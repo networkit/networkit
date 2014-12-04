@@ -14,74 +14,87 @@
 namespace NetworKit {
 
 PageRankNibble::PageRankNibble(Graph& g, double alpha, double epsilon): SelectiveCommunityDetector(g), alpha(alpha), epsilon(epsilon) {
+	assert(!g.isWeighted());
+}
+
+PageRankNibble::~PageRankNibble() {
 
 }
 
 
-
-std::set<node> PageRankNibble::bestSweepSet(const std::vector<double>& pr) {
-	double entry = 0.0;
-	double deg = 0.0;
-	std::vector<std::pair<double, node> > sweepVec;
-
-	// fill sweep set vector, use only non-zero entries
-	G.forNodes([&](node v) {
-		if (pr[v] > 0.0) {
-			deg = (double) G.degree(v);
-			entry = (deg > 0.0) ? (pr[v] / deg) : (0.0);
-			sweepVec.push_back(std::make_pair(entry, v));
-		}
-	});
-	count suppSize = sweepVec.size();
+std::set<node> PageRankNibble::bestSweepSet(std::vector<std::pair<node, double>>& pr) {
+	count suppSize = pr.size();
 	TRACE("Support size: ", suppSize);
 
 
 	// order vertices
 	TRACE("Before sorting");
-	auto comp([&](const std::pair<double, node>& a, const std::pair<double, node>& b) {
-		return a.first > b.first;
+	auto comp([&](const std::pair<node, double>& a, const std::pair<node, double>& b) {
+		return (a.second / G.degree(a.first)) > (b.second / G.degree(b.first));
 	});
-	std::sort(sweepVec.begin(), sweepVec.end(), comp);
+	std::sort(pr.begin(), pr.end(), comp);
 	TRACE("After sorting");
+
+	for (std::vector<std::pair<node, double>>::iterator it = pr.begin(); it != pr.end(); it++) {
+		TRACE("(", it->first, ", ", it->second, ")");
+	}
 
 
 	// find best sweep set w.r.t. conductance
-	std::set<node> suitableCluster, bestCluster;
-	Conductance conductance;
 	double bestCond = std::numeric_limits<double>::max();
 	double cut = 0.0;
 	double volume = 0.0;
+	index bestSweepSetIndex = 0;
+	std::unordered_map<node, bool> withinSweepSet;
+	std::vector<node> currentSweepSet;
 
-	for (index j = 0; j < suppSize; ++j) {
+	for (std::vector<std::pair<node, double>>::iterator it = pr.begin(); it != pr.end(); it++) {
 		// update sweep set
-		node v = sweepVec[j].second;
+		node v = it->first;
 		G.forNeighborsOf(v, [&](node neigh) {
-			if (suitableCluster.count(neigh) == 0) {
-				cut += G.weight(v, neigh);
+			if (withinSweepSet.find(neigh) == withinSweepSet.end()) {
+				cut++;
+			} else {
+				cut--;
 			}
 		});
-		volume += G.degree(v);
-		suitableCluster.insert(v);
+		volume += G.volume(v);
+		currentSweepSet.push_back(v);
+		withinSweepSet[v] = true;
 
 		// compute conductance
-		double cond = cut / volume;
+		double cond = cut / fmin(volume, 2 * G.numberOfEdges() - volume);
+
+		std::stringstream debug;
+
+		debug << "Current vertex: " << v << "; Current sweep set conductance: " << cond << std::endl;
+		debug << "Current cut weight: " << cut << "; Current volume: " << volume << std::endl;
+		debug << "Total graph volume: " << 2 * G.numberOfEdges() << std::endl;
+
+		TRACE(debug.str());
 
 		if (cond < bestCond) {
-			bestCluster = suitableCluster;
+			bestCond = cond;
+			bestSweepSetIndex = currentSweepSet.size();
 		}
 	}
 
-	return bestCluster;
+	std::set<node> bestSweepSet;
+
+	for (index j = 0; j < bestSweepSetIndex; j++) {
+		bestSweepSet.insert(currentSweepSet[j]);
+	}
+
+	return bestSweepSet;
 }
 
 
 std::set<node> PageRankNibble::expandSeed(node seed) {
 	DEBUG("APR(G, ", alpha, ", ", epsilon, ")");
 	ApproximatePageRank apr(G, alpha, epsilon);
-	std::vector<double> pr = apr.run(seed);
-
-	std::set<node> cluster = bestSweepSet(pr);
-	return cluster;
+	std::vector<std::pair<node, double>> pr = apr.run(seed);
+	std::set<node> s = bestSweepSet(pr);
+	return s;
 }
 
 std::map<node, std::set<node> >  PageRankNibble::run(std::set<unsigned int>& seeds) {
