@@ -12,6 +12,10 @@ namespace NetworKit {
 ChungLuAttributizer::ChungLuAttributizer(const Graph& graph) : graph(graph) {}
 
 std::vector< double > ChungLuAttributizer::getAttribute() {
+	if (!graph.hasEdgeIds()) {
+		throw std::runtime_error("edges have not been indexed - call indexEdges first");
+	}
+
 	std::vector< double > result(graph.upperEdgeIdBound());
 	
 	graph.parallelForEdges([&](node u, node v, edgeid eid) {

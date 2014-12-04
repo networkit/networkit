@@ -16,6 +16,9 @@ namespace NetworKit {
 ForestFireAttributizer::ForestFireAttributizer(const Graph& graph, double pf, double targetBurntRatio): graph(graph), pf(pf), targetBurntRatio(targetBurntRatio) {}
 
 std::vector<double> ForestFireAttributizer::getAttribute() {
+	if (!graph.hasEdgeIds()) {
+		throw std::runtime_error("edges have not been indexed - call indexEdges first");
+	}
 
 	std::vector<count> burnt (graph.upperEdgeIdBound(), 0);
 	count edgesBurnt = 0;

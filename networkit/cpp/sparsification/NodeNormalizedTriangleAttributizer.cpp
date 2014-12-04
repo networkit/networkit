@@ -13,6 +13,10 @@ NodeNormalizedTriangleAttributizer::NodeNormalizedTriangleAttributizer(const Gra
 };
 
 std::vector< double > NodeNormalizedTriangleAttributizer::getAttribute() {
+	if (!graph.hasEdgeIds()) {
+		throw std::runtime_error("edges have not been indexed - call indexEdges first");
+	}
+
 	std::vector<double> averageTrianglesPerNode(graph.upperNodeIdBound());
 
 	graph.balancedParallelForNodes([&](node u) {

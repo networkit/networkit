@@ -12,6 +12,10 @@ namespace NetworKit {
 MultiscaleAttributizer::MultiscaleAttributizer(const Graph& graph, const std::vector<double>& attribute) : graph(graph), attribute(attribute) {}
 
 std::vector<double> MultiscaleAttributizer::getAttribute() {
+	if (!graph.hasEdgeIds()) {
+		throw std::runtime_error("edges have not been indexed - call indexEdges first");
+	}
+
 	//The following vector is used for the _local_ normalization of edgeweights.
 	//We use a global vector for performance reasons.
 	std::vector<edgeweight> normalizedWeights(graph.upperNodeIdBound());

@@ -13,6 +13,10 @@ EdgeAttributeBlender::EdgeAttributeBlender(const Graph &G, const std::vector< do
 G(G), attribute0(attribute0), attribute1(attribute1), selection(selection), hasAttribute(false) {}
 
 void EdgeAttributeBlender::run() {
+	if (!G.hasEdgeIds()) {
+		throw std::runtime_error("edges have not been indexed - call indexEdges first");
+	}
+
 	blendedAttribute.resize(G.upperEdgeIdBound());
 
 	G.parallelForEdges([&](node u, node v, edgeid eid) {
@@ -23,7 +27,7 @@ void EdgeAttributeBlender::run() {
 }
 
 std::vector< double > EdgeAttributeBlender::getAttribute() {
-	if (!hasAttribute) throw std::runtime_error("Error: Run must called first");
+	if (!hasAttribute) throw std::runtime_error("Error: Run must be called first");
 
 	hasAttribute = false;
 

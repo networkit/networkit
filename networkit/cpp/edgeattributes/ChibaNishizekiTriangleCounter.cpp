@@ -15,6 +15,10 @@ ChibaNishizekiTriangleCounter::ChibaNishizekiTriangleCounter(const Graph& G) : G
 }
 
 std::vector<count> ChibaNishizekiTriangleCounter::getAttribute() {
+	if (!G.hasEdgeIds()) {
+		throw std::runtime_error("edges have not been indexed - call indexEdges first");
+	}
+
 	std::vector<std::vector<std::pair<node, edgeid> > > edges(G.upperNodeIdBound());
 
 	// copy edges with edge ids

@@ -16,6 +16,10 @@ TriangleCounter::TriangleCounter(const Graph& G) : G(G) {
 }
 
 std::vector<count> TriangleCounter::getAttribute() {
+	if (!G.hasEdgeIds()) {
+		throw std::runtime_error("edges have not been indexed - call indexEdges first");
+	}
+
 	auto isOutEdge = [&](node u, node v) {
 		return G.degree(u) > G.degree(v) || (G.degree(u) == G.degree(v) && u < v);
 	};

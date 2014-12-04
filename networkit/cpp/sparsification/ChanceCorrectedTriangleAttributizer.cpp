@@ -13,6 +13,10 @@ ChanceCorrectedTriangleAttributizer::ChanceCorrectedTriangleAttributizer(const G
 }
 
 std::vector< double > ChanceCorrectedTriangleAttributizer::getAttribute() {
+	if (!graph.hasEdgeIds()) {
+		throw std::runtime_error("edges have not been indexed - call indexEdges first");
+	}
+
 	std::vector<double> result(graph.upperEdgeIdBound(), 0);
 	
 	graph.parallelForEdges([&](node u, node v, edgeid eid) {

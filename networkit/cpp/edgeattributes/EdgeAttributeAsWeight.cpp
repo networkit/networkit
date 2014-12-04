@@ -14,6 +14,10 @@ EdgeAttributeAsWeight::EdgeAttributeAsWeight(const Graph& graph, const std::vect
 }
 
 Graph EdgeAttributeAsWeight::calculate() {
+	if (!graph.hasEdgeIds()) {
+		throw std::runtime_error("edges have not been indexed - call indexEdges first");
+	}
+
 	Graph result(graph, true, false);
 
 	if (squared) {

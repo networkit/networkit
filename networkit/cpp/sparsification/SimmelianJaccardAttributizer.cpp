@@ -14,6 +14,10 @@ SimmelianJaccardAttributizer::SimmelianJaccardAttributizer(const Graph& graph, c
 }
 
 std::vector<double> SimmelianJaccardAttributizer::getAttribute() {
+	if (!graph.hasEdgeIds()) {
+		throw std::runtime_error("edges have not been indexed - call indexEdges first");
+	}
+
 	std::vector<RankedNeighbors> neighbors = getRankedNeighborhood(graph, triangles);
 	std::vector<double> jaccardAttribute(graph.upperEdgeIdBound(), 1.0);
 
