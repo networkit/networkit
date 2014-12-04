@@ -2756,15 +2756,25 @@ cdef class GraphClusteringTools:
 		return equalClusterings(zeta._this, eta._this, G._this)
 
 cdef extern from "cpp/graph/GraphTools.h" namespace "NetworKit::GraphTools":
-	_Graph getCompactedGraph(_Graph G) except +
+	_Graph getCompactedGraph(_Graph G, unordered_map[node,node]) except +
 	unordered_map[node,node] getContinuousNodeIds(_Graph G) except +
 
 cdef class GraphTools:
 	@staticmethod
-	def getCompactedGraph(Graph graph):
-		return Graph().setThis(getCompactedGraph(graph._this))
+	def getCompactedGraph(Graph graph, nodeIdMap):
+		"""
+			Computes a graph with the same structure but with continuous node ids.
+		"""
+		cdef unordered_map[node,node] cNodeIdMap
+		for key in nodeIdMap:
+			cNodeIdMap[key] = nodeIdMap[key]
+		return Graph().setThis(getCompactedGraph(graph._this,cNodeIdMap))
+
 	@staticmethod
 	def getContinuousNodeIds(Graph graph):
+		""" 
+			Computes a map of node ids to continuous node ids.
+		"""
 		cdef unordered_map[node,node] cResult = getContinuousNodeIds(graph._this)
 		result = dict()
 		for elem in cResult:
