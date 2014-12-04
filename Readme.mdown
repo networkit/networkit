@@ -62,7 +62,7 @@ Building NetworKit as a Python Module
 To build the module, the following is required:
 
 - Python 3 (>= 3.4 recommended, 3.3 supported)
-- Cython
+- [for developers: Cython (>= 0.21)]
 
 Additionally, the module uses the following external Python packages:
 
@@ -81,11 +81,11 @@ Then, switch to the top folder and run the script `setup.py` with the following 
 	python3 setup.py build_ext --inplace [--optimize=V] [-jX]
 
 The script will call scons to compile NetworKit as a library and then build the extensions in the top folder. By default, NetworKit will be built with the amount of available cores in optimized mode. It is possible the add the options `--optimize=V` and `-jN` the same way it can be done to a manual scons call, to specify the optimization level and the number of threads used for compilation.
-The setup script provides more functionality:
+The setup script provides more functionality and can be used with pip aswell:
 
-	python3 setup.py develop [--uninstall] [--optimize=V] [-jX]
+	pip3 install -e .
 
-will compile NetworKit, build the extensions and on top of that temporarily install NetworKit so that it is available on the whole system. This can be undone by adding `--uninstall`.
+will compile NetworKit, build the extensions and on top of that temporarily install NetworKit so that it is available on the whole system. `pip3 uninstall networkit` will remove networkit.
 
 	python3 setup.py clean [--optimize=V]
 
@@ -93,7 +93,7 @@ will remove the extensions and its build folder as well as call scons to remove 
 
 Note: All of the above installation command may require `sudo` privileges depending on your system, so try this accordingly.
 
-Assuming the extension module `_NetworKit` exists, it can be imported in python:
+Assuming the extension module `_NetworKit` exists, the front end can be imported in python:
 
 	python3
 	>>> import networkit
@@ -124,13 +124,18 @@ IPython Notebook
 
 We recommend that you familiarize yourself with NetworKit through experimenting with the interactive IPython Notebook `NetworKit_UserGuide.ipynb` located in the folder `Doc/Notebooks`. To display and work with these notebooks, you have to start a local notebook server from the terminal with:
 
-	ipython3 notebook --pylab inline
+	ipython3 notebook
 
 It can occur, that ipython3 itself works, but the notebook server won't start. In that case, head over to the [IPython website](http://ipython.org/ipython-doc/2/install/install.html) and make sure, you have the listed packages installed. If the notebook server starts as it is supposed to, your default browser should open a web interface named "IPython Dashboard". You can either add `NetworKit_UserGuide.ipynb` from the above mentioned location, or you can point IPython to the location by starting it with
 
-	ipython3 notebook --pylab inline --notebook-dir=Doc/Notebooks
+	ipython3 notebook --notebook-dir=Doc/Notebooks
 
 The notebook appears in the list and you can start it by clicking on it.
+
+To show plots within the notebooks, place the following two lines at the beginning of your notebook:
+
+	%matplotlib
+	matplotlib.pyplot as plt
 
 
 
