@@ -29,11 +29,10 @@ protected:
 
 	count updateThreshold = 0;
 	count nIterations = 0; //!< number of iterations in last run
+	std::vector<count> timing;	//!< running times for each iteration
 
 
 public:
-
-	std::string VERSION;	// algorithm version number - increment in constructor for significant changes to the implementation
 
 	/**
 	 * Constructor to the label propagation community detection algorithm.
@@ -77,6 +76,14 @@ public:
 	* @return The number of iterations.
 	*/
 	virtual count numberOfIterations();
+
+
+	/**
+	* Get list of running times for each iteration.
+	*
+	* @return The list of running times in milliseconds
+	*/
+	virtual std::vector<count> getTiming();
 
 
 };

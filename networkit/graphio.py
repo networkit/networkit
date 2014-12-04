@@ -1,6 +1,6 @@
 # extension imports
 from _NetworKit import (Graph, METISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListWriter, \
-						 GMLGraphWriter, LineFileReader, SNAPGraphWriter, DGSWriter, \
+						 GMLGraphWriter, LineFileReader, SNAPGraphWriter, DGSWriter, GraphToolBinaryWriter, GraphToolBinaryReader, \
 						  DGSStreamParser, GraphUpdater, SNAPEdgeListPartitionReader, SNAPGraphReader, EdgeListReader, CoverReader, CoverWriter, EdgeListCoverReader, KONECTGraphReader, GMLGraphReader)
 
 # local imports
@@ -41,6 +41,8 @@ try:
 		EdgeList = ()
 		LFR = ()
 		KONECT = ()
+		GraphToolBinary = ()
+
 except ImportError:
 	print("Update to Python >=3.4 recommended - support for < 3.4 may be discontinued in the future")
 	class Format:
@@ -58,6 +60,7 @@ except ImportError:
 		EdgeList = "edgelist"
 		LFR = "edgelist-t1"
 		KONECT = "konect"
+		GraphToolBinary = "gtbin"
 
 
 
@@ -78,7 +81,8 @@ def getReader(fileformat, **kwargs):
 			Format.EdgeListTabZero:		EdgeListReader('\t',0),
 			Format.LFR:			EdgeListReader('\t',1),
 			Format.KONECT:			KONECTGraphReader(' '),
-			Format.GML:			GMLGraphReader()
+			Format.GML:			GMLGraphReader(),
+			Format.GraphToolBinary:		GraphToolBinaryReader()
 			}
 
 	try:
@@ -155,7 +159,8 @@ def getWriter(fileformat, **kwargs):
 			Format.GraphViz:		DotGraphWriter(),
 			Format.DOT:			DotGraphWriter(),
 			Format.GML:			GMLGraphWriter(),
-			Format.LFR:			EdgeListWriter('\t',1)
+			Format.LFR:			EdgeListWriter('\t',1),
+			Format.GraphToolBinary:		GraphToolBinaryWriter()
 #			Format.GDF:			GDFGraphWriter(),
 #			Format.VNA:			VNAGraphWriter(),
 			}

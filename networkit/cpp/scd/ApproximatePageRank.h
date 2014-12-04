@@ -9,6 +9,7 @@
 #define APPROXIMATEPAGERANK_H_
 
 #include <vector>
+#include <unordered_map>
 #include "../graph/Graph.h"
 
 namespace NetworKit {
@@ -23,12 +24,9 @@ protected:
 	double oneMinusAlphaOver2;
 	double eps;
 
-	std::vector<double> pr; // page rank vector
-	std::vector<double> residual;
-	std::vector<double> normalizedResid;
+	std::unordered_map<node, std::pair<double, double>> pr_res;
 
-
-	void push(node u, node seed, std::set<node>& activeNodes);
+	void push(node u, std::set<node>& activeNodes);
 
 public:
 	/**
@@ -37,13 +35,12 @@ public:
 	 * @param epsilon Error tolerance.
 	 */
 	ApproximatePageRank(const Graph& g, double alpha, double epsilon = 1e-12);
-	virtual ~ApproximatePageRank();
 
 	/**
 	 * @return Approximate PageRank vector from @a seed with parameters
 	 *         specified in the constructor.
 	 */
-	std::vector<double> run(node seed);
+	std::vector<std::pair<node, double>> run(node seed);
 };
 
 } /* namespace NetworKit */

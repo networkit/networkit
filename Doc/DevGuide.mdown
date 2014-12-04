@@ -168,7 +168,7 @@ The following general conventions apply to all NetworKit developers.
 
 Every new feature must be covered by a unit test. Omitting unit tests makes it very likely that your feature will break silently as the project develops, leading to unneccessary work in tracing back the source of the error. 
 
-Unit tests for NetworKit are based on the `googletest` library. For more information read the [googletest primer](http://code.google.com/p/googletest/wiki/Primer).
+Unit tests for the C++ part of NetworKit are based on the `googletest` library. For more information read the [googletest primer](http://code.google.com/p/googletest/wiki/Primer). The Python test framework currently relies on `nose` to collect the tests.
 
 - Each source folder contains a `test` folder with `googletest` classes. Create the unit tests for each feature in the appropriate `test/*GTest` class by adding a `TEST_F` function. 
 - Prefix standard unit tests with `test` and experimental feature tests with `try`. A `test*` must pass when pushed to the main repository, a `try*` is allowed to fail.
@@ -197,6 +197,17 @@ To run only specific unit tests, you can also add a filter expression, e. g.:
 		./NetworKit-Tests-Dbg --gtest_filter=*PartitionGTest*
 
 initiates unit tests only for the Partition data structure.
+
+For Python tests, run:
+
+		python3 setup.py test [--cpp-tests/-c]
+
+This command will compile the _NetworKit extension and then run all test cases on the Python layer. If you append `--cpp-tests/-c`, the unit tests of the c++ side will be compiled and run before the Python test cases.
+
+
+### Test-driven development
+
+If you implement a new feature for NetworKit, we encourage you to adapt your development process to test driven development. This means that you start with a one ore ideally several test-cases for your feature and then write the feature for the test case(s). If your feature is mostly implemented in C++, you should write your test cases there. If you expose your feature to Python, you should also write a test case for the extension module on the Python layer. The same applies for features in Pyton.
 
 
 ### Code Style
