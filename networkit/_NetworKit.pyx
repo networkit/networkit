@@ -650,8 +650,10 @@ cdef class BFS:
 
 	"""
 	cdef _BFS* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False):
+		self._G = G
 		self._this = new _BFS(G._this, source, storePaths, storeStack)
 
 	def __dealloc__(self):
@@ -726,8 +728,10 @@ cdef class DynBFS:
 		maintain a stack of nodes in order of decreasing distance?
 	"""
 	cdef _DynBFS* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, source):
+		self._G = G
 		self._this = new _DynBFS(G._this, source)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -817,8 +821,10 @@ cdef class Dijkstra:
 		maintain a stack of nodes in order of decreasing distance?
     """
 	cdef _Dijkstra* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False):
+		self._G = G
 		self._this = new _Dijkstra(G._this, source, storePaths, storeStack)
 
 	def __dealloc__(self):
@@ -891,8 +897,10 @@ cdef class DynDijkstra:
 
 	"""
 	cdef _DynDijkstra* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, source):
+		self._G = G
 		self._this = new _DynDijkstra(G._this, source)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -999,8 +1007,10 @@ cdef class SpanningForest:
 			A subset of nodes of `G` which induce the subgraph.
 	"""
 	cdef _SpanningForest* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G not None):
+		self._G = G
 		self._this = new _SpanningForest(G._this)
 
 	def __dealloc__(self):
@@ -5134,8 +5144,10 @@ cdef class PageRankNibble:
 	alpha : the random walk loop probability.
 	"""
 	cdef _PageRankNibble *_this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, double epsilon, double alpha):
+		self._G = G
 		self._this = new _PageRankNibble(G._this, epsilon, alpha)
 
 	def run(self, set[unsigned int] seeds):
