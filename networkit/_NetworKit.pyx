@@ -3045,13 +3045,15 @@ cdef extern from "cpp/community/PLM.h" namespace "NetworKit::PLM":
 
 
 cdef class PLM(CommunityDetector):
-	""" MultiLevel Parallel LocalMover - the Louvain method, optionally extended to
+	""" Parallel Louvain Method - the Louvain method, optionally extended to
 		a full multi-level algorithm with refinement
 
 		PLM(refine=True, gamma=1.0, par="balanced", maxIter=32)
 
 		Parameters
 		----------
+		G : Graph
+			A graph.
 		refine : bool, optional
 			Add a second move phase to refine the communities.
 		gamma : double
