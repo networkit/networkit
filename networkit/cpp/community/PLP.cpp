@@ -23,6 +23,10 @@ PLP::PLP(const Graph& G, const Partition baseClustering, count theta) : Communit
 }
 
 void PLP::run() {
+	if (hasRun) {
+		throw std::runtime_error("The algorithm has already run on the graph.");
+	}
+
 	// set unique label for each node if no baseClustering was given
 	index z = G.upperNodeIdBound();
 	if (result.numberOfElements() != z) {
