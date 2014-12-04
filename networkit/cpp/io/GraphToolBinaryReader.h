@@ -19,11 +19,8 @@
 namespace NetworKit {
 
 /**
- * A reader for the edge list format used by the LFR benchmark generators, defined as:
- * 		list of edges (nodes are labelled from 1 to the number of nodes;
- * 		the edges are ordered and repeated twice, i.e. source-target and target-source).
- *
- * 	The starting index is a parameter to enable other edge list formats.
+ * Reads graphs from files in the binary format defined by graph-tool[1].
+ * [1]: http://graph-tool.skewed.de/static/doc/gt_format.html
  */
 class GraphToolBinaryReader: public NetworKit::GraphReader {
 
