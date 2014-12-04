@@ -152,6 +152,7 @@ cdef extern from "cpp/graph/Graph.h":
 		void setCoordinate(node v, Point[float] value) except +
 		void initCoordinates() except +
 		count numberOfSelfLoops() except +
+		_Graph toUndirected() except +
 
 
 cdef class Graph:
@@ -480,6 +481,16 @@ cdef class Graph:
 	 		List of neighbors of `u.
 		"""
 		return self._this.neighbors(u)
+
+	def toUndirected(self):
+		"""
+		Return an undirected version of this graph.
+
+	 	Returns
+	 	-------
+			undirected graph.
+		"""
+		return Graph().setThis(self._this.toUndirected())
 
 	def isWeighted(self):
 		"""
