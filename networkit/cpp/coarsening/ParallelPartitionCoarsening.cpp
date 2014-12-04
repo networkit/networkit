@@ -130,7 +130,9 @@ std::pair<Graph, std::vector<node> > ParallelPartitionCoarsening::run(const Grap
 			for (node u : nodesPerSuperNode[su]) {
 				G.forNeighborsOf(u, [&](node v, edgeweight ew) {
 					node sv = nodeToSuperNode[v];
-					if (su != sv || u >= v) { // count edges inside uv only once (we iterate over them twice)
+					if (su == sv) {
+						outEdges[sv] += ew / 2;
+					} else if (su > sv) { // count edges inside uv only once (we iterate over them twice)
 						outEdges[sv] += ew;
 					}
 				});
