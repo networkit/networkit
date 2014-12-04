@@ -28,7 +28,7 @@ namespace NetworKit {
 
 class MultigridSolverGTest : public testing::Test {
 protected:
-	const vector<string> GRAPH_INSTANCES = {"power.graph", "arxiv-qfin-author.dgs"};
+	const vector<string> GRAPH_INSTANCES = {"lesmis.graph", "power.graph", "celegans_metabolic.graph", "airfoil1.graph", "PGPgiantcompo.graph"};
 
 	Vector randZeroSum(const Graph &graph, size_t seed);
 };

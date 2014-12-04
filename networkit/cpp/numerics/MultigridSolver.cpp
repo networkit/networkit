@@ -6,6 +6,10 @@
  */
 
 #include "MultigridSolver.h"
+#include "../auxiliary/Enforce.h"
+#include <sstream>
+#include <fstream>
+#include <iostream>
 
 namespace NetworKit {
 
@@ -29,26 +33,25 @@ void MultigridSolver::interpolateError(const Matrix &interpolationMatrix, const 
 
 Vector MultigridSolver::vCycle(const Matrix &matrix, index level, const Vector &rhs, const Vector &result) {
 	if (level == hierarchy.getNumLevels() - 1) {
-		// TODO: direct solution
-		CGStatus status;
-		status.residual = tolerance;
-		status.max_iters = 10000;
-		return solveConjugateGradient<IdentityPreconditioner>(matrix, rhs, status);
+//		CGStatus status;
+//		status.residual = tolerance;
+//		status.max_iters = 10000;
+//		return solveConjugateGradient<IdentityPreconditioner>(matrix, rhs, status);
+		return smoother.relax(matrix, rhs, result, 1e4);
 	}
 
 	// presmoothing
 	Vector res = smoother.relax(matrix, rhs, result, numPreSmooth);
 
 	// restriction
-	Matrix interpolationMatrix = hierarchy.getInterpolationMatrix(level);
-	Vector restricted_residual = restrictResidual(matrix, interpolationMatrix, res, rhs);
+	Vector restrictedVector = hierarchy.restriction(level, res, rhs);
 
 	// coarse error correction
-	Vector coarse_error(interpolationMatrix.numberOfColumns());
-	coarse_error = vCycle(hierarchy.getLaplacian(level + 1), level + 1, restricted_residual, coarse_error);
+	Vector coarseResult(restrictedVector.getDimension());
+	coarseResult = vCycle(hierarchy.getLaplacian(level + 1), level + 1, restrictedVector, coarseResult);
 
 	// prolongation
-	interpolateError(interpolationMatrix, coarse_error, res);
+	res = hierarchy.prolongation(level, coarseResult, res);
 
 	// postsmooothing
 	res = smoother.relax(matrix, rhs, res, numPostSmooth);
@@ -57,37 +60,28 @@ Vector MultigridSolver::vCycle(const Matrix &matrix, index level, const Vector &
 }
 
 Vector MultigridSolver::fCycle(const Matrix &matrix, index level, const Vector &rhs, const Vector &result) {
-	TRACE("entering fCycle at level ", level);
 	if (level == hierarchy.getNumLevels() - 1) {
-		// TODO: direct solution
-		CGStatus status;
-		status.residual = tolerance;
-		status.max_iters = 10000;
-		return solveConjugateGradient<IdentityPreconditioner>(matrix, rhs, status);
+//		CGStatus status;
+//		status.residual = tolerance;
+//		status.max_iters = 10000;
+//		return solveConjugateGradient<IdentityPreconditioner>(matrix, rhs, status);
+		return smoother.relax(matrix, rhs, result, 1e4);
 	}
 
-	// presmoothing
-	TRACE("smoothing on level ", level);
-	Vector res = smoother.relax(matrix, rhs, result, numPreSmooth);
-
 	// restriction
-	TRACE("restriction on level", level);
-	Matrix interpolationMatrix = hierarchy.getInterpolationMatrix(level);
-	Vector restricted_residual = restrictResidual(matrix, interpolationMatrix, res, rhs);
+	Vector restrictedVector = hierarchy.restriction(level, result, rhs);
 
 	// coarse error correction (f-cycle)
-	TRACE("coarse error correction from ", level, " to ", level +1);
-	Vector coarse_error(interpolationMatrix.numberOfColumns());
-	coarse_error = fCycle(hierarchy.getLaplacian(level + 1), level + 1, restricted_residual, coarse_error);
+	Vector coarseResult(restrictedVector.getDimension());
+	coarseResult = fCycle(hierarchy.getLaplacian(level + 1), level + 1, restrictedVector, coarseResult);
 
 	// prolongation
-	TRACE("prolongation on level", level);
-	interpolateError(interpolationMatrix, coarse_error, res);
+	Vector res = hierarchy.prolongation(level, coarseResult, result);
 
 	// v-cycle
 	res = vCycle(matrix, level, rhs, res);
 
-	return result;
+	return res;
 }
 
 bool MultigridSolver::solve(const Vector &rhs, Vector &result, count maxIterations) {
@@ -95,11 +89,43 @@ bool MultigridSolver::solve(const Vector &rhs, Vector &result, count maxIteratio
 	Matrix matrix = hierarchy.getLaplacian(0);
 	Vector residual = rhs - matrix * result;
 
+	INFO("Entering while loop to solve equation");
 	while (!isConverged(residual) && iter < maxIterations) {
+		INFO("residual norm= ", residual.length());
 		result = fCycle(matrix, 0, rhs, result);
 		residual = rhs - matrix * result;
+
 		++iter;
 	}
+
+	return isConverged(residual);
+}
+
+bool MultigridSolver::solve(const std::string &graph_name, const Vector &rhs, Vector &result, count maxIterations) {
+	count iter = 0;
+	Matrix matrix = hierarchy.getLaplacian(0);
+	Vector residual = rhs - matrix * result;
+	Vector initial = residual;
+
+	std::ofstream file("LAMG_" + graph_name + ".out");
+	Aux::enforceOpened(file);
+
+	INFO("Entering while loop to solve equation");
+	while (!isConverged(residual) /*&& iter < maxIterations*/) {
+		file << iter << " " << residual.length() << std::endl;
+		INFO("residual norm= ", residual.length());
+		result = fCycle(matrix, 0, rhs, result);
+		residual = rhs - matrix * result;
+
+		++iter;
+	}
+
+	file << iter << " " << residual.length() << std::endl;
+
+	file.close();
+
+	double acf = pow(residual.length() / initial.length(), (double) 1 / iter);
+	INFO("acf=", acf);
 
 	return isConverged(residual);
 }
