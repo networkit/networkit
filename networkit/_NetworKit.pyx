@@ -1669,9 +1669,8 @@ cdef extern from "cpp/io/GraphToolBinaryReader.h":
 		_Graph read(string path) except +
 
 cdef class GraphToolBinaryReader:
-	""" Reads the METIS adjacency file format [1]. If the Fast reader fails,
-		use readGraph(path, graphio.formats.metis) as an alternative.
-		[1]: http://people.sc.fsu.edu/~jburkardt/data/metis_graph/metis_graph.html
+	""" Reads the binary file format defined by graph-tool[1]. 
+		[1]: http://graph-tool.skewed.de/static/doc/gt_format.html
 	"""
 	cdef _GraphToolBinaryReader _this
 
@@ -1689,9 +1688,7 @@ cdef extern from "cpp/io/EdgeListReader.h":
 
 
 cdef class EdgeListReader:
-	""" Reads the METIS adjacency file format [1]. If the Fast reader fails,
-		use readGraph(path, graphio.formats.metis) as an alternative.
-		[1]: http://people.sc.fsu.edu/~jburkardt/data/metis_graph/metis_graph.html
+	""" Reads a file in an edge list format.
 	"""
 	cdef _EdgeListReader _this
 
@@ -1769,7 +1766,9 @@ cdef extern from "cpp/io/GraphToolBinaryWriter.h":
 
 
 cdef class GraphToolBinaryWriter:
-	""" Writes graphs in the METIS format"""
+	""" Reads the binary file format defined by graph-tool[1]. 
+		[1]: http://graph-tool.skewed.de/static/doc/gt_format.html
+	"""
 	cdef _GraphToolBinaryWriter _this
 
 	def write(self, Graph G not None, path):
