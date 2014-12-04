@@ -26,10 +26,6 @@ std::unordered_map<node,node> getContinuousNodeIds(const Graph& graph) {
 	return nodeIdMap;
 }
 
-Graph toUndirected(const Graph& graph) {
-	return Graph(graph,graph.isWeighted(),false);
-}
-
 }
 
 }
