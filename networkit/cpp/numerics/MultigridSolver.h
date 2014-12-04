@@ -41,6 +41,7 @@ public:
 	void setup(const Matrix &matrix);
 
 	bool solve(const Vector &rhs, Vector &result, count maxIterations = 20);
+	bool solve(const std::string &graph_name, const Vector &rhs, Vector &result, count maxIterations = 20);
 };
 
 } /* namespace NetworKit */

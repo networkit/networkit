@@ -11,12 +11,13 @@ namespace NetworKit {
 
 template<typename InterpretationMatrix>
 MultigridHierarchy MatchingHierarchyBuilder::computeHierarchy(const Graph &graph) const {
-	MultigridHierarchy hierarchy;
+	Matrix mat = InterpretationMatrix(graph);
+	MultigridHierarchy hierarchy(mat);
 	PathGrowingMatcher matcher;
 	MatchingContracter contracter;
 
 	Graph currentGraph = graph;
-
+	INFO("Computing hierarchy");
 	do {
 		// calculate matching of graph
 		Matching matching = matcher.run(currentGraph, false);
@@ -28,9 +29,11 @@ MultigridHierarchy MatchingHierarchyBuilder::computeHierarchy(const Graph &graph
 		interpolationMatrixFromMatching(coarsening.second, interpolationMatrix);
 
 		// add level to hierarchy
-		hierarchy.addLevel(InterpretationMatrix(currentGraph), interpolationMatrix);
 		currentGraph = coarsening.first;
+		hierarchy.addLevel(InterpretationMatrix(currentGraph), interpolationMatrix);
+		INFO("add level with nC=", currentGraph.numberOfNodes(), " and matched nodes ", matching.size());
 	} while (currentGraph.upperNodeIdBound() > numCoarseGraphNodes);
+	INFO("Done with ", hierarchy.getNumLevels(), " levels");
 
 	return hierarchy;
 }

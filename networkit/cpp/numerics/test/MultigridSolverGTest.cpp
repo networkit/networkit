@@ -37,26 +37,26 @@ TEST_F(MultigridSolverGTest, tryOneCycle) {
 }
 
 TEST_F(MultigridSolverGTest, tryLarge) {
-//	METISGraphReader reader;
-//	GaussSeidelRelaxation smoother;
-//	MatchingHierarchyBuilder hierarchyBuilder;
-//	MultigridSolver solver(1e-3, 3, 3, hierarchyBuilder, smoother);
-//
-//	for (const string &graph : GRAPH_INSTANCES) {
-//		Graph G = reader.read("input/" + graph);
-//		TRACE("setting up solver for graph ", graph);
-//		solver.setup(G);
-//		TRACE("DONE");
-//
-//		Vector b = randZeroSum(G, 1234);
-//		Vector result(G.upperNodeIdBound(), 0.0);
-//
-//		TRACE("Solving equation system");
-//		bool converged = solver.solve(b, result);
-//		TRACE("DONE");
-//
-//		EXPECT_TRUE(converged);
-//	}
+	METISGraphReader reader;
+	GaussSeidelRelaxation smoother;
+	MatchingHierarchyBuilder hierarchyBuilder;
+	MultigridSolver solver(1e-3, 3, 3, hierarchyBuilder, smoother);
+
+	for (const string &graph : GRAPH_INSTANCES) {
+		Graph G = reader.read("input/" + graph);
+		TRACE("setting up solver for graph ", graph);
+		solver.setup(G);
+		TRACE("DONE");
+
+		Vector b = randZeroSum(G, 1234);
+		Vector result(G.upperNodeIdBound(), 0.0);
+
+		TRACE("Solving equation system");
+		bool converged = solver.solve(b, result);
+		TRACE("DONE");
+
+		EXPECT_TRUE(converged);
+	}
 }
 
 Vector MultigridSolverGTest::randZeroSum(const Graph& G, size_t seed) {

@@ -26,24 +26,23 @@ private:
 	GaussSeidelRelaxation smoother;
 	double guard, cycleIndex;
 
-	std::vector<bool> lowDegreeNodes(const Matrix &matrix) const;
+	count lowDegreeNodes(const Matrix &matrix, std::vector<bool> &eliminate) const;
 	std::vector<Vector> computeTestVectors(const Matrix &matrix, const count numOfVectors) const;
+	bool fastRelaxationSpeed(const Matrix &matrix) const;
 	Matrix computeAffinityMatrix(const Matrix &matrix, const std::vector<Vector> &testVectors) const;
 	void addHighDegreeSeedNodes(const Matrix &matrix, std::vector<int64_t> &status) const;
 	std::vector<std::vector<index>> computeStrongNeighbors(const Matrix &affinityMatrix, const double delta) const;
-	int64_t findBestSeed(const Matrix &affinityMatrix, const std::vector<index> &strongNeighbors, const std::vector<int64_t> &status, const index u) const;
+	bool findBestSeed(const Matrix &affinityMatrix, const std::vector<index> &strongNeighborsOfU, const std::vector<int64_t> &status, const index u, index &s) const;
 	void aggregationStage(const Matrix &matrix, count &numCoarseNodes, const Matrix &affinityMatrix, std::vector<Vector> &testVectors, std::vector<int64_t> &status, std::vector<count> &aggregateSize, double delta) const;
 
-	bool addEliminationLevel(Matrix &matrix, LAMGHierarchy &hierarchy);
+	bool addEliminationLevel(Matrix &matrix, LAMGHierarchy &hierarchy) const;
 
-	bool addAggregationLevel(Matrix &matrix, LAMGHierarchy &hierarchy, const count numTestVectors);
+	bool addAggregationLevel(Matrix &matrix, LAMGHierarchy &hierarchy, const count numTestVectors) const;
 
 public:
 	LAMG(double guard=0.7, double cycleIndex=1.5);
 
-	LAMGHierarchy buildHierarchy(const Matrix &matrix);
-	LAMGHierarchy buildHierarchy(const Graph &graph);
-
+	MultigridHierarchy buildHierarchy(const Matrix &matrix) const;
 };
 
 } /* namespace NetworKit */

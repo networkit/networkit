@@ -16,6 +16,8 @@ Vector GaussSeidelRelaxation::relax(const Matrix &A, const Vector &b, const Vect
 	count iterations = 0;
 	Vector x_old = initialGuess;
 	Vector x_new = initialGuess;
+	if (maxIterations == 0) return initialGuess;
+
 	do {
 		x_old = x_new;
 
