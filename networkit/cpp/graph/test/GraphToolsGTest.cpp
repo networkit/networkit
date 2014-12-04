@@ -47,7 +47,8 @@ TEST_F(GraphToolsGTest, testGetCompactedGraphUndirectedUnweighted1) {
 	G.addEdge(3,7);
 	G.addEdge(5,7);
 
-	auto Gcompact = GraphTools::getCompactedGraph(G);
+	auto nodeMap = GraphTools::getContinuousNodeIds(G);
+	auto Gcompact = GraphTools::getCompactedGraph(G,nodeMap);
 	
 	EXPECT_EQ(G.numberOfNodes(),Gcompact.numberOfNodes());
 	EXPECT_EQ(G.numberOfEdges(),Gcompact.numberOfEdges());
@@ -70,7 +71,8 @@ TEST_F(GraphToolsGTest, testGetCompactedGraphUndirectedUnweighted2) {
 	G.addEdge(7,9);
 	G.addEdge(1,9);
 
-	auto Gcompact = GraphTools::getCompactedGraph(G);
+	auto nodeMap = GraphTools::getContinuousNodeIds(G);
+	auto Gcompact = GraphTools::getCompactedGraph(G,nodeMap);
 	
 	EXPECT_NE(G.upperNodeIdBound(),Gcompact.upperNodeIdBound());
 	EXPECT_EQ(G.numberOfNodes(),Gcompact.numberOfNodes());
@@ -94,7 +96,8 @@ TEST_F(GraphToolsGTest, testGetCompactedGraphUndirectedWeighted1) {
 	G.addEdge(7,9,2.7);
 	G.addEdge(1,9,0.12345);
 
-	auto Gcompact = GraphTools::getCompactedGraph(G);
+	auto nodeMap = GraphTools::getContinuousNodeIds(G);
+	auto Gcompact = GraphTools::getCompactedGraph(G,nodeMap);
 	
 	EXPECT_EQ(G.totalEdgeWeight(),Gcompact.totalEdgeWeight());
 	EXPECT_NE(G.upperNodeIdBound(),Gcompact.upperNodeIdBound());
@@ -119,7 +122,8 @@ TEST_F(GraphToolsGTest, testGetCompactedGraphDirectedWeighted1) {
 	G.addEdge(7,9,2.7);
 	G.addEdge(1,9,0.12345);
 
-	auto Gcompact = GraphTools::getCompactedGraph(G);
+	auto nodeMap = GraphTools::getContinuousNodeIds(G);
+	auto Gcompact = GraphTools::getCompactedGraph(G,nodeMap);
 	
 	EXPECT_EQ(G.totalEdgeWeight(),Gcompact.totalEdgeWeight());
 	EXPECT_NE(G.upperNodeIdBound(),Gcompact.upperNodeIdBound());
@@ -143,8 +147,8 @@ TEST_F(GraphToolsGTest, testGetCompactedGraphDirectedUnweighted1) {
 	G.addEdge(7,5);
 	G.addEdge(7,9);
 	G.addEdge(1,9);
-
-	auto Gcompact = GraphTools::getCompactedGraph(G);
+	auto nodeMap = GraphTools::getContinuousNodeIds(G);
+	auto Gcompact = GraphTools::getCompactedGraph(G,nodeMap);
 	
 	EXPECT_EQ(G.totalEdgeWeight(),Gcompact.totalEdgeWeight());
 	EXPECT_NE(G.upperNodeIdBound(),Gcompact.upperNodeIdBound());
