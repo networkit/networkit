@@ -2920,6 +2920,7 @@ cdef class PLP(CommunityDetector):
  	has the label that at least half of its neighbors have.
 	"""
 	cdef _PLP* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G not None, Partition baseClustering=None, updateThreshold=None):
 		"""
@@ -2934,6 +2935,8 @@ cdef class PLP(CommunityDetector):
 		updateThreshold : integer
 			number of nodes that have to be changed in each iteration so that a new iteration starts.
 		"""
+		self._G = G
+
 		if updateThreshold is None and baseClustering is None:
 			self._this = new _PLP(G._this)
 		elif updateThreshold is None and baseClustering is not None:
@@ -3005,8 +3008,10 @@ cdef extern from "cpp/community/LPDegreeOrdered.h":
 cdef class LPDegreeOrdered(CommunityDetector):
 	""" Label propagation-based community detection algorithm which processes nodes in increasing order of node degree.	"""
 	cdef _LPDegreeOrdered* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G not None):
+		self._G = G
 		self._this = new _LPDegreeOrdered(G._this)
 
 	def __dealloc__(self):
@@ -3086,8 +3091,10 @@ cdef class PLM(CommunityDetector):
 	"""
 
 	cdef _PLM* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G not None, refine=False, gamma=1.0, par="balanced", maxIter=32, parCoarsening=True, turbo=False):
+		self._G = G
 		self._this = new _PLM(G._this, refine, gamma, stdstring(par), maxIter, parCoarsening, turbo)
 
 	def __dealloc__(self):
@@ -3150,8 +3157,10 @@ cdef class CNM(CommunityDetector):
  	"""
 
 	cdef _CNM* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G not None):
+		self._G = G
 		self._this = new _CNM(G._this)
 
 	def __dealloc__(self):
@@ -3207,8 +3216,10 @@ cdef class CutClustering(CommunityDetector):
 		The parameter for the cut clustering algorithm
 	"""
 	cdef _CutClustering* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G not None,  edgeweight alpha):
+		self._G = G
 		self._this = new _CutClustering(G._this, alpha)
 
 	def __dealloc__(self):
@@ -3350,8 +3361,10 @@ cdef class EPP(CommunityDetector):
 	for the input graph.
 	"""
 	cdef _EPP* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G not None):
+		self._G = G
 		self._this = new _EPP(G._this)
 
 	def __dealloc__(self):
@@ -3673,8 +3686,10 @@ cdef class ConnectedComponents:
 		The graph.
 	"""
 	cdef _ConnectedComponents* _this
+	cdef Graph _G
 
 	def __cinit__(self,  Graph G):
+		self._G = G
 		self._this = new _ConnectedComponents(G._this)
 
 	def __dealloc__(self):
@@ -3731,8 +3746,10 @@ cdef class ParallelConnectedComponents:
 		an undirected graph.
 	"""
 	cdef _ParallelConnectedComponents* _this
+	cdef Graph _G
 
 	def __cinit__(self,  Graph G, coarsening=True	):
+		self._G = G
 		self._this = new _ParallelConnectedComponents(G._this, coarsening)
 
 	def __dealloc__(self):
@@ -3766,8 +3783,10 @@ cdef class StronglyConnectedComponents:
 		a directed graph.
 	"""
 	cdef _StronglyConnectedComponents* _this
+	cdef Graph _G
 
 	def __cinit__(self,  Graph G):
+		self._G = G
 		self._this = new _StronglyConnectedComponents(G._this)
 
 	def __dealloc__(self):
@@ -3968,8 +3987,10 @@ cdef class CoreDecomposition:
 	"""
 
 	cdef _CoreDecomposition* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G):
+		self._G = G
 		self._this = new _CoreDecomposition(G._this)
 
 	def __dealloc__(self):
@@ -4092,8 +4113,10 @@ cdef class Betweenness:
 	 		Set this parameter to True if scores should be normalized in the interval [0,1].
 	"""
 	cdef _Betweenness* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, normalized=False):
+		self._G = G
 		self._this = new _Betweenness(G._this, normalized)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -4170,8 +4193,10 @@ cdef class DynBetweenness:
 			store lists of predecessors?
 	"""
 	cdef _DynBetweenness* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, bool storePredecessors = True):
+		self._G = G
 		self._this = new _DynBetweenness(G._this, storePredecessors)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -4258,8 +4283,10 @@ cdef class ApproxBetweenness:
 		probability that the values are within the error guarantee
 	"""
 	cdef _ApproxBetweenness* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, diameterSamples=0):
+		self._G = G
 		self._this = new _ApproxBetweenness(G._this, epsilon, delta, diameterSamples)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -4341,8 +4368,10 @@ cdef class DynApproxBetweenness:
 		store lists of predecessors?
 	"""
 	cdef _DynApproxBetweenness* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, storePredecessors = True):
+		self._G = G
 		self._this = new _DynApproxBetweenness(G._this, epsilon, delta, storePredecessors)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -4434,8 +4463,10 @@ cdef class ApproxBetweenness2:
 		normalize centrality values in interval [0,1]
 	"""
 	cdef _ApproxBetweenness2* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, nSamples, normalized=False):
+		self._G = G
 		self._this = new _ApproxBetweenness2(G._this, nSamples, normalized)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -4501,8 +4532,10 @@ cdef class PageRank:
 		Error tolerance for PageRank iteration.
 	"""
 	cdef _PageRank* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, double damp, double tol=1e-9):
+		self._G = G
 		self._this = new _PageRank(G._this, damp, tol)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -4569,8 +4602,10 @@ cdef class EigenvectorCentrality:
 		The tolerance for convergence.
 	"""
 	cdef _EigenvectorCentrality* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, double tol=1e-9):
+		self._G = G
 		self._this = new _EigenvectorCentrality(G._this, tol)
 
 	def __dealloc__(self):
@@ -4638,8 +4673,10 @@ cdef class DegreeCentrality:
  		Normalize centrality values in the interval [0,1].
 	"""
 	cdef _DegreeCentrality* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, bool normalized=False):
+		self._G = G
 		self._this = new _DegreeCentrality(G._this, normalized)
 
 	def __dealloc__(self):
@@ -4716,8 +4753,10 @@ cdef class AlgebraicDistance:
 		The norm factor of the extended algebraic distance. Maximum norm is realized by setting the norm to 0. Default: 2.
 	"""
 	cdef _AlgebraicDistance* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, count numberSystems, count numberIterations, double omega = 0.5, index norm = 2):
+		self._G = G
 		self._this = new _AlgebraicDistance(G._this, numberSystems, numberIterations, omega, norm)
 
 	def __dealloc__(self):
@@ -5039,8 +5078,10 @@ cdef class GraphUpdater:
 	 	initial graph
 	"""
 	cdef _GraphUpdater* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G):
+		self._G = G
 		self._this = new _GraphUpdater(G._this)
 
 	def __dealloc__(self):
