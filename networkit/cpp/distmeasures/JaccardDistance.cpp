@@ -16,6 +16,10 @@ JaccardDistance::JaccardDistance(const Graph& G, const std::vector<count>& trian
 }
 
 void JaccardDistance::preprocess() {
+	if (!G.hasEdgeIds()) {
+		throw std::runtime_error("edges have not been indexed - call indexEdges first");
+	}
+
 	jDistance = std::vector< double>(G.upperEdgeIdBound());
 
 	G.parallelForEdges([&](node u, node v, edgeid eid) {

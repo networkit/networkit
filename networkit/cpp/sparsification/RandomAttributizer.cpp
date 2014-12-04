@@ -13,6 +13,10 @@ RandomAttributizer::RandomAttributizer(const Graph& graph) : graph(graph) {
 }
 
 std::vector<double> RandomAttributizer::getAttribute() {
+	if (!graph.hasEdgeIds()) {
+		throw std::runtime_error("edges have not been indexed - call indexEdges first");
+	}
+
 	std::vector<double> randomAttribute(graph.upperEdgeIdBound(), 0.0);
 
 	graph.forEdges([&](node u, node v, edgeid eid) {

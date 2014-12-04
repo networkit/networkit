@@ -14,6 +14,10 @@ LocalDegreeAttributizer::LocalDegreeAttributizer(const Graph& graph) : graph(gra
 }
 
 std::vector<double> LocalDegreeAttributizer::getAttribute() {
+	if (!graph.hasEdgeIds()) {
+		throw std::runtime_error("edges have not been indexed - call indexEdges first");
+	}
+
 	std::vector<double> sparsificationExp(graph.upperEdgeIdBound(), 1.0);
 
 	graph.forNodes([&](node i) {

@@ -20,6 +20,10 @@ public:
 		graph(graph), attribute(attribute), bothRequired(bothRequired), logarithmic(logarithmic) {}
 
 	virtual std::vector< double > getAttribute() {
+		if (!graph.hasEdgeIds()) {
+			throw std::runtime_error("edges have not been indexed - call indexEdges first");
+		}
+
 		/*
 		* For each edge, we calculate the minimum required sparsification exponent e
 		* such that the edge is contained in the backbone.

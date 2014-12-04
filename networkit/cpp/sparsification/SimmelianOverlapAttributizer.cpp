@@ -14,6 +14,10 @@ SimmelianOverlapAttributizer::SimmelianOverlapAttributizer(const Graph& graph, c
 		SimmelianAttributizer(graph, triangles), maxRank(maxRank) {}
 
 std::vector<double> SimmelianOverlapAttributizer::getAttribute() {
+	if (!graph.hasEdgeIds()) {
+		throw std::runtime_error("edges have not been indexed - call indexEdges first");
+	}
+
 	std::vector<RankedNeighbors> neighbors = getRankedNeighborhood(graph, triangles);
 	std::vector<double> overlapAttribute(graph.upperEdgeIdBound(), 0.0);
 

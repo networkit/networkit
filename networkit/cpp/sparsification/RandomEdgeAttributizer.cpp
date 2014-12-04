@@ -14,6 +14,10 @@ RandomEdgeAttributizer::RandomEdgeAttributizer(const Graph& graph, double rneRat
 }
 
 std::vector< double > RandomEdgeAttributizer::getAttribute() {
+	if (!graph.hasEdgeIds()) {
+		throw std::runtime_error("edges have not been indexed - call indexEdges first");
+	}
+
 	Graph backbone = graph;
 
 	std::vector<double> edgeAttribute(graph.upperEdgeIdBound());

@@ -15,6 +15,10 @@ AdamicAdarDistance::AdamicAdarDistance(const Graph& G) : NodeDistance(G) {
 }
 
 void AdamicAdarDistance::preprocess() {
+	if (!G.hasEdgeIds()) {
+		throw std::runtime_error("edges have not been indexed - call indexEdges first");
+	}
+
 	Graph g = G;
 
 	//Node attribute: marker

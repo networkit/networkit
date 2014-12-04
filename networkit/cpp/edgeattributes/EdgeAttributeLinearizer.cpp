@@ -18,6 +18,10 @@ EdgeAttributeLinearizer::EdgeAttributeLinearizer(const Graph& graph, const std::
 
 
 std::vector< double > EdgeAttributeLinearizer::getAttribute() {
+	if (!graph.hasEdgeIds()) {
+		throw std::runtime_error("edges have not been indexed - call indexEdges first");
+	}
+
 	std::vector<double> result(graph.upperEdgeIdBound());
 
 	// Special case for m = 1

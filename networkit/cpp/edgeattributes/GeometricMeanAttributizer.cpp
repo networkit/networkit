@@ -15,6 +15,10 @@ GeometricMeanAttributizer::GeometricMeanAttributizer(const Graph& graph, const s
 }
 
 std::vector< double > GeometricMeanAttributizer::getAttribute() {
+	if (!graph.hasEdgeIds()) {
+		throw std::runtime_error("edges have not been indexed - call indexEdges first");
+	}
+
 	std::vector<double> result(graph.upperEdgeIdBound());
 	
 	std::vector<double> nodeSum(graph.upperNodeIdBound());
