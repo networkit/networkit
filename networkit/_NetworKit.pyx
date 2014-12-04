@@ -5066,3 +5066,36 @@ cdef class ParallelPartitionCoarsening:
 	def run(self, Graph G not None, Partition zeta not None):
 		result = self._this.run(G._this, zeta._this)
 		return (Graph(0).setThis(result.first), result.second)
+	
+# Module: scd
+
+cdef extern from "cpp/scd/PageRankNibble.h":
+	cdef cppclass _PageRankNibble "NetworKit::PageRankNibble":
+		_PageRankNibble(_Graph G, double epsilon, double alpha) except +
+		map[node, set[node]] run(set[unsigned int] seeds)
+
+cdef class PageRankNibble:
+	"""
+	Produces a cut around a given seed node using the PageRank-Nibble algorithm.
+	see Andersen, Chung, Lang: Local Graph Partitioning using PageRank Vectors
+	
+	Parameters:
+	-----------
+	G : graph in which the cut is to be produced, must be unweighted.
+	epsilon : the max probability in the residual vector for each node.
+	alpha : the random walk loop probability.
+	"""
+	cdef _PageRankNibble *_this
+	
+	def __cinit__(self, Graph G, double epsilon, double alpha):
+		self._this = new _PageRankNibble(G._this, epsilon, alpha)
+
+	def run(self, set[unsigned int] seeds):
+		"""
+		Produces a cut around a given seed node.
+		
+		Parameters:
+		-----------
+		seeds : the seed node ids.
+		"""
+		return self._this.run(seeds)
