@@ -28,6 +28,7 @@ class GraphBuilder {
 private:
 	count n; //!< current number of nodes
 	count selfloops; //!< currently encountered number of self loops
+	std::string name; //!< name of the graph, if not set it will be G#ID
 
 	bool weighted; //!< true if the graph will be weighted, false otherwise
 	bool directed; //!< true if the graph will be directed, false otherwise
@@ -56,6 +57,12 @@ public:
 	GraphBuilder(count n = 0, bool weighted = false, bool directed = false);
 
 	void reset(count n = 0);
+
+	/**
+	 * Set name of graph to @a name.
+	 * @param name The name.
+	 */
+	void setName(std::string name) { this->name = name; }
 
 	/**
 	 * Returns <code>true</code> if this graph supports edge weights other than 1.0.
