@@ -154,6 +154,7 @@ cdef extern from "cpp/graph/Graph.h":
 		void setCoordinate(node v, Point[float] value) except +
 		void initCoordinates() except +
 		count numberOfSelfLoops() except +
+		_Graph toUndirected() except +
 
 
 cdef class Graph:
@@ -482,6 +483,16 @@ cdef class Graph:
 	 		List of neighbors of `u.
 		"""
 		return self._this.neighbors(u)
+
+	def toUndirected(self):
+		"""
+		Return an undirected version of this graph.
+
+	 	Returns
+	 	-------
+			undirected graph.
+		"""
+		return Graph().setThis(self._this.toUndirected())
 
 	def isWeighted(self):
 		"""
@@ -1242,7 +1253,7 @@ cdef class ErdosRenyiGenerator:
 
 	def __cinit__(self, nNodes, prob, directed=False):
 		self._this = new _ErdosRenyiGenerator(nNodes, prob, directed)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -1272,7 +1283,7 @@ cdef class DorogovtsevMendesGenerator:
 
 	def __cinit__(self, nNodes):
 		self._this = new _DorogovtsevMendesGenerator(nNodes)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -1310,7 +1321,7 @@ cdef class RegularRingLatticeGenerator:
 
 	def __cinit__(self, nNodes, nNeighbors):
 		self._this = new _RegularRingLatticeGenerator(nNodes, nNeighbors)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -1348,7 +1359,7 @@ cdef class WattsStrogatzGenerator:
 	"""
 
 	cdef _WattsStrogatzGenerator* _this
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -1440,7 +1451,7 @@ cdef class ChungLuGenerator:
 
 	def __cinit__(self, vector[count] degreeSequence):
 		self._this = new _ChungLuGenerator(degreeSequence)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -1602,7 +1613,7 @@ cdef class RmatGenerator:
 
 	def __cinit__(self, count scale, count edgeFactor, double a, double b, double c, double d):
 		self._this = new _RmatGenerator(scale, edgeFactor, a, b, c, d)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -1733,6 +1744,21 @@ cdef class METISGraphReader:
 		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
 		return Graph(0).setThis(self._this.read(pathbytes))
 
+cdef extern from "cpp/io/GraphToolBinaryReader.h":
+	cdef cppclass _GraphToolBinaryReader "NetworKit::GraphToolBinaryReader":
+		_GraphToolBinaryReader() except +
+		_Graph read(string path) except +
+
+cdef class GraphToolBinaryReader:
+	""" Reads the binary file format defined by graph-tool[1]. 
+		[1]: http://graph-tool.skewed.de/static/doc/gt_format.html
+	"""
+	cdef _GraphToolBinaryReader _this
+
+	def read(self, path):
+		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
+		return Graph(0).setThis(self._this.read(pathbytes))
+
 
 cdef extern from "cpp/io/EdgeListReader.h":
 	cdef cppclass _EdgeListReader "NetworKit::EdgeListReader":
@@ -1743,9 +1769,7 @@ cdef extern from "cpp/io/EdgeListReader.h":
 
 
 cdef class EdgeListReader:
-	""" Reads the METIS adjacency file format [1]. If the Fast reader fails,
-		use readGraph(path, graphio.formats.metis) as an alternative.
-		[1]: http://people.sc.fsu.edu/~jburkardt/data/metis_graph/metis_graph.html
+	""" Reads a file in an edge list format.
 	"""
 	cdef _EdgeListReader _this
 
@@ -1811,6 +1835,22 @@ cdef extern from "cpp/io/METISGraphWriter.h":
 cdef class METISGraphWriter:
 	""" Writes graphs in the METIS format"""
 	cdef _METISGraphWriter _this
+
+	def write(self, Graph G not None, path):
+		 # string needs to be converted to bytes, which are coerced to std::string
+		self._this.write(G._this, stdstring(path))
+
+cdef extern from "cpp/io/GraphToolBinaryWriter.h":
+	cdef cppclass _GraphToolBinaryWriter "NetworKit::GraphToolBinaryWriter":
+		_GraphToolBinaryWriter() except +
+		void write(_Graph G, string path) except +
+
+
+cdef class GraphToolBinaryWriter:
+	""" Reads the binary file format defined by graph-tool[1]. 
+		[1]: http://graph-tool.skewed.de/static/doc/gt_format.html
+	"""
+	cdef _GraphToolBinaryWriter _this
 
 	def write(self, Graph G not None, path):
 		 # string needs to be converted to bytes, which are coerced to std::string
@@ -1925,7 +1965,7 @@ cdef class SNAPGraphReader:
 		[1]: http://snap.stanford.edu/data/index.html
 	"""
 	cdef _SNAPGraphReader _this
-		
+
 	def read(self, path):
 		return Graph().setThis(self._this.read(stdstring(path)))
 
@@ -2797,24 +2837,30 @@ cdef class GraphClusteringTools:
 		return equalClusterings(zeta._this, eta._this, G._this)
 
 cdef extern from "cpp/graph/GraphTools.h" namespace "NetworKit::GraphTools":
-	_Graph getCompactedGraph(_Graph G) except +
+	_Graph getCompactedGraph(_Graph G, unordered_map[node,node]) except +
 	unordered_map[node,node] getContinuousNodeIds(_Graph G) except +
-	_Graph toUndirected(_Graph G) except +
 
 cdef class GraphTools:
 	@staticmethod
-	def getCompactedGraph(Graph graph):
-		return Graph().setThis(getCompactedGraph(graph._this))
+	def getCompactedGraph(Graph graph, nodeIdMap):
+		"""
+			Computes a graph with the same structure but with continuous node ids.
+		"""
+		cdef unordered_map[node,node] cNodeIdMap
+		for key in nodeIdMap:
+			cNodeIdMap[key] = nodeIdMap[key]
+		return Graph().setThis(getCompactedGraph(graph._this,cNodeIdMap))
+
 	@staticmethod
 	def getContinuousNodeIds(Graph graph):
+		""" 
+			Computes a map of node ids to continuous node ids.
+		"""
 		cdef unordered_map[node,node] cResult = getContinuousNodeIds(graph._this)
 		result = dict()
 		for elem in cResult:
 			result[elem.first] = elem.second
 		return result
-	@staticmethod
-	def toUndirected(Graph graph):
-		return Graph().setThis(toUndirected(graph._this))
 
 cdef extern from "cpp/community/PartitionIntersection.h":
 	cdef cppclass _PartitionIntersection "NetworKit::PartitionIntersection":
@@ -2935,6 +2981,7 @@ cdef extern from "cpp/community/PLP.h":
 		void run() except +
 		_Partition getPartition() except +
 		count numberOfIterations() except +
+		vector[count] getTiming() except +
 		string toString() except +
 
 
@@ -2954,7 +3001,7 @@ cdef class PLP(CommunityDetector):
 	cdef _PLP* _this
 
 	def __cinit__(self, Graph G not None, Partition baseClustering=None, updateThreshold=None):
-		""" 
+		"""
 		Constructor to the Parallel label propagation community detection algorithm.
 
 		Parameters
@@ -2975,7 +3022,7 @@ cdef class PLP(CommunityDetector):
 			self._this = new _PLP(G._this, p._this, updateThreshold)
 		else:
 			self._this = new _PLP(G._this, baseClustering._this, updateThreshold)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -3005,6 +3052,16 @@ cdef class PLP(CommunityDetector):
 		"""
 		return self._this.numberOfIterations()
 
+	def getTiming(self):
+		""" Get list of running times for each iteration.
+
+		Returns
+		-------
+		count
+			The list of running times in milliseconds.
+		"""
+		return self._this.getTiming()
+
 	def toString(self):
 		""" Get string representation.
 
@@ -3030,7 +3087,7 @@ cdef class LPDegreeOrdered(CommunityDetector):
 
 	def __cinit__(self, Graph G not None):
 		self._this = new _LPDegreeOrdered(G._this)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -3083,19 +3140,17 @@ cdef extern from "cpp/community/PLM.h" namespace "NetworKit::PLM":
 	pair[_Graph, vector[node]] PLM_coarsen "NetworKit::PLM::coarsen" (const _Graph& G, const _Partition& zeta, bool parallel) except +
 	_Partition PLM_prolong "NetworKit::PLM::prolong"(const _Graph& Gcoarse, const _Partition& zetaCoarse, const _Graph& Gfine, vector[node] nodeToMetaNode) except +
 
-cdef extern from "cpp/community/PLM.h" namespace "NetworKit::PLM":
-	pair[_Graph, vector[node]] PLM_coarsen "NetworKit::PLM::coarsen" (const _Graph& G, const _Partition& zeta, bool parallel) except +
-	_Partition PLM_prolong "NetworKit::PLM::prolong"(const _Graph& Gcoarse, const _Partition& zetaCoarse, const _Graph& Gfine, vector[unsigned long] nodeToMetaNode) except + # FIXME this should be vector[node]
-
 
 cdef class PLM(CommunityDetector):
-	""" MultiLevel Parallel LocalMover - the Louvain method, optionally extended to
+	""" Parallel Louvain Method - the Louvain method, optionally extended to
 		a full multi-level algorithm with refinement
 
 		PLM(refine=True, gamma=1.0, par="balanced", maxIter=32)
 
 		Parameters
 		----------
+		G : Graph
+			A graph.
 		refine : bool, optional
 			Add a second move phase to refine the communities.
 		gamma : double
@@ -3115,7 +3170,7 @@ cdef class PLM(CommunityDetector):
 
 	def __cinit__(self, Graph G not None, refine=False, gamma=1.0, par="balanced", maxIter=32, parCoarsening=True, turbo=False):
 		self._this = new _PLM(G._this, refine, gamma, stdstring(par), maxIter, parCoarsening, turbo)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -3177,7 +3232,7 @@ cdef class CNM(CommunityDetector):
 
 	def __cinit__(self, Graph G not None):
 		self._this = new _CNM(G._this)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -3377,7 +3432,7 @@ cdef class EPP(CommunityDetector):
 
 	def __cinit__(self, Graph G not None):
 		self._this = new _EPP(G._this)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -3793,7 +3848,7 @@ cdef class StronglyConnectedComponents:
 
 	def __cinit__(self,  Graph G):
 		self._this = new _StronglyConnectedComponents(G._this)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -4596,7 +4651,7 @@ cdef class EigenvectorCentrality:
 
 	def __cinit__(self, Graph G, double tol=1e-9):
 		self._this = new _EigenvectorCentrality(G._this, tol)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -4665,7 +4720,7 @@ cdef class DegreeCentrality:
 
 	def __cinit__(self, Graph G, bool normalized=False):
 		self._this = new _DegreeCentrality(G._this, normalized)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -4858,7 +4913,7 @@ cdef class DGSStreamParser:
 
 	def __cinit__(self, path, mapped=True, baseIndex=0):
 		self._this = new _DGSStreamParser(stdstring(path), mapped, baseIndex)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -4876,7 +4931,7 @@ cdef class DGSWriter:
 
 	def __cinit__(self):
 		self._this = new _DGSWriter()
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -4932,7 +4987,7 @@ cdef class DynamicPathGenerator:
 
 	def __cinit__(self):
 		self._this = new _DynamicPathGenerator()
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -4957,7 +5012,7 @@ cdef class DynamicDorogovtsevMendesGenerator:
 
 	def __cinit__(self):
 		self._this = new _DynamicDorogovtsevMendesGenerator()
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -4986,7 +5041,7 @@ cdef class DynamicPubWebGenerator:
 
 	def __cinit__(self, numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors):
 		self._this = new _DynamicPubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -5039,7 +5094,7 @@ cdef class DynamicForestFireGenerator:
 
 	def __cinit__(self, p, directed, r = 1.0):
 		self._this = new _DynamicForestFireGenerator(p, directed, r)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -5074,7 +5129,7 @@ cdef class GraphUpdater:
 
 	def __cinit__(self, Graph G):
 		self._this = new _GraphUpdater(G._this)
-		
+
 	def __dealloc__(self):
 		del self._this
 
@@ -5098,13 +5153,46 @@ cdef class ParallelPartitionCoarsening:
 
 	def __cinit__(self):
 		self._this = new _ParallelPartitionCoarsening()
-		
+
 	def __dealloc__(self):
 		del self._this
 
 	def run(self, Graph G not None, Partition zeta not None):
 		result = self._this.run(G._this, zeta._this)
 		return (Graph(0).setThis(result.first), result.second)
+
+# Module: scd
+
+cdef extern from "cpp/scd/PageRankNibble.h":
+	cdef cppclass _PageRankNibble "NetworKit::PageRankNibble":
+		_PageRankNibble(_Graph G, double epsilon, double alpha) except +
+		map[node, set[node]] run(set[unsigned int] seeds)
+
+cdef class PageRankNibble:
+	"""
+	Produces a cut around a given seed node using the PageRank-Nibble algorithm.
+	see Andersen, Chung, Lang: Local Graph Partitioning using PageRank Vectors
+	
+	Parameters:
+	-----------
+	G : graph in which the cut is to be produced, must be unweighted.
+	epsilon : the max probability in the residual vector for each node.
+	alpha : the random walk loop probability.
+	"""
+	cdef _PageRankNibble *_this
+	
+	def __cinit__(self, Graph G, double epsilon, double alpha):
+		self._this = new _PageRankNibble(G._this, epsilon, alpha)
+
+	def run(self, set[unsigned int] seeds):
+		"""
+		Produces a cut around a given seed node.
+		
+		Parameters:
+		-----------
+		seeds : the seed node ids.
+		"""
+		return self._this.run(seeds)
 
 # Module: edgeattributes
 

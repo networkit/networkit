@@ -34,6 +34,7 @@ from . import flow
 from . import distmeasures
 from . import plot
 from . import sparsification
+from . import scd
 
 try:
 	from . import viztools
