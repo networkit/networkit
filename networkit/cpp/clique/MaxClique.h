@@ -25,7 +25,8 @@ protected:
 	count maxi;
 
 	/**
-	 * Subroutine that
+	 * Subroutine that goes through every relevant clique containing a certain node in
+	 * a recursive fashion and computes the size of the largest.
 	 */
 	void clique(std::set<node>& U, count size);
 
@@ -37,7 +38,9 @@ public:
 	MaxClique(const Graph& G);
 
 	/**
-	 * Actual maximum clique algorithm.
+	 * Actual maximum clique algorithm. Determines largest clique each vertex
+	 * is contained in and returns size of largest. Pruning steps keep running time
+	 * acceptable in practice.
 	 * @param[in] lb Lower bound for maximum clique size.
 	 * @return Size of maximum clique.
 	 */
