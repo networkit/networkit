@@ -267,6 +267,9 @@ void PLM::run() {
 		for (count t : tim["coarsen"]) {
 			timing["coarsen"].push_back(t);
 		}
+		for (count t : tim["refine"]) {
+			timing["refine"].push_back(t);
+		}
 
 
 		INFO("coarse graph has ", coarsened.first.numberOfEdges(), " edges");
@@ -287,7 +290,13 @@ void PLM::run() {
 			});
 
 			// second move phase
+			timer.start();
+			//
 			movePhase();
+			//
+			timer.stop();
+			timing["refine"].push_back(timer.elapsedMilliseconds());
+
 		}
 	}
 	result = std::move(zeta);
