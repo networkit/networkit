@@ -748,6 +748,16 @@ public:
 	std::vector<node> neighbors(node u) const;
 
 
+	/* Derivative Graphs */
+
+	/**
+	* Return an undirected version of this graph.
+	*
+	* @return undirected graph.
+	*/
+	Graph toUndirected() const;
+
+
 	/* NODE ITERATORS */
 
 	/**

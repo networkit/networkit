@@ -97,3 +97,13 @@ def testPLPThreshold(graphPaths, thresholdFactors, outPath, repeat=1):
 					row = [graphName, "PLP", factor, theta,  time, mod]
 					writer.writerow(row)
 					print(row)
+
+
+def testPLMDetailedScaling(G, threadSequence):
+	data = {}
+	for nThreads in threadSequence:
+		setNumberOfThreads(nThreads)
+		plm = community.PLM(G, turbo=True, refine=True)
+		plm.run()
+		data[nThreads] = plm.getTiming()
+	return data

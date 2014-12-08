@@ -732,6 +732,15 @@ std::vector<node> Graph::neighbors(node u) const {
 	return neighbors;
 }
 
+
+Graph Graph::toUndirected() const {
+	if (directed == false) {
+		throw std::runtime_error("this graph is already undirected");
+	}
+	Graph U(*this, weighted, false);
+	return std::move(U);
+}
+
 bool Graph::checkConsistency() const {
 	// check for multi-edges
 	std::vector<node> lastSeen(z, none);

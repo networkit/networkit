@@ -6,8 +6,7 @@ namespace NetworKit {
 
 namespace GraphTools {
 
-Graph getCompactedGraph(const Graph& graph) {
-	auto nodeIdMap = getContinuousNodeIds(graph);
+Graph getCompactedGraph(const Graph& graph, std::unordered_map<node,node>& nodeIdMap) {
 	Graph Gcompact(nodeIdMap.size(),graph.isWeighted(),graph.isDirected());
 	auto copyEdge = [&Gcompact,&nodeIdMap](node u, node v, edgeweight ew) {
 		Gcompact.addEdge(nodeIdMap[u], nodeIdMap[v], ew);
@@ -24,10 +23,6 @@ std::unordered_map<node,node> getContinuousNodeIds(const Graph& graph) {
 	};
 	graph.forNodes(addToMap);
 	return nodeIdMap;
-}
-
-Graph toUndirected(const Graph& graph) {
-	return Graph(graph,graph.isWeighted(),false);
 }
 
 }
