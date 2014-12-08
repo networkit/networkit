@@ -5172,3 +5172,29 @@ cdef class PageRankNibble:
 		seeds : the seed node ids.
 		"""
 		return self._this.run(seeds)
+
+
+# Module: clique
+
+cdef extern from "cpp/clique/MaxClique.h":
+	cdef cppclass _MaxClique "NetworKit::MaxClique":
+		_MaxClique(_Graph G) except +
+		count run(count lb) except +
+		count run() except +
+
+cdef class MaxClique:
+	"""
+
+	"""
+	cdef _MaxClique* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G not None):
+		self._G = G
+		self._this = new _MaxClique(G._this)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self, lb=0):
+		return self._this.run(lb)
