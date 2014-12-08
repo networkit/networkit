@@ -28,15 +28,15 @@ void MaxClique::clique(std::set<node>& U, count size) {
 
 		// extract arbitrary element from U
 		node x = (* U.begin());
-		U.erase(U.begin());
+		U.erase(x);
 
 		// pruning 5: compute set of nodes in U that are neighbors of x and have at least degree maxi
-		std::set<node> X = U;
-		for (auto elem : X) {
-			if ((! G.hasEdge(x, elem)) || (U.find(elem) == U.end()) || (G.degree(elem) < maxi)) {
-				X.erase(elem);
+		std::set<node> X;
+		G.forNeighborsOf(x, [&](node v) {
+			if ((G.degree(v) >= maxi) && (U.count(v) > 0)) {
+				X.insert(v);
 			}
-		}
+		});
 
 		// recursive call
 		clique(X, size + 1);
