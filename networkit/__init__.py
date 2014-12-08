@@ -34,6 +34,7 @@ from . import flow
 from . import distmeasures
 from . import plot
 from . import scd
+from . import clique
 
 try:
 	from . import viztools
