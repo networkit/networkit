@@ -2805,6 +2805,19 @@ cdef class Coverage:
 		return self._this.getQuality(zeta._this, G._this)
 
 
+cdef extern from "cpp/community/EdgeCut.h":
+	cdef cppclass _EdgeCut "NetworKit::EdgeCut":
+		_EdgeCut() except +
+		double getQuality(_Partition _zeta, _Graph _G) except +
+
+cdef class EdgeCut:
+	""" Edge cut is the total weight of inter-community edges"""
+	cdef _EdgeCut _this
+
+	def getQuality(self, Partition zeta, Graph G):
+		return self._this.getQuality(zeta._this, G._this)
+
+
 cdef extern from "cpp/community/Modularity.h":
 	cdef cppclass _Modularity "NetworKit::Modularity":
 		_Modularity() except +

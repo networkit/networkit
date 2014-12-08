@@ -12,6 +12,7 @@
 #include "../CNM.h"
 #include "../ParallelAgglomerativeClusterer.h"
 #include "../../community/Modularity.h"
+#include "../../community/EdgeCut.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../community/ClusteringGenerator.h"
 #include "../../io/METISGraphReader.h"
@@ -502,6 +503,37 @@ TEST_F(CommunityGTest, testClusteringEquality) {
 
 }
 
+
+TEST_F(CommunityGTest, testEdgeCutMeasure) {
+	/* Graph:
+	    0    3
+	     \  / \
+	      2    5
+	     /  \ /
+	    1    4
+	 */
+	count n = 6;
+	Graph G(n);
+
+	G.addEdge(0, 2);
+	G.addEdge(1, 2);
+	G.addEdge(2, 3);
+	G.addEdge(2, 4);
+	G.addEdge(3, 5);
+	G.addEdge(4, 5);
+
+	Partition part(n);
+	part[0] = 0;
+	part[1] = 0;
+	part[2] = 0;
+	part[3] = 1;
+	part[4] = 2;
+	part[5] = 1;
+
+	EdgeCut ec;
+	edgeweight cut = ec.getQuality(part, G);
+	EXPECT_EQ(cut, 3);
+}
 
 
 TEST_F(CommunityGTest, testJaccardMeasure) {
