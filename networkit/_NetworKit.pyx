@@ -5184,7 +5184,9 @@ cdef extern from "cpp/clique/MaxClique.h":
 
 cdef class MaxClique:
 	"""
-
+	Exact algorithm for computing the size of the largest clique in a graph.
+	Worst-case running time is exponential, but in practice the algorithm is fairly fast.
+	Reference: Pattabiraman et al., http://arxiv.org/pdf/1411.7460.pdf
 	"""
 	cdef _MaxClique* _this
 	cdef Graph _G
@@ -5197,4 +5199,17 @@ cdef class MaxClique:
 		del self._this
 
 	def run(self, lb=0):
+		"""
+		Actual maximum clique algorithm. Determines largest clique each vertex
+	 	is contained in and returns size of largest. Pruning steps keep running time
+	 	acceptable in practice.
+
+	 	Parameters:
+	 	-----------
+	 	lb : Lower bound for maximum clique size.
+
+	 	Returns:
+	 	--------
+	 	The size of the largest clique.
+	 	"""
 		return self._this.run(lb)
