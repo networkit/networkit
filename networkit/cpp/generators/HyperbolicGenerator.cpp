@@ -142,7 +142,7 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	}
 
 	timer.stop();
-	INFO("Generated Graph, took ", timer.elapsedMilliseconds(), " milliseconds.");
+	INFO("Generating Edges took ", timer.elapsedMilliseconds(), " milliseconds.");
 	return result.toGraph(true);
 }
 }
