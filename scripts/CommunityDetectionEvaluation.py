@@ -53,9 +53,9 @@ def communityDetectionBenchmark(graphPaths, outPath, algorithms, arglist=None, r
 			graphName = os.path.basename(graphPath).split(".")[0]
 			(n, m) = properties.size(G)
 			for (algoClass, kwargs) in zip(algorithms, arglist):
-				algo = algoClass(G, **kwargs)
-				algoName = algo.toString()
 				for i in range(repeat):
+					algo = algoClass(G, **kwargs)
+					algoName = algo.toString()
 					print("evaluating {0} on {1}".format(algoName, graphName))
 					timer = stopwatch.Timer()
 					algo.run()
