@@ -17,6 +17,7 @@
 #include "../../community/ClusteringGenerator.h"
 #include "../../io/METISGraphReader.h"
 #include "../EPP.h"
+#include "../EPPInstance.h"
 #include "../../overlap/HashingOverlapper.h"
 #include "../EPPFactory.h"
 #include "../CommunityGraph.h"
@@ -68,6 +69,27 @@ TEST_F(CommunityGTest, testEnsemblePreprocessing) {
 	auto overlap = new HashingOverlapper;
 	std::unique_ptr<Overlapper> overlap_ptr(overlap);
 	ensemble.setOverlapper(overlap_ptr);
+
+	ensemble.run();
+	Partition zeta = ensemble.getPartition();
+
+	INFO("number of clusters:" , zeta.numberOfSubsets());
+
+	Modularity modularity;
+	INFO("modularity: " , modularity.getQuality(zeta, G));
+
+}
+
+TEST_F(CommunityGTest, testEPPInstance) {
+	count n = 1000;
+	count k = 10;
+	double pin = 1.0;
+	double pout = 0.0;
+
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
+
+	EPPInstance ensemble(G, 4);
 
 	ensemble.run();
 	Partition zeta = ensemble.getPartition();
