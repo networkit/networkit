@@ -2784,7 +2784,7 @@ cdef class GraphTools:
 
 	@staticmethod
 	def getContinuousNodeIds(Graph graph):
-		""" 
+		"""
 			Computes a map of node ids to continuous node ids.
 		"""
 		cdef unordered_map[node,node] cResult = getContinuousNodeIds(graph._this)
@@ -3375,6 +3375,8 @@ cdef extern from "cpp/community/EPP.h":
 		void run() except +
 		_Partition getPartition() except +
 		string toString()
+		_Partition getCorePartition() except +
+		vector[_Partition] getBasePartitions() except +
 
 cdef class EPP(CommunityDetector):
 	""" EPP - Ensemble Preprocessing community detection algorithm.
@@ -3408,6 +3410,22 @@ cdef class EPP(CommunityDetector):
 		"""
 		return Partition().setThis(self._this.getPartition())
 
+	def getCorePartition(self):
+		"""  Returns the core partition the algorithm.
+
+		Returns
+		-------
+		Partition:
+			A Partition of the clustering.
+		"""
+		return Partition().setThis(self._this.getCorePartition())
+
+	def getBasePartitions(self):
+		"""  Returns the base partitions of the algorithm.
+		"""
+		base = self._this.getBasePartitions()
+		return [Partition().setThis(b) for b in base]
+
 	def toString(self):
 		""" String representation of EPP class.
 
@@ -3422,6 +3440,74 @@ cdef class EPP(CommunityDetector):
 		del self._this # is this correct here?
 		self._this = other
 		return self
+
+cdef extern from "cpp/community/EPPInstance.h":
+	cdef cppclass _EPPInstance "NetworKit::EPPInstance":
+		_EPPInstance(_Graph G, count ensembleSize) except +
+		void run() except +
+		_Partition getPartition() except +
+		string toString() except +
+		_Partition getCorePartition() except +
+		vector[_Partition] getBasePartitions() except +
+
+cdef class EPPInstance(CommunityDetector):
+	""" EPP - Ensemble Preprocessing community detection algorithm.
+	Combines multiple base algorithms and a final algorithm. A consensus of the
+	solutions of the base algorithms is formed and the graph is coarsened accordingly.
+	Then the final algorithm operates on the coarse graph and determines a solution
+	for the input graph.
+	"""
+	cdef _EPPInstance* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G not None, ensembleSize=4):
+		self._G = G
+		self._this = new _EPPInstance(G._this, ensembleSize)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		"""  Run the ensemble clusterer.
+		"""
+		self._this.run()
+
+	def getPartition(self):
+		"""  Returns a partition of the clustering.
+
+		Returns
+		-------
+		Partition:
+			A Partition of the clustering.
+		"""
+		return Partition().setThis(self._this.getPartition())
+
+	def getCorePartition(self):
+		"""  Returns the core partition the algorithm.
+
+		Returns
+		-------
+		Partition:
+			A Partition of the clustering.
+		"""
+		return Partition().setThis(self._this.getCorePartition())
+
+	def getBasePartitions(self):
+		"""  Returns the base partitions of the algorithm.
+		"""
+		base = self._this.getBasePartitions()
+		return [Partition().setThis(b) for b in base]
+
+	def toString(self):
+		""" String representation of EPP class.
+
+		Returns
+		-------
+		string
+			String representation.
+		"""
+		return self._this.toString()
+
 
 
 cdef extern from "cpp/community/EPPFactory.h" namespace "NetworKit::EPPFactory":
