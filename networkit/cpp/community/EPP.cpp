@@ -11,6 +11,7 @@
 #include "../coarsening/ClusteringProjector.h"
 #include "../community/JaccardMeasure.h"
 #include "../auxiliary/Log.h"
+#include "PLM.h"
 
 namespace NetworKit {
 
@@ -74,6 +75,14 @@ void EPP::run() {
 	std::vector<node> fineToCoarse = contraction.second;
 	// send contracted graph to final clusterer
 	// FIXME: initialization of final clusterer with contracted graph?
+	// TODO: complete 'if (...) else if (...)' cascade for other CDAs...
+	// TODO: maybe put this in a private helper function as this could be distracting...
+	if (dynamic_cast<PLM*>(this->finalClusterer.get())) {
+		DEBUG("final clusterer is PLM");
+		// TODO: init with the right parameters, here that means we need a getter for the 'refined' flag
+		this->finalClusterer.reset(new PLM(Gcore));
+	}
+
 	this->finalClusterer->run();
 	Partition finalCoarse = this->finalClusterer->getPartition();
 
