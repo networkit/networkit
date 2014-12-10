@@ -99,11 +99,17 @@ def testPLPThreshold(graphPaths, thresholdFactors, outPath, repeat=1):
 					print(row)
 
 
-def testPLMDetailedScaling(G, threadSequence):
+def testPLMDetailedScaling(graphPaths, threadSequence):
 	data = {}
-	for nThreads in threadSequence:
-		setNumberOfThreads(nThreads)
-		plm = community.PLM(G, turbo=True, refine=True)
-		plm.run()
-		data[nThreads] = plm.getTiming()
+	for path in graphPaths:
+		graphName = os.path.basename(graphPath).split(".")[0]
+		print("reading ", path)
+		G = readGraph(path, Format.METIS)
+		data[graphName] = {}
+		for nThreads in threadSequence:
+			setNumberOfThreads(nThreads)
+			print("running on {0} at {1} threads".format(graphName, nThreads))
+			plm = community.PLM(G, turbo=True, refine=True)
+			plm.run()
+			data[graphName][nThreads] = plm.getTiming()
 	return data
