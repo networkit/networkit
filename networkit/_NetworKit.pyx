@@ -117,7 +117,7 @@ cdef extern from "cpp/graph/Graph.h":
 		_Graph(const _Graph& other) except +
 		_Graph(const _Graph& other, bool weighted, bool directed) except +
 		void indexEdges() except +
-		bool hasEdgeIds()
+		bool hasEdgeIds() except +
 		edgeid edgeId(node, node) except +
 		count numberOfNodes() except +
 		count numberOfEdges() except +
