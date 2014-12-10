@@ -102,7 +102,7 @@ def testPLPThreshold(graphPaths, thresholdFactors, outPath, repeat=1):
 def testPLMDetailedScaling(graphPaths, threadSequence):
 	data = {}
 	for path in graphPaths:
-		graphName = os.path.basename(graphPath).split(".")[0]
+		graphName = os.path.basename(path).split(".")[0]
 		print("reading ", path)
 		G = readGraph(path, Format.METIS)
 		data[graphName] = {}
