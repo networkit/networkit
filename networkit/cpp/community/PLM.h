@@ -34,6 +34,8 @@ public:
 	 */
 	PLM(const Graph& G, bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32, bool parallelCoarsening=true, bool turbo = false);
 
+	PLM(const Graph& G, const PLM& other);
+
 
 	/**
 	 * Get string representation.
