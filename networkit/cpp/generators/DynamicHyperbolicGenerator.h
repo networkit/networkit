@@ -112,6 +112,13 @@ private:
 	 */
 	void getEventsFromNodeMovement(vector<GraphEvent> &result);
 
+	/**
+     * Execute node movement part of time step
+	 *
+	 * @param result vector to store GraphEvents in
+	 */
+	void moveNode(index node);
+
 	count nodes;
 	double currentfactor;
 	double alpha;
@@ -124,6 +131,7 @@ private:
 	vector<double> radii;
 	vector<double> angularMovement;
 	vector<double> radialMovement;
+	double R, r;
 	bool initialized;
 };
 
