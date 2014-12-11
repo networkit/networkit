@@ -30,6 +30,8 @@ DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(count n, double initialFa
 	this->initialized = false;
 	initializeQuadTree();
 	initializeMovement();
+	R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(nodes);
+	r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 }
 
 DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(vector<double> &angles, vector<double> &radii, double stretch, double initialFactor, double moveEachStep, double factorgrowth, double moveDistance) {
@@ -38,8 +40,8 @@ DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(vector<double> &angles, v
 	this->nodes = angles.size();
 	this->stretch = stretch;
 	assert(radii.size() == nodes);
-	double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(nodes);
-	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
+	R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(nodes);
+	r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	quad = Quadtree<index>(r);
 	currentfactor = initialFactor;
 	this->alpha = 1;//not needed any more
@@ -175,9 +177,56 @@ void DynamicHyperbolicGenerator::getEventsFromFactorGrowth(vector<GraphEvent> &r
 	currentfactor = newfactor;
 }
 
+void DynamicHyperbolicGenerator::moveNode(index toMove) {
+	double hyperbolicRadius = HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[toMove]);
+
+	//angular movement
+	double maxcdf = cosh(alpha*R);
+	double mincdf = 1;
+	double currcdf = cosh(alpha*hyperbolicRadius);
+
+	double newcosh = currcdf + alpha*radialMovement[toMove];
+	double newphi = angles[toMove];
+	//bounce off the boundary
+	if (newcosh > maxcdf) {
+		newcosh -= 2*(newcosh - maxcdf);
+		radialMovement[toMove] *= -1;
+		DEBUG("Node ", toMove, " bounced off upper boundary, radial movement set to ", radialMovement[toMove]);
+	}
+	if (newcosh < mincdf) {
+		newcosh += 2*(mincdf - newcosh);
+		radialMovement[toMove] *= -1;
+		DEBUG("Node ", toMove, " crossed center, radial movement set to ", radialMovement[toMove]);
+
+		/**
+		 * nodes should cross the center, not bounce off it
+		 */
+		if (newphi > M_PI) {
+			newphi -= M_PI;
+		}
+		else {
+			newphi += M_PI;
+		}
+	}
+	double newradius = acosh(newcosh)/alpha;
+	//assert(abs(newradius - hyperbolicRadius) < moveEachStep);
+	if (newradius >= R) newradius = std::nextafter(R, std::numeric_limits<double>::lowest());
+	assert(newradius < R);
+	assert(newradius >= 0);
+
+	//double angleMovement = Aux::Random::real(-moveDistance/hyperbolicRadius, moveDistance/hyperbolicRadius);
+	newphi += angularMovement[toMove]/newradius;
+	if (newphi < 0) newphi += (floor(-newphi/(2*M_PI))+1)*2*M_PI;
+	if (newphi > 2*M_PI) newphi -= floor(newphi/(2*M_PI))*2*M_PI;
+
+	newradius = HyperbolicSpace::hyperbolicRadiusToEuclidean(newradius);
+	if (newradius >= r) newradius = std::nextafter(newradius, std::numeric_limits<double>::lowest());
+
+	angles[toMove] = newphi;
+	radii[toMove] = newradius;
+}
+
 void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &result) {
-	double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(nodes);
-	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	count oldStreamMarker = result.size();
 	vector<index> toWiggle;
 	vector<vector<index> > oldNeighbours;
@@ -192,60 +241,20 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
 	 * Tried to parallelize this, didn't bring any benefit.
 	 * Not surprising, since most of the work - manipulating the QuadTree - needs to be done in a critical section
 	 */
+	#pragma omp parallel for
 	for (index j = 0; j < toWiggle.size(); j++) {
 		//wiggle this node!
-		double hyperbolicRadius = HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[toWiggle[j]]);
 
-		//angular movement
-
-		double maxcdf = cosh(alpha*R);
-		double mincdf = 1;
-		double currcdf = cosh(alpha*hyperbolicRadius);
-
-		double newcosh = currcdf + alpha*radialMovement[toWiggle[j]];
-		double newphi = angles[toWiggle[j]];
-		//bounce off the boundary
-		if (newcosh > maxcdf) {
-			newcosh -= 2*(newcosh - maxcdf);
-			radialMovement[toWiggle[j]] *= -1;
-			DEBUG("Node ", toWiggle[j], " bounced off upper boundary, radial movement set to ", radialMovement[toWiggle[j]]);
-		}
-		if (newcosh < mincdf) {
-			newcosh += 2*(mincdf - newcosh);
-			radialMovement[toWiggle[j]] *= -1;
-			DEBUG("Node ", toWiggle[j], " crossed center, radial movement set to ", radialMovement[toWiggle[j]]);
-
-			/**
-			 * nodes should cross the center, not bounce off it
-			 */
-			if (newphi > M_PI) {
-				newphi -= M_PI;
-			}
-			else {
-				newphi += M_PI;
-			}
-		}
-		double newradius = acosh(newcosh)/alpha;
-		//assert(abs(newradius - hyperbolicRadius) < moveEachStep);
-		if (newradius >= R) newradius = std::nextafter(R, std::numeric_limits<double>::lowest());
-		assert(newradius < R);
-		assert(newradius >= 0);
-
-		//double angleMovement = Aux::Random::real(-moveDistance/hyperbolicRadius, moveDistance/hyperbolicRadius);
-		newphi += angularMovement[toWiggle[j]]/newradius;
-		if (newphi < 0) newphi += (floor(-newphi/(2*M_PI))+1)*2*M_PI;
-		if (newphi > 2*M_PI) newphi -= floor(newphi/(2*M_PI))*2*M_PI;
-
-		newradius = HyperbolicSpace::hyperbolicRadiusToEuclidean(newradius);
-		if (newradius >= r) newradius = std::nextafter(newradius, std::numeric_limits<double>::lowest());
-
+		double oldphi = angles[toWiggle[j]];
+		double oldr = radii[toWiggle[j]];
+		moveNode(toWiggle[j]);
 		//updating Quadtree
-		bool removed = quad.removeContent(toWiggle[j], angles[toWiggle[j]], radii[toWiggle[j]]);
-		assert(removed);
-		angles[toWiggle[j]] = newphi;
-		radii[toWiggle[j]] = newradius;
-		quad.addContent(toWiggle[j], newphi, newradius);
-
+		#pragma omp critical
+		{
+			bool removed = quad.removeContent(toWiggle[j], oldphi, oldr);
+			assert(removed);
+			quad.addContent(toWiggle[j], angles[toWiggle[j]], radii[toWiggle[j]]);
+		}
 	}
 
 	//now get the new edges and see what changed
