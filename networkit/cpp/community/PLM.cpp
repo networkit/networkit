@@ -22,6 +22,10 @@ PLM::PLM(const Graph& G, bool refine, double gamma, std::string par, count maxIt
 
 }
 
+PLM::PLM(const Graph& G, const PLM& other) : CommunityDetectionAlgorithm(G), parallelism(other.parallelism), refine(other.refine), gamma(other.gamma), maxIter(other.maxIter), parallelCoarsening(other.parallelCoarsening), turbo(other.turbo){
+
+}
+
 void PLM::run() {
 	DEBUG("calling run method on " , G.toString());
 
