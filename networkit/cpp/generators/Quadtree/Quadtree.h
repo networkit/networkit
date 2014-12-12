@@ -66,7 +66,13 @@ public:
 		count numberOfThreads = omp_get_max_threads();
 		double k = ceil(log(numberOfThreads)/log(4));
 		root = QuadNode<T>(0, 0, 2*M_PI, r, capacity, 0,theoreticalSplit,alpha,diagnostics);
-		fillInParallel(n, alpha, k, 0, root);
+		#pragma omp parallel
+		{
+			#pragma omp single nowait
+			{
+				fillInParallel(n, alpha, k, 0, root);
+			}
+		}
 		//bernoulli to distribute
 	}
 
