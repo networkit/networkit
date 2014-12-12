@@ -112,8 +112,13 @@ public:
 	 * @param hyperbolicRadius Radius of the query circle
 	 */
 	vector<T> getElementsInHyperbolicCircle(Point2D<double> circleCenter, double hyperbolicRadius) {
-		Point2D<double> origin(0,0);
 		vector<T> circleDenizens;
+		getElementsInHyperbolicCircle(circleCenter, hyperbolicRadius, circleDenizens);
+		return circleDenizens;
+	}
+
+	void getElementsInHyperbolicCircle(Point2D<double> circleCenter, double hyperbolicRadius, vector<T> &circleDenizens) {
+		Point2D<double> origin(0,0);
 		Point2D<double> center;
 
 		//Transform hyperbolic circle into Euclidean circle
@@ -160,11 +165,6 @@ public:
 			auto newend = unique(circleDenizens.begin(), circleDenizens.end());
 			circleDenizens.resize(newend - circleDenizens.begin());
 		}
-
-		/**
-		 * return the elements
-		 */
-		return circleDenizens;
 	}
 
 	count size() const {
