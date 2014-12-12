@@ -500,4 +500,26 @@ TEST_F(QuadTreeTest, testQuadTreeCutLeaves) {
 	DEBUG("Total edges: ", totalEdges);
 }
 
+TEST_F(QuadTreeTest, testParallelQuadTreeConstruction) {
+	Quadtree<index> quad(100000,1.0);
+}
+
+TEST_F(QuadTreeTest, testSequentialQuadTreeConstruction) {
+	count n = 100000;
+	count capacity = 1000;
+	double s =1;
+	double alpha = 1;
+	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
+	vector<double> angles(n);
+	vector<double> radii(n);
+	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
+
+	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R),false,alpha,capacity,true);
+
+	for (index i = 0; i < n; i++) {
+		quad.addContent(i, angles[i], radii[i]);
+	}
+}
+
+
 } /* namespace NetworKit */
