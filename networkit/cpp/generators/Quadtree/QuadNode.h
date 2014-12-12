@@ -390,17 +390,12 @@ public:
 		if (outOfReach(center, radius)) {
 			return;
 		}
+		double phi_c, r_c;
+		HyperbolicSpace::cartesianToPolar(center, phi_c, r_c);
+		const double maxRinSlice = HyperbolicSpace::maxRinSlice(leftAngle, rightAngle, phi_c, r_c, radius);
 
 		if (isLeaf) {
 			const double rsq = radius*radius;
-	//		if (diagnostics) {
-	//			if (center.distance(a) > radius || center.distance(b) > radius || center.distance(c) > radius || center.distance(d) > radius) {
-	//				wasCut = true;
-	//			} else {
-	//				wasCut = false;
-	//				wasIncluded = true;
-	//			}
-	//		}
 			const double queryX = center[0];
 			const double queryY = center[1];
 			const count cSize = content.size();
@@ -410,10 +405,8 @@ public:
 				const double deltaY = positions[i][1] - queryY;
 				if (deltaX*deltaX + deltaY*deltaY < rsq) {
 					result.push_back(content[i]);
-	//				if (diagnostics) ncomp++;
-				} else {
-	//				if (diagnostics) uncomp++;
-					//if (wasIncluded) ERROR("Node not in range despite cell included.");
+				} else if (radii[i] > maxRinSlice) {
+					break;//this requires sorting
 				}
 			}
 		}	else {
@@ -607,10 +600,11 @@ public:
 				std::vector<double> radiicopy(cs);
 
 				for (index i = 0; i < cs; i++) {
-					contentcopy[i] = content[permutation[i]];
-					positioncopy[i] = positions[permutation[i]];
-					anglecopy[i] = angles[permutation[i]];
-					radiicopy[i] = radii[permutation[i]];
+					const index perm = permutation[i];
+					contentcopy[i] = content[perm];
+					positioncopy[i] = positions[perm];
+					anglecopy[i] = angles[perm];
+					radiicopy[i] = radii[perm];
 				}
 
 				content.swap(contentcopy);
