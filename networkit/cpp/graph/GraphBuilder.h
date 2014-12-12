@@ -92,6 +92,8 @@ public:
 	 */
 	void addEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
 
+	void swapNeighborhood(node u, std::vector<node> &neighbours, std::vector<edgeweight> &weights, bool selfloop);
+
 	/**
 	 * Set the weight of an edge. If the edge does not exist,
 	 * it will be inserted.
