@@ -71,7 +71,8 @@ Graph HyperbolicGenerator::generate(count n, double distanceFactor, double alpha
 	vector<double> radii(n);
 	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	//sample points randomly
-	HyperbolicSpace::fillPoints(&angles, &radii, stretchradius, alpha);
+
+	HyperbolicSpace::fillPoints(angles, radii, stretchradius, alpha);
 	vector<index> permutation(n);
 
 	index p = 0;
@@ -121,7 +122,7 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	{
 		index id = omp_get_thread_num();
 		threadtimers[id].start();
-		#pragma omp for schedule(guided, 1000) nowait
+		#pragma omp for schedule(dynamic) nowait
 		for (index i = 0; i < n; i++) {
 			//get neighbours for node i
 			vector<index> near = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance);

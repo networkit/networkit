@@ -33,7 +33,6 @@ private:
 	static const unsigned coarsenLimit = 4;
 	double minRegion;//the minimal region a QuadNode should cover. If it is smaller, don't bother splitting up.
 	count elements;
-	std::vector<QuadNode> children;
 	std::vector<T> content;
 	std::vector<Point2D<double> > positions;
 	std::vector<double> angles;
@@ -46,8 +45,11 @@ private:
 	bool wasCut;
 	bool wasIncluded;
 	bool diagnostics;
+	index ID;
 
 public:
+	std::vector<QuadNode> children;
+
 	QuadNode() {
 		//This should never be called.
 		leftAngle = 0;
@@ -97,6 +99,40 @@ public:
 		resetCounter();
 	}
 
+	void split() {
+		assert(isLeaf);
+		//heavy lifting: split up!
+		double middleAngle = (rightAngle - leftAngle) / 2 + leftAngle;
+		/**
+		 * we want to make sure the space is evenly divided to obtain a balanced tree
+		 * Simply halving the radius will cause a larger space for the outer Quadnode, resulting in an unbalanced tree
+		 */
+
+		double middleR;
+		if (splitTheoretical) {
+			double hyperbolicOuter = HyperbolicSpace::EuclideanRadiusToHyperbolic(maxR);
+			double hyperbolicInner = HyperbolicSpace::EuclideanRadiusToHyperbolic(minR);
+			double hyperbolicMiddle = acosh((cosh(alpha*hyperbolicOuter) + cosh(alpha*hyperbolicInner))/2)/alpha;
+			middleR = HyperbolicSpace::hyperbolicRadiusToEuclidean(hyperbolicMiddle);
+		} else {
+			double nom = maxR - minR;
+			double denom = pow((1-maxR*maxR)/(1-minR*minR), 0.5)+1;
+			middleR = nom/denom + minR;
+		}
+
+		//one could also use the median here. Results in worse asymptotical complexity, but maybe better runtime?
+
+		assert(middleR < maxR);
+		assert(middleR > minR);
+
+		QuadNode southwest(leftAngle, minR, middleAngle, middleR, capacity, minRegion, splitTheoretical, alpha,diagnostics);
+		QuadNode southeast(middleAngle, minR, rightAngle, middleR, capacity, minRegion, splitTheoretical, alpha,diagnostics);
+		QuadNode northwest(leftAngle, middleR, middleAngle, maxR, capacity, minRegion, splitTheoretical, alpha,diagnostics);
+		QuadNode northeast(middleAngle, middleR, rightAngle, maxR, capacity, minRegion, splitTheoretical, alpha,diagnostics);
+		children = {southwest, southeast, northwest, northeast};
+		isLeaf = false;
+	}
+
 	/**
 	 * Add a point at polar coordinates (angle, R) with content input. May split node if capacity is full
 	 *
@@ -114,40 +150,13 @@ public:
 				Point2D<double> pos = HyperbolicSpace::polarToCartesian(angle, R);
 				positions.push_back(pos);
 			} else {
-				//heavy lifting: split up!
-				double middleAngle = (rightAngle - leftAngle) / 2 + leftAngle;
-				/**
-				 * we want to make sure the space is evenly divided to obtain a balanced tree
-				 * Simply halving the radius will cause a larger space for the outer Quadnode, resulting in an unbalanced tree
-				 */
 
-				double middleR;
-				if (splitTheoretical) {
-					double hyperbolicOuter = HyperbolicSpace::EuclideanRadiusToHyperbolic(maxR);
-					double hyperbolicInner = HyperbolicSpace::EuclideanRadiusToHyperbolic(minR);
-					double hyperbolicMiddle = acosh((cosh(alpha*hyperbolicOuter) + cosh(alpha*hyperbolicInner))/2)/alpha;
-					middleR = HyperbolicSpace::hyperbolicRadiusToEuclidean(hyperbolicMiddle);
-				} else {
-					double nom = maxR - minR;
-					double denom = pow((1-maxR*maxR)/(1-minR*minR), 0.5)+1;
-					middleR = nom/denom + minR;
-				}
+				split();
 
-				//one could also use the median here. Results in worse asymptotical complexity, but maybe better runtime?
-
-				assert(middleR < maxR);
-				assert(middleR > minR);
-
-				QuadNode southwest(leftAngle, minR, middleAngle, middleR, capacity, minRegion, splitTheoretical, alpha,diagnostics);
-				QuadNode southeast(middleAngle, minR, rightAngle, middleR, capacity, minRegion, splitTheoretical, alpha,diagnostics);
-				QuadNode northwest(leftAngle, middleR, middleAngle, maxR, capacity, minRegion, splitTheoretical, alpha,diagnostics);
-				QuadNode northeast(middleAngle, middleR, rightAngle, maxR, capacity, minRegion, splitTheoretical, alpha,diagnostics);
-				children = {southwest, southeast, northwest, northeast};
-
-				isLeaf = false;
 				for (uint i = 0; i < content.size(); i++) {
 					this->addContent(content[i], angles[i], radii[i]);
 				}
+
 				content.clear();
 				this->addContent(input, angle, R);
 			}
@@ -517,7 +526,6 @@ public:
 		return result;
 	}
 
-
 	double getLeftAngle() const {
 		return leftAngle;
 	}
@@ -532,6 +540,50 @@ public:
 
 	double getMaxR() const {
 		return maxR;
+	}
+
+	void setID(index id) {
+		this->ID = id;
+	}
+
+	index getID() const {
+		return ID;
+	}
+
+	index indexSubtree(index nextID) {
+		if (isLeaf) {
+			this->ID = nextID;
+			return nextID +1;
+		}
+		index result = nextID;
+		for (int i = 0; i < 4; i++) {
+			result = children[i].indexSubtree(result);
+		}
+		return result;
+	}
+
+	index getCellID(double phi, double r) {
+		if (!responsible(phi, r)) return -1;
+		if (isLeaf) return getID();
+		else {
+			for (int i = 0; i < 4; i++) {
+				index childresult = children[i].getCellID(phi, r);
+				if (childresult >= 0) return childresult;
+			}
+			assert(false); //if responsible
+			return -1;
+		}
+	}
+
+	index getMaxIDInSubtree() {
+		if (isLeaf) return getID();
+		else {
+			index result = -1;
+			for (int i = 0; i < 4; i++) {
+				result = std::max(children[i].getMaxIDInSubtree(), result);
+			}
+			return result;
+		}
 	}
 };
 }

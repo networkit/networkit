@@ -28,10 +28,10 @@ DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(count n, double initialFa
 	this->factorgrowth = factorgrowth;
 	this->moveDistance = moveDistance;
 	this->initialized = false;
-	initializeQuadTree();
-	initializeMovement();
 	R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(nodes);
 	r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
+	initializeQuadTree();
+	initializeMovement();
 }
 
 DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(vector<double> &angles, vector<double> &radii, double stretch, double initialFactor, double moveEachStep, double factorgrowth, double moveDistance) {
@@ -75,7 +75,7 @@ void DynamicHyperbolicGenerator::initializeQuadTree() {
 	radii.resize(nodes);
 	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	quad = Quadtree<index>(r);
-	HyperbolicSpace::fillPoints(&angles, &radii, stretch, alpha);
+	HyperbolicSpace::fillPoints(angles, radii, stretch, alpha);
 	INFO("Generated Points");
 	for (index i = 0; i < nodes; i++) {
 		assert(radii[i] < R);
@@ -142,8 +142,6 @@ void DynamicHyperbolicGenerator::getEventsFromFactorGrowth(vector<GraphEvent> &r
 	}
 	double newfactor = currentfactor + factorgrowth;
 	if (newfactor < 0) newfactor = 0;
-
-	double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(nodes);
 
 	/**
 	 * TODO: get all neighbours in the beginning, sort them by hyperbolic distance, move along edge array.

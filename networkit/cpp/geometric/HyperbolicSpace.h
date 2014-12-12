@@ -31,7 +31,17 @@ public:
 	 *
 	 * Fill preallocated vectors with randomly sampled points in the poincare disk
 	 */
-	static void fillPoints(vector<double> * angles, vector<double> * radii, double stretch, double alpha);
+	static void fillPoints(vector<double> &angles, vector<double> &radii, double stretch, double alpha);
+
+	/**
+	 * @param angles empty vector to hold angular coordinates of generated points
+	 * @param radii empty vector to hold radial coordinates of generated points
+	 * @param stretch multiplier for the radius of the hyperbolic disk
+	 * @param alpha dispersion parameter for the node positions
+	 *
+	 * Fill preallocated vectors with randomly sampled points in the poincare disk
+	 */
+	static void fillPoints(vector<double> &angles, vector<double> &radii, double minPhi, double maxPhi, double minR, double maxR, double alpha);
 
 	/**
 	 * @param firstangle angular coordinate of the first point

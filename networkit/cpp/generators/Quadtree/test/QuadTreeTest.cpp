@@ -31,7 +31,7 @@ TEST_F(QuadTreeTest, testQuadTreeHyperbolicCircle) {
 	double R = 1;
 	vector<double> angles(n);
 	vector<double> radii(n);
-	HyperbolicSpace::fillPoints(&angles, &radii, 1, 1);
+	HyperbolicSpace::fillPoints(angles, radii, 1, 1);
 	double max = 0;
 	for (index i = 0; i < n; i++) {
 		if (radii[i] > max) {
@@ -118,7 +118,7 @@ TEST_F(QuadTreeTest, testQuadTreeThresholdGrowth) {
 	vector<double> angles(n);
 	vector<double> radii(n);
 	vector<double> indices(n);
-	HyperbolicSpace::fillPoints(&angles, &radii, 1, 1);
+	HyperbolicSpace::fillPoints(angles, radii, 1, 1);
 	double max = 0;
 	for (index i = 0; i < n; i++) {
 		indices[i] = i;
@@ -169,7 +169,7 @@ TEST_F(QuadTreeTest, testQuadTreeDeletion) {
 	vector<double> angles(n);
 	vector<double> radii(n);
 	vector<double> indices(n);
-	HyperbolicSpace::fillPoints(&angles, &radii, 1, 1);
+	HyperbolicSpace::fillPoints(angles, radii, 1, 1);
 	double max = 0;
 	for (index i = 0; i < n; i++) {
 		indices[i] = i;
@@ -226,7 +226,7 @@ TEST_F(QuadTreeTest, testEuclideanCircle) {
 	double R = 1;
 	vector<double> angles(n);
 	vector<double> radii(n);
-	HyperbolicSpace::fillPoints(&angles, &radii, 1, 1);
+	HyperbolicSpace::fillPoints(angles, radii, 1, 1);
 	double max = 0;
 	for (index i = 0; i < n; i++) {
 		if (radii[i] > max) {
@@ -320,7 +320,7 @@ TEST_F(QuadTreeTest, testQuadTreeBalance) {
 	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
 	vector<double> angles(n);
 	vector<double> radii(n);
-	HyperbolicSpace::fillPoints(&angles, &radii, s, alpha);
+	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
 	double max = 0;
 	for (index i = 0; i < n; i++) {
 		if (radii[i] > max) {
@@ -394,7 +394,7 @@ TEST_F(QuadTreeTest, tryQuadTreeCutLeaves) {
 	double threshold = t*R;
 	vector<double> angles(n);
 	vector<double> radii(n);
-	HyperbolicSpace::fillPoints(&angles, &radii, s, alpha);
+	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
 
 	for (index capexp = 1; capexp < log(n)/log(4); capexp++) {
 		count capacity = pow(4,capexp);
@@ -457,7 +457,7 @@ TEST_F(QuadTreeTest, testQuadTreeCutLeaves) {
 	double threshold = t*R;
 	vector<double> angles(n);
 	vector<double> radii(n);
-	HyperbolicSpace::fillPoints(&angles, &radii, s, alpha);
+	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
 
 	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R),false,alpha,capacity,true);
 
