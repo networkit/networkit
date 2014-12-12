@@ -127,15 +127,15 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 		#pragma omp for schedule(guided) nowait
 		for (index i = 0; i < n; i++) {
 			//get neighbours for node i
-			vector<index> near = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance);
+			count expectedDegree = (4/M_PI)*n*exp(-HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[i])/2);
+			vector<index> near;
+			near.reserve(expectedDegree*1.1);
+			quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance, near);
 			std::remove(near.begin(), near.end(), i); //no self loops!
+			//count realDegree = near.size();
+			//std::swap(expectedDegree, realDegree);//dummy statement for debugging
 			result.swapNeighborhood(i, near, empty, false);
-			for (index j : near) {
-				if (i != j) {
-					//we add half-edges from both directions at the same time. Due to the symmetry of distances, the correct edges will be formed in parallel without a need for deduplication
-					result.addEdge(i,j);
-				}
-			}
+
 			if (i % 1000 == 0) {
 				#pragma omp critical (progress)
 				{

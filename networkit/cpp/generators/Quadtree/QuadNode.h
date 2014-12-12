@@ -390,14 +390,14 @@ public:
 	 * @param highR Optional value for the maximum radial coordinate of the query region
 	 */
 	void getElementsInEuclideanCircle(Point2D<double> center, double radius, vector<T> &result, double minAngle=0, double maxAngle=2*M_PI, double lowR=0, double highR = 1) {
-		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR <= minR) return;
+		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR < lowerBoundR) return;
 		if (outOfReach(center, radius)) {
 			return;
 		}
 		double phi_c, r_c;
 		HyperbolicSpace::cartesianToPolar(center, phi_c, r_c);
-		const double maxRinSlice = HyperbolicSpace::maxRinSlice(leftAngle, rightAngle, phi_c, r_c, radius);
-		if (maxRinSlice < lowerBoundR) return;
+		highR = min(highR, HyperbolicSpace::maxRinSlice(leftAngle, rightAngle, phi_c, r_c, radius));
+		if (highR < lowerBoundR) return;
 
 		if (isLeaf) {
 			const double rsq = radius*radius;
