@@ -128,7 +128,8 @@ double HyperbolicSpace::maxRinSlice(double minPhi, double maxPhi, double phi_c, 
 
 	if (minPhi < phi_c && phi_c < maxPhi) maxCos = 1;
 	//applying law of cosines here
-	double maxR = sqrt(euRadius*euRadius-r_c*r_c+2*euRadius*r_c*maxCos);
+	double p = r_c*maxCos;
+	double maxR = p + sqrt(p*p - r_c*r_c + euRadius*euRadius);
 	return maxR;
 }
 
