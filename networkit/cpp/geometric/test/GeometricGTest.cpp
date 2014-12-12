@@ -28,7 +28,7 @@ TEST_F(GeometricGTest, testConversion) {
 	count n = 1000;
 	vector<double> angles(n);
 	vector<double> radii(n);
-	HyperbolicSpace::fillPoints(&angles, &radii, 1, 1);
+	HyperbolicSpace::fillPoints(angles, radii, 1, 1);
 	for (index i = 0; i < n; i++) {
 		Point2D<double> point = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
 		double phi, r;

@@ -205,7 +205,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnFactorGrowth) {
 	double R = HyperbolicSpace::hyperbolicAreaToRadius(n)*stretch;
 	vector<double> angles(n, -1);
 	vector<double> radii(n, -1);
-	HyperbolicSpace::fillPoints(&angles, &radii, stretch, alpha);
+	HyperbolicSpace::fillPoints(angles, radii, stretch, alpha);
 	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 
 	//set up generators
@@ -256,7 +256,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	//set up initial node positions
 	vector<double> angles(n, -1);
 	vector<double> radii(n, -1);
-	HyperbolicSpace::fillPoints(&angles, &radii, stretch, alpha);
+	HyperbolicSpace::fillPoints(angles, radii, stretch, alpha);
 	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 
 	DynamicHyperbolicGenerator dynGen(angles, radii, stretch, factor, movedShare, 0, moveDistance);
@@ -308,7 +308,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
 	vector<double> angles(n);
 	vector<double> radii(n);
 
-	HyperbolicSpace::fillPoints(&angles, &radii, stretch, alpha);
+	HyperbolicSpace::fillPoints(angles, radii, stretch, alpha);
 
 	DynamicHyperbolicGenerator dynGen(angles, radii, stretch, factor, movedShare, 0, moveDistance);
 	Graph G = dynGen.getGraph();
@@ -356,7 +356,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorCollectedSteps) {
 
 	vector<double> angles(n, -1);
 	vector<double> radii(n, -1);
-	HyperbolicSpace::fillPoints(&angles, &radii, stretch, alpha);
+	HyperbolicSpace::fillPoints(angles, radii, stretch, alpha);
 
 	DynamicHyperbolicGenerator dyngen(angles, radii, R, initialFactor, 0, factorGrowth, 0);
 
@@ -743,7 +743,7 @@ TEST_F(GeneratorsGTest, testHyperbolicPointGeneration) {
 	double R = HyperbolicSpace::hyperbolicAreaToRadius(n)*stretch;
 	vector<double> angles(n, -1);
 	vector<double> radii(n, -1);
-	HyperbolicSpace::fillPoints(&angles, &radii, stretch, alpha);
+	HyperbolicSpace::fillPoints(angles, radii, stretch, alpha);
 	for (index i = 0; i < n; i++) {
 		EXPECT_GE(angles[i], 0);
 		EXPECT_LT(angles[i], 2*M_PI);

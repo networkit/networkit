@@ -41,23 +41,29 @@ double HyperbolicSpace::poincareMetric(Point2D<double> a, Point2D<double> b) {
 	return result;
 }
 
-void HyperbolicSpace::fillPoints(vector<double> * angles, vector<double> * radii, double stretch, double alpha) {
-	uint64_t n = radii->size();
+void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, double stretch, double alpha) {
+	uint64_t n = radii.size();
 	double R = stretch*hyperbolicAreaToRadius(n);
-	assert(angles->size() == n);
+	fillPoints(angles, radii, 0, 2*M_PI, 0, R, alpha);
+}
+
+void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, double minPhi, double maxPhi, double minR, double maxR, double alpha) {
+	uint64_t n = radii.size();
+	assert(angles.size() == n);
 	for (uint64_t i = 0; i < n; i++) {
-		(*angles)[i] = Aux::Random::real(0, 2*M_PI);
+		angles[i] = Aux::Random::real(minPhi, maxPhi);
 		/**
 		 * for the radial coordinate distribution, I took the probability density from Greedy Forwarding in Dynamic Scale-Free Networks Embedded in Hyperbolic Metric Spaces
 		 * f (r) = sinh r/(cosh R − 1)
 		 * \int sinh = cosh+const
 		 */
-		double maxcdf = cosh(alpha*R);
-		double random = Aux::Random::real(1, maxcdf);
+		double mincdf = cosh(alpha*minR);
+		double maxcdf = cosh(alpha*maxR);
+		double random = Aux::Random::real(mincdf, maxcdf);
 		double radius = (acosh(random)/alpha);
 		//now translate into coordinates of Poincaré disc
-		(*radii)[i] = hyperbolicRadiusToEuclidean(radius);
-		assert((*radii)[i] < 1);
+		radii[i] = hyperbolicRadiusToEuclidean(radius);
+		assert(radii[i] < 1);
 	}
 }
 

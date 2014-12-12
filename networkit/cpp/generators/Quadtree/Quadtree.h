@@ -11,6 +11,7 @@
 #include <vector>
 #include <memory>
 #include <cmath>
+#include <omp.h>
 #include "QuadNode.h"
 #include "../../geometric/HyperbolicSpace.h"
 
@@ -36,6 +37,35 @@ public:
 	Quadtree(double maxR,bool theoreticalSplit=false, double alpha=1, count capacity=1000, bool diagnostics = false) {
 		root = QuadNode<T>(0, 0, 2*M_PI, maxR, capacity, 0,theoreticalSplit,alpha,diagnostics);
 		this->maxRadius = maxR;
+	}
+
+	Quadtree(count n, double stretch, bool theoreticalSplit=false, double alpha=1, count capacity=1000, bool diagnostics = false) {
+		double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(n);
+		count numberOfThreads = omp_get_num_threads();
+		count k = ceil(log(numberOfThreads)/log(4));
+		root = QuadNode<T>(0, 0, 2*M_PI, R, capacity, 0,theoreticalSplit,alpha,diagnostics);
+		fillParallel(n, alpha, k, 0, root);
+		//bernoulli to distribute
+	}
+
+
+	void fillInParallel(count l, double alpha, count seqDepth, count offset, QuadNode<T> &currentNode) {
+		if (seqDepth > 0) {
+			if (currentNode.isLeaf) currentNode.split();
+			for (int i = 0; i < currentNode.children.size(); i++) {
+				fillInParallel(l/4, alpha, seqDepth -1, offset+(l/4)*i, currentNode.children[i]);
+			}
+		} else {
+				#pragma omp task
+				{
+					vector<double> angles(l);
+					vector<double> radii(l);
+					HyperbolicSpace::fillPoints(angles, radii, currentNode.leftAngle, currentNode.rightAngle, currentNode.minR, currentNode.maxR, alpha);
+					for (index i = 0; i < l; i++) {
+						currentNode.addContent(i+offset, angles[i], radii[i]);
+					}
+				}
+		}
 	}
 
 	/**
@@ -139,6 +169,14 @@ public:
 
 	count countLeaves() const {
 		return root.countLeaves();
+	}
+
+	index indexSubtree(index nextID) {
+		return root.indexSubtree(nextID);
+	}
+
+	index getCellID(double phi, double r) {
+		return root.getCellID(phi, r);
 	}
 
 	/**
