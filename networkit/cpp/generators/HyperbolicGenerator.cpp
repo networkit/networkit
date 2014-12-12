@@ -132,6 +132,7 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 			near.reserve(expectedDegree*1.1);
 			quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance, near);
 			std::remove(near.begin(), near.end(), i); //no self loops!
+			near.pop_back();//std::remove doesn't remove element but swaps it to the end
 			//count realDegree = near.size();
 			//std::swap(expectedDegree, realDegree);//dummy statement for debugging
 			result.swapNeighborhood(i, near, empty, false);
