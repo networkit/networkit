@@ -55,6 +55,19 @@ void GraphBuilder::addEdge(node u, node v, edgeweight ew) {
 	}
 }
 
+void GraphBuilder::swapNeighborhood(node u, std::vector<node> &neighbours, std::vector<edgeweight> &weights, bool selfloop) {
+	if (weighted) assert(neighbours.size() == weights.size());
+	halfEdges[u].swap(neighbours);
+	if (weighted) {
+		halfEdgeWeights[u].swap(weights);
+	}
+
+	if (selfloop) {
+	#pragma omp atomic
+		selfloops++;
+	}
+}
+
 void GraphBuilder::setWeight(node u, node v, edgeweight ew) {
 	assert(u < n);
 	assert(v < n);

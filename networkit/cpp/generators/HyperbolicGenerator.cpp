@@ -117,6 +117,7 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	timer.stop();
 	INFO("Filled Quadtree, took ", timer.elapsedMilliseconds(), " milliseconds.");
 	timer.start();
+	vector<double> empty;
 
 	Aux::ProgressMeter progress(n, 1000);
 	#pragma omp parallel
@@ -127,6 +128,8 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 		for (index i = 0; i < n; i++) {
 			//get neighbours for node i
 			vector<index> near = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance);
+			std::remove(near.begin(), near.end(), i); //no self loops!
+			result.swapNeighborhood(i, near, empty, false);
 			for (index j : near) {
 				if (i != j) {
 					//we add half-edges from both directions at the same time. Due to the symmetry of distances, the correct edges will be formed in parallel without a need for deduplication
