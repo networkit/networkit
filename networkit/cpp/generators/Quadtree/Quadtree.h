@@ -187,6 +187,16 @@ public:
 		return root.getCellID(phi, r);
 	}
 
+	void sortPointsInLeaves() {
+		#pragma omp parallel
+		{
+			#pragma omp single nowait
+			{
+				root.sortPointsInLeaves();
+			}
+		}
+	}
+
 	/**
 	 * trims the vectors used to hold the content in the leaf cells. Reduces memory usage, makes changes slower
 	 */

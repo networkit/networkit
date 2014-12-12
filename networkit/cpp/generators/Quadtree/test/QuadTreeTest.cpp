@@ -501,11 +501,11 @@ TEST_F(QuadTreeTest, testQuadTreeCutLeaves) {
 }
 
 TEST_F(QuadTreeTest, testParallelQuadTreeConstruction) {
-	Quadtree<index> quad(100000,1.0);
+	Quadtree<index> quad(100000000,1.0);
 }
 
 TEST_F(QuadTreeTest, testSequentialQuadTreeConstruction) {
-	count n = 100000;
+	count n = 100000000;
 	count capacity = 1000;
 	double s =1;
 	double alpha = 1;
