@@ -39,33 +39,35 @@ public:
 		this->maxRadius = maxR;
 	}
 
-	Quadtree(count n, double stretch, bool theoreticalSplit=false, double alpha=1, count capacity=1000, bool diagnostics = false) {
-		double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(n);
-		count numberOfThreads = omp_get_num_threads();
-		count k = ceil(log(numberOfThreads)/log(4));
-		root = QuadNode<T>(0, 0, 2*M_PI, R, capacity, 0,theoreticalSplit,alpha,diagnostics);
-		fillParallel(n, alpha, k, 0, root);
-		//bernoulli to distribute
-	}
-
-
 	void fillInParallel(count l, double alpha, count seqDepth, count offset, QuadNode<T> &currentNode) {
 		if (seqDepth > 0) {
-			if (currentNode.isLeaf) currentNode.split();
+			if (currentNode.height() == 1) currentNode.split();
 			for (int i = 0; i < currentNode.children.size(); i++) {
 				fillInParallel(l/4, alpha, seqDepth -1, offset+(l/4)*i, currentNode.children[i]);
 			}
 		} else {
-				#pragma omp task
+				#pragma omp task shared(currentNode)
 				{
 					vector<double> angles(l);
 					vector<double> radii(l);
-					HyperbolicSpace::fillPoints(angles, radii, currentNode.leftAngle, currentNode.rightAngle, currentNode.minR, currentNode.maxR, alpha);
+					HyperbolicSpace::fillPoints(angles, radii, currentNode.getLeftAngle(), currentNode.getRightAngle(),
+							HyperbolicSpace::EuclideanRadiusToHyperbolic(currentNode.getMinR()),
+							HyperbolicSpace::EuclideanRadiusToHyperbolic(currentNode.getMaxR()), alpha);
 					for (index i = 0; i < l; i++) {
 						currentNode.addContent(i+offset, angles[i], radii[i]);
 					}
 				}
+			}
 		}
+
+	Quadtree(count n, double stretch, bool theoreticalSplit=false, double alpha=1, count capacity=1000, bool diagnostics = false) {
+		double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(n);
+		double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
+		count numberOfThreads = omp_get_max_threads();
+		double k = ceil(log(numberOfThreads)/log(4));
+		root = QuadNode<T>(0, 0, 2*M_PI, r, capacity, 0,theoreticalSplit,alpha,diagnostics);
+		fillInParallel(n, alpha, k, 0, root);
+		//bernoulli to distribute
 	}
 
 	/**
