@@ -46,6 +46,7 @@ private:
 	bool wasIncluded;
 	bool diagnostics;
 	index ID;
+	double lowerBoundR;
 
 public:
 	std::vector<QuadNode> children;
@@ -62,6 +63,7 @@ public:
 		elements = 0;
 		splitTheoretical = false;
 		alpha = 1;
+		lowerBoundR = maxR;
 		resetCounter();
 	}
 
@@ -94,6 +96,7 @@ public:
 		this->alpha = alpha;
 		this->splitTheoretical = splitTheoretical;
 		this->diagnostics = diagnostics;
+		this->lowerBoundR = maxR;
 		isLeaf = true;
 		elements = 0;
 		resetCounter();
@@ -142,6 +145,7 @@ public:
 	 */
 	void addContent(T input, double angle, double R) {
 		assert(this->responsible(angle, R));
+		if (lowerBoundR > R) lowerBoundR = R;
 		if (isLeaf) {
 			if (content.size() + 1 < capacity ||  HyperbolicSpace::poincareMetric(leftAngle, minR, rightAngle, maxR) < minRegion) {
 				content.push_back(input);
@@ -393,6 +397,7 @@ public:
 		double phi_c, r_c;
 		HyperbolicSpace::cartesianToPolar(center, phi_c, r_c);
 		const double maxRinSlice = HyperbolicSpace::maxRinSlice(leftAngle, rightAngle, phi_c, r_c, radius);
+		if (maxRinSlice < lowerBoundR) return;
 
 		if (isLeaf) {
 			const double rsq = radius*radius;
@@ -405,8 +410,6 @@ public:
 				const double deltaY = positions[i][1] - queryY;
 				if (deltaX*deltaX + deltaY*deltaY < rsq) {
 					result.push_back(content[i]);
-				} else if (radii[i] > maxRinSlice) {
-					break;//this requires sorting
 				}
 			}
 		}	else {

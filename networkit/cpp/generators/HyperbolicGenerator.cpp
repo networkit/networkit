@@ -112,7 +112,7 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 		assert(radii[i] < R);
 		quad.addContent(i, angles[i], radii[i]);
 	}
-	quad.sortPointsInLeaves();
+
 	quad.trim();
 	timer.stop();
 	INFO("Filled Quadtree, took ", timer.elapsedMilliseconds(), " milliseconds.");
