@@ -122,7 +122,7 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	{
 		index id = omp_get_thread_num();
 		threadtimers[id].start();
-		#pragma omp for schedule(dynamic) nowait
+		#pragma omp for schedule(guided) nowait
 		for (index i = 0; i < n; i++) {
 			//get neighbours for node i
 			vector<index> near = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance);
