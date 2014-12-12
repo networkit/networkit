@@ -122,6 +122,11 @@ public:
 	 * @param R radius of the hyperbolic base disk
 	 */
 	static double hyperbolicSpaceInEuclideanCircle(double r_c, double d_c, double R);
+
+	/**
+	 *
+	 */
+	static double maxRinSlice(double minPhi, double maxPhi, double phi_c, double r_c, double euRadius);
 };
 }
 

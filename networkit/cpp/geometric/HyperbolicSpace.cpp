@@ -120,6 +120,18 @@ double HyperbolicSpace::EuclideanRadiusToHyperbolic(double euclideanRadius) {
 	return result;
 }
 
+double HyperbolicSpace::maxRinSlice(double minPhi, double maxPhi, double phi_c, double r_c, double euRadius) {
+	double maxCos = max(cos(abs(minPhi - phi_c)), cos(abs(maxPhi - phi_c)));
+	//double mirrorAngle;
+	//if (phi_c >= M_PI) mirrorAngle = phi_c - M_PI;
+	//else mirrorAngle = phi_c + M_PI;
+
+	if (minPhi < phi_c && phi_c < maxPhi) maxCos = 1;
+	//applying law of cosines here
+	double maxR = sqrt(euRadius*euRadius-r_c*r_c+2*euRadius*r_c*maxCos);
+	return maxR;
+}
+
 double HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(double r_c, double d_c,
 		double r_max) {
 	double result = 0;
