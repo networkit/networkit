@@ -84,8 +84,8 @@ def components(G):
 def numberOfComponents(G):
 	""" Find and number of components """
 	logging.info("[...] finding connected components....")
-	cc = ConnectedComponents()
-	cc.run(G)
+	cc = ConnectedComponents(G)
+	cc.run()
 	nComponents = cc.numberOfComponents()
 	return nComponents
 
@@ -105,6 +105,14 @@ def clustering(G, error=0.01):
 
 def degreePowerLaw(G, dd=None):
 	""" Check if a power law is a good fit for the degree distribution.
+
+	Returns
+	-------
+	answer: bool
+		whether a power law is a good fit
+	R : double
+		goodness of the fit, i.e.
+		the loglikelihood ratio between the two candidate distributions. This number will be positive if the data is more likely in the first distribution, and negative if the data is more likely in the 		  	 	second distribution. The exponential distribution is the absolute minimum alternative candidate for evaluating the heavy- tailedness of the distribution. The reason is definitional: the typical quantitative definition of a ”heavy- tail” is that it is not exponentially bounded. Thus if a power law is not a better fit than an exponential distribution (as in the above example) there is scarce ground for considering the distribution to be heavy-tailed at all, let alone a power law.
 
 	"""
 	if not dd:
@@ -177,7 +185,8 @@ def properties(G, settings):
 		logging.info("[...] performing community detection: PLM")
 		plm = community.PLM(G)
 		print(plm)
-		zetaPLM = plm.run()
+		plm.run()
+		zetaPLM = plm.getPartition()
 		ncomPLM = zetaPLM.numberOfSubsets()
 		modPLM = community.Modularity().getQuality(zetaPLM, G)
 
@@ -219,11 +228,8 @@ def properties(G, settings):
 	assort = degreeAssortativity(G)
 
 	# degeneracy
-	if not G.isDirected():
-		logging.info("[...] calculating degeneracy by k-core decomposition")
-		degen = degeneracy(G)
-	else:
-		degen = None
+	logging.info("[...] calculating degeneracy by k-core decomposition")
+	degen = degeneracy(G)
 
 	props = {
 		 "name": G.getName(),
@@ -255,7 +261,7 @@ def properties(G, settings):
 	return props
 
 
-def overview(G, settings=collections.defaultdict(lambda: True)):
+def overview(G, settings=collections.defaultdict(lambda: True), showDegreeHistogram=True):
 	"""
 	Print an overview of important network properties to the terminal.
 	"""
@@ -270,7 +276,7 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 		["clustering coefficient", "{0:.6f}".format(props["avglcc"]) if props["avglcc"] else None],
 		["max. core number", props["degeneracy"]],
 		["connected components", props["nComponents"]],
-		["size of largest component", props["sizeLargestComponent"]],
+		["size of largest component", "{0} ({1:.2f} %)".format(props["sizeLargestComponent"], (props["sizeLargestComponent"] / props["n"]) * 100)],
 		["estimated diameter range", str(props["dia"])],
 		["estimated effective diameter", str(props["effDia"])],
 	]
@@ -298,11 +304,12 @@ def overview(G, settings=collections.defaultdict(lambda: True)):
 	#print(tabulate.tabulate(miscProperties))
 	print("Community Structure")
 	print(tabulate.tabulate(communityStructure))
-	print("Degree Distribution")
-	print("-------------------")
-	(labels, histo) = props["histo"]
-	if labels and histo:
-		termgraph.graph(labels, histo)
+	if showDegreeHistogram:
+		print("Degree Distribution")
+		print("-------------------")
+		(labels, histo) = props["histo"]
+		if labels and histo:
+			termgraph.graph(labels, histo)
 
 
 def compressHistogram(hist, nbins=20):

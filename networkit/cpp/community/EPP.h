@@ -9,6 +9,7 @@
 #define ENSEMBLEPREPROCESSING_H_
 
 #include <vector>
+#include <memory>
 #include "../community/CommunityDetectionAlgorithm.h"
 #include "../structures/Partition.h"
 #include "../overlap/Overlapper.h"
@@ -28,10 +29,10 @@ class EPP: public NetworKit::CommunityDetectionAlgorithm {
 
 protected:
 
-	CommunityDetectionAlgorithm* finalClusterer;	//!< final clustering algorithm
-	std::vector<CommunityDetectionAlgorithm*> baseClusterers; //!< ensemble of base clusterers
+	std::unique_ptr<CommunityDetectionAlgorithm> finalClusterer;	//!< final clustering algorithm
+	std::vector<std::unique_ptr<CommunityDetectionAlgorithm>> baseClusterers; //!< ensemble of base clusterers
 
-	Overlapper* overlap; //!< clustering overlap algorithm
+	std::unique_ptr<Overlapper> overlap; //!< clustering overlap algorithm
 
 public:
 	/**
@@ -46,7 +47,7 @@ public:
 	 *
 	 * @param base A base clusterer.
 	 */
-	virtual void addBaseClusterer(CommunityDetectionAlgorithm&  base);
+	virtual void addBaseClusterer(std::unique_ptr<CommunityDetectionAlgorithm>& base);
 
 
 	/**
@@ -54,22 +55,19 @@ public:
 	 *
 	 * @param final The final clusterer.
 	 */
-	virtual void setFinalClusterer(CommunityDetectionAlgorithm& final);
+	virtual void setFinalClusterer(std::unique_ptr<CommunityDetectionAlgorithm>& final);
 
 	/**
 	 * Set overlap algorithm which combines the results of the base clusterers.
 	 *
 	 * @param overlap The overlap algorithm.
 	 */
-	virtual void setOverlapper(Overlapper& overlap);
+	virtual void setOverlapper(std::unique_ptr<Overlapper>& overlap);
 
 	/**
-	 * Run the ensemble clusterer on @a G and return the result in a Partition.
-	 *
-	 * @param G The graph.
-	 * @return A Partition of the clustering.
+	 * Run the ensemble clusterer.
 	 */
-	virtual Partition run();
+	virtual void run();
 
 	/**
 	 * String representation of EPP class.

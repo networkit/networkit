@@ -29,35 +29,32 @@ protected:
 
 	count updateThreshold = 0;
 	count nIterations = 0; //!< number of iterations in last run
+	std::vector<count> timing;	//!< running times for each iteration
 
 
 public:
-
-	std::string VERSION;	// algorithm version number - increment in constructor for significant changes to the implementation
 
 	/**
 	 * Constructor to the label propagation community detection algorithm.
 	 *
 	 * @param[in]	G	input graph
+	 * @param[in]	theta	updateThreshold: number of nodes that have to be changed in each iteration so that a new iteration starts.
 	 */
 	PLP(const Graph& G, count theta = none);
 
 	/**
-	 * Run the label propagation clustering algorithm.
-	 *
-	 * @return			clustering
-	 */
-	virtual Partition run();
-
-	/**
-	 * Run the label propagation clustering algorithm, cluster
-	 * initialization with @a part.
+	 * Constructor to the label propagation community detection algorithm.
 	 *
 	 * @param[in]	G	input graph
-	 * @param[in]	part input partition
-	 * @return			clustering
+	 * @param[in]	baseClustering optional; the algorithm will start from the given clustering.
+	 * @param[in]	theta	updateThreshold: number of nodes that have to be changed in each iteration so that a new iteration starts.
 	 */
-	virtual Partition& runFromGiven(Partition& part);
+	PLP(const Graph& G, const Partition baseClustering, count theta = none);
+
+	/**
+	 * Run the label propagation clustering algorithm.
+	 */
+	virtual void run();
 
 	/**
 	 * @return String representation of algorithm and parameters.
@@ -79,6 +76,14 @@ public:
 	* @return The number of iterations.
 	*/
 	virtual count numberOfIterations();
+
+
+	/**
+	* Get list of running times for each iteration.
+	*
+	* @return The list of running times in milliseconds
+	*/
+	virtual std::vector<count> getTiming();
 
 
 };

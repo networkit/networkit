@@ -12,7 +12,7 @@ namespace NetworKit {
 
 Vector::Vector() : values(0), transposed(false) {}
 
-Vector::Vector(const uint64_t dimension, const double initialValue, const bool transpose) : values(dimension, initialValue), transposed(transpose) {}
+Vector::Vector(const count dimension, const double initialValue, const bool transpose) : values(dimension, initialValue), transposed(transpose) {}
 
 Vector::Vector(const std::vector<double> &values, const bool transpose) : values(values), transposed(transpose) {
 }
@@ -51,6 +51,33 @@ bool Vector::operator!=(const Vector &other) const {
 	return !(*this == other);
 }
 
+Matrix Vector::outerProduct(const Vector &v1, const Vector &v2) {
+	std::vector<Vector> rows(v1.getDimension(), Vector(v2.getDimension(), 0.0));
+
+#pragma omp parallel for
+	for (index i = 0; i < v1.getDimension(); ++i) {
+		for (index j = 0; j < v2.getDimension(); ++j) {
+			rows[i][j] = v1[i] * v2[j];
+		}
+	}
+
+	return Matrix(rows);
+}
+
+double Vector::innerProduct(const Vector &v1, const Vector &v2) {
+	if (v1.getDimension() != v2.getDimension()) {
+		throw std::runtime_error("Vector::innerProduct(const Vector &v1, const Vector &v2): dimensions do not match");
+	}
+
+	double result = 0.0;
+#pragma omp parallel for reduction(+:result)
+	for (index i = 0; i < v1.getDimension(); ++i) {
+		result += v1[i] * v2[i];
+	}
+
+	return result;
+}
+
 double Vector::operator*(const Vector &other) const {
 	if (!isTransposed() || other.isTransposed()) {
 		throw std::runtime_error("vectors are not transposed correctly for inner product");
@@ -58,13 +85,7 @@ double Vector::operator*(const Vector &other) const {
 		throw std::runtime_error("dimensions of vectors do not match");
 	}
 
-	double result = 0.0;
-#pragma omp parallel for reduction(+:result)
-	for (count i = 0; i < getDimension(); ++i) {
-		result += values[i] * other[i];
-	}
-
-	return result;
+	return innerProduct(*this, other);
 }
 
 Vector Vector::operator*(const Matrix &matrix) const {

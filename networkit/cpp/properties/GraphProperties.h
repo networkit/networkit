@@ -37,7 +37,7 @@ public:
 
 	static std::vector<count> degreeDistribution(const Graph& G);
 
-	static std::vector<unsigned int> degreeSequence(const Graph& G); // TODO: revert to count when cython issue fixed
+	static std::vector<count> degreeSequence(const Graph& G);
 
 
 	/**

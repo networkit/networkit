@@ -5,7 +5,7 @@ to the network """
 __author__ = "Christian Staudt"
 
 # extension imports
-from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2, DynBetweenness, DynApproxBetweenness
+from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, Closeness, ApproxBetweenness, ApproxBetweenness2, DynBetweenness, DynApproxBetweenness, KPathCentrality
 
 
 # local imports
@@ -21,9 +21,9 @@ def ranking(G, algorithm=Betweenness, normalized=False):
 	centrality.run()
 	return centrality.ranking()
 
-def scores(G, algorithm=Betweenness, normalized=False):
+def scores(G, algorithm=Betweenness, normalized=False, computeEdges=False):
 	""" Return the centrality scores of nodes using the specified centrality type"""
-	centrality = algorithm(G, normalized)
+	centrality = algorithm(G, normalized, computeEdges)
 	centrality.run()
 	return centrality.scores()
 
@@ -127,6 +127,7 @@ class SpectralCentrality:
 
 
 class SciPyEVZ(SpectralCentrality):
+	# TODO: docstring
 	def __init__(self, G, normalized=False):
 		super(SciPyEVZ, self).__init__(G, normalized=normalized)
 
@@ -143,6 +144,7 @@ class SciPyEVZ(SpectralCentrality):
 		self.eigenvalue = spectrum[0]
 
 class SciPyPageRank(SpectralCentrality):
+	# TODO: docstring
 	def __init__(self, G, damp=0.95, normalized=False):
 		super(SciPyPageRank, self).__init__(G, normalized=normalized)
 

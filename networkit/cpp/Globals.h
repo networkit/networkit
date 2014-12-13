@@ -31,7 +31,11 @@ namespace NetworKit {
 	constexpr edgeweight nullWeight = 0.0;
 }
 
+#ifdef __INTEL_COMPILER
+constexpr double PI = 3.141592653589793238462643383279502884197169399375105820974944592307816406286;
+#else
 constexpr double PI = 2.0*std::acos(0);
+#endif
 
 extern bool PRINT_PROGRESS;
 extern bool RAND_ORDER;

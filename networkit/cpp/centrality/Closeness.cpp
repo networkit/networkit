@@ -18,7 +18,7 @@
 
 namespace NetworKit {
 
-Closeness::Closeness(const Graph& G, bool normalized) : Centrality(G, normalized, false) {
+Closeness::Closeness(const Graph& G, bool normalized) : Centrality(G, normalized) {
 
 }
 

@@ -20,6 +20,8 @@ class GraphCoarsening {
 
 public:
 
+	virtual ~GraphCoarsening() = default;
+
 };
 
 

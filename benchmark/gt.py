@@ -41,7 +41,7 @@ class bDegreeAssortativity(Algo):
 	name = "gt:DegreeAssortativity"
 
 	def run(self, G):
-		graphtool.assortativity(G, deg="total")
+		graphtool.correlations.scalar_assortativity(G, deg="total")
 
 
 # - BFS & Dijkstra (graph.BFS, graph.Dijkstra)
@@ -50,7 +50,7 @@ class bBFS(Algo):
 
 	def run(self, G):
 		v = random.randint(0, G.num_vertices()-1)
-		graphtool.bfs_search(G,v)
+		graphtool.topology.shortest_distance(G, v)
 
 # - community detection (community.PLM, community.PLP)
 

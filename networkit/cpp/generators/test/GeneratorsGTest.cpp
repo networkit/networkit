@@ -21,6 +21,7 @@ Dy * GeneratorsTest.cpp
 #include "../../community/PLM.h"
 #include "../../community/Modularity.h"
 #include "../StochasticBlockmodel.h"
+#include "../ConfigurationModelGenerator.h"
 
 
 namespace NetworKit {
@@ -131,7 +132,8 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 
 	// clustering
 	PLM clusterAlgo(G);
-	Partition clustering = clusterAlgo.run();
+	clusterAlgo.run();
+	Partition clustering = clusterAlgo.getPartition();
 	EXPECT_EQ(G.numberOfNodes(),clustering.numberOfElements());
 	psWriter.write(G, clustering, "output/pubweb-clustered-PLM.eps");
 
@@ -276,7 +278,8 @@ TEST_F(GeneratorsGTest, testRmatGenerator) {
 	EXPECT_LE(ccex, 0.4);
 
 	PLM clusterer(G, true);
-	Partition zeta = clusterer.run();
+	clusterer.run();
+	Partition zeta = clusterer.getPartition();
 	Modularity mod;
 	double modVal = mod.getQuality(zeta, G);
 	INFO("Modularity of R-MAT graph clustering: ", modVal);
@@ -287,7 +290,7 @@ TEST_F(GeneratorsGTest, testRmatGenerator) {
 TEST_F(GeneratorsGTest, testChungLuGenerator) {
 	count n = 400;
 	count maxDegree = n / 8;
-	std::vector<unsigned int> sequence(n); // TODO: revert to count when cython issue fixed
+	std::vector<count> sequence(n);
 	count expVolume = 0;
 	count actualVolume = 0;
 
@@ -311,7 +314,7 @@ TEST_F(GeneratorsGTest, testChungLuGenerator) {
 TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRandomSequence) {
 	count n = 400;
 	count maxDegree = n / 10;
-	std::vector<unsigned int> sequence(n); // TODO: revert to count when cython issue fixed
+	std::vector<count> sequence(n);
 //	std::vector<count> sequence = {5, 4, 4, 3, 2, 2, 2, 2, 2, 2};
 	bool realizable = false;
 
@@ -322,9 +325,8 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRandomSequence) {
 		}
 
 		// check if sequence is realizable
-		bool skipTest = false;
-		HavelHakimiGenerator hhgen(sequence, skipTest);
-		realizable = hhgen.getRealizable();
+		HavelHakimiGenerator hhgen(sequence);
+		realizable = hhgen.isRealizable();
 
 		if (realizable) {
 			Graph G = hhgen.generate();
@@ -342,25 +344,36 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRealSequence) {
 	for (auto path : graphs) {
 		Graph G = reader.read(path);
 		count n = G.numberOfNodes();
-		std::vector<unsigned int> sequence = GraphProperties::degreeSequence(G); // TODO: revert to count when cython issue fixed
+		std::vector<count> sequence = GraphProperties::degreeSequence(G);
 
-		bool skipTest = false;
-		HavelHakimiGenerator hhgen(sequence, skipTest);
+		HavelHakimiGenerator hhgen(sequence);
 		Graph G2 = hhgen.generate();
 
 		count volume = std::accumulate(sequence.begin(), sequence.end(), 0);
 		EXPECT_EQ(volume, 2 * G2.numberOfEdges());
 
 		if (volume < 50000) {
-			std::vector<unsigned int> testSequence = GraphProperties::degreeSequence(G2);
-			std::sort(testSequence.begin(), testSequence.end(), std::greater<unsigned int>());
-			std::sort(sequence.begin(), sequence.end(), std::greater<unsigned int>());
+			std::vector<count> testSequence = GraphProperties::degreeSequence(G2);
 
 			for (index i = 0; i < n; ++i) {
 				EXPECT_EQ(sequence[i], testSequence[i]);
 			}
 		}
 	}
+}
+
+TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnUnrealizableSequence) {
+	std::vector<count> seq = {20, 10, 2, 2, 2, 2, 2, 2, 2, 2, 2};
+
+	HavelHakimiGenerator hhgen(seq);
+	EXPECT_THROW(hhgen.generate(), std::runtime_error);
+
+	hhgen = HavelHakimiGenerator(seq, true);
+	Graph G = hhgen.generate();
+
+	G.forNodes([&](node u) {
+		EXPECT_EQ(std::min<count>(seq[u], 10), G.degree(u));
+	});
 }
 
 
@@ -371,7 +384,7 @@ TEST_F(GeneratorsGTest, testDynamicForestFireGenerator) {
 	DynamicForestFireGenerator ffg1(0.0, false);
 	stream = ffg1.generate(10);
 	gu1.update(stream);
-	EXPECT_EQ(11u, G1.numberOfNodes());
+	EXPECT_EQ(10u, G1.numberOfNodes());
 	G1.forNodes([&](node u) {
 		count c = 0;
 		G1.forNeighborsOf(u, [&](node v) {
@@ -391,12 +404,15 @@ TEST_F(GeneratorsGTest, testDynamicForestFireGenerator) {
 	DynamicForestFireGenerator ffg2(1.0, true, 1.0);
 	stream = ffg2.generate(10);
 	gu2.update(stream);
-	EXPECT_EQ(11u, G2.numberOfNodes());
+	EXPECT_EQ(10u, G2.numberOfNodes());
 	G2.forNodePairs([&](node u, node v) {
 		if (v < u) {
 			EXPECT_TRUE(G2.hasEdge(u,v));
 		}
 	});
+	stream = ffg2.generate(10);
+	gu2.update(stream);
+	EXPECT_EQ(20u, G2.numberOfNodes());
 }
 
 TEST_F(GeneratorsGTest, testRegularRingLatticeGenerator) {
@@ -502,6 +518,35 @@ TEST_F(GeneratorsGTest, testStochasticBlockmodel) {
 
 	EXPECT_EQ(n, G.numberOfNodes());
 	EXPECT_EQ(20u, G.numberOfEdges());
+}
+
+TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {
+	METISGraphReader reader;
+	std::vector<std::string> graphs = {"input/jazz.graph",
+			"input/lesmis.graph"}; //, "input/PGPgiantcompo.graph", "input/coAuthorsDBLP.graph"};
+
+	for (auto path : graphs) {
+		Graph G = reader.read(path);
+		count n = G.numberOfNodes();
+		std::vector<count> sequence = GraphProperties::degreeSequence(G);
+
+		bool skipTest = false;
+		ConfigurationModelGenerator gen(sequence, skipTest);
+		Graph G2 = gen.generate();
+
+		count volume = std::accumulate(sequence.begin(), sequence.end(), 0);
+		EXPECT_EQ(volume, 2 * G2.numberOfEdges());
+
+		if (volume < 50000) {
+			std::vector<count> testSequence = GraphProperties::degreeSequence(G2);
+			std::sort(testSequence.begin(), testSequence.end(), std::greater<count>());
+			std::sort(sequence.begin(), sequence.end(), std::greater<count>());
+
+			for (index i = 0; i < n; ++i) {
+				EXPECT_EQ(sequence[i], testSequence[i]);
+			}
+		}
+	}
 }
 
 } /* namespace NetworKit */

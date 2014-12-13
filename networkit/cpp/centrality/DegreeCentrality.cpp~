@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-DegreeCentrality::DegreeCentrality(const Graph& G, bool normalized) : Centrality(G, normalized) {
+DegreeCentrality::DegreeCentrality(const Graph& G, bool normalized) : Centrality(G, normalized, false) {
 }
 
 void DegreeCentrality::run() {

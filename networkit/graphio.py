@@ -1,8 +1,8 @@
 # extension imports
 from _NetworKit import (Graph, METISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListWriter, \
-						 GMLGraphWriter, LineFileReader, SNAPGraphWriter, DGSWriter, \
+						 GMLGraphWriter, LineFileReader, SNAPGraphWriter, DGSWriter, GraphToolBinaryWriter, GraphToolBinaryReader, \
 						  DGSStreamParser, GraphUpdater, SNAPEdgeListPartitionReader, SNAPGraphReader, EdgeListReader, CoverReader, CoverWriter, EdgeListCoverReader, KONECTGraphReader, GMLGraphReader)
-						  
+
 # local imports
 from .GraphMLIO import GraphMLReader, GraphMLWriter
 
@@ -41,6 +41,8 @@ try:
 		EdgeList = ()
 		LFR = ()
 		KONECT = ()
+		GraphToolBinary = ()
+
 except ImportError:
 	print("Update to Python >=3.4 recommended - support for < 3.4 may be discontinued in the future")
 	class Format:
@@ -58,6 +60,7 @@ except ImportError:
 		EdgeList = "edgelist"
 		LFR = "edgelist-t1"
 		KONECT = "konect"
+		GraphToolBinary = "gtbin"
 
 
 
@@ -78,7 +81,8 @@ def getReader(fileformat, **kwargs):
 			Format.EdgeListTabZero:		EdgeListReader('\t',0),
 			Format.LFR:			EdgeListReader('\t',1),
 			Format.KONECT:			KONECTGraphReader(' '),
-			Format.GML:			GMLGraphReader()
+			Format.GML:			GMLGraphReader(),
+			Format.GraphToolBinary:		GraphToolBinaryReader()
 			}
 
 	try:
@@ -92,10 +96,10 @@ def getReader(fileformat, **kwargs):
 	return reader
 
 
-def readGraph(path, fileformat = Format.METIS, **kwargs):
+def readGraph(path, fileformat, **kwargs):
 	""" Read graph file in various formats and return a NetworKit::Graph
-	    Paramaters: 
-		- fileformat: An element of the Format enumeration, default is Format.METIS
+	    Paramaters:
+		- fileformat: An element of the Format enumeration
 		- **kwargs: in case of a custom edge list, provide the defining paramaters as follows:
 			"separator=CHAR, firstNode=NODE, commentPrefix=STRING, continuous=BOOL"
 			commentPrefix and continuous are optional
@@ -122,7 +126,7 @@ def readMat(path, key="A"):
 	""" Reads a Graph from a matlab object file containing an adjacency matrix and returns a NetworKit::Graph
 		Parameters:
 		- key: The key of the adjacency matrix in the matlab object file (default: A)"""
-	matlabObject = scipy.io.loadmat(path)	
+	matlabObject = scipy.io.loadmat(path)
 	# result is a dictionary of variable names and objects, representing the matlab object
 	if key in matlabObject:
 		A = matlabObject[key]
@@ -155,7 +159,8 @@ def getWriter(fileformat, **kwargs):
 			Format.GraphViz:		DotGraphWriter(),
 			Format.DOT:			DotGraphWriter(),
 			Format.GML:			GMLGraphWriter(),
-			Format.LFR:			EdgeListWriter('\t',1)
+			Format.LFR:			EdgeListWriter('\t',1),
+			Format.GraphToolBinary:		GraphToolBinaryWriter()
 #			Format.GDF:			GDFGraphWriter(),
 #			Format.VNA:			VNAGraphWriter(),
 			}
@@ -168,24 +173,31 @@ def getWriter(fileformat, **kwargs):
 	except KeyError:
 		raise Exception("format {0} currently not supported".format(fileformat))
 	return writer
-def writeGraph(G, path, fileformat = Format.METIS, **kwargs):
-	""" Write graph to various output formats. 
-		Default format is METIS."""
+
+def writeGraph(G, path, fileformat, **kwargs):
+	""" Write graph to various output formats.
+
+	Paramaters:
+	- G:			a graph
+	- path: 		output path
+	- fileformat: 	an element of the Format enumeration
+
+	"""
 	writer = getWriter(fileformat, **kwargs)
 	writer.write(G, path)
 	logging.info("wrote graph {0} to file {1}".format(G, path))
 
 
 class GraphConverter:
-	
+
 	def __init__(self, reader, writer):
 		self.reader = reader
 		self.writer = writer
-		
+
 	def convert(self, inPath, outPath):
 		G = self.reader.read(inPath)
 		self.writer.write(G, outPath)
-		
+
 	def __str__(self):
 		return "GraphConverter: {0} => {0}".format(self.reader, self.writer)
 
@@ -225,4 +237,3 @@ def graphFromStreamFile(path, mapped=True, baseIndex=0):
 	gu = GraphUpdater(G)
 	gu.update(stream)
 	return G
-

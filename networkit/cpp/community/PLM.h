@@ -43,15 +43,18 @@ public:
 	std::string toString() const override;
 
 	/**
-	 * Detect communities in the given graph @a G
-	 *
-	 * @return A partition containing the found communities.
+	 * Detect communities.
 	 */
-	Partition run() override;
+	void run() override;
 
 	static std::pair<Graph, std::vector<node>> coarsen(const Graph& G, const Partition& zeta, bool parallel=false);
 
 	static Partition prolong(const Graph& Gcoarse, const Partition& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode);
+
+	/**
+	 * Returns fine-grained running time measurements for algorithm engineering purposes.
+	 */
+	std::map<std::string, std::vector<count> > getTiming();
 
 private:
 
@@ -61,6 +64,7 @@ private:
 	count maxIter;
 	bool parallelCoarsening;
 	bool turbo;
+	std::map<std::string, std::vector<count> > timing;	 // fine-grained running time measurement
 };
 
 } /* namespace NetworKit */
