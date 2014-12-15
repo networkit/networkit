@@ -5398,7 +5398,7 @@ cdef extern from "cpp/edgeattributes/ChibaNishizekiTriangleCounter.h":
 
 cdef class ChibaNishizekiTriangleCounter:
 	"""
-	Triangle counting.
+	Calculates for each edge the number of triangles it is embedded in.
 	
 	Parameters
 	----------
@@ -5410,27 +5410,34 @@ cdef class ChibaNishizekiTriangleCounter:
 	cdef Graph _G
 
 	def __cinit__(self, Graph G):
+		"""
+		G : Graph
+			The graph to count triangles on.
+		"""
 		self._G = G
 		self._this = new _ChibaNishizekiTriangleCounter(G._this)
 
 	def __dealloc__(self):
 		del self._this
-		
-	#def run(self):
-		#self._this.run()
-
+	
 	def getAttribute(self):
+		"""
+		Returns 
+		----------
+		vector[count]
+			the number of triangles edges are embedded in.
+		
+		"""
 		return self._this.getAttribute()
 
 cdef extern from "cpp/edgeattributes/ChibaNishizekiQuadrangleCounter.h":
 	cdef cppclass _ChibaNishizekiQuadrangleCounter "NetworKit::ChibaNishizekiQuadrangleCounter":
 		_ChibaNishizekiQuadrangleCounter(const _Graph& G) except +
-		#void run() except +
 		vector[count] getAttribute() except +
 
 cdef class ChibaNishizekiQuadrangleCounter:
 	"""
-	Triangle counting.
+	Calculates for each edge the number of quadrangles (circles of length 4) it is embedded in.
 	
 	Parameters
 	----------
@@ -5441,16 +5448,25 @@ cdef class ChibaNishizekiQuadrangleCounter:
 	cdef Graph _G
 
 	def __cinit__(self, Graph G):
+		"""
+		Parameters
+		----------
+		G : Graph
+			The graph to count quadrangles on.
+		"""
 		self._G = G
 		self._this = new _ChibaNishizekiQuadrangleCounter(G._this)
 
 	def __dealloc__(self):
 		del self._this
-		
-	#def run(self):
-		#self._this.run()
 
 	def getAttribute(self):
+		"""
+		Returns
+		----------
+		vector
+			the number of quadrangles edges are embedded in.
+		"""
 		return self._this.getAttribute()
 
 cdef extern from "cpp/edgeattributes/TriangleCounter.h":
@@ -5473,16 +5489,25 @@ cdef class TriangleCounter:
 	cdef Graph _G
 
 	def __cinit__(self, Graph G):
+		"""
+		Parameters
+		----------
+		G : Graph
+			The graph to count triangles on.
+		"""
 		self._G = G
 		self._this = new _TriangleCounter(G._this)
 
 	def __dealloc__(self):
 		del self._this
-		
-	#def run(self):
-		#self._this.run()
 
 	def getAttribute(self):
+		"""
+		Returns
+		----------
+		vector[count]
+			the number of triangles edges are embedded in.
+		"""
 		return self._this.getAttribute()
 	
 cdef extern from "cpp/edgeattributes/EdgeAttributeLinearizer.h":
@@ -5492,7 +5517,7 @@ cdef extern from "cpp/edgeattributes/EdgeAttributeLinearizer.h":
 
 cdef class EdgeAttributeLinearizer:
 	"""
-	Linearize an attribute such that values are evenly distributed between 0 and 1.
+	Linearizes an attribute such that values are evenly distributed between 0 and 1.
 	
 	Parameters
 	----------
@@ -5521,7 +5546,6 @@ cdef class EdgeAttributeLinearizer:
 		-------
 		vector[double]
 			The edge attribute that contains the linearized attribute.
-
 		"""
 		return self._this.getAttribute()
 
@@ -5534,7 +5558,20 @@ cdef extern from "cpp/edgeattributes/EdgeAttributeNormalizer.h":
 
 cdef class EdgeAttributeNormalizer:
 	"""
-	Normalize an edge attribute such that it is in a certain range
+	Normalize an edge attribute such that it is in a certain range.
+	
+	Parameters
+	----------
+	G : Graph
+		The graph the edge attribute is defined on.
+	attribute : vector[double]
+		The edge attribute to normalize.
+	inverse
+		Set to True in order to inverse the resulting attribute.
+	lower
+		Lower bound of the target range.
+	upper
+		Upper bound of the target range.
 	"""
 	cdef _EdgeAttributeNormalizer *_this
 	cdef Graph _G
@@ -5553,6 +5590,12 @@ cdef class EdgeAttributeNormalizer:
 		return self
 
 	def getAttribute(self):
+		"""
+		Returns
+		-------
+		vector
+			The normalized edge attribute. 
+		"""
 		return self._this.getAttribute()
 
 cdef extern from "cpp/edgeattributes/EdgeAttributeBlender.h":
@@ -5628,9 +5671,6 @@ cdef class GeometricMeanAttributizer:
 
 	def __dealloc__(self):
 		del self._this
-
-	#def run(self):
-		#self._this.run()
 		
 	def getAttribute(self):
 		"""
@@ -5712,7 +5752,6 @@ cdef class AdamicAdarDistance:
 cdef extern from "cpp/sparsification/ChungLuAttributizer.h":
 	cdef cppclass _ChungLuAttributizer "NetworKit::ChungLuAttributizer":
 		_ChungLuAttributizer(const _Graph& G) except +
-		#void run() except +
 		vector[double] getAttribute() except +
 
 cdef class ChungLuAttributizer:
@@ -5734,9 +5773,6 @@ cdef class ChungLuAttributizer:
 
 	def __dealloc__(self):
 		del self._this
-		
-	#def run(self):
-		#self._this.run()
 
 	def getAttribute(self):
 		return self._this.getAttribute()
@@ -5744,10 +5780,21 @@ cdef class ChungLuAttributizer:
 cdef extern from "cpp/sparsification/SimmelianJaccardAttributizer.h":
 	cdef cppclass _SimmelianJaccardAttributizer "NetworKit::SimmelianJaccardAttributizer":
 		_SimmelianJaccardAttributizer(const _Graph& G, const vector[count]& triangles) except +
-		#void run() except +
 		vector[double] getAttribute() except +
 
 cdef class SimmelianJaccardAttributizer:
+	"""
+	An implmentation of the non-parametric variant of Simmelian Backbones. Calculates
+	for each edge the minimum parameter value such that the edge is still contained in 
+	the sparsified graph.
+	
+	Parameters
+	----------
+	G : Graph
+		The graph to apply the Simmelian Backbone algorithm to.
+	triangles : vector[count]
+		Previously calculated edge triangle counts on G.
+	"""
 
 	cdef _SimmelianJaccardAttributizer* _this
 	cdef Graph _G
@@ -5761,9 +5808,6 @@ cdef class SimmelianJaccardAttributizer:
 	def __dealloc__(self):
 		del self._this
 
-	#def run(self):
-		#self._this.run()
-
 	def getAttribute(self):
 		return self._this.getAttribute()
 
@@ -5774,6 +5818,18 @@ cdef extern from "cpp/sparsification/SimmelianOverlapAttributizer.h":
 		vector[double] getAttribute() except +
 
 cdef class SimmelianOverlapAttributizer:
+	"""
+	An implmentation of the parametric variant of Simmelian Backbones. Calculates
+	for each edge the minimum parameter value such that the edge is still contained in 
+	the sparsified graph.
+	
+	Parameters
+	----------
+	G : Graph
+		The graph to apply the Simmelian Backbone algorithm to.
+	triangles : vector[count]
+		Previously calculated edge triangle counts on G.
+	"""
 
 	cdef _SimmelianOverlapAttributizer* _this
 	cdef Graph _G
@@ -5787,9 +5843,6 @@ cdef class SimmelianOverlapAttributizer:
 	def __dealloc__(self):
 		del self._this
 
-	#def run(self):
-		#self._this.run()
-
 	def getAttribute(self):
 		return self._this.getAttribute()
 
@@ -5800,6 +5853,18 @@ cdef extern from "cpp/sparsification/MultiscaleAttributizer.h":
 		vector[double] getAttribute() except +
 
 cdef class MultiscaleAttributizer:
+	"""
+	An implmentation of the Multiscale Backbone. Calculates for each edge the minimum
+	 parameter value such that the edge is still contained in the sparsified graph.
+	
+	Parameters
+	----------
+	G : Graph
+		The graph to apply the Multiscale algorithm to.
+	attribute : vector[double]
+		The edge attribute the Multiscale algorithm is to be applied to.
+	"""
+
 
 	cdef _MultiscaleAttributizer* _this
 	cdef Graph _G
