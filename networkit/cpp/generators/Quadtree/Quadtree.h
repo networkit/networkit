@@ -42,9 +42,9 @@ public:
 	count fillInParallel(count l, double alpha, count seqDepth, count offset, QuadNode<T> &currentNode) {
 		if (seqDepth > 0) {
 			if (currentNode.height() == 1) currentNode.split();
-			double treeArea = HyperbolicSpace::areaInCell(currentNode.getLeftAngle(), currentNode.getRightAngle(), currentNode.getMinR(), currentNode.getMaxR());
+			double treeArea = HyperbolicSpace::effectiveAreaInCell(currentNode.getLeftAngle(), currentNode.getRightAngle(), currentNode.getMinR(), currentNode.getMaxR(), alpha);
 			for (int i = 0; i < currentNode.children.size(); i++) {
-				double subTreeArea = HyperbolicSpace::areaInCell(currentNode.children[i].getLeftAngle(), currentNode.children[i].getRightAngle(), currentNode.children[i].getMinR(), currentNode.children[i].getMaxR());
+				double subTreeArea = HyperbolicSpace::effectiveAreaInCell(currentNode.children[i].getLeftAngle(), currentNode.children[i].getRightAngle(), currentNode.children[i].getMinR(), currentNode.children[i].getMaxR(), alpha);
 				const count pointsInSubtree = l*(subTreeArea/treeArea);
 				offset = fillInParallel(pointsInSubtree, alpha, seqDepth -1, offset, currentNode.children[i]);
 				//offset += pointsInSubtree;

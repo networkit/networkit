@@ -120,11 +120,11 @@ public:
 			return  2*M_PI*(cosh(radius)-1);
 		}
 
-	static inline double areaInCell(double minPhi, double maxPhi, double minR, double maxR) {
+	static inline double effectiveAreaInCell(double minPhi, double maxPhi, double minR, double maxR, double alpha) {
 		double deltaPhi = maxPhi - minPhi;
 		assert(deltaPhi >= 0);
 		assert(deltaPhi <= 2*M_PI);
-		double ringArea = radiusToHyperbolicArea(EuclideanRadiusToHyperbolic(maxR)) - radiusToHyperbolicArea(EuclideanRadiusToHyperbolic(minR));
+		double ringArea = radiusToHyperbolicArea(alpha*EuclideanRadiusToHyperbolic(maxR)) - radiusToHyperbolicArea(alpha*EuclideanRadiusToHyperbolic(minR));
 		return ringArea*(deltaPhi/(2*M_PI));
 	}
 
