@@ -143,6 +143,34 @@ TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorWithParallelQuadtree) {
 	EXPECT_EQ(n, G.numberOfNodes());
 }
 
+TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorWithSequentialQuadtree) {
+	count n = 100000;
+	double s = 1.0;
+	double alpha = 1;
+
+	vector<double> angles(n);
+	vector<double> radii(n);
+	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
+	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
+	Quadtree<index> quad(r);
+
+	for (index i = 0; i < n; i++) {
+		quad.addContent(i, angles[i], radii[i]);
+	}
+
+	quad.trim();
+	quad.sortPointsInLeaves();
+	quad.reindex();
+	quad.extractCoordinates(angles, radii);
+
+
+	HyperbolicGenerator gen;
+	Graph G = gen.generate(angles, radii, quad, R);
+
+	EXPECT_EQ(n, G.numberOfNodes());
+}
+
 TEST_F(GeneratorsBenchmark, benchmarkDynamicHyperbolicGeneratorOnFactorGrowth) {
 	count n = 10000;
 	count nSteps = 100;
