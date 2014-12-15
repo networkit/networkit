@@ -116,6 +116,10 @@ public:
 		return root.getElements();
 	}
 
+	void extractCoordinates(vector<double> &anglesContainer, vector<double> &radiiContainer) const {
+		root.getCoordinates(anglesContainer, radiiContainer);
+	}
+
 	/**
 	 * Get elements whose hyperbolic distance to the query point is less than the hyperbolic distance
 	 *

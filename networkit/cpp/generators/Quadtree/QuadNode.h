@@ -340,6 +340,19 @@ public:
 		}
 	}
 
+	void getCoordinates(vector<double> &anglesContainer, vector<double> &radiiContainer) const {
+		assert(angles.size() == radii.size());
+		if (isLeaf) {
+			anglesContainer.insert(anglesContainer.end(), angles.begin(), angles.end());
+			radiiContainer.insert(radiiContainer.end(), radii.begin(), radii.end());
+		}
+		else {
+			for (uint i = 0; i < children.size(); i++) {
+				children[i].getCoordinates(anglesContainer, radiiContainer);
+			}
+		}
+	}
+
 	/**
 	 * Don't use this!
 	 * Code is still in here for a unit test.
@@ -593,7 +606,7 @@ public:
 				std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
 
 				//can probably be parallelized easily, but doesn't bring much benefit
-				std::sort(permutation.begin(), permutation.end(), [this](index i, index j){return radii[i] < radii[j];});
+				std::sort(permutation.begin(), permutation.end(), [this](index i, index j){return angles[i] < angles[j];});
 
 				//There ought to be a way to do this more elegant with some algorithm header, but I didn't find any
 
