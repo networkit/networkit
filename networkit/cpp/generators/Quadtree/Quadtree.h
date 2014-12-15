@@ -39,14 +39,14 @@ public:
 		this->maxRadius = maxR;
 	}
 
-	count fillInParallel(count l, double alpha, count seqDepth, count offset, QuadNode<T> &currentNode) {
-		if (seqDepth > 0) {
+	count fillInParallel(count l, double alpha, count seqThreshold, count offset, QuadNode<T> &currentNode) {
+		if (l > seqThreshold) {
 			if (currentNode.height() == 1) currentNode.split();
 			double treeArea = HyperbolicSpace::effectiveAreaInCell(currentNode.getLeftAngle(), currentNode.getRightAngle(), currentNode.getMinR(), currentNode.getMaxR(), alpha);
 			for (int i = 0; i < currentNode.children.size(); i++) {
 				double subTreeArea = HyperbolicSpace::effectiveAreaInCell(currentNode.children[i].getLeftAngle(), currentNode.children[i].getRightAngle(), currentNode.children[i].getMinR(), currentNode.children[i].getMaxR(), alpha);
 				const count pointsInSubtree = l*(subTreeArea/treeArea);
-				offset = fillInParallel(pointsInSubtree, alpha, seqDepth -1, offset, currentNode.children[i]);
+				offset = fillInParallel(pointsInSubtree, alpha, seqThreshold, offset, currentNode.children[i]);
 				//offset += pointsInSubtree;
 			}
 		} else {
@@ -70,14 +70,14 @@ public:
 		double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(n);
 		double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 		count numberOfThreads = omp_get_max_threads();
-		double k = ceil(log(numberOfThreads)/log(4));
+		//double k = ceil(log(numberOfThreads)/log(4));
 		root = QuadNode<T>(0, 0, 2*M_PI, r, capacity, 0,theoreticalSplit,alpha,diagnostics);
 		count result;
 		#pragma omp parallel
 		{
 			#pragma omp single nowait
 			{
-				result = fillInParallel(n, alpha, k, 0, root);
+				result = fillInParallel(n, alpha, n/numberOfThreads, 0, root);
 			}
 		}
 		vector<double> missingAngles(n-result);
