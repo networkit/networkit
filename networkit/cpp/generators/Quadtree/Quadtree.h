@@ -50,8 +50,7 @@ public:
 				//offset += pointsInSubtree;
 			}
 		} else {
-			offset += l;
-				#pragma omp task shared(currentNode)
+				#pragma omp task shared(currentNode) firstprivate(offset)
 				{
 					vector<double> angles(l);
 					vector<double> radii(l);
@@ -62,6 +61,7 @@ public:
 						currentNode.addContent(i+offset, angles[i], radii[i]);
 					}
 				}
+				offset += l;
 			}
 			return offset;
 		}
@@ -210,6 +210,16 @@ public:
 			#pragma omp single nowait
 			{
 				root.sortPointsInLeaves();
+			}
+		}
+	}
+
+	void reindex() {
+		#pragma omp parallel
+		{
+			#pragma omp single nowait
+			{
+				root.reindex(0);
 			}
 		}
 	}
