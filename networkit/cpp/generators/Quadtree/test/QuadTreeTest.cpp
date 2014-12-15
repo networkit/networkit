@@ -501,7 +501,11 @@ TEST_F(QuadTreeTest, testQuadTreeCutLeaves) {
 }
 
 TEST_F(QuadTreeTest, testParallelQuadTreeConstruction) {
-	Quadtree<index> quad(1000000,1.0);
+	count n = 1000000;
+	Quadtree<index> quad(n,1.0);
+	EXPECT_EQ(quad.size(), n);
+	EXPECT_GE(quad.height(), log(n/1000)/log(4));
+	EXPECT_GE(quad.countLeaves(), n/1000);
 }
 
 TEST_F(QuadTreeTest, testSequentialQuadTreeConstruction) {
@@ -519,6 +523,7 @@ TEST_F(QuadTreeTest, testSequentialQuadTreeConstruction) {
 	for (index i = 0; i < n; i++) {
 		quad.addContent(i, angles[i], radii[i]);
 	}
+	EXPECT_EQ(quad.size(), n);
 }
 
 

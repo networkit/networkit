@@ -12,6 +12,7 @@
 #include "../geometric/HyperbolicSpace.h"
 #include "StaticGraphGenerator.h"
 #include "../auxiliary/Timer.h"
+#include "Quadtree/Quadtree.h"
 
 namespace NetworKit {
 
@@ -43,6 +44,8 @@ public:
 	 * @return Theoretical number of edges expected from a graph with alpha=1 and factor=1
 	 */
 	static double expectedNumberOfEdges(count n, double stretch);
+
+	Graph generate(const vector<double> &angles, const vector<double> &radii, Quadtree<index> &quad, double thresholdDistance);
 
 	/**
 	 * @param[in] angles Pointer to angles of node positions

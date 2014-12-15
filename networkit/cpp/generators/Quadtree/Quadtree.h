@@ -39,13 +39,18 @@ public:
 		this->maxRadius = maxR;
 	}
 
-	void fillInParallel(count l, double alpha, count seqDepth, count offset, QuadNode<T> &currentNode) {
+	count fillInParallel(count l, double alpha, count seqDepth, count offset, QuadNode<T> &currentNode) {
 		if (seqDepth > 0) {
 			if (currentNode.height() == 1) currentNode.split();
+			double treeArea = HyperbolicSpace::areaInCell(currentNode.getLeftAngle(), currentNode.getRightAngle(), currentNode.getMinR(), currentNode.getMaxR());
 			for (int i = 0; i < currentNode.children.size(); i++) {
-				fillInParallel(l/4, alpha, seqDepth -1, offset+(l/4)*i, currentNode.children[i]);
+				double subTreeArea = HyperbolicSpace::areaInCell(currentNode.children[i].getLeftAngle(), currentNode.children[i].getRightAngle(), currentNode.children[i].getMinR(), currentNode.children[i].getMaxR());
+				const count pointsInSubtree = l*(subTreeArea/treeArea);
+				offset = fillInParallel(pointsInSubtree, alpha, seqDepth -1, offset, currentNode.children[i]);
+				//offset += pointsInSubtree;
 			}
 		} else {
+			offset += l;
 				#pragma omp task shared(currentNode)
 				{
 					vector<double> angles(l);
@@ -58,6 +63,7 @@ public:
 					}
 				}
 			}
+			return offset;
 		}
 
 	Quadtree(count n, double stretch, bool theoreticalSplit=false, double alpha=1, count capacity=1000, bool diagnostics = false) {
@@ -66,12 +72,19 @@ public:
 		count numberOfThreads = omp_get_max_threads();
 		double k = ceil(log(numberOfThreads)/log(4));
 		root = QuadNode<T>(0, 0, 2*M_PI, r, capacity, 0,theoreticalSplit,alpha,diagnostics);
+		count result;
 		#pragma omp parallel
 		{
 			#pragma omp single nowait
 			{
-				fillInParallel(n, alpha, k, 0, root);
+				result = fillInParallel(n, alpha, k, 0, root);
 			}
+		}
+		vector<double> missingAngles(n-result);
+		vector<double> missingRadii(n-result);
+		HyperbolicSpace::fillPoints(missingAngles, missingRadii, stretch, alpha);
+		for (index i = result; i < n; i++) {
+			root.addContent(i, missingAngles[i-result], missingRadii[i-result]);
 		}
 		//bernoulli to distribute
 	}
