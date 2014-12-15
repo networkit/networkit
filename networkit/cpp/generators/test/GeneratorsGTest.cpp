@@ -765,6 +765,7 @@ TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
 	DEBUG("Actual: ", G.numberOfEdges());
 	EXPECT_NEAR(G.numberOfEdges(), expected, expected/10);
 	EXPECT_EQ(G.numberOfNodes(), n);
+	EXPECT_TRUE(G.checkConsistency());
 	//ConnectedComponents cc(G);
 	//cc.run();
 	//EXPECT_EQ(cc.numberOfComponents(),1);
@@ -774,6 +775,58 @@ TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
 	G = gen2.generate();
 	EXPECT_NEAR(G.numberOfEdges(), m, m/10);
 	DEBUG("Actual: ", G.numberOfEdges());
+}
+
+TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithSequentialQuadtree) {
+	count n = 50000;
+	double s = 1.2;
+	double t = 1;
+	double alpha =1;
+	vector<double> angles(n);
+	vector<double> radii(n);
+	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
+	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
+	Quadtree<index> quad(r);
+
+	for (index i = 0; i < n; i++) {
+		quad.addContent(i, angles[i], radii[i]);
+	}
+
+	quad.trim();
+	quad.sortPointsInLeaves();
+	angles.clear();
+	radii.clear();
+	quad.reindex();
+	quad.extractCoordinates(angles, radii);
+
+	HyperbolicGenerator gen;
+	Graph G = gen.generate(angles, radii, quad, t*R);
+	count expected = HyperbolicGenerator::expectedNumberOfEdges(n,s);
+	EXPECT_EQ(n, G.numberOfNodes());
+	EXPECT_NEAR(G.numberOfEdges(), expected, expected/10);
+	EXPECT_TRUE(G.checkConsistency());
+}
+
+TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithParallelQuadtree) {
+	count n = 50000;
+	double s = 1.2;
+	double t = 1;
+	Quadtree<index> quad(n,s);
+	vector<double> angles;
+	vector<double> radii;
+	quad.trim();
+	quad.sortPointsInLeaves();
+	quad.reindex();
+	quad.extractCoordinates(angles, radii);
+	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
+
+	HyperbolicGenerator gen;
+	Graph G = gen.generate(angles, radii, quad, t*R);
+	count expected = HyperbolicGenerator::expectedNumberOfEdges(n,s);
+	EXPECT_EQ(n, G.numberOfNodes());
+	EXPECT_NEAR(G.numberOfEdges(), expected, expected/10);
+	EXPECT_TRUE(G.checkConsistency());
 }
 
 /**

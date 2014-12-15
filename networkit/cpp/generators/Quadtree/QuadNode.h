@@ -595,6 +595,23 @@ public:
 		}
 	}
 
+	count reindex(count offset) {
+		if (isLeaf)
+		{
+			#pragma omp task
+			{
+				index p = offset;
+				std::generate(content.begin(), content.end(), [&p](){return p++;});
+			}
+			offset += size();
+		} else {
+			for (int i = 0; i < 4; i++) {
+				offset = children[i].reindex(offset);
+			}
+		}
+		return offset;
+	}
+
 	void sortPointsInLeaves() {
 		if (isLeaf) {
 			#pragma omp task

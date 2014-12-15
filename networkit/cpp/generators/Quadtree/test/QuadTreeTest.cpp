@@ -7,6 +7,7 @@
 
 #include <stack>
 #include <cmath>
+#include <algorithm>
 
 #include "QuadTreeTest.h"
 #include "../../../auxiliary/Random.h"
@@ -506,6 +507,12 @@ TEST_F(QuadTreeTest, testParallelQuadTreeConstruction) {
 	EXPECT_EQ(quad.size(), n);
 	EXPECT_GE(quad.height(), log(n/1000)/log(4));
 	EXPECT_GE(quad.countLeaves(), n/1000);
+	quad.reindex();
+	vector<index> elements = quad.getElements();
+	EXPECT_EQ(elements.size(), n);
+	EXPECT_EQ(*std::min_element(elements.begin(), elements.end()), 0);
+	EXPECT_EQ(*std::max_element(elements.begin(), elements.end()), n-1);
+	EXPECT_TRUE(std::is_sorted(elements.begin(), elements.end()));
 }
 
 TEST_F(QuadTreeTest, testSequentialQuadTreeConstruction) {
@@ -524,6 +531,16 @@ TEST_F(QuadTreeTest, testSequentialQuadTreeConstruction) {
 		quad.addContent(i, angles[i], radii[i]);
 	}
 	EXPECT_EQ(quad.size(), n);
+
+	quad.trim();
+	quad.sortPointsInLeaves();
+	vector<double> anglecopy;
+	vector<double> radiicopy;
+	quad.extractCoordinates(anglecopy, radiicopy);
+	EXPECT_EQ(anglecopy.size(), n);
+	EXPECT_EQ(radiicopy.size(), n);
+	//EXPECT_TRUE(std::is_permutation(angles.begin(), angles.end(), anglecopy.begin()));//too slow!
+	//EXPECT_TRUE(std::is_permutation(radii.begin(), radii.end(), radiicopy.begin()));
 }
 
 
