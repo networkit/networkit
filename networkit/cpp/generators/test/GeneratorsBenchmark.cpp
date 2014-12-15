@@ -159,11 +159,13 @@ TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorWithSequentialQuadtree) 
 		quad.addContent(i, angles[i], radii[i]);
 	}
 
+	angles.clear();
+	radii.clear();
+
 	quad.trim();
 	quad.sortPointsInLeaves();
 	quad.reindex();
 	quad.extractCoordinates(angles, radii);
-
 
 	HyperbolicGenerator gen;
 	Graph G = gen.generate(angles, radii, quad, R);
