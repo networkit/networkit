@@ -107,7 +107,6 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	Quadtree<index> quad(R, theoreticalSplit, alpha, capacity);
 
 	//initialize a graph builder for n nodes and an undirected, unweighted graph with direct swap
-	GraphBuilder result(n, false, false, true);
 	for (index i = 0; i < n; i++) {
 		assert(radii[i] < R);
 		quad.addContent(i, angles[i], radii[i]);
@@ -116,10 +115,19 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	quad.trim();
 	timer.stop();
 	INFO("Filled Quadtree, took ", timer.elapsedMilliseconds(), " milliseconds.");
+
+	return generate(angles, radii, quad, thresholdDistance);
+}
+
+Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<double> &radii, Quadtree<index> &quad, double thresholdDistance) {
+	index n = angles.size();
+	assert(radii.size() == n);
+	Aux::Timer timer;
 	timer.start();
 	vector<double> empty;
+	GraphBuilder result(n, false, false, true);
 
-	Aux::ProgressMeter progress(n, 1000);
+	Aux::ProgressMeter progress(n, 10000);
 	#pragma omp parallel
 	{
 		index id = omp_get_thread_num();
@@ -137,7 +145,7 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 			//std::swap(expectedDegree, realDegree);//dummy statement for debugging
 			result.swapNeighborhood(i, near, empty, false);
 
-			if (i % 1000 == 0) {
+			if (i % 10000 == 0) {
 				#pragma omp critical (progress)
 				{
 					progress.signal(i);

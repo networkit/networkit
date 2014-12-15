@@ -116,6 +116,18 @@ public:
 		return acosh(area/(2*M_PI)+1);
 	}
 
+	static inline double radiusToHyperbolicArea(double radius) {
+			return  2*M_PI*(cosh(radius)-1);
+		}
+
+	static inline double areaInCell(double minPhi, double maxPhi, double minR, double maxR) {
+		double deltaPhi = maxPhi - minPhi;
+		assert(deltaPhi >= 0);
+		assert(deltaPhi <= 2*M_PI);
+		double ringArea = radiusToHyperbolicArea(EuclideanRadiusToHyperbolic(maxR)) - radiusToHyperbolicArea(EuclideanRadiusToHyperbolic(minR));
+		return ringArea*(deltaPhi/(2*M_PI));
+	}
+
 	/**
 	 * @param r_c radial coordinate of the circle center
 	 * @param d_c radius of the Euclidean circle
