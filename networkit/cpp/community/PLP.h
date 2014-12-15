@@ -42,6 +42,8 @@ public:
 	 */
 	PLP(const Graph& G, count theta = none);
 
+	PLP(const Graph& G, const PLP& other);
+
 	/**
 	 * Constructor to the label propagation community detection algorithm.
 	 *
