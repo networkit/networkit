@@ -22,6 +22,10 @@ PLM::PLM(const Graph& G, bool refine, double gamma, std::string par, count maxIt
 
 }
 
+PLM::PLM(const Graph& G, const PLM& other) : CommunityDetectionAlgorithm(G), parallelism(other.parallelism), refine(other.refine), gamma(other.gamma), maxIter(other.maxIter), parallelCoarsening(other.parallelCoarsening), turbo(other.turbo){
+
+}
+
 void PLM::run() {
 	DEBUG("calling run method on " , G.toString());
 
@@ -267,6 +271,9 @@ void PLM::run() {
 		for (count t : tim["coarsen"]) {
 			timing["coarsen"].push_back(t);
 		}
+		for (count t : tim["refine"]) {
+			timing["refine"].push_back(t);
+		}
 
 
 		INFO("coarse graph has ", coarsened.first.numberOfEdges(), " edges");
@@ -287,7 +294,13 @@ void PLM::run() {
 			});
 
 			// second move phase
+			timer.start();
+			//
 			movePhase();
+			//
+			timer.stop();
+			timing["refine"].push_back(timer.elapsedMilliseconds());
+
 		}
 	}
 	result = std::move(zeta);

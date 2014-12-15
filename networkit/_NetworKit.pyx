@@ -119,7 +119,7 @@ cdef extern from "cpp/graph/Graph.h":
 		_Graph(const _Graph& other) except +
 		_Graph(const _Graph& other, bool weighted, bool directed) except +
 		void indexEdges() except +
-		bool hasEdgeIds()
+		bool hasEdgeIds() except +
 		edgeid edgeId(node, node) except +
 		count numberOfNodes() except +
 		count numberOfEdges() except +
@@ -616,6 +616,12 @@ cdef class Graph:
 		self._this.initCoordinates()
 
 	def numberOfSelfLoops(self):
+		""" Get number of self-loops, i.e. edges {v, v}.
+		Returns
+		-------
+		count
+			number of self-loops.
+		"""
 		return self._this.numberOfSelfLoops()
 
 # TODO: expose all methods
@@ -646,8 +652,10 @@ cdef class BFS:
 
 	"""
 	cdef _BFS* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False):
+		self._G = G
 		self._this = new _BFS(G._this, source, storePaths, storeStack)
 
 	def __dealloc__(self):
@@ -722,8 +730,10 @@ cdef class DynBFS:
 		maintain a stack of nodes in order of decreasing distance?
 	"""
 	cdef _DynBFS* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, source):
+		self._G = G
 		self._this = new _DynBFS(G._this, source)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -813,8 +823,10 @@ cdef class Dijkstra:
 		maintain a stack of nodes in order of decreasing distance?
     """
 	cdef _Dijkstra* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False):
+		self._G = G
 		self._this = new _Dijkstra(G._this, source, storePaths, storeStack)
 
 	def __dealloc__(self):
@@ -887,8 +899,10 @@ cdef class DynDijkstra:
 
 	"""
 	cdef _DynDijkstra* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, source):
+		self._G = G
 		self._this = new _DynDijkstra(G._this, source)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -995,8 +1009,10 @@ cdef class SpanningForest:
 			A subset of nodes of `G` which induce the subgraph.
 	"""
 	cdef _SpanningForest* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G not None):
+		self._G = G
 		self._this = new _SpanningForest(G._this)
 
 
@@ -1212,16 +1228,12 @@ cdef class PubWebGenerator:
 	cdef _PubWebGenerator* _this
 
 	def __cinit__(self, numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors):
-		""" TODO
-		"""
 		self._this = new _PubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
 
 	def __dealloc__(self):
 		del self._this
 
 	def generate(self):
-		""" TODO
-		"""
 		return Graph(0).setThis(self._this.generate())
 
 
@@ -1750,7 +1762,7 @@ cdef extern from "cpp/io/GraphToolBinaryReader.h":
 		_Graph read(string path) except +
 
 cdef class GraphToolBinaryReader:
-	""" Reads the binary file format defined by graph-tool[1]. 
+	""" Reads the binary file format defined by graph-tool[1].
 		[1]: http://graph-tool.skewed.de/static/doc/gt_format.html
 	"""
 	cdef _GraphToolBinaryReader _this
@@ -1847,7 +1859,7 @@ cdef extern from "cpp/io/GraphToolBinaryWriter.h":
 
 
 cdef class GraphToolBinaryWriter:
-	""" Reads the binary file format defined by graph-tool[1]. 
+	""" Reads the binary file format defined by graph-tool[1].
 		[1]: http://graph-tool.skewed.de/static/doc/gt_format.html
 	"""
 	cdef _GraphToolBinaryWriter _this
@@ -2853,7 +2865,7 @@ cdef class GraphTools:
 
 	@staticmethod
 	def getContinuousNodeIds(Graph graph):
-		""" 
+		"""
 			Computes a map of node ids to continuous node ids.
 		"""
 		cdef unordered_map[node,node] cResult = getContinuousNodeIds(graph._this)
@@ -2897,6 +2909,19 @@ cdef extern from "cpp/community/Coverage.h":
 cdef class Coverage:
 	""" Coverage is the fraction of intra-community edges """
 	cdef _Coverage _this
+
+	def getQuality(self, Partition zeta, Graph G):
+		return self._this.getQuality(zeta._this, G._this)
+
+
+cdef extern from "cpp/community/EdgeCut.h":
+	cdef cppclass _EdgeCut "NetworKit::EdgeCut":
+		_EdgeCut() except +
+		double getQuality(_Partition _zeta, _Graph _G) except +
+
+cdef class EdgeCut:
+	""" Edge cut is the total weight of inter-community edges"""
+	cdef _EdgeCut _this
 
 	def getQuality(self, Partition zeta, Graph G):
 		return self._this.getQuality(zeta._this, G._this)
@@ -2999,6 +3024,7 @@ cdef class PLP(CommunityDetector):
  	has the label that at least half of its neighbors have.
 	"""
 	cdef _PLP* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G not None, Partition baseClustering=None, updateThreshold=None):
 		"""
@@ -3013,6 +3039,8 @@ cdef class PLP(CommunityDetector):
 		updateThreshold : integer
 			number of nodes that have to be changed in each iteration so that a new iteration starts.
 		"""
+		self._G = G
+
 		if updateThreshold is None and baseClustering is None:
 			self._this = new _PLP(G._this)
 		elif updateThreshold is None and baseClustering is not None:
@@ -3084,8 +3112,10 @@ cdef extern from "cpp/community/LPDegreeOrdered.h":
 cdef class LPDegreeOrdered(CommunityDetector):
 	""" Label propagation-based community detection algorithm which processes nodes in increasing order of node degree.	"""
 	cdef _LPDegreeOrdered* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G not None):
+		self._G = G
 		self._this = new _LPDegreeOrdered(G._this)
 
 	def __dealloc__(self):
@@ -3145,8 +3175,6 @@ cdef class PLM(CommunityDetector):
 	""" Parallel Louvain Method - the Louvain method, optionally extended to
 		a full multi-level algorithm with refinement
 
-		PLM(refine=True, gamma=1.0, par="balanced", maxIter=32)
-
 		Parameters
 		----------
 		G : Graph
@@ -3167,8 +3195,10 @@ cdef class PLM(CommunityDetector):
 	"""
 
 	cdef _PLM* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G not None, refine=False, gamma=1.0, par="balanced", maxIter=32, parCoarsening=True, turbo=False):
+		self._G = G
 		self._this = new _PLM(G._this, refine, gamma, stdstring(par), maxIter, parCoarsening, turbo)
 
 	def __dealloc__(self):
@@ -3201,6 +3231,8 @@ cdef class PLM(CommunityDetector):
 		return Partition().setThis(self._this.getPartition())
 
 	def getTiming(self):
+		"""  Get detailed time measurements.
+		"""
 		return self._this.getTiming()
 
 	@staticmethod
@@ -3229,8 +3261,10 @@ cdef class CNM(CommunityDetector):
  	"""
 
 	cdef _CNM* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G not None):
+		self._G = G
 		self._this = new _CNM(G._this)
 
 	def __dealloc__(self):
@@ -3286,8 +3320,10 @@ cdef class CutClustering(CommunityDetector):
 		The parameter for the cut clustering algorithm
 	"""
 	cdef _CutClustering* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G not None,  edgeweight alpha):
+		self._G = G
 		self._this = new _CutClustering(G._this, alpha)
 
 	def __dealloc__(self):
@@ -3420,6 +3456,8 @@ cdef extern from "cpp/community/EPP.h":
 		void run() except +
 		_Partition getPartition() except +
 		string toString()
+		_Partition getCorePartition() except +
+		vector[_Partition] getBasePartitions() except +
 
 cdef class EPP(CommunityDetector):
 	""" EPP - Ensemble Preprocessing community detection algorithm.
@@ -3429,8 +3467,10 @@ cdef class EPP(CommunityDetector):
 	for the input graph.
 	"""
 	cdef _EPP* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G not None):
+		self._G = G
 		self._this = new _EPP(G._this)
 
 	def __dealloc__(self):
@@ -3451,6 +3491,22 @@ cdef class EPP(CommunityDetector):
 		"""
 		return Partition().setThis(self._this.getPartition())
 
+	def getCorePartition(self):
+		"""  Returns the core partition the algorithm.
+
+		Returns
+		-------
+		Partition:
+			A Partition of the clustering.
+		"""
+		return Partition().setThis(self._this.getCorePartition())
+
+	def getBasePartitions(self):
+		"""  Returns the base partitions of the algorithm.
+		"""
+		base = self._this.getBasePartitions()
+		return [Partition().setThis(b) for b in base]
+
 	def toString(self):
 		""" String representation of EPP class.
 
@@ -3465,6 +3521,74 @@ cdef class EPP(CommunityDetector):
 		del self._this # is this correct here?
 		self._this = other
 		return self
+
+cdef extern from "cpp/community/EPPInstance.h":
+	cdef cppclass _EPPInstance "NetworKit::EPPInstance":
+		_EPPInstance(_Graph G, count ensembleSize) except +
+		void run() except +
+		_Partition getPartition() except +
+		string toString() except +
+		_Partition getCorePartition() except +
+		vector[_Partition] getBasePartitions() except +
+
+cdef class EPPInstance(CommunityDetector):
+	""" EPP - Ensemble Preprocessing community detection algorithm.
+	Combines multiple base algorithms and a final algorithm. A consensus of the
+	solutions of the base algorithms is formed and the graph is coarsened accordingly.
+	Then the final algorithm operates on the coarse graph and determines a solution
+	for the input graph.
+	"""
+	cdef _EPPInstance* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G not None, ensembleSize=4):
+		self._G = G
+		self._this = new _EPPInstance(G._this, ensembleSize)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		"""  Run the ensemble clusterer.
+		"""
+		self._this.run()
+
+	def getPartition(self):
+		"""  Returns a partition of the clustering.
+
+		Returns
+		-------
+		Partition:
+			A Partition of the clustering.
+		"""
+		return Partition().setThis(self._this.getPartition())
+
+	def getCorePartition(self):
+		"""  Returns the core partition the algorithm.
+
+		Returns
+		-------
+		Partition:
+			A Partition of the clustering.
+		"""
+		return Partition().setThis(self._this.getCorePartition())
+
+	def getBasePartitions(self):
+		"""  Returns the base partitions of the algorithm.
+		"""
+		base = self._this.getBasePartitions()
+		return [Partition().setThis(b) for b in base]
+
+	def toString(self):
+		""" String representation of EPP class.
+
+		Returns
+		-------
+		string
+			String representation.
+		"""
+		return self._this.toString()
+
 
 
 cdef extern from "cpp/community/EPPFactory.h" namespace "NetworKit::EPPFactory":
@@ -3752,8 +3876,10 @@ cdef class ConnectedComponents:
 		The graph.
 	"""
 	cdef _ConnectedComponents* _this
+	cdef Graph _G
 
 	def __cinit__(self,  Graph G):
+		self._G = G
 		self._this = new _ConnectedComponents(G._this)
 
 	def __dealloc__(self):
@@ -3810,8 +3936,10 @@ cdef class ParallelConnectedComponents:
 		an undirected graph.
 	"""
 	cdef _ParallelConnectedComponents* _this
+	cdef Graph _G
 
 	def __cinit__(self,  Graph G, coarsening=True	):
+		self._G = G
 		self._this = new _ParallelConnectedComponents(G._this, coarsening)
 
 	def __dealloc__(self):
@@ -3845,8 +3973,10 @@ cdef class StronglyConnectedComponents:
 		a directed graph.
 	"""
 	cdef _StronglyConnectedComponents* _this
+	cdef Graph _G
 
 	def __cinit__(self,  Graph G):
+		self._G = G
 		self._this = new _StronglyConnectedComponents(G._this)
 
 	def __dealloc__(self):
@@ -4047,8 +4177,10 @@ cdef class CoreDecomposition:
 	"""
 
 	cdef _CoreDecomposition* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G):
+		self._G = G
 		self._this = new _CoreDecomposition(G._this)
 
 	def __dealloc__(self):
@@ -4171,8 +4303,10 @@ cdef class Betweenness:
 	 		Set this parameter to True if scores should be normalized in the interval [0,1].
 	"""
 	cdef _Betweenness* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, normalized=False):
+		self._G = G
 		self._this = new _Betweenness(G._this, normalized)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -4249,8 +4383,10 @@ cdef class DynBetweenness:
 			store lists of predecessors?
 	"""
 	cdef _DynBetweenness* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, bool storePredecessors = True):
+		self._G = G
 		self._this = new _DynBetweenness(G._this, storePredecessors)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -4337,8 +4473,10 @@ cdef class ApproxBetweenness:
 		probability that the values are within the error guarantee
 	"""
 	cdef _ApproxBetweenness* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, diameterSamples=0):
+		self._G = G
 		self._this = new _ApproxBetweenness(G._this, epsilon, delta, diameterSamples)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -4420,8 +4558,10 @@ cdef class DynApproxBetweenness:
 		store lists of predecessors?
 	"""
 	cdef _DynApproxBetweenness* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, storePredecessors = True):
+		self._G = G
 		self._this = new _DynApproxBetweenness(G._this, epsilon, delta, storePredecessors)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -4513,8 +4653,10 @@ cdef class ApproxBetweenness2:
 		normalize centrality values in interval [0,1]
 	"""
 	cdef _ApproxBetweenness2* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, nSamples, normalized=False):
+		self._G = G
 		self._this = new _ApproxBetweenness2(G._this, nSamples, normalized)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -4580,8 +4722,10 @@ cdef class PageRank:
 		Error tolerance for PageRank iteration.
 	"""
 	cdef _PageRank* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, double damp, double tol=1e-9):
+		self._G = G
 		self._this = new _PageRank(G._this, damp, tol)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -4648,8 +4792,10 @@ cdef class EigenvectorCentrality:
 		The tolerance for convergence.
 	"""
 	cdef _EigenvectorCentrality* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, double tol=1e-9):
+		self._G = G
 		self._this = new _EigenvectorCentrality(G._this, tol)
 
 	def __dealloc__(self):
@@ -4717,8 +4863,10 @@ cdef class DegreeCentrality:
  		Normalize centrality values in the interval [0,1].
 	"""
 	cdef _DegreeCentrality* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, bool normalized=False):
+		self._G = G
 		self._this = new _DegreeCentrality(G._this, normalized)
 
 	def __dealloc__(self):
@@ -4796,8 +4944,10 @@ cdef class AlgebraicDistance:
 		The norm factor of the extended algebraic distance. Maximum norm is realized by setting the norm to 0. Default: 2.
 	"""
 	cdef _AlgebraicDistance* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, count numberSystems, count numberIterations, double omega = 0.5, index norm = 2):
+		self._G = G
 		self._this = new _AlgebraicDistance(G._this, numberSystems, numberIterations, omega, norm)
 
 	def __dealloc__(self):
@@ -5126,8 +5276,10 @@ cdef class GraphUpdater:
 	 	initial graph
 	"""
 	cdef _GraphUpdater* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G):
+		self._G = G
 		self._this = new _GraphUpdater(G._this)
 
 	def __dealloc__(self):
@@ -5172,7 +5324,7 @@ cdef class PageRankNibble:
 	"""
 	Produces a cut around a given seed node using the PageRank-Nibble algorithm.
 	see Andersen, Chung, Lang: Local Graph Partitioning using PageRank Vectors
-	
+
 	Parameters:
 	-----------
 	G : graph in which the cut is to be produced, must be unweighted.
@@ -5180,19 +5332,61 @@ cdef class PageRankNibble:
 	alpha : the random walk loop probability.
 	"""
 	cdef _PageRankNibble *_this
-	
+	cdef Graph _G
+
 	def __cinit__(self, Graph G, double epsilon, double alpha):
+		self._G = G
 		self._this = new _PageRankNibble(G._this, epsilon, alpha)
 
 	def run(self, set[unsigned int] seeds):
 		"""
 		Produces a cut around a given seed node.
-		
+
 		Parameters:
 		-----------
 		seeds : the seed node ids.
 		"""
 		return self._this.run(seeds)
+
+# Module: clique
+
+cdef extern from "cpp/clique/MaxClique.h":
+	cdef cppclass _MaxClique "NetworKit::MaxClique":
+		_MaxClique(_Graph G) except +
+		count run(count lb) except +
+		count run() except +
+
+cdef class MaxClique:
+	"""
+	Exact algorithm for computing the size of the largest clique in a graph.
+	Worst-case running time is exponential, but in practice the algorithm is fairly fast.
+	Reference: Pattabiraman et al., http://arxiv.org/pdf/1411.7460.pdf
+	"""
+	cdef _MaxClique* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G not None):
+		self._G = G
+		self._this = new _MaxClique(G._this)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self, lb=0):
+		"""
+		Actual maximum clique algorithm. Determines largest clique each vertex
+	 	is contained in and returns size of largest. Pruning steps keep running time
+	 	acceptable in practice.
+
+	 	Parameters:
+	 	-----------
+	 	lb : Lower bound for maximum clique size.
+
+	 	Returns:
+	 	--------
+	 	The size of the largest clique.
+	 	"""
+		return self._this.run(lb)
 
 # Module: edgeattributes
 

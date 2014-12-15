@@ -12,10 +12,12 @@
 #include "../CNM.h"
 #include "../ParallelAgglomerativeClusterer.h"
 #include "../../community/Modularity.h"
+#include "../../community/EdgeCut.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../community/ClusteringGenerator.h"
 #include "../../io/METISGraphReader.h"
 #include "../EPP.h"
+#include "../EPPInstance.h"
 #include "../../overlap/HashingOverlapper.h"
 #include "../EPPFactory.h"
 #include "../CommunityGraph.h"
@@ -67,6 +69,27 @@ TEST_F(CommunityGTest, testEnsemblePreprocessing) {
 	auto overlap = new HashingOverlapper;
 	std::unique_ptr<Overlapper> overlap_ptr(overlap);
 	ensemble.setOverlapper(overlap_ptr);
+
+	ensemble.run();
+	Partition zeta = ensemble.getPartition();
+
+	INFO("number of clusters:" , zeta.numberOfSubsets());
+
+	Modularity modularity;
+	INFO("modularity: " , modularity.getQuality(zeta, G));
+
+}
+
+TEST_F(CommunityGTest, testEPPInstance) {
+	count n = 1000;
+	count k = 10;
+	double pin = 1.0;
+	double pout = 0.0;
+
+	GraphGenerator graphGen;
+	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
+
+	EPPInstance ensemble(G, 4);
 
 	ensemble.run();
 	Partition zeta = ensemble.getPartition();
@@ -502,6 +525,37 @@ TEST_F(CommunityGTest, testClusteringEquality) {
 
 }
 
+
+TEST_F(CommunityGTest, testEdgeCutMeasure) {
+	/* Graph:
+	    0    3
+	     \  / \
+	      2    5
+	     /  \ /
+	    1    4
+	 */
+	count n = 6;
+	Graph G(n);
+
+	G.addEdge(0, 2);
+	G.addEdge(1, 2);
+	G.addEdge(2, 3);
+	G.addEdge(2, 4);
+	G.addEdge(3, 5);
+	G.addEdge(4, 5);
+
+	Partition part(n);
+	part[0] = 0;
+	part[1] = 0;
+	part[2] = 0;
+	part[3] = 1;
+	part[4] = 2;
+	part[5] = 1;
+
+	EdgeCut ec;
+	edgeweight cut = ec.getQuality(part, G);
+	EXPECT_EQ(cut, 3);
+}
 
 
 TEST_F(CommunityGTest, testJaccardMeasure) {
