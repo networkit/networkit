@@ -5688,7 +5688,20 @@ cdef extern from "cpp/edgeattributes/EdgeAttributeAsWeight.h":
 
 cdef class EdgeAttributeAsWeight:
 	"""
-	Assigns the attribute as edge weight
+	Assigns an edge attribute as edge weight of a graph.
+	
+	Parameters
+	----------
+	G : Graph
+		The graph to assign edge weights to.
+	attribute : vector[double]
+		The input edge attribute.
+	squared : bool
+		Edge weights will be squared if set to True.
+	offset : edgeweight
+		This offset will be added to each edge weight.
+	factor : edgeweight
+		Each edge weight will be multiplied by this factor.
 	"""
 
 	cdef _EdgeAttributeAsWeight* _this
@@ -5703,7 +5716,13 @@ cdef class EdgeAttributeAsWeight:
 	def __dealloc__(self):
 		del self._this
 
-	def getAttribute(self):
+	def getWeightedGraph(self):
+		"""
+		Returns
+		-------
+		Graph
+			The weighted result graph.
+		"""
 		return Graph(0).setThis(self._this.calculate())
 
 # Module: distmeasures
@@ -5784,7 +5803,7 @@ cdef extern from "cpp/sparsification/SimmelianJaccardAttributizer.h":
 
 cdef class SimmelianJaccardAttributizer:
 	"""
-	An implmentation of the non-parametric variant of Simmelian Backbones. Calculates
+	An implementation of the non-parametric variant of Simmelian Backbones. Calculates
 	for each edge the minimum parameter value such that the edge is still contained in 
 	the sparsified graph.
 	
@@ -5814,12 +5833,11 @@ cdef class SimmelianJaccardAttributizer:
 cdef extern from "cpp/sparsification/SimmelianOverlapAttributizer.h":
 	cdef cppclass _SimmelianOverlapAttributizer "NetworKit::SimmelianOverlapAttributizer":
 		_SimmelianOverlapAttributizer(const _Graph& G, const vector[count]& triangles, count maxRank) except +
-		#void run() except +
 		vector[double] getAttribute() except +
 
 cdef class SimmelianOverlapAttributizer:
 	"""
-	An implmentation of the parametric variant of Simmelian Backbones. Calculates
+	An implementation of the parametric variant of Simmelian Backbones. Calculates
 	for each edge the minimum parameter value such that the edge is still contained in 
 	the sparsified graph.
 	
@@ -5849,13 +5867,12 @@ cdef class SimmelianOverlapAttributizer:
 cdef extern from "cpp/sparsification/MultiscaleAttributizer.h":
 	cdef cppclass _MultiscaleAttributizer "NetworKit::MultiscaleAttributizer":
 		_MultiscaleAttributizer(const _Graph& G, const vector[double]& a) except +
-		#void run() except +
 		vector[double] getAttribute() except +
 
 cdef class MultiscaleAttributizer:
 	"""
-	An implmentation of the Multiscale Backbone. Calculates for each edge the minimum
-	 parameter value such that the edge is still contained in the sparsified graph.
+	An implementation of the Multiscale Backbone. Calculates for each edge the minimum
+	parameter value such that the edge is still contained in the sparsified graph.
 	
 	Parameters
 	----------
@@ -5864,7 +5881,6 @@ cdef class MultiscaleAttributizer:
 	attribute : vector[double]
 		The edge attribute the Multiscale algorithm is to be applied to.
 	"""
-
 
 	cdef _MultiscaleAttributizer* _this
 	cdef Graph _G
@@ -5878,19 +5894,23 @@ cdef class MultiscaleAttributizer:
 	def __dealloc__(self):
 		del self._this
 
-	#def run(self):
-		#self._this.run()
-
 	def getAttribute(self):
 		return self._this.getAttribute()
 
 cdef extern from "cpp/sparsification/RandomAttributizer.h":
 	cdef cppclass _RandomAttributizer "NetworKit::RandomAttributizer":
 		_RandomAttributizer(const _Graph& G) except +
-		#void run() except +
 		vector[double] getAttribute() except +
 
 cdef class RandomAttributizer:
+	"""
+	[todo]
+	
+	Parameters
+	----------
+	G : Graph
+		The graph to calculate the Random Edge attribute for.
+	"""
 
 	cdef _RandomAttributizer* _this
 	cdef Graph _G
@@ -5901,9 +5921,6 @@ cdef class RandomAttributizer:
 
 	def __dealloc__(self):
 		del self._this
-		
-	#def run(self):
-		#self._this.run()
 
 	def getAttribute(self):
 		return self._this.getAttribute()
@@ -5911,10 +5928,22 @@ cdef class RandomAttributizer:
 cdef extern from "cpp/sparsification/LocalSimilarityAttributizer.h":
 	cdef cppclass _LocalSimilarityAttributizer "NetworKit::LocalSimilarityAttributizer":
 		_LocalSimilarityAttributizer(const _Graph& G, const vector[count]& triangles) except +
-		#void run() except +
 		vector[double] getAttribute() except +
 
 cdef class LocalSimilarityAttributizer:
+	"""
+	An implementation of the Local Simlarity sparsification approach. 
+	This attributizer calculates for each edge the maximum parameter value 
+	such that the edge is still contained in the sparsified graph.
+	
+	Parameters
+	----------
+	G : Graph
+		The graph to apply the Local Similarity algorithm to.
+	triangles : vector[count]
+		Previously calculated edge triangle counts.
+	"""
+
 	cdef _LocalSimilarityAttributizer* _this
 	
 	cdef Graph _G
@@ -5927,9 +5956,6 @@ cdef class LocalSimilarityAttributizer:
 
 	def __dealloc__(self):
 		del self._this
-		
-	#def run(self):
-		#self._this.run()
 
 	def getAttribute(self):
 		return self._this.getAttribute()
@@ -5941,6 +5967,20 @@ cdef extern from "cpp/sparsification/ForestFireAttributizer.h":
 		vector[double] getAttribute() except +
 
 cdef class ForestFireAttributizer:
+	"""
+	A variant of the Forest Fire sparsification approach that is based on random walks. 
+	This attributizer calculates for each edge the minimum parameter value 
+	such that the edge is still contained in the sparsified graph.
+	
+	Parameters
+	----------
+	G : Graph
+		The graph to apply the Forest Fire algorithm to.
+	pf : double
+		The probability for neighbor nodes to get burned aswell.
+	tebr : double
+		The Forest Fire will burn until tebr * numberOfEdges edges have been burnt.
+	"""
 
 	cdef _ForestFireAttributizer* _this
 	cdef Graph _G
@@ -5951,9 +5991,6 @@ cdef class ForestFireAttributizer:
 
 	def __dealloc__(self):
 		del self._this
-		
-	#def run(self):
-		#self._this.run()
 
 	def getAttribute(self):
 		return self._this.getAttribute()
@@ -5961,10 +5998,19 @@ cdef class ForestFireAttributizer:
 cdef extern from "cpp/sparsification/LocalDegreeAttributizer.h":
 	cdef cppclass _LocalDegreeAttributizer "NetworKit::LocalDegreeAttributizer":
 		_LocalDegreeAttributizer(const _Graph& G) except +
-		void run() except +
 		vector[double] getAttribute() except +
 
 cdef class LocalDegreeAttributizer:
+	"""
+	The LocalDegree sparsification approach is based on the idea of hub nodes. 
+	This attributizer calculates for each edge the maximum parameter value 
+	such that the edge is still contained in the sparsified graph.
+	
+	Parameters
+	----------
+	G : Graph
+		The graph to apply the Local Degree  algorithm to.
+	"""
 
 	cdef _LocalDegreeAttributizer* _this
 	cdef Graph _G
@@ -5975,9 +6021,6 @@ cdef class LocalDegreeAttributizer:
 
 	def __dealloc__(self):
 		del self._this
-
-	#def run(self):
-		#self._this.run()
 		
 	def getAttribute(self):
 		return self._this.getAttribute()
@@ -5985,10 +6028,20 @@ cdef class LocalDegreeAttributizer:
 cdef extern from "cpp/distmeasures/JaccardDistance.h":
 	cdef cppclass _JaccardDistance "NetworKit::JaccardDistance":
 		_JaccardDistance(const _Graph& G, const vector[count]& triangles) except +
-		#void run() except +
 		vector[double] getEdgeAttribute() except +
 
 cdef class JaccardDistance:
+	"""
+	The Jaccard distance measure assigns to each edge the jaccard coefficient
+	of the neighborhoods of the two adjacent nodes. 
+	
+	Parameters
+	----------
+	G : Graph
+		The graph to calculate Jaccard distances for.
+	triangles : vector[count]
+		Previously calculated edge triangle counts.
+	"""
 
 	cdef _JaccardDistance* _this
 	cdef Graph _G
@@ -6006,6 +6059,17 @@ cdef class JaccardDistance:
 		return self._this.getEdgeAttribute()
 
 cdef class JaccardSimilarityAttributizer:
+	"""
+	The Jaccard similarity measure assigns to each edge (1 - the jaccard coefficient
+	of the neighborhoods of the two adjacent nodes). 
+	
+	Parameters
+	----------
+	G : Graph
+		The graph to calculate Jaccard similarities for.
+	triangles : vector[count]
+		Previously calculated edge triangle counts.
+	"""
 
 	cdef _JaccardDistance* _this
 	cdef Graph _G
@@ -6018,9 +6082,6 @@ cdef class JaccardSimilarityAttributizer:
 
 	def __dealloc__(self):
 		del self._this
-
-	#def run(self):
-		#self._this.run()
 		
 	def getAttribute(self):
 		#convert distance to similarity
@@ -6029,10 +6090,18 @@ cdef class JaccardSimilarityAttributizer:
 cdef extern from "cpp/sparsification/RandomEdgeAttributizer.h":
 	cdef cppclass _RandomEdgeAttributizer "NetworKit::RandomEdgeAttributizer":
 		_RandomEdgeAttributizer(const _Graph& G) except +
-		#void run() except +
 		vector[double] getAttribute() except +
 
 cdef class RandomEdgeAttributizer:
+	"""
+	Random Edge sampling. This attributizer returns edge attributes where
+	each value is selected uniformly at random from [0,1].
+	
+	Parameters
+	----------
+	G : Graph
+		The graph to calculate the Random Edge attribute for.
+	"""
 
 	cdef _RandomEdgeAttributizer* _this
 	cdef Graph _G
@@ -6044,9 +6113,6 @@ cdef class RandomEdgeAttributizer:
 	def __dealloc__(self):
 		del self._this
 
-	#def run(self):
-		#self._this.run()
-		
 	def getAttribute(self):
 		return self._this.getAttribute()
 
@@ -6063,8 +6129,10 @@ cdef extern from "cpp/sparsification/LocalFilterAttributizer.h":
 		_LocalFilterAttributizerInt(const _Graph& G, const vector[double]& a, bool logarithmic,  bothRequired) except +
 		inline vector[double] getAttribute() except +
 
-
 cdef class LocalFilterAttributizer:
+	"""
+	TODO
+	"""
 	cdef _LocalFilterAttributizerDouble* _thisDouble
 	#cdef _LocalFilterAttributizerInt _thisInt
 	
@@ -6171,6 +6239,22 @@ cdef extern from "cpp/sparsification/GlobalThresholdFilter.h":
 		_Graph calculate() except +
 
 cdef class GlobalThresholdFilter:
+	"""
+	Calculates a sparsified graph by filtering globally using a constant threshold value 
+	and a given edge attribute.
+	
+	Parameters
+	----------
+	G : Graph
+		The graph to sparsify. 
+	attribute : vector[double]
+		The edge attribute to consider for filtering.
+	e : double
+		Threshold value.
+	above : bool
+		If set to True (False), all edges with an attribute value equal to or above (below)
+		will be kept in the sparsified graph.
+	"""
 	cdef _GlobalThresholdFilter* _this
 	cdef Graph _G
 	cdef vector[double] _attribute
