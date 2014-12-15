@@ -782,6 +782,7 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithSequentialQuadtree) {
 	double s = 1.2;
 	double t = 1;
 	double alpha =1;
+
 	vector<double> angles(n);
 	vector<double> radii(n);
 	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
@@ -793,10 +794,11 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithSequentialQuadtree) {
 		quad.addContent(i, angles[i], radii[i]);
 	}
 
-	quad.trim();
-	quad.sortPointsInLeaves();
 	angles.clear();
 	radii.clear();
+
+	quad.trim();
+	quad.sortPointsInLeaves();
 	quad.reindex();
 	quad.extractCoordinates(angles, radii);
 
@@ -812,6 +814,7 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithParallelQuadtree) {
 	count n = 50000;
 	double s = 1.2;
 	double t = 1;
+
 	Quadtree<index> quad(n,s);
 	vector<double> angles;
 	vector<double> radii;
