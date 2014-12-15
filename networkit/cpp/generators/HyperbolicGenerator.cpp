@@ -73,23 +73,25 @@ Graph HyperbolicGenerator::generate(count n, double distanceFactor, double alpha
 	//sample points randomly
 
 	HyperbolicSpace::fillPoints(angles, radii, stretchradius, alpha);
+	vector<index> permutation(n);
 
-	Quadtree<index> quad(r);
+	index p = 0;
+	std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
 
-	for (index i = 0; i < n; i++) {
-		quad.addContent(i, angles[i], radii[i]);
+	//can probably be parallelized easily, but doesn't bring much benefit
+	std::sort(permutation.begin(), permutation.end(), [&angles,&radii](index i, index j){return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);});
+
+	vector<double> anglecopy(n);
+	vector<double> radiicopy(n);
+
+	#pragma omp parallel for
+	for (index j = 0; j < n; j++) {
+		anglecopy[j] = angles[permutation[j]];
+		radiicopy[j] = radii[permutation[j]];
 	}
 
-	angles.clear();
-	radii.clear();
-
-	quad.trim();
-	quad.sortPointsInLeaves();
-	quad.reindex();
-	quad.extractCoordinates(angles, radii);
-
 	INFO("Generated Points");
-	return generate(angles, radii, quad, R*distanceFactor);
+	return generate(anglecopy, radiicopy, r, R*distanceFactor);
 }
 
 double HyperbolicGenerator::expectedNumberOfEdges(count n, double stretch) {
