@@ -38,7 +38,7 @@ public:
 
 		if (invert) {
 			factor *= -1.0;
-			offset += lower + upper;
+			offset = upper - minValue * factor;
 		}
 
 		output.resize(G.upperEdgeIdBound(), std::numeric_limits<double>::quiet_NaN());
