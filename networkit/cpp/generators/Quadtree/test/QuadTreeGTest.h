@@ -1,5 +1,5 @@
 /*
- * QuadTreeTest.h
+ * QuadTreeGTest.h
  *
  *  Created on: 28.05.2014
  *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
@@ -21,10 +21,10 @@ namespace NetworKit {
 typedef uint64_t index; // more expressive name for an index into an array
 typedef uint64_t count; // more expressive name for an integer quantity
 
-class QuadTreeTest: public testing::Test {
+class QuadTreeGTest: public testing::Test {
 public:
-	QuadTreeTest();
-	virtual ~QuadTreeTest();
+	QuadTreeGTest();
+	virtual ~QuadTreeGTest();
 
 protected:
 	template <class T>

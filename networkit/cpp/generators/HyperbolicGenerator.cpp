@@ -132,15 +132,13 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	{
 		index id = omp_get_thread_num();
 		threadtimers[id].start();
-		#pragma omp for schedule(guided) nowait
+		#pragma omp for schedule(dynamic) nowait
 		for (index i = 0; i < n; i++) {
 			//get neighbours for node i
 			count expectedDegree = (4/M_PI)*n*exp(-HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[i])/2);
 			vector<index> near;
 			near.reserve(expectedDegree*1.1);
-			quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance, near);
-			std::remove(near.begin(), near.end(), i); //no self loops!
-			near.pop_back();//std::remove doesn't remove element but swaps it to the end
+			quad.getElementsInHyperbolicCircle(i, HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance, near);
 			//count realDegree = near.size();
 			//std::swap(expectedDegree, realDegree);//dummy statement for debugging
 			result.swapNeighborhood(i, near, empty, false);

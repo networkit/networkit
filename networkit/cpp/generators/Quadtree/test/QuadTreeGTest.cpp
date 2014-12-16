@@ -1,5 +1,5 @@
 /*
- * QuadTreeTest.cpp
+ * QuadTreeGTest.cpp
  *
  *  Created on: 28.05.2014
  *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
@@ -9,25 +9,25 @@
 #include <cmath>
 #include <algorithm>
 
-#include "QuadTreeTest.h"
+#include "QuadTreeGTest.h"
 #include "../../../auxiliary/Random.h"
 #include "../../../auxiliary/Log.h"
 #include "../../../geometric/HyperbolicSpace.h"
 
 namespace NetworKit {
 
-QuadTreeTest::QuadTreeTest() {
+QuadTreeGTest::QuadTreeGTest() {
 	// TODO Auto-generated constructor stub
 }
 
-QuadTreeTest::~QuadTreeTest() {
+QuadTreeGTest::~QuadTreeGTest() {
 	// TODO Auto-generated destructor stub
 }
 
 /**
  * Test whether the elements returned by a quadtree range query are indeed those whose hyperbolic distance to the query point is below a threshold
  */
-TEST_F(QuadTreeTest, testQuadTreeHyperbolicCircle) {
+TEST_F(QuadTreeGTest, testQuadTreeHyperbolicCircle) {
 	count n = 1000;
 	double R = 1;
 	vector<double> angles(n);
@@ -58,7 +58,7 @@ TEST_F(QuadTreeTest, testQuadTreeHyperbolicCircle) {
 		Point2D<double> query = HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]);
 		DEBUG("Using ", comparison, " at (", angles[comparison], ",", radii[comparison], ") as query point");
 
-		vector<index> closeToOne = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]), R);
+		vector<index> closeToOne = quad.getElementsInHyperbolicCircle(testindex, HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]), R);
 		EXPECT_LE(closeToOne.size(), n);
 
 		for (index i = 0; i < closeToOne.size(); i++) {
@@ -113,7 +113,7 @@ TEST_F(QuadTreeTest, testQuadTreeHyperbolicCircle) {
 /**
  * Gradually increase the distance threshold and check whether the number of neighbours increases monotonically. Necessary foundation for the dynamic hyperbolic generator.
  */
-TEST_F(QuadTreeTest, testQuadTreeThresholdGrowth) {
+TEST_F(QuadTreeGTest, testQuadTreeThresholdGrowth) {
 	count n = 100;
 	double R = HyperbolicSpace::hyperbolicAreaToRadius(n);
 	vector<double> angles(n);
@@ -144,7 +144,7 @@ TEST_F(QuadTreeTest, testQuadTreeThresholdGrowth) {
 		if (query == n) query--;
 		vector<index> lastNeighbours;
 		for (double threshold = 0; threshold < R; threshold += 0.01) {
-			vector<index> neighbours = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[query], radii[query]), threshold);
+			vector<index> neighbours = quad.getElementsInHyperbolicCircle(testindex, HyperbolicSpace::polarToCartesian(angles[query], radii[query]), threshold);
 			EXPECT_GE(neighbours.size(), lastNeighbours.size());
 			if (neighbours.size() < lastNeighbours.size()) {
 				DEBUG("Previous Neighbours: ");
@@ -164,7 +164,7 @@ TEST_F(QuadTreeTest, testQuadTreeThresholdGrowth) {
 /**
  * Insert nodes into Quadtree and successively delete all of them, check if resulting tree is empty
  */
-TEST_F(QuadTreeTest, testQuadTreeDeletion) {
+TEST_F(QuadTreeGTest, testQuadTreeDeletion) {
 	count n = 1000;
 	double R = HyperbolicSpace::hyperbolicAreaToRadius(n);
 	vector<double> angles(n);
@@ -222,7 +222,7 @@ TEST_F(QuadTreeTest, testQuadTreeDeletion) {
 /**
  * Test whether the points found by a Euclidean range query on the quadtree root are exactly those whose Euclidean distance to the query point is smaller than the threshold.
  */
-TEST_F(QuadTreeTest, testEuclideanCircle) {
+TEST_F(QuadTreeGTest, testEuclideanCircle) {
 	count n = 1000;
 	double R = 1;
 	vector<double> angles(n);
@@ -276,17 +276,17 @@ TEST_F(QuadTreeTest, testEuclideanCircle) {
 
 		vector<index> circleDenizens;
 
-		root.getElementsInEuclideanCircle(query, radius, circleDenizens, minPhi, maxPhi, minR, maxR);
+		root.getElementsInEuclideanCircle(i, query, radius, circleDenizens, minPhi, maxPhi, minR, maxR);
 		if (minPhi < 0) {
-			root.getElementsInEuclideanCircle(query, radius, circleDenizens, 2*M_PI+minPhi, 2*M_PI, minR, maxR);
+			root.getElementsInEuclideanCircle(i, query, radius, circleDenizens, 2*M_PI+minPhi, 2*M_PI, minR, maxR);
 		}
 		if (maxPhi > 2*M_PI) {
-			root.getElementsInEuclideanCircle(query, radius, circleDenizens, 0, maxPhi - 2*M_PI, minR, maxR);
+			root.getElementsInEuclideanCircle(i, query, radius, circleDenizens, 0, maxPhi - 2*M_PI, minR, maxR);
 		}
 
 		//check whether bounds were correct by calling again without bounds and comparing
 		vector<index> alternateDenizens;
-		root.getElementsInEuclideanCircle(query, radius, alternateDenizens);
+		root.getElementsInEuclideanCircle(i, query, radius, alternateDenizens);
 
 		EXPECT_EQ(circleDenizens.size(), alternateDenizens.size());
 
@@ -314,7 +314,7 @@ TEST_F(QuadTreeTest, testEuclideanCircle) {
 /**
  * Test whether the theoretical splitting rules for different point distributions succeed in creating a balanced tree
  */
-TEST_F(QuadTreeTest, testQuadTreeBalance) {
+TEST_F(QuadTreeGTest, testQuadTreeBalance) {
 	count n = 100000;
 	double s =1;
 	double alpha = 1;
@@ -385,7 +385,7 @@ TEST_F(QuadTreeTest, testQuadTreeBalance) {
 /**
  * No testing yet, just debug output
  */
-TEST_F(QuadTreeTest, tryQuadTreeCutLeaves) {
+TEST_F(QuadTreeGTest, tryQuadTreeCutLeaves) {
 	count n = 1000000;
 	count trials = 20;
 	double s =1;
@@ -414,7 +414,7 @@ TEST_F(QuadTreeTest, tryQuadTreeCutLeaves) {
 		for (index e = 0; e < trials; e++) {
 			index q = Aux::Random::integer(n);
 			quad.resetCounter();
-			vector<index> neighbours = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[q], radii[q]), threshold);
+			vector<index> neighbours = quad.getElementsInHyperbolicCircle(e, HyperbolicSpace::polarToCartesian(angles[q], radii[q]), threshold);
 			QuadNode<index> root = getRoot(quad);
 			count included = root.countIncluded();
 			count cut = root.countCut();
@@ -447,7 +447,7 @@ TEST_F(QuadTreeTest, tryQuadTreeCutLeaves) {
 /**
  * No testing yet, just debug output
  */
-TEST_F(QuadTreeTest, testQuadTreeCutLeaves) {
+TEST_F(QuadTreeGTest, testQuadTreeCutLeaves) {
 	count n = 100000;
 	count capacity = 1000;
 	count trials = 20;
@@ -475,7 +475,7 @@ TEST_F(QuadTreeTest, testQuadTreeCutLeaves) {
 	for (index e = 0; e < trials; e++) {
 		index q = Aux::Random::integer(n);
 		quad.resetCounter();
-		vector<index> neighbours = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[q], radii[q]), threshold);
+		vector<index> neighbours = quad.getElementsInHyperbolicCircle(e, HyperbolicSpace::polarToCartesian(angles[q], radii[q]), threshold);
 		QuadNode<index> root = getRoot(quad);
 		count included = root.countIncluded();
 		count cut = root.countCut();
@@ -501,7 +501,7 @@ TEST_F(QuadTreeTest, testQuadTreeCutLeaves) {
 	DEBUG("Total edges: ", totalEdges);
 }
 
-TEST_F(QuadTreeTest, testParallelQuadtreeConstruction) {
+TEST_F(QuadTreeGTest, testParallelQuadTreeConstruction) {
 	count n = 1000000;
 	double s = 1;
 	Quadtree<index> quad(n,s);
@@ -516,7 +516,7 @@ TEST_F(QuadTreeTest, testParallelQuadtreeConstruction) {
 	}
 }
 
-TEST_F(QuadTreeTest, testSequentialQuadtreeConstruction) {
+TEST_F(QuadTreeGTest, testSequentialQuadTreeConstruction) {
 	count n = 1000000;
 	count capacity = 1000;
 	double s =1;
