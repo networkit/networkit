@@ -501,21 +501,22 @@ TEST_F(QuadTreeTest, testQuadTreeCutLeaves) {
 	DEBUG("Total edges: ", totalEdges);
 }
 
-TEST_F(QuadTreeTest, testParallelQuadTreeConstruction) {
+TEST_F(QuadTreeTest, testParallelQuadtreeConstruction) {
 	count n = 1000000;
-	Quadtree<index> quad(n,1.0);
+	double s = 1;
+	Quadtree<index> quad(n,s);
 	EXPECT_EQ(quad.size(), n);
 	EXPECT_GE(quad.height(), log(n/1000)/log(4));
 	EXPECT_GE(quad.countLeaves(), n/1000);
 	quad.reindex();
 	vector<index> elements = quad.getElements();
 	EXPECT_EQ(elements.size(), n);
-	EXPECT_EQ(*std::min_element(elements.begin(), elements.end()), 0);
-	EXPECT_EQ(*std::max_element(elements.begin(), elements.end()), n-1);
-	EXPECT_TRUE(std::is_sorted(elements.begin(), elements.end()));
+	for (index i = 0; i < elements.size(); i++) {
+		EXPECT_EQ(elements[i], i);
+	}
 }
 
-TEST_F(QuadTreeTest, testSequentialQuadTreeConstruction) {
+TEST_F(QuadTreeTest, testSequentialQuadtreeConstruction) {
 	count n = 1000000;
 	count capacity = 1000;
 	double s =1;

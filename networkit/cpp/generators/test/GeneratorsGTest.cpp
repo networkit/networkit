@@ -822,6 +822,15 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithParallelQuadtree) {
 	quad.sortPointsInLeaves();
 	quad.reindex();
 	quad.extractCoordinates(angles, radii);
+	EXPECT_EQ(angles.size(), n);
+	EXPECT_EQ(radii.size(), n);
+
+	vector<index> elements = quad.getElements();
+	EXPECT_EQ(elements.size(), n);
+	for (index i = 0; i < elements.size(); i++) {
+		EXPECT_EQ(elements[i], i);
+	}
+
 	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
 
 	HyperbolicGenerator gen;

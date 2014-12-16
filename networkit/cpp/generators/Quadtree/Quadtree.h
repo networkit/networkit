@@ -45,7 +45,7 @@ public:
 			double treeArea = HyperbolicSpace::effectiveAreaInCell(currentNode.getLeftAngle(), currentNode.getRightAngle(), currentNode.getMinR(), currentNode.getMaxR(), alpha);
 			for (int i = 0; i < currentNode.children.size(); i++) {
 				double subTreeArea = HyperbolicSpace::effectiveAreaInCell(currentNode.children[i].getLeftAngle(), currentNode.children[i].getRightAngle(), currentNode.children[i].getMinR(), currentNode.children[i].getMaxR(), alpha);
-				const count pointsInSubtree = l*(subTreeArea/treeArea);
+				const count pointsInSubtree = l*(subTreeArea/treeArea);//TODO: bernoulli to distribute
 				offset = fillInParallel(pointsInSubtree, alpha, seqThreshold, offset, currentNode.children[i]);
 				//offset += pointsInSubtree;
 			}
@@ -82,11 +82,10 @@ public:
 		}
 		vector<double> missingAngles(n-result);
 		vector<double> missingRadii(n-result);
-		HyperbolicSpace::fillPoints(missingAngles, missingRadii, stretch, alpha);
+		HyperbolicSpace::fillPoints(missingAngles, missingRadii, 0, 2*M_PI, 0, R, alpha);
 		for (index i = result; i < n; i++) {
 			root.addContent(i, missingAngles[i-result], missingRadii[i-result]);
 		}
-		//bernoulli to distribute
 	}
 
 	/**

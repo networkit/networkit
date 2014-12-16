@@ -120,8 +120,41 @@ TEST_F(GeneratorsBenchmark, benchmarkBarabasiAlbertGenerator) {
 
 TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGenerator) {
 	count n = 100000;
-	HyperbolicGenerator gen(n,1,1);
-	Graph G = gen.generate();
+	HyperbolicGenerator gen;
+	Graph G = gen.generate(n,1,1);
+	EXPECT_EQ(G.numberOfNodes(), n);
+}
+
+TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorWithSortedNodes) {
+	count n = 100000;
+	double s = 1.0;
+	double alpha = 1.0;
+	double t = 1.0;
+	vector<double> angles(n);
+	vector<double> radii(n);
+	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
+	//sample points randomly
+
+	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
+	vector<index> permutation(n);
+
+	index p = 0;
+	std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
+
+	//can probably be parallelized easily, but doesn't bring much benefit
+	std::sort(permutation.begin(), permutation.end(), [&angles,&radii](index i, index j){return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);});
+
+	vector<double> anglecopy(n);
+	vector<double> radiicopy(n);
+
+	#pragma omp parallel for
+	for (index j = 0; j < n; j++) {
+		anglecopy[j] = angles[permutation[j]];
+		radiicopy[j] = radii[permutation[j]];
+	}
+
+	Graph G = HyperbolicGenerator().generate(anglecopy, radiicopy, r, R*t);
 	EXPECT_EQ(G.numberOfNodes(), n);
 }
 

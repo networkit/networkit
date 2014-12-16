@@ -66,9 +66,9 @@ Graph HyperbolicGenerator::generate() {
 }
 
 Graph HyperbolicGenerator::generate(count n, double distanceFactor, double alpha, double stretchradius) {
-	double R = stretchradius*HyperbolicSpace::hyperbolicAreaToRadius(n);
 	vector<double> angles(n);
 	vector<double> radii(n);
+	double R = stretchradius*HyperbolicSpace::hyperbolicAreaToRadius(n);
 	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	//sample points randomly
 
@@ -144,6 +144,9 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 			//count realDegree = near.size();
 			//std::swap(expectedDegree, realDegree);//dummy statement for debugging
 			result.swapNeighborhood(i, near, empty, false);
+			//for (index neighbour : near) {
+			//	if (neighbour < i) result.addEdge(i, neighbour);
+			//}
 
 			if (i % 10000 == 0) {
 				#pragma omp critical (progress)
