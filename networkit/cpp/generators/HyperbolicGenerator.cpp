@@ -139,7 +139,14 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 			vector<index> near;
 			near.reserve(expectedDegree*1.1);
 			quad.getElementsInHyperbolicCircle(i, HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance, near);
-			//count realDegree = near.size();
+			auto newend = std::unique(near.begin(), near.end());
+			if (near.end() != newend) {
+				near.pop_back();
+			}
+			count realDegree = near.size();
+			if (realDegree > 1.2*expectedDegree || realDegree < 0.8*expectedDegree) {
+				DEBUG("Expected ", expectedDegree, " neighbours, but got ", realDegree, "!");
+			}
 			//std::swap(expectedDegree, realDegree);//dummy statement for debugging
 			result.swapNeighborhood(i, near, empty, false);
 			//for (index neighbour : near) {
