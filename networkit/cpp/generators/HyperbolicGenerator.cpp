@@ -141,7 +141,7 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 			quad.getElementsInHyperbolicCircle(i, HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance, near);
 			//count realDegree = near.size();
 			//std::swap(expectedDegree, realDegree);//dummy statement for debugging
-			//result.swapNeighborhood(i, near, empty, false);
+			result.swapNeighborhood(i, near, empty, false);
 
 			if (i % 10000 == 0) {
 				#pragma omp critical (progress)
