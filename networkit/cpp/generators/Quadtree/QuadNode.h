@@ -22,7 +22,7 @@ namespace NetworKit {
 
 template <class T>
 class QuadNode {
-	friend class QuadTreeTest;
+	friend class QuadTreeGTest;
 private:
 	double leftAngle;
 	double minR;
@@ -402,7 +402,7 @@ public:
 	 * @param lowR Optional value for the minimum radial coordinate of the query region
 	 * @param highR Optional value for the maximum radial coordinate of the query region
 	 */
-	void getElementsInEuclideanCircle(Point2D<double> center, double radius, vector<T> &result, double minAngle=0, double maxAngle=2*M_PI, double lowR=0, double highR = 1) {
+	void getElementsInEuclideanCircle(index excluding, Point2D<double> center, double radius, vector<T> &result, double minAngle=0, double maxAngle=2*M_PI, double lowR=0, double highR = 1) {
 		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR < lowerBoundR) return;
 		if (outOfReach(center, radius)) {
 			return;
@@ -417,17 +417,27 @@ public:
 			const double queryX = center[0];
 			const double queryY = center[1];
 			const count cSize = content.size();
+			bool bits[cSize] __attribute__((aligned(64)));
 
+			#pragma ivdep
+			#pragma vector always
+			#pragma simd
 			for (int i = 0; i < cSize; i++) {
 				const double deltaX = positions[i][0] - queryX;
 				const double deltaY = positions[i][1] - queryY;
-				if (deltaX*deltaX + deltaY*deltaY < rsq) {
-					result.push_back(content[i]);
+				bits[i] = deltaX*deltaX + deltaY*deltaY < rsq; // && content[i] != excluding;
+			}
+
+			for (int i = 0; i < cSize; i++) {
+				if (bits[i]) {
+					try {
+						result.push_back(content[i]);
+					} catch (...) { }
 				}
 			}
 		}	else {
 			for (uint i = 0; i < children.size(); i++) {
-				children[i].getElementsInEuclideanCircle(center, radius, result, minAngle, maxAngle, lowR, highR);
+				children[i].getElementsInEuclideanCircle(excluding, center, radius, result, minAngle, maxAngle, lowR, highR);
 			}
 		}
 	}

@@ -19,7 +19,7 @@ namespace NetworKit {
 
 template <class T>
 class Quadtree {
-	friend class QuadTreeTest;
+	friend class QuadTreeGTest;
 public:
 	Quadtree() {
 		root = QuadNode<T>();
@@ -127,13 +127,13 @@ public:
 	 * @param circleCenter Cartesian coordinates of the query circle's center
 	 * @param hyperbolicRadius Radius of the query circle
 	 */
-	vector<T> getElementsInHyperbolicCircle(Point2D<double> circleCenter, double hyperbolicRadius) {
+	vector<T> getElementsInHyperbolicCircle(index excluding, Point2D<double> circleCenter, double hyperbolicRadius) {
 		vector<T> circleDenizens;
-		getElementsInHyperbolicCircle(circleCenter, hyperbolicRadius, circleDenizens);
+		getElementsInHyperbolicCircle(excluding, circleCenter, hyperbolicRadius, circleDenizens);
 		return circleDenizens;
 	}
 
-	void getElementsInHyperbolicCircle(Point2D<double> circleCenter, double hyperbolicRadius, vector<T> &circleDenizens) {
+	void getElementsInHyperbolicCircle(index excluding, Point2D<double> circleCenter, double hyperbolicRadius, vector<T> &circleDenizens) {
 		Point2D<double> origin(0,0);
 		Point2D<double> center;
 
@@ -165,13 +165,13 @@ public:
 		 */
 
 		bool wraparound = false;
-		root.getElementsInEuclideanCircle(center, radius, circleDenizens, minPhi, maxPhi, minR, maxR);
+		root.getElementsInEuclideanCircle(excluding, center, radius, circleDenizens, minPhi, maxPhi, minR, maxR);
 		if (minPhi < 0) {
-			root.getElementsInEuclideanCircle(center, radius, circleDenizens, 2*M_PI+minPhi, 2*M_PI, minR, maxR);
+			root.getElementsInEuclideanCircle(excluding, center, radius, circleDenizens, 2*M_PI+minPhi, 2*M_PI, minR, maxR);
 			wraparound = true;
 		}
 		if (maxPhi > 2*M_PI) {
-			root.getElementsInEuclideanCircle(center, radius, circleDenizens, 0, maxPhi - 2*M_PI, minR, maxR);
+			root.getElementsInEuclideanCircle(excluding, center, radius, circleDenizens, 0, maxPhi - 2*M_PI, minR, maxR);
 			wraparound = true;
 		}
 
