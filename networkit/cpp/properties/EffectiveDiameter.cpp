@@ -17,8 +17,7 @@
 
 namespace NetworKit {
 /*
-this is a variaton of the ANF algorithm presented in the paper "A Fast and Scalable Tool for Data Mining
-in Massive Graphs" by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
+
 */
 double EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, const count k, const count r) {
 	// the length of the bitmask where the number of connected nodes is saved

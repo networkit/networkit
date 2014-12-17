@@ -16,7 +16,7 @@ namespace NetworKit {
 
 KPathCentrality::KPathCentrality(const Graph& G, double alpha, count k) : Centrality(G, false, false) {
 	if (alpha >= -0.5 && alpha <= 0.5) {
-		KPathCentrality::alpha = alpha;
+		KPathCentrality::alpha = alpha; // FIXME: check and remove strange syntax
 	} else {
 		throw std::runtime_error("alpha must lie in interval [-0.5, 0.5]");
 	}
@@ -45,7 +45,7 @@ void KPathCentrality::run() {
 	std::stack<node> stack;
 	node v;
 
-	for (int i = 1; i <= t; i++) {
+	for (int i = 1; i <= t; i++) { // FIXME: int -> count
 		node s = G.randomNode();
 		int l = Aux::Random::integer(1, k);
 		explored[s] = true;

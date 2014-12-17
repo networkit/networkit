@@ -66,7 +66,7 @@ void Betweenness::run() {
 				double c= weight * (1 + dependency[t]);
 				dependency[p] += c;
 				if (computeEdges) {
-					edgeData[G.edgeId(p,t)] += c;
+					edgeData[G.edgeId(p,t)] += c; // FIXME: probably wrong for parallel case
 				}
 
 
