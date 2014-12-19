@@ -303,6 +303,29 @@ void Graph::shrinkToFit() {
 
 }
 
+void Graph::compactEdges() {
+	if (hasEdgeIds()) throw std::runtime_error("Not implemented for graphs with edge ids");
+	if (weighted) throw std::runtime_error("Not implemented for weighted graphs");
+
+	auto doCompact = [&](std::vector<std::vector<node>> & edgeContainer) {
+		for (std::vector<node> &edges : edgeContainer) {
+			auto writeIt = edges.begin();
+
+			for (auto readIt = edges.begin(); readIt != edges.end(); ++readIt) {
+				if (*readIt != none) {
+					*writeIt = *readIt;
+					++writeIt;
+				}
+			}
+
+			edges.resize(std::distance(edges.begin(), writeIt));
+		}
+	};
+
+	doCompact(outEdges);
+	doCompact(inEdges);
+}
+
 std::string Graph::toString() const {
 	std::stringstream strm;
 	strm << typ() << "(name=" << getName() << ", n=" << numberOfNodes()

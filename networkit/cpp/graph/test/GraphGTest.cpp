@@ -1837,6 +1837,33 @@ TEST_P(GraphGTest, testInForEdgesUndirected) {
 	INFO(choices2);*/
 }
 
+TEST_P(GraphGTest, testCompactEdges) {
+	Graph G = this->Ghouse;
+
+	G.addEdge(0, 4);
+	G.addEdge(0, 3);
+	G.removeEdge(0, 3);
+	G.removeEdge(0, 4);
+
+	if (!G.isWeighted())
+		G.compactEdges();
+
+	std::vector<std::pair<node, node> > outEdges;
+	outEdges.reserve(this->Ghouse.numberOfEdges());
+
+	this->Ghouse.forEdges([&](node u, node v) {
+		outEdges.emplace_back(u, v);
+	});
+
+	auto it = outEdges.begin();
+
+	G.forEdges([&](node u, node v) {
+		ASSERT_NE(it, outEdges.end());
+		EXPECT_EQ(it->first, u);
+		EXPECT_EQ(it->second, v);
+		++it;
+	});
+}
 
 
 } /* namespace NetworKit */

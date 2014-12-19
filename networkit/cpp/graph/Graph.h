@@ -398,6 +398,11 @@ public:
 	void shrinkToFit();
 
 	/**
+	 * Compacts the adjacency arrays by re-using no longer neede slots from deleted edges.
+	 */
+	void compactEdges();
+
+	/**
 	 * Set name of graph to @a name.
 	 * @param name The name.
 	 */
