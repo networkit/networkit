@@ -23,6 +23,7 @@ public:
 	 *
 	 * @param G The graph.
 	 * @param normalized Set this parameter to <code>true</code> if scores should be normalized in the interval [0,1].
+	 * @param computeEdges Set this parameter to <code>true</code> if edge betweenness should be computed as well.
 	 */
 	Betweenness(const Graph& G, bool normalized=false, bool computeEdges=false);
 

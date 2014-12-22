@@ -4165,6 +4165,7 @@ cdef extern from "cpp/centrality/Betweenness.h":
 		_Betweenness(_Graph, bool) except +
 		void run() except +
 		vector[double] scores() except +
+		vector[double] edgeScores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
 
@@ -4251,6 +4252,14 @@ cdef class Betweenness:
 			A vector of pairs.
 		"""
 		return self._this.ranking()
+
+cdef extern from "cpp/centrality/Closeness.h":
+	cdef cppclass _Closeness "NetworKit::Closeness":
+		_Closeness(_Graph, bool) except +
+		void run() except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
 
 cdef class Closeness:
 	"""
@@ -4874,6 +4883,14 @@ cdef class DegreeCentrality:
 			The theoretical maximum of centrality score.
 		"""
 		return self._this.maximum()
+
+cdef extern from "cpp/centrality/KPathCentrality.h":
+	cdef cppclass _KPathCentrality "NetworKit::KPathCentrality":
+		_KPathCentrality(_Graph, bool) except +
+		void run() except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
 
 cdef class KPathCentrality:
 	"""

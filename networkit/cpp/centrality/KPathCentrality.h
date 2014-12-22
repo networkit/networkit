@@ -33,7 +33,7 @@ public:
 	double alpha;
 
 	/**
-	 * Constructs the Betweenness class for the given Graph @a G.
+	 * Constructs the K-Path Centrality class for the given Graph @a G.
 	 *
 	 * @param G The graph.
 	 * @param alpha tradeoff between precision and runtime.
@@ -42,7 +42,7 @@ public:
 	KPathCentrality(const Graph& G, double alpha=0.2, count k=0);
 
 	/**
-	* Compute betweenness scores sequential.
+	* Compute K-Path scores sequential.
 	*
 	*/
 	void run() override;
