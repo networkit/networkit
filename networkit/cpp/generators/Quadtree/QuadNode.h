@@ -22,7 +22,7 @@ namespace NetworKit {
 
 template <class T>
 class QuadNode {
-	friend class QuadTreeTest;
+	friend class QuadTreeGTest;
 private:
 	double leftAngle;
 	double minR;
