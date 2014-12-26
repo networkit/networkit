@@ -1,5 +1,5 @@
 /*
- * QuadTreeTest.cpp
+ * QuadTreeGTest.cpp
  *
  *  Created on: 28.05.2014
  *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
@@ -9,25 +9,25 @@
 #include <cmath>
 #include <algorithm>
 
-#include "QuadTreeTest.h"
+#include "QuadTreeGTest.h"
 #include "../../../auxiliary/Random.h"
 #include "../../../auxiliary/Log.h"
 #include "../../../geometric/HyperbolicSpace.h"
 
 namespace NetworKit {
 
-QuadTreeTest::QuadTreeTest() {
+QuadTreeGTest::QuadTreeGTest() {
 	// TODO Auto-generated constructor stub
 }
 
-QuadTreeTest::~QuadTreeTest() {
+QuadTreeGTest::~QuadTreeGTest() {
 	// TODO Auto-generated destructor stub
 }
 
 /**
  * Test whether the elements returned by a quadtree range query are indeed those whose hyperbolic distance to the query point is below a threshold
  */
-TEST_F(QuadTreeTest, testQuadTreeHyperbolicCircle) {
+TEST_F(QuadTreeGTest, testQuadTreeHyperbolicCircle) {
 	count n = 1000;
 	double R = 1;
 	vector<double> angles(n);
@@ -113,7 +113,7 @@ TEST_F(QuadTreeTest, testQuadTreeHyperbolicCircle) {
 /**
  * Gradually increase the distance threshold and check whether the number of neighbours increases monotonically. Necessary foundation for the dynamic hyperbolic generator.
  */
-TEST_F(QuadTreeTest, testQuadTreeThresholdGrowth) {
+TEST_F(QuadTreeGTest, testQuadTreeThresholdGrowth) {
 	count n = 100;
 	double R = HyperbolicSpace::hyperbolicAreaToRadius(n);
 	vector<double> angles(n);
@@ -164,7 +164,7 @@ TEST_F(QuadTreeTest, testQuadTreeThresholdGrowth) {
 /**
  * Insert nodes into Quadtree and successively delete all of them, check if resulting tree is empty
  */
-TEST_F(QuadTreeTest, testQuadTreeDeletion) {
+TEST_F(QuadTreeGTest, testQuadTreeDeletion) {
 	count n = 1000;
 	double R = HyperbolicSpace::hyperbolicAreaToRadius(n);
 	vector<double> angles(n);
@@ -222,7 +222,7 @@ TEST_F(QuadTreeTest, testQuadTreeDeletion) {
 /**
  * Test whether the points found by a Euclidean range query on the quadtree root are exactly those whose Euclidean distance to the query point is smaller than the threshold.
  */
-TEST_F(QuadTreeTest, testEuclideanCircle) {
+TEST_F(QuadTreeGTest, testEuclideanCircle) {
 	count n = 1000;
 	double R = 1;
 	vector<double> angles(n);
@@ -314,7 +314,7 @@ TEST_F(QuadTreeTest, testEuclideanCircle) {
 /**
  * Test whether the theoretical splitting rules for different point distributions succeed in creating a balanced tree
  */
-TEST_F(QuadTreeTest, testQuadTreeBalance) {
+TEST_F(QuadTreeGTest, testQuadTreeBalance) {
 	count n = 100000;
 	double s =1;
 	double alpha = 1;
@@ -384,7 +384,7 @@ TEST_F(QuadTreeTest, testQuadTreeBalance) {
 
 
 
-TEST_F(QuadTreeTest, testParallelQuadTreeConstruction) {
+TEST_F(QuadTreeGTest, testParallelQuadTreeConstruction) {
 	count n = 1000000;
 	Quadtree<index> quad(n,1.0);
 	EXPECT_EQ(quad.size(), n);
@@ -398,7 +398,7 @@ TEST_F(QuadTreeTest, testParallelQuadTreeConstruction) {
 	EXPECT_TRUE(std::is_sorted(elements.begin(), elements.end()));
 }
 
-TEST_F(QuadTreeTest, testSequentialQuadTreeConstruction) {
+TEST_F(QuadTreeGTest, testSequentialQuadTreeConstruction) {
 	count n = 1000000;
 	count capacity = 1000;
 	double s =1;
