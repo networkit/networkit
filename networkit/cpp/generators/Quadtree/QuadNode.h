@@ -403,10 +403,11 @@ public:
 		if (outOfReach(center, radius)) {
 			return;
 		}
-		double phi_c, r_c;
-		HyperbolicSpace::cartesianToPolar(center, phi_c, r_c);
-		highR = min(highR, HyperbolicSpace::maxRinSlice(leftAngle, rightAngle, phi_c, r_c, radius));
-		if (highR < lowerBoundR) return;
+
+		//double phi_c, r_c;
+		//HyperbolicSpace::cartesianToPolar(center, phi_c, r_c);
+		//highR = min(highR, HyperbolicSpace::maxRinSlice(leftAngle, rightAngle, phi_c, r_c, radius));
+		//if (highR < lowerBoundR) return;
 
 		if (isLeaf) {
 			const double rsq = radius*radius;
