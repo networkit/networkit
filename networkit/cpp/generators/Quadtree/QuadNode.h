@@ -78,6 +78,7 @@ public:
 	 *
 	 */
 	QuadNode(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity, double minDiameter, bool splitTheoretical = false, double alpha = 1, double balance = 0.5) {
+		if (balance <= 0 || balance >= 1) throw  std::runtime_error("Quadtree balance parameter must be between 0 and 1.");
 		this->leftAngle = leftAngle;
 		this->minR = minR;
 		this->maxR = maxR;
@@ -91,8 +92,6 @@ public:
 		this->alpha = alpha;
 		this->splitTheoretical = splitTheoretical;
 		this->balance = balance;
-		assert(balance > 0);
-		assert(balance < 1);
 		this->lowerBoundR = maxR;
 		isLeaf = true;
 		elements = 0;

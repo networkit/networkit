@@ -87,6 +87,10 @@ public:
 		this->theoreticalSplit = split;
 	}
 
+	void setBalance(double balance) {
+		this->balance = balance;
+	}
+
 	vector<double> getElapsedMilliseconds() {
 		vector<double> result(threadtimers.size());
 		for (index i = 0; i < result.size(); i++) {
@@ -115,6 +119,7 @@ private:
 	 */
 	count capacity;
 	bool theoreticalSplit;
+	double balance;
 
 	/**
 	 * times

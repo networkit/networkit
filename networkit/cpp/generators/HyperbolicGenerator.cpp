@@ -59,6 +59,7 @@ void HyperbolicGenerator::initialize() {
 	capacity = 1000;
 	theoreticalSplit = false;
 	threadtimers.resize(omp_get_max_threads());
+	balance = 0.5;
 }
 
 Graph HyperbolicGenerator::generate() {
@@ -104,7 +105,7 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	timer.start();
 	index n = angles.size();
 	assert(radii.size() == n);
-	Quadtree<index> quad(R, theoreticalSplit, alpha, capacity);
+	Quadtree<index> quad(R, theoreticalSplit, alpha, capacity, balance);
 
 	//initialize a graph builder for n nodes and an undirected, unweighted graph with direct swap
 	for (index i = 0; i < n; i++) {

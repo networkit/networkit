@@ -1491,6 +1491,7 @@ cdef extern from "cpp/generators/HyperbolicGenerator.h":
 		_HyperbolicGenerator(unsigned int nodes,  double distanceFactor, double alpha, double stretch) except +
 		void setLeafCapacity(unsigned int capacity) except +
 		void setTheoreticalSplit(bool split) except +
+		void setBalance(double balance) except +
 		vector[double] getElapsedMilliseconds() except +
 		_Graph generate() except +
 
@@ -1519,6 +1520,9 @@ cdef class HyperbolicGenerator:
 
 	def setLeafCapacity(self, capacity):
 		self._this.setLeafCapacity(capacity)
+
+	def setBalance(self, balance):
+		self._this.setBalance(balance)
 
 	def setTheoreticalSplit(self, theoreticalSplit):
 		self._this.setTheoreticalSplit(theoreticalSplit)
