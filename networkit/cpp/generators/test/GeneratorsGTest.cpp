@@ -814,6 +814,7 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithParallelQuadtree) {
 	count n = 50000;
 	double s = 1.2;
 	double t = 1;
+	count oldthreads = omp_get_max_threads()
 	omp_set_num_threads(8);
 
 	Quadtree<index> quad(n,s);
@@ -831,6 +832,7 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithParallelQuadtree) {
 	EXPECT_EQ(n, G.numberOfNodes());
 	EXPECT_NEAR(G.numberOfEdges(), expected, expected/10);
 	EXPECT_TRUE(G.checkConsistency());
+	omp_set_num_threads(oldthreads);
 }
 
 /**
