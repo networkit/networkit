@@ -34,8 +34,8 @@ public:
 	 * @param diagnostics Count how many necessary and unnecessary comparisons happen in leaf cells? Will cause race condition and false sharing in parallel calls
 	 *
 	 */
-	Quadtree(double maxR,bool theoreticalSplit=false, double alpha=1, count capacity=1000, bool diagnostics = false) {
-		root = QuadNode<T>(0, 0, 2*M_PI, maxR, capacity, 0,theoreticalSplit,alpha,diagnostics);
+	Quadtree(double maxR,bool theoreticalSplit=false, double alpha=1, count capacity=1000, double balance = 0.5) {
+		root = QuadNode<T>(0, 0, 2*M_PI, maxR, capacity, 0,theoreticalSplit,alpha,balance);
 		this->maxRadius = maxR;
 	}
 
@@ -66,12 +66,12 @@ public:
 			return offset;
 		}
 
-	Quadtree(count n, double stretch, bool theoreticalSplit=false, double alpha=1, count capacity=1000, bool diagnostics = false) {
+	Quadtree(count n, double stretch, bool theoreticalSplit=false, double alpha=1, count capacity=1000, double balance = 0.5) {
 		double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(n);
 		double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 		count numberOfThreads = omp_get_max_threads();
 		//double k = ceil(log(numberOfThreads)/log(4));
-		root = QuadNode<T>(0, 0, 2*M_PI, r, capacity, 0,theoreticalSplit,alpha,diagnostics);
+		root = QuadNode<T>(0, 0, 2*M_PI, r, capacity, 0,theoreticalSplit,alpha,balance);
 		count result;
 		#pragma omp parallel
 		{
@@ -229,13 +229,6 @@ public:
 	 */
 	void trim() {
 		root.trim();
-	}
-
-	/**
-	 * Reset the counters of necessary and unnecessary comparisons.
-	 */
-	void resetCounter() {
-		root.resetCounter();
 	}
 
 private:

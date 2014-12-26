@@ -40,11 +40,7 @@ private:
 	bool isLeaf;
 	bool splitTheoretical;
 	double alpha;
-	count uncomp;
-	count ncomp;
-	bool wasCut;
-	bool wasIncluded;
-	bool diagnostics;
+	double balance;
 	index ID;
 	double lowerBoundR;
 
@@ -61,10 +57,9 @@ public:
 		isLeaf = true;
 		minRegion = 0;
 		elements = 0;
-		splitTheoretical = false;
+		balance = 0.5;
 		alpha = 1;
 		lowerBoundR = maxR;
-		resetCounter();
 	}
 
 	/**
@@ -82,7 +77,7 @@ public:
 	 * @param diagnostics Count how many necessary and unnecessary comparisons happen in leaf cells? Will cause race condition and false sharing in parallel use
 	 *
 	 */
-	QuadNode(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity, double minDiameter, bool splitTheoretical = false, double alpha = 1,bool diagnostics = false) {
+	QuadNode(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity, double minDiameter, bool splitTheoretical = false, double alpha = 1, double balance = 0.5) {
 		this->leftAngle = leftAngle;
 		this->minR = minR;
 		this->maxR = maxR;
@@ -95,11 +90,12 @@ public:
 		this->minRegion = minDiameter;
 		this->alpha = alpha;
 		this->splitTheoretical = splitTheoretical;
-		this->diagnostics = diagnostics;
+		this->balance = balance;
+		assert(balance > 0);
+		assert(balance < 1);
 		this->lowerBoundR = maxR;
 		isLeaf = true;
 		elements = 0;
-		resetCounter();
 	}
 
 	void split() {
@@ -115,7 +111,7 @@ public:
 		if (splitTheoretical) {
 			double hyperbolicOuter = HyperbolicSpace::EuclideanRadiusToHyperbolic(maxR);
 			double hyperbolicInner = HyperbolicSpace::EuclideanRadiusToHyperbolic(minR);
-			double hyperbolicMiddle = acosh((cosh(alpha*hyperbolicOuter) + cosh(alpha*hyperbolicInner))/2)/alpha;
+			double hyperbolicMiddle = acosh((1-balance)*cosh(alpha*hyperbolicOuter) + balance*cosh(alpha*hyperbolicInner))/alpha;
 			middleR = HyperbolicSpace::hyperbolicRadiusToEuclidean(hyperbolicMiddle);
 		} else {
 			double nom = maxR - minR;
@@ -128,10 +124,10 @@ public:
 		assert(middleR < maxR);
 		assert(middleR > minR);
 
-		QuadNode southwest(leftAngle, minR, middleAngle, middleR, capacity, minRegion, splitTheoretical, alpha,diagnostics);
-		QuadNode southeast(middleAngle, minR, rightAngle, middleR, capacity, minRegion, splitTheoretical, alpha,diagnostics);
-		QuadNode northwest(leftAngle, middleR, middleAngle, maxR, capacity, minRegion, splitTheoretical, alpha,diagnostics);
-		QuadNode northeast(middleAngle, middleR, rightAngle, maxR, capacity, minRegion, splitTheoretical, alpha,diagnostics);
+		QuadNode southwest(leftAngle, minR, middleAngle, middleR, capacity, minRegion, splitTheoretical, alpha, balance);
+		QuadNode southeast(middleAngle, minR, rightAngle, middleR, capacity, minRegion, splitTheoretical, alpha, balance);
+		QuadNode northwest(leftAngle, middleR, middleAngle, maxR, capacity, minRegion, splitTheoretical, alpha, balance);
+		QuadNode northeast(middleAngle, middleR, rightAngle, maxR, capacity, minRegion, splitTheoretical, alpha, balance);
 		children = {southwest, southeast, northwest, northeast};
 		isLeaf = false;
 	}
@@ -433,22 +429,6 @@ public:
 	}
 
 	/**
-	 * Reset the counters of necessary and unecessary distance calculations in this subtree.
-	 * Also reset the flags indicating whether each leaf was included or cut during the last query
-	 */
-	void resetCounter() {
-		ncomp = 0;
-		uncomp = 0;
-		wasCut = false;
-		wasIncluded = false;
-		if (!isLeaf) {
-			for (index i = 0; i < children.size(); i++) {
-				children[i].resetCounter();
-			}
-		}
-	}
-
-	/**
 	 * Shrink all vectors in this subtree to fit the content.
 	 * Call after quadtree construction is complete, causes better memory usage and cache efficiency
 	 */
@@ -462,47 +442,6 @@ public:
 				children[i].trim();
 			}
 		}
-	}
-
-	/**
-	 * Count how many of the leafs in this subtree were wholly included in the last query circle
-	 */
-	int countIncluded() const {
-		if (isLeaf) return wasIncluded ? 1 : 0;
-		int result = 0;
-		//This probably creates a copy each loop iteration
-		for (auto child : children) result += child.countIncluded();
-		return result;
-	}
-
-	/**
-	 * Count how many of the leafs in this subtree were cut by the last query circle
-	 */
-	int countCut() const {
-		if (isLeaf) return wasCut ? 1 : 0;
-		int result = 0;
-		for (auto child : children) result += child.countCut();
-		return result;
-	}
-
-	/**
-	 * Count how many points where contained in cut leaves of the last query circle, but not the circle itself
-	 */
-	int countUnnecessaryComparisonsInCutLeaves() const {
-		if (isLeaf) return wasCut ? uncomp : 0;
-		int result = 0;
-		for (auto child : children) result += child.countUnnecessaryComparisonsInCutLeaves();
-		return result;
-	}
-
-	/**
-     * Count how many points where contained in cut leaves of the last query circle AND in the circle itself
-	 */
-	int countNecessaryComparisonsInCutLeaves() const {
-		if (isLeaf) return wasCut ? ncomp : 0;
-		int result = 0;
-		for (auto child : children) result += child.countNecessaryComparisonsInCutLeaves();
-		return result;
 	}
 
 	/**

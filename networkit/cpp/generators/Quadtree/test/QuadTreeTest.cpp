@@ -329,7 +329,7 @@ TEST_F(QuadTreeTest, testQuadTreeBalance) {
 		}
 	}
 
-	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R),true,alpha);
+	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R),true,alpha, 1000, 0.5);
 
 	for (index i = 0; i < n; i++) {
 		EXPECT_GE(angles[i], 0);
@@ -382,124 +382,7 @@ TEST_F(QuadTreeTest, testQuadTreeBalance) {
 	}
 }
 
-/**
- * No testing yet, just debug output
- */
-TEST_F(QuadTreeTest, tryQuadTreeCutLeaves) {
-	count n = 1000000;
-	count trials = 20;
-	double s =1;
-	double alpha = 1;
-	double t = 1;
-	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
-	double threshold = t*R;
-	vector<double> angles(n);
-	vector<double> radii(n);
-	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
 
-	for (index capexp = 1; capexp < log(n)/log(4); capexp++) {
-		count capacity = pow(4,capexp);
-		Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R),false,alpha,capacity,true);
-
-		for (index i = 0; i < n; i++) {
-			quad.addContent(i, angles[i], radii[i]);
-		}
-
-		count sumIncluded = 0;
-		count sumCut = 0;
-		count sumUNcomp = 0;
-		count sumNcomp = 0;
-		count totalEdges = 0;
-
-		for (index e = 0; e < trials; e++) {
-			index q = Aux::Random::integer(n);
-			quad.resetCounter();
-			vector<index> neighbours = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[q], radii[q]), threshold);
-			QuadNode<index> root = getRoot(quad);
-			count included = root.countIncluded();
-			count cut = root.countCut();
-			count uncomp = root.countUnnecessaryComparisonsInCutLeaves();
-			count ncomp = root.countNecessaryComparisonsInCutLeaves();
-			/*
-			DEBUG("Node: ", q);
-			DEBUG("Degree: ", neighbours.size());
-			DEBUG("Included leaves: ", included);
-			DEBUG("Cut leaves: ", cut);
-			DEBUG("Unnecessary comparisons in cut leaves: ", uncomp);
-			DEBUG("Necessary comparisons in cut leaves: ", ncomp);
-			*/
-			sumIncluded += included;
-			sumCut += cut;
-			sumUNcomp += uncomp;
-			sumNcomp += ncomp;
-			totalEdges += neighbours.size();
-		}
-		DEBUG("Capacity:", capacity);
-		DEBUG("Number of Leaves:", quad.countLeaves(), "(", pow(4,ceil(log(n/capacity)/log(4))), ")");
-		DEBUG("Average included leaves: ", sumIncluded/trials);
-		DEBUG("Average cut leaves: ", sumCut/trials);
-		DEBUG("Avg unnecessary comparisons in cut leaves: ", sumUNcomp/trials);
-		DEBUG("Avg necessary comparisons in cut leaves: ", sumNcomp/trials);
-		DEBUG("Avg Total edges: ", totalEdges/trials);
-	}
-}
-
-/**
- * No testing yet, just debug output
- */
-TEST_F(QuadTreeTest, testQuadTreeCutLeaves) {
-	count n = 100000;
-	count capacity = 1000;
-	count trials = 20;
-	double s =1;
-	double alpha = 1;
-	double t = 1;
-	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
-	double threshold = t*R;
-	vector<double> angles(n);
-	vector<double> radii(n);
-	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
-
-	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R),false,alpha,capacity,true);
-
-	for (index i = 0; i < n; i++) {
-		quad.addContent(i, angles[i], radii[i]);
-	}
-
-	count sumIncluded = 0;
-	count sumCut = 0;
-	count sumUNcomp = 0;
-	count sumNcomp = 0;
-	count totalEdges = 0;
-
-	for (index e = 0; e < trials; e++) {
-		index q = Aux::Random::integer(n);
-		quad.resetCounter();
-		vector<index> neighbours = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[q], radii[q]), threshold);
-		QuadNode<index> root = getRoot(quad);
-		count included = root.countIncluded();
-		count cut = root.countCut();
-		count uncomp = root.countUnnecessaryComparisonsInCutLeaves();
-		count ncomp = root.countNecessaryComparisonsInCutLeaves();
-		DEBUG("Node: ", q);
-		DEBUG("Degree: ", neighbours.size());
-		DEBUG("Included leaves: ", included);
-		DEBUG("Cut leaves: ", cut);
-		DEBUG("Unnecessary comparisons in cut leaves: ", uncomp);
-		DEBUG("Necessary comparisons in cut leaves: ", ncomp);
-		sumIncluded += included;
-		sumCut += cut;
-		sumUNcomp += uncomp;
-		sumNcomp += ncomp;
-		totalEdges += neighbours.size();
-	}
-	DEBUG("Number of Leaves:", quad.countLeaves());
-	DEBUG("Total included leaves: ", sumIncluded);
-	DEBUG("Total cut leaves: ", sumCut);
-	DEBUG("Unnecessary comparisons in cut leaves: ", sumUNcomp);
-	DEBUG("Necessary comparisons in cut leaves: ", sumNcomp);
-	DEBUG("Total edges: ", totalEdges);
-}
 
 TEST_F(QuadTreeTest, testParallelQuadTreeConstruction) {
 	count n = 1000000;
@@ -525,7 +408,7 @@ TEST_F(QuadTreeTest, testSequentialQuadTreeConstruction) {
 	vector<double> radii(n);
 	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
 
-	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R),false,alpha,capacity,true);
+	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R),false,alpha,capacity);
 
 	for (index i = 0; i < n; i++) {
 		quad.addContent(i, angles[i], radii[i]);
