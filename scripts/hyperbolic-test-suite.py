@@ -12,10 +12,9 @@ processors = psutil.NUM_CPUS
 
 stamp = time.time()
 
-cpucount = 2 #TODO: properly import number of cpus here
 balancelist = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.96, 0.97, 0.98, 0.99, 0.995]
 capacitylist = range(7, 13)
-threadlist = range(0, int(math.log2(cpucount)+1))
+threadlist = range(0, int(math.log2(processors)+1))
 scalelist = range(10, 26)# upper limit depends on platform. (Maybe) lower on phi, definitely higher on vsmp
 iterations = 10
 # Forget about openmp chunk size and schedule. They are not adjustable on the python level and the optimal value probably doesn't depend much on the other
@@ -83,15 +82,15 @@ for scale in scalelist:
 	n = 2**scale
 	gen = generators.HyperbolicGenerator(n)
 	for th in threadlist:
-	threads = 2**threadlist[i]
-	setNumberOfThreads(threads)
-	print("Starting ", iterations, " runs with", n, " nodes, and ", threads, " threads.")
-	start = time.time()
-	for i in range(0, iterations):
-		G = gen.generate()
-	end = time.time()
-	threadcost.append((end-start)/5)
-	print("Finished iterations in ", end - start, " seconds")
-	with open(str(stamp)+'-weak-cost.json', 'w') as j:
-		json.dump(cost, j)
+		threads = 2**threadlist[i]
+		setNumberOfThreads(threads)
+		print("Starting ", iterations, " runs with", n, " nodes, and ", threads, " threads.")
+		start = time.time()
+		for i in range(0, iterations):
+			G = gen.generate()
+		end = time.time()
+		threadcost.append((end-start)/5)
+		print("Finished iterations in ", end - start, " seconds")
+		with open(str(stamp)+'-weak-cost.json', 'w') as j:
+			json.dump(cost, j)
 
