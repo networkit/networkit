@@ -279,7 +279,7 @@ class SimmelianMultiscaleBackbone(Sparsifier):
 		return a_ms
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
-		gf = GlobalThresholdFilter(G, attribute, parameter, False)
+		gf = GlobalThresholdFilter(G, attribute, parameter, True)
 		return gf.calculate()
 
 	def _getParameterizationAlgorithm(self):
@@ -304,11 +304,11 @@ class LocalSimilarityBackbone(Sparsifier):
 		return a_ls
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
-		gf = GlobalThresholdFilter(G, attribute, parameter, False)
+		gf = GlobalThresholdFilter(G, attribute, parameter, True)
 		return gf.calculate()
 
 	def _getParameterizationAlgorithm(self):
-		return BinarySearchParameterization(True, 0.0, 1.0, 20)
+		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
 class MultiscaleBackbone(Sparsifier):
 
@@ -332,11 +332,11 @@ class MultiscaleBackbone(Sparsifier):
 		return attribute
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
-		gf = GlobalThresholdFilter(G, attribute, parameter, False)
+		gf = GlobalThresholdFilter(G, attribute, parameter, True)
 		return gf.calculate()
 
 	def _getParameterizationAlgorithm(self):
-		return BinarySearchParameterization(True, 0.0, 1.0, 20)
+		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
 class RandomBackbone(Sparsifier):
 
@@ -355,7 +355,7 @@ class RandomBackbone(Sparsifier):
 		return a_r
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
-		gf = GlobalThresholdFilter(G, attribute, parameter, False)
+		gf = GlobalThresholdFilter(G, attribute, parameter, True)
 		return gf.calculate()
 
 	def _getParameterizationAlgorithm(self):
@@ -410,11 +410,11 @@ class LocalDegreeBackbone(Sparsifier):
 		return a_ld
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
-		gf = GlobalThresholdFilter(G, attribute, parameter, False)
+		gf = GlobalThresholdFilter(G, attribute, parameter, True)
 		return gf.calculate()
 
 	def _getParameterizationAlgorithm(self):
-		return BinarySearchParameterization(True, 0.0, 1.0, 20)
+		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
 
 

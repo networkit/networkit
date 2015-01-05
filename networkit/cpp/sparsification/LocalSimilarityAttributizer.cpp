@@ -24,7 +24,7 @@ std::vector<double> LocalSimilarityAttributizer::getAttribute() {
 	 * such that the edge is contained in the backbone.
 	 */
 
-	std::vector<double> sparsificationExp(graph.upperEdgeIdBound(), 1.0);
+	std::vector<double> sparsificationExp(graph.upperEdgeIdBound(), 0.0);
 
 	graph.balancedParallelForNodes([&](node i) {
 		count d = graph.degree(i);
@@ -41,17 +41,21 @@ std::vector<double> LocalSimilarityAttributizer::getAttribute() {
 		std::sort(neighbors.begin(), neighbors.end());
 
 		count rank = 1;
-		//Top d^e edges are to be retained in the backbone graph.
-		//So we calculate the minimum exponent e for each edge that will keep it in the backbone.
+
+		/**
+		 * By convention, we want to the edges with highest "similarity" or "cohesion" to have values close to 1,
+		 * so we invert the range.
+		 */
+
 		#pragma omp critical
 		for(std::vector<AttributizedEdge<double>>::iterator it = neighbors.begin(); it != neighbors.end(); ++it) {
 			edgeid eid = it->eid;
 
-			double e = 0.0;
-			if (d > 1) 			//The node has only one neighbor,, so the edge will be kept anyway.
-				e = log(rank) / log(d);
+			double e = 1.0; //If the node has only one neighbor, the edge will be kept anyway.
+			if (d > 1)
+				e = 1 - (log(rank) / log(d));
 
-			sparsificationExp[eid] = std::min(e, sparsificationExp[eid]);
+			sparsificationExp[eid] = std::max(e, sparsificationExp[eid]);
 			rank++;
 		}
 

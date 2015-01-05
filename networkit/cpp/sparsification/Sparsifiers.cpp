@@ -86,7 +86,7 @@ void MultiscaleBackbone::run() {
 	MultiscaleAttributizer multiscaleAttributizer(inputGraph, weight);
 	std::vector<double> multiscale = multiscaleAttributizer.getAttribute();
 
-	GlobalThresholdFilter filter(inputGraph, multiscale, alpha, false);
+	GlobalThresholdFilter filter(inputGraph, multiscale, alpha, true);
 	outputGraph = filter.calculate();
 	hasOutput = true;
 }
@@ -105,7 +105,7 @@ void LocalSimilarityBackbone::run() {
 	LocalSimilarityAttributizer localSimAttributizer(inputGraph, triangles);
 	std::vector<double> minExponent = localSimAttributizer.getAttribute();
 
-	GlobalThresholdFilter filter(inputGraph, minExponent, e, false);
+	GlobalThresholdFilter filter(inputGraph, minExponent, e, true);
 	outputGraph = filter.calculate();
 	hasOutput = true;
 }
@@ -125,7 +125,7 @@ void SimmelianMultiscaleBackbone::run() {
 	MultiscaleAttributizer multiscaleAttributizer (inputGraph, triangles_d);
 	std::vector<double> multiscale = multiscaleAttributizer.getAttribute();
 
-	GlobalThresholdFilter filter(inputGraph, multiscale, alpha, false);
+	GlobalThresholdFilter filter(inputGraph, multiscale, alpha, true);
 	outputGraph = filter.calculate();
 	hasOutput = true;
 }
@@ -141,7 +141,7 @@ void RandomBackbone::run() {
 	RandomAttributizer randomAttributizer (inputGraph);
 	std::vector<double> random = randomAttributizer.getAttribute();
 
-	GlobalThresholdFilter filter(inputGraph, random, ratio, false);
+	GlobalThresholdFilter filter(inputGraph, random, ratio, true);
 	outputGraph = filter.calculate();
 	hasOutput = true;
 }
