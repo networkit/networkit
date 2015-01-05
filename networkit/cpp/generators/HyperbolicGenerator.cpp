@@ -24,7 +24,6 @@
 
 namespace NetworKit {
 
-
 HyperbolicGenerator::HyperbolicGenerator() {
 	stretch = 1;
 	alpha = 1;
