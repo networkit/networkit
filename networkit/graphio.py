@@ -88,7 +88,7 @@ def getReader(fileformat, **kwargs):
 	try:
 		# special case for custom Edge Lists
 		if fileformat == Format.EdgeList:
-			reader = EdgeListReader(kwargs['separator'],kwargs['firstNode'])
+			reader = EdgeListReader(**kwargs)
 		else:
 			reader = readers[fileformat]#(**kwargs)
 	except Exception or KeyError:

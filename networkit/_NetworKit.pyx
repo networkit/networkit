@@ -1775,18 +1775,19 @@ cdef class GraphToolBinaryReader:
 cdef extern from "cpp/io/EdgeListReader.h":
 	cdef cppclass _EdgeListReader "NetworKit::EdgeListReader":
 		_EdgeListReader() except +
-		_EdgeListReader(char separator, node firstNode, string commentPrefix, bool continuous)
+		_EdgeListReader(char separator, node firstNode, string commentPrefix, bool continuous, bool directed)
 		_Graph read(string path) except +
 		unordered_map[node,node] getNodeMap() except +
 
 
 cdef class EdgeListReader:
 	""" Reads a file in an edge list format.
+		TODO: docstring
 	"""
 	cdef _EdgeListReader _this
 
-	def __cinit__(self, separator, firstNode, commentPrefix="#", continuous=True):
-		self._this = _EdgeListReader(stdstring(separator)[0], firstNode, stdstring(commentPrefix), continuous)
+	def __cinit__(self, separator, firstNode, commentPrefix="#", continuous=True, directed=False):
+		self._this = _EdgeListReader(stdstring(separator)[0], firstNode, stdstring(commentPrefix), continuous, directed)
 
 	def read(self, path):
 		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
