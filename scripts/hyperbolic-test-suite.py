@@ -75,6 +75,8 @@ for i in range(0,minlength):
 	end = time.time()
 	threadcost.append((end-start)/5)
 	print("Finished iterations in ", end - start, " seconds")
+	with open(str(stamp)+'-weak-scaling.json', 'w') as j:
+		json.dump(cost, j)
 	
 # Strong scaling
 for scale in scalelist:
@@ -90,4 +92,6 @@ for scale in scalelist:
 	end = time.time()
 	threadcost.append((end-start)/5)
 	print("Finished iterations in ", end - start, " seconds")
+	with open(str(stamp)+'-weak-cost.json', 'w') as j:
+		json.dump(cost, j)
 
