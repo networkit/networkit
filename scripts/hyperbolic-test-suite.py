@@ -4,8 +4,11 @@ from networkit import *
 import time
 import json
 import math
+import psutil
 
 cost = []
+
+processors = psutil.NUM_CPUS
 
 stamp = time.time()
 
@@ -22,6 +25,7 @@ iterations = 10
 # For each node size, make one pass over all parameters to find an optimum while keeping everything else at default, then make a second pass with 
 # updated parameters to see whether the optimum persists. Use all threads. Make seperate runs with parallel/sequential quadtree construction manually.
 
+setNumberOfThreads(processors)
 scaleindex = 0
 for scale in scalelist:
 	n = 2**scale
@@ -49,17 +53,41 @@ for scale in scalelist:
 				json.dump(cost, j)
 			print("Finished iterations in ", end - start, " seconds")
 			cindex = cindex + 1
+			sys.stdout.flush()
 		bindex = bindex + 1
 	print("Optimal performance at balance ", balancelist[minBindex], " and capacity ", 2**capacitylist[minCindex], ".")
 	scaleindex = scaleindex + 1
 #TODO: find optimal value for each n, second pass
 
+threadcost = []
 # Weak scaling
 minlength = min(len(scalelist, threadlist))
 for i in range(0,minlength):
 	scale = scalelist[i]
 	threads = 2**threadlist[i]
-	# TODO: set number of threads appropriately
+	setNumberOfThreads(threads)
 	n = 2**scale
+	gen = generators.HyperbolicGenerator(n)
+	print("Starting ", iterations, " runs with", n, " nodes, and ", threads, " threads.")
+	start = time.time()
+	for i in range(0, iterations):
+		G = gen.generate()
+	end = time.time()
+	threadcost.append((end-start)/5)
+	print("Finished iterations in ", end - start, " seconds")
 	
 # Strong scaling
+for scale in scalelist:
+	n = 2**scale
+	gen = generators.HyperbolicGenerator(n)
+	for th in threadlist:
+	threads = 2**threadlist[i]
+	setNumberOfThreads(threads)
+	print("Starting ", iterations, " runs with", n, " nodes, and ", threads, " threads.")
+	start = time.time()
+	for i in range(0, iterations):
+		G = gen.generate()
+	end = time.time()
+	threadcost.append((end-start)/5)
+	print("Finished iterations in ", end - start, " seconds")
+
