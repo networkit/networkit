@@ -20,7 +20,7 @@ std::vector<double> MultiscaleAttributizer::getAttribute() {
 	//We use a global vector for performance reasons.
 	std::vector<edgeweight> normalizedWeights(graph.upperNodeIdBound());
 
-	std::vector<double> multiscaleAttribute(graph.upperEdgeIdBound(), 1.0);
+	std::vector<double> multiscaleAttribute(graph.upperEdgeIdBound(), 0.0);
 
 	graph.forNodes([&](node u) {
 		count k = graph.degree(u);
@@ -41,7 +41,7 @@ std::vector<double> MultiscaleAttributizer::getAttribute() {
 				edgeweight p = normalizedWeights[v];
 				double probability = getProbability(k, p);
 
-				multiscaleAttribute[eid] = std::min(multiscaleAttribute[eid], probability);
+				multiscaleAttribute[eid] = std::max(multiscaleAttribute[eid], probability);
 			//}
 		});
 	});
@@ -57,7 +57,7 @@ std::vector<double> MultiscaleAttributizer::getAttribute() {
  * edges connected to a node of degree k are uniformly distributed.
  */
 double MultiscaleAttributizer::getProbability(count degree, edgeweight normalizedWeight) {
-	return 1 - (1 - pow(1 - normalizedWeight, degree - 1));
+	return 1 - pow(1 - normalizedWeight, degree - 1);
 }
 
 } /* namespace NetworKit */

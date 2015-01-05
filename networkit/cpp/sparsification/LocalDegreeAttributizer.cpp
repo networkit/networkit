@@ -18,13 +18,14 @@ std::vector<double> LocalDegreeAttributizer::getAttribute() {
 		throw std::runtime_error("edges have not been indexed - call indexEdges first");
 	}
 
-	std::vector<double> sparsificationExp(graph.upperEdgeIdBound(), 1.0);
+	std::vector<double> sparsificationExp(graph.upperEdgeIdBound(), 0.0);
 
 	graph.forNodes([&](node i) {
 		count d = graph.degree(i);
 
-		/* The top d^e edges (sorted by degree)
-		* are to be kept in the backbone */
+		/**
+		 *  The top d^e edges (sorted by degree)
+		 * are to be kept in the backbone */
 
 		std::vector<AttributizedEdge<count>> neighbors;
 		graph.forNeighborsOf(i, [&](node _i, node j, edgeid eid) {
@@ -34,16 +35,21 @@ std::vector<double> LocalDegreeAttributizer::getAttribute() {
 		std::sort(neighbors.begin(), neighbors.end());
 
 		count rank = 1;
-		//Top d^e edges are to be retained in the backbone graph.
-		//So we calculate the minimum exponent e for each edge that will keep it in the backbone.
+
+		/**
+		 * By convention, we want to the edges with highest "similarity" or "cohesion" to have values close to 1,
+		 * so we invert the range.
+		 */
+
+		#pragma omp critical
 		for (auto neighborEdge : neighbors) {
 			edgeid eid = neighborEdge.eid;
 
-			double e = 0.0;
-			if (d > 1) 			//The node has only one neighbor,, so the edge will be kept anyway.
-				e = log(rank) / log(d);
+			double e = 1.0; // If the node has only one neighbor, the edge should be kept anyway.
+			if (d > 1)
+				e = 1.0 - (log(rank) / log(d));
 
-			sparsificationExp[eid] = std::min(e, sparsificationExp[eid]);
+			sparsificationExp[eid] = std::max(e, sparsificationExp[eid]);
 			rank++;
 		}
 
