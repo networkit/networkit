@@ -14,8 +14,8 @@
 
 namespace NetworKit {
 
-EdgeListReader::EdgeListReader(char separator, node firstNode, std::string commentPrefix, bool continuous) : 
-	separator(separator), commentPrefix(commentPrefix), firstNode(firstNode), continuous(continuous), mapNodeIds() {
+EdgeListReader::EdgeListReader(char separator, node firstNode, std::string commentPrefix, bool continuous, bool directed) :
+	separator(separator), commentPrefix(commentPrefix), firstNode(firstNode), continuous(continuous), mapNodeIds(), directed(directed) {
 //	this->mapNodeIds;i
 }
 
@@ -25,7 +25,7 @@ Graph EdgeListReader::read(const std::string& path) {
 		return readContinuous(path);
 	} else {
 		DEBUG("read graph with NON continuous ids");
-		return readNonContinuous(path); 
+		return readNonContinuous(path);
 	}
 }
 
@@ -83,8 +83,8 @@ Graph EdgeListReader::readContinuous(const std::string& path) {
 	maxNode = maxNode - this->firstNode + 1;
 	DEBUG("max. node id found: " , maxNode);
 
-	Graph G(maxNode);
-	
+	Graph G(maxNode, false, directed);
+
 	DEBUG("second pass");
 	file.open(path);
 	// split the line into start and end node. since the edges are sorted, the start node has the highest id of all nodes
@@ -127,7 +127,7 @@ Graph EdgeListReader::readNonContinuous(const std::string& path) {
 	std::string previousLine;
 	node maxNode = 0;
 	node consecutiveID = 0;
-	
+
 	// first find out the maximum node id
 	DEBUG("first pass: create node ID mapping");
 	count i = 0;
@@ -141,7 +141,7 @@ Graph EdgeListReader::readNonContinuous(const std::string& path) {
         		// TRACE("ignoring empty line");
 		} else {
 			std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
-	
+
 			if (split.size() == 2) {
         			TRACE("split into : " , split[0] , " and " , split[1]);
 				node u = std::stoul(split[0]);
