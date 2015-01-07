@@ -31,7 +31,6 @@ public:
 	 * @param theoreticalSplit If true, split cells to get the same area in each child cell. Default is false
 	 * @param alpha dispersion Parameter of the point distribution. Only has an effect if theoretical split is true
 	 * @param capacity How many points can inhabit a leaf cell before it is split up?
-	 * @param diagnostics Count how many necessary and unnecessary comparisons happen in leaf cells? Will cause race condition and false sharing in parallel calls
 	 *
 	 */
 	Quadtree(double maxR,bool theoreticalSplit=false, double alpha=1, count capacity=1000, double balance = 0.5) {
