@@ -11,9 +11,11 @@
 #include "../ApproxBetweenness.h"
 #include "../ApproxBetweenness2.h"
 #include "../EigenvectorCentrality.h"
+#include "../KatzCentrality.h"
 #include "../PageRank.h"
 #include "../DynBetweenness.h"
 #include "../../io/METISGraphReader.h"
+#include "../../generators/ErdosRenyiGenerator.h"
 #include "../../auxiliary/Log.h"
 
 namespace NetworKit {
@@ -161,6 +163,29 @@ TEST_F(CentralityGTest, testBetweennessCentralityWeighted) {
 	EXPECT_NEAR(23.0, bc[5], tol);
 	EXPECT_NEAR(0.0, bc[6], tol);
 	EXPECT_NEAR(0.0, bc[7], tol);
+}
+
+TEST_F(CentralityGTest, testKatzAndPageRankDirected) {
+	bool directed = true;
+	count n = 150;
+	double prob = 0.1;
+	ErdosRenyiGenerator gen(n, prob, directed);
+	Graph G = gen.generate();
+
+	KatzCentrality kc(G);
+	PageRank pr(G);
+
+	DEBUG("start kc run");
+	kc.run();
+
+	// TODO: compare Katz values to NetworkX on real directed graph
+
+	DEBUG("start pr run");
+	pr.run();
+	DEBUG("finish pr");
+
+	// TODO: compare PageRank values to NetworkX on real directed graph
+
 }
 
 TEST_F(CentralityGTest, testEigenvectorCentrality) {
