@@ -10,8 +10,8 @@
 
 namespace NetworKit {
 
-KatzCentrality::KatzCentrality(const Graph& G, double tol):
-		Centrality(G, true), tol(tol)
+KatzCentrality::KatzCentrality(const Graph& G, double alpha, double beta, double tol):
+		Centrality(G, true), alpha(alpha), beta(beta), tol(tol)
 {
 
 }
@@ -22,10 +22,6 @@ void KatzCentrality::run() {
 	scoreData = values;
 	double length = 0.0;
 	double oldLength = 0.0;
-
-	// Katz centrality constants
-	double alpha = 1e-3;
-	double beta = 1.0;
 
 	auto converged([&](double val, double other) {
 		// compute residual
