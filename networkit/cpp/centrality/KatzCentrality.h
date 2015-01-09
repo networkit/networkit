@@ -18,6 +18,8 @@ namespace NetworKit {
  */
 class KatzCentrality: public Centrality {
 protected:
+	double alpha; // damping
+	double beta; // constant centrality amount
 	double tol; // error tolerance
 
 public:
@@ -27,7 +29,7 @@ public:
 	 * @param[in] G The graph.
 	 * @param[in] tol The tolerance for convergence.
 	 */
-	KatzCentrality(const Graph& G, double tol = 1e-9);
+	KatzCentrality(const Graph& G, double alpha = 1e-3, double beta = 1.0, double tol = 1e-9);
 
 	virtual void run();
 };

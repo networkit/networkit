@@ -165,7 +165,7 @@ TEST_F(CentralityGTest, testBetweennessCentralityWeighted) {
 	EXPECT_NEAR(0.0, bc[7], tol);
 }
 
-TEST_F(CentralityGTest, testKatzAndPageRankDirected) {
+TEST_F(CentralityGTest, testKatzCentralityAndPageRankDirected) {
 	bool directed = true;
 	count n = 150;
 	double prob = 0.1;
@@ -185,7 +185,6 @@ TEST_F(CentralityGTest, testKatzAndPageRankDirected) {
 	DEBUG("finish pr");
 
 	// TODO: compare PageRank values to NetworkX on real directed graph
-
 }
 
 TEST_F(CentralityGTest, testEigenvectorCentrality) {
