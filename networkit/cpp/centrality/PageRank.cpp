@@ -45,7 +45,7 @@ void NetworKit::PageRank::run() {
 				double d = scoreData[u] - pr[u];
 				return d * d;
 			});
-			TRACE("sqrt(diff): ", sqrt(diff));
+//			TRACE("sqrt(diff): ", sqrt(diff));
 			return (sqrt(diff) <= tol);
 		});
 
