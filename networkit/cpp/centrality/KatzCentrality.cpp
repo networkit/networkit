@@ -34,7 +34,7 @@ void KatzCentrality::run() {
 		// iterate matrix-vector product
 		G.parallelForNodes([&](node u) {
 			values[u] = 0.0;
-			G.forNeighborsOf(u, [&](node v) {
+			G.forEdgesOf(u, [&](node v) {
 				values[u] += G.weight(u, v) * scoreData[v];
 			});
 			values[u] *= alpha;
@@ -57,12 +57,12 @@ void KatzCentrality::run() {
 		scoreData = values;
 	} while (! converged(length, oldLength));
 
-	// check sign and correct if necessary
-	if (scoreData[0] < 0) {
-		G.parallelForNodes([&](node u) {
-			scoreData[u] = fabs(scoreData[u]);
-		});
-	}
+//	// check sign and correct if necessary
+//	if (scoreData[0] < 0) {
+//		G.parallelForNodes([&](node u) {
+//			scoreData[u] = fabs(scoreData[u]);
+//		});
+//	}
 }
 
 } /* namespace NetworKit */

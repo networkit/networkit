@@ -15,6 +15,7 @@
 #include "../PageRank.h"
 #include "../DynBetweenness.h"
 #include "../../io/METISGraphReader.h"
+#include "../../io/SNAPGraphReader.h"
 #include "../../generators/ErdosRenyiGenerator.h"
 #include "../../auxiliary/Log.h"
 
@@ -165,27 +166,35 @@ TEST_F(CentralityGTest, testBetweennessCentralityWeighted) {
 	EXPECT_NEAR(0.0, bc[7], tol);
 }
 
-TEST_F(CentralityGTest, testKatzCentralityAndPageRankDirected) {
-	bool directed = true;
-	count n = 150;
-	double prob = 0.1;
-	ErdosRenyiGenerator gen(n, prob, directed);
-	Graph G = gen.generate();
-
+TEST_F(CentralityGTest, testKatzCentralityDirected) {
+	SNAPGraphReader reader;
+	Graph G = reader.read("input/wiki-Vote.txt"); // TODO: replace by smaller graph
 	KatzCentrality kc(G);
-	PageRank pr(G);
 
 	DEBUG("start kc run");
 	kc.run();
+	DEBUG("finish kc");
+	std::vector<std::pair<node, double> > kc_ranking = kc.ranking();
+	std::vector<double> kc_scores = kc.scores();
 
-	// TODO: compare Katz values to NetworkX on real directed graph
+	EXPECT_EQ(kc_ranking[0].first, 699);
+}
+
+TEST_F(CentralityGTest, testPageRankDirected) {
+	SNAPGraphReader reader;
+	Graph G = reader.read("input/wiki-Vote.txt"); // TODO: replace by smaller graph
+	PageRank pr(G);
 
 	DEBUG("start pr run");
 	pr.run();
 	DEBUG("finish pr");
+	std::vector<std::pair<node, double> > pr_ranking = pr.ranking();
 
-	// TODO: compare PageRank values to NetworkX on real directed graph
+	const double tol = 1e-3;
+	EXPECT_EQ(pr_ranking[0].first, 699);
+	EXPECT_NEAR(pr_ranking[0].second, 0.00432, tol);
 }
+
 
 TEST_F(CentralityGTest, testEigenvectorCentrality) {
  /* Graph:

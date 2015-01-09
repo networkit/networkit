@@ -24,12 +24,14 @@ protected:
 
 public:
 	/**
-	 * Constructs the EigenvectorCentrality class for the given Graph @a G. @a tol defines the tolerance for convergence.
+	 * Constructs a KatzCentrality object for the given Graph @a G. @a tol defines the tolerance for convergence.
 	 *
 	 * @param[in] G The graph.
+	 * @param[in] alpha Damping of the matrix vector product result
+	 * @param[in] beta Constant value added to the centrality of each vertex
 	 * @param[in] tol The tolerance for convergence.
 	 */
-	KatzCentrality(const Graph& G, double alpha = 1e-3, double beta = 1.0, double tol = 1e-9);
+	KatzCentrality(const Graph& G, double alpha = 5e-4, double beta = 0.1, double tol = 1e-8);
 
 	virtual void run();
 };
