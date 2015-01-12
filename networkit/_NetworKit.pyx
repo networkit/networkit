@@ -117,7 +117,7 @@ cdef extern from "cpp/graph/Graph.h":
 		_Graph(const _Graph& other) except +
 		_Graph(const _Graph& other, bool weighted, bool directed) except +
 		void indexEdges() except +
-		bool hasEdgeIds()
+		bool hasEdgeIds() except +
 		edgeid edgeId(node, node) except +
 		count numberOfNodes() except +
 		count numberOfEdges() except +
@@ -1694,18 +1694,19 @@ cdef class GraphToolBinaryReader:
 cdef extern from "cpp/io/EdgeListReader.h":
 	cdef cppclass _EdgeListReader "NetworKit::EdgeListReader":
 		_EdgeListReader() except +
-		_EdgeListReader(char separator, node firstNode, string commentPrefix, bool continuous)
+		_EdgeListReader(char separator, node firstNode, string commentPrefix, bool continuous, bool directed)
 		_Graph read(string path) except +
 		unordered_map[node,node] getNodeMap() except +
 
 
 cdef class EdgeListReader:
 	""" Reads a file in an edge list format.
+		TODO: docstring
 	"""
 	cdef _EdgeListReader _this
 
-	def __cinit__(self, separator, firstNode, commentPrefix="#", continuous=True):
-		self._this = _EdgeListReader(stdstring(separator)[0], firstNode, stdstring(commentPrefix), continuous)
+	def __cinit__(self, separator, firstNode, commentPrefix="#", continuous=True, directed=False):
+		self._this = _EdgeListReader(stdstring(separator)[0], firstNode, stdstring(commentPrefix), continuous, directed)
 
 	def read(self, path):
 		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
@@ -2784,7 +2785,7 @@ cdef class GraphTools:
 
 	@staticmethod
 	def getContinuousNodeIds(Graph graph):
-		""" 
+		"""
 			Computes a map of node ids to continuous node ids.
 		"""
 		cdef unordered_map[node,node] cResult = getContinuousNodeIds(graph._this)
@@ -2828,6 +2829,19 @@ cdef extern from "cpp/community/Coverage.h":
 cdef class Coverage:
 	""" Coverage is the fraction of intra-community edges """
 	cdef _Coverage _this
+
+	def getQuality(self, Partition zeta, Graph G):
+		return self._this.getQuality(zeta._this, G._this)
+
+
+cdef extern from "cpp/community/EdgeCut.h":
+	cdef cppclass _EdgeCut "NetworKit::EdgeCut":
+		_EdgeCut() except +
+		double getQuality(_Partition _zeta, _Graph _G) except +
+
+cdef class EdgeCut:
+	""" Edge cut is the total weight of inter-community edges"""
+	cdef _EdgeCut _this
 
 	def getQuality(self, Partition zeta, Graph G):
 		return self._this.getQuality(zeta._this, G._this)
@@ -3362,6 +3376,8 @@ cdef extern from "cpp/community/EPP.h":
 		void run() except +
 		_Partition getPartition() except +
 		string toString()
+		_Partition getCorePartition() except +
+		vector[_Partition] getBasePartitions() except +
 
 cdef class EPP(CommunityDetector):
 	""" EPP - Ensemble Preprocessing community detection algorithm.
@@ -3395,6 +3411,22 @@ cdef class EPP(CommunityDetector):
 		"""
 		return Partition().setThis(self._this.getPartition())
 
+	def getCorePartition(self):
+		"""  Returns the core partition the algorithm.
+
+		Returns
+		-------
+		Partition:
+			A Partition of the clustering.
+		"""
+		return Partition().setThis(self._this.getCorePartition())
+
+	def getBasePartitions(self):
+		"""  Returns the base partitions of the algorithm.
+		"""
+		base = self._this.getBasePartitions()
+		return [Partition().setThis(b) for b in base]
+
 	def toString(self):
 		""" String representation of EPP class.
 
@@ -3409,6 +3441,74 @@ cdef class EPP(CommunityDetector):
 		del self._this # is this correct here?
 		self._this = other
 		return self
+
+cdef extern from "cpp/community/EPPInstance.h":
+	cdef cppclass _EPPInstance "NetworKit::EPPInstance":
+		_EPPInstance(_Graph G, count ensembleSize) except +
+		void run() except +
+		_Partition getPartition() except +
+		string toString() except +
+		_Partition getCorePartition() except +
+		vector[_Partition] getBasePartitions() except +
+
+cdef class EPPInstance(CommunityDetector):
+	""" EPP - Ensemble Preprocessing community detection algorithm.
+	Combines multiple base algorithms and a final algorithm. A consensus of the
+	solutions of the base algorithms is formed and the graph is coarsened accordingly.
+	Then the final algorithm operates on the coarse graph and determines a solution
+	for the input graph.
+	"""
+	cdef _EPPInstance* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G not None, ensembleSize=4):
+		self._G = G
+		self._this = new _EPPInstance(G._this, ensembleSize)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		"""  Run the ensemble clusterer.
+		"""
+		self._this.run()
+
+	def getPartition(self):
+		"""  Returns a partition of the clustering.
+
+		Returns
+		-------
+		Partition:
+			A Partition of the clustering.
+		"""
+		return Partition().setThis(self._this.getPartition())
+
+	def getCorePartition(self):
+		"""  Returns the core partition the algorithm.
+
+		Returns
+		-------
+		Partition:
+			A Partition of the clustering.
+		"""
+		return Partition().setThis(self._this.getCorePartition())
+
+	def getBasePartitions(self):
+		"""  Returns the base partitions of the algorithm.
+		"""
+		base = self._this.getBasePartitions()
+		return [Partition().setThis(b) for b in base]
+
+	def toString(self):
+		""" String representation of EPP class.
+
+		Returns
+		-------
+		string
+			String representation.
+		"""
+		return self._this.toString()
+
 
 
 cdef extern from "cpp/community/EPPFactory.h" namespace "NetworKit::EPPFactory":
@@ -4530,7 +4630,7 @@ cdef extern from "cpp/centrality/PageRank.h":
 cdef class PageRank:
 	"""	Compute PageRank as node centrality measure.
 
-	PageRank(G, damp, tol=1e-9)
+	PageRank(G, damp=0.85, tol=1e-9)
 
 	Parameters
 	----------
@@ -4544,7 +4644,7 @@ cdef class PageRank:
 	cdef _PageRank* _this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, double damp, double tol=1e-9):
+	def __cinit__(self, Graph G, double damp=0.85, double tol=1e-9):
 		self._G = G
 		self._this = new _PageRank(G._this, damp, tol)
 
@@ -5159,3 +5259,44 @@ cdef class PageRankNibble:
 		seeds : the seed node ids.
 		"""
 		return self._this.run(seeds)
+
+
+# Module: clique
+
+cdef extern from "cpp/clique/MaxClique.h":
+	cdef cppclass _MaxClique "NetworKit::MaxClique":
+		_MaxClique(_Graph G) except +
+		count run(count lb) except +
+		count run() except +
+
+cdef class MaxClique:
+	"""
+	Exact algorithm for computing the size of the largest clique in a graph.
+	Worst-case running time is exponential, but in practice the algorithm is fairly fast.
+	Reference: Pattabiraman et al., http://arxiv.org/pdf/1411.7460.pdf
+	"""
+	cdef _MaxClique* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G not None):
+		self._G = G
+		self._this = new _MaxClique(G._this)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self, lb=0):
+		"""
+		Actual maximum clique algorithm. Determines largest clique each vertex
+	 	is contained in and returns size of largest. Pruning steps keep running time
+	 	acceptable in practice.
+
+	 	Parameters:
+	 	-----------
+	 	lb : Lower bound for maximum clique size.
+
+	 	Returns:
+	 	--------
+	 	The size of the largest clique.
+	 	"""
+		return self._this.run(lb)
