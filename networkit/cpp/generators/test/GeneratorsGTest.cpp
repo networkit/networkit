@@ -329,8 +329,8 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
 		G.initCoordinates();
 
 		auto coords = dynGen.getHyperbolicCoordinates();
-		for (index i = 0; i < coords.size(); i++) {
-			G.setCoordinate(i, coords[i]);
+		for (index j = 0; j < coords.size(); j++) {
+			G.setCoordinate(j, coords[j]);
 		}
 
 		// output for visual inspection
