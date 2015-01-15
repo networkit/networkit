@@ -29,6 +29,9 @@ count DynApproxBetweenness::getNumberOfSamples() {
 
 
 void DynApproxBetweenness::run() {
+    if (G.isDirected()) {
+        throw std::runtime_error("Invalid argument: G must be undirected.");
+    }
     scoreData.clear();
     scoreData.resize(G.upperNodeIdBound());
     u.clear();
