@@ -416,7 +416,21 @@ class LocalDegreeBackbone(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
+class TriangleBackbone(Sparsifier):
+	"""  Allows for global filtering with respect to triangle counts. """
 
+	def getAttribute(self, G):
+		""" Returns the triangle counts of the input graph. """
+		attributizer_t = TriangleCounter(G)
+		a_t = attributizer_t.getAttribute()
+		return a_t
+
+	def _getSparsifiedGraph(self, G, parameter, attribute):
+		gf = GlobalThresholdFilter(G, attribute, parameter, True)
+		return gf.calculate()
+
+	def _getParameterizationAlgorithm(self):
+		raise NotImplementedError("parameterization method not yet implemented.")
 
 class ModularityPartitionAttributizer():
 
@@ -446,5 +460,17 @@ class ModularityPartitionAttributizer():
 			edgeScores[G.edgeId(u, v)] = together(u, v)
 		return edgeScores
 
+class ConstantAttributizer():
+	""" Assigns as an attribute the same value to each edge (for sanity checks) """
 
-# TODO: constant edge score as sanity check
+	def __init__(self, constValue = 1.0):
+		""" Creates a new instance of an attributizer that always
+		 returns the given value as edge attribute value.
+		"""
+		self.constValue = constValue
+
+	def getAttribute(self, G):
+		""" Returns an edge attribute that holds for each edge the constant value given
+		in the constructor.
+		"""
+		return self.constValue
