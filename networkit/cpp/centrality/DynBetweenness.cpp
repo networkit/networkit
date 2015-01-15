@@ -29,6 +29,9 @@ storePreds(storePredecessors) {
 
 
 void DynBetweenness::run() {
+    if (G.isDirected()) {
+        throw std::runtime_error("Invalid argument: G must be undirected.");
+    }
     count z = G.upperNodeIdBound();
     scoreData.clear();
     scoreData.resize(z);
