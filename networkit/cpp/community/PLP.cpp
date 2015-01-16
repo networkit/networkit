@@ -13,6 +13,7 @@
 #include "../auxiliary/ProgressMeter.h"
 #include "../auxiliary/Timer.h"
 #include "../auxiliary/Random.h"
+#include "../auxiliary/SignalHandling.h"
 
 namespace NetworKit {
 
@@ -29,6 +30,8 @@ void PLP::run() {
 	if (hasRun) {
 		throw std::runtime_error("The algorithm has already run on the graph.");
 	}
+
+	Aux::SignalHandling::init();
 
 	// set unique label for each node if no baseClustering was given
 	index z = G.upperNodeIdBound();
@@ -69,7 +72,7 @@ void PLP::run() {
 	Aux::Timer runtime;
 
 	// propagate labels
-	while (nUpdated > this->updateThreshold) { // as long as a label has changed...
+	while (nUpdated > this->updateThreshold && Aux::SignalHandling::isRunning()) { // as long as a label has changed...
 		runtime.start();
 		nIterations += 1;
 		INFO("[BEGIN] LabelPropagation: iteration #" , nIterations);
@@ -118,6 +121,10 @@ void PLP::run() {
 
 	} // end while
 	hasRun = true;
+	if (!Aux::SignalHandling::isRunning()) {
+		ERROR("Algorithm has been interrupted with CTRL+C, computation hasn't been completed!");
+		Aux::SignalHandling::setRunning(true);
+	}
 }
 
 std::string PLP::toString() const {

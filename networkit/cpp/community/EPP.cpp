@@ -11,6 +11,7 @@
 #include "../coarsening/ClusteringProjector.h"
 #include "../community/JaccardMeasure.h"
 #include "../auxiliary/Log.h"
+#include "../auxiliary/SignalHandling.h"
 #include "PLM.h"
 #include "PLP.h"
 #include "CNM.h"
@@ -37,6 +38,7 @@ void EPP::setOverlapper(std::unique_ptr<Overlapper>& overlap) {
 
 void EPP::run() {
 	INFO("STARTING EnsemblePreprocessing on G=" , G.toString());
+	Aux::SignalHandling::init();
 
 	// fixed sub-algorithms
 	ClusterContractor contracter;
@@ -55,7 +57,7 @@ void EPP::run() {
 	}
 
 	// ANALYSIS
-	if (CALC_DISSIMILARITY) {
+	if (CALC_DISSIMILARITY && Aux::SignalHandling::isRunning()) {
 		JaccardMeasure dm;
 		double dissimilaritySum = 0.0;
 		for (index b = 0; b < baseClusterings.size(); b += 1) {
@@ -87,14 +89,20 @@ void EPP::run() {
 		DEBUG("final clusterer is CNM");
 		this->finalClusterer.reset(new CNM(Gcore));
 	}
-	this->finalClusterer->run();
-	Partition finalCoarse = this->finalClusterer->getPartition();
+	if (Aux::SignalHandling::isRunning()) {
+		this->finalClusterer->run();
+		Partition finalCoarse = this->finalClusterer->getPartition();
 
-	// project clustering of contracted graph back to original graph
-	Partition final = projector.projectBack(Gcore, G, fineToCoarse, finalCoarse);
-	// return clustering
-	result = std::move(final);
-	hasRun = true;
+		// project clustering of contracted graph back to original graph
+		Partition final = projector.projectBack(Gcore, G, fineToCoarse, finalCoarse);
+		// return clustering
+		result = std::move(final);
+		hasRun = true;
+	}
+	if (!Aux::SignalHandling::isRunning()) {
+		ERROR("Algorithm has been interrupted with CTRL+C, computation hasn't been completed!");
+		Aux::SignalHandling::setRunning(true);
+	}
 }
 
 std::string EPP::toString() const {

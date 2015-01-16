@@ -12,9 +12,11 @@
 #include "../coarsening/ClusteringProjector.h"
 #include "../auxiliary/Log.h"
 #include "../auxiliary/Timer.h"
+#include "../auxiliary/SignalHandling.h"
 
 
 #include <sstream>
+#include <csignal>
 
 namespace NetworKit {
 
@@ -28,6 +30,7 @@ PLM::PLM(const Graph& G, const PLM& other) : CommunityDetectionAlgorithm(G), par
 
 void PLM::run() {
 	DEBUG("calling run method on " , G.toString());
+	Aux::SignalHandling::init();
 
 	count z = G.upperNodeIdBound();
 
@@ -236,7 +239,7 @@ void PLM::run() {
 				WARN("move phase aborted after ", maxIter, " iterations");
 			}
 			iter += 1;
-		} while (moved && (iter <= maxIter));
+		} while (moved && (iter <= maxIter) && Aux::SignalHandling::isRunning());
 		DEBUG("iterations in move phase: ", iter);
 	};
 
@@ -249,7 +252,7 @@ void PLM::run() {
 	timer.stop();
 	timing["move"].push_back(timer.elapsedMilliseconds());
 
-	if (change) {
+	if (change && Aux::SignalHandling::isRunning()) {
 		INFO("nodes moved, so begin coarsening and recursive call");
 
 		timer.start();
@@ -305,6 +308,10 @@ void PLM::run() {
 	}
 	result = std::move(zeta);
 	hasRun = true;
+	if (!Aux::SignalHandling::isRunning()) {
+		ERROR("Algorithm has been interrupted with CTRL+C, computation hasn't been completed!");
+		Aux::SignalHandling::setRunning(true);
+	}
 }
 
 std::string NetworKit::PLM::toString() const {
