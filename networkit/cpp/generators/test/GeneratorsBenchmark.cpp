@@ -189,6 +189,30 @@ TEST_F(GeneratorsBenchmark, benchmarkDynamicHyperbolicGeneratorOnNodeMovement) {
 	dyngen.generate(nSteps);
 }
 
+TEST_F(GeneratorsBenchmark, benchmarkParallelQuadtreeConstruction) {
+	count n = 33554432;
+	Quadtree<index> quad(n,1.0);
+	EXPECT_EQ(quad.size(), n);
+}
+
+TEST_F(GeneratorsBenchmark, benchmarkSequentialQuadtreeConstruction) {
+	count n = 33554432;
+	count capacity = 1000;
+	double s =1;
+	double alpha = 1;
+	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
+	vector<double> angles(n);
+	vector<double> radii(n);
+	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
+
+	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R),false,alpha,capacity);
+
+	for (index i = 0; i < n; i++) {
+		quad.addContent(i, angles[i], radii[i]);
+	}
+	EXPECT_EQ(quad.size(), n);
+}
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
