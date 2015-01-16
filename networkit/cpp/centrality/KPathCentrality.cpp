@@ -16,14 +16,14 @@ namespace NetworKit {
 
 KPathCentrality::KPathCentrality(const Graph& G, double alpha, count k) : Centrality(G, false, false) {
 	if (alpha >= -0.5 && alpha <= 0.5) {
-		KPathCentrality::alpha = alpha; // FIXME: check and remove strange syntax
+		this->alpha = alpha;
 	} else {
 		throw std::runtime_error("alpha must lie in interval [-0.5, 0.5]");
 	}
 	if (k == 0) {
-		KPathCentrality::k = log(G.numberOfNodes() + G.numberOfEdges());
+		this->k = log(G.numberOfNodes() + G.numberOfEdges());
 	} else if (k >0) {
-		KPathCentrality::k = k;
+		this->k = k;
 	} else {
 		throw std::runtime_error("k must be an integer");
 	}
