@@ -13,6 +13,7 @@
 #include <cmath>
 #include "Point2D.h"
 #include "../viz/Point.h"
+#include "../auxiliary/Random.h"
 
 using std::vector;
 using std::abs;
