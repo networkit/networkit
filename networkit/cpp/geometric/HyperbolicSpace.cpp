@@ -10,7 +10,6 @@
 
 
 #include "HyperbolicSpace.h"
-#include "../auxiliary/Random.h"
 #include "../auxiliary/Log.h"
 
 using std::abs;

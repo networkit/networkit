@@ -42,9 +42,20 @@ public:
 		if (l > seqThreshold) {
 			if (currentNode.height() == 1) currentNode.split();
 			double treeArea = HyperbolicSpace::effectiveAreaInCell(currentNode.getLeftAngle(), currentNode.getRightAngle(), currentNode.getMinR(), currentNode.getMaxR(), alpha);
+			count coveredPoints = 0;
+			double coveredArea = 0;
 			for (int i = 0; i < currentNode.children.size(); i++) {
-				double subTreeArea = HyperbolicSpace::effectiveAreaInCell(currentNode.children[i].getLeftAngle(), currentNode.children[i].getRightAngle(), currentNode.children[i].getMinR(), currentNode.children[i].getMaxR(), alpha);
-				const count pointsInSubtree = l*(subTreeArea/treeArea);
+				count pointsInSubtree;
+				if (i < currentNode.children.size()-1) {
+					double subTreeArea = HyperbolicSpace::effectiveAreaInCell(currentNode.children[i].getLeftAngle(), currentNode.children[i].getRightAngle(), currentNode.children[i].getMinR(), currentNode.children[i].getMaxR(), alpha);
+					assert(treeArea-coveredArea >= subTreeArea);
+					std::binomial_distribution<int> distribution(l-coveredPoints,subTreeArea/(treeArea-coveredArea));
+					pointsInSubtree = distribution(Aux::Random::getURNG());
+					coveredArea += subTreeArea;
+				} else {
+					pointsInSubtree = l-coveredPoints;
+				}
+				coveredPoints += pointsInSubtree;
 				offset = fillInParallel(pointsInSubtree, alpha, seqThreshold, offset, currentNode.children[i]);
 				//offset += pointsInSubtree;
 			}
@@ -79,6 +90,7 @@ public:
 				result = fillInParallel(n, alpha, n/numberOfThreads, 0, root);
 			}
 		}
+		assert(result == n);
 		vector<double> missingAngles(n-result);
 		vector<double> missingRadii(n-result);
 		HyperbolicSpace::fillPoints(missingAngles, missingRadii, stretch, alpha);
