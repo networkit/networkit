@@ -49,17 +49,20 @@ void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, 
 
 void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, double minPhi, double maxPhi, double minR, double maxR, double alpha) {
 	uint64_t n = radii.size();
+	double mincdf = cosh(alpha*minR);
+	double maxcdf = cosh(alpha*maxR);
+	std::uniform_real_distribution<double> phidist{minPhi, maxPhi};
+	std::uniform_real_distribution<double> rdist{mincdf, maxcdf};
+
 	assert(angles.size() == n);
 	for (uint64_t i = 0; i < n; i++) {
-		angles[i] = Aux::Random::real(minPhi, maxPhi);
+		angles[i] = phidist(Aux::Random::getURNG());
 		/**
 		 * for the radial coordinate distribution, I took the probability density from Greedy Forwarding in Dynamic Scale-Free Networks Embedded in Hyperbolic Metric Spaces
 		 * f (r) = sinh r/(cosh R − 1)
 		 * \int sinh = cosh+const
 		 */
-		double mincdf = cosh(alpha*minR);
-		double maxcdf = cosh(alpha*maxR);
-		double random = Aux::Random::real(mincdf, maxcdf);
+		double random = rdist(Aux::Random::getURNG());
 		double radius = (acosh(random)/alpha);
 		//now translate into coordinates of Poincaré disc
 		radii[i] = hyperbolicRadiusToEuclidean(radius);
