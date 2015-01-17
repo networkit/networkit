@@ -91,13 +91,6 @@ public:
 			}
 		}
 		assert(result == n);
-		vector<double> missingAngles(n-result);
-		vector<double> missingRadii(n-result);
-		HyperbolicSpace::fillPoints(missingAngles, missingRadii, stretch, alpha);
-		for (index i = result; i < n; i++) {
-			root.addContent(i, missingAngles[i-result], missingRadii[i-result]);
-		}
-		//bernoulli to distribute
 	}
 
 	/**
