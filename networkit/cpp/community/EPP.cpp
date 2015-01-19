@@ -36,9 +36,8 @@ void EPP::setOverlapper(std::unique_ptr<Overlapper>& overlap) {
 	this->overlap = std::move(overlap);
 }
 
-void EPP::run() {
+void EPP::runImpl() {
 	INFO("STARTING EnsemblePreprocessing on G=" , G.toString());
-	Aux::SignalHandling::init();
 
 	// fixed sub-algorithms
 	ClusterContractor contracter;

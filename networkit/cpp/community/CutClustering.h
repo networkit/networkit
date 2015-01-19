@@ -28,7 +28,7 @@ public:
 	 * Warning: due to numerical errors the resulting clusters might not be correct.
 	 * This implementation uses the Edmonds-Karp algorithm for the cut calculation.
 	 */
-	virtual void run() override;
+	virtual void runImpl() override;
 
 	/**
 	 * @return string representation of algorithm and parameters.

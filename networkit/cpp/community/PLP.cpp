@@ -26,12 +26,10 @@ PLP::PLP(const Graph& G, const PLP& other) : CommunityDetectionAlgorithm(G, othe
 PLP::PLP(const Graph& G, const Partition baseClustering, count theta) : CommunityDetectionAlgorithm(G, baseClustering), updateThreshold(theta) {
 }
 
-void PLP::run() {
+void PLP::runImpl() {
 	if (hasRun) {
 		throw std::runtime_error("The algorithm has already run on the graph.");
 	}
-
-	Aux::SignalHandling::init();
 
 	// set unique label for each node if no baseClustering was given
 	index z = G.upperNodeIdBound();
