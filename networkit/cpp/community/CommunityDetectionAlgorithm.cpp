@@ -9,10 +9,10 @@
 
 namespace NetworKit {
 
-CommunityDetectionAlgorithm::CommunityDetectionAlgorithm(const Graph& G) : G(G), result(0), hasRun(false) {
+CommunityDetectionAlgorithm::CommunityDetectionAlgorithm(const Graph& G) : Algorithm(), G(G), result(0) {
 }
 
-CommunityDetectionAlgorithm::CommunityDetectionAlgorithm(const Graph& G, const Partition baseClustering) : G(G), result(baseClustering), hasRun(false) {
+CommunityDetectionAlgorithm::CommunityDetectionAlgorithm(const Graph& G, const Partition baseClustering) : Algorithm(), G(G), result(baseClustering) {
 }
 
 Partition CommunityDetectionAlgorithm::getPartition() {

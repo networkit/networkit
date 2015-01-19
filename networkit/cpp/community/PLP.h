@@ -56,7 +56,7 @@ public:
 	/**
 	 * Run the label propagation clustering algorithm.
 	 */
-	virtual void run();
+	void runImpl() override;
 
 	/**
 	 * @return String representation of algorithm and parameters.

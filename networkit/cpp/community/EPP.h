@@ -70,7 +70,7 @@ public:
 	/**
 	 * Run the ensemble clusterer.
 	 */
-	virtual void run();
+	virtual void runImpl();
 
 	/**
 	 * String representation of EPP class.

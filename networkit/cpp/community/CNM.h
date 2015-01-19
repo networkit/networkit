@@ -34,7 +34,7 @@ public:
 	/**
 	 * Detect communities in the given graph @a graph.
 	 */
-	void run() override;
+	void runImpl() override;
 
 	/**
 	 * Get string representation.

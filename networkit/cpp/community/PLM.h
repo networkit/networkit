@@ -47,7 +47,7 @@ public:
 	/**
 	 * Detect communities.
 	 */
-	void run() override;
+	void runImpl() override;
 
 	static std::pair<Graph, std::vector<node>> coarsen(const Graph& G, const Partition& zeta, bool parallel=false);
 

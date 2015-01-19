@@ -68,7 +68,7 @@ node CNM::mergeEdge(Graph &G, node u, node v, bool discardSelfLoop){
 	return none;
 }
 
-void CNM::run() {
+void CNM::runImpl() {
 	// copy graph because we make changes due to merges
 	Graph Gcopy(G.numberOfNodes(), true); // make weighted copy
 	G.forEdges([&](node u, node v, edgeweight w){
