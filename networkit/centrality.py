@@ -111,6 +111,7 @@ class SpectralCentrality:
 
 		for v in self.graph.nodes():
 			self.evz[v] = self.eigenvector[v] * normFactor
+		return self
 
 	def scores(self):
 		if self.scoreList is None:
