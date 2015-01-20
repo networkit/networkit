@@ -286,7 +286,7 @@ class SimmelianMultiscaleBackbone(Sparsifier):
 		return gf.calculate()
 
 	def _getParameterizationAlgorithm(self):
-		return BinarySearchParameterization(True, 0.0, 1.0, 20)
+		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
 class LocalSimilarityBackbone(Sparsifier):
 
