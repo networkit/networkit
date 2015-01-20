@@ -13,7 +13,7 @@ def getAlgorithms():
     return [
         S_Original(),
         S_SimmelianBackboneNonParametric(),
-        S_SimmelianBackboneParametric(),
+        S_SimmelianBackboneParametric(10),
         S_LocalSimilarity(),
         S_SimmelianMultiscale(),
         S_Multiscale(),
@@ -44,9 +44,10 @@ def getProperties():
     return [
         P_General(),
         P_Ratios(),
-        P_Community(),
-        P_Diameter(),
-        P_DegreeDistribution(),
-        P_Centrality(),
-        P_Components()
+        #P_Community(),
+        #P_Diameter(),
+        #P_DegreeDistribution(),
+        #P_Centrality(),
+        #P_Components()
+		P_KolmogorowSmirnow()
         ]
