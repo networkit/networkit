@@ -1,6 +1,7 @@
 from scipy.spatial import distance
 from scipy.stats import kendalltau
 from networkit import *
+from scipy import stats # for KS statistic
 import math
 
 #This file holds the definitions of all backbone properties, including
@@ -11,8 +12,8 @@ class P_Example:
 	def getName(self):
 		return "Example property calculator"
 
-	#Returns a dictionary containing key/value pairs that are calculated from the given graph and backbone.
-	def getValues(self, graph, backbones):
+	#Returns a dictionary containing key/value pairs that are calculated from the given graph and sparsified graph.
+	def getValues(self, graph, sparsifiedGraph):
 		return {'key':'value'}
 
 	#Returns a dictionary containing the types (integer or real) of the values
@@ -24,7 +25,7 @@ class P_General:
 	def getName(self):
 		return "General information"
 
-	def getValues(self, graph, backbone):
+	def getValues(self, graph, sparsifiedGraph):
 		return {}
 
 	def getTypes(self):
@@ -35,9 +36,9 @@ class P_Ratios:
 	def getName(self):
 		return "Node and edge ratios"
 
-	def getValues(self, graph, backbone):
-		numNodes = backbone.numberOfNodes()
-		numEdges = backbone.numberOfEdges()
+	def getValues(self, graph, sparsifiedGraph):
+		numNodes = sparsifiedGraph.numberOfNodes()
+		numEdges = sparsifiedGraph.numberOfEdges()
 		nodeRatio = (numNodes / graph.numberOfNodes())
 		edgeRatio = (numEdges / graph.numberOfEdges())
 		return {'numNodes':numNodes, 'numEdges':numEdges, 'nodeRatio':nodeRatio, 'edgeRatio':edgeRatio}
@@ -50,37 +51,37 @@ class P_Community:
 	def getName(self):
 		return "Community structure"
 
-	def getValues(self, graph, backbone):
-		if backbone.numberOfEdges() > 0:
+	def getValues(self, graph, sparsifiedGraph):
+		if sparsifiedGraph.numberOfEdges() > 0:
 			cAlgo = community.PLM(graph, refine=False, par='none')
 			communitiesGraph = community.detectCommunities(graph, algo=cAlgo)
-			communitiesBackbone = community.detectCommunities(backbone, algo=cAlgo)
+			communitiesSparsifiedGraph = community.detectCommunities(sparsifiedGraph, algo=cAlgo)
 
 			#Number of communities
-			communitySizes = communitiesBackbone.subsetSizes()
-			numCommunities = communitiesBackbone.numberOfSubsets()
+			communitySizes = communitiesSparsifiedGraph.subsetSizes()
+			numCommunities = communitiesSparsifiedGraph.numberOfSubsets()
 			minCommunitySize = min(communitySizes)
 			maxCommunitySize = max(communitySizes)
 			avgCommunitySize = sum(communitySizes) / len(communitySizes)
 
 			#Graph structural rand measure
 			_randMeasure = community.GraphStructuralRandMeasure()
-			randMeasure = _randMeasure.getDissimilarity(graph, communitiesGraph, communitiesBackbone)
+			randMeasure = _randMeasure.getDissimilarity(graph, communitiesGraph, communitiesSparsifiedGraph)
 
 			#Normalized Mutual information
 			_nmi = community.NMIDistance()
-			nmi = _nmi.getDissimilarity(graph, communitiesGraph, communitiesBackbone)
+			nmi = _nmi.getDissimilarity(graph, communitiesGraph, communitiesSparsifiedGraph)
 
 			#Clustering coefficients
 			_cc = properties.ClusteringCoefficient()
-			ccAvgLocal = _cc.avgLocal(backbone)
-			if backbone.numberOfNodes() < 300:
-				ccGlobal = _cc.exactGlobal(backbone)
+			ccAvgLocal = _cc.avgLocal(sparsifiedGraph)
+			if sparsifiedGraph.numberOfNodes() < 300:
+				ccGlobal = _cc.exactGlobal(sparsifiedGraph)
 			else:
-				ccGlobal = _cc.approxGlobal(backbone, min(backbone.numberOfNodes(), 10000))
+				ccGlobal = _cc.approxGlobal(sparsifiedGraph, min(sparsifiedGraph.numberOfNodes(), 10000))
 
 			#Modularity
-			modularity = community.Modularity().getQuality(communitiesBackbone, backbone)
+			modularity = community.Modularity().getQuality(communitiesSparsifiedGraph, sparsifiedGraph)
 		else:
 			randMeasure = 0.0
 			nmi = 0.0
@@ -108,15 +109,15 @@ class P_Diameter:
 	def getName(self):
 		return "Diameter"
 
-	#def getValues(self, graph, backbone):
-	#	diameter = properties.Diameter.estimatedDiameterRange(backbone, error=0.1)
+	#def getValues(self, graph, sparsifiedGraph):
+	#	diameter = properties.Diameter.estimatedDiameterRange(sparsifiedGraph, error=0.1)
 	#	return {'diameterLow':diameter[0], 'diameterHigh':diameter[1]}
 
 	#def getTypes(self):
 	#	return {'diameterLow':'integer', 'diameterHigh':'integer'}
 
-	def getValues(self, graph, backbone):
-		diameter = properties.Diameter.estimatedDiameterRange(backbone, 0)[0]
+	def getValues(self, graph, sparsifiedGraph):
+		diameter = properties.Diameter.estimatedDiameterRange(sparsifiedGraph, 0)[0]
 		return {'diameter':diameter}
 
 	def getTypes(self):
@@ -127,11 +128,11 @@ class P_DegreeDistribution:
 	def getName(self):
 		return "Degree Distribution"
 
-	def getValues(self, graph, backbone):
-		dd = properties.degreeDistribution(backbone)
+	def getValues(self, graph, sparsifiedGraph):
+		dd = properties.degreeDistribution(sparsifiedGraph)
 		fit = properties.powerlaw.Fit(dd)
 		degreeDistCoefficient = fit.alpha
-		powerLawFit = properties.degreePowerLaw(backbone, dd)[1]
+		powerLawFit = properties.degreePowerLaw(sparsifiedGraph, dd)[1]
 
 		return {'degreeDistCoefficient':degreeDistCoefficient, 'powerLawFit':powerLawFit}
 
@@ -168,20 +169,20 @@ class P_Centrality:
 	def getJaccard(self, list1, list2):
 		return len(set(list1) & set(list2)) / len(set(list1) | set(list2))
 
-	def getValues(self, graph, backbone):
+	def getValues(self, graph, sparsifiedGraph):
 		#lcGraph = workflows.extractLargestComponent(graph)
-		#lcBackbone = workflows.extractLargestComponent(backbone)
+		#lcSparsifiedGraph = workflows.extractLargestComponent(sparsifiedGraph)
 
 		#PageRank
 		hubCountPageRank = math.ceil(graph.numberOfNodes() * 0.01)
 		prHubsG = self.getPageRankHubs(graph, hubCountPageRank)
-		prHubsB = self.getPageRankHubs(backbone, hubCountPageRank)
+		prHubsB = self.getPageRankHubs(sparsifiedGraph, hubCountPageRank)
 		centralityPageRank = self.getJaccard(prHubsG, prHubsB)
 
 		#Betweenness
 		hubCountBetweenness = math.ceil(graph.numberOfNodes() * 0.001)
 		bHubsG = self.getBetweennessHubs(graph, hubCountBetweenness)
-		bHubsB = self.getBetweennessHubs(backbone, hubCountBetweenness)
+		bHubsB = self.getBetweennessHubs(sparsifiedGraph, hubCountBetweenness)
 		centralityBetweenness = self.getJaccard(bHubsG, bHubsB)
 
 		return {'centralityPageRank':centralityPageRank, 'centralityBetweenness':centralityBetweenness}
@@ -194,10 +195,26 @@ class P_Components:
 	def getName(self):
 		return "Connected Components"
 
-	def getValues(self, graph, backbone):
-		nComponents, componentSizes = properties.components(backbone)
+	def getValues(self, graph, sparsifiedGraph):
+		nComponents, componentSizes = properties.components(sparsifiedGraph)
 
 		return {'largestComponentSize':max(componentSizes.values()), 'numComponents':nComponents}
 
 	def getTypes(self):
 		return {'largestComponentSize':'integer', 'numComponents':'integer'}
+
+#Various properties based on the Kolmogorow-Smirnow-Test
+class P_KolmogorowSmirnow:
+	def getName(self):
+		return "KolmogorowSmirnow"
+
+	def getValues(self, graph, sparsifiedGraph):
+		#Degree Distribution
+		ddGraph = properties.degreeDistribution(graph)
+		ddSparsifiedGraph = properties.degreeDistribution(sparsifiedGraph)
+		ks_dd = stats.ks_2samp(ddGraph, ddSparsifiedGraph)
+
+		return {'ks_dd':ks_dd}
+
+	def getTypes(self):
+		return {'ks_dd':'real'}
