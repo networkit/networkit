@@ -25,11 +25,16 @@ void NetworKit::PageRank::run() {
 	std::vector<double> pr = scoreData;
 	bool isConverged = false;
 
+	std::vector<double> deg(z, 0.0);
+	G.parallelForNodes([&](node u) {
+		deg[u] = (double) G.weightedDegree(u);
+	});
+
 	while (! isConverged) {
 		G.balancedParallelForNodes([&](node u) {
 			pr[u] = 0.0;
-			G.forNeighborsOf(u, [&](node v) {
-				pr[u] += scoreData[v] * G.weight(u, v) / (double) G.weightedDegree(v);
+			G.forInEdgesOf(u, [&](node v) {
+				pr[u] += scoreData[v] * G.weight(v, u) / deg[v];
 			});
 			pr[u] *= damp;
 			pr[u] += teleportProb;
@@ -40,6 +45,7 @@ void NetworKit::PageRank::run() {
 				double d = scoreData[u] - pr[u];
 				return d * d;
 			});
+//			TRACE("sqrt(diff): ", sqrt(diff));
 			return (sqrt(diff) <= tol);
 		});
 

@@ -25,9 +25,9 @@ def getAlgorithms():
 #Returns a list of graphs
 def getGraphs():
     return [
-        GraphDescription("./input/Yale4.graphml", Format.GraphML, "Yale4"),
-        GraphDescription("./input/Virginia63.graphml", Format.GraphML, "Virginia63"),
-        GraphDescription("./input/Tennessee95.graphml", Format.GraphML, "Tennessee95"),
+        #GraphDescription("./input/Yale4.graphml", Format.GraphML, "Yale4"),
+        #GraphDescription("./input/Virginia63.graphml", Format.GraphML, "Virginia63"),
+        #GraphDescription("./input/Tennessee95.graphml", Format.GraphML, "Tennessee95"),
         GraphDescription("./input/us-aviation-t100-2013.graphml", Format.GraphML, "USAviation"),
         GraphDescription("./input/Caltech36.graphml", Format.GraphML, "Caltech36"),
         GraphDescription("./input/kitEmail.graphml", Format.GraphML, "KitEmail"),

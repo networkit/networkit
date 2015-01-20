@@ -56,17 +56,25 @@ except:
 	print("WARNING: unable to check whether build system SCons is installed")
 	scons_available = False
 
+#
+if sys.platform == 'Windows' and not scons_available:
+	abort_installation = True
+	errorMessages.append("ERROR: Build system SCons is not installed. Please install and rerun")
+
+
 #######################################
 # determine and set compiler or exit if there is no suitable compiler
 #######################################
-candidates = ["g++", "g++-4.9", "g++-4.8"]  # , "g++-4.7"
-cppcompiler = determineCompiler(candidates)
-if cppcompiler is not None:
-	os.environ["CC"] = cppcompiler
-	os.environ["CXX"] = cppcompiler
-else:
-	errorMessages.append("ERROR: Please install GCC/g++ 4.8 or later and rerun")
-	abort_installation = True
+# temporarily disable compiler check on windows.
+if not sys.platform == 'Windows':
+	candidates = ["g++", "g++-4.9", "g++-4.8"]  # , "g++-4.7"
+	cppcompiler = determineCompiler(candidates)
+	if cppcompiler is not None:
+		os.environ["CC"] = cppcompiler
+		os.environ["CXX"] = cppcompiler
+	else:
+		errorMessages.append("ERROR: Please install GCC/g++ 4.8 or later and rerun")
+		abort_installation = True
 
 # early abort installation in case the compiler requirements aren't satisfied
 if abort_installation:

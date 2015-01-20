@@ -4711,7 +4711,7 @@ cdef extern from "cpp/centrality/PageRank.h":
 cdef class PageRank:
 	"""	Compute PageRank as node centrality measure.
 
-	PageRank(G, damp, tol=1e-9)
+	PageRank(G, damp=0.85, tol=1e-9)
 
 	Parameters
 	----------
@@ -4725,7 +4725,7 @@ cdef class PageRank:
 	cdef _PageRank* _this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, double damp, double tol=1e-9):
+	def __cinit__(self, Graph G, double damp=0.85, double tol=1e-9):
 		self._G = G
 		self._this = new _PageRank(G._this, damp, tol)
 
