@@ -355,7 +355,7 @@ class RandomBackbone(Sparsifier):
 		return a_r
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
-		gf = GlobalThresholdFilter(G, attribute, parameter, True)
+		gf = GlobalThresholdFilter(G, attribute, parameter, False)
 		return gf.calculate()
 
 	def _getParameterizationAlgorithm(self):
