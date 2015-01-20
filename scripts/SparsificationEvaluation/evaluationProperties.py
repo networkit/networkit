@@ -208,13 +208,26 @@ class P_KolmogorowSmirnow:
 	def getName(self):
 		return "KolmogorowSmirnow"
 
+	def getCCDistPerDegree(inputGraph):
+    	localCCs = properties.ClusteringCoefficient.exactLocal(inputGraph)
+    	maxDegree = max([inputGraph.degree(n) for n in inputGraph.nodes()])
+    	ccPerDegree = list(map(lambda d : np.average([localCCs[n] for n in inputGraph.nodes() if inputGraph.degree(n) == d]), range(0, maxDegree + 1)))
+    	#We map nan to 0. is this the way to go??
+    	ccPerDegree = list(map(lambda avg : 0.0 if math.isnan(avg) else avg, ccPerDegree))
+    	return ccPerDegree
+
 	def getValues(self, graph, sparsifiedGraph):
 		#Degree Distribution
 		ddGraph = properties.degreeDistribution(graph)
 		ddSparsifiedGraph = properties.degreeDistribution(sparsifiedGraph)
 		ks_dd = stats.ks_2samp(ddGraph, ddSparsifiedGraph)
 
-		return {'ks_dd':ks_dd}
+		#Distribution of clustering coefficients (per degree)
+		ddGraph = getCCDistPerDegree(graph)
+		ddSparsifiedGraph = getCCDistPerDegree(sparsifiedGraph)
+		ks_cc_perDegree = stats.ks_2samp(ddGraph, ddSparsifiedGraph)
+
+		return {'ks_dd':ks_dd, 'ks_cc_perDegree':ks_cc_perDegree}
 
 	def getTypes(self):
-		return {'ks_dd':'real'}
+		return {'ks_dd':'real', 'ks_cc_perDegree':'real'}
