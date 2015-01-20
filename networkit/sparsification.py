@@ -213,6 +213,9 @@ class SimmelianBackboneParametric(Sparsifier):
 	""" An implementation of the Parametric variant of the Simmelian Backbones
 	 introduced by Nick et al. """
 
+	def __init__(self, maxRank):
+		self.maxRank = maxRank
+
 	def getAttribute(self, G):
 		""" Returns an edge attribute that holds for each edge the minimum parameter value
 		such that the edge is contained in the sparsified graph.
@@ -223,7 +226,7 @@ class SimmelianBackboneParametric(Sparsifier):
 
 		chiba = ChibaNishizekiTriangleCounter(G)
 		triangles = chiba.getAttribute()
-		so = SimmelianOverlapAttributizer(G, triangles, 10)
+		so = SimmelianOverlapAttributizer(G, triangles, self.maxRank)
 		a_so = so.getAttribute()
 		return a_so
 
@@ -232,7 +235,7 @@ class SimmelianBackboneParametric(Sparsifier):
 		return gf.calculate()
 
 	def _getParameterizationAlgorithm(self):
-		return CompleteSearchParameterization(0, 10)
+		return CompleteSearchParameterization(0, self.maxRank)
 
 class SimmelianBackboneNonParametric(Sparsifier):
 
