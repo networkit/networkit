@@ -68,6 +68,17 @@ double AlgebraicDistance::distance(node u, node v) {
 	return result;
 }
 
+std::vector<double> AlgebraicDistance::getEdgeAttribute() {
+	INFO("attributizing edges");
+	std::vector<double> ad(G.upperEdgeIdBound(), 0.0);
+
+	G.parallelForEdges([&](node u, node v, edgeid uv){
+		ad[uv] = distance(u, v);
+	});
+
+	return ad;
+}
+
 void AlgebraicDistance::randomInit() {
 	count n = G.numberOfNodes();
 
