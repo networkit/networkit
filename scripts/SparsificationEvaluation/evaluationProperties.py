@@ -2,6 +2,7 @@ from scipy.spatial import distance
 from scipy.stats import kendalltau
 from networkit import *
 from scipy import stats # for KS statistic
+import numpy as np
 import math
 
 #This file holds the definitions of all backbone properties, including
@@ -208,26 +209,38 @@ class P_KolmogorowSmirnow:
 	def getName(self):
 		return "KolmogorowSmirnow"
 
-	def getCCDistPerDegree(inputGraph):
-    	localCCs = properties.ClusteringCoefficient.exactLocal(inputGraph)
-    	maxDegree = max([inputGraph.degree(n) for n in inputGraph.nodes()])
-    	ccPerDegree = list(map(lambda d : np.average([localCCs[n] for n in inputGraph.nodes() if inputGraph.degree(n) == d]), range(0, maxDegree + 1)))
-    	#We map nan to 0. is this the way to go??
-    	ccPerDegree = list(map(lambda avg : 0.0 if math.isnan(avg) else avg, ccPerDegree))
-    	return ccPerDegree
+	def getCCDistPerDegree(self, inputGraph):
+		localCCs = properties.ClusteringCoefficient.exactLocal(inputGraph)
+		maxDegree = max([inputGraph.degree(n) for n in inputGraph.nodes()])
+		ccPerDegree = list(map(lambda d : np.average([localCCs[n] for n in inputGraph.nodes() if inputGraph.degree(n) == d]), range(0, maxDegree + 1)))
+		#We map nan to 0. is this the way to go?? (currently, above line will produce many warnings because we try to calculate the average values of empty lists...)
+		ccPerDegree = list(map(lambda avg : 0.0 if math.isnan(avg) else avg, ccPerDegree))
+		return ccPerDegree
+
+	def getWCCSizesDistribution(self, inputGraph):
+		wccs = properties.ConnectedComponents(inputGraph)
+		wccs.run()
+		componentSizesList = list(map(lambda tuple_ID_Size: tuple_ID_Size[1], list(wccs.getComponentSizes().items())))
+		componentSizesDist = list(map(lambda s : len([c for c in componentSizesList if c == s]), range(0, max(componentSizesList) + 1)))
+		return componentSizesDist
 
 	def getValues(self, graph, sparsifiedGraph):
 		#Degree Distribution
 		ddGraph = properties.degreeDistribution(graph)
 		ddSparsifiedGraph = properties.degreeDistribution(sparsifiedGraph)
-		ks_dd = stats.ks_2samp(ddGraph, ddSparsifiedGraph)
+		ks_dd, p_dd = stats.ks_2samp(ddGraph, ddSparsifiedGraph)
 
 		#Distribution of clustering coefficients (per degree)
-		ddGraph = getCCDistPerDegree(graph)
-		ddSparsifiedGraph = getCCDistPerDegree(sparsifiedGraph)
-		ks_cc_perDegree = stats.ks_2samp(ddGraph, ddSparsifiedGraph)
+		ddGraph = self.getCCDistPerDegree(graph)
+		ddSparsifiedGraph = self.getCCDistPerDegree(sparsifiedGraph)
+		ks_cc_perDegree, p_cc_perDegree = stats.ks_2samp(ddGraph, ddSparsifiedGraph)
 
-		return {'ks_dd':ks_dd, 'ks_cc_perDegree':ks_cc_perDegree}
+		#Distribution of sizes of weakly connected components
+		ddGraph = self.getWCCSizesDistribution(graph)
+		ddSparsifiedGraph = self.getWCCSizesDistribution(sparsifiedGraph)
+		ks_wccSizes, p_wccSizes = stats.ks_2samp(ddGraph, ddSparsifiedGraph)
+
+		return {'ks_dd':ks_dd, 'p_dd':p_dd, 'ks_cc_perDegree':ks_cc_perDegree, 'p_cc_perDegree':p_cc_perDegree, 'ks_wccSizes':ks_wccSizes, 'p_wccSizes':p_wccSizes}
 
 	def getTypes(self):
-		return {'ks_dd':'real', 'ks_cc_perDegree':'real'}
+		return {'ks_dd':'real', 'p_dd':'real', 'ks_cc_perDegree':'real', 'p_cc_perDegree':'real', 'ks_wccSizes':'real', 'p_wccSizes':'real'}
