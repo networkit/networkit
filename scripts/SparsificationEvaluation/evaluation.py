@@ -25,10 +25,11 @@ class TaskResult:
 
 #Information about a graph; used as inpu tparamete
 class GraphDescription:
-	def __init__(self, path, format, name):
+	def __init__(self, path, name, format, **kwargs):
 		self.path = path
 		self.format = format
 		self.name = name
+		self.kwargs = kwargs
 
 # Calculates all properties for all graphs for all algorithms.
 def executeTask(task):
@@ -40,7 +41,7 @@ def executeTask(task):
 		print("-------------------------------------------------------------------------------------------- ")
 		print("Now working on graph ", igraph.name)
 		print("-------------------------------------------------------------------------------------------- ")
-		graph = readGraph(igraph.path, igraph.format)
+		graph = readGraph(igraph.path, igraph.format, **igraph.kwargs)
 		graph.indexEdges()
 
 		for ialgorithm in task.algorithms:
@@ -53,10 +54,15 @@ def executeTask(task):
 			if not graph.isWeighted() and ialgorithm.requiresWeight():
 				print("Skipping ", igraph.name, " for ", ialgorithm.getShortName(), " (requires weighted graph)")
 			else:
-				for iedgeRatio in task.edgeRatios:
+				#We don't need to consider multiple edgeRatios for non-parameterizable algorithms
+				actualEdgeRatios = task.edgeRatios
+				if ialgorithm.parameterizationType() == 'None':
+					actualEdgeRatios = [1.0]
+
+				for iedgeRatio in actualEdgeRatios:
 					#Parameterize the algorithm in such a way that we meet the expected edge ratio
 					algorithmParameter = ialgorithm.getAlgorithm().getParameter(graph, iedgeRatio)
-					
+
 					time_backbone_start = time.time()
 					backbone = ialgorithm.getAlgorithm().getSparsifiedGraph(graph, algorithmParameter, attribute)
 					time_backbone_elapsed = time.time() - time_backbone_start
@@ -83,9 +89,5 @@ def executeTask(task):
 							raise
 
 					taskResult.data.append(propertiesDict)
-
-					#Non-parameterizable algorithms do not need to be applied several times.
-					if ialgorithm.parameterizationType() == 'None':
-						break
 
 	return taskResult
