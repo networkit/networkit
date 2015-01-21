@@ -15,6 +15,10 @@ namespace NetworKit {
 
 class EffectiveDiameter {
 
+	/*
+	these are variatons of the ANF algorithm presented in the paper "A Fast and Scalable Tool for Data Mining
+	in Massive Graphs" by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
+	*/
 public:
 	/**
 	 * approximates the effective diameter of a given graph
@@ -53,4 +57,4 @@ public:
 
 } /* namespace NetworKit */
 
-#endif /* ECCENTRICITY_H_ */
+#endif /* EFFECTIVEDIAMETER_H_ */

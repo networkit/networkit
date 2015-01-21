@@ -4066,6 +4066,11 @@ cdef class CoreDecomposition:
 		"""
 		return self._this.shells()
 
+cdef extern from "cpp/properties/EffectiveDiameter.h" namespace "NetworKit::EffectiveDiameter":
+	double effectiveDiameter (_Graph G, double ratio, count k, count r) except +
+	double effectiveDiameterExact(_Graph G, double ratio) except +
+	map[count, double] hopPlot(_Graph G, count maxDistance, count k, count r) except +
+
 cdef class EffectiveDiameter:
 
 	@staticmethod
