@@ -4167,7 +4167,7 @@ cdef class EffectiveDiameter:
 
 cdef extern from "cpp/centrality/Betweenness.h":
 	cdef cppclass _Betweenness "NetworKit::Betweenness":
-		_Betweenness(_Graph, bool) except +
+		_Betweenness(_Graph, bool, bool) except +
 		void run() except +
 		vector[double] scores() except +
 		vector[double] edgeScores() except +
@@ -4193,7 +4193,7 @@ cdef class Betweenness:
 	cdef _Betweenness* _this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, normalized=False):
+	def __cinit__(self, Graph G, normalized=False, computeEdges=False):
 		self._G = G
 		self._this = new _Betweenness(G._this, normalized, computeEdges)
 
