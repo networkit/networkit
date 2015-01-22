@@ -49,10 +49,10 @@ def getProperties():
     return [
         P_General(),
         P_Ratios(),
-        #P_Community(),
-        #P_Diameter(),
-        #P_DegreeDistribution(),
-        #P_Centrality(),
-        #P_Components()
-		P_KolmogorowSmirnow()
+        P_Community(),
+        P_Diameter(),
+        P_DegreeDistribution(),
+        P_Centrality(),
+        P_Components()
+		#P_KolmogorowSmirnow()
         ]
