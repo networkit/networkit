@@ -34,6 +34,9 @@ protected:
 
 	std::unique_ptr<Overlapper> overlap; //!< clustering overlap algorithm
 
+	Partition core;
+	std::vector<Partition> baseClusterings;
+
 public:
 	/**
 	 * Constructor to the EPP community detection algorithm.
@@ -74,6 +77,11 @@ public:
 	 * @return string representation.
 	 */
 	virtual std::string toString() const;
+
+
+	std::vector<Partition> getBasePartitions() const;
+
+	Partition getCorePartition() const;
 
 };
 

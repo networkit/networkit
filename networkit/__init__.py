@@ -6,7 +6,7 @@ usage examples can be found on http://nbviewer.ipython.org/urls/networkit.iti.ki
 __author__ = "Christian Staudt"
 __copyright__ = "Copyright (c) 2014 Christan Staudt"
 __license__ = "MIT"
-__version__ = "3.4"
+__version__ = "3.5"
 
 
 # standard library modules
@@ -33,6 +33,8 @@ from . import workflows
 from . import flow
 from . import distmeasures
 from . import plot
+from . import scd
+from . import clique
 
 try:
 	from . import viztools

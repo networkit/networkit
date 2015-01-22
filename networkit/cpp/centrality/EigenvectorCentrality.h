@@ -16,6 +16,7 @@ namespace NetworKit {
  * @ingroup centrality
  * Computes the leading eigenvector of the graph's adjacency matrix (normalized in 2-norm).
  * Interpreted as eigenvector centrality score.
+ * Should NOT be used for directed graphs!
  */
 class EigenvectorCentrality: public Centrality {
 protected:
@@ -23,12 +24,12 @@ protected:
 
 public:
 	/**
-	 * Constructs the EigenvectorCentrality class for the given Graph @a G. @a tol defines the tolerance for convergence.
+	 * Constructs an EigenvectorCentrality object for the given Graph @a G. @a tol defines the tolerance for convergence.
 	 *
 	 * @param[in] G The graph.
 	 * @param[in] tol The tolerance for convergence.
 	 */
-	EigenvectorCentrality(const Graph& G, double tol = 1e-9);
+	EigenvectorCentrality(const Graph& G, double tol = 1e-8);
 
 	virtual void run();
 };
