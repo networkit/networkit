@@ -1,5 +1,6 @@
 import os
 import subprocess
+from subprocess import DEVNULL
 
 def collectExternalPackageStatus():
 	""" This function is supposed to check if the packages, NetworKit uses are installed or not.
@@ -86,7 +87,7 @@ def determineCompiler(candidates):
 	v = 0
 	while not compiler_version_satisfied and v < len(candidates):
 		try:
-			if subprocess.call([candidates[v],"-o","test_build","-std=c++11","-fopenmp","sample.cpp"]) == 0:
+			if subprocess.call([candidates[v],"-o","test_build","-std=c++11","-fopenmp","sample.cpp"],stdout=DEVNULL,stderr=DEVNULL) == 0:
 				compiler_version_satisfied = True
 				compiler = "{0}".format(candidates[v])
 				#print("your latest gcc is {0}".format(compiler))

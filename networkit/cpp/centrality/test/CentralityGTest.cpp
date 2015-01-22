@@ -11,9 +11,12 @@
 #include "../ApproxBetweenness.h"
 #include "../ApproxBetweenness2.h"
 #include "../EigenvectorCentrality.h"
+#include "../KatzCentrality.h"
 #include "../PageRank.h"
 #include "../DynBetweenness.h"
 #include "../../io/METISGraphReader.h"
+#include "../../io/SNAPGraphReader.h"
+#include "../../generators/ErdosRenyiGenerator.h"
 #include "../../auxiliary/Log.h"
 
 namespace NetworKit {
@@ -162,6 +165,36 @@ TEST_F(CentralityGTest, testBetweennessCentralityWeighted) {
 	EXPECT_NEAR(0.0, bc[6], tol);
 	EXPECT_NEAR(0.0, bc[7], tol);
 }
+
+TEST_F(CentralityGTest, testKatzCentralityDirected) {
+	SNAPGraphReader reader;
+	Graph G = reader.read("input/wiki-Vote.txt"); // TODO: replace by smaller graph
+	KatzCentrality kc(G);
+
+	DEBUG("start kc run");
+	kc.run();
+	DEBUG("finish kc");
+	std::vector<std::pair<node, double> > kc_ranking = kc.ranking();
+	std::vector<double> kc_scores = kc.scores();
+
+	EXPECT_EQ(kc_ranking[0].first, 699);
+}
+
+TEST_F(CentralityGTest, testPageRankDirected) {
+	SNAPGraphReader reader;
+	Graph G = reader.read("input/wiki-Vote.txt"); // TODO: replace by smaller graph
+	PageRank pr(G);
+
+	DEBUG("start pr run");
+	pr.run();
+	DEBUG("finish pr");
+	std::vector<std::pair<node, double> > pr_ranking = pr.ranking();
+
+	const double tol = 1e-3;
+	EXPECT_EQ(pr_ranking[0].first, 699);
+	EXPECT_NEAR(pr_ranking[0].second, 0.00432, tol);
+}
+
 
 TEST_F(CentralityGTest, testEigenvectorCentrality) {
  /* Graph:

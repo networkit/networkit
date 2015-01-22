@@ -733,6 +733,15 @@ std::vector<node> Graph::neighbors(node u) const {
 	return neighbors;
 }
 
+
+Graph Graph::toUndirected() const {
+	if (directed == false) {
+		throw std::runtime_error("this graph is already undirected");
+	}
+	Graph U(*this, weighted, false);
+	return std::move(U);
+}
+
 bool Graph::checkConsistency() const {
 	//TODO: as of now, only works for undirected graphs
 	std::vector<std::unordered_set<node> > neighborsets(z);

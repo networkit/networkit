@@ -36,8 +36,8 @@ public:
 	virtual void run() = 0;
 
 	/**
-	 * Get a vector containing the betweenness score for each node in the graph.
-	 * @return The betweenness scores calculated by @link run().
+	 * Get a vector containing the centrality score for each node in the graph.
+	 * @return The centrality scores calculated by @link run().
 	 */
 	virtual std::vector<double> scores();
 

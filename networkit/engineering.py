@@ -37,7 +37,7 @@ def strongScaling(algorithmClass, threadSequence, inargs, inputTitle=None, repet
 	if outPath:
 		with open(outPath, "w") as outFile:
 			columns = ["algo", "input", "threads", "time"]
-			writer = csv.DictWriter(outFile, fieldnames=columns)
+			writer = csv.DictWriter(outFile, fieldnames=columns, delimiter="\t")
 			writer.writeheader()
 			for row in data:
 				writer.writerow(row)
@@ -66,7 +66,7 @@ def weakScaling(algorithmClass, inargs, threadSequence, inputSequence, inputTitl
 	if outPath:
 		with open(outPath, "w") as outFile:
 			columns = ["algo", "input", "threads", "time"]
-			writer = csv.DictWriter(outFile, fieldnames=columns)
+			writer = csv.DictWriter(outFile, fieldnames=columns, delimiter="\t")
 			writer.writeheader()
 			for row in data:
 				writer.writerow(row)
