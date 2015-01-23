@@ -70,7 +70,7 @@ void PLP::runImpl() {
 	Aux::Timer runtime;
 
 	// propagate labels
-	while (nUpdated > this->updateThreshold && Aux::SignalHandling::isRunning()) { // as long as a label has changed...
+	while (nUpdated > this->updateThreshold && isRunning()) { // as long as a label has changed...
 		runtime.start();
 		nIterations += 1;
 		INFO("[BEGIN] LabelPropagation: iteration #" , nIterations);
@@ -119,10 +119,6 @@ void PLP::runImpl() {
 
 	} // end while
 	hasRun = true;
-	if (!Aux::SignalHandling::isRunning()) {
-		ERROR("Algorithm has been interrupted with CTRL+C, computation hasn't been completed!");
-		Aux::SignalHandling::setRunning(true);
-	}
 }
 
 std::string PLP::toString() const {

@@ -56,7 +56,7 @@ void EPP::runImpl() {
 	}
 
 	// ANALYSIS
-	if (CALC_DISSIMILARITY && Aux::SignalHandling::isRunning()) {
+	if (CALC_DISSIMILARITY && isRunning()) {
 		JaccardMeasure dm;
 		double dissimilaritySum = 0.0;
 		for (index b = 0; b < baseClusterings.size(); b += 1) {
@@ -88,7 +88,7 @@ void EPP::runImpl() {
 		DEBUG("final clusterer is CNM");
 		this->finalClusterer.reset(new CNM(Gcore));
 	}
-	if (Aux::SignalHandling::isRunning()) {
+	if (isRunning()) {
 		this->finalClusterer->run();
 		Partition finalCoarse = this->finalClusterer->getPartition();
 
@@ -97,10 +97,6 @@ void EPP::runImpl() {
 		// return clustering
 		result = std::move(final);
 		hasRun = true;
-	}
-	if (!Aux::SignalHandling::isRunning()) {
-		ERROR("Algorithm has been interrupted with CTRL+C, computation hasn't been completed!");
-		Aux::SignalHandling::setRunning(true);
 	}
 }
 

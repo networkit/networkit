@@ -13,14 +13,19 @@ namespace NetworKit {
 		try {
 			runImpl();
 			hasRun = true;
-		} catch (Aux::InterruptException e) {
-			ERROR(e.what());
-			hasRun = false;
 		} catch (std::runtime_error e) {
-			ERROR("received runtime error:\t",e.what());
+			ERROR(e.what());
 			hasRun = false;
 		}
 		Aux::SignalHandling::reset((uint64_t)this);
+	}
+
+	bool Algorithm::isRunning() {
+		if (!Aux::SignalHandling::gotSIGINT()) {
+			return true;
+		} else {
+			throw std::runtime_error("Received SIGINT, aborting calculations.");
+		}
 	}
 
 

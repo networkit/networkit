@@ -238,7 +238,7 @@ void PLM::runImpl() {
 				WARN("move phase aborted after ", maxIter, " iterations");
 			}
 			iter += 1;
-		} while (moved && (iter <= maxIter) && Aux::SignalHandling::isRunning());
+		} while (moved && (iter <= maxIter) && isRunning());
 		DEBUG("iterations in move phase: ", iter);
 	};
 
@@ -251,7 +251,7 @@ void PLM::runImpl() {
 	timer.stop();
 	timing["move"].push_back(timer.elapsedMilliseconds());
 
-	if (change && Aux::SignalHandling::isRunning()) {
+	if (change && isRunning()) {
 		INFO("nodes moved, so begin coarsening and recursive call");
 
 		timer.start();
@@ -307,10 +307,6 @@ void PLM::runImpl() {
 	}
 	result = std::move(zeta);
 	hasRun = true;
-	if (!Aux::SignalHandling::isRunning()) {
-		ERROR("Algorithm has been interrupted with CTRL+C, computation hasn't been completed!");
-		Aux::SignalHandling::setRunning(true);
-	}
 }
 
 std::string NetworKit::PLM::toString() const {

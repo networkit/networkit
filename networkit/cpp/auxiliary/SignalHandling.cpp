@@ -1,42 +1,60 @@
 #include "SignalHandling.h"
 #include <exception>
+#include <atomic>
+#include <signal.h>
 
 namespace Aux {
-bool SignalHandling::running = true;
-bool SignalHandling::handlerInitialized = false;
-uint64_t SignalHandling::root = 0;
-bool SignalHandling::rootSet = false;
 
-bool SignalHandling::isRunning() {
-	InterruptException ie;
-	if (!running) throw ie;
-	return running;
+namespace SignalHandling {
+
+namespace {
+	std::atomic<bool> receivedSIGINT(false);
+	bool handlerInitialized = false;
+	uint64_t root = 0;
+	bool rootSet = false;
+	void sigHandler(int sig) {
+		switch (sig) {
+			case SIGINT: receivedSIGINT.store(true);
+			default: break;
+		}
+	};
+	//struct sigaction act;
+	//memset (&act, 0, sizeof (act));
+	//act.sa_handler = sigHandler;
 }
 
-void SignalHandling::setRunning(bool isRunning) {
-	running = isRunning;
+bool gotSIGINT() {
+	return receivedSIGINT.load();
 }
 
-void SignalHandling::init(uint64_t caller) {
+void setSIGINT(bool received) {
+	receivedSIGINT.store(received);
+}
+
+void signalHandler(int signum) {
+	setSIGINT(true);
+}
+
+void init(uint64_t caller) {
 	if (!rootSet) {
 		root = caller;
 		if (!handlerInitialized) {
-			auto signalHandler = [](int signum ) {
-				setRunning(false);
-			};
-			signal(SIGINT,signalHandler);
-			handlerInitialized = true;
+			//sigaction(SIGINT,&act,0);
+			signal(SIGINT,sigHandler);
 		}
 		rootSet = true;
 	}
 }
 
-void SignalHandling::reset(uint64_t caller) {
+void reset(uint64_t caller) {
 	if (root == caller) {
 		rootSet = false;
-		running = true;
+		receivedSIGINT = false;
 		root = 0;
+		signal(SIGINT,0);
 	}
 }
+
+} /* SignalHandling */
 
 } /* Aux */
