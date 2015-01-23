@@ -9,6 +9,7 @@ protected:
 public:
 	Algorithm();
 	void run();
+	bool isRunning();
 };
 
 } /* NetworKit */
