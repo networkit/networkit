@@ -3,11 +3,11 @@
 
 #include <map>
 #include "graph/Graph.h"
+#include "centrality/Centrality.h"
 
 namespace NetworKit {
 
 class TestsNemes {
-
 
 public:
 	static double effectiveDiameterExact();
@@ -19,7 +19,7 @@ public:
 	static double correlation();
 
 private:
-	static double calculateCorrelation(const Graph& g, count measure1, count measure2);
+	static double calculateCorrelation(const Graph& g, Centrality& centrality1, Centrality& centrality2);
 
 };
 

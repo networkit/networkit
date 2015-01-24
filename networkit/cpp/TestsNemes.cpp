@@ -1,6 +1,8 @@
 #include "TestsNemes.h"
 #include "properties/EffectiveDiameter.h"
 #include "centrality/Closeness.h"
+#include "centrality/DegreeCentrality.h"
+#include "centrality/EigenvectorCentrality.h"
 #include "centrality/Betweenness.h"
 #include "centrality/KPathCentrality.h"
 #include "properties/ConnectedComponents.h"
@@ -29,8 +31,7 @@ double TestsNemes::effectiveDiameterExact() {
 	double end;
 	double result;
 
-	//vector<string> testInstances = {"power", "PGPgiantcompo", "memplus", "as-22july06", "cs4", "citationCiteseer"};
-	vector<string> testInstances = {"karate", "lesmis", "power"};
+	vector<string> testInstances = {"power", "PGPgiantcompo", "memplus", "as-22july06", "cs4", "citationCiteseer"};
 	for (auto testInstance : testInstances) {
 		METISGraphReader reader;
 		Graph g = reader.read("input/" + testInstance + ".graph");
@@ -95,7 +96,7 @@ double TestsNemes::closeness() {
 
 	cout << "Testing Closeness:" << endl;
 
-	vector<string> testInstances = {"power", "PGPgiantcompo", "astro-ph", "memplus", "cs4", "as-22july06", "bcsstk30", "cond-mat-2003", "rgg_n_2_15_s0", "fe_pwt", "cond-mat-2005", "delaunay_n16", "rgg_n_2_16_s0",	"kron_g500-simple-logn16", "luxembourg.osm", "delaunay_n17", "citationCiteseer", "coPapersCiteseer"};
+	vector<string> testInstances = {"power", "PGPgiantcompo", "astro-ph", "memplus", "cs4", "as-22july06", "bcsstk30", "cond-mat-2003", "rgg_n_2_15_s0", "fe_pwt", "cond-mat-2005", "delaunay_n16", "rgg_n_2_16_s0", "kron_g500-simple-logn16", "luxembourg.osm", "delaunay_n17", "citationCiteseer", "coPapersCiteseer"};
 
 	for (auto testInstance : testInstances) {
 		METISGraphReader reader;
@@ -144,7 +145,6 @@ double TestsNemes::betweenness() {
 	}
 	return 0;
 }
-
 
 double TestsNemes::kpath() {
 	using namespace std;
@@ -242,20 +242,87 @@ double TestsNemes::kpath() {
 	return 0;
 }
 
-//TODO
 double TestsNemes::correlation() {
 	using namespace std;
 
 	cout << "Testing Correlation:" << endl;
 
 	METISGraphReader reader;
-	Graph g = reader.read("input/power.graph");
-	cout << calculateCorrelation(g, 0, 0);
+
+	vector<string> oldNew = {"power", "PGPgiantcompo", "cs4"};
+	for (auto testInstance : oldNew) {
+		Graph g = reader.read("input/" + testInstance + ".graph");
+		DegreeCentrality centralityDegree(g,false);
+		Closeness centralityClose(g,false);
+		KPathCentrality centralityKPath(g);
+		Betweenness centralityBetween(g);
+		EigenvectorCentrality centralityEigen(g);
+		cout << testInstance << ", Degree - Closeness: " << calculateCorrelation(g, centralityDegree, centralityClose) << endl;
+		cout << testInstance << ", Degree - KPath: " << calculateCorrelation(g, centralityDegree, centralityKPath) << endl;
+		cout << testInstance << ", Betweenness - Closeness: " << calculateCorrelation(g, centralityBetween, centralityClose) << endl;
+		cout << testInstance << ", Betweenness - KPath: " << calculateCorrelation(g, centralityBetween, centralityKPath) << endl;
+		cout << testInstance << ", Eigenvector - Closeness: " << calculateCorrelation(g, centralityEigen, centralityClose) << endl;
+		cout << testInstance << ", Eigenvector - KPath: " << calculateCorrelation(g, centralityEigen, centralityKPath) << endl;
+	}
+	cout << endl;
+
+	vector<string> closeKPath = {"power", "cs4", "bcsstk30", "PGPgiantcompo", "as-22july06"};
+	for (auto testInstance : closeKPath) {
+		Graph g = reader.read("input/" + testInstance + ".graph");
+		Closeness centralityClose(g,false);
+		KPathCentrality centralityKPath(g);
+		cout << testInstance << ", Closeness - KPath: " << calculateCorrelation(g, centralityClose, centralityKPath) << endl;
+	}
+	cout << endl;
+
+	vector<string> degreeBetween = {"as-22july06", "PGPgiantcompo", "bcsstk30", "cs4", "fe_pwt", "luxembourg.osm", "citationCiteseer"};
+	for (auto testInstance : degreeBetween) {
+		Graph g = reader.read("input/" + testInstance + ".graph");
+		DegreeCentrality centralityDegree(g,false);
+		Betweenness centralityBetween(g,false);
+		cout << testInstance << ", Degree - Betweenness: " << calculateCorrelation(g, centralityDegree, centralityBetween) << endl;
+	}
+	cout << endl;
+
+	vector<string> degreeEigen = {"PGPgiantcompo", "fe_pwt", "power", "bcsstk30", "cs4"};
+	for (auto testInstance : degreeEigen) {
+		Graph g = reader.read("input/" + testInstance + ".graph");
+		DegreeCentrality centralityDegree(g,false);
+		EigenvectorCentrality centralityEigen(g);
+		cout << testInstance << ", Degree - Eigenvector: " << calculateCorrelation(g, centralityDegree, centralityEigen) << endl;
+	}
+	cout << endl;
+
+	vector<string> betweenEigen = {"bcsstk30", "power", "fe_pwt", "cs4", "PGPgiantcompo"};
+	for (auto testInstance : betweenEigen) {
+		Graph g = reader.read("input/" + testInstance + ".graph");
+		Betweenness centralityBetween(g,false);
+		EigenvectorCentrality centralityEigen(g);
+		cout << testInstance << ", Betweenness - Eigenvector: " << calculateCorrelation(g, centralityBetween, centralityEigen) << endl;
+	}
+	cout << endl;
+
+	vector<double> alphas = {0.5, 0.4, 0.3, 0.2, 0.1, 0, -0.1};
+
+	Graph power = reader.read("input/power.graph");
+	for (auto alpha : alphas) {
+		Betweenness centralityBetween(power,false);
+		KPathCentrality centralityKPath(power, alpha, 0);
+		cout << "Power, Betweenness - KPath, alpha=" << alpha << ": " << calculateCorrelation(power, centralityBetween, centralityKPath) << endl;
+	}
+	cout << endl;
+
+	Graph pgp = reader.read("input/PGPgiantcompo.graph");
+	for (auto alpha : alphas) {
+		Betweenness centralityBetween(pgp,false);
+		KPathCentrality centralityKPath(pgp, alpha, 0);
+		cout << "PGPgiantcompo, Betweenness - KPath, alpha=" << alpha << ": " << calculateCorrelation(pgp, centralityBetween, centralityKPath) << endl;
+	}
 
 	return 0;
 }
 
-double TestsNemes::calculateCorrelation(const Graph& g, count measure1, count measure2) {
+double TestsNemes::calculateCorrelation(const Graph& g, Centrality& centrality1, Centrality& centrality2) {
 	using namespace std;
 
 	double mean1 = 0;
@@ -265,10 +332,7 @@ double TestsNemes::calculateCorrelation(const Graph& g, count measure1, count me
 	double covariance = 0;
 	double correlation = 0;
 
-	//TODO
-	KPathCentrality centrality1(g,0.0,10);
 	centrality1.run();
-	Betweenness centrality2(g,false);
 	centrality2.run();
 
 	for (count i = 0; i < g.numberOfNodes(); i++) {

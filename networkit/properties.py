@@ -335,9 +335,9 @@ def printDegreeHistogram(G, nbins=25):
 	termgraph.graph(labels, hist)
 
 def showHopPlot(G): 	 	
-	""" Prints the hop-plot""" 	 	
-	# hop-plot 	 	
-	if nComponents == 1: 	 	
+	""" Prints the hop-plot"""
+	#hop-plot
+	if numberOfComponents(G) == 1:
 		hopPlot = EffectiveDiameter.hopPlot(G, maxDistance=0, k=64, r=7) 	 	
 	else: 	 	
 		hopPlot = None 	 	
