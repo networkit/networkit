@@ -156,8 +156,8 @@ class P_Centrality:
 			return [-1] * count
 
 		print("ApproxBetweenness...")
-		#bc = centrality.ApproxBetweenness(graph, epsilon=0.01, delta=0.01, diameterSamples=0)
-		bc = centrality.Betweenness(graph)
+		bc = centrality.ApproxBetweenness(graph, epsilon=0.05, delta=0.05, diameterSamples=0)
+		#bc = centrality.Betweenness(graph)
 		bc.run()
 		return self.getHubsFromRanking(bc.ranking(), count)
 
@@ -216,23 +216,46 @@ class P_KolmogorowSmirnow:
 		#componentSizesDist = list(map(lambda s : len([c for c in componentSizesList if c == s]), range(0, max(componentSizesList) + 1)))
 		return componentSizes
 
+	def getCCSamples(self, inputGraph):
+		localCCs = properties.ClusteringCoefficient.exactLocal(inputGraph)
+		maxDegree = max([inputGraph.degree(n) for n in inputGraph.nodes()])
+
+		#Calculate average ccs per degree.
+		ccDictPerDegree = {}
+		for n in inputGraph.nodes():
+			deg = inputGraph.degree(n)
+			if not deg in ccDictPerDegree:
+				ccDictPerDegree[deg] = [localCCs[n]]
+			else:
+				ccDictPerDegree[deg].append(localCCs[n])
+
+		ccPerDegree = [0] * (maxDegree + 1)
+		for deg in ccDictPerDegree:
+			ccPerDegree[deg] = np.average(ccDictPerDegree[deg])
+			
+		return localCCs, ccPerDegree
+
 	def getValues(self, graph, sparsifiedGraph):
 		#Degree Distribution
+		print("KS eval: dd")
 		sampleGraph = properties.degreeSequence(graph)
 		sampleSparsifiedGraph = properties.degreeSequence(sparsifiedGraph)
 		ks_dd, p_dd = stats.ks_2samp(sampleGraph, sampleSparsifiedGraph)
 
-		#Distribution of clustering coefficients (TODO: per degree?)
-		sampleGraph = properties.ClusteringCoefficient.exactLocal(graph)#self.getCCDistPerDegree(graph)
-		sampleSparsifiedGraph = properties.ClusteringCoefficient.exactLocal(sparsifiedGraph)#self.getCCDistPerDegree(sparsifiedGraph)
-		ks_cc_perDegree, p_cc_perDegree = stats.ks_2samp(sampleGraph, sampleSparsifiedGraph)
+		#Distribution of clustering coefficients (per degree and not per degree)
+		print("KS eval: cc")
+		localCCs_graph, ccPerDegree_graph = self.getCCSamples(graph)
+		localCCs_sparsifiedGraph, ccPerDegree_sparsifiedGraph = self.getCCSamples(sparsifiedGraph)
+		ks_cc_perDegree, p_cc_perDegree = stats.ks_2samp(ccPerDegree_graph, ccPerDegree_sparsifiedGraph)
+		ks_cc, p_cc = stats.ks_2samp(localCCs_graph, localCCs_sparsifiedGraph)
 
 		#Distribution of sizes of weakly connected components
+		print("KS eval: wcc")
 		sampleGraph = self.getWCCSizes(graph)
 		sampleSparsifiedGraph = self.getWCCSizes(sparsifiedGraph)
 		ks_wccSizes, p_wccSizes = stats.ks_2samp(sampleGraph, sampleSparsifiedGraph)
 
-		return {'ks_dd':ks_dd, 'p_dd':p_dd, 'ks_cc_perDegree':ks_cc_perDegree, 'p_cc_perDegree':p_cc_perDegree, 'ks_wccSizes':ks_wccSizes, 'p_wccSizes':p_wccSizes}
+		return {'ks_dd':ks_dd, 'p_dd':p_dd, 'ks_cc':ks_cc, 'p_cc':p_cc, 'ks_cc_perDegree':ks_cc_perDegree, 'p_cc_perDegree':p_cc_perDegree, 'ks_wccSizes':ks_wccSizes, 'p_wccSizes':p_wccSizes}
 
 	def getTypes(self):
-		return {'ks_dd':'real', 'p_dd':'real', 'ks_cc_perDegree':'real', 'p_cc_perDegree':'real', 'ks_wccSizes':'real', 'p_wccSizes':'real'}
+		return {'ks_dd':'real', 'p_dd':'real', 'ks_cc':'real', 'p_cc':'real', 'ks_cc_perDegree':'real', 'p_cc_perDegree':'real', 'ks_wccSizes':'real', 'p_wccSizes':'real'}
