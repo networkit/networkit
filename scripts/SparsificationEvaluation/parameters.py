@@ -26,23 +26,23 @@ def getAlgorithms():
 def getGraphs():
     return [
 	#thesis set
-    #GraphDescription("./input/Yale4.graphml", "Yale4", Format.GraphML),
-	#GraphDescription("./input/Virginia63.graphml", "Virginia63", Format.GraphML),
-    #GraphDescription("./input/Tennessee95.graphml", "Tennessee95", Format.GraphML),
-    #GraphDescription("./input/us-aviation-t100-2013.graphml", "USAviation", Format.GraphML),
-    #GraphDescription("./input/Caltech36.graphml", "Caltech36", Format.GraphML),
-    #GraphDescription("./input/kitEmail.graphml", "KitEmail", Format.GraphML),
-    #GraphDescription("./input/LFR-1000.graph", "LFR-1000", Format.METIS),
-    #GraphDescription("./input/PGPgiantcompo.graph", "PGP", Format.METIS),
-    #GraphDescription("./input/karate.graph", "Karate", Format.METIS),
-    #GraphDescription("./input/bter-graph-cc0.7-small.graph", "BTER", Format.EdgeListCommaOne),
-    #GraphDescription("./input/ErdosRenyi.graph", "ErdosRenyi", Format.METIS),
-    #GraphDescription("./input/jazz.graph", "Jazz", Format.METIS),
+    GraphDescription("./input/Yale4.graphml", "Yale4", Format.GraphML),
+	GraphDescription("./input/Virginia63.graphml", "Virginia63", Format.GraphML),
+    GraphDescription("./input/Tennessee95.graphml", "Tennessee95", Format.GraphML),
+    GraphDescription("./input/us-aviation-t100-2013.graphml", "USAviation", Format.GraphML),
+    GraphDescription("./input/Caltech36.graphml", "Caltech36", Format.GraphML),
+    GraphDescription("./input/kitEmail.graphml", "KitEmail", Format.GraphML),
+    GraphDescription("./input/LFR-1000.graph", "LFR-1000", Format.METIS),
+    GraphDescription("./input/PGPgiantcompo.graph", "PGP", Format.METIS),
+    GraphDescription("./input/karate.graph", "Karate", Format.METIS),
+    GraphDescription("./input/bter-graph-cc0.7-small.graph", "BTER", Format.EdgeListCommaOne),
+    GraphDescription("./input/ErdosRenyi.graph", "ErdosRenyi", Format.METIS),
+    GraphDescription("./input/jazz.graph", "Jazz", Format.METIS),
 	#sampling from large graphs
-	#GraphDescription("./input/cit-HepTh.edgelist-t0.graph", "HepTh", Format.EdgeList, continuous=False, separator='\t', firstNode=0),
-	#GraphDescription("./input/cit-HepPh.edgelist-t0.graph", "HepPh", Format.EdgeList, continuous=False, separator='\t', firstNode=0),
-	#GraphDescription("./input/soc-Epinions1.edgelist-t0.graph", "Epinions", Format.EdgeListTabZero),
-	#GraphDescription("./input/as20000102.txt", "AS", Format.EdgeList, continuous=False, separator='\t', firstNode=1),
+	GraphDescription("./input/cit-HepTh.edgelist-t0.graph", "HepTh", Format.EdgeList, continuous=False, separator='\t', firstNode=0),
+	GraphDescription("./input/cit-HepPh.edgelist-t0.graph", "HepPh", Format.EdgeList, continuous=False, separator='\t', firstNode=0),
+	GraphDescription("./input/soc-Epinions1.edgelist-t0.graph", "Epinions", Format.EdgeListTabZero),
+	GraphDescription("./input/as20000102.txt", "AS", Format.EdgeList, continuous=False, separator='\t', firstNode=1),
 	#some more fb graphs
 	GraphDescription("./input/fb-FSU53.edgelist", "fb-FSU53", Format.EdgeListTabZero),
 	GraphDescription("./input/fb-Indiana69.edgelist", "fb-Indiana69", Format.EdgeListTabZero),
@@ -55,14 +55,16 @@ def getGraphs():
 	GraphDescription("./input/fb-UGA50.edgelist", "fb-UGA50", Format.EdgeListTabZero),
 	GraphDescription("./input/fb-UIllinois20.edgelist", "fb-UIllinois20", Format.EdgeListTabZero),
 	#others
-	#GraphDescription("./input/con-fiber_big.metis.graph", "fiber_big", Format.METIS),
 	GraphDescription("./input/mouse_brain_1.graphml", "mouse_brain_1", Format.GraphML),
 	GraphDescription("./input/test.fiber.small.graphml", "test.fiber.small", Format.GraphML),
 	#web
 	GraphDescription("./input/cnr-2000.metis.graph", "cnr-2000", Format.METIS),
-	#GraphDescription("./input/eu-2005.metis.graph", "eu-2005", Format.METIS),
-	GraphDescription("./input/in-2004.metis.graph", "in-2004", Format.METIS),
+
+	#big..
 	#GraphDescription("./input/uk-2002.metis.graph", "uk-2002", Format.METIS)
+	#GraphDescription("./input/eu-2005.metis.graph", "eu-2005", Format.METIS),
+	#GraphDescription("./input/in-2004.metis.graph", "in-2004", Format.METIS),
+	#GraphDescription("./input/con-fiber_big.metis.graph", "fiber_big", Format.METIS),
 	]
 
 #Returns a list of property calculation descriptions
