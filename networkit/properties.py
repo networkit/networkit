@@ -338,12 +338,12 @@ def showHopPlot(G):
 	""" Prints the hop-plot"""
 	#hop-plot
 	if numberOfComponents(G) == 1:
-		hopPlot = EffectiveDiameter.hopPlot(G, maxDistance=0, k=64, r=7) 	 	
-	else: 	 	
-		hopPlot = None 	 	
+		hopPlot = EffectiveDiameter.hopPlot(G, maxDistance=0, k=64, r=7)
+	else:
+		hopPlot = {}
 	plt.title(G.getName())
 	plt.xlabel('distance')
-	plt.ylabel('fraction of connected nodes') 	 	
-	plt.ylim([0,1.02]) 	 	
-	plt.plot(hopPlot, 'r') 	 	
+	plt.ylabel('fraction of connected nodes')
+	plt.ylim([0,1.02])
+	plt.plot(list(hopPlot.keys()), list(hopPlot.values()), 'r')
 	plt.show()

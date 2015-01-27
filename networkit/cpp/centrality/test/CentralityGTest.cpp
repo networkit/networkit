@@ -14,6 +14,7 @@
 #include "../EigenvectorCentrality.h"
 #include "../PageRank.h"
 #include "../DynBetweenness.h"
+#include "../KPathCentrality.h"
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/Log.h"
 
@@ -67,6 +68,7 @@ TEST_F(CentralityGTest, testEdgeBetweennessCentrality) {
 	G.addEdge(2, 4);
 	G.addEdge(3, 5);
 	G.addEdge(4, 5);
+	G.indexEdges();
 
 	Betweenness centrality(G,false,true);
 	centrality.run();
@@ -309,6 +311,14 @@ TEST_F(CentralityGTest, testClosenessCentrality) {
 	EXPECT_NEAR(0.1, bc[5], tol);
 }
 
+TEST_F(CentralityGTest, testKPathCentrality) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/power.graph");
+
+	KPathCentrality centrality(G);
+	centrality.run();
+}
+
 TEST_F(CentralityGTest, benchSequentialBetweennessCentralityOnRealGraph) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/celegans_metabolic.graph");
@@ -361,3 +371,4 @@ TEST_F(CentralityGTest, testApproxBetweenness2) {
 
 
 } /* namespace NetworKit */
+

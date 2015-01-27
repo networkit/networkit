@@ -37,6 +37,7 @@ void Betweenness::run() {
 	// thread-local scores for efficient parallelism
 	count maxThreads = omp_get_max_threads();
 	std::vector<std::vector<double> > scorePerThread(maxThreads, std::vector<double>(G.upperNodeIdBound()));
+	std::vector<std::vector<double> > edgeScorePerThread(maxThreads, std::vector<double>(G.upperEdgeIdBound()));
 
 
 	auto computeDependencies = [&](node s) {
@@ -66,7 +67,7 @@ void Betweenness::run() {
 				double c= weight * (1 + dependency[t]);
 				dependency[p] += c;
 				if (computeEdges) {
-					edgeData[G.edgeId(p,t)] += c; // FIXME: probably wrong for parallel case
+					edgeScorePerThread[omp_get_thread_num()][G.edgeId(p,t)] += c;
 				}
 
 
@@ -77,8 +78,6 @@ void Betweenness::run() {
 		}
 	};
 
-
-
 	G.balancedParallelForNodes(computeDependencies);
 
 	INFO("adding thread-local scores");
@@ -88,20 +87,26 @@ void Betweenness::run() {
 			scoreData[v] += local[v];
 		});
 	}
+	for (auto local : edgeScorePerThread) {
+		for (int i = 0; i < local.size(); i++) {
+			edgeData[i] += local[i];
+		}
+	}
 
 	if (normalized) {
 		// divide by the number of possible pairs
 		count n = G.numberOfNodes();
 		count pairs = (n-2) * (n-1);
+		count edges =  n    * (n-1);
 		G.forNodes([&](node u){
 			scoreData[u] = scoreData[u] / pairs;
 		});
+		if (computeEdges) {
+			for (count edge = 0; edge < edgeData.size(); edge++) {
+				edgeData[edge] =  edgeData[edge] / edges;
+			}
+		}
 	}
 }
-
-
-
-
-
 
 } /* namespace NetworKit */
