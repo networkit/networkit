@@ -232,25 +232,22 @@ class P_KolmogorowSmirnow:
 		ccPerDegree = [0] * (maxDegree + 1)
 		for deg in ccDictPerDegree:
 			ccPerDegree[deg] = np.average(ccDictPerDegree[deg])
-			
+
 		return localCCs, ccPerDegree
 
 	def getValues(self, graph, sparsifiedGraph):
 		#Degree Distribution
-		print("KS eval: dd")
 		sampleGraph = properties.degreeSequence(graph)
 		sampleSparsifiedGraph = properties.degreeSequence(sparsifiedGraph)
 		ks_dd, p_dd = stats.ks_2samp(sampleGraph, sampleSparsifiedGraph)
 
 		#Distribution of clustering coefficients (per degree and not per degree)
-		print("KS eval: cc")
 		localCCs_graph, ccPerDegree_graph = self.getCCSamples(graph)
 		localCCs_sparsifiedGraph, ccPerDegree_sparsifiedGraph = self.getCCSamples(sparsifiedGraph)
 		ks_cc_perDegree, p_cc_perDegree = stats.ks_2samp(ccPerDegree_graph, ccPerDegree_sparsifiedGraph)
 		ks_cc, p_cc = stats.ks_2samp(localCCs_graph, localCCs_sparsifiedGraph)
 
 		#Distribution of sizes of weakly connected components
-		print("KS eval: wcc")
 		sampleGraph = self.getWCCSizes(graph)
 		sampleSparsifiedGraph = self.getWCCSizes(sparsifiedGraph)
 		ks_wccSizes, p_wccSizes = stats.ks_2samp(sampleGraph, sampleSparsifiedGraph)

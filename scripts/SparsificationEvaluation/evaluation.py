@@ -31,8 +31,16 @@ class GraphDescription:
 		self.name = name
 		self.kwargs = kwargs
 
+def taskResultReceived(taskResult, resultWriters, outputLock):
+	outputLock.acquire()
+	try:
+		for writer in resultWriters:
+			writer.receiveResult(taskResult)
+	finally:
+		outputLock.release()
+
 # Calculates all properties for all graphs for all algorithms.
-def executeTask(task):
+def executeTask(task, resultWriters, lock):
 	taskResult = TaskResult(task)
 	taskResult.data = []
 	taskResult.columns = []
@@ -89,5 +97,8 @@ def executeTask(task):
 							raise
 
 					taskResult.data.append(propertiesDict)
+
+		print('Writing results for ' + igraph.name)
+		taskResultReceived(taskResult, resultWriters, lock)
 
 	return taskResult

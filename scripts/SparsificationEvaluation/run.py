@@ -32,17 +32,19 @@ def main():
 	properties = parameters.getProperties()
 
 	#Generate tasks from input parameters
-	tasks = [Task([_graphs], algorithms, properties, edgeRatios) for _graphs in graphs]
+	lock = multiprocessing.Lock()
+	writers = [SqliteResultWriter("./output/backbones.db")]
+	jobs = [multiprocessing.Process(target=executeTask, name=g, args=(Task([g], algorithms, properties, edgeRatios), writers, lock)) for g in graphs]
 
 	#Execute the tasks
-	pool = multiprocessing.Pool()
-	taskResults = pool.map(executeTask, tasks)
+	for job in jobs:
+		job.start()
 
-	#Output files...
-	writers = [SqliteResultWriter("./output/backbones.db")]
-	for writer in writers:
-		for taskResult in taskResults:
-			writer.receiveResult(taskResult)
+	#Wait for the tasks to finish
+	for job in jobs:
+		job.join()
+
+	print("[FINISHED ALL JOBS]")
 
 if __name__ == "__main__":
 	sys.exit(main())
