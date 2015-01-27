@@ -52,11 +52,13 @@ void EPP::runImpl() {
 	for (index b = 0; b < baseClusterers.size(); b += 1) {
 		// FIXME: initialization of base clusterer?
 		baseClusterers.at(b)->run();
-		baseClusterings.at(b) = baseClusterers.at(b)->getPartition();
+		if (baseClusterers.at(b)->hasFinished())
+			baseClusterings.at(b) = baseClusterers.at(b)->getPartition();
 	}
 
 	// ANALYSIS
-	if (CALC_DISSIMILARITY && isRunning()) {
+	assureRunning();
+	if (CALC_DISSIMILARITY) {
 		JaccardMeasure dm;
 		double dissimilaritySum = 0.0;
 		for (index b = 0; b < baseClusterings.size(); b += 1) {
@@ -88,16 +90,15 @@ void EPP::runImpl() {
 		DEBUG("final clusterer is CNM");
 		this->finalClusterer.reset(new CNM(Gcore));
 	}
-	if (isRunning()) {
-		this->finalClusterer->run();
+	assureRunning();
+	this->finalClusterer->run();
+	assureRunning();
 		Partition finalCoarse = this->finalClusterer->getPartition();
 
 		// project clustering of contracted graph back to original graph
 		Partition final = projector.projectBack(Gcore, G, fineToCoarse, finalCoarse);
 		// return clustering
 		result = std::move(final);
-		hasRun = true;
-	}
 }
 
 std::string EPP::toString() const {
