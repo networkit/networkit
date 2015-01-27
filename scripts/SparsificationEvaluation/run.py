@@ -32,17 +32,14 @@ def main():
 	properties = parameters.getProperties()
 
 	#Generate tasks from input parameters
-	lock = multiprocessing.Lock()
+	manager = multiprocessing.Manager()
+	pool = multiprocessing.Pool()
+	lock = manager.Lock()
 	writers = [SqliteResultWriter("./output/backbones.db")]
-	jobs = [multiprocessing.Process(target=executeTask, name=g, args=(Task([g], algorithms, properties, edgeRatios), writers, lock)) for g in graphs]
-
-	#Execute the tasks
-	for job in jobs:
-		job.start()
-
-	#Wait for the tasks to finish
-	for job in jobs:
-		job.join()
+	for g in graphs:
+		pool.apply_async(func=executeTask, args=(Task([g], algorithms, properties, edgeRatios), writers, lock))
+	pool.close()
+	pool.join()
 
 	print("[FINISHED ALL JOBS]")
 
