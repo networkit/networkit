@@ -70,7 +70,8 @@ void PLP::runImpl() {
 	Aux::Timer runtime;
 
 	// propagate labels
-	while (nUpdated > this->updateThreshold && isRunning()) { // as long as a label has changed...
+	while (nUpdated > this->updateThreshold) { // as long as a label has changed...
+		assureRunning();
 		runtime.start();
 		nIterations += 1;
 		INFO("[BEGIN] LabelPropagation: iteration #" , nIterations);

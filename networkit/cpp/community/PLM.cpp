@@ -13,10 +13,7 @@
 #include "../auxiliary/Log.h"
 #include "../auxiliary/Timer.h"
 #include "../auxiliary/SignalHandling.h"
-
-
 #include <sstream>
-#include <csignal>
 
 namespace NetworKit {
 
@@ -218,6 +215,7 @@ void PLM::runImpl() {
 	auto movePhase = [&](){
 		count iter = 0;
 		do {
+			assureRunning();
 			moved = false;
 			// apply node movement according to parallelization strategy
 			if (this->parallelism == "none") {
@@ -238,7 +236,7 @@ void PLM::runImpl() {
 				WARN("move phase aborted after ", maxIter, " iterations");
 			}
 			iter += 1;
-		} while (moved && (iter <= maxIter) && isRunning());
+		} while (moved && (iter <= maxIter));
 		DEBUG("iterations in move phase: ", iter);
 	};
 
@@ -251,7 +249,8 @@ void PLM::runImpl() {
 	timer.stop();
 	timing["move"].push_back(timer.elapsedMilliseconds());
 
-	if (change && isRunning()) {
+	assureRunning();
+	if (change) {
 		INFO("nodes moved, so begin coarsening and recursive call");
 
 		timer.start();
@@ -306,7 +305,6 @@ void PLM::runImpl() {
 		}
 	}
 	result = std::move(zeta);
-	hasRun = true;
 }
 
 std::string NetworKit::PLM::toString() const {

@@ -13,21 +13,28 @@ namespace NetworKit {
 		try {
 			runImpl();
 			hasRun = true;
+		} catch (InterruptException e) {
+			ERROR(toString()," at ",this,":\t",e.what());
+			hasRun = false;
 		} catch (std::runtime_error e) {
-			ERROR(e.what());
+			ERROR(toString()," at ",this,":\t",e.what());
 			hasRun = false;
 		}
 		Aux::SignalHandling::reset((uint64_t)this);
 	}
 
-	bool Algorithm::isRunning() {
-		if (!Aux::SignalHandling::gotSIGINT()) {
-			return true;
-		} else {
-			throw std::runtime_error("Received SIGINT, aborting calculations.");
+	void Algorithm::assureRunning() {
+		if (Aux::SignalHandling::gotSIGINT()) {
+			throw InterruptException();
 		}
 	}
 
+	bool Algorithm::hasFinished() const {
+		return hasRun;
+	}
 
+	std::string Algorithm::toString() const {
+		return "Algorithm base";
+	}
 
 } /* NetworKit */
