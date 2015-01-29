@@ -88,7 +88,7 @@ void Betweenness::run() {
 		});
 	}
 	for (auto local : edgeScorePerThread) {
-		for (int i = 0; i < local.size(); i++) {
+		for (count i = 0; i < local.size(); i++) {
 			edgeData[i] += local[i];
 		}
 	}

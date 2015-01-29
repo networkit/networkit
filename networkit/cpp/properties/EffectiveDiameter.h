@@ -23,8 +23,6 @@ public:
 	/**
 	 * approximates the effective diameter of a given graph
 	 * the effective diameter equals the number of edges on average to reach 90% of all other nodes
-	 * this is a variaton of the ANF algorithm presented in the paper "A Fast and Scalable Tool for Data Mining
-	 * in Massive Graphs" by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
 	 *
 	 * @param G the given graph
 	 * @param ratio the ratio of nodes that should be connected (0,1]

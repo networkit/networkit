@@ -68,7 +68,7 @@ double EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, 
 
 	// as long as we need to connect more nodes
 	while (!activeNodes.empty()) {
-		for (int x = 0; x < activeNodes.size(); x++) {
+		for (count x = 0; x < activeNodes.size(); x++) {
 			node v = activeNodes[x];
 			#pragma omp parallel for
 			// for each parallel approximation
@@ -148,7 +148,7 @@ double EffectiveDiameter::effectiveDiameterExact(const Graph& G, const double ra
 
 	// as long as we need to connect more nodes
 	while (!activeNodes.empty()) {
-		for (int x = 0; x < activeNodes.size(); x++) {
+		for (count x = 0; x < activeNodes.size(); x++) {
 			node v = activeNodes[x];
 				mCurr[v] = mPrev[v];
 				G.forNeighborsOf(v, [&](node u) {
@@ -232,7 +232,7 @@ std::map<count, double> EffectiveDiameter::hopPlot(const Graph& G, const count m
 	// as long as we need to connect more nodes
 	while (!activeNodes.empty() && (maxDistance <= 0 || h < maxDistance)) {
 		totalConnectedNodes = 0;
-		for (int x = 0; x < activeNodes.size(); x++) {
+		for (count x = 0; x < activeNodes.size(); x++) {
 			node v = activeNodes[x];
 			// for each parallel approximation
 			for (count j = 0; j < k; j++) {
@@ -258,6 +258,7 @@ std::map<count, double> EffectiveDiameter::hopPlot(const Graph& G, const count m
 			b = b / k;
 
 			// calculate the estimated number of neighbors
+			// For the origin of the factor 0.77351 see http://www.mathcs.emory.edu/~cheung/papers/StreamDB/Probab/1985-Flajolet-Probabilistic-counting.pdf Theorem 3.A (p. 193)
 			estimatedConnectedNodes = (pow(2,b) / 0.77351);
 
 			// enforce monotonicity
