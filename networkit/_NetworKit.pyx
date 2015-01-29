@@ -2784,7 +2784,7 @@ cdef class GraphTools:
 
 	@staticmethod
 	def getContinuousNodeIds(Graph graph):
-		""" 
+		"""
 			Computes a map of node ids to continuous node ids.
 		"""
 		cdef unordered_map[node,node] cResult = getContinuousNodeIds(graph._this)
