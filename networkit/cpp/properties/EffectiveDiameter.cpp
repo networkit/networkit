@@ -16,10 +16,7 @@
 #include <map>
 
 namespace NetworKit {
-/*
-this is a variaton of the ANF algorithm presented in the paper "A Fast and Scalable Tool for Data Mining
-in Massive Graphs" by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
-*/
+
 double EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, const count k, const count r) {
 	// the length of the bitmask where the number of connected nodes is saved
 	count lengthOfBitmask = (count) ceil(log2(G.numberOfNodes()));
@@ -123,10 +120,6 @@ double EffectiveDiameter::effectiveDiameter(const Graph& G, const double ratio, 
 	return effectiveDiameter/G.numberOfNodes();
 }
 
-/*
-this is a variaton of the ANF algorithm presented in the paper "A Fast and Scalable Tool for Data Mining
-in Massive Graphs" by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
-*/
 double EffectiveDiameter::effectiveDiameterExact(const Graph& G, const double ratio) {
 	// saves the reachable nodes of the current iteration
 	std::vector<std::vector<bool> > mCurr;
@@ -179,6 +172,7 @@ double EffectiveDiameter::effectiveDiameterExact(const Graph& G, const double ra
 					// remove the current node from future iterations
 					std::swap(activeNodes[x], activeNodes.back());
 					activeNodes.pop_back();
+					x--; //don't skip former activeNodes.back() that has been switched to activeNodes[x] 
 				}
 			}
 			mPrev = mCurr;
@@ -188,10 +182,6 @@ double EffectiveDiameter::effectiveDiameterExact(const Graph& G, const double ra
 	return effectiveDiameter/G.numberOfNodes();
 }
 
-/*
-this is a variaton of the ANF algorithm presented in the paper "A Fast and Scalable Tool for Data Mining
-in Massive Graphs" by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
-*/
 std::map<count, double> EffectiveDiameter::hopPlot(const Graph& G, const count maxDistance, const count k, const count r) {
 	//the returned hop-plot
 	std::map<count, double> hopPlot;

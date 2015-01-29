@@ -19,7 +19,7 @@ std::vector<count> GraphProperties::degreeDistribution(const Graph& G) {
 
 
 std::vector<double> GraphProperties::localClusteringCoefficients(const Graph& G) {
-	count n = G.numberOfNodes();
+	count n = G.upperNodeIdBound();
 	std::vector<double> numerator(n); //
 	std::vector<double> denominator(n); // $\deg(u) \cdot ( \deg(u) - 1 )$
 	std::vector<double> coefficient(n); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
@@ -113,8 +113,8 @@ std::pair<count, count> GraphProperties::minMaxDegree(const Graph& G) {
 	return std::pair<count, count>(min, max);
 }
 
-std::vector<unsigned int> GraphProperties::degreeSequence(const Graph& G) {
-	std::vector<unsigned int> sequence(G.numberOfNodes()); // TODO: revert to count when cython issue fixed
+std::vector< count > GraphProperties::degreeSequence(const NetworKit::Graph &G) {
+	std::vector<count> sequence(G.upperNodeIdBound());
 
 	G.parallelForNodes([&](node v) {
 		sequence[v] = G.degree(v);

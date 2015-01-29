@@ -6,6 +6,7 @@
  */
 
 #include "METISGraphWriter.h"
+#include "../graph/GraphTools.h"
 
 #include "../auxiliary/Enforce.h"
 
@@ -25,22 +26,41 @@ void METISGraphWriter::write(Graph& G, bool weighted, std::string path) {
 	count m = G.numberOfEdges();
 
 	file << n << " " << m << " " << int{weighted} << '\n';
-
-	if (weighted == false) {
-		G.forNodes([&](node u) {
-			G.forNeighborsOf(u, [&](node v){
-				file << v + 1 << " ";
-			});
-			file << '\n';
-		});
-	} else {
+	if (G.numberOfNodes() != G.upperNodeIdBound()) {
+		auto nodeIds = GraphTools::getContinuousNodeIds(G);
+		if (weighted == false) {
 			G.forNodes([&](node u) {
-			G.forNeighborsOf(u, [&](node v, edgeweight w){
-				file << v + 1 << " " << w <<"\t";
+				G.forNeighborsOf(u, [&](node v){
+					file << nodeIds[v] + 1 << " ";
+				});
+				file << '\n';
 			});
-			file << '\n';
-		});
+		} else {
+				G.forNodes([&](node u) {
+				G.forNeighborsOf(u, [&](node v, edgeweight w){
+					file << nodeIds[v] + 1 << " " << w <<"\t";
+				});
+				file << '\n';
+			});
+		}
+	} else {
+		if (weighted == false) {
+			G.forNodes([&](node u) {
+				G.forNeighborsOf(u, [&](node v){
+					file << v + 1 << " ";
+				});
+				file << '\n';
+			});
+		} else {
+				G.forNodes([&](node u) {
+				G.forNeighborsOf(u, [&](node v, edgeweight w){
+					file << v + 1 << " " << w <<"\t";
+				});
+				file << '\n';
+			});
+		}
 	}
+
 }
 
 } /* namespace NetworKit */

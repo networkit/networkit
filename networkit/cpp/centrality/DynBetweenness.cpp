@@ -18,7 +18,7 @@
 #include "../graph/BFS.h"
 
 namespace NetworKit {
-DynBetweenness::DynBetweenness(const Graph& G, bool storePredecessors) : Centrality(G, normalized, false),
+DynBetweenness::DynBetweenness(const Graph& G, bool storePredecessors) : Centrality(G, normalized),
 maxDistance(G.upperNodeIdBound()),
 npaths(G.upperNodeIdBound(), std::vector<bigfloat>(G.upperNodeIdBound())),
 distances(G.upperNodeIdBound(), std::vector<edgeweight>(G.upperNodeIdBound())),

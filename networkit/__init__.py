@@ -32,6 +32,8 @@ from . import coloring
 from . import workflows
 from . import flow
 from . import distmeasures
+from . import plot
+from . import scd
 
 try:
 	from . import viztools

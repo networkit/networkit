@@ -17,9 +17,14 @@
 
 namespace NetworKit {
 
-DynApproxBetweenness::DynApproxBetweenness(const Graph& G, double epsilon, double delta, bool storePredecessors) : Centrality(G, true, false),
+DynApproxBetweenness::DynApproxBetweenness(const Graph& G, double epsilon, double delta, bool storePredecessors) : Centrality(G, true),
 storePreds(storePredecessors), epsilon(epsilon), delta(delta) {
 
+}
+
+
+count DynApproxBetweenness::getNumberOfSamples() {
+    return r;
 }
 
 

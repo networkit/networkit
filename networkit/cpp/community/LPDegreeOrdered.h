@@ -33,11 +33,9 @@ public:
 	LPDegreeOrdered(const Graph& G);
 
 	/**
-	 * Detect communities in the given graph @a G
-	 *
-	 * @return A partition containing the found communities.
+	 * Detect communities.
 	 */
-	virtual Partition run();
+	virtual void run();
 
 	/**
 	* Get number of iterations in last run.

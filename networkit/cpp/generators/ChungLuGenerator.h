@@ -22,11 +22,11 @@ namespace NetworKit {
  */
 class ChungLuGenerator: public StaticDegreeSequenceGenerator {
 protected:
-	unsigned int sum_deg;
+	count sum_deg;
 	count n;
 
 public:
-	ChungLuGenerator(const std::vector<unsigned int>& degreeSequence);
+	ChungLuGenerator(const std::vector<count>& degreeSequence);
 
 	/**
 	 * Generates graph with expected degree sequence seq.

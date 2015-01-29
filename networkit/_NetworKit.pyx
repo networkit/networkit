@@ -38,6 +38,7 @@ cdef extern from "<algorithm>" namespace "std":
 	_Graph move( _Graph t ) # specialized declaration as general declaration disables template argument deduction and doesn't work
 	_Partition move( _Partition t)
 	_Cover move(_Cover t)
+	pair[_Graph, vector[node]] move(pair[_Graph, vector[node]])
 
 
 # Cython helper functions
@@ -114,6 +115,7 @@ cdef extern from "cpp/graph/Graph.h":
 		_Graph() except +
 		_Graph(count, bool, bool) except +
 		_Graph(const _Graph& other) except +
+		_Graph(const _Graph& other, bool weighted, bool directed) except +
 		void indexEdges() except +
 		bool hasEdgeIds()
 		edgeid edgeId(node, node) except +
@@ -131,6 +133,7 @@ cdef extern from "cpp/graph/Graph.h":
 		void addEdge(node u, node v, edgeweight w) except +
 		void setWeight(node u, node v, edgeweight w) except +
 		void removeEdge(node u, node v) except +
+		void swapEdge(node s1, node t1, node s2, node t2) except +
 		bool hasEdge(node u, node v) except +
 		edgeweight weight(node u, node v) except +
 		vector[node] nodes() except +
@@ -149,6 +152,7 @@ cdef extern from "cpp/graph/Graph.h":
 		void setCoordinate(node v, Point[float] value) except +
 		void initCoordinates() except +
 		count numberOfSelfLoops() except +
+		_Graph toUndirected() except +
 
 
 cdef class Graph:
@@ -171,8 +175,11 @@ cdef class Graph:
 	"""
 	cdef _Graph _this
 
-	def __cinit__(self, n=0, weighted=False, directed=False):
-		self._this = move(_Graph(n, weighted, directed))
+	def __cinit__(self, n=0, bool weighted=False, bool directed=False):
+		if isinstance(n, Graph):
+			self._this = move(_Graph((<Graph>n)._this, weighted, directed))
+		else:
+			self._this = move(_Graph(<count>n, weighted, directed))
 
 	# # any _thisect which appears as a return type needs to implement setThis
 	# cdef setThis(self, _Graph other):
@@ -387,6 +394,25 @@ cdef class Graph:
 		"""
 		self._this.removeEdge(u, v)
 
+	def swapEdge(self, node s1, node t1, node s2, node t2):
+		"""
+		Changes the edge (s1, t1) into (s1, t2) and the edge (s2, t2) into (s2, t1).
+
+		If there are edge weights or edge ids, they are preserved. Note that no check is performed if the swap is actually possible, i.e. does not generate duplicate edges.
+
+		Parameters
+		----------
+		s1 : node
+			Source node of the first edge
+		t1 : node
+			Target node of the first edge
+		s2 : node
+			Source node of the second edge
+		t2 : node
+			Target node of the second edge
+		"""
+		self._this.swapEdge(s1, t1, s2, t2)
+
 	def hasEdge(self, u, v):
 		""" Checks if undirected edge {`u`,`v`} exists in the graph.
 
@@ -455,6 +481,16 @@ cdef class Graph:
 	 		List of neighbors of `u.
 		"""
 		return self._this.neighbors(u)
+
+	def toUndirected(self):
+		"""
+		Return an undirected version of this graph.
+
+	 	Returns
+	 	-------
+			undirected graph.
+		"""
+		return Graph().setThis(self._this.toUndirected())
 
 	def isWeighted(self):
 		"""
@@ -578,6 +614,12 @@ cdef class Graph:
 		self._this.initCoordinates()
 
 	def numberOfSelfLoops(self):
+		""" Get number of self-loops, i.e. edges {v, v}.
+		Returns
+		-------
+		count
+			number of self-loops.
+		"""
 		return self._this.numberOfSelfLoops()
 
 # TODO: expose all methods
@@ -608,10 +650,14 @@ cdef class BFS:
 
 	"""
 	cdef _BFS* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False):
+		self._G = G
 		self._this = new _BFS(G._this, source, storePaths, storeStack)
 
+	def __dealloc__(self):
+		del self._this
 
 	def run(self, t = None):
 		"""
@@ -682,8 +728,10 @@ cdef class DynBFS:
 		maintain a stack of nodes in order of decreasing distance?
 	"""
 	cdef _DynBFS* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, source):
+		self._G = G
 		self._this = new _DynBFS(G._this, source)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -773,10 +821,14 @@ cdef class Dijkstra:
 		maintain a stack of nodes in order of decreasing distance?
     """
 	cdef _Dijkstra* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False):
+		self._G = G
 		self._this = new _Dijkstra(G._this, source, storePaths, storeStack)
 
+	def __dealloc__(self):
+		del self._this
 
 	def run(self, t = None):
 		"""
@@ -845,8 +897,10 @@ cdef class DynDijkstra:
 
 	"""
 	cdef _DynDijkstra* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, source):
+		self._G = G
 		self._this = new _DynDijkstra(G._this, source)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -953,10 +1007,11 @@ cdef class SpanningForest:
 			A subset of nodes of `G` which induce the subgraph.
 	"""
 	cdef _SpanningForest* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G not None):
+		self._G = G
 		self._this = new _SpanningForest(G._this)
-
 
 	def __dealloc__(self):
 		del self._this
@@ -1034,17 +1089,23 @@ cdef extern from "cpp/generators/BarabasiAlbertGenerator.h":
 		_Graph generate() except +
 
 cdef class BarabasiAlbertGenerator:
-	""" Generates a scale-free graph using the Barabasi-Albert preferential attachment model. """
+	""" Generates a scale-free graph using the Barabasi-Albert preferential attachment model.
+
+	Parameters
+	----------
+	k : count
+		number of edges that come with a new node
+	nMax : count
+		maximum number of nodes produced
+	n0 : count
+		number of starting nodes
+	 """
 	cdef _BarabasiAlbertGenerator _this
 
 	def __cinit__(self, k, nMax, n0):
-		""" TODO
-		"""
 		self._this = _BarabasiAlbertGenerator(k, nMax, n0)
 
 	def generate(self):
-		""" TODO
-		"""
 		return Graph().setThis(self._this.generate());
 
 
@@ -1086,13 +1147,12 @@ cdef class PubWebGenerator:
 	cdef _PubWebGenerator* _this
 
 	def __cinit__(self, numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors):
-		""" TODO
-		"""
 		self._this = new _PubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
 
+	def __dealloc__(self):
+		del self._this
+
 	def generate(self):
-		""" TODO
-		"""
 		return Graph(0).setThis(self._this.generate())
 
 
@@ -1125,6 +1185,9 @@ cdef class ErdosRenyiGenerator:
 	def __cinit__(self, nNodes, prob, directed=False):
 		self._this = new _ErdosRenyiGenerator(nNodes, prob, directed)
 
+	def __dealloc__(self):
+		del self._this
+
 	def generate(self):
 		return Graph(0).setThis(self._this.generate())
 
@@ -1151,6 +1214,9 @@ cdef class DorogovtsevMendesGenerator:
 
 	def __cinit__(self, nNodes):
 		self._this = new _DorogovtsevMendesGenerator(nNodes)
+
+	def __dealloc__(self):
+		del self._this
 
 	def generate(self):
 		""" Generates a random graph according to the Dorogovtsev-Mendes model.
@@ -1187,6 +1253,9 @@ cdef class RegularRingLatticeGenerator:
 	def __cinit__(self, nNodes, nNeighbors):
 		self._this = new _RegularRingLatticeGenerator(nNodes, nNeighbors)
 
+	def __dealloc__(self):
+		del self._this
+
 	def generate(self):
 		""" Generates a rgular ring lattice.
 
@@ -1221,6 +1290,9 @@ cdef class WattsStrogatzGenerator:
 	"""
 
 	cdef _WattsStrogatzGenerator* _this
+
+	def __dealloc__(self):
+		del self._this
 
 	def __cinit__(self, nNodes, nNeighbors, p):
 		self._this = new _WattsStrogatzGenerator(nNodes, nNeighbors, p)
@@ -1269,6 +1341,9 @@ cdef class ClusteredRandomGraphGenerator:
 	def __cinit__(self, n, k, pin, pout):
 		self._this = new _ClusteredRandomGraphGenerator(n, k, pin, pout)
 
+	def __dealloc__(self):
+		del self._this
+
 	def generate(self):
 		""" Generates a clustered random graph with the properties given in the constructor.
 
@@ -1292,8 +1367,7 @@ cdef class ClusteredRandomGraphGenerator:
 
 cdef extern from "cpp/generators/ChungLuGenerator.h":
 	cdef cppclass _ChungLuGenerator "NetworKit::ChungLuGenerator":
-		# TODO: revert to count when cython issue fixed
-		_ChungLuGenerator(vector[unsigned int] degreeSequence) except +
+		_ChungLuGenerator(vector[count] degreeSequence) except +
 		_Graph generate() except +
 
 cdef class ChungLuGenerator:
@@ -1306,9 +1380,11 @@ cdef class ChungLuGenerator:
 
 	cdef _ChungLuGenerator* _this
 
-	def __cinit__(self, degreeSequence):
-		cdef vector
+	def __cinit__(self, vector[count] degreeSequence):
 		self._this = new _ChungLuGenerator(degreeSequence)
+
+	def __dealloc__(self):
+		del self._this
 
 	def generate(self):
 		""" Generates graph with expected degree sequence seq.
@@ -1323,8 +1399,7 @@ cdef class ChungLuGenerator:
 
 cdef extern from "cpp/generators/HavelHakimiGenerator.h":
 	cdef cppclass _HavelHakimiGenerator "NetworKit::HavelHakimiGenerator":
-		# TODO: revert to count when cython issue fixed
-		_HavelHakimiGenerator(vector[unsigned int] degreeSequence, bool skipTest) except +
+		_HavelHakimiGenerator(vector[count] degreeSequence, bool ignoreIfRealizable) except +
 		_Graph generate() except +
 		bool isRealizable() except +
 		bool getRealizable() except +
@@ -1332,27 +1407,31 @@ cdef extern from "cpp/generators/HavelHakimiGenerator.h":
 cdef class HavelHakimiGenerator:
 	""" Havel-Hakimi algorithm for generating a graph according to a given degree sequence.
 
- 		The sequence, if it is realizable, is reconstructed exactly. The resulting graph usually
- 		has a high clustering coefficient. Construction runs in linear time O(m). However, the test
- 		if a sequence is realizable is quadratic in the sequence length.
+		The sequence, if it is realizable, is reconstructed exactly. The resulting graph usually
+		has a high clustering coefficient. Construction runs in linear time O(m).
 
- 		HavelHakimiGenerator(sequence, skipTest=True)
+		If the sequence is not realizable, depending on the parameter ignoreIfRealizable, either
+		an exception is thrown during generation or the graph is generated with a modified degree
+		sequence, i.e. not all nodes might have as many neighbors as requested.
 
- 		Parameters
+		HavelHakimiGenerator(sequence, ignoreIfRealizable=True)
+
+		Parameters
 		----------
 		sequence : vector
 			Degree sequence to realize. Must be non-increasing.
-		skipTest : bool, optional
-			If True, the test if the sequence is realizable is skipped.
-	        Default value is False. Set ONLY to True if you are certain that the
-	        sequence is realizable
+		ignoreIfRealizable : bool, optional
+			If true, generate the graph even if the degree sequence is not realizable. Some nodes may get lower degrees than requested in the sequence.
 	"""
 
 	cdef _HavelHakimiGenerator* _this
 
 
-	def __cinit__(self, degreeSequence, skipTest=True):
-		self._this = new _HavelHakimiGenerator(degreeSequence, skipTest)
+	def __cinit__(self, vector[count] degreeSequence, ignoreIfRealizable=True):
+		self._this = new _HavelHakimiGenerator(degreeSequence, ignoreIfRealizable)
+
+	def __dealloc__(self):
+		del self._this
 
 	def isRealizable(self):
 		return self._this.isRealizable()
@@ -1366,9 +1445,67 @@ cdef class HavelHakimiGenerator:
 		Returns
 		-------
 		Graph
-			Empty graph if graph is not realizable, otherwise graph with degree sequence seq.
+			Graph with degree sequence seq or modified sequence if ignoreIfRealizable is true and the sequence is not realizable.
 		"""
 		return Graph(0).setThis(self._this.generate())
+
+cdef extern from "cpp/generators/ConfigurationModelGenerator.h":
+	cdef cppclass _ConfigurationModelGenerator "NetworKit::ConfigurationModelGenerator":
+		_ConfigurationModelGenerator(vector[count] degreeSequence, bool ignoreIfRealizable) except +
+		_Graph generate() except +
+		bool isRealizable() except +
+		bool getRealizable() except +
+
+cdef class ConfigurationModelGenerator:
+	"""
+	Configuration model graph generator for generating a random simple graph with exactly the given degree sequence.
+
+	This implementation is based on the paper
+	"Random generation of large connected simple graphs with prescribed degree distribution" by Fabien Viger and Matthieu Latapy,
+	available at http://www-rp.lip6.fr/~latapy/FV/generation.html, however without preserving connectivity (this could later be added as
+	optional feature).
+
+	The Havel-Hakami generator is used for the initial graph generation, then the Markov-Chain Monte-Carlo algorithm as described and
+	implemented by Fabien Viger and Matthieu Latapy but without the steps for ensuring connectivity is executed. This should lead to a
+	graph that is drawn uniformly at random from all graphs with the given degree sequence.
+
+	Note that at most 10 times the number of edges edge swaps are performed (same number as in the abovementioned implementation) and
+	in order to limit the running time, at most 200 times as many attempts to perform an edge swap are made (as certain degree distributions
+	do not allow edge swaps at all).
+
+	Parameters
+	----------
+	degreeSequence : vector[count]
+		The degree sequence that shall be generated
+	ignoreIfRealizable : bool, optional
+		If true, generate the graph even if the degree sequence is not realizable. Some nodes may get lower degrees than requested in the sequence.
+	"""
+	cdef _ConfigurationModelGenerator *_this
+
+	def __cinit__(self, vector[count] degreeSequence, bool ignoreIfRealizable = False):
+		self._this = new _ConfigurationModelGenerator(degreeSequence, ignoreIfRealizable)
+
+	def __dealloc__(self):
+		del self._this
+
+	def isRealizable(self):
+		return self._this.isRealizable()
+
+	def getRealizable(self):
+		return self._this.getRealizable()
+
+	def generate(self):
+		"""
+		Generate a graph according to the configuration model.
+
+		Issues a INFO log message if the wanted number of edge swaps cannot be performed because of the limit of attempts (see in the description of the class for details).
+
+		Returns
+		-------
+		Graph
+			The generated graph.
+		"""
+		return Graph().setThis(self._this.generate())
 
 
 cdef extern from "cpp/generators/RmatGenerator.h":
@@ -1408,6 +1545,9 @@ cdef class RmatGenerator:
 	def __cinit__(self, count scale, count edgeFactor, double a, double b, double c, double d):
 		self._this = new _RmatGenerator(scale, edgeFactor, a, b, c, d)
 
+	def __dealloc__(self):
+		del self._this
+
 	def generate(self):
 		""" Graph to be generated according to parameters specified in constructor.
 
@@ -1418,6 +1558,104 @@ cdef class RmatGenerator:
 		"""
 		return Graph(0).setThis(self._this.generate())
 
+cdef extern from "cpp/generators/PowerlawDegreeSequence.h":
+	cdef cppclass _PowerlawDegreeSequence "NetworKit::PowerlawDegreeSequence":
+		_PowerlawDegreeSequence(count minDeg, count maxDeg, double gamma) except +
+		void setMinimumFromAverageDegree(double avgDeg) except +
+		double getExpectedAverageDegree() except +
+		count getMinimumDegree() const
+		void run() except +
+		vector[count] getDegreeSequence(count numNodes) except +
+		count getDegree() except +
+
+cdef class PowerlawDegreeSequence:
+	"""
+	Generates a powerlaw degree sequence with the given minimum and maximum degree, the powerlaw exponent gamma
+
+	Parameters
+	----------
+	minDeg : count
+		The minium degree
+	maxDeg : count
+		The maximum degree
+	gamma : double
+		The powerlaw exponent
+	"""
+	cdef _PowerlawDegreeSequence *_this
+
+	def __cinit__(self, count minDeg, count maxDeg, double gamma):
+		self._this = new _PowerlawDegreeSequence(minDeg, maxDeg, gamma)
+
+	def __dealloc__(self):
+		del self._this
+
+	def setMinimumFromAverageDegree(self, double avgDeg):
+		"""
+		Tries to set the minimum degree such that the specified average degree is expected.
+
+		Parameters
+		----------
+		avgDeg : double
+			The average degree that shall be approximated
+		"""
+		self._this.setMinimumFromAverageDegree(avgDeg)
+		return self
+
+	def getExpectedAverageDegree(self):
+		"""
+		Returns the expected average degree. Note: run needs to be called first.
+
+		Returns
+		-------
+		double
+			The expected average degree.
+		"""
+		return self._this.getExpectedAverageDegree()
+
+	def getMinimumDegree(self):
+		"""
+		Returns the minimum degree.
+
+		Returns
+		-------
+		count
+			The minimum degree
+		"""
+		return self._this.getMinimumDegree()
+
+	def run(self):
+		"""
+		Executes the generation of the probability distribution.
+		"""
+		self._this.run()
+		return self
+
+	def getDegreeSequence(self, count numNodes):
+		"""
+		Returns a degree sequence with even degree sum.
+
+		Parameters
+		----------
+		numNodes : count
+			The number of nodes/degrees that shall be returned
+
+		Returns
+		-------
+		vector[count]
+			The generated degree sequence
+		"""
+		return self._this.getDegreeSequence(numNodes)
+
+	def getDegree(self):
+		"""
+		Returns a degree drawn at random with a power law distribution
+
+		Returns
+		-------
+		count
+			The generated random degree
+		"""
+		return self._this.getDegree()
 
 # Module: graphio
 
@@ -1437,6 +1675,21 @@ cdef class METISGraphReader:
 		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
 		return Graph(0).setThis(self._this.read(pathbytes))
 
+cdef extern from "cpp/io/GraphToolBinaryReader.h":
+	cdef cppclass _GraphToolBinaryReader "NetworKit::GraphToolBinaryReader":
+		_GraphToolBinaryReader() except +
+		_Graph read(string path) except +
+
+cdef class GraphToolBinaryReader:
+	""" Reads the binary file format defined by graph-tool[1].
+		[1]: http://graph-tool.skewed.de/static/doc/gt_format.html
+	"""
+	cdef _GraphToolBinaryReader _this
+
+	def read(self, path):
+		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
+		return Graph(0).setThis(self._this.read(pathbytes))
+
 
 cdef extern from "cpp/io/EdgeListReader.h":
 	cdef cppclass _EdgeListReader "NetworKit::EdgeListReader":
@@ -1447,9 +1700,7 @@ cdef extern from "cpp/io/EdgeListReader.h":
 
 
 cdef class EdgeListReader:
-	""" Reads the METIS adjacency file format [1]. If the Fast reader fails,
-		use readGraph(path, graphio.formats.metis) as an alternative.
-		[1]: http://people.sc.fsu.edu/~jburkardt/data/metis_graph/metis_graph.html
+	""" Reads a file in an edge list format.
 	"""
 	cdef _EdgeListReader _this
 
@@ -1515,6 +1766,22 @@ cdef extern from "cpp/io/METISGraphWriter.h":
 cdef class METISGraphWriter:
 	""" Writes graphs in the METIS format"""
 	cdef _METISGraphWriter _this
+
+	def write(self, Graph G not None, path):
+		 # string needs to be converted to bytes, which are coerced to std::string
+		self._this.write(G._this, stdstring(path))
+
+cdef extern from "cpp/io/GraphToolBinaryWriter.h":
+	cdef cppclass _GraphToolBinaryWriter "NetworKit::GraphToolBinaryWriter":
+		_GraphToolBinaryWriter() except +
+		void write(_Graph G, string path) except +
+
+
+cdef class GraphToolBinaryWriter:
+	""" Reads the binary file format defined by graph-tool[1].
+		[1]: http://graph-tool.skewed.de/static/doc/gt_format.html
+	"""
+	cdef _GraphToolBinaryWriter _this
 
 	def write(self, Graph G not None, path):
 		 # string needs to be converted to bytes, which are coerced to std::string
@@ -1833,13 +2100,13 @@ cdef class Partition:
 
 		Parameters
 		----------
-		z : index, optional
+		size : index, optional
 			Maximum index of an element. Default is 0.
 	"""
 	cdef _Partition _this
 
-	def __cinit__(self, index z=0):
-		self._this = move(_Partition(z))
+	def __cinit__(self, index size=0):
+		self._this = move(_Partition(size))
 
 	def __len__(self):
 		"""
@@ -2500,6 +2767,32 @@ cdef class GraphClusteringTools:
 	def equalClustering(Partition zeta, Partition eta, Graph G):
 		return equalClusterings(zeta._this, eta._this, G._this)
 
+cdef extern from "cpp/graph/GraphTools.h" namespace "NetworKit::GraphTools":
+	_Graph getCompactedGraph(_Graph G, unordered_map[node,node]) except +
+	unordered_map[node,node] getContinuousNodeIds(_Graph G) except +
+
+cdef class GraphTools:
+	@staticmethod
+	def getCompactedGraph(Graph graph, nodeIdMap):
+		"""
+			Computes a graph with the same structure but with continuous node ids.
+		"""
+		cdef unordered_map[node,node] cNodeIdMap
+		for key in nodeIdMap:
+			cNodeIdMap[key] = nodeIdMap[key]
+		return Graph().setThis(getCompactedGraph(graph._this,cNodeIdMap))
+
+	@staticmethod
+	def getContinuousNodeIds(Graph graph):
+		"""
+			Computes a map of node ids to continuous node ids.
+		"""
+		cdef unordered_map[node,node] cResult = getContinuousNodeIds(graph._this)
+		result = dict()
+		for elem in cResult:
+			result[elem.first] = elem.second
+		return result
+
 cdef extern from "cpp/community/PartitionIntersection.h":
 	cdef cppclass _PartitionIntersection "NetworKit::PartitionIntersection":
 		_PartitionIntersection() except +
@@ -2614,9 +2907,12 @@ cdef extern from "cpp/community/PLP.h":
 	cdef cppclass _PLP "NetworKit::PLP":
 		_PLP(_Graph _G) except +
 		_PLP(_Graph _G, count updateThreshold) except +
-		_Partition run() except +
-		_Partition runFromGiven(_Partition _part) except +
+		_PLP(_Graph _G, _Partition baseClustering, count updateThreshold) except +
+		_PLP(_Graph _G, _Partition baseClustering) except +
+		void run() except +
+		_Partition getPartition() except +
 		count numberOfIterations() except +
+		vector[count] getTiming() except +
 		string toString() except +
 
 
@@ -2634,50 +2930,51 @@ cdef class PLP(CommunityDetector):
  	has the label that at least half of its neighbors have.
 	"""
 	cdef _PLP* _this
+	cdef Graph _G
 
-	def __cinit__(self, Graph G not None, updateThreshold=None):
-		if updateThreshold is None:
+	def __cinit__(self, Graph G not None, Partition baseClustering=None, updateThreshold=None):
+		"""
+		Constructor to the Parallel label propagation community detection algorithm.
+
+		Parameters
+		----------
+		G : Graph
+			The graph on which the algorithm has to run.
+		baseClustering : Partition
+			PLP needs a base clustering to start from; if none is given the algorithm will run on a singleton clustering.
+		updateThreshold : integer
+			number of nodes that have to be changed in each iteration so that a new iteration starts.
+		"""
+		self._G = G
+
+		if updateThreshold is None and baseClustering is None:
 			self._this = new _PLP(G._this)
+		elif updateThreshold is None and baseClustering is not None:
+			self._this = new _PLP(G._this, baseClustering._this)
+		elif updateThreshold is not None and baseClustering is None:
+			p = Partition(0)
+			self._this = new _PLP(G._this, p._this, updateThreshold)
 		else:
-			self._this = new _PLP(G._this, updateThreshold)
+			self._this = new _PLP(G._this, baseClustering._this, updateThreshold)
 
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		""" Run the label propagation clustering algorithm.
-
-		Parameters
-		----------
-		G : Graph
-			input graph
-
-	 	Returns
-	 	-------
-	 	Partition
-	 		The created clustering.
 		"""
-		return Partition().setThis(self._this.run())
+		self._this.run()
+		return self
 
-	def runFromGiven(self, Partition part not None):
-		""" Run the label propagation clustering algorithm starting
-		from the Partition part.
+	def getPartition(self):
+		"""  Returns a partition of the clustering.
 
-		Parameters
-		----------
-		G : Graph
-			input graph
-
-		part : Partition
-			input partition
-
-	 	Returns
-	 	-------
-	 	Partition
-	 		The created clustering.
+		Returns
+		-------
+		Partition:
+			A Partition of the clustering.
 		"""
-		# Work on a local copy as PLP::runFromGiven works on the input
-		cdef _Partition algInput = part._this
-		self._this.runFromGiven(algInput)
-		return Partition().setThis(algInput)
+		return Partition().setThis(self._this.getPartition())
 
 	def numberOfIterations(self):
 		""" Get number of iterations in last run.
@@ -2688,6 +2985,16 @@ cdef class PLP(CommunityDetector):
 			The number of iterations.
 		"""
 		return self._this.numberOfIterations()
+
+	def getTiming(self):
+		""" Get list of running times for each iteration.
+
+		Returns
+		-------
+		count
+			The list of running times in milliseconds.
+		"""
+		return self._this.getTiming()
 
 	def toString(self):
 		""" Get string representation.
@@ -2703,19 +3010,38 @@ cdef class PLP(CommunityDetector):
 cdef extern from "cpp/community/LPDegreeOrdered.h":
 	cdef cppclass _LPDegreeOrdered "NetworKit::LPDegreeOrdered":
 		_LPDegreeOrdered(_Graph _G) except +
-		_Partition run() except +
+		void run() except +
+		_Partition getPartition() except +
 		count numberOfIterations()
 		string toString() except +
 
 cdef class LPDegreeOrdered(CommunityDetector):
 	""" Label propagation-based community detection algorithm which processes nodes in increasing order of node degree.	"""
 	cdef _LPDegreeOrdered* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G not None):
+		self._G = G
 		self._this = new _LPDegreeOrdered(G._this)
 
+	def __dealloc__(self):
+		del self._this
+
 	def run(self):
-		return Partition().setThis(self._this.run())
+		""" Detect communites.
+		"""
+		self._this.run()
+		return self
+
+	def getPartition(self):
+		"""  Returns a partition of the clustering.
+
+		Returns
+		-------
+		Partition:
+			A Partition of the clustering.
+		"""
+		return Partition().setThis(self._this.getPartition())
 
 	def numberOfIterations(self):
 		""" Get number of iterations in last run.
@@ -2742,17 +3068,23 @@ cdef extern from "cpp/community/PLM.h":
 		_PLM(_Graph _G) except +
 		_PLM(_Graph _G, bool refine, double gamma, string par, count maxIter, bool parCoarsening, bool turbo) except +
 		string toString() except +
-		_Partition run() except +
+		void run() except +
+		_Partition getPartition() except +
+		map[string, vector[count]] getTiming() except +
+
+cdef extern from "cpp/community/PLM.h" namespace "NetworKit::PLM":
+	pair[_Graph, vector[node]] PLM_coarsen "NetworKit::PLM::coarsen" (const _Graph& G, const _Partition& zeta, bool parallel) except +
+	_Partition PLM_prolong "NetworKit::PLM::prolong"(const _Graph& Gcoarse, const _Partition& zetaCoarse, const _Graph& Gfine, vector[node] nodeToMetaNode) except +
 
 
 cdef class PLM(CommunityDetector):
-	""" MultiLevel Parallel LocalMover - the Louvain method, optionally extended to
+	""" Parallel Louvain Method - the Louvain method, optionally extended to
 		a full multi-level algorithm with refinement
-
-		PLM(refine=True, gamma=1.0, par="balanced", maxIter=32)
 
 		Parameters
 		----------
+		G : Graph
+			A graph.
 		refine : bool, optional
 			Add a second move phase to refine the communities.
 		gamma : double
@@ -2769,9 +3101,14 @@ cdef class PLM(CommunityDetector):
 	"""
 
 	cdef _PLM* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G not None, refine=False, gamma=1.0, par="balanced", maxIter=32, parCoarsening=True, turbo=False):
+		self._G = G
 		self._this = new _PLM(G._this, refine, gamma, stdstring(par), maxIter, parCoarsening, turbo)
+
+	def __dealloc__(self):
+		del self._this
 
 	def toString(self):
 		""" Get string representation.
@@ -2784,26 +3121,42 @@ cdef class PLM(CommunityDetector):
 		return self._this.toString().decode("utf-8")
 
 	def run(self):
-		""" Detect communities in the given graph `G`
+		""" Detect communities.
+		"""
+		self._this.run()
+		return self
 
-		Parameters
-		----------
-		G : Graph
-			The graph.
+	def getPartition(self):
+		"""  Returns a partition of the clustering.
 
 		Returns
 		-------
-		Partition
-			A partition containing the found communities.
+		Partition:
+			A Partition of the clustering.
 		"""
-		return Partition().setThis(self._this.run())
+		return Partition().setThis(self._this.getPartition())
+
+	def getTiming(self):
+		"""  Get detailed time measurements.
+		"""
+		return self._this.getTiming()
+
+	@staticmethod
+	def coarsen(Graph G, Partition zeta, bool parallel = False):
+		cdef pair[_Graph, vector[node]] result = move(PLM_coarsen(G._this, zeta._this, parallel))
+		return (Graph().setThis(result.first), result.second)
+
+	@staticmethod
+	def prolong(Graph Gcoarse, Partition zetaCoarse, Graph Gfine, vector[node] nodeToMetaNode):
+		return Partition().setThis(PLM_prolong(Gcoarse._this, zetaCoarse._this, Gfine._this, nodeToMetaNode))
 
 
 cdef extern from "cpp/community/CNM.h":
 	cdef cppclass _CNM "NetworKit::CNM":
 		_CNM(_Graph _G) except +
 		string toString() except +
-		_Partition run() except +
+		void run() except +
+		_Partition getPartition() except +
 
 
 cdef class CNM(CommunityDetector):
@@ -2814,9 +3167,14 @@ cdef class CNM(CommunityDetector):
  	"""
 
 	cdef _CNM* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G not None):
+		self._G = G
 		self._this = new _CNM(G._this)
+
+	def __dealloc__(self):
+		del self._this
 
 	def toString(self):
 		""" Get string representation.
@@ -2829,26 +3187,28 @@ cdef class CNM(CommunityDetector):
 		return self._this.toString().decode("utf-8")
 
 	def run(self):
-		""" Detect communities in the given graph `graph`.
+		""" Detect communities.
+		"""
+		self._this.run()
+		return self
 
-		Parameters
-		----------
-		graph : Graph
-			The graph.
+	def getPartition(self):
+		"""  Returns a partition of the clustering.
 
 		Returns
 		-------
-		Partition
-			A partition containing the found communities.
+		Partition:
+			A Partition of the clustering.
 		"""
-		return Partition().setThis(self._this.run())
+		return Partition().setThis(self._this.getPartition())
 
 cdef extern from "cpp/community/CutClustering.h":
 	cdef cppclass _CutClustering "NetworKit::CutClustering":
 		_CutClustering(_Graph _G) except +
 		_CutClustering(_Graph _G, edgeweight alpha) except +
 		string toString() except +
-		_Partition run() except +
+		void run() except +
+		_Partition getPartition() except +
 
 cdef extern from "cpp/community/CutClustering.h" namespace "NetworKit::CutClustering":
 	map[double, _Partition] CutClustering_getClusterHierarchy "NetworKit::CutClustering::getClusterHierarchy"(const _Graph& G) except +
@@ -2866,8 +3226,10 @@ cdef class CutClustering(CommunityDetector):
 		The parameter for the cut clustering algorithm
 	"""
 	cdef _CutClustering* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G not None,  edgeweight alpha):
+		self._G = G
 		self._this = new _CutClustering(G._this, alpha)
 
 	def __dealloc__(self):
@@ -2883,23 +3245,25 @@ cdef class CutClustering(CommunityDetector):
 		"""
 		return self._this.toString().decode("utf-8")
 
+	def getPartition(self):
+		"""  Returns a partition of the clustering.
+
+		Returns
+		-------
+		Partition:
+			A Partition of the clustering.
+		"""
+		return Partition().setThis(self._this.getPartition())
+
 	def run(self):
 		""" Detect communities in the given graph `graph`.
 
 		Warning: due to numerical errors the resulting clusters might not be correct.
 		This implementation uses the Edmonds-Karp algorithm for the cut calculation.
 
-		Parameters
-		----------
-		G : Graph
-			The graph.
-
-		Returns
-		-------
-		Partition
-			A partition containing the found communities.
 		"""
-		return Partition().setThis(self._this.run())
+		self._this.run()
+		return self
 
 	@staticmethod
 	def getClusterHierarchy(Graph G not None):
@@ -2995,7 +3359,8 @@ cdef class NMIDistance(DissimilarityMeasure):
 cdef extern from "cpp/community/EPP.h":
 	cdef cppclass _EPP "NetworKit::EPP":
 		_EPP(_Graph G)
-		_Partition run() except +
+		void run() except +
+		_Partition getPartition() except +
 		string toString()
 
 cdef class EPP(CommunityDetector):
@@ -3006,24 +3371,29 @@ cdef class EPP(CommunityDetector):
 	for the input graph.
 	"""
 	cdef _EPP* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G not None):
+		self._G = G
 		self._this = new _EPP(G._this)
 
-	def run(self):
-		"""  Run the ensemble clusterer on `G` and return the result in a Partition.
+	def __dealloc__(self):
+		del self._this
 
-		Parameters
-		----------
-		G : Graph
-			The graph.
+	def run(self):
+		"""  Run the ensemble clusterer.
+		"""
+		self._this.run()
+
+	def getPartition(self):
+		"""  Returns a partition of the clustering.
 
 		Returns
 		-------
 		Partition:
 			A Partition of the clustering.
 		"""
-		return Partition().setThis(self._this.run())
+		return Partition().setThis(self._this.getPartition())
 
 	def toString(self):
 		""" String representation of EPP class.
@@ -3036,20 +3406,40 @@ cdef class EPP(CommunityDetector):
 		return self._this.toString()
 
 	cdef setThis(self, _EPP* other):
+		del self._this # is this correct here?
 		self._this = other
 		return self
 
 
-cdef extern from "cpp/community/EPPFactory.h":
-	cdef cppclass _EPPFactory "NetworKit::EPPFactory":
-		_EPP make(_Graph G, count ensembleSize, string baseAlgorithm, string finalAlgorithm)
+cdef extern from "cpp/community/EPPFactory.h" namespace "NetworKit::EPPFactory":
+		#_EPP make(_Graph G, count ensembleSize, string baseAlgorithm, string finalAlgorithm)
+		_EPP* makePtr(_Graph G, count ensembleSize, string baseAlgorithm, string finalAlgorithm)
 
 cdef class EPPFactory:
 	""" This class makes instaces of the EPP community detection algorithm """
-	cdef _EPPFactory _this
 
-#	def make(self, Graph G not None, ensembleSize, baseAlgorithm="PLP", finalAlgorithm="PLM"):
-#		return EPP().setThis(self._this.make(G._this, ensembleSize, stdstring(baseAlgorithm), stdstring(finalAlgorithm)))
+	@staticmethod
+	def make(Graph G not None, ensembleSize, baseAlgorithm="PLP", finalAlgorithm="PLM"):
+		"""
+		Returns an instance of an ensemble preprocessing (EPP).
+
+		Parameters:
+		-----------
+		G : Graph
+			The graph on which the ensemble is supposed to run.
+		ensembleSize : integer
+			The amount of baseAlgorithms to preprocess the communities.
+		baseAlgorithm : CommunityDetectionAlgorithm
+			String representation of the algorithm ("PLP","PLM") to preprocess the communities. ensembleSize instances will be created.
+		finalAlgorithm  : CommunityDetectionAlgorithm
+			String representation of the algorithm ("PLP" "PLM[R]") to finish the ensemble.
+
+		Returns
+		-------
+		EPP
+			The EPP instance.
+		"""
+		return EPP(G).setThis(makePtr(G._this, ensembleSize, stdstring(baseAlgorithm), stdstring(finalAlgorithm)))
 
 cdef extern from "cpp/community/CommunityGraph.h":
 	cdef cppclass _CommunityGraph "NetworKit::CommunityGraph":
@@ -3213,7 +3603,7 @@ cdef extern from "cpp/properties/GraphProperties.h" namespace "NetworKit::GraphP
 	pair[count, count] minMaxDegree(_Graph _G) except +
 	double averageDegree(_Graph _G) except +
 	vector[count] degreeDistribution(_Graph _G) except +
-	vector[unsigned int] degreeSequence(_Graph _G) except +
+	vector[count] degreeSequence(_Graph _G) except +
 	vector[double] localClusteringCoefficients(_Graph _G) except +
 	double averageLocalClusteringCoefficient(_Graph _G) except +
 	vector[double] localClusteringCoefficientPerDegree(_Graph _G) except +
@@ -3306,9 +3696,14 @@ cdef class ConnectedComponents:
 		The graph.
 	"""
 	cdef _ConnectedComponents* _this
+	cdef Graph _G
 
 	def __cinit__(self,  Graph G):
+		self._G = G
 		self._this = new _ConnectedComponents(G._this)
+
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		""" This method determines the connected components for the graph given in the constructor. """
@@ -3361,9 +3756,14 @@ cdef class ParallelConnectedComponents:
 		an undirected graph.
 	"""
 	cdef _ParallelConnectedComponents* _this
+	cdef Graph _G
 
 	def __cinit__(self,  Graph G, coarsening=True	):
+		self._G = G
 		self._this = new _ParallelConnectedComponents(G._this, coarsening)
+
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		self._this.run()
@@ -3393,9 +3793,14 @@ cdef class StronglyConnectedComponents:
 		a directed graph.
 	"""
 	cdef _StronglyConnectedComponents* _this
+	cdef Graph _G
 
 	def __cinit__(self,  Graph G):
+		self._G = G
 		self._this = new _StronglyConnectedComponents(G._this)
+
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		self._this.run()
@@ -3592,9 +3997,14 @@ cdef class CoreDecomposition:
 	"""
 
 	cdef _CoreDecomposition* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G):
+		self._G = G
 		self._this = new _CoreDecomposition(G._this)
+
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		""" Perform k-core decomposition of graph passed in constructor. """
@@ -3656,6 +4066,71 @@ cdef class CoreDecomposition:
 		"""
 		return self._this.shells()
 
+cdef extern from "cpp/properties/EffectiveDiameter.h" namespace "NetworKit::EffectiveDiameter":
+	double effectiveDiameter (_Graph G, double ratio, count k, count r) except +
+	double effectiveDiameterExact(_Graph G, double ratio) except +
+	map[count, double] hopPlot(_Graph G, count maxDistance, count k, count r) except +
+
+cdef class EffectiveDiameter:
+
+	@staticmethod
+	def effectiveDiameter(Graph G, ratio=0.9, k=64, r=7):
+		""" Estimates the number of edges on average needed to reach 90% of all other nodes with a variaton of the ANF algorithm presented in the paper A Fast and Scalable Tool for Data Mining
+		    in Massive Graphs by Palmer, Gibbons and Faloutsos
+		Parameters
+		----------
+		G : Graph
+			The graph.
+		ratio : double
+			The percentage of nodes that shall be within stepwith
+		k : count
+			number of parallel approximations, bigger k -> longer runtime, more precise result
+		r : count
+			number of additional bits, important in tiny graphs
+		Returns
+		-------
+		double
+			the estimated effective diameter
+		"""
+		return effectiveDiameter(G._this, ratio, k, r)
+
+	@staticmethod
+	def effectiveDiameterExact(Graph G, ratio=0.9):
+		""" Calculates the number of edges on average needed to reach 90% of all other nodes
+		Parameters
+		----------
+		G : Graph
+			The graph.
+		ratio : double
+			The percentage of nodes that shall be within stepwith
+		Returns
+		-------
+		double
+			the effective diameter
+		"""
+		return effectiveDiameterExact(G._this, ratio)
+
+	@staticmethod
+	def hopPlot(Graph G, maxDistance=0, k=64, r=7):
+		""" Calculates the number of connected nodes for each distance between 0 and the diameter of the graph
+		Parameters
+		----------
+		G : Graph
+			The graph.
+		maxDistance : double
+			maximum distance between considered nodes
+			set to 0 or negative to get the hop-plot for the entire graph so that each node can reach each other node
+		k : count
+			number of parallel approximations, bigger k -> longer runtime, more precise result
+		r : count
+			number of additional bits, important in tiny graphs
+		Returns
+		-------
+		map
+			number of connected nodes for each distance
+		"""
+		return hopPlot(G._this, maxDistance, k, r)
+
 
 # Module: centrality
 
@@ -3692,15 +4167,16 @@ cdef class CoreDecomposition:
 
 cdef extern from "cpp/centrality/Betweenness.h":
 	cdef cppclass _Betweenness "NetworKit::Betweenness":
-		_Betweenness(_Graph, bool) except +
+		_Betweenness(_Graph, bool, bool) except +
 		void run() except +
 		vector[double] scores() except +
+		vector[double] edgeScores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
 
 cdef class Betweenness:
 	"""
-		Betweenness(G, normalized=False)
+		Betweenness(G, normalized=False, computeEdges=False)
 
 		Constructs the Betweenness class for the given Graph `G`. If the betweenness scores should be normalized,
   		then set `normalized` to True.
@@ -3711,11 +4187,15 @@ cdef class Betweenness:
 	 		The graph.
 	 	normalized : bool, optional
 	 		Set this parameter to True if scores should be normalized in the interval [0,1].
+	 	computeEdges : bool, optional
+	 		Set this parameter to True if edge betweenness should be calculated as well.
 	"""
 	cdef _Betweenness* _this
+	cdef Graph _G
 
-	def __cinit__(self, Graph G, normalized=False):
-		self._this = new _Betweenness(G._this, normalized)
+	def __cinit__(self, Graph G, normalized=False, computeEdges=False):
+		self._G = G
+		self._this = new _Betweenness(G._this, normalized, computeEdges)
 
 	# this is necessary so that the C++ object gets properly garbage collected
 	def __dealloc__(self):
@@ -3742,6 +4222,16 @@ cdef class Betweenness:
 		"""
 		return self._this.scores()
 
+	def edgeScores(self):
+		""" Get a vector containing the betweenness score for each edge in the graph.
+
+		Returns
+		-------
+		vector
+			The betweenness scores calculated by run().
+		"""
+		return self._this.edgeScores()
+
 	def score(self, v):
 		""" Get the betweenness score of node `v` calculated by run().
 
@@ -3754,6 +4244,81 @@ cdef class Betweenness:
 		-------
 		double
 			The betweenness score of node `v.
+		"""
+		return self._this.score(v)
+
+	def ranking(self):
+		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
+		calculated by run().
+
+		Returns
+		-------
+		vector
+			A vector of pairs.
+		"""
+		return self._this.ranking()
+
+cdef extern from "cpp/centrality/Closeness.h":
+	cdef cppclass _Closeness "NetworKit::Closeness":
+		_Closeness(_Graph, bool) except +
+		void run() except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class Closeness:
+	"""
+		Closeness(G, normalized=False)
+
+		Constructs the Closeness class for the given Graph `G`. If the Closeness scores should be normalized,
+  		then set `normalized` to True.
+
+	 	Parameters
+	 	----------
+	 	G : Graph
+	 		The graph.
+	 	normalized : bool, optional
+	 		Set this parameter to True if scores should be normalized in the interval [0,1]. Normalization only for unweighted networks.
+	"""
+	cdef _Closeness* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, normalized=False):
+		self._G = G
+		self._this = new _Closeness(G._this, normalized)
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		"""  Compute closeness scores parallel."""
+
+		self._this.run()
+		return self
+
+	def scores(self):
+		""" Get a vector containing the closeness score for each node in the graph.
+
+		Returns
+		-------
+		vector
+			The closeness scores calculated by run().
+		"""
+		return self._this.scores()
+
+	def score(self, v):
+		""" Get the closeness score of node `v` calculated by run().
+
+		Parameters
+		----------
+		v : node
+			A node.
+
+		Returns
+		-------
+		double
+			The closeness score of node `v.
 		"""
 		return self._this.score(v)
 
@@ -3791,8 +4356,10 @@ cdef class DynBetweenness:
 			store lists of predecessors?
 	"""
 	cdef _DynBetweenness* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, bool storePredecessors = True):
+		self._G = G
 		self._this = new _DynBetweenness(G._this, storePredecessors)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -3879,8 +4446,10 @@ cdef class ApproxBetweenness:
 		probability that the values are within the error guarantee
 	"""
 	cdef _ApproxBetweenness* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, diameterSamples=0):
+		self._G = G
 		self._this = new _ApproxBetweenness(G._this, epsilon, delta, diameterSamples)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -3938,6 +4507,7 @@ cdef extern from "cpp/centrality/DynApproxBetweenness.h":
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
+		count getNumberOfSamples() except +
 
 cdef class DynApproxBetweenness:
 	""" New dynamic algorithm for the approximation of betweenness centrality with
@@ -3961,8 +4531,10 @@ cdef class DynApproxBetweenness:
 		store lists of predecessors?
 	"""
 	cdef _DynApproxBetweenness* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, storePredecessors = True):
+		self._G = G
 		self._this = new _DynApproxBetweenness(G._this, epsilon, delta, storePredecessors)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -4021,6 +4593,12 @@ cdef class DynApproxBetweenness:
 		"""
 		return self._this.ranking()
 
+	def getNumberOfSamples(self):
+		"""
+		Get number of path samples used in last calculation.
+		"""
+		return self._this.getNumberOfSamples()
+
 cdef extern from "cpp/centrality/ApproxBetweenness2.h":
 	cdef cppclass _ApproxBetweenness2 "NetworKit::ApproxBetweenness2":
 		_ApproxBetweenness2(_Graph, count, bool) except +
@@ -4048,8 +4626,10 @@ cdef class ApproxBetweenness2:
 		normalize centrality values in interval [0,1]
 	"""
 	cdef _ApproxBetweenness2* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, nSamples, normalized=False):
+		self._G = G
 		self._this = new _ApproxBetweenness2(G._this, nSamples, normalized)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -4115,8 +4695,10 @@ cdef class PageRank:
 		Error tolerance for PageRank iteration.
 	"""
 	cdef _PageRank* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, double damp, double tol=1e-9):
+		self._G = G
 		self._this = new _PageRank(G._this, damp, tol)
 
 	# this is necessary so that the C++ object gets properly garbage collected
@@ -4183,9 +4765,14 @@ cdef class EigenvectorCentrality:
 		The tolerance for convergence.
 	"""
 	cdef _EigenvectorCentrality* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, double tol=1e-9):
+		self._G = G
 		self._this = new _EigenvectorCentrality(G._this, tol)
+
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		self._this.run()
@@ -4249,9 +4836,14 @@ cdef class DegreeCentrality:
  		Normalize centrality values in the interval [0,1].
 	"""
 	cdef _DegreeCentrality* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, bool normalized=False):
+		self._G = G
 		self._this = new _DegreeCentrality(G._this, normalized)
+
+	def __dealloc__(self):
+		del self._this
 
 	def run(self):
 		self._this.run()
@@ -4297,6 +4889,82 @@ cdef class DegreeCentrality:
 		"""
 		return self._this.maximum()
 
+cdef extern from "cpp/centrality/KPathCentrality.h":
+	cdef cppclass _KPathCentrality "NetworKit::KPathCentrality":
+		_KPathCentrality(_Graph, bool) except +
+		void run() except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class KPathCentrality:
+	"""
+		KPathCentrality(G, alpha=0.2, k=0)
+
+		Constructs the K-Path Centrality class for the given Graph `G`.
+
+	 	Parameters
+	 	----------
+	 	G : Graph
+	 		The graph.
+	 	alpha : double, in interval [-0.5, 0.5]
+			tradeoff between runtime and precision
+			-0.5: maximum precision, maximum runtime
+	 		 0.5: lowest precision, lowest runtime
+	"""
+	cdef _KPathCentrality* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, normalized=False):
+		self._G = G
+		self._this = new _KPathCentrality(G._this, normalized)
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		"""  Compute KPathCentrality scores."""
+		self._this.run()
+		return self
+
+	def scores(self):
+		""" Get a vector containing the KPathCentrality score for each node in the graph.
+
+		Returns
+		-------
+		vector
+			The KPathCentrality scores calculated by run().
+		"""
+		return self._this.scores()
+
+	def score(self, v):
+		""" Get the KPathCentrality score of node `v` calculated by run().
+
+		Parameters
+		----------
+		v : node
+			A node.
+
+		Returns
+		-------
+		double
+			The KPathCentrality score of node `v.
+		"""
+		return self._this.score(v)
+
+	def ranking(self):
+		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
+		calculated by run().
+
+		Returns
+		-------
+		vector
+			A vector of pairs.
+		"""
+		return self._this.ranking()
+
+
 # Module: distmeasures
 
 cdef extern from "cpp/distmeasures/AlgebraicDistance.h":
@@ -4324,8 +4992,10 @@ cdef class AlgebraicDistance:
 		The norm factor of the extended algebraic distance. Maximum norm is realized by setting the norm to 0. Default: 2.
 	"""
 	cdef _AlgebraicDistance* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G, count numberSystems, count numberIterations, double omega = 0.5, index norm = 2):
+		self._G = G
 		self._this = new _AlgebraicDistance(G._this, numberSystems, numberIterations, omega, norm)
 
 	def __dealloc__(self):
@@ -4435,6 +5105,9 @@ cdef class DGSStreamParser:
 	def __cinit__(self, path, mapped=True, baseIndex=0):
 		self._this = new _DGSStreamParser(stdstring(path), mapped, baseIndex)
 
+	def __dealloc__(self):
+		del self._this
+
 	def getStream(self):
 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.getStream()]
 
@@ -4449,6 +5122,9 @@ cdef class DGSWriter:
 
 	def __cinit__(self):
 		self._this = new _DGSWriter()
+
+	def __dealloc__(self):
+		del self._this
 
 	def write(self, stream, path):
 		cdef vector[_GraphEvent] _stream
@@ -4503,6 +5179,9 @@ cdef class DynamicPathGenerator:
 	def __cinit__(self):
 		self._this = new _DynamicPathGenerator()
 
+	def __dealloc__(self):
+		del self._this
+
 	def generate(self, nSteps):
 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
 
@@ -4524,6 +5203,9 @@ cdef class DynamicDorogovtsevMendesGenerator:
 
 	def __cinit__(self):
 		self._this = new _DynamicDorogovtsevMendesGenerator()
+
+	def __dealloc__(self):
+		del self._this
 
 	def generate(self, nSteps):
 		""" Generate event stream.
@@ -4550,6 +5232,9 @@ cdef class DynamicPubWebGenerator:
 
 	def __cinit__(self, numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors):
 		self._this = new _DynamicPubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
+
+	def __dealloc__(self):
+		del self._this
 
 	def generate(self, nSteps):
 		""" Generate event stream.
@@ -4601,6 +5286,9 @@ cdef class DynamicForestFireGenerator:
 	def __cinit__(self, p, directed, r = 1.0):
 		self._this = new _DynamicForestFireGenerator(p, directed, r)
 
+	def __dealloc__(self):
+		del self._this
+
 	def generate(self, nSteps):
 		""" Generate event stream.
 
@@ -4629,9 +5317,14 @@ cdef class GraphUpdater:
 	 	initial graph
 	"""
 	cdef _GraphUpdater* _this
+	cdef Graph _G
 
 	def __cinit__(self, Graph G):
+		self._G = G
 		self._this = new _GraphUpdater(G._this)
+
+	def __dealloc__(self):
+		del self._this
 
 	def update(self, stream):
 		cdef vector[_GraphEvent] _stream
@@ -4654,6 +5347,44 @@ cdef class ParallelPartitionCoarsening:
 	def __cinit__(self):
 		self._this = new _ParallelPartitionCoarsening()
 
+	def __dealloc__(self):
+		del self._this
+
 	def run(self, Graph G not None, Partition zeta not None):
 		result = self._this.run(G._this, zeta._this)
 		return (Graph(0).setThis(result.first), result.second)
+
+# Module: scd
+
+cdef extern from "cpp/scd/PageRankNibble.h":
+	cdef cppclass _PageRankNibble "NetworKit::PageRankNibble":
+		_PageRankNibble(_Graph G, double epsilon, double alpha) except +
+		map[node, set[node]] run(set[unsigned int] seeds)
+
+cdef class PageRankNibble:
+	"""
+	Produces a cut around a given seed node using the PageRank-Nibble algorithm.
+	see Andersen, Chung, Lang: Local Graph Partitioning using PageRank Vectors
+
+	Parameters:
+	-----------
+	G : graph in which the cut is to be produced, must be unweighted.
+	epsilon : the max probability in the residual vector for each node.
+	alpha : the random walk loop probability.
+	"""
+	cdef _PageRankNibble *_this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, double epsilon, double alpha):
+		self._G = G
+		self._this = new _PageRankNibble(G._this, epsilon, alpha)
+
+	def run(self, set[unsigned int] seeds):
+		"""
+		Produces a cut around a given seed node.
+
+		Parameters:
+		-----------
+		seeds : the seed node ids.
+		"""
+		return self._this.run(seeds)

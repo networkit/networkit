@@ -1,12 +1,12 @@
 /*
- * KPath.h
+ * KPathCentrality.h
  *
  *  Created on: 05.10.2014
  *      Author: nemes
  */
 
-#ifndef KPATH_H_
-#define KPATH_H_
+#ifndef KPATHCENTRALITY_H_
+#define KPATHCENTRALITY_H_
 
 #include "Centrality.h"
 
@@ -15,7 +15,7 @@ namespace NetworKit {
 /**
  * @ingroup centrality
  */
-class KPath: public NetworKit::Centrality {
+class KPathCentrality: public NetworKit::Centrality {
 public:
 
 	/*
@@ -33,16 +33,16 @@ public:
 	double alpha;
 
 	/**
-	 * Constructs the Betweenness class for the given Graph @a G.
+	 * Constructs the K-Path Centrality class for the given Graph @a G.
 	 *
 	 * @param G The graph.
 	 * @param alpha tradeoff between precision and runtime.
 	 * @param k maximum length of paths.
 	 */
-	KPath(const Graph& G, double alpha=0.2, count k=0);
+	KPathCentrality(const Graph& G, double alpha=0.2, count k=0);
 
 	/**
-	* Compute betweenness scores sequential.
+	* Compute K-Path scores sequential.
 	*
 	*/
 	void run() override;
@@ -51,4 +51,4 @@ public:
 
 } /* namespace NetworKit */
 
-#endif /* KPATH_H_ */
+#endif /* KPATHCENTRALITY_H_ */

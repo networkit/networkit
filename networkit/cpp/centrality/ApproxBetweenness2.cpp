@@ -15,7 +15,7 @@
 
 namespace NetworKit {
 
-ApproxBetweenness2::ApproxBetweenness2(const Graph& G, count nSamples, bool normalized) : Centrality(G, normalized, false), nSamples(nSamples) {
+ApproxBetweenness2::ApproxBetweenness2(const Graph& G, count nSamples, bool normalized) : Centrality(G, normalized), nSamples(nSamples) {
 }
 
 void ApproxBetweenness2::run() {

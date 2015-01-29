@@ -23,17 +23,11 @@ struct FunctionTraits<ReturnType(ClassType::*)(Args...) const> {
 
 	using result_type = ReturnType;
 
-	template <std::size_t i, class Enable = void>
+	template <std::size_t i>
 	struct arg;
 
-	// declare void as type if there is no such parameter
 	template <std::size_t i>
-	struct arg<i, typename std::enable_if<(i >= arity)>::type> {
-			using type = void;
-	};
-
-	template <std::size_t i>
-	struct arg<i, typename std::enable_if<(i < arity)>::type> {
+	struct arg {
 			static_assert(i < arity, "error: invalid parameter index.");
 			using type = typename std::tuple_element<i, std::tuple<Args...>>::type;
 			// the i-th argument is equivalent to the i-th tuple element of a tuple

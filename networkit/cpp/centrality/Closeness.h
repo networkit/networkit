@@ -18,7 +18,7 @@ namespace NetworKit {
 class Closeness: public NetworKit::Centrality {
 public:
 	/**
-	 * Constructs the Betweenness class for the given Graph @a G. If the betweenness scores should be normalized,
+	 * Constructs the Closeness class for the given Graph @a G. If the closeness scores should be normalized,
 	 * then set @a normalized to <code>true</code>.
 	 *
 	 * @param G The graph.
@@ -29,7 +29,7 @@ public:
 
 
 	/**
-	* Compute betweenness scores sequential or parallel depending on @a runUnweightedInParallel.
+	* Compute closeness scores parallel
 	*
 	*/
 	void run() override;

@@ -226,6 +226,47 @@ TEST(MatrixGTest, testMatrixAddition) {
 
 	EXPECT_EQ(0, result(0,1));
 	EXPECT_EQ(0, result(4,1));
+
+
+	// non-matching dimensions
+	//
+	rows.clear();
+	rows.push_back({1.0, 2.0});
+	rows.push_back({2.0, 1.0});
+	mat1 = Matrix(rows);
+
+	rows.clear();
+	rows.push_back({1.0, 0.0, 3.0});
+	rows.push_back({0.0, 0.0, 1.0});
+	rows.push_back({0.0, 0.0, 1.0});
+	mat2 = Matrix(rows);
+
+	EXPECT_THROW(mat1 + mat2, std::runtime_error);
+
+	rows.clear();
+	rows.push_back({1.0, 2.0, 0.0});
+	rows.push_back({2.0, 1.0, 0.0});
+	mat1 = Matrix(rows);
+
+	rows.clear();
+	rows.push_back({1.0, 0.0, 3.0});
+	rows.push_back({0.0, 0.0, 1.0});
+	rows.push_back({0.0, 0.0, 1.0});
+	mat2 = Matrix(rows);
+
+	EXPECT_THROW(mat1 + mat2, std::runtime_error);
+
+	rows.clear();
+	rows.push_back({1.0, 2.0});
+	rows.push_back({2.0, 1.0});
+	mat1 = Matrix(rows);
+
+	rows.clear();
+	rows.push_back({1.0, 0.0, 3.0});
+	rows.push_back({0.0, 0.0, 1.0});
+	mat2 = Matrix(rows);
+
+	EXPECT_THROW(mat1 + mat2, std::runtime_error);
 }
 
 TEST(MatrixGTest, testMatrixSubtraction) {
@@ -322,6 +363,47 @@ TEST(MatrixGTest, testMatrixSubtraction) {
 
 	EXPECT_EQ(0, result(0,1));
 	EXPECT_EQ(0, result(4,1));
+
+
+	// non-matching dimensions
+	//
+	rows.clear();
+	rows.push_back({1.0, 2.0});
+	rows.push_back({2.0, 1.0});
+	mat1 = Matrix(rows);
+
+	rows.clear();
+	rows.push_back({1.0, 0.0, 3.0});
+	rows.push_back({0.0, 0.0, 1.0});
+	rows.push_back({0.0, 0.0, 1.0});
+	mat2 = Matrix(rows);
+
+	EXPECT_THROW(mat1 - mat2, std::runtime_error);
+
+	rows.clear();
+	rows.push_back({1.0, 2.0, 0.0});
+	rows.push_back({2.0, 1.0, 0.0});
+	mat1 = Matrix(rows);
+
+	rows.clear();
+	rows.push_back({1.0, 0.0, 3.0});
+	rows.push_back({0.0, 0.0, 1.0});
+	rows.push_back({0.0, 0.0, 1.0});
+	mat2 = Matrix(rows);
+
+	EXPECT_THROW(mat1 - mat2, std::runtime_error);
+
+	rows.clear();
+	rows.push_back({1.0, 2.0});
+	rows.push_back({2.0, 1.0});
+	mat1 = Matrix(rows);
+
+	rows.clear();
+	rows.push_back({1.0, 0.0, 3.0});
+	rows.push_back({0.0, 0.0, 1.0});
+	mat2 = Matrix(rows);
+
+	EXPECT_THROW(mat1 - mat2, std::runtime_error);
 }
 
 TEST(MatrixGTest, testScalarMultiplication) {
@@ -477,6 +559,11 @@ TEST(MatrixGTest, testMatrixVectorProduct) {
 	ASSERT_EQ(2u, res.getDimension());
 	EXPECT_EQ(0, res[0]);
 	EXPECT_EQ(6, res[1]);
+
+	EXPECT_THROW(mat * v.transpose(), std::runtime_error);
+
+	Vector v1 = {1.0, 2.0};
+	EXPECT_THROW(mat * v1, std::runtime_error);
 }
 
 TEST(MatrixGTest, testMatrixMultiplication) {
@@ -560,6 +647,17 @@ TEST(MatrixGTest, testMatrixMultiplication) {
 	EXPECT_EQ(0.5, result(1,1));
 	EXPECT_EQ(168, result(2,0));
 	EXPECT_EQ(4, result(2,1));
+
+
+	// non-matching dimensions
+	//
+	rows.clear();
+	rows.push_back({1, 0});
+	rows.push_back({0, 0});
+	rows.push_back({0, 0.5});
+	mat2 = Matrix(rows);
+
+	EXPECT_THROW(mat1 * mat2, std::runtime_error);
 }
 
 TEST(MatrixGTest, testBigMatrixMultiplication) {

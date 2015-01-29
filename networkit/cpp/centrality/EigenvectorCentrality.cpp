@@ -11,7 +11,7 @@
 namespace NetworKit {
 
 EigenvectorCentrality::EigenvectorCentrality(const Graph& G, double tol):
-		Centrality(G, true, false), tol(tol)
+		Centrality(G, true), tol(tol)
 {
 
 }

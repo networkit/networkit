@@ -1,5 +1,5 @@
 /*
- * KPath.cpp
+ * KPathCentrality.cpp
  *
  *  Created on: 05.10.2014
  *      Author: nemes
@@ -7,29 +7,29 @@
 
 #include <stack>
 
-#include "KPath.h"
+#include "KPathCentrality.h"
 #include "../auxiliary/PrioQueue.h"
 #include "../auxiliary/Log.h"
 #include "../auxiliary/Random.h"
 
 namespace NetworKit {
 
-KPath::KPath(const Graph& G, double alpha, count k) : Centrality(G, false, false) {
+KPathCentrality::KPathCentrality(const Graph& G, double alpha, count k) : Centrality(G, false, false) {
 	if (alpha >= -0.5 && alpha <= 0.5) {
-		KPath::alpha = alpha;
+		this->alpha = alpha;
 	} else {
 		throw std::runtime_error("alpha must lie in interval [-0.5, 0.5]");
 	}
 	if (k == 0) {
-		KPath::k = log(G.numberOfNodes() + G.numberOfEdges());
+		this->k = log(G.numberOfNodes() + G.numberOfEdges());
 	} else if (k >0) {
-		KPath::k = k;
+		this->k = k;
 	} else {
 		throw std::runtime_error("k must be an integer");
 	}
 }
 
-void KPath::run() {
+void KPathCentrality::run() {
 	count z = G.upperNodeIdBound();
 	count n = G.numberOfNodes();
 	scoreData.clear();
@@ -45,7 +45,7 @@ void KPath::run() {
 	std::stack<node> stack;
 	node v;
 
-	for (int i = 1; i <= t; i++) {
+	for (int i = 1; i <= t; i++) { // FIXME: int -> count
 		node s = G.randomNode();
 		int l = Aux::Random::integer(1, k);
 		explored[s] = true;
