@@ -59,6 +59,8 @@ Graph METISGraphReader::read(const std::string& path) {
 				Aux::Checkers::Enforcer::enforce(v >= 0 && v < n);
 				if (u <= v) { // self-loops are allowed
 					b.addHalfEdge(u, v);
+				} else {
+					b.addHalfEdge(v, u);
 				}
 			}
 			u++; // next node
@@ -69,7 +71,6 @@ Graph METISGraphReader::read(const std::string& path) {
 		}
 	} else {
 		while (parser.hasNext() && u < n) {
-
 			std::vector<std::pair<node,double>> adjacencies = parser.getNextWithWeights(ignoreFirst);
 			edgeCounter += adjacencies.size();
 			DEBUG("node ",u," has ",adjacencies.size()," edges");
@@ -84,6 +85,8 @@ Graph METISGraphReader::read(const std::string& path) {
 				if (u <= v) { // self-loops are allowed
 					b.addHalfEdge(u, v, weight);
 					TRACE("(",u,",",v,",",adjacencies[i].second,")");
+				} else {
+					b.addHalfEdge(v, u, weight);
 				}
 			}
 			u += 1; // next node
@@ -94,7 +97,7 @@ Graph METISGraphReader::read(const std::string& path) {
 		}
 	}
 
-	auto G = b.toGraph(true);
+	auto G = b.toGraph(false);
 
 	if (G.numberOfEdges() != m) {
 		ERROR("METIS file is corrupted: actual number of added edges doesn't match the specifed number of edges");
