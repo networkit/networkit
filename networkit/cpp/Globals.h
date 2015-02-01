@@ -50,5 +50,9 @@ extern bool CALC_DISSIMILARITY;
 
 extern int MAX_LOUVAIN_ITERATIONS;
 
+#ifndef _OPENMP
+int omp_get_thread_num();
+int omp_get_max_threads();
+#endif
 
 #endif /* GLOBALS_H_ */

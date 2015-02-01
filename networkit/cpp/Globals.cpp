@@ -6,6 +6,7 @@
  */
 
 #include "Globals.h"
+#include "auxiliary/Log.h"
 
 bool PRINT_PROGRESS = true;
 bool RAND_ORDER = false; 	///< don't randomize LabelPropagation node order by default, since this seems to be faster and slightly better
@@ -22,3 +23,14 @@ double REL_REPEAT_THRSH = 5e-3; ///< threshold for minimum number of matching ed
 bool CALC_DISSIMILARITY = false; ///< if set, calculate and print base clustering dissimilarity for ensemble (expensive!)
 
 int MAX_LOUVAIN_ITERATIONS = 32; ///< maximum number of iterations within contractions in Louvain algorithm
+
+#ifndef _OPENMP
+int omp_get_thread_num() {
+	ERROR("OpenMP is not available");
+	return 0;
+}
+int omp_get_max_threads() {
+	ERROR("OpenMP is not available");
+	return 1;
+}
+#endif

@@ -19,7 +19,9 @@
 #endif
 
 // OpenMP
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 
 // necessary for some reasons?
 #include "Globals.h"
