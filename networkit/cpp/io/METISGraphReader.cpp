@@ -57,11 +57,7 @@ Graph METISGraphReader::read(const std::string& path) {
 				}
 				node v = adjacencies[i] - 1; 	// METIS-indices are 1-based
 				Aux::Checkers::Enforcer::enforce(v >= 0 && v < n);
-				if (u <= v) { // self-loops are allowed
-					b.addHalfEdge(u, v);
-				} else {
-					b.addHalfEdge(v, u);
-				}
+				b.addHalfEdge(u, v);
 			}
 			u++; // next node
 			if ((u % ((n + 10)/10)) == 0) {
@@ -82,12 +78,8 @@ Graph METISGraphReader::read(const std::string& path) {
 				node v = adjacencies[i].first- 1; 	// METIS-indices are 1-based
 				double weight = adjacencies[i].second;
 				Aux::Checkers::Enforcer::enforce(v >= 0 && v < n);
-				if (u <= v) { // self-loops are allowed
-					b.addHalfEdge(u, v, weight);
-					TRACE("(",u,",",v,",",adjacencies[i].second,")");
-				} else {
-					b.addHalfEdge(v, u, weight);
-				}
+				b.addHalfEdge(u, v, weight);
+				TRACE("(",u,",",v,",",adjacencies[i].second,")");
 			}
 			u += 1; // next node
 			if ((u % ((n + 10)/10)) == 0) {
