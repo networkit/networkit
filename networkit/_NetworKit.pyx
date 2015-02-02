@@ -5033,7 +5033,7 @@ cdef class GraphEvent:
 		def __set__(self, w):
 			self._this.w = w
 
-	def __cinit__(self, type, u, v, w):
+	def __cinit__(self, _GraphEventType type, node u, node v, edgeweight w):
 		self._this = _GraphEvent(type, u, v, w)
 
 	def toString(self):
