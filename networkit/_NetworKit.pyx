@@ -127,6 +127,7 @@ cdef extern from "cpp/graph/Graph.h":
 		count degreeIn(node u) except +
 		count degreeOut(node u) except +
 		bool isIsolated(node u) except +
+		_Graph copyNodes() except +
 		node addNode() except +
 		void removeNode(node u) except +
 		bool hasNode(node u) except +
@@ -202,6 +203,17 @@ cdef class Graph:
 		Generates a (deep) copy of the graph
 		"""
 		return Graph().setThis(_Graph(self._this))
+
+	def copyNodes(self):
+		"""
+		Copies all nodes to a new graph
+
+		Returns
+		-------
+		Graph
+			Graph with the same nodes (without edges)
+		"""
+		return Graph().setThis(self._this.copyNodes())
 
 	def indexEdges(self):
 		"""
