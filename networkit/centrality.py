@@ -89,6 +89,11 @@ def rankPerNode(ranking):
 
 def relativeRankError(rx, ry):
 	"""
+	Let $r_x(u)$ be the rank of node $u$ in ranking $x$.
+	The relative rank error of node $u$ is defined as
+		$$r_x(u) / r_y(u)$$
+
+
 	Parameters
 	----------
 	rx : list
