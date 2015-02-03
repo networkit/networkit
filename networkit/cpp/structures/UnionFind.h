@@ -16,7 +16,7 @@ namespace NetworKit {
 
 /**
  * @ingroup structures
- * Implements the Union Find Datastructure to maintain disjoint sets efficiently.
+ * Implements the Union Find data structure to maintain disjoint sets efficiently.
  */
 class UnionFind {
 private:
@@ -25,7 +25,7 @@ public:
 		
 	/**
 	 * Create a new set representation with not more the @max_element elements.
-	 * Initialy every element is in its own set.
+	 * Initially every element is in its own set.
 	 * @param max_element maximum number of elements 
 	 */
 	UnionFind(index max_element) : data(max_element) {
@@ -40,9 +40,9 @@ public:
 	void allToSingletons();
 
 	/**
-	 * Find the represetive to element @u
+	 * Find the representative to element @u
 	 * @param u element
-	 * @return representive of set containing @u
+	 * @return representative of set containing @u
 	 */	
 	index find(index u);
 	
@@ -54,8 +54,8 @@ public:
 	void merge(index u, index v);
 
 	/**
-	 * Convert the Union Find Datastructure to a Partition
-	 * @return Partiion equivalent of the union find datastructure
+	 * Convert the Union Find data structure to a Partition
+	 * @return Partition equivalent to the union find data structure
 	 * */	
 	Partition toPartition();
 };

@@ -86,7 +86,7 @@ void DynApproxBetweenness::run() {
                     }
                 }
                 else {
-                G.forEdgesOf(t, [&](node t, node z, edgeweight w){
+                G.forInEdgesOf(t, [&](node t, node z, edgeweight w){
                         if (Aux::NumericTools::logically_equal(sssp[i]->distances[t], sssp[i]->distances[z] + w)) {
                             // workaround for integer overflow in large graphs
                             bigfloat tmp = sssp[i]->numberOfPaths(z) / sssp[i]->numberOfPaths(t);
@@ -98,6 +98,8 @@ void DynApproxBetweenness::run() {
 
                     });
                 }
+                INFO("Node considered: ", t);
+                INFO("Source considered: ", u[i]);
                 assert (choices.size() > 0);
                 node z = Aux::Random::weightedChoice(choices);
                 assert (z <= G.upperNodeIdBound());
