@@ -56,6 +56,7 @@ from . import workflows
 from . import flow
 from . import distmeasures
 from . import plot
+from . import sparsification
 from . import scd
 from . import clique
 
