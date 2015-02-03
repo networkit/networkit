@@ -87,7 +87,7 @@ def rankPerNode(ranking):
 	return ranking_id
 
 
-def relativeRankError(rx, ry):
+def relativeRankErrors(rx, ry):
 	"""
 	Let $r_x(u)$ be the rank of node $u$ in ranking $x$.
 	The relative rank error of node $u$ is defined as
