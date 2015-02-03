@@ -127,6 +127,7 @@ cdef extern from "cpp/graph/Graph.h":
 		count degreeIn(node u) except +
 		count degreeOut(node u) except +
 		bool isIsolated(node u) except +
+		_Graph copyNodes() except +
 		node addNode() except +
 		void removeNode(node u) except +
 		bool hasNode(node u) except +
@@ -202,6 +203,17 @@ cdef class Graph:
 		Generates a (deep) copy of the graph
 		"""
 		return Graph().setThis(_Graph(self._this))
+
+	def copyNodes(self):
+		"""
+		Copies all nodes to a new graph
+
+		Returns
+		-------
+		Graph
+			Graph with the same nodes (without edges)
+		"""
+		return Graph().setThis(self._this.copyNodes())
 
 	def indexEdges(self):
 		"""
@@ -4167,6 +4179,72 @@ cdef class CoreDecomposition:
 		return self._this.shells()
 
 
+cdef extern from "cpp/properties/EffectiveDiameter.h" namespace "NetworKit::EffectiveDiameter":
+	double effectiveDiameter (_Graph G, double ratio, count k, count r) except +
+	double effectiveDiameterExact(_Graph G, double ratio) except +
+	map[count, double] hopPlot(_Graph G, count maxDistance, count k, count r) except +
+
+cdef class EffectiveDiameter:
+
+	@staticmethod
+	def effectiveDiameter(Graph G, ratio=0.9, k=64, r=7):
+		""" Estimates the number of edges on average needed to reach 90% of all other nodes with a variaton of the ANF algorithm presented in the paper A Fast and Scalable Tool for Data Mining
+			in Massive Graphs by Palmer, Gibbons and Faloutsos
+		Parameters
+		----------
+		G : Graph
+			The graph.
+		ratio : double
+			The percentage of nodes that shall be within stepwith
+		k : count
+			number of parallel approximations, bigger k -> longer runtime, more precise result
+		r : count
+			number of additional bits, important in tiny graphs
+		Returns
+		-------
+		double
+			the estimated effective diameter
+		"""
+		return effectiveDiameter(G._this, ratio, k, r)
+
+	@staticmethod
+	def effectiveDiameterExact(Graph G, ratio=0.9):
+		""" Calculates the number of edges on average needed to reach 90% of all other nodes
+		Parameters
+		----------
+		G : Graph
+			The graph.
+		ratio : double
+			The percentage of nodes that shall be within stepwith
+		Returns
+		-------
+		double
+			the effective diameter
+		"""
+		return effectiveDiameterExact(G._this, ratio)
+
+	@staticmethod
+	def hopPlot(Graph G, maxDistance=0, k=64, r=7):
+		""" Calculates the number of connected nodes for each distance between 0 and the diameter of the graph
+		Parameters
+		----------
+		G : Graph
+			The graph.
+		maxDistance : double
+			maximum distance between considered nodes
+			set to 0 or negative to get the hop-plot for the entire graph so that each node can reach each other node
+		k : count
+			number of parallel approximations, bigger k -> longer runtime, more precise result
+		r : count
+			number of additional bits, important in tiny graphs
+		Returns
+		-------
+		map
+			number of connected nodes for each distance
+		"""
+		return hopPlot(G._this, maxDistance, k, r)
+
+
 # Module: centrality
 
 
@@ -4955,7 +5033,7 @@ cdef class GraphEvent:
 		def __set__(self, w):
 			self._this.w = w
 
-	def __cinit__(self, type, u, v, w):
+	def __cinit__(self, _GraphEventType type, node u, node v, edgeweight w):
 		self._this = _GraphEvent(type, u, v, w)
 
 	def toString(self):
