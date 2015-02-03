@@ -10,6 +10,9 @@
 #include <algorithm>
 
 #include "GraphGTest.h"
+#include "../../io/METISGraphReader.h"
+#include "../../auxiliary/NumericTools.h"
+#include "../../graph/DynBFS.h"
 
 namespace NetworKit {
 
@@ -1788,6 +1791,50 @@ TEST_P(GraphGTest, testForWeightedEdgesWithIds) {
 		}
 
 	}
+}
+
+TEST_P(GraphGTest, testInForEdgesUndirected) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/PGPgiantcompo.graph");
+	INFO(G.upperNodeIdBound());
+	node u = 5474;
+	G.forInEdgesOf(u, [&](node u, node z, edgeweight w){
+		INFO("(1) node: ", u, " neigh:", z, " weight: ", w);
+	});
+	G.forEdgesOf(u, [&](node u, node z, edgeweight w){
+		INFO("(2) node: ", u, " neigh:", z, " weight: ", w);
+	});
+
+
+	node source = 1492;
+	DynBFS bfs(G, source, false);
+	bfs.run();
+
+/*	std::vector<std::pair<node, double> > choices1;
+	G.forInEdgesOf(5474, [&](node t, node z, edgeweight w){
+		INFO("considered edge (1): ", t, z, w);
+		if (Aux::NumericTools::logically_equal(bfs.distance(t), bfs.distance(z) + w)) {
+			// workaround for integer overflow in large graphs
+			bigfloat tmp = bfs.getNumberOfPaths(z) / bfs.getNumberOfPaths(t);
+			double weight;
+			tmp.ToDouble(weight);
+			choices1.emplace_back(z, weight);
+		}
+	});
+	std::vector<std::pair<node, double> > choices2;
+	G.forEdgesOf(5474, [&](node t, node z, edgeweight w){
+		INFO("considered edge (2): ", t, z, w);
+		if (Aux::NumericTools::logically_equal(bfs.distance(t), bfs.distance(z) + w)) {
+			// workaround for integer overflow in large graphs
+			bigfloat tmp = bfs.getNumberOfPaths(z) / bfs.getNumberOfPaths(t);
+			double weight;
+			tmp.ToDouble(weight);
+			choices2.emplace_back(z, weight);
+		}
+	});
+
+	INFO(choices1);
+	INFO(choices2);*/
 }
 
 
