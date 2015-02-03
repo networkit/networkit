@@ -1,3 +1,8 @@
+""" This module deals with the conversion of graphs into matrices and linear algebra operations on graphs """
+
+
+__author__ = "Christian Staudt"
+
 # local imports
 
 # external imports
