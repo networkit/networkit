@@ -61,6 +61,17 @@ def centralization(G, centralityMeasure):
 	return diff1 / diff2
 
 
+def rankDifference(rx, ry):
+	"""
+	Parameters
+	----------
+	rx : ranking: ordered list of tuples (node, score)
+
+	ry:
+
+	"""
+
+
 class SpectralCentrality:
 	"""
 	Abstract class to compute the spectral centrality of a graph. This class needs to be supplied with methods
