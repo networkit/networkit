@@ -173,10 +173,10 @@ class CustomCythonBuildExtCmd(CythonBuildExtCmd):
 class MyTestCommand(TestCommand):
 	def initialize_options(self):
 		TestCommand.initialize_options(self)
-	
+
 	def finalize_options(self):
 		TestCommand.finalize_options(self)
-	
+
 	def run(self):
 		if options.cpptests:
 			optimize = "Dbg"
@@ -195,7 +195,7 @@ class MyTestCommand(TestCommand):
 class CustomInstallCmd(InstallCmd):
 	def initialize_options(self):
 		InstallCmd.initialize_options(self)
-	
+
 	def finalize_options(self):
 		InstallCmd.finalize_options(self)
 
@@ -263,7 +263,7 @@ setup(
 	keywords		= version.keywords,
 	platforms		= version.platforms,
 	classifiers		= version.classifiers,
-	cmdclass		= {'build_ext' : build_ext_cmd, 'test' : MyTestCommand, 'install' : CustomInstallCmd}, #'clean' : CustomCleanCmd, 
+	cmdclass		= {'build_ext' : build_ext_cmd, 'test' : MyTestCommand, 'install' : CustomInstallCmd}, #'clean' : CustomCleanCmd,
 	test_suite		= 'nose.collector',
 	ext_modules		= modules,
 	zip_safe		= False)
