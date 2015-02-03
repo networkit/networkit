@@ -3,6 +3,7 @@ to the network """
 
 
 __author__ = "Christian Staudt"
+__credits__ = ["Christian Staudt", "Elisabetta Bergamini", "Henning Meyerhenke"]
 
 # extension imports
 from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2, DynBetweenness, DynApproxBetweenness
@@ -59,6 +60,57 @@ def centralization(G, centralityMeasure):
 	diff1 = sum([(centerScore - c) for (u, c) in ranking])
 	diff2 = sum([(maxScore - c) for (u, c) in ranking])
 	return diff1 / diff2
+
+
+def rankPerNode(ranking):
+	"""
+	Parameters
+	----------
+ 	ranking: ordered list of tuples (node, score)
+
+	Returns
+	_______
+	for each node (sorted by node ID), the ranking of the node
+
+	"""
+    n_nodes = len(ranking)
+    ranking_id = [0]*n_nodes
+    for index, pair in enumerate(ranking):
+        ranking_id[pair[0]] = index
+    #we assign to all nodes the ranking of the first node with the same score
+    for index, pair in enumerate(ranking):
+            if index == 0:
+                continue
+            if pair[1] == ranking[index-1][1]:
+                prev_node = ranking[index-1][0]
+                ranking_id[pair[0]] = ranking_id[prev_node]
+    return ranking_id
+
+
+def relativeRankError(rx, ry):
+	"""
+	Parameters
+	----------
+	rx : list
+		ranking - ordered list of tuples (node, score)
+
+	ry:  list
+		ranking - ordered list of tuples (node, score)
+
+	Returns
+	_______
+	list of rank errors ordered by node ID
+
+	"""
+	diff = []
+	n = len(rx)
+	if not(n == len(ry)):
+		return diff
+	rnode_x = rankPerNode(rx)
+	rnode_y = rankPerNode(ry)
+	for i in range(n):
+		diff.append((rnode_x[i]+1)/(rnode_y[i]+1))
+	return diff
 
 
 class SpectralCentrality:

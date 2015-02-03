@@ -49,6 +49,9 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 
 
 std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworKit::Graph &G, double error, std::pair< NetworKit::node, NetworKit::node > *proof) {
+	if (G.isDirected()) {
+		throw std::runtime_error("Error, the diameter of directed graphs cannot be computed yet.");
+	}
 	/*
 	 * This is an implementation of the iFub-algorithm by
 	 * Pilu Crescenzi, Roberto Grossi, Michel Habib, Leonardo Lanzi, Andrea Marino:

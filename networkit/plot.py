@@ -52,3 +52,18 @@ def clusteringPerDegree(G, **kwargs):
 	data = pandas.DataFrame({"deg": degs, "cc" : cc})
 	data = data.groupby("deg", as_index=False).mean()
 	jointplot = seaborn.jointplot("deg", "cc", data, kind="reg", ylim=(0, 1), **kwargs)
+
+
+def hopPlot(G):
+	""" Prints the hop-plot"""
+	#hop-plot
+	if properties.numberOfComponents(G) == 1:
+		hopPlot = properties.EffectiveDiameter.hopPlot(G, maxDistance=0, k=64, r=7)
+	else:
+		hopPlot = {}
+	plt.title(G.getName())
+	plt.xlabel('distance')
+	plt.ylabel('fraction of connected nodes')
+	plt.ylim([0,1.02])
+	plt.plot(list(hopPlot.keys()), list(hopPlot.values()), 'r')
+	plt.show()
