@@ -29,12 +29,20 @@ def adjacencyMatrix(G):
 	:py:class:`scipy.sparse.csr_matrix`
 		The adjacency matrix of the graph.
 	"""
+    if G.isDirected():
+        raise NotImplementedError("TODO: implement for directed graphs")
 	n = G.numberOfNodes()
 	A = scipy.sparse.lil_matrix((n,n))
-	for (u, v) in G.edges():
-		A[u, v] = G.weight(u, v)
-		A[v, u] = G.weight(v, u)
-	A = A.tocsr()
+    # TODO: replace .edges() with efficient iterations
+    if G.isWeighted():
+    	for (u, v) in G.edges():
+    		A[u, v] = G.weight(u, v)
+    		A[v, u] = G.weight(v, u)
+    else:
+        for (u, v) in G.edges():
+            A[u, v] = 1
+            A[v, u] = 1
+	A = A.tocsr()  # convert to CSR for more efficient arithmetic operations
 	return A
 
 def laplacianMatrix(G):
