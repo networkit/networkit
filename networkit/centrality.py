@@ -87,13 +87,15 @@ def rankPerNode(ranking):
     return ranking_id
 
 
-def rankDifference(rx, ry):
+def relativeRankError(rx, ry):
 	"""
 	Parameters
 	----------
-	rx : ranking: ordered list of tuples (node, score)
+	rx : list
+		ranking - ordered list of tuples (node, score)
 
-	ry:  ranking: ordered list of tuples (node, score)
+	ry:  list
+		ranking - ordered list of tuples (node, score)
 
 	Returns
 	_______
