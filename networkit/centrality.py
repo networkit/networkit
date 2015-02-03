@@ -73,18 +73,18 @@ def rankPerNode(ranking):
 	for each node (sorted by node ID), the ranking of the node
 
 	"""
-    n_nodes = len(ranking)
-    ranking_id = [0]*n_nodes
-    for index, pair in enumerate(ranking):
-        ranking_id[pair[0]] = index
-    #we assign to all nodes the ranking of the first node with the same score
-    for index, pair in enumerate(ranking):
-            if index == 0:
-                continue
-            if pair[1] == ranking[index-1][1]:
-                prev_node = ranking[index-1][0]
-                ranking_id[pair[0]] = ranking_id[prev_node]
-    return ranking_id
+	n_nodes = len(ranking)
+	ranking_id = [0]*n_nodes
+	for index, pair in enumerate(ranking):
+		ranking_id[pair[0]] = index
+	#we assign to all nodes the ranking of the first node with the same score
+	for index, pair in enumerate(ranking):
+			if index == 0:
+				continue
+			if pair[1] == ranking[index-1][1]:
+				prev_node = ranking[index-1][0]
+				ranking_id[pair[0]] = ranking_id[prev_node]
+	return ranking_id
 
 
 def relativeRankError(rx, ry):
@@ -125,7 +125,7 @@ class SpectralCentrality:
 		Parameters
 		----------
 		G : graph
-		    The graph of which to compute the centrality
+			The graph of which to compute the centrality
 		normalized : boolean
 					 Whether to normalize the results or not
 
