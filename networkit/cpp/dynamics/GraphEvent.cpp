@@ -32,6 +32,16 @@ std::string GraphEvent::toString() {
 	return ss.str();
 }
 
+bool GraphEvent::compare(GraphEvent a, GraphEvent b) {
+	if (a.type < b.type || (a.type == b.type && a.u < b.u) || (a.type == b.type && a.u == b.u && a.v < b.v) || (a.type == b.type && a.u == b.u && a.v == b.v && a.w < b.w)) return true;
+	else return false;
+}
+
+bool GraphEvent::equal(GraphEvent a, GraphEvent b) {
+	if (a.type == GraphEvent::TIME_STEP && b.type == GraphEvent::TIME_STEP) return true;
+	return (a.type == b.type && a.u == b.u && a.v == b.v && a.w == b.w);
+}
+
 
 } /* namespace NetworKit */
 

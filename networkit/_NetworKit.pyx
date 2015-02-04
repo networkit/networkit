@@ -1520,6 +1520,61 @@ cdef class ConfigurationModelGenerator:
 		return Graph().setThis(self._this.generate())
 
 
+cdef extern from "cpp/generators/HyperbolicGenerator.h":
+	cdef cppclass _HyperbolicGenerator "NetworKit::HyperbolicGenerator":
+		# TODO: revert to count when cython issue fixed
+		_HyperbolicGenerator(unsigned int nodes,  double distanceFactor, double alpha, double stretch) except +
+		void setLeafCapacity(unsigned int capacity) except +
+		void setTheoreticalSplit(bool split) except +
+		void setBalance(double balance) except +
+		vector[double] getElapsedMilliseconds() except +
+		_Graph generate() except +
+
+cdef class HyperbolicGenerator:
+	""" The Hyperbolic Generator can be described as a unit-disk model in hyperbolic space. The resulting graphs have a power-law degree distribution, small diameter and high clustering coefficient.
+
+ 		HyperbolicGenerator(n, distanceFactor=1, alpha=1, stretchradius=1)
+
+ 		Parameters
+		----------
+		n : integer
+			number of nodes
+		distanceFactor : double
+			scale distance threshold. The number of edges grows exponentially with a higher threshold
+		alpha : double
+			dispersion parameter governing whether points are moved to the boundary or the center. The power-law exponent of the degree distribution is 2*alpha+1.
+		stretchradius : double
+			parameter governing stretch of nodes. The number of edges decreases exponentially with a higher stretch
+			
+	"""
+
+	cdef _HyperbolicGenerator* _this
+
+	def __cinit__(self,  n, distanceFactor=1, alpha=1, stretchradius=1):		
+		self._this = new _HyperbolicGenerator(n, distanceFactor, alpha, stretchradius)
+
+	def setLeafCapacity(self, capacity):
+		self._this.setLeafCapacity(capacity)
+
+	def setBalance(self, balance):
+		self._this.setBalance(balance)
+
+	def setTheoreticalSplit(self, theoreticalSplit):
+		self._this.setTheoreticalSplit(theoreticalSplit)
+
+	def getElapsedMilliseconds(self):
+		return self._this.getElapsedMilliseconds()
+
+	def generate(self):
+		""" Generates graph from hyperbolic geometry
+
+		Returns
+		-------
+		Graph
+		
+		"""
+		return Graph(0).setThis(self._this.generate())
+
 cdef extern from "cpp/generators/RmatGenerator.h":
 	cdef cppclass _RmatGenerator "NetworKit::RmatGenerator":
 		_RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d) except +
@@ -2988,6 +3043,16 @@ cdef class PLP(CommunityDetector):
 
 	def run(self):
 		""" Run the label propagation clustering algorithm.
+
+		Parameters
+		----------
+		G : Graph
+			input graph
+
+	 	Returns
+	 	-------
+	 	Partition
+	 		The created clustering.
 		"""
 		self._this.run()
 		return self
@@ -3287,6 +3352,10 @@ cdef class CutClustering(CommunityDetector):
 		Warning: due to numerical errors the resulting clusters might not be correct.
 		This implementation uses the Edmonds-Karp algorithm for the cut calculation.
 
+		Returns
+		-------
+		Partition
+			A partition containing the found communities.
 		"""
 		self._this.run()
 		return self
@@ -5198,7 +5267,61 @@ cdef class DynamicPubWebGenerator:
 	def getGraph(self):
 		return Graph().setThis(self._this.getGraph())
 
+cdef extern from "cpp/generators/DynamicHyperbolicGenerator.h":
+	cdef cppclass _DynamicHyperbolicGenerator "NetworKit::DynamicHyperbolicGenerator":
+		_DynamicHyperbolicGenerator(count numNodes, double initialFactor,
+			double alpha, double stretch, double moveEachStep, double factorGrowth, double moveDistance) except +
+		vector[_GraphEvent] generate(count nSteps) except +
+		_Graph getGraph() except +
+		vector[Point[float]] getCoordinates() except +
+		vector[Point[float]] getHyperbolicCoordinates() except +
 
+
+cdef class DynamicHyperbolicGenerator:
+	cdef _DynamicHyperbolicGenerator* _this
+
+	def __cinit__(self, numNodes, initialFactor, alpha, stretch, moveFraction, factorGrowth, moveDistance):
+		""" Dynamic graph generator according to the hyperbolic unit disk model.
+
+		Parameters
+		----------
+		numNodes : count
+			number of nodes
+		initialFactor : double
+			initial value of thresholdFactor
+		alpha : double
+			point dispersion parameter, remaining fixed
+		stretch : double
+			multiplier for the hyperbolic disk, remaining fixed
+		moveFraction : double
+			fraction of nodes to be moved in each time step. The nodes are chosen randomly each step
+		factorGrowth : double
+			increment added to the value of thresholdFactor at each step
+		moveDistance: double
+			base value for the node movements
+		"""
+		self._this = new _DynamicHyperbolicGenerator(numNodes, initialFactor, alpha, stretch, moveFraction, factorGrowth, moveDistance)
+
+	def generate(self, nSteps):
+		""" Generate event stream.
+
+		Parameters
+		----------
+		nSteps : count
+			Number of time steps in the event stream.
+		"""
+		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
+
+	def getGraph(self):
+		return Graph().setThis(self._this.getGraph())
+
+	def getCoordinates(self):
+		""" Get coordinates in the Poincare disk"""
+		return [(p[0], p[1]) for p in self._this.getCoordinates()]
+
+	def getHyperbolicCoordinates(self):
+		""" Get coordinates in the hyperbolic disk"""
+		return [(p[0], p[1]) for p in self._this.getHyperbolicCoordinates()]
 
 
 
