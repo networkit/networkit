@@ -4002,6 +4002,7 @@ cdef extern from "cpp/properties/Diameter.h" namespace "NetworKit::Diameter":
 	pair[count, count] estimatedDiameterRange(_Graph G, double error, pair[node,node] *proof) except +
 	count exactDiameter(_Graph G) except +
 	edgeweight estimatedVertexDiameter(_Graph G, count) except +
+	edgeweight estimatedVertexDiameterPedantic(_Graph G) except +
 
 cdef class Diameter:
 	"""
@@ -4070,7 +4071,10 @@ cdef class Diameter:
 		edgeweight
 			A 2-approximation of the vertex diameter (unweighted diameter) of `G`.
 		"""
-		return estimatedVertexDiameter(G._this, samples)
+		if samples == 0:
+			return estimatedVertexDiameterPedantic(G._this)
+		else:
+			return estimatedVertexDiameter(G._this, samples)
 
 cdef extern from "cpp/properties/Eccentricity.h" namespace "NetworKit::Eccentricity":
 	pair[node, count] getValue(_Graph G, node v) except +
