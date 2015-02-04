@@ -1,12 +1,11 @@
 from scipy.spatial import distance
-from scipy.stats import kendalltau
 from networkit import *
-from scipy import stats # for KS statistic
+from scipy import stats
 import numpy as np
 import math
 
-#This file holds the definitions of all backbone properties, including
-#how to calculate the property's characteristic values.
+# For comparison of sparsification methods, we want to calculate distance measures between (sparsified) graphs
+# and properties of these graphs. Calculation methods are defined here.
 
 #Base class
 class P_Example:
@@ -31,70 +30,6 @@ class P_General:
 
 	def getTypes(self):
 		return {'graph':'text', 'algorithm':'text', 'parameter':'text', 'evalExpr':'text', 'rt_attribute':'real', 'rt_backbone':'real', 'targetEdgeRatio':'real'}
-
-#Centrality
-class P_Centrality_DEPRECATED:
-	def getName(self):
-		return "Centrality"
-
-	def getHubsFromRanking(self, ranking, count):
-		ranking.sort(key=lambda x: (x[1] if not math.isnan(x[1]) else 0), reverse=True) #Sort by centrality score
-		ranking = ranking[:count]
-		return list(map(lambda x: x[0], ranking))
-
-	def getBetweennessHubs(self, graph, count):
-		#Empty graphs result in crash of approxbetweenness. #TODO incestigate
-		if graph.numberOfNodes() == 0:
-			return [-1] * count
-
-		print("ApproxBetweenness...")
-		bc = centrality.ApproxBetweenness(graph, epsilon=0.05, delta=0.05, diameterSamples=0)
-		#bc = centrality.Betweenness(graph)
-		bc.run()
-		return self.getHubsFromRanking(bc.ranking(), count)
-
-	def getPageRankHubs(self, graph, count):
-		print("PageRank...")
-		bc = centrality.PageRank(graph, damp=0.95)
-		bc.run()
-		return self.getHubsFromRanking(bc.ranking(), count)
-
-	def getJaccard(self, list1, list2):
-		return len(set(list1) & set(list2)) / len(set(list1) | set(list2))
-
-	def getValues(self, graph, sparsifiedGraph):
-		#lcGraph = workflows.extractLargestComponent(graph)
-		#lcSparsifiedGraph = workflows.extractLargestComponent(sparsifiedGraph)
-
-		#PageRank
-		hubCountPageRank = math.ceil(graph.numberOfNodes() * 0.01)
-		prHubsG = self.getPageRankHubs(graph, hubCountPageRank)
-		prHubsB = self.getPageRankHubs(sparsifiedGraph, hubCountPageRank)
-		centralityPageRank = self.getJaccard(prHubsG, prHubsB)
-
-		#Betweenness
-		hubCountBetweenness = math.ceil(graph.numberOfNodes() * 0.001)
-		bHubsG = self.getBetweennessHubs(graph, hubCountBetweenness)
-		bHubsB = self.getBetweennessHubs(sparsifiedGraph, hubCountBetweenness)
-		centralityBetweenness = self.getJaccard(bHubsG, bHubsB)
-
-		return {'centralityPageRank':centralityPageRank, 'centralityBetweenness':centralityBetweenness}
-
-	def getTypes(self):
-		return {'centralityPageRank':'real', 'centralityBetweenness':'real'}
-
-#Connected components
-class P_Components:
-	def getName(self):
-		return "Connected Components"
-
-	def getValues(self, graph, sparsifiedGraph):
-		nComponents, componentSizes = properties.components(sparsifiedGraph)
-
-		return {'largestComponentSize':max(componentSizes.values()), 'numComponents':nComponents}
-
-	def getTypes(self):
-		return {'largestComponentSize':'integer', 'numComponents':'integer'}
 
 #Node and edge ratios
 class P_Ratios:
@@ -188,7 +123,7 @@ class P_DegreeDistribution:
 		powerLawFit = properties.degreePowerLaw(sparsifiedGraph, dd_sparsified)[1]
 
 		#Spearmans rho
-		spearman_rho, spearman_p = scipy.stats.spearmanr(ds_original, ds_sparsified)
+		spearman_rho, spearman_p = stats.spearmanr(ds_original, ds_sparsified)
 
 		#Relative rank error
 		ranking_original = [(n, ds_original[n]) for n in graph.nodes()]
@@ -254,7 +189,7 @@ class P_ClusteringCoefficients:
 
 		# ------------------------ local clustering coefficients per node ------------------------------
 		#spearmans rho
-		perNode_spearman_rho, perNode_spearman_p = scipy.stats.spearmanr(localCC_original, localCC_sparsified)
+		perNode_spearman_rho, perNode_spearman_p = stats.spearmanr(localCC_original, localCC_sparsified)
 
 		#Relative rank error
 		ranking_original = [(n, localCC_original[n]) for n in graph.nodes()]
@@ -292,19 +227,17 @@ class P_ConnectedComponents:
 	def getValues(self, graph, sparsifiedGraph):
 		wccs_original = properties.ConnectedComponents(graph)
 		wccs_original.run()
-		componentSizes_original = getComponentSizes(wccs_original)
+		componentSizes_original = self.getComponentSizes(wccs_original)
 
 		wccs_sparsified = properties.ConnectedComponents(sparsifiedGraph)
 		wccs_sparsified.run()
-		componentSizes_sparsified = getComponentSizes(wccs_sparsified)
+		componentSizes_sparsified = self.getComponentSizes(wccs_sparsified)
 
 		#Number of weakly connected components
 		wccCount = wccs_sparsified.numberOfComponents()
 
 		#KS D-Statistics
-		wccSizes_original = self.getWCCSizes(graph)
-		sampleSparsifiedGraph = self.getWCCSizes(sparsifiedGraph)
-		ks_wccSizes, p_wccSizes = stats.ks_2samp(sampleGraph, sampleSparsifiedGraph)
+		ks_wccSizes, p_wccSizes = stats.ks_2samp(componentSizes_original, componentSizes_sparsified)
 
 		#NMI (difference between partitions)
 		nmi = community.NMIDistance().getDissimilarity(graph, wccs_original.getPartition(), wccs_sparsified.getPartition())
@@ -325,12 +258,12 @@ class P_PageRank:
 		return bc.ranking()
 
 	def getValues(self, graph, sparsifiedGraph):
-		ranking_original = getRanking(graph)
-		ranking_sparsified = getRanking(sparsifiedGraph)
+		ranking_original = self.getRanking(graph)
+		ranking_sparsified = self.getRanking(sparsifiedGraph)
 
 		scores_original = [r[1] for r in ranking_original]
 		scores_sparsified = [r[1] for r in ranking_sparsified]
-		spearman_rho, spearman_p = scipy.stats.spearmanr(scores_original, scores_sparsified)
+		spearman_rho, spearman_p = stats.spearmanr(scores_original, scores_sparsified)
 
 		#Relative rank error
 		relRankError = centrality.relativeRankError(ranking_original, ranking_sparsified)
@@ -341,3 +274,69 @@ class P_PageRank:
 	def getTypes(self):
 		return {'pagerank_spearman_rho':'real', 'pagerank_spearman_p':'real',
 			'pagerank_relRankError':'real'}
+
+
+# The following is not being used anymore
+#Centrality
+class P_Centrality_DEPRECATED:
+	def getName(self):
+		return "Centrality"
+
+	def getHubsFromRanking(self, ranking, count):
+		ranking.sort(key=lambda x: (x[1] if not math.isnan(x[1]) else 0), reverse=True) #Sort by centrality score
+		ranking = ranking[:count]
+		return list(map(lambda x: x[0], ranking))
+
+	def getBetweennessHubs(self, graph, count):
+		#Empty graphs result in crash of approxbetweenness. #TODO incestigate
+		if graph.numberOfNodes() == 0:
+			return [-1] * count
+
+		print("ApproxBetweenness...")
+		bc = centrality.ApproxBetweenness(graph, epsilon=0.05, delta=0.05, diameterSamples=0)
+		#bc = centrality.Betweenness(graph)
+		bc.run()
+		return self.getHubsFromRanking(bc.ranking(), count)
+
+	def getPageRankHubs(self, graph, count):
+		print("PageRank...")
+		bc = centrality.PageRank(graph, damp=0.95)
+		bc.run()
+		return self.getHubsFromRanking(bc.ranking(), count)
+
+	def getJaccard(self, list1, list2):
+		return len(set(list1) & set(list2)) / len(set(list1) | set(list2))
+
+	def getValues(self, graph, sparsifiedGraph):
+		#lcGraph = workflows.extractLargestComponent(graph)
+		#lcSparsifiedGraph = workflows.extractLargestComponent(sparsifiedGraph)
+
+		#PageRank
+		hubCountPageRank = math.ceil(graph.numberOfNodes() * 0.01)
+		prHubsG = self.getPageRankHubs(graph, hubCountPageRank)
+		prHubsB = self.getPageRankHubs(sparsifiedGraph, hubCountPageRank)
+		centralityPageRank = self.getJaccard(prHubsG, prHubsB)
+
+		#Betweenness
+		hubCountBetweenness = math.ceil(graph.numberOfNodes() * 0.001)
+		bHubsG = self.getBetweennessHubs(graph, hubCountBetweenness)
+		bHubsB = self.getBetweennessHubs(sparsifiedGraph, hubCountBetweenness)
+		centralityBetweenness = self.getJaccard(bHubsG, bHubsB)
+
+		return {'centralityPageRank':centralityPageRank, 'centralityBetweenness':centralityBetweenness}
+
+	def getTypes(self):
+		return {'centralityPageRank':'real', 'centralityBetweenness':'real'}
+
+#Connected components
+class P_Components_DEPRECATED:
+	def getName(self):
+		return "Connected Components"
+
+	def getValues(self, graph, sparsifiedGraph):
+		nComponents, componentSizes = properties.components(sparsifiedGraph)
+
+		return {'largestComponentSize':max(componentSizes.values()), 'numComponents':nComponents}
+
+	def getTypes(self):
+		return {'largestComponentSize':'integer', 'numComponents':'integer'}
