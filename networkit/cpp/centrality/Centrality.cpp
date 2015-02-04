@@ -10,7 +10,7 @@
 namespace NetworKit {
 
 
-Centrality::Centrality(const Graph& G, bool normalized) : G(G), normalized(normalized) {
+Centrality::Centrality(const Graph& G, bool normalized, bool computeEdgeCentrality) : G(G), normalized(normalized), computeEdgeCentrality(computeEdgeCentrality) {
 }
 
 double Centrality::score(node v) {
@@ -26,9 +26,12 @@ std::vector<std::pair<node, double> > Centrality::ranking() {
 	return ranking;
 }
 
-
 std::vector<double> Centrality::scores() {
 	return scoreData;
+}
+
+std::vector<double> Centrality::edgeScores() {
+	return edgeScoreData;
 }
 
 double Centrality::maximum() {
