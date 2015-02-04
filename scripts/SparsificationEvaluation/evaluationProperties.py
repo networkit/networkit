@@ -287,25 +287,35 @@ class P_ClusteringCoefficients:
 		'cc_relRankError':'real', 'cc_normalizedAbsDiff':'real', 'cc_ks_d':'real', 'cc_ks_p':'real',
 		'cc_perDegree_ks_d':'real', 'cc_perDegree_ks_p':'real' }
 
-#Various properties based on the Kolmogorow-Smirnow-Test
-class P_KolmogorowSmirnow:
+#Weakly Connected Components
+class P_ConnectedComponents:
 	def getName(self):
-		return "KolmogorowSmirnow"
+		return "Connected Components"
 
-	def getWCCSizes(self, inputGraph):
-		wccs = properties.ConnectedComponents(inputGraph)
-		wccs.run()
-		componentSizes = list(map(lambda tuple_ID_Size: tuple_ID_Size[1], list(wccs.getComponentSizes().items())))
-		#componentSizesDist = list(map(lambda s : len([c for c in componentSizesList if c == s]), range(0, max(componentSizesList) + 1)))
-		return componentSizes
+	def getComponentSizes(self, wcc):
+		return list(map(lambda tuple_ID_Size: tuple_ID_Size[1], list(wcc.getComponentSizes().items())))
 
 	def getValues(self, graph, sparsifiedGraph):
-		#Distribution of sizes of weakly connected components
-		sampleGraph = self.getWCCSizes(graph)
+		wccs_original = properties.ConnectedComponents(graph)
+		wccs_original.run()
+		componentSizes_original = getComponentSizes(wccs_original)
+
+		wccs_sparsified = properties.ConnectedComponents(sparsifiedGraph)
+		wccs_sparsified.run()
+		componentSizes_sparsified = getComponentSizes(wccs_sparsified)
+
+		#Number of weakly connected components
+		wccCount = wccs_sparsified.numberOfComponents()
+
+		#KS D-Statistics
+		wccSizes_original = self.getWCCSizes(graph)
 		sampleSparsifiedGraph = self.getWCCSizes(sparsifiedGraph)
 		ks_wccSizes, p_wccSizes = stats.ks_2samp(sampleGraph, sampleSparsifiedGraph)
 
-		return {'ks_wccSizes':ks_wccSizes, 'p_wccSizes':p_wccSizes}
+		#NMI (difference between partitions)
+		nmi = community.NMIDistance().getDissimilarity(graph, wccs_original.getPartition(), wccs_sparsified.getPartition())
+
+		return {'wcc_sizes_ks':ks_wccSizes, 'wcc_sizes_p':p_wccSizes, 'wcc_count':wccCount, 'wcc_nmi':nmi}
 
 	def getTypes(self):
-		return {'ks_wccSizes':'real', 'p_wccSizes':'real'}
+		return {'wcc_sizes_ks':'real', 'wcc_sizes_p':'real', 'wcc_count':'real', 'wcc_nmi':'real'}
