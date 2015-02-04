@@ -330,4 +330,37 @@ TEST_F(CentralityGTest, testApproxBetweenness2) {
 }
 
 
+TEST_F(CentralityGTest, testEdgeBetweennessCentrality) {
+ /* Graph:
+    0    3
+     \  / \
+      2    5
+     /  \ /
+    1    4
+ */
+	count n = 6;
+	Graph G(n);
+	G.addEdge(0, 2);
+	G.addEdge(1, 2);
+	G.addEdge(2, 3);
+	G.addEdge(2, 4);
+	G.addEdge(3, 5);
+	G.addEdge(4, 5);
+	G.indexEdges();
+
+	Betweenness centrality(G,false,true);
+	centrality.run();
+	std::vector<double> bc = centrality.edgeScores();
+
+	const double tol = 1e-3;
+	EXPECT_NEAR(10.0, bc[0], tol);
+	EXPECT_NEAR(10.0, bc[1], tol);
+	EXPECT_NEAR(10.0, bc[2], tol);
+	EXPECT_NEAR(10.0, bc[3], tol);
+	EXPECT_NEAR(6.0, bc[4], tol);
+	EXPECT_NEAR(6.0, bc[5], tol);
+}
+
+
+
 } /* namespace NetworKit */
