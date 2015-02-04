@@ -73,27 +73,17 @@ class P_Community:
 			_nmi = community.NMIDistance()
 			nmi = _nmi.getDissimilarity(graph, communitiesGraph, communitiesSparsifiedGraph)
 
-			#Clustering coefficients
-			_cc = properties.ClusteringCoefficient()
-			ccAvgLocal = _cc.avgLocal(sparsifiedGraph)
-			if sparsifiedGraph.numberOfNodes() < 300:
-				ccGlobal = _cc.exactGlobal(sparsifiedGraph)
-			else:
-				ccGlobal = _cc.approxGlobal(sparsifiedGraph, min(sparsifiedGraph.numberOfNodes(), 10000))
-
 			#Modularity
 			modularity = community.Modularity().getQuality(communitiesSparsifiedGraph, sparsifiedGraph)
 		else:
 			randMeasure = 0.0
 			nmi = 0.0
-			ccAvgLocal = 0.0
-			ccGlobal = 0.0
 			numCommunities = 0
 			minCommunitySize = 0
 			maxCommunitySize = 0
 			avgCommunitySize = 0
 			modularity = 0.0
-		return {'randMeasure':randMeasure, 'nmi':nmi, 'ccAvgLocal':ccAvgLocal, 'ccGlobal':ccGlobal,
+		return {'randMeasure':randMeasure, 'nmi':nmi,
 			'numCommunities':numCommunities, 'minCommunitySize':minCommunitySize,
 			'maxCommunitySize':maxCommunitySize, 'avgCommunitySize':avgCommunitySize,
 			'modularity':modularity}
@@ -229,19 +219,15 @@ class P_Components:
 	def getTypes(self):
 		return {'largestComponentSize':'integer', 'numComponents':'integer'}
 
-#Various properties based on the Kolmogorow-Smirnow-Test
-class P_KolmogorowSmirnow:
+class P_ClusteringCoefficients:
 	def getName(self):
-		return "KolmogorowSmirnow"
+		return "Clustering Coefficients"
 
-	def getWCCSizes(self, inputGraph):
-		wccs = properties.ConnectedComponents(inputGraph)
-		wccs.run()
-		componentSizes = list(map(lambda tuple_ID_Size: tuple_ID_Size[1], list(wccs.getComponentSizes().items())))
-		#componentSizesDist = list(map(lambda s : len([c for c in componentSizesList if c == s]), range(0, max(componentSizesList) + 1)))
-		return componentSizes
-
-	def getCCSamples(self, inputGraph):
+	def getCCSequences(self, inputGraph):
+		"""
+		Returns a 2-tuple containing the list of local clustering coefficients and the list
+		of average local clustering coefficients per degree.
+		"""
 		localCCs = properties.ClusteringCoefficient.exactLocal(inputGraph)
 		maxDegree = max([inputGraph.degree(n) for n in inputGraph.nodes()])
 
@@ -261,19 +247,65 @@ class P_KolmogorowSmirnow:
 		return localCCs, ccPerDegree
 
 	def getValues(self, graph, sparsifiedGraph):
+		#Precalculations
+		localCC_original, ccPerDegree_original = self.getCCSequences(graph)
+		localCC_sparsified, ccPerDegree_sparsified = self.getCCSequences(sparsifiedGraph)
 
-		#Distribution of clustering coefficients (per degree and not per degree)
-		localCCs_graph, ccPerDegree_graph = self.getCCSamples(graph)
-		localCCs_sparsifiedGraph, ccPerDegree_sparsifiedGraph = self.getCCSamples(sparsifiedGraph)
-		ks_cc_perDegree, p_cc_perDegree = stats.ks_2samp(ccPerDegree_graph, ccPerDegree_sparsifiedGraph)
-		ks_cc, p_cc = stats.ks_2samp(localCCs_graph, localCCs_sparsifiedGraph)
+		#single-value coefficients
+		ccAvgLocal = properties.ClusteringCoefficient().avgLocal(sparsifiedGraph)
+		if sparsifiedGraph.numberOfNodes() < 300:
+			ccGlobal = properties.ClusteringCoefficient().exactGlobal(sparsifiedGraph)
+		else:
+			ccGlobal = properties.ClusteringCoefficient().approxGlobal(sparsifiedGraph, min(sparsifiedGraph.numberOfNodes(), 10000))
 
+		# ------------------------ local clustering coefficients per node ------------------------------
+		#spearmans rho
+		perNode_spearman_rho, perNode_spearman_p = scipy.stats.spearmanr(localCC_original, localCC_sparsified)
+
+		#Relative rank error
+		ranking_original = [(n, localCC_original[n]) for n in graph.nodes()]
+		ranking_sparsified = [(n, localCC_sparsified[n]) for n in sparsifiedGraph.nodes()]
+		perNode_relRankError = centrality.relativeRankError(ranking_original, ranking_sparsified)
+
+		#Normalized absolute difference
+		perNode_normalizedAbsDiff = sum([abs(localCC_original[n] - localCC_sparsified[n]) for n in graph.nodes()]) / graph.numberOfNodes()
+
+		#KS D-Statistics
+		perNode_ks_d, perNode_ks_p = stats.ks_2samp(localCC_original, localCC_sparsified)
+
+		# ------------------------ local clustering coefficients per degree ------------------------------
+		#KS D-Statistics
+		perDegree_ks_d, perDegree_ks_p = stats.ks_2samp(ccPerDegree_original, ccPerDegree_sparsified)
+
+		return {'ccAvgLocal':ccAvgLocal, 'ccGlobal':ccGlobal, 'cc_spearman_rho':perNode_spearman_rho,
+			'cc_spearman_p':perNode_spearman_p, 'cc_relRankError':perNode_relRankError,
+			'cc_normalizedAbsDiff':perNode_normalizedAbsDiff, 'cc_ks_d':perNode_ks_d,
+			'cc_ks_p':perNode_ks_p, 'cc_perDegree_ks_d':perDegree_ks_d, 'cc_perDegree_ks_p':perDegree_ks_p }
+
+	def getTypes(self):
+		return {'ccAvgLocal':'real', 'ccGlobal':'real', 'cc_spearman_rho':'real', 'cc_spearman_p':'real',
+		'cc_relRankError':'real', 'cc_normalizedAbsDiff':'real', 'cc_ks_d':'real', 'cc_ks_p':'real',
+		'cc_perDegree_ks_d':'real', 'cc_perDegree_ks_p':'real' }
+
+#Various properties based on the Kolmogorow-Smirnow-Test
+class P_KolmogorowSmirnow:
+	def getName(self):
+		return "KolmogorowSmirnow"
+
+	def getWCCSizes(self, inputGraph):
+		wccs = properties.ConnectedComponents(inputGraph)
+		wccs.run()
+		componentSizes = list(map(lambda tuple_ID_Size: tuple_ID_Size[1], list(wccs.getComponentSizes().items())))
+		#componentSizesDist = list(map(lambda s : len([c for c in componentSizesList if c == s]), range(0, max(componentSizesList) + 1)))
+		return componentSizes
+
+	def getValues(self, graph, sparsifiedGraph):
 		#Distribution of sizes of weakly connected components
 		sampleGraph = self.getWCCSizes(graph)
 		sampleSparsifiedGraph = self.getWCCSizes(sparsifiedGraph)
 		ks_wccSizes, p_wccSizes = stats.ks_2samp(sampleGraph, sampleSparsifiedGraph)
 
-		return {'ks_dd':ks_dd, 'p_dd':p_dd, 'ks_cc':ks_cc, 'p_cc':p_cc, 'ks_cc_perDegree':ks_cc_perDegree, 'p_cc_perDegree':p_cc_perDegree, 'ks_wccSizes':ks_wccSizes, 'p_wccSizes':p_wccSizes}
+		return {'ks_wccSizes':ks_wccSizes, 'p_wccSizes':p_wccSizes}
 
 	def getTypes(self):
-		return {'ks_dd':'real', 'p_dd':'real', 'ks_cc':'real', 'p_cc':'real', 'ks_cc_perDegree':'real', 'p_cc_perDegree':'real', 'ks_wccSizes':'real', 'p_wccSizes':'real'}
+		return {'ks_wccSizes':'real', 'p_wccSizes':'real'}
