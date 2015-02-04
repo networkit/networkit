@@ -130,15 +130,40 @@ class P_DegreeDistribution:
 		return "Degree Distribution"
 
 	def getValues(self, graph, sparsifiedGraph):
-		dd = properties.degreeDistribution(sparsifiedGraph)
-		fit = properties.powerlaw.Fit(dd)
-		degreeDistCoefficient = fit.alpha
-		powerLawFit = properties.degreePowerLaw(sparsifiedGraph, dd)[1]
+		#Precalculations used below
+		dd_sparsified = properties.degreeDistribution(sparsifiedGraph)
+		ds_original = properties.degreeSequence(graph)
+		ds_sparsified = properties.degreeSequence(sparsifiedGraph)
 
-		return {'degreeDistCoefficient':degreeDistCoefficient, 'powerLawFit':powerLawFit}
+		#Coefficient of the sparsified graph
+		fit = properties.powerlaw.Fit(dd_sparsified)
+		degreeDistCoefficient = fit.alpha
+		powerLawFit = properties.degreePowerLaw(sparsifiedGraph, dd_sparsified)[1]
+
+		#Spearmans rho
+		spearman_rho, spearman_p = scipy.stats.spearmanr(ds_original, ds_sparsified)
+
+		#Relative rank error
+		ranking_original = [(n, ds_original[n]) for n in graph.nodes()]
+		ranking_sparsified = [(n, ds_sparsified[n]) for n in sparsifiedGraph.nodes()]
+		relRankError = centrality.relativeRankError(ranking_original, ranking_sparsified)
+
+		#Normalized absolute difference
+		normalizedAbsDiff = sum([abs(ds_original[n] - ds_sparsified[n]) for n in graph.nodes()]) / graph.numberOfNodes()
+
+		#KS D-Statistics
+		ks_d, ks_p = stats.ks_2samp(ds_original, ds_sparsified)
+
+		return {'dd_distCoefficient':degreeDistCoefficient, 'dd_powerLawFit':powerLawFit,
+			'dd_spearman_rho':spearman_rho, 'dd_spearman_p':spearman_p,
+			'dd_relRankError':relRankError, 'dd_normalizedAbsDiff':normalizedAbsDiff,
+			'dd_ks_d':ks_d, 'dd_ks_p':ks_p}
 
 	def getTypes(self):
-		return {'degreeDistCoefficient':'real', 'powerLawFit':'real'}
+		return {'dd_distCoefficient':'real', 'dd_powerLawFit':'real',
+			'dd_spearman_rho':'real', 'dd_spearman_p':'real',
+			'dd_relRankError':'real', 'dd_normalizedAbsDiff':'real',
+			'dd_ks_d':'real', 'dd_ks_p':'real'}
 
 #Centrality
 class P_Centrality:
@@ -236,10 +261,6 @@ class P_KolmogorowSmirnow:
 		return localCCs, ccPerDegree
 
 	def getValues(self, graph, sparsifiedGraph):
-		#Degree Distribution
-		sampleGraph = properties.degreeSequence(graph)
-		sampleSparsifiedGraph = properties.degreeSequence(sparsifiedGraph)
-		ks_dd, p_dd = stats.ks_2samp(sampleGraph, sampleSparsifiedGraph)
 
 		#Distribution of clustering coefficients (per degree and not per degree)
 		localCCs_graph, ccPerDegree_graph = self.getCCSamples(graph)
