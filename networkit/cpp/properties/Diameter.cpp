@@ -12,6 +12,7 @@
 #include "../graph/BFS.h"
 #include "../graph/Dijkstra.h"
 #include "../properties/ConnectedComponents.h"
+#include "../structures/Partition.h"
 #include "../graph/BFS.h"
 
 namespace NetworKit {
@@ -254,5 +255,31 @@ edgeweight Diameter::estimatedVertexDiameterPedantic(const Graph& G) {
 
 }
 
+edgeweight Diameter::estimatedVertexDiameterPedantic2(const Graph& G) {
+	std::vector<bool> visited(G.upperNodeIdBound(), false);
+	count vdUnweighted = 0;
+
+	// perform breadth-first searches
+	G.forNodes([&](node u) {
+		if (visited[u] == false) {
+			count maxDist = 0, maxDist2 = 0;
+			G.BFSfrom(u, [&](node v, count dist) {
+				visited[v] = true;
+				if (dist > maxDist) {
+					maxDist2 = maxDist;
+					maxDist = dist;
+				}
+				else if (dist > maxDist2) {
+					maxDist2 = dist;
+				}
+			});
+			if (maxDist + maxDist2 > vdUnweighted) {
+				vdUnweighted = maxDist + maxDist2;
+			}
+			assert (visited[u] == true);
+		}
+	});
+	return vdUnweighted + 1;
+}
 
 } /* namespace NetworKit */

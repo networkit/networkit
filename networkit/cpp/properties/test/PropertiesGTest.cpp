@@ -464,6 +464,14 @@ TEST_F(PropertiesGTest, testPedanticDiameterErdos) {
 	ASSERT_LE(diameter, n);
 }
 
+TEST_F(PropertiesGTest, testComparePedanticDiameter) {
+	count n = 5000;
+	ErdosRenyiGenerator gen(n,0.001);
+	Graph G1 = gen.generate();
+	count diameter = Diameter::estimatedVertexDiameterPedantic(G1);
+	count diameter2 = Diameter::estimatedVertexDiameterPedantic2(G1);
+	INFO("diameter 1: ", diameter, "   diameter 2: ", diameter2);
+}
 
 
 TEST_F(PropertiesGTest, testDegreeAssortativity) {
