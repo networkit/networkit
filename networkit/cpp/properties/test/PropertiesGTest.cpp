@@ -464,8 +464,6 @@ TEST_F(PropertiesGTest, testPedanticDiameterErdos) {
 	ASSERT_LE(diameter, n);
 }
 
-
-
 TEST_F(PropertiesGTest, testDegreeAssortativity) {
 	METISGraphReader reader;
 	double tol = 1e-6;
