@@ -98,6 +98,8 @@ void DynApproxBetweenness::run() {
 
                     });
                 }
+                INFO("Node considered: ", t);
+                INFO("Source considered: ", u[i]);
                 assert (choices.size() > 0);
                 node z = Aux::Random::weightedChoice(choices);
                 assert (z <= G.upperNodeIdBound());

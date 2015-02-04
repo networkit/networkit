@@ -114,7 +114,6 @@ class GephiStreamingClient:
                         edgeId = str(ev.u) + '->' + str(ev.v)
                     else:
                         edgeId = str(min(ev.u,ev.v)) + '-' + str(max(ev.u,ev.v))
-                    edgeId = str(min(ev.u,ev.v)) + '-' + str(max(ev.u,ev.v))
                     self._pygephi.delete_edge(edgeId)
                 elif ev.type == ev.EDGE_WEIGHT_UPDATE:
                     print("Edge weights not yet supported in gephi streaming!")
@@ -169,8 +168,8 @@ class GephiStreamingClient:
         - attribute_name: name of the edge attribute in gephi
         """
         try:
-            if len(values) != graph.numberOfEdges():
-                print("Warning: #Nodes (", graph.numberOfEdges(), ") does not match #Values (", len(values), ").")
+            if len(values) != graph.upperEdgeIdBound():
+                print("Warning: Upper edge id bound (", graph.upperEdgeIdBound(), ") does not match #Values (", len(values), ").")
 
             idx = 0
             for edge in graph.edges():
