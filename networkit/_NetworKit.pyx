@@ -4280,15 +4280,16 @@ cdef class EffectiveDiameter:
 
 cdef extern from "cpp/centrality/Betweenness.h":
 	cdef cppclass _Betweenness "NetworKit::Betweenness":
-		_Betweenness(_Graph, bool) except +
+		_Betweenness(_Graph, bool, bool) except +
 		void run() except +
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
+		vector[double] edgeScores() except +
 
 cdef class Betweenness:
 	"""
-		Betweenness(G, normalized=False)
+		Betweenness(G, normalized=False, computeEdgeCentrality=False)
 
 		Constructs the Betweenness class for the given Graph `G`. If the betweenness scores should be normalized,
   		then set `normalized` to True.
@@ -4299,13 +4300,15 @@ cdef class Betweenness:
 	 		The graph.
 	 	normalized : bool, optional
 	 		Set this parameter to True if scores should be normalized in the interval [0,1].
+		computeEdgeCentrality: bool, optional
+			Set this to true if edge betweenness scores should be computed as well.
 	"""
 	cdef _Betweenness* _this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, normalized=False):
+	def __cinit__(self, Graph G, normalized=False, computeEdgeCentrality=False):
 		self._G = G
-		self._this = new _Betweenness(G._this, normalized)
+		self._this = new _Betweenness(G._this, normalized, computeEdgeCentrality)
 
 	# this is necessary so that the C++ object gets properly garbage collected
 	def __dealloc__(self):
@@ -4357,6 +4360,16 @@ cdef class Betweenness:
 			A vector of pairs.
 		"""
 		return self._this.ranking()
+
+	def edgeScores(self):
+		""" Get a vector containing the betweenness score for each edge in the graph.
+
+		Returns
+		-------
+		vector
+			The betweenness scores calculated by run().
+		"""
+		return self._this.edgeScores()
 
 
 cdef extern from "cpp/centrality/DynBetweenness.h":
