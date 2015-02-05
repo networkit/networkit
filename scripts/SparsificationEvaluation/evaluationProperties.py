@@ -13,7 +13,7 @@ class P_Example:
 		return "Example property calculator"
 
 	#Returns a dictionary containing key/value pairs that are calculated from the given graph and sparsified graph.
-	def getValues(self, graph, sparsifiedGraph):
+	def getValues(self, graph, sparsifiedGraph, cache):
 		return {'key':'value'}
 
 	#Returns a dictionary containing the types (integer or real) of the values
@@ -25,7 +25,7 @@ class P_General:
 	def getName(self):
 		return "General information"
 
-	def getValues(self, graph, sparsifiedGraph):
+	def getValues(self, graph, sparsifiedGraph, cache):
 		return {}
 
 	def getTypes(self):
@@ -36,7 +36,7 @@ class P_Ratios:
 	def getName(self):
 		return "Node and edge ratios"
 
-	def getValues(self, graph, sparsifiedGraph):
+	def getValues(self, graph, sparsifiedGraph, cache):
 		numNodes = sparsifiedGraph.numberOfNodes()
 		numEdges = sparsifiedGraph.numberOfEdges()
 		nodeRatio = (numNodes / graph.numberOfNodes())
@@ -51,11 +51,16 @@ class P_Community:
 	def getName(self):
 		return "Community structure"
 
-	def getValues(self, graph, sparsifiedGraph):
+	def getValues(self, graph, sparsifiedGraph, cache):
 		if sparsifiedGraph.numberOfEdges() > 0:
-			cAlgo = community.PLM(graph, refine=False, par='none')
-			communitiesGraph = community.detectCommunities(graph, algo=cAlgo)
-			communitiesSparsifiedGraph = community.detectCommunities(sparsifiedGraph, algo=cAlgo)
+			#caching (TODO: refactor..)
+			if not 'communities_original' in cache:
+				cAlgoG = community.PLM(graph, refine=False, par='none')
+				cache['communities_original'] = community.detectCommunities(graph, algo=cAlgoG) 
+			communitiesGraph = cache['communities_original']
+			
+			cAlgoS = community.PLM(sparsifiedGraph, refine=False, par='none')
+			communitiesSparsifiedGraph = community.detectCommunities(sparsifiedGraph, algo=cAlgoS)
 
 			#Number of communities
 			communitySizes = communitiesSparsifiedGraph.subsetSizes()
@@ -88,10 +93,9 @@ class P_Community:
 			'modularity':modularity}
 
 	def getTypes(self):
-		return {'randMeasure':'real', 'nmi':'real', 'ccAvgLocal':'real', 'ccGlobal':'real',
-			'numCommunities':'integer', 'minCommunitySize':'integer',
-			'maxCommunitySize':'integer', 'avgCommunitySize':'integer',
-			'modularity':'real'
+		return {'randMeasure':'real', 'nmi':'real', 'numCommunities':'integer', 
+			'minCommunitySize':'integer', 'maxCommunitySize':'integer',
+			'avgCommunitySize':'integer', 'modularity':'real'
 		}
 
 #Diameter
@@ -99,7 +103,7 @@ class P_Diameter:
 	def getName(self):
 		return "Diameter"
 
-	def getValues(self, graph, sparsifiedGraph):
+	def getValues(self, graph, sparsifiedGraph, cache):
 		diameter = properties.Diameter.estimatedDiameterRange(sparsifiedGraph, 0)[0]
 		return {'diameter':diameter}
 
@@ -111,10 +115,14 @@ class P_DegreeDistribution:
 	def getName(self):
 		return "Degree Distribution"
 
-	def getValues(self, graph, sparsifiedGraph):
+	def getValues(self, graph, sparsifiedGraph, cache):
+		#Caching
+		if not 'degreeSequence_original' in cache:
+			cache['degreeSequence_original'] = properties.degreeSequence(graph) 
+		
 		#Precalculations used below
 		dd_sparsified = properties.degreeDistribution(sparsifiedGraph)
-		ds_original = properties.degreeSequence(graph)
+		ds_original = cache['degreeSequence_original']
 		ds_sparsified = properties.degreeSequence(sparsifiedGraph)
 
 		#Coefficient of the sparsified graph
@@ -128,7 +136,7 @@ class P_DegreeDistribution:
 		#Relative rank error
 		ranking_original = [(n, ds_original[n]) for n in graph.nodes()]
 		ranking_sparsified = [(n, ds_sparsified[n]) for n in sparsifiedGraph.nodes()]
-		relRankError = numpy.average(centrality.relativeRankError(ranking_original, ranking_sparsified))
+		relRankError = np.average(centrality.relativeRankError(ranking_original, ranking_sparsified))
 
 		#Normalized absolute difference
 		normalizedAbsDiff = sum([abs(ds_original[n] - ds_sparsified[n]) for n in graph.nodes()]) / graph.numberOfNodes()
@@ -175,9 +183,16 @@ class P_ClusteringCoefficients:
 
 		return localCCs, ccPerDegree
 
-	def getValues(self, graph, sparsifiedGraph):
+	def getValues(self, graph, sparsifiedGraph, cache):
+		#Caching
+		if not 'ccSequence_original' in cache:
+			_cc, _ccD = self.getCCSequences(graph)
+			cache['ccSequence_original'] = _cc
+			cache['ccSequencePerDegree_original'] = _ccD
+		
 		#Precalculations
-		localCC_original, ccPerDegree_original = self.getCCSequences(graph)
+		localCC_original = cache['ccSequence_original']
+		ccPerDegree_original = cache['ccSequencePerDegree_original']
 		localCC_sparsified, ccPerDegree_sparsified = self.getCCSequences(sparsifiedGraph)
 
 		#single-value coefficients
@@ -194,7 +209,7 @@ class P_ClusteringCoefficients:
 		#Relative rank error
 		ranking_original = [(n, localCC_original[n]) for n in graph.nodes()]
 		ranking_sparsified = [(n, localCC_sparsified[n]) for n in sparsifiedGraph.nodes()]
-		perNode_relRankError = numpy.average(centrality.relativeRankError(ranking_original, ranking_sparsified))
+		perNode_relRankError = np.average(centrality.relativeRankError(ranking_original, ranking_sparsified))
 
 		#Normalized absolute difference
 		perNode_normalizedAbsDiff = sum([abs(localCC_original[n] - localCC_sparsified[n]) for n in graph.nodes()]) / graph.numberOfNodes()
@@ -224,9 +239,14 @@ class P_ConnectedComponents:
 	def getComponentSizes(self, wcc):
 		return list(map(lambda tuple_ID_Size: tuple_ID_Size[1], list(wcc.getComponentSizes().items())))
 
-	def getValues(self, graph, sparsifiedGraph):
-		wccs_original = properties.ConnectedComponents(graph)
-		wccs_original.run()
+	def getValues(self, graph, sparsifiedGraph, cache):
+		#Caching
+		if not 'wccs_original' in cache:
+			_wccs_original = properties.ConnectedComponents(graph)
+			_wccs_original.run()
+			cache['wccs_original'] = _wccs_original
+		
+		wccs_original = cache['wccs_original']
 		componentSizes_original = self.getComponentSizes(wccs_original)
 
 		wccs_sparsified = properties.ConnectedComponents(sparsifiedGraph)
@@ -257,8 +277,13 @@ class P_PageRank:
 		bc.run()
 		return bc.ranking()
 
-	def getValues(self, graph, sparsifiedGraph):
-		ranking_original = self.getRanking(graph)
+	def getValues(self, graph, sparsifiedGraph, cache):
+		#Caching
+		if not 'pagerank_ranking' in cache:
+			_ranking_original = self.getRanking(graph)
+			cache['pagerank_ranking'] = _ranking_original 
+			
+		ranking_original = cache['pagerank_ranking']
 		ranking_sparsified = self.getRanking(sparsifiedGraph)
 
 		scores_original = [r[1] for r in ranking_original]
@@ -266,7 +291,7 @@ class P_PageRank:
 		spearman_rho, spearman_p = stats.spearmanr(scores_original, scores_sparsified)
 
 		#Relative rank error
-		relRankError = numpy.average(centrality.relativeRankError(ranking_original, ranking_sparsified))
+		relRankError = np.average(centrality.relativeRankError(ranking_original, ranking_sparsified))
 
 		return {'pagerank_spearman_rho':spearman_rho, 'pagerank_spearman_p':spearman_p,
 			'pagerank_relRankError':relRankError}
@@ -307,7 +332,7 @@ class P_Centrality_DEPRECATED:
 	def getJaccard(self, list1, list2):
 		return len(set(list1) & set(list2)) / len(set(list1) | set(list2))
 
-	def getValues(self, graph, sparsifiedGraph):
+	def getValues(self, graph, sparsifiedGraph, cache):
 		#lcGraph = workflows.extractLargestComponent(graph)
 		#lcSparsifiedGraph = workflows.extractLargestComponent(sparsifiedGraph)
 
@@ -333,7 +358,7 @@ class P_Components_DEPRECATED:
 	def getName(self):
 		return "Connected Components"
 
-	def getValues(self, graph, sparsifiedGraph):
+	def getValues(self, graph, sparsifiedGraph, cache):
 		nComponents, componentSizes = properties.components(sparsifiedGraph)
 
 		return {'largestComponentSize':max(componentSizes.values()), 'numComponents':nComponents}
