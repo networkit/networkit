@@ -51,6 +51,7 @@ def executeTask(task, resultWriters, lock):
 		print("-------------------------------------------------------------------------------------------- ")
 		graph = readGraph(igraph.path, igraph.format, **igraph.kwargs)
 		graph.indexEdges()
+		cachePerGraph = {} 
 
 		for ialgorithm in task.algorithms:
 			#Calculate the attribute that is characteristic for that algorithm.
@@ -89,7 +90,7 @@ def executeTask(task, resultWriters, lock):
 					print('Calculating properties: ', igraph.name, ', ', ialgorithm.getShortName(),', ', algorithmParameter)
 					for iproperty in task.properties:
 						try:
-							d = iproperty.getValues(graph, backbone)
+							d = iproperty.getValues(graph, backbone, cachePerGraph)
 							propertiesDict = dict(list(propertiesDict.items()) + list(d.items()))
 						except:
 							print(traceback.format_exc())
