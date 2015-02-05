@@ -128,7 +128,7 @@ class P_DegreeDistribution:
 		#Relative rank error
 		ranking_original = [(n, ds_original[n]) for n in graph.nodes()]
 		ranking_sparsified = [(n, ds_sparsified[n]) for n in sparsifiedGraph.nodes()]
-		relRankError = centrality.relativeRankError(ranking_original, ranking_sparsified)
+		relRankError = numpy.average(centrality.relativeRankError(ranking_original, ranking_sparsified))
 
 		#Normalized absolute difference
 		normalizedAbsDiff = sum([abs(ds_original[n] - ds_sparsified[n]) for n in graph.nodes()]) / graph.numberOfNodes()
@@ -194,7 +194,7 @@ class P_ClusteringCoefficients:
 		#Relative rank error
 		ranking_original = [(n, localCC_original[n]) for n in graph.nodes()]
 		ranking_sparsified = [(n, localCC_sparsified[n]) for n in sparsifiedGraph.nodes()]
-		perNode_relRankError = centrality.relativeRankError(ranking_original, ranking_sparsified)
+		perNode_relRankError = numpy.average(centrality.relativeRankError(ranking_original, ranking_sparsified))
 
 		#Normalized absolute difference
 		perNode_normalizedAbsDiff = sum([abs(localCC_original[n] - localCC_sparsified[n]) for n in graph.nodes()]) / graph.numberOfNodes()
@@ -266,7 +266,7 @@ class P_PageRank:
 		spearman_rho, spearman_p = stats.spearmanr(scores_original, scores_sparsified)
 
 		#Relative rank error
-		relRankError = centrality.relativeRankError(ranking_original, ranking_sparsified)
+		relRankError = numpy.average(centrality.relativeRankError(ranking_original, ranking_sparsified))
 
 		return {'pagerank_spearman_rho':spearman_rho, 'pagerank_spearman_p':spearman_p,
 			'pagerank_relRankError':relRankError}
