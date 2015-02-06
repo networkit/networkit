@@ -19,6 +19,8 @@
 #include "../../io/SNAPGraphReader.h"
 #include "../../generators/ErdosRenyiGenerator.h"
 #include "../../auxiliary/Log.h"
+#include "../KPathCentrality.h"
+
 
 namespace NetworKit {
 
@@ -395,6 +397,13 @@ TEST_F(CentralityGTest, testClosenessCentrality) {
 }
 
 
+TEST_F(CentralityGTest, testKPathCentrality) {
+    METISGraphReader reader;
+    Graph G = reader.read("input/power.graph");
+
+    KPathCentrality centrality(G);
+    centrality.run();
+}
 
 
 } /* namespace NetworKit */
