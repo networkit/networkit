@@ -4385,6 +4385,82 @@ cdef extern from "cpp/centrality/DynBetweenness.h":
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
 
+cdef extern from "cpp/centrality/Closeness.h":
+	cdef cppclass _Closeness "NetworKit::Closeness":
+		_Closeness(_Graph, bool) except +
+		void run() except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class Closeness:
+	"""
+		Closeness(G, normalized=False)
+
+		Constructs the Closeness class for the given Graph `G`. If the Closeness scores should be normalized,
+  		then set `normalized` to True.
+
+	 	Parameters
+	 	----------
+	 	G : Graph
+	 		The graph.
+	 	normalized : bool, optional
+	 		Set this parameter to True if scores should be normalized in the interval [0,1]. Normalization only for unweighted networks.
+	"""
+	cdef _Closeness* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, normalized=False):
+		self._G = G
+		self._this = new _Closeness(G._this, normalized)
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		"""  Compute closeness scores parallel."""
+
+		self._this.run()
+		return self
+
+	def scores(self):
+		""" Get a vector containing the closeness score for each node in the graph.
+
+		Returns
+		-------
+		vector
+			The closeness scores calculated by run().
+		"""
+		return self._this.scores()
+
+	def score(self, v):
+		""" Get the closeness score of node `v` calculated by run().
+
+		Parameters
+		----------
+		v : node
+			A node.
+
+		Returns
+		-------
+		double
+			The closeness score of node `v.
+		"""
+		return self._this.score(v)
+
+	def ranking(self):
+		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
+		calculated by run().
+
+		Returns
+		-------
+		vector
+			A vector of pairs.
+		"""
+		return self._this.ranking()
+
+
 cdef class DynBetweenness:
 	"""
 		DynBetweenness(G, [storePredecessors])
