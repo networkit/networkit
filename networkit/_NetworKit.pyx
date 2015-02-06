@@ -4463,7 +4463,7 @@ cdef class Closeness:
 
 cdef extern from "cpp/centrality/KPathCentrality.h":
 	cdef cppclass _KPathCentrality "NetworKit::KPathCentrality":
-		_KPathCentrality(_Graph, bool) except +
+		_KPathCentrality(_Graph, double, count) except +
 		void run() except +
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
@@ -4487,9 +4487,9 @@ cdef class KPathCentrality:
 	cdef _KPathCentrality* _this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, normalized=False):
+	def __cinit__(self, Graph G, alpha=0.2, k=0):
 		self._G = G
-		self._this = new _KPathCentrality(G._this, normalized)
+		self._this = new _KPathCentrality(G._this, alpha, k)
 
 	# this is necessary so that the C++ object gets properly garbage collected
 	def __dealloc__(self):
