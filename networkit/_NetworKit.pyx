@@ -4461,6 +4461,82 @@ cdef class Closeness:
 		return self._this.ranking()
 
 
+cdef extern from "cpp/centrality/KPathCentrality.h":
+	cdef cppclass _KPathCentrality "NetworKit::KPathCentrality":
+		_KPathCentrality(_Graph, bool) except +
+		void run() except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class KPathCentrality:
+	"""
+		KPathCentrality(G, alpha=0.2, k=0)
+
+		Constructs the K-Path Centrality class for the given Graph `G`.
+
+	 	Parameters
+	 	----------
+	 	G : Graph
+	 		The graph.
+	 	alpha : double, in interval [-0.5, 0.5]
+			tradeoff between runtime and precision
+			-0.5: maximum precision, maximum runtime
+	 		 0.5: lowest precision, lowest runtime
+	"""
+	cdef _KPathCentrality* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, normalized=False):
+		self._G = G
+		self._this = new _KPathCentrality(G._this, normalized)
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		"""  Compute KPathCentrality scores."""
+		self._this.run()
+		return self
+
+	def scores(self):
+		""" Get a vector containing the KPathCentrality score for each node in the graph.
+
+		Returns
+		-------
+		vector
+			The KPathCentrality scores calculated by run().
+		"""
+		return self._this.scores()
+
+	def score(self, v):
+		""" Get the KPathCentrality score of node `v` calculated by run().
+
+		Parameters
+		----------
+		v : node
+			A node.
+
+		Returns
+		-------
+		double
+			The KPathCentrality score of node `v.
+		"""
+		return self._this.score(v)
+
+	def ranking(self):
+		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
+		calculated by run().
+
+		Returns
+		-------
+		vector
+			A vector of pairs.
+		"""
+		return self._this.ranking()
+
+
 cdef class DynBetweenness:
 	"""
 		DynBetweenness(G, [storePredecessors])
