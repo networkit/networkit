@@ -288,6 +288,43 @@ class SimmelianMultiscaleBackbone(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
+class DegreeMultiscaleBackbone(Sparsifier):
+	""" Multiscale Backbone that uses node degrees (mapped to edges) as input edge weight. """
+
+	def __init__(self, degsToAttrValue):
+		"""
+		Creates a new instance of the Degree Multiscale sparsifier.
+		Keyword arguments:
+		attrType -- For each edge (x,y) the following edge value will be used.
+			0: max(d(x), d(y))
+			1: min(d(x), d(y))
+			2: avg(d(x), d(y))
+		"""
+		self.degsToAttrValue = degsToAttrValue
+
+	def getAttribute(self, G):
+		""" Returns an edge attribute that holds for each edge the maximum parameter value
+		such that the edge is contained in the sparsified graph.
+
+		Keyword arguments:
+		G -- the input graph
+		"""
+
+		inputAttribute = [0] * G.upperEdgeIdBound()
+		for (x,y) in G.edges():
+			inputAttribute[G.edgeId(x,y)] = self.degsToAttrValue(G.degree(x), G.degree(y))
+
+		ms = MultiscaleAttributizer(G, inputAttribute)
+		a_ms = ms.getAttribute()
+		return a_ms
+
+	def _getSparsifiedGraph(self, G, parameter, attribute):
+		gf = GlobalThresholdFilter(G, attribute, parameter, True)
+		return gf.calculate()
+
+	def _getParameterizationAlgorithm(self):
+		return BinarySearchParameterization(False, 0.0, 1.0, 20)
+
 class LocalSimilarityBackbone(Sparsifier):
 
 	""" An implementation of the Local Similarity sparsification approach introduced by Satuluri et al. """
