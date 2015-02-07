@@ -57,6 +57,27 @@ class S_SimmelianMultiscale:
 
     def parameterizationType(self):
         return "Default"
+
+# -----------------------------------------------------------
+
+class S_DegreeMultiscale:
+
+    def __init__(self, degsToAttrValue, tag):
+        self.degsToAttrValue = degsToAttrValue
+        self.tag = tag
+
+    def getShortName(self):
+        return ("Degree Multiscale " + self.tag).strip()
+
+    def getAlgorithm(self):
+        return sparsification.DegreeMultiscaleBackbone(eval(self.degsToAttrValue))
+
+    def requiresWeight(self):
+        return False
+
+    def parameterizationType(self):
+        return "Default"
+
 # -----------------------------------------------------------
 
 class S_SimmelianBackboneParametric:
