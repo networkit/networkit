@@ -13,14 +13,14 @@ def getEdgeRatios():
 def getAlgorithms():
     return [
 	S_Original(),
-	#S_SimmelianBackboneNonParametric(),
+	S_SimmelianBackboneNonParametric(),
 	S_SimmelianBackboneParametric(10),
-    S_LocalSimilarity(),
-    S_SimmelianMultiscale(),
-    S_Multiscale(),
-    S_Random(""),
-    S_LocalDegree(),
-    S_ForestFire("", 0.7, 5),
+    	S_LocalSimilarity(),
+	S_SimmelianMultiscale(),
+	S_Multiscale(),
+	S__Random(""),
+	S_LocalDegree(),
+	S_ForestFire("", 0.7, 5),
 	S_DegreeMultiscale("lambda dx,dy: max(dx, dy)", "max"),
 	S_DegreeMultiscale("lambda dx,dy: min(dx, dy)", "min"),
 	S_DegreeMultiscale("lambda dx,dy: (dx + dy / 2.0)", "avg")
