@@ -18,7 +18,7 @@ namespace NetworKit {
 ApproxBetweenness2::ApproxBetweenness2(const Graph& G, count nSamples, bool normalized) : Centrality(G, normalized), nSamples(nSamples) {
 }
 
-void ApproxBetweenness2::run() {
+void ApproxBetweenness2::runImpl() {
 	scoreData = std::vector<double>(G.upperNodeIdBound(), 0.0);
 
 	//std::vector<node> sampledNodes = G.nodes();
@@ -30,6 +30,7 @@ void ApproxBetweenness2::run() {
 	}
 
 	for (node s : sampledNodes) {
+		assureRunning();
 		// run single-source shortest path algorithm
 		std::unique_ptr<SSSP> sssp;
 		if (G.isWeighted()) {
