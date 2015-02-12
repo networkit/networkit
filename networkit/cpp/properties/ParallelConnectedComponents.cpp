@@ -15,12 +15,12 @@
 
 namespace NetworKit {
 
-ParallelConnectedComponents::ParallelConnectedComponents(const Graph& G, bool coarsening) : G(G), coarsening(coarsening) {
+ParallelConnectedComponents::ParallelConnectedComponents(const Graph& G, bool coarsening) : Algorithm(), G(G), coarsening(coarsening) {
 
 }
 
 
-void ParallelConnectedComponents::run() {
+void ParallelConnectedComponents::runImpl() {
 	if (G.isDirected()) {
 		throw std::runtime_error("algorithm does not accept directed graphs");
 	}
@@ -50,6 +50,7 @@ void ParallelConnectedComponents::run() {
 	bool change = true;
 	// only 8 iterations when coarsening is on, otherwise till no more changes happened
 	while (change && (!coarsening || numIterations < 8)) {
+		assureRunning();
 //		TRACE("label propagation iteration");
 		activeNodes.swap(nextActiveNodes);
 		nextActiveNodes.assign(z, INACTIVE);
@@ -81,6 +82,7 @@ void ParallelConnectedComponents::run() {
 //		TRACE("num active: ", numActive);
 		++numIterations;
 	}
+	assureRunning();
 	if (coarsening && numIterations == 8) { // TODO: externalize constant
 		// coarsen and make recursive call
 		ParallelPartitionCoarsening con;
