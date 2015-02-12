@@ -28,7 +28,7 @@ public:
 	 */
 	DegreeCentrality(const Graph& G, bool normalized=false);
 
-	void run() override;
+	void runImpl() override;
 
 	/**
 	 * @return the theoretical maximum degree centrality, which is $n$ (including the possibility of a self-loop)

@@ -28,7 +28,7 @@ storePreds(storePredecessors) {
 }
 
 
-void DynBetweenness::run() {
+void DynBetweenness::runImpl() {
     count z = G.upperNodeIdBound();
     scoreData.clear();
     scoreData.resize(z);
@@ -57,7 +57,7 @@ void DynBetweenness::run() {
         }
 
         sssp->run();
-
+	assureRunning();
         G.forNodes([&](node t){
             distances[s][t] = sssp->distance(t);
             npaths[s][t] = sssp->numberOfPaths(t);

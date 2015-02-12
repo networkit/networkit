@@ -28,7 +28,7 @@ count DynApproxBetweenness::getNumberOfSamples() {
 }
 
 
-void DynApproxBetweenness::run() {
+void DynApproxBetweenness::runImpl() {
     scoreData.clear();
     scoreData.resize(G.upperNodeIdBound());
     u.clear();
@@ -50,6 +50,7 @@ void DynApproxBetweenness::run() {
     sampledPaths.resize(r);
 
     for (count i = 0; i < r; i++) {
+	assureRunning();
         DEBUG("sample ", i);
         // sample random node pair
         u[i] = Sampling::randomNode(G);
