@@ -11,11 +11,11 @@
 
 namespace NetworKit {
 
-CoreDecomposition::CoreDecomposition(const Graph& G) : G(G), maxCore(0), ran(false) {
+CoreDecomposition::CoreDecomposition(const Graph& G) : Algorithm(), G(G), maxCore(0), ran(false) {
 
 }
 
-void CoreDecomposition::run() {
+void CoreDecomposition::runImpl() {
 	/* Main data structure: buckets of nodes indexed by their remaining degree. */
 	typedef std::list<node> Bucket;
 	index z = G.upperNodeIdBound();
@@ -48,6 +48,7 @@ void CoreDecomposition::run() {
 	/* Main loop: Successively remove nodes in copy G2 of G. */
 	Graph G2 = G;
 	while (!G2.isEmpty()) {
+		assureRunning();
 		Bucket& cur_bucket = buckets[core];
 
 		/* Remove nodes with remaining degree <= core. */
