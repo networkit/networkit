@@ -11,13 +11,14 @@
 #include "../graph/Graph.h"
 #include "../graph/BFS.h"
 #include "../structures/Partition.h"
+#include "../base/Algorithm.h"
 
 namespace NetworKit {
 
 /**
  * Determines the connected components of an undirected graph.
  */
-class ParallelConnectedComponents {
+class ParallelConnectedComponents : public Algorithm {
 public:
 
 	ParallelConnectedComponents(const Graph& G, bool coarsening = true);
@@ -30,7 +31,7 @@ public:
 	/**
 	 * This method determines the connected components for the graph g.
 	 */
-	void run();
+	void runImpl();
 
 	/**
 	 * This method returns the number of connected components.
