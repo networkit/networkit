@@ -1839,14 +1839,14 @@ TEST_P(GraphGTest, testInForEdgesUndirected) {
 
 TEST_P(GraphGTest, testCompactEdges) {
 	Graph G = this->Ghouse;
+	G.indexEdges();
 
 	G.addEdge(0, 4);
 	G.addEdge(0, 3);
 	G.removeEdge(0, 3);
 	G.removeEdge(0, 4);
 
-	if (!G.isWeighted())
-		G.compactEdges();
+	G.compactEdges();
 
 	std::vector<std::pair<node, node> > outEdges;
 	outEdges.reserve(this->Ghouse.numberOfEdges());
