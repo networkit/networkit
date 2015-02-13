@@ -304,26 +304,58 @@ void Graph::shrinkToFit() {
 }
 
 void Graph::compactEdges() {
-	if (hasEdgeIds()) throw std::runtime_error("Not implemented for graphs with edge ids");
-	if (weighted) throw std::runtime_error("Not implemented for weighted graphs");
+	this->parallelForNodes([&](node u) {
+		if (degreeOut(u) != outEdges[u].size()) {
+			if (degreeOut(u) == 0) {
+				outEdges[u].clear();
+				if (weighted) outEdgeWeights[u].clear();
+				if (edgesIndexed) outEdgeIds[u].clear();
+			} else {
+				for (index i = 0; i < outEdges[u].size(); ++i) {
+					while (i < outEdges[u].size() && outEdges[u][i] == none) {
+						outEdges[u][i] = outEdges[u].back();
+						outEdges[u].pop_back();
 
-	auto doCompact = [&](std::vector<std::vector<node>> & edgeContainer) {
-		for (std::vector<node> &edges : edgeContainer) {
-			auto writeIt = edges.begin();
+						if (weighted) {
+							outEdgeWeights[u][i] = outEdgeWeights[u].back();
+							outEdgeWeights[u].pop_back();
+						}
 
-			for (auto readIt = edges.begin(); readIt != edges.end(); ++readIt) {
-				if (*readIt != none) {
-					*writeIt = *readIt;
-					++writeIt;
+						if (edgesIndexed) {
+							outEdgeIds[u][i] = outEdgeIds[u].back();
+							outEdgeIds[u].pop_back();
+						}
+					}
+				}
+			}
+		}
+
+		if (directed && degreeIn(u) != inEdges[u].size()) {
+			if (degreeIn(u) == 0) {
+				inEdges[u].clear();
+				if (weighted) inEdgeWeights[u].clear();
+			       if (edgesIndexed) inEdgeIds[u].clear();
+			} else {
+				for (index i = 0; i < inEdges[u].size(); ++i) {
+					while (i < inEdges[u].size() && inEdges[u][i] == none) {
+						inEdges[u][i] = inEdges[u].back();
+						inEdges[u].pop_back();
+
+						if (weighted) {
+							inEdgeWeights[u][i] = inEdgeWeights[u].back();
+							inEdgeWeights[u].pop_back();
+						}
+
+						if (edgesIndexed) {
+							inEdgeIds[u][i] = inEdgeIds[u].back();
+							inEdgeIds[u].pop_back();
+						}
+					}
 				}
 			}
 
-			edges.resize(std::distance(edges.begin(), writeIt));
 		}
-	};
-
-	doCompact(outEdges);
-	doCompact(inEdges);
+	});
 }
 
 std::string Graph::toString() const {
