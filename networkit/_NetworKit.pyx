@@ -2801,6 +2801,7 @@ cdef class GraphClusteringTools:
 cdef extern from "cpp/graph/GraphTools.h" namespace "NetworKit::GraphTools":
 	_Graph getCompactedGraph(_Graph G, unordered_map[node,node]) except +
 	unordered_map[node,node] getContinuousNodeIds(_Graph G) except +
+	unordered_map[node,node] getRandomContinuousNodeIds(_Graph G) except +
 
 cdef class GraphTools:
 	@staticmethod
@@ -2823,6 +2824,18 @@ cdef class GraphTools:
 		for elem in cResult:
 			result[elem.first] = elem.second
 		return result
+
+	@staticmethod
+	def getRandomContinuousNodeIds(Graph graph):
+		"""
+			Computes a map of node ids to continuous, randomly permutated node ids.
+		"""
+		cdef unordered_map[node,node] cResult = getRandomContinuousNodeIds(graph._this)
+		result = dict()
+		for elem in cResult:
+			result[elem.first] = elem.second
+		return result
+
 
 cdef extern from "cpp/community/PartitionIntersection.h":
 	cdef cppclass _PartitionIntersection "NetworKit::PartitionIntersection":
