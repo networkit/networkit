@@ -110,7 +110,8 @@ def degreePowerLaw(G, dd=None):
 	R : double
 		goodness of the fit, i.e.
 		the loglikelihood ratio between the two candidate distributions. This number will be positive if the data is more likely in the first distribution, and negative if the data is more likely in the 		  	 	second distribution. The exponential distribution is the absolute minimum alternative candidate for evaluating the heavy- tailedness of the distribution. The reason is definitional: the typical quantitative definition of a ”heavy- tail” is that it is not exponentially bounded. Thus if a power law is not a better fit than an exponential distribution (as in the above example) there is scarce ground for considering the distribution to be heavy-tailed at all, let alone a power law.
-
+	gamma : double
+		the degree power law exponent
 	"""
 	if not dd:
 		dd = degreeSequence(G)
