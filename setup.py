@@ -232,7 +232,7 @@ elif os.path.isfile("networkit/_NetworKit.pyx") and cython_available:
 	src = ["networkit/_NetworKit.pyx"]
 	do_cythonize = True
 else:
-	print("ERROR: some requirements aren't met. Exiting...")
+	print("ERROR: Some requirements aren't met.\nIf you try to install/build NetworKit from a clone of the repository or a ZIP archive, make sure you have Cython (version >= 0.21) installed under the __same__ Python 3 version from which you tried to install NetworKit.\nExiting...""")
 	exit(1)
 
 # initialize Extension module with the appropriate source file
