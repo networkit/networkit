@@ -40,6 +40,9 @@ public:
 
 	GraphEvent(Type type, node u = none, node v = none, edgeweight w = 1.0);
 
+	static bool compare(GraphEvent a, GraphEvent b);
+	static bool equal(GraphEvent a, GraphEvent b);
+
 	/**
 	 * Return string representation.
 	 */
