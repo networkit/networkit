@@ -810,6 +810,38 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithSequentialQuadtree) {
 	EXPECT_TRUE(G.checkConsistency());
 }
 
+TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithDataFromParallelQuadtree) {
+	count n = 50000;
+	double s = 1.2;
+	double t = 1;
+
+	Quadtree<index> quad(n,s);
+	vector<double> angles;
+	vector<double> radii;
+	quad.trim();
+	quad.sortPointsInLeaves();
+	quad.reindex();
+	quad.extractCoordinates(angles, radii);
+	EXPECT_EQ(angles.size(), n);
+	EXPECT_EQ(radii.size(), n);
+
+	vector<index> elements = quad.getElements();
+	EXPECT_EQ(elements.size(), n);
+	for (index i = 0; i < elements.size(); i++) {
+		EXPECT_EQ(elements[i], i);
+	}
+
+	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
+
+	HyperbolicGenerator gen;
+	Graph G = gen.generate(angles, radii, r, t*R);
+	count expected = HyperbolicGenerator::expectedNumberOfEdges(n,s);
+	EXPECT_EQ(n, G.numberOfNodes());
+	EXPECT_NEAR(G.numberOfEdges(), expected, expected/10);
+	EXPECT_TRUE(G.checkConsistency());
+}
+
 TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithParallelQuadtree) {
 	count n = 50000;
 	double s = 1.2;
@@ -824,6 +856,15 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithParallelQuadtree) {
 	quad.sortPointsInLeaves();
 	quad.reindex();
 	quad.extractCoordinates(angles, radii);
+	EXPECT_EQ(angles.size(), n);
+	EXPECT_EQ(radii.size(), n);
+
+	vector<index> elements = quad.getElements();
+	EXPECT_EQ(elements.size(), n);
+	for (index i = 0; i < elements.size(); i++) {
+		EXPECT_EQ(elements[i], i);
+	}
+
 	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
 
 	HyperbolicGenerator gen;

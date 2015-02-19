@@ -58,6 +58,7 @@ public:
 		minRegion = 0;
 		elements = 0;
 		balance = 0.5;
+		splitTheoretical = false;
 		alpha = 1;
 		lowerBoundR = maxR;
 	}
@@ -157,6 +158,8 @@ public:
 				}
 
 				content.clear();
+				angles.clear();
+				radii.clear();
 				this->addContent(input, angle, R);
 			}
 		}
@@ -326,6 +329,9 @@ public:
 		if (isLeaf) {
 			return content;
 		} else {
+			assert(content.size() == 0);
+			assert(angles.size() == 0);
+			assert(radii.size() == 0);
 			vector<T> result;
 			for (uint i = 0; i < children.size(); i++) {
 				std::vector<T> subresult = children[i].getElements();
@@ -342,6 +348,9 @@ public:
 			radiiContainer.insert(radiiContainer.end(), radii.begin(), radii.end());
 		}
 		else {
+			assert(content.size() == 0);
+			assert(angles.size() == 0);
+			assert(radii.size() == 0);
 			for (uint i = 0; i < children.size(); i++) {
 				children[i].getCoordinates(anglesContainer, radiiContainer);
 			}

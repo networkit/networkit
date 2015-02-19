@@ -50,11 +50,11 @@ public:
 	/**
 	 * @param[in] angles Pointer to angles of node positions
 	 * @param[in] radii Pointer to radii of node positions
-	 * @param[in] R radius of hyperbolic disk to place nodes in
+	 * @param[in] r radius of poincare disk to place nodes in
 	 * @param[in] thresholdDistance Edges are added for nodes closer to each other than this threshold
 	 * @return Graph to be generated according to parameters
 	 */
-	Graph generate(const vector<double> &angles, const vector<double> &radii, double R, double thresholdDistance);
+	Graph generate(const vector<double> &angles, const vector<double> &radii, double r, double thresholdDistance);
 
 	/**
 	 * @param[in] n Number of nodes
