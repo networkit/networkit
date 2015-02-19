@@ -44,6 +44,18 @@ private:
 	index ID;
 	double lowerBoundR;
 
+	double upperBoundProb(vector<Point2D<double> > &euCenters, vector<double> &euRadii, vector<double> &hyperbolicDistances, double (*prob)(double)) {
+		count numCircles = euCenters.size();
+		assert(euRadii.size() == numCircles);
+		assert(hyperbolicDistances.size() == numCircles);
+		double distanceLowerBound = 0;
+		for (int i = 0; i < numCircles; i++) {
+			if (outOfReach(euCenters[i], euRadii[i])) distanceLowerBound = hyperbolicDistances[i];
+			else break;
+		}
+		return (*prob)(distanceLowerBound);
+	}
+
 public:
 	std::vector<QuadNode> children;
 
@@ -435,6 +447,40 @@ public:
 				children[i].getElementsInEuclideanCircle(center, radius, result, minAngle, maxAngle, lowR, highR);
 			}
 		}
+	}
+
+	void getElementsProbabilistically(vector<Point2D<double> > euCenters, vector<double> euRadii, vector<double> hyDistances, Point2D<double> euQuery, double (*prob)(double), vector<T> &result) {
+		double probUB = upperBoundProb(euCenters, euRadii, hyDistances, prob);
+		index delta = 0;
+		//count expectationUpperBound =
+		if (isLeaf) {
+			for (int i = 0; i < content.size(); i++) {
+				double q = prob(HyperbolicSpace::poincareMetric(positions[i], euQuery));
+				if (i > 0) {
+					q = q / probUB; //since the candidate was selected by the jumping process, we have to adjust the probabilities
+				}
+
+				//accept?
+				double acc = Aux::Random::real();
+				if (acc < q) {
+					result.push_back(content[i]);
+				}
+
+				//now jump!
+				double random = Aux::Random::real();
+				if (probUB < 1) delta = std::log(random) / std::log(1-probUB);
+				i += delta;
+			}
+		}	else {
+			for (index i = 0; i < children.size(); i++) {
+				children[i].getElementsProbabilistically(euCenters, euRadii, hyDistances, euQuery, prob, result);
+			}
+		}
+	}
+
+	//this could be private
+	void getElementsProbabilistically(vector<Point2D<double> > euCenters, vector<double> euRadii, vector<double> hyDistances, Point2D<double> hyquery, double (*prob)(double), int candidates, vector<T> &circleDenizens) {
+
 	}
 
 	/**

@@ -82,6 +82,7 @@ public:
 		count numberOfThreads = omp_get_max_threads();
 		//double k = ceil(log(numberOfThreads)/log(4));
 		root = QuadNode<T>(0, 0, 2*M_PI, r, capacity, 0,theoreticalSplit,alpha,balance);
+		maxRadius = r;
 		count result;
 		#pragma omp parallel
 		{
@@ -127,7 +128,6 @@ public:
 	/**
 	 * Get elements whose hyperbolic distance to the query point is less than the hyperbolic distance
 	 *
-	 * Safe to call in parallel if diagnostics were not activated
 	 *
 	 * @param circleCenter Cartesian coordinates of the query circle's center
 	 * @param hyperbolicRadius Radius of the query circle
@@ -139,7 +139,6 @@ public:
 	}
 
 	void getElementsInHyperbolicCircle(Point2D<double> circleCenter, double hyperbolicRadius, vector<T> &circleDenizens) {
-		Point2D<double> origin(0,0);
 		Point2D<double> center;
 
 		//Transform hyperbolic circle into Euclidean circle
@@ -186,6 +185,29 @@ public:
 			auto newend = unique(circleDenizens.begin(), circleDenizens.end());
 			circleDenizens.resize(newend - circleDenizens.begin());
 		}
+	}
+
+	void getElementsProbabilistically(Point2D<double> euQuery, double (*prob)(double), vector<T> &circleDenizens) {
+		//get bunch of circles
+		vector<Point2D<double> > euCenters;
+		vector<double> euRadii;
+		vector<double> hyDistances;
+		count steps = 20;
+		double maxDist = HyperbolicSpace::EuclideanRadiusToHyperbolic(euQuery.length()) + this->maxRadius;
+		double stepsize = maxDist / steps;
+
+		for (index i = 0; i < steps; i++) {
+			hyDistances.push_back(i*stepsize);
+			Point2D<double> center;
+			double radius;
+			HyperbolicSpace::getEuclideanCircle(euQuery, i*stepsize, center, radius);
+			euCenters.push_back(center);
+			euRadii.push_back(radius);
+		}
+
+		//call root node
+
+		root.getElementsProbabilistically(euCenters, euRadii, hyDistances, euQuery, prob, circleDenizens);
 	}
 
 	count size() const {
