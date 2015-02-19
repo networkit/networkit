@@ -56,6 +56,7 @@ Graph::Graph(const Graph& G, bool weighted, bool directed) :
 	n(G.n),
 	m(G.m),
 	z(G.z),
+	omega(0),
 	t(G.t),
 	weighted(weighted),
 	directed(directed),

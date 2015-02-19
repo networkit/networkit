@@ -3,10 +3,10 @@ to the network """
 
 
 __author__ = "Christian Staudt"
-__credits__ = ["Christian Staudt", "Elisabetta Bergamini", "Henning Meyerhenke"]
+__credits__ = ["Christian Staudt", "Elisabetta Bergamini", "Henning Meyerhenke", "Marc Nemes"]
 
 # extension imports
-from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2, DynBetweenness, DynApproxBetweenness
+from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2, DynBetweenness, DynApproxBetweenness, Closeness, KPathCentrality
 
 
 # local imports

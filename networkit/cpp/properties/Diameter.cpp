@@ -12,6 +12,7 @@
 #include "../graph/BFS.h"
 #include "../graph/Dijkstra.h"
 #include "../properties/ConnectedComponents.h"
+#include "../structures/Partition.h"
 #include "../graph/BFS.h"
 
 namespace NetworKit {
@@ -184,60 +185,36 @@ edgeweight Diameter::estimatedVertexDiameter(const Graph& G, count samples) {
 
 }
 
-
 edgeweight Diameter::estimatedVertexDiameterPedantic(const Graph& G) {
-
-	edgeweight infDist = std::numeric_limits<edgeweight>::max();
-
-	auto estimateFrom = [&](node v) -> count {
-		BFS bfs(G, v);
-		bfs.run();
-		auto distances = bfs.getDistances();
-
-		// get two largest path lengths
-		count maxD = 0;
-		count maxD2 = 0; // second largest distance
-		for (auto d : distances) {
-			if ((d != infDist) && (d >= maxD)) {
-				maxD2 = maxD;
-				maxD = d;
-			}
-		}
-
-		edgeweight dMax = maxD + maxD2;
-		count vd = (count) dMax + 1; 	// count the nodes, not the edges
-		return vd;
-	};
-
-	ConnectedComponents cc(G);
-	DEBUG("finding connected components");
-	cc.run();
-	INFO("Graph is weighted? ", G.isWeighted());
+	count vd = 0;
 	if (!G.isWeighted()) {
-		INFO("Number of components ", cc.numberOfComponents());
-		if (cc.numberOfComponents() > 1) {
-			DEBUG("estimating for each component in parallel");
-			std::vector<std::set<node> > components;
-			for (auto component : cc.getPartition().getSubsets()) {
-				components.push_back(component);
+		std::vector<bool> visited(G.upperNodeIdBound(), false);
+		// perform breadth-first searches
+		G.forNodes([&](node u) {
+			if (visited[u] == false) {
+				count maxDist = 0, maxDist2 = 0;
+				G.BFSfrom(u, [&](node v, count dist) {
+					visited[v] = true;
+					if (dist > maxDist) {
+						maxDist2 = maxDist;
+						maxDist = dist;
+					}
+					else if (dist > maxDist2) {
+						maxDist2 = dist;
+					}
+				});
+				if (maxDist + maxDist2 > vd) {
+					vd = maxDist + maxDist2;
+				}
+				assert (visited[u] == true);
 			}
-			DEBUG("gathered components");
-			std::vector<count> vds;
-			#pragma omp parallel for
-			for (index i = 0; i < components.size(); ++i) {
-				count vd = estimateFrom(*components[i].begin()); // take any node from the component and perform bfs from there
-				DEBUG("checking component ", i);
-				#pragma omp critical
-				vds.push_back(vd);
-			}
-
-			count vdMax = *std::max_element(vds.begin(), vds.end());
-			return vdMax;
-
-		} else {
-			return estimateFrom(G.randomNode());
-		}
-	} else {
+		});
+		vd ++; //we need the number of nodes, not the number of edges
+	}
+	else {
+		ConnectedComponents cc(G);
+		DEBUG("finding connected components");
+		cc.run();
 		INFO("Number of components ", cc.numberOfComponents());
 		DEBUG("Estimating size of the largest component");
 		std::map<count, count> sizes = cc.getComponentSizes();
@@ -249,10 +226,9 @@ edgeweight Diameter::estimatedVertexDiameterPedantic(const Graph& G) {
 			}
 		}
 		INFO("Largest component size: ", largest_comp_size);
-		return largest_comp_size;
+		vd = largest_comp_size;
 	}
-
+	return vd;
 }
-
 
 } /* namespace NetworKit */
