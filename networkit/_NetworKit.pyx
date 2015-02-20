@@ -1529,6 +1529,7 @@ cdef extern from "cpp/generators/HyperbolicGenerator.h":
 		void setBalance(double balance) except +
 		vector[double] getElapsedMilliseconds() except +
 		_Graph generate() except +
+		_Graph generateTemperate(double T) except +
 
 cdef class HyperbolicGenerator:
 	""" The Hyperbolic Generator can be described as a unit-disk model in hyperbolic space. The resulting graphs have a power-law degree distribution, small diameter and high clustering coefficient.
@@ -1566,7 +1567,7 @@ cdef class HyperbolicGenerator:
 		return self._this.getElapsedMilliseconds()
 
 	def generate(self):
-		""" Generates graph from hyperbolic geometry
+		""" Generates hyperbolic unit disk graph
 
 		Returns
 		-------
@@ -1574,6 +1575,16 @@ cdef class HyperbolicGenerator:
 		
 		"""
 		return Graph(0).setThis(self._this.generate())
+
+	def generateTemperate(self, T):
+		""" Generates graph from hyperbolic geometry
+
+		Returns
+		-------
+		Graph
+		
+		"""
+		return Graph(0).setThis(self._this.generateTemperate(T))
 
 cdef extern from "cpp/generators/RmatGenerator.h":
 	cdef cppclass _RmatGenerator "NetworKit::RmatGenerator":

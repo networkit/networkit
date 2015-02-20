@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <functional>
 #include <assert.h>
 #include "../../auxiliary/Log.h"
 #include "../../geometric/HyperbolicSpace.h"
@@ -44,7 +45,7 @@ private:
 	index ID;
 	double lowerBoundR;
 
-	double upperBoundProb(vector<Point2D<double> > &euCenters, vector<double> &euRadii, vector<double> &hyperbolicDistances, double (*prob)(double)) {
+	double upperBoundProb(vector<Point2D<double> > &euCenters, vector<double> &euRadii, vector<double> &hyperbolicDistances, std::function<double(double)> prob) {
 		count numCircles = euCenters.size();
 		assert(euRadii.size() == numCircles);
 		assert(hyperbolicDistances.size() == numCircles);
@@ -53,7 +54,7 @@ private:
 			if (outOfReach(euCenters[i], euRadii[i])) distanceLowerBound = hyperbolicDistances[i];
 			else break;
 		}
-		return (*prob)(distanceLowerBound);
+		return prob(distanceLowerBound);
 	}
 
 public:
@@ -449,7 +450,7 @@ public:
 		}
 	}
 
-	void getElementsProbabilistically(vector<Point2D<double> > euCenters, vector<double> euRadii, vector<double> hyDistances, Point2D<double> euQuery, double (*prob)(double), vector<T> &result) {
+	void getElementsProbabilistically(vector<Point2D<double> > euCenters, vector<double> euRadii, vector<double> hyDistances, Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &result) {
 		double probUB = upperBoundProb(euCenters, euRadii, hyDistances, prob);
 		index delta = 0;
 		//count expectationUpperBound =
@@ -479,7 +480,7 @@ public:
 	}
 
 	//this could be private
-	void getElementsProbabilistically(vector<Point2D<double> > euCenters, vector<double> euRadii, vector<double> hyDistances, Point2D<double> hyquery, double (*prob)(double), int candidates, vector<T> &circleDenizens) {
+	void getElementsProbabilistically(vector<Point2D<double> > euCenters, vector<double> euRadii, vector<double> hyDistances, Point2D<double> hyquery, std::function<double(double)> prob, int candidates, vector<T> &circleDenizens) {
 
 	}
 

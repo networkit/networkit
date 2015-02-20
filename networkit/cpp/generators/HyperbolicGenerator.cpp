@@ -159,4 +159,69 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	INFO("Generating Edges took ", timer.elapsedMilliseconds(), " milliseconds.");
 	return result.toGraph(true);
 }
+
+Graph HyperbolicGenerator::generateTemperate(double T) {
+	count n = nodeCount;
+	double stretchradius = stretch;
+	double R = stretchradius*HyperbolicSpace::hyperbolicAreaToRadius(n);
+	vector<double> angles(n);
+	vector<double> radii(n);
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
+	//sample points randomly
+
+	HyperbolicSpace::fillPoints(angles, radii, stretchradius, alpha);
+	vector<index> permutation(n);
+
+	index p = 0;
+	std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
+
+	//can probably be parallelized easily, but doesn't bring much benefit
+	std::sort(permutation.begin(), permutation.end(), [&angles,&radii](index i, index j){return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);});
+
+	vector<double> anglecopy(n);
+	vector<double> radiicopy(n);
+
+	#pragma omp parallel for
+	for (index j = 0; j < n; j++) {
+		anglecopy[j] = angles[permutation[j]];
+		radiicopy[j] = radii[permutation[j]];
+	}
+
+	INFO("Generated Points");
+	Quadtree<index> quad(r, theoreticalSplit, alpha, capacity, balance);
+
+	for (index i = 0; i < n; i++) {
+		assert(radii[i] < r);
+		quad.addContent(i, angles[i], radii[i]);
+	}
+
+	quad.trim();
+
+	//now define lambda
+	double beta = 1/T;
+	auto edgeProb = [beta](double distance) -> double {return 1 / (pow(distance, beta)+1);};
+
+	//get Graph
+	GraphBuilder result(n, false, false, false);//no direct swap with probabilistic graphs, sorry
+	Aux::ProgressMeter progress(n, 10000);
+	#pragma omp parallel for
+	for (index i = 0; i < n; i++) {
+		vector<index> near;
+		quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), edgeProb, near);
+		for (index j : near) {
+			if (j < i) result.addEdge(i, j);
+		}
+
+		if (i % 10000 == 0) {
+			#pragma omp critical (progress)
+			{
+				progress.signal(i);
+			}
+		}
+
+	}
+
+	return result.toGraph(true);
+
+}
 }
