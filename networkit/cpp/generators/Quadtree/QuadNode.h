@@ -92,7 +92,7 @@ public:
 	 *
 	 */
 	QuadNode(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity, double minDiameter, bool splitTheoretical = false, double alpha = 1, double balance = 0.5) {
-		if (balance <= 0 || balance >= 1) throw  std::runtime_error("Quadtree balance parameter must be between 0 and 1.");
+		if (balance <= 0 || balance >= 1) throw std::runtime_error("Quadtree balance parameter must be between 0 and 1.");
 		this->leftAngle = leftAngle;
 		this->minR = minR;
 		this->maxR = maxR;
@@ -454,6 +454,7 @@ public:
 	void getElementsProbabilistically(vector<Point2D<double> > euCenters, vector<double> euRadii, vector<double> hyDistances, Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &result) {
 		double probUB = upperBoundProb(euCenters, euRadii, hyDistances, prob);
 		count expectedNeighbours = probUB*size();
+
 		index delta = 0;
 		count offset = result.size();
 
@@ -476,18 +477,50 @@ public:
 				i += delta;
 			}
 		}	else {
-			for (index i = 0; i < children.size(); i++) {
-				children[i].getElementsProbabilistically(euCenters, euRadii, hyDistances, euQuery, prob, result);
+			if (probUB < 1/capacity) {//switch to binomial candidate selection
+				std::binomial_distribution<count> distribution(size(),probUB);
+				count candidates = distribution(Aux::Random::getURNG());
+				getElementsProbabilistically(probUB, euQuery, prob, candidates, result);
+			} else {//carry on as normal
+				for (index i = 0; i < children.size(); i++) {
+					children[i].getElementsProbabilistically(euCenters, euRadii, hyDistances, euQuery, prob, result);
+				}
 			}
 		}
 		INFO("Expected at most ", expectedNeighbours, " neighbours, got ", result.size() - offset);
 	}
 
 	//this could be private
-	void getElementsProbabilistically(double multiplier, Point2D<double> euQuery, std::function<double(double)> prob, count candidates, vector<T> &circleDenizens) {
+	void getElementsProbabilistically(double upperBound, Point2D<double> euQuery, std::function<double(double)> prob, count candidates, vector<T> &circleDenizens) {
 		assert(candidates >= 0);
 		if (candidates == 0) return;
+		if (candidates > size()) throw std::runtime_error("Cannot supply more candidates than subtree has points!");
 
+		if (isLeaf) {
+			//get candidates
+			vector<index> candList;//this will rarely hold more than one element
+			for (index i = 0; i < candidates; i++) {
+				index candidate = Aux::Random::integer(content.size()-1);
+				if (std::find(candList.begin(), candList.end(), candidate) != candList.end()) i--;//only want unique values
+				else candList.push_back(candidate);
+			}
+			for (index cand : candList) {
+				double acceptance = prob(HyperbolicSpace::poincareMetric(euQuery, positions[cand]))/upperBound;
+				if (Aux::Random::real() < acceptance) circleDenizens.push_back(cand);
+			}
+		} else {
+			assert(children.size() == 4);
+			count coveredpoints = 0;
+			count coveredcandidates = 0;
+			for (index i = 0; i < children.size(); i++) {
+				if (i == children.size()-1) assert(size() - coveredpoints == children[i].size());
+				std::binomial_distribution<count> distribution(candidates - coveredcandidates,children[i].size()/(size()-coveredpoints));
+				count childcands = distribution(Aux::Random::getURNG());
+				children[i].getElementsProbabilistically(upperBound, euQuery, prob, childcands, circleDenizens);
+				coveredpoints += children[i].size();
+				coveredcandidates += childcands;
+			}
+		}
 	}
 
 	/**
