@@ -45,6 +45,8 @@ public:
 	 */
 	static double expectedNumberOfEdges(count n, double stretch);
 
+	Graph generateTemperate(double T);
+
 	Graph generate(const vector<double> &angles, const vector<double> &radii, Quadtree<index> &quad, double thresholdDistance);
 
 	/**

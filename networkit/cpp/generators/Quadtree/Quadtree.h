@@ -12,6 +12,7 @@
 #include <memory>
 #include <cmath>
 #include <omp.h>
+#include <functional>
 #include "QuadNode.h"
 #include "../../geometric/HyperbolicSpace.h"
 
@@ -187,7 +188,7 @@ public:
 		}
 	}
 
-	void getElementsProbabilistically(Point2D<double> euQuery, double (*prob)(double), vector<T> &circleDenizens) {
+	void getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &circleDenizens) {
 		//get bunch of circles
 		vector<Point2D<double> > euCenters;
 		vector<double> euRadii;
