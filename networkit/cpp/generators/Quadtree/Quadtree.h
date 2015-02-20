@@ -194,7 +194,7 @@ public:
 		vector<double> euRadii;
 		vector<double> hyDistances;
 		count steps = 20;
-		double maxDist = HyperbolicSpace::EuclideanRadiusToHyperbolic(euQuery.length()) + this->maxRadius;
+		double maxDist = HyperbolicSpace::EuclideanRadiusToHyperbolic(euQuery.length()) + HyperbolicSpace::EuclideanRadiusToHyperbolic(this->maxRadius);
 		double stepsize = maxDist / steps;
 
 		for (index i = 0; i < steps; i++) {

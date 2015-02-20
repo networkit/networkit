@@ -453,7 +453,7 @@ public:
 	void getElementsProbabilistically(vector<Point2D<double> > euCenters, vector<double> euRadii, vector<double> hyDistances, Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &result) {
 		double probUB = upperBoundProb(euCenters, euRadii, hyDistances, prob);
 		index delta = 0;
-		//count expectationUpperBound =
+
 		if (isLeaf) {
 			for (int i = 0; i < content.size(); i++) {
 				double q = prob(HyperbolicSpace::poincareMetric(positions[i], euQuery));

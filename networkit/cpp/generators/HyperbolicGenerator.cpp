@@ -199,7 +199,7 @@ Graph HyperbolicGenerator::generateTemperate(double T) {
 
 	//now define lambda
 	double beta = 1/T;
-	auto edgeProb = [beta](double distance) -> double {return 1 / (pow(distance, beta)+1);};
+	auto edgeProb = [beta, R](double distance) -> double {return 1 / (exp(beta*(distance-R)/2)+1);};
 
 	//get Graph
 	GraphBuilder result(n, false, false, false);//no direct swap with probabilistic graphs, sorry
