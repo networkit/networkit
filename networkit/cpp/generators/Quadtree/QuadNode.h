@@ -33,7 +33,7 @@ private:
 	unsigned capacity;
 	static const unsigned coarsenLimit = 4;
 	double minRegion;//the minimal region a QuadNode should cover. If it is smaller, don't bother splitting up.
-	count elements;
+	count subTreeSize;
 	std::vector<T> content;
 	std::vector<Point2D<double> > positions;
 	std::vector<double> angles;
@@ -69,7 +69,7 @@ public:
 		capacity = 20;
 		isLeaf = true;
 		minRegion = 0;
-		elements = 0;
+		subTreeSize = 0;
 		balance = 0.5;
 		splitTheoretical = false;
 		alpha = 1;
@@ -108,7 +108,7 @@ public:
 		this->balance = balance;
 		this->lowerBoundR = maxR;
 		isLeaf = true;
-		elements = 0;
+		subTreeSize = 0;
 	}
 
 	void split() {
@@ -169,7 +169,7 @@ public:
 				for (uint i = 0; i < content.size(); i++) {
 					this->addContent(content[i], angles[i], radii[i]);
 				}
-
+				subTreeSize = content.size();
 				content.clear();
 				angles.clear();
 				radii.clear();
@@ -184,8 +184,8 @@ public:
 					break;
 				}
 			}
+			subTreeSize++;
 		}
-		elements++;
 	}
 
 	/**
@@ -228,6 +228,7 @@ public:
 					removed = true;
 				}
 			}
+			if (removed) subTreeSize--;
 			//coarsen?
 			if (removed && allLeaves && size() < coarsenLimit) {
 				//coarsen!!
@@ -452,7 +453,9 @@ public:
 
 	void getElementsProbabilistically(vector<Point2D<double> > euCenters, vector<double> euRadii, vector<double> hyDistances, Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &result) {
 		double probUB = upperBoundProb(euCenters, euRadii, hyDistances, prob);
+		count expectedNeighbours = probUB*size();
 		index delta = 0;
+		count offset = result.size();
 
 		if (isLeaf) {
 			for (int i = 0; i < content.size(); i++) {
@@ -477,10 +480,13 @@ public:
 				children[i].getElementsProbabilistically(euCenters, euRadii, hyDistances, euQuery, prob, result);
 			}
 		}
+		INFO("Expected at most ", expectedNeighbours, " neighbours, got ", result.size() - offset);
 	}
 
 	//this could be private
-	void getElementsProbabilistically(vector<Point2D<double> > euCenters, vector<double> euRadii, vector<double> hyDistances, Point2D<double> hyquery, std::function<double(double)> prob, int candidates, vector<T> &circleDenizens) {
+	void getElementsProbabilistically(double multiplier, Point2D<double> euQuery, std::function<double(double)> prob, count candidates, vector<T> &circleDenizens) {
+		assert(candidates >= 0);
+		if (candidates == 0) return;
 
 	}
 
@@ -504,9 +510,15 @@ public:
 	 * Number of points lying in the region managed by this QuadNode
 	 */
 	count size() const {
-		count result = isLeaf ? content.size() : 0;
-		for (auto child : children) result += child.size();
-		return result;
+		return isLeaf ? content.size() : subTreeSize;
+	}
+
+	void recount() {
+		subTreeSize = 0;
+		for (index i = 0; i < children.size(); i++) {
+			children[i].recount();
+			subTreeSize += children[i].size();
+		}
 	}
 
 	/**

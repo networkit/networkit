@@ -426,5 +426,49 @@ TEST_F(QuadTreeGTest, testSequentialQuadTreeConstruction) {
 	//EXPECT_TRUE(std::is_permutation(radii.begin(), radii.end(), radiicopy.begin()));
 }
 
+TEST_F(QuadTreeGTest, testProbabilisticQuery) {
+	count n = 10000;
+	count m = n*3;
+	count capacity = 1000;
+	double targetR = 2*log(8*n / (M_PI*(m/n)*2));
+	double s = targetR / HyperbolicSpace::hyperbolicAreaToRadius(n);
+	double alpha = 1;
+
+	vector<double> angles(n);
+	vector<double> radii(n);
+
+	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
+
+	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(targetR),false,alpha,capacity);
+
+	for (index i = 0; i < n; i++) {
+		EXPECT_EQ(i, quad.size());
+		quad.addContent(i, angles[i], radii[i]);
+	}
+	EXPECT_EQ(n, quad.size());
+
+	quad.trim();
+
+	for (index i = 0; i < 200; i++) {
+		index query = Aux::Random::integer(n-1);
+		double acc = Aux::Random::probability() ;
+		auto edgeProb = [acc](double distance) -> double {return acc;};
+		vector<index> near;
+		quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[query], radii[query]), edgeProb, near);
+		EXPECT_NEAR(near.size(), acc*n, std::max(acc*n*0.25, 10.0));
+	}
+
+	auto edgeProb = [](double distance) -> double {return 1;};
+	vector<index> near;
+	quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[0], radii[0]), edgeProb, near);
+	EXPECT_EQ(n, near.size());
+
+	auto edgeProb2 = [](double distance) -> double {return 0;};
+	near.clear();
+	quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[0], radii[0]), edgeProb2, near);
+	EXPECT_EQ(0, near.size());
+
+}
+
 
 } /* namespace NetworKit */
