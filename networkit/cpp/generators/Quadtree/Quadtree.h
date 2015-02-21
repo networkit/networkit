@@ -200,6 +200,7 @@ public:
 		double stepsize = maxDist / steps;
 
 		for (index i = 0; i < steps; i++) {
+			if (prob(i*stepsize) > 0.5) continue;//very high upper bounds are not that useful anyway
 			hyDistances.push_back(i*stepsize);
 			Point2D<double> center;
 			double radius;

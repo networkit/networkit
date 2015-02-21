@@ -445,13 +445,14 @@ public:
 		assert(hyDistances.size() == numCircles);
 		assert(minCircle >= -1);
 		assert(minCircle < numCircles);
+		double probUB = 1;
 		int ci;
 		for (ci = minCircle+1; ci < numCircles; ci++) {
 			if (!outOfReach(euCenters[ci], euRadii[ci])) break;
 		}
 		assert(ci > minCircle);
 		minCircle = ci-1;
-		double probUB = prob(hyDistances[minCircle]);
+		if (minCircle >= 0) probUB = prob(hyDistances[minCircle]);
 		count expectedNeighbours = probUB*size();
 
 		index delta = 0;
@@ -471,9 +472,11 @@ public:
 				}
 
 				//now jump!
-				double random = Aux::Random::real();
-				if (probUB < 1) delta = std::log(random) / std::log(1-probUB);
-				i += delta;
+				if (probUB < 1) {
+					double random = Aux::Random::real();
+					delta = std::log(random) / std::log(1-probUB);
+					i += delta;
+				}
 			}
 		}	else {
 			if (expectedNeighbours < 4) {//select candidates directly instead of calling recursively
