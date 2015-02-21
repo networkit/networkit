@@ -477,11 +477,13 @@ public:
 				i += delta;
 			}
 		}	else {
-			if (expectedNeighbours < 1) {//switch to binomial candidate selection
-				std::binomial_distribution<count> distribution(size(),probUB);
-				count candidates = distribution(Aux::Random::getURNG());
-				assert(candidates < size());
-				getElementsProbabilistically(probUB, euQuery, prob, candidates, result);
+			if (expectedNeighbours < 4) {//select candidates directly instead of calling recursively
+				assert(probUB < 1);
+				for (index i = 0; i < size(); i++) {
+					delta = std::log(Aux::Random::real()) / std::log(1-probUB);
+					i += delta;
+					if (i < size()) maybeGetKthElement(probUB, euQuery, prob, i, result);//this could be optimized. As of now, the offset is subtracted seperately for each point
+				}
 			} else {//carry on as normal
 				for (index i = 0; i < children.size(); i++) {
 					children[i].getElementsProbabilistically(euCenters, euRadii, hyDistances, euQuery, prob, result);
@@ -527,17 +529,19 @@ public:
 		}
 	}
 
-	T maybeGetKthElement(double upperBound, Point2D<double> euQuery, std::function<double(double)> prob, index k, vector<T> &circleDenizens) {
+	void maybeGetKthElement(double upperBound, Point2D<double> euQuery, std::function<double(double)> prob, index k, vector<T> &circleDenizens) {
 		assert(k < size());
 		if (isLeaf) {
 			double acceptance = prob(HyperbolicSpace::poincareMetric(euQuery, positions[k]))/upperBound;
 			if (Aux::Random::real() < acceptance) circleDenizens.push_back(content[k]);
-			return content[k];
 		} else {
 			index offset = 0;
 			for (index i = 0; i < children.size(); i++) {
 				count childsize = children[i].size();
-				if (k - offset < childsize) return children[i].maybeGetKthElement(upperBound, euQuery, prob, k - offset, circleDenizens);
+				if (k - offset < childsize) {
+					children[i].maybeGetKthElement(upperBound, euQuery, prob, k - offset, circleDenizens);
+					break;
+				}
 				offset += childsize;
 			}
 		}
