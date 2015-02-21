@@ -45,7 +45,7 @@ public:
 	* Compute K-Path scores sequential.
 	*
 	*/
-	void run() override;
+	void runImpl() override;
 
 };
 
