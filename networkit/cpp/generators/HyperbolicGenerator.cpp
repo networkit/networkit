@@ -161,6 +161,9 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 }
 
 Graph HyperbolicGenerator::generateTemperate(double T) {
+	if (T < 0) throw std::runtime_error("Temperature cannot be negative.");
+	if (T == 0) return generate(nodeCount, 1, alpha, stretch);
+	assert(T > 0);
 	count n = nodeCount;
 	double stretchradius = stretch;
 	double R = stretchradius*HyperbolicSpace::hyperbolicAreaToRadius(n);
