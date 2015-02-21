@@ -24,9 +24,9 @@ import networkit
 
 from util import *
 import nk
-import nx
-import ig
-import gt
+#import nx
+#import ig
+#import gt
 
 # helper function
 
@@ -301,8 +301,58 @@ class Bench:
 
 
 
-    def generatorBenchmark(self, generator, argtuples):
-        pass
+    def generatorBenchmark(self, generator, argtuples, nRuns=None, timeout=None):
+        """ Run a kernel represented by an algorithm benchmark object """
+        # set the defaults
+        if nRuns is None:
+            nRuns = self.nRuns  # lets argument override the default nRuns
+        if timeout is None:
+            timeout = self.timeout
+
+        genName = str(generator)
+
+        self.info("benchmarking {genName}".format(**locals()))
+        table = []  # list of dictionaries, to be converted to a DataFrame
+
+        for param in argtuples:
+            try:
+                gen = generator(*param)
+                row = {}    # benchmark data row
+                row["graph"] = str(param)
+                try:
+                    self.info("running {genName} {nRuns} times".format(**locals()))
+                    for i in range(nRuns):
+                        row["algo"] = genName
+                        try: # timeout
+                            result = None
+                            if timeout:
+                                signal.signal(signal.SIGALRM, timeoutHandler)
+                                signal.alarm(int(timeout * 60))  # timeout in seconds
+                            with Timer() as t:
+                                result = gen.generate()
+                            self.debug("took {0} s".format(t.elapsed))
+                            # store data
+                            row["m"] = result.numberOfNodes()
+                            row["time"] = t.elapsed
+                            row["result"] = result
+                        except Timeout as tx:
+                            self.error("{genName} timed out after {timeout} minutes".format(**locals()))
+                            row["time"] = None
+                            row["result"] = None
+                        finally:
+                            table.append(row)
+                            signal.alarm(int(1e9))    # in any case, cancel the timeout alarm by setting it to a ridiculously high time
+                except Exception as ex:
+                    self.error("generator {genName} failed with exception: {ex}".format(**locals()))
+            except Exception as ex:
+                self.error("initializing generator {genName} failed with exception: {ex}".format(**locals()))
+
+        df = pandas.DataFrame(table)
+        self.data[genName] = df
+        # store data frame on disk
+        if self.save:
+            df.to_csv(os.path.join(self.outDataDir, "{genName}.csv".format(**locals())))
+
 
 
 # - generators

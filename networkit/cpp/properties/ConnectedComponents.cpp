@@ -14,6 +14,9 @@
 namespace NetworKit {
 
 ConnectedComponents::ConnectedComponents(const Graph& G) : G(G), hasRun(false) {
+	if (G.isDirected()) {
+		throw std::runtime_error("Error, connected components of directed graphs cannot be computed, use StronglyConnectedComponents for them.");
+	}
 }
 
 void ConnectedComponents::runImpl() {

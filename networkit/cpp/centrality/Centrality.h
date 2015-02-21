@@ -2,7 +2,7 @@
  * Centrality.h
  *
  *  Created on: 19.02.2014
- *      Author: cls
+ *      Author: Christian Staudt
  */
 
 #ifndef CENTRALITY_H_
@@ -25,8 +25,9 @@ public:
 	 *
 	 * @param G The graph.
 	 * @param normalized If set to @c true the scores are normalized in the interval [0,1].
+	 * @param computeEdgeCentrality		If true, compute also edge centralities (for algorithms where this is applicable)
 	 */
-	Centrality(const Graph& G, bool normalized=false);
+	Centrality(const Graph& G, bool normalized=false, bool computeEdgeCentrality=false);
 
 	/** Default destructor */
 	virtual ~Centrality() = default;
@@ -37,10 +38,16 @@ public:
 	virtual void runImpl() = 0;
 
 	/**
-	 * Get a vector containing the centrality score for each node in the graph.
-	 * @return The centrality scores calculated by @link run().
+	 * Get a vector containing the betweenness score for each node in the graph.
+	 * @return The betweenness scores calculated by @link run().
 	 */
 	virtual std::vector<double> scores();
+
+	/**
+	 * Get a vector containing the edge betweenness score for each edge in the graph.
+	 * @return The edge betweenness scores calculated by @link run().
+	 */
+	virtual std::vector<double> edgeScores();
 
 	/**
 	 * Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
@@ -68,8 +75,9 @@ protected:
 
 	const Graph& G;
 	std::vector<double> scoreData;
+	std::vector<double> edgeScoreData;
 	bool normalized; // true if scores should be normalized in the interval [0,1]
-
+	bool computeEdgeCentrality;
 
 };
 

@@ -92,14 +92,20 @@ void DynBetweenness::runImpl() {
 
 
 void DynBetweenness::updateUnweighted(GraphEvent e) {
+    node u_l, u_h;
+    if (G.isDirected()) {
+        u_h = e.u;
+        u_l = e.v;
+    }
     G.forNodes([&] (node s){
-        node u_l, u_h;
-        if (distances[s][e.u] > distances[s][e.v]){
-            u_l = e.u;
-            u_h = e.v;
-        } else {
-            u_l = e.v;
-            u_h = e.u;
+	if (!G.isDirected()) {
+            if (distances[s][e.u] > distances[s][e.v]){
+                u_l = e.u;
+                u_h = e.v;
+            } else {
+                u_l = e.v;
+                u_h = e.u;
+            }
         }
         edgeweight difference = distances[s][u_l] - distances[s][u_h];
         if (difference > 0) {
@@ -150,20 +156,22 @@ void DynBetweenness::updateUnweighted(GraphEvent e) {
                     queue_BFS.pop();
                     touched[v] = -1;
                     new_npaths[v] = 0;
+                    G.forInNeighborsOf(v, [&] (node w){
+                        if (new_dist[w] + 1 == new_dist[v]) {
+                            new_npaths[v] += new_npaths[w];
+                            if (storePreds) {
+                                predecessors[s][v].push_back(w);
+			    }
+			}
+		    });
                     G.forNeighborsOf(v, [&] (node w){
-                            if (new_dist[w] + 1 == new_dist[v]) {
-                                new_npaths[v] += new_npaths[w];
-                                if (storePreds) {
-                                    predecessors[s][v].push_back(w);
-                                }
-                            }
-                            if (new_dist[w] >= new_dist[v] && touched[w] == 0) {
-                                if (new_dist[w] > new_dist[v])
-                                    new_dist[w] = new_dist[v]+1;
-                                touched[w] = -1;
-                                l_queues[new_dist[w]].push(w);
-                                queue_BFS.push(w);
-                            }
+                        if (new_dist[w] >= new_dist[v] && touched[w] == 0) {
+                            if (new_dist[w] > new_dist[v])
+                                new_dist[w] = new_dist[v]+1;
+                            touched[w] = -1;
+                            l_queues[new_dist[w]].push(w);
+                            queue_BFS.push(w);
+                        }
                     });
                 }
             }
@@ -202,7 +210,7 @@ void DynBetweenness::updateUnweighted(GraphEvent e) {
                         }
                     }
                     else {
-                        G.forNeighborsOf(w, [&](node v){
+                        G.forInNeighborsOf(w, [&](node v){
                             updateDependency(w, v);
                         });
                     }
@@ -310,7 +318,8 @@ void DynBetweenness::updateWeighted(GraphEvent e) {
             };
             if (s != t) {
                 updatePaths(e.u, e.v, e.w);
-                updatePaths(e.v, e.u, e.w);
+                if (!G.isDirected())
+                    updatePaths(e.v, e.u, e.w);
                 S.insert(-1*distances[s][t], t);
                 dependencies[s][t] = 0.0;
             }
@@ -329,7 +338,7 @@ void DynBetweenness::updateWeighted(GraphEvent e) {
                 }
             }
             else {
-                G.forNeighborsOf(t, [&] (node p){
+                G.forInNeighborsOf(t, [&] (node p){
                     if (Aux::NumericTools::logically_equal(distances[s][t], distances[s][p] + G.weight(p, t))) {
                         bigfloat tmp = npaths[s][p] / npaths[s][t];
                         double weight;

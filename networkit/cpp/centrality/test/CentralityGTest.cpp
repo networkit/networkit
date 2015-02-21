@@ -7,6 +7,7 @@
 
 #include "CentralityGTest.h"
 #include "../Betweenness.h"
+#include "../Closeness.h"
 #include "../DynApproxBetweenness.h"
 #include "../ApproxBetweenness.h"
 #include "../ApproxBetweenness2.h"
@@ -18,6 +19,8 @@
 #include "../../io/SNAPGraphReader.h"
 #include "../../generators/ErdosRenyiGenerator.h"
 #include "../../auxiliary/Log.h"
+#include "../KPathCentrality.h"
+
 
 namespace NetworKit {
 
@@ -327,6 +330,79 @@ TEST_F(CentralityGTest, testApproxBetweenness2) {
 
 	DEBUG("approximated betweenness scores: ", abc2.scores());
 
+}
+
+
+TEST_F(CentralityGTest, testEdgeBetweennessCentrality) {
+ /* Graph:
+    0    3
+     \  / \
+      2    5
+     /  \ /
+    1    4
+ */
+	count n = 6;
+	Graph G(n);
+	G.addEdge(0, 2);
+	G.addEdge(1, 2);
+	G.addEdge(2, 3);
+	G.addEdge(2, 4);
+	G.addEdge(3, 5);
+	G.addEdge(4, 5);
+	G.indexEdges();
+
+	Betweenness centrality(G,false,true);
+	centrality.run();
+	std::vector<double> bc = centrality.edgeScores();
+
+	const double tol = 1e-3;
+	EXPECT_NEAR(10.0, bc[0], tol);
+	EXPECT_NEAR(10.0, bc[1], tol);
+	EXPECT_NEAR(10.0, bc[2], tol);
+	EXPECT_NEAR(10.0, bc[3], tol);
+	EXPECT_NEAR(6.0, bc[4], tol);
+	EXPECT_NEAR(6.0, bc[5], tol);
+}
+
+
+TEST_F(CentralityGTest, testClosenessCentrality) {
+ /* Graph:
+    0    3
+     \  / \
+      2    5
+     /  \ /
+    1    4
+ */
+    count n = 6;
+    Graph G(n);
+
+    G.addEdge(0, 2);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+    G.addEdge(2, 4);
+    G.addEdge(3, 5);
+    G.addEdge(4, 5);
+
+    Closeness centrality(G,false);
+    centrality.run();
+    std::vector<double> bc = centrality.scores();
+
+    const double tol = 1e-3;
+    EXPECT_NEAR(0.1, bc[0], tol);
+    EXPECT_NEAR(0.1, bc[1], tol);
+    EXPECT_NEAR(0.166667, bc[2], tol);
+    EXPECT_NEAR(0.125, bc[3], tol);
+    EXPECT_NEAR(0.125, bc[4], tol);
+    EXPECT_NEAR(0.1, bc[5], tol);
+}
+
+
+TEST_F(CentralityGTest, testKPathCentrality) {
+    METISGraphReader reader;
+    Graph G = reader.read("input/power.graph");
+
+    KPathCentrality centrality(G);
+    centrality.run();
 }
 
 
