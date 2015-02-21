@@ -93,6 +93,8 @@ public:
 			}
 		}
 		assert(result == n);
+		root.recount();
+		assert(root.size() == n);
 	}
 
 	/**
@@ -193,7 +195,7 @@ public:
 		vector<Point2D<double> > euCenters;
 		vector<double> euRadii;
 		vector<double> hyDistances;
-		count steps = 20;
+		count steps = 50;
 		double maxDist = HyperbolicSpace::EuclideanRadiusToHyperbolic(euQuery.length()) + HyperbolicSpace::EuclideanRadiusToHyperbolic(this->maxRadius);
 		double stepsize = maxDist / steps;
 

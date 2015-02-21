@@ -429,7 +429,7 @@ TEST_F(QuadTreeGTest, testSequentialQuadTreeConstruction) {
 TEST_F(QuadTreeGTest, testProbabilisticQuery) {
 	count n = 10000;
 	count m = n*3;
-	count capacity = 1000;
+	count capacity = 20;
 	double targetR = 2*log(8*n / (M_PI*(m/n)*2));
 	double s = targetR / HyperbolicSpace::hyperbolicAreaToRadius(n);
 	double alpha = 1;

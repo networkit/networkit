@@ -451,12 +451,12 @@ public:
 		}
 	}
 
-	void getElementsProbabilistically(vector<Point2D<double> > euCenters, vector<double> euRadii, vector<double> hyDistances, Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &result) {
+	void getElementsProbabilistically(vector<Point2D<double> > &euCenters, vector<double> &euRadii, vector<double> &hyDistances, Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &result) {
 		double probUB = upperBoundProb(euCenters, euRadii, hyDistances, prob);
 		count expectedNeighbours = probUB*size();
 
 		index delta = 0;
-		count offset = result.size();
+		//count offset = result.size();
 
 		if (isLeaf) {
 			for (int i = 0; i < content.size(); i++) {
@@ -477,9 +477,10 @@ public:
 				i += delta;
 			}
 		}	else {
-			if (probUB < 1/capacity) {//switch to binomial candidate selection
+			if (expectedNeighbours < 1) {//switch to binomial candidate selection
 				std::binomial_distribution<count> distribution(size(),probUB);
 				count candidates = distribution(Aux::Random::getURNG());
+				assert(candidates < size());
 				getElementsProbabilistically(probUB, euQuery, prob, candidates, result);
 			} else {//carry on as normal
 				for (index i = 0; i < children.size(); i++) {
@@ -487,7 +488,7 @@ public:
 				}
 			}
 		}
-		INFO("Expected at most ", expectedNeighbours, " neighbours, got ", result.size() - offset);
+		//DEBUG("Expected at most ", expectedNeighbours, " neighbours, got ", result.size() - offset);
 	}
 
 	//this could be private
@@ -506,7 +507,7 @@ public:
 			}
 			for (index cand : candList) {
 				double acceptance = prob(HyperbolicSpace::poincareMetric(euQuery, positions[cand]))/upperBound;
-				if (Aux::Random::real() < acceptance) circleDenizens.push_back(cand);
+				if (Aux::Random::real() < acceptance) circleDenizens.push_back(content[cand]);
 			}
 		} else {
 			assert(children.size() == 4);
@@ -516,9 +517,28 @@ public:
 				if (i == children.size()-1) assert(size() - coveredpoints == children[i].size());
 				std::binomial_distribution<count> distribution(candidates - coveredcandidates,children[i].size()/(size()-coveredpoints));
 				count childcands = distribution(Aux::Random::getURNG());
+				assert(childcands < children[i].size());
 				children[i].getElementsProbabilistically(upperBound, euQuery, prob, childcands, circleDenizens);
 				coveredpoints += children[i].size();
 				coveredcandidates += childcands;
+			}
+			assert(coveredpoints == size());
+			assert(coveredcandidates == candidates);
+		}
+	}
+
+	T maybeGetKthElement(double upperBound, Point2D<double> euQuery, std::function<double(double)> prob, index k, vector<T> &circleDenizens) {
+		assert(k < size());
+		if (isLeaf) {
+			double acceptance = prob(HyperbolicSpace::poincareMetric(euQuery, positions[k]))/upperBound;
+			if (Aux::Random::real() < acceptance) circleDenizens.push_back(cand);
+			return content[k];
+		} else {
+			index offset = 0;
+			for (index i = 0; i < children.size(); i++) {
+				count childsize = children[i].size();
+				if (k - offset < childsize) return children[i].maybeGetKthElement(upperBound, euQuery, prob, k - offset, circleDenizens);
+				offset += childsize;
 			}
 		}
 	}
