@@ -13,13 +13,13 @@ namespace NetworKit {
 DegreeCentrality::DegreeCentrality(const Graph& G, bool normalized) : Centrality(G, normalized) {
 }
 
-void DegreeCentrality::run() {
+void DegreeCentrality::runImpl() {
 	scoreData = std::vector<double>(G.upperNodeIdBound(), 0.0);
 
 	G.parallelForNodes([&](node u) {
 		scoreData[u] = G.degree(u);
 	});
-
+	assureRunning();
 	if (normalized) {
 		count maxDeg = GraphProperties::minMaxDegree(G).second;
 		G.parallelForNodes([&](node u) {

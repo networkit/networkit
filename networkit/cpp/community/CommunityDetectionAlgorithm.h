@@ -9,6 +9,7 @@
 #define COMMUNITYDETECTIONALGORITHM_H_
 
 #include "../structures/Partition.h"
+#include "../base/Algorithm.h"
 
 namespace NetworKit {
 
@@ -16,7 +17,7 @@ namespace NetworKit {
  * @ingroup community
  * Abstract base class for community detection/graph clustering algorithms.
  */
-class CommunityDetectionAlgorithm {
+class CommunityDetectionAlgorithm : public Algorithm {
 public:
 	/**
 	 * A community detection algorithm operates on a graph, so the constructor expects a graph.
@@ -39,7 +40,7 @@ public:
 	/**
 	 * Apply algorithm to graph
 	 */
-	virtual void run() = 0;
+	virtual void runImpl() = 0;
 
 	/**
 	 * Returns the result of the run method or throws an error, if the algorithm hasn't run yet.
@@ -55,7 +56,7 @@ public:
 protected:
 	const Graph& G;
 	Partition result;
-	bool hasRun;
+	//bool hasRun;
 };
 
 } /* namespace NetworKit */

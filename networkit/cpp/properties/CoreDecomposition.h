@@ -13,6 +13,7 @@
 #include <string>
 #include <list>
 #include "../graph/Graph.h"
+#include "../base/Algorithm.h"
 
 namespace NetworKit {
 
@@ -20,7 +21,7 @@ namespace NetworKit {
  * @ingroup properties
  * Computes k-core decomposition of a graph.
  */
-class CoreDecomposition {
+class CoreDecomposition : public Algorithm {
 
 public:
 
@@ -34,7 +35,9 @@ public:
 	/**
 	* Perform k-core decomposition of graph passed in constructor.
 	*/
-	void run();
+	//void run();
+
+	void runImpl() override;
 
 	/**
 	 * Get vector of core numbers, indexed by node.

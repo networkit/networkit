@@ -24,7 +24,7 @@ Betweenness::Betweenness(const Graph& G, bool normalized, bool computeEdgeCentra
 
 }
 
-void Betweenness::run() {
+void Betweenness::runImpl() {
 	count z = G.upperNodeIdBound();
 	scoreData.clear();
 	scoreData.resize(z);
@@ -81,7 +81,7 @@ void Betweenness::run() {
 	};
 
 	G.balancedParallelForNodes(computeDependencies);
-
+	assureRunning();
 	INFO("adding thread-local scores");
 	// add up all thread-local values
 	for (auto local : scorePerThread) {

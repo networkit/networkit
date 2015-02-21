@@ -15,7 +15,7 @@
 namespace NetworKit {
 ParallelAgglomerativeClusterer::ParallelAgglomerativeClusterer(const Graph& G) : CommunityDetectionAlgorithm(G) {};
 
-void ParallelAgglomerativeClusterer::run() {
+void ParallelAgglomerativeClusterer::runImpl() {
 	// copy graph because we make changes due to merges
 	Graph Gcopy(G.numberOfNodes(), true); // make weighted copy
 	G.forEdges([&](node u, node v, edgeweight w){
