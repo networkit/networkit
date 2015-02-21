@@ -24,9 +24,9 @@ import networkit
 
 from util import *
 import nk
-import nx
-import ig
-import gt
+#import nx
+#import ig
+#import gt
 
 # helper function
 
@@ -317,11 +317,11 @@ class Bench:
         for param in argtuples:
             try:
                 gen = generator(*param)
+                row = {}    # benchmark data row
                 row["graph"] = str(param)
                 try:
                     self.info("running {genName} {nRuns} times".format(**locals()))
                     for i in range(nRuns):
-                        row = {}    # benchmark data row
                         row["algo"] = genName
                         try: # timeout
                             result = None
@@ -332,6 +332,7 @@ class Bench:
                                 result = gen.generate()
                             self.debug("took {0} s".format(t.elapsed))
                             # store data
+                            row["m"] = result.numberOfNodes()
                             row["time"] = t.elapsed
                             row["result"] = result
                         except Timeout as tx:
