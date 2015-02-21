@@ -531,7 +531,7 @@ public:
 		assert(k < size());
 		if (isLeaf) {
 			double acceptance = prob(HyperbolicSpace::poincareMetric(euQuery, positions[k]))/upperBound;
-			if (Aux::Random::real() < acceptance) circleDenizens.push_back(cand);
+			if (Aux::Random::real() < acceptance) circleDenizens.push_back(content[k]);
 			return content[k];
 		} else {
 			index offset = 0;
