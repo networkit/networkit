@@ -458,6 +458,8 @@ TEST_F(QuadTreeGTest, testProbabilisticQuery) {
 		EXPECT_NEAR(near.size(), acc*n, std::max(acc*n*0.25, 10.0));
 	}
 
+	//TODO: some test about appropriate subtrees and leaves
+
 	auto edgeProb = [](double distance) -> double {return 1;};
 	vector<index> near;
 	quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[0], radii[0]), edgeProb, near);

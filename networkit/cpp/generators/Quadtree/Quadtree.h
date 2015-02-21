@@ -195,7 +195,7 @@ public:
 		vector<Point2D<double> > euCenters;
 		vector<double> euRadii;
 		vector<double> hyDistances;
-		count steps = 50;
+		count steps = 40;
 		double maxDist = HyperbolicSpace::EuclideanRadiusToHyperbolic(euQuery.length()) + HyperbolicSpace::EuclideanRadiusToHyperbolic(this->maxRadius);
 		double stepsize = maxDist / steps;
 
@@ -210,7 +210,7 @@ public:
 
 		//call root node
 
-		root.getElementsProbabilistically(euCenters, euRadii, hyDistances, euQuery, prob, circleDenizens);
+		root.getElementsProbabilistically(-1, euCenters, euRadii, hyDistances, euQuery, prob, circleDenizens);
 	}
 
 	count size() const {

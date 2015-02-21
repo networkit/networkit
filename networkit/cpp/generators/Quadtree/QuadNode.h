@@ -45,18 +45,6 @@ private:
 	index ID;
 	double lowerBoundR;
 
-	double upperBoundProb(vector<Point2D<double> > &euCenters, vector<double> &euRadii, vector<double> &hyperbolicDistances, std::function<double(double)> prob) {
-		count numCircles = euCenters.size();
-		assert(euRadii.size() == numCircles);
-		assert(hyperbolicDistances.size() == numCircles);
-		double distanceLowerBound = 0;
-		for (int i = 0; i < numCircles; i++) {
-			if (outOfReach(euCenters[i], euRadii[i])) distanceLowerBound = hyperbolicDistances[i];
-			else break;
-		}
-		return prob(distanceLowerBound);
-	}
-
 public:
 	std::vector<QuadNode> children;
 
@@ -451,8 +439,19 @@ public:
 		}
 	}
 
-	void getElementsProbabilistically(vector<Point2D<double> > &euCenters, vector<double> &euRadii, vector<double> &hyDistances, Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &result) {
-		double probUB = upperBoundProb(euCenters, euRadii, hyDistances, prob);
+	void getElementsProbabilistically(int minCircle, vector<Point2D<double> > &euCenters, vector<double> &euRadii, vector<double> &hyDistances, Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &result) {
+		int numCircles = euCenters.size();
+		assert(euRadii.size() == numCircles);
+		assert(hyDistances.size() == numCircles);
+		assert(minCircle >= -1);
+		assert(minCircle < numCircles);
+		int ci;
+		for (ci = minCircle+1; ci < numCircles; ci++) {
+			if (!outOfReach(euCenters[ci], euRadii[ci])) break;
+		}
+		assert(ci > minCircle);
+		minCircle = ci-1;
+		double probUB = prob(hyDistances[minCircle]);
 		count expectedNeighbours = probUB*size();
 
 		index delta = 0;
@@ -486,7 +485,7 @@ public:
 				}
 			} else {//carry on as normal
 				for (index i = 0; i < children.size(); i++) {
-					children[i].getElementsProbabilistically(euCenters, euRadii, hyDistances, euQuery, prob, result);
+					children[i].getElementsProbabilistically(minCircle, euCenters, euRadii, hyDistances, euQuery, prob, result);
 				}
 			}
 		}
