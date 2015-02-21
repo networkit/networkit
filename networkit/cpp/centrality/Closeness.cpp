@@ -22,7 +22,7 @@ Closeness::Closeness(const Graph& G, bool normalized) : Centrality(G, normalized
 
 }
 
-void Closeness::run() {
+void Closeness::runImpl() {
 	count z = G.upperNodeIdBound();
 	scoreData.clear();
 	scoreData.resize(z);

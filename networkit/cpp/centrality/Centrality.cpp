@@ -10,7 +10,7 @@
 namespace NetworKit {
 
 
-Centrality::Centrality(const Graph& G, bool normalized) : Algorithm(), G(G), normalized(normalized), computeEdgeCentrality(computeEdgeCentrality) {
+Centrality::Centrality(const Graph& G, bool normalized, bool computeEdgeCentrality) : Algorithm(), G(G), normalized(normalized), computeEdgeCentrality(computeEdgeCentrality) {
 	if (computeEdgeCentrality && !G.hasEdgeIds()) {
 		throw std::runtime_error("For edge centralities to be computed, edges must be indexed first: call G.indexEdges()");
 	}
