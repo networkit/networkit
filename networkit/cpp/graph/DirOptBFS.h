@@ -66,14 +66,6 @@ private:
 	 */
 	count rhs_C_BT;
 
-	void topDownStep(count currentDistance);
-
-	void bottomUpStep(count currentDistance);
-
-	bool determineDirection();
-
-
-
 public:
 	/**
 	 * Constructs the BFS class for @a G and source node @a source.
@@ -83,7 +75,7 @@ public:
 	 * @param storePaths	store paths and number of paths?
 	 * @param storeStack	maintain a stack of nodes in decreasing order of distance
 	 */
-	DirOptBFS(const Graph& G, node source, bool storePaths=true, bool storeStack=false);
+	DirOptBFS(const Graph& G, node source, bool storePaths=true, bool storeStack=false, count alphe = 12, count beta = 24);
 
 	/**
 	 * Breadth-first search from @a source.
