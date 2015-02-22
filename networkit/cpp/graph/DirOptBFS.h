@@ -1,5 +1,5 @@
 /*
- * BFS.h
+ * DirOptBFS.h
  *
  *  Created on: Feb 21, 2015
  *      Author: Maximilian Vogel
@@ -10,13 +10,13 @@
 
 #include "Graph.h"
 #include "SSSP.h"
-#include <unordered_set>
 
 namespace NetworKit {
 
 /**
  * @ingroup graph
  * The BFS class is used to do a breadth-first search on a Graph from a given source node.
+ * Idea of the direction optimizing BFS came from: http://www.cs.berkeley.edu/~sbeamer/beamer-sc2012.pdf
  */
 class DirOptBFS : public SSSP {
 

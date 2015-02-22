@@ -26,34 +26,31 @@ DirOptBFS::DirOptBFS(const Graph& G, node source, bool storePaths, bool storeSta
 void DirOptBFS::run(node t) {
 	count currentDistance = 0;
 	auto doTopDownStep = [&]() {
-		if (topdown) {
-	#if 0
+		topdown = topdown?(m_f < (m_u/alpha)):(n_f < rhs_C_BT);
+		/*if (topdown) {
 			count m_f = 0;
+			// manual computation of m_f is no bookkeeping is done
 			// set would be better as one doesn't have to do a whole scan
 			#pragma omp parallel for reduction(+:m_f)
 			for (count u = 0; u < frontier.size(); ++u) {
 				if (frontier[u]) m_f += G.degree(u);
 			}
+			// manual computation of m_u is no bookkeeping is done
 			count m_u = G.parallelSumForNodes([&](node v){
 				return (previous[v].empty()?G.degree(v):0);
 			});
-			/*G.forNodes([&](node u) {
-				if (previous[u].empty()) {
-					m_u += G.degree(u);
-				}
-			});*/
-	#endif
 			topdown = !(m_f > (m_u / alpha));
-			// reset m_f as it gets computed with each iteration.
 		} else {
-	/*		count n = G.numberOfNodes();
+			count n = G.numberOfNodes();
 			count n_f = 0;
+			// manual computation of n_f is no bookkeeping is done
 			#pragma omp parallel for reduction(+:n_f)
 			for (count u = 0; u < frontier.size(); ++u) {
 				n_f += frontier[u];
-			}*/
+			}
 			topdown = n_f < rhs_C_BT;
-		}
+		}*/
+		// reset bookkeeping variables that are computed for each iteration
 		m_f = 0;
 		n_f = 0;
 		return topdown;
@@ -62,8 +59,9 @@ void DirOptBFS::run(node t) {
 
 	auto bottomUpStep = [&](){
 		// this probably could be parallelized, however the following stuff needs to be sorted out
-		// - concurrent writes on different indizes vector<bool> and vector in general ?
-		// - bookkeeping variables m_f, n_f, m_u. The order of writes do not matter at all, however they need to be taken care of when parallelized.
+		// - concurrent writes on different indices vector<bool> and vector in general ?
+		// - synchronisation of bookkeeping variables m_f, n_f, m_u. The order of writes do not matter at all, 
+		//   however they need to be taken care of when parallelized.
 		G.forNodes([&](node v){
 			// iterate over all nodes v that haven't been visited yet
 			if (previous[v].empty()) {
@@ -81,7 +79,7 @@ void DirOptBFS::run(node t) {
 						n_f++;
 						hasQueuedNodes = true;
 						m_u -= G.degree(u);
-						break; // if we only want one predecessor/bfs tree, we could break here.
+						break; // if we only want one predecessor/bfs tree, we break the loop here.
 					}
 				}
 			}
@@ -89,7 +87,10 @@ void DirOptBFS::run(node t) {
 	};
 
 	auto topDownStep = [&]() {
-		// set would be better as one doesn't have to do a whole scan
+		// TODO:
+		// this scan could only be avoided with a queue or set-like data structure
+		// however, this will degrade performance as the current frontier[u]-accesses in the bottom-up-step
+		// will result in "frontier.find(u) != frontier.end()" which seems to be way more expensive
 		for (count u = 0, end = frontier.size(); u < end; ++u) {
 			// if the node is not in the frontier, just continue
 			if(!frontier[u]) continue;
@@ -151,6 +152,9 @@ void DirOptBFS::run(node t) {
 /*			timer.stop();
 			time_botstep += timer.elapsedMilliseconds();
 			n_bot += n_f;*/
+			// during a bottom-up step, we don't really handle the nodes in the frontier and clean it up
+			// therefore, clear the frontier now. TODO: can this be done any cheaper?
+			frontier.assign(z,false);
 		}
 		++currentDistance;
 		std::swap(frontier,next);
