@@ -8,10 +8,12 @@
 #include "SSSPGTest.h"
 #include "../DynBFS.h"
 #include "../BFS.h"
+#include "../DirOptBFS.h"
 #include "../DynDijkstra.h"
 #include "../Dijkstra.h"
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/Log.h"
+#include "../../auxiliary/Timer.h"
 
 #include <stack>
 
@@ -115,6 +117,59 @@ TEST_F(SSSPGTest, testGetAllShortestPaths) {
 			INFO(n);
 		}
 	}
+}
+
+TEST_F(SSSPGTest, testDirOptBFS) {
+/* Graph:
+         ______
+		/      \
+	   0    3   6
+		\  / \ /
+		 2    5
+		/  \ / \
+	   1    4   7
+*/
+	int n = 8;
+	Graph G(n);
+
+	G.addEdge(0, 2);
+	G.addEdge(1, 2);
+	G.addEdge(2, 3);
+	G.addEdge(2, 4);
+	G.addEdge(3, 5);
+	G.addEdge(4, 5);
+	G.addEdge(5, 6);
+	G.addEdge(5, 7);
+	G.addEdge(0, 6);
+
+
+	BFS bfs_ref(G, 5);
+	bfs_ref.run();
+
+	DirOptBFS bfs_diropt(G, 5);
+	bfs_diropt.run();
+
+	EXPECT_EQ(bfs_ref.getDistances(),bfs_diropt.getDistances());
+}
+
+TEST_F(SSSPGTest, benchDirOptBFS) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/as-Skitter.metis.graph");
+	Aux::Timer t;
+
+	BFS bfs_ref(G, 100000);
+	t.start();
+	bfs_ref.run();
+	t.stop();
+	INFO("bfs_ref took:\t",t.elapsedTag());
+
+	DirOptBFS bfs_diropt(G, 100000);
+	t.start();
+	bfs_diropt.run();
+	t.stop();
+	INFO("bfs_diropt took:\t",t.elapsedTag());
+
+	EXPECT_EQ(bfs_ref.getDistances(),bfs_diropt.getDistances());
 }
 
 } /* namespace NetworKit */
