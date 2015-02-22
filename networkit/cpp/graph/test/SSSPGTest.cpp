@@ -154,7 +154,7 @@ TEST_F(SSSPGTest, testDirOptBFS) {
 
 TEST_F(SSSPGTest, benchDirOptBFS) {
 	METISGraphReader reader;
-	Graph G = reader.read("input/as-Skitter.metis.graph");
+	Graph G = reader.read("input/caidaRouterLevel.graph");
 	Aux::Timer t;
 
 	BFS bfs_ref(G, 100000);
