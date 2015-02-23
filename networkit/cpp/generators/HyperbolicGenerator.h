@@ -26,17 +26,14 @@ public:
 
 	/**
 	 * @param[in] n Number of nodes
-	 * @param[in] factor Size of neighborhood radius. If factor=1, radius = R
-	 * @param[in] alpha Dispersion parameter, default=1
-	 * @param[in] stretchradius Stretching the hyperbolic disk results in thinner graphs, default=1
 	 */
-	HyperbolicGenerator(count n, double factor = 1, double alpha = 1, double stretchradius = 1);
+	HyperbolicGenerator(count n);
 
 	/**
 	 * @param[in] n Number of nodes
 	 * @param[in] m Target number of edges
 	 */
-	HyperbolicGenerator(count n, count m);
+	HyperbolicGenerator(count n, count m, double exp=3);
 
 	/**
 	 * @param[in] n Number of nodes
