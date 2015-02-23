@@ -119,7 +119,28 @@ public:
 
 	static inline double radiusToHyperbolicArea(double radius) {
 			return  2*M_PI*(cosh(radius)-1);
+	}
+
+	static double getTargetRadius(double n, double m, double alpha, double T) {
+		double result;
+		double plexp = 2*alpha+1;
+		double avgDegree = m/n;
+		double gammaratio = ((plexp-2)/(plexp-1));
+		if (T == 0) {
+			result = 2*log(8*n / (M_PI*(m/n)*2));
+		} else {
+			double beta = 1/T;
+			if (T < 1){//cold regime
+				double Iinv = ((beta/M_PI)*sin(M_PI/beta));
+				double v = (avgDegree*Iinv)*(M_PI/2)*gammaratio*gammaratio;
+				result = 2*log(n / v);
+			} else {//hot regime
+				double v = avgDegree*(1-beta)*pow((M_PI/2), beta)*gammaratio*gammaratio;
+				result = 2*log(n/v)/beta;
+			}
 		}
+		return result;
+	}
 
 	static inline double effectiveAreaInCell(double minPhi, double maxPhi, double minR, double maxR, double alpha) {
 		double deltaPhi = maxPhi - minPhi;
