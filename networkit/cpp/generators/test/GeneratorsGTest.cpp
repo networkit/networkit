@@ -757,22 +757,11 @@ TEST_F(GeneratorsGTest, testHyperbolicPointGeneration) {
  */
 TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
 	count n = 50000;
-	double s = 1.2;
-	HyperbolicGenerator gen(n,1,1,s);
-	count expected = HyperbolicGenerator::expectedNumberOfEdges(n,s);
-	DEBUG("Expected: ", expected);
-	Graph G = gen.generate();
-	DEBUG("Actual: ", G.numberOfEdges());
-	EXPECT_NEAR(G.numberOfEdges(), expected, expected/10);
-	EXPECT_EQ(G.numberOfNodes(), n);
-	EXPECT_TRUE(G.checkConsistency());
-	//ConnectedComponents cc(G);
-	//cc.run();
-	//EXPECT_EQ(cc.numberOfComponents(),1);
-
 	count m = 100*n;
 	HyperbolicGenerator gen2(n,m);
-	G = gen2.generate();
+	Graph G = gen2.generate();
+	EXPECT_EQ(G.numberOfNodes(), n);
+	EXPECT_TRUE(G.checkConsistency());
 	EXPECT_NEAR(G.numberOfEdges(), m, m/10);
 	DEBUG("Actual: ", G.numberOfEdges());
 }
@@ -891,8 +880,8 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorConsistency) {
 
 TEST_F(GeneratorsGTest, testHyperbolicGeneratorMechanicGraphs) {
 	count n = 20000;
-	HyperbolicGenerator gen(n, n*3);
-	Graph G = gen.generateTemperate(1);
+	HyperbolicGenerator gen(n, n*3, 3, 0.5);
+	Graph G = gen.generate();
 	ASSERT_TRUE(G.checkConsistency());
 	CoreDecomposition cd(G);
 	cd.run();
