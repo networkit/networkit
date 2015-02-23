@@ -26,17 +26,14 @@ public:
 
 	/**
 	 * @param[in] n Number of nodes
-	 * @param[in] factor Size of neighborhood radius. If factor=1, radius = R
-	 * @param[in] alpha Dispersion parameter, default=1
-	 * @param[in] stretchradius Stretching the hyperbolic disk results in thinner graphs, default=1
 	 */
-	HyperbolicGenerator(count n, double factor = 1, double alpha = 1, double stretchradius = 1);
+	HyperbolicGenerator(count n);
 
 	/**
 	 * @param[in] n Number of nodes
 	 * @param[in] m Target number of edges
 	 */
-	HyperbolicGenerator(count n, count m);
+	HyperbolicGenerator(count n, count m, double exp=3, double T=0);
 
 	/**
 	 * @param[in] n Number of nodes
@@ -45,9 +42,10 @@ public:
 	 */
 	static double expectedNumberOfEdges(count n, double stretch);
 
-	Graph generateTemperate(double T);
+	//Graph generateTemperate(double T);
 
-	Graph generate(const vector<double> &angles, const vector<double> &radii, Quadtree<index> &quad, double thresholdDistance);
+	Graph generate(const vector<double> &angles, const vector<double> &radii, Quadtree<index> &quad, double thresholdDistance, double T=0);
+	Graph generateCold(const vector<double> &angles, const vector<double> &radii, Quadtree<index> &quad, double thresholdDistance);
 
 	/**
 	 * @param[in] angles Pointer to angles of node positions
@@ -56,7 +54,7 @@ public:
 	 * @param[in] thresholdDistance Edges are added for nodes closer to each other than this threshold
 	 * @return Graph to be generated according to parameters
 	 */
-	Graph generate(const vector<double> &angles, const vector<double> &radii, double r, double thresholdDistance);
+	Graph generate(const vector<double> &angles, const vector<double> &radii, double r, double thresholdDistance, double T=0);
 
 	/**
 	 * @param[in] n Number of nodes
@@ -65,7 +63,7 @@ public:
 	 * @param[in] stretchradius Stretching the hyperbolic disk results in thinner graphs, default=1
 	 * @return Graph to be generated according to parameters
 	 */
-	Graph generate(count n, double distanceFactor=1, double alpha=1, double stretchradius = 1);
+	Graph generate(count n, double distanceFactor=1, double alpha=1, double stretchradius = 1, double T = 0);
 
 	/**
 	 * @return Graph to be generated according to parameters specified in constructor.
@@ -115,6 +113,7 @@ private:
 	double stretch;
 	double factor;
 	double alpha;
+	double temperature;
 
 	/**
 	 * tuning parameters

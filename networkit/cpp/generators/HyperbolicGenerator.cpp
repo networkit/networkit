@@ -31,26 +31,29 @@ HyperbolicGenerator::HyperbolicGenerator() {
 	nodeCount = 10000;
 	initialize();
 }
-/**
- * Construct a generator for n nodes and the parameters, t, alpha and s.
- */
-HyperbolicGenerator::HyperbolicGenerator(count n, double distanceFactor, double alpha, double stretchradius) {
+
+HyperbolicGenerator::HyperbolicGenerator(count n) {
 	nodeCount = n;
-	stretch = stretchradius;
-	factor = distanceFactor;
-	this->alpha = alpha;
+	alpha = 1;
+	factor = 1;
+	stretch=1;
+	temperature=0;
 	initialize();
 }
+
 /**
  * Construct a generator for n nodes and m edges
  */
-HyperbolicGenerator::HyperbolicGenerator(count n, count m) {
+HyperbolicGenerator::HyperbolicGenerator(count n, count m, double plexp, double T) {
 	nodeCount = n;
+	if (plexp < 2) throw std::runtime_error("Exponent of power-law degree distribution must be >= 2");
+	if (T < 0 || T == 1) throw std::runtime_error("Temperature must be non-negative and not 1.");//Really necessary? Graphs with T=1 can be generated, only their degree is not controllable
+	alpha = (plexp-1)/2;
 	double R = HyperbolicSpace::hyperbolicAreaToRadius(n);
-	double targetR = 2*log(8*n / (M_PI*(m/n)*2));
+	double targetR = HyperbolicSpace::getTargetRadius(n, m, alpha, T);// 2*log(8*n / (M_PI*(m/n)*2));
 	stretch = targetR / R;
 	factor = 1;
-	alpha = 1;
+	temperature=T;
 	initialize();
 }
 
@@ -62,10 +65,10 @@ void HyperbolicGenerator::initialize() {
 }
 
 Graph HyperbolicGenerator::generate() {
-	return generate(nodeCount, factor, alpha, stretch);
+	return generate(nodeCount, factor, alpha, stretch, temperature);
 }
 
-Graph HyperbolicGenerator::generate(count n, double distanceFactor, double alpha, double stretchradius) {
+Graph HyperbolicGenerator::generate(count n, double distanceFactor, double alpha, double stretchradius, double T) {
 	double R = stretchradius*HyperbolicSpace::hyperbolicAreaToRadius(n);
 	vector<double> angles(n);
 	vector<double> radii(n);
@@ -91,7 +94,7 @@ Graph HyperbolicGenerator::generate(count n, double distanceFactor, double alpha
 	}
 
 	INFO("Generated Points");
-	return generate(anglecopy, radiicopy, r, R*distanceFactor);
+	return generate(anglecopy, radiicopy, r, R*distanceFactor, T);
 }
 
 double HyperbolicGenerator::expectedNumberOfEdges(count n, double stretch) {
@@ -99,7 +102,7 @@ double HyperbolicGenerator::expectedNumberOfEdges(count n, double stretch) {
 	return (8 / M_PI) * n * exp(-R/2)*(n/2);
 }
 
-Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<double> &radii, double R, double thresholdDistance) {
+Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<double> &radii, double R, double thresholdDistance, double T) {
 	Aux::Timer timer;
 	timer.start();
 	index n = angles.size();
@@ -116,10 +119,10 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	timer.stop();
 	INFO("Filled Quadtree, took ", timer.elapsedMilliseconds(), " milliseconds.");
 
-	return generate(angles, radii, quad, thresholdDistance);
+	return generate(angles, radii, quad, thresholdDistance, T);
 }
 
-Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<double> &radii, Quadtree<index> &quad, double thresholdDistance) {
+Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vector<double> &radii, Quadtree<index> &quad, double thresholdDistance) {
 	index n = angles.size();
 	assert(radii.size() == n);
 	Aux::Timer timer;
@@ -160,49 +163,17 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	return result.toGraph(true);
 }
 
-Graph HyperbolicGenerator::generateTemperate(double T) {
+Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<double> &radii, Quadtree<index> &quad, double thresholdDistance, double T) {
 	if (T < 0) throw std::runtime_error("Temperature cannot be negative.");
-	if (T == 0) return generate(nodeCount, 1, alpha, stretch);
+	if (T == 0) return generateCold(angles, radii, quad, thresholdDistance);
 	assert(T > 0);
-	count n = nodeCount;
-	double stretchradius = stretch;
-	double R = stretchradius*HyperbolicSpace::hyperbolicAreaToRadius(n);
-	vector<double> angles(n);
-	vector<double> radii(n);
-	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
-	//sample points randomly
-
-	HyperbolicSpace::fillPoints(angles, radii, stretchradius, alpha);
-	vector<index> permutation(n);
-
-	index p = 0;
-	std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
-
-	//can probably be parallelized easily, but doesn't bring much benefit
-	std::sort(permutation.begin(), permutation.end(), [&angles,&radii](index i, index j){return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);});
-
-	vector<double> anglecopy(n);
-	vector<double> radiicopy(n);
-
-	#pragma omp parallel for
-	for (index j = 0; j < n; j++) {
-		anglecopy[j] = angles[permutation[j]];
-		radiicopy[j] = radii[permutation[j]];
-	}
-
-	INFO("Generated Points");
-	Quadtree<index> quad(r, theoreticalSplit, alpha, capacity, balance);
-
-	for (index i = 0; i < n; i++) {
-		assert(radii[i] < r);
-		quad.addContent(i, angles[i], radii[i]);
-	}
-
-	quad.trim();
+	count n = angles.size();
+	assert(radii.size() == n);
+	assert(quad.size() == n);
 
 	//now define lambda
 	double beta = 1/T;
-	auto edgeProb = [beta, R](double distance) -> double {return 1 / (exp(beta*(distance-R)/2)+1);};
+	auto edgeProb = [beta, thresholdDistance](double distance) -> double {return 1 / (exp(beta*(distance-thresholdDistance)/2)+1);};
 
 	//get Graph
 	GraphBuilder result(n, false, false, false);//no direct swap with probabilistic graphs, sorry

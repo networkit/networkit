@@ -1523,13 +1523,12 @@ cdef class ConfigurationModelGenerator:
 cdef extern from "cpp/generators/HyperbolicGenerator.h":
 	cdef cppclass _HyperbolicGenerator "NetworKit::HyperbolicGenerator":
 		# TODO: revert to count when cython issue fixed
-		_HyperbolicGenerator(unsigned int nodes,  double distanceFactor, double alpha, double stretch) except +
+		_HyperbolicGenerator(unsigned int nodes,  unsigned int edges, double gamma, double T) except +
 		void setLeafCapacity(unsigned int capacity) except +
 		void setTheoreticalSplit(bool split) except +
 		void setBalance(double balance) except +
 		vector[double] getElapsedMilliseconds() except +
 		_Graph generate() except +
-		_Graph generateTemperate(double T) except +
 
 cdef class HyperbolicGenerator:
 	""" The Hyperbolic Generator can be described as a unit-disk model in hyperbolic space. The resulting graphs have a power-law degree distribution, small diameter and high clustering coefficient.
@@ -1540,19 +1539,19 @@ cdef class HyperbolicGenerator:
 		----------
 		n : integer
 			number of nodes
-		distanceFactor : double
-			scale distance threshold. The number of edges grows exponentially with a higher threshold
-		alpha : double
-			dispersion parameter governing whether points are moved to the boundary or the center. The power-law exponent of the degree distribution is 2*alpha+1.
-		stretchradius : double
-			parameter governing stretch of nodes. The number of edges decreases exponentially with a higher stretch
+		m : integer
+			number of edges
+		gamma : double
+			exponent of power-law degree distribution
+		T : double
+			temperature of statistical model
 			
 	"""
 
 	cdef _HyperbolicGenerator* _this
 
-	def __cinit__(self,  n, distanceFactor=1, alpha=1, stretchradius=1):		
-		self._this = new _HyperbolicGenerator(n, distanceFactor, alpha, stretchradius)
+	def __cinit__(self,  n, m, gamma=3, T=0):		
+		self._this = new _HyperbolicGenerator(n, m, gamma, T)
 
 	def setLeafCapacity(self, capacity):
 		self._this.setLeafCapacity(capacity)
@@ -1567,7 +1566,7 @@ cdef class HyperbolicGenerator:
 		return self._this.getElapsedMilliseconds()
 
 	def generate(self):
-		""" Generates hyperbolic unit disk graph
+		""" Generates hyperbolic graph
 
 		Returns
 		-------
@@ -1575,16 +1574,6 @@ cdef class HyperbolicGenerator:
 		
 		"""
 		return Graph(0).setThis(self._this.generate())
-
-	def generateTemperate(self, T):
-		""" Generates graph from hyperbolic geometry
-
-		Returns
-		-------
-		Graph
-		
-		"""
-		return Graph(0).setThis(self._this.generateTemperate(T))
 
 cdef extern from "cpp/generators/RmatGenerator.h":
 	cdef cppclass _RmatGenerator "NetworKit::RmatGenerator":
