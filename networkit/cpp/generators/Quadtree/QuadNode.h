@@ -453,36 +453,38 @@ public:
 		assert(ci > minCircle);
 		minCircle = ci-1;
 		if (minCircle >= 0) probUB = prob(hyDistances[minCircle]);
+		if (probUB == 0) return;
 		count expectedNeighbours = probUB*size();
 
-		index delta = 0;
 		//count offset = result.size();
 
 		if (isLeaf) {
 			for (int i = 0; i < content.size(); i++) {
-				double q = prob(HyperbolicSpace::poincareMetric(positions[i], euQuery));
-				if (i > 0) {
-					q = q / probUB; //since the candidate was selected by the jumping process, we have to adjust the probabilities
+				//jump!
+				if (probUB < 1) {
+					double random = Aux::Random::real();
+					double delta = std::log(random) / std::log(1-probUB);
+					//assert(delta >= 0);
+					i += delta;
+					if (i >= content.size()) break;
 				}
+
+				//see where we've arrived
+				double q = prob(HyperbolicSpace::poincareMetric(positions[i], euQuery));
+				q = q / probUB; //since the candidate was selected by the jumping process, we have to adjust the probabilities
+				assert(q <= 1);
 
 				//accept?
 				double acc = Aux::Random::real();
 				if (acc < q) {
 					result.push_back(content[i]);
 				}
-
-				//now jump!
-				if (probUB < 1) {
-					double random = Aux::Random::real();
-					delta = std::log(random) / std::log(1-probUB);
-					i += delta;
-				}
 			}
 		}	else {
-			if (expectedNeighbours < 4) {//select candidates directly instead of calling recursively
+			if (expectedNeighbours < 4 || probUB < 1/capacity) {//select candidates directly instead of calling recursively
 				assert(probUB < 1);
 				for (index i = 0; i < size(); i++) {
-					delta = std::log(Aux::Random::real()) / std::log(1-probUB);
+					double delta = std::log(Aux::Random::real()) / std::log(1-probUB);
 					i += delta;
 					if (i < size()) maybeGetKthElement(probUB, euQuery, prob, i, result);//this could be optimized. As of now, the offset is subtracted seperately for each point
 				}

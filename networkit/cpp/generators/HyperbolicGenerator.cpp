@@ -102,16 +102,16 @@ double HyperbolicGenerator::expectedNumberOfEdges(count n, double stretch) {
 	return (8 / M_PI) * n * exp(-R/2)*(n/2);
 }
 
-Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<double> &radii, double R, double thresholdDistance, double T) {
+Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<double> &radii, double r, double thresholdDistance, double T) {
 	Aux::Timer timer;
 	timer.start();
 	index n = angles.size();
 	assert(radii.size() == n);
-	Quadtree<index> quad(R, theoreticalSplit, alpha, capacity, balance);
+	Quadtree<index> quad(r, theoreticalSplit, alpha, capacity, balance);
 
 	//initialize a graph builder for n nodes and an undirected, unweighted graph with direct swap
 	for (index i = 0; i < n; i++) {
-		assert(radii[i] < R);
+		assert(radii[i] < r);
 		quad.addContent(i, angles[i], radii[i]);
 	}
 
