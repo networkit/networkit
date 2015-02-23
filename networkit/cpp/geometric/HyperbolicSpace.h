@@ -124,7 +124,7 @@ public:
 	static double getTargetRadius(double n, double m, double alpha, double T) {
 		double result;
 		double plexp = 2*alpha+1;
-		double avgDegree = m/n;
+		double avgDegree = (m/n)*2;
 		double gammaratio = ((plexp-2)/(plexp-1));
 		if (T == 0) {
 			result = 2*log(8*n / (M_PI*(m/n)*2));

@@ -880,8 +880,10 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorConsistency) {
 
 TEST_F(GeneratorsGTest, testHyperbolicGeneratorMechanicGraphs) {
 	count n = 20000;
-	HyperbolicGenerator gen(n, n*3, 3, 0.5);
+	count m = n*3;
+	HyperbolicGenerator gen(n, m, 3, 0.5);
 	Graph G = gen.generate();
+	EXPECT_NEAR(G.numberOfEdges(), m, m/10);
 	ASSERT_TRUE(G.checkConsistency());
 	CoreDecomposition cd(G);
 	cd.run();
