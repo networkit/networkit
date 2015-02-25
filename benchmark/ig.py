@@ -5,10 +5,12 @@ except ImportError as ex:
 
 import random
 
+framework = " (ig)"
+
 
 class Algo:
 
-	frameworkPrefix = "ig:"
+	framework = framework
 
 	""" runner for an algorithm"""
 	def run(self, G):
@@ -20,7 +22,7 @@ class Algo:
 
 
 class bConnectedComponents(Algo):
-	name = "ig:ConnectedComponents"
+	name = "ConnectedComponents" + framework
 
 	def run(self, G):
 		comp = G.components()
@@ -29,7 +31,7 @@ class bConnectedComponents(Algo):
 # - k-core decomposition (properties.CoreDecomposition)
 
 class bCoreDecomposition(Algo):
-	name = "ig:CoreDecomposition"
+	name = "CoreDecomposition" + framework
 
 	def run(self, G):
 		igraph.Graph.coreness(G)
@@ -38,7 +40,7 @@ class bCoreDecomposition(Algo):
 # - degree distribution power-law estimation (properties.powerLawExponent)
 
 class bPowerLaw(Algo):
-	name = "ig:PowerLaw"
+	name = "PowerLaw" + framework
 
 	def run(self, G):
 		fit = igraph.statistics.power_law_fit(G.degree())
@@ -47,7 +49,7 @@ class bPowerLaw(Algo):
 # - degree assortativity (properties.degreeAssortativity)
 
 class bDegreeAssortativity(Algo):
-	name = "ig:DegreeAssortativity"
+	name = "DegreeAssortativity" + framework
 
 	def run(self, G):
 		return igraph.Graph.assortativity_degree(G)
@@ -56,7 +58,7 @@ class bDegreeAssortativity(Algo):
 # - BFS & Dijkstra (graph.BFS, graph.Dijkstra)
 
 class bBFS(Algo):
-	name = "ig:BFS"
+	name = "BFS" + framework
 
 	def run(self, G):
 		s = random.randint(0, G.vcount())
@@ -65,14 +67,14 @@ class bBFS(Algo):
 
 # - community detection (community.PLM, community.PLP)
 class bCommunityDetectionLM(Algo):
-	name = "ig:CommunityDetectionLM"
+	name = "CommunityDetectionLM" + framework
 
 	def run(self, G):
 		igraph.Graph.community_multilevel(G)
 
 
 class bCommunityDetectionLP(Algo):
-	name = "ig:CommunityDetectionLP"
+	name = "CommunityDetectionLP" + framework
 
 	def run(self, G):
 		igraph.Graph.community_label_propagation(G)
@@ -82,40 +84,28 @@ class bCommunityDetectionLP(Algo):
 
 
 class bDiameter(Algo):
-	name = "ig:Diameter"
+	name = "Diameter" + framework
 
 	def run(self, G):
 		return igraph.Graph.diameter(G)
 
 
-class bDiameterEstimate(Algo):
-	name = "ig:Diameter"
-
-	def run(self, G):
-		raise NotImplementedError("TODO")  # Can't find relevant method
-
 
 # - clustering coefficients (average local), exact (properties.ClusteringCoefficient.avgLocal) and approximated (properties.ClusteringCoefficient.approxAvgLocal)
 class bClusteringCoefficient(Algo):
-	name = "ig:ClusteringCoefficient"
+	name = "ClusteringCoefficient" + framework
 
 	def run(self, G):
-		return igraph.Graph.transitivity_local_undirected(G)
+		igraph.Graph.transitivity_local_undirected(G)
 
 
-class bApproxClusteringCoefficient(Algo):
-	name = "ig:ApproxClusteringCoefficient"
-
-	def run(self, G):
-		# TODO: specify number of trials
-		raise NotImplementedError("TODO")  # Can't find relevant method
 
 # - centrality
 
 
 # 	- PageRank (centrality.PageRank, centrality.SciPyPageRank)
 class bPageRank(Algo):
-	name = "ig:PageRank"
+	name = "PageRank" + framework
 
 	def run(self, G):
 		pr = igraph.Graph.pagerank(G)	# this leads to a segfault -seems buggy
@@ -125,14 +115,7 @@ class bPageRank(Algo):
 
 # 	- betweenness,  exact (centrality.Betweenness) and approximated (centrality.ApproxBetweenness, centrality.ApproxBetweenness2)
 class bBetweenness(Algo):
-	name = "ig:Betweenness"
+	name = "Betweenness" + framework
 
 	def run(self, G):
 		b = igraph.Graph.betweenness(G)
-
-
-class bApproxBetweenness(Algo):
-	name = "ig:ApproxBetweenness"
-
-	def run(self, G):
-		raise NotImplementedError("TODO")  # Can't find relevant method
