@@ -5090,6 +5090,7 @@ cdef extern from "cpp/distmeasures/AlgebraicDistance.h":
 		_AlgebraicDistance(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm) except +
 		void preprocess() except +
 		double distance(node u, node v) except +
+		vector[vector[double]] getLoadsOnNodes()
 
 cdef class AlgebraicDistance:
 	"""
@@ -5147,6 +5148,13 @@ cdef class AlgebraicDistance:
 		Extended algebraic distance between the two nodes.
 		"""
 		return self._this.distance(u, v)
+
+
+	def getLoadsOnNodes(self):
+		"""
+		Returns a list, indexed by node id, of the load values.
+		"""
+		return self._this.getLoadsOnNodes()
 
 # Module: dynamic
 
