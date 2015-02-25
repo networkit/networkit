@@ -95,6 +95,24 @@ def enableNestedParallelism():
 	""" Enable nested parallelism for OpenMP"""
 	_enableNestedParallelism()
 
+
+cdef extern from "cpp/auxiliary/Random.h" namespace "Aux::Random":
+	void _setSeed "Aux::Random::setSeed" (uint64_t, bool)
+
+def setSeed(uint64_t seed, bool useThreadId):
+	""" Set the random seed that is used in NetworKit.
+
+	Note that there is a separate random number generator per thread.
+
+	Parameters
+	----------
+	seed : uint64_t
+		The seed
+	useThreadId : bool
+		If the thread id shall be added to the seed
+	"""
+	_setSeed(seed, useThreadId)
+
 # Class definitions
 
 ## Module: engineering
