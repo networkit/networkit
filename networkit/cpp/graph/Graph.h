@@ -943,7 +943,7 @@ void Graph::forNodesWhile(C condition, L handle) const {
 template<typename L>
 void Graph::forNodesInRandomOrder(L handle) const {
 	std::vector<node> randVec = nodes();
-	random_shuffle(randVec.begin(), randVec.end());
+	std::shuffle(randVec.begin(), randVec.end(), Aux::Random::getURNG());
 	for (node v : randVec) {
 		handle(v);
 	}
