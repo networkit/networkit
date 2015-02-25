@@ -715,6 +715,86 @@ cdef class BFS:
 		return self._this.getPath(t)
 
 
+cdef extern from "cpp/graph/DirOptBFS.h":
+	cdef cppclass _DirOptBFS "NetworKit::DirOptBFS":
+		_DirOptBFS(_Graph G, node source, bool storePaths, bool storeStack) except +
+		void run() except +
+		void run(node t) except +
+		vector[edgeweight] getDistances() except +
+		vector[node] getPath(node t) except +
+
+cdef class DirOptBFS:
+	""" Simple breadth-first search on a Graph from a given source
+
+	DirOptBFS(G, source, [storePaths], [storeStack])
+
+	Create DirOptBFS for `G` and source node `source`.
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	source : node
+		The source node of the breadth-first search.
+	storePaths : bool
+		store paths and number of paths?
+
+	"""
+	cdef _DirOptBFS* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False):
+		self._G = G
+		self._this = new _DirOptBFS(G._this, source, storePaths, storeStack)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self, t = None):
+		"""
+		Breadth-first search from source.
+
+		Returns
+		-------
+		vector
+			Vector of unweighted distances from source node, i.e. the
+			length (number of edges) of the shortest path from source to any other node.
+		"""
+		if t == None:
+			self._this.run()
+		else:
+			self._this.run(t)
+		return self
+
+	def getDistances(self):
+		"""
+		Returns a vector of weighted distances from the source node, i.e. the
+		length of the shortest path from the source node to any other node.
+
+		Returns
+		-------
+		vector
+			The weighted distances from the source node to any other node in the graph.
+		"""
+		return self._this.getDistances()
+
+	def getPath(self, t):
+		""" Returns a shortest path from source to `t` and an empty path if source and `t` are not connected.
+
+		Parameters
+		----------
+		t : node
+			Target node.
+
+		Returns
+		-------
+		vector
+			A shortest path from source to `t or an empty path.
+		"""
+		return self._this.getPath(t)
+
+
+
 cdef extern from "cpp/graph/DynBFS.h":
 	cdef cppclass _DynBFS "NetworKit::DynBFS":
 		_DynBFS(_Graph G, node source) except +

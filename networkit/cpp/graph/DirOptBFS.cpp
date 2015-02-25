@@ -11,15 +11,15 @@
 
 namespace NetworKit {
 
-DirOptBFS::DirOptBFS(const Graph& G, node source, bool storePaths, bool storeStack, count alpha, count beta) : 
-	SSSP(G, source, storePaths, storeStack), 
-	hasQueuedNodes(false), 
-	topdown(true), 
-	alpha(alpha), 
-	beta(beta), 
-	m_f(0), 
-	m_u(0), 
-	n_f(0), 
+DirOptBFS::DirOptBFS(const Graph& G, node source, bool storePaths, bool storeStack, count alpha, count beta) :
+	SSSP(G, source, storePaths, storeStack),
+	hasQueuedNodes(false),
+	topdown(true),
+	alpha(alpha),
+	beta(beta),
+	m_f(0),
+	m_u(0),
+	n_f(0),
 	rhs_C_BT(G.numberOfNodes()/beta) {
 }
 
@@ -59,12 +59,14 @@ void DirOptBFS::run(node t) {
 
 	auto bottomUpStep = [&](){
 		// this probably could be parallelized, however the following stuff needs to be sorted out
-		// - concurrent writes on different indices vector<bool> and vector in general ?
-		// - synchronisation of bookkeeping variables m_f, n_f, m_u. The order of writes do not matter at all, 
-		//   however they need to be taken care of when parallelized.
-		G.forNodes([&](node v){
+		// - concurrent writes on different indices vector<bool> and vector in general ? - Not a problem on general vectors (indices are different). But vector<bool>
+		//    has a different implementation from all other vectors to save space, so this needs to be tested.
+		// - synchronisation of bookkeeping variables m_f, n_f, m_u. The order of writes do not matter at all,
+		//   however they need to be taken care of when parallelized. - These are the problem. Simply parallelizing this will result in
+		//   wrong results due to race conditions. However, can the
+		G.balancedParallelForNodes([&](node v){
 			// iterate over all nodes v that haven't been visited yet
-			if (previous[v].empty()) {
+			if (previous[v].empty()) { // TODO: is it necessary to rely on the "previous" array here?
 				// iterate over their neighbours u ...
 				for (auto &u : G.neighbors(v)) {
 					// ... and if one of them belongs to the frontier ...
@@ -91,7 +93,7 @@ void DirOptBFS::run(node t) {
 		// this scan could only be avoided with a queue or set-like data structure
 		// however, this will degrade performance as the current frontier[u]-accesses in the bottom-up-step
 		// will result in "frontier.find(u) != frontier.end()" which seems to be way more expensive
-		for (count u = 0, end = frontier.size(); u < end; ++u) {
+		for (count u = 0, end = frontier.size(); u < end; ++u) { // TODO: why not use the node iterator here? This probably fails if there are deleted nodes.
 			// if the node is not in the frontier, just continue
 			if(!frontier[u]) continue;
 			// unset the node in the frontier

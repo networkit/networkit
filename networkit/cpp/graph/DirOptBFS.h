@@ -23,11 +23,11 @@ class DirOptBFS : public SSSP {
 friend class DynBFS;
 
 private:
-	std::vector<bool> frontier;
-	std::vector<bool> next;
+	std::vector<bool> frontier; //TODO: doc
+	std::vector<bool> next; // TODO: doc
 
 	/**
-	 * Indicates, if the BFS is finished yet.
+	 * Indicates if the BFS is finished yet.
 	 */
 	bool hasQueuedNodes;
 
@@ -52,7 +52,7 @@ private:
 	count m_f;
 
 	/**
-	 * Number of edges to be visited from unvisited nodes (should decrease monotonousely?).
+	 * Number of edges to be visited from unvisited nodes (should decrease monotonously?).
 	 */
 	count m_u;
 
