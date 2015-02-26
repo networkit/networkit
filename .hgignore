@@ -13,7 +13,6 @@ build.conf
 .sconsign.dblite
 /_NetworKit.cpp$
 src/python/NetworKit.egg-info/
-NetworKit-Tests-D
 \.out$
 \.egg$
 \~$
@@ -48,6 +47,10 @@ syntax: regexp
 /*.eps
 syntax: regexp
 ^doxygen$
+syntax: regexp
+^cachegrind.out
+syntax: regexp
+^networkit.egg-info
 
 syntax: glob
 NetworKit-Tests-*
