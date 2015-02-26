@@ -190,7 +190,7 @@ public:
 		}
 	}
 
-	void getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &circleDenizens) {
+	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &circleDenizens) {
 		//get bunch of circles
 		vector<Point2D<double> > euCenters;
 		vector<double> euRadii;
@@ -211,7 +211,7 @@ public:
 
 		//call root node
 
-		root.getElementsProbabilistically(-1, euCenters, euRadii, hyDistances, euQuery, prob, circleDenizens);
+		return root.getElementsProbabilistically(-1, euCenters, euRadii, hyDistances, euQuery, prob, circleDenizens);
 	}
 
 	count size() const {

@@ -178,10 +178,11 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	//get Graph
 	GraphBuilder result(n, false, false, false);//no direct swap with probabilistic graphs, sorry
 	Aux::ProgressMeter progress(n, 10000);
+	count totalCandidates = 0;
 	#pragma omp parallel for
 	for (index i = 0; i < n; i++) {
 		vector<index> near;
-		quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), edgeProb, near);
+		totalCandidates += quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), edgeProb, near);
 		for (index j : near) {
 			if (j < i) result.addEdge(i, j);
 		}
@@ -194,7 +195,7 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 		}
 
 	}
-
+	DEBUG("Candidates tested: ", totalCandidates);
 	return result.toGraph(true);
 
 }
