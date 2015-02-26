@@ -439,7 +439,7 @@ public:
 		}
 	}
 
-	void getElementsProbabilistically(int minCircle, vector<Point2D<double> > &euCenters, vector<double> &euRadii, vector<double> &hyDistances, Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &result) {
+	count getElementsProbabilistically(int minCircle, vector<Point2D<double> > &euCenters, vector<double> &euRadii, vector<double> &hyDistances, Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &result) {
 		int numCircles = euCenters.size();
 		assert(euRadii.size() == numCircles);
 		assert(hyDistances.size() == numCircles);
@@ -453,8 +453,9 @@ public:
 		assert(ci > minCircle);
 		minCircle = ci-1;
 		if (minCircle >= 0) probUB = prob(hyDistances[minCircle]);
-		if (probUB == 0) return;
+		if (probUB == 0) return 0;
 		count expectedNeighbours = probUB*size();
+		count candidatesTested = 0;
 
 		//count offset = result.size();
 
@@ -470,6 +471,7 @@ public:
 				}
 
 				//see where we've arrived
+				candidatesTested++;
 				double q = prob(HyperbolicSpace::poincareMetric(positions[i], euQuery));
 				q = q / probUB; //since the candidate was selected by the jumping process, we have to adjust the probabilities
 				assert(q <= 1);
@@ -487,14 +489,17 @@ public:
 					double delta = std::log(Aux::Random::real()) / std::log(1-probUB);
 					i += delta;
 					if (i < size()) maybeGetKthElement(probUB, euQuery, prob, i, result);//this could be optimized. As of now, the offset is subtracted seperately for each point
+					else break;
+					candidatesTested++;
 				}
 			} else {//carry on as normal
 				for (index i = 0; i < children.size(); i++) {
-					children[i].getElementsProbabilistically(minCircle, euCenters, euRadii, hyDistances, euQuery, prob, result);
+					candidatesTested += children[i].getElementsProbabilistically(minCircle, euCenters, euRadii, hyDistances, euQuery, prob, result);
 				}
 			}
 		}
 		//DEBUG("Expected at most ", expectedNeighbours, " neighbours, got ", result.size() - offset);
+		return candidatesTested;
 	}
 
 	//this could be private
