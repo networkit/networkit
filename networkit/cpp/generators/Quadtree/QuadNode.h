@@ -17,6 +17,7 @@
 
 using std::vector;
 using std::min;
+using std::max;
 using std::cos;
 
 namespace NetworKit {
@@ -310,6 +311,100 @@ public:
 		return outOfReach(query, radius);
 	}
 
+
+	/**
+	 * @param phi Angular coordinate of query point
+	 * @param r_h radial coordinate of query point in poincare disk
+	 */
+	std::pair<double, double> hyperbolicDistances(double phi, double r) {
+		//double minRHyper=HyperbolicSpace::EuclideanRadiusToHyperbolic(this->minR);
+		//double maxRHyper=HyperbolicSpace::EuclideanRadiusToHyperbolic(this->maxR);
+		double r_h = HyperbolicSpace::EuclideanRadiusToHyperbolic(r);
+		//if (responsible(phi, r)) return 0;
+
+		/**
+		 * If the query point is not within the quadnode, the distance minimum is on the border.
+		 * Need to check whether extremum is between corners:
+		 */
+
+		/**
+		 * this is horribly inefficient. Converting polar to cartesian coordinates for the poincare distance
+		 * However, this is just a first proof of concept
+		 * TODO: optimize later
+		 */
+		double minDistance, maxDistance;
+
+		//Left border
+		double lowerLeftDistance = HyperbolicSpace::poincareMetric(leftAngle, minR, phi, r);
+		double upperLeftDistance = HyperbolicSpace::poincareMetric(leftAngle, maxR, phi, r);
+		if (responsible(phi, r)) minDistance = 0;
+		else minDistance = min(lowerLeftDistance, upperLeftDistance);
+
+		maxDistance = max(lowerLeftDistance, upperLeftDistance);
+		double a = cosh(r_h);
+		double b = sinh(r_h)*cos(phi-this->leftAngle);
+		double extremum1 = HyperbolicSpace::hyperbolicRadiusToEuclidean(log(sqrt(a+b)/sqrt(a-b)));
+		double extremum2 = HyperbolicSpace::hyperbolicRadiusToEuclidean(log(-sqrt(a+b)/sqrt(a-b)));
+		if (extremum1 < maxR && extremum1 >= minR) {
+			double extremaDistance = HyperbolicSpace::poincareMetric(leftAngle, extremum1, phi, r);
+			if (extremaDistance < minDistance) minDistance = extremaDistance;
+			maxDistance = max(maxDistance, extremaDistance);
+		}
+		if (extremum2 < maxR && extremum2 >= minR) {
+			double extremaDistance = HyperbolicSpace::poincareMetric(leftAngle, extremum2, phi, r);
+			if (extremaDistance < minDistance) minDistance = extremaDistance;
+			maxDistance = max(maxDistance, extremaDistance);
+		}
+
+		//Right border
+		double lowerRightDistance = HyperbolicSpace::poincareMetric(rightAngle, minR, phi, r);
+		double upperRightDistance = HyperbolicSpace::poincareMetric(rightAngle, maxR, phi, r);
+		minDistance = min(minDistance, lowerRightDistance);
+		minDistance = min(minDistance, upperRightDistance);
+		maxDistance = max(maxDistance, lowerRightDistance);
+		maxDistance = max(maxDistance, upperRightDistance);
+
+		b = sinh(r_h)*cos(phi-this->rightAngle);
+		extremum1 = HyperbolicSpace::hyperbolicRadiusToEuclidean(log(sqrt(a+b)/sqrt(a-b)));
+		extremum2 = HyperbolicSpace::hyperbolicRadiusToEuclidean(log(-sqrt(a+b)/sqrt(a-b)));
+		if (extremum1 < maxR && extremum1 >= minR) {
+			double extremaDistance = HyperbolicSpace::poincareMetric(rightAngle, extremum1, phi, r);
+			if (extremaDistance < minDistance) minDistance = extremaDistance;
+			maxDistance = max(maxDistance, extremaDistance);
+		}
+		if (extremum2 < maxR && extremum2 >= minR) {
+			double extremaDistance = HyperbolicSpace::poincareMetric(rightAngle, extremum2, phi, r);
+			if (extremaDistance < minDistance) minDistance = extremaDistance;
+			maxDistance = max(maxDistance, extremaDistance);
+		}
+
+		//phi
+		if (phi >= leftAngle && phi < rightAngle) {
+			double lower = HyperbolicSpace::poincareMetric(phi, minR, phi, r);
+			double upper = HyperbolicSpace::poincareMetric(phi, maxR, phi, r);
+			minDistance = min(minDistance, lower);
+			minDistance = min(minDistance, upper);
+			maxDistance = max(maxDistance, upper);
+			maxDistance = max(maxDistance, lower);
+		}
+
+		double mirrorphi;
+		if (phi >= M_PI) mirrorphi = phi - M_PI;
+		else mirrorphi = phi + M_PI;
+		//mirrored phi
+		if (mirrorphi >= leftAngle && mirrorphi < rightAngle) {
+			double lower = HyperbolicSpace::poincareMetric(mirrorphi, minR, phi, r);
+			double upper = HyperbolicSpace::poincareMetric(mirrorphi, maxR, phi, r);
+			minDistance = min(minDistance, lower);
+			minDistance = min(minDistance, upper);
+			maxDistance = max(maxDistance, upper);
+			maxDistance = max(maxDistance, lower);
+		}
+
+		return std::pair<double, double>(minDistance, maxDistance);
+	}
+
+
 	/**
 	 * Does the point at (angle, r) fall inside the region managed by this QuadNode?
 	 *
@@ -446,14 +541,23 @@ public:
 		assert(minCircle >= -1);
 		assert(minCircle < numCircles);
 		double probUB = 1;
+		double approxLB = 0;
 		int ci;
 		for (ci = minCircle+1; ci < numCircles; ci++) {
 			if (!outOfReach(euCenters[ci], euRadii[ci])) break;
 		}
 		assert(ci > minCircle);
 		minCircle = ci-1;
-		if (minCircle >= 0) probUB = prob(hyDistances[minCircle]);
+		if (minCircle >= 0) {
+			approxLB = hyDistances[minCircle];
+			probUB = prob(approxLB);
+		}
 		if (probUB == 0) return 0;
+		double phi_q, r_q;
+		HyperbolicSpace::cartesianToPolar(euQuery, phi_q, r_q);
+		//double hyperbolicLB = hyperbolicDistances(phi_q, r_q).first;
+
+		//assert(prob(hyperbolicLB) <= probUB);
 		count expectedNeighbours = probUB*size();
 		count candidatesTested = 0;
 
@@ -472,7 +576,9 @@ public:
 
 				//see where we've arrived
 				candidatesTested++;
-				double q = prob(HyperbolicSpace::poincareMetric(positions[i], euQuery));
+				double distance = HyperbolicSpace::poincareMetric(positions[i], euQuery);
+				//assert(distance >= hyperbolicLB);
+				double q = prob(distance);
 				q = q / probUB; //since the candidate was selected by the jumping process, we have to adjust the probabilities
 				assert(q <= 1);
 
