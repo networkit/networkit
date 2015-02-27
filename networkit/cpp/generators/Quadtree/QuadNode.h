@@ -320,7 +320,6 @@ public:
 		//double minRHyper=HyperbolicSpace::EuclideanRadiusToHyperbolic(this->minR);
 		//double maxRHyper=HyperbolicSpace::EuclideanRadiusToHyperbolic(this->maxR);
 		double r_h = HyperbolicSpace::EuclideanRadiusToHyperbolic(r);
-		//if (responsible(phi, r)) return 0;
 
 		/**
 		 * If the query point is not within the quadnode, the distance minimum is on the border.
@@ -343,19 +342,12 @@ public:
 		maxDistance = max(lowerLeftDistance, upperLeftDistance);
 		double a = cosh(r_h);
 		double b = sinh(r_h)*cos(phi-this->leftAngle);
-		double extremum1 = HyperbolicSpace::hyperbolicRadiusToEuclidean(log(sqrt(a+b)/sqrt(a-b)));
-		double extremum2 = HyperbolicSpace::hyperbolicRadiusToEuclidean(log(-sqrt(a+b)/sqrt(a-b)));
-		if (extremum1 < maxR && extremum1 >= minR) {
-			double extremaDistance = HyperbolicSpace::poincareMetric(leftAngle, extremum1, phi, r);
-			if (extremaDistance < minDistance) minDistance = extremaDistance;
-			maxDistance = max(maxDistance, extremaDistance);
+		double extremum = HyperbolicSpace::hyperbolicRadiusToEuclidean(log(sqrt(a+b)/sqrt(a-b)));
+		if (extremum < maxR && extremum >= minR) {
+			double extremeDistance = HyperbolicSpace::poincareMetric(leftAngle, extremum, phi, r);
+			minDistance = min(minDistance, extremeDistance);
+			maxDistance = max(maxDistance, extremeDistance);
 		}
-		if (extremum2 < maxR && extremum2 >= minR) {
-			double extremaDistance = HyperbolicSpace::poincareMetric(leftAngle, extremum2, phi, r);
-			if (extremaDistance < minDistance) minDistance = extremaDistance;
-			maxDistance = max(maxDistance, extremaDistance);
-		}
-
 		//Right border
 		double lowerRightDistance = HyperbolicSpace::poincareMetric(rightAngle, minR, phi, r);
 		double upperRightDistance = HyperbolicSpace::poincareMetric(rightAngle, maxR, phi, r);
@@ -365,20 +357,14 @@ public:
 		maxDistance = max(maxDistance, upperRightDistance);
 
 		b = sinh(r_h)*cos(phi-this->rightAngle);
-		extremum1 = HyperbolicSpace::hyperbolicRadiusToEuclidean(log(sqrt(a+b)/sqrt(a-b)));
-		extremum2 = HyperbolicSpace::hyperbolicRadiusToEuclidean(log(-sqrt(a+b)/sqrt(a-b)));
-		if (extremum1 < maxR && extremum1 >= minR) {
-			double extremaDistance = HyperbolicSpace::poincareMetric(rightAngle, extremum1, phi, r);
-			if (extremaDistance < minDistance) minDistance = extremaDistance;
-			maxDistance = max(maxDistance, extremaDistance);
-		}
-		if (extremum2 < maxR && extremum2 >= minR) {
-			double extremaDistance = HyperbolicSpace::poincareMetric(rightAngle, extremum2, phi, r);
-			if (extremaDistance < minDistance) minDistance = extremaDistance;
-			maxDistance = max(maxDistance, extremaDistance);
+		extremum = HyperbolicSpace::hyperbolicRadiusToEuclidean(log(sqrt(a+b)/sqrt(a-b)));
+		if (extremum < maxR && extremum >= minR) {
+			double extremeDistance = HyperbolicSpace::poincareMetric(rightAngle, extremum, phi, r);
+			minDistance = min(minDistance, extremeDistance);
+			maxDistance = max(maxDistance, extremeDistance);
 		}
 
-		//phi
+		//upper and lower borders
 		if (phi >= leftAngle && phi < rightAngle) {
 			double lower = HyperbolicSpace::poincareMetric(phi, minR, phi, r);
 			double upper = HyperbolicSpace::poincareMetric(phi, maxR, phi, r);
@@ -388,10 +374,10 @@ public:
 			maxDistance = max(maxDistance, lower);
 		}
 
+		//again with mirrored phi
 		double mirrorphi;
 		if (phi >= M_PI) mirrorphi = phi - M_PI;
 		else mirrorphi = phi + M_PI;
-		//mirrored phi
 		if (mirrorphi >= leftAngle && mirrorphi < rightAngle) {
 			double lower = HyperbolicSpace::poincareMetric(mirrorphi, minR, phi, r);
 			double upper = HyperbolicSpace::poincareMetric(mirrorphi, maxR, phi, r);
@@ -534,45 +520,30 @@ public:
 		}
 	}
 
-	count getElementsProbabilistically(int minCircle, vector<Point2D<double> > &euCenters, vector<double> &euRadii, vector<double> &hyDistances, Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &result) {
-		int numCircles = euCenters.size();
-		assert(euRadii.size() == numCircles);
-		assert(hyDistances.size() == numCircles);
-		assert(minCircle >= -1);
-		assert(minCircle < numCircles);
-		double probUB = 1;
-		double approxLB = 0;
-		int ci;
-		for (ci = minCircle+1; ci < numCircles; ci++) {
-			if (!outOfReach(euCenters[ci], euRadii[ci])) break;
-		}
-		assert(ci > minCircle);
-		minCircle = ci-1;
-		if (minCircle >= 0) {
-			approxLB = hyDistances[minCircle];
-			probUB = prob(approxLB);
-		}
-		if (probUB == 0) return 0;
+	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &result) {
 		double phi_q, r_q;
 		HyperbolicSpace::cartesianToPolar(euQuery, phi_q, r_q);
-		//double hyperbolicLB = hyperbolicDistances(phi_q, r_q).first;
+		double probUB = prob(hyperbolicDistances(phi_q, r_q).first);
+		if (probUB > 0.5) probUB = 1;
+		if (probUB == 0) return 0;
+		double probdenom = std::log(1-probUB);
+		if (probdenom == 0) return 0;//there is a very small probability, but we cannot process it.
 
-		//assert(prob(hyperbolicLB) <= probUB);
 		count expectedNeighbours = probUB*size();
 		count candidatesTested = 0;
 
-		//count offset = result.size();
-
 		if (isLeaf) {
-			for (int i = 0; i < content.size(); i++) {
+			const count lsize = content.size();
+			for (int i = 0; i < lsize; i++) {
 				//jump!
 				if (probUB < 1) {
 					double random = Aux::Random::real();
-					double delta = std::log(random) / std::log(1-probUB);
-					//assert(delta >= 0);
+					double delta = std::log(random) / probdenom;
+					assert(delta >= 0);
 					i += delta;
-					if (i >= content.size()) break;
+					if (i >= lsize) break;
 				}
+				assert(i >= 0);
 
 				//see where we've arrived
 				candidatesTested++;
@@ -591,16 +562,18 @@ public:
 		}	else {
 			if (expectedNeighbours < 4 || probUB < 1/capacity) {//select candidates directly instead of calling recursively
 				assert(probUB < 1);
-				for (index i = 0; i < size(); i++) {
-					double delta = std::log(Aux::Random::real()) / std::log(1-probUB);
+				const count stsize = size();
+				for (index i = 0; i < stsize; i++) {
+					double delta = std::log(Aux::Random::real()) / probdenom;
+					assert(delta >= 0);
 					i += delta;
-					if (i < size()) maybeGetKthElement(probUB, euQuery, prob, i, result);//this could be optimized. As of now, the offset is subtracted seperately for each point
+					if (i < size()) maybeGetKthElement(probUB, euQuery, prob, i, result);//this could be optimized. As of now, the offset is subtracted separately for each point
 					else break;
 					candidatesTested++;
 				}
 			} else {//carry on as normal
 				for (index i = 0; i < children.size(); i++) {
-					candidatesTested += children[i].getElementsProbabilistically(minCircle, euCenters, euRadii, hyDistances, euQuery, prob, result);
+					candidatesTested += children[i].getElementsProbabilistically(euQuery, prob, result);
 				}
 			}
 		}

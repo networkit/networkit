@@ -191,27 +191,8 @@ public:
 	}
 
 	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &circleDenizens) {
-		//get bunch of circles
-		vector<Point2D<double> > euCenters;
-		vector<double> euRadii;
-		vector<double> hyDistances;
-		count steps = 40;
-		double maxDist = HyperbolicSpace::EuclideanRadiusToHyperbolic(euQuery.length()) + HyperbolicSpace::EuclideanRadiusToHyperbolic(this->maxRadius);
-		double stepsize = maxDist / steps;
 
-		for (index i = 0; i < steps; i++) {
-			if (prob(i*stepsize) > 0.5) continue;//very high upper bounds are not that useful anyway
-			hyDistances.push_back(i*stepsize);
-			Point2D<double> center;
-			double radius;
-			HyperbolicSpace::getEuclideanCircle(euQuery, i*stepsize, center, radius);
-			euCenters.push_back(center);
-			euRadii.push_back(radius);
-		}
-
-		//call root node
-
-		return root.getElementsProbabilistically(-1, euCenters, euRadii, hyDistances, euQuery, prob, circleDenizens);
+		return root.getElementsProbabilistically(euQuery, prob, circleDenizens);
 	}
 
 	count size() const {
