@@ -65,10 +65,12 @@ void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, 
 		 */
 		double random = rdist(Aux::Random::getURNG());
 		double radius = (acosh(random)/alpha);
-		assert(radius < maxR);
+		//assert(radius < maxR);
 		//now translate into coordinates of Poincaré disc
 		radii[i] = hyperbolicRadiusToEuclidean(radius);
-		assert(radii[i] < r);
+		assert(radii[i] <= r);
+		if (radii[i] == r) radii[i] = std::nextafter(radii[i], 0);
+
 	}
 }
 
