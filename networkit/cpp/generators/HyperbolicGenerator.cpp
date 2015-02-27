@@ -183,9 +183,11 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	for (index i = 0; i < n; i++) {
 		vector<index> near;
 		totalCandidates += quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), edgeProb, near);
+		TRACE("Got neighbours of node ", i, ", adding them to graph builder.");
 		for (index j : near) {
 			if (j < i) result.addEdge(i, j);
 		}
+		TRACE("Addition to graph builder complete.");
 
 		if (i % 10000 == 0) {
 			#pragma omp critical (progress)
