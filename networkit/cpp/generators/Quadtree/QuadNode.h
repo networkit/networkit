@@ -523,17 +523,20 @@ public:
 	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &result) {
 		double phi_q, r_q;
 		HyperbolicSpace::cartesianToPolar(euQuery, phi_q, r_q);
+		TRACE("Getting hyperbolic distances");
 		double probUB = prob(hyperbolicDistances(phi_q, r_q).first);
 		if (probUB > 0.5) probUB = 1;
 		if (probUB == 0) return 0;
 		double probdenom = std::log(1-probUB);
 		if (probdenom == 0) return 0;//there is a very small probability, but we cannot process it.
+		TRACE("probUB: ", probUB, ", probdenom: ", probdenom);
 
 		count expectedNeighbours = probUB*size();
 		count candidatesTested = 0;
 
 		if (isLeaf) {
 			const count lsize = content.size();
+			TRACE("Leaf of size ", lsize);
 			for (int i = 0; i < lsize; i++) {
 				//jump!
 				if (probUB < 1) {
@@ -542,6 +545,7 @@ public:
 					assert(delta >= 0);
 					i += delta;
 					if (i >= lsize) break;
+					TRACE("Jumped with delta ", delta, " arrived at ", i);
 				}
 				assert(i >= 0);
 
@@ -556,23 +560,27 @@ public:
 				//accept?
 				double acc = Aux::Random::real();
 				if (acc < q) {
+					TRACE("Accepted node ", i, " with probability ", q, ".");
 					result.push_back(content[i]);
 				}
 			}
 		}	else {
 			if (expectedNeighbours < 4 || probUB < 1/capacity) {//select candidates directly instead of calling recursively
+				TRACE("probUB = ", probUB,  ", switching to direct candidate selection.");
 				assert(probUB < 1);
 				const count stsize = size();
 				for (index i = 0; i < stsize; i++) {
 					double delta = std::log(Aux::Random::real()) / probdenom;
 					assert(delta >= 0);
 					i += delta;
+					TRACE("Jumped with delta ", delta, " arrived at ", i, ". Calling maybeGetKthElement.");
 					if (i < size()) maybeGetKthElement(probUB, euQuery, prob, i, result);//this could be optimized. As of now, the offset is subtracted separately for each point
 					else break;
 					candidatesTested++;
 				}
 			} else {//carry on as normal
 				for (index i = 0; i < children.size(); i++) {
+					TRACE("Recursively calling child ", i);
 					candidatesTested += children[i].getElementsProbabilistically(euQuery, prob, result);
 				}
 			}
@@ -618,11 +626,14 @@ public:
 	}
 
 	void maybeGetKthElement(double upperBound, Point2D<double> euQuery, std::function<double(double)> prob, index k, vector<T> &circleDenizens) {
+		TRACE("Maybe get element ", k, " with upper Bound ", upperBound);
 		assert(k < size());
 		if (isLeaf) {
 			double acceptance = prob(HyperbolicSpace::poincareMetric(euQuery, positions[k]))/upperBound;
+			TRACE("Is leaf, accept with ", acceptance);
 			if (Aux::Random::real() < acceptance) circleDenizens.push_back(content[k]);
 		} else {
+			TRACE("Call recursively.");
 			index offset = 0;
 			for (index i = 0; i < children.size(); i++) {
 				count childsize = children[i].size();
