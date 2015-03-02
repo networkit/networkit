@@ -921,6 +921,17 @@ TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {
 	}
 }
 
+TEST_F(GeneratorsGTest, tryGiganticCollectionOfHyperbolicTemperatureGraphs) {
+	for (index i = 0; i < 30; i++) {
+		count n = 50000000;
+		count m = n*5;
+		HyperbolicGenerator gen(n, m, 3, 0.5);
+		Graph G = gen.generate();
+		EXPECT_NEAR(G.numberOfEdges(), m, m/10);
+		EXPECT_TRUE(G.checkConsistency());
+	}
+}
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
