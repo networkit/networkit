@@ -753,7 +753,7 @@ bool Graph::checkConsistency() const {
 			forNeighborsOf(u, [&](node v){
 				if (!exists[v]) {
 					nodeMissing = true;
-					DEBUG("Node ", v, " is missing, but node ", u, " has an edge to it!");
+					WARN("Node ", v, " is missing, but node ", u, " has an edge to it!");
 				} else if (v != u) {
 					neighborsets[u].insert(v);
 				}
@@ -770,7 +770,7 @@ bool Graph::checkConsistency() const {
 			if (v != none && v != u) {
 				auto it = neighborsets[v].find(u);
 				if (it == neighborsets[v].end()) {
-					DEBUG("Edge from ", u, " to ", v,  ", but not from ", v , " to ", u, "!");
+					WARN("Edge from ", u, " to ", v,  ", but not from ", v , " to ", u, "!");
 					edgeMissing = true;
 				} else {
 					neighborsets[v].erase(it);
@@ -782,7 +782,7 @@ bool Graph::checkConsistency() const {
 	bool nonEmpty = false;
 	forNodes([&](node u) {
 		if (exists[u] && !neighborsets[u].empty()) {
-			DEBUG("Node ", u, " had unresolved edges.");
+			WARN("Node ", u, " had unresolved edges.");
 			nonEmpty = true;
 		}
 	});
@@ -797,7 +797,7 @@ bool Graph::checkConsistency() const {
 		forNeighborsOf(v, [&](node u) {
 			if (lastSeen[u] == v) {
 				noMultiEdges = false;
-				DEBUG("Multiedge found!");
+				WARN("Multiedge found!");
 			}
 			lastSeen[u] = v;
 		});

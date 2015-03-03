@@ -342,7 +342,7 @@ public:
 		maxDistance = max(lowerLeftDistance, upperLeftDistance);
 		double a = cosh(r_h);
 		double b = sinh(r_h)*cos(phi-this->leftAngle);
-		double extremum = HyperbolicSpace::hyperbolicRadiusToEuclidean(log(sqrt(a+b)/sqrt(a-b)));
+		double extremum = HyperbolicSpace::hyperbolicRadiusToEuclidean(log((a+b)/(a-b))/2);
 		if (extremum < maxR && extremum >= minR) {
 			double extremeDistance = HyperbolicSpace::poincareMetric(leftAngle, extremum, phi, r);
 			minDistance = min(minDistance, extremeDistance);
@@ -357,7 +357,7 @@ public:
 		maxDistance = max(maxDistance, upperRightDistance);
 
 		b = sinh(r_h)*cos(phi-this->rightAngle);
-		extremum = HyperbolicSpace::hyperbolicRadiusToEuclidean(log(sqrt(a+b)/sqrt(a-b)));
+		extremum = HyperbolicSpace::hyperbolicRadiusToEuclidean(log((a+b)/(a-b))/2);
 		if (extremum < maxR && extremum >= minR) {
 			double extremeDistance = HyperbolicSpace::poincareMetric(rightAngle, extremum, phi, r);
 			minDistance = min(minDistance, extremeDistance);
