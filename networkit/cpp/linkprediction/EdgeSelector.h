@@ -1,14 +1,15 @@
 /*
  * EdgeSelector.h
  *
- *  Created on: 28.0022015
+ *  Created on: 28.02.2015
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
 #ifndef EDGESELECTOR_H_
 #define EDGESELECTOR_H_
 
-#include "EdgeSelector.h"
+#include "../graph/Graph.h"
+#include "LinkPredictor.h"
 
 namespace NetworKit {
 
@@ -18,15 +19,16 @@ namespace NetworKit {
  */
 class EdgeSelector {
 private:
-  const Graph& G;
-  const LinkPredictor linkPredictor;
+  const Graph& G; //!< Graph to work on
+
+  LinkPredictor* linkPredictor; //!< Predictor used to generate scores
 
 public:
   /**
-   * @param G graph to operate on
+   * @param G The graph to operate on
    * @param linkPredictor predictor used to rank 
    */
-  EdgeSelector(const Graph& G, const LinkPredictor linkPredictor);
+  EdgeSelector(const Graph& G, LinkPredictor* linkPredictor);
   
   std::vector<std::pair<node, node>> selectByLimit(count limit) const;
 

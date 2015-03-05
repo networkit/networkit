@@ -5,20 +5,21 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include <unordered_map>
 #include <list>
 
 #include "KatzIndex.h"
 
 namespace NetworKit {
 
-KatzIndex::KatzIndex(const Graph& G, unsigned int maxPathLength, double dampingValue)
+KatzIndex::KatzIndex(const Graph& G, count maxPathLength, double dampingValue)
     : LinkPredictor(G), maxPathLength(maxPathLength), dampingValue(dampingValue) {
+  // Invalidate start node in case the algorithm starts at node 0 the first time
+  lastStartNode = -1;
 }
 
 double KatzIndex::run(node u, node v) {
   if (lastStartNode == u || lastStartNode == v) {
-    return lastScores.at(lastStartNode == u ? v : u);
+    return getScore(u, v);
   }
   std::list<node> toProcess;
   // Start at the node with less neighbors to potentially increase performance
@@ -41,7 +42,15 @@ double KatzIndex::run(node u, node v) {
       toProcess.push_front(kv.first);
     }
   }
-  return lastScores.at(lastStartNode == u ? v : u);
+  return getScore(u, v);
+}
+
+double KatzIndex::getScore(node u, node v) const {
+  node endNode = lastStartNode == u ? v : u;
+  if (lastScores.find(endNode) == lastScores.end()) {
+    return 0;
+  }
+  return lastScores.at(endNode);
 }
 
 } // namespace NetworKit

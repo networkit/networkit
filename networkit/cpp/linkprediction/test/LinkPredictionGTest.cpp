@@ -9,6 +9,8 @@
 
 #include "LinkPredictionGTest.h"
 #include "../../io/METISGraphReader.h"
+#include "../KatzIndex.h"
+#include "../EdgeSelector.h"
 
 namespace NetworKit {
 
@@ -33,6 +35,19 @@ TEST_F(LinkPredictionGTest, testRandomEdgeRemoval) {
   std::pair<Graph, Graph> result = remover.remove(0.3);
   EXPECT_EQ(7, result.first.numberOfEdges());
   EXPECT_EQ(3, result.second.numberOfEdges());
+}
+
+TEST_F(LinkPredictionGTest, testEdgeSelectorByLimit) {
+  LinkPredictor* predictor = new KatzIndex(G, 3, 0.8);
+  EdgeSelector selector(G, predictor);
+  std::vector<std::pair<node, node>> edges = selector.selectByLimit(5);
+  // Assumes the edges are ordered by scores (ascending)
+  EXPECT_EQ(4, edges[0].first); EXPECT_EQ(0, edges[0].second);
+  EXPECT_EQ(6, edges[1].first); EXPECT_EQ(5, edges[1].second);
+  EXPECT_EQ(5, edges[2].first); EXPECT_EQ(1, edges[2].second);
+  EXPECT_EQ(6, edges[3].first); EXPECT_EQ(2, edges[3].second);
+  EXPECT_EQ(6, edges[4].first); EXPECT_EQ(3, edges[4].second);
+  delete predictor;
 }
 
 /*

@@ -5159,3 +5159,55 @@ cdef class PageRankNibble:
 		seeds : the seed node ids.
 		"""
 		return self._this.run(seeds)
+
+# Module: linkprediction
+
+cdef extern from "cpp/linkprediction/KatzIndex.h":
+	cdef cppclass _KatzIndex "NetworKit::KatzIndex":
+		_KatzIndex(const _Graph& G, count maxPathLength, double dampingValue) except +
+		double run(node u, node v) except +
+
+cdef class KatzIndex:
+	"""
+	Katz index assigns a pair of nodes a similarity score
+	that is based on the sum of the weighted number of paths of length l
+	where l is smaller than a given limit.
+
+	Parameters
+	----------
+	G : Graph
+		The graph to operate on.
+	maxPathLength : count
+		Maximal length of the paths to consider. Default: 3
+	dampingValue : count
+		Used to exponentially damp every addend of the sum. Should be in (0, 1). Default: 0.9
+	"""
+	cdef _KatzIndex* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, count maxPathLength = 3, double dampingValue = 0.9):
+		self._G = G
+		self._this = new _KatzIndex(G._this, maxPathLength, dampingValue)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self, node u, node v):
+		"""
+		Returns the similarity score for the given node-pair based on the
+		Katz index specified during construction. The algorithm considers all
+		paths starting at the node with the smaller degree except the algorithm
+		started at the other node at the last call.
+
+		Parameters
+		----------
+		u : node
+			First node.
+		v : node
+			Second node.
+
+		Returns
+		-------
+		The similarity score of the given node-pair calculated by the specified Katz index.
+		"""
+		return self._this.run(u, v)
