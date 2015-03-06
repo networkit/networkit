@@ -1865,6 +1865,66 @@ TEST_P(GraphGTest, testCompactEdges) {
 	});
 }
 
+TEST_P(GraphGTest, testSortEdges) {
+	Graph G = this->Ghouse;
+
+	for (int i = 0; i < 2; ++i) {
+		if (i > 0) {
+			G.indexEdges();
+		}
+
+		Graph origG = G;
+
+		G.sortEdges();
+
+		std::vector<std::tuple<node, node, edgeweight, edgeid> > edges;
+		edges.reserve(origG.numberOfEdges()*4);
+
+		std::vector<std::tuple<node, edgeweight, edgeid> > outEdges;
+		origG.forNodes([&](node u) {
+			origG.forEdgesOf(u, [&](node u, node v, edgeweight w, edgeid eid) {
+				outEdges.emplace_back(v, w, eid);
+			});
+
+			std::sort(outEdges.begin(), outEdges.end());
+
+			for (auto x : outEdges) {
+				edges.emplace_back(u, std::get<0>(x), std::get<1>(x), std::get<2>(x));
+			}
+
+			outEdges.clear();
+
+			origG.forInEdgesOf(u, [&](node v, node u, edgeweight w, edgeid eid) {
+				outEdges.emplace_back(v, w, eid);
+			});
+
+			std::sort(outEdges.begin(), outEdges.end());
+
+			for (auto x : outEdges) {
+				edges.emplace_back(u, std::get<0>(x), std::get<1>(x), std::get<2>(x));
+			}
+
+			outEdges.clear();
+		});
+
+		auto it = edges.begin();
+
+		G.forNodes([&](node u) {
+			G.forEdgesOf(u, [&](node u, node v, edgeweight w, edgeid eid) {
+				ASSERT_NE(it, edges.end());
+				EXPECT_EQ(*it, std::make_tuple(u, v, w, eid)) << "Out edge (" << u << ", " << v << ", " << w << ", " << eid <<
+				") was expected to be (" << std::get<0>(*it) << ", " << std::get<1>(*it) << ", " << std::get<2>(*it) << ", " << std::get<3>(*it) << ")";
+				++it;
+			});
+			G.forInEdgesOf(u, [&](node v, node u, edgeweight w, edgeid eid) {
+				ASSERT_NE(it, edges.end());
+				EXPECT_EQ(*it, std::make_tuple(u, v, w, eid)) << "In edge (" << u << ", " << v << ", " << w << ", " << eid <<
+				") was expected to be (" << std::get<0>(*it) << ", " << std::get<1>(*it) << ", " << std::get<2>(*it) << ", " << std::get<3>(*it) << ")";
+				++it;
+			});
+		});
+	}
+}
 
 } /* namespace NetworKit */
 

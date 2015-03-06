@@ -403,6 +403,12 @@ public:
 	void compactEdges();
 
 	/**
+	 * Sorts the adjacency arrays by node id. While the running time is linear this
+	 * temporarily duplicates the memory.
+	 */
+	void sortEdges();
+
+	/**
 	 * Set name of graph to @a name.
 	 * @param name The name.
 	 */
