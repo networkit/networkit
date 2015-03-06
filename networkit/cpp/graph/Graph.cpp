@@ -358,6 +358,84 @@ void Graph::compactEdges() {
 	});
 }
 
+void Graph::sortEdges() {
+	std::vector<std::vector<node> > targetAdjacencies(upperNodeIdBound());
+	std::vector<std::vector<edgeweight> > targetWeight;
+	std::vector<std::vector<edgeid> > targetEdgeIds;
+
+	if (isWeighted()) {
+		targetWeight.resize(upperNodeIdBound());
+		forNodes([&](node u) {
+			targetWeight[u].reserve(degree(u));
+		});
+	}
+	if (hasEdgeIds()) {
+		targetEdgeIds.resize(upperNodeIdBound());
+		forNodes([&](node u) {
+			targetEdgeIds[u].reserve(degree(u));
+		});
+	}
+
+	forNodes([&](node u) {
+		targetAdjacencies[u].reserve(degree(u));
+	});
+
+	auto assignToTarget = [&](node u, node v, edgeweight w, edgeid eid) {
+			targetAdjacencies[v].push_back(u);
+			if (isWeighted()) {
+				targetWeight[v].push_back(w);
+			}
+			if (hasEdgeIds()) {
+				targetEdgeIds[v].push_back(eid);
+			}
+		};
+
+	forNodes([&](node u) {
+		if (isDirected()) {
+			forInEdgesOf(u, [&](node u, node v, edgeweight w, edgeid eid) {
+				assignToTarget(v, u, w, eid);
+			});
+		} else {
+			forEdgesOf(u, assignToTarget);
+		}
+	});
+
+	outEdges.swap(targetAdjacencies);
+	outEdgeWeights.swap(targetWeight);
+	outEdgeIds.swap(targetEdgeIds);
+
+	if (isDirected()) {
+		inEdges.swap(targetAdjacencies);
+		inEdgeWeights.swap(targetWeight);
+		inEdgeIds.swap(targetEdgeIds);
+
+		forNodes([&](node u) {
+			targetAdjacencies[u].resize(degreeIn(u));
+			targetAdjacencies[u].shrink_to_fit();
+			targetAdjacencies[u].clear();
+			if (isWeighted()) {
+				targetWeight[u].resize(degreeIn(u));
+				targetWeight[u].shrink_to_fit();
+				targetWeight[u].clear();
+			}
+			if (hasEdgeIds()) {
+				targetEdgeIds[u].resize(degreeIn(u));
+				targetEdgeIds[u].shrink_to_fit();
+				targetEdgeIds[u].clear();
+			}
+		});
+
+		forNodes([&](node u) {
+			forEdgesOf(u, assignToTarget);
+		});
+
+		inEdges.swap(targetAdjacencies);
+		inEdgeWeights.swap(targetWeight);
+		inEdgeIds.swap(targetEdgeIds);
+	}
+}
+
+
 std::string Graph::toString() const {
 	std::stringstream strm;
 	strm << typ() << "(name=" << getName() << ", n=" << numberOfNodes()

@@ -154,6 +154,7 @@ cdef extern from "cpp/graph/Graph.h":
 		void removeEdge(node u, node v) except +
 		void swapEdge(node s1, node t1, node s2, node t2) except +
 		void compactEdges() except +
+		void sortEdges() except +
 		bool hasEdge(node u, node v) except +
 		edgeweight weight(node u, node v) except +
 		vector[node] nodes() except +
@@ -449,6 +450,13 @@ cdef class Graph:
 		Compact the edge storage, this should be called after executing many edge deletions.
 		"""
 		self._this.compactEdges()
+
+	def sortEdges(self):
+		"""
+		Sorts the adjacency arrays by node id. While the running time is linear this
+		temporarily duplicates the memory.
+		"""
+		self._this.sortEdges()
 
 	def hasEdge(self, u, v):
 		""" Checks if undirected edge {`u`,`v`} exists in the graph.
