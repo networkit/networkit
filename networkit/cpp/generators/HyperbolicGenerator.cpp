@@ -128,7 +128,7 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 	Aux::Timer timer;
 	timer.start();
 	vector<double> empty;
-	GraphBuilder result(n, false, false, true);
+	GraphBuilder result(n, false, false, directSwap);
 
 	Aux::ProgressMeter progress(n, 10000);
 	#pragma omp parallel
@@ -142,11 +142,17 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 			vector<index> near;
 			near.reserve(expectedDegree*1.1);
 			quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance, near);
-			std::remove(near.begin(), near.end(), i); //no self loops!
-			near.pop_back();//std::remove doesn't remove element but swaps it to the end
 			//count realDegree = near.size();
 			//std::swap(expectedDegree, realDegree);//dummy statement for debugging
-			result.swapNeighborhood(i, near, empty, false);
+			if (directSwap) {
+				std::remove(near.begin(), near.end(), i); //no self loops!
+				near.pop_back();//std::remove doesn't remove element but swaps it to the end
+				result.swapNeighborhood(i, near, empty, false);
+			} else {
+				for (index j : near) {
+					if (j < i) result.addEdge(i,j);
+				}
+			}
 
 			if (i % 10000 == 0) {
 				#pragma omp critical (progress)
@@ -183,11 +189,9 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	for (index i = 0; i < n; i++) {
 		vector<index> near;
 		totalCandidates += quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), edgeProb, near);
-		TRACE("Got neighbours of node ", i, ", adding them to graph builder.");
 		for (index j : near) {
 			if (j < i) result.addEdge(i, j);
 		}
-		TRACE("Addition to graph builder complete.");
 
 		if (i % 10000 == 0) {
 			#pragma omp critical (progress)

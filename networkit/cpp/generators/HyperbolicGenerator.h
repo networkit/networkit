@@ -121,6 +121,7 @@ private:
 	count capacity;
 	bool theoreticalSplit;
 	double balance;
+	static const bool directSwap = false;
 
 	/**
 	 * times
