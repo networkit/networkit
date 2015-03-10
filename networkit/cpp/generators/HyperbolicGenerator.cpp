@@ -96,16 +96,16 @@ double HyperbolicGenerator::expectedNumberOfEdges(count n, double stretch) {
 	return (8 / M_PI) * n * exp(-R/2)*(n/2);
 }
 
-Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<double> &radii, double R, double thresholdDistance) {
+Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<double> &radii, double r, double thresholdDistance) {
 	Aux::Timer timer;
 	timer.start();
 	index n = angles.size();
 	assert(radii.size() == n);
-	Quadtree<index> quad(R, theoreticalSplit, alpha, capacity, balance);
+	Quadtree<index> quad(r, theoreticalSplit, alpha, capacity, balance);
 
 	//initialize a graph builder for n nodes and an undirected, unweighted graph with direct swap
 	for (index i = 0; i < n; i++) {
-		assert(radii[i] < R);
+		assert(radii[i] < r);
 		quad.addContent(i, angles[i], radii[i]);
 	}
 
@@ -135,17 +135,24 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 			vector<index> near;
 			near.reserve(expectedDegree*1.1);
 			quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance, near);
-			std::remove(near.begin(), near.end(), i); //no self loops!
-			near.pop_back();//std::remove doesn't remove element but swaps it to the end
 			//count realDegree = near.size();
 			//std::swap(expectedDegree, realDegree);//dummy statement for debugging
-			result.swapNeighborhood(i, near, empty, false);
+			if (directSwap) {
+				std::remove(near.begin(), near.end(), i); //no self loops!
+				near.pop_back();//std::remove doesn't remove element but swaps it to the end
+				result.swapNeighborhood(i, near, empty, false);
+			} else {
+				for (index j : near) {
+					if (j < i) result.addHalfEdge(i,j);
+				}
+			}
+
 		}
 		threadtimers[id].stop();
 	}
 
 	timer.stop();
 	INFO("Generating Edges took ", timer.elapsedMilliseconds(), " milliseconds.");
-	return result.toGraph(false, true);
+	return result.toGraph(!directSwap, true);
 }
 }
