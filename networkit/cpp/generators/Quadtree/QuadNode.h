@@ -553,10 +553,13 @@ public:
 		double phi_q, r_q;
 		HyperbolicSpace::cartesianToPolar(euQuery, phi_q, r_q);
 		TRACE("Getting hyperbolic distances");
-		double distanceLB = hyperbolicDistances(phi_q, r_q).first;
-		double probUB = prob(distanceLB);
+		auto distancePair = hyperbolicDistances(phi_q, r_q);
+		double probUB = prob(distancePair.first);
+		double probLB = prob(distancePair.second);
+		assert(probLB <= probUB);
 		if (probUB > 0.5) probUB = 1;
 		if (probUB == 0) return 0;
+		//TODO: return whole if probLB == 1
 		double probdenom = std::log(1-probUB);
 		if (probdenom == 0) return 0;//there is a very small probability, but we cannot process it.
 		TRACE("probUB: ", probUB, ", probdenom: ", probdenom);
@@ -595,7 +598,7 @@ public:
 				}
 			}
 		}	else {
-			if (expectedNeighbours < 4 || probUB < 1/capacity) {//select candidates directly instead of calling recursively
+			if (expectedNeighbours < 4 || probUB < 1/1000) {//select candidates directly instead of calling recursively
 				TRACE("probUB = ", probUB,  ", switching to direct candidate selection.");
 				assert(probUB < 1);
 				const count stsize = size();

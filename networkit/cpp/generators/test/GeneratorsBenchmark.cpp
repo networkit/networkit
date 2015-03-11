@@ -246,6 +246,15 @@ TEST_F(GeneratorsBenchmark, benchmarkSequentialQuadtreeConstruction) {
 	EXPECT_EQ(quad.size(), n);
 }
 
+TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorMechanicGraphs) {
+	count n = 1000000;
+	count m = n*3;
+	HyperbolicGenerator gen(n, m, 3, 0.14);
+	gen.setLeafCapacity(10);
+	Graph G = gen.generate();
+	EXPECT_NEAR(G.numberOfEdges(), m, m/10);
+}
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */

@@ -58,7 +58,11 @@ HyperbolicGenerator::HyperbolicGenerator(count n, count m, double plexp, double 
 }
 
 void HyperbolicGenerator::initialize() {
-	capacity = 1000;
+	if (temperature == 0) {
+		capacity = 1000;
+	} else {
+		capacity = 10;
+	}
 	theoreticalSplit = false;
 	threadtimers.resize(omp_get_max_threads());
 	balance = 0.5;
