@@ -95,6 +95,24 @@ def enableNestedParallelism():
 	""" Enable nested parallelism for OpenMP"""
 	_enableNestedParallelism()
 
+
+cdef extern from "cpp/auxiliary/Random.h" namespace "Aux::Random":
+	void _setSeed "Aux::Random::setSeed" (uint64_t, bool)
+
+def setSeed(uint64_t seed, bool useThreadId):
+	""" Set the random seed that is used in NetworKit.
+
+	Note that there is a separate random number generator per thread.
+
+	Parameters
+	----------
+	seed : uint64_t
+		The seed
+	useThreadId : bool
+		If the thread id shall be added to the seed
+	"""
+	_setSeed(seed, useThreadId)
+
 # Class definitions
 
 ## Module: engineering
@@ -135,6 +153,8 @@ cdef extern from "cpp/graph/Graph.h":
 		void setWeight(node u, node v, edgeweight w) except +
 		void removeEdge(node u, node v) except +
 		void swapEdge(node s1, node t1, node s2, node t2) except +
+		void compactEdges() except +
+		void sortEdges() except +
 		bool hasEdge(node u, node v) except +
 		edgeweight weight(node u, node v) except +
 		vector[node] nodes() except +
@@ -424,6 +444,19 @@ cdef class Graph:
 			Target node of the second edge
 		"""
 		self._this.swapEdge(s1, t1, s2, t2)
+
+	def compactEdges(self):
+		"""
+		Compact the edge storage, this should be called after executing many edge deletions.
+		"""
+		self._this.compactEdges()
+
+	def sortEdges(self):
+		"""
+		Sorts the adjacency arrays by node id. While the running time is linear this
+		temporarily duplicates the memory.
+		"""
+		self._this.sortEdges()
 
 	def hasEdge(self, u, v):
 		""" Checks if undirected edge {`u`,`v`} exists in the graph.
@@ -2838,6 +2871,7 @@ cdef class GraphClusteringTools:
 cdef extern from "cpp/graph/GraphTools.h" namespace "NetworKit::GraphTools":
 	_Graph getCompactedGraph(_Graph G, unordered_map[node,node]) except +
 	unordered_map[node,node] getContinuousNodeIds(_Graph G) except +
+	unordered_map[node,node] getRandomContinuousNodeIds(_Graph G) except +
 
 cdef class GraphTools:
 	@staticmethod
@@ -2860,6 +2894,18 @@ cdef class GraphTools:
 		for elem in cResult:
 			result[elem.first] = elem.second
 		return result
+
+	@staticmethod
+	def getRandomContinuousNodeIds(Graph graph):
+		"""
+			Computes a map of node ids to continuous, randomly permutated node ids.
+		"""
+		cdef unordered_map[node,node] cResult = getRandomContinuousNodeIds(graph._this)
+		result = dict()
+		for elem in cResult:
+			result[elem.first] = elem.second
+		return result
+
 
 cdef extern from "cpp/community/PartitionIntersection.h":
 	cdef cppclass _PartitionIntersection "NetworKit::PartitionIntersection":
@@ -5159,6 +5205,7 @@ cdef extern from "cpp/distmeasures/AlgebraicDistance.h":
 		_AlgebraicDistance(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm) except +
 		void preprocess() except +
 		double distance(node u, node v) except +
+		vector[vector[double]] getLoadsOnNodes()
 
 cdef class AlgebraicDistance:
 	"""
@@ -5216,6 +5263,13 @@ cdef class AlgebraicDistance:
 		Extended algebraic distance between the two nodes.
 		"""
 		return self._this.distance(u, v)
+
+
+	def getLoadsOnNodes(self):
+		"""
+		Returns a list, indexed by node id, of the load values.
+		"""
+		return self._this.getLoadsOnNodes()
 
 # Module: dynamic
 

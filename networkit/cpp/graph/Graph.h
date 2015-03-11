@@ -398,6 +398,17 @@ public:
 	void shrinkToFit();
 
 	/**
+	 * Compacts the adjacency arrays by re-using no longer neede slots from deleted edges.
+	 */
+	void compactEdges();
+
+	/**
+	 * Sorts the adjacency arrays by node id. While the running time is linear this
+	 * temporarily duplicates the memory.
+	 */
+	void sortEdges();
+
+	/**
 	 * Set name of graph to @a name.
 	 * @param name The name.
 	 */
@@ -955,7 +966,7 @@ void Graph::forNodesWhile(C condition, L handle) const {
 template<typename L>
 void Graph::forNodesInRandomOrder(L handle) const {
 	std::vector<node> randVec = nodes();
-	random_shuffle(randVec.begin(), randVec.end());
+	std::shuffle(randVec.begin(), randVec.end(), Aux::Random::getURNG());
 	for (node v : randVec) {
 		handle(v);
 	}
