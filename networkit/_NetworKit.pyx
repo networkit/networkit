@@ -1564,9 +1564,10 @@ cdef extern from "cpp/generators/HyperbolicGenerator.h":
 		_Graph generate() except +
 
 cdef class HyperbolicGenerator:
-	""" The Hyperbolic Generator can be described as a unit-disk model in hyperbolic space. The resulting graphs have a power-law degree distribution, small diameter and high clustering coefficient.
+	""" The Hyperbolic Generator distributes points in hyperbolic space and adds edges between points with a probability depending on their distance. The resulting graphs have a power-law degree distribution, small diameter and high clustering coefficient.
+For a temperature of 0, the model resembles a unit-disk model in hyperbolic space.
 
- 		HyperbolicGenerator(n, distanceFactor=1, alpha=1, stretchradius=1)
+ 		HyperbolicGenerator(n, m, gamma=3, T=0)
 
  		Parameters
 		----------
