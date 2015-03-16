@@ -20,6 +20,16 @@ namespace NetworKit {
  * Abstract base class for link predictors.
  */
 class LinkPredictor {
+public:
+  // Declare typedef in advance for later use
+  typedef std::pair<std::pair<node, node>, double> node_dyad_score_pair;
+
+private:
+  struct SecondGreater {
+    bool operator()(const node_dyad_score_pair& a, const node_dyad_score_pair& b) const {
+      return (a.second < b.second) || (a.second == b.second && a.first > b.first);
+    }
+  };
 
 protected:
   const Graph& G; //!< Graph to operate on
@@ -46,6 +56,8 @@ public:
    * edge between the given nodes
    */
   virtual double run(node u, node v) = 0;
+
+  virtual std::vector<node_dyad_score_pair> runAll(count limit = 0);
 };
 
 } // namespace NetworKit

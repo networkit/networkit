@@ -11,6 +11,7 @@
 #include "../../io/METISGraphReader.h"
 #include "../KatzIndex.h"
 #include "../EdgeSelector.h"
+#include "../ROC.h"
 
 namespace NetworKit {
 
@@ -37,18 +38,54 @@ TEST_F(LinkPredictionGTest, testRandomEdgeRemoval) {
   EXPECT_EQ(3, result.second.numberOfEdges());
 }
 
-TEST_F(LinkPredictionGTest, testEdgeSelectorByLimit) {
-  LinkPredictor* predictor = new KatzIndex(G, 3, 0.8);
+TEST_F(LinkPredictionGTest, testEdgeSelectorGetByCount) {
+  LinkPredictor* predictor = new KatzIndex(G, 2, 1);
   EdgeSelector selector(G, predictor);
-  std::vector<std::pair<node, node>> edges = selector.selectByLimit(5);
-  // Assumes the edges are ordered by scores (ascending)
-  EXPECT_EQ(4, edges[0].first); EXPECT_EQ(0, edges[0].second);
-  EXPECT_EQ(6, edges[1].first); EXPECT_EQ(5, edges[1].second);
-  EXPECT_EQ(5, edges[2].first); EXPECT_EQ(1, edges[2].second);
-  EXPECT_EQ(6, edges[3].first); EXPECT_EQ(2, edges[3].second);
-  EXPECT_EQ(6, edges[4].first); EXPECT_EQ(3, edges[4].second);
+  selector.calculateScores();
+  std::vector<std::pair<std::pair<node, node>, double>> edges = selector.getByCount(6);
+  // Expects that the edges are ordered descendingly by scores and that on equality the edge-pairs
+  // are ordered ascendingly [(0,1) < (0,2) and (1, 2) < (1, 0)].
+  EXPECT_EQ(1, edges[0].first.first); EXPECT_EQ(3, edges[0].first.second); EXPECT_EQ(3, edges[0].second);
+  EXPECT_EQ(0, edges[1].first.first); EXPECT_EQ(2, edges[1].first.second); EXPECT_EQ(2, edges[1].second);
+  EXPECT_EQ(0, edges[2].first.first); EXPECT_EQ(4, edges[2].first.second); EXPECT_EQ(2, edges[2].second);
+  EXPECT_EQ(1, edges[3].first.first); EXPECT_EQ(5, edges[3].first.second); EXPECT_EQ(2, edges[3].second);
+  EXPECT_EQ(0, edges[4].first.first); EXPECT_EQ(5, edges[4].first.second); EXPECT_EQ(1, edges[4].second);
+  EXPECT_EQ(0, edges[5].first.first); EXPECT_EQ(6, edges[5].first.second); EXPECT_EQ(0, edges[5].second);
   delete predictor;
 }
+
+TEST_F(LinkPredictionGTest, testEdgeSelectorGetByCountArgumentException) {
+  LinkPredictor* predictor = new KatzIndex(G, 2, 1);
+  EdgeSelector selector(G, predictor, 5);
+  selector.calculateScores();
+  EXPECT_THROW(selector.getByCount(6), std::invalid_argument);
+  delete predictor;
+}
+
+TEST_F(LinkPredictionGTest, testEdgeSelectorGetAllMissingCalcCall) {
+  LinkPredictor* predictor = new KatzIndex(G, 2, 1);
+  EdgeSelector selector(G, predictor, 5);
+  EXPECT_THROW(selector.getAll(), std::logic_error);
+  delete predictor;
+}
+
+TEST_F(LinkPredictionGTest, testEdgeSelectorGetByCountMissingCalcCall) {
+  LinkPredictor* predictor = new KatzIndex(G, 2, 1);
+  EdgeSelector selector(G, predictor);
+  EXPECT_THROW(selector.getByCount(1), std::logic_error);
+  delete predictor;
+}
+
+/*TEST_F(LinkPredictionGTest, testReceiverOperatingCharacteristic) {
+  RandomEdgeRemover remover(G);
+  std::pair<Graph, Graph> graphPartitions = remover.remove(0.3);
+
+  KatzIndex katz(graphPartitions.first, 2, 1);
+  std::vector<LinkPredictor::node_dyad_score_pair> scores = katz.runAll();
+
+  std::vector<std::pair<double, double>> points = ROC::from(graphPartitions.second, scores);
+}*/
+
 
 /*
 TEST_F(LinkPredictionGTest, testCommonNeighborsRun) {

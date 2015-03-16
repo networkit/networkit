@@ -36,6 +36,8 @@ private:
   // Defaults to 0.0 if no score could be found.
   double getScore(node u, node v) const;
 
+  bool executed = false;
+
 public:
   /**
    * @param G The graph to operate on
