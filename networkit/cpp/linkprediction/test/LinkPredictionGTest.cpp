@@ -12,6 +12,7 @@
 #include "../KatzIndex.h"
 #include "../EdgeSelector.h"
 #include "../ROC.h"
+#include "../RandomEdgePartitioner.h"
 
 namespace NetworKit {
 
@@ -32,10 +33,11 @@ void LinkPredictionGTest::SetUp() {
 }
 
 TEST_F(LinkPredictionGTest, testRandomEdgeRemoval) {
-  RandomEdgeRemover remover(G);
-  std::pair<Graph, Graph> result = remover.remove(0.3);
-  EXPECT_EQ(7, result.first.numberOfEdges());
-  EXPECT_EQ(3, result.second.numberOfEdges());
+  RandomEdgePartitioner partitioner(G);
+  std::pair<Graph, Graph> graphPartitions = partitioner.partition(0.3);
+
+  EXPECT_EQ(7, graphPartitions.first.numberOfEdges());
+  EXPECT_EQ(3, graphPartitions.second.numberOfEdges());
 }
 
 TEST_F(LinkPredictionGTest, testEdgeSelectorGetByCount) {
@@ -77,8 +79,8 @@ TEST_F(LinkPredictionGTest, testEdgeSelectorGetByCountMissingCalcCall) {
 }
 
 /*TEST_F(LinkPredictionGTest, testReceiverOperatingCharacteristic) {
-  RandomEdgeRemover remover(G);
-  std::pair<Graph, Graph> graphPartitions = remover.remove(0.3);
+  RandomEdgePartitioner partitioner(G);
+  std::pair<Graph, Graph> graphPartitions = partitioner.partition(0.3);
 
   KatzIndex katz(graphPartitions.first, 2, 1);
   std::vector<LinkPredictor::node_dyad_score_pair> scores = katz.runAll();

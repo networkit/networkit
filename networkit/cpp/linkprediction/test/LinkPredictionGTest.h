@@ -13,7 +13,6 @@
 #include <gtest/gtest.h>
 
 #include "../../graph/Graph.h"
-#include "../RandomEdgeRemover.h"
 
 namespace NetworKit {
 
