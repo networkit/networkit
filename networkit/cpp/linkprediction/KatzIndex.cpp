@@ -13,14 +13,13 @@ namespace NetworKit {
 
 KatzIndex::KatzIndex(const Graph& G, count maxPathLength, double dampingValue)
     : LinkPredictor(G), maxPathLength(maxPathLength), dampingValue(dampingValue) {
-  // Invalidate start node in case the algorithm starts at node 0 the first time
-  lastStartNode = -1;
 }
 
 double KatzIndex::run(node u, node v) {
-  if (lastStartNode == u || lastStartNode == v) {
+  if (executed && (lastStartNode == u || lastStartNode == v)) {
     return getScore(u, v);
   }
+  lastScores.clear();
   std::list<node> toProcess;
   // Start at the node with less neighbors to potentially increase performance
   lastStartNode = G.degree(u) > G.degree(v) ? v : u;
@@ -42,6 +41,7 @@ double KatzIndex::run(node u, node v) {
       toProcess.push_front(kv.first);
     }
   }
+  executed = true;
   return getScore(u, v);
 }
 

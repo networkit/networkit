@@ -5,8 +5,6 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include "../auxiliary/Log.h"
-
 #include "RandomEdgeRemover.h"
 
 namespace NetworKit {
@@ -25,6 +23,7 @@ std::pair<Graph, Graph> RandomEdgeRemover::remove(double percentage) {
     std::pair<node, node> edgeToRemove = remaining.randomEdge();
     remaining.removeEdge(edgeToRemove.first, edgeToRemove.second);
     removed.addEdge(edgeToRemove.first, edgeToRemove.second);
+    INFO("Removed edge (", edgeToRemove.first, ", ", edgeToRemove.second, ").");
   }
   return std::make_pair(remaining, removed);
 }

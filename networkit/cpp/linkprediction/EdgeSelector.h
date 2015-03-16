@@ -15,22 +15,49 @@ namespace NetworKit {
 
 /**
  * @ingroup linkprediction
- * 
+ * Selects based on a given threshold/limit a number of node-pairs whose scores
+ * fullfil the requirements of the given threshold/limit.
  */
 class EdgeSelector {
 private:
+  typedef std::pair<std::pair<node, node>, double> nodes_score_pair;
+
+  struct SecondGreater {
+    bool operator()(const nodes_score_pair& a, const nodes_score_pair& b) const {
+      return (a.second < b.second) || (a.second == b.second && a.first > b.first);
+    }
+  };
+
   const Graph& G; //!< Graph to work on
 
   LinkPredictor* linkPredictor; //!< Predictor used to generate scores
 
+  count maxSize; //!< Maximal number of node-pairs to store
+
+  std::vector<nodes_score_pair> nodePairs;
+
+  bool executed = false;
+
 public:
   /**
-   * @param G The graph to operate on
-   * @param linkPredictor predictor used to rank 
+   * Constructs a new EdgeSelector with a given predictor that is used on a given graph.
+   * The number of node-pairs that will get stored can be limited by the @a maxSize argument.
+   * The node-pairs are stored descendingly by score which means any given @a limit will reject
+   * the node-pairs with score that is too low.
+   * @param G The graph to operate on.
+   * @param linkPredictor Link predictor used to calculate scores for the node-pairs.
+   * @param maxSize Maximal number of node-pairs to store. Setting it to 0 will lead to the
+   * storage of all node-pairs.
    */
-  EdgeSelector(const Graph& G, LinkPredictor* linkPredictor);
+  EdgeSelector(const Graph& G, LinkPredictor* linkPredictor, count maxSize = 0);
   
-  std::vector<std::pair<node, node>> selectByLimit(count limit) const;
+  void calculateScores();
+
+  const std::vector<nodes_score_pair> getAll() const;
+
+  std::vector<nodes_score_pair> getByCount(count cnt) const;
+
+  
 
   /**
    * Selects a vector of node-pairs whose generated scores exceed or equal the given threshold score.
@@ -42,7 +69,7 @@ public:
    * @return a vector of node-pairs where the probability of a link between the nodes exceeds or equals
    * the given threshold
    */
-  //std::vector<std::pair<node, node>> selectByThreshold(double scoreThreshold) const;
+  //std::vector<std::pair<node, node>> getByThreshold(double scoreThreshold) const;
 
 };
 
