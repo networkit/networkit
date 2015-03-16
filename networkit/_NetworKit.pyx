@@ -5211,3 +5211,46 @@ cdef class KatzIndex:
 		The similarity score of the given node-pair calculated by the specified Katz index.
 		"""
 		return self._this.run(u, v)
+
+cdef extern from "cpp/linkprediction/RandomEdgePartitioner.h":
+	cdef cppclass _RandomEdgePartitioner "NetworKit::RandomEdgePartitioner":
+		_RandomEdgePartitioner(const _Graph& G) except +
+		pair[_Graph, _Graph] partition(double percentage) except +
+
+cdef class RandomEdgePartitioner:
+	"""
+	Partitions the set of edges of an given graph into two separate edge-sets
+	that get encapsulated into two corresponding graphs. This is done by randomly
+	removing edges from the given graph until a given percentage of edges have been removed.
+
+	Parameters
+	----------
+	G : Graph
+		The graph whose edges to partition.
+	"""
+	cdef _RandomEdgePartitioner* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _RandomEdgePartitioner(G._this)
+
+	def __dealloc__(self):
+		del self._this
+
+	def partition(self, double percentage):
+		"""
+		Randomly removes edges until the given percentage of total edges has been removed.
+
+		Parameters
+		----------
+		percentage : double
+			Percentage of edges to remove from the graph.
+
+		Returns
+		-------
+		A pair of new graphs where the first graph is the remaining graph and the
+		second graph consists of all removed edges.
+		"""
+		cdef pair[_Graph, _Graph] result = self._this.partition(percentage)
+		return (Graph().setThis(result.first), Graph().setThis(result.second))
