@@ -55,7 +55,7 @@ public:
    * @param v Second node
    * @return the similarity score of the given node-pair calculated by the specified Katz index
    */
-  double run(node u, node v);
+  double run(node u, node v) override;
 
 };
 

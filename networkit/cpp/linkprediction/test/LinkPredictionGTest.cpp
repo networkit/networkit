@@ -83,9 +83,10 @@ TEST_F(LinkPredictionGTest, testEdgeSelectorGetByCountMissingCalcCall) {
   std::pair<Graph, Graph> graphPartitions = partitioner.partition(0.3);
 
   KatzIndex katz(graphPartitions.first, 2, 1);
-  std::vector<LinkPredictor::node_dyad_score_pair> scores = katz.runAll();
-
-  std::vector<std::pair<double, double>> points = ROC::fromDyadScorePairs(graphPartitions.second, scores);
+  std::vector<LinkPredictor::node_dyad_score_pair> scores = katz.runAll(4);
+  for (index i = 0; i < scores.size(); ++i) {
+    INFO("entries[", i, "] = ((", scores[i].first.first, ", ", scores[i].first.second, "), ", scores[i].second, ")");
+  }
 }*/
 
 
