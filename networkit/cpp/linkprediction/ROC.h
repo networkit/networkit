@@ -24,20 +24,13 @@ namespace NetworKit {
 class ROC {
 public:
   /**
-   * Constructs a new LinkPredictor instance for the graph @a G.
-   *
-   * @param G The graph to use
-   * @param predictions The edges which got predicted
+   * Generates a vector of points that belong to the Receiver Operating Characteristic of the given
+   * dyad-score-pairs and the graph to check against.
+   * @param testGraph The graph whose edges are used to test the given dyad-score-pairs against
+   * @param data Dyad-score-pairs to test.
+   * @return a pair of vectors where the first vector contains the x values and the second the y values
    */
-  //explicit ROC(const Graph& testGraph);
-  
-  /**
-   * 
-   *
-   * @return a prediction-score indicating the likelihood of an
-   * edge between the given nodes
-   */
-  static std::vector<std::pair<double, double>> from(const Graph &testGraph, std::vector<LinkPredictor::node_dyad_score_pair> data);
+  static std::pair<std::vector<double>, std::vector<double>> fromDyadScorePairs(const Graph &testGraph, std::vector<LinkPredictor::node_dyad_score_pair> data);
 };
 
 } // namespace NetworKit

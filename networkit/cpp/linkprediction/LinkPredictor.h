@@ -57,6 +57,15 @@ public:
    */
   virtual double run(node u, node v) = 0;
 
+  /**
+   * Runs the link predictor on all node-pairs which are not connected
+   * by a node in the given graph.
+   *
+   * @param limit Limit for the number of dyad-score-pairs to return.
+   * If set to 0 all pairs will get returned.
+   * @return a vector of dyad-score-pairs that is ordered descendingly by score and
+   * on score equality ordered ascendingly by node-pairs.
+   */
   virtual std::vector<node_dyad_score_pair> runAll(count limit = 0);
 };
 

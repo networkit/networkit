@@ -5166,6 +5166,7 @@ cdef extern from "cpp/linkprediction/KatzIndex.h":
 	cdef cppclass _KatzIndex "NetworKit::KatzIndex":
 		_KatzIndex(const _Graph& G, count maxPathLength, double dampingValue) except +
 		double run(node u, node v) except +
+		vector[pair[pair[node, node], double]] runAll(count limit) except +
 
 cdef class KatzIndex:
 	"""
@@ -5212,6 +5213,23 @@ cdef class KatzIndex:
 		"""
 		return self._this.run(u, v)
 
+	def runAll(self, count limit = 0):
+		"""
+		Runs the link predictor on all node-pairs which are not connected
+		by a node in the given graph.
+
+		Parameters
+		----------
+		limit : count
+			Limit for the number of dyad-score-pairs to return. If set to 0 all pairs will get returned.
+
+		Returns
+		-------
+		A vector of dyad-score-pairs that is ordered descendingly by score and on score equality ordered
+		ascendingly by node-pairs.
+		"""
+		return self._this.runAll(limit)
+
 cdef extern from "cpp/linkprediction/RandomEdgePartitioner.h":
 	cdef cppclass _RandomEdgePartitioner "NetworKit::RandomEdgePartitioner":
 		_RandomEdgePartitioner(const _Graph& G) except +
@@ -5254,3 +5272,51 @@ cdef class RandomEdgePartitioner:
 		"""
 		cdef pair[_Graph, _Graph] result = self._this.partition(percentage)
 		return (Graph().setThis(result.first), Graph().setThis(result.second))
+
+cdef extern from "cpp/linkprediction/ROC.h" namespace "NetworKit::ROC":
+	pair[vector[double], vector[double]] fromDyadScorePairs(const _Graph& testGraph, vector[pair[pair[node, node], double]] data) except +
+
+cdef class ROC:
+	"""
+	Provides data points for the receiver operating characteristic of
+	a given set of predictions for graph edges.
+	"""
+
+	@staticmethod
+	def fromDyadScorePairs(Graph testGraph, vector[pair[pair[node, node], double]] data):
+		"""
+		Generates a vector of points that belong to the Receiver Operating Characteristic of the given
+		dyad-score-pairs and the graph to check against.
+
+		Parameters
+		----------
+		testGraph : Graph
+			The graph whose edges are used to test the given dyad-score-pairs against
+		data : vector[pair[pair[node, node], double]]
+			Dyad-score-pairs to test.
+
+		Returns
+		-------
+		A vector of points belonging to the ROC.
+		"""
+		return fromDyadScorePairs(testGraph._this, data)
+
+
+#cdef extern from "cpp/linkprediction/LinkPredictor.h":
+#	cdef cppclass _LinkPredictor "NetworKit::LinkPredictor":
+#		_LinkPredictor(const _Graph& G) except +
+#		double run(node u, node v) except +
+#		vector[pair[pair[node, node], double]] runAll(count limit) except +
+#
+#cdef class LinkPredictor:
+#	cdef _LinkPredictor* _this
+#	cdef Graph _G
+#
+#	def __cinit__(self, Graph G):
+#		self._G = G
+#
+#	def __dealloc__(self):
+#		del self._this
+#
+#	def runAll(self, count limit = 0):
+#		return self._this.runAll(limit)
