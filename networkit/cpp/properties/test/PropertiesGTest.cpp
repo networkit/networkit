@@ -149,7 +149,7 @@ TEST_F(PropertiesGTest, testCoreDecomposition) {
 	// compute core decomposition
 	CoreDecomposition coreDec(G);
 	coreDec.run();
-	std::vector<count> coreness = coreDec.coreNumbers();
+	std::vector<double> coreness = coreDec.scores();
 
 	EXPECT_EQ(0u, coreness[0]) << "expected coreness";
 	EXPECT_EQ(0u, coreness[1]) << "expected coreness";
@@ -209,7 +209,7 @@ TEST_F(PropertiesGTest, testCoreDecompositionDirected) {
 	// compute core decomposition
 	CoreDecomposition coreDec(G);
 	coreDec.run();
-	std::vector<count> coreness = coreDec.coreNumbers();
+	std::vector<double> coreness = coreDec.scores();
 
 	EXPECT_EQ(0u, coreness[0]) << "expected coreness";
 	EXPECT_EQ(0u, coreness[1]) << "expected coreness";
