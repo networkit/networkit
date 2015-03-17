@@ -91,6 +91,8 @@ void DynBetweenness::run() {
     };
 
     G.forNodes(computeDependencies);
+
+    ran = true;
 }
 
 
@@ -356,7 +358,6 @@ void DynBetweenness::updateWeighted(GraphEvent e) {
         }
 
     });
-
 }
 
 void DynBetweenness::update(GraphEvent e) {

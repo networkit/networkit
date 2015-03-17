@@ -56,13 +56,13 @@ def computeNetworkProperties(G):
 	return networkProperties
 
 
-def computeNetworkPartitions(G)
+def computeNetworkPartitions(G):
 	components = properties.components(G)
 	communities = community.detectCommunities(G)
 
 def computeNodeProperties(G):
 	degree = properties.degreeSequence(G)
-	core = properties.CoreDecomposition(G).run().
+	# TODO: core = properties.CoreDecomposition(G).run()
 
 def profile(G):
 	"""

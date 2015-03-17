@@ -4139,8 +4139,8 @@ cdef extern from "cpp/properties/CoreDecomposition.h":
 	cdef cppclass _CoreDecomposition "NetworKit::CoreDecomposition":
 		_CoreDecomposition(_Graph)
 		void run() except +
-		vector[index] coreNumbers() except +
-		index coreNumber(node) except +
+		vector[double] scores() except +
+		index score(node) except +
 		vector[set[node]] cores() except +
 		vector[set[node]] shells() except +
 		index maxCoreNumber() except +
@@ -4173,7 +4173,7 @@ cdef class CoreDecomposition:
 		self._this.run()
 		return self
 
-	def coreNumbers(self):
+	def scores(self):
 		""" Get vector of core numbers, indexed by node.
 
 		Returns
@@ -4181,9 +4181,9 @@ cdef class CoreDecomposition:
 		vector
 			Vector of core numbers, indexed by node.
 		"""
-		return self._this.coreNumbers()
+		return self._this.scores()
 
-	def coreNumber(self, v):
+	def score(self, v):
 		""" Get core number of node `v`.
 
 		Parameters
@@ -4196,7 +4196,7 @@ cdef class CoreDecomposition:
 		node
 			Core number of node `v.
 		"""
-		return self._this.coreNumber(v)
+		return self._this.score(v)
 
 	def maxCoreNumber(self):
 		""" Get maximum core number.
