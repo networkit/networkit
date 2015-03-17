@@ -4135,7 +4135,7 @@ cdef class Eccentricity:
 		return getValue(G._this, v)
 
 
-cdef extern from "cpp/properties/CoreDecomposition.h":
+cdef extern from "cpp/centrality/CoreDecomposition.h":
 	cdef cppclass _CoreDecomposition "NetworKit::CoreDecomposition":
 		_CoreDecomposition(_Graph)
 		void run() except +
