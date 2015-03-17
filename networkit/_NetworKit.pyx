@@ -5273,17 +5273,27 @@ cdef class RandomEdgePartitioner:
 		cdef pair[_Graph, _Graph] result = self._this.partition(percentage)
 		return (Graph().setThis(result.first), Graph().setThis(result.second))
 
-cdef extern from "cpp/linkprediction/ROC.h" namespace "NetworKit::ROC":
-	pair[vector[double], vector[double]] fromDyadScorePairs(const _Graph& testGraph, vector[pair[pair[node, node], double]] data) except +
+cdef extern from "cpp/linkprediction/ROC.h":
+	cdef cppclass _ROC "NetworKit::ROC":
+		_ROC(const _Graph& testGraph, vector[pair[pair[node, node], double]] dyadScorePairs) except +
+		void generatePoints() except +
+		pair[vector[double], vector[double]] getPoints() except +
+		double areaUnderCurve() except +
 
 cdef class ROC:
 	"""
 	Provides data points for the receiver operating characteristic of
 	a given set of predictions for graph edges.
 	"""
+	cdef _ROC* _this
 
-	@staticmethod
-	def fromDyadScorePairs(Graph testGraph, vector[pair[pair[node, node], double]] data):
+	def __cinit__(self, Graph testGraph, vector[pair[pair[node, node], double]] dyadScorePairs):
+		self._this = new _ROC(testGraph._this, dyadScorePairs)
+
+	def __dealloc__(self):
+		del self._this
+
+	def generatePoints(self):
 		"""
 		Generates a vector of points that belong to the Receiver Operating Characteristic of the given
 		dyad-score-pairs and the graph to check against.
@@ -5299,7 +5309,29 @@ cdef class ROC:
 		-------
 		A vector of points belonging to the ROC.
 		"""
-		return fromDyadScorePairs(testGraph._this, data)
+		self._this.generatePoints()
+
+	def getPoints(self):
+		"""
+		Returns the previously generated data-points for the curve.
+
+		Returns
+		-------
+		The previously generated data-points for the curve where the first vector
+		of the pair contains all x-values and the second vector the corresponding y-values
+		"""
+		return self._this.getPoints()
+
+	def areaUnderCurve(self):
+		"""
+		Calculates the area under the curve for the previously generated data-points.
+		This is done through the trapezoid rule.
+
+		Returns
+		-------
+		The area under the given curve.
+		"""
+		return self._this.areaUnderCurve()
 
 
 #cdef extern from "cpp/linkprediction/LinkPredictor.h":

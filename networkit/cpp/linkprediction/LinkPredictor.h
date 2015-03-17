@@ -25,9 +25,9 @@ public:
   typedef std::pair<std::pair<node, node>, double> node_dyad_score_pair;
 
 private:
-  struct SecondGreater {
+  struct NodeDyadScoreComp {
     bool operator()(const node_dyad_score_pair& a, const node_dyad_score_pair& b) const {
-      return (a.second < b.second) || (a.second == b.second && a.first > b.first);
+      return (a.second > b.second) || (a.second == b.second && a.first < b.first);
     }
   };
 
