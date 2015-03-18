@@ -4582,6 +4582,83 @@ cdef class KPathCentrality:
 		"""
 		return self._this.ranking()
 
+cdef extern from "cpp/centrality/KatzCentrality.h":
+	cdef cppclass _KatzCentrality "NetworKit::KatzCentrality":
+		_KatzCentrality(_Graph, double, count) except +
+		void run() except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class KatzCentrality:
+	"""
+		KatzCentrality(G, alpha=5e-4, beta=0.1, tol=1e-8)
+
+		Constructs a KatzCentrality object for the given Graph `G`
+
+	 	Parameters
+	 	----------
+	 	G : Graph
+	 		The graph.
+	 	alpha : double
+			Damping of the matrix vector product result
+		beta : double
+			Constant value added to the centrality of each vertex
+		tol : double
+			The tolerance for convergence.
+	"""
+	cdef _KatzCentrality* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, alpha=0.2, k=0):
+		self._G = G
+		self._this = new _KatzCentrality(G._this, alpha, k)
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		"""  Compute KatzCentrality scores."""
+		self._this.run()
+		return self
+
+	def scores(self):
+		""" Get a vector containing the KatzCentrality score for each node in the graph.
+
+		Returns
+		-------
+		vector
+			The KatzCentrality scores calculated by run().
+		"""
+		return self._this.scores()
+
+	def score(self, v):
+		""" Get the KatzCentrality score of node `v` calculated by run().
+
+		Parameters
+		----------
+		v : node
+			A node.
+
+		Returns
+		-------
+		double
+			The KatzCentrality score of node `v.
+		"""
+		return self._this.score(v)
+
+	def ranking(self):
+		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
+		calculated by run().
+
+		Returns
+		-------
+		vector
+			A vector of pairs.
+		"""
+		return self._this.ranking()
+
 
 cdef class DynBetweenness:
 	"""
