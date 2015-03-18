@@ -62,7 +62,8 @@ def computeNetworkPartitions(G):
 
 def computeNodeProperties(G):
 	degree = properties.degreeSequence(G)
-	# TODO: core = properties.CoreDecomposition(G).run()
+	core = centrality.CoreDecomposition(G).run().scores()
+	
 
 def profile(G):
 	"""
