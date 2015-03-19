@@ -12,18 +12,24 @@ namespace NetworKit {
 RandomEdgePartitioner::RandomEdgePartitioner(const Graph& G) : G(G) {
 }
 
-std::pair<Graph, Graph> RandomEdgePartitioner::partition(double percentage) {
+std::pair<Graph, Graph> RandomEdgePartitioner::partitionByPercentage(double percentage) const {
   if (percentage < 0 || percentage > 1) {
     throw std::invalid_argument("Given percentage is not in [0, 1].");
   }
+  return partitionByCount(percentage * G.numberOfEdges());
+}
+
+std::pair<Graph, Graph> RandomEdgePartitioner::partitionByCount(count numEdges) const {
+  if (numEdges > G.numberOfEdges()) {
+    throw std::invalid_argument("numEdges > G.numberOfEdges().");
+  }
   Graph remaining(G);
   Graph removed(G.upperNodeIdBound());
-  count numEdgesToRemove = 1.0 * percentage * G.numberOfEdges();
-  for (index i = 0; i < numEdgesToRemove; ++i) {
+  for (index i = 0; i < numEdges; ++i) {
     std::pair<node, node> edgeToRemove = remaining.randomEdge();
     remaining.removeEdge(edgeToRemove.first, edgeToRemove.second);
     removed.addEdge(edgeToRemove.first, edgeToRemove.second);
-    INFO("Removed edge (", edgeToRemove.first, ", ", edgeToRemove.second, ").");
+    //INFO("Removed edge (", edgeToRemove.first, ", ", edgeToRemove.second, ").");
   }
   return std::make_pair(remaining, removed);
 }

@@ -9,8 +9,28 @@
 
 namespace NetworKit {
 
-EvaluationCurve::EvaluationCurve(const Graph& testGraph, std::vector<LinkPredictor::node_dyad_score_pair> dyadScorePairs)
-    : testGraph(testGraph), dyadScorePairs(dyadScorePairs) {
+EvaluationCurve::EvaluationCurve() : testGraph(nullptr) {
+}
+
+EvaluationCurve::EvaluationCurve(const Graph& testGraph, std::vector<LinkPredictor::node_dyad_score_pair> predictions)
+    : testGraph(&testGraph), predictions(predictions) {
+}
+
+void EvaluationCurve::setTestGraph(const Graph& newTestGraph) {
+  testGraph = &newTestGraph;
+}
+
+void EvaluationCurve::setPredictions(std::vector<LinkPredictor::node_dyad_score_pair> newPredictions) {
+  predictions = newPredictions;
+}
+
+void EvaluationCurve::generatePoints() {
+  if (testGraph == nullptr) {
+    throw std::logic_error("Set testGraph first.");
+  } else if (predictions.size() == 0) {
+    throw std::logic_error("Set predictions first.");
+  }
+  generatePointsImpl();
 }
 
 std::pair<std::vector<double>, std::vector<double>> EvaluationCurve::getPoints() const {

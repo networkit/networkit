@@ -20,10 +20,13 @@ namespace NetworKit {
  * a given set of predictions for graph edges.
  */
 class ROC : public EvaluationCurve {
+private:
+  void generatePointsImpl() override;
+
 public:
   using EvaluationCurve::EvaluationCurve;
 
-  void generatePoints() override;
+  
 };
 
 } // namespace NetworKit

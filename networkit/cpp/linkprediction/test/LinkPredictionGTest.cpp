@@ -13,6 +13,7 @@
 #include "../EdgeSelector.h"
 #include "../ROC.h"
 #include "../RandomEdgePartitioner.h"
+#include "../KFoldCrossValidator.h"
 
 namespace NetworKit {
 
@@ -34,7 +35,7 @@ void LinkPredictionGTest::SetUp() {
 
 TEST_F(LinkPredictionGTest, testRandomEdgeRemoval) {
   RandomEdgePartitioner partitioner(G);
-  std::pair<Graph, Graph> graphPartitions = partitioner.partition(0.3);
+  std::pair<Graph, Graph> graphPartitions = partitioner.partitionByPercentage(0.3);
 
   EXPECT_EQ(7, graphPartitions.first.numberOfEdges());
   EXPECT_EQ(3, graphPartitions.second.numberOfEdges());
@@ -77,6 +78,18 @@ TEST_F(LinkPredictionGTest, testEdgeSelectorGetByCountMissingCalcCall) {
   EXPECT_THROW(selector.getByCount(1), std::logic_error);
   delete predictor;
 }
+
+TEST_F(LinkPredictionGTest, testKFoldCrossValidator) {
+  KatzIndex katzIndex;
+  METISGraphReader graphReader;
+  Graph jazz = graphReader.read("input/jazz.graph");
+  ROC roc;
+
+  KFoldCrossValidator validator(jazz, &katzIndex, &roc);
+  double average = validator.crossValidate(10);
+  EXPECT_NEAR(average, 0.78, 0.03);
+}
+
 
 /*TEST_F(LinkPredictionGTest, testReceiverOperatingCharacteristic) {
   RandomEdgePartitioner partitioner(G);
