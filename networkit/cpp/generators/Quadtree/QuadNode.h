@@ -316,7 +316,7 @@ public:
 	 * @param phi Angular coordinate of query point
 	 * @param r_h radial coordinate of query point in poincare disk
 	 */
-	std::pair<double, double> hyperbolicDistances(double phi, double r) {
+	std::pair<double, double> hyperbolicDistances(double phi, double r) const {
 		double minRHyper=HyperbolicSpace::EuclideanRadiusToHyperbolic(this->minR);
 		double maxRHyper=HyperbolicSpace::EuclideanRadiusToHyperbolic(this->maxR);
 		double r_h = HyperbolicSpace::EuclideanRadiusToHyperbolic(r);
@@ -482,9 +482,9 @@ public:
 	 * @return Copy of leaf cell containing point, or dummy cell not responsible for point
 	 *
 	 */
-	QuadNode<T> getAppropriateLeaf(double angle, double r) {
+	QuadNode<T>& getAppropriateLeaf(double angle, double r) {
 		assert(this->responsible(angle, r));
-		if (isLeaf) return *this;
+		if (isLeaf) return *this;//will this return the reference to the subtree itself or to a copy?
 		else {
 			for (uint i = 0; i < children.size(); i++) {
 				bool foundResponsibleChild = false;
@@ -494,11 +494,7 @@ public:
 					return children[i].getAppropriateLeaf(angle, r);
 				}
 			}
-			DEBUG("No responsible child for (", angle, ", ", r, ") found.");
-			assert(false);
-			//to make compiler happy:
-			QuadNode<T> dummy;
-			return dummy;
+			throw std::runtime_error("No responsible child found.");
 		}
 	}
 
@@ -518,7 +514,7 @@ public:
 	 * @param lowR Optional value for the minimum radial coordinate of the query region
 	 * @param highR Optional value for the maximum radial coordinate of the query region
 	 */
-	void getElementsInEuclideanCircle(Point2D<double> center, double radius, vector<T> &result, double minAngle=0, double maxAngle=2*M_PI, double lowR=0, double highR = 1) {
+	void getElementsInEuclideanCircle(Point2D<double> center, double radius, vector<T> &result, double minAngle=0, double maxAngle=2*M_PI, double lowR=0, double highR = 1) const {
 		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR < lowerBoundR) return;
 		if (outOfReach(center, radius)) {
 			return;
@@ -536,8 +532,8 @@ public:
 			const count cSize = content.size();
 
 			for (int i = 0; i < cSize; i++) {
-				const double deltaX = positions[i][0] - queryX;
-				const double deltaY = positions[i][1] - queryY;
+				const double deltaX = positions[i].getX() - queryX;
+				const double deltaY = positions[i].getY() - queryY;
 				if (deltaX*deltaX + deltaY*deltaY < rsq) {
 					result.push_back(content[i]);
 				}
@@ -549,7 +545,7 @@ public:
 		}
 	}
 
-	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &result) {
+	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &result) const {
 		double phi_q, r_q;
 		HyperbolicSpace::cartesianToPolar(euQuery, phi_q, r_q);
 		TRACE("Getting hyperbolic distances");
@@ -623,7 +619,7 @@ public:
 	}
 
 	//this could be private
-	void getElementsProbabilistically(double upperBound, Point2D<double> euQuery, std::function<double(double)> prob, count candidates, vector<T> &circleDenizens) {
+	void getElementsProbabilistically(double upperBound, Point2D<double> euQuery, std::function<double(double)> prob, count candidates, vector<T> &circleDenizens) const {
 		assert(candidates >= 0);
 		if (candidates == 0) return;
 		if (candidates > size()) throw std::runtime_error("Cannot supply more candidates than subtree has points!");
@@ -658,7 +654,7 @@ public:
 		}
 	}
 
-	void maybeGetKthElement(double upperBound, Point2D<double> euQuery, std::function<double(double)> prob, index k, vector<T> &circleDenizens) {
+	void maybeGetKthElement(double upperBound, Point2D<double> euQuery, std::function<double(double)> prob, index k, vector<T> &circleDenizens) const {
 		TRACE("Maybe get element ", k, " with upper Bound ", upperBound);
 		assert(k < size());
 		if (isLeaf) {
@@ -767,7 +763,7 @@ public:
 		return result;
 	}
 
-	index getCellID(double phi, double r) {
+	index getCellID(double phi, double r) const {
 		if (!responsible(phi, r)) return -1;
 		if (isLeaf) return getID();
 		else {
@@ -780,7 +776,7 @@ public:
 		}
 	}
 
-	index getMaxIDInSubtree() {
+	index getMaxIDInSubtree() const {
 		if (isLeaf) return getID();
 		else {
 			index result = -1;
