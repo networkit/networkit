@@ -5164,9 +5164,11 @@ cdef class PageRankNibble:
 
 cdef extern from "cpp/linkprediction/KatzIndex.h":
 	cdef cppclass _KatzIndex "NetworKit::KatzIndex":
+		_KatzIndex(count maxPathLength, double dampingValue) except +
 		_KatzIndex(const _Graph& G, count maxPathLength, double dampingValue) except +
 		double run(node u, node v) except +
 		vector[pair[pair[node, node], double]] runAll(count limit) except +
+		void setGraph(const _Graph& newGraph) except +
 
 cdef class KatzIndex:
 	"""
@@ -5181,17 +5183,29 @@ cdef class KatzIndex:
 	maxPathLength : count
 		Maximal length of the paths to consider. Default: 3
 	dampingValue : count
-		Used to exponentially damp every addend of the sum. Should be in (0, 1). Default: 0.9
+		Used to exponentially damp every addend of the sum. Should be in (0, 1]. Default: 0.9
 	"""
 	cdef _KatzIndex* _this
-	cdef Graph _G
 
-	def __cinit__(self, Graph G, count maxPathLength = 3, double dampingValue = 0.9):
-		self._G = G
-		self._this = new _KatzIndex(G._this, maxPathLength, dampingValue)
+	def __cinit__(self, Graph G = None, count maxPathLength = 3, double dampingValue = 0.9):
+		if G is None:
+			self._this = new _KatzIndex(maxPathLength, dampingValue)
+		else:
+			self._this = new _KatzIndex(G._this, maxPathLength, dampingValue)
 
 	def __dealloc__(self):
 		del self._this
+
+	def setGraph(self, Graph newGraph):
+		"""
+  	Sets the graph to work on.
+
+		Parameters
+		----------
+		newGraph : Graph
+			The graph to work on
+   	"""
+		self._this.setGraph(newGraph._this)
 
 	def run(self, node u, node v):
 		"""
@@ -5233,7 +5247,8 @@ cdef class KatzIndex:
 cdef extern from "cpp/linkprediction/RandomEdgePartitioner.h":
 	cdef cppclass _RandomEdgePartitioner "NetworKit::RandomEdgePartitioner":
 		_RandomEdgePartitioner(const _Graph& G) except +
-		pair[_Graph, _Graph] partition(double percentage) except +
+		pair[_Graph, _Graph] partitionByPercentage(double percentage) except +
+		pair[_Graph, _Graph] partitionByCount(count numEdges) except +
 
 cdef class RandomEdgePartitioner:
 	"""
@@ -5247,18 +5262,17 @@ cdef class RandomEdgePartitioner:
 		The graph whose edges to partition.
 	"""
 	cdef _RandomEdgePartitioner* _this
-	cdef Graph _G
 
 	def __cinit__(self, Graph G):
-		self._G = G
 		self._this = new _RandomEdgePartitioner(G._this)
 
 	def __dealloc__(self):
 		del self._this
 
-	def partition(self, double percentage):
+	def partitionByPercentage(self, double percentage):
 		"""
 		Randomly removes edges until the given percentage of total edges has been removed.
+		Removed edges will be added to a new graph.
 
 		Parameters
 		----------
@@ -5270,25 +5284,59 @@ cdef class RandomEdgePartitioner:
 		A pair of new graphs where the first graph is the remaining graph and the
 		second graph consists of all removed edges.
 		"""
-		cdef pair[_Graph, _Graph] result = self._this.partition(percentage)
+		cdef pair[_Graph, _Graph] result = self._this.partitionByPercentage(percentage)
+		return (Graph().setThis(result.first), Graph().setThis(result.second))
+
+	def partitionByCount(self, count numEdges):
+		"""
+		Randomly removes edges until the given count of total edges has been removed.
+		Removed edges will be added to a new graph.
+
+		Parameters
+		----------
+		numEdges : count
+			Number of edges to remove from the graph
+
+		Returns
+		-------
+		A pair of new graphs where the first graph is the remaining graph and the
+		second graph consists of all removed edges.
+		"""
+		cdef pair[_Graph, _Graph] result = self._this.partitionByCount(numEdges)
 		return (Graph().setThis(result.first), Graph().setThis(result.second))
 
 cdef extern from "cpp/linkprediction/ROC.h":
 	cdef cppclass _ROC "NetworKit::ROC":
-		_ROC(const _Graph& testGraph, vector[pair[pair[node, node], double]] dyadScorePairs) except +
+		_ROC() except +
+		_ROC(const _Graph& testGraph) except +
+		_ROC(const _Graph& testGraph, vector[pair[pair[node, node], double]] predictions) except +
 		void generatePoints() except +
 		pair[vector[double], vector[double]] getPoints() except +
 		double areaUnderCurve() except +
+		void setTestGraph(const _Graph& newTestGraph) except +
+		void setPredictions(vector[pair[pair[node, node], double]] predictions)
 
 cdef class ROC:
 	"""
 	Provides data points for the receiver operating characteristic of
 	a given set of predictions for graph edges.
+
+	Parameters
+	----------
+	testGraph : Graph
+		Graph containing test-set of edges to use for evaluation
+	predictions : vector[pair[pair[node, node], double]]
+		Dyad-score-pairs whose prediction quality has to be evaluated
 	"""
 	cdef _ROC* _this
 
-	def __cinit__(self, Graph testGraph, vector[pair[pair[node, node], double]] dyadScorePairs):
-		self._this = new _ROC(testGraph._this, dyadScorePairs)
+	def __cinit__(self, Graph testGraph = None, vector[pair[pair[node, node], double]] predictions = vector[pair[pair[node, node], double]]()):
+		if testGraph is None and predictions.empty():
+			self._this = new _ROC()
+		elif (testGraph is not None) and predictions.empty():
+			self._this = new _ROC(testGraph._this)
+		else:
+			self._this = new _ROC(testGraph._this, predictions)
 
 	def __dealloc__(self):
 		del self._this

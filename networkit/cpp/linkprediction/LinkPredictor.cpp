@@ -12,15 +12,23 @@
 
 namespace NetworKit {
 
-LinkPredictor::LinkPredictor(const Graph& G) : G(G) {
+LinkPredictor::LinkPredictor() : G(nullptr), validCache(false) {
 }
 
-std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runAll(count limit) {
+LinkPredictor::LinkPredictor(const Graph& G) : G(&G), validCache(false) {
+}
+
+void LinkPredictor::setGraph(const Graph& newGraph) {
+  G = &newGraph;
+  validCache = false;
+}
+
+std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runAllImpl(count limit) {
   std::priority_queue<node_dyad_score_pair, std::vector<node_dyad_score_pair>, NodeDyadScoreComp> pairQueue;
   std::vector<node_dyad_score_pair> result;
-  G.forNodes([&](node u) {
-    G.forNodes([&](node v) {
-      if (u < v && !G.hasEdge(u, v)) {
+  G->forNodes([&](node u) {
+    G->forNodes([&](node v) {
+      if (u < v && !G->hasEdge(u, v)) {
         double score = run(u, v);
         if (limit == 0 || pairQueue.size() < limit) {
           //INFO("Inserting: ((", u, ", ", v, "), ", score, ")");
@@ -41,6 +49,20 @@ std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runAll(count lim
   }
   std::reverse(result.begin(), result.end());
   return result;
+}
+
+double LinkPredictor::run(node u, node v) {
+  if (G == nullptr) {
+    throw std::logic_error("Set a graph first.");
+  }
+  return runImpl(u, v);
+}
+
+std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runAll(count limit) {
+  if (G == nullptr) {
+    throw std::logic_error("Set a graph first.");
+  }
+  return runAllImpl(limit);
 }
 
 } // namespace NetworKit

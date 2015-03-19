@@ -36,16 +36,6 @@ private:
   // Defaults to 0.0 if no score could be found.
   double getScore(node u, node v) const;
 
-  bool executed = false;
-
-public:
-  /**
-   * @param G The graph to operate on
-   * @param maxPathLength Maximal length of the paths to consider
-   * @param dampingValue Used to exponentially damp every addend of the sum. Should be in (0, 1)
-   */
-  KatzIndex(const Graph& G, count maxPathLength = 3, double dampingValue = 0.9);
-  
   /**
    * Returns the similarity score for the given node-pair based on the
    * Katz index specified during construction. The algorithm considers all
@@ -55,8 +45,21 @@ public:
    * @param v Second node
    * @return the similarity score of the given node-pair calculated by the specified Katz index
    */
-  double run(node u, node v) override;
+  double runImpl(node u, node v) override;
 
+public:
+  /**
+   * @param maxPathLength Maximal length of the paths to consider
+   * @param dampingValue Used to exponentially damp every addend of the sum. Should be in (0, 1]
+   */
+  explicit KatzIndex(count maxPathLength = 3, double dampingValue = 0.9);
+
+  /**
+   * @param G The graph to operate on
+   * @param maxPathLength Maximal length of the paths to consider
+   * @param dampingValue Used to exponentially damp every addend of the sum. Should be in (0, 1]
+   */
+  explicit KatzIndex(const Graph& G, count maxPathLength = 3, double dampingValue = 0.9);
 };
 
 } // namespace NetworKit

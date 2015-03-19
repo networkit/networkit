@@ -16,6 +16,7 @@ namespace NetworKit {
 
 /**
  * @ingroup linkprediction
+ *
  * Partitions the set of edges of an given graph into two separate edge-sets
  * that get encapsulated into two corresponding graphs. This is done by randomly
  * removing edges from the given graph until a given percentage of edges have been removed.
@@ -26,17 +27,30 @@ private:
 
 public:
   /**
+   *
    * @param G The graph whose edges to partition
    */
   RandomEdgePartitioner(const Graph& G);
   
   /**
    * Randomly removes edges until the given percentage of total edges has been removed.
+   * Removed edges will be added to a new graph.
+   *
    * @param percentage Percentage of edges to remove from the graph
    * @return a pair of new graphs where the first graph is the remaining
    * graph and the second graph consists of all removed edges
    */
-  std::pair<Graph, Graph> partition(double percentage);
+  std::pair<Graph, Graph> partitionByPercentage(double percentage) const;
+
+  /**
+   * Randomly removes edges until the given count of total edges has been removed.
+   * Removed edges will be added to a new graph.
+   *
+   * @param numEdges Number of edges to remove from the graph
+   * @return a pair of new graphs where the first graph is the remaining
+   * graph and the second graph consists of all removed edges
+   */
+  std::pair<Graph, Graph> partitionByCount(count numEdges) const;
 
 };
 
