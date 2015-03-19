@@ -40,12 +40,12 @@ HyperbolicGenerator::HyperbolicGenerator(count n) {
 /**
  * Construct a generator for n nodes and m edges
  */
-HyperbolicGenerator::HyperbolicGenerator(count n, count m, double plexp) {
+HyperbolicGenerator::HyperbolicGenerator(count n, double avgDegree, double plexp) {
 	nodeCount = n;
 	if (plexp < 2) throw std::runtime_error("Exponent of power-law degree distribution must be >= 2");
 	alpha = (plexp-1)/2;
 	double R = HyperbolicSpace::hyperbolicAreaToRadius(n);
-	double targetR = HyperbolicSpace::getTargetRadius(n, m, alpha, 0);// 2*log(8*n / (M_PI*(m/n)*2));
+	double targetR = HyperbolicSpace::getTargetRadius(n, n*avgDegree/2, alpha, 0);// 2*log(8*n / (M_PI*(m/n)*2));
 	stretch = targetR / R;
 	factor = 1;
 	initialize();

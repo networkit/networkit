@@ -33,7 +33,7 @@ public:
 	 * @param[in] n Number of nodes
 	 * @param[in] m Target number of edges
 	 */
-	HyperbolicGenerator(count n, count m, double exp=3);
+	HyperbolicGenerator(count n, double avgDegree=6, double exp=3);
 
 	/**
 	 * @param[in] n Number of nodes
