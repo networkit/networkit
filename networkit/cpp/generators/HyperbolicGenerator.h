@@ -33,7 +33,7 @@ public:
 	 * @param[in] n Number of nodes
 	 * @param[in] m Target number of edges
 	 */
-	HyperbolicGenerator(count n, count m, double exp=3, double T=0);
+	HyperbolicGenerator(count n, double avgDegree=6, double exp=3, double T=0);
 
 	/**
 	 * @param[in] n Number of nodes
@@ -41,8 +41,6 @@ public:
 	 * @return Theoretical number of edges expected from a graph with alpha=1 and factor=1
 	 */
 	static double expectedNumberOfEdges(count n, double stretch);
-
-	//Graph generateTemperate(double T);
 
 	Graph generate(const vector<double> &angles, const vector<double> &radii, Quadtree<index> &quad, double thresholdDistance, double T=0);
 	Graph generateCold(const vector<double> &angles, const vector<double> &radii, Quadtree<index> &quad, double thresholdDistance);
@@ -88,10 +86,11 @@ public:
 	}
 
 	void setBalance(double balance) {
+
 		this->balance = balance;
 	}
 
-	vector<double> getElapsedMilliseconds() {
+	vector<double> getElapsedMilliseconds() const {
 		vector<double> result(threadtimers.size());
 		for (index i = 0; i < result.size(); i++) {
 			result[i] = threadtimers[i].elapsedMilliseconds();
@@ -120,7 +119,7 @@ private:
 	 */
 	count capacity;
 	bool theoreticalSplit;
-	double balance;
+	double balance = 0.5;
 	static const bool directSwap = false;
 
 	/**

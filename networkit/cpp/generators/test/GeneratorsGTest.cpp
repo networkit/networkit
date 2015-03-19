@@ -757,8 +757,9 @@ TEST_F(GeneratorsGTest, testHyperbolicPointGeneration) {
  */
 TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
 	count n = 500000;
-	count m = 10*n;
-	HyperbolicGenerator gen2(n,m);
+	double k = 20;
+	count m = k*n/2;
+	HyperbolicGenerator gen2(n,k);
 	Graph G = gen2.generate();
 	EXPECT_EQ(G.numberOfNodes(), n);
 	EXPECT_TRUE(G.checkConsistency());
@@ -870,8 +871,9 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithParallelQuadtree) {
  */
 TEST_F(GeneratorsGTest, testHyperbolicGeneratorConsistency) {
 	count n = 20000;
-	count m = n*3;
-	HyperbolicGenerator gen(n, m);
+	double k = 6;
+	count m = n*k/2;
+	HyperbolicGenerator gen(n, k);
 	Graph G = gen.generate();
 	EXPECT_NEAR(G.numberOfEdges(), m, m/10);
 	ASSERT_TRUE(G.checkConsistency());
@@ -882,8 +884,9 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorConsistency) {
 
 TEST_F(GeneratorsGTest, testHyperbolicGeneratorMechanicGraphs) {
 	count n = 20000;
-	count m = n*3;
-	HyperbolicGenerator gen(n, m, 3, 0.14);
+	double k = 6;
+	count m = n*k/2;
+	HyperbolicGenerator gen(n, k, 3, 0.14);
 	Graph G = gen.generate();
 	EXPECT_NEAR(G.numberOfEdges(), m, m/10);
 	ASSERT_TRUE(G.checkConsistency());
@@ -924,8 +927,9 @@ TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {
 TEST_F(GeneratorsGTest, tryGiganticCollectionOfHyperbolicTemperatureGraphs) {
 	for (index i = 0; i < 30; i++) {
 		count n = 50000000;
-		count m = n*5;
-		HyperbolicGenerator gen(n, m, 3, 0.5);
+		double k = 10;
+		count m = n*k/2;
+		HyperbolicGenerator gen(n, k, 3, 0.5);
 		Graph G = gen.generate();
 		EXPECT_NEAR(G.numberOfEdges(), m, m/10);
 		EXPECT_TRUE(G.checkConsistency());
@@ -935,7 +939,8 @@ TEST_F(GeneratorsGTest, tryGiganticCollectionOfHyperbolicTemperatureGraphs) {
 TEST_F(GeneratorsGTest, tryGiganticCollectionOfHyperbolicUnitDiskGraphs) {
 	for (index i = 0; i < 30; i++) {
 		count n = 50000000;
-		count m = n*10;
+		double k = 20;
+		count m = n*k/2;
 		HyperbolicGenerator gen(n, m, 3);
 		Graph G = gen.generate();
 		EXPECT_NEAR(G.numberOfEdges(), m, m/10);
