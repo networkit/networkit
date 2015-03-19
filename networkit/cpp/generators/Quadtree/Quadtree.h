@@ -135,13 +135,13 @@ public:
 	 * @param circleCenter Cartesian coordinates of the query circle's center
 	 * @param hyperbolicRadius Radius of the query circle
 	 */
-	vector<T> getElementsInHyperbolicCircle(Point2D<double> circleCenter, double hyperbolicRadius) {
+	vector<T> getElementsInHyperbolicCircle(Point2D<double> circleCenter, double hyperbolicRadius) const {
 		vector<T> circleDenizens;
 		getElementsInHyperbolicCircle(circleCenter, hyperbolicRadius, circleDenizens);
 		return circleDenizens;
 	}
 
-	void getElementsInHyperbolicCircle(Point2D<double> circleCenter, double hyperbolicRadius, vector<T> &circleDenizens) {
+	void getElementsInHyperbolicCircle(Point2D<double> circleCenter, double hyperbolicRadius, vector<T> &circleDenizens) const {
 		Point2D<double> center;
 
 		//Transform hyperbolic circle into Euclidean circle
@@ -211,7 +211,7 @@ public:
 		return root.indexSubtree(nextID);
 	}
 
-	index getCellID(double phi, double r) {
+	index getCellID(double phi, double r) const {
 		return root.getCellID(phi, r);
 	}
 

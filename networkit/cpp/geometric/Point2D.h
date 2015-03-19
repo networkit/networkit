@@ -64,6 +64,8 @@ public:
 	T squaredLength() const;
 
 	T& operator[](const index i);
+	T getX() const;
+	T getY() const;
 };
 
 template<class T>
@@ -125,6 +127,16 @@ inline T& Point2D<T>::operator [](index i) {
 	assert(i >= 0 && i <2);
 	if (i == 0) return x;
 	else return y;
+}
+
+template<class T>
+inline T Point2D<T>::getX() const {
+	return x;
+}
+
+template<class T>
+inline T Point2D<T>::getY() const {
+	return y;
 }
 
 } /* namespace NetworKit */

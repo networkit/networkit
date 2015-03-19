@@ -50,14 +50,14 @@ public:
 	 * object was created.  If stop() was called, it is the number
 	 * of seconds from the instance creation until stop() was called.
 	 */
-	virtual std::chrono::duration<uint64_t, std::milli> elapsed();
+	virtual std::chrono::duration<uint64_t, std::milli> elapsed() const;
 
 	/**
 	 * The number of milliseconds since the current time that the Timer
 	 * object was created. If stop() was called, it is the number
 	 * of seconds from the instance creation until stop() was called.
 	 */
-	virtual uint64_t elapsedMilliseconds();
+	virtual uint64_t elapsedMilliseconds() const;
 	
 	/**
 	 * The number of microseconds since the current time that the Timer
