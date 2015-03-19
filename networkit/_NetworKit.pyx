@@ -1556,7 +1556,7 @@ cdef class ConfigurationModelGenerator:
 cdef extern from "cpp/generators/HyperbolicGenerator.h":
 	cdef cppclass _HyperbolicGenerator "NetworKit::HyperbolicGenerator":
 		# TODO: revert to count when cython issue fixed
-		_HyperbolicGenerator(unsigned int nodes,  unsigned int edges, double gamma, double T) except +
+		_HyperbolicGenerator(unsigned int nodes,  double k, double gamma, double T) except +
 		void setLeafCapacity(unsigned int capacity) except +
 		void setTheoreticalSplit(bool split) except +
 		void setBalance(double balance) except +
@@ -1567,14 +1567,14 @@ cdef class HyperbolicGenerator:
 	""" The Hyperbolic Generator distributes points in hyperbolic space and adds edges between points with a probability depending on their distance. The resulting graphs have a power-law degree distribution, small diameter and high clustering coefficient.
 For a temperature of 0, the model resembles a unit-disk model in hyperbolic space.
 
- 		HyperbolicGenerator(n, m, gamma=3, T=0)
+ 		HyperbolicGenerator(n, k=6, gamma=3, T=0)
 
  		Parameters
 		----------
 		n : integer
 			number of nodes
-		m : integer
-			number of edges
+		k : double
+			average degree
 		gamma : double
 			exponent of power-law degree distribution
 		T : double
@@ -1584,8 +1584,8 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 
 	cdef _HyperbolicGenerator* _this
 
-	def __cinit__(self,  n, m, gamma=3, T=0):		
-		self._this = new _HyperbolicGenerator(n, m, gamma, T)
+	def __cinit__(self,  n, k=6, gamma=3, T=0):		
+		self._this = new _HyperbolicGenerator(n, k, gamma, T)
 
 	def setLeafCapacity(self, capacity):
 		self._this.setLeafCapacity(capacity)
