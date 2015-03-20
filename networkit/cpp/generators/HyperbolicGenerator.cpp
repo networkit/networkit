@@ -14,6 +14,7 @@
 #include <math.h>
 #include <assert.h>
 #include <omp.h>
+#include <algorithm>
 
 #include "../graph/GraphBuilder.h"
 #include "HyperbolicGenerator.h"
@@ -64,7 +65,7 @@ void HyperbolicGenerator::initialize() {
 	} else {
 		capacity = 10;
 	}
-	theoreticalSplit = false;
+	theoreticalSplit = true;
 	threadtimers.resize(omp_get_max_threads());
 	balance = 0.5;
 }
@@ -134,6 +135,7 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 	timer.start();
 	vector<double> empty;
 	GraphBuilder result(n, false, false, directSwap);
+	bool anglesSorted = directSwap ? false : std::is_sorted(angles.begin(), angles.end());//relying on lazy evaluation here
 
 	Aux::ProgressMeter progress(n, 10000);
 	#pragma omp parallel
@@ -146,16 +148,16 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 			count expectedDegree = (4/M_PI)*n*exp(-HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[i])/2);
 			vector<index> near;
 			near.reserve(expectedDegree*1.1);
-			quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance, near);
+			quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance, !directSwap && anglesSorted, near);
 			//count realDegree = near.size();
 			//std::swap(expectedDegree, realDegree);//dummy statement for debugging
 			if (directSwap) {
-				std::remove(near.begin(), near.end(), i); //no self loops!
-				near.pop_back();//std::remove doesn't remove element but swaps it to the end
+				auto newend = std::remove(near.begin(), near.end(), i); //no self loops!
+				if (newend != near.end())	near.pop_back();//std::remove doesn't remove element but swaps it to the end
 				result.swapNeighborhood(i, near, empty, false);
 			} else {
 				for (index j : near) {
-					if (j < i) result.addEdge(i,j);
+					if (j > i) result.addEdge(i,j);
 				}
 			}
 
