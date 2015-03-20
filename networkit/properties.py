@@ -59,7 +59,11 @@ def degreeSequence(G):
 def density(G):
 	""" Return the density of the graph"""
 	(n, m) = size(G)
-	return (2 * m) / (n * (n-1))
+	if G.isDirected():
+		d = m / (n * (n-1))
+	else:
+		d = (2 * m) / (n * (n-1))
+	return d
 
 def components(G):
 	""" Find and analyze detected components.
