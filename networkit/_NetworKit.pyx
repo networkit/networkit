@@ -5503,10 +5503,6 @@ cdef class KFoldCrossValidator:
 			self._this = new _KFoldCrossValidator(G._this, (<KatzIndex>linkPredictor)._this, (<ROC>evaluator)._this)
 		elif isinstance(linkPredictor, CommonNeighborsIndex) and isinstance(evaluator, ROC):
 			self._this = new _KFoldCrossValidator(G._this, (<CommonNeighborsIndex>linkPredictor)._this, (<ROC>evaluator)._this)
-		elif not isinstance(linkPredictor, LinkPredictor):
-			raise TypeError("linkPredictor must derive from LinkPredictor")
-		else:
-			raise TypeError("evaluator must derive from EvaluationCurve")
 
 	def __dealloc__(self):
 		del self._this
