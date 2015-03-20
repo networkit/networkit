@@ -3,6 +3,7 @@ from _NetworKit import GraphProperties, ConnectedComponents, ParallelConnectedCo
 
 # other submodules
 from . import community
+from . import centrality
 from . import termgraph
 from . import auxiliary
 from . import nxadapter
@@ -146,7 +147,7 @@ def degreeAssortativity(G):
 def degeneracy(G):
 	""" degeneracy of an undirected graph is defined as the largest k for which
 	the graph has a non-empty k-core"""
-	coreDec = CoreDecomposition(G)
+	coreDec = centrality.CoreDecomposition(G)
 	coreDec.run()
 	return coreDec.maxCoreNumber()
 
