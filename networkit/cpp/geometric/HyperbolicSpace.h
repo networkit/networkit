@@ -73,7 +73,7 @@ public:
 	/**
 	 * Convenience function for visualizations which expect coordinates as map<index,Point<float> >
 	 */
-	static std::map<index, Point<float> > polarToCartesian(vector<double> &angles, vector<double> &radii);
+	static std::map<index, Point<float> > polarToCartesian(const vector<double> &angles, const vector<double> &radii);
 
 	/**
 	 * @param a cartesian coordinates
@@ -121,7 +121,7 @@ public:
 			return  2*M_PI*(cosh(radius)-1);
 	}
 
-	static double getTargetRadius(double n, double m, double alpha, double T) {
+	static double getTargetRadius(double n, double m, double alpha=1, double T=0) {
 		double result;
 		double plexp = 2*alpha+1;
 		double avgDegree = (m/n)*2;
