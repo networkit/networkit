@@ -127,7 +127,8 @@ public:
 		double avgDegree = (m/n)*2;
 		double gammaratio = ((plexp-2)/(plexp-1));
 		if (T == 0) {
-			result = 2*log(8*n / (M_PI*(m/n)*2));
+			double v = avgDegree * (M_PI/2)*gammaratio*gammaratio;
+			result = 2*log(n / v);
 		} else {
 			double beta = 1/T;
 			if (T < 1){//cold regime
