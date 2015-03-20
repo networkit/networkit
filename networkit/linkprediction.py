@@ -1,3 +1,3 @@
 
-from _NetworKit import KatzIndex, RandomEdgePartitioner, ROC
+from _NetworKit import KatzIndex, CommonNeighborsIndex, RandomEdgePartitioner, ROC
 

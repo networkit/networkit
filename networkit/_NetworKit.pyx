@@ -5162,15 +5162,23 @@ cdef class PageRankNibble:
 
 # Module: linkprediction
 
+cdef extern from "cpp/linkprediction/LinkPredictor.h":
+	cdef cppclass _LinkPredictor "NetworKit::LinkPredictor":
+		_LinkPredictor(const _Graph& G) except +
+
+cdef class LinkPredictor:
+	def __cinit__(self):
+		return
+
 cdef extern from "cpp/linkprediction/KatzIndex.h":
-	cdef cppclass _KatzIndex "NetworKit::KatzIndex":
+	cdef cppclass _KatzIndex "NetworKit::KatzIndex"(_LinkPredictor):
 		_KatzIndex(count maxPathLength, double dampingValue) except +
 		_KatzIndex(const _Graph& G, count maxPathLength, double dampingValue) except +
 		double run(node u, node v) except +
 		vector[pair[pair[node, node], double]] runAll(count limit) except +
 		void setGraph(const _Graph& newGraph) except +
 
-cdef class KatzIndex:
+cdef class KatzIndex(LinkPredictor):
 	"""
 	Katz index assigns a pair of nodes a similarity score
 	that is based on the sum of the weighted number of paths of length l
@@ -5224,6 +5232,80 @@ cdef class KatzIndex:
 		Returns
 		-------
 		The similarity score of the given node-pair calculated by the specified Katz index.
+		"""
+		return self._this.run(u, v)
+
+	def runAll(self, count limit = 0):
+		"""
+		Runs the link predictor on all node-pairs which are not connected
+		by a node in the given graph.
+
+		Parameters
+		----------
+		limit : count
+			Limit for the number of dyad-score-pairs to return. If set to 0 all pairs will get returned.
+
+		Returns
+		-------
+		A vector of dyad-score-pairs that is ordered descendingly by score and on score equality ordered
+		ascendingly by node-pairs.
+		"""
+		return self._this.runAll(limit)
+
+cdef extern from "cpp/linkprediction/CommonNeighborsIndex.h":
+	cdef cppclass _CommonNeighborsIndex "NetworKit::CommonNeighborsIndex"(_LinkPredictor):
+		_CommonNeighborsIndex() except +
+		_CommonNeighborsIndex(const _Graph& G) except +
+		double run(node u, node v) except +
+		vector[pair[pair[node, node], double]] runAll(count limit) except +
+		void setGraph(const _Graph& newGraph) except +
+
+cdef class CommonNeighborsIndex(LinkPredictor):
+	"""
+	The CommonNeighborsIndex calculates the number of common
+	neighbors of a node-pair in a given graph.
+
+	Parameters
+	----------
+	G : Graph
+		The graph to work on.
+	"""
+	cdef _CommonNeighborsIndex* _this
+
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _CommonNeighborsIndex()
+		else:
+			self._this = new _CommonNeighborsIndex(G._this)
+
+	def __dealloc__(self):
+		del self._this
+
+	def setGraph(self, Graph newGraph):
+		"""
+  	Sets the graph to work on.
+
+		Parameters
+		----------
+		newGraph : Graph
+			The graph to work on.
+   	"""
+		self._this.setGraph(newGraph._this)
+
+	def run(self, node u, node v):
+		"""
+		Returns the number of common neighbors of the given nodes @a u and @a v.
+
+		Parameters
+		----------
+		u : node
+			First node.
+		v : node
+			Second node.
+
+		Returns
+		-------
+		The number of common neighbors of u and v.
 		"""
 		return self._this.run(u, v)
 
@@ -5381,22 +5463,37 @@ cdef class ROC:
 		"""
 		return self._this.areaUnderCurve()
 
+# cdef extern from "cpp/linkprediction/KFoldCrossValidator.h":
+# 	cdef cppclass _KFoldCrossValidator "NetworKit::KFoldCrossValidator":
+# 		_KFoldCrossValidator(const _Graph& G, _LinkPredictor* linkPredictor, _EvaluationCurve* evaluator) except +
+# 		double crossValidate() except +
 
-#cdef extern from "cpp/linkprediction/LinkPredictor.h":
-#	cdef cppclass _LinkPredictor "NetworKit::LinkPredictor":
-#		_LinkPredictor(const _Graph& G) except +
-#		double run(node u, node v) except +
-#		vector[pair[pair[node, node], double]] runAll(count limit) except +
-#
-#cdef class LinkPredictor:
-#	cdef _LinkPredictor* _this
-#	cdef Graph _G
-#
-#	def __cinit__(self, Graph G):
-#		self._G = G
-#
-#	def __dealloc__(self):
-#		del self._this
-#
-#	def runAll(self, count limit = 0):
-#		return self._this.runAll(limit)
+# cdef class KFoldCrossValidator:
+# 	"""
+# 	"""
+# 	cdef _KFoldCrossValidator* _this
+
+# 	def __cinit__(self, Graph G, LinkPredictor linkPredictor, EvaluationCurve evaluator):
+# 		self._this = new _KFoldCrossValidator(G._this, linkPredictor._this, evaluator._this)
+
+# 	def __dealloc__(self):
+# 		del self._this
+
+# 	def crossValidate(self):
+# 		return self._this.crossValidate()
+
+# cdef extern from "cpp/linkprediction/EvaluationCurve.h":
+# 	cdef cppclass _EvaluationCurve "NetworKit::EvaluationCurve":
+# 		_EvaluationCurve() except +
+# 		_EvaluationCurve(const _Graph& testGraph) except +
+# 		_EvaluationCurve(const _Graph& testGraph, vector[pair[pair[node, node], double]] predictions) except +
+# 		void generatePoints() except +
+# 		pair[vector[double], vector[double]] getPoints() except +
+# 		double areaUnderCurve() except +
+# 		void setTestGraph(const _Graph& newTestGraph) except +
+# 		void setPredictions(vector[pair[pair[node, node], double]] predictions)
+
+# cdef class EvaluationCurve:
+
+# 	def __cinit__(self):
+# 		return

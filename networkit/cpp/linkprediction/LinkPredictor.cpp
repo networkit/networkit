@@ -54,6 +54,8 @@ std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runAllImpl(count
 double LinkPredictor::run(node u, node v) {
   if (G == nullptr) {
     throw std::logic_error("Set a graph first.");
+  } else if (!G->hasNode(u) || !G->hasNode(v)) {
+    throw std::invalid_argument("Invalid node provided.");
   }
   return runImpl(u, v);
 }
