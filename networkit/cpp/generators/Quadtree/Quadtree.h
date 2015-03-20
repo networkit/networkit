@@ -97,6 +97,20 @@ public:
 		assert(root.size() == n);
 	}
 
+	Quadtree(const vector<double> &angles, const vector<double> &radii, const vector<T> &content, double stretch, bool theoreticalSplit=false, double alpha=1, count capacity=1000, double balance = 0.5) {
+		const count n = angles.size();
+		assert(angles.size() == radii.size());
+		assert(radii.size() == content.size());
+		double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(n);
+		double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
+		root = QuadNode<T>(0, 0, 2*M_PI, r, capacity, 0,theoreticalSplit,alpha,balance);
+		maxRadius = r;
+		for (index i = 0; i < n; i++) {
+			assert(content[i] < n);
+			root.addContent(content[i], angles[i], radii[i]);
+		}
+	}
+
 	/**
 	 * @param newcomer content to be added at point x
 	 * @param angle angular coordinate of x
@@ -141,14 +155,15 @@ public:
 		return circleDenizens;
 	}
 
-	void getElementsInHyperbolicCircle(Point2D<double> circleCenter, double hyperbolicRadius, vector<T> &circleDenizens) const {
-		Point2D<double> center;
-
+	void getElementsInHyperbolicCircle(const Point2D<double> circleCenter, const double hyperbolicRadius, const bool suppressLeft, vector<T> &circleDenizens) const {
+		double cc_phi, cc_r;
+		HyperbolicSpace::cartesianToPolar(circleCenter, cc_phi, cc_r);
 		//Transform hyperbolic circle into Euclidean circle
-		double minPhi, maxPhi, radius;
-		HyperbolicSpace::getEuclideanCircle(circleCenter, hyperbolicRadius, center, radius);
-		double minR = center.length() - radius;
-		double maxR = center.length() + radius;
+		double minPhi, maxPhi, radius, r_e;
+		HyperbolicSpace::getEuclideanCircle(cc_r, hyperbolicRadius, r_e, radius);
+		Point2D<double> center = HyperbolicSpace::polarToCartesian(cc_phi, r_e);
+		double minR = r_e - radius;
+		double maxR = r_e + radius;
 		//assert(maxR < 1);//this looks fishy
 		if (maxR > 1) maxR = 1;
 		if (minR < 0) {
@@ -157,16 +172,17 @@ public:
 			minPhi = 0;
 			maxPhi = 2*M_PI;
 		} else {
-			double spread = asin(radius / center.length());
-			double phi_c, r_c;
-			HyperbolicSpace::cartesianToPolar(center, phi_c, r_c);
-			minPhi = phi_c - spread;
-			maxPhi = phi_c + spread;
+			double spread = asin(radius / r_e);
+			//double phi_c, r_c;
+			//HyperbolicSpace::cartesianToPolar(center, phi_c, r_c);
+			minPhi = cc_phi - spread;
+			maxPhi = cc_phi + spread;
 			/**
 			 * If the circle overlaps the 2\pi line, we have to make two separate calls and collect
 			 */
 		}
 
+		if (suppressLeft) minPhi = cc_phi;
 		/**
 		 * get Elements in Euclidean circle
 		 */
@@ -188,6 +204,10 @@ public:
 			auto newend = unique(circleDenizens.begin(), circleDenizens.end());
 			circleDenizens.resize(newend - circleDenizens.begin());
 		}
+	}
+
+	void getElementsInHyperbolicCircle(const Point2D<double> circleCenter, const double hyperbolicRadius, vector<T> &circleDenizens) const {
+		getElementsInHyperbolicCircle(circleCenter, hyperbolicRadius, false, circleDenizens);
 	}
 
 	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &circleDenizens) {

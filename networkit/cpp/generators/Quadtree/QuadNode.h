@@ -531,7 +531,24 @@ public:
 			const double queryY = center[1];
 			const count cSize = content.size();
 
-			for (int i = 0; i < cSize; i++) {
+//			if (minAngle > leftAngle) //some points are excluded
+//			{
+//				int left = 0;
+//				int right = content.size();
+//				while (right-left > 1) {
+//					int middle = (right+left)/2;
+//					assert(middle >= left);
+//					assert(middle <= right);
+//					if (angles[middle] > minAngle) {
+//						right=middle;
+//					} else {
+//						left = middle;
+//					}
+//				}
+//				i = left;
+//			}
+
+			for (int i=0; i < cSize; i++) {
 				const double deltaX = positions[i].getX() - queryX;
 				const double deltaY = positions[i].getY() - queryY;
 				if (deltaX*deltaX + deltaY*deltaY < rsq) {
