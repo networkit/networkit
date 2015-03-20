@@ -5387,8 +5387,18 @@ cdef class RandomEdgePartitioner:
 		cdef pair[_Graph, _Graph] result = self._this.partitionByCount(numEdges)
 		return (Graph().setThis(result.first), Graph().setThis(result.second))
 
+cdef extern from "cpp/linkprediction/EvaluationCurve.h":
+	cdef cppclass _EvaluationCurve "NetworKit::EvaluationCurve":
+		_EvaluationCurve() except +
+		_EvaluationCurve(const _Graph& testGraph) except +
+		_EvaluationCurve(const _Graph& testGraph, vector[pair[pair[node, node], double]] predictions) except +
+
+cdef class EvaluationCurve:
+	def __cinit__(self):
+		return
+
 cdef extern from "cpp/linkprediction/ROC.h":
-	cdef cppclass _ROC "NetworKit::ROC":
+	cdef cppclass _ROC "NetworKit::ROC"(_EvaluationCurve):
 		_ROC() except +
 		_ROC(const _Graph& testGraph) except +
 		_ROC(const _Graph& testGraph, vector[pair[pair[node, node], double]] predictions) except +
@@ -5398,7 +5408,7 @@ cdef extern from "cpp/linkprediction/ROC.h":
 		void setTestGraph(const _Graph& newTestGraph) except +
 		void setPredictions(vector[pair[pair[node, node], double]] predictions)
 
-cdef class ROC:
+cdef class ROC(EvaluationCurve):
 	"""
 	Provides data points for the receiver operating characteristic of
 	a given set of predictions for graph edges.
@@ -5463,37 +5473,55 @@ cdef class ROC:
 		"""
 		return self._this.areaUnderCurve()
 
-# cdef extern from "cpp/linkprediction/KFoldCrossValidator.h":
-# 	cdef cppclass _KFoldCrossValidator "NetworKit::KFoldCrossValidator":
-# 		_KFoldCrossValidator(const _Graph& G, _LinkPredictor* linkPredictor, _EvaluationCurve* evaluator) except +
-# 		double crossValidate() except +
+cdef extern from "cpp/linkprediction/KFoldCrossValidator.h":
+	cdef cppclass _KFoldCrossValidator "NetworKit::KFoldCrossValidator":
+		_KFoldCrossValidator(const _Graph& G, _CommonNeighborsIndex* linkPredictor, _ROC* evaluator) except +
+		_KFoldCrossValidator(const _Graph& G, _KatzIndex* linkPredictor, _ROC* evaluator) except +
+		double crossValidate(count k) except +
 
-# cdef class KFoldCrossValidator:
-# 	"""
-# 	"""
-# 	cdef _KFoldCrossValidator* _this
+cdef class KFoldCrossValidator:
+	"""
+	Evaluates the performance of a given LinkPredictor on a given graph
+	by randomly partitioning the graph into k subsamples. Of the k samples
+	a single subsamples is used as test-data and the remaining subsamples are
+	used as training-data.
+	The performance will be measured by the given EvaluationCurve.
 
-# 	def __cinit__(self, Graph G, LinkPredictor linkPredictor, EvaluationCurve evaluator):
-# 		self._this = new _KFoldCrossValidator(G._this, linkPredictor._this, evaluator._this)
+	Parameters
+	----------
+	G : Graph
+		Graph to work on
+	linkPredictor : LinkPredictor
+		Predictor whose performance should be measured
+	evaluator : EvaluationCurve
+		Evaluator which provides a metric for evaluating the link prediction results
+	"""
+	cdef _KFoldCrossValidator* _this
 
-# 	def __dealloc__(self):
-# 		del self._this
+	def __cinit__(self, Graph G, LinkPredictor linkPredictor, EvaluationCurve evaluator):
+		if isinstance(linkPredictor, KatzIndex) and isinstance(evaluator, ROC):
+			self._this = new _KFoldCrossValidator(G._this, (<KatzIndex>linkPredictor)._this, (<ROC>evaluator)._this)
+		elif isinstance(linkPredictor, CommonNeighborsIndex) and isinstance(evaluator, ROC):
+			self._this = new _KFoldCrossValidator(G._this, (<CommonNeighborsIndex>linkPredictor)._this, (<ROC>evaluator)._this)
+		elif not isinstance(linkPredictor, LinkPredictor):
+			raise TypeError("linkPredictor must derive from LinkPredictor")
+		else:
+			raise TypeError("evaluator must derive from EvaluationCurve")
 
-# 	def crossValidate(self):
-# 		return self._this.crossValidate()
+	def __dealloc__(self):
+		del self._this
 
-# cdef extern from "cpp/linkprediction/EvaluationCurve.h":
-# 	cdef cppclass _EvaluationCurve "NetworKit::EvaluationCurve":
-# 		_EvaluationCurve() except +
-# 		_EvaluationCurve(const _Graph& testGraph) except +
-# 		_EvaluationCurve(const _Graph& testGraph, vector[pair[pair[node, node], double]] predictions) except +
-# 		void generatePoints() except +
-# 		pair[vector[double], vector[double]] getPoints() except +
-# 		double areaUnderCurve() except +
-# 		void setTestGraph(const _Graph& newTestGraph) except +
-# 		void setPredictions(vector[pair[pair[node, node], double]] predictions)
+	def crossValidate(self, count k):
+		"""
+		Calculates the average AUC of the given EvaluationCurve after k test-runs.
 
-# cdef class EvaluationCurve:
+		Parameters
+		----------
+		k : count
+			Number of subsamples to split the given Graph G into.
 
-# 	def __cinit__(self):
-# 		return
+		Returns
+		-------
+		The average area under the given EvaluationCurve after k runs.
+		"""
+		return self._this.crossValidate(k)

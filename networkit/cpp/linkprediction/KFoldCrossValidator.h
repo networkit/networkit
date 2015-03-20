@@ -17,6 +17,11 @@ namespace NetworKit {
 /**
  * @ingroup linkprediction
  *
+ * Evaluates the performance of a given LinkPredictor on a given graph
+ * by randomly partitioning the graph into k subsamples. Of the k samples
+ * a single subsamples is used as test-data and the remaining subsamples are
+ * used as training-data.
+ * The performance will be measured by the given EvaluationCurve.
  */
 class KFoldCrossValidator {
 private:
@@ -31,12 +36,18 @@ private:
 public:
   /**
    *
-   * @param G 
-   * @param linkPredictor 
-   * @param evaluator 
+   * @param G Graph to work on
+   * @param linkPredictor Predictor whose performance should be measured
+   * @param evaluator Evaluator which provides a metric for evaluating the link prediction results
    */
   KFoldCrossValidator(const Graph& G, LinkPredictor* linkPredictor, EvaluationCurve* evaluator);
   
+  /**
+   * Calculates the average AUC of the given EvaluationCurve after k test-runs.
+   *
+   * @param k Number of subsamples to split the given Graph G into
+   * @return the average area under the given EvaluationCurve after k runs
+   */
   double crossValidate(count k);
 
 };
