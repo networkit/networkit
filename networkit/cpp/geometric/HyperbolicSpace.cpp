@@ -78,7 +78,7 @@ Point2D<double> HyperbolicSpace::polarToCartesian(double phi, double r) {
 	return Point2D<double>(r*cos(phi), r*sin(phi));
 }
 
-std::map<index, Point<float> > HyperbolicSpace::polarToCartesian(vector<double> &angles, vector<double> &radii) {
+std::map<index, Point<float> > HyperbolicSpace::polarToCartesian(const vector<double> &angles, const vector<double> &radii) {
 	count n = angles.size();
 	assert(radii.size() == n);
 	std::map<index, Point<float> > result;
