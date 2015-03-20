@@ -427,4 +427,49 @@ TEST_F(QuadTreeGTest, testSequentialQuadTreeConstruction) {
 }
 
 
+TEST_F(QuadTreeGTest, testLeftSuppression) {
+	/**
+	 * define parameters
+	 */
+	count n = 100000;
+	double k = 10;
+	count m = n*k/2;
+	double targetR = HyperbolicSpace::getTargetRadius(n, m);
+	double R = HyperbolicSpace::hyperbolicAreaToRadius(n);
+	double alpha = 1;
+
+	//allocate data structures
+	vector<double> angles(n), radii(n);
+
+	/**
+	 * generate values and construct quadtree
+	 */
+	HyperbolicSpace::fillPoints(angles, radii, targetR / R, alpha);
+	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(targetR));
+
+	for (index i = 0; i < n; i++) {
+		quad.addContent(i, angles[i], radii[i]);
+	}
+	EXPECT_EQ(quad.size(), n);
+
+	//now test
+	for (index i = 0; i < n; i++) {
+		vector<index> allNeighbours;
+		vector<index> rightNeighbours;
+		quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), targetR, true, rightNeighbours);
+		quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), targetR, false, allNeighbours);
+		EXPECT_LE(rightNeighbours.size(), allNeighbours.size());
+		index aIndex, bIndex;
+		for (aIndex = 0, bIndex = 0; aIndex < rightNeighbours.size() && bIndex < allNeighbours.size(); aIndex++, bIndex++)  {
+			//EXPECT_GE(angles[rightNeighbours[aIndex]], angles[i]);//all elements returned by partial query are right
+			while(rightNeighbours[aIndex] != allNeighbours[bIndex]) {//iterate over suppressed elements until next match
+				EXPECT_LT(angles[allNeighbours[bIndex]], angles[i]);//all elements suppressed are left
+				bIndex++;
+			}
+		}
+		EXPECT_EQ(aIndex, rightNeighbours.size());//all elements in partial query are also contained in complete query
+	}
+}
+
+
 } /* namespace NetworKit */

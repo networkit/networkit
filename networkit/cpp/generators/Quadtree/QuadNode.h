@@ -10,12 +10,14 @@
 
 #include <vector>
 #include <algorithm>
+#include <functional>
 #include <assert.h>
 #include "../../auxiliary/Log.h"
 #include "../../geometric/HyperbolicSpace.h"
 
 using std::vector;
 using std::min;
+using std::max;
 using std::cos;
 
 namespace NetworKit {
@@ -32,7 +34,7 @@ private:
 	unsigned capacity;
 	static const unsigned coarsenLimit = 4;
 	double minRegion;//the minimal region a QuadNode should cover. If it is smaller, don't bother splitting up.
-	count elements;
+	count subTreeSize;
 	std::vector<T> content;
 	std::vector<Point2D<double> > positions;
 	std::vector<double> angles;
@@ -56,7 +58,7 @@ public:
 		capacity = 20;
 		isLeaf = true;
 		minRegion = 0;
-		elements = 0;
+		subTreeSize = 0;
 		balance = 0.5;
 		splitTheoretical = false;
 		alpha = 1;
@@ -79,7 +81,7 @@ public:
 	 *
 	 */
 	QuadNode(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity, double minDiameter, bool splitTheoretical = false, double alpha = 1, double balance = 0.5) {
-		if (balance <= 0 || balance >= 1) throw  std::runtime_error("Quadtree balance parameter must be between 0 and 1.");
+		if (balance <= 0 || balance >= 1) throw std::runtime_error("Quadtree balance parameter must be between 0 and 1.");
 		this->leftAngle = leftAngle;
 		this->minR = minR;
 		this->maxR = maxR;
@@ -95,7 +97,7 @@ public:
 		this->balance = balance;
 		this->lowerBoundR = maxR;
 		isLeaf = true;
-		elements = 0;
+		subTreeSize = 0;
 	}
 
 	void split() {
@@ -156,7 +158,7 @@ public:
 				for (uint i = 0; i < content.size(); i++) {
 					this->addContent(content[i], angles[i], radii[i]);
 				}
-
+				subTreeSize = content.size();
 				content.clear();
 				angles.clear();
 				radii.clear();
@@ -171,8 +173,8 @@ public:
 					break;
 				}
 			}
+			subTreeSize++;
 		}
-		elements++;
 	}
 
 	/**
@@ -215,6 +217,7 @@ public:
 					removed = true;
 				}
 			}
+			if (removed) subTreeSize--;
 			//coarsen?
 			if (removed && allLeaves && size() < coarsenLimit) {
 				//coarsen!!
@@ -308,6 +311,115 @@ public:
 		return outOfReach(query, radius);
 	}
 
+
+	/**
+	 * @param phi Angular coordinate of query point
+	 * @param r_h radial coordinate of query point in poincare disk
+	 */
+	std::pair<double, double> hyperbolicDistances(double phi, double r) const {
+		double minRHyper=HyperbolicSpace::EuclideanRadiusToHyperbolic(this->minR);
+		double maxRHyper=HyperbolicSpace::EuclideanRadiusToHyperbolic(this->maxR);
+		double r_h = HyperbolicSpace::EuclideanRadiusToHyperbolic(r);
+
+		double coshr = cosh(r_h);
+		double sinhr = sinh(r_h);
+		double coshMinR = cosh(minRHyper);
+		double coshMaxR = cosh(maxRHyper);
+		double sinhMinR = sinh(minRHyper);
+		double sinhMaxR = sinh(maxRHyper);
+		double cosDiffLeft = cos(phi - leftAngle);
+		double cosDiffRight = cos(phi - rightAngle);
+
+		/**
+		 * If the query point is not within the quadnode, the distance minimum is on the border.
+		 * Need to check whether extremum is between corners:
+		 */
+
+		double minDistance, maxDistance;
+
+		//Left border
+		double lowerLeftDistance = coshMinR*coshr-sinhMinR*sinhr*cosDiffLeft;
+		double upperLeftDistance = coshMaxR*coshr-sinhMaxR*sinhr*cosDiffLeft;
+		//double lowerLeftDistance = HyperbolicSpace::poincareMetric(leftAngle, minR, phi, r);
+		//double upperLeftDistance = HyperbolicSpace::poincareMetric(leftAngle, maxR, phi, r);
+		if (responsible(phi, r)) minDistance = 0;
+		else minDistance = min(lowerLeftDistance, upperLeftDistance);
+
+		maxDistance = max(lowerLeftDistance, upperLeftDistance);
+		//double a = cosh(r_h);
+		double b = sinhr*cosDiffLeft;
+		double extremum = log((coshr+b)/(coshr-b))/2;
+		if (extremum < maxRHyper && extremum >= minRHyper) {
+			double extremeDistance = cosh(extremum)*coshr-sinh(extremum)*sinhr*cosDiffLeft;
+			//double extremeDistance = HyperbolicSpace::poincareMetric(leftAngle, extremum, phi, r);
+			minDistance = min(minDistance, extremeDistance);
+			maxDistance = max(maxDistance, extremeDistance);
+		}
+		assert(maxDistance == 0 || maxDistance >= 1);
+		assert(minDistance == 0 || minDistance >= 1);
+
+		//Right border
+		double lowerRightDistance = coshMinR*coshr-sinhMinR*sinhr*cosDiffRight;
+		double upperRightDistance = coshMaxR*coshr-sinhMaxR*sinhr*cosDiffRight;
+		//double lowerRightDistance = HyperbolicSpace::poincareMetric(rightAngle, minR, phi, r);
+		//double upperRightDistance = HyperbolicSpace::poincareMetric(rightAngle, maxR, phi, r);
+		minDistance = min(minDistance, lowerRightDistance);
+		minDistance = min(minDistance, upperRightDistance);
+		maxDistance = max(maxDistance, lowerRightDistance);
+		maxDistance = max(maxDistance, upperRightDistance);
+
+		b = sinhr*cosDiffRight;
+		extremum = log((coshr+b)/(coshr-b))/2;
+		if (extremum < maxR && extremum >= minR) {
+			double extremeDistance = cosh(extremum)*coshr-sinh(extremum)*sinhr*cosDiffRight;
+			//double extremeDistance = HyperbolicSpace::poincareMetric(rightAngle, extremum, phi, r);
+			minDistance = min(minDistance, extremeDistance);
+			maxDistance = max(maxDistance, extremeDistance);
+		}
+		assert(maxDistance == 0 || maxDistance >= 1);
+		assert(minDistance == 0 || minDistance >= 1);
+
+		//upper and lower borders
+		if (phi >= leftAngle && phi < rightAngle) {
+			double lower = cosh(abs(r_h-minRHyper));
+			double upper = cosh(abs(r_h-maxRHyper));
+			//double lower = coshMinR*coshr-sinhMinR*sinhr*cos(0);
+			//double upper = coshMaxR*coshr-sinhMaxR*sinhr*cos(0);
+
+			//double lower = HyperbolicSpace::poincareMetric(phi, minR, phi, r);
+			//double upper = HyperbolicSpace::poincareMetric(phi, maxR, phi, r);
+			minDistance = min(minDistance, lower);
+			minDistance = min(minDistance, upper);
+			maxDistance = max(maxDistance, upper);
+			maxDistance = max(maxDistance, lower);
+		}
+		assert(maxDistance == 0 || maxDistance >= 1);
+		assert(minDistance == 0 || minDistance >= 1);
+		//again with mirrored phi
+		double mirrorphi;
+		if (phi >= M_PI) mirrorphi = phi - M_PI;
+		else mirrorphi = phi + M_PI;
+		if (mirrorphi >= leftAngle && mirrorphi < rightAngle) {
+			double lower = coshMinR*coshr+sinhMinR*sinhr;
+			double upper = coshMaxR*coshr+sinhMaxR*sinhr;
+			//double lower = HyperbolicSpace::poincareMetric(mirrorphi, minR, phi, r);
+			//double upper = HyperbolicSpace::poincareMetric(mirrorphi, maxR, phi, r);
+			minDistance = min(minDistance, lower);
+			minDistance = min(minDistance, upper);
+			maxDistance = max(maxDistance, upper);
+			maxDistance = max(maxDistance, lower);
+		}
+		assert(maxDistance == 0 || maxDistance >= 1);
+		assert(minDistance == 0 || minDistance >= 1);
+
+		if (minDistance > 0) minDistance = acosh(minDistance);
+		if (maxDistance > 0) maxDistance = acosh(maxDistance);
+		assert(maxDistance >= 0);
+		assert(minDistance >= 0);
+		return std::pair<double, double>(minDistance, maxDistance);
+	}
+
+
 	/**
 	 * Does the point at (angle, r) fall inside the region managed by this QuadNode?
 	 *
@@ -370,9 +482,9 @@ public:
 	 * @return Copy of leaf cell containing point, or dummy cell not responsible for point
 	 *
 	 */
-	QuadNode<T> getAppropriateLeaf(double angle, double r) {
+	QuadNode<T>& getAppropriateLeaf(double angle, double r) {
 		assert(this->responsible(angle, r));
-		if (isLeaf) return *this;
+		if (isLeaf) return *this;//will this return the reference to the subtree itself or to a copy?
 		else {
 			for (uint i = 0; i < children.size(); i++) {
 				bool foundResponsibleChild = false;
@@ -382,11 +494,7 @@ public:
 					return children[i].getAppropriateLeaf(angle, r);
 				}
 			}
-			DEBUG("No responsible child for (", angle, ", ", r, ") found.");
-			assert(false);
-			//to make compiler happy:
-			QuadNode<T> dummy;
-			return dummy;
+			throw std::runtime_error("No responsible child found.");
 		}
 	}
 
@@ -406,7 +514,7 @@ public:
 	 * @param lowR Optional value for the minimum radial coordinate of the query region
 	 * @param highR Optional value for the maximum radial coordinate of the query region
 	 */
-	void getElementsInEuclideanCircle(Point2D<double> center, double radius, vector<T> &result, double minAngle=0, double maxAngle=2*M_PI, double lowR=0, double highR = 1) {
+	void getElementsInEuclideanCircle(Point2D<double> center, double radius, vector<T> &result, double minAngle=0, double maxAngle=2*M_PI, double lowR=0, double highR = 1) const {
 		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR < lowerBoundR) return;
 		if (outOfReach(center, radius)) {
 			return;
@@ -424,8 +532,8 @@ public:
 			const count cSize = content.size();
 
 			for (int i = 0; i < cSize; i++) {
-				const double deltaX = positions[i][0] - queryX;
-				const double deltaY = positions[i][1] - queryY;
+				const double deltaX = positions[i].getX() - queryX;
+				const double deltaY = positions[i].getY() - queryY;
 				if (deltaX*deltaX + deltaY*deltaY < rsq) {
 					result.push_back(content[i]);
 				}
@@ -457,9 +565,15 @@ public:
 	 * Number of points lying in the region managed by this QuadNode
 	 */
 	count size() const {
-		count result = isLeaf ? content.size() : 0;
-		for (auto child : children) result += child.size();
-		return result;
+		return isLeaf ? content.size() : subTreeSize;
+	}
+
+	void recount() {
+		subTreeSize = 0;
+		for (index i = 0; i < children.size(); i++) {
+			children[i].recount();
+			subTreeSize += children[i].size();
+		}
 	}
 
 	/**
@@ -519,7 +633,7 @@ public:
 		return result;
 	}
 
-	index getCellID(double phi, double r) {
+	index getCellID(double phi, double r) const {
 		if (!responsible(phi, r)) return -1;
 		if (isLeaf) return getID();
 		else {
@@ -532,7 +646,7 @@ public:
 		}
 	}
 
-	index getMaxIDInSubtree() {
+	index getMaxIDInSubtree() const {
 		if (isLeaf) return getID();
 		else {
 			index result = -1;
