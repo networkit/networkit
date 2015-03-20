@@ -1,5 +1,7 @@
 from networkit import *
 import tabulate
+import pandas
+import seaborn
 import matplotlib.pyplot as plt
 from matplotlib._pylab_helpers import Gcf
 from IPython.core.pylabtools import print_figure
@@ -56,14 +58,37 @@ def computeNetworkProperties(G):
 	return networkProperties
 
 
-def computeNetworkPartitions(G):
+def computeNodePartitions(G):
 	components = properties.components(G)
 	communities = community.detectCommunities(G)
 
 def computeNodeProperties(G):
+	# degree
 	degree = properties.degreeSequence(G)
+	# coreness
 	core = centrality.CoreDecomposition(G).run().scores()
-	
+	# local clustering coefficient
+	clustering = properties.ClusteringCoefficient.exactLocal(G)
+	# betweenness
+	nSamples = max(42, G.numberOfNodes() / 1000)
+	betweenness = centrality.ApproxBetweenness2(G, nSamples, normalized=True).run().scores()
+	# pagerank
+	pagerank = centrality.PageRank(G).run().scores()
+	# Katz centrality
+	katz = centrality.KatzCentrality(G).run().scores()
+	# package node properties in DataFrame
+	nodeProperties = pandas.DataFrame({"degree": degree, "core": core, "clustering": clustering, "betweenness": betweenness, "pagerank": pagerank, "katz": katz})
+	return nodeProperties
+
+
+def plotNodePropertyCorrelations(nodeProperties, figsize=(8,8), method="spearman"):
+    cmap = seaborn.diverging_palette(220, 20, as_cmap=True)
+    f, ax = plt.subplots(figsize=figsize)
+    print("correlating"); sys.stdout.flush()
+    seaborn.corrplot(nodeProperties, cmap=cmap, method=method)
+    f.tight_layout()
+
+
 
 def profile(G):
 	"""
