@@ -5294,7 +5294,8 @@ cdef extern from "cpp/distmeasures/AlgebraicDistance.h":
 		_AlgebraicDistance(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm) except +
 		void preprocess() except +
 		double distance(node u, node v) except +
-		vector[vector[double]] getLoadsOnNodes()
+		vector[vector[double]] getLoadsOnNodes() except +
+		vector[double] getEdgeAttribute() except +
 
 cdef class AlgebraicDistance:
 	"""
