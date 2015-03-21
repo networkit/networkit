@@ -29,7 +29,7 @@ __credits__ = ["Lukas Barth", "Miriam Beddig", "Elisabetta Bergamini", "Stefan B
 	"Guido Brückner", "Patrick Flick", "Michael Hamann", "Lukas Hartmann", "Daniel Hoske", "Gerd Lindner", "Moritz v. Looz", "Yassine Marrakchi", "Henning Meyerhenke", \
 	"Marcel Radermacher", "Klara Reichard", "Marvin Ritter", "Aleksejs Sazonovs", "Florian Weber", "Michael Wegner", "Jörg Weisbarth"]
 __license__ = "MIT"
-__version__ = "3.5"
+__version__ = "3.4.1-Dev"
 
 
 # standard library modules
@@ -59,6 +59,7 @@ from . import plot
 from . import sparsification
 from . import scd
 from . import clique
+from . import profiling
 
 try:
 	from . import viztools
@@ -80,7 +81,7 @@ except ImportError as importError:
 # TODO: introduce settings module
 
 # extension imports
-from _NetworKit import getLogLevel, setLogLevel, setPrintLocation, enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads, none
+from _NetworKit import getLogLevel, setLogLevel, setPrintLocation, enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads, none, setSeed
 
 # local imports
 from .graph import Graph

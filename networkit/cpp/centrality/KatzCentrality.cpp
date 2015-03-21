@@ -57,6 +57,8 @@ void KatzCentrality::run() {
 		scoreData = values;
 	} while (! converged(length, oldLength));
 
+	ran = true;
+
 //	// check sign and correct if necessary
 //	if (scoreData[0] < 0) {
 //		G.parallelForNodes([&](node u) {

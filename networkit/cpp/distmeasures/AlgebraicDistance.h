@@ -18,7 +18,7 @@ namespace NetworKit {
 /**
  * @ingroup distmeasures
  * Algebraic distance assigns a distance value to pairs of nodes
- * according to their structural closeness in the graph. 
+ * according to their structural closeness in the graph.
  */
 class AlgebraicDistance: public NetworKit::NodeDistance {
 public:
@@ -47,6 +47,12 @@ public:
 	 * @return Extended algebraic distance between the two nodes.
 	 */
 	 virtual double distance(node u, node v);
+
+
+	/**
+	* @return A value for each node and each system.
+	*/
+	std::vector<std::vector<double> > getLoadsOnNodes();
 
 	 /**
 	  * Returns the extended algebraic distances between all connected nodes in the norm specified in the constructor.

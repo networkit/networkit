@@ -6,6 +6,8 @@
  */
 
 #include <cmath>
+#include <omp.h>
+#include <limits>
 
 #include "Random.h"
 
@@ -23,15 +25,39 @@
 namespace Aux {
 namespace Random {
 
+static bool staticSeed = false;
+static uint64_t seedValue = 0;
+static uint64_t globalSeedGeneration = 0; // global seed generation, updated on every setSeed-call
+static bool seedUseThredId = false;
+
+void setSeed(uint64_t seed, bool useThreadId) {
+	seedValue = seed;
+	staticSeed = true;
+	seedUseThredId = useThreadId;
+	++globalSeedGeneration;
+	getURNG(); // update local seed value
+}
+
 uint64_t getSeed() {
-	AUX_THREAD_LOCAL static std::random_device urng{};
-	std::uniform_int_distribution<uint64_t> dist{};
-	return dist(urng);
+	if (!staticSeed) {
+		AUX_THREAD_LOCAL static std::random_device urng{};
+		std::uniform_int_distribution<uint64_t> dist{};
+		return dist(urng);
+	} else if (seedUseThredId) {
+		return seedValue + omp_get_thread_num();
+	} else {
+		return seedValue;
+	}
 }
 
 
 std::mt19937_64& getURNG() {
 	AUX_THREAD_LOCAL static std::mt19937_64 generator{getSeed()};
+	AUX_THREAD_LOCAL static uint64_t localSeedGeneration = std::numeric_limits<uint64_t>::max();
+	if (staticSeed && localSeedGeneration != globalSeedGeneration) {
+		generator.seed(getSeed());
+		localSeedGeneration = globalSeedGeneration;
+	}
 	return generator;
 }
 

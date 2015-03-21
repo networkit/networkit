@@ -97,6 +97,24 @@ def enableNestedParallelism():
 	""" Enable nested parallelism for OpenMP"""
 	_enableNestedParallelism()
 
+
+cdef extern from "cpp/auxiliary/Random.h" namespace "Aux::Random":
+	void _setSeed "Aux::Random::setSeed" (uint64_t, bool)
+
+def setSeed(uint64_t seed, bool useThreadId):
+	""" Set the random seed that is used in NetworKit.
+
+	Note that there is a separate random number generator per thread.
+
+	Parameters
+	----------
+	seed : uint64_t
+		The seed
+	useThreadId : bool
+		If the thread id shall be added to the seed
+	"""
+	_setSeed(seed, useThreadId)
+
 # Class definitions
 
 ## Module: engineering
@@ -137,6 +155,8 @@ cdef extern from "cpp/graph/Graph.h":
 		void setWeight(node u, node v, edgeweight w) except +
 		void removeEdge(node u, node v) except +
 		void swapEdge(node s1, node t1, node s2, node t2) except +
+		void compactEdges() except +
+		void sortEdges() except +
 		bool hasEdge(node u, node v) except +
 		edgeweight weight(node u, node v) except +
 		vector[node] nodes() except +
@@ -426,6 +446,19 @@ cdef class Graph:
 			Target node of the second edge
 		"""
 		self._this.swapEdge(s1, t1, s2, t2)
+
+	def compactEdges(self):
+		"""
+		Compact the edge storage, this should be called after executing many edge deletions.
+		"""
+		self._this.compactEdges()
+
+	def sortEdges(self):
+		"""
+		Sorts the adjacency arrays by node id. While the running time is linear this
+		temporarily duplicates the memory.
+		"""
+		self._this.sortEdges()
 
 	def hasEdge(self, u, v):
 		""" Checks if undirected edge {`u`,`v`} exists in the graph.
@@ -2864,6 +2897,7 @@ cdef class GraphClusteringTools:
 cdef extern from "cpp/graph/GraphTools.h" namespace "NetworKit::GraphTools":
 	_Graph getCompactedGraph(_Graph G, unordered_map[node,node]) except +
 	unordered_map[node,node] getContinuousNodeIds(_Graph G) except +
+	unordered_map[node,node] getRandomContinuousNodeIds(_Graph G) except +
 
 cdef class GraphTools:
 	@staticmethod
@@ -2886,6 +2920,18 @@ cdef class GraphTools:
 		for elem in cResult:
 			result[elem.first] = elem.second
 		return result
+
+	@staticmethod
+	def getRandomContinuousNodeIds(Graph graph):
+		"""
+			Computes a map of node ids to continuous, randomly permutated node ids.
+		"""
+		cdef unordered_map[node,node] cResult = getRandomContinuousNodeIds(graph._this)
+		result = dict()
+		for elem in cResult:
+			result[elem.first] = elem.second
+		return result
+
 
 cdef extern from "cpp/community/PartitionIntersection.h":
 	cdef cppclass _PartitionIntersection "NetworKit::PartitionIntersection":
@@ -4083,6 +4129,7 @@ cdef extern from "cpp/properties/Diameter.h" namespace "NetworKit::Diameter":
 	pair[count, count] estimatedDiameterRange(_Graph G, double error, pair[node,node] *proof) except +
 	count exactDiameter(_Graph G) except +
 	edgeweight estimatedVertexDiameter(_Graph G, count) except +
+	edgeweight estimatedVertexDiameterPedantic(_Graph G) except +
 
 cdef class Diameter:
 	"""
@@ -4151,7 +4198,10 @@ cdef class Diameter:
 		edgeweight
 			A 2-approximation of the vertex diameter (unweighted diameter) of `G`.
 		"""
-		return estimatedVertexDiameter(G._this, samples)
+		if samples == 0:
+			return estimatedVertexDiameterPedantic(G._this)
+		else:
+			return estimatedVertexDiameter(G._this, samples)
 
 cdef extern from "cpp/properties/Eccentricity.h" namespace "NetworKit::Eccentricity":
 	pair[node, count] getValue(_Graph G, node v) except +
@@ -4166,12 +4216,12 @@ cdef class Eccentricity:
 		return getValue(G._this, v)
 
 
-cdef extern from "cpp/properties/CoreDecomposition.h":
+cdef extern from "cpp/centrality/CoreDecomposition.h":
 	cdef cppclass _CoreDecomposition "NetworKit::CoreDecomposition":
 		_CoreDecomposition(_Graph)
 		void run() except +
-		vector[index] coreNumbers() except +
-		index coreNumber(node) except +
+		vector[double] scores() except +
+		index score(node) except +
 		vector[set[node]] cores() except +
 		vector[set[node]] shells() except +
 		index maxCoreNumber() except +
@@ -4204,7 +4254,7 @@ cdef class CoreDecomposition:
 		self._this.run()
 		return self
 
-	def coreNumbers(self):
+	def scores(self):
 		""" Get vector of core numbers, indexed by node.
 
 		Returns
@@ -4212,9 +4262,9 @@ cdef class CoreDecomposition:
 		vector
 			Vector of core numbers, indexed by node.
 		"""
-		return self._this.coreNumbers()
+		return self._this.scores()
 
-	def coreNumber(self, v):
+	def score(self, v):
 		""" Get core number of node `v`.
 
 		Parameters
@@ -4227,7 +4277,7 @@ cdef class CoreDecomposition:
 		node
 			Core number of node `v.
 		"""
-		return self._this.coreNumber(v)
+		return self._this.score(v)
 
 	def maxCoreNumber(self):
 		""" Get maximum core number.
@@ -4361,15 +4411,16 @@ cdef class EffectiveDiameter:
 
 cdef extern from "cpp/centrality/Betweenness.h":
 	cdef cppclass _Betweenness "NetworKit::Betweenness":
-		_Betweenness(_Graph, bool) except +
+		_Betweenness(_Graph, bool, bool) except +
 		void run() except +
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
+		vector[double] edgeScores() except +
 
 cdef class Betweenness:
 	"""
-		Betweenness(G, normalized=False)
+		Betweenness(G, normalized=False, computeEdgeCentrality=False)
 
 		Constructs the Betweenness class for the given Graph `G`. If the betweenness scores should be normalized,
   		then set `normalized` to True.
@@ -4380,13 +4431,15 @@ cdef class Betweenness:
 	 		The graph.
 	 	normalized : bool, optional
 	 		Set this parameter to True if scores should be normalized in the interval [0,1].
+		computeEdgeCentrality: bool, optional
+			Set this to true if edge betweenness scores should be computed as well.
 	"""
 	cdef _Betweenness* _this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, normalized=False):
+	def __cinit__(self, Graph G, normalized=False, computeEdgeCentrality=False):
 		self._G = G
-		self._this = new _Betweenness(G._this, normalized)
+		self._this = new _Betweenness(G._this, normalized, computeEdgeCentrality)
 
 	# this is necessary so that the C++ object gets properly garbage collected
 	def __dealloc__(self):
@@ -4439,6 +4492,16 @@ cdef class Betweenness:
 		"""
 		return self._this.ranking()
 
+	def edgeScores(self):
+		""" Get a vector containing the betweenness score for each edge in the graph.
+
+		Returns
+		-------
+		vector
+			The betweenness scores calculated by run().
+		"""
+		return self._this.edgeScores()
+
 
 cdef extern from "cpp/centrality/DynBetweenness.h":
 	cdef cppclass _DynBetweenness "NetworKit::DynBetweenness":
@@ -4448,6 +4511,235 @@ cdef extern from "cpp/centrality/DynBetweenness.h":
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
+
+cdef extern from "cpp/centrality/Closeness.h":
+	cdef cppclass _Closeness "NetworKit::Closeness":
+		_Closeness(_Graph, bool) except +
+		void run() except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class Closeness:
+	"""
+		Closeness(G, normalized=False)
+
+		Constructs the Closeness class for the given Graph `G`. If the Closeness scores should be normalized,
+  		then set `normalized` to True.
+
+	 	Parameters
+	 	----------
+	 	G : Graph
+	 		The graph.
+	 	normalized : bool, optional
+	 		Set this parameter to True if scores should be normalized in the interval [0,1]. Normalization only for unweighted networks.
+	"""
+	cdef _Closeness* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, normalized=False):
+		self._G = G
+		self._this = new _Closeness(G._this, normalized)
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		"""  Compute closeness scores parallel."""
+
+		self._this.run()
+		return self
+
+	def scores(self):
+		""" Get a vector containing the closeness score for each node in the graph.
+
+		Returns
+		-------
+		vector
+			The closeness scores calculated by run().
+		"""
+		return self._this.scores()
+
+	def score(self, v):
+		""" Get the closeness score of node `v` calculated by run().
+
+		Parameters
+		----------
+		v : node
+			A node.
+
+		Returns
+		-------
+		double
+			The closeness score of node `v.
+		"""
+		return self._this.score(v)
+
+	def ranking(self):
+		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
+		calculated by run().
+
+		Returns
+		-------
+		vector
+			A vector of pairs.
+		"""
+		return self._this.ranking()
+
+
+cdef extern from "cpp/centrality/KPathCentrality.h":
+	cdef cppclass _KPathCentrality "NetworKit::KPathCentrality":
+		_KPathCentrality(_Graph, double, count) except +
+		void run() except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class KPathCentrality:
+	"""
+		KPathCentrality(G, alpha=0.2, k=0)
+
+		Constructs the K-Path Centrality class for the given Graph `G`.
+
+	 	Parameters
+	 	----------
+	 	G : Graph
+	 		The graph.
+	 	alpha : double, in interval [-0.5, 0.5]
+			tradeoff between runtime and precision
+			-0.5: maximum precision, maximum runtime
+	 		 0.5: lowest precision, lowest runtime
+	"""
+	cdef _KPathCentrality* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, alpha=0.2, k=0):
+		self._G = G
+		self._this = new _KPathCentrality(G._this, alpha, k)
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		"""  Compute KPathCentrality scores."""
+		self._this.run()
+		return self
+
+	def scores(self):
+		""" Get a vector containing the KPathCentrality score for each node in the graph.
+
+		Returns
+		-------
+		vector
+			The KPathCentrality scores calculated by run().
+		"""
+		return self._this.scores()
+
+	def score(self, v):
+		""" Get the KPathCentrality score of node `v` calculated by run().
+
+		Parameters
+		----------
+		v : node
+			A node.
+
+		Returns
+		-------
+		double
+			The KPathCentrality score of node `v.
+		"""
+		return self._this.score(v)
+
+	def ranking(self):
+		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
+		calculated by run().
+
+		Returns
+		-------
+		vector
+			A vector of pairs.
+		"""
+		return self._this.ranking()
+
+cdef extern from "cpp/centrality/KatzCentrality.h":
+	cdef cppclass _KatzCentrality "NetworKit::KatzCentrality":
+		_KatzCentrality(_Graph, double, count) except +
+		void run() except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class KatzCentrality:
+	"""
+		KatzCentrality(G, alpha=5e-4, beta=0.1, tol=1e-8)
+
+		Constructs a KatzCentrality object for the given Graph `G`
+
+	 	Parameters
+	 	----------
+	 	G : Graph
+	 		The graph.
+	 	alpha : double
+			Damping of the matrix vector product result
+		beta : double
+			Constant value added to the centrality of each vertex
+		tol : double
+			The tolerance for convergence.
+	"""
+	cdef _KatzCentrality* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, alpha=0.2, k=0):
+		self._G = G
+		self._this = new _KatzCentrality(G._this, alpha, k)
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		"""  Compute KatzCentrality scores."""
+		self._this.run()
+		return self
+
+	def scores(self):
+		""" Get a vector containing the KatzCentrality score for each node in the graph.
+
+		Returns
+		-------
+		vector
+			The KatzCentrality scores calculated by run().
+		"""
+		return self._this.scores()
+
+	def score(self, v):
+		""" Get the KatzCentrality score of node `v` calculated by run().
+
+		Parameters
+		----------
+		v : node
+			A node.
+
+		Returns
+		-------
+		double
+			The KatzCentrality score of node `v.
+		"""
+		return self._this.score(v)
+
+	def ranking(self):
+		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
+		calculated by run().
+
+		Returns
+		-------
+		vector
+			A vector of pairs.
+		"""
+		return self._this.ranking()
+
 
 cdef class DynBetweenness:
 	"""
@@ -5002,7 +5294,7 @@ cdef extern from "cpp/distmeasures/AlgebraicDistance.h":
 		_AlgebraicDistance(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm) except +
 		void preprocess() except +
 		double distance(node u, node v) except +
-		vector[double] getEdgeAttribute() except +
+		vector[vector[double]] getLoadsOnNodes()
 
 cdef class AlgebraicDistance:
 	"""
@@ -5060,6 +5352,13 @@ cdef class AlgebraicDistance:
 		Extended algebraic distance between the two nodes.
 		"""
 		return self._this.distance(u, v)
+
+
+	def getLoadsOnNodes(self):
+		"""
+		Returns a list, indexed by node id, of the load values.
+		"""
+		return self._this.getLoadsOnNodes()
 
 	def getAttribute(self):
 		"""
