@@ -54,6 +54,12 @@ public:
 	*/
 	std::vector<std::vector<double> > getLoadsOnNodes();
 
+	 /**
+	  * Returns the extended algebraic distances between all connected nodes in the norm specified in the constructor.
+	  * @return Vector containing the extended algebraic distances between all connected pairs of nodes.
+	  */
+	 virtual std::vector<double> getEdgeAttribute();
+
 protected:
 
 	count numSystems; //!< number of vectors/systems used for algebraic iteration
