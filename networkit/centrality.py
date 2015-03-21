@@ -3,10 +3,10 @@ to the network """
 
 
 __author__ = "Christian Staudt"
-__credits__ = ["Christian Staudt", "Elisabetta Bergamini", "Henning Meyerhenke"]
+__credits__ = ["Christian Staudt", "Elisabetta Bergamini", "Henning Meyerhenke", "Marc Nemes"]
 
 # extension imports
-from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2, DynBetweenness, DynApproxBetweenness
+from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2, DynBetweenness, DynApproxBetweenness, Closeness, KPathCentrality, CoreDecomposition, KatzCentrality
 
 
 # local imports
@@ -87,8 +87,13 @@ def rankPerNode(ranking):
 	return ranking_id
 
 
-def relativeRankError(rx, ry):
+def relativeRankErrors(rx, ry):
 	"""
+	Let $r_x(u)$ be the rank of node $u$ in ranking $x$.
+	The relative rank error of node $u$ is defined as
+		$$r_x(u) / r_y(u)$$
+
+
 	Parameters
 	----------
 	rx : list

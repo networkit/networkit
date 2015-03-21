@@ -20,7 +20,7 @@
 
 namespace NetworKit {
 
-Betweenness::Betweenness(const Graph& G, bool normalized) : Centrality(G, normalized) {
+Betweenness::Betweenness(const Graph& G, bool normalized, bool computeEdgeCentrality) : Centrality(G, normalized, computeEdgeCentrality) {
 
 }
 
@@ -28,11 +28,19 @@ void Betweenness::run() {
 	count z = G.upperNodeIdBound();
 	scoreData.clear();
 	scoreData.resize(z);
+	if (computeEdgeCentrality) {
+		count z2 = G.upperEdgeIdBound();
+		edgeScoreData.clear();
+		edgeScoreData.resize(z2);
+	}
 
 	// thread-local scores for efficient parallelism
 	count maxThreads = omp_get_max_threads();
 	std::vector<std::vector<double> > scorePerThread(maxThreads, std::vector<double>(G.upperNodeIdBound()));
-
+	INFO("score per thread: ", scorePerThread.size());
+	INFO("G.upperEdgeIdBound(): ", G.upperEdgeIdBound());
+	std::vector<std::vector<double> > edgeScorePerThread(maxThreads, std::vector<double>(G.upperEdgeIdBound()));
+	INFO("edge score per thread: ", edgeScorePerThread.size());
 
 	auto computeDependencies = [&](node s) {
 
@@ -58,16 +66,19 @@ void Betweenness::run() {
 				bigfloat tmp = sssp->numberOfPaths(p) / sssp->numberOfPaths(t);
 				double weight;
 				tmp.ToDouble(weight);
+				double c= weight * (1 + dependency[t]);
+				dependency[p] += c;
+				if (computeEdgeCentrality) {
+					edgeScorePerThread[omp_get_thread_num()][G.edgeId(p,t)] += c;
+				}
 
-				dependency[p] += weight * (1 + dependency[t]);
+
 			}
 			if (t != s) {
 				scorePerThread[omp_get_thread_num()][t] += dependency[t];
 			}
 		}
 	};
-
-
 
 	G.balancedParallelForNodes(computeDependencies);
 
@@ -78,20 +89,29 @@ void Betweenness::run() {
 			scoreData[v] += local[v];
 		});
 	}
-
+	if (computeEdgeCentrality) {
+		for (auto local : edgeScorePerThread) {
+			for (count i = 0; i < local.size(); i++) {
+				edgeScoreData[i] += local[i];
+			}
+		}
+	}
 	if (normalized) {
 		// divide by the number of possible pairs
 		count n = G.numberOfNodes();
 		count pairs = (n-2) * (n-1);
+		count edges =  n    * (n-1);
 		G.forNodes([&](node u){
 			scoreData[u] = scoreData[u] / pairs;
 		});
+		if (computeEdgeCentrality) {
+			for (count edge = 0; edge < edgeScoreData.size(); edge++) {
+				edgeScoreData[edge] =  edgeScoreData[edge] / edges;
+			}
+		}
 	}
+
+	ran = true;
 }
-
-
-
-
-
 
 } /* namespace NetworKit */
