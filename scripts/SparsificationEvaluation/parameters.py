@@ -15,10 +15,10 @@ def getAlgorithms():
 	S_Original(),
 	S_SimmelianBackboneNonParametric(),
 	S_SimmelianBackboneParametric(10),
-    	S_LocalSimilarity(),
+    S_LocalSimilarity(),
 	S_SimmelianMultiscale(),
 	S_Multiscale(),
-	S__Random(""),
+	S_Random(""),
 	S_LocalDegree(),
 	S_ForestFire("", 0.7, 5),
 	S_DegreeMultiscale("lambda dx,dy: max(dx, dy)", "max"),
@@ -30,9 +30,9 @@ def getAlgorithms():
 def getGraphs():
     return [
 	#thesis set
-	GraphDescription("./input/Yale4.graphml", "Yale4", Format.GraphML),
-	GraphDescription("./input/Virginia63.graphml", "Virginia63", Format.GraphML),
-	GraphDescription("./input/Tennessee95.graphml", "Tennessee95", Format.GraphML),
+	#GraphDescription("./input/Yale4.graphml", "Yale4", Format.GraphML),
+	#GraphDescription("./input/Virginia63.graphml", "Virginia63", Format.GraphML),
+	#GraphDescription("./input/Tennessee95.graphml", "Tennessee95", Format.GraphML),
 	GraphDescription("./input/us-aviation-t100-2013.graphml", "USAviation", Format.GraphML),
 	GraphDescription("./input/Caltech36.graphml", "Caltech36", Format.GraphML),
 	GraphDescription("./input/kitEmail.graphml", "KitEmail", Format.GraphML),
@@ -43,27 +43,26 @@ def getGraphs():
 	GraphDescription("./input/ErdosRenyi.graph", "ErdosRenyi", Format.METIS),
 	GraphDescription("./input/jazz.graph", "Jazz", Format.METIS),
 	#sampling from large graphs
-	GraphDescription("./input/cit-HepTh.edgelist-t0.graph", "HepTh", Format.EdgeList, continuous=False, separator='\t', firstNode=0),
-	GraphDescription("./input/cit-HepPh.edgelist-t0.graph", "HepPh", Format.EdgeList, continuous=False, separator='\t', firstNode=0),
-	GraphDescription("./input/soc-Epinions1.edgelist-t0.graph", "Epinions", Format.EdgeListTabZero),
-	GraphDescription("./input/as20000102.txt", "AS", Format.EdgeList, continuous=False, separator='\t', firstNode=1),
+	#GraphDescription("./input/cit-HepTh.edgelist-t0.graph", "HepTh", Format.EdgeList, continuous=False, separator='\t', firstNode=0),
+	#GraphDescription("./input/cit-HepPh.edgelist-t0.graph", "HepPh", Format.EdgeList, continuous=False, separator='\t', firstNode=0),
+	#GraphDescription("./input/soc-Epinions1.edgelist-t0.graph", "Epinions", Format.EdgeListTabZero),
+	#GraphDescription("./input/as20000102.txt", "AS", Format.EdgeList, continuous=False, separator='\t', firstNode=1),
 	#some more fb graphs
-	GraphDescription("./input/fb-FSU53.edgelist", "fb-FSU53", Format.EdgeListTabZero),
-	GraphDescription("./input/fb-Indiana69.edgelist", "fb-Indiana69", Format.EdgeListTabZero),
-	GraphDescription("./input/fb-Michigan23.edgelist", "fb-Michigan23", Format.EdgeListTabZero),
-	GraphDescription("./input/fb-MSU24.edgelist", "fb-MSU24", Format.EdgeListTabZero),
-	GraphDescription("./input/fb-Penn94.edgelist", "fb-Penn94", Format.EdgeListTabZero),
-	GraphDescription("./input/fb-Texas80.edgelist", "fb-Texas80", Format.EdgeListTabZero),
-	GraphDescription("./input/fb-Texas84.edgelist", "fb-Texas84", Format.EdgeListTabZero),
-	GraphDescription("./input/fb-UF21.edgelist", "fb-UF21", Format.EdgeListTabZero),
-	GraphDescription("./input/fb-UGA50.edgelist", "fb-UGA50", Format.EdgeListTabZero),
-	GraphDescription("./input/fb-UIllinois20.edgelist", "fb-UIllinois20", Format.EdgeListTabZero),
+	#GraphDescription("./input/fb-FSU53.edgelist", "fb-FSU53", Format.EdgeListTabZero),
+	#GraphDescription("./input/fb-Indiana69.edgelist", "fb-Indiana69", Format.EdgeListTabZero),
+	#GraphDescription("./input/fb-Michigan23.edgelist", "fb-Michigan23", Format.EdgeListTabZero),
+	#GraphDescription("./input/fb-MSU24.edgelist", "fb-MSU24", Format.EdgeListTabZero),
+	#GraphDescription("./input/fb-Penn94.edgelist", "fb-Penn94", Format.EdgeListTabZero),
+	#GraphDescription("./input/fb-Texas80.edgelist", "fb-Texas80", Format.EdgeListTabZero),
+	#GraphDescription("./input/fb-Texas84.edgelist", "fb-Texas84", Format.EdgeListTabZero),
+	#GraphDescription("./input/fb-UF21.edgelist", "fb-UF21", Format.EdgeListTabZero),
+	#GraphDescription("./input/fb-UGA50.edgelist", "fb-UGA50", Format.EdgeListTabZero),
+	#GraphDescription("./input/fb-UIllinois20.edgelist", "fb-UIllinois20", Format.EdgeListTabZero),
 	#others
-	GraphDescription("./input/mouse_brain_1.graphml", "mouse_brain_1", Format.GraphML),
-	GraphDescription("./input/test.fiber.small.graphml", "test.fiber.small", Format.GraphML),
+	#GraphDescription("./input/mouse_brain_1.graphml", "mouse_brain_1", Format.GraphML),
+	#GraphDescription("./input/test.fiber.small.graphml", "test.fiber.small", Format.GraphML),
 	#web
-	GraphDescription("./input/cnr-2000.metis.graph", "cnr-2000", Format.METIS),
-
+	#GraphDescription("./input/cnr-2000.metis.graph", "cnr-2000", Format.METIS),
 	#big..
 	#GraphDescription("./input/uk-2002.metis.graph", "uk-2002", Format.METIS)
 	#GraphDescription("./input/eu-2005.metis.graph", "eu-2005", Format.METIS),
@@ -81,5 +80,6 @@ def getProperties():
 	P_Diameter(),
 	P_ConnectedComponents(),
 	P_Community(),
-	P_PageRank()
+	P_PageRank(),
+	P_Betweenness()
 	]

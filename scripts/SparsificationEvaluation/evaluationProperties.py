@@ -56,9 +56,9 @@ class P_Community:
 			#caching (TODO: refactor..)
 			if not 'communities_original' in cache:
 				cAlgoG = community.PLM(graph, refine=False, par='none')
-				cache['communities_original'] = community.detectCommunities(graph, algo=cAlgoG) 
+				cache['communities_original'] = community.detectCommunities(graph, algo=cAlgoG)
 			communitiesGraph = cache['communities_original']
-			
+
 			cAlgoS = community.PLM(sparsifiedGraph, refine=False, par='none')
 			communitiesSparsifiedGraph = community.detectCommunities(sparsifiedGraph, algo=cAlgoS)
 
@@ -93,7 +93,7 @@ class P_Community:
 			'modularity':modularity}
 
 	def getTypes(self):
-		return {'randMeasure':'real', 'nmi':'real', 'numCommunities':'integer', 
+		return {'randMeasure':'real', 'nmi':'real', 'numCommunities':'integer',
 			'minCommunitySize':'integer', 'maxCommunitySize':'integer',
 			'avgCommunitySize':'integer', 'modularity':'real'
 		}
@@ -118,8 +118,8 @@ class P_DegreeDistribution:
 	def getValues(self, graph, sparsifiedGraph, cache):
 		#Caching
 		if not 'degreeSequence_original' in cache:
-			cache['degreeSequence_original'] = properties.degreeSequence(graph) 
-		
+			cache['degreeSequence_original'] = properties.degreeSequence(graph)
+
 		#Precalculations used below
 		dd_sparsified = properties.degreeDistribution(sparsifiedGraph)
 		ds_original = cache['degreeSequence_original']
@@ -136,7 +136,7 @@ class P_DegreeDistribution:
 		#Relative rank error
 		ranking_original = [(n, ds_original[n]) for n in graph.nodes()]
 		ranking_sparsified = [(n, ds_sparsified[n]) for n in sparsifiedGraph.nodes()]
-		relRankError = np.average(centrality.relativeRankError(ranking_original, ranking_sparsified))
+		relRankError = np.average(centrality.relativeRankErrors(ranking_original, ranking_sparsified))
 
 		#Normalized absolute difference
 		normalizedAbsDiff = sum([abs(ds_original[n] - ds_sparsified[n]) for n in graph.nodes()]) / graph.numberOfNodes()
@@ -189,7 +189,7 @@ class P_ClusteringCoefficients:
 			_cc, _ccD = self.getCCSequences(graph)
 			cache['ccSequence_original'] = _cc
 			cache['ccSequencePerDegree_original'] = _ccD
-		
+
 		#Precalculations
 		localCC_original = cache['ccSequence_original']
 		ccPerDegree_original = cache['ccSequencePerDegree_original']
@@ -209,7 +209,7 @@ class P_ClusteringCoefficients:
 		#Relative rank error
 		ranking_original = [(n, localCC_original[n]) for n in graph.nodes()]
 		ranking_sparsified = [(n, localCC_sparsified[n]) for n in sparsifiedGraph.nodes()]
-		perNode_relRankError = np.average(centrality.relativeRankError(ranking_original, ranking_sparsified))
+		perNode_relRankError = np.average(centrality.relativeRankErrors(ranking_original, ranking_sparsified))
 
 		#Normalized absolute difference
 		perNode_normalizedAbsDiff = sum([abs(localCC_original[n] - localCC_sparsified[n]) for n in graph.nodes()]) / graph.numberOfNodes()
@@ -245,7 +245,7 @@ class P_ConnectedComponents:
 			_wccs_original = properties.ConnectedComponents(graph)
 			_wccs_original.run()
 			cache['wccs_original'] = _wccs_original
-		
+
 		wccs_original = cache['wccs_original']
 		componentSizes_original = self.getComponentSizes(wccs_original)
 
@@ -281,8 +281,8 @@ class P_PageRank:
 		#Caching
 		if not 'pagerank_ranking' in cache:
 			_ranking_original = self.getRanking(graph)
-			cache['pagerank_ranking'] = _ranking_original 
-			
+			cache['pagerank_ranking'] = _ranking_original
+
 		ranking_original = cache['pagerank_ranking']
 		ranking_sparsified = self.getRanking(sparsifiedGraph)
 
@@ -291,7 +291,7 @@ class P_PageRank:
 		spearman_rho, spearman_p = stats.spearmanr(scores_original, scores_sparsified)
 
 		#Relative rank error
-		relRankError = np.average(centrality.relativeRankError(ranking_original, ranking_sparsified))
+		relRankError = np.average(centrality.relativeRankErrors(ranking_original, ranking_sparsified))
 
 		return {'pagerank_spearman_rho':spearman_rho, 'pagerank_spearman_p':spearman_p,
 			'pagerank_relRankError':relRankError}
@@ -301,67 +301,49 @@ class P_PageRank:
 			'pagerank_relRankError':'real'}
 
 
-# The following is not being used anymore
-#Centrality
-class P_Centrality_DEPRECATED:
+#Betweenness Centrality
+class P_Betweenness:
 	def getName(self):
 		return "Centrality"
 
-	def getHubsFromRanking(self, ranking, count):
-		ranking.sort(key=lambda x: (x[1] if not math.isnan(x[1]) else 0), reverse=True) #Sort by centrality score
-		ranking = ranking[:count]
-		return list(map(lambda x: x[0], ranking))
+	def getApproxBetweennessSampleCount(self, nodeCount):
+		if nodeCount > 100000:
+			return 10
+		elif nodeCount > 50000:
+			return 50
+		elif nodeCount > 10000:
+			return 100
+		elif nodeCount > 1000:
+			return 150
+		else:
+			return 500
 
-	def getBetweennessHubs(self, graph, count):
-		#Empty graphs result in crash of approxbetweenness. #TODO incestigate
-		if graph.numberOfNodes() == 0:
-			return [-1] * count
-
-		print("ApproxBetweenness...")
-		bc = centrality.ApproxBetweenness(graph, epsilon=0.05, delta=0.05, diameterSamples=0)
-		#bc = centrality.Betweenness(graph)
-		bc.run()
-		return self.getHubsFromRanking(bc.ranking(), count)
-
-	def getPageRankHubs(self, graph, count):
-		print("PageRank...")
-		bc = centrality.PageRank(graph, damp=0.95)
-		bc.run()
-		return self.getHubsFromRanking(bc.ranking(), count)
-
-	def getJaccard(self, list1, list2):
-		return len(set(list1) & set(list2)) / len(set(list1) | set(list2))
-
-	def getValues(self, graph, sparsifiedGraph, cache):
-		#lcGraph = workflows.extractLargestComponent(graph)
-		#lcSparsifiedGraph = workflows.extractLargestComponent(sparsifiedGraph)
-
-		#PageRank
-		hubCountPageRank = math.ceil(graph.numberOfNodes() * 0.01)
-		prHubsG = self.getPageRankHubs(graph, hubCountPageRank)
-		prHubsB = self.getPageRankHubs(sparsifiedGraph, hubCountPageRank)
-		centralityPageRank = self.getJaccard(prHubsG, prHubsB)
-
+	def getRanking(self, graph):
 		#Betweenness
-		hubCountBetweenness = math.ceil(graph.numberOfNodes() * 0.001)
-		bHubsG = self.getBetweennessHubs(graph, hubCountBetweenness)
-		bHubsB = self.getBetweennessHubs(sparsifiedGraph, hubCountBetweenness)
-		centralityBetweenness = self.getJaccard(bHubsG, bHubsB)
-
-		return {'centralityPageRank':centralityPageRank, 'centralityBetweenness':centralityBetweenness}
-
-	def getTypes(self):
-		return {'centralityPageRank':'real', 'centralityBetweenness':'real'}
-
-#Connected components
-class P_Components_DEPRECATED:
-	def getName(self):
-		return "Connected Components"
+		sampleCount = self.getApproxBetweennessSampleCount(graph.numberOfNodes())
+		bc = centrality.ApproxBetweenness2(graph, sampleCount)
+		bc.run()
+		return bc.ranking()
 
 	def getValues(self, graph, sparsifiedGraph, cache):
-		nComponents, componentSizes = properties.components(sparsifiedGraph)
+		#Caching
+		if not 'betweenness_ranking' in cache:
+			_ranking_original = self.getRanking(graph)
+			cache['betweenness_ranking'] = _ranking_original
 
-		return {'largestComponentSize':max(componentSizes.values()), 'numComponents':nComponents}
+		ranking_original = cache['betweenness_ranking']
+		ranking_sparsified = self.getRanking(sparsifiedGraph)
+
+		scores_original = [r[1] for r in ranking_original]
+		scores_sparsified = [r[1] for r in ranking_sparsified]
+		spearman_rho, spearman_p = stats.spearmanr(scores_original, scores_sparsified)
+
+		#Relative rank error
+		relRankError = np.average(centrality.relativeRankErrors(ranking_original, ranking_sparsified))
+
+		return {'betweenness_spearman_rho':spearman_rho, 'betweenness_spearman_p':spearman_p,
+			'betweenness_relRankError':relRankError}
 
 	def getTypes(self):
-		return {'largestComponentSize':'integer', 'numComponents':'integer'}
+		return {'betweenness_spearman_rho':'real', 'betweenness_spearman_p':'real',
+			'betweenness_relRankError':'real'}

@@ -5778,7 +5778,7 @@ cdef extern from "cpp/edgeattributes/ChibaNishizekiTriangleCounter.h":
 cdef class ChibaNishizekiTriangleCounter:
 	"""
 	Calculates for each edge the number of triangles it is embedded in.
-	
+
 	Parameters
 	----------
 	G : Graph
@@ -5798,14 +5798,14 @@ cdef class ChibaNishizekiTriangleCounter:
 
 	def __dealloc__(self):
 		del self._this
-	
+
 	def getAttribute(self):
 		"""
-		Returns 
+		Returns
 		----------
 		vector[count]
 			the number of triangles edges are embedded in.
-		
+
 		"""
 		return self._this.getAttribute()
 
@@ -5817,7 +5817,7 @@ cdef extern from "cpp/edgeattributes/ChibaNishizekiQuadrangleCounter.h":
 cdef class ChibaNishizekiQuadrangleCounter:
 	"""
 	Calculates for each edge the number of quadrangles (circles of length 4) it is embedded in.
-	
+
 	Parameters
 	----------
 	G : Graph
@@ -5857,7 +5857,7 @@ cdef extern from "cpp/edgeattributes/TriangleCounter.h":
 cdef class TriangleCounter:
 	"""
 	Triangle counting.
-	
+
 	Parameters
 	----------
 	G : Graph
@@ -5888,7 +5888,7 @@ cdef class TriangleCounter:
 			the number of triangles edges are embedded in.
 		"""
 		return self._this.getAttribute()
-	
+
 cdef extern from "cpp/edgeattributes/EdgeAttributeLinearizer.h":
 	cdef cppclass _EdgeAttributeLinearizer "NetworKit::EdgeAttributeLinearizer":
 		_EdgeAttributeLinearizer(const _Graph& G, const vector[double]& attribute, bool inverse) except +
@@ -5897,7 +5897,7 @@ cdef extern from "cpp/edgeattributes/EdgeAttributeLinearizer.h":
 cdef class EdgeAttributeLinearizer:
 	"""
 	Linearizes an attribute such that values are evenly distributed between 0 and 1.
-	
+
 	Parameters
 	----------
 	G : Graph
@@ -5913,14 +5913,14 @@ cdef class EdgeAttributeLinearizer:
 		self._G = G
 		self._attribute = attribute
 		self._this = new _EdgeAttributeLinearizer(G._this, attribute, inverse)
-	
+
 	def __dealloc__(self):
 		del self._this
 
 	def getAttribute(self):
 		"""
 		Gets the edge attribute that can be used for global filtering.
-		
+
 		Returns
 		-------
 		vector[double]
@@ -5938,7 +5938,7 @@ cdef extern from "cpp/edgeattributes/EdgeAttributeNormalizer.h":
 cdef class EdgeAttributeNormalizer:
 	"""
 	Normalize an edge attribute such that it is in a certain range.
-	
+
 	Parameters
 	----------
 	G : Graph
@@ -5973,7 +5973,7 @@ cdef class EdgeAttributeNormalizer:
 		Returns
 		-------
 		vector
-			The normalized edge attribute. 
+			The normalized edge attribute.
 		"""
 		return self._this.getAttribute()
 
@@ -6031,7 +6031,7 @@ cdef extern from "cpp/edgeattributes/GeometricMeanAttributizer.h":
 cdef class GeometricMeanAttributizer:
 	"""
 	Normalizes the given edge attribute by the geometric average of the sum of the attributes of the incident edges of the incident nodes.
-	
+
 	Parameters
 	----------
 	G : Graph
@@ -6050,7 +6050,7 @@ cdef class GeometricMeanAttributizer:
 
 	def __dealloc__(self):
 		del self._this
-		
+
 	def getAttribute(self):
 		"""
 		Returns
@@ -6068,7 +6068,7 @@ cdef extern from "cpp/edgeattributes/EdgeAttributeAsWeight.h":
 cdef class EdgeAttributeAsWeight:
 	"""
 	Assigns an edge attribute as edge weight of a graph.
-	
+
 	Parameters
 	----------
 	G : Graph
@@ -6115,7 +6115,7 @@ cdef extern from "cpp/distmeasures/AdamicAdarDistance.h":
 cdef class AdamicAdarDistance:
 	"""
 	Calculate the adamic adar similarity.
-	
+
 	Parameters
 	----------
 	G : Graph
@@ -6130,7 +6130,7 @@ cdef class AdamicAdarDistance:
 
 	def __dealloc__(self):
 		del self._this
-		
+
 	def preprocess(self):
 		self._this.preprocess()
 
@@ -6155,7 +6155,7 @@ cdef extern from "cpp/sparsification/ChungLuAttributizer.h":
 cdef class ChungLuAttributizer:
 	"""
 	Chung-Lu based attributizer.
-	
+
 	Parameters
 	----------
 	G : Graph
@@ -6183,9 +6183,9 @@ cdef extern from "cpp/sparsification/SimmelianJaccardAttributizer.h":
 cdef class SimmelianJaccardAttributizer:
 	"""
 	An implementation of the non-parametric variant of Simmelian Backbones. Calculates
-	for each edge the minimum parameter value such that the edge is still contained in 
+	for each edge the minimum parameter value such that the edge is still contained in
 	the sparsified graph.
-	
+
 	Parameters
 	----------
 	G : Graph
@@ -6217,9 +6217,9 @@ cdef extern from "cpp/sparsification/SimmelianOverlapAttributizer.h":
 cdef class SimmelianOverlapAttributizer:
 	"""
 	An implementation of the parametric variant of Simmelian Backbones. Calculates
-	for each edge the minimum parameter value such that the edge is still contained in 
+	for each edge the minimum parameter value such that the edge is still contained in
 	the sparsified graph.
-	
+
 	Parameters
 	----------
 	G : Graph
@@ -6252,7 +6252,7 @@ cdef class MultiscaleAttributizer:
 	"""
 	An implementation of the Multiscale Backbone. Calculates for each edge the minimum
 	parameter value such that the edge is still contained in the sparsified graph.
-	
+
 	Parameters
 	----------
 	G : Graph
@@ -6284,7 +6284,7 @@ cdef extern from "cpp/sparsification/RandomAttributizer.h":
 cdef class RandomAttributizer:
 	"""
 	[todo]
-	
+
 	Parameters
 	----------
 	G : Graph
@@ -6311,10 +6311,10 @@ cdef extern from "cpp/sparsification/LocalSimilarityAttributizer.h":
 
 cdef class LocalSimilarityAttributizer:
 	"""
-	An implementation of the Local Simlarity sparsification approach. 
-	This attributizer calculates for each edge the maximum parameter value 
+	An implementation of the Local Simlarity sparsification approach.
+	This attributizer calculates for each edge the maximum parameter value
 	such that the edge is still contained in the sparsified graph.
-	
+
 	Parameters
 	----------
 	G : Graph
@@ -6324,7 +6324,7 @@ cdef class LocalSimilarityAttributizer:
 	"""
 
 	cdef _LocalSimilarityAttributizer* _this
-	
+
 	cdef Graph _G
 	cdef vector[count] _triangles
 
@@ -6347,10 +6347,10 @@ cdef extern from "cpp/sparsification/ForestFireAttributizer.h":
 
 cdef class ForestFireAttributizer:
 	"""
-	A variant of the Forest Fire sparsification approach that is based on random walks. 
-	This attributizer calculates for each edge the minimum parameter value 
+	A variant of the Forest Fire sparsification approach that is based on random walks.
+	This attributizer calculates for each edge the minimum parameter value
 	such that the edge is still contained in the sparsified graph.
-	
+
 	Parameters
 	----------
 	G : Graph
@@ -6381,10 +6381,10 @@ cdef extern from "cpp/sparsification/LocalDegreeAttributizer.h":
 
 cdef class LocalDegreeAttributizer:
 	"""
-	The LocalDegree sparsification approach is based on the idea of hub nodes. 
-	This attributizer calculates for each edge the maximum parameter value 
+	The LocalDegree sparsification approach is based on the idea of hub nodes.
+	This attributizer calculates for each edge the maximum parameter value
 	such that the edge is still contained in the sparsified graph.
-	
+
 	Parameters
 	----------
 	G : Graph
@@ -6400,7 +6400,7 @@ cdef class LocalDegreeAttributizer:
 
 	def __dealloc__(self):
 		del self._this
-		
+
 	def getAttribute(self):
 		return self._this.getAttribute()
 
@@ -6412,8 +6412,8 @@ cdef extern from "cpp/distmeasures/JaccardDistance.h":
 cdef class JaccardDistance:
 	"""
 	The Jaccard distance measure assigns to each edge the jaccard coefficient
-	of the neighborhoods of the two adjacent nodes. 
-	
+	of the neighborhoods of the two adjacent nodes.
+
 	Parameters
 	----------
 	G : Graph
@@ -6433,15 +6433,15 @@ cdef class JaccardDistance:
 
 	def __dealloc__(self):
 		del self._this
-		
+
 	def getAttribute(self):
 		return self._this.getEdgeAttribute()
 
 cdef class JaccardSimilarityAttributizer:
 	"""
 	The Jaccard similarity measure assigns to each edge (1 - the jaccard coefficient
-	of the neighborhoods of the two adjacent nodes). 
-	
+	of the neighborhoods of the two adjacent nodes).
+
 	Parameters
 	----------
 	G : Graph
@@ -6461,7 +6461,7 @@ cdef class JaccardSimilarityAttributizer:
 
 	def __dealloc__(self):
 		del self._this
-		
+
 	def getAttribute(self):
 		#convert distance to similarity
 		return [1 - x for x in self._this.getEdgeAttribute()]
@@ -6475,7 +6475,7 @@ cdef class RandomEdgeAttributizer:
 	"""
 	Random Edge sampling. This attributizer returns edge attributes where
 	each value is selected uniformly at random from [0,1].
-	
+
 	Parameters
 	----------
 	G : Graph
@@ -6514,7 +6514,7 @@ cdef class LocalFilterAttributizer:
 	"""
 	cdef _LocalFilterAttributizerDouble* _thisDouble
 	#cdef _LocalFilterAttributizerInt _thisInt
-	
+
 	cdef Graph _G
 	cdef vector[double] _a
 
@@ -6531,7 +6531,7 @@ cdef class LocalFilterAttributizer:
 		#	return self._thisInt.getAttribute(G._this, a)
 		#else:
 		return self._thisDouble.getAttribute()
-	
+
 cdef extern from "cpp/sparsification/ChanceCorrectedTriangleAttributizer.h":
 	cdef cppclass _ChanceCorrectedTriangleAttributizer "NetworKit::ChanceCorrectedTriangleAttributizer":
 		_ChanceCorrectedTriangleAttributizer(const _Graph& G, const vector[count]& triangles) except +
@@ -6540,7 +6540,7 @@ cdef extern from "cpp/sparsification/ChanceCorrectedTriangleAttributizer.h":
 cdef class ChanceCorrectedTriangleAttributizer:
 	"""
 	Divide the number of triangles per edge by the expected number of triangles given a random edge distribution.
-	
+
 	Parameters
 	----------
 	G : Graph
@@ -6563,7 +6563,7 @@ cdef class ChanceCorrectedTriangleAttributizer:
 	def getAttribute(self):
 		"""
 		Gets the edge attribute that can be used for global filtering.
-		
+
 		Returns
 		-------
 		vector[double]
@@ -6580,7 +6580,7 @@ cdef extern from "cpp/sparsification/NodeNormalizedTriangleAttributizer.h":
 cdef class NodeNormalizedTriangleAttributizer:
 	"""
 	Divide the number of triangles per edge by the average number of triangles of the incident nodes.
-	
+
 	Parameters
 	----------
 	G : Graph
@@ -6603,7 +6603,7 @@ cdef class NodeNormalizedTriangleAttributizer:
 	def getAttribute(self):
 		"""
 		Gets the edge attribute that can be used for global filtering.
-		
+
 		Returns
 		-------
 		vector[double]
@@ -6619,13 +6619,13 @@ cdef extern from "cpp/sparsification/GlobalThresholdFilter.h":
 
 cdef class GlobalThresholdFilter:
 	"""
-	Calculates a sparsified graph by filtering globally using a constant threshold value 
+	Calculates a sparsified graph by filtering globally using a constant threshold value
 	and a given edge attribute.
-	
+
 	Parameters
 	----------
 	G : Graph
-		The graph to sparsify. 
+		The graph to sparsify.
 	attribute : vector[double]
 		The edge attribute to consider for filtering.
 	e : double
