@@ -1,15 +1,15 @@
 /*
- * ROC.h
+ * ROCMetric.h
  *
  *  Created on: 14.03.2015
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#ifndef ROC_H_
-#define ROC_H_
+#ifndef ROCMETRIC_H_
+#define ROCMETRIC_H_
 
 #include "../graph/Graph.h"
-#include "EvaluationCurve.h"
+#include "EvaluationMetric.h"
 
 namespace NetworKit {
 
@@ -19,16 +19,15 @@ namespace NetworKit {
  * Provides data points for the receiver operating characteristic of
  * a given set of predictions for graph edges.
  */
-class ROC : public EvaluationCurve {
+class ROCMetric : public EvaluationMetric {
 private:
   void generatePointsImpl() override;
 
 public:
-  using EvaluationCurve::EvaluationCurve;
-
+  using EvaluationMetric::EvaluationMetric;
   
 };
 
 } // namespace NetworKit
 
-#endif /* ROC_H_ */
+#endif /* ROCMETRIC_H_ */
