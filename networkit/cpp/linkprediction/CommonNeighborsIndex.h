@@ -36,6 +36,9 @@ public:
    * @param G The graph to work on
    */
   explicit CommonNeighborsIndex(const Graph& G);
+
+  std::vector<node> getCommonNeighbors(node u, node v);
+
 };
 
 } // namespace NetworKit
