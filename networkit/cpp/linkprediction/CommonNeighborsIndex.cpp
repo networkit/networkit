@@ -16,6 +16,10 @@ CommonNeighborsIndex::CommonNeighborsIndex(const Graph& G) : LinkPredictor(G) {
 }
 
 double CommonNeighborsIndex::runImpl(node u, node v) {
+  return getCommonNeighbors(u, v).size();
+}
+
+std::vector<node> CommonNeighborsIndex::getCommonNeighbors(node u, node v) {
   std::vector<node> uNeighbors = G->neighbors(u);
   std::vector<node> vNeighbors = G->neighbors(v);
   std::vector<node> commonNeighbors;
@@ -25,7 +29,7 @@ double CommonNeighborsIndex::runImpl(node u, node v) {
   std::sort(vNeighbors.begin(), vNeighbors.end());
   std::set_intersection(uNeighbors.begin(), uNeighbors.end(), vNeighbors.begin(),
     vNeighbors.end(), std::back_inserter(commonNeighbors));
-  return commonNeighbors.size();
+  return commonNeighbors;
 }
 
 } // namespace NetworKit
