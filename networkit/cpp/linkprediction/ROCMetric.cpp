@@ -1,15 +1,15 @@
 /*
- * ROC.cpp
+ * ROCMetric.cpp
  *
  *  Created on: 28.02.2015
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include "ROC.h"
+#include "ROCMetric.h"
 
 namespace NetworKit {
 
-void ROC::generatePointsImpl() {
+void ROCMetric::generatePointsImpl() {
   std::vector<std::pair<std::pair<node, node>, double>> predictedEdges;
   generatedPoints.first.clear();
   generatedPoints.second.clear();

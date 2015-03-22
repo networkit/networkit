@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-KFoldCrossValidator::KFoldCrossValidator(const Graph& G, LinkPredictor* linkPredictor, EvaluationCurve* evaluator)
+KFoldCrossValidator::KFoldCrossValidator(const Graph& G, LinkPredictor* linkPredictor, EvaluationMetric* evaluator)
     : G(G), linkPredictor(linkPredictor), evaluator(evaluator) {
 }
 

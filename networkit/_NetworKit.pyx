@@ -5387,28 +5387,28 @@ cdef class RandomEdgePartitioner:
 		cdef pair[_Graph, _Graph] result = self._this.partitionByCount(numEdges)
 		return (Graph().setThis(result.first), Graph().setThis(result.second))
 
-cdef extern from "cpp/linkprediction/EvaluationCurve.h":
-	cdef cppclass _EvaluationCurve "NetworKit::EvaluationCurve":
-		_EvaluationCurve() except +
-		_EvaluationCurve(const _Graph& testGraph) except +
-		_EvaluationCurve(const _Graph& testGraph, vector[pair[pair[node, node], double]] predictions) except +
+cdef extern from "cpp/linkprediction/EvaluationMetric.h":
+	cdef cppclass _EvaluationMetric "NetworKit::EvaluationMetric":
+		_EvaluationMetric() except +
+		_EvaluationMetric(const _Graph& testGraph) except +
+		_EvaluationMetric(const _Graph& testGraph, vector[pair[pair[node, node], double]] predictions) except +
 
-cdef class EvaluationCurve:
+cdef class EvaluationMetric:
 	def __cinit__(self):
 		return
 
-cdef extern from "cpp/linkprediction/ROC.h":
-	cdef cppclass _ROC "NetworKit::ROC"(_EvaluationCurve):
-		_ROC() except +
-		_ROC(const _Graph& testGraph) except +
-		_ROC(const _Graph& testGraph, vector[pair[pair[node, node], double]] predictions) except +
+cdef extern from "cpp/linkprediction/ROCMetric.h":
+	cdef cppclass _ROCMetric "NetworKit::ROCMetric"(_EvaluationMetric):
+		_ROCMetric() except +
+		_ROCMetric(const _Graph& testGraph) except +
+		_ROCMetric(const _Graph& testGraph, vector[pair[pair[node, node], double]] predictions) except +
 		void generatePoints() except +
 		pair[vector[double], vector[double]] getPoints() except +
 		double areaUnderCurve() except +
 		void setTestGraph(const _Graph& newTestGraph) except +
 		void setPredictions(vector[pair[pair[node, node], double]] predictions)
 
-cdef class ROC(EvaluationCurve):
+cdef class ROCMetric(EvaluationMetric):
 	"""
 	Provides data points for the receiver operating characteristic of
 	a given set of predictions for graph edges.
@@ -5420,15 +5420,15 @@ cdef class ROC(EvaluationCurve):
 	predictions : vector[pair[pair[node, node], double]]
 		Dyad-score-pairs whose prediction quality has to be evaluated
 	"""
-	cdef _ROC* _this
+	cdef _ROCMetric* _this
 
 	def __cinit__(self, Graph testGraph = None, vector[pair[pair[node, node], double]] predictions = vector[pair[pair[node, node], double]]()):
 		if testGraph is None and predictions.empty():
-			self._this = new _ROC()
+			self._this = new _ROCMetric()
 		elif (testGraph is not None) and predictions.empty():
-			self._this = new _ROC(testGraph._this)
+			self._this = new _ROCMetric(testGraph._this)
 		else:
-			self._this = new _ROC(testGraph._this, predictions)
+			self._this = new _ROCMetric(testGraph._this, predictions)
 
 	def __dealloc__(self):
 		del self._this
@@ -5473,10 +5473,54 @@ cdef class ROC(EvaluationCurve):
 		"""
 		return self._this.areaUnderCurve()
 
+cdef extern from "cpp/linkprediction/PrecisionRecallMetric.h":
+	cdef cppclass _PrecisionRecallMetric "NetworKit::PrecisionRecallMetric"(_EvaluationMetric):
+		_PrecisionRecallMetric() except +
+		_PrecisionRecallMetric(const _Graph& testGraph) except +
+		_PrecisionRecallMetric(const _Graph& testGraph, vector[pair[pair[node, node], double]] predictions) except +
+		void generatePoints() except +
+		pair[vector[double], vector[double]] getPoints() except +
+		double areaUnderCurve() except +
+		void setTestGraph(const _Graph& newTestGraph) except +
+		void setPredictions(vector[pair[pair[node, node], double]] predictions)
+
+cdef class PrecisionRecallMetric(EvaluationMetric):
+	"""
+	"""
+	cdef _PrecisionRecallMetric* _this
+
+	def __cinit__(self, Graph testGraph = None, vector[pair[pair[node, node], double]] predictions = vector[pair[pair[node, node], double]]()):
+		if testGraph is None and predictions.empty():
+			self._this = new _PrecisionRecallMetric()
+		elif (testGraph is not None) and predictions.empty():
+			self._this = new _PrecisionRecallMetric(testGraph._this)
+		else:
+			self._this = new _PrecisionRecallMetric(testGraph._this, predictions)
+
+	def __dealloc__(self):
+		del self._this
+
+	def generatePoints(self):
+		"""
+		"""
+		self._this.generatePoints()
+
+	def getPoints(self):
+		"""
+		"""
+		return self._this.getPoints()
+
+	def areaUnderCurve(self):
+		"""
+		"""
+		return self._this.areaUnderCurve()
+
 cdef extern from "cpp/linkprediction/KFoldCrossValidator.h":
 	cdef cppclass _KFoldCrossValidator "NetworKit::KFoldCrossValidator":
-		_KFoldCrossValidator(const _Graph& G, _CommonNeighborsIndex* linkPredictor, _ROC* evaluator) except +
-		_KFoldCrossValidator(const _Graph& G, _KatzIndex* linkPredictor, _ROC* evaluator) except +
+		_KFoldCrossValidator(const _Graph& G, _CommonNeighborsIndex* linkPredictor, _ROCMetric* evaluator) except +
+		_KFoldCrossValidator(const _Graph& G, _KatzIndex* linkPredictor, _ROCMetric* evaluator) except +
+		_KFoldCrossValidator(const _Graph& G, _CommonNeighborsIndex* linkPredictor, _PrecisionRecallMetric* evaluator) except +
+		_KFoldCrossValidator(const _Graph& G, _KatzIndex* linkPredictor, _PrecisionRecallMetric* evaluator) except +
 		double crossValidate(count k) except +
 
 cdef class KFoldCrossValidator:
@@ -5498,11 +5542,16 @@ cdef class KFoldCrossValidator:
 	"""
 	cdef _KFoldCrossValidator* _this
 
-	def __cinit__(self, Graph G, LinkPredictor linkPredictor, EvaluationCurve evaluator):
-		if isinstance(linkPredictor, KatzIndex) and isinstance(evaluator, ROC):
-			self._this = new _KFoldCrossValidator(G._this, (<KatzIndex>linkPredictor)._this, (<ROC>evaluator)._this)
-		elif isinstance(linkPredictor, CommonNeighborsIndex) and isinstance(evaluator, ROC):
-			self._this = new _KFoldCrossValidator(G._this, (<CommonNeighborsIndex>linkPredictor)._this, (<ROC>evaluator)._this)
+	def __cinit__(self, Graph G, LinkPredictor linkPredictor, EvaluationMetric evaluator):
+		if isinstance(linkPredictor, KatzIndex) and isinstance(evaluator, ROCMetric):
+			self._this = new _KFoldCrossValidator(G._this, (<KatzIndex>linkPredictor)._this, (<ROCMetric>evaluator)._this)
+		elif isinstance(linkPredictor, CommonNeighborsIndex) and isinstance(evaluator, ROCMetric):
+			self._this = new _KFoldCrossValidator(G._this, (<CommonNeighborsIndex>linkPredictor)._this, (<ROCMetric>evaluator)._this)
+		elif isinstance(linkPredictor, KatzIndex) and isinstance(evaluator, PrecisionRecallMetric):
+			self._this = new _KFoldCrossValidator(G._this, (<KatzIndex>linkPredictor)._this, (<PrecisionRecallMetric>evaluator)._this)
+		elif isinstance(linkPredictor, CommonNeighborsIndex) and isinstance(evaluator, PrecisionRecallMetric):
+			self._this = new _KFoldCrossValidator(G._this, (<CommonNeighborsIndex>linkPredictor)._this, (<PrecisionRecallMetric>evaluator)._this)
+
 
 	def __dealloc__(self):
 		del self._this

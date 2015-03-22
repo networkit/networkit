@@ -10,7 +10,7 @@
 
 #include "../graph/Graph.h"
 #include "LinkPredictor.h"
-#include "EvaluationCurve.h"
+#include "EvaluationMetric.h"
 
 namespace NetworKit {
 
@@ -21,7 +21,7 @@ namespace NetworKit {
  * by randomly partitioning the graph into k subsamples. Of the k samples
  * a single subsamples is used as test-data and the remaining subsamples are
  * used as training-data.
- * The performance will be measured by the given EvaluationCurve.
+ * The performance will be measured by the given EvaluationMetric.
  */
 class KFoldCrossValidator {
 private:
@@ -29,7 +29,7 @@ private:
 
   LinkPredictor* linkPredictor;
 
-  EvaluationCurve* evaluator;
+  EvaluationMetric* evaluator;
 
   Graph mergeEdges(std::set<Graph> edgeSets) const;
 
@@ -40,13 +40,13 @@ public:
    * @param linkPredictor Predictor whose performance should be measured
    * @param evaluator Evaluator which provides a metric for evaluating the link prediction results
    */
-  KFoldCrossValidator(const Graph& G, LinkPredictor* linkPredictor, EvaluationCurve* evaluator);
+  KFoldCrossValidator(const Graph& G, LinkPredictor* linkPredictor, EvaluationMetric* evaluator);
   
   /**
-   * Calculates the average AUC of the given EvaluationCurve after k test-runs.
+   * Calculates the average AUC of the given EvaluationMetric after k test-runs.
    *
    * @param k Number of subsamples to split the given Graph G into
-   * @return the average area under the given EvaluationCurve after k runs
+   * @return the average area under the given EvaluationMetric after k runs
    */
   double crossValidate(count k);
 
