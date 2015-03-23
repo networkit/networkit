@@ -2244,7 +2244,7 @@ cdef class Partition:
 		"""
 		return self._this.numberOfElements()
 
-	def __getitem__(self, e):
+	def __getitem__(self, index e):
 		""" Get the set (id) in which the element `e` is contained.
 
 	 	Parameters
@@ -2258,6 +2258,18 @@ cdef class Partition:
 	 		The index of the set in which `e` is contained.
 		"""
 		return self._this.subsetOf(e)
+
+	def __setitem__(self, index e, index s):
+		""" Set the set (id) in which the element `e` is contained.
+
+		Parameters
+		----------
+		e : index
+			Index of the element
+		s : index
+			Index of the subset
+		"""
+		self._this.addToSubset(s, e)
 
 	def __copy__(self):
 		"""
@@ -6243,6 +6255,33 @@ cdef class SimmelianOverlapAttributizer:
 	def getAttribute(self):
 		return self._this.getAttribute()
 
+
+cdef extern from "cpp/edgeattributes/PrefixJaccardCoefficient.h":
+	cdef cppclass _PrefixJaccardCoefficient "NetworKit::PrefixJaccardCoefficient<double>":
+		_PrefixJaccardCoefficient(const _Graph& G, const vector[double]& a) except +
+		void run() except +
+		vector[double] getAttribute() except +
+
+cdef class PrefixJaccardCoefficient:
+	cdef _PrefixJaccardCoefficient *_this
+	cdef Graph _G
+	cdef vector[double] _attribute
+
+	def __cinit__(self, Graph G, vector[double] attribute):
+		self._G = G
+		self._attribute = attribute
+		self._this = new _PrefixJaccardCoefficient(G._this, self._attribute)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		self._this.run()
+		return self
+
+	def getAttribute(self):
+		return self._this.getAttribute()
+
 cdef extern from "cpp/sparsification/MultiscaleAttributizer.h":
 	cdef cppclass _MultiscaleAttributizer "NetworKit::MultiscaleAttributizer":
 		_MultiscaleAttributizer(const _Graph& G, const vector[double]& a) except +
@@ -6407,6 +6446,7 @@ cdef class LocalDegreeAttributizer:
 cdef extern from "cpp/distmeasures/JaccardDistance.h":
 	cdef cppclass _JaccardDistance "NetworKit::JaccardDistance":
 		_JaccardDistance(const _Graph& G, const vector[count]& triangles) except +
+		void preprocess() except +
 		vector[double] getEdgeAttribute() except +
 
 cdef class JaccardDistance:
@@ -6457,13 +6497,14 @@ cdef class JaccardSimilarityAttributizer:
 	def __cinit__(self, Graph G, vector[count] triangles):
 		self._G = G
 		self._triangles = triangles
-		self._this = new _JaccardDistance(G._this, triangles)
+		self._this = new _JaccardDistance(G._this, self._triangles)
 
 	def __dealloc__(self):
 		del self._this
 
 	def getAttribute(self):
 		#convert distance to similarity
+		self._this.preprocess()
 		return [1 - x for x in self._this.getEdgeAttribute()]
 
 cdef extern from "cpp/sparsification/RandomNodeEdgeAttributizer.h":
@@ -6571,6 +6612,37 @@ cdef class ChanceCorrectedTriangleAttributizer:
 
 		"""
 		return self._this.getAttribute()
+
+cdef extern from "cpp/sparsification/SCANStructuralSimilarityAttributizer.h":
+	cdef cppclass _SCANStructuralSimilarityAttributizer "NetworKit::SCANStructuralSimilarityAttributizer":
+		_SCANStructuralSimilarityAttributizer(_Graph G, const vector[count]& triangles) except +
+		vector[double] getAttribute() except +
+
+cdef class SCANStructuralSimilarityAttributizer:
+	cdef _SCANStructuralSimilarityAttributizer* _this
+	cdef Graph _G
+	cdef vector[count] _triangles
+
+	def __cinit__(self, Graph G, vector[count] triangles):
+		self._G = G
+		self._triangles = triangles
+		self._this = new _SCANStructuralSimilarityAttributizer(G._this, self._triangles)
+
+	def __dealloc__(self):
+		del self._this
+
+	def getAttribute(self):
+		"""
+		Gets the edge attribute that can be used for global filtering.
+
+		Returns
+		-------
+		vector[double]
+			The edge attribute
+
+		"""
+		return self._this.getAttribute()
+
 
 cdef extern from "cpp/sparsification/NodeNormalizedTriangleAttributizer.h":
 	cdef cppclass _NodeNormalizedTriangleAttributizer "NetworKit::NodeNormalizedTriangleAttributizer":
