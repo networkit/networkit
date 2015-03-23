@@ -19,7 +19,7 @@ std::vector<double> RandomAttributizer::getAttribute() {
 
 	std::vector<double> randomAttribute(graph.upperEdgeIdBound(), 0.0);
 
-	graph.forEdges([&](node u, node v, edgeid eid) {
+	graph.parallelForEdges([&](node u, node v, edgeid eid) {
 		//double r = Aux::Random::probability();
 		//randomAttribute[eid] = randomness * r + (1 - randomness) * attribute[eid];
 		randomAttribute[eid] = Aux::Random::probability();
