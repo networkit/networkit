@@ -1,19 +1,19 @@
 /*
- * RandomEdgeAttributizer.cpp
+ * RandomNodeEdgeAttributizer.cpp
  *
  *  Created on: 20.11.2014
  *      Author: Michael Hamann
  */
 
-#include "RandomEdgeAttributizer.h"
+#include "RandomNodeEdgeAttributizer.h"
 #include "../auxiliary/Random.h"
 
 namespace NetworKit {
 
-RandomEdgeAttributizer::RandomEdgeAttributizer(const Graph& graph, double rneRatio) : graph(graph), rneRatio(rneRatio) {
+RandomNodeEdgeAttributizer::RandomNodeEdgeAttributizer(const Graph& graph, double rneRatio) : graph(graph), rneRatio(rneRatio) {
 }
 
-std::vector< double > RandomEdgeAttributizer::getAttribute() {
+std::vector< double > RandomNodeEdgeAttributizer::getAttribute() {
 	if (!graph.hasEdgeIds()) {
 		throw std::runtime_error("edges have not been indexed - call indexEdges first");
 	}
