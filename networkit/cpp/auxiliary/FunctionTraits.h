@@ -6,35 +6,76 @@
 
 namespace Aux {
 
-// Code by kennytm (auraHT Ltd.) 2011. See
-// http://stackoverflow.com/questions/7943525/is-it-possible-to-figure-out-the-parameter-type-and-return-type-of-a-lambda
-// Adapted by Michael Hamann <michael.hamann@kit.edu>
-template <typename T>
-struct FunctionTraits
-	: public FunctionTraits<decltype(&T::operator())>
+// Code taken from https://functionalcpp.wordpress.com/2013/08/05/function-traits/ and slightly modified
+
+template<class F>
+struct FunctionTraits;
+
+// function pointer
+template<class R, class... Args>
+struct FunctionTraits<R( *)(Args...)> : public FunctionTraits<R(Args...)>
 {};
-// For generic types, directly use the result of the signature of its 'operator()'
 
-template <typename ClassType, typename ReturnType, typename... Args>
-struct FunctionTraits<ReturnType(ClassType::*)(Args...) const> {
-	// we specialize for pointers to member function
-	static constexpr std::size_t arity = sizeof...(Args);
-	// arity is the number of arguments.
+template<class R, class... Args>
+struct FunctionTraits<R(Args...)> {
+    using result_type = R;
 
-	using result_type = ReturnType;
+    static constexpr std::size_t arity = sizeof...(Args);
 
-	template <std::size_t i>
+    template <std::size_t N>
+    struct arg;
+
+    template <std::size_t N>
+    struct arg {
+        static_assert(N < arity, "error: invalid parameter index.");
+        using type = typename std::tuple_element<N, std::tuple<Args...>>::type;
+    };
+};
+
+
+// member function pointer
+template<class C, class R, class... Args>
+struct FunctionTraits<R(C:: *)(Args...)> : public FunctionTraits<R(C &, Args...)>
+{};
+
+// const member function pointer
+template<class C, class R, class... Args>
+struct FunctionTraits<R(C:: *)(Args...) const> : public FunctionTraits<R(C &, Args...)>
+{};
+
+// member object pointer
+template<class C, class R>
+struct FunctionTraits<R(C:: *)> : public FunctionTraits<R(C &)>
+{};
+
+// functor
+template<class F>
+struct FunctionTraits {
+private:
+	using call_type = FunctionTraits<decltype(&F::operator())>;
+public:
+	using result_type = typename call_type::result_type;
+
+	static constexpr std::size_t arity = call_type::arity - 1;
+
+	template <std::size_t N>
 	struct arg;
 
-	template <std::size_t i>
+	template <std::size_t N>
 	struct arg {
-			static_assert(i < arity, "error: invalid parameter index.");
-			using type = typename std::tuple_element<i, std::tuple<Args...>>::type;
-			// the i-th argument is equivalent to the i-th tuple element of a tuple
-			// composed of those arguments.
+		static_assert(N < arity, "error: invalid parameter index.");
+		using type = typename call_type::template arg < N + 1 >::type;
 	};
-
 };
+
+template<class F>
+struct FunctionTraits<F &> : public FunctionTraits<F>
+{};
+
+template<class F>
+struct FunctionTraits < F && > : public FunctionTraits<F>
+{};
+
 
 
 } // namespace Aux
