@@ -6434,6 +6434,7 @@ cdef class LocalDegreeAttributizer:
 cdef extern from "cpp/distmeasures/JaccardDistance.h":
 	cdef cppclass _JaccardDistance "NetworKit::JaccardDistance":
 		_JaccardDistance(const _Graph& G, const vector[count]& triangles) except +
+		void preprocess() except +
 		vector[double] getEdgeAttribute() except +
 
 cdef class JaccardDistance:
@@ -6484,13 +6485,14 @@ cdef class JaccardSimilarityAttributizer:
 	def __cinit__(self, Graph G, vector[count] triangles):
 		self._G = G
 		self._triangles = triangles
-		self._this = new _JaccardDistance(G._this, triangles)
+		self._this = new _JaccardDistance(G._this, self._triangles)
 
 	def __dealloc__(self):
 		del self._this
 
 	def getAttribute(self):
 		#convert distance to similarity
+		self._this.preprocess()
 		return [1 - x for x in self._this.getEdgeAttribute()]
 
 cdef extern from "cpp/sparsification/RandomEdgeAttributizer.h":
