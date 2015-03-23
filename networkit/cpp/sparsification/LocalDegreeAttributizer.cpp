@@ -20,7 +20,7 @@ std::vector<double> LocalDegreeAttributizer::getAttribute() {
 
 	std::vector<double> sparsificationExp(graph.upperEdgeIdBound(), 0.0);
 
-	graph.forNodes([&](node i) {
+	graph.balancedParallelForNodes([&](node i) {
 		count d = graph.degree(i);
 
 		/**
