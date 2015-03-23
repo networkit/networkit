@@ -2244,7 +2244,7 @@ cdef class Partition:
 		"""
 		return self._this.numberOfElements()
 
-	def __getitem__(self, e):
+	def __getitem__(self, index e):
 		""" Get the set (id) in which the element `e` is contained.
 
 	 	Parameters
@@ -2258,6 +2258,18 @@ cdef class Partition:
 	 		The index of the set in which `e` is contained.
 		"""
 		return self._this.subsetOf(e)
+
+	def __setitem__(self, index e, index s):
+		""" Set the set (id) in which the element `e` is contained.
+
+		Parameters
+		----------
+		e : index
+			Index of the element
+		s : index
+			Index of the subset
+		"""
+		self._this.addToSubset(s, e)
 
 	def __copy__(self):
 		"""
