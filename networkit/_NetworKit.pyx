@@ -6601,6 +6601,37 @@ cdef class ChanceCorrectedTriangleAttributizer:
 		"""
 		return self._this.getAttribute()
 
+cdef extern from "cpp/sparsification/SCANStructuralSimilarityAttributizer.h":
+	cdef cppclass _SCANStructuralSimilarityAttributizer "NetworKit::SCANStructuralSimilarityAttributizer":
+		_SCANStructuralSimilarityAttributizer(_Graph G, const vector[count]& triangles) except +
+		vector[double] getAttribute() except +
+
+cdef class SCANStructuralSimilarityAttributizer:
+	cdef _SCANStructuralSimilarityAttributizer* _this
+	cdef Graph _G
+	cdef vector[count] _triangles
+
+	def __cinit__(self, Graph G, vector[count] triangles):
+		self._G = G
+		self._triangles = triangles
+		self._this = new _SCANStructuralSimilarityAttributizer(G._this, self._triangles)
+
+	def __dealloc__(self):
+		del self._this
+
+	def getAttribute(self):
+		"""
+		Gets the edge attribute that can be used for global filtering.
+
+		Returns
+		-------
+		vector[double]
+			The edge attribute
+
+		"""
+		return self._this.getAttribute()
+
+
 cdef extern from "cpp/sparsification/NodeNormalizedTriangleAttributizer.h":
 	cdef cppclass _NodeNormalizedTriangleAttributizer "NetworKit::NodeNormalizedTriangleAttributizer":
 		_NodeNormalizedTriangleAttributizer(_Graph G, const vector[count]& triangles) except +
