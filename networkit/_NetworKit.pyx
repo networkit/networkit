@@ -6243,6 +6243,33 @@ cdef class SimmelianOverlapAttributizer:
 	def getAttribute(self):
 		return self._this.getAttribute()
 
+
+cdef extern from "cpp/edgeattributes/PrefixJaccardCoefficient.h":
+	cdef cppclass _PrefixJaccardCoefficient "NetworKit::PrefixJaccardCoefficient<double>":
+		_PrefixJaccardCoefficient(const _Graph& G, const vector[double]& a) except +
+		void run() except +
+		vector[double] getAttribute() except +
+
+cdef class PrefixJaccardCoefficient:
+	cdef _PrefixJaccardCoefficient *_this
+	cdef Graph _G
+	cdef vector[double] _attribute
+
+	def __cinit__(self, Graph G, vector[double] attribute):
+		self._G = G
+		self._attribute = attribute
+		self._this = new _PrefixJaccardCoefficient(G._this, self._attribute)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		self._this.run()
+		return self
+
+	def getAttribute(self):
+		return self._this.getAttribute()
+
 cdef extern from "cpp/sparsification/MultiscaleAttributizer.h":
 	cdef cppclass _MultiscaleAttributizer "NetworKit::MultiscaleAttributizer":
 		_MultiscaleAttributizer(const _Graph& G, const vector[double]& a) except +
