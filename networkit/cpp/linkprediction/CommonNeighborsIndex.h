@@ -37,7 +37,12 @@ public:
    */
   explicit CommonNeighborsIndex(const Graph& G);
 
-  std::vector<node> getCommonNeighbors(node u, node v);
+  /**
+   * Returns the common neighbors of the given nodes @a u and @a v.
+   * 
+   *
+   */
+  std::vector<node> getCommonNeighbors(node u, node v) const;
 
 };
 

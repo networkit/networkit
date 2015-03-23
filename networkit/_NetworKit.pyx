@@ -5326,6 +5326,88 @@ cdef class CommonNeighborsIndex(LinkPredictor):
 		"""
 		return self._this.runAll(limit)
 
+cdef extern from "cpp/linkprediction/PreferentialAttachmentIndex.h":
+	cdef cppclass _PreferentialAttachmentIndex "NetworKit::PreferentialAttachmentIndex"(_LinkPredictor):
+		_PreferentialAttachmentIndex() except +
+		_PreferentialAttachmentIndex(const _Graph& G) except +
+		double run(node u, node v) except +
+		vector[pair[pair[node, node], double]] runAll(count limit) except +
+		void setGraph(const _Graph& newGraph) except +
+
+cdef class PreferentialAttachmentIndex(LinkPredictor):
+	"""
+	TODO(kesders)
+  """
+	cdef _PreferentialAttachmentIndex* _this
+
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _PreferentialAttachmentIndex()
+		else:
+			self._this = new _PreferentialAttachmentIndex(G._this)
+
+	def __dealloc__(self):
+		del self._this
+
+	def setGraph(self, Graph newGraph):
+		"""
+		TODO(kesders)
+   	"""
+		self._this.setGraph(newGraph._this)
+
+	def run(self, node u, node v):
+		"""
+		TODO(kesders)
+		"""
+		return self._this.run(u, v)
+
+	def runAll(self, count limit = 0):
+		"""
+		TODO(kesders)
+		"""
+		return self._this.runAll(limit)
+
+cdef extern from "cpp/linkprediction/JaccardIndex.h":
+	cdef cppclass _JaccardIndex "NetworKit::JaccardIndex"(_LinkPredictor):
+		_JaccardIndex() except +
+		_JaccardIndex(const _Graph& G) except +
+		double run(node u, node v) except +
+		vector[pair[pair[node, node], double]] runAll(count limit) except +
+		void setGraph(const _Graph& newGraph) except +
+
+cdef class JaccardIndex(LinkPredictor):
+	"""
+	TODO(kesders)
+  """
+	cdef _JaccardIndex* _this
+
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _JaccardIndex()
+		else:
+			self._this = new _JaccardIndex(G._this)
+
+	def __dealloc__(self):
+		del self._this
+
+	def setGraph(self, Graph newGraph):
+		"""
+		TODO(kesders)
+   	"""
+		self._this.setGraph(newGraph._this)
+
+	def run(self, node u, node v):
+		"""
+		TODO(kesders)
+		"""
+		return self._this.run(u, v)
+
+	def runAll(self, count limit = 0):
+		"""
+		TODO(kesders)
+		"""
+		return self._this.runAll(limit)
+
 cdef extern from "cpp/linkprediction/RandomEdgePartitioner.h":
 	cdef cppclass _RandomEdgePartitioner "NetworKit::RandomEdgePartitioner":
 		_RandomEdgePartitioner(const _Graph& G) except +

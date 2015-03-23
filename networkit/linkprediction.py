@@ -1,3 +1,3 @@
 
-from _NetworKit import KatzIndex, CommonNeighborsIndex, RandomEdgePartitioner, ROCMetric, KFoldCrossValidator, PrecisionRecallMetric
+from _NetworKit import KatzIndex, CommonNeighborsIndex, JaccardIndex, PreferentialAttachmentIndex, RandomEdgePartitioner, ROCMetric, KFoldCrossValidator, PrecisionRecallMetric
 

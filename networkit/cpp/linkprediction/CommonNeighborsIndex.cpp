@@ -19,7 +19,7 @@ double CommonNeighborsIndex::runImpl(node u, node v) {
   return getCommonNeighbors(u, v).size();
 }
 
-std::vector<node> CommonNeighborsIndex::getCommonNeighbors(node u, node v) {
+std::vector<node> CommonNeighborsIndex::getCommonNeighbors(node u, node v) const {
   std::vector<node> uNeighbors = G->neighbors(u);
   std::vector<node> vNeighbors = G->neighbors(v);
   std::vector<node> commonNeighbors;

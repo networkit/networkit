@@ -9,6 +9,12 @@
 
 namespace NetworKit {
 
+PreferentialAttachmentIndex::PreferentialAttachmentIndex() {
+}
+
+PreferentialAttachmentIndex::PreferentialAttachmentIndex(const Graph& G) : LinkPredictor(G) {
+}
+
 double PreferentialAttachmentIndex::runImpl(node u, node v) {
   return G->degree(u) * G->degree(v);
 }
