@@ -906,6 +906,18 @@ TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {
 	}
 }
 
+TEST_F(GeneratorsGTest, tryGiganticCollectionOfHyperbolicUnitDiskGraphs) {
+	for (index i = 0; i < 30; i++) {
+		count n = 50000000;
+		double k = 20;
+		count m = n*k/2;
+		HyperbolicGenerator gen(n, k, 3);
+		Graph G = gen.generate();
+		EXPECT_NEAR(G.numberOfEdges(), m, m/10);
+		EXPECT_TRUE(G.checkConsistency());
+	}
+}
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
