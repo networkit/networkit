@@ -263,6 +263,28 @@ class SimmelianBackboneNonParametric(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
+class SimmelianQuadrangleBackbone(Sparsifier):
+	""" An implementation of the Simmelian Backbones based on quadrangles. """
+
+	def getAttribute(self, G):
+		"""
+		Returns an edge scoring attribute that can be used for global filtering.
+
+		Keyword arguments:
+		G -- the input graph
+		"""
+		quadrangles = ChibaNishizekiQuadrangleCounter(G).getAttribute()
+		meanQuadrangles = GeometricMeanAttributizer(G, quadrangles).getAttribute()
+		quadranglePrefixJaccard = PrefixJaccardCoefficient(G, meanQuadrangles).run().getAttribute()
+		return quadranglePrefixJaccard
+
+	def _getSparsifiedGraph(self, G, parameter, attribute):
+		gf = GlobalThresholdFilter(G, attribute, parameter, True)
+		return gf.calculate()
+
+	def _getParameterizationAlgorithm(self):
+		return BinarySearchParameterization(False, 0.0, 1.0, 20)
+
 class SimmelianMultiscaleBackbone(Sparsifier):
 
 	""" Multiscale Backbone that uses triangle counts as input edge weight. """
