@@ -503,6 +503,33 @@ class LocalDegreeBackbone(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
+class SCANBackbone(Sparsifier):
+
+	""" A sparsifiier dervived from 'SCAN: a structural clustering algorithm for networks' """
+
+	def getAttribute(self, G):
+		""" Returns an edge attribute that holds for each edge the minimum parameter value
+		such that the edge is contained in the sparsified graph.
+
+		Keyword arguments:
+		G -- the input graph
+		"""
+
+		chiba = ChibaNishizekiTriangleCounter(G)
+		a_triangles = chiba.getAttribute()
+
+		attributizer_scan = SCANStructuralSimilarityAttributizer(G, a_triangles)
+		a_scan = attributizer_scan.getAttribute()
+
+		return a_scan
+
+	def _getSparsifiedGraph(self, G, parameter, attribute):
+		gf = GlobalThresholdFilter(G, attribute, parameter, True)
+		return gf.calculate()
+
+	def _getParameterizationAlgorithm(self):
+		return BinarySearchParameterization(False, 0.0, 1.0, 20)
+
 class TriangleBackbone(Sparsifier):
 	"""  Allows for global filtering with respect to triangle counts. """
 
