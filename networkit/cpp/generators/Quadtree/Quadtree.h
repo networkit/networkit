@@ -211,8 +211,11 @@ public:
 	}
 
 	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &circleDenizens) {
+		return root.getElementsProbabilistically(euQuery, prob, false, circleDenizens);
+	}
 
-		return root.getElementsProbabilistically(euQuery, prob, circleDenizens);
+	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, bool suppressLeft, vector<T> &circleDenizens) {
+		return root.getElementsProbabilistically(euQuery, prob, suppressLeft, circleDenizens);
 	}
 
 	count size() const {
