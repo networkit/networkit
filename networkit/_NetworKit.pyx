@@ -3440,6 +3440,38 @@ cdef class NMIDistance(DissimilarityMeasure):
 	def getDissimilarity(self, Graph G, Partition first, Partition second):
 		return self._this.getDissimilarity(G._this, first._this, second._this)
 
+cdef extern from "cpp/community/AdjustedRandMeasure.h":
+	cdef cppclass _AdjustedRandMeasure "NetworKit::AdjustedRandMeasure":
+		double getDissimilarity(_Graph G, _Partition first, _Partition second) except +
+
+cdef class AdjustedRandMeasure(DissimilarityMeasure):
+	"""
+	The adjusted rand dissimilarity measure as proposed by Huber and Arabie in "Comparing partitions" (http://link.springer.com/article/10.1007/BF01908075)
+	"""
+	cdef _AdjustedRandMeasure _this
+
+	def getDissimilarity(self, Graph G not None, Partition first not None, Partition second not None):
+		"""
+		Get the adjust rand dissimilarity. Runs in O(n log(n)).
+
+		Note that the dissimilarity can be larger than 1 if the partitions are more different than expected in the random model.
+
+		Parameters
+		----------
+		G : Graph
+			The graph on which the partitions shall be compared
+		zeta : Partition
+			The first partiton
+		eta : Partition
+			The second partition
+
+		Returns
+		-------
+		double
+			The adjusted rand dissimilarity
+		"""
+		return self._this.getDissimilarity(G._this, first._this, second._this)
+
 cdef extern from "cpp/community/EPP.h":
 	cdef cppclass _EPP "NetworKit::EPP":
 		_EPP(_Graph G)
