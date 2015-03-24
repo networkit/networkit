@@ -135,7 +135,7 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 	timer.start();
 	vector<double> empty;
 	GraphBuilder result(n, false, false, directSwap);
-	bool anglesSorted = directSwap ? false : std::is_sorted(angles.begin(), angles.end());//relying on lazy evaluation here
+	bool suppressLeft = directSwap ? false : std::is_sorted(angles.begin(), angles.end());//relying on lazy evaluation here
 
 	Aux::ProgressMeter progress(n, 10000);
 	#pragma omp parallel
@@ -148,7 +148,7 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 			count expectedDegree = (4/M_PI)*n*exp(-HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[i])/2);
 			vector<index> near;
 			near.reserve(expectedDegree*1.1);
-			quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance, !directSwap && anglesSorted, near);
+			quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance, suppressLeft, near);
 			//count realDegree = near.size();
 			//std::swap(expectedDegree, realDegree);//dummy statement for debugging
 			if (directSwap) {
@@ -184,6 +184,8 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	assert(radii.size() == n);
 	assert(quad.size() == n);
 
+	bool anglesSorted = std::is_sorted(angles.begin(), angles.end());
+
 	//now define lambda
 	double beta = 1/T;
 	auto edgeProb = [beta, thresholdDistance](double distance) -> double {return 1 / (exp(beta*(distance-thresholdDistance)/2)+1);};
@@ -195,9 +197,9 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	#pragma omp parallel for
 	for (index i = 0; i < n; i++) {
 		vector<index> near;
-		totalCandidates += quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), edgeProb, near);
+		totalCandidates += quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), edgeProb, anglesSorted, near);
 		for (index j : near) {
-			if (j < i) result.addEdge(i, j);
+			if (j > i) result.addEdge(i, j);
 		}
 
 		if (i % 10000 == 0) {

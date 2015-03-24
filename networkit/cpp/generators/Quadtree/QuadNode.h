@@ -562,9 +562,10 @@ public:
 		}
 	}
 
-	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &result) const {
+	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, bool suppressLeft, vector<T> &result) const {
 		double phi_q, r_q;
 		HyperbolicSpace::cartesianToPolar(euQuery, phi_q, r_q);
+		if (suppressLeft && phi_q > rightAngle) return 0;
 		TRACE("Getting hyperbolic distances");
 		auto distancePair = hyperbolicDistances(phi_q, r_q);
 		double probUB = prob(distancePair.first);
@@ -627,7 +628,7 @@ public:
 			} else {//carry on as normal
 				for (index i = 0; i < children.size(); i++) {
 					TRACE("Recursively calling child ", i);
-					candidatesTested += children[i].getElementsProbabilistically(euQuery, prob, result);
+					candidatesTested += children[i].getElementsProbabilistically(euQuery, prob, suppressLeft, result);
 				}
 			}
 		}
