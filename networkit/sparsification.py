@@ -442,11 +442,11 @@ class RandomNodeEdgeBackbone(Sparsifier):
 		return rneAttribute
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
-		gf = GlobalThresholdFilter(G, attribute, parameter, above)
+		gf = GlobalThresholdFilter(G, attribute, parameter, self.above)
 		return gf.calculate()
 
 	def _getParameterizationAlgorithm(self):
-		return BinarySearchParameterization((not above), 0.0, 1.0, 20)
+		return BinarySearchParameterization((not self.above), 0.0, 1.0, 20)
 
 class ForestFireBackbone(Sparsifier):
 
