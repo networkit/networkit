@@ -1,18 +1,18 @@
 /*
- * RondomAttributizer.cpp
+ * RandomEdgeAttributizer.cpp
  *
  *  Created on: 11.08.2014
  *      Author: Gerd Lindner
  */
 
-#include "RandomAttributizer.h"
+#include "RandomEdgeAttributizer.h"
 
 namespace NetworKit {
 
-RandomAttributizer::RandomAttributizer(const Graph& graph) : graph(graph) {
+RandomEdgeAttributizer::RandomEdgeAttributizer(const Graph& graph) : graph(graph) {
 }
 
-std::vector<double> RandomAttributizer::getAttribute() {
+std::vector<double> RandomEdgeAttributizer::getAttribute() {
 	if (!graph.hasEdgeIds()) {
 		throw std::runtime_error("edges have not been indexed - call indexEdges first");
 	}

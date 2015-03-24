@@ -6315,12 +6315,12 @@ cdef class MultiscaleAttributizer:
 	def getAttribute(self):
 		return self._this.getAttribute()
 
-cdef extern from "cpp/sparsification/RandomAttributizer.h":
-	cdef cppclass _RandomAttributizer "NetworKit::RandomAttributizer":
-		_RandomAttributizer(const _Graph& G) except +
+cdef extern from "cpp/sparsification/RandomEdgeAttributizer.h":
+	cdef cppclass _RandomEdgeAttributizer "NetworKit::RandomEdgeAttributizer":
+		_RandomEdgeAttributizer(const _Graph& G) except +
 		vector[double] getAttribute() except +
 
-cdef class RandomAttributizer:
+cdef class RandomEdgeAttributizer:
 	"""
 	[todo]
 
@@ -6330,12 +6330,12 @@ cdef class RandomAttributizer:
 		The graph to calculate the Random Edge attribute for.
 	"""
 
-	cdef _RandomAttributizer* _this
+	cdef _RandomEdgeAttributizer* _this
 	cdef Graph _G
 
 	def __cinit__(self, Graph G):
 		self._G = G
-		self._this = new _RandomAttributizer(G._this)
+		self._this = new _RandomEdgeAttributizer(G._this)
 
 	def __dealloc__(self):
 		del self._this
