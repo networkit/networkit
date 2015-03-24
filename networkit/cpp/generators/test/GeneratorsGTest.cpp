@@ -941,7 +941,7 @@ TEST_F(GeneratorsGTest, tryGiganticCollectionOfHyperbolicUnitDiskGraphs) {
 		count n = 50000000;
 		double k = 20;
 		count m = n*k/2;
-		HyperbolicGenerator gen(n, m, 3);
+		HyperbolicGenerator gen(n, k, 3);
 		Graph G = gen.generate();
 		EXPECT_NEAR(G.numberOfEdges(), m, m/10);
 		EXPECT_TRUE(G.checkConsistency());
