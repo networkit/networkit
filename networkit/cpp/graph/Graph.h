@@ -1095,7 +1095,7 @@ inline void Graph::forEdgeImpl(L handle) const {
 
 template<bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline void Graph::parallelForEdgesImpl(L handle) const {
-	#pragma omp parallel for
+	#pragma omp parallel for schedule(guided)
 	for (node u = 0; u < z; ++u) {
 		forOutEdgesOfImpl<graphIsDirected, hasWeights, graphHasEdgeIds, L>(u, handle);
 	}
