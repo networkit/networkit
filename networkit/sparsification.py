@@ -423,6 +423,31 @@ class RandomBackbone(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		return SimpleParameterization()
 
+class RandomNodeEdgeBackbone(Sparsifier):
+	""" [TODO not yet documented] """
+
+	def __init__(self, above = True):
+		self.above = above
+
+	def getAttribute(self, G):
+		""" Returns an edge attribute that holds for each edge the minimum parameter value
+		such that the edge is contained in the sparsified graph.
+
+		Keyword arguments:
+		G -- the input graph
+		"""
+
+		attributizer = RandomNodeEdgeAttributizer(G)
+		rneAttribute = attributizer.getAttribute()
+		return rneAttribute
+
+	def _getSparsifiedGraph(self, G, parameter, attribute):
+		gf = GlobalThresholdFilter(G, attribute, parameter, above)
+		return gf.calculate()
+
+	def _getParameterizationAlgorithm(self):
+		return BinarySearchParameterization((not above), 0.0, 1.0, 20)
+
 class ForestFireBackbone(Sparsifier):
 
 	""" A variant of the Forest Fire sparsification approach proposed by Leskovec et al. """
