@@ -1994,7 +1994,7 @@ cdef class PartitionWriter:
 cdef extern from "cpp/io/EdgeListPartitionReader.h":
 	cdef cppclass _EdgeListPartitionReader "NetworKit::EdgeListPartitionReader":
 		_EdgeListPartitionReader() except +
-		_EdgeListPartitionReader(node firstNode) except +
+		_EdgeListPartitionReader(node firstNode, char sepChar) except +
 		_Partition read(string path) except +
 
 
@@ -2003,8 +2003,8 @@ cdef class EdgeListPartitionReader:
 	 """
 	cdef _EdgeListPartitionReader _this
 
-	def __cinit__(self, firstNode=1):
-		self._this = _EdgeListPartitionReader(firstNode)
+	def __cinit__(self, node firstNode=1, sepChar = '\t'):
+		self._this = _EdgeListPartitionReader(firstNode, stdstring(sepChar)[0])
 
 	def read(self, path):
 		return Partition().setThis(self._this.read(stdstring(path)))
