@@ -20,8 +20,9 @@ public:
 	/**
 	 * Constructs the EdgeListPartitionReader class with @a firstNode as the index of the first node in the file.
 	 * @param[in]	firstNode	Index of the first node in the file.
+	 * @param[in]	sepChar		The separator between two elements
 	 */
-	EdgeListPartitionReader(node firstNode=1);
+	EdgeListPartitionReader(node firstNode=1, char sepChar='\t');
 
 	/**
 	 * Read a clustering from a file. File format:
@@ -34,6 +35,7 @@ public:
 
 
 	node firstNode;
+	char sepChar;
 };
 
 } /* namespace NetworKit */
