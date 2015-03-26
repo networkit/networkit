@@ -2988,21 +2988,54 @@ cdef class HubDominance:
 		return self._this.getQuality(zeta._this, G._this)
 
 
+cdef extern from "cpp/community/CommunityDetectionAlgorithm.h":
+	cdef cppclass _CommunityDetectionAlgorithm "NetworKit::CommunityDetectionAlgorithm":
+		_CommunityDetectionAlgorithm(const _Graph &_G)
+		void run() except +
+		_Partition getPartition() except +
+		string toString() except +
+
+
 cdef class CommunityDetector:
 	""" Abstract base class for static community detection algorithms """
-	pass
+	cdef _CommunityDetectionAlgorithm *_this
+	cdef Graph _G
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		self._this.run()
+		return self
+
+	def getPartition(self):
+		"""  Returns a partition of the clustering.
+
+		Returns
+		-------
+		Partition:
+			A Partition of the clustering.
+		"""
+		return Partition().setThis(self._this.getPartition())
+
+	def toString(self):
+		""" Get string representation.
+
+		Returns
+		-------
+		string
+			String representation of algorithm and parameters.
+		"""
+		return self._this.toString().decode("utf-8")
 
 cdef extern from "cpp/community/PLP.h":
-	cdef cppclass _PLP "NetworKit::PLP":
+	cdef cppclass _PLP "NetworKit::PLP"(_CommunityDetectionAlgorithm):
 		_PLP(_Graph _G) except +
 		_PLP(_Graph _G, count updateThreshold) except +
 		_PLP(_Graph _G, _Partition baseClustering, count updateThreshold) except +
 		_PLP(_Graph _G, _Partition baseClustering) except +
-		void run() except +
-		_Partition getPartition() except +
 		count numberOfIterations() except +
 		vector[count] getTiming() except +
-		string toString() except +
 
 
 cdef class PLP(CommunityDetector):
@@ -3018,8 +3051,6 @@ cdef class PLP(CommunityDetector):
  	that the maximum number of its neighbors have. The procedure is stopped when every vertex
  	has the label that at least half of its neighbors have.
 	"""
-	cdef _PLP* _this
-	cdef Graph _G
 
 	def __cinit__(self, Graph G not None, Partition baseClustering=None, updateThreshold=None):
 		"""
@@ -3046,25 +3077,6 @@ cdef class PLP(CommunityDetector):
 		else:
 			self._this = new _PLP(G._this, baseClustering._this, updateThreshold)
 
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		""" Run the label propagation clustering algorithm.
-		"""
-		self._this.run()
-		return self
-
-	def getPartition(self):
-		"""  Returns a partition of the clustering.
-
-		Returns
-		-------
-		Partition:
-			A Partition of the clustering.
-		"""
-		return Partition().setThis(self._this.getPartition())
-
 	def numberOfIterations(self):
 		""" Get number of iterations in last run.
 
@@ -3073,7 +3085,7 @@ cdef class PLP(CommunityDetector):
 		count
 			The number of iterations.
 		"""
-		return self._this.numberOfIterations()
+		return (<_PLP*>(self._this)).numberOfIterations()
 
 	def getTiming(self):
 		""" Get list of running times for each iteration.
@@ -3083,54 +3095,19 @@ cdef class PLP(CommunityDetector):
 		count
 			The list of running times in milliseconds.
 		"""
-		return self._this.getTiming()
-
-	def toString(self):
-		""" Get string representation.
-
-		Returns
-		-------
-		string
-			String representation of algorithm and parameters.
-		"""
-		return self._this.toString().decode("utf-8")
-
+		return (<_PLP*>(self._this)).getTiming()
 
 cdef extern from "cpp/community/LPDegreeOrdered.h":
-	cdef cppclass _LPDegreeOrdered "NetworKit::LPDegreeOrdered":
+	cdef cppclass _LPDegreeOrdered "NetworKit::LPDegreeOrdered"(_CommunityDetectionAlgorithm):
 		_LPDegreeOrdered(_Graph _G) except +
-		void run() except +
-		_Partition getPartition() except +
 		count numberOfIterations()
-		string toString() except +
 
 cdef class LPDegreeOrdered(CommunityDetector):
 	""" Label propagation-based community detection algorithm which processes nodes in increasing order of node degree.	"""
-	cdef _LPDegreeOrdered* _this
-	cdef Graph _G
 
 	def __cinit__(self, Graph G not None):
 		self._G = G
 		self._this = new _LPDegreeOrdered(G._this)
-
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		""" Detect communites.
-		"""
-		self._this.run()
-		return self
-
-	def getPartition(self):
-		"""  Returns a partition of the clustering.
-
-		Returns
-		-------
-		Partition:
-			A Partition of the clustering.
-		"""
-		return Partition().setThis(self._this.getPartition())
 
 	def numberOfIterations(self):
 		""" Get number of iterations in last run.
@@ -3140,25 +3117,14 @@ cdef class LPDegreeOrdered(CommunityDetector):
 		count
 			Number of iterations.
 		"""
-		return self._this.numberOfIterations()
+		return (<_LPDegreeOrdered*>(self._this)).numberOfIterations()
 
-	def toString(self):
-		""" Get string representation.
 
-		Returns
-		-------
-		string
-			String representation of algorithm and parameters.
-		"""
-		return self._this.toString().decode("utf-8")
 
 cdef extern from "cpp/community/PLM.h":
-	cdef cppclass _PLM "NetworKit::PLM":
+	cdef cppclass _PLM "NetworKit::PLM"(_CommunityDetectionAlgorithm):
 		_PLM(_Graph _G) except +
 		_PLM(_Graph _G, bool refine, double gamma, string par, count maxIter, bool parCoarsening, bool turbo) except +
-		string toString() except +
-		void run() except +
-		_Partition getPartition() except +
 		map[string, vector[count]] getTiming() except +
 
 cdef extern from "cpp/community/PLM.h" namespace "NetworKit::PLM":
@@ -3189,46 +3155,14 @@ cdef class PLM(CommunityDetector):
 			faster but uses O(n) additional memory per thread
 	"""
 
-	cdef _PLM* _this
-	cdef Graph _G
-
 	def __cinit__(self, Graph G not None, refine=False, gamma=1.0, par="balanced", maxIter=32, parCoarsening=True, turbo=False):
 		self._G = G
 		self._this = new _PLM(G._this, refine, gamma, stdstring(par), maxIter, parCoarsening, turbo)
 
-	def __dealloc__(self):
-		del self._this
-
-	def toString(self):
-		""" Get string representation.
-
-		Returns
-		-------
-		string
-			String representation of this algorithm.
-		"""
-		return self._this.toString().decode("utf-8")
-
-	def run(self):
-		""" Detect communities.
-		"""
-		self._this.run()
-		return self
-
-	def getPartition(self):
-		"""  Returns a partition of the clustering.
-
-		Returns
-		-------
-		Partition:
-			A Partition of the clustering.
-		"""
-		return Partition().setThis(self._this.getPartition())
-
 	def getTiming(self):
 		"""  Get detailed time measurements.
 		"""
-		return self._this.getTiming()
+		return (<_PLM*>(self._this)).getTiming()
 
 	@staticmethod
 	def coarsen(Graph G, Partition zeta, bool parallel = False):
@@ -3241,7 +3175,7 @@ cdef class PLM(CommunityDetector):
 
 
 cdef extern from "cpp/community/CNM.h":
-	cdef cppclass _CNM "NetworKit::CNM":
+	cdef cppclass _CNM "NetworKit::CNM"(_CommunityDetectionAlgorithm):
 		_CNM(_Graph _G) except +
 		string toString() except +
 		void run() except +
@@ -3254,50 +3188,14 @@ cdef class CNM(CommunityDetector):
  	Probably not the fastest possible implementation, but it already uses a priority queue
  	and local updates.
  	"""
-
-	cdef _CNM* _this
-	cdef Graph _G
-
 	def __cinit__(self, Graph G not None):
 		self._G = G
 		self._this = new _CNM(G._this)
 
-	def __dealloc__(self):
-		del self._this
-
-	def toString(self):
-		""" Get string representation.
-
-		Returns
-		-------
-		string
-			A string representation of this algorithm.
-		"""
-		return self._this.toString().decode("utf-8")
-
-	def run(self):
-		""" Detect communities.
-		"""
-		self._this.run()
-		return self
-
-	def getPartition(self):
-		"""  Returns a partition of the clustering.
-
-		Returns
-		-------
-		Partition:
-			A Partition of the clustering.
-		"""
-		return Partition().setThis(self._this.getPartition())
-
 cdef extern from "cpp/community/CutClustering.h":
-	cdef cppclass _CutClustering "NetworKit::CutClustering":
+	cdef cppclass _CutClustering "NetworKit::CutClustering"(_CommunityDetectionAlgorithm):
 		_CutClustering(_Graph _G) except +
 		_CutClustering(_Graph _G, edgeweight alpha) except +
-		string toString() except +
-		void run() except +
-		_Partition getPartition() except +
 
 cdef extern from "cpp/community/CutClustering.h" namespace "NetworKit::CutClustering":
 	map[double, _Partition] CutClustering_getClusterHierarchy "NetworKit::CutClustering::getClusterHierarchy"(const _Graph& G) except +
@@ -3314,45 +3212,9 @@ cdef class CutClustering(CommunityDetector):
 	alpha : double
 		The parameter for the cut clustering algorithm
 	"""
-	cdef _CutClustering* _this
-	cdef Graph _G
-
 	def __cinit__(self, Graph G not None,  edgeweight alpha):
 		self._G = G
 		self._this = new _CutClustering(G._this, alpha)
-
-	def __dealloc__(self):
-		del self._this
-
-	def toString(self):
-		""" Get string representation.
-
-		Returns
-		-------
-		string
-			A string representation of this algorithm.
-		"""
-		return self._this.toString().decode("utf-8")
-
-	def getPartition(self):
-		"""  Returns a partition of the clustering.
-
-		Returns
-		-------
-		Partition:
-			A Partition of the clustering.
-		"""
-		return Partition().setThis(self._this.getPartition())
-
-	def run(self):
-		""" Detect communities in the given graph `graph`.
-
-		Warning: due to numerical errors the resulting clusters might not be correct.
-		This implementation uses the Edmonds-Karp algorithm for the cut calculation.
-
-		"""
-		self._this.run()
-		return self
 
 	@staticmethod
 	def getClusterHierarchy(Graph G not None):
@@ -3478,11 +3340,8 @@ cdef class AdjustedRandMeasure(DissimilarityMeasure):
 		return self._this.getDissimilarity(G._this, first._this, second._this)
 
 cdef extern from "cpp/community/EPP.h":
-	cdef cppclass _EPP "NetworKit::EPP":
+	cdef cppclass _EPP "NetworKit::EPP"(_CommunityDetectionAlgorithm):
 		_EPP(_Graph G)
-		void run() except +
-		_Partition getPartition() except +
-		string toString()
 		_Partition getCorePartition() except +
 		vector[_Partition] getBasePartitions() except +
 
@@ -3493,30 +3352,9 @@ cdef class EPP(CommunityDetector):
 	Then the final algorithm operates on the coarse graph and determines a solution
 	for the input graph.
 	"""
-	cdef _EPP* _this
-	cdef Graph _G
-
 	def __cinit__(self, Graph G not None):
 		self._G = G
 		self._this = new _EPP(G._this)
-
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		"""  Run the ensemble clusterer.
-		"""
-		self._this.run()
-
-	def getPartition(self):
-		"""  Returns a partition of the clustering.
-
-		Returns
-		-------
-		Partition:
-			A Partition of the clustering.
-		"""
-		return Partition().setThis(self._this.getPartition())
 
 	def getCorePartition(self):
 		"""  Returns the core partition the algorithm.
@@ -3526,23 +3364,13 @@ cdef class EPP(CommunityDetector):
 		Partition:
 			A Partition of the clustering.
 		"""
-		return Partition().setThis(self._this.getCorePartition())
+		return Partition().setThis((<_EPP*>(self._this)).getCorePartition())
 
 	def getBasePartitions(self):
 		"""  Returns the base partitions of the algorithm.
 		"""
-		base = self._this.getBasePartitions()
+		base = (<_EPP*>(self._this)).getBasePartitions()
 		return [Partition().setThis(b) for b in base]
-
-	def toString(self):
-		""" String representation of EPP class.
-
-		Returns
-		-------
-		string
-			String representation.
-		"""
-		return self._this.toString()
 
 	cdef setThis(self, _EPP* other):
 		del self._this # is this correct here?
@@ -3550,11 +3378,8 @@ cdef class EPP(CommunityDetector):
 		return self
 
 cdef extern from "cpp/community/EPPInstance.h":
-	cdef cppclass _EPPInstance "NetworKit::EPPInstance":
+	cdef cppclass _EPPInstance "NetworKit::EPPInstance"(_CommunityDetectionAlgorithm):
 		_EPPInstance(_Graph G, count ensembleSize) except +
-		void run() except +
-		_Partition getPartition() except +
-		string toString() except +
 		_Partition getCorePartition() except +
 		vector[_Partition] getBasePartitions() except +
 
@@ -3565,30 +3390,9 @@ cdef class EPPInstance(CommunityDetector):
 	Then the final algorithm operates on the coarse graph and determines a solution
 	for the input graph.
 	"""
-	cdef _EPPInstance* _this
-	cdef Graph _G
-
 	def __cinit__(self, Graph G not None, ensembleSize=4):
 		self._G = G
 		self._this = new _EPPInstance(G._this, ensembleSize)
-
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		"""  Run the ensemble clusterer.
-		"""
-		self._this.run()
-
-	def getPartition(self):
-		"""  Returns a partition of the clustering.
-
-		Returns
-		-------
-		Partition:
-			A Partition of the clustering.
-		"""
-		return Partition().setThis(self._this.getPartition())
 
 	def getCorePartition(self):
 		"""  Returns the core partition the algorithm.
@@ -3598,23 +3402,13 @@ cdef class EPPInstance(CommunityDetector):
 		Partition:
 			A Partition of the clustering.
 		"""
-		return Partition().setThis(self._this.getCorePartition())
+		return Partition().setThis((<_EPPInstance*>(self._this)).getCorePartition())
 
 	def getBasePartitions(self):
 		"""  Returns the base partitions of the algorithm.
 		"""
-		base = self._this.getBasePartitions()
+		base = (<_EPPInstance*>(self._this)).getBasePartitions()
 		return [Partition().setThis(b) for b in base]
-
-	def toString(self):
-		""" String representation of EPP class.
-
-		Returns
-		-------
-		string
-			String representation.
-		"""
-		return self._this.toString()
 
 
 
