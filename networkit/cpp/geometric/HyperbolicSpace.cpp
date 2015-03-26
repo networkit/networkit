@@ -48,10 +48,13 @@ void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, 
 
 void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, double minPhi, double maxPhi, double minR, double maxR, double alpha) {
 	uint64_t n = radii.size();
+	assert(angles.size() == n);
+
 	double mincdf = cosh(alpha*minR);
 	double maxcdf = cosh(alpha*maxR);
 	std::uniform_real_distribution<double> phidist{minPhi, maxPhi};
 	std::uniform_real_distribution<double> rdist{mincdf, maxcdf};
+	double r = hyperbolicRadiusToEuclidean(maxR);
 
 	assert(angles.size() == n);
 	for (uint64_t i = 0; i < n; i++) {
@@ -63,9 +66,12 @@ void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, 
 		 */
 		double random = rdist(Aux::Random::getURNG());
 		double radius = (acosh(random)/alpha);
+		//assert(radius < maxR);
 		//now translate into coordinates of Poincaré disc
 		radii[i] = hyperbolicRadiusToEuclidean(radius);
-		assert(radii[i] < 1);
+		assert(radii[i] <= r);
+		if (radii[i] == r) radii[i] = std::nextafter(radii[i], 0);
+		assert(radii[i] < r);
 	}
 }
 
