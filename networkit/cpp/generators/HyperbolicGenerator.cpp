@@ -123,7 +123,7 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	timer.start();
 	vector<double> empty;
 	GraphBuilder result(n, false, false);
-	bool anglesSorted = directSwap ? false : std::is_sorted(angles.begin(), angles.end());//relying on lazy evaluation here
+	bool suppressLeft = directSwap ? false : std::is_sorted(angles.begin(), angles.end());//relying on lazy evaluation here
 
 	#pragma omp parallel
 	{
@@ -135,12 +135,16 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 			count expectedDegree = (4/M_PI)*n*exp(-HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[i])/2);
 			vector<index> near;
 			near.reserve(expectedDegree*1.1);
-			quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance, !directSwap && anglesSorted, near);
+			quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance, suppressLeft, near);
 			//count realDegree = near.size();
 			//std::swap(expectedDegree, realDegree);//dummy statement for debugging
 			if (directSwap) {
 				auto newend = std::remove(near.begin(), near.end(), i); //no self loops!
-				if (newend != near.end())	near.pop_back();//std::remove doesn't remove element but swaps it to the end
+				if (newend != near.end()) {
+					assert(newend+1 == near.end());
+					assert(*(newend)==i);
+					near.pop_back();//std::remove doesn't remove element but swaps it to the end
+				}
 				result.swapNeighborhood(i, near, empty, false);
 			} else {
 				for (index j : near) {
@@ -154,6 +158,6 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 
 	timer.stop();
 	INFO("Generating Edges took ", timer.elapsedMilliseconds(), " milliseconds.");
-	return result.toGraph(!directSwap, true);
+	return result.toGraph(true);
 }
 }
