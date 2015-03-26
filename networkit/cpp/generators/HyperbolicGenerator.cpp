@@ -153,7 +153,11 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 			//std::swap(expectedDegree, realDegree);//dummy statement for debugging
 			if (directSwap) {
 				auto newend = std::remove(near.begin(), near.end(), i); //no self loops!
-				if (newend != near.end())	near.pop_back();//std::remove doesn't remove element but swaps it to the end
+				if (newend != near.end()) {
+					assert(newend+1 == near.end());
+					assert(*(newend)==i);
+					near.pop_back();//std::remove doesn't remove element but swaps it to the end
+				}
 				result.swapNeighborhood(i, near, empty, false);
 			} else {
 				for (index j : near) {
@@ -208,7 +212,6 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 				progress.signal(i);
 			}
 		}
-
 	}
 	DEBUG("Candidates tested: ", totalCandidates);
 	return result.toGraph(true);

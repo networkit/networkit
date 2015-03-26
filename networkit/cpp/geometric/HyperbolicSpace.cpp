@@ -70,7 +70,7 @@ void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, 
 		radii[i] = hyperbolicRadiusToEuclidean(radius);
 		assert(radii[i] <= r);
 		if (radii[i] == r) radii[i] = std::nextafter(radii[i], 0);
-
+		assert(radii[i] < r);
 	}
 }
 
