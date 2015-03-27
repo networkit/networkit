@@ -1,6 +1,15 @@
+import sys
+
+##################################
+# check Python version
+##################################
+
+if sys.version_info.major < 3:
+	print("ERROR: NetworKit requires Python 3.")
+	sys.exit(1)
+
 import version
 from setup_util import *
-import sys
 if "setuptools" not in sys.modules:
 	from ez_setup import use_setuptools
 	# in case setuptools is not installed
