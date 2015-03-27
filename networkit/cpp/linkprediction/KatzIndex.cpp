@@ -58,4 +58,23 @@ double KatzIndex::runImpl(node u, node v) {
   return getScore(u, v);
 }
 
+std::vector<LinkPredictor::node_dyad_score_pair> KatzIndex::runOnParallel(std::vector<std::pair<node, node>> nodePairs) {
+  std::vector<node_dyad_score_pair> predictions;
+  #pragma omp parallel
+  {
+    // Create local KatzIndex
+    KatzIndex katz(*G, maxPathLength, dampingValue);
+    INFO("Created katz index");
+    std::vector<node_dyad_score_pair> predictionsPrivate;
+    #pragma omp for nowait
+    for (index i = 0; i < nodePairs.size(); ++i) {
+      predictionsPrivate.push_back(std::make_pair(nodePairs[i], katz.run(nodePairs[i].first, nodePairs[i].second)));
+    }
+    #pragma omp critical
+    predictions.insert(predictions.end(), predictionsPrivate.begin(), predictionsPrivate.end());
+  }
+  std::sort(predictions.begin(), predictions.end(), ConcreteNodeDyadScoreComp);
+  return predictions;
+}
+
 } // namespace NetworKit

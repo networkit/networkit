@@ -11,6 +11,7 @@
 #include "../../io/METISGraphReader.h"
 #include "../KatzIndex.h"
 #include "../CommonNeighborsIndex.h"
+#include "../JaccardIndex.h"
 #include "../EdgeSelector.h"
 #include "../ROCMetric.h"
 #include "../PrecisionRecallMetric.h"
@@ -82,6 +83,28 @@ TEST_F(LinkPredictionGTest, testEdgeSelectorGetByCountMissingCalcCall) {
   delete predictor;
 }
 
+TEST_F(LinkPredictionGTest, testCommonNeighborsRunOn) {
+  METISGraphReader graphReader;
+  Graph newG = graphReader.read("input/caidaRouterLevel.graph");
+  RandomEdgePartitioner partitioner(newG);
+  std::pair<Graph, Graph> graphPartitions = partitioner.partitionByPercentage(0.1);
+
+  CommonNeighborsIndex cn(graphPartitions.first);
+
+  UnconnectedNodesFinder unf(graphPartitions.first);
+  std::vector<std::pair<node, node>> missingLinks = unf.findAll(2);
+  INFO("Found ", missingLinks.size(), " missing links with distance 2");
+  std::vector<LinkPredictor::node_dyad_score_pair> scoresParallel = cn.runOnParallel(missingLinks);
+  //std::vector<LinkPredictor::node_dyad_score_pair> scores = cn.runOn(missingLinks);
+
+  INFO("Size = ", scoresParallel.size());
+
+  //for (index i = 0; i < scores.size(); ++i) {
+    //EXPECT_EQ(scoresParallel[i].second, scores[i].second);
+    //INFO("entries[", i, "] = ((", scores[i].first.first, ", ", scores[i].first.second, "), ", scores[i].second, ")");
+  //}
+}
+
 /*TEST_F(LinkPredictionGTest, testKFoldCrossValidator) {
   KatzIndex katzIndex;
   METISGraphReader graphReader;
@@ -101,7 +124,7 @@ TEST_F(LinkPredictionGTest, testEdgeSelectorGetByCountMissingCalcCall) {
   INFO(missingEdges.size());
 }*/
 
-TEST_F(LinkPredictionGTest, testPrecisionRecallMetric) {
+/*TEST_F(LinkPredictionGTest, testPrecisionRecallMetric) {
   RandomEdgePartitioner partitioner(G);
   std::pair<Graph, Graph> graphPartitions = partitioner.partitionByPercentage(0.3);
   CommonNeighborsIndex cni(graphPartitions.first);
@@ -112,7 +135,18 @@ TEST_F(LinkPredictionGTest, testPrecisionRecallMetric) {
   PrecisionRecallMetric pr(graphPartitions.second, results);
   pr.generatePoints();
   EXPECT_NEAR(0.7, pr.areaUnderCurve(), 0.01);
-}
+}*/
+
+/*TEST_F(LinkPredictionGTest, testUnconnectedNodesFinder) {
+  METISGraphReader graphReader;
+  Graph newG = graphReader.read("input/caidaRouterLevel.graph");
+  UnconnectedNodesFinder unf(newG);
+  std::vector<std::pair<node, node>> missingLinks = unf.findAll(2);
+  INFO("Size = ", missingLinks.size());
+  //for (std::pair<node, node> p : missingLinks) {
+  //  INFO("(", p.first, ", ", p.second, ")");
+  //}
+}*/
 
 /*TEST_F(LinkPredictionGTest, testReceiverOperatingCharacteristic) {
   RandomEdgePartitioner partitioner(G);
