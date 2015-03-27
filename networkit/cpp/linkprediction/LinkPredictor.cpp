@@ -23,32 +23,29 @@ void LinkPredictor::setGraph(const Graph& newGraph) {
   validCache = false;
 }
 
-std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runAllImpl(count limit) {
-  std::priority_queue<node_dyad_score_pair, std::vector<node_dyad_score_pair>, NodeDyadScoreComp> pairQueue;
-  std::vector<node_dyad_score_pair> result;
-  G->forNodes([&](node u) {
-    G->forNodes([&](node v) {
-      if (u < v && !G->hasEdge(u, v)) {
-        double score = run(u, v);
-        if (limit == 0 || pairQueue.size() < limit) {
-          //INFO("Inserting: ((", u, ", ", v, "), ", score, ")");
-          pairQueue.push(std::make_pair(std::make_pair(u, v), score));
-        } else if (score > pairQueue.top().second) {
-          //INFO("Replacing ((", pairQueue.top().first.first, ", ", pairQueue.top().first.second, "), ", pairQueue.top().second, ") with ((", u, ", ", v, "), ", score, ")");
-          pairQueue.pop();
-          pairQueue.push(std::make_pair(std::make_pair(u, v), score));
-        }
-        //INFO("Top element: ((", pairQueue.top().first.first, ", ", pairQueue.top().first.second, "), ", pairQueue.top().second, ")");
-      }
-    });
-  });
-  count numEntries = pairQueue.size();
-  for (index i = 0; i < numEntries; ++i) {
-    result.push_back(pairQueue.top());
-    pairQueue.pop();
+std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runOn(std::vector<std::pair<node, node>> nodePairs) {
+  std::vector<node_dyad_score_pair> predictions;
+  for (index i = 0; i < nodePairs.size(); ++i) {
+    predictions.push_back(std::make_pair(nodePairs[i], run(nodePairs[i].first, nodePairs[i].second)));
   }
-  std::reverse(result.begin(), result.end());
-  return result;
+  std::sort(predictions.begin(), predictions.end(), ConcreteNodeDyadScoreComp);
+  return predictions;
+}
+
+std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runOnParallel(std::vector<std::pair<node, node>> nodePairs) {
+  std::vector<node_dyad_score_pair> predictions;
+  #pragma omp parallel
+  {
+    std::vector<node_dyad_score_pair> predictionsPrivate;
+    #pragma omp for nowait
+    for (index i = 0; i < nodePairs.size(); ++i) {
+      predictionsPrivate.push_back(std::make_pair(nodePairs[i], run(nodePairs[i].first, nodePairs[i].second)));
+    }
+    #pragma omp critical
+    predictions.insert(predictions.end(), predictionsPrivate.begin(), predictionsPrivate.end());
+  }
+  std::sort(predictions.begin(), predictions.end(), ConcreteNodeDyadScoreComp);
+  return predictions;
 }
 
 double LinkPredictor::run(node u, node v) {
@@ -60,11 +57,16 @@ double LinkPredictor::run(node u, node v) {
   return runImpl(u, v);
 }
 
-std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runAll(count limit) {
-  if (G == nullptr) {
-    throw std::logic_error("Set a graph first.");
+std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runAll() {
+  std::vector<node> nodes = G->nodes();
+  std::vector<std::pair<node, node>> nodePairs;
+  for (index i = 0; i < nodes.size(); ++i) {
+    for (index j = i + 1; j < nodes.size(); ++j) {
+      if (!G->hasEdge(i, j))
+        nodePairs.push_back(std::make_pair(i, j));
+    }
   }
-  return runAllImpl(limit);
+  return runOn(nodePairs);
 }
 
 } // namespace NetworKit

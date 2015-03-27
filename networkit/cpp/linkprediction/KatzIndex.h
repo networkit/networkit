@@ -60,6 +60,8 @@ public:
    * @param dampingValue Used to exponentially damp every addend of the sum. Should be in (0, 1]
    */
   explicit KatzIndex(const Graph& G, count maxPathLength = 3, double dampingValue = 0.9);
+
+  std::vector<LinkPredictor::node_dyad_score_pair> runOnParallel(std::vector<std::pair<node, node>> nodePairs);
 };
 
 } // namespace NetworKit

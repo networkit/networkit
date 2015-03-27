@@ -25,12 +25,6 @@ public:
   typedef std::pair<std::pair<node, node>, double> node_dyad_score_pair;
 
 private:
-  struct NodeDyadScoreComp {
-    bool operator()(const node_dyad_score_pair& a, const node_dyad_score_pair& b) const {
-      return (a.second > b.second) || (a.second == b.second && a.first < b.first);
-    }
-  };
-
   /**
    * Implementation of the run method.
    * Doesn't have to check for a missing graph.
@@ -42,18 +36,13 @@ private:
    */
   virtual double runImpl(node u, node v) = 0;
 
-  /**
-   * Implementation of the runAll method.
-   * Doesn't have to check for a missing graph.
-   *
-   * @param limit Limit for the number of dyad-score-pairs to return.
-   * If set to 0 all pairs will get returned.
-   * @return a vector of dyad-score-pairs that is ordered descendingly by score and
-   * on score equality ordered ascendingly by node-pairs.
-   */
-  virtual std::vector<node_dyad_score_pair> runAllImpl(count limit);
-
 protected:
+  struct NodeDyadScoreComp {
+    bool operator()(const node_dyad_score_pair& a, const node_dyad_score_pair& b) const {
+      return (a.second > b.second) || (a.second == b.second && a.first < b.first);
+    }
+  } ConcreteNodeDyadScoreComp;
+
   const Graph* G; //!< Graph to operate on
 
   bool validCache; //!< Indicates whether a possibly used cache is valid
@@ -89,16 +78,19 @@ public:
    */
   double run(node u, node v);
 
+  virtual std::vector<node_dyad_score_pair> runOn(std::vector<std::pair<node, node>> nodePairs);
+
+  virtual std::vector<node_dyad_score_pair> runOnParallel(std::vector<std::pair<node, node>> nodePairs);
+
+
   /**
    * Runs the link predictor on all node-pairs which are not connected
    * by a node in the given graph.
    *
-   * @param limit Limit for the number of dyad-score-pairs to return.
-   * If set to 0 all pairs will get returned.
    * @return a vector of dyad-score-pairs that is ordered descendingly by score and
    * on score equality ordered ascendingly by node-pairs.
    */
-  virtual std::vector<node_dyad_score_pair> runAll(count limit = 0);
+  virtual std::vector<node_dyad_score_pair> runAll();
 };
 
 } // namespace NetworKit
