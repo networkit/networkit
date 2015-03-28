@@ -83,7 +83,7 @@ TEST_F(LinkPredictionGTest, testEdgeSelectorGetByCountMissingCalcCall) {
   delete predictor;
 }
 
-TEST_F(LinkPredictionGTest, testCommonNeighborsRunOn) {
+/*TEST_F(LinkPredictionGTest, testCommonNeighborsRunOn) {
   METISGraphReader graphReader;
   Graph newG = graphReader.read("input/caidaRouterLevel.graph");
   RandomEdgePartitioner partitioner(newG);
@@ -103,7 +103,7 @@ TEST_F(LinkPredictionGTest, testCommonNeighborsRunOn) {
     //EXPECT_EQ(scoresParallel[i].second, scores[i].second);
     //INFO("entries[", i, "] = ((", scores[i].first.first, ", ", scores[i].first.second, "), ", scores[i].second, ")");
   //}
-}
+}*/
 
 /*TEST_F(LinkPredictionGTest, testKFoldCrossValidator) {
   KatzIndex katzIndex;
@@ -148,16 +148,29 @@ TEST_F(LinkPredictionGTest, testCommonNeighborsRunOn) {
   //}
 }*/
 
-/*TEST_F(LinkPredictionGTest, testReceiverOperatingCharacteristic) {
-  RandomEdgePartitioner partitioner(G);
-  std::pair<Graph, Graph> graphPartitions = partitioner.partition(0.3);
+TEST_F(LinkPredictionGTest, testReceiverOperatingCharacteristic) {
+  METISGraphReader graphReader;
+  Graph newG = graphReader.read("input/PGPgiantcompo.graph");
+  RandomEdgePartitioner partitioner(newG);
+  std::pair<Graph, Graph> graphPartitions = partitioner.partitionByPercentage(0.3);
+
+  UnconnectedNodesFinder unf(graphPartitions.first);
+  std::vector<std::pair<node, node>> nodePairs = unf.findAll(2);
+  INFO("nodePairs.size() = ", nodePairs.size());
 
   KatzIndex katz(graphPartitions.first, 2, 1);
-  std::vector<LinkPredictor::node_dyad_score_pair> scores = katz.runAll(4);
-  for (index i = 0; i < scores.size(); ++i) {
+  std::vector<LinkPredictor::node_dyad_score_pair> scores = katz.runOnParallel(nodePairs);
+  /*for (index i = 0; i < scores.size(); ++i) {
     INFO("entries[", i, "] = ((", scores[i].first.first, ", ", scores[i].first.second, "), ", scores[i].second, ")");
-  }
-}*/
+  }*/
+  ROCMetric roc(graphPartitions.second, scores);
+  roc.generatePoints();
+  std::pair<std::vector<double>, std::vector<double>> points = roc.getPoints();
+  INFO("Size = ", points.first.size());
+  /*for (index i = 0; i < points.first.size(); ++i) {
+    INFO("Point[", i, "] = (", points.first[i], ", ", points.second[i], ").");
+  }*/
+}
 
 
 /*

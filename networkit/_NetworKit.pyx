@@ -5166,7 +5166,8 @@ cdef extern from "cpp/linkprediction/LinkPredictor.h":
 	cdef cppclass _LinkPredictor "NetworKit::LinkPredictor":
 		_LinkPredictor(const _Graph& G) except +
 		double run(node u, node v) except +
-		vector[pair[pair[node, node], double]] runAll(count limit) except +
+		vector[pair[pair[node, node], double]] runAll() except +
+		vector[pair[pair[node, node], double]] runOnParallel(vector[pair[node, node]] nodePairs) except +
 		void setGraph(const _Graph& newGraph) except +
 
 cdef class LinkPredictor:
@@ -5192,11 +5193,17 @@ cdef class LinkPredictor:
 		"""
 		return self._this.run(u, v)
 
-	def runAll(self, count limit = 0):
+	def runAll(self):
 		"""
 		TODO(kesders)
 		"""
-		return self._this.runAll(limit)
+		return self._this.runAll()
+
+	def runOnParallel(self, vector[pair[node, node]] nodePairs):
+		"""
+		TODO(kesders)
+		"""
+		return self._this.runOnParallel(nodePairs)
 
 cdef extern from "cpp/linkprediction/KatzIndex.h":
 	cdef cppclass _KatzIndex "NetworKit::KatzIndex"(_LinkPredictor):
@@ -5388,7 +5395,7 @@ cdef extern from "cpp/linkprediction/EvaluationMetric.h":
 		_EvaluationMetric() except +
 		_EvaluationMetric(const _Graph& testGraph) except +
 		_EvaluationMetric(const _Graph& testGraph, vector[pair[pair[node, node], double]] predictions) except +
-		void generatePoints() except +
+		void generatePoints(count numThresholds) except +
 		pair[vector[double], vector[double]] getPoints() except +
 		double areaUnderCurve() except +
 		void setTestGraph(const _Graph& newTestGraph) except +
@@ -5405,10 +5412,10 @@ cdef class EvaluationMetric:
 			del self._this
 			self._this = NULL
 
-	def generatePoints(self):
+	def generatePoints(self, count numThresholds = 1000):
 		"""
 		"""
-		self._this.generatePoints()
+		self._this.generatePoints(numThresholds)
 
 	def getPoints(self):
 		"""
@@ -5435,7 +5442,7 @@ cdef extern from "cpp/linkprediction/ROCMetric.h":
 		_ROCMetric() except +
 		_ROCMetric(const _Graph& testGraph) except +
 		_ROCMetric(const _Graph& testGraph, vector[pair[pair[node, node], double]] predictions) except +
-		void generatePoints() except +
+		void generatePoints(count numThresholds) except +
 
 cdef class ROCMetric(EvaluationMetric):
 	"""
@@ -5462,7 +5469,7 @@ cdef class ROCMetric(EvaluationMetric):
 			del self._this
 			self._this = NULL
 
-	def generatePoints(self):
+	def generatePoints(self, count numThresholds = 1000):
 		"""
 		Generates a vector of points that belong to the Receiver Operating Characteristic of the given
 		dyad-score-pairs and the graph to check against.
@@ -5478,14 +5485,14 @@ cdef class ROCMetric(EvaluationMetric):
 		-------
 		A vector of points belonging to the ROC.
 		"""
-		self._this.generatePoints()
+		self._this.generatePoints(numThresholds)
 
 cdef extern from "cpp/linkprediction/PrecisionRecallMetric.h":
 	cdef cppclass _PrecisionRecallMetric "NetworKit::PrecisionRecallMetric"(_EvaluationMetric):
 		_PrecisionRecallMetric() except +
 		_PrecisionRecallMetric(const _Graph& testGraph) except +
 		_PrecisionRecallMetric(const _Graph& testGraph, vector[pair[pair[node, node], double]] predictions) except +
-		void generatePoints() except +
+		void generatePoints(count numThresholds) except +
 
 cdef class PrecisionRecallMetric(EvaluationMetric):
 	"""
@@ -5503,17 +5510,13 @@ cdef class PrecisionRecallMetric(EvaluationMetric):
 			del self._this
 			self._this = NULL
 
-	def generatePoints(self):
+	def generatePoints(self, count numThresholds = 1000):
 		"""
 		"""
-		self._this.generatePoints()
+		self._this.generatePoints(numThresholds)
 
 cdef extern from "cpp/linkprediction/KFoldCrossValidator.h":
 	cdef cppclass _KFoldCrossValidator "NetworKit::KFoldCrossValidator":
-		#_KFoldCrossValidator(const _Graph& G, _CommonNeighborsIndex* linkPredictor, _ROCMetric* evaluator) except +
-		#_KFoldCrossValidator(const _Graph& G, _KatzIndex* linkPredictor, _ROCMetric* evaluator) except +
-		#_KFoldCrossValidator(const _Graph& G, _CommonNeighborsIndex* linkPredictor, _PrecisionRecallMetric* evaluator) except +
-		#_KFoldCrossValidator(const _Graph& G, _KatzIndex* linkPredictor, _PrecisionRecallMetric* evaluator) except +
 		_KFoldCrossValidator(const _Graph& G, _LinkPredictor* linkPredictor, _EvaluationMetric* evaluator) except +
 		double crossValidate(count k) except +
 
@@ -5537,16 +5540,7 @@ cdef class KFoldCrossValidator:
 	cdef _KFoldCrossValidator* _this
 
 	def __cinit__(self, Graph G, LinkPredictor linkPredictor, EvaluationMetric evaluator):
-		#if isinstance(linkPredictor, KatzIndex) and isinstance(evaluator, ROCMetric):
-		#	self._this = new _KFoldCrossValidator(G._this, (<KatzIndex>linkPredictor)._this, (<ROCMetric>evaluator)._this)
-		#elif isinstance(linkPredictor, CommonNeighborsIndex) and isinstance(evaluator, ROCMetric):
-		#	self._this = new _KFoldCrossValidator(G._this, (<CommonNeighborsIndex>linkPredictor)._this, (<ROCMetric>evaluator)._this)
-		#elif isinstance(linkPredictor, KatzIndex) and isinstance(evaluator, PrecisionRecallMetric):
-		#	self._this = new _KFoldCrossValidator(G._this, (<KatzIndex>linkPredictor)._this, (<PrecisionRecallMetric>evaluator)._this)
-		#elif isinstance(linkPredictor, CommonNeighborsIndex) and isinstance(evaluator, PrecisionRecallMetric):
-		#	self._this = new _KFoldCrossValidator(G._this, (<CommonNeighborsIndex>linkPredictor)._this, (<PrecisionRecallMetric>evaluator)._this)
 		self._this = new _KFoldCrossValidator(G._this, linkPredictor._this, evaluator._this)
-
 
 	def __dealloc__(self):
 		del self._this
@@ -5565,3 +5559,30 @@ cdef class KFoldCrossValidator:
 		The average area under the given EvaluationCurve after k runs.
 		"""
 		return self._this.crossValidate(k)
+
+cdef extern from "cpp/linkprediction/UnconnectedNodesFinder.h":
+	cdef cppclass _UnconnectedNodesFinder "NetworKit::UnconnectedNodesFinder":
+		_UnconnectedNodesFinder(const _Graph& G) except +
+		vector[pair[node, node]] findAll(count k) except +
+		vector[pair[node, node]] findFromNode(node u, count k) except +
+
+cdef class UnconnectedNodesFinder:
+	"""
+	"""
+	cdef _UnconnectedNodesFinder* _this
+
+	def __cinit__(self, Graph G):
+		self._this = new _UnconnectedNodesFinder(G._this)
+
+	def __dealloc__(self):
+		del self._this
+
+	def findAll(self, count k):
+		"""
+		"""
+		return self._this.findAll(k)
+
+	def findFromNode(self, node u, count k):
+		"""
+		"""
+		return self._this.findFromNode(u, k)

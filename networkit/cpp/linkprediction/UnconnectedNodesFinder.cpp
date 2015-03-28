@@ -42,6 +42,7 @@ std::vector<std::pair<node, node>> UnconnectedNodesFinder::findAll(count k) {
     #pragma omp critical
     missingLinks.insert(missingLinks.end(), missingLinksPrivate.begin(), missingLinksPrivate.end());
   }
+  DEBUG("Found ", missingLinks.size(), " missing links with distance ", k, ".");
   return missingLinks;
 }
 

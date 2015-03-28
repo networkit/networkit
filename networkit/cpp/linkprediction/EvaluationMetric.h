@@ -28,12 +28,32 @@ private:
    */
   virtual void generatePointsImpl() = 0;
 
+  void calculateStatisticalMeasures();
+
+  void addStatisticsForThresholdIndex(index thresholdIndex);
+
+  void setPositivesAndNegatives();
+
 protected:
   std::pair<std::vector<double>, std::vector<double>> generatedPoints; //!< The generated points of the curve
 
   const Graph* testGraph; //!< Contains set of edges to test the given node-pairs and its scores against
 
   std::vector<LinkPredictor::node_dyad_score_pair> predictions; //!< Pairs of node-pairs and corresponding scores generated from the LinkPredictor to evaluate
+
+  count numThresholds;
+
+  count numPositives;
+
+  count numNegatives;
+
+  std::vector<count> truePositives;
+
+  std::vector<count> falsePositives;
+
+  std::vector<count> trueNegatives;
+
+  std::vector<count> falseNegatives;
 
 public:
   explicit EvaluationMetric();
@@ -54,8 +74,12 @@ public:
 
   /**
    * Generates the data-points for the EvaluationMetric.
+   *
+   * @param numThresholds Number of thresholds to use.
+   * If the number exceeds the actual number of predictions all the predictions will be used.
+   * If set to 0 the maximal number of thresholds will be used.
    */
-  void generatePoints();
+  void generatePoints(count numThresholds = 1000);
 
   /**
    * Returns the previously generated data-points for the curve.
