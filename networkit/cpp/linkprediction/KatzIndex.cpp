@@ -64,7 +64,6 @@ std::vector<LinkPredictor::node_dyad_score_pair> KatzIndex::runOnParallel(std::v
   {
     // Create local KatzIndex
     KatzIndex katz(*G, maxPathLength, dampingValue);
-    INFO("Created katz index");
     std::vector<node_dyad_score_pair> predictionsPrivate;
     #pragma omp for nowait
     for (index i = 0; i < nodePairs.size(); ++i) {
