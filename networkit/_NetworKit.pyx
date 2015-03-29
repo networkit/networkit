@@ -148,6 +148,7 @@ cdef extern from "cpp/graph/Graph.h":
 		node randomNode() except +
 		node randomNeighbor(node) except +
 		pair[node, node] randomEdge() except +
+		vector[pair[node, node]] randomEdges(count nr) except +
 		Point[float] getCoordinate(node v) except +
 		void setCoordinate(node v, Point[float] value) except +
 		void initCoordinates() except +
@@ -582,6 +583,22 @@ cdef class Graph:
 		Fast, but not uniformly random.
 		"""
 		return self._this.randomEdge()
+
+	def randomEdges(self, count nr):
+		"""
+		Returns a vector with nr random edges. The edges are chosen uniform random.
+
+		Parameters
+		----------
+		nr : count
+			Number of edges to return
+
+		Returns
+		-------
+		vector[pair[node, node]]
+			A vector of random edges
+		"""
+		return self._this.randomEdges(nr)
 
 	def getCoordinate(self, v):
 		""" Get the coordinates of node v.

@@ -111,10 +111,8 @@ void EvaluationMetric::setTrueAndFalseNegatives() {
     if (thresholdIt != thresholds.rend() && i == *thresholdIt) {
       trueNegatives.push_back(tmpTrueNegatives);
       falseNegatives.push_back(tmpFalseNegatives);
-      //INFO("Added because of ", correctedIndex, " <= ", *thresholdIt);
       if (*thresholdIt != 0)
         ++thresholdIt;
-      ++added;
     }
     bool hasEdge = testGraph->hasEdge(predictions[i - 1].first.first, predictions[i - 1].first.second);
     if (hasEdge) {
@@ -123,19 +121,13 @@ void EvaluationMetric::setTrueAndFalseNegatives() {
       tmpTrueNegatives++;
     }
   }
-  INFO("Added = ", added);
   if (thresholdIt != thresholds.rend()) {
     trueNegatives.push_back(tmpTrueNegatives);
     falseNegatives.push_back(tmpFalseNegatives);
   }
   ++thresholdIt;
-  if (thresholdIt == thresholds.rend()) {
-    INFO("Reached end.");
-  }
   std::reverse(trueNegatives.begin(), trueNegatives.end());
   std::reverse(falseNegatives.begin(), falseNegatives.end());
-    INFO("Last trueNegatives: ", trueNegatives.back());
-    INFO("Last falseNegatives: ", falseNegatives.back());
 }
 
 void EvaluationMetric::setPositivesAndNegatives() {
