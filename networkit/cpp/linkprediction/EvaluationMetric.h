@@ -32,11 +32,12 @@ private:
 
   void addStatisticsForThresholdIndex(index thresholdIndex);
 
+  // Helper function to determine and set the absolute number of positive and negative instances
   void setPositivesAndNegatives();
 
-  void setTrueAndFalsePositives(std::vector<index> thresholdIndices);
+  void setTrueAndFalsePositives();
   
-  void setTrueAndFalseNegatives(std::vector<index> thresholdIndices);
+  void setTrueAndFalseNegatives();
 
 protected:
   std::pair<std::vector<double>, std::vector<double>> generatedPoints; //!< The generated points of the curve
@@ -45,19 +46,19 @@ protected:
 
   std::vector<LinkPredictor::node_dyad_score_pair> predictions; //!< Pairs of node-pairs and corresponding scores generated from the LinkPredictor to evaluate
 
-  count numThresholds;
+  std::vector<index> thresholds; //!< Indices for thresholds
 
-  count numPositives;
+  count numPositives; //!< Absolute number of positive instances in the prediction-set
 
-  count numNegatives;
+  count numNegatives; //!< Absolute number of negative instances in the prediction-set
 
-  std::vector<count> truePositives;
+  std::vector<count> truePositives; //!< True positives regarding the corresponding threshold
 
-  std::vector<count> falsePositives;
+  std::vector<count> falsePositives; //!< False positives regarding the corresponding threshold
 
-  std::vector<count> trueNegatives;
+  std::vector<count> trueNegatives; //!< True negatives regarding the corresponding threshold
 
-  std::vector<count> falseNegatives;
+  std::vector<count> falseNegatives; //!< False negatives regarding the corresponding threshold
 
 public:
   explicit EvaluationMetric();
