@@ -124,18 +124,33 @@ TEST_F(LinkPredictionGTest, testEdgeSelectorGetByCountMissingCalcCall) {
   INFO(missingEdges.size());
 }*/
 
-/*TEST_F(LinkPredictionGTest, testPrecisionRecallMetric) {
+TEST_F(LinkPredictionGTest, testPrecisionRecall) {
+  METISGraphReader graphReader;
+  Graph newG = graphReader.read("input/jazz.graph");
   RandomEdgePartitioner partitioner(G);
   std::pair<Graph, Graph> graphPartitions = partitioner.partitionByPercentage(0.3);
-  CommonNeighborsIndex cni(graphPartitions.first);
-  std::vector<std::pair<std::pair<node, node>, double>> results = cni.runAll();
 
-  INFO("#Predictions: ", results.size());
+  for (std::pair<node, node> e : graphPartitions.second.edges()) {
+    INFO("Removed edge (", e.first, ", ", e.second, ").");
+  }
 
-  PrecisionRecallMetric pr(graphPartitions.second, results);
+  UnconnectedNodesFinder unf(graphPartitions.first);
+  std::vector<std::pair<node, node>> nodePairs = unf.findAll(2);
+  INFO("nodePairs.size() = ", nodePairs.size());
+
+  CommonNeighborsIndex cn(graphPartitions.first);
+  std::vector<LinkPredictor::node_dyad_score_pair> scores = cn.runOnParallel(nodePairs);
+  for (index i = 0; i < scores.size(); ++i) {
+    INFO("entries[", i, "] = ((", scores[i].first.first, ", ", scores[i].first.second, "), ", scores[i].second, ")");
+  }
+  PrecisionRecallMetric pr(graphPartitions.second, scores);
   pr.generatePoints();
-  EXPECT_NEAR(0.7, pr.areaUnderCurve(), 0.01);
-}*/
+  std::pair<std::vector<double>, std::vector<double>> points = pr.getPoints();
+  INFO("Size = ", points.first.size());
+  for (index i = 0; i < points.first.size(); ++i) {
+    INFO("Point[", i, "] = (", points.first[i], ", ", points.second[i], ").");
+  }
+}
 
 /*TEST_F(LinkPredictionGTest, testUnconnectedNodesFinder) {
   METISGraphReader graphReader;
@@ -151,7 +166,7 @@ TEST_F(LinkPredictionGTest, testEdgeSelectorGetByCountMissingCalcCall) {
 TEST_F(LinkPredictionGTest, testReceiverOperatingCharacteristic) {
   METISGraphReader graphReader;
   Graph newG = graphReader.read("input/PGPgiantcompo.graph");
-  RandomEdgePartitioner partitioner(newG);
+  RandomEdgePartitioner partitioner(G);
   std::pair<Graph, Graph> graphPartitions = partitioner.partitionByPercentage(0.3);
 
   UnconnectedNodesFinder unf(graphPartitions.first);
