@@ -16,7 +16,6 @@ void ROCMetric::generatePointsImpl() {
     double falsePositiveRatio = 1.0 * falsePositives.at(i) / numNegatives;
     if (generatedPoints.first.size() == 0 || generatedPoints.first.back() < falsePositiveRatio) {
       generatedPoints.first.push_back(falsePositiveRatio);
-      //INFO("Calculating: 1.0 * ", truePositives.at(i), " / ", numPositives, ".");
       generatedPoints.second.push_back(1.0 * truePositives.at(i) / numPositives);
     }
   }

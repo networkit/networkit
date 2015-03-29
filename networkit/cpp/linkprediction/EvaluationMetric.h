@@ -34,6 +34,10 @@ private:
 
   void setPositivesAndNegatives();
 
+  void setTrueAndFalsePositives(std::vector<index> thresholdIndices);
+  
+  void setTrueAndFalseNegatives(std::vector<index> thresholdIndices);
+
 protected:
   std::pair<std::vector<double>, std::vector<double>> generatedPoints; //!< The generated points of the curve
 
