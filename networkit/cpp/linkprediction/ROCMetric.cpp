@@ -12,7 +12,7 @@ namespace NetworKit {
 void ROCMetric::generatePointsImpl() {
   generatedPoints.first.clear();
   generatedPoints.second.clear();
-  for (index i = 0; i < truePositives.size(); ++i) {
+  for (index i = 0; i < thresholds.size(); ++i) {
     double falsePositiveRatio = 1.0 * falsePositives.at(i) / numNegatives;
     if (generatedPoints.first.size() == 0 || generatedPoints.first.back() < falsePositiveRatio) {
       generatedPoints.first.push_back(falsePositiveRatio);

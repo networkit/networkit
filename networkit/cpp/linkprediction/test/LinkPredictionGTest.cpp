@@ -126,8 +126,8 @@ TEST_F(LinkPredictionGTest, testEdgeSelectorGetByCountMissingCalcCall) {
 
 TEST_F(LinkPredictionGTest, testPrecisionRecall) {
   METISGraphReader graphReader;
-  Graph newG = graphReader.read("input/jazz.graph");
-  RandomEdgePartitioner partitioner(G);
+  Graph newG = graphReader.read("input/hep-th.graph");
+  RandomEdgePartitioner partitioner(newG);
   std::pair<Graph, Graph> graphPartitions = partitioner.partitionByPercentage(0.3);
 
   for (std::pair<node, node> e : graphPartitions.second.edges()) {
@@ -141,14 +141,15 @@ TEST_F(LinkPredictionGTest, testPrecisionRecall) {
   CommonNeighborsIndex cn(graphPartitions.first);
   std::vector<LinkPredictor::node_dyad_score_pair> scores = cn.runOnParallel(nodePairs);
   for (index i = 0; i < scores.size(); ++i) {
-    INFO("entries[", i, "] = ((", scores[i].first.first, ", ", scores[i].first.second, "), ", scores[i].second, ")");
+    //INFO("entries[", i, "] = ((", scores[i].first.first, ", ", scores[i].first.second, "), ", scores[i].second, ")");
   }
   PrecisionRecallMetric pr(graphPartitions.second, scores);
   pr.generatePoints();
   std::pair<std::vector<double>, std::vector<double>> points = pr.getPoints();
   INFO("Size = ", points.first.size());
+  INFO("Last point = (", points.first.back(), ", ", points.second.back(), ").");
   for (index i = 0; i < points.first.size(); ++i) {
-    INFO("Point[", i, "] = (", points.first[i], ", ", points.second[i], ").");
+    //INFO("Point[", i, "] = (", points.first[i], ", ", points.second[i], ").");
   }
 }
 
