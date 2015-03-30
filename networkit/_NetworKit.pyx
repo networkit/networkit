@@ -226,7 +226,7 @@ cdef class Graph:
 		return Graph().setThis(_Graph(self._this))
 
 	def __str__(self):
-		return "NetworKit.Graph(name={0}, n={2}, m={3})".format(self.getName(), self.numberOfNodes(), self.numberOfEdges())
+		return "NetworKit.Graph(name={0}, n={1}, m={2})".format(self.getName(), self.numberOfNodes(), self.numberOfEdges())
 
 
 	def copyNodes(self):
