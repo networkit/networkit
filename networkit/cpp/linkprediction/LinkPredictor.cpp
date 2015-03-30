@@ -47,6 +47,8 @@ double LinkPredictor::run(node u, node v) {
     throw std::logic_error("Set a graph first.");
   } else if (!G->hasNode(u) || !G->hasNode(v)) {
     throw std::invalid_argument("Invalid node provided.");
+  } else if (G->isDirected()) {
+    throw std::invalid_argument("Only undirected graphs accepted.");
   } else if (u == v) {
     // TODO(kesders): How to handle this situation? Return 0, throw error or let through?
     return 0;
