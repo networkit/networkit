@@ -1,3 +1,4 @@
+
 # cython: language_level=3
 
 #includes
@@ -223,6 +224,10 @@ cdef class Graph:
 		Generates a (deep) copy of the graph
 		"""
 		return Graph().setThis(_Graph(self._this))
+
+	def __str__(self):
+		return "NetworKit.Graph(name={0}, n={2}, m={3})".format(self.getName(), self.numberOfNodes(), self.numberOfEdges())
+
 
 	def copyNodes(self):
 		"""
