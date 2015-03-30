@@ -130,9 +130,9 @@ TEST_F(LinkPredictionGTest, testPrecisionRecall) {
   RandomEdgePartitioner partitioner(newG);
   std::pair<Graph, Graph> graphPartitions = partitioner.partitionByPercentage(0.3);
 
-  for (std::pair<node, node> e : graphPartitions.second.edges()) {
+  /*for (std::pair<node, node> e : graphPartitions.second.edges()) {
     INFO("Removed edge (", e.first, ", ", e.second, ").");
-  }
+  }*/
 
   UnconnectedNodesFinder unf(graphPartitions.first);
   std::vector<std::pair<node, node>> nodePairs = unf.findAll(2);
@@ -140,8 +140,9 @@ TEST_F(LinkPredictionGTest, testPrecisionRecall) {
 
   CommonNeighborsIndex cn(graphPartitions.first);
   std::vector<LinkPredictor::node_dyad_score_pair> scores = cn.runOnParallel(nodePairs);
-  for (index i = 0; i < scores.size(); ++i) {
-    //INFO("entries[", i, "] = ((", scores[i].first.first, ", ", scores[i].first.second, "), ", scores[i].second, ")");
+  LinkPredictor::sortByScore(scores);
+  for (index i = 0; i < 50; ++i) {
+    INFO("entries[", i, "] = ((", scores[i].first.first, ", ", scores[i].first.second, "), ", scores[i].second, ")");
   }
   PrecisionRecallMetric pr(graphPartitions.second, scores);
   pr.generatePoints();

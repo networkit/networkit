@@ -5187,6 +5187,9 @@ cdef extern from "cpp/linkprediction/LinkPredictor.h":
 		vector[pair[pair[node, node], double]] runOnParallel(vector[pair[node, node]] nodePairs) except +
 		void setGraph(const _Graph& newGraph) except +
 
+cdef extern from "cpp/linkprediction/LinkPredictor.h" namespace "NetworKit::LinkPredictor":
+	vector[pair[pair[node, node], double]]& LinkPredictor_sortByScore "NetworKit::LinkPredictor::sortByScore"(vector[pair[pair[node, node], double]]& predictions) except +
+
 cdef class LinkPredictor:
 	cdef _LinkPredictor* _this
 
@@ -5221,6 +5224,13 @@ cdef class LinkPredictor:
 		TODO(kesders)
 		"""
 		return self._this.runOnParallel(nodePairs)
+
+	@staticmethod
+	def sortByScore(vector[pair[pair[node, node], double]] predictions):
+		"""
+		TODO(kesders)
+		"""
+		return LinkPredictor_sortByScore(predictions)
 
 cdef extern from "cpp/linkprediction/KatzIndex.h":
 	cdef cppclass _KatzIndex "NetworKit::KatzIndex"(_LinkPredictor):
