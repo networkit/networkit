@@ -101,7 +101,6 @@ void EvaluationMetric::setTrueAndFalseNegatives() {
   count tmpFalseNegatives = 0;
   trueNegatives.clear();
   falseNegatives.clear();
-  int added = 0;
   std::vector<index>::reverse_iterator thresholdIt = thresholds.rbegin();
   INFO("thresholds.size() = ", thresholds.size());
   INFO("thresholds.front() = ", thresholds.front());

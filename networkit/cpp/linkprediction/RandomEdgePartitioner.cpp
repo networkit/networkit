@@ -29,7 +29,6 @@ std::pair<Graph, Graph> RandomEdgePartitioner::partitionByCount(count numEdges) 
     std::pair<node, node> edgeToRemove = remaining.randomEdge();
     remaining.removeEdge(edgeToRemove.first, edgeToRemove.second);
     removed.addEdge(edgeToRemove.first, edgeToRemove.second);
-    //INFO("Removed edge (", edgeToRemove.first, ", ", edgeToRemove.second, ").");
   }
   return std::make_pair(remaining, removed);
 }

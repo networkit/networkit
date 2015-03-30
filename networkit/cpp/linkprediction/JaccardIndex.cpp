@@ -17,7 +17,11 @@ JaccardIndex::JaccardIndex(const Graph& G) : LinkPredictor(G), commonNeighborsIn
 
 double JaccardIndex::runImpl(node u, node v) {
   commonNeighborsIndex.setGraph(*G);
-  return commonNeighborsIndex.run(u, v) / getNeighborsUnion(u, v).size();
+  count denominator = getNeighborsUnion(u, v).size();
+  if (denominator == 0) {
+    return 0;
+  }
+  return commonNeighborsIndex.run(u, v) / denominator;
 }
 
 std::vector<node> JaccardIndex::getNeighborsUnion(node u, node v) const {

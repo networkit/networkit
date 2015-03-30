@@ -41,7 +41,7 @@ protected:
     bool operator()(const node_dyad_score_pair& a, const node_dyad_score_pair& b) const {
       return (a.second > b.second) || (a.second == b.second && a.first < b.first);
     }
-  } ConcreteNodeDyadScoreComp;
+  } static ConcreteNodeDyadScoreComp;
 
   const Graph* G; //!< Graph to operate on
 
@@ -82,7 +82,6 @@ public:
 
   virtual std::vector<node_dyad_score_pair> runOnParallel(std::vector<std::pair<node, node>> nodePairs);
 
-
   /**
    * Runs the link predictor on all node-pairs which are not connected
    * by a node in the given graph.
@@ -91,6 +90,8 @@ public:
    * on score equality ordered ascendingly by node-pairs.
    */
   virtual std::vector<node_dyad_score_pair> runAll();
+
+  static std::vector<LinkPredictor::node_dyad_score_pair>& sortByScore(std::vector<node_dyad_score_pair>& predictions);
 };
 
 } // namespace NetworKit

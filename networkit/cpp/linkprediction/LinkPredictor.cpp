@@ -10,6 +10,8 @@
 #include "LinkPredictor.h"
 #include "../auxiliary/Log.h"
 
+#include <omp.h>
+
 namespace NetworKit {
 
 LinkPredictor::LinkPredictor() : G(nullptr), validCache(false) {
@@ -28,23 +30,15 @@ std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runOn(std::vecto
   for (index i = 0; i < nodePairs.size(); ++i) {
     predictions.push_back(std::make_pair(nodePairs[i], run(nodePairs[i].first, nodePairs[i].second)));
   }
-  std::sort(predictions.begin(), predictions.end(), ConcreteNodeDyadScoreComp);
   return predictions;
 }
 
 std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runOnParallel(std::vector<std::pair<node, node>> nodePairs) {
-  std::vector<node_dyad_score_pair> predictions;
-  #pragma omp parallel
-  {
-    std::vector<node_dyad_score_pair> predictionsPrivate;
-    #pragma omp for nowait schedule(dynamic, 128)
-    for (index i = 0; i < nodePairs.size(); ++i) {
-      predictionsPrivate.push_back(std::make_pair(nodePairs[i], run(nodePairs[i].first, nodePairs[i].second)));
-    }
-    #pragma omp critical
-    predictions.insert(predictions.end(), predictionsPrivate.begin(), predictionsPrivate.end());
+  std::vector<node_dyad_score_pair> predictions(nodePairs.size());
+  #pragma omp parallel for schedule(guided) shared(predictions)
+  for (index i = 0; i < nodePairs.size(); ++i) {
+    predictions[i] = std::make_pair(nodePairs[i], run(nodePairs[i].first, nodePairs[i].second));
   }
-  std::sort(predictions.begin(), predictions.end(), ConcreteNodeDyadScoreComp);
   return predictions;
 }
 
@@ -63,13 +57,19 @@ double LinkPredictor::run(node u, node v) {
 std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runAll() {
   std::vector<node> nodes = G->nodes();
   std::vector<std::pair<node, node>> nodePairs;
+  // Exclude all node-pairs that are already connected and ensure u != v for all node-pairs (u, v).
   for (index i = 0; i < nodes.size(); ++i) {
     for (index j = i + 1; j < nodes.size(); ++j) {
       if (!G->hasEdge(i, j))
         nodePairs.push_back(std::make_pair(i, j));
     }
   }
-  return runOn(nodePairs);
+  return runOnParallel(nodePairs);
+}
+
+std::vector<LinkPredictor::node_dyad_score_pair>& LinkPredictor::sortByScore(std::vector<LinkPredictor::node_dyad_score_pair>& predictions) {
+  std::sort(predictions.begin(), predictions.end(), ConcreteNodeDyadScoreComp);
+  return predictions;
 }
 
 } // namespace NetworKit
