@@ -3,8 +3,8 @@
 
 namespace NetworKit {
 
-LocalClusteringCoefficient::LocalClusteringCoefficient(const Graph& G, bool normalized, bool computeEdgeCentrality) : Centrality(G, normalized, computeEdgeCentrality) {
-	;
+LocalClusteringCoefficient::LocalClusteringCoefficient(const Graph& G) : Centrality(G, false, false) {
+	if (G.isDirected()) throw std::runtime_error("Not implemented: Local clustering coefficient is currently not implemted for directed graphs");
 }
 
 void LocalClusteringCoefficient::run() {

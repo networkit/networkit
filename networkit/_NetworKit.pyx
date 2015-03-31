@@ -4274,7 +4274,7 @@ cdef class CoreDecomposition:
 
 cdef extern from "cpp/centrality/LocalClusteringCoefficient.h":
 	cdef cppclass _LocalClusteringCoefficient "NetworKit::LocalClusteringCoefficient":
-		_LocalClusteringCoefficient(_Graph, bool, bool) except +
+		_LocalClusteringCoefficient(_Graph) except +
 		void run() except +
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
@@ -4292,17 +4292,13 @@ cdef class LocalClusteringCoefficient:
 	 	----------
 	 	G : Graph
 	 		The graph.
-	 	normalized : bool, optional
-	 		Set this parameter to True if scores should be normalized in the interval [0,1].
-		computeEdgeCentrality: bool, optional
-			Set this to true if edge local clustering coefficient values should be computed as well.
 	"""
 	cdef _LocalClusteringCoefficient* _this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, normalized=False, computeEdgeCentrality=False):
+	def __cinit__(self, Graph G):
 		self._G = G
-		self._this = new _LocalClusteringCoefficient(G._this, normalized, computeEdgeCentrality)
+		self._this = new _LocalClusteringCoefficient(G._this)
 
 	# this is necessary so that the C++ object gets properly garbage collected
 	def __dealloc__(self):
