@@ -555,6 +555,7 @@ public:
 				const double deltaY = positions[i].getY() - queryY;
 				if (deltaX*deltaX + deltaY*deltaY < rsq) {
 					result.push_back(content[i]);
+					if (content[i] >= sanityNodeLimit) DEBUG("Quadnode content ", content[i], " found, suspicously high!");
 					assert(content[i] < sanityNodeLimit);
 				}
 			}

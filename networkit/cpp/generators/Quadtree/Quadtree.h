@@ -207,6 +207,7 @@ public:
 		}
 
 		for (T denizen : circleDenizens) {
+			if (denizen >= size()) DEBUG("Content ", denizen, " found in quadtree of size", size(), ".");
 			assert(denizen < size());//TODO: remove this after debugging, in general the quadtree should handle arbitrary contents
 		}
 	}
