@@ -145,10 +145,12 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 		#pragma omp for schedule(guided) nowait
 		for (index i = 0; i < n; i++) {
 			//get neighbours for node i
-			count expectedDegree = (4/M_PI)*n*exp(-HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[i])/2);
+			count expectedDegree = (4/M_PI)*n*exp(-HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[i])/2);//TODO: adapt for alpha!=1
 			vector<index> near;
 			near.reserve(expectedDegree*1.1);
 			quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance, suppressLeft, near);
+			assert(near.size() <= n);
+			if (near.size() > 2*expectedDegree) DEBUG("Odd. Found more than twice as many edges as expected.");
 			//count realDegree = near.size();
 			//std::swap(expectedDegree, realDegree);//dummy statement for debugging
 			if (directSwap) {
@@ -161,6 +163,7 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 				result.swapNeighborhood(i, near, empty, false);
 			} else {
 				for (index j : near) {
+					if (j >= n) ERROR("Node ", j, " prospective neighbour of ", i, " does not actually exist. Oops.");
 					if (j > i) result.addEdge(i,j);
 				}
 			}
@@ -205,6 +208,7 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 		vector<index> near;
 		totalCandidates += quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), edgeProb, anglesSorted, near);
 		for (index j : near) {
+			if (j >= n) ERROR("Node ", j, " prospective neighbour of ", i, " does not actually exist. Oops.");
 			if (j > i) result.addEdge(i, j);
 		}
 
