@@ -123,7 +123,7 @@ void GraphBuilder::toGraphParallel(Graph &G) {
 	// basic idea of the parallelization:
 	// 1) each threads collects its own data
 	// 2) each node collects all its data from all threads
-
+	TRACE("Called toGraphParallel");
 	int maxThreads = omp_get_max_threads();
 
 	using adjacencylists = std::vector< std::vector<node> >;
@@ -132,12 +132,14 @@ void GraphBuilder::toGraphParallel(Graph &G) {
 	std::vector<adjacencylists> inEdgesPerThread(maxThreads, adjacencylists(n));
 	std::vector<weightlists> inWeightsPerThread(weighted ? maxThreads : 0, weightlists(n));
 	std::vector<count> numberOfSelfLoopsPerThread(maxThreads, 0);
-
+	TRACE("Allocated vectors for ", maxThreads, " threads.");
 	// step 1
 	parallelForNodes([&](node v) {
 		int tid = omp_get_thread_num();
+		assert(tid < maxThreads);
 		for (index i = 0; i < halfEdges[v].size(); i++) {
 			node u = halfEdges[v][i];
+			assert(u < n);
 			if (directed || u != v) { // self loops don't need to be added twice in undirected graphs
 				inEdgesPerThread[tid][u].push_back(v);
 				if (weighted) {
@@ -150,6 +152,7 @@ void GraphBuilder::toGraphParallel(Graph &G) {
 		}
 	});
 
+	TRACE("First step complete");
 	// we have already half of the edges
 	G.outEdges.swap(halfEdges);
 	G.outEdgeWeights.swap(halfEdgeWeights);
@@ -162,6 +165,8 @@ void GraphBuilder::toGraphParallel(Graph &G) {
 			inDeg += inEdgesPerThread[tid][v].size();
 		}
 
+		assert(inDeg <= n);
+		assert(outDeg <= n);
 		// allocate enough memory for all edges/weights
 		if (directed) {
 			G.inEdges[v].reserve(inDeg);
@@ -182,16 +187,21 @@ void GraphBuilder::toGraphParallel(Graph &G) {
 			for (int tid = 0; tid < maxThreads; tid++) {
 				copyAndClear(inEdgesPerThread[tid][v], G.inEdges[v]);
 			}
+			assert(G.inDeg[v] == G.inEdges[v].size());
 			if (weighted) {
 				for (int tid = 0; tid < maxThreads; tid++) {
 					copyAndClear(inWeightsPerThread[tid][v], G.inEdgeWeights[v]);
-				}	
+				}
+				assert(G.inDeg[v] == G.inEdgeWeights[v].size());
 			}
+
 		} else {
 			G.outDeg[v] = inDeg + outDeg;
+			assert(G.outDeg[v] <= n);
 			for (int tid = 0; tid < maxThreads; tid++) {
 				copyAndClear(inEdgesPerThread[tid][v], G.outEdges[v]);
 			}
+			assert(G.outDeg[v] == G.outEdges[v].size());
 			if (weighted) {
 				for (int tid = 0; tid < maxThreads; tid++) {
 					copyAndClear(inWeightsPerThread[tid][v], G.outEdgeWeights[v]);
@@ -200,12 +210,16 @@ void GraphBuilder::toGraphParallel(Graph &G) {
 		}
 	});
 
+	TRACE("Second step complete.");
+
 	// calculate correct m
 	count numberOfSelfLoops = 0;
 	for (auto c : numberOfSelfLoopsPerThread) {
 		numberOfSelfLoops += c;
 	}
 	correctNumberOfEdges(G, numberOfSelfLoops);
+
+	TRACE("Graph Builder complete");
 
 	// bring the builder into an empty, but valid state
 	reset();
