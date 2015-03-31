@@ -150,7 +150,7 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 			near.reserve(expectedDegree*1.1);
 			quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance, suppressLeft, near);
 			assert(near.size() <= n);
-			if (near.size() > 2*expectedDegree) DEBUG("Odd. Found more than twice as many edges as expected.");
+			if (near.size() > 20*expectedDegree) DEBUG("Found ", near.size() , " neighbours while expecting ", expectedDegree, ".");
 			//count realDegree = near.size();
 			//std::swap(expectedDegree, realDegree);//dummy statement for debugging
 			if (directSwap) {
