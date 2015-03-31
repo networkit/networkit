@@ -22,10 +22,8 @@ public:
 	 * then set @a normalized to <code>true</code>.
 	 *
 	 * @param G The graph.
-	 * @param normalized Set this parameter to <code>true</code> if scores should be normalized in the interval [0,1].
-	 * @param computeEdgeCentrality Set this parameter to <code>true</code> if edge betweenness should be computed as well.
 	 */
-	LocalClusteringCoefficient(const Graph& G, bool normalized=false, bool computeEdgeCentrality=false);
+	LocalClusteringCoefficient(const Graph& G);
 
 
 

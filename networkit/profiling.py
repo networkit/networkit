@@ -111,6 +111,10 @@ def computeNodeProperties(G):
 	return nodeProperties
 
 
+def computeNodePropertyCorrelations(nodeProperties, method="spearman"):
+	return nodeProperties.corr(method=method)
+
+
 def plotNodePropertyCorrelations(nodeProperties, figsize=(8,8), method="spearman"):
     cmap = seaborn.diverging_palette(220, 20, as_cmap=True)
     f, ax = plt.subplots(figsize=figsize)
