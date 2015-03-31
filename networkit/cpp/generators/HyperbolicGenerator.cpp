@@ -172,7 +172,9 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 				}
 			}
 		}
+		TRACE("Thread ", id, " finished.");
 		threadtimers[id].stop();
+		TRACE("Took ", threadtimers[id].elapsedMilliseconds(), " milliseconds.");
 	}
 
 	timer.stop();
