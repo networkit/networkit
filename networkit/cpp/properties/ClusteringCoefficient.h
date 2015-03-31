@@ -18,9 +18,6 @@ namespace NetworKit {
 class ClusteringCoefficient {
 
 public:
-
-	static std::vector<double> exactLocal(Graph &G);
-	
 	/**
 	 * This calculates the average local clustering coefficient of graph @a G.
 	 *
