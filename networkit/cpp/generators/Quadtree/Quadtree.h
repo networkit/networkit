@@ -156,6 +156,7 @@ public:
 	}
 
 	void getElementsInHyperbolicCircle(const Point2D<double> circleCenter, const double hyperbolicRadius, const bool suppressLeft, vector<T> &circleDenizens) const {
+		assert(circleDenizens.empty());
 		double cc_phi, cc_r;
 		HyperbolicSpace::cartesianToPolar(circleCenter, cc_phi, cc_r);
 		//Transform hyperbolic circle into Euclidean circle
@@ -203,6 +204,10 @@ public:
 			std::sort(circleDenizens.begin(), circleDenizens.end());
 			auto newend = unique(circleDenizens.begin(), circleDenizens.end());
 			circleDenizens.resize(newend - circleDenizens.begin());
+		}
+
+		for (T denizen : circleDenizens) {
+			assert(denizen < size());//TODO: remove this after debugging, in general the quadtree should handle arbitrary contents
 		}
 	}
 

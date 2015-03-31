@@ -33,6 +33,7 @@ private:
 	Point2D<double> a,b,c,d;
 	unsigned capacity;
 	static const unsigned coarsenLimit = 4;
+	static const long unsigned sanityNodeLimit = 10E15; //just assuming, for debug purposes, that this algorithm never runs on machines with more than 4 Petabyte RAM
 	double minRegion;//the minimal region a QuadNode should cover. If it is smaller, don't bother splitting up.
 	count subTreeSize;
 	std::vector<T> content;
@@ -142,6 +143,7 @@ public:
 	 * @param R radial coordinate of point, between 0 and 1.
 	 */
 	void addContent(T input, double angle, double R) {
+		assert(input < sanityNodeLimit);
 		assert(this->responsible(angle, R));
 		if (lowerBoundR > R) lowerBoundR = R;
 		if (isLeaf) {
@@ -553,6 +555,7 @@ public:
 				const double deltaY = positions[i].getY() - queryY;
 				if (deltaX*deltaX + deltaY*deltaY < rsq) {
 					result.push_back(content[i]);
+					assert(content[i] < sanityNodeLimit);
 				}
 			}
 		}	else {
