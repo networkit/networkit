@@ -4025,7 +4025,6 @@ cdef class StronglyConnectedComponents:
 
 
 cdef extern from "cpp/properties/ClusteringCoefficient.h" namespace "NetworKit::ClusteringCoefficient":
-		vector[double] exactLocal(_Graph G) except +
 		double avgLocal(_Graph G) except +
 		double sequentialAvgLocal(_Graph G) except +
 		double approxAvgLocal(_Graph G, count trials) except +
@@ -4033,10 +4032,6 @@ cdef extern from "cpp/properties/ClusteringCoefficient.h" namespace "NetworKit::
 		double approxGlobal(_Graph G, count trials) except +
 
 cdef class ClusteringCoefficient:
-	@staticmethod
-	def exactLocal(Graph G):
-		return exactLocal(G._this)
-
 	@staticmethod
 	def avgLocal(Graph G):
 		"""  This calculates the average local clustering coefficient of graph `G`.
@@ -4276,6 +4271,94 @@ cdef class CoreDecomposition:
 			The k-shells as sets of nodes, indexed by k.
 		"""
 		return self._this.shells()
+
+cdef extern from "cpp/centrality/LocalClusteringCoefficient.h":
+	cdef cppclass _LocalClusteringCoefficient "NetworKit::LocalClusteringCoefficient":
+		_LocalClusteringCoefficient(_Graph, bool, bool) except +
+		void run() except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+		vector[double] edgeScores() except +
+
+cdef class LocalClusteringCoefficient:
+	"""
+		LocalClusteringCoefficient(G, normalized=False, computeEdgeCentrality=False)
+
+		Constructs the LocalClusteringCoefficient class for the given Graph `G`. If the local clustering coefficient values should be normalized,
+  		then set `normalized` to True.
+
+	 	Parameters
+	 	----------
+	 	G : Graph
+	 		The graph.
+	 	normalized : bool, optional
+	 		Set this parameter to True if scores should be normalized in the interval [0,1].
+		computeEdgeCentrality: bool, optional
+			Set this to true if edge local clustering coefficient values should be computed as well.
+	"""
+	cdef _LocalClusteringCoefficient* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, normalized=False, computeEdgeCentrality=False):
+		self._G = G
+		self._this = new _LocalClusteringCoefficient(G._this, normalized, computeEdgeCentrality)
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		"""  Compute LocalClusteringCoefficient.
+		"""
+		self._this.run()
+		return self
+
+	def scores(self):
+		""" Get a vector containing the local clustering coefficient value for each node in the graph.
+
+		Returns
+		-------
+		vector
+			The local clustering coefficient values calculated by run().
+		"""
+		return self._this.scores()
+
+	def score(self, v):
+		""" Get the local clustering coefficient value of node `v` calculated by run().
+
+		Parameters
+		----------
+		v : node
+			A node.
+
+		Returns
+		-------
+		double
+			The local clustering coefficient value of node `v`.
+		"""
+		return self._this.score(v)
+
+	def ranking(self):
+		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
+		calculated by run().
+
+		Returns
+		-------
+		vector
+			A vector of pairs.
+		"""
+		return self._this.ranking()
+
+	def edgeScores(self):
+		""" Get a vector containing the local clustering coefficient values for each edge in the graph.
+
+		Returns
+		-------
+		vector
+			The local clustering coefficient values calculated by run().
+		"""
+		return self._this.edgeScores()
 
 
 cdef extern from "cpp/properties/EffectiveDiameter.h" namespace "NetworKit::EffectiveDiameter":
