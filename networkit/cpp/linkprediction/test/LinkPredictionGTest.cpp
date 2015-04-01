@@ -12,12 +12,13 @@
 #include "../KatzIndex.h"
 #include "../CommonNeighborsIndex.h"
 #include "../JaccardIndex.h"
-#include "../EdgeSelector.h"
 #include "../ROCMetric.h"
 #include "../PrecisionRecallMetric.h"
-#include "../RandomEdgePartitioner.h"
+#include "../TrainingGraphGenerator.h"
 #include "../KFoldCrossValidator.h"
 #include "../UnconnectedNodesFinder.h"
+#include "../UDegreeIndex.h"
+#include "../VDegreeIndex.h"
 
 namespace NetworKit {
 
@@ -37,51 +38,31 @@ void LinkPredictionGTest::SetUp() {
   G.addEdge(4, 5);
 }
 
-TEST_F(LinkPredictionGTest, testRandomEdgeRemoval) {
-  RandomEdgePartitioner partitioner(G);
-  std::pair<Graph, Graph> graphPartitions = partitioner.partitionByPercentage(0.3);
-
-  EXPECT_EQ(7, graphPartitions.first.numberOfEdges());
-  EXPECT_EQ(3, graphPartitions.second.numberOfEdges());
+TEST_F(LinkPredictionGTest, testTrainingGraphGenerator) {
+  Graph trainingGraph = TrainingGraphGenerator::byPercentage(G, 0.7);
+  EXPECT_EQ(7, trainingGraph.numberOfEdges());
 }
 
-TEST_F(LinkPredictionGTest, testEdgeSelectorGetByCount) {
-  LinkPredictor* predictor = new KatzIndex(G, 2, 1);
-  EdgeSelector selector(G, predictor);
-  selector.calculateScores();
-  std::vector<std::pair<std::pair<node, node>, double>> edges = selector.getByCount(6);
-  // Expects that the edges are ordered descendingly by scores and that on equality the edge-pairs
-  // are ordered ascendingly [(0,1) < (0,2) and (1, 2) < (1, 0)].
-  EXPECT_EQ(1, edges[0].first.first); EXPECT_EQ(3, edges[0].first.second); EXPECT_EQ(3, edges[0].second);
-  EXPECT_EQ(0, edges[1].first.first); EXPECT_EQ(2, edges[1].first.second); EXPECT_EQ(2, edges[1].second);
-  EXPECT_EQ(0, edges[2].first.first); EXPECT_EQ(4, edges[2].first.second); EXPECT_EQ(2, edges[2].second);
-  EXPECT_EQ(1, edges[3].first.first); EXPECT_EQ(5, edges[3].first.second); EXPECT_EQ(2, edges[3].second);
-  EXPECT_EQ(0, edges[4].first.first); EXPECT_EQ(5, edges[4].first.second); EXPECT_EQ(1, edges[4].second);
-  EXPECT_EQ(0, edges[5].first.first); EXPECT_EQ(6, edges[5].first.second); EXPECT_EQ(0, edges[5].second);
-  delete predictor;
+TEST_F(LinkPredictionGTest, testUDegreeIndexRun) {
+  UDegreeIndex uDegreeIndex(G);
+  EXPECT_EQ(2, uDegreeIndex.run(0, 3));
+  EXPECT_EQ(3, uDegreeIndex.run(1, 0));
+  EXPECT_EQ(4, uDegreeIndex.run(2, 3));
+  EXPECT_EQ(4, uDegreeIndex.run(3, 4));
+  EXPECT_EQ(4, uDegreeIndex.run(4, 5));
+  EXPECT_EQ(3, uDegreeIndex.run(5, 4));
 }
 
-TEST_F(LinkPredictionGTest, testEdgeSelectorGetByCountArgumentException) {
-  LinkPredictor* predictor = new KatzIndex(G, 2, 1);
-  EdgeSelector selector(G, predictor, 5);
-  selector.calculateScores();
-  EXPECT_THROW(selector.getByCount(6), std::invalid_argument);
-  delete predictor;
+TEST_F(LinkPredictionGTest, testVDegreeIndexRun) {
+  VDegreeIndex vDegreeIndex(G);
+  EXPECT_EQ(2, vDegreeIndex.run(3, 0));
+  EXPECT_EQ(3, vDegreeIndex.run(0, 1));
+  EXPECT_EQ(4, vDegreeIndex.run(3, 2));
+  EXPECT_EQ(4, vDegreeIndex.run(4, 3));
+  EXPECT_EQ(4, vDegreeIndex.run(5, 4));
+  EXPECT_EQ(3, vDegreeIndex.run(4, 5));
 }
 
-TEST_F(LinkPredictionGTest, testEdgeSelectorGetAllMissingCalcCall) {
-  LinkPredictor* predictor = new KatzIndex(G, 2, 1);
-  EdgeSelector selector(G, predictor, 5);
-  EXPECT_THROW(selector.getAll(), std::logic_error);
-  delete predictor;
-}
-
-TEST_F(LinkPredictionGTest, testEdgeSelectorGetByCountMissingCalcCall) {
-  LinkPredictor* predictor = new KatzIndex(G, 2, 1);
-  EdgeSelector selector(G, predictor);
-  EXPECT_THROW(selector.getByCount(1), std::logic_error);
-  delete predictor;
-}
 
 /*TEST_F(LinkPredictionGTest, testCommonNeighborsRunOn) {
   METISGraphReader graphReader;
@@ -124,15 +105,15 @@ TEST_F(LinkPredictionGTest, testEdgeSelectorGetByCountMissingCalcCall) {
   INFO(missingEdges.size());
 }*/
 
-TEST_F(LinkPredictionGTest, testPrecisionRecall) {
+/*TEST_F(LinkPredictionGTest, testPrecisionRecall) {
   METISGraphReader graphReader;
   Graph newG = graphReader.read("input/hep-th.graph");
   RandomEdgePartitioner partitioner(newG);
   std::pair<Graph, Graph> graphPartitions = partitioner.partitionByPercentage(0.3);
 
-  /*for (std::pair<node, node> e : graphPartitions.second.edges()) {
+  for (std::pair<node, node> e : graphPartitions.second.edges()) {
     INFO("Removed edge (", e.first, ", ", e.second, ").");
-  }*/
+  }
 
   UnconnectedNodesFinder unf(graphPartitions.first);
   std::vector<std::pair<node, node>> nodePairs = unf.findAll(2);
@@ -152,7 +133,7 @@ TEST_F(LinkPredictionGTest, testPrecisionRecall) {
   for (index i = 0; i < points.first.size(); ++i) {
     //INFO("Point[", i, "] = (", points.first[i], ", ", points.second[i], ").");
   }
-}
+}*/
 
 /*TEST_F(LinkPredictionGTest, testUnconnectedNodesFinder) {
   METISGraphReader graphReader;
@@ -165,7 +146,7 @@ TEST_F(LinkPredictionGTest, testPrecisionRecall) {
   //}
 }*/
 
-TEST_F(LinkPredictionGTest, testReceiverOperatingCharacteristic) {
+/*TEST_F(LinkPredictionGTest, testReceiverOperatingCharacteristic) {
   METISGraphReader graphReader;
   Graph newG = graphReader.read("input/PGPgiantcompo.graph");
   RandomEdgePartitioner partitioner(G);
@@ -177,17 +158,17 @@ TEST_F(LinkPredictionGTest, testReceiverOperatingCharacteristic) {
 
   KatzIndex katz(graphPartitions.first, 2, 1);
   std::vector<LinkPredictor::node_dyad_score_pair> scores = katz.runOnParallel(nodePairs);
-  /*for (index i = 0; i < scores.size(); ++i) {
+  for (index i = 0; i < scores.size(); ++i) {
     INFO("entries[", i, "] = ((", scores[i].first.first, ", ", scores[i].first.second, "), ", scores[i].second, ")");
-  }*/
+  }
   ROCMetric roc(graphPartitions.second, scores);
   roc.generatePoints();
   std::pair<std::vector<double>, std::vector<double>> points = roc.getPoints();
   INFO("Size = ", points.first.size());
-  /*for (index i = 0; i < points.first.size(); ++i) {
+  for (index i = 0; i < points.first.size(); ++i) {
     INFO("Point[", i, "] = (", points.first[i], ", ", points.second[i], ").");
-  }*/
-}
+  }
+}*/
 
 
 /*

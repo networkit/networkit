@@ -5354,6 +5354,48 @@ cdef class AdamicAdarIndex(LinkPredictor):
 			del self._this
 			self._this = NULL
 
+cdef extern from "cpp/linkprediction/UDegreeIndex.h":
+	cdef cppclass _UDegreeIndex "NetworKit::UDegreeIndex"(_LinkPredictor):
+		_UDegreeIndex() except +
+		_UDegreeIndex(const _Graph& G) except +
+
+cdef class UDegreeIndex(LinkPredictor):
+	"""
+	TODO(kesders)
+  """
+
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _UDegreeIndex()
+		else:
+			self._this = new _UDegreeIndex(G._this)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+cdef extern from "cpp/linkprediction/VDegreeIndex.h":
+	cdef cppclass _VDegreeIndex "NetworKit::VDegreeIndex"(_LinkPredictor):
+		_VDegreeIndex() except +
+		_VDegreeIndex(const _Graph& G) except +
+
+cdef class VDegreeIndex(LinkPredictor):
+	"""
+	TODO(kesders)
+  """
+
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _VDegreeIndex()
+		else:
+			self._this = new _VDegreeIndex(G._this)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
 cdef extern from "cpp/linkprediction/TrainingGraphGenerator.h" namespace "NetworKit::TrainingGraphGenerator":
 	_Graph byPercentage(_Graph G, double trainPercentage) except +
 	_Graph byCount(_Graph G, count numTrainEdges) except +
