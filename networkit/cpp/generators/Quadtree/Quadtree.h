@@ -200,7 +200,9 @@ public:
 		}
 
 		for (T denizen : circleDenizens) {
-			if (denizen >= size()) DEBUG("Content ", denizen, " found in quadtree of size", size(), ".");
+			if (denizen >= size()) {
+				DEBUG("Content ", denizen, " found in quadtree of size ", size(), ", as one of ", circleDenizens.size(), " neighbours.");
+			}
 			assert(denizen < size());//TODO: remove this after debugging, in general the quadtree should handle arbitrary contents
 		}
 
@@ -208,12 +210,16 @@ public:
 		if (wraparound) {
 			std::sort(circleDenizens.begin(), circleDenizens.end());
 			auto newend = unique(circleDenizens.begin(), circleDenizens.end());
-			if (newend != circleDenizens.end()) DEBUG("Removing duplicate entries.");
-			circleDenizens.resize(newend - circleDenizens.begin());
+			count toRemove = circleDenizens.end() - newend;
+			count remaining = newend - circleDenizens.begin();
+			if (toRemove > 0) {
+				DEBUG("Removing, ", toRemove, " duplicate entries, keeping ", remaining);
+				circleDenizens.resize(remaining);
+			}
 		}
 
 		for (T denizen : circleDenizens) {
-			if (denizen >= size()) DEBUG("Content ", denizen, " found in quadtree of size", size(), ", after sorting.");
+			if (denizen >= size()) DEBUG("Content ", denizen, " found in quadtree of size ", size(), ", as one of ", circleDenizens.size(), " neighbours, after sorting");
 			assert(denizen < size());//TODO: remove this after debugging, in general the quadtree should handle arbitrary contents
 		}
 	}
@@ -248,6 +254,10 @@ public:
 
 	index getCellID(double phi, double r) const {
 		return root.getCellID(phi, r);
+	}
+
+	double getMaxRadius() const {
+		return maxRadius;
 	}
 
 	void sortPointsInLeaves() {
