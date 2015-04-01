@@ -5354,68 +5354,18 @@ cdef class AdamicAdarIndex(LinkPredictor):
 			del self._this
 			self._this = NULL
 
-cdef extern from "cpp/linkprediction/RandomEdgePartitioner.h":
-	cdef cppclass _RandomEdgePartitioner "NetworKit::RandomEdgePartitioner":
-		_RandomEdgePartitioner(const _Graph& G) except +
-		pair[_Graph, _Graph] partitionByPercentage(double percentage) except +
-		pair[_Graph, _Graph] partitionByCount(count numEdges) except +
+cdef extern from "cpp/linkprediction/TrainingGraphGenerator.h" namespace "NetworKit::TrainingGraphGenerator":
+	_Graph byPercentage(_Graph G, double trainPercentage) except +
+	_Graph byCount(_Graph G, count numTrainEdges) except +
 
-cdef class RandomEdgePartitioner:
-	"""
-	Partitions the set of edges of an given graph into two separate edge-sets
-	that get encapsulated into two corresponding graphs. This is done by randomly
-	removing edges from the given graph until a given percentage of edges have been removed.
+cdef class TrainingGraphGenerator:
+	@staticmethod
+	def byPercentage(Graph G, double trainPercentage):
+		return Graph().setThis(byPercentage(G._this, trainPercentage))
 
-	Parameters
-	----------
-	G : Graph
-		The graph whose edges to partition.
-	"""
-	cdef _RandomEdgePartitioner* _this
-
-	def __cinit__(self, Graph G):
-		self._this = new _RandomEdgePartitioner(G._this)
-
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
-
-	def partitionByPercentage(self, double percentage):
-		"""
-		Randomly removes edges until the given percentage of total edges has been removed.
-		Removed edges will be added to a new graph.
-
-		Parameters
-		----------
-		percentage : double
-			Percentage of edges to remove from the graph.
-
-		Returns
-		-------
-		A pair of new graphs where the first graph is the remaining graph and the
-		second graph consists of all removed edges.
-		"""
-		cdef pair[_Graph, _Graph] result = self._this.partitionByPercentage(percentage)
-		return (Graph().setThis(result.first), Graph().setThis(result.second))
-
-	def partitionByCount(self, count numEdges):
-		"""
-		Randomly removes edges until the given count of total edges has been removed.
-		Removed edges will be added to a new graph.
-
-		Parameters
-		----------
-		numEdges : count
-			Number of edges to remove from the graph
-
-		Returns
-		-------
-		A pair of new graphs where the first graph is the remaining graph and the
-		second graph consists of all removed edges.
-		"""
-		cdef pair[_Graph, _Graph] result = self._this.partitionByCount(numEdges)
-		return (Graph().setThis(result.first), Graph().setThis(result.second))
+	@staticmethod
+	def byCount(Graph G, count numTrainEdges):
+		return Graph().setThis(byCount(G._this, numTrainEdges))
 
 cdef extern from "cpp/linkprediction/EvaluationMetric.h":
 	cdef cppclass _EvaluationMetric "NetworKit::EvaluationMetric":
