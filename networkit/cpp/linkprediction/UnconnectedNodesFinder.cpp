@@ -14,17 +14,6 @@ namespace NetworKit {
 UnconnectedNodesFinder::UnconnectedNodesFinder(const Graph& G) : G(G) {
 }
 
-/*std::vector<std::pair<node, node>> UnconnectedNodesFinder::findAll(count k) {
-  std::vector<std::pair<node, node>> missingLinks;
-  G.forNodes([&](node u) {
-    std::vector<std::pair<node, node>> missingAtU = findFromNode(u, k);
-    missingLinks.insert(missingLinks.end(), missingAtU.begin(), missingAtU.end());
-  });
-  missingLinks.erase(std::remove_if(std::begin(missingLinks), std::end(missingLinks),
-          [&](std::pair<node, node> p) { return p.first > p.second; }), std::end(missingLinks));
-  return missingLinks;
-}*/
-
 std::vector<std::pair<node, node>> UnconnectedNodesFinder::findAll(count k) {
   std::vector<std::pair<node, node>> missingLinks;
   std::vector<node> nodes = G.nodes();
@@ -34,7 +23,7 @@ std::vector<std::pair<node, node>> UnconnectedNodesFinder::findAll(count k) {
     #pragma omp for nowait
     for (index i = 0; i < nodes.size(); ++i) {
       std::vector<std::pair<node, node>> missingAtU = findFromNode(nodes[i], k);
-      // Discard all node-pairs of the form u > v. This removes all duplicates that result from undirected edges
+      // Discard all node-pairs of the form u > v. This removes all duplicates that result from undirected edges.
       missingAtU.erase(std::remove_if(std::begin(missingAtU), std::end(missingAtU),
           [&](std::pair<node, node> p) { return p.first > p.second; }), std::end(missingAtU));
       missingLinksPrivate.insert(missingLinksPrivate.end(), missingAtU.begin(), missingAtU.end());
