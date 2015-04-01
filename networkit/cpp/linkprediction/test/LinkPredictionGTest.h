@@ -21,6 +21,8 @@ class LinkPredictionGTest : public testing::Test {
 protected:
   Graph G;
 
+  Graph trainingGraph;
+
 public:
   LinkPredictionGTest();
 

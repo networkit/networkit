@@ -36,6 +36,12 @@ void LinkPredictionGTest::SetUp() {
   G.addEdge(3, 4);
   G.addEdge(3, 5);
   G.addEdge(4, 5);
+
+  trainingGraph = G;
+
+  trainingGraph.removeEdge(0, 1);
+  trainingGraph.removeEdge(2, 4);
+  trainingGraph.removeEdge(3, 5);
 }
 
 TEST_F(LinkPredictionGTest, testTrainingGraphGenerator) {
@@ -61,6 +67,23 @@ TEST_F(LinkPredictionGTest, testVDegreeIndexRun) {
   EXPECT_EQ(4, vDegreeIndex.run(4, 3));
   EXPECT_EQ(4, vDegreeIndex.run(5, 4));
   EXPECT_EQ(3, vDegreeIndex.run(4, 5));
+}
+
+TEST_F(LinkPredictionGTest, testROCMetric) {
+  ROCMetric roc(G);
+  CommonNeighborsIndex cn(trainingGraph);
+  UnconnectedNodesFinder unf(trainingGraph);
+  std::vector<std::pair<node, node>> twoHopMissing = unf.findAll(2);
+  std::vector<LinkPredictor::node_dyad_score_pair> predictions = cn.runOnParallel(twoHopMissing);
+  std::pair<std::vector<double>, std::vector<double>> curve = roc.getCurve(predictions);
+  double auc = roc.getAreaUnderCurve();
+
+  EXPECT_EQ(auc, 0.625);
+  EXPECT_EQ(curve.first[0], 0); EXPECT_EQ(curve.second[0], 0);
+  EXPECT_EQ(curve.first[1], 0.25); EXPECT_EQ(curve.second[1], 0.5);
+  EXPECT_EQ(curve.first[2], 0.5); EXPECT_EQ(curve.second[2], 0.5);
+  EXPECT_EQ(curve.first[3], 0.75); EXPECT_EQ(curve.second[3], 1);
+  EXPECT_EQ(curve.first[4], 1); EXPECT_EQ(curve.second[4], 1);
 }
 
 

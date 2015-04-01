@@ -9,9 +9,10 @@
 
 namespace NetworKit {
 
-void PrecisionRecallMetric::generatePointsImpl() {
-  generatedPoints.first.clear();
-  generatedPoints.second.clear();
+std::pair<std::vector<double>, std::vector<double>> PrecisionRecallMetric::generatePoints() {
+  std::pair<std::vector<double>, std::vector<double>> points;
+  points.first.reserve(thresholds.size());
+  points.second.reserve(thresholds.size());
   for (index i = 0; i < thresholds.size(); ++i) {
     double recall = 1;
     double precision = 1;
@@ -27,15 +28,12 @@ void PrecisionRecallMetric::generatePointsImpl() {
     } else {
       //INFO("Precision = 1");
     }
-    if (generatedPoints.first.size() == 0 || generatedPoints.first.back() < recall) {
-      generatedPoints.first.push_back(recall);
-      generatedPoints.second.push_back(precision);
+    if (points.first.size() == 0 || points.first.back() < recall) {
+      points.first.push_back(recall);
+      points.second.push_back(precision);
     }
   }
-  INFO("thresholds.size() = ", thresholds.size());
-  INFO("truePositives.size() = ", truePositives.size());
-  INFO("falseNegatives.size() = ", falseNegatives.size());
-  INFO("falsePositives.size() = ", falsePositives.size());
+  return points;
 }
 
 } // namespace NetworKit

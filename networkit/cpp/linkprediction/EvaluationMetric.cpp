@@ -20,43 +20,51 @@ void EvaluationMetric::setTestGraph(const Graph& newTestGraph) {
   testGraph = &newTestGraph;
 }
 
-void EvaluationMetric::setPredictions(std::vector<LinkPredictor::node_dyad_score_pair> newPredictions) {
-  predictions = newPredictions;
-}
-
-std::pair<std::vector<double>, std::vector<double>> EvaluationMetric::getPoints() const {
-  return generatedPoints;
-}
-
-void EvaluationMetric::generatePoints(count numThresholds) {
+std::pair<std::vector<double>, std::vector<double>> EvaluationMetric::getCurve(std::vector<LinkPredictor::node_dyad_score_pair> predictions, count numThresholds) {
   if (testGraph == nullptr) {
     throw std::logic_error("Set testGraph first.");
   } else if (predictions.size() == 0) {
-    throw std::logic_error("Set predictions first.");
+    throw std::logic_error("predictions.size() == 0");
+  } else if (numThresholds < 2) {
+    throw std::invalid_argument("numThresholds < 2: At least 2 thresholds needed for curve.");
   }
-  // Don't overshoot with the number of thresholds.
-  if (predictions.size() < numThresholds || numThresholds == 0) {
+  // Don't overshoot with the number of thresholds being greater than the number of predictions + 1.
+  if (predictions.size() + 1 < numThresholds || numThresholds == 0) {
     numThresholds = predictions.size() + 1;
   }
   thresholds.clear();
   thresholds.reserve(numThresholds);
+  count numPredictions = predictions.size();
   for (index i = 0; i < numThresholds; ++i) {
     // Percentile calculation through nearest rank method.
-    thresholds.push_back(std::ceil(predictions.size() * (1.0 * i / (numThresholds - 1))));
+    thresholds.push_back(std::ceil(numPredictions * (1.0 * i / (numThresholds - 1))));
   }
   LinkPredictor::sortByScore(predictions);
+  this->predictions = predictions;
   calculateStatisticalMeasures();
-  generatePointsImpl();
+  generatedPoints = generatePoints();
+  return generatedPoints;
 }
 
-double EvaluationMetric::areaUnderCurve() const {
-  double sum = 0;
-  for (index i = 0; i < generatedPoints.first.size() - 1; ++i) {
-    // Trapezoid rule
-    sum += 0.5 * (generatedPoints.first[i + 1] - generatedPoints.first[i])
-           * (generatedPoints.second[i] + generatedPoints.second[i + 1]);
+double EvaluationMetric::getAreaUnderCurve(std::pair<std::vector<double>, std::vector<double>> curve) const {
+  if (curve.first.size() < 2) {
+    throw std::invalid_argument("At least 2 points needed for AUC.");
+  } else if (curve.first.size() != curve.second.size()) {
+    throw std::invalid_argument("X- and Y-vector differ in size().");
   }
-  return sum;
+  double AUC = 0;
+  for (index i = 0; i < curve.first.size() - 1; ++i) {
+    // Trapezoid rule
+    AUC += 0.5 * (curve.first[i + 1] - curve.first[i]) * (curve.second[i] + curve.second[i + 1]);
+  }
+  return AUC;
+}
+
+double EvaluationMetric::getAreaUnderCurve() const {
+  if (generatedPoints.first.size() == 0) {
+    throw std::logic_error("Call getCurve first or use getAreaUnderCurve(curve).");
+  }
+  return getAreaUnderCurve(generatedPoints);
 }
 
 void EvaluationMetric::calculateStatisticalMeasures() {
@@ -103,9 +111,6 @@ void EvaluationMetric::setTrueAndFalseNegatives() {
   trueNegatives.clear();
   falseNegatives.clear();
   std::vector<index>::reverse_iterator thresholdIt = thresholds.rbegin();
-  INFO("thresholds.size() = ", thresholds.size());
-  INFO("thresholds.front() = ", thresholds.front());
-  INFO("thresholds.back() = ", thresholds.back());
   for (index i = predictions.size(); i > 0; --i) {
     // Check in the beginning to catch threshold = predictions.size().
     if (thresholdIt != thresholds.rend() && i == *thresholdIt) {

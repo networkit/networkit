@@ -19,7 +19,7 @@ namespace NetworKit {
  */
 class PrecisionRecallMetric : public EvaluationMetric {
 private:
-  void generatePointsImpl() override;
+  std::pair<std::vector<double>, std::vector<double>> generatePoints() override;
 
 public:
   using EvaluationMetric::EvaluationMetric;
