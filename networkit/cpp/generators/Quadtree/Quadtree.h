@@ -199,15 +199,21 @@ public:
 			wraparound = true;
 		}
 
+		for (T denizen : circleDenizens) {
+			if (denizen >= size()) DEBUG("Content ", denizen, " found in quadtree of size", size(), ".");
+			assert(denizen < size());//TODO: remove this after debugging, in general the quadtree should handle arbitrary contents
+		}
+
 		//we have sort(deg(v)) here! This is not good, but does not make the asymptotical complexity of O(deg(v) log n) worse.
 		if (wraparound) {
 			std::sort(circleDenizens.begin(), circleDenizens.end());
 			auto newend = unique(circleDenizens.begin(), circleDenizens.end());
+			if (newend != circleDenizens.end()) DEBUG("Removing duplicate entries.");
 			circleDenizens.resize(newend - circleDenizens.begin());
 		}
 
 		for (T denizen : circleDenizens) {
-			if (denizen >= size()) DEBUG("Content ", denizen, " found in quadtree of size", size(), ".");
+			if (denizen >= size()) DEBUG("Content ", denizen, " found in quadtree of size", size(), ", after sorting.");
 			assert(denizen < size());//TODO: remove this after debugging, in general the quadtree should handle arbitrary contents
 		}
 	}
