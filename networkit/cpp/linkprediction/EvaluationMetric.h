@@ -23,10 +23,10 @@ class EvaluationMetric {
 private:
 
   /**
-   * Implementation of the generatePoints-method.
+   * 
    * Doesn't have to check if testGraph or predictions are existent.
    */
-  virtual void generatePointsImpl() = 0;
+  virtual std::pair<std::vector<double>, std::vector<double>> generatePoints() = 0;
 
   void calculateStatisticalMeasures();
 
@@ -75,30 +75,11 @@ public:
 
   void setTestGraph(const Graph& newTestGraph);
 
-  void setPredictions(std::vector<LinkPredictor::node_dyad_score_pair> newPredictions);
+  virtual std::pair<std::vector<double>, std::vector<double>> getCurve(std::vector<LinkPredictor::node_dyad_score_pair> predictions, count numThresholds = 1000);
 
-  /**
-   * Generates the data-points for the EvaluationMetric.
-   *
-   * @param numThresholds Number of thresholds to use.
-   * If the number exceeds the actual number of predictions all the predictions will be used.
-   * If set to 0 the maximal number of thresholds will be used.
-   */
-  void generatePoints(count numThresholds = 1000);
+  virtual double getAreaUnderCurve(std::pair<std::vector<double>, std::vector<double>> curve) const;
 
-  /**
-   * Returns the previously generated data-points for the curve.
-   * @return the previously generated data-points for the curve where the first vector
-   * of the pair contains all x-values and the second vector the corresponding y-values
-   */
-  std::pair<std::vector<double>, std::vector<double>> getPoints() const;
-
-  /**
-   * Calculates the area under the curve for the previously generated data-points.
-   * This is done through the trapezoid rule.
-   * @return the area under the given curve
-   */
-  virtual double areaUnderCurve() const;
+  virtual double getAreaUnderCurve() const;
 
 };
 

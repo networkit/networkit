@@ -5413,12 +5413,10 @@ cdef extern from "cpp/linkprediction/EvaluationMetric.h":
 	cdef cppclass _EvaluationMetric "NetworKit::EvaluationMetric":
 		_EvaluationMetric() except +
 		_EvaluationMetric(const _Graph& testGraph) except +
-		_EvaluationMetric(const _Graph& testGraph, vector[pair[pair[node, node], double]] predictions) except +
-		void generatePoints(count numThresholds) except +
-		pair[vector[double], vector[double]] getPoints() except +
-		double areaUnderCurve() except +
 		void setTestGraph(const _Graph& newTestGraph) except +
-		void setPredictions(vector[pair[pair[node, node], double]] predictions)
+		pair[vector[double], vector[double]] getCurve(vector[pair[pair[node, node], double]] predictions, count numThresholds) except +
+		double getAreaUnderCurve() except +
+		double getAreaUnderCurve(pair[vector[double], vector[double]] curve) except +
 
 cdef class EvaluationMetric:
 	cdef _EvaluationMetric *_this
@@ -5431,37 +5429,31 @@ cdef class EvaluationMetric:
 			del self._this
 			self._this = NULL
 
-	def generatePoints(self, count numThresholds = 1000):
-		"""
-		"""
-		self._this.generatePoints(numThresholds)
-
-	def getPoints(self):
-		"""
-		"""
-		return self._this.getPoints()
-
-	def areaUnderCurve(self):
-		"""
-		"""
-		return self._this.areaUnderCurve()
-
 	def setTestGraph(self, Graph newTestGraph):
 		"""
 		"""
 		self._this.setTestGraph(newTestGraph._this)
 
-	def setPredictions(self, vector[pair[pair[node, node], double]] predictions):
+	def getCurve(self, vector[pair[pair[node, node], double]] predictions, count numThresholds = 1000):
 		"""
 		"""
-		self._this.setPredictions(predictions)
+		return self._this.getCurve(predictions, numThresholds)
+
+	def getAreaUnderCurve(self):
+		"""
+		"""
+		return self._this.getAreaUnderCurve()
+
+	def getAreaUnderCurve(self, pair[vector[double], vector[double]] curve):
+		"""
+		"""
+		return self._this.getAreaUnderCurve(curve)
 
 cdef extern from "cpp/linkprediction/ROCMetric.h":
 	cdef cppclass _ROCMetric "NetworKit::ROCMetric"(_EvaluationMetric):
 		_ROCMetric() except +
 		_ROCMetric(const _Graph& testGraph) except +
-		_ROCMetric(const _Graph& testGraph, vector[pair[pair[node, node], double]] predictions) except +
-		void generatePoints(count numThresholds) except +
+		pair[vector[double], vector[double]] getCurve(vector[pair[pair[node, node], double]] predictions, count numThresholds) except +
 
 cdef class ROCMetric(EvaluationMetric):
 	"""
@@ -5475,64 +5467,42 @@ cdef class ROCMetric(EvaluationMetric):
 	predictions : vector[pair[pair[node, node], double]]
 		Dyad-score-pairs whose prediction quality has to be evaluated
 	"""
-	def __cinit__(self, Graph testGraph = None, vector[pair[pair[node, node], double]] predictions = vector[pair[pair[node, node], double]]()):
-		if testGraph is None and predictions.empty():
+	def __cinit__(self, Graph testGraph = None):
+		if testGraph is None:
 			self._this = new _ROCMetric()
-		elif (testGraph is not None) and predictions.empty():
-			self._this = new _ROCMetric(testGraph._this)
 		else:
-			self._this = new _ROCMetric(testGraph._this, predictions)
+			self._this = new _ROCMetric(testGraph._this)
 
 	def __dealloc__(self):
 		if self._this is not NULL:
 			del self._this
 			self._this = NULL
 
-	def generatePoints(self, count numThresholds = 1000):
-		"""
-		Generates a vector of points that belong to the Receiver Operating Characteristic of the given
-		dyad-score-pairs and the graph to check against.
-
-		Parameters
-		----------
-		testGraph : Graph
-			The graph whose edges are used to test the given dyad-score-pairs against
-		data : vector[pair[pair[node, node], double]]
-			Dyad-score-pairs to test.
-
-		Returns
-		-------
-		A vector of points belonging to the ROC.
-		"""
-		self._this.generatePoints(numThresholds)
+	def getCurve(self, vector[pair[pair[node, node], double]] predictions, count numThresholds = 1000):
+		return self._this.getCurve(predictions, numThresholds)
 
 cdef extern from "cpp/linkprediction/PrecisionRecallMetric.h":
 	cdef cppclass _PrecisionRecallMetric "NetworKit::PrecisionRecallMetric"(_EvaluationMetric):
 		_PrecisionRecallMetric() except +
 		_PrecisionRecallMetric(const _Graph& testGraph) except +
-		_PrecisionRecallMetric(const _Graph& testGraph, vector[pair[pair[node, node], double]] predictions) except +
-		void generatePoints(count numThresholds) except +
+		pair[vector[double], vector[double]] getCurve(vector[pair[pair[node, node], double]] predictions, count numThresholds) except +
 
 cdef class PrecisionRecallMetric(EvaluationMetric):
 	"""
 	"""
-	def __cinit__(self, Graph testGraph = None, vector[pair[pair[node, node], double]] predictions = vector[pair[pair[node, node], double]]()):
-		if testGraph is None and predictions.empty():
+	def __cinit__(self, Graph testGraph = None):
+		if testGraph is None:
 			self._this = new _PrecisionRecallMetric()
-		elif (testGraph is not None) and predictions.empty():
-			self._this = new _PrecisionRecallMetric(testGraph._this)
 		else:
-			self._this = new _PrecisionRecallMetric(testGraph._this, predictions)
+			self._this = new _PrecisionRecallMetric(testGraph._this)
 
 	def __dealloc__(self):
 		if self._this is not NULL:
 			del self._this
 			self._this = NULL
 
-	def generatePoints(self, count numThresholds = 1000):
-		"""
-		"""
-		self._this.generatePoints(numThresholds)
+	def getCurve(self, vector[pair[pair[node, node], double]] predictions, count numThresholds = 1000):
+		return self._this.getCurve(predictions, numThresholds)
 
 cdef extern from "cpp/linkprediction/KFoldCrossValidator.h":
 	cdef cppclass _KFoldCrossValidator "NetworKit::KFoldCrossValidator":
