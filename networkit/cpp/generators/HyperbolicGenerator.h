@@ -43,7 +43,7 @@ public:
 	static double expectedNumberOfEdges(count n, double stretch);
 
 	Graph generate(const vector<double> &angles, const vector<double> &radii, Quadtree<index> &quad, double thresholdDistance, double T=0);
-	Graph generateCold(const vector<double> &angles, const vector<double> &radii, Quadtree<index> &quad, double thresholdDistance);
+	Graph generateCold(const vector<double> &angles, const vector<double> &radii, const Quadtree<index> &quad, double thresholdDistance);
 
 	/**
 	 * @param[in] angles Pointer to angles of node positions

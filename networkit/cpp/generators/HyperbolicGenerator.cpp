@@ -128,9 +128,19 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	return generate(angles, radii, quad, thresholdDistance, T);
 }
 
-Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vector<double> &radii, Quadtree<index> &quad, double thresholdDistance) {
+Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vector<double> &radii, const Quadtree<index> &quad, double thresholdDistance) {
 	index n = angles.size();
 	assert(radii.size() == n);
+	assert(quad.size() == n);
+
+	for (index i = 0; i < n; i++) {
+		assert(radii[i] < quad.getMaxRadius());
+	}
+
+	for (index elem : quad.getElements()) {
+		assert(elem < n);
+	}
+
 	Aux::Timer timer;
 	timer.start();
 	vector<double> empty;
@@ -175,9 +185,7 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 				}
 			}
 		}
-		TRACE("Thread ", id, " finished.");
 		threadtimers[id].stop();
-		TRACE("Took ", threadtimers[id].elapsedMilliseconds(), " milliseconds.");
 	}
 
 	timer.stop();
