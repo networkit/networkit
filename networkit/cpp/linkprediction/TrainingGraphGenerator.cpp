@@ -1,17 +1,33 @@
 /*
- * RandomEdgePartitioner.cpp
+ * TrainingGraphGenerator.cpp
  *
  *  Created on: 28.02.2015
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include "RandomEdgePartitioner.h"
+#include "TrainingGraphGenerator.h"
 
 namespace NetworKit {
 
-RandomEdgePartitioner::RandomEdgePartitioner(const Graph& G) : G(G) {
+Graph TrainingGraphGenerator::byPercentage(const Graph& G, double trainPercentage) {
+  if (trainPercentage < 0 || trainPercentage > 1) {
+    throw std::invalid_argument("Given percentage is not in [0, 1].");
+  }
+  return byCount(G, trainPercentage * G.numberOfEdges());
 }
 
+Graph TrainingGraphGenerator::byCount(const Graph& G, count numTrainEdges) {
+  if (numTrainEdges > G.numberOfEdges()) {
+    throw std::invalid_argument("numTrainEdges > G.numberOfEdges().");
+  }
+  Graph trainingGraph(G);
+  for (count i = 0; i < G.numberOfEdges() - numTrainEdges; ++i) {
+    std::pair<node, node> edgeToRemove = trainingGraph.randomEdge();
+    trainingGraph.removeEdge(edgeToRemove.first, edgeToRemove.second);
+  }
+  return trainingGraph;
+}
+/*
 std::pair<Graph, Graph> RandomEdgePartitioner::partitionByPercentage(double percentage) const {
   if (percentage < 0 || percentage > 1) {
     throw std::invalid_argument("Given percentage is not in [0, 1].");
@@ -31,6 +47,6 @@ std::pair<Graph, Graph> RandomEdgePartitioner::partitionByCount(count numEdges) 
     removed.addEdge(edgeToRemove.first, edgeToRemove.second);
   }
   return std::make_pair(remaining, removed);
-}
+}*/
 
 } // namespace NetworKit
