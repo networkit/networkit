@@ -44,6 +44,7 @@ void EvaluationMetric::generatePoints(count numThresholds) {
     // Percentile calculation through nearest rank method.
     thresholds.push_back(std::ceil(predictions.size() * (1.0 * i / (numThresholds - 1))));
   }
+  LinkPredictor::sortByScore(predictions);
   calculateStatisticalMeasures();
   generatePointsImpl();
 }
