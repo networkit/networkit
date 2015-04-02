@@ -38,12 +38,12 @@ public:
   explicit CommonNeighborsIndex(const Graph& G);
 
   /**
-   * Returns the common neighbors of the given nodes @a u and @a v.
-   * 
-   *
+   * Returns a vector containing the node-ids of all common neighbors of @a u and @a v.
+   * @param u First node
+   * @param v Second node
+   * @return a vector containing the node-ids of all common neighbors of u and v
    */
   std::vector<node> getCommonNeighbors(node u, node v) const;
-
 };
 
 } // namespace NetworKit
