@@ -12,6 +12,7 @@
 
 #include <gtest/gtest.h>
 
+#include "../LinkPredictor.h"
 #include "../../graph/Graph.h"
 
 namespace NetworKit {
@@ -22,6 +23,10 @@ protected:
   Graph G;
 
   Graph trainingGraph;
+
+  std::vector<std::pair<node, node>> missingLinks;
+
+  std::vector<LinkPredictor::node_dyad_score_pair> predictions;
 
 public:
   LinkPredictionGTest();

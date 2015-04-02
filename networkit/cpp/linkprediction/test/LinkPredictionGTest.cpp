@@ -16,9 +16,10 @@
 #include "../PrecisionRecallMetric.h"
 #include "../TrainingGraphGenerator.h"
 #include "../KFoldCrossValidator.h"
-#include "../UnconnectedNodesFinder.h"
+#include "../MissingLinksFinder.h"
 #include "../UDegreeIndex.h"
 #include "../VDegreeIndex.h"
+#include "../LinkThresholder.h"
 
 namespace NetworKit {
 
@@ -36,12 +37,71 @@ void LinkPredictionGTest::SetUp() {
   G.addEdge(3, 4);
   G.addEdge(3, 5);
   G.addEdge(4, 5);
-
   trainingGraph = G;
-
   trainingGraph.removeEdge(0, 1);
   trainingGraph.removeEdge(2, 4);
   trainingGraph.removeEdge(3, 5);
+  missingLinks = MissingLinksFinder(trainingGraph).findAll(2);
+  CommonNeighborsIndex cn(trainingGraph);
+  predictions = cn.runOnParallel(missingLinks);
+  LinkPredictor::sortByScore(predictions);
+}
+
+TEST_F(LinkPredictionGTest, testCommonNeighborsIndexRunOnParallel) {
+  EXPECT_EQ(6, predictions.size());
+  EXPECT_EQ(2, predictions[0].first.first); EXPECT_EQ(4, predictions[0].first.second); EXPECT_EQ(3, predictions[0].second);
+  EXPECT_EQ(1, predictions[1].first.first); EXPECT_EQ(3, predictions[1].first.second); EXPECT_EQ(2, predictions[1].second);
+  EXPECT_EQ(1, predictions[2].first.first); EXPECT_EQ(5, predictions[2].first.second); EXPECT_EQ(2, predictions[2].second);
+  EXPECT_EQ(3, predictions[3].first.first); EXPECT_EQ(5, predictions[3].first.second); EXPECT_EQ(2, predictions[3].second);
+  EXPECT_EQ(0, predictions[4].first.first); EXPECT_EQ(2, predictions[4].first.second); EXPECT_EQ(1, predictions[4].second);
+  EXPECT_EQ(0, predictions[5].first.first); EXPECT_EQ(4, predictions[5].first.second); EXPECT_EQ(1, predictions[5].second);
+}
+
+TEST_F(LinkPredictionGTest, testMissingLinksFinderDistanceTwo) {
+  EXPECT_EQ(6, missingLinks.size());
+  EXPECT_EQ(0, missingLinks[0].first); EXPECT_EQ(2, missingLinks[0].second);
+  EXPECT_EQ(0, missingLinks[1].first); EXPECT_EQ(4, missingLinks[1].second);
+  EXPECT_EQ(1, missingLinks[2].first); EXPECT_EQ(3, missingLinks[2].second);
+  EXPECT_EQ(1, missingLinks[3].first); EXPECT_EQ(5, missingLinks[3].second);
+  EXPECT_EQ(2, missingLinks[4].first); EXPECT_EQ(4, missingLinks[4].second);
+  EXPECT_EQ(3, missingLinks[5].first); EXPECT_EQ(5, missingLinks[5].second);
+}
+
+TEST_F(LinkPredictionGTest, testMissingLinksFinderDistanceThree) {
+  std::vector<std::pair<node, node>> hopThreeMissingLinks = MissingLinksFinder(trainingGraph).findAll(3);
+  EXPECT_EQ(2, hopThreeMissingLinks.size());
+  EXPECT_EQ(0, hopThreeMissingLinks[0].first); EXPECT_EQ(1, hopThreeMissingLinks[0].second);
+  EXPECT_EQ(0, hopThreeMissingLinks[1].first); EXPECT_EQ(5, hopThreeMissingLinks[1].second);
+}
+
+TEST_F(LinkPredictionGTest, testLinkThresholderByScore) {
+  std::vector<std::pair<node, node>> selectedLinks;
+  selectedLinks = LinkThresholder::byScore(predictions, 2);
+  EXPECT_EQ(4, selectedLinks.size());
+  EXPECT_EQ(1, selectedLinks[0].first); EXPECT_EQ(3, selectedLinks[0].second);
+  EXPECT_EQ(1, selectedLinks[1].first); EXPECT_EQ(5, selectedLinks[1].second);
+  EXPECT_EQ(2, selectedLinks[2].first); EXPECT_EQ(4, selectedLinks[2].second);
+  EXPECT_EQ(3, selectedLinks[3].first); EXPECT_EQ(5, selectedLinks[3].second);
+}
+
+TEST_F(LinkPredictionGTest, testLinkThresholderByCount) {
+  std::vector<std::pair<node, node>> selectedLinks;
+  selectedLinks = LinkThresholder::byCount(predictions, 5);
+  EXPECT_EQ(5, selectedLinks.size());
+  EXPECT_EQ(0, selectedLinks[0].first); EXPECT_EQ(2, selectedLinks[0].second);
+  EXPECT_EQ(1, selectedLinks[1].first); EXPECT_EQ(3, selectedLinks[1].second);
+  EXPECT_EQ(1, selectedLinks[2].first); EXPECT_EQ(5, selectedLinks[2].second);
+  EXPECT_EQ(2, selectedLinks[3].first); EXPECT_EQ(4, selectedLinks[3].second);
+  EXPECT_EQ(3, selectedLinks[4].first); EXPECT_EQ(5, selectedLinks[4].second);
+}
+
+TEST_F(LinkPredictionGTest, testLinkThresholderByPercentage) {
+  std::vector<std::pair<node, node>> selectedLinks;
+  selectedLinks = LinkThresholder::byPercentage(predictions, 0.5);
+  EXPECT_EQ(3, selectedLinks.size());
+  EXPECT_EQ(1, selectedLinks[0].first); EXPECT_EQ(3, selectedLinks[0].second);
+  EXPECT_EQ(1, selectedLinks[1].first); EXPECT_EQ(5, selectedLinks[1].second);
+  EXPECT_EQ(2, selectedLinks[2].first); EXPECT_EQ(4, selectedLinks[2].second);
 }
 
 TEST_F(LinkPredictionGTest, testTrainingGraphGenerator) {
@@ -71,179 +131,27 @@ TEST_F(LinkPredictionGTest, testVDegreeIndexRun) {
 
 TEST_F(LinkPredictionGTest, testROCMetric) {
   ROCMetric roc(G);
-  CommonNeighborsIndex cn(trainingGraph);
-  UnconnectedNodesFinder unf(trainingGraph);
-  std::vector<std::pair<node, node>> twoHopMissing = unf.findAll(2);
-  std::vector<LinkPredictor::node_dyad_score_pair> predictions = cn.runOnParallel(twoHopMissing);
   std::pair<std::vector<double>, std::vector<double>> curve = roc.getCurve(predictions);
   double auc = roc.getAreaUnderCurve();
 
-  EXPECT_EQ(auc, 0.625);
-  EXPECT_EQ(curve.first[0], 0); EXPECT_EQ(curve.second[0], 0);
-  EXPECT_EQ(curve.first[1], 0.25); EXPECT_EQ(curve.second[1], 0.5);
-  EXPECT_EQ(curve.first[2], 0.5); EXPECT_EQ(curve.second[2], 0.5);
-  EXPECT_EQ(curve.first[3], 0.75); EXPECT_EQ(curve.second[3], 1);
-  EXPECT_EQ(curve.first[4], 1); EXPECT_EQ(curve.second[4], 1);
+  EXPECT_EQ(auc, 0.8125);
+  EXPECT_EQ(0, curve.first[0]); EXPECT_EQ(0.5, curve.second[0]);
+  EXPECT_EQ(0.25, curve.first[1]); EXPECT_EQ(0.5, curve.second[1]);
+  EXPECT_EQ(0.5, curve.first[2]); EXPECT_EQ(1, curve.second[2]);
+  EXPECT_EQ(0.75, curve.first[3]); EXPECT_EQ(1, curve.second[3]);
+  EXPECT_EQ(1, curve.first[4]); EXPECT_EQ(1, curve.second[4]);
 }
 
+TEST_F(LinkPredictionGTest, testPRMetric) {
+  PrecisionRecallMetric pr(G);
+  std::pair<std::vector<double>, std::vector<double>> curve = pr.getCurve(predictions);
+  double auc = pr.getAreaUnderCurve();
 
-/*TEST_F(LinkPredictionGTest, testCommonNeighborsRunOn) {
-  METISGraphReader graphReader;
-  Graph newG = graphReader.read("input/caidaRouterLevel.graph");
-  RandomEdgePartitioner partitioner(newG);
-  std::pair<Graph, Graph> graphPartitions = partitioner.partitionByPercentage(0.1);
-
-  CommonNeighborsIndex cn(graphPartitions.first);
-
-  UnconnectedNodesFinder unf(graphPartitions.first);
-  std::vector<std::pair<node, node>> missingLinks = unf.findAll(2);
-  INFO("Found ", missingLinks.size(), " missing links with distance 2");
-  std::vector<LinkPredictor::node_dyad_score_pair> scoresParallel = cn.runOnParallel(missingLinks);
-  //std::vector<LinkPredictor::node_dyad_score_pair> scores = cn.runOn(missingLinks);
-
-  INFO("Size = ", scoresParallel.size());
-
-  //for (index i = 0; i < scores.size(); ++i) {
-    //EXPECT_EQ(scoresParallel[i].second, scores[i].second);
-    //INFO("entries[", i, "] = ((", scores[i].first.first, ", ", scores[i].first.second, "), ", scores[i].second, ")");
-  //}
-}*/
-
-/*TEST_F(LinkPredictionGTest, testKFoldCrossValidator) {
-  KatzIndex katzIndex;
-  METISGraphReader graphReader;
-  Graph jazz = graphReader.read("input/jazz.graph");
-  ROC roc;
-
-  KFoldCrossValidator validator(jazz, &katzIndex, &roc);
-  double average = validator.crossValidate(10);
-  EXPECT_NEAR(average, 0.78, 0.03);
-}*/
-
-/*TEST_F(LinkPredictionGTest, testMissingLinkFinder) {
-  METISGraphReader graphReader;
-  Graph jazz = graphReader.read("input/PGPgiantcompo.graph");
-  UnconnectedNodesFinder unf(jazz);
-  std::vector<std::pair<node, node>> missingEdges = unf.findAll(2);
-  INFO(missingEdges.size());
-}*/
-
-/*TEST_F(LinkPredictionGTest, testPrecisionRecall) {
-  METISGraphReader graphReader;
-  Graph newG = graphReader.read("input/hep-th.graph");
-  RandomEdgePartitioner partitioner(newG);
-  std::pair<Graph, Graph> graphPartitions = partitioner.partitionByPercentage(0.3);
-
-  for (std::pair<node, node> e : graphPartitions.second.edges()) {
-    INFO("Removed edge (", e.first, ", ", e.second, ").");
-  }
-
-  UnconnectedNodesFinder unf(graphPartitions.first);
-  std::vector<std::pair<node, node>> nodePairs = unf.findAll(2);
-  INFO("nodePairs.size() = ", nodePairs.size());
-
-  CommonNeighborsIndex cn(graphPartitions.first);
-  std::vector<LinkPredictor::node_dyad_score_pair> scores = cn.runOnParallel(nodePairs);
-  LinkPredictor::sortByScore(scores);
-  for (index i = 0; i < 50; ++i) {
-    INFO("entries[", i, "] = ((", scores[i].first.first, ", ", scores[i].first.second, "), ", scores[i].second, ")");
-  }
-  PrecisionRecallMetric pr(graphPartitions.second, scores);
-  pr.generatePoints();
-  std::pair<std::vector<double>, std::vector<double>> points = pr.getPoints();
-  INFO("Size = ", points.first.size());
-  INFO("Last point = (", points.first.back(), ", ", points.second.back(), ").");
-  for (index i = 0; i < points.first.size(); ++i) {
-    //INFO("Point[", i, "] = (", points.first[i], ", ", points.second[i], ").");
-  }
-}*/
-
-/*TEST_F(LinkPredictionGTest, testUnconnectedNodesFinder) {
-  METISGraphReader graphReader;
-  Graph newG = graphReader.read("input/caidaRouterLevel.graph");
-  UnconnectedNodesFinder unf(newG);
-  std::vector<std::pair<node, node>> missingLinks = unf.findAll(2);
-  INFO("Size = ", missingLinks.size());
-  //for (std::pair<node, node> p : missingLinks) {
-  //  INFO("(", p.first, ", ", p.second, ")");
-  //}
-}*/
-
-/*TEST_F(LinkPredictionGTest, testReceiverOperatingCharacteristic) {
-  METISGraphReader graphReader;
-  Graph newG = graphReader.read("input/PGPgiantcompo.graph");
-  RandomEdgePartitioner partitioner(G);
-  std::pair<Graph, Graph> graphPartitions = partitioner.partitionByPercentage(0.3);
-
-  UnconnectedNodesFinder unf(graphPartitions.first);
-  std::vector<std::pair<node, node>> nodePairs = unf.findAll(2);
-  INFO("nodePairs.size() = ", nodePairs.size());
-
-  KatzIndex katz(graphPartitions.first, 2, 1);
-  std::vector<LinkPredictor::node_dyad_score_pair> scores = katz.runOnParallel(nodePairs);
-  for (index i = 0; i < scores.size(); ++i) {
-    INFO("entries[", i, "] = ((", scores[i].first.first, ", ", scores[i].first.second, "), ", scores[i].second, ")");
-  }
-  ROCMetric roc(graphPartitions.second, scores);
-  roc.generatePoints();
-  std::pair<std::vector<double>, std::vector<double>> points = roc.getPoints();
-  INFO("Size = ", points.first.size());
-  for (index i = 0; i < points.first.size(); ++i) {
-    INFO("Point[", i, "] = (", points.first[i], ", ", points.second[i], ").");
-  }
-}*/
-
-
-/*
-TEST_F(LinkPredictionGTest, testCommonNeighborsRun) {
-  CommonNeighborsIndex cni(G);
-  EXPECT_EQ(3.0, cni.run(1, 3));
-  EXPECT_EQ(2.0, cni.run(3, 5));
-  EXPECT_EQ(0.0, cni.run(4, 6));
+  EXPECT_EQ(auc, 0.5);
+  EXPECT_EQ(0, curve.first[0]); EXPECT_EQ(1, curve.second[0]);
+  EXPECT_EQ(0.5, curve.first[1]); EXPECT_EQ(1.0 / 3, curve.second[1]);
+  EXPECT_EQ(1, curve.first[2]); EXPECT_EQ(1.0 / 3, curve.second[2]);
 }
-
-TEST_F(LinkPredictionGTest, testCommonNeighborsRunAll) {
-  CommonNeighborsIndex cni(G);
-  ScoreCollection scores = cni.runAll();
-  EXPECT_EQ(3.0, scores.getScore(1, 3));
-  EXPECT_EQ(2.0, scores.getScore(3, 5));
-  EXPECT_EQ(0.0, scores.getScore(4, 6));
-}*/
-/*
-TEST_F(LinkPredictionGTest, testPreferentialAttachmentRun) {
-  PreferentialAttachmentIndex pai(G);
-  EXPECT_EQ(12.0, pai.run(1, 3));
-  EXPECT_EQ(16.0, pai.run(2, 3));
-  EXPECT_EQ(0.0, pai.run(4, 6));
-}
-
-TEST_F(LinkPredictionGTest, testPreferentialAttachmentRunAll) {
-  PreferentialAttachmentIndex pai(G);
-  ScoreCollection scores = pai.runAll();
-  EXPECT_EQ(12.0, scores.getScore(1, 3));
-  EXPECT_EQ(16.0, scores.getScore(2, 3));
-  EXPECT_EQ(0.0, scores.getScore(4, 6));
-}
-
-TEST_F(LinkPredictionGTest, testJaccardCoefficientRun) {
-  JaccardCoefficientIndex jci(G);
-  EXPECT_DOUBLE_EQ(0.75, jci.run(1, 3));
-  EXPECT_DOUBLE_EQ((double) 1 / 3, jci.run(2, 3));
-  EXPECT_EQ(0.0, jci.run(4, 6));
-}
-
-TEST_F(LinkPredictionGTest, testJaccardCoefficientRunAll) {
-  JaccardCoefficientIndex jci(G);
-  ScoreCollection scores = jci.runAll();
-  EXPECT_DOUBLE_EQ(0.75, scores.getScore(1, 3));
-  EXPECT_DOUBLE_EQ((double) 1 / 3, scores.getScore(2, 3));
-  EXPECT_EQ(0.0, scores.getScore(4, 6));
-}
-*/
-/*TEST_F(LinkPredictionGTest, testNonexistentResultsException) {
-  PreferentialAttachmentIndex pai(G);
-  EXPECT_THROW(pai.getResult(1, 2), std::runtime_error);
-}*/
 
 // TODO: Write a test to make sure the score of a node with itself
 // is [...] (maybe 0, MISSING_SCORE or a new INVALID_SCORE)
