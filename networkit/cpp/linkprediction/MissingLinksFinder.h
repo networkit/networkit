@@ -1,12 +1,12 @@
 /*
- * UnconnectedNodesFinder.h
+ * MissingLinksFinder.h
  *
  *  Created on: 20.03.2015
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#ifndef UNCONNECTEDNODESFINDER_H_
-#define UNCONNECTEDNODESFINDER_H_
+#ifndef MISSINGLINKSFINDER_H_
+#define MISSINGLINKSFINDER_H_
 
 #include "../graph/Graph.h"
 
@@ -19,12 +19,12 @@ namespace NetworKit {
  *
  * 
  */
-class UnconnectedNodesFinder {
+class MissingLinksFinder {
 private:
   const Graph& G;
 
 public:
-  explicit UnconnectedNodesFinder(const Graph& G);
+  explicit MissingLinksFinder(const Graph& G);
 
   std::vector<std::pair<node, node>> findAll(count k);
 
@@ -34,4 +34,4 @@ public:
 
 } // namespace NetworKit
 
-#endif /* UNCONNECTEDNODESFINDER_H_ */
+#endif /* MISSINGLINKSFINDER_H_ */

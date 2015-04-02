@@ -1,20 +1,20 @@
 /*
- * UnconnectedNodesFinder.cpp
+ * MissingLinksFinder.cpp
  *
  *  Created on: 20.03.2015
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include "UnconnectedNodesFinder.h"
+#include "MissingLinksFinder.h"
 
 #include <algorithm>
 
 namespace NetworKit {
 
-UnconnectedNodesFinder::UnconnectedNodesFinder(const Graph& G) : G(G) {
+MissingLinksFinder::MissingLinksFinder(const Graph& G) : G(G) {
 }
 
-std::vector<std::pair<node, node>> UnconnectedNodesFinder::findAll(count k) {
+std::vector<std::pair<node, node>> MissingLinksFinder::findAll(count k) {
   std::vector<std::pair<node, node>> missingLinks;
   std::vector<node> nodes = G.nodes();
   #pragma omp parallel
@@ -25,17 +25,18 @@ std::vector<std::pair<node, node>> UnconnectedNodesFinder::findAll(count k) {
       std::vector<std::pair<node, node>> missingAtU = findFromNode(nodes[i], k);
       // Discard all node-pairs of the form u > v. This removes all duplicates that result from undirected edges.
       missingAtU.erase(std::remove_if(std::begin(missingAtU), std::end(missingAtU),
-          [&](std::pair<node, node> p) { return p.first > p.second; }), std::end(missingAtU));
+          [&](std::pair<node, node> p) { return p.first >= p.second; }), std::end(missingAtU));
       missingLinksPrivate.insert(missingLinksPrivate.end(), missingAtU.begin(), missingAtU.end());
     }
     #pragma omp critical
     missingLinks.insert(missingLinks.end(), missingLinksPrivate.begin(), missingLinksPrivate.end());
   }
   DEBUG("Found ", missingLinks.size(), " missing links with distance ", k, ".");
+  std::sort(missingLinks.begin(), missingLinks.end());
   return missingLinks;
 }
 
-std::vector<std::pair<node, node>> UnconnectedNodesFinder::findFromNode(node u, count k) {
+std::vector<std::pair<node, node>> MissingLinksFinder::findFromNode(node u, count k) {
   std::vector<std::pair<node, node>> missingLinks;
   std::vector<bool> visited;
   visited.resize(G.upperNodeIdBound(), false);

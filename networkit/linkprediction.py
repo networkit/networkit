@@ -1,5 +1,5 @@
 
-from _NetworKit import KatzIndex, CommonNeighborsIndex, JaccardIndex, PreferentialAttachmentIndex, AdamicAdarIndex, UDegreeIndex, VDegreeIndex, TrainingGraphGenerator, ROCMetric, KFoldCrossValidator, PrecisionRecallMetric, UnconnectedNodesFinder
+from _NetworKit import KatzIndex, CommonNeighborsIndex, JaccardIndex, PreferentialAttachmentIndex, AdamicAdarIndex, UDegreeIndex, VDegreeIndex, TrainingGraphGenerator, ROCMetric, KFoldCrossValidator, PrecisionRecallMetric, MissingLinksFinder
 
 from .graph import Graph
 

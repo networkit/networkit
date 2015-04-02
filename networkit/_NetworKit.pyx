@@ -5549,19 +5549,19 @@ cdef class KFoldCrossValidator:
 		"""
 		return self._this.crossValidate(k)
 
-cdef extern from "cpp/linkprediction/UnconnectedNodesFinder.h":
-	cdef cppclass _UnconnectedNodesFinder "NetworKit::UnconnectedNodesFinder":
-		_UnconnectedNodesFinder(const _Graph& G) except +
+cdef extern from "cpp/linkprediction/MissingLinksFinder.h":
+	cdef cppclass _MissingLinksFinder "NetworKit::MissingLinksFinder":
+		_MissingLinksFinder(const _Graph& G) except +
 		vector[pair[node, node]] findAll(count k) except +
 		vector[pair[node, node]] findFromNode(node u, count k) except +
 
-cdef class UnconnectedNodesFinder:
+cdef class MissingLinksFinder:
 	"""
 	"""
-	cdef _UnconnectedNodesFinder* _this
+	cdef _MissingLinksFinder* _this
 
 	def __cinit__(self, Graph G):
-		self._this = new _UnconnectedNodesFinder(G._this)
+		self._this = new _MissingLinksFinder(G._this)
 
 	def __dealloc__(self):
 		del self._this
