@@ -28,10 +28,12 @@ std::pair<std::vector<double>, std::vector<double>> PrecisionRecallMetric::gener
     } else {
       //INFO("Precision = 1");
     }
-    if (points.first.size() == 0 || points.first.back() < recall) {
+    if (!points.first.empty() && points.first.back() == recall) {
+      points.second.pop_back();
+    } else {
       points.first.push_back(recall);
-      points.second.push_back(precision);
     }
+    points.second.push_back(precision);
   }
   return points;
 }
