@@ -15,24 +15,30 @@ namespace NetworKit {
 
 /**
  * @ingroup linkprediction
- * Abstract base class for evaluation curves of link predictors.
- * The evualation curves are generated based on the node-dyad-score pairs calculated
- * by the link predictor and a testGraph used for performance evaluation.
+ *
+ * Abstract base class for evaluation curves.
+ * The evualation curves are generated based on the predictions calculated
+ * by the link predictor and a testGraph to compare against.
  */
 class EvaluationMetric {
 private:
 
   /**
-   * 
+   * Generates the points on the evaluation curve. Each metric will implement
+   * it's own way to generate those points.
    * Doesn't have to check if testGraph or predictions are existent.
+   * @return a pair of X- and Y-vectors (in that order) that can be used for plotting
    */
   virtual std::pair<std::vector<double>, std::vector<double>> generatePoints() = 0;
 
+  /**
+   * Helper function that bundles the calculation of all statistical measures including
+   * number of TP, FP, TN, FN and also absolute number of positives and negatives.
+   */
   void calculateStatisticalMeasures();
 
-  void addStatisticsForThresholdIndex(index thresholdIndex);
-
-  // Helper function to determine and set the absolute number of positive and negative instances
+  // The following three helper methods generate statistical measures for every threshold
+  // based on the given predictions. The names should be self-explanatory.
   void setPositivesAndNegatives();
 
   void setTrueAndFalsePositives();
@@ -40,13 +46,13 @@ private:
   void setTrueAndFalseNegatives();
 
 protected:
-  std::pair<std::vector<double>, std::vector<double>> generatedPoints; //!< The generated points of the curve
+  std::pair<std::vector<double>, std::vector<double>> generatedPoints; //!< Points describing the generated curve. Will be set after a call to getCurve
 
-  const Graph* testGraph; //!< Contains set of edges to test the given node-pairs and its scores against
+  const Graph* testGraph; //!< Used to evaluate the binary predictions at the thresholds
 
-  std::vector<LinkPredictor::node_dyad_score_pair> predictions; //!< Pairs of node-pairs and corresponding scores generated from the LinkPredictor to evaluate
+  std::vector<LinkPredictor::node_dyad_score_pair> predictions; //!< Predictions that should be evaluated
 
-  std::vector<index> thresholds; //!< Indices for thresholds
+  std::vector<index> thresholds; //!< Indices for the thresholds to use. All node-pairs with an index < thresholds[i] will be regarded as links
 
   count numPositives; //!< Absolute number of positive instances in the prediction-set
 
@@ -65,22 +71,47 @@ public:
 
   /**
    *
-   * @param testGraph Graph containing test-set of edges to use for evaluation
-   * @param predictions Dyad-score-pairs whose prediction quality has to be evaluated
+   * @param testGraph Graph containing the links to use for evaluation
+   * @param predictions Dyad-score-pairs whose prediction quality will be evaluated
    */
   explicit EvaluationMetric(const Graph& testGraph, 
       std::vector<LinkPredictor::node_dyad_score_pair> predictions = std::vector<LinkPredictor::node_dyad_score_pair>());
 
   virtual ~EvaluationMetric() = default;
 
+  /**
+   * Sets a new graph to use as ground truth for evaluation.
+   * Note that this won't reset the most recently calculated curve and as a consequence
+   * getAreaUnderCurve() will still behave as expected by returning the AUC of the most recent curve.
+   * @param newTestGraph New graph to use as ground truth
+   */
   void setTestGraph(const Graph& newTestGraph);
 
+  /**
+   * Returns a pair of X- and Y-vectors describing the evaluation curve generated from the given predictions.
+   * The latest y-value will be used as a tie-breaker in case there are multiple y-values for one x-value.
+   * @param predictions Predictions to evaluate
+   * @param numThresholds The number of thresholds to use the metric on. Note that this number is an upper bound
+   * for the number of points returned. This is due to the fact that multiple y-values can map to one x-value in
+   * which case the tie-breaking behaviour described above will intervene
+   * @return a pair of vectors where the first vectors contains all x-values and the second one contains the corresponding
+   * y-value
+   */
   virtual std::pair<std::vector<double>, std::vector<double>> getCurve(std::vector<LinkPredictor::node_dyad_score_pair> predictions, count numThresholds = 1000);
 
+  /**
+   * Returns the area under the given @a curve by using the trapezoidal rule.
+   * @param curve Curve whose AUC to determine
+   * @return the area under the given curve
+   */
   virtual double getAreaUnderCurve(std::pair<std::vector<double>, std::vector<double>> curve) const;
 
+  /**
+   * Returns the area under the curve that was most recently calculated by this instance.
+   * This implies that getCurve(...) has to get called beforehand.
+   * @return area under the most recently calculated curve
+   */
   virtual double getAreaUnderCurve() const;
-
 };
 
 } // namespace NetworKit
