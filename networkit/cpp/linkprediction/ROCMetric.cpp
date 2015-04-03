@@ -10,6 +10,11 @@
 namespace NetworKit {
 
 std::pair<std::vector<double>, std::vector<double>> ROCMetric::generatePoints() {
+  if (numPositives == 0) {
+    throw std::logic_error("ROC metric is not defined for #positives == 0.");
+  } else if (numNegatives == 0) {
+    throw std::logic_error("ROC metric is not defined for #negatives == 0.");
+  }
   std::pair<std::vector<double>, std::vector<double>> points;
   points.first.reserve(thresholds.size());
   points.second.reserve(thresholds.size());
