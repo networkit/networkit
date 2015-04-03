@@ -153,6 +153,16 @@ TEST_F(LinkPredictionGTest, testPRMetric) {
   EXPECT_EQ(1, curve.first[2]); EXPECT_EQ(1.0 / 3, curve.second[2]);
 }
 
+TEST_F(LinkPredictionGTest, testTenFoldCrossValidation) {
+  METISGraphReader graphReader;
+  Graph newG = graphReader.read("input/jazz.graph");
+  ROCMetric roc(newG);
+  CommonNeighborsIndex cn;
+  KFoldCrossValidator validator(newG, &cn, &roc);
+  double averageAUC = validator.crossValidate(10);
+  EXPECT_NEAR(0.89, averageAUC, 0.05);
+}
+
 // TODO: Write a test to make sure the score of a node with itself
 // is [...] (maybe 0, MISSING_SCORE or a new INVALID_SCORE)
 // Maybe it should throw an exception?
