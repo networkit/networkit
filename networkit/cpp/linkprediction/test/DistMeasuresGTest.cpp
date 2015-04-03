@@ -20,19 +20,19 @@ DistMeasuresGTest::~DistMeasuresGTest() {
 
 }
 
-TEST_F(DistMeasuresGTest, testAlgebraicDistance) {
+TEST_F(DistMeasuresGTest, testAlgebraicDistanceIndex) {
 	GraphGenerator gen;
 	Graph G = gen.makeCompleteGraph(42);
 
 	count numSystems = 2;
 	count numIterations = 200;
 	double omega = 0.5;
-	NodeDistance* ad = new AlgebraicDistance(G, numSystems, numIterations, omega);
-	ad->preprocess();
+	AlgebraicDistanceIndex ad(G, numSystems, numIterations, omega);
+	ad.preprocess();
 
 	double adSum = 0.0;
 	G.forNodePairs([&](node u, node v){
-		adSum += ad->distance(u, v);
+		adSum += ad.run(u, v);
 	});
 
 	INFO("sum of algebraic distances: " , adSum);
