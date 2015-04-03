@@ -45,6 +45,14 @@ private:
   
   void setTrueAndFalseNegatives();
 
+  /**
+   * Sorts the given pair of vectors ascendingly with respect to the values of the first vector.
+   * This effectively leads to an sorted pair of vectors where each x-value still maps to the
+   * same y-value but the x-values are sorted ascendingly from 0 to 1.
+   * @param curve Points to sort
+   */
+  void sortPointsOfCurve(std::pair<std::vector<double>, std::vector<double>>& curve) const;
+
 protected:
   std::pair<std::vector<double>, std::vector<double>> generatedPoints; //!< Points describing the generated curve. Will be set after a call to getCurve
 
