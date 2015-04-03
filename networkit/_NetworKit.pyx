@@ -4753,71 +4753,6 @@ cdef class DegreeCentrality:
 		"""
 		return self._this.maximum()
 
-# Module: distmeasures
-
-cdef extern from "cpp/distmeasures/AlgebraicDistance.h":
-	cdef cppclass _AlgebraicDistance "NetworKit::AlgebraicDistance":
-		_AlgebraicDistance(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm) except +
-		void preprocess() except +
-		double distance(node u, node v) except +
-
-cdef class AlgebraicDistance:
-	"""
-	Algebraic distance assigns a distance value to pairs of nodes
-	according to their structural closeness in the graph.
-
-	Parameters
-	----------
-	G : Graph
-		The graph.
-	numberSystems : count
-		Number of vectors/systems used for algebraic iteration.
-	numberIterations : count
-		Number of iterations in each system.
-	omega : double, optional
-		Overrelaxation parameter, default: 0.5.
-	norm : index, optional
-		The norm factor of the extended algebraic distance. Maximum norm is realized by setting the norm to 0. Default: 2.
-	"""
-	cdef _AlgebraicDistance* _this
-	cdef Graph _G
-
-	def __cinit__(self, Graph G, count numberSystems, count numberIterations, double omega = 0.5, index norm = 2):
-		self._G = G
-		self._this = new _AlgebraicDistance(G._this, numberSystems, numberIterations, omega, norm)
-
-	def __dealloc__(self):
-		del self._this
-
-	def preprocess(self):
-		"""
-		Starting with random initialization, compute for all numberSystems
-		"diffusion" systems the situation after numberIterations iterations
-		of overrelaxation with overrelaxation parameter omega.
-
-		REQ: Needs to be called before algdist delivers meaningful results!
-		"""
-		self._this.preprocess()
-
-
-	def distance(self, node u, node v):
-		"""
-		Returns the extended algebraic distance between node u and node v in the norm specified in
-		the constructor.
-
-		Parameters
-		----------
-		u : node
-			The first node
-		v : node
-			The second node
-
-		Returns
-		-------
-		Extended algebraic distance between the two nodes.
-		"""
-		return self._this.distance(u, v)
-
 # Module: dynamic
 
 cdef extern from "cpp/dynamics/GraphEvent.h":
@@ -5395,6 +5330,94 @@ cdef class VDegreeIndex(LinkPredictor):
 		if self._this is not NULL:
 			del self._this
 			self._this = NULL
+
+cdef extern from "cpp/linkprediction/AlgebraicDistanceIndex.h":
+	cdef cppclass _AlgebraicDistanceIndex "NetworKit::AlgebraicDistanceIndex"(_LinkPredictor):
+		_AlgebraicDistanceIndex(count numberSystems, count numberIterations, double omega, index norm) except +
+		_AlgebraicDistanceIndex(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm) except +
+		void preprocess() except +
+		double run(node u, node v) except +
+
+cdef class AlgebraicDistanceIndex(LinkPredictor):
+	"""
+	Algebraic distance assigns a distance value to pairs of nodes
+	according to their structural closeness in the graph.
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	numberSystems : count
+		Number of vectors/systems used for algebraic iteration.
+	numberIterations : count
+		Number of iterations in each system.
+	omega : double, optional
+		Overrelaxation parameter, default: 0.5.
+	norm : index, optional
+		The norm factor of the extended algebraic distance. Maximum norm is realized by setting the norm to 0. Default: 2.
+	"""
+
+	def __cinit__(self, Graph G, count numberSystems, count numberIterations, double omega = 0.5, index norm = 2):
+		if G is None:
+			self._this = new _AlgebraicDistanceIndex(numberSystems, numberIterations, omega, norm)
+		else:
+			self._this = new _AlgebraicDistanceIndex(G._this, numberSystems, numberIterations, omega, norm)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def preprocess(self):
+		"""
+		Starting with random initialization, compute for all numberSystems
+		"diffusion" systems the situation after numberIterations iterations
+		of overrelaxation with overrelaxation parameter omega.
+
+		REQ: Needs to be called before algdist delivers meaningful results!
+		"""
+		(<_AlgebraicDistanceIndex *>self._this).preprocess()
+
+
+	def run(self, node u, node v):
+		"""
+		Returns the extended algebraic distance between node u and node v in the norm specified in
+		the constructor.
+
+		Parameters
+		----------
+		u : node
+			The first node
+		v : node
+			The second node
+
+		Returns
+		-------
+		Extended algebraic distance between the two nodes.
+		"""
+		return self._this.run(u, v)
+
+cdef extern from "cpp/linkprediction/NeighborhoodDistanceIndex.h":
+	cdef cppclass _NeighborhoodDistanceIndex "NetworKit::NeighborhoodDistanceIndex"(_LinkPredictor):
+		_NeighborhoodDistanceIndex() except +
+		_NeighborhoodDistanceIndex(const _Graph& G) except +
+		double run(node u, node v) except +
+
+cdef class NeighborhoodDistanceIndex(LinkPredictor):
+
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _NeighborhoodDistanceIndex()
+		else:
+			self._this = new _NeighborhoodDistanceIndex(G._this)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def run(self, node u, node v):
+		return self._this.run(u, v)
 
 cdef extern from "cpp/linkprediction/TrainingGraphGenerator.h" namespace "NetworKit::TrainingGraphGenerator":
 	_Graph byPercentage(_Graph G, double trainPercentage) except +

@@ -2,7 +2,7 @@
  * AlgebraicDistanceIndex.h
  *
  *  Created on: 19.06.2013
- *      Author: cls
+ *      Authors: cls, Kolja Esders
  */
 
 #ifndef ALGEBRAICDISTANCEINDEX_H_
@@ -33,7 +33,19 @@ private:
 	 */
 	double runImpl(node u, node v) override;
 
+protected:
+	count numSystems; //!< number of vectors/systems used for algebraic iteration
+	count numIters; //!< number of iterations in each system
+	double omega; //!<
+	index norm;
+	const index MAX_NORM = 0;
+
+	std::vector<std::vector<double> > loads; //!< loads[i]: vector of loads of length n for one system
+
+	void randomInit();
+
 public:
+	AlgebraicDistanceIndex(count numberSystems, count numberIterations, double omega = 0.5, index norm = 2);
 
 	/**
 	 * @param G The graph.
@@ -42,7 +54,7 @@ public:
 	 * @param omega Overrelaxation parameter.
 	 * @param norm The norm factor of the extended algebraic distance. Maximum norm is realized by setting @a norm to 0.
 	 */
-	AlgebraicDistanceIndex(const Graph& G, count numberSystems, count numberIterations, double omega = 0.5, index norm = 2);
+	explicit AlgebraicDistanceIndex(const Graph& G, count numberSystems, count numberIterations, double omega = 0.5, index norm = 2);
 
 	/**
 	 * Starting with random initialization, compute for all @a numberSystems
@@ -52,19 +64,6 @@ public:
 	 * REQ: Needs to be called before algdist delivers meaningful results!
 	 */
 	 virtual void preprocess();
-
-protected:
-
-	count numSystems; //!< number of vectors/systems used for algebraic iteration
-	count numIters; //!< number of iterations in each system
-	double omega; //!<
-	index norm;
-	const index MAX_NORM = 0;
-
-	std::vector<std::vector<double> > loads; //!< loads[i]: vector of loads of length n for one system
-
-
-	void randomInit();
 };
 
 } /* namespace NetworKit */

@@ -2,7 +2,7 @@
  * NeighborhoodDistanceIndex.h
  *
  *  Created on: 24.06.2013
- *      Author: cls
+ *      Authors: cls, Kolja Esders
  */
 
 #ifndef NEIGHBORHOODDISTANCEINDEX_H_
@@ -23,10 +23,9 @@ namespace NetworKit {
 class NeighborhoodDistanceIndex : public LinkPredictor {
 
 public:
+  NeighborhoodDistanceIndex() = default;
 
 	NeighborhoodDistanceIndex(const Graph& G);
-
-	virtual void preprocess();
 
 	virtual double runImpl(node u, node v);
 };

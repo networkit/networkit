@@ -2,7 +2,7 @@
  * AlgebraicDistanceIndex.cpp
  *
  *  Created on: 19.06.2013
- *      Author: cls
+ *      Authors: cls, Kolja Esders
  */
 
 #include "../auxiliary/Random.h"
@@ -12,8 +12,10 @@
 
 namespace NetworKit {
 
-AlgebraicDistanceIndex::AlgebraicDistanceIndex(const Graph& G, count numberSystems, count numberIterations, double omega, index norm) : LinkPredictor(G), numSystems(numberSystems), numIters(numberIterations), omega(omega), norm(norm) {
+AlgebraicDistanceIndex::AlgebraicDistanceIndex(count numberSystems, count numberIterations, double omega, index norm) : numSystems(numberSystems), numIters(numberIterations), omega(omega), norm(norm) {
+}
 
+AlgebraicDistanceIndex::AlgebraicDistanceIndex(const Graph& G, count numberSystems, count numberIterations, double omega, index norm) : LinkPredictor(G), numSystems(numberSystems), numIters(numberIterations), omega(omega), norm(norm) {
 }
 
 void AlgebraicDistanceIndex::preprocess() {
@@ -47,6 +49,9 @@ void AlgebraicDistanceIndex::preprocess() {
 }
 
 double AlgebraicDistanceIndex::runImpl(node u, node v) {
+	if (loads.size() == 0) {
+		throw std::logic_error("Call preprocess() first.");
+	}
 	double result = 0.0;
 
 	if (norm == MAX_NORM) { // maximum norm
