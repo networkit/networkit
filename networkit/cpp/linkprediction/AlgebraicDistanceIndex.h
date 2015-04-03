@@ -1,14 +1,14 @@
 /*
- * AlgebraicDistance.h
+ * AlgebraicDistanceIndex.h
  *
  *  Created on: 19.06.2013
  *      Author: cls
  */
 
-#ifndef ALGEBRAICDISTANCE_H_
-#define ALGEBRAICDISTANCE_H_
+#ifndef ALGEBRAICDISTANCEINDEX_H_
+#define ALGEBRAICDISTANCEINDEX_H_
 
-#include "NodeDistance.h"
+#include "LinkPredictor.h"
 #include "../graph/Graph.h"
 #include "../auxiliary/Timer.h"
 
@@ -16,11 +16,23 @@
 namespace NetworKit {
 
 /**
- * @ingroup distmeasures
+ * @ingroup linkprediction
+ *
  * Algebraic distance assigns a distance value to pairs of nodes
  * according to their structural closeness in the graph. 
  */
-class AlgebraicDistance: public NetworKit::NodeDistance {
+class AlgebraicDistanceIndex : public LinkPredictor {
+private:
+
+	/**
+	 * Returns the extended algebraic distance between node @a u and node @a v in the norm specified in
+	 * the constructor.
+	 * @param u The first node
+	 * @param v The second node
+	 * @return Extended algebraic distance between the two nodes.
+	 */
+	double runImpl(node u, node v) override;
+
 public:
 
 	/**
@@ -30,7 +42,7 @@ public:
 	 * @param omega Overrelaxation parameter.
 	 * @param norm The norm factor of the extended algebraic distance. Maximum norm is realized by setting @a norm to 0.
 	 */
-	AlgebraicDistance(const Graph& G, count numberSystems, count numberIterations, double omega = 0.5, index norm = 2);
+	AlgebraicDistanceIndex(const Graph& G, count numberSystems, count numberIterations, double omega = 0.5, index norm = 2);
 
 	/**
 	 * Starting with random initialization, compute for all @a numberSystems
@@ -40,13 +52,6 @@ public:
 	 * REQ: Needs to be called before algdist delivers meaningful results!
 	 */
 	 virtual void preprocess();
-
-	/**
-	 * Returns the extended algebraic distance between node @a u and node @a v in the norm specified in
-	 * the constructor.
-	 * @return Extended algebraic distance between the two nodes.
-	 */
-	 virtual double distance(node u, node v);
 
 protected:
 
@@ -63,4 +68,4 @@ protected:
 };
 
 } /* namespace NetworKit */
-#endif /* ALGEBRAICDISTANCE_H_ */
+#endif /* ALGEBRAICDISTANCEINDEX_H_ */
