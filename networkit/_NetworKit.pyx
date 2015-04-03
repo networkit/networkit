@@ -5439,14 +5439,11 @@ cdef class EvaluationMetric:
 		"""
 		return self._this.getCurve(predictions, numThresholds)
 
-	def getAreaUnderCurve(self):
+	def getAreaUnderCurve(self, pair[vector[double], vector[double]] curve = pair[vector[double], vector[double]]()):
 		"""
 		"""
-		return self._this.getAreaUnderCurve()
-
-	def getAreaUnderCurve(self, pair[vector[double], vector[double]] curve):
-		"""
-		"""
+		if len(curve.first) == 0:
+			return self._this.getAreaUnderCurve()
 		return self._this.getAreaUnderCurve(curve)
 
 cdef extern from "cpp/linkprediction/ROCMetric.h":
