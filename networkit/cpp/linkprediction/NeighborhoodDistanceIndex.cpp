@@ -2,7 +2,7 @@
  * NeighborhoodDistanceIndex.cpp
  *
  *  Created on: 24.06.2013
- *      Author: cls
+ *      Authors: cls, Kolja Esders
  */
 
 #include "NeighborhoodDistanceIndex.h"
@@ -14,12 +14,7 @@ NeighborhoodDistanceIndex::NeighborhoodDistanceIndex(const Graph& G) : LinkPredi
 
 }
 
-void NeighborhoodDistanceIndex::preprocess() {
-	// no preprocessing necessary
-}
-
 double NeighborhoodDistanceIndex::runImpl(node u, node v) {
-
 	count inter = 0;
 	int neighborhood1 = G->degree(u);
 	int neighborhood2 = G->degree(v);
