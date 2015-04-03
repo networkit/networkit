@@ -9,9 +9,6 @@
 
 namespace NetworKit {
 
-UDegreeIndex::UDegreeIndex() {
-}
-
 UDegreeIndex::UDegreeIndex(const Graph& G) : LinkPredictor(G) {
 }
 

@@ -11,10 +11,7 @@
 
 namespace NetworKit {
 
-AdamicAdarIndex::AdamicAdarIndex() : commonNeighborsIndex() {
-}
-
-AdamicAdarIndex::AdamicAdarIndex(const Graph& G) : LinkPredictor(G), commonNeighborsIndex() {
+AdamicAdarIndex::AdamicAdarIndex(const Graph& G) : LinkPredictor(G) {
 }
 
 double AdamicAdarIndex::runImpl(node u, node v) {

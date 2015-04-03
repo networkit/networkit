@@ -32,7 +32,7 @@ private:
   double runImpl(node u, node v) override;
 
 public:
-  JaccardIndex();
+  JaccardIndex() = default;
 
   /**
    *

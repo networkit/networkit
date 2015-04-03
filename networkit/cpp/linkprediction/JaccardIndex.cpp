@@ -9,10 +9,7 @@
 
 namespace NetworKit {
 
-JaccardIndex::JaccardIndex() : commonNeighborsIndex() {
-}
-
-JaccardIndex::JaccardIndex(const Graph& G) : LinkPredictor(G), commonNeighborsIndex() {
+JaccardIndex::JaccardIndex(const Graph& G) : LinkPredictor(G) {
 }
 
 double JaccardIndex::runImpl(node u, node v) {

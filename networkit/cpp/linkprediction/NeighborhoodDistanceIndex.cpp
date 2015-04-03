@@ -10,8 +10,6 @@
 namespace NetworKit {
 
 NeighborhoodDistanceIndex::NeighborhoodDistanceIndex(const Graph& G) : LinkPredictor(G) {
-	// TODO Auto-generated constructor stub
-
 }
 
 double NeighborhoodDistanceIndex::runImpl(node u, node v) {
