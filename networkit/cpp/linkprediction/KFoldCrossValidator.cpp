@@ -6,7 +6,7 @@
  */
 
 #include "KFoldCrossValidator.h"
-#include "RandomEdgePartitioner.h"
+#include "MissingLinksFinder.h"
 
 namespace NetworKit {
 
@@ -16,31 +16,30 @@ KFoldCrossValidator::KFoldCrossValidator(const Graph& G, LinkPredictor* linkPred
 
 double KFoldCrossValidator::crossValidate(count k) {
   if (k < 2) {
-    throw std::invalid_argument("k < 2 => Unable to split set of edges.");
+    throw std::invalid_argument("k has to be at least 2.");
   }
-  std::vector<Graph> edgeSets;
-  count setSize = G.numberOfEdges() / k;
-  Graph remainingGraph(G);
-  // Split edge-set into k subsets
-  for (count i = 0; i < k;  ++i) {
-    RandomEdgePartitioner partitioner(remainingGraph);
-    std::pair<Graph, Graph> splittedEdges = partitioner.partitionByCount(setSize);
-    edgeSets.push_back(splittedEdges.second);
+  evaluator->setTestGraph(G);
+  std::vector<std::vector<std::pair<node, node>>> linkPartitions(k, std::vector<std::pair<node, node>>());
+  count numberEdges = G.numberOfEdges();
+  Graph copyOfG(G);
+  // Partition the graph into k sets of edges
+  for (index i = 0; i < numberEdges; ++i) {
+    std::pair<node, node> e = copyOfG.randomEdge();
+    copyOfG.removeEdge(e.first, e.second);
+    linkPartitions[i % k].push_back(e);
   }
-  // perform evaluation k-times and average over result
+  // Remove edges from original graph for every edge-set to get the trainingGraph
   double sum = 0;
-  for (count i = 0; i < k; ++i) {
-    Graph testSet = edgeSets.at(i);
-    Graph trainingSet(G);
-    testSet.forEdges([&](node u, node v) {
-      trainingSet.removeEdge(u, v);
-    });
-    linkPredictor->setGraph(trainingSet);
-    evaluator->setTestGraph(testSet);
-    evaluator->setPredictions(linkPredictor->runAll());
-    evaluator->generatePoints();
-    double auc = evaluator->areaUnderCurve();
-    sum += auc;
+  for (index i = 0; i < k; ++i) {
+    Graph trainingGraph(G);
+    for (index j = 0; j < linkPartitions[i].size(); ++j) {
+      trainingGraph.removeEdge(linkPartitions[i][j].first, linkPartitions[i][j].second);
+    }
+    linkPredictor->setGraph(trainingGraph);
+    // Evaluate on all 2-hop missing links
+    std::vector<std::pair<node, node>> twoHopsMissing = MissingLinksFinder(trainingGraph).findAll(2);
+    std::pair<std::vector<double>, std::vector<double>> ps = evaluator->getCurve(linkPredictor->runOnParallel(twoHopsMissing));
+    sum += evaluator->getAreaUnderCurve();
   }
   return sum / k;
 }
