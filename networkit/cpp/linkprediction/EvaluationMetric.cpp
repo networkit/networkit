@@ -52,6 +52,8 @@ double EvaluationMetric::getAreaUnderCurve(std::pair<std::vector<double>, std::v
   } else if (curve.first.size() != curve.second.size()) {
     throw std::invalid_argument("X- and Y-vector differ in size().");
   }
+  // Sort points so that x-values start at zero.
+  sortPointsOfCurve(curve);
   double AUC = 0;
   for (index i = 0; i < curve.first.size() - 1; ++i) {
     // Trapezoid rule
@@ -145,6 +147,19 @@ void EvaluationMetric::setPositivesAndNegatives() {
     }
   }
   numNegatives = predictions.size() - numPositives;
+}
+
+void EvaluationMetric::sortPointsOfCurve(std::pair<std::vector<double>, std::vector<double>>& curve) const {
+  // Create a permutation that you would use in sorting the x-values ascendingly
+  std::vector<int> permutation(curve.first.size());
+  std::iota(permutation.begin(), permutation.end(), 0);
+  std::sort(permutation.begin(), permutation.end(), [&](int i, int j){ return curve.first[i] < curve.first[j]; });
+  // Sort X-vector
+  std::sort(curve.first.begin(), curve.first.end());
+  std::vector<double> sortedY(permutation.size());
+  // Apply the permutation to the Y-vector
+  std::transform(permutation.begin(), permutation.end(), sortedY.begin(), [&](int i){ return curve.second[i]; });
+  curve.second = sortedY;
 }
 
 } // namespace NetworKit
