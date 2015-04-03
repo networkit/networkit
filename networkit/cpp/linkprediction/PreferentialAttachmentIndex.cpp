@@ -9,9 +9,6 @@
 
 namespace NetworKit {
 
-PreferentialAttachmentIndex::PreferentialAttachmentIndex() {
-}
-
 PreferentialAttachmentIndex::PreferentialAttachmentIndex(const Graph& G) : LinkPredictor(G) {
 }
 

@@ -28,7 +28,7 @@ private:
   double runImpl(node u, node v) override;
 
 public:
-  UDegreeIndex();
+  UDegreeIndex() = default;
 
   /**
    *
