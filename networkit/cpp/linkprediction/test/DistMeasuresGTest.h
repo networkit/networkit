@@ -20,8 +20,7 @@
 #include "../../structures/Partition.h"
 #include "../../community/Modularity.h"
 #include "../../graph/GraphGenerator.h"
-#include "../NodeDistance.h"
-#include "../AlgebraicDistance.h"
+#include "../AlgebraicDistanceIndex.h"
 
 namespace NetworKit {
 

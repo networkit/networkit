@@ -83,7 +83,7 @@ void MaxentStress::draw(Graph& G) {
 	// alpha: initially 1, then in each iteration alpha := 0.3 * alpha
 	float q = 0;
 	float alpha = 1.0;
-	AlgebraicDistance algdist(G, 5, 10);
+	AlgebraicDistanceIndex algdist(G, 5, 10);
 	algdist.preprocess();
 
 	while (! converged) {
