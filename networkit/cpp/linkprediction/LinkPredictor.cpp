@@ -50,7 +50,7 @@ double LinkPredictor::run(node u, node v) {
   } else if (G->isDirected()) {
     throw std::invalid_argument("Only undirected graphs accepted.");
   } else if (u == v) {
-    // TODO(kesders): How to handle this situation? Return 0, throw error or let through?
+    // Default behaviour for self-loops
     return 0;
   }
   return runImpl(u, v);
@@ -69,9 +69,8 @@ std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runAll() {
   return runOnParallel(nodePairs);
 }
 
-std::vector<LinkPredictor::node_dyad_score_pair>& LinkPredictor::sortByScore(std::vector<LinkPredictor::node_dyad_score_pair>& predictions) {
+void LinkPredictor::sortByScore(std::vector<LinkPredictor::node_dyad_score_pair>& predictions) {
   std::sort(predictions.begin(), predictions.end(), ConcreteNodeDyadScoreComp);
-  return predictions;
 }
 
 } // namespace NetworKit

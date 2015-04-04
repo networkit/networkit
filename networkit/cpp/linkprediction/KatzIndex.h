@@ -74,7 +74,7 @@ public:
 
   // Overriding this method is necessary as the implementation of the Katz index makes use
   // of caching. This makes run() not thread-safe. To still achieve performance gains
-  // we split the nodePairs into subsets and create a new katz instance for every subset.
+  // we split the nodePairs into subsets and create a new Katz instance for every subset.
   std::vector<LinkPredictor::node_dyad_score_pair> runOnParallel(std::vector<std::pair<node, node>> nodePairs) override;
   
 };
