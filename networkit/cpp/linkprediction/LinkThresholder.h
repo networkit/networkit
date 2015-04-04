@@ -25,6 +25,7 @@ public:
   static std::vector<std::pair<node, node>> byCount(std::vector<LinkPredictor::node_dyad_score_pair> predictions, count numLinks);
   
   static std::vector<std::pair<node, node>> byPercentage(std::vector<LinkPredictor::node_dyad_score_pair> predictions, double percentageLinks);
+  
 };
 
 } // namespace NetworKit

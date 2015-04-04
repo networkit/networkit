@@ -21,34 +21,36 @@ namespace NetworKit {
  */
 class LinkPredictor {
 public:
-  // Declare typedef in advance for later use
-  typedef std::pair<std::pair<node, node>, double> node_dyad_score_pair;
+  // Declare typedef in advance for use in the protected section
+  typedef std::pair<std::pair<node, node>, double> node_dyad_score_pair; //!< Type of predictions
 
 private:
   /**
-   * Implementation of the run method.
-   * Doesn't have to check for a missing graph.
-   *
-   * @param u node in graph
-   * @param v node in graph
-   * @return a prediction-score indicating the likelihood of an
-   * edge between the given nodes
+   * Subclasses implement this private method to inject the custom predictor-code.
+   * Subclasses don't have to check whether the arguments are valid or a graph is set.
+   * @param u First node in graph
+   * @param v Second node in graph
+   * @return a prediction-score indicating the likelihood of a future link between the given nodes
    */
   virtual double runImpl(node u, node v) = 0;
 
 protected:
+  /**
+   * Comparator used to sort predictions descendingly by score and on equality
+   * ascendingly by node-pairs which means e.g. (0, 1) < (1, 1) and (0, 0) < (0, 1).
+   */
   struct NodeDyadScoreComp {
     bool operator()(const node_dyad_score_pair& a, const node_dyad_score_pair& b) const {
       return (a.second > b.second) || (a.second == b.second && a.first < b.first);
     }
-  } static ConcreteNodeDyadScoreComp;
+  } static ConcreteNodeDyadScoreComp; //!< Comparator instance used to sort predictions
 
   const Graph* G; //!< Graph to operate on
 
   bool validCache; //!< Indicates whether a possibly used cache is valid
 
 public:
-  explicit LinkPredictor();
+  LinkPredictor();
 
   /**
    * Constructs a new LinkPredictor instance for the graph @a G.
@@ -92,6 +94,7 @@ public:
   virtual std::vector<node_dyad_score_pair> runAll();
 
   static std::vector<LinkPredictor::node_dyad_score_pair>& sortByScore(std::vector<node_dyad_score_pair>& predictions);
+  
 };
 
 } // namespace NetworKit

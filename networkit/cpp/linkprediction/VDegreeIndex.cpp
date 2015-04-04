@@ -9,9 +9,6 @@
 
 namespace NetworKit {
 
-VDegreeIndex::VDegreeIndex(const Graph& G) : LinkPredictor(G) {
-}
-
 double VDegreeIndex::runImpl(node u, node v) {
   return G->degree(v);
 }

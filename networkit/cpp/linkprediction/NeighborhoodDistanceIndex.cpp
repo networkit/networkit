@@ -9,9 +9,6 @@
 
 namespace NetworKit {
 
-NeighborhoodDistanceIndex::NeighborhoodDistanceIndex(const Graph& G) : LinkPredictor(G) {
-}
-
 double NeighborhoodDistanceIndex::runImpl(node u, node v) {
 	count inter = 0;
 	int neighborhood1 = G->degree(u);

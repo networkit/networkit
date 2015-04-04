@@ -17,21 +17,19 @@ namespace NetworKit {
 /**
  * @ingroup linkprediction
  *
- * Evaluates the performance of a given LinkPredictor on a given graph
- * by randomly partitioning the graph into k subsamples. Of the k samples
+ * Averages the performance of a given LinkPredictor on a given graph
+ * by randomly partitioning the graph into k subsamples. From the k samples
  * a single subsamples is used as test-data and the remaining subsamples are
- * used as training-data.
- * The performance will be measured by the given EvaluationMetric.
+ * used as training-data. This is done for every subsample.
+ * The single performances will be measured by the given EvaluationMetric.
  */
 class KFoldCrossValidator {
 private:
-  const Graph& G;
+  const Graph& G; //!< The graph used as testGraph
 
-  LinkPredictor* linkPredictor;
+  LinkPredictor* linkPredictor; //!< Predictor whose performance to evaluate
 
-  EvaluationMetric* evaluator;
-
-  Graph mergeEdges(std::set<Graph> edgeSets) const;
+  EvaluationMetric* evaluator; //!< Metric used to generate an evaluation score
 
 public:
   /**
@@ -40,16 +38,15 @@ public:
    * @param linkPredictor Predictor whose performance should be measured
    * @param evaluator Evaluator which provides a metric for evaluating the link prediction results
    */
-  KFoldCrossValidator(const Graph& G, LinkPredictor* linkPredictor, EvaluationMetric* evaluator);
+  explicit KFoldCrossValidator(const Graph& G, LinkPredictor* linkPredictor, EvaluationMetric* evaluator);
   
   /**
    * Calculates the average AUC of the given EvaluationMetric after k test-runs.
-   *
    * @param k Number of subsamples to split the given Graph G into
    * @return the average area under the given EvaluationMetric after k runs
    */
   double crossValidate(count k);
-
+  
 };
 
 } // namespace NetworKit

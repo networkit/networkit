@@ -28,13 +28,8 @@ private:
   double runImpl(node u, node v) override;
 
 public:
-  UDegreeIndex() = default;
+  using LinkPredictor::LinkPredictor;
 
-  /**
-   *
-   * @param G The graph to work on
-   */
-  explicit UDegreeIndex(const Graph& G);
 };
 
 } // namespace NetworKit

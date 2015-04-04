@@ -16,20 +16,22 @@ namespace NetworKit {
 
 /**
  * @ingroup linkprediction
+ *
  * Katz index assigns a pair of nodes a similarity score
  * that is based on the sum of the weighted number of paths of length l
  * where l is smaller than a given limit.
  */
 class KatzIndex : public LinkPredictor {
 private:
-  unsigned int maxPathLength; //!< Maximal length of the paths to consider
+  count maxPathLength; //!< Maximal length of the paths to consider
 
   double dampingValue; //!< Damping factor in (0,1) used to exponentially damp every addend of the sum
 
   node lastStartNode; //!< Node at which the algorithm started at the last call
 
-  // TODO: Maybe replace with vector/array of size G.upperNodeIdBound? Constant access but uses more memory.
-  std::unordered_map<node, double> lastScores;
+  std::unordered_map<node, double> lastScores; //!< Stores the last generated scores from the lastStartNode
+
+  std::vector<double> dampingFactors; //!< Stores precalculated damping factors to increase performance
 
   // Helper method used to access the score for a given node-pair. Checks which of the given nodes
   // was used as the starting node and uses the other node to access the last scores generated.
@@ -47,21 +49,34 @@ private:
    */
   double runImpl(node u, node v) override;
 
+  /**
+   * Calculated the damping factors for every path length smaller or equal to maxPathLength.
+   * This can be used to cache damping factors to increase performance through reuse.
+   * The results will be stored in dampingFactors and dampingFactors[0] is always 1.
+   */
+  void calcDampingFactors();
+
 public:
   /**
+   *
    * @param maxPathLength Maximal length of the paths to consider
    * @param dampingValue Used to exponentially damp every addend of the sum. Should be in (0, 1]
    */
   explicit KatzIndex(count maxPathLength = 3, double dampingValue = 0.9);
 
   /**
+   *
    * @param G The graph to operate on
    * @param maxPathLength Maximal length of the paths to consider
    * @param dampingValue Used to exponentially damp every addend of the sum. Should be in (0, 1]
    */
   explicit KatzIndex(const Graph& G, count maxPathLength = 3, double dampingValue = 0.9);
 
-  std::vector<LinkPredictor::node_dyad_score_pair> runOnParallel(std::vector<std::pair<node, node>> nodePairs);
+  // Overriding this method is necessary as the implementation of the Katz index makes use
+  // of caching. This makes run() not thread-safe. To still achieve performance gains
+  // we split the nodePairs into subsets and create a new katz instance for every subset.
+  std::vector<LinkPredictor::node_dyad_score_pair> runOnParallel(std::vector<std::pair<node, node>> nodePairs) override;
+  
 };
 
 } // namespace NetworKit

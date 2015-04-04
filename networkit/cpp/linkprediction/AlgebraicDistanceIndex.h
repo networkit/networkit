@@ -45,7 +45,7 @@ protected:
 	void randomInit();
 
 public:
-	AlgebraicDistanceIndex(count numberSystems, count numberIterations, double omega = 0.5, index norm = 2);
+	explicit AlgebraicDistanceIndex(count numberSystems, count numberIterations, double omega = 0.5, index norm = 2);
 
 	/**
 	 * @param G The graph.
@@ -64,6 +64,7 @@ public:
 	 * REQ: Needs to be called before algdist delivers meaningful results!
 	 */
 	 virtual void preprocess();
+	 
 };
 
 } /* namespace NetworKit */

@@ -21,13 +21,12 @@ namespace NetworKit {
  * overlap of their neighborhoods.
  */
 class NeighborhoodDistanceIndex : public LinkPredictor {
+private:
+  virtual double runImpl(node u, node v) override;
 
 public:
-  NeighborhoodDistanceIndex() = default;
-
-	NeighborhoodDistanceIndex(const Graph& G);
-
-	virtual double runImpl(node u, node v);
+  using LinkPredictor::LinkPredictor;
+  
 };
 
 } /* namespace NetworKit */

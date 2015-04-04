@@ -13,10 +13,12 @@ namespace NetworKit {
 
 KatzIndex::KatzIndex(count maxPathLength, double dampingValue)
     : maxPathLength(maxPathLength), dampingValue(dampingValue) {
+  calcDampingFactors();
 }
 
 KatzIndex::KatzIndex(const Graph& G, count maxPathLength, double dampingValue)
     : LinkPredictor(G), maxPathLength(maxPathLength), dampingValue(dampingValue) {
+  calcDampingFactors();
 }
 
 double KatzIndex::getScore(node u, node v) const {
@@ -37,8 +39,8 @@ double KatzIndex::runImpl(node u, node v) {
   // Start at the node with less neighbors to potentially increase performance
   lastStartNode = G->degree(u) > G->degree(v) ? v : u;
   toProcess.push_front(lastStartNode);
-  for (unsigned int pathLength = 1; pathLength <= maxPathLength; ++pathLength) {
-    std::unordered_map<node, unsigned int> hits;
+  for (index pathLength = 1; pathLength <= maxPathLength; ++pathLength) {
+    std::unordered_map<node, count> hits;
     for (std::list<node>::const_iterator it = toProcess.begin(); it != toProcess.end(); ++it) {
       const node current = *it;
       // TODO: Parallelize this part.
@@ -47,10 +49,9 @@ double KatzIndex::runImpl(node u, node v) {
       });
     }
     // Add found nodes to the todo-list for the next round and update scores
-    double dampingFactor = pow(dampingValue, pathLength);
     toProcess.clear();
     for (auto kv : hits) {
-      lastScores[kv.first] += dampingFactor * kv.second;
+      lastScores[kv.first] += dampingFactors[pathLength] * kv.second;
       toProcess.push_front(kv.first);
     }
   }
@@ -59,6 +60,9 @@ double KatzIndex::runImpl(node u, node v) {
 }
 
 std::vector<LinkPredictor::node_dyad_score_pair> KatzIndex::runOnParallel(std::vector<std::pair<node, node>> nodePairs) {
+  // Make sure the nodePairs are sorted. This will make use of the caching of the Katz index
+  // and will exploit locality in the form of cpu caching as well.
+  std::sort(nodePairs.begin(), nodePairs.end());
   std::vector<node_dyad_score_pair> predictions;
   #pragma omp parallel
   {
@@ -74,6 +78,14 @@ std::vector<LinkPredictor::node_dyad_score_pair> KatzIndex::runOnParallel(std::v
   }
   std::sort(predictions.begin(), predictions.end(), ConcreteNodeDyadScoreComp);
   return predictions;
+}
+
+void KatzIndex::calcDampingFactors() {
+  dampingFactors.reserve(maxPathLength + 1);
+  dampingFactors[0] = 1;
+  for (count i = 1; i <= maxPathLength; ++i) {
+    dampingFactors[i] = std::pow(dampingValue, i);
+  }
 }
 
 } // namespace NetworKit
