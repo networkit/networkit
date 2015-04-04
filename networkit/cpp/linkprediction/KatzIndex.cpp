@@ -63,20 +63,16 @@ std::vector<LinkPredictor::node_dyad_score_pair> KatzIndex::runOnParallel(std::v
   // Make sure the nodePairs are sorted. This will make use of the caching of the Katz index
   // and will exploit locality in the form of cpu caching as well.
   std::sort(nodePairs.begin(), nodePairs.end());
-  std::vector<node_dyad_score_pair> predictions;
+  std::vector<node_dyad_score_pair> predictions(nodePairs.size());
+  KatzIndex katz(*G, maxPathLength, dampingValue);
   #pragma omp parallel
   {
-    // Create local KatzIndex
     KatzIndex katz(*G, maxPathLength, dampingValue);
-    std::vector<node_dyad_score_pair> predictionsPrivate;
-    #pragma omp for nowait
+    #pragma omp for schedule(guided)
     for (index i = 0; i < nodePairs.size(); ++i) {
-      predictionsPrivate.push_back(std::make_pair(nodePairs[i], katz.run(nodePairs[i].first, nodePairs[i].second)));
+      predictions[i] = std::make_pair(nodePairs[i], katz.run(nodePairs[i].first, nodePairs[i].second));
     }
-    #pragma omp critical
-    predictions.insert(predictions.end(), predictionsPrivate.begin(), predictionsPrivate.end());
   }
-  std::sort(predictions.begin(), predictions.end(), ConcreteNodeDyadScoreComp);
   return predictions;
 }
 
