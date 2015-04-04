@@ -29,13 +29,7 @@ private:
   double runImpl(node u, node v) override;
 
 public:
-  CommonNeighborsIndex() = default;
-
-  /**
-   *
-   * @param G The graph to work on
-   */
-  explicit CommonNeighborsIndex(const Graph& G);
+  using LinkPredictor::LinkPredictor;
 
   /**
    * Returns a vector containing the node-ids of all common neighbors of @a u and @a v.
@@ -44,6 +38,7 @@ public:
    * @return a vector containing the node-ids of all common neighbors of u and v
    */
   std::vector<node> getCommonNeighbors(node u, node v) const;
+  
 };
 
 } // namespace NetworKit

@@ -75,7 +75,7 @@ protected:
   std::vector<count> falseNegatives; //!< False negatives regarding the corresponding threshold
 
 public:
-  explicit EvaluationMetric();
+  EvaluationMetric();
 
   /**
    *
@@ -120,6 +120,7 @@ public:
    * @return area under the most recently calculated curve
    */
   virtual double getAreaUnderCurve() const;
+  
 };
 
 } // namespace NetworKit

@@ -39,6 +39,7 @@ std::pair<std::vector<double>, std::vector<double>> EvaluationMetric::getCurve(s
     // Percentile calculation through nearest rank method.
     thresholds.push_back(std::ceil(numPredictions * (1.0 * i / (numThresholds - 1))));
   }
+  // The extraction of statistical measures requires sorted predictions
   LinkPredictor::sortByScore(predictions);
   this->predictions = predictions;
   calculateStatisticalMeasures();
@@ -101,6 +102,7 @@ void EvaluationMetric::setTrueAndFalsePositives() {
       tmpFalsePositives++;
     }
   }
+  // If there is a threshold at predictions.size() add it as well
   if (thresholdIt != thresholds.end()) {
     truePositives.push_back(tmpTruePositives);
     falsePositives.push_back(tmpFalsePositives);
@@ -128,11 +130,14 @@ void EvaluationMetric::setTrueAndFalseNegatives() {
       tmpTrueNegatives++;
     }
   }
+  // If there is a threshold at 0 add it as well
   if (thresholdIt != thresholds.rend()) {
     trueNegatives.push_back(tmpTrueNegatives);
     falseNegatives.push_back(tmpFalseNegatives);
   }
-  ++thresholdIt;
+  // We need to reverse so that TN/FN and TP/FP have the same index for a given threshold.
+  // As we have started at the bottom of the predictions we need to reverse our results since
+  // the TP/FP calculation started at the top.
   std::reverse(trueNegatives.begin(), trueNegatives.end());
   std::reverse(falseNegatives.begin(), falseNegatives.end());
 }
@@ -154,10 +159,10 @@ void EvaluationMetric::sortPointsOfCurve(std::pair<std::vector<double>, std::vec
   std::vector<int> permutation(curve.first.size());
   std::iota(permutation.begin(), permutation.end(), 0);
   std::sort(permutation.begin(), permutation.end(), [&](int i, int j){ return curve.first[i] < curve.first[j]; });
-  // Sort X-vector
+  // Actually sort x-vector
   std::sort(curve.first.begin(), curve.first.end());
+  // Apply the permutation to the y-vector
   std::vector<double> sortedY(permutation.size());
-  // Apply the permutation to the Y-vector
   std::transform(permutation.begin(), permutation.end(), sortedY.begin(), [&](int i){ return curve.second[i]; });
   curve.second = sortedY;
 }

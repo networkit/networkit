@@ -9,9 +9,6 @@
 
 namespace NetworKit {
 
-CommonNeighborsIndex::CommonNeighborsIndex(const Graph& G) : LinkPredictor(G) {
-}
-
 double CommonNeighborsIndex::runImpl(node u, node v) {
   return getCommonNeighbors(u, v).size();
 }

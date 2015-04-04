@@ -28,13 +28,8 @@ private:
   double runImpl(node u, node v) override;
 
 public:
-  PreferentialAttachmentIndex() = default;
+  using LinkPredictor::LinkPredictor;
 
-  /**
-   *
-   * @param G The graph to work on
-   */
-  explicit PreferentialAttachmentIndex(const Graph& G);
 };
 
 } // namespace NetworKit

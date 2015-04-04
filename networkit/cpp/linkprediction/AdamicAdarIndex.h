@@ -32,13 +32,8 @@ private:
   double runImpl(node u, node v) override;
 
 public:
-  AdamicAdarIndex() = default;
+  using LinkPredictor::LinkPredictor;
 
-  /**
-   *
-   * @param G The graph to work on
-   */
-  explicit AdamicAdarIndex(const Graph& G);
 };
 
 } // namespace NetworKit

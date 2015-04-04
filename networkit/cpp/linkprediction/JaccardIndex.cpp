@@ -9,9 +9,6 @@
 
 namespace NetworKit {
 
-JaccardIndex::JaccardIndex(const Graph& G) : LinkPredictor(G) {
-}
-
 double JaccardIndex::runImpl(node u, node v) {
   commonNeighborsIndex.setGraph(*G);
   count denominator = getNeighborsUnion(u, v).size();
