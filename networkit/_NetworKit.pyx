@@ -5422,6 +5422,48 @@ cdef class NeighborhoodDistanceIndex(LinkPredictor):
 	def run(self, node u, node v):
 		return self._this.run(u, v)
 
+cdef extern from "cpp/linkprediction/TotalNeighborsIndex.h":
+	cdef cppclass _TotalNeighborsIndex "NetworKit::TotalNeighborsIndex"(_LinkPredictor):
+		_TotalNeighborsIndex() except +
+		_TotalNeighborsIndex(const _Graph& G) except +
+
+cdef class TotalNeighborsIndex(LinkPredictor):
+	"""
+	TODO(kesders)
+  """
+
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _TotalNeighborsIndex()
+		else:
+			self._this = new _TotalNeighborsIndex(G._this)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+cdef extern from "cpp/linkprediction/NeighborsMeasureIndex.h":
+	cdef cppclass _NeighborsMeasureIndex "NetworKit::NeighborsMeasureIndex"(_LinkPredictor):
+		_NeighborsMeasureIndex() except +
+		_NeighborsMeasureIndex(const _Graph& G) except +
+
+cdef class NeighborsMeasureIndex(LinkPredictor):
+	"""
+	TODO(kesders)
+  """
+
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _NeighborsMeasureIndex()
+		else:
+			self._this = new _NeighborsMeasureIndex(G._this)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
 cdef extern from "cpp/linkprediction/TrainingGraphGenerator.h" namespace "NetworKit::TrainingGraphGenerator":
 	_Graph byPercentage(_Graph G, double trainPercentage) except +
 	_Graph byCount(_Graph G, count numTrainEdges) except +

@@ -20,6 +20,8 @@
 #include "../UDegreeIndex.h"
 #include "../VDegreeIndex.h"
 #include "../LinkThresholder.h"
+#include "../TotalNeighborsIndex.h"
+#include "../NeighborsMeasureIndex.h"
 
 namespace NetworKit {
 
@@ -127,6 +129,26 @@ TEST_F(LinkPredictionGTest, testVDegreeIndexRun) {
   EXPECT_EQ(4, vDegreeIndex.run(4, 3));
   EXPECT_EQ(4, vDegreeIndex.run(5, 4));
   EXPECT_EQ(3, vDegreeIndex.run(4, 5));
+}
+
+TEST_F(LinkPredictionGTest, testTotalNeighborsIndexRun) {
+  TotalNeighborsIndex totalNeighborsIndex(trainingGraph);
+  EXPECT_EQ(3, totalNeighborsIndex.run(0, 2));
+  EXPECT_EQ(3, totalNeighborsIndex.run(0, 4));
+  EXPECT_EQ(3, totalNeighborsIndex.run(1, 3));
+  EXPECT_EQ(2, totalNeighborsIndex.run(1, 5));
+  EXPECT_EQ(3, totalNeighborsIndex.run(2, 4));
+  EXPECT_EQ(3, totalNeighborsIndex.run(3, 5));
+}
+
+TEST_F(LinkPredictionGTest, testNeighborsMeasureIndexRun) {
+  NeighborsMeasureIndex neighborsMeasureIndex(trainingGraph);
+  EXPECT_EQ(0, neighborsMeasureIndex.run(0, 2));
+  EXPECT_EQ(0, neighborsMeasureIndex.run(0, 4));
+  EXPECT_EQ(0, neighborsMeasureIndex.run(1, 3));
+  EXPECT_EQ(0, neighborsMeasureIndex.run(1, 5));
+  EXPECT_EQ(0, neighborsMeasureIndex.run(2, 4));
+  EXPECT_EQ(0, neighborsMeasureIndex.run(3, 5));
 }
 
 TEST_F(LinkPredictionGTest, testROCMetric) {

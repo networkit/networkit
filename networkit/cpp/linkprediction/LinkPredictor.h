@@ -67,7 +67,7 @@ public:
    * Sets the graph to work on.
    * @param newGraph The graph to work on
    */
-  void setGraph(const Graph& newGraph);
+  virtual void setGraph(const Graph& newGraph);
 
   /**
    * Returns a score indicating the likelihood of a future link between the given nodes.
