@@ -98,10 +98,11 @@ public:
   /**
    * Returns a pair of X- and Y-vectors describing the evaluation curve generated from the given predictions.
    * The latest y-value will be used as a tie-breaker in case there are multiple y-values for one x-value.
+   * Note that the given number of thresholds (@a numThresholds) is an upper bound for the number of
+   * points returned. This is due to the fact that multiple y-values can map to one x-value in which case
+   * the tie-breaking behaviour described above will intervene.
    * @param predictions Predictions to evaluate
-   * @param numThresholds The number of thresholds to use the metric on. Note that this number is an upper bound
-   * for the number of points returned. This is due to the fact that multiple y-values can map to one x-value in
-   * which case the tie-breaking behaviour described above will intervene
+   * @param numThresholds The number of thresholds to use the metric on
    * @return a pair of vectors where the first vectors contains all x-values and the second one contains the corresponding
    * y-value
    */
