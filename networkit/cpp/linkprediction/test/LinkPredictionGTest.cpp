@@ -14,7 +14,7 @@
 #include "../JaccardIndex.h"
 #include "../ROCMetric.h"
 #include "../PrecisionRecallMetric.h"
-#include "../TrainingGraphGenerator.h"
+#include "../TrainingGraphSampler.h"
 #include "../KFoldCrossValidator.h"
 #include "../MissingLinksFinder.h"
 #include "../UDegreeIndex.h"
@@ -107,7 +107,7 @@ TEST_F(LinkPredictionGTest, testLinkThresholderByPercentage) {
 }
 
 TEST_F(LinkPredictionGTest, testTrainingGraphGenerator) {
-  Graph trainingGraph = TrainingGraphGenerator::byPercentage(G, 0.7);
+  Graph trainingGraph = TrainingGraphSampler::byPercentage(G, 0.7);
   EXPECT_EQ(7, trainingGraph.numberOfEdges());
 }
 
@@ -189,7 +189,7 @@ TEST_F(LinkPredictionGTest, testCommonNeighborsIndexRunOnParallelHugeGraph) {
   METISGraphReader graphReader;
   Graph newG = graphReader.read("input/caidaRouterLevel.graph");
   CommonNeighborsIndex cn(newG);
-  Graph trainingGraph = TrainingGraphGenerator::byPercentage(newG, 0.7);
+  Graph trainingGraph = TrainingGraphSampler::byPercentage(newG, 0.7);
   std::vector<std::pair<node, node>> nodePairs = MissingLinksFinder(trainingGraph).findAll(2);
   count sizeMissingLinks = sizeof(std::vector<std::pair<node, node>>)
       + (sizeof(std::pair<node, node>) * nodePairs.size());
