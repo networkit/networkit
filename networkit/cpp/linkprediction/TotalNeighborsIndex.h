@@ -16,7 +16,9 @@ namespace NetworKit {
 /**
  * @ingroup linkprediction
  *
- * ...
+ * Implementation of the Total Neighbors Index.
+ * This index is also known as Total Friends Index and returns
+ * the number of nodes in the neighborhood-union of u and v.
  */
 class TotalNeighborsIndex : public LinkPredictor {
 private:
