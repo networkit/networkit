@@ -5464,11 +5464,11 @@ cdef class NeighborsMeasureIndex(LinkPredictor):
 			del self._this
 			self._this = NULL
 
-cdef extern from "cpp/linkprediction/TrainingGraphGenerator.h" namespace "NetworKit::TrainingGraphGenerator":
+cdef extern from "cpp/linkprediction/TrainingGraphSampler.h" namespace "NetworKit::TrainingGraphSampler":
 	_Graph byPercentage(_Graph G, double trainPercentage) except +
 	_Graph byCount(_Graph G, count numTrainEdges) except +
 
-cdef class TrainingGraphGenerator:
+cdef class TrainingGraphSampler:
 	@staticmethod
 	def byPercentage(Graph G, double trainPercentage):
 		return Graph().setThis(byPercentage(G._this, trainPercentage))
