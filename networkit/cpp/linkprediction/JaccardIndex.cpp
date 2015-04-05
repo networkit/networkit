@@ -9,8 +9,13 @@
 
 namespace NetworKit {
 
+JaccardIndex::JaccardIndex() : LinkPredictor() {
+}
+
+JaccardIndex::JaccardIndex(const Graph& G) : LinkPredictor(G), commonNeighborsIndex(G) {
+}
+
 double JaccardIndex::runImpl(node u, node v) {
-  commonNeighborsIndex.setGraph(*G);
   count denominator = getNeighborsUnion(u, v).size();
   if (denominator == 0) {
     return 0;
@@ -36,5 +41,10 @@ std::vector<node> JaccardIndex::getNeighborsUnion(node u, node v) const {
   return neighborsUnion;
 }
 
+void JaccardIndex::setGraph(const Graph& newGraph) {
+  commonNeighborsIndex.setGraph(newGraph);
+  G = &newGraph;
+  validCache = false;
+}
 
 } // namespace NetworKit

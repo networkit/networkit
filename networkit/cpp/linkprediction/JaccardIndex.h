@@ -32,8 +32,10 @@ private:
   double runImpl(node u, node v) override;
 
 public:
-  using LinkPredictor::LinkPredictor;
-  
+  JaccardIndex();
+
+  explicit JaccardIndex(const Graph& G);
+
   /**
    * Returns the union of the neighboorhoods of @a u and @a v.
    * @param u First node
@@ -41,6 +43,8 @@ public:
    * @return a vector containing all the nodes in the neighboorhood-union of u and v
    */
   std::vector<node> getNeighborsUnion(node u, node v) const;
+
+  void setGraph(const Graph& newGraph) override;
   
 };
 
