@@ -15,15 +15,16 @@ namespace NetworKit {
 /**
  * @ingroup linkprediction
  *
- *
+ * Implementation of the Preferential Attachment Index that simply calculates the product
+ * of the number of nodes in the neighborhoods regarding the given nodes.
  */
 class PreferentialAttachmentIndex : public LinkPredictor {
 private:
   /**
-   *
+   * Returns the product of the cardinalities of the neighborhoods regarding @a u and @a v.
    * @param u First node
    * @param v Second node
-   * @return 
+   * @return the product of the cardinalities of the neighborhoods regarding @a u and @a v
    */
   double runImpl(node u, node v) override;
 

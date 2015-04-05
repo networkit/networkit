@@ -15,7 +15,7 @@ namespace NetworKit {
 /**
  * @ingroup linkprediction
  *
- *
+ * Index that simply returns the degree of the first given node.
  */
 class UDegreeIndex : public LinkPredictor {
 private:

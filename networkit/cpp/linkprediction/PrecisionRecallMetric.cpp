@@ -18,15 +18,9 @@ std::pair<std::vector<double>, std::vector<double>> PrecisionRecallMetric::gener
     double precision = 1;
     if (truePositives.at(i) > 0 || falseNegatives.at(i) > 0) {
       recall = 1.0 * truePositives.at(i) / (truePositives.at(i) + falseNegatives.at(i));
-      //INFO("Recall = ", truePositives.at(i), " / (", truePositives.at(i), " + ", falseNegatives.at(i), ") = ", recall, ".");
-    } else {
-      //INFO("Recall = 1");
     }
     if (truePositives.at(i) > 0 || falsePositives.at(i) > 0) {
       precision = 1.0 * truePositives.at(i) / (truePositives.at(i) + falsePositives.at(i));
-      //INFO("Precision = ", truePositives.at(i), " / (", truePositives.at(i), " + ", falsePositives.at(i), ") = ", precision, ".");
-    } else {
-      //INFO("Precision = 1");
     }
     if (!points.first.empty() && points.first.back() == recall) {
       points.second.pop_back();

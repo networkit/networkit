@@ -22,6 +22,12 @@ namespace NetworKit {
  */
 class NeighborhoodDistanceIndex : public LinkPredictor {
 private:
+  /**
+   * Returns the Neighborhood Distance index for the given node-pair (@a u, @a v).
+   * @param u First node
+   * @param v Second node
+   * @return the Neighborhood Distance index for the given node-pair (@a u, @a v)
+   */
   virtual double runImpl(node u, node v) override;
 
 public:

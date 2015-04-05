@@ -17,17 +17,43 @@ namespace NetworKit {
 /**
  * @ingroup linkprediction
  *
- * 
+ * Allows the user to find missing links in the given graph.
+ * The absent links to find are narrowed down by providing a distance
+ * that the nodes of the missing links should have.
+ * For example in case of distance 2 only node-pairs that would close
+ * a triangle in the given graph get returned.
  */
 class MissingLinksFinder {
 private:
-  const Graph& G;
+  const Graph& G; //!< The graph to find missing links in
 
 public:
+  /**
+   *
+   * @param G The graph to find missing links in
+   */
   explicit MissingLinksFinder(const Graph& G);
 
+  /**
+   * Returns a vector of node-pairs where there is a missing link between
+   * the nodes of the given distance @a k in respect to the whole graph.
+   * Note that a distance of k actually means that there are k different links
+   * on the path of the two nodes that are connected through that path.
+   * @param k Distance of the absent links
+   * @return a vector of node-pairs where there is a missing link of distance @a k
+   * between the two nodes
+   */
   std::vector<std::pair<node, node>> findAll(count k);
 
+  /**
+   * Returns a vector of node-pairs where there is a missing link of distance
+   * @a k between the given node @a u and another node in the graph.
+   * Note that a distance of k actually means that there are k different links
+   * on the path of the two nodes that are connected through that path.
+   * @param k Distance of the absent links
+   * @return a vector of node-pairs where there is a missing link of distance @a k
+   * between the given node @a u and another node in the graph
+   */
   std::vector<std::pair<node, node>> findFromNode(node u, count k);
 
 };
