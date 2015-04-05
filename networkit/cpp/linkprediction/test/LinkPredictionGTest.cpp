@@ -163,9 +163,22 @@ TEST_F(LinkPredictionGTest, testTenFoldCrossValidation) {
   EXPECT_NEAR(0.89, averageAUC, 0.05);
 }
 
-// TODO: Write a test to make sure the score of a node with itself
-// is [...] (maybe 0, MISSING_SCORE or a new INVALID_SCORE)
-// Maybe it should throw an exception?
+TEST_F(LinkPredictionGTest, testCommonNeighborsIndexRunOnParallelHugeGraph) {
+  METISGraphReader graphReader;
+  Graph newG = graphReader.read("input/caidaRouterLevel.graph");
+  CommonNeighborsIndex cn(newG);
+  Graph trainingGraph = TrainingGraphGenerator::byPercentage(newG, 0.7);
+  std::vector<std::pair<node, node>> nodePairs = MissingLinksFinder(trainingGraph).findAll(2);
+  count sizeMissingLinks = sizeof(std::vector<std::pair<node, node>>)
+      + (sizeof(std::pair<node, node>) * nodePairs.size());
+  INFO("Allocated ~", sizeMissingLinks / (1024 * 1024), " MiB for 2-hop missing links.");
+
+  std::vector<std::pair<std::pair<node, node>, double>> preds = cn.runOnParallel(nodePairs);
+  count sizePredictions = sizeof(std::vector<std::pair<std::pair<node, node>, double>>)
+    + (sizeof(std::pair<std::pair<node, node>, double>) * preds.size());
+  INFO("Allocated ~", sizePredictions / (1024 * 1024), " MiB for predictions.");
+  // ... expectations
+}
 
 } // namespace NetworKit
 

@@ -35,7 +35,7 @@ std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runOn(std::vecto
 
 std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runOnParallel(std::vector<std::pair<node, node>> nodePairs) {
   std::vector<node_dyad_score_pair> predictions(nodePairs.size());
-  #pragma omp parallel for schedule(guided) shared(predictions)
+  #pragma omp parallel for schedule(dynamic) shared(predictions)
   for (index i = 0; i < nodePairs.size(); ++i) {
     predictions[i] = std::make_pair(nodePairs[i], run(nodePairs[i].first, nodePairs[i].second));
   }

@@ -39,7 +39,8 @@ cdef extern from "<algorithm>" namespace "std":
 	_Partition move( _Partition t)
 	_Cover move(_Cover t)
 	pair[_Graph, vector[node]] move(pair[_Graph, vector[node]])
-
+	vector[pair[pair[node, node], double]] move(vector[pair[pair[node, node], double]])
+	vector[pair[node, node]] move(vector[pair[node, node]])
 
 # Cython helper functions
 
@@ -5158,7 +5159,7 @@ cdef class LinkPredictor:
 		"""
 		TODO(kesders)
 		"""
-		return self._this.runOnParallel(nodePairs)
+		return move(self._this.runOnParallel(nodePairs))
 
 	@staticmethod
 	def sortByScore(list predictions):
@@ -5591,9 +5592,9 @@ cdef class MissingLinksFinder:
 	def findAll(self, count k):
 		"""
 		"""
-		return self._this.findAll(k)
+		return move(self._this.findAll(k))
 
 	def findFromNode(self, node u, count k):
 		"""
 		"""
-		return self._this.findFromNode(u, k)
+		return move(self._this.findFromNode(u, k))
