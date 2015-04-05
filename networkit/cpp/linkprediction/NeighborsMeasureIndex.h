@@ -15,7 +15,9 @@ namespace NetworKit {
 /**
  * @ingroup linkprediction
  *
- * ...
+ * Implementation of the Neighbors Measure Index.
+ * This index is also known as Friends Measure and simply returns
+ * the number of connections between neighbors of the given nodes u and v.
  */
 class NeighborsMeasureIndex : public LinkPredictor {
 private:
