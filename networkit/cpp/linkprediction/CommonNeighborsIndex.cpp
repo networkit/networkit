@@ -6,24 +6,12 @@
  */
 
 #include "CommonNeighborsIndex.h"
+#include "NeighborhoodUtility.h"
 
 namespace NetworKit {
 
 double CommonNeighborsIndex::runImpl(node u, node v) {
-  return getCommonNeighbors(u, v).size();
-}
-
-std::vector<node> CommonNeighborsIndex::getCommonNeighbors(node u, node v) const {
-  std::vector<node> uNeighbors = G->neighbors(u);
-  std::vector<node> vNeighbors = G->neighbors(v);
-  std::vector<node> commonNeighbors;
-  // We have no guarantee that the neighbor-vectors are sorted so we have to
-  // sort them in order for set_intersection to work properly.
-  std::sort(uNeighbors.begin(), uNeighbors.end());
-  std::sort(vNeighbors.begin(), vNeighbors.end());
-  std::set_intersection(uNeighbors.begin(), uNeighbors.end(), vNeighbors.begin(),
-    vNeighbors.end(), std::back_inserter(commonNeighbors));
-  return commonNeighbors;
+  return NeighborhoodUtility::getCommonNeighbors(*G, u, v).size();
 }
 
 } // namespace NetworKit

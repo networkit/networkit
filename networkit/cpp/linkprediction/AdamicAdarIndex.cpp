@@ -6,14 +6,14 @@
  */
 
 #include "AdamicAdarIndex.h"
+#include "NeighborhoodUtility.h"
 
 #include <cmath>
 
 namespace NetworKit {
 
 double AdamicAdarIndex::runImpl(node u, node v) {
-  commonNeighborsIndex.setGraph(*G);
-  std::vector<node> commonNeighbors = commonNeighborsIndex.getCommonNeighbors(u, v);
+  std::vector<node> commonNeighbors = NeighborhoodUtility::getCommonNeighbors(*G, u, v);
   double sum = 0;
   for (node w : commonNeighbors) {
     sum += 1.0 / std::log(G->degree(w));
