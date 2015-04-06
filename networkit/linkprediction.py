@@ -8,7 +8,7 @@ import numpy as np
 try:
   import sklearn
 except ImportError:
-  print(""" WARNING: module 'sklearn' not found, supervised link prediction won't work """)
+  print(""" WARNING: module 'sklearn' not found, supervised link prediction won't be available """)
 
 # Maybe the methods below should be encapsulated into a "SupervisedPrediction" class?
 
@@ -33,8 +33,6 @@ def trainClassifier(trainingSet, trainingGraph, classifier, *linkPredictors):
 def getSamples(nodePairs, *linkPredictors):
   """ Returns a numpy-array containing the generated scores from the predictors for the given node-pairs.
 
-  The numpy-array has the shape (#nodePairs, #linkPredictors).
-
   Parameters
   ----------
   nodePairs : vector[pair[node, node]]
@@ -44,7 +42,8 @@ def getSamples(nodePairs, *linkPredictors):
 
   Returns
   -------
-  A numpy-array containing the generated scores from the predictors for the given node-pairs.
+  A numpy-array of shape (#nodePairs, #linkPredictors) containing the generated scores
+  from the predictors for the given node-pairs.
   """
   return np.column_stack(([list(zip(*p.runOnParallel(nodePairs)))[1] for p in linkPredictors]))
 
