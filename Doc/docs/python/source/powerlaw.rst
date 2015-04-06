@@ -1,7 +1,7 @@
-NetworKit.powerlaw
+networkit.powerlaw
 ==================
 
-.. automodule:: powerlaw
+.. automodule:: networkit.powerlaw
     :members:
     :imported-members:
     :undoc-members:

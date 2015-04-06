@@ -1,21 +1,21 @@
-NetworKit.scripts
+networkit.scripts
 =================
 
 Submodules
 ----------
 
-scripts.cdeval module
----------------------
+networkit.scripts.cdeval module
+-------------------------------
 
-.. automodule:: scripts.cdeval
+.. automodule:: networkit.scripts.cdeval
     :members:
     :undoc-members:
     :show-inheritance:
 
-scripts.webgraph module
------------------------
+networkit.scripts.webgraph module
+---------------------------------
 
-.. automodule:: scripts.webgraph
+.. automodule:: networkit.scripts.webgraph
     :members:
     :undoc-members:
     :show-inheritance:
@@ -24,7 +24,7 @@ scripts.webgraph module
 Module contents
 ---------------
 
-.. automodule:: scripts
+.. automodule:: networkit.scripts
     :members:
     :undoc-members:
     :show-inheritance:

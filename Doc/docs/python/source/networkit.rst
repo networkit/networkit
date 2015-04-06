@@ -1,7 +1,7 @@
 NetworKit module
 ================
 
-.. automodule:: NetworKit
+.. automodule:: networkit
     :members:
     :undoc-members:
     :show-inheritance:
