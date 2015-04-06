@@ -16,8 +16,9 @@ namespace NetworKit {
 /**
  * @ingroup linkprediction
  *
- * Implementation of the Adamic/Adar Index which sums up the reciprocals
- * of the logarithm of the degree of all common neighbors of u and v.
+ * Implementation of the Adamic/Adar Index.
+ * The index sums up the reciprocals of the logarithm of the degree of all
+ * common neighbors of u and v.
  */
 class AdamicAdarIndex : public LinkPredictor {
 private:

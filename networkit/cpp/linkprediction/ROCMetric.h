@@ -17,6 +17,7 @@ namespace NetworKit {
  * @ingroup linkprediction
  *
  * Provides points that define the Receiver Operating Characteristic curve for a given set of predictions.
+ * Based on the generated points the area under the curve can be calculated with the trapzoidal rule.
  */
 class ROCMetric : public EvaluationMetric {
 private:

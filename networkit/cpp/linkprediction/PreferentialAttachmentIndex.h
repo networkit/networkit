@@ -15,8 +15,9 @@ namespace NetworKit {
 /**
  * @ingroup linkprediction
  *
- * Implementation of the Preferential Attachment Index that simply calculates the product
- * of the number of nodes in the neighborhoods regarding the given nodes.
+ * Implementation of the Preferential Attachment Index. 
+ * The run-method simply calculates the product of the number of nodes in the neighborhoods
+ * regarding the given nodes.
  */
 class PreferentialAttachmentIndex : public LinkPredictor {
 private:

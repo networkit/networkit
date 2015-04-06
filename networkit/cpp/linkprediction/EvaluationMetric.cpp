@@ -12,8 +12,7 @@ namespace NetworKit {
 EvaluationMetric::EvaluationMetric() : testGraph(nullptr) {
 }
 
-EvaluationMetric::EvaluationMetric(const Graph& testGraph, std::vector<LinkPredictor::node_dyad_score_pair> predictions)
-    : testGraph(&testGraph), predictions(predictions) {
+EvaluationMetric::EvaluationMetric(const Graph& testGraph) : testGraph(&testGraph) {
 }
 
 void EvaluationMetric::setTestGraph(const Graph& newTestGraph) {

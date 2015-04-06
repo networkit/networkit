@@ -82,21 +82,23 @@ public:
    * @param testGraph Graph containing the links to use for evaluation
    * @param predictions Dyad-score-pairs whose prediction quality will be evaluated
    */
-  explicit EvaluationMetric(const Graph& testGraph, 
-      std::vector<LinkPredictor::node_dyad_score_pair> predictions = std::vector<LinkPredictor::node_dyad_score_pair>());
+  explicit EvaluationMetric(const Graph& testGraph);
 
+  /**
+   * Default destructor.
+   */
   virtual ~EvaluationMetric() = default;
 
   /**
    * Sets a new graph to use as ground truth for evaluation.
    * Note that this won't reset the most recently calculated curve and as a consequence
-   * getAreaUnderCurve() will still behave as expected by returning the AUC of the most recent curve.
+   * getAreaUnderCurve() const will still behave as expected by returning the AUC of the most recent curve.
    * @param newTestGraph New graph to use as ground truth
    */
   void setTestGraph(const Graph& newTestGraph);
 
   /**
-   * Returns a pair of X- and Y-vectors describing the evaluation curve generated from the given predictions.
+   * Returns a pair of X- and Y-vectors describing the evaluation curve generated from the @a predictions.
    * The latest y-value will be used as a tie-breaker in case there are multiple y-values for one x-value.
    * Note that the given number of thresholds (@a numThresholds) is an upper bound for the number of
    * points returned. This is due to the fact that multiple y-values can map to one x-value in which case
@@ -117,7 +119,7 @@ public:
 
   /**
    * Returns the area under the curve that was most recently calculated by this instance.
-   * This implies that getCurve(...) has to get called beforehand.
+   * This implies that getCurve() has to get called beforehand.
    * @return area under the most recently calculated curve
    */
   virtual double getAreaUnderCurve() const;

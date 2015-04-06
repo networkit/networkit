@@ -24,7 +24,7 @@ private:
    * Returns the number of common neighbors of the given nodes @a u and @a v.
    * @param u First node
    * @param v Second node
-   * @return the number of common neighbors of u and v
+   * @return the number of common neighbors of @a u and @a v
    */
   double runImpl(node u, node v) override;
 

@@ -35,9 +35,8 @@ public:
   explicit MissingLinksFinder(const Graph& G);
 
   /**
-   * Returns a vector of node-pairs where there is a missing link between
-   * the nodes of the given distance @a k in respect to the whole graph.
-   * Note that a distance of k actually means that there are k different links
+   * Returns all missing links in the graph that have distance @a k.
+   * Note that a distance of @a k actually means that there are @a k different links
    * on the path of the two nodes that are connected through that path.
    * @param k Distance of the absent links
    * @return a vector of node-pairs where there is a missing link of distance @a k
@@ -46,10 +45,10 @@ public:
   std::vector<std::pair<node, node>> findAll(count k);
 
   /**
-   * Returns a vector of node-pairs where there is a missing link of distance
-   * @a k between the given node @a u and another node in the graph.
-   * Note that a distance of k actually means that there are k different links
+   * Returns all missing links in the graph that have distance @a k and are connected to @a u.
+   * Note that a distance of @a k actually means that there are @a k different links
    * on the path of the two nodes that are connected through that path.
+   * @param u Node to find missing links from
    * @param k Distance of the absent links
    * @return a vector of node-pairs where there is a missing link of distance @a k
    * between the given node @a u and another node in the graph
