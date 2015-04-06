@@ -4,7 +4,7 @@ python
 .. toctree::
    :maxdepth: 4
 
-   NetworKit
+   networkit
    algebraic
    auxiliary
    centrality
@@ -25,3 +25,4 @@ python
    toolbox
    viztasks
    viztools
+   linkprediction
