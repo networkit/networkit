@@ -22,8 +22,6 @@ namespace NetworKit {
  */
 class TotalNeighborsIndex : public LinkPredictor {
 private:
-  JaccardIndex jaccardIndex; //!< Used to get the neighborhood-union of u and v
-
   /**
    * Returns the number of total union-neighbors for the given node-pair (@a u, @a v).
    * @param u First node
@@ -33,11 +31,8 @@ private:
   double runImpl(node u, node v) override;
 
 public:
-  TotalNeighborsIndex();
+  using LinkPredictor::LinkPredictor;
 
-  explicit TotalNeighborsIndex(const Graph& G);
-  
-  void setGraph(const Graph& newGraph) override;
 };
 
 } // namespace NetworKit

@@ -6,45 +6,16 @@
  */
 
 #include "JaccardIndex.h"
+#include "NeighborhoodUtility.h"
 
 namespace NetworKit {
 
-JaccardIndex::JaccardIndex() : LinkPredictor() {
-}
-
-JaccardIndex::JaccardIndex(const Graph& G) : LinkPredictor(G), commonNeighborsIndex(G) {
-}
-
 double JaccardIndex::runImpl(node u, node v) {
-  count denominator = getNeighborsUnion(u, v).size();
-  if (denominator == 0) {
+  count unionSize = NeighborhoodUtility::getNeighborsUnion(*G, u, v).size();
+  if (unionSize == 0) {
     return 0;
   }
-  return commonNeighborsIndex.run(u, v) / denominator;
-}
-
-std::vector<node> JaccardIndex::getNeighborsUnion(node u, node v) const {
-  if (G == nullptr) {
-    throw std::logic_error("Set a graph first.");
-  } else if (!G->hasNode(u) || !G->hasNode(v)) {
-    throw std::invalid_argument("Invalid node provided.");
-  }
-  std::vector<node> uNeighbors = G->neighbors(u);
-  std::vector<node> vNeighbors = G->neighbors(v);
-  std::vector<node> neighborsUnion;
-  // We have no guarantee that the neighbor-vectors are sorted so we have to
-  // sort them in order for set_intersection to work properly.
-  std::sort(uNeighbors.begin(), uNeighbors.end());
-  std::sort(vNeighbors.begin(), vNeighbors.end());
-  std::set_union(uNeighbors.begin(), uNeighbors.end(), vNeighbors.begin(),
-    vNeighbors.end(), std::back_inserter(neighborsUnion));
-  return neighborsUnion;
-}
-
-void JaccardIndex::setGraph(const Graph& newGraph) {
-  commonNeighborsIndex.setGraph(newGraph);
-  G = &newGraph;
-  validCache = false;
+  return 1.0 * NeighborhoodUtility::getCommonNeighbors(*G, u, v).size() / unionSize;
 }
 
 } // namespace NetworKit

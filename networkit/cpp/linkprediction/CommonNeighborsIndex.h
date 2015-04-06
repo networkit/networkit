@@ -31,14 +31,6 @@ private:
 public:
   using LinkPredictor::LinkPredictor;
 
-  /**
-   * Returns a vector containing the node-ids of all common neighbors of @a u and @a v.
-   * @param u First node
-   * @param v Second node
-   * @return a vector containing the node-ids of all common neighbors of u and v
-   */
-  std::vector<node> getCommonNeighbors(node u, node v) const;
-  
 };
 
 } // namespace NetworKit
