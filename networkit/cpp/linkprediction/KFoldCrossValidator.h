@@ -17,10 +17,10 @@ namespace NetworKit {
 /**
  * @ingroup linkprediction
  *
- * Averages the performance of a given LinkPredictor on a given graph
- * by randomly partitioning the graph into k subsamples. From the k samples
- * a single subsamples is used as test-data and the remaining subsamples are
- * used as training-data. This is done for every subsample.
+ * Averages the performance of a given LinkPredictor on a given graph.
+ * This is done by randomly partitioning the graph into k subsamples.
+ * From the k samples a single subsamples is used as test-data and the
+ * remaining subsamples are used as training-data. This is done for every subsample.
  * The single performances will be measured by the given EvaluationMetric.
  */
 class KFoldCrossValidator {
@@ -41,9 +41,9 @@ public:
   explicit KFoldCrossValidator(const Graph& G, LinkPredictor* linkPredictor, EvaluationMetric* evaluator);
   
   /**
-   * Calculates the average AUC of the given EvaluationMetric after k test-runs.
+   * Calculates the average AUC of the given EvaluationMetric after @a k test-runs.
    * @param k Number of subsamples to split the given Graph G into
-   * @return the average area under the given EvaluationMetric after k runs
+   * @return the average area under the given EvaluationMetric after @a k runs
    */
   double crossValidate(count k);
   

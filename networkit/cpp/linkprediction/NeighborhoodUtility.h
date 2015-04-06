@@ -12,6 +12,11 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup linkprediction
+ *
+ * Provides basic operations on neighborhoods in a given graph.
+ */
 class NeighborhoodUtility {
 private:
   /**
@@ -29,7 +34,7 @@ public:
    * @param G Graph to obtain neighbors-union from
    * @param u First node
    * @param v Second node
-   * @return a vector containing all the nodes in the neighboorhood-union of u and v
+   * @return a vector containing all the nodes in the neighboorhood-union of @a u and @a v
    */
   static std::vector<node> getNeighborsUnion(const Graph& G, node u, node v);
 
@@ -38,7 +43,7 @@ public:
    * @param G Graph to obtain common neighbors from
    * @param u First node
    * @param v Second node
-   * @return a vector containing the node-ids of all common neighbors of u and v
+   * @return a vector containing the node-ids of all common neighbors of @a u and @a v
    */
   static std::vector<node> getCommonNeighbors(const Graph& G, node u, node v);
 
