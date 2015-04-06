@@ -87,3 +87,8 @@
  * @defgroup viz Viz
  * @brief Algorithms for drawing a graph.
  */
+
+/**
+ * @defgroup linkprediction Link Prediction
+ * @brief Algorithms for predicting links in a graph.
+ */
