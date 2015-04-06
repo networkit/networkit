@@ -5132,8 +5132,8 @@ cdef class LinkPredictor:
 
 	Parameters
 	----------
-	G : Graph
-		The graph to work on. Can be None.
+	G : Graph, optional
+		The graph to work on. Defaults to None.
 	"""
 	cdef _LinkPredictor* _this
 
@@ -5258,12 +5258,12 @@ cdef class KatzIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph
-		The graph to operate on. Can be set to None and default is None.
-	maxPathLength : count
-		Maximal length of the paths to consider. Default: 5.
-	dampingValue : double
-		Used to exponentially damp every addend of the sum. Should be in (0, 1]. Default: 0.005.
+	G : Graph, optional
+		The graph to operate on. Defaults to None.
+	maxPathLength : count, optional
+		Maximal length of the paths to consider. Defaults to 5.
+	dampingValue : double, optional
+		Used to exponentially damp every addend of the sum. Should be in (0, 1]. Defaults to 0.005.
 	"""
 
 	def __cinit__(self, Graph G = None, count maxPathLength = 5, double dampingValue = 0.005):
@@ -5306,8 +5306,8 @@ cdef class CommonNeighborsIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph
-		The graph to work on. Can be set to None and default is None.
+	G : Graph, optional
+		The graph to work on. Defaults to None.
 	"""
 
 	def __cinit__(self, Graph G = None):
@@ -5350,8 +5350,8 @@ cdef class PreferentialAttachmentIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph
-		The graph to work on. Can be set to None and default is None.
+	G : Graph, optional
+		The graph to work on. Defaults to None.
 	"""
 
 	def __cinit__(self, Graph G = None):
@@ -5394,8 +5394,8 @@ cdef class JaccardIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph
-		The graph to work on. Can be set to None and default is None.
+	G : Graph, optional
+		The graph to work on. Defaults to None.
 	"""
 	def __cinit__(self, Graph G = None):
 		if G is None:
@@ -5437,8 +5437,8 @@ cdef class AdamicAdarIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph
-		The graph to work on. Can be set to None and default is None.
+	G : Graph, optional
+		The graph to work on. Defaults to None.
 	"""
 
 	def __cinit__(self, Graph G = None):
@@ -5478,8 +5478,8 @@ cdef class UDegreeIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph
-		The graph to work on. Can be set to None and default is None.
+	G : Graph, optional
+		The graph to work on. Defaults to None.
 	"""
 
 	def __cinit__(self, Graph G = None):
@@ -5519,8 +5519,8 @@ cdef class VDegreeIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph
-		The graph to work on. Can be set to None and default is None.
+	G : Graph, optional
+		The graph to work on. Defaults to None.
 	"""
 
 	def __cinit__(self, Graph G = None):
@@ -5625,8 +5625,8 @@ cdef class NeighborhoodDistanceIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph
-		The graph to work on. Can be set to None and default is None.
+	G : Graph, optional
+		The graph to work on. Defaults to None.
 	"""
 	def __cinit__(self, Graph G = None):
 		if G is None:
@@ -5668,8 +5668,8 @@ cdef class TotalNeighborsIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph
-		The graph to work on. Can be set to None and default is None.
+	G : Graph, optional
+		The graph to work on. Defaults to None.
 	"""
 
 	def __cinit__(self, Graph G = None):
@@ -5712,8 +5712,8 @@ cdef class NeighborsMeasureIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph
-		The graph to work on. Can be set to None and default is None.
+	G : Graph, optional
+		The graph to work on. Defaults to None.
 	"""
 
 	def __cinit__(self, Graph G = None):
@@ -5845,8 +5845,8 @@ cdef class EvaluationMetric:
 		----------
 		predictions : vector[pair[pair[node, node], double]]
 			Predictions to evaluate.
-		numThresholds : count
-			The number of thresholds to use the metric on. Default: 1000.
+		numThresholds : count, optional
+			The number of thresholds to use the metric on. Defaults to 1000.
 
 		Returns
 		-------
@@ -5887,8 +5887,8 @@ cdef class ROCMetric(EvaluationMetric):
 
 	Parameters
 	----------
-	testGraph : Graph
-		Graph containing the links to use for evaluation. Can be set to None and default is None.
+	testGraph : Graph, optional
+		Graph containing the links to use for evaluation. Defaults to None.
 	"""
 
 	def __cinit__(self, Graph testGraph = None):
@@ -5911,8 +5911,8 @@ cdef class ROCMetric(EvaluationMetric):
 		----------
 		predictions : vector[pair[pair[node, node], double]]
 			Predictions to evaluate.
-		numThresholds : count
-			The number of thresholds to use the metric on. Default: 1000.
+		numThresholds : count, optional
+			The number of thresholds to use the metric on. Defaults to 1000.
 
 		Returns
 		-------
@@ -5934,8 +5934,8 @@ cdef class PrecisionRecallMetric(EvaluationMetric):
 
 	Parameters
 	----------
-	testGraph : Graph
-		Graph containing the links to use for evaluation. Can be set to None and default is None.
+	testGraph : Graph, optional
+		Graph containing the links to use for evaluation. Defaults to None.
 	"""
 
 	def __cinit__(self, Graph testGraph = None):
@@ -5959,8 +5959,8 @@ cdef class PrecisionRecallMetric(EvaluationMetric):
 		----------
 		predictions : vector[pair[pair[node, node], double]]
 			Predictions to evaluate.
-		numThresholds : count
-			The number of thresholds to use the metric on. Default: 1000.
+		numThresholds : count, optional
+			The number of thresholds to use the metric on. Defaults to 1000.
 
 		Returns
 		-------
