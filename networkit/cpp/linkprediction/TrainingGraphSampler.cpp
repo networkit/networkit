@@ -9,14 +9,16 @@
 
 namespace NetworKit {
 
-Graph TrainingGraphSampler::byPercentage(const Graph& G, double trainPercentage) {
+namespace TrainingGraphSampler {
+
+Graph byPercentage(const Graph& G, double trainPercentage) {
   if (trainPercentage < 0 || trainPercentage > 1) {
     throw std::invalid_argument("Given percentage is not in [0, 1].");
   }
   return byCount(G, trainPercentage * G.numberOfEdges());
 }
 
-Graph TrainingGraphSampler::byCount(const Graph& G, count numTrainLinks) {
+Graph byCount(const Graph& G, count numTrainLinks) {
   if (numTrainLinks > G.numberOfEdges()) {
     throw std::invalid_argument("numTrainLinks > G.numberOfEdges().");
   }
@@ -27,5 +29,7 @@ Graph TrainingGraphSampler::byCount(const Graph& G, count numTrainLinks) {
   }
   return trainingGraph;
 }
+
+} // namespace TrainingGraphSampler
 
 } // namespace NetworKit
