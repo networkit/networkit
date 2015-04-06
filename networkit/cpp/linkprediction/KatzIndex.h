@@ -17,6 +17,7 @@ namespace NetworKit {
 /**
  * @ingroup linkprediction
  *
+ * Implementation of the Katz index.
  * Katz index assigns a pair of nodes a similarity score
  * that is based on the sum of the weighted number of paths of length l
  * where l is smaller than a given limit.
@@ -39,9 +40,8 @@ private:
   double getScore(node u, node v) const;
 
   /**
-   * Returns the similarity score for the given node-pair based on the
-   * Katz index specified during construction. The algorithm considers all
-   * paths starting at the node with the smaller degree except the algorithm
+   * Returns the similarity score for the given node-pair based on the Katz index specified during construction.
+   * The algorithm considers all paths starting at the node with the smaller degree except the algorithm
    * started at the other node at the last call.
    * @param u First node
    * @param v Second node
@@ -62,7 +62,7 @@ public:
    * @param maxPathLength Maximal length of the paths to consider
    * @param dampingValue Used to exponentially damp every addend of the sum. Should be in (0, 1]
    */
-  explicit KatzIndex(count maxPathLength = 3, double dampingValue = 0.9);
+  explicit KatzIndex(count maxPathLength = 5, double dampingValue = 0.005);
 
   /**
    *
@@ -70,7 +70,7 @@ public:
    * @param maxPathLength Maximal length of the paths to consider
    * @param dampingValue Used to exponentially damp every addend of the sum. Should be in (0, 1]
    */
-  explicit KatzIndex(const Graph& G, count maxPathLength = 3, double dampingValue = 0.9);
+  explicit KatzIndex(const Graph& G, count maxPathLength = 5, double dampingValue = 0.005);
 
   // Overriding this method is necessary as the implementation of the Katz index makes use
   // of caching. This makes run() not thread-safe. To still achieve performance gains
