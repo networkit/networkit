@@ -1,69 +1,69 @@
-NetworKit.viztools
+networkit.viztools
 ==================
 
 Submodules
 ----------
 
-viztools.cluster module
------------------------
+networkit.viztools.cluster module
+---------------------------------
 
-.. automodule:: viztools.cluster
+.. automodule:: networkit.viztools.cluster
     :members:
     :undoc-members:
     :show-inheritance:
 
-viztools.construct module
--------------------------
+networkit.viztools.construct module
+-----------------------------------
 
-.. automodule:: viztools.construct
+.. automodule:: networkit.viztools.construct
     :members:
     :undoc-members:
     :show-inheritance:
 
-viztools.drawing module
------------------------
+networkit.viztools.drawing module
+---------------------------------
 
-.. automodule:: viztools.drawing
+.. automodule:: networkit.viztools.drawing
     :members:
     :undoc-members:
     :show-inheritance:
 
-viztools.edgemap module
------------------------
+networkit.viztools.edgemap module
+---------------------------------
 
-.. automodule:: viztools.edgemap
+.. automodule:: networkit.viztools.edgemap
     :members:
     :undoc-members:
     :show-inheritance:
 
-viztools.graph module
----------------------
+networkit.viztools.graph module
+-------------------------------
 
-.. automodule:: viztools.graph
+.. automodule:: networkit.viztools.graph
     :members:
     :undoc-members:
     :show-inheritance:
 
-viztools.graphio module
------------------------
+networkit.viztools.graphio module
+---------------------------------
 
-.. automodule:: viztools.graphio
+.. automodule:: networkit.viztools.graphio
     :members:
     :undoc-members:
     :show-inheritance:
 
-viztools.layout module
-----------------------
+networkit.viztools.layout module
+--------------------------------
 
-.. automodule:: viztools.layout
+.. automodule:: networkit.viztools.layout
     :members:
     :undoc-members:
     :show-inheritance:
 
-viztools.nodemap module
------------------------
+networkit.viztools.nodemap module
+---------------------------------
 
-.. automodule:: viztools.nodemap
+.. automodule:: networkit.viztools.nodemap
     :members:
     :undoc-members:
     :show-inheritance:
@@ -72,7 +72,7 @@ viztools.nodemap module
 Module contents
 ---------------
 
-.. automodule:: viztools
+.. automodule:: networkit.viztools
     :members:
     :undoc-members:
     :show-inheritance:

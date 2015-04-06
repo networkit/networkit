@@ -1,7 +1,7 @@
-NetworKit.nxadapter
+networkit.nxadapter
 ===================
 
-.. automodule:: nxadapter
+.. automodule:: networkit.nxadapter
     :members:
     :imported-members:
     :undoc-members:

@@ -1,7 +1,7 @@
-NetworKit.toolbox
+networkit.toolbox
 =================
 
-.. automodule:: toolbox
+.. automodule:: networkit.toolbox
     :members:
     :imported-members:
     :undoc-members:
