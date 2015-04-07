@@ -9,7 +9,6 @@
 #define JACCARDINDEX_H_
 
 #include "LinkPredictor.h"
-#include "CommonNeighborsIndex.h"
 
 namespace NetworKit {
 
