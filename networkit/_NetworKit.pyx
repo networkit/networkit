@@ -5743,6 +5743,47 @@ cdef class NeighborsMeasureIndex(LinkPredictor):
 		"""
 		return self._this.run(u, v)
 
+cdef extern from "cpp/linkprediction/SameCommunityIndex.h":
+	cdef cppclass _SameCommunityIndex "NetworKit::SameCommunityIndex"(_LinkPredictor):
+		_SameCommunityIndex() except +
+		_SameCommunityIndex(const _Graph& G) except +
+
+cdef class SameCommunityIndex(LinkPredictor):
+	""" Index to determine whether two nodes are in the same community.
+
+	Parameters
+	----------
+	G : Graph, optional
+		The graph to work on. Defaults to None.
+	"""
+
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _SameCommunityIndex()
+		else:
+			self._this = new _SameCommunityIndex(G._this)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def run(self, node u, node v):
+		""" Returns 1 if the given nodes u and v are in the same community, 0 otherwise.
+
+		Parameters
+		----------
+		u : node
+			First node in graph.
+		v : node
+			Second node in graph.
+
+		Returns
+		-------
+		1 if the given nodes u and v are in the same community, 0 otherwise.
+		"""
+		return self._this.run(u, v)
+
 cdef extern from "cpp/linkprediction/TrainingGraphSampler.h" namespace "NetworKit::TrainingGraphSampler":
 	_Graph byPercentage(_Graph G, double trainPercentage) except +
 	_Graph byCount(_Graph G, count numTrainLinks) except +
