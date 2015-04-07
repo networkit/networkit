@@ -22,6 +22,7 @@
 #include "../LinkThresholder.h"
 #include "../TotalNeighborsIndex.h"
 #include "../NeighborsMeasureIndex.h"
+#include "../SameCommunityIndex.h"
 
 namespace NetworKit {
 
@@ -183,6 +184,16 @@ TEST_F(LinkPredictionGTest, testTenFoldCrossValidation) {
   KFoldCrossValidator validator(newG, &cn, &roc);
   double averageAUC = validator.crossValidate(10);
   EXPECT_NEAR(0.89, averageAUC, 0.05);
+}
+
+TEST_F(LinkPredictionGTest, testSameCommunityIndexRun) {
+  SameCommunityIndex sameCommunityIndex(trainingGraph);
+  EXPECT_EQ(0, sameCommunityIndex.run(0, 2));
+  EXPECT_EQ(0, sameCommunityIndex.run(0, 4));
+  EXPECT_EQ(0, sameCommunityIndex.run(1, 3));
+  EXPECT_EQ(1, sameCommunityIndex.run(1, 5));
+  EXPECT_EQ(1, sameCommunityIndex.run(2, 4));
+  EXPECT_EQ(0, sameCommunityIndex.run(3, 5));
 }
 
 TEST_F(LinkPredictionGTest, testCommonNeighborsIndexRunOnParallelHugeGraph) {
