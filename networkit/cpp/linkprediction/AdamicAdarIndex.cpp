@@ -21,5 +21,4 @@ double AdamicAdarIndex::runImpl(node u, node v) {
   return sum;
 }
 
-
 } // namespace NetworKit
