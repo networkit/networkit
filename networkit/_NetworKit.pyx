@@ -41,7 +41,6 @@ cdef extern from "<algorithm>" namespace "std":
 	pair[_Graph, vector[node]] move(pair[_Graph, vector[node]])
 	vector[pair[pair[node, node], double]] move(vector[pair[pair[node, node], double]])
 	vector[pair[node, node]] move(vector[pair[node, node]])
-
 # Cython helper functions
 
 def stdstring(pystring):
@@ -5781,6 +5780,91 @@ cdef class SameCommunityIndex(LinkPredictor):
 		Returns
 		-------
 		1 if the given nodes u and v are in the same community, 0 otherwise.
+		"""
+		return self._this.run(u, v)
+
+cdef extern from "cpp/linkprediction/AdjustedRandIndex.h":
+	cdef cppclass _AdjustedRandIndex "NetworKit::AdjustedRandIndex"(_LinkPredictor):
+		_AdjustedRandIndex() except +
+		_AdjustedRandIndex(const _Graph& G) except +
+
+cdef class AdjustedRandIndex(LinkPredictor):
+	""" AdjustedRandIndex proposed by Hoffman et al. with natural threshold of 0.
+
+	Parameters
+	----------
+	G : Graph, optional
+		The graph to work on. Defaults to None.
+	"""
+
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _AdjustedRandIndex()
+		else:
+			self._this = new _AdjustedRandIndex(G._this)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def run(self, node u, node v):
+		""" Returns the Adjusted Rand Index of the given node-pair (u, v).
+
+		Parameters
+		----------
+		u : node
+			First node in graph.
+		v : node
+			Second node in graph.
+
+		Returns
+		-------
+		The Adjusted Rand Index of the given node-pair (u, v).
+		"""
+		return self._this.run(u, v)
+
+cdef extern from "cpp/linkprediction/ResourceAllocationIndex.h":
+	cdef cppclass _ResourceAllocationIndex "NetworKit::ResourceAllocationIndex"(_LinkPredictor):
+		_ResourceAllocationIndex() except +
+		_ResourceAllocationIndex(const _Graph& G) except +
+
+cdef class ResourceAllocationIndex(LinkPredictor):
+	""" Implementation of the ResourceAllocationIndex.
+
+	The index is similar to Adamic/Adar and sums up the reciprocals of
+	the degree of all common neighbors of u and v.
+
+	Parameters
+	----------
+	G : Graph, optional
+		The graph to work on. Defaults to None.
+	"""
+
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _ResourceAllocationIndex()
+		else:
+			self._this = new _ResourceAllocationIndex(G._this)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def run(self, node u, node v):
+		""" Returns the Resource Allocation Index of the given node-pair (u, v).
+
+		Parameters
+		----------
+		u : node
+			First node in graph.
+		v : node
+			Second node in graph.
+
+		Returns
+		-------
+		The Resource Allocation Index of the given node-pair (u, v).
 		"""
 		return self._this.run(u, v)
 

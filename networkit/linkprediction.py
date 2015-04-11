@@ -1,5 +1,5 @@
 
-from _NetworKit import KatzIndex, CommonNeighborsIndex, JaccardIndex, PreferentialAttachmentIndex, AdamicAdarIndex, UDegreeIndex, VDegreeIndex, AlgebraicDistanceIndex, NeighborhoodDistanceIndex, TotalNeighborsIndex, NeighborsMeasureIndex, SameCommunityIndex, TrainingGraphSampler, ROCMetric, KFoldCrossValidator, PrecisionRecallMetric, MissingLinksFinder
+from _NetworKit import KatzIndex, CommonNeighborsIndex, JaccardIndex, PreferentialAttachmentIndex, AdamicAdarIndex, UDegreeIndex, VDegreeIndex, AlgebraicDistanceIndex, NeighborhoodDistanceIndex, TotalNeighborsIndex, NeighborsMeasureIndex, SameCommunityIndex, AdjustedRandIndex, ResourceAllocationIndex, TrainingGraphSampler, ROCMetric, KFoldCrossValidator, PrecisionRecallMetric, MissingLinksFinder
 
 from .graph import Graph
 
@@ -20,7 +20,7 @@ def trainClassifier(trainingSet, trainingGraph, classifier, *linkPredictors):
   trainingSet : vector[pair[node, node]]
     Vector of node-pairs to generate features for,
   trainingGraph : Graph
-    Training graph containg all edges from the training set.
+    Training graph containing all edges from the training set.
   classifier:
     Scikit-learn classifier to train.
   linkPredictors:
