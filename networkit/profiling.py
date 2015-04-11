@@ -9,7 +9,57 @@ from base64 import b64encode
 from IPython.core.display import HTML
 
 
-def asImage(plotFunction, plotArgs, plotKwargs={}, size=(8,6)):
+profileTemplate = """
+	<style media="screen" type="text/css">
+	#wrapper {
+	    width: 500px;
+	    border: 1px solid black;
+	}
+	#first {
+	    width: 300px;
+	    border: 1px solid red;
+	}
+	#second {
+	    border: 1px solid green;
+	}
+	</style>
+
+	<div id="page">
+	<h1>Network Profile</h1>
+
+	<h2>Network Properties</h2>
+		<div id="wrapper">
+			<div id="first">
+				{networkPropertiesTable}
+			</div>
+			<div id="second">
+				{hopPlot}
+			</div>
+		</div>
+
+	<h2>Network Partitions</h2>
+
+	<h2>Node Centrality Measures</h2>
+
+	<h3>Degree</h3>
+	{ddPlot}
+	{ddHist}
+
+	<h3>Local Clustering Coefficient</h3>
+	{ccPlot}
+	{ccHist}
+
+
+
+
+	power law distribution: {plaw} {gamma}
+
+	{compPlot}
+	</div>
+"""
+
+
+def asImage(plotFunction, plotArgs=[], plotKwargs={}, size=(8,6)):
 	"""
 	Call any plot function with the given argument and return the image in an HTML <img> tag.
 	"""
@@ -24,26 +74,6 @@ def asImage(plotFunction, plotArgs, plotKwargs={}, size=(8,6)):
 	# generate img tag
 	image = "<img src='{0}'\>".format(imageData)
 	return image
-
-
-profileTemplate = """
-	<h1>Network Profile</h1>
-
-	<h2>Network Properties</h2>
-
-	{networkPropertiesTable}
-
-	<h2>Network Partitions</h2>
-
-	<h2>Node Centrality Measures</h2>
-
-	{ddImage}
-
-	power law distribution: {plaw} {gamma}
-
-	{ccImage}
-"""
-
 
 def computeNetworkProperties(G):
 	"""
@@ -81,6 +111,10 @@ def computeNodeProperties(G):
 	return nodeProperties
 
 
+def computeNodePropertyCorrelations(nodeProperties, method="spearman"):
+	return nodeProperties.corr(method=method)
+
+
 def plotNodePropertyCorrelations(nodeProperties, figsize=(8,8), method="spearman"):
     cmap = seaborn.diverging_palette(220, 20, as_cmap=True)
     f, ax = plt.subplots(figsize=figsize)
@@ -94,19 +128,29 @@ def profile(G):
 	"""
 	Output profile page of network as HTML
 	"""
+	# settings
+	defaultSize = (5,2)
+	histArgs = {"bins" : 100, "figsize" : (12,8)}
 
 	# compute global network attributes
 	networkProperties = computeNetworkProperties(G)
 	networkPropertiesTable = tabulate.tabulate(networkProperties, tablefmt="html")
+
+	hopPlot = asImage(plot.hopPlot, plotArgs=[G], size=defaultSize)
+
+	# compute node properties
+	nodeProperties = computeNodeProperties(G)
 
 
 	# compute figures
 	(plaw, _, gamma) = properties.degreePowerLaw(G)
 
 	# compute images
-	ddImage  = asImage(plot.degreeDistribution, plotArgs=[G], size=(4,2))
-	ccImage = asImage(plot.connectedComponentsSizes, [G], size=(1,1))
-
+	ddPlot  = asImage(plot.degreeDistribution, plotArgs=[G], size=defaultSize)
+	ddHist = asImage(nodeProperties["degree"].hist, plotKwargs=histArgs, size=defaultSize)
+	ccPlot = asImage(plot.nodeProperty, plotKwargs={"data" : nodeProperties["clustering"], "label": "local clustering coefficient"}, size=defaultSize)
+	ccHist = asImage(nodeProperties["clustering"].hist, plotKwargs=histArgs, size=defaultSize)
+	compPlot = asImage(plot.connectedComponentsSizes, [G], size=(1,1))
 
 	page = HTML(profileTemplate.format(**locals()))
 	return page
