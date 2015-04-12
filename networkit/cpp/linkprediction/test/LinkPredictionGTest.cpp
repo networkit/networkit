@@ -186,14 +186,16 @@ TEST_F(LinkPredictionGTest, testTenFoldCrossValidation) {
   EXPECT_NEAR(0.89, averageAUC, 0.05);
 }
 
-TEST_F(LinkPredictionGTest, testSameCommunityIndexRun) {
-  SameCommunityIndex sameCommunityIndex(trainingGraph);
-  EXPECT_EQ(0, sameCommunityIndex.run(0, 2));
-  EXPECT_EQ(0, sameCommunityIndex.run(0, 4));
-  EXPECT_EQ(0, sameCommunityIndex.run(1, 3));
-  EXPECT_EQ(1, sameCommunityIndex.run(1, 5));
-  EXPECT_EQ(1, sameCommunityIndex.run(2, 4));
-  EXPECT_EQ(0, sameCommunityIndex.run(3, 5));
+TEST_F(LinkPredictionGTest, testRunOnParallelOrdering) {
+  METISGraphReader graphReader;
+  Graph newG = graphReader.read("input/jazz.graph");
+  KatzIndex katz(newG);
+  Graph trainingGraph = TrainingGraphSampler::byPercentage(newG, 0.7);
+  std::vector<std::pair<node, node>> nodePairs = MissingLinksFinder(trainingGraph).findAll(2);
+  std::vector<std::pair<std::pair<node, node>, double>> preds = katz.runOnParallel(missingLinks);
+  for (index i = 0; i < preds.size() - 1; ++i) {
+    EXPECT_TRUE(preds[i].first.first < preds[i+1].first.first || preds[i].first.second < preds[i+1].first.second);
+  }
 }
 
 TEST_F(LinkPredictionGTest, testCommonNeighborsIndexRunOnParallelHugeGraph) {

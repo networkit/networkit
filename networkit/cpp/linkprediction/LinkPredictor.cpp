@@ -35,6 +35,7 @@ std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runOn(std::vecto
 
 std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runOnParallel(std::vector<std::pair<node, node>> nodePairs) {
   std::vector<node_dyad_score_pair> predictions(nodePairs.size());
+  std::sort(nodePairs.begin(), nodePairs.end());
   #pragma omp parallel for schedule(dynamic) shared(predictions)
   for (index i = 0; i < nodePairs.size(); ++i) {
     predictions[i] = std::make_pair(nodePairs[i], run(nodePairs[i].first, nodePairs[i].second));
@@ -70,7 +71,11 @@ std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runAll() {
 }
 
 void LinkPredictor::sortByScore(std::vector<LinkPredictor::node_dyad_score_pair>& predictions) {
-  std::sort(predictions.begin(), predictions.end(), ConcreteNodeDyadScoreComp);
+  std::sort(predictions.begin(), predictions.end(), ConcreteScoreComp);
+}
+
+void LinkPredictor::sortByNodePair(std::vector<LinkPredictor::node_dyad_score_pair>& predictions) {
+  std::sort(predictions.begin(), predictions.end(), ConcreteNodePairComp);
 }
 
 } // namespace NetworKit
