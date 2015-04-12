@@ -6040,7 +6040,7 @@ cdef class EdgeAttributeLinearizer:
 	def __cinit__(self, Graph G, vector[double] attribute, inverse = False):
 		self._G = G
 		self._attribute = attribute
-		self._this = new _EdgeAttributeLinearizer(G._this, attribute, inverse)
+		self._this = new _EdgeAttributeLinearizer(G._this, self._attribute, inverse)
 
 	def __dealloc__(self):
 		del self._this
