@@ -10,21 +10,28 @@
 namespace NetworKit {
 
 double AdjustedRandIndex::runImpl(node u, node v) {
-  std::vector<node> uAdjacencyColumn(G->upperNodeIdBound());
-  std::vector<node> vAdjacencyColumn(G->upperNodeIdBound());
-  double a = 0, b = 0, c = 0, d = 0;
+  std::set<node> uNeighbors;
+  std::set<node> vNeighbors;
+
   G->forNeighborsOf(u, [&](node z) {
-    uAdjacencyColumn[z] = 1;
+    uNeighbors.insert(z);
   });
   G->forNeighborsOf(v, [&](node z) {
-    vAdjacencyColumn[z] = 1;
+    vNeighbors.insert(z);
   });
-  for (index i = 0; i < G->upperNodeIdBound(); ++i) {
-    a += uAdjacencyColumn[i] * vAdjacencyColumn[i];
-    b += uAdjacencyColumn[i] * (1 - vAdjacencyColumn[i]);
-    c += (1 - uAdjacencyColumn[i]) * vAdjacencyColumn[i];
-    d += (1 - uAdjacencyColumn[i]) * (1 - vAdjacencyColumn[i]);
-  }
+  std::vector<node> commonNeighbors;
+  std::set_intersection(uNeighbors.begin(), uNeighbors.end(), vNeighbors.begin(), vNeighbors.end(), std::back_inserter(commonNeighbors));
+  std::vector<node> unionNeighbors;
+  std::set_union(uNeighbors.begin(), uNeighbors.end(), vNeighbors.begin(), vNeighbors.end(), std::back_inserter(unionNeighbors));
+  std::vector<node> uDifference;
+  std::set_union(uNeighbors.begin(), uNeighbors.end(), vNeighbors.begin(), vNeighbors.end(), std::back_inserter(uDifference));
+  std::vector<node> vDifference;
+  std::set_union(vNeighbors.begin(), vNeighbors.end(), uNeighbors.begin(), uNeighbors.end(), std::back_inserter(vDifference));
+
+  double a = commonNeighbors.size();
+  double b = uDifference.size();
+  double c = vDifference.size();
+  double d = G->numberOfNodes() - unionNeighbors.size();
   double ad = a*d;
   return (2*(ad - b*c)) / (a*b + a*c + 2*ad + b*b + b*d + c*c + c*d);
 }
