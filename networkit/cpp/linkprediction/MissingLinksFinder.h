@@ -39,7 +39,7 @@ public:
    * Note that a distance of @a k actually means that there are @a k different links
    * on the path of the two nodes that are connected through that path.
    * @param k Distance of the absent links
-   * @return a vector of node-pairs where there is a missing link of distance @a k
+   * @return an ascendingly sorted vector of node-pairs where there is a missing link of distance @a k
    * between the two nodes
    */
   std::vector<std::pair<node, node>> findAll(count k);

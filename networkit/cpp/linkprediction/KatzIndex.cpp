@@ -73,6 +73,7 @@ std::vector<LinkPredictor::node_dyad_score_pair> KatzIndex::runOnParallel(std::v
       predictions[i] = std::make_pair(nodePairs[i], katz.run(nodePairs[i].first, nodePairs[i].second));
     }
   }
+  sortByNodePair(predictions);
   return predictions;
 }
 
