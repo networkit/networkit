@@ -252,8 +252,7 @@ class SimmelianBackboneNonParametric(Sparsifier):
 
 		chiba = ChibaNishizekiTriangleCounter(G)
 		triangles = chiba.getAttribute()
-		sj = SimmelianJaccardAttributizer(G, triangles)
-		a_sj = sj.getAttribute()
+		a_sj = PrefixJaccardCoefficient(G, triangles).run().getAttribute()
 		return a_sj
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
