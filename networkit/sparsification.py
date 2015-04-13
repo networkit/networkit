@@ -262,7 +262,7 @@ class SimmelianBackboneNonParametric(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
-class SimmelianQuadrangleBackbone(Sparsifier):
+class QuadrilateralSimmelianBackbone(Sparsifier):
 	""" An implementation of the Simmelian Backbones based on quadrangles. """
 
 	def getAttribute(self, G):
