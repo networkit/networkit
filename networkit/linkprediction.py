@@ -26,6 +26,10 @@ def trainClassifier(trainingSet, trainingGraph, classifier, *linkPredictors):
   linkPredictors:
     Predictors used for the generation of feature-vectors.
   """
+  # Make sure the set is sorted because the samples will be sorted by node-pairs (asc.)
+  # and the labels would be sorted by the initial order. That would lead to an incorrect
+  # matching between labels and samples.
+  trainingSet.sort()
   trainingClasses = getClasses(trainingSet, trainingGraph)
   trainingSamples = getSamples(trainingSet, *linkPredictors)
   classifier.fit(trainingSamples, trainingClasses)

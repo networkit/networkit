@@ -43,7 +43,6 @@ double KatzIndex::runImpl(node u, node v) {
     std::unordered_map<node, count> hits;
     for (std::list<node>::const_iterator it = toProcess.begin(); it != toProcess.end(); ++it) {
       const node current = *it;
-      // TODO: Parallelize this part.
       G->forNeighborsOf(current, [&](node neighbor) {
         hits[neighbor] += 1;
       });
