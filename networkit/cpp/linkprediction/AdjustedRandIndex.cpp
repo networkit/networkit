@@ -33,7 +33,9 @@ double AdjustedRandIndex::runImpl(node u, node v) {
   double c = vDifference.size();
   double d = G->numberOfNodes() - unionNeighbors.size();
   double ad = a*d;
-  return (2*(ad - b*c)) / (a*b + a*c + 2*ad + b*b + b*d + c*c + c*d);
+  // Make sure to not divide by zero
+  double denominator = (a*b + a*c + 2*ad + b*b + b*d + c*c + c*d);
+  return denominator == 0 ? 0 : (2*(ad - b*c)) / denominator;
 }
 
 } // namespace NetworKit
