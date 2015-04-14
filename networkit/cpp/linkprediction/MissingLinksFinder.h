@@ -55,6 +55,8 @@ public:
    */
   std::vector<std::pair<node, node>> findFromNode(node u, count k);
 
+  std::vector<std::pair<node, node>> findRandomly(count k, count limit);
+
 };
 
 } // namespace NetworKit

@@ -77,6 +77,13 @@ TEST_F(LinkPredictionGTest, testMissingLinksFinderDistanceThree) {
   EXPECT_EQ(0, hopThreeMissingLinks[1].first); EXPECT_EQ(5, hopThreeMissingLinks[1].second);
 }
 
+TEST_F(LinkPredictionGTest, testMissingLinksFinderRandomDistanceTwo) {
+  std::vector<std::pair<node, node>> hopThreeMissingLinks = MissingLinksFinder(trainingGraph).findRandomly(2, 2);
+  EXPECT_EQ(2, hopThreeMissingLinks.size());
+  INFO(hopThreeMissingLinks[0]);
+  INFO(hopThreeMissingLinks[1]);
+}
+
 TEST_F(LinkPredictionGTest, testLinkThresholderByScore) {
   std::vector<std::pair<node, node>> selectedLinks;
   selectedLinks = LinkThresholder::byScore(predictions, 2);

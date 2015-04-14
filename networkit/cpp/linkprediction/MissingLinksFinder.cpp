@@ -8,10 +8,46 @@
 #include "MissingLinksFinder.h"
 
 #include <algorithm>
+#include <random>
 
 namespace NetworKit {
 
 MissingLinksFinder::MissingLinksFinder(const Graph& G) : G(G) {
+}
+
+std::vector<std::pair<node, node>> MissingLinksFinder::findRandomly(count k, count limit) {
+  std::set<std::pair<node, node>> missingLinks;
+  std::vector<node> nodes = G.nodes();
+  std::random_device randomDevice;
+  std::mt19937 generator(randomDevice());
+  count numMissingLinks = 0;
+  // Determine the number of missing links with distance k
+  /*#pragma omp parallel for
+  for (index i = 0; i < nodes.size(); ++i) {
+    std::vector<std::pair<node, node>> missingAtU = findFromNode(nodes[i], k);
+    #pragma omp atomic
+    numMissingLinks += missingAtU.size();
+  }
+  // Every edge will be counted twice, so adjust the number accordingly
+  numMissingLinks /= 2;
+  if (limit > numMissingLinks) {
+    return findAll(k);
+  }*/
+  while (missingLinks.size() < limit) {
+    std::vector<std::pair<node, node>> missingAtU;
+    // Make sure to actually get a node that has missing links with distance k
+    while (missingAtU.size() == 0) {
+      node randomNode = G.randomNode();
+      missingAtU = findFromNode(randomNode, k);
+      INFO("Random node = ", randomNode);
+    }
+    std::uniform_int_distribution<> distribution(0, missingAtU.size() - 1);
+    std::pair<node, node> edge = missingAtU[distribution(generator)];
+    missingLinks.insert(edge.first < edge.second ? edge : std::make_pair(edge.second, edge.first));
+  }
+  std::vector<std::pair<node, node>> result(limit);
+  result.assign(missingLinks.begin(), missingLinks.end());
+  return result;
 }
 
 std::vector<std::pair<node, node>> MissingLinksFinder::findAll(count k) {

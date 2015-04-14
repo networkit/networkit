@@ -6157,6 +6157,7 @@ cdef extern from "cpp/linkprediction/MissingLinksFinder.h":
 		_MissingLinksFinder(const _Graph& G) except +
 		vector[pair[node, node]] findAll(count k) except +
 		vector[pair[node, node]] findFromNode(node u, count k) except +
+		vector[pair[node, node]] findRandomly(node u, count limit) except +
 
 cdef class MissingLinksFinder:
 	""" Allows the user to find missing links in the given graph.
@@ -6216,6 +6217,9 @@ cdef class MissingLinksFinder:
 		between the given node u and another node in the graph.
 		"""
 		return move(self._this.findFromNode(u, k))
+
+	def findRandomly(self, count k, count limit):
+		return move(self._this.findRandomly(k, limit))
 
 cdef extern from "cpp/linkprediction/NeighborhoodUtility.h" namespace "NetworKit::NeighborhoodUtility":
 	vector[node] getNeighborsUnion(const _Graph& G, node u, node v) except +
