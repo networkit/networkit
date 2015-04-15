@@ -19,11 +19,6 @@
  */
 
 /**
- * @defgroup distmeasures Distance Measures
- * @brief Various distance measuring algorithms.
- */
-
-/**
  * @defgroup dynamics Dynamics
  * @brief TODO
  */
