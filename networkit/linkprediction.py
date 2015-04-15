@@ -4,6 +4,8 @@ from _NetworKit import KatzIndex, CommonNeighborsIndex, JaccardIndex, Preferenti
 from .graph import Graph
 
 import numpy as np
+# Only necessary to fix GML, remove afterwards
+import re, string
 
 try:
   import sklearn
@@ -120,3 +122,61 @@ def readGraph(file, percentLinks):
   for (time, u, v) in filelist[-nEdges:]:
     G1.removeEdge(u, v)
   return G, G1
+
+def fixGML(filepath):
+  directed = 0
+  f = open(filepath, "r")
+  i = 0
+  state = 0
+  directed = '0'
+  awaitNodeId = False
+  awaitEdgeId = False
+  nodes = []
+  edges = []
+  source = -1
+  for line in f:
+    cleanedLine = re.sub(r'[^\s\w_]+', '', line).strip()
+    if state == 0: # graph key
+      if cleanedLine == 'graph':
+        state += 1
+    elif state == 1: # directed
+      p = cleanedLine.split()
+      if p[0] == 'directed':
+        directed = p[1]
+        state += 1
+    else: # nodes or edges
+      p = cleanedLine.split()
+      if len(p) == 0:
+        continue
+      if p[0] == 'node':
+        awaitNodeId = True
+        awaitEdgeId = False
+      if p[0] == 'edge':
+        awaitNodeId = False
+        awaitEdgeId = True
+      if awaitNodeId and p[0] == 'id':
+        nodes.append(int(p[1]))
+        awaitNodeId = False
+      if awaitEdgeId and p[0] == 'source':
+        source = int(p[1])
+      elif awaitEdgeId and p[0] == 'target':
+        edges.append((source, int(p[1])))
+        awaitEdgeId = False
+  f.close()
+  if state != 2:
+    return
+  n = open(filepath + "_new", "w")
+  n.write("graph [\n")
+  n.write("  directed " + directed + "\n")
+  for node in nodes:
+    n.write("  node [\n")
+    n.write("    id " + str(node) + "\n")
+    n.write("  ]\n")
+  for edge in edges:
+    n.write("  edge [\n")
+    n.write("    source " + str(edge[0]) + "\n")
+    n.write("    target " + str(edge[1]) + "\n")
+    n.write("  ]\n")
+
+  n.write("]")
+  n.close()
