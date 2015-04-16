@@ -14,7 +14,7 @@ double NeighborsMeasureIndex::runImpl(node u, node v) {
   G->forNeighborsOf(u, [&](node uNeighbor) {
     G->forNeighborsOf(v, [&](node vNeighbor) {
       // Don't count self-loops
-      if (G->hasEdge(uNeighbor, vNeighbor) && uNeighbor != vNeighbor) {
+      if (uNeighbor == vNeighbor || G->hasEdge(uNeighbor, vNeighbor)) {
         ++neighborConnections;
       }
     });
