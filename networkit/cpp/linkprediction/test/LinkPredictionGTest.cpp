@@ -84,6 +84,13 @@ TEST_F(LinkPredictionGTest, testMissingLinksFinderRandomDistanceTwo) {
   INFO(hopThreeMissingLinks[1]);
 }
 
+TEST_F(LinkPredictionGTest, testMissingLinksFinderRandomNegativesDistanceTwo) {
+  std::vector<std::pair<node, node>> hopTwoNegatives = MissingLinksFinder(trainingGraph).findRandomNegatives(2, 2, trainingGraph);
+  EXPECT_EQ(2, hopTwoNegatives.size());
+  INFO(hopTwoNegatives[0]);
+  INFO(hopTwoNegatives[1]);
+}
+
 TEST_F(LinkPredictionGTest, testLinkThresholderByScore) {
   std::vector<std::pair<node, node>> selectedLinks;
   selectedLinks = LinkThresholder::byScore(predictions, 2);

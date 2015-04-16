@@ -6157,7 +6157,11 @@ cdef extern from "cpp/linkprediction/MissingLinksFinder.h":
 		_MissingLinksFinder(const _Graph& G) except +
 		vector[pair[node, node]] findAll(count k) except +
 		vector[pair[node, node]] findFromNode(node u, count k) except +
-		vector[pair[node, node]] findRandomly(node u, count limit) except +
+		vector[pair[node, node]] findRandomly(count k, count limit) except +
+		vector[pair[node, node]] findPositives(count k, const _Graph& testGraph) except +
+		vector[pair[node, node]] findNegatives(count k, const _Graph& testGraph) except +
+		vector[pair[node, node]] findRandomNegatives(count k, count limit, const _Graph& testGraph) except +
+		count getNumNegatives(count k, const _Graph& G) except +
 
 cdef class MissingLinksFinder:
 	""" Allows the user to find missing links in the given graph.
@@ -6220,6 +6224,18 @@ cdef class MissingLinksFinder:
 
 	def findRandomly(self, count k, count limit):
 		return move(self._this.findRandomly(k, limit))
+
+	def findPositives(self, count k, Graph G):
+		return move(self._this.findPositives(k, G._this))
+
+	def findNegatives(self, count k, Graph G):
+		return move(self._this.findNegatives(k, G._this))
+
+	def findRandomNegatives(self, count k, count limit, Graph G):
+		return move(self._this.findRandomNegatives(k, limit, G._this))
+
+	def getNumNegatives(self, count k, Graph G):
+		return self._this.getNumNegatives(k, G._this)
 
 cdef extern from "cpp/linkprediction/NeighborhoodUtility.h" namespace "NetworKit::NeighborhoodUtility":
 	vector[node] getNeighborsUnion(const _Graph& G, node u, node v) except +
