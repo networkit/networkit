@@ -199,9 +199,10 @@ def fixGML(filepath):
         state += 1
     elif state == 1: # directed
       p = cleanedLine.split()
-      if p[0] == 'directed':
-        directed = p[1]
-        state += 1
+      if len(p) > 0:
+        if p[0] == 'directed':
+          directed = p[1]
+          state += 1
     else: # nodes or edges
       p = cleanedLine.split()
       if len(p) == 0:
