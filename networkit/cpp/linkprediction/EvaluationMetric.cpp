@@ -31,13 +31,15 @@ std::pair<std::vector<double>, std::vector<double>> EvaluationMetric::getCurve(s
   if (predictions.size() + 1 < numThresholds || numThresholds == 0) {
     numThresholds = predictions.size() + 1;
   }
-  thresholds.clear();
-  thresholds.reserve(numThresholds);
+  std::set<index> thresholdSet;
   count numPredictions = predictions.size();
   for (index i = 0; i < numThresholds; ++i) {
     // Percentile calculation through nearest rank method.
-    thresholds.push_back(std::ceil(numPredictions * (1.0 * i / (numThresholds - 1))));
+    // This calculation is numerically instable. This is why we use a set to make sure that
+    // we obtain pairwise different thresholds.
+    thresholdSet.insert(std::ceil(numPredictions * (1.0 * i / (numThresholds - 1))));
   }
+  thresholds.assign(thresholdSet.begin(), thresholdSet.end());
   // The extraction of statistical measures requires sorted predictions
   LinkPredictor::sortByScore(predictions);
   this->predictions = predictions;
