@@ -70,7 +70,7 @@ double AlgebraicDistanceIndex::runImpl(node u, node v) {
 		result = pow(result, 1.0 / (double) norm);
 	}
 
-	return result;
+	return std::isnan(result) ? 0 : result;
 }
 
 void AlgebraicDistanceIndex::randomInit() {
