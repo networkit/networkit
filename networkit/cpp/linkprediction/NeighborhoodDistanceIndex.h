@@ -1,12 +1,12 @@
 /*
- * ReversedNeighborhoodDistanceIndex.h
+ * NeighborhoodDistanceIndex.h
  *
  *  Created on: 24.06.2013
  *      Authors: cls, Kolja Esders
  */
 
-#ifndef REVERSEDNEIGHBORHOODDISTANCEINDEX_H_
-#define REVERSEDNEIGHBORHOODDISTANCEINDEX_H_
+#ifndef NEIGHBORHOODDISTANCEINDEX_H_
+#define NEIGHBORHOODDISTANCEINDEX_H_
 
 #include "LinkPredictor.h"
 #include <math.h>
@@ -20,7 +20,7 @@ namespace NetworKit {
  * Assigns a distance value to pairs of nodes according to the
  * overlap of their neighborhoods.
  */
-class ReversedNeighborhoodDistanceIndex : public LinkPredictor {
+class NeighborhoodDistanceIndex : public LinkPredictor {
 private:
   /**
    * Returns the Neighborhood Distance index for the given node-pair (@a u, @a v).
@@ -36,4 +36,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* REVERSEDNEIGHBORHOODDISTANCEINDEX_H_ */
+#endif /* NEIGHBORHOODDISTANCEINDEX_H_ */
