@@ -5627,13 +5627,13 @@ cdef class AlgebraicDistanceIndex(LinkPredictor):
 		"""
 		return self._this.run(u, v)
 
-cdef extern from "cpp/linkprediction/ReversedNeighborhoodDistanceIndex.h":
-	cdef cppclass _ReversedNeighborhoodDistanceIndex "NetworKit::ReversedNeighborhoodDistanceIndex"(_LinkPredictor):
-		_ReversedNeighborhoodDistanceIndex() except +
-		_ReversedNeighborhoodDistanceIndex(const _Graph& G) except +
+cdef extern from "cpp/linkprediction/NeighborhoodDistanceIndex.h":
+	cdef cppclass _NeighborhoodDistanceIndex "NetworKit::NeighborhoodDistanceIndex"(_LinkPredictor):
+		_NeighborhoodDistanceIndex() except +
+		_NeighborhoodDistanceIndex(const _Graph& G) except +
 		double run(node u, node v) except +
 
-cdef class ReversedNeighborhoodDistanceIndex(LinkPredictor):
+cdef class NeighborhoodDistanceIndex(LinkPredictor):
 	""" Assigns a distance value to pairs of nodes according to the overlap of their neighborhoods.
 
 	Parameters
@@ -5643,9 +5643,9 @@ cdef class ReversedNeighborhoodDistanceIndex(LinkPredictor):
 	"""
 	def __cinit__(self, Graph G = None):
 		if G is None:
-			self._this = new _ReversedNeighborhoodDistanceIndex()
+			self._this = new _NeighborhoodDistanceIndex()
 		else:
-			self._this = new _ReversedNeighborhoodDistanceIndex(G._this)
+			self._this = new _NeighborhoodDistanceIndex(G._this)
 
 	def __dealloc__(self):
 		if self._this is not NULL:
