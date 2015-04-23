@@ -7,6 +7,8 @@
 
 #ifndef NOGTEST
 
+#include <chrono>
+
 #include "LinkPredictionGTest.h"
 #include "../../io/METISGraphReader.h"
 #include "../KatzIndex.h"
@@ -211,7 +213,7 @@ TEST_F(LinkPredictionGTest, testRunOnParallelOrdering) {
     EXPECT_TRUE(preds[i].first.first < preds[i+1].first.first || preds[i].first.second < preds[i+1].first.second);
   }
 }
-
+  
 TEST_F(LinkPredictionGTest, testCommonNeighborsIndexRunOnParallelHugeGraph) {
   METISGraphReader graphReader;
   Graph newG = graphReader.read("input/caidaRouterLevel.graph");
@@ -227,6 +229,20 @@ TEST_F(LinkPredictionGTest, testCommonNeighborsIndexRunOnParallelHugeGraph) {
     + (sizeof(std::pair<std::pair<node, node>, double>) * preds.size());
   INFO("Allocated ~", sizePredictions / (1024 * 1024), " MiB for predictions.");
   // ... expectations
+}
+
+TEST_F(LinkPredictionGTest, testSpeedup) {
+  METISGraphReader graphReader;
+  Graph newG = graphReader.read("input/caidaRouterLevel.graph");
+  CommonNeighborsIndex cn(newG);
+  std::vector<std::pair<node, node>> nodePairs = MissingLinksFinder(newG).findAll(2);
+  INFO("Found ", nodePairs.size(), " node-pairs.");
+
+  auto start_time = std::chrono::high_resolution_clock::now();
+  cn.runOn(nodePairs);
+  auto end_time = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<float> delta = end_time - start_time;
+  INFO("Elapsed time: ",  std::chrono::duration_cast<std::chrono::milliseconds>(delta).count(), " milliseconds.");
 }
 
 } // namespace NetworKit
