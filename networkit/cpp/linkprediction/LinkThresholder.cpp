@@ -9,7 +9,9 @@
 
 namespace NetworKit {
 
-std::vector<std::pair<node, node>> LinkThresholder::byScore(std::vector<LinkPredictor::node_dyad_score_pair> predictions, double minScore) {
+namespace LinkThresholder {
+
+std::vector<std::pair<node, node>> byScore(std::vector<LinkPredictor::node_dyad_score_pair> predictions, double minScore) {
   std::list<LinkPredictor::node_dyad_score_pair> predictionsList;
   std::copy(predictions.begin(), predictions.end(), std::back_inserter(predictionsList));
   predictionsList.erase(std::remove_if(predictionsList.begin(), predictionsList.end(),
@@ -22,7 +24,7 @@ std::vector<std::pair<node, node>> LinkThresholder::byScore(std::vector<LinkPred
   return selectedLinks;
 }
 
-std::vector<std::pair<node, node>> LinkThresholder::byCount(std::vector<LinkPredictor::node_dyad_score_pair> predictions, count numLinks) {
+std::vector<std::pair<node, node>> byCount(std::vector<LinkPredictor::node_dyad_score_pair> predictions, count numLinks) {
   if (numLinks > predictions.size()) {
     throw std::invalid_argument("numLinks > predictions.size().");
   }
@@ -36,11 +38,13 @@ std::vector<std::pair<node, node>> LinkThresholder::byCount(std::vector<LinkPred
   return selectedLinks;
 }
 
-std::vector<std::pair<node, node>> LinkThresholder::byPercentage(std::vector<LinkPredictor::node_dyad_score_pair> predictions, double percentageLinks) {
+std::vector<std::pair<node, node>> byPercentage(std::vector<LinkPredictor::node_dyad_score_pair> predictions, double percentageLinks) {
   if (percentageLinks < 0 || percentageLinks > 1) {
     throw std::invalid_argument("Given percentage is not in [0, 1].");
   }
   return byCount(predictions, percentageLinks * predictions.size());
 }
+
+} // namespace LinkThresholder
 
 } // namespace NetworKit
