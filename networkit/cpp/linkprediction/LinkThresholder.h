@@ -20,34 +20,34 @@ namespace NetworKit {
  * This can be used to determine which node-pairs should actually be interpreted
  * as future links and which shouldn't.
  */
-class LinkThresholder {
-public:
-  /**
-   * Returns the node-pairs whose scores are at least equal to the given @a minScore.
-   * @param predictions Predictions to filter
-   * @param minScore Minimal score that the returned node-pairs should have
-   * @return a vector of node-pairs whose scores are at least equal to the given @a minScore
-   */
-  static std::vector<std::pair<node, node>> byScore(std::vector<LinkPredictor::node_dyad_score_pair> predictions, double minScore);
+namespace LinkThresholder {
 
-  /**
-   * Returns the first @a numLinks highest scored node-pairs.
-   * @param predictions Predictions to filter
-   * @param numLinks Number of top-scored node-pairs to return
-   * @return the first @a numLinks highest scored node-pairs
-   */
-  static std::vector<std::pair<node, node>> byCount(std::vector<LinkPredictor::node_dyad_score_pair> predictions, count numLinks);
-  
-  /**
-   * Returns the first @a percentageLinks percent of the highest scores node-pairs.
-   * @param predictions Predictions to filter
-   * @param percentageLinks Percentage of highest scored node-pairs to return
-   * @return the first @a percentageLinks percent of the highest scores node-pairs
-   */
-  static std::vector<std::pair<node, node>> byPercentage(std::vector<LinkPredictor::node_dyad_score_pair> predictions, double percentageLinks);
-  
-};
+/**
+ * Returns the node-pairs whose scores are at least equal to the given @a minScore.
+ * @param predictions Predictions to filter
+ * @param minScore Minimal score that the returned node-pairs should have
+ * @return a vector of node-pairs whose scores are at least equal to the given @a minScore
+ */
+std::vector<std::pair<node, node>> byScore(std::vector<LinkPredictor::node_dyad_score_pair> predictions, double minScore);
+
+/**
+ * Returns the first @a numLinks highest scored node-pairs.
+ * @param predictions Predictions to filter
+ * @param numLinks Number of top-scored node-pairs to return
+ * @return the first @a numLinks highest scored node-pairs
+ */
+std::vector<std::pair<node, node>> byCount(std::vector<LinkPredictor::node_dyad_score_pair> predictions, count numLinks);
+
+/**
+ * Returns the first @a percentageLinks percent of the highest scores node-pairs.
+ * @param predictions Predictions to filter
+ * @param percentageLinks Percentage of highest scored node-pairs to return
+ * @return the first @a percentageLinks percent of the highest scores node-pairs
+ */
+std::vector<std::pair<node, node>> byPercentage(std::vector<LinkPredictor::node_dyad_score_pair> predictions, double percentageLinks);
+
+} // namespace LinkThresholder
 
 } // namespace NetworKit
 
-#endif /* LINKTHRESHOLDER_H_std::vector<std::pair<node, node>> by */
+#endif /* LINKTHRESHOLDER_H_ */

@@ -6281,3 +6281,67 @@ cdef class NeighborhoodUtility:
 		A vector containing the node-ids of all common neighbors of u and v.
 		"""
 		return getCommonNeighbors(G._this, u, v)
+
+cdef extern from "cpp/linkprediction/LinkThresholder.h" namespace "NetworKit::LinkThresholder":
+	float getImbalance(_Partition zeta) except +
+	vector[pair[node, node]] byScore(vector[pair[pair[node, node], double]] predictions, double minScore)
+	vector[pair[node, node]] byCount(vector[pair[pair[node, node], double]] predictions, count numLinks)
+	vector[pair[node, node]] byPercentage(vector[pair[pair[node, node], double]] predictions, double percentageLinks)
+
+cdef class LinkThresholder:
+	""" Filters given predictions based on some criterion and returns a vector of node-pairs that fulfill the given criterion.
+
+	This can be used to determine which node-pairs should actually be interpreted
+	as future links and which shouldn't.
+	"""
+
+	@staticmethod
+	def byScore(vector[pair[pair[node, node], double]] predictions, double minScore):
+		""" Returns the node-pairs whose scores are at least equal to the given minScore.
+
+		Parameters
+		----------
+		predictions : vector[pair[pair[node, node], double]].
+			Predictions to filter.
+		minScore : double
+			Minimal score that the returned node-pairs should have.
+
+		Returns
+		-------
+		A vector of node-pairs whose scores are at least equal to the given minScore.
+		"""
+		return byScore(predictions, minScore)
+
+	@staticmethod
+	def byCount(vector[pair[pair[node, node], double]] predictions, count numLinks):
+		""" Returns the first numLinks highest scored node-pairs.
+
+		Parameters
+		----------
+		predictions : vector[pair[pair[node, node], double]].
+			Predictions to filter.
+		numLinks : count
+			Number of top-scored node-pairs to return.
+
+		Returns
+		-------
+		The first numLinks highest scored node-pairs.
+		"""
+		return byCount(predictions, numLinks)
+
+	@staticmethod
+	def byPercentage(vector[pair[pair[node, node], double]] predictions, double percentageLinks):
+		""" Returns the first percentageLinks percent of the highest scores node-pairs.
+
+		Parameters
+		----------
+		predictions : vector[pair[pair[node, node], double]].
+			Predictions to filter.
+		percentageLinks : double
+			Percentage of highest scored node-pairs to return.
+
+		Returns
+		-------
+		The first percentageLinks percent of the highest scores node-pairs.
+		"""
+		return byPercentage(predictions, percentageLinks)
