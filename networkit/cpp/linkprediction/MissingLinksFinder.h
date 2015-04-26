@@ -42,7 +42,7 @@ public:
    * @return an ascendingly sorted vector of node-pairs where there is a missing link of distance @a k
    * between the two nodes
    */
-  std::vector<std::pair<node, node>> findAll(count k);
+  std::vector<std::pair<node, node>> findAtDistance(count k);
 
   /**
    * Returns all missing links in the graph that have distance @a k and are connected to @a u.

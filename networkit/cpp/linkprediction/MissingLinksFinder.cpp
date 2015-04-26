@@ -65,6 +65,52 @@ std::vector<std::pair<node, node>> MissingLinksFinder::findRandomNegatives(count
   //std::random_shuffle(result.begin(), result.end());
   return std::vector<std::pair<node, node>>(std::move(result.begin()), std::move(result.begin() + limit));
 }
+/*
+std::vector<std::pair<node, node>> MissingLinksFinder::findRandomNegatives(count k, count limit, const Graph& testGraph) {
+  count edgesPerNode = (limit / testGraph.numberOfNodes()) + 1;
+  std::vector<std::pair<node, node>> missingLinks();
+  std::vector<node> nodes = G.nodes();
+  std::random_device randomDevice;
+  std::mt19937 generator(randomDevice());
+  count numNegatives = getNumNegatives(k, testGraph);
+  if (limit > numNegatives) {
+    return findNegatives(k, testGraph);
+  }
+  // If limit is close to the actual number of negatives, we will have to
+  // generate too much random nodes until we have all negatives needed.
+  // In this case it is easier to remove from all the negatives.
+  if (limit > 2 * numNegatives) {
+    std::vector<std::pair<node, node>> negs = findNegatives(k, testGraph);
+    std::random_shuffle(negs.begin(), negs.end());
+    return std::vector<std::pair<node, node>>(negs.begin(), negs.begin() + limit);
+  }
+  j = 1;
+  while (missingLinks.size() < limit) {
+    missingLinks.reserve(j * edgesPerNode * testGraph.numberOfNodes());
+    #pragma omp parallel for
+    for (index i = 0; i < G.numberOfNodes; ++i) {
+      std::vector<std::pair<node, node>> missingAtU = findFromNode(nodes[i], k);
+      missingAtU.erase(std::remove_if(std::begin(missingAtU), std::end(missingAtU),
+            [&](std::pair<node, node> p) { return p.first >= p.second; }), std::end(missingAtU));
+        missingAtU.erase(std::remove_if(std::begin(missingAtU), std::end(missingAtU),
+            [&](std::pair<node, node> p) { return testGraph.hasEdge(p.first, p.second); }), std::end(missingAtU));
+      std::set<std::pair<node, node>> selectedEdges;
+      count effectiveNumEdges = missingAtU.size() < edgesPerNode ? missingAtU.size() : edgesPerNode;
+      while (selectedEdges.size() < effectiveNumEdges) {
+        std::pair<node, node> edge = missingAtU[distribution(generator)];
+        selectedEdges.insert(edge);
+      }
+    }
+    ++j;
+  }
+  // Remove (0,0)
+  set<int> s;
+unsigned size = vec.size();
+for( unsigned i = 0; i < size; ++i ) s.insert( vec[i] );
+vec.assign( s.begin(), s.end() );
+}
+*/
+
 
 std::vector<std::pair<node, node>> MissingLinksFinder::findRandomly(count k, count limit) {
   std::set<std::pair<node, node>> missingLinks;
@@ -111,7 +157,7 @@ count MissingLinksFinder::getNumNegatives(count k, const Graph& testGraph) {
   return sum;
 }
 
-std::vector<std::pair<node, node>> MissingLinksFinder::findAll(count k) {
+std::vector<std::pair<node, node>> MissingLinksFinder::findAtDistance(count k) {
   std::vector<std::pair<node, node>> missingLinks;
   std::vector<node> nodes = G.nodes();
   #pragma omp parallel
