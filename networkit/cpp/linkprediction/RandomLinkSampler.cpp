@@ -1,15 +1,15 @@
 /*
- * TrainingGraphSampler.cpp
+ * RandomLinkSampler.cpp
  *
  *  Created on: 28.02.2015
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include "TrainingGraphSampler.h"
+#include "RandomLinkSampler.h"
 
 namespace NetworKit {
 
-namespace TrainingGraphSampler {
+namespace RandomLinkSampler {
 
 Graph byPercentage(const Graph& G, double trainPercentage) {
   if (trainPercentage < 0 || trainPercentage > 1) {
@@ -30,6 +30,6 @@ Graph byCount(const Graph& G, count numTrainLinks) {
   return trainingGraph;
 }
 
-} // namespace TrainingGraphSampler
+} // namespace RandomLinkSampler
 
 } // namespace NetworKit

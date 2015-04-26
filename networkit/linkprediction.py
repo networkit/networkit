@@ -1,5 +1,5 @@
 
-from _NetworKit import KatzIndex, CommonNeighborsIndex, JaccardIndex, PreferentialAttachmentIndex, AdamicAdarIndex, UDegreeIndex, VDegreeIndex, AlgebraicDistanceIndex, NeighborhoodDistanceIndex, TotalNeighborsIndex, NeighborsMeasureIndex, SameCommunityIndex, AdjustedRandIndex, ResourceAllocationIndex, TrainingGraphSampler, ROCMetric, KFoldCrossValidator, PrecisionRecallMetric, MissingLinksFinder, LinkThresholder
+from _NetworKit import KatzIndex, CommonNeighborsIndex, JaccardIndex, PreferentialAttachmentIndex, AdamicAdarIndex, UDegreeIndex, VDegreeIndex, AlgebraicDistanceIndex, NeighborhoodDistanceIndex, TotalNeighborsIndex, NeighborsMeasureIndex, SameCommunityIndex, AdjustedRandIndex, ResourceAllocationIndex, RandomLinkSampler, ROCMetric, KFoldCrossValidator, PrecisionRecallMetric, MissingLinksFinder, LinkThresholder
 
 from .graph import Graph
 
@@ -32,11 +32,11 @@ def trainClassifier(trainingSet, trainingGraph, classifier, *linkPredictors):
   # and the labels would be sorted by the initial order. That would lead to an incorrect
   # matching between labels and samples.
   trainingSet.sort()
-  trainingClasses = getClasses(trainingSet, trainingGraph)
-  trainingSamples = getSamples(trainingSet, *linkPredictors)
-  classifier.fit(trainingSamples, trainingClasses)
-
-def getSamples(nodePairs, *linkPredictors):
+  trainingLabels = getLabels(trainingSet, trainingGraph)
+  trainingFeatures = getFeatures(trainingSet, *linkPredictors)
+  classifier.fit(trainingFeatures, trainingLabels)
+  
+def getFeatures(nodePairs, *linkPredictors):
   """ Returns a numpy-array containing the generated scores from the predictors for the given node-pairs.
 
   Parameters
@@ -53,21 +53,21 @@ def getSamples(nodePairs, *linkPredictors):
   """
   return np.column_stack(([list(zip(*p.runOnParallel(nodePairs)))[1] for p in linkPredictors]))
 
-def getClasses(nodePairs, G):
-  """ Returns a numpy-array containing the classes of the given node-pairs.
+def getLabels(nodePairs, G):
+  """ Returns a numpy-array containing the labels of the given node-pairs.
 
-  The classes are defined as follows: 1 = link, 0 = absent link.
+  The labels are defined as follows: 1 = link, 0 = absent link.
 
   Parameters
   ----------
   nodePairs : vector[pair[node, node]]
-    Node-pairs to get the classes for.
+    Node-pairs to get the labels for.
   G : Graph
-    Graph to obtain classes for node-pairs from.
+    Graph which provides ground truth for the labels.
 
   Returns
   -------
-  A numpy-array containing the classes of the given node-pairs.
+  A numpy-array containing the labels of the given node-pairs.
   """
   return np.array(list(map(lambda p: 1 if G.hasEdge(p[0], p[1]) else 0, nodePairs)))
 

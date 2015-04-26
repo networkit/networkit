@@ -1,12 +1,12 @@
 /*
- * TrainingGraphSampler.h
+ * RandomLinkSampler.h
  *
  *  Created on: 28.02.2015
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#ifndef TRAININGGRAPHSAMPLER_H_
-#define TRAININGGRAPHSAMPLER_H_
+#ifndef RANDOMLINKSAMPLER_H_
+#define RANDOMLINKSAMPLER_H_
 
 #include <utility>
 
@@ -16,30 +16,32 @@ namespace NetworKit {
 
 /**
  * @ingroup linkprediction
+ *
+ * Provides methods to randomly sample a number of edges from a given graph.
  */
-namespace TrainingGraphSampler {
+namespace RandomLinkSampler {
 
 /**
- * Returns a graph that contains @a trainPercentage percent of links form the given graph @a G.
+ * Returns a graph that contains @a percentage percent of links form the given graph @a G.
  * The links are randomly selected from @a G until the given percentage is reached.
  * @param G The graph to construct the training graph from
- * @param trainPercentage Percentage of links regarding the number of links in the
+ * @param percentage Percentage of links regarding the number of links in the
  * given graph that should be in the returned graph
  * @return a graph that contains the given percentage of links from @a G
  */
-Graph byPercentage(const Graph& G, double trainPercentage);
+Graph byPercentage(const Graph& G, double percentage);
 
 /**
- * Returns a graph that contains @a numTrainEdges links from the given graph @a G.
+ * Returns a graph that contains @a numLinks links from the given graph @a G.
  * The links are randomly selected from @a G until the given count is reached.
  * @param G The graph to construct the training graph from
- * @param numTrainLinks Number of links the returned graph should consist of
+ * @param numLinks Number of links the returned graph should consist of
  * @return a graph that contains the given number of links from @a G
  */
-Graph byCount(const Graph& G, count numTrainLinks);
+Graph byCount(const Graph& G, count numLinks);
 
-} // namespace TrainingGraphSampler
+} // namespace RandomLinkSampler
 
 } // namespace NetworKit
 
-#endif /* TRAININGGRAPHSAMPLER_H_ */
+#endif /* RANDOMLINKSAMPLER_H_ */
