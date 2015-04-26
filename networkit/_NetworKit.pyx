@@ -5882,16 +5882,16 @@ cdef class ResourceAllocationIndex(LinkPredictor):
 		"""
 		return self._this.run(u, v)
 
-cdef extern from "cpp/linkprediction/TrainingGraphSampler.h" namespace "NetworKit::TrainingGraphSampler":
-	_Graph byPercentage(_Graph G, double trainPercentage) except +
-	_Graph byCount(_Graph G, count numTrainLinks) except +
+cdef extern from "cpp/linkprediction/RandomLinkSampler.h" namespace "NetworKit::RandomLinkSampler":
+	_Graph byPercentage(_Graph G, double percentage) except +
+	_Graph byCount(_Graph G, count numLinks) except +
 
-cdef class TrainingGraphSampler:
-	# This is actually just a namespace in C++
+cdef class RandomLinkSampler:
+	""" Provides methods to randomly sample a number of edges from a given graph. """
 
 	@staticmethod
-	def byPercentage(Graph G, double trainPercentage):
-		""" Returns a graph that contains trainPercentage percent of links form the given graph G.
+	def byPercentage(Graph G, double percentage):
+		""" Returns a graph that contains percentage percent of links form the given graph G.
 
 		The links are randomly selected from G until the given percentage is reached.
 
@@ -5899,7 +5899,7 @@ cdef class TrainingGraphSampler:
 		----------
 		G : Graph
 			The graph to construct the training graph from.
-		trainPercentage : double
+		percentage : double
 			Percentage of links regarding the number of links in the given graph that should
 			be in the returned graph.
 
@@ -5907,11 +5907,11 @@ cdef class TrainingGraphSampler:
 		-------
 		A graph that contains the given percentage of links from G.
 		"""
-		return Graph().setThis(byPercentage(G._this, trainPercentage))
+		return Graph().setThis(byPercentage(G._this, percentage))
 
 	@staticmethod
-	def byCount(Graph G, count numTrainLinks):
-		""" Returns a graph that contains numTrainLinks links from the given graph G.
+	def byCount(Graph G, count numLinks):
+		""" Returns a graph that contains numLinks links from the given graph G.
 
 		The links are randomly selected from G until the given count is reached.
 
@@ -5919,14 +5919,14 @@ cdef class TrainingGraphSampler:
 		----------
 		G : Graph
 			The graph to construct the training graph from.
-		numTrainLinks : count
+		numLinks : count
 			Number of links the returned graph should consist of.
 
 		Returns
 		-------
 		A graph that contains the given number of links from G.
 		"""
-		return Graph().setThis(byCount(G._this, numTrainLinks))
+		return Graph().setThis(byCount(G._this, numLinks))
 
 cdef extern from "cpp/linkprediction/EvaluationMetric.h":
 	cdef cppclass _EvaluationMetric "NetworKit::EvaluationMetric":
@@ -6155,7 +6155,7 @@ cdef class KFoldCrossValidator:
 cdef extern from "cpp/linkprediction/MissingLinksFinder.h":
 	cdef cppclass _MissingLinksFinder "NetworKit::MissingLinksFinder":
 		_MissingLinksFinder(const _Graph& G) except +
-		vector[pair[node, node]] findAll(count k) except +
+		vector[pair[node, node]] findAtDistance(count k) except +
 		vector[pair[node, node]] findFromNode(node u, count k) except +
 		vector[pair[node, node]] findRandomly(count k, count limit) except +
 		vector[pair[node, node]] findPositives(count k, const _Graph& testGraph) except +
@@ -6184,7 +6184,7 @@ cdef class MissingLinksFinder:
 	def __dealloc__(self):
 		del self._this
 
-	def findAll(self, count k):
+	def findAtDistance(self, count k):
 		""" Returns all missing links in the graph that have distance k.
 
 		Note that a distance of k actually means that there are k different links
@@ -6200,7 +6200,7 @@ cdef class MissingLinksFinder:
 		An ascendingly sorted vector of node-pairs where there is a missing link of distance k
 		between the two nodes.
 		"""
-		return move(self._this.findAll(k))
+		return move(self._this.findAtDistance(k))
 
 	def findFromNode(self, node u, count k):
 		""" Returns all missing links in the graph that have distance k and are connected to u.
