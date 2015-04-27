@@ -3001,10 +3001,30 @@ cdef class CommunityDetector:
 	cdef _CommunityDetectionAlgorithm *_this
 	cdef Graph _G
 
+	def __init__(self, *args, **namedargs):
+		if type(self) == CommunityDetector:
+			raise RuntimeError("Error, you may not use CommunityDetector directly, use a sub-class instead")
+
+	def __cinit__(self, *args, **namedargs):
+		self._this = NULL
+
 	def __dealloc__(self):
-		del self._this
+		if self._this != NULL:
+			del self._this
+		self._this = NULL
+		self._G = None # just to be sure the graph is deleted
 
 	def run(self):
+		"""
+		Executes the community detection algorithm.
+
+		Returns
+		-------
+		CommunityDetector:
+			self
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
 		self._this.run()
 		return self
 
@@ -3016,6 +3036,8 @@ cdef class CommunityDetector:
 		Partition:
 			A Partition of the clustering.
 		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
 		return Partition().setThis(self._this.getPartition())
 
 	def toString(self):
@@ -3026,6 +3048,8 @@ cdef class CommunityDetector:
 		string
 			String representation of algorithm and parameters.
 		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
 		return self._this.toString().decode("utf-8")
 
 cdef extern from "cpp/community/PLP.h":
