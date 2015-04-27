@@ -41,6 +41,8 @@ cdef extern from "<algorithm>" namespace "std":
 	_Cover move(_Cover t)
 	pair[_Graph, vector[node]] move(pair[_Graph, vector[node]])
 
+cdef extern from "cython_helper.h":
+	pass
 
 # Cython helper functions
 
@@ -161,6 +163,7 @@ cdef extern from "cpp/graph/Graph.h":
 		vector[node] nodes() except +
 		vector[pair[node, node]] edges() except +
 		vector[node] neighbors(node u) except +
+		void forEdges[Callback](Callback c) except +
 		bool isWeighted() except +
 		bool isDirected() except +
 		string toString() except +
@@ -176,6 +179,12 @@ cdef extern from "cpp/graph/Graph.h":
 		count numberOfSelfLoops() except +
 		_Graph toUndirected() except +
 
+cdef cppclass EdgeCallBackWrapper:
+	void* callback
+	__init__(object callback):
+		this.callback = <void*>callback
+	void cython_call_operator(node u, node v, edgeweight w, edgeid eid):
+		(<object>callback)(u, v, w, eid)
 
 cdef class Graph:
 	""" An undirected graph (with optional weights) and parallel iterator methods.
@@ -531,6 +540,14 @@ cdef class Graph:
 	 		List of neighbors of `u.
 		"""
 		return self._this.neighbors(u)
+
+	def forEdges(self, object callback):
+		cdef EdgeCallBackWrapper* wrapper
+		try:
+			wrapper = new EdgeCallBackWrapper(callback)
+			self._this.forEdges[EdgeCallBackWrapper](dereference(wrapper))
+		finally:
+			del wrapper
 
 	def toUndirected(self):
 		"""
