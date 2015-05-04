@@ -53,6 +53,7 @@ public:
 	 * @return Graph to be generated according to parameters
 	 */
 	Graph generate(const vector<double> &angles, const vector<double> &radii, double r, double thresholdDistance, double T=0);
+	Graph generateExternal(const vector<double> &angles, const vector<double> &radii, double k, double gamma, double T=0);
 
 	/**
 	 * @param[in] n Number of nodes

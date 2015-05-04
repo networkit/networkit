@@ -130,14 +130,13 @@ public:
 		return expectedDegree;
 	}
 
-	static double searchTargetRadiusForColdGraphs(double n, double k, double alpha) {
+	static double searchTargetRadiusForColdGraphs(double n, double k, double alpha, double epsilon) {
 		double gamma = 2*alpha+1;
 		double xiInv = ((gamma-2)/(gamma-1));
 		double v = k * (M_PI/2)*xiInv*xiInv;
 		double currentR = 2*log(n / v);
 		double lowerBound = currentR/2;
 		double upperBound = currentR*2;
-		const double epsilon = 0.01;
 		assert(getExpectedDegree(n, alpha, lowerBound) > k);
 		assert(getExpectedDegree(n, alpha, upperBound) < k);
 		do {
@@ -152,7 +151,7 @@ public:
 		return currentR;
 	}
 
-	static double getTargetRadius(double n, double m, double alpha=1, double T=0) {
+	static double getTargetRadius(double n, double m, double alpha=1, double T=0, double epsilon = 0.01) {
 		double result;
 		double plexp = 2*alpha+1;
 		double targetAvgDegree = (m/n)*2;
@@ -162,7 +161,7 @@ public:
 			result = 2*log(n / v);
 			double expected = getExpectedDegree(n, alpha, result);
 			TRACE("expected:", expected);
-			result = searchTargetRadiusForColdGraphs(n, targetAvgDegree, alpha);
+			result = searchTargetRadiusForColdGraphs(n, targetAvgDegree, alpha, epsilon);
 		} else {
 			double beta = 1/T;
 			if (T < 1){//cold regime

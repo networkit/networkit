@@ -1562,6 +1562,7 @@ cdef extern from "cpp/generators/HyperbolicGenerator.h":
 		void setBalance(double balance) except +
 		vector[double] getElapsedMilliseconds() except +
 		_Graph generate() except +
+		_Graph generateExternal(vector[double] angles, vector[double] radii, double r, double thresholdDistance, double T) except +
 
 cdef class HyperbolicGenerator:
 	""" The Hyperbolic Generator distributes points in hyperbolic space and adds edges between points with a probability depending on their distance. The resulting graphs have a power-law degree distribution, small diameter and high clustering coefficient.
@@ -1584,7 +1585,7 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 
 	cdef _HyperbolicGenerator* _this
 
-	def __cinit__(self,  n, k=6, gamma=3, T=0):		
+	def __cinit__(self, int n, k=6, gamma=3, T=0):		
 		self._this = new _HyperbolicGenerator(n, k, gamma, T)
 
 	def setLeafCapacity(self, capacity):
@@ -1608,6 +1609,10 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		
 		"""
 		return Graph(0).setThis(self._this.generate())
+
+	def generateExternal(self, angles, radii, k, gamma, T=0):
+		return Graph(0).setThis(self._this.generateExternal(angles, radii, k, gamma, T))
+	
 
 cdef extern from "cpp/generators/RmatGenerator.h":
 	cdef cppclass _RmatGenerator "NetworKit::RmatGenerator":
