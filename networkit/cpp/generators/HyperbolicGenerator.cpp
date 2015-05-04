@@ -14,6 +14,7 @@
 #include <math.h>
 #include <assert.h>
 #include <omp.h>
+#include <algorithm>
 
 #include "../graph/GraphBuilder.h"
 #include "HyperbolicGenerator.h"
@@ -116,6 +117,33 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	return generate(angles, radii, quad, thresholdDistance);
 }
 
+Graph HyperbolicGenerator::generateExternal(const vector<double> &angles, const vector<double> &radii, double k, double gamma) {
+	count n = angles.size();
+	assert(angles.size() == radii.size());
+	vector<double> radiiPoincare(n);
+	double targetR = HyperbolicSpace::getTargetRadius(n, n*k/2, (gamma-1)/2, 0, 0.001);
+	for (index i = 0; i < n; i++) {
+		assert(angles[i] > 0);
+		assert(angles[i] <= 2*M_PI);
+		assert(radii[i] >= 0);
+		if (radii[i] > targetR) {
+			DEBUG("Coordinate radii[",i, "] = ", radii[i],  " > ", targetR, " = targetR");
+			targetR = std::nextafter(radii[i], std::numeric_limits<double>::max());
+		}
+
+		assert(radii[i] <= targetR);
+		radiiPoincare[i] = HyperbolicSpace::hyperbolicRadiusToEuclidean(radii[i]);
+	}
+
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(targetR);
+
+	for (double radius : radiiPoincare) {
+		if (r <= radius) r = std::nextafter(radius, std::numeric_limits<double>::max());
+	}
+
+	return generate(angles, radiiPoincare, r, targetR);
+}
+
 Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<double> &radii, Quadtree<index> &quad, double thresholdDistance) {
 	index n = angles.size();
 	assert(radii.size() == n);
@@ -132,7 +160,7 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 		#pragma omp for schedule(guided) nowait
 		for (index i = 0; i < n; i++) {
 			//get neighbours for node i
-			count expectedDegree = (4/M_PI)*n*exp(-HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[i])/2);
+			count expectedDegree = (4/M_PI)*n*exp(-HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[i])/2);//TODO: adapt for alpha!=1
 			vector<index> near;
 			near.reserve(expectedDegree*1.1);
 			quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance, suppressLeft, near);
