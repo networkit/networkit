@@ -542,6 +542,15 @@ cdef class Graph:
 		return self._this.neighbors(u)
 
 	def forEdges(self, object callback):
+		""" Experimental edge iterator interface
+
+		This will probably be changed or removed in future releases.
+
+		Parameters
+		----------
+		callback : object
+			Any callable object that takes the parameter (node, node, edgeweight, edgeid)
+		"""
 		cdef EdgeCallBackWrapper* wrapper
 		try:
 			wrapper = new EdgeCallBackWrapper(callback)
