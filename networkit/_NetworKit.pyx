@@ -3016,6 +3016,7 @@ cdef class HubDominance:
 
 cdef extern from "cpp/community/CommunityDetectionAlgorithm.h":
 	cdef cppclass _CommunityDetectionAlgorithm "NetworKit::CommunityDetectionAlgorithm":
+		_CommunityDetectionAlgorithm() # Workaround for Cython < 0.22
 		_CommunityDetectionAlgorithm(const _Graph &_G)
 		void run() except +
 		_Partition getPartition() except +
