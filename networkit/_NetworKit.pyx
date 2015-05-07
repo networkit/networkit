@@ -1837,7 +1837,7 @@ cdef class GMLGraphReader:
 cdef extern from "cpp/io/METISGraphWriter.h":
 	cdef cppclass _METISGraphWriter "NetworKit::METISGraphWriter":
 		_METISGraphWriter() except +
-		void write(_Graph G, string path) except +
+		void write(_Graph G, string path) nogil except +
 
 
 cdef class METISGraphWriter:
@@ -1846,12 +1846,14 @@ cdef class METISGraphWriter:
 
 	def write(self, Graph G not None, path):
 		 # string needs to be converted to bytes, which are coerced to std::string
-		self._this.write(G._this, stdstring(path))
+		cdef string cpath = stdstring(path)
+		with nogil:
+			self._this.write(G._this, cpath)
 
 cdef extern from "cpp/io/GraphToolBinaryWriter.h":
 	cdef cppclass _GraphToolBinaryWriter "NetworKit::GraphToolBinaryWriter":
 		_GraphToolBinaryWriter() except +
-		void write(_Graph G, string path) except +
+		void write(_Graph G, string path) nogil except +
 
 
 cdef class GraphToolBinaryWriter:
@@ -1862,13 +1864,15 @@ cdef class GraphToolBinaryWriter:
 
 	def write(self, Graph G not None, path):
 		 # string needs to be converted to bytes, which are coerced to std::string
-		self._this.write(G._this, stdstring(path))
+		cdef string cpath = stdstring(path)
+		with nogil:
+			self._this.write(G._this, cpath)
 
 
 cdef extern from "cpp/io/DotGraphWriter.h":
 	cdef cppclass _DotGraphWriter "NetworKit::DotGraphWriter":
 		_DotGraphWriter() except +
-		void write(_Graph G, string path) except +
+		void write(_Graph G, string path) nogil except +
 
 
 cdef class DotGraphWriter:
@@ -1877,7 +1881,9 @@ cdef class DotGraphWriter:
 
 	def write(self, Graph G not None, path):
 		 # string needs to be converted to bytes, which are coerced to std::string
-		self._this.write(G._this, stdstring(path))
+		cdef string cpath = stdstring(path)
+		with nogil:
+			self._this.write(G._this, cpath)
 
 
 #cdef extern from "cpp/io/VNAGraphWriter.h":
@@ -1899,7 +1905,7 @@ cdef class DotGraphWriter:
 cdef extern from "cpp/io/GMLGraphWriter.h":
 	cdef cppclass _GMLGraphWriter "NetworKit::GMLGraphWriter":
 		_GMLGraphWriter() except +
-		void write(_Graph G, string path) except +
+		void write(_Graph G, string path) nogil except +
 
 
 cdef class GMLGraphWriter:
@@ -1909,14 +1915,16 @@ cdef class GMLGraphWriter:
 
 	def write(self, Graph G not None, path):
 		 # string needs to be converted to bytes, which are coerced to std::string
-		self._this.write(G._this, stdstring(path))
+		cdef string cpath = stdstring(path)
+		with nogil:
+			self._this.write(G._this, cpath)
 
 
 cdef extern from "cpp/io/EdgeListWriter.h":
 	cdef cppclass _EdgeListWriter "NetworKit::EdgeListWriter":
 		_EdgeListWriter() except +
 		_EdgeListWriter(char separator, node firstNode) except +
-		void write(_Graph G, string path) except +
+		void write(_Graph G, string path) nogil except +
 
 cdef class EdgeListWriter:
 	""" Reads and writes graphs in various edge list formats. The constructor takes a
@@ -1929,7 +1937,9 @@ cdef class EdgeListWriter:
 		self._this = _EdgeListWriter(sep, firstNode)
 
 	def write(self, Graph G not None, path):
-		self._this.write(G._this, stdstring(path))
+		cdef string cpath = stdstring(path)
+		with nogil:
+			self._this.write(G._this, cpath)
 
 
 
@@ -1950,7 +1960,7 @@ cdef class LineFileReader:
 cdef extern from "cpp/io/SNAPGraphWriter.h":
 	cdef cppclass _SNAPGraphWriter "NetworKit::SNAPGraphWriter":
 		_SNAPGraphWriter() except +
-		void write(_Graph G, string path)
+		void write(_Graph G, string path) nogil except +
 
 cdef class SNAPGraphWriter:
 	""" Writes graphs in a format suitable for the Georgia Tech SNAP software [1]
@@ -1959,7 +1969,9 @@ cdef class SNAPGraphWriter:
 	cdef _SNAPGraphWriter _this
 
 	def write(self, Graph G, path):
-		self._this.write(G._this, stdstring(path))
+		cdef string cpath = stdstring(path)
+		with nogil:
+			self._this.write(G._this, cpath)
 
 
 cdef extern from "cpp/io/SNAPGraphReader.h":
@@ -2004,7 +2016,7 @@ cdef class PartitionReader:
 cdef extern from "cpp/io/PartitionWriter.h":
 	cdef cppclass _PartitionWriter "NetworKit::PartitionWriter":
 		_PartitionWriter() except +
-		void write(_Partition, string path)
+		void write(_Partition, string path) nogil except +
 
 
 cdef class PartitionWriter:
@@ -2014,7 +2026,9 @@ cdef class PartitionWriter:
 	cdef _PartitionWriter _this
 
 	def write(self, Partition zeta, path):
-		self._this.write(zeta._this, stdstring(path))
+		cdef string cpath = stdstring(path)
+		with nogil:
+			self._this.write(zeta._this, cpath)
 
 
 cdef extern from "cpp/io/EdgeListPartitionReader.h":
@@ -2088,7 +2102,7 @@ cdef class CoverReader:
 cdef extern from "cpp/io/CoverWriter.h":
 	cdef cppclass _CoverWriter "NetworKit::CoverWriter":
 		_CoverWriter() except +
-		void write(_Cover, string path)
+		void write(_Cover, string path) nogil except +
 
 
 cdef class CoverWriter:
@@ -2098,7 +2112,9 @@ cdef class CoverWriter:
 	cdef _CoverWriter _this
 
 	def write(self, Cover zeta, path):
-		self._this.write(zeta._this, stdstring(path))
+		cdef string cpath = stdstring(path)
+		with nogil:
+			self._this.write(zeta._this, cpath)
 
 cdef extern from "cpp/io/EdgeListCoverReader.h":
 	cdef cppclass _EdgeListCoverReader "NetworKit::EdgeListCoverReader":
