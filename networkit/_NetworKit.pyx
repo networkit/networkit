@@ -3034,7 +3034,7 @@ cdef extern from "cpp/community/CommunityDetectionAlgorithm.h":
 	cdef cppclass _CommunityDetectionAlgorithm "NetworKit::CommunityDetectionAlgorithm":
 		_CommunityDetectionAlgorithm() # Workaround for Cython < 0.22
 		_CommunityDetectionAlgorithm(const _Graph &_G)
-		void run() except +
+		void run() nogil except +
 		_Partition getPartition() except +
 		string toString() except +
 
@@ -3068,7 +3068,8 @@ cdef class CommunityDetector:
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
-		self._this.run()
+		with nogil:
+			self._this.run()
 		return self
 
 	def getPartition(self):
