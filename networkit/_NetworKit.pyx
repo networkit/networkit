@@ -2239,15 +2239,15 @@ cdef class PowerlawDegreeSequence:
 cdef extern from "cpp/generators/LFRGenerator.h":
 	cdef cppclass _LFRGenerator "NetworKit::LFRGenerator":
 		_LFRGenerator(count n) except +
-		void setDegreeSequence(vector[count] degreeSequence) except +
-		void generatePowerlawDegreeSequence(count avgDegree, count maxDegree, double nodeDegreeExp) except +
-		void setCommunitySizeSequence(vector[count] communitySizeSequence) except +
-		void setPartition(_Partition zeta) except +
-		void generatePowerlawCommunitySizeSequence(count minCommunitySize, count maxCommunitySize, double communitySizeExp) except +
-		void setMu(double mu) except +
-		void setMu(const vector[double] & mu) except +
-		void setMuWithBinomialDistribution(double mu) except +
-		void run() except +
+		void setDegreeSequence(vector[count] degreeSequence) nogil except +
+		void generatePowerlawDegreeSequence(count avgDegree, count maxDegree, double nodeDegreeExp) nogil except +
+		void setCommunitySizeSequence(vector[count] communitySizeSequence) nogil except +
+		void setPartition(_Partition zeta) nogil except +
+		void generatePowerlawCommunitySizeSequence(count minCommunitySize, count maxCommunitySize, double communitySizeExp) nogil except +
+		void setMu(double mu) nogil except +
+		void setMu(const vector[double] & mu) nogil except +
+		void setMuWithBinomialDistribution(double mu) nogil except +
+		void run() nogil except +
 		_Graph getGraph() except +
 		_Partition getPartition() except +
 
@@ -2292,23 +2292,28 @@ cdef class LFRGenerator:
 		del self._this
 
 	def setDegreeSequence(self, vector[count] degreeSequence):
-		self._this.setDegreeSequence(degreeSequence)
+		with nogil:
+			self._this.setDegreeSequence(degreeSequence)
 		return self
 
 	def generatePowerlawDegreeSequence(self, count avgDegree, count maxDegree, double nodeDegreeExp):
-		self._this.generatePowerlawDegreeSequence(avgDegree, maxDegree, nodeDegreeExp)
+		with nogil:
+			self._this.generatePowerlawDegreeSequence(avgDegree, maxDegree, nodeDegreeExp)
 		return self
 
 	def setCommunitySizeSequence(self, vector[count] communitySizeSequence):
-		self._this.setCommunitySizeSequence(communitySizeSequence)
+		with nogil:
+			self._this.setCommunitySizeSequence(communitySizeSequence)
 		return self
 
 	def setPartition(self, Partition zeta not None):
-		self._this.setPartition(zeta._this)
+		with nogil:
+			self._this.setPartition(zeta._this)
 		return self
 
 	def generatePowerlawCommunitySizeSequence(self, count minCommunitySize, count maxCommunitySize, double communitySizeExp):
-		self._this.generatePowerlawCommunitySizeSequence(minCommunitySize, maxCommunitySize, communitySizeExp)
+		with nogil:
+			self._this.generatePowerlawCommunitySizeSequence(minCommunitySize, maxCommunitySize, communitySizeExp)
 		return self
 
 	def setMu(self, mu):
@@ -2319,14 +2324,16 @@ cdef class LFRGenerator:
 		return self
 
 	def setMuWithBinomialDistribution(self, double mu):
-		self._this.setMuWithBinomialDistribution(mu)
+		with nogil:
+			self._this.setMuWithBinomialDistribution(mu)
 		return self
 
 	def run(self):
 		"""
 		Run the generator
 		"""
-		self._this.run()
+		with nogil:
+			self._this.run()
 		return self
 
 	def getGraph(self):
