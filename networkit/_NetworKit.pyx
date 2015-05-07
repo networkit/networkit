@@ -42,7 +42,7 @@ cdef extern from "<algorithm>" namespace "std":
 	pair[_Graph, vector[node]] move(pair[_Graph, vector[node]])
 
 cdef extern from "cython_helper.h":
-	pass
+	void throw_runtime_error(string message)
 
 # Cython helper functions
 
@@ -164,6 +164,11 @@ cdef extern from "cpp/graph/Graph.h":
 		vector[pair[node, node]] edges() except +
 		vector[node] neighbors(node u) except +
 		void forEdges[Callback](Callback c) except +
+		void forNodes[Callback](Callback c) except +
+		void forNodePairs[Callback](Callback c) except +
+		void forNodesInRandomOrder[Callback](Callback c) except +
+		void forEdgesOf[Callback](node u, Callback c) except +
+		void forInEdgesOf[Callback](node u, Callback c) except +
 		bool isWeighted() except +
 		bool isDirected() except +
 		string toString() except +
@@ -178,13 +183,51 @@ cdef extern from "cpp/graph/Graph.h":
 		void initCoordinates() except +
 		count numberOfSelfLoops() except +
 		_Graph toUndirected() except +
+		void BFSfromNode "BFSfrom"[Callback] (node r, Callback c) except +
+		void BFSfrom[Callback](vector[node] startNodes, Callback c) except +
+		void BFSEdgesFrom[Callback](node r, Callback c) except +
+		void DFSfrom[Callback](node r, Callback c) except +
+		void DFSEdgesFrom[Callback](node r, Callback c) except +
 
 cdef cppclass EdgeCallBackWrapper:
 	void* callback
 	__init__(object callback):
 		this.callback = <void*>callback
 	void cython_call_operator(node u, node v, edgeweight w, edgeid eid):
-		(<object>callback)(u, v, w, eid)
+		try:
+			(<object>callback)(u, v, w, eid)
+		except:
+			throw_runtime_error(b"Exception occurred, aborting execution of iterator.")
+
+cdef cppclass NodeCallbackWrapper:
+	void* callback
+	__init__(object callback):
+		this.callback = <void*>callback
+	void cython_call_operator(node u):
+		try:
+			(<object>callback)(u)
+		except:
+			throw_runtime_error(b"Exception occurred, aborting execution of iterator.")
+
+cdef cppclass NodeDistCallbackWrapper:
+	void* callback
+	__init__(object callback):
+		this.callback = <void*>callback
+	void cython_call_operator(node u, count dist):
+		try:
+			(<object>callback)(u, dist)
+		except:
+			throw_runtime_error(b"Exception occurred, aborting execution of iterator.")
+
+cdef cppclass NodePairCallbackWrapper:
+	void* callback
+	__init__(object callback):
+		this.callback = <void*>callback
+	void cython_call_operator(node u, node v):
+		try:
+			(<object>callback)(u, v)
+		except:
+			throw_runtime_error(b"Exception occurred, aborting execution of iterator.")
 
 cdef class Graph:
 	""" An undirected graph (with optional weights) and parallel iterator methods.
@@ -541,10 +584,53 @@ cdef class Graph:
 		"""
 		return self._this.neighbors(u)
 
+	def forNodes(self, object callback):
+		""" Experimental node iterator interface
+
+		Parameters
+		----------
+		callback : object
+			Any callable object that takes the parameter node
+		"""
+		cdef NodeCallbackWrapper* wrapper
+		try:
+			wrapper = new NodeCallbackWrapper(callback)
+			self._this.forNodes[NodeCallbackWrapper](dereference(wrapper))
+		finally:
+			del wrapper
+
+	def forNodesInRandomOrder(self, object callback):
+		""" Experimental node iterator interface
+
+		Parameters
+		----------
+		callback : object
+			Any callable object that takes the parameter node
+		"""
+		cdef NodeCallbackWrapper* wrapper
+		try:
+			wrapper = new NodeCallbackWrapper(callback)
+			self._this.forNodesInRandomOrder[NodeCallbackWrapper](dereference(wrapper))
+		finally:
+			del wrapper
+
+	def forNodePairs(self, object callback):
+		""" Experimental node pair iterator interface
+
+		Parameters
+		----------
+		callback : object
+			Any callable object that takes the parameters (node, node)
+		"""
+		cdef NodePairCallbackWrapper* wrapper
+		try:
+			wrapper = new NodePairCallbackWrapper(callback)
+			self._this.forNodePairs[NodePairCallbackWrapper](dereference(wrapper))
+		finally:
+			del wrapper
+
 	def forEdges(self, object callback):
 		""" Experimental edge iterator interface
-
-		This will probably be changed or removed in future releases.
 
 		Parameters
 		----------
@@ -555,6 +641,40 @@ cdef class Graph:
 		try:
 			wrapper = new EdgeCallBackWrapper(callback)
 			self._this.forEdges[EdgeCallBackWrapper](dereference(wrapper))
+		finally:
+			del wrapper
+
+	def forEdgesOf(self, node u, object callback):
+		""" Experimental incident (outgoing) edge iterator interface
+
+		Parameters
+		----------
+		u : node
+			The node of which incident edges shall be passed to the callback
+		callback : object
+			Any callable object that takes the parameter (node, node, edgeweight, edgeid)
+		"""
+		cdef EdgeCallBackWrapper* wrapper
+		try:
+			wrapper = new EdgeCallBackWrapper(callback)
+			self._this.forEdgesOf[EdgeCallBackWrapper](u, dereference(wrapper))
+		finally:
+			del wrapper
+
+	def forInEdgesOf(self, node u, object callback):
+		""" Experimental incident incoming edge iterator interface
+
+		Parameters
+		----------
+		u : node
+			The node of which incident edges shall be passed to the callback
+		callback : object
+			Any callable object that takes the parameter (node, node, edgeweight, edgeid)
+		"""
+		cdef EdgeCallBackWrapper* wrapper
+		try:
+			wrapper = new EdgeCallBackWrapper(callback)
+			self._this.forInEdgesOf[EdgeCallBackWrapper](u, dereference(wrapper))
 		finally:
 			del wrapper
 
@@ -697,6 +817,77 @@ cdef class Graph:
 			number of self-loops.
 		"""
 		return self._this.numberOfSelfLoops()
+
+	def BFSfrom(self, start, object callback):
+		""" Experimental BFS search interface
+
+		Parameters
+		----------
+		start: node or list[node]
+			One or more start nodes from which the BFS shall be started
+		callback : object
+			Any callable object that takes the parameter (node, count) (the second parameter is the depth)
+		"""
+		cdef NodeDistCallbackWrapper *wrapper
+		try:
+			wrapper = new NodeDistCallbackWrapper(callback)
+			try:
+				self._this.BFSfromNode[NodeDistCallbackWrapper](<node?>start, dereference(wrapper))
+			except TypeError:
+				self._this.BFSfrom[NodeDistCallbackWrapper](<vector[node]?>start, dereference(wrapper))
+		finally:
+			del wrapper
+
+	def BFSEdgesFrom(self, node start, object callback):
+		""" Experimental BFS search interface that passes edges that are part of the BFS tree to the callback
+
+		Parameters
+		----------
+		start: node
+			The start node from which the BFS shall be started
+		callback : object
+			Any callable object that takes the parameter (node, node)
+		"""
+		cdef NodePairCallbackWrapper *wrapper
+		try:
+			wrapper = new NodePairCallbackWrapper(callback)
+			self._this.BFSEdgesFrom[NodePairCallbackWrapper](start, dereference(wrapper))
+		finally:
+			del wrapper
+
+	def DFSfrom(self, node start, object callback):
+		""" Experimental DFS search interface
+
+		Parameters
+		----------
+		start: node
+			The start node from which the DFS shall be started
+		callback : object
+			Any callable object that takes the parameter node
+		"""
+		cdef NodeCallbackWrapper *wrapper
+		try:
+			wrapper = new NodeCallbackWrapper(callback)
+			self._this.DFSfrom[NodeCallbackWrapper](start, dereference(wrapper))
+		finally:
+			del wrapper
+
+	def DFSEdgesFrom(self, node start, object callback):
+		""" Experimental DFS search interface that passes edges that are part of the DFS tree to the callback
+
+		Parameters
+		----------
+		start: node
+			The start node from which the DFS shall be started
+		callback : object
+			Any callable object that takes the parameter (node, node)
+		"""
+		cdef NodePairCallbackWrapper *wrapper
+		try:
+			wrapper = new NodePairCallbackWrapper(callback)
+			self._this.DFSEdgesFrom(start, dereference(wrapper))
+		finally:
+			del wrapper
 
 # TODO: expose all methods
 
