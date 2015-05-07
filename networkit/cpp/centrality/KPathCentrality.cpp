@@ -96,6 +96,8 @@ void KPathCentrality::run() {
 	G.forNodes([&](node v) {
 		scoreData[v] = k * n * ((double) counter[v] / t);
 	});
+
+	ran = true;
 }
 
 

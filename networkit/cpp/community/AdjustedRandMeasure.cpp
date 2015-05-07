@@ -1,19 +1,12 @@
 /*
- * JaccardMeasure.cpp
  *
- *  Created on: 19.01.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "JaccardMeasure.h"
+#include "AdjustedRandMeasure.h"
 #include "PartitionIntersection.h"
 
-namespace NetworKit {
 
-
-double JaccardMeasure::getDissimilarity(const Graph& G, const Partition& zeta,
-		const Partition& eta) {
-
+double NetworKit::AdjustedRandMeasure::getDissimilarity(const NetworKit::Graph &G, const NetworKit::Partition &zeta, const NetworKit::Partition &eta) {
 	Partition intersection = PartitionIntersection().calculate(zeta, eta);
 
 	std::vector<count> size_zeta(zeta.upperBound(), 0);
@@ -34,9 +27,9 @@ double JaccardMeasure::getDissimilarity(const Graph& G, const Partition& zeta,
 	});
 
 
-	count sumIntersection = 0;
+	count randIndex = 0;
 	for (count s : size_intersection) {
-		sumIntersection += s * (s - 1) / 2;
+		randIndex += s * (s - 1) / 2;
 	}
 
 	count sumZeta = 0;
@@ -51,22 +44,13 @@ double JaccardMeasure::getDissimilarity(const Graph& G, const Partition& zeta,
 
 	count n = G.numberOfNodes();
 
-	count s11 = sumIntersection; // number of node pairs for which clusterings aggree
-	count s00 = n * (n-1) / 2 + sumIntersection - (sumZeta + sumEta); // number of node pairs for which clusterings disagree
+	double maxIndex = 0.5 * (sumZeta + sumEta);
 
-	double jaccard;
-	double divisor = n * (n - 1) - 2 * s00;
-	if (divisor > 0) {
-		jaccard = 1 - ((2 * s11) / divisor);
+	double expectedIndex = sumZeta * sumEta / (n * (n-1) / 2);
+
+	if (maxIndex == 0) { // both clusterings are singleton clusterings
+		return 0.0;
 	} else {
-		jaccard = 0;
+		return 1.0 - (randIndex - expectedIndex) / (maxIndex - expectedIndex);
 	}
-
-	// assert range [0, 1]
-	assert (jaccard <= 1.0);
-	assert (jaccard >= 0.0);
-	return jaccard;
-
 }
-
-} /* namespace NetworKit */

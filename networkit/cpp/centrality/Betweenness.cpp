@@ -110,6 +110,8 @@ void Betweenness::run() {
 			}
 		}
 	}
+
+	ran = true;
 }
 
 } /* namespace NetworKit */

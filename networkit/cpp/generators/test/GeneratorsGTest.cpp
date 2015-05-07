@@ -18,7 +18,7 @@ Dy * GeneratorsTest.cpp
 #include "../WattsStrogatzGenerator.h"
 #include "../RegularRingLatticeGenerator.h"
 #include "../../properties/ClusteringCoefficient.h"
-#include "../../properties/CoreDecomposition.h"
+#include "../../centrality/CoreDecomposition.h"
 #include "../../community/PLM.h"
 #include "../../community/Modularity.h"
 #include "../StochasticBlockmodel.h"

@@ -50,6 +50,8 @@ void Closeness::run() {
 			scoreData[u] = scoreData[u] * (G.numberOfNodes() - 1);
 		});
 	}
+
+	ran = true;
 }
 
 double Closeness::maximum() {
