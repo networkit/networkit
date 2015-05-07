@@ -3321,7 +3321,7 @@ cdef class DissimilarityMeasure:
 cdef extern from "cpp/community/NodeStructuralRandMeasure.h":
 	cdef cppclass _NodeStructuralRandMeasure "NetworKit::NodeStructuralRandMeasure":
 		_NodeStructuralRandMeasure() except +
-		double getDissimilarity(_Graph G, _Partition first, _Partition second)
+		double getDissimilarity(_Graph G, _Partition first, _Partition second) nogil except +
 
 cdef class NodeStructuralRandMeasure(DissimilarityMeasure):
 	""" The node-structural Rand measure assigns a similarity value in [0,1]
@@ -3330,13 +3330,16 @@ cdef class NodeStructuralRandMeasure(DissimilarityMeasure):
 	cdef _NodeStructuralRandMeasure _this
 
 	def getDissimilarity(self, Graph G, Partition first, Partition second):
-		return self._this.getDissimilarity(G._this, first._this, second._this)
+		cdef double ret
+		with nogil:
+			ret = self._this.getDissimilarity(G._this, first._this, second._this)
+		return ret
 
 
 cdef extern from "cpp/community/GraphStructuralRandMeasure.h":
 	cdef cppclass _GraphStructuralRandMeasure "NetworKit::GraphStructuralRandMeasure":
 		_GraphStructuralRandMeasure() except +
-		double getDissimilarity(_Graph G, _Partition first, _Partition second)
+		double getDissimilarity(_Graph G, _Partition first, _Partition second) nogil except +
 
 cdef class GraphStructuralRandMeasure(DissimilarityMeasure):
 	""" The graph-structural Rand measure assigns a similarity value in [0,1]
@@ -3345,13 +3348,16 @@ cdef class GraphStructuralRandMeasure(DissimilarityMeasure):
 	cdef _GraphStructuralRandMeasure _this
 
 	def getDissimilarity(self, Graph G, Partition first, Partition second):
-		return self._this.getDissimilarity(G._this, first._this, second._this)
+		cdef double ret
+		with nogil:
+			ret = self._this.getDissimilarity(G._this, first._this, second._this)
+		return ret
 
 
 cdef extern from "cpp/community/JaccardMeasure.h":
 	cdef cppclass _JaccardMeasure "NetworKit::JaccardMeasure":
 		_JaccardMeasure() except +
-		double getDissimilarity(_Graph G, _Partition first, _Partition second)
+		double getDissimilarity(_Graph G, _Partition first, _Partition second) nogil except +
 
 cdef class JaccardMeasure(DissimilarityMeasure):
 	""" TODO:
@@ -3359,12 +3365,15 @@ cdef class JaccardMeasure(DissimilarityMeasure):
 	cdef _JaccardMeasure _this
 
 	def getDissimilarity(self, Graph G, Partition first, Partition second):
-		return self._this.getDissimilarity(G._this, first._this, second._this)
+		cdef double ret
+		with nogil:
+			ret = self._this.getDissimilarity(G._this, first._this, second._this)
+		return ret
 
 cdef extern from "cpp/community/NMIDistance.h":
 	cdef cppclass _NMIDistance "NetworKit::NMIDistance":
 		_NMIDistance() except +
-		double getDissimilarity(_Graph G, _Partition first, _Partition second)
+		double getDissimilarity(_Graph G, _Partition first, _Partition second) nogil except +
 
 cdef class NMIDistance(DissimilarityMeasure):
 	""" The NMI distance assigns a similarity value in [0,1] to two partitions
@@ -3373,11 +3382,14 @@ cdef class NMIDistance(DissimilarityMeasure):
 	cdef _NMIDistance _this
 
 	def getDissimilarity(self, Graph G, Partition first, Partition second):
-		return self._this.getDissimilarity(G._this, first._this, second._this)
+		cdef double ret
+		with nogil:
+			ret = self._this.getDissimilarity(G._this, first._this, second._this)
+		return ret
 
 cdef extern from "cpp/community/AdjustedRandMeasure.h":
 	cdef cppclass _AdjustedRandMeasure "NetworKit::AdjustedRandMeasure":
-		double getDissimilarity(_Graph G, _Partition first, _Partition second) except +
+		double getDissimilarity(_Graph G, _Partition first, _Partition second) nogil except +
 
 cdef class AdjustedRandMeasure(DissimilarityMeasure):
 	"""
@@ -3405,7 +3417,10 @@ cdef class AdjustedRandMeasure(DissimilarityMeasure):
 		double
 			The adjusted rand dissimilarity
 		"""
-		return self._this.getDissimilarity(G._this, first._this, second._this)
+		cdef double ret
+		with nogil:
+			ret = self._this.getDissimilarity(G._this, first._this, second._this)
+		return ret
 
 cdef extern from "cpp/community/EPP.h":
 	cdef cppclass _EPP "NetworKit::EPP"(_CommunityDetectionAlgorithm):
