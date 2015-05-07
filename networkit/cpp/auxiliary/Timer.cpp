@@ -22,7 +22,7 @@ my_steady_clock::time_point Timer::stop() {
 	return this->stopped;
 }
 
-std::chrono::duration<uint64_t, std::milli> Timer::elapsed() {
+std::chrono::duration<uint64_t, std::milli> Timer::elapsed() const {
 	std::chrono::duration<uint64_t, std::milli> elapsed = std::chrono::duration_cast<std::chrono::duration<uint64_t, std::milli>>(this->stopped - this->started);
 	return elapsed;
 }
@@ -35,7 +35,7 @@ my_steady_clock::time_point Timer::stopTime() {
 	return this->stopped;
 }
 
-uint64_t Timer::elapsedMilliseconds() {
+uint64_t Timer::elapsedMilliseconds() const {
 	return this->elapsed().count();
 }
 

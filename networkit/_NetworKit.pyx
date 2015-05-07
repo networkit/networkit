@@ -1558,6 +1558,67 @@ cdef class ConfigurationModelGenerator:
 		return Graph().setThis(self._this.generate())
 
 
+cdef extern from "cpp/generators/HyperbolicGenerator.h":
+	cdef cppclass _HyperbolicGenerator "NetworKit::HyperbolicGenerator":
+		# TODO: revert to count when cython issue fixed
+		_HyperbolicGenerator(unsigned int nodes,  double k, double gamma, double T) except +
+		void setLeafCapacity(unsigned int capacity) except +
+		void setTheoreticalSplit(bool split) except +
+		void setBalance(double balance) except +
+		vector[double] getElapsedMilliseconds() except +
+		_Graph generate() except +
+		_Graph generateExternal(vector[double] angles, vector[double] radii, double r, double thresholdDistance, double T) except +
+
+cdef class HyperbolicGenerator:
+	""" The Hyperbolic Generator distributes points in hyperbolic space and adds edges between points with a probability depending on their distance. The resulting graphs have a power-law degree distribution, small diameter and high clustering coefficient.
+For a temperature of 0, the model resembles a unit-disk model in hyperbolic space.
+
+ 		HyperbolicGenerator(n, k=6, gamma=3, T=0)
+
+ 		Parameters
+		----------
+		n : integer
+			number of nodes
+		k : double
+			average degree
+		gamma : double
+			exponent of power-law degree distribution
+		T : double
+			temperature of statistical model
+			
+	"""
+
+	cdef _HyperbolicGenerator* _this
+
+	def __cinit__(self, int n, k=6, gamma=3, T=0):		
+		self._this = new _HyperbolicGenerator(n, k, gamma, T)
+
+	def setLeafCapacity(self, capacity):
+		self._this.setLeafCapacity(capacity)
+
+	def setBalance(self, balance):
+		self._this.setBalance(balance)
+
+	def setTheoreticalSplit(self, theoreticalSplit):
+		self._this.setTheoreticalSplit(theoreticalSplit)
+
+	def getElapsedMilliseconds(self):
+		return self._this.getElapsedMilliseconds()
+
+	def generate(self):
+		""" Generates hyperbolic graph
+
+		Returns
+		-------
+		Graph
+		
+		"""
+		return Graph(0).setThis(self._this.generate())
+
+	def generateExternal(self, angles, radii, k, gamma, T=0):
+		return Graph(0).setThis(self._this.generateExternal(angles, radii, k, gamma, T))
+	
+
 cdef extern from "cpp/generators/RmatGenerator.h":
 	cdef cppclass _RmatGenerator "NetworKit::RmatGenerator":
 		_RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d) except +
@@ -3101,6 +3162,25 @@ cdef class PLP(CommunityDetector):
 		else:
 			self._this = new _PLP(G._this, baseClustering._this, updateThreshold)
 
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		""" Run the label propagation clustering algorithm.
+		"""
+		self._this.run()
+		return self
+
+	def getPartition(self):
+		"""  Returns a partition of the clustering.
+
+		Returns
+		-------
+		Partition:
+			A Partition of the clustering.
+		"""
+		return Partition().setThis(self._this.getPartition())
+
 	def numberOfIterations(self):
 		""" Get number of iterations in last run.
 
@@ -3239,6 +3319,39 @@ cdef class CutClustering(CommunityDetector):
 	def __cinit__(self, Graph G not None,  edgeweight alpha):
 		self._G = G
 		self._this = new _CutClustering(G._this, alpha)
+
+	def __dealloc__(self):
+		del self._this
+
+	def toString(self):
+		""" Get string representation.
+
+		Returns
+		-------
+		string
+			A string representation of this algorithm.
+		"""
+		return self._this.toString().decode("utf-8")
+
+	def getPartition(self):
+		"""  Returns a partition of the clustering.
+
+		Returns
+		-------
+		Partition:
+			A Partition of the clustering.
+		"""
+		return Partition().setThis(self._this.getPartition())
+
+	def run(self):
+		""" Detect communities in the given graph `graph`.
+
+		Warning: due to numerical errors the resulting clusters might not be correct.
+		This implementation uses the Edmonds-Karp algorithm for the cut calculation.
+
+		"""
+		self._this.run()
+		return self
 
 	@staticmethod
 	def getClusterHierarchy(Graph G not None):
@@ -5444,7 +5557,61 @@ cdef class DynamicPubWebGenerator:
 	def getGraph(self):
 		return Graph().setThis(self._this.getGraph())
 
+cdef extern from "cpp/generators/DynamicHyperbolicGenerator.h":
+	cdef cppclass _DynamicHyperbolicGenerator "NetworKit::DynamicHyperbolicGenerator":
+		_DynamicHyperbolicGenerator(count numNodes, double initialFactor,
+			double alpha, double stretch, double moveEachStep, double factorGrowth, double moveDistance) except +
+		vector[_GraphEvent] generate(count nSteps) except +
+		_Graph getGraph() except +
+		vector[Point[float]] getCoordinates() except +
+		vector[Point[float]] getHyperbolicCoordinates() except +
 
+
+cdef class DynamicHyperbolicGenerator:
+	cdef _DynamicHyperbolicGenerator* _this
+
+	def __cinit__(self, numNodes, initialFactor, alpha, stretch, moveFraction, factorGrowth, moveDistance):
+		""" Dynamic graph generator according to the hyperbolic unit disk model.
+
+		Parameters
+		----------
+		numNodes : count
+			number of nodes
+		initialFactor : double
+			initial value of thresholdFactor
+		alpha : double
+			point dispersion parameter, remaining fixed
+		stretch : double
+			multiplier for the hyperbolic disk, remaining fixed
+		moveFraction : double
+			fraction of nodes to be moved in each time step. The nodes are chosen randomly each step
+		factorGrowth : double
+			increment added to the value of thresholdFactor at each step
+		moveDistance: double
+			base value for the node movements
+		"""
+		self._this = new _DynamicHyperbolicGenerator(numNodes, initialFactor, alpha, stretch, moveFraction, factorGrowth, moveDistance)
+
+	def generate(self, nSteps):
+		""" Generate event stream.
+
+		Parameters
+		----------
+		nSteps : count
+			Number of time steps in the event stream.
+		"""
+		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
+
+	def getGraph(self):
+		return Graph().setThis(self._this.getGraph())
+
+	def getCoordinates(self):
+		""" Get coordinates in the Poincare disk"""
+		return [(p[0], p[1]) for p in self._this.getCoordinates()]
+
+	def getHyperbolicCoordinates(self):
+		""" Get coordinates in the hyperbolic disk"""
+		return [(p[0], p[1]) for p in self._this.getHyperbolicCoordinates()]
 
 
 

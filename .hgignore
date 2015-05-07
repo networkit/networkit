@@ -5,15 +5,24 @@ syntax: regexp
 \.mk$
 \.o$
 .DS_Store
-\.pyc
-\.a
-\.so
+\.pyc$
+\.a$
+\.so$
 \checkpoint.ipynb
 build.conf
 .sconsign.dblite
 /_NetworKit.cpp$
 src/python/NetworKit.egg-info/
-NetworKit-Tests-D
+\.out$
+\.egg$
+\~$
+\.dot$
+\.project$
+\.cproject$
+^tracelog
+\.json$
+\.csv
+\.dat
 
 syntax: regexp
 ^output$
@@ -38,6 +47,10 @@ syntax: regexp
 /*.eps
 syntax: regexp
 ^doxygen$
+syntax: regexp
+^cachegrind.out
+syntax: regexp
+^networkit.egg-info
 
 syntax: glob
 NetworKit-Tests-*
