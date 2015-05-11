@@ -42,6 +42,7 @@ private:
 	// scalars
 	count n; //!< current number of nodes
 	count m; //!< current number of edges
+	count storedNumberOfSelfLoops; //!< current number of self loops, edges which have the same origin and target
 	node z; //!< current upper bound of node ids, z will be the id of the next node
 	edgeid omega; 	//!< current upper bound of edge ids, will be the id of the next edge
 	count t; //!< current time step

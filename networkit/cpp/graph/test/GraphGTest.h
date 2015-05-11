@@ -37,6 +37,7 @@ protected:
 	bool isWeighted() const;
 	bool isDirected() const;
 	Graph createGraph(count n = 0) const;
+	count countSelfLoopsManually(Graph G);
 };
 
 } /* namespace NetworKit */

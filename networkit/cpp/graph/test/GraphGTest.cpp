@@ -36,6 +36,17 @@ Graph GraphGTest::createGraph(count n) const {
 	return G;
 }
 
+count GraphGTest::countSelfLoopsManually(Graph G) {
+	count c = 0;
+	G.parallelForEdges([&](node u, node v) {
+		if (u == v) {
+			#pragma omp atomic
+			c += 1;
+		}
+	});
+	return c;
+}
+
 void GraphGTest::SetUp() {
 	/*
 	 *    0
@@ -682,6 +693,14 @@ TEST_P(GraphGTest, testRandomEdge) {
 
 /** GLOBAL PROPERTIES **/
 
+TEST_P(GraphGTest, testSelfLoopCountSimple) {
+	//create graph, count self loops manually, compare with stored value
+}
+
+TEST_P(GraphGTest, testSelfLoopCountConversion) {
+	//create graph, count self loops manually, compare with stored value
+}
+
 TEST_P(GraphGTest, testIsWeighted) {
 	ASSERT_EQ(isWeighted(), this->Ghouse.isWeighted());
 }
@@ -749,6 +768,33 @@ TEST_P(GraphGTest, testNumberOfSelfLoops) {
 	ASSERT_EQ(2u, G.numberOfSelfLoops());
 	G.removeEdge(0, 0);
 	ASSERT_EQ(1u, G.numberOfSelfLoops());
+}
+
+TEST_P(GraphGTest, testSelfLoopConversion) {
+	const count runs = 100;
+	const count n_max = 200;
+	for (index i = 0; i < runs; i++) {
+		bool directed = Aux::Random::probability() < 0.5;
+		count n = Aux::Random::integer(n_max);
+		Graph G(n, false, directed);
+
+		G.forNodes([&](node v) {
+			double p = Aux::Random::probability();
+
+			if (p < 0.1) { // new node
+				n++;
+				G.addNode();
+			} else { // new edge
+				node u = Aux::Random::integer(v, n - 1); // self-loops possible
+				G.addEdge(v, u);
+			}
+		});
+		count measuredSelfLoops = countSelfLoopsManually(G);
+		EXPECT_EQ(G.numberOfSelfLoops(), measuredSelfLoops);
+		Graph G_converted(G, false, !directed);
+		EXPECT_EQ(G_converted.numberOfSelfLoops(), measuredSelfLoops);
+	}
+
 }
 
 TEST_P(GraphGTest, testUpperNodeIdBound) {

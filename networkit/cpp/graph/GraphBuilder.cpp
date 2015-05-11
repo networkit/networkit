@@ -120,7 +120,8 @@ void GraphBuilder::toGraphParallel(Graph &G) {
 					edgeweight ew = halfEdgeWeights[v][i];
 					inWeightsPerThread[tid][u].push_back(ew);
 				}
-			} else {
+			}
+			if (u == v) {
 				numberOfSelfLoopsPerThread[tid]++;
 			}
 		}
@@ -204,9 +205,10 @@ void GraphBuilder::toGraphSequential(Graph &G) {
 		for (node u : G.outEdges[v]) {
 			if (directed || u != v) {
 				missingEdgesCounts[u]++;
-			} else {
+			}
+			if (u == v) {
 				// self loops don't need to be added again
-				// but we need to count them to correct the number of edges later
+				// but we need to count them
 				numberOfSelfLoops++;
 			}
 		}
@@ -298,6 +300,7 @@ void GraphBuilder::correctNumberOfEdges(Graph& G, count numberOfSelfLoops) {
 		// self loops are just counted once
 		G.m = numberOfSelfLoops + (G.m - numberOfSelfLoops) / 2;
 	}
+	G.storedNumberOfSelfLoops = numberOfSelfLoops;
 }
 
 } /* namespace NetworKit */
