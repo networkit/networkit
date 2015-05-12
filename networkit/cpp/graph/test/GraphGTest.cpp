@@ -36,7 +36,7 @@ Graph GraphGTest::createGraph(count n) const {
 	return G;
 }
 
-count GraphGTest::countSelfLoopsManually(Graph G) {
+count GraphGTest::countSelfLoopsManually(const Graph &G) {
 	count c = 0;
 	G.parallelForEdges([&](node u, node v) {
 		if (u == v) {
