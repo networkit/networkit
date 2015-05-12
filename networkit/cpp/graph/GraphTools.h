@@ -24,6 +24,13 @@ Graph getCompactedGraph(const Graph& graph, std::unordered_map<node,node>& nodeI
  */
 std::unordered_map<node,node> getContinuousNodeIds(const Graph& graph);
 
+/**
+ * Computes a map of random node ids
+ * @param	graph	The graph of which the node id map is wanted.
+ * @return		Returns the node id map.
+ */
+std::unordered_map<node, node> getRandomContinuousNodeIds(const Graph& graph);
+
 }	// namespace GraphTools
 
 }	// namespace NetworKit

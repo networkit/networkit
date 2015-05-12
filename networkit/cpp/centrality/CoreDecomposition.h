@@ -13,7 +13,7 @@
 #include <string>
 #include <list>
 #include "../graph/Graph.h"
-#include "../base/Algorithm.h"
+#include "../centrality/Centrality.h"
 
 namespace NetworKit {
 
@@ -21,7 +21,7 @@ namespace NetworKit {
  * @ingroup properties
  * Computes k-core decomposition of a graph.
  */
-class CoreDecomposition : public Algorithm {
+class CoreDecomposition : public NetworKit::Centrality  {
 
 public:
 
@@ -38,21 +38,6 @@ public:
 	//void run();
 
 	void runImpl() override;
-
-	/**
-	 * Get vector of core numbers, indexed by node.
-	 *
-	 * @return Vector of core numbers, indexed by node.
-	 */
-	std::vector<index> coreNumbers() const;
-
-	/**
-	 * Get core number of node @a v.
-	 *
-	 * @param v A node.
-	 * @return Core number of node @a v.
-	 */
-	index coreNumber(node v) const;
 
 	/**
 	 * Get the k-cores as sets of nodes, indexed by k.
@@ -78,10 +63,7 @@ public:
 
 private:
 
-	const Graph& G;
-	std::vector<index> coreness;
 	index maxCore; // maximum core number of any node in the graph
-	bool ran; // whether algorithm has been run
 };
 
 } /* namespace NetworKit */

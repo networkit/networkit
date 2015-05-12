@@ -20,6 +20,8 @@
 #include "../../generators/ErdosRenyiGenerator.h"
 #include "../../auxiliary/Log.h"
 #include "../KPathCentrality.h"
+#include "../CoreDecomposition.h"
+#include "../LocalClusteringCoefficient.h"
 
 
 namespace NetworKit {
@@ -405,5 +407,191 @@ TEST_F(CentralityGTest, testKPathCentrality) {
     centrality.run();
 }
 
+TEST_F(CentralityGTest, testCoreDecomposition) {
+	count n = 16;
+	Graph G(n);
+
+// 	// create graph used in Baur et al. and network analysis lecture
+	G.addEdge(2, 4);
+	G.addEdge(3, 4);
+	G.addEdge(4, 5);
+	G.addEdge(5, 7);
+	G.addEdge(6, 7);
+
+	G.addEdge(6, 8);
+	G.addEdge(6, 9);
+	G.addEdge(6, 11);
+	G.addEdge(7, 12);
+	G.addEdge(8, 9);
+
+	G.addEdge(8, 10);
+	G.addEdge(8, 11);
+	G.addEdge(8, 13);
+	G.addEdge(9, 10);
+	G.addEdge(9, 11);
+
+	G.addEdge(9, 13);
+	G.addEdge(10, 11);
+	G.addEdge(10, 13);
+	G.addEdge(10, 14);
+	G.addEdge(11, 13);
+
+	G.addEdge(11, 14);
+	G.addEdge(12, 15);
+	G.addEdge(13, 14);
+	G.addEdge(14, 15);
+
+	EXPECT_EQ(n, G.numberOfNodes()) << "should have " << n << " vertices";
+	EXPECT_EQ(24u, G.numberOfEdges()) << "should have 24 edges";
+
+	// compute core decomposition
+	CoreDecomposition coreDec(G);
+	coreDec.run();
+	std::vector<double> coreness = coreDec.scores();
+
+	EXPECT_EQ(0u, coreness[0]) << "expected coreness";
+	EXPECT_EQ(0u, coreness[1]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[2]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[3]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[4]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[5]) << "expected coreness";
+	EXPECT_EQ(3u, coreness[6]) << "expected coreness";
+	EXPECT_EQ(2u, coreness[7]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[8]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[9]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[10]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[11]) << "expected coreness";
+	EXPECT_EQ(2u, coreness[12]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[13]) << "expected coreness";
+	EXPECT_EQ(3u, coreness[14]) << "expected coreness";
+	EXPECT_EQ(2u, coreness[15]) << "expected coreness";
+}
+
+TEST_F(CentralityGTest, testCoreDecompositionDirected) {
+	count n = 16;
+	Graph G(n,false,true);
+
+// 	// create graph used in Baur et al. and network analysis lecture
+	G.addEdge(2, 4);
+	G.addEdge(3, 4);
+	G.addEdge(4, 5);
+	G.addEdge(5, 7);
+	G.addEdge(6, 7);
+
+	G.addEdge(6, 8);
+	G.addEdge(6, 9);
+	G.addEdge(6, 11);
+	G.addEdge(7, 12);
+	G.addEdge(8, 9);
+
+	G.addEdge(8, 10);
+	G.addEdge(8, 11);
+	G.addEdge(8, 13);
+	G.addEdge(9, 10);
+	G.addEdge(9, 11);
+
+	G.addEdge(9, 13);
+	G.addEdge(10, 11);
+	G.addEdge(10, 13);
+	G.addEdge(10, 14);
+	G.addEdge(11, 13);
+
+	G.addEdge(11, 14);
+	G.addEdge(12, 15);
+	G.addEdge(13, 14);
+	G.addEdge(14, 15);
+
+	EXPECT_EQ(n, G.numberOfNodes()) << "should have " << n << " vertices";
+	EXPECT_EQ(24u, G.numberOfEdges()) << "should have 24 edges";
+
+	// compute core decomposition
+	CoreDecomposition coreDec(G);
+	coreDec.run();
+	std::vector<double> coreness = coreDec.scores();
+
+	EXPECT_EQ(0u, coreness[0]) << "expected coreness";
+	EXPECT_EQ(0u, coreness[1]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[2]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[3]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[4]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[5]) << "expected coreness";
+	EXPECT_EQ(3u, coreness[6]) << "expected coreness";
+	EXPECT_EQ(2u, coreness[7]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[8]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[9]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[10]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[11]) << "expected coreness";
+	EXPECT_EQ(2u, coreness[12]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[13]) << "expected coreness";
+	EXPECT_EQ(3u, coreness[14]) << "expected coreness";
+	EXPECT_EQ(2u, coreness[15]) << "expected coreness";
+}
+
+TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected) {
+	count n = 16;
+	Graph G(n,false,false);
+
+// 	// create graph used in Baur et al. and network analysis lecture
+	G.addEdge(2, 4);
+	G.addEdge(3, 4);
+	G.addEdge(4, 5);
+	G.addEdge(5, 7);
+	G.addEdge(6, 7);
+
+	G.addEdge(6, 8);
+	G.addEdge(6, 9);
+	G.addEdge(6, 11);
+	G.addEdge(7, 12);
+	G.addEdge(8, 9);
+
+	G.addEdge(8, 10);
+	G.addEdge(8, 11);
+	G.addEdge(8, 13);
+	G.addEdge(9, 10);
+	G.addEdge(9, 11);
+
+	G.addEdge(9, 13);
+	G.addEdge(10, 11);
+	G.addEdge(10, 13);
+	G.addEdge(10, 14);
+	G.addEdge(11, 13);
+
+	G.addEdge(11, 14);
+	G.addEdge(12, 15);
+	G.addEdge(13, 14);
+	G.addEdge(14, 15);
+
+	EXPECT_EQ(n, G.numberOfNodes()) << "should have " << n << " vertices";
+	EXPECT_EQ(24u, G.numberOfEdges()) << "should have 24 edges";
+
+	// compute core decomposition
+	LocalClusteringCoefficient lcc(G);
+	lcc.run();
+	std::vector<double> lccScores = lcc.scores();
+	std::vector<double> reference = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.8, 0.8, 0.8, 0.6666666666666666, 0.0, 0.8, 0.5, 0.0};
+
+ 	EXPECT_EQ(reference,lccScores);
+}
+
+TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected2) {
+	Graph G(6,false,false);
+	G.addEdge(1, 0);
+	G.addEdge(2, 0);
+	G.addEdge(2, 1);
+	G.addEdge(3, 2);
+	G.addEdge(3, 0);
+	G.addEdge(3, 1);
+	G.addEdge(4, 2);
+	G.addEdge(4, 0);
+	G.addEdge(5, 3);
+	G.addEdge(5, 4);
+	G.addEdge(5, 1);
+	LocalClusteringCoefficient lcc(G);
+	lcc.run();
+	std::vector<double> lccScores = lcc.scores();
+	std::vector<double> reference = {0.6666666666666666, 0.6666666666666666, 0.6666666666666666, 0.6666666666666666, 0.3333333333333333, 0.3333333333333333};
+
+ 	EXPECT_EQ(reference,lccScores);
+ }
 
 } /* namespace NetworKit */

@@ -116,6 +116,7 @@ void ApproxBetweenness::runImpl() {
 		});
 	}
 
+	ran = true;
 }
 
 
