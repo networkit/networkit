@@ -4,7 +4,7 @@ __author__ = "Christian Staudt"
 
 
 from _NetworKit import Partition, Coverage, Modularity, CommunityDetector, PLP, LPDegreeOrdered, PLM, CNM, PartitionReader, PartitionWriter,\
-	NodeStructuralRandMeasure, GraphStructuralRandMeasure, JaccardMeasure, NMIDistance,\
+	NodeStructuralRandMeasure, GraphStructuralRandMeasure, JaccardMeasure, NMIDistance, AdjustedRandMeasure,\
 	EPP, EPPFactory, CommunityGraph, EdgeListPartitionReader, GraphClusteringTools, ClusteringGenerator, PartitionIntersection, HubDominance, CoreDecomposition, CutClustering
 
 # local imports
@@ -80,10 +80,10 @@ def evalCommunityDetection(algo, G):
 def readCommunities(path, format="default"):
 	""" Read a partition into communities from a file"""
 	readers =  {"default": PartitionReader(),
-		"edgelist-t1": EdgeListPartitionReader(1),
-		"edgelist-t0": EdgeListPartitionReader(0),
-		"edgelist-s1": EdgeListPartitionReader(1),
-		"edgelist-s0": EdgeListPartitionReader(0),
+		"edgelist-t1": EdgeListPartitionReader(1, '\t'),
+		"edgelist-t0": EdgeListPartitionReader(0, '\t'),
+		"edgelist-s1": EdgeListPartitionReader(1, ' '),
+		"edgelist-s0": EdgeListPartitionReader(0, ' '),
 		}
 	# get reader
 	try:

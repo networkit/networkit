@@ -303,6 +303,139 @@ void Graph::shrinkToFit() {
 
 }
 
+void Graph::compactEdges() {
+	this->parallelForNodes([&](node u) {
+		if (degreeOut(u) != outEdges[u].size()) {
+			if (degreeOut(u) == 0) {
+				outEdges[u].clear();
+				if (weighted) outEdgeWeights[u].clear();
+				if (edgesIndexed) outEdgeIds[u].clear();
+			} else {
+				for (index i = 0; i < outEdges[u].size(); ++i) {
+					while (i < outEdges[u].size() && outEdges[u][i] == none) {
+						outEdges[u][i] = outEdges[u].back();
+						outEdges[u].pop_back();
+
+						if (weighted) {
+							outEdgeWeights[u][i] = outEdgeWeights[u].back();
+							outEdgeWeights[u].pop_back();
+						}
+
+						if (edgesIndexed) {
+							outEdgeIds[u][i] = outEdgeIds[u].back();
+							outEdgeIds[u].pop_back();
+						}
+					}
+				}
+			}
+		}
+
+		if (directed && degreeIn(u) != inEdges[u].size()) {
+			if (degreeIn(u) == 0) {
+				inEdges[u].clear();
+				if (weighted) inEdgeWeights[u].clear();
+			       if (edgesIndexed) inEdgeIds[u].clear();
+			} else {
+				for (index i = 0; i < inEdges[u].size(); ++i) {
+					while (i < inEdges[u].size() && inEdges[u][i] == none) {
+						inEdges[u][i] = inEdges[u].back();
+						inEdges[u].pop_back();
+
+						if (weighted) {
+							inEdgeWeights[u][i] = inEdgeWeights[u].back();
+							inEdgeWeights[u].pop_back();
+						}
+
+						if (edgesIndexed) {
+							inEdgeIds[u][i] = inEdgeIds[u].back();
+							inEdgeIds[u].pop_back();
+						}
+					}
+				}
+			}
+
+		}
+	});
+}
+
+void Graph::sortEdges() {
+	std::vector<std::vector<node> > targetAdjacencies(upperNodeIdBound());
+	std::vector<std::vector<edgeweight> > targetWeight;
+	std::vector<std::vector<edgeid> > targetEdgeIds;
+
+	if (isWeighted()) {
+		targetWeight.resize(upperNodeIdBound());
+		forNodes([&](node u) {
+			targetWeight[u].reserve(degree(u));
+		});
+	}
+	if (hasEdgeIds()) {
+		targetEdgeIds.resize(upperNodeIdBound());
+		forNodes([&](node u) {
+			targetEdgeIds[u].reserve(degree(u));
+		});
+	}
+
+	forNodes([&](node u) {
+		targetAdjacencies[u].reserve(degree(u));
+	});
+
+	auto assignToTarget = [&](node u, node v, edgeweight w, edgeid eid) {
+			targetAdjacencies[v].push_back(u);
+			if (isWeighted()) {
+				targetWeight[v].push_back(w);
+			}
+			if (hasEdgeIds()) {
+				targetEdgeIds[v].push_back(eid);
+			}
+		};
+
+	forNodes([&](node u) {
+		if (isDirected()) {
+			forInEdgesOf(u, [&](node u, node v, edgeweight w, edgeid eid) {
+				assignToTarget(v, u, w, eid);
+			});
+		} else {
+			forEdgesOf(u, assignToTarget);
+		}
+	});
+
+	outEdges.swap(targetAdjacencies);
+	outEdgeWeights.swap(targetWeight);
+	outEdgeIds.swap(targetEdgeIds);
+
+	if (isDirected()) {
+		inEdges.swap(targetAdjacencies);
+		inEdgeWeights.swap(targetWeight);
+		inEdgeIds.swap(targetEdgeIds);
+
+		forNodes([&](node u) {
+			targetAdjacencies[u].resize(degreeIn(u));
+			targetAdjacencies[u].shrink_to_fit();
+			targetAdjacencies[u].clear();
+			if (isWeighted()) {
+				targetWeight[u].resize(degreeIn(u));
+				targetWeight[u].shrink_to_fit();
+				targetWeight[u].clear();
+			}
+			if (hasEdgeIds()) {
+				targetEdgeIds[u].resize(degreeIn(u));
+				targetEdgeIds[u].shrink_to_fit();
+				targetEdgeIds[u].clear();
+			}
+		});
+
+		forNodes([&](node u) {
+			forEdgesOf(u, assignToTarget);
+		});
+
+		inEdges.swap(targetAdjacencies);
+		inEdgeWeights.swap(targetWeight);
+		inEdgeIds.swap(targetEdgeIds);
+	}
+}
+
+
 std::string Graph::toString() const {
 	std::stringstream strm;
 	strm << typ() << "(name=" << getName() << ", n=" << numberOfNodes()

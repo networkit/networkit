@@ -17,6 +17,7 @@ Centrality::Centrality(const Graph& G, bool normalized, bool computeEdgeCentrali
 }
 
 double Centrality::score(node v) {
+	if (!ran) throw std::runtime_error("Call run method first");
 	return scoreData.at(v);
 }
 
@@ -31,6 +32,7 @@ std::vector<std::pair<node, double> > Centrality::ranking() {
 
 
 std::vector<double> Centrality::scores() {
+	if (!ran) throw std::runtime_error("Call run method first");
 	return scoreData;
 }
 std::vector<double> Centrality::edgeScores() {

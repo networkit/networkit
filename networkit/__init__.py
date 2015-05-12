@@ -58,6 +58,7 @@ from . import distmeasures
 from . import plot
 from . import scd
 from . import clique
+from . import profiling
 
 try:
 	from . import viztools
@@ -79,7 +80,7 @@ except ImportError as importError:
 # TODO: introduce settings module
 
 # extension imports
-from _NetworKit import getLogLevel, setLogLevel, setPrintLocation, enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads, none
+from _NetworKit import getLogLevel, setLogLevel, setPrintLocation, enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads, none, setSeed
 
 # local imports
 from .graph import Graph

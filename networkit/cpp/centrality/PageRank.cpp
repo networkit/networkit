@@ -62,6 +62,8 @@ void NetworKit::PageRank::runImpl() {
 	G.parallelForNodes([&](node u) {
 		scoreData[u] /= sum;
 	});
+
+	ran = true;
 }
 
 } /* namespace NetworKit */

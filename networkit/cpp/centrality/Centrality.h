@@ -78,6 +78,7 @@ protected:
 	std::vector<double> edgeScoreData;
 	bool normalized; // true if scores should be normalized in the interval [0,1]
 	bool computeEdgeCentrality;
+	bool ran; // true if run method has been called
 
 };
 

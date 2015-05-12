@@ -1,8 +1,9 @@
 # NetworKit native classes and functions
-from _NetworKit import GraphProperties, ConnectedComponents, ParallelConnectedComponents, StronglyConnectedComponents, ClusteringCoefficient, Diameter, Eccentricity, CoreDecomposition, EffectiveDiameter
+from _NetworKit import GraphProperties, ConnectedComponents, ParallelConnectedComponents, StronglyConnectedComponents, ClusteringCoefficient, Diameter, Eccentricity, EffectiveDiameter
 
 # other submodules
 from . import community
+from . import centrality
 from . import termgraph
 from . import auxiliary
 from . import nxadapter
@@ -59,7 +60,11 @@ def degreeSequence(G):
 def density(G):
 	""" Return the density of the graph"""
 	(n, m) = size(G)
-	return (2 * m) / (n * (n-1))
+	if G.isDirected():
+		d = m / (n * (n-1))
+	else:
+		d = (2 * m) / (n * (n-1))
+	return d
 
 def components(G):
 	""" Find and analyze detected components.
@@ -142,7 +147,7 @@ def degreeAssortativity(G):
 def degeneracy(G):
 	""" degeneracy of an undirected graph is defined as the largest k for which
 	the graph has a non-empty k-core"""
-	coreDec = CoreDecomposition(G)
+	coreDec = centrality.CoreDecomposition(G)
 	coreDec.run()
 	return coreDec.maxCoreNumber()
 

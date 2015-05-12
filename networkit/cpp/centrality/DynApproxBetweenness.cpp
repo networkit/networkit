@@ -113,6 +113,8 @@ void DynApproxBetweenness::runImpl() {
         }
     }
 
+    ran = true;
+
 }
 
 void DynApproxBetweenness::update(const std::vector<GraphEvent>& batch) {

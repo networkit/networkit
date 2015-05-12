@@ -166,7 +166,7 @@ Graph EdgeListReader::readNonContinuous(const std::string& path) {
 	file.close();
 
 	DEBUG("found ",this->mapNodeIds.size()," unique node ids");
-	Graph G(this->mapNodeIds.size());
+	Graph G(this->mapNodeIds.size(), false, directed);
 
 	DEBUG("second pass: add edges");
 	file.open(path);
@@ -184,7 +184,7 @@ Graph EdgeListReader::readNonContinuous(const std::string& path) {
 			if (split.size() == 2) {
 				node u = this->mapNodeIds[std::stoul(split[0])];
 				node v = this->mapNodeIds[std::stoul(split[1])];
-				if (!G.hasEdge(u,v) && !G.hasEdge(v,u)) {
+				if (!G.hasEdge(u,v)) {
 					G.addEdge(u, v);
 				}
 			} else {

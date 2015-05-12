@@ -82,6 +82,8 @@ void EigenvectorCentrality::runImpl() {
 			scoreData[u] = fabs(scoreData[u]);
 		});
 	}
+
+	ran = true;
 }
 
 } /* namespace NetworKit */
