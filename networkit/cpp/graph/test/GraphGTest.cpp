@@ -697,7 +697,6 @@ TEST_P(GraphGTest, testSelfLoopCountSimple) {
 	Graph G(Ghouse);
 	G.addEdge(0,0);
 	EXPECT_EQ(1, G.numberOfSelfLoops());
-	//create graph, count self loops manually, compare with stored value
 }
 
 TEST_P(GraphGTest, testIsWeighted) {
