@@ -769,6 +769,7 @@ TEST_P(GraphGTest, testNumberOfSelfLoops) {
 }
 
 TEST_P(GraphGTest, testSelfLoopConversion) {
+	Aux::Random::setSeed(1, false);
 	const count runs = 100;
 	const count n_max = 200;
 	for (index i = 0; i < runs; i++) {
