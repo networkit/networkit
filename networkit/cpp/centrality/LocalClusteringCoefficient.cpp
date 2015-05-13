@@ -46,7 +46,7 @@ void LocalClusteringCoefficient::runImpl() {
 			scoreData[u] = (double) triangles / (double)(d * (d - 1)); // No division by 2 since triangles are counted twice as well!
 		}
 	});
-	ran = true;
+	hasRun = true;
 }
 
 }

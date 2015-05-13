@@ -34,7 +34,7 @@ namespace NetworKit {
 	}
 
 	std::string Algorithm::toString() const {
-		return "Algorithm base";
+		return "Algorithm base class";
 	}
 
 } /* NetworKit */

@@ -63,7 +63,7 @@ void NetworKit::PageRank::runImpl() {
 		scoreData[u] /= sum;
 	});
 
-	ran = true;
+	hasRun = true;
 }
 
 } /* namespace NetworKit */
