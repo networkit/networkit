@@ -97,7 +97,7 @@ void KPathCentrality::runImpl() {
 		scoreData[v] = k * n * ((double) counter[v] / t);
 	});
 
-	ran = true;
+	hasRun = true;
 }
 
 

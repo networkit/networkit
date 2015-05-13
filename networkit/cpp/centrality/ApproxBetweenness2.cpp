@@ -82,7 +82,7 @@ void ApproxBetweenness2::runImpl() {
 		});
 	}
 
-	ran = true;
+	hasRun = true;
 }
 
 

@@ -9,39 +9,28 @@ namespace SignalHandling {
 
 namespace {
 	std::atomic<bool> receivedSIGINT(false);
-	bool handlerInitialized = false;
-	uint64_t root = 0;
-	bool rootSet = false;
+	std::atomic<bool> rootSet(false);
+	std::atomic<uint64_t> root(0);
 	void sigHandler(int sig) {
 		switch (sig) {
-			case SIGINT: receivedSIGINT.store(true);
+			case SIGINT: receivedSIGINT = true;
 			default: break;
 		}
 	};
-	//struct sigaction act;
-	//memset (&act, 0, sizeof (act));
-	//act.sa_handler = sigHandler;
 }
 
 bool gotSIGINT() {
-	return receivedSIGINT.load();
+	return receivedSIGINT;
 }
 
 void setSIGINT(bool received) {
-	receivedSIGINT.store(received);
-}
-
-void signalHandler(int signum) {
-	setSIGINT(true);
+	receivedSIGINT = received;
 }
 
 void init(uint64_t caller) {
 	if (!rootSet) {
 		root = caller;
-		if (!handlerInitialized) {
-			//sigaction(SIGINT,&act,0);
-			signal(SIGINT,sigHandler);
-		}
+		signal(SIGINT,sigHandler);
 		rootSet = true;
 	}
 }

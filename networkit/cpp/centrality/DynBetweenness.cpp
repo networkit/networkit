@@ -89,7 +89,7 @@ void DynBetweenness::runImpl() {
 
     G.forNodes(computeDependencies);
 
-    ran = true;
+    hasRun = true;
 }
 
 

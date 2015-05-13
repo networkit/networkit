@@ -113,7 +113,7 @@ void DynApproxBetweenness::runImpl() {
         }
     }
 
-    ran = true;
+    hasRun = true;
 
 }
 

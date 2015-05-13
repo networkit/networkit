@@ -106,12 +106,12 @@ void CoreDecomposition::runImpl() {
 	}
 
 	maxCore = core - 1;
-	ran = true;
+	hasRun = true;
 }
 
 
 std::vector<std::set<node> > CoreDecomposition::cores() const {
-	if (! ran) throw std::runtime_error("call run method first");
+	if (!hasFinished()) throw std::runtime_error("call run method first");
 
 	std::vector<std::set<node> > cores(maxCore + 1);
 	for (index k = 0; k <= maxCore; k++) {
@@ -125,7 +125,7 @@ std::vector<std::set<node> > CoreDecomposition::cores() const {
 }
 
 std::vector<std::set<node> > CoreDecomposition::shells() const {
-	if (! ran) throw std::runtime_error("call run method first");
+	if (!hasFinished()) throw std::runtime_error("call run method first");
 
 	std::vector<std::set<node> > shells(maxCore + 1);
 	for (index k = 0; k <= maxCore; k++) {
@@ -139,7 +139,7 @@ std::vector<std::set<node> > CoreDecomposition::shells() const {
 }
 
 index CoreDecomposition::maxCoreNumber() const {
-	if (! ran) throw std::runtime_error("call run method first");
+	if (!hasFinished()) throw std::runtime_error("call run method first");
 	return maxCore;
 }
 

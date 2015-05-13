@@ -51,7 +51,7 @@ void Closeness::runImpl() {
 		});
 	}
 
-	ran = true;
+	hasRun = true;
 }
 
 double Closeness::maximum() {
