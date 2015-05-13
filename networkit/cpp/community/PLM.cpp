@@ -12,7 +12,6 @@
 #include "../coarsening/ClusteringProjector.h"
 #include "../auxiliary/Log.h"
 #include "../auxiliary/Timer.h"
-#include "../auxiliary/SignalHandling.h"
 #include <sstream>
 
 namespace NetworKit {
