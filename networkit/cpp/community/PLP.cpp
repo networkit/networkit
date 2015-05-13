@@ -13,7 +13,6 @@
 #include "../auxiliary/ProgressMeter.h"
 #include "../auxiliary/Timer.h"
 #include "../auxiliary/Random.h"
-#include "../auxiliary/SignalHandling.h"
 
 namespace NetworKit {
 

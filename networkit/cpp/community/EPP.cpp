@@ -11,7 +11,6 @@
 #include "../coarsening/ClusteringProjector.h"
 #include "../community/JaccardMeasure.h"
 #include "../auxiliary/Log.h"
-#include "../auxiliary/SignalHandling.h"
 #include "PLM.h"
 #include "PLP.h"
 #include "CNM.h"
