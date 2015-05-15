@@ -66,6 +66,8 @@ public:
 
 	static std::pair<count, count> minMaxDegree(const Graph& G);
 
+	static std::pair<std::pair<count,count>, std::pair<count,count>> minMaxDegreeDirected(const Graph& G);
+
 	static double averageDegree(const Graph& G);
 
 	/**
