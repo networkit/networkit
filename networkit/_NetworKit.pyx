@@ -3862,6 +3862,7 @@ cdef class EdmondsKarp:
 cdef extern from "cpp/properties/GraphProperties.h" namespace "NetworKit::GraphProperties":
 	# static methods live in the class namespace, so declare them here
 	pair[count, count] minMaxDegree(_Graph _G) except +
+	pair[pair[count, count], pair[count, count]] minMaxDegreeDirected(_Graph _G) except +
 	double averageDegree(_Graph _G) except +
 	vector[count] degreeDistribution(_Graph _G) except +
 	vector[count] degreeSequence(_Graph _G) except +
@@ -3879,6 +3880,10 @@ cdef class GraphProperties:
 	@staticmethod
 	def minMaxDegree(Graph G not None):
 		return minMaxDegree(G._this)
+
+	@staticmethod
+	def minMaxDegreeDirected(Graph G not None):
+		return minMaxDegreeDirected(G._this)
 
 	@staticmethod
 	def averageDegree(Graph G not None):

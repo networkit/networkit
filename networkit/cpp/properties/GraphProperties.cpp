@@ -96,7 +96,7 @@ double GraphProperties::averageLocalClusteringCoefficient(const Graph& G) {
 }
 
 std::pair<count, count> GraphProperties::minMaxDegree(const Graph& G) {
-
+	assert(!G.isDirected());
 	count min = G.numberOfNodes();
 	count max = 0;
 
@@ -111,6 +111,33 @@ std::pair<count, count> GraphProperties::minMaxDegree(const Graph& G) {
 	});
 
 	return std::pair<count, count>(min, max);
+}
+
+std::pair<std::pair<count,count>, std::pair<count,count>> GraphProperties::minMaxDegreeDirected(const Graph& G) {
+	assert(G.isDirected());
+	count minIn = G.numberOfNodes();
+	count minOut = G.numberOfNodes();
+	count maxIn = 0;
+	count maxOut = 0;
+
+	G.forNodes([&](node v){
+		count d = G.degreeIn(v);
+		if (d < minIn) {
+			minIn = d;
+		}
+		if (d > maxIn) {
+			maxIn = d;
+		}
+		d = G.degreeOut(v);
+		if (d < minOut) {
+			minOut = d;
+		}
+		if (d > maxIn) {
+			maxOut = d;
+		}
+	});
+
+	return {{minIn,minOut},{maxIn,maxOut}};
 }
 
 std::vector< count > GraphProperties::degreeSequence(const NetworKit::Graph &G) {
