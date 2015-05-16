@@ -8,6 +8,7 @@
 #include <list>
 
 #include "KatzIndex.h"
+#include "PredictionsSorter.h"
 
 namespace NetworKit {
 
@@ -58,11 +59,11 @@ double KatzIndex::runImpl(node u, node v) {
   return getScore(u, v);
 }
 
-std::vector<LinkPredictor::node_dyad_score_pair> KatzIndex::runOnParallel(std::vector<std::pair<node, node>> nodePairs) {
+std::vector<LinkPredictor::prediction> KatzIndex::runOn(std::vector<std::pair<node, node>> nodePairs) {
   // Make sure the nodePairs are sorted. This will make use of the caching of the Katz index
   // and will exploit locality in the form of cpu caching as well.
   std::sort(nodePairs.begin(), nodePairs.end());
-  std::vector<node_dyad_score_pair> predictions(nodePairs.size());
+  std::vector<prediction> predictions(nodePairs.size());
   KatzIndex katz(*G, maxPathLength, dampingValue);
   #pragma omp parallel
   {
@@ -72,7 +73,7 @@ std::vector<LinkPredictor::node_dyad_score_pair> KatzIndex::runOnParallel(std::v
       predictions[i] = std::make_pair(nodePairs[i], katz.run(nodePairs[i].first, nodePairs[i].second));
     }
   }
-  sortByNodePair(predictions);
+  PredictionsSorter::sortByNodePair(predictions);
   return predictions;
 }
 
