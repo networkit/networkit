@@ -16,7 +16,7 @@
 #include "../JaccardIndex.h"
 #include "../ROCMetric.h"
 #include "../PrecisionRecallMetric.h"
-#include "../TrainingGraphSampler.h"
+#include "../RandomLinkSampler.h"
 #include "../KFoldCrossValidator.h"
 #include "../MissingLinksFinder.h"
 #include "../UDegreeIndex.h"
@@ -25,6 +25,7 @@
 #include "../TotalNeighborsIndex.h"
 #include "../NeighborsMeasureIndex.h"
 #include "../SameCommunityIndex.h"
+#include "../PredictionsSorter.h"
 
 namespace NetworKit {
 
@@ -46,13 +47,13 @@ void LinkPredictionGTest::SetUp() {
   trainingGraph.removeEdge(0, 1);
   trainingGraph.removeEdge(2, 4);
   trainingGraph.removeEdge(3, 5);
-  missingLinks = MissingLinksFinder(trainingGraph).findAll(2);
+  missingLinks = MissingLinksFinder(trainingGraph).findAtDistance(2);
   CommonNeighborsIndex cn(trainingGraph);
-  predictions = cn.runOnParallel(missingLinks);
-  LinkPredictor::sortByScore(predictions);
+  predictions = cn.runOn(missingLinks);
+  PredictionsSorter::sortByScore(predictions);
 }
 
-TEST_F(LinkPredictionGTest, testCommonNeighborsIndexRunOnParallel) {
+TEST_F(LinkPredictionGTest, testCommonNeighborsIndexRunOn) {
   EXPECT_EQ(6, predictions.size());
   EXPECT_EQ(2, predictions[0].first.first); EXPECT_EQ(4, predictions[0].first.second); EXPECT_EQ(3, predictions[0].second);
   EXPECT_EQ(1, predictions[1].first.first); EXPECT_EQ(3, predictions[1].first.second); EXPECT_EQ(2, predictions[1].second);
@@ -73,24 +74,10 @@ TEST_F(LinkPredictionGTest, testMissingLinksFinderDistanceTwo) {
 }
 
 TEST_F(LinkPredictionGTest, testMissingLinksFinderDistanceThree) {
-  std::vector<std::pair<node, node>> hopThreeMissingLinks = MissingLinksFinder(trainingGraph).findAll(3);
+  std::vector<std::pair<node, node>> hopThreeMissingLinks = MissingLinksFinder(trainingGraph).findAtDistance(3);
   EXPECT_EQ(2, hopThreeMissingLinks.size());
   EXPECT_EQ(0, hopThreeMissingLinks[0].first); EXPECT_EQ(1, hopThreeMissingLinks[0].second);
   EXPECT_EQ(0, hopThreeMissingLinks[1].first); EXPECT_EQ(5, hopThreeMissingLinks[1].second);
-}
-
-TEST_F(LinkPredictionGTest, testMissingLinksFinderRandomDistanceTwo) {
-  std::vector<std::pair<node, node>> hopThreeMissingLinks = MissingLinksFinder(trainingGraph).findRandomly(2, 2);
-  EXPECT_EQ(2, hopThreeMissingLinks.size());
-  INFO(hopThreeMissingLinks[0]);
-  INFO(hopThreeMissingLinks[1]);
-}
-
-TEST_F(LinkPredictionGTest, testMissingLinksFinderRandomNegativesDistanceTwo) {
-  std::vector<std::pair<node, node>> hopTwoNegatives = MissingLinksFinder(trainingGraph).findRandomNegatives(2, 2, trainingGraph);
-  EXPECT_EQ(2, hopTwoNegatives.size());
-  INFO(hopTwoNegatives[0]);
-  INFO(hopTwoNegatives[1]);
 }
 
 TEST_F(LinkPredictionGTest, testLinkThresholderByScore) {
@@ -124,7 +111,7 @@ TEST_F(LinkPredictionGTest, testLinkThresholderByPercentage) {
 }
 
 TEST_F(LinkPredictionGTest, testTrainingGraphGenerator) {
-  Graph trainingGraph = TrainingGraphSampler::byPercentage(G, 0.7);
+  Graph trainingGraph = RandomLinkSampler::byPercentage(G, 0.7);
   EXPECT_EQ(7, trainingGraph.numberOfEdges());
 }
 
@@ -172,7 +159,6 @@ TEST_F(LinkPredictionGTest, testROCMetric) {
   ROCMetric roc(G);
   std::pair<std::vector<double>, std::vector<double>> curve = roc.getCurve(predictions);
   double auc = roc.getAreaUnderCurve();
-
   EXPECT_EQ(auc, 0.8125);
   EXPECT_EQ(0, curve.first[0]); EXPECT_EQ(0.5, curve.second[0]);
   EXPECT_EQ(0.25, curve.first[1]); EXPECT_EQ(0.5, curve.second[1]);
@@ -185,7 +171,6 @@ TEST_F(LinkPredictionGTest, testPRMetric) {
   PrecisionRecallMetric pr(G);
   std::pair<std::vector<double>, std::vector<double>> curve = pr.getCurve(predictions);
   double auc = pr.getAreaUnderCurve();
-
   EXPECT_EQ(auc, 0.5);
   EXPECT_EQ(0, curve.first[0]); EXPECT_EQ(1, curve.second[0]);
   EXPECT_EQ(0.5, curve.first[1]); EXPECT_EQ(1.0 / 3, curve.second[1]);
@@ -202,47 +187,16 @@ TEST_F(LinkPredictionGTest, testTenFoldCrossValidation) {
   EXPECT_NEAR(0.89, averageAUC, 0.05);
 }
 
-TEST_F(LinkPredictionGTest, testRunOnParallelOrdering) {
+TEST_F(LinkPredictionGTest, testKatzRunOnOrdering) {
   METISGraphReader graphReader;
   Graph newG = graphReader.read("input/jazz.graph");
   KatzIndex katz(newG);
-  Graph trainingGraph = TrainingGraphSampler::byPercentage(newG, 0.7);
-  std::vector<std::pair<node, node>> nodePairs = MissingLinksFinder(trainingGraph).findAll(2);
-  std::vector<std::pair<std::pair<node, node>, double>> preds = katz.runOnParallel(missingLinks);
+  Graph trainingGraph = RandomLinkSampler::byPercentage(newG, 0.7);
+  std::vector<std::pair<node, node>> nodePairs = MissingLinksFinder(trainingGraph).findAtDistance(2);
+  std::vector<std::pair<std::pair<node, node>, double>> preds = katz.runOn(missingLinks);
   for (index i = 0; i < preds.size() - 1; ++i) {
     EXPECT_TRUE(preds[i].first.first < preds[i+1].first.first || preds[i].first.second < preds[i+1].first.second);
   }
-}
-  
-TEST_F(LinkPredictionGTest, testCommonNeighborsIndexRunOnParallelHugeGraph) {
-  METISGraphReader graphReader;
-  Graph newG = graphReader.read("input/caidaRouterLevel.graph");
-  CommonNeighborsIndex cn(newG);
-  Graph trainingGraph = TrainingGraphSampler::byPercentage(newG, 0.7);
-  std::vector<std::pair<node, node>> nodePairs = MissingLinksFinder(trainingGraph).findAll(2);
-  count sizeMissingLinks = sizeof(std::vector<std::pair<node, node>>)
-      + (sizeof(std::pair<node, node>) * nodePairs.size());
-  INFO("Allocated ~", sizeMissingLinks / (1024 * 1024), " MiB for 2-hop missing links.");
-
-  std::vector<std::pair<std::pair<node, node>, double>> preds = cn.runOnParallel(nodePairs);
-  count sizePredictions = sizeof(std::vector<std::pair<std::pair<node, node>, double>>)
-    + (sizeof(std::pair<std::pair<node, node>, double>) * preds.size());
-  INFO("Allocated ~", sizePredictions / (1024 * 1024), " MiB for predictions.");
-  // ... expectations
-}
-
-TEST_F(LinkPredictionGTest, testSpeedup) {
-  METISGraphReader graphReader;
-  Graph newG = graphReader.read("input/caidaRouterLevel.graph");
-  CommonNeighborsIndex cn(newG);
-  std::vector<std::pair<node, node>> nodePairs = MissingLinksFinder(newG).findAll(2);
-  INFO("Found ", nodePairs.size(), " node-pairs.");
-
-  auto start_time = std::chrono::high_resolution_clock::now();
-  cn.runOn(nodePairs);
-  auto end_time = std::chrono::high_resolution_clock::now();
-  std::chrono::duration<float> delta = end_time - start_time;
-  INFO("Elapsed time: ",  std::chrono::duration_cast<std::chrono::milliseconds>(delta).count(), " milliseconds.");
 }
 
 } // namespace NetworKit

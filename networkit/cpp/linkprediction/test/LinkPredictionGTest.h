@@ -26,7 +26,7 @@ protected:
 
   std::vector<std::pair<node, node>> missingLinks;
 
-  std::vector<LinkPredictor::node_dyad_score_pair> predictions;
+  std::vector<LinkPredictor::prediction> predictions;
 
 public:
   LinkPredictionGTest();
