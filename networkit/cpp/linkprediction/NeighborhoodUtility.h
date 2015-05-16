@@ -26,7 +26,7 @@ private:
    * @param v Second node in the graph
    * @return the sorted nodes regarding the neighborhoods of the nodes @a u and @a v in the given graph @a G.
    */
-  static std::pair<std::vector<node>, std::vector<node>> prepareNeighbors(const Graph& G, node u, node v);
+  static std::pair<std::vector<node>, std::vector<node>> getSortedNeighborhoods(const Graph& G, node u, node v);
 
 public:
   /**

@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-std::pair<std::vector<node>, std::vector<node>> NeighborhoodUtility::prepareNeighbors(const Graph& G, node u, node v) {
+std::pair<std::vector<node>, std::vector<node>> NeighborhoodUtility::getSortedNeighborhoods(const Graph& G, node u, node v) {
   std::vector<node> uNeighbors = G.neighbors(u);
   std::vector<node> vNeighbors = G.neighbors(v);
   // We have no guarantee that the neighbor-vectors are sorted so we have to
@@ -23,7 +23,7 @@ std::vector<node> NeighborhoodUtility::getNeighborsUnion(const Graph& G, node u,
   if (!G.hasNode(u) || !G.hasNode(v)) {
     throw std::invalid_argument("Invalid node provided.");
   }
-  std::pair<std::vector<node>, std::vector<node>> neighborhoods = prepareNeighbors(G, u, v);
+  std::pair<std::vector<node>, std::vector<node>> neighborhoods = getSortedNeighborhoods(G, u, v);
   std::vector<node> neighborsUnion;
   std::set_union(neighborhoods.first.begin(), neighborhoods.first.end(), neighborhoods.second.begin(),
     neighborhoods.second.end(), std::back_inserter(neighborsUnion));
@@ -34,7 +34,7 @@ std::vector<node> NeighborhoodUtility::getCommonNeighbors(const Graph& G, node u
   if (!G.hasNode(u) || !G.hasNode(v)) {
     throw std::invalid_argument("Invalid node provided.");
   }
-  std::pair<std::vector<node>, std::vector<node>> neighborhoods = prepareNeighbors(G, u, v);
+  std::pair<std::vector<node>, std::vector<node>> neighborhoods = getSortedNeighborhoods(G, u, v);
   std::vector<node> commonNeighbors;
   std::set_intersection(neighborhoods.first.begin(), neighborhoods.first.end(), neighborhoods.second.begin(),
     neighborhoods.second.end(), std::back_inserter(commonNeighbors));
