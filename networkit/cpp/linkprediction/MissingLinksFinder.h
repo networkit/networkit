@@ -55,16 +55,6 @@ public:
    */
   std::vector<std::pair<node, node>> findFromNode(node u, count k);
 
-  std::vector<std::pair<node, node>> findRandomly(count k, count limit);
-
-  std::vector<std::pair<node, node>> findPositives(count k, const Graph& testGraph);
-
-  std::vector<std::pair<node, node>> findNegatives(count k, const Graph& testGraph);
-
-  std::vector<std::pair<node, node>> findRandomNegatives(count k, count limit, const Graph& testGraph);
-
-  count getNumNegatives(count k, const Graph& testGraph);
-
 };
 
 } // namespace NetworKit
