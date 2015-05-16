@@ -6,6 +6,7 @@
  */
 
 #include "EvaluationMetric.h"
+#include "PredictionsSorter.h"
 
 namespace NetworKit {
 
@@ -19,7 +20,7 @@ void EvaluationMetric::setTestGraph(const Graph& newTestGraph) {
   testGraph = &newTestGraph;
 }
 
-std::pair<std::vector<double>, std::vector<double>> EvaluationMetric::getCurve(std::vector<LinkPredictor::node_dyad_score_pair> predictions, count numThresholds) {
+std::pair<std::vector<double>, std::vector<double>> EvaluationMetric::getCurve(std::vector<LinkPredictor::prediction> predictions, count numThresholds) {
   if (testGraph == nullptr) {
     throw std::logic_error("Set testGraph first.");
   } else if (predictions.size() == 0) {
@@ -41,7 +42,7 @@ std::pair<std::vector<double>, std::vector<double>> EvaluationMetric::getCurve(s
   }
   thresholds.assign(thresholdSet.begin(), thresholdSet.end());
   // The extraction of statistical measures requires sorted predictions
-  LinkPredictor::sortByScore(predictions);
+  PredictionsSorter::sortByScore(predictions);
   this->predictions = predictions;
   calculateStatisticalMeasures();
   generatedPoints = generatePoints();

@@ -25,16 +25,8 @@ void LinkPredictor::setGraph(const Graph& newGraph) {
   validCache = false;
 }
 
-std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runOn(std::vector<std::pair<node, node>> nodePairs) {
-  std::vector<node_dyad_score_pair> predictions;
-  for (index i = 0; i < nodePairs.size(); ++i) {
-    predictions.push_back(std::make_pair(nodePairs[i], run(nodePairs[i].first, nodePairs[i].second)));
-  }
-  return predictions;
-}
-
-std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runOnParallel(std::vector<std::pair<node, node>> nodePairs) {
-  std::vector<node_dyad_score_pair> predictions(nodePairs.size());
+std::vector<LinkPredictor::prediction> LinkPredictor::runOn(std::vector<std::pair<node, node>> nodePairs) {
+  std::vector<prediction> predictions(nodePairs.size());
   std::sort(nodePairs.begin(), nodePairs.end());
   #pragma omp parallel for schedule(dynamic) shared(predictions)
   for (index i = 0; i < nodePairs.size(); ++i) {
@@ -57,7 +49,7 @@ double LinkPredictor::run(node u, node v) {
   return runImpl(u, v);
 }
 
-std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runAll() {
+std::vector<LinkPredictor::prediction> LinkPredictor::runAll() {
   std::vector<node> nodes = G->nodes();
   std::vector<std::pair<node, node>> nodePairs;
   // Exclude all node-pairs that are already connected and ensure u != v for all node-pairs (u, v).
@@ -67,15 +59,7 @@ std::vector<LinkPredictor::node_dyad_score_pair> LinkPredictor::runAll() {
         nodePairs.push_back(std::make_pair(i, j));
     }
   }
-  return runOnParallel(nodePairs);
-}
-
-void LinkPredictor::sortByScore(std::vector<LinkPredictor::node_dyad_score_pair>& predictions) {
-  std::sort(predictions.begin(), predictions.end(), ConcreteScoreComp);
-}
-
-void LinkPredictor::sortByNodePair(std::vector<LinkPredictor::node_dyad_score_pair>& predictions) {
-  std::sort(predictions.begin(), predictions.end(), ConcreteNodePairComp);
+  return runOn(nodePairs);
 }
 
 } // namespace NetworKit

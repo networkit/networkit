@@ -38,7 +38,7 @@ double KFoldCrossValidator::crossValidate(count k) {
     linkPredictor->setGraph(trainingGraph);
     // Evaluate on all 2-hop missing links
     std::vector<std::pair<node, node>> twoHopsMissing = MissingLinksFinder(trainingGraph).findAtDistance(2);
-    std::pair<std::vector<double>, std::vector<double>> ps = evaluator->getCurve(linkPredictor->runOnParallel(twoHopsMissing));
+    std::pair<std::vector<double>, std::vector<double>> ps = evaluator->getCurve(linkPredictor->runOn(twoHopsMissing));
     sum += evaluator->getAreaUnderCurve();
   }
   return sum / k;

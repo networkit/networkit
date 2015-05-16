@@ -58,7 +58,7 @@ protected:
 
   const Graph* testGraph; //!< Used to evaluate the binary predictions at the thresholds
 
-  std::vector<LinkPredictor::node_dyad_score_pair> predictions; //!< Predictions that should be evaluated
+  std::vector<LinkPredictor::prediction> predictions; //!< Predictions that should be evaluated
 
   std::vector<index> thresholds; //!< Indices for the thresholds to use. All node-pairs with an index < thresholds[i] will be regarded as links
 
@@ -108,7 +108,7 @@ public:
    * @return a pair of vectors where the first vectors contains all x-values and the second one contains the corresponding
    * y-value
    */
-  virtual std::pair<std::vector<double>, std::vector<double>> getCurve(std::vector<LinkPredictor::node_dyad_score_pair> predictions, count numThresholds = 1000);
+  virtual std::pair<std::vector<double>, std::vector<double>> getCurve(std::vector<LinkPredictor::prediction> predictions, count numThresholds = 1000);
 
   /**
    * Returns the area under the given @a curve by using the trapezoidal rule.
