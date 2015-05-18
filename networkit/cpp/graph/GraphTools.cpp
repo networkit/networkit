@@ -45,6 +45,35 @@ std::unordered_map<node,node> getRandomContinuousNodeIds(const Graph& graph) {
 	return nodeIdMap;
 }
 
+std::vector<node> invertContinuousNodeIds(std::unordered_map<node,node>& nodeIdMap, const Graph& G) {
+	assert(nodeIdMap.size() == G.numberOfNodes());
+	std::vector<node> invertedIdMap(G.numberOfNodes() + 1);
+	// store upper node id bound
+	invertedIdMap[G.numberOfNodes()] = G.upperNodeIdBound();
+	// inverted node mapping
+	for (auto& x : nodeIdMap) {
+		invertedIdMap[x.second] = x.first;
+	}
+	return std::move(invertedIdMap);
+}
+
+Graph restoreGraph(std::vector<node>& invertedIdMap, const Graph& G) {
+	// with the inverted id map and the compacted graph, generate the original graph again
+	Graph Goriginal(invertedIdMap[invertedIdMap.size()-1],G.isWeighted(), G.isDirected());
+	index current = 0;
+	Goriginal.forNodes([&](node u){
+		if (invertedIdMap[current] == u) {
+			G.forNeighborsOf(current,[&](node v){
+				Goriginal.addEdge(u,invertedIdMap[v]);
+			});
+			++current;
+		} else {
+			Goriginal.removeNode(u);
+		}
+	});
+	return std::move(Goriginal);
+}
+
 }
 
 }
