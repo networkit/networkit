@@ -11,7 +11,6 @@
 
 #include "../../generators/ErdosRenyiGenerator.h"
 #include "../../community/ClusteringGenerator.h"
-#include "../../coarsening/PartitionCoarsening.h"
 #include "../../coarsening/ParallelPartitionCoarsening.h"
 #include "../../coarsening/ClusteringProjector.h"
 #include "../../community/ClusteringGenerator.h"
@@ -39,7 +38,7 @@ TEST_F(CoarseningBenchmark, benchmarkCoarsening) {
 
 	Aux::Timer timer;
 	INFO("parallel coarsening");
-	PartitionCoarsening coarsening;
+	ParallelPartitionCoarsening coarsening(false);
 	timer.start();
 	auto result2 = coarsening.run(G, zeta);
 	timer.stop();

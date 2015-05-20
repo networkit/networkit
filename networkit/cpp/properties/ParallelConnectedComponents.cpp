@@ -5,11 +5,8 @@
  *      Author: cls
  */
 
-#include <set>
-
 #include "ParallelConnectedComponents.h"
 #include "../structures/Partition.h"
-#include "../coarsening/PartitionCoarsening.h"
 #include "../coarsening/ParallelPartitionCoarsening.h"
 #include "../auxiliary/Log.h"
 
@@ -153,7 +150,7 @@ void ParallelConnectedComponents::runSequential() {
 	}
 	if (coarsening && numIterations == 8) { // TODO: externalize constant
 		// coarsen and make recursive call
-		PartitionCoarsening con;
+		ParallelPartitionCoarsening con(false);
 		std::pair<Graph, std::vector<node> > coarse = con.run(G, component);
 		ParallelConnectedComponents cc(coarse.first);
 		cc.run();
