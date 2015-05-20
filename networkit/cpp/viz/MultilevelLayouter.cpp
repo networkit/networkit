@@ -6,7 +6,12 @@
  */
 
 #include "MultilevelLayouter.h"
+#include "FruchtermanReingold.h"
+#include "MaxentStress.h"
+#include "../community/PLP.h"
+#include "../io/METISGraphWriter.h"
 #include "../community/EdgeCut.h"
+#include "../coarsening/ParallelPartitionCoarsening.h"
 
 namespace NetworKit {
 
@@ -51,10 +56,10 @@ void MultilevelLayouter::drawInternal(Graph& G, count level) {
 		INFO("Clustering: #clusters: ", clustering.numberOfSubsets(), "; cut: ", ec.getQuality(clustering, G));
 
 		// coarsen by clustering
-		ClusterContractor contracter;
-		auto mypair = contracter.run(G, clustering);
-		Graph& Gcon = mypair.first;
-		auto mapping = mypair.second;
+		ParallelPartitionCoarsening contracter;
+		Graph Gcon;
+		std::vector<node> mapping;
+		std::tie(Gcon, mapping) = contracter.run(G, clustering);
 
 		// make recursive call
 		drawInternal(Gcon, level + 1);

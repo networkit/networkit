@@ -7,7 +7,7 @@
 
 #include "EPP.h"
 
-#include "../coarsening/ClusterContractor.h"
+#include "../coarsening/ParallelPartitionCoarsening.h"
 #include "../coarsening/ClusteringProjector.h"
 #include "../community/JaccardMeasure.h"
 #include "../auxiliary/Log.h"
@@ -39,7 +39,7 @@ void EPP::run() {
 	INFO("STARTING EnsemblePreprocessing on G=" , G.toString());
 
 	// fixed sub-algorithms
-	ClusterContractor contracter;
+	ParallelPartitionCoarsening contracter;
 	ClusteringProjector projector;
 
 	// data
@@ -72,9 +72,9 @@ void EPP::run() {
 	// create core clustering
 	core = this->overlap->run(G, baseClusterings);
 	// contract graph according to core clustering
-	std::pair<Graph, std::vector<node> > contraction = contracter.run(G, core);
-	Graph Gcore = contraction.first;
-	std::vector<node> fineToCoarse = contraction.second;
+	Graph Gcore;
+	std::vector<node> fineToCoarse;
+	std::tie(Gcore,fineToCoarse) = contracter.run(G,core);
 	// send contracted graph to final clusterer
 	// TODO: maybe put this in a private helper function as this could be distracting...
 	if (auto tmp = dynamic_cast<PLM*>(this->finalClusterer.get())) {
