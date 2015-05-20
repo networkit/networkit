@@ -19,7 +19,6 @@
 #include "../EPP.h"
 #include "../../overlap/HashingOverlapper.h"
 #include "../EPPFactory.h"
-#include "../CommunityGraph.h"
 #include "../PLM.h"
 #include "../../community/GraphClusteringTools.h"
 #include "../../auxiliary/Log.h"
@@ -396,28 +395,6 @@ TEST_F(CommunityGTest, testDeletedNodesPLM) {
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta2));
 
 }
-
-
-TEST_F(CommunityGTest, testCommunityGraph) {
-	CommunityGraph com;
-	METISGraphReader reader;
-	Graph G = reader.read("input/jazz.graph");
-	ClusteringGenerator clusteringGen;
-
-	Partition one = clusteringGen.makeOneClustering(G);
-	com.run(G, one);
-	EXPECT_EQ(1u, com.getGraph().numberOfNodes());
-
-	Partition singleton = clusteringGen.makeSingletonClustering(G);
-	com.run(G, singleton);
-	EXPECT_EQ(G.numberOfNodes(), com.getGraph().numberOfNodes());
-	PLP plp(G);
-	plp.run();
-	Partition zeta = plp.getPartition();
-	com.run(G, zeta);
-	EXPECT_EQ(zeta.numberOfSubsets(), com.getGraph().numberOfNodes());
-}
-
 
 TEST_F(CommunityGTest, testModularity) {
 	GraphGenerator graphGenerator;

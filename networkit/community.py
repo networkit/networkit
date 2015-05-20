@@ -5,7 +5,7 @@ __author__ = "Christian Staudt"
 
 from _NetworKit import Partition, Coverage, Modularity, CommunityDetector, PLP, LPDegreeOrdered, PLM, CNM, PartitionReader, PartitionWriter,\
 	NodeStructuralRandMeasure, GraphStructuralRandMeasure, JaccardMeasure, NMIDistance, AdjustedRandMeasure,\
-	EPP, EPPFactory, CommunityGraph, EdgeListPartitionReader, GraphClusteringTools, ClusteringGenerator, PartitionIntersection, HubDominance, CoreDecomposition, CutClustering
+	EPP, EPPFactory, EdgeListPartitionReader, GraphClusteringTools, ClusteringGenerator, PartitionIntersection, HubDominance, CoreDecomposition, CutClustering, ParallelPartitionCoarsening
 
 # local imports
 #from .properties import CoreDecomposition, overview
@@ -57,9 +57,9 @@ def inspectCommunities(zeta, G):
 
 def communityGraph(G, zeta):
 	""" Create a community graph, i.e. a graph in which one node represents a community and an edge represents the edges between communities, from a given graph and a community detection solution"""
-	cg = CommunityGraph()
-	cg.run(G, zeta)
-	return cg.getGraph()
+	cg = ParallelPartitionCoarsening()
+	Gcom,_ = cg.run(G, zeta)
+	return Gcom
 
 
 def evalCommunityDetection(algo, G):
