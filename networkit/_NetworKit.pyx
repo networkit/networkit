@@ -3701,63 +3701,6 @@ cdef class EPPFactory:
 		"""
 		return EPP(G).setThis(makePtr(G._this, ensembleSize, stdstring(baseAlgorithm), stdstring(finalAlgorithm)))
 
-cdef extern from "cpp/community/CommunityGraph.h":
-	cdef cppclass _CommunityGraph "NetworKit::CommunityGraph":
-		void run(_Graph G, _Partition zeta) except +
-		_Graph getGraph() except +
-		map[index, node] getCommunityToNodeMap() except +
-		map[node, index] getNodeToCommunityMap() except +
-
-cdef class CommunityGraph:
-	""" The CommunityGraph class represents a Graph coarsened according to communities. Each node in the CommunityGraph
- 	represents a community. Edge weights are the weights of inter-community cuts.
-	"""
-	cdef _CommunityGraph _this
-
-	def run(self, Graph G, Partition zeta):
-		""" Creates a coarsened graph of `G` according to communities in `zeta`. Edge weights are the weights of
-		inter-community cuts.
-
-		Parameters
-		----------
-		G : Graph
-			The graph.
-		zeta : Partition
-			A community clustering of `G`.
-		"""
-		self._this.run(G._this, zeta._this)
-		return self
-
-	def getGraph(self):
-		""" Returns the coarsened Graph.
-
-		Returns
-		-------
-		Graph
-			The coarsened graph.
-		"""
-		return Graph().setThis(self._this.getGraph())
-
-	def getCommunityToNodeMap(self):
-		""" Maps community id to node id in the community graph.
-
-		Returns
-		-------
-		dict
-			Map containing community id to node id mappings.
-		"""
-		return self._this.getCommunityToNodeMap()
-
-	def getNodeToCommunityMap(self):
-		""" Maps node id in the community graph to community id.
-
-		Returns
-		-------
-		dict
-			Map containing node id to community id mappins.
-		"""
-		return self._this.getNodeToCommunityMap()
-
 # Module: flows
 
 cdef extern from "cpp/flow/EdmondsKarp.h":
