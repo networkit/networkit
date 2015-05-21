@@ -140,3 +140,20 @@ def kCoreCommunityDetection(G, k, algo=None, inspect=True):
 	#properties.overview(C)
 
 	return detectCommunities(C, algo, inspect)
+
+
+def mesoscopicResponseFunction(G, samples=100):
+	"""
+	"""
+	raise NotImplementedError("TODO: under construction")
+	m = G.numberOfEdges()
+	gammaRange = list(range(0, 2*m+1, round(2*m / (samples - 1)))) # FIXME: scale differently, 1.0 as middle
+	nCom = []
+
+	for gamma in gammaRange:
+		communityDetector = PLM(G, gamma=gamma)
+		communityDetector.run()
+		communities = communityDetector.getPartition()
+		nCom.append(communities.numberOfSubsets())
+
+	return nCom
