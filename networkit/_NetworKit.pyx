@@ -3402,11 +3402,11 @@ cdef class LPDegreeOrdered(CommunityDetector):
 cdef extern from "cpp/community/PLM.h":
 	cdef cppclass _PLM "NetworKit::PLM"(_CommunityDetectionAlgorithm):
 		_PLM(_Graph _G) except +
-		_PLM(_Graph _G, bool refine, double gamma, string par, count maxIter, bool parCoarsening, bool turbo) except +
+		_PLM(_Graph _G, bool refine, double gamma, string par, count maxIter, bool turbo) except +
 		map[string, vector[count]] getTiming() except +
 
 cdef extern from "cpp/community/PLM.h" namespace "NetworKit::PLM":
-	pair[_Graph, vector[node]] PLM_coarsen "NetworKit::PLM::coarsen" (const _Graph& G, const _Partition& zeta, bool parallel) except +
+	pair[_Graph, vector[node]] PLM_coarsen "NetworKit::PLM::coarsen" (const _Graph& G, const _Partition& zeta) except +
 	_Partition PLM_prolong "NetworKit::PLM::prolong"(const _Graph& Gcoarse, const _Partition& zetaCoarse, const _Graph& Gfine, vector[node] nodeToMetaNode) except +
 
 
@@ -3433,9 +3433,9 @@ cdef class PLM(CommunityDetector):
 			faster but uses O(n) additional memory per thread
 	"""
 
-	def __cinit__(self, Graph G not None, refine=False, gamma=1.0, par="balanced", maxIter=32, parCoarsening=True, turbo=False):
+	def __cinit__(self, Graph G not None, refine=False, gamma=1.0, par="balanced", maxIter=32, turbo=False):
 		self._G = G
-		self._this = new _PLM(G._this, refine, gamma, stdstring(par), maxIter, parCoarsening, turbo)
+		self._this = new _PLM(G._this, refine, gamma, stdstring(par), maxIter, turbo)
 
 	def getTiming(self):
 		"""  Get detailed time measurements.
@@ -3444,7 +3444,7 @@ cdef class PLM(CommunityDetector):
 
 	@staticmethod
 	def coarsen(Graph G, Partition zeta, bool parallel = False):
-		cdef pair[_Graph, vector[node]] result = move(PLM_coarsen(G._this, zeta._this, parallel))
+		cdef pair[_Graph, vector[node]] result = move(PLM_coarsen(G._this, zeta._this))
 		return (Graph().setThis(result.first), result.second)
 
 	@staticmethod
