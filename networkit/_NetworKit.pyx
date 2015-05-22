@@ -780,7 +780,11 @@ cdef class Graph:
 		return self._this.randomEdge()
 
 	def getCoordinate(self, v):
-		""" Get the coordinates of node v.
+		"""
+		DEPRECATED: Coordinates should be handled outside the Graph class
+		 like general node attributes.
+
+		Get the coordinates of node v.
 		Parameters
 		----------
 		v : node
@@ -795,7 +799,11 @@ cdef class Graph:
 		return (self._this.getCoordinate(v)[0], self._this.getCoordinate(v)[1])
 
 	def setCoordinate(self, v, value):
-		""" Set the coordinates of node v.
+		"""
+		DEPRECATED: Coordinates should be handled outside the Graph class
+		 like general node attributes.
+
+		Set the coordinates of node v.
 		Parameters
 		----------
 		v : node
@@ -807,6 +815,10 @@ cdef class Graph:
 		self._this.setCoordinate(v, p)
 
 	def initCoordinates(self):
+		"""
+		DEPRECATED: Coordinates should be handled outside the Graph class
+		 like general node attributes.
+		"""
 		self._this.initCoordinates()
 
 	def numberOfSelfLoops(self):
