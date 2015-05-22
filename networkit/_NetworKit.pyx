@@ -4047,7 +4047,10 @@ cdef extern from "cpp/properties/ClusteringCoefficient.h" namespace "NetworKit::
 cdef class ClusteringCoefficient:
 	@staticmethod
 	def avgLocal(Graph G):
-		"""  This calculates the average local clustering coefficient of graph `G`.
+		"""
+		DEPRECATED: Use centrality.LocalClusteringCoefficient and take average.
+
+		This calculates the average local clustering coefficient of graph `G`.
 
 		Parameters
 		----------
