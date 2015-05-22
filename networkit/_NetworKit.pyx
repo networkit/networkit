@@ -4322,6 +4322,7 @@ cdef extern from "cpp/centrality/LocalClusteringCoefficient.h":
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
 		vector[double] edgeScores() except +
+		double maximum() except +
 
 cdef class LocalClusteringCoefficient:
 	"""
@@ -4397,6 +4398,9 @@ cdef class LocalClusteringCoefficient:
 			The local clustering coefficient values calculated by run().
 		"""
 		return self._this.edgeScores()
+
+	def maximum(self):
+		return self._this.maximum()
 
 
 cdef extern from "cpp/properties/EffectiveDiameter.h" namespace "NetworKit::EffectiveDiameter":
