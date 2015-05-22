@@ -10,7 +10,9 @@
 #include "ClusteringCoefficient.h"
 #include "../auxiliary/Random.h"
 #include "../auxiliary/Log.h"
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 
 namespace NetworKit {
 

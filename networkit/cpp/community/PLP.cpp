@@ -7,7 +7,6 @@
 
 #include "PLP.h"
 
-#include <omp.h>
 #include "../Globals.h"
 #include "../auxiliary/Log.h"
 #include "../auxiliary/ProgressMeter.h"

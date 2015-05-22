@@ -5,10 +5,11 @@
  *      Author: Marvin Ritter (marvin.ritter@gmail.com)
  */
 
-#include <stdexcept>
-#include <omp.h>
-
 #include "GraphBuilder.h"
+#include <stdexcept>
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 namespace NetworKit {
 

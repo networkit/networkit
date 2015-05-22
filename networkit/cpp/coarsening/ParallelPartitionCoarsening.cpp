@@ -6,10 +6,12 @@
  */
 
 #include "ParallelPartitionCoarsening.h"
-#include <omp.h>
 #include "../graph/GraphBuilder.h"
 #include "../auxiliary/Timer.h"
 #include "../auxiliary/Log.h"
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 namespace NetworKit {
 

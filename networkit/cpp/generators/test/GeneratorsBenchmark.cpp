@@ -7,7 +7,6 @@
 
 #ifndef NOGTEST
 
-#include <omp.h>
 #include <random>
 #include <functional>
 
@@ -15,7 +14,10 @@
 #include "../../graph/GraphGenerator.h"
 #include "../BarabasiAlbertGenerator.h"
 #include "../../graph/GraphBuilder.h"
-
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+ 
 namespace NetworKit {
 
 

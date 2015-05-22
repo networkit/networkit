@@ -17,7 +17,9 @@
 #include <math.h>
 #include <algorithm>
 #include <memory>
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 
 namespace NetworKit {
 

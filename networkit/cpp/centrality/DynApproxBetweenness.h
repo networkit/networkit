@@ -16,7 +16,6 @@
 #include <math.h>
 #include <algorithm>
 #include <memory>
-#include <omp.h>
 
 namespace NetworKit {
 

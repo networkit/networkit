@@ -8,8 +8,10 @@
 #include <stack>
 #include <queue>
 #include <memory>
-#include <omp.h>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 #include "Betweenness.h"
 #include "../auxiliary/PrioQueue.h"

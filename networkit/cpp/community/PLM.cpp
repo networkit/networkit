@@ -6,13 +6,14 @@
  */
 
 #include "PLM.h"
-#include <omp.h>
 #include "../coarsening/ParallelPartitionCoarsening.h"
 #include "../coarsening/ClusterContractor.h"
 #include "../coarsening/ClusteringProjector.h"
 #include "../auxiliary/Log.h"
 #include "../auxiliary/Timer.h"
-
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 #include <sstream>
 

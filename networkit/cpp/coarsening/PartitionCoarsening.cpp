@@ -6,9 +6,11 @@
  */
 
 #include "PartitionCoarsening.h"
-#include <omp.h>
 #include "../auxiliary/Timer.h"
 #include "../auxiliary/Log.h"
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 namespace NetworKit {
 
