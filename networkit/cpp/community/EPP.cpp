@@ -54,21 +54,6 @@ void EPP::run() {
 		baseClusterings.at(b) = baseClusterers.at(b)->getPartition();
 	}
 
-	// ANALYSIS
-	if (CALC_DISSIMILARITY) {
-		JaccardMeasure dm;
-		double dissimilaritySum = 0.0;
-		for (index b = 0; b < baseClusterings.size(); b += 1) {
-			for (index c = b + 1; c < baseClusterings.size(); c += 1) {
-				double d = dm.getDissimilarity(G, baseClusterings.at(b), baseClusterings.at(c));
-				dissimilaritySum += d;
-			}
-		}
-		double avgDissimilarity = dissimilaritySum / (baseClusterings.size() * (baseClusterings.size() - 1) / 2.0);
-		std::cout << "[INFO] avg. base clustering dissimilarity: " << avgDissimilarity << std::endl;
-	}
-	//
-
 	// create core clustering
 	core = this->overlap->run(G, baseClusterings);
 	// contract graph according to core clustering
