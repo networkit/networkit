@@ -26,11 +26,9 @@ int MAX_LOUVAIN_ITERATIONS = 32; ///< maximum number of iterations within contra
 
 #ifndef _OPENMP
 int omp_get_thread_num() {
-	ERROR("OpenMP is not available");
 	return 0;
 }
 int omp_get_max_threads() {
-	ERROR("OpenMP is not available");
 	return 1;
 }
 #endif
