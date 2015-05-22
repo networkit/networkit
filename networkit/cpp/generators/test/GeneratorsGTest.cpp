@@ -931,8 +931,9 @@ TEST_F(GeneratorsGTest, tryGiganticCollectionOfHyperbolicTemperatureGraphs) {
 	for (index i = 0; i < 30; i++) {
 		count n = 50000000;
 		double k = 10;
+		double T = 0.1;
 		count m = n*k/2;
-		HyperbolicGenerator gen(n, k, 3, 0.5);
+		HyperbolicGenerator gen(n, k, 3, T);
 		Graph G = gen.generate();
 		EXPECT_NEAR(G.numberOfEdges(), m, m/10);
 		EXPECT_TRUE(G.checkConsistency());

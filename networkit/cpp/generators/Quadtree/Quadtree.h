@@ -236,6 +236,10 @@ public:
 		return root.getElementsProbabilistically(euQuery, prob, suppressLeft, circleDenizens);
 	}
 
+	void recount() {
+		root.recount();
+	}
+
 	count size() const {
 		return root.size();
 	}

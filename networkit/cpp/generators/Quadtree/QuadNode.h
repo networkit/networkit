@@ -337,49 +337,54 @@ public:
 		 * Need to check whether extremum is between corners:
 		 */
 
-		double minDistance, maxDistance;
+		double coshMinDistance, coshMaxDistance;
 
 		//Left border
 		double lowerLeftDistance = coshMinR*coshr-sinhMinR*sinhr*cosDiffLeft;
 		double upperLeftDistance = coshMaxR*coshr-sinhMaxR*sinhr*cosDiffLeft;
 		//double lowerLeftDistance = HyperbolicSpace::poincareMetric(leftAngle, minR, phi, r);
 		//double upperLeftDistance = HyperbolicSpace::poincareMetric(leftAngle, maxR, phi, r);
-		if (responsible(phi, r)) minDistance = 0;
-		else minDistance = min(lowerLeftDistance, upperLeftDistance);
+		if (responsible(phi, r)) coshMinDistance = 1; //strictly speaking, this is wrong
+		else coshMinDistance = min(lowerLeftDistance, upperLeftDistance);
 
-		maxDistance = max(lowerLeftDistance, upperLeftDistance);
+		coshMaxDistance = max(lowerLeftDistance, upperLeftDistance);
 		//double a = cosh(r_h);
 		double b = sinhr*cosDiffLeft;
 		double extremum = log((coshr+b)/(coshr-b))/2;
 		if (extremum < maxRHyper && extremum >= minRHyper) {
 			double extremeDistance = cosh(extremum)*coshr-sinh(extremum)*sinhr*cosDiffLeft;
 			//double extremeDistance = HyperbolicSpace::poincareMetric(leftAngle, extremum, phi, r);
-			minDistance = min(minDistance, extremeDistance);
-			maxDistance = max(maxDistance, extremeDistance);
+			coshMinDistance = min(coshMinDistance, extremeDistance);
+			coshMaxDistance = max(coshMaxDistance, extremeDistance);
 		}
-		assert(maxDistance == 0 || maxDistance >= 1);
-		assert(minDistance == 0 || minDistance >= 1);
+		/**
+		 * cosh is a function from [0,\infty) to [1, \infty)
+		 * Variables thus need
+		 */
+		assert(coshMaxDistance >= 1);
+		assert(coshMinDistance >= 1);
 
 		//Right border
 		double lowerRightDistance = coshMinR*coshr-sinhMinR*sinhr*cosDiffRight;
 		double upperRightDistance = coshMaxR*coshr-sinhMaxR*sinhr*cosDiffRight;
 		//double lowerRightDistance = HyperbolicSpace::poincareMetric(rightAngle, minR, phi, r);
 		//double upperRightDistance = HyperbolicSpace::poincareMetric(rightAngle, maxR, phi, r);
-		minDistance = min(minDistance, lowerRightDistance);
-		minDistance = min(minDistance, upperRightDistance);
-		maxDistance = max(maxDistance, lowerRightDistance);
-		maxDistance = max(maxDistance, upperRightDistance);
+		coshMinDistance = min(coshMinDistance, lowerRightDistance);
+		coshMinDistance = min(coshMinDistance, upperRightDistance);
+		coshMaxDistance = max(coshMaxDistance, lowerRightDistance);
+		coshMaxDistance = max(coshMaxDistance, upperRightDistance);
 
 		b = sinhr*cosDiffRight;
 		extremum = log((coshr+b)/(coshr-b))/2;
 		if (extremum < maxR && extremum >= minR) {
 			double extremeDistance = cosh(extremum)*coshr-sinh(extremum)*sinhr*cosDiffRight;
 			//double extremeDistance = HyperbolicSpace::poincareMetric(rightAngle, extremum, phi, r);
-			minDistance = min(minDistance, extremeDistance);
-			maxDistance = max(maxDistance, extremeDistance);
+			coshMinDistance = min(coshMinDistance, extremeDistance);
+			coshMaxDistance = max(coshMaxDistance, extremeDistance);
 		}
-		assert(maxDistance == 0 || maxDistance >= 1);
-		assert(minDistance == 0 || minDistance >= 1);
+
+		assert(coshMaxDistance >= 1);
+		assert(coshMinDistance >= 1);
 
 		//upper and lower borders
 		if (phi >= leftAngle && phi < rightAngle) {
@@ -390,13 +395,15 @@ public:
 
 			//double lower = HyperbolicSpace::poincareMetric(phi, minR, phi, r);
 			//double upper = HyperbolicSpace::poincareMetric(phi, maxR, phi, r);
-			minDistance = min(minDistance, lower);
-			minDistance = min(minDistance, upper);
-			maxDistance = max(maxDistance, upper);
-			maxDistance = max(maxDistance, lower);
+			coshMinDistance = min(coshMinDistance, lower);
+			coshMinDistance = min(coshMinDistance, upper);
+			coshMaxDistance = max(coshMaxDistance, upper);
+			coshMaxDistance = max(coshMaxDistance, lower);
 		}
-		assert(maxDistance == 0 || maxDistance >= 1);
-		assert(minDistance == 0 || minDistance >= 1);
+
+		assert(coshMaxDistance >= 1);
+		assert(coshMinDistance >= 1);
+
 		//again with mirrored phi
 		double mirrorphi;
 		if (phi >= M_PI) mirrorphi = phi - M_PI;
@@ -406,16 +413,18 @@ public:
 			double upper = coshMaxR*coshr+sinhMaxR*sinhr;
 			//double lower = HyperbolicSpace::poincareMetric(mirrorphi, minR, phi, r);
 			//double upper = HyperbolicSpace::poincareMetric(mirrorphi, maxR, phi, r);
-			minDistance = min(minDistance, lower);
-			minDistance = min(minDistance, upper);
-			maxDistance = max(maxDistance, upper);
-			maxDistance = max(maxDistance, lower);
+			coshMinDistance = min(coshMinDistance, lower);
+			coshMinDistance = min(coshMinDistance, upper);
+			coshMaxDistance = max(coshMaxDistance, upper);
+			coshMaxDistance = max(coshMaxDistance, lower);
 		}
-		assert(maxDistance == 0 || maxDistance >= 1);
-		assert(minDistance == 0 || minDistance >= 1);
 
-		if (minDistance > 0) minDistance = acosh(minDistance);
-		if (maxDistance > 0) maxDistance = acosh(maxDistance);
+		assert(coshMaxDistance >= 1);
+		assert(coshMinDistance >= 1);
+
+		double minDistance, maxDistance;
+		minDistance = acosh(coshMinDistance);
+		maxDistance = acosh(coshMaxDistance);
 		assert(maxDistance >= 0);
 		assert(minDistance >= 0);
 		return std::pair<double, double>(minDistance, maxDistance);

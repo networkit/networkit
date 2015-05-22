@@ -122,6 +122,8 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	}
 
 	quad.trim();
+	quad.recount();
+	assert(quad.size() == n);
 	timer.stop();
 	INFO("Filled Quadtree, took ", timer.elapsedMilliseconds(), " milliseconds.");
 
