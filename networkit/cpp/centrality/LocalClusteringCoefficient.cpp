@@ -49,4 +49,9 @@ void LocalClusteringCoefficient::run() {
 	ran = true;
 }
 
+
+double LocalClusteringCoefficient::maximum() {
+	return 1.0;
+}
+
 }

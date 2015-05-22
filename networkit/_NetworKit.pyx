@@ -124,6 +124,8 @@ def setSeed(uint64_t seed, bool useThreadId):
 
 ## Module: graph
 
+# DEPRECATED
+# TODO: replace with std::pair<double>
 cdef extern from "cpp/viz/Point.h" namespace "NetworKit":
 	cdef cppclass Point[T]:
 		Point()
@@ -254,12 +256,6 @@ cdef class Graph:
 			self._this = move(_Graph((<Graph>n)._this, weighted, directed))
 		else:
 			self._this = move(_Graph(<count>n, weighted, directed))
-
-	# # any _thisect which appears as a return type needs to implement setThis
-	# cdef setThis(self, _Graph other):
-	# 	#del self._this
-	# 	self._this = other
-	# 	return self
 
 	cdef setThis(self, _Graph& other):
 		swap[_Graph](self._this, other)
@@ -780,7 +776,11 @@ cdef class Graph:
 		return self._this.randomEdge()
 
 	def getCoordinate(self, v):
-		""" Get the coordinates of node v.
+		"""
+		DEPRECATED: Coordinates should be handled outside the Graph class
+		 like general node attributes.
+
+		Get the coordinates of node v.
 		Parameters
 		----------
 		v : node
@@ -795,7 +795,11 @@ cdef class Graph:
 		return (self._this.getCoordinate(v)[0], self._this.getCoordinate(v)[1])
 
 	def setCoordinate(self, v, value):
-		""" Set the coordinates of node v.
+		"""
+		DEPRECATED: Coordinates should be handled outside the Graph class
+		 like general node attributes.
+
+		Set the coordinates of node v.
 		Parameters
 		----------
 		v : node
@@ -807,6 +811,10 @@ cdef class Graph:
 		self._this.setCoordinate(v, p)
 
 	def initCoordinates(self):
+		"""
+		DEPRECATED: Coordinates should be handled outside the Graph class
+		 like general node attributes.
+		"""
 		self._this.initCoordinates()
 
 	def numberOfSelfLoops(self):
@@ -4039,7 +4047,10 @@ cdef extern from "cpp/properties/ClusteringCoefficient.h" namespace "NetworKit::
 cdef class ClusteringCoefficient:
 	@staticmethod
 	def avgLocal(Graph G):
-		"""  This calculates the average local clustering coefficient of graph `G`.
+		"""
+		DEPRECATED: Use centrality.LocalClusteringCoefficient and take average.
+
+		This calculates the average local clustering coefficient of graph `G`.
 
 		Parameters
 		----------
@@ -4311,6 +4322,7 @@ cdef extern from "cpp/centrality/LocalClusteringCoefficient.h":
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
 		vector[double] edgeScores() except +
+		double maximum() except +
 
 cdef class LocalClusteringCoefficient:
 	"""
@@ -4387,6 +4399,9 @@ cdef class LocalClusteringCoefficient:
 		"""
 		return self._this.edgeScores()
 
+	def maximum(self):
+		return self._this.maximum()
+
 
 cdef extern from "cpp/properties/EffectiveDiameter.h" namespace "NetworKit::EffectiveDiameter":
 	double effectiveDiameter (_Graph G, double ratio, count k, count r) nogil except +
@@ -4462,35 +4477,58 @@ cdef class EffectiveDiameter:
 
 # Module: centrality
 
-
-# TODO: how to properly wrap class hierarchies and reuse code?
-
-# cdef extern from "cpp/centrality/Centrality.h":
-# 	cdef cppclass _Centrality "NetworKit::Centrality":
-# 		_centrality(_Graph, bool) except +
-# 		void run() except +
-# 		vector[double] scores() except +
-# 		vector[pair[node, double]] ranking() except +
-# 		double score(node) except +
+cdef extern from "cpp/centrality/Centrality.h":
+	cdef cppclass _Centrality "NetworKit::Centrality":
+		_centrality(_Graph, bool, bool) except +
+		void run() nogil except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+		double maximum() except +
 
 
-# cdef class Centrality:
-# 	""" Abstract base class for centrality measures"""
+cdef class Centrality:
+	""" Abstract base class for centrality measures"""
 
-# 	def __cinit__(self, _Centrality* _this):
-# 		self._this = _this
+	cdef _Centrality* _this
+	cdef Graph _G
 
-# 	def run(self):
-# 		self._this.run()
+	def __init__(self, *args, **kwargs):
+		if type(self) == Centrality:
+			raise RuntimeError("Error, you may not use CommunityDetector directly, use a sub-class instead")
 
-# 	def scores(self):
-# 		return self._this.scores()
+	def __cinit__(self, *args, **kwargs):
+		self._this = NULL
 
-# 	def score(self, v):
-# 		return self._this.score(v)
+	def __dealloc__(self):
+		if self._this != NULL:
+			del self._this
+		self._this = NULL
+		self._G = None # just to be sure the graph is deleted
 
-# 	def ranking(self):
-# 		return self._this.ranking()
+	def run(self):
+		"""
+		Executes the centrality algorithm.
+
+		Returns
+		-------
+		Centrality:
+			self
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		with nogil:
+			self._this.run()
+		return self
+
+	def scores(self):
+		return self._this.scores()
+
+	def score(self, v):
+		return self._this.score(v)
+
+	def ranking(self):
+		return self._this.ranking()
 
 
 cdef extern from "cpp/centrality/Betweenness.h":
@@ -4587,15 +4625,6 @@ cdef class Betweenness:
 		"""
 		return self._this.edgeScores()
 
-
-cdef extern from "cpp/centrality/DynBetweenness.h":
-	cdef cppclass _DynBetweenness "NetworKit::DynBetweenness":
-		_DynBetweenness(_Graph, bool) except +
-		void run() nogil except +
-		void update(_GraphEvent) nogil except +
-		vector[double] scores() except +
-		vector[pair[node, double]] ranking() except +
-		double score(node) except +
 
 cdef extern from "cpp/centrality/Closeness.h":
 	cdef cppclass _Closeness "NetworKit::Closeness":
@@ -4827,6 +4856,14 @@ cdef class KatzCentrality:
 		"""
 		return self._this.ranking()
 
+cdef extern from "cpp/centrality/DynBetweenness.h":
+	cdef cppclass _DynBetweenness "NetworKit::DynBetweenness":
+		_DynBetweenness(_Graph, bool) except +
+		void run() nogil except +
+		void update(_GraphEvent) nogil except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
 
 cdef class DynBetweenness:
 	"""
