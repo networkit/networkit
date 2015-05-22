@@ -16,7 +16,7 @@
 namespace NetworKit {
 
 double ClusteringCoefficient::sequentialAvgLocal(const Graph &G) {
-    WARN("DEPRECATED: use centrality.LocalClusteringCoefficient and take average")
+    WARN("DEPRECATED: use centrality.LocalClusteringCoefficient and take average");
 	std::vector<std::vector<node> > edges(G.upperNodeIdBound());
 
 	// copy edges with edge ids
@@ -104,7 +104,7 @@ double ClusteringCoefficient::sequentialAvgLocal(const Graph &G) {
 }
 
 double ClusteringCoefficient::avgLocal(Graph& G) {
-    WARN("DEPRECATED: use centrality.LocalClusteringCoefficient and take average")
+    WARN("DEPRECATED: use centrality.LocalClusteringCoefficient and take average");
 	LocalClusteringCoefficient lcc(G);
 	lcc.run();
 	auto coefficients = lcc.scores(); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
