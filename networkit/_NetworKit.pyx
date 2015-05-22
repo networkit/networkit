@@ -124,6 +124,8 @@ def setSeed(uint64_t seed, bool useThreadId):
 
 ## Module: graph
 
+# DEPRECATED
+# TODO: replace with std::pair<double>
 cdef extern from "cpp/viz/Point.h" namespace "NetworKit":
 	cdef cppclass Point[T]:
 		Point()
@@ -254,12 +256,6 @@ cdef class Graph:
 			self._this = move(_Graph((<Graph>n)._this, weighted, directed))
 		else:
 			self._this = move(_Graph(<count>n, weighted, directed))
-
-	# # any _thisect which appears as a return type needs to implement setThis
-	# cdef setThis(self, _Graph other):
-	# 	#del self._this
-	# 	self._this = other
-	# 	return self
 
 	cdef setThis(self, _Graph& other):
 		swap[_Graph](self._this, other)
