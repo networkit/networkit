@@ -4477,35 +4477,58 @@ cdef class EffectiveDiameter:
 
 # Module: centrality
 
-
-# TODO: how to properly wrap class hierarchies and reuse code?
-
-# cdef extern from "cpp/centrality/Centrality.h":
-# 	cdef cppclass _Centrality "NetworKit::Centrality":
-# 		_centrality(_Graph, bool) except +
-# 		void run() except +
-# 		vector[double] scores() except +
-# 		vector[pair[node, double]] ranking() except +
-# 		double score(node) except +
+cdef extern from "cpp/centrality/Centrality.h":
+	cdef cppclass _Centrality "NetworKit::Centrality":
+		_centrality(_Graph, bool, bool) except +
+		void run() nogil except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+		double maximum() except +
 
 
-# cdef class Centrality:
-# 	""" Abstract base class for centrality measures"""
+cdef class Centrality:
+	""" Abstract base class for centrality measures"""
 
-# 	def __cinit__(self, _Centrality* _this):
-# 		self._this = _this
+	cdef _Centrality* _this
+	cdef Graph _G
 
-# 	def run(self):
-# 		self._this.run()
+	def __init__(self, *args, **kwargs):
+		if type(self) == Centrality:
+			raise RuntimeError("Error, you may not use CommunityDetector directly, use a sub-class instead")
 
-# 	def scores(self):
-# 		return self._this.scores()
+	def __cinit__(self, *args, **kwargs):
+		self._this = NULL
 
-# 	def score(self, v):
-# 		return self._this.score(v)
+	def __dealloc__(self):
+		if self._this != NULL:
+			del self._this
+		self._this = NULL
+		self._G = None # just to be sure the graph is deleted
 
-# 	def ranking(self):
-# 		return self._this.ranking()
+	def run(self):
+		"""
+		Executes the centrality algorithm.
+
+		Returns
+		-------
+		Centrality:
+			self
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		with nogil:
+			self._this.run()
+		return self
+
+	def scores(self):
+		return self._this.scores()
+
+	def score(self, v):
+		return self._this.score(v)
+
+	def ranking(self):
+		return self._this.ranking()
 
 
 cdef extern from "cpp/centrality/Betweenness.h":
@@ -4602,15 +4625,6 @@ cdef class Betweenness:
 		"""
 		return self._this.edgeScores()
 
-
-cdef extern from "cpp/centrality/DynBetweenness.h":
-	cdef cppclass _DynBetweenness "NetworKit::DynBetweenness":
-		_DynBetweenness(_Graph, bool) except +
-		void run() nogil except +
-		void update(_GraphEvent) nogil except +
-		vector[double] scores() except +
-		vector[pair[node, double]] ranking() except +
-		double score(node) except +
 
 cdef extern from "cpp/centrality/Closeness.h":
 	cdef cppclass _Closeness "NetworKit::Closeness":
@@ -4842,6 +4856,14 @@ cdef class KatzCentrality:
 		"""
 		return self._this.ranking()
 
+cdef extern from "cpp/centrality/DynBetweenness.h":
+	cdef cppclass _DynBetweenness "NetworKit::DynBetweenness":
+		_DynBetweenness(_Graph, bool) except +
+		void run() nogil except +
+		void update(_GraphEvent) nogil except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
 
 cdef class DynBetweenness:
 	"""
