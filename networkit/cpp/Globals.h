@@ -31,12 +31,20 @@ namespace NetworKit {
 }
 
 #ifdef __INTEL_COMPILER
-constexpr double PI = 3.141592653589793238462643383279502884197169399375105820974944592307816406286;
+const double PI = 3.141592653589793238462643383279502884197169399375105820974944592307816406286;
 #else
-constexpr double PI = 2.0*std::acos(0);
+const double PI = 2.0 * std::acos(0);
 #endif
 
 // CODE STYLE GUIDELINES: Do not rely on global variables for algorithm parametrization.
 
+#ifndef _OPENMP
+int inline omp_get_thread_num() {
+	return 0;
+}
+int inline omp_get_max_threads() {
+	return 1;
+}
+#endif
 
 #endif /* GLOBALS_H_ */

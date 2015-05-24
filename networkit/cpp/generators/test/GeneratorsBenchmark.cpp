@@ -7,7 +7,6 @@
 
 #ifndef NOGTEST
 
-#include <omp.h>
 #include <random>
 #include <functional>
 
@@ -15,7 +14,10 @@
 #include "../../graph/GraphGenerator.h"
 #include "../BarabasiAlbertGenerator.h"
 #include "../../graph/GraphBuilder.h"
-
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+ 
 namespace NetworKit {
 
 
@@ -52,17 +54,16 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 			int tid = omp_get_thread_num();
 			double rdn = randomPerThread[tid]();
 			if (rdn <= p) {
-				builder.addEdge(u, v);
+				builder.addHalfEdge(u, v);
 			}
 		});
 	});
 	t2 = timeOnce([&]() {
-		G = builder.toGraph(false);
+		G = builder.toGraph(true);
 	});
 	m_actual = G.numberOfEdges();
 	EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
 	std::cout << "parallelForNodePairs + toGraphSequentiel:\t\t" << t1 << " + " << t2 << " = " << (t1 + t2) << " ms\n";
-	// printf("parallelForNodePairs + toGraphSequentiel:\t\t%" PRIu64 " + %" PRIu64 " = %" PRIu64 " ms\n", t1, t2, t1 + t2);
 
 	// fully parallel way
 	m_actual = 0;
@@ -72,29 +73,29 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 			int tid = omp_get_thread_num();
 			double rdn = randomPerThread[tid]();
 			if (rdn <= p) {
-				builder.addEdge(u, v);
+				builder.addHalfEdge(u, v);
 			}
 		});
 	});
 	t2 = timeOnce([&]() {
-		G = builder.toGraph();
+		G = builder.toGraph(true, false);
 	});
 	m_actual = G.numberOfEdges();
 	EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
 	std::cout << "parallelForNodePairs + toGraphParallel:\t\t" << t1 << " + " << t2 << " = " << (t1 + t2) << " ms\n";
 
 	// old way
-	// t1 = timeOnce([&]() {
-	// 	G = Graph(n);
-	// 	G.forNodePairs([&](node u, node v) {
-	// 		if (randomPerThread[0]() <= p) {
-	// 			G.addEdge(u, v);
-	// 		}
-	// 	});
-	// });
-	// m_actual = G.numberOfEdges();
-	// EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
-	// std::cout << "forNodePairs + Graph.addEdge:\t\t\t\t" << t1 << " ms\n";
+	t1 = timeOnce([&]() {
+		G = Graph(n);
+		G.forNodePairs([&](node u, node v) {
+			if (randomPerThread[0]() <= p) {
+				G.addEdge(u, v);
+			}
+		});
+	});
+	m_actual = G.numberOfEdges();
+	EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
+	std::cout << "forNodePairs + Graph.addEdge:\t\t\t\t" << t1 << " ms\n";
 }
 
 TEST_F(GeneratorsBenchmark, benchmarkBarabasiAlbertGenerator) {

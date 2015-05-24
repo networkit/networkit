@@ -16,7 +16,6 @@
 #include <math.h>
 #include <algorithm>
 #include <memory>
-#include <omp.h>
 
 namespace NetworKit {
 
@@ -49,7 +48,7 @@ public:
     *
     * @param batch The batch of edge insertions.
     */
-    void update(const std::vector<GraphEvent>& batch);
+    void update(const std::vector<GraphEvent>& batch) override;
 
     /**
     * Get number of path samples used for last calculation

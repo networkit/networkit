@@ -37,7 +37,7 @@ public:
 	/*
 	 * Returns the maximum possible Closeness a node can have in a graph with the same amount of nodes (=a star)
 	 */
-	double maximum();
+	double maximum() override;
 };
 
 } /* namespace NetworKit */

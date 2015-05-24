@@ -6,7 +6,11 @@
  */
 
 #include <cmath>
-#include <omp.h>
+#ifdef _OPENMP
+ #include <omp.h>
+#else
+ #include "../Globals.h"
+#endif
 #include <limits>
 
 #include "Random.h"

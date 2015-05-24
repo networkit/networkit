@@ -12,7 +12,9 @@
 #include <math.h>
 #include <iterator>
 #include <stdlib.h>
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 #include <map>
 
 namespace NetworKit {

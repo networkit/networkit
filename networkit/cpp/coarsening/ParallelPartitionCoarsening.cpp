@@ -6,10 +6,12 @@
  */
 
 #include "ParallelPartitionCoarsening.h"
-#include <omp.h>
 #include "../graph/GraphBuilder.h"
 #include "../auxiliary/Timer.h"
 #include "../auxiliary/Log.h"
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 namespace NetworKit {
 
@@ -123,7 +125,7 @@ std::pair<Graph, std::vector<node> > ParallelPartitionCoarsening::run(const Grap
 
 		// iterate over edges of G and create edges in coarse graph or update edge and node weights in Gcon
 		DEBUG("create edges in coarse graphs");
-		GraphBuilder b(nextNodeId, true, false, true);
+		GraphBuilder b(nextNodeId, true, false);
 		#pragma omp parallel for schedule(guided)
 		for (node su = 0; su < nextNodeId; su++) {
 			std::map<index, edgeweight> outEdges;
@@ -136,11 +138,11 @@ std::pair<Graph, std::vector<node> > ParallelPartitionCoarsening::run(const Grap
 				});
 			}
 			for (auto it : outEdges) {
-				b.addEdge(su, it.first, it.second);
+				b.addHalfEdge(su, it.first, it.second);
 			}
 		}
 
-		Gcombined = b.toGraph();
+		Gcombined = b.toGraph(false);
 	}
 
 	timer.stop();

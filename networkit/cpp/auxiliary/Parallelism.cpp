@@ -2,16 +2,15 @@
 #include "Log.h"
 
  // OpenMP
+#ifdef _OPENMP
 #include <omp.h>
-
+#endif
 
 
 void Aux::setNumberOfThreads(int nThreads) {
-#ifdef _OPENMP
+	#ifdef _OPENMP
 		omp_set_num_threads(nThreads);
-#else
-		ERROR("Thread option ignored since OpenMP is deactivated.");
-#endif
+	#endif
 }
 
 
@@ -20,7 +19,6 @@ int Aux::getCurrentNumberOfThreads() {
 		return omp_get_num_threads();
 	#else
 		return 1;
-		ERROR("OpenMP is not available");
 	#endif
 }
 
@@ -30,15 +28,12 @@ int Aux::getMaxNumberOfThreads() {
 		return omp_get_max_threads();
 	#else
 		return 1;
-		ERROR("OpenMP is not available");
 	#endif
 }
 
 void Aux::enableNestedParallelism() {
 	#ifdef _OPENMP
-	omp_set_nested(1); // enable nested parallelism
-	#else
-	ERROR("OpenMP is not available");
+		omp_set_nested(1); // enable nested parallelism
 	#endif
 }
 

@@ -1,5 +1,7 @@
 #include "LocalClusteringCoefficient.h"
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 
 namespace NetworKit {
 
