@@ -68,7 +68,7 @@ void EPP::run() {
 	} else if (auto tmp = dynamic_cast<PLP*>(this->finalClusterer.get())) {
 		DEBUG("final clusterer is PLP");
 		this->finalClusterer.reset(new PLP(Gcore, *tmp));
-	} else if (auto tmp = dynamic_cast<CNM*>(this->finalClusterer.get())) {
+	} else if (dynamic_cast<CNM*>(this->finalClusterer.get())) {
 		DEBUG("final clusterer is CNM");
 		this->finalClusterer.reset(new CNM(Gcore));
 	}
