@@ -64,7 +64,7 @@ std::set<node> GCE::expandSeed(node s) {
 
 
 	/** @return the shell of the given community */
-	auto shell = [&](const std::set<node>& C) {
+	/*auto shell = [&](const std::set<node>& C) {
 		std::set<node> sh;
 		for (node v : C) {
 			G.forNeighborsOf(v, [&](node u){
@@ -74,7 +74,7 @@ std::set<node> GCE::expandSeed(node s) {
 			});
 		}
 		return sh;
-	};
+	};*/
 
 	/**
 	 * internal and external degree of a node with respect to the community
@@ -134,11 +134,11 @@ std::set<node> GCE::expandSeed(node s) {
 
 
 
-    auto acceptability = [&](node v, std::set<node>& C){
+    /*auto acceptability = [&](node v, std::set<node>& C){
         double intersectSize ;
         double unionSize;
         return intersectSize / unionSize;
-    };
+    };*/
 
 
     std::function<double(node v, std::set<node>& C)> deltaQ;

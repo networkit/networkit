@@ -286,18 +286,19 @@ TEST_F(PropertiesGTest, testClusteringCoefficientsOnPgp) {
 	std::string path = "input/PGPgiantcompo.graph";
 	METISGraphReader reader;
 	Graph G = reader.read(path);
-
 	// compute values
 	double ccLocalEx = cc.avgLocal(G);
-	double ccLocalApprox = cc.approxAvgLocal(G, 20000); // TODO: externalize
+	/*double ccLocalApprox = cc.approxAvgLocal(G, 20000); // TODO: externalize
 	double ccGlobalEx = cc.exactGlobal(G);
-	double ccGlobalApprox = cc.approxGlobal(G, 20000); // TODO: externalize
+	double ccGlobalApprox = cc.approxGlobal(G, 20000); // TODO: externalize*/
 
 	// test / output
 	DEBUG("average local exact: ", ccLocalEx);
-	DEBUG("average local approximated: ", ccLocalApprox);
-	DEBUG("global exact: ", ccGlobalEx);
-	DEBUG("global approximated: ", ccGlobalApprox);
+	DEBUG("average local approximated: ", cc.approxAvgLocal(G, 20000));
+	DEBUG("global exact: ", cc.exactGlobal(G));
+	DEBUG("global approximated: ", cc.approxGlobal(G, 20000));
+	EXPECT_GE(ccLocalEx,0);
+	EXPECT_GE(1,ccLocalEx);
 }
 
 
