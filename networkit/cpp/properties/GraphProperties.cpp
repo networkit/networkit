@@ -251,6 +251,30 @@ double GraphProperties::degreeAssortativity(const Graph& G, bool useWeighted) {
 	return r;
 }
 
+double GraphProperties::degreeAssortativityDirected(const Graph& G, bool alpha, bool beta) {
+	assert(G.isDirected());
+	count alphaAvg = 0;
+	count betaAvg = 0;
+	G.forEdges([&](node u, node v){
+		alphaAvg += (alpha) ? G.degreeOut(u) : G.degreeIn(u);
+		betaAvg += (beta) ? G.degreeOut(v) : G.degreeIn(v);
+	});
+	alphaAvg /= G.numberOfEdges();
+	betaAvg /= G.numberOfEdges();
+	count sum = 0;
+	count jAggr = 0;
+	count kAggr = 0;
+	G.forEdges([&](node u, node v){
+		count j = ((alpha) ? G.degreeOut(u) : G.degreeIn(u)) - alphaAvg;
+		count k = ((beta) ? G.degreeOut(v) : G.degreeIn(v)) - betaAvg;
+		sum += (j * k);
+		jAggr += (j*j);
+		kAggr += (k*k);
+	});
+	return (sum)/(std::sqrt(jAggr)*std::sqrt(kAggr));
+
+}
+
 
 
 } /* namespace NetworKit */
