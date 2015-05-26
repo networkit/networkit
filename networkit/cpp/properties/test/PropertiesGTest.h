@@ -11,17 +11,6 @@
 #define PROPERTIESGTEST_H_
 
 #include <gtest/gtest.h>
-#include <algorithm> // for copy
-#include <iterator> // for ostream_iterator
-#include <fstream> // for ofstream
-#include <string>
-#include <list>
-
-#include "../ClusteringCoefficient.h"
-#include "../../graph/GraphGenerator.h"
-#include "../../properties/GraphProperties.h"
-#include "../../io/METISGraphReader.h"
-
 
 namespace NetworKit {
 
