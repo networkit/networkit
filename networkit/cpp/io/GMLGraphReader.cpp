@@ -88,7 +88,8 @@ Graph GMLGraphReader::read(const std::string& path) {
 		//DEBUG("trying to parse an edge");
 		if (line.find("edge") < line.size() && line.find("[") < line.size()) {
 			std::getline(graphFile, line);
-			node u,v;
+			node u = 0;
+			node v = 0;
 			while (!(line.find("]") < line.size())) {
 				try {
 					auto pair = getPair(line);

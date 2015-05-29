@@ -163,10 +163,11 @@ namespace NetworKit {
 
                 // correct number of values?
                 if (split.size() >= minValuesPerLine && split.size() <= 4) {
+                    count weightIdx = (split[2].size() > 0) ? 2 : 3;
                     node u = std::stoul(split[0]) - this->firstNode;
                     node v = std::stoul(split[1]) - this->firstNode;
                     if (weighted) {
-                        edgeweight weight = std::stod(split[2]);
+                        edgeweight weight = std::stod(split[weightIdx]);
 
                         if (!this->ignoreLoops || u != v) {
                             if (directed) {

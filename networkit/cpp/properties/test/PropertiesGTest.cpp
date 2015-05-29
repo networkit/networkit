@@ -6,13 +6,26 @@
  */
 
 #ifndef NOGTEST
+#include <algorithm> // for copy
+#include <iterator> // for ostream_iterator
+#include <fstream> // for ofstream
+#include <list>
+#include <string>
 
 #include "PropertiesGTest.h"
 #include "../Diameter.h"
+#include "../ClusteringCoefficient.h"
 #include "../EffectiveDiameter.h"
+#include "../../properties/GraphProperties.h"
+
 #include "../../auxiliary/Timer.h"
-#include "../../generators/ErdosRenyiGenerator.h"
 #include "../../auxiliary/Log.h"
+#include "../../generators/ErdosRenyiGenerator.h"
+#include "../../graph/GraphGenerator.h"
+#include "../../io/METISGraphReader.h"
+#include "../../io/KONECTGraphReader.h"
+
+
 
 
 namespace NetworKit {
@@ -286,18 +299,19 @@ TEST_F(PropertiesGTest, testClusteringCoefficientsOnPgp) {
 	std::string path = "input/PGPgiantcompo.graph";
 	METISGraphReader reader;
 	Graph G = reader.read(path);
-
 	// compute values
 	double ccLocalEx = cc.avgLocal(G);
-	double ccLocalApprox = cc.approxAvgLocal(G, 20000); // TODO: externalize
+	/*double ccLocalApprox = cc.approxAvgLocal(G, 20000); // TODO: externalize
 	double ccGlobalEx = cc.exactGlobal(G);
-	double ccGlobalApprox = cc.approxGlobal(G, 20000); // TODO: externalize
+	double ccGlobalApprox = cc.approxGlobal(G, 20000); // TODO: externalize*/
 
 	// test / output
 	DEBUG("average local exact: ", ccLocalEx);
-	DEBUG("average local approximated: ", ccLocalApprox);
-	DEBUG("global exact: ", ccGlobalEx);
-	DEBUG("global approximated: ", ccGlobalApprox);
+	DEBUG("average local approximated: ", cc.approxAvgLocal(G, 20000));
+	DEBUG("global exact: ", cc.exactGlobal(G));
+	DEBUG("global approximated: ", cc.approxGlobal(G, 20000));
+	EXPECT_GE(ccLocalEx,0);
+	EXPECT_GE(1,ccLocalEx);
 }
 
 
@@ -509,21 +523,35 @@ Number of steps needed per node: (1-21)
 }
 
 TEST_F(PropertiesGTest, testHopPlot) {
-using namespace std;
+	using namespace std;
 
-vector<string> testInstances= {"celegans_metabolic", "power", "lesmis"};
+	vector<string> testInstances= {"celegans_metabolic", "power", "lesmis"};
 
-const double tol = 1e-2;
+	const double tol = 1e-2;
 
-for (auto testInstance : testInstances) {
-	METISGraphReader reader;
-	Graph G = reader.read("input/" + testInstance + ".graph");
-	map<count, double> hopPlot = EffectiveDiameter::hopPlot(G);
-	for (count i=1; i < hopPlot.size(); i++) {
-		EXPECT_LE(hopPlot[i-1], hopPlot[i]+tol);
+	for (auto& testInstance : testInstances) {
+		METISGraphReader reader;
+		Graph G = reader.read("input/" + testInstance + ".graph");
+		map<count, double> hopPlot = EffectiveDiameter::hopPlot(G);
+		for (count i=1; i < hopPlot.size(); i++) {
+			EXPECT_LE(hopPlot[i-1], hopPlot[i]+tol);
+		}
 	}
 }
+
+TEST_F(PropertiesGTest, testDegreeAssortativityDirected) {
+		std::string testInstance = "foodweb-baydry";
+		KONECTGraphReader reader(' ');
+		Graph G = reader.read("input/" + testInstance + ".konect");
+		DEBUG(G.toString());
+		DEBUG(testInstance);
+		for (int i = 0; i < 2; ++i)
+			for (int j= 0; j < 2; ++j)
+				DEBUG(GraphProperties::degreeAssortativityDirected(G,i,j));
+		DEBUG("---------------");
 }
+
+
 
 
 

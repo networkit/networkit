@@ -124,6 +124,8 @@ def setSeed(uint64_t seed, bool useThreadId):
 
 ## Module: graph
 
+# DEPRECATED
+# TODO: replace with std::pair<double>
 cdef extern from "cpp/viz/Point.h" namespace "NetworKit":
 	cdef cppclass Point[T]:
 		Point()
@@ -254,12 +256,6 @@ cdef class Graph:
 			self._this = move(_Graph((<Graph>n)._this, weighted, directed))
 		else:
 			self._this = move(_Graph(<count>n, weighted, directed))
-
-	# # any _thisect which appears as a return type needs to implement setThis
-	# cdef setThis(self, _Graph other):
-	# 	#del self._this
-	# 	self._this = other
-	# 	return self
 
 	cdef setThis(self, _Graph& other):
 		swap[_Graph](self._this, other)
@@ -780,7 +776,11 @@ cdef class Graph:
 		return self._this.randomEdge()
 
 	def getCoordinate(self, v):
-		""" Get the coordinates of node v.
+		"""
+		DEPRECATED: Coordinates should be handled outside the Graph class
+		 like general node attributes.
+
+		Get the coordinates of node v.
 		Parameters
 		----------
 		v : node
@@ -795,7 +795,11 @@ cdef class Graph:
 		return (self._this.getCoordinate(v)[0], self._this.getCoordinate(v)[1])
 
 	def setCoordinate(self, v, value):
-		""" Set the coordinates of node v.
+		"""
+		DEPRECATED: Coordinates should be handled outside the Graph class
+		 like general node attributes.
+
+		Set the coordinates of node v.
 		Parameters
 		----------
 		v : node
@@ -807,6 +811,10 @@ cdef class Graph:
 		self._this.setCoordinate(v, p)
 
 	def initCoordinates(self):
+		"""
+		DEPRECATED: Coordinates should be handled outside the Graph class
+		 like general node attributes.
+		"""
 		self._this.initCoordinates()
 
 	def numberOfSelfLoops(self):
@@ -3402,11 +3410,11 @@ cdef class LPDegreeOrdered(CommunityDetector):
 cdef extern from "cpp/community/PLM.h":
 	cdef cppclass _PLM "NetworKit::PLM"(_CommunityDetectionAlgorithm):
 		_PLM(_Graph _G) except +
-		_PLM(_Graph _G, bool refine, double gamma, string par, count maxIter, bool parCoarsening, bool turbo) except +
+		_PLM(_Graph _G, bool refine, double gamma, string par, count maxIter, bool turbo) except +
 		map[string, vector[count]] getTiming() except +
 
 cdef extern from "cpp/community/PLM.h" namespace "NetworKit::PLM":
-	pair[_Graph, vector[node]] PLM_coarsen "NetworKit::PLM::coarsen" (const _Graph& G, const _Partition& zeta, bool parallel) except +
+	pair[_Graph, vector[node]] PLM_coarsen "NetworKit::PLM::coarsen" (const _Graph& G, const _Partition& zeta) except +
 	_Partition PLM_prolong "NetworKit::PLM::prolong"(const _Graph& Gcoarse, const _Partition& zetaCoarse, const _Graph& Gfine, vector[node] nodeToMetaNode) except +
 
 
@@ -3433,9 +3441,9 @@ cdef class PLM(CommunityDetector):
 			faster but uses O(n) additional memory per thread
 	"""
 
-	def __cinit__(self, Graph G not None, refine=False, gamma=1.0, par="balanced", maxIter=32, parCoarsening=True, turbo=False):
+	def __cinit__(self, Graph G not None, refine=False, gamma=1.0, par="balanced", maxIter=32, turbo=False):
 		self._G = G
-		self._this = new _PLM(G._this, refine, gamma, stdstring(par), maxIter, parCoarsening, turbo)
+		self._this = new _PLM(G._this, refine, gamma, stdstring(par), maxIter, turbo)
 
 	def getTiming(self):
 		"""  Get detailed time measurements.
@@ -3444,7 +3452,7 @@ cdef class PLM(CommunityDetector):
 
 	@staticmethod
 	def coarsen(Graph G, Partition zeta, bool parallel = False):
-		cdef pair[_Graph, vector[node]] result = move(PLM_coarsen(G._this, zeta._this, parallel))
+		cdef pair[_Graph, vector[node]] result = move(PLM_coarsen(G._this, zeta._this))
 		return (Graph().setThis(result.first), result.second)
 
 	@staticmethod
@@ -3671,41 +3679,6 @@ cdef class EPP(CommunityDetector):
 		self._this = other
 		return self
 
-cdef extern from "cpp/community/EPPInstance.h":
-	cdef cppclass _EPPInstance "NetworKit::EPPInstance"(_CommunityDetectionAlgorithm):
-		_EPPInstance(_Graph G, count ensembleSize) except +
-		_Partition getCorePartition() except +
-		vector[_Partition] getBasePartitions() except +
-
-cdef class EPPInstance(CommunityDetector):
-	""" EPP - Ensemble Preprocessing community detection algorithm.
-	Combines multiple base algorithms and a final algorithm. A consensus of the
-	solutions of the base algorithms is formed and the graph is coarsened accordingly.
-	Then the final algorithm operates on the coarse graph and determines a solution
-	for the input graph.
-	"""
-	def __cinit__(self, Graph G not None, ensembleSize=4):
-		self._G = G
-		self._this = new _EPPInstance(G._this, ensembleSize)
-
-	def getCorePartition(self):
-		"""  Returns the core partition the algorithm.
-
-		Returns
-		-------
-		Partition:
-			A Partition of the clustering.
-		"""
-		return Partition().setThis((<_EPPInstance*>(self._this)).getCorePartition())
-
-	def getBasePartitions(self):
-		"""  Returns the base partitions of the algorithm.
-		"""
-		base = (<_EPPInstance*>(self._this)).getBasePartitions()
-		return [Partition().setThis(b) for b in base]
-
-
-
 cdef extern from "cpp/community/EPPFactory.h" namespace "NetworKit::EPPFactory":
 		#_EPP make(_Graph G, count ensembleSize, string baseAlgorithm, string finalAlgorithm)
 		_EPP* makePtr(_Graph G, count ensembleSize, string baseAlgorithm, string finalAlgorithm)
@@ -3735,63 +3708,6 @@ cdef class EPPFactory:
 			The EPP instance.
 		"""
 		return EPP(G).setThis(makePtr(G._this, ensembleSize, stdstring(baseAlgorithm), stdstring(finalAlgorithm)))
-
-cdef extern from "cpp/community/CommunityGraph.h":
-	cdef cppclass _CommunityGraph "NetworKit::CommunityGraph":
-		void run(_Graph G, _Partition zeta) except +
-		_Graph getGraph() except +
-		map[index, node] getCommunityToNodeMap() except +
-		map[node, index] getNodeToCommunityMap() except +
-
-cdef class CommunityGraph:
-	""" The CommunityGraph class represents a Graph coarsened according to communities. Each node in the CommunityGraph
- 	represents a community. Edge weights are the weights of inter-community cuts.
-	"""
-	cdef _CommunityGraph _this
-
-	def run(self, Graph G, Partition zeta):
-		""" Creates a coarsened graph of `G` according to communities in `zeta`. Edge weights are the weights of
-		inter-community cuts.
-
-		Parameters
-		----------
-		G : Graph
-			The graph.
-		zeta : Partition
-			A community clustering of `G`.
-		"""
-		self._this.run(G._this, zeta._this)
-		return self
-
-	def getGraph(self):
-		""" Returns the coarsened Graph.
-
-		Returns
-		-------
-		Graph
-			The coarsened graph.
-		"""
-		return Graph().setThis(self._this.getGraph())
-
-	def getCommunityToNodeMap(self):
-		""" Maps community id to node id in the community graph.
-
-		Returns
-		-------
-		dict
-			Map containing community id to node id mappings.
-		"""
-		return self._this.getCommunityToNodeMap()
-
-	def getNodeToCommunityMap(self):
-		""" Maps node id in the community graph to community id.
-
-		Returns
-		-------
-		dict
-			Map containing node id to community id mappins.
-		"""
-		return self._this.getNodeToCommunityMap()
 
 # Module: flows
 
@@ -3897,6 +3813,7 @@ cdef class EdmondsKarp:
 cdef extern from "cpp/properties/GraphProperties.h" namespace "NetworKit::GraphProperties":
 	# static methods live in the class namespace, so declare them here
 	pair[count, count] minMaxDegree(_Graph _G) except +
+	pair[pair[count, count], pair[count, count]] minMaxDegreeDirected(_Graph _G) except +
 	double averageDegree(_Graph _G) except +
 	vector[count] degreeDistribution(_Graph _G) except +
 	vector[count] degreeSequence(_Graph _G) except +
@@ -3914,6 +3831,10 @@ cdef class GraphProperties:
 	@staticmethod
 	def minMaxDegree(Graph G not None):
 		return minMaxDegree(G._this)
+
+	@staticmethod
+	def minMaxDegreeDirected(Graph G not None):
+		return minMaxDegreeDirected(G._this)
 
 	@staticmethod
 	def averageDegree(Graph G not None):
@@ -4126,7 +4047,10 @@ cdef extern from "cpp/properties/ClusteringCoefficient.h" namespace "NetworKit::
 cdef class ClusteringCoefficient:
 	@staticmethod
 	def avgLocal(Graph G):
-		"""  This calculates the average local clustering coefficient of graph `G`.
+		"""
+		DEPRECATED: Use centrality.LocalClusteringCoefficient and take average.
+
+		This calculates the average local clustering coefficient of graph `G`.
 
 		Parameters
 		----------
@@ -4398,6 +4322,7 @@ cdef extern from "cpp/centrality/LocalClusteringCoefficient.h":
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
 		vector[double] edgeScores() except +
+		double maximum() except +
 
 cdef class LocalClusteringCoefficient:
 	"""
@@ -4474,6 +4399,9 @@ cdef class LocalClusteringCoefficient:
 		"""
 		return self._this.edgeScores()
 
+	def maximum(self):
+		return self._this.maximum()
+
 
 cdef extern from "cpp/properties/EffectiveDiameter.h" namespace "NetworKit::EffectiveDiameter":
 	double effectiveDiameter (_Graph G, double ratio, count k, count r) nogil except +
@@ -4549,35 +4477,58 @@ cdef class EffectiveDiameter:
 
 # Module: centrality
 
-
-# TODO: how to properly wrap class hierarchies and reuse code?
-
-# cdef extern from "cpp/centrality/Centrality.h":
-# 	cdef cppclass _Centrality "NetworKit::Centrality":
-# 		_centrality(_Graph, bool) except +
-# 		void run() except +
-# 		vector[double] scores() except +
-# 		vector[pair[node, double]] ranking() except +
-# 		double score(node) except +
+cdef extern from "cpp/centrality/Centrality.h":
+	cdef cppclass _Centrality "NetworKit::Centrality":
+		_centrality(_Graph, bool, bool) except +
+		void run() nogil except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+		double maximum() except +
 
 
-# cdef class Centrality:
-# 	""" Abstract base class for centrality measures"""
+cdef class Centrality:
+	""" Abstract base class for centrality measures"""
 
-# 	def __cinit__(self, _Centrality* _this):
-# 		self._this = _this
+	cdef _Centrality* _this
+	cdef Graph _G
 
-# 	def run(self):
-# 		self._this.run()
+	def __init__(self, *args, **kwargs):
+		if type(self) == Centrality:
+			raise RuntimeError("Error, you may not use CommunityDetector directly, use a sub-class instead")
 
-# 	def scores(self):
-# 		return self._this.scores()
+	def __cinit__(self, *args, **kwargs):
+		self._this = NULL
 
-# 	def score(self, v):
-# 		return self._this.score(v)
+	def __dealloc__(self):
+		if self._this != NULL:
+			del self._this
+		self._this = NULL
+		self._G = None # just to be sure the graph is deleted
 
-# 	def ranking(self):
-# 		return self._this.ranking()
+	def run(self):
+		"""
+		Executes the centrality algorithm.
+
+		Returns
+		-------
+		Centrality:
+			self
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		with nogil:
+			self._this.run()
+		return self
+
+	def scores(self):
+		return self._this.scores()
+
+	def score(self, v):
+		return self._this.score(v)
+
+	def ranking(self):
+		return self._this.ranking()
 
 
 cdef extern from "cpp/centrality/Betweenness.h":
@@ -4674,15 +4625,6 @@ cdef class Betweenness:
 		"""
 		return self._this.edgeScores()
 
-
-cdef extern from "cpp/centrality/DynBetweenness.h":
-	cdef cppclass _DynBetweenness "NetworKit::DynBetweenness":
-		_DynBetweenness(_Graph, bool) except +
-		void run() nogil except +
-		void update(_GraphEvent) nogil except +
-		vector[double] scores() except +
-		vector[pair[node, double]] ranking() except +
-		double score(node) except +
 
 cdef extern from "cpp/centrality/Closeness.h":
 	cdef cppclass _Closeness "NetworKit::Closeness":
@@ -4914,6 +4856,14 @@ cdef class KatzCentrality:
 		"""
 		return self._this.ranking()
 
+cdef extern from "cpp/centrality/DynBetweenness.h":
+	cdef cppclass _DynBetweenness "NetworKit::DynBetweenness":
+		_DynBetweenness(_Graph, bool) except +
+		void run() nogil except +
+		void update(_GraphEvent) nogil except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
 
 cdef class DynBetweenness:
 	"""
