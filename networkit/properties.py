@@ -43,8 +43,11 @@ def size(G):
 
 def degrees(G):
 	""" Return min/max/avg degree"""
-	minMaxDeg = GraphProperties.minMaxDegree(G)
 	avgDeg = GraphProperties.averageDegree(G)
+	if G.isDirected():
+		minMaxDeg = GraphProperties.minMaxDegreeDirected(G)
+	else:
+		minMaxDeg = GraphProperties.minMaxDegree(G)
 	return (minMaxDeg[0], minMaxDeg[1], avgDeg)
 
 def degreeDistribution(G):
@@ -209,15 +212,22 @@ def properties(G, settings):
 	# diameter
 	if settings["diameter"]:
 		logging.info("[...] estimating diameter range")
-		dia = Diameter.estimatedDiameterRange(G, error=0.1)
+		try:
+			dia = Diameter.estimatedDiameterRange(G, error=0.1)
+		except Exception as e:
+			print(e)
+			dia = "Not implemented for directed graphs"
 	else:
-		dia = None
+		dia = "Not selected"
 
 	# clustering
 	avglcc = None
 	if settings["clustering"]:
 		logging.info("[...] approximating clustering coefficient")
-		avglcc = clustering(G)
+		if not G.isDirected():
+			avglcc = clustering(G)
+		else:
+			avglcc = None
 
 	# degree assortativity
 	logging.info("[...] calculating degree assortativity coefficient")
@@ -275,8 +285,8 @@ def overview(G, settings=collections.defaultdict(lambda: True), showDegreeHistog
 		["estimated diameter range", str(props["dia"])],
 	]
 	degreeProperties = [
-		["min./max. degree", "({0}, {1})".format(props["minDeg"], props["maxDeg"])],
-		["avg. degree", "{0:.6f}".format(props["avgDeg"])],
+		["min./max. degree{0}".format(" (in,out)" if G.isDirected() else ""), "({0}, {1})".format(props["minDeg"], props["maxDeg"])],
+		["avg. degree",	"{0:.6f}".format(props["avgDeg"])],
 		["power law?, likelihood, gamma", "{0}, {1}, {2}".format(props["plfit"][0], "{0:.4f}".format(props["plfit"][1]), "{0:.4f}".format(props["plfit"][2]))],
 		["degree assortativity", "{0:.4f}".format(props["assort"])],
 	]

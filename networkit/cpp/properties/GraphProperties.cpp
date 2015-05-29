@@ -96,7 +96,7 @@ double GraphProperties::averageLocalClusteringCoefficient(const Graph& G) {
 }
 
 std::pair<count, count> GraphProperties::minMaxDegree(const Graph& G) {
-
+	assert(!G.isDirected());
 	count min = G.numberOfNodes();
 	count max = 0;
 
@@ -111,6 +111,33 @@ std::pair<count, count> GraphProperties::minMaxDegree(const Graph& G) {
 	});
 
 	return std::pair<count, count>(min, max);
+}
+
+std::pair<std::pair<count,count>, std::pair<count,count>> GraphProperties::minMaxDegreeDirected(const Graph& G) {
+	assert(G.isDirected());
+	count minIn = G.numberOfNodes();
+	count minOut = G.numberOfNodes();
+	count maxIn = 0;
+	count maxOut = 0;
+
+	G.forNodes([&](node v){
+		count d = G.degreeIn(v);
+		if (d < minIn) {
+			minIn = d;
+		}
+		if (d > maxIn) {
+			maxIn = d;
+		}
+		d = G.degreeOut(v);
+		if (d < minOut) {
+			minOut = d;
+		}
+		if (d > maxIn) {
+			maxOut = d;
+		}
+	});
+
+	return {{minIn,minOut},{maxIn,maxOut}};
 }
 
 std::vector< count > GraphProperties::degreeSequence(const NetworKit::Graph &G) {
@@ -222,6 +249,30 @@ double GraphProperties::degreeAssortativity(const Graph& G, bool useWeighted) {
 	assert(S1 * S3 != S2 * S2);
 	r = (S1 * Se - S2 * S2) / (S1 * S3 - S2 * S2);
 	return r;
+}
+
+double GraphProperties::degreeAssortativityDirected(const Graph& G, bool alpha, bool beta) {
+	assert(G.isDirected());
+	count alphaAvg = 0;
+	count betaAvg = 0;
+	G.forEdges([&](node u, node v){
+		alphaAvg += (alpha) ? G.degreeOut(u) : G.degreeIn(u);
+		betaAvg += (beta) ? G.degreeOut(v) : G.degreeIn(v);
+	});
+	alphaAvg /= G.numberOfEdges();
+	betaAvg /= G.numberOfEdges();
+	count sum = 0;
+	count jAggr = 0;
+	count kAggr = 0;
+	G.forEdges([&](node u, node v){
+		count j = ((alpha) ? G.degreeOut(u) : G.degreeIn(u)) - alphaAvg;
+		count k = ((beta) ? G.degreeOut(v) : G.degreeIn(v)) - betaAvg;
+		sum += (j * k);
+		jAggr += (j*j);
+		kAggr += (k*k);
+	});
+	return (sum)/(std::sqrt(jAggr)*std::sqrt(kAggr));
+
 }
 
 

@@ -16,6 +16,11 @@ namespace NetworKit {
 ParallelAgglomerativeClusterer::ParallelAgglomerativeClusterer(const Graph& G) : CommunityDetectionAlgorithm(G) {};
 
 void ParallelAgglomerativeClusterer::run() {
+
+	count MIN_NUM_COMMUNITIES = 2;
+	double REL_REPEAT_THRSH = 5e-3; ///< threshold for minimum number of matching edges relative to number of vertices to proceed agglomeration
+
+
 	// copy graph because we make changes due to merges
 	Graph Gcopy(G.numberOfNodes(), true); // make weighted copy
 	G.forEdges([&](node u, node v, edgeweight w){
