@@ -5857,6 +5857,35 @@ cdef class PageRankNibble:
 		"""
 		return self._this.run(seeds)
 
+cdef extern from "cpp/scd/GCE.h":
+	cdef cppclass _GCE "NetworKit::GCE":
+		_GCE(_Graph G, string quality) except +
+		map[node, set[node]] run(set[unsigned int] seeds) except +
+
+cdef class GCE:
+	"""
+	Produces a cut around a given seed node using the GCE algorithm.
+
+	Parameters:
+	-----------
+	G : graph in which the cut is to be produced, must be unweighted.
+	"""
+	cdef _GCE *_this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, quality):
+		self._G = G
+		self._this = new _GCE(G._this, stdstring(quality))
+
+	def run(self, set[unsigned int] seeds):
+		"""
+		Produces a cut around a given seed node.
+
+		Parameters:
+		-----------
+		seeds : the seed node ids.
+		"""
+		return self._this.run(seeds)
 
 # Module: clique
 
