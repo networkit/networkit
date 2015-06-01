@@ -13,7 +13,7 @@
 
 // If GCC does not support thread local, we are sad and don't use it:
 #ifdef __GNUC__
-#	if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR >= 8)
+#	if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)
 #		define AUX_THREAD_LOCAL thread_local
 #	else
 #		define AUX_THREAD_LOCAL
