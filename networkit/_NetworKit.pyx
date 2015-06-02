@@ -4555,7 +4555,7 @@ cdef class DegreeCentrality(Centrality):
 
  	DegreeCentrality(G, normalized=False)
 
- 	Constructs the DegreeCentrality class for the given Graph `G`. If the betweenness scores should be normalized,
+ 	Constructs the DegreeCentrality class for the given Graph `G`. If the scores should be normalized,
  	then set `normalized` to True.
 
  	Parameters
@@ -4573,15 +4573,11 @@ cdef class DegreeCentrality(Centrality):
 
 
 cdef extern from "cpp/centrality/Betweenness.h":
-	cdef cppclass _Betweenness "NetworKit::Betweenness":
+	cdef cppclass _Betweenness "NetworKit::Betweenness" (_Centrality):
 		_Betweenness(_Graph, bool, bool) except +
-		void run() nogil except +
-		vector[double] scores() except +
-		vector[pair[node, double]] ranking() except +
-		double score(node) except +
 		vector[double] edgeScores() except +
 
-cdef class Betweenness:
+cdef class Betweenness(Centrality):
 	"""
 		Betweenness(G, normalized=False, computeEdgeCentrality=False)
 
@@ -4597,64 +4593,11 @@ cdef class Betweenness:
 		computeEdgeCentrality: bool, optional
 			Set this to true if edge betweenness scores should be computed as well.
 	"""
-	cdef _Betweenness* _this
-	cdef Graph _G
 
 	def __cinit__(self, Graph G, normalized=False, computeEdgeCentrality=False):
 		self._G = G
 		self._this = new _Betweenness(G._this, normalized, computeEdgeCentrality)
 
-	# this is necessary so that the C++ object gets properly garbage collected
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		"""  Compute betweenness scores sequential or parallel depending on `runUnweightedInParallel`.
-
-		Parameters
-		----------
-		runUnweightedInParallel : bool
-			If set to True the computation is done in parallel.
-		"""
-		with nogil:
-			self._this.run()
-		return self
-
-	def scores(self):
-		""" Get a vector containing the betweenness score for each node in the graph.
-
-		Returns
-		-------
-		vector
-			The betweenness scores calculated by run().
-		"""
-		return self._this.scores()
-
-	def score(self, v):
-		""" Get the betweenness score of node `v` calculated by run().
-
-		Parameters
-		----------
-		v : node
-			A node.
-
-		Returns
-		-------
-		double
-			The betweenness score of node `v.
-		"""
-		return self._this.score(v)
-
-	def ranking(self):
-		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
-		calculated by run().
-
-		Returns
-		-------
-		vector
-			A vector of pairs.
-		"""
-		return self._this.ranking()
 
 	def edgeScores(self):
 		""" Get a vector containing the betweenness score for each edge in the graph.
@@ -4664,7 +4607,7 @@ cdef class Betweenness:
 		vector
 			The betweenness scores calculated by run().
 		"""
-		return self._this.edgeScores()
+		return (<_Betweenness*>(self._this)).edgeScores()
 
 
 cdef extern from "cpp/centrality/Closeness.h":
