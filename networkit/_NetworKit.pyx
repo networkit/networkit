@@ -4635,14 +4635,10 @@ cdef class Closeness(Centrality):
 
 
 cdef extern from "cpp/centrality/KPathCentrality.h":
-	cdef cppclass _KPathCentrality "NetworKit::KPathCentrality":
+	cdef cppclass _KPathCentrality "NetworKit::KPathCentrality" (_Centrality):
 		_KPathCentrality(_Graph, double, count) except +
-		void run() nogil except +
-		vector[double] scores() except +
-		vector[pair[node, double]] ranking() except +
-		double score(node) except +
 
-cdef class KPathCentrality:
+cdef class KPathCentrality(Centrality):
 	"""
 		KPathCentrality(G, alpha=0.2, k=0)
 
@@ -4657,68 +4653,17 @@ cdef class KPathCentrality:
 			-0.5: maximum precision, maximum runtime
 	 		 0.5: lowest precision, lowest runtime
 	"""
-	cdef _KPathCentrality* _this
-	cdef Graph _G
 
 	def __cinit__(self, Graph G, alpha=0.2, k=0):
 		self._G = G
 		self._this = new _KPathCentrality(G._this, alpha, k)
 
-	# this is necessary so that the C++ object gets properly garbage collected
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		"""  Compute KPathCentrality scores."""
-		with nogil:
-			self._this.run()
-		return self
-
-	def scores(self):
-		""" Get a vector containing the KPathCentrality score for each node in the graph.
-
-		Returns
-		-------
-		vector
-			The KPathCentrality scores calculated by run().
-		"""
-		return self._this.scores()
-
-	def score(self, v):
-		""" Get the KPathCentrality score of node `v` calculated by run().
-
-		Parameters
-		----------
-		v : node
-			A node.
-
-		Returns
-		-------
-		double
-			The KPathCentrality score of node `v.
-		"""
-		return self._this.score(v)
-
-	def ranking(self):
-		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
-		calculated by run().
-
-		Returns
-		-------
-		vector
-			A vector of pairs.
-		"""
-		return self._this.ranking()
 
 cdef extern from "cpp/centrality/KatzCentrality.h":
-	cdef cppclass _KatzCentrality "NetworKit::KatzCentrality":
+	cdef cppclass _KatzCentrality "NetworKit::KatzCentrality" (_Centrality):
 		_KatzCentrality(_Graph, double, count) except +
-		void run() nogil except +
-		vector[double] scores() except +
-		vector[pair[node, double]] ranking() except +
-		double score(node) except +
 
-cdef class KatzCentrality:
+cdef class KatzCentrality(Centrality):
 	"""
 		KatzCentrality(G, alpha=5e-4, beta=0.1, tol=1e-8)
 
@@ -4735,58 +4680,128 @@ cdef class KatzCentrality:
 		tol : double
 			The tolerance for convergence.
 	"""
-	cdef _KatzCentrality* _this
-	cdef Graph _G
 
 	def __cinit__(self, Graph G, alpha=0.2, k=0):
 		self._G = G
 		self._this = new _KatzCentrality(G._this, alpha, k)
 
-	# this is necessary so that the C++ object gets properly garbage collected
-	def __dealloc__(self):
-		del self._this
 
-	def run(self):
-		"""  Compute KatzCentrality scores."""
-		with nogil:
-			self._this.run()
-		return self
 
-	def scores(self):
-		""" Get a vector containing the KatzCentrality score for each node in the graph.
 
-		Returns
-		-------
-		vector
-			The KatzCentrality scores calculated by run().
-		"""
-		return self._this.scores()
+cdef extern from "cpp/centrality/ApproxBetweenness.h":
+	cdef cppclass _ApproxBetweenness "NetworKit::ApproxBetweenness" (_Centrality):
+		_ApproxBetweenness(_Graph, double, double, count) except +
+		count numberOfSamples() except +
 
-	def score(self, v):
-		""" Get the KatzCentrality score of node `v` calculated by run().
+cdef class ApproxBetweenness(Centrality):
+	""" Approximation of betweenness centrality according to algorithm described in
+ 	Matteo Riondato and Evgenios M. Kornaropoulos: Fast Approximation of Betweenness Centrality through Sampling
 
-		Parameters
-		----------
-		v : node
-			A node.
+ 	ApproxBetweenness(G, epsilon=0.01, delta=0.1)
 
-		Returns
-		-------
-		double
-			The KatzCentrality score of node `v.
-		"""
-		return self._this.score(v)
+ 	The algorithm approximates the betweenness of all vertices so that the scores are
+	within an additive error epsilon with probability at least (1- delta).
+	The values are normalized by default.
 
-	def ranking(self):
-		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
-		calculated by run().
+	Parameters
+	----------
+	G : Graph
+		the graph
+	epsilon : double, optional
+		maximum additive error
+	delta : double, optional
+		probability that the values are within the error guarantee
+	"""
 
-		Returns
-		-------
-		vector
-			A vector of pairs.
-		"""
-		return self._this.ranking()
+	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, diameterSamples=0):
+		self._G = G
+		self._this = new _ApproxBetweenness(G._this, epsilon, delta, diameterSamples)
+
+	def numberOfSamples(self):
+		return (<_ApproxBetweenness*>(self._this)).numberOfSamples()
+
+
+
+cdef extern from "cpp/centrality/ApproxBetweenness2.h":
+	cdef cppclass _ApproxBetweenness2 "NetworKit::ApproxBetweenness2" (_Centrality):
+		_ApproxBetweenness2(_Graph, count, bool) except +
+
+
+cdef class ApproxBetweenness2(Centrality):
+	""" Approximation of betweenness centrality according to algorithm described in
+	Sanders, Geisberger, Schultes: Better Approximation of Betweenness Centrality
+
+	ApproxBetweenness2(G, nSamples, normalized=False)
+
+	The algorithm approximates the betweenness of all nodes, using weighting
+	of the contributions to avoid biased estimation.
+
+	Parameters
+	----------
+	G : Graph
+		input graph
+	nSamples : count
+		user defined number of samples
+	normalized : bool, optional
+		normalize centrality values in interval [0,1]
+	"""
+
+	def __cinit__(self, Graph G, nSamples, normalized=False):
+		self._G = G
+		self._this = new _ApproxBetweenness2(G._this, nSamples, normalized)
+
+
+cdef extern from "cpp/centrality/PageRank.h":
+	cdef cppclass _PageRank "NetworKit::PageRank" (_Centrality):
+		_PageRank(_Graph, double damp, double tol) except +
+
+cdef class PageRank(Centrality):
+	"""	Compute PageRank as node centrality measure.
+
+	PageRank(G, damp=0.85, tol=1e-9)
+
+	Parameters
+	----------
+	G : Graph
+		Graph to be processed.
+	damp : double
+		Damping factor of the PageRank algorithm.
+	tol : double, optional
+		Error tolerance for PageRank iteration.
+	"""
+
+	def __cinit__(self, Graph G, double damp=0.85, double tol=1e-9):
+		self._G = G
+		self._this = new _PageRank(G._this, damp, tol)
+
+
+
+cdef extern from "cpp/centrality/EigenvectorCentrality.h":
+	cdef cppclass _EigenvectorCentrality "NetworKit::EigenvectorCentrality" (_Centrality):
+		_EigenvectorCentrality(_Graph, double tol) except +
+
+cdef class EigenvectorCentrality(Centrality):
+	"""	Computes the leading eigenvector of the graph's adjacency matrix (normalized in 2-norm).
+	Interpreted as eigenvector centrality score.
+
+	EigenvectorCentrality(G, tol=1e-9)
+
+	Constructs the EigenvectorCentrality class for the given Graph `G`. `tol` defines the tolerance for convergence.
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	tol : double, optional
+		The tolerance for convergence.
+	"""
+
+	def __cinit__(self, Graph G, double tol=1e-9):
+		self._G = G
+		self._this = new _EigenvectorCentrality(G._this, tol)
+
+
+# Dynamic centrality
 
 cdef extern from "cpp/centrality/DynBetweenness.h":
 	cdef cppclass _DynBetweenness "NetworKit::DynBetweenness":
@@ -4796,6 +4811,7 @@ cdef extern from "cpp/centrality/DynBetweenness.h":
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
+
 
 cdef class DynBetweenness:
 	"""
@@ -4873,89 +4889,6 @@ cdef class DynBetweenness:
 			A vector of pairs.
 		"""
 		return self._this.ranking()
-
-cdef extern from "cpp/centrality/ApproxBetweenness.h":
-	cdef cppclass _ApproxBetweenness "NetworKit::ApproxBetweenness":
-		_ApproxBetweenness(_Graph, double, double, count) except +
-		void run() nogil except +
-		vector[double] scores() except +
-		vector[pair[node, double]] ranking() except +
-		double score(node) except +
-		count numberOfSamples() except +
-
-cdef class ApproxBetweenness:
-	""" Approximation of betweenness centrality according to algorithm described in
- 	Matteo Riondato and Evgenios M. Kornaropoulos: Fast Approximation of Betweenness Centrality through Sampling
-
- 	ApproxBetweenness(G, epsilon=0.01, delta=0.1)
-
- 	The algorithm approximates the betweenness of all vertices so that the scores are
-	within an additive error epsilon with probability at least (1- delta).
-	The values are normalized by default.
-
-	Parameters
-	----------
-	G : Graph
-		the graph
-	epsilon : double, optional
-		maximum additive error
-	delta : double, optional
-		probability that the values are within the error guarantee
-	"""
-	cdef _ApproxBetweenness* _this
-	cdef Graph _G
-
-	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, diameterSamples=0):
-		self._G = G
-		self._this = new _ApproxBetweenness(G._this, epsilon, delta, diameterSamples)
-
-	# this is necessary so that the C++ object gets properly garbage collected
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		with nogil:
-			self._this.run()
-		return self
-
-	def scores(self):
-		""" Get a vector containing the betweenness score for each node in the graph.
-
-		Returns
-		-------
-		vector
-			The betweenness scores calculated by run().
-		"""
-		return self._this.scores()
-
-	def score(self, v):
-		""" Get the betweenness score of node `v` calculated by run().
-
-		Parameters
-		----------
-		v : node
-			A node.
-
-		Returns
-		-------
-		double
-			The betweenness score of node `v.
-		"""
-		return self._this.score(v)
-
-	def ranking(self):
-		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
-		calculated by run().
-
-		Returns
-		-------
-		vector
-			A vector of pairs.
-		"""
-		return self._this.ranking()
-
-	def numberOfSamples(self):
-		return self._this.numberOfSamples()
 
 cdef extern from "cpp/centrality/DynApproxBetweenness.h":
 	cdef cppclass _DynApproxBetweenness "NetworKit::DynApproxBetweenness":
@@ -5057,220 +4990,6 @@ cdef class DynApproxBetweenness:
 		Get number of path samples used in last calculation.
 		"""
 		return self._this.getNumberOfSamples()
-
-cdef extern from "cpp/centrality/ApproxBetweenness2.h":
-	cdef cppclass _ApproxBetweenness2 "NetworKit::ApproxBetweenness2":
-		_ApproxBetweenness2(_Graph, count, bool) except +
-		void run() nogil except +
-		vector[double] scores() except +
-		vector[pair[node, double]] ranking() except +
-		double score(node) except +
-
-cdef class ApproxBetweenness2:
-	""" Approximation of betweenness centrality according to algorithm described in
-	Sanders, Geisberger, Schultes: Better Approximation of Betweenness Centrality
-
-	ApproxBetweenness2(G, nSamples, normalized=False)
-
-	The algorithm approximates the betweenness of all nodes, using weighting
-	of the contributions to avoid biased estimation.
-
-	Parameters
-	----------
-	G : Graph
-		input graph
-	nSamples : count
-		user defined number of samples
-	normalized : bool, optional
-		normalize centrality values in interval [0,1]
-	"""
-	cdef _ApproxBetweenness2* _this
-	cdef Graph _G
-
-	def __cinit__(self, Graph G, nSamples, normalized=False):
-		self._G = G
-		self._this = new _ApproxBetweenness2(G._this, nSamples, normalized)
-
-	# this is necessary so that the C++ object gets properly garbage collected
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		with nogil:
-			self._this.run()
-		return self
-
-	def scores(self):
-		""" Get a vector containing the betweenness score for each node in the graph.
-
-		Returns
-		-------
-		vector
-			The betweenness scores calculated by run().
-		"""
-		return self._this.scores()
-
-	def score(self, v):
-		""" Get a vector containing the betweenness score for each node in the graph.
-
-		Returns
-		-------
-		vector
-			The betweenness scores calculated by run().
-		"""
-		return self._this.score(v)
-
-	def ranking(self):
-		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
-		calculated by run().
-
-		Returns
-		-------
-		vector
-			A vector of pairs.
-		"""
-		return self._this.ranking()
-
-
-cdef extern from "cpp/centrality/PageRank.h":
-	cdef cppclass _PageRank "NetworKit::PageRank":
-		_PageRank(_Graph, double damp, double tol) except +
-		void run() nogil except +
-		vector[double] scores() except +
-		vector[pair[node, double]] ranking() except +
-		double score(node) except +
-
-cdef class PageRank:
-	"""	Compute PageRank as node centrality measure.
-
-	PageRank(G, damp=0.85, tol=1e-9)
-
-	Parameters
-	----------
-	G : Graph
-		Graph to be processed.
-	damp : double
-		Damping factor of the PageRank algorithm.
-	tol : double, optional
-		Error tolerance for PageRank iteration.
-	"""
-	cdef _PageRank* _this
-	cdef Graph _G
-
-	def __cinit__(self, Graph G, double damp=0.85, double tol=1e-9):
-		self._G = G
-		self._this = new _PageRank(G._this, damp, tol)
-
-	# this is necessary so that the C++ object gets properly garbage collected
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		with nogil:
-			self._this.run()
-		return self
-
-	def scores(self):
-		""" Get a vector containing the betweenness score for each node in the graph.
-
-		Returns
-		-------
-		vector
-			The betweenness scores calculated by run().
-		"""
-		return self._this.scores()
-
-	def score(self, v):
-		""" Get a vector containing the betweenness score for each node in the graph.
-
-		Returns
-		-------
-		vector
-			The betweenness scores calculated by run().
-		"""
-		return self._this.score(v)
-
-	def ranking(self):
-		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
-		calculated by run().
-
-		Returns
-		-------
-		vector
-			A vector of pairs.
-		"""
-		return self._this.ranking()
-
-
-cdef extern from "cpp/centrality/EigenvectorCentrality.h":
-	cdef cppclass _EigenvectorCentrality "NetworKit::EigenvectorCentrality":
-		_EigenvectorCentrality(_Graph, double tol) except +
-		void run() nogil except +
-		vector[double] scores() except +
-		vector[pair[node, double]] ranking() except +
-		double score(node) except +
-
-cdef class EigenvectorCentrality:
-	"""	Computes the leading eigenvector of the graph's adjacency matrix (normalized in 2-norm).
-	Interpreted as eigenvector centrality score.
-
-	EigenvectorCentrality(G, tol=1e-9)
-
-	Constructs the EigenvectorCentrality class for the given Graph `G`. `tol` defines the tolerance for convergence.
-
-	Parameters
-	----------
-	G : Graph
-		The graph.
-	tol : double, optional
-		The tolerance for convergence.
-	"""
-	cdef _EigenvectorCentrality* _this
-	cdef Graph _G
-
-	def __cinit__(self, Graph G, double tol=1e-9):
-		self._G = G
-		self._this = new _EigenvectorCentrality(G._this, tol)
-
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		with nogil:
-			self._this.run()
-		return self
-
-	def scores(self):
-		""" Get a vector containing the betweenness score for each node in the graph.
-
-		Returns
-		-------
-		vector
-			The betweenness scores calculated by run().
-		"""
-		return self._this.scores()
-
-	def score(self, v):
-		""" Get a vector containing the betweenness score for each node in the graph.
-
-		Returns
-		-------
-		vector
-			The betweenness scores calculated by run().
-		"""
-		return self._this.score(v)
-
-	def ranking(self):
-		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
-		calculated by run().
-
-		Returns
-		-------
-		vector
-			A vector of pairs.
-		"""
-		return self._this.ranking()
-
 
 
 # Module: distmeasures
