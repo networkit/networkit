@@ -4223,187 +4223,6 @@ cdef class Eccentricity:
 		return getValue(G._this, v)
 
 
-cdef extern from "cpp/centrality/CoreDecomposition.h":
-	cdef cppclass _CoreDecomposition "NetworKit::CoreDecomposition":
-		_CoreDecomposition(_Graph)
-		void run() nogil except +
-		vector[double] scores() except +
-		index score(node) except +
-		vector[set[node]] cores() except +
-		vector[set[node]] shells() except +
-		index maxCoreNumber() except +
-
-cdef class CoreDecomposition:
-	""" Computes k-core decomposition of a graph.
-
-	CoreDecomposition(G)
-
-	Create CoreDecomposition class for graph `G`.
-
-	Parameters
-	----------
-	G : Graph
-		The graph.
-	"""
-
-	cdef _CoreDecomposition* _this
-	cdef Graph _G
-
-	def __cinit__(self, Graph G):
-		self._G = G
-		self._this = new _CoreDecomposition(G._this)
-
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		""" Perform k-core decomposition of graph passed in constructor. """
-		with nogil:
-			self._this.run()
-		return self
-
-	def scores(self):
-		""" Get vector of core numbers, indexed by node.
-
-		Returns
-		-------
-		vector
-			Vector of core numbers, indexed by node.
-		"""
-		return self._this.scores()
-
-	def score(self, v):
-		""" Get core number of node `v`.
-
-		Parameters
-		----------
-		v : node
-			A node.
-
-		Returns
-		-------
-		node
-			Core number of node `v.
-		"""
-		return self._this.score(v)
-
-	def maxCoreNumber(self):
-		""" Get maximum core number.
-
-		Returns
-		-------
-		index
-			The maximum core number.
-		"""
-		return self._this.maxCoreNumber()
-
-	def cores(self):
-		""" Get the k-cores as sets of nodes, indexed by k.
-
-		Returns
-		-------
-		vector
-			The k-cores as sets of nodes, indexed by k.
-		"""
-		return self._this.cores()
-
-	def shells(self):
-		""" Get the k-shells as sets of nodes, indexed by k.
-
-		Returns
-		-------
-		vector
-			The k-shells as sets of nodes, indexed by k.
-		"""
-		return self._this.shells()
-
-cdef extern from "cpp/centrality/LocalClusteringCoefficient.h":
-	cdef cppclass _LocalClusteringCoefficient "NetworKit::LocalClusteringCoefficient":
-		_LocalClusteringCoefficient(_Graph) except +
-		void run() except +
-		vector[double] scores() except +
-		vector[pair[node, double]] ranking() except +
-		double score(node) except +
-		vector[double] edgeScores() except +
-		double maximum() except +
-
-cdef class LocalClusteringCoefficient:
-	"""
-		LocalClusteringCoefficient(G, normalized=False, computeEdgeCentrality=False)
-
-		Constructs the LocalClusteringCoefficient class for the given Graph `G`. If the local clustering coefficient values should be normalized,
-  		then set `normalized` to True.
-
-	 	Parameters
-	 	----------
-	 	G : Graph
-	 		The graph.
-	"""
-	cdef _LocalClusteringCoefficient* _this
-	cdef Graph _G
-
-	def __cinit__(self, Graph G):
-		self._G = G
-		self._this = new _LocalClusteringCoefficient(G._this)
-
-	# this is necessary so that the C++ object gets properly garbage collected
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		"""  Compute LocalClusteringCoefficient.
-		"""
-		self._this.run()
-		return self
-
-	def scores(self):
-		""" Get a vector containing the local clustering coefficient value for each node in the graph.
-
-		Returns
-		-------
-		vector
-			The local clustering coefficient values calculated by run().
-		"""
-		return self._this.scores()
-
-	def score(self, v):
-		""" Get the local clustering coefficient value of node `v` calculated by run().
-
-		Parameters
-		----------
-		v : node
-			A node.
-
-		Returns
-		-------
-		double
-			The local clustering coefficient value of node `v`.
-		"""
-		return self._this.score(v)
-
-	def ranking(self):
-		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
-		calculated by run().
-
-		Returns
-		-------
-		vector
-			A vector of pairs.
-		"""
-		return self._this.ranking()
-
-	def edgeScores(self):
-		""" Get a vector containing the local clustering coefficient values for each edge in the graph.
-
-		Returns
-		-------
-		vector
-			The local clustering coefficient values calculated by run().
-		"""
-		return self._this.edgeScores()
-
-	def maximum(self):
-		return self._this.maximum()
 
 
 cdef extern from "cpp/properties/EffectiveDiameter.h" namespace "NetworKit::EffectiveDiameter":
@@ -4799,6 +4618,84 @@ cdef class EigenvectorCentrality(Centrality):
 	def __cinit__(self, Graph G, double tol=1e-9):
 		self._G = G
 		self._this = new _EigenvectorCentrality(G._this, tol)
+
+
+cdef extern from "cpp/centrality/CoreDecomposition.h":
+	cdef cppclass _CoreDecomposition "NetworKit::CoreDecomposition" (_Centrality):
+		_CoreDecomposition(_Graph)
+		vector[set[node]] cores() except +
+		vector[set[node]] shells() except +
+		index maxCoreNumber() except +
+
+cdef class CoreDecomposition(Centrality):
+	""" Computes k-core decomposition of a graph.
+
+	CoreDecomposition(G)
+
+	Create CoreDecomposition class for graph `G`.
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	"""
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _CoreDecomposition(G._this)
+
+	def maxCoreNumber(self):
+		""" Get maximum core number.
+
+		Returns
+		-------
+		index
+			The maximum core number.
+		"""
+		return (<_CoreDecomposition*>(self._this)).maxCoreNumber()
+
+	def cores(self):
+		""" Get the k-cores as sets of nodes, indexed by k.
+
+		Returns
+		-------
+		vector
+			The k-cores as sets of nodes, indexed by k.
+		"""
+		return (<_CoreDecomposition*>(self._this)).cores()
+
+	def shells(self):
+		""" Get the k-shells as sets of nodes, indexed by k.
+
+		Returns
+		-------
+		vector
+			The k-shells as sets of nodes, indexed by k.
+		"""
+		return (<_CoreDecomposition*>(self._this)).shells()
+
+
+cdef extern from "cpp/centrality/LocalClusteringCoefficient.h":
+	cdef cppclass _LocalClusteringCoefficient "NetworKit::LocalClusteringCoefficient" (_Centrality):
+		_LocalClusteringCoefficient(_Graph) except +
+
+cdef class LocalClusteringCoefficient(Centrality):
+	"""
+		LocalClusteringCoefficient(G, normalized=False, computeEdgeCentrality=False)
+
+		Constructs the LocalClusteringCoefficient class for the given Graph `G`. If the local clustering coefficient values should be normalized,
+  		then set `normalized` to True.
+
+	 	Parameters
+	 	----------
+	 	G : Graph
+	 		The graph.
+	"""
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _LocalClusteringCoefficient(G._this)
+
 
 
 # Dynamic centrality
