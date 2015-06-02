@@ -4482,7 +4482,7 @@ cdef class EffectiveDiameter:
 
 cdef extern from "cpp/centrality/Centrality.h":
 	cdef cppclass _Centrality "NetworKit::Centrality":
-		_centrality(_Graph, bool, bool) except +
+		_Centrality(_Graph, bool, bool) except +
 		void run() nogil except +
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
@@ -4498,7 +4498,7 @@ cdef class Centrality:
 
 	def __init__(self, *args, **kwargs):
 		if type(self) == Centrality:
-			raise RuntimeError("Error, you may not use CommunityDetector directly, use a sub-class instead")
+			raise RuntimeError("Error, you may not use Centrality directly, use a sub-class instead")
 
 	def __cinit__(self, *args, **kwargs):
 		self._this = NULL
@@ -4525,13 +4525,51 @@ cdef class Centrality:
 		return self
 
 	def scores(self):
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
 		return self._this.scores()
 
 	def score(self, v):
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
 		return self._this.score(v)
 
 	def ranking(self):
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
 		return self._this.ranking()
+
+	def maximum(self):
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return self._this.maximum()
+
+
+cdef extern from "cpp/centrality/DegreeCentrality.h":
+	cdef cppclass _DegreeCentrality "NetworKit::DegreeCentrality" (_Centrality):
+		_DegreeCentrality(_Graph, bool normalized) except +
+
+cdef class DegreeCentrality(Centrality):
+	""" Node centrality index which ranks nodes by their degree.
+ 	Optional normalization by maximum degree.
+
+ 	DegreeCentrality(G, normalized=False)
+
+ 	Constructs the DegreeCentrality class for the given Graph `G`. If the betweenness scores should be normalized,
+ 	then set `normalized` to True.
+
+ 	Parameters
+ 	----------
+ 	G : Graph
+ 		The graph.
+ 	normalized : bool, optional
+ 		Normalize centrality values in the interval [0,1].
+	"""
+
+	def __cinit__(self, Graph G, bool normalized=False):
+		self._G = G
+		self._this = new _DegreeCentrality(G._this, normalized)
+
 
 
 cdef extern from "cpp/centrality/Betweenness.h":
@@ -5343,85 +5381,6 @@ cdef class EigenvectorCentrality:
 		return self._this.ranking()
 
 
-cdef extern from "cpp/centrality/DegreeCentrality.h":
-	cdef cppclass _DegreeCentrality "NetworKit::DegreeCentrality":
-		_DegreeCentrality(_Graph, bool normalized) except +
-		void run() nogil except +
-		vector[double] scores() except +
-		vector[pair[node, double]] ranking() except +
-		double score(node) except +
-		double maximum()  except +
-
-cdef class DegreeCentrality:
-	""" Node centrality index which ranks nodes by their degree.
- 	Optional normalization by maximum degree.
-
- 	DegreeCentrality(G, normalized=False)
-
- 	Constructs the DegreeCentrality class for the given Graph `G`. If the betweenness scores should be normalized,
- 	then set `normalized` to True.
-
- 	Parameters
- 	----------
- 	G : Graph
- 		The graph.
- 	normalized : bool, optional
- 		Normalize centrality values in the interval [0,1].
-	"""
-	cdef _DegreeCentrality* _this
-	cdef Graph _G
-
-	def __cinit__(self, Graph G, bool normalized=False):
-		self._G = G
-		self._this = new _DegreeCentrality(G._this, normalized)
-
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		with nogil:
-			self._this.run()
-		return self
-
-	def scores(self):
-		""" Get a vector containing the betweenness score for each node in the graph.
-
-		Returns
-		-------
-		vector
-			The betweenness scores calculated by run().
-		"""
-		return self._this.scores()
-
-	def score(self, v):
-		""" Get a vector containing the betweenness score for each node in the graph.
-
-		Returns
-		-------
-		vector
-			The betweenness scores calculated by run().
-		"""
-		return self._this.score(v)
-
-	def ranking(self):
-		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
-		calculated by run().
-
-		Returns
-		-------
-		vector
-			A vector of pairs.
-		"""
-		return self._this.ranking()
-
-	def maximum(self):
-		"""
-		Returns
-		-------
-		m
-			The theoretical maximum of centrality score.
-		"""
-		return self._this.maximum()
 
 # Module: distmeasures
 
