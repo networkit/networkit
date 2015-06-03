@@ -196,40 +196,60 @@ cdef cppclass EdgeCallBackWrapper:
 	__init__(object callback):
 		this.callback = <void*>callback
 	void cython_call_operator(node u, node v, edgeweight w, edgeid eid):
+		cdef bool error = False
+		cdef string message
 		try:
 			(<object>callback)(u, v, w, eid)
-		except:
-			throw_runtime_error(b"Exception occurred, aborting execution of iterator.")
+		except Exception as e:
+			error = True
+			message = stdstring("An Exception occurred, aborting execution of iterator: {0}".format(e))
+		if (error):
+			throw_runtime_error(message)
 
 cdef cppclass NodeCallbackWrapper:
 	void* callback
 	__init__(object callback):
 		this.callback = <void*>callback
 	void cython_call_operator(node u):
+		cdef bool error = False
+		cdef string message
 		try:
 			(<object>callback)(u)
-		except:
-			throw_runtime_error(b"Exception occurred, aborting execution of iterator.")
+		except Exception as e:
+			error = True
+			message = stdstring("An Exception occurred, aborting execution of iterator: {0}".format(e))
+		if (error):
+			throw_runtime_error(message)
 
 cdef cppclass NodeDistCallbackWrapper:
 	void* callback
 	__init__(object callback):
 		this.callback = <void*>callback
 	void cython_call_operator(node u, count dist):
+		cdef bool error = False
+		cdef string message
 		try:
 			(<object>callback)(u, dist)
-		except:
-			throw_runtime_error(b"Exception occurred, aborting execution of iterator.")
+		except Exception as e:
+			error = True
+			message = stdstring("An Exception occurred, aborting execution of iterator: {0}".format(e))
+		if (error):
+			throw_runtime_error(message)
 
 cdef cppclass NodePairCallbackWrapper:
 	void* callback
 	__init__(object callback):
 		this.callback = <void*>callback
 	void cython_call_operator(node u, node v):
+		cdef bool error = False
+		cdef string message
 		try:
 			(<object>callback)(u, v)
-		except:
-			throw_runtime_error(b"Exception occurred, aborting execution of iterator.")
+		except Exception as e:
+			error = True
+			message = stdstring("An Exception occurred, aborting execution of iterator: {0}".format(e))
+		if (error):
+			throw_runtime_error(message)
 
 cdef class Graph:
 	""" An undirected graph (with optional weights) and parallel iterator methods.
