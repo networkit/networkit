@@ -36,10 +36,10 @@ none = _none
 
 cdef extern from "<algorithm>" namespace "std":
 	void swap[T](T &a,  T &b)
-	_Graph move( _Graph t ) # specialized declaration as general declaration disables template argument deduction and doesn't work
-	_Partition move( _Partition t)
-	_Cover move(_Cover t)
-	pair[_Graph, vector[node]] move(pair[_Graph, vector[node]])
+	_Graph move( _Graph t ) nogil # specialized declaration as general declaration disables template argument deduction and doesn't work
+	_Partition move( _Partition t) nogil
+	_Cover move(_Cover t) nogil
+	pair[_Graph, vector[node]] move(pair[_Graph, vector[node]]) nogil
 
 cdef extern from "cython_helper.h":
 	void throw_runtime_error(string message)
@@ -1949,104 +1949,105 @@ cdef class PowerlawDegreeSequence:
 
 # Module: graphio
 
-cdef extern from "cpp/io/METISGraphReader.h":
-	cdef cppclass _METISGraphReader "NetworKit::METISGraphReader":
-		_METISGraphReader() except +
-		_Graph read(string path) except +
+cdef extern from "cpp/io/GraphReader.h":
+	cdef cppclass _GraphReader "NetworKit::GraphReader":
+		_GraphReader() nogil except +
+		_Graph read(string path) nogil except +
 
-cdef class METISGraphReader:
+cdef class GraphReader:
+	""" Abstract base class for graph readers"""
+
+	cdef _GraphReader* _this
+
+	def __init__(self, *args, **kwargs):
+		if type(self) == GraphReader:
+			raise RuntimeError("Error, you may not use GraphReader directly, use a sub-class instead")
+
+	def __cinit__(self, *args, **kwargs):
+		self._this = NULL
+
+	def __dealloc__(self):
+		if self._this != NULL:
+			del self._this
+		self._this = NULL
+
+	def read(self, path):
+		cdef string cpath = stdstring(path)
+		cdef _Graph result
+
+		with nogil:
+			result = move(self._this.read(cpath)) # extra move in order to avoid copying the internal variable that is used by Cython
+		return Graph(0).setThis(result)
+
+cdef extern from "cpp/io/METISGraphReader.h":
+	cdef cppclass _METISGraphReader "NetworKit::METISGraphReader" (_GraphReader):
+		_METISGraphReader() nogil except +
+
+cdef class METISGraphReader(GraphReader):
 	""" Reads the METIS adjacency file format [1]. If the Fast reader fails,
 		use readGraph(path, graphio.formats.metis) as an alternative.
 		[1]: http://people.sc.fsu.edu/~jburkardt/data/metis_graph/metis_graph.html
 	"""
-	cdef _METISGraphReader _this
-
-	def read(self, path):
-		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
-		return Graph(0).setThis(self._this.read(pathbytes))
+	def __cinit__(self):
+		self._this = new _METISGraphReader()
 
 cdef extern from "cpp/io/GraphToolBinaryReader.h":
-	cdef cppclass _GraphToolBinaryReader "NetworKit::GraphToolBinaryReader":
+	cdef cppclass _GraphToolBinaryReader "NetworKit::GraphToolBinaryReader" (_GraphReader):
 		_GraphToolBinaryReader() except +
-		_Graph read(string path) except +
 
-cdef class GraphToolBinaryReader:
+cdef class GraphToolBinaryReader(GraphReader):
 	""" Reads the binary file format defined by graph-tool[1].
 		[1]: http://graph-tool.skewed.de/static/doc/gt_format.html
 	"""
-	cdef _GraphToolBinaryReader _this
-
-	def read(self, path):
-		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
-		return Graph(0).setThis(self._this.read(pathbytes))
+	def __cinit__(self):
+		self._this = new _GraphToolBinaryReader()
 
 
 cdef extern from "cpp/io/EdgeListReader.h":
-	cdef cppclass _EdgeListReader "NetworKit::EdgeListReader":
+	cdef cppclass _EdgeListReader "NetworKit::EdgeListReader"(_GraphReader):
 		_EdgeListReader() except +
 		_EdgeListReader(char separator, node firstNode, string commentPrefix, bool continuous, bool directed)
-		_Graph read(string path) except +
 		unordered_map[node,node] getNodeMap() except +
 
 
-cdef class EdgeListReader:
+cdef class EdgeListReader(GraphReader):
 	""" Reads a file in an edge list format.
 		TODO: docstring
 	"""
-	cdef _EdgeListReader _this
-
 	def __cinit__(self, separator, firstNode, commentPrefix="#", continuous=True, directed=False):
-		self._this = _EdgeListReader(stdstring(separator)[0], firstNode, stdstring(commentPrefix), continuous, directed)
-
-	def read(self, path):
-		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
-		return Graph(0).setThis(self._this.read(pathbytes))
+		self._this = new _EdgeListReader(stdstring(separator)[0], firstNode, stdstring(commentPrefix), continuous, directed)
 
 	def getNodeMap(self):
-		cdef unordered_map[node,node] cResult = self._this.getNodeMap()
+		cdef unordered_map[node,node] cResult = (<_EdgeListReader*>(self._this)).getNodeMap()
 		result = []
 		for elem in cResult:
 			result.append((elem.first,elem.second))
 		return result
 
 cdef extern from "cpp/io/KONECTGraphReader.h":
-	cdef cppclass _KONECTGraphReader "NetworKit::KONECTGraphReader":
+	cdef cppclass _KONECTGraphReader "NetworKit::KONECTGraphReader"(_GraphReader):
 		_KONECTGraphReader() except +
 		_KONECTGraphReader(char separator, bool ignoreLoops)
-		_Graph read(string path) except +
 
-cdef class KONECTGraphReader:
+cdef class KONECTGraphReader(GraphReader):
 	""" Reader for the KONECT graph format, which is described in detail on the KONECT website[1].
 
 		[1]: http://konect.uni-koblenz.de/downloads/konect-handbook.pdf
 	"""
-	cdef _KONECTGraphReader _this
-
 	def __cinit__(self, separator, ignoreLoops = False):
-		self._this = _KONECTGraphReader(stdstring(separator)[0], ignoreLoops)
-
-	def read(self, path):
-		pathbytes = path.encode("utf-8") # string needs to be converted to bytes, which are coerced to std::string
-		return Graph(0).setThis(self._this.read(pathbytes))
+		self._this = new _KONECTGraphReader(stdstring(separator)[0], ignoreLoops)
 
 cdef extern from "cpp/io/GMLGraphReader.h":
-	cdef cppclass _GMLGraphReader "NetworKit::GMLGraphReader":
+	cdef cppclass _GMLGraphReader "NetworKit::GMLGraphReader"(_GraphReader):
 		_GMLGraphReader() except +
-		_Graph read(string path) except +
 
-cdef class GMLGraphReader:
+cdef class GMLGraphReader(GraphReader):
 	""" Reader for the GML graph format, which is documented here [1].
 
 		[1]: http://www.fim.uni-passau.de/fileadmin/files/lehrstuhl/brandenburg/projekte/gml/gml-technical-report.pdf
  	"""
-	cdef _GMLGraphReader _this
-
 	def __cinit__(self):
-		self._this = _GMLGraphReader()
-
-	def read(self, path):
-		pathbytes = path.encode("utf-8")
-		return Graph(0).setThis(self._this.read(pathbytes))
+		self._this = new _GMLGraphReader()
 
 cdef extern from "cpp/io/METISGraphWriter.h":
 	cdef cppclass _METISGraphWriter "NetworKit::METISGraphWriter":
@@ -2189,22 +2190,19 @@ cdef class SNAPGraphWriter:
 
 
 cdef extern from "cpp/io/SNAPGraphReader.h":
-	cdef cppclass _SNAPGraphReader "NetworKit::SNAPGraphReader":
+	cdef cppclass _SNAPGraphReader "NetworKit::SNAPGraphReader"(_GraphReader):
 		_SNAPGraphReader() except +
-		_Graph read(string path) except +
 		unordered_map[node,node] getNodeIdMap() except +
 
-cdef class SNAPGraphReader:
+cdef class SNAPGraphReader(GraphReader):
 	""" Reads a graph from the SNAP graph data collection [1] (currently experimental)
 		[1]: http://snap.stanford.edu/data/index.html
 	"""
-	cdef _SNAPGraphReader _this
-
-	def read(self, path):
-		return Graph().setThis(self._this.read(stdstring(path)))
+	def __cinit__(self):
+		self._this = new _SNAPGraphReader()
 
 	def getNodeIdMap(self):
-		cdef unordered_map[node,node] cResult = self._this.getNodeIdMap()
+		cdef unordered_map[node,node] cResult = (<_SNAPGraphReader*>(self._this)).getNodeIdMap()
 		result = []
 		for elem in cResult:
 			result.append((elem.first,elem.second))
