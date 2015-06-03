@@ -30,8 +30,6 @@ void EigenvectorCentrality::runImpl() {
 	double length = 0.0;
 	double oldLength = 0.0;
 
-	double NEAR_ZERO = 1e-16;
-
 	auto converged([&](double val, double other) {
 		// compute residual
 		return (Aux::NumericTools::equal(val, other, tol));
@@ -50,7 +48,7 @@ void EigenvectorCentrality::runImpl() {
 
 //		// set everything very small to zero
 //		G.parallelForNodes([&](node u) {
-//			if (values[u] < NEAR_ZERO) {
+//			if (values[u] < 1e-16) {
 //				values[u] = 0.0;
 //			}
 //		});
@@ -65,7 +63,7 @@ void EigenvectorCentrality::runImpl() {
 //		TRACE("length: ", length);
 //		TRACE(values);
 
-		assert(! Aux::NumericTools::equal(length, NEAR_ZERO));
+		assert(! Aux::NumericTools::equal(length, 1e-16));
 		G.parallelForNodes([&](node u) {
 			values[u] /= length;
 		});

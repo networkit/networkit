@@ -61,12 +61,10 @@ from . import clique
 from . import profiling
 
 try:
-	from . import viztools
 	from . import viztasks
-	from . import algebraic
 except ImportError as importError:
 	print("""WARNING: some dependencies are not satisfied which are needed to use the
-		'viztools' submodule""")
+		'viztasks' submodule""")
 	print(importError)
 
 

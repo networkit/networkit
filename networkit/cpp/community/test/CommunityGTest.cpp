@@ -19,7 +19,6 @@
 #include "../EPP.h"
 #include "../../overlap/HashingOverlapper.h"
 #include "../EPPFactory.h"
-#include "../CommunityGraph.h"
 #include "../PLM.h"
 #include "../../community/GraphClusteringTools.h"
 #include "../../auxiliary/Log.h"
@@ -150,8 +149,7 @@ TEST_F(CommunityGTest, testLabelPropagationOnClusteredGraph_ForNumberOfClusters)
 	Partition zeta = lp.getPartition();
 
 	Modularity modularity;
-	double mod = modularity.getQuality(zeta, G);
-	DEBUG("modularity produced by LabelPropagation: " , mod);
+	DEBUG("modularity produced by LabelPropagation: " , modularity.getQuality(zeta, G));
 
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta)) << "the resulting partition should be a proper clustering";
 	EXPECT_EQ(k, zeta.numberOfSubsets()) << " " << k << " clusters are easy to detect";
@@ -178,8 +176,7 @@ TEST_F(CommunityGTest, testLabelPropagationOnClusteredGraph_ForEquality) {
 	Partition zeta = lp.getPartition();
 
 	Modularity modularity;
-	double mod = modularity.getQuality(zeta, G);
-	DEBUG("modularity produced by LabelPropagation: " , mod);
+	DEBUG("modularity produced by LabelPropagation: " , modularity.getQuality(zeta, G));
 	DEBUG("number of clusters produced by LabelPropagation: k=" , zeta.numberOfSubsets());
 
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta)) << "the resulting partition should be a proper clustering";
@@ -200,8 +197,7 @@ TEST_F(CommunityGTest, testLabelPropagationOnDisconnectedGraph) {
 	Partition zeta = lp.getPartition();
 
 	Modularity modularity;
-	double mod = modularity.getQuality(zeta, G);
-	DEBUG("modularity produced by LabelPropagation: " , mod);
+	DEBUG("modularity produced by LabelPropagation: " , modularity.getQuality(zeta, G));
 
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta)) << "the resulting partition should be a proper clustering";
 	EXPECT_EQ(k, zeta.numberOfSubsets()) << " " << k << " clusters are easy to detect"; //FIXME
@@ -223,8 +219,7 @@ TEST_F(CommunityGTest, testLabelPropagationOnSingleNodeWithSelfLoop) {
 	EXPECT_TRUE(GraphClusteringTools::isOneClustering(G, zeta)); //FIXME does this make sense? singleton and one partition at the same time.
 
 	Modularity modularity;
-	double mod = modularity.getQuality(zeta, G);
-	DEBUG("modularity produced by LabelPropagation: " , mod);
+	DEBUG("modularity produced by LabelPropagation: " , modularity.getQuality(zeta, G));
 }
 
 
@@ -243,8 +238,7 @@ TEST_F(CommunityGTest, testLabelPropagationOnManySmallClusters) {
 	Partition zeta = lp.getPartition();
 
 	Modularity modularity;
-	double mod = modularity.getQuality(zeta, G_ref.first);
-	DEBUG("modularity produced by LabelPropagation: " , mod);
+	DEBUG("modularity produced by LabelPropagation: " , modularity.getQuality(zeta, G_ref.first));
 	DEBUG("number of clusters produced by LabelPropagation: k=" , zeta.numberOfSubsets());
 
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G_ref.first, zeta)) << "the resulting partition should be a proper clustering";
@@ -396,28 +390,6 @@ TEST_F(CommunityGTest, testDeletedNodesPLM) {
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta2));
 
 }
-
-
-TEST_F(CommunityGTest, testCommunityGraph) {
-	CommunityGraph com;
-	METISGraphReader reader;
-	Graph G = reader.read("input/jazz.graph");
-	ClusteringGenerator clusteringGen;
-
-	Partition one = clusteringGen.makeOneClustering(G);
-	com.run(G, one);
-	EXPECT_EQ(1u, com.getGraph().numberOfNodes());
-
-	Partition singleton = clusteringGen.makeSingletonClustering(G);
-	com.run(G, singleton);
-	EXPECT_EQ(G.numberOfNodes(), com.getGraph().numberOfNodes());
-	PLP plp(G);
-	plp.run();
-	Partition zeta = plp.getPartition();
-	com.run(G, zeta);
-	EXPECT_EQ(zeta.numberOfSubsets(), com.getGraph().numberOfNodes());
-}
-
 
 TEST_F(CommunityGTest, testModularity) {
 	GraphGenerator graphGenerator;
@@ -699,12 +671,8 @@ TEST_F(CommunityGTest, testSampledRandMeasures) {
 
 	SampledNodeStructuralRandMeasure nRand(20);
 	SampledGraphStructuralRandMeasure gRand(20);
-
-	double nDis = nRand.getDissimilarity(G, one, singleton);
-	double gDis = gRand.getDissimilarity(G, one, singleton);
-
-	DEBUG("node structural dissimilarity: ", nDis);
-	DEBUG("graph structural dissimilarity: ", gDis);
+	DEBUG("node structural dissimilarity: ", nRand.getDissimilarity(G, one, singleton));
+	DEBUG("graph structural dissimilarity: ", gRand.getDissimilarity(G, one, singleton));
 }
 
 

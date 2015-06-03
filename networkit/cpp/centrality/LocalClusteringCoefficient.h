@@ -33,6 +33,14 @@ public:
 	*/
 	void runImpl() override;
 
+
+	/**
+	* Get the theoretical maximum of centrality score in the given graph.
+	*
+	* @return The maximum centrality score.
+	*/
+	virtual double maximum();
+
 };
 
 } /* namespace NetworKit */

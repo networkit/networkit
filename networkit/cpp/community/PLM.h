@@ -32,7 +32,7 @@ public:
 	 * @param[in]	turbo	faster but uses O(n) additional memory per thread
 	 *
 	 */
-	PLM(const Graph& G, bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32, bool parallelCoarsening=true, bool turbo = false);
+	PLM(const Graph& G, bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32, bool turbo = false);
 
 	PLM(const Graph& G, const PLM& other);
 
@@ -49,7 +49,7 @@ public:
 	 */
 	void runImpl() override;
 
-	static std::pair<Graph, std::vector<node>> coarsen(const Graph& G, const Partition& zeta, bool parallel=false);
+	static std::pair<Graph, std::vector<node>> coarsen(const Graph& G, const Partition& zeta);
 
 	static Partition prolong(const Graph& Gcoarse, const Partition& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode);
 
@@ -64,7 +64,6 @@ private:
 	bool refine;
 	double gamma = 1.0;
 	count maxIter;
-	bool parallelCoarsening;
 	bool turbo;
 	std::map<std::string, std::vector<count> > timing;	 // fine-grained running time measurement
 };

@@ -98,16 +98,24 @@ def computeNodeProperties(G):
 	# coreness
 	core = centrality.CoreDecomposition(G).run().scores()
 	# local clustering coefficient
-	clustering = properties.ClusteringCoefficient.exactLocal(G)
+	clustering = centrality.LocalClusteringCoefficient(G).run().scores()
 	# betweenness
 	nSamples = max(42, G.numberOfNodes() / 1000)
 	betweenness = centrality.ApproxBetweenness2(G, nSamples, normalized=True).run().scores()
 	# pagerank
 	pagerank = centrality.PageRank(G).run().scores()
+	# k-Path centrality
+	kpath = centrality.KPathCentrality(G).run().scores()
 	# Katz centrality
 	katz = centrality.KatzCentrality(G).run().scores()
 	# package node properties in DataFrame
-	nodeProperties = pandas.DataFrame({"degree": degree, "core": core, "clustering": clustering, "betweenness": betweenness, "pagerank": pagerank, "katz": katz})
+	nodeProperties = pandas.DataFrame({"degree": degree,
+	 									"core": core,
+										"clustering": clustering,
+										"betweenness": betweenness,
+										"pagerank": pagerank,
+										"kpath": kpath,
+										"katz": katz})
 	return nodeProperties
 
 

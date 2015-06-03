@@ -26,8 +26,6 @@ void DegreeCentrality::runImpl() {
 			scoreData[u] = scoreData[u] / maxDeg;
 		});
 	}
-
-
 }
 
 

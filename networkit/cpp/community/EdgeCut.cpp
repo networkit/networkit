@@ -11,9 +11,9 @@ namespace NetworKit {
 
 double EdgeCut::getQuality(const Partition& zeta, const Graph& G) {
 	double cutWeight = 0.0;
-	G.forEdges([&](node u, node v) {
+	G.forEdges([&](node u, node v, edgeweight w) {
 		if (zeta[u] != zeta[v]) {
-			cutWeight += G.weight(u, v);
+			cutWeight += w;
 		}
 	});
 	return cutWeight;
