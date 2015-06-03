@@ -3831,6 +3831,8 @@ cdef extern from "cpp/properties/GraphProperties.h" namespace "NetworKit::GraphP
 cdef class GraphProperties:
 	""" Collects various functions for basic graph properties """
 
+	# TODO: this class should become obsolete with the new profiling module
+
 	@staticmethod
 	def minMaxDegree(Graph G not None):
 		return minMaxDegree(G._this)
