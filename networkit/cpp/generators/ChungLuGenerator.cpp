@@ -9,6 +9,7 @@
 #include <numeric>
 
 #include "ChungLuGenerator.h"
+#include "../graph/GraphBuilder.h"
 
 namespace NetworKit {
 
@@ -19,22 +20,19 @@ ChungLuGenerator::ChungLuGenerator(const std::vector< NetworKit::count > &degree
 }
 
 Graph ChungLuGenerator::generate() {
-	/* Random number in [0, 1] */
-	double randVal = 0.0;
+	GraphBuilder gB(n);
 
-	Graph G(n);
-	for (index u = 0; u < n; ++u) {
-		for (index v = u + 1; v < n; ++v) {
-			randVal = Aux::Random::probability();
-			/* Probability of edge (u, v): d(u)*d(v)/sum_deg */
-			if (randVal < double(seq[u] * seq[v]) / sum_deg) {
-				G.addEdge(u, v);
-			}
+	gB.parallelForNodePairs([&](node u, node v) {
+		/* Random number in [0, 1] */
+		double randVal = Aux::Random::probability();
+		/* Probability of edge (u, v): d(u)*d(v)/sum_deg */
+		if (randVal < double(seq[u] * seq[v]) / sum_deg) {
+			gB.addEdge(u, v);
 		}
-	}
+	});
 
-	G.shrinkToFit();
-	return G;
+
+	return gB.toGraph();
 }
 
 } /* namespace NetworKit */

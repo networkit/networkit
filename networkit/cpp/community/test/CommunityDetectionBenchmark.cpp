@@ -53,7 +53,7 @@ TEST_F(CommunityDetectionBenchmark, timeClusteringAlgos) {
 		auto communitySizes = zeta.subsetSizes();
 
 
-		printf("%s on %s: %.1f s\n\t# communities: %llu\n\tmodularity: %f\n",
+		printf("%s on %s: %.1f s\n\t# communities: %lu\n\tmodularity: %f\n",
 			"Parallel Label Propagation", graph.c_str(),
 			timer.elapsedMilliseconds() / 1000.0,
 			zeta.numberOfSubsets(),
@@ -72,7 +72,7 @@ TEST_F(CommunityDetectionBenchmark, timeClusteringAlgos) {
 		auto communitySizes = zeta.subsetSizes();
 
 
-		printf("%s on %s: %.1f s\n\t# communities: %llu\n\tmodularity: %f\n",
+		printf("%s on %s: %.1f s\n\t# communities: %lu\n\tmodularity: %f\n",
 			"Parallel Louvain", graph.c_str(),
 			timer.elapsedMilliseconds() / 1000.0,
 			zeta.numberOfSubsets(),
@@ -95,7 +95,7 @@ TEST_F(CommunityDetectionBenchmark, timePageRankCentrality) {
 		auto ranking = cen.ranking();
 
 
-		printf("%s on %s: %.1f s\n\tranking: [(%llu: %f), (%llu: %f), ...]\n",
+		printf("%s on %s: %.1f s\n\tranking: [(%lu: %f), (%lu: %f), ...]\n",
 			"Page Rank Centrality", graph.c_str(),
 			timer.elapsedMilliseconds() / 1000.0,
 			ranking[0].first, ranking[0].second,
@@ -118,7 +118,7 @@ TEST_F(CommunityDetectionBenchmark, timeBetweennessCentrality) {
 		auto ranking = cen.ranking();
 
 
-		printf("%s on %s: %.1f s\n\tranking: [(%llu: %f), (%llu: %f), ...]\n",
+		printf("%s on %s: %.1f s\n\tranking: [(%lu: %f), (%lu: %f), ...]\n",
 			"Betweenness Centrality", graph.c_str(),
 			timer.elapsedMilliseconds() / 1000.0,
 			ranking[0].first, ranking[0].second,

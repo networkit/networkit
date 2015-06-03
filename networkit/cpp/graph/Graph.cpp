@@ -17,6 +17,7 @@ namespace NetworKit {
 Graph::Graph(count n, bool weighted, bool directed) :
 	n(n),
 	m(0),
+	storedNumberOfSelfLoops(0),
 	z(n),
 	omega(0),
 	t(0),
@@ -54,6 +55,7 @@ Graph::Graph(count n, bool weighted, bool directed) :
 Graph::Graph(const Graph& G, bool weighted, bool directed) :
 	n(G.n),
 	m(G.m),
+	storedNumberOfSelfLoops(G.storedNumberOfSelfLoops),
 	z(G.z),
 	omega(0),
 	t(G.t),
@@ -618,6 +620,10 @@ void Graph::addEdge(node u, node v, edgeweight ew) {
 			outEdgeIds[v].push_back(omega - 1);
 		}
 	}
+
+	if (u == v) { //count self loop
+		storedNumberOfSelfLoops++;
+	}
 }
 
 void Graph::removeEdge(node u, node v) {
@@ -657,6 +663,11 @@ void Graph::removeEdge(node u, node v) {
 		if (weighted) {
 			outEdgeWeights[v][ui] = nullWeight;
 		}
+	}
+
+	if (u == v) {
+		storedNumberOfSelfLoops--;
+		assert(storedNumberOfSelfLoops >= 0);
 	}
 
 	// dose not make a lot of sense do remove attributes,
@@ -750,14 +761,7 @@ std::vector< std::pair<node, node> > Graph::randomEdges(count nr) const {
 /** GLOBAL PROPERTIES **/
 
 count Graph::numberOfSelfLoops() const {
-	count c = 0;
-	parallelForEdges([&](node u, node v) {
-		if (u == v) {
-			#pragma omp atomic
-			c += 1;
-		}
-	});
-	return c;
+	return storedNumberOfSelfLoops;
 }
 
 

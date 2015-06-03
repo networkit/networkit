@@ -66,6 +66,8 @@ public:
 
 	static std::pair<count, count> minMaxDegree(const Graph& G);
 
+	static std::pair<std::pair<count,count>, std::pair<count,count>> minMaxDegreeDirected(const Graph& G);
+
 	static double averageDegree(const Graph& G);
 
 	/**
@@ -77,6 +79,18 @@ public:
 	 * @note Degree assortativity based on description in Newman: Networks. An Introduction. Chapter 8.7.
 	 */
 	static double degreeAssortativity(const Graph& G, bool useWeights = false);
+
+
+	/**
+	 * Degree Assortativity for directed graphs.[1]
+	 *
+	 * [1] http://www.pnas.org/content/107/24/10815.full
+	 * @param  G     The graph
+	 * @param  alpha True, if the out-degree of the edge's source vertex is to be considered. False for the in-degree.
+	 * @param  beta  True, if the out-degree of the edge's target vertex is to be considered. False for the in-degree.
+	 * @return       The degree assortativity for the given configuration.
+	 */
+	static double degreeAssortativityDirected(const Graph& G, bool alpha, bool beta);
 };
 
 } /* namespace NetworKit */

@@ -9,15 +9,6 @@
 #define MULTILEVELLAYOUTER_H_
 
 #include "Layouter.h"
-#include "FruchtermanReingold.h"
-#include "MaxentStress.h"
-#include "../community/PLP.h"
-#include "../coarsening/GraphCoarsening.h"
-#include "../coarsening/MatchingContracter.h"
-#include "../coarsening/ClusterContractor.h"
-#include "../matching/ParallelMatcher.h"
-#include "../matching/Matching.h"
-#include "../io/METISGraphWriter.h"
 
 namespace NetworKit {
 

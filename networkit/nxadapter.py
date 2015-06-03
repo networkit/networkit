@@ -50,10 +50,13 @@ def nk2nx(nkG):
 		nxG = nx.DiGraph()
 	else:
 		nxG = nx.Graph()
+	nxG.add_nodes_from(nkG.nodes())
 	if nkG.isWeighted():
 		for (u, v) in nkG.edges():
 			nxG.add_edge(u, v, weight=nkG.weight(u, v))
 	else:
-		for (u, v) in nkG.edges():
-			nxG.add_edge(u, v)
+		nxG.add_edges_from(nkG.edges())
+
+	assert (nkG.numberOfNodes() == nxG.number_of_nodes())
+	assert (nkG.numberOfEdges() == nxG.number_of_edges())
 	return nxG

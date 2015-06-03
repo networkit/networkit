@@ -8,7 +8,6 @@
 #include "PLM.h"
 #include <omp.h>
 #include "../coarsening/ParallelPartitionCoarsening.h"
-#include "../coarsening/ClusterContractor.h"
 #include "../coarsening/ClusteringProjector.h"
 #include "../auxiliary/Log.h"
 #include "../auxiliary/Timer.h"
@@ -16,11 +15,11 @@
 
 namespace NetworKit {
 
-PLM::PLM(const Graph& G, bool refine, double gamma, std::string par, count maxIter, bool parallelCoarsening, bool turbo) : CommunityDetectionAlgorithm(G), parallelism(par), refine(refine), gamma(gamma), maxIter(maxIter), parallelCoarsening(parallelCoarsening), turbo(turbo) {
+PLM::PLM(const Graph& G, bool refine, double gamma, std::string par, count maxIter, bool turbo) : CommunityDetectionAlgorithm(G), parallelism(par), refine(refine), gamma(gamma), maxIter(maxIter), turbo(turbo) {
 
 }
 
-PLM::PLM(const Graph& G, const PLM& other) : CommunityDetectionAlgorithm(G), parallelism(other.parallelism), refine(other.refine), gamma(other.gamma), maxIter(other.maxIter), parallelCoarsening(other.parallelCoarsening), turbo(other.turbo){
+PLM::PLM(const Graph& G, const PLM& other) : CommunityDetectionAlgorithm(G), parallelism(other.parallelism), refine(other.refine), gamma(other.gamma), maxIter(other.maxIter), turbo(other.turbo){
 
 }
 
@@ -254,12 +253,12 @@ void PLM::runImpl() {
 
 		timer.start();
 		//
-		std::pair<Graph, std::vector<node>> coarsened = coarsen(G, zeta, parallelCoarsening);	// coarsen graph according to communitites
+		std::pair<Graph, std::vector<node>> coarsened = coarsen(G, zeta);	// coarsen graph according to communitites
 		//
 		timer.stop();
 		timing["coarsen"].push_back(timer.elapsedMilliseconds());
 
-		PLM onCoarsened(coarsened.first, this->refine, this->gamma, this->parallelism, this->maxIter, this->parallelCoarsening, this->turbo);
+		PLM onCoarsened(coarsened.first, this->refine, this->gamma, this->parallelism, this->maxIter, this->turbo);
 		onCoarsened.run();
 		Partition zetaCoarse = onCoarsened.getPartition();
 
@@ -313,9 +312,7 @@ std::string NetworKit::PLM::toString() const {
 	if (refine) {
 		stream << "," << "refine";
 	}
-	if (parallelCoarsening) {
-		stream << "," << "pc";
-	}
+	stream << "," << "pc";
 	if (turbo) {
 		stream << "," << "turbo";
 	}
@@ -324,16 +321,9 @@ std::string NetworKit::PLM::toString() const {
 	return stream.str();
 }
 
-std::pair<Graph, std::vector<node> > PLM::coarsen(const Graph& G, const Partition& zeta, bool parallel) {
-	if (parallel) {
-		ParallelPartitionCoarsening parCoarsening(true);
-		return parCoarsening.run(G, zeta);
-	} else {
-		ClusterContractor seqCoarsening;
-		return seqCoarsening.run(G, zeta);
-	}
-
-
+std::pair<Graph, std::vector<node> > PLM::coarsen(const Graph& G, const Partition& zeta) {
+	ParallelPartitionCoarsening parCoarsening(true);
+	return parCoarsening.run(G, zeta);
 }
 
 Partition PLM::prolong(const Graph& Gcoarse, const Partition& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode) {

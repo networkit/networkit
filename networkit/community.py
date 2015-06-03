@@ -5,7 +5,7 @@ __author__ = "Christian Staudt"
 
 from _NetworKit import Partition, Coverage, Modularity, CommunityDetector, PLP, LPDegreeOrdered, PLM, CNM, PartitionReader, PartitionWriter,\
 	NodeStructuralRandMeasure, GraphStructuralRandMeasure, JaccardMeasure, NMIDistance, AdjustedRandMeasure,\
-	EPP, EPPFactory, CommunityGraph, EdgeListPartitionReader, GraphClusteringTools, ClusteringGenerator, PartitionIntersection, HubDominance, CoreDecomposition, CutClustering
+	EPP, EPPFactory, EdgeListPartitionReader, GraphClusteringTools, ClusteringGenerator, PartitionIntersection, HubDominance, CoreDecomposition, CutClustering, ParallelPartitionCoarsening
 
 # local imports
 #from .properties import CoreDecomposition, overview
@@ -57,9 +57,9 @@ def inspectCommunities(zeta, G):
 
 def communityGraph(G, zeta):
 	""" Create a community graph, i.e. a graph in which one node represents a community and an edge represents the edges between communities, from a given graph and a community detection solution"""
-	cg = CommunityGraph()
-	cg.run(G, zeta)
-	return cg.getGraph()
+	cg = ParallelPartitionCoarsening()
+	Gcom,_ = cg.run(G, zeta)
+	return Gcom
 
 
 def evalCommunityDetection(algo, G):
@@ -140,3 +140,20 @@ def kCoreCommunityDetection(G, k, algo=None, inspect=True):
 	#properties.overview(C)
 
 	return detectCommunities(C, algo, inspect)
+
+
+def mesoscopicResponseFunction(G, samples=100):
+	"""
+	"""
+	raise NotImplementedError("TODO: under construction")
+	m = G.numberOfEdges()
+	gammaRange = list(range(0, 2*m+1, round(2*m / (samples - 1)))) # FIXME: scale differently, 1.0 as middle
+	nCom = []
+
+	for gamma in gammaRange:
+		communityDetector = PLM(G, gamma=gamma)
+		communityDetector.run()
+		communities = communityDetector.getPartition()
+		nCom.append(communities.numberOfSubsets())
+
+	return nCom
