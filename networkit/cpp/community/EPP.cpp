@@ -7,10 +7,13 @@
 
 #include "EPP.h"
 
-#include "../coarsening/ClusterContractor.h"
+#include "../coarsening/ParallelPartitionCoarsening.h"
 #include "../coarsening/ClusteringProjector.h"
 #include "../community/JaccardMeasure.h"
 #include "../auxiliary/Log.h"
+#include "PLM.h"
+#include "PLP.h"
+#include "CNM.h"
 
 namespace NetworKit {
 
@@ -36,11 +39,12 @@ void EPP::run() {
 	INFO("STARTING EnsemblePreprocessing on G=" , G.toString());
 
 	// fixed sub-algorithms
-	ClusterContractor contracter;
+	ParallelPartitionCoarsening contracter;
 	ClusteringProjector projector;
 
 	// data
-	std::vector<Partition> baseClusterings(baseClusterers.size(), Partition(0)); // collection of base clusterings - fill with empty clustering
+	baseClusterings.clear();
+	baseClusterings.resize(baseClusterers.size(), Partition(G.upperNodeIdBound())); // collection of base clusterings - fill with empty clustering
 
 	// run base clusterers in parallel
 	#pragma omp parallel for
@@ -50,29 +54,24 @@ void EPP::run() {
 		baseClusterings.at(b) = baseClusterers.at(b)->getPartition();
 	}
 
-	// ANALYSIS
-	if (CALC_DISSIMILARITY) {
-		JaccardMeasure dm;
-		double dissimilaritySum = 0.0;
-		for (index b = 0; b < baseClusterings.size(); b += 1) {
-			for (index c = b + 1; c < baseClusterings.size(); c += 1) {
-				double d = dm.getDissimilarity(G, baseClusterings.at(b), baseClusterings.at(c));
-				dissimilaritySum += d;
-			}
-		}
-		double avgDissimilarity = dissimilaritySum / (baseClusterings.size() * (baseClusterings.size() - 1) / 2.0);
-		std::cout << "[INFO] avg. base clustering dissimilarity: " << avgDissimilarity << std::endl;
-	}
-	//
-
 	// create core clustering
-	Partition core = this->overlap->run(G, baseClusterings);
+	core = this->overlap->run(G, baseClusterings);
 	// contract graph according to core clustering
-	std::pair<Graph, std::vector<node> > contraction = contracter.run(G, core);
-	Graph Gcore = contraction.first;
-	std::vector<node> fineToCoarse = contraction.second;
+	Graph Gcore;
+	std::vector<node> fineToCoarse;
+	std::tie(Gcore,fineToCoarse) = contracter.run(G,core);
 	// send contracted graph to final clusterer
-	// FIXME: initialization of final clusterer?
+	// TODO: maybe put this in a private helper function as this could be distracting...
+	if (auto tmp = dynamic_cast<PLM*>(this->finalClusterer.get())) {
+		DEBUG("final clusterer is PLM");
+		this->finalClusterer.reset(new PLM(Gcore, tmp));
+	} else if (auto tmp = dynamic_cast<PLP*>(this->finalClusterer.get())) {
+		DEBUG("final clusterer is PLP");
+		this->finalClusterer.reset(new PLP(Gcore, *tmp));
+	} else if (dynamic_cast<CNM*>(this->finalClusterer.get())) {
+		DEBUG("final clusterer is CNM");
+		this->finalClusterer.reset(new CNM(Gcore));
+	}
 	this->finalClusterer->run();
 	Partition finalCoarse = this->finalClusterer->getPartition();
 
@@ -89,5 +88,13 @@ std::string EPP::toString() const {
 	return strm.str();
 }
 
+
+Partition EPP::getCorePartition() const {
+	return core;
+}
+
+std::vector<Partition> EPP::getBasePartitions() const {
+	return baseClusterings;
+}
 
 } /* namespace NetworKit */

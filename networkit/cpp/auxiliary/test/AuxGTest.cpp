@@ -29,12 +29,18 @@
 
 
 TEST_F(AuxGTest, produceRandomIntegers) {
+#if (LOG_LEVEL == LOG_LEVEL_TRACE)
 	int64_t l = 0; 	// lower bound
 	int64_t u = 100;	// upper bound
 
 	for (int i = 0; i < 100; ++i) {
 		TRACE(Aux::Random::integer(l, u));
 	}
+#else
+	for (int i = 0; i < 100; ++i) {
+		TRACE(Aux::Random::integer(1, 100));
+	}
+#endif
 }
 
 TEST_F(AuxGTest, testRandomInteger) {

@@ -165,6 +165,8 @@ Graph GraphBuilder::toGraph(bool autoCompleteEdges, bool parallel) {
 
 	setDegrees(G);
 	G.m = numberOfEdges(G);
+	//G.storedNumberOfSelfLoops = selfloops;
+	
 	G.shrinkToFit();
 	
 	reset();
@@ -177,6 +179,7 @@ void GraphBuilder::toGraphDirectSwap(Graph& G) {
 	G.outEdgeWeights = std::move(outEdgeWeights);
 	G.inEdges = std::move(inEdges);
 	G.inEdgeWeights = std::move(inEdgeWeights);
+	G.storedNumberOfSelfLoops = selfloops;
 }
 
 void GraphBuilder::toGraphParallel(Graph& G) {
@@ -204,7 +207,8 @@ void GraphBuilder::toGraphParallel(Graph& G) {
 					edgeweight ew = outEdgeWeights[v][i];
 					inWeightsPerThread[tid][u].push_back(ew);
 				}
-			} else {
+			}
+			if (u == v) {
 				numberOfSelfLoopsPerThread[tid]++;
 			}
 		}
@@ -259,6 +263,11 @@ void GraphBuilder::toGraphParallel(Graph& G) {
 			}
 		}
 	});
+	count numSelfLoops = 0;
+	#pragma omp parallel for reduction(+:numSelfLoops)
+	for (int i = 0; i < maxThreads; ++i)
+		numSelfLoops += numberOfSelfLoopsPerThread[i];
+	G.storedNumberOfSelfLoops = numSelfLoops;
 }
 
 void GraphBuilder::toGraphSequential(Graph &G) {
@@ -278,9 +287,10 @@ void GraphBuilder::toGraphSequential(Graph &G) {
 		for (node u : G.outEdges[v]) {
 			if (directed || u != v) {
 				missingEdgesCounts[u]++;
-			} else {
+			}
+			if (u == v) {
 				// self loops don't need to be added again
-				// but we need to count them to correct the number of edges later
+				// but we need to count them
 				numberOfSelfLoops++;
 			}
 		}
@@ -346,6 +356,7 @@ void GraphBuilder::toGraphSequential(Graph &G) {
 			G.outDeg[v] += missingEdgesCounts[v];
 		});
 	}
+	G.storedNumberOfSelfLoops = numberOfSelfLoops;
 }
 
 void GraphBuilder::setDegrees(Graph& G) {

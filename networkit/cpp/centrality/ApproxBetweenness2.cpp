@@ -81,6 +81,7 @@ void ApproxBetweenness2::run() {
 		});
 	}
 
+	ran = true;
 }
 
 

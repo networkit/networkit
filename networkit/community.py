@@ -4,8 +4,8 @@ __author__ = "Christian Staudt"
 
 
 from _NetworKit import Partition, Coverage, Modularity, CommunityDetector, PLP, LPDegreeOrdered, PLM, CNM, PartitionReader, PartitionWriter,\
-	NodeStructuralRandMeasure, GraphStructuralRandMeasure, JaccardMeasure, NMIDistance,\
-	EPP, EPPFactory, CommunityGraph, EdgeListPartitionReader, GraphClusteringTools, ClusteringGenerator, PartitionIntersection, HubDominance, CoreDecomposition, CutClustering
+	NodeStructuralRandMeasure, GraphStructuralRandMeasure, JaccardMeasure, NMIDistance, AdjustedRandMeasure,\
+	EPP, EPPFactory, EdgeListPartitionReader, GraphClusteringTools, ClusteringGenerator, PartitionIntersection, HubDominance, CoreDecomposition, CutClustering, ParallelPartitionCoarsening
 
 # local imports
 #from .properties import CoreDecomposition, overview
@@ -14,6 +14,7 @@ from . import stopwatch
 
 # external imports
 import os
+import math
 try:
 	import tabulate
 except ImportError:
@@ -57,9 +58,9 @@ def inspectCommunities(zeta, G):
 
 def communityGraph(G, zeta):
 	""" Create a community graph, i.e. a graph in which one node represents a community and an edge represents the edges between communities, from a given graph and a community detection solution"""
-	cg = CommunityGraph()
-	cg.run(G, zeta)
-	return cg.getGraph()
+	cg = ParallelPartitionCoarsening()
+	Gcom,_ = cg.run(G, zeta)
+	return Gcom
 
 
 def evalCommunityDetection(algo, G):
@@ -80,10 +81,10 @@ def evalCommunityDetection(algo, G):
 def readCommunities(path, format="default"):
 	""" Read a partition into communities from a file"""
 	readers =  {"default": PartitionReader(),
-		"edgelist-t1": EdgeListPartitionReader(1),
-		"edgelist-t0": EdgeListPartitionReader(0),
-		"edgelist-s1": EdgeListPartitionReader(1),
-		"edgelist-s0": EdgeListPartitionReader(0),
+		"edgelist-t1": EdgeListPartitionReader(1, '\t'),
+		"edgelist-t0": EdgeListPartitionReader(0, '\t'),
+		"edgelist-s1": EdgeListPartitionReader(1, ' '),
+		"edgelist-s0": EdgeListPartitionReader(0, ' '),
 		}
 	# get reader
 	try:
@@ -140,3 +141,22 @@ def kCoreCommunityDetection(G, k, algo=None, inspect=True):
 	#properties.overview(C)
 
 	return detectCommunities(C, algo, inspect)
+
+
+def mesoscopicResponseFunction(G, samples=100):
+	"""
+	"""
+	m = G.numberOfEdges()
+	gammaRangeLow = [math.e**x for x in range(-10, 0)]
+	gammaRangeHigh = [math.e**x for x in range(0, math.ceil(math.log(2*m)))]
+	gammaRange = gammaRangeLow + gammaRangeHigh
+	print(gammaRange)
+	nCom = []
+
+	for gamma in gammaRange:
+		communityDetector = PLM(G, gamma=gamma)
+		communityDetector.run()
+		communities = communityDetector.getPartition()
+		nCom.append(communities.numberOfSubsets())
+
+	return (gammaRange, nCom)

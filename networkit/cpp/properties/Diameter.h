@@ -57,6 +57,11 @@ public:
 			Considers each connected component and returns the maximum diameter.
 	 */
 	static edgeweight estimatedVertexDiameterPedantic(const Graph& G);
+
+	/** @return a 2-approximation of the vertex diameter (unweighted diameter) of @a G.
+			Considers each connected component and returns the maximum diameter.
+	*/
+	static edgeweight estimatedVertexDiameterPedantic2(const Graph& G);
 };
 
 } /* namespace NetworKit */

@@ -10,6 +10,9 @@
 #include <algorithm>
 
 #include "GraphGTest.h"
+#include "../../io/METISGraphReader.h"
+#include "../../auxiliary/NumericTools.h"
+#include "../../graph/DynBFS.h"
 
 namespace NetworKit {
 
@@ -31,6 +34,17 @@ Graph GraphGTest::createGraph(count n) const {
 	std::tie(weighted, directed) = GetParam();
 	Graph G(n, weighted, directed);
 	return G;
+}
+
+count GraphGTest::countSelfLoopsManually(const Graph &G) {
+	count c = 0;
+	G.parallelForEdges([&](node u, node v) {
+		if (u == v) {
+			#pragma omp atomic
+			c += 1;
+		}
+	});
+	return c;
 }
 
 void GraphGTest::SetUp() {
@@ -679,6 +693,12 @@ TEST_P(GraphGTest, testRandomEdge) {
 
 /** GLOBAL PROPERTIES **/
 
+TEST_P(GraphGTest, testSelfLoopCountSimple) {
+	Graph G(Ghouse);
+	G.addEdge(0,0);
+	EXPECT_EQ(1, G.numberOfSelfLoops());
+}
+
 TEST_P(GraphGTest, testIsWeighted) {
 	ASSERT_EQ(isWeighted(), this->Ghouse.isWeighted());
 }
@@ -746,6 +766,34 @@ TEST_P(GraphGTest, testNumberOfSelfLoops) {
 	ASSERT_EQ(2u, G.numberOfSelfLoops());
 	G.removeEdge(0, 0);
 	ASSERT_EQ(1u, G.numberOfSelfLoops());
+}
+
+TEST_P(GraphGTest, testSelfLoopConversion) {
+	Aux::Random::setSeed(1, false);
+	const count runs = 100;
+	const count n_max = 200;
+	for (index i = 0; i < runs; i++) {
+		bool directed = Aux::Random::probability() < 0.5;
+		count n = Aux::Random::integer(n_max);
+		Graph G(n, false, directed);
+
+		G.forNodes([&](node v) {
+			double p = Aux::Random::probability();
+
+			if (p < 0.1) { // new node
+				n++;
+				G.addNode();
+			} else { // new edge
+				node u = Aux::Random::integer(v, n - 1); // self-loops possible
+				G.addEdge(v, u);
+			}
+		});
+		count measuredSelfLoops = countSelfLoopsManually(G);
+		EXPECT_EQ(G.numberOfSelfLoops(), measuredSelfLoops);
+		Graph G_converted(G, false, !directed);
+		EXPECT_EQ(G_converted.numberOfSelfLoops(), measuredSelfLoops);
+	}
+
 }
 
 TEST_P(GraphGTest, testUpperNodeIdBound) {
@@ -1790,7 +1838,138 @@ TEST_P(GraphGTest, testForWeightedEdgesWithIds) {
 	}
 }
 
+TEST_P(GraphGTest, testInForEdgesUndirected) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/PGPgiantcompo.graph");
+	INFO(G.upperNodeIdBound());
+	node u = 5474;
+	G.forInEdgesOf(u, [&](node u, node z, edgeweight w){
+		INFO("(1) node: ", u, " neigh:", z, " weight: ", w);
+	});
+	G.forEdgesOf(u, [&](node u, node z, edgeweight w){
+		INFO("(2) node: ", u, " neigh:", z, " weight: ", w);
+	});
 
+
+	node source = 1492;
+	DynBFS bfs(G, source, false);
+	bfs.run();
+
+/*	std::vector<std::pair<node, double> > choices1;
+	G.forInEdgesOf(5474, [&](node t, node z, edgeweight w){
+		INFO("considered edge (1): ", t, z, w);
+		if (Aux::NumericTools::logically_equal(bfs.distance(t), bfs.distance(z) + w)) {
+			// workaround for integer overflow in large graphs
+			bigfloat tmp = bfs.getNumberOfPaths(z) / bfs.getNumberOfPaths(t);
+			double weight;
+			tmp.ToDouble(weight);
+			choices1.emplace_back(z, weight);
+		}
+	});
+	std::vector<std::pair<node, double> > choices2;
+	G.forEdgesOf(5474, [&](node t, node z, edgeweight w){
+		INFO("considered edge (2): ", t, z, w);
+		if (Aux::NumericTools::logically_equal(bfs.distance(t), bfs.distance(z) + w)) {
+			// workaround for integer overflow in large graphs
+			bigfloat tmp = bfs.getNumberOfPaths(z) / bfs.getNumberOfPaths(t);
+			double weight;
+			tmp.ToDouble(weight);
+			choices2.emplace_back(z, weight);
+		}
+	});
+
+	INFO(choices1);
+	INFO(choices2);*/
+}
+
+TEST_P(GraphGTest, testCompactEdges) {
+	Graph G = this->Ghouse;
+	G.indexEdges();
+
+	G.addEdge(0, 4);
+	G.addEdge(0, 3);
+	G.removeEdge(0, 3);
+	G.removeEdge(0, 4);
+
+	G.compactEdges();
+
+	std::vector<std::pair<node, node> > outEdges;
+	outEdges.reserve(this->Ghouse.numberOfEdges());
+
+	this->Ghouse.forEdges([&](node u, node v) {
+		outEdges.emplace_back(u, v);
+	});
+
+	auto it = outEdges.begin();
+
+	G.forEdges([&](node u, node v) {
+		ASSERT_NE(it, outEdges.end());
+		EXPECT_EQ(it->first, u);
+		EXPECT_EQ(it->second, v);
+		++it;
+	});
+}
+
+TEST_P(GraphGTest, testSortEdges) {
+	Graph G = this->Ghouse;
+
+	for (int i = 0; i < 2; ++i) {
+		if (i > 0) {
+			G.indexEdges();
+		}
+
+		Graph origG = G;
+
+		G.sortEdges();
+
+		std::vector<std::tuple<node, node, edgeweight, edgeid> > edges;
+		edges.reserve(origG.numberOfEdges()*4);
+
+		std::vector<std::tuple<node, edgeweight, edgeid> > outEdges;
+		origG.forNodes([&](node u) {
+			origG.forEdgesOf(u, [&](node u, node v, edgeweight w, edgeid eid) {
+				outEdges.emplace_back(v, w, eid);
+			});
+
+			std::sort(outEdges.begin(), outEdges.end());
+
+			for (auto x : outEdges) {
+				edges.emplace_back(u, std::get<0>(x), std::get<1>(x), std::get<2>(x));
+			}
+
+			outEdges.clear();
+
+			origG.forInEdgesOf(u, [&](node v, node u, edgeweight w, edgeid eid) {
+				outEdges.emplace_back(v, w, eid);
+			});
+
+			std::sort(outEdges.begin(), outEdges.end());
+
+			for (auto x : outEdges) {
+				edges.emplace_back(u, std::get<0>(x), std::get<1>(x), std::get<2>(x));
+			}
+
+			outEdges.clear();
+		});
+
+		auto it = edges.begin();
+
+		G.forNodes([&](node u) {
+			G.forEdgesOf(u, [&](node u, node v, edgeweight w, edgeid eid) {
+				ASSERT_NE(it, edges.end());
+				EXPECT_EQ(*it, std::make_tuple(u, v, w, eid)) << "Out edge (" << u << ", " << v << ", " << w << ", " << eid <<
+				") was expected to be (" << std::get<0>(*it) << ", " << std::get<1>(*it) << ", " << std::get<2>(*it) << ", " << std::get<3>(*it) << ")";
+				++it;
+			});
+			G.forInEdgesOf(u, [&](node v, node u, edgeweight w, edgeid eid) {
+				ASSERT_NE(it, edges.end());
+				EXPECT_EQ(*it, std::make_tuple(u, v, w, eid)) << "In edge (" << u << ", " << v << ", " << w << ", " << eid <<
+				") was expected to be (" << std::get<0>(*it) << ", " << std::get<1>(*it) << ", " << std::get<2>(*it) << ", " << std::get<3>(*it) << ")";
+				++it;
+			});
+		});
+	}
+}
 
 } /* namespace NetworKit */
 

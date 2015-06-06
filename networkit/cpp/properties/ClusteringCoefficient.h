@@ -18,10 +18,9 @@ namespace NetworKit {
 class ClusteringCoefficient {
 
 public:
-
-	static std::vector<double> exactLocal(Graph &G);
-	
 	/**
+	 * DEPRECATED: use centrality.LocalClusteringCoefficient and take average
+	 * 
 	 * This calculates the average local clustering coefficient of graph @a G.
 	 *
 	 * @param G The graph.
@@ -37,7 +36,7 @@ public:
 	 */
   	static double exactGlobal(Graph& G);
   	static double approxGlobal(Graph& G, const count trials);
-  
+
 };
 
 } /* namespace NetworKit */

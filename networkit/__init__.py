@@ -1,12 +1,35 @@
 """
-an interactive toolkit for high-performance network analysis
-usage examples can be found on http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb
+NetworKit -- an interactive tool suite for high-performance network analysis.
+
+NetworKit is an open-source software package for high-performance
+analysis of large complex networks. Complex networks are equally
+attractive and challenging targets for data mining, and novel
+algorithmic solutions, including parallelization, are required to handle
+data sets containing billions of connections. Our goal for NetworKit is
+to package results of our algorithm engineering efforts and put them
+into the hands of domain experts. NetworKit is a hybrid combining the
+performance of kernels written in C++ with a convenient Python
+frontend. The package targets shared-memory platforms with OpenMP support.
+The current feature set includes various analytics kernels such as connected components, diameter, clustering
+coefficients, community detection, k-core decomposition, degree assortativity
+and multiple centrality indices, as well as a
+collection of graph generators. Scaling to massive networks is enabled by techniques such as parallel and sampling-based approximation algorithms.
+NetworKit is geared towards large networks and satisfies three important
+criteria: High performance, interactive workflows
+and integration into the Python ecosystem of tools for data analysis and
+scientific computation.
+
+
+Usage examples can be found on http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb
 """
 
 __author__ = "Christian Staudt"
 __copyright__ = "Copyright (c) 2014 Christan Staudt"
+__credits__ = ["Lukas Barth", "Miriam Beddig", "Elisabetta Bergamini", "Stefan Bertsch", "Pratistha Bhattarai", "Andreas Bilke", "Simon Bischof", \
+	"Guido Brückner", "Patrick Flick", "Michael Hamann", "Lukas Hartmann", "Daniel Hoske", "Gerd Lindner", "Moritz v. Looz", "Yassine Marrakchi", "Henning Meyerhenke", \
+	"Marcel Radermacher", "Klara Reichard", "Marvin Ritter", "Aleksejs Sazonovs", "Florian Weber", "Michael Wegner", "Jörg Weisbarth"]
 __license__ = "MIT"
-__version__ = "3.5"
+__version__ = "3.4.1-Dev"
 
 
 # standard library modules
@@ -34,14 +57,14 @@ from . import flow
 from . import distmeasures
 from . import plot
 from . import scd
+from . import clique
+from . import profiling
 
 try:
-	from . import viztools
 	from . import viztasks
-	from . import algebraic
 except ImportError as importError:
 	print("""WARNING: some dependencies are not satisfied which are needed to use the
-		'viztools' submodule""")
+		'viztasks' submodule""")
 	print(importError)
 
 
@@ -55,7 +78,7 @@ except ImportError as importError:
 # TODO: introduce settings module
 
 # extension imports
-from _NetworKit import getLogLevel, setLogLevel, setPrintLocation, enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads, none
+from _NetworKit import getLogLevel, setLogLevel, setPrintLocation, enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads, none, setSeed
 
 # local imports
 from .graph import Graph

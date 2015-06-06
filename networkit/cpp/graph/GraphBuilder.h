@@ -189,7 +189,7 @@ void GraphBuilder::forNodes(L handle) const {
 
 template<typename L>
 void GraphBuilder::parallelForNodes(L handle) const {
-	#pragma omp parallel for schedule(dynamic)
+	#pragma omp parallel for schedule(dynamic, 100)
 	for (node v = 0; v < n; v++) {
 		handle(v);
 	}
@@ -206,7 +206,7 @@ void GraphBuilder::forNodePairs(L handle) const {
 
 template<typename L>
 void GraphBuilder::parallelForNodePairs(L handle) const {
-	#pragma omp parallel for schedule(dynamic)
+	#pragma omp parallel for schedule(dynamic, 100)
 	for (node u = 0; u < n; u++) {
 		for (node v = u + 1; v < n; v++) {
 			handle(u, v);
