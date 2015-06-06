@@ -11,6 +11,7 @@ import os
 import logging
 import numpy
 import scipy.io
+import fnmatch
 
 try:
 	from enum import Enum
@@ -98,7 +99,7 @@ def getReader(fileformat, **kwargs):
 
 def readGraph(path, fileformat, **kwargs):
 	""" Read graph file in various formats and return a NetworKit::Graph
-	    Paramaters:
+	    Parameters:
 		- fileformat: An element of the Format enumeration
 		- **kwargs: in case of a custom edge list, provide the defining paramaters as follows:
 			"separator=CHAR, firstNode=NODE, commentPrefix=STRING, continuous=BOOL"
@@ -121,6 +122,28 @@ def readGraph(path, fileformat, **kwargs):
 			except Exception as e:
 				raise IOError("{0} is not a valid {1} file: {2}".format(path,fileformat,e))
 	return None
+
+def readGraphs(dirPath, pattern, fileformat, some=None, **kwargs):
+	"""
+	Read all graph files contained in a directory whose filename contains the pattern, return a dictionary of name to Graph object.
+    Parameters:
+	- pattern: unix-style string pattern
+	- fileformat: An element of the Format enumeration
+	- some: restrict number of graphs to be read
+	- **kwargs: in case of a custom edge list, provide the defining paramaters as follows:
+		"separator=CHAR, firstNode=NODE, commentPrefix=STRING, continuous=BOOL"
+		commentPrefix and continuous are optional
+	"""
+	graphs = {}
+	for root, dirs, files in os.walk(dirPath):
+		for file in files:
+			if fnmatch.fnmatch(file, pattern):
+				G = readGraph(os.path.join(root, file), fileformat, **kwargs)
+				graphs[G.getName()] = G
+				if some:
+					if len(graphs) == some:
+						return graphs
+	return graphs
 
 
 def readMat(path, key="A"):

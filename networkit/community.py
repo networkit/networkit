@@ -14,6 +14,7 @@ from . import stopwatch
 
 # external imports
 import os
+import math
 try:
 	import tabulate
 except ImportError:
@@ -145,9 +146,11 @@ def kCoreCommunityDetection(G, k, algo=None, inspect=True):
 def mesoscopicResponseFunction(G, samples=100):
 	"""
 	"""
-	raise NotImplementedError("TODO: under construction")
 	m = G.numberOfEdges()
-	gammaRange = list(range(0, 2*m+1, round(2*m / (samples - 1)))) # FIXME: scale differently, 1.0 as middle
+	gammaRangeLow = [math.e**x for x in range(-10, 0)]
+	gammaRangeHigh = [math.e**x for x in range(0, math.ceil(math.log(2*m)))]
+	gammaRange = gammaRangeLow + gammaRangeHigh
+	print(gammaRange)
 	nCom = []
 
 	for gamma in gammaRange:
@@ -156,4 +159,4 @@ def mesoscopicResponseFunction(G, samples=100):
 		communities = communityDetector.getPartition()
 		nCom.append(communities.numberOfSubsets())
 
-	return nCom
+	return (gammaRange, nCom)
