@@ -29,7 +29,7 @@ public:
 	 * @param[in] damp Damping factor of the PageRank algorithm.
 	 * @param[in] tol Error tolerance for PageRank iteration.
 	 */
-	PageRank(const Graph& G, double damp, double tol = 1e-9);
+	PageRank(const Graph& G, double damp=0.85, double tol = 1e-8);
 
 	virtual void run();
 };

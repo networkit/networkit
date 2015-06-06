@@ -43,7 +43,9 @@ Graph METISGraphReader::read(const std::string& path) {
 
 	INFO("\n[BEGIN] reading graph G(n=", n, ", m=", m, ") from METIS file: ", graphName);	// progress bar follows
 
+#if (LOG_LEVEL == LOG_LEVEL_TRACE)
 	double p = 0.0; // percentage for progress bar
+#endif
 	node u = 0; // begin with 0
 	count edgeCounter = 0;
 	if (weighted == 0) {
@@ -60,10 +62,12 @@ Graph METISGraphReader::read(const std::string& path) {
 				b.addHalfEdge(u, v);
 			}
 			u++; // next node
+#if (LOG_LEVEL == LOG_LEVEL_TRACE)
 			if ((u % ((n + 10)/10)) == 0) {
 				p = ((double) (u-1) / (double) n) * 100;
 				DEBUG(p, "% ");
 			}
+#endif
 		}
 	} else {
 		while (parser.hasNext() && u < n) {
@@ -82,10 +86,12 @@ Graph METISGraphReader::read(const std::string& path) {
 				TRACE("(",u,",",v,",",adjacencies[i].second,")");
 			}
 			u += 1; // next node
+#if (LOG_LEVEL == LOG_LEVEL_TRACE)
 			if ((u % ((n + 10)/10)) == 0) {
 				p = ((double) (u-1) / (double) n) * 100;
 				DEBUG(p, "% ");
 			}
+#endif
 		}
 	}
 

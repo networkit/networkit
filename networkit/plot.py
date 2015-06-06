@@ -12,6 +12,17 @@ except ImportError as importError:
 	print(importError)
 
 
+def nodeProperty(data, label, sorted=True, yscale="linear", xscale="linear"):
+	""" General plotting function for a node property"""
+	plt.yscale(yscale)
+	plt.xscale(xscale)
+	plt.xlabel("nodes")
+	plt.ylabel(label)
+	if sorted:
+		data = data.sort(ascending=False, inplace=False)
+	plt.plot(data)
+
+
 def degreeDistribution(G, **kwargs):
 	"""Plots the degree distribution of the given network."""
 	dd = properties.degreeDistribution(G)
@@ -52,3 +63,17 @@ def clusteringPerDegree(G, **kwargs):
 	data = pandas.DataFrame({"deg": degs, "cc" : cc})
 	data = data.groupby("deg", as_index=False).mean()
 	jointplot = seaborn.jointplot("deg", "cc", data, kind="reg", ylim=(0, 1), **kwargs)
+
+
+def hopPlot(G, **kwargs):
+	""" Prints the hop-plot"""
+	#hop-plot
+	if properties.numberOfComponents(G) == 1:
+		hopPlot = properties.EffectiveDiameter.hopPlot(G, maxDistance=0, k=64, r=7)
+	else:
+		hopPlot = {}
+	plt.xlabel('distance')
+	plt.ylabel('fraction of connected nodes')
+	plt.ylim([0,1.02])
+	plt.plot(list(hopPlot.keys()), list(hopPlot.values()), **kwargs)
+	#plt.show()

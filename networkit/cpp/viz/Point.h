@@ -30,6 +30,10 @@ typedef uint64_t count; // more expressive name for an integer quantity
 
 /**
  * @ingroup viz
+ *
+ * DEPRECATED: To take advantage of automatic mapping between C++ and Python data structures, use
+ * standard library containers (std::pair, std::tuple..) instead.
+ *
  * Points in any dimension of templated type.
  */
 template<class T>

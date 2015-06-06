@@ -1,6 +1,15 @@
+import sys
+
+##################################
+# check Python version
+##################################
+
+if sys.version_info.major < 3:
+	print("ERROR: NetworKit requires Python 3.")
+	sys.exit(1)
+
 import version
 from setup_util import *
-import sys
 if "setuptools" not in sys.modules:
 	from ez_setup import use_setuptools
 	# in case setuptools is not installed
@@ -56,17 +65,25 @@ except:
 	print("WARNING: unable to check whether build system SCons is installed")
 	scons_available = False
 
+#
+if sys.platform == 'Windows' and not scons_available:
+	abort_installation = True
+	errorMessages.append("ERROR: Build system SCons is not installed. Please install and rerun")
+
+
 #######################################
 # determine and set compiler or exit if there is no suitable compiler
 #######################################
-candidates = ["g++", "g++-4.9", "g++-4.8"]  # , "g++-4.7"
-cppcompiler = determineCompiler(candidates)
-if cppcompiler is not None:
-	os.environ["CC"] = cppcompiler
-	os.environ["CXX"] = cppcompiler
-else:
-	errorMessages.append("ERROR: Please install GCC/g++ 4.8 or later and rerun")
-	abort_installation = True
+# temporarily disable compiler check on windows.
+if not sys.platform == 'Windows':
+	candidates = ["g++", "g++-4.9", "g++-4.8"]  # , "g++-4.7"
+	cppcompiler = determineCompiler(candidates)
+	if cppcompiler is not None:
+		os.environ["CC"] = cppcompiler
+		os.environ["CXX"] = cppcompiler
+	else:
+		errorMessages.append("ERROR: Please install GCC/g++ 4.8 or later and rerun")
+		abort_installation = True
 
 # early abort installation in case the compiler requirements aren't satisfied
 if abort_installation:
@@ -165,10 +182,10 @@ class CustomCythonBuildExtCmd(CythonBuildExtCmd):
 class MyTestCommand(TestCommand):
 	def initialize_options(self):
 		TestCommand.initialize_options(self)
-	
+
 	def finalize_options(self):
 		TestCommand.finalize_options(self)
-	
+
 	def run(self):
 		if options.cpptests:
 			optimize = "Dbg"
@@ -187,7 +204,7 @@ class MyTestCommand(TestCommand):
 class CustomInstallCmd(InstallCmd):
 	def initialize_options(self):
 		InstallCmd.initialize_options(self)
-	
+
 	def finalize_options(self):
 		InstallCmd.finalize_options(self)
 
@@ -224,7 +241,7 @@ elif os.path.isfile("networkit/_NetworKit.pyx") and cython_available:
 	src = ["networkit/_NetworKit.pyx"]
 	do_cythonize = True
 else:
-	print("ERROR: some requirements aren't met. Exiting...")
+	print("ERROR: Some requirements aren't met.\nIf you try to install/build NetworKit from a clone of the repository or a ZIP archive, make sure you have Cython (version >= 0.21) installed under the __same__ Python 3 version from which you tried to install NetworKit.\nExiting...""")
 	exit(1)
 
 # initialize Extension module with the appropriate source file
@@ -255,7 +272,7 @@ setup(
 	keywords		= version.keywords,
 	platforms		= version.platforms,
 	classifiers		= version.classifiers,
-	cmdclass		= {'build_ext' : build_ext_cmd, 'test' : MyTestCommand, 'install' : CustomInstallCmd}, #'clean' : CustomCleanCmd, 
+	cmdclass		= {'build_ext' : build_ext_cmd, 'test' : MyTestCommand, 'install' : CustomInstallCmd}, #'clean' : CustomCleanCmd,
 	test_suite		= 'nose.collector',
 	ext_modules		= modules,
 	zip_safe		= False)

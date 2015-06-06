@@ -69,12 +69,12 @@ double AlgebraicDistance::distance(node u, node v) {
 }
 
 void AlgebraicDistance::randomInit() {
-	count n = G.numberOfNodes();
+	count z = G.upperNodeIdBound();
 
 	// allocate space for loads
 	loads.resize(numSystems);
 	for (index i = 0; i < numSystems; ++i) {
-		loads[i].resize(n);
+		loads[i].resize(z);
 	}
 
 	for (index i = 0; i < numSystems; ++i) {
@@ -82,6 +82,19 @@ void AlgebraicDistance::randomInit() {
 			loads[i][v] = Aux::Random::real();
 		});
 	}
+}
+
+
+std::vector<std::vector<double> > AlgebraicDistance::getLoadsOnNodes() {
+	std::vector<std::vector<double> > values;
+	values.resize(G.upperNodeIdBound());
+	G.forNodes([&](node u) {
+		values[u].resize(numSystems);
+		for (index i = 0; i < numSystems; ++i) {
+			values[u][i] = loads[i][u];
+		}
+	});
+	return values;
 }
 
 } /* namespace NetworKit */

@@ -42,6 +42,7 @@ private:
 	// scalars
 	count n; //!< current number of nodes
 	count m; //!< current number of edges
+	count storedNumberOfSelfLoops; //!< current number of self loops, edges which have the same origin and target
 	node z; //!< current upper bound of node ids, z will be the id of the next node
 	edgeid omega; 	//!< current upper bound of edge ids, will be the id of the next edge
 	count t; //!< current time step
@@ -398,6 +399,17 @@ public:
 	void shrinkToFit();
 
 	/**
+	 * Compacts the adjacency arrays by re-using no longer neede slots from deleted edges.
+	 */
+	void compactEdges();
+
+	/**
+	 * Sorts the adjacency arrays by node id. While the running time is linear this
+	 * temporarily duplicates the memory.
+	 */
+	void sortEdges();
+
+	/**
 	 * Set name of graph to @a name.
 	 * @param name The name.
 	 */
@@ -435,8 +447,12 @@ public:
 	node addNode();
 
 	/**
+	 * DEPRECATED: Coordinates should be handled outside the Graph class
+	 * like general node attributes.
+	 *
 	 * Add a new node to the graph with coordinates @a x and @y and return it.
 	 */
+	// TODO: remove method
 	node addNode(float x, float y);
 
 	/**
@@ -646,40 +662,60 @@ public:
 	/* COORDINATES */
 
 	/**
+	 * DEPRECATED: Coordinates should be handled outside the Graph class
+	 * like general node attributes.
+	 *
 	 * Sets the coordinate of @a v to @a value.
 	 *
 	 * @param v Node.
 	 * @param value The coordinate of @a v.
 	 */
+	// TODO: remove method
 	void setCoordinate(node v, Point<float> value) { coordinates.setCoordinate(v, value); }
 
 
 	/**
+	 * DEPRECATED: Coordinates should be handled outside the Graph class
+	 * like general node attributes.
+	 *
 	 * Get the coordinate of @a v.
 	 * @param v Node.
 	 * @return The coordinate of @a v.
 	 */
+	// TODO: remove method
 	Point<float>& getCoordinate(node v) { return coordinates.getCoordinate(v); }
 
 	/**
+	 * DEPRECATED: Coordinates should be handled outside the Graph class
+	 * like general node attributes.
+	 *
 	 * Get minimum coordinate of all coordinates with respect to dimension @a dim.
 	 * @param dim The dimension to search for minimum.
 	 * @return The minimum coordinate in dimension @a dim.
 	 */
+	// TODO: remove method
 	float minCoordinate(count dim) { return coordinates.minCoordinate(dim); }
 
 	/**
+	 * DEPRECATED: Coordinates should be handled outside the Graph class
+	 * like general node attributes.
+	 *
 	 * Get maximum coordinate of all coordinates with respect to dimension @a dim.
 	 * @param dim The dimension to search for maximum.
 	 * @return The maximum coordinate in dimension @a dim.
 	 */
+	// TODO: remove method
 	float maxCoordinate(count dim) { return coordinates.maxCoordinate(dim); }
 
 	/**
+	 * DEPRECATED: Coordinates should be handled outside the Graph class
+	 * like general node attributes.
+	 *
 	 * Initializes the coordinates for the nodes in graph.
 	 * @note This has to be called once and before you set coordinates. Call this method again if new nodes have
 	 * been added.
 	 */
+	// TODO: remove method
 	void initCoordinates() { coordinates.init(z); }
 
 
@@ -943,7 +979,7 @@ void Graph::forNodesWhile(C condition, L handle) const {
 template<typename L>
 void Graph::forNodesInRandomOrder(L handle) const {
 	std::vector<node> randVec = nodes();
-	random_shuffle(randVec.begin(), randVec.end());
+	std::shuffle(randVec.begin(), randVec.end(), Aux::Random::getURNG());
 	for (node v : randVec) {
 		handle(v);
 	}
@@ -1084,7 +1120,7 @@ inline void Graph::forEdgeImpl(L handle) const {
 
 template<bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline void Graph::parallelForEdgesImpl(L handle) const {
-	#pragma omp parallel for
+	#pragma omp parallel for schedule(guided)
 	for (node u = 0; u < z; ++u) {
 		forOutEdgesOfImpl<graphIsDirected, hasWeights, graphHasEdgeIds, L>(u, handle);
 	}

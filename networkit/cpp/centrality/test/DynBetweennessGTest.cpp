@@ -16,8 +16,55 @@
 #include "../../auxiliary/NumericTools.h"
 #include "../../graph/Sampling.h"
 #include "../../generators/DorogovtsevMendesGenerator.h"
+#include "../../generators/ErdosRenyiGenerator.h"
 
 namespace NetworKit {
+
+TEST_F(DynBetweennessGTest, testDynBetweennessDirected) {
+	int n = 200;
+	Graph G = ErdosRenyiGenerator(n, 0.05, true).generate();
+	Betweenness bc(G);
+	bc.run();
+	DynBetweenness dyn_bc(G, true);
+	dyn_bc.run();
+	std::vector<double> dynbc_scores = dyn_bc.scores();
+	std::vector<double> bc_scores = bc.scores();
+	int i;
+	const double tol = 1e-8;
+	for(i=0; i<n; i++) {
+		EXPECT_NEAR(dynbc_scores[i], bc_scores[i], tol) << "Scores (storing preds) are different";
+	}
+	DynBetweenness dyn_bc2(G, false);
+	dyn_bc2.run();
+	dynbc_scores = dyn_bc2.scores();
+	for(i=0; i<n; i++) {
+		EXPECT_NEAR(dynbc_scores[i], bc_scores[i], tol) << "Scores (without storing preds) are different";
+	}
+}
+
+TEST_F(DynBetweennessGTest, testDynBetweennessDirectedWeighted) {
+	int n = 200;
+	Graph G1 = ErdosRenyiGenerator(n, 0.05, true).generate();
+	Graph G(G1, true, true);
+	Betweenness bc(G);
+	bc.run();
+	DynBetweenness dyn_bc(G, true);
+	dyn_bc.run();
+	std::vector<double> dynbc_scores = dyn_bc.scores();
+	std::vector<double> bc_scores = bc.scores();
+	int i;
+	const double tol = 1e-8;
+	for(i=0; i<n; i++) {
+		EXPECT_NEAR(dynbc_scores[i], bc_scores[i], tol) << "Scores (storing preds) are different";
+	}
+	DynBetweenness dyn_bc2(G, false);
+	dyn_bc2.run();
+	dynbc_scores = dyn_bc2.scores();
+	for(i=0; i<n; i++) {
+		EXPECT_NEAR(dynbc_scores[i], bc_scores[i], tol) << "Scores (without storing preds) are different";
+	}
+}
+
 
 TEST_F(DynBetweennessGTest, testDynBetweennessSmallGraph) {
 /* Graph:

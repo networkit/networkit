@@ -36,8 +36,9 @@ public:
 	 * @param[in]	firstNode	index of the first node in the file
 	 * @param[in]	commentChar	character used to mark comment lines
 	 * @param[in]	continuous	boolean to specify, if node ids are continuous
+	 * @param[in]	directed	treat graph as directed
 	 */
-	EdgeListReader(char separator, node firstNode, std::string commentPrefix = "#", bool continuous = true);
+	EdgeListReader(char separator, node firstNode, std::string commentPrefix = "#", bool continuous = true, bool directed = false);
 
 	/**
 	 * Given the path of an input file, read the graph contained.
@@ -64,6 +65,7 @@ protected:
 	node firstNode;
 	bool continuous;
 	std::unordered_map<index,node> mapNodeIds;
+	bool directed;
 
 private:
 	Graph readContinuous(const std::string& path);

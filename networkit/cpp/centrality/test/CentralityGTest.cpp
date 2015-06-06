@@ -7,14 +7,22 @@
 
 #include "CentralityGTest.h"
 #include "../Betweenness.h"
+#include "../Closeness.h"
 #include "../DynApproxBetweenness.h"
 #include "../ApproxBetweenness.h"
 #include "../ApproxBetweenness2.h"
 #include "../EigenvectorCentrality.h"
+#include "../KatzCentrality.h"
 #include "../PageRank.h"
 #include "../DynBetweenness.h"
 #include "../../io/METISGraphReader.h"
+#include "../../io/SNAPGraphReader.h"
+#include "../../generators/ErdosRenyiGenerator.h"
 #include "../../auxiliary/Log.h"
+#include "../KPathCentrality.h"
+#include "../CoreDecomposition.h"
+#include "../LocalClusteringCoefficient.h"
+
 
 namespace NetworKit {
 
@@ -163,6 +171,36 @@ TEST_F(CentralityGTest, testBetweennessCentralityWeighted) {
 	EXPECT_NEAR(0.0, bc[7], tol);
 }
 
+TEST_F(CentralityGTest, testKatzCentralityDirected) {
+	SNAPGraphReader reader;
+	Graph G = reader.read("input/wiki-Vote.txt"); // TODO: replace by smaller graph
+	KatzCentrality kc(G);
+
+	DEBUG("start kc run");
+	kc.run();
+	DEBUG("finish kc");
+	std::vector<std::pair<node, double> > kc_ranking = kc.ranking();
+	std::vector<double> kc_scores = kc.scores();
+
+	EXPECT_EQ(kc_ranking[0].first, 699);
+}
+
+TEST_F(CentralityGTest, testPageRankDirected) {
+	SNAPGraphReader reader;
+	Graph G = reader.read("input/wiki-Vote.txt"); // TODO: replace by smaller graph
+	PageRank pr(G);
+
+	DEBUG("start pr run");
+	pr.run();
+	DEBUG("finish pr");
+	std::vector<std::pair<node, double> > pr_ranking = pr.ranking();
+
+	const double tol = 1e-3;
+	EXPECT_EQ(pr_ranking[0].first, 699);
+	EXPECT_NEAR(pr_ranking[0].second, 0.00432, tol);
+}
+
+
 TEST_F(CentralityGTest, testEigenvectorCentrality) {
  /* Graph:
     0    3   6
@@ -296,5 +334,264 @@ TEST_F(CentralityGTest, testApproxBetweenness2) {
 
 }
 
+
+TEST_F(CentralityGTest, testEdgeBetweennessCentrality) {
+ /* Graph:
+    0    3
+     \  / \
+      2    5
+     /  \ /
+    1    4
+ */
+	count n = 6;
+	Graph G(n);
+	G.addEdge(0, 2);
+	G.addEdge(1, 2);
+	G.addEdge(2, 3);
+	G.addEdge(2, 4);
+	G.addEdge(3, 5);
+	G.addEdge(4, 5);
+	G.indexEdges();
+
+	Betweenness centrality(G,false,true);
+	centrality.run();
+	std::vector<double> bc = centrality.edgeScores();
+
+	const double tol = 1e-3;
+	EXPECT_NEAR(10.0, bc[0], tol);
+	EXPECT_NEAR(10.0, bc[1], tol);
+	EXPECT_NEAR(10.0, bc[2], tol);
+	EXPECT_NEAR(10.0, bc[3], tol);
+	EXPECT_NEAR(6.0, bc[4], tol);
+	EXPECT_NEAR(6.0, bc[5], tol);
+}
+
+
+TEST_F(CentralityGTest, testClosenessCentrality) {
+ /* Graph:
+    0    3
+     \  / \
+      2    5
+     /  \ /
+    1    4
+ */
+    count n = 6;
+    Graph G(n);
+
+    G.addEdge(0, 2);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+    G.addEdge(2, 4);
+    G.addEdge(3, 5);
+    G.addEdge(4, 5);
+
+    Closeness centrality(G,false);
+    centrality.run();
+    std::vector<double> bc = centrality.scores();
+
+    const double tol = 1e-3;
+    EXPECT_NEAR(0.1, bc[0], tol);
+    EXPECT_NEAR(0.1, bc[1], tol);
+    EXPECT_NEAR(0.166667, bc[2], tol);
+    EXPECT_NEAR(0.125, bc[3], tol);
+    EXPECT_NEAR(0.125, bc[4], tol);
+    EXPECT_NEAR(0.1, bc[5], tol);
+}
+
+
+TEST_F(CentralityGTest, testKPathCentrality) {
+    METISGraphReader reader;
+    Graph G = reader.read("input/power.graph");
+
+    KPathCentrality centrality(G);
+    centrality.run();
+}
+
+TEST_F(CentralityGTest, testCoreDecomposition) {
+	count n = 16;
+	Graph G(n);
+
+// 	// create graph used in Baur et al. and network analysis lecture
+	G.addEdge(2, 4);
+	G.addEdge(3, 4);
+	G.addEdge(4, 5);
+	G.addEdge(5, 7);
+	G.addEdge(6, 7);
+
+	G.addEdge(6, 8);
+	G.addEdge(6, 9);
+	G.addEdge(6, 11);
+	G.addEdge(7, 12);
+	G.addEdge(8, 9);
+
+	G.addEdge(8, 10);
+	G.addEdge(8, 11);
+	G.addEdge(8, 13);
+	G.addEdge(9, 10);
+	G.addEdge(9, 11);
+
+	G.addEdge(9, 13);
+	G.addEdge(10, 11);
+	G.addEdge(10, 13);
+	G.addEdge(10, 14);
+	G.addEdge(11, 13);
+
+	G.addEdge(11, 14);
+	G.addEdge(12, 15);
+	G.addEdge(13, 14);
+	G.addEdge(14, 15);
+
+	EXPECT_EQ(n, G.numberOfNodes()) << "should have " << n << " vertices";
+	EXPECT_EQ(24u, G.numberOfEdges()) << "should have 24 edges";
+
+	// compute core decomposition
+	CoreDecomposition coreDec(G);
+	coreDec.run();
+	std::vector<double> coreness = coreDec.scores();
+
+	EXPECT_EQ(0u, coreness[0]) << "expected coreness";
+	EXPECT_EQ(0u, coreness[1]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[2]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[3]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[4]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[5]) << "expected coreness";
+	EXPECT_EQ(3u, coreness[6]) << "expected coreness";
+	EXPECT_EQ(2u, coreness[7]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[8]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[9]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[10]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[11]) << "expected coreness";
+	EXPECT_EQ(2u, coreness[12]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[13]) << "expected coreness";
+	EXPECT_EQ(3u, coreness[14]) << "expected coreness";
+	EXPECT_EQ(2u, coreness[15]) << "expected coreness";
+}
+
+TEST_F(CentralityGTest, testCoreDecompositionDirected) {
+	count n = 16;
+	Graph G(n,false,true);
+
+// 	// create graph used in Baur et al. and network analysis lecture
+	G.addEdge(2, 4);
+	G.addEdge(3, 4);
+	G.addEdge(4, 5);
+	G.addEdge(5, 7);
+	G.addEdge(6, 7);
+
+	G.addEdge(6, 8);
+	G.addEdge(6, 9);
+	G.addEdge(6, 11);
+	G.addEdge(7, 12);
+	G.addEdge(8, 9);
+
+	G.addEdge(8, 10);
+	G.addEdge(8, 11);
+	G.addEdge(8, 13);
+	G.addEdge(9, 10);
+	G.addEdge(9, 11);
+
+	G.addEdge(9, 13);
+	G.addEdge(10, 11);
+	G.addEdge(10, 13);
+	G.addEdge(10, 14);
+	G.addEdge(11, 13);
+
+	G.addEdge(11, 14);
+	G.addEdge(12, 15);
+	G.addEdge(13, 14);
+	G.addEdge(14, 15);
+
+	EXPECT_EQ(n, G.numberOfNodes()) << "should have " << n << " vertices";
+	EXPECT_EQ(24u, G.numberOfEdges()) << "should have 24 edges";
+
+	// compute core decomposition
+	CoreDecomposition coreDec(G);
+	coreDec.run();
+	std::vector<double> coreness = coreDec.scores();
+
+	EXPECT_EQ(0u, coreness[0]) << "expected coreness";
+	EXPECT_EQ(0u, coreness[1]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[2]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[3]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[4]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[5]) << "expected coreness";
+	EXPECT_EQ(3u, coreness[6]) << "expected coreness";
+	EXPECT_EQ(2u, coreness[7]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[8]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[9]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[10]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[11]) << "expected coreness";
+	EXPECT_EQ(2u, coreness[12]) << "expected coreness";
+	EXPECT_EQ(4u, coreness[13]) << "expected coreness";
+	EXPECT_EQ(3u, coreness[14]) << "expected coreness";
+	EXPECT_EQ(2u, coreness[15]) << "expected coreness";
+}
+
+TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected) {
+	count n = 16;
+	Graph G(n,false,false);
+
+// 	// create graph used in Baur et al. and network analysis lecture
+	G.addEdge(2, 4);
+	G.addEdge(3, 4);
+	G.addEdge(4, 5);
+	G.addEdge(5, 7);
+	G.addEdge(6, 7);
+
+	G.addEdge(6, 8);
+	G.addEdge(6, 9);
+	G.addEdge(6, 11);
+	G.addEdge(7, 12);
+	G.addEdge(8, 9);
+
+	G.addEdge(8, 10);
+	G.addEdge(8, 11);
+	G.addEdge(8, 13);
+	G.addEdge(9, 10);
+	G.addEdge(9, 11);
+
+	G.addEdge(9, 13);
+	G.addEdge(10, 11);
+	G.addEdge(10, 13);
+	G.addEdge(10, 14);
+	G.addEdge(11, 13);
+
+	G.addEdge(11, 14);
+	G.addEdge(12, 15);
+	G.addEdge(13, 14);
+	G.addEdge(14, 15);
+
+	EXPECT_EQ(n, G.numberOfNodes()) << "should have " << n << " vertices";
+	EXPECT_EQ(24u, G.numberOfEdges()) << "should have 24 edges";
+
+	// compute core decomposition
+	LocalClusteringCoefficient lcc(G);
+	lcc.run();
+	std::vector<double> lccScores = lcc.scores();
+	std::vector<double> reference = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.8, 0.8, 0.8, 0.6666666666666666, 0.0, 0.8, 0.5, 0.0};
+
+ 	EXPECT_EQ(reference,lccScores);
+}
+
+TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected2) {
+	Graph G(6,false,false);
+	G.addEdge(1, 0);
+	G.addEdge(2, 0);
+	G.addEdge(2, 1);
+	G.addEdge(3, 2);
+	G.addEdge(3, 0);
+	G.addEdge(3, 1);
+	G.addEdge(4, 2);
+	G.addEdge(4, 0);
+	G.addEdge(5, 3);
+	G.addEdge(5, 4);
+	G.addEdge(5, 1);
+	LocalClusteringCoefficient lcc(G);
+	lcc.run();
+	std::vector<double> lccScores = lcc.scores();
+	std::vector<double> reference = {0.6666666666666666, 0.6666666666666666, 0.6666666666666666, 0.6666666666666666, 0.3333333333333333, 0.3333333333333333};
+
+ 	EXPECT_EQ(reference,lccScores);
+ }
 
 } /* namespace NetworKit */

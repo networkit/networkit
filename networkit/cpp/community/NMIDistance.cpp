@@ -82,6 +82,7 @@ double NMIDistance::getDissimilarity(const Graph& G, const Partition& zeta, cons
 	 * Return the size of the union of C and D.
 	 * C is a cluster in zeta, D in eta
 	 */
+#if (LOG_LEVEL != LOG_LEVEL_INFO)
 	auto unionSize = [&](index C, index D){
 		index O = intersect[C][D];
 		assert (O != none); // entry must be set
@@ -94,6 +95,7 @@ double NMIDistance::getDissimilarity(const Graph& G, const Partition& zeta, cons
 		assert (sizeO <= std::max(sizeC, sizeD));
 		return sizeC + sizeD - sizeO;
 	};
+#endif
 
 
 	auto log_b = Aux::MissingMath::log_b; // import convenient logarithm function

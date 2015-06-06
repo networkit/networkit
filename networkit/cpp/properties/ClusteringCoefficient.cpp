@@ -6,57 +6,17 @@
  */
 
 #include <unordered_set>
- 
+
 #include "ClusteringCoefficient.h"
+#include "../centrality/LocalClusteringCoefficient.h"
 #include "../auxiliary/Random.h"
 #include "../auxiliary/Log.h"
 #include <omp.h>
 
 namespace NetworKit {
 
-std::vector<double> ClusteringCoefficient::exactLocal(Graph &G) {
-	count z = G.upperNodeIdBound();
-	std::vector<double> coefficient(z); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
-
-	std::vector<std::vector<bool> > nodeMarker(omp_get_max_threads());
-
-	for (auto & nm : nodeMarker) {
-		nm.resize(z, false);
-	}
-
-	G.balancedParallelForNodes([&](node u) {
-		count d = G.degree(u);
-
-		if (d < 2) {
-			coefficient[u] = 0.0;
-		} else {
-			size_t tid = omp_get_thread_num();
-			count triangles = 0;
-
-			G.forEdgesOf(u, [&](node u, node v) {
-				nodeMarker[tid][v] = true;
-			});
-
-			G.forEdgesOf(u, [&](node u, node v) {
-				G.forEdgesOf(v, [&](node v, node w) {
-					if (nodeMarker[tid][w]) {
-						triangles += 1;
-					}
-				});
-			});
-
-			G.forEdgesOf(u, [&](node u, node v) {
-				nodeMarker[tid][v] = false;
-			});
-
-			coefficient[u] = (double) triangles / (double)(d * (d - 1)); // No division by 2 since triangles are counted twice as well!
-		}
-	});
-
-	return coefficient;
-}
-
 double ClusteringCoefficient::sequentialAvgLocal(const Graph &G) {
+    WARN("DEPRECATED: use centrality.LocalClusteringCoefficient and take average");
 	std::vector<std::vector<node> > edges(G.upperNodeIdBound());
 
 	// copy edges with edge ids
@@ -144,8 +104,10 @@ double ClusteringCoefficient::sequentialAvgLocal(const Graph &G) {
 }
 
 double ClusteringCoefficient::avgLocal(Graph& G) {
-
-	auto coefficients = exactLocal(G); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
+    WARN("DEPRECATED: use centrality.LocalClusteringCoefficient and take average");
+	LocalClusteringCoefficient lcc(G);
+	lcc.run();
+	auto coefficients = lcc.scores(); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 
 	double sum = 0.0;
 	count size = 0;
@@ -229,7 +191,7 @@ double ClusteringCoefficient::exactGlobal(Graph& G) {
 
 		triangles[u] = tr;
 	});
-  
+
   double denominator = G.parallelSumForNodes([&](node u){
 		return G.degree(u) * (G.degree(u) - 1);
 	});
@@ -238,7 +200,7 @@ double ClusteringCoefficient::exactGlobal(Graph& G) {
 		return triangles[u];
 	});
 
-	cc /= denominator; 
+	cc /= denominator;
 
 	return cc;
 }
@@ -256,7 +218,7 @@ double ClusteringCoefficient::approxGlobal(Graph& G, const count trials) {
 	});
 
 	// WARNING: I assume RAND_MAX to be larger than PSUM. If this should not hold for an application
-	// or implementation of the standard library, a more sophisticated version of determining a 
+	// or implementation of the standard library, a more sophisticated version of determining a
 	// vertex uniformly at random must be used.
 
 	double triangles = 0;
@@ -264,7 +226,7 @@ double ClusteringCoefficient::approxGlobal(Graph& G, const count trials) {
 		count r = Aux::Random::integer(psum - 1);
 
 		// plain old binary search:
-		index low = 0; 
+		index low = 0;
 		index high = G.upperNodeIdBound();
 		while (low < high) {
 			index middle = (low + high) / 2;

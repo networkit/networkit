@@ -17,7 +17,7 @@ void UnionFind::allToSingletons() {
 }
 
 index UnionFind::find(index u) {
-	if (data[u] > 0) {
+	if (data[u] >= 0) {
 		data[u] = find(data[u]);
 		return data[u];
 	} else {

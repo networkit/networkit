@@ -1,8 +1,9 @@
 # NetworKit native classes and functions
-from _NetworKit import GraphProperties, ConnectedComponents, ParallelConnectedComponents, StronglyConnectedComponents, ClusteringCoefficient, Diameter, Eccentricity, CoreDecomposition
+from _NetworKit import GraphProperties, ConnectedComponents, ParallelConnectedComponents, StronglyConnectedComponents, ClusteringCoefficient, Diameter, Eccentricity, EffectiveDiameter
 
 # other submodules
 from . import community
+from . import centrality
 from . import termgraph
 from . import auxiliary
 from . import nxadapter
@@ -42,8 +43,11 @@ def size(G):
 
 def degrees(G):
 	""" Return min/max/avg degree"""
-	minMaxDeg = GraphProperties.minMaxDegree(G)
 	avgDeg = GraphProperties.averageDegree(G)
+	if G.isDirected():
+		minMaxDeg = GraphProperties.minMaxDegreeDirected(G)
+	else:
+		minMaxDeg = GraphProperties.minMaxDegree(G)
 	return (minMaxDeg[0], minMaxDeg[1], avgDeg)
 
 def degreeDistribution(G):
@@ -59,7 +63,11 @@ def degreeSequence(G):
 def density(G):
 	""" Return the density of the graph"""
 	(n, m) = size(G)
-	return (2 * m) / (n * (n-1))
+	if G.isDirected():
+		d = m / (n * (n-1))
+	else:
+		d = (2 * m) / (n * (n-1))
+	return d
 
 def components(G):
 	""" Find and analyze detected components.
@@ -110,7 +118,8 @@ def degreePowerLaw(G, dd=None):
 	R : double
 		goodness of the fit, i.e.
 		the loglikelihood ratio between the two candidate distributions. This number will be positive if the data is more likely in the first distribution, and negative if the data is more likely in the 		  	 	second distribution. The exponential distribution is the absolute minimum alternative candidate for evaluating the heavy- tailedness of the distribution. The reason is definitional: the typical quantitative definition of a ”heavy- tail” is that it is not exponentially bounded. Thus if a power law is not a better fit than an exponential distribution (as in the above example) there is scarce ground for considering the distribution to be heavy-tailed at all, let alone a power law.
-
+	gamma : double
+		the degree power law exponent
 	"""
 	if not dd:
 		dd = degreeSequence(G)
@@ -141,7 +150,7 @@ def degreeAssortativity(G):
 def degeneracy(G):
 	""" degeneracy of an undirected graph is defined as the largest k for which
 	the graph has a non-empty k-core"""
-	coreDec = CoreDecomposition(G)
+	coreDec = centrality.CoreDecomposition(G)
 	coreDec.run()
 	return coreDec.maxCoreNumber()
 
@@ -203,15 +212,22 @@ def properties(G, settings):
 	# diameter
 	if settings["diameter"]:
 		logging.info("[...] estimating diameter range")
-		dia = Diameter.estimatedDiameterRange(G, error=0.1)
+		try:
+			dia = Diameter.estimatedDiameterRange(G, error=0.1)
+		except Exception as e:
+			print(e)
+			dia = "Not implemented for directed graphs"
 	else:
-		dia = None
+		dia = "Not selected"
 
 	# clustering
 	avglcc = None
 	if settings["clustering"]:
 		logging.info("[...] approximating clustering coefficient")
-		avglcc = clustering(G)
+		if not G.isDirected():
+			avglcc = clustering(G)
+		else:
+			avglcc = None
 
 	# degree assortativity
 	logging.info("[...] calculating degree assortativity coefficient")
@@ -269,8 +285,8 @@ def overview(G, settings=collections.defaultdict(lambda: True), showDegreeHistog
 		["estimated diameter range", str(props["dia"])],
 	]
 	degreeProperties = [
-		["min./max. degree", "({0}, {1})".format(props["minDeg"], props["maxDeg"])],
-		["avg. degree", "{0:.6f}".format(props["avgDeg"])],
+		["min./max. degree{0}".format(" (in,out)" if G.isDirected() else ""), "({0}, {1})".format(props["minDeg"], props["maxDeg"])],
+		["avg. degree",	"{0:.6f}".format(props["avgDeg"])],
 		["power law?, likelihood, gamma", "{0}, {1}, {2}".format(props["plfit"][0], "{0:.4f}".format(props["plfit"][1]), "{0:.4f}".format(props["plfit"][2]))],
 		["degree assortativity", "{0:.4f}".format(props["assort"])],
 	]
