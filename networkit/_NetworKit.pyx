@@ -3848,6 +3848,7 @@ cdef extern from "cpp/properties/GraphProperties.h" namespace "NetworKit::GraphP
 	double averageLocalClusteringCoefficient(_Graph _G) except +
 	vector[double] localClusteringCoefficientPerDegree(_Graph _G) except +
 	double degreeAssortativity(_Graph G, bool) except +
+	double degreeAssortativityDirected(_Graph G, bool, bool) except +
 
 	cdef cppclass _GraphProperties "NetworKit::GraphProperties":
 		pass
@@ -3896,12 +3897,12 @@ cdef class GraphProperties:
 
 	@staticmethod
 	def degreeAssortativity(Graph G, bool useWeights):
-		""" Get degree assortativity of the graph `G`.
+		""" Get degree assortativity of the undirected graph `G`.
 
 		Parameters
 		----------
 		G : Graph
-			The graph
+			The undirected graph
 		useWeights : bool
 			If True, the weights are considered for calculation.
 
@@ -3915,6 +3916,30 @@ cdef class GraphProperties:
 		Degree assortativity based on description in Newman: Networks. An Introduction. Chapter 8.7.
 		"""
 		return degreeAssortativity(G._this, useWeights)
+
+	@staticmethod
+	def degreeAssortativityDirected(Graph G, bool alpha, bool beta):
+		""" Get degree assortativity of the directed graph `G`.
+
+		Parameters
+		----------
+		G : Graph
+			The directed graph
+		alpha : bool
+			When iterating over edges (u,v), if alpha is True, the out degree of u will be considered.
+		beta : bool
+			When iterating over edges (u,v), if beta is True, the out degree of v will be considered.
+
+		Returns
+		-------
+		double
+			Degree assortativity of the graph `G`.
+
+		Notes
+		-----
+		Degree assortativity for directed graphs based on http://www.pnas.org/content/107/24/10815.full
+		"""
+		return degreeAssortativityDirected(G._this, alpha, beta)
 
 
 
