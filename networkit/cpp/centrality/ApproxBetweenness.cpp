@@ -110,7 +110,7 @@ void ApproxBetweenness::runImpl() {
 
 	INFO("adding thread-local scores");
 	// add up all thread-local values
-	for (auto local : scorePerThread) {
+	for (auto &local : scorePerThread) {
 		G.parallelForNodes([&](node v){
 			scoreData[v] += local[v];
 		});
