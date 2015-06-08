@@ -495,6 +495,8 @@ TEST_P(GraphGTest, testRandomNode) {
 	count samples = 100000;
 	double maxAbsoluteError = 0.005;
 
+	Aux::Random::setSeed(42, false);
+
 	Graph G = createGraph(n);
 	std::vector<count> drawCounts(n, 0);
 	for (count i = 0; i < samples; i++) {
@@ -513,6 +515,8 @@ TEST_P(GraphGTest, testRandomNeighbor) {
 	G.addEdge(2, 1);
 	G.addEdge(2, 2);
 	G.addEdge(5, 6);
+
+	Aux::Random::setSeed(42, false);
 
 	ASSERT_EQ(none, G.randomNeighbor(3));
 	ASSERT_EQ(6u, G.randomNeighbor(5));
