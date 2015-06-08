@@ -352,6 +352,8 @@ TEST_P(GraphBuilderDirectSwapGTest, testSameAsGraph) {
 	const count runs = 10;
 	const count n_max = 10;
 
+	Aux::Random::setSeed(42, false);
+
 	// in each loop run we will create a random graph (using a GraphBuilder and a Graph)
 	// we will only use methods that both GraphBuilder and Graph support and
 	for (index i = 0; i < runs; i++) {
