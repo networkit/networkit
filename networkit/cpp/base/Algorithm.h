@@ -34,6 +34,11 @@ public:
 	Algorithm();
 
 	/**
+	 * Virtual default destructor
+	 */
+	virtual ~Algorithm() = default;
+
+	/**
 	 * The generic run method which calls runImpl() and takes care of setting @hasRun to the appropriate value.
 	 */
 	void run();
