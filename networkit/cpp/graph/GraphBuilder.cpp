@@ -179,7 +179,13 @@ void GraphBuilder::toGraphDirectSwap(Graph& G) {
 	G.outEdgeWeights = std::move(outEdgeWeights);
 	G.inEdges = std::move(inEdges);
 	G.inEdgeWeights = std::move(inEdgeWeights);
-	G.storedNumberOfSelfLoops = selfloops;
+	if (!directed) {
+		G.storedNumberOfSelfLoops = selfloops;
+	} else if (selfloops % 2 == 0) {
+		G.storedNumberOfSelfLoops = selfloops / 2;
+	} else {
+		throw std::runtime_error("Error, odd number of self loops added but each self loop must be added twice!");
+	}
 }
 
 void GraphBuilder::toGraphParallel(Graph& G) {
