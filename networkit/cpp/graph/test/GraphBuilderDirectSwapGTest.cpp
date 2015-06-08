@@ -254,9 +254,16 @@ TEST_P(GraphBuilderDirectSwapGTest, testIsDirected) {
 
 TEST_P(GraphBuilderDirectSwapGTest, testNumberOfSelfLoops) {
 	auto b = createGraphBuilder(3);
-	b.addHalfEdge(0, 1);
-	b.addHalfEdge(0, 0);
-	b.addHalfEdge(1,0);
+	if (isDirected()) {
+		b.addHalfOutEdge(0, 1);
+		b.addHalfInEdge(1, 0);
+		b.addHalfOutEdge(0, 0);
+		b.addHalfInEdge(0, 0);
+	} else {
+		b.addHalfEdge(0, 1);
+		b.addHalfEdge(0, 0);
+		b.addHalfEdge(1,0);
+	}
 	Graph G = toGraph(b);
 	ASSERT_EQ(1u, G.numberOfSelfLoops());
 }
