@@ -9,7 +9,6 @@
 
 #include "../PLP.h"
 #include "../PLM.h"
-#include "../CNM.h"
 #include "../ParallelAgglomerativeClusterer.h"
 #include "../../community/Modularity.h"
 #include "../../community/EdgeCut.h"
@@ -269,55 +268,6 @@ TEST_F(CommunityGTest, testLouvainParallel2Naive) {
 }
 */
 
-
-
-TEST_F(CommunityGTest, tryCNMandLouvainRandom) {
-	count n = 400;
-	count k = 20;
-	double pin = 0.9;
-	double pout = 0.0005;
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
-
-	Modularity modularity;
-
-	// CNM with PQ
-	CNM cnm(G);
-	cnm.run();
-	Partition clustering = cnm.getPartition();
-	INFO("CNM number of clusters: " , clustering.numberOfSubsets());
-	INFO("modularity clustered random graph: " , modularity.getQuality(clustering, G));
-	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, clustering));
-
-	// Louvain
-	PLM louvain(G);
-	louvain.run();
-	clustering = louvain.getPartition();
-	INFO("Louvain number of clusters: " , clustering.numberOfSubsets());
-	INFO("modularity clustered random graph: " , modularity.getQuality(clustering, G));
-	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, clustering));
-}
-
-
-TEST_F(CommunityGTest, tryCNMandLouvainReal) {
-	METISGraphReader reader;
-	Graph jazz = reader.read("input/jazz.graph");
-	Modularity modularity;
-	CNM cnm(jazz);
-	PLM louvain(jazz);
-
-	// CNM
-	cnm.run();
-	Partition clustering = cnm.getPartition();
-	INFO("CNM number of jazz clusters: " , clustering.numberOfSubsets());
-	INFO("CNM modularity jazz graph: " , modularity.getQuality(clustering, jazz));
-
-	// Louvain
-	louvain.run();
-	clustering = louvain.getPartition();
-	INFO("Louvain number of jazz clusters: " , clustering.numberOfSubsets());
-	INFO("Louvain modularity jazz graph: " , modularity.getQuality(clustering, jazz));
-}
 
 
 

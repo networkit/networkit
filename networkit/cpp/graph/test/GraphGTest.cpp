@@ -495,6 +495,8 @@ TEST_P(GraphGTest, testRandomNode) {
 	count samples = 100000;
 	double maxAbsoluteError = 0.005;
 
+	Aux::Random::setSeed(42, false);
+
 	Graph G = createGraph(n);
 	std::vector<count> drawCounts(n, 0);
 	for (count i = 0; i < samples; i++) {
@@ -513,6 +515,8 @@ TEST_P(GraphGTest, testRandomNeighbor) {
 	G.addEdge(2, 1);
 	G.addEdge(2, 2);
 	G.addEdge(5, 6);
+
+	Aux::Random::setSeed(42, false);
 
 	ASSERT_EQ(none, G.randomNeighbor(3));
 	ASSERT_EQ(6u, G.randomNeighbor(5));
@@ -1474,7 +1478,7 @@ TEST_P(GraphGTest, testForWeightedInEdgesOf) {
 	this->Ahouse[3][3] = 2.5;
 
 	std::vector<edgeweight> visited(this->n_house, -1.0);
-	this->Ghouse.forInEdgesOf(3, [&](node u, node v, edgeweight ew) {
+	this->Ghouse.forInEdgesOf(3, [&](node v, node u, edgeweight ew) {
 		ASSERT_EQ(-1.0, visited[v]);
 		visited[u] = ew;
 	});
@@ -1939,7 +1943,7 @@ TEST_P(GraphGTest, testSortEdges) {
 
 			outEdges.clear();
 
-			origG.forInEdgesOf(u, [&](node v, node u, edgeweight w, edgeid eid) {
+			origG.forInEdgesOf(u, [&](node u, node v, edgeweight w, edgeid eid) {
 				outEdges.emplace_back(v, w, eid);
 			});
 
@@ -1961,7 +1965,7 @@ TEST_P(GraphGTest, testSortEdges) {
 				") was expected to be (" << std::get<0>(*it) << ", " << std::get<1>(*it) << ", " << std::get<2>(*it) << ", " << std::get<3>(*it) << ")";
 				++it;
 			});
-			G.forInEdgesOf(u, [&](node v, node u, edgeweight w, edgeid eid) {
+			G.forInEdgesOf(u, [&](node u, node v, edgeweight w, edgeid eid) {
 				ASSERT_NE(it, edges.end());
 				EXPECT_EQ(*it, std::make_tuple(u, v, w, eid)) << "In edge (" << u << ", " << v << ", " << w << ", " << eid <<
 				") was expected to be (" << std::get<0>(*it) << ", " << std::get<1>(*it) << ", " << std::get<2>(*it) << ", " << std::get<3>(*it) << ")";

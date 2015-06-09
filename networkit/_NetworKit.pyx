@@ -1496,7 +1496,6 @@ cdef class ErdosRenyiGenerator:
 	def generate(self):
 		return Graph(0).setThis(self._this.generate())
 
-
 cdef extern from "cpp/generators/DorogovtsevMendesGenerator.h":
 	cdef cppclass _DorogovtsevMendesGenerator "NetworKit::DorogovtsevMendesGenerator":
 		_DorogovtsevMendesGenerator(count nNodes) except +
@@ -3480,25 +3479,6 @@ cdef class PLM(CommunityDetector):
 	def prolong(Graph Gcoarse, Partition zetaCoarse, Graph Gfine, vector[node] nodeToMetaNode):
 		return Partition().setThis(PLM_prolong(Gcoarse._this, zetaCoarse._this, Gfine._this, nodeToMetaNode))
 
-
-cdef extern from "cpp/community/CNM.h":
-	cdef cppclass _CNM "NetworKit::CNM"(_CommunityDetectionAlgorithm):
-		_CNM(_Graph _G) except +
-		string toString() except +
-		void run() except +
-		_Partition getPartition() except +
-
-
-cdef class CNM(CommunityDetector):
-	"""
-	Community detection algorithm due to Clauset, Newman and Moore.
- 	Probably not the fastest possible implementation, but it already uses a priority queue
- 	and local updates.
- 	"""
-	def __cinit__(self, Graph G not None):
-		self._G = G
-		self._this = new _CNM(G._this)
-
 cdef extern from "cpp/community/CutClustering.h":
 	cdef cppclass _CutClustering "NetworKit::CutClustering"(_CommunityDetectionAlgorithm):
 		_CutClustering(_Graph _G) except +
@@ -3516,6 +3496,7 @@ cdef class CutClustering(CommunityDetector):
 
 	Parameters
 	----------
+	G : Graph
 	alpha : double
 		The parameter for the cut clustering algorithm
 	"""
@@ -3555,6 +3536,7 @@ cdef class CutClustering(CommunityDetector):
 
 cdef class DissimilarityMeasure:
 	""" Abstract base class for partition/community dissimilarity measures """
+	# TODO: use conventional class design of parametrized constructor, run-method and getters
 	pass
 
 
@@ -3842,6 +3824,7 @@ cdef extern from "cpp/properties/GraphProperties.h" namespace "NetworKit::GraphP
 	double averageLocalClusteringCoefficient(_Graph _G) except +
 	vector[double] localClusteringCoefficientPerDegree(_Graph _G) except +
 	double degreeAssortativity(_Graph G, bool) except +
+	double degreeAssortativityDirected(_Graph G, bool, bool) except +
 
 	cdef cppclass _GraphProperties "NetworKit::GraphProperties":
 		pass
@@ -3890,12 +3873,12 @@ cdef class GraphProperties:
 
 	@staticmethod
 	def degreeAssortativity(Graph G, bool useWeights):
-		""" Get degree assortativity of the graph `G`.
+		""" Get degree assortativity of the undirected graph `G`.
 
 		Parameters
 		----------
 		G : Graph
-			The graph
+			The undirected graph
 		useWeights : bool
 			If True, the weights are considered for calculation.
 
@@ -3909,6 +3892,30 @@ cdef class GraphProperties:
 		Degree assortativity based on description in Newman: Networks. An Introduction. Chapter 8.7.
 		"""
 		return degreeAssortativity(G._this, useWeights)
+
+	@staticmethod
+	def degreeAssortativityDirected(Graph G, bool alpha, bool beta):
+		""" Get degree assortativity of the directed graph `G`.
+
+		Parameters
+		----------
+		G : Graph
+			The directed graph
+		alpha : bool
+			When iterating over edges (u,v), if alpha is True, the out degree of u will be considered.
+		beta : bool
+			When iterating over edges (u,v), if beta is True, the out degree of v will be considered.
+
+		Returns
+		-------
+		double
+			Degree assortativity of the graph `G`.
+
+		Notes
+		-----
+		Degree assortativity for directed graphs based on http://www.pnas.org/content/107/24/10815.full
+		"""
+		return degreeAssortativityDirected(G._this, alpha, beta)
 
 
 
@@ -4717,96 +4724,6 @@ cdef class LocalClusteringCoefficient(Centrality):
 		self._this = new _LocalClusteringCoefficient(G._this)
 
 
-
-# Dynamic centrality
-
-cdef extern from "cpp/centrality/DynBetweenness.h":
-	cdef cppclass _DynBetweenness "NetworKit::DynBetweenness":
-		_DynBetweenness(_Graph, bool) except +
-		void run() nogil except +
-		void update(_GraphEvent) nogil except +
-		vector[double] scores() except +
-		vector[pair[node, double]] ranking() except +
-		double score(node) except +
-
-
-cdef class DynBetweenness:
-	"""
-		DynBetweenness(G, [storePredecessors])
-
-		Constructs the Betweenness class for the dynamic Graph `G`.
-		Parameters
-		----------
-		G : Graph
-			The graph.
-		storePredecessors : bool
-			store lists of predecessors?
-	"""
-	cdef _DynBetweenness* _this
-	cdef Graph _G
-
-	def __cinit__(self, Graph G, bool storePredecessors = True):
-		self._G = G
-		self._this = new _DynBetweenness(G._this, storePredecessors)
-
-	# this is necessary so that the C++ object gets properly garbage collected
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		"""  Compute betweenness scores on the initial graph.
-		"""
-		with nogil:
-			self._this.run()
-		return self
-
-	def update(self, ev):
-		""" Updates the betweenness centralities after the edge insertion.
-
-		Parameters
-		----------
-		ev : GraphEvent.
-		"""
-		cdef _GraphEvent cev = _GraphEvent(ev.type, ev.u, ev.v, ev.w)
-		with nogil:
-			self._this.update(cev)
-
-	def scores(self):
-		""" Get a vector containing the betweenness score for each node in the graph.
-
-		Returns
-		-------
-		vector
-			The betweenness scores calculated by run().
-		"""
-		return self._this.scores()
-
-	def score(self, v):
-		""" Get the betweenness score of node `v` calculated by run().
-
-		Parameters
-		----------
-		v : node
-			A node.
-
-		Returns
-		-------
-		double
-			The betweenness score of node `v.
-		"""
-		return self._this.score(v)
-
-	def ranking(self):
-		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
-		calculated by run().
-
-		Returns
-		-------
-		vector
-			A vector of pairs.
-		"""
-		return self._this.ranking()
-
 cdef extern from "cpp/centrality/DynApproxBetweenness.h":
 	cdef cppclass _DynApproxBetweenness "NetworKit::DynApproxBetweenness":
 		_DynApproxBetweenness(_Graph, double, double, bool) except +
@@ -5377,41 +5294,44 @@ cdef class GCE:
 
 cdef extern from "cpp/clique/MaxClique.h":
 	cdef cppclass _MaxClique "NetworKit::MaxClique":
-		_MaxClique(_Graph G) except +
-		count run(count lb) nogil except +
-		count run() nogil except +
+		_MaxClique(_Graph G, count lb) except +
+		void run() nogil except +
+		count getMaxCliqueSize() except +
 
 cdef class MaxClique:
 	"""
 	Exact algorithm for computing the size of the largest clique in a graph.
 	Worst-case running time is exponential, but in practice the algorithm is fairly fast.
 	Reference: Pattabiraman et al., http://arxiv.org/pdf/1411.7460.pdf
+
+	Parameters:
+	-----------
+	G : graph in which the cut is to be produced, must be unweighted.
+	lb : the lower bound of the size of the maximum clique.
 	"""
 	cdef _MaxClique* _this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G not None):
+	def __cinit__(self, Graph G not None, lb=0):
 		self._G = G
-		self._this = new _MaxClique(G._this)
+		self._this = new _MaxClique(G._this, lb)
+
 
 	def __dealloc__(self):
 		del self._this
 
-	def run(self, count lb=0):
+	def run(self):
 		"""
 		Actual maximum clique algorithm. Determines largest clique each vertex
 	 	is contained in and returns size of largest. Pruning steps keep running time
 	 	acceptable in practice.
-
-	 	Parameters:
-	 	-----------
-	 	lb : Lower bound for maximum clique size.
-
-	 	Returns:
-	 	--------
-	 	The size of the largest clique.
 	 	"""
 		cdef count size
 		with nogil:
-			size = self._this.run(lb)
-		return size
+			self._this.run()
+
+	def getMaxCliqueSize(self):
+		"""
+		Returns the size of the biggest clique
+		"""
+		return self._this.getMaxCliqueSize()

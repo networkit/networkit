@@ -80,7 +80,7 @@ void EigenvectorCentrality::run() {
 		});
 	}
 
-	ran = true;
+	hasRun = true;
 }
 
 } /* namespace NetworKit */

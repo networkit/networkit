@@ -13,6 +13,7 @@
 #include "../graph/BFS.h"
 #include "../graph/SSSP.h"
 #include "../auxiliary/Log.h"
+#include "../auxiliary/SignalHandling.h"
 
 #include <math.h>
 #include <algorithm>
@@ -27,6 +28,7 @@ ApproxBetweenness::ApproxBetweenness(const Graph& G, double epsilon, double delt
 
 
 void ApproxBetweenness::run() {
+	Aux::SignalHandler handler;
 	scoreData.clear();
 	scoreData.resize(G.upperNodeIdBound());
 
@@ -55,7 +57,7 @@ void ApproxBetweenness::run() {
 	DEBUG("max threads: ", maxThreads);
 	std::vector<std::vector<double> > scorePerThread(maxThreads, std::vector<double>(G.upperNodeIdBound()));
 	DEBUG("score per thread size: ", scorePerThread.size());
-
+	handler.assureRunning();
 	#pragma omp parallel for
 	for (count i = 1; i <= r; i++) {
 		count thread = omp_get_thread_num();
@@ -77,7 +79,9 @@ void ApproxBetweenness::run() {
 			sssp.reset(new BFS(G, u));
 		}
 		DEBUG("running shortest path algorithm for node ", u);
+		if (!handler.isRunning()) continue;
 		sssp->run(v);
+		if (!handler.isRunning()) continue;
 		if (sssp->numberOfPaths(v) > 0) { // at least one path between {u, v} exists
 			DEBUG("updating estimate for path ", u, " <-> ", v);
 			// random path sampling and estimation update
@@ -102,16 +106,17 @@ void ApproxBetweenness::run() {
 			}
 		}
 	}
+	handler.assureRunning();
 
 	INFO("adding thread-local scores");
 	// add up all thread-local values
-	for (auto local : scorePerThread) {
+	for (auto &local : scorePerThread) {
 		G.parallelForNodes([&](node v){
 			scoreData[v] += local[v];
 		});
 	}
 
-	ran = true;
+	hasRun = true;
 }
 
 

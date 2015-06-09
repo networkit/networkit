@@ -393,13 +393,7 @@ void Graph::sortEdges() {
 		};
 
 	forNodes([&](node u) {
-		if (isDirected()) {
-			forInEdgesOf(u, [&](node u, node v, edgeweight w, edgeid eid) {
-				assignToTarget(v, u, w, eid);
-			});
-		} else {
-			forEdgesOf(u, assignToTarget);
-		}
+		forInEdgesOf(u, assignToTarget);
 	});
 
 	outEdges.swap(targetAdjacencies);
