@@ -13,7 +13,6 @@
 #include "../auxiliary/Log.h"
 #include "PLM.h"
 #include "PLP.h"
-#include "CNM.h"
 
 namespace NetworKit {
 
@@ -68,9 +67,6 @@ void EPP::run() {
 	} else if (auto tmp = dynamic_cast<PLP*>(this->finalClusterer.get())) {
 		DEBUG("final clusterer is PLP");
 		this->finalClusterer.reset(new PLP(Gcore, *tmp));
-	} else if (dynamic_cast<CNM*>(this->finalClusterer.get())) {
-		DEBUG("final clusterer is CNM");
-		this->finalClusterer.reset(new CNM(Gcore));
 	}
 	this->finalClusterer->run();
 	Partition finalCoarse = this->finalClusterer->getPartition();

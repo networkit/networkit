@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-ParallelConnectedComponents::ParallelConnectedComponents(const Graph& G, bool coarsening) : G(G), coarsening(coarsening) {
+ParallelConnectedComponents::ParallelConnectedComponents(const Graph& G, bool coarsening) : Algorithm(), G(G), coarsening(coarsening) {
 
 }
 

@@ -35,6 +35,11 @@ public:
 	*/
 	void run() override;
 
+	/*
+	* Returns the maximum possible Betweenness a node can have in a graph with the same amount of nodes (=a star)
+	*/
+	double maximum();
+
 };
 
 } /* namespace NetworKit */

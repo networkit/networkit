@@ -57,7 +57,7 @@ void KatzCentrality::run() {
 		scoreData = values;
 	} while (! converged(length, oldLength));
 
-	ran = true;
+	hasRun = true;
 
 //	// check sign and correct if necessary
 //	if (scoreData[0] < 0) {

@@ -14,6 +14,7 @@
 #include "Betweenness.h"
 #include "../auxiliary/PrioQueue.h"
 #include "../auxiliary/Log.h"
+#include "../auxiliary/SignalHandling.h"
 #include "../graph/SSSP.h"
 #include "../graph/Dijkstra.h"
 #include "../graph/BFS.h"
@@ -25,6 +26,7 @@ Betweenness::Betweenness(const Graph& G, bool normalized, bool computeEdgeCentra
 }
 
 void Betweenness::run() {
+	Aux::SignalHandler handler;
 	count z = G.upperNodeIdBound();
 	scoreData.clear();
 	scoreData.resize(z);
@@ -53,9 +55,9 @@ void Betweenness::run() {
 		} else {
 			sssp.reset(new BFS(G, s, true, true));
 		}
-
+		if (!handler.isRunning()) return;
 		sssp->run();
-
+		if (!handler.isRunning()) return;
 		// compute dependencies for nodes in order of decreasing distance from s
 		std::stack<node> stack = sssp->getStack();
 		while (!stack.empty()) {
@@ -79,9 +81,9 @@ void Betweenness::run() {
 			}
 		}
 	};
-
+	handler.assureRunning();
 	G.balancedParallelForNodes(computeDependencies);
-
+	handler.assureRunning();
 	INFO("adding thread-local scores");
 	// add up all thread-local values
 	for (auto local : scorePerThread) {
@@ -101,6 +103,10 @@ void Betweenness::run() {
 		count n = G.numberOfNodes();
 		count pairs = (n-2) * (n-1);
 		count edges =  n    * (n-1);
+		if (!G.isDirected()) {
+			pairs = pairs / 2;
+			edges = edges / 2;
+		}
 		G.forNodes([&](node u){
 			scoreData[u] = scoreData[u] / pairs;
 		});
@@ -111,7 +117,21 @@ void Betweenness::run() {
 		}
 	}
 
-	ran = true;
+	hasRun = true;
+}
+
+double Betweenness::maximum(){
+	if (normalized) {
+		return 1;
+	}
+	double score;
+	count n = G.numberOfNodes();
+	if (G.isDirected()) {
+		score = (n-1)*(n-2);
+	} else {
+		score = (n-1)*(n-2)/2;
+	}
+	return score;
 }
 
 } /* namespace NetworKit */
