@@ -40,8 +40,10 @@ TEST_F(CliqueGTest, testMaxCliqueOnSmallerGraphs) {
 	MaxClique mcHamming(gHamming);
 
 	//count maxCliqueSizeKeller = mcKeller.run();
-	count maxCliqueSizeJohnson = mcJohnson.run();
-	count maxCliqueSizeHamming = mcHamming.run();
+	mcJohnson.run();
+	count maxCliqueSizeJohnson = mcJohnson.getMaxCliqueSize();
+	mcHamming.run();
+	count maxCliqueSizeHamming = mcHamming.getMaxCliqueSize();
 
 	//EXPECT_EQ(11,maxCliqueSizeKeller) << "maximum clique size on graph keller4 is not correct";
 	EXPECT_EQ(14,maxCliqueSizeJohnson) << "maximum clique size on graph johnson8-4-4 is not correct";
