@@ -10,7 +10,7 @@ namespace SignalHandling {
 namespace {
 	std::atomic<bool> receivedSIGINT(false);
 	std::atomic<bool> rootSet(false);
-	std::atomic<uint64_t> root(0);
+	std::atomic<SignalHandler*> root(0);
 	void sigHandler(int sig) {
 		switch (sig) {
 			case SIGINT: receivedSIGINT = true;
@@ -27,7 +27,7 @@ void setSIGINT(bool received) {
 	receivedSIGINT = received;
 }
 
-void init(uint64_t caller) {
+void init(SignalHandler* caller) {
 	if (!rootSet) {
 		root = caller;
 		signal(SIGINT,sigHandler);
@@ -35,7 +35,7 @@ void init(uint64_t caller) {
 	}
 }
 
-void reset(uint64_t caller) {
+void reset(SignalHandler* caller) {
 	if (root == caller) {
 		rootSet = false;
 		receivedSIGINT = false;
@@ -44,6 +44,25 @@ void reset(uint64_t caller) {
 	}
 }
 
+
 } /* SignalHandling */
+
+SignalHandler::SignalHandler() {
+	Aux::SignalHandling::init(this);
+}
+
+SignalHandler::~SignalHandler() {
+	Aux::SignalHandling::reset(this);
+}
+
+void SignalHandler::assureRunning() {
+	if (Aux::SignalHandling::gotSIGINT()) {
+		throw Aux::SignalHandling::InterruptException();
+	}
+}
+
+bool SignalHandler::isRunning() {
+	return !Aux::SignalHandling::gotSIGINT();
+}
 
 } /* Aux */

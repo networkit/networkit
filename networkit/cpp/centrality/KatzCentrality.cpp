@@ -16,7 +16,7 @@ KatzCentrality::KatzCentrality(const Graph& G, double alpha, double beta, double
 
 }
 
-void KatzCentrality::runImpl() {
+void KatzCentrality::run() {
 	count z = G.upperNodeIdBound();
 	std::vector<double> values(z, 1.0);
 	scoreData = values;
@@ -55,7 +55,6 @@ void KatzCentrality::runImpl() {
 //		TRACE(values);
 
 		scoreData = values;
-		assureRunning();
 	} while (! converged(length, oldLength));
 
 	hasRun = true;

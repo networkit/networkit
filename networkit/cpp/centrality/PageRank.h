@@ -31,7 +31,7 @@ public:
 	 */
 	PageRank(const Graph& G, double damp=0.85, double tol = 1e-8);
 
-	virtual void runImpl() override;
+	virtual void run();
 };
 
 } /* namespace NetworKit */

@@ -1465,7 +1465,6 @@ cdef extern from "cpp/generators/ErdosRenyiGenerator.h":
 	cdef cppclass _ErdosRenyiGenerator "NetworKit::ErdosRenyiGenerator":
 		_ErdosRenyiGenerator(count nNodes, double prob, bool directed) except +
 		_Graph generate() except +
-		bool hasFinished() except +
 
 cdef class ErdosRenyiGenerator:
 	""" Creates random graphs in the G(n,p) model.
@@ -1495,12 +1494,7 @@ cdef class ErdosRenyiGenerator:
 		del self._this
 
 	def generate(self):
-		g = Graph(0).setThis(self._this.generate())
-		if self._this.hasFinished():
-			return g
-		else:
-			return None
-
+		return Graph(0).setThis(self._this.generate())
 
 cdef extern from "cpp/generators/DorogovtsevMendesGenerator.h":
 	cdef cppclass _DorogovtsevMendesGenerator "NetworKit::DorogovtsevMendesGenerator":
@@ -3485,25 +3479,6 @@ cdef class PLM(CommunityDetector):
 	def prolong(Graph Gcoarse, Partition zetaCoarse, Graph Gfine, vector[node] nodeToMetaNode):
 		return Partition().setThis(PLM_prolong(Gcoarse._this, zetaCoarse._this, Gfine._this, nodeToMetaNode))
 
-
-cdef extern from "cpp/community/CNM.h":
-	cdef cppclass _CNM "NetworKit::CNM"(_CommunityDetectionAlgorithm):
-		_CNM(_Graph _G) except +
-		string toString() except +
-		void run() except +
-		_Partition getPartition() except +
-
-
-cdef class CNM(CommunityDetector):
-	"""
-	Community detection algorithm due to Clauset, Newman and Moore.
- 	Probably not the fastest possible implementation, but it already uses a priority queue
- 	and local updates.
- 	"""
-	def __cinit__(self, Graph G not None):
-		self._G = G
-		self._this = new _CNM(G._this)
-
 cdef extern from "cpp/community/CutClustering.h":
 	cdef cppclass _CutClustering "NetworKit::CutClustering"(_CommunityDetectionAlgorithm):
 		_CutClustering(_Graph _G) except +
@@ -3521,6 +3496,7 @@ cdef class CutClustering(CommunityDetector):
 
 	Parameters
 	----------
+	G : Graph
 	alpha : double
 		The parameter for the cut clustering algorithm
 	"""
@@ -3848,6 +3824,7 @@ cdef extern from "cpp/properties/GraphProperties.h" namespace "NetworKit::GraphP
 	double averageLocalClusteringCoefficient(_Graph _G) except +
 	vector[double] localClusteringCoefficientPerDegree(_Graph _G) except +
 	double degreeAssortativity(_Graph G, bool) except +
+	double degreeAssortativityDirected(_Graph G, bool, bool) except +
 
 	cdef cppclass _GraphProperties "NetworKit::GraphProperties":
 		pass
@@ -3896,12 +3873,12 @@ cdef class GraphProperties:
 
 	@staticmethod
 	def degreeAssortativity(Graph G, bool useWeights):
-		""" Get degree assortativity of the graph `G`.
+		""" Get degree assortativity of the undirected graph `G`.
 
 		Parameters
 		----------
 		G : Graph
-			The graph
+			The undirected graph
 		useWeights : bool
 			If True, the weights are considered for calculation.
 
@@ -3915,6 +3892,30 @@ cdef class GraphProperties:
 		Degree assortativity based on description in Newman: Networks. An Introduction. Chapter 8.7.
 		"""
 		return degreeAssortativity(G._this, useWeights)
+
+	@staticmethod
+	def degreeAssortativityDirected(Graph G, bool alpha, bool beta):
+		""" Get degree assortativity of the directed graph `G`.
+
+		Parameters
+		----------
+		G : Graph
+			The directed graph
+		alpha : bool
+			When iterating over edges (u,v), if alpha is True, the out degree of u will be considered.
+		beta : bool
+			When iterating over edges (u,v), if beta is True, the out degree of v will be considered.
+
+		Returns
+		-------
+		double
+			Degree assortativity of the graph `G`.
+
+		Notes
+		-----
+		Degree assortativity for directed graphs based on http://www.pnas.org/content/107/24/10815.full
+		"""
+		return degreeAssortativityDirected(G._this, alpha, beta)
 
 
 

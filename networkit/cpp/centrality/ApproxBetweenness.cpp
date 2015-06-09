@@ -26,7 +26,7 @@ ApproxBetweenness::ApproxBetweenness(const Graph& G, double epsilon, double delt
 }
 
 
-void ApproxBetweenness::runImpl() {
+void ApproxBetweenness::run() {
 	scoreData.clear();
 	scoreData.resize(G.upperNodeIdBound());
 
@@ -55,11 +55,9 @@ void ApproxBetweenness::runImpl() {
 	DEBUG("max threads: ", maxThreads);
 	std::vector<std::vector<double> > scorePerThread(maxThreads, std::vector<double>(G.upperNodeIdBound()));
 	DEBUG("score per thread size: ", scorePerThread.size());
-	assureRunning();
+
 	#pragma omp parallel for
 	for (count i = 1; i <= r; i++) {
-		try {
-			assureRunning();
 		count thread = omp_get_thread_num();
 		DEBUG("sample ", i);
 		// if (i >= 1000) throw std::runtime_error("too many iterations");
@@ -103,14 +101,11 @@ void ApproxBetweenness::runImpl() {
 				t = z;
 			}
 		}
-		} catch (std::exception e) {
-		ERROR("received something:\t",e.what());
-		}
 	}
 
 	INFO("adding thread-local scores");
 	// add up all thread-local values
-	for (auto local : scorePerThread) {
+	for (auto &local : scorePerThread) {
 		G.parallelForNodes([&](node v){
 			scoreData[v] += local[v];
 		});

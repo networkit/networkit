@@ -8,12 +8,28 @@
 namespace NetworKit {
 
 std::vector<count> GraphProperties::degreeDistribution(const Graph& G) {
-	count maxDegree = minMaxDegree(G).second;
-	std::vector<count> distribution(maxDegree+1, 0);
-	G.forNodes([&](node v){
-		count i = G.degree(v);
-		distribution[i]++;
-	});
+	std::vector<count> distribution;
+	if (G.isDirected()) {
+		auto maxDegree = minMaxDegreeDirected(G).second;
+		distribution.assign(maxDegree.first+maxDegree.second+1, 0);
+		G.parallelForNodes([&](node v){
+			count i = G.degreeOut(v) + G.degreeIn(v);
+			#pragma omp atomic
+			distribution[i]++;
+		});
+		// workaround as now minmaxdegree for combined degree is implemented yet.
+		count i = distribution.size()-1;
+		while (i > 0 && distribution[i] == 0) --i;
+		distribution.resize(i+1);
+	} else {
+		count maxDegree = minMaxDegree(G).second;
+		distribution.assign(maxDegree+1, 0);
+		G.parallelForNodes([&](node v){
+			count i = G.degree(v);
+			#pragma omp atomic
+			distribution[i]++;
+		});
+	}
 	return distribution;
 }
 
@@ -261,6 +277,7 @@ double GraphProperties::degreeAssortativityDirected(const Graph& G, bool alpha, 
 	});
 	alphaAvg /= G.numberOfEdges();
 	betaAvg /= G.numberOfEdges();
+	double normalize = 1.f/G.numberOfEdges();
 	count sum = 0;
 	count jAggr = 0;
 	count kAggr = 0;
@@ -271,7 +288,8 @@ double GraphProperties::degreeAssortativityDirected(const Graph& G, bool alpha, 
 		jAggr += (j*j);
 		kAggr += (k*k);
 	});
-	return (sum)/(std::sqrt(jAggr)*std::sqrt(kAggr));
+	// multiplication with normalize doesn't change anything; could be avoided?!
+	return (normalize*sum)/(std::sqrt(normalize*jAggr)*std::sqrt(normalize*kAggr));
 
 }
 

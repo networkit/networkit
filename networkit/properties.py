@@ -103,9 +103,12 @@ def clustering(G, error=0.01):
 		for details see:
 			Schank, Wagner: Approximating Clustering Coefficient and Transitivity
 	"""
-	nSamples = math.ceil(math.log(10) / (error**2)) # fixed confidence of 90%
-	logging.info("taking {0} samples".format(nSamples))
-	return ClusteringCoefficient().approxAvgLocal(G, nSamples)
+	if G.numberOfNodes() < 100:
+		return ClusteringCoefficient().avgLocal(G)
+	else:
+		nSamples = math.ceil(math.log(10) / (error**2)) # fixed confidence of 90%
+		logging.info("taking {0} samples".format(nSamples))
+		return ClusteringCoefficient().approxAvgLocal(G, nSamples)
 
 
 def degreePowerLaw(G, dd=None):
@@ -144,7 +147,13 @@ def degreePowerLaw(G, dd=None):
 
 def degreeAssortativity(G):
 	""" Returns the degree assortativity coefficient """
-	return GraphProperties.degreeAssortativity(G, G.isWeighted())
+	if G.isDirected():
+		results = []
+		results.append(GraphProperties.degreeAssortativityDirected(G,0,0))
+		results.append(GraphProperties.degreeAssortativityDirected(G,1,1))
+		return results
+	else:
+		return GraphProperties.degreeAssortativity(G, G.isWeighted())
 
 
 def degeneracy(G):
@@ -189,7 +198,7 @@ def properties(G, settings):
 
 	ncomPLP, modPLP = None, None
 	ncomPLM, modPLM = None, None
-	if settings["communities"]:
+	if settings["communities"] and not G.isDirected():
 		logging.info("[...] detecting communities")
 		# perform PLM community detection
 		logging.info("[...] performing community detection: PLM")
@@ -282,17 +291,17 @@ def overview(G, settings=collections.defaultdict(lambda: True), showDegreeHistog
 		["isolated nodes", props["isolates"]],
 		["self-loops", props["loops"]],
 		["density", "{0:.6f}".format(props["dens"]) if props["dens"] else None],
-		["clustering coefficient", "{0:.6f}".format(props["avglcc"]) if props["avglcc"] else None],
+		["clustering coefficient", "Not implemented for directed graphs" if not props["avglcc"] else "{0:.6f}".format(props["avglcc"])],
 		["max. core number", props["degeneracy"]],
-		["connected components", props["nComponents"]],
+		["{0}connected components".format("strongly " if G.isDirected() else None), props["nComponents"]],
 		["size of largest component", "{0} ({1:.2f} %)".format(props["sizeLargestComponent"], (props["sizeLargestComponent"] / props["n"]) * 100)],
 		["estimated diameter range", str(props["dia"])],
 	]
 	degreeProperties = [
-		["min./max. degree{0}".format(" (in,out)" if G.isDirected() else ""), "({0}, {1})".format(props["minDeg"], props["maxDeg"])],
+		["min./max. degree{0}".format(" (in,out)" if G.isDirected() else ""), "({0} / {1})".format(props["minDeg"], props["maxDeg"])],
 		["avg. degree",	"{0:.6f}".format(props["avgDeg"])],
 		["power law?, likelihood, gamma", "{0}, {1}, {2}".format(props["plfit"][0], "{0:.4f}".format(props["plfit"][1]), "{0:.4f}".format(props["plfit"][2]))],
-		["degree assortativity", "{0:.4f}".format(props["assort"])],
+		["degree assortativity{0}".format(" (in,in),(out,out)" if G.isDirected() else ""), "{0:.4f}".format(props["assort"]) if not G.isDirected() else ", ".join(["{0:.4f}".format(x) for x in props["assort"]]) ],
 	]
 
 	communityStructure = [
@@ -310,10 +319,14 @@ def overview(G, settings=collections.defaultdict(lambda: True), showDegreeHistog
 	print(tabulate.tabulate(degreeProperties))
 	#print("Miscellaneous")
 	#print(tabulate.tabulate(miscProperties))
-	print("Community Structure")
-	print(tabulate.tabulate(communityStructure))
+	if not G.isDirected():
+		print("Community Structure")
+		print(tabulate.tabulate(communityStructure))
 	if showDegreeHistogram:
-		print("Degree Distribution")
+		if G.isDirected():
+			print("Degree Distribution (in+out)")
+		else:
+			print("Degree Distribution")
 		print("-------------------")
 		(labels, histo) = props["histo"]
 		if labels and histo:
