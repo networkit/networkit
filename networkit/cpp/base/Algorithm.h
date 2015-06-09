@@ -5,17 +5,6 @@
 #include <stdexcept>
 
 namespace NetworKit {
-	/**
-	 * Special Exception to indicate, that a SIGINT has been received.
-	 */
-	class InterruptException : public std::exception {
-	public:
-		InterruptException() : std::exception() {}
-		virtual const char* what() const noexcept
-		{
-		    return "Received CTRL+C/SIGINT";
-  		}
-	};
 
 class Algorithm {
 protected:
