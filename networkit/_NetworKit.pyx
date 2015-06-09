@@ -3521,6 +3521,7 @@ cdef class CutClustering(CommunityDetector):
 
 	Parameters
 	----------
+	G : Graph
 	alpha : double
 		The parameter for the cut clustering algorithm
 	"""
