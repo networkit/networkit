@@ -149,9 +149,8 @@ def degreeAssortativity(G):
 	""" Returns the degree assortativity coefficient """
 	if G.isDirected():
 		results = []
-		for i in range(0,2):
-			for j in range(0,2):
-				results.append(GraphProperties.degreeAssortativityDirected(G,i,j))
+		results.append(GraphProperties.degreeAssortativityDirected(G,0,0))
+		results.append(GraphProperties.degreeAssortativityDirected(G,1,1))
 		return results
 	else:
 		return GraphProperties.degreeAssortativity(G, G.isWeighted())
@@ -302,7 +301,7 @@ def overview(G, settings=collections.defaultdict(lambda: True), showDegreeHistog
 		["min./max. degree{0}".format(" (in,out)" if G.isDirected() else ""), "({0} / {1})".format(props["minDeg"], props["maxDeg"])],
 		["avg. degree",	"{0:.6f}".format(props["avgDeg"])],
 		["power law?, likelihood, gamma", "{0}, {1}, {2}".format(props["plfit"][0], "{0:.4f}".format(props["plfit"][1]), "{0:.4f}".format(props["plfit"][2]))],
-		["degree assortativity{0}".format(" (in,in),(in,out),(out,in),(out,out)" if G.isDirected() else ""), "{0:.4f}".format(props["assort"]) if not G.isDirected() else ", ".join(["{0:.4f}".format(x) for x in props["assort"]]) ],
+		["degree assortativity{0}".format(" (in,in),(out,out)" if G.isDirected() else ""), "{0:.4f}".format(props["assort"]) if not G.isDirected() else ", ".join(["{0:.4f}".format(x) for x in props["assort"]]) ],
 	]
 
 	communityStructure = [
