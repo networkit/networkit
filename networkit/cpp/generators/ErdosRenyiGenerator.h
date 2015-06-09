@@ -10,7 +10,6 @@
 
 #include "StaticGraphGenerator.h"
 #include <cmath>
-#include "../base/Algorithm.h"
 
 namespace NetworKit {
 
@@ -18,9 +17,8 @@ namespace NetworKit {
  * @ingroup generators
  * Creates G(n, p) graphs.
  */
-class ErdosRenyiGenerator: public Algorithm, public StaticGraphGenerator {
+class ErdosRenyiGenerator: public StaticGraphGenerator {
 protected:
-	Graph G;
 	count n;
 	double p;
 	bool directed;
@@ -38,8 +36,6 @@ public:
 	ErdosRenyiGenerator(count nNodes, double prob, bool directed=false);
 
 	virtual Graph generate();
-
-	void runImpl();
 };
 
 } /* namespace NetworKit */

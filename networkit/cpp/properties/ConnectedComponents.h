@@ -31,7 +31,7 @@ public:
 	/**
 	 * This method determines the connected components for the graph given in the constructor.
 	 */
-	void runImpl();
+	void run();
 
 	/**
 	 * Get the number of connected components.

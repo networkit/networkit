@@ -28,7 +28,7 @@ count DynApproxBetweenness::getNumberOfSamples() {
 }
 
 
-void DynApproxBetweenness::runImpl() {
+void DynApproxBetweenness::run() {
     if (G.isDirected()) {
         throw std::runtime_error("Invalid argument: G must be undirected.");
     }
@@ -53,7 +53,6 @@ void DynApproxBetweenness::runImpl() {
     sampledPaths.resize(r);
 
     for (count i = 0; i < r; i++) {
-	assureRunning();
         DEBUG("sample ", i);
         // sample random node pair
         u[i] = Sampling::randomNode(G);
@@ -87,7 +86,7 @@ void DynApproxBetweenness::runImpl() {
                     }
                 }
                 else {
-                G.forEdgesOf(t, [&](node t, node z, edgeweight w){
+                G.forInEdgesOf(t, [&](node t, node z, edgeweight w){
                         if (Aux::NumericTools::logically_equal(sssp[i]->distances[t], sssp[i]->distances[z] + w)) {
                             // workaround for integer overflow in large graphs
                             bigfloat tmp = sssp[i]->numberOfPaths(z) / sssp[i]->numberOfPaths(t);
@@ -99,7 +98,7 @@ void DynApproxBetweenness::runImpl() {
 
                     });
                 }
-               	INFO("Node considered: ", t);
+                INFO("Node considered: ", t);
                 INFO("Source considered: ", u[i]);
                 assert (choices.size() > 0);
                 node z = Aux::Random::weightedChoice(choices);
@@ -143,7 +142,7 @@ void DynApproxBetweenness::update(const std::vector<GraphEvent>& batch) {
                     }
                 }
                 else {
-                    G.forEdgesOf(t, [&](node t, node z, edgeweight w){
+                    G.forInEdgesOf(t, [&](node t, node z, edgeweight w){
                         if (Aux::NumericTools::logically_equal(sssp[i]->distances[t], sssp[i]->distances[z] + w)) {
                             // workaround for integer overflow in large graphs
                             bigfloat tmp = sssp[i]->numberOfPaths(z) / sssp[i]->numberOfPaths(t);
