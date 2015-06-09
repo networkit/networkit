@@ -103,9 +103,12 @@ def clustering(G, error=0.01):
 		for details see:
 			Schank, Wagner: Approximating Clustering Coefficient and Transitivity
 	"""
-	nSamples = math.ceil(math.log(10) / (error**2)) # fixed confidence of 90%
-	logging.info("taking {0} samples".format(nSamples))
-	return ClusteringCoefficient().approxAvgLocal(G, nSamples)
+	if G.numberOfNodes() < 100:
+		return ClusteringCoefficient().avgLocal(G)
+	else:
+		nSamples = math.ceil(math.log(10) / (error**2)) # fixed confidence of 90%
+		logging.info("taking {0} samples".format(nSamples))
+		return ClusteringCoefficient().approxAvgLocal(G, nSamples)
 
 
 def degreePowerLaw(G, dd=None):
