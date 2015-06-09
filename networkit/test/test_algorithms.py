@@ -12,8 +12,8 @@ class Test_SelfLoops(unittest.TestCase):
 		# toggle the comment/uncomment to test on small or large test cases
 		#self.L = readGraph("PGPgiantcompo.graph", Format.METIS) #without self-loops
 		#self.LL = readGraph("PGPConnectedCompoLoops.gml", Format.GML) #with self-loops sprinkled in
-		self.L = readGraph("looptest1.gml", Format.GML) #without self-loops
-		self.LL = readGraph("looptest2.gml", Format.GML) #with self-loops sprinkled in
+		self.L = readGraph("../../input/looptest1.gml", Format.GML) #without self-loops
+		self.LL = readGraph("../../input/looptest2.gml", Format.GML) #with self-loops sprinkled in
 
 	def test_centrality_Betweenness(self):
 		CL = centrality.Betweenness(self.L)
