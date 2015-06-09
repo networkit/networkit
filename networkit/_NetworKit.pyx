@@ -3560,6 +3560,7 @@ cdef class CutClustering(CommunityDetector):
 
 cdef class DissimilarityMeasure:
 	""" Abstract base class for partition/community dissimilarity measures """
+	# TODO: use conventional class design of parametrized constructor, run-method and getters
 	pass
 
 
