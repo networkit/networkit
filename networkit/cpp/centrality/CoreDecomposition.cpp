@@ -87,7 +87,7 @@ void CoreDecomposition::runImpl() {
 						nodePtr[v] = buckets[deg - 1].begin();
 					}
 				});
-				G2.forInNeighborsOf(u, [&](node v) {
+				G2.forInNeighborsOf(u, [&](node u, node v) {
 					count deg = G2.degreeOut(v) + G2.degreeIn(v);
 					G2.removeEdge(v, u);
 
