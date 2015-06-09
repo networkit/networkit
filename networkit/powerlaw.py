@@ -1,3 +1,6 @@
+import warnings
+warnings.filterwarnings("ignore")
+
 class Fit(object):
     """
     A fit of a data set to various probability distributions, namely power
@@ -14,18 +17,18 @@ class Fit(object):
     xmin : int or float, optional
         The data value beyond which distributions should be fitted. If
         None an optimal one will be calculated.
-    xmax : int or float, optional 
+    xmax : int or float, optional
         The maximum value of the fitted distributions.
     estimate_discrete : bool, optional
         Whether to estimate the fit of a discrete power law using fast
         analytical methods, instead of calculating the fit exactly with
         slow numerical methods. Very accurate with xmin>6
     sigma_threshold : float, optional
-        Upper limit on the standard error of the power law fit. Used after 
+        Upper limit on the standard error of the power law fit. Used after
         fitting, when identifying valid xmin values.
     parameter_range : dict, optional
-        Dictionary of valid parameter ranges for fitting. Formatted as a 
-        dictionary of parameter names ('alpha' and/or 'sigma') and tuples 
+        Dictionary of valid parameter ranges for fitting. Formatted as a
+        dictionary of parameter names ('alpha' and/or 'sigma') and tuples
         of their lower and upper limits (ex. (1.5, 2.5), (None, .1)
     """
 
@@ -149,7 +152,7 @@ class Fit(object):
         xmins, xmin_indices = unique(possible_xmins, return_index=True)
 #Don't look at last xmin, as that's also the xmax, and we want to at least have TWO points to fit!
         xmins = xmins[:-1]
-        xmin_indices = xmin_indices[:-1] 
+        xmin_indices = xmin_indices[:-1]
         if len(xmins)<=0:
             print("Less than 2 unique data values left after xmin and xmax "
                     "options! Cannot fit. Returning nans.")
@@ -224,7 +227,7 @@ class Fit(object):
         dist2 : string
             Name of the second candidate distribution (ex. 'exponential')
         nested : bool or None, optional
-            Whether to assume the candidate distributions are nested versions 
+            Whether to assume the candidate distributions are nested versions
             of each other. None assumes not unless the name of one distribution
             is a substring of the other. True by default.
 
@@ -251,7 +254,7 @@ class Fit(object):
         dist2 : string
             Name of the second candidate distribution (ex. 'exponential')
         nested : bool or None, optional
-            Whether to assume the candidate distributions are nested versions 
+            Whether to assume the candidate distributions are nested versions
             of each other. None assumes not unless the name of one distribution
             is a substring of the other.
 
@@ -315,7 +318,7 @@ class Fit(object):
             xmin = self.xmin
             xmax = self.xmax
         return cdf(data, xmin=xmin, xmax=xmax, survival=survival,
-                **kwargs) 
+                **kwargs)
 
     def ccdf(self, original_data=False, survival=True, **kwargs):
         """
@@ -348,7 +351,7 @@ class Fit(object):
             xmin = self.xmin
             xmax = self.xmax
         return cdf(data, xmin=xmin, xmax=xmax, survival=survival,
-                **kwargs) 
+                **kwargs)
 
     def pdf(self, original_data=False, **kwargs):
         """
@@ -490,8 +493,8 @@ class Distribution(object):
         The parameters of the distribution. Will be overridden if data is
         given or the fit method is called.
     parameter_range : dict, optional
-        Dictionary of valid parameter ranges for fitting. Formatted as a 
-        dictionary of parameter names ('alpha' and/or 'sigma') and tuples 
+        Dictionary of valid parameter ranges for fitting. Formatted as a
+        dictionary of parameter names ('alpha' and/or 'sigma') and tuples
         of their lower and upper limits (ex. (1.5, 2.5), (None, .1)
     initial_parameters : tuple or list, optional
         Initial values for the parameter in the fitting search.
@@ -586,7 +589,7 @@ class Distribution(object):
         """
         Returns the Kolmogorov-Smirnov distance D between the distribution and
         the data. Also sets the properties D+, D-, V (the Kuiper testing
-        statistic), and Kappa (1 + the average difference between the 
+        statistic), and Kappa (1 + the average difference between the
         theoretical and empirical distributions).
 
         Parameters
@@ -745,12 +748,12 @@ class Distribution(object):
                 upper_data = data+.5
 #Temporarily expand xmin and xmax to be able to grab the extra bit of
 #probability mass beyond the (integer) values of xmin and xmax
-#Note this is a design decision. One could also say this extra 
+#Note this is a design decision. One could also say this extra
 #probability "off the edge" of the distribution shouldn't be included,
 #and that implementation is retained below, commented out. Note, however,
 #that such a cliff means values right at xmin and xmax have half the width to
 #grab probability from, and thus are lower probability than they would otherwise
-#be. This is particularly concerning for values at xmin, which are typically 
+#be. This is particularly concerning for values at xmin, which are typically
 #the most likely and greatly influence the distribution's fit.
                 self.xmin -= .5
                 if self.xmax:
@@ -797,7 +800,7 @@ class Distribution(object):
         Parameters
         ----------
         r : dict
-            A dictionary of the parameter range. Restricted parameter 
+            A dictionary of the parameter range. Restricted parameter
             names are keys, and with tuples of the form (lower_bound,
             upper_bound) as values.
         initial_parameters : tuple or list, optional
@@ -853,7 +856,7 @@ class Distribution(object):
         The likelihoods of the observed data from the theoretical distribution.
         Another name for the probabilities or probability density function.
         """
-        return self.pdf(data) 
+        return self.pdf(data)
 
     def loglikelihoods(self, data):
         """
@@ -972,7 +975,7 @@ class Distribution(object):
             object or the parent Fit object, if present. Approximations only
             exist for some distributions (namely the power law). If an
             approximation does not exist an estimate_discrete setting of True
-            will not be inherited. 
+            will not be inherited.
 
         Returns
         -------
@@ -1246,10 +1249,10 @@ class Streched_Exponential(Distribution):
         if not self.discrete and self.in_range() and not self.xmax:
             data = trim_to_range(data, xmin=self.xmin, xmax=self.xmax)
             from numpy import log
-            loglikelihoods = ( 
+            loglikelihoods = (
                     log((data*self.Lambda)**(self.beta-1) *
-                        self.beta * self. Lambda) + 
-                    (self.Lambda*self.xmin)**self.beta - 
+                        self.beta * self. Lambda) +
+                    (self.Lambda*self.xmin)**self.beta -
                         (self.Lambda*data)**self.beta)
             #Simplified so as not to throw a nan from infs being divided by each other
             from sys import float_info
@@ -1389,7 +1392,7 @@ class Lognormal(Distribution):
     def _cdf_base_function(self, x):
         from numpy import sqrt, log
         from scipy.special import erf
-        return  0.5 + ( 0.5 * 
+        return  0.5 + ( 0.5 *
                 erf((log(x)-self.mu) / (sqrt(2)*self.sigma)))
 
     def _pdf_base_function(self, x):
@@ -1471,7 +1474,7 @@ def nested_loglikelihood_ratio(loglikelihoods1, loglikelihoods2, **kwargs):
     Returns
     -------
     R : float
-        The loglikelihood ratio of the two sets of likelihoods. If positive, 
+        The loglikelihood ratio of the two sets of likelihoods. If positive,
         the first set of likelihoods is more likely (and so the probability
         distribution that produced them is a better fit to the data). If
         negative, the reverse is true.
@@ -1509,7 +1512,7 @@ def loglikelihood_ratio(loglikelihoods1, loglikelihoods2,
     Returns
     -------
     R : float
-        The loglikelihood ratio of the two sets of likelihoods. If positive, 
+        The loglikelihood ratio of the two sets of likelihoods. If positive,
         the first set of likelihoods is more likely (and so the probability
         distribution that produced them is a better fit to the data). If
         negative, the reverse is true.
@@ -1638,7 +1641,7 @@ def cumulative_distribution_function(data,
         from numpy import arange
         CDF = arange(n)/n
     else:
-#This clever bit way of using searchsorted to rapidly calculate the 
+#This clever bit way of using searchsorted to rapidly calculate the
 #CDF of data with repeated values comes from Adam Ginsburg's plfit code,
 #specifically https://github.com/keflavich/plfit/commit/453edc36e4eb35f35a34b6c792a6d8c7e848d3b5#plfit/plfit.py
         from numpy import searchsorted, unique
@@ -1828,7 +1831,7 @@ def bisect_map(mn, mx, function, target):
     Returns
     -------
     value : the input value that yields the target solution. If there is no
-    exact solution in the input sequence, finds the nearest value k such that 
+    exact solution in the input sequence, finds the nearest value k such that
     function(k) <= target < function(k+1). This is similar to the behavior of
     bisect_left in the bisect package. If even the first, leftmost value of seq
     does not satisfy this condition, -1 is returned.
