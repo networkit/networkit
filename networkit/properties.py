@@ -156,6 +156,10 @@ def degeneracy(G):
 
 
 def properties(G, settings):
+	"""
+	Helper function for the properties.overview function.
+	Calculates a number of network properties.
+	"""
 	logging.info("[...] calculating properties")
 
 	# size
