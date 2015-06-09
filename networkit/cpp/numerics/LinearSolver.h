@@ -24,7 +24,7 @@ public:
 	virtual ~LinearSolver();
 
 	virtual void setup(const Matrix &matrix) = 0;
-	void setup(const Graph &graph);
+	virtual void setup(const Graph &graph);
 
 
 	virtual bool solve(const Vector &rhs, Vector &result, count maxIterations = 20) = 0;

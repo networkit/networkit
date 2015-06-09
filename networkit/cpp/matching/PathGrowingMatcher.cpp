@@ -40,7 +40,7 @@ Matching PathGrowingMatcher::run(const Graph& G, const bool matchSelfLoops) {
 
 			// find heaviest incident edge
 			node bestNeighbor = 0;
-			edgeweight bestWeight = 0;
+			edgeweight bestWeight = std::numeric_limits<edgeweight>::min();
 			graph.forEdgesOf(v, [&](node v, node u, edgeweight weight) {
 				if (weight > bestWeight && (v != u || matchSelfLoops)) {
 					bestNeighbor = u;

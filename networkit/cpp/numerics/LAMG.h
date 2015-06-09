@@ -21,7 +21,7 @@
 
 namespace NetworKit {
 
-class LAMG : public MultigridHierarchyBuilder {
+class LAMG : public MultigridHierarchyBuilder<LAMGHierarchy> {
 private:
 	GaussSeidelRelaxation smoother;
 	double guard, cycleIndex;
@@ -31,8 +31,9 @@ private:
 	bool fastRelaxationSpeed(const Matrix &matrix) const;
 	Matrix computeAffinityMatrix(const Matrix &matrix, const std::vector<Vector> &testVectors) const;
 	void addHighDegreeSeedNodes(const Matrix &matrix, std::vector<int64_t> &status) const;
-	std::vector<std::vector<index>> computeStrongNeighbors(const Matrix &affinityMatrix, const double delta) const;
+	std::vector<std::vector<index>> computeStrongNeighbors(const Matrix &affinityMatrix, const double delta, const std::vector<int64_t> &status, std::vector<std::vector<index>> &bins) const;
 	bool findBestSeed(const Matrix &affinityMatrix, const std::vector<index> &strongNeighborsOfU, const std::vector<int64_t> &status, const index u, index &s) const;
+	bool findBestSeedEnergyCorrected(const Matrix &matrix, const Matrix &affinityMatrix, const std::vector<index> &strongNeighborsOfU, const std::vector<Vector> &testVectors, const std::vector<int64_t> &status, const index u, index &s) const;
 	void aggregationStage(const Matrix &matrix, count &numCoarseNodes, const Matrix &affinityMatrix, std::vector<Vector> &testVectors, std::vector<int64_t> &status, std::vector<count> &aggregateSize, double delta) const;
 
 	bool addEliminationLevel(Matrix &matrix, LAMGHierarchy &hierarchy) const;
@@ -42,7 +43,7 @@ private:
 public:
 	LAMG(double guard=0.7, double cycleIndex=1.5);
 
-	MultigridHierarchy buildHierarchy(const Matrix &matrix) const;
+	LAMGHierarchy buildHierarchy(const Matrix &matrix) const;
 };
 
 } /* namespace NetworKit */

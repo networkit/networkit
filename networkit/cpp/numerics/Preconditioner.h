@@ -14,7 +14,7 @@
 
 #include "../algebraic/Matrix.h"
 #include "../algebraic/Vector.h"
-
+#include "../sdd/SDDSolver.h"
 
 namespace NetworKit {
 

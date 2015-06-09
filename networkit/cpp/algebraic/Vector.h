@@ -10,6 +10,7 @@
 
 #include <vector>
 #include "../Globals.h"
+#include <cassert>
 
 namespace NetworKit {
 
@@ -50,8 +51,21 @@ public:
 	 */
 	Vector(const std::initializer_list<double> &list);
 
-	/** Copy constructor */
-	Vector(const Vector &other);
+	/** Default copy constructor */
+	Vector(const Vector &other) = default;
+
+	/** Default move constructor */
+	Vector(Vector &&other) = default;
+
+	/** Default destructor */
+	virtual ~Vector() = default;
+
+	/** Default copy assignment operator */
+	Vector& operator=(const Vector &other) = default;
+
+	/** Default move assignment operator */
+	Vector& operator=(Vector &&other) = default;
+
 
 	/**
 	 * @return dimension of vector
@@ -78,26 +92,27 @@ public:
 	 */
 	double length() const;
 
+
+	/**
+	 * Calculates and returns the arithmetic mean of this vector
+	 * @return The arithmetic mean of this vector.
+	 */
+	double mean() const;
+
 	/**
 	 * @return Reference to the element at index @a idx.
 	 */
 	inline double& operator[](const NetworKit::index &idx) {
-		if (idx >= values.size()) {
-			throw std::out_of_range("index out of range");
-		} else {
-			return values[idx];
-		}
+		assert(idx < values.size());
+		return values[idx];
 	}
 
 	/**
 	 * @return Constant reference to the element at index @a idx.
 	 */
 	inline const double& operator[](const uint64_t &idx) const {
-		if (idx >= values.size()) {
-			throw std::runtime_error("index out of range");
-		} else {
-			return values[idx];
-		}
+		assert(idx < values.size());
+		return values[idx];
 	}
 
 	/**
@@ -166,11 +181,21 @@ public:
 	Vector operator+(const Vector &other) const;
 
 	/**
+	 * Adds @a value to each element of this vector and returns the result.
+	 */
+	Vector operator+(const double value) const;
+
+	/**
 	 * Adds @a other to this vector.
 	 * Note that the dimensions of the vectors have to be the same.
 	 * @return Reference to this vector.
 	 */
 	Vector& operator+=(const Vector &other);
+
+	/**
+	 * Adds @a value to each element of this vector.
+	 */
+	Vector& operator+=(const double value);
 
 	/**
 	 * Subtracts @a other from this vector and returns the result.
@@ -181,11 +206,21 @@ public:
 	Vector operator-(const Vector &other) const;
 
 	/**
+	 * Subtracts @a value from each element of this vector and returns the result.
+	 */
+	Vector operator-(const double value) const;
+
+	/**
 	 * Subtracts @a other from this vector.
 	 * Note that the dimensions of the vectors have to be the same.
 	 * @return Reference to this vector.
 	 */
 	Vector& operator-=(const Vector &other);
+
+	/**
+	 * Subtracts @a value from each element of this vector.
+	 */
+	Vector& operator-=(const double value);
 
 	/**
 	 * Iterate over all elements of the vector and call handler (lambda closure).

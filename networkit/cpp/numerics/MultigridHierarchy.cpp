@@ -10,17 +10,17 @@
 namespace NetworKit {
 
 MultigridHierarchy::MultigridHierarchy(const Matrix &fineMatrix) {
-	coarseMatrices.push_back(fineMatrix);
+	laplacianMatrices.push_back(fineMatrix);
 }
 
 void MultigridHierarchy::addLevel(const Matrix &coarseMatrix, const Matrix &interpolationMatrix) {
-	coarseMatrices.push_back(coarseMatrix);
+	laplacianMatrices.push_back(coarseMatrix);
 	interpolationMatrices.push_back(interpolationMatrix);
 }
 
 const Matrix& MultigridHierarchy::getLaplacian(const index level) {
 	assert(level < getNumLevels());
-	return coarseMatrices[level];
+	return laplacianMatrices[level];
 }
 
 const Matrix& MultigridHierarchy::getInterpolationMatrix(const index level) {
@@ -36,23 +36,27 @@ count MultigridHierarchy::getNumPostSmooth(const index level) const {
 	return 3;
 }
 
-count MultigridHierarchy::getNumMultigridCycles(const index level) const {
-	return 0;
+float MultigridHierarchy::getNumMultigridCycles(const index level) const {
+	return 0.0;
 }
 
-Vector MultigridHierarchy::restriction(const index level, const Vector &currentApproximation, const Vector &rhs) const {
+Vector MultigridHierarchy::createInitialCoarseResult(const index level, const Vector &xFine) const {
+	return Vector(laplacianMatrices[level].numberOfRows());
+}
+
+Vector MultigridHierarchy::restriction(const index level, const Vector &xFine, const Vector &bFine) const {
 	assert(level < getNumLevels());
-	Vector residual = rhs - coarseMatrices[level] * currentApproximation;
+	Vector residual = bFine - laplacianMatrices[level] * xFine;
 	return Matrix::mTvMultiply(interpolationMatrices[level], residual);
 }
 
-Vector MultigridHierarchy::prolongation(const index level, const Vector &coarseApproximation, const Vector &fineApproximation) const {
+Vector MultigridHierarchy::prolongation(const index level, const Vector &xCoarse, const Vector &xFine, const Vector &bFine) const {
 	assert(level < getNumLevels());
-	return fineApproximation + interpolationMatrices[level] * coarseApproximation;
+	return xFine + interpolationMatrices[level] * xCoarse;
 }
 
 count MultigridHierarchy::getNumLevels() const {
-	return coarseMatrices.size();
+	return laplacianMatrices.size();
 }
 
 } /* namespace NetworKit */
