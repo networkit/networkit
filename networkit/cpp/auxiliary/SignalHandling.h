@@ -6,7 +6,32 @@
 
 namespace Aux {
 
+	class SignalHandler {
+	public:
+		SignalHandler();
+
+		~SignalHandler();
+
+		void assureRunning();
+
+		bool isRunning();
+	private:
+		uint64_t caller;
+	};
+	
 namespace SignalHandling {
+		/**
+		 * Special Exception to indicate, that a SIGINT has been received.
+		 */
+		class InterruptException : public std::exception {
+		public:
+			InterruptException() : std::exception() {}
+			virtual const char* what() const noexcept
+			{
+			    return "Received CTRL+C/SIGINT";
+			}
+		};
+
 		/**
 		 * Returns true, if CTRL+C/SIGINT has been received, false otherwise.
 		 * @return A boolean indicating if SIGINT has been received since construction/reset
@@ -24,15 +49,16 @@ namespace SignalHandling {
 		 * Also registers `caller` to be the root calling object, if none is registered yet.
 		 * @param caller address of the calling object
 		 */
-		void init(uint64_t caller);
+		void init(SignalHandler* caller);
 
 		/**
 		 * Resets receivedSIGINT to false and rootSet to false to allow a new initialization, 
 		 * if the calling object is the same as the root.
 		 * @param caller address of the calling object
 		 */
-		void reset(uint64_t caller);
+		void reset(SignalHandler* caller);
 	};
+
 }
 
 #endif /* SIGNALHANDLING_H */

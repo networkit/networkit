@@ -5,24 +5,9 @@
 #include <stdexcept>
 
 namespace NetworKit {
-	/**
-	 * Special Exception to indicate, that a SIGINT has been received.
-	 */
-	class InterruptException : public std::exception {
-	public:
-		InterruptException() : std::exception() {}
-		virtual const char* what() const noexcept
-		{
-		    return "Received CTRL+C/SIGINT";
-  		}
-	};
 
 class Algorithm {
 protected:
-	/**
-	 * The method that actually holds the implementation of an algorithm. Subclasses need to override it.
-	 */
-	virtual void runImpl() = 0;
 	/**
 	 * A boolean variable indicating whether an algorithm has finished its computation or not.
 	 */
@@ -41,12 +26,7 @@ public:
 	/**
 	 * The generic run method which calls runImpl() and takes care of setting @hasRun to the appropriate value.
 	 */
-	void run();
-
-	/**
-	 * Uses SignalHandling to check whether a SIGINT signal has been received. If so, it throws an InterruptException.
-	 */
-	void assureRunning();
+	virtual void run() = 0;
 
 	/**
 	 * Indicates whether an algorithm has completed computation or not.

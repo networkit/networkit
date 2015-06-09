@@ -31,7 +31,7 @@ public:
 	 */
 	EigenvectorCentrality(const Graph& G, double tol = 1e-8);
 
-	void runImpl() override;
+	virtual void run();
 };
 
 } /* namespace NetworKit */
