@@ -64,7 +64,7 @@ def laplacianMatrix(G):
 	A = adjacencyMatrix(G)
 	return scipy.sparse.csgraph.laplacian(A)
 
-def PageRankMatrix(G, damp):
+def PageRankMatrix(G, damp=0.85):
 	"""
 	Builds the PageRank matrix of the undirected Graph `G`. This matrix corresponds with the
 	PageRank matrix used in the C++ backend.
@@ -74,7 +74,8 @@ def PageRankMatrix(G, damp):
 	----------
 	G : Graph
 		The graph.
-
+	damp:
+		Damping factor of the PageRank algorithm (0.85 by default)
 	Returns
 	-------
 	pr : ndarray

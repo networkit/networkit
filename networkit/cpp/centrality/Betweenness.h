@@ -33,7 +33,7 @@ public:
 	* Compute betweenness scores sequential or parallel depending on @a runUnweightedInParallel.
 	*
 	*/
-	void runImpl() override;
+	void run() override;
 
 	/*
 	* Returns the maximum possible Betweenness a node can have in a graph with the same amount of nodes (=a star)

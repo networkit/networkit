@@ -31,7 +31,7 @@ public:
 	/**
 	 * This method determines the connected components for the graph g.
 	 */
-	void runImpl();
+	void run();
 
 	/**
 	 * This method returns the number of connected components.

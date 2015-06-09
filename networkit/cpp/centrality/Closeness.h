@@ -32,7 +32,7 @@ public:
 	* Compute closeness scores parallel
 	*
 	*/
-	void runImpl() override;
+	void run() override;
 
 	/*
 	 * Returns the maximum possible Closeness a node can have in a graph with the same amount of nodes (=a star)
