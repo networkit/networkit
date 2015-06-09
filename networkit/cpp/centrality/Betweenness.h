@@ -33,7 +33,7 @@ public:
 	* Compute betweenness scores sequential or parallel depending on @a runUnweightedInParallel.
 	*
 	*/
-	void runImpl() override;
+	void run() override;
 
 };
 

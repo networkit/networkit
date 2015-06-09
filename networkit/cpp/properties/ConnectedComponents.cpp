@@ -19,14 +19,13 @@ ConnectedComponents::ConnectedComponents(const Graph& G) : G(G), hasRun(false) {
 	}
 }
 
-void ConnectedComponents::runImpl() {
+void ConnectedComponents::run() {
 	DEBUG("initializing labels");
 	component = Partition(G.upperNodeIdBound(), none);
 	numComponents = 0;
 
 	// perform breadth-first searches
 	G.forNodes([&](node u) {
-		assureRunning();
 		if (component[u] == none) {
 			component.setUpperBound(numComponents+1);
 			index c = numComponents;

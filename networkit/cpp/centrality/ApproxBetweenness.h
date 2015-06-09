@@ -36,7 +36,7 @@ public:
 	 */
 	ApproxBetweenness(const Graph& G, double epsilon=0.01, double delta=0.1, count diameterSamples=0);
 
-	void runImpl() override;
+	void run() override;
 
 	/**
 	 * @return number of samples taken in last run

@@ -33,7 +33,7 @@ public:
 	 */
 	KatzCentrality(const Graph& G, double alpha = 5e-4, double beta = 0.1, double tol = 1e-8);
 
-	void runImpl() override;
+	virtual void run();
 };
 
 } /* namespace NetworKit */
