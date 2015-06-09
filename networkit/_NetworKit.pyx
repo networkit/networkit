@@ -5390,41 +5390,44 @@ cdef class GCE:
 
 cdef extern from "cpp/clique/MaxClique.h":
 	cdef cppclass _MaxClique "NetworKit::MaxClique":
-		_MaxClique(_Graph G) except +
-		count run(count lb) nogil except +
-		count run() nogil except +
+		_MaxClique(_Graph G, count lb) except +
+		void run() nogil except +
+		count getMaxCliqueSize() except +
 
 cdef class MaxClique:
 	"""
 	Exact algorithm for computing the size of the largest clique in a graph.
 	Worst-case running time is exponential, but in practice the algorithm is fairly fast.
 	Reference: Pattabiraman et al., http://arxiv.org/pdf/1411.7460.pdf
+
+	Parameters:
+	-----------
+	G : graph in which the cut is to be produced, must be unweighted.
+	lb : the lower bound of the size of the maximum clique.
 	"""
 	cdef _MaxClique* _this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G not None):
+	def __cinit__(self, Graph G not None, lb=0):
 		self._G = G
-		self._this = new _MaxClique(G._this)
+		self._this = new _MaxClique(G._this, lb)
+
 
 	def __dealloc__(self):
 		del self._this
 
-	def run(self, count lb=0):
+	def run(self):
 		"""
 		Actual maximum clique algorithm. Determines largest clique each vertex
 	 	is contained in and returns size of largest. Pruning steps keep running time
 	 	acceptable in practice.
-
-	 	Parameters:
-	 	-----------
-	 	lb : Lower bound for maximum clique size.
-
-	 	Returns:
-	 	--------
-	 	The size of the largest clique.
 	 	"""
 		cdef count size
 		with nogil:
-			size = self._this.run(lb)
-		return size
+			self._this.run()
+
+	def getMaxCliqueSize(self):
+		"""
+		Returns the size of the biggest clique
+		"""
+		return self._this.getMaxCliqueSize()
