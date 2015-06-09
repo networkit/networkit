@@ -35,7 +35,7 @@ public:
 	/**
 	 * Detect communities.
 	 */
-	virtual void runImpl();
+	virtual void run();
 
 	/**
 	* Get number of iterations in last run.

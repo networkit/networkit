@@ -16,7 +16,7 @@ EigenvectorCentrality::EigenvectorCentrality(const Graph& G, double tol):
 
 }
 
-void EigenvectorCentrality::runImpl() {
+void EigenvectorCentrality::run() {
 	count z = G.upperNodeIdBound();
 	std::vector<double> values(z, 1.0);
 	scoreData = values;
@@ -71,7 +71,6 @@ void EigenvectorCentrality::runImpl() {
 //		TRACE(values);
 
 		scoreData = values;
-		assureRunning();
 	} while (! converged(length, oldLength));
 
 	// check sign and correct if necessary
