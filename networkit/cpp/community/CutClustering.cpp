@@ -13,7 +13,7 @@
 
 NetworKit::CutClustering::CutClustering(const Graph& G, NetworKit::edgeweight alpha) : CommunityDetectionAlgorithm(G), alpha(alpha) { }
 
-void NetworKit::CutClustering::runImpl() {
+void NetworKit::CutClustering::run() {
 	Partition result(G.upperNodeIdBound());
 	result.setUpperBound(G.upperNodeIdBound());
 

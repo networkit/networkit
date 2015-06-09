@@ -30,7 +30,7 @@ public:
     /**
      * Runs the static betweenness centrality algorithm on the initial graph.
      */
-    void runImpl() override;
+    void run() override;
 
     /**
     * Updates the betweenness centralities after a batch of edge insertions on the graph.

@@ -34,7 +34,7 @@ void EPP::setOverlapper(std::unique_ptr<Overlapper>& overlap) {
 	this->overlap = std::move(overlap);
 }
 
-void EPP::runImpl() {
+void EPP::run() {
 	INFO("STARTING EnsemblePreprocessing on G=" , G.toString());
 
 	// fixed sub-algorithms
@@ -50,8 +50,7 @@ void EPP::runImpl() {
 	for (index b = 0; b < baseClusterers.size(); b += 1) {
 		// FIXME: initialization of base clusterer?
 		baseClusterers.at(b)->run();
-		if (baseClusterers.at(b)->hasFinished())
-			baseClusterings.at(b) = baseClusterers.at(b)->getPartition();
+		baseClusterings.at(b) = baseClusterers.at(b)->getPartition();
 	}
 
 	// create core clustering
@@ -69,15 +68,14 @@ void EPP::runImpl() {
 		DEBUG("final clusterer is PLP");
 		this->finalClusterer.reset(new PLP(Gcore, *tmp));
 	}
-	assureRunning();
 	this->finalClusterer->run();
-	assureRunning();
-		Partition finalCoarse = this->finalClusterer->getPartition();
+	Partition finalCoarse = this->finalClusterer->getPartition();
 
-		// project clustering of contracted graph back to original graph
-		Partition final = projector.projectBack(Gcore, G, fineToCoarse, finalCoarse);
-		// return clustering
-		result = std::move(final);
+	// project clustering of contracted graph back to original graph
+	Partition final = projector.projectBack(Gcore, G, fineToCoarse, finalCoarse);
+	// return clustering
+	result = std::move(final);
+	hasRun = true;
 }
 
 std::string EPP::toString() const {

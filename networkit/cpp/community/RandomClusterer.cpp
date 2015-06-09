@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-Partition RandomClusterer::runImpl(Graph& G) {
+Partition RandomClusterer::run(Graph& G) {
 	ClusteringGenerator gen;
 	return gen.makeRandomClustering(G, 42); // TODO: does this need a command line parameter?
 }

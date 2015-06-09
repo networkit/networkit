@@ -28,7 +28,10 @@ storePreds(storePredecessors) {
 }
 
 
-void DynBetweenness::runImpl() {
+void DynBetweenness::run() {
+/*    if (G.isDirected()) {
+        throw std::runtime_error("Invalid argument: G must be undirected.");
+    }*/
     count z = G.upperNodeIdBound();
     scoreData.clear();
     scoreData.resize(z);
@@ -57,7 +60,7 @@ void DynBetweenness::runImpl() {
         }
 
         sssp->run();
-	assureRunning();
+
         G.forNodes([&](node t){
             distances[s][t] = sssp->distance(t);
             npaths[s][t] = sssp->numberOfPaths(t);
@@ -100,7 +103,7 @@ void DynBetweenness::updateUnweighted(GraphEvent e) {
         u_l = e.v;
     }
     G.forNodes([&] (node s){
-	if (!G.isDirected()) {
+        if (!G.isDirected()) {
             if (distances[s][e.u] > distances[s][e.v]){
                 u_l = e.u;
                 u_h = e.v;
@@ -163,9 +166,9 @@ void DynBetweenness::updateUnweighted(GraphEvent e) {
                             new_npaths[v] += new_npaths[w];
                             if (storePreds) {
                                 predecessors[s][v].push_back(w);
-			    }
-			}
-		    });
+                            }
+                        }
+                    });
                     G.forNeighborsOf(v, [&] (node w){
                         if (new_dist[w] >= new_dist[v] && touched[w] == 0) {
                             if (new_dist[w] > new_dist[v])

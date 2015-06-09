@@ -35,9 +35,7 @@ public:
 	/**
 	* Perform k-core decomposition of graph passed in constructor.
 	*/
-	//void run();
-
-	void runImpl() override;
+	void run();
 
 	/**
 	 * Get the k-cores as sets of nodes, indexed by k.
