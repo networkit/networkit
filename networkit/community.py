@@ -7,7 +7,7 @@ from _NetworKit import Partition, Coverage, Modularity, CommunityDetector, PLP, 
 	NodeStructuralRandMeasure, GraphStructuralRandMeasure, JaccardMeasure, NMIDistance, AdjustedRandMeasure,\
 	EPPFactory, EdgeListPartitionReader, GraphClusteringTools, ClusteringGenerator, PartitionIntersection, HubDominance, CoreDecomposition, CutClustering, ParallelPartitionCoarsening
 
-# R.I.P.: The CNM (Clauset, Newman, Moore) community detection algorithm - it was always a bit slow, but it broke down in the end. Resurrect it from ancient history (>= 3.4.1) if needed for experimental purposes.
+# R.I.P.: The CNM (Clauset, Newman, Moore) community detection algorithm - it was always a bit slow, but it broke down in the end. Resurrect it from history (<= 3.4.1) if needed for experimental purposes.
 
 # local imports
 #from .properties import CoreDecomposition, overview
@@ -148,6 +148,7 @@ def kCoreCommunityDetection(G, k, algo=None, inspect=True):
 def mesoscopicResponseFunction(G, samples=100):
 	"""
 	"""
+	raise NotImplementedError("work in progress")
 	m = G.numberOfEdges()
 	gammaRangeLow = [math.e**x for x in range(-10, 0)]
 	gammaRangeHigh = [math.e**x for x in range(0, math.ceil(math.log(2*m)))]
