@@ -9,8 +9,6 @@
 
 namespace NetworKit {
 
-MultigridHierarchy MultigridHierarchyBuilder::buildHierarchy(const Graph &graph) const {
-	return buildHierarchy(LaplacianMatrix(graph));
-}
+
 
 } /* namespace NetworKit */

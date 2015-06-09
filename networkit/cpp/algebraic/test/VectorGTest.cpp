@@ -168,6 +168,13 @@ TEST(VectorGTest, testVectorSubtraction) {
 	for (uint64_t i = 0; i < v1.getDimension(); i++) {
 		EXPECT_EQ(v3[i], v1[i]);
 	}
+
+	v1 = Vector{1.0, 2.0, 3.0, 4.0};
+	v1 -= 1.0;
+	EXPECT_EQ(v1[0], 0.0);
+	EXPECT_EQ(v1[1], 1.0);
+	EXPECT_EQ(v1[2], 2.0);
+	EXPECT_EQ(v1[3], 3.0);
 }
 
 TEST(VectorGTest, testVectorIterators) {
@@ -205,6 +212,12 @@ TEST(VectorGTest, testVectorIterators) {
 	for (uint64_t i = 0; i < v.getDimension(); i++) {
 		EXPECT_EQ((i + 3.0), v[i]);
 	}
+}
+
+TEST(VectorGTest, testMean) {
+	Vector v = {1.0, 2.0, 3.0, 4.0, 5.0};
+	double mean = v.mean();
+	EXPECT_EQ(mean, 3);
 }
 
 

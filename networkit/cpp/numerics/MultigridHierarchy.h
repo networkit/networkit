@@ -14,12 +14,13 @@ namespace NetworKit {
 
 class MultigridHierarchy {
 protected:
-	std::vector<Matrix> coarseMatrices;
+	std::vector<Matrix> laplacianMatrices;
 	std::vector<Matrix> interpolationMatrices;
 
 public:
 	MultigridHierarchy() {}
 	MultigridHierarchy(const Matrix &fineMatrix);
+	virtual ~MultigridHierarchy() {}
 
 	void addLevel(const Matrix &coarseMatrix, const Matrix &interpolationMatrix);
 
@@ -28,10 +29,11 @@ public:
 
 	virtual count getNumPreSmooth(const index level) const;
 	virtual count getNumPostSmooth(const index level) const;
-	virtual count getNumMultigridCycles(const index level) const;
+	virtual float getNumMultigridCycles(const index level) const;
 
-	Vector restriction(const index level, const Vector &currentApproximation, const Vector &rhs) const;
-	Vector prolongation(const index level, const Vector &coarseApproximation, const Vector &fineApproximation) const;
+	virtual Vector createInitialCoarseResult(const index level, const Vector &xFine) const;
+	virtual Vector restriction(const index level, const Vector &xFine, const Vector &bFine) const;
+	virtual Vector prolongation(const index level, const Vector &xCoarse, const Vector &xFine, const Vector &bFine) const;
 
 	count getNumLevels() const;
 

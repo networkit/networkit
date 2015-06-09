@@ -29,8 +29,18 @@ public:
 	 *
 	 * @param G The graph.
 	 * @param s The source node.
+   * @param storePaths
+   * @param storeStack
 	 */
 	SSSP(const Graph& G, node s, bool storePaths=true, bool storeStack=false);
+
+  /**
+   * Creates the SSSP class for @a G and sources @a sources.
+   *
+   * @param G The graph.
+   * @param sources The source nodes.
+   */
+  SSSP(const Graph& G, const std::vector<node>& sources);
 
 	/** Computes the shortest paths from the source to all other nodes. */
 	virtual void run(node t = none) = 0;
@@ -82,28 +92,33 @@ public:
 	 */
 	virtual std::set<std::vector<node> > getPaths(node t, bool forward=true) const;
 
-	/* Returns the number of shortest paths to node t.*/
-	bigfloat getNumberOfPaths(node t) const;
+  /**
+   * @return a canonical shortest-path predecessor for each node.
+   */
+  virtual std::vector<node> getCanonicalPredecessors() const;
+
+  inline bigfloat getNumberOfPaths(node t) const;
 
 	/**
 	* Returns a stack of nodes ordered in decreasing distance from the source
 	*
-	* @return stack of nodes
+  * @return stack of nodes
 	*/
 	virtual std::stack<node> getStack() const;
 
-protected:
+public:
+//protected:
 
 	const Graph& G;
-	const node source;
+  const std::vector<node> sources;
 	std::vector<edgeweight> distances;
 	std::vector<std::vector<node> > previous; // predecessors on shortest path
 	std::vector<bigfloat> npaths;
 
 	std::stack<node> stack;
 
-	bool storePaths;		//!< if true, paths are reconstructable and the number of paths is stored
-	bool storeStack;		//!< if true, store a stack of nodes ordered in decreasing distance from the source
+  bool storePaths = true;		//!< if true, paths are reconstructable and the number of paths is stored
+  bool storeStack = false;		//!< if true, store a stack of nodes ordered in decreasing distance from the source
 };
 
 inline edgeweight SSSP::distance(node t) const {

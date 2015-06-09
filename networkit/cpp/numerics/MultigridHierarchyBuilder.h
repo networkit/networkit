@@ -13,14 +13,20 @@
 
 namespace NetworKit {
 
+template<class H>
 class MultigridHierarchyBuilder {
 public:
 	MultigridHierarchyBuilder() {}
 	virtual ~MultigridHierarchyBuilder() {}
 
-	virtual MultigridHierarchy buildHierarchy(const Matrix &matrix) const = 0;
-	virtual MultigridHierarchy buildHierarchy(const Graph &graph) const;
+	virtual H buildHierarchy(const Matrix &matrix) const = 0;
+	virtual H buildHierarchy(const Graph &graph) const;
 };
+
+template <typename H>
+H MultigridHierarchyBuilder<H>::buildHierarchy(const Graph &graph) const {
+	return buildHierarchy(LaplacianMatrix(graph));
+}
 
 } /* namespace NetworKit */
 

@@ -13,6 +13,7 @@
 
 #include "../algebraic/Matrix.h"
 #include "../algebraic/Vector.h"
+#include "../algebraic/CSRMatrix.h"
 
 namespace NetworKit {
 

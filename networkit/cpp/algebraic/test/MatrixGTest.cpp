@@ -240,47 +240,6 @@ TEST(MatrixGTest, testMatrixAddition) {
 
 	EXPECT_EQ(0, result(0,1));
 	EXPECT_EQ(0, result(4,1));
-
-
-	// non-matching dimensions
-	//
-	rows.clear();
-	rows.push_back({1.0, 2.0});
-	rows.push_back({2.0, 1.0});
-	mat1 = Matrix(rows);
-
-	rows.clear();
-	rows.push_back({1.0, 0.0, 3.0});
-	rows.push_back({0.0, 0.0, 1.0});
-	rows.push_back({0.0, 0.0, 1.0});
-	mat2 = Matrix(rows);
-
-	EXPECT_THROW(mat1 + mat2, std::runtime_error);
-
-	rows.clear();
-	rows.push_back({1.0, 2.0, 0.0});
-	rows.push_back({2.0, 1.0, 0.0});
-	mat1 = Matrix(rows);
-
-	rows.clear();
-	rows.push_back({1.0, 0.0, 3.0});
-	rows.push_back({0.0, 0.0, 1.0});
-	rows.push_back({0.0, 0.0, 1.0});
-	mat2 = Matrix(rows);
-
-	EXPECT_THROW(mat1 + mat2, std::runtime_error);
-
-	rows.clear();
-	rows.push_back({1.0, 2.0});
-	rows.push_back({2.0, 1.0});
-	mat1 = Matrix(rows);
-
-	rows.clear();
-	rows.push_back({1.0, 0.0, 3.0});
-	rows.push_back({0.0, 0.0, 1.0});
-	mat2 = Matrix(rows);
-
-	EXPECT_THROW(mat1 + mat2, std::runtime_error);
 }
 
 TEST(MatrixGTest, testMatrixSubtraction) {
@@ -377,46 +336,6 @@ TEST(MatrixGTest, testMatrixSubtraction) {
 
 	EXPECT_EQ(0, result(0,1));
 	EXPECT_EQ(0, result(4,1));
-
-	// non-matching dimensions
-	//
-	rows.clear();
-	rows.push_back({1.0, 2.0});
-	rows.push_back({2.0, 1.0});
-	mat1 = Matrix(rows);
-
-	rows.clear();
-	rows.push_back({1.0, 0.0, 3.0});
-	rows.push_back({0.0, 0.0, 1.0});
-	rows.push_back({0.0, 0.0, 1.0});
-	mat2 = Matrix(rows);
-
-	EXPECT_THROW(mat1 - mat2, std::runtime_error);
-
-	rows.clear();
-	rows.push_back({1.0, 2.0, 0.0});
-	rows.push_back({2.0, 1.0, 0.0});
-	mat1 = Matrix(rows);
-
-	rows.clear();
-	rows.push_back({1.0, 0.0, 3.0});
-	rows.push_back({0.0, 0.0, 1.0});
-	rows.push_back({0.0, 0.0, 1.0});
-	mat2 = Matrix(rows);
-
-	EXPECT_THROW(mat1 - mat2, std::runtime_error);
-
-	rows.clear();
-	rows.push_back({1.0, 2.0});
-	rows.push_back({2.0, 1.0});
-	mat1 = Matrix(rows);
-
-	rows.clear();
-	rows.push_back({1.0, 0.0, 3.0});
-	rows.push_back({0.0, 0.0, 1.0});
-	mat2 = Matrix(rows);
-
-	EXPECT_THROW(mat1 - mat2, std::runtime_error);
 }
 
 TEST(MatrixGTest, testScalarMultiplication) {
@@ -572,11 +491,6 @@ TEST(MatrixGTest, testMatrixVectorProduct) {
 	ASSERT_EQ(2u, res.getDimension());
 	EXPECT_EQ(0, res[0]);
 	EXPECT_EQ(6, res[1]);
-
-	EXPECT_THROW(mat * v.transpose(), std::runtime_error);
-
-	Vector v1 = {1.0, 2.0};
-	EXPECT_THROW(mat * v1, std::runtime_error);
 }
 
 TEST(MatrixGTest, testMatrixMultiplication) {
@@ -658,17 +572,6 @@ TEST(MatrixGTest, testMatrixMultiplication) {
 	EXPECT_EQ(0.5, result(1,1));
 	EXPECT_EQ(168, result(2,0));
 	EXPECT_EQ(4, result(2,1));
-
-
-	// non-matching dimensions
-	//
-	rows.clear();
-	rows.push_back({1, 0});
-	rows.push_back({0, 0});
-	rows.push_back({0, 0.5});
-	mat2 = Matrix(rows);
-
-	EXPECT_THROW(mat1 * mat2, std::runtime_error);
 }
 
 TEST(MatrixGTest, testBigMatrixMultiplication) {
@@ -707,14 +610,38 @@ TEST(MatrixGTest, testMatrixTransposeMatrixMultiplication) {
 	EXPECT_EQ(3, C(2,0));
 	EXPECT_EQ(-5, C(2,1));
 	EXPECT_EQ(8, C(2,2));
+}
 
-	rowsB.clear();
-	rowsB.push_back({1, 3, 0, 0});
-	rowsB.push_back({0, 0, -2, 5});
-	rowsB.push_back({0, 0, 0, 8});
-	B = Matrix(rowsB);
+TEST(MatrixGTest, testMatrixMatrixTransposeMultiplication) {
+	std::vector<Vector> rowsA, rowsB;
 
-	EXPECT_THROW(Matrix::mTmMultiply(A, B), std::runtime_error);
+	rowsA.push_back({1, 2, 3});
+	rowsA.push_back({0, 2, 0});
+	rowsA.push_back({3, 0, 0});
+	rowsA.push_back({0, 0, -1});
+
+	rowsB.push_back({1, 0, 0});
+	rowsB.push_back({3, 0, 0});
+	rowsB.push_back({0, -2, 0});
+	rowsB.push_back({0, 5, -8});
+
+	Matrix A(rowsA);
+	Matrix B(rowsB);
+
+	Matrix C = Matrix::mmTMultiply(A, B);
+
+	EXPECT_EQ(1, C(0,0));
+	EXPECT_EQ(3, C(0,1));
+	EXPECT_EQ(-4, C(0,2));
+	EXPECT_EQ(-14, C(0,3));
+	EXPECT_EQ(-4, C(1,2));
+	EXPECT_EQ(10, C(1,3));
+	EXPECT_EQ(3, C(2,0));
+	EXPECT_EQ(9, C(2,1));
+	EXPECT_EQ(8, C(3,3));
+	EXPECT_EQ(0, C(1,0));
+	EXPECT_EQ(0, C(1,1));
+	EXPECT_EQ(0, C(2,3));
 }
 
 TEST(MatrixGTest, testMatrixTransposeVectorMultiplication) {
@@ -733,9 +660,6 @@ TEST(MatrixGTest, testMatrixTransposeVectorMultiplication) {
 	ASSERT_EQ(2u, res.getDimension());
 	EXPECT_EQ(0, res[0]);
 	EXPECT_EQ(6, res[1]);
-
-	Vector v1 = {1.0, 2.0};
-	EXPECT_THROW(Matrix::mTvMultiply(mat, v1), std::runtime_error);
 }
 
 

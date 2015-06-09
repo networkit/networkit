@@ -16,7 +16,7 @@
 
 namespace NetworKit {
 
-class MatchingHierarchyBuilder : public MultigridHierarchyBuilder {
+class MatchingHierarchyBuilder : public MultigridHierarchyBuilder<MultigridHierarchy> {
 private:
 	const static count numCoarseGraphNodes = 30;
 

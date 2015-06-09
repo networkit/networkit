@@ -21,7 +21,7 @@ void DynBFS::run(node t) {
 	if (t != none) {
 		throw std::runtime_error("Invalid argument: DynBFS doesn't work with a target node.");
 	}
-	BFS bfs(G, source, true);
+  BFS bfs(G, sources.front(), true);
 	bfs.run();
 	distances = bfs.distances;
 	npaths = bfs.npaths;

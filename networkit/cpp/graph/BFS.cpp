@@ -28,7 +28,9 @@ void BFS::run(node t) {
 		previous.resize(z);
 		npaths.clear();
 		npaths.resize(z, 0);
-		npaths[source] = 1;
+    for (node source: sources) {
+      npaths[source] = 1;
+    }
 	}
 
 	if (storeStack) {
@@ -37,10 +39,14 @@ void BFS::run(node t) {
 	}
 
 	std::queue<node> q;
-	q.push(source);
+  for (node source: sources) {
 	visited[source] = true;
-	distances[source] = 0;
-	bool breakWhenFound = (t != none);
+    distances[source] = 0;
+    q.push(source);
+  }
+  bool breakWhenFound = (t != none);
+
+
 	while (! q.empty()) {
 		node u = q.front();
 		q.pop();

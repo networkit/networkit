@@ -18,9 +18,10 @@ private:
 	double tolerance;
 
 public:
-	GaussSeidelRelaxation(double tolerance=1e-6);
+	GaussSeidelRelaxation(double tolerance=1e-15);
 
-	Vector relax(const Matrix &A, const Vector &b, const Vector &initialGuess, const count maxIterations = std::numeric_limits<count>::max()) const;
+	Vector relax(const CSRMatrix &A, const Vector &b, const Vector &initialGuess, const count maxIterations = std::numeric_limits<count>::max()) const;
+	Vector relax(const CSRMatrix &A, const Vector &b, const count maxIterations = std::numeric_limits<count>::max()) const;
 
 };
 
