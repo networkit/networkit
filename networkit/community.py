@@ -5,7 +5,7 @@ __author__ = "Christian Staudt"
 
 from _NetworKit import Partition, Coverage, Modularity, CommunityDetector, PLP, LPDegreeOrdered, PLM, CNM, PartitionReader, PartitionWriter,\
 	NodeStructuralRandMeasure, GraphStructuralRandMeasure, JaccardMeasure, NMIDistance, AdjustedRandMeasure,\
-	EPP, EPPFactory, EdgeListPartitionReader, GraphClusteringTools, ClusteringGenerator, PartitionIntersection, HubDominance, CoreDecomposition, CutClustering, ParallelPartitionCoarsening
+	EPPFactory, EdgeListPartitionReader, GraphClusteringTools, ClusteringGenerator, PartitionIntersection, HubDominance, CoreDecomposition, CutClustering, ParallelPartitionCoarsening
 
 # local imports
 #from .properties import CoreDecomposition, overview

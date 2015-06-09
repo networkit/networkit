@@ -547,7 +547,7 @@ TEST_F(PropertiesGTest, testDegreeAssortativityDirected) {
 		DEBUG(testInstance);
 		for (int i = 0; i < 2; ++i)
 			for (int j= 0; j < 2; ++j)
-				DEBUG(GraphProperties::degreeAssortativityDirected(G,i,j));
+				DEBUG((i)?"out\t":"in\t",(j)?"out\t":"in\t",GraphProperties::degreeAssortativityDirected(G,i,j));
 		DEBUG("---------------");
 }
 
