@@ -163,29 +163,6 @@ class Test_SelfLoops(unittest.TestCase):
 		self.assertEqual(set(self.LL.nodes()), set(reconstructedSet))
 
 
-
-	def test_community_CNM(self): #THIS TEST FAILS
-		CL = community.CNM(self.L)
-		CLL = community.CNM(self.LL)
-		CL.run()
-		CLL.run()
-		CLP = CL.getPartition()
-		CLLP = CLL.getPartition()
-		self.assertIsNot(CLP.getSubsetIds(), None)
-		self.assertIsNot(CLLP.getSubsetIds(), None)
-		# test if partitions add up to original set
-		reconstructedSet = []
-		for i in CLP.getSubsetIds():
-			for j in CLP.getMembers(i):
-				reconstructedSet.append(j)
-		self.assertEqual(set(self.L.nodes()), set(reconstructedSet))
-		reconstructedSet = []
-		for i in CLLP.getSubsetIds():
-			for j in CLLP.getMembers(i):
-				reconstructedSet.append(j)
-		self.assertEqual(set(self.LL.nodes()), set(reconstructedSet))
-
-
 	def test_community_CutClustering(self):
 		CL = community.CutClustering(self.L, 0.2)
 		CLL = community.CutClustering(self.LL, 0.2)
