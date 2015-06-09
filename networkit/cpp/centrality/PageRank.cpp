@@ -34,7 +34,7 @@ void NetworKit::PageRank::runImpl() {
 		assureRunning();
 		G.balancedParallelForNodes([&](node u) {
 			pr[u] = 0.0;
-			G.forInEdgesOf(u, [&](node v) {
+			G.forInEdgesOf(u, [&](node u, node v) {
 				pr[u] += scoreData[v] * G.weight(v, u) / deg[v];
 			});
 			pr[u] *= damp;
