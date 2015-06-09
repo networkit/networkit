@@ -5,6 +5,7 @@ namespace NetworKit {
 
 LocalClusteringCoefficient::LocalClusteringCoefficient(const Graph& G) : Centrality(G, false, false) {
 	if (G.isDirected()) throw std::runtime_error("Not implemented: Local clustering coefficient is currently not implemted for directed graphs");
+	if (G.numberOfSelfLoops()) throw std::runtime_error("The Local Clustering Coeffiecient implementation cannot yet deal with self-loops");
 }
 
 void LocalClusteringCoefficient::run() {
