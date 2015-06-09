@@ -403,6 +403,5 @@ class Test_SelfLoops(unittest.TestCase):
 		EDL = ED.effectiveDiameter(self.L)
 		EDLL = ED.effectiveDiameter(self.LL)
 
-
-
-
+if __name__ == "__main__":
+	unittest.main()
