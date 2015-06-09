@@ -27,12 +27,10 @@ Graph ChungLuGenerator::generate() {
 		double randVal = Aux::Random::probability();
 		/* Probability of edge (u, v): d(u)*d(v)/sum_deg */
 		if (randVal < double(seq[u] * seq[v]) / sum_deg) {
-			gB.addEdge(u, v);
+			gB.addHalfOutEdge(u, v);
 		}
 	});
-
-
-	return gB.toGraph();
+	return gB.toGraph(true,true);
 }
 
 } /* namespace NetworKit */
