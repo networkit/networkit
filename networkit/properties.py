@@ -196,7 +196,7 @@ def properties(G, settings):
 
 	ncomPLP, modPLP = None, None
 	ncomPLM, modPLM = None, None
-	if settings["communities"]:
+	if settings["communities"] and not G.isDirected():
 		logging.info("[...] detecting communities")
 		# perform PLM community detection
 		logging.info("[...] performing community detection: PLM")
@@ -317,8 +317,9 @@ def overview(G, settings=collections.defaultdict(lambda: True), showDegreeHistog
 	print(tabulate.tabulate(degreeProperties))
 	#print("Miscellaneous")
 	#print(tabulate.tabulate(miscProperties))
-	print("Community Structure")
-	print(tabulate.tabulate(communityStructure))
+	if not G.isDirected():
+		print("Community Structure")
+		print(tabulate.tabulate(communityStructure))
 	if showDegreeHistogram:
 		if G.isDirected():
 			print("Degree Distribution (in+out)")
