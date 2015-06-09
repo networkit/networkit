@@ -3485,25 +3485,6 @@ cdef class PLM(CommunityDetector):
 	def prolong(Graph Gcoarse, Partition zetaCoarse, Graph Gfine, vector[node] nodeToMetaNode):
 		return Partition().setThis(PLM_prolong(Gcoarse._this, zetaCoarse._this, Gfine._this, nodeToMetaNode))
 
-
-cdef extern from "cpp/community/CNM.h":
-	cdef cppclass _CNM "NetworKit::CNM"(_CommunityDetectionAlgorithm):
-		_CNM(_Graph _G) except +
-		string toString() except +
-		void run() except +
-		_Partition getPartition() except +
-
-
-cdef class CNM(CommunityDetector):
-	"""
-	Community detection algorithm due to Clauset, Newman and Moore.
- 	Probably not the fastest possible implementation, but it already uses a priority queue
- 	and local updates.
- 	"""
-	def __cinit__(self, Graph G not None):
-		self._G = G
-		self._this = new _CNM(G._this)
-
 cdef extern from "cpp/community/CutClustering.h":
 	cdef cppclass _CutClustering "NetworKit::CutClustering"(_CommunityDetectionAlgorithm):
 		_CutClustering(_Graph _G) except +
