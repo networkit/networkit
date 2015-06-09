@@ -11,6 +11,8 @@
 #include "../coarsening/ClusteringProjector.h"
 #include "../auxiliary/Log.h"
 #include "../auxiliary/Timer.h"
+
+
 #include <sstream>
 
 namespace NetworKit {
@@ -23,7 +25,7 @@ PLM::PLM(const Graph& G, const PLM& other) : CommunityDetectionAlgorithm(G), par
 
 }
 
-void PLM::runImpl() {
+void PLM::run() {
 	DEBUG("calling run method on " , G.toString());
 
 	count z = G.upperNodeIdBound();
@@ -213,7 +215,6 @@ void PLM::runImpl() {
 	auto movePhase = [&](){
 		count iter = 0;
 		do {
-			assureRunning();
 			moved = false;
 			// apply node movement according to parallelization strategy
 			if (this->parallelism == "none") {
@@ -247,7 +248,6 @@ void PLM::runImpl() {
 	timer.stop();
 	timing["move"].push_back(timer.elapsedMilliseconds());
 
-	assureRunning();
 	if (change) {
 		INFO("nodes moved, so begin coarsening and recursive call");
 
@@ -303,6 +303,7 @@ void PLM::runImpl() {
 		}
 	}
 	result = std::move(zeta);
+	hasRun = true;
 }
 
 std::string NetworKit::PLM::toString() const {

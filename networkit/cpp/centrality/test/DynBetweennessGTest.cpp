@@ -10,7 +10,6 @@
 #include "../DynApproxBetweenness.h"
 #include "../ApproxBetweenness.h"
 #include "../ApproxBetweenness2.h"
-#include "../DynBetweenness.h"
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/Log.h"
 #include "../../auxiliary/NumericTools.h"
@@ -20,148 +19,7 @@
 
 namespace NetworKit {
 
-TEST_F(DynBetweennessGTest, testDynBetweennessDirected) {
-	int n = 200;
-	Graph G = ErdosRenyiGenerator(n, 0.05, true).generate();
-	Betweenness bc(G);
-	bc.run();
-	DynBetweenness dyn_bc(G, true);
-	dyn_bc.run();
-	std::vector<double> dynbc_scores = dyn_bc.scores();
-	std::vector<double> bc_scores = bc.scores();
-	int i;
-	const double tol = 1e-8;
-	for(i=0; i<n; i++) {
-		EXPECT_NEAR(dynbc_scores[i], bc_scores[i], tol) << "Scores (storing preds) are different";
-	}
-	DynBetweenness dyn_bc2(G, false);
-	dyn_bc2.run();
-	dynbc_scores = dyn_bc2.scores();
-	for(i=0; i<n; i++) {
-		EXPECT_NEAR(dynbc_scores[i], bc_scores[i], tol) << "Scores (without storing preds) are different";
-	}
-}
 
-TEST_F(DynBetweennessGTest, testDynBetweennessDirectedWeighted) {
-	int n = 200;
-	Graph G1 = ErdosRenyiGenerator(n, 0.05, true).generate();
-	Graph G(G1, true, true);
-	Betweenness bc(G);
-	bc.run();
-	DynBetweenness dyn_bc(G, true);
-	dyn_bc.run();
-	std::vector<double> dynbc_scores = dyn_bc.scores();
-	std::vector<double> bc_scores = bc.scores();
-	int i;
-	const double tol = 1e-8;
-	for(i=0; i<n; i++) {
-		EXPECT_NEAR(dynbc_scores[i], bc_scores[i], tol) << "Scores (storing preds) are different";
-	}
-	DynBetweenness dyn_bc2(G, false);
-	dyn_bc2.run();
-	dynbc_scores = dyn_bc2.scores();
-	for(i=0; i<n; i++) {
-		EXPECT_NEAR(dynbc_scores[i], bc_scores[i], tol) << "Scores (without storing preds) are different";
-	}
-}
-
-
-TEST_F(DynBetweennessGTest, testDynBetweennessSmallGraph) {
-/* Graph:
-   0    3   6
-	\  / \ /
-	2    5
-	/  \ / \
-   1    4   7
-*/
-	int n = 8;
-	Graph G(n);
-
-	G.addEdge(0, 2);
-	G.addEdge(1, 2);
-	G.addEdge(2, 3);
-	G.addEdge(2, 4);
-	G.addEdge(3, 5);
-	G.addEdge(4, 5);
-	G.addEdge(5, 6);
-	G.addEdge(5, 7);
-
-	DynBetweenness dynbc(G, false);
-	Betweenness bc(G);
-	dynbc.run();
-	bc.run();
-	std::vector<double> dynbc_scores = dynbc.scores();
-	std::vector<double> bc_scores = bc.scores();
-
-	int i;
-	const double tol = 1e-8;
-	for(i=0; i<n; i++) {
-		EXPECT_NEAR(dynbc_scores[i], bc_scores[i], tol) << "Scores are different";
-	}
-
-	// edge insertions
-	GraphEvent ev(GraphEvent::EDGE_ADDITION, 0, 6, 1.0);
-	G.addEdge(ev.u, ev.v);
-	bc.run();
-	dynbc.update(ev);
-
-	dynbc_scores = dynbc.scores();
-	bc_scores = bc.scores();
-	for(i=0; i<n; i++) {
-		EXPECT_NEAR(dynbc_scores[i], bc_scores[i], tol) << "Scores are different";
-	}
-
-}
-
-
-TEST_F(DynBetweennessGTest, testWeightedDynBetweennessSmallGraph) {
-/* Graph:
-0    3   6
-	\  / \ /
-	2    5
-	/  \ / \
-1    4   7
-*/
-	int n = 8;
-	Graph G(n, true);
-
-	G.addEdge(0, 2);
-	G.addEdge(1, 2);
-	G.addEdge(2, 3);
-	G.addEdge(2, 4);
-	G.addEdge(3, 5);
-	G.addEdge(4, 5);
-	G.addEdge(5, 6);
-	G.addEdge(5, 7);
-
-	DynBetweenness dynbc(G, true);
-//	Graph G1 = Graph(G, false, false);
-	Betweenness bc(G);
-	dynbc.run();
-	bc.run();
-	std::vector<double> dynbc_scores = dynbc.scores();
-	std::vector<double> bc_scores = bc.scores();
-
-	int i;
-	const double tol = 1e-8;
-	for(i=0; i<n; i++) {
-		EXPECT_NEAR(dynbc_scores[i], bc_scores[i], tol) << "Scores are different";
-	}
-
-	// edge insertions
-	GraphEvent ev(GraphEvent::EDGE_ADDITION, 0, 6, 1.0);
-	G.addEdge(ev.u, ev.v);
-//	G1.addEdge(ev.u, ev.v);
-	bc.run();
-	dynbc.update(ev);
-	DEBUG("after");
-	dynbc_scores = dynbc.scores();
-	bc_scores = bc.scores();
-	for(i=0; i<n; i++) {
-		EXPECT_NEAR(dynbc_scores[i], bc_scores[i], tol) << "Scores are different";
-	}
-
-}
 
 TEST_F(DynBetweennessGTest, testDynApproxBetweennessSmallGraph) {
 /* Graph:
@@ -254,39 +112,6 @@ TEST_F(DynBetweennessGTest, testDynVsStatic) {
 }
 
 
-TEST_F(DynBetweennessGTest, testCorrectnessDynExactBetweenness) {
-	METISGraphReader reader;
-	DorogovtsevMendesGenerator generator(100);
-	Graph G = generator.generate();
-	int n = G.upperNodeIdBound();
-	DynBetweenness dynbc(G, true);
-	Betweenness bc(G);
-	dynbc.run();
-	bc.run();
-	DEBUG("Before the edge insertion: ");
-	GraphEvent ev;
-	count nInsertions = 1, i = 0;
-	while (i < nInsertions) {
-		node v1 = Sampling::randomNode(G);
-		node v2 = Sampling::randomNode(G);
-		if (v1 != v2 && !G.hasEdge(v1, v2)) {
-			i++;
-			G.addEdge(v1, v2);
-			ev = GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2, 1.0);
-			dynbc.update(ev);
-			bc.run();
-			std::vector<double> dynbc_scores = dynbc.scores();
-			std::vector<double> bc_scores = bc.scores();
-			int j;
-			const double tol = 1e-6;
-			for(j=0; j<n; j++) {
-				EXPECT_NEAR(dynbc_scores[j], bc_scores[j], tol) << "Scores are different";
-			}
-		}
-	}
-}
-
-
 TEST_F(DynBetweennessGTest, testApproxBetweenness) {
 	METISGraphReader reader;
 	DorogovtsevMendesGenerator generator(1000);
@@ -300,43 +125,5 @@ TEST_F(DynBetweennessGTest, testApproxBetweenness) {
 	DEBUG("Number of samples: ", bc1.numberOfSamples());
 }
 
-
-TEST_F(DynBetweennessGTest, testWeightedDynExactBetweenness) {
-	METISGraphReader reader;
-	DorogovtsevMendesGenerator generator(100);
-	Graph G1 = generator.generate();
-	Graph G(G1, true, false);
-	DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
-	int n = G.upperNodeIdBound();
-	DynBetweenness dynbc(G, true);
-	Betweenness bc(G);
-	dynbc.run();
-	bc.run();
-	DEBUG("Before the edge insertion: ");
-	GraphEvent ev;
-	count nInsertions = 1, i = 0;
-	while (i < nInsertions) {
-		DEBUG("Sampling a new edge");
-		node v1 = Sampling::randomNode(G);
-		node v2 = Sampling::randomNode(G);
-		if (v1 != v2 && !G.hasEdge(v1, v2)) {
-			i++;
-			DEBUG("Adding edge number ", i);
-			G.addEdge(v1, v2);
-			ev = GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2, 1.0);
-			DEBUG("Running update with dynamic bc");
-			dynbc.update(ev);
-			DEBUG("Running from scratch with bc");
-			bc.run();
-			std::vector<double> dynbc_scores = dynbc.scores();
-			std::vector<double> bc_scores = bc.scores();
-			int j;
-			const double tol = 1e-6;
-			for(j=0; j<n; j++) {
-				EXPECT_NEAR(dynbc_scores[j], bc_scores[j], tol) << "Scores are different";
-			}
-		}
-	}
-}
 
 } /* namespace NetworKit */

@@ -14,7 +14,6 @@
 #include "../EigenvectorCentrality.h"
 #include "../KatzCentrality.h"
 #include "../PageRank.h"
-#include "../DynBetweenness.h"
 #include "../../io/METISGraphReader.h"
 #include "../../io/SNAPGraphReader.h"
 #include "../../generators/ErdosRenyiGenerator.h"

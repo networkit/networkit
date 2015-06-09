@@ -31,7 +31,7 @@ public:
 	 */
 	ApproxBetweenness2(const Graph& G, count nSamples, bool normalized=false);
 
-	void runImpl() override;
+	void run() override;
 
 
 private:

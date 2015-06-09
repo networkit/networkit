@@ -29,7 +29,7 @@ public:
 	/**
 	 * Detect communities.
 	 */
-	virtual void runImpl();
+	virtual void run();
 
 	virtual std::string toString() const;
 };

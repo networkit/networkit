@@ -14,7 +14,7 @@ namespace NetworKit {
 
 LPDegreeOrdered::LPDegreeOrdered(const Graph& G) : CommunityDetectionAlgorithm(G) {}
 
-void LPDegreeOrdered::runImpl() {
+void LPDegreeOrdered::run() {
 	count n = G.numberOfNodes();
 	count theta = n / 1e5;
 	DEBUG("theta: " , theta);
