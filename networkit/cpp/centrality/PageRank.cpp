@@ -7,6 +7,7 @@
 
 #include "PageRank.h"
 #include "../auxiliary/NumericTools.h"
+#include "../auxiliary/SignalHandling.h"
 
 namespace NetworKit {
 
@@ -17,6 +18,7 @@ NetworKit::PageRank::PageRank(const Graph& G, double damp, double tol):
 }
 
 void NetworKit::PageRank::run() {
+	Aux::SignalHandler handler;
 	count n = G.numberOfNodes();
 	count z = G.upperNodeIdBound();
 	double oneOverN = 1.0 / (double) n;
@@ -31,6 +33,7 @@ void NetworKit::PageRank::run() {
 	});
 
 	while (! isConverged) {
+		handler.assureRunning();
 		G.balancedParallelForNodes([&](node u) {
 			pr[u] = 0.0;
 			G.forInEdgesOf(u, [&](node u, node v) {
@@ -52,7 +55,7 @@ void NetworKit::PageRank::run() {
 		isConverged = converged();
 		scoreData = pr;
 	}
-
+	handler.assureRunning();
 	// make sure scoreData sums up to 1
 	double sum = G.parallelSumForNodes([&](node u) {
 		return scoreData[u];
