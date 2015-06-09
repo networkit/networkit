@@ -11,6 +11,7 @@
 #include "../coarsening/ClusteringProjector.h"
 #include "../auxiliary/Log.h"
 #include "../auxiliary/Timer.h"
+#include "../auxiliary/SignalHandling.h"
 
 
 #include <sstream>
@@ -26,6 +27,7 @@ PLM::PLM(const Graph& G, const PLM& other) : CommunityDetectionAlgorithm(G), par
 }
 
 void PLM::run() {
+	Aux::SignalHandler handler;
 	DEBUG("calling run method on " , G.toString());
 
 	count z = G.upperNodeIdBound();
@@ -235,10 +237,10 @@ void PLM::run() {
 				WARN("move phase aborted after ", maxIter, " iterations");
 			}
 			iter += 1;
-		} while (moved && (iter <= maxIter));
+		} while (moved && (iter <= maxIter) && handler.isRunning());
 		DEBUG("iterations in move phase: ", iter);
 	};
-
+	handler.assureRunning();
 	// first move phase
 	Aux::Timer timer;
 	timer.start();
@@ -247,7 +249,7 @@ void PLM::run() {
 	//
 	timer.stop();
 	timing["move"].push_back(timer.elapsedMilliseconds());
-
+	handler.assureRunning();
 	if (change) {
 		INFO("nodes moved, so begin coarsening and recursive call");
 
@@ -291,7 +293,6 @@ void PLM::run() {
 					volCommunity[C] += volN;
 				}
 			});
-
 			// second move phase
 			timer.start();
 			//
