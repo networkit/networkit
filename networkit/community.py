@@ -148,6 +148,7 @@ def kCoreCommunityDetection(G, k, algo=None, inspect=True):
 def mesoscopicResponseFunction(G, samples=100):
 	"""
 	"""
+	raise NotImplementedError("work in progress")
 	m = G.numberOfEdges()
 	gammaRangeLow = [math.e**x for x in range(-10, 0)]
 	gammaRangeHigh = [math.e**x for x in range(0, math.ceil(math.log(2*m)))]
