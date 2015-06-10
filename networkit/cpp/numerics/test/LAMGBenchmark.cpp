@@ -90,6 +90,22 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		DIMACS_SPARSE
 	},
 	{
+		"Dimacs Clustering",
+		10,
+		5,
+		1e-6,
+		GAUSS_SEIDEL,
+		DIMACS_CLUSTERING
+	},
+	{
+		"Dimacs Street",
+		10,
+		5,
+		1e-6,
+		GAUSS_SEIDEL,
+		DIMACS_STREET_NETWORKS
+	},
+	{
 		"Walshaw",
 		10,
 		10,
