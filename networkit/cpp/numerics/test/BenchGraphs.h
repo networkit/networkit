@@ -81,6 +81,24 @@ const vector<string> DIMACS_SPARSE { // http://www.cc.gatech.edu/dimacs10/archiv
 	"instances/dimacs_sparse_matrices/thermal2.graph"
 };
 
+const vector<string> DIMACS_CLUSTERING { // http://www.cc.gatech.edu/dimacs10/archive/clustering.shtml
+    "instances/dimacs_clustering/as-22july06.graph",
+	"instances/dimacs_clustering/cnr-2000.graph",
+	"instances/dimacs_clustering/in-2004.graph",
+	"instances/dimacs_clustering/PGPgiantcompo.graph",
+	"instances/dimacs_clustering/preferentialAttachment.graph",
+	"instances/dimacs_clustering/smallworld.graph",
+	"instances/dimacs_clustering/uk-2002.graph"
+};
+
+const vector<string> DIMACS_STREET_NETWORKS { // http://www.cc.gatech.edu/dimacs10/archive/streets.shtml
+    "instances/dimacs_street_networks/belgium.osm.graph",
+	"instances/dimacs_street_networks/europe.osm.graph",
+	"instances/dimacs_street_networks/great-britain.osm.graph",
+	"instances/dimacs_street_networks/luxembourg.osm.graph"
+};
+
+
 const vector<string> WALSHAW { // http://staffweb.cms.gre.ac.uk/~wc06/partition/
 	"instances/walshaw/3elt.graph",
 	"instances/walshaw/4elt.graph",
@@ -120,4 +138,7 @@ const vector<string> WALSHAW { // http://staffweb.cms.gre.ac.uk/~wc06/partition/
 
 
 
-#endif /* NETWORKIT_CPP_NUMERICS_TEST_BENCHGRAPHS_H_ */
+
+
+
+#endif /* NETWORKIT_CPP_NUMERICS_TEST_BENCHGRAPHS_H */
