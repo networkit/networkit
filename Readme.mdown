@@ -238,6 +238,7 @@ Credits
 - Klara Reichard
 - Marvin Ritter
 - Aleksejs Sazonovs
+- Arie Slobbe
 - Florian Weber
 - Michael Wegner
 - Jörg Weisbarth
