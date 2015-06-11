@@ -5229,7 +5229,7 @@ cdef class ParallelPartitionCoarsening:
 
 cdef extern from "cpp/scd/PageRankNibble.h":
 	cdef cppclass _PageRankNibble "NetworKit::PageRankNibble":
-		_PageRankNibble(_Graph G, double epsilon, double alpha) except +
+		_PageRankNibble(_Graph G, double alpha, double epsilon) except +
 		map[node, set[node]] run(set[unsigned int] seeds) except +
 
 cdef class PageRankNibble:
@@ -5240,15 +5240,15 @@ cdef class PageRankNibble:
 	Parameters:
 	-----------
 	G : graph in which the cut is to be produced, must be unweighted.
-	epsilon : the max probability in the residual vector for each node.
-	alpha : the random walk loop probability.
+	alpha : Loop probability of random walk; smaller values tend to produce larger communities.
+	epsilon: Tolerance threshold for approximation of PageRank vectors
 	"""
 	cdef _PageRankNibble *_this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, double epsilon, double alpha):
+	def __cinit__(self, Graph G, double alpha, double epsilon):
 		self._G = G
-		self._this = new _PageRankNibble(G._this, epsilon, alpha)
+		self._this = new _PageRankNibble(G._this, alpha, epsilon)
 
 	def run(self, set[unsigned int] seeds):
 		"""
