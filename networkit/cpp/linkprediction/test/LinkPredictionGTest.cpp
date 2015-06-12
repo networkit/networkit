@@ -147,12 +147,12 @@ TEST_F(LinkPredictionGTest, testTotalNeighborsIndexRun) {
 
 TEST_F(LinkPredictionGTest, testNeighborsMeasureIndexRun) {
   NeighborsMeasureIndex neighborsMeasureIndex(trainingGraph);
-  EXPECT_EQ(0, neighborsMeasureIndex.run(0, 2));
-  EXPECT_EQ(0, neighborsMeasureIndex.run(0, 4));
-  EXPECT_EQ(0, neighborsMeasureIndex.run(1, 3));
-  EXPECT_EQ(0, neighborsMeasureIndex.run(1, 5));
-  EXPECT_EQ(0, neighborsMeasureIndex.run(2, 4));
-  EXPECT_EQ(0, neighborsMeasureIndex.run(3, 5));
+  EXPECT_EQ(1, neighborsMeasureIndex.run(0, 2));
+  EXPECT_EQ(1, neighborsMeasureIndex.run(0, 4));
+  EXPECT_EQ(2, neighborsMeasureIndex.run(1, 3));
+  EXPECT_EQ(2, neighborsMeasureIndex.run(1, 5));
+  EXPECT_EQ(3, neighborsMeasureIndex.run(2, 4));
+  EXPECT_EQ(2, neighborsMeasureIndex.run(3, 5));
 }
 
 TEST_F(LinkPredictionGTest, testROCMetric) {
