@@ -754,7 +754,7 @@ WARN_LOGFILE           =
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = ../../src/cpp \
+INPUT                  = ../../networkit/cpp \
 						 c++/mainpage \
 						 c++/modules
 

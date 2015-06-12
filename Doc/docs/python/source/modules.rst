@@ -4,7 +4,7 @@ python
 .. toctree::
    :maxdepth: 4
 
-   NetworKit
+   networkit
    algebraic
    auxiliary
    centrality
@@ -22,6 +22,4 @@ python
    stopwatch
    structures
    termgraph
-   toolbox
    viztasks
-   viztools
