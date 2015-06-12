@@ -11,6 +11,7 @@ namespace {
 	std::atomic<bool> receivedSIGINT(false);
 	std::atomic<bool> rootSet(false);
 	std::atomic<SignalHandler*> root(0);
+	std::atomic<void (*)(int)> prev_handler;
 	void sigHandler(int sig) {
 		switch (sig) {
 			case SIGINT: receivedSIGINT = true;
@@ -28,19 +29,25 @@ void setSIGINT(bool received) {
 }
 
 void init(SignalHandler* caller) {
-	if (!rootSet) {
-		root = caller;
-		signal(SIGINT,sigHandler);
-		rootSet = true;
+	#pragma omp critical (SignalHandlerCritical)
+	{
+		if (!rootSet) {
+			root = caller;
+			prev_handler = signal(SIGINT,sigHandler);
+			rootSet = true;
+		}
 	}
 }
 
 void reset(SignalHandler* caller) {
-	if (root == caller) {
-		rootSet = false;
-		receivedSIGINT = false;
-		root = 0;
-		signal(SIGINT,0);
+	#pragma omp critical (SignalHandlerCritical)
+	{
+		if (root == caller) {
+			rootSet = false;
+			receivedSIGINT = false;
+			root = 0;
+			signal(SIGINT,prev_handler);
+		}
 	}
 }
 
