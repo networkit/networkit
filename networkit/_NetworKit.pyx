@@ -5670,9 +5670,7 @@ cdef extern from "cpp/linkprediction/AlgebraicDistanceIndex.h":
 		double run(node u, node v) except +
 
 cdef class AlgebraicDistanceIndex(LinkPredictor):
-	"""
-	Algebraic distance assigns a distance value to pairs of nodes
-	according to their structural closeness in the graph.
+	""" Algebraic distance assigns a distance value to pairs of nodes according to their structural closeness in the graph.
 
 	Parameters
 	----------
