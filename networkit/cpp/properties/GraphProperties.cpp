@@ -8,12 +8,28 @@
 namespace NetworKit {
 
 std::vector<count> GraphProperties::degreeDistribution(const Graph& G) {
-	count maxDegree = minMaxDegree(G).second;
-	std::vector<count> distribution(maxDegree+1, 0);
-	G.forNodes([&](node v){
-		count i = G.degree(v);
-		distribution[i]++;
-	});
+	std::vector<count> distribution;
+	if (G.isDirected()) {
+		auto maxDegree = minMaxDegreeDirected(G).second;
+		distribution.assign(maxDegree.first+maxDegree.second+1, 0);
+		G.parallelForNodes([&](node v){
+			count i = G.degreeOut(v) + G.degreeIn(v);
+			#pragma omp atomic
+			distribution[i]++;
+		});
+		// workaround as now minmaxdegree for combined degree is implemented yet.
+		count i = distribution.size()-1;
+		while (i > 0 && distribution[i] == 0) --i;
+		distribution.resize(i+1);
+	} else {
+		count maxDegree = minMaxDegree(G).second;
+		distribution.assign(maxDegree+1, 0);
+		G.parallelForNodes([&](node v){
+			count i = G.degree(v);
+			#pragma omp atomic
+			distribution[i]++;
+		});
+	}
 	return distribution;
 }
 
@@ -96,7 +112,7 @@ double GraphProperties::averageLocalClusteringCoefficient(const Graph& G) {
 }
 
 std::pair<count, count> GraphProperties::minMaxDegree(const Graph& G) {
-
+	assert(!G.isDirected());
 	count min = G.numberOfNodes();
 	count max = 0;
 
@@ -111,6 +127,33 @@ std::pair<count, count> GraphProperties::minMaxDegree(const Graph& G) {
 	});
 
 	return std::pair<count, count>(min, max);
+}
+
+std::pair<std::pair<count,count>, std::pair<count,count>> GraphProperties::minMaxDegreeDirected(const Graph& G) {
+	assert(G.isDirected());
+	count minIn = G.numberOfNodes();
+	count minOut = G.numberOfNodes();
+	count maxIn = 0;
+	count maxOut = 0;
+
+	G.forNodes([&](node v){
+		count d = G.degreeIn(v);
+		if (d < minIn) {
+			minIn = d;
+		}
+		if (d > maxIn) {
+			maxIn = d;
+		}
+		d = G.degreeOut(v);
+		if (d < minOut) {
+			minOut = d;
+		}
+		if (d > maxIn) {
+			maxOut = d;
+		}
+	});
+
+	return {{minIn,minOut},{maxIn,maxOut}};
 }
 
 std::vector< count > GraphProperties::degreeSequence(const NetworKit::Graph &G) {
@@ -222,6 +265,32 @@ double GraphProperties::degreeAssortativity(const Graph& G, bool useWeighted) {
 	assert(S1 * S3 != S2 * S2);
 	r = (S1 * Se - S2 * S2) / (S1 * S3 - S2 * S2);
 	return r;
+}
+
+double GraphProperties::degreeAssortativityDirected(const Graph& G, bool alpha, bool beta) {
+	assert(G.isDirected());
+	count alphaAvg = 0;
+	count betaAvg = 0;
+	G.forEdges([&](node u, node v){
+		alphaAvg += (alpha) ? G.degreeOut(u) : G.degreeIn(u);
+		betaAvg += (beta) ? G.degreeOut(v) : G.degreeIn(v);
+	});
+	alphaAvg /= G.numberOfEdges();
+	betaAvg /= G.numberOfEdges();
+	double normalize = 1.f/G.numberOfEdges();
+	count sum = 0;
+	count jAggr = 0;
+	count kAggr = 0;
+	G.forEdges([&](node u, node v){
+		count j = ((alpha) ? G.degreeOut(u) : G.degreeIn(u)) - alphaAvg;
+		count k = ((beta) ? G.degreeOut(v) : G.degreeIn(v)) - betaAvg;
+		sum += (j * k);
+		jAggr += (j*j);
+		kAggr += (k*k);
+	});
+	// multiplication with normalize doesn't change anything; could be avoided?!
+	return (normalize*sum)/(std::sqrt(normalize*jAggr)*std::sqrt(normalize*kAggr));
+
 }
 
 

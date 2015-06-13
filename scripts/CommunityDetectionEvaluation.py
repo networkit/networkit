@@ -53,9 +53,9 @@ def communityDetectionBenchmark(graphPaths, outPath, algorithms, arglist=None, r
 			graphName = os.path.basename(graphPath).split(".")[0]
 			(n, m) = properties.size(G)
 			for (algoClass, kwargs) in zip(algorithms, arglist):
-				algo = algoClass(G, **kwargs)
-				algoName = algo.toString()
 				for i in range(repeat):
+					algo = algoClass(G, **kwargs)
+					algoName = algo.toString()
 					print("evaluating {0} on {1}".format(algoName, graphName))
 					timer = stopwatch.Timer()
 					algo.run()
@@ -97,3 +97,19 @@ def testPLPThreshold(graphPaths, thresholdFactors, outPath, repeat=1):
 					row = [graphName, "PLP", factor, theta,  time, mod]
 					writer.writerow(row)
 					print(row)
+
+
+def testPLMDetailedScaling(graphPaths, threadSequence):
+	data = {}
+	for path in graphPaths:
+		graphName = os.path.basename(path).split(".")[0]
+		print("reading ", path)
+		G = readGraph(path, Format.METIS)
+		data[graphName] = {}
+		for nThreads in threadSequence:
+			setNumberOfThreads(nThreads)
+			print("running on {0} at {1} threads".format(graphName, nThreads))
+			plm = community.PLM(G, turbo=True, refine=True)
+			plm.run()
+			data[graphName][nThreads] = plm.getTiming()
+	return data

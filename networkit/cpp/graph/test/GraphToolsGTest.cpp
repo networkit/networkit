@@ -160,4 +160,56 @@ TEST_F(GraphToolsGTest, testGetCompactedGraphDirectedUnweighted1) {
 	// probably compare results of some algorithms or compare each edge with a reference node id map.
 }
 
+TEST_F(GraphToolsGTest, testInvertedMapping) {
+	Graph G(10,false,true);
+	G.removeNode(0);
+	G.removeNode(2);
+	G.removeNode(4);
+	G.removeNode(6);
+	G.removeNode(8);
+	G.addEdge(1,3);
+	G.addEdge(5,3);
+	G.addEdge(7,5);
+	G.addEdge(7,9);
+	G.addEdge(1,9);
+	auto nodeMap = GraphTools::getContinuousNodeIds(G);
+	auto invertedNodeMap = GraphTools::invertContinuousNodeIds(nodeMap,G);
+
+	EXPECT_EQ(6,invertedNodeMap.size());
+
+	std::vector<node> reference = {1,3,5,7,9,10};
+	EXPECT_EQ(reference,invertedNodeMap);
+}
+
+TEST_F(GraphToolsGTest, testRestoreGraph) {
+	Graph G(10,false,true);
+	G.removeNode(0);
+	G.removeNode(2);
+	G.removeNode(4);
+	G.removeNode(6);
+	G.removeNode(8);
+	G.addEdge(1,3);
+	G.addEdge(5,3);
+	G.addEdge(7,5);
+	G.addEdge(7,9);
+	G.addEdge(1,9);
+	auto nodeMap = GraphTools::getContinuousNodeIds(G);
+	auto invertedNodeMap = GraphTools::invertContinuousNodeIds(nodeMap,G);
+	std::vector<node> reference = {1,3,5,7,9,10};
+
+
+	EXPECT_EQ(6,invertedNodeMap.size());
+	EXPECT_EQ(reference,invertedNodeMap);
+
+	auto Gcompact = GraphTools::getCompactedGraph(G,nodeMap);
+	Graph Goriginal = GraphTools::restoreGraph(invertedNodeMap,Gcompact);
+
+	EXPECT_EQ(Goriginal.totalEdgeWeight(),Gcompact.totalEdgeWeight());
+	EXPECT_NE(Goriginal.upperNodeIdBound(),Gcompact.upperNodeIdBound());
+	EXPECT_EQ(Goriginal.numberOfNodes(),Gcompact.numberOfNodes());
+	EXPECT_EQ(Goriginal.numberOfEdges(),Gcompact.numberOfEdges());
+	EXPECT_EQ(Goriginal.isDirected(),Gcompact.isDirected());
+	EXPECT_EQ(Goriginal.isWeighted(),Gcompact.isWeighted());
+}
+
 }

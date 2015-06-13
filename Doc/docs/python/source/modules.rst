@@ -18,11 +18,8 @@ python
    nxadapter
    powerlaw
    properties
-   scripts
    stopwatch
    structures
    termgraph
-   toolbox
    viztasks
-   viztools
    linkprediction

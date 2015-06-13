@@ -1,3 +1,8 @@
+""" This module deals with the conversion of graphs into matrices and linear algebra operations on graphs """
+
+
+__author__ = "Christian Staudt"
+
 # local imports
 
 # external imports
@@ -8,7 +13,7 @@ import numpy as np
 
 
 def column(matrix, i):
-    return [row[i] for row in matrix]
+	return [row[i] for row in matrix]
 
 
 def adjacencyMatrix(G):
@@ -24,12 +29,20 @@ def adjacencyMatrix(G):
 	:py:class:`scipy.sparse.csr_matrix`
 		The adjacency matrix of the graph.
 	"""
+	if G.isDirected():
+		raise NotImplementedError("TODO: implement for directed graphs")
 	n = G.numberOfNodes()
 	A = scipy.sparse.lil_matrix((n,n))
-	for (u, v) in G.edges():
-		A[u, v] = G.weight(u, v)
-		A[v, u] = G.weight(v, u)
-	A = A.tocsr()
+	# TODO: replace .edges() with efficient iterations
+	if G.isWeighted():
+		for (u, v) in G.edges():
+			A[u, v] = G.weight(u, v)
+			A[v, u] = G.weight(v, u)
+	else:
+		for (u, v) in G.edges():
+			A[u, v] = 1
+			A[v, u] = 1
+	A = A.tocsr()  # convert to CSR for more efficient arithmetic operations
 	return A
 
 def laplacianMatrix(G):
@@ -41,17 +54,17 @@ def laplacianMatrix(G):
 		The graph.
 
 	Returns
-    -------
-    lap : ndarray
-        The N x N laplacian matrix of graph.
-    diag : ndarray
-        The length-N diagonal of the laplacian matrix.
-        diag is returned only if return_diag is True.
+	-------
+	lap : ndarray
+		The N x N laplacian matrix of graph.
+	diag : ndarray
+		The length-N diagonal of the laplacian matrix.
+		diag is returned only if return_diag is True.
 	"""
 	A = adjacencyMatrix(G)
 	return scipy.sparse.csgraph.laplacian(A)
 
-def PageRankMatrix(G, damp):
+def PageRankMatrix(G, damp=0.85):
 	"""
 	Builds the PageRank matrix of the undirected Graph `G`. This matrix corresponds with the
 	PageRank matrix used in the C++ backend.
@@ -61,11 +74,12 @@ def PageRankMatrix(G, damp):
 	----------
 	G : Graph
 		The graph.
-
+	damp:
+		Damping factor of the PageRank algorithm (0.85 by default)
 	Returns
-    -------
-    pr : ndarray
-         The N x N page rank matrix of graph.
+	-------
+	pr : ndarray
+		 The N x N page rank matrix of graph.
 	"""
 	A = adjacencyMatrix(G)
 
@@ -98,10 +112,10 @@ def symmetricEigenvectors(matrix, cutoff=-1, reverse=False):
 			  If set to true, the smaller eigenvalues will be computed before the larger ones
 
 	Returns
-    -------
-    pr : ( [ float ], [ ndarray ] )
-    	 A tuple of ordered lists, the first containing the eigenvalues in descending (ascending) magnitude, the
-    	 second one holding the corresponding eigenvectors
+	-------
+	pr : ( [ float ], [ ndarray ] )
+		 A tuple of ordered lists, the first containing the eigenvalues in descending (ascending) magnitude, the
+		 second one holding the corresponding eigenvectors
 
 	"""
 	if cutoff == -1:

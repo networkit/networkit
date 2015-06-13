@@ -27,6 +27,8 @@ const double EPS = 0.1;
  * the description in Stephen G. Kobourov: Spring Embedders and Force
  * Directed Graph Drawing Algorithms.
  */
+
+// TODO: refactor to inherit from LayoutAlgorithm base class
 class FruchtermanReingold: public NetworKit::Layouter {
 private:
 	static const float INITIAL_STEP_LENGTH;

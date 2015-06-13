@@ -9,10 +9,14 @@
 
 namespace NetworKit {
 
-CommunityDetectionAlgorithm::CommunityDetectionAlgorithm(const Graph& G) : G(G), result(0), hasRun(false) {
+CommunityDetectionAlgorithm::CommunityDetectionAlgorithm(const Graph& G) : Algorithm(), G(G), result(0) {
+	// currently our community detection methods are not defined on directed graphs
+	if (G.isDirected()) {
+		throw std::runtime_error("This community detection method is undefined on directed graphs");
+	}
 }
 
-CommunityDetectionAlgorithm::CommunityDetectionAlgorithm(const Graph& G, const Partition baseClustering) : G(G), result(baseClustering), hasRun(false) {
+CommunityDetectionAlgorithm::CommunityDetectionAlgorithm(const Graph& G, const Partition baseClustering) : Algorithm(), G(G), result(baseClustering) {
 }
 
 Partition CommunityDetectionAlgorithm::getPartition() {
