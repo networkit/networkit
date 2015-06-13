@@ -1,6 +1,15 @@
+import sys
+
+##################################
+# check Python version
+##################################
+
+if sys.version_info.major < 3:
+	print("ERROR: NetworKit requires Python 3.")
+	sys.exit(1)
+
 import version
 from setup_util import *
-import sys
 if "setuptools" not in sys.modules:
 	from ez_setup import use_setuptools
 	# in case setuptools is not installed
@@ -173,10 +182,10 @@ class CustomCythonBuildExtCmd(CythonBuildExtCmd):
 class MyTestCommand(TestCommand):
 	def initialize_options(self):
 		TestCommand.initialize_options(self)
-	
+
 	def finalize_options(self):
 		TestCommand.finalize_options(self)
-	
+
 	def run(self):
 		if options.cpptests:
 			optimize = "Dbg"
@@ -195,7 +204,7 @@ class MyTestCommand(TestCommand):
 class CustomInstallCmd(InstallCmd):
 	def initialize_options(self):
 		InstallCmd.initialize_options(self)
-	
+
 	def finalize_options(self):
 		InstallCmd.finalize_options(self)
 
@@ -263,7 +272,7 @@ setup(
 	keywords		= version.keywords,
 	platforms		= version.platforms,
 	classifiers		= version.classifiers,
-	cmdclass		= {'build_ext' : build_ext_cmd, 'test' : MyTestCommand, 'install' : CustomInstallCmd}, #'clean' : CustomCleanCmd, 
+	cmdclass		= {'build_ext' : build_ext_cmd, 'test' : MyTestCommand, 'install' : CustomInstallCmd}, #'clean' : CustomCleanCmd,
 	test_suite		= 'nose.collector',
 	ext_modules		= modules,
 	zip_safe		= False)

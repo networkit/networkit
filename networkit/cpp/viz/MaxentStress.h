@@ -16,6 +16,7 @@ namespace NetworKit {
 /**
  * @ingroup viz
  */
+// TODO: refactor to inherit from LayoutAlgorithm base class
 class MaxentStress: public NetworKit::Layouter {
 protected:
 

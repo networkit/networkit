@@ -17,7 +17,6 @@
 
 namespace NetworKit {
 	/** Typedefs **/
-
 	typedef uint64_t index; // more expressive name for an index into an array
 	typedef uint64_t count; // more expressive name for an integer quantity
 	typedef ttmath::Big<1,1> bigfloat;	// big floating point number
@@ -37,18 +36,7 @@ constexpr double PI = 3.14159265358979323846264338327950288419716939937510582097
 constexpr double PI = 2.0*std::acos(0);
 #endif
 
-extern bool PRINT_PROGRESS;
-extern bool RAND_ORDER;
-extern uint64_t INACTIVE_SEEDS;
-extern bool NORMALIZE_VOTES;
-extern double SCALE_STRENGTH;
-
-extern uint64_t MIN_NUM_COMMUNITIES;
-extern double REL_REPEAT_THRSH;
-
-extern bool CALC_DISSIMILARITY;
-
-extern int MAX_LOUVAIN_ITERATIONS;
+// CODE STYLE GUIDELINES: Do not rely on global variables for algorithm parametrization.
 
 
 #endif /* GLOBALS_H_ */

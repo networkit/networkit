@@ -9,16 +9,15 @@
 
 #include "../PLP.h"
 #include "../PLM.h"
-#include "../CNM.h"
 #include "../ParallelAgglomerativeClusterer.h"
 #include "../../community/Modularity.h"
+#include "../../community/EdgeCut.h"
 #include "../../graph/GraphGenerator.h"
 #include "../../community/ClusteringGenerator.h"
 #include "../../io/METISGraphReader.h"
 #include "../EPP.h"
 #include "../../overlap/HashingOverlapper.h"
 #include "../EPPFactory.h"
-#include "../CommunityGraph.h"
 #include "../PLM.h"
 #include "../../community/GraphClusteringTools.h"
 #include "../../auxiliary/Log.h"
@@ -149,8 +148,7 @@ TEST_F(CommunityGTest, testLabelPropagationOnClusteredGraph_ForNumberOfClusters)
 	Partition zeta = lp.getPartition();
 
 	Modularity modularity;
-	double mod = modularity.getQuality(zeta, G);
-	DEBUG("modularity produced by LabelPropagation: " , mod);
+	DEBUG("modularity produced by LabelPropagation: " , modularity.getQuality(zeta, G));
 
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta)) << "the resulting partition should be a proper clustering";
 	EXPECT_EQ(k, zeta.numberOfSubsets()) << " " << k << " clusters are easy to detect";
@@ -177,8 +175,7 @@ TEST_F(CommunityGTest, testLabelPropagationOnClusteredGraph_ForEquality) {
 	Partition zeta = lp.getPartition();
 
 	Modularity modularity;
-	double mod = modularity.getQuality(zeta, G);
-	DEBUG("modularity produced by LabelPropagation: " , mod);
+	DEBUG("modularity produced by LabelPropagation: " , modularity.getQuality(zeta, G));
 	DEBUG("number of clusters produced by LabelPropagation: k=" , zeta.numberOfSubsets());
 
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta)) << "the resulting partition should be a proper clustering";
@@ -199,8 +196,7 @@ TEST_F(CommunityGTest, testLabelPropagationOnDisconnectedGraph) {
 	Partition zeta = lp.getPartition();
 
 	Modularity modularity;
-	double mod = modularity.getQuality(zeta, G);
-	DEBUG("modularity produced by LabelPropagation: " , mod);
+	DEBUG("modularity produced by LabelPropagation: " , modularity.getQuality(zeta, G));
 
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta)) << "the resulting partition should be a proper clustering";
 	EXPECT_EQ(k, zeta.numberOfSubsets()) << " " << k << " clusters are easy to detect"; //FIXME
@@ -222,8 +218,7 @@ TEST_F(CommunityGTest, testLabelPropagationOnSingleNodeWithSelfLoop) {
 	EXPECT_TRUE(GraphClusteringTools::isOneClustering(G, zeta)); //FIXME does this make sense? singleton and one partition at the same time.
 
 	Modularity modularity;
-	double mod = modularity.getQuality(zeta, G);
-	DEBUG("modularity produced by LabelPropagation: " , mod);
+	DEBUG("modularity produced by LabelPropagation: " , modularity.getQuality(zeta, G));
 }
 
 
@@ -242,8 +237,7 @@ TEST_F(CommunityGTest, testLabelPropagationOnManySmallClusters) {
 	Partition zeta = lp.getPartition();
 
 	Modularity modularity;
-	double mod = modularity.getQuality(zeta, G_ref.first);
-	DEBUG("modularity produced by LabelPropagation: " , mod);
+	DEBUG("modularity produced by LabelPropagation: " , modularity.getQuality(zeta, G_ref.first));
 	DEBUG("number of clusters produced by LabelPropagation: k=" , zeta.numberOfSubsets());
 
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G_ref.first, zeta)) << "the resulting partition should be a proper clustering";
@@ -274,55 +268,6 @@ TEST_F(CommunityGTest, testLouvainParallel2Naive) {
 }
 */
 
-
-
-TEST_F(CommunityGTest, tryCNMandLouvainRandom) {
-	count n = 400;
-	count k = 20;
-	double pin = 0.9;
-	double pout = 0.0005;
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
-
-	Modularity modularity;
-
-	// CNM with PQ
-	CNM cnm(G);
-	cnm.run();
-	Partition clustering = cnm.getPartition();
-	INFO("CNM number of clusters: " , clustering.numberOfSubsets());
-	INFO("modularity clustered random graph: " , modularity.getQuality(clustering, G));
-	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, clustering));
-
-	// Louvain
-	PLM louvain(G);
-	louvain.run();
-	clustering = louvain.getPartition();
-	INFO("Louvain number of clusters: " , clustering.numberOfSubsets());
-	INFO("modularity clustered random graph: " , modularity.getQuality(clustering, G));
-	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, clustering));
-}
-
-
-TEST_F(CommunityGTest, tryCNMandLouvainReal) {
-	METISGraphReader reader;
-	Graph jazz = reader.read("input/jazz.graph");
-	Modularity modularity;
-	CNM cnm(jazz);
-	PLM louvain(jazz);
-
-	// CNM
-	cnm.run();
-	Partition clustering = cnm.getPartition();
-	INFO("CNM number of jazz clusters: " , clustering.numberOfSubsets());
-	INFO("CNM modularity jazz graph: " , modularity.getQuality(clustering, jazz));
-
-	// Louvain
-	louvain.run();
-	clustering = louvain.getPartition();
-	INFO("Louvain number of jazz clusters: " , clustering.numberOfSubsets());
-	INFO("Louvain modularity jazz graph: " , modularity.getQuality(clustering, jazz));
-}
 
 
 
@@ -395,28 +340,6 @@ TEST_F(CommunityGTest, testDeletedNodesPLM) {
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta2));
 
 }
-
-
-TEST_F(CommunityGTest, testCommunityGraph) {
-	CommunityGraph com;
-	METISGraphReader reader;
-	Graph G = reader.read("input/jazz.graph");
-	ClusteringGenerator clusteringGen;
-
-	Partition one = clusteringGen.makeOneClustering(G);
-	com.run(G, one);
-	EXPECT_EQ(1u, com.getGraph().numberOfNodes());
-
-	Partition singleton = clusteringGen.makeSingletonClustering(G);
-	com.run(G, singleton);
-	EXPECT_EQ(G.numberOfNodes(), com.getGraph().numberOfNodes());
-	PLP plp(G);
-	plp.run();
-	Partition zeta = plp.getPartition();
-	com.run(G, zeta);
-	EXPECT_EQ(zeta.numberOfSubsets(), com.getGraph().numberOfNodes());
-}
-
 
 TEST_F(CommunityGTest, testModularity) {
 	GraphGenerator graphGenerator;
@@ -502,6 +425,37 @@ TEST_F(CommunityGTest, testClusteringEquality) {
 
 }
 
+
+TEST_F(CommunityGTest, testEdgeCutMeasure) {
+	/* Graph:
+	    0    3
+	     \  / \
+	      2    5
+	     /  \ /
+	    1    4
+	 */
+	count n = 6;
+	Graph G(n);
+
+	G.addEdge(0, 2);
+	G.addEdge(1, 2);
+	G.addEdge(2, 3);
+	G.addEdge(2, 4);
+	G.addEdge(3, 5);
+	G.addEdge(4, 5);
+
+	Partition part(n);
+	part[0] = 0;
+	part[1] = 0;
+	part[2] = 0;
+	part[3] = 1;
+	part[4] = 2;
+	part[5] = 1;
+
+	EdgeCut ec;
+	edgeweight cut = ec.getQuality(part, G);
+	EXPECT_EQ(cut, 3);
+}
 
 
 TEST_F(CommunityGTest, testJaccardMeasure) {
@@ -667,12 +621,8 @@ TEST_F(CommunityGTest, testSampledRandMeasures) {
 
 	SampledNodeStructuralRandMeasure nRand(20);
 	SampledGraphStructuralRandMeasure gRand(20);
-
-	double nDis = nRand.getDissimilarity(G, one, singleton);
-	double gDis = gRand.getDissimilarity(G, one, singleton);
-
-	DEBUG("node structural dissimilarity: ", nDis);
-	DEBUG("graph structural dissimilarity: ", gDis);
+	DEBUG("node structural dissimilarity: ", nRand.getDissimilarity(G, one, singleton));
+	DEBUG("graph structural dissimilarity: ", gRand.getDissimilarity(G, one, singleton));
 }
 
 

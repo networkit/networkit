@@ -19,6 +19,7 @@
 #include "../../community/ClusteringGenerator.h"
 #include "../../io/PartitionWriter.h"
 #include "../../io/METISGraphReader.h"
+#include "../../io/METISGraphWriter.h"
 #include "../../io/DibapGraphReader.h"
 #include "../../generators/PubWebGenerator.h"
 #include "../../auxiliary/Random.h"

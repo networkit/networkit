@@ -22,7 +22,7 @@ class NodeStructuralRandMeasure: public NetworKit::DissimilarityMeasure {
 public:
 
 
-	virtual double getDissimilarity(const Graph& G, const Partition& first, const Partition& second);
+	virtual double getDissimilarity(const NetworKit::Graph &G, const NetworKit::Partition &zeta, const NetworKit::Partition &eta);
 
 };
 

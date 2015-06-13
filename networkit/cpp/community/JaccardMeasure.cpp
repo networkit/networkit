@@ -6,26 +6,53 @@
  */
 
 #include "JaccardMeasure.h"
+#include "PartitionIntersection.h"
 
 namespace NetworKit {
 
 
-double JaccardMeasure::getDissimilarity(const Graph& G, const Partition& first,
-		const Partition& second) {
+double JaccardMeasure::getDissimilarity(const Graph& G, const Partition& zeta,
+		const Partition& eta) {
 
-	int64_t n = G.numberOfNodes();
-	assert (n > 0);
+	Partition intersection = PartitionIntersection().calculate(zeta, eta);
 
-	int64_t s11 = 0; 	// number of node pairs for which clusterings aggree
-	int64_t s00 = 0;	// number of node pairs for which clusterings disagree
+	std::vector<count> size_zeta(zeta.upperBound(), 0);
+	std::vector<count> size_eta(eta.upperBound(), 0);
+	std::vector<count> size_intersection(intersection.upperBound(), 0);
 
-	G.forNodePairs([&](node u, node v){
-		if ((first[u] == first[v]) && (second[u] == second[v])) {
-			s11 += 1;
-		} else if ((first[u] != first[v]) && (second[u] != second[v])) {
-			s00 += 1;
-		}
+	// precompute sizes for each cluster
+	G.forNodes([&](node u){
+		index C = zeta[u];
+		index D = eta[u];
+		index I = intersection[u];
+		assert (C != none);
+		assert (D != none);
+		assert (I != none);
+		size_zeta[C] += 1;
+		size_eta[D] += 1;
+		size_intersection[I] += 1;
 	});
+
+
+	count sumIntersection = 0;
+	for (count s : size_intersection) {
+		sumIntersection += s * (s - 1) / 2;
+	}
+
+	count sumZeta = 0;
+	for (count s : size_zeta) {
+		sumZeta += s * (s - 1) / 2;
+	}
+
+	count sumEta = 0;
+	for (count s : size_eta) {
+		sumEta += s * (s - 1) / 2;
+	}
+
+	count n = G.numberOfNodes();
+
+	count s11 = sumIntersection; // number of node pairs for which clusterings aggree
+	count s00 = n * (n-1) / 2 + sumIntersection - (sumZeta + sumEta); // number of node pairs for which clusterings disagree
 
 	double jaccard;
 	double divisor = n * (n - 1) - 2 * s00;
