@@ -1,5 +1,5 @@
 
-from _NetworKit import KatzIndex, CommonNeighborsIndex, JaccardIndex, PreferentialAttachmentIndex, AdamicAdarIndex, UDegreeIndex, VDegreeIndex, AlgebraicDistanceIndex, NeighborhoodDistanceIndex, TotalNeighborsIndex, NeighborsMeasureIndex, SameCommunityIndex, AdjustedRandIndex, ResourceAllocationIndex, RandomLinkSampler, ROCMetric, KFoldCrossValidator, PrecisionRecallMetric, MissingLinksFinder, LinkThresholder, PredictionsSorter
+from _NetworKit import KatzIndex, CommonNeighborsIndex, JaccardIndex, PreferentialAttachmentIndex, AdamicAdarIndex, UDegreeIndex, VDegreeIndex, AlgebraicDistanceIndex, NeighborhoodDistanceIndex, TotalNeighborsIndex, NeighborsMeasureIndex, SameCommunityIndex, AdjustedRandIndex, ResourceAllocationIndex, RandomLinkSampler, ROCMetric, PrecisionRecallMetric, MissingLinksFinder, LinkThresholder, PredictionsSorter
 
 from .graph import Graph
 
@@ -66,55 +66,3 @@ def getLabels(nodePairs, G):
   A numpy-array containing the labels of the given node-pairs.
   """
   return np.array(list(map(lambda p: 1 if G.hasEdge(p[0], p[1]) else 0, nodePairs)))
-
-# This should probably move to graphio or sth. similar
-def readGraph(file, percentLinks):
-  """ Reads a time-based graph and returns a pair of graphs encompassing the original graph and a subgraph.
-
-  The subgraph is constructed by copying the first percentLinks percent of links from the original graph
-  to the subgraph with respect to the date of creation.
-
-  Parameters
-  ----------
-  file : str
-    Path to the file to read the graph from.
-  percentLinks : double
-    Percentage of links to store in the training graph.
-
-  Returns
-  -------
-  A pair of graphs where the first graph contains all the links from the file whereas
-  the second graph contains only the first (timewise) percentLinks percent of links.
-  """
-  # reads the konect file contained in "file" and returns two graphs: G (full
-  # graph read from the file) and G1 (equal to G, but without the last nEdges
-  # edges, i.e. the ones that have to be predicted)
-  f = open(file, "r")
-  n = 0
-  filelist = []
-  #first scan to find out the number of nodes
-  for line in f:
-    fields = line.strip().split()
-    if fields[0].startswith("%"):
-      continue
-    (u, v, weight, time) = [int(i) for i in fields]
-    if u == v:
-      continue
-    filelist.append((time, u-1, v-1))
-    n = max(u, v, n)
-  # we sort filelist by time
-  filelist.sort()
-  G = Graph(n)
-  # we create the graph. if an edge is created between a pair of nodes that were already connected by an edge, it is ignored and removed from the list
-  filelist2 = []
-  for index, (time, u, v) in enumerate(filelist):
-    if not G.hasEdge(u, v):
-      G.addEdge(u, v)
-      filelist2.append([time, u, v])
-  filelist = filelist2
-  # now G is the graph with all the edges. we want to remove the last nEdges edges, creating G1
-  G1 = Graph(G)
-  nEdges = int(percentLinks * G.numberOfEdges())
-  for (time, u, v) in filelist[-nEdges:]:
-    G1.removeEdge(u, v)
-  return G, G1

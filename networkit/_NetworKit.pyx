@@ -6055,50 +6055,6 @@ cdef class PrecisionRecallMetric(EvaluationMetric):
 		"""
 		return self._this.getCurve(predictions, numThresholds)
 
-cdef extern from "cpp/linkprediction/KFoldCrossValidator.h":
-	cdef cppclass _KFoldCrossValidator "NetworKit::KFoldCrossValidator":
-		_KFoldCrossValidator(const _Graph& G, _LinkPredictor* linkPredictor, _EvaluationMetric* evaluator) except +
-		double crossValidate(count k) except +
-
-cdef class KFoldCrossValidator:
-	""" Averages the performance of a given LinkPredictor on a given graph.
-
-	This is done by randomly partitioning the graph into k subsamples.
-	From the k samples a single subsamples is used as test-data and the
-	remaining subsamples are used as training-data. This is done for every subsample.
-	The single performances will be measured by the given EvaluationMetric.
-
-	Parameters
-	----------
-	G : Graph
-		Graph to work on.
-	linkPredictor : LinkPredictor
-		Predictor whose performance should be measured.
-	evaluator : EvaluationMetric
-		Evaluator which provides a metric for evaluating the link prediction results.
-	"""
-	cdef _KFoldCrossValidator* _this
-
-	def __cinit__(self, Graph G, LinkPredictor linkPredictor, EvaluationMetric evaluator):
-		self._this = new _KFoldCrossValidator(G._this, linkPredictor._this, evaluator._this)
-
-	def __dealloc__(self):
-		del self._this
-
-	def crossValidate(self, count k):
-		""" Calculates the average AUC of the given EvaluationMetric after k test-runs.
-
-		Parameters
-		----------
-		k : count
-			Number of subsamples to split the given Graph G into.
-
-		Returns
-		-------
-		The average area under the given EvaluationCurve after k runs.
-		"""
-		return self._this.crossValidate(k)
-
 cdef extern from "cpp/linkprediction/MissingLinksFinder.h":
 	cdef cppclass _MissingLinksFinder "NetworKit::MissingLinksFinder":
 		_MissingLinksFinder(const _Graph& G) except +
