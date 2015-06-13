@@ -17,7 +17,6 @@
 #include "../ROCMetric.h"
 #include "../PrecisionRecallMetric.h"
 #include "../RandomLinkSampler.h"
-#include "../KFoldCrossValidator.h"
 #include "../MissingLinksFinder.h"
 #include "../UDegreeIndex.h"
 #include "../VDegreeIndex.h"
@@ -175,16 +174,6 @@ TEST_F(LinkPredictionGTest, testPRMetric) {
   EXPECT_EQ(0, curve.first[0]); EXPECT_EQ(1, curve.second[0]);
   EXPECT_EQ(0.5, curve.first[1]); EXPECT_EQ(1.0 / 3, curve.second[1]);
   EXPECT_EQ(1, curve.first[2]); EXPECT_EQ(1.0 / 3, curve.second[2]);
-}
-
-TEST_F(LinkPredictionGTest, testTenFoldCrossValidation) {
-  METISGraphReader graphReader;
-  Graph newG = graphReader.read("input/jazz.graph");
-  ROCMetric roc(newG);
-  CommonNeighborsIndex cn;
-  KFoldCrossValidator validator(newG, &cn, &roc);
-  double averageAUC = validator.crossValidate(10);
-  EXPECT_NEAR(0.89, averageAUC, 0.05);
 }
 
 TEST_F(LinkPredictionGTest, testKatzRunOnOrdering) {
