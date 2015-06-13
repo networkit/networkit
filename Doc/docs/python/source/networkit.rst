@@ -1,4 +1,4 @@
-NetworKit module
+networkit module
 ================
 
 .. automodule:: networkit
