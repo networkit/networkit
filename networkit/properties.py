@@ -7,13 +7,18 @@ from . import centrality
 from . import termgraph
 from . import auxiliary
 from . import nxadapter
-from . import powerlaw
 
 # other modules
 import textwrap
 import collections
 import math
 import logging
+
+try:
+	import powerlaw
+except ImportError:
+	logging.warning("""WARNING: module 'powerlaw' not installed, which is required by some
+						functions.""")
 
 try:
 	import networkx as nx
