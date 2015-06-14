@@ -2352,20 +2352,6 @@ cdef class EdgeListCoverReader:
 	def read(self, path, Graph G):
 		return Cover().setThis(self._this.read(stdstring(path), G._this))
 
-# Parameters
-
-cdef extern from "cpp/base/Parameters.h":
-	cdef cppclass _Parameters "NetworKit::Parameters":
-		_Parameters() except +
-		void setInt(string key, int64_t value)
-		void setDouble(string key, double value)
-		void setString(key, value)
-		void setBool(string key, bool value)
-		int64_t getInt(string key)
-		double getDouble(string key)
-		string getString(string key)
-		bool getBool(string key)
-
 
 # Module: structures
 #
