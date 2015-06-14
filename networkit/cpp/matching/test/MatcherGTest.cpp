@@ -24,8 +24,11 @@ MatcherGTest::~MatcherGTest() {
 
 TEST_F(MatcherGTest, testLocalMaxMatching) {
 	count n = 50;
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeCompleteGraph(n);
+	Graph G(n);
+	G.forNodePairs([&](node u, node v){
+		G.addEdge(u,v);
+	});
+
 	LocalMaxMatcher localMaxMatcher(none);
 
 	TRACE("Start localMax matching");
@@ -50,8 +53,10 @@ TEST_F(MatcherGTest, testLocalMaxMatching) {
 
 TEST_F(MatcherGTest, testPgaMatching) {
 	count n = 50;
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeCompleteGraph(n);
+	Graph G(n);
+	G.forNodePairs([&](node u, node v){
+		G.addEdge(u,v);
+	});
 	PathGrowingMatcher pgaMatcher;
 
 	TRACE("Start PGA matching");
