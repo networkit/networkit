@@ -11,7 +11,6 @@
 #include <set>
 
 #include "StaticGraphGenerator.h"
-#include "../auxiliary/ProgressMeter.h"
 
 namespace NetworKit {
 
