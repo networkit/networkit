@@ -1370,23 +1370,7 @@ cdef class Luby:
 
 # Module: generators
 
-# cdef extern from "cpp/graph/GraphGenerator.h":
-# 	cdef cppclass _GraphGenerator "NetworKit::GraphGenerator":
-# 		_GraphGenerator() except +
-# 		_Graph makeRandomGraph(count n, double p)
 
-
-# cdef class GraphGenerator:
-# 	""" Provides several functions for graph generation"""
-# 	cdef _GraphGenerator _this
-
-# 	def __cinit__(self):
-# 		self._this = _GraphGenerator()
-
-
-# 	def makeRandomGraph(self, n, p):
-# 		cdef _Graph _G = self._this.makeRandomGraph(n, p)
-# 		return Graph(0).setThis(_G)
 
 cdef extern from "cpp/generators/BarabasiAlbertGenerator.h":
 	cdef cppclass _BarabasiAlbertGenerator "NetworKit::BarabasiAlbertGenerator":
@@ -5326,7 +5310,7 @@ cdef class LinkPredictor:
 		return self._this.run(u, v)
 
 	def runAll(self):
-		""" Runs the link predictor on all currently unconnected node-pairs. 
+		""" Runs the link predictor on all currently unconnected node-pairs.
 
 		Possible self-loops are also excluded. The method makes use of parallelisation.
 
@@ -5455,7 +5439,7 @@ cdef extern from "cpp/linkprediction/PreferentialAttachmentIndex.h":
 		_PreferentialAttachmentIndex(const _Graph& G) except +
 
 cdef class PreferentialAttachmentIndex(LinkPredictor):
-	""" Implementation of the Preferential Attachment Index. 
+	""" Implementation of the Preferential Attachment Index.
 
 	The run-method simply calculates the product of the number of nodes in the neighborhoods
 	regarding the given nodes.

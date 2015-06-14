@@ -21,8 +21,10 @@ DistMeasuresGTest::~DistMeasuresGTest() {
 }
 
 TEST_F(DistMeasuresGTest, testAlgebraicDistanceIndex) {
-	GraphGenerator gen;
-	Graph G = gen.makeCompleteGraph(42);
+	Graph G(42);
+	G.forNodePairs([&](node u, node v){
+		G.addEdge(u,v);
+	});
 
 	count numSystems = 2;
 	count numIterations = 200;

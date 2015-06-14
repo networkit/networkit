@@ -19,7 +19,6 @@
 #include "../../io/DibapGraphReader.h"
 #include "../../structures/Partition.h"
 #include "../../community/Modularity.h"
-#include "../../graph/GraphGenerator.h"
 #include "../AlgebraicDistanceIndex.h"
 
 namespace NetworKit {

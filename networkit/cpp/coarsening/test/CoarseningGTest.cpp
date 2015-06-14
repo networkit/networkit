@@ -10,7 +10,6 @@
 #include "CoarseningGTest.h"
 
 #include "../../auxiliary/Log.h"
-#include "../../graph/GraphGenerator.h"
 #include "../../community/ClusteringGenerator.h"
 #include "../../coarsening/ClusteringProjector.h"
 #include "../../community/GraphClusteringTools.h"
@@ -21,9 +20,8 @@
 namespace NetworKit {
 
 TEST_F(CoarseningGTest, testClusteringProjectorWithOneClustering) {
-	GraphGenerator graphGen;
-	int64_t n = 100;
-	Graph G0 = graphGen.makeErdosRenyiGraph(n, 0.5);
+	ErdosRenyiGenerator gen(100, 0.5);
+	Graph G0 = gen.generate();
 
 	// get 1-clustering of G0
 	ClusteringGenerator clusteringGen;
@@ -46,9 +44,8 @@ TEST_F(CoarseningGTest, testClusteringProjectorWithOneClustering) {
 
 
 TEST_F(CoarseningGTest, testClusteringProjectorWithSingletonClustering) {
-	GraphGenerator graphGen;
-	int64_t n = 100;
-	Graph G0 = graphGen.makeErdosRenyiGraph(n, 0.5);
+	ErdosRenyiGenerator gen(100, 0.5);
+	Graph G0 = gen.generate();
 
 	// get 1-clustering of G0
 	ClusteringGenerator clusteringGen;
