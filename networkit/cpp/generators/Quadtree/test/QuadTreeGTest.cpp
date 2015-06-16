@@ -516,5 +516,68 @@ TEST_F(QuadTreeGTest, testLeftSuppression) {
 	}
 }
 
+TEST_F(QuadTreeGTest, tryTreeExport) {
+	count n = 40;
+	count capacity = 10;
+	double k = 6;
+	count m = n*k/2;
+	double targetR = HyperbolicSpace::getTargetRadius(n, m);
+
+	double R = HyperbolicSpace::hyperbolicAreaToRadius(n);
+	double alpha = 1;
+
+	//allocate data structures
+	vector<double> angles(n), radii(n);
+
+	/**
+	 * generate values and construct quadtree
+	 */
+	HyperbolicSpace::fillPoints(angles, radii, targetR / R, alpha);
+	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(targetR), true, 1, capacity);
+
+	for (index i = 0; i < n; i++) {
+		quad.addContent(i, angles[i], radii[i]);
+	}
+
+	EXPECT_EQ(quad.size(), n);
+
+	quad.reindex();
+
+	count treeheight = quad.height();
+	DEBUG("Quadtree height: ", treeheight);
+
+	index query = Aux::Random::integer(n-1);
+	DEBUG("Query:", angles[query], ", ", radii[query]);
+	double T = 0.2;
+	double beta = 1/T;
+
+	auto edgeProb = [beta, targetR](double distance) -> double {return 1 / (exp(beta*(distance-targetR)/2)+1);};
+
+	std::stack<QuadNode<index> > quadnodestack;
+	quadnodestack.push(getRoot(quad));
+
+	while (!quadnodestack.empty()) {
+		QuadNode<index> current = quadnodestack.top();
+		quadnodestack.pop();
+
+		DEBUG("Quadtree Cell ", current.getID());
+		DEBUG("Height: ", current.height());
+		auto distances = current.hyperbolicDistances(angles[query], radii[query]);
+		DEBUG("Mindistance to query:", distances.first);
+		DEBUG("ProbUB:", edgeProb(distances.first), " ProbLB:", edgeProb(distances.second));
+
+		if (current.height() == 1) {
+			for (index elem : current.getElements()) {
+				DEBUG("Leaf contains: ", angles[elem], ", ", radii[elem], " p: ", edgeProb(HyperbolicSpace::poincareMetric(angles[elem], radii[elem], angles[query], radii[query])));
+			}
+		}
+
+
+		for (QuadNode<index> child : current.children) {
+			quadnodestack.push(child);
+		}
+	}
+}
+
 
 } /* namespace NetworKit */
