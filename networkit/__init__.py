@@ -29,7 +29,7 @@ __credits__ = ["Lukas Barth", "Miriam Beddig", "Elisabetta Bergamini", "Stefan B
 	"Guido Brückner", "Patrick Flick", "Michael Hamann", "Lukas Hartmann", "Daniel Hoske", "Gerd Lindner", "Moritz v. Looz", "Yassine Marrakchi", "Henning Meyerhenke", \
 	"Marcel Radermacher", "Klara Reichard", "Marvin Ritter", "Aleksejs Sazonovs", "Florian Weber", "Michael Wegner", "Jörg Weisbarth"]
 __license__ = "MIT"
-__version__ = "3.4.1-Dev"
+__version__ = "3.5"
 
 
 # standard library modules
@@ -54,10 +54,10 @@ from . import partitioning
 from . import coloring
 from . import workflows
 from . import flow
-from . import distmeasures
 from . import plot
 from . import scd
 from . import clique
+from . import linkprediction
 from . import profiling
 
 try:

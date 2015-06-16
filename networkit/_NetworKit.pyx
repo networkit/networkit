@@ -40,6 +40,8 @@ cdef extern from "<algorithm>" namespace "std":
 	_Partition move( _Partition t) nogil
 	_Cover move(_Cover t) nogil
 	pair[_Graph, vector[node]] move(pair[_Graph, vector[node]]) nogil
+	vector[pair[pair[node, node], double]] move(vector[pair[pair[node, node], double]]) nogil
+	vector[pair[node, node]] move(vector[pair[node, node]]) nogil
 
 cdef extern from "cython_helper.h":
 	void throw_runtime_error(string message)
@@ -1368,23 +1370,7 @@ cdef class Luby:
 
 # Module: generators
 
-# cdef extern from "cpp/graph/GraphGenerator.h":
-# 	cdef cppclass _GraphGenerator "NetworKit::GraphGenerator":
-# 		_GraphGenerator() except +
-# 		_Graph makeRandomGraph(count n, double p)
 
-
-# cdef class GraphGenerator:
-# 	""" Provides several functions for graph generation"""
-# 	cdef _GraphGenerator _this
-
-# 	def __cinit__(self):
-# 		self._this = _GraphGenerator()
-
-
-# 	def makeRandomGraph(self, n, p):
-# 		cdef _Graph _G = self._this.makeRandomGraph(n, p)
-# 		return Graph(0).setThis(_G)
 
 cdef extern from "cpp/generators/BarabasiAlbertGenerator.h":
 	cdef cppclass _BarabasiAlbertGenerator "NetworKit::BarabasiAlbertGenerator":
@@ -2365,20 +2351,6 @@ cdef class EdgeListCoverReader:
 
 	def read(self, path, Graph G):
 		return Cover().setThis(self._this.read(stdstring(path), G._this))
-
-# Parameters
-
-cdef extern from "cpp/base/Parameters.h":
-	cdef cppclass _Parameters "NetworKit::Parameters":
-		_Parameters() except +
-		void setInt(string key, int64_t value)
-		void setDouble(string key, double value)
-		void setString(key, value)
-		void setBool(string key, bool value)
-		int64_t getInt(string key)
-		double getDouble(string key)
-		string getString(string key)
-		bool getBool(string key)
 
 
 # Module: structures
@@ -4854,82 +4826,8 @@ cdef class DynApproxBetweenness:
 		"""
 		Get number of path samples used in last calculation.
 		"""
+
 		return self._this.getNumberOfSamples()
-
-
-# Module: distmeasures
-
-cdef extern from "cpp/distmeasures/AlgebraicDistance.h":
-	cdef cppclass _AlgebraicDistance "NetworKit::AlgebraicDistance":
-		_AlgebraicDistance(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm) except +
-		void preprocess() nogil except +
-		double distance(node u, node v) except +
-		vector[vector[double]] getLoadsOnNodes()
-
-cdef class AlgebraicDistance:
-	"""
-	Algebraic distance assigns a distance value to pairs of nodes
-	according to their structural closeness in the graph.
-
-	Parameters
-	----------
-	G : Graph
-		The graph.
-	numberSystems : count
-		Number of vectors/systems used for algebraic iteration.
-	numberIterations : count
-		Number of iterations in each system.
-	omega : double, optional
-		Overrelaxation parameter, default: 0.5.
-	norm : index, optional
-		The norm factor of the extended algebraic distance. Maximum norm is realized by setting the norm to 0. Default: 2.
-	"""
-	cdef _AlgebraicDistance* _this
-	cdef Graph _G
-
-	def __cinit__(self, Graph G, count numberSystems, count numberIterations, double omega = 0.5, index norm = 2):
-		self._G = G
-		self._this = new _AlgebraicDistance(G._this, numberSystems, numberIterations, omega, norm)
-
-	def __dealloc__(self):
-		del self._this
-
-	def preprocess(self):
-		"""
-		Starting with random initialization, compute for all numberSystems
-		"diffusion" systems the situation after numberIterations iterations
-		of overrelaxation with overrelaxation parameter omega.
-
-		REQ: Needs to be called before algdist delivers meaningful results!
-		"""
-		with nogil:
-			self._this.preprocess()
-
-
-	def distance(self, node u, node v):
-		"""
-		Returns the extended algebraic distance between node u and node v in the norm specified in
-		the constructor.
-
-		Parameters
-		----------
-		u : node
-			The first node
-		v : node
-			The second node
-
-		Returns
-		-------
-		Extended algebraic distance between the two nodes.
-		"""
-		return self._this.distance(u, v)
-
-
-	def getLoadsOnNodes(self):
-		"""
-		Returns a list, indexed by node id, of the load values.
-		"""
-		return self._this.getLoadsOnNodes()
 
 # Module: dynamic
 
@@ -5260,7 +5158,7 @@ cdef class ParallelPartitionCoarsening:
 
 cdef extern from "cpp/scd/PageRankNibble.h":
 	cdef cppclass _PageRankNibble "NetworKit::PageRankNibble":
-		_PageRankNibble(_Graph G, double epsilon, double alpha) except +
+		_PageRankNibble(_Graph G, double alpha, double epsilon) except +
 		map[node, set[node]] run(set[unsigned int] seeds) except +
 
 cdef class PageRankNibble:
@@ -5271,15 +5169,15 @@ cdef class PageRankNibble:
 	Parameters:
 	-----------
 	G : graph in which the cut is to be produced, must be unweighted.
-	epsilon : the max probability in the residual vector for each node.
-	alpha : the random walk loop probability.
+	alpha : Loop probability of random walk; smaller values tend to produce larger communities.
+	epsilon: Tolerance threshold for approximation of PageRank vectors
 	"""
 	cdef _PageRankNibble *_this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, double epsilon, double alpha):
+	def __cinit__(self, Graph G, double alpha, double epsilon):
 		self._G = G
-		self._this = new _PageRankNibble(G._this, epsilon, alpha)
+		self._this = new _PageRankNibble(G._this, alpha, epsilon)
 
 	def run(self, set[unsigned int] seeds):
 		"""
@@ -5366,3 +5264,1155 @@ cdef class MaxClique:
 		Returns the size of the biggest clique
 		"""
 		return self._this.getMaxCliqueSize()
+
+# Module: linkprediction
+
+cdef extern from "cpp/linkprediction/LinkPredictor.h":
+	cdef cppclass _LinkPredictor "NetworKit::LinkPredictor":
+		_LinkPredictor(const _Graph& G) except +
+		double run(node u, node v) except +
+		vector[pair[pair[node, node], double]] runAll() except +
+		vector[pair[pair[node, node], double]] runOn(vector[pair[node, node]] nodePairs) except +
+		void setGraph(const _Graph& newGraph) except +
+
+cdef class LinkPredictor:
+	""" Abstract base class for link predictors.
+
+	Parameters
+	----------
+	G : Graph, optional
+		The graph to work on. Defaults to None.
+	"""
+	cdef _LinkPredictor* _this
+
+	def __cinit__(self, *args):
+		# The construction is handled by the subclasses
+		return
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def setGraph(self, Graph newGraph):
+		""" Sets the graph to work on.
+
+		Parameters
+		----------
+		newGraph : Graph
+			The graph to work on.
+   	"""
+		self._this.setGraph(newGraph._this)
+
+	def run(self, node u, node v):
+		""" Returns a score indicating the likelihood of a future link between the given nodes.
+
+		Prior to calling this method a graph should be provided through the constructor or
+		by calling setGraph. Note that only undirected graphs are accepted.
+		There is also no lower or upper bound for scores and the actual range of values depends
+		on the specific link predictor implementation. In case u == v a 0 is returned.
+		If suitable this method might make use of parallelization to enhance performance.
+
+		Parameters
+		----------
+		u : node
+			First node in graph.
+		v : node
+			Second node in graph.
+
+		Returns
+		-------
+		A prediction-score indicating the likelihood of a future link between the given nodes.
+		"""
+		return self._this.run(u, v)
+
+	def runAll(self):
+		""" Runs the link predictor on all currently unconnected node-pairs.
+
+		Possible self-loops are also excluded. The method makes use of parallelisation.
+
+		Returns
+		-------
+		A vector of pairs containing all currently unconnected node-pairs as the first elements
+		and the corresponding scores as the second elements. The vector is sorted ascendingly by node-pair.
+		"""
+		return move(self._this.runAll())
+
+	def runOn(self, vector[pair[node, node]] nodePairs):
+		""" Executes the run-method on aĺl given node-pairs and returns a vector of predictions.
+
+		The result is a vector of pairs where the first element is the node-pair and it's second
+		element the corresponding score generated by the run-method. The method makes use of
+		parallelisation.
+
+		Parameters
+		----------
+		nodePairs : vector[pair[node, node]]
+			Node-pairs to run the predictor on.
+
+		Returns
+		-------
+		A vector of pairs containing the given node-pair as the first element and it's corresponding score
+		as the second element. The vector is sorted ascendingly by node-pair.
+		"""
+		return move(self._this.runOn(nodePairs))
+
+cdef extern from "cpp/linkprediction/KatzIndex.h":
+	cdef cppclass _KatzIndex "NetworKit::KatzIndex"(_LinkPredictor):
+		_KatzIndex(count maxPathLength, double dampingValue) except +
+		_KatzIndex(const _Graph& G, count maxPathLength, double dampingValue) except +
+
+cdef class KatzIndex(LinkPredictor):
+	""" Implementation of the Katz index.
+
+	Katz index assigns a pair of nodes a similarity score
+	that is based on the sum of the weighted number of paths of length l
+	where l is smaller than a given limit.
+
+	Parameters
+	----------
+	G : Graph, optional
+		The graph to operate on. Defaults to None.
+	maxPathLength : count, optional
+		Maximal length of the paths to consider. Defaults to 5.
+	dampingValue : double, optional
+		Used to exponentially damp every addend of the sum. Should be in (0, 1]. Defaults to 0.005.
+	"""
+
+	def __cinit__(self, Graph G = None, count maxPathLength = 5, double dampingValue = 0.005):
+		if G is None:
+			self._this = new _KatzIndex(maxPathLength, dampingValue)
+		else:
+			self._this = new _KatzIndex(G._this, maxPathLength, dampingValue)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def run(self, node u, node v):
+		""" Returns the similarity score for the given node-pair based on the Katz index specified during construction.
+
+		The algorithm considers all paths starting at the node with the smaller degree except the algorithm
+		started at the other node at the last call.
+
+		Parameters
+		----------
+		u : node
+			First node in graph.
+		v : node
+			Second node in graph.
+
+		Returns
+		-------
+		The similarity score of the given node-pair calculated by the specified Katz index.
+		"""
+		return self._this.run(u, v)
+
+cdef extern from "cpp/linkprediction/CommonNeighborsIndex.h":
+	cdef cppclass _CommonNeighborsIndex "NetworKit::CommonNeighborsIndex"(_LinkPredictor):
+		_CommonNeighborsIndex() except +
+		_CommonNeighborsIndex(const _Graph& G) except +
+
+cdef class CommonNeighborsIndex(LinkPredictor):
+	""" The CommonNeighborsIndex calculates the number of common neighbors of a node-pair in a given graph.
+
+	Parameters
+	----------
+	G : Graph, optional
+		The graph to work on. Defaults to None.
+	"""
+
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _CommonNeighborsIndex()
+		else:
+			self._this = new _CommonNeighborsIndex(G._this)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def run(self, node u, node v):
+		""" Returns the number of common neighbors of the given nodes u and v.
+
+		Parameters
+		----------
+		u : node
+			First node in graph.
+		v : node
+			Second node in graph.
+
+		Returns
+		-------
+		The number of common neighbors of u and v.
+		"""
+		return self._this.run(u, v)
+
+cdef extern from "cpp/linkprediction/PreferentialAttachmentIndex.h":
+	cdef cppclass _PreferentialAttachmentIndex "NetworKit::PreferentialAttachmentIndex"(_LinkPredictor):
+		_PreferentialAttachmentIndex() except +
+		_PreferentialAttachmentIndex(const _Graph& G) except +
+
+cdef class PreferentialAttachmentIndex(LinkPredictor):
+	""" Implementation of the Preferential Attachment Index.
+
+	The run-method simply calculates the product of the number of nodes in the neighborhoods
+	regarding the given nodes.
+
+	Parameters
+	----------
+	G : Graph, optional
+		The graph to work on. Defaults to None.
+	"""
+
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _PreferentialAttachmentIndex()
+		else:
+			self._this = new _PreferentialAttachmentIndex(G._this)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def run(self, node u, node v):
+		""" Returns the product of the cardinalities of the neighborhoods regarding u and v.
+
+		Parameters
+		----------
+		u : node
+			First node in graph.
+		v : node
+			Second node in graph.
+
+		Returns
+		-------
+		The product of the cardinalities of the neighborhoods regarding u and v
+		"""
+		return self._this.run(u, v)
+
+cdef extern from "cpp/linkprediction/JaccardIndex.h":
+	cdef cppclass _JaccardIndex "NetworKit::JaccardIndex"(_LinkPredictor):
+		_JaccardIndex() except +
+		_JaccardIndex(const _Graph& G) except +
+
+cdef class JaccardIndex(LinkPredictor):
+	""" Implementation of the Jaccard index which normalizes the Common Neighbors Index.
+
+	This is done through dividing the number of common neighbors by the number of nodes
+	in the neighboorhood-union.
+
+	Parameters
+	----------
+	G : Graph, optional
+		The graph to work on. Defaults to None.
+	"""
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _JaccardIndex()
+		else:
+			self._this = new _JaccardIndex(G._this)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def run(self, node u, node v):
+		""" Returns the Jaccard index for the given node-pair (u, v).
+
+		Parameters
+		----------
+		u : node
+			First node in graph.
+		v : node
+			Second node in graph.
+
+		Returns
+		-------
+		The Jaccard index for the given node-pair (u, v).
+		"""
+		return self._this.run(u, v)
+
+cdef extern from "cpp/linkprediction/AdamicAdarIndex.h":
+	cdef cppclass _AdamicAdarIndex "NetworKit::AdamicAdarIndex"(_LinkPredictor):
+		_AdamicAdarIndex() except +
+		_AdamicAdarIndex(const _Graph& G) except +
+
+cdef class AdamicAdarIndex(LinkPredictor):
+	""" Implementation of the Adamic/Adar Index.
+
+	The index sums up the reciprocals of the logarithm of the degree of all
+	common neighbors of u and v.
+
+	Parameters
+	----------
+	G : Graph, optional
+		The graph to work on. Defaults to None.
+	"""
+
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _AdamicAdarIndex()
+		else:
+			self._this = new _AdamicAdarIndex(G._this)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def run(self, node u, node v):
+		""" Returns the Adamic/Adar Index of the given node-pair (u, v).
+
+		Parameters
+		----------
+		u : node
+			First node in graph.
+		v : node
+			Second node in graph.
+
+		Returns
+		-------
+		The Adamic/Adar Index of the given node-pair (u, v).
+		"""
+		return self._this.run(u, v)
+
+cdef extern from "cpp/linkprediction/UDegreeIndex.h":
+	cdef cppclass _UDegreeIndex "NetworKit::UDegreeIndex"(_LinkPredictor):
+		_UDegreeIndex() except +
+		_UDegreeIndex(const _Graph& G) except +
+
+cdef class UDegreeIndex(LinkPredictor):
+	""" Index that simply returns the degree of the first given node.
+
+	Parameters
+	----------
+	G : Graph, optional
+		The graph to work on. Defaults to None.
+	"""
+
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _UDegreeIndex()
+		else:
+			self._this = new _UDegreeIndex(G._this)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def run(self, node u, node v):
+		""" Returns the degree of the first node provided, namely u.
+
+		Parameters
+		----------
+		u : node
+			First node in graph.
+		v : node
+			Second node in graph.
+
+		Returns
+		-------
+		The degree of the first node provided, namely u.
+		"""
+		return self._this.run(u, v)
+
+cdef extern from "cpp/linkprediction/VDegreeIndex.h":
+	cdef cppclass _VDegreeIndex "NetworKit::VDegreeIndex"(_LinkPredictor):
+		_VDegreeIndex() except +
+		_VDegreeIndex(const _Graph& G) except +
+
+cdef class VDegreeIndex(LinkPredictor):
+	""" Index that simply returns the degree of the second given node.
+
+	Parameters
+	----------
+	G : Graph, optional
+		The graph to work on. Defaults to None.
+	"""
+
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _VDegreeIndex()
+		else:
+			self._this = new _VDegreeIndex(G._this)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def run(self, node u, node v):
+		""" Returns the degree of the second node provided, namely v.
+
+		Parameters
+		----------
+		u : node
+			First node in graph.
+		v : node
+			Second node in graph.
+
+		Returns
+		-------
+		The degree of the second node provided, namely v.
+		"""
+		return self._this.run(u, v)
+
+cdef extern from "cpp/linkprediction/AlgebraicDistanceIndex.h":
+	cdef cppclass _AlgebraicDistanceIndex "NetworKit::AlgebraicDistanceIndex"(_LinkPredictor):
+		_AlgebraicDistanceIndex(count numberSystems, count numberIterations, double omega, index norm) except +
+		_AlgebraicDistanceIndex(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm) except +
+		void preprocess() except +
+		double run(node u, node v) except +
+
+cdef class AlgebraicDistanceIndex(LinkPredictor):
+	""" Algebraic distance assigns a distance value to pairs of nodes according to their structural closeness in the graph.
+
+	Parameters
+	----------
+	G : Graph
+		The graph to work on. Can be set to None and default is None.
+	numberSystems : count
+		Number of vectors/systems used for algebraic iteration.
+	numberIterations : count
+		Number of iterations in each system.
+	omega : double, optional
+		Overrelaxation parameter, default: 0.5.
+	norm : index, optional
+		The norm factor of the extended algebraic distance. Maximum norm is realized by setting the norm to 0. Default: 2.
+	"""
+
+	def __cinit__(self, Graph G, count numberSystems, count numberIterations, double omega = 0.5, index norm = 2):
+		if G is None:
+			self._this = new _AlgebraicDistanceIndex(numberSystems, numberIterations, omega, norm)
+		else:
+			self._this = new _AlgebraicDistanceIndex(G._this, numberSystems, numberIterations, omega, norm)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def preprocess(self):
+		""" Executes necessary initializations.
+
+		Starting with random initialization, compute for all numberSystems
+		"diffusion" systems the situation after numberIterations iterations
+		of overrelaxation with overrelaxation parameter omega.
+
+		REQ: Needs to be called before algdist delivers meaningful results!
+		"""
+		(<_AlgebraicDistanceIndex *>self._this).preprocess()
+
+	def run(self, node u, node v):
+		""" Returns the extended algebraic distance between node u and node v in the norm specified in the constructor.
+
+		Parameters
+		----------
+		u : node
+			The first node.
+		v : node
+			The second node.
+
+		Returns
+		-------
+		Extended algebraic distance between the two nodes.
+		"""
+		return self._this.run(u, v)
+
+cdef extern from "cpp/linkprediction/NeighborhoodDistanceIndex.h":
+	cdef cppclass _NeighborhoodDistanceIndex "NetworKit::NeighborhoodDistanceIndex"(_LinkPredictor):
+		_NeighborhoodDistanceIndex() except +
+		_NeighborhoodDistanceIndex(const _Graph& G) except +
+		double run(node u, node v) except +
+
+cdef class NeighborhoodDistanceIndex(LinkPredictor):
+	""" Assigns a distance value to pairs of nodes according to the overlap of their neighborhoods.
+
+	Parameters
+	----------
+	G : Graph, optional
+		The graph to work on. Defaults to None.
+	"""
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _NeighborhoodDistanceIndex()
+		else:
+			self._this = new _NeighborhoodDistanceIndex(G._this)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def run(self, node u, node v):
+		""" Returns the Neighborhood Distance index for the given node-pair (u, v).
+
+		Parameters
+		----------
+		u : node
+			First node in graph.
+		v : node
+			Second node in graph.
+
+		Returns
+		-------
+		The Neighborhood Distance index for the given node-pair (u, v).
+		"""
+		return self._this.run(u, v)
+
+cdef extern from "cpp/linkprediction/TotalNeighborsIndex.h":
+	cdef cppclass _TotalNeighborsIndex "NetworKit::TotalNeighborsIndex"(_LinkPredictor):
+		_TotalNeighborsIndex() except +
+		_TotalNeighborsIndex(const _Graph& G) except +
+
+cdef class TotalNeighborsIndex(LinkPredictor):
+	""" Implementation of the Total Neighbors Index.
+
+	This index is also known as Total Friends Index and returns
+	the number of nodes in the neighborhood-union of u and v.
+
+	Parameters
+	----------
+	G : Graph, optional
+		The graph to work on. Defaults to None.
+	"""
+
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _TotalNeighborsIndex()
+		else:
+			self._this = new _TotalNeighborsIndex(G._this)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def run(self, node u, node v):
+		""" Returns the number of total union-neighbors for the given node-pair (u, v).
+
+		Parameters
+		----------
+		u : node
+			First node in graph.
+		v : node
+			Second node in graph.
+
+		Returns
+		-------
+		The number of total union-neighbors for the given node-pair (u, v).
+		"""
+		return self._this.run(u, v)
+
+cdef extern from "cpp/linkprediction/NeighborsMeasureIndex.h":
+	cdef cppclass _NeighborsMeasureIndex "NetworKit::NeighborsMeasureIndex"(_LinkPredictor):
+		_NeighborsMeasureIndex() except +
+		_NeighborsMeasureIndex(const _Graph& G) except +
+
+cdef class NeighborsMeasureIndex(LinkPredictor):
+	""" Implementation of the Neighbors Measure Index.
+
+	This index is also known as Friends Measure and simply returns
+	the number of connections between neighbors of the given nodes u and v.
+
+	Parameters
+	----------
+	G : Graph, optional
+		The graph to work on. Defaults to None.
+	"""
+
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _NeighborsMeasureIndex()
+		else:
+			self._this = new _NeighborsMeasureIndex(G._this)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def run(self, node u, node v):
+		""" Returns the number of connections between neighbors of u and v.
+
+		Parameters
+		----------
+		u : node
+			First node in graph.
+		v : node
+			Second node in graph.
+
+		Returns
+		-------
+		The number of connections between neighbors of u and v.
+		"""
+		return self._this.run(u, v)
+
+cdef extern from "cpp/linkprediction/SameCommunityIndex.h":
+	cdef cppclass _SameCommunityIndex "NetworKit::SameCommunityIndex"(_LinkPredictor):
+		_SameCommunityIndex() except +
+		_SameCommunityIndex(const _Graph& G) except +
+
+cdef class SameCommunityIndex(LinkPredictor):
+	""" Index to determine whether two nodes are in the same community.
+
+	Parameters
+	----------
+	G : Graph, optional
+		The graph to work on. Defaults to None.
+	"""
+
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _SameCommunityIndex()
+		else:
+			self._this = new _SameCommunityIndex(G._this)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def run(self, node u, node v):
+		""" Returns 1 if the given nodes u and v are in the same community, 0 otherwise.
+
+		Parameters
+		----------
+		u : node
+			First node in graph.
+		v : node
+			Second node in graph.
+
+		Returns
+		-------
+		1 if the given nodes u and v are in the same community, 0 otherwise.
+		"""
+		return self._this.run(u, v)
+
+cdef extern from "cpp/linkprediction/AdjustedRandIndex.h":
+	cdef cppclass _AdjustedRandIndex "NetworKit::AdjustedRandIndex"(_LinkPredictor):
+		_AdjustedRandIndex() except +
+		_AdjustedRandIndex(const _Graph& G) except +
+
+cdef class AdjustedRandIndex(LinkPredictor):
+	""" AdjustedRandIndex proposed by Hoffman et al. with natural threshold of 0.
+
+	Parameters
+	----------
+	G : Graph, optional
+		The graph to work on. Defaults to None.
+	"""
+
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _AdjustedRandIndex()
+		else:
+			self._this = new _AdjustedRandIndex(G._this)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def run(self, node u, node v):
+		""" Returns the Adjusted Rand Index of the given node-pair (u, v).
+
+		Parameters
+		----------
+		u : node
+			First node in graph.
+		v : node
+			Second node in graph.
+
+		Returns
+		-------
+		The Adjusted Rand Index of the given node-pair (u, v).
+		"""
+		return self._this.run(u, v)
+
+cdef extern from "cpp/linkprediction/ResourceAllocationIndex.h":
+	cdef cppclass _ResourceAllocationIndex "NetworKit::ResourceAllocationIndex"(_LinkPredictor):
+		_ResourceAllocationIndex() except +
+		_ResourceAllocationIndex(const _Graph& G) except +
+
+cdef class ResourceAllocationIndex(LinkPredictor):
+	""" Implementation of the ResourceAllocationIndex.
+
+	The index is similar to Adamic/Adar and sums up the reciprocals of
+	the degree of all common neighbors of u and v.
+
+	Parameters
+	----------
+	G : Graph, optional
+		The graph to work on. Defaults to None.
+	"""
+
+	def __cinit__(self, Graph G = None):
+		if G is None:
+			self._this = new _ResourceAllocationIndex()
+		else:
+			self._this = new _ResourceAllocationIndex(G._this)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def run(self, node u, node v):
+		""" Returns the Resource Allocation Index of the given node-pair (u, v).
+
+		Parameters
+		----------
+		u : node
+			First node in graph.
+		v : node
+			Second node in graph.
+
+		Returns
+		-------
+		The Resource Allocation Index of the given node-pair (u, v).
+		"""
+		return self._this.run(u, v)
+
+cdef extern from "cpp/linkprediction/RandomLinkSampler.h" namespace "NetworKit::RandomLinkSampler":
+	_Graph byPercentage(_Graph G, double percentage) except +
+	_Graph byCount(_Graph G, count numLinks) except +
+
+cdef class RandomLinkSampler:
+	""" Provides methods to randomly sample a number of edges from a given graph. """
+
+	@staticmethod
+	def byPercentage(Graph G, double percentage):
+		""" Returns a graph that contains percentage percent of links form the given graph G.
+
+		The links are randomly selected from G until the given percentage is reached.
+
+		Parameters
+		----------
+		G : Graph
+			The graph to construct the training graph from.
+		percentage : double
+			Percentage of links regarding the number of links in the given graph that should
+			be in the returned graph.
+
+		Returns
+		-------
+		A graph that contains the given percentage of links from G.
+		"""
+		return Graph().setThis(byPercentage(G._this, percentage))
+
+	@staticmethod
+	def byCount(Graph G, count numLinks):
+		""" Returns a graph that contains numLinks links from the given graph G.
+
+		The links are randomly selected from G until the given count is reached.
+
+		Parameters
+		----------
+		G : Graph
+			The graph to construct the training graph from.
+		numLinks : count
+			Number of links the returned graph should consist of.
+
+		Returns
+		-------
+		A graph that contains the given number of links from G.
+		"""
+		return Graph().setThis(byCount(G._this, numLinks))
+
+cdef extern from "cpp/linkprediction/EvaluationMetric.h":
+	cdef cppclass _EvaluationMetric "NetworKit::EvaluationMetric":
+		_EvaluationMetric() except +
+		_EvaluationMetric(const _Graph& testGraph) except +
+		void setTestGraph(const _Graph& newTestGraph) except +
+		pair[vector[double], vector[double]] getCurve(vector[pair[pair[node, node], double]] predictions, count numThresholds) except +
+		double getAreaUnderCurve() except +
+		double getAreaUnderCurve(pair[vector[double], vector[double]] curve) except +
+
+cdef class EvaluationMetric:
+	""" Abstract base class for evaluation curves.
+
+	The evualation curves are generated based on the predictions calculated
+	by the link predictor and a testGraph to compare against.
+
+	Parameters
+	----------
+	testGraph : Graph
+		Graph containing the links to use for evaluation. Can be set to None and default is None.
+	"""
+	cdef _EvaluationMetric *_this
+
+	def __cinit__(self, *args):
+		# The construction is handled by the subclasses
+		return
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def setTestGraph(self, Graph newTestGraph):
+		""" Sets a new graph to use as ground truth for evaluation.
+
+		Note that this won't reset the most recently calculated curve and as a consequence
+		getAreaUnderCurve() will still behave as expected by returning the AUC of the most recent curve.
+
+		Parameters
+		----------
+		newTestGraph : Graph
+			New graph to use as ground truth.
+		"""
+		self._this.setTestGraph(newTestGraph._this)
+
+	def getCurve(self, vector[pair[pair[node, node], double]] predictions, count numThresholds = 1000):
+		""" Returns a pair of X- and Y-vectors describing the evaluation curve generated from the given predictions.
+
+		The latest y-value will be used as a tie-breaker in case there are multiple y-values for one x-value.
+		Note that the given number of thresholds (@a numThresholds) is an upper bound for the number of
+		points returned. This is due to the fact that multiple y-values can map to one x-value in which case
+		the tie-breaking behaviour described above will intervene.
+
+		Parameters
+		----------
+		predictions : vector[pair[pair[node, node], double]]
+			Predictions to evaluate.
+		numThresholds : count, optional
+			The number of thresholds to use the metric on. Defaults to 1000.
+
+		Returns
+		-------
+		A pair of vectors where the first vectors contains all x-values and the second one contains the
+		corresponding y-value.
+		"""
+		return self._this.getCurve(predictions, numThresholds)
+
+	def getAreaUnderCurve(self, pair[vector[double], vector[double]] curve = pair[vector[double], vector[double]]()):
+		""" Returns the area under the most recently calculated or optionally the given curve by using the trapezoidal rule.
+
+		Note that if there is no curve specified or the vectors of the given curves are empty than
+		the area under the most recently calculated curve will be returned.
+
+		Parameters
+		----------
+		curve : pair[vector[double], vector[double]]
+			Curve whose AUC to determine. Default: Pair of empty vectors.
+
+		Returns
+		-------
+		The area under the given curve.
+		"""
+		if len(curve.first) == 0:
+			return self._this.getAreaUnderCurve()
+		return self._this.getAreaUnderCurve(curve)
+
+cdef extern from "cpp/linkprediction/ROCMetric.h":
+	cdef cppclass _ROCMetric "NetworKit::ROCMetric"(_EvaluationMetric):
+		_ROCMetric() except +
+		_ROCMetric(const _Graph& testGraph) except +
+		pair[vector[double], vector[double]] getCurve(vector[pair[pair[node, node], double]] predictions, count numThresholds) except +
+
+cdef class ROCMetric(EvaluationMetric):
+	""" Provides points that define the Receiver Operating Characteristic curve for a given set of predictions.
+
+	Based on the generated points the area under the curve can be calculated with the trapzoidal rule.
+
+	Parameters
+	----------
+	testGraph : Graph, optional
+		Graph containing the links to use for evaluation. Defaults to None.
+	"""
+
+	def __cinit__(self, Graph testGraph = None):
+		if testGraph is None:
+			self._this = new _ROCMetric()
+		else:
+			self._this = new _ROCMetric(testGraph._this)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def getCurve(self, vector[pair[pair[node, node], double]] predictions, count numThresholds = 1000):
+		""" Generate the points of the Receiver Operating Characteristic curve regarding the previously set predictions.
+
+		Note that in the case of multiple y-values mapping to the same x-value the highest (=latest) y-value gets picked.
+
+		Parameters
+		----------
+		predictions : vector[pair[pair[node, node], double]]
+			Predictions to evaluate.
+		numThresholds : count, optional
+			The number of thresholds to use the metric on. Defaults to 1000.
+
+		Returns
+		-------
+		A pair of vectors where the first vector contains the false positive rates and the second vector the
+		corresponding true positive rates.
+		"""
+		return self._this.getCurve(predictions, numThresholds)
+
+cdef extern from "cpp/linkprediction/PrecisionRecallMetric.h":
+	cdef cppclass _PrecisionRecallMetric "NetworKit::PrecisionRecallMetric"(_EvaluationMetric):
+		_PrecisionRecallMetric() except +
+		_PrecisionRecallMetric(const _Graph& testGraph) except +
+		pair[vector[double], vector[double]] getCurve(vector[pair[pair[node, node], double]] predictions, count numThresholds) except +
+
+cdef class PrecisionRecallMetric(EvaluationMetric):
+	""" Provides points that define the Precision-Recall curve for a given set of predictions.
+
+	Based on the generated points the area under the curve can be calculated with the trapzoidal rule.
+
+	Parameters
+	----------
+	testGraph : Graph, optional
+		Graph containing the links to use for evaluation. Defaults to None.
+	"""
+
+	def __cinit__(self, Graph testGraph = None):
+		if testGraph is None:
+			self._this = new _PrecisionRecallMetric()
+		else:
+			self._this = new _PrecisionRecallMetric(testGraph._this)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def getCurve(self, vector[pair[pair[node, node], double]] predictions, count numThresholds = 1000):
+		""" Generates the points for the Precision-Recall curve with respect to the given predictions.
+
+		The curve assigns every recall-value a corresponding precision as the y-value.
+		In case of a tie regarding multiple y-values for a x-value the smallest (= latest) y-value will be used.
+
+		Parameters
+		----------
+		predictions : vector[pair[pair[node, node], double]]
+			Predictions to evaluate.
+		numThresholds : count, optional
+			The number of thresholds to use the metric on. Defaults to 1000.
+
+		Returns
+		-------
+		A pair of vectors where the first vector contains all recall-values and the second vector
+		the corresponding precision-values.
+		"""
+		return self._this.getCurve(predictions, numThresholds)
+
+cdef extern from "cpp/linkprediction/MissingLinksFinder.h":
+	cdef cppclass _MissingLinksFinder "NetworKit::MissingLinksFinder":
+		_MissingLinksFinder(const _Graph& G) except +
+		vector[pair[node, node]] findAtDistance(count k) except +
+		vector[pair[node, node]] findFromNode(node u, count k) except +
+
+cdef class MissingLinksFinder:
+	""" Allows the user to find missing links in the given graph.
+
+	The absent links to find are narrowed down by providing a distance
+	that the nodes of the missing links should have.
+	For example in case of distance 2 only node-pairs that would close
+	a triangle in the given graph get returned.
+
+	Parameters
+	----------
+	G : Graph
+		The graph to find missing links in.
+	"""
+	cdef _MissingLinksFinder* _this
+
+	def __cinit__(self, Graph G):
+		self._this = new _MissingLinksFinder(G._this)
+
+	def __dealloc__(self):
+		del self._this
+
+	def findAtDistance(self, count k):
+		""" Returns all missing links in the graph that have distance k.
+
+		Note that a distance of k actually means that there are k different links
+		on the path of the two nodes that are connected through that path.
+
+		Parameters
+		----------
+		k : count
+			Distance of the absent links.
+
+		Returns
+		-------
+		An ascendingly sorted vector of node-pairs where there is a missing link of distance k
+		between the two nodes.
+		"""
+		return move(self._this.findAtDistance(k))
+
+	def findFromNode(self, node u, count k):
+		""" Returns all missing links in the graph that have distance k and are connected to u.
+
+		Note that a distance of k actually means that there are k different links
+		on the path of the two nodes that are connected through that path.
+
+		Parameters
+		----------
+		u : node
+			Node to find missing links from.
+		k : count
+			Distance of the absent links.
+
+		Returns
+		-------
+		A vector of node-pairs where there is a missing link of distance k
+		between the given node u and another node in the graph.
+		"""
+		return move(self._this.findFromNode(u, k))
+
+cdef extern from "cpp/linkprediction/NeighborhoodUtility.h" namespace "NetworKit::NeighborhoodUtility":
+	vector[node] getNeighborsUnion(const _Graph& G, node u, node v) except +
+	vector[node] getCommonNeighbors(const _Graph& G, node u, node v) except +
+
+cdef class NeighborhoodUtility:
+	""" Provides basic operations on neighborhoods in a given graph. """
+
+	@staticmethod
+	def getNeighborsUnion(Graph G, node u, node v):
+		""" Returns the union of the neighboorhoods of u and v.
+
+		Parameters
+		----------
+		G : Graph
+			Graph to obtain neighbors-union from.
+		u : node
+			First node.
+		v : node
+			Second node.
+
+		Returns
+		-------
+		A vector containing all the nodes in the neighboorhood-union of u and v.
+		"""
+		return getNeighborsUnion(G._this, u, v)
+
+	@staticmethod
+	def getCommonNeighbors(Graph G, node u, node v):
+		""" Returns a vector containing the node-ids of all common neighbors of u and v.
+
+		Parameters
+		----------
+		G : Graph
+			Graph to obtain common neighbors from.
+		u : node
+			First node.
+		v : node
+			Second node.
+
+		Returns
+		-------
+		A vector containing the node-ids of all common neighbors of u and v.
+		"""
+		return getCommonNeighbors(G._this, u, v)
+
+cdef extern from "cpp/linkprediction/LinkThresholder.h" namespace "NetworKit::LinkThresholder":
+	vector[pair[node, node]] byScore(vector[pair[pair[node, node], double]] predictions, double minScore)
+	vector[pair[node, node]] byCount(vector[pair[pair[node, node], double]] predictions, count numLinks)
+	vector[pair[node, node]] byPercentage(vector[pair[pair[node, node], double]] predictions, double percentageLinks)
+
+cdef class LinkThresholder:
+	""" Filters given predictions based on some criterion and returns a vector of node-pairs that fulfill the given criterion.
+
+	This can be used to determine which node-pairs should actually be interpreted
+	as future links and which shouldn't.
+	"""
+
+	@staticmethod
+	def byScore(vector[pair[pair[node, node], double]] predictions, double minScore):
+		""" Returns the node-pairs whose scores are at least equal to the given minScore.
+
+		Parameters
+		----------
+		predictions : vector[pair[pair[node, node], double]].
+			Predictions to filter.
+		minScore : double
+			Minimal score that the returned node-pairs should have.
+
+		Returns
+		-------
+		A vector of node-pairs whose scores are at least equal to the given minScore.
+		"""
+		return byScore(predictions, minScore)
+
+	@staticmethod
+	def byCount(vector[pair[pair[node, node], double]] predictions, count numLinks):
+		""" Returns the first numLinks highest scored node-pairs.
+
+		Parameters
+		----------
+		predictions : vector[pair[pair[node, node], double]].
+			Predictions to filter.
+		numLinks : count
+			Number of top-scored node-pairs to return.
+
+		Returns
+		-------
+		The first numLinks highest scored node-pairs.
+		"""
+		return byCount(predictions, numLinks)
+
+	@staticmethod
+	def byPercentage(vector[pair[pair[node, node], double]] predictions, double percentageLinks):
+		""" Returns the first percentageLinks percent of the highest scores node-pairs.
+
+		Parameters
+		----------
+		predictions : vector[pair[pair[node, node], double]].
+			Predictions to filter.
+		percentageLinks : double
+			Percentage of highest scored node-pairs to return.
+
+		Returns
+		-------
+		The first percentageLinks percent of the highest scores node-pairs.
+		"""
+		return byPercentage(predictions, percentageLinks)
+
+cdef extern from "cpp/linkprediction/PredictionsSorter.h" namespace "NetworKit::PredictionsSorter":
+	void sortByScore (vector[pair[pair[node, node], double]]& predictions) except +
+	void sortByNodePair (vector[pair[pair[node, node], double]]& predictions) except +
+
+cdef class PredictionsSorter:
+	""" Allows the sorting of predictions by score or node-pair. """
+
+	@staticmethod
+	def sortByScore(list predictions):
+		""" Sorts the given predictions descendingly by score.
+
+		In case there is a tie the node-pairs are used as a tie-breaker by sorting them
+		ascendingly on the first node and on a tie ascendingly by the second node.
+
+		Parameters
+		----------
+		predictions : vector[pair[pair[node, node], double]]
+			The predictions to sort.
+		"""
+		cdef vector[pair[pair[node, node], double]] predCopy = predictions
+		sortByScore(predCopy)
+		predictions[:] = predCopy
+
+	@staticmethod
+	def sortByNodePair(list predictions):
+		""" Sorts the predictions ascendingly by node-pair.
+
+		This means for example (0, 0) < (0, 1) and (1, 1) < (1, 0).
+
+		Parameters
+		----------
+		predictions : vector[pair[pair[node, node], double]]
+			The predictions to sort.
+		"""
+		cdef vector[pair[pair[node, node], double]] predCopy = predictions
+		sortByNodePair(predCopy)
+		predictions[:] = predCopy

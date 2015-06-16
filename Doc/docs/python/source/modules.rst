@@ -4,7 +4,7 @@ python
 .. toctree::
    :maxdepth: 4
 
-   NetworKit
+   networkit
    algebraic
    auxiliary
    centrality
@@ -18,10 +18,8 @@ python
    nxadapter
    powerlaw
    properties
-   scripts
    stopwatch
    structures
    termgraph
-   toolbox
    viztasks
-   viztools
+   linkprediction

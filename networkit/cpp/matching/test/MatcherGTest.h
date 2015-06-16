@@ -17,7 +17,6 @@
 #include "../PathGrowingMatcher.h"
 #include "../ParallelMatcher.h"
 #include "../../graph/Graph.h"
-#include "../../graph/GraphGenerator.h"
 #include "../../io/DibapGraphReader.h"
 
 

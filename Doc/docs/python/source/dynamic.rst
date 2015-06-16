@@ -1,7 +1,7 @@
-NetworKit.dynamic
+networkit.dynamic
 =================
 
-.. automodule:: dynamic
+.. automodule:: networkit.dynamic
     :members:
     :imported-members:
     :undoc-members:
