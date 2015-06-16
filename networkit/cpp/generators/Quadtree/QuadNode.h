@@ -64,6 +64,7 @@ public:
 		splitTheoretical = false;
 		alpha = 1;
 		lowerBoundR = maxR;
+		ID = 0;
 	}
 
 	/**
@@ -97,6 +98,7 @@ public:
 		this->splitTheoretical = splitTheoretical;
 		this->balance = balance;
 		this->lowerBoundR = maxR;
+		this->ID = 0;
 		isLeaf = true;
 		subTreeSize = 0;
 	}
@@ -772,10 +774,6 @@ public:
 
 	double getMaxR() const {
 		return maxR;
-	}
-
-	void setID(index id) {
-		this->ID = id;
 	}
 
 	index getID() const {
