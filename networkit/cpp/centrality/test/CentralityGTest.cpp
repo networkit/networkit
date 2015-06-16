@@ -11,6 +11,7 @@
 #include "../DynApproxBetweenness.h"
 #include "../ApproxBetweenness.h"
 #include "../ApproxBetweenness2.h"
+#include "../ApproxCloseness.h"
 #include "../EigenvectorCentrality.h"
 #include "../KatzCentrality.h"
 #include "../PageRank.h"
@@ -330,7 +331,64 @@ TEST_F(CentralityGTest, testApproxBetweenness2) {
 	abc2.run();
 
 	DEBUG("approximated betweenness scores: ", abc2.scores());
+}
 
+TEST_F(CentralityGTest, testApproxClosenessCentralityOnRealGraph) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/celegans_metabolic.graph");
+
+	ApproxCloseness acc(G, 100);
+	acc.run();
+
+	DEBUG("approximated closeness scores: ", acc.scores());
+}
+
+TEST_F(CentralityGTest, testApproxClosenessCentralityOnToyGraph) {
+ /* Graph:
+    0    3
+     \  / \
+      2    5
+     /  \ /
+    1    4
+ */
+    count n = 6;
+    Graph G(n);
+
+    G.addEdge(0, 2);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+    G.addEdge(2, 4);
+    G.addEdge(3, 5);
+    G.addEdge(4, 5);
+
+    ApproxCloseness acc(G, 1000, false);
+    acc.run();
+    std::vector<double> cc = acc.scores();
+
+		double maximum = acc.maximum();
+
+    const double tol = 0.1;
+    EXPECT_NEAR(0.1, cc[0], tol);
+    EXPECT_NEAR(0.1, cc[1], tol);
+    EXPECT_NEAR(0.166667, cc[2], tol);
+    EXPECT_NEAR(0.125, cc[3], tol);
+    EXPECT_NEAR(0.125, cc[4], tol);
+    EXPECT_NEAR(0.1, cc[5], tol);
+		EXPECT_NEAR(0.2, maximum, tol);
+
+		ApproxCloseness acc2(G, 50, true);
+		acc2.run();
+		std::vector<double> cc2 = acc2.scores();
+
+		double maximum2 = acc2.maximum();
+
+		EXPECT_NEAR(0.5, cc2[0], tol);
+		EXPECT_NEAR(0.5, cc2[1], tol);
+		EXPECT_NEAR(0.833335, cc2[2], tol);
+		EXPECT_NEAR(0.625, cc2[3], tol);
+		EXPECT_NEAR(0.625, cc2[4], tol);
+		EXPECT_NEAR(0.5, cc2[5], tol);
+		EXPECT_NEAR(0.2, maximum2, tol);
 }
 
 
@@ -388,6 +446,8 @@ TEST_F(CentralityGTest, testClosenessCentrality) {
     centrality.run();
     std::vector<double> bc = centrality.scores();
 
+		double maximum = centrality.maximum();
+
     const double tol = 1e-3;
     EXPECT_NEAR(0.1, bc[0], tol);
     EXPECT_NEAR(0.1, bc[1], tol);
@@ -395,6 +455,7 @@ TEST_F(CentralityGTest, testClosenessCentrality) {
     EXPECT_NEAR(0.125, bc[3], tol);
     EXPECT_NEAR(0.125, bc[4], tol);
     EXPECT_NEAR(0.1, bc[5], tol);
+		EXPECT_NEAR(0.2, maximum, tol);
 }
 
 

@@ -6,7 +6,7 @@ __author__ = "Christian Staudt"
 __credits__ = ["Christian Staudt", "Elisabetta Bergamini", "Henning Meyerhenke", "Marc Nemes"]
 
 # extension imports
-from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2, DynApproxBetweenness, Closeness, KPathCentrality, CoreDecomposition, KatzCentrality, LocalClusteringCoefficient
+from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2, ApproxCloseness, DynApproxBetweenness, Closeness, KPathCentrality, CoreDecomposition, KatzCentrality, LocalClusteringCoefficient
 
 
 # local imports
