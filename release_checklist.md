@@ -13,6 +13,12 @@
     7. Set version tag in default branch.
     8. Merge default branch back into Dev branch.
 
+## PyPI related
+    1. Run `python setup.py sdist upload -r test` to create the package NetworKit and upload it to the PIP test server
+    2. Do a test installation with `[sudo] pip[3] install -i https://testpypi.python.org/pypi networkit [--upgrade]` (on multiple systems, if possible).
+    3. Upload it to the real PyPI with: `python setup.py sdist upload -r test`
+
+
 ## Website related
 
     * Write news item.

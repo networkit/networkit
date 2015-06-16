@@ -1,7 +1,7 @@
-NetworKit.auxiliary
+networkit.auxiliary
 ===================
 
-.. automodule:: auxiliary
+.. automodule:: networkit.auxiliary
     :members:
     :imported-members:
     :undoc-members:

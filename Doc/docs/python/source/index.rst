@@ -9,7 +9,7 @@ Welcome to NetworKit's documentation!
 Module Overview:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
 
    modules
 
