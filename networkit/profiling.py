@@ -110,8 +110,8 @@ def computeNodeCentralities(G):
 							"pagerank":		(centrality.PageRank, 					(G, )),
 							"kpath":		(centrality.KPathCentrality,			(G, )),
 							"katz":			(centrality.KatzCentrality,				(G, )),
-							"betweenness":	(centrality.ApproxBetweenness2,			(G, max(42, n / 1000))),
-							"closeness":	(centrality.Closeness,					(G, max(42, n / 1000)))
+							"betweenness":	(centrality.ApproxBetweenness2,			(G, max(42, n / 1000), True)),
+							"closeness":	(centrality.ApproxCloseness,			(G, max(42, n / 1000), True))
 							}
 
 	centralityScores = {}
