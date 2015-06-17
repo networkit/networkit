@@ -40,11 +40,6 @@ except ImportError:
 
 ########  PROPERTIES ########
 
-def size(G):
-	""" Return number of nodes and number of edges"""
-	n = G.numberOfNodes()
-	m = G.numberOfEdges()
-	return (n, m)
 
 def degrees(G):
 	""" Return min/max/avg degree"""

@@ -617,6 +617,12 @@ public:
 	 */
 	count numberOfEdges() const { return m; }
 
+
+	/**
+	* @return a pair (n, m) where n is the number of nodes and m is the number of edges
+	*/
+	std::pair<count, count> const size() { return {n, m}; };
+
 	/**
 	 * Return the number of loops {v,v} in the graph.
 	 * @return The number of loops.

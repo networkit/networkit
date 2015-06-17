@@ -146,6 +146,7 @@ cdef extern from "cpp/graph/Graph.h":
 		edgeid edgeId(node, node) except +
 		count numberOfNodes() except +
 		count numberOfEdges() except +
+		pair[count, count] size() except +
 		index upperNodeIdBound() except +
 		index upperEdgeIdBound() except +
 		count degree(node u) except +
@@ -358,6 +359,17 @@ cdef class Graph:
 	 		The number of edges.
 		"""
 		return self._this.numberOfEdges()
+
+	def size(self):
+		"""
+		Get the size of the graph.
+
+	 	Returns
+	 	-------
+	 	tuple
+	 		a pair (n, m) where n is the number of nodes and m is the number of edges
+		"""
+		return self._this.size()
 
 	def upperNodeIdBound(self):
 		"""
