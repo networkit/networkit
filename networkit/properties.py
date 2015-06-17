@@ -71,6 +71,7 @@ def density(G):
 		d = (2 * m) / (n * (n-1))
 	return d
 
+# TODO: move to profiling module
 def components(G):
 	""" Find and analyze detected components.
 		Returns the number of components and the sizes
