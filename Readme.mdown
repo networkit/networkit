@@ -91,7 +91,7 @@ will compile NetworKit, build the extensions and on top of that temporarily inst
 
 will remove the extensions and its build folder as well as call scons to remove the NetworKit library and its build folder specified by `--optimize=V`.
 
-Note: All of the above installation command may require `sudo` privileges depending on your system, so try this accordingly.
+Note: All of the above installation command may require root privileges depending on your system, so try this accordingly. If you do not have root privileges, add `--user` to your command.
 
 Assuming the extension module `_NetworKit` exists, the front end can be imported in python:
 
