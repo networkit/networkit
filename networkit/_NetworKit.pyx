@@ -4588,7 +4588,7 @@ cdef class ApproxCloseness(Centrality):
 	Parameters
 	----------
 	G : Graph
-		input graph
+		input graph (undirected)
 	nSamples : count
 		user defined number of samples
 	normalized : bool, optional
