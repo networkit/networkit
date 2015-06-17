@@ -2,6 +2,7 @@ from networkit import *
 import tabulate
 import pandas
 import seaborn
+import powerlaw
 import matplotlib.pyplot as plt
 from matplotlib._pylab_helpers import Gcf
 from IPython.core.pylabtools import print_figure
@@ -89,38 +90,51 @@ def computeNetworkProperties(G):
 
 
 def computeNodePartitions(G):
-	components = properties.components(G)
-	communities = community.detectCommunities(G)
+	partitions = {	"components":	properties.components(G),
+					"communities":	community.detectCommunities(G)}
+	# TODO: shells
+	for (partitionName, partition) in partitions.items():
+		partition.subsetSizes()
 
-def computeNodeProperties(G):
-	# degree
-	degree = properties.degreeSequence(G)
-	# coreness
-	core = centrality.CoreDecomposition(G).run().scores()
-	# local clustering coefficient
-	clustering = centrality.LocalClusteringCoefficient(G).run().scores()
-	# betweenness
-	nSamples = max(42, G.numberOfNodes() / 1000)
-	betweenness = centrality.ApproxBetweenness2(G, nSamples, normalized=True).run().scores()
-	# pagerank
-	pagerank = centrality.PageRank(G).run().scores()
-	# k-Path centrality
-	kpath = centrality.KPathCentrality(G).run().scores()
-	# Katz centrality
-	katz = centrality.KatzCentrality(G).run().scores()
-	# package node properties in DataFrame
-	nodeProperties = pandas.DataFrame({"degree": degree,
-	 									"core": core,
-										"clustering": clustering,
-										"betweenness": betweenness,
-										"pagerank": pagerank,
-										"kpath": kpath,
-										"katz": katz})
-	return nodeProperties
+	raise NotImplementedError("TODO")
 
+def computeNodeCentralities(G):
+	(n, m) = G.size()
 
-def computeNodePropertyCorrelations(nodeProperties, method="spearman"):
-	return nodeProperties.corr(method=method)
+	# TODO: normalization?
+
+	nodeCentralityAlgos = {
+							"degree":		(centrality.DegreeCentrality, 			(G, )),
+							"coreness":		(centrality.CoreDecomposition, 			(G, )),
+							"clustering":	(centrality.LocalClusteringCoefficient, (G, )),
+							"pagerank":		(centrality.PageRank, 					(G, )),
+							"kpath":		(centrality.KPathCentrality,			(G, )),
+							"katz":			(centrality.KatzCentrality,				(G, )),
+							"betweenness":	(centrality.ApproxBetweenness2,			(G, max(42, n / 1000))),
+							"closeness":	(centrality.Closeness,					(G, max(42, n / 1000)))
+							}
+
+	centralityScores = {}
+	for (algoName, (algoClass, params)) in nodeCentralityAlgos.items():
+		algo = algoClass(*params)
+		t = stopwatch.Timer()
+		algo.run()
+		print(algoName, ": ", "{:.2E}".format(t.elapsed))
+		centralityScores[algoName] = algo.scores()
+	nodeCentralities = pandas.DataFrame(centralityScores)
+	return nodeCentralities
+
+def powerLawStats(centralities):
+	powerLawStats = {}
+	for (centralityName, centralityScores) in centralities.items():
+		fit = powerlaw.Fit(centralityScores)
+		R, p = fit.distribution_compare("power_law", "exponential", normalized_ratio=True)
+		gamma = fit.alpha
+		powerLawStats[centralityName] = ((R > 0), R, gamma)
+	return powerLawStats
+
+def computeRankCorrelations(centralities : pandas.DataFrame, method="spearman"):
+	return centralities.corr(method=method)
 
 
 def plotNodePropertyCorrelations(nodeProperties, figsize=(8,8), method="spearman"):
@@ -147,7 +161,7 @@ def profile(G):
 	hopPlot = asImage(plot.hopPlot, plotArgs=[G], size=defaultSize)
 
 	# compute node properties
-	nodeProperties = computeNodeProperties(G)
+	nodeProperties = perties(G)
 
 
 	# compute figures
@@ -162,3 +176,21 @@ def profile(G):
 
 	page = HTML(profileTemplate.format(**locals()))
 	return page
+
+
+class Profile:
+	""" This class computes and presents a structural profile of a networks"""
+
+	def __init__(self, G, settings={}):
+		self.G = G
+		self.settings = settings
+
+	def compute(self):
+		self.nodeCentralities = computeNodeCentralities(self.G)
+		raise NotImplementedError("TODO")
+
+	def getPage(self):
+		raise NotImplementedError("TODO")
+
+	def getAttributeVector(self):
+		raise NotImplementedError("TODO:")
