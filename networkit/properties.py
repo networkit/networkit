@@ -68,6 +68,8 @@ def degreeSequence(G):
 def density(G):
 	""" Return the density of the graph"""
 	(n, m) = size(G)
+	loops = G.numberOfSelfLoops()
+	m -= loops
 	if G.isDirected():
 		d = m / (n * (n-1))
 	else:
