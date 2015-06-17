@@ -13,19 +13,17 @@ namespace NetworKit {
 EigenvectorCentrality::EigenvectorCentrality(const Graph& G, double tol):
 		Centrality(G, true), tol(tol)
 {
-
+	// do not execute algorithm on directed graphs since this is error prone
+	// and can yield misleading results (wrong metric, not implementation fault!)
+	if (G.isDirected()) {
+		throw std::runtime_error("This algorithm does not work on directed graphs.")
+	}
 }
 
 void EigenvectorCentrality::run() {
 	count z = G.upperNodeIdBound();
 	std::vector<double> values(z, 1.0);
 	scoreData = values;
-
-	// do not execute algorithm on directed graphs since this is error prone
-	// and can yield misleading results (wrong metric, not implementation fault!)
-	if (G.isDirected()) {
-		return;
-	}
 
 	double length = 0.0;
 	double oldLength = 0.0;
