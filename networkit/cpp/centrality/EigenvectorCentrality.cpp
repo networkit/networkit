@@ -16,7 +16,7 @@ EigenvectorCentrality::EigenvectorCentrality(const Graph& G, double tol):
 	// do not execute algorithm on directed graphs since this is error prone
 	// and can yield misleading results (wrong metric, not implementation fault!)
 	if (G.isDirected()) {
-		throw std::runtime_error("This algorithm does not work on directed graphs.")
+		throw std::runtime_error("This algorithm does not work on directed graphs.");
 	}
 }
 
