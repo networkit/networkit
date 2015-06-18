@@ -1,63 +1,54 @@
-from networkit import *
-import tabulate
-import pandas
-import seaborn
-import powerlaw
-import matplotlib.pyplot as plt
-from matplotlib._pylab_helpers import Gcf
-from IPython.core.pylabtools import print_figure
+# standard library modules
 from base64 import b64encode
-from IPython.core.display import HTML
+import logging
 
 
-profileTemplate = """
-	<style media="screen" type="text/css">
-	#wrapper {
-	    width: 500px;
-	    border: 1px solid black;
-	}
-	#first {
-	    width: 300px;
-	    border: 1px solid red;
-	}
-	#second {
-	    border: 1px solid green;
-	}
-	</style>
+# networkit submodules
+from . import community
+from . import centrality
+from . import termgraph
+from . import auxiliary
+from . import nxadapter
+from . import stopwatch
 
-	<div id="page">
-	<h1>Network Profile</h1>
+# TODO: refactor imports
+from . import properties
 
-	<h2>Network Properties</h2>
-		<div id="wrapper">
-			<div id="first">
-				{networkPropertiesTable}
-			</div>
-			<div id="second">
-				{hopPlot}
-			</div>
-		</div>
+# external modules
+try:
+	import tabulate
+except ImportError:
+	logging.warning("""WARNING: module 'tabulate' not installed, which is required by some functions.""")
 
-	<h2>Network Partitions</h2>
+try:
+	import pandas
+except ImportError:
+	logging.warning("""WARNING: module 'pandas' not installed, which is required by some functions.""")
 
-	<h2>Node Centrality Measures</h2>
+try:
+	import powerlaw
+except ImportError:
+	logging.warning("""WARNING: module 'powerlaw' not installed, which is required by some
+						functions.""")
 
-	<h3>Degree</h3>
-	{ddPlot}
-	{ddHist}
+try:
+	import matplotlib.pyplot as plt
+	from matplotlib._pylab_helpers import Gcf
+except ImportError:
+	logging.warning("""WARNING: module 'matplotlib' not installed, which is required for plotting.""")
 
-	<h3>Local Clustering Coefficient</h3>
-	{ccPlot}
-	{ccHist}
+try:
+	import seaborn
+except ImportError:
+	logging.warning("""WARNING: module 'seaborn' not installed, which is required by some plotting functions. Also your plots will look better with it.""")
+
+try:
+	from IPython.core.pylabtools import print_figure
+	from IPython.core.display import HTML
+except ImportError:
+	logging.warning("""WARNING: module 'IPython' not installed, which is required by some functions.""")
 
 
-
-
-	power law distribution: {plaw} {gamma}
-
-	{compPlot}
-	</div>
-"""
 
 
 def asImage(plotFunction, plotArgs=[], plotKwargs={}, size=(8,6)):
@@ -89,40 +80,9 @@ def computeNetworkProperties(G):
 	return networkProperties
 
 
-def computeNodePartitions(G):
-	partitions = {	"components":	properties.components(G),
-					"communities":	community.detectCommunities(G)}
-	# TODO: shells
-	for (partitionName, partition) in partitions.items():
-		partition.subsetSizes()
 
-	raise NotImplementedError("TODO")
 
-def computeNodeCentralities(G):
-	(n, m) = G.size()
 
-	# TODO: normalization?
-
-	nodeCentralityAlgos = {
-							"degree":		(centrality.DegreeCentrality, 			(G, )),
-							"coreness":		(centrality.CoreDecomposition, 			(G, )),
-							"clustering":	(centrality.LocalClusteringCoefficient, (G, )),
-							"pagerank":		(centrality.PageRank, 					(G, )),
-							"kpath":		(centrality.KPathCentrality,			(G, )),
-							"katz":			(centrality.KatzCentrality,				(G, )),
-							"betweenness":	(centrality.ApproxBetweenness2,			(G, max(42, n / 1000), True)),
-							"closeness":	(centrality.ApproxCloseness,			(G, max(42, n / 1000), True))
-							}
-
-	centralityScores = {}
-	for (algoName, (algoClass, params)) in nodeCentralityAlgos.items():
-		algo = algoClass(*params)
-		t = stopwatch.Timer()
-		algo.run()
-		print(algoName, ": ", "{:.2E}".format(t.elapsed))
-		centralityScores[algoName] = algo.scores()
-	nodeCentralities = pandas.DataFrame(centralityScores)
-	return nodeCentralities
 
 def powerLawStats(centralities):
 	powerLawStats = {}
@@ -137,12 +97,7 @@ def computeRankCorrelations(centralities : pandas.DataFrame, method="spearman"):
 	return centralities.corr(method=method)
 
 
-def plotNodePropertyCorrelations(nodeProperties, figsize=(8,8), method="spearman"):
-    cmap = seaborn.diverging_palette(220, 20, as_cmap=True)
-    f, ax = plt.subplots(figsize=figsize)
-    print("correlating"); sys.stdout.flush()
-    seaborn.corrplot(nodeProperties, cmap=cmap, method=method)
-    f.tight_layout()
+
 
 
 
@@ -181,16 +136,128 @@ def profile(G):
 class Profile:
 	""" This class computes and presents a structural profile of a networks"""
 
+	pageTemplate = """
+		<style media="screen" type="text/css">
+		#wrapper {
+		    width: 500px;
+		    border: 1px solid black;
+		}
+		#first {
+		    width: 300px;
+		    border: 1px solid red;
+		}
+		#second {
+		    border: 1px solid green;
+		}
+		</style>
+
+		<div id="page">
+		<h1>Network Profile</h1>
+
+		<h2>Network Properties</h2>
+			<div id="wrapper">
+				<div id="first">
+					{networkPropertiesTable}
+				</div>
+				<div id="second">
+					{hopPlot}
+				</div>
+			</div>
+
+		<h2>Network Partitions</h2>
+
+		<h2>Node Centrality Measures</h2>
+
+		<h3>Degree</h3>
+		{ddPlot}
+		{ddHist}
+
+		<h3>Local Clustering Coefficient</h3>
+		{ccPlot}
+		{ccHist}
+
+
+
+
+		power law distribution: {plaw} {gamma}
+
+		{compPlot}
+		</div>
+	"""
+
+
 	def __init__(self, G, settings={}):
+		if (G.isDirected()):
+			raise Exception("Profiling currently only supported for undirected graphs")
 		self.G = G
 		self.settings = settings
 
+	def computePartitions(self):
+		G = self.G
+
+		# TODO: refactor module membership of component algorithms
+		partitionAlgos = 	{ 	"components":	(properties.ConnectedComponents, 	(G,)),
+								"communities":	(community.PLM, 					(G,))
+							}
+
+		partitions = {}
+		for (algoName, (algoClass, params)) in partitionAlgos.items():
+			algo = algoClass(*params)
+			t = stopwatch.Timer()
+			algo.run()
+			logging.info("{algoName} computed in {time} s".format(algoName=algoName, time="{:.2E}".format(t.elapsed)))
+			partitions[algoName] = algo.getPartition()
+
+		# store partition vectors in data frame so pandas can operate on them
+		self.partitionVectors = pandas.DataFrame(dict((name, partition.getVector()) for (name, partition) in partitions.items()))
+
+
+	def computeNodeCentralities(self):
+		G = self.G
+		(n, m) = G.size()
+
+		# TODO: normalization?
+
+		nodeCentralityAlgos = {
+								"degree":		(centrality.DegreeCentrality, 			(G, )),
+								"coreness":		(centrality.CoreDecomposition, 			(G, )),
+								"clustering":	(centrality.LocalClusteringCoefficient, (G, )),
+								"pagerank":		(centrality.PageRank, 					(G, )),
+								"kpath":		(centrality.KPathCentrality,			(G, )),
+								"katz":			(centrality.KatzCentrality,				(G, )),
+								"betweenness":	(centrality.ApproxBetweenness2,			(G, max(42, n / 1000), False)),
+								"closeness":	(centrality.ApproxCloseness,			(G, max(42, n / 1000), False))
+								}
+
+		centralityScores = {}
+		for (algoName, (algoClass, params)) in nodeCentralityAlgos.items():
+			algo = algoClass(*params)
+			t = stopwatch.Timer()
+			algo.run()
+			logging.info("{algoName} computed in {time} s".format(algoName=algoName, time="{:.2E}".format(t.elapsed)))
+			centralityScores[algoName] = algo.scores()
+		self.nodeCentralities = pandas.DataFrame(centralityScores)
+
+
+
 	def compute(self):
-		self.nodeCentralities = computeNodeCentralities(self.G)
-		raise NotImplementedError("TODO")
+		# compute node centralities
+		self.computeNodeCentralities()
+		# compute rank correlations between node centrality values
+		self.nodeCentralityCorrelations = self.nodeCentralities.corr(method="spearman")
 
 	def getPage(self):
 		raise NotImplementedError("TODO")
 
 	def getAttributeVector(self):
 		raise NotImplementedError("TODO:")
+
+	def plotNodeCentralityCorrelations(self, figsize=(6,6)):
+		cmap = seaborn.diverging_palette(220, 20, as_cmap=True)
+		f, ax = plt.subplots(figsize=figsize)
+		logging.info("calculating correlation heatmap")
+		seaborn.corrplot(self.nodeCentralities, cmap=cmap, method="spearman")
+		f.tight_layout()
+
+	def plotNodeCentralityHistograms(self, figsize=(12,8)):
+		self.nodeCentralities.hist(bins=50, figsize=figsize)
