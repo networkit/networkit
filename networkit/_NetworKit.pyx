@@ -4666,7 +4666,7 @@ cdef extern from "cpp/centrality/CoreDecomposition.h":
 	cdef cppclass _CoreDecomposition "NetworKit::CoreDecomposition" (_Centrality):
 		_CoreDecomposition(_Graph)
 		vector[set[node]] cores() except +
-		vector[set[node]] shells() except +
+		_Partition shells() except +
 		index maxCoreNumber() except +
 
 cdef class CoreDecomposition(Centrality):
@@ -4714,8 +4714,7 @@ cdef class CoreDecomposition(Centrality):
 		vector
 			The k-shells as sets of nodes, indexed by k.
 		"""
-		return (<_CoreDecomposition*>(self._this)).shells()
-
+		return Partition().setThis((<_CoreDecomposition*>(self._this)).shells())
 
 cdef extern from "cpp/centrality/LocalClusteringCoefficient.h":
 	cdef cppclass _LocalClusteringCoefficient "NetworKit::LocalClusteringCoefficient" (_Centrality):

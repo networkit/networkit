@@ -14,6 +14,8 @@
 #include <list>
 #include "../graph/Graph.h"
 #include "../centrality/Centrality.h"
+#include "../structures/Partition.h"
+
 
 namespace NetworKit {
 
@@ -49,7 +51,7 @@ public:
 	 *
 	 * @return the k-shells as sets of nodes, indexed by k
 	 */
-	std::vector<std::set<node> > shells() const;
+	Partition shells() const;
 
 	/**
 	 * Get maximum core number.
@@ -58,6 +60,9 @@ public:
 	 */
 	index maxCoreNumber() const;
 
+protected:
+
+	Partition shellData; // stores scoreData as Partition structure
 
 private:
 
