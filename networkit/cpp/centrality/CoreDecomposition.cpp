@@ -104,6 +104,16 @@ void CoreDecomposition::run() {
 		core++;
 	}
 
+	// initialize Partition
+	if (shellData.numberOfElements() != z) {
+		shellData = Partition(z);
+		shellData.allToSingletons();
+	}
+	// enter values from scoreData into shellData
+	G.forNodes([&](node u){
+		shellData.moveToSubset(scoreData[u], (index) u);
+	});
+
 	maxCore = core - 1;
 	hasRun = true;
 }
@@ -123,18 +133,9 @@ std::vector<std::set<node> > CoreDecomposition::cores() const {
 	return cores;
 }
 
-std::vector<std::set<node> > CoreDecomposition::shells() const {
+Partition CoreDecomposition::shells() const {
 	if (! hasRun) throw std::runtime_error("call run method first");
-
-	std::vector<std::set<node> > shells(maxCore + 1);
-	for (index k = 0; k <= maxCore; k++) {
-		G.forNodes([&](node u){
-			if (scoreData[u] == k) {
-				shells.at(k).insert(u);
-			}
-		});
-	}
-	return shells;
+	return shellData;
 }
 
 index CoreDecomposition::maxCoreNumber() const {
