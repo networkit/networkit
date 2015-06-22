@@ -111,7 +111,7 @@ void CoreDecomposition::run() {
 	}
 	// enter values from scoreData into shellData
 	G.forNodes([&](node u){
-		shellData.moveToSubset(scoreData[u], (index) u);
+		shellData.moveToSubset((index) scoreData[u], (index) u);
 	});
 
 	maxCore = core - 1;

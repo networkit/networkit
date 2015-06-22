@@ -4707,12 +4707,12 @@ cdef class CoreDecomposition(Centrality):
 		return (<_CoreDecomposition*>(self._this)).cores()
 
 	def shells(self):
-		""" Get the k-shells as sets of nodes, indexed by k.
+		""" Get the k-shells as a partition object.
 
 		Returns
 		-------
-		vector
-			The k-shells as sets of nodes, indexed by k.
+		Partition
+			The k-shells
 		"""
 		return Partition().setThis((<_CoreDecomposition*>(self._this)).shells())
 

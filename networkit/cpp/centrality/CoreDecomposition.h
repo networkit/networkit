@@ -47,9 +47,9 @@ public:
 	std::vector<std::set<node> > cores() const;
 
 	/**
-	 * Get the k-shells as sets of nodes, indexed by k.
+	 * Get the k-shells as a partition object
 	 *
-	 * @return the k-shells as sets of nodes, indexed by k
+	 * @return the k-shells as a partition object
 	 */
 	Partition shells() const;
 
