@@ -125,7 +125,7 @@ void CoreDecomposition::run() {
 	for (index k = 0; k <= maxCore; k++) {
 		G.forNodes([&](node u){
 			if (scoreData[u] >= k) {
-				coverData.addToSubset((index) u, (index) k);
+				coverData.addToSubset((index) k, (index) u);
 			}
 		});
 	}

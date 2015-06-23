@@ -2742,7 +2742,7 @@ cdef extern from "cpp/structures/Cover.h":
 #		vector[index] getVector() except +
 #		void setName(string name) except +
 #		string getName() except +
-#		set[index] getSubsetIds() except +
+		set[index] getSubsetIds() except +
 
 
 cdef class Cover:
@@ -2953,8 +2953,15 @@ cdef class Cover:
 #	def getName(self):
 #		return self._this.getName()
 
-#	def getSubsetIds(self):
-#		return self._this.getSubsetIds()
+	def getSubsetIds(self):
+		""" Get the ids of nonempty subsets.
+
+		Returns
+		-------
+		set
+			A set of ids of nonempty subsets.
+		"""
+		return self._this.getSubsetIds()
 
 
 # Module: community
