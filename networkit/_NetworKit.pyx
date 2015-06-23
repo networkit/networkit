@@ -4665,7 +4665,7 @@ cdef class EigenvectorCentrality(Centrality):
 cdef extern from "cpp/centrality/CoreDecomposition.h":
 	cdef cppclass _CoreDecomposition "NetworKit::CoreDecomposition" (_Centrality):
 		_CoreDecomposition(_Graph)
-		vector[set[node]] cores() except +
+		_Cover cores() except +
 		_Partition shells() except +
 		index maxCoreNumber() except +
 
@@ -4704,7 +4704,7 @@ cdef class CoreDecomposition(Centrality):
 		vector
 			The k-cores as sets of nodes, indexed by k.
 		"""
-		return (<_CoreDecomposition*>(self._this)).cores()
+		return Cover().setThis((<_CoreDecomposition*>(self._this)).cores())
 
 	def shells(self):
 		""" Get the k-shells as a partition object.
