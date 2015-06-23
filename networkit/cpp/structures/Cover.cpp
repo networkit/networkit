@@ -170,6 +170,12 @@ void Cover::setUpperBound(index upper) {
 	this->omega = upper -1;
 }
 
+std::set<index> Cover::getSubsetIds() {
+	std::set<index> ids;
+	for (std::set<index> subset : data) {
+		ids.insert(subset.begin(), subset.end());
+	}
+	return ids;
+}
 
 } /* namespace NetworKit */
-
