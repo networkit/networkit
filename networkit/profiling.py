@@ -237,7 +237,6 @@ class Profile:
 
 
 	def compute(self):
-<<<<<<< local
 		# compute node centralities
 		self.computeNodeCentralities()
 		# compute rank correlations between node centrality values
@@ -257,12 +256,6 @@ class Profile:
 
 		self.nodeCentralityStats = stdStats.append(powerLawStats)
 
-=======
-		# compute node centralities
-		self.computeNodeCentralities()
-		# compute rank correlations between node centrality values
-		self.nodeCentralityCorrelations = self.nodeCentralities.corr(method="spearman")
->>>>>>> other
 
 	def getPage(self):
 		raise NotImplementedError("TODO")
