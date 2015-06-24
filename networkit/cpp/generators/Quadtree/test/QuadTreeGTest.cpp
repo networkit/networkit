@@ -517,14 +517,14 @@ TEST_F(QuadTreeGTest, testLeftSuppression) {
 }
 
 TEST_F(QuadTreeGTest, tryTreeExport) {
-	count n = 40;
-	count capacity = 10;
-	double k = 6;
+	count n = 200;
+	count capacity = 40;
+	double k = 10;
 	count m = n*k/2;
 	double targetR = HyperbolicSpace::getTargetRadius(n, m);
 
 	double R = HyperbolicSpace::hyperbolicAreaToRadius(n);
-	double alpha = 1;
+	double alpha = 0.7;
 
 	//allocate data structures
 	vector<double> angles(n), radii(n);
@@ -533,7 +533,7 @@ TEST_F(QuadTreeGTest, tryTreeExport) {
 	 * generate values and construct quadtree
 	 */
 	HyperbolicSpace::fillPoints(angles, radii, targetR / R, alpha);
-	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(targetR), true, 1, capacity);
+	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(targetR), true, alpha, capacity);
 
 	for (index i = 0; i < n; i++) {
 		quad.addContent(i, angles[i], radii[i]);
@@ -541,26 +541,38 @@ TEST_F(QuadTreeGTest, tryTreeExport) {
 
 	EXPECT_EQ(quad.size(), n);
 
-	quad.reindex();
+	quad.indexSubtree(0);
 
 	count treeheight = quad.height();
 	DEBUG("Quadtree height: ", treeheight);
+	auto deg = [](double rad) -> double {return 180*rad/M_PI;};
+
 
 	index query = Aux::Random::integer(n-1);
+	radii[query] = HyperbolicSpace::hyperbolicRadiusToEuclidean(HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[query])*0.75);
 	DEBUG("Query:", angles[query], ", ", radii[query]);
-	double T = 0.2;
+	double T = 0.5;
 	double beta = 1/T;
 
 	auto edgeProb = [beta, targetR](double distance) -> double {return 1 / (exp(beta*(distance-targetR)/2)+1);};
 
-	std::stack<QuadNode<index> > quadnodestack;
-	quadnodestack.push(getRoot(quad));
+	std::stack<std::tuple<QuadNode<index>, count, double, double, index > > quadnodestack;
+	QuadNode<index> root = getRoot(quad);
+	quadnodestack.push(std::make_tuple(root, quad.height(), 0, 0, root.getID()));
 
-	while (!quadnodestack.empty()) {
-		QuadNode<index> current = quadnodestack.top();
+	while(!quadnodestack.empty()) {
+		auto currentTuple = quadnodestack.top();
 		quadnodestack.pop();
+		QuadNode<index> current;
+		count remainingHeight;
+		double xoffset, yoffset;
+		index parentID;
+		std::tie(current, remainingHeight, xoffset, yoffset, parentID) = currentTuple;
 
 		DEBUG("Quadtree Cell ", current.getID());
+		double probUB = edgeProb(current.hyperbolicDistances(angles[query], radii[query]).first);
+		DEBUG("\\drawQuadNode{",xoffset,"}{", yoffset, "}{", current.getID(), "}{", parentID, "}{", probUB, "}{", current.size(), "}");
+		DEBUG("\\drawCell{",deg(current.getLeftAngle()), "}{", deg(current.getRightAngle()),"}{", HyperbolicSpace::EuclideanRadiusToHyperbolic(current.getMinR()), "}{", HyperbolicSpace::EuclideanRadiusToHyperbolic(current.getMaxR()), "}");
 		DEBUG("Height: ", current.height());
 		auto distances = current.hyperbolicDistances(angles[query], radii[query]);
 		DEBUG("Mindistance to query:", distances.first);
@@ -568,16 +580,24 @@ TEST_F(QuadTreeGTest, tryTreeExport) {
 
 		if (current.height() == 1) {
 			for (index elem : current.getElements()) {
-				DEBUG("Leaf contains: ", angles[elem], ", ", radii[elem], " p: ", edgeProb(HyperbolicSpace::poincareMetric(angles[elem], radii[elem], angles[query], radii[query])));
+				double p = edgeProb(HyperbolicSpace::poincareMetric(angles[elem], radii[elem], angles[query], radii[query]));
+				DEBUG("\\drawPoint{", deg(angles[elem]), "}{", HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[elem]), "}{", p, "}");
+				DEBUG("Leaf contains: ", angles[elem], ", ", radii[elem], " p: ", p);
 			}
 		}
 
-
+		double stepsize = pow(4, remainingHeight-1);
+		double newXOffset = xoffset-1.5*stepsize;
+		double newYOffset = yoffset + 1;
 		for (QuadNode<index> child : current.children) {
-			quadnodestack.push(child);
+			quadnodestack.push(std::make_tuple(child, remainingHeight-1, newXOffset, newYOffset, current.getID()));
+			newXOffset += stepsize;
 		}
 	}
-}
 
+
+	DEBUG("\\drawQuery{", deg(angles[query]), "}{", HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[query]),"}");
+
+}
 
 } /* namespace NetworKit */
