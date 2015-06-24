@@ -579,9 +579,11 @@ TEST_F(QuadTreeGTest, tryTreeExport) {
 		DEBUG("ProbUB:", edgeProb(distances.first), " ProbLB:", edgeProb(distances.second));
 
 		if (current.height() == 1) {
+			index i = 0;
 			for (index elem : current.getElements()) {
+				i++;
 				double p = edgeProb(HyperbolicSpace::poincareMetric(angles[elem], radii[elem], angles[query], radii[query]));
-				DEBUG("\\drawPoint{", deg(angles[elem]), "}{", HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[elem]), "}{", p, "}");
+				DEBUG("\\drawPoint{", deg(angles[elem]), "}{", HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[elem]), "}{", p, "}{", current.getID(), "}{", i, "}");
 				DEBUG("Leaf contains: ", angles[elem], ", ", radii[elem], " p: ", p);
 			}
 		}
