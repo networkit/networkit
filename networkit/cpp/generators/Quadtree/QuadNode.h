@@ -781,15 +781,13 @@ public:
 	}
 
 	index indexSubtree(index nextID) {
-		if (isLeaf) {
-			this->ID = nextID;
-			return nextID +1;
-		}
 		index result = nextID;
-		for (int i = 0; i < 4; i++) {
+		assert(children.size() == 4 || children.size() == 0);
+		for (int i = 0; i < children.size(); i++) {
 			result = children[i].indexSubtree(result);
 		}
-		return result;
+		this->ID = result;
+		return result+1;
 	}
 
 	index getCellID(double phi, double r) const {
@@ -812,7 +810,7 @@ public:
 			for (int i = 0; i < 4; i++) {
 				result = std::max(children[i].getMaxIDInSubtree(), result);
 			}
-			return result;
+			return std::max(result, getID());
 		}
 	}
 
