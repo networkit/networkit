@@ -111,6 +111,7 @@ void CoreDecomposition::run() {
 	// initialize Partition
 	if (shellData.numberOfElements() != z) {
 		shellData = Partition(z);
+		shellData.allToSingletons();
 	}
 	// enter values from scoreData into shellData
 	G.forNodes([&](node u){
@@ -120,6 +121,7 @@ void CoreDecomposition::run() {
 	// initialize Cover
 	if (coverData.numberOfElements() != maxCore) {
 		coverData = Cover(z);
+		coverData.setUpperBound(z);
 	}
 	//enter values from scoreData into coverData
 	for (index k = 0; k <= maxCore; k++) {
