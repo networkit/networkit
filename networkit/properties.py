@@ -62,7 +62,7 @@ def degreeSequence(G):
 
 def density(G):
 	""" Return the density of the graph"""
-	(n, m) = size(G)
+	(n, m) = G.size()
 	loops = G.numberOfSelfLoops()
 	m -= loops
 	if G.isDirected():
@@ -175,7 +175,7 @@ def properties(G, settings):
 	logging.info("[...] calculating properties")
 
 	# size
-	n, m = size(G)    # n and m
+	n, m = G.size()   # n and m
 
 	logging.info("[...] determining degree distribution")
 	# degrees
