@@ -73,6 +73,7 @@ index Cover::toSingleton(index e) {
 }
 
 void Cover::allToSingletons() {
+	setUpperBound(numberOfElements());
 	for (index e = 0; e <= this->z; ++e) {
 		toSingleton(e);
 	}
