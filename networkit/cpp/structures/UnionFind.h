@@ -25,7 +25,7 @@ namespace NetworKit {
 class UnionFind {
 private:
 	std::vector<index> parent;
-	std::vector<unsigned short> rank;
+	std::vector<unsigned char> rank;
 public:
 		
 	/**
