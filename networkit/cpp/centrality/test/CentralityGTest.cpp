@@ -362,13 +362,13 @@ TEST_F(CentralityGTest, testApproxClosenessCentralityOnToyGraph) {
     G.addEdge(3, 5);
     G.addEdge(4, 5);
 
-    ApproxCloseness acc(G, 1000, false);
+    ApproxCloseness acc(G, 10000, false);
     acc.run();
     std::vector<double> cc = acc.scores();
 
 		double maximum = acc.maximum();
 
-    const double tol = 0.1;
+    const double tol = 0.15;
     EXPECT_NEAR(0.1, cc[0], tol);
     EXPECT_NEAR(0.1, cc[1], tol);
     EXPECT_NEAR(0.166667, cc[2], tol);

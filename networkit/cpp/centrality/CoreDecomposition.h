@@ -61,11 +61,6 @@ public:
 	 */
 	index maxCoreNumber() const;
 
-protected:
-
-	Partition shellData; // stores scoreData as Partition structure
-	Cover coverData;
-
 private:
 
 	index maxCore; // maximum core number of any node in the graph

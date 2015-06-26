@@ -198,8 +198,8 @@ public:
 	 *
 	 * @return A set of ids of nonempty subsets.
 	 */
-	std::set<index> getSubsetIds();
-	
+	std::set<index> getSubsetIds() const;
+
 	/**
 	 * Sets an upper bound for the subset ids that CAN be assigned.
 	 *

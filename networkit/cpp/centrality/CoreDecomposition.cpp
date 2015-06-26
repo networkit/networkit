@@ -121,25 +121,19 @@ void CoreDecomposition::run() {
 
 	maxCore = core - 1;
 
+	hasRun = true;
+}
 
-	// TODO: shift the following to the respective getters
 
-	// initialize Partition
-	if (shellData.numberOfElements() != z) {
-		shellData = Partition(z);
-		shellData.allToSingletons();
-	}
-	// enter values from scoreData into shellData
-	G.forNodes([&](node u){
-		shellData.moveToSubset((index) scoreData[u], (index) u);
-	});
-
+Cover CoreDecomposition::cores() const {
+	if (! hasRun) throw std::runtime_error("call run method first");
 	// initialize Cover
+	index z = G.upperNodeIdBound();
+	Cover coverData;
 	if (coverData.numberOfElements() != z) {
 		coverData = Cover(z);
 		coverData.setUpperBound(z);
 	}
-
 	// enter values from scoreData into coverData
 	G.forNodes([&](node u) {
 		index k = 0;
@@ -148,18 +142,22 @@ void CoreDecomposition::run() {
 			++k;
 		}
 	});
-
-	hasRun = true;
-}
-
-
-Cover CoreDecomposition::cores() const {
-	if (! hasRun) throw std::runtime_error("call run method first");
 	return coverData;
 }
 
 Partition CoreDecomposition::shells() const {
 	if (! hasRun) throw std::runtime_error("call run method first");
+	// initialize Partition
+	index z = G.upperNodeIdBound();
+	Partition shellData;
+	if (shellData.numberOfElements() != z) {
+		shellData = Partition(z);
+		shellData.allToSingletons();
+	}
+	// enter values from scoreData into shellData
+	G.forNodes([&](node u){
+		shellData.moveToSubset((index) scoreData[u], (index) u);
+	});
 	return shellData;
 }
 
