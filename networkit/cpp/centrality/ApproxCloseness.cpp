@@ -28,7 +28,6 @@ void ApproxCloseness::run() {
 
 	scoreData = std::vector<double>(G.upperNodeIdBound(), 0.0);
 
-	//std::vector<node> sampledNodes = G.nodes();
 	std::vector<node> sampledNodes;
 
 	// sample nodes
