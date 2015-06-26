@@ -3,6 +3,7 @@
  *
  *  Created on: Oct 28, 2013
  *      Author: Lukas Barth, David Weiß, Christian Staudt
+ *  Inplace change on Jun 26, 2015 by Henning Meyerhenke
  */
 
 #include <set>
@@ -27,10 +28,15 @@ void CoreDecomposition::run() {
 	scoreData.clear();
 	scoreData.resize(z);
 
+	std::vector<count> degree(z);       // tracks degree during algo
+	std::vector<bool> alive(z, true);   // tracks if node is deleted (alive) or not
+	count numAlive = G.numberOfNodes(); // tracks number of alive nodes
+
 	/* Insert nodes into their initial buckets. */
 	if (!G.isDirected()) {
 		G.forNodes([&](node v) {
 			count deg = G.degree(v);
+			degree[v] = deg;
 			buckets[deg].push_front(v);
 			core = std::min(core, deg);
 			nodePtr[v] = buckets[deg].begin();
@@ -38,6 +44,7 @@ void CoreDecomposition::run() {
 	} else {
 		G.forNodes([&](node v) {
 			count deg = G.degreeIn(v) + G.degreeOut(v); // TODO: Document this behavior for directed graph
+			degree[v] = deg;
 			buckets[deg].push_front(v);
 			core = std::min(core, deg);
 			nodePtr[v] = buckets[deg].begin();
@@ -45,9 +52,8 @@ void CoreDecomposition::run() {
 
 	}
 
-	/* Main loop: Successively remove nodes in copy G2 of G. */
-	Graph G2 = G;
-	while (!G2.isEmpty()) {
+	/* Main loop: Successively "remove" nodes by setting them not alive after processing them. */
+	while (numAlive > 0) {
 		Bucket& cur_bucket = buckets[core];
 
 		/* Remove nodes with remaining degree <= core. */
@@ -59,10 +65,10 @@ void CoreDecomposition::run() {
 
 			/* Remove u and its incident edges. */
 			/* graph is undirected */
-			if (!G2.isDirected()) {
-				G2.forNeighborsOf(u, [&](node v) {
-					count deg = G2.degree(v);
-					G2.removeEdge(u, v);
+			if (!G.isDirected()) {
+				G.forNeighborsOf(u, [&](node v) {
+					count deg = degree[v];
+					degree[v]--;
 
 					/* Shift node v into new bucket.
 					   Optimisation: Need not move to buckets < core. */
@@ -74,9 +80,9 @@ void CoreDecomposition::run() {
 				});
 			} else {
 			/* graph is directed */
-				G2.forNeighborsOf(u, [&](node v) {
-					count deg = G2.degreeIn(v) + G2.degreeOut(v);
-					G2.removeEdge(u, v);
+				G.forNeighborsOf(u, [&](node v) {
+					count deg = degree[v];
+					degree[v]--;
 
 					/* Shift node v into new bucket.
 					   Optimisation: Need not move to buckets < core. */
@@ -86,9 +92,9 @@ void CoreDecomposition::run() {
 						nodePtr[v] = buckets[deg - 1].begin();
 					}
 				});
-				G2.forInNeighborsOf(u, [&](node u, node v) {
-					count deg = G2.degreeOut(v) + G2.degreeIn(v);
-					G2.removeEdge(v, u);
+				G.forInNeighborsOf(u, [&](node u, node v) {
+					count deg = degree[v];
+					degree[v]--;
 
 					/* Shift node v into new bucket.
 					   Optimisation: Need not move to buckets < core. */
@@ -99,7 +105,10 @@ void CoreDecomposition::run() {
 					}
 				});
 			}
-			G2.removeNode(u);
+
+			// "delete" current node
+			alive[u] = false;
+			--numAlive;
 		}
 		core++;
 	}
