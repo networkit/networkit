@@ -16,7 +16,6 @@ CoreDecomposition::CoreDecomposition(const Graph& G) : Centrality(G, false), max
 }
 
 void CoreDecomposition::run() {
-	// TODO: kernel crashes when running on input G= (V = (0,1,2), E = ((0,1)) )
 	/* Main data structure: buckets of nodes indexed by their remaining degree. */
 	typedef std::list<node> Bucket;
 	index z = G.upperNodeIdBound();
@@ -38,7 +37,7 @@ void CoreDecomposition::run() {
 		});
 	} else {
 		G.forNodes([&](node v) {
-			count deg = G.degreeIn(v) + G.degreeOut(v);
+			count deg = G.degreeIn(v) + G.degreeOut(v); // TODO: Document this behavior for directed graph
 			buckets[deg].push_front(v);
 			core = std::min(core, deg);
 			nodePtr[v] = buckets[deg].begin();
@@ -105,8 +104,10 @@ void CoreDecomposition::run() {
 		core++;
 	}
 
-		maxCore = core - 1;
+	maxCore = core - 1;
 
+
+	// TODO: shift the following to the respective getters
 
 	// initialize Partition
 	if (shellData.numberOfElements() != z) {
@@ -119,18 +120,19 @@ void CoreDecomposition::run() {
 	});
 
 	// initialize Cover
-	if (coverData.numberOfElements() != maxCore) {
+	if (coverData.numberOfElements() != z) {
 		coverData = Cover(z);
 		coverData.setUpperBound(z);
 	}
-	//enter values from scoreData into coverData
-	for (index k = 0; k <= maxCore; k++) {
-		G.forNodes([&](node u){
-			if (scoreData[u] >= k) {
-				coverData.addToSubset((index) k, (index) u);
-			}
-		});
-	}
+
+	// enter values from scoreData into coverData
+	G.forNodes([&](node u) {
+		index k = 0;
+		while (scoreData[u] >= k) {
+			coverData.addToSubset((index) k, (index) u);
+			++k;
+		}
+	});
 
 	hasRun = true;
 }

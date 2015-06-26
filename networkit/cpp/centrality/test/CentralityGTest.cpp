@@ -468,6 +468,21 @@ TEST_F(CentralityGTest, testKPathCentrality) {
     centrality.run();
 }
 
+
+TEST_F(CentralityGTest, testCoreDecompositionSimple) {
+	count n = 3;
+	Graph G(n);
+	G.addEdge(0,1);
+
+	CoreDecomposition coreDec(G);
+	coreDec.run();
+	std::vector<double> coreness = coreDec.scores();
+
+	EXPECT_EQ(1u, coreness[0]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[1]) << "expected coreness";
+	EXPECT_EQ(0u, coreness[2]) << "expected coreness";
+}
+
 TEST_F(CentralityGTest, testCoreDecomposition) {
 	count n = 16;
 	Graph G(n);
