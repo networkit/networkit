@@ -22,7 +22,8 @@
 #include "../KPathCentrality.h"
 #include "../CoreDecomposition.h"
 #include "../LocalClusteringCoefficient.h"
-
+#include "../../structures/Cover.h"
+#include "../../structures/Partition.h"
 
 namespace NetworKit {
 
@@ -467,6 +468,21 @@ TEST_F(CentralityGTest, testKPathCentrality) {
     centrality.run();
 }
 
+
+TEST_F(CentralityGTest, testCoreDecompositionSimple) {
+	count n = 3;
+	Graph G(n);
+	G.addEdge(0,1);
+
+	CoreDecomposition coreDec(G);
+	coreDec.run();
+	std::vector<double> coreness = coreDec.scores();
+
+	EXPECT_EQ(1u, coreness[0]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[1]) << "expected coreness";
+	EXPECT_EQ(0u, coreness[2]) << "expected coreness";
+}
+
 TEST_F(CentralityGTest, testCoreDecomposition) {
 	count n = 16;
 	Graph G(n);
@@ -508,6 +524,10 @@ TEST_F(CentralityGTest, testCoreDecomposition) {
 	CoreDecomposition coreDec(G);
 	coreDec.run();
 	std::vector<double> coreness = coreDec.scores();
+	// init cores
+	// init shells
+	Cover cores = coreDec.cores();
+	Partition shells = coreDec.shells();
 
 	EXPECT_EQ(0u, coreness[0]) << "expected coreness";
 	EXPECT_EQ(0u, coreness[1]) << "expected coreness";
@@ -525,6 +545,14 @@ TEST_F(CentralityGTest, testCoreDecomposition) {
 	EXPECT_EQ(4u, coreness[13]) << "expected coreness";
 	EXPECT_EQ(3u, coreness[14]) << "expected coreness";
 	EXPECT_EQ(2u, coreness[15]) << "expected coreness";
+
+	// for (index e = 0; e < n; e++) {
+	// 	EXPECT_EQ(cores.contains(e), true);
+	// 	EXPECT_EQ(shells.contains(e), true);
+	// }
+	// EXPECT_EQ(cores.get, coreness[15]) << "expected coreness";
+
+
 }
 
 TEST_F(CentralityGTest, testCoreDecompositionDirected) {

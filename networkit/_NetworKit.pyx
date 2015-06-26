@@ -2742,7 +2742,7 @@ cdef extern from "cpp/structures/Cover.h":
 #		vector[index] getVector() except +
 #		void setName(string name) except +
 #		string getName() except +
-#		set[index] getSubsetIds() except +
+		set[index] getSubsetIds() except +
 
 
 cdef class Cover:
@@ -2953,8 +2953,15 @@ cdef class Cover:
 #	def getName(self):
 #		return self._this.getName()
 
-#	def getSubsetIds(self):
-#		return self._this.getSubsetIds()
+	def getSubsetIds(self):
+		""" Get the ids of nonempty subsets.
+
+		Returns
+		-------
+		set
+			A set of ids of nonempty subsets.
+		"""
+		return self._this.getSubsetIds()
 
 
 # Module: community
@@ -3628,73 +3635,6 @@ cdef class AdjustedRandMeasure(DissimilarityMeasure):
 			ret = self._this.getDissimilarity(G._this, first._this, second._this)
 		return ret
 
-cdef extern from "cpp/community/EPP.h":
-	cdef cppclass _EPP "NetworKit::EPP"(_CommunityDetectionAlgorithm):
-		_EPP(_Graph G)
-		_Partition getCorePartition() except +
-		vector[_Partition] getBasePartitions() except +
-
-cdef class EPP(CommunityDetector):
-	""" EPP - Ensemble Preprocessing community detection algorithm.
-	Combines multiple base algorithms and a final algorithm. A consensus of the
-	solutions of the base algorithms is formed and the graph is coarsened accordingly.
-	Then the final algorithm operates on the coarse graph and determines a solution
-	for the input graph.
-	"""
-	def __cinit__(self, Graph G not None):
-		self._G = G
-		self._this = new _EPP(G._this)
-
-	def getCorePartition(self):
-		"""  Returns the core partition the algorithm.
-
-		Returns
-		-------
-		Partition:
-			A Partition of the clustering.
-		"""
-		return Partition().setThis((<_EPP*>(self._this)).getCorePartition())
-
-	def getBasePartitions(self):
-		"""  Returns the base partitions of the algorithm.
-		"""
-		base = (<_EPP*>(self._this)).getBasePartitions()
-		return [Partition().setThis(b) for b in base]
-
-	cdef setThis(self, _EPP* other):
-		del self._this # is this correct here?
-		self._this = other
-		return self
-
-cdef extern from "cpp/community/EPPFactory.h" namespace "NetworKit::EPPFactory":
-		#_EPP make(_Graph G, count ensembleSize, string baseAlgorithm, string finalAlgorithm)
-		_EPP* makePtr(_Graph G, count ensembleSize, string baseAlgorithm, string finalAlgorithm)
-
-cdef class EPPFactory:
-	""" This class makes instaces of the EPP community detection algorithm """
-
-	@staticmethod
-	def make(Graph G not None, ensembleSize, baseAlgorithm="PLP", finalAlgorithm="PLM"):
-		"""
-		Returns an instance of an ensemble preprocessing (EPP).
-
-		Parameters:
-		-----------
-		G : Graph
-			The graph on which the ensemble is supposed to run.
-		ensembleSize : integer
-			The amount of baseAlgorithms to preprocess the communities.
-		baseAlgorithm : CommunityDetectionAlgorithm
-			String representation of the algorithm ("PLP","PLM") to preprocess the communities. ensembleSize instances will be created.
-		finalAlgorithm  : CommunityDetectionAlgorithm
-			String representation of the algorithm ("PLP" "PLM[R]") to finish the ensemble.
-
-		Returns
-		-------
-		EPP
-			The EPP instance.
-		"""
-		return EPP(G).setThis(makePtr(G._this, ensembleSize, stdstring(baseAlgorithm), stdstring(finalAlgorithm)))
 
 # Module: flows
 
@@ -4665,8 +4605,8 @@ cdef class EigenvectorCentrality(Centrality):
 cdef extern from "cpp/centrality/CoreDecomposition.h":
 	cdef cppclass _CoreDecomposition "NetworKit::CoreDecomposition" (_Centrality):
 		_CoreDecomposition(_Graph)
-		vector[set[node]] cores() except +
-		vector[set[node]] shells() except +
+		_Cover cores() except +
+		_Partition shells() except +
 		index maxCoreNumber() except +
 
 cdef class CoreDecomposition(Centrality):
@@ -4704,18 +4644,17 @@ cdef class CoreDecomposition(Centrality):
 		vector
 			The k-cores as sets of nodes, indexed by k.
 		"""
-		return (<_CoreDecomposition*>(self._this)).cores()
+		return Cover().setThis((<_CoreDecomposition*>(self._this)).cores())
 
 	def shells(self):
-		""" Get the k-shells as sets of nodes, indexed by k.
+		""" Get the k-shells as a partition object.
 
 		Returns
 		-------
-		vector
-			The k-shells as sets of nodes, indexed by k.
+		Partition
+			The k-shells
 		"""
-		return (<_CoreDecomposition*>(self._this)).shells()
-
+		return Partition().setThis((<_CoreDecomposition*>(self._this)).shells())
 
 cdef extern from "cpp/centrality/LocalClusteringCoefficient.h":
 	cdef cppclass _LocalClusteringCoefficient "NetworKit::LocalClusteringCoefficient" (_Centrality):

@@ -3,6 +3,7 @@
  *
  *  Created on: Oct 28, 2013
  *      Author: Lukas Barth, David Weiß, Christian Staudt
+ *  Inplace change on Jun 26, 2015 by Henning Meyerhenke
  */
 
 #include <set>
@@ -27,17 +28,23 @@ void CoreDecomposition::run() {
 	scoreData.clear();
 	scoreData.resize(z);
 
+	std::vector<count> degree(z);       // tracks degree during algo
+	std::vector<bool> alive(z, true);   // tracks if node is deleted (alive) or not
+	count numAlive = G.numberOfNodes(); // tracks number of alive nodes
+
 	/* Insert nodes into their initial buckets. */
 	if (!G.isDirected()) {
 		G.forNodes([&](node v) {
 			count deg = G.degree(v);
+			degree[v] = deg;
 			buckets[deg].push_front(v);
 			core = std::min(core, deg);
 			nodePtr[v] = buckets[deg].begin();
 		});
 	} else {
 		G.forNodes([&](node v) {
-			count deg = G.degreeIn(v) + G.degreeOut(v);
+			count deg = G.degreeIn(v) + G.degreeOut(v); // TODO: Document this behavior for directed graph
+			degree[v] = deg;
 			buckets[deg].push_front(v);
 			core = std::min(core, deg);
 			nodePtr[v] = buckets[deg].begin();
@@ -45,9 +52,8 @@ void CoreDecomposition::run() {
 
 	}
 
-	/* Main loop: Successively remove nodes in copy G2 of G. */
-	Graph G2 = G;
-	while (!G2.isEmpty()) {
+	/* Main loop: Successively "remove" nodes by setting them not alive after processing them. */
+	while (numAlive > 0) {
 		Bucket& cur_bucket = buckets[core];
 
 		/* Remove nodes with remaining degree <= core. */
@@ -59,82 +65,102 @@ void CoreDecomposition::run() {
 
 			/* Remove u and its incident edges. */
 			/* graph is undirected */
-			if (!G2.isDirected()) {
-				G2.forNeighborsOf(u, [&](node v) {
-					count deg = G2.degree(v);
-					G2.removeEdge(u, v);
+			if (!G.isDirected()) {
+				G.forNeighborsOf(u, [&](node v) {
+					if (alive[v]) {
+						count deg = degree[v];
+						degree[v]--;
 
-					/* Shift node v into new bucket.
+						/* Shift node v into new bucket.
 					   Optimisation: Need not move to buckets < core. */
-					if (deg > core) {
-						buckets[deg].erase(nodePtr[v]);
-						buckets[deg - 1].push_front(v);
-						nodePtr[v] = buckets[deg - 1].begin();
+						if (deg > core) {
+							buckets[deg].erase(nodePtr[v]);
+							buckets[deg - 1].push_front(v);
+							nodePtr[v] = buckets[deg - 1].begin();
+						}
 					}
 				});
 			} else {
 			/* graph is directed */
-				G2.forNeighborsOf(u, [&](node v) {
-					count deg = G2.degreeIn(v) + G2.degreeOut(v);
-					G2.removeEdge(u, v);
+				G.forNeighborsOf(u, [&](node v) {
+					if (alive[v]) {
+						count deg = degree[v];
+						degree[v]--;
 
-					/* Shift node v into new bucket.
+						/* Shift node v into new bucket.
 					   Optimisation: Need not move to buckets < core. */
-					if (deg > core) {
-						buckets[deg].erase(nodePtr[v]);
-						buckets[deg - 1].push_front(v);
-						nodePtr[v] = buckets[deg - 1].begin();
+						if (deg > core) {
+							buckets[deg].erase(nodePtr[v]);
+							buckets[deg - 1].push_front(v);
+							nodePtr[v] = buckets[deg - 1].begin();
+						}
 					}
 				});
-				G2.forInNeighborsOf(u, [&](node u, node v) {
-					count deg = G2.degreeOut(v) + G2.degreeIn(v);
-					G2.removeEdge(v, u);
+				G.forInNeighborsOf(u, [&](node u, node v) {
+					if (alive[v]) {
+						count deg = degree[v];
+						degree[v]--;
 
-					/* Shift node v into new bucket.
+						/* Shift node v into new bucket.
 					   Optimisation: Need not move to buckets < core. */
-					if (deg > core) {
-						buckets[deg].erase(nodePtr[v]);
-						buckets[deg - 1].push_front(v);
-						nodePtr[v] = buckets[deg - 1].begin();
+						if (deg > core) {
+							buckets[deg].erase(nodePtr[v]);
+							buckets[deg - 1].push_front(v);
+							nodePtr[v] = buckets[deg - 1].begin();
+						}
 					}
 				});
 			}
-			G2.removeNode(u);
+
+			// "delete" current node
+			alive[u] = false;
+			--numAlive;
 		}
 		core++;
 	}
 
 	maxCore = core - 1;
+
+
+	// TODO: shift the following to the respective getters
+
+	// initialize Partition
+	if (shellData.numberOfElements() != z) {
+		shellData = Partition(z);
+		shellData.allToSingletons();
+	}
+	// enter values from scoreData into shellData
+	G.forNodes([&](node u){
+		shellData.moveToSubset((index) scoreData[u], (index) u);
+	});
+
+	// initialize Cover
+	if (coverData.numberOfElements() != z) {
+		coverData = Cover(z);
+		coverData.setUpperBound(z);
+	}
+
+	// enter values from scoreData into coverData
+	G.forNodes([&](node u) {
+		index k = 0;
+		while (scoreData[u] >= k) {
+			coverData.addToSubset((index) k, (index) u);
+			++k;
+		}
+	});
+
 	hasRun = true;
 }
 
 
-std::vector<std::set<node> > CoreDecomposition::cores() const {
+Cover CoreDecomposition::cores() const {
 	if (! hasRun) throw std::runtime_error("call run method first");
-
-	std::vector<std::set<node> > cores(maxCore + 1);
-	for (index k = 0; k <= maxCore; k++) {
-		G.forNodes([&](node u){
-			if (scoreData[u] >= k) {
-				cores.at(k).insert(u);
-			}
-		});
-	}
-	return cores;
+	return coverData;
 }
 
-std::vector<std::set<node> > CoreDecomposition::shells() const {
+Partition CoreDecomposition::shells() const {
 	if (! hasRun) throw std::runtime_error("call run method first");
-
-	std::vector<std::set<node> > shells(maxCore + 1);
-	for (index k = 0; k <= maxCore; k++) {
-		G.forNodes([&](node u){
-			if (scoreData[u] == k) {
-				shells.at(k).insert(u);
-			}
-		});
-	}
-	return shells;
+	return shellData;
 }
 
 index CoreDecomposition::maxCoreNumber() const {

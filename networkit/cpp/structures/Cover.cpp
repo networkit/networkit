@@ -73,6 +73,7 @@ index Cover::toSingleton(index e) {
 }
 
 void Cover::allToSingletons() {
+	setUpperBound(numberOfElements());
 	for (index e = 0; e <= this->z; ++e) {
 		toSingleton(e);
 	}
@@ -170,6 +171,12 @@ void Cover::setUpperBound(index upper) {
 	this->omega = upper -1;
 }
 
+std::set<index> Cover::getSubsetIds() {
+	std::set<index> ids;
+	for (std::set<index> subset : data) {
+		ids.insert(subset.begin(), subset.end());
+	}
+	return ids;
+}
 
 } /* namespace NetworKit */
-
