@@ -67,41 +67,47 @@ void CoreDecomposition::run() {
 			/* graph is undirected */
 			if (!G.isDirected()) {
 				G.forNeighborsOf(u, [&](node v) {
-					count deg = degree[v];
-					degree[v]--;
+					if (alive[v]) {
+						count deg = degree[v];
+						degree[v]--;
 
-					/* Shift node v into new bucket.
+						/* Shift node v into new bucket.
 					   Optimisation: Need not move to buckets < core. */
-					if (deg > core) {
-						buckets[deg].erase(nodePtr[v]);
-						buckets[deg - 1].push_front(v);
-						nodePtr[v] = buckets[deg - 1].begin();
+						if (deg > core) {
+							buckets[deg].erase(nodePtr[v]);
+							buckets[deg - 1].push_front(v);
+							nodePtr[v] = buckets[deg - 1].begin();
+						}
 					}
 				});
 			} else {
 			/* graph is directed */
 				G.forNeighborsOf(u, [&](node v) {
-					count deg = degree[v];
-					degree[v]--;
+					if (alive[v]) {
+						count deg = degree[v];
+						degree[v]--;
 
-					/* Shift node v into new bucket.
+						/* Shift node v into new bucket.
 					   Optimisation: Need not move to buckets < core. */
-					if (deg > core) {
-						buckets[deg].erase(nodePtr[v]);
-						buckets[deg - 1].push_front(v);
-						nodePtr[v] = buckets[deg - 1].begin();
+						if (deg > core) {
+							buckets[deg].erase(nodePtr[v]);
+							buckets[deg - 1].push_front(v);
+							nodePtr[v] = buckets[deg - 1].begin();
+						}
 					}
 				});
 				G.forInNeighborsOf(u, [&](node u, node v) {
-					count deg = degree[v];
-					degree[v]--;
+					if (alive[v]) {
+						count deg = degree[v];
+						degree[v]--;
 
-					/* Shift node v into new bucket.
+						/* Shift node v into new bucket.
 					   Optimisation: Need not move to buckets < core. */
-					if (deg > core) {
-						buckets[deg].erase(nodePtr[v]);
-						buckets[deg - 1].push_front(v);
-						nodePtr[v] = buckets[deg - 1].begin();
+						if (deg > core) {
+							buckets[deg].erase(nodePtr[v]);
+							buckets[deg - 1].push_front(v);
+							nodePtr[v] = buckets[deg - 1].begin();
+						}
 					}
 				});
 			}
