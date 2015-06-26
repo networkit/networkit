@@ -12,31 +12,27 @@ namespace NetworKit {
 
 Matching PathGrowingMatcher::run(Graph& G) {
 	// make copy since graph will be transformed
-	// copy graph because we make changes due to merges
-	Graph graph(G.numberOfNodes(), true); // make weighted copy
-	G.forEdges([&](node u, node v, edgeweight w){
-		graph.addEdge(u, v, w);
-	});
+	Graph graph = G;
 	const count n = graph.numberOfNodes();
 
 	// init matching to empty
 	Matching m1(n);
 	Matching m2(n);
-	bool smaller = true;
+	bool takeM1 = true;
 
 	// main loop
 	while (graph.numberOfEdges() > 0) {
-		TRACE("Remaining edges: " , graph.numberOfEdges());
+//		TRACE("Remaining edges: " , graph.numberOfEdges());
 
 		// use arbitrary vertex with positive degree
-		node v = 0;
+		node v = 0; // TODO: maybe not optimal
 		while (graph.degree(v) == 0 && v < n) {
 			++v;
 		}
 
 		// path growing
 		while (graph.degree(v) > 0) {
-			TRACE("Current vertex: " , v);
+//			TRACE("Current vertex: " , v);
 
 			// find heaviest incident edge
 			node bestNeighbor = 0;
@@ -48,23 +44,23 @@ Matching PathGrowingMatcher::run(Graph& G) {
 				}
 			});
 
-			if (smaller) {
+			if (takeM1) {
 				// add edge to m1
 				m1.match(v, bestNeighbor);
-				smaller = false;
+				takeM1 = false;
 			}
 			else {
 				// add edge to m2
 				m2.match(v, bestNeighbor);
-				smaller = true;
+				takeM1 = true;
 			}
 
 			// remove current vertex and its incident edges from graph
-			TRACE("Remove edges of node " , v , ", which has degree " , graph.degree(v));
+//			TRACE("Remove edges of node " , v , ", which has degree " , graph.degree(v));
 			graph.forEdgesOf(v, [&](node v, node u) {
 				graph.removeEdge(v, u);
 			});
-			TRACE("Remove node " , v , " of degree " , graph.degree(v));
+//			TRACE("Remove node " , v , " of degree " , graph.degree(v));
 			graph.removeNode(v);
 
 			// start next iteration from best neighbor
