@@ -14,9 +14,7 @@
 #include "../../community/EdgeCut.h"
 #include "../../community/ClusteringGenerator.h"
 #include "../../io/METISGraphReader.h"
-#include "../EPP.h"
 #include "../../overlap/HashingOverlapper.h"
-#include "../EPPFactory.h"
 #include "../PLM.h"
 #include "../../community/GraphClusteringTools.h"
 #include "../../auxiliary/Log.h"
@@ -41,80 +39,9 @@
 
 namespace NetworKit {
 
-TEST_F(CommunityGTest, testEnsemblePreprocessing) {
-	count n = 1000;
-	count k = 10;
-	double pin = 1.0;
-	double pout = 0.0;
 
-	ClusteredRandomGraphGenerator graphGen(n, k, pin, pout);
-	Graph G = graphGen.generate();
 
-	EPP ensemble(G);
 
-	count b = 4;
-	for (count i = 0; i < b; ++i) {
-		auto p = new PLP(G);
-		std::unique_ptr<CommunityDetectionAlgorithm> base(p);
-		ensemble.addBaseClusterer(base);
-	}
-
-	auto p = new PLM(G);
-	std::unique_ptr<CommunityDetectionAlgorithm> final(p);
-	ensemble.setFinalClusterer(final);
-
-	auto overlap = new HashingOverlapper;
-	std::unique_ptr<Overlapper> overlap_ptr(overlap);
-	ensemble.setOverlapper(overlap_ptr);
-
-	ensemble.run();
-	Partition zeta = ensemble.getPartition();
-
-	INFO("number of clusters:" , zeta.numberOfSubsets());
-
-	Modularity modularity;
-	INFO("modularity: " , modularity.getQuality(zeta, G));
-
-}
-
-TEST_F(CommunityGTest, tryEnsemblePreprocessingCorrectness) {
-	count n = 10000;
-	count k = 1000;
-	double pin = 1.0;
-	double pout = 0.0;
-
-	ClusteredRandomGraphGenerator graphGen(n, k, pin, pout);
-	Graph G = graphGen.generate();
-
-	EPP ensemble(G);
-
-	count b = 4;
-	for (count i = 0; i < b; ++i) {
-		auto p = new PLP(G);
-		std::unique_ptr<CommunityDetectionAlgorithm> base(p);
-		ensemble.addBaseClusterer(base);
-	}
-
-	auto p = new PLM(G);
-	std::unique_ptr<CommunityDetectionAlgorithm> final(p);
-	ensemble.setFinalClusterer(final);
-	auto overlap = new HashingOverlapper;
-	std::unique_ptr<Overlapper> overlap_ptr(overlap);
-	ensemble.setOverlapper(overlap_ptr);
-
-	ensemble.run();
-	Partition zeta = ensemble.getPartition();
-
-	Modularity modularity;
-	PLP plp(G);
-	plp.run();
-	Partition plpClus = plp.getPartition();
-	INFO("modularity of PLP clusters: ", modularity.getQuality(plpClus, G));
-	EXPECT_EQ(k, plpClus.numberOfSubsets()) << "In this simple setting (clusters are cliques), PLP should detect all 1000 clusters";
-	INFO("modularity: " , modularity.getQuality(zeta, G));
-
-	EXPECT_EQ(k, zeta.numberOfSubsets()) << "In this simple setting (clusters are cliques), EPP should detect all 1000 clusters";
-}
 
 
 
@@ -241,24 +168,6 @@ TEST_F(CommunityGTest, testLouvainParallel2Naive) {
 }
 */
 
-
-
-
-
-
-TEST_F(CommunityGTest, testEPPFactory) {
-	METISGraphReader reader;
-	Graph jazz = reader.read("input/jazz.graph");
-
-	EPP epp = EPPFactory::make(jazz, 4, "PLP", "PLM");
-
-	epp.run();
-	Partition zeta = epp.getPartition();
-
-	INFO("number of clusters: " , zeta.numberOfSubsets());
-
-	EXPECT_TRUE(GraphClusteringTools::isProperClustering(jazz, zeta));
-}
 
 
 
