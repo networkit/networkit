@@ -263,9 +263,7 @@ TEST_F(AuxGTest, testPrioQueueForInts) {
 	NetworKit::index max = pq.extractMax();
 	EXPECT_EQ(max, 7u);
 	max = pq.extractMax();
-//	DEBUG("2nd extractMax yields ", max);
 	max = pq.extractMax();
-//	DEBUG("3rd extractMax yields ", max);
 	max = pq.extractMax();
 	EXPECT_EQ(max, 15u);
 
