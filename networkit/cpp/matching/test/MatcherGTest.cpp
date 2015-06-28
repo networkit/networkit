@@ -59,14 +59,15 @@ TEST_F(MatcherGTest, testPgaMatching) {
 	});
 	PathGrowingMatcher pgaMatcher;
 
-	TRACE("Start PGA matching");
+	DEBUG("Start PGA matching on 50-clique");
 	Matching M = pgaMatcher.run(G);
-	TRACE("Finished PGA matching");
 
 	count numExpEdges = n / 2;
 	bool isProper = M.isProper(G);
 	EXPECT_TRUE(isProper);
 	EXPECT_EQ(M.size(), numExpEdges);
+	DEBUG("Finished PGA matching on 50-clique");
+
 
 #if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
 	DibapGraphReader reader;
