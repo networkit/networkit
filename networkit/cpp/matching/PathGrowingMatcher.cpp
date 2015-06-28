@@ -20,28 +20,29 @@ Matching PathGrowingMatcher::run(Graph& G) {
 	Matching m2(n);
 	bool takeM1 = true;
 
+	// degrees tracks degree of vertices,
+	// avoids to make a copy of the graph and
+	// delete vertices and edges explicitly
 	std::vector<count> degrees(n);
 	G.forNodes([&](node u) {
 		degrees[u] = G.degree(u);
 	});
+
+	// alive tracks if vertices are alive or not in the algorithm
 	std::vector<bool> alive(n, true);
 	count numEdges = G.numberOfEdges();
 
-//	TRACE("init bpq");
+	// PQ to retrieve vertices with degree > 0 quickly
 	Aux::PrioQueueForInts bpq(degrees, n-1);
 
 	// main loop
 	while (numEdges > 0) {
-//		TRACE("Remaining edges: " , numEdges);
-
 		// use vertex with positive degree
 		node v = bpq.extractMax();
 		assert(v != none);
 
 		// path growing
 		while (degrees[v] > 0) {
-//			TRACE("Current vertex: " , v);
-
 			// find heaviest incident edge
 			node bestNeighbor = 0;
 			edgeweight bestWeight = 0;
@@ -66,8 +67,6 @@ Matching PathGrowingMatcher::run(Graph& G) {
 			}
 
 			// remove current vertex and its incident edges from graph
-//			TRACE("Remove edges of node " , v , ", which has degree " , degrees[v]);
-
 			G.forEdgesOf(v, [&](node v, node u) {
 				if (alive[u]) {
 					degrees[u]--;
@@ -75,8 +74,6 @@ Matching PathGrowingMatcher::run(Graph& G) {
 					bpq.changePrio(u, degrees[u]);
 				}
 			});
-//			TRACE("Remove node " , v , " of degree " , degrees[v]);
-
 			alive[v] = false;
 			bpq.remove(v);
 
