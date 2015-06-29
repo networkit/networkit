@@ -553,7 +553,7 @@ public:
 	void removeEdge(node u, node v);
 
 	/**
-	 * Removes all self-loops in the graph
+	 * Removes all self-loops in the graph.
 	 */
 	void removeSelfLoops();
 
