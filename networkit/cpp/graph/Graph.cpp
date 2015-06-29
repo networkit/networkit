@@ -669,7 +669,7 @@ void Graph::removeEdge(node u, node v) {
 }
 
 void Graph::removeSelfLoops() {
-	parallelForEdges([&](node u, node v, edgeweight ew) {
+	forEdges([&](node u, node v, edgeweight ew) {
 		if (u == v) {
 			removeEdge(u, v);
 		}
