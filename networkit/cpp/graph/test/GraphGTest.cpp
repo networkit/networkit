@@ -633,6 +633,7 @@ TEST_P(GraphGTest, testRemoveEdge) {
 	ASSERT_TRUE(G.hasEdge(0, 1));
 	ASSERT_FALSE(G.hasEdge(2, 1));
 
+	// test remove regular edge
 	ewBefore = G.totalEdgeWeight();
 	G.removeEdge(0, 1);
 	if (G.isWeighted()) {
@@ -645,6 +646,23 @@ TEST_P(GraphGTest, testRemoveEdge) {
 	ASSERT_TRUE(G.hasEdge(0, 0));
 	ASSERT_FALSE(G.hasEdge(0, 1));
 	ASSERT_FALSE(G.hasEdge(2, 1));
+
+	// test remove self-loop
+	G.addEdge(2, 1);
+
+	ewBefore = G.totalEdgeWeight();
+	G.removeEdge(0, 0);
+	if (G.isWeighted()) {
+		ASSERT_NEAR(ewBefore - defaultEdgeWeight, G.totalEdgeWeight(), epsilon);
+	} else {
+		ASSERT_NEAR(ewBefore - defaultEdgeWeight, G.totalEdgeWeight(), epsilon);
+	}
+
+	ASSERT_EQ(1u, G.numberOfEdges());
+	ASSERT_FALSE(G.hasEdge(0, 0));
+	ASSERT_FALSE(G.hasEdge(0, 1));
+	ASSERT_TRUE(G.hasEdge(2, 1));
+
 }
 
 TEST_P(GraphGTest, testHasEdge) {
