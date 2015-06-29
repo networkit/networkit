@@ -663,6 +663,45 @@ TEST_P(GraphGTest, testRemoveEdge) {
 	ASSERT_FALSE(G.hasEdge(0, 1));
 	ASSERT_TRUE(G.hasEdge(2, 1));
 
+	// test from removeselfloops adapted for removeEdge
+	G = createGraph(2);
+
+	ewBefore = G.totalEdgeWeight();
+
+	G.addEdge(0, 1);
+	G.addEdge(0, 0, 3.14);
+	G.addEdge(1, 1);
+
+	if (G.isWeighted()) {
+		EXPECT_NEAR(ewBefore + 3.14 + 2 * defaultEdgeWeight, G.totalEdgeWeight(), epsilon);
+	} else {
+		EXPECT_NEAR(ewBefore + 3 * defaultEdgeWeight, G.totalEdgeWeight(), epsilon);
+	}
+
+	EXPECT_EQ(3u, G.numberOfEdges());
+	EXPECT_TRUE(G.hasEdge(0, 0));
+	EXPECT_TRUE(G.hasEdge(0, 1));
+	EXPECT_TRUE(G.hasEdge(1, 1));
+	EXPECT_EQ(G.numberOfSelfLoops(), 2u);
+
+	//remove self-loops
+	ewBefore = G.totalEdgeWeight();
+
+	//G.removeSelfLoops();
+	G.removeEdge(0,0);
+	G.removeEdge(1,1);
+
+	if (G.isWeighted()) {
+		EXPECT_NEAR(ewBefore - defaultEdgeWeight - 3.14, G.totalEdgeWeight(), epsilon);
+	} else {
+		EXPECT_NEAR(ewBefore - 2 * defaultEdgeWeight, G.totalEdgeWeight(), epsilon)  << "Weighted, directed: " << G.isWeighted() << ", " << G.isDirected();
+	}
+
+	EXPECT_EQ(1u, G.numberOfEdges());
+	EXPECT_FALSE(G.hasEdge(0, 0));
+	EXPECT_FALSE(G.hasEdge(1, 1));
+	EXPECT_TRUE(G.hasEdge(0, 1));
+	EXPECT_EQ(0u, G.numberOfSelfLoops())   << "Weighted, directed: " << G.isWeighted() << ", " << G.isDirected();
 }
 
 TEST_P(GraphGTest, testRemoveSelfLoops) {
@@ -676,15 +715,16 @@ TEST_P(GraphGTest, testRemoveSelfLoops) {
 	G.addEdge(1, 1);
 
 	if (G.isWeighted()) {
-		ASSERT_NEAR(ewBefore + 3.14 + 2 * defaultEdgeWeight, G.totalEdgeWeight(), epsilon);
+		EXPECT_NEAR(ewBefore + 3.14 + 2 * defaultEdgeWeight, G.totalEdgeWeight(), epsilon);
 	} else {
-		ASSERT_NEAR(ewBefore + 3 * defaultEdgeWeight, G.totalEdgeWeight(), epsilon);
+		EXPECT_NEAR(ewBefore + 3 * defaultEdgeWeight, G.totalEdgeWeight(), epsilon);
 	}
 
-	ASSERT_EQ(3u, G.numberOfEdges());
-	ASSERT_TRUE(G.hasEdge(0, 0));
-	ASSERT_TRUE(G.hasEdge(0, 1));
-	ASSERT_FALSE(G.hasEdge(1, 1));
+	EXPECT_EQ(3u, G.numberOfEdges());
+	EXPECT_TRUE(G.hasEdge(0, 0));
+	EXPECT_TRUE(G.hasEdge(0, 1));
+	EXPECT_TRUE(G.hasEdge(1, 1));
+	EXPECT_EQ(G.numberOfSelfLoops(), 2u);
 	EXPECT_EQ(G.numberOfSelfLoops(), 2u);
 
 	//remove self-loops
@@ -692,16 +732,17 @@ TEST_P(GraphGTest, testRemoveSelfLoops) {
 	G.removeSelfLoops();
 
 	if (G.isWeighted()) {
-		ASSERT_NEAR(ewBefore - defaultEdgeWeight - 3.14, G.totalEdgeWeight(), epsilon);
+		EXPECT_NEAR(ewBefore - defaultEdgeWeight - 3.14, G.totalEdgeWeight(), epsilon);
 	} else {
-		ASSERT_NEAR(ewBefore - 2 * defaultEdgeWeight, G.totalEdgeWeight(), epsilon);
+		EXPECT_NEAR(ewBefore - 2 * defaultEdgeWeight, G.totalEdgeWeight(), epsilon)  << "Weighted, directed: " << G.isWeighted() << ", " << G.isDirected();
 	}
 
-	ASSERT_EQ(1u, G.numberOfEdges());
-	ASSERT_FALSE(G.hasEdge(0, 0));
-	ASSERT_FALSE(G.hasEdge(1, 1));
-	ASSERT_TRUE(G.hasEdge(0, 1));
-	EXPECT_EQ(G.numberOfSelfLoops(), 0u);
+	EXPECT_EQ(1u, G.numberOfEdges());
+	EXPECT_FALSE(G.hasEdge(0, 0));
+	EXPECT_FALSE(G.hasEdge(1, 1));
+	EXPECT_TRUE(G.hasEdge(0, 1));
+	EXPECT_EQ(0u, G.numberOfSelfLoops())   << "Weighted, directed: " << G.isWeighted() << ", " << G.isDirected();
+
 }
 
 TEST_P(GraphGTest, testHasEdge) {
