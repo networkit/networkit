@@ -668,6 +668,11 @@ void Graph::removeEdge(node u, node v) {
 	// cause the edge is marked as deleted and we have no null values for the attributes
 }
 
+void Graph::removeSelfLoops() {
+	int temptestvar = 0;
+}
+
+
 void Graph::swapEdge(node s1, node t1, node s2, node t2) {
 	index s1t1 = indexInOutEdgeArray(s1, t1);
 	if (s1t1 == none) throw std::runtime_error("The first edge does not exist");

@@ -160,6 +160,7 @@ cdef extern from "cpp/graph/Graph.h":
 		void addEdge(node u, node v, edgeweight w) except +
 		void setWeight(node u, node v, edgeweight w) except +
 		void removeEdge(node u, node v) except +
+		void removeSelfLoops() except +
 		void swapEdge(node s1, node t1, node s2, node t2) except +
 		void compactEdges() except +
 		void sortEdges() except +
@@ -512,6 +513,11 @@ cdef class Graph:
 			Endpoint of edge.
 		"""
 		self._this.removeEdge(u, v)
+
+	def removeSelfLoops(self):
+		""" Removes all self-loops from the graph.
+		"""
+		self._this.removeSelfLoops()
 
 	def swapEdge(self, node s1, node t1, node s2, node t2):
 		"""
