@@ -14,6 +14,7 @@ namespace NetworKit {
 Matching PathGrowingMatcher::run(Graph& G) {
 	// make copy since graph will be transformed
 	count n = G.numberOfNodes();
+	assert(n == G.upperNodeIdBound());
 
 	// init matching to empty
 	Matching m1(n);
