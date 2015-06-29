@@ -665,6 +665,45 @@ TEST_P(GraphGTest, testRemoveEdge) {
 
 }
 
+TEST_P(GraphGTest, testRemoveSelfLoops) {
+	double epsilon = 1e-6;
+	Graph G = createGraph(2);
+
+	edgeweight ewBefore = G.totalEdgeWeight();
+
+	G.addEdge(0, 1);
+	G.addEdge(0, 0, 3.14);
+	G.addEdge(1, 1);
+
+	if (G.isWeighted()) {
+		ASSERT_NEAR(ewBefore + 3.14 + 2 * defaultEdgeWeight, G.totalEdgeWeight(), epsilon);
+	} else {
+		ASSERT_NEAR(ewBefore + 3 * defaultEdgeWeight, G.totalEdgeWeight(), epsilon);
+	}
+
+	ASSERT_EQ(3u, G.numberOfEdges());
+	ASSERT_TRUE(G.hasEdge(0, 0));
+	ASSERT_TRUE(G.hasEdge(0, 1));
+	ASSERT_FALSE(G.hasEdge(1, 1));
+	EXPECT_EQ(G.numberOfSelfLoops(), 2u);
+
+	//remove self-loops
+	ewBefore = G.totalEdgeWeight();
+	G.removeSelfLoops();
+
+	if (G.isWeighted()) {
+		ASSERT_NEAR(ewBefore - defaultEdgeWeight - 3.14, G.totalEdgeWeight(), epsilon);
+	} else {
+		ASSERT_NEAR(ewBefore - 2 * defaultEdgeWeight, G.totalEdgeWeight(), epsilon);
+	}
+
+	ASSERT_EQ(1u, G.numberOfEdges());
+	ASSERT_FALSE(G.hasEdge(0, 0));
+	ASSERT_FALSE(G.hasEdge(1, 1));
+	ASSERT_TRUE(G.hasEdge(0, 1));
+	EXPECT_EQ(G.numberOfSelfLoops(), 0u);
+}
+
 TEST_P(GraphGTest, testHasEdge) {
 	auto containsEdge = [&](std::pair<node, node> e) {
 		auto it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(), e);
