@@ -9,6 +9,7 @@
 #define ASSORTATIVITY_H_
 
 #include "../graph/Graph.h"
+#include "../structures/Partition.h"
 
 
 namespace NetworKit {
@@ -24,11 +25,22 @@ class Assortativity {
 public:
 
 	/**
-	 * Create CoreDecomposition class for graph @a G.
+	 * Initialize Assortativity with a graph @a G and an array of numerical
+	 * node values.
 	 *
 	 * @param G The graph.
+	 * @param attribute		numerical node value array
 	 */
 	Assortativity(const Graph& G, const std::vector<double>& attribute);
+
+
+	/**
+	* Initialize Assortativity with a graph @a G and a partition of the node set
+	*
+	* @param G The graph.
+	* @param partition		partition of the node set
+	*/
+	Assortativity(const Graph& G, const Partition& partition);
 
 	/**
 	*
@@ -46,7 +58,10 @@ public:
 private:
 
 	const Graph& G;
+	const std::vector<double> emptyVector;
+	const Partition emptyPartition;
 	const std::vector<double>& attribute;
+	const Partition& partition;
 	bool ran; // whether algorithm has been run
 };
 
