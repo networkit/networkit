@@ -45,8 +45,10 @@ private:
 public:
 	/**
 	 * Constructor that initializes the PQ with the full batch of entries.
-	 * @param[in] values Contains the batch of n entries, where prios[i]
-	 *   represents the key-value pair (i, prios[i]).
+	 * @param[in] prios Contains the batch of n entries, where prios[i]
+	 *   represents the key-value pair (i, prios[i]). Priorities must be in
+	 *   range [0, maxPrio] or none (the latter means that the element does
+	 *   not exist).
 	 * @param[in] maxPrio Maximum priority value.
 	 */
 	PrioQueueForInts(std::vector<index>& prios, index maxPrio);
@@ -58,7 +60,7 @@ public:
 
 	/**
 	 * Remove element with key @a key from PQ.
-	 * @param[in] Key of element to be removed.
+	 * @param[in] elem Element to be removed.
 	 */
 	void remove(index elem);
 
