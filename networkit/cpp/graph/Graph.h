@@ -553,6 +553,11 @@ public:
 	void removeEdge(node u, node v);
 
 	/**
+	 * Removes all self-loops in the graph.
+	 */
+	void removeSelfLoops();
+
+	/**
 	 * Changes the edges {@a s1, @a t1} into {@a s1, @a t2} and the edge {@a s2, @a t2} into {@a s2, @a t1}.
 	 *
 	 * If there are edge weights or edge ids, they are preserved. Note that no check is performed if the swap is actually possible, i.e. does not generate duplicate edges.
@@ -791,6 +796,12 @@ public:
 	*/
 	Graph toUndirected() const;
 
+	/**
+	 * Return the transpose of this graph. The graph must be directed.
+	 *
+	 * @return transpose of the graph.
+	 */
+	Graph transpose() const;
 
 	/* NODE ITERATORS */
 
