@@ -10,31 +10,34 @@
 
 namespace NetworKit {
 
+PathGrowingMatcher::PathGrowingMatcher(Graph& G): Matcher(G) {
+}
 
-Matching PathGrowingMatcher::run(Graph& G) {
+Matching PathGrowingMatcher::run() {
 	// make copy since graph will be transformed
-	count n = G.numberOfNodes();
-	assert(n == G.upperNodeIdBound());
+	count z = G.upperNodeIdBound();
 
 	// init matching to empty
-	Matching m1(n);
-	Matching m2(n);
+	Matching m1(z);
+	Matching m2(z);
 	bool takeM1 = true;
 
 	// degrees tracks degree of vertices,
 	// avoids to make a copy of the graph and
-	// delete vertices and edges explicitly
-	std::vector<count> degrees(n);
-	G.forNodes([&](node u) {
+	// delete vertices and edges explicitly.
+	// Init to none important because deleted nodes
+	// must have value none for priority queue.
+	std::vector<count> degrees(z, none);
+	G.parallelForNodes([&](node u) {
 		degrees[u] = G.degree(u);
 	});
 
 	// alive tracks if vertices are alive or not in the algorithm
-	std::vector<bool> alive(n, true);
+	std::vector<bool> alive(z, true);
 	count numEdges = G.numberOfEdges();
 
 	// PQ to retrieve vertices with degree > 0 quickly
-	Aux::PrioQueueForInts bpq(degrees, n-1);
+	Aux::PrioQueueForInts bpq(degrees, z-1);
 
 	// main loop
 	while (numEdges > 0) {
@@ -93,3 +96,4 @@ Matching PathGrowingMatcher::run(Graph& G) {
 }
 
 } /* namespace NetworKit */
+

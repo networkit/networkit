@@ -10,12 +10,14 @@
 namespace Aux {
 
 
-PrioQueueForInts::PrioQueueForInts(std::vector<index>& elems, index maxPrio):
-		buckets(maxPrio+1), nodePtr(elems.size()), myBucket(elems.size(), NetworKit::none),
+PrioQueueForInts::PrioQueueForInts(std::vector<index>& prios, index maxPrio):
+		buckets(maxPrio+1), nodePtr(prios.size()), myBucket(prios.size(), NetworKit::none),
 		minNotEmpty(maxPrio+1), maxNotEmpty(-1), maxPrio(maxPrio)
 {
-	for (index i = 0; i < elems.size(); ++i) {
-		insert(i, elems[i]);
+	for (index i = 0; i < prios.size(); ++i) {
+		if (prios[i] != NetworKit::none) {
+			insert(i, prios[i]);
+		}
 	}
 }
 
