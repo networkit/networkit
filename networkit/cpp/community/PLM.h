@@ -32,7 +32,7 @@ public:
 	 * @param[in]	turbo	faster but uses O(n) additional memory per thread
 	 *
 	 */
-	PLM(const Graph& G, bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32, bool turbo = false);
+	PLM(const Graph& G, bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32, bool turbo = false, bool recurse = true);
 
 	PLM(const Graph& G, const PLM& other);
 
@@ -65,6 +65,7 @@ private:
 	double gamma = 1.0;
 	count maxIter;
 	bool turbo;
+	bool recurse;
 	std::map<std::string, std::vector<count> > timing;	 // fine-grained running time measurement
 };
 
