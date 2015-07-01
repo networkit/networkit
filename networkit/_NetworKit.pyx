@@ -160,6 +160,7 @@ cdef extern from "cpp/graph/Graph.h":
 		void addEdge(node u, node v, edgeweight w) except +
 		void setWeight(node u, node v, edgeweight w) except +
 		void removeEdge(node u, node v) except +
+		void removeSelfLoops() except +
 		void swapEdge(node s1, node t1, node s2, node t2) except +
 		void compactEdges() except +
 		void sortEdges() except +
@@ -188,6 +189,7 @@ cdef extern from "cpp/graph/Graph.h":
 		void initCoordinates() except +
 		count numberOfSelfLoops() except +
 		_Graph toUndirected() except +
+		_Graph transpose() except +
 		void BFSfromNode "BFSfrom"[Callback] (node r, Callback c) except +
 		void BFSfrom[Callback](vector[node] startNodes, Callback c) except +
 		void BFSEdgesFrom[Callback](node r, Callback c) except +
@@ -513,6 +515,11 @@ cdef class Graph:
 		"""
 		self._this.removeEdge(u, v)
 
+	def removeSelfLoops(self):
+		""" Removes all self-loops from the graph.
+		"""
+		self._this.removeSelfLoops()
+
 	def swapEdge(self, node s1, node t1, node s2, node t2):
 		"""
 		Changes the edge (s1, t1) into (s1, t2) and the edge (s2, t2) into (s2, t1).
@@ -717,6 +724,16 @@ cdef class Graph:
 			undirected graph.
 		"""
 		return Graph().setThis(self._this.toUndirected())
+
+	def transpose(self):
+		"""
+		Return the transpose of this (directed) graph.
+
+		Returns
+		-------
+			directed graph.
+		"""
+		return Graph().setThis(self._this.transpose())
 
 	def isWeighted(self):
 		"""
