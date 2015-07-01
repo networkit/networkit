@@ -18,18 +18,16 @@ namespace NetworKit {
 
 /**
  * @ingroup matching
- * LocalMax matching as described in the EuroPar13 paper by the Sanders group
+ * LocalMax matching similar to the one described in the EuroPar13 paper
+ * by the Sanders group (Birn, Osipov, Sanders, Schulz, Sitchinava)
  */
 class LocalMaxMatcher: public NetworKit::Matcher {
-private:
-	uint64_t attrId; ///< attribute ID of matching scores/weights
-
 public:
 
-	LocalMaxMatcher(uint64_t attrId);
+	LocalMaxMatcher(Graph& G);
 
 
-	virtual Matching run(Graph& G);
+	virtual Matching run();
 };
 
 } /* namespace NetworKit */

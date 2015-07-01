@@ -22,13 +22,16 @@ namespace NetworKit {
 class PathGrowingMatcher: public NetworKit::Matcher {
 public:
 	/**
+	 * @param[in] G Graph for which matching is computed.
+	 */
+	PathGrowingMatcher(Graph& G);
+
+	/**
 	 * Runs path growing algorithm to compute approximate maximum weight matching
 	 * for graph @a G.
-	 * @param[in] G Graph for which matching is computed.
-	 *   All nodes must be alive (static graph).
 	 * @return Matching (at least half as heavy as maximum weight matching).
 	 */
-	virtual Matching run(Graph& G);
+	virtual Matching run();
 };
 
 } /* namespace NetworKit */
