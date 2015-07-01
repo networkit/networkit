@@ -189,6 +189,7 @@ cdef extern from "cpp/graph/Graph.h":
 		void initCoordinates() except +
 		count numberOfSelfLoops() except +
 		_Graph toUndirected() except +
+		_Graph transpose() except +
 		void BFSfromNode "BFSfrom"[Callback] (node r, Callback c) except +
 		void BFSfrom[Callback](vector[node] startNodes, Callback c) except +
 		void BFSEdgesFrom[Callback](node r, Callback c) except +
@@ -723,6 +724,16 @@ cdef class Graph:
 			undirected graph.
 		"""
 		return Graph().setThis(self._this.toUndirected())
+
+	def transpose(self):
+		"""
+		Return the transpose of this (directed) graph.
+
+		Returns
+		-------
+			directed graph.
+		"""
+		return Graph().setThis(self._this.transpose())
 
 	def isWeighted(self):
 		"""

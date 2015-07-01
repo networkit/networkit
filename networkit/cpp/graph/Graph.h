@@ -796,6 +796,12 @@ public:
 	*/
 	Graph toUndirected() const;
 
+	/**
+	 * Return the transpose of this graph. The graph must be directed.
+	 *
+	 * @return transpose of the graph.
+	 */
+	Graph transpose() const;
 
 	/* NODE ITERATORS */
 
