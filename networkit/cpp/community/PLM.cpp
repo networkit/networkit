@@ -18,7 +18,7 @@
 
 namespace NetworKit {
 
-PLM::PLM(const Graph& G, bool refine, double gamma, std::string par, count maxIter, bool turbo) : CommunityDetectionAlgorithm(G), parallelism(par), refine(refine), gamma(gamma), maxIter(maxIter), turbo(turbo) {
+PLM::PLM(const Graph& G, bool refine, double gamma, std::string par, count maxIter, bool turbo, bool recurse) : CommunityDetectionAlgorithm(G), parallelism(par), refine(refine), gamma(gamma), maxIter(maxIter), turbo(turbo), recurse(recurse) {
 
 }
 
@@ -250,7 +250,7 @@ void PLM::run() {
 	timer.stop();
 	timing["move"].push_back(timer.elapsedMilliseconds());
 	handler.assureRunning();
-	if (change) {
+	if (recurse && change) {
 		INFO("nodes moved, so begin coarsening and recursive call");
 
 		timer.start();
@@ -277,7 +277,7 @@ void PLM::run() {
 		}
 
 
-		INFO("coarse graph has ", coarsened.first.numberOfEdges(), " edges");
+		INFO("coarse graph has ", coarsened.first.numberOfNodes(), " nodes and ", coarsened.first.numberOfEdges(), " edges");
 		zeta = prolong(coarsened.first, zetaCoarse, G, coarsened.second); // unpack communities in coarse graph onto fine graph
 		// refinement phase
 		if (refine) {
