@@ -29,7 +29,7 @@ class CoreDecomposition : public NetworKit::Centrality  {
 public:
 
 	/**
-	 * Create CoreDecomposition class for graph @a G.
+	 * Create CoreDecomposition class for graph @a G. The graph may not contain self-loops.
 	 *
 	 * @param G The graph.
 	 */

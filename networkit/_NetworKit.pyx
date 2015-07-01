@@ -3780,7 +3780,8 @@ cdef class GraphProperties:
 
 	@staticmethod
 	def averageLocalClusteringCoefficient(Graph G not None):
-		""" The average local clustering coefficient for the graph `G`.
+		""" The average local clustering coefficient for the graph `G`. The graph may
+		not contain self-loops.
 
 		Parameters
 		----------
@@ -4004,7 +4005,7 @@ cdef class ClusteringCoefficient:
 		"""
 		DEPRECATED: Use centrality.LocalClusteringCoefficient and take average.
 
-		This calculates the average local clustering coefficient of graph `G`.
+		This calculates the average local clustering coefficient of graph `G`. The graph may not contain self-loops.
 
 		Parameters
 		----------
@@ -4604,7 +4605,7 @@ cdef class EigenvectorCentrality(Centrality):
 
 cdef extern from "cpp/centrality/CoreDecomposition.h":
 	cdef cppclass _CoreDecomposition "NetworKit::CoreDecomposition" (_Centrality):
-		_CoreDecomposition(_Graph)
+		_CoreDecomposition(_Graph) except +
 		_Cover cores() except +
 		_Partition shells() except +
 		index maxCoreNumber() except +
@@ -4614,7 +4615,7 @@ cdef class CoreDecomposition(Centrality):
 
 	CoreDecomposition(G)
 
-	Create CoreDecomposition class for graph `G`.
+	Create CoreDecomposition class for graph `G`. The graph may not contain self-loops.
 
 	Parameters
 	----------
@@ -4665,7 +4666,7 @@ cdef class LocalClusteringCoefficient(Centrality):
 		LocalClusteringCoefficient(G, normalized=False, computeEdgeCentrality=False)
 
 		Constructs the LocalClusteringCoefficient class for the given Graph `G`. If the local clustering coefficient values should be normalized,
-  		then set `normalized` to True.
+  		then set `normalized` to True. The graph may not contain self-loops.
 
 	 	Parameters
 	 	----------

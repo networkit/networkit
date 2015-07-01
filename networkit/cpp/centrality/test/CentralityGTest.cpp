@@ -552,6 +552,12 @@ TEST_F(CentralityGTest, testCoreDecomposition) {
 	// }
 	// EXPECT_EQ(cores.get, coreness[15]) << "expected coreness";
 
+	// test throw runtime error for self-loop in graph
+	Graph H(2);
+	H.addEdge(0, 1);
+	H.addEdge(1, 1);
+	EXPECT_ANY_THROW(CoreDecomposition CoreDec(H));
+
 
 }
 
@@ -659,6 +665,12 @@ TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected) {
 	std::vector<double> reference = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.8, 0.8, 0.8, 0.6666666666666666, 0.0, 0.8, 0.5, 0.0};
 
  	EXPECT_EQ(reference,lccScores);
+
+	// test throw runtime error for self-loop in graph
+	Graph H(2);
+	H.addEdge(0, 1);
+	H.addEdge(1, 1);
+	EXPECT_ANY_THROW(LocalClusteringCoefficient lcc(H));
 }
 
 TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected2) {
