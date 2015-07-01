@@ -1,0 +1,29 @@
+.NetworKit_Page {
+}
+
+.NetworKit_Page:before {
+	font-size: 22px;
+	content: "Network Profile";
+}
+
+.NetworKit_Page .Group  {
+	margin-top: 6px;
+	margin-left: 10px;
+}
+
+.NetworKit_Page .Group:before {
+	font-size: 18px;
+}
+
+.NetworKit_Page .Node_Centrality_Measures:before {
+	content: "Node Centrality Measures";
+}
+
+.NetworKit_Page .Test:before {
+	content: "Test";
+}
+
+.NetworKit_Page .Plot {
+	margin-top: 4px;
+	margin-left: 10px;
+}

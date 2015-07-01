@@ -57,7 +57,7 @@ from . import flow
 from . import plot
 from . import scd
 from . import clique
-from . import linkprediction
+# from . import linkprediction
 from . import profiling
 
 try:
