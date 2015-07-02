@@ -20,16 +20,38 @@ def readfile(postfix):
 
 def header(tag, type, data):
 	result = """
-		if (!document.getElementById('NetworKit_""" + tag + """')) {
-			var element = document.createElement('""" + tag + """');
+		{
+			var element = document.getElementById('NetworKit_""" + tag + """');
+			if (element) {
+				element.parentNode.removeChild(element);
+			}
+			element = document.createElement('""" + tag + """');
 			element.type = 'text/""" + type + """';
 			element.innerHTML = '""" + data + """';
 			element.setAttribute('id', 'NetworKit_""" + tag + """');
 			document.head.appendChild(element);
-		} else {
-			document.getElementById('NetworKit_""" + tag + """').innerHTML = '""" + data + """';
 		}
 	"""
+	return result
+	
+	
+def overlay(name, data):
+	result = """
+		{
+			var element = document.getElementById('NetworKit_""" + name + """');
+			if (element) {
+				element.parentNode.removeChild(element);
+			}
+			element = document.createElement('div');
+			element.innerHTML = '<div class="btn" id="NetworKit_Overlay_Close"></div>""" + data + """';
+			element.setAttribute('id', 'NetworKit_""" + name + """');
+			document.body.appendChild(element);
+			document.getElementById('NetworKit_""" + name + """_Close').onclick = function (e) {
+				document.getElementById('NetworKit_""" + name + """').style.display = 'none';
+			}
+		}
+	"""
+	
 	return result
 	
 	
@@ -39,6 +61,7 @@ display_html(
 		<!--
 			""" + header("script", "javascript", readfile("js"))  + """
 			""" + header("style",  "css",        readfile("css")) + """
+			""" + overlay("Overlay", readfile("overlay.html")) + """
 		-->
 		</script>
 	""")
@@ -50,6 +73,7 @@ count = 0
 
 def createImageURI():
 	fig = plt.gcf()
+	fig.tight_layout()
 	imgdata = io.StringIO()
 	fig.savefig(imgdata, format='svg')
 	plaintext = imgdata.getvalue()
@@ -95,11 +119,12 @@ def profile(G):
 	centrality_1_images = histogram(degree, "x-Axis", "y-Axis");
 	centrality_2_images = plot2();
 	
-	result = readfile("html")
+	result = readfile("profile.html")
 	result = result.format(**locals());
 	display_html(HTML(result))
 	
 	count = count + 1;
+	
 	
 # def asImage(plotFunction, plotArgs=[], plotKwargs={}, size=(8,6)):
 	# """
