@@ -80,15 +80,10 @@ except ImportError as importError:
 # extension imports
 from _NetworKit import getLogLevel, setLogLevel, setPrintLocation, enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads, none, setSeed
 
-# local imports
+# local imports into the top namespace
 from .graph import Graph
-#try:
+from .structures import Partition, Cover
 from .graphio import readGraph, writeGraph, Format
-#except ImportError:
-#	from _graphio33 import readGraph, writeGraph, Format
-from .nxadapter import nk2nx, nx2nk
-from .workflows import batch
-from .community import detectCommunities
 
 
 #-------- Setup ---------- #
