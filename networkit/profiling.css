@@ -1,0 +1,123 @@
+.NetworKit_Page {
+}
+
+.NetworKit_Page:before {
+	font-size: 22px;
+	content: "Network Profile";
+}
+
+.NetworKit_Page .Group  {
+	margin-top: 6px;
+	margin-left: 10px;
+}
+
+.NetworKit_Page .Group:before {
+	font-size: 18px;
+	display: block;
+}
+
+.NetworKit_Page .Node_Centrality_Measures:before {
+	content: "Node Centrality Measures";
+}
+
+.NetworKit_Page .Test:before {
+	content: "Test";
+}
+
+.NetworKit_Page .Plot {
+	display: inline-block;
+	width: 244px;
+	height: 206px;
+	margin-top: 4px;
+	margin-left: 10px;
+	text-align: center;
+	margin-top: 8px;
+	cursor: pointer;
+}
+
+.NetworKit_Page .Plot:hover {
+	color: #FFFFFF;
+	background-color: #333333;
+}
+
+.NetworKit_Page .Plot .Title {
+	font-weight: bold;
+    pointer-events: none;
+}
+
+.NetworKit_Page .Plot .Image {
+	background-repeat: no-repeat;
+    background-position: center center;
+	background-size: contain;
+	background-position: 0em 1.4em;
+	height: 100%;
+    pointer-events: none;
+}
+
+#NetworKit_Overlay {
+	left: 0px;
+	top: 0px;
+	display: none;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0,0,0,0.6);
+	z-index: 1000;
+}
+
+#NetworKit_Overlay_Close {
+	position: absolute;
+	top: 10px;
+	right: 16px;
+	z-index: 1100;
+}
+
+#NetworKit_Overlay_Close:before {
+	font-family: FontAwesome;
+	font-size: 10px;
+	display: inline-block;
+}
+
+#NetworKit_Overlay_Toolbar {
+	font-family: FontAwesome;
+	font-size: 10px;
+	position: absolute;
+	bottom: 10px;
+	right: 16px;
+	width: 40px;
+	z-index: 1100;
+}
+
+#NetworKit_Overlay_Toolbar .btn {
+}
+
+#NetworKit_Overlay_Toolbar .btn:before {
+	display: inline-block;
+	margin-top: 1em;
+}
+
+#NetworKit_Overlay_ImageContainer {
+	position: absolute;
+	top: 5%;
+	left: 2.5%;
+	height: 90%;
+	width: 90%;
+	background-repeat: no-repeat;
+    background-position: center center;
+	background-size: contain;
+}
+
+#NetworKit_Overlay_Image {
+	height: 100%;
+	width: 100%;
+	background-repeat: no-repeat;
+    background-position: center center;
+	background-size: contain;
+}
+
+#NetworKit_Overlay_Frame {
+	//display: none;
+	width: 200px;
+	height: 200px;
+	
+}
