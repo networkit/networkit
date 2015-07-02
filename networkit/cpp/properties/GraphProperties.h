@@ -16,7 +16,7 @@ namespace NetworKit {
 /**
  * @ingroup properties
  * @deprecated DEPRECATED: Implement algorithms in their own classes.
- * 
+ *
  * Collection of methods for basic network properties.
  */
 class GraphProperties {
@@ -47,7 +47,7 @@ public:
 	 * 		$c_v := \frac{2 \cdot |E(N(v))| }{\deg(v) ( \deg(v) - 1 )}$
 	 *
 	 *
-	 * @param[in]	G	the graph
+	 * @param[in]	G	the graph (may not contain self-loops)
 	 * @param[out]		node -> local clustering coefficient
 	 */
 	static std::vector<double> localClusteringCoefficients(const Graph& G);
@@ -57,11 +57,17 @@ public:
 	 * The average local clustering coefficient for the graph @a G.
 	 * 		$\frac{1}{n} \cdot \sum_{v \in V} c_v$
 	 *
-	 * @param[in]	G	the graph
+	 * @param[in]	G	the graph (may not contain self-loops)
 	 * @return Average local clustering coefficient.
 	 */
 	static double averageLocalClusteringCoefficient(const Graph& G);
 
+	/**
+	 * The local clustering coefficient for the graph @a G per degree.
+	 *
+	 * @param[in]	G	the graph (may not contain self-loops)
+	 * @return local clustering coefficient per degree.
+	 */
 	static std::vector<double> localClusteringCoefficientPerDegree(const Graph& G);
 
 	static std::pair<count, count> minMaxDegree(const Graph& G);

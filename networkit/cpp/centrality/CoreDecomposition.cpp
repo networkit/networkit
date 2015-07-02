@@ -13,7 +13,7 @@
 namespace NetworKit {
 
 CoreDecomposition::CoreDecomposition(const Graph& G) : Centrality(G, false), maxCore(0) {
-
+	if (G.numberOfSelfLoops()) throw std::runtime_error("Core Decomposition implementation does not supprt graphs with self-loops. Call Graph.removeSelfLoops() first.");
 }
 
 void CoreDecomposition::run() {

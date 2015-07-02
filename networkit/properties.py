@@ -61,7 +61,7 @@ def degreeSequence(G):
 
 
 def density(G):
-	""" Return the density of the graph"""
+	""" Return the density of the graph."""
 	(n, m) = G.size()
 	loops = G.numberOfSelfLoops()
 	m -= loops
@@ -161,7 +161,10 @@ def degreeAssortativity(G):
 
 def degeneracy(G):
 	""" degeneracy of an undirected graph is defined as the largest k for which
-	the graph has a non-empty k-core"""
+	the graph has a non-empty k-core. Degeneracy is only implemented for graphs without
+	self-loops."""
+	if G.numberOfSelfLoops() > 0:
+		raise NotImplementedError("Call Graph.removeSelfLoops() first.")
 	coreDec = centrality.CoreDecomposition(G)
 	coreDec.run()
 	return coreDec.maxCoreNumber()

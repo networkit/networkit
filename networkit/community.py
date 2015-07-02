@@ -124,7 +124,7 @@ def compareCommunities(G, zeta1, zeta2):
 def kCoreCommunityDetection(G, k, algo=None, inspect=True):
 	""" Perform community detection on the k-core of the graph, which possibly
 		reduces computation time and enhances the result.
-		:param    G    the graph
+		:param    G    the graph (may not contain self-loops)
 		:param		k 	k as in k-core
 		:param     algorithm    community detection algorithm instance
 		:return communities (as type Partition)

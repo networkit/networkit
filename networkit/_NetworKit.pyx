@@ -160,6 +160,7 @@ cdef extern from "cpp/graph/Graph.h":
 		void addEdge(node u, node v, edgeweight w) except +
 		void setWeight(node u, node v, edgeweight w) except +
 		void removeEdge(node u, node v) except +
+		void removeSelfLoops() except +
 		void swapEdge(node s1, node t1, node s2, node t2) except +
 		void compactEdges() except +
 		void sortEdges() except +
@@ -188,6 +189,7 @@ cdef extern from "cpp/graph/Graph.h":
 		void initCoordinates() except +
 		count numberOfSelfLoops() except +
 		_Graph toUndirected() except +
+		_Graph transpose() except +
 		void BFSfromNode "BFSfrom"[Callback] (node r, Callback c) except +
 		void BFSfrom[Callback](vector[node] startNodes, Callback c) except +
 		void BFSEdgesFrom[Callback](node r, Callback c) except +
@@ -513,6 +515,11 @@ cdef class Graph:
 		"""
 		self._this.removeEdge(u, v)
 
+	def removeSelfLoops(self):
+		""" Removes all self-loops from the graph.
+		"""
+		self._this.removeSelfLoops()
+
 	def swapEdge(self, node s1, node t1, node s2, node t2):
 		"""
 		Changes the edge (s1, t1) into (s1, t2) and the edge (s2, t2) into (s2, t1).
@@ -717,6 +724,16 @@ cdef class Graph:
 			undirected graph.
 		"""
 		return Graph().setThis(self._this.toUndirected())
+
+	def transpose(self):
+		"""
+		Return the transpose of this (directed) graph.
+
+		Returns
+		-------
+			directed graph.
+		"""
+		return Graph().setThis(self._this.transpose())
 
 	def isWeighted(self):
 		"""
@@ -3780,7 +3797,8 @@ cdef class GraphProperties:
 
 	@staticmethod
 	def averageLocalClusteringCoefficient(Graph G not None):
-		""" The average local clustering coefficient for the graph `G`.
+		""" The average local clustering coefficient for the graph `G`. The graph may
+		not contain self-loops.
 
 		Parameters
 		----------
@@ -4004,7 +4022,7 @@ cdef class ClusteringCoefficient:
 		"""
 		DEPRECATED: Use centrality.LocalClusteringCoefficient and take average.
 
-		This calculates the average local clustering coefficient of graph `G`.
+		This calculates the average local clustering coefficient of graph `G`. The graph may not contain self-loops.
 
 		Parameters
 		----------
@@ -4604,7 +4622,7 @@ cdef class EigenvectorCentrality(Centrality):
 
 cdef extern from "cpp/centrality/CoreDecomposition.h":
 	cdef cppclass _CoreDecomposition "NetworKit::CoreDecomposition" (_Centrality):
-		_CoreDecomposition(_Graph)
+		_CoreDecomposition(_Graph) except +
 		_Cover cores() except +
 		_Partition shells() except +
 		index maxCoreNumber() except +
@@ -4614,7 +4632,7 @@ cdef class CoreDecomposition(Centrality):
 
 	CoreDecomposition(G)
 
-	Create CoreDecomposition class for graph `G`.
+	Create CoreDecomposition class for graph `G`. The graph may not contain self-loops.
 
 	Parameters
 	----------
@@ -4665,7 +4683,7 @@ cdef class LocalClusteringCoefficient(Centrality):
 		LocalClusteringCoefficient(G, normalized=False, computeEdgeCentrality=False)
 
 		Constructs the LocalClusteringCoefficient class for the given Graph `G`. If the local clustering coefficient values should be normalized,
-  		then set `normalized` to True.
+  		then set `normalized` to True. The graph may not contain self-loops.
 
 	 	Parameters
 	 	----------
