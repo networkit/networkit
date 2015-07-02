@@ -36,7 +36,8 @@
 }
 
 .NetworKit_Page .Plot:hover {
-	background-color: #DEDEDE;
+	color: #FFFFFF;
+	background-color: #333333;
 }
 
 .NetworKit_Page .Plot .Title {
@@ -65,24 +66,40 @@
 }
 
 #NetworKit_Overlay_Close {
-	font-size: 14px;
 	position: absolute;
-	right: 16px;
 	top: 10px;
-	font-weight: bold;
+	right: 16px;
 	z-index: 1100;
 }
 
 #NetworKit_Overlay_Close:before {
-	font-size: 0.8em;
-	content: "X";
+	font-family: FontAwesome;
+	font-size: 10px;
 	display: inline-block;
+}
+
+#NetworKit_Overlay_Toolbar {
+	font-family: FontAwesome;
+	font-size: 10px;
+	position: absolute;
+	bottom: 10px;
+	right: 16px;
+	width: 40px;
+	z-index: 1100;
+}
+
+#NetworKit_Overlay_Toolbar .btn {
+}
+
+#NetworKit_Overlay_Toolbar .btn:before {
+	display: inline-block;
+	margin-top: 1em;
 }
 
 #NetworKit_Overlay_ImageContainer {
 	position: absolute;
 	top: 5%;
-	left: 5%;
+	left: 2.5%;
 	height: 90%;
 	width: 90%;
 	background-repeat: no-repeat;
@@ -96,4 +113,11 @@
 	background-repeat: no-repeat;
     background-position: center center;
 	background-size: contain;
+}
+
+#NetworKit_Overlay_Frame {
+	//display: none;
+	width: 200px;
+	height: 200px;
+	
 }
