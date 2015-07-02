@@ -15,18 +15,21 @@ function embedPlots(id)
 }
 
 
-function showOverlay(source)
-{
-	var images = source.getAttribute("data-image");
-	var element = document.getElementById("NetworKit_Overlay_Image");
-	element.setAttribute("data-image", images);
-	element.style.backgroundImage = "url(" + images +")";
-	showElement("NetworKit_Overlay", true);
-}
-
-
 function showElement(id, show)
 {
 	var element = document.getElementById(id);
 	element.style.display = (show) ? "block" : "none";
+}
+
+
+function showOverlay(source)
+{
+	var data = source.getAttribute("data-image");
+	var image = document.getElementById("NetworKit_Overlay_Image");
+	image.setAttribute("data-image", data);
+	image.style.backgroundImage = "url(" + data +")";
+	var link = document.getElementById("NetworKit_Overlay_Toolbar_Save_Link");
+	link.href = data;
+	link.download = "image.svg";
+	showElement("NetworKit_Overlay", true);
 }
