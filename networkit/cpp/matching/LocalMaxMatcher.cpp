@@ -16,6 +16,7 @@ LocalMaxMatcher::LocalMaxMatcher(Graph& graph): Matcher(graph)
 
 // TODO: update to new edge attribute system
 
+
 Matching LocalMaxMatcher::run() {
 	int64_t z = G.upperNodeIdBound();
 	count E = G.numberOfEdges();
@@ -41,7 +42,6 @@ Matching LocalMaxMatcher::run() {
 	std::vector<MyEdge> candidates(z);
 	G.parallelForNodes([&](node u) {
 		candidates[u].w = (edgeweight) 0;
-		candidates[u].s = u; // itself as source
 		candidates[u].t = u; // itself as mating partner => unmatched
 	});
 
@@ -49,25 +49,22 @@ Matching LocalMaxMatcher::run() {
 		// for each edge find out if it is locally maximum
 		for (auto edge: edges) {
 			if (edge.w > candidates[edge.s].w && edge.w > candidates[edge.t].w) {
-				candidates[edge.s].s = edge.s;
 				candidates[edge.s].t = edge.t;
 				candidates[edge.s].w = edge.w;
-				candidates[edge.t].s = edge.t;
 				candidates[edge.t].t = edge.s;
 				candidates[edge.t].w = edge.w;
 			}
 		}
 
 		// check if candidates agree to match; if so, then match them
-		for (auto candEdge: candidates) {
-			node u = candEdge.s;
-			node partner = candidates[u].t;
-			if (u < partner && candidates[partner].t == u) {
+		for (auto edge: edges) {
+			node u = edge.s;
+			node v = edge.t;
+			if (candidates[u].t == v && candidates[v].t == u) {
 				// both nodes agree
-				M.match(u, partner);
+				M.match(u, v);
 			}
 		}
-
 
 		// create remaining "graph" by selecting remaining edges (as triples)
 		// adjust candidates
