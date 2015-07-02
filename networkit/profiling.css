@@ -13,6 +13,7 @@
 
 .NetworKit_Page .Group:before {
 	font-size: 18px;
+	display: block;
 }
 
 .NetworKit_Page .Node_Centrality_Measures:before {
@@ -24,6 +25,75 @@
 }
 
 .NetworKit_Page .Plot {
+	display: inline-block;
+	width: 244px;
+	height: 206px;
 	margin-top: 4px;
 	margin-left: 10px;
+	text-align: center;
+	margin-top: 8px;
+	cursor: pointer;
+}
+
+.NetworKit_Page .Plot:hover {
+	background-color: #DEDEDE;
+}
+
+.NetworKit_Page .Plot .Title {
+	font-weight: bold;
+    pointer-events: none;
+}
+
+.NetworKit_Page .Plot .Image {
+	background-repeat: no-repeat;
+    background-position: center center;
+	background-size: contain;
+	background-position: 0em 1.4em;
+	height: 100%;
+    pointer-events: none;
+}
+
+#NetworKit_Overlay {
+	left: 0px;
+	top: 0px;
+	display: none;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0,0,0,0.6);
+	z-index: 1000;
+}
+
+#NetworKit_Overlay_Close {
+	font-size: 14px;
+	position: absolute;
+	right: 16px;
+	top: 10px;
+	font-weight: bold;
+	z-index: 1100;
+}
+
+#NetworKit_Overlay_Close:before {
+	font-size: 0.8em;
+	content: "X";
+	display: inline-block;
+}
+
+#NetworKit_Overlay_ImageContainer {
+	position: absolute;
+	top: 5%;
+	left: 5%;
+	height: 90%;
+	width: 90%;
+	background-repeat: no-repeat;
+    background-position: center center;
+	background-size: contain;
+}
+
+#NetworKit_Overlay_Image {
+	height: 100%;
+	width: 100%;
+	background-repeat: no-repeat;
+    background-position: center center;
+	background-size: contain;
 }
