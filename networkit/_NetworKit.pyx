@@ -3467,6 +3467,8 @@ cdef class PLM(CommunityDetector):
 			maximum number of iterations for move phase
 		turbo : bool, optional
 			faster but uses O(n) additional memory per thread
+		recurse: bool, optional
+			use recursive coarsening, see http://journals.aps.org/pre/abstract/10.1103/PhysRevE.89.049902 for some explanations (default: true)
 	"""
 
 	def __cinit__(self, Graph G not None, refine=False, gamma=1.0, par="balanced", maxIter=32, turbo=False, recurse=True):
