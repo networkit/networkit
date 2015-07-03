@@ -22,7 +22,7 @@ PLM::PLM(const Graph& G, bool refine, double gamma, std::string par, count maxIt
 
 }
 
-PLM::PLM(const Graph& G, const PLM& other) : CommunityDetectionAlgorithm(G), parallelism(other.parallelism), refine(other.refine), gamma(other.gamma), maxIter(other.maxIter), turbo(other.turbo){
+PLM::PLM(const Graph& G, const PLM& other) : CommunityDetectionAlgorithm(G), parallelism(other.parallelism), refine(other.refine), gamma(other.gamma), maxIter(other.maxIter), turbo(other.turbo), recurse(other.recurse) {
 
 }
 
@@ -317,6 +317,9 @@ std::string NetworKit::PLM::toString() const {
 	stream << "," << "pc";
 	if (turbo) {
 		stream << "," << "turbo";
+	}
+	if (!recurse) {
+		stream << "," << "non-recursive";
 	}
 	stream << ")";
 
