@@ -45,7 +45,7 @@ public:
 	 *
 	 * @param[in]	p	The partition to construct the cover from
 	 */
-	Cover(Partition &p);
+	Cover(const Partition &p);
 
 	/** Default destructor */
 	virtual ~Cover() = default;
