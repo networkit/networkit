@@ -1,61 +1,66 @@
-from networkit import *
 # import tabulate
 # import pandas
 # import seaborn
 # import matplotlib.pyplot as plt
 # from matplotlib._pylab_helpers import Gcf
 # from IPython.core.pylabtools import print_figure
+
+from networkit import *
 from IPython.core.display import *
 from urllib.parse import quote
 import io
 import numpy as np
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
-		
-		
-def readfile(postfix):
-	with open(__file__[:__file__.rfind(".py")] + "." + postfix, "r") as file:
-		return " ".join(file.read().split())
-		
-
-def initHeader(tag, type, data):
-	result = """
-		{
-			var element = document.getElementById('NetworKit_""" + tag + """');
-			if (element) {
-				element.parentNode.removeChild(element);
-			}
-			element = document.createElement('""" + tag + """');
-			element.type = 'text/""" + type + """';
-			element.innerHTML = '""" + data + """';
-			element.setAttribute('id', 'NetworKit_""" + tag + """');
-			document.head.appendChild(element);
-		}
-	"""
-	return result
-	
-	
-def initOverlay(name, data):
-	result = """
-		{
-			var element = document.getElementById('NetworKit_""" + name + """');
-			if (element) {
-				element.parentNode.removeChild(element);
-			}
-			element = document.createElement('div');
-			element.innerHTML = '<div id="NetworKit_""" + name + """_Toolbar_Top"><div class="button icon-close" id="NetworKit_""" + name + """_Close" /></div>""" + data + """';
-			element.setAttribute('id', 'NetworKit_""" + name + """');
-			document.body.appendChild(element);
-			document.getElementById('NetworKit_""" + name + """_Close').onclick = function (e) {
-				document.getElementById('NetworKit_""" + name + """').style.display = 'none';
-			}
-		}
-	"""
-	
-	return result
-	
+import seaborn as sns		
+			
+			
 try:
 	__IPYTHON__
+	
+	
+	def readfile(postfix):
+		with open(__file__[:__file__.rfind(".py")] + "." + postfix, "r") as file:
+			return " ".join(file.read().split())
+			
+
+	def initHeader(tag, type, data):
+		result = """
+			{
+				var element = document.getElementById('NetworKit_""" + tag + """');
+				if (element) {
+					element.parentNode.removeChild(element);
+				}
+				element = document.createElement('""" + tag + """');
+				element.type = 'text/""" + type + """';
+				element.innerHTML = '""" + data + """';
+				element.setAttribute('id', 'NetworKit_""" + tag + """');
+				document.head.appendChild(element);
+			}
+		"""
+		return result
+		
+		
+	def initOverlay(name, data):
+		result = """
+			{
+				var element = document.getElementById('NetworKit_""" + name + """');
+				if (element) {
+					element.parentNode.removeChild(element);
+				}
+				element = document.createElement('div');
+				element.innerHTML = '<div id="NetworKit_""" + name + """_Toolbar_Top"><div class="button icon-close" id="NetworKit_""" + name + """_Close" /></div>""" + data + """';
+				element.setAttribute('id', 'NetworKit_""" + name + """');
+				document.body.appendChild(element);
+				document.getElementById('NetworKit_""" + name + """_Close').onclick = function (e) {
+					document.getElementById('NetworKit_""" + name + """').style.display = 'none';
+				}
+			}
+		"""
+		
+		return result
+
+
 	display_html(
 		HTML("""
 			<script type="text/javascript">
@@ -67,74 +72,81 @@ try:
 			</script>
 		""")
 	)
+	
+	
+	class Profiling:
+		__NetworKit_Profiling_Page_Count = 0
+	
+
+		def __plotInit(self, xScale, yScale):
+			plt.clf();
+			fig, ax = plt.subplots()
+			if xScale:
+				ax.set_xscale('log')
+			if yScale:
+				ax.set_yscale('log')
+
+
+		def __plotCreateImageURI(self):
+			fig = plt.gcf()
+			fig.tight_layout()
+			imgdata = io.StringIO()
+			fig.savefig(imgdata, format='svg')
+			plaintext = imgdata.getvalue()
+			plaintext = " ".join(plaintext[plaintext.find("<svg "):].split())
+			encoded = quote(plaintext, safe='');
+			encoded = "data:image/svg+xml;utf8," + encoded; 
+			return encoded;
+
+			
+		def __plotHistogram(self, data, xLabel, yLabel, xScale, yScale):
+			self.__plotInit(xScale, yScale)
+			
+			# TODO: remove
+			mu, sigma = 100, 15
+			x = mu + sigma*np.random.randn(10000)
+
+			n, bins, patches = plt.hist(x, 50, normed=1, facecolor='green', alpha=0.75)
+			plt.xlabel(xLabel)
+			plt.ylabel(yLabel)
+			plt.axis([40, 160, 0, 0.03])
+			plt.grid(True)
+			return self.__plotCreateImageURI();
+
+			
+		def __plotHistogramSet(self, data, xLabel, yLabel):
+			result = ""
+			for xScale in range(0, 2):
+				for yScale in range(0, 2):
+						result += self.__plotHistogram(data, xLabel, yLabel, xScale, yScale)
+						if (not(xScale and yScale)):
+							result += "|"
+			return result;
+
+			
+		def __init__(self):
+			return
+			
+			
+		def profile(self, G):
+			pageIndex = self.__NetworKit_Profiling_Page_Count
+			
+			plt.ioff()
+			
+			degree = properties.degreeSequence(G)
+			
+			centrality_1_images = self.__plotHistogram(degree, "x-Axis", "y-Axis", True, False)
+			centrality_2_images = self.__plotHistogramSet(degree, "x-Axis", "y-Axis")
+			
+			result = readfile("profile.html")
+			result = result.format(**locals());
+			display_html(HTML(result))
+			
+			self.__NetworKit_Profiling_Page_Count = self.__NetworKit_Profiling_Page_Count + 1;
+		
 except:
 	print("Error: module has been loaded outside of \"IPython Notbook\"")
 
-	
-count = 0
-
-
-def plotInit(xScale, yScale):
-	plt.clf();
-	fig, ax = plt.subplots()
-	if xScale:
-		ax.set_xscale('log')
-	if yScale:
-		ax.set_yscale('log')
-
-
-def plotCreateImageURI():
-	fig = plt.gcf()
-	fig.tight_layout()
-	imgdata = io.StringIO()
-	fig.savefig(imgdata, format='svg')
-	plaintext = imgdata.getvalue()
-	plaintext = " ".join(plaintext[plaintext.find("<svg "):].split())
-	encoded = quote(plaintext, safe='');
-	encoded = "data:image/svg+xml;utf8," + encoded; 
-	return encoded;
-
-	
-def plotHistogram(data, xLabel, yLabel, xScale, yScale):
-	plotInit(xScale, yScale)
-	
-	# TODO: remove
-	mu, sigma = 100, 15
-	x = mu + sigma*np.random.randn(10000)
-
-	n, bins, patches = plt.hist(x, 50, normed=1, facecolor='green', alpha=0.75)
-	plt.xlabel(xLabel)
-	plt.ylabel(yLabel)
-	plt.axis([40, 160, 0, 0.03])
-	plt.grid(True)
-	return plotCreateImageURI();
-
-	
-def plotHistogramSet(data, xLabel, yLabel):
-	result = ""
-	for xScale in range(0, 2):
-		for yScale in range(0, 2):
-				result += plotHistogram(data, xLabel, yLabel, xScale, yScale)
-				if (not(xScale and yScale)):
-					result += "|"
-	return result;
-
-	
-def profile(G):
-	global count
-	plt.ioff()
-	
-	degree = properties.degreeSequence(G)
-	
-	pageIndex = count
-	centrality_1_images = plotHistogram(degree, "x-Axis", "y-Axis", True, False)
-	centrality_2_images = plotHistogramSet(degree, "x-Axis", "y-Axis")
-	
-	result = readfile("profile.html")
-	result = result.format(**locals());
-	display_html(HTML(result))
-	
-	count = count + 1;
 	
 # def asImage(plotFunction, plotArgs=[], plotKwargs={}, size=(8,6)):
 	# """
