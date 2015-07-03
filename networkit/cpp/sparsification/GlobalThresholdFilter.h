@@ -22,8 +22,8 @@ public:
 	/**
 	 * Creates a new instance of a global threshold filter.
 	 * @param threshold		the threshold
-	 * @param above			if set to true, edge attribute needs to be above or equal to the threshold.
-	 * 						If set to false, edge attribute needs to be below or equal to the threshold.
+	 * @param above			if set to true, edges with a score above or equal to the threshold remain in the filtered graph.
+	 * 						If set to false, edges with a score below or equal to the threshold remain in the filtered graph.
 	 */
 	GlobalThresholdFilter(const Graph& graph, const std::vector<double>& attribute, double threshold, bool above);
 

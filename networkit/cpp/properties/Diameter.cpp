@@ -25,7 +25,7 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 
 	edgeweight diameter = 0.0;
 
-	if (! G.isWeighted()) {
+	if (! G.isWeighted() && !G.isDirected()) {
 		std::tie(diameter, std::ignore) = estimatedDiameterRange(G, 0);
 	} else {
 		 G.forNodes([&](node v) {

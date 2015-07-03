@@ -2,8 +2,8 @@
 
 __author__ = "Gerd Lindner"
 
-from _NetworKit import ChibaNishizekiTriangleCounter, SimmelianJaccardAttributizer, GlobalThresholdFilter, LocalSimilarityAttributizer, MultiscaleAttributizer, SimmelianOverlapAttributizer, RandomAttributizer, LocalDegreeAttributizer, ForestFireAttributizer, \
-	EdgeAttributeAsWeight, EdgeAttributeLinearizer, JaccardSimilarityAttributizer, LocalFilterAttributizer, AdamicAdarDistance, ChanceCorrectedTriangleAttributizer, NodeNormalizedTriangleAttributizer, TriangleCounter, RandomEdgeAttributizer, ChungLuAttributizer, ChibaNishizekiQuadrangleCounter, GeometricMeanAttributizer, \
+from _NetworKit import ChibaNishizekiTriangleCounter, SimmelianJaccardAttributizer, GlobalThresholdFilter, LocalSimilarityAttributizer, MultiscaleAttributizer, SimmelianOverlapAttributizer, RandomEdgeAttributizer, LocalDegreeAttributizer, ForestFireAttributizer, \
+	EdgeAttributeAsWeight, EdgeAttributeLinearizer, JaccardSimilarityAttributizer, LocalFilterAttributizer, AdamicAdarDistance, ChanceCorrectedTriangleAttributizer, NodeNormalizedTriangleAttributizer, TriangleCounter, RandomNodeEdgeAttributizer, ChungLuAttributizer, ChibaNishizekiQuadrangleCounter, GeometricMeanAttributizer, \
 	EdgeAttributeNormalizer, EdgeAttributeBlender, PrefixJaccardCoefficient, SCANStructuralSimilarityAttributizer
 
 # local imports
@@ -252,9 +252,30 @@ class SimmelianBackboneNonParametric(Sparsifier):
 
 		chiba = ChibaNishizekiTriangleCounter(G)
 		triangles = chiba.getAttribute()
-		sj = SimmelianJaccardAttributizer(G, triangles)
-		a_sj = sj.getAttribute()
+		a_sj = PrefixJaccardCoefficient(G, triangles).run().getAttribute()
 		return a_sj
+
+	def _getSparsifiedGraph(self, G, parameter, attribute):
+		gf = GlobalThresholdFilter(G, attribute, parameter, True)
+		return gf.calculate()
+
+	def _getParameterizationAlgorithm(self):
+		return BinarySearchParameterization(False, 0.0, 1.0, 20)
+
+class QuadrilateralSimmelianBackbone(Sparsifier):
+	""" An implementation of the Simmelian Backbones based on quadrangles. """
+
+	def getAttribute(self, G):
+		"""
+		Returns an edge scoring attribute that can be used for global filtering.
+
+		Keyword arguments:
+		G -- the input graph
+		"""
+		quadrangles = ChibaNishizekiQuadrangleCounter(G).getAttribute()
+		meanQuadrangles = GeometricMeanAttributizer(G, quadrangles).getAttribute()
+		quadranglePrefixJaccard = PrefixJaccardCoefficient(G, meanQuadrangles).run().getAttribute()
+		return quadranglePrefixJaccard
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
 		gf = GlobalThresholdFilter(G, attribute, parameter, True)
@@ -378,7 +399,7 @@ class MultiscaleBackbone(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
-class RandomBackbone(Sparsifier):
+class RandomEdgeBackbone(Sparsifier):
 
 	""" Random Edge sampling. Edges to keep in the backbone are selected uniformly at random. """
 
@@ -390,7 +411,7 @@ class RandomBackbone(Sparsifier):
 		G -- the input graph
 		"""
 
-		attributizer = RandomAttributizer(G)
+		attributizer = RandomEdgeAttributizer(G)
 		a_r = attributizer.getAttribute()
 		return a_r
 
@@ -400,6 +421,31 @@ class RandomBackbone(Sparsifier):
 
 	def _getParameterizationAlgorithm(self):
 		return SimpleParameterization()
+
+class RandomNodeEdgeBackbone(Sparsifier):
+	""" [TODO not yet documented] """
+
+	def __init__(self, above = True):
+		self.above = above
+
+	def getAttribute(self, G):
+		""" Returns an edge attribute that holds for each edge the minimum parameter value
+		such that the edge is contained in the sparsified graph.
+
+		Keyword arguments:
+		G -- the input graph
+		"""
+
+		attributizer = RandomNodeEdgeAttributizer(G)
+		rneAttribute = attributizer.getAttribute()
+		return rneAttribute
+
+	def _getSparsifiedGraph(self, G, parameter, attribute):
+		gf = GlobalThresholdFilter(G, attribute, parameter, self.above)
+		return gf.calculate()
+
+	def _getParameterizationAlgorithm(self):
+		return BinarySearchParameterization((not self.above), 0.0, 1.0, 20)
 
 class ForestFireBackbone(Sparsifier):
 
@@ -448,6 +494,33 @@ class LocalDegreeBackbone(Sparsifier):
 		attributizer_ld = LocalDegreeAttributizer(G)
 		a_ld = attributizer_ld.getAttribute()
 		return a_ld
+
+	def _getSparsifiedGraph(self, G, parameter, attribute):
+		gf = GlobalThresholdFilter(G, attribute, parameter, True)
+		return gf.calculate()
+
+	def _getParameterizationAlgorithm(self):
+		return BinarySearchParameterization(False, 0.0, 1.0, 20)
+
+class SCANBackbone(Sparsifier):
+
+	""" A sparsifiier dervived from 'SCAN: a structural clustering algorithm for networks' """
+
+	def getAttribute(self, G):
+		""" Returns an edge attribute that holds for each edge the minimum parameter value
+		such that the edge is contained in the sparsified graph.
+
+		Keyword arguments:
+		G -- the input graph
+		"""
+
+		chiba = ChibaNishizekiTriangleCounter(G)
+		a_triangles = chiba.getAttribute()
+
+		attributizer_scan = SCANStructuralSimilarityAttributizer(G, a_triangles)
+		a_scan = attributizer_scan.getAttribute()
+
+		return a_scan
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
 		gf = GlobalThresholdFilter(G, attribute, parameter, True)
