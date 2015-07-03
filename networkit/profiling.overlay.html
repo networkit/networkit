@@ -1,8 +1,29 @@
+<!-- 
+	file: profiling.overlay.html
+	author: Mark Erb
+		
+	This file contains all content representing the overlay layout.
+	
+	The data will be automatically embedded as singelton into the original
+	IPython Layout 
+	
+		html > body > <div id=#NetworKit_Overlay />
+	
+	together with
+		
+		<div id="NetworKit_Overlay_Toolbar_Top">
+			<div class="button icon-close" />
+		</div>
+-->
+
+<div id="NetworKit_Overlay_Title" />
+
 <div id="NetworKit_Overlay_ImageContainer">
 	<div id="NetworKit_Overlay_Image"></div>
 </div>
-<div id="NetworKit_Overlay_Toolbar">
-	<div class="btn icon-arrow-left" id="NetworKit_Overlay_Toolbar_Prev" onclick="overlayImageShift(-1)"></div>
-	<div class="btn icon-arrow-right" id="NetworKit_Overlay_Toolbar_Next" onclick="overlayImageShift(1)"></div>
-	<a id="NetworKit_Overlay_Toolbar_Save_Link"><div class="btn icon-save" id="NetworKit_Overlay_Toolbar_Save"></div></a>
+
+<div id="NetworKit_Overlay_Toolbar_Bottom">
+	<div class="button icon-previous" onclick="NetworKit_overlayImageShift(-1)" />
+	<div class="button icon-next" onclick="NetworKit_overlayImageShift(1)" />
+	<a id="NetworKit_Overlay_Toolbar_Bottom_Save"><div class="button icon-save" /></a>
 </div>

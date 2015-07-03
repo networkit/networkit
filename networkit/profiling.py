@@ -43,7 +43,7 @@ def initOverlay(name, data):
 				element.parentNode.removeChild(element);
 			}
 			element = document.createElement('div');
-			element.innerHTML = '<div class="btn icon-ok" id="NetworKit_Overlay_Close"></div>""" + data + """';
+			element.innerHTML = '<div id="NetworKit_""" + name + """_Toolbar_Top"><div class="button icon-close" id="NetworKit_""" + name + """_Close" /></div>""" + data + """';
 			element.setAttribute('id', 'NetworKit_""" + name + """');
 			document.body.appendChild(element);
 			document.getElementById('NetworKit_""" + name + """_Close').onclick = function (e) {
