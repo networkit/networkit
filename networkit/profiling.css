@@ -1,3 +1,29 @@
+/*
+	file: profiling.css
+	author: Mark Erb
+		
+	This file contains all CSS rules for the profiling layout 
+	
+	The data will be automatically embedded as singelton into the original
+	IPython Layout 
+	
+		html > head > style id="NetworKit_style"
+		
+	Every rule should be hosted by one of the following terms at least:
+		
+		.NetworKit_Page    (=> Page)
+		#NetworKit_Overlay (=> Overlay)
+		
+	See the following files for possible id/class names:
+		
+		profiling.profile.html
+		profiling.overlay.html
+		profiling.js
+*/
+
+
+/* --- Page ---------------------------------------------------------------- */
+
 .NetworKit_Page {
 }
 
@@ -26,8 +52,8 @@
 
 .NetworKit_Page .Plot {
 	display: inline-block;
-	width: 244px;
-	height: 206px;
+	width: 250px;
+	height: 210px;
 	margin-top: 4px;
 	margin-left: 10px;
 	text-align: center;
@@ -54,6 +80,9 @@
     pointer-events: none;
 }
 
+
+/* --- Overlay ------------------------------------------------------------- */
+
 #NetworKit_Overlay {
 	left: 0px;
 	top: 0px;
@@ -65,35 +94,53 @@
 	z-index: 1000;
 }
 
-#NetworKit_Overlay_Close {
+#NetworKit_Overlay_Title {
 	position: absolute;
-	top: 10px;
-	right: 16px;
+	display: block;
+	top: 5%;
+	font-size: 32px;
+	left: 1em;
+	background: white;
+	text-align: center;
 	z-index: 1100;
+	padding: 4px;
 }
 
-#NetworKit_Overlay_Close:before {
-	font-family: FontAwesome;
-	font-size: 10px;
+#NetworKit_Overlay .button {
+	background: white;
+	cursor: pointer;
+}
+
+#NetworKit_Overlay .button:before {
+	size: 13px;
 	display: inline-block;
+	text-align: center;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+	width: 1.5em;
+	height: 1.5em;
 }
 
-#NetworKit_Overlay_Toolbar {
-	font-family: FontAwesome;
-	font-size: 10px;
+#NetworKit_Overlay .icon-close:before { content: "X"; }
+#NetworKit_Overlay .icon-previous:before { content: "P"; }
+#NetworKit_Overlay .icon-next:before { content: "N"; }
+#NetworKit_Overlay .icon-save:before { content: "S"; }
+
+#NetworKit_Overlay_Toolbar_Top,
+#NetworKit_Overlay_Toolbar_Bottom {
 	position: absolute;
-	bottom: 10px;
-	right: 16px;
 	width: 40px;
+	right: 1em;
+	text-align: right;
 	z-index: 1100;
 }
 
-#NetworKit_Overlay_Toolbar .btn {
+#NetworKit_Overlay_Toolbar_Top {
+	top: 0.5em;
 }
 
-#NetworKit_Overlay_Toolbar .btn:before {
-	display: inline-block;
-	margin-top: 1em;
+#NetworKit_Overlay_Toolbar_Bottom {
+	Bottom: 0.5em;
 }
 
 #NetworKit_Overlay_ImageContainer {
@@ -113,11 +160,4 @@
 	background-repeat: no-repeat;
     background-position: center center;
 	background-size: contain;
-}
-
-#NetworKit_Overlay_Frame {
-	//display: none;
-	width: 200px;
-	height: 200px;
-	
 }
