@@ -1,0 +1,163 @@
+/*
+	file: profiling.css
+	author: Mark Erb
+		
+	This file contains all CSS rules for the profiling layout 
+	
+	The data will be automatically embedded as singelton into the original
+	IPython Layout 
+	
+		html > head > style id="NetworKit_style"
+		
+	Every rule should be hosted by one of the following terms at least:
+		
+		.NetworKit_Page    (=> Page)
+		#NetworKit_Overlay (=> Overlay)
+		
+	See the following files for possible id/class names:
+		
+		profiling.profile.html
+		profiling.overlay.html
+		profiling.js
+*/
+
+
+/* --- Page ---------------------------------------------------------------- */
+
+.NetworKit_Page {
+}
+
+.NetworKit_Page:before {
+	font-size: 22px;
+	content: "Network Profile";
+}
+
+.NetworKit_Page .Group  {
+	margin-top: 6px;
+	margin-left: 10px;
+}
+
+.NetworKit_Page .Group:before {
+	font-size: 18px;
+	display: block;
+}
+
+.NetworKit_Page .Node_Centrality_Measures:before {
+	content: "Node Centrality Measures";
+}
+
+.NetworKit_Page .Test:before {
+	content: "Test";
+}
+
+.NetworKit_Page .Plot {
+	display: inline-block;
+	width: 250px;
+	height: 210px;
+	margin-top: 4px;
+	margin-left: 10px;
+	text-align: center;
+	margin-top: 8px;
+	cursor: pointer;
+}
+
+.NetworKit_Page .Plot:hover {
+	color: #FFFFFF;
+	background-color: #333333;
+}
+
+.NetworKit_Page .Plot .Title {
+	font-weight: bold;
+    pointer-events: none;
+}
+
+.NetworKit_Page .Plot .Image {
+	background-repeat: no-repeat;
+    background-position: center center;
+	background-size: contain;
+	background-position: 0em 1.4em;
+	height: 100%;
+    pointer-events: none;
+}
+
+
+/* --- Overlay ------------------------------------------------------------- */
+
+#NetworKit_Overlay {
+	left: 0px;
+	top: 0px;
+	display: none;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0,0,0,0.6);
+	z-index: 1000;
+}
+
+#NetworKit_Overlay_Title {
+	position: absolute;
+	color: white;
+	transform: rotate(-90deg);
+	width: 32em;
+	height: 32em;
+	padding-right: 0.5em;
+	padding-top: 0.5em;
+	text-align: right;
+	font-size: 40px;
+}
+
+#NetworKit_Overlay .button {
+	background: white;
+	cursor: pointer;
+}
+
+#NetworKit_Overlay .button:before {
+	size: 13px;
+	display: inline-block;
+	text-align: center;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+	width: 1.5em;
+	height: 1.5em;
+}
+
+#NetworKit_Overlay .icon-close:before { content: "X"; }
+#NetworKit_Overlay .icon-previous:before { content: "P"; }
+#NetworKit_Overlay .icon-next:before { content: "N"; }
+#NetworKit_Overlay .icon-save:before { content: "S"; }
+
+#NetworKit_Overlay_Toolbar_Top,
+#NetworKit_Overlay_Toolbar_Bottom {
+	position: absolute;
+	width: 40px;
+	right: 13px;
+	text-align: right;
+	z-index: 1100;
+}
+
+#NetworKit_Overlay_Toolbar_Top {
+	top: 0.5em;
+}
+
+#NetworKit_Overlay_Toolbar_Bottom {
+	Bottom: 0.5em;
+}
+
+#NetworKit_Overlay_ImageContainer {
+	position: absolute;
+	top: 5%;
+	left: 5%;
+	height: 90%;
+	width: 90%;
+	background-repeat: no-repeat;
+    background-position: center center;
+	background-size: contain;
+}
+
+#NetworKit_Overlay_Image {
+	height: 100%;
+	width: 100%;
+	background-repeat: no-repeat;
+    background-position: center center;
+	background-size: contain;
+}
