@@ -96,14 +96,14 @@
 
 #NetworKit_Overlay_Title {
 	position: absolute;
-	display: block;
-	top: 5%;
-	font-size: 32px;
-	left: 1em;
-	background: white;
-	text-align: center;
-	z-index: 1100;
-	padding: 4px;
+	color: white;
+	transform: rotate(-90deg);
+	width: 32em;
+	height: 32em;
+	padding-right: 0.5em;
+	padding-top: 0.5em;
+	text-align: right;
+	font-size: 40px;
 }
 
 #NetworKit_Overlay .button {
@@ -130,7 +130,7 @@
 #NetworKit_Overlay_Toolbar_Bottom {
 	position: absolute;
 	width: 40px;
-	right: 1em;
+	right: 13px;
 	text-align: right;
 	z-index: 1100;
 }
@@ -146,7 +146,7 @@
 #NetworKit_Overlay_ImageContainer {
 	position: absolute;
 	top: 5%;
-	left: 2.5%;
+	left: 5%;
 	height: 90%;
 	width: 90%;
 	background-repeat: no-repeat;
