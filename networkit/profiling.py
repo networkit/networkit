@@ -54,20 +54,23 @@ def initOverlay(name, data):
 	
 	return result
 	
+try:
+	__IPYTHON__
+	display_html(
+		HTML("""
+			<script type="text/javascript">
+			<!--
+				""" + initHeader("script", "javascript", readfile("js"))  + """
+				""" + initHeader("style",  "css",        readfile("css")) + """
+				""" + initOverlay("Overlay", readfile("overlay.html")) + """
+			-->
+			</script>
+		""")
+	)
+except:
+	print("Error: module has been loaded outside of \"IPython Notbook\"")
+
 	
-display_html(
-	HTML("""
-		<script type="text/javascript">
-		<!--
-			""" + initHeader("script", "javascript", readfile("js"))  + """
-			""" + initHeader("style",  "css",        readfile("css")) + """
-			""" + initOverlay("Overlay", readfile("overlay.html")) + """
-		-->
-		</script>
-	""")
-)
-
-
 count = 0
 
 
