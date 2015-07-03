@@ -18,7 +18,7 @@ def readfile(postfix):
 		return " ".join(file.read().split())
 		
 
-def header(tag, type, data):
+def initHeader(tag, type, data):
 	result = """
 		{
 			var element = document.getElementById('NetworKit_""" + tag + """');
@@ -35,7 +35,7 @@ def header(tag, type, data):
 	return result
 	
 	
-def overlay(name, data):
+def initOverlay(name, data):
 	result = """
 		{
 			var element = document.getElementById('NetworKit_""" + name + """');
@@ -59,9 +59,9 @@ display_html(
 	HTML("""
 		<script type="text/javascript">
 		<!--
-			""" + header("script", "javascript", readfile("js"))  + """
-			""" + header("style",  "css",        readfile("css")) + """
-			""" + overlay("Overlay", readfile("overlay.html")) + """
+			""" + initHeader("script", "javascript", readfile("js"))  + """
+			""" + initHeader("style",  "css",        readfile("css")) + """
+			""" + initOverlay("Overlay", readfile("overlay.html")) + """
 		-->
 		</script>
 	""")
@@ -71,7 +71,16 @@ display_html(
 count = 0
 
 
-def createImageURI():
+def plotInit(xScale, yScale):
+	plt.clf();
+	fig, ax = plt.subplots()
+	if xScale:
+		ax.set_xscale('log')
+	if yScale:
+		ax.set_yscale('log')
+
+
+def plotCreateImageURI():
 	fig = plt.gcf()
 	fig.tight_layout()
 	imgdata = io.StringIO()
@@ -83,30 +92,29 @@ def createImageURI():
 	return encoded;
 
 	
-def histogram(data, xlabel, ylabel):
-	plt.clf();
+def plotHistogram(data, xLabel, yLabel, xScale, yScale):
+	plotInit(xScale, yScale)
 	
+	# TODO: remove
 	mu, sigma = 100, 15
 	x = mu + sigma*np.random.randn(10000)
 
-	# the histogram of the data
 	n, bins, patches = plt.hist(x, 50, normed=1, facecolor='green', alpha=0.75)
-	
-	plt.xlabel(xlabel)
-	plt.ylabel(ylabel)
-	# plt.title(r'$\mathrm{Histogram\ of\ IQ:}\ \mu=100,\ \sigma=15$')
+	plt.xlabel(xLabel)
+	plt.ylabel(yLabel)
 	plt.axis([40, 160, 0, 0.03])
 	plt.grid(True)
-	
-	return createImageURI();
+	return plotCreateImageURI();
 
 	
-def plot2():
-	plt.clf();
-	
-	plt.plot(range(30, 20))
-	
-	return createImageURI();
+def plotHistogramSet(data, xLabel, yLabel):
+	result = ""
+	for xScale in range(0, 2):
+		for yScale in range(0, 2):
+				result += plotHistogram(data, xLabel, yLabel, xScale, yScale)
+				if (not(xScale and yScale)):
+					result += "|"
+	return result;
 
 	
 def profile(G):
@@ -116,15 +124,14 @@ def profile(G):
 	degree = properties.degreeSequence(G)
 	
 	pageIndex = count
-	centrality_1_images = histogram(degree, "x-Axis", "y-Axis");
-	centrality_2_images = plot2();
+	centrality_1_images = plotHistogram(degree, "x-Axis", "y-Axis", True, False)
+	centrality_2_images = plotHistogramSet(degree, "x-Axis", "y-Axis")
 	
 	result = readfile("profile.html")
 	result = result.format(**locals());
 	display_html(HTML(result))
 	
 	count = count + 1;
-	
 	
 # def asImage(plotFunction, plotArgs=[], plotKwargs={}, size=(8,6)):
 	# """
@@ -141,21 +148,6 @@ def profile(G):
 	# # generate img tag
 	# image = "<img src='{0}'>".format(imageData)
 	# return image
-	
-	
-# def asSlideShow(*images):
-	# """
-	# """
-	# global imageIndex
-	# result = "<div>"
-	# offset = imageIndex
-	# for image in images:
-		# result += "<div id='profiling_slideshow_img_" + str(imageIndex) + "'>" + image + "</div>"
-		# imageIndex = imageIndex + 1
-	# result += "<a href='javascript:SlideShow(" + str(offset) + "," + str(len(images)) + ");'><div>Button</div></a>"
-	# result += "</div>"
-	# return result 
-
 
 # def computeNetworkProperties(G):
 	# """
