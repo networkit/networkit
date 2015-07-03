@@ -1,30 +1,36 @@
 /*
  * RandomEdgeAttributizer.h
  *
- *  Created on: 20.11.2014
- *      Author: Michael Hamann
+ *  Created on: 11.08.2014
+ *      Author: Gerd Lindner
  */
 
-#ifndef RANDOMEDGEATTRIBUTIZER_H
-#define RANDOMEDGEATTRIBUTIZER_H
+#ifndef RANDOMEDGEATTRIBUTIZER_H_
+#define RANDOMEDGEATTRIBUTIZER_H_
 
 #include "../edgeattributes/EdgeAttribute.h"
 
 namespace NetworKit {
 
+/**
+ * Generates a random edge attribute. Each edge is assigned a random value in [0,1].
+ */
 class RandomEdgeAttributizer : public EdgeAttribute<double> {
 
 public:
-	RandomEdgeAttributizer(const Graph& graph, double rneRatio = 0.8);
-	
+
+	/**
+	 * Creates a new instance of the Random edge attributizer.
+	 */
+	RandomEdgeAttributizer(const Graph& graph);
+
 	virtual std::vector<double> getAttribute() override;
-	
+
 private:
 	const Graph& graph;
-	double rneRatio;
 
 };
 
-} /* namespace NetworKit */
-
-#endif // RANDOMEDGEATTRIBUTIZER_H
+}
+/* namespace NetworKit */
+#endif /* RANDOMEDGEATTRIBUTIZER_H_ */

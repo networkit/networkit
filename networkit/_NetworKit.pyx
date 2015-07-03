@@ -6613,7 +6613,7 @@ cdef class EdgeAttributeLinearizer:
 	def __cinit__(self, Graph G, vector[double] attribute, inverse = False):
 		self._G = G
 		self._attribute = attribute
-		self._this = new _EdgeAttributeLinearizer(G._this, attribute, inverse)
+		self._this = new _EdgeAttributeLinearizer(G._this, self._attribute, inverse)
 
 	def __dealloc__(self):
 		del self._this
@@ -7004,12 +7004,12 @@ cdef class MultiscaleAttributizer:
 	def getAttribute(self):
 		return self._this.getAttribute()
 
-cdef extern from "cpp/sparsification/RandomAttributizer.h":
-	cdef cppclass _RandomAttributizer "NetworKit::RandomAttributizer":
-		_RandomAttributizer(const _Graph& G) except +
+cdef extern from "cpp/sparsification/RandomEdgeAttributizer.h":
+	cdef cppclass _RandomEdgeAttributizer "NetworKit::RandomEdgeAttributizer":
+		_RandomEdgeAttributizer(const _Graph& G) except +
 		vector[double] getAttribute() except +
 
-cdef class RandomAttributizer:
+cdef class RandomEdgeAttributizer:
 	"""
 	[todo]
 
@@ -7019,12 +7019,12 @@ cdef class RandomAttributizer:
 		The graph to calculate the Random Edge attribute for.
 	"""
 
-	cdef _RandomAttributizer* _this
+	cdef _RandomEdgeAttributizer* _this
 	cdef Graph _G
 
 	def __cinit__(self, Graph G):
 		self._G = G
-		self._this = new _RandomAttributizer(G._this)
+		self._this = new _RandomEdgeAttributizer(G._this)
 
 	def __dealloc__(self):
 		del self._this
@@ -7196,12 +7196,12 @@ cdef class JaccardSimilarityAttributizer:
 		self._this.preprocess()
 		return [1 - x for x in self._this.getEdgeAttribute()]
 
-cdef extern from "cpp/sparsification/RandomEdgeAttributizer.h":
-	cdef cppclass _RandomEdgeAttributizer "NetworKit::RandomEdgeAttributizer":
-		_RandomEdgeAttributizer(const _Graph& G) except +
+cdef extern from "cpp/sparsification/RandomNodeEdgeAttributizer.h":
+	cdef cppclass _RandomNodeEdgeAttributizer "NetworKit::RandomNodeEdgeAttributizer":
+		_RandomNodeEdgeAttributizer(const _Graph& G) except +
 		vector[double] getAttribute() except +
 
-cdef class RandomEdgeAttributizer:
+cdef class RandomNodeEdgeAttributizer:
 	"""
 	Random Edge sampling. This attributizer returns edge attributes where
 	each value is selected uniformly at random from [0,1].
@@ -7212,12 +7212,12 @@ cdef class RandomEdgeAttributizer:
 		The graph to calculate the Random Edge attribute for.
 	"""
 
-	cdef _RandomEdgeAttributizer* _this
+	cdef _RandomNodeEdgeAttributizer* _this
 	cdef Graph _G
 
 	def __cinit__(self, Graph G):
 		self._G = G
-		self._this = new _RandomEdgeAttributizer(G._this)
+		self._this = new _RandomNodeEdgeAttributizer(G._this)
 
 	def __dealloc__(self):
 		del self._this
