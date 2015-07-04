@@ -9,7 +9,7 @@
 	
 		html > head > script id="NetworKit_script"
 		
-	In addition a function for hidding the Overlay is defined in 
+	In addition a function for hiding the Overlay is defined in 
 	"profiling.py"
 	
 	To prevent conflicts with the IPython Notebook, prove that every function
@@ -107,7 +107,7 @@ function NetworKit_overlayUpdate(source)
 	image.style.backgroundImage = "url(" + data + ")";
 	var link = document.getElementById("NetworKit_Overlay_Toolbar_Bottom_Save");
 	link.href = data;
-	link.download = "image.svg";
+	link.download = source.title + ".svg";
 }
 
 
