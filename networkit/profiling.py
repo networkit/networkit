@@ -1,152 +1,223 @@
-# import tabulate
-# import pandas
-# import seaborn
-# import matplotlib.pyplot as plt
-# from matplotlib._pylab_helpers import Gcf
-# from IPython.core.pylabtools import print_figure
+#
+# file: profiling.py
+#
 
 from networkit import *
+
 from IPython.core.display import *
 from urllib.parse import quote
+from abc import ABCMeta, abstractmethod
 import io
+
 import numpy as np
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
-import seaborn as sns		
+import seaborn as sns
+import pandas as pd
 			
 			
 try:
-	__IPYTHON__
-	
-	
-	def readfile(postfix):
-		with open(__file__[:__file__.rfind(".py")] + "." + postfix, "r") as file:
-			return " ".join(file.read().split())
-			
-
-	def initHeader(tag, type, data):
-		result = """
-			{
-				var element = document.getElementById('NetworKit_""" + tag + """');
-				if (element) {
-					element.parentNode.removeChild(element);
-				}
-				element = document.createElement('""" + tag + """');
-				element.type = 'text/""" + type + """';
-				element.innerHTML = '""" + data + """';
-				element.setAttribute('id', 'NetworKit_""" + tag + """');
-				document.head.appendChild(element);
-			}
-		"""
-		return result
-		
-		
-	def initOverlay(name, data):
-		result = """
-			{
-				var element = document.getElementById('NetworKit_""" + name + """');
-				if (element) {
-					element.parentNode.removeChild(element);
-				}
-				element = document.createElement('div');
-				element.innerHTML = '<div id="NetworKit_""" + name + """_Toolbar_Top"><div class="button icon-close" id="NetworKit_""" + name + """_Close" /></div>""" + data + """';
-				element.setAttribute('id', 'NetworKit_""" + name + """');
-				document.body.appendChild(element);
-				document.getElementById('NetworKit_""" + name + """_Close').onclick = function (e) {
-					document.getElementById('NetworKit_""" + name + """').style.display = 'none';
-				}
-			}
-		"""
-		
-		return result
-
-
-	display_html(
-		HTML("""
-			<script type="text/javascript">
-			<!--
-				""" + initHeader("script", "javascript", readfile("js"))  + """
-				""" + initHeader("style",  "css",        readfile("css")) + """
-				""" + initOverlay("Overlay", readfile("overlay.html")) + """
-			-->
-			</script>
-		""")
-	)
-	
-	
-	class Profiling:
-		__NetworKit_Profiling_Page_Count = 0
-	
-
-		def __plotInit(self, xScale, yScale):
-			plt.clf();
-			fig, ax = plt.subplots()
-			if xScale:
-				ax.set_xscale('log')
-			if yScale:
-				ax.set_yscale('log')
-
-
-		def __plotCreateImageURI(self):
-			fig = plt.gcf()
-			fig.tight_layout()
-			imgdata = io.StringIO()
-			fig.savefig(imgdata, format='svg')
-			plaintext = imgdata.getvalue()
-			plaintext = " ".join(plaintext[plaintext.find("<svg "):].split())
-			encoded = quote(plaintext, safe='');
-			encoded = "data:image/svg+xml;utf8," + encoded; 
-			return encoded;
-
-			
-		def __plotHistogram(self, data, xLabel, yLabel, xScale, yScale):
-			self.__plotInit(xScale, yScale)
-			
-			# TODO: remove
-			mu, sigma = 100, 15
-			x = mu + sigma*np.random.randn(10000)
-
-			n, bins, patches = plt.hist(x, 50, normed=1, facecolor='green', alpha=0.75)
-			plt.xlabel(xLabel)
-			plt.ylabel(yLabel)
-			plt.axis([40, 160, 0, 0.03])
-			plt.grid(True)
-			return self.__plotCreateImageURI();
-
-			
-		def __plotHistogramSet(self, data, xLabel, yLabel):
-			result = ""
-			for xScale in range(0, 2):
-				for yScale in range(0, 2):
-						result += self.__plotHistogram(data, xLabel, yLabel, xScale, yScale)
-						if (not(xScale and yScale)):
-							result += "|"
-			return result;
-
-			
-		def __init__(self):
-			return
-			
-			
-		def profile(self, G):
-			pageIndex = self.__NetworKit_Profiling_Page_Count
-			
-			plt.ioff()
-			
-			degree = properties.degreeSequence(G)
-			
-			centrality_1_images = self.__plotHistogram(degree, "x-Axis", "y-Axis", True, False)
-			centrality_2_images = self.__plotHistogramSet(degree, "x-Axis", "y-Axis")
-			
-			result = readfile("profile.html")
-			result = result.format(**locals());
-			display_html(HTML(result))
-			
-			self.__NetworKit_Profiling_Page_Count = self.__NetworKit_Profiling_Page_Count + 1;
-		
+	__IPYTHON__	
 except:
-	print("Error: module has been loaded outside of \"IPython Notbook\"")
+	raise NameError("module has been loaded outside of \"IPython\"")
 
+	
+def readfile(postfix):
+	with open(__file__[:__file__.rfind(".py")] + "." + postfix, "r") as file:
+		return " ".join(file.read().split())
+			
+
+def __initHeader(tag, type, data):
+	result = """
+		{
+			var element = document.getElementById('NetworKit_""" + tag + """');
+			if (element) {
+				element.parentNode.removeChild(element);
+			}
+			element = document.createElement('""" + tag + """');
+			element.type = 'text/""" + type + """';
+			element.innerHTML = '""" + data + """';
+			element.setAttribute('id', 'NetworKit_""" + tag + """');
+			document.head.appendChild(element);
+		}
+	"""
+	return result
+		
+		
+def __initOverlay(name, data):
+	result = """
+		{
+			var element = document.getElementById('NetworKit_""" + name + """');
+			if (element) {
+				element.parentNode.removeChild(element);
+			}
+			element = document.createElement('div');
+			element.innerHTML = '<div id="NetworKit_""" + name + """_Toolbar_Top"><div class="button icon-close" id="NetworKit_""" + name + """_Close" /></div>""" + data + """';
+			element.setAttribute('id', 'NetworKit_""" + name + """');
+			document.body.appendChild(element);
+			document.getElementById('NetworKit_""" + name + """_Close').onclick = function (e) {
+				document.getElementById('NetworKit_""" + name + """').style.display = 'none';
+			}
+		}
+	"""	
+	return result
+
+
+display_html(
+	HTML("""
+		<script type="text/javascript">
+		<!--
+			""" + __initHeader("script", "javascript", readfile("js"))  + """
+			""" + __initHeader("style",  "css",        readfile("css")) + """
+			""" + __initOverlay("Overlay", readfile("overlay.html")) + """
+		-->
+		</script>
+	""")
+)
+	
+	
+class Profiling:
+	__TOKEN = object();		
+	__pageCount = 0
+	__verbose = False
+	__verbose_tab = "    "
+	__parallel = True
+		
+		
+	def __init__(self, G, token):
+		if token is not self.__TOKEN:
+			raise ValueError("call create(G) to create an instance")
+		self.__G = G
+		self.__centralities = self.__computeNodeCentralities(G)
+			
+			
+	@classmethod
+	def create(cls, G):
+		return cls(G, cls.__TOKEN)
+	
+
+	@classmethod
+	def setVerbose(cls, verbose):
+		cls.__verbose = verbose
+	
+	
+	@classmethod
+	def getVerbose(cls):
+		return cls.__verbose
+	
+	
+	@classmethod
+	def setParallel(cls, parallel)
+		cls.__parallel = parallel
+	
+
+	@classmethod
+	def getParallel(cls):
+		return cls.__parallel
+
+
+	def show(self):
+		pageIndex = self.__pageCount
+			
+		plt.ioff()
+	
+		hist = Histogram()
+		
+		centralities = ""
+		for key in self.__centralities:
+			data = hist.plotSet(self.__centralities[key], "x-Axis", "y-Axis")
+			centralities += '<div class="Plot" title="' + key + '" data-image="' + data + '" />'
+					
+		result = readfile("profile.html")
+		result = result.format(**locals());
+		display_html(HTML(result))
+			
+		self.__pageCount = self.__pageCount + 1
+		
+		
+	def __computeNodeCentralities(self, G):
+		n = G.numberOfNodes()
+		
+		nodeCentralityAlgos = [	(centrality.DegreeCentrality, 			(G, )),
+								(centrality.CoreDecomposition, 			(G, )),
+								(centrality.LocalClusteringCoefficient, (G, )),
+								(centrality.PageRank, 					(G, )),
+								(centrality.KPathCentrality,			(G, )),
+								(centrality.KatzCentrality,				(G, )),
+								(centrality.ApproxBetweenness2,			(G, max(42, n / 1000), False)) ]
+								
+		result = {}
+		if self.__verbose:
+			print("Centralities:")
+		for (algoClass, params) in nodeCentralityAlgos:
+			algoName = algoClass.__name__
+			if self.__verbose:
+				print(self.__verbose_tab + algoName + ": ", end="", flush=True)
+				t = stopwatch.Timer()
+			algo = algoClass(*params)
+			algo.run()
+			result[algoName] = algo.scores()
+			if self.__verbose:
+				print("{:.2F} s".format(t.elapsed))
+		return result;
+	
+	
+class Plot:
+	__metaclass__ = ABCMeta
+			
+	def init(self, xScale, yScale):
+		plt.clf();
+		fig, ax = plt.subplots()
+		if xScale:
+			ax.set_xscale('log')
+		if yScale:
+			ax.set_yscale('log')
+
+
+	def createImageURI(self):
+		fig = plt.gcf()
+		fig.tight_layout()
+		imgdata = io.StringIO()
+		fig.savefig(imgdata, format='svg')
+		plaintext = imgdata.getvalue()
+		plaintext = " ".join(plaintext[plaintext.find("<svg "):].split())
+		encoded = quote(plaintext, safe='');
+		encoded = "data:image/svg+xml;utf8," + encoded; 
+		return encoded;
+		
+			
+	def plotSet(self, data, xLabel, yLabel):
+		result = ""
+		for xScale in range(0, 2):
+			for yScale in range(0, 2):
+				result += self.plot(data, xLabel, yLabel, xScale, yScale)
+				if (not(xScale and yScale)):
+					result += "|"
+		return result;
+			
+		
+	@abstractmethod 
+	def plot(self, data, xLabel, yLabel, xScale, yScale): pass
+			
+			
+class Histogram(Plot):
+	def plot(self, data, xLabel, yLabel, xScale, yScale):
+		self.init(xScale, yScale)
+		n, bins, patches = plt.hist(data, 50, normed=1, facecolor='green', alpha=0.75)
+		plt.xlabel(xLabel)
+		plt.ylabel(yLabel)
+		plt.grid(True)
+		return self.createImageURI()
+				
+				
+class HistogramSeaborn(Plot):
+	def plot(self, data, xLabel, yLabel, xScale, yScale):
+		self.init(xScale, yScale)
+		sns.distplot(data);
+		plt.xlabel(xLabel)
+		plt.ylabel(yLabel)
+		plt.grid(True)
+		return self.createImageURI()
 	
 # def asImage(plotFunction, plotArgs=[], plotKwargs={}, size=(8,6)):
 	# """
