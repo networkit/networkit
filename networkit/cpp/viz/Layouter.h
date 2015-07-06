@@ -13,6 +13,7 @@
 namespace NetworKit {
 
 /**
+ * DEPRECATED: use base class LayoutAlgorithm instead
  * @ingroup viz
  */
 class Layouter {

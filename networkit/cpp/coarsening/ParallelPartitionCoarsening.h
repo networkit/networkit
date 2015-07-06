@@ -19,7 +19,7 @@ namespace NetworKit {
  */
 class ParallelPartitionCoarsening: public NetworKit::GraphCoarsening {
 public:
-	ParallelPartitionCoarsening(bool useGraphBuilder = false);
+	ParallelPartitionCoarsening(bool useGraphBuilder = true);
 
 	virtual std::pair<Graph, std::vector<node> > run(const Graph& G, const Partition& zeta);
 

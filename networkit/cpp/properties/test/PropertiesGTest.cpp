@@ -6,13 +6,25 @@
  */
 
 #ifndef NOGTEST
+#include <algorithm> // for copy
+#include <iterator> // for ostream_iterator
+#include <fstream> // for ofstream
+#include <list>
+#include <string>
 
 #include "PropertiesGTest.h"
 #include "../Diameter.h"
+#include "../ClusteringCoefficient.h"
 #include "../EffectiveDiameter.h"
+#include "../../properties/GraphProperties.h"
+
 #include "../../auxiliary/Timer.h"
-#include "../../generators/ErdosRenyiGenerator.h"
 #include "../../auxiliary/Log.h"
+#include "../../generators/ErdosRenyiGenerator.h"
+#include "../../io/METISGraphReader.h"
+#include "../../io/KONECTGraphReader.h"
+
+
 
 
 namespace NetworKit {
@@ -28,14 +40,13 @@ PropertiesGTest::~PropertiesGTest() {
 
 TEST_F(PropertiesGTest, testClusteringCoefficient) {
 
-	GraphGenerator gen;
-	Graph G = gen.makeErdosRenyiGraph(10, 1.0);
+	ErdosRenyiGenerator graphGen(10, 1.0);
+	Graph G = graphGen.generate();
 
 	ClusteringCoefficient clusteringCoefficient;
 	double cc = clusteringCoefficient.avgLocal(G);
 
 	EXPECT_EQ(1.0, cc);
-
 }
 
 TEST_F(PropertiesGTest, testDegreeDistribution) {
@@ -48,16 +59,16 @@ TEST_F(PropertiesGTest, testDegreeDistribution) {
 	EXPECT_EQ(0u, degreeDist[0]);
 	EXPECT_EQ(0u, degreeDist[1]);
 	EXPECT_EQ(3u, degreeDist[2]);
-
 }
 
 
 
 TEST_F(PropertiesGTest, testLocalClusteringCoefficients) {
-
 	// Test case for a complete graph
-	GraphGenerator gen;
-	Graph G_complete = gen.makeCompleteGraph(4);
+	Graph G_complete(4);
+	G_complete.forNodePairs([&](node u, node v){
+		G_complete.addEdge(u,v);
+	});
 
 	std::vector<double> coefficients = GraphProperties::localClusteringCoefficients(G_complete);
 	for (double cc : coefficients) {
@@ -90,6 +101,11 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficients) {
 	EXPECT_EQ(0.0, coefficients_G2[1]);
 	EXPECT_EQ(0.0, coefficients_G2[2]);
 
+	// test throw runtime error for self-loop in graph
+	Graph H(2);
+	H.addEdge(0, 1);
+	H.addEdge(1, 1);
+	EXPECT_ANY_THROW(GraphProperties::localClusteringCoefficients(H));
 }
 
 
@@ -136,8 +152,10 @@ TEST_F(PropertiesGTest, testCoreDecompositionOnGraphFiles) {
 TEST_F(PropertiesGTest, testAverageLocalClusteringCoefficient) {
 
 	// Test case for a complete graph
-	GraphGenerator gen;
-	Graph G_complete = gen.makeCompleteGraph(4);
+	Graph G_complete(4);
+	G_complete.forNodePairs([&](node u, node v){
+		G_complete.addEdge(u,v);
+	});
 
 	EXPECT_EQ(1.0, GraphProperties::averageLocalClusteringCoefficient(G_complete)) << "should be 1.0 for a complete graph";
 
@@ -160,13 +178,21 @@ TEST_F(PropertiesGTest, testAverageLocalClusteringCoefficient) {
 
 	EXPECT_EQ(0.0, GraphProperties::averageLocalClusteringCoefficient(G_path_isolated)) << "should be 0.0 for a path";
 
+	// test throw runtime error for self-loop in graph
+	Graph H(2);
+	H.addEdge(0, 1);
+	H.addEdge(1, 1);
+	EXPECT_ANY_THROW(GraphProperties::averageLocalClusteringCoefficient(H));
 
 }
 
 
 TEST_F(PropertiesGTest, testLocalClusteringCoefficientPerDegree) {
-	GraphGenerator gen;
-	Graph G = gen.makeCompleteGraph(5);
+	Graph G(5);
+	G.forNodePairs([&](node u, node v){
+		G.addEdge(u,v);
+	});
+
 
 	std::vector<double> coefficients = GraphProperties::localClusteringCoefficientPerDegree(G);
 
@@ -196,6 +222,11 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientPerDegree) {
 	EXPECT_EQ(0, coefficients1[1]);
 	EXPECT_EQ(1.0, coefficients1[2]);
 
+	// test throw runtime error for self-loop in graph
+	Graph H(2);
+	H.addEdge(0, 1);
+	H.addEdge(1, 1);
+	EXPECT_ANY_THROW(GraphProperties::localClusteringCoefficientPerDegree(H));
 }
 
 TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
@@ -286,18 +317,19 @@ TEST_F(PropertiesGTest, testClusteringCoefficientsOnPgp) {
 	std::string path = "input/PGPgiantcompo.graph";
 	METISGraphReader reader;
 	Graph G = reader.read(path);
-
 	// compute values
 	double ccLocalEx = cc.avgLocal(G);
-	double ccLocalApprox = cc.approxAvgLocal(G, 20000); // TODO: externalize
+	/*double ccLocalApprox = cc.approxAvgLocal(G, 20000); // TODO: externalize
 	double ccGlobalEx = cc.exactGlobal(G);
-	double ccGlobalApprox = cc.approxGlobal(G, 20000); // TODO: externalize
+	double ccGlobalApprox = cc.approxGlobal(G, 20000); // TODO: externalize*/
 
 	// test / output
 	DEBUG("average local exact: ", ccLocalEx);
-	DEBUG("average local approximated: ", ccLocalApprox);
-	DEBUG("global exact: ", ccGlobalEx);
-	DEBUG("global approximated: ", ccGlobalApprox);
+	DEBUG("average local approximated: ", cc.approxAvgLocal(G, 20000));
+	DEBUG("global exact: ", cc.exactGlobal(G));
+	DEBUG("global approximated: ", cc.approxGlobal(G, 20000));
+	EXPECT_GE(ccLocalEx,0);
+	EXPECT_GE(1,ccLocalEx);
 }
 
 
@@ -509,21 +541,35 @@ Number of steps needed per node: (1-21)
 }
 
 TEST_F(PropertiesGTest, testHopPlot) {
-using namespace std;
+	using namespace std;
 
-vector<string> testInstances= {"celegans_metabolic", "power", "lesmis"};
+	vector<string> testInstances= {"celegans_metabolic", "power", "lesmis"};
 
-const double tol = 1e-2;
+	const double tol = 1e-2;
 
-for (auto testInstance : testInstances) {
-	METISGraphReader reader;
-	Graph G = reader.read("input/" + testInstance + ".graph");
-	map<count, double> hopPlot = EffectiveDiameter::hopPlot(G);
-	for (count i=1; i < hopPlot.size(); i++) {
-		EXPECT_LE(hopPlot[i-1], hopPlot[i]+tol);
+	for (auto& testInstance : testInstances) {
+		METISGraphReader reader;
+		Graph G = reader.read("input/" + testInstance + ".graph");
+		map<count, double> hopPlot = EffectiveDiameter::hopPlot(G);
+		for (count i=1; i < hopPlot.size(); i++) {
+			EXPECT_LE(hopPlot[i-1], hopPlot[i]+tol);
+		}
 	}
 }
+
+TEST_F(PropertiesGTest, testDegreeAssortativityDirected) {
+		std::string testInstance = "foodweb-baydry";
+		KONECTGraphReader reader(' ');
+		Graph G = reader.read("input/" + testInstance + ".konect");
+		DEBUG(G.toString());
+		DEBUG(testInstance);
+		for (int i = 0; i < 2; ++i)
+			for (int j= 0; j < 2; ++j)
+				DEBUG((i)?"out\t":"in\t",(j)?"out\t":"in\t",GraphProperties::degreeAssortativityDirected(G,i,j));
+		DEBUG("---------------");
 }
+
+
 
 
 

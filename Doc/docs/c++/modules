@@ -19,11 +19,6 @@
  */
 
 /**
- * @defgroup distmeasures Distance Measures
- * @brief Various distance measuring algorithms.
- */
-
-/**
  * @defgroup dynamics Dynamics
  * @brief TODO
  */
@@ -86,4 +81,9 @@
 /**
  * @defgroup viz Viz
  * @brief Algorithms for drawing a graph.
+ */
+
+/**
+ * @defgroup linkprediction Link Prediction
+ * @brief Algorithms for predicting links in a graph.
  */

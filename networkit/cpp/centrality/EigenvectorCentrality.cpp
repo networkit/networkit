@@ -13,7 +13,11 @@ namespace NetworKit {
 EigenvectorCentrality::EigenvectorCentrality(const Graph& G, double tol):
 		Centrality(G, true), tol(tol)
 {
-
+	// do not execute algorithm on directed graphs since this is error prone
+	// and can yield misleading results (wrong metric, not implementation fault!)
+	if (G.isDirected()) {
+		throw std::runtime_error("This algorithm does not work on directed graphs.");
+	}
 }
 
 void EigenvectorCentrality::run() {
@@ -21,16 +25,8 @@ void EigenvectorCentrality::run() {
 	std::vector<double> values(z, 1.0);
 	scoreData = values;
 
-	// do not execute algorithm on directed graphs since this is error prone
-	// and can yield misleading results (wrong metric, not implementation fault!)
-	if (G.isDirected()) {
-		return;
-	}
-
 	double length = 0.0;
 	double oldLength = 0.0;
-
-	double NEAR_ZERO = 1e-16;
 
 	auto converged([&](double val, double other) {
 		// compute residual
@@ -50,7 +46,7 @@ void EigenvectorCentrality::run() {
 
 //		// set everything very small to zero
 //		G.parallelForNodes([&](node u) {
-//			if (values[u] < NEAR_ZERO) {
+//			if (values[u] < 1e-16) {
 //				values[u] = 0.0;
 //			}
 //		});
@@ -65,7 +61,7 @@ void EigenvectorCentrality::run() {
 //		TRACE("length: ", length);
 //		TRACE(values);
 
-		assert(! Aux::NumericTools::equal(length, NEAR_ZERO));
+		assert(! Aux::NumericTools::equal(length, 1e-16));
 		G.parallelForNodes([&](node u) {
 			values[u] /= length;
 		});
@@ -82,7 +78,7 @@ void EigenvectorCentrality::run() {
 		});
 	}
 
-	ran = true;
+	hasRun = true;
 }
 
 } /* namespace NetworKit */

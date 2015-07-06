@@ -19,7 +19,7 @@ Graph GlobalThresholdFilter::calculate() {
 	}
 
 	//Create an edge-less backbone graph.
-	GraphBuilder builder(graph.upperNodeIdBound(), false, false, true);
+	GraphBuilder builder(graph.upperNodeIdBound(), false);
 
 	//Re-add the backbone edges.
 	graph.balancedParallelForNodes([&](node u) {
@@ -27,12 +27,12 @@ Graph GlobalThresholdFilter::calculate() {
 		graph.forEdgesOf(u, [&](node u, node v, edgeid eid) {
 			if ((above && attribute[eid] >= threshold)
 			|| (!above && attribute[eid] <= threshold)) {
-				builder.addEdge(u, v);
+				builder.addHalfEdge(u, v);
 			}
 		});
 	});
 
-	Graph backboneGraph = builder.toGraph();
+	Graph backboneGraph = builder.toGraph(false);
 	backboneGraph.parallelForNodes([&](node u) {
 		if (!graph.hasNode(u)) {
 			backboneGraph.removeNode(u);

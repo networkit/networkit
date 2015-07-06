@@ -5,6 +5,7 @@ namespace NetworKit {
 
 LocalClusteringCoefficient::LocalClusteringCoefficient(const Graph& G) : Centrality(G, false, false) {
 	if (G.isDirected()) throw std::runtime_error("Not implemented: Local clustering coefficient is currently not implemted for directed graphs");
+	if (G.numberOfSelfLoops()) throw std::runtime_error("Local Clustering Coefficient implementation does not supprt graphs with self-loops. Call Graph.removeSelfLoops first.");
 }
 
 void LocalClusteringCoefficient::run() {
@@ -46,7 +47,12 @@ void LocalClusteringCoefficient::run() {
 			scoreData[u] = (double) triangles / (double)(d * (d - 1)); // No division by 2 since triangles are counted twice as well!
 		}
 	});
-	ran = true;
+	hasRun = true;
+}
+
+
+double LocalClusteringCoefficient::maximum() {
+	return 1.0;
 }
 
 }

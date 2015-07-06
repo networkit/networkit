@@ -27,7 +27,7 @@ void DegreeCentrality::run() {
 		});
 	}
 
-
+	hasRun = true;
 }
 
 

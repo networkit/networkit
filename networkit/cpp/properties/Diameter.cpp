@@ -21,12 +21,15 @@ namespace NetworKit {
 edgeweight Diameter::exactDiameter(const Graph& G) {
 	using namespace std;
 
+	Aux::SignalHandler handler;
+
 	edgeweight diameter = 0.0;
 
 	if (! G.isWeighted() && !G.isDirected()) {
 		std::tie(diameter, std::ignore) = estimatedDiameterRange(G, 0);
 	} else {
 		 G.forNodes([&](node v) {
+			handler.assureRunning();
 		 	Dijkstra dijkstra(G, v);
 		 	dijkstra.run();
 		 	auto distances = dijkstra.getDistances();
@@ -50,6 +53,7 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 
 
 std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworKit::Graph &G, double error, std::pair< NetworKit::node, NetworKit::node > *proof) {
+	// TODO: make abortable with ctrl+c using SignalHandling code
 	if (G.isDirected()) {
 		throw std::runtime_error("Error, the diameter of directed graphs cannot be computed yet.");
 	}

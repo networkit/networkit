@@ -24,7 +24,7 @@ typedef uint64_t count;
 
 /**
  * @ingroup structures
- * Implements a cover of a set, i.e. an assignment of 
+ * Implements a cover of a set, i.e. an assignment of
  * its elements to possibly overlapping subsets.
  */
 class Cover {
@@ -45,7 +45,7 @@ public:
 	 *
 	 * @param[in]	p	The partition to construct the cover from
 	 */
-	Cover(Partition &p);
+	Cover(const Partition &p);
 
 	/** Default destructor */
 	virtual ~Cover() = default;
@@ -192,6 +192,13 @@ public:
 	 * @return The current number of elements.
 	 */
 	count numberOfElements() const;
+
+	/**
+	 * Get the ids of nonempty subsets.
+	 *
+	 * @return A set of ids of nonempty subsets.
+	 */
+	std::set<index> getSubsetIds() const;
 
 	/**
 	 * Sets an upper bound for the subset ids that CAN be assigned.

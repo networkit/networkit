@@ -11,10 +11,10 @@
 #include "../DynApproxBetweenness.h"
 #include "../ApproxBetweenness.h"
 #include "../ApproxBetweenness2.h"
+#include "../ApproxCloseness.h"
 #include "../EigenvectorCentrality.h"
 #include "../KatzCentrality.h"
 #include "../PageRank.h"
-#include "../DynBetweenness.h"
 #include "../../io/METISGraphReader.h"
 #include "../../io/SNAPGraphReader.h"
 #include "../../generators/ErdosRenyiGenerator.h"
@@ -22,7 +22,8 @@
 #include "../KPathCentrality.h"
 #include "../CoreDecomposition.h"
 #include "../LocalClusteringCoefficient.h"
-
+#include "../../structures/Cover.h"
+#include "../../structures/Partition.h"
 
 namespace NetworKit {
 
@@ -331,7 +332,64 @@ TEST_F(CentralityGTest, testApproxBetweenness2) {
 	abc2.run();
 
 	DEBUG("approximated betweenness scores: ", abc2.scores());
+}
 
+TEST_F(CentralityGTest, testApproxClosenessCentralityOnRealGraph) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/celegans_metabolic.graph");
+
+	ApproxCloseness acc(G, 100);
+	acc.run();
+
+	DEBUG("approximated closeness scores: ", acc.scores());
+}
+
+TEST_F(CentralityGTest, testApproxClosenessCentralityOnToyGraph) {
+ /* Graph:
+    0    3
+     \  / \
+      2    5
+     /  \ /
+    1    4
+ */
+    count n = 6;
+    Graph G(n);
+
+    G.addEdge(0, 2);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+    G.addEdge(2, 4);
+    G.addEdge(3, 5);
+    G.addEdge(4, 5);
+
+    ApproxCloseness acc(G, 10000, false);
+    acc.run();
+    std::vector<double> cc = acc.scores();
+
+		double maximum = acc.maximum();
+
+    const double tol = 0.15;
+    EXPECT_NEAR(0.1, cc[0], tol);
+    EXPECT_NEAR(0.1, cc[1], tol);
+    EXPECT_NEAR(0.166667, cc[2], tol);
+    EXPECT_NEAR(0.125, cc[3], tol);
+    EXPECT_NEAR(0.125, cc[4], tol);
+    EXPECT_NEAR(0.1, cc[5], tol);
+		EXPECT_NEAR(0.2, maximum, tol);
+
+		ApproxCloseness acc2(G, 50, true);
+		acc2.run();
+		std::vector<double> cc2 = acc2.scores();
+
+		double maximum2 = acc2.maximum();
+
+		EXPECT_NEAR(0.5, cc2[0], tol);
+		EXPECT_NEAR(0.5, cc2[1], tol);
+		EXPECT_NEAR(0.833335, cc2[2], tol);
+		EXPECT_NEAR(0.625, cc2[3], tol);
+		EXPECT_NEAR(0.625, cc2[4], tol);
+		EXPECT_NEAR(0.5, cc2[5], tol);
+		EXPECT_NEAR(0.2, maximum2, tol);
 }
 
 
@@ -389,6 +447,8 @@ TEST_F(CentralityGTest, testClosenessCentrality) {
     centrality.run();
     std::vector<double> bc = centrality.scores();
 
+		double maximum = centrality.maximum();
+
     const double tol = 1e-3;
     EXPECT_NEAR(0.1, bc[0], tol);
     EXPECT_NEAR(0.1, bc[1], tol);
@@ -396,6 +456,7 @@ TEST_F(CentralityGTest, testClosenessCentrality) {
     EXPECT_NEAR(0.125, bc[3], tol);
     EXPECT_NEAR(0.125, bc[4], tol);
     EXPECT_NEAR(0.1, bc[5], tol);
+		EXPECT_NEAR(0.2, maximum, tol);
 }
 
 
@@ -405,6 +466,21 @@ TEST_F(CentralityGTest, testKPathCentrality) {
 
     KPathCentrality centrality(G);
     centrality.run();
+}
+
+
+TEST_F(CentralityGTest, testCoreDecompositionSimple) {
+	count n = 3;
+	Graph G(n);
+	G.addEdge(0,1);
+
+	CoreDecomposition coreDec(G);
+	coreDec.run();
+	std::vector<double> coreness = coreDec.scores();
+
+	EXPECT_EQ(1u, coreness[0]) << "expected coreness";
+	EXPECT_EQ(1u, coreness[1]) << "expected coreness";
+	EXPECT_EQ(0u, coreness[2]) << "expected coreness";
 }
 
 TEST_F(CentralityGTest, testCoreDecomposition) {
@@ -448,6 +524,10 @@ TEST_F(CentralityGTest, testCoreDecomposition) {
 	CoreDecomposition coreDec(G);
 	coreDec.run();
 	std::vector<double> coreness = coreDec.scores();
+	// init cores
+	// init shells
+	Cover cores = coreDec.cores();
+	Partition shells = coreDec.shells();
 
 	EXPECT_EQ(0u, coreness[0]) << "expected coreness";
 	EXPECT_EQ(0u, coreness[1]) << "expected coreness";
@@ -465,6 +545,20 @@ TEST_F(CentralityGTest, testCoreDecomposition) {
 	EXPECT_EQ(4u, coreness[13]) << "expected coreness";
 	EXPECT_EQ(3u, coreness[14]) << "expected coreness";
 	EXPECT_EQ(2u, coreness[15]) << "expected coreness";
+
+	// for (index e = 0; e < n; e++) {
+	// 	EXPECT_EQ(cores.contains(e), true);
+	// 	EXPECT_EQ(shells.contains(e), true);
+	// }
+	// EXPECT_EQ(cores.get, coreness[15]) << "expected coreness";
+
+	// test throw runtime error for self-loop in graph
+	Graph H(2);
+	H.addEdge(0, 1);
+	H.addEdge(1, 1);
+	EXPECT_ANY_THROW(CoreDecomposition CoreDec(H));
+
+
 }
 
 TEST_F(CentralityGTest, testCoreDecompositionDirected) {
@@ -571,6 +665,12 @@ TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected) {
 	std::vector<double> reference = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.8, 0.8, 0.8, 0.6666666666666666, 0.0, 0.8, 0.5, 0.0};
 
  	EXPECT_EQ(reference,lccScores);
+
+	// test throw runtime error for self-loop in graph
+	Graph H(2);
+	H.addEdge(0, 1);
+	H.addEdge(1, 1);
+	EXPECT_ANY_THROW(LocalClusteringCoefficient lcc(H));
 }
 
 TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected2) {

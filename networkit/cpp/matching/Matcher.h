@@ -17,17 +17,24 @@ namespace NetworKit {
  * Abstract base class for matching algorithms.
  */
 class Matcher {
+protected:
+	Graph& G;
 
 public:
+	/**
+	 * Constructor.
+	 * @param[in] G Graph for which matching is to be computed.
+	 */
+	Matcher(Graph& G);
 
 	/** Default destructor */
 	virtual ~Matcher() = default;
 
 	/**
-	 * Run the matching algorithm on Graph @a G and return a matching.
-	 * @return A matching of @a G
+	 * Run the matching algorithm on the stored graph and return a matching.
+	 * @return A matching of the stored graph.
 	 */
-	virtual Matching run(Graph& G) = 0;
+	virtual Matching run() = 0;
 };
 
 } /* namespace NetworKit */

@@ -10,6 +10,8 @@
 #include "../graph/BFS.h"
 #include "../graph/Dijkstra.h"
 #include "../graph/SSSP.h"
+#include "../auxiliary/SignalHandling.h"
+
 
 #include <memory>
 
@@ -19,6 +21,8 @@ ApproxBetweenness2::ApproxBetweenness2(const Graph& G, count nSamples, bool norm
 }
 
 void ApproxBetweenness2::run() {
+	Aux::SignalHandler handler;
+
 	scoreData = std::vector<double>(G.upperNodeIdBound(), 0.0);
 
 	//std::vector<node> sampledNodes = G.nodes();
@@ -30,6 +34,7 @@ void ApproxBetweenness2::run() {
 	}
 
 	for (node s : sampledNodes) {
+		handler.assureRunning();
 		// run single-source shortest path algorithm
 		std::unique_ptr<SSSP> sssp;
 		if (G.isWeighted()) {
@@ -81,7 +86,7 @@ void ApproxBetweenness2::run() {
 		});
 	}
 
-	ran = true;
+	hasRun = true;
 }
 
 

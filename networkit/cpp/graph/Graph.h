@@ -42,6 +42,7 @@ private:
 	// scalars
 	count n; //!< current number of nodes
 	count m; //!< current number of edges
+	count storedNumberOfSelfLoops; //!< current number of self loops, edges which have the same origin and target
 	node z; //!< current upper bound of node ids, z will be the id of the next node
 	edgeid omega; 	//!< current upper bound of edge ids, will be the id of the next edge
 	count t; //!< current time step
@@ -199,7 +200,7 @@ private:
 	 * of this method is lower than the priority of the other methods. This method avoids ugly and unreadable template substitution
 	 * error messages from the other declarations.
 	 */
-	template<class F, bool InEdges = false, void* = (void*)0>
+	template<class F, void* = (void*)0>
 	typename Aux::FunctionTraits<F>::result_type edgeLambda(F&f, ...) const {
 		// the strange condition is used in order to delay the eveluation of the static assert to the moment when this function is actually used
 		static_assert(! std::is_same<F, F>::value, "Your lambda does not support the required parameters or the parameters have the wrong type.");
@@ -210,7 +211,7 @@ private:
 	 * Calls the given function f if its fourth argument is of the type edgeid and third of type edgeweight
 	 * Note that the decltype check is not enough as edgeweight can be casted to node and we want to assure that .
 	 */
-	template < class F, bool InEdges = false,
+	template < class F,
 	         typename std::enable_if <
 	         (Aux::FunctionTraits<F>::arity >= 3) &&
 	         std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<2>::type>::value &&
@@ -225,7 +226,7 @@ private:
 	 * Calls the given function f if its third argument is of the type edgeid, discards the edge weight
 	 * Note that the decltype check is not enough as edgeweight can be casted to node.
 	 */
-	template<class F, bool InEdges = false,
+	template<class F,
 			 typename std::enable_if<
 			 (Aux::FunctionTraits<F>::arity >= 2) &&
 			 std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<2>::type>::value
@@ -238,7 +239,7 @@ private:
 	 * Calls the given function f if its third argument is of type edgeweight, discards the edge id
 	 * Note that the decltype check is not enough as node can be casted to edgeweight.
 	 */
-	template<class F, bool InEdges = false,
+	template<class F,
 			 typename std::enable_if<
 			 (Aux::FunctionTraits<F>::arity >= 2) &&
 			 std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<2>::type>::value
@@ -253,7 +254,7 @@ private:
 	 * discards edge weight and id
 	 * Note that the decltype check is not enough as edgeweight can be casted to node.
 	 */
-	template<class F, bool InEdges = false,
+	template<class F,
 			 typename std::enable_if<
 			 (Aux::FunctionTraits<F>::arity >= 1) &&
 			 std::is_same<node, typename Aux::FunctionTraits<F>::template arg<1>::type>::value
@@ -264,35 +265,27 @@ private:
 
 	/**
 	 * Calls the given function f if it has only two arguments and the second argument is of type edgeweight,
-	 * discards the first (or second if InEdges is true) node and the edge id
+	 * discards the first node and the edge id
 	 * Note that the decltype check is not enough as edgeweight can be casted to node.
 	 */
-	template<class F, bool InEdges = false,
+	template<class F,
 			 typename std::enable_if<
 			 (Aux::FunctionTraits<F>::arity >= 1) &&
 			 std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<1>::type>::value
 			 >::type* = (void*)0>
 	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, ew)) {
-		if (InEdges) {
-			return f(u, ew);
-		} else {
-			return f(v, ew);
-		}
+		return f(v, ew);
 	}
 
 
 	/**
-	 * Calls the given function f if it has only one argument, discards the first (or second if InEdges is true)
+	 * Calls the given function f if it has only one argument, discards the first
 	 * node id, the edge weight and the edge id
 	 */
-	template<class F, bool InEdges = false,
+	template<class F,
 			 void* = (void*)0>
 	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(v)) {
-		if (InEdges) {
-			return f(u);
-		} else {
-			return f(v);
-		}
+		return f(v);
 	}
 
 
@@ -446,8 +439,12 @@ public:
 	node addNode();
 
 	/**
+	 * DEPRECATED: Coordinates should be handled outside the Graph class
+	 * like general node attributes.
+	 *
 	 * Add a new node to the graph with coordinates @a x and @y and return it.
 	 */
+	// TODO: remove method
 	node addNode(float x, float y);
 
 	/**
@@ -556,6 +553,11 @@ public:
 	void removeEdge(node u, node v);
 
 	/**
+	 * Removes all self-loops in the graph.
+	 */
+	void removeSelfLoops();
+
+	/**
 	 * Changes the edges {@a s1, @a t1} into {@a s1, @a t2} and the edge {@a s2, @a t2} into {@a s2, @a t1}.
 	 *
 	 * If there are edge weights or edge ids, they are preserved. Note that no check is performed if the swap is actually possible, i.e. does not generate duplicate edges.
@@ -620,6 +622,12 @@ public:
 	 */
 	count numberOfEdges() const { return m; }
 
+
+	/**
+	* @return a pair (n, m) where n is the number of nodes and m is the number of edges
+	*/
+	std::pair<count, count> const size() { return {n, m}; };
+
 	/**
 	 * Return the number of loops {v,v} in the graph.
 	 * @return The number of loops.
@@ -657,40 +665,60 @@ public:
 	/* COORDINATES */
 
 	/**
+	 * DEPRECATED: Coordinates should be handled outside the Graph class
+	 * like general node attributes.
+	 *
 	 * Sets the coordinate of @a v to @a value.
 	 *
 	 * @param v Node.
 	 * @param value The coordinate of @a v.
 	 */
+	// TODO: remove method
 	void setCoordinate(node v, Point<float> value) { coordinates.setCoordinate(v, value); }
 
 
 	/**
+	 * DEPRECATED: Coordinates should be handled outside the Graph class
+	 * like general node attributes.
+	 *
 	 * Get the coordinate of @a v.
 	 * @param v Node.
 	 * @return The coordinate of @a v.
 	 */
+	// TODO: remove method
 	Point<float>& getCoordinate(node v) { return coordinates.getCoordinate(v); }
 
 	/**
+	 * DEPRECATED: Coordinates should be handled outside the Graph class
+	 * like general node attributes.
+	 *
 	 * Get minimum coordinate of all coordinates with respect to dimension @a dim.
 	 * @param dim The dimension to search for minimum.
 	 * @return The minimum coordinate in dimension @a dim.
 	 */
+	// TODO: remove method
 	float minCoordinate(count dim) { return coordinates.minCoordinate(dim); }
 
 	/**
+	 * DEPRECATED: Coordinates should be handled outside the Graph class
+	 * like general node attributes.
+	 *
 	 * Get maximum coordinate of all coordinates with respect to dimension @a dim.
 	 * @param dim The dimension to search for maximum.
 	 * @return The maximum coordinate in dimension @a dim.
 	 */
+	// TODO: remove method
 	float maxCoordinate(count dim) { return coordinates.maxCoordinate(dim); }
 
 	/**
+	 * DEPRECATED: Coordinates should be handled outside the Graph class
+	 * like general node attributes.
+	 *
 	 * Initializes the coordinates for the nodes in graph.
 	 * @note This has to be called once and before you set coordinates. Call this method again if new nodes have
 	 * been added.
 	 */
+	// TODO: remove method
 	void initCoordinates() { coordinates.init(z); }
 
 
@@ -768,6 +796,12 @@ public:
 	*/
 	Graph toUndirected() const;
 
+	/**
+	 * Return the transpose of this graph. The graph must be directed.
+	 *
+	 * @return transpose of the graph.
+	 */
+	Graph transpose() const;
 
 	/* NODE ITERATORS */
 
@@ -1060,7 +1094,7 @@ inline void Graph::forOutEdgesOfImpl(node u, L handle) const {
 		node v = outEdges[u][i];
 
 		if (useEdgeInIteration<graphIsDirected>(u, v)) {
-			edgeLambda<L, false>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i), getOutEdgeId<graphHasEdgeIds>(u, i));
+			edgeLambda<L>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i), getOutEdgeId<graphHasEdgeIds>(u, i));
 		}
 	}
 }
@@ -1072,7 +1106,7 @@ inline void Graph::forInEdgesOfImpl(node u, L handle) const {
 			node v = inEdges[u][i];
 
 			if (useEdgeInIteration<true>(u, v)) {
-				edgeLambda<L, true>(handle, v, u, getInEdgeWeight<hasWeights>(u, i), getInEdgeId<graphHasEdgeIds>(u, i));
+				edgeLambda<L>(handle, u, v, getInEdgeWeight<hasWeights>(u, i), getInEdgeId<graphHasEdgeIds>(u, i));
 			}
 		}
 	} else {
@@ -1080,7 +1114,7 @@ inline void Graph::forInEdgesOfImpl(node u, L handle) const {
 			node v = outEdges[u][i];
 
 			if (useEdgeInIteration<true>(u, v)) {
-				edgeLambda<L, true>(handle, v, u, getOutEdgeWeight<hasWeights>(u, i), getOutEdgeId<graphHasEdgeIds>(u, i));
+				edgeLambda<L>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i), getOutEdgeId<graphHasEdgeIds>(u, i));
 			}
 		}
 	}
@@ -1114,7 +1148,7 @@ inline double Graph::parallelSumForEdgesImpl(L handle) const {
 			// undirected, do not iterate over edges twice
 			// {u, v} instead of (u, v); if v == none, u > v is not fulfilled
 			if (useEdgeInIteration<graphIsDirected>(u, v)) {
-				sum += edgeLambda<L, false>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i), getOutEdgeId<graphHasEdgeIds>(u, i));
+				sum += edgeLambda<L>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i), getOutEdgeId<graphHasEdgeIds>(u, i));
 			}
 		}
 	}

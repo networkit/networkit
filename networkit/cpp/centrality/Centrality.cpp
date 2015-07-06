@@ -10,18 +10,19 @@
 namespace NetworKit {
 
 
-Centrality::Centrality(const Graph& G, bool normalized, bool computeEdgeCentrality) : G(G), normalized(normalized), computeEdgeCentrality(computeEdgeCentrality), ran(false) {
+Centrality::Centrality(const Graph& G, bool normalized, bool computeEdgeCentrality) : Algorithm(), G(G), normalized(normalized), computeEdgeCentrality(computeEdgeCentrality) {
 	if (computeEdgeCentrality && !G.hasEdgeIds()) {
 		throw std::runtime_error("For edge centralities to be computed, edges must be indexed first: call G.indexEdges()");
 	}
 }
 
 double Centrality::score(node v) {
-	if (!ran) throw std::runtime_error("Call run method first");
+	if (!hasRun) throw std::runtime_error("Call run method first");
 	return scoreData.at(v);
 }
 
 std::vector<std::pair<node, double> > Centrality::ranking() {
+	if (!hasRun) throw std::runtime_error("Call run method first");
 	std::vector<std::pair<node, double> > ranking;
 	G.forNodes([&](node v){
 		ranking.push_back({v, scoreData[v]});
@@ -31,11 +32,12 @@ std::vector<std::pair<node, double> > Centrality::ranking() {
 }
 
 std::vector<double> Centrality::scores() {
-	if (!ran) throw std::runtime_error("Call run method first");
+	if (!hasRun) throw std::runtime_error("Call run method first");
 	return scoreData;
 }
 
 std::vector<double> Centrality::edgeScores() {
+	if (!hasRun) throw std::runtime_error("Call run method first");
 	return edgeScoreData;
 }
 

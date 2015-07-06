@@ -9,6 +9,8 @@
 #define DIAMETER_H_
 
 #include "../graph/Graph.h"
+#include "../auxiliary/SignalHandling.h"
+
 
 namespace NetworKit {
 
