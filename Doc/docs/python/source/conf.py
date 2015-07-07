@@ -21,8 +21,9 @@ import os
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
 
-sys.path.insert(0, os.path.abspath('../../../../'))
 sys.path.append(os.path.abspath('ext'))
+sys.path.insert(0, os.path.abspath('../../../..'))
+print sys.path
 
 # -- General configuration ------------------------------------------------
 
@@ -53,7 +54,7 @@ source_suffix = '.rst'
 #source_encoding = 'utf-8-sig'
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = 'sidebar'
 
 # General information about the project.
 project = 'NetworKit'
@@ -112,6 +113,18 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 html_theme = 'scipy'
+html_theme_options = {
+    "edit_link": False,
+    "sidebar": "left",
+    "scipy_org_logo": False,
+    #"rootlinks": [("https://networkit.iti.kit.edu/", "NetworKit")]
+}
+html_show_sourcelink=False
+
+html_add_permalinks=""
+
+# Custom sidebar templates, maps document names to template names.
+#html_sidebars = {'**': ['globaltoc.html', 'searchbox.html']}
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the

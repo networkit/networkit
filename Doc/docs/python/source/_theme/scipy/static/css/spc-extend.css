@@ -2,21 +2,21 @@ body {
   background-color: #f9faf5;
 }
 .container {
-  width: 80%;
+  width: 100%;
 }
 .main {
   background-color: white;
-  padding: 18px;
-  -moz-box-shadow: 0 0 3px #888;
-  -webkit-box-shadow: 0 0 3px #888;
-  box-shadow: 0 0 3px #888;
+  padding: 0px;
+  -moz-box-shadow: 0 0 0px #888;
+  -webkit-box-shadow: 0 0 0px #888;
+  box-shadow: 0 0 0px #888;
 }
 .underline {
   border-bottom: 1.5px solid #eeeeee;
 }
 .header {
-  margin-top: 15px;
-  margin-bottom: 15px;
+  margin-top: 0px;
+  margin-bottom: 0px;
   margin-left: 0px;
   margin-right: 0px;
 }
