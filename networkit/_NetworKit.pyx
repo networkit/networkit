@@ -3438,7 +3438,7 @@ cdef class LPDegreeOrdered(CommunityDetector):
 cdef extern from "cpp/community/PLM.h":
 	cdef cppclass _PLM "NetworKit::PLM"(_CommunityDetectionAlgorithm):
 		_PLM(_Graph _G) except +
-		_PLM(_Graph _G, bool refine, double gamma, string par, count maxIter, bool turbo) except +
+		_PLM(_Graph _G, bool refine, double gamma, string par, count maxIter, bool turbo, bool recurse) except +
 		map[string, vector[count]] getTiming() except +
 
 cdef extern from "cpp/community/PLM.h" namespace "NetworKit::PLM":
@@ -3467,11 +3467,13 @@ cdef class PLM(CommunityDetector):
 			maximum number of iterations for move phase
 		turbo : bool, optional
 			faster but uses O(n) additional memory per thread
+		recurse: bool, optional
+			use recursive coarsening, see http://journals.aps.org/pre/abstract/10.1103/PhysRevE.89.049902 for some explanations (default: true)
 	"""
 
-	def __cinit__(self, Graph G not None, refine=False, gamma=1.0, par="balanced", maxIter=32, turbo=False):
+	def __cinit__(self, Graph G not None, refine=False, gamma=1.0, par="balanced", maxIter=32, turbo=False, recurse=True):
 		self._G = G
-		self._this = new _PLM(G._this, refine, gamma, stdstring(par), maxIter, turbo)
+		self._this = new _PLM(G._this, refine, gamma, stdstring(par), maxIter, turbo, recurse)
 
 	def getTiming(self):
 		"""  Get detailed time measurements.
