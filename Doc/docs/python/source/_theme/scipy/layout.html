@@ -20,12 +20,12 @@
 
 {%- macro relbar_top() %}
     <ul class="nav nav-pills pull-left">
-        {%- for link in theme_rootlinks %}
+        <!--{%- for link in theme_rootlinks %}
         <li class="active"><a href="{{ link[0] }}">{{ link[1] }}</a></li>
-        {%- endfor %}
+        {%- endfor %}-->
         {%- block rootrellink %}
-	{% if pagename != master_doc %}
-        <li class="active"><a href="{{ pathto(master_doc) }}">{{ shorttitle|e }}</a></li>
+	{% if pagename != index %}
+        <li class="active"><a href="index.html">{{ shorttitle|e }}</a></li>
 	{% endif %}
         {%- endblock %}
         {%- for parent in parents %}
@@ -58,30 +58,32 @@
               <img class="logo" src="{{ pathto('_static/' + logo, 1) }}" alt="Logo">
             </a></p>
           {%- endif %}
-          {%- endblock %}
-          {%- if sidebars != None %}
-            {#- new style sidebar: explicitly include/exclude templates #}
-            {%- for sidebartemplate in sidebars %}
-            {%- include sidebartemplate %}
-            {%- endfor %}
-          {%- else %}
+          {%- endblock %}          
             {#- old style sidebars: using blocks -- should be deprecated #}
+            
+            <div class="side_toc">
             {%- block sidebartoc %}
-            {%- include "localtoc.html" %}
+            <h3>{{ _('Table Of Contents') }}</h3>
+            {{ toctree(includehidden=True) }}
             {%- endblock %}
-            {%- block sidebarrel %}
-            {%- include "relations.html" %}
-            {%- endblock %}
-            {%- block sidebarsourcelink %}
-            {%- include "sourcelink.html" %}
-            {%- endblock %}
-            {%- if customsidebar %}
-            {%- include customsidebar %}
-            {%- endif %}
-            {%- block sidebarsearch %}
-            {%- include "searchbox.html" %}
-            {%- endblock %}
-          {%- endif %}
+
+            <div id="searchbox" style="display: none">
+              <h3>{{ _('Quick search') }}</h3>
+              <form class="search" action="{{ pathto('search') }}" method="get">
+                 <input type="text" name="q" />
+                 <input type="submit" value="{{ _('Go') }}" />
+                 <input type="hidden" name="check_keywords" value="yes" />
+                 <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+                {{ _('') }}
+              </p>
+            </div>
+            <script type="text/javascript">$('#searchbox').show(0);</script>
+            
+            </div>
+            
+         
         </div>
       </div>
 {%- endmacro %}
@@ -117,7 +119,7 @@
     <meta charset="{{ encoding }}">
     {{ metatags }}
     {%- block htmltitle %}
-    <title>{{ title|striptags|e }}{{ titlesuffix }}</title>
+    <title>{{ title|striptags|e }}</title>
     {%- endblock %}
     {{ css() }}
     {%- if not embedded %}

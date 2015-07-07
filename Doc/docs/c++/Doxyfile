@@ -755,8 +755,8 @@ WARN_LOGFILE           =
 # Note: If this tag is empty the current directory is searched.
 
 INPUT                  = ../../networkit/cpp \
-						 c++/mainpage \
-						 c++/modules
+						 c++/mainpage.dox \
+						 c++/modules.dox
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -1048,7 +1048,7 @@ HTML_FILE_EXTENSION    = .html
 # of the possible markers and block names see the documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_HEADER            =
+HTML_HEADER            = c++/doxystyle/doxygen_header.html
 
 # The HTML_FOOTER tag can be used to specify a user-defined HTML footer for each
 # generated HTML page. If the tag is left blank doxygen will generate a standard
@@ -1058,7 +1058,7 @@ HTML_HEADER            =
 # that doxygen normally uses.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_FOOTER            =
+HTML_FOOTER            = c++/doxystyle/doxygen_footer.html
 
 # The HTML_STYLESHEET tag can be used to specify a user-defined cascading style
 # sheet that is used by each HTML page. It can be used to fine-tune the look of
@@ -1070,7 +1070,7 @@ HTML_FOOTER            =
 # obsolete.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_STYLESHEET        = 
+HTML_STYLESHEET        = c++/doxystyle/doxygen.css
 
 # The HTML_EXTRA_STYLESHEET tag can be used to specify an additional user-
 # defined cascading style sheet that is included after the standard style sheets
@@ -1081,7 +1081,7 @@ HTML_STYLESHEET        =
 # see the documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_STYLESHEET  = 
+HTML_EXTRA_STYLESHEET  = c++/doxystyle/doxygen-extra.css
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note
@@ -1137,7 +1137,7 @@ HTML_TIMESTAMP         = YES
 # The default value is: NO.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_DYNAMIC_SECTIONS  = NO
+HTML_DYNAMIC_SECTIONS  = YES
 
 # With HTML_INDEX_NUM_ENTRIES one can control the preferred number of entries
 # shown in the various tree structured indices initially; the user can expand
