@@ -33,19 +33,19 @@ public:
 	virtual ~Centrality() = default;
 
 	/**
-	 * Compute betweenness scores.
+	 * Compute scores.
 	 */
 	virtual void run() = 0;
 
 	/**
-	 * Get a vector containing the betweenness score for each node in the graph.
-	 * @return The betweenness scores calculated by @link run().
+	 * Get a vector containing the score for each node in the graph.
+	 * @return The scores calculated by @link run().
 	 */
 	virtual std::vector<double> scores();
 
 	/**
-	 * Get a vector containing the edge betweenness score for each edge in the graph.
-	 * @return The edge betweenness scores calculated by @link run().
+	 * Get a vector containing the edge score for each edge in the graph.
+	 * @return The edge scores calculated by @link run().
 	 */
 	virtual std::vector<double> edgeScores();
 
@@ -57,7 +57,7 @@ public:
 	virtual std::vector<std::pair<node, double> > ranking();
 
 	/**
-	 * Get the betweenness score of node @a v calculated by @link run().
+	 * Get the score of node @a v calculated by @link run().
 	 *
 	 * @param v A node.
 	 * @return The betweenness score of node @a v.
