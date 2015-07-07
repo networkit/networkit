@@ -207,6 +207,21 @@ def writeGraph(G, path, fileformat, **kwargs):
 	- fileformat: 	an element of the Format enumeration
 
 	"""
+
+	dirname = os.path.dirname(os.path.realpath(path))
+	# the given file path does not exist yet
+	if not os.path.isfile(path):
+		# check write permissions on the directory
+		if not os.access(dirname, os.W_OK):
+			# we may not write on this directory, raise Error
+			raise IOError("No permission to write")
+		# else everthing is alright
+	else:
+		# the given path points to a file
+		if not os.access(path, os.W_OK):
+			raise IOError("No permission to write")
+		else:
+			logging.warning("overriding given file")
 	writer = getWriter(fileformat, **kwargs)
 	writer.write(G, path)
 	logging.info("wrote graph {0} to file {1}".format(G, path))
