@@ -27,43 +27,41 @@ void DynAPSP::dynamic_sssp(node root, node startbfs) {
 }
 
 void DynAPSP::update(const GraphEvent& event) {
-	if (event.type!=GraphEvent::EDGE_ADDITION && event.type!=GraphEvent::EDGE_WEIGHT_UPDATE)
+	if (event.type!=GraphEvent::EDGE_ADDITION && event.type!=GraphEvent::EDGE_REMOVAL && event.type!=GraphEvent::EDGE_WEIGHT_UPDATE)
 		throw std::runtime_error("Graph update not allowed");
-	// we assume edge insertion
-	// node u = event.u;
-	// node v = event.v;
-	//
-	// std::vector<std::vector<edgeweight> > L;
-	// L = distances;
-	// G.forNodes([&](node x){
-	// 	if (L[x][v] - L[x][u] > 1) {
-	// 		L[x][v] = distances[x][u] + 1;
-	// 		INFO("x, v, L[x, v]: ", x," ", v," ", L[x][v]);
-	// 		dynamic_sssp(x, v);
-	// 	}
-	// });
 
-	// we assume edge deletion
 	node u = event.u;
 	node v = event.v;
-
 	std::vector<std::vector<edgeweight> > L;
 	L = distances;
 
-	// update l.[v] block
-	Graph Gtrans = G.transpose();
-	// use dijkstra for now. We might be able to use dyn_sssp_1
-	Dijkstra dijk(Gtrans, v);
-	dijk.run();
-	std::vector<edgeweight> distancesToV = dijk.getDistances();
-	G.forNodes([&](node x){
-		L[x][v] = distancesToV[x];
-	// end of update l.[v] block
-		if (L[x][v] - L[x][u] > 1) {
-			INFO("x, v, L[x, v]: ", x," ", v," ", L[x][v]);
-			dynamic_sssp(x, v);
-		}
-	});
+	if (event.type==GraphEvent::EDGE_ADDITION) {
+		G.forNodes([&](node x){
+			if (L[x][v] - L[x][u] > 1) {
+				L[x][v] = distances[x][u] + 1;
+				INFO("x, v, L[x, v]: ", x," ", v," ", L[x][v]);
+				dynamic_sssp(x, v);
+			}
+		});
+	}
+	if (event.type==GraphEvent::EDGE_REMOVAL) {
+		// update l.[v] block
+		//Graph Gtrans = G.transpose();
+		// use dijkstra for now. We might be able to use dyn_sssp_1
+		Dijkstra dijk(G, v); // for directed we use dijk(Gtrans, v)
+		dijk.run();
+		std::vector<edgeweight> distancesToV = dijk.getDistances();
+		G.forNodes([&](node x){
+			L[x][v] = distancesToV[x];
+		// end of update l.[v] block
+			if (L[x][v] - L[x][u] > 1) {
+				INFO("x, v, L[x, v]: ", x," ", v," ", L[x][v]);
+				dynamic_sssp(x, v);
+			}
+		});
+	}
+
+
 
 	// mod = false;
 	// // priority queue with distance-node pairs
