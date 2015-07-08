@@ -69,9 +69,18 @@ TEST_F(APSPGTest, testTempAPSPInsertion) {
 	event.v = 5;
 	apsp.update(event);
 	distances = apsp.getDistances();
-	INFO("distances[0][0] after update: ", distances[0][0]);
-	// EXPECT_EQ(D[0][5], 3);
-	// EXPECT_EQ(D[0][6], 4);
+
+	apsp.run();
+	std::vector<std::vector<edgeweight> > distances2 = apsp.getDistances();
+	G.forNodes([&](node i) {
+		G.forNodes([&](node j) {
+			INFO("i, j = ", i, j);
+			EXPECT_EQ(distances[i][j], distances2[i][j]);
+		});
+	});
+
+	// EXPECT_EQ(distances[0][5], 3);
+	// EXPECT_EQ(distances[0][6], 4);
 }
 
 TEST_F(APSPGTest, testTempAPSPDeletion) {
@@ -100,10 +109,18 @@ TEST_F(APSPGTest, testTempAPSPDeletion) {
 	event.v = 5;
 	apsp.update(event);
 	distances = apsp.getDistances();
-	INFO("distances[0][0] after update: ", distances[0][0]);
 
-	// EXPECT_EQ(D[0][5], 4);
-	// EXPECT_EQ(D[0][6], 5);
+	apsp.run();
+	std::vector<std::vector<edgeweight> > distances2 = apsp.getDistances();
+	G.forNodes([&](node i) {
+		G.forNodes([&](node j) {
+			INFO("i, j = ", i, j);
+			EXPECT_EQ(distances[i][j], distances2[i][j]);
+		});
+	});
+
+	// EXPECT_EQ(distances[0][5], 4);
+	// EXPECT_EQ(distances[0][6], 5);
 }
 
 } /* namespace NetworKit */
