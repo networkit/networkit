@@ -15,7 +15,6 @@
 #include "../auxiliary/NumericTools.h"
 #include <queue>
 
-
 namespace NetworKit {
 
 DynAPSP::DynAPSP(const Graph& G) : APSP(G) {
@@ -23,23 +22,86 @@ DynAPSP::DynAPSP(const Graph& G) : APSP(G) {
 }
 
 void DynAPSP::dynamic_sssp(node root, node startbfs) {
-	distances[0][0] = 42;
+	INFO("Entering Dynamic SSSP, root = ", root, ", startbfs = ", startbfs);
+	// priority queue with distance-node pairs
+	Aux::PrioQueue<edgeweight, node> Q(G.upperNodeIdBound());
+	std::vector<bool> enqueued(G.upperNodeIdBound(), false);
+	// queue with all visited nodes
+	// if u has a new shortest path going through v, it updates the distance of u
+	// and inserts u in the priority queue (or updates its priority, if already in Q)
+	auto updateQueue = [&](node u, edgeweight priority) {
+		if (!enqueued[u]) {
+			Q.insert(priority, u);
+			enqueued[u] = true;
+		}	else {
+			Q.decreaseKey(priority, u);
+		}
+	};
+
+	updateQueue(startbfs, std::min(L[root][startbfs], distances[root][startbfs]));
+	while(Q.size() != 0) {
+		//INFO("Entering while loop");
+		node v = Q.extractMin().second;
+		INFO("The current node v is ", v);
+		enqueued[v] = false;
+		INFO("label[",root,"][",v,"] = ", L[root][v]," distances[",root,"][",v,"] = ", distances[root][v]);
+		if (L[root][v] < distances[root][v]) {
+			INFO("label[",root,"][",v,"] < distances[",root,"][",v,"]");
+			INFO("distances[",root,"][",v,"] was ", distances[root][v], " and now becomes ",L[root][v]);
+			distances[root][v] = L[root][v];
+			if(!G.isDirected()) {
+				distances[v][root] = L[root][v];
+			}
+			G.forNeighborsOf(v, [&](node w, edgeweight weight){
+				INFO("neighbor w: ", w);
+				if (distances[root][v] + weight < L[root][w]) {
+					L[root][w] = distances[root][v] + weight;
+					updateQueue(w, std::min(L[root][w], distances[root][w]));
+				}
+			});
+		}
+		if (L[root][v] > distances[root][v]) {
+			//INFO("label[",root,"][",v,"] > distances[",root,"][",v,"]");
+			edgeweight Dold = distances[root][v];
+			distances[root][v] = infDist;
+			edgeweight con = infDist;
+			G.forInNeighborsOf(v, [&](node z, edgeweight weight) {
+				if (distances[root][z] != infDist && distances[root][z] + weight < con) {
+					con = distances[root][z] + weight;
+				}
+			});
+			L[root][v] = con;
+			updateQueue(v, L[root][v]);
+			G.forNeighborsOf(v, [&](node w, edgeweight weight){
+				if(Dold + weight == L[root][w]) {
+					edgeweight con = infDist;
+					G.forInNeighborsOf(w, [&](node z, edgeweight weight) {
+						if (distances[root][z] != infDist && distances[root][z] + weight < con) {
+							con = distances[root][z] + weight;
+						}
+					});
+					L[root][w] = con;
+					updateQueue(w, std::min(L[root][w], distances[root][w]));
+				}
+			});
+		}
+	}
 }
 
 void DynAPSP::update(const GraphEvent& event) {
+	INFO("Entering update");
 	if (event.type!=GraphEvent::EDGE_ADDITION && event.type!=GraphEvent::EDGE_REMOVAL && event.type!=GraphEvent::EDGE_WEIGHT_UPDATE)
 		throw std::runtime_error("Graph update not allowed");
 
 	node u = event.u;
 	node v = event.v;
-	std::vector<std::vector<edgeweight> > L;
 	L = distances;
 
 	if (event.type==GraphEvent::EDGE_ADDITION) {
 		G.forNodes([&](node x){
 			if (L[x][v] - L[x][u] > 1) {
 				L[x][v] = distances[x][u] + 1;
-				INFO("x, v, L[x, v]: ", x," ", v," ", L[x][v]);
+				INFO("x, v, D[x][v], L[x, v]: ", x, " ", v," ", distances[x][v], " ", L[x][v]);
 				dynamic_sssp(x, v);
 			}
 		});
@@ -49,7 +111,7 @@ void DynAPSP::update(const GraphEvent& event) {
 		//Graph Gtrans = G.transpose();
 		// use dijkstra for now. We might be able to use dyn_sssp_1
 		Dijkstra dijk(G, v); // for directed we use dijk(Gtrans, v)
-		dijk.run();
+	 	dijk.run();
 		std::vector<edgeweight> distancesToV = dijk.getDistances();
 		G.forNodes([&](node x){
 			L[x][v] = distancesToV[x];
@@ -60,65 +122,6 @@ void DynAPSP::update(const GraphEvent& event) {
 			}
 		});
 	}
-
-
-
-	// mod = false;
-	// // priority queue with distance-node pairs
-	// Aux::PrioQueue<edgeweight, node> Q(G.upperNodeIdBound());
-	// // queue with all visited nodes
-	// std::queue<node> visited;
-	// // if u has a new shortest path going through v, it updates the distance of u
-	// // and inserts u in the priority queue (or updates its priority, if already in Q)
-	// auto updateQueue = [&](node u, node v, edgeweight w) {
-	// 	if (distances[u] >= distances[v]+w) {
-	// 		distances[u] = distances[v]+w;
-	// 		if (color[u] == WHITE) {
-	// 			Q.insert(distances[u], u);
-	// 			color[u] = BLACK;
-	// 		}	else {
-	// 			Q.decreaseKey(distances[u], u);
-	// 		}
-	// 	}
-	// };
-	//
-	// for (GraphEvent edge : batch) {
-	// 	if (edge.type!=GraphEvent::EDGE_ADDITION && edge.type!=GraphEvent::EDGE_WEIGHT_UPDATE)
-	// 		throw std::runtime_error("Graph update not allowed");
-	// 	//TODO: discuss with Christian whether you can substitute weight_update with with_increase/weight_decrease
-	// 	// otherwise, it is not possbile to check wether the change in the weight is positive or negative
-	// 	updateQueue(edge.u, edge.v, edge.w);
-	// 	updateQueue(edge.v, edge.u, edge.w);
-	// }
-	//
-	// while(Q.size() != 0) {
-	// 	mod = true;
-	// 	node current = Q.extractMin().second;
-	// 	visited.push(current);
-	// 	if (storePreds) {
-	// 		previous[current].clear();
-	// 	}
-	// 	npaths[current] = 0;
-	// 	G.forInNeighborsOf(current, [&](node current, node z, edgeweight w){
-	// 		//z is a predecessor of current node
-	// 		if (Aux::NumericTools::equal(distances[current], distances[z]+w, 0.000001)) {
-	// 			if (storePreds) {
-	// 				previous[current].push_back(z);
-	// 			}
-	// 			npaths[current] += npaths[z];
-	// 		}
-	// 		//check whether curent node is a predecessor of z
-	// 		else {
-	// 			updateQueue(z, current, w);
-	// 		}
-	// 	});
-	// }
-	// reset colors
-	// while(!visited.empty()) {
-	// 	node w = visited.front();
-	// 	visited.pop();
-	// 	color[w] = WHITE;
-	// }
 }
 
 } /* namespace NetworKit */

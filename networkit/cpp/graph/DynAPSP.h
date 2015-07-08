@@ -35,6 +35,8 @@ public:
 
 private:
 	void dynamic_sssp(node source, node startbfs);
+	std::vector<std::vector<edgeweight> > L;
+	const edgeweight infDist = std::numeric_limits<edgeweight>::max();
 };
 
 } /* namespace NetworKit */
