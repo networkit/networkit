@@ -11,11 +11,7 @@
 
 namespace NetworKit {
 
-APSP::APSP(const Graph& G) : G(G) {
-	if (G.isDirected()) {
-		throw std::runtime_error("Graph is directed. APSP only runs on undirected graphs only.");
-	}
-}
+APSP::APSP(const Graph& G) : G(G) {}
 
 void APSP::run() {
 	std::vector<edgeweight> distanceVector(G.upperNodeIdBound(), 0.0);
