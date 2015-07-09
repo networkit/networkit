@@ -21,7 +21,7 @@
 namespace NetworKit {
 
 /**
- * @ingroup graph
+ * @ingroup centrality
  * Interface for dynamic approximated betweenness centrality algorithm.
  */
 class DynApproxBetweenness: public Centrality, public DynCentrality {

@@ -21,7 +21,7 @@
 namespace NetworKit {
 
 /**
- * @ingroup properties
+ * @ingroup centrality
  * Computes k-core decomposition of a graph.
  */
 class CoreDecomposition : public NetworKit::Centrality  {
