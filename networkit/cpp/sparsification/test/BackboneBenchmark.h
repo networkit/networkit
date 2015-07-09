@@ -12,7 +12,7 @@
 
 #include <gtest/gtest.h>
 
-#include "../../graph/GraphGenerator.h"
+#include "../../graph/Graph.h"
 #include "../../auxiliary/Timer.h"
 
 
@@ -24,6 +24,7 @@ protected:
 public:
 	BackboneBenchmark();
 	virtual ~BackboneBenchmark();
+	Graph makeCompleteGraph(count n);
 };
 
 } /* namespace NetworKit */

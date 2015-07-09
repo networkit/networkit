@@ -29,12 +29,20 @@ BackboneBenchmark::BackboneBenchmark() {
 BackboneBenchmark::~BackboneBenchmark() {
 }
 
+Graph BackboneBenchmark::makeCompleteGraph(count n) {
+	Graph G(n);
+	G.forNodePairs([&](node u, node v){
+		G.addEdge(u,v);
+	});
+	G.shrinkToFit();
+	return G;
+}
+
 TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneParametric) {
 	int64_t n = this->n;
 	Aux::Timer runtime;
 
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeCompleteGraph(n);
+	Graph G = BackboneBenchmark::makeCompleteGraph(n);
 	G.indexEdges();
 
 	runtime.start();
@@ -53,8 +61,7 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneNonParametric) {
 	int64_t n = this->n;
 	Aux::Timer runtime;
 
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeCompleteGraph(n);
+	Graph G = BackboneBenchmark::makeCompleteGraph(n);
 	G.indexEdges();
 
 	runtime.start();
@@ -73,8 +80,7 @@ TEST_F(BackboneBenchmark, completeGraphMultiscaleBackbone) {
 	int64_t n = this->n;
 	Aux::Timer runtime;
 
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeCompleteGraph(n);
+	Graph G = BackboneBenchmark::makeCompleteGraph(n);
 	G.indexEdges();
 
 	runtime.start();
@@ -95,8 +101,7 @@ TEST_F(BackboneBenchmark, completeGraphLocalSimilarityBackbone) {
 	int64_t n = this->n;
 	Aux::Timer runtime;
 
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeCompleteGraph(n);
+	Graph G = BackboneBenchmark::makeCompleteGraph(n);
 	G.indexEdges();
 
 	runtime.start();

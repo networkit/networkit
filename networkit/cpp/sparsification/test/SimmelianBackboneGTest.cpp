@@ -12,7 +12,6 @@
 #include "../Sparsifiers.h"
 #include "../SimmelianJaccardAttributizer.h"
 #include "../../edgeattributes/ChibaNishizekiTriangleCounter.h"
-#include "../../graph/GraphGenerator.h"
 
 namespace NetworKit {
 
@@ -200,8 +199,12 @@ TEST_F(SimmelianBackboneGTest, testBackboneTrivial) {
 }
 
 TEST_F(SimmelianBackboneGTest, testBackboneConnectedGraph) {
-	GraphGenerator graphGen;
-	Graph g = graphGen.makeCompleteGraph(25);
+	Graph g(25);
+	g.forNodePairs([&](node u, node v){
+		g.addEdge(u,v);
+	});
+	g.shrinkToFit();
+
 	g.indexEdges();
 
 	//Parametric
