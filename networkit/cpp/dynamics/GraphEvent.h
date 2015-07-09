@@ -26,7 +26,8 @@ public:
 		NODE_REMOVAL,
 		EDGE_ADDITION,
 		EDGE_REMOVAL,
-		EDGE_WEIGHT_UPDATE,
+		EDGE_WEIGHT_UPDATE, // set edge weight to specified value
+		EDGE_WEIGHT_INCREMENT, // increment of decrement edge weight by specified value
 		TIME_STEP
 	};
 

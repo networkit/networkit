@@ -26,6 +26,8 @@ std::string GraphEvent::toString() {
 		ss << "de(" << u << "," << v << ")";
 	} else if (this->type == GraphEvent::EDGE_WEIGHT_UPDATE) {
 		ss << "ce(" << u << "," << v << ")";
+	} else if (this->type == GraphEvent::EDGE_WEIGHT_INCREMENT) {
+		ss << "ie(" << u << "," << v << ")";
 	} else if (this->type == GraphEvent::TIME_STEP) {
 		ss << "st";
 	}
@@ -34,4 +36,3 @@ std::string GraphEvent::toString() {
 
 
 } /* namespace NetworKit */
-

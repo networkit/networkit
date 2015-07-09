@@ -2,7 +2,7 @@
  * DynAPSP.h
  *
  *  Created on: 07.07.2015
- *      Author: Arie Slobbe
+ *      Author: Arie Slobbe, Elisabetta Bergamini
  */
 
 #ifndef DYNAPSP_H_

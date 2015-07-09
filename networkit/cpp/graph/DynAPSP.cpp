@@ -2,7 +2,7 @@
  * DynAPSP.cpp
  *
  *  Created on: 07.07.2015
- *      Author: Arie Slobbe
+ *      Author: Arie Slobbe, Elisabetta Bergamini
  */
 
 #include "APSP.h"
@@ -108,16 +108,25 @@ void DynAPSP::update(const GraphEvent& event) {
 	}
 	if (event.type==GraphEvent::EDGE_REMOVAL) {
 		// update l.[v] block
-		//Graph Gtrans = G.transpose();
 		// use dijkstra for now. We might be able to use dyn_sssp_1
-		Dijkstra dijk(G, v); // for directed we use dijk(Gtrans, v)
-	 	dijk.run();
-		std::vector<edgeweight> distancesToV = dijk.getDistances();
+		std::vector<edgeweight> distancesToV(G.upperNodeIdBound());
+		if (G.isDirected()) {
+			Graph Gtrans = G.transpose();
+			Dijkstra dijk(Gtrans, v);
+			dijk.run();
+			distancesToV = dijk.getDistances();
+		} else {
+			Dijkstra dijk(G, v);
+			dijk.run();
+			distancesToV = dijk.getDistances();
+		}
+		
+		INFO("v, distancesToV:", v, " ", distancesToV[1]," ", distancesToV[2]," ", distancesToV[3]," ", distancesToV[4]," ", distancesToV[5]," ", distancesToV[6]);
 		G.forNodes([&](node x){
 			L[x][v] = distancesToV[x];
 		// end of update l.[v] block
 			if (L[x][v] - L[x][u] > 1) {
-				INFO("x, v, L[x, v]: ", x," ", v," ", L[x][v]);
+				INFO("x, v, D[x][v], L[x, v]: ", x, " ", v," ", distances[x][v], " ", L[x][v]);
 				dynamic_sssp(x, v);
 			}
 		});
