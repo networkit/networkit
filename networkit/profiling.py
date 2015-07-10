@@ -9,7 +9,7 @@ import multiprocessing
 from IPython.core.display import *
 from urllib.parse import quote
 import io
-import sys
+import math
 
 import numpy as np
 import matplotlib.mlab as mlab
@@ -90,24 +90,150 @@ class Worker(multiprocessing.Process):
 			if task is None:
 				self.__tasks.task_done()
 				break
-			result = task.run()
+			result = (task.getType(), task.getName(), task.run())
 			self.__tasks.task_done()
 			self.__results.put(result)
-		
-	
-class Plot_Task(object):
-	def __init__(self, name, index, data):
+
+			
+class Stat_Task(object):
+	def __init__(self, name, params):
 		self.__name = name
-		self.__index = index
-		self.__data = data
+		self.__params = params
 	
+	def getName(self):
+		return self.__name
+		
+	def getType(self):
+		return "Stat"
 	
 	def run(self):
+		sample = self.__params
+		sampleSorted = sorted(sample)
+
+		results = {}
+		results["Location"] =  {}
+		results["Dispersion"] =  {}
+		results["Shape"] =  {}
+		
+		def functSize():
+			result = len(sample)
+			return result;
+		results["Size"] = n = functSize()
+		
+		def funcHoelderMean(p):
+			result = 0
+			for i in range(n):
+				result += sample[i] ** p
+			result /= n
+			result **= 1 / p
+			return result
+		results["Location"]["Arithmetic Mean"] = arithmeticMean = funcHoelderMean(1)
+		results["Location"]["Quadratic Mean"] = quadraticMean = funcHoelderMean(2)
+		
+		def funcVariance():
+			result = 0
+			for i in range(n):
+				result += (sample[i] - arithmeticMean)**2
+			result /= n - 1
+			return result
+		results["Dispersion"]["Variance"] = variance = funcVariance()
+		
+		def funcStandardDeviation():
+			result = math.sqrt(variance)
+			return result
+		results["Dispersion"]["Standard Deviation"] = s_n = funcStandardDeviation()
+		
+		def funcCoefficientOfVariation():
+			result = s_n / arithmeticMean
+			return result
+		results["Dispersion"]["Coefficient Of Variation"] = c_v = funcCoefficientOfVariation()
+		
+		def funcMin():
+			result = sampleSorted[0]
+			return result
+		results["Location"]["Min"] = min = funcMin()
+			
+		def funcMax():
+			result = sampleSorted[n-1]
+			return result	
+		results["Location"]["Max"] = max = funcMax()
+		
+		def funcAlphaQuartile(alpha):
+			k_real = (alpha * n)
+			k = math.floor(k_real)
+			if (k != k_real) or (k < 1):
+				result = sampleSorted[(k-1)+1]
+			else:
+				result = 0.5 * (sampleSorted[(k-1)] + sampleSorted[(k-1)+1])
+			return result
+		results["Location"]["1st Quartile"] = Q1 = funcAlphaQuartile(0.25)
+		results["Location"]["Median"] = median = funcAlphaQuartile(0.5)
+		results["Location"]["3rd Quartile"] = Q3 = funcAlphaQuartile(0.75)
+		
+		def funcAlphaTrimmedMean(alpha):
+			k = math.floor(alpha * n)
+			i = k+1
+			result = 0
+			while (i < n-k+1):
+				result += sampleSorted[(i-1)]
+				i += 1
+			result /= n	- 2*(k)
+			return result
+		results["Location"]["Interquartile Mean"] = IQM = funcAlphaTrimmedMean(0.25)
+		
+		def funcIQR():
+			result = Q3 - Q1
+			return result
+		results["Dispersion"]["Interquartile Range"] = IQR = funcIQR()
+		
+		def funcSampleRange():
+			result = max - min
+			return result
+		results["Dispersion"]["Sample Range"] = sampleRange = funcSampleRange()
+		
+		def funcSkewnessYP():
+			result = 3 * (arithmeticMean - median) / s_n
+			return result
+		results["Shape"]["Skewness YP"] = skewness_yp = funcSkewnessYP()
+		
+		def funcSkewnessM():
+			result = 0
+			for i in range(n):
+				result += ((sample[i] - arithmeticMean) / s_n) ** 3
+			result /= n
+			return result
+		results["Shape"]["Skewness M"] = skewnewss_m = funcSkewnessM()
+		
+		def funcKurtosis():
+			result = 0
+			for i in range(n):
+				result += ((sample[i] - arithmeticMean) / s_n) ** 4
+			result /= n
+			result -= 3
+			return result
+		results["Shape"]["Kurtosis"] = kurtosis = funcKurtosis()
+		
+		return results
+	
+	
+class Plot_Task(object):
+	def __init__(self, name, params):
+		self.__name = name
+		self.__params = params
+	
+	def getName(self):
+		return self.__name
+		
+	def getType(self):
+		return "Plot"
+	
+	def run(self):
+		(index, data) = self.__params
 		plt.ioff()	
 		xLabel = "x-Axis"
 		yLabel = "y-Axis"
 		fig = plt.figure()
-		n, bins, patches = plt.hist(self.__data, 50, normed=1, facecolor='green', alpha=0.75)
+		n, bins, patches = plt.hist(data, 50, normed=1, facecolor='green', alpha=0.75)
 		plt.xlabel(xLabel)
 		plt.ylabel(yLabel)
 		plt.grid(True)
@@ -118,14 +244,14 @@ class Plot_Task(object):
 		plaintext = imgdata.getvalue()
 		plaintext = " ".join(plaintext[plaintext.find("<svg "):].split())
 		encoded = quote(plaintext, safe='');
-		return (self.__name, self.__index, encoded)
+		return (index, encoded)
 		
 	
-class Profiling:
+class Profile:
 	__TOKEN = object();		
 	__pageCount = 0
 	__verbose = False
-	__parallel = multiprocessing.cpu_count() * 2
+	__parallel = 2 + math.floor(multiprocessing.cpu_count() / 2)
 		
 		
 	def __init__(self, G, token):
@@ -177,29 +303,9 @@ class Profiling:
 
 	def show(self):
 		pageIndex = self.__pageCount
-		tasks = multiprocessing.JoinableQueue()
-		results = multiprocessing.Queue()
 		
 		if self.__verbose:
 			timerAll = stopwatch.Timer()
-		
-		workers = [Worker(tasks, results) for i in range(self.__parallel)]
-		for w in workers:
-			w.deamon = True
-			w.start()
-			
-		numberOfTasks = 0
-		for key in self.__measures:
-			tasks.put(Plot_Task(key, 0, self.__measures[key]["data"]))
-			numberOfTasks += 1
-		for i in range(self.__parallel):
-			tasks.put(None)
-		tasks.join()
-		
-		while(numberOfTasks):
-			(name, index, image) = results.get()
-			self.__measures[name]["image"] = image
-			numberOfTasks -= 1
 		
 		centralities = ""
 		for key in self.__measures:
@@ -226,7 +332,15 @@ class Profiling:
 		self.__measures[measureName] = measure
 	
 	
-	def __loadMeasures(self):
+	def __loadMeasures(self):	
+		numberOfTasks = 0
+		tasks = multiprocessing.JoinableQueue()
+		results = multiprocessing.Queue()
+		workers = [Worker(tasks, results) for i in range(self.__parallel)]
+		for w in workers:
+			w.deamon = True
+			w.start()
+			
 		if self.__verbose:
 			timerAll = stopwatch.Timer()
 		
@@ -240,10 +354,27 @@ class Profiling:
 			elapsed = timerInstance.elapsed
 			if self.__verbose:
 				print("{:.2F} s".format(elapsed))
-			measure["data"] = instance.scores()
+			data = instance.scores()
+			tasks.put(Plot_Task(name, (0, data)))
+			tasks.put(Stat_Task(name, data))
+			numberOfTasks += 2
 			measure["time"] = elapsed
+		
+		while(numberOfTasks):
+			(type, name, data) = results.get()
+			if (type == "Plot"):
+				(index, image) = data
+				self.__measures[name]["image"] = image
+			elif (type == "Stat"):
+				self.__measures[name]["stat"] = data
+			numberOfTasks -= 1
+		
+		for i in range(self.__parallel):
+			tasks.put(None)
+		tasks.join()
+		
 		if self.__verbose:
-			print("\ntotal time: {:.2F} s".format(timerAll.elapsed))	
+			print("\ntotal time (measures + stats + plots): {:.2F} s".format(timerAll.elapsed))	
 			
 	
 # class Plot:
