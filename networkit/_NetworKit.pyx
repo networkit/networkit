@@ -18,8 +18,8 @@ from libcpp.utility cimport pair
 from libcpp.map cimport map
 from libcpp.set cimport set
 from libcpp.string cimport string
-from networkit.unordered_set cimport unordered_set
-from networkit.unordered_map cimport unordered_map
+from libcpp.unordered_set cimport unordered_set
+from libcpp.unordered_map cimport unordered_map
 
 # NetworKit typedefs
 ctypedef uint64_t count
