@@ -2041,7 +2041,7 @@ cdef extern from "cpp/io/EdgeListReader.h":
 	cdef cppclass _EdgeListReader "NetworKit::EdgeListReader"(_GraphReader):
 		_EdgeListReader() except +
 		_EdgeListReader(char separator, node firstNode, string commentPrefix, bool continuous, bool directed)
-		unordered_map[node,node] getNodeMap() except +
+		map[string,node] getNodeMap() except +
 
 
 cdef class EdgeListReader(GraphReader):
@@ -2052,10 +2052,11 @@ cdef class EdgeListReader(GraphReader):
 		self._this = new _EdgeListReader(stdstring(separator)[0], firstNode, stdstring(commentPrefix), continuous, directed)
 
 	def getNodeMap(self):
-		cdef unordered_map[node,node] cResult = (<_EdgeListReader*>(self._this)).getNodeMap()
-		result = []
+		cdef map[string,node] cResult = (<_EdgeListReader*>(self._this)).getNodeMap()
+		result = dict()
 		for elem in cResult:
-			result.append((elem.first,elem.second))
+			#result.append((elem.first,elem.second))
+			result[(elem.first).decode("utf-8")] = elem.second
 		return result
 
 cdef extern from "cpp/io/KONECTGraphReader.h":
