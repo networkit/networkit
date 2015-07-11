@@ -12,8 +12,8 @@ class Test_SelfLoops(unittest.TestCase):
 		# toggle the comment/uncomment to test on small or large test cases
 		#self.L = readGraph("PGPgiantcompo.graph", Format.METIS) #without self-loops
 		#self.LL = readGraph("PGPConnectedCompoLoops.gml", Format.GML) #with self-loops sprinkled in
-		self.L = readGraph("../../input/looptest1.gml", Format.GML) #without self-loops
-		self.LL = readGraph("../../input/looptest2.gml", Format.GML) #with self-loops sprinkled in
+		self.L = readGraph("input/looptest1.gml", Format.GML) #without self-loops
+		self.LL = readGraph("input/looptest2.gml", Format.GML) #with self-loops sprinkled in
 
 	def test_centrality_Betweenness(self):
 		CL = centrality.Betweenness(self.L)
@@ -166,29 +166,6 @@ class Test_SelfLoops(unittest.TestCase):
 	def test_community_CutClustering(self):
 		CL = community.CutClustering(self.L, 0.2)
 		CLL = community.CutClustering(self.LL, 0.2)
-		CL.run()
-		CLL.run()
-		CLP = CL.getPartition()
-		CLLP = CLL.getPartition()
-		self.assertIsNot(CLP.getSubsetIds(), None)
-		self.assertIsNot(CLLP.getSubsetIds(), None)
-		# test if partitions add up to original set
-		reconstructedSet = []
-		for i in CLP.getSubsetIds():
-			for j in CLP.getMembers(i):
-				reconstructedSet.append(j)
-		self.assertEqual(set(self.L.nodes()), set(reconstructedSet))
-		reconstructedSet = []
-		for i in CLLP.getSubsetIds():
-			for j in CLLP.getMembers(i):
-				reconstructedSet.append(j)
-		self.assertEqual(set(self.LL.nodes()), set(reconstructedSet))
-
-
-	def test_community_EPPFactory(self):
-		EPPFactory = community.EPPFactory()
-		CL = EPPFactory.make(self.L, 2, baseAlgorithm=u'PLP', finalAlgorithm=u'PLM')
-		CLL = EPPFactory.make(self.LL, 2, baseAlgorithm=u'PLP', finalAlgorithm=u'PLM')
 		CL.run()
 		CLL.run()
 		CLP = CL.getPartition()
