@@ -76,25 +76,36 @@ display_html(
 		</script>
 	""")
 )
-
-
-
-def hoelderMean(sample, n, p):
-	result = 0
-	for i in range(n):
-		result += sample[i] ** p
-	result /= n
-	result **= 1 / p
-	return result
 	
 	
-def momentum(sample, n, arithmeticMean, s_n, p):
-	result = 0
+def ranged(sample):
+	n = len(sample)
+	result = []
 	for i in range(n):
-		result += ((sample[i] - arithmeticMean) / s_n) ** p
-	result /= n
+		result.append([sample[i], i, -1])	
+	result.sort(key=lambda x: x[0])
+	value = result[0][0]
+	sum = 0
+	length = 0
+	for i in range(n):
+		if value == result[i][0]:
+			sum += (i+1)
+			length += 1
+		else:
+			sum /= length
+			for j in range(length):
+				result[i-j-1][2] = sum
+			value = result[i][0]
+			sum = (i+1)
+			length = 1
+	sum /= length
+	for i in range(length):
+		result[n-i-1][2] = sum
+	result.sort(key=lambda x: x[1])
+	for i in range(n):
+		result[i] = result[i][2]
 	return result
-
+		
 
 class Worker(multiprocessing.Process):
 	def __init__(self, tasks, results):
@@ -125,9 +136,8 @@ class Stat_Task(object):
 		return "Stat"
 	
 	def run(self):
-		sample = self.__params
+		(sample, sampleSorted, sampleRanged) = self.__params
 		n = len(sample)
-		sampleSorted = sorted(sample)
 	
 		results = {}
 		results["Location"] =  {}
@@ -135,27 +145,50 @@ class Stat_Task(object):
 		results["Shape"] =  {}
 		results["Binning"] = {}
 		results["Size"] = n
+
+		def hoelderMean(sample, p):
+			result = 0
+			for i in range(n):
+				result += sample[i] ** p
+			result /= n
+			result **= 1 / p
+			return result			
+		results["Location"]["Arithmetic Mean"] = arithmeticMean = hoelderMean(sample, 1)
+		results["Location"]["Arithmetic Mean (Rang)"] = arithmeticMean_Rang = hoelderMean(sampleRanged, 1)
+		results["Location"]["Quadratic Mean"] = quadraticMean = hoelderMean(sample, 2)
 		
-		results["Location"]["Arithmetic Mean"] = arithmeticMean = hoelderMean(sample, n, 1)
-		results["Location"]["Quadratic Mean"] = quadraticMean = hoelderMean(sample, n, 2)
-		
-		def funcVariance():
+		def funcUncorrectedVariance(sample, arithmeticMean):
 			result = 0
 			for i in range(n):
 				result += (sample[i] - arithmeticMean) ** 2
-			result /= n - 1
+			result /= n
 			return result
-		results["Dispersion"]["Variance"] = variance = funcVariance()
+		results["Dispersion"]["Uncorrected Variance"] = variance_uncorrected = funcUncorrectedVariance(sample, arithmeticMean)
+		results["Dispersion"]["Uncorrected Variance (Rang)"] = variance_Rang_uncorrected = funcUncorrectedVariance(sampleRanged, arithmeticMean_Rang)
 		
-		def funcStandardDeviation():
+		def funcVariance(variance_uncorrected):
+			result = variance_uncorrected * n / (n-1)
+			return result
+		results["Dispersion"]["Variance"] = variance = funcVariance(variance_uncorrected)
+		results["Dispersion"]["Variance (Rang)"] = variance_Rang = funcVariance(variance_Rang_uncorrected)
+		
+		
+		def funcStandardDeviation(variance):
 			result = math.sqrt(variance)
 			return result
-		results["Dispersion"]["Standard Deviation"] = s_n = funcStandardDeviation()
+		results["Dispersion"]["Standard Deviation"] = s_n = funcStandardDeviation(variance)
+		results["Dispersion"]["Standard Deviation (Rang)"] = s_n_Rang = funcStandardDeviation(variance_Rang)
+		results["Dispersion"]["Uncorrected Standard Deviation"] = s_n_uncorrected = funcStandardDeviation(variance_uncorrected)
+		results["Dispersion"]["Uncorrected Standard Deviation (Rang)"] = s_n_Rang_uncorrected = funcStandardDeviation(variance_Rang_uncorrected)
 		
-		def funcCoefficientOfVariation():
+		
+		def funcCoefficientOfVariation(s_n, arithmeticMean):
 			result = s_n / arithmeticMean
 			return result
-		results["Dispersion"]["Coefficient Of Variation"] = c_v = funcCoefficientOfVariation()
+		results["Dispersion"]["Coefficient Of Variation"] = c_v = funcCoefficientOfVariation(s_n, arithmeticMean)
+		results["Dispersion"]["Coefficient Of Variation (Rang)"] = c_v_Rang = funcCoefficientOfVariation(s_n_Rang, arithmeticMean_Rang)
+		results["Dispersion"]["Uncorrected Coefficient Of Variation"] = c_v = funcCoefficientOfVariation(s_n_uncorrected, arithmeticMean)
+		results["Dispersion"]["Uncorrected Coefficient Of Variation (Rang)"] = c_v_Rang = funcCoefficientOfVariation(s_n_Rang_uncorrected, arithmeticMean_Rang)
 		
 		def funcMin():
 			result = sampleSorted[0]
@@ -205,13 +238,20 @@ class Stat_Task(object):
 			return result
 		results["Shape"]["Skewness YP"] = skewness_yp = funcSkewnessYP()
 		
+		def funcMomentum(p):
+			result = 0
+			for i in range(n):
+				result += ((sample[i] - arithmeticMean) / s_n) ** p
+			result /= n
+			return result
+		
 		def funcSkewnessM():
-			result = momentum(sample, n, arithmeticMean, s_n, 3)
+			result = funcMomentum(3)
 			return result
 		results["Shape"]["Skewness M"] = skewnewss_m = funcSkewnessM()
 		
 		def funcKurtosis():
-			result = momentum(sample, n, arithmeticMean, s_n, 4) - 3
+			result = funcMomentum(4) - 3
 			return result
 		results["Shape"]["Kurtosis"] = kurtosis = funcKurtosis()
 		
@@ -285,74 +325,29 @@ class Corr_Task(object):
 		return "Stat"
 	
 	def run(self):
-		(sample_1, sample_2) = self.__params
+		(sample_1, sampleRanged_1, stat_1, sample_2, sampleRanged_2, stat_2) = self.__params
 		n = len(sample_1)
 		assert (n == len(sample_2)), "sample size are not equal"
 		
+		arithmeticMean_1_Rang = stat_1["Location"]["Arithmetic Mean (Rang)"]
+		arithmeticMean_2_Rang = stat_2["Location"]["Arithmetic Mean (Rang)"]
+		uncorrectedStandardDeviation_1_Rang = stat_1["Dispersion"]["Uncorrected Standard Deviation (Rang)"]
+		uncorrectedStandardDeviation_2_Rang = stat_2["Dispersion"]["Uncorrected Standard Deviation (Rang)"]
+		
 		results = {}
 		
-		def funcRanged():
-			result = []
-			for i in range(n):
-				result.append([sample_1[i], -1, sample_2[i], -1])
-			for i in [0, 2]:
-				result.sort(key=lambda x: x[i])
-				value = result[0][i]
-				sum = 0
-				length = 0
-				for j in range(n):
-					if value == result[j][i]:
-						sum += (j+1)
-						length += 1
-					else:
-						sum /= length
-						for k in range(length):
-							result[j-k-1][i+1] = sum
-						value = result[j][i]
-						sum = (j+1)
-						length = 1
-				sum /= length
-				for j in range(length):
-					result[n-j-1][i+1] = sum
-			return result
-		ranged = funcRanged()
-		
-		def funcRangedArithmeticMean(p):
+		def funcCovariance(sample_1, arithmeticMean_1, sample_2, arithmeticMean_2):
 			result = 0
 			for i in range(n):
-				result += ranged[i][p]
+				result += (sample_1[i]- arithmeticMean_1) * (sample_2[i] - arithmeticMean_2)
 			result /= n
 			return result
-		rangedArithmeticMean_1 = funcRangedArithmeticMean(1)
-		rangedArithmeticMean_2 = funcRangedArithmeticMean(3)
-		
-		def funcRangedCovariance():
-			result = 0
-			for i in range(n):
-				result += (ranged[i][1] - rangedArithmeticMean_1) * (ranged[i][3] - rangedArithmeticMean_2)
-			result /= n
-			return result
-		rangedCovariance = funcRangedCovariance()
-		
-		def funcRangedVariance(p, rangedArithmeticMean):
-			result = 0
-			for i in range(n):
-				result += (ranged[i][p] - rangedArithmeticMean) ** 2
-			result /= n
-			return result
-		rangedVariance_1 = funcRangedVariance(1, rangedArithmeticMean_1)
-		rangedVariance_2 = funcRangedVariance(3, rangedArithmeticMean_2)
-		
-		def funcRangedStandardDeviation(rangedVariance):
-			result = math.sqrt(rangedVariance)
-			return result
-		rangedStandardDeviation_1 = funcRangedStandardDeviation(rangedVariance_1)
-		rangedStandardDeviation_2 = funcRangedStandardDeviation(rangedVariance_2)
+		results["Covariance (Rang)"] = rangedCovariance = funcCovariance(sampleRanged_1, arithmeticMean_1_Rang, sampleRanged_2, arithmeticMean_2_Rang)
 		
 		def funcSpearmansCorrelationCoefficient():
-			result = rangedCovariance / (rangedStandardDeviation_1 * rangedStandardDeviation_2)
+			result = rangedCovariance / (uncorrectedStandardDeviation_1_Rang * uncorrectedStandardDeviation_2_Rang)
 			return result
-		results["Spearman's Correlation Coefficient"] = funcSpearmansCorrelationCoefficient()
+		results["Spearman's Rang Correlation Coefficient"] = funcSpearmansCorrelationCoefficient()
 		
 		return results
 
@@ -470,6 +465,7 @@ class Profile:
 		measure["index"] = len(self.__measures)
 		measure["class"] = measureClass
 		measure["parameters"] = parameters
+		measure["data"] = {}
 		self.__measures[measureName] = measure
 	
 	
@@ -495,9 +491,11 @@ class Profile:
 			elapsed = timerInstance.elapsed
 			if self.__verbose:
 				print("{:.2F} s".format(elapsed))
-			data = instance.scores()
-			tasks.put(Plot_Task(name, (0, data)))
-			tasks.put(Stat_Task(name, data))
+			measure["data"]["sample"] = sample = instance.scores()
+			measure["data"]["sorted"] = sampleSorted = sorted(measure["data"]["sample"])
+			measure["data"]["ranged"] = sampleRanged = ranged(measure["data"]["sample"])
+			tasks.put(Plot_Task(name, (0, sample)))
+			tasks.put(Stat_Task(name, (sample, sampleSorted, sampleRanged)))
 			numberOfTasks += 2
 			measure["time"] = elapsed
 		
