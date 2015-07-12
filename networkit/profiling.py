@@ -78,6 +78,24 @@ display_html(
 )
 
 
+
+def hoelderMean(sample, n, p):
+	result = 0
+	for i in range(n):
+		result += sample[i] ** p
+	result /= n
+	result **= 1 / p
+	return result
+	
+	
+def momentum(sample, n, arithmeticMean, s_n, p):
+	result = 0
+	for i in range(n):
+		result += ((sample[i] - arithmeticMean) / s_n) ** p
+	result /= n
+	return result
+
+
 class Worker(multiprocessing.Process):
 	def __init__(self, tasks, results):
 		multiprocessing.Process.__init__(self)
@@ -108,32 +126,23 @@ class Stat_Task(object):
 	
 	def run(self):
 		sample = self.__params
+		n = len(sample)
 		sampleSorted = sorted(sample)
-
+	
 		results = {}
 		results["Location"] =  {}
 		results["Dispersion"] =  {}
 		results["Shape"] =  {}
+		results["Binning"] = {}
+		results["Size"] = n
 		
-		def functSize():
-			result = len(sample)
-			return result;
-		results["Size"] = n = functSize()
-		
-		def funcHoelderMean(p):
-			result = 0
-			for i in range(n):
-				result += sample[i] ** p
-			result /= n
-			result **= 1 / p
-			return result
-		results["Location"]["Arithmetic Mean"] = arithmeticMean = funcHoelderMean(1)
-		results["Location"]["Quadratic Mean"] = quadraticMean = funcHoelderMean(2)
+		results["Location"]["Arithmetic Mean"] = arithmeticMean = hoelderMean(sample, n, 1)
+		results["Location"]["Quadratic Mean"] = quadraticMean = hoelderMean(sample, n, 2)
 		
 		def funcVariance():
 			result = 0
 			for i in range(n):
-				result += (sample[i] - arithmeticMean)**2
+				result += (sample[i] - arithmeticMean) ** 2
 			result /= n - 1
 			return result
 		results["Dispersion"]["Variance"] = variance = funcVariance()
@@ -197,24 +206,156 @@ class Stat_Task(object):
 		results["Shape"]["Skewness YP"] = skewness_yp = funcSkewnessYP()
 		
 		def funcSkewnessM():
-			result = 0
-			for i in range(n):
-				result += ((sample[i] - arithmeticMean) / s_n) ** 3
-			result /= n
+			result = momentum(sample, n, arithmeticMean, s_n, 3)
 			return result
 		results["Shape"]["Skewness M"] = skewnewss_m = funcSkewnessM()
 		
 		def funcKurtosis():
-			result = 0
-			for i in range(n):
-				result += ((sample[i] - arithmeticMean) / s_n) ** 4
-			result /= n
-			result -= 3
+			result = momentum(sample, n, arithmeticMean, s_n, 4) - 3
 			return result
 		results["Shape"]["Kurtosis"] = kurtosis = funcKurtosis()
 		
+		def funcNumberOfBins():
+			result = math.sqrt(n)
+			if (result < 5):
+				result = 5
+			elif (result > 20):
+				result = 20
+			return result
+		results["Binning"]["Number"] = k_Bins = funcNumberOfBins()
+		
+		def funcIntervals():
+			result = []
+			w = sampleRange / k_Bins
+			result.append(min)
+			for i in range(1, k_Bins):
+				result.append(min + w * i)
+			result.append(max)
+			return result
+		results["Binning"]["Intervals"] = intervals  = funcIntervals()
+		
+		def funcBinAbsoluteFrequencies():
+			result = [0]
+			index = 0
+			for i in range(n):
+				value = sampleSorted[i]
+				if intervals[index + 1] < value:
+					result.append(0)
+					index += 1
+				result[index] += 1
+			return result
+		results["Binning"]["Absolute Frequencies"] = absoluteFrequencies = funcBinAbsoluteFrequencies()
+		
+		
+		def funcBinRelativeFrequencies():
+			result = []
+			for H in absoluteFrequencies:
+				result.append(H / n)
+			return result
+		results["Binning"]["Relative Frequencies"] = relativeFrequencies = funcBinRelativeFrequencies()
+		
+		def funcMode():
+			index = 0
+			max = 0
+			for i in range(len(absoluteFrequencies)):
+				if absoluteFrequencies[i] > max:
+					max = absoluteFrequencies[i]
+					index = i
+			result = (intervals[index]+intervals[index+1]) / 2
+			return result
+		results["Binning"]["Mode"] = mode = funcMode()
+		
+		def funcSkewnessKPM():
+			result = (arithmeticMean - mode) / s_n
+			return result
+		results["Shape"]["Skewness KPM"] = skewnewss_kpm = funcSkewnessKPM()
+		
 		return results
+
+		
+class Corr_Task(object):
+	def __init__(self, name, params):
+		self.__name = name
+		self.__params = params
 	
+	def getName(self):
+		return self.__name
+		
+	def getType(self):
+		return "Stat"
+	
+	def run(self):
+		(sample_1, sample_2) = self.__params
+		n = len(sample_1)
+		assert (n == len(sample_2)), "sample size are not equal"
+		
+		results = {}
+		
+		def funcRanged():
+			result = []
+			for i in range(n):
+				result.append([sample_1[i], -1, sample_2[i], -1])
+			for i in [0, 2]:
+				result.sort(key=lambda x: x[i])
+				value = result[0][i]
+				sum = 0
+				length = 0
+				for j in range(n):
+					if value == result[j][i]:
+						sum += (j+1)
+						length += 1
+					else:
+						sum /= length
+						for k in range(length):
+							result[j-k-1][i+1] = sum
+						value = result[j][i]
+						sum = (j+1)
+						length = 1
+				sum /= length
+				for j in range(length):
+					result[n-j-1][i+1] = sum
+			return result
+		ranged = funcRanged()
+		
+		def funcRangedArithmeticMean(p):
+			result = 0
+			for i in range(n):
+				result += ranged[i][p]
+			result /= n
+			return result
+		rangedArithmeticMean_1 = funcRangedArithmeticMean(1)
+		rangedArithmeticMean_2 = funcRangedArithmeticMean(3)
+		
+		def funcRangedCovariance():
+			result = 0
+			for i in range(n):
+				result += (ranged[i][1] - rangedArithmeticMean_1) * (ranged[i][3] - rangedArithmeticMean_2)
+			result /= n
+			return result
+		rangedCovariance = funcRangedCovariance()
+		
+		def funcRangedVariance(p, rangedArithmeticMean):
+			result = 0
+			for i in range(n):
+				result += (ranged[i][p] - rangedArithmeticMean) ** 2
+			result /= n
+			return result
+		rangedVariance_1 = funcRangedVariance(1, rangedArithmeticMean_1)
+		rangedVariance_2 = funcRangedVariance(3, rangedArithmeticMean_2)
+		
+		def funcRangedStandardDeviation(rangedVariance):
+			result = math.sqrt(rangedVariance)
+			return result
+		rangedStandardDeviation_1 = funcRangedStandardDeviation(rangedVariance_1)
+		rangedStandardDeviation_2 = funcRangedStandardDeviation(rangedVariance_2)
+		
+		def funcSpearmansCorrelationCoefficient():
+			result = rangedCovariance / (rangedStandardDeviation_1 * rangedStandardDeviation_2)
+			return result
+		results["Spearman's Correlation Coefficient"] = funcSpearmansCorrelationCoefficient()
+		
+		return results
+
 	
 class Plot_Task(object):
 	def __init__(self, name, params):
@@ -251,7 +392,7 @@ class Profile:
 	__TOKEN = object();		
 	__pageCount = 0
 	__verbose = False
-	__parallel = 2 + math.floor(multiprocessing.cpu_count() / 2)
+	__parallel = multiprocessing.cpu_count() * 2 - 1
 		
 		
 	def __init__(self, G, token):
