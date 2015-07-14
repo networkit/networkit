@@ -251,7 +251,6 @@ class Test_SelfLoops(unittest.TestCase):
 				reconstructedSet.append(j)
 		self.assertEqual(set(self.LL.nodes()), set(reconstructedSet))
 
-
 	def test_community_Modularity(self):
 		PLPLL = community.PLP(self.LL)
 		PLPLL.run()

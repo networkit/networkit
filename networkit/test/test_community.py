@@ -26,3 +26,4 @@ class Test_CommunityDetection(unittest.TestCase):
 
 		hierarchy = community.CutClustering.getClusterHierarchy(jazz)
 		self.assertEqual(3, len(hierarchy))
+

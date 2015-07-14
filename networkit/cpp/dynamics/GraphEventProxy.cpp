@@ -34,6 +34,13 @@ void GraphEventProxy::removeNode(node u) {
 	}
 }
 
+void GraphEventProxy::restoreNode(node u) {
+	this->G->restoreNode(u);
+//	TRACE("restoring node " , u);
+	for (GraphEventHandler* observer : this->observers) {
+		observer->onNodeRestoration(u);
+	}
+}
 void GraphEventProxy::addEdge(node u, node v, edgeweight weight) {
 	this->G->addEdge(u, v, weight);
 //	TRACE("adding edge (" , u , "," , v , ")");

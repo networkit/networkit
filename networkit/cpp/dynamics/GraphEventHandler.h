@@ -22,6 +22,8 @@ public:
 
 	virtual void onNodeRemoval(node u) = 0;
 
+	virtual void onNodeRestoration(node u) = 0;
+
 	virtual void onEdgeAddition(node u, node v, edgeweight w = 1.0) = 0;
 
 	virtual void onEdgeRemoval(node u, node v, edgeweight w = 1.0) = 0;

@@ -101,7 +101,14 @@ std::vector<GraphEvent> NetworKit::DGSStreamParser::getStream() {
 				auto ev = GraphEvent(GraphEvent::NODE_REMOVAL, u);
 				// TRACE(ev.toString());
 				stream.push_back(ev);
-			} else {
+			} else if (tag.compare("rn") == 0) {
+				node u = map(split[1]);
+				auto ev = GraphEvent(GraphEvent::NODE_RESTORATION, u);
+				// TRACE(ev.toString());
+				stream.push_back(ev);
+			}
+
+				else {
 				ERROR("malformed line (" , lc , ") : " , line);
 				throw std::runtime_error("malformed line in .DGS file");
 			}
@@ -151,7 +158,12 @@ std::vector<GraphEvent> NetworKit::DGSStreamParser::getStream() {
 				node u = offset(std::stoul(split[1]));
 				stream.push_back(GraphEvent(GraphEvent::NODE_REMOVAL, u));
 				// TRACE("read: dn ", u);
-			} else {
+			} else if (tag.compare("rn") == 0) {
+				node u = offset(std::stoul(split[1]));
+				stream.push_back(GraphEvent(GraphEvent::NODE_RESTORATION, u));
+				TRACE("read: rn ", u);
+			}
+			  else {
 				ERROR("malformed line (" , lc , ") : " , line);
 				throw std::runtime_error("malformed line in .DGS file");
 			}
@@ -167,4 +179,3 @@ std::vector<GraphEvent> NetworKit::DGSStreamParser::getStream() {
 
 
 } /* namespace NetworKit */
-

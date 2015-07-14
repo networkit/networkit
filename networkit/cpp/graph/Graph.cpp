@@ -501,6 +501,14 @@ void Graph::removeNode(node v) {
 	n--;
 }
 
+void Graph::restoreNode(node v){
+	assert(v < z);
+	assert(!exists[v]);
+
+	exists[v] = true;
+	n++;
+}
+
 
 /** NODE PROPERTIES **/
 

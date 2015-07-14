@@ -28,7 +28,8 @@ public:
 		EDGE_REMOVAL,
 		EDGE_WEIGHT_UPDATE, // set edge weight to specified value
 		EDGE_WEIGHT_INCREMENT, // increment of decrement edge weight by specified value
-		TIME_STEP
+		TIME_STEP,
+		NODE_RESTORATION
 	};
 
 	Type type;	//!< type of graph event

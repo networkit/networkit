@@ -464,7 +464,18 @@ public:
 	 * @param v Node.
 	 * @return @c true if @a v exists, @c false otherwise.
 	 */
+
 	bool hasNode(node v) const { return (v < z) && this->exists[v];	}
+
+
+	/**
+	 * Restores a previously deleted node @a v with its previous id in the graph.
+	 *
+	 * @param v Node.
+	 *
+	 */
+
+	void restoreNode(node v);
 
 
 	/** NODE PROPERTIES **/

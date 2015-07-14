@@ -342,6 +342,33 @@ TEST_P(GraphGTest, testHasNode) {
 	ASSERT_FALSE(G.hasNode(6));
 }
 
+TEST_P(GraphGTest, testRestoreNode) {
+	Graph G = createGraph(4);
+
+	ASSERT_EQ(4u, G.numberOfNodes());
+	ASSERT_TRUE(G.hasNode(0));
+	ASSERT_TRUE(G.hasNode(1));
+	ASSERT_TRUE(G.hasNode(2));
+	ASSERT_TRUE(G.hasNode(3));
+
+	G.removeNode(0);
+
+	ASSERT_EQ(3u, G.numberOfNodes());
+	ASSERT_FALSE(G.hasNode(0));
+	ASSERT_TRUE(G.hasNode(1));
+	ASSERT_TRUE(G.hasNode(2));
+	ASSERT_TRUE(G.hasNode(3));
+
+	G.restoreNode(0);
+
+	ASSERT_EQ(4u, G.numberOfNodes());
+	ASSERT_TRUE(G.hasNode(0));
+	ASSERT_TRUE(G.hasNode(1));
+	ASSERT_TRUE(G.hasNode(2));
+	ASSERT_TRUE(G.hasNode(3));
+
+}
+
 
 /** NODE PROPERTIES **/
 
