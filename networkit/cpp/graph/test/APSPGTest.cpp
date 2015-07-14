@@ -370,6 +370,23 @@ TEST_F(APSPGTest, testAPSPDirectedWeighted) {
 			EXPECT_NEAR(distances[i][j], distances1[i][j], 0.0001);
 		});
 	});
+
+	// apply graph update edge insertion update with ID 2
+	INFO("entering update 2");
+	G.addEdge(3, 1, 1);
+	GraphEvent event(GraphEvent::EDGE_ADDITION, 3, 1, 1);
+	apsp.update(event);
+	distances = apsp.getDistances();
+
+	DynAPSP apsp2(G);
+	apsp2.run();
+	std::vector<std::vector<edgeweight> > distances2 = apsp2.getDistances();
+	G.forNodes([&](node i) {
+		G.forNodes([&](node j) {
+			INFO("i, j = ", i, " ", j);
+			EXPECT_NEAR(distances[i][j], distances2[i][j], 0.0001);
+		});
+	});
 }
 
 } /* namespace NetworKit */
