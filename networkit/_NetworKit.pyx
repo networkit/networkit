@@ -4810,6 +4810,7 @@ cdef extern from "cpp/dynamics/GraphEvent.h":
 		EDGE_ADDITION,
 		EDGE_REMOVAL,
 		EDGE_WEIGHT_UPDATE,
+		EDGE_WEIGHT_INCREMENT,
 		TIME_STEP
 
 cdef extern from "cpp/dynamics/GraphEvent.h":
@@ -4829,7 +4830,8 @@ cdef class GraphEvent:
 	EDGE_ADDITION = 2
 	EDGE_REMOVAL = 3
 	EDGE_WEIGHT_UPDATE = 4
-	TIME_STEP = 5
+	EDGE_WEIGHT_INCREMENT = 5
+	TIME_STEP = 6
 
 	property type:
 		def __get__(self):
