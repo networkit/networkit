@@ -305,7 +305,7 @@ class GEXFWriter:
 		for e in graph.edges():
 			self.q.put((e[0], e[1], graph.weight(e[0], e[1])))
 		for event in eventStream:
-			if event.type == 2:#edge addition event
+			if event.type == GraphEvent.EDGE_ADDITION:
 				self.q.put((event.u, event.v, event.w))
 		#4.2 Write edges to the gexf file
 		while not self.q.empty():
