@@ -67,6 +67,14 @@ void GraphEventProxy::setWeight(node u, node v, edgeweight w) {
 	}
 }
 
+void GraphEventProxy::incrementWeight(node u, node v, edgeweight delta) {
+//	TRACE("incrementing weight of edge (" , u , "," , v , ") by " , delta);
+	edgeweight wOld = this->G->weight(u, v);
+	this->G->setWeight(u, v, wOld+delta);
+	for (GraphEventHandler* observer : this->observers) {
+		observer->onWeightIncrement(u, v, wOld, delta);
+	}
+}
 
 void GraphEventProxy::timeStep() {
 //	TRACE("time step");

@@ -29,6 +29,8 @@ public:
 	virtual void onEdgeRemoval(node u, node v, edgeweight w = 1.0) = 0;
 
 	virtual void onWeightUpdate(node u, node v, edgeweight wOld, edgeweight wNew) = 0;
+	
+	virtual void onWeightIncrement(node u, node v, edgeweight wOld, edgeweight delta) = 0;
 
 	virtual void onTimeStep() = 0;
 };

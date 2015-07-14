@@ -48,6 +48,8 @@ public:
 
 	void setWeight(node u, node v, edgeweight w);
 
+	void incrementWeight(node u, node v, edgeweight delta);
+
 	void timeStep();
 };
 

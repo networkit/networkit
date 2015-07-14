@@ -4812,7 +4812,7 @@ cdef extern from "cpp/dynamics/GraphEvent.h":
 		EDGE_REMOVAL,
 		EDGE_WEIGHT_UPDATE,
 		EDGE_WEIGHT_INCREMENT,
-		TIME_STEP,
+		TIME_STEP
 		
 cdef extern from "cpp/dynamics/GraphEvent.h":
 	cdef cppclass _GraphEvent "NetworKit::GraphEvent":
@@ -4825,13 +4825,14 @@ cdef extern from "cpp/dynamics/GraphEvent.h":
 
 cdef class GraphEvent:
 	cdef _GraphEvent _this
-
 	NODE_ADDITION = 0
 	NODE_REMOVAL = 1
-	EDGE_ADDITION = 2
-	EDGE_REMOVAL = 3
-	EDGE_WEIGHT_UPDATE = 4
-	TIME_STEP = 5
+	NODE_RESTORATION = 2
+	EDGE_ADDITION = 3
+	EDGE_REMOVAL = 4
+	EDGE_WEIGHT_UPDATE = 5
+	EDGE_WEIGHT_INCREMENT = 6
+	TIME_STEP = 7
 
 	property type:
 		def __get__(self):
