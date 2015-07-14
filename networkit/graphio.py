@@ -5,6 +5,7 @@ from _NetworKit import (METISGraphReader, METISGraphWriter, DotGraphWriter, Edge
 from _NetworKit import Graph as __Graph
 # local imports
 from .GraphMLIO import GraphMLReader, GraphMLWriter
+from .GEXFIO import GEXFReader, GEXFWriter
 
 # external imports
 import os
@@ -33,6 +34,7 @@ try:
 		EdgeListTabOne = ()
 		METIS = ()
 		GraphML = ()
+		GEXF = ()
 		GML = ()
 	#	VNA = ()
 		EdgeListCommaOne = ()
@@ -54,6 +56,7 @@ except ImportError:
 		EdgeListSpaceZero = "edgelist-s0"
 		METIS = "metis"
 		GraphML = "graphml"
+		GEXF = "gexf"
 		GML = "gml"
 		EdgeListCommaOne = "edgelist-cs1"
 		GraphViz = "dot"
@@ -74,6 +77,7 @@ def getReader(fileformat, **kwargs):
 	readers =	{
 			Format.METIS:			METISGraphReader(),
 			Format.GraphML:			GraphMLReader(),
+			Format.GEXF:			GEXFReader(),
 			Format.SNAP:			EdgeListReader('\t',0,'#',False),
 			Format.EdgeListCommaOne:	EdgeListReader(',',1,),
 			Format.EdgeListSpaceOne:	EdgeListReader(' ',1),
@@ -176,6 +180,7 @@ def getWriter(fileformat, **kwargs):
 	writers =	{
 			Format.METIS:			METISGraphWriter(),
 			Format.GraphML:			GraphMLWriter(),
+			Format.GEXF:			GEXFWriter(),
 #			Format.SNAP:			EdgeListWriter('\t',0,'#',False),
 			Format.EdgeListCommaOne:	EdgeListWriter(',',1,),
 			Format.EdgeListSpaceOne:	EdgeListWriter(' ',1),
