@@ -47,6 +47,10 @@ void DGSWriter::write(std::vector<GraphEvent>& stream, std::string path) {
 				out << "ce " << ev.u << "-" << ev.v  << " weight=" << ev.w << std::endl;
 				break;
 			}
+			case GraphEvent::EDGE_WEIGHT_INCREMENT : {
+				out << "ie " << ev.u << "-" << ev.v  << " weight=" << ev.w << std::endl;
+				break;
+			}
 			case GraphEvent::TIME_STEP : {
 				out << "st" << std::endl;
 				break;
