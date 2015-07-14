@@ -42,18 +42,18 @@ void DynAPSP::dynamic_sssp(node root, node startbfs) {
 	while(Q.size() != 0) {
 		//INFO("Entering while loop");
 		node v = Q.extractMin().second;
-		INFO("The current node v is ", v);
+		//INFO("The current node v is ", v);
 		enqueued[v] = false;
-		INFO("label[",root,"][",v,"] = ", L[root][v]," distances[",root,"][",v,"] = ", distances[root][v]);
+		//INFO("label[",root,"][",v,"] = ", L[root][v]," distances[",root,"][",v,"] = ", distances[root][v]);
 		if (L[root][v] < distances[root][v]) {
-			INFO("label[",root,"][",v,"] < distances[",root,"][",v,"]");
-			INFO("distances[",root,"][",v,"] was ", distances[root][v], " and now becomes ",L[root][v]);
+			//INFO("label[",root,"][",v,"] < distances[",root,"][",v,"]");
+			//INFO("distances[",root,"][",v,"] was ", distances[root][v], " and now becomes ",L[root][v]);
 			distances[root][v] = L[root][v];
 			if(!G.isDirected()) {
 				distances[v][root] = L[root][v];
 			}
 			G.forNeighborsOf(v, [&](node w, edgeweight weight){
-				INFO("neighbor w: ", w);
+				//INFO("neighbor w: ", w);
 				if (distances[root][v] + weight < L[root][w]) {
 					L[root][w] = distances[root][v] + weight;
 					updateQueue(w, std::min(L[root][w], distances[root][w]));
@@ -88,25 +88,37 @@ void DynAPSP::dynamic_sssp(node root, node startbfs) {
 	}
 }
 
+/**
+ * update takes a graph event and updates the all-pair shortest path distances. L contains
+ * the label value for each node. A node's label value is necessary for the sssp
+ * recomputation (see Tuned SWSF in Bauer & Wagner paper titled Batch Dynamic Sinlge-Source
+ * Shortest-Path Algorithms: An Experimental Study). update initializes the label values and
+ * identifies all nodes for which an sssp must be run. The helper method dynamic_sssp does the
+ * actual updating of the distances.
+ */
 void DynAPSP::update(const GraphEvent& event) {
 	INFO("Entering update");
-	if (event.type!=GraphEvent::EDGE_ADDITION && event.type!=GraphEvent::EDGE_REMOVAL && event.type!=GraphEvent::EDGE_WEIGHT_UPDATE)
+	if (event.type!=GraphEvent::EDGE_ADDITION && event.type!=GraphEvent::EDGE_REMOVAL &&
+		event.type!=GraphEvent::EDGE_WEIGHT_UPDATE && event.type!=GraphEvent::EDGE_WEIGHT_INCREMENT)
 		throw std::runtime_error("Graph update not allowed");
 
 	node u = event.u;
 	node v = event.v;
+	edgeweight ew = G.weight(u, v);
 	L = distances;
 
-	if (event.type==GraphEvent::EDGE_ADDITION) {
+	if (event.type==GraphEvent::EDGE_ADDITION || (event.type==GraphEvent::EDGE_WEIGHT_INCREMENT && ew < 0)
+		|| (event.type==GraphEvent::EDGE_WEIGHT_UPDATE && ew < distances[u][v]) ) {
 		G.forNodes([&](node x){
-			if (L[x][v] - L[x][u] > 1) {
-				L[x][v] = distances[x][u] + 1;
+			if (L[x][v] - L[x][u] > ew) {
+				L[x][v] = distances[x][u] + ew;
 				INFO("x, v, D[x][v], L[x, v]: ", x, " ", v," ", distances[x][v], " ", L[x][v]);
 				dynamic_sssp(x, v);
 			}
 		});
 	}
-	if (event.type==GraphEvent::EDGE_REMOVAL) {
+	if (event.type==GraphEvent::EDGE_REMOVAL || (event.type==GraphEvent::EDGE_WEIGHT_INCREMENT && ew > 0)
+		|| (event.type==GraphEvent::EDGE_WEIGHT_UPDATE && ew > distances[u][v]) ) {
 		// update l.[v] block
 		// use dijkstra for now. We might be able to use dyn_sssp_1
 		std::vector<edgeweight> distancesToV(G.upperNodeIdBound());
@@ -120,12 +132,13 @@ void DynAPSP::update(const GraphEvent& event) {
 			dijk.run();
 			distancesToV = dijk.getDistances();
 		}
-		
-		INFO("v, distancesToV:", v, " ", distancesToV[1]," ", distancesToV[2]," ", distancesToV[3]," ", distancesToV[4]," ", distancesToV[5]," ", distancesToV[6]);
+		//INFO("v, distancesToV: ", v, ", ", distancesToV[0], " ", distancesToV[1]," ", distancesToV[2]," ", distancesToV[3]," ", distancesToV[4]," ", distancesToV[5]," ", distancesToV[6]);
 		G.forNodes([&](node x){
 			L[x][v] = distancesToV[x];
 		// end of update l.[v] block
-			if (L[x][v] - L[x][u] > 1) {
+			//INFO("x, v, L[x][u], L[x][v], L[x][v] - L[x][u], ew: ", x, " ", v," ", L[x][u], " ", L[x][v], " ", L[x][v] - L[x][u], " ", ew);
+			//if (true) {
+			if ((L[x][v] - L[x][u]) > ew) {
 				INFO("x, v, D[x][v], L[x, v]: ", x, " ", v," ", distances[x][v], " ", L[x][v]);
 				dynamic_sssp(x, v);
 			}
