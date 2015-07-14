@@ -157,7 +157,6 @@ cdef extern from "cpp/graph/Graph.h":
 		node addNode() except +
 		void removeNode(node u) except +
 		bool hasNode(node u) except +
-		void restoreNode(node u) except +
 		void addEdge(node u, node v, edgeweight w) except +
 		void setWeight(node u, node v, edgeweight w) except +
 		void removeEdge(node u, node v) except +
@@ -474,16 +473,6 @@ cdef class Graph:
 			If the Graph has the node `u`
 		"""
 		return self._this.hasNode(u)
-	def restoreNode(self, u):
-		""" Adds the node u to the graph with its previous id
-
-	 	Parameters
-	 	----------
-	 	u : node
-	 		Node
-		"""
-		self._this.restoreNode(u)
-
 
 	def addEdge(self, u, v, w=1.0):
 		""" Insert an undirected edge between the nodes `u` and `v`. If the graph is weighted you can optionally
@@ -4818,12 +4807,13 @@ cdef extern from "cpp/dynamics/GraphEvent.h":
 	enum _GraphEventType "NetworKit::GraphEvent::Type":
 		NODE_ADDITION,
 		NODE_REMOVAL,
+		NODE_RESTORATION,
 		EDGE_ADDITION,
 		EDGE_REMOVAL,
 		EDGE_WEIGHT_UPDATE,
+		EDGE_WEIGHT_INCREMENT,
 		TIME_STEP,
-		NODE_RESTORATION
-
+		
 cdef extern from "cpp/dynamics/GraphEvent.h":
 	cdef cppclass _GraphEvent "NetworKit::GraphEvent":
 		node u, v
@@ -4842,7 +4832,6 @@ cdef class GraphEvent:
 	EDGE_REMOVAL = 3
 	EDGE_WEIGHT_UPDATE = 4
 	TIME_STEP = 5
-	NODE_RESTORATION = 6
 
 	property type:
 		def __get__(self):
