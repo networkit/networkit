@@ -374,7 +374,7 @@ TEST_F(APSPGTest, testAPSPDirectedWeighted) {
 	// apply graph update edge insertion update with ID 2
 	INFO("entering update 2");
 	G.addEdge(3, 1, 1);
-	GraphEvent event(GraphEvent::EDGE_ADDITION, 3, 1, 1);
+	event = GraphEvent(GraphEvent::EDGE_ADDITION, 3, 1, 1);
 	apsp.update(event);
 	distances = apsp.getDistances();
 
