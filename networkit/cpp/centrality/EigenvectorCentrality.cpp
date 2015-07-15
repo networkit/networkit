@@ -39,8 +39,8 @@ void EigenvectorCentrality::run() {
 		// iterate matrix-vector product
 		G.parallelForNodes([&](node u) {
 			values[u] = 0.0;
-			G.forNeighborsOf(u, [&](node v) {
-				values[u] += G.weight(u, v) * scoreData[v];
+			G.forNeighborsOf(u, [&](node v, edgeweight ew) {
+				values[u] += ew * scoreData[v];
 			});
 		});
 
