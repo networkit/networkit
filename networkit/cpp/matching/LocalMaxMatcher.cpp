@@ -15,6 +15,7 @@ LocalMaxMatcher::LocalMaxMatcher(Graph& graph): Matcher(graph)
 }
 
 // TODO: update to new edge attribute system
+// TODO: make local max matching parallel
 
 
 Matching LocalMaxMatcher::run() {
