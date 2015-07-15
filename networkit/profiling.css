@@ -53,7 +53,7 @@
 	height: 440px;
 	cursor: pointer;
 	float: left;
-	margin-right: 1em;
+	margin-right: 2em;
 	margin-bottom: 1.5em;
 }
 
@@ -66,7 +66,7 @@
 }
 
 .NetworKit_Page .Measure .Stat {
-	width: 600px;
+	width: 580px;
 	float: left;
 	margin-bottom: 1.5em;
 }
@@ -81,6 +81,12 @@
 	display: block;
 	margin-bottom: 0.3em;
 	margin-left: -0.75em;
+	border-right-style: dotted;
+    border-right-width: 1px;
+	border-bottom-style: dotted;
+    border-bottom-width: 1px;
+	background-color: #D0D0D0;
+	padding-left: 0.2em;
 }
 
 .NetworKit_Page .Measure .Stat .Group .List { 
