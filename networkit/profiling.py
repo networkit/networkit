@@ -364,15 +364,37 @@ class Plot_Task(object):
 		return "Plot"
 	
 	def run(self):
-		(index, data) = self.__params
+		(index, sample, stat) = self.__params
 		plt.ioff()	
-		xLabel = "x-Axis"
-		yLabel = "y-Axis"
-		fig = plt.figure()
-		n, bins, patches = plt.hist(data, 50, normed=1, facecolor='green', alpha=0.75)
-		plt.xlabel(xLabel)
-		plt.ylabel(yLabel)
-		plt.grid(True)
+		
+		sns.set(color_codes=True)
+
+		fig = plt.figure(figsize=(6, 6))
+
+		number = stat["Binning"]["Number"]
+		x_min = stat["Location"]["Min"] - (stat["Binning"]["Intervals"][1] - stat["Binning"]["Intervals"][0])/2
+		x_max = stat["Location"]["Max"] + (stat["Binning"]["Intervals"][number] - stat["Binning"]["Intervals"][number-1])/2
+
+		ax1 = plt.subplot2grid((15, 8), (0, 0), colspan=9)
+		axBoxPlot = sns.boxplot(sample, ax=ax1, showfliers=False)
+
+		ax2 = plt.subplot2grid((15, 8), (1, 0), colspan=9, rowspan=8)
+		axDistPlot = sns.distplot(sample, ax=ax2, bins=stat["Binning"]["Intervals"], kde=False, norm_hist=False)
+
+		ax3 = plt.subplot2grid((15, 8), (9, 0), colspan=9, rowspan=6)
+		range = [x_min-(x_max-x_min)/100, x_max+(x_max-x_min)/100]
+		Cde = plt.hist(sample, linewidth=2.0, range=range, histtype='step', cumulative=True, normed=1, bins=1000)
+
+		x_limitsBoxPlot = axBoxPlot.set_xlim([x_min, x_max])
+		x_limitsDistPlot = axDistPlot.set_xlim([x_min, x_max])
+		CdeXlim = plt.xlim(x_min, x_max)
+		CdeYlim = plt.ylim(-0.01, 1.01)
+
+		axBoxXTickLabels = axBoxPlot.set_xticklabels([])
+		axDistXTickLabels = axDistPlot.set_xticklabels([])
+		axBoxYTicks = axBoxPlot.set_yticks([])
+		axCdeYTicks = plt.yticks([0, 0.2, 0.4, 0.6, 0.8, 1.0])
+	
 		fig.tight_layout()
 		imgdata = io.StringIO()
 		fig.savefig(imgdata, format='svg')
@@ -395,6 +417,7 @@ class Profile:
 			raise ValueError("call create(G) to create an instance")
 		self.__G = G
 		self.__measures = {}
+		self.__correlations = {}
 		
 	
 	@classmethod
@@ -403,11 +426,11 @@ class Profile:
 		
 		for parameter in [ 
 			(centrality.DegreeCentrality, 			(G, )),
-			(centrality.CoreDecomposition, 			(G, )),
-			(centrality.LocalClusteringCoefficient, (G, )),
-			(centrality.PageRank, 					(G, )),
-			(centrality.KPathCentrality,			(G, )),
-			(centrality.KatzCentrality,				(G, )),
+			#(centrality.CoreDecomposition, 			(G, )),
+			#(centrality.LocalClusteringCoefficient, (G, )),
+			#(centrality.PageRank, 					(G, )),
+			#(centrality.KPathCentrality,			(G, )),
+			#(centrality.KatzCentrality,				(G, )),
 			(centrality.ApproxBetweenness2,			(G, max(42, G.numberOfNodes() / 1000), False))
 		]: result.__addMeasure(parameter)
 		
@@ -443,19 +466,30 @@ class Profile:
 		if self.__verbose:
 			timerAll = stopwatch.Timer()
 		
+		templateMeasure = readfile("measure.html")
+		
 		centralities = ""
 		for key in self.__measures:
-			image = self.__measures[key]["image"]
-			centralities = centralities + "<div class=\"Plot\" title=\"" + key + "\" data-image=\"data:image/svg+xml;utf8," + image + "\" />"
+			measure = self.__measures[key]
+			image = measure["image"]
+			stat = measure["stat"]
+			centralities += self.__formatMeasureTemplate(templateMeasure, key, image, stat)
 			
-		result = readfile("profile.html")
-		result = result.format(**locals());
+			#centralities = centralities + "<div class=\"Plot\" title=\"" + key + "\" data-image=\"data:image/svg+xml;utf8," + image + "\" />"
+			
+		templateProfile = readfile("profile.html")
+		result = templateProfile.format(**locals())
 		display_html(HTML(result))
 		
 		if self.__verbose:
 			print("\ntotal time: {:.2F} s".format(timerAll.elapsed))
 	
 		self.__pageCount = self.__pageCount + 1
+	
+	
+	def __formatMeasureTemplate(self, template, key, image, stat):
+		result = template.format(**locals())
+		return result
 	
 	
 	def __addMeasure(self, args):
@@ -494,9 +528,8 @@ class Profile:
 			measure["data"]["sample"] = sample = instance.scores()
 			measure["data"]["sorted"] = sampleSorted = sorted(measure["data"]["sample"])
 			measure["data"]["ranged"] = sampleRanged = ranged(measure["data"]["sample"])
-			tasks.put(Plot_Task(name, (0, sample)))
 			tasks.put(Stat_Task(name, (sample, sampleSorted, sampleRanged)))
-			numberOfTasks += 2
+			numberOfTasks += 1
 			measure["time"] = elapsed
 		
 		while(numberOfTasks):
@@ -506,8 +539,14 @@ class Profile:
 				self.__measures[name]["image"] = image
 			elif (type == "Stat"):
 				self.__measures[name]["stat"] = data
+				tasks.put(Plot_Task(name, (0, self.__measures[name]["data"]["sample"], data)))
+				numberOfTasks += 1
+				
+				for key in self.__correlations:
+					print(name + " <-> " + key)
+				self.__correlations[name] = {}
 			numberOfTasks -= 1
-		
+					
 		for i in range(self.__parallel):
 			tasks.put(None)
 		tasks.join()

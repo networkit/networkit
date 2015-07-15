@@ -31,9 +31,7 @@ function NetworKit_pageEmbed(id)
 		var data = elements[i].getAttribute("data-image").split("|");
 		elements[i].removeAttribute("data-image");
 		var content = 
-			"<div class=\\"Image\\" id=\\"" + elements[i].id + "_Image\\">" +
-			"  <div class=\\"Title\\">" + elements[i].title + "</div>" +
-			"</div>";
+			"<div class=\\"Image\\" id=\\"" + elements[i].id + "_Image\\" />";
 		elements[i].innerHTML = content;
 		elements[i].setAttribute("data-image-index", 0);
 		elements[i].setAttribute("data-image-length", data.length);

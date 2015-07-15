@@ -24,60 +24,113 @@
 
 /* --- Page ---------------------------------------------------------------- */
 
-.NetworKit_Page {
+.NetworKit_Page .Category {
+	clear: both;
 }
 
-.NetworKit_Page:before {
-	font-size: 22px;
-	content: "Network Profile";
-}
-
-.NetworKit_Page .Group  {
-	margin-top: 6px;
-	margin-left: 10px;
-}
-
-.NetworKit_Page .Group:before {
-	font-size: 18px;
+.NetworKit_Page .Category:before {
+	font-size: 1.75em;
 	display: block;
+	margin-bottom: 0.75em;
 }
 
-.NetworKit_Page .Node_Centrality_Measures:before {
-	content: "Node Centrality Measures";
+.NetworKit_Page .Node_Centrality_Measures:before	{ content: "Node Centrality Measures"; }
+.NetworKit_Page .Test:before						{ content: "Test"; }
+
+.NetworKit_Page .Measure {
+	clear: both;
+	margin-left: 1em;
 }
 
-.NetworKit_Page .Test:before {
-	content: "Test";
+.NetworKit_Page .Measure .Title {
+	font-size: 1.6em;
+	display: block;
+	margin-bottom: 0.75em;
 }
 
-.NetworKit_Page .Plot {
-	display: inline-block;
-	width: 250px;
-	height: 210px;
-	margin-top: 4px;
-	margin-left: 10px;
-	text-align: center;
-	margin-top: 8px;
+.NetworKit_Page .Measure .Plot {
+	width: 440px;
+	height: 440px;
 	cursor: pointer;
+	float: left;
+	margin-right: 1em;
+	margin-bottom: 1.5em;
 }
 
-.NetworKit_Page .Plot:hover {
-	color: #FFFFFF;
-	background-color: #333333;
-}
-
-.NetworKit_Page .Plot .Title {
-	font-weight: bold;
-    pointer-events: none;
-}
-
-.NetworKit_Page .Plot .Image {
+.NetworKit_Page .Measure .Plot .Image {
 	background-repeat: no-repeat;
     background-position: center center;
 	background-size: contain;
-	background-position: 0em 1.4em;
 	height: 100%;
     pointer-events: none;
+}
+
+.NetworKit_Page .Measure .Stat {
+	width: 600px;
+	float: left;
+	margin-bottom: 1.5em;
+}
+
+.NetworKit_Page .Measure .Stat .Group { 
+	padding-left: 1.25em;
+	margin-bottom: 0.75em;
+}
+
+.NetworKit_Page .Measure .Stat .Group .Title { 
+	font-size: 1.35em;
+	display: block;
+	margin-bottom: 0.3em;
+	margin-left: -0.75em;
+}
+
+.NetworKit_Page .Measure .Stat .Group .List { 
+	-webkit-column-count: 3;
+    -moz-column-count: 3;
+    column-count: 3;
+}
+
+.NetworKit_Page .Measure .Stat .Group .List .Entry {
+	position: relative;
+}
+
+.NetworKit_Page .Measure .Stat .Group .List .Entry[data-tooltip]:before {
+	position: absolute;
+	left: 0;
+	top: -40px;
+	background-color: #808080;
+	color: #ffffff;
+	height: 30px;
+	line-height: 30px;
+	border-radius: 5px;
+	padding: 0 15px;
+	content: attr(data-tooltip);
+	white-space: nowrap;
+	display: none;
+}
+
+.NetworKit_Page .Measure .Stat .Group .List .Entry[data-tooltip]:after {
+	position: absolute;
+	left: 15px;
+	top: -10px;
+	border-top: 7px solid #808080;
+	border-left: 7px solid transparent;
+	border-right: 7px solid transparent;
+	content: "";
+	display: none;
+}
+
+.NetworKit_Page .Measure .Stat .Group .List .Entry[data-tooltip]:hover:after,
+.NetworKit_Page .Measure .Stat .Group .List .Entry[data-tooltip]:hover:before {
+	display: block;
+}
+
+.NetworKit_Page .Measure .Stat .Group .List .Entry span:after {
+	content: ": ";
+}
+
+.NetworKit_Page .Measure .Stat .Group .List .Entry math {
+	font-size: 1.35em;
+	color: #333333;
 }
 
 
