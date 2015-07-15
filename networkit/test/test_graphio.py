@@ -38,7 +38,7 @@ class TestGEXFIO(unittest.TestCase):
 				self.assertEqual(len(eventStream[old_index:index]),
 					len(eventStream2[old_index:index]))
 
-	def test(self):
+	def test_read_and_write(self):
 		#write and read files again to check
 		from networkit.GEXFIO import GEXFWriter
 		writer = GEXFWriter()
