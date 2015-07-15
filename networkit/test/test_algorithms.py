@@ -8,6 +8,13 @@ from networkit import *
 
 class Test_SelfLoops(unittest.TestCase):
 
+	def checkCovers(self, c1, c2):
+		if not c1.numberOfElements() == c2.numberOfElements(): return False
+		if not c1.numberOfSubsets() == c2. numberOfSubsets(): return False
+		for i in range(0,c1.numberOfElements()):
+			if not c1.subsetsOf(i) == c2.subsetsOf(i): return False
+		return True
+
 	def setUp(self):
 		# toggle the comment/uncomment to test on small or large test cases
 		#self.L = readGraph("PGPgiantcompo.graph", Format.METIS) #without self-loops
@@ -44,9 +51,15 @@ class Test_SelfLoops(unittest.TestCase):
 	def test_centrality_CoreDecomposition(self):
 		CL = centrality.CoreDecomposition(self.L)
 		CL.run()
-		CLL = centrality.CoreDecomposition(self.LL)
-		CLL.run()
-		self.assertEqual(CL.cores(),CL.cores())
+		try:
+			CLL = centrality.CoreDecomposition(self.LL)
+		except RuntimeError:
+			import copy
+			tmp = copy.deepcopy(self.LL)
+			tmp.removeSelfLoops()
+			CLL = centrality.CoreDecomposition(tmp)
+			CLL.run()
+			self.assertTrue(self.checkCovers(CL.cores(),CLL.cores()))
 
 
 	def test_centrality_EigenvectorCentrality(self):
@@ -295,7 +308,8 @@ class Test_SelfLoops(unittest.TestCase):
 
 
 	def test_community_kCoreCommunityDetection(self):
-		kCCD = community.kCoreCommunityDetection(self.LL, 1, inspect=False)
+		with self.assertRaises(RuntimeError) as cm:
+			kCCD = community.kCoreCommunityDetection(self.LL, 1, inspect=False)
 
 
 	def test_flow_EdmondsKarp(self):
@@ -324,7 +338,8 @@ class Test_SelfLoops(unittest.TestCase):
 		CL.approxAvgLocal(self.L, 5)
 		CL.approxAvgLocal(self.LL, 5)
 		CL.avgLocal(self.L)
-		CL.avgLocal(self.LL)
+		with self.assertRaises(RuntimeError) as cm:
+			CL.avgLocal(self.LL)
 		CL.sequentialAvgLocal(self.L)
 		CL.sequentialAvgLocal(self.LL)
 
