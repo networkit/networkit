@@ -19,7 +19,25 @@
 					   <mrow>
 						<mi mathvariant="italic">n</mi>
 						<mo stretchy="false">=</mo>
-						<mn>{stat[Size]:g}</mn>
+						<mn>{stat[Properties][Size]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Bessel's Correction">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>f</mi>
+						 <mrow>
+						  <mi mathvariant="italic">BC</mi>
+						 </mrow>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Properties][Bessel's Correction]:g}</mn>
 					   </mrow>
 					  </mrow>
 					 </semantics>
@@ -106,10 +124,17 @@
 					 <semantics>
 					  <mrow>
 					   <mrow>
-						<mover accent="true">
-						 <mi>x</mi>
-						 <mo stretchy="false">̃</mo>
-						</mover>
+						<msub>
+						 <mrow>
+						  <mover accent="true">
+						   <mi>x</mi>
+						   <mo stretchy="false">̃</mo>
+						  </mover>
+						 </mrow>
+						 <mrow>
+						  <mn>Med</mn>
+						 </mrow>
+						</msub>
 						<mo stretchy="false">=</mo>
 						<mn>{stat[Location][Median]:g}</mn>
 					   </mrow>
@@ -179,7 +204,7 @@
 					 </semantics>
 					</math>
 				</div>
-				<div class="Entry" data-tooltip="Root Mean Square / Quadratic Mean">
+				<div class="Entry" data-tooltip="Quadratic Mean / Root Mean Square">
 					<math>
 					 <semantics>
 					  <mrow>
@@ -207,36 +232,292 @@
 		<div class="Group">
 			<div class="Title">Dispersion</div>
 			<div class="List">
-				<div class="Entry" data-tooltip="Variance"><span>Variance</span>{stat[Dispersion][Variance]:g}</div>
-				<div class="Entry"><span>Standard Deviation</span>{stat[Dispersion][Standard Deviation]:g}</div>
-				<div class="Entry"><span>Coefficient Of Variation</span>{stat[Dispersion][Coefficient Of Variation]:g}</div>
-				<div class="Entry"><span>Sample Range</span>{stat[Dispersion][Sample Range]:g}</div>
-				<div class="Entry"><span>Interquartile Range</span>{stat[Dispersion][Interquartile Range]:g}</div>
+				<div class="Entry" data-tooltip="Unbiased Sample Variance">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msubsup>
+						 <mi>s</mi>
+						 <mrow>
+						  <mi>x</mi>
+						 </mrow>
+						 <mrow>
+						  <mn>2</mn>
+						 </mrow>
+						</msubsup>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Dispersion][Variance]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Unbiased Standard Deviation">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>s</mi>
+						 <mi>x</mi>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Dispersion][Standard Deviation]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Unbiased Coefficient Of Variation">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>v</mi>
+						 <mi>x</mi>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Dispersion][Coefficient Of Variation]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Sample Range">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<mi>R</mi>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Dispersion][Sample Range]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Sample Mid-Range">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>R</mi>
+						 <mi mathvariant="italic">Mid</mi>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Dispersion][Mid-Range]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Interquartile Range">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>R</mi>
+						 <mi mathvariant="italic">IQR</mi>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Dispersion][Interquartile Range]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
 			</div>
 		</div>
 		<div class="Group">
 			<div class="Title">Shape</div>
 			<div class="List">
-				<div class="Entry"><span>Skewness YP</span>{stat[Shape][Skewness YP]:g}</div>
-				<div class="Entry"><span>Skewness M</span>{stat[Shape][Skewness M]:g}</div>
-				<div class="Entry"><span>Skewness KPM</span>{stat[Shape][Skewness KPM]:g}</div>
-				<div class="Entry"><span>Kurtosis</span>{stat[Shape][Kurtosis]:g}</div>
+				<div class="Entry" data-tooltip="Skewness (Yule-Pearson)">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>S</mi>
+						 <mi mathvariant="italic">YP</mi>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Shape][Skewness YP]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>	
+				</div>
+				<div class="Entry" data-tooltip="Skewness (3rd Momentum)">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>S</mi>
+						 <mi mathvariant="italic">M</mi>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Shape][Skewness M]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>	
+				</div>
+				<div class="Entry" data-tooltip="Kurtotis (Excess)">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<mo stretchy="false">γ</mo>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Shape][Kurtosis]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
 			</div>
 		</div>
 		<div class="Group">
 			<div class="Title">Rang</div>
 			<div class="List">
-				<div class="Entry"><span>Arithmetic Mean</span>{stat[Location][Arithmetic Mean (Rang)]:g}</div>
-				<div class="Entry"><span>Variance</span>{stat[Dispersion][Variance (Rang)]:g}</div>
-				<div class="Entry"><span>Standard Deviation</span>{stat[Dispersion][Standard Deviation (Rang)]:g}</div>
-				<div class="Entry"><span>Coefficient Of Variation</span>{stat[Dispersion][Coefficient Of Variation (Rang)]:g}</div>
+				<div class="Entry" data-tooltip="Arithmetic Mean (Rang)">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mrow>
+						  <mover accent="true">
+						   <mi mathvariant="italic">rg</mi>
+						   <mo>¯
+						   </mo>
+						  </mover>
+						 </mrow>
+						 <mrow>
+						  <mi>x</mi>
+						 </mrow>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Location][Arithmetic Mean (Rang)]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Unbiased Variance (Rang)">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msubsup>
+						 <mi>s</mi>
+						 <mrow>
+						  <msub>
+						   <mi mathvariant="italic">rg</mi>
+						   <mi>x</mi>
+						  </msub>
+						 </mrow>
+						 <mrow>
+						  <mn>2</mn>
+						 </mrow>
+						</msubsup>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Dispersion][Variance (Rang)]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Unbiased Standard Deviation (Rang)">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>s</mi>
+						 <mrow>
+						  <msub>
+						   <mi mathvariant="italic">rg</mi>
+						   <mi>x</mi>
+						  </msub>
+						 </mrow>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Dispersion][Standard Deviation (Rang)]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Unbiased Coefficient Of Variation (Rang)">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>v</mi>
+						 <mrow>
+						  <msub>
+						   <mi mathvariant="italic">rg</mi>
+						   <mi>x</mi>
+						  </msub>
+						 </mrow>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Dispersion][Coefficient Of Variation (Rang)]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
 			</div>
 		</div>
 		<div class="Group">
 			<div class="Title">Binning</div>
 			<div class="List">
-				<div class="Entry"><span>Number</span>{stat[Binning][Number]:g}</div>
-				<div class="Entry"><span>Mode</span>{stat[Binning][Mode]:g}</div>
+				<div class="Entry" data-tooltip="Number Of Bins">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>n</mi>
+						 <mrow>
+						  <mi mathvariant="italic">Bin</mi>
+						 </mrow>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Binning][Number]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Mode (Binning)">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>x</mi>
+						 <mrow>
+						  <mi>D</mi>
+						  <mi>,</mi>
+						  <mi mathvariant="italic">Bin</mi>
+						 </mrow>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Binning][Mode]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
 			</div>
 		</div>
 	</div>
