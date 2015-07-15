@@ -36,8 +36,8 @@ void NetworKit::PageRank::run() {
 		handler.assureRunning();
 		G.balancedParallelForNodes([&](node u) {
 			pr[u] = 0.0;
-			G.forInEdgesOf(u, [&](node u, node v) {
-				pr[u] += scoreData[v] * G.weight(v, u) / deg[v];
+			G.forInEdgesOf(u, [&](node u, node v, edgeweight w) {
+				pr[u] += scoreData[v] * w / deg[v];
 			});
 			pr[u] *= damp;
 			pr[u] += teleportProb;
