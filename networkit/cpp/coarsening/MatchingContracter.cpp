@@ -41,7 +41,7 @@ std::pair<Graph, std::vector<node> > MatchingContracter::run(Graph& G, Matching&
 			node cv = mapFineToCoarse[v];
 			node cu = mapFineToCoarse[u];
 			if (! noSelfLoops || (cv != cu)) {
-				cG.setWeight(cv, cu, cG.weight(cv, cu) + ew);
+				cG.increaseWeight(cv, cu, ew);
 			}
 		});
 	});
