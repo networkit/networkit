@@ -144,8 +144,15 @@ class Stat_Task(object):
 		results["Dispersion"] =  {}
 		results["Shape"] =  {}
 		results["Binning"] = {}
-		results["Size"] = n
-
+		results["Properties"] = {}
+		
+		results["Properties"]["Size"] = n
+		
+		def funcBesselsCorrection():
+			result = n / (n-1)
+			return result
+		results["Properties"]["Bessel's Correction"] = besselsCorrection = funcBesselsCorrection()
+		
 		def hoelderMean(sample, p):
 			result = 0
 			for i in range(n):
@@ -167,7 +174,7 @@ class Stat_Task(object):
 		results["Dispersion"]["Uncorrected Variance (Rang)"] = variance_Rang_uncorrected = funcUncorrectedVariance(sampleRanged, arithmeticMean_Rang)
 		
 		def funcVariance(variance_uncorrected):
-			result = variance_uncorrected * n / (n-1)
+			result = variance_uncorrected * besselsCorrection
 			return result
 		results["Dispersion"]["Variance"] = variance = funcVariance(variance_uncorrected)
 		results["Dispersion"]["Variance (Rang)"] = variance_Rang = funcVariance(variance_Rang_uncorrected)
@@ -232,6 +239,11 @@ class Stat_Task(object):
 			result = max - min
 			return result
 		results["Dispersion"]["Sample Range"] = sampleRange = funcSampleRange()
+
+		def funcMidRange():
+			result = sampleRange / 2
+			return result
+		results["Dispersion"]["Mid-Range"] = midRange = funcMidRange()
 		
 		def funcSkewnessYP():
 			result = 3 * (arithmeticMean - median) / s_n
@@ -304,11 +316,6 @@ class Stat_Task(object):
 			result = (intervals[index]+intervals[index+1]) / 2
 			return result
 		results["Binning"]["Mode"] = mode = funcMode()
-		
-		def funcSkewnessKPM():
-			result = (arithmeticMean - mode) / s_n
-			return result
-		results["Shape"]["Skewness KPM"] = skewnewss_kpm = funcSkewnessKPM()
 		
 		return results
 
