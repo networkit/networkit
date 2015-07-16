@@ -34,7 +34,8 @@ void KatzCentrality::run() {
 		// iterate matrix-vector product
 		G.parallelForNodes([&](node u) {
 			values[u] = 0.0;
-			G.forEdgesOf(u, [&](node v, edgeweight ew) {
+			// note: error in definition in Newman's book (Ch. 7) regarding directed graphs, fixed here
+			G.forInEdgesOf(u, [&](node v, edgeweight ew) {
 				values[u] += ew * scoreData[v];
 			});
 			values[u] *= alpha;
