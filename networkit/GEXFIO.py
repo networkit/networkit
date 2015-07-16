@@ -16,7 +16,6 @@ class GEXFReader:
 		self.q = queue.Queue()
 		self.eventStream = []
 		self.nInitialNodes = 0
-		self.ctr = 0
 		self.timeFormat = ""
 
 	def read(self, fpath):
@@ -44,9 +43,22 @@ class GEXFReader:
 		for n in nodes:
 			u = n.getAttribute("id")
 			if self.dynamic:
+				"""
+				A GEXF ID can be a string. However, this version of parser accepts ids
+				in only 2 formats:
+				1. id = "0,1,2," etc.
+				2. id = "n0, n1, n2" etc.
+				So either an integer or an integer that has n prefix.
+				Gephi generates its random graphs in 2nd format for example.
+				"""
+				_id = ""
+				try:
+					_id = int(u)
+				except:
+					_id = int(u[1:])
 				# 2-way mapping to refer nodes back in mapDynamicNodes() method
-				self.mapping[u] = self.ctr
-				self.mapping[self.ctr] = u
+				self.mapping[u] = _id
+				self.mapping[_id] = u
 				controlList = {'elementAdded': False, 'elementDeleted': False}
 				spells = n.getElementsByTagName("spell")
 				if len(spells) > 0:
@@ -54,7 +66,6 @@ class GEXFReader:
 						self.parseDynamics(s, "n", controlList, u)
 				else:
 					self.parseDynamics(n, "n", controlList, u)
-				self.ctr += 1
 			else:
 				self.mapping[u] = self.nInitialNodes
 				self.nInitialNodes +=1
@@ -101,6 +112,7 @@ class GEXFReader:
 		return (self.g, self.eventStream)
 
 
+
 	def parseDynamics(self, element, elementType, controlList,  u,  v = "0", w = "0"):
 		"""
 			Determine the operations as follows:
@@ -132,7 +144,7 @@ class GEXFReader:
 				endTime = float(endTime)
 			except:
 				pass
-
+				
 		if startTime != "" and endTime != "":
 			if startTime < endTime and not controlList['elementDeleted']:
 				self.createEvent(startTime, "a"+elementType, u, v, w)
@@ -173,7 +185,7 @@ class GEXFReader:
 		if startTime == "":
 			if not controlList['elementAdded']:
 				if elementType == "n":
-					self.mapping[u] = self.ctr
+					self.mapping[u] = self.nInitialNodes
 					self.nInitialNodes += 1
 				else:
 					self.q.put((u,v,w))
@@ -234,6 +246,15 @@ class GEXFReader:
 				nNodes +=1
 				isMapped[i] = True
 
+	def getNodeMap(self):
+		""" Returns GEXF ID -> NetworKit::Graph node ID mapping. """
+		forwardMap = dict()
+		for key in self.mapping:
+			if type(key) == str:
+				forwardMap[key] = self.mapping[key]
+		return forwardMap
+
+
 # GEXFWriter
 class GEXFWriter:
 	""" This class provides a function to write a NetworKit graph to a file in the
@@ -245,13 +266,14 @@ class GEXFWriter:
 		self.q = queue.Queue()
 		self.hasDynamicWeight = False
 
-	def write(self, graph, fname, eventStream = []):
+	def write(self, graph, fname, eventStream = [], mapping = []):
 		"""
 			Writes a NetworKit::Graph to the specified file fname.
 			Parameters:
 				- graph: a NetworKit::Graph python object
 				- fname: the desired file path and name to be written to
 				- eventStream: stream of events
+				- mapping: random node mapping
 		"""
 		#0. Reset internal vars
 		self.__init__()
@@ -287,16 +309,26 @@ class GEXFWriter:
 
 		#3. Add nodes
 		nodesElement = ET.SubElement(graphElement, "nodes")
-		nNodes = 0
+		nNodes, idArray = 0, []
 		#3.1 Count the # of nodes (inital + dynamic nodes)
 		for event in eventStream:
 			if event.type == GraphEvent.NODE_ADDITION:
 				nNodes +=1
 		nNodes += len(graph.nodes())
+		for i in range(0, nNodes):
+			idArray.append(i)
+		# Optional:Map nodes to a random mapping if user provided one
+		if (len(mapping) > 0):
+			if(nNodes != len(mapping)):
+				 raise Exception('Size of nodes and mapping must match')
+			else:
+				for i in range(0, nNodes):
+					idArray[i] = mapping[i]
+
 		#3.2 Write nodes to the gexf file
 		for n in range(nNodes):
 			nodeElement = ET.SubElement(nodesElement,'node')
-			nodeElement.set('id', str(n))
+			nodeElement.set('id', str(idArray[n]))
 			self.writeEvent(nodeElement, eventStream, n)
 
 		#4. Add edges
@@ -311,8 +343,8 @@ class GEXFWriter:
 		while not self.q.empty():
 			edgeElement = ET.SubElement(edgesElement,'edge')
 			e = self.q.get()
-			edgeElement.set('source', str(e[0]))
-			edgeElement.set('target', str(e[1]))
+			edgeElement.set('source', str(idArray[e[0]]))
+			edgeElement.set('target', str(idArray[e[1]]))
 			edgeElement.set('id', "{0}".format(self.edgeIdctr))
 			self.edgeIdctr += 1
 			if graph.isWeighted():
