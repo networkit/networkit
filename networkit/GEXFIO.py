@@ -101,6 +101,7 @@ class GEXFReader:
 		return (self.g, self.eventStream)
 
 
+
 	def parseDynamics(self, element, elementType, controlList,  u,  v = "0", w = "0"):
 		"""
 			Determine the operations as follows:
@@ -214,7 +215,7 @@ class GEXFReader:
 			!Note: New mapping of a node can be equal to old mapping of a node. In order to prevent collisions,
 			isMapped array must be maintained and controlled.
 		"""
-		nNodes = self.nInitialNodes
+		#nNodes = self.ctr
 		nEvent = len(self.eventStream)
 		isMapped = [False] * nEvent
 		self.eventStream.sort(key=lambda x:x[1])
@@ -223,7 +224,7 @@ class GEXFReader:
 			# Only the nodes with addition event will get remapped.
 			if not isMapped[i] and event[0].type == GraphEvent.NODE_ADDITION:
 				u = event[0].u
-				self.mapping[self.mapping[u]] = nNodes
+				self.mapping[self.mapping[u]] = self.ctr
 				# All the other events of that node comes after it's addition event
 				for j in range(i, len(self.eventStream)):
 					event = self.eventStream[j]
@@ -231,7 +232,7 @@ class GEXFReader:
 						mappedEvent = GraphEvent(event[0].type, self.mapping[self.mapping[u]], 0, 0)
 						self.eventStream[j] = (mappedEvent, event[1])
 						isMapped[j] = True
-				nNodes +=1
+				self.ctr +=1
 				isMapped[i] = True
 
 # GEXFWriter
@@ -287,17 +288,18 @@ class GEXFWriter:
 
 		#3. Add nodes
 		nodesElement = ET.SubElement(graphElement, "nodes")
-		nNodes = 0
-		#3.1 Count the # of nodes (inital + dynamic nodes)
 		for event in eventStream:
 			if event.type == GraphEvent.NODE_ADDITION:
-				nNodes +=1
-		nNodes += len(graph.nodes())
-		#3.2 Write nodes to the gexf file
-		for n in range(nNodes):
+				nodeElement = ET.SubElement(nodesElement,'node')
+				nodeElement.set('id', str(event.u))
+				self.writeEvent(nodeElement, eventStream, event.u)
+
+		for n in range(len(graph.nodes())):
 			nodeElement = ET.SubElement(nodesElement,'node')
 			nodeElement.set('id', str(n))
 			self.writeEvent(nodeElement, eventStream, n)
+
+
 
 		#4. Add edges
 		edgesElement = ET.SubElement(graphElement, "edges")
