@@ -1418,9 +1418,9 @@ void Graph::BFSEdgesFrom(node r, L handle) const {
 		node u = q.front();
 		q.pop();
 		// apply function
-		forNeighborsOf(u, [&](node v, edgeweight w) {
+		forNeighborsOf(u, [&](node v, edgeweight w, edgeid eid) {
 			if (!marked[v]) {
-				handle(u, v, w);
+				handle(u, v, w, eid);
 				q.push(v);
 				marked[v] = true;
 			}
