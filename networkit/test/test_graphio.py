@@ -51,7 +51,6 @@ class TestGEXFIO(unittest.TestCase):
 		writer.write(self.g4, "output/dynamicTest3Result.gexf", self.events4)
 		self.assertTrue(os.path.isfile("output/dynamicTest3Result.gexf"))
 
-
 		gTest, testEvents = self.reader.read("output/staticTestResult.gexf")
 		g2Test, testEvents2 = self.reader.read("output/dynamicTestResult.gexf")
 		g3Test, testEvents3 = self.reader.read("output/dynamicTest2Result.gexf")
