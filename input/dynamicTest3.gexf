@@ -6,7 +6,8 @@
 	       <spells>
                     <spell end="1"/>
                     <spell start="2" end="4" />
-                </spells>            
+                </spells>
+	    </node>            
             <node id="1" label="Visualization">            
                 <spells>
                     <spell start="1"/>
