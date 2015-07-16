@@ -907,10 +907,10 @@ cdef class Graph:
 		callback : object
 			Any callable object that takes the parameter (node, node)
 		"""
-		cdef NodePairCallbackWrapper *wrapper
+		cdef EdgeCallBackWrapper *wrapper
 		try:
-			wrapper = new NodePairCallbackWrapper(callback)
-			self._this.BFSEdgesFrom[NodePairCallbackWrapper](start, dereference(wrapper))
+			wrapper = new EdgeCallBackWrapper(callback)
+			self._this.BFSEdgesFrom[EdgeCallBackWrapper](start, dereference(wrapper))
 		finally:
 			del wrapper
 
