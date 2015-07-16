@@ -736,7 +736,7 @@ public:
 
 	/**
 	 * Return edge weight of edge {@a u,@a v}. Returns 0 if edge does not exist.
-	 * BEWARE: Running time is O(deg(u))!
+	 * BEWARE: Running time is \Theta(deg(u))!
 	 *
 	 * @param u Endpoint of edge.
 	 * @param v Endpoint of edge.
