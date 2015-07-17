@@ -37,6 +37,36 @@
 .NetworKit_Page .Node_Centrality_Measures:before	{ content: "Node Centrality Measures"; }
 .NetworKit_Page .Test:before						{ content: "Test"; }
 
+.NetworKit_Page .HeatTable {
+	margin: 1em;
+}
+
+.NetworKit_Page .HeatCell {
+	font-family: "Courier New", Courier, monospace;
+	cursor: pointer;
+}
+
+.NetworKit_Page .HeatCell,
+.NetworKit_Page .HeatCellName {
+	display: inline;
+	padding: 0.1em;
+	margin-right: 2px;
+	background-color: #FFFFFF
+}
+
+.NetworKit_Page .HeatCellName {
+	margin-left: 0.25em;
+}
+
+.NetworKit_Page .HeatCell[data-heat]:before {
+	content: attr(data-heat);
+	color: #000000;
+}
+
+.NetworKit_Page .HeatCell[data-image]:hover:after {
+	content: attr(data-image url);
+}
+
 .NetworKit_Page .Measure {
 	clear: both;
 	margin-left: 1em;

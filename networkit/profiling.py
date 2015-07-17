@@ -10,6 +10,8 @@ from IPython.core.display import *
 from urllib.parse import quote
 import io
 import math
+import collections
+from array import array
 
 import numpy as np
 import matplotlib.mlab as mlab
@@ -241,9 +243,9 @@ class Stat_Task(object):
 		results["Dispersion"]["Sample Range"] = sampleRange = funcSampleRange()
 
 		def funcMidRange():
-			result = sampleRange / 2
+			result = (min + max)/ 2
 			return result
-		results["Dispersion"]["Mid-Range"] = midRange = funcMidRange()
+		results["Location"]["Mid-Range"] = midRange = funcMidRange()
 		
 		def funcSkewnessYP():
 			result = 3 * (arithmeticMean - median) / s_n
@@ -320,7 +322,7 @@ class Stat_Task(object):
 		return results
 
 		
-class Corr_Task(object):
+class Correlation_Task(object):
 	def __init__(self, name, params):
 		self.__name = name
 		self.__params = params
@@ -329,17 +331,12 @@ class Corr_Task(object):
 		return self.__name
 		
 	def getType(self):
-		return "Stat"
+		return "Correlation"
 	
 	def run(self):
-		(sample_1, sampleRanged_1, stat_1, sample_2, sampleRanged_2, stat_2) = self.__params
+		(nameB, sample_1, sampleRanged_1, stat_1, sample_2, sampleRanged_2, stat_2) = self.__params
 		n = len(sample_1)
-		assert (n == len(sample_2)), "sample size are not equal"
-		
-		arithmeticMean_1_Rang = stat_1["Location"]["Arithmetic Mean (Rang)"]
-		arithmeticMean_2_Rang = stat_2["Location"]["Arithmetic Mean (Rang)"]
-		uncorrectedStandardDeviation_1_Rang = stat_1["Dispersion"]["Uncorrected Standard Deviation (Rang)"]
-		uncorrectedStandardDeviation_2_Rang = stat_2["Dispersion"]["Uncorrected Standard Deviation (Rang)"]
+		assert (n == len(sample_2)), "sample sizes are not equal"
 		
 		results = {}
 		
@@ -349,17 +346,48 @@ class Corr_Task(object):
 				result += (sample_1[i]- arithmeticMean_1) * (sample_2[i] - arithmeticMean_2)
 			result /= n
 			return result
-		results["Covariance (Rang)"] = rangedCovariance = funcCovariance(sampleRanged_1, arithmeticMean_1_Rang, sampleRanged_2, arithmeticMean_2_Rang)
+		results["Covariance"] = covariance = funcCovariance(
+			sample_1,
+			stat_1["Location"]["Arithmetic Mean"],
+			sample_2,
+			stat_2["Location"]["Arithmetic Mean"]
+		)
+		results["Covariance (Rang)"] = covarianceRanged = funcCovariance(
+			sampleRanged_1,
+			stat_1["Location"]["Arithmetic Mean (Rang)"],
+			sampleRanged_2,
+			stat_2["Location"]["Arithmetic Mean (Rang)"]
+		)
 		
-		def funcSpearmansCorrelationCoefficient():
-			result = rangedCovariance / (uncorrectedStandardDeviation_1_Rang * uncorrectedStandardDeviation_2_Rang)
+		def funcPearsonsCorrelationCoefficient(covariance, uncorrectedStandardDeviation_1, uncorrectedStandardDeviation_2):
+			result = covariance / (uncorrectedStandardDeviation_1 * uncorrectedStandardDeviation_2)
 			return result
-		results["Spearman's Rang Correlation Coefficient"] = funcSpearmansCorrelationCoefficient()
+		results["Pearson's Correlation Coefficient"] = funcPearsonsCorrelationCoefficient(
+			covariance,
+			stat_1["Dispersion"]["Uncorrected Standard Deviation"],
+			stat_2["Dispersion"]["Uncorrected Standard Deviation"]
+		)
+		results["Spearman's Rang Correlation Coefficient"] = funcPearsonsCorrelationCoefficient(
+			covarianceRanged,
+			stat_1["Dispersion"]["Uncorrected Standard Deviation (Rang)"],
+			stat_2["Dispersion"]["Uncorrected Standard Deviation (Rang)"]
+		)
 		
-		return results
+		def funcFechnersCorrelationCoefficent(arithmeticMean_1, arithmeticMean_2):
+			result = 0
+			for i in range(n):
+				result += math.copysign(1.0, (sample_1[i] - arithmeticMean_1) * (sample_2[i] - arithmeticMean_2))
+			result /= n
+			return result
+		results["Fechner's Correlation Coefficient"] = funcFechnersCorrelationCoefficent(
+			stat_1["Location"]["Arithmetic Mean"],
+			stat_2["Location"]["Arithmetic Mean"]
+		)
+		
+		return (nameB, results)
 
 	
-class Plot_Task(object):
+class PlotMeasure_Task(object):
 	def __init__(self, name, params):
 		self.__name = name
 		self.__params = params
@@ -368,7 +396,7 @@ class Plot_Task(object):
 		return self.__name
 		
 	def getType(self):
-		return "Plot"
+		return "PlotMeasure"
 	
 	def run(self):
 		(index, sample, stat) = self.__params
@@ -411,7 +439,43 @@ class Plot_Task(object):
 		encoded = quote(plaintext, safe='');
 		return (index, encoded)
 		
+		
+class PlotCorrelation_Task(object):
+	def __init__(self, name, params):
+		self.__name = name
+		self.__params = params
 	
+	def getName(self):
+		return self.__name
+		
+	def getType(self):
+		return "PlotCorrelation"
+	
+	def run(self):
+		nameA = self.__name
+		(nameB, sample_1, sample_2) = self.__params
+		plt.ioff()	
+		
+		sns.set(color_codes=True)
+		
+		fig = plt.figure(figsize=(6, 6))
+
+		def hexbin(x, y, color, **kwargs):
+			cmap = sns.light_palette(color, as_cmap=True)
+			ax = plt.hexbin(x, y, cmap=cmap, **kwargs)
+
+		hexbin(sample_1, sample_2, "#000070")
+
+		fig.tight_layout()
+		imgdata = io.StringIO()
+		fig.savefig(imgdata, format='svg')
+		plt.close(fig)
+		plaintext = imgdata.getvalue()
+		plaintext = " ".join(plaintext[plaintext.find("<svg "):].split())
+		encoded = quote(plaintext, safe='');
+		return (nameB, encoded)
+
+			
 class Profile:
 	__TOKEN = object();		
 	__pageCount = 0
@@ -423,7 +487,7 @@ class Profile:
 		if token is not self.__TOKEN:
 			raise ValueError("call create(G) to create an instance")
 		self.__G = G
-		self.__measures = {}
+		self.__measures = collections.OrderedDict()
 		self.__correlations = {}
 		
 	
@@ -433,11 +497,11 @@ class Profile:
 		
 		for parameter in [ 
 			(centrality.DegreeCentrality, 			(G, )),
-			#(centrality.CoreDecomposition, 			(G, )),
+			(centrality.CoreDecomposition, 			(G, )),
 			#(centrality.LocalClusteringCoefficient, (G, )),
 			#(centrality.PageRank, 					(G, )),
-			#(centrality.KPathCentrality,			(G, )),
-			#(centrality.KatzCentrality,				(G, )),
+			# (centrality.KPathCentrality,			(G, )),
+			# (centrality.KatzCentrality,				(G, )),
 			(centrality.ApproxBetweenness2,			(G, max(42, G.numberOfNodes() / 1000), False))
 		]: result.__addMeasure(parameter)
 		
@@ -476,13 +540,30 @@ class Profile:
 		templateMeasure = readfile("measure.html")
 		
 		centralities = ""
+		
+		def funcHeatTable(correlationName):
+			result = "<div class=\"HeatTable\" title=\"" + correlationName + "\">"
+			keyBList = []
+			for keyA in self.__measures:
+				keyBList.append(keyA)
+				for keyB in keyBList:
+					try:
+						value = self.__correlations[keyA][keyB]["stat"]
+					except:
+						value = self.__correlations[keyB][keyA]["stat"]
+					result += "<div class=\"HeatCell\" title=\"" + keyB + " <-> " + keyA + "\" data-image=\"data:image/svg+xml;utf8," + self.__correlations[keyB][keyA]["image"] + "\" data-heat=\"{:+.3F}\"></div>".format(value[correlationName])
+				result += "<div class=\"HeatCellName\">" + keyB + "</div><br>"
+			result += "</div>"
+			return result
+		centralities += funcHeatTable("Pearson's Correlation Coefficient")
+		centralities += funcHeatTable("Spearman's Rang Correlation Coefficient")
+		centralities += funcHeatTable("Fechner's Correlation Coefficient")
+		
 		for key in self.__measures:
 			measure = self.__measures[key]
 			image = measure["image"]
 			stat = measure["stat"]
 			centralities += self.__formatMeasureTemplate(templateMeasure, key, image, stat)
-			
-			#centralities = centralities + "<div class=\"Plot\" title=\"" + key + "\" data-image=\"data:image/svg+xml;utf8," + image + "\" />"
 			
 		templateProfile = readfile("profile.html")
 		result = templateProfile.format(**locals())
@@ -503,7 +584,6 @@ class Profile:
 		(measureClass, parameters) = args
 		measureName = measureClass.__name__
 		measure = {}
-		measure["index"] = len(self.__measures)
 		measure["class"] = measureClass
 		measure["parameters"] = parameters
 		measure["data"] = {}
@@ -532,28 +612,68 @@ class Profile:
 			elapsed = timerInstance.elapsed
 			if self.__verbose:
 				print("{:.2F} s".format(elapsed))
-			measure["data"]["sample"] = sample = instance.scores()
-			measure["data"]["sorted"] = sampleSorted = sorted(measure["data"]["sample"])
-			measure["data"]["ranged"] = sampleRanged = ranged(measure["data"]["sample"])
-			tasks.put(Stat_Task(name, (sample, sampleSorted, sampleRanged)))
+			measure["data"]["sample"] = instance.scores()
+			measure["data"]["sorted"] = sorted(measure["data"]["sample"])
+			measure["data"]["ranged"] = ranged(measure["data"]["sample"])
+			tasks.put(Stat_Task(name, (
+				measure["data"]["sample"],
+				measure["data"]["sorted"],
+				measure["data"]["ranged"]
+			)))
 			numberOfTasks += 1
 			measure["time"] = elapsed
 		
 		while(numberOfTasks):
 			(type, name, data) = results.get()
-			if (type == "Plot"):
+			if (type == "PlotMeasure"):
 				(index, image) = data
 				self.__measures[name]["image"] = image
 			elif (type == "Stat"):
 				self.__measures[name]["stat"] = data
-				tasks.put(Plot_Task(name, (0, self.__measures[name]["data"]["sample"], data)))
+				tasks.put(PlotMeasure_Task(name, (
+					0,
+					self.__measures[name]["data"]["sample"],
+					self.__measures[name]["stat"]
+				)))
 				numberOfTasks += 1
 				
 				for key in self.__correlations:
-					print(name + " <-> " + key)
-				self.__correlations[name] = {}
-			numberOfTasks -= 1
+					self.__correlations[key][name] = {}
+					self.__correlations[key][name]["stat"] = {}
+					tasks.put(Correlation_Task(key, (
+						name,
+						self.__measures[key]["data"]["sample"],
+						self.__measures[key]["data"]["ranged"],
+						self.__measures[key]["stat"],
+						self.__measures[name]["data"]["sample"],
+						self.__measures[name]["data"]["ranged"],
+						self.__measures[name]["stat"]
+					)))
+					numberOfTasks += 1
 					
+					tasks.put(PlotCorrelation_Task(key, (
+						name,
+						self.__measures[key]["data"]["sample"],
+						self.__measures[name]["data"]["sample"]
+					)))
+					numberOfTasks += 1
+					
+				self.__correlations[name] = {}
+				self.__correlations[name][name] = {}
+				self.__correlations[name][name]["stat"] = {	
+					"Spearman's Rang Correlation Coefficient": 1,
+					"Pearson's Correlation Coefficient": 1,
+					"Fechner's Correlation Coefficient": 1
+				}
+				self.__correlations[name][name]["image"] = "" 
+			elif (type == "Correlation"):
+				(nameB, correlation) = data
+				self.__correlations[name][nameB]["stat"] = correlation
+			elif (type == "PlotCorrelation"):
+				(nameB, image) = data
+				self.__correlations[name][nameB]["image"] = image
+			numberOfTasks -= 1
+		
 		for i in range(self.__parallel):
 			tasks.put(None)
 		tasks.join()
