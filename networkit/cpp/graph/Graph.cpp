@@ -890,7 +890,7 @@ Graph Graph::transpose() const {
 
 	GraphBuilder gB(z, weighted, true);
 
-	this->parallelForEdges([&](node u, node v) {
+	this->forEdges([&](node u, node v) {
 		gB.addHalfEdge(v, u, weight(u,v));
 	});
 
