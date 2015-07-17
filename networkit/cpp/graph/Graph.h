@@ -84,7 +84,6 @@ private:
 
 	/**
 	 * Returns the edge weight of the outgoing edge of index i in the outgoing edges of node u
-	 *
 	 * @param u The node
 	 * @param i The index
 	 * @return The weight of the outgoing edge or defaultEdgeWeight if the graph is unweighted
@@ -737,6 +736,7 @@ public:
 
 	/**
 	 * Return edge weight of edge {@a u,@a v}. Returns 0 if edge does not exist.
+	 * BEWARE: Running time is \Theta(deg(u))!
 	 *
 	 * @param u Endpoint of edge.
 	 * @param v Endpoint of edge.
@@ -1418,9 +1418,9 @@ void Graph::BFSEdgesFrom(node r, L handle) const {
 		node u = q.front();
 		q.pop();
 		// apply function
-		forNeighborsOf(u, [&](node v) {
+		forNeighborsOf(u, [&](node v, edgeweight w, edgeid eid) {
 			if (!marked[v]) {
-				handle(u, v);
+				handle(u, v, w, eid);
 				q.push(v);
 				marked[v] = true;
 			}

@@ -37,6 +37,7 @@ void NetworKit::PageRank::run() {
 		G.balancedParallelForNodes([&](node u) {
 			pr[u] = 0.0;
 			G.forInEdgesOf(u, [&](node u, node v, edgeweight w) {
+				// note: error in definition in Newman's book (Ch. 7) regarding directed graphs, fixed here
 				pr[u] += scoreData[v] * w / deg[v];
 			});
 			pr[u] *= damp;
