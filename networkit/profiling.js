@@ -24,8 +24,10 @@
  */
 function NetworKit_pageEmbed(id)
 {
-	var elements = document.getElementById(id).getElementsByClassName("Plot");
 	var i, j;
+	var elements;
+	
+	elements = document.getElementById(id).getElementsByClassName("Plot");
 	for (i=0; i<elements.length; i++) {
 		elements[i].id = id + "_Plot_" + i;
 		var data = elements[i].getAttribute("data-image").split("|");
@@ -39,6 +41,25 @@ function NetworKit_pageEmbed(id)
 			elements[i].setAttribute("data-image-" + j, data[j]);
 		}
 		NetworKit_plotUpdate(elements[i]);
+		elements[i].onclick = function (e) {
+			NetworKit_overlayShow((e.target) ? e.target : e.srcElement);
+		}
+	}
+	
+	elements = document.getElementById(id).getElementsByClassName("HeatCell");
+	for (i=0; i<elements.length; i++) {
+		var data;
+		
+		data = Math.abs(parseFloat(elements[i].getAttribute("data-heat")));
+		elements[i].style.backgroundColor = (data <= 1) ? "hsl(" + (240 + 120 * data) + ", 60%, 70%)" : "#00FF00";
+		
+		data = elements[i].getAttribute("data-image").split("|");
+		elements[i].removeAttribute("data-image");
+		elements[i].setAttribute("data-image-index", 0);
+		elements[i].setAttribute("data-image-length", data.length);
+		for (j=0; j<data.length; j++) {
+			elements[i].setAttribute("data-image-" + j, data[j]);
+		}
 		elements[i].onclick = function (e) {
 			NetworKit_overlayShow((e.target) ? e.target : e.srcElement);
 		}
