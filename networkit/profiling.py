@@ -163,8 +163,13 @@ class Stat_Task(object):
 			result **= 1 / p
 			return result			
 		results["Location"]["Arithmetic Mean"] = arithmeticMean = hoelderMean(sample, 1)
-		results["Location"]["Arithmetic Mean (Rang)"] = arithmeticMean_Rang = hoelderMean(sampleRanged, 1)
 		results["Location"]["Quadratic Mean"] = quadraticMean = hoelderMean(sample, 2)
+		
+		def funcArithmeticMeanRang():
+			result = (n + 1) / 2
+			return result
+		results["Location"]["Arithmetic Mean (Rang)"] = arithmeticMean_Rang = funcArithmeticMeanRang()
+		
 		
 		def funcUncorrectedVariance(sample, arithmeticMean):
 			result = 0
@@ -462,7 +467,12 @@ class PlotCorrelation_Task(object):
 
 		def hexbin(x, y, color, **kwargs):
 			cmap = sns.light_palette(color, as_cmap=True)
-			ax = plt.hexbin(x, y, cmap=cmap, **kwargs)
+			ax = plt.hexbin(x, y, gridsize=32, bins="log", cmap=cmap, **kwargs)
+			xTicks = plt.xticks([])
+			yTicks = plt.yticks([])
+			xLabel = plt.xlabel(nameA)
+			yLabel = plt.ylabel(nameB)
+	
 
 		hexbin(sample_1, sample_2, "#000070")
 
@@ -480,7 +490,7 @@ class Profile:
 	__TOKEN = object();		
 	__pageCount = 0
 	__verbose = False
-	__parallel = multiprocessing.cpu_count() * 2 - 1
+	__parallel = multiprocessing.cpu_count() * 2
 		
 		
 	def __init__(self, G, token):
@@ -498,10 +508,10 @@ class Profile:
 		for parameter in [ 
 			(centrality.DegreeCentrality, 			(G, )),
 			(centrality.CoreDecomposition, 			(G, )),
-			#(centrality.LocalClusteringCoefficient, (G, )),
-			#(centrality.PageRank, 					(G, )),
-			# (centrality.KPathCentrality,			(G, )),
-			# (centrality.KatzCentrality,				(G, )),
+			(centrality.LocalClusteringCoefficient, (G, )),
+			(centrality.PageRank, 					(G, )),
+			(centrality.KPathCentrality,			(G, )),
+			(centrality.KatzCentrality,				(G, )),
 			(centrality.ApproxBetweenness2,			(G, max(42, G.numberOfNodes() / 1000), False))
 		]: result.__addMeasure(parameter)
 		
@@ -548,10 +558,10 @@ class Profile:
 				keyBList.append(keyA)
 				for keyB in keyBList:
 					try:
-						value = self.__correlations[keyA][keyB]["stat"]
+						value = self.__correlations[keyA][keyB]
 					except:
-						value = self.__correlations[keyB][keyA]["stat"]
-					result += "<div class=\"HeatCell\" title=\"" + keyB + " <-> " + keyA + "\" data-image=\"data:image/svg+xml;utf8," + self.__correlations[keyB][keyA]["image"] + "\" data-heat=\"{:+.3F}\"></div>".format(value[correlationName])
+						value = self.__correlations[keyB][keyA]
+					result += "<div class=\"HeatCell\" title=\"" + keyB + " - " + keyA + "\" data-image=\"data:image/svg+xml;utf8," + value["image"] + "\" data-heat=\"{:+.3F}\"></div>".format(value["stat"][correlationName])
 				result += "<div class=\"HeatCellName\">" + keyB + "</div><br>"
 			result += "</div>"
 			return result
