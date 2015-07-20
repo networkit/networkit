@@ -159,7 +159,7 @@ public:
 
 				split();
 
-				for (uint i = 0; i < content.size(); i++) {
+				for (index i = 0; i < content.size(); i++) {
 					this->addContent(content[i], angles[i], radii[i]);
 				}
 				subTreeSize = content.size();
@@ -171,7 +171,7 @@ public:
 		}
 		else {
 			assert(children.size() > 0);
-			for (uint i = 0; i < children.size(); i++) {
+			for (index i = 0; i < children.size(); i++) {
 				if (children[i].responsible(angle, R)) {
 					children[i].addContent(input, angle, R);
 					break;
@@ -458,7 +458,7 @@ public:
 			assert(angles.size() == 0);
 			assert(radii.size() == 0);
 			vector<T> result;
-			for (uint i = 0; i < children.size(); i++) {
+			for (index i = 0; i < children.size(); i++) {
 				std::vector<T> subresult = children[i].getElements();
 				result.insert(result.end(), subresult.begin(), subresult.end());
 			}
@@ -476,7 +476,7 @@ public:
 			assert(content.size() == 0);
 			assert(angles.size() == 0);
 			assert(radii.size() == 0);
-			for (uint i = 0; i < children.size(); i++) {
+			for (index i = 0; i < children.size(); i++) {
 				children[i].getCoordinates(anglesContainer, radiiContainer);
 			}
 		}
@@ -499,7 +499,7 @@ public:
 		assert(this->responsible(angle, r));
 		if (isLeaf) return *this;//will this return the reference to the subtree itself or to a copy?
 		else {
-			for (uint i = 0; i < children.size(); i++) {
+			for (index i = 0; i < children.size(); i++) {
 				bool foundResponsibleChild = false;
 				if (children[i].responsible(angle, r)) {
 					assert(foundResponsibleChild == false);
@@ -571,7 +571,7 @@ public:
 				}
 			}
 		}	else {
-			for (uint i = 0; i < children.size(); i++) {
+			for (index i = 0; i < children.size(); i++) {
 				children[i].getElementsInEuclideanCircle(center, radius, result, minAngle, maxAngle, lowR, highR);
 			}
 		}
