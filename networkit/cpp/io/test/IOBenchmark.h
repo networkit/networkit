@@ -20,8 +20,8 @@ namespace NetworKit {
 
 class IOBenchmark: public testing::Test {
 public:
-	IOBenchmark();
-	virtual ~IOBenchmark();
+	IOBenchmark() = default;
+	virtual ~IOBenchmark() = default;
 };
 
 } /* namespace NetworKit */
