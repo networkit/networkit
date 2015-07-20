@@ -8,17 +8,11 @@
 #ifndef NOGTEST
 
 #include "IOBenchmark.h"
+#include "../RasterReader.h"
+#include "../../generators/Quadtree/Quadtree.h"
 
 namespace NetworKit {
 
-IOBenchmark::IOBenchmark() {
-	// TODO Auto-generated constructor stub
-
-}
-
-IOBenchmark::~IOBenchmark() {
-	// TODO Auto-generated destructor stub
-}
 
 
 TEST_F(IOBenchmark, timeMETISGraphReader) {
@@ -39,6 +33,36 @@ TEST_F(IOBenchmark, timeMETISGraphReader) {
 	EXPECT_TRUE(! G.isEmpty());
 
 }
+
+
+TEST_F(IOBenchmark, benchRasterReader) {
+	double normalizationFactor = 0.05;
+	RasterReader reader(normalizationFactor);
+	std::vector<double> xcoords;
+	std::vector<double> ycoords;
+	Aux::Timer runtime;
+
+	std::vector<std::string> countries = {"deu", "fra", "usa"};
+	for (auto country: countries) {
+		std::string path("input/" + country + "p00ag.asc");
+
+		// read raster file
+		INFO("[BEGIN] reading raster data set: ", path);
+		runtime.start();
+		std::tie(xcoords, ycoords) = reader.read(path);
+		runtime.stop();
+		INFO("[DONE] reading raster data set " , runtime.elapsedTag());
+		EXPECT_EQ(xcoords.size(), ycoords.size());
+
+		// perform range queries
+		// Quadtree(xcoords, ycoords);
+		uint64_t numQueries = 1000;
+		for (uint64_t q = 0; q < numQueries; ++q) {
+			// TODO
+		}
+	}
+}
+
 
 } /* namespace NetworKit */
 
