@@ -41,21 +41,25 @@ TEST_F(IOBenchmark, benchRasterReader) {
 	std::vector<double> xcoords;
 	std::vector<double> ycoords;
 	Aux::Timer runtime;
-	std::string path("input/deup00ag.asc");
 
-	// read raster file
-	INFO("[BEGIN] reading raster data set: ", path);
-	runtime.start();
-	std::tie(xcoords, ycoords) = reader.read(path);
-	runtime.stop();
-	INFO("[DONE] reading raster data set " , runtime.elapsedTag());
-	EXPECT_EQ(xcoords.size(), ycoords.size());
+	std::vector<std::string> countries = {"deu", "fra", "usa"};
+	for (auto country: countries) {
+		std::string path("input/" + country + "p00ag.asc");
 
-	// perform range queries
-	// Quadtree(xcoords, ycoords);
-	uint64_t numQueries = 1000;
-	for (uint64_t q = 0; q < numQueries; ++q) {
-		// TODO
+		// read raster file
+		INFO("[BEGIN] reading raster data set: ", path);
+		runtime.start();
+		std::tie(xcoords, ycoords) = reader.read(path);
+		runtime.stop();
+		INFO("[DONE] reading raster data set " , runtime.elapsedTag());
+		EXPECT_EQ(xcoords.size(), ycoords.size());
+
+		// perform range queries
+		// Quadtree(xcoords, ycoords);
+		uint64_t numQueries = 1000;
+		for (uint64_t q = 0; q < numQueries; ++q) {
+			// TODO
+		}
 	}
 }
 

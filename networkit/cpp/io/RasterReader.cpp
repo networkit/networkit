@@ -60,6 +60,9 @@ NetworKit::RasterReader::read(const std::string& path)
 	double ylb = 1.0 - ydelta;            // lower bound in y-direction
 	double xub = xdelta;                  // upper bound in x-direction
 	double yub = 1.0;                     // upper bound in y-direction
+	double validate = 0.0;                // to validate the sum of the values
+
+	DEBUG("xdelta: ", xdelta, ", ydelta: ", ydelta);
 
 	std::vector<double> xcoords;          // stores the x-coordinates of generated points
 	std::vector<double> ycoords;          // stores the y-coordinates of generated points
@@ -72,17 +75,18 @@ NetworKit::RasterReader::read(const std::string& path)
 		for (uint64_t col = 0; col < ncols; ++col) {
 			// read next number
 			std::tie(val, it) = Aux::Parsing::strTo<double>(it, end);
+			validate += val;
 //			TRACE("row: ", row, ", col: ", col, ", val: ", val);
 
 			// divide by "normalizer" and round down
 			val *= normalizationFactor;
-			uint64_t numPointsInCell = (uint64_t) val;
+			uint64_t numPointsInCell = (uint64_t) std::round(val);
 
 			for (uint64_t i = 0; i < numPointsInCell; ++i) {
 				// insert random coordinate into coordinate arrays
 				xcoords.push_back(Aux::Random::real(xlb, xub));
 				ycoords.push_back(Aux::Random::real(ylb, yub));
-				TRACE("point: (", xcoords.back(), ",", ycoords.back(), ")");
+//				TRACE("point: (", xcoords.back(), ",", ycoords.back(), ")");
 			}
 
 			// adjust x-coordinate
@@ -96,7 +100,7 @@ NetworKit::RasterReader::read(const std::string& path)
 		yub = ylb;
 		ylb -= ydelta;
 	}
-	DEBUG("Created ", xcoords.size(), " 2D points");
+	DEBUG("Created ", xcoords.size(), " 2D points, validation: ", validate, " vs ", xcoords.size() / normalizationFactor);
 	return std::make_pair(xcoords, ycoords);
 }
 
