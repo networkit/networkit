@@ -10,6 +10,7 @@
 #include <unordered_set>
 
 #include "Graph.h"
+#include "GraphBuilder.h"
 
 namespace NetworKit {
 
@@ -18,6 +19,7 @@ namespace NetworKit {
 Graph::Graph(count n, bool weighted, bool directed) :
 	n(n),
 	m(0),
+	storedNumberOfSelfLoops(0),
 	z(n),
 	omega(0),
 	t(0),
@@ -55,6 +57,7 @@ Graph::Graph(count n, bool weighted, bool directed) :
 Graph::Graph(const Graph& G, bool weighted, bool directed) :
 	n(G.n),
 	m(G.m),
+	storedNumberOfSelfLoops(G.storedNumberOfSelfLoops),
 	z(G.z),
 	omega(0),
 	t(G.t),
@@ -392,13 +395,7 @@ void Graph::sortEdges() {
 		};
 
 	forNodes([&](node u) {
-		if (isDirected()) {
-			forInEdgesOf(u, [&](node u, node v, edgeweight w, edgeid eid) {
-				assignToTarget(v, u, w, eid);
-			});
-		} else {
-			forEdgesOf(u, assignToTarget);
-		}
+		forInEdgesOf(u, assignToTarget);
 	});
 
 	outEdges.swap(targetAdjacencies);
@@ -503,6 +500,14 @@ void Graph::removeNode(node v) {
 
 	exists[v] = false;
 	n--;
+}
+
+void Graph::restoreNode(node v){
+	assert(v < z);
+	assert(!exists[v]);
+
+	exists[v] = true;
+	n++;
 }
 
 
@@ -619,6 +624,10 @@ void Graph::addEdge(node u, node v, edgeweight ew) {
 			outEdgeIds[v].push_back(omega - 1);
 		}
 	}
+
+	if (u == v) { //count self loop
+		storedNumberOfSelfLoops++;
+	}
 }
 
 void Graph::removeEdge(node u, node v) {
@@ -660,9 +669,24 @@ void Graph::removeEdge(node u, node v) {
 		}
 	}
 
+	if (u == v) {
+		storedNumberOfSelfLoops--;
+		assert(storedNumberOfSelfLoops >= 0);
+	}
+
 	// dose not make a lot of sense do remove attributes,
 	// cause the edge is marked as deleted and we have no null values for the attributes
 }
+
+void Graph::removeSelfLoops() {
+	this->forEdges([&](node u, node v, edgeweight ew) {
+		if (u == v) {
+			removeEdge(u, v);
+		}
+	});
+
+}
+
 
 void Graph::swapEdge(node s1, node t1, node s2, node t2) {
 	index s1t1 = indexInOutEdgeArray(s1, t1);
@@ -751,14 +775,7 @@ std::vector< std::pair<node, node> > Graph::randomEdges(count nr) const {
 /** GLOBAL PROPERTIES **/
 
 count Graph::numberOfSelfLoops() const {
-	count c = 0;
-	parallelForEdges([&](node u, node v) {
-		if (u == v) {
-			#pragma omp atomic
-			c += 1;
-		}
-	});
-	return c;
+	return storedNumberOfSelfLoops;
 }
 
 
@@ -867,6 +884,27 @@ std::vector<node> Graph::neighbors(node u) const {
 	return neighbors;
 }
 
+Graph Graph::transpose() const {
+	if (directed == false) {
+		throw std::runtime_error("The transpose of an undirected graph is identical to the original graph.");
+	}
+
+	GraphBuilder gB(z, weighted, true);
+
+	this->forEdges([&](node u, node v) {
+		gB.addHalfEdge(v, u, weight(u,v));
+	});
+
+	Graph GTranspose = gB.toGraph(true);
+	for (node u = 0; u < z; ++u) {
+		if (! exists[u]) {
+			GTranspose.removeNode(u);
+		}
+	}
+	GTranspose.t = t;
+	GTranspose.setName(getName() + "Transpose");
+	return std::move(GTranspose);
+}
 
 Graph Graph::toUndirected() const {
 	if (directed == false) {

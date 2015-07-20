@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-MaxClique::MaxClique(const Graph& G): G(G), maxi(0) {
+MaxClique::MaxClique(const Graph& G, count lb): G(G), maxi(lb) {
 
 }
 
@@ -43,8 +43,7 @@ void MaxClique::clique(std::set<node>& U, count size) {
 	}
 }
 
-count MaxClique::run(count lb) {
-	maxi = lb;
+void MaxClique::run() {
 
 	G.forNodes([&](node u) {
 		if (G.degree(u) >= maxi) { // pruning 1
@@ -59,8 +58,10 @@ count MaxClique::run(count lb) {
 			clique(U, 1);
 		}
 	});
+}
 
-	return maxi;
+count MaxClique::getMaxCliqueSize() {
+		return maxi;
 }
 
 } /* namespace NetworKit */

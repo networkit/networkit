@@ -7,6 +7,7 @@
 
 #include "ErdosRenyiGenerator.h"
 #include "../auxiliary/Random.h"
+#include "../auxiliary/SignalHandling.h"
 
 namespace NetworKit {
 
@@ -23,6 +24,7 @@ static inline count get_next_edge_distance(const double log_cp) {
 }
 
 Graph ErdosRenyiGenerator::generate() {
+	Aux::SignalHandler handler;
 	Graph G(n, false, directed);
 	const double log_cp = log(1.0 - p); // log of counter probability
 
@@ -30,6 +32,7 @@ Graph ErdosRenyiGenerator::generate() {
 	node curr = 1;
 	node next = -1; // according to Batagelj/Brandes
 	while (curr < n) {
+		handler.assureRunning();
 		// compute new step length
 		next += get_next_edge_distance(log_cp);
 
@@ -47,7 +50,7 @@ Graph ErdosRenyiGenerator::generate() {
 	}
 
 	G.shrinkToFit();
-	return G;
+	return std::move(G);
 }
 
 } /* namespace NetworKit */

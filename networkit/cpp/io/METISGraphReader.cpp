@@ -10,6 +10,7 @@
 #include "../auxiliary/Enforce.h"
 #include "../auxiliary/Log.h"
 #include "../auxiliary/StringTools.h"
+#include "../graph/GraphBuilder.h"
 
 namespace NetworKit {
 
@@ -36,14 +37,15 @@ Graph METISGraphReader::read(const std::string& path) {
 		ignoreFirst = ncon;
 	}
 
-	Graph G(n, weighted);
+	GraphBuilder b(n, weighted);
 	std::string graphName = Aux::StringTools::split(Aux::StringTools::split(path, '/').back(), '.').front();
-
-	G.setName(graphName);
+	b.setName(graphName);
 
 	INFO("\n[BEGIN] reading graph G(n=", n, ", m=", m, ") from METIS file: ", graphName);	// progress bar follows
 
+#if (LOG_LEVEL == LOG_LEVEL_TRACE)
 	double p = 0.0; // percentage for progress bar
+#endif
 	node u = 0; // begin with 0
 	count edgeCounter = 0;
 	if (weighted == 0) {
@@ -57,19 +59,18 @@ Graph METISGraphReader::read(const std::string& path) {
 				}
 				node v = adjacencies[i] - 1; 	// METIS-indices are 1-based
 				Aux::Checkers::Enforcer::enforce(v >= 0 && v < n);
-				if (u <= v) { // self-loops are allowed
-					G.addEdge(u, v);
-				}
+				b.addHalfEdge(u, v);
 			}
 			u++; // next node
+#if (LOG_LEVEL == LOG_LEVEL_TRACE)
 			if ((u % ((n + 10)/10)) == 0) {
 				p = ((double) (u-1) / (double) n) * 100;
 				DEBUG(p, "% ");
 			}
+#endif
 		}
 	} else {
 		while (parser.hasNext() && u < n) {
-
 			std::vector<std::pair<node,double>> adjacencies = parser.getNextWithWeights(ignoreFirst);
 			edgeCounter += adjacencies.size();
 			DEBUG("node ",u," has ",adjacencies.size()," edges");
@@ -81,18 +82,21 @@ Graph METISGraphReader::read(const std::string& path) {
 				node v = adjacencies[i].first- 1; 	// METIS-indices are 1-based
 				double weight = adjacencies[i].second;
 				Aux::Checkers::Enforcer::enforce(v >= 0 && v < n);
-				if (u <= v) { // self-loops are allowed
-					G.addEdge(u, v, weight);
-					TRACE("(",u,",",v,",",adjacencies[i].second,")");
-				}
+				b.addHalfEdge(u, v, weight);
+				TRACE("(",u,",",v,",",adjacencies[i].second,")");
 			}
 			u += 1; // next node
+#if (LOG_LEVEL == LOG_LEVEL_TRACE)
 			if ((u % ((n + 10)/10)) == 0) {
 				p = ((double) (u-1) / (double) n) * 100;
 				DEBUG(p, "% ");
 			}
+#endif
 		}
 	}
+
+	auto G = b.toGraph(false);
+
 	if (G.numberOfEdges() != m) {
 		ERROR("METIS file is corrupted: actual number of added edges doesn't match the specifed number of edges");
 	}
@@ -101,8 +105,7 @@ Graph METISGraphReader::read(const std::string& path) {
 	}
 
 	INFO("\n[DONE]\n");
-	G.shrinkToFit();
-	return G;
+	return std::move(G);
 }
 
 } /* namespace NetworKit */

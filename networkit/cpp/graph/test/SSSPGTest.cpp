@@ -117,4 +117,77 @@ TEST_F(SSSPGTest, testGetAllShortestPaths) {
 	}
 }
 
-} /* namespace NetworKit */
+TEST_F(SSSPGTest, testDirectedBFS) {
+/* Graph:
+         ________
+		/        \.
+	   0     3.    6
+		\. ./  \ ./
+		  2     .5
+		./  \. / \.
+	   1     4    7
+*/
+	int n = 8;
+	// G directed unweighted
+	Graph G(n, false, true);
+
+	G.addEdge(0, 6);
+	G.addEdge(0, 2);
+	G.addEdge(3, 2);
+	G.addEdge(5, 3);
+	G.addEdge(6, 5);
+	G.addEdge(5, 7);
+	G.addEdge(4, 5);
+	G.addEdge(2, 4);
+	G.addEdge(2, 1);
+
+
+	BFS sssp(G, 0);
+	sssp.run();
+	EXPECT_EQ(sssp.distance(0), 0);
+	EXPECT_EQ(sssp.distance(1), 2);
+	EXPECT_EQ(sssp.distance(2), 1);
+	EXPECT_EQ(sssp.distance(3), 3);
+	EXPECT_EQ(sssp.distance(4), 2);
+	EXPECT_EQ(sssp.distance(5), 2);
+	EXPECT_EQ(sssp.distance(6), 1);
+	EXPECT_EQ(sssp.distance(7), 3);
+}
+
+TEST_F(SSSPGTest, testDirectedDijkstra) {
+/* Graph:
+         ________
+		/        \.
+	   0     3.    6
+		\. ./  \ ./
+		  2     .5
+		./  \. / \.
+	   1     4    7
+*/
+	int n = 8;
+	// G directed unweighted
+	Graph G(n, false, true);
+
+	G.addEdge(0, 6, 1);
+	G.addEdge(0, 2, 1);
+	G.addEdge(3, 2, 1);
+	G.addEdge(5, 3, 1);
+	G.addEdge(6, 5, 1);
+	G.addEdge(5, 7, 1);
+	G.addEdge(4, 5, 1);
+	G.addEdge(2, 4, 1);
+	G.addEdge(2, 1, 1);
+
+
+	Dijkstra sssp(G, 0);
+	sssp.run();
+	EXPECT_EQ(sssp.distance(0), 0);
+	EXPECT_EQ(sssp.distance(1), 2);
+	EXPECT_EQ(sssp.distance(2), 1);
+	EXPECT_EQ(sssp.distance(3), 3);
+	EXPECT_EQ(sssp.distance(4), 2);
+	EXPECT_EQ(sssp.distance(5), 2);
+	EXPECT_EQ(sssp.distance(6), 1);
+	EXPECT_EQ(sssp.distance(7), 3);
+}
+}

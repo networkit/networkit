@@ -45,12 +45,12 @@ void KPathCentrality::run() {
 	std::stack<node> stack;
 	node v;
 
-	for (int i = 1; i <= t; i++) { // FIXME: int -> count
+	for (index i = 1; i <= t; i++) { // FIXME: int -> count
 		node s = G.randomNode();
-		int l = Aux::Random::integer(1, k);
+		auto l = Aux::Random::integer(1, k);
 		explored[s] = true;
 		stack.push(s);
-		int j = 1;
+		count j = 1;
 
 		while (j <= l) {
 			edgeweight sum = 0;
@@ -70,7 +70,7 @@ void KPathCentrality::run() {
 			}
 			if (G.isWeighted()) {
 				double random = Aux::Random::real(0, sum);
-				for (int x = 0; x < weights.size(); x++) {
+				for (index x = 0; x < weights.size(); x++) {
 					if (random < weights[x]) {
 						v = neighbours[x];
 						break;
@@ -97,7 +97,7 @@ void KPathCentrality::run() {
 		scoreData[v] = k * n * ((double) counter[v] / t);
 	});
 
-	ran = true;
+	hasRun = true;
 }
 
 

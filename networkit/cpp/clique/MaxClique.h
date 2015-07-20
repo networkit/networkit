@@ -34,17 +34,23 @@ public:
 	/**
 	 * Constructor for maximum clique algorithm.
 	 * @param[in] G Graph @a G for which algorithm should be run.
+	 * @param[in] lb Lower bound for maximum clique size.
 	 */
-	MaxClique(const Graph& G);
+	MaxClique(const Graph& G, count lb=0);
 
 	/**
 	 * Actual maximum clique algorithm. Determines largest clique each vertex
 	 * is contained in and returns size of largest. Pruning steps keep running time
 	 * acceptable in practice.
-	 * @param[in] lb Lower bound for maximum clique size.
 	 * @return Size of maximum clique.
 	 */
-	count run(count lb = 0);
+	void run();
+
+	/**
+	 * Get size of maximum clique
+	 * @return size of maximum clique
+	 */
+	count getMaxCliqueSize();
 };
 
 } /* namespace NetworKit */

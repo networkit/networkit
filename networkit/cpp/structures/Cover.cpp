@@ -17,7 +17,7 @@ Cover::Cover() : z(0), omega(0), data(0) {}
 Cover::Cover(index z) : z(z-1), omega(0), data(z) {
 }
 
-Cover::Cover(Partition &p) : z(p.numberOfElements()-1), omega(p.upperBound()-1), data(p.numberOfElements()) {
+Cover::Cover(const NetworKit::Partition &p) : z(p.numberOfElements()-1), omega(p.upperBound()-1), data(p.numberOfElements()) {
 	p.forEntries([&](index e, index s) {
 		if (s != none)
 			data[e].insert(s);
@@ -170,6 +170,12 @@ void Cover::setUpperBound(index upper) {
 	this->omega = upper -1;
 }
 
+std::set<index> Cover::getSubsetIds() const {
+	std::set<index> ids;
+	for (std::set<index> subset : data) {
+		ids.insert(subset.begin(), subset.end());
+	}
+	return ids;
+}
 
 } /* namespace NetworKit */
-

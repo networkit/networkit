@@ -10,6 +10,7 @@
 
 #include "Centrality.h"
 
+
 namespace NetworKit {
 
 /**

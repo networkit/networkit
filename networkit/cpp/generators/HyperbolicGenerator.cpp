@@ -20,8 +20,6 @@
 #include "HyperbolicGenerator.h"
 #include "Quadtree/Quadtree.h"
 #include "../auxiliary/Random.h"
-#include "../auxiliary/ProgressMeter.h"
-
 
 namespace NetworKit {
 
@@ -173,10 +171,9 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 	Aux::Timer timer;
 	timer.start();
 	vector<double> empty;
-	GraphBuilder result(n, false, false, directSwap);
+	GraphBuilder result(n, false, false);
 	bool suppressLeft = directSwap ? false : std::is_sorted(angles.begin(), angles.end());//relying on lazy evaluation here
 
-	Aux::ProgressMeter progress(n, 10000);
 	#pragma omp parallel
 	{
 		index id = omp_get_thread_num();
@@ -203,23 +200,17 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 			} else {
 				for (index j : near) {
 					if (j >= n) ERROR("Node ", j, " prospective neighbour of ", i, " does not actually exist. Oops.");
-					if (j > i) result.addEdge(i,j);
+					if (j > i) result.addHalfEdge(i,j);
 				}
 			}
 
-			if (i % 10000 == 0) {
-				#pragma omp critical (progress)
-				{
-					progress.signal(i);
-				}
-			}
 		}
 		threadtimers[id].stop();
 	}
 
 	timer.stop();
 	INFO("Generating Edges took ", timer.elapsedMilliseconds(), " milliseconds.");
-	return result.toGraph(true);
+	return result.toGraph(!directSwap, true);
 }
 
 Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<double> &radii, Quadtree<index> &quad, double thresholdDistance, double T) {
@@ -237,8 +228,7 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	auto edgeProb = [beta, thresholdDistance](double distance) -> double {return 1 / (exp(beta*(distance-thresholdDistance)/2)+1);};
 
 	//get Graph
-	GraphBuilder result(n, false, false, false);//no direct swap with probabilistic graphs, sorry
-	Aux::ProgressMeter progress(n, 10000);
+	GraphBuilder result(n, false, false);//no direct swap with probabilistic graphs, sorry
 	count totalCandidates = 0;
 	#pragma omp parallel for
 	for (index i = 0; i < n; i++) {
@@ -246,18 +236,12 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 		totalCandidates += quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), edgeProb, anglesSorted, near);
 		for (index j : near) {
 			if (j >= n) ERROR("Node ", j, " prospective neighbour of ", i, " does not actually exist. Oops.");
-			if (j > i) result.addEdge(i, j);
+			if (j > i) result.addHalfEdge(i, j);
 		}
 
-		if (i % 10000 == 0) {
-			#pragma omp critical (progress)
-			{
-				progress.signal(i);
-			}
-		}
 	}
 	DEBUG("Candidates tested: ", totalCandidates);
-	return result.toGraph(true);
+	return result.toGraph(true, true);
 
 }
 }
