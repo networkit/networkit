@@ -45,11 +45,11 @@ struct Benchmark {
 	double residual;
 	SmootherType smootherType;
 
-	vector<string> graphs;
+	vector<Instance> instances;
 };
 
 const vector<Benchmark> BENCHS = { // available benchmarks for different graph types
-	{
+	{ // 0
 		"Grids",
 		10,
 		5,
@@ -57,7 +57,7 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		GAUSS_SEIDEL,
 		GRIDS
 	},
-	{
+	{ // 1
 		"Barabasi",
 		10,
 		5,
@@ -65,7 +65,7 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		GAUSS_SEIDEL,
 		BARABASI
 	},
-	{
+	{ // 2
 		"Laplace",
 		10,
 		5,
@@ -73,7 +73,7 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		GAUSS_SEIDEL,
 		LAPLACE
 	},
-	{
+	{ // 3
 		"Dimacs Numerics",
 		10,
 		5,
@@ -81,7 +81,7 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		GAUSS_SEIDEL,
 		DIMACS_NUMERICS
 	},
-	{
+	{ // 4
 		"Dimacs Sparse",
 		10,
 		5,
@@ -89,7 +89,7 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		GAUSS_SEIDEL,
 		DIMACS_SPARSE
 	},
-	{
+	{ // 5
 		"Dimacs Clustering",
 		10,
 		5,
@@ -97,7 +97,7 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		GAUSS_SEIDEL,
 		DIMACS_CLUSTERING
 	},
-	{
+	{ // 6
 		"Dimacs Street",
 		10,
 		5,
@@ -105,7 +105,15 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		GAUSS_SEIDEL,
 		DIMACS_STREET_NETWORKS
 	},
-	{
+	{ // 7
+		"Facebook100",
+		10,
+		5,
+		1e-6,
+		GAUSS_SEIDEL,
+		FACEBOOK100
+	},
+	{ // 8
 		"Walshaw",
 		10,
 		10,
@@ -122,7 +130,6 @@ Vector randZeroSum(const Graph& G, size_t seed) {
 	count n = G.numberOfNodes();
 	con.run();
 	Partition comps = con.getPartition();
-
 	/* Fill each component randomly such that its sum is 0 */
 	Vector b(n, 0.0);
 
@@ -161,6 +168,7 @@ bool isSymmetric(const CSRMatrix& A) {
 			output = false;
 		}
 	});
+	if (!output) INFO("not symmetric!");
 	return output;
 }
 
@@ -180,6 +188,24 @@ bool isLaplacian(const CSRMatrix& A) {
 	});
 
 	return right_sign && all_of(row_sum.begin(), row_sum.end(), [] (double val) {return abs(val) < EPSILON;});
+}
+
+bool isSDD(const CSRMatrix& A) {
+  if (!isSymmetric(A)) {
+    return false;
+  }
+
+  /* Criterion: a_ii >= \sum_{j != i} a_ij */
+  vector<double> row_sum(A.numberOfRows());
+  A.parallelForNonZeroElementsInRowOrder([&] (node i, node j, double value) {
+    if (i == j) {
+      row_sum[i] += value;
+    } else {
+      row_sum[i] -= abs(value);
+    }
+  });
+
+  return all_of(row_sum.begin(), row_sum.end(), [] (double val) {return val > -EPSILON;});
 }
 
 Graph laplacianToGraph(const CSRMatrix &matrix) {
@@ -202,27 +228,81 @@ Graph matrixToGraph(const CSRMatrix &matrix) {
 	return G;
 }
 
-Graph readGraph(const string& path) {
+Graph sddToLaplacian(const CSRMatrix& A) {
+  assert(isSDD(A));
+  count n = A.numberOfColumns();
+
+  /* Compute row sum and excess */
+  vector<double> abs_row_sum(n);
+  A.parallelForNonZeroElementsInRowOrder([&] (node i, node j, double value) {
+    if (i != j) {
+      abs_row_sum[i] += abs(value);
+    }
+  });
+
+  vector<double> excess(n);
+#pragma omp parallel for
+  for (index i = 0; i < n; ++i) {
+     excess[i] = A(i, i) - abs_row_sum[i];
+  }
+
+  /* Set lower and upper diagonal elements */
+  Graph G(2*n, true);
+  for (index i = 0; i < n; ++i) {
+    G.addEdge(i, i + n, excess[i]/2);
+  }
+
+  /* Distribute original entries of A into the 2 times larger graph G */
+  A.forNonZeroElementsInRowOrder([&] (node i, node j, double value) {
+    if (i < j) {
+      /* Off-diagonals */
+      if (value < 0) {
+        G.addEdge(i,     j,     -value);
+        G.addEdge(i + n, j + n, -value);
+      } else {
+        G.addEdge(i + n,     j, value);
+        G.addEdge(    i, j + n, value);
+      }
+    }
+  });
+
+  return G;
+}
+
+Graph readGraph(Instance& instance) {
 	using namespace Aux::StringTools;
-	if (ends_with(path, ".graph")) {
+	if (ends_with(instance.path, ".graph") || ends_with(instance.path, ".metis")) {
 		METISGraphReader reader;
-		Graph G = reader.read(path);
-		CSRMatrix M = CSRMatrix::adjacencyMatrix(G);
-		if (isLaplacian(M)) {
-			INFO("already laplacian!!");
+		Graph G = reader.read(instance.path);
+		if (instance.type == MATRIX) {
+			CSRMatrix A = CSRMatrix::adjacencyMatrix(G);
+			if (isLaplacian(A)) {
+				instance.type = LAPLACIAN;
+			} else if (isSDD(A)) {
+				instance.type = SDD;
+			} else {
+				INFO(instance.path, " is unknown");
+				instance.type = UNKNOWN;
+			}
 		}
-		return reader.read(path);
-	} else if (ends_with(path, ".mtx")) {
-		INFO("reading ", path);
+
+		return G;
+	} else if (ends_with(instance.path, ".mtx")) {
 		MatrixMarketReader reader;
-		CSRMatrix M = reader.read(path);
+		INFO("reading ", instance.path);
+		CSRMatrix M = reader.read(instance.path);
+		INFO("done");
 		if (isLaplacian(M)) {
-			return laplacianToGraph(M);
+			instance.type = LAPLACIAN;
+		} else if (isSDD(M)) {
+			instance.type = SDD;
 		} else {
-			return matrixToGraph(M);
+			instance.type = UNKNOWN;
 		}
+
+		return matrixToGraph(M);
 	} else {
-		throw std::runtime_error("unknown graph format " + path);
+		throw std::runtime_error("unknown graph format " + instance.path);
 	}
 }
 
@@ -270,7 +350,7 @@ string printLatexDocumentHeader() {
 					"\\usepackage{numprint} \n" <<
 					"\\usepackage[margin=1in]{geometry} \n\n" <<
 					"\\begin{document} \n\n" <<
-					"\\\nprounddigits{2}";
+					"\\nprounddigits{2}\n";
 
 	time_t time_cur = std::time(nullptr);
 	tm* time_local = localtime(&time_cur); // not reentrant
@@ -300,7 +380,7 @@ string printBenchHeader(const Benchmark &bench) {
 string printBenchFooter(const Benchmark &bench) {
 	stringstream ss;
 	ss << "\\end{tabularx} \n";
-	ss << "\\caption{" << bench.graphs[0].substr(0, bench.graphs[0].find_last_of("/")) << "} \n";
+	ss << "\\caption{" << bench.instances[0].path.substr(0, bench.instances[0].path.find_last_of("/")) << "} \n";
 	ss << "\\end{table} \n";
 
 	return ss.str();
@@ -376,44 +456,7 @@ string benchmark(const CSRMatrix &matrix, const Vector &initialX, const Vector &
 	return printTableRow(solverStati, avgSetupTime, avgSolveTime);
 }
 
-string benchmark(const Benchmark &bench) {
-	/* Read all given graphs in parallel */
-	vector<Graph> graphs;
-	vector<future<Graph>> graph_reads;
-	for (const auto& filename : bench.graphs) {
-		graph_reads.emplace_back(async(launch::async, [&] {
-			Graph G = readGraph(filename);
-			G.setName(filename);
-			return G;
-		}));
-	}
-
-	for (auto& read : graph_reads) {
-		graphs.emplace_back(read.get());
-	}
-	sort(graphs.begin(), graphs.end(), [&] (const Graph& G1, const Graph& G2) {
-		return G1.numberOfNodes() < G2.numberOfNodes();
-	});
-
-	/* Convert formats */
-	vector<CSRMatrix> L;
-
-	vector<Vector> b;
-	vector<Vector> x;
-	for (index i = 0; i < bench.graphs.size(); ++i) {
-		auto& G = graphs[i];
-		CSRMatrix LCur = CSRMatrix::graphLaplacian(G);
-		L.emplace_back(LCur);
-
-		Vector bCur = randZeroSum(G, 12345);
-		b.emplace_back(bCur);
-
-		Vector xCur = randVector(G.numberOfNodes());
-		x.emplace_back(xCur);
-
-		writeProblemVectors(bCur, xCur, graphs[i].getName());
-	}
-
+string benchmark(Benchmark &bench) {
 	string output = "";
 	output += printBenchHeader(bench);
 
@@ -428,19 +471,48 @@ string benchmark(const Benchmark &bench) {
 	}
 
 	stringstream ss;
-	for (index i = 0; i < graphs.size(); ++i) {
-		string graphFile = graphs[i].getName().substr(bench.graphs[i].find_last_of("/") + 1, bench.graphs[i].length());
+	for (index i = 0; i < bench.instances.size(); ++i) {
+		Graph G = readGraph(bench.instances[i]);
+		CSRMatrix L;
+		switch(bench.instances[i].type) {
+			case LAPLACIAN:
+				L = CSRMatrix::adjacencyMatrix(G);
+				break;
+			case SDD:
+				L = CSRMatrix::adjacencyMatrix(sddToLaplacian(CSRMatrix::adjacencyMatrix(G)));
+				break;
+			case NETWORK:
+				L = CSRMatrix::graphLaplacian(G);
+				break;
+			default:
+				INFO(bench.instances[i].path, " is unknown matrix. Will not solve this!");
+				continue;
+		}
+
+		string path = bench.instances[i].path;
+		G.setName(path);
+		Vector b = randZeroSum(matrixToGraph(L), 12345);
+		Vector x = randVector(L.numberOfColumns());
+
+		INFO("L = ", L.numberOfRows(), "x", L.numberOfColumns(), "; x = ", x.getDimension(), "; b = ", b.getDimension());
+
+		writeProblemVectors(b, x, G.getName());
+
+		string graphFile = G.getName().substr(path.find_last_of("/") + 1, path.length());
 		output += graphFile.substr(0, graphFile.find_last_of("."));
-		ss << " & " << L[i].numberOfRows() << " x " << L[i].numberOfColumns() << " & ";
-		ss << L[i].nnz() << " & ";
+		ss << " & " << L.numberOfRows() << " x " << L.numberOfColumns() << " & ";
+		ss << L.nnz() << " & ";
 		output += ss.str();
 
 		INFO(graphFile);
 
-		ConnectedComponents con(graphs[i]);
+		Graph Gcheck = matrixToGraph(L);
+		ConnectedComponents con(Gcheck);
+		INFO("checking connected components");
 		con.run();
+		INFO("done");
 		if (con.numberOfComponents() == 1) { // LAMG solver currently only supports connected graphs
-			output += benchmark(L[i], x[i], b[i], graphs[i].getName(), bench.setupTries, bench.solveTriesPerSetup, *smoother);
+			output += benchmark(L, x, b, G.getName(), bench.setupTries, bench.solveTriesPerSetup, *smoother);
 		} else {
 			output += " -  & - & - & - \\\\ \n";
 		}
@@ -457,7 +529,7 @@ TEST_F(LAMGBenchmark, bench) {
 	string texContent = printLatexDocumentHeader();
 	stringstream ss;
 
-	Benchmark bench = BENCHS[0]; // grids
+	Benchmark bench = BENCHS[7]; // facebook
 	texContent += benchmark(bench);
 	ss << bench.name;
 
