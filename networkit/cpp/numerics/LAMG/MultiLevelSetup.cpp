@@ -24,8 +24,6 @@
 
 namespace NetworKit {
 
-count MultiLevelSetup::numAggLevels = 1;
-
 MultiLevelSetup::MultiLevelSetup(const Smoother &smoother) : smoother(smoother) {
 }
 
@@ -36,7 +34,7 @@ void MultiLevelSetup::setup(const Graph &G, LevelHierarchy &hierarchy) const {
 void MultiLevelSetup::setup(const CSRMatrix &matrix, LevelHierarchy &hierarchy) const {
 	CSRMatrix A = matrix;
 	hierarchy.addFinestLevel(A);
-	DEBUG("FINEST\t", matrix.numberOfRows(), "\t", matrix.nnz() - matrix.numberOfRows());
+	INFO("FINEST\t", matrix.numberOfRows(), "\t", matrix.nnz() - matrix.numberOfRows());
 
 	bool doneCoarsening = false;
 	count numTVs = TV_NUM;
@@ -46,7 +44,7 @@ void MultiLevelSetup::setup(const CSRMatrix &matrix, LevelHierarchy &hierarchy) 
 		if (coarseningElimination(A, hierarchy)) {
 			if (!canCoarsen(A)) doneCoarsening = true;
 			level++;
-			DEBUG(level, " ELIM\t\t", A.numberOfRows(), "\t", A.nnz() / 2);
+			INFO(level, " ELIM\t\t", A.numberOfRows(), "\t", A.nnz() / 2);
 		}
 
 		// AGGREGATION
@@ -56,8 +54,7 @@ void MultiLevelSetup::setup(const CSRMatrix &matrix, LevelHierarchy &hierarchy) 
 		} else {
 			coarseningAggregation(A, hierarchy, tv, numTVs);
 			level++;
-			numAggLevels++;
-			DEBUG(level, " AGG\t\t", A.numberOfRows(), "\t", A.nnz() / 2);
+			INFO(level, " AGG\t\t", A.numberOfRows(), "\t", A.nnz() / 2);
 			if (numTVs < TV_MAX) {
 				numTVs += TV_INC;
 			}
@@ -140,24 +137,8 @@ count MultiLevelSetup::lowDegreeSweep(const CSRMatrix &matrix, std::vector<bool>
 	fNode.resize(matrix.numberOfRows(), true); // first mark all nodes as f nodes
 	count numFNodes = 0;
 
-//	std::vector<count> degree(matrix.numberOfRows()); // degree is sum over column vectors of matrix
-//	count sum = 0;
-//	for (index i = 0; i < matrix.numberOfRows(); ++i) {
-//		if (stage == 0) {
-//			degree[i] = matrix.nnzInRow(i);
-//		} else {
-//			degree[i] = matrix.nnzInRow(i)-1;
-//
-//		}
-//		sum += matrix.nnzInRow(i)-1;
-//	}
-//
-//	DEBUG("sum = ", sum);
-
-
-
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
-		if (matrix.nnzInRow(i)-1 <= SETUP_ELIMINATION_MAX_DEGREE && fNode[i]) { // node i has degree <= 4 and can be eliminated
+		if (matrix.nnzInRow(i) <= SETUP_ELIMINATION_MAX_DEGREE && fNode[i]) { // node i has degree <= 4 and can be eliminated
 			numFNodes++;
 			matrix.forNonZeroElementsInRow(i, [&](index j, edgeweight w){ // to maintain independence, mark all neighbors as not eliminated
 				if (j != i)	{ // all neighbors of this f node are c nodes
@@ -282,30 +263,6 @@ void MultiLevelSetup::coarseningAggregation(CSRMatrix &matrix, LevelHierarchy &h
 
 	assert(newIndex == nc[bestAggregate]);
 
-//	LineFileReader reader;
-//	std::stringstream ss;
-//	ss << "status_" << numAggLevels << ".txt";
-//	DEBUG("reading ", ss.str());
-//	std::vector<std::string> lines = reader.read(ss.str());
-//	std::string input = lines[0];
-//	std::string current = "";
-//	index idx = 0;
-//	std::set<index> elements;
-//	for (int i = 0; i < input.size(); ++i) {
-//		if (input[i] != ',') {
-//			current += input[i];
-//		} else {
-//			status[idx++] = (index) std::stod(current);
-//			elements.emplace((index) std::stod(current));
-//			current = "";
-//		}
-//	}
-//	status[idx] = (index) std::stod(current);
-//	elements.emplace((index) std::stod(current));
-//	DEBUG("n = ", idx+1);
-//	DEBUG("set size ", elements.size());
-//	nc[bestAggregate] = elements.size();
-
 	// create interpolation matrix
 	std::vector<std::pair<index, index>> pPositions(matrix.numberOfRows());
 	std::vector<double> pValues(matrix.numberOfRows());
@@ -352,21 +309,6 @@ std::vector<Vector> MultiLevelSetup::generateTVs(const CSRMatrix &matrix, Vector
 		}
 	}
 
-//	LineFileReader reader;
-//	std::stringstream ss;
-//	ss << "tv_" << numAggLevels << ".txt";
-//	std::cout << "reading " << ss.str() << " from disk" << std::endl;
-//	std::vector<std::string> lines = reader.read(ss.str());
-//	DEBUG("expected: ", matrix.numberOfColumns(), " actual: ", lines.size()-1);
-//	for (index i = 0; i < lines.size()-1; ++i) {
-//		index startPos = 0;
-//		index endPos = 0;
-//		for (index k = 0; k < numVectors; ++k) {
-//			endPos = lines[i].find_first_of(",", startPos);
-//			testVectors[k][i] = std::stod(lines[i].substr(startPos, endPos));
-//			startPos = endPos + 1;
-//		}
-//	}
 	return testVectors;
 }
 
@@ -391,7 +333,6 @@ void MultiLevelSetup::addHighDegreeSeedNodes(const CSRMatrix &matrix, std::vecto
 
 		if ((double) deg[i] >= SETUP_AGGREGATION_DEGREE_THRESHOLD * (num / denom)) { // high degree node becomes seed
 			status[i] = i;
-			DEBUG("found high degree nodes");
 		}
 	}
 }
@@ -410,7 +351,6 @@ void MultiLevelSetup::aggregateLooseNodes(const CSRMatrix &strongAdjMatrix, std:
 	}
 
 	if (looseNodes.size() > 0) {
-		DEBUG("Found loose nodes: ", looseNodes.size());
 		status[looseNodes[0]] = looseNodes[0]; // mark first as seed
 		for (index k = 1; k < looseNodes.size(); ++k) {
 			status[looseNodes[k]] = looseNodes[0]; // first loose nodes becomes seed
@@ -491,30 +431,11 @@ void MultiLevelSetup::aggregationStage(const CSRMatrix &matrix, count &nc, const
 		diag[i] = matrix(i,i);
 	}
 
-//	LineFileReader reader;
-//	std::vector<std::string> lines = reader.read("../../../../../Downloads/D.txt");
-//	for (index i = 0; i < lines.size()-1; ++i) {
-//		diag[i] = std::stoi(lines[i]);
-//	}
-//
-//	lines = reader.read("../../../../../Downloads/bin.txt");
-//	bins[9] = std::vector<index>(lines.size()-1);
-//	for (index i = 0; i < lines.size()-1; ++i) {
-//		bins[9][i] = std::stoi(lines[i])-1;
-//	}
-//
-//	lines = reader.read("../../../../../Downloads/bin2.txt");
-//	bins[8] = std::vector<index>(lines.size()-1);
-//	for (index i = 0; i < lines.size()-1; ++i) {
-//		bins[8][i] = std::stoi(lines[i])-1;
-//	}
-
 	for (index k = bins.size(); k-- > 0;) { // iterate over undecided nodes with strong neighbors in decreasing order of strongest neighbor
 		for (index i : bins[k]) {
 			if (status[i] == UNDECIDED) { // node is still undecided
 				index s = 0;
 				if (findBestSeedEnergyCorrected(strongAdjMatrix, affinityMatrix, diag, tVs, status, i, s)) {
-				//if (findBestSeedEnergyCorrected(matrix, affinityMatrix, strongNeighbors[i], testVectors, status, i, s)) {
 					status[s] = s; // s becomes seed
 					status[i] = s; // i's seed is s
 					nc--;

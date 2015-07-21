@@ -23,8 +23,6 @@ class MultiLevelSetup {
 private:
 	const Smoother &smoother;
 
-	static count numAggLevels;
-
 	bool coarseningElimination(CSRMatrix &matrix, LevelHierarchy &hierarchy) const;
 	count lowDegreeSweep(const CSRMatrix &matrix, std::vector<bool> &fNode, index stage) const;
 	void eliminationOperators(const CSRMatrix &matrix, const std::vector<index> &fSet, const std::vector<index> &coarseIndex, CSRMatrix &P, Vector &q) const;
