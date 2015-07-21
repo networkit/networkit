@@ -10,7 +10,6 @@
 
 #include "gtest/gtest.h"
 
-#include "../LAMG.h"
 #include "../../algebraic/Matrix.h"
 #include "../../algebraic/Vector.h"
 #include "../../io/METISGraphReader.h"
@@ -18,9 +17,6 @@
 #include "../../generators/BarabasiAlbertGenerator.h"
 #include "../../properties/ConnectedComponents.h"
 #include "../../structures/Partition.h"
-#include "../LAMGSolver.h"
-#include "../MultigridSolver.h"
-
 
 using namespace std;
 
@@ -33,7 +29,7 @@ protected:
 			"economic_problem/finan512.graph", "structural_problem/bcsstk29.graph", "structural_problem/bcsstk30.graph", "structural_problem/bcsstk31.graph", "structural_problem/bcsstk32.graph",
 			"structural_problem/bcsstk33.graph", "undirected_graphs/598a.graph", "undirected_graphs/cs4.graph", "undirected_graphs/cti.graph", "undirected_graphs/data.graph", "undirected_graphs/fe_4elt2.graph",
 			"undirected_graphs/fe_body.graph", "undirected_graphs/fe_ocean.graph", "undirected_graphs/fe_rotor.graph", "undirected_graphs/fe_sphere.graph", "undirected_graphs/fe_tooth.graph",
-			"undirected_graphs/t60k.graph", "undirected_graphs/uk.graph", "undirected_graphs/wing_nodal.graph", *"walshaw/wing.graph"*/"grid/Laplace_512x512.graph"};
+			"undirected_graphs/t60k.graph", "undirected_graphs/uk.graph", "undirected_graphs/wing_nodal.graph", */"facebook100/Auburn71.mat.txt.metis"/*"grid/Laplace_512x512.graph"*/};
 
 	const std::vector<count> grid2DSizes = {4, 8, 16, 32, 64, 128, 256, 512, 1024};
 	const std::vector<count> grid3DSizes = {2, 4, 8, 16, 32, 64, 128};
