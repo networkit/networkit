@@ -7,7 +7,6 @@
 
 #include "SolverLamg.h"
 #include "LAMGSettings.h"
-//#include "Level.h"
 
 #include <fstream>
 #include <iostream>
@@ -53,7 +52,7 @@ void SolverLamg::solve(Vector &x, const Vector &b, LAMGSolverStatus &status) {
 
 	double residual = (b - hierarchy.at(0).getLaplacian() * x).length();
 	status.residual = residual;
-	DEBUG("final residual\t ", residual);
+	INFO("final residual\t ", residual);
 }
 
 void SolverLamg::solveCycle(Vector &x, const Vector &b, int finest, LAMGSolverStatus &status) {
@@ -78,7 +77,7 @@ void SolverLamg::solveCycle(Vector &x, const Vector &b, int finest, LAMGSolverSt
 	count iterations = 0;
 	status.residualHistory.emplace_back(residual);
 	while (residual > finalResidual && residual < lastResidual && iterations < status.maxIters && timer.elapsedMilliseconds() <= status.maxConvergenceTime ) {
-		DEBUG("iter ", iterations, " r=", residual);
+		INFO("iter ", iterations, " r=", residual);
 		lastResidual = residual;
 
 		cycle(x, b, finest, status);
@@ -93,7 +92,7 @@ void SolverLamg::solveCycle(Vector &x, const Vector &b, int finest, LAMGSolverSt
 	status.numIters = iterations;
 	status.residual = r.length();
 	status.converged = r.length() <= finalResidual;
-	DEBUG("nIter\t ", iterations);
+	INFO("nIter\t ", iterations);
 }
 
 void SolverLamg::cycle(Vector &x, const Vector &b, int finest, const LAMGSolverStatus &status) {
@@ -117,7 +116,7 @@ void SolverLamg::cycle(Vector &x, const Vector &b, int finest, const LAMGSolverS
 		if (currLvl == coarsest) {
 			nextLvl = currLvl - 1;
 			if (currLvl == finest) { // finest level
-				X[currLvl] = smoother.relax(hierarchy.at(currLvl).getLaplacian(), B[currLvl], X[currLvl], 1);
+				X[currLvl] = smoother.relax(hierarchy.at(currLvl).getLaplacian(), B[currLvl], X[currLvl], status.numPreSmoothIters);
 			} else {
 				X[currLvl] = smoother.relax(hierarchy.at(currLvl).getLaplacian(), B[currLvl], X[currLvl], SETUP_RELAX_COARSEST_SWEEPS);
 			}
@@ -200,7 +199,6 @@ void SolverLamg::cycle(Vector &x, const Vector &b, int finest, const LAMGSolverS
 
 	// post-cycle finest
 	if (hierarchy.size() > finest + 1 && hierarchy.getType(finest+1) != ELIMINATION) { // do an iterate recombination on calculated solutions
-//		DEBUG("numActive: ", numActiveIterates[finest]);
 		minRes(finest, X[finest], B[finest] - hierarchy.at(finest).getLaplacian() * X[finest]);
 	}
 
@@ -214,51 +212,6 @@ void SolverLamg::cycle(Vector &x, const Vector &b, int finest, const LAMGSolverS
 	}
 
 	x = X[finest];
-}
-
-void SolverLamg::multigridCycle(index level, Vector &xf, const Vector &bf) {
-	if (level == hierarchy.size()-1) { // at coarsest level
-		if (level == 0) {
-			xf = smoother.relax(hierarchy.at(level).getLaplacian(), bf, xf, 1);
-		} else {
-			xf = smoother.relax(hierarchy.at(level).getLaplacian(), bf, xf, SETUP_RELAX_COARSEST_SWEEPS);
-		}
-
-		return;
-	}
-
-	// pre-smoothing
-	if (hierarchy.getType(level+1) != ELIMINATION) {
-		xf = smoother.relax(hierarchy.at(level).getLaplacian(), bf, xf, 1);
-	}
-
-	// restriction
-	Vector bc;
-	Vector xc = xf;
-	if (hierarchy.getType(level+1) == AGGREGATION) { // coarse b is residual
-		hierarchy.at(level+1).restrict(bf - hierarchy.at(level).getLaplacian() * xf, bc);
-	} else {
-		hierarchy.at(level+1).restrict(bf, bc);
-	}
-
-	hierarchy.at(level+1).coarseType(xf, xc);
-
-	// solve coarse problem
-	multigridCycle(level+1, xc, bc);
-
-	// interpolation
-	Vector newXf = xf;
-	hierarchy.at(level+1).interpolate(xc, newXf);
-	if (hierarchy.getType(level+1) == AGGREGATION) {
-		newXf += xf;
-	}
-
-	xf = newXf;
-
-	// post-smoothing
-	if (hierarchy.getType(level+1) != ELIMINATION) {
-		xf = smoother.relax(hierarchy.at(level).getLaplacian(), bf, xf, 2);
-	}
 }
 
 void SolverLamg::saveIterate(index level, const Vector &x, const Vector &r) {
