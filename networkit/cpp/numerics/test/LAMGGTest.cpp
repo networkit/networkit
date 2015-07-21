@@ -12,6 +12,7 @@
 #include "../../auxiliary/Timer.h"
 
 #include "../NearlyLinearLaplacianSmoother.h"
+#include "../GaussSeidelRelaxation.h"
 
 namespace NetworKit {
 
@@ -19,14 +20,10 @@ TEST_F(LAMGGTest, testSmallGraphs) {
 	METISGraphReader reader;
 	GaussSeidelRelaxation gaussSmoother;
 	Smoother *smoother = new GaussSeidelRelaxation();
-	//LAMG lamg;
-	//MultigridSolver solver(1e-6, 3, 3, lamg, smoother);
-	//LAMGSolver solver(1e-6, lamg, smoother);
 	MultiLevelSetup setup(gaussSmoother);
 	Aux::Timer timer;
 	for (index i = 0; i < GRAPH_INSTANCES.size(); ++i) {
 		string graph = GRAPH_INSTANCES[i];
-//		graph = "barabasi/10000_att_4_unweighted.graph";
 		Graph G = reader.read("instances/" + graph);
 		ConnectedComponents con(G);
 		con.run();
@@ -42,45 +39,49 @@ TEST_F(LAMGGTest, testSmallGraphs) {
 		timer.stop();
 		INFO("setup time\t ", timer.elapsedMilliseconds());
 
-		//Vector b = randZeroSum(G, 1234);
-		Vector b(G.numberOfNodes());
-		LineFileReader reader;
-		std::vector<string> lines = reader.read("instances/grid/Laplace_512x512_b");
-		std::string input = lines[0];
-		std::string current = "";
-		int idx = 0;
-		for (int i = 0; i < input.size(); ++i) {
-			if (input[i] != ',') {
-				current += input[i];
-			} else {
-				b[idx++] = std::stod(current);
-				current = "";
-			}
-		}
-		b[b.getDimension() - 1] = std::stod(current);
-
-		INFO("b ", b.length());
+		Vector b = randZeroSum(G, 1234);
 
 
+//		Vector b(G.numberOfNodes());
+//		LineFileReader reader;
+//		std::vector<string> lines = reader.read("instances/facebook100/Auburn71.mat.txt_b");
+//		std::string input = lines[0];
+//		std::string current = "";
+//		int idx = 0;
+//		for (int i = 0; i < input.size(); ++i) {
+//			if (input[i] != ',') {
+//				current += input[i];
+//			} else {
+//				b[idx++] = std::stod(current);
+//				current = "";
+//			}
+//		}
+//		b[b.getDimension() - 1] = std::stod(current);
+
+//		INFO("b ", b.length());
 
 
-		//Vector x = randVector(G.upperNodeIdBound(), -1, 1);
-		Vector x(G.numberOfNodes());
-		lines = reader.read("instances/grid/Laplace_512x512_x");
-		input = lines[0];
-		current = "";
-		idx = 0;
-		for (int i = 0; i < input.size(); ++i) {
-			if (input[i] != ',') {
-				current += input[i];
-			} else {
-				x[idx++] = std::stod(current);
-				current = "";
-			}
-		}
-		x[x.getDimension() - 1] = std::stod(current);
 
-		INFO("x ", x.length());
+
+		Vector x = randVector(G.upperNodeIdBound(), -1, 1);
+
+
+//		Vector x(G.numberOfNodes());
+//		lines = reader.read("instances/facebook100/Auburn71.mat.txt_x");
+//		input = lines[0];
+//		current = "";
+//		idx = 0;
+//		for (int i = 0; i < input.size(); ++i) {
+//			if (input[i] != ',') {
+//				current += input[i];
+//			} else {
+//				x[idx++] = std::stod(current);
+//				current = "";
+//			}
+//		}
+//		x[x.getDimension() - 1] = std::stod(current);
+//
+//		INFO("x ", x.length());
 
 //		Vector result(G.upperNodeIdBound());
 
@@ -90,103 +91,18 @@ TEST_F(LAMGGTest, testSmallGraphs) {
 
 		Vector result = x;
 		INFO("Solving equation system - Gauss-Seidel");
-//		solver.solve(graph.substr(graph.find_last_of("/") + 1), result, b, false);
 		timer.start();
 		solver.solve(result, b, status);
 		timer.stop();
 		INFO("solve time\t ", timer.elapsedMilliseconds());
 		INFO("DONE");
 
-//		result = x;
-//		INFO("Solving equation system - NearlyLinearSmoother");
-//		solver.solve(result, b, true);
-//		INFO("DONE");
-
-		//EXPECT_TRUE(converged);
 	}
 
 	delete smoother;
 }
 
-TEST_F(LAMGGTest, testGeneratedGraphs) {
-//	METISGraphReader reader;
-//	GaussSeidelRelaxation smoother;
-//	//LAMG lamg;
-//	//MultigridSolver solver(1e-6, 3, 3, lamg, smoother);
-//	MultiLevelSetup setup(smoother);
-//
-//	for (count n : grid2DSizes) {
-//		string graph = Aux::toStringF("instances/grid/Laplace_%sx%s.graph", n, n);
-//		Graph G = reader.read(graph);
-//		ConnectedComponents con(G);
-//		con.run();
-//		Partition comps = con.getPartition();
-//		if (comps.numberOfSubsets() > 1) { // disconnected graphs are currently not supported
-//			continue;
-//		}
-//
-//		LevelHierarchy hierarchy;
-//		setup.setup(G, hierarchy);
-//		SolverLamg solver(hierarchy, smoother);
-//
-//		Vector b = randZeroSum(G, 1234);
-//		Vector result = randVector(G.upperNodeIdBound(), -1, 1);
-//
-//		INFO("Solving equation system");
-//		solver.solve(graph.substr(graph.find_last_of("/") + 1), result, b, false);
-//		INFO("DONE");
-//
-////		EXPECT_TRUE(converged);
-//	}
-//
-//	for (count n : grid3DSizes) {
-//		string graph = Aux::toStringF("instances/grid3/Laplace_%sx%sx%s.graph", n, n, n);
-//		Graph G = reader.read(graph);
-//		ConnectedComponents con(G);
-//		con.run();
-//		Partition comps = con.getPartition();
-//		if (comps.numberOfSubsets() > 1) { // disconnected graphs are currently not supported
-//			continue;
-//		}
-//
-//		LevelHierarchy hierarchy;
-//		setup.setup(G, hierarchy);
-//		SolverLamg solver(hierarchy, smoother);
-//
-//		Vector b = randZeroSum(G, 1234);
-//		Vector result = randVector(G.upperNodeIdBound(), -1, 1);
-//
-//		INFO("Solving equation system");
-//		solver.solve(graph.substr(graph.find_last_of("/") + 1), result, b, false);
-//		INFO("DONE");
-//
-////		EXPECT_TRUE(converged);
-//	}
-//
-//	for (count n : barabasiSizes) {
-//		string graph = Aux::toStringF("instances/barabasi/%s_att_%s_unweighted.graph", n, 4);
-//		Graph G = reader.read(graph);
-//		ConnectedComponents con(G);
-//		con.run();
-//		Partition comps = con.getPartition();
-//		if (comps.numberOfSubsets() > 1) { // disconnected graphs are currently not supported
-//			continue;
-//		}
-//
-//		LevelHierarchy hierarchy;
-//		setup.setup(G, hierarchy);
-//		SolverLamg solver(hierarchy, smoother);
-//
-//		Vector b = randZeroSum(G, 1234);
-//		Vector result = randVector(G.upperNodeIdBound(), -1, 1);
-//
-//		INFO("Solving equation system");
-//		solver.solve(graph.substr(graph.find_last_of("/") + 1), result, b, false);
-//		INFO("DONE");
-//
-////		EXPECT_TRUE(converged);
-//	}
-}
+
 
 //TEST_F(LAMGGTest, generateGraphs) {
 //	for (count size : grid2DSizes) {
@@ -268,24 +184,6 @@ Vector LAMGGTest::randZeroSum(const Graph& G, size_t seed) const {
 		b[*indexes.begin()] -= sum;
 	}
 
-//	for (index i = 0; i < b.getDimension(); ++i) {
-//		b[i] = Aux::Random::probability();
-//	}
-//
-//	b -= b.mean();
-
-//	for (index i = 0; i < b.getDimension(); ++i) {
-//		b[i] = 1.0;
-//	}
-//	b[b.getDimension() - 1] = -(double) b.getDimension() + 1;
-
-//	for (index i = 0; i < b.getDimension(); ++i) {
-//		INFO(b[i]);
-//	}
-
-	// b[1] - mean , ..., b[n] - mean
-
-	INFO("b=", b.length());
 	return b;
 }
 
