@@ -45,6 +45,7 @@ CSRMatrix MatrixMarketReader::read(std::istream& in) {
 	std::vector<double> values;
 	std::string line;
 	bool weighted = true;
+	bool symmetric = false;
 	while (getline(in, line)) {
 		std::istringstream in_line(line);
 
@@ -71,6 +72,10 @@ CSRMatrix MatrixMarketReader::read(std::istream& in) {
 				throw std::runtime_error("Unsupported data type: " + data);
 			}
 
+			if (qualifier == "symmetric") {
+				symmetric = true;
+			}
+
 			state = HEADER;
 		} else if (line.empty() || line[0] == COMMENT_CHAR) {
 			// Skip line if empty or comment
@@ -82,8 +87,6 @@ CSRMatrix MatrixMarketReader::read(std::istream& in) {
 				throw std::runtime_error("expected three non-negative integers in header line:" + line);
 			}
 
-			positions = std::vector<std::pair<index,index>>(nzeroes);
-			values = std::vector<double>(nzeroes);
 			state = ENTRIES;
 		} else {
 			// Entry: row col value
@@ -108,14 +111,16 @@ CSRMatrix MatrixMarketReader::read(std::istream& in) {
 				throw std::runtime_error("invalid index: " + std::to_string(j));
 			}
 
-			positions[nzeroes] = std::make_pair(i,j);
-			values[nzeroes] = val;
-			nzeroes--;
-		}
-	}
+			positions.push_back(std::make_pair(i,j));
+			values.push_back(val);
 
-	if (nzeroes != 0) {
-		WARN("wrong number of non-zeroes given");
+			if (i != j && symmetric) {
+				positions.push_back(std::make_pair(j,i));
+				values.push_back(val);
+			}
+		}
+
+
 	}
 
 	return CSRMatrix(nrows, ncols, positions, values);
