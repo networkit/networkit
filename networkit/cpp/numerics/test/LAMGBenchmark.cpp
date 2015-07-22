@@ -116,7 +116,7 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 	{ // 8
 		"Walshaw",
 		10,
-		10,
+		5,
 		1e-6,
 		GAUSS_SEIDEL,
 		WALSHAW
@@ -529,7 +529,7 @@ TEST_F(LAMGBenchmark, bench) {
 	string texContent = printLatexDocumentHeader();
 	stringstream ss;
 
-	Benchmark bench = BENCHS[7]; // facebook
+	Benchmark bench = BENCHS[8]; // walshaw
 	texContent += benchmark(bench);
 	ss << bench.name;
 
