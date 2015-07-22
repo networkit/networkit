@@ -372,6 +372,8 @@ public:
 		updateMinMax(leftAngle, minR);
 		updateMinMax(rightAngle, minR);
 
+		assert(minDistance < minR + r);
+		assert(maxDistance < maxR + r);
 		assert(minDistance < maxDistance);
 		return std::pair<double, double>(minDistance, maxDistance);
 	}
