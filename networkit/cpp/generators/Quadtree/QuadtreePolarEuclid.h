@@ -19,7 +19,7 @@ namespace NetworKit {
 
 template <class T>
 class QuadtreePolarEuclid {
-	friend class QuadTreeGTest;
+	friend class QuadTreePolarEuclidGTest;
 public:
 	QuadtreePolarEuclid() {
 		root = QuadNodePolarEuclid<T>();
@@ -38,13 +38,16 @@ public:
 		this->maxRadius = maxR;
 	}
 
-	QuadtreePolarEuclid(const vector<double> &angles, const vector<double> &radii, const vector<T> &content, bool theoreticalSplit=false, double alpha=1, count capacity=1000, double balance = 0.5) {
+	QuadtreePolarEuclid(const vector<double> &angles, const vector<double> &radii, const vector<T> &content, bool theoreticalSplit=false, count capacity=1000, double balance = 0.5) {
 		const count n = angles.size();
 		assert(angles.size() == radii.size());
 		assert(radii.size() == content.size());
-		double r =
-		root = QuadNodePolarEuclid<T>(0, 0, 2*M_PI, r, capacity, 0,theoreticalSplit,alpha,balance);
-		maxRadius = r;
+		maxRadius = 0;
+		for (double radius : radii) {
+			if (radius > maxRadius) maxRadius = radius;
+		}
+		maxRadius = std::nextafter(maxRadius, std::numeric_limits<double>::max());
+		root = QuadNodePolarEuclid<T>(0, 0, 2*M_PI, maxRadius, capacity, theoreticalSplit,balance);
 		for (index i = 0; i < n; i++) {
 			assert(content[i] < n);
 			root.addContent(content[i], angles[i], radii[i]);
