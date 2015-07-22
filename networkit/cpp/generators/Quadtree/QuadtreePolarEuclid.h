@@ -18,10 +18,10 @@
 namespace NetworKit {
 
 template <class T>
-class Quadtree {
+class QuadtreePolarEuclid {
 	friend class QuadTreeGTest;
 public:
-	Quadtree() {
+	QuadtreePolarEuclid() {
 		root = QuadNodePolarEuclid<T>();
 		this->maxRadius = 1;
 	}
@@ -33,15 +33,16 @@ public:
 	 * @param capacity How many points can inhabit a leaf cell before it is split up?
 	 *
 	 */
-	Quadtree(double maxR,bool theoreticalSplit=false, double alpha=1, count capacity=1000, double balance = 0.5) {
+	QuadtreePolarEuclid(double maxR,bool theoreticalSplit=false, double alpha=1, count capacity=1000, double balance = 0.5) {
 		root = QuadNodePolarEuclid<T>(0, 0, 2*M_PI, maxR, capacity, 0,theoreticalSplit,alpha,balance);
 		this->maxRadius = maxR;
 	}
 
-	Quadtree(const vector<double> &angles, const vector<double> &radii, const vector<T> &content, double r, bool theoreticalSplit=false, double alpha=1, count capacity=1000, double balance = 0.5) {
+	QuadtreePolarEuclid(const vector<double> &angles, const vector<double> &radii, const vector<T> &content, bool theoreticalSplit=false, double alpha=1, count capacity=1000, double balance = 0.5) {
 		const count n = angles.size();
 		assert(angles.size() == radii.size());
 		assert(radii.size() == content.size());
+		double r =
 		root = QuadNodePolarEuclid<T>(0, 0, 2*M_PI, r, capacity, 0,theoreticalSplit,alpha,balance);
 		maxRadius = r;
 		for (index i = 0; i < n; i++) {
