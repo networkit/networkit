@@ -533,40 +533,18 @@ public:
 			return;
 		}
 
-		//double phi_c, r_c;
-		//HyperbolicSpace::cartesianToPolar(center, phi_c, r_c);
-		//highR = min(highR, HyperbolicSpace::maxRinSlice(leftAngle, rightAngle, phi_c, r_c, radius));
-		//if (highR < lowerBoundR) return;
-
 		if (isLeaf) {
 			const double rsq = radius*radius;
 			const double queryX = center[0];
 			const double queryY = center[1];
 			const count cSize = content.size();
 
-//			if (minAngle > leftAngle) //some points are excluded
-//			{
-//				int left = 0;
-//				int right = content.size();
-//				while (right-left > 1) {
-//					int middle = (right+left)/2;
-//					assert(middle >= left);
-//					assert(middle <= right);
-//					if (angles[middle] > minAngle) {
-//						right=middle;
-//					} else {
-//						left = middle;
-//					}
-//				}
-//				i = left;
-//			}
-
 			for (int i=0; i < cSize; i++) {
 				const double deltaX = positions[i].getX() - queryX;
 				const double deltaY = positions[i].getY() - queryY;
 				if (deltaX*deltaX + deltaY*deltaY < rsq) {
 					result.push_back(content[i]);
-					if (content[i] >= sanityNodeLimit) DEBUG("Quadnode content ", content[i], " found, suspicously high!");
+					if (content[i] >= sanityNodeLimit) DEBUG("Quadnode content ", content[i], " found, suspiciously high!");
 					assert(content[i] < sanityNodeLimit);
 				}
 			}
@@ -650,6 +628,7 @@ public:
 		//DEBUG("Expected at most ", expectedNeighbours, " neighbours, got ", result.size() - offset);
 		return candidatesTested;
 	}
+
 
 	void maybeGetKthElement(double upperBound, Point2D<double> euQuery, std::function<double(double)> prob, index k, vector<T> &circleDenizens) const {
 		TRACE("Maybe get element ", k, " with upper Bound ", upperBound);
