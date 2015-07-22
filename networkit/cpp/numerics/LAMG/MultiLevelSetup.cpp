@@ -34,7 +34,7 @@ void MultiLevelSetup::setup(const Graph &G, LevelHierarchy &hierarchy) const {
 void MultiLevelSetup::setup(const CSRMatrix &matrix, LevelHierarchy &hierarchy) const {
 	CSRMatrix A = matrix;
 	hierarchy.addFinestLevel(A);
-	INFO("FINEST\t", matrix.numberOfRows(), "\t", matrix.nnz() - matrix.numberOfRows());
+	DEBUG("FINEST\t", matrix.numberOfRows(), "\t", matrix.nnz() - matrix.numberOfRows());
 
 	bool doneCoarsening = false;
 	count numTVs = TV_NUM;
@@ -44,7 +44,7 @@ void MultiLevelSetup::setup(const CSRMatrix &matrix, LevelHierarchy &hierarchy) 
 		if (coarseningElimination(A, hierarchy)) {
 			if (!canCoarsen(A)) doneCoarsening = true;
 			level++;
-			INFO(level, " ELIM\t\t", A.numberOfRows(), "\t", A.nnz() / 2);
+			DEBUG(level, " ELIM\t\t", A.numberOfRows(), "\t", A.nnz() / 2);
 		}
 
 		// AGGREGATION
@@ -54,7 +54,7 @@ void MultiLevelSetup::setup(const CSRMatrix &matrix, LevelHierarchy &hierarchy) 
 		} else {
 			coarseningAggregation(A, hierarchy, tv, numTVs);
 			level++;
-			INFO(level, " AGG\t\t", A.numberOfRows(), "\t", A.nnz() / 2);
+			DEBUG(level, " AGG\t\t", A.numberOfRows(), "\t", A.nnz() / 2);
 			if (numTVs < TV_MAX) {
 				numTVs += TV_INC;
 			}
@@ -123,6 +123,8 @@ bool MultiLevelSetup::coarseningElimination(CSRMatrix &matrix, LevelHierarchy &h
 		}
 
 		stageNum++;
+
+		DEBUG("Elimination stage ", stageNum, ": total=", nc, " f=", nf, " c=", nc);
 	}
 
 	if (stageNum != 0) { // we have coarsened the matrix
@@ -136,9 +138,10 @@ bool MultiLevelSetup::coarseningElimination(CSRMatrix &matrix, LevelHierarchy &h
 count MultiLevelSetup::lowDegreeSweep(const CSRMatrix &matrix, std::vector<bool> &fNode, index stage) const {
 	fNode.resize(matrix.numberOfRows(), true); // first mark all nodes as f nodes
 	count numFNodes = 0;
+	int degreeOffset = stage != 0;
 
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
-		if (matrix.nnzInRow(i) <= SETUP_ELIMINATION_MAX_DEGREE && fNode[i]) { // node i has degree <= 4 and can be eliminated
+		if ((int) matrix.nnzInRow(i) - degreeOffset <= SETUP_ELIMINATION_MAX_DEGREE && fNode[i]) { // node i has degree <= 4 and can be eliminated
 			numFNodes++;
 			matrix.forNonZeroElementsInRow(i, [&](index j, edgeweight w){ // to maintain independence, mark all neighbors as not eliminated
 				if (j != i)	{ // all neighbors of this f node are c nodes
@@ -305,7 +308,7 @@ std::vector<Vector> MultiLevelSetup::generateTVs(const CSRMatrix &matrix, Vector
 				testVectors[i][j] = 2 * Aux::Random::probability() - 1;
 			}
 
-			testVectors[i] = smoother.relax(matrix, b, testVectors[i], SETUP_TV_SWEEPS*2);
+			testVectors[i] = smoother.relax(matrix, b, testVectors[i], SETUP_TV_SWEEPS);
 		}
 	}
 

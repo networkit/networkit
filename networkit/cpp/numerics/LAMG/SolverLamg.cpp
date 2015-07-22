@@ -52,7 +52,7 @@ void SolverLamg::solve(Vector &x, const Vector &b, LAMGSolverStatus &status) {
 
 	double residual = (b - hierarchy.at(0).getLaplacian() * x).length();
 	status.residual = residual;
-	INFO("final residual\t ", residual);
+	DEBUG("final residual\t ", residual);
 }
 
 void SolverLamg::solveCycle(Vector &x, const Vector &b, int finest, LAMGSolverStatus &status) {
@@ -77,7 +77,7 @@ void SolverLamg::solveCycle(Vector &x, const Vector &b, int finest, LAMGSolverSt
 	count iterations = 0;
 	status.residualHistory.emplace_back(residual);
 	while (residual > finalResidual && residual < lastResidual && iterations < status.maxIters && timer.elapsedMilliseconds() <= status.maxConvergenceTime ) {
-		INFO("iter ", iterations, " r=", residual);
+		DEBUG("iter ", iterations, " r=", residual);
 		lastResidual = residual;
 
 		cycle(x, b, finest, status);
@@ -92,7 +92,7 @@ void SolverLamg::solveCycle(Vector &x, const Vector &b, int finest, LAMGSolverSt
 	status.numIters = iterations;
 	status.residual = r.length();
 	status.converged = r.length() <= finalResidual;
-	INFO("nIter\t ", iterations);
+	DEBUG("nIter\t ", iterations);
 }
 
 void SolverLamg::cycle(Vector &x, const Vector &b, int finest, const LAMGSolverStatus &status) {
