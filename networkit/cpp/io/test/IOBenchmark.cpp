@@ -9,7 +9,8 @@
 
 #include "IOBenchmark.h"
 #include "../RasterReader.h"
-#include "../../generators/Quadtree/Quadtree.h"
+#include "../../generators/Quadtree/QuadtreePolarEuclid.h"
+#include "../../geometric/HyperbolicSpace.h"
 
 namespace NetworKit {
 
@@ -54,8 +55,15 @@ TEST_F(IOBenchmark, benchRasterReader) {
 		INFO("[DONE] reading raster data set " , runtime.elapsedTag());
 		EXPECT_EQ(xcoords.size(), ycoords.size());
 
+		//transform into polar coordinates
+		vector<double> angles;
+		vector<double> radii;
+		for (index i = 0; i < xcoords.size(); i++) {
+			HyperbolicSpace::cartesianToPolar(Point2D<double>(xcoords[i], ycoords[i]), angles[i], radii[i]);
+		}
+
 		// perform range queries
-		// Quadtree(xcoords, ycoords);
+		// Quadtree(angles, radii);
 		uint64_t numQueries = 1000;
 		for (uint64_t q = 0; q < numQueries; ++q) {
 			// TODO

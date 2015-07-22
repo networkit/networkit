@@ -13,6 +13,7 @@
 #include <functional>
 #include <assert.h>
 #include "../../auxiliary/Log.h"
+#include "../../geometric/HyperbolicSpace.h"
 
 using std::vector;
 using std::min;
@@ -41,7 +42,6 @@ private:
 	std::vector<double> radii;
 	bool isLeaf;
 	bool splitTheoretical;
-	double alpha;
 	double balance;
 	index ID;
 	double lowerBoundR;
@@ -61,7 +61,6 @@ public:
 		subTreeSize = 0;
 		balance = 0.5;
 		splitTheoretical = false;
-		alpha = 1;
 		lowerBoundR = maxR;
 		ID = 0;
 	}
@@ -81,7 +80,7 @@ public:
 	 * @param diagnostics Count how many necessary and unnecessary comparisons happen in leaf cells? Will cause race condition and false sharing in parallel use
 	 *
 	 */
-	QuadNodePolarEuclid(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity, bool splitTheoretical = false, double alpha = 1, double balance = 0.5) {
+	QuadNodePolarEuclid(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity, bool splitTheoretical = false, double balance = 0.5) {
 		if (balance <= 0 || balance >= 1) throw std::runtime_error("Quadtree balance parameter must be between 0 and 1.");
 		this->leftAngle = leftAngle;
 		this->minR = minR;
@@ -92,8 +91,6 @@ public:
 		this->c = HyperbolicSpace::polarToCartesian(rightAngle, maxR);
 		this->d = HyperbolicSpace::polarToCartesian(leftAngle, maxR);
 		this->capacity = capacity;
-		this->minRegion = minDiameter;
-		this->alpha = alpha;
 		this->splitTheoretical = splitTheoretical;
 		this->balance = balance;
 		this->lowerBoundR = maxR;
@@ -122,10 +119,10 @@ public:
 		assert(middleR > minR);
 		assert(middleR < maxR);
 
-		QuadNodePolarEuclid southwest(leftAngle, minR, middleAngle, middleR, capacity, splitTheoretical, alpha, balance);
-		QuadNodePolarEuclid southeast(middleAngle, minR, rightAngle, middleR, capacity, splitTheoretical, alpha, balance);
-		QuadNodePolarEuclid northwest(leftAngle, middleR, middleAngle, maxR, capacity, splitTheoretical, alpha, balance);
-		QuadNodePolarEuclid northeast(middleAngle, middleR, rightAngle, maxR, capacity, splitTheoretical, alpha, balance);
+		QuadNodePolarEuclid southwest(leftAngle, minR, middleAngle, middleR, capacity, splitTheoretical, balance);
+		QuadNodePolarEuclid southeast(middleAngle, minR, rightAngle, middleR, capacity, splitTheoretical, balance);
+		QuadNodePolarEuclid northwest(leftAngle, middleR, middleAngle, maxR, capacity, splitTheoretical, balance);
+		QuadNodePolarEuclid northeast(middleAngle, middleR, rightAngle, maxR, capacity, splitTheoretical, balance);
 		children = {southwest, southeast, northwest, northeast};
 		isLeaf = false;
 	}
@@ -320,14 +317,14 @@ public:
 		double maxDistance = 0;
 		double minDistance = std::numeric_limits<double>::max();
 
-		if responsible(phi, r) minDistance = 0;
+		if (responsible(phi, r)) minDistance = 0;
 
 		auto euclidDistancePolar = [](double phi_a, double r_a, double phi_b, double r_b){
 			return pow(r_a*r_a+r_b*r_b-2*r_a*r_b*cos(phi_a-phi_b), 0.5);
 		};
 
-		auto updateMinMax = [&minDistance, &maxDistance, phi, r](double phi_b, double r_b){
-			double extremalValue = euclidDistancePolar(phi_b, r_b);
+		auto updateMinMax = [&minDistance, &maxDistance, phi, r, euclidDistancePolar](double phi_b, double r_b){
+			double extremalValue = euclidDistancePolar(phi, r, phi_b, r_b);
 			maxDistance = std::max(extremalValue, maxDistance);
 			minDistance = std::min(minDistance, extremalValue);
 		};
