@@ -73,7 +73,7 @@ TEST_F(IOBenchmark, benchRasterReader) {
 		double T = 0.01;
 		double thresholdDistance = maxR/1000;
 		double beta = 1/T;
-		auto edgeProb = [](double distance) -> double {return exp(-distance*100);};
+		auto edgeProb = [](double distance) -> double {return exp(-distance*200);};
 		//auto edgeProb = [beta, thresholdDistance](double distance) -> double {return 1 / (exp(beta*(distance-thresholdDistance)/2)+1);};
 
 		// perform range queries
@@ -83,17 +83,20 @@ TEST_F(IOBenchmark, benchRasterReader) {
 		INFO("Filled quadtree", runtime.elapsedTag());
 
 		uint64_t numQueries = 1000;
+		long treeTotalNeighbours = 0;
+
 		runtime.start();
 		for (uint64_t q = 0; q < numQueries; ++q) {
 			vector<index> result;
 			index comparison = Aux::Random::integer(xcoords.size());
 			Point2D<double> query(xcoords[comparison], ycoords[comparison]);
 			tree.getElementsProbabilistically(query, edgeProb, result);
-			INFO("Completed query ", q, ", resulting in ", result.size(), " neighbours. ");
+			treeTotalNeighbours += result.size();
 		}
 		runtime.stop();
-		INFO("Completed 1000 quadtree queries ", runtime.elapsedTag());
+		INFO("Completed ", numQueries, " quadtree queries with on average ", treeTotalNeighbours / numQueries, " neighbours", runtime.elapsedTag());
 
+		long naiveTotalNeighbours = 0;
 		runtime.start();
 		for (uint64_t q = 0; q < numQueries; ++q) {
 			vector<index> result;
@@ -107,11 +110,11 @@ TEST_F(IOBenchmark, benchRasterReader) {
 				double random = Aux::Random::real();
 				if (random < prob) result.push_back(i);
 			}
-			INFO("Completed query ", q, ", resulting in ", result.size(), " neighbours. ");
+			naiveTotalNeighbours += result.size();
 		}
 		runtime.stop();
-		INFO("Completed 1000 naive queries ", runtime.elapsedTag());
-
+		INFO("Completed ", numQueries, " naive queries with on average ", naiveTotalNeighbours / numQueries, " neighbours", runtime.elapsedTag());
+		EXPECT_NEAR(treeTotalNeighbours, naiveTotalNeighbours, treeTotalNeighbours / 20);
 	}
 }
 
