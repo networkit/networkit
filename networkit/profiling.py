@@ -121,7 +121,13 @@ class Worker(multiprocessing.Process):
 			if task is None:
 				self.__tasks.task_done()
 				break
-			result = (task.getType(), task.getName(), task.run())
+			data = "Error"
+			try:
+				data = task.run()
+			except Exception as e:
+				print("Error: " + task.getType() + " - " + task.getName())
+				print(str(e))
+			result = (task.getType(), task.getName(), data)
 			self.__tasks.task_done()
 			self.__results.put(result)
 
@@ -142,11 +148,12 @@ class Stat_Task(object):
 		n = len(sample)
 	
 		results = {}
+		results["Properties"] = {}
 		results["Location"] =  {}
 		results["Dispersion"] =  {}
 		results["Shape"] =  {}
 		results["Binning"] = {}
-		results["Properties"] = {}
+		results["Distribution"] = {}
 		
 		results["Properties"]["Size"] = n
 		
@@ -294,17 +301,17 @@ class Stat_Task(object):
 		results["Binning"]["Intervals"] = intervals  = funcIntervals()
 		
 		def funcBinAbsoluteFrequencies():
-			result = [0]
+			result = []
 			index = 0
+			for i in range(k_Bins):
+				result.append(0)
 			for i in range(n):
 				value = sampleSorted[i]
-				if intervals[index + 1] < value:
-					result.append(0)
+				while intervals[index + 1] < value:
 					index += 1
 				result[index] += 1
 			return result
 		results["Binning"]["Absolute Frequencies"] = absoluteFrequencies = funcBinAbsoluteFrequencies()
-		
 		
 		def funcBinRelativeFrequencies():
 			result = []
@@ -323,6 +330,89 @@ class Stat_Task(object):
 			result = (intervals[index]+intervals[index+1]) / 2
 			return result
 		results["Binning"]["Mode"] = mode = funcMode()
+		
+		# For Test-Case Purpose
+		# n = 100
+		# arithmeticMean = 51.05
+		# s_n = 1.209
+		# absoluteFrequencies = [5, 11, 35, 29, 13, 7]
+		# intervals = [-10000, 49, 50, 51, 52, 53, 10000]
+		# k_Bins = len(absoluteFrequencies)
+		
+		def funcErf(x):
+			sign = 1 if x >= 0 else -1
+			x = abs(x)
+
+			a1 =  0.254829592
+			a2 = -0.284496736
+			a3 =  1.421413741
+			a4 = -1.453152027
+			a5 =  1.061405429
+			p  =  0.3275911
+
+			t = 1.0/(1.0 + p*x)
+			y = 1 - (((((a5*t + a4)*t) + a3)*t + a2)*t + a1) * t * math.exp(-x*x)
+			return sign*y
+		
+		def funcDistributionNormal(x):
+			result = 1/2 * (1 + funcErf((x-arithmeticMean)/(math.sqrt(2) * s_n)))
+			return result
+		
+		def funcDistributionExponential(x):
+			result = 1 - math.exp((-1/arithmeticMean) * x)
+			return result
+		
+		def funcIncompleteGamma(s, x):
+			if x < 0.0:
+				return 0.0
+			sc = (1.0 / s)
+			sc *= math.pow(x, s)
+			sc *= math.exp(-x)
+			sum = 1.0
+			nom = 1.0
+			denom = 1.0
+			for i in range(1, 128):
+				nom *= x
+				denom *= s + i
+				sum += (nom / denom)
+			return sum * sc
+			
+		def funcGamma(x):
+			result = (x / math.e) ** x
+			result *= math.sqrt(2 * math.pi / x)
+			result *= (1 + 1/(12 * x*x - 1/10)) ** x
+			return result
+			
+		def funcPValue(criticalValue, degreesOfFreedom):
+			if criticalValue < 0.0 or degreesOfFreedom < 1:
+				return 0.0
+			k = degreesOfFreedom * 0.5
+			x = criticalValue * 0.5
+			if degreesOfFreedom == 2:
+				return math.exp(-x)
+			result = funcIncompleteGamma(k, x)
+			result /= funcGamma(k)
+			return 1-result
+		
+		def funcChiSquaredTest(distribution, numberOfUsedEstimators):
+			z = 0;
+			pValue = 0
+			for i in range(k_Bins):
+				p_i = distribution(intervals[i+1]) - distribution(intervals[i])
+				hypotheticAbsoluteFrequency = n*p_i
+				if hypotheticAbsoluteFrequency == 0:
+					if absoluteFrequencies[i] == 0:
+						continue
+					z = float("Inf")
+					break
+				d = absoluteFrequencies[i] - hypotheticAbsoluteFrequency
+				z += d*d / hypotheticAbsoluteFrequency
+				print(self.getName(), hypotheticAbsoluteFrequency, absoluteFrequencies[i], z)
+			degreesOfFreedom = (k_Bins - 1) - numberOfUsedEstimators
+			pValue = funcPValue(z, degreesOfFreedom)
+			return (z, pValue)
+		results["Distribution"]["Chi-Square-Test (Normal)"] = funcChiSquaredTest(funcDistributionNormal, 2)
+		results["Distribution"]["Chi-Square-Test (Exponential)"] = funcChiSquaredTest(funcDistributionExponential, 1)
 		
 		return results
 
@@ -497,6 +587,7 @@ class Profile:
 		if token is not self.__TOKEN:
 			raise ValueError("call create(G) to create an instance")
 		self.__G = G
+		self.__properties = {}
 		self.__measures = collections.OrderedDict()
 		self.__correlations = {}
 		
@@ -515,6 +606,7 @@ class Profile:
 			(centrality.ApproxBetweenness2,			(G, max(42, G.numberOfNodes() / 1000), False))
 		]: result.__addMeasure(parameter)
 		
+		result.__loadProperties()
 		result.__loadMeasures()
 		return result;
 	
@@ -542,17 +634,14 @@ class Profile:
 
 
 	def show(self):
-		pageIndex = self.__pageCount
-		
 		if self.__verbose:
 			timerAll = stopwatch.Timer()
 		
 		templateMeasure = readfile("measure.html")
-		
-		centralities = ""
-		
+		centralities = {}
+		centralities["Correlations"] = ""
 		def funcHeatTable(correlationName):
-			result = "<div class=\"HeatTable\" title=\"" + correlationName + "\">"
+			result = "<div class=\"SubCategory HeatTable\" data-title=\"" + correlationName + "\">"
 			keyBList = []
 			for keyA in self.__measures:
 				keyBList.append(keyA)
@@ -565,28 +654,52 @@ class Profile:
 				result += "<div class=\"HeatCellName\">" + keyB + "</div><br>"
 			result += "</div>"
 			return result
-		centralities += funcHeatTable("Pearson's Correlation Coefficient")
-		centralities += funcHeatTable("Spearman's Rang Correlation Coefficient")
-		centralities += funcHeatTable("Fechner's Correlation Coefficient")
+		centralities["Correlations"] += funcHeatTable("Pearson's Correlation Coefficient")
+		centralities["Correlations"] += funcHeatTable("Spearman's Rang Correlation Coefficient")
+		centralities["Correlations"] += funcHeatTable("Fechner's Correlation Coefficient")
 		
+		centralities["Measures"] = ""
 		for key in self.__measures:
 			measure = self.__measures[key]
 			image = measure["image"]
 			stat = measure["stat"]
-			centralities += self.__formatMeasureTemplate(templateMeasure, key, image, stat)
+			centralities["Measures"] += self.__formatMeasureTemplate(
+				templateMeasure,
+				key,
+				image,
+				stat
+			)
 			
 		templateProfile = readfile("profile.html")
-		result = templateProfile.format(**locals())
+		result = self.__formatProfileTemplate(
+			templateProfile,
+			centralities
+		)
 		display_html(HTML(result))
 		
 		if self.__verbose:
 			print("\ntotal time: {:.2F} s".format(timerAll.elapsed))
 	
-		self.__pageCount = self.__pageCount + 1
-	
+	def __loadProperties(self):
+		self.__properties["Nodes"] = self.__G.numberOfNodes()
+		self.__properties["Edges"] = self.__G.numberOfEdges()
+		self.__properties["Directed"] = self.__G.isDirected()
+		self.__properties["Weighted"] = self.__G.isWeighted()
+		# self.__properties["Density"] = properties.density(self.__G)
+		self.__properties["Diameter Range"] = properties.Diameter.estimatedDiameterRange(self.__G, error=0.1)
+
 	
 	def __formatMeasureTemplate(self, template, key, image, stat):
 		result = template.format(**locals())
+		return result
+		
+		
+	def __formatProfileTemplate(self, template, centralities):
+		pageIndex = self.__pageCount
+		properties = self.__properties
+		
+		result = template.format(**locals())	
+		self.__pageCount = self.__pageCount + 1
 		return result
 	
 	

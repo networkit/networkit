@@ -15,10 +15,16 @@
 -->
 
 <div class="NetworKit_Page" id="NetworKit_Page_{pageIndex}">
-	<div class="Category Node_Centrality_Measures">		
-		{centralities}
+	<div class="Category" data-title="Network Properties">
+		<div>Nodes: {properties[Nodes]}</div>
+		<div>Edges: {properties[Edges]}</div>
+		<div>Directed: {properties[Directed]}</div>
+		<div>Weighted: {properties[Weighted]}</div>
+		<div>Diameter Range: {properties[Diameter Range]}</div>
 	</div>
-	<div class="Category Test">
+	<div class="Category" data-title="Node Centrality Measures">		
+		{centralities[Correlations]}
+		{centralities[Measures]}
 	</div>
 </div>
 
