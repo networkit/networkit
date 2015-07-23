@@ -17,7 +17,7 @@
 namespace NetworKit {
 
 /**
- * A reader for the edge list format used by the LFR benchmark generators, defined as:
+ * A writer for the edge list format used by the LFR benchmark generators, defined as:
  * 		list of edges (nodes are labelled from 1 to the number of nodes;
  * 		the edges are ordered and repeated twice, i.e. source-target and target-source).
  *

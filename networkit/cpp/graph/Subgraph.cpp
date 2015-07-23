@@ -19,10 +19,10 @@ Graph Subgraph::fromNodes(const Graph& G, const std::unordered_set<node>& nodes)
 		}
 	});
 
-	G.forEdges([&](node u, node v) {
+	G.forEdges([&](node u, node v, edgeweight w) {
 		// if both end nodes are in the node set
 		if (nodes.find(u) != nodes.end() && nodes.find(v) != nodes.end()) {
-			S.addEdge(u, v, G.weight(u, v));
+			S.addEdge(u, v, w);
 		}
 	});
 

@@ -19,10 +19,10 @@ Graph SpanningForest::generate() {
 
 	G.forNodes([&](node s){
 		if (! visited[s]) {
-			G.BFSEdgesFrom(s, [&](node u, node v) {
+			G.BFSEdgesFrom(s, [&](node u, node v, edgeweight w, edgeid eid) {
 				visited[u] = true;
 				visited[v] = true;
-				F.addEdge(u, v, G.weight(u, v));
+				F.addEdge(u, v, w);
 			});
 		}
 	});

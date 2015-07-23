@@ -11,7 +11,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <unordered_map>
+#include <map>
 
 
 #include "GraphReader.h"
@@ -57,14 +57,14 @@ public:
 	/**
 	 * Return the node map, in case node ids are not continuous
 	 */
-	std::unordered_map<index,node> getNodeMap();
+	std::map<std::string,node> getNodeMap();
 
 protected:
 	char separator; 	//!< character separating nodes in an edge line
 	std::string commentPrefix;
 	node firstNode;
 	bool continuous;
-	std::unordered_map<index,node> mapNodeIds;
+	std::map<std::string,node> mapNodeIds;
 	bool directed;
 
 private:

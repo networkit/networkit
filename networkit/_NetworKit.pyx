@@ -18,8 +18,8 @@ from libcpp.utility cimport pair
 from libcpp.map cimport map
 from libcpp.set cimport set
 from libcpp.string cimport string
-from networkit.unordered_set cimport unordered_set
-from networkit.unordered_map cimport unordered_map
+from libcpp.unordered_set cimport unordered_set
+from libcpp.unordered_map cimport unordered_map
 
 # NetworKit typedefs
 ctypedef uint64_t count
@@ -907,10 +907,10 @@ cdef class Graph:
 		callback : object
 			Any callable object that takes the parameter (node, node)
 		"""
-		cdef NodePairCallbackWrapper *wrapper
+		cdef EdgeCallBackWrapper *wrapper
 		try:
-			wrapper = new NodePairCallbackWrapper(callback)
-			self._this.BFSEdgesFrom[NodePairCallbackWrapper](start, dereference(wrapper))
+			wrapper = new EdgeCallBackWrapper(callback)
+			self._this.BFSEdgesFrom[EdgeCallBackWrapper](start, dereference(wrapper))
 		finally:
 			del wrapper
 
@@ -2041,7 +2041,7 @@ cdef extern from "cpp/io/EdgeListReader.h":
 	cdef cppclass _EdgeListReader "NetworKit::EdgeListReader"(_GraphReader):
 		_EdgeListReader() except +
 		_EdgeListReader(char separator, node firstNode, string commentPrefix, bool continuous, bool directed)
-		unordered_map[node,node] getNodeMap() except +
+		map[string,node] getNodeMap() except +
 
 
 cdef class EdgeListReader(GraphReader):
@@ -2052,10 +2052,11 @@ cdef class EdgeListReader(GraphReader):
 		self._this = new _EdgeListReader(stdstring(separator)[0], firstNode, stdstring(commentPrefix), continuous, directed)
 
 	def getNodeMap(self):
-		cdef unordered_map[node,node] cResult = (<_EdgeListReader*>(self._this)).getNodeMap()
-		result = []
+		cdef map[string,node] cResult = (<_EdgeListReader*>(self._this)).getNodeMap()
+		result = dict()
 		for elem in cResult:
-			result.append((elem.first,elem.second))
+			#result.append((elem.first,elem.second))
+			result[(elem.first).decode("utf-8")] = elem.second
 		return result
 
 cdef extern from "cpp/io/KONECTGraphReader.h":
@@ -4806,11 +4807,13 @@ cdef extern from "cpp/dynamics/GraphEvent.h":
 	enum _GraphEventType "NetworKit::GraphEvent::Type":
 		NODE_ADDITION,
 		NODE_REMOVAL,
+		NODE_RESTORATION,
 		EDGE_ADDITION,
 		EDGE_REMOVAL,
 		EDGE_WEIGHT_UPDATE,
+		EDGE_WEIGHT_INCREMENT,
 		TIME_STEP
-
+		
 cdef extern from "cpp/dynamics/GraphEvent.h":
 	cdef cppclass _GraphEvent "NetworKit::GraphEvent":
 		node u, v
@@ -4822,13 +4825,14 @@ cdef extern from "cpp/dynamics/GraphEvent.h":
 
 cdef class GraphEvent:
 	cdef _GraphEvent _this
-
 	NODE_ADDITION = 0
 	NODE_REMOVAL = 1
-	EDGE_ADDITION = 2
-	EDGE_REMOVAL = 3
-	EDGE_WEIGHT_UPDATE = 4
-	TIME_STEP = 5
+	NODE_RESTORATION = 2
+	EDGE_ADDITION = 3
+	EDGE_REMOVAL = 4
+	EDGE_WEIGHT_UPDATE = 5
+	EDGE_WEIGHT_INCREMENT = 6
+	TIME_STEP = 7
 
 	property type:
 		def __get__(self):

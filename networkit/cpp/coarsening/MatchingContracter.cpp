@@ -37,12 +37,11 @@ std::pair<Graph, std::vector<node> > MatchingContracter::run(Graph& G, Matching&
 //	std::cout << "matching size: " << M.matchingSize() << std::endl;
 
 	G.forNodes([&](node v) { // TODO: difficult in parallel
-		G.forNeighborsOf(v, [&](node u) {
+		G.forNeighborsOf(v, [&](node u, edgeweight ew) {
 			node cv = mapFineToCoarse[v];
 			node cu = mapFineToCoarse[u];
-			edgeweight ew = G.weight(v, u);
 			if (! noSelfLoops || (cv != cu)) {
-				cG.setWeight(cv, cu, cG.weight(cv, cu) + ew);
+				cG.increaseWeight(cv, cu, ew);
 			}
 		});
 	});
