@@ -7,8 +7,8 @@
  *  Note: This is similar enough to QuadNode.h that one could merge these two classes.
  */
 
-#ifndef QUADNODEPOLAREUCLID_H_
-#define QUADNODEPOLAREUCLID_H_
+#ifndef QUADNODECARTESIANEUCLID_H_
+#define QUADNODECARTESIANEUCLID_H_
 
 #include <vector>
 #include <algorithm>
@@ -25,45 +25,37 @@ using std::cos;
 namespace NetworKit {
 
 template <class T>
-class QuadNodePolarEuclid {
+class QuadNodeCartesianEuclid {
 	friend class QuadTreeGTest;
 private:
-	double leftAngle;
-	double minR;
-	double rightAngle;
-	double maxR;
-	Point2D<double> a,b,c,d;
+	double minX;
+	double minY;
+	double maxX;
+	double maxY;
 	unsigned capacity;
 	static const unsigned coarsenLimit = 4;
 	static const long unsigned sanityNodeLimit = 10E15; //just assuming, for debug purposes, that this algorithm never runs on machines with more than 4 Petabyte RAM
-	double minRegion;//the minimal region a QuadNode should cover. If it is smaller, don't bother splitting up.
 	count subTreeSize;
 	std::vector<T> content;
 	std::vector<Point2D<double> > positions;
-	std::vector<double> angles;
-	std::vector<double> radii;
 	bool isLeaf;
 	bool splitTheoretical;
-	double balance;
 	index ID;
 	double lowerBoundR;
 
 public:
-	std::vector<QuadNodePolarEuclid> children;
+	std::vector<QuadNodeCartesianEuclid> children;
 
-	QuadNodePolarEuclid() {
+	QuadNodeCartesianEuclid() {
 		//This should never be called.
-		leftAngle = 0;
-		rightAngle = 0;
-		minR = 0;
-		maxR = 0;
+		minX = 0;
+		maxX = 0;
+		minY = 0;
+		maxY = 0;
 		capacity = 20;
 		isLeaf = true;
-		minRegion = 0;
 		subTreeSize = 0;
-		balance = 0.5;
 		splitTheoretical = false;
-		lowerBoundR = maxR;
 		ID = 0;
 	}
 
@@ -82,20 +74,13 @@ public:
 	 * @param diagnostics Count how many necessary and unnecessary comparisons happen in leaf cells? Will cause race condition and false sharing in parallel use
 	 *
 	 */
-	QuadNodePolarEuclid(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity, bool splitTheoretical = false, double balance = 0.5) {
-		if (balance <= 0 || balance >= 1) throw std::runtime_error("Quadtree balance parameter must be between 0 and 1.");
-		this->leftAngle = leftAngle;
-		this->minR = minR;
-		this->maxR = maxR;
-		this->rightAngle = rightAngle;
-		this->a = HyperbolicSpace::polarToCartesian(leftAngle, minR);
-		this->b = HyperbolicSpace::polarToCartesian(rightAngle, minR);
-		this->c = HyperbolicSpace::polarToCartesian(rightAngle, maxR);
-		this->d = HyperbolicSpace::polarToCartesian(leftAngle, maxR);
+	QuadNodeCartesianEuclid(Point2D<double> lower, Point2D<double> upper, unsigned capacity, bool splitTheoretical = false) {
+		this->minX = lower.getX();
+		this->minY = lower.getY();
+		this->maxX = upper.getX();
+		this->maxY = upper.getY();
 		this->capacity = capacity;
 		this->splitTheoretical = splitTheoretical;
-		this->balance = balance;
-		this->lowerBoundR = maxR;
 		this->ID = 0;
 		isLeaf = true;
 		subTreeSize = 0;
@@ -104,28 +89,39 @@ public:
 	void split() {
 		assert(isLeaf);
 		//heavy lifting: split up!
-		double middleAngle, middleR;
+		double middleX, middleY;
 		if (splitTheoretical) {
 			//Euclidean space is distributed equally
-			middleAngle = (rightAngle - leftAngle) / 2 + leftAngle;
-			middleR = pow(maxR*maxR*(1-balance)+minR*minR*balance, 0.5);
+			middleX = (minX + maxX) / 2;
+			middleY = (minY + maxY) / 2;
 		} else {
 			//median of points
-			vector<double> sortedAngles = angles;
-			std::sort(sortedAngles.begin(), sortedAngles.end());
-			middleAngle = sortedAngles[sortedAngles.size()/2];
-			vector<double> sortedRadii = radii;
-			std::sort(sortedRadii.begin(), sortedRadii.end());
-			middleR = sortedRadii[sortedRadii.size()/2];
+			const count numPoints = positions.size();
+			vector<double> sortedX(numPoints);
+			vector<double> sortedY(numPoints);
+			for (index i = 0; i < numPoints; i++) {
+				sortedX[i] = positions[i].getX();
+				sortedY[i] = positions[i].getY();
+			}
+			std::sort(sortedX.begin(), sortedX.end());
+			std::sort(sortedY.begin(), sortedY.end());
+			assert(sortedX.size() == numPoints);
+			assert(sortedY.size() == numPoints);
+			middleX = sortedX[numPoints/2];
+			middleY = sortedY[numPoints/2];
 		}
-		assert(middleR > minR);
-		assert(middleR < maxR);
+		assert(middleX > minX);
+		assert(middleX < maxX);
+		assert(middleY > minY);
+		assert(middleY < maxY);
+		Point2D<double> middle(middleX, middleY);
 
-		QuadNodePolarEuclid southwest(leftAngle, minR, middleAngle, middleR, capacity, splitTheoretical, balance);
-		QuadNodePolarEuclid southeast(middleAngle, minR, rightAngle, middleR, capacity, splitTheoretical, balance);
-		QuadNodePolarEuclid northwest(leftAngle, middleR, middleAngle, maxR, capacity, splitTheoretical, balance);
-		QuadNodePolarEuclid northeast(middleAngle, middleR, rightAngle, maxR, capacity, splitTheoretical, balance);
+		QuadNodeCartesianEuclid southwest(Point2D<double>(minX, minY), middle, capacity, splitTheoretical);
+		QuadNodeCartesianEuclid southeast(Point2D<double>(middleX, minY), Point2D<double>(maxX, middleY), capacity, splitTheoretical);
+		QuadNodeCartesianEuclid northwest(Point2D<double>(minX, middleY), Point2D<double>(middleX, maxY), capacity, splitTheoretical);
+		QuadNodeCartesianEuclid northeast(middle, Point2D<double>(maxX, maxY), capacity, splitTheoretical);
 		children = {southwest, southeast, northwest, northeast};
+		for (auto child : children) assert(child.isLeaf);
 		isLeaf = false;
 	}
 
@@ -136,40 +132,40 @@ public:
 	 * @param angle angular coordinate of point, between 0 and 2 pi.
 	 * @param R radial coordinate of point, between 0 and 1.
 	 */
-	void addContent(T input, double angle, double R) {
+	void addContent(T input, Point2D<double> pos) {
 		assert(input < sanityNodeLimit);
-		assert(this->responsible(angle, R));
-		if (lowerBoundR > R) lowerBoundR = R;
+		assert(content.size() == positions.size());
+		assert(this->responsible(pos));
 		if (isLeaf) {
 			if (content.size() + 1 < capacity) {
 				content.push_back(input);
-				angles.push_back(angle);
-				radii.push_back(R);
-				Point2D<double> pos = HyperbolicSpace::polarToCartesian(angle, R);
 				positions.push_back(pos);
 			} else {
-
 				split();
 
 				for (index i = 0; i < content.size(); i++) {
-					this->addContent(content[i], angles[i], radii[i]);
+					this->addContent(content[i], positions[i]);
 				}
+				assert(subTreeSize == content.size());//we have added everything twice
 				subTreeSize = content.size();
 				content.clear();
-				angles.clear();
-				radii.clear();
 				positions.clear();
-				this->addContent(input, angle, R);
+				this->addContent(input, pos);
 			}
 		}
 		else {
 			assert(children.size() > 0);
+			bool foundResponsibleChild = false;
 			for (index i = 0; i < children.size(); i++) {
-				if (children[i].responsible(angle, R)) {
-					children[i].addContent(input, angle, R);
+				if (children[i].responsible(pos)) {
+					foundResponsibleChild = true;
+					children[i].addContent(input, pos);
 					break;
+				} else {
+					TRACE("Child not responsible for (", pos.getX(), ", ", pos.getY(), ").");
 				}
 			}
+			assert(foundResponsibleChild);
 			subTreeSize++;
 		}
 	}
@@ -183,21 +179,18 @@ public:
 	 *
 	 * @return True if content was found and removed, false otherwise
 	 */
-	bool removeContent(T input, double angle, double R) {
-		if (!responsible(angle, R)) return false;
+	bool removeContent(T input, Point2D<double> pos) {
+		if (!responsible(pos)) return false;
 		if (isLeaf) {
 			index i = 0;
 			for (; i < content.size(); i++) {
 				if (content[i] == input) break;
 			}
 			if (i < content.size()) {
-				assert(angles[i] == angle);
-				assert(radii[i] == R);
+				assert(positions[i].distance(pos) == 0);
 				//remove element
 				content.erase(content.begin()+i);
 				positions.erase(positions.begin()+i);
-				angles.erase(angles.begin()+i);
-				radii.erase(radii.begin()+i);
 				return true;
 			} else {
 				return false;
@@ -209,7 +202,7 @@ public:
 			assert(children.size() > 0);
 			for (index i = 0; i < children.size(); i++) {
 				if (!children[i].isLeaf) allLeaves = false;
-				if (children[i].removeContent(input, angle, R)) {
+				if (children[i].removeContent(input, pos)) {
 					assert(!removed);
 					removed = true;
 				}
@@ -221,22 +214,14 @@ public:
 				//why not assert empty containers and then insert directly?
 				vector<T> allContent;
 				vector<Point2D<double> > allPositions;
-				vector<double> allAngles;
-				vector<double> allRadii;
 				for (index i = 0; i < children.size(); i++) {
 					allContent.insert(allContent.end(), children[i].content.begin(), children[i].content.end());
 					allPositions.insert(allPositions.end(), children[i].positions.begin(), children[i].positions.end());
-					allAngles.insert(allAngles.end(), children[i].angles.begin(), children[i].angles.end());
-					allRadii.insert(allRadii.end(), children[i].radii.begin(), children[i].radii.end());
 				}
 				assert(allContent.size() == allPositions.size());
-				assert(allContent.size() == allAngles.size());
-				assert(allContent.size() == allRadii.size());
 				children.clear();
 				content.swap(allContent);
 				positions.swap(allPositions);
-				angles.swap(allAngles);
-				radii.swap(allRadii);
 				isLeaf = true;
 			}
 
@@ -254,65 +239,13 @@ public:
 	 * @return True if the region managed by this node lies completely outside of the circle
 	 */
 	bool outOfReach(Point2D<double> query, double radius) const {
-		double phi, r;
-		HyperbolicSpace::cartesianToPolar(query, phi, r);
-		if (responsible(phi, r)) return false;
-
-		//get four edge points
-		double topDistance, bottomDistance, leftDistance, rightDistance;
-
-		if (phi < leftAngle || phi > rightAngle) {
-			topDistance = min(c.distance(query), d.distance(query));
-		} else {
-			topDistance = abs(r - maxR);
-		}
-		if (topDistance <= radius) return false;
-		if (phi < leftAngle || phi > rightAngle) {
-			bottomDistance = min(a.distance(query), b.distance(query));
-		} else {
-			bottomDistance = abs(r - minR);
-		}
-		if (bottomDistance <= radius) return false;
-
-		double minDistanceR = r*cos(abs(phi-leftAngle));
-		if (minDistanceR > minR && minDistanceR < maxR) {
-			leftDistance = query.distance(HyperbolicSpace::polarToCartesian(phi, minDistanceR));
-		} else {
-			leftDistance = min(a.distance(query), d.distance(query));
-		}
-		if (leftDistance <= radius) return false;
-
-		minDistanceR = r*cos(abs(phi-rightAngle));
-		if (minDistanceR > minR && minDistanceR < maxR) {
-			rightDistance = query.distance(HyperbolicSpace::polarToCartesian(phi, minDistanceR));
-		} else {
-			rightDistance = min(b.distance(query), c.distance(query));
-		}
-		if (rightDistance <= radius) return false;
-		return true;
+		return EuclideanDistances(query).first > radius;
 	}
 
 	/**
-	 * Check whether the region managed by this node lies outside of an Euclidean circle.
-	 * Functionality is the same as in the method above, but it takes polar coordinates instead of Cartesian ones
-	 *
-	 * @param angle_c Angular coordinate of the Euclidean query circle's center
-	 * @param r_c Radial coordinate of the Euclidean query circle's center
-	 * @param radius Radius of the Euclidean query circle
-	 *
-	 * @return True if the region managed by this node lies completely outside of the circle
+	 * @param query Position of the query point
 	 */
-	bool outOfReach(double angle_c, double r_c, double radius) const {
-		if (responsible(angle_c, r_c)) return false;
-		Point2D<double> query = HyperbolicSpace::polarToCartesian(angle_c, r_c);
-		return outOfReach(query, radius);
-	}
-
-	/**
-	 * @param phi Angular coordinate of query point
-	 * @param r_h radial coordinate of query point
-	 */
-	std::pair<double, double> EuclideanDistances(double phi, double r) const {
+	std::pair<double, double> EuclideanDistances(Point2D<double> query) const {
 		/**
 		 * If the query point is not within the quadnode, the distance minimum is on the border.
 		 * Need to check whether extremum is between corners.
@@ -320,62 +253,44 @@ public:
 		double maxDistance = 0;
 		double minDistance = std::numeric_limits<double>::max();
 
-		if (responsible(phi, r)) minDistance = 0;
+		if (responsible(query)) minDistance = 0;
 
-		auto euclidDistancePolar = [](double phi_a, double r_a, double phi_b, double r_b){
-			return pow(r_a*r_a+r_b*r_b-2*r_a*r_b*cos(phi_a-phi_b), 0.5);
-		};
-
-		auto updateMinMax = [&minDistance, &maxDistance, phi, r, euclidDistancePolar](double phi_b, double r_b){
-			double extremalValue = euclidDistancePolar(phi, r, phi_b, r_b);
-			//assert(extremalValue <= r + r_b);
+		auto updateMinMax = [&minDistance, &maxDistance, query](Point2D<double> pos){
+			double extremalValue = pos.distance(query);
 			maxDistance = std::max(extremalValue, maxDistance);
 			minDistance = std::min(minDistance, extremalValue);
 		};
 
 		/**
-		 * angular boundaries
+		 * Horizontal boundaries
 		 */
-		//left
-		double extremum = r*cos(this->leftAngle - phi);
-		if (extremum < maxR && extremum > minR) {
-			updateMinMax(this->leftAngle, extremum);
+		if (query.getX() > minX && query.getX() < maxX) {
+			Point2D<double> upper(query.getX(), maxY);
+			Point2D<double> lower(query.getX(), minY);
+			updateMinMax(upper);
+			updateMinMax(lower);
 		}
-
-		//right
-		extremum = r*cos(this->rightAngle - phi);
-		if (extremum < maxR && extremum > minR) {
-			updateMinMax(this->leftAngle, extremum);
-		}
-
 
 		/**
-		 * radial boundaries.
+		 * Vertical boundaries
 		 */
-		if (phi > leftAngle && phi < rightAngle) {
-			updateMinMax(phi, maxR);
-			updateMinMax(phi, minR);
+		if (query.getY() > minY && query.getY() < maxY) {
+			Point2D<double> left(query.getY(), maxX);
+			Point2D<double> right(query.getY(), minX);
+			updateMinMax(left);
+			updateMinMax(right);
 		}
-		if (phi + M_PI > leftAngle && phi + M_PI < rightAngle) {
-			updateMinMax(phi + M_PI, maxR);
-			updateMinMax(phi + M_PI, minR);
-		}
-		if (phi - M_PI > leftAngle && phi -M_PI < rightAngle) {
-			updateMinMax(phi - M_PI, maxR);
-			updateMinMax(phi - M_PI, minR);
-		}
+
 
 		/**
 		 * corners
 		 */
-		updateMinMax(leftAngle, maxR);
-		updateMinMax(rightAngle, maxR);
-		updateMinMax(leftAngle, minR);
-		updateMinMax(rightAngle, minR);
+		updateMinMax(Point2D<double>(minX, minY));
+		updateMinMax(Point2D<double>(minX, maxY));
+		updateMinMax(Point2D<double>(maxX, minY));
+		updateMinMax(Point2D<double>(maxX, maxY));
 
-		double shortCutGainMax = maxR + r - maxDistance;
-		//assert(minDistance <= minR + r);
-		//assert(maxDistance <= maxR + r);
+		assert(minDistance < query.length() + Point2D<double>(maxX, maxY).length());
 		assert(minDistance < maxDistance);
 		return std::pair<double, double>(minDistance, maxDistance);
 	}
@@ -389,8 +304,8 @@ public:
 	 *
 	 * @return True if input point lies within the region of this QuadNode
 	 */
-	bool responsible(double angle, double r) const {
-		return (angle >= leftAngle && angle < rightAngle && r >= minR && r < maxR);
+	bool responsible(Point2D<double> pos) const {
+		return (pos.getX() >= minX && pos.getY() >= minY && pos.getX() < maxX && pos.getY() < maxY);
 	}
 
 	/**
@@ -403,8 +318,7 @@ public:
 			return content;
 		} else {
 			assert(content.size() == 0);
-			assert(angles.size() == 0);
-			assert(radii.size() == 0);
+			assert(positions.size() == 0);
 			vector<T> result;
 			for (index i = 0; i < children.size(); i++) {
 				std::vector<T> subresult = children[i].getElements();
@@ -414,18 +328,15 @@ public:
 		}
 	}
 
-	void getCoordinates(vector<double> &anglesContainer, vector<double> &radiiContainer) const {
-		assert(angles.size() == radii.size());
+	void getCoordinates(vector<Point2D<double> > &pointContainer) const {
 		if (isLeaf) {
-			anglesContainer.insert(anglesContainer.end(), angles.begin(), angles.end());
-			radiiContainer.insert(radiiContainer.end(), radii.begin(), radii.end());
+			pointContainer.insert(pointContainer.end(), positions.begin(), positions.end());
 		}
 		else {
 			assert(content.size() == 0);
-			assert(angles.size() == 0);
-			assert(radii.size() == 0);
+			assert(positions.size() == 0);
 			for (index i = 0; i < children.size(); i++) {
-				children[i].getCoordinates(anglesContainer, radiiContainer);
+				children[i].getCoordinates(pointContainer);
 			}
 		}
 	}
@@ -436,7 +347,7 @@ public:
 	 *
 	 * Elements are pushed onto a vector which is a required argument. This is done to reduce copying
 	 *
-	 * Safe to call in parallel if diagnostics are disabled
+	 * Safe to call in parallel.
 	 *
 	 * @param center Center of the query circle
 	 * @param radius Radius of the query circle
@@ -446,8 +357,7 @@ public:
 	 * @param lowR Optional value for the minimum radial coordinate of the query region
 	 * @param highR Optional value for the maximum radial coordinate of the query region
 	 */
-	void getElementsInEuclideanCircle(Point2D<double> center, double radius, vector<T> &result, double minAngle=0, double maxAngle=2*M_PI, double lowR=0, double highR = 1) const {
-		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR < lowerBoundR) return;
+	void getElementsInEuclideanCircle(Point2D<double> center, double radius, vector<T> &result) const {
 		if (outOfReach(center, radius)) {
 			return;
 		}
@@ -469,17 +379,14 @@ public:
 			}
 		}	else {
 			for (index i = 0; i < children.size(); i++) {
-				children[i].getElementsInEuclideanCircle(center, radius, result, minAngle, maxAngle, lowR, highR);
+				children[i].getElementsInEuclideanCircle(center, radius, result);
 			}
 		}
 	}
 
-	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, bool suppressLeft, vector<T> &result) const {
-		double phi_q, r_q;
-		HyperbolicSpace::cartesianToPolar(euQuery, phi_q, r_q);
-		if (suppressLeft && phi_q > rightAngle) return 0;
+	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &result) const {
 		TRACE("Getting Euclidean distances");
-		auto distancePair = EuclideanDistances(phi_q, r_q);
+		auto distancePair = EuclideanDistances(euQuery);
 		double probUB = prob(distancePair.first);
 		double probLB = prob(distancePair.second);
 		assert(probLB <= probUB);
@@ -487,14 +394,14 @@ public:
 		if (probUB == 0) return 0;
 		//TODO: return whole if probLB == 1
 		double probdenom = std::log(1-probUB);
-		if (probdenom == 0) {
-			DEBUG(probUB, " not zero, but too small too process. Ignoring.");
-			return 0;
-		}
+		if (probdenom == 0) return 0;//there is a very small probability, but we cannot process it.
 		TRACE("probUB: ", probUB, ", probdenom: ", probdenom);
 
 		count expectedNeighbours = probUB*size();
 		count candidatesTested = 0;
+		count incomingNeighbours = result.size();
+		count ownsize = size();
+
 
 		if (isLeaf) {
 			const count lsize = content.size();
@@ -542,11 +449,12 @@ public:
 			} else {//carry on as normal
 				for (index i = 0; i < children.size(); i++) {
 					TRACE("Recursively calling child ", i);
-					candidatesTested += children[i].getElementsProbabilistically(euQuery, prob, suppressLeft, result);
+					candidatesTested += children[i].getElementsProbabilistically(euQuery, prob, result);
 				}
 			}
 		}
-		//DEBUG("Expected at most ", expectedNeighbours, " neighbours, got ", result.size() - offset);
+		count finalNeighbours = result.size();
+		if (probLB == 1) assert(finalNeighbours == incomingNeighbours + ownsize);
 		return candidatesTested;
 	}
 
@@ -579,8 +487,6 @@ public:
 	void trim() {
 		content.shrink_to_fit();
 		positions.shrink_to_fit();
-		angles.shrink_to_fit();
-		radii.shrink_to_fit();
 		if (!isLeaf) {
 			for (index i = 0; i < children.size(); i++) {
 				children[i].trim();
@@ -624,22 +530,6 @@ public:
 		return result;
 	}
 
-	double getLeftAngle() const {
-		return leftAngle;
-	}
-
-	double getRightAngle() const {
-		return rightAngle;
-	}
-
-	double getMinR() const {
-		return minR;
-	}
-
-	double getMaxR() const {
-		return maxR;
-	}
-
 	index getID() const {
 		return ID;
 	}
@@ -654,12 +544,12 @@ public:
 		return result+1;
 	}
 
-	index getCellID(double phi, double r) const {
-		if (!responsible(phi, r)) return -1;
+	index getCellID(Point2D<double> pos) const {
+		if (!responsible(pos)) return -1;
 		if (isLeaf) return getID();
 		else {
 			for (int i = 0; i < 4; i++) {
-				index childresult = children[i].getCellID(phi, r);
+				index childresult = children[i].getCellID(pos);
 				if (childresult >= 0) return childresult;
 			}
 			assert(false); //if responsible
@@ -706,27 +596,21 @@ public:
 				std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
 
 				//can probably be parallelized easily, but doesn't bring much benefit
-				std::sort(permutation.begin(), permutation.end(), [this](index i, index j){return angles[i] < angles[j];});
+				std::sort(permutation.begin(), permutation.end(), [this](index i, index j){return positions[i].getX() < positions[j].getX();});
 
 				//There ought to be a way to do this more elegant with some algorithm header, but I didn't find any
 
 				std::vector<T> contentcopy(cs);
 				std::vector<Point2D<double> > positioncopy(cs);
-				std::vector<double> anglecopy(cs);
-				std::vector<double> radiicopy(cs);
 
 				for (index i = 0; i < cs; i++) {
 					const index perm = permutation[i];
 					contentcopy[i] = content[perm];
 					positioncopy[i] = positions[perm];
-					anglecopy[i] = angles[perm];
-					radiicopy[i] = radii[perm];
 				}
 
 				content.swap(contentcopy);
 				positions.swap(positioncopy);
-				angles.swap(anglecopy);
-				radii.swap(radiicopy);
 			}
 
 		} else {

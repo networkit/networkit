@@ -5,25 +5,24 @@
  *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
  */
 
-#ifndef QUADTREEPOLAREUCLID_H_
-#define QUADTREEPOLAREUCLID_H_
+#ifndef QUADTREECARTESIANEUCLID_H_
+#define QUADTREECARTESIANEUCLID_H_
 
 #include <vector>
 #include <memory>
 #include <cmath>
 #include <omp.h>
 #include <functional>
-#include "QuadNodePolarEuclid.h"
+#include "QuadNodeCartesianEuclid.h"
 
 namespace NetworKit {
 
 template <class T>
-class QuadtreePolarEuclid {
-	friend class QuadTreePolarEuclidGTest;
+class QuadtreeCartesianEuclid {
+	friend class QuadTreeCartesianEuclidGTest;
 public:
-	QuadtreePolarEuclid() {
-		root = QuadNodePolarEuclid<T>();
-		this->maxRadius = 1;
+	QuadtreeCartesianEuclid() {
+		root = QuadNodeCartesianEuclid<T>();
 	}
 
 	/**
@@ -33,24 +32,31 @@ public:
 	 * @param capacity How many points can inhabit a leaf cell before it is split up?
 	 *
 	 */
-	QuadtreePolarEuclid(double maxR,bool theoreticalSplit=false, double alpha=1, count capacity=1000, double balance = 0.5) {
-		root = QuadNodePolarEuclid<T>(0, 0, 2*M_PI, maxR, capacity, 0,theoreticalSplit,alpha,balance);
-		this->maxRadius = maxR;
+	QuadtreeCartesianEuclid(Point2D<double> lowerLeft, Point2D<double> upperRight,bool theoreticalSplit=false, count capacity=1000) {
+		root = QuadNodeCartesianEuclid<T>(lowerLeft, upperRight, capacity, theoreticalSplit);
+		lower = lowerLeft;
+		upper = upperRight;
 	}
 
-	QuadtreePolarEuclid(const vector<double> &angles, const vector<double> &radii, const vector<T> &content, bool theoreticalSplit=false, count capacity=1000, double balance = 0.5) {
-		const count n = angles.size();
-		assert(angles.size() == radii.size());
-		assert(radii.size() == content.size());
-		maxRadius = 0;
-		for (double radius : radii) {
-			if (radius > maxRadius) maxRadius = radius;
+	QuadtreeCartesianEuclid(const vector<Point2D<double> > &positions, const vector<T> &content, bool theoreticalSplit=false, count capacity=1000) {
+		const count n = positions.size();
+		assert(content.size() == n);
+
+		for (Point2D<double> pos : positions) {
+			if (pos.getX() < lower.getX()) lower = Point2D<double>(pos.getX(), lower.getY());
+			if (pos.getY() < lower.getY()) lower = Point2D<double>(lower.getX(), pos.getY());
+
+			if (pos.getX() > upper.getX()) upper = Point2D<double>(pos.getX(), upper.getY());
+			if (pos.getY() > upper.getY()) upper = Point2D<double>(upper.getX(), pos.getY());
 		}
-		maxRadius = std::nextafter(maxRadius, std::numeric_limits<double>::max());
-		root = QuadNodePolarEuclid<T>(0, 0, 2*M_PI, maxRadius, capacity, theoreticalSplit,balance);
+
+		//the upper limit is open, so it needs to be above the points
+		upper = Point2D<double>(std::nextafter(upper.getX(), std::numeric_limits<double>::max()), std::nextafter(upper.getY(), std::numeric_limits<double>::max()));
+
+		root = QuadNodeCartesianEuclid<T>(lower, upper, capacity, theoreticalSplit);
 		for (index i = 0; i < n; i++) {
 			assert(content[i] < n);
-			root.addContent(content[i], angles[i], radii[i]);
+			root.addContent(content[i], positions[i]);
 		}
 	}
 
@@ -59,8 +65,8 @@ public:
 	 * @param angle angular coordinate of x
 	 * @param R radial coordinate of x
 	 */
-	void addContent(T newcomer, double angle, double r) {
-		root.addContent(newcomer, angle, r);
+	void addContent(T newcomer, Point2D<double> pos) {
+		root.addContent(newcomer, pos);
 	}
 
 	/**
@@ -68,8 +74,8 @@ public:
 	 * @param angle angular coordinate of x
 	 * @param R radial coordinate of x
 	 */
-	bool removeContent(T toRemove, double angle, double r) {
-		return root.removeContent(toRemove, angle, r);
+	bool removeContent(T toRemove, Point2D<double> pos) {
+		return root.removeContent(toRemove, pos);
 	}
 
 	/**
@@ -81,8 +87,8 @@ public:
 		return root.getElements();
 	}
 
-	void extractCoordinates(vector<double> &anglesContainer, vector<double> &radiiContainer) const {
-		root.getCoordinates(anglesContainer, radiiContainer);
+	void extractCoordinates(vector<Point2D<double> > &posContainer) const {
+		root.getCoordinates(posContainer);
 	}
 
 	void getElementsInEuclideanCircle(const Point2D<double> circleCenter, const double radius, vector<T> &circleDenizens) const {
@@ -90,11 +96,7 @@ public:
 	}
 
 	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &circleDenizens) {
-		return root.getElementsProbabilistically(euQuery, prob, false, circleDenizens);
-	}
-
-	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, bool suppressLeft, vector<T> &circleDenizens) {
-		return root.getElementsProbabilistically(euQuery, prob, suppressLeft, circleDenizens);
+		return root.getElementsProbabilistically(euQuery, prob, circleDenizens);
 	}
 
 	void recount() {
@@ -117,13 +119,10 @@ public:
 		return root.indexSubtree(nextID);
 	}
 
-	index getCellID(double phi, double r) const {
-		return root.getCellID(phi, r);
+	index getCellID(Point2D<double> pos) const {
+		return root.getCellID(pos);
 	}
 
-	double getMaxRadius() const {
-		return maxRadius;
-	}
 
 	void sortPointsInLeaves() {
 		#pragma omp parallel
@@ -153,8 +152,9 @@ public:
 	}
 
 private:
-	QuadNodePolarEuclid<T> root;
-	double maxRadius;
+	QuadNodeCartesianEuclid<T> root;
+	Point2D<double> lower;
+	Point2D<double> upper;
 };
 }
 

@@ -14,6 +14,9 @@
 #include "../../../auxiliary/Log.h"
 #include "../../../geometric/HyperbolicSpace.h"
 
+#include "../QuadtreeCartesianEuclid.h"
+#include "../QuadtreePolarEuclid.h"
+
 namespace NetworKit {
 
 QuadTreeGTest::QuadTreeGTest() {
@@ -469,8 +472,56 @@ TEST_F(QuadTreeGTest, testProbabilisticQuery) {
 	near.clear();
 	quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[0], radii[0]), edgeProb2, near);
 	EXPECT_EQ(0, near.size());
-
 }
+
+TEST_F(QuadTreeGTest, testCartesianEuclidQuery) {
+	count n = 10000;
+	count m = n*3;
+	count capacity = 20;
+
+	assert(n > 0);
+
+	vector<Point2D<double> > positions(n);
+	vector<index> content(n);
+
+	for (index i = 0; i < n; i++) {
+		Point2D<double> pos = Point2D<double>(Aux::Random::probability(), Aux::Random::probability());
+		positions[i] = pos;
+		content[i] = i;
+	}
+
+
+	QuadtreeCartesianEuclid<index> quad(positions, content, true);
+
+	EXPECT_EQ(n, quad.size());
+	quad.recount();
+	EXPECT_EQ(n, quad.size());
+//
+//	quad.trim();
+//
+//	for (index i = 0; i < 200; i++) {
+//		index query = Aux::Random::integer(n-1);
+//		double acc = Aux::Random::probability() ;
+//		auto edgeProb = [acc](double distance) -> double {return acc;};
+//		vector<index> near;
+//		quad.getElementsProbabilistically(positions[query], edgeProb, near);
+//	//	EXPECT_NEAR(near.size(), acc*n, std::max(acc*n*0.25, 10.0));
+//	}
+
+	//TODO: some test about appropriate subtrees and leaves
+
+	auto edgeProb = [](double distance) -> double {return 1;};
+	vector<index> near;
+	quad.getElementsProbabilistically(positions[0], edgeProb, near);
+	EXPECT_EQ(n, near.size());
+
+	auto edgeProb2 = [](double distance) -> double {return 0;};
+	near.clear();
+	quad.getElementsProbabilistically(positions[0], edgeProb2, near);
+	EXPECT_EQ(0, near.size());
+}
+
+
 
 TEST_F(QuadTreeGTest, testLeftSuppression) {
 	/**
@@ -600,6 +651,108 @@ TEST_F(QuadTreeGTest, tryTreeExport) {
 
 	DEBUG("\\drawQuery{", deg(angles[query]), "}{", HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[query]),"}");
 
+}
+
+TEST_F(QuadTreeGTest, testPolarEuclidQuery) {
+	/**
+	 * setup of data structures and constants
+	 */
+	double maxR = 2;
+	count n = 10000;
+	vector<double> angles(n);
+	vector<double> radii(n);
+	vector<index> content(n);
+
+	double minPhi = 0;
+	double maxPhi = 2*M_PI;
+	double minR = 0;
+
+	/**
+	 * get random number generators
+	 */
+
+	std::uniform_real_distribution<double> phidist{minPhi, maxPhi};
+	std::uniform_real_distribution<double> rdist{minR, maxR};
+
+	/**
+	 * fill vectors
+	 */
+	for (index i = 0; i < n; i++) {
+		angles[i] = phidist(Aux::Random::getURNG());
+		radii[i] = rdist(Aux::Random::getURNG());
+		content[i] = i;
+	}
+
+	const bool splitTheoretical = true;
+	QuadtreePolarEuclid<index> tree(angles, radii, content, splitTheoretical);
+	EXPECT_EQ(n, tree.size());
+
+	tree.trim();
+
+	for (index i = 0; i < 200; i++) {
+		index query = Aux::Random::integer(n-1);
+		double acc = Aux::Random::probability() ;
+		auto edgeProb = [acc](double distance) -> double {return acc;};
+		vector<index> near;
+		tree.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[query], radii[query]), edgeProb, near);
+		EXPECT_NEAR(near.size(), acc*n, std::max(acc*n*0.25, 10.0));
+	}
+
+	//TODO: some test about appropriate subtrees and leaves
+
+	auto edgeProb = [](double distance) -> double {return 1;};
+	vector<index> near;
+	tree.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[0], radii[0]), edgeProb, near);
+	EXPECT_EQ(n, near.size());
+
+	auto edgeProb2 = [](double distance) -> double {return 0;};
+	near.clear();
+	tree.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[0], radii[0]), edgeProb2, near);
+	EXPECT_EQ(0, near.size());
+}
+
+TEST_F(QuadTreeGTest, testQuadTreePolarEuclidInsertion) {
+	/**
+	 * setup of data structures and constants
+	 */
+	double maxR = 2;
+	count n = 1000;
+	vector<double> angles(n);
+	vector<double> radii(n);
+	vector<index> content(n);
+
+	double minPhi = 0;
+	double maxPhi = 2*M_PI;
+	double minR = 0;
+
+	/**
+	 * get random number generators
+	 */
+
+	std::uniform_real_distribution<double> phidist{minPhi, maxPhi};
+	std::uniform_real_distribution<double> rdist{minR, maxR};
+
+	/**
+	 * fill vectors
+	 */
+	for (index i = 0; i < n; i++) {
+		angles[i] = phidist(Aux::Random::getURNG());
+		radii[i] = rdist(Aux::Random::getURNG());
+		content[i] = i;
+	}
+
+	QuadtreePolarEuclid<index> tree(angles, radii, content);
+	EXPECT_EQ(n, tree.size());
+
+	/**
+	 * elements are returned
+	 */
+	vector<index> returned = tree.getElements();
+	EXPECT_EQ(n, returned.size());
+	sort(returned.begin(), returned.end());
+	for (index i = 0; i < returned.size(); i++) {
+		EXPECT_EQ(i, returned[i]);
+	}
 }
 
 } /* namespace NetworKit */

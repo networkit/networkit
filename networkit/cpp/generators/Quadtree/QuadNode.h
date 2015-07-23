@@ -156,12 +156,12 @@ public:
 				Point2D<double> pos = HyperbolicSpace::polarToCartesian(angle, R);
 				positions.push_back(pos);
 			} else {
-
 				split();
 
 				for (index i = 0; i < content.size(); i++) {
 					this->addContent(content[i], angles[i], radii[i]);
 				}
+				assert(subTreeSize == content.size());//we have added everything twice
 				subTreeSize = content.size();
 				content.clear();
 				angles.clear();
