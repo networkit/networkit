@@ -1,8 +1,10 @@
 /*
- * QuadNode.h
+ * QuadNodePolarEuclid.h
  *
  *  Created on: 21.05.2014
  *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
+ *
+ *  Note: This is similar enough to QuadNode.h that one could merge these two classes.
  */
 
 #ifndef QUADNODE_H_
@@ -156,6 +158,7 @@ public:
 				content.clear();
 				angles.clear();
 				radii.clear();
+				positions.clear();
 				this->addContent(input, angle, R);
 			}
 		}

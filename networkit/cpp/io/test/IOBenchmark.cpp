@@ -74,8 +74,6 @@ TEST_F(IOBenchmark, benchRasterReader) {
 			INFO("Converted coordinates", runtime.elapsedTag());
 			//define query function
 			double T = 0.01;
-			double thresholdDistance = maxR/1000;
-			double beta = 1/T;
 			auto edgeProb = [](double distance) -> double {return exp(-(distance*200+5));};
 			//auto edgeProb = [beta, thresholdDistance](double distance) -> double {return 1 / (exp(beta*(distance-thresholdDistance)/2)+1);};
 
