@@ -1,0 +1,509 @@
+<!--
+	file: profiling.measure.html
+	author: Mark Erb
+		
+	This file contains all content representing the measure layout 
+-->
+
+<div class="SubCategory Measure" data-title="{key}">
+	<div class="Plot" title="{key}" data-image="data:image/svg+xml;utf8,{image}" />
+	<div class="Stat">
+		<div class="Group">
+			<div class="Title">Properties</div>
+			<div class="List">
+				<div class="Entry" data-tooltip="Sample Size">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<mi mathvariant="italic">n</mi>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Properties][Size]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Bessel's Correction">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>f</mi>
+						 <mrow>
+						  <mi mathvariant="italic">BC</mi>
+						 </mrow>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Properties][Bessel's Correction]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+			</div>
+		</div>
+		<div class="Group">
+			<div class="Title">Location</div>
+			<div class="List">
+				<div class="Entry" data-tooltip="Minimum">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>x</mi>
+						 <mrow>
+						  <mrow>
+						   <mo stretchy="false">(</mo>
+						   <mrow>
+							<mn>1</mn>
+						   </mrow>
+						   <mo stretchy="false">)</mo>
+						  </mrow>
+						 </mrow>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Location][Min]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Maximum">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>x</mi>
+						 <mrow>
+						  <mrow>
+						   <mo stretchy="false">(</mo>
+						   <mrow>
+							<mn>n</mn>
+						   </mrow>
+						   <mo stretchy="false">)</mo>
+						  </mrow>
+						 </mrow>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Location][Max]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="1st Quartile">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mrow>
+						  <mover accent="true">
+						   <mi>x</mi>
+						   <mo stretchy="false">̃</mo>
+						  </mover>
+						 </mrow>
+						 <mrow>
+						  <mn>0.25</mn>
+						 </mrow>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Location][1st Quartile]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="2nd Quartile / Median">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mrow>
+						  <mover accent="true">
+						   <mi>x</mi>
+						   <mo stretchy="false">̃</mo>
+						  </mover>
+						 </mrow>
+						 <mrow>
+						  <mn>Med</mn>
+						 </mrow>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Location][Median]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="3rd Quartile">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mrow>
+						  <mover accent="true">
+						   <mi>x</mi>
+						   <mo stretchy="false">̃</mo>
+						  </mover>
+						 </mrow>
+						 <mrow>
+						  <mn>0.75</mn>
+						 </mrow>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Location][3rd Quartile]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Arithmetic Mean">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<mover accent="true">
+						 <mi>x</mi>
+						 <mo stretchy="false">̄</mo>
+						</mover>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Location][Arithmetic Mean]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Interquartile Mean">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mrow>
+						  <mover accent="true">
+						   <mi>x</mi>
+						   <mo stretchy="false">̄</mo>
+						  </mover>
+						 </mrow>
+						 <mrow>
+						  <mi mathvariant="italic">IQM</mi>
+						 </mrow>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Location][Interquartile Mean]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Quadratic Mean / Root Mean Square">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mrow>
+						  <mover accent="true">
+						   <mi>x</mi>
+						   <mo stretchy="false">̄</mo>
+						  </mover>
+						 </mrow>
+						 <mrow>
+						  <mi mathvariant="italic">RMS</mi>
+						 </mrow>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Location][Quadratic Mean]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Sample Mid-Range">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mrow>
+						  <mover accent="true">
+						   <mi>x</mi>
+						   <mo stretchy="false">̄</mo>
+						  </mover>
+						 </mrow>
+						 <mrow>
+						  <mi mathvariant="italic">R</mi>
+						 </mrow>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Location][Mid-Range]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+			</div>
+		</div>
+		<div class="Group">
+			<div class="Title">Dispersion</div>
+			<div class="List">
+				<div class="Entry" data-tooltip="Unbiased Sample Variance">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msubsup>
+						 <mi>s</mi>
+						 <mrow>
+						  <mi>x</mi>
+						 </mrow>
+						 <mrow>
+						  <mn>2</mn>
+						 </mrow>
+						</msubsup>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Dispersion][Variance]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Unbiased Standard Deviation">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>s</mi>
+						 <mi>x</mi>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Dispersion][Standard Deviation]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Unbiased Coefficient Of Variation">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>v</mi>
+						 <mi>x</mi>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Dispersion][Coefficient Of Variation]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Sample Range">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<mi>R</mi>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Dispersion][Sample Range]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Interquartile Range">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>R</mi>
+						 <mi mathvariant="italic">IQR</mi>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Dispersion][Interquartile Range]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+			</div>
+		</div>
+		<div class="Group">
+			<div class="Title">Shape</div>
+			<div class="List">
+				<div class="Entry" data-tooltip="Skewness (Yule-Pearson)">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>S</mi>
+						 <mi mathvariant="italic">YP</mi>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Shape][Skewness YP]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>	
+				</div>
+				<div class="Entry" data-tooltip="Skewness (3rd Momentum)">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>S</mi>
+						 <mi mathvariant="italic">M</mi>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Shape][Skewness M]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>	
+				</div>
+				<div class="Entry" data-tooltip="Kurtotis (Excess)">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<mo stretchy="false">γ</mo>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Shape][Kurtosis]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+			</div>
+		</div>
+		<div class="Group">
+			<div class="Title">Rang</div>
+			<div class="List">
+				<div class="Entry" data-tooltip="Unbiased Variance (Rang)">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msubsup>
+						 <mi>s</mi>
+						 <mrow>
+						  <msub>
+						   <mi mathvariant="italic">rg</mi>
+						   <mi>x</mi>
+						  </msub>
+						 </mrow>
+						 <mrow>
+						  <mn>2</mn>
+						 </mrow>
+						</msubsup>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Dispersion][Variance (Rang)]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Unbiased Standard Deviation (Rang)">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>s</mi>
+						 <mrow>
+						  <msub>
+						   <mi mathvariant="italic">rg</mi>
+						   <mi>x</mi>
+						  </msub>
+						 </mrow>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Dispersion][Standard Deviation (Rang)]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Unbiased Coefficient Of Variation (Rang)">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>v</mi>
+						 <mrow>
+						  <msub>
+						   <mi mathvariant="italic">rg</mi>
+						   <mi>x</mi>
+						  </msub>
+						 </mrow>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Dispersion][Coefficient Of Variation (Rang)]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+			</div>
+		</div>
+		<div class="Group">
+			<div class="Title">Binning</div>
+			<div class="List">
+				<div class="Entry" data-tooltip="Number Of Bins">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>n</mi>
+						 <mrow>
+						  <mi mathvariant="italic">Bin</mi>
+						 </mrow>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Binning][Number]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+				<div class="Entry" data-tooltip="Mode (Binning)">
+					<math>
+					 <semantics>
+					  <mrow>
+					   <mrow>
+						<msub>
+						 <mi>x</mi>
+						 <mrow>
+						  <msub>
+						   <mi>D</mi>
+						   <mi mathvariant="italic">Bin</mi>
+						  </msub>
+						 </mrow>
+						</msub>
+						<mo stretchy="false">=</mo>
+						<mn>{stat[Binning][Mode]:g}</mn>
+					   </mrow>
+					  </mrow>
+					 </semantics>
+					</math>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{stat[Distribution][Chi-Square-Test (Normal)]}<br>
+{stat[Distribution][Chi-Square-Test (Exponential)]}
