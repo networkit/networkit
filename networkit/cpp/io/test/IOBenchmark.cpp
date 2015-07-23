@@ -43,7 +43,7 @@ TEST_F(IOBenchmark, benchRasterReader) {
 	std::vector<double> ycoords;
 	Aux::Timer runtime;
 
-	std::vector<std::string> countries = {"deu", "usa"};
+	std::vector<std::string> countries = {"deu", "fra", "usa"};
 	for (auto country: countries) {
 		std::string path("input/" + country + "p00ag.asc");
 
