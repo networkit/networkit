@@ -26,19 +26,29 @@
 
 .NetworKit_Page .Category {
 	clear: both;
+	padding-left: 1em;
+	margin-bottom: 1.5em;
 }
 
 .NetworKit_Page .Category:before {
+	content: attr(data-title);
 	font-size: 1.75em;
 	display: block;
-	margin-bottom: 0.75em;
+	margin-left: -0.8em;
+	margin-bottom: 0.5em;
 }
 
-.NetworKit_Page .Node_Centrality_Measures:before	{ content: "Node Centrality Measures"; }
-.NetworKit_Page .Test:before						{ content: "Test"; }
+.NetworKit_Page .SubCategory {
+	margin-bottom: 1.5em;
+	padding-left: 1em;
+}
 
-.NetworKit_Page .HeatTable {
-	margin: 1em;
+.NetworKit_Page .SubCategory:before {
+	content: attr(data-title);
+	font-size: 1.6em;
+	display: block;
+	margin-left: -0.8em;
+	margin-bottom: 0.5em;
 }
 
 .NetworKit_Page .HeatCell {
@@ -58,24 +68,17 @@
 	margin-left: 0.25em;
 }
 
-.NetworKit_Page .HeatCell[data-heat]:before {
+.NetworKit_Page .HeatCell:before {
 	content: attr(data-heat);
 	color: #000000;
 }
 
-.NetworKit_Page .HeatCell[data-image]:hover:after {
+.NetworKit_Page .HeatCell:hover:after {
 	content: attr(data-image url);
 }
 
 .NetworKit_Page .Measure {
 	clear: both;
-	margin-left: 1em;
-}
-
-.NetworKit_Page .Measure .Title {
-	font-size: 1.6em;
-	display: block;
-	margin-bottom: 0.75em;
 }
 
 .NetworKit_Page .Measure .Plot {
@@ -83,8 +86,8 @@
 	height: 440px;
 	cursor: pointer;
 	float: left;
-	margin-right: 2em;
-	margin-bottom: 1.5em;
+	margin-left: -0.9em;
+	margin-right: 1.5em;
 }
 
 .NetworKit_Page .Measure .Plot .Image {
@@ -97,8 +100,7 @@
 
 .NetworKit_Page .Measure .Stat {
 	width: 580px;
-	float: left;
-	margin-bottom: 1.5em;
+	float: left;;
 }
 
 .NetworKit_Page .Measure .Stat .Group { 
@@ -107,7 +109,7 @@
 }
 
 .NetworKit_Page .Measure .Stat .Group .Title { 
-	font-size: 1.35em;
+	font-size: 1.1em;
 	display: block;
 	margin-bottom: 0.3em;
 	margin-left: -0.75em;
