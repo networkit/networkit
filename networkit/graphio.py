@@ -26,7 +26,9 @@ try:
 
 
 	class Format(__AutoNumber):
-		""" Simple enumeration class to list supported file types """
+		""" Simple enumeration class to list supported file types. Currently supported
+		file types: SNAP, EdgeListSpaceZero, EdgeListSpaceOne, EdgeListTabZero, EdgeListTabOne,
+		METIS, GraphML, GEXF, GML, EdgeListCommaOne, GraphViz, DOT, EdgeList, LFR, KONEC, GraphToolBinary"""
 		SNAP = ()
 		EdgeListSpaceZero = ()
 		EdgeListSpaceOne = ()
@@ -106,7 +108,9 @@ def getReader(fileformat, **kwargs):
 def readGraph(path, fileformat, **kwargs):
 	""" Read graph file in various formats and return a NetworKit::Graph
 	    Parameters:
-		- fileformat: An element of the Format enumeration
+		- fileformat: An element of the Format enumeration. Currently supported file types:
+		SNAP, EdgeListSpaceZero, EdgeListSpaceOne, EdgeListTabZero, EdgeListTabOne, METIS,
+		GraphML, GEXF, GML, EdgeListCommaOne, GraphViz, DOT, EdgeList, LFR, KONEC, GraphToolBinary
 		- **kwargs: in case of a custom edge list, provide the defining paramaters as follows:
 			"separator=CHAR, firstNode=NODE, commentPrefix=STRING, continuous=BOOL"
 			commentPrefix and continuous are optional

@@ -65,7 +65,9 @@ TEST_F(APSPGTest, testAPSPInsertionUndirectedUnweighted) {
 	// apply graph update
 	G.addEdge(2, 5);
 	GraphEvent event(GraphEvent::EDGE_ADDITION, 2, 5);
-	apsp.update(event);
+	std::vector<GraphEvent> batch;
+	batch.push_back(event);
+	apsp.update(batch);
 	distances = apsp.getDistances();
 
 	apsp.run();
@@ -102,14 +104,16 @@ TEST_F(APSPGTest, testAPSPDeletionUndirectedUnweighted) {
 	// apply graph update
 	G.removeEdge(2, 5);
 	GraphEvent event(GraphEvent::EDGE_REMOVAL, 2, 5);
-	apsp.update(event);
+	std::vector<GraphEvent> batch;
+	batch.push_back(event);
+	apsp.update(batch);
 	distances = apsp.getDistances();
 
 	apsp.run();
 	std::vector<std::vector<edgeweight> > distances2 = apsp.getDistances();
 	G.forNodes([&](node i) {
 		G.forNodes([&](node j) {
-			//INFO("i, j = ", i, j);
+			INFO("i, j = ", i, j);
 			EXPECT_EQ(distances[i][j], distances2[i][j]);
 		});
 	});
@@ -141,7 +145,10 @@ TEST_F(APSPGTest, testAPSPInsertionDirectedUnweighted) {
 
 	G.addEdge(0,3);
 	GraphEvent event(GraphEvent::EDGE_ADDITION, 0, 3);
-	apsp.update(event);
+	std::vector<GraphEvent> batch;
+	batch.push_back(event);
+	apsp.update(batch);
+
 	distances = apsp.getDistances();
 
 	DynAPSP apsp2(G);
@@ -180,7 +187,10 @@ TEST_F(APSPGTest, testAPSPDeletionDirectedUnweighted) {
 
 	G.removeEdge(0,3);
 	GraphEvent event(GraphEvent::EDGE_REMOVAL, 0, 3);
-	apsp.update(event);
+	std::vector<GraphEvent> batch;
+	batch.push_back(event);
+	apsp.update(batch);
+
 	distances = apsp.getDistances();
 
 	G.forNodes([&](node i) {
@@ -222,7 +232,10 @@ TEST_F(APSPGTest, testAPSPUndirectedWeighted) {
 	// apply graph update edge addition with ID 2
 	G.addEdge(2, 5, 0.000002);
 	GraphEvent event2(GraphEvent::EDGE_ADDITION, 2, 5, 0.000002);
-	apsp.update(event2);
+	std::vector<GraphEvent> batch2;
+	batch2.push_back(event2);
+	apsp.update(batch2);
+
 	distances = apsp.getDistances();
 
 	DynAPSP apsp2(G);
@@ -238,7 +251,9 @@ TEST_F(APSPGTest, testAPSPUndirectedWeighted) {
 	// apply graph update edge weight increment with ID 3
 	G.setWeight(2, 5, 0.000003);
 	GraphEvent event3(GraphEvent::EDGE_WEIGHT_INCREMENT, 2, 5, 0.000001);
-	apsp.update(event3);
+	std::vector<GraphEvent> batch3;
+	batch3.push_back(event3);
+	apsp.update(batch3);
 	distances = apsp.getDistances();
 
 	DynAPSP apsp3(G);
@@ -254,7 +269,10 @@ TEST_F(APSPGTest, testAPSPUndirectedWeighted) {
 	// apply graph update edge weight update with ID 4
 	G.setWeight(2, 5, 0.000001);
 	GraphEvent event4(GraphEvent::EDGE_WEIGHT_UPDATE, 2, 5, 0.000001);
-	apsp.update(event4);
+	std::vector<GraphEvent> batch4;
+	batch4.push_back(event4);
+	apsp.update(batch4);
+
 	distances = apsp.getDistances();
 
 	DynAPSP apsp4(G);
@@ -287,7 +305,10 @@ TEST_F(APSPGTest, testAPSPUndirectedWeighted) {
 	INFO("entering update 5");
 	H.removeEdge(2, 5);
 	GraphEvent event5(GraphEvent::EDGE_REMOVAL, 2, 5);
-	Hapsp.update(event5);
+	std::vector<GraphEvent> batch5;
+	batch5.push_back(event5);
+	apsp.update(batch5);
+
 	Hdistances = Hapsp.getDistances();
 
 	DynAPSP apsp5(G);
@@ -323,7 +344,10 @@ TEST_F(APSPGTest, testAPSPUndirectedWeightedDisconnectComponent) {
 	INFO("entering update 5");
 	G.removeEdge(4, 5);
 	GraphEvent event5(GraphEvent::EDGE_REMOVAL, 4, 5);
-	apsp.update(event5);
+	std::vector<GraphEvent> batch5;
+	batch5.push_back(event5);
+	apsp.update(batch5);
+
 	distances = apsp.getDistances();
 
 	DynAPSP apsp5(G);
@@ -338,7 +362,7 @@ TEST_F(APSPGTest, testAPSPUndirectedWeightedDisconnectComponent) {
 }
 
 TEST_F(APSPGTest, testAPSPDirectedWeighted) {
-	Graph G(5); // G+
+	Graph G(5, true, true); // G+ Ghouse
 	G.addEdge(3,1,1);
 	G.addEdge(1,0,2);
 	G.addEdge(0,2,3);
@@ -358,7 +382,10 @@ TEST_F(APSPGTest, testAPSPDirectedWeighted) {
 	INFO("entering update 1");
 	G.removeEdge(3, 1);
 	GraphEvent event(GraphEvent::EDGE_REMOVAL, 3, 1);
-	apsp.update(event);
+	std::vector<GraphEvent> batch;
+	batch.push_back(event);
+	apsp.update(batch);
+
 	distances = apsp.getDistances();
 
 	DynAPSP apsp1(G);
@@ -374,8 +401,11 @@ TEST_F(APSPGTest, testAPSPDirectedWeighted) {
 	// apply graph update edge insertion update with ID 2
 	INFO("entering update 2");
 	G.addEdge(3, 1, 1);
-	event = GraphEvent(GraphEvent::EDGE_ADDITION, 3, 1, 1);
-	apsp.update(event);
+	GraphEvent event2(GraphEvent::EDGE_ADDITION, 3, 1, 1);
+	std::vector<GraphEvent> batch2;
+	batch2.push_back(event2);
+	apsp.update(batch2);
+
 	distances = apsp.getDistances();
 
 	DynAPSP apsp2(G);
@@ -387,6 +417,80 @@ TEST_F(APSPGTest, testAPSPDirectedWeighted) {
 			EXPECT_NEAR(distances[i][j], distances2[i][j], 0.0001);
 		});
 	});
+}
+
+TEST_F(APSPGTest, testAPSPBatchDelIns) {
+	Graph G(4, true, true);
+	G.addEdge(0, 1, 2);
+	G.addEdge(0, 3, 2);
+	G.addEdge(1, 2, 3);
+	G.addEdge(2, 3, 1);
+
+	// Run baseline apsp with ID 0
+	DynAPSP apsp(G);
+	apsp.run();
+	std::vector<std::vector<edgeweight> > distances = apsp.getDistances();
+	INFO("distances[0]: ", distances[0][0], " ", distances[0][1]," ", distances[0][2]," ", distances[0][3]);
+
+	// apply batch update
+	G.removeEdge(0, 3);
+	G.addEdge(0,2, 1);
+	GraphEvent event1(GraphEvent::EDGE_REMOVAL, 0, 3);
+	GraphEvent event2(GraphEvent::EDGE_ADDITION, 0, 2, 1);
+	std::vector<GraphEvent> batch;
+	batch.push_back(event1);
+	batch.push_back(event2);
+	apsp.update(batch);
+	distances = apsp.getDistances();
+
+	DynAPSP apsp1(G);
+	apsp1.run();
+	std::vector<std::vector<edgeweight> > distances1 = apsp1.getDistances();
+	G.forNodes([&](node i) {
+		G.forNodes([&](node j) {
+			INFO("i, j = ", i, " ", j);
+			EXPECT_NEAR(distances[i][j], distances1[i][j], 0.0001);
+		});
+	});
+
+
+}
+
+TEST_F(APSPGTest, testAPSPBatchInsDel) {
+	Graph G(5, true, true);
+	G.addEdge(0, 1, 1);
+	G.addEdge(0, 3, 1);
+	G.addEdge(1, 2, 1);
+	G.addEdge(2, 4, 1);
+
+	// Run baseline apsp with ID 0
+	DynAPSP apsp(G);
+	apsp.run();
+	std::vector<std::vector<edgeweight> > distances = apsp.getDistances();
+	INFO("distances[0]: ", distances[0][0], " ", distances[0][1]," ", distances[0][2]," ", distances[0][3], " ", distances[0][4]);
+
+	// apply batch update
+	G.addEdge(3, 4, 1);
+	G.removeEdge(0, 3);
+	GraphEvent event1(GraphEvent::EDGE_ADDITION, 3, 4, 1);
+	GraphEvent event2(GraphEvent::EDGE_REMOVAL, 0, 3);
+	std::vector<GraphEvent> batch;
+	batch.push_back(event1);
+	batch.push_back(event2);
+	apsp.update(batch);
+	distances = apsp.getDistances();
+
+	DynAPSP apsp1(G);
+	apsp1.run();
+	std::vector<std::vector<edgeweight> > distances1 = apsp1.getDistances();
+	G.forNodes([&](node i) {
+		G.forNodes([&](node j) {
+			INFO("i, j = ", i, " ", j);
+			EXPECT_EQ(distances[i][j], distances1[i][j]);
+		});
+	});
+
+
 }
 
 } /* namespace NetworKit */
