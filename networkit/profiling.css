@@ -24,6 +24,11 @@
 
 /* --- Page ---------------------------------------------------------------- */
 
+.NetworKit_Page {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+}
+
 .NetworKit_Page .Category {
 	clear: both;
 	padding-left: 1em;
