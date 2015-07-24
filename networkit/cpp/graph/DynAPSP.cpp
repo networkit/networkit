@@ -21,8 +21,9 @@ DynAPSP::DynAPSP(const Graph& G) : APSP(G) {
 
 }
 
-void DynAPSP::dynamic_sssp(node root, node startbfs) {
-	INFO("Entering Dynamic SSSP, root = ", root, ", startbfs = ", startbfs);
+void DynAPSP::dynamic_sssp(node root, std::vector<std::pair<node, edgeweight> > batch) {
+	INFO("Entering Dynamic SSSP, root = ", root);
+	INFO("Labels: ", L[root][0], " ", L[root][1], " ", L[root][2], " ", L[root][3], " ", L[root][4]);
 	// priority queue with distance-node pairs
 	Aux::PrioQueue<edgeweight, node> Q(G.upperNodeIdBound());
 	std::vector<bool> enqueued(G.upperNodeIdBound(), false);
@@ -38,30 +39,33 @@ void DynAPSP::dynamic_sssp(node root, node startbfs) {
 		}
 	};
 
-	updateQueue(startbfs, std::min(L[root][startbfs], distances[root][startbfs]));
+	for (std::pair<node, edgeweight> update: batch) {
+		INFO("Enqueueing node ", update.first, " with priority ", update.second);
+		updateQueue(update.first, update.second);
+	}
+
 	while(Q.size() != 0) {
-		//INFO("Entering while loop");
 		node v = Q.extractMin().second;
-		//INFO("The current node v is ", v);
+		INFO("The current node v is ", v);
 		enqueued[v] = false;
-		//INFO("label[",root,"][",v,"] = ", L[root][v]," distances[",root,"][",v,"] = ", distances[root][v]);
+		INFO("label[",root,"][",v,"] = ", L[root][v]," distances[",root,"][",v,"] = ", distances[root][v]);
 		if (L[root][v] < distances[root][v]) {
-			//INFO("label[",root,"][",v,"] < distances[",root,"][",v,"]");
-			//INFO("distances[",root,"][",v,"] was ", distances[root][v], " and now becomes ",L[root][v]);
+			INFO("label[",root,"][",v,"] < distances[",root,"][",v,"]");
+			INFO("distances[",root,"][",v,"] was ", distances[root][v], " and now becomes ",L[root][v]);
 			distances[root][v] = L[root][v];
 			if(!G.isDirected()) {
 				distances[v][root] = L[root][v];
 			}
 			G.forNeighborsOf(v, [&](node w, edgeweight weight){
-				//INFO("neighbor w: ", w);
 				if (distances[root][v] + weight < L[root][w]) {
 					L[root][w] = distances[root][v] + weight;
+					INFO("neighbor ", w, " of node ", v, " inserted into queue.");
 					updateQueue(w, std::min(L[root][w], distances[root][w]));
 				}
 			});
 		}
 		if (L[root][v] > distances[root][v]) {
-			//INFO("label[",root,"][",v,"] > distances[",root,"][",v,"]");
+			INFO("label[",root,"][",v,"] > distances[",root,"][",v,"]");
 			edgeweight Dold = distances[root][v];
 			distances[root][v] = infDist;
 			edgeweight con = infDist;
@@ -71,6 +75,7 @@ void DynAPSP::dynamic_sssp(node root, node startbfs) {
 				}
 			});
 			L[root][v] = con;
+			INFO("reinserting ", v, " with priority ", L[root][v]);
 			updateQueue(v, L[root][v]);
 			G.forNeighborsOf(v, [&](node w, edgeweight weight){
 				if(Dold + weight == L[root][w]) {
@@ -81,6 +86,7 @@ void DynAPSP::dynamic_sssp(node root, node startbfs) {
 						}
 					});
 					L[root][w] = con;
+					INFO("inserting neighbor ", w," of ", v, " with priority ", L[root][v]);
 					updateQueue(w, std::min(L[root][w], distances[root][w]));
 				}
 			});
@@ -96,53 +102,64 @@ void DynAPSP::dynamic_sssp(node root, node startbfs) {
  * identifies all nodes for which an sssp must be run. The helper method dynamic_sssp does the
  * actual updating of the distances.
  */
-void DynAPSP::update(const GraphEvent& event) {
+void DynAPSP::update(const std::vector<GraphEvent>& batch) {
 	INFO("Entering update");
-	if (event.type!=GraphEvent::EDGE_ADDITION && event.type!=GraphEvent::EDGE_REMOVAL &&
-		event.type!=GraphEvent::EDGE_WEIGHT_UPDATE && event.type!=GraphEvent::EDGE_WEIGHT_INCREMENT)
-		throw std::runtime_error("Graph update not allowed");
+	// initialize affected sources
+	std::map<node, std::vector<std::pair<node, edgeweight> > > affected;
+	std::map<node, std::vector<std::pair<node, edgeweight> > >::iterator affectedIterator;
 
-	node u = event.u;
-	node v = event.v;
-	edgeweight ew = G.weight(u, v);
 	L = distances;
+	
+	// identify affected sources
+	for (GraphEvent event: batch) {
+		if (event.type!=GraphEvent::EDGE_ADDITION && event.type!=GraphEvent::EDGE_REMOVAL &&
+			event.type!=GraphEvent::EDGE_WEIGHT_UPDATE && event.type!=GraphEvent::EDGE_WEIGHT_INCREMENT)
+			throw std::runtime_error("Graph update not allowed");
 
-	if (event.type==GraphEvent::EDGE_ADDITION || (event.type==GraphEvent::EDGE_WEIGHT_INCREMENT && ew < 0)
-		|| (event.type==GraphEvent::EDGE_WEIGHT_UPDATE && ew < distances[u][v]) ) {
-		G.forNodes([&](node x){
-			if (L[x][v] - L[x][u] > ew) {
-				L[x][v] = distances[x][u] + ew;
-				INFO("x, v, D[x][v], L[x, v]: ", x, " ", v," ", distances[x][v], " ", L[x][v]);
-				dynamic_sssp(x, v);
-			}
-		});
-	}
-	if (event.type==GraphEvent::EDGE_REMOVAL || (event.type==GraphEvent::EDGE_WEIGHT_INCREMENT && ew > 0)
-		|| (event.type==GraphEvent::EDGE_WEIGHT_UPDATE && ew > distances[u][v]) ) {
-		// update l.[v] block
-		// use dijkstra for now. We might be able to use dyn_sssp_1
-		std::vector<edgeweight> distancesToV(G.upperNodeIdBound());
-		if (G.isDirected()) {
-			Graph Gtrans = G.transpose();
-			Dijkstra dijk(Gtrans, v);
-			dijk.run();
-			distancesToV = dijk.getDistances();
-		} else {
-			Dijkstra dijk(G, v);
-			dijk.run();
-			distancesToV = dijk.getDistances();
+		node u = event.u;
+		node v = event.v;
+		edgeweight ew = G.weight(u, v);
+
+		if (event.type==GraphEvent::EDGE_ADDITION || (event.type==GraphEvent::EDGE_WEIGHT_INCREMENT && ew < 0)
+			|| (event.type==GraphEvent::EDGE_WEIGHT_UPDATE && ew < G.weight(u,v)) ) {
+			G.forNodes([&](node x){
+				if (L[x][v] > ew + distances[x][u]) {
+					INFO("edge insertion. Updating L[x][v]. x, v, old, new : ", x, " ", v, " ", L[x][v], " ", distances[x][u] + ew);
+					L[x][v] = distances[x][u] + ew;
+					INFO("x, v, D[x][v], L[x, v]: ", x, " ", v," ", distances[x][v], " ", L[x][v]);
+					affected[x].push_back(std::pair<node, edgeweight>(v, std::min(L[x][v], distances[x][v])));
+				}
+			});
 		}
-		//INFO("v, distancesToV: ", v, ", ", distancesToV[0], " ", distancesToV[1]," ", distancesToV[2]," ", distancesToV[3]," ", distancesToV[4]," ", distancesToV[5]," ", distancesToV[6]);
-		G.forNodes([&](node x){
-			L[x][v] = distancesToV[x];
-		// end of update l.[v] block
-			//INFO("x, v, L[x][u], L[x][v], L[x][v] - L[x][u], ew: ", x, " ", v," ", L[x][u], " ", L[x][v], " ", L[x][v] - L[x][u], " ", ew);
-			//if (true) {
-			if ((L[x][v] - L[x][u]) > ew) {
-				INFO("x, v, D[x][v], L[x, v]: ", x, " ", v," ", distances[x][v], " ", L[x][v]);
-				dynamic_sssp(x, v);
-			}
-		});
+		if (event.type==GraphEvent::EDGE_REMOVAL || (event.type==GraphEvent::EDGE_WEIGHT_INCREMENT && ew > 0)
+			|| (event.type==GraphEvent::EDGE_WEIGHT_UPDATE && ew > G.weight(u,v)) ) {
+
+			// this part below identifies all source nodes for which v must be set to con(v)
+
+			G.forNodes([&](node x){
+				edgeweight con = infDist;
+				if (x != v) {
+					G.forInNeighborsOf(v, [&](node y, edgeweight weightyv) {
+						if (distances[x][y] != infDist && distances[x][y] + weightyv < con) {
+							con = distances[x][y] + weightyv;
+						}
+					});
+					INFO("edge removal. Setting L[x][v] to con. x, v, L[x][v], con: ", x, " ", v, " ", L[x][v], " ", con);
+					L[x][v] = con;
+				}
+
+				//INFO("x, v, L[x][u], L[x][v], L[x][v] - L[x][u], ew: ", x, " ", v," ", L[x][u], " ", L[x][v], " ", L[x][v] - L[x][u], " ", ew);
+				if (L[x][v] > ew + distances[x][u]) {
+					INFO("x, v, D[x][v], L[x, v]: ", x, " ", v," ", distances[x][v], " ", L[x][v]);
+					affected[x].push_back(std::pair<node, edgeweight>(v, std::min(L[x][v], distances[x][v])));
+				}
+			});
+		}
+	}
+
+	// process affected sources
+	for (affectedIterator = affected.begin(); affectedIterator != affected.end(); affectedIterator++) {
+		dynamic_sssp(affectedIterator->first, affectedIterator->second);
 	}
 }
 
