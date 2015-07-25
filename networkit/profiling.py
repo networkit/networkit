@@ -132,7 +132,7 @@ class Worker(multiprocessing.Process):
 			self.__results.put(result)
 
 			
-class Stat_Task(object):
+class Stat_Task:
 	def __init__(self, name, params):
 		self.__name = name
 		self.__params = params
@@ -157,6 +157,16 @@ class Stat_Task(object):
 		
 		results["Properties"]["Size"] = n
 		
+		def funcMin():
+			result = sampleSorted[0]
+			return result
+		results["Location"]["Min"] = min = funcMin()
+			
+		def funcMax():
+			result = sampleSorted[n-1]
+			return result	
+		results["Location"]["Max"] = max = funcMax()
+		
 		def funcBesselsCorrection():
 			result = n / (n-1)
 			return result
@@ -171,6 +181,11 @@ class Stat_Task(object):
 			return result			
 		results["Location"]["Arithmetic Mean"] = arithmeticMean = hoelderMean(sample, 1)
 		results["Location"]["Quadratic Mean"] = quadraticMean = hoelderMean(sample, 2)
+		results["Location"]["Cubic Mean"] = cubicMean = hoelderMean(sample, 3)
+		if min > 0:
+			results["Location"]["Harmonic Mean"] = harmonicMean = hoelderMean(sample, -1)
+		else:
+			results["Location"]["Harmonic Mean"] = harmonicMean = float("nan")
 		
 		def funcArithmeticMeanRang():
 			result = (n + 1) / 2
@@ -210,17 +225,6 @@ class Stat_Task(object):
 		results["Dispersion"]["Coefficient Of Variation (Rang)"] = c_v_Rang = funcCoefficientOfVariation(s_n_Rang, arithmeticMean_Rang)
 		results["Dispersion"]["Uncorrected Coefficient Of Variation"] = c_v = funcCoefficientOfVariation(s_n_uncorrected, arithmeticMean)
 		results["Dispersion"]["Uncorrected Coefficient Of Variation (Rang)"] = c_v_Rang = funcCoefficientOfVariation(s_n_Rang_uncorrected, arithmeticMean_Rang)
-		
-		def funcMin():
-			result = sampleSorted[0]
-			return result
-		results["Location"]["Min"] = min = funcMin()
-			
-		def funcMax():
-			result = sampleSorted[n-1]
-			return result	
-		results["Location"]["Max"] = max = funcMax()
-		
 		def funcAlphaQuartile(alpha):
 			k_real = (alpha * n)
 			k = math.floor(k_real)
@@ -287,7 +291,7 @@ class Stat_Task(object):
 				result = 5
 			elif (result > 20):
 				result = 20
-			return result
+			return int(result)
 		results["Binning"]["Number"] = k_Bins = funcNumberOfBins()
 		
 		def funcIntervals():
@@ -418,7 +422,7 @@ class Stat_Task(object):
 		return results
 
 		
-class Correlation_Task(object):
+class Correlation_Task:
 	def __init__(self, name, params):
 		self.__name = name
 		self.__params = params
@@ -428,7 +432,7 @@ class Correlation_Task(object):
 		
 	def getType(self):
 		return "Correlation"
-	
+		
 	def run(self):
 		(nameB, sample_1, sampleRanged_1, stat_1, sample_2, sampleRanged_2, stat_2) = self.__params
 		n = len(sample_1)
@@ -483,7 +487,7 @@ class Correlation_Task(object):
 		return (nameB, results)
 
 	
-class PlotMeasure_Task(object):
+class PlotMeasure_Task:
 	def __init__(self, name, params):
 		self.__name = name
 		self.__params = params
@@ -536,7 +540,7 @@ class PlotMeasure_Task(object):
 		return (index, encoded)
 		
 		
-class PlotCorrelation_Task(object):
+class PlotCorrelation_Task:
 	def __init__(self, name, params):
 		self.__name = name
 		self.__params = params
@@ -598,14 +602,24 @@ class Profile:
 	def create(cls, G, exclude=[]):
 		result = cls(G, cls.__TOKEN)
 		
+		def funcScores(instance):
+			return instance.scores()
+		
+		def funcSizes(instance):
+			return sorted(instance.getPartition().subsetSizes())
+		
+		
 		for parameter in [ 
-			(centrality.DegreeCentrality, 			(G, )),
-			(centrality.CoreDecomposition, 			(G, )),
-			(centrality.LocalClusteringCoefficient, (G, )),
-			(centrality.PageRank, 					(G, )),
-			(centrality.KPathCentrality,			(G, )),
-			(centrality.KatzCentrality,				(G, )),
-			(centrality.ApproxBetweenness2,			(G, max(42, G.numberOfNodes() / 1000), False))
+			("Node Centrality",	True,	funcScores,	centrality.DegreeCentrality, 			(G, )),
+			("Node Centrality",	True,	funcScores,	centrality.CoreDecomposition, 			(G, )),
+			("Node Centrality",	True,	funcScores,	centrality.LocalClusteringCoefficient,	(G, )),
+			("Node Centrality",	True,	funcScores,	centrality.PageRank, 					(G, )),
+			("Node Centrality",	True,	funcScores,	centrality.KPathCentrality,				(G, )),
+			("Node Centrality",	True,	funcScores,	centrality.KatzCentrality,				(G, )),
+			("Node Centrality",	True,	funcScores,	centrality.ApproxBetweenness2,			(G, max(42, G.numberOfNodes() / 1000), False)),
+			("Partition",		False,	funcSizes,	community.LPDegreeOrdered, 				(G, )),
+			("Partition",		False,	funcSizes,	community.PLP, 							(G, ))
+		
 		]: result.__addMeasure(parameter, exclude)
 		
 		result.__loadProperties()
@@ -621,7 +635,7 @@ class Profile:
 	
 	@classmethod
 	def getVerbose(cls):
-		return cls.__verbose
+		return (cls.__verbose, cls.__verboseLevel)
 	
 	
 	@classmethod
@@ -634,39 +648,59 @@ class Profile:
 	@classmethod
 	def getParallel(cls):
 		return cls.__parallel
+		
+		
+	def getStat(self, measure):
+		return self.__measures[measure]["stat"]
 
+
+	def getCategory(self, measure):
+		return self.__measures[measure]["category"]
+		
+		
+	def getTime(self, measure):
+		return self.__measures[measure]["time"]
+		
 
 	def show(self):
 		if self.__verbose:
 			timerAll = stopwatch.Timer()
 		
 		templateMeasure = readfile("measure.html")
-		centralities = {}
-		centralities["Correlations"] = ""
-		def funcHeatTable(correlationName):
-			result = "<div class=\"SubCategory HeatTable\" data-title=\"" + correlationName + "\">"
-			keyBList = []
-			for keyA in self.__measures:
-				keyBList.append(keyA)
-				for keyB in keyBList:
-					try:
-						value = self.__correlations[keyA][keyB]
-					except:
-						value = self.__correlations[keyB][keyA]
-					result += "<div class=\"HeatCell\" title=\"" + keyB + " - " + keyA + "\" data-image=\"data:image/svg+xml;utf8," + value["image"] + "\" data-heat=\"{:+.3F}\"></div>".format(value["stat"][correlationName])
-				result += "<div class=\"HeatCellName\">" + keyB + "</div><br>"
-			result += "</div>"
-			return result
-		centralities["Correlations"] += funcHeatTable("Pearson's Correlation Coefficient")
-		centralities["Correlations"] += funcHeatTable("Spearman's Rang Correlation Coefficient")
-		centralities["Correlations"] += funcHeatTable("Fechner's Correlation Coefficient")
 		
-		centralities["Measures"] = ""
+		results = {}
+		for category in self.__correlations:
+			results[category] = {}
+			results[category]["Correlations"] = ""
+			results[category]["Measures"] = ""
+		
+			def funcHeatTable(category, correlationName):
+				result = "<div class=\"SubCategory HeatTable\" data-title=\"" + correlationName + "\">"
+				keyBList = []
+				for keyA in self.__measures:
+					if self.__measures[keyA]["category"] == category and self.__measures[keyA]["correlate"]:
+						keyBList.append(keyA)
+						for keyB in keyBList:
+							try:
+								value = self.__correlations[category][keyA][keyB]
+							except:
+								value = self.__correlations[category][keyB][keyA]
+							result += "<div class=\"HeatCell\" title=\"" + keyB + " - " + keyA + "\" data-image=\"data:image/svg+xml;utf8," + value["image"] + "\" data-heat=\"{:+.3F}\"></div>".format(value["stat"][correlationName])
+						result += "<div class=\"HeatCellName\">" + keyB + "</div><br>"
+				result += "</div>"
+				return result
+			
+			results[category]["Correlations"] += funcHeatTable(category, "Pearson's Correlation Coefficient")
+			results[category]["Correlations"] += funcHeatTable(category, "Spearman's Rang Correlation Coefficient")
+			results[category]["Correlations"] += funcHeatTable(category, "Fechner's Correlation Coefficient")
+		
+		
 		for key in self.__measures:
 			measure = self.__measures[key]
+			category = measure["category"]
 			image = measure["image"]
 			stat = measure["stat"]
-			centralities["Measures"] += self.__formatMeasureTemplate(
+			results[category]["Measures"] += self.__formatMeasureTemplate(
 				templateMeasure,
 				key,
 				image,
@@ -676,12 +710,43 @@ class Profile:
 		templateProfile = readfile("profile.html")
 		result = self.__formatProfileTemplate(
 			templateProfile,
-			centralities
+			results
 		)
 		display_html(HTML(result))
+		self.__pageCount = self.__pageCount + 1
 		
 		if self.__verbose:
 			print("\ntotal time: {:.2F} s".format(timerAll.elapsed))
+	
+	def __formatMeasureTemplate(self, template, key, image, stat):
+		result = template.format(**locals())
+		return result
+		
+		
+	def __formatProfileTemplate(self, template, results):
+		pageIndex = self.__pageCount
+		properties = self.__properties
+		result = template.format(**locals())
+		return result
+	
+	
+	def __addMeasure(self, args, exclude):
+		(measureCategory, correlate, getter, measureClass, parameters) = args
+		measureName = measureClass.__name__
+		if measureName not in exclude:
+			measure = {}
+			measure["category"] = measureCategory
+			measure["correlate"] = correlate
+			measure["getter"] = getter
+			measure["class"] = measureClass
+			measure["parameters"] = parameters
+			measure["data"] = {}
+			self.__measures[measureName] = measure
+		try:
+			self.__correlations[measureCategory]
+		except:
+			self.__correlations[measureCategory] = {}
+	
 	
 	def __loadProperties(self):
 		self.__properties["Nodes"] = self.__G.numberOfNodes()
@@ -691,31 +756,6 @@ class Profile:
 		# self.__properties["Density"] = properties.density(self.__G)
 		self.__properties["Diameter Range"] = properties.Diameter.estimatedDiameterRange(self.__G, error=0.1)
 
-	
-	def __formatMeasureTemplate(self, template, key, image, stat):
-		result = template.format(**locals())
-		return result
-		
-		
-	def __formatProfileTemplate(self, template, centralities):
-		pageIndex = self.__pageCount
-		properties = self.__properties
-		
-		result = template.format(**locals())	
-		self.__pageCount = self.__pageCount + 1
-		return result
-	
-	
-	def __addMeasure(self, args, exclude):
-		(measureClass, parameters) = args
-		measureName = measureClass.__name__
-		if measureName not in exclude:
-			measure = {}
-			measure["class"] = measureClass
-			measure["parameters"] = parameters
-			measure["data"] = {}
-			self.__measures[measureName] = measure
-	
 	
 	def __loadMeasures(self):
 		def funcPrint(str):
@@ -746,7 +786,7 @@ class Profile:
 			elapsed = timerInstance.elapsed
 			if self.__verbose:
 				print("{:.2F} s".format(elapsed), flush=True)
-			measure["data"]["sample"] = instance.scores()
+			measure["data"]["sample"] = measure["getter"](instance)
 			measure["data"]["sorted"] = sorted(measure["data"]["sample"])
 			measure["data"]["ranged"] = ranged(measure["data"]["sample"])
 			tasks.put(Stat_Task(name, (
@@ -762,7 +802,8 @@ class Profile:
 		
 		while(numberOfTasks):
 			(type, name, data) = results.get()
-			
+			category = self.__measures[name]["category"]
+				
 			if (type == "PlotMeasure"):
 				(index, image) = data
 				funcPrint("Plot (Measure): " + name)
@@ -778,45 +819,46 @@ class Profile:
 				)))
 				numberOfTasks += 1
 				
-				for key in self.__correlations:
-					self.__correlations[key][name] = {}
-					self.__correlations[key][name]["stat"] = {}
-					tasks.put(Correlation_Task(key, (
-						name,
-						self.__measures[key]["data"]["sample"],
-						self.__measures[key]["data"]["ranged"],
-						self.__measures[key]["stat"],
-						self.__measures[name]["data"]["sample"],
-						self.__measures[name]["data"]["ranged"],
-						self.__measures[name]["stat"]
-					)))
-					numberOfTasks += 1
-					
-					tasks.put(PlotCorrelation_Task(key, (
-						name,
-						self.__measures[key]["data"]["sample"],
-						self.__measures[name]["data"]["sample"]
-					)))
-					numberOfTasks += 1
-					
-				self.__correlations[name] = {}
-				self.__correlations[name][name] = {}
-				self.__correlations[name][name]["stat"] = {	
-					"Spearman's Rang Correlation Coefficient": 1,
-					"Pearson's Correlation Coefficient": 1,
-					"Fechner's Correlation Coefficient": 1
-				}
-				self.__correlations[name][name]["image"] = "" 
+				if self.__measures[name]["correlate"]:
+					for key in self.__correlations[category]:
+						self.__correlations[category][key][name] = {}
+						self.__correlations[category][key][name]["stat"] = {}
+						tasks.put(Correlation_Task(key, (
+							name,
+							self.__measures[key]["data"]["sample"],
+							self.__measures[key]["data"]["ranged"],
+							self.__measures[key]["stat"],
+							self.__measures[name]["data"]["sample"],
+							self.__measures[name]["data"]["ranged"],
+							self.__measures[name]["stat"]
+						)))
+						numberOfTasks += 1
+						
+						tasks.put(PlotCorrelation_Task(key, (
+							name,
+							self.__measures[key]["data"]["sample"],
+							self.__measures[name]["data"]["sample"]
+						)))
+						numberOfTasks += 1
+						
+					self.__correlations[category][name] = {}
+					self.__correlations[category][name][name] = {}
+					self.__correlations[category][name][name]["stat"] = {	
+						"Spearman's Rang Correlation Coefficient": 1,
+						"Pearson's Correlation Coefficient": 1,
+						"Fechner's Correlation Coefficient": 1
+					}
+					self.__correlations[category][name][name]["image"] = "" 
 			
 			elif (type == "Correlation"):
 				(nameB, correlation) = data
 				funcPrint("Correlation: " + name + " <-> " + nameB)
-				self.__correlations[name][nameB]["stat"] = correlation
+				self.__correlations[category][name][nameB]["stat"] = correlation
 			
 			elif (type == "PlotCorrelation"):
 				(nameB, image) = data
 				funcPrint("Plot (Correlation): " + name)
-				self.__correlations[name][nameB]["image"] = image
+				self.__correlations[category][name][nameB]["image"] = image
 			numberOfTasks -= 1
 		
 		for i in range(self.__parallel):
