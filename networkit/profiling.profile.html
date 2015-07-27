@@ -1,0 +1,36 @@
+<!--
+	file: profiling.profiling.html
+	author: Mark Erb
+		
+	This file contains all content representing the profiling layout 
+	
+	All embraced terms will be automatically replaced by it's local 
+	representation in 
+	
+		profiling.py : run(self)
+	
+	Some additional Tags and Attributes will be added while embedding
+	
+		=> profiling.js
+-->
+
+<div class="NetworKit_Page" id="NetworKit_Page_{pageIndex}">
+	<div class="Category" data-title="Network Properties">
+		<div>Nodes: {properties[Nodes]}</div>
+		<div>Edges: {properties[Edges]}</div>
+		<div>Directed: {properties[Directed]}</div>
+		<div>Weighted: {properties[Weighted]}</div>
+		<div>Diameter Range: {properties[Diameter Range]}</div>
+	</div>
+	<div class="Category" data-title="Node Centrality Measures">		
+		{results[Node Centrality][Correlations]}
+		{results[Node Centrality][Measures]}
+	</div>
+	<div class="Category" data-title="Partitions">
+		{results[Partition][Measures]}
+	</div>
+</div>
+
+<script language="javascript" type="text/javascript">
+	NetworKit_pageEmbed("NetworKit_Page_{pageIndex}");
+</script>
