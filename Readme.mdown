@@ -192,8 +192,8 @@ NetworKit in the directory `include `is a symlink to the directory `networkit/cp
 ## Known Issues
 - Mac OS X 10.10 "Yosemite": Some users have reported compilation problems on Yosemite with g++ 4.9. The compiler errors mention register problems. 
   While the exact reason remains unclear, the actual issue seems to be that the compiler tries to perform a dual architecture build. 
-  Fix: Enforce a 64-bit build by prepending `ARCHFLAGS="-arch x86_64"` to your setup command, e.g. as in
-  `sudo ARCHFLAGS="-arch x86_64" python3 setup.py build_ext --inplace -j4`.
+  Fix: Enforce a 64-bit build by prepending `ARCHFLAGS="-arch x86_64"` to your setup/pip command, e.g. as in
+  `sudo ARCHFLAGS="-arch x86_64" python3 setup.py build_ext --inplace -j4` or `sudo ARCHFLAGS="-arch x86_64" pip3 install networkit`.
 
 
 Contribute
