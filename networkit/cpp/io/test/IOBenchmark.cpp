@@ -7,6 +7,7 @@
 
 #ifndef NOGTEST
 
+#include <utility>
 #include <algorithm>
 
 #include "IOBenchmark.h"
@@ -128,7 +129,7 @@ TEST_F(IOBenchmark, benchRasterReader) {
  */
 TEST_F(IOBenchmark, simulateDiseaseProgression) {
 	const double recoveryProb = 0.8;
-	auto edgeProb = [](double distance) -> double {return exp(-(distance*300+7));};
+	auto edgeProb = [](double distance) -> double {return exp(-(distance*3000+5));};
 	double normalizationFactor = 0.05;
 	RasterReader reader(normalizationFactor);
 	std::vector<double> xcoords;
@@ -147,6 +148,10 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 		INFO("[DONE] reading raster data set " , runtime.elapsedTag());
 		EXPECT_EQ(xcoords.size(), ycoords.size());
 
+		auto minmaxx = std::minmax_element (xcoords.begin(),xcoords.end());
+		INFO("X coordinates range from ", *minmaxx.first, " to ", *minmaxx.second, ".");
+		auto  minmaxy = std::minmax_element (ycoords.begin(),ycoords.end());
+		INFO("Y coordinates range from ", *minmaxy.first, " to ", *minmaxy.second, ".");
 
 		//convert coordinates
 		runtime.start();
@@ -187,11 +192,27 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 				Point2D<double> query(xcoords[patient], ycoords[patient]);
 				tree.getElementsProbabilistically(query, edgeProb, newInfections);
 			}
+
 			std::sort(newInfections.begin(), newInfections.end());
 			newInfections.erase(std::unique(newInfections.begin(), newInfections.end()), newInfections.end());
 			count newInfectionCount = newInfections.size();
 			newInfections.erase(std::remove_if(newInfections.begin(), newInfections.end(), [wasEverInfected](index i)->bool{return wasEverInfected[i];}), newInfections.end());
 			INFO(newInfectionCount, " infections happened, of which ", newInfectionCount - newInfections.size(), " were already infected or immune.");
+
+			if (newInfections.size() > 0) {
+				double minX = xcoords[newInfections[0]];
+				double maxX = xcoords[newInfections[0]];
+				double minY = ycoords[newInfections[0]];
+				double maxY = ycoords[newInfections[0]];
+				for (index patient : newInfections) {
+					minX = min(xcoords[patient], minX);
+					maxX = max(xcoords[patient], maxX);
+					minY = min(ycoords[patient], minY);
+					maxY = max(ycoords[patient], maxY);
+				}
+				INFO("X coordinates of new infections range from ", minX, " to ", maxX, ".");
+				INFO("Y coordinates of new infections range from ", minY, " to ", maxY, ".");
+			}
 
 			//old infections may recover or stay infectious
 			for (index oldPatient : infectedList) {
@@ -212,6 +233,7 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 			}
 			step++;
 		}
+		INFO("Total infections: ", std::count(wasEverInfected.begin(), wasEverInfected.end(), true));
 	}
 }
 
