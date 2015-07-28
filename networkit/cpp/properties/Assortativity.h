@@ -56,13 +56,14 @@ public:
 
 
 private:
-
 	const Graph& G;
 	const std::vector<double> emptyVector;
 	const Partition emptyPartition;
 	const std::vector<double>& attribute;
 	const Partition& partition;
+	bool nominal; // whether we calculate assortativity for a nominal or ordinal attribute
 	bool ran; // whether algorithm has been run
+	double coefficient;
 };
 
 } /* namespace NetworKit */
