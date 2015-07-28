@@ -13,13 +13,12 @@
 #include "../graph/BFS.h"
 #include "../graph/SSSP.h"
 #include "../auxiliary/Log.h"
+#include "../auxiliary/Parallelism.h"
+
 
 #include <math.h>
 #include <algorithm>
 #include <memory>
-#ifdef _OPENMP
-#include <omp.h>
-#endif
 
 namespace NetworKit {
 
@@ -53,14 +52,14 @@ void ApproxBetweenness::run() {
 
 	INFO("taking ", r, " path samples");
 	// parallelization:
-	count maxThreads = omp_get_max_threads();
+	count maxThreads = Aux::getMaxNumberOfThreads();
 	DEBUG("max threads: ", maxThreads);
 	std::vector<std::vector<double> > scorePerThread(maxThreads, std::vector<double>(G.upperNodeIdBound()));
 	DEBUG("score per thread size: ", scorePerThread.size());
 
 	#pragma omp parallel for
 	for (count i = 1; i <= r; i++) {
-		count thread = omp_get_thread_num();
+		count thread = Aux::getThreadNumber();
 		DEBUG("sample ", i);
 		// if (i >= 1000) throw std::runtime_error("too many iterations");
 		// DEBUG

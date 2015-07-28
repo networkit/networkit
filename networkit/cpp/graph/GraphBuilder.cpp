@@ -7,9 +7,7 @@
 
 #include "GraphBuilder.h"
 #include <stdexcept>
-#ifdef _OPENMP
-#include <omp.h>
-#endif
+#include "../auxiliary/Parallelism.h"
 
 namespace NetworKit {
 
@@ -185,7 +183,7 @@ void GraphBuilder::toGraphParallel(Graph& G) {
 	// 1) each threads collects its own data
 	// 2) each node collects all its data from all threads
 
-	int maxThreads = omp_get_max_threads();
+	int maxThreads = Aux::getMaxNumberOfThreads();
 
 	using Adjacencylists = std::vector< std::vector<node> >;
 	using Weightlists = std::vector< std::vector<edgeweight> >;
@@ -196,7 +194,7 @@ void GraphBuilder::toGraphParallel(Graph& G) {
 
 	// step 1
 	parallelForNodes([&](node v) {
-		int tid = omp_get_thread_num();
+		int tid = Aux::getThreadNumber();
 		for (index i = 0; i < outEdges[v].size(); i++) {
 			node u = outEdges[v][i];
 			if (directed || u != v) { // self loops don't need to be added twice in undirected graphs

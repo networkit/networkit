@@ -38,13 +38,4 @@ const double PI = 2.0 * std::acos(0);
 
 // CODE STYLE GUIDELINES: Do not rely on global variables for algorithm parametrization.
 
-#ifndef _OPENMP
-int inline omp_get_thread_num() {
-	return 0;
-}
-int inline omp_get_max_threads() {
-	return 1;
-}
-#endif
-
 #endif /* GLOBALS_H_ */

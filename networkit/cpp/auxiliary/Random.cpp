@@ -6,11 +6,7 @@
  */
 
 #include <cmath>
-#ifdef _OPENMP
- #include <omp.h>
-#else
- #include "../Globals.h"
-#endif
+#include "Parallelism.h"
 #include <limits>
 
 #include "Random.h"
@@ -48,7 +44,7 @@ uint64_t getSeed() {
 		std::uniform_int_distribution<uint64_t> dist{};
 		return dist(urng);
 	} else if (seedUseThredId) {
-		return seedValue + omp_get_thread_num();
+		return seedValue + getThreadNumber();
 	} else {
 		return seedValue;
 	}

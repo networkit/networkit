@@ -11,9 +11,7 @@
 #include "../centrality/LocalClusteringCoefficient.h"
 #include "../auxiliary/Random.h"
 #include "../auxiliary/Log.h"
-#ifdef _OPENMP
-#include <omp.h>
-#endif
+#include "../auxiliary/Parallelism.h"
 
 namespace NetworKit {
 
@@ -163,14 +161,14 @@ double ClusteringCoefficient::exactGlobal(Graph& G) {
 	count z = G.upperNodeIdBound();
 	std::vector<count> triangles(z); // triangles including node u (every triangle is counted six times)
 
-	std::vector<std::vector<bool> > nodeMarker(omp_get_max_threads());
+	std::vector<std::vector<bool> > nodeMarker(Aux::getMaxNumberOfThreads());
 	for (auto &nm : nodeMarker) {
 		nm.resize(z, false);
 	}
 
 	G.balancedParallelForNodes([&](node u){
 
-		size_t tid = omp_get_thread_num();
+		size_t tid = Aux::getThreadNumber();
 		count tr = 0;
 
 		if (G.degree(u) > 1) {

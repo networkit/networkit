@@ -1,7 +1,5 @@
 #include "LocalClusteringCoefficient.h"
-#ifdef _OPENMP
-#include <omp.h>
-#endif
+#include "../auxiliary/Parallelism.h"
 
 namespace NetworKit {
 
@@ -14,7 +12,7 @@ void LocalClusteringCoefficient::run() {
 	scoreData.clear();
 	scoreData.resize(z); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 
-	std::vector<std::vector<bool> > nodeMarker(omp_get_max_threads());
+	std::vector<std::vector<bool> > nodeMarker(Aux::getMaxNumberOfThreads());
 
 	for (auto & nm : nodeMarker) {
 		nm.resize(z, false);
@@ -26,7 +24,7 @@ void LocalClusteringCoefficient::run() {
 		if (d < 2) {
 			scoreData[u] = 0.0;
 		} else {
-			size_t tid = omp_get_thread_num();
+			size_t tid = Aux::getThreadNumber();
 			count triangles = 0;
 
 			G.forEdgesOf(u, [&](node u, node v) {

@@ -10,9 +10,7 @@
 #include "../coarsening/ClusteringProjector.h"
 #include "../auxiliary/Log.h"
 #include "../auxiliary/Timer.h"
-#ifdef _OPENMP
-#include <omp.h>
-#endif
+#include "../auxiliary/Parallelism.h"
 
 #include <sstream>
 
@@ -69,8 +67,8 @@ void PLM::run() {
 
 	if (turbo) {
 		if (this->parallelism != "none" && this->parallelism != "none randomized") { // initialize arrays for all threads only when actually needed
-			turboAffinity.resize(omp_get_max_threads());
-			neigh_comm.resize(omp_get_max_threads());
+			turboAffinity.resize(Aux::getMaxNumberOfThreads());
+			neigh_comm.resize(Aux::getMaxNumberOfThreads());
 			for (auto &it : turboAffinity) {
 				// resize to maximum community id
 				it.resize(zeta.upperBound());
@@ -88,7 +86,7 @@ void PLM::run() {
 	// try to improve modularity by moving a node to neighboring clusters
 	auto tryMove = [&](node u) {
 		// TRACE("trying to move node " , u);
-		index tid = omp_get_thread_num();
+		index tid = Aux::getThreadNumber();
 
 		// collect edge weight to neighbor clusters
 		std::map<index, edgeweight> affinity;
