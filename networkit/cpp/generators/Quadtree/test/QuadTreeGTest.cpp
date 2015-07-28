@@ -496,17 +496,17 @@ TEST_F(QuadTreeGTest, testCartesianEuclidQuery) {
 	EXPECT_EQ(n, quad.size());
 	quad.recount();
 	EXPECT_EQ(n, quad.size());
-//
-//	quad.trim();
-//
-//	for (index i = 0; i < 200; i++) {
-//		index query = Aux::Random::integer(n-1);
-//		double acc = Aux::Random::probability() ;
-//		auto edgeProb = [acc](double distance) -> double {return acc;};
-//		vector<index> near;
-//		quad.getElementsProbabilistically(positions[query], edgeProb, near);
-//	//	EXPECT_NEAR(near.size(), acc*n, std::max(acc*n*0.25, 10.0));
-//	}
+
+	quad.trim();
+
+	for (index i = 0; i < 200; i++) {
+		index query = Aux::Random::integer(n-1);
+		double acc = Aux::Random::probability() ;
+		auto edgeProb = [acc](double distance) -> double {return acc;};
+		vector<index> near;
+		quad.getElementsProbabilistically(positions[query], edgeProb, near);
+		EXPECT_NEAR(near.size(), acc*n, std::max(acc*n*0.25, 10.0));
+	}
 
 	//TODO: some test about appropriate subtrees and leaves
 

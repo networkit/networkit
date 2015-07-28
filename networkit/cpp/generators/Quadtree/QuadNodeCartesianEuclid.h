@@ -421,6 +421,8 @@ public:
 				//see where we've arrived
 				candidatesTested++;
 				double distance = positions[i].distance(euQuery);
+				assert(distance >= distancePair.first);
+				assert(distance <= distancePair.second);
 				double q = prob(distance);
 				q = q / probUB; //since the candidate was selected by the jumping process, we have to adjust the probabilities
 				assert(q <= 1);
