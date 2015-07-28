@@ -44,7 +44,7 @@ public:
 	*/
 	virtual count numberOfIterations();
 
-	virtual std::string toString();
+	virtual std::string toString() const;
 
 };
 

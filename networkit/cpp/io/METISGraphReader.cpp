@@ -58,7 +58,7 @@ Graph METISGraphReader::read(const std::string& path) {
 					continue;
 				}
 				node v = adjacencies[i] - 1; 	// METIS-indices are 1-based
-				Aux::Checkers::Enforcer::enforce(v >= 0 && v < n);
+				Aux::Checkers::Enforcer::enforce(v < n);
 				b.addHalfEdge(u, v);
 			}
 			u++; // next node
@@ -81,7 +81,7 @@ Graph METISGraphReader::read(const std::string& path) {
 				}
 				node v = adjacencies[i].first- 1; 	// METIS-indices are 1-based
 				double weight = adjacencies[i].second;
-				Aux::Checkers::Enforcer::enforce(v >= 0 && v < n);
+				Aux::Checkers::Enforcer::enforce(v < n);
 				b.addHalfEdge(u, v, weight);
 				TRACE("(",u,",",v,",",adjacencies[i].second,")");
 			}

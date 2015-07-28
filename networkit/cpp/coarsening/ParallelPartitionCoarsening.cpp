@@ -6,10 +6,10 @@
  */
 
 #include "ParallelPartitionCoarsening.h"
-#include <omp.h>
 #include "../graph/GraphBuilder.h"
 #include "../auxiliary/Timer.h"
 #include "../auxiliary/Log.h"
+#include "../auxiliary/Parallelism.h"
 
 namespace NetworKit {
 
@@ -47,14 +47,14 @@ std::pair<Graph, std::vector<node> > ParallelPartitionCoarsening::run(const Grap
 		Graph Ginit(nextNodeId, true); // initial graph containing supernodes
 
 		// make copies of initial graph
-		count nThreads = omp_get_max_threads();
+		count nThreads = Aux::getMaxNumberOfThreads();
 		std::vector<Graph> localGraphs(nThreads, Ginit); // thread-local graphs
 
 
 		// iterate over edges of G and create edges in coarse graph or update edge and node weights in Gcon
 		DEBUG("create edges in coarse graphs");
 		G.parallelForEdges([&](node u, node v, edgeweight ew) {
-			index t = omp_get_thread_num();
+			index t = Aux::getThreadNumber();
 
 			node su = nodeToSuperNode[u];
 			node sv = nodeToSuperNode[v];
@@ -77,7 +77,7 @@ std::pair<Graph, std::vector<node> > ParallelPartitionCoarsening::run(const Grap
 
 			index vi = Gcombined.indexInOutEdgeArray(u, v);
 			if (vi == none) {
-				index t = omp_get_thread_num();
+				index t = Aux::getThreadNumber();
 				if (u == v) {
 					numEdges[t] += 2;
 				} else {

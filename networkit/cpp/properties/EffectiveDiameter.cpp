@@ -12,7 +12,7 @@
 #include <math.h>
 #include <iterator>
 #include <stdlib.h>
-#include <omp.h>
+#include "../auxiliary/Parallelism.h"
 #include <map>
 
 namespace NetworKit {

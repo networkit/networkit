@@ -6,9 +6,9 @@
  */
 
 #include <cmath>
-#include <omp.h>
 #include <limits>
 
+#include "Parallelism.h"
 #include "Random.h"
 
 // If GCC does not support thread local, we are sad and don't use it:
@@ -44,7 +44,7 @@ uint64_t getSeed() {
 		std::uniform_int_distribution<uint64_t> dist{};
 		return dist(urng);
 	} else if (seedUseThredId) {
-		return seedValue + omp_get_thread_num();
+		return seedValue + getThreadNumber();
 	} else {
 		return seedValue;
 	}

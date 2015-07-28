@@ -19,7 +19,7 @@
 #endif
 
 // OpenMP
-#include <omp.h>
+#include "./auxiliary/Parallelism.h"
 
 // necessary for some reasons?
 #include "Globals.h"
@@ -116,10 +116,7 @@ int main(int argc, char **argv) {
 
 
 	// CONFIGURE PARALLELISM
-
-#ifdef _OPENMP
-	omp_set_nested(1); // enable nested parallelism
-#endif
+	Aux::enableNestedParallelism();
 
 	if (options[THREADS]) {
 		// set number of threads

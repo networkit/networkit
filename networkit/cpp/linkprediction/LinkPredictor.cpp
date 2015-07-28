@@ -9,8 +9,7 @@
 
 #include "LinkPredictor.h"
 #include "../auxiliary/Log.h"
-
-#include <omp.h>
+#include "../auxiliary/Parallelism.h"
 
 namespace NetworKit {
 

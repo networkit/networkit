@@ -28,7 +28,7 @@ bool StaticDegreeSequenceGenerator::isRealizable() {
 	/* First inequality. */
 	count deg_sum = 0;
 	for (count i = 0; i < n; ++i) {
-		if (seq[i] < 0 || seq[i] >= n) {
+		if (seq[i] >= n) {
 			realizable = NO;
 			DEBUG("not realizable: ", seq[i], ", n: ", n);
 			return false;

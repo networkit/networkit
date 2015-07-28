@@ -8,8 +8,8 @@
 #include <stack>
 #include <queue>
 #include <memory>
-#include <omp.h>
 
+#include "../auxiliary/Parallelism.h"
 
 #include "Betweenness.h"
 #include "../auxiliary/PrioQueue.h"
@@ -37,7 +37,7 @@ void Betweenness::run() {
 	}
 
 	// thread-local scores for efficient parallelism
-	count maxThreads = omp_get_max_threads();
+	count maxThreads = Aux::getMaxNumberOfThreads();
 	std::vector<std::vector<double> > scorePerThread(maxThreads, std::vector<double>(G.upperNodeIdBound()));
 	INFO("score per thread: ", scorePerThread.size());
 	INFO("G.upperEdgeIdBound(): ", G.upperEdgeIdBound());
@@ -71,17 +71,17 @@ void Betweenness::run() {
 				double c= weight * (1 + dependency[t]);
 				dependency[p] += c;
 				if (computeEdgeCentrality) {
-					edgeScorePerThread[omp_get_thread_num()][G.edgeId(p,t)] += c;
+					edgeScorePerThread[Aux::getThreadNumber()][G.edgeId(p,t)] += c;
 				}
-
-
 			}
 			if (t != s) {
-				scorePerThread[omp_get_thread_num()][t] += dependency[t];
+				scorePerThread[Aux::getThreadNumber()][t] += dependency[t];
 			}
 		}
 	};
+
 	handler.assureRunning();
+
 	G.balancedParallelForNodes(computeDependencies);
 	handler.assureRunning();
 	INFO("adding thread-local scores");
@@ -116,7 +116,6 @@ void Betweenness::run() {
 			}
 		}
 	}
-
 	hasRun = true;
 }
 

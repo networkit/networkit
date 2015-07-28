@@ -7,14 +7,14 @@
 
 #ifndef NOGTEST
 
-#include <omp.h>
 #include <random>
 #include <functional>
 
 #include "GeneratorsBenchmark.h"
 #include "../BarabasiAlbertGenerator.h"
 #include "../../graph/GraphBuilder.h"
-
+#include "../../auxiliary/Parallelism.h"
+ 
 namespace NetworKit {
 
 
@@ -28,7 +28,7 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 	GraphBuilder builder;
 
 	// prepare a random generator for each possible thread
-	int maxThreads = omp_get_max_threads();
+	int maxThreads = Aux::getMaxNumberOfThreads();
 	std::vector< std::function<double()> > randomPerThread;
 	std::random_device device;
 	std::uniform_int_distribution<uint64_t> intDist;
@@ -48,7 +48,7 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 	t1 = timeOnce([&]() {
 		builder = GraphBuilder(n);
 		builder.parallelForNodePairs([&](node u, node v) {
-			int tid = omp_get_thread_num();
+			int tid = Aux::getThreadNumber();
 			double rdn = randomPerThread[tid]();
 			if (rdn <= p) {
 				builder.addHalfEdge(u, v);
@@ -67,7 +67,7 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 	t1 = timeOnce([&]() {
 		builder = GraphBuilder(n);
 		builder.parallelForNodePairs([&](node u, node v) {
-			int tid = omp_get_thread_num();
+			int tid = Aux::getThreadNumber();
 			double rdn = randomPerThread[tid]();
 			if (rdn <= p) {
 				builder.addHalfEdge(u, v);
