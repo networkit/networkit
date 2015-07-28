@@ -161,9 +161,9 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 
 		//convert coordinates
 		runtime.start();
-		vector<double> angles(xcoords.size());
-		vector<double> radii(xcoords.size());
-		vector<index> content(xcoords.size());
+		vector<double> angles(n);
+		vector<double> radii(n);
+		vector<index> content(n);
 		double maxR = 0;
 
 		for (index i = 0; i < n; i++) {

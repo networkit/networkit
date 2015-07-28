@@ -92,7 +92,7 @@ public:
 	}
 
 	void getElementsInEuclideanCircle(const Point2D<double> circleCenter, const double radius, vector<T> &circleDenizens) const {
-		root.getElementsInEuclideanCircle(circleCenter, radius, false, circleDenizens);
+		root.getElementsInEuclideanCircle(circleCenter, radius, circleDenizens);
 	}
 
 	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &circleDenizens) {
