@@ -54,8 +54,8 @@ NetworKit::RasterReader::read(const std::string& path)
 
 
 	// data for main loop
-	double xdelta = 1.0 / (double) ncols; // width of each column
-	double ydelta = 1.0 / (double) nrows; // height of each row
+	double xdelta = 1.0;// / (double) ncols; // width of each column
+	double ydelta = 1.0;// / (double) nrows; // height of each row
 	double xlb = 0.0;                     // lower bound in x-direction
 	double ylb = 1.0 - ydelta;            // lower bound in y-direction
 	double xub = xdelta;                  // upper bound in x-direction

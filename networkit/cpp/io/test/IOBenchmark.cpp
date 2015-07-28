@@ -13,6 +13,7 @@
 #include "IOBenchmark.h"
 #include "../RasterReader.h"
 #include "../../generators/Quadtree/QuadtreePolarEuclid.h"
+#include "../../generators/Quadtree/QuadtreeCartesianEuclid.h"
 #include "../../geometric/HyperbolicSpace.h"
 
 namespace NetworKit {
@@ -58,18 +59,21 @@ TEST_F(IOBenchmark, benchRasterReader) {
 		INFO("[DONE] reading raster data set " , runtime.elapsedTag());
 		EXPECT_EQ(xcoords.size(), ycoords.size());
 
+		const count n = xcoords.size();
 		count numRuns = 10;
 
 		for (index run = 0; run < numRuns; run++) {
 			//transform into polar coordinates
 			runtime.start();
-			vector<double> angles(xcoords.size());
-			vector<double> radii(xcoords.size());
-			vector<index> content(xcoords.size());
+			vector<double> angles(n);
+			vector<double> radii(n);
+			vector<Point2D<double> > positions(n);
+			vector<index> content(n);
 			double maxR = 0;
-			for (index i = 0; i < xcoords.size(); i++) {
+			for (index i = 0; i < n; i++) {
 				HyperbolicSpace::cartesianToPolar(Point2D<double>(xcoords[i], ycoords[i]), angles[i], radii[i]);
 				maxR = std::max(maxR, radii[i]);
+				positions[i] = Point2D<double>(xcoords[i], ycoords[i]);
 				content[i] = i;
 			}
 			runtime.stop();
@@ -129,7 +133,6 @@ TEST_F(IOBenchmark, benchRasterReader) {
  */
 TEST_F(IOBenchmark, simulateDiseaseProgression) {
 	const double recoveryProb = 0.8;
-	auto edgeProb = [](double distance) -> double {return exp(-(distance*3000+5));};
 	double normalizationFactor = 0.05;
 	RasterReader reader(normalizationFactor);
 	std::vector<double> xcoords;
@@ -147,11 +150,14 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 		runtime.stop();
 		INFO("[DONE] reading raster data set " , runtime.elapsedTag());
 		EXPECT_EQ(xcoords.size(), ycoords.size());
+		const count n = xcoords.size();
 
 		auto minmaxx = std::minmax_element (xcoords.begin(),xcoords.end());
 		INFO("X coordinates range from ", *minmaxx.first, " to ", *minmaxx.second, ".");
 		auto  minmaxy = std::minmax_element (ycoords.begin(),ycoords.end());
 		INFO("Y coordinates range from ", *minmaxy.first, " to ", *minmaxy.second, ".");
+
+		auto edgeProb = [n](double distance) -> double {return exp(-(distance)+7)/(double)n;};
 
 		//convert coordinates
 		runtime.start();
@@ -159,7 +165,7 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 		vector<double> radii(xcoords.size());
 		vector<index> content(xcoords.size());
 		double maxR = 0;
-		const count n = xcoords.size();
+
 		for (index i = 0; i < n; i++) {
 			HyperbolicSpace::cartesianToPolar(Point2D<double>(xcoords[i], ycoords[i]), angles[i], radii[i]);
 			maxR = std::max(maxR, radii[i]);
