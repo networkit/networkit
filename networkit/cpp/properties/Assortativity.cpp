@@ -6,6 +6,7 @@
  */
 
 #include "Assortativity.h"
+#include <math.h>
 
 namespace NetworKit {
 
@@ -59,7 +60,33 @@ void Assortativity::run() {
 		INFO("r: ", r);
 		coefficient = r;
 	} else {
+		// assortativity with respect to a continous, ordinal-scaled node attribute is simply the Person correlation coefficient of the lists x and y
+		// where (x_u, y_v) are the attributes of connected pairs of nodes
+		// r_{xy} := \frac{\sum_{i=1}^n(x_i-\bar x)(y_i-\bar y)}{\sqrt{\sum_{i=1}^n(x_i-\bar x)^2\cdot \sum_{i=1}^n(y_i-\bar y)^2}}
 
+		count m = G.numberOfEdges();
+		double xSum = 0.0;
+		double ySum = 0.0;
+		G.forEdges([&](node u, node v) {
+			xSum += attribute[u];
+			ySum += attribute[v];
+		});
+		double xMean = xSum / m;
+		double yMean = ySum / m;
+
+		double A = 0.0;
+		double B = 0.0;
+		double C = 0.0;
+		G.forEdges([&](node u, node v) {
+			double x = (attribute[u] - xMean);
+			double y = (attribute[v] - yMean);
+			A +=  x * y;
+			B += x * x;
+			C += y * y;
+		});
+
+		double r = A / sqrt(B * C);
+		coefficient = r;
 	}
 
 }
