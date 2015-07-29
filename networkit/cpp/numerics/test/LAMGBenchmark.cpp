@@ -13,6 +13,7 @@
 #include <future>
 #include <atomic>
 #include <algorithm>
+#include <iomanip>
 
 #include "../../properties/ConnectedComponents.h"
 #include "../../auxiliary/Timer.h"
@@ -336,9 +337,10 @@ void writeBenchmarkResults(string texContent, string filename) {
 }
 
 template <typename T>
-string numprint(T val) {
+string numprint(T val, bool scientific = false) {
 	stringstream ss;
 	ss << setprecision(16);
+	if (scientific)	ss.setf(std::ios_base::scientific, std::ios_base::floatfield);
 	ss << "\\numprint{" << val << "}";
 	return ss.str();
 }
@@ -399,7 +401,7 @@ string printTableRow(const vector<LAMGSolverStatus> &solverStati, double avgSetu
 		finalResidual += status.residual;
 	}
 
-	ss << numprint(avgSetupTime) << " & " << numprint(avgSolveTime) << " & " << numprint(numIters / (double) solverStati.size()) << " & " << numprint(finalResidual / (double) solverStati.size()) << " \\\\ \n";
+	ss << numprint(avgSetupTime) << " & " << numprint(avgSolveTime) << " & " << numprint(numIters / (double) solverStati.size()) << " & " << numprint(finalResidual / (double) solverStati.size(), true) << " \\\\ \n";
 
 	return ss.str();
 }
@@ -417,7 +419,7 @@ void outputPlotData(const LAMGSolverStatus &status, const string &filename) {
 }
 
 
-string benchmark(const CSRMatrix &matrix, const Vector &initialX, const Vector &b, const string &graphPath, count numSetups, count numSolvesPerSetup, const Smoother &smoother) {
+string benchmark(const CSRMatrix &matrix, const Vector &initialX, const Vector &b, const string &graphPath, count numSetups, count numSolvesPerSetup, const Smoother &smoother, double desiredResidual) {
 	Aux::Timer tSetup;
 	Aux::Timer tSolve;
 
@@ -438,6 +440,7 @@ string benchmark(const CSRMatrix &matrix, const Vector &initialX, const Vector &
 		for (index j = 0; j < numSolvesPerSetup; ++j) {
 			Vector x = initialX;
 			solverStati[i * numSolvesPerSetup + j].maxConvergenceTime = MAX_CONVERGENCE_TIME;
+			solverStati[i * numSolvesPerSetup + j].desiredResidual = desiredResidual;
 
 			tSolve.start();
 				solver.solve(x, b, solverStati[i * numSolvesPerSetup + j]);
@@ -512,7 +515,7 @@ string benchmark(Benchmark &bench) {
 		con.run();
 		INFO("done");
 		if (con.numberOfComponents() == 1) { // LAMG solver currently only supports connected graphs
-			output += benchmark(L, x, b, G.getName(), bench.setupTries, bench.solveTriesPerSetup, *smoother);
+			output += benchmark(L, x, b, G.getName(), bench.setupTries, bench.solveTriesPerSetup, *smoother, bench.residual);
 		} else {
 			output += " -  & - & - & - \\\\ \n";
 		}
@@ -529,7 +532,7 @@ TEST_F(LAMGBenchmark, bench) {
 	string texContent = printLatexDocumentHeader();
 	stringstream ss;
 
-	Benchmark bench = BENCHS[8]; // walshaw
+	Benchmark bench = BENCHS[5]; // walshaw
 	texContent += benchmark(bench);
 	ss << bench.name;
 

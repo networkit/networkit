@@ -95,6 +95,8 @@ TEST_F(LAMGGTest, testSmallGraphs) {
 		solver.solve(result, b, status);
 		timer.stop();
 		INFO("solve time\t ", timer.elapsedMilliseconds());
+		INFO("final residual = ", status.residual);
+		INFO("numIters = ", status.numIters);
 		INFO("DONE");
 
 	}
