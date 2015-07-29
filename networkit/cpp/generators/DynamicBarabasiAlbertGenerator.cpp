@@ -13,7 +13,7 @@ namespace NetworKit {
 
 
 DynamicBarabasiAlbertGenerator::DynamicBarabasiAlbertGenerator(count k) : DynamicGraphSource(), k(k), degSum(0) {
-	if (k <= 0) {
+	if (k < 1) {
 		throw std::runtime_error("k must be at least 1");
 	}
 }
@@ -66,11 +66,11 @@ void DynamicBarabasiAlbertGenerator::generate() {
 		auto notFound = [&](){ return ! found; };
 		this->G->forNodesWhile(notFound, [&](node v){
 			if (v != u) { // skip u, which has degree 0 anyway, to avoid self-loops
-				assert (rand >= 0);
 				if (rand <= this->G->degree(v)) {
 					found = true; // found a node to connect to
 					targets.insert(v);
 				}
+				assert(rand >= this->G->degree(v));
 				rand -= this->G->degree(v);
 			}
 		});

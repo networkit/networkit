@@ -669,8 +669,8 @@ void Graph::removeEdge(node u, node v) {
 	}
 
 	if (u == v) {
+		assert(storedNumberOfSelfLoops > 0);
 		storedNumberOfSelfLoops--;
-		assert(storedNumberOfSelfLoops >= 0);
 	}
 
 	// dose not make a lot of sense do remove attributes,

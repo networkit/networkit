@@ -28,8 +28,8 @@ void PrioQueueForInts::changePrio(index elem, index prio) {
 
 
 void PrioQueueForInts::insert(index elem, index prio) {
-	assert(0 <= prio && prio <= maxPrio);
-	assert(0 <= elem && elem < nodePtr.size());
+	assert(prio <= maxPrio);
+	assert(elem < nodePtr.size());
 
 	buckets[prio].push_front(elem);
 	nodePtr[elem] = buckets[prio].begin();
@@ -69,7 +69,7 @@ index PrioQueueForInts::extractMax() {
 }
 
 void PrioQueueForInts::remove(index elem) {
-	assert(0 <= elem && elem < nodePtr.size());
+	assert(elem < nodePtr.size());
 
 	if (myBucket[elem] != NetworKit::none) {
 		// remove from appropriate bucket
@@ -90,7 +90,7 @@ void PrioQueueForInts::remove(index elem) {
 }
 
 index PrioQueueForInts::extractAt(index prio) {
-	assert(0 <= prio && prio <= maxPrio);
+	assert(prio <= maxPrio);
 	if (buckets[prio].empty()) {
 		return NetworKit::none;
 	}

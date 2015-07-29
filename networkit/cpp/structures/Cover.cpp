@@ -142,7 +142,7 @@ std::map<index, count> Cover::subsetSizeMap() const {
 count Cover::numberOfSubsets() const {
 	std::vector<int> exists(upperBound(), 0); // a boolean vector would not be thread-safe
 
-	this->parallelForEntries([&](index e, std::set<index> s) {
+	this->parallelForEntries([&](index, std::set<index> s) {
 		if (!s.empty()) {
 			for (auto it = s.begin(); it != s.end(); it++) {
 				index currentSubset = *it;

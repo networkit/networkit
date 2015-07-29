@@ -23,7 +23,7 @@ Matrix::Matrix(const count &dimension, const std::vector<std::pair<index, index>
 	assert(positions.size() == values.size());
 
 	for (size_t k = 0; k < positions.size(); ++k) {
-		assert(positions[k].first >= 0 && positions[k].second >= 0 && positions[k].first < dimension && positions[k].second < dimension);
+		assert(positions[k].first < dimension && positions[k].second < dimension);
 
 		std::pair<node, node> pos = positions[k];
 		graph.addEdge(pos.first, pos.second, values[k]);
@@ -35,7 +35,7 @@ Matrix::Matrix(const count &nRows, const count &nCols, const std::vector<std::pa
 	assert(positions.size() == values.size());
 
 	for (size_t k = 0; k < positions.size(); ++k) {
-		assert(positions[k].first >= 0 && positions[k].second >= 0 && positions[k].first < nRows && positions[k].second < nCols);
+		assert(positions[k].first < nRows && positions[k].second < nCols);
 
 		std::pair<node, node> pos = positions[k];
 		graph.addEdge(pos.first, pos.second, values[k]);

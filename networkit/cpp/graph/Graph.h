@@ -272,7 +272,7 @@ private:
 			 (Aux::FunctionTraits<F>::arity >= 1) &&
 			 std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<1>::type>::value
 			 >::type* = (void*)0>
-	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid) const -> decltype(f(u, ew)) {
+	auto edgeLambda(F&f, node, node v, edgeweight ew, edgeid) const -> decltype(f(v, ew)) {
 		return f(v, ew);
 	}
 
