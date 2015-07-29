@@ -120,14 +120,14 @@ env.Append(LINKFLAGS = ["-std=c++11"])
 commonCFlags = ["-c", "-fmessage-length=0", "-std=c99", "-fPIC"]
 commonCppFlags = ["-std=c++11", "-Wall", "-c", "-fmessage-length=0", "-fPIC"]
 
-debugCppFlags = ["-O0", "-g3", "-DLOG_LEVEL=LOG_LEVEL_TRACE"]
+debugCppFlags = ["-O0", "-g3", "-DNPROFILE", "-DLOG_LEVEL=LOG_LEVEL_TRACE"]
 debugCFlags = ["-O0", "-g3"]
 
-optimizedCppFlags = ["-O3", "-DNDEBUG", "-DLOG_LEVEL=LOG_LEVEL_INFO"]
+optimizedCppFlags = ["-O3", "-DNPROFILE", "-DNDEBUG", "-DLOG_LEVEL=LOG_LEVEL_INFO"]
 optimizedCFlags = ["-O3"]
 
-profileCppFlags = ["-O2", "-DNDEBUG", "-g", "-pg", "-DLOG_LEVEL=LOG_LEVEL_INFO"]
-profileCFlags = ["-O2", "-DNDEBUG", "-g", "-pg"]
+profileCppFlags = ["-O2", "-DNPROFILE", "-DNDEBUG", "-g", "-pg", "-DLOG_LEVEL=LOG_LEVEL_INFO"]
+profileCFlags = ["-O2", "-DNDEBUG", "-DNPROFILE", "-g", "-pg"]
 
 
 # select configuration
