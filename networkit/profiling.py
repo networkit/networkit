@@ -20,68 +20,67 @@ import seaborn as sns
 import pandas as pd
 
 
-try:
-	__IPYTHON__
-except:
-	raise ImportError("module has been loaded outside of \"IPython\"")
-
-
-def readfile(postfix):
-	""" TODO: """
+def _readfile(postfix):
+	""" private helper function: file to string (all whitespace characters are replaced by ' ') """
 	with open(__file__[:__file__.rfind(".py")] + "." + postfix, "r") as file:
 		return " ".join(file.read().split())
 
-
-def __initHeader(tag, type, data):
-	""" TODO: """
-	result = """
-		{
-			var element = document.getElementById('NetworKit_""" + tag + """');
-			if (element) {
-				element.parentNode.removeChild(element);
+		
+try:
+	__IPYTHON__
+	
+	def _initHeader(tag, type, data):
+		""" private helper function for notebook hack: create content of extended header """
+		result = """
+			{
+				var element = document.getElementById('NetworKit_""" + tag + """');
+				if (element) {
+					element.parentNode.removeChild(element);
+				}
+				element = document.createElement('""" + tag + """');
+				element.type = 'text/""" + type + """';
+				element.innerHTML = '""" + data + """';
+				element.setAttribute('id', 'NetworKit_""" + tag + """');
+				document.head.appendChild(element);
 			}
-			element = document.createElement('""" + tag + """');
-			element.type = 'text/""" + type + """';
-			element.innerHTML = '""" + data + """';
-			element.setAttribute('id', 'NetworKit_""" + tag + """');
-			document.head.appendChild(element);
-		}
-	"""
-	return result
+		"""
+		return result
 
-
-def __initOverlay(name, data):
-	""" TODO: """
-	result = """
-		{
-			var element = document.getElementById('NetworKit_""" + name + """');
-			if (element) {
-				element.parentNode.removeChild(element);
+		
+	def _initOverlay(name, data):
+		""" private helper function for notebook hack: create content of overlay """
+		result = """
+			{
+				var element = document.getElementById('NetworKit_""" + name + """');
+				if (element) {
+					element.parentNode.removeChild(element);
+				}
+				element = document.createElement('div');
+				element.innerHTML = '<div id="NetworKit_""" + name + """_Toolbar_Top"><div class="button icon-close" id="NetworKit_""" + name + """_Close" /></div>""" + data + """';
+				element.setAttribute('id', 'NetworKit_""" + name + """');
+				document.body.appendChild(element);
+				document.getElementById('NetworKit_""" + name + """_Close').onclick = function (e) {
+					document.getElementById('NetworKit_""" + name + """').style.display = 'none';
+				}
 			}
-			element = document.createElement('div');
-			element.innerHTML = '<div id="NetworKit_""" + name + """_Toolbar_Top"><div class="button icon-close" id="NetworKit_""" + name + """_Close" /></div>""" + data + """';
-			element.setAttribute('id', 'NetworKit_""" + name + """');
-			document.body.appendChild(element);
-			document.getElementById('NetworKit_""" + name + """_Close').onclick = function (e) {
-				document.getElementById('NetworKit_""" + name + """').style.display = 'none';
-			}
-		}
-	"""
-	return result
+		"""
+		return result
 
-
-display_html(
-	HTML("""
-		<script type="text/javascript">
-		<!--
-			""" + __initHeader("script", "javascript", readfile("js"))  + """
-			""" + __initHeader("style",  "css",        readfile("css")) + """
-			""" + __initOverlay("Overlay", readfile("overlay.html")) + """
-		-->
-		</script>
-	""")
-)
-
+		
+	display_html(
+		HTML("""
+			<script type="text/javascript">
+			<!--
+				""" + _initHeader("script", "javascript", _readfile("js"))  + """
+				""" + _initHeader("style",  "css",        _readfile("css")) + """
+				""" + _initOverlay("Overlay", _readfile("overlay.html")) + """
+			-->
+			</script>
+		""")
+	)
+except Exception as e:
+	print(str(e))
+	
 
 def ranged(sample):
 	""" TODO: """
@@ -562,6 +561,7 @@ class PlotMeasure_Task:
 
 
 class PlotCorrelation_Task:
+	""" TODO: """
 	def __init__(self, name, params):
 		self.__name = name
 		self.__params = params
@@ -602,6 +602,7 @@ class PlotCorrelation_Task:
 
 
 class PlotPartitionPie_Task:
+	""" TODO: """
 	def __init__(self, name, params):
 		self.__name = name
 		self.__params = params
@@ -678,6 +679,7 @@ class PlotPartitionPie_Task:
 
 
 class Profile:
+	""" TODO: """
 	__TOKEN = object();
 	__pageCount = 0
 	__verbose = False
@@ -685,7 +687,8 @@ class Profile:
 	__parallel = multiprocessing.cpu_count() * 2
 
 
-	def __init__(self, G, token):
+	def __init__(self, G, token=object()):
+		""" TODO: """
 		if token is not self.__TOKEN:
 			raise ValueError("call create(G) to create an instance")
 		self.__G = G
@@ -696,6 +699,7 @@ class Profile:
 
 	@classmethod
 	def create(cls, G, exclude=[]):
+		""" TODO: """
 		result = cls(G, cls.__TOKEN)
 
 		def funcScores(instance):
@@ -730,17 +734,20 @@ class Profile:
 
 	@classmethod
 	def setVerbose(cls, verbose=False, level=0):
+		""" TODO: """
 		cls.__verbose = verbose
 		cls.__verboseLevel = level
 
 
 	@classmethod
 	def getVerbose(cls):
+		""" TODO: """
 		return (cls.__verbose, cls.__verboseLevel)
 
 
 	@classmethod
 	def setParallel(cls, parallel):
+		""" TODO: """
 		if (parallel < 1):
 			raise ValueError("parallel < 1");
 		cls.__parallel = parallel
@@ -748,26 +755,36 @@ class Profile:
 
 	@classmethod
 	def getParallel(cls):
+		""" TODO: """
 		return cls.__parallel
 
 
 	def getStat(self, measure):
+		""" TODO: """
 		return self.__measures[measure]["stat"]
 
 
 	def getCategory(self, measure):
+		""" TODO: """
 		return self.__measures[measure]["category"]
 
 
 	def getElapsedTime(self, measure):
+		""" TODO: """
 		return self.__measures[measure]["time"]
 
 
 	def show(self):
+		""" TODO: """
+		try:
+			__IPYTHON__
+		except:
+			raise RuntimeError("this function cannot be used outside ipython notebook")
+			
 		if self.__verbose:
 			timerAll = stopwatch.Timer()
 
-		templateMeasure = readfile("measure.html")
+		templateMeasure = _readfile("measure.html")
 
 		results = {}
 		for category in self.__correlations:
@@ -830,7 +847,7 @@ class Profile:
 				pass
 			results[category]["Overview"] += "<div class=\"Thumbnail_Overview\" data-title=\"" + key + "\"><a href=\"#NetworKit_Page_" + str(self.__pageCount) + "_" + key + "\"><img src=\"data:image/svg+xml;utf8," + image[1] + "\" /></a></div>"
 
-		templateProfile = readfile("profile.html")
+		templateProfile = _readfile("profile.html")
 		result = self.__formatProfileTemplate(
 			templateProfile,
 			results
@@ -843,12 +860,14 @@ class Profile:
 
 
 	def __formatMeasureTemplate(self, template, key, image, stat):
+		""" TODO: """
 		pageIndex = self.__pageCount
 		result = template.format(**locals())
 		return result
 
 
 	def __formatProfileTemplate(self, template, results):
+		""" TODO: """
 		pageIndex = self.__pageCount
 		properties = self.__properties
 		result = template.format(**locals())
@@ -856,6 +875,7 @@ class Profile:
 
 
 	def __addMeasure(self, args, exclude):
+		""" TODO: """
 		(measureCategory, correlate, getter, measureClass, parameters) = args
 		measureName = measureClass.__name__
 		if measureName not in exclude:
@@ -875,7 +895,7 @@ class Profile:
 
 
 	def __loadProperties(self):
-		""" """
+		""" TODO: """
 		self.__properties["Nodes"] = self.__G.numberOfNodes()
 		self.__properties["Edges"] = self.__G.numberOfEdges()
 		self.__properties["Directed"] = self.__G.isDirected()
@@ -885,6 +905,7 @@ class Profile:
 
 
 	def __loadMeasures(self):
+		""" TODO: """
 		def funcPrint(str):
 			if self.__verbose:
 				if self.__verboseLevel >= 1:
