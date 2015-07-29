@@ -6,7 +6,6 @@
  */
 
 #include "CSRMatrix.h"
-#include "SparseAccumulator.h"
 
 #include <cassert>
 
@@ -137,23 +136,23 @@ Vector CSRMatrix::diagonal() const {
 
 CSRMatrix CSRMatrix::operator+(const CSRMatrix &other) const {
 	assert(nRows == other.nRows && nCols == other.nCols);
-	return CSRMatrix::binaryOperator(*this, other, [&](double val1, double val2) {return val1 + val2;});
+	return CSRMatrix::binaryOperator(*this, other, [](double val1, double val2) {return val1 + val2;});
 }
 
 CSRMatrix& CSRMatrix::operator+=(const CSRMatrix &other) {
 	assert(nRows == other.nRows && nCols == other.nCols);
-	*this = CSRMatrix::binaryOperator(*this, other, [&](double val1, double val2) {return val1 + val2;});
+	*this = CSRMatrix::binaryOperator(*this, other, [](double val1, double val2) {return val1 + val2;});
 	return *this;
 }
 
 CSRMatrix CSRMatrix::operator-(const CSRMatrix &other) const {
 	assert(nRows == other.nRows && nCols == other.nCols);
-	return CSRMatrix::binaryOperator(*this, other, [&](double val1, double val2) {return val1 - val2;});
+	return CSRMatrix::binaryOperator(*this, other, [](double val1, double val2) {return val1 - val2;});
 }
 
 CSRMatrix& CSRMatrix::operator-=(const CSRMatrix &other) {
 	assert(nRows == other.nRows && nCols == other.nCols);
-	*this = CSRMatrix::binaryOperator(*this, other, [&](double val1, double val2) {return val1 + val2;});
+	*this = CSRMatrix::binaryOperator(*this, other, [](double val1, double val2) {return val1 - val2;});
 	return *this;
 }
 
