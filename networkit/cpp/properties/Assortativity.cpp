@@ -10,14 +10,13 @@
 
 namespace NetworKit {
 
-Assortativity::Assortativity(const Graph& G, const std::vector<double>& attribute) : Algorithm(), G(G), emptyVector(), emptyPartition(), attribute(attribute),  partition(emptyPartition), nominal(false) {
+Assortativity::Assortativity(const Graph& G, const std::vector<double>& attribute) : Algorithm(), G(G), emptyVector(), emptyPartition(), attribute(attribute), partition(emptyPartition), nominal(false) {
 	if (attribute.size() < G.upperNodeIdBound()) {
 		throw std::runtime_error("attribute list has incorrect length: there must be an entry for each node");
 	}
 }
 
-
-Assortativity::Assortativity(const Graph& G, const Partition& partition) : Algorithm(), G(G), emptyVector(), emptyPartition(), partition(partition), attribute(emptyVector), nominal(true) {
+Assortativity::Assortativity(const Graph& G, const Partition& partition) : Algorithm(), G(G), emptyVector(), emptyPartition(), attribute(emptyVector), partition(partition), nominal(true) {
 	if (partition.numberOfElements() < G.upperNodeIdBound()) {
 		throw std::runtime_error("partition has incorrect length: there must be an entry for each node");
 	}
@@ -60,7 +59,7 @@ void Assortativity::run() {
 		INFO("r: ", r);
 		coefficient = r;
 	} else {
-		// assortativity with respect to a continous, ordinal-scaled node attribute is simply the Person correlation coefficient of the lists x and y
+		// assortativity with respect to a continous, ordinal-scaled node attribute is simply the Pearson correlation coefficient of the lists x and y
 		// where (x_u, y_v) are the attributes of connected pairs of nodes
 		// r_{xy} := \frac{\sum_{i=1}^n(x_i-\bar x)(y_i-\bar y)}{\sqrt{\sum_{i=1}^n(x_i-\bar x)^2\cdot \sum_{i=1}^n(y_i-\bar y)^2}}
 
