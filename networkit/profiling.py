@@ -20,7 +20,7 @@ import seaborn as sns
 import pandas as pd
 
 
-def _readfile(postfix):
+def readfile(postfix):
 	""" private helper function: file to string (all whitespace characters are replaced by ' ') """
 	with open(__file__[:__file__.rfind(".py")] + "." + postfix, "r") as file:
 		return " ".join(file.read().split())
@@ -71,9 +71,9 @@ try:
 		HTML("""
 			<script type="text/javascript">
 			<!--
-				""" + _initHeader("script", "javascript", _readfile("js"))  + """
-				""" + _initHeader("style",  "css",        _readfile("css")) + """
-				""" + _initOverlay("Overlay", _readfile("overlay.html")) + """
+				""" + _initHeader("script", "javascript", readfile("js"))  + """
+				""" + _initHeader("style",  "css",        readfile("css")) + """
+				""" + _initOverlay("Overlay", readfile("overlay.html")) + """
 			-->
 			</script>
 		""")
@@ -784,7 +784,7 @@ class Profile:
 		if self.__verbose:
 			timerAll = stopwatch.Timer()
 
-		templateMeasure = _readfile("measure.html")
+		templateMeasure = readfile("measure.html")
 
 		results = {}
 		for category in self.__correlations:
@@ -847,7 +847,7 @@ class Profile:
 				pass
 			results[category]["Overview"] += "<div class=\"Thumbnail_Overview\" data-title=\"" + key + "\"><a href=\"#NetworKit_Page_" + str(self.__pageCount) + "_" + key + "\"><img src=\"data:image/svg+xml;utf8," + image[1] + "\" /></a></div>"
 
-		templateProfile = _readfile("profile.html")
+		templateProfile = readfile("profile.html")
 		result = self.__formatProfileTemplate(
 			templateProfile,
 			results
