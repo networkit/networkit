@@ -49,11 +49,50 @@
 }
 
 .NetworKit_Page .SubCategory:before {
-	content: attr(data-title);
 	font-size: 1.6em;
 	display: block;
 	margin-left: -0.8em;
 	margin-bottom: 0.5em;
+}
+
+.NetworKit_Page .SubCategory[data-title]:before {
+	content: attr(data-title);
+}
+
+.NetworKit_Page .Block {
+	display: block;
+}
+
+.NetworKit_Page .Block:after {
+	content: "."; 
+	visibility: hidden; 
+	display: block; 
+	height: 0; 
+	clear: both;
+}
+
+.NetworKit_Page .Block .Thumbnail_Overview,
+.NetworKit_Page .Block .Thumbnail_ScatterPlot  {
+	width: 240px;
+	float: left;
+	margin-right: 1em;
+	padding-bottom: 1em;
+}
+
+.NetworKit_Page .Block .Thumbnail_Overview:before,
+.NetworKit_Page .Block .Thumbnail_ScatterPlot:before {
+	display: block;
+	text-align: center;
+	font-weight: bold;
+}
+
+.NetworKit_Page .Block .Thumbnail_Overview:before {
+	content: attr(data-title);
+}
+
+.NetworKit_Page .Block .Thumbnail_ScatterPlot:before {
+	content: attr(data-title) "\\a" attr(data-title-second);
+	white-space: pre;
 }
 
 .NetworKit_Page .HeatCell {
@@ -176,6 +215,17 @@
 	color: #383838;
 }
 
+.NetworKit_Page .Measure:after {
+	content: "."; 
+	visibility: hidden; 
+	display: block; 
+	height: 0; 
+	clear: both;
+}
+
+.NetworKit_Page .PartitionPie img {
+	width: 600px;
+}
 
 /* --- Overlay ------------------------------------------------------------- */
 
