@@ -7,6 +7,8 @@
 
 #include "SolverLamg.h"
 #include "LAMGSettings.h"
+#include "../CG.h"
+#include "../Preconditioner.h"
 
 #include <fstream>
 #include <iostream>
@@ -18,6 +20,12 @@
 
 namespace NetworKit {
 
+#ifndef NPROFILE
+count SolverLamg::minResTime = 0;
+count SolverLamg::interpolationTime = 0;
+count SolverLamg::restrictionTime = 0;
+count SolverLamg::coarsestSolve = 0;
+#endif
 
 SolverLamg::SolverLamg(LevelHierarchy &hierarchy, const Smoother &smoother) : hierarchy(hierarchy), smoother(smoother) {
 }
@@ -29,6 +37,9 @@ void SolverLamg::solve(Vector &x, const Vector &b, LAMGSolverStatus &status) {
 		int finest = 0;
 
 		if (hierarchy.getType(1) == ELIMINATION) {
+#ifndef NPROFILE
+			Aux::Timer t; t.start();
+#endif
 			hierarchy.at(1).restrict(b, bc);
 			if (hierarchy.at(1).getLaplacian().numberOfRows() == 1) {
 				x = 0.0;
@@ -37,12 +48,23 @@ void SolverLamg::solve(Vector &x, const Vector &b, LAMGSolverStatus &status) {
 				hierarchy.at(1).coarseType(x, xc);
 				finest = 1;
 			}
+#ifndef NPROFILE
+			t.stop();
+			restrictionTime += t.elapsedMicroseconds();
+#endif
 		}
 
 		solveCycle(xc, bc, finest, status);
 
 		if (finest == 1) { // interpolate from finest == ELIMINATION level back to actual finest level
+#ifndef NPROFILE
+			Aux::Timer t; t.start();
+#endif
 			hierarchy.at(1).interpolate(xc, x);
+#ifndef NPROFILE
+			t.stop();
+			interpolationTime += t.elapsedMicroseconds();
+#endif
 		} else {
 			x = xc;
 		}
@@ -53,6 +75,12 @@ void SolverLamg::solve(Vector &x, const Vector &b, LAMGSolverStatus &status) {
 	double residual = (b - hierarchy.at(0).getLaplacian() * x).length();
 	status.residual = residual;
 	DEBUG("final residual\t ", residual);
+#ifndef NPROFILE
+	INFO("minResTime: ", minResTime / 1000);
+	INFO("interpolationTime: ", interpolationTime / 1000);
+	INFO("restrictionTime: ", restrictionTime / 1000);
+	INFO("coarsestSolve: ", coarsestSolve / 1000);
+#endif
 }
 
 void SolverLamg::solveCycle(Vector &x, const Vector &b, int finest, LAMGSolverStatus &status) {
@@ -64,6 +92,11 @@ void SolverLamg::solveCycle(Vector &x, const Vector &b, int finest, LAMGSolverSt
 	rHistory = std::vector<std::vector<Vector>>(hierarchy.size());
 	latestIterate = std::vector<index>(hierarchy.size(), 0);
 	numActiveIterates = std::vector<count>(hierarchy.size(), 0);
+	int coarsest = hierarchy.size() - 1;
+	std::vector<count> numVisits(coarsest);
+	std::vector<Vector> X(hierarchy.size());
+	std::vector<Vector> B(hierarchy.size());
+
 	for (index i = 0; i < hierarchy.size(); ++i) {
 		history[i] = std::vector<Vector>(MAX_COMBINED_ITERATES, Vector(hierarchy.at(i).getNumberOfNodes()));
 		rHistory[i] = std::vector<Vector>(MAX_COMBINED_ITERATES, Vector(hierarchy.at(i).getNumberOfNodes()));
@@ -80,7 +113,7 @@ void SolverLamg::solveCycle(Vector &x, const Vector &b, int finest, LAMGSolverSt
 		DEBUG("iter ", iterations, " r=", residual);
 		lastResidual = residual;
 
-		cycle(x, b, finest, status);
+		cycle(x, b, finest, coarsest, numVisits, X, B, status);
 		r = b - hierarchy.at(finest).getLaplacian() * x;
 		residual = r.length();
 		status.residualHistory.emplace_back(residual);
@@ -95,31 +128,35 @@ void SolverLamg::solveCycle(Vector &x, const Vector &b, int finest, LAMGSolverSt
 	DEBUG("nIter\t ", iterations);
 }
 
-void SolverLamg::cycle(Vector &x, const Vector &b, int finest, const LAMGSolverStatus &status) {
-	std::vector<count> numVisits(hierarchy.size()-1, 0);
-	int coarsest = hierarchy.size() - 1;
-	std::vector<Vector> X(hierarchy.size());
-	std::vector<Vector> B(hierarchy.size());
+void SolverLamg::cycle(Vector &x, const Vector &b, int finest, int coarsest, std::vector<count> &numVisits, std::vector<Vector> &X, std::vector<Vector> &B, const LAMGSolverStatus &status) {
+	std::fill(numVisits.begin(), numVisits.end(), 0);
 	X[finest] = x;
 	B[finest] = b;
 
-
-
+#ifndef NPROFILE
+	Aux::Timer t;
+#endif
 
 	int currLvl = finest;
-	int nextLvl = 0;
+	int nextLvl = finest;
 	double maxVisits = 0.0;
 
 	saveIterate(currLvl, X[currLvl], B[currLvl] - hierarchy.at(currLvl).getLaplacian() * X[currLvl]);
-
 	while (true) {
 		if (currLvl == coarsest) {
+#ifndef NPROFILE
+			t.start();
+#endif
 			nextLvl = currLvl - 1;
 			if (currLvl == finest) { // finest level
 				X[currLvl] = smoother.relax(hierarchy.at(currLvl).getLaplacian(), B[currLvl], X[currLvl], status.numPreSmoothIters);
 			} else {
-				X[currLvl] = smoother.relax(hierarchy.at(currLvl).getLaplacian(), B[currLvl], X[currLvl], SETUP_RELAX_COARSEST_SWEEPS);
+				X[currLvl] = smoother.relax(hierarchy.at(currLvl).getLaplacian(), B[currLvl], X[currLvl], 50);
 			}
+#ifndef NPROFILE
+			t.stop();
+			coarsestSolve += t.elapsedMicroseconds();
+#endif
 		} else {
 			if (currLvl == finest) {
 				maxVisits = 1.0;
@@ -137,65 +174,65 @@ void SolverLamg::cycle(Vector &x, const Vector &b, int finest, const LAMGSolverS
 		if (nextLvl < finest) break;
 
 		if (nextLvl > currLvl) {  // preProcess
+#ifndef NPROFILE
+			t.start();
+#endif
 			numVisits[currLvl]++;
 
-			Vector xf = X[currLvl];
-			Vector bf = B[currLvl];
-			Vector bc;
-			Vector xc;
 			if (hierarchy.getType(nextLvl) != ELIMINATION) {
-				xf = smoother.relax(hierarchy.at(currLvl).getLaplacian(), bf, xf, status.numPreSmoothIters);
-				X[currLvl] = xf;
+				X[currLvl] = smoother.relax(hierarchy.at(currLvl).getLaplacian(), B[currLvl], X[currLvl], status.numPreSmoothIters);
 			}
 
 			if (hierarchy.getType(nextLvl) == ELIMINATION) {
-				hierarchy.at(nextLvl).restrict(bf, bc);
+				hierarchy.at(nextLvl).restrict(B[currLvl], B[nextLvl]);
 			} else {
-				Vector rf = bf - hierarchy.at(currLvl).getLaplacian() * xf;
-				hierarchy.at(nextLvl).restrict(rf, bc);
+				hierarchy.at(nextLvl).restrict(B[currLvl] - hierarchy.at(currLvl).getLaplacian() * X[currLvl], B[nextLvl]);
 			}
 
-			hierarchy.at(nextLvl).coarseType(xf, xc);
-			B[nextLvl] = bc;
-			X[nextLvl] = xc;
+			hierarchy.at(nextLvl).coarseType(X[currLvl], X[nextLvl]);
+
 			clearHistory(nextLvl);
 			if (currLvl > finest) {
 				clearHistory(currLvl);
 			}
+#ifndef NPROFILE
+			t.stop();
+			restrictionTime += t.elapsedMicroseconds();
+#endif
 		} else { // postProcess
-			Vector xf = X[nextLvl];
-			Vector bf = B[nextLvl];
-			Vector rf = bf - hierarchy.at(nextLvl).getLaplacian() * xf;
-			Vector xc = X[currLvl];
-			Vector rc = B[currLvl] - hierarchy.at(currLvl).getLaplacian() * xc;
+#ifndef NPROFILE
+			t.start();
+#endif
 
 			if (currLvl == coarsest || hierarchy.getType(currLvl+1) != ELIMINATION) {
-				minRes(currLvl, xc, rc);
-				X[currLvl] = xc;
+				minRes(currLvl, X[currLvl], B[currLvl] - hierarchy.at(currLvl).getLaplacian() * X[currLvl]);
 			}
 
 			if (nextLvl > finest) {
-				saveIterate(nextLvl, xf, rf);
+				saveIterate(nextLvl, X[nextLvl], B[nextLvl] - hierarchy.at(nextLvl).getLaplacian() * X[nextLvl]);
 			}
 
 
 			if (hierarchy.getType(currLvl) == ELIMINATION) {
-				hierarchy.at(currLvl).interpolate(xc, xf);
+				hierarchy.at(currLvl).interpolate(X[currLvl], X[nextLvl]);
 			} else {
-				hierarchy.at(currLvl).interpolate(xc, xf);
-				xf += X[nextLvl];
+				Vector xf = X[nextLvl];
+				hierarchy.at(currLvl).interpolate(X[currLvl], xf);
+				X[nextLvl] += xf;
 			}
 
 			if (hierarchy.getType(currLvl) != ELIMINATION) {
-				xf = smoother.relax(hierarchy.at(nextLvl).getLaplacian(), bf, xf, status.numPostSmoothIters);
+				X[nextLvl] = smoother.relax(hierarchy.at(nextLvl).getLaplacian(), B[nextLvl], X[nextLvl], status.numPostSmoothIters);
 			}
 
-			X[nextLvl] = xf;
+#ifndef NPROFILE
+			t.stop();
+			interpolationTime += t.elapsedMicroseconds();
+#endif
 		}
 
 		currLvl = nextLvl;
 	} // while
-
 
 	// post-cycle finest
 	if (hierarchy.size() > finest + 1 && hierarchy.getType(finest+1) != ELIMINATION) { // do an iterate recombination on calculated solutions
@@ -203,14 +240,7 @@ void SolverLamg::cycle(Vector &x, const Vector &b, int finest, const LAMGSolverS
 	}
 
 
-
-
-	double mean = X[finest].mean();
-#pragma omp parallel for
-	for (index i = 0; i < X[finest].getDimension(); ++i) { // subtract mean from all entries in final solution vector
-		X[finest][i] -= mean;
-	}
-
+	X[finest] -= X[finest].mean();
 	x = X[finest];
 }
 
@@ -236,6 +266,10 @@ void SolverLamg::clearHistory(index level) {
 }
 
 void SolverLamg::minRes(index level, Vector &x, const Vector &r) {
+#ifndef NPROFILE
+	Aux::Timer t;
+	t.start();
+#endif
 	if (numActiveIterates[level] > 0) {
 		count n = numActiveIterates[level];
 		std::vector<std::pair<index, index>> AEpos;
@@ -261,12 +295,17 @@ void SolverLamg::minRes(index level, Vector &x, const Vector &r) {
 		}
 
 
+
 		CSRMatrix AE(r.getDimension(), n, AEpos, AEvalues);
 		CSRMatrix E(r.getDimension(), n, Epos, Evalues);
 
-		Vector alpha = smoother.relax(CSRMatrix::mTmMultiply(AE, AE), CSRMatrix::mTvMultiply(AE, r), Vector(n, 0.0), SETUP_RELAX_COARSEST_SWEEPS);
+		Vector alpha = smoother.relax(CSRMatrix::mTmMultiply(AE, AE), CSRMatrix::mTvMultiply(AE, r), Vector(n, 0.0), 10);
 		x += E * alpha;
 	}
+#ifndef NPROFILE
+	t.stop();
+	minResTime += t.elapsedMicroseconds();
+#endif
 }
 
 } /* namespace NetworKit */
