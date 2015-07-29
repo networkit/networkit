@@ -23,10 +23,10 @@ void LevelHierarchy::addEliminationLevel(const CSRMatrix &A, const std::vector<E
 	eliminationLevels.push_back(LevelElimination(A, coarseningStages));
 }
 
-void LevelHierarchy::addAggregationLevel(const CSRMatrix &A, const CSRMatrix &P) {
+void LevelHierarchy::addAggregationLevel(const CSRMatrix &A, const CSRMatrix &P, const CSRMatrix &R) {
 	levelType.push_back(AGGREGATION);
 	levelIndex.push_back(aggregationLevels.size());
-	aggregationLevels.push_back(LevelAggregation(A, P));
+	aggregationLevels.push_back(LevelAggregation(A, P, R));
 }
 
 count LevelHierarchy::size() const {

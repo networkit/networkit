@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-LevelAggregation::LevelAggregation(const CSRMatrix &A, const CSRMatrix &P) : Level(LevelType::AGGREGATION, A), P(P) {
+LevelAggregation::LevelAggregation(const CSRMatrix &A, const CSRMatrix &P, const CSRMatrix &R) : Level(LevelType::AGGREGATION, A), P(P), R(R) {
 }
 
 void LevelAggregation::coarseType(const Vector &xf, Vector &xc) const {
@@ -17,7 +17,8 @@ void LevelAggregation::coarseType(const Vector &xf, Vector &xc) const {
 }
 
 void LevelAggregation::restrict(const Vector &bf, Vector &bc) {
-	bc = CSRMatrix::mTvMultiply(P, bf);
+	//bc = CSRMatrix::mTvMultiply(P, bf);
+	bc = R * bf;
 }
 
 void LevelAggregation::interpolate(const Vector &xc, Vector &xf) const {
