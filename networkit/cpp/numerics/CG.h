@@ -66,8 +66,8 @@ Vector solveConjugateGradient(const Matrix& A, const Vector& b, CGStatus& status
   Vector x(A.numberOfColumns(), 0.0);
   Vector residual_dir = b - A*x;
   Vector conjugate_dir = precond.rhs(residual_dir);
-  double sqr_residual = residual_dir.transpose() * residual_dir;
-  double sqr_residual_precond = residual_dir.transpose() * conjugate_dir;
+  double sqr_residual = Vector::innerProduct(residual_dir, residual_dir);//residual_dir.transpose() * residual_dir;
+  double sqr_residual_precond = Vector::innerProduct(residual_dir, conjugate_dir);//residual_dir.transpose() * conjugate_dir;
 
   count niters = 0;
   Vector tmp, residual_precond;
@@ -83,13 +83,13 @@ Vector solveConjugateGradient(const Matrix& A, const Vector& b, CGStatus& status
 
     // dot() or innerProduct() did not exist before???
     tmp = A * conjugate_dir;
-    double step = sqr_residual_precond / (tmp.transpose() * conjugate_dir);
+    double step = sqr_residual_precond / Vector::innerProduct(conjugate_dir, tmp);// (tmp.transpose() * conjugate_dir);
     x += step * conjugate_dir;
     residual_dir -= step * tmp;
-    sqr_residual = residual_dir.length() * residual_dir.length();
+    sqr_residual = Vector::innerProduct(residual_dir, residual_dir);//residual_dir.length() * residual_dir.length();
 
     residual_precond = precond.rhs(residual_dir);
-    double new_sqr_residual_precond = residual_dir.transpose() * residual_precond;
+    double new_sqr_residual_precond = Vector::innerProduct(residual_dir, residual_precond);//residual_dir.transpose() * residual_precond;
     conjugate_dir = (new_sqr_residual_precond / sqr_residual_precond) * conjugate_dir + residual_precond;
     sqr_residual_precond = new_sqr_residual_precond;
   }
