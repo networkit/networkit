@@ -117,8 +117,8 @@ env.Append(LINKFLAGS = ["-std=c++11"])
 
 ## CONFIGURATIONS
 
-commonCFlags = ["-c", "-fmessage-length=0", "-std=c99", "-fPIC"]
-commonCppFlags = ["-std=c++11", "-Wall", "-c", "-fmessage-length=0", "-fPIC"]
+commonCFlags = ["-c", "-fmessage-length=0", "-std=c99", "-fPIC", "-Wextra"]
+commonCppFlags = ["-std=c++11", "-Wall", "-c", "-fmessage-length=0", "-fPIC", "-Wextra"]
 
 debugCppFlags = ["-O0", "-g3", "-DLOG_LEVEL=LOG_LEVEL_TRACE"]
 debugCFlags = ["-O0", "-g3"]

@@ -14,7 +14,7 @@ BottomUpBFS::BottomUpBFS(const Graph& G, node source, bool storePaths, bool stor
 }
 
 
-void BottomUpBFS::run(node t) {
+void BottomUpBFS::run(node) {
 	edgeweight infDist = std::numeric_limits<edgeweight>::max();
 	count z = G.upperNodeIdBound();
 	distances.clear();

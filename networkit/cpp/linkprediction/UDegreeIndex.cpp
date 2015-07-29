@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-double UDegreeIndex::runImpl(node u, node v) {
+double UDegreeIndex::runImpl(node u, node) {
   return G->degree(u);
 }
 

@@ -97,7 +97,7 @@ std::set<node> GCE::expandSeed(node s) {
         count internal = 0;
         count external = 0;
         for (node u : community) {
-            G.forEdgesOf(u, [&](node u, node v) {
+            G.forEdgesOf(u, [&](node, node v) {
                 if (in(community, v)) {
                     internal += 1;
                 } else {

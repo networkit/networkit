@@ -84,7 +84,7 @@ TEST_F(Graph2Benchmark, nodePairIteration) {
 	run.start();
 
 	count p = 0;
-	G.forNodePairs([&](node u, node v){
+	G.forNodePairs([&](node, node){
 		p += 1;
 	});
 
@@ -153,7 +153,7 @@ TEST_F(Graph2Benchmark, edgeIteration) {
 	INFO("[BEGIN] (n=" , n , ")");
 	run.start();
 
-	G.forEdges([&](node u, node v){
+	G.forEdges([&](node, node){
 
 	});
 
@@ -175,7 +175,7 @@ TEST_F(Graph2Benchmark, parallelEdgeIteration) {
 	run.start();
 
 	count i = 0;
-	G.parallelForEdges([&](node u, node v){
+	G.parallelForEdges([&](node, node){
 		i += 1;
 	});
 
@@ -189,7 +189,7 @@ TEST_F(Graph2Benchmark, parallelSumForNodes) {
 	count n = 1e+7;
 	Graph G(n);
 
-	double sum = G.parallelSumForNodes([&](node v) {
+	double sum = G.parallelSumForNodes([&](node) {
 		return 1;
 	});
 

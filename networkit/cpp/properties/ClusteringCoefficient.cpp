@@ -22,7 +22,7 @@ double ClusteringCoefficient::sequentialAvgLocal(const Graph &G) {
 	// copy edges with edge ids
 	G.parallelForNodes([&](node u) {
 		edges[u].reserve(G.degree(u));
-		G.forEdgesOf(u, [&](node _u, node v, edgeid eid) {
+		G.forEdgesOf(u, [&](node, node v) {
 			edges[u].emplace_back(v);
 		});
 	});
@@ -172,19 +172,19 @@ double ClusteringCoefficient::exactGlobal(Graph& G) {
 		count tr = 0;
 
 		if (G.degree(u) > 1) {
-			G.forEdgesOf(u, [&](node u, node v) {
+			G.forEdgesOf(u, [&](node, node v) {
 				nodeMarker[tid][v] = true;
 			});
 
-			G.forEdgesOf(u, [&](node u, node v) {
-				G.forEdgesOf(v, [&](node v, node w) {
+			G.forEdgesOf(u, [&](node, node v) {
+				G.forEdgesOf(v, [&](node, node w) {
 					if (nodeMarker[tid][w]) {
 						tr += 1;
 					}
 				});
 			});
 
-			G.forEdgesOf(u, [&](node u, node v) {
+			G.forEdgesOf(u, [&](node, node v) {
 				nodeMarker[tid][v] = false;
 			});
 		}

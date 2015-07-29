@@ -200,7 +200,7 @@ private:
 	 * error messages from the other declarations.
 	 */
 	template<class F, void* = (void*)0>
-	typename Aux::FunctionTraits<F>::result_type edgeLambda(F&f, ...) const {
+	typename Aux::FunctionTraits<F>::result_type edgeLambda(F&, ...) const {
 		// the strange condition is used in order to delay the eveluation of the static assert to the moment when this function is actually used
 		static_assert(! std::is_same<F, F>::value, "Your lambda does not support the required parameters or the parameters have the wrong type.");
 		return std::declval<typename Aux::FunctionTraits<F>::result_type>(); // use the correct return type (this won't compile)
@@ -230,7 +230,7 @@ private:
 			 (Aux::FunctionTraits<F>::arity >= 2) &&
 			 std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<2>::type>::value
 			 >::type* = (void*)0>
-	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, v, id)) {
+	auto edgeLambda(F&f, node u, node v, edgeweight, edgeid id) const -> decltype(f(u, v, id)) {
 		return f(u, v, id);
 	}
 
@@ -243,7 +243,7 @@ private:
 			 (Aux::FunctionTraits<F>::arity >= 2) &&
 			 std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<2>::type>::value
 			 >::type* = (void*)0>
-	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, v, ew)) {
+	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid) const -> decltype(f(u, v, ew)) {
 		return f(u, v, ew);
 	}
 
@@ -258,7 +258,7 @@ private:
 			 (Aux::FunctionTraits<F>::arity >= 1) &&
 			 std::is_same<node, typename Aux::FunctionTraits<F>::template arg<1>::type>::value
 			 >::type* = (void*)0>
-	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, v)) {
+	auto edgeLambda(F&f, node u, node v, edgeweight, edgeid) const -> decltype(f(u, v)) {
 			return f(u, v);
 	}
 
@@ -272,7 +272,7 @@ private:
 			 (Aux::FunctionTraits<F>::arity >= 1) &&
 			 std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<1>::type>::value
 			 >::type* = (void*)0>
-	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, ew)) {
+	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid) const -> decltype(f(u, ew)) {
 		return f(v, ew);
 	}
 
@@ -283,7 +283,7 @@ private:
 	 */
 	template<class F,
 			 void* = (void*)0>
-	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(v)) {
+	auto edgeLambda(F&f, node, node v, edgeweight, edgeid) const -> decltype(f(v)) {
 		return f(v);
 	}
 
@@ -300,7 +300,7 @@ private:
 	 * Calls the given BFS handle without distance parameter
 	 */
 	template <class F>
-	auto callBFSHandle(F &f, node u, count dist) const -> decltype(f(u)) {
+	auto callBFSHandle(F &f, node u, count) const -> decltype(f(u)) {
 		return f(u);
 	}
 
@@ -1090,7 +1090,7 @@ inline edgeid Graph::getInEdgeId<false>(node, index) const {
 
 
 template<bool graphIsDirected> // implementation for graphIsDirected == true
-inline bool Graph::useEdgeInIteration(node u, node v) const {
+inline bool Graph::useEdgeInIteration(node, node v) const {
 	return v != none;
 }
 

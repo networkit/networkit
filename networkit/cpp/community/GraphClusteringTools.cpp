@@ -49,14 +49,14 @@ count weightedDegreeWithCluster(const Graph& graph, const Partition &zeta, node 
 	count wdeg = 0;
 
 	if (graph.isWeighted()) {
-		graph.forEdgesOf(u, [&](node u, node v, edgeweight w) {
+		graph.forEdgesOf(u, [&](node, node v, edgeweight w) {
 			if (zeta[v] == cid) {
 				wdeg += w;
 			}
 		});
 	}
 	else {
-		graph.forEdgesOf(u, [&](node u, node v) {
+		graph.forEdgesOf(u, [&](node, node v) {
 			if (zeta[v] == cid) {
 				wdeg += 1;
 			}
@@ -78,7 +78,7 @@ bool isProperClustering(const Graph &G, const Partition &zeta) {
 	return success;
 }
 
-bool isOneClustering(const Graph &G, const Partition &zeta) {
+bool isOneClustering(const Graph&, const Partition &zeta) {
 	return (zeta.numberOfSubsets() == 1);
 /*	index one = data[0];	// first subset id should be equal to all others
 	// TODO: use iterator forEntries and pair-wise comparison?

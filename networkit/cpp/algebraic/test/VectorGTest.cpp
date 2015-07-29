@@ -254,7 +254,7 @@ TEST(VectorGTest, testVectorIterators) {
 		EXPECT_EQ((i + 2.0), v[i]);
 	}
 
-	auto nonConstantParallelTester = [](const int &idx, double &element) {
+	auto nonConstantParallelTester = [](const int, double &element) {
 		element++;
 	};
 

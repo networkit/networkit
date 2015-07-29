@@ -50,7 +50,7 @@ Matching PathGrowingMatcher::run() {
 			// find heaviest incident edge
 			node bestNeighbor = 0;
 			edgeweight bestWeight = 0;
-			G.forEdgesOf(v, [&](node v, node u, edgeweight weight) {
+			G.forEdgesOf(v, [&](node, node u, edgeweight weight) {
 				if (alive[u]) {
 					if (weight > bestWeight) {
 						bestNeighbor = u;
@@ -71,7 +71,7 @@ Matching PathGrowingMatcher::run() {
 			}
 
 			// remove current vertex and its incident edges from graph
-			G.forEdgesOf(v, [&](node v, node u) {
+			G.forEdgesOf(v, [&](node, node u) {
 				if (alive[u]) {
 					degrees[u]--;
 					numEdges--;

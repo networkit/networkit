@@ -29,7 +29,7 @@ void ParallelConnectedComponents::run() {
 	component = Partition(z);
 	component.allToSingletons();
 	// remove nodes that do not exist from the partition so it doesn't report wrong numbers
-	component.parallelForEntries([&](node u, index s) {
+	component.parallelForEntries([&](node u, index) {
 		if (!G.hasNode(u)) {
 			component[u] = none;
 		}
@@ -102,7 +102,7 @@ void ParallelConnectedComponents::runSequential() {
 	component = Partition(z);
 	component.allToSingletons();
 	// remove nodes that do not exist from the partition so it doesn't report wrong numbers
-	component.forEntries([&](node u, index s) {
+	component.forEntries([&](node u, index) {
 		if (!G.hasNode(u)) {
 			component[u] = none;
 		}

@@ -184,7 +184,7 @@ void DynamicNMIDistance::sanityCheck(double& NMI, double& NMID) const {
 	assert (Aux::NumericTools::le(NMID, 1.0));
 }
 
-std::vector<std::vector<count> > DynamicNMIDistance::confusionMatrix(const Graph& G,
+std::vector<std::vector<count> > DynamicNMIDistance::confusionMatrix(const Graph&,
 		const Partition& first, const Partition& second) {
 	index firstUpperId = first.upperBound();
 	index secondUpperId = second.upperBound();

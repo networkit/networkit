@@ -105,7 +105,7 @@ Vector Matrix::row(const index &i) const {
 	}
 
 	Vector row(numberOfColumns(), 0.0, true);
-	graph.forEdgesOf(i, [&](node i, node j, double value) {
+	graph.forEdgesOf(i, [&](node, node j, double value) {
 		row[j] = value;
 	});
 

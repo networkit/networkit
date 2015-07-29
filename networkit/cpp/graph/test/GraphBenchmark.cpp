@@ -31,7 +31,7 @@ TEST_F(GraphBenchmark, edgeInsertions_noop_seq) {
 	Graph G(n);
 	int64_t i = 0;
 	runtime.start();
-	G.forNodePairs([&](node u, node v) {
+	G.forNodePairs([&](node, node) {
 		i++;
 		// G.insertEdge(u, v);
 	});
@@ -50,7 +50,7 @@ TEST_F(GraphBenchmark, edgeInsertions_noop_par) {
 	Graph G(n);
 	int64_t i = 0;
 	runtime.start();
-	G.parallelForNodePairs([&](node u, node v) {
+	G.parallelForNodePairs([&](node, node) {
 		i++;
 		// G.insertEdge(u, v);
 	});

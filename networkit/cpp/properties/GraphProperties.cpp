@@ -44,7 +44,7 @@ std::vector<double> GraphProperties::localClusteringCoefficients(const Graph& G)
 	G.balancedParallelForNodes([&](node u){
 		count edgeCount = 0;
 		G.forEdgesOf(u, [&](node u, node v) {
-			G.forEdgesOf(v, [&](node v, node w){
+			G.forEdgesOf(v, [&](node, node w){
 				if (G.hasEdge(u, w)) {
 					edgeCount += 1;
 				}

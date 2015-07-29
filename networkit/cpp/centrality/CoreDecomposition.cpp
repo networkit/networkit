@@ -96,7 +96,7 @@ void CoreDecomposition::run() {
 						}
 					}
 				});
-				G.forInNeighborsOf(u, [&](node u, node v) {
+				G.forInNeighborsOf(u, [&](node, node v) {
 					if (alive[v]) {
 						count deg = degree[v];
 						degree[v]--;

@@ -28,19 +28,19 @@ void LocalClusteringCoefficient::run() {
 			size_t tid = Aux::getThreadNumber();
 			count triangles = 0;
 
-			G.forEdgesOf(u, [&](node u, node v) {
+			G.forEdgesOf(u, [&](node, node v) {
 				nodeMarker[tid][v] = true;
 			});
 
-			G.forEdgesOf(u, [&](node u, node v) {
-				G.forEdgesOf(v, [&](node v, node w) {
+			G.forEdgesOf(u, [&](node, node v) {
+				G.forEdgesOf(v, [&](node, node w) {
 					if (nodeMarker[tid][w]) {
 						triangles += 1;
 					}
 				});
 			});
 
-			G.forEdgesOf(u, [&](node u, node v) {
+			G.forEdgesOf(u, [&](node, node v) {
 				nodeMarker[tid][v] = false;
 			});
 
