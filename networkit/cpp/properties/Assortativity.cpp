@@ -10,14 +10,14 @@
 
 namespace NetworKit {
 
-Assortativity::Assortativity(const Graph& G, const std::vector<double>& attribute) : G(G), emptyVector(), emptyPartition(), attribute(attribute),  partition(emptyPartition), nominal(false) {
+Assortativity::Assortativity(const Graph& G, const std::vector<double>& attribute) : Algorithm(), G(G), emptyVector(), emptyPartition(), attribute(attribute),  partition(emptyPartition), nominal(false) {
 	if (attribute.size() < G.upperNodeIdBound()) {
 		throw std::runtime_error("attribute list has incorrect length: there must be an entry for each node");
 	}
 }
 
 
-Assortativity::Assortativity(const Graph& G, const Partition& partition) : G(G), emptyVector(), emptyPartition(), partition(partition), attribute(emptyVector), nominal(true) {
+Assortativity::Assortativity(const Graph& G, const Partition& partition) : Algorithm(), G(G), emptyVector(), emptyPartition(), partition(partition), attribute(emptyVector), nominal(true) {
 	if (partition.numberOfElements() < G.upperNodeIdBound()) {
 		throw std::runtime_error("partition has incorrect length: there must be an entry for each node");
 	}
@@ -88,7 +88,7 @@ void Assortativity::run() {
 		double r = A / sqrt(B * C);
 		coefficient = r;
 	}
-
+	hasRun = true;
 }
 
 

@@ -8,6 +8,7 @@
 #ifndef ASSORTATIVITY_H_
 #define ASSORTATIVITY_H_
 
+#include "../base/Algorithm.h"
 #include "../graph/Graph.h"
 #include "../structures/Partition.h"
 
@@ -20,7 +21,7 @@ namespace NetworKit {
  * Assortativity computes a coefficient that expresses the correlation of a
  * node attribute among connected pairs of nodes.
  */
-class Assortativity {
+class Assortativity : public Algorithm {
 
 public:
 
@@ -62,7 +63,6 @@ private:
 	const std::vector<double>& attribute;
 	const Partition& partition;
 	bool nominal; // whether we calculate assortativity for a nominal or ordinal attribute
-	bool ran; // whether algorithm has been run
 	double coefficient;
 };
 
