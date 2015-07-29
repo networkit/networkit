@@ -28,7 +28,7 @@ Graph BarabasiAlbertGenerator::generate() {
 	assert (G.numberOfNodes() >= k);
 
 	for (count i = n0; i < nMax; i++) {
-		count degreeSum = G.numberOfEdges() * 2;
+		degreeSum = G.numberOfEdges() * 2;
 		node u = G.addNode();
 		std::set<node> targets;
 		targets.insert(u);
