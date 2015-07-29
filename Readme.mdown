@@ -177,7 +177,6 @@ Test
 You actually don't need to build and run our unit tests. However if you experience any issues with NetworKit, you might want to check, if NetworKit runs properly. Please refer to the `Unit Tests and Testing` section in our `DevGuide`.
 
 
-
 NetworKit as a library
 ----------------------
 
@@ -189,6 +188,12 @@ NetworKit in the directory `include `is a symlink to the directory `networkit/cp
 
 	g++ -o LibDemo -std=c++11 -I/path/to/repository/include
 		-L/path/to/repository LibDemo.cpp -lNetworKit -fopenmp
+
+## Known Issues
+- Mac OS X 10.10 "Yosemite": Some users have reported compilation problems on Yosemite with g++ 4.9. The compiler errors mention register problems. 
+  While the exact reason remains unclear, the actual issue seems to be that the compiler tries to perform a dual architecture build. 
+  Fix: Enforce a 64-bit build by prepending `ARCHFLAGS="-arch x86_64"` to your setup/pip command, e.g. as in
+  `sudo ARCHFLAGS="-arch x86_64" python3 setup.py build_ext --inplace -j4` or `sudo ARCHFLAGS="-arch x86_64" pip3 install networkit`.
 
 
 Contribute
@@ -267,34 +272,7 @@ project. Feedback is also welcome.
 
 Publications
 ------------
+[nwkpubs]: https://networkit.iti.kit.edu/publications/
 
-The following is a list of publications on the basis of NetworKit. We ask you to cite the appropriate ones if you found NetworKit useful for your own research.
-
-		@article{staudt2014networkit,
-			Author = {Staudt, Christian L and Sazonovs, Aleksejs and Meyerhenke, Henning},
-			Date-Added = {2014-03-13 12:41:29 +0000},
-			Date-Modified = {2014-03-13 12:42:47 +0000},
-			Journal = {arXiv preprint arXiv:1403.3005},
-			Title = {NetworKit: An Interactive Tool Suite for High-Performance Network Analysis},
-			Year = {2014}}
-
-
-		@article{DBLP:journals/corr/abs-1304-4453,
-		  author    = {Christian Staudt and Henning Meyerhenke},
-		  title     = {Engineering High-Performance Community Detection Heuristics
-		               for Massive Graphs},
-		  journal   = {CoRR},
-		  volume    = {abs/1304.4453},
-		  year      = {2013},
-		  ee        = {http://arxiv.org/abs/1304.4453},
-		  bibsource = {DBLP, http://dblp.uni-trier.de}}
-
-
-		@inproceedings{sm2013ehpcdh,
-			Author = {Christian L. Staudt and Henning Meyerhenke},
-			Booktitle = {proceedings of the 2013 International Conference on Parallel Processing},
-			Date-Added = {2013-10-01 08:13:23 +0000},
-			Date-Modified = {2013-10-01 08:13:23 +0000},
-			Publisher = {Conference Publishing Services (CPS)},
-			Title = {Engineering High-Performance Community Detection Heuristics for Massive Graphs},
-			Year = {2013}}
+The [[NetworKit publications page][nwkpubs] lists the publications on NetworKit as a toolkit, on algorithms available
+in NetworKit, and simply using NetworKit. We ask you to cite the appropriate ones if you found NetworKit useful for your own research.
