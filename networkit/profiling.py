@@ -18,20 +18,22 @@ import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-			
-			
+
+
 try:
 	__IPYTHON__
 except:
 	raise ImportError("module has been loaded outside of \"IPython\"")
 
-	
+
 def readfile(postfix):
+	""" TODO: """
 	with open(__file__[:__file__.rfind(".py")] + "." + postfix, "r") as file:
 		return " ".join(file.read().split())
-			
+
 
 def __initHeader(tag, type, data):
+	""" TODO: """
 	result = """
 		{
 			var element = document.getElementById('NetworKit_""" + tag + """');
@@ -46,9 +48,10 @@ def __initHeader(tag, type, data):
 		}
 	"""
 	return result
-		
-		
+
+
 def __initOverlay(name, data):
+	""" TODO: """
 	result = """
 		{
 			var element = document.getElementById('NetworKit_""" + name + """');
@@ -63,7 +66,7 @@ def __initOverlay(name, data):
 				document.getElementById('NetworKit_""" + name + """').style.display = 'none';
 			}
 		}
-	"""	
+	"""
 	return result
 
 
@@ -78,13 +81,14 @@ display_html(
 		</script>
 	""")
 )
-	
-	
+
+
 def ranged(sample):
+	""" TODO: """
 	n = len(sample)
 	result = []
 	for i in range(n):
-		result.append([sample[i], i, -1])	
+		result.append([sample[i], i, -1])
 	result.sort(key=lambda x: x[0])
 	value = result[0][0]
 	sum = 0
@@ -107,14 +111,15 @@ def ranged(sample):
 	for i in range(n):
 		result[i] = result[i][2]
 	return result
-		
+
 
 class Worker(multiprocessing.Process):
+	""" TODO: """
 	def __init__(self, tasks, results):
 		multiprocessing.Process.__init__(self)
 		self.__tasks = tasks
 		self.__results = results
-		
+
 	def run(self):
 		while True:
 			task = self.__tasks.get()
@@ -131,22 +136,23 @@ class Worker(multiprocessing.Process):
 			self.__tasks.task_done()
 			self.__results.put(result)
 
-			
+
 class Stat_Task:
+	""" TODO: """
 	def __init__(self, name, params):
 		self.__name = name
 		self.__params = params
-	
+
 	def getName(self):
 		return self.__name
-		
+
 	def getType(self):
 		return "Stat"
-	
+
 	def run(self):
 		(sample, sampleSorted, sampleRanged) = self.__params
 		n = len(sample)
-	
+
 		results = {}
 		results["Properties"] = {}
 		results["Location"] =  {}
@@ -154,19 +160,19 @@ class Stat_Task:
 		results["Shape"] =  {}
 		results["Binning"] = {}
 		results["Distribution"] = {}
-		
+
 		results["Properties"]["Size"] = n
-		
+
 		def funcMin():
 			result = sampleSorted[0]
 			return result
 		results["Location"]["Min"] = min = funcMin()
-			
+
 		def funcMax():
 			result = sampleSorted[n-1]
-			return result	
+			return result
 		results["Location"]["Max"] = max = funcMax()
-		
+
 		def funcBesselsCorrection():
 			try:
 				result = n / (n-1)
@@ -174,14 +180,14 @@ class Stat_Task:
 				result = float("nan")
 			return result
 		results["Properties"]["Bessel's Correction"] = besselsCorrection = funcBesselsCorrection()
-		
+
 		def hoelderMean(sample, p):
 			result = 0
 			for i in range(n):
 				result += sample[i] ** p
 			result /= n
 			result **= 1 / p
-			return result			
+			return result
 		results["Location"]["Arithmetic Mean"] = arithmeticMean = hoelderMean(sample, 1)
 		results["Location"]["Quadratic Mean"] = quadraticMean = hoelderMean(sample, 2)
 		results["Location"]["Cubic Mean"] = cubicMean = hoelderMean(sample, 3)
@@ -189,13 +195,13 @@ class Stat_Task:
 			results["Location"]["Harmonic Mean"] = harmonicMean = hoelderMean(sample, -1)
 		else:
 			results["Location"]["Harmonic Mean"] = harmonicMean = float("nan")
-		
+
 		def funcArithmeticMeanRang():
 			result = (n + 1) / 2
 			return result
 		results["Location"]["Arithmetic Mean (Rang)"] = arithmeticMean_Rang = funcArithmeticMeanRang()
-		
-		
+
+
 		def funcUncorrectedVariance(sample, arithmeticMean):
 			result = 0
 			for i in range(n):
@@ -204,14 +210,14 @@ class Stat_Task:
 			return result
 		results["Dispersion"]["Uncorrected Variance"] = variance_uncorrected = funcUncorrectedVariance(sample, arithmeticMean)
 		results["Dispersion"]["Uncorrected Variance (Rang)"] = variance_Rang_uncorrected = funcUncorrectedVariance(sampleRanged, arithmeticMean_Rang)
-		
+
 		def funcVariance(variance_uncorrected):
 			result = variance_uncorrected * besselsCorrection
 			return result
 		results["Dispersion"]["Variance"] = variance = funcVariance(variance_uncorrected)
 		results["Dispersion"]["Variance (Rang)"] = variance_Rang = funcVariance(variance_Rang_uncorrected)
-		
-		
+
+
 		def funcStandardDeviation(variance):
 			result = math.sqrt(variance)
 			return result
@@ -219,8 +225,8 @@ class Stat_Task:
 		results["Dispersion"]["Standard Deviation (Rang)"] = s_n_Rang = funcStandardDeviation(variance_Rang)
 		results["Dispersion"]["Uncorrected Standard Deviation"] = s_n_uncorrected = funcStandardDeviation(variance_uncorrected)
 		results["Dispersion"]["Uncorrected Standard Deviation (Rang)"] = s_n_Rang_uncorrected = funcStandardDeviation(variance_Rang_uncorrected)
-		
-		
+
+
 		def funcCoefficientOfVariation(s_n, arithmeticMean):
 			result = s_n / arithmeticMean
 			return result
@@ -239,7 +245,7 @@ class Stat_Task:
 		results["Location"]["1st Quartile"] = Q1 = funcAlphaQuartile(0.25)
 		results["Location"]["Median"] = median = funcAlphaQuartile(0.5)
 		results["Location"]["3rd Quartile"] = Q3 = funcAlphaQuartile(0.75)
-		
+
 		def funcAlphaTrimmedMean(alpha):
 			k = math.floor(alpha * n)
 			i = k+1
@@ -250,12 +256,12 @@ class Stat_Task:
 			result /= n	- 2*(k)
 			return result
 		results["Location"]["Interquartile Mean"] = IQM = funcAlphaTrimmedMean(0.25)
-		
+
 		def funcIQR():
 			result = Q3 - Q1
 			return result
 		results["Dispersion"]["Interquartile Range"] = IQR = funcIQR()
-		
+
 		def funcSampleRange():
 			result = max - min
 			return result
@@ -265,29 +271,29 @@ class Stat_Task:
 			result = (min + max)/ 2
 			return result
 		results["Location"]["Mid-Range"] = midRange = funcMidRange()
-		
+
 		def funcSkewnessYP():
 			result = 3 * (arithmeticMean - median) / s_n
 			return result
 		results["Shape"]["Skewness YP"] = skewness_yp = funcSkewnessYP()
-		
+
 		def funcMomentum(p):
 			result = 0
 			for i in range(n):
 				result += ((sample[i] - arithmeticMean) / s_n) ** p
 			result /= n
 			return result
-		
+
 		def funcSkewnessM():
 			result = funcMomentum(3)
 			return result
 		results["Shape"]["Skewness M"] = skewnewss_m = funcSkewnessM()
-		
+
 		def funcKurtosis():
 			result = funcMomentum(4) - 3
 			return result
 		results["Shape"]["Kurtosis"] = kurtosis = funcKurtosis()
-		
+
 		def funcNumberOfBins():
 			result = math.sqrt(n)
 			if (result < 5):
@@ -296,7 +302,7 @@ class Stat_Task:
 				result = 20
 			return int(result)
 		results["Binning"]["Number"] = k_Bins = funcNumberOfBins()
-		
+
 		def funcIntervals():
 			result = []
 			w = sampleRange / k_Bins
@@ -306,7 +312,7 @@ class Stat_Task:
 			result.append(max)
 			return result
 		results["Binning"]["Intervals"] = intervals  = funcIntervals()
-		
+
 		def funcBinAbsoluteFrequencies():
 			result = []
 			index = 0
@@ -319,14 +325,14 @@ class Stat_Task:
 				result[index] += 1
 			return result
 		results["Binning"]["Absolute Frequencies"] = absoluteFrequencies = funcBinAbsoluteFrequencies()
-		
+
 		def funcBinRelativeFrequencies():
 			result = []
 			for H in absoluteFrequencies:
 				result.append(H / n)
 			return result
 		results["Binning"]["Relative Frequencies"] = relativeFrequencies = funcBinRelativeFrequencies()
-		
+
 		def funcMode():
 			index = 0
 			max = 0
@@ -337,7 +343,7 @@ class Stat_Task:
 			result = (intervals[index]+intervals[index+1]) / 2
 			return result
 		results["Binning"]["Mode"] = mode = funcMode()
-		
+
 		# Chi-Squared-Test <- Correct Binning
 		# For Test-Case Purpose
 		# n = 100
@@ -346,7 +352,7 @@ class Stat_Task:
 		# absoluteFrequencies = [5, 11, 35, 29, 13, 7]
 		# intervals = [-10000, 49, 50, 51, 52, 53, 10000]
 		# k_Bins = len(absoluteFrequencies)
-		
+
 		# def funcErf(x):
 			# sign = 1 if x >= 0 else -1
 			# x = abs(x)
@@ -361,15 +367,15 @@ class Stat_Task:
 			# t = 1.0/(1.0 + p*x)
 			# y = 1 - (((((a5*t + a4)*t) + a3)*t + a2)*t + a1) * t * math.exp(-x*x)
 			# return sign*y
-		
+
 		# def funcDistributionNormal(x):
 			# result = 1/2 * (1 + funcErf((x-arithmeticMean)/(math.sqrt(2) * s_n)))
 			# return result
-		
+
 		# def funcDistributionExponential(x):
 			# result = 1 - math.exp((-1/arithmeticMean) * x)
 			# return result
-		
+
 		# def funcIncompleteGamma(s, x):
 			# if x < 0.0:
 				# return 0.0
@@ -384,13 +390,13 @@ class Stat_Task:
 				# denom *= s + i
 				# sum += (nom / denom)
 			# return sum * sc
-			
+
 		# def funcGamma(x):
 			# result = (x / math.e) ** x
 			# result *= math.sqrt(2 * math.pi / x)
 			# result *= (1 + 1/(12 * x*x - 1/10)) ** x
 			# return result
-			
+
 		# def funcPValue(criticalValue, degreesOfFreedom):
 			# if criticalValue < 0.0 or degreesOfFreedom < 1:
 				# return 0.0
@@ -401,7 +407,7 @@ class Stat_Task:
 			# result = funcIncompleteGamma(k, x)
 			# result /= funcGamma(k)
 			# return 1-result
-		
+
 		# def funcChiSquaredTest(distribution, numberOfUsedEstimators):
 			# z = 0;
 			# pValue = 0
@@ -421,28 +427,29 @@ class Stat_Task:
 			# return (z, pValue)
 		# results["Distribution"]["Chi-Square-Test (Normal)"] = funcChiSquaredTest(funcDistributionNormal, 2)
 		# results["Distribution"]["Chi-Square-Test (Exponential)"] = funcChiSquaredTest(funcDistributionExponential, 1)
-		
+
 		return results
 
-		
+
 class Correlation_Task:
+	""" TODO: """
 	def __init__(self, name, params):
 		self.__name = name
 		self.__params = params
-	
+
 	def getName(self):
 		return self.__name
-		
+
 	def getType(self):
 		return "Correlation"
-		
+
 	def run(self):
 		(nameB, sample_1, sampleRanged_1, stat_1, sample_2, sampleRanged_2, stat_2) = self.__params
 		n = len(sample_1)
 		assert (n == len(sample_2)), "sample sizes are not equal"
-		
+
 		results = {}
-		
+
 		def funcCovariance(sample_1, arithmeticMean_1, sample_2, arithmeticMean_2):
 			result = 0
 			for i in range(n):
@@ -461,7 +468,7 @@ class Correlation_Task:
 			sampleRanged_2,
 			stat_2["Location"]["Arithmetic Mean (Rang)"]
 		)
-		
+
 		def funcPearsonsCorrelationCoefficient(covariance, uncorrectedStandardDeviation_1, uncorrectedStandardDeviation_2):
 			result = covariance / (uncorrectedStandardDeviation_1 * uncorrectedStandardDeviation_2)
 			return result
@@ -475,7 +482,7 @@ class Correlation_Task:
 			stat_1["Dispersion"]["Uncorrected Standard Deviation (Rang)"],
 			stat_2["Dispersion"]["Uncorrected Standard Deviation (Rang)"]
 		)
-		
+
 		def funcFechnersCorrelationCoefficent(arithmeticMean_1, arithmeticMean_2):
 			result = 0
 			for i in range(n):
@@ -486,26 +493,29 @@ class Correlation_Task:
 			stat_1["Location"]["Arithmetic Mean"],
 			stat_2["Location"]["Arithmetic Mean"]
 		)
-		
+
 		return (nameB, results)
 
-	
+
 class PlotMeasure_Task:
+	""" TODO: """
 	def __init__(self, name, params):
 		self.__name = name
 		self.__params = params
-	
+
 	def getName(self):
 		return self.__name
-		
+
 	def getType(self):
 		return "PlotMeasure"
-	
+
 	def run(self):
 		(index, sample, stat) = self.__params
-		plt.ioff()	
-		
+		plt.ioff()
+
 		sns.set(color_codes=True)
+		sns.set_style("whitegrid")
+		# sns.set_palette("Reds")
 
 
 		number = stat["Binning"]["Number"]
@@ -534,13 +544,13 @@ class PlotMeasure_Task:
 			axDistXTickLabels = axDistPlot.set_xticklabels([])
 			axBoxYTicks = axBoxPlot.set_yticks([])
 			axCdeYTicks = plt.yticks([0, 0.2, 0.4, 0.6, 0.8, 1.0])
-		
+
 		elif index == 1:
 			fig = plt.figure(figsize=(8, 6))
-			
+
 			axDistPlot = sns.distplot(sample, bins=stat["Binning"]["Intervals"], kde=False, norm_hist=False)
 			x_limitsDistPlot = axDistPlot.set_xlim([x_min, x_max])
-			
+
 		fig.tight_layout()
 		imgdata = io.StringIO()
 		fig.savefig(imgdata, format='svg')
@@ -549,26 +559,28 @@ class PlotMeasure_Task:
 		plaintext = " ".join(plaintext[plaintext.find("<svg "):].split())
 		encoded = quote(plaintext, safe='');
 		return (index, encoded)
-		
-		
+
+
 class PlotCorrelation_Task:
 	def __init__(self, name, params):
 		self.__name = name
 		self.__params = params
-	
+
 	def getName(self):
 		return self.__name
-		
+
 	def getType(self):
 		return "PlotCorrelation"
-	
+
 	def run(self):
 		nameA = self.__name
 		(nameB, sample_1, sample_2) = self.__params
-		plt.ioff()	
-		
+		plt.ioff()
+
 		sns.set(color_codes=True)
-		
+		sns.set_style("whitegrid")
+
+
 		fig = plt.figure(figsize=(7, 6))
 
 		def hexbin(x, y, color, **kwargs):
@@ -588,25 +600,25 @@ class PlotCorrelation_Task:
 		encoded = quote(plaintext, safe='');
 		return (nameB, encoded)
 
-		
+
 class PlotPartitionPie_Task:
 	def __init__(self, name, params):
 		self.__name = name
 		self.__params = params
-	
+
 	def getName(self):
 		return self.__name
-		
+
 	def getType(self):
 		return "PlotPartitionPie"
-	
+
 	def run(self):
 		nameA = self.__name
 		(sample) = self.__params
-		plt.ioff()	
-		
+		plt.ioff()
+
 		sns.set(color_codes=True)
-		
+
 		fig = plt.figure(figsize=(10, 8))
 
 		n = len(sample)
@@ -624,7 +636,7 @@ class PlotPartitionPie_Task:
 		labels = [""]
 		for i in range(n):
 			sample[i]/sum
-			value = sample[i]/sum 
+			value = sample[i]/sum
 			if value < min:
 				relativeFrequencies[0] += sample[i]
 				cutSize += 1
@@ -643,7 +655,7 @@ class PlotPartitionPie_Task:
 		labels[0] = labels[0].format(
 			cutValue*100
 		)
-			
+
 		ax = plt.pie(
 			relativeFrequencies,
 			explode=explodes,
@@ -664,15 +676,15 @@ class PlotPartitionPie_Task:
 		encoded = quote(plaintext, safe='');
 		return encoded
 
-			
+
 class Profile:
-	__TOKEN = object();		
+	__TOKEN = object();
 	__pageCount = 0
 	__verbose = False
 	__verboseLevel = 0
 	__parallel = multiprocessing.cpu_count() * 2
-		
-		
+
+
 	def __init__(self, G, token):
 		if token is not self.__TOKEN:
 			raise ValueError("call create(G) to create an instance")
@@ -680,83 +692,83 @@ class Profile:
 		self.__properties = {}
 		self.__measures = collections.OrderedDict()
 		self.__correlations = {}
-		
-	
+
+
 	@classmethod
 	def create(cls, G, exclude=[]):
 		result = cls(G, cls.__TOKEN)
-		
+
 		def funcScores(instance):
 			return instance.scores()
-		
+
 		def funcSizes(instance):
 			return sorted(instance.getPartition().subsetSizes())
-		
+
 		if G.isDirected():
-			classConnectedComponents = properties.StronglyConnectedComponents 
+			classConnectedComponents = properties.StronglyConnectedComponents
 		else:
 			classConnectedComponents = properties.ConnectedComponents
-		
-		for parameter in [ 
+
+		for parameter in [
 			("Node Centrality",	True,	funcScores,	centrality.DegreeCentrality, 			(G, )),
 			("Node Centrality",	True,	funcScores,	centrality.CoreDecomposition, 			(G, )),
 			("Node Centrality",	True,	funcScores,	centrality.LocalClusteringCoefficient,	(G, )),
 			("Node Centrality",	True,	funcScores,	centrality.PageRank, 					(G, )),
 			("Node Centrality",	True,	funcScores,	centrality.KPathCentrality,				(G, )),
 			("Node Centrality",	True,	funcScores,	centrality.KatzCentrality,				(G, )),
-			("Node Centrality",	True,	funcScores,	centrality.ApproxBetweenness2,			(G, max(42, G.numberOfNodes() / 1000), False)),
+			("Node Centrality",	True,	funcScores,	centrality.ApproxBetweenness2,			(G, max(42, G.numberOfNodes() / 10000), False)),
 			("Partition",		False,	funcSizes,	community.LPDegreeOrdered, 				(G, )),
 			("Partition",		False,	funcSizes,	community.PLP, 							(G, )),
 			("Partition",		False,	funcSizes,	community.PLM, 							(G, )),
-			("Partition",		False,	funcSizes,	classConnectedComponents,				(G, ))	
+			("Partition",		False,	funcSizes,	classConnectedComponents,				(G, ))
 		]: result.__addMeasure(parameter, exclude)
-		
+
 		result.__loadProperties()
 		result.__loadMeasures()
 		return result;
-	
+
 
 	@classmethod
 	def setVerbose(cls, verbose=False, level=0):
 		cls.__verbose = verbose
 		cls.__verboseLevel = level
-	
-	
+
+
 	@classmethod
 	def getVerbose(cls):
 		return (cls.__verbose, cls.__verboseLevel)
-	
-	
+
+
 	@classmethod
 	def setParallel(cls, parallel):
 		if (parallel < 1):
 			raise ValueError("parallel < 1");
 		cls.__parallel = parallel
-	
+
 
 	@classmethod
 	def getParallel(cls):
 		return cls.__parallel
-		
-		
+
+
 	def getStat(self, measure):
 		return self.__measures[measure]["stat"]
 
 
 	def getCategory(self, measure):
 		return self.__measures[measure]["category"]
-		
-		
+
+
 	def getElapsedTime(self, measure):
 		return self.__measures[measure]["time"]
-		
+
 
 	def show(self):
 		if self.__verbose:
 			timerAll = stopwatch.Timer()
-		
+
 		templateMeasure = readfile("measure.html")
-		
+
 		results = {}
 		for category in self.__correlations:
 			results[category] = {}
@@ -765,7 +777,7 @@ class Profile:
 			results[category]["Correlations"]["ScatterPlots"] = ""
 			results[category]["Measures"] = ""
 			results[category]["Overview"] = ""
-		
+
 			def funcHeatMap(category, correlationName):
 				result = "<div class=\"SubCategory HeatTable\" data-title=\"" + correlationName + "\">"
 				keyBList = []
@@ -784,7 +796,7 @@ class Profile:
 			results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Pearson's Correlation Coefficient")
 			results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Spearman's Rang Correlation Coefficient")
 			results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Fechner's Correlation Coefficient")
-		
+
 			def funcScatterPlot(category):
 				result = ""
 				keyBList = []
@@ -800,7 +812,7 @@ class Profile:
 								result += "<div class=\"Thumbnail_ScatterPlot\" data-title=\"" + keyB + "\" data-title-second=\"" + keyA + "\"><img src=\"data:image/svg+xml;utf8," + value["image"] + "\" /></div>"
 				return result
 			results[category]["Correlations"]["ScatterPlots"] += funcScatterPlot(category)
-		
+
 		for key in self.__measures:
 			measure = self.__measures[key]
 			category = measure["category"]
@@ -817,7 +829,7 @@ class Profile:
 			except:
 				pass
 			results[category]["Overview"] += "<div class=\"Thumbnail_Overview\" data-title=\"" + key + "\"><a href=\"#NetworKit_Page_" + str(self.__pageCount) + "_" + key + "\"><img src=\"data:image/svg+xml;utf8," + image[1] + "\" /></a></div>"
-		
+
 		templateProfile = readfile("profile.html")
 		result = self.__formatProfileTemplate(
 			templateProfile,
@@ -825,24 +837,24 @@ class Profile:
 		)
 		display_html(HTML(result))
 		self.__pageCount = self.__pageCount + 1
-		
+
 		if self.__verbose:
 			print("\ntotal time: {:.2F} s".format(timerAll.elapsed))
-	
-	
+
+
 	def __formatMeasureTemplate(self, template, key, image, stat):
 		pageIndex = self.__pageCount
 		result = template.format(**locals())
 		return result
-		
-		
+
+
 	def __formatProfileTemplate(self, template, results):
 		pageIndex = self.__pageCount
 		properties = self.__properties
 		result = template.format(**locals())
 		return result
-	
-	
+
+
 	def __addMeasure(self, args, exclude):
 		(measureCategory, correlate, getter, measureClass, parameters) = args
 		measureName = measureClass.__name__
@@ -860,17 +872,18 @@ class Profile:
 			self.__correlations[measureCategory]
 		except:
 			self.__correlations[measureCategory] = {}
-	
-	
+
+
 	def __loadProperties(self):
+		""" """
 		self.__properties["Nodes"] = self.__G.numberOfNodes()
 		self.__properties["Edges"] = self.__G.numberOfEdges()
 		self.__properties["Directed"] = self.__G.isDirected()
 		self.__properties["Weighted"] = self.__G.isWeighted()
-		# self.__properties["Density"] = properties.density(self.__G)
+		self.__properties["Density"] = properties.density(self.__G)
 		self.__properties["Diameter Range"] = properties.Diameter.estimatedDiameterRange(self.__G, error=0.1)
 
-	
+
 	def __loadMeasures(self):
 		def funcPrint(str):
 			if self.__verbose:
@@ -878,7 +891,7 @@ class Profile:
 					print(str, flush=True)
 				else:
 					print(".", end="", flush=True)
-					
+
 		numberOfTasks = 0
 		tasks = multiprocessing.JoinableQueue()
 		results = multiprocessing.Queue()
@@ -886,10 +899,10 @@ class Profile:
 		for w in workers:
 			w.deamon = True
 			w.start()
-			
+
 		if self.__verbose:
 			timerAll = stopwatch.Timer()
-		
+
 		for name in self.__measures:
 			measure = self.__measures[name]
 			instance = measure["class"](*measure["parameters"])
@@ -904,10 +917,10 @@ class Profile:
 			measure["data"]["sorted"] = sorted(measure["data"]["sample"])
 			measure["data"]["ranged"] = ranged(measure["data"]["sample"])
 			measure["time"] = elapsed
-		
+
 		if self.__verbose:
 			print("")
-		
+
 		for name in self.__measures:
 			if len(self.__measures[name]["data"]["sample"]) <= 1:
 				del self.__measures[name]
@@ -918,25 +931,25 @@ class Profile:
 					self.__measures[name]["data"]["ranged"]
 				)))
 				numberOfTasks += 1
-				
+
 				if self.__measures[name]["category"] == "Partition":
 					tasks.put(PlotPartitionPie_Task(name, (
 						self.__measures[name]["data"]["sorted"]
 					)))
 					numberOfTasks += 1
-				
+
 		while (numberOfTasks):
 			(type, name, data) = results.get()
 			category = self.__measures[name]["category"]
-				
+
 			if (type == "PlotMeasure"):
 				(index, image) = data
 				funcPrint("Plot (Measure): " + name)
 				self.__measures[name]["image"][index] = image
-			
+
 			elif (type == "PlotPartitionPie"):
 				self.__measures[name]["image-pie"] = data
-				
+
 			elif (type == "Stat"):
 				self.__measures[name]["stat"] = data
 				funcPrint("Stat: " + name)
@@ -946,14 +959,14 @@ class Profile:
 					self.__measures[name]["stat"]
 				)))
 				numberOfTasks += 1
-				
+
 				tasks.put(PlotMeasure_Task(name, (
 					1,
 					self.__measures[name]["data"]["sample"],
 					self.__measures[name]["stat"]
 				)))
 				numberOfTasks += 1
-				
+
 				if self.__measures[name]["correlate"]:
 					for key in self.__correlations[category]:
 						self.__correlations[category][key][name] = {}
@@ -968,47 +981,47 @@ class Profile:
 							self.__measures[name]["stat"]
 						)))
 						numberOfTasks += 1
-						
+
 						tasks.put(PlotCorrelation_Task(key, (
 							name,
 							self.__measures[key]["data"]["sample"],
 							self.__measures[name]["data"]["sample"]
 						)))
 						numberOfTasks += 1
-						
+
 					self.__correlations[category][name] = {}
 					self.__correlations[category][name][name] = {}
-					self.__correlations[category][name][name]["stat"] = {	
+					self.__correlations[category][name][name]["stat"] = {
 						"Spearman's Rang Correlation Coefficient": 1,
 						"Pearson's Correlation Coefficient": 1,
 						"Fechner's Correlation Coefficient": 1
 					}
-					self.__correlations[category][name][name]["image"] = "" 
-			
+					self.__correlations[category][name][name]["image"] = ""
+
 			elif (type == "Correlation"):
 				(nameB, correlation) = data
 				funcPrint("Correlation: " + name + " <-> " + nameB)
 				self.__correlations[category][name][nameB]["stat"] = correlation
-			
+
 			elif (type == "PlotCorrelation"):
 				(nameB, image) = data
 				funcPrint("Plot (Correlation): " + name)
 				self.__correlations[category][name][nameB]["image"] = image
 			numberOfTasks -= 1
-		
+
 		for i in range(self.__parallel):
 			tasks.put(None)
 		tasks.join()
-		
+
 		if self.__verbose:
 			if self.__verboseLevel < 1:
 				print("")
-			print("\ntotal time (measures + stats + correlations + plots): {:.2F} s".format(timerAll.elapsed))	
-			
-	
+			print("\ntotal time (measures + stats + correlations + plots): {:.2F} s".format(timerAll.elapsed))
+
+
 # class Plot:
 	# __metaclass__ = ABCMeta
-			
+
 	# def init(self, xScale, yScale):
 		# plt.clf();
 		# fig, ax = plt.subplots()
@@ -1026,10 +1039,10 @@ class Profile:
 		# plaintext = imgdata.getvalue()
 		# plaintext = " ".join(plaintext[plaintext.find("<svg "):].split())
 		# encoded = quote(plaintext, safe='');
-		# encoded = "data:image/svg+xml;utf8," + encoded; 
+		# encoded = "data:image/svg+xml;utf8," + encoded;
 		# return encoded;
-		
-			
+
+
 	# def plotSet(self, data, xLabel, yLabel):
 		# result = ""
 		# for xScale in range(0, 2):
@@ -1038,12 +1051,12 @@ class Profile:
 				# if (not(xScale and yScale)):
 					# result += "|"
 		# return result;
-			
-		
-	# @abstractmethod 
+
+
+	# @abstractmethod
 	# def plot(self, data, xLabel, yLabel, xScale, yScale): pass
-			
-			
+
+
 # class Histogram(Plot):
 	# def plot(self, data, xLabel, yLabel, xScale, yScale):
 		# self.init(xScale, yScale)
@@ -1052,8 +1065,8 @@ class Profile:
 		# plt.ylabel(yLabel)
 		# plt.grid(True)
 		# return self.createImageURI()
-				
-				
+
+
 # class HistogramSeaborn(Plot):
 	# def plot(self, data, xLabel, yLabel, xScale, yScale):
 		# self.init(xScale, yScale)
@@ -1062,7 +1075,7 @@ class Profile:
 		# plt.ylabel(yLabel)
 		# plt.grid(True)
 		# return self.createImageURI()
-	
+
 # def asImage(plotFunction, plotArgs=[], plotKwargs={}, size=(8,6)):
 	# """
 	# Call any plot function with the given argument and return the image in an HTML <img> tag.
@@ -1096,7 +1109,7 @@ class Profile:
 	# components = properties.components(G)
 	# communities = community.detectCommunities(G)
 
-	
+
 # def computeNodeProperties(G):
 	# # degree
 	# degree = properties.degreeSequence(G)
@@ -1163,7 +1176,7 @@ class Profile:
 	# ddPlot = asImage(plot.degreeDistribution, plotArgs=[G], size=defaultSize)
 	# ddHist = asImage(nodeProperties["degree"].hist, plotKwargs=histArgs, size=defaultSize)
 	# dd = asSlideShow(ddPlot, ddHist)
-				  
+
 	# ccPlot = asImage(plot.nodeProperty, plotKwargs={"data" : nodeProperties["clustering"], "label": "local clustering coefficient"}, size=defaultSize)
 	# ccHist = asImage(nodeProperties["clustering"].hist, plotKwargs=histArgs, size=defaultSize)
 	# compPlot = asImage(plot.connectedComponentsSizes, [G], size=(1,1))
