@@ -30,6 +30,12 @@ class SolverLamg {
 private:
 	LevelHierarchy &hierarchy;
 	const Smoother &smoother;
+#ifndef NPROFILE
+	static count minResTime;
+	static count interpolationTime;
+	static count restrictionTime;
+	static count coarsestSolve;
+#endif
 
 	// data structures for iterate recombination
 	std::vector<std::vector<Vector>> history;
@@ -38,7 +44,7 @@ private:
 	std::vector<count> numActiveIterates;
 
 	void solveCycle(Vector &x, const Vector &b, int finest, LAMGSolverStatus &status);
-	void cycle(Vector &x, const Vector &b, int finest, const LAMGSolverStatus &status);
+	void cycle(Vector &x, const Vector &b, int finest, int coarsest, std::vector<count> &numVisits, std::vector<Vector> &X, std::vector<Vector> &B, const LAMGSolverStatus &status);
 	void multigridCycle(index level, Vector &xf, const Vector &bf);
 	void saveIterate(index level, const Vector &x, const Vector &r);
 	void clearHistory(index level);

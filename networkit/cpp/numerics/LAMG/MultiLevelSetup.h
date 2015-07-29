@@ -8,7 +8,6 @@
 #ifndef MULTILEVELSETUP_H_
 #define MULTILEVELSETUP_H_
 
-#include "../../algebraic/Matrix.h"
 #include "LevelHierarchy.h"
 #include "../Smoother.h"
 
@@ -22,6 +21,11 @@ class MultiLevelSetup {
 
 private:
 	const Smoother &smoother;
+#ifndef NPROFILE
+	static count eliminationTime;
+	static count schurComplementTime;
+	static count aggregationTime;
+#endif
 
 	bool coarseningElimination(CSRMatrix &matrix, LevelHierarchy &hierarchy) const;
 	count lowDegreeSweep(const CSRMatrix &matrix, std::vector<bool> &fNode, index stage) const;
