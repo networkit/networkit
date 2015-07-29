@@ -168,7 +168,10 @@ class Stat_Task:
 		results["Location"]["Max"] = max = funcMax()
 		
 		def funcBesselsCorrection():
-			result = n / (n-1)
+			try:
+				result = n / (n-1)
+			except:
+				result = float("nan")
 			return result
 		results["Properties"]["Bessel's Correction"] = besselsCorrection = funcBesselsCorrection()
 		
@@ -504,32 +507,40 @@ class PlotMeasure_Task:
 		
 		sns.set(color_codes=True)
 
-		fig = plt.figure(figsize=(6, 6))
 
 		number = stat["Binning"]["Number"]
 		x_min = stat["Location"]["Min"] - (stat["Binning"]["Intervals"][1] - stat["Binning"]["Intervals"][0])/2
 		x_max = stat["Location"]["Max"] + (stat["Binning"]["Intervals"][number] - stat["Binning"]["Intervals"][number-1])/2
 
-		ax1 = plt.subplot2grid((15, 8), (0, 0), colspan=9)
-		axBoxPlot = sns.boxplot(sample, ax=ax1, showfliers=False)
+		if index == 0:
+			fig = plt.figure(figsize=(6, 6))
 
-		ax2 = plt.subplot2grid((15, 8), (1, 0), colspan=9, rowspan=8)
-		axDistPlot = sns.distplot(sample, ax=ax2, bins=stat["Binning"]["Intervals"], kde=False, norm_hist=False)
+			ax1 = plt.subplot2grid((15, 8), (0, 0), colspan=9)
+			axBoxPlot = sns.boxplot(sample, ax=ax1, showfliers=False)
 
-		ax3 = plt.subplot2grid((15, 8), (9, 0), colspan=9, rowspan=6)
-		range = [x_min-(x_max-x_min)/100, x_max+(x_max-x_min)/100]
-		Cde = plt.hist(sample, linewidth=2.0, range=range, histtype='step', cumulative=True, normed=1, bins=1000)
+			ax2 = plt.subplot2grid((15, 8), (1, 0), colspan=9, rowspan=8)
+			axDistPlot = sns.distplot(sample, ax=ax2, bins=stat["Binning"]["Intervals"], kde=False, norm_hist=False)
 
-		x_limitsBoxPlot = axBoxPlot.set_xlim([x_min, x_max])
-		x_limitsDistPlot = axDistPlot.set_xlim([x_min, x_max])
-		CdeXlim = plt.xlim(x_min, x_max)
-		CdeYlim = plt.ylim(-0.01, 1.01)
+			ax3 = plt.subplot2grid((15, 8), (9, 0), colspan=9, rowspan=6)
+			range = [x_min-(x_max-x_min)/100, x_max+(x_max-x_min)/100]
+			Cde = plt.hist(sample, linewidth=2.0, range=range, histtype='step', cumulative=True, normed=1, bins=1000)
 
-		axBoxXTickLabels = axBoxPlot.set_xticklabels([])
-		axDistXTickLabels = axDistPlot.set_xticklabels([])
-		axBoxYTicks = axBoxPlot.set_yticks([])
-		axCdeYTicks = plt.yticks([0, 0.2, 0.4, 0.6, 0.8, 1.0])
-	
+			x_limitsBoxPlot = axBoxPlot.set_xlim([x_min, x_max])
+			x_limitsDistPlot = axDistPlot.set_xlim([x_min, x_max])
+			CdeXlim = plt.xlim(x_min, x_max)
+			CdeYlim = plt.ylim(-0.01, 1.01)
+
+			axBoxXTickLabels = axBoxPlot.set_xticklabels([])
+			axDistXTickLabels = axDistPlot.set_xticklabels([])
+			axBoxYTicks = axBoxPlot.set_yticks([])
+			axCdeYTicks = plt.yticks([0, 0.2, 0.4, 0.6, 0.8, 1.0])
+		
+		elif index == 1:
+			fig = plt.figure(figsize=(8, 6))
+			
+			axDistPlot = sns.distplot(sample, bins=stat["Binning"]["Intervals"], kde=False, norm_hist=False)
+			x_limitsDistPlot = axDistPlot.set_xlim([x_min, x_max])
+			
 		fig.tight_layout()
 		imgdata = io.StringIO()
 		fig.savefig(imgdata, format='svg')
@@ -558,16 +569,13 @@ class PlotCorrelation_Task:
 		
 		sns.set(color_codes=True)
 		
-		fig = plt.figure(figsize=(6, 6))
+		fig = plt.figure(figsize=(7, 6))
 
 		def hexbin(x, y, color, **kwargs):
 			cmap = sns.light_palette(color, as_cmap=True)
 			ax = plt.hexbin(x, y, gridsize=32, bins="log", cmap=cmap, **kwargs)
-			xTicks = plt.xticks([])
-			yTicks = plt.yticks([])
 			xLabel = plt.xlabel(nameA)
 			yLabel = plt.ylabel(nameB)
-	
 
 		hexbin(sample_1, sample_2, "#000070")
 
@@ -579,6 +587,82 @@ class PlotCorrelation_Task:
 		plaintext = " ".join(plaintext[plaintext.find("<svg "):].split())
 		encoded = quote(plaintext, safe='');
 		return (nameB, encoded)
+
+		
+class PlotPartitionPie_Task:
+	def __init__(self, name, params):
+		self.__name = name
+		self.__params = params
+	
+	def getName(self):
+		return self.__name
+		
+	def getType(self):
+		return "PlotPartitionPie"
+	
+	def run(self):
+		nameA = self.__name
+		(sample) = self.__params
+		plt.ioff()	
+		
+		sns.set(color_codes=True)
+		
+		fig = plt.figure(figsize=(10, 8))
+
+		n = len(sample)
+		sum = 0
+		for i in range(n):
+			sum += sample[i]
+
+		min = 0.01
+		cutSize = 0
+		cutValue = 0
+		relativeFrequencies = [0]
+		explodes = [0.1]
+		colorBase = (0.55, 0.55, 1)
+		colors = [(0.8, 0.8, 0.9)]
+		labels = [""]
+		for i in range(n):
+			sample[i]/sum
+			value = sample[i]/sum 
+			if value < min:
+				relativeFrequencies[0] += sample[i]
+				cutSize += 1
+				cutValue += value
+			else:
+				relativeFrequencies.append(sample[i])
+				explodes.append(0.0)
+				scale = 1-min/value
+				colors.append((
+					colorBase[0]*scale,
+					colorBase[1]*scale,
+					colorBase[2]*scale
+				))
+				labels.append("{:1.1f}".format(value*100) + "%")
+		labels[0] = "{:1.1f}%\n" + str(cutSize) + " Subsets"
+		labels[0] = labels[0].format(
+			cutValue*100
+		)
+			
+		ax = plt.pie(
+			relativeFrequencies,
+			explode=explodes,
+			colors=colors,
+			labels=labels,
+			# autopct="%1.1f%%",
+			shadow=True,
+			startangle=90
+		)
+		axis = plt.axis('equal')
+
+		# fig.tight_layout()
+		imgdata = io.StringIO()
+		fig.savefig(imgdata, format='svg')
+		plt.close(fig)
+		plaintext = imgdata.getvalue()
+		plaintext = " ".join(plaintext[plaintext.find("<svg "):].split())
+		encoded = quote(plaintext, safe='');
+		return encoded
 
 			
 class Profile:
@@ -608,6 +692,10 @@ class Profile:
 		def funcSizes(instance):
 			return sorted(instance.getPartition().subsetSizes())
 		
+		if G.isDirected():
+			classConnectedComponents = properties.StronglyConnectedComponents 
+		else:
+			classConnectedComponents = properties.ConnectedComponents
 		
 		for parameter in [ 
 			("Node Centrality",	True,	funcScores,	centrality.DegreeCentrality, 			(G, )),
@@ -618,8 +706,9 @@ class Profile:
 			("Node Centrality",	True,	funcScores,	centrality.KatzCentrality,				(G, )),
 			("Node Centrality",	True,	funcScores,	centrality.ApproxBetweenness2,			(G, max(42, G.numberOfNodes() / 1000), False)),
 			("Partition",		False,	funcSizes,	community.LPDegreeOrdered, 				(G, )),
-			("Partition",		False,	funcSizes,	community.PLP, 							(G, ))
-		
+			("Partition",		False,	funcSizes,	community.PLP, 							(G, )),
+			("Partition",		False,	funcSizes,	community.PLM, 							(G, )),
+			("Partition",		False,	funcSizes,	classConnectedComponents,				(G, ))	
 		]: result.__addMeasure(parameter, exclude)
 		
 		result.__loadProperties()
@@ -658,7 +747,7 @@ class Profile:
 		return self.__measures[measure]["category"]
 		
 		
-	def getTime(self, measure):
+	def getElapsedTime(self, measure):
 		return self.__measures[measure]["time"]
 		
 
@@ -671,10 +760,13 @@ class Profile:
 		results = {}
 		for category in self.__correlations:
 			results[category] = {}
-			results[category]["Correlations"] = ""
+			results[category]["Correlations"] = {}
+			results[category]["Correlations"]["HeatMaps"] = ""
+			results[category]["Correlations"]["ScatterPlots"] = ""
 			results[category]["Measures"] = ""
+			results[category]["Overview"] = ""
 		
-			def funcHeatTable(category, correlationName):
+			def funcHeatMap(category, correlationName):
 				result = "<div class=\"SubCategory HeatTable\" data-title=\"" + correlationName + "\">"
 				keyBList = []
 				for keyA in self.__measures:
@@ -689,11 +781,25 @@ class Profile:
 						result += "<div class=\"HeatCellName\">" + keyB + "</div><br>"
 				result += "</div>"
 				return result
-			
-			results[category]["Correlations"] += funcHeatTable(category, "Pearson's Correlation Coefficient")
-			results[category]["Correlations"] += funcHeatTable(category, "Spearman's Rang Correlation Coefficient")
-			results[category]["Correlations"] += funcHeatTable(category, "Fechner's Correlation Coefficient")
+			results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Pearson's Correlation Coefficient")
+			results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Spearman's Rang Correlation Coefficient")
+			results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Fechner's Correlation Coefficient")
 		
+			def funcScatterPlot(category):
+				result = ""
+				keyBList = []
+				for keyA in self.__measures:
+					if self.__measures[keyA]["category"] == category and self.__measures[keyA]["correlate"]:
+						keyBList.append(keyA)
+						for keyB in keyBList:
+							if keyA != keyB:
+								try:
+									value = self.__correlations[category][keyA][keyB]
+								except:
+									value = self.__correlations[category][keyB][keyA]
+								result += "<div class=\"Thumbnail_ScatterPlot\" data-title=\"" + keyB + "\" data-title-second=\"" + keyA + "\"><img src=\"data:image/svg+xml;utf8," + value["image"] + "\" /></div>"
+				return result
+			results[category]["Correlations"]["ScatterPlots"] += funcScatterPlot(category)
 		
 		for key in self.__measures:
 			measure = self.__measures[key]
@@ -706,7 +812,12 @@ class Profile:
 				image,
 				stat
 			)
-			
+			try:
+				results[category]["Measures"] += "<div class=\"PartitionPie\"><img src=\"data:image/svg+xml;utf8," + measure["image-pie"] + "\" /></div>"
+			except:
+				pass
+			results[category]["Overview"] += "<div class=\"Thumbnail_Overview\" data-title=\"" + key + "\"><a href=\"#NetworKit_Page_" + str(self.__pageCount) + "_" + key + "\"><img src=\"data:image/svg+xml;utf8," + image[1] + "\" /></a></div>"
+		
 		templateProfile = readfile("profile.html")
 		result = self.__formatProfileTemplate(
 			templateProfile,
@@ -718,7 +829,9 @@ class Profile:
 		if self.__verbose:
 			print("\ntotal time: {:.2F} s".format(timerAll.elapsed))
 	
+	
 	def __formatMeasureTemplate(self, template, key, image, stat):
+		pageIndex = self.__pageCount
 		result = template.format(**locals())
 		return result
 		
@@ -741,6 +854,7 @@ class Profile:
 			measure["class"] = measureClass
 			measure["parameters"] = parameters
 			measure["data"] = {}
+			measure["image"] = {}
 			self.__measures[measureName] = measure
 		try:
 			self.__correlations[measureCategory]
@@ -789,31 +903,52 @@ class Profile:
 			measure["data"]["sample"] = measure["getter"](instance)
 			measure["data"]["sorted"] = sorted(measure["data"]["sample"])
 			measure["data"]["ranged"] = ranged(measure["data"]["sample"])
-			tasks.put(Stat_Task(name, (
-				measure["data"]["sample"],
-				measure["data"]["sorted"],
-				measure["data"]["ranged"]
-			)))
-			numberOfTasks += 1
 			measure["time"] = elapsed
 		
 		if self.__verbose:
 			print("")
 		
-		while(numberOfTasks):
+		for name in self.__measures:
+			if len(self.__measures[name]["data"]["sample"]) <= 1:
+				del self.__measures[name]
+			else:
+				tasks.put(Stat_Task(name, (
+					self.__measures[name]["data"]["sample"],
+					self.__measures[name]["data"]["sorted"],
+					self.__measures[name]["data"]["ranged"]
+				)))
+				numberOfTasks += 1
+				
+				if self.__measures[name]["category"] == "Partition":
+					tasks.put(PlotPartitionPie_Task(name, (
+						self.__measures[name]["data"]["sorted"]
+					)))
+					numberOfTasks += 1
+				
+		while (numberOfTasks):
 			(type, name, data) = results.get()
 			category = self.__measures[name]["category"]
 				
 			if (type == "PlotMeasure"):
 				(index, image) = data
 				funcPrint("Plot (Measure): " + name)
-				self.__measures[name]["image"] = image
+				self.__measures[name]["image"][index] = image
 			
+			elif (type == "PlotPartitionPie"):
+				self.__measures[name]["image-pie"] = data
+				
 			elif (type == "Stat"):
 				self.__measures[name]["stat"] = data
 				funcPrint("Stat: " + name)
 				tasks.put(PlotMeasure_Task(name, (
 					0,
+					self.__measures[name]["data"]["sample"],
+					self.__measures[name]["stat"]
+				)))
+				numberOfTasks += 1
+				
+				tasks.put(PlotMeasure_Task(name, (
+					1,
 					self.__measures[name]["data"]["sample"],
 					self.__measures[name]["stat"]
 				)))

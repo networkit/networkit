@@ -15,6 +15,12 @@
 -->
 
 <div class="NetworKit_Page" id="NetworKit_Page_{pageIndex}">
+	<div class="Category" data-title="Overview">
+		<div class="Block">
+			{results[Node Centrality][Overview]}
+			{results[Partition][Overview]}
+		</div>
+	</div>
 	<div class="Category" data-title="Network Properties">
 		<div>Nodes: {properties[Nodes]}</div>
 		<div>Edges: {properties[Edges]}</div>
@@ -23,8 +29,9 @@
 		<div>Diameter Range: {properties[Diameter Range]}</div>
 	</div>
 	<div class="Category" data-title="Node Centrality Measures">		
-		{results[Node Centrality][Correlations]}
 		{results[Node Centrality][Measures]}
+		{results[Node Centrality][Correlations][HeatMaps]}
+		<div class="Block SubCategory" data-title="Related Scatter Plots">{results[Node Centrality][Correlations][ScatterPlots]}</div>
 	</div>
 	<div class="Category" data-title="Partitions">
 		{results[Partition][Measures]}
