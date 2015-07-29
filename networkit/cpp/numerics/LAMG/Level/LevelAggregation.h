@@ -15,9 +15,10 @@ namespace NetworKit {
 class LevelAggregation : public Level {
 private:
 	CSRMatrix P; // interpolation matrix (n x nc)
+	CSRMatrix R; // restriction matrix (nc x n)
 
 public:
-	LevelAggregation(const CSRMatrix &A, const CSRMatrix &P);
+	LevelAggregation(const CSRMatrix &A, const CSRMatrix &P, const CSRMatrix &R);
 
 	void coarseType(const Vector &xf, Vector &xc) const;
 

@@ -8,7 +8,6 @@
 #ifndef LEVEL_H_
 #define LEVEL_H_
 
-#include "../../../algebraic/Matrix.h"
 #include "../../../algebraic/CSRMatrix.h"
 
 namespace NetworKit {
