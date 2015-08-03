@@ -87,7 +87,7 @@ TEST_F(LAMGGTest, testSmallGraphs) {
 
 		LAMGSolverStatus status;
 		status.maxConvergenceTime = 10 * 60 * 1000;
-		status.desiredResidual = 1e-6;
+		status.desiredResidualReduction = 1e-6;
 
 		Vector result = x;
 		INFO("Solving equation system - Gauss-Seidel");

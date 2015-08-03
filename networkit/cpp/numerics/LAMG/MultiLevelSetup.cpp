@@ -55,7 +55,7 @@ void MultiLevelSetup::setup(const CSRMatrix &matrix, LevelHierarchy &hierarchy) 
 
 		// AGGREGATION
 		Vector tv;
-		if (doneCoarsening || !isRelaxationFast(A, level, tv)) {
+		if (doneCoarsening || isRelaxationFast(A, level, tv)) {
 			doneCoarsening = true;
 		} else {
 			coarseningAggregation(A, hierarchy, tv, numTVs);
@@ -70,9 +70,9 @@ void MultiLevelSetup::setup(const CSRMatrix &matrix, LevelHierarchy &hierarchy) 
 	}
 
 #ifndef NPROFILE
-	INFO("Elimination: ", eliminationTime);
-	INFO("Schur: ", schurComplementTime);
-	INFO("Aggregation: ", aggregationTime);
+	DEBUG("Elimination: ", eliminationTime);
+	DEBUG("Schur: ", schurComplementTime);
+	DEBUG("Aggregation: ", aggregationTime);
 #endif
 }
 
@@ -149,8 +149,6 @@ bool MultiLevelSetup::coarseningElimination(CSRMatrix &matrix, LevelHierarchy &h
 		}
 
 		stageNum++;
-
-		DEBUG("Elimination stage ", stageNum, ": total=", nc, " f=", nf, " c=", nc);
 	}
 
 	if (stageNum != 0) { // we have coarsened the matrix
@@ -397,7 +395,7 @@ void MultiLevelSetup::aggregateLooseNodes(const CSRMatrix &strongAdjMatrix, std:
 			if (value > max) max = value;
 		});
 
-		if (std::abs(max) < 1e-14 || max == std::numeric_limits<double>::min()) {
+		if (std::abs(max) < 1e-9 || max == std::numeric_limits<double>::min()) {
 			looseNodes.push_back(i);
 		}
 	}
@@ -537,21 +535,6 @@ void MultiLevelSetup::computeStrongNeighbors(const CSRMatrix &affinityMatrix, co
 	}
 }
 
-bool MultiLevelSetup::findBestSeed(const CSRMatrix &affinityMatrix, const std::vector<index> &strongNeighborsOfU, const std::vector<int64_t> &status, const index u, index &s) const {
-	double maxAffinity = std::numeric_limits<double>::min();
-	for (index i = 0; i < strongNeighborsOfU.size(); ++i) {
-		index v = strongNeighborsOfU[i];
-		if (status[v] < 0 || (index) status[v] == v) { // neighbor is seed or undecided
-			if (affinityMatrix(u, v) > maxAffinity) {
-				s = v;
-				maxAffinity = affinityMatrix(u, v);
-			}
-		}
-	}
-
-	return maxAffinity != std::numeric_limits<double>::min(); // we have found a strong neighbor which is seed or undecided
-}
-
 bool MultiLevelSetup::findBestSeedEnergyCorrected(const CSRMatrix &strongAdjMatrix, const CSRMatrix &affinityMatrix, const std::vector<double> &diag, const std::vector<Vector> &tVs, const std::vector<int64_t> &status, const index u, index &s) const {
 	bool foundSeed = false;
 	std::vector<double> r(tVs.size(), 0.0);
@@ -626,7 +609,7 @@ bool MultiLevelSetup::isRelaxationFast(const CSRMatrix &A, index lvlIndex, Vecto
 	Vector y = smoother.relax(A, b, tv, nu - tvNu);
 	double relaxAcf = std::pow((y - y.mean()).length() / (x - x.mean()).length(), (double) 1.0 / (double) (nu - initial));
 
-	return relaxAcf > SETUP_MAX_COARSE_RELAX_ACF;
+	return relaxAcf <= SETUP_MAX_COARSE_RELAX_ACF;
 }
 
 void MultiLevelSetup::galerkinOperator(const CSRMatrix &P, const CSRMatrix &A, const std::vector<index> &PColIndex, const std::vector<std::vector<index>> &PRowIndex, CSRMatrix &B) const {

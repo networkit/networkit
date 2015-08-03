@@ -13,19 +13,27 @@
 
 namespace NetworKit {
 
+/**
+ * Status parameters of the solver.
+ */
 struct LAMGSolverStatus {
-	count maxIters = std::numeric_limits<count>::max();
-	count maxConvergenceTime = std::numeric_limits<count>::max();
-	double desiredResidual = 1e-8;
-	count numPreSmoothIters = 1;
-	count numPostSmoothIters = 2;
+	// in
+	count maxIters = std::numeric_limits<count>::max(); // maximum number of iterations
+	count maxConvergenceTime = std::numeric_limits<count>::max(); // maximum time in milliseconds spent to solve the system
+	double desiredResidualReduction = 1e-8; // desired reduction of the initial residual (finalResidual <= desiredResReduction * initialResidual)
+	count numPreSmoothIters = 1; // number of pre smoothing iterations
+	count numPostSmoothIters = 2; // number of post smoothing iterations
 
-	count numIters;
-	double residual;
-	bool converged;
-	std::vector<double> residualHistory;
+	// out
+	count numIters; // number of iterations needed during solve phase
+	double residual; // absolute final residual
+	bool converged; // flag of conversion status
+	std::vector<double> residualHistory; // history of absolute residuals
 };
 
+/**
+ * Implements the solve phase of LAMG (Lean Algebraic Multigrid by Livne et al.).
+ */
 class SolverLamg {
 private:
 	LevelHierarchy &hierarchy;
@@ -51,8 +59,22 @@ private:
 	void minRes(index level, Vector &x, const Vector &r);
 
 public:
+	/**
+	 * Constructs a new solver instance for the specified @a hierarchy. The @a smoother will be used for relaxing and
+	 * solving the coarser solutions.
+	 * @param hierarchy Reference to the LevelHierarchy constructed by MultiLevelSetup.
+	 * @param smoother Reference to a smoother.
+	 */
 	SolverLamg(LevelHierarchy &hierarchy, const Smoother &smoother);
 
+	/**
+	 * Solves the system A*x = b for the given initial @a x and right-hand side @a b. More parameters can be specified
+	 * in @a status and additional output is also stored in @a status. After the solver finished, the approximate
+	 * solution is stored in @a x.
+	 * @param x[out] Reference to the initial guess to the solution and the approximation after the solver finished.
+	 * @param b The right-hand side vector.
+	 * @param status Reference to an LAMGSolverStatus.
+	 */
 	void solve(Vector &x, const Vector &b, LAMGSolverStatus &status);
 };
 
