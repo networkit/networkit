@@ -53,7 +53,6 @@ void SolverLamg::solve(Vector &x, const Vector &b, LAMGSolverStatus &status) {
 			restrictionTime += t.elapsedMicroseconds();
 #endif
 		}
-
 		solveCycle(xc, bc, finest, status);
 
 		if (finest == 1) { // interpolate from finest == ELIMINATION level back to actual finest level
@@ -76,10 +75,10 @@ void SolverLamg::solve(Vector &x, const Vector &b, LAMGSolverStatus &status) {
 	status.residual = residual;
 	DEBUG("final residual\t ", residual);
 #ifndef NPROFILE
-	INFO("minResTime: ", minResTime / 1000);
-	INFO("interpolationTime: ", interpolationTime / 1000);
-	INFO("restrictionTime: ", restrictionTime / 1000);
-	INFO("coarsestSolve: ", coarsestSolve / 1000);
+	DEBUG("minResTime: ", minResTime / 1000);
+	DEBUG("interpolationTime: ", interpolationTime / 1000);
+	DEBUG("restrictionTime: ", restrictionTime / 1000);
+	DEBUG("coarsestSolve: ", coarsestSolve / 1000);
 #endif
 }
 
@@ -104,7 +103,7 @@ void SolverLamg::solveCycle(Vector &x, const Vector &b, int finest, LAMGSolverSt
 
 	Vector r = b - hierarchy.at(finest).getLaplacian() * x;
 	double residual = r.length();
-	double finalResidual = residual * status.desiredResidual;
+	double finalResidual = residual * status.desiredResidualReduction;
 	double lastResidual = std::numeric_limits<double>::max();
 
 	count iterations = 0;
