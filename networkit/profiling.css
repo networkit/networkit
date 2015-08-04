@@ -73,10 +73,10 @@
 
 .NetworKit_Page .Block .Thumbnail_Overview,
 .NetworKit_Page .Block .Thumbnail_ScatterPlot  {
-	width: 240px;
+	width: 260px;
 	float: left;
-	margin-right: 1em;
-	padding-bottom: 1em;
+	margin-right: 16px
+	padding-bottom: 16px;
 }
 
 .NetworKit_Page .Block .Thumbnail_Overview:before,
@@ -91,8 +91,10 @@
 }
 
 .NetworKit_Page .Block .Thumbnail_ScatterPlot:before {
+	/*
 	content: attr(data-title) "\\a" attr(data-title-second);
 	white-space: pre;
+	*/
 }
 
 .NetworKit_Page .HeatCell {
@@ -131,7 +133,7 @@
 	cursor: pointer;
 	float: left;
 	margin-left: -0.9em;
-	margin-right: 1.5em;
+	margin-right: 20px;
 }
 
 .NetworKit_Page .Measure .Plot .Image {
@@ -143,8 +145,8 @@
 }
 
 .NetworKit_Page .Measure .Stat {
-	width: 580px;
-	float: left;;
+	width: 560px;
+	float: left;
 }
 
 .NetworKit_Page .Measure .Stat .Group { 
