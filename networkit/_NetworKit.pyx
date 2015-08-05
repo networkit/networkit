@@ -5110,24 +5110,61 @@ cdef class GraphUpdater:
 
 # Module: coarsening
 
-cdef extern from "cpp/coarsening/ParallelPartitionCoarsening.h":
-	cdef cppclass _ParallelPartitionCoarsening "NetworKit::ParallelPartitionCoarsening":
-		_ParallelPartitionCoarsening() except +
-		pair[_Graph, vector[node]] run(_Graph, _Partition) except +
+cdef extern from "cpp/coarsening/GraphCoarsening.h":
+	cdef cppclass _GraphCoarsening "NetworKit::GraphCoarsening":
+		_GraphCoarsening(_Graph) except +
+		void run() nogil except +
+		_Graph getCoarseGraph() except +
+		vector[node] getNodeMapping() except +
 
+cdef class GraphCoarsening:
+	cdef _GraphCoarsening *_this
+	cdef Graph _G
 
-cdef class ParallelPartitionCoarsening:
-	cdef _ParallelPartitionCoarsening* _this
+	def __init__(self, *args, **namedargs):
+		if type(self) == GraphCoarsening:
+			raise RuntimeError("Error, you may not use GraphCoarsening directly, use a sub-class instead")
 
-	def __cinit__(self):
-		self._this = new _ParallelPartitionCoarsening()
+	def __cinit__(self, *args, **namedargs):
+		self._this = NULL
 
 	def __dealloc__(self):
-		del self._this
+		if self._this != NULL:
+			del self._this
+		self._this = NULL
+		self._G = None # just to be sure the graph is deleted
 
-	def run(self, Graph G not None, Partition zeta not None):
-		result = self._this.run(G._this, zeta._this)
-		return (Graph(0).setThis(result.first), result.second)
+	def run(self):
+		"""
+		Executes the Graph coarsening algorithm.
+
+		Returns
+		-------
+		GraphCoarsening:
+			self
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		with nogil:
+			self._this.run()
+		return self
+
+	def getCoarseGraph(self):
+		return Graph(0).setThis(self._this.getCoarseGraph())
+
+	def getNodeMapping(self):
+		return self._this.getNodeMapping()
+
+
+cdef extern from "cpp/coarsening/ParallelPartitionCoarsening.h":
+	cdef cppclass _ParallelPartitionCoarsening "NetworKit::ParallelPartitionCoarsening"(_GraphCoarsening):
+		_ParallelPartitionCoarsening(_Graph, _Partition, bool) except +
+
+
+cdef class ParallelPartitionCoarsening(GraphCoarsening):
+	def __cinit__(self, Graph G not None, Partition zeta not None, useGraphBuilder = True):
+		self._this = new _ParallelPartitionCoarsening(G._this, zeta._this, useGraphBuilder)
+
 
 # Module: scd
 
