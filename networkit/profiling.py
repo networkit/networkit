@@ -128,7 +128,7 @@ class Theme:
 		return result		
 	
 	
-	def set(self, color=(0, 0, 1), style="light"):
+	def set(self, style="light", color=(0, 0, 1)):
 		optionsStyle = ["light"]
 		if style not in optionsStyle:
 			raise ValueError("possible style options: " + str(optionsStyle))
@@ -210,12 +210,6 @@ class Theme:
 		return self.__fontColor
     
 	
-class ThreadPool():
-	""" TODO: """
-	def __init__(self, numberOfWorker)
-		self.__numberOfWorker = numberOfWorker
-	
-
 class Worker(multiprocessing.Process):
 	""" TODO: """
 	def __init__(self, tasks, results):
@@ -240,6 +234,40 @@ class Worker(multiprocessing.Process):
 			self.__results.put(result)
 
 
+class ThreadPool():
+	""" TODO: """
+	def __init__(self, numberOfWorkers):
+		self.__numberOfWorkers = numberOfWorkers
+		self.__numberOfTasks = 0
+		self.__tasks = multiprocessing.JoinableQueue()
+		self.__results = multiprocessing.Queue()
+		self.__workers = [Worker(self.__tasks, self.__results) for i in range(self.__numberOfWorkers)]
+		for w in self.__workers:
+			w.deamon = True
+			w.start()
+	
+	
+	def numberOfTasks(self):
+		return self.__numberOfTasks
+	
+	
+	def put(self, task):
+		self.__tasks.put(task)
+		self.__numberOfTasks += 1
+		
+	
+	def get(self):
+		result = self.__results.get()
+		self.__numberOfTasks -= 1
+		return result;
+
+	
+	def join(self):
+		for i in range(self.__numberOfWorkers):
+			self.__tasks.put(None)
+		self.__tasks.join()
+		
+		
 class Stat_Task:
 	""" TODO: """
 	def __init__(self, name, params):
@@ -694,44 +722,7 @@ class PlotMeasure_Task:
 		(index, stat, theme) = self.__params
 		plt.ioff()
 
-		# sns.set(color_codes=True)
-		# sns.set_style("whitegrid")
-		# sns.set_palette("Reds")
-
-
-		# number = stat["Binning"]["Number"]
-		# x_min = stat["Location"]["Min"] - (stat["Binning"]["Intervals"][1] - stat["Binning"]["Intervals"][0])/2
-		# x_max = stat["Location"]["Max"] + (stat["Binning"]["Intervals"][number] - stat["Binning"]["Intervals"][number-1])/2
-
-		# if index == 0:
-			# fig = plt.figure(figsize=(6, 6))
-
-			# ax1 = plt.subplot2grid((15, 8), (0, 0), colspan=9)
-			# axBoxPlot = sns.boxplot(sample, ax=ax1, showfliers=False)
-
-			# ax2 = plt.subplot2grid((15, 8), (1, 0), colspan=9, rowspan=8)
-			# axDistPlot = sns.distplot(sample, ax=ax2, bins=stat["Binning"]["Intervals"], kde=False, norm_hist=False)
-
-			# ax3 = plt.subplot2grid((15, 8), (9, 0), colspan=9, rowspan=6)
-			# range = [x_min-(x_max-x_min)/100, x_max+(x_max-x_min)/100]
-			# Cde = plt.hist(sample, linewidth=2.0, range=range, histtype='step', cumulative=True, normed=1, bins=1000)
-
-			# x_limitsBoxPlot = axBoxPlot.set_xlim([x_min, x_max])
-			# x_limitsDistPlot = axDistPlot.set_xlim([x_min, x_max])
-			# CdeXlim = plt.xlim(x_min, x_max)
-			# CdeYlim = plt.ylim(-0.01, 1.01)
-
-			# axBoxXTickLabels = axBoxPlot.set_xticklabels([])
-			# axDistXTickLabels = axDistPlot.set_xticklabels([])
-			# axBoxYTicks = axBoxPlot.set_yticks([])
-			# axCdeYTicks = plt.yticks([0, 0.2, 0.4, 0.6, 0.8, 1.0])
-
-		# elif index == 1:
-			# fig = plt.figure(figsize=(4, 3))
-
-			# axDistPlot = sns.distplot(sample, bins=stat["Binning"]["Intervals"], kde=False, norm_hist=False)
-			# x_limitsDistPlot = axDistPlot.set_xlim([x_min, x_max])
-
+		
 		def funcSpace(min, max):
 			result = (max - min) * 0.04
 			return result
@@ -1133,81 +1124,6 @@ class PlotCorrelation_Task:
 		return (nameB, encoded)
 
 
-class PlotPartitionPie_Task:
-	""" TODO: """
-	def __init__(self, name, params):
-		self.__name = name
-		self.__params = params
-
-	def getName(self):
-		return self.__name
-
-	def getType(self):
-		return "PlotPartitionPie"
-
-	def run(self):
-		nameA = self.__name
-		(sample) = self.__params
-		plt.ioff()
-
-		fig = plt.figure(figsize=(8, 6.5))
-
-		n = len(sample)
-		sum = 0
-		for i in range(n):
-			sum += sample[i]
-
-		min = 0.01
-		cutSize = 0
-		cutValue = 0
-		relativeFrequencies = [0]
-		explodes = [0.1]
-		colorBase = (0.55, 0.55, 1)
-		colors = [(0.8, 0.8, 0.9)]
-		labels = [""]
-		for i in range(n):
-			sample[i]/sum
-			value = sample[i]/sum
-			if value < min:
-				relativeFrequencies[0] += sample[i]
-				cutSize += 1
-				cutValue += value
-			else:
-				relativeFrequencies.append(sample[i])
-				explodes.append(0.0)
-				scale = 1-min/value
-				colors.append((
-					colorBase[0]*scale,
-					colorBase[1]*scale,
-					colorBase[2]*scale
-				))
-				labels.append("{:1.1f}".format(value*100) + "%")
-		labels[0] = "{:1.1f}%\n" + str(cutSize) + " Subsets"
-		labels[0] = labels[0].format(
-			cutValue*100
-		)
-
-		ax = plt.pie(
-			relativeFrequencies,
-			explode=explodes,
-			colors=colors,
-			labels=labels,
-			# autopct="%1.1f%%",
-			shadow=True,
-			startangle=90
-		)
-		axis = plt.axis('equal')
-
-		# fig.tight_layout()
-		imgdata = io.StringIO()
-		fig.savefig(imgdata, format='svg')
-		plt.close(fig)
-		plaintext = imgdata.getvalue()
-		plaintext = " ".join(plaintext[plaintext.find("<svg "):].split())
-		encoded = quote(plaintext, safe='');
-		return encoded
-
-
 class Profile:
 	""" TODO: """
 	__TOKEN = object();
@@ -1313,6 +1229,40 @@ class Profile:
 			
 		if self.__verbose:
 			timerAll = stopwatch.Timer()
+		
+		pool = ThreadPool(self.__parallel)
+		for name in self.__measures:
+			category = self.__measures[name]["category"]
+			pool.put(
+				PlotMeasure_Task(name, (
+					0,
+					self.__measures[name]["stat"],
+					theme
+				))
+			)
+			pool.put(
+				PlotMeasure_Task(name, (
+					1,
+					self.__measures[name]["stat"],
+					theme
+				))
+			)				
+			if category == "Partition":
+				pool.put(
+					PlotMeasure_Task(name, (
+						2,
+						self.__measures[name]["stat"],
+						theme
+					))
+				)
+		while pool.numberOfTasks() > 0:
+			(type, name, data) = pool.get()
+			category = self.__measures[name]["category"]
+
+			if type == "PlotMeasure":
+				(index, image) = data
+				self.__measures[name]["image"][index] = image	
+		pool.join()
 
 		templateMeasure = readfile("measure.html")
 
@@ -1443,13 +1393,7 @@ class Profile:
 				else:
 					print(".", end="", flush=True)
 
-		numberOfTasks = 0
-		tasks = multiprocessing.JoinableQueue()
-		results = multiprocessing.Queue()
-		workers = [Worker(tasks, results) for i in range(self.__parallel)]
-		for w in workers:
-			w.deamon = True
-			w.start()
+		pool = ThreadPool(self.__parallel)
 
 		if self.__verbose:
 			timerAll = stopwatch.Timer()
@@ -1477,70 +1421,46 @@ class Profile:
 				del self.__measures[name]
 			else:
 				category = self.__measures[name]["category"]
-				tasks.put(Stat_Task(name, (
-					self.__measures[name]["data"]["sample"],
-					self.__measures[name]["data"]["sorted"],
-					self.__measures[name]["data"]["ranged"],
-					category == "Partition"
-				)))
-				numberOfTasks += 1
+				pool.put(
+					Stat_Task(name, (
+						self.__measures[name]["data"]["sample"],
+						self.__measures[name]["data"]["sorted"],
+						self.__measures[name]["data"]["ranged"],
+						category == "Partition"
+					))
+				)
 				
-		while (numberOfTasks):
-			(type, name, data) = results.get()
+		while pool.numberOfTasks() > 0:
+			(type, name, data) = pool.get()
 			category = self.__measures[name]["category"]
 
-			if (type == "PlotMeasure"):
-				(index, image) = data
-				funcPrint("Plot (Measure): " + name)
-				self.__measures[name]["image"][index] = image
-
-			elif (type == "Stat"):
+			if type == "Stat":
 				self.__measures[name]["stat"] = data
-				funcPrint("Stat: " + name)
-				tasks.put(PlotMeasure_Task(name, (
-					0,
-					self.__measures[name]["stat"],
-					Theme()
-				)))
-				numberOfTasks += 1
-
-				tasks.put(PlotMeasure_Task(name, (
-					1,
-					self.__measures[name]["stat"],
-					Theme()
-				)))
-				numberOfTasks += 1
-				
-				if category == "Partition":
-					tasks.put(PlotMeasure_Task(name, (
-						2,
-						self.__measures[name]["stat"],
-						Theme()
-					)))
-					numberOfTasks += 1
-
+				funcPrint("Stat: " + name)					
 				if self.__measures[name]["correlate"]:
 					for key in self.__correlations[category]:
 						self.__correlations[category][key][name] = {}
 						self.__correlations[category][key][name]["stat"] = {}
-						tasks.put(Correlation_Task(key, (
-							name,
-							self.__measures[key]["data"]["sample"],
-							self.__measures[key]["data"]["ranged"],
-							self.__measures[key]["stat"],
-							self.__measures[name]["data"]["sample"],
-							self.__measures[name]["data"]["ranged"],
-							self.__measures[name]["stat"]
-						)))
-						numberOfTasks += 1
-
-						tasks.put(PlotCorrelation_Task(key, (
-							name,
-							self.__measures[key]["data"]["sample"],
-							self.__measures[name]["data"]["sample"]
-						)))
-						numberOfTasks += 1
-
+						pool.put(
+							Correlation_Task(key, (
+								name,
+								self.__measures[key]["data"]["sample"],
+								self.__measures[key]["data"]["ranged"],
+								self.__measures[key]["stat"],
+								self.__measures[name]["data"]["sample"],
+								self.__measures[name]["data"]["ranged"],
+								self.__measures[name]["stat"]
+							))
+						)
+						
+						pool.put(
+							PlotCorrelation_Task(key, (
+								name,
+								self.__measures[key]["data"]["sample"],
+								self.__measures[name]["data"]["sample"]
+							))
+						)
+						
 					self.__correlations[category][name] = {}
 					self.__correlations[category][name][name] = {}
 					self.__correlations[category][name][name]["stat"] = {
@@ -1550,190 +1470,19 @@ class Profile:
 					}
 					self.__correlations[category][name][name]["image"] = ""
 
-			elif (type == "Correlation"):
+			elif type == "Correlation":
 				(nameB, correlation) = data
 				funcPrint("Correlation: " + name + " <-> " + nameB)
 				self.__correlations[category][name][nameB]["stat"] = correlation
 
-			elif (type == "PlotCorrelation"):
+			elif type == "PlotCorrelation":
 				(nameB, image) = data
 				funcPrint("Plot (Correlation): " + name)
 				self.__correlations[category][name][nameB]["image"] = image
-			numberOfTasks -= 1
 
-		for i in range(self.__parallel):
-			tasks.put(None)
-		tasks.join()
+		pool.join()
 
 		if self.__verbose:
 			if self.__verboseLevel < 1:
 				print("")
 			print("\ntotal time (measures + stats + correlations + plots): {:.2F} s".format(timerAll.elapsed))
-
-
-# class Plot:
-	# __metaclass__ = ABCMeta
-
-	# def init(self, xScale, yScale):
-		# plt.clf();
-		# fig, ax = plt.subplots()
-		# if xScale:
-			# ax.set_xscale('log')
-		# if yScale:
-			# ax.set_yscale('log')
-
-
-	# def createImageURI(self):
-		# fig = plt.gcf()
-		# fig.tight_layout()
-		# imgdata = io.StringIO()
-		# fig.savefig(imgdata, format='svg')
-		# plaintext = imgdata.getvalue()
-		# plaintext = " ".join(plaintext[plaintext.find("<svg "):].split())
-		# encoded = quote(plaintext, safe='');
-		# encoded = "data:image/svg+xml;utf8," + encoded;
-		# return encoded;
-
-
-	# def plotSet(self, data, xLabel, yLabel):
-		# result = ""
-		# for xScale in range(0, 2):
-			# for yScale in range(0, 2):
-				# result += self.plot(data, xLabel, yLabel, xScale, yScale)
-				# if (not(xScale and yScale)):
-					# result += "|"
-		# return result;
-
-
-	# @abstractmethod
-	# def plot(self, data, xLabel, yLabel, xScale, yScale): pass
-
-
-# class Histogram(Plot):
-	# def plot(self, data, xLabel, yLabel, xScale, yScale):
-		# self.init(xScale, yScale)
-		# n, bins, patches = plt.hist(data, 50, normed=1, facecolor='green', alpha=0.75)
-		# plt.xlabel(xLabel)
-		# plt.ylabel(yLabel)
-		# plt.grid(True)
-		# return self.createImageURI()
-
-
-# class HistogramSeaborn(Plot):
-	# def plot(self, data, xLabel, yLabel, xScale, yScale):
-		# self.init(xScale, yScale)
-		# sns.distplot(data);
-		# plt.xlabel(xLabel)
-		# plt.ylabel(yLabel)
-		# plt.grid(True)
-		# return self.createImageURI()
-
-# def asImage(plotFunction, plotArgs=[], plotKwargs={}, size=(8,6)):
-	# """
-	# Call any plot function with the given argument and return the image in an HTML <img> tag.
-	# """
-	# plt.figure(figsize=size)
-	# plotFunction(*plotArgs, **plotKwargs)
-	# # Get a handle for the plot that was just generated
-	# fig = Gcf.get_all_fig_managers()[-1].canvas.figure
-	# # Generate a data URL for the image
-	# imageData = "data:image/png;base64,{0}".format(b64encode(print_figure(fig)).decode("utf-8"))
-	# # Remove the plot from the list of plots for the current cell
-	# Gcf.destroy_fig(fig)
-	# # generate img tag
-	# image = "<img src='{0}'>".format(imageData)
-	# return image
-
-# def computeNetworkProperties(G):
-	# """
-	# """
-	# networkProperties = [
-			# ["nodes, edges", "{0}, {1}".format(G.numberOfNodes(), G.numberOfEdges())],
-			# ["directed?", "{0}".format(G.isDirected())],
-			# ["weighted?", "{0}".format(G.isWeighted())],
-			# #["density", "{0:.6f}".format(properties.density(G))],
-			# ["diameter range", "{0}".format(properties.Diameter.estimatedDiameterRange(G, error=0.1))]
-		# ]
-	# return networkProperties
-
-
-# def computeNodePartitions(G):
-	# components = properties.components(G)
-	# communities = community.detectCommunities(G)
-
-
-# def computeNodeProperties(G):
-	# # degree
-	# degree = properties.degreeSequence(G)
-	# # coreness
-	# core = centrality.CoreDecomposition(G).run().scores()
-	# # local clustering coefficient
-	# clustering = centrality.LocalClusteringCoefficient(G).run().scores()
-	# # betweenness
-	# nSamples = max(42, G.numberOfNodes() / 1000)
-	# betweenness = centrality.ApproxBetweenness2(G, nSamples, normalized=True).run().scores()
-	# # pagerank
-	# pagerank = centrality.PageRank(G).run().scores()
-	# # k-Path centrality
-	# kpath = centrality.KPathCentrality(G).run().scores()
-	# # Katz centrality
-	# katz = centrality.KatzCentrality(G).run().scores()
-	# # package node properties in DataFrame
-	# nodeProperties = pandas.DataFrame({"degree": degree,
-	 									# "core": core,
-										# "clustering": clustering,
-										# "betweenness": betweenness,
-										# "pagerank": pagerank,
-										# "kpath": kpath,
-										# "katz": katz})
-	# return nodeProperties
-
-
-# def computeNodePropertyCorrelations(nodeProperties, method="spearman"):
-	# return nodeProperties.corr(method=method)
-
-
-# def plotNodePropertyCorrelations(nodeProperties, figsize=(8,8), method="spearman"):
-    # cmap = seaborn.diverging_palette(220, 20, as_cmap=True)
-    # f, ax = plt.subplots(figsize=figsize)
-    # print("correlating"); sys.stdout.flush()
-    # seaborn.corrplot(nodeProperties, cmap=cmap, method=method)
-    # f.tight_layout()
-
-
-
-# def profile(G):
-	# """
-	# Output profile page of network as HTML
-	# """
-	# global loaded
-	# # settings
-	# defaultSize = (5,2)
-	# histArgs = {"bins" : 100, "figsize" : (12,8)}
-
-	# # compute global network attributes
-	# networkProperties = computeNetworkProperties(G)
-	# networkPropertiesTable = tabulate.tabulate(networkProperties, tablefmt="html")
-
-	# hopPlot = asImage(plot.hopPlot, plotArgs=[G], size=defaultSize)
-
-	# # compute node properties
-	# nodeProperties = computeNodeProperties(G)
-
-
-	# # compute figures
-	# (plaw, _, gamma) = properties.degreePowerLaw(G)
-
-	# # compute images
-	# ddPlot = asImage(plot.degreeDistribution, plotArgs=[G], size=defaultSize)
-	# ddHist = asImage(nodeProperties["degree"].hist, plotKwargs=histArgs, size=defaultSize)
-	# dd = asSlideShow(ddPlot, ddHist)
-
-	# ccPlot = asImage(plot.nodeProperty, plotKwargs={"data" : nodeProperties["clustering"], "label": "local clustering coefficient"}, size=defaultSize)
-	# ccHist = asImage(nodeProperties["clustering"].hist, plotKwargs=histArgs, size=defaultSize)
-	# compPlot = asImage(plot.connectedComponentsSizes, [G], size=(1,1))
-
-	# html = readfile("html")
-
-	# result = html.format(**locals())
-	# return HTML(result)
