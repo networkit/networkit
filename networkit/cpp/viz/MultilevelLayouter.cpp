@@ -56,10 +56,10 @@ void MultilevelLayouter::drawInternal(Graph& G, count level) {
 		INFO("Clustering: #clusters: ", clustering.numberOfSubsets(), "; cut: ", ec.getQuality(clustering, G));
 
 		// coarsen by clustering
-		ParallelPartitionCoarsening contracter;
-		Graph Gcon;
-		std::vector<node> mapping;
-		std::tie(Gcon, mapping) = contracter.run(G, clustering);
+		ParallelPartitionCoarsening contracter(G, clustering);
+		contracter.run();
+		Graph Gcon = contracter.getCoarseGraph();
+		std::vector<node> mapping = contracter.getNodeMapping();
 
 		// make recursive call
 		drawInternal(Gcon, level + 1);
