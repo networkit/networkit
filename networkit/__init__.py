@@ -58,7 +58,7 @@ from . import plot
 from . import scd
 from . import clique
 # from . import linkprediction
-from . import profiling
+from .profiling import profiling
 
 try:
 	from . import viztasks

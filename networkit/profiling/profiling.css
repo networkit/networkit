@@ -29,6 +29,20 @@
 	font-size: 14px;
 }
 
+.NetworKit_Page .Value:before {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 1.05em;
+	content: attr(data-title) ":";
+	display: block;
+	margin-left: -2.5em;
+}
+
+.NetworKit_Page .Value {
+	font-family: monospace;
+	white-space: pre;
+	padding-left: 2.5em;
+}
+
 .NetworKit_Page .Category {
 	clear: both;
 	padding-left: 1em;
@@ -75,8 +89,8 @@
 .NetworKit_Page .Block .Thumbnail_ScatterPlot  {
 	width: 260px;
 	float: left;
-	margin-right: 16px
-	padding-bottom: 16px;
+	/*margin-right: 16px;
+	adding-bottom: 16px;*/
 }
 
 .NetworKit_Page .Block .Thumbnail_Overview:before,
@@ -127,6 +141,28 @@
 	clear: both;
 }
 
+.NetworKit_Page .Measure .Details {
+	cursor: pointer;
+}
+
+.NetworKit_Page .Measure .Details:before {
+	content: "[" attr(data-title) "]";
+	display: block;
+}
+
+.NetworKit_Page .Measure .Details .Value {
+	border-left: 1px dotted black;
+	margin-left: 0.4em;
+	padding-left: 3.5em;
+	pointer-events: none;
+}
+
+.NetworKit_Page .Measure .Details .Spacer:before {
+	content: ".";
+	opacity: 0.0;
+	pointer-events: none;
+}
+
 .NetworKit_Page .Measure .Plot {
 	width: 440px;
 	height: 440px;
@@ -145,7 +181,7 @@
 }
 
 .NetworKit_Page .Measure .Stat {
-	width: 560px;
+	width: 540px;
 	float: left;
 }
 
@@ -222,6 +258,10 @@
 	visibility: hidden; 
 	display: block; 
 	height: 0; 
+	clear: both;
+}
+
+.NetworKit_Page .PartitionPie {
 	clear: both;
 }
 
