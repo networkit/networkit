@@ -107,7 +107,6 @@ class Stat:
 			return result
 		results["Location"]["Arithmetic Mean (Rang)"] = arithmeticMean_Rang = funcArithmeticMeanRang()
 
-
 		def funcUncorrectedVariance(sample, arithmeticMean):
 			result = 0
 			for i in range(n):
@@ -123,7 +122,6 @@ class Stat:
 		results["Dispersion"]["Variance"] = variance = funcVariance(variance_uncorrected)
 		results["Dispersion"]["Variance (Rang)"] = variance_Rang = funcVariance(variance_Rang_uncorrected)
 
-
 		def funcStandardDeviation(variance):
 			result = math.sqrt(variance)
 			return result
@@ -132,9 +130,10 @@ class Stat:
 		results["Dispersion"]["Uncorrected Standard Deviation"] = s_n_uncorrected = funcStandardDeviation(variance_uncorrected)
 		results["Dispersion"]["Uncorrected Standard Deviation (Rang)"] = s_n_Rang_uncorrected = funcStandardDeviation(variance_Rang_uncorrected)
 
-
 		def funcCoefficientOfVariation(s_n, arithmeticMean):
-			result = s_n / arithmeticMean
+			result = float("nan")
+			if arithmeticMean != 0:
+				result = s_n / arithmeticMean
 			return result
 		results["Dispersion"]["Coefficient Of Variation"] = c_v = funcCoefficientOfVariation(s_n, arithmeticMean)
 		results["Dispersion"]["Coefficient Of Variation (Rang)"] = c_v_Rang = funcCoefficientOfVariation(s_n_Rang, arithmeticMean_Rang)
@@ -179,15 +178,19 @@ class Stat:
 		results["Location"]["Mid-Range"] = midRange = funcMidRange()
 
 		def funcSkewnessYP():
-			result = 3 * (arithmeticMean - median) / s_n
+			result = float("nan")
+			if s_n != 0:
+				result = 3 * (arithmeticMean - median) / s_n
 			return result
 		results["Shape"]["Skewness YP"] = skewness_yp = funcSkewnessYP()
 
 		def funcMomentum(p):
-			result = 0
-			for i in range(n):
-				result += ((sample[i] - arithmeticMean) / s_n) ** p
-			result /= n
+			result = float("nan")
+			if s_n != 0:
+				result = 0
+				for i in range(n):
+					result += ((sample[i] - arithmeticMean) / s_n) ** p
+				result /= n
 			return result
 
 		def funcSkewnessM():
@@ -200,15 +203,20 @@ class Stat:
 			return result
 		results["Shape"]["Kurtosis"] = kurtosis = funcKurtosis()
 
-		def funcNumberOfBins():
-			result = math.sqrt(n)
-			if (result < 5):
-				result = 5
-			elif (result > 20):
-				result = 20
+		def funcNumberOfBins(commulative):
+			result = 1
+			if min < max:
+				if commulative:
+					result = 256
+				else:
+					result = math.sqrt(n)
+					if (result < 5):
+						result = 5
+					elif (result > 20):
+						result = 20
 			return int(result)
-		results["Binning"]["Number Histogram"] = k_Bins_Histogram = funcNumberOfBins()
-		k_Bins_CDF = 256
+		results["Binning"]["Number Histogram"] = k_Bins_Histogram = funcNumberOfBins(False)
+		k_Bins_CDF = funcNumberOfBins(True)
 
 		def funcIntervals(numberOfBins):
 			result = []
@@ -216,7 +224,7 @@ class Stat:
 			result.append(min)
 			for i in range(1, numberOfBins):
 				result.append(min + w * i)
-			result.append(max)
+			result.append(max if min < max else max+10e-12)
 			return result
 		results["Binning"]["Intervals Histogram"] = intervalsHistogram = funcIntervals(k_Bins_Histogram)
 		intervalsCDF = funcIntervals(k_Bins_CDF)
@@ -454,7 +462,9 @@ class Correlation:
 		)
 
 		def funcPearsonsCorrelationCoefficient(covariance, uncorrectedStandardDeviation_1, uncorrectedStandardDeviation_2):
-			result = covariance / (uncorrectedStandardDeviation_1 * uncorrectedStandardDeviation_2)
+			result = float("nan")
+			if uncorrectedStandardDeviation_1 * uncorrectedStandardDeviation_2 != 0:
+				result = covariance / (uncorrectedStandardDeviation_1 * uncorrectedStandardDeviation_2)
 			return result
 		results["Pearson's Correlation Coefficient"] = funcPearsonsCorrelationCoefficient(
 			covariance,

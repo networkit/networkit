@@ -220,8 +220,9 @@ class Profile:
 				if type == "Plot.Measure":
 					(index, image) = data
 					self.__measures[name]["image"][index] = image
-			except:
-				pass
+			except Exception as e:
+				print("Error (Post Processing): " + type + " - " + name)
+				print(str(e))
 		pool.join()
 
 		templateMeasure = readfile("measure.html")
@@ -356,7 +357,12 @@ class Profile:
 		self.__properties["Directed"] = self.__G.isDirected()
 		self.__properties["Weighted"] = self.__G.isWeighted()
 		self.__properties["Density"] = properties.density(self.__G)
-		self.__properties["Diameter Range"] = properties.Diameter.estimatedDiameterRange(self.__G, error=0.1)
+	
+		try:
+			diameter = properties.Diameter.estimatedDiameterRange(self.__G, error=0.1)
+		except:
+			diameter = "N/A"
+		self.__properties["Diameter Range"] = diameter
 
 
 	def __loadMeasures(self):
@@ -375,9 +381,15 @@ class Profile:
 
 		for name in self.__measures:
 			measure = self.__measures[name]
-			instance = measure["class"](*measure["parameters"])
 			if self.__verbose:
 				print(name + ": ", end="", flush=True)
+			try:
+				instance = measure["class"](*measure["parameters"])
+			except Exception as e:
+				del self.__measures[name]
+				if self.__verbose:
+					print("(removed)\n>> " + str(e), flush=True)
+				continue
 			timerInstance = stopwatch.Timer()
 			instance.run()
 			elapsed = timerInstance.elapsed
@@ -404,6 +416,13 @@ class Profile:
 						category == "Partition"
 					))
 				)
+				# stat.Stat(name, (
+						# self.__measures[name]["data"]["sample"],
+						# self.__measures[name]["data"]["sorted"],
+						# self.__measures[name]["data"]["ranged"],
+						# category == "Partition"
+				# )).run()
+				
 		while pool.numberOfTasks() > 0:
 			(type, name, data) = pool.get()
 			
@@ -453,8 +472,10 @@ class Profile:
 					(nameB, image) = data
 					funcPrint("Plot.Scatter: " + name)
 					self.__correlations[category][name][nameB]["image"] = image
-			except:
-				pass
+			except Exception as e:
+				print("Error (Post Processing): " + type + " - " + name)
+				print(str(e))
+		
 		pool.join()
 
 		if self.__verbose:

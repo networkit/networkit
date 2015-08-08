@@ -141,11 +141,10 @@
 
 .NetworKit_Page .HeatCell:before {
 	content: attr(data-heat);
+	display: inline-block;
 	color: #000000;
-}
-
-.NetworKit_Page .HeatCell:hover:after {
-	content: attr(data-image url);
+	width: 4em;
+	text-align: center;
 }
 
 .NetworKit_Page .Measure {
