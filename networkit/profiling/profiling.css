@@ -192,7 +192,7 @@
 }
 
 .NetworKit_Page .Measure .Stat {
-	width: 540px;
+	width: 520px;
 	float: left;
 }
 
@@ -222,6 +222,7 @@
 
 .NetworKit_Page .Measure .Stat .Group .List .Entry {
 	position: relative;
+	line-height: 1.75em;
 }
 
 .NetworKit_Page .Measure .Stat .Group .List .Entry[data-tooltip]:before {
@@ -253,15 +254,6 @@
 .NetworKit_Page .Measure .Stat .Group .List .Entry[data-tooltip]:hover:after,
 .NetworKit_Page .Measure .Stat .Group .List .Entry[data-tooltip]:hover:before {
 	display: block;
-}
-
-.NetworKit_Page .Measure .Stat .Group .List .Entry span:after {
-	content: ": ";
-}
-
-.NetworKit_Page .Measure .Stat .Group .List .Entry math {
-	font-size: 1.35em;
-	color: #383838;
 }
 
 .NetworKit_Page .Measure:after {

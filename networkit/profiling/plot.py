@@ -30,14 +30,17 @@ class Theme:
 	
 	
 	def set(self, style="light", color=(0, 0, 1)):
-		optionsStyle = ["light"]
+		optionsStyle = ["light", "system"]
 		if style not in optionsStyle:
 			raise ValueError("possible style options: " + str(optionsStyle))
 		if len(color) != 3:
 			raise ValueError("(r,g,b) tuple required")
+				
+		if style == "system":
+			self.__rcParams = mpl.rcParams
+			raise ValueError("not implemented, yet")
 			
 		if style == "light":
-			self.__color = color
 			self.__defaultColor = (0, 0, 0)
 			self.__defaultWidth = 1
 			self.__backgroundColor = (1, 1, 1)
@@ -50,11 +53,20 @@ class Theme:
 			self.__edgeWidth = 2
 			self.__gridColor = "lightgray"
 			self.__fontColor = (0, 0, 0)
-            
-		self.__fontSize = 10
+			self.__fontSize = 10
+
+		self.__color = color
 		self.__style = style
     
-    
+	
+	def get(self):
+		return (self.__style, self.__color)
+
+		
+	def getRcParams():
+		return self.__rcParams
+
+		
 	def getDefaultColor(self):
 		return self.__defaultColor
 	def getDefaultWidth(self):
@@ -223,7 +235,7 @@ class Measure:
 			return ax
 			
 
-		def funcPlotPDF(ax, x_numberOfTicks, y_numberOfTicks, x_showTickLabels, y_showTickLabels, showGrid):
+		def funcPlotPDE(ax, x_numberOfTicks, y_numberOfTicks, x_showTickLabels, y_showTickLabels, showGrid):
 			numberOfBins = stat["Binning"]["Number Histogram"]
 			intervals = stat["Binning"]["Intervals Histogram"]
 			absoluteFrequencies = stat["Binning"]["Absolute Frequencies Histogram"]
@@ -256,7 +268,7 @@ class Measure:
 			return ax
 
 
-		def funcPlotCDF(ax, x_numberOfTicks, y_numberOfTicks, x_showTickLabels, y_showTickLabels, showGrid):
+		def funcPlotCDE(ax, x_numberOfTicks, y_numberOfTicks, x_showTickLabels, y_showTickLabels, showGrid):
 			numberOfBins = stat["Binning"]["Number CDF"]
 			intervals = stat["Binning"]["Intervals CDF"]
 			comulativeRelativeFrequencies = stat["Binning"]["Relative Frequencies CDF"]
@@ -386,9 +398,9 @@ class Measure:
 			)
 			
 			ax2 = plt.subplot2grid((40, 8), (3, 0), colspan=8, rowspan=20)
-			ax2.set_ylabel("PDF (absolute)")
+			ax2.set_ylabel("PDE (absolute)")
 			ax2.yaxis.set_label_position("right")
-			funcPlotPDF(
+			funcPlotPDE(
 				ax = ax2,
 				x_numberOfTicks = 5,
 				y_numberOfTicks = 5,
@@ -406,9 +418,9 @@ class Measure:
 
 			ax3 = plt.subplot2grid((40, 8), (23, 0), colspan=8, rowspan=17)
 			ax3.set_xlabel(label)
-			ax3.set_ylabel('CDF (relative)')
+			ax3.set_ylabel('CDE (relative)')
 			ax3.yaxis.set_label_position("right")
-			funcPlotCDF(
+			funcPlotCDE(
 				ax = ax3,
 				x_numberOfTicks = 5,
 				y_numberOfTicks = 5,
@@ -431,9 +443,9 @@ class Measure:
 			
 			ax.set_xlabel(label)
 			# ax.xaxis.set_label_position("top")
-			ax.set_ylabel("PDF (absolute)")
+			ax.set_ylabel("PDE (absolute)")
 			ax.yaxis.set_label_position("right")
-			funcPlotPDF(
+			funcPlotPDE(
 				ax = ax,
 				x_numberOfTicks = 5,
 				y_numberOfTicks = 5,
