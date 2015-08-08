@@ -113,7 +113,9 @@ class Measure:
 
 		
 		def funcSpace(min, max):
-			result = (max - min) * 0.04
+			result = 0.1
+			if min < max:
+				result = (max - min) * 0.04
 			return result
 
 
@@ -235,7 +237,7 @@ class Measure:
 			return ax
 			
 
-		def funcPlotPDE(ax, x_numberOfTicks, y_numberOfTicks, x_showTickLabels, y_showTickLabels, showGrid):
+		def funcPlotPDF(ax, x_numberOfTicks, y_numberOfTicks, x_showTickLabels, y_showTickLabels, showGrid):
 			numberOfBins = stat["Binning"]["Number Histogram"]
 			intervals = stat["Binning"]["Intervals Histogram"]
 			absoluteFrequencies = stat["Binning"]["Absolute Frequencies Histogram"]
@@ -268,7 +270,7 @@ class Measure:
 			return ax
 
 
-		def funcPlotCDE(ax, x_numberOfTicks, y_numberOfTicks, x_showTickLabels, y_showTickLabels, showGrid):
+		def funcPlotCDF(ax, x_numberOfTicks, y_numberOfTicks, x_showTickLabels, y_showTickLabels, showGrid):
 			numberOfBins = stat["Binning"]["Number CDF"]
 			intervals = stat["Binning"]["Intervals CDF"]
 			comulativeRelativeFrequencies = stat["Binning"]["Relative Frequencies CDF"]
@@ -398,9 +400,9 @@ class Measure:
 			)
 			
 			ax2 = plt.subplot2grid((40, 8), (3, 0), colspan=8, rowspan=20)
-			ax2.set_ylabel("PDE (absolute)")
+			ax2.set_ylabel("PDF (absolute)")
 			ax2.yaxis.set_label_position("right")
-			funcPlotPDE(
+			funcPlotPDF(
 				ax = ax2,
 				x_numberOfTicks = 5,
 				y_numberOfTicks = 5,
@@ -418,9 +420,9 @@ class Measure:
 
 			ax3 = plt.subplot2grid((40, 8), (23, 0), colspan=8, rowspan=17)
 			ax3.set_xlabel(label)
-			ax3.set_ylabel('CDE (relative)')
+			ax3.set_ylabel('CDF (relative)')
 			ax3.yaxis.set_label_position("right")
-			funcPlotCDE(
+			funcPlotCDF(
 				ax = ax3,
 				x_numberOfTicks = 5,
 				y_numberOfTicks = 5,
@@ -443,9 +445,9 @@ class Measure:
 			
 			ax.set_xlabel(label)
 			# ax.xaxis.set_label_position("top")
-			ax.set_ylabel("PDE (absolute)")
+			ax.set_ylabel("PDF (absolute)")
 			ax.yaxis.set_label_position("right")
-			funcPlotPDE(
+			funcPlotPDF(
 				ax = ax,
 				x_numberOfTicks = 5,
 				y_numberOfTicks = 5,

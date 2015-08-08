@@ -80,7 +80,7 @@ function NetworKit_pageEmbed(id)
 	}
 	catch (e) {}
 	if (!isFirefox) {
-		alert("Currently the output\'s style is only maintained for Firefox.");
+		alert("Currently the function\'s output is only fully supported by Firefox.");
 	}
 }
 
