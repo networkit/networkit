@@ -73,6 +73,15 @@ function NetworKit_pageEmbed(id)
 			NetworKit_toggleDetails((e.target) ? e.target : e.srcElement);
 		}
 	}
+	
+	var isFirefox = false;
+	try {
+		isFirefox = typeof InstallTrigger !== "undefined";
+	}
+	catch (e) {}
+	if (!isFirefox) {
+		alert("Currently the output\'s style is only maintained for Firefox.");
+	}
 }
 
 
