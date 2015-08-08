@@ -13,11 +13,11 @@
 
 namespace NetworKit {
 
-ParallelPartitionCoarsening::ParallelPartitionCoarsening(bool useGraphBuilder) :
-	useGraphBuilder(useGraphBuilder)
-{}
+ParallelPartitionCoarsening::ParallelPartitionCoarsening(const Graph& G, const Partition& zeta, bool useGraphBuilder) : GraphCoarsening(G), zeta(zeta),	useGraphBuilder(useGraphBuilder) {
 
-std::pair<Graph, std::vector<node> > ParallelPartitionCoarsening::run(const Graph& G, const Partition& zeta) {
+}
+
+void ParallelPartitionCoarsening::run() {
 
 	Aux::Timer timer;
 	timer.start();
@@ -145,9 +145,9 @@ std::pair<Graph, std::vector<node> > ParallelPartitionCoarsening::run(const Grap
 
 	timer.stop();
 	INFO("parallel coarsening took ", timer.elapsedTag());
-
-	return {std::move(Gcombined), std::move(nodeToSuperNode)};
-
+	Gcoarsed = std::move(Gcombined);
+	nodeMapping = std::move(nodeToSuperNode);
+	hasRun = true;
 }
 
 } /* namespace NetworKit */
