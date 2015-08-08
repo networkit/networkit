@@ -33,14 +33,25 @@
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 1.05em;
 	content: attr(data-title) ":";
-	display: block;
 	margin-left: -2.5em;
+	padding-right: 0.5em;
+}
+
+.NetworKit_Page .Details .Value:before {
+	display: block;
 }
 
 .NetworKit_Page .Value {
 	font-family: monospace;
 	white-space: pre;
 	padding-left: 2.5em;
+	white-space: -moz-pre-wrap !important;
+	white-space: -pre-wrap;
+	white-space: -o-pre-wrap;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	tab-size: 4;
+	-moz-tab-size: 4;
 }
 
 .NetworKit_Page .Category {

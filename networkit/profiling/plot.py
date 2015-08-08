@@ -3,7 +3,7 @@
 # author: Mark Erb
 #
 
-import matplotlib.mlab as mlab
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
@@ -96,7 +96,7 @@ class Measure:
 		return "Plot.Measure"
 
 	def run(self):
-		(index, stat, theme) = self.__params
+		(index, stat, label, theme) = self.__params
 		plt.ioff()
 
 		
@@ -223,7 +223,7 @@ class Measure:
 			return ax
 			
 
-		def funcPlotHistogram(ax, x_numberOfTicks, y_numberOfTicks, x_showTickLabels, y_showTickLabels, showGrid):
+		def funcPlotPDF(ax, x_numberOfTicks, y_numberOfTicks, x_showTickLabels, y_showTickLabels, showGrid):
 			numberOfBins = stat["Binning"]["Number Histogram"]
 			intervals = stat["Binning"]["Intervals Histogram"]
 			absoluteFrequencies = stat["Binning"]["Absolute Frequencies Histogram"]
@@ -256,7 +256,7 @@ class Measure:
 			return ax
 
 
-		def funcPlotCDE(ax, x_numberOfTicks, y_numberOfTicks, x_showTickLabels, y_showTickLabels, showGrid):
+		def funcPlotCDF(ax, x_numberOfTicks, y_numberOfTicks, x_showTickLabels, y_showTickLabels, showGrid):
 			numberOfBins = stat["Binning"]["Number CDF"]
 			intervals = stat["Binning"]["Intervals CDF"]
 			comulativeRelativeFrequencies = stat["Binning"]["Relative Frequencies CDF"]
@@ -369,6 +369,8 @@ class Measure:
 			fig = plt.figure()
 			
 			ax1 = plt.subplot2grid((40, 8), (0, 0), colspan=8, rowspan=3)
+			ax1.set_ylabel('Box')
+			ax1.yaxis.set_label_position("right")
 			funcPlotBox(
 				ax = ax1,
 				x_numberOfTicks = 5,
@@ -384,7 +386,9 @@ class Measure:
 			)
 			
 			ax2 = plt.subplot2grid((40, 8), (3, 0), colspan=8, rowspan=20)
-			funcPlotHistogram(
+			ax2.set_ylabel("PDF (absolute)")
+			ax2.yaxis.set_label_position("right")
+			funcPlotPDF(
 				ax = ax2,
 				x_numberOfTicks = 5,
 				y_numberOfTicks = 5,
@@ -401,7 +405,10 @@ class Measure:
 			)
 
 			ax3 = plt.subplot2grid((40, 8), (23, 0), colspan=8, rowspan=17)
-			funcPlotCDE(
+			ax3.set_xlabel(label)
+			ax3.set_ylabel('CDF (relative)')
+			ax3.yaxis.set_label_position("right")
+			funcPlotCDF(
 				ax = ax3,
 				x_numberOfTicks = 5,
 				y_numberOfTicks = 5,
@@ -422,7 +429,11 @@ class Measure:
 			fig = plt.figure()
 			ax = fig.gca()
 			
-			funcPlotHistogram(
+			ax.set_xlabel(label)
+			# ax.xaxis.set_label_position("top")
+			ax.set_ylabel("PDF (absolute)")
+			ax.yaxis.set_label_position("right")
+			funcPlotPDF(
 				ax = ax,
 				x_numberOfTicks = 5,
 				y_numberOfTicks = 5,
@@ -481,16 +492,23 @@ class Scatter:
 		(nameB, sample_1, sample_2) = self.__params
 		plt.ioff()
 
-		fig = plt.figure(figsize=(4, 3.75))
-
-		def hexbin(x, y, color, **kwargs):
+		
+		def hexbin(ax, x, y, color, **kwargs):
 			# cmap = sns.light_palette(color, as_cmap=True)
-			ax = plt.hexbin(x, y, gridsize=32, bins="log", **kwargs)
+			ax.hexbin(x, y, gridsize=32, bins="log", **kwargs)
 			# ax = plt.hexbin(x, y, gridsize=32, bins="log", cmap=cmap, **kwargs)
-			xLabel = plt.xlabel(nameA)
-			yLabel = plt.ylabel(nameB)
-
-		hexbin(sample_1, sample_2, "#000070")
+			ax.set_xlabel(nameA)
+			# ax.xaxis.set_label_position("top")
+			ax.set_ylabel(nameB)
+			# ax.yaxis.set_label_position("right")
+		
+		
+		fig = plt.figure()
+		ax = fig.gca()	
+		
+		hexbin(ax, sample_1, sample_2, "#000070")
+		
+		fig.set_size_inches(4, 3.75)
 
 		fig.tight_layout()
 		imgdata = io.StringIO()

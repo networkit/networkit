@@ -111,17 +111,17 @@ class Profile:
 			classConnectedComponents = properties.ConnectedComponents
 
 		for parameter in [
-			("Node Centrality",	"Degree Centrality",			True,	funcScores,	centrality.DegreeCentrality, 			(G, )),
-			("Node Centrality",	"K-Core Decomposition",			True,	funcScores,	centrality.CoreDecomposition, 			(G, )),
-			("Node Centrality",	"Local Clustering Coefficient",	True,	funcScores,	centrality.LocalClusteringCoefficient,	(G, )),
-			("Node Centrality",	"Page Rank",					True,	funcScores,	centrality.PageRank, 					(G, )),
-			("Node Centrality",	"K-Path Centrality",			True,	funcScores,	centrality.KPathCentrality,				(G, )),
-			("Node Centrality",	"Katz Centrality",				True,	funcScores,	centrality.KatzCentrality,				(G, )),
-			("Node Centrality",	"Betweenness",					True,	funcScores,	centrality.ApproxBetweenness2,			(G, max(42, G.numberOfNodes() / 10000), False)),
-		#	("Partition",		"Community",					False,	funcSizes,	community.LPDegreeOrdered, 				(G, )),
-		#	("Partition",		"Community",					False,	funcSizes,	community.PLP, 							(G, )),
-			("Partition",		"Community",					False,	funcSizes,	community.PLM, 							(G, )),
-			("Partition",		"Connected Components",			False,	funcSizes,	classConnectedComponents,				(G, ))
+			("Node Centrality",	"Degree Centrality",			True,	funcScores,	"Score",	centrality.DegreeCentrality, 			(G, )),
+			("Node Centrality",	"K-Core Decomposition",			True,	funcScores,	"Score",	centrality.CoreDecomposition, 			(G, )),
+			("Node Centrality",	"Local Clustering Coefficient",	True,	funcScores,	"Score",	centrality.LocalClusteringCoefficient,	(G, )),
+			("Node Centrality",	"Page Rank",					True,	funcScores,	"Score",	centrality.PageRank, 					(G, )),
+			("Node Centrality",	"K-Path Centrality",			True,	funcScores,	"Score",	centrality.KPathCentrality,				(G, )),
+			("Node Centrality",	"Katz Centrality",				True,	funcScores,	"Score",	centrality.KatzCentrality,				(G, )),
+			("Node Centrality",	"Betweenness",					True,	funcScores,	"Score",	centrality.ApproxBetweenness2,			(G, max(42, G.numberOfNodes() / 10000), False)),
+		#	("Partition",		"Community",					False,	funcSizes,	"Nodes Per Community",	community.LPDegreeOrdered, 				(G, )),
+		#	("Partition",		"Community",					False,	funcSizes,	"Nodes Per Community",	community.PLP, 							(G, )),
+			("Partition",		"Community",					False,	funcSizes,	"Nodes Per Community",	community.PLM, 							(G, )),
+			("Partition",		"Connected Components",			False,	funcSizes,	"Connected Nodes",	classConnectedComponents,				(G, ))
 		]: result.__addMeasure(parameter, exclude)
 
 		result.__loadProperties()
@@ -191,6 +191,7 @@ class Profile:
 				plot.Measure(name, (
 					0,
 					self.__measures[name]["stat"],
+					self.__measures[name]["label"],
 					theme
 				))
 			)
@@ -198,6 +199,7 @@ class Profile:
 				plot.Measure(name, (
 					1,
 					self.__measures[name]["stat"],
+					self.__measures[name]["label"],
 					theme
 				))
 			)				
@@ -206,16 +208,20 @@ class Profile:
 					plot.Measure(name, (
 						2,
 						self.__measures[name]["stat"],
+						self.__measures[name]["label"],
 						theme
 					))
 				)
 		while pool.numberOfTasks() > 0:
 			(type, name, data) = pool.get()
-			category = self.__measures[name]["category"]
-
-			if type == "Plot.Measure":
-				(index, image) = data
-				self.__measures[name]["image"][index] = image	
+			try:
+				category = self.__measures[name]["category"]
+				
+				if type == "Plot.Measure":
+					(index, image) = data
+					self.__measures[name]["image"][index] = image
+			except:
+				pass
 		pool.join()
 
 		templateMeasure = readfile("measure.html")
@@ -323,7 +329,7 @@ class Profile:
 
 	def __addMeasure(self, args, exclude):
 		""" TODO: """
-		(measureCategory, measureName, correlate, getter, measureClass, parameters) = args
+		(measureCategory, measureName, correlate, getter, label, measureClass, parameters) = args
 		measureKey = measureClass.__name__
 		if measureKey not in exclude:
 			measure = {}
@@ -331,6 +337,7 @@ class Profile:
 			measure["category"] = measureCategory
 			measure["correlate"] = correlate
 			measure["getter"] = getter
+			measure["label"] = label
 			measure["class"] = measureClass
 			measure["parameters"] = parameters
 			measure["data"] = {}
@@ -399,51 +406,55 @@ class Profile:
 				)
 		while pool.numberOfTasks() > 0:
 			(type, name, data) = pool.get()
-			category = self.__measures[name]["category"]
+			
+			try:
+				category = self.__measures[name]["category"]
 
-			if type == "Stat":
-				self.__measures[name]["stat"] = data
-				funcPrint("Stat: " + name)					
-				if self.__measures[name]["correlate"]:
-					for key in self.__correlations[category]:
-						self.__correlations[category][key][name] = {}
-						self.__correlations[category][key][name]["stat"] = {}
-						pool.put(
-							stat.Correlation(key, (
-								name,
-								self.__measures[key]["data"]["sample"],
-								self.__measures[key]["data"]["ranged"],
-								self.__measures[key]["stat"],
-								self.__measures[name]["data"]["sample"],
-								self.__measures[name]["data"]["ranged"],
-								self.__measures[name]["stat"]
-							))
-						)
-						pool.put(
-							plot.Scatter(key, (
-								name,
-								self.__measures[key]["data"]["sample"],
-								self.__measures[name]["data"]["sample"]
-							))
-						)
-					self.__correlations[category][name] = {}
-					self.__correlations[category][name][name] = {}
-					self.__correlations[category][name][name]["stat"] = {
-						"Spearman's Rang Correlation Coefficient": 1,
-						"Pearson's Correlation Coefficient": 1,
-						"Fechner's Correlation Coefficient": 1
-					}
-					self.__correlations[category][name][name]["image"] = ""
+				if type == "Stat":
+					self.__measures[name]["stat"] = data
+					funcPrint("Stat: " + name)					
+					if self.__measures[name]["correlate"]:
+						for key in self.__correlations[category]:
+							self.__correlations[category][key][name] = {}
+							self.__correlations[category][key][name]["stat"] = {}
+							pool.put(
+								stat.Correlation(key, (
+									name,
+									self.__measures[key]["data"]["sample"],
+									self.__measures[key]["data"]["ranged"],
+									self.__measures[key]["stat"],
+									self.__measures[name]["data"]["sample"],
+									self.__measures[name]["data"]["ranged"],
+									self.__measures[name]["stat"]
+								))
+							)
+							pool.put(
+								plot.Scatter(key, (
+									name,
+									self.__measures[key]["data"]["sample"],
+									self.__measures[name]["data"]["sample"]
+								))
+							)
+						self.__correlations[category][name] = {}
+						self.__correlations[category][name][name] = {}
+						self.__correlations[category][name][name]["stat"] = {
+							"Spearman's Rang Correlation Coefficient": 1,
+							"Pearson's Correlation Coefficient": 1,
+							"Fechner's Correlation Coefficient": 1
+						}
+						self.__correlations[category][name][name]["image"] = ""
 
-			elif type == "Correlation":
-				(nameB, correlation) = data
-				funcPrint("Correlation: " + name + " <-> " + nameB)
-				self.__correlations[category][name][nameB]["stat"] = correlation
+				elif type == "Correlation":
+					(nameB, correlation) = data
+					funcPrint("Correlation: " + name + " <-> " + nameB)
+					self.__correlations[category][name][nameB]["stat"] = correlation
 
-			elif type == "Plot.Scatter":
-				(nameB, image) = data
-				funcPrint("Plot.Scatter: " + name)
-				self.__correlations[category][name][nameB]["image"] = image
+				elif type == "Plot.Scatter":
+					(nameB, image) = data
+					funcPrint("Plot.Scatter: " + name)
+					self.__correlations[category][name][nameB]["image"] = image
+			except:
+				pass
 		pool.join()
 
 		if self.__verbose:

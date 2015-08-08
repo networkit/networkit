@@ -3,8 +3,8 @@
 # author: Mark Erb
 #
 
-
 import multiprocessing
+
 
 def numberOfProcessors():
 	return multiprocessing.cpu_count()
@@ -12,11 +12,13 @@ def numberOfProcessors():
 
 class Worker(multiprocessing.Process):
 	""" TODO: """
+
 	def __init__(self, tasks, results):
 		multiprocessing.Process.__init__(self)
 		self.__tasks = tasks
 		self.__results = results
 
+		
 	def run(self):
 		while True:
 			task = self.__tasks.get()
@@ -35,7 +37,23 @@ class Worker(multiprocessing.Process):
 
 
 class ThreadPool():
-	""" TODO: """
+	""" 
+		Suggested Syntax:
+		
+		n = multiprocessing.numberOfProcessors() * 2
+		pool = multiprocessing.ThreadPool(n)
+		
+		for i in list:
+			pool.put(task[i])
+		while pool.numberOfTasks() > 0:
+			(type, name, data) = pool.get()
+			try:
+				... unpack data & post processing ...
+			except:
+				pass
+		pool.join()
+	"""
+
 	def __init__(self, numberOfWorkers):
 		self.__numberOfWorkers = numberOfWorkers
 		self.__numberOfTasks = 0
