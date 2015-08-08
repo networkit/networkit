@@ -143,6 +143,7 @@ class SpectralCentrality:
 
 		self.scoreList = None
 		self.rankList = None
+		self.evz = {}
 
 	def prepareSpectrum(self):
 		""" Method that must be implemented to set the following values:
@@ -173,15 +174,13 @@ class SpectralCentrality:
 
 	def scores(self):
 		if self.scoreList is None:
-			self.scoreList = [abs(self.evz[v]) for v in self.graph.nodes()] # TODO bad! This depends on iteration order...
+			self.scoreList = [v for k,v in self.evz.items()]
 
 		return self.scoreList
 
 	def ranking(self):
 		if self.rankList is None:
-			self.rankList = [(v, abs(self.evz[v])) for v in self.graph.nodes()]
-			self.rankList.sort(key=lambda x: float(x[1]), reverse=True)
-
+			self.rankList = sorted(self.evz.items(),key=lambda x: float(x[1]), reverse=True)
 		return self.rankList
 
 
