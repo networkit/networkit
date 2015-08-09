@@ -17,10 +17,16 @@
 			<div class="Title">Properties</div>
 			<div class="List">
 				<div class="Entry" data-tooltip="Sample Size">
-					$$ n = {stat[Properties][Size]:g} $$
+					$ n = $
+					<span class="MathValue">
+						{stat[Properties][Size]:g}
+					</span>
 				</div>
 				<div class="Entry" data-tooltip="Bessel's Correction">
-					$$ f_{{BC}} = {stat[Properties][Bessel's Correction]:g} $$
+					$ f_{{BC}} = $
+					<span class="MathValue">
+						{stat[Properties][Bessel's Correction]:g}
+					</span>
 				</div>
 			</div>
 		</div>
@@ -28,31 +34,58 @@
 			<div class="Title">Location</div>
 			<div class="List">
 				<div class="Entry" data-tooltip="Minimum">
-					$$ x_{{(1)}} = {stat[Location][Min]:g} $$
+					$ x_{{(1)}} = $
+					<span class="MathValue">
+						{stat[Location][Min]:g}
+					</span>
 				</div>
 				<div class="Entry" data-tooltip="Maximum">
-					$$ x_{{(n)}} = {stat[Location][Max]:g} $$
+					$ x_{{(n)}} = $
+					<span class="MathValue">
+						{stat[Location][Max]:g}
+					</span>
 				</div>
 				<div class="Entry" data-tooltip="1st Quartile">
-					$$ \widetilde{{x}}_{{0.25}} = {stat[Location][1st Quartile]:g} $$
+					$ \widetilde{{x}}_{{0.25}} = $
+					<span class="MathValue">
+						{stat[Location][1st Quartile]:g}
+					</span>
 				</div>
 				<div class="Entry" data-tooltip="2nd Quartile / Median">
-					$$ \widetilde{{x}}_{{Med}} = {stat[Location][Median]:g} $$
+					$ \widetilde{{x}}_{{Med}} = $
+					<span class="MathValue">
+						{stat[Location][Median]:g}
+					</span>
 				</div>
 				<div class="Entry" data-tooltip="3rd Quartile">
-					$$ \widetilde{{x}}_{{0.75}} = {stat[Location][3rd Quartile]:g} $$
+					$ \widetilde{{x}}_{{0.75}} = $
+					<span class="MathValue">
+						{stat[Location][3rd Quartile]:g}
+					</span>
 				</div>
 				<div class="Entry" data-tooltip="Arithmetic Mean">
-					$$ \overline{{x}} =	{stat[Location][Arithmetic Mean]:g} $$
+					$ \overline{{x}} = $
+					<span class="MathValue">
+						{stat[Location][Arithmetic Mean]:g}
+					</span>
 				</div>
 				<div class="Entry" data-tooltip="Interquartile Mean">
-					$$ \overline{{x}}_{{IQM}} =	{stat[Location][Interquartile Mean]:g} $$
+					$ \overline{{x}}_{{IQM}} = $
+					<span class="MathValue">
+						{stat[Location][Interquartile Mean]:g}
+					</span>
 				</div>
 				<div class="Entry" data-tooltip="Quadratic Mean / Root Mean Square">
-					$$ \overline{{x}}_{{RMS}} =	{stat[Location][Quadratic Mean]:g} $$
+					$ \overline{{x}}_{{RMS}} = $
+					<span class="MathValue">
+						{stat[Location][Quadratic Mean]:g}
+					</span>
 				</div>
 				<div class="Entry" data-tooltip="Sample Mid-Range">
-					$$ \overline{{x}}_{{R}} =	{stat[Location][Mid-Range]:g} $$
+					$ \overline{{x}}_{{R}} = $
+					<span class="MathValue">
+						{stat[Location][Mid-Range]:g}
+					</span>
 				</div>
 			</div>
 		</div>
@@ -60,19 +93,34 @@
 			<div class="Title">Dispersion</div>
 			<div class="List">
 				<div class="Entry" data-tooltip="Unbiased Sample Variance">
-					$$ s^{{2}}_{{x}} = {stat[Dispersion][Variance]:g} $$
+					$ s^{{2}}_{{x}} = $
+					<span class="MathValue">
+						{stat[Dispersion][Variance]:g}
+					</span>
 				</div>
 				<div class="Entry" data-tooltip="Unbiased Standard Deviation">
-					$$ s_{{x}} = {stat[Dispersion][Standard Deviation]:g} $$
+					$ s_{{x}} = $
+					<span class="MathValue">
+						{stat[Dispersion][Standard Deviation]:g}
+					</span>
 				</div>
 				<div class="Entry" data-tooltip="Unbiased Coefficient Of Variation">
-					$$ v_{{x}} = {stat[Dispersion][Coefficient Of Variation]:g} $$
+					$ v_{{x}} = $
+					<span class="MathValue">
+						{stat[Dispersion][Coefficient Of Variation]:g}
+					</span>
 				</div>
 				<div class="Entry" data-tooltip="Sample Range">
-					$$ R = {stat[Dispersion][Sample Range]:g} $$
+					$ R = $
+					<span class="MathValue">
+						{stat[Dispersion][Sample Range]:g}
+					</span>
 				</div>
 				<div class="Entry" data-tooltip="Interquartile Range">
-					$$ R_{{IQR}} = {stat[Dispersion][Interquartile Range]:g} $$
+					$ R_{{IQR}} = $
+					<span class="MathValue">
+						{stat[Dispersion][Interquartile Range]:g}
+					</span>
 				</div>
 			</div>
 		</div>
@@ -80,13 +128,22 @@
 			<div class="Title">Shape</div>
 			<div class="List">
 				<div class="Entry" data-tooltip="Skewness (Yule-Pearson)">
-					$$ S_{{YP}} = {stat[Shape][Skewness YP]:g} $$
+					$ S_{{YP}} = $
+					<span class="MathValue">
+						{stat[Shape][Skewness YP]:g}
+					</span>
 				</div>
 				<div class="Entry" data-tooltip="Skewness (3rd Momentum)">
-					$$ S_{{M}} = {stat[Shape][Skewness M]:g} $$
+					$ S_{{M}} = $
+					<span class="MathValue">
+						{stat[Shape][Skewness M]:g}
+					</span>
 				</div>
 				<div class="Entry" data-tooltip="Kurtotis (Excess)">
-					$$ \gamma = {stat[Shape][Kurtosis]:g} $$
+					$ \gamma = $
+					<span class="MathValue">
+						{stat[Shape][Kurtosis]:g}
+					</span>
 				</div>
 			</div>
 		</div>
@@ -94,13 +151,22 @@
 			<div class="Title">Rang</div>
 			<div class="List">
 				<div class="Entry" data-tooltip="Unbiased Variance (Rang)">
-					$$ s^{{2}}_{{rg_{{x}}}} = {stat[Dispersion][Variance (Rang)]:g} $$
+					$ s^{{2}}_{{rg_{{x}}}} = $
+					<span class="MathValue">
+						{stat[Dispersion][Variance (Rang)]:g}
+					</span>
 				</div>
 				<div class="Entry" data-tooltip="Unbiased Standard Deviation (Rang)">
-					$$ s_{{rg_{{x}}}} = {stat[Dispersion][Standard Deviation (Rang)]:g} $$
+					$ s_{{rg_{{x}}}} = $
+					<span class="MathValue">
+						{stat[Dispersion][Standard Deviation (Rang)]:g}
+					</span>
 				</div>
 				<div class="Entry" data-tooltip="Unbiased Coefficient Of Variation (Rang)">
-					$$ v_{{rg_{{x}}}} = {stat[Dispersion][Coefficient Of Variation (Rang)]:g} $$
+					$ v_{{rg_{{x}}}} = $
+					<span class="MathValue">
+						{stat[Dispersion][Coefficient Of Variation (Rang)]:g}
+					</span>
 				</div>
 			</div>
 		</div>
@@ -108,10 +174,16 @@
 			<div class="Title">Binning</div>
 			<div class="List">
 				<div class="Entry" data-tooltip="Number Of Bins">
-					$$ n_{{Bin}} = {stat[Binning][Number Histogram]:g} $$
+					$ n_{{Bin}} = $
+					<span class="MathValue">
+						{stat[Binning][Number Histogram]:g}
+					</span>
 				</div>
 				<div class="Entry" data-tooltip="Mode (Binning)">
-					$$ x_{{D_{{Bin}}}} = {stat[Binning][Mode][0]:g} $$
+					$ x_{{D_{{Bin}}}} = $
+					<span class="MathValue">
+						{stat[Binning][Mode][0]:g}
+					</span>
 				</div>
 			</div>
 		</div>
