@@ -255,6 +255,10 @@
 	display: block;
 }
 
+.NetworKit_Page .Measure .Stat .Group .List .Entry .MathValue {
+	font-family: "Courier New", Courier, monospace;
+}
+
 .NetworKit_Page .Measure:after {
 	content: "."; 
 	visibility: hidden; 
