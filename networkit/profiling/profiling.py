@@ -450,6 +450,8 @@ class Profile:
 							pool.put(
 								plot.Scatter(key, (
 									name,
+									self.__measures[key]["label"],
+									self.__measures[name]["label"],
 									self.__measures[key]["data"]["sample"],
 									self.__measures[name]["data"]["sample"]
 								))

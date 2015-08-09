@@ -6,6 +6,7 @@
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+from matplotlib.ticker import FormatStrFormatter, ScalarFormatter
 
 import io
 from urllib.parse import quote
@@ -131,7 +132,20 @@ class Measure:
 			return result
 
 
-		def funcPlotEnd(fig, ax, theme, width, height, drawAxis=True):
+		def funcPlotEnd(fig, ax, theme, width, height, x_showTicks=True, x_showTickLabels=True, y_showTicks=True, y_showTickLabels=True, drawAxis=True, showGrid=True):
+			if not x_showTicks:
+				ax.set_xticks([])
+			if not x_showTickLabels:
+				ax.set_xticklabels([])
+			else:
+				xfmt = ScalarFormatter(useMathText=True)
+				xfmt.set_powerlimits((-3,3))
+				ax.xaxis.set_major_formatter(xfmt)
+			if not y_showTicks:
+				ax.set_yticks([])
+			if not y_showTickLabels:
+				ax.set_yticklabels([])
+			ax.grid(showGrid, which="both", color=theme.getGridColor(), linestyle="-")
 			ax.patch.set_facecolor(theme.getBackgroundColor())
 			if drawAxis:
 				axisColor = theme.getGridColor()
@@ -150,7 +164,7 @@ class Measure:
 			fig.set_size_inches(width, height)
 			
 
-		def funcPlotBox(ax, x_numberOfTicks, x_showTickLabels, showGrid):
+		def funcPlotBox(ax):
 			q1 = stat["Location"]["1st Quartile"]
 			q3 = stat["Location"]["3rd Quartile"]
 			median = stat["Location"]["Median"]
@@ -161,7 +175,6 @@ class Measure:
 			x_min = stat["Location"]["Min"]
 			x_max = stat["Location"]["Max"]
 			space = funcSpace(x_min, x_max)
-			ticks = funcTicks(x_min, x_max, x_numberOfTicks)
 			ax.scatter(
 				[x_min, x_max],
 				[0.5, 0.5],
@@ -225,19 +238,13 @@ class Measure:
 				linestyle = "solid",
 				linewidth = theme.getEdgeWidth(),
 				edgecolor = theme.getEdgeColor()
-			))			
+			))
 			ax.set_xlim([x_min-space, x_max+space])
-			ax.set_ylim([0, 1])
-			# ax.set_xticks(ticks)
-			ax.set_yticks([])
-			if not x_showTickLabels:
-				ax.set_xticklabels([])
-			if showGrid:
-				ax.grid(showGrid, which="both", color=theme.getGridColor(), linestyle="-")
+			ax.set_ylim([0, 1])			
 			return ax
 			
 
-		def funcPlotPDF(ax, x_numberOfTicks, y_numberOfTicks, x_showTickLabels, y_showTickLabels, showGrid):
+		def funcPlotPDF(ax):
 			numberOfBins = stat["Binning"]["Number Histogram"]
 			intervals = stat["Binning"]["Intervals Histogram"]
 			absoluteFrequencies = stat["Binning"]["Absolute Frequencies Histogram"]
@@ -247,7 +254,6 @@ class Measure:
 			y_max = stat["Binning"]["Mode"][1]
 			x_space = funcSpace(x_min, x_max)
 			y_space = funcSpace(y_min, y_max)
-			x_ticks = funcTicks(x_min, x_max, x_numberOfTicks)
 			for i in range(numberOfBins):
 				ax.add_patch(patches.Rectangle(
 					(intervals[i], 0),
@@ -260,17 +266,10 @@ class Measure:
 				))
 			ax.set_xlim([x_min-x_space, x_max+x_space])
 			ax.set_ylim([0, y_max+y_space])
-			# ax.set_xticks(x_ticks)
-			if not x_showTickLabels:
-				ax.set_xticklabels([])
-			if not y_showTickLabels:
-				ax.set_yticklabels([])
-			if showGrid:
-				ax.grid(showGrid, which="both", color=theme.getGridColor(), linestyle="-")
 			return ax
 
 
-		def funcPlotCDF(ax, x_numberOfTicks, y_numberOfTicks, x_showTickLabels, y_showTickLabels, showGrid):
+		def funcPlotCDF(ax):
 			numberOfBins = stat["Binning"]["Number CDF"]
 			intervals = stat["Binning"]["Intervals CDF"]
 			comulativeRelativeFrequencies = stat["Binning"]["Relative Frequencies CDF"]
@@ -278,8 +277,6 @@ class Measure:
 			x_max = stat["Location"]["Max"]
 			x_space = funcSpace(x_min, x_max)
 			y_space = funcSpace(0, 1)
-			x_ticks = funcTicks(x_min, x_max, x_numberOfTicks)
-			y_ticks = funcTicks(0, 1, y_numberOfTicks)
 			for i in range(numberOfBins):
 				ax.plot(
 					[intervals[i], intervals[i+1]],
@@ -297,14 +294,6 @@ class Measure:
 				)
 			ax.set_xlim([x_min-x_space, x_max+x_space])
 			ax.set_ylim([0, 1+y_space])
-			# ax.set_xticks(x_ticks)
-			ax.set_yticks(y_ticks)
-			if not x_showTickLabels:
-				ax.set_xticklabels([])
-			if not y_showTickLabels:
-				ax.set_yticklabels([])
-			if showGrid:
-				ax.grid(showGrid, which="both", color=theme.getGridColor(), linestyle="-")
 			return ax
     
 	
@@ -385,51 +374,37 @@ class Measure:
 			ax1 = plt.subplot2grid((40, 8), (0, 0), colspan=8, rowspan=3)
 			ax1.set_ylabel('Box')
 			ax1.yaxis.set_label_position("right")
-			funcPlotBox(
-				ax = ax1,
-				x_numberOfTicks = 5,
-				x_showTickLabels = False,
-				showGrid = False
-			)
+			funcPlotBox(ax1)
 			funcPlotEnd(
 				fig = fig,
 				ax = ax1,
 				theme = theme,
 				width = 4,
-				height = 0.2
+				height = 0.2,
+				x_showTickLabels = False,
+				y_showTicks = False,
+				y_showTickLabels = False,
+				showGrid = False
 			)
 			
 			ax2 = plt.subplot2grid((40, 8), (3, 0), colspan=8, rowspan=20)
 			ax2.set_ylabel("PDF (absolute)")
 			ax2.yaxis.set_label_position("right")
-			funcPlotPDF(
-				ax = ax2,
-				x_numberOfTicks = 5,
-				y_numberOfTicks = 5,
-				x_showTickLabels = False,
-				y_showTickLabels = True,
-				showGrid = True
-			)
+			funcPlotPDF(ax2)
 			funcPlotEnd(
 				fig = fig,
 				ax = ax2,
 				theme = theme,
 				width = 4,
-				height = 3
+				height = 3,
+				x_showTickLabels = False
 			)
 
 			ax3 = plt.subplot2grid((40, 8), (23, 0), colspan=8, rowspan=17)
 			ax3.set_xlabel(label)
 			ax3.set_ylabel('CDF (relative)')
 			ax3.yaxis.set_label_position("right")
-			funcPlotCDF(
-				ax = ax3,
-				x_numberOfTicks = 5,
-				y_numberOfTicks = 5,
-				x_showTickLabels = True,
-				y_showTickLabels = True,
-				showGrid = True
-			)
+			funcPlotCDF(ax3)
 			funcPlotEnd(
 				fig = fig,
 				ax = ax3,
@@ -447,14 +422,7 @@ class Measure:
 			# ax.xaxis.set_label_position("top")
 			ax.set_ylabel("PDF (absolute)")
 			ax.yaxis.set_label_position("right")
-			funcPlotPDF(
-				ax = ax,
-				x_numberOfTicks = 5,
-				y_numberOfTicks = 5,
-				x_showTickLabels = True,
-				y_showTickLabels = True,
-				showGrid = True
-			)
+			funcPlotPDF(ax)
 			funcPlotEnd(
 				fig = fig,
 				ax = ax,
@@ -467,9 +435,7 @@ class Measure:
 			fig = plt.figure()
 			ax = fig.gca()
 			
-			funcPlotPie(
-				ax = ax,
-			)
+			funcPlotPie(ax)
 			funcPlotEnd(
 				fig = fig,
 				ax = ax,
@@ -503,7 +469,7 @@ class Scatter:
 
 	def run(self):
 		nameA = self.__name
-		(nameB, sample_1, sample_2) = self.__params
+		(nameB, labelA, labelB, sample_1, sample_2) = self.__params
 		plt.ioff()
 
 		
@@ -511,16 +477,28 @@ class Scatter:
 			# cmap = sns.light_palette(color, as_cmap=True)
 			ax.hexbin(x, y, gridsize=32, bins="log", **kwargs)
 			# ax = plt.hexbin(x, y, gridsize=32, bins="log", cmap=cmap, **kwargs)
-			ax.set_xlabel(nameA)
+			ax.set_xlabel(labelA)
 			# ax.xaxis.set_label_position("top")
-			ax.set_ylabel(nameB)
+			ax.set_ylabel(labelB)
 			# ax.yaxis.set_label_position("right")
+			ax2 = ax.twinx()
+			ax2.set_ylabel(nameB)
+			ax2.set_yticks([])
+			ax3 = ax.twiny()
+			ax3.set_xlabel(nameA)
+			ax3.set_xticks([])
 		
 		
 		fig = plt.figure()
 		ax = fig.gca()	
 		
 		hexbin(ax, sample_1, sample_2, "#000070")
+		xfmt = ScalarFormatter(useMathText=True)
+		xfmt.set_powerlimits((-1,1))
+		ax.xaxis.set_major_formatter(xfmt)
+		yfmt = ScalarFormatter(useMathText=True)
+		yfmt.set_powerlimits((-1,1))
+		ax.yaxis.set_major_formatter(yfmt)		
 		
 		fig.set_size_inches(4, 3.75)
 
