@@ -10,10 +10,9 @@
 
 namespace Aux {
 
-BloomFilter::BloomFilter(count numHashes, count size): numHashes(numHashes), size(size) {
-	membership.resize(numHashes);
-	salts.resize(numHashes);
-
+BloomFilter::BloomFilter(count numHashes, count size): numHashes(numHashes), size(size),
+	membership(numHashes), salts(numHashes)
+{
 	for (index i = 0; i < numHashes; ++i) {
 		membership[i].resize(size, false);
 		salts[i] = Aux::Random::integer();
@@ -21,6 +20,7 @@ BloomFilter::BloomFilter(count numHashes, count size): numHashes(numHashes), siz
 }
 
 void BloomFilter::insert(index key) {
+	// set hashed positions of key in each array to true
 	for (index func = 0; func < numHashes; ++func) {
 		membership[func][hash(key, func)] = true;
 	}
@@ -28,7 +28,9 @@ void BloomFilter::insert(index key) {
 
 bool BloomFilter::isMember(index key) const {
 	bool result = true;
-	for (index func = 0; func < numHashes; ++func) {
+
+	// find out if all hashed positions of key are true
+	for (index func = 0; (func < numHashes) && result; ++func) {
 		result = result && membership[func][hash(key, func)];
 	}
 	return result;
@@ -38,6 +40,7 @@ index BloomFilter::hash(index key, index hfunc) const {
 	index result = 0;
 	std::hash<index> myhash;
 
+	// instead of using different hash functions: salt key with different (but fixed) random salt
 	result = myhash(key ^ salts[hfunc]);
 	return (result % size);
 }
