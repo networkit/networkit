@@ -536,7 +536,7 @@ TEST_F(AuxGTest, testNumberParsingAdvancedReal) {
 
 TEST_F(AuxGTest, testBloomFilter) {
 	Aux::BloomFilter bf(5);
-	uint64_t size = 500;
+	uint64_t size = 750;
 	std::set<uint64_t> randomKeys;
 
 	while (randomKeys.size() < size) {
@@ -557,7 +557,6 @@ TEST_F(AuxGTest, testBloomFilter) {
 			}
 		}
 	}
-
 }
 
 #endif /*NOGTEST */

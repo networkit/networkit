@@ -13,10 +13,13 @@ MaxClique::MaxClique(const Graph& G, count lb): G(G), maxi(lb) {
 
 }
 
-void MaxClique::clique(std::set<node>& U, count size) {
+void MaxClique::clique(std::unordered_set<node>& U, std::unordered_set<node>& currClique, count size) {
 	if (U.empty()) {
 		if (size > maxi) {
 			maxi = size;
+			bestClique = currClique;
+//			DEBUG("new best clique, size: ", maxi);
+//			assert(size == bestClique.size());
 		}
 	}
 
@@ -30,8 +33,8 @@ void MaxClique::clique(std::set<node>& U, count size) {
 		node x = (* U.begin());
 		U.erase(x);
 
-		// pruning 5: compute set of nodes in U that are neighbors of x and have at least degree maxi
-		std::set<node> X;
+		// pruning 5: compute unordered_set of nodes in U that are neighbors of x and have at least degree maxi
+		std::unordered_set<node> X;
 		G.forNeighborsOf(x, [&](node v) {
 			if ((G.degree(v) >= maxi) && (U.count(v) > 0)) {
 				X.insert(v);
@@ -39,15 +42,19 @@ void MaxClique::clique(std::set<node>& U, count size) {
 		});
 
 		// recursive call
-		clique(X, size + 1);
+		std::unordered_set<node> extendedClique = currClique;
+		extendedClique.insert(x);
+//		assert(extendedClique.size() == size + 1);
+		clique(X, extendedClique, size + 1);
 	}
 }
 
 void MaxClique::run() {
+	std::unordered_set<node> currClique;
 
 	G.forNodes([&](node u) {
 		if (G.degree(u) >= maxi) { // pruning 1
-			std::set<node> U;
+			std::unordered_set<node> U;
 			G.forNeighborsOf(u, [&](node v) {
 				if (v > u) { // pruning 2
 					if (G.degree(v) >= maxi) { // pruning 3
@@ -55,13 +62,22 @@ void MaxClique::run() {
 					}
 				}
 			});
-			clique(U, 1);
+			currClique.clear();
+			currClique.insert(u);
+//			assert(currClique.size() == 1);
+//			if (u % 4 == 0)
+//				INFO("initial recursion for ", u);
+			clique(U, currClique, 1);
 		}
 	});
 }
 
 count MaxClique::getMaxCliqueSize() {
-		return maxi;
+	return maxi;
+}
+
+std::unordered_set<node> MaxClique::getMaxClique() const {
+	return bestClique;
 }
 
 } /* namespace NetworKit */

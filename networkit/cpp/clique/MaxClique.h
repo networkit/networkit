@@ -9,7 +9,7 @@
 #define MAXCLIQUE_H_
 
 #include "../graph/Graph.h"
-#include <set>
+#include <unordered_set>
 
 
 namespace NetworKit {
@@ -23,12 +23,13 @@ class MaxClique {
 protected:
 	const Graph& G;
 	count maxi;
+	std::unordered_set<node> bestClique;
 
 	/**
 	 * Subroutine that goes through every relevant clique containing a certain node in
 	 * a recursive fashion and computes the size of the largest.
 	 */
-	void clique(std::set<node>& U, count size);
+	void clique(std::unordered_set<node>& U, std::unordered_set<node>& currClique, count size);
 
 public:
 	/**
@@ -47,10 +48,15 @@ public:
 	void run();
 
 	/**
-	 * Get size of maximum clique
-	 * @return size of maximum clique
+	 * Get size of maximum clique.
+	 * @return Size of maximum clique
 	 */
 	count getMaxCliqueSize();
+
+	/**
+	 * @return Largest clique of the graph.
+	 */
+	std::unordered_set<node> getMaxClique() const;
 };
 
 } /* namespace NetworKit */
