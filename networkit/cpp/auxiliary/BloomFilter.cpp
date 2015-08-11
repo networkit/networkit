@@ -10,8 +10,7 @@
 
 namespace Aux {
 
-BloomFilter::BloomFilter(count numHashes): numHashes(numHashes) {
-	size = 6291469;
+BloomFilter::BloomFilter(count numHashes, count size): numHashes(numHashes), size(size) {
 	membership.resize(numHashes);
 	salts.resize(numHashes);
 
@@ -19,8 +18,6 @@ BloomFilter::BloomFilter(count numHashes): numHashes(numHashes) {
 		membership[i].resize(size, false);
 		salts[i] = Aux::Random::integer();
 	}
-
-//	DEBUG("end of constructor");
 }
 
 void BloomFilter::insert(index key) {
@@ -42,7 +39,6 @@ index BloomFilter::hash(index key, index hfunc) const {
 	std::hash<index> myhash;
 
 	result = myhash(key ^ salts[hfunc]);
-//	TRACE("result: ", result);
 	return (result % size);
 }
 
