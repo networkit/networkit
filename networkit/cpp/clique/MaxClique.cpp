@@ -6,6 +6,8 @@
  */
 
 #include "MaxClique.h"
+#include "../auxiliary/SignalHandling.h"
+
 
 namespace NetworKit {
 
@@ -14,6 +16,7 @@ MaxClique::MaxClique(const Graph& G, count lb): G(G), maxi(lb) {
 }
 
 void MaxClique::clique(std::unordered_set<node>& U, std::unordered_set<node>& currClique, count size) {
+	Aux::SignalHandler handler;
 
 	if (U.empty()) {
 		if (size > maxi) {
@@ -26,6 +29,10 @@ void MaxClique::clique(std::unordered_set<node>& U, std::unordered_set<node>& cu
 	}
 
 	while (U.size() > 0) {
+		if (! handler.isRunning()) {
+			return;
+		}
+
 		// pruning 4
 		if (size + U.size() <= maxi) {
 			return;
@@ -52,9 +59,14 @@ void MaxClique::clique(std::unordered_set<node>& U, std::unordered_set<node>& cu
 }
 
 void MaxClique::run() {
+	Aux::SignalHandler handler;
 	std::unordered_set<node> currClique;
 
 	G.forNodes([&](node u) {
+		if (! handler.isRunning()) {
+			return;
+		}
+
 		if (G.degree(u) >= maxi) { // pruning 1
 			std::unordered_set<node> U;
 			G.forNeighborsOf(u, [&](node v) {
