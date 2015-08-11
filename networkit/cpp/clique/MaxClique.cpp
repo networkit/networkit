@@ -14,13 +14,15 @@ MaxClique::MaxClique(const Graph& G, count lb): G(G), maxi(lb) {
 }
 
 void MaxClique::clique(std::unordered_set<node>& U, std::unordered_set<node>& currClique, count size) {
+
 	if (U.empty()) {
 		if (size > maxi) {
 			maxi = size;
 			bestClique = currClique;
-//			DEBUG("new best clique, size: ", maxi);
+			INFO("new best clique, size: ", maxi);
 //			assert(size == bestClique.size());
 		}
+		return;
 	}
 
 	while (U.size() > 0) {
