@@ -406,7 +406,7 @@ class Profile:
 				assortativity.run()
 				measure["assortativity"] = assortativity.getCoefficient()
 			else:
-				measure["assortativity"] = "N/A"
+				measure["assortativity"] = float("nan")
 			measure["time"] = elapsed
 
 		if self.__verbose:
