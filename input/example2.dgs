@@ -1,0 +1,18 @@
+DGS004
+authorGraph 0 0
+an 1
+an 2
+ae 1-2 1 2 weight=1
+st 1
+ce 1-2 weight=2
+de 1-2
+dn 1
+dn 2
+an 3
+an 4
+ae 3-4 3 4 weight=5
+an 5
+ae 5-3 5 3 weight=2
+an 6
+dn 6
+rn 6
