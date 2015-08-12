@@ -74,6 +74,14 @@ function NetworKit_pageEmbed(id)
 		}
 	}
 	
+	elements = document.getElementById(id).getElementsByClassName("MathValue");
+	for (i=0; i<elements.length; i++) {
+		value = elements[i].innerHTML.trim();
+		if (value === "nan") {
+			elements[i].innerHTML = "N/A"
+		}
+	}
+	
 	var isFirefox = false;
 	try {
 		isFirefox = typeof InstallTrigger !== "undefined";
