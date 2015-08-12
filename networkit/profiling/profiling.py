@@ -277,6 +277,7 @@ class Profile:
 			category = measure["category"]
 			image = measure["image"]
 			stat = measure["stat"]
+			assortativity = measure["assortativity"]
 			
 			try:
 				with open(__file__[:__file__.rfind("/")] + "/description/" + key + ".txt") as file:
@@ -296,6 +297,7 @@ class Profile:
 				name,
 				image,
 				stat,
+				assortativity,
 				extentions,
 				description
 			)
@@ -313,7 +315,7 @@ class Profile:
 			print("\ntotal time: {:.2F} s".format(timerAll.elapsed))
 
 
-	def __formatMeasureTemplate(self, template, key, name, image, stat, extentions, description):
+	def __formatMeasureTemplate(self, template, key, name, image, stat, assortativity, extentions, description):
 		""" TODO: """
 		pageIndex = self.__pageCount
 		result = template.format(**locals())
@@ -357,6 +359,7 @@ class Profile:
 		self.__properties["Directed"] = self.__G.isDirected()
 		self.__properties["Weighted"] = self.__G.isWeighted()
 		self.__properties["Density"] = properties.density(self.__G)
+		self.__properties["Self Loops"] = self.__G.numberOfSelfLoops()
 	
 		try:
 			diameter = properties.Diameter.estimatedDiameterRange(self.__G, error=0.1)
@@ -398,6 +401,12 @@ class Profile:
 			measure["data"]["sample"] = measure["getter"](instance)
 			measure["data"]["sorted"] = stat.sorted(measure["data"]["sample"])
 			measure["data"]["ranged"] = stat.ranged(measure["data"]["sample"])
+			if self.__measures[name]["category"] == "Node Centrality":
+				assortativity = properties.Assortativity(self.__G, measure["data"]["sample"])
+				assortativity.run()
+				measure["assortativity"] = assortativity.getCoefficient()
+			else:
+				measure["assortativity"] = "N/A"
 			measure["time"] = elapsed
 
 		if self.__verbose:
