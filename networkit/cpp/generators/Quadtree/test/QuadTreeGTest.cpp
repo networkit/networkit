@@ -277,7 +277,7 @@ TEST_F(QuadTreeGTest, testEuclideanCircle) {
 		 * get Elements in Circle
 		 */
 
-		vector<index> circleDenizens;
+		list<index> circleDenizens;
 
 		root.getElementsInEuclideanCircle(query, radius, circleDenizens, minPhi, maxPhi, minR, maxR);
 		if (minPhi < 0) {
@@ -288,7 +288,7 @@ TEST_F(QuadTreeGTest, testEuclideanCircle) {
 		}
 
 		//check whether bounds were correct by calling again without bounds and comparing
-		vector<index> alternateDenizens;
+		list<index> alternateDenizens;
 		root.getElementsInEuclideanCircle(query, radius, alternateDenizens);
 
 		EXPECT_EQ(circleDenizens.size(), alternateDenizens.size());
@@ -299,8 +299,8 @@ TEST_F(QuadTreeGTest, testEuclideanCircle) {
 			double dist = comp.distance(query);
 			if (dist < radius) {
 				bool found = false;
-				for (index k = 0; k < circleDenizens.size(); k++) {
-					if (circleDenizens[k] == j) {
+				for (index k : circleDenizens) {
+					if (k == j) {
 						found = true;
 					}
 				}
@@ -456,7 +456,7 @@ TEST_F(QuadTreeGTest, testProbabilisticQuery) {
 		index query = Aux::Random::integer(n-1);
 		double acc = Aux::Random::probability() ;
 		auto edgeProb = [acc](double distance) -> double {return acc;};
-		vector<index> near;
+		list<index> near;
 		quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[query], radii[query]), edgeProb, near);
 		EXPECT_NEAR(near.size(), acc*n, std::max(acc*n*0.25, 10.0));
 	}
@@ -464,7 +464,7 @@ TEST_F(QuadTreeGTest, testProbabilisticQuery) {
 	//TODO: some test about appropriate subtrees and leaves
 
 	auto edgeProb = [](double distance) -> double {return 1;};
-	vector<index> near;
+	list<index> near;
 	quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[0], radii[0]), edgeProb, near);
 	EXPECT_EQ(n, near.size());
 
@@ -561,10 +561,8 @@ TEST_F(QuadTreeGTest, testLeftSuppression) {
 
 	//now test
 	for (index i = 0; i < n; i++) {
-		vector<index> allNeighbours;
-		vector<index> rightNeighbours;
-		quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), targetR, true, rightNeighbours);
-		quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), targetR, false, allNeighbours);
+		vector<index> allNeighbours = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), targetR, false);
+		vector<index> rightNeighbours = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), targetR, true);
 		EXPECT_LE(rightNeighbours.size(), allNeighbours.size());
 		index aIndex, bIndex;
 		for (aIndex = 0, bIndex = 0; aIndex < rightNeighbours.size() && bIndex < allNeighbours.size(); aIndex++, bIndex++)  {

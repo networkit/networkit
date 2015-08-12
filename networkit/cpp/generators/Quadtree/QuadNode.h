@@ -9,6 +9,7 @@
 #define QUADNODE_H_
 
 #include <vector>
+#include <list>
 #include <algorithm>
 #include <functional>
 #include <assert.h>
@@ -16,6 +17,7 @@
 #include "../../geometric/HyperbolicSpace.h"
 
 using std::vector;
+using std::list;
 using std::min;
 using std::max;
 using std::cos;
@@ -528,7 +530,7 @@ public:
 	 * @param lowR Optional value for the minimum radial coordinate of the query region
 	 * @param highR Optional value for the maximum radial coordinate of the query region
 	 */
-	void getElementsInEuclideanCircle(Point2D<double> center, double radius, vector<T> &result, double minAngle=0, double maxAngle=2*M_PI, double lowR=0, double highR = 1) const {
+	void getElementsInEuclideanCircle(Point2D<double> center, double radius, list<T> &result, double minAngle=0, double maxAngle=2*M_PI, double lowR=0, double highR = 1) const {
 		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR < lowerBoundR) return;
 		if (outOfReach(center, radius)) {
 			return;
@@ -556,7 +558,7 @@ public:
 		}
 	}
 
-	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, bool suppressLeft, vector<T> &result) const {
+	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, bool suppressLeft, list<T> &result) const {
 		double phi_q, r_q;
 		HyperbolicSpace::cartesianToPolar(euQuery, phi_q, r_q);
 		if (suppressLeft && phi_q > rightAngle) return 0;
@@ -565,7 +567,7 @@ public:
 		double probUB = prob(distancePair.first);
 		double probLB = prob(distancePair.second);
 		assert(probLB <= probUB);
-		if (probUB > 0.5) probUB = 1;
+		if (probUB > 0.5) probUB = 1;//if we are going to take every second element anyway, no use in calculating expensive jumps
 		if (probUB == 0) return 0;
 		//TODO: return whole if probLB == 1
 		double probdenom = std::log(1-probUB);
@@ -583,6 +585,7 @@ public:
 				if (probUB < 1) {
 					double random = Aux::Random::real();
 					double delta = std::log(random) / probdenom;
+					assert(delta == delta);
 					assert(delta >= 0);
 					i += delta;
 					if (i >= lsize) break;
@@ -593,10 +596,12 @@ public:
 				//see where we've arrived
 				candidatesTested++;
 				double distance = HyperbolicSpace::poincareMetric(positions[i], euQuery);
-				//assert(distance >= hyperbolicLB);
+				assert(distance >= distancePair.first);
+
 				double q = prob(distance);
 				q = q / probUB; //since the candidate was selected by the jumping process, we have to adjust the probabilities
 				assert(q <= 1);
+				assert(q >= 0);
 
 				//accept?
 				double acc = Aux::Random::real();
@@ -631,7 +636,7 @@ public:
 	}
 
 
-	void maybeGetKthElement(double upperBound, Point2D<double> euQuery, std::function<double(double)> prob, index k, vector<T> &circleDenizens) const {
+	void maybeGetKthElement(double upperBound, Point2D<double> euQuery, std::function<double(double)> prob, index k, list<T> &circleDenizens) const {
 		TRACE("Maybe get element ", k, " with upper Bound ", upperBound);
 		assert(k < size());
 		if (isLeaf) {

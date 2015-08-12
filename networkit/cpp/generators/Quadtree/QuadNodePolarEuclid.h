@@ -373,7 +373,7 @@ public:
 		updateMinMax(leftAngle, minR);
 		updateMinMax(rightAngle, minR);
 
-		double shortCutGainMax = maxR + r - maxDistance;
+		//double shortCutGainMax = maxR + r - maxDistance;
 		//assert(minDistance <= minR + r);
 		//assert(maxDistance <= maxR + r);
 		assert(minDistance < maxDistance);
