@@ -9,6 +9,7 @@
 
 #include <utility>
 #include <algorithm>
+#include <fstream>
 
 #include "IOBenchmark.h"
 #include "../RasterReader.h"
@@ -18,7 +19,65 @@
 
 namespace NetworKit {
 
+/**
+ * This should actually not be in the benchmark but somewhere else. Can't figure out where yet.
+ */
+void IOBenchmark::convertToHeatMap(vector<bool> &infected, vector<double> &xcoords, vector<double> &ycoords, string filename, double resolution) {
 
+	auto minmaxx = std::minmax_element (xcoords.begin(),xcoords.end());
+	auto  minmaxy = std::minmax_element (ycoords.begin(),ycoords.end());
+
+	//create data structures for heat map
+	double xspread = *minmaxx.second - *minmaxx.first;
+	double yspread = *minmaxy.second - *minmaxy.first;
+	int xsteps = xspread / resolution + 1;
+	int ysteps = yspread / resolution + 1;
+	vector<vector<int> > infectedByRegion(xsteps);
+	vector<vector<bool> > populated(xsteps);
+	for (int i = 0; i < xsteps; i++) {
+		infectedByRegion[i].resize(ysteps, 0);
+		populated[i].resize(ysteps, false);
+	}
+
+	//fill heat map
+	for (index i = 0; i < infected.size(); i++) {
+		//get bins
+		index xBin = (xcoords[i]-*minmaxx.first)/resolution;
+		index yBin = (ycoords[i]-*minmaxy.first)/resolution;
+
+		//check bins
+		assert(xBin >= 0);
+		assert(xBin < infectedByRegion.size());
+		assert(yBin >= 0);
+		assert(yBin < infectedByRegion[0].size());
+		populated[xBin][yBin] = true;
+
+		if (infected[i]) {
+			//write in bin
+			infectedByRegion[xBin][yBin]++;
+		}
+	}
+
+	//open output file
+	std::ofstream file;
+	file.open(filename.c_str());
+
+	//write column labels
+	file << "x" << "\t" << "y" << "\t" << "label" << std::endl;
+
+	//write heat map
+	for (index i = 0; i < infectedByRegion.size(); i++) {
+		double x = *minmaxx.first + i*resolution;
+		for (index j = 0; j < infectedByRegion[i].size(); j++) {
+			double y = *minmaxy.first + j*resolution;
+			std::string heat = populated[i][j] ? std::to_string(infectedByRegion[i][j]) : std::string("NaN");
+			file << x << '\t' << y << '\t' << heat << std::endl;
+		}
+		file << std::endl;
+	}
+	file.close();
+
+}
 
 TEST_F(IOBenchmark, timeMETISGraphReader) {
 	std::string path = "";
@@ -56,7 +115,7 @@ TEST_F(IOBenchmark, benchRasterReader) {
 		runtime.start();
 		std::tie(xcoords, ycoords) = reader.read(path);
 		runtime.stop();
-		INFO("[DONE] reading raster data set " , runtime.elapsedTag());
+		INFO("[DONE] reading raster data set with ", xcoords.size(), " points:" , runtime.elapsedTag());
 		EXPECT_EQ(xcoords.size(), ycoords.size());
 
 		const count n = xcoords.size();
@@ -152,6 +211,7 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 		EXPECT_EQ(xcoords.size(), ycoords.size());
 		const count n = xcoords.size();
 
+		// get minimum and maximum
 		auto minmaxx = std::minmax_element (xcoords.begin(),xcoords.end());
 		INFO("X coordinates range from ", *minmaxx.first, " to ", *minmaxx.second, ".");
 		auto  minmaxy = std::minmax_element (ycoords.begin(),ycoords.end());
@@ -199,12 +259,14 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 				tree.getElementsProbabilistically(query, edgeProb, newInfections);
 			}
 
+			//remove old infections from list of new infections
 			std::sort(newInfections.begin(), newInfections.end());
 			newInfections.erase(std::unique(newInfections.begin(), newInfections.end()), newInfections.end());
 			count newInfectionCount = newInfections.size();
 			newInfections.erase(std::remove_if(newInfections.begin(), newInfections.end(), [wasEverInfected](index i)->bool{return wasEverInfected[i];}), newInfections.end());
 			INFO(newInfectionCount, " infections happened, of which ", newInfectionCount - newInfections.size(), " were already infected or immune.");
 
+			//get coordinates of new infections
 			if (newInfections.size() > 0) {
 				double minX = xcoords[newInfections[0]];
 				double maxX = xcoords[newInfections[0]];
@@ -237,6 +299,12 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 				infectedState[patient] = true;
 				wasEverInfected[patient] = true;
 			}
+
+			//build and write heat map of infections
+			const double resolution = 5;
+			std::string filename = std::string("heatMap-") + country + std::string("-step-") + std::to_string(step) + std::string(".dat");
+			convertToHeatMap(infectedState, xcoords, ycoords, filename, resolution);
+
 			step++;
 		}
 		INFO("Total infections: ", std::count(wasEverInfected.begin(), wasEverInfected.end(), true));
