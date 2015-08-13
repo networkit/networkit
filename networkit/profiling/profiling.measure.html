@@ -100,7 +100,7 @@
 					</span>
 				</div>
 				<div class="Entry" data-tooltip="Interquartile Mean">
-					$ \overline{{x}}_{{IQM}} = $
+					$ \overline{{x}}_{{IQ}} = $
 					<span class="MathValue">
 						{stat[Location][Interquartile Mean]:g}
 					</span>
@@ -109,6 +109,12 @@
 					$ \overline{{x}}_{{R}} = $
 					<span class="MathValue">
 						{stat[Location][Mid-Range]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Harmonic Mean">
+					$ \overline{{x}}_{{H^{{-1}}}} = $
+					<span class="MathValue">
+						{stat[Location][Harmonic Mean]:g}
 					</span>
 				</div>
 				<div class="Entry" data-tooltip="Quadratic Mean / Root Mean Square">
@@ -121,12 +127,6 @@
 					$ \overline{{x}}_{{H^{{3}}}} = $
 					<span class="MathValue">
 						{stat[Location][Cubic Mean]:g}
-					</span>
-				</div>
-				<div class="Entry" data-tooltip="Harmonic Mean">
-					$ \overline{{x}}_{{H^{{-1}}}} = $
-					<span class="MathValue">
-						{stat[Location][Harmonic Mean]:g}
 					</span>
 				</div>
 			</div>
@@ -159,7 +159,7 @@
 					</span>
 				</div>
 				<div class="Entry" data-tooltip="Interquartile Range">
-					$ R_{{IQM}} = $
+					$ R_{{IQ}} = $
 					<span class="MathValue">
 						{stat[Dispersion][Interquartile Range]:g}
 					</span>
@@ -215,14 +215,20 @@
 		<div class="Group">
 			<div class="Title">Binning</div>
 			<div class="List">
-				<div class="Entry" data-tooltip="Number Of Bins">
-					$ n_{{Bin}} = $
+				<div class="Entry" data-tooltip="Number Of Bins (PDF)">
+					$ k_{{PDF}} = $
 					<span class="MathValue">
 						{stat[Binning][Number Histogram]:g}
 					</span>
 				</div>
+				<div class="Entry" data-tooltip="Number Of Bins (CDF)">
+					$ k_{{CDF}} = $
+					<span class="MathValue">
+						{stat[Binning][Number CDF]:g}
+					</span>
+				</div>
 				<div class="Entry" data-tooltip="Mode (Binning)">
-					$ x_{{D_{{Bin}}}} = $
+					$ x_{{D_{{PDF}}}} = $
 					<span class="MathValue">
 						{stat[Binning][Mode][0]:g}
 					</span>

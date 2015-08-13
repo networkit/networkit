@@ -301,7 +301,7 @@ class Profile:
 				extentions,
 				description
 			)
-			results[category]["Overview"] += "<div class=\"Thumbnail_Overview\" data-title=\"" + key + "\"><a href=\"#NetworKit_Page_" + str(self.__pageCount) + "_" + key + "\"><img src=\"data:image/svg+xml;utf8," + image[1] + "\" /></a></div>"
+			results[category]["Overview"] += "<div class=\"Thumbnail_Overview\" data-title=\"" + name + "\"><a href=\"#NetworKit_Page_" + str(self.__pageCount) + "_" + key + "\"><img src=\"data:image/svg+xml;utf8," + image[1] + "\" /></a></div>"
 
 		templateProfile = readfile("profile.html")
 		result = self.__formatProfileTemplate(
@@ -393,11 +393,14 @@ class Profile:
 				if self.__verbose:
 					print("(removed)\n>> " + str(e), flush=True)
 				continue
+			
 			timerInstance = stopwatch.Timer()
 			instance.run()
-			elapsed = timerInstance.elapsed
+			elapsedMain = timerInstance.elapsed
 			if self.__verbose:
-				print("{:.2F} s".format(elapsed), flush=True)
+				print("{:.2F} s (Post: ".format(elapsedMain), end="", flush=True)
+			
+			timerPost = stopwatch.Timer()
 			measure["data"]["sample"] = measure["getter"](instance)
 			measure["data"]["sorted"] = stat.sorted(measure["data"]["sample"])
 			measure["data"]["ranged"] = stat.ranged(measure["data"]["sample"])
@@ -407,7 +410,11 @@ class Profile:
 				measure["assortativity"] = assortativity.getCoefficient()
 			else:
 				measure["assortativity"] = float("nan")
-			measure["time"] = elapsed
+			elapsedPost = timerPost.elapsed
+			if self.__verbose:
+				print("{:.2F} s)".format(elapsedPost), flush=True)
+			
+			measure["time"] = (elapsedMain, elapsedPost)
 
 		if self.__verbose:
 			print("")

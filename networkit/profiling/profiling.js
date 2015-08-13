@@ -179,18 +179,21 @@ function NetworKit_overlayImageShift(delta)
 
 
 /*
-	TODO:
+	Toggle Measure Details
+	
+	Arguments:
+		source: element to get data for the overlay
 */
-function NetworKit_toggleDetails(elem)
+function NetworKit_toggleDetails(source)
 {
-	var childs = elem.children;
+	var childs = source.children;
 	var show = false;
-	if (elem.getAttribute("data-title") == "-") {
-		elem.setAttribute("data-title", "+");
+	if (source.getAttribute("data-title") == "-") {
+		source.setAttribute("data-title", "+");
 		show = false;
 	}
 	else {
-		elem.setAttribute("data-title", "-");
+		source.setAttribute("data-title", "-");
 		show = true;
 	}
 	for (i=0; i<childs.length; i++) {
