@@ -140,7 +140,7 @@ TEST_F(IOBenchmark, benchRasterReader) {
 			INFO("Converted coordinates", runtime.elapsedTag());
 			//define query function
 			double T = 0.01;
-			auto edgeProb = [](double distance) -> double {return exp(-(distance*200+5));};
+			auto edgeProb = [n](double distance) -> double {return (1/distance)*exp(5)/(double)n ;};
 			//auto edgeProb = [beta, thresholdDistance](double distance) -> double {return 1 / (exp(beta*(distance-thresholdDistance)/2)+1);};
 
 			// construct quadtree
@@ -217,7 +217,7 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 		auto  minmaxy = std::minmax_element (ycoords.begin(),ycoords.end());
 		INFO("Y coordinates range from ", *minmaxy.first, " to ", *minmaxy.second, ".");
 
-		auto edgeProb = [n](double distance) -> double {return exp(-(distance)+7)/(double)n;};
+		auto edgeProb = [n](double distance) -> double {return (1/distance)*exp(5)/(double)n ;};
 
 		//convert coordinates
 		runtime.start();
@@ -239,16 +239,21 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 		runtime.stop();
 		INFO("Filled quadtree", runtime.elapsedTag());
 
-		//performing queries!
-		runtime.start();
+		//data structures
 		vector<bool> wasEverInfected(n, false);
 		vector<bool> infectedState(n, false);
 		vector<index> infectedList;
+
+		//patient zero
+		runtime.start();
 		index patientZero = Aux::Random::index(n);
+		INFO("Person ", patientZero, " at (", xcoords[patientZero], ", ", ycoords[patientZero], ") selected as patient zero.");
 		infectedList.push_back(patientZero);
 		infectedState[patientZero] = true;
 		wasEverInfected[patientZero] = true;
 		index step = 0;
+
+		//main loop
 		while (!infectedList.empty()) {
 			INFO("At step ", step, ", ", infectedList.size(), " people are infected.");
 
