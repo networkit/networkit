@@ -9,7 +9,6 @@
 #define QUADNODE_H_
 
 #include <vector>
-#include <list>
 #include <algorithm>
 #include <functional>
 #include <assert.h>
@@ -17,7 +16,6 @@
 #include "../../geometric/HyperbolicSpace.h"
 
 using std::vector;
-using std::list;
 using std::min;
 using std::max;
 using std::cos;
@@ -530,7 +528,7 @@ public:
 	 * @param lowR Optional value for the minimum radial coordinate of the query region
 	 * @param highR Optional value for the maximum radial coordinate of the query region
 	 */
-	void getElementsInEuclideanCircle(Point2D<double> center, double radius, list<T> &result, double minAngle=0, double maxAngle=2*M_PI, double lowR=0, double highR = 1) const {
+	void getElementsInEuclideanCircle(Point2D<double> center, double radius, vector<T> &result, double minAngle=0, double maxAngle=2*M_PI, double lowR=0, double highR = 1) const {
 		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR < lowerBoundR) return;
 		if (outOfReach(center, radius)) {
 			return;
@@ -558,7 +556,7 @@ public:
 		}
 	}
 
-	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, bool suppressLeft, list<T> &result) const {
+	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, bool suppressLeft, vector<T> &result) const {
 		double phi_q, r_q;
 		HyperbolicSpace::cartesianToPolar(euQuery, phi_q, r_q);
 		if (suppressLeft && phi_q > rightAngle) return 0;
@@ -611,7 +609,7 @@ public:
 				}
 			}
 		}	else {
-			if (expectedNeighbours < 4 || probUB < 1/1000) {//select candidates directly instead of calling recursively
+			if (expectedNeighbours < 1) {//select candidates directly instead of calling recursively
 				TRACE("probUB = ", probUB,  ", switching to direct candidate selection.");
 				assert(probUB < 1);
 				const count stsize = size();
@@ -636,7 +634,7 @@ public:
 	}
 
 
-	void maybeGetKthElement(double upperBound, Point2D<double> euQuery, std::function<double(double)> prob, index k, list<T> &circleDenizens) const {
+	void maybeGetKthElement(double upperBound, Point2D<double> euQuery, std::function<double(double)> prob, index k, vector<T> &circleDenizens) const {
 		TRACE("Maybe get element ", k, " with upper Bound ", upperBound);
 		assert(k < size());
 		if (isLeaf) {

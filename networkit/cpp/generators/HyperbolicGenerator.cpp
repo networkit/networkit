@@ -191,22 +191,27 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 		for (index i = 0; i < n; i++) {
 			//get neighbours for node i
 			count expectedDegree = (4/M_PI)*n*exp(-HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[i])/2);//TODO: adapt for alpha!=1
-			list<index> near;
-			//near.reserve(expectedDegree*1.1);
+			vector<index> near;
+			near.reserve(expectedDegree*1.1);
 			quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), thresholdDistance, suppressLeft, near);
 			assert(near.size() <= n);
 			if (near.size() > 20*expectedDegree) DEBUG("Found ", near.size() , " neighbours while expecting ", expectedDegree, ".");
 			//count realDegree = near.size();
 			//std::swap(expectedDegree, realDegree);//dummy statement for debugging
-			//if (directSwap) {
-			//	near.remove(i);
-			//	result.swapNeighborhood(i, near, empty, false);
-			//} else {
+			if (directSwap) {
+				auto newend = std::remove(near.begin(), near.end(), i); //no self loops!
+				if (newend != near.end()) {
+					assert(newend+1 == near.end());
+					assert(*(newend)==i);
+					near.pop_back();//std::remove doesn't remove element but swaps it to the end
+				}
+				result.swapNeighborhood(i, near, empty, false);
+			} else {
 				for (index j : near) {
 					if (j >= n) ERROR("Node ", j, " prospective neighbour of ", i, " does not actually exist. Oops.");
 					if (j > i) result.addHalfEdge(i,j);
 				}
-			//}
+			}
 
 		}
 		threadtimers[id].stop();
@@ -238,7 +243,7 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	count totalCandidates = 0;
 	#pragma omp parallel for
 	for (index i = 0; i < n; i++) {
-		list<index> near;
+		vector<index> near;
 		totalCandidates += quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), edgeProb, anglesSorted, near);
 		for (index j : near) {
 			if (j >= n) ERROR("Node ", j, " prospective neighbour of ", i, " does not actually exist. Oops.");
