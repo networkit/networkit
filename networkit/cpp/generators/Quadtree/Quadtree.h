@@ -149,34 +149,55 @@ public:
 	 * @param circleCenter Cartesian coordinates of the query circle's center
 	 * @param hyperbolicRadius Radius of the query circle
 	 */
-	vector<T> getElementsInHyperbolicCircle(Point2D<double> circleCenter, double hyperbolicRadius, const bool suppressLeft=false) const {
-		list<T> circleDenizens;
-		getElementsInHyperbolicCircle(circleCenter, hyperbolicRadius, suppressLeft, circleDenizens);
-		std::vector<T> v{ std::make_move_iterator(std::begin(circleDenizens)),
-		                  std::make_move_iterator(std::end(circleDenizens)) };
-		return v;
+	vector<T> getElementsInHyperbolicCircle(Point2D<double> circleCenter, double hyperbolicRadius) const {
+		vector<T> circleDenizens;
+		getElementsInHyperbolicCircle(circleCenter, hyperbolicRadius, circleDenizens);
+		return circleDenizens;
 	}
 
-	void getElementsInHyperbolicCircle(const Point2D<double> circleCenter, const double hyperbolicRadius, const bool suppressLeft, list<T> &circleDenizens) const {
+	void getElementsInHyperbolicCircle(const Point2D<double> circleCenter, const double hyperbolicRadius, const bool suppressLeft, vector<T> &circleDenizens) const {
 		assert(circleDenizens.empty());
 		double cc_phi, cc_r;
 		HyperbolicSpace::cartesianToPolar(circleCenter, cc_phi, cc_r);
 		//Transform hyperbolic circle into Euclidean circle
-		double minPhi, radius, r_e;
+		double minPhi, maxPhi, radius, r_e;
 		HyperbolicSpace::getEuclideanCircle(cc_r, hyperbolicRadius, r_e, radius);
 		Point2D<double> center = HyperbolicSpace::polarToCartesian(cc_phi, r_e);
+		double minR = r_e - radius;
 		double maxR = r_e + radius;
-		minPhi = 0;
 		//assert(maxR < 1);//this looks fishy
 		if (maxR > 1) maxR = 1;
+		if (minR < 0) {
+			maxR = std::max(abs(minR), maxR);
+			minR = 0;
+			minPhi = 0;
+			maxPhi = 2*M_PI;
+		} else {
+			double spread = asin(radius / r_e);
+			//double phi_c, r_c;
+			//HyperbolicSpace::cartesianToPolar(center, phi_c, r_c);
+			minPhi = cc_phi - spread;
+			maxPhi = cc_phi + spread;
+			/**
+			 * If the circle overlaps the 2\pi line, we have to make two separate calls and collect
+			 */
+		}
 
 		if (suppressLeft) minPhi = cc_phi;
-
 		/**
 		 * get Elements in Euclidean circle
 		 */
 
-		root.getElementsInEuclideanCircle(center, radius, circleDenizens, minPhi, 2*M_PI, 0, 1);
+		bool wraparound = false;
+		root.getElementsInEuclideanCircle(center, radius, circleDenizens, minPhi, maxPhi, minR, maxR);
+		if (minPhi < 0) {
+			root.getElementsInEuclideanCircle(center, radius, circleDenizens, 2*M_PI+minPhi, 2*M_PI, minR, maxR);
+			wraparound = true;
+		}
+		if (maxPhi > 2*M_PI) {
+			root.getElementsInEuclideanCircle(center, radius, circleDenizens, 0, maxPhi - 2*M_PI, minR, maxR);
+			wraparound = true;
+		}
 
 		for (T denizen : circleDenizens) {
 			if (denizen >= size()) {
@@ -185,21 +206,33 @@ public:
 			assert(denizen < size());//TODO: remove this after debugging, in general the quadtree should handle arbitrary contents
 		}
 
+		//we have sort(deg(v)) here! This is not good, but does not make the asymptotical complexity of O(deg(v) log n) worse.
+		if (wraparound) {
+			std::sort(circleDenizens.begin(), circleDenizens.end());
+			auto newend = unique(circleDenizens.begin(), circleDenizens.end());
+			count toRemove = circleDenizens.end() - newend;
+			count remaining = newend - circleDenizens.begin();
+			if (toRemove > 0) {
+				DEBUG("Removing, ", toRemove, " duplicate entries, keeping ", remaining);
+				circleDenizens.resize(remaining);
+			}
+		}
+
 		for (T denizen : circleDenizens) {
 			if (denizen >= size()) DEBUG("Content ", denizen, " found in quadtree of size ", size(), ", as one of ", circleDenizens.size(), " neighbours, after sorting");
 			assert(denizen < size());//TODO: remove this after debugging, in general the quadtree should handle arbitrary contents
 		}
 	}
 
-	void getElementsInHyperbolicCircle(const Point2D<double> circleCenter, const double hyperbolicRadius, list<T> &circleDenizens) const {
+	void getElementsInHyperbolicCircle(const Point2D<double> circleCenter, const double hyperbolicRadius, vector<T> &circleDenizens) const {
 		getElementsInHyperbolicCircle(circleCenter, hyperbolicRadius, false, circleDenizens);
 	}
 
-	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, list<T> &circleDenizens) {
+	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &circleDenizens) {
 		return root.getElementsProbabilistically(euQuery, prob, false, circleDenizens);
 	}
 
-	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, bool suppressLeft, list<T> &circleDenizens) {
+	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, bool suppressLeft, vector<T> &circleDenizens) {
 		return root.getElementsProbabilistically(euQuery, prob, suppressLeft, circleDenizens);
 	}
 
