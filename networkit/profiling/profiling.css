@@ -174,8 +174,8 @@
 }
 
 .NetworKit_Page .Measure .Plot {
-	width: 440px;
-	height: 440px;
+	width: 420px;
+	height: 420px;
 	cursor: pointer;
 	float: left;
 	margin-left: -0.9em;
@@ -191,7 +191,7 @@
 }
 
 .NetworKit_Page .Measure .Stat {
-	width: 520px;
+	width: 500px;
 	float: left;
 }
 
