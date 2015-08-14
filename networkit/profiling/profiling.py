@@ -4,6 +4,7 @@
 #
 
 from networkit import *
+import networkit as kit
 
 from . import multiprocessing
 from . import stat
@@ -352,6 +353,7 @@ class Profile:
 
 	def __loadProperties(self):
 		""" TODO: """
+		self.__properties["Name"] = self.__G.getName()
 		self.__properties["Nodes"] = self.__G.numberOfNodes()
 		self.__properties["Edges"] = self.__G.numberOfEdges()
 		self.__properties["Directed"] = self.__G.isDirected()
@@ -375,8 +377,9 @@ class Profile:
 				else:
 					print(".", end="", flush=True)
 
+		kit.setNumberOfThreads(self.__parallel)
 		pool = multiprocessing.ThreadPool(self.__parallel)
-
+			
 		if self.__verbose:
 			timerAll = stopwatch.Timer()
 

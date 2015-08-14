@@ -345,61 +345,77 @@ class Stat:
 		# intervals = [-10000, 49, 50, 51, 52, 53, 10000]
 		# k_Bins = len(absoluteFrequencies)
 
-		# def funcErf(x):
-			# sign = 1 if x >= 0 else -1
-			# x = abs(x)
+		def funcErf(x):
+			sign = 1 if x >= 0 else -1
+			x = abs(x)
 
-			# a1 =  0.254829592
-			# a2 = -0.284496736
-			# a3 =  1.421413741
-			# a4 = -1.453152027
-			# a5 =  1.061405429
-			# p  =  0.3275911
+			a1 =  0.254829592
+			a2 = -0.284496736
+			a3 =  1.421413741
+			a4 = -1.453152027
+			a5 =  1.061405429
+			p  =  0.3275911
 
-			# t = 1.0/(1.0 + p*x)
-			# y = 1 - (((((a5*t + a4)*t) + a3)*t + a2)*t + a1) * t * math.exp(-x*x)
-			# return sign*y
+			t = 1.0/(1.0 + p*x)
+			y = 1 - (((((a5*t + a4)*t) + a3)*t + a2)*t + a1) * t * math.exp(-x*x)
+			return sign*y
 
-		# def funcDistributionNormal(x):
-			# result = 1/2 * (1 + funcErf((x-arithmeticMean)/(math.sqrt(2) * s_n)))
+		def funcDistributionNormal(x):
+			result = 1/2 * (1 + funcErf((x-arithmeticMean)/(math.sqrt(2) * s_n)))
+			return result
+
+		def funcDistributionExponential(x):
+			result = 1 - math.exp((-1/arithmeticMean) * x)
+			return result
+			
+		def funcDistributionExponentialInverse(x):
+			result = math.ln(1/(1-a))*arithmeticMean
+			return result
+			
+		def funcIncompleteGamma(s, x):
+			if x < 0.0:
+				return 0.0
+			sc = (1.0 / s)
+			sc *= math.pow(x, s)
+			sc *= math.exp(-x)
+			sum = 1.0
+			nom = 1.0
+			denom = 1.0
+			for i in range(1, 128):
+				nom *= x
+				denom *= s + i
+				sum += (nom / denom)
+			return sum * sc
+
+		def funcGamma(x):
+			result = (x / math.e) ** x
+			result *= math.sqrt(2 * math.pi / x)
+			result *= (1 + 1/(12 * x*x - 1/10)) ** x
+			return result
+
+		def funcPValue(criticalValue, degreesOfFreedom):
+			if criticalValue < 0.0 or degreesOfFreedom < 1:
+				return 0.0
+			k = degreesOfFreedom * 0.5
+			x = criticalValue * 0.5
+			if degreesOfFreedom == 2:
+				return math.exp(-x)
+			result = funcIncompleteGamma(k, x)
+			result /= funcGamma(k)
+			return 1-result
+
+		def funcNumberOfBinsChiSquaredTest():
+			result = 1 + ln(n)/ln(2)
+			if result > 128:
+				result = 128
+			return int(result)
+			
+		# TODO:
+		# def funcIntervalsChiSquaredTest(inverseFunction, min, max, k_Bins):
+			# bin_size = n / k
+			# result = []
 			# return result
-
-		# def funcDistributionExponential(x):
-			# result = 1 - math.exp((-1/arithmeticMean) * x)
-			# return result
-
-		# def funcIncompleteGamma(s, x):
-			# if x < 0.0:
-				# return 0.0
-			# sc = (1.0 / s)
-			# sc *= math.pow(x, s)
-			# sc *= math.exp(-x)
-			# sum = 1.0
-			# nom = 1.0
-			# denom = 1.0
-			# for i in range(1, 128):
-				# nom *= x
-				# denom *= s + i
-				# sum += (nom / denom)
-			# return sum * sc
-
-		# def funcGamma(x):
-			# result = (x / math.e) ** x
-			# result *= math.sqrt(2 * math.pi / x)
-			# result *= (1 + 1/(12 * x*x - 1/10)) ** x
-			# return result
-
-		# def funcPValue(criticalValue, degreesOfFreedom):
-			# if criticalValue < 0.0 or degreesOfFreedom < 1:
-				# return 0.0
-			# k = degreesOfFreedom * 0.5
-			# x = criticalValue * 0.5
-			# if degreesOfFreedom == 2:
-				# return math.exp(-x)
-			# result = funcIncompleteGamma(k, x)
-			# result /= funcGamma(k)
-			# return 1-result
-
+			
 		# def funcChiSquaredTest(distribution, numberOfUsedEstimators):
 			# z = 0;
 			# pValue = 0

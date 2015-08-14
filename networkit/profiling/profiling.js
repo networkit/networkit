@@ -75,10 +75,26 @@ function NetworKit_pageEmbed(id)
 	}
 	
 	elements = document.getElementById(id).getElementsByClassName("MathValue");
-	for (i=0; i<elements.length; i++) {
+	for (i=elements.length-1; i>=0; i--) {
 		value = elements[i].innerHTML.trim();
 		if (value === "nan") {
-			elements[i].innerHTML = "N/A"
+			elements[i].parentNode.innerHTML = ""
+		}
+	}
+	
+	elements = document.getElementById(id).getElementsByClassName("SubCategory");
+	for (i=elements.length-1; i>=0; i--) {
+		value = elements[i].innerHTML.trim();
+		if (value === "") {
+			elements[i].parentNode.removeChild(elements[i])
+		}
+	}
+	
+	elements = document.getElementById(id).getElementsByClassName("Category");
+	for (i=elements.length-1; i>=0; i--) {
+		value = elements[i].innerHTML.trim();
+		if (value === "") {
+			elements[i].parentNode.removeChild(elements[i])
 		}
 	}
 	
