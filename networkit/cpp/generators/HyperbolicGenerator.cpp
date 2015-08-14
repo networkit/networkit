@@ -238,6 +238,12 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	assert(beta == beta);
 	auto edgeProb = [beta, thresholdDistance](double distance) -> double {return 1 / (exp(beta*(distance-thresholdDistance)/2)+1);};
 
+	//just for now, write out coordinates
+	for (index i = 0; i < n; i++) {
+		auto cartesian = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
+		INFO("\node at (", cartesian.getX(), ", ", cartesian.getY(), ") [vertex] (n", i, ") {};");
+	}
+
 	//get Graph
 	GraphBuilder result(n, false, false);//no direct swap with probabilistic graphs, sorry
 	count totalCandidates = 0;
@@ -247,7 +253,11 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 		totalCandidates += quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), edgeProb, anglesSorted, near);
 		for (index j : near) {
 			if (j >= n) ERROR("Node ", j, " prospective neighbour of ", i, " does not actually exist. Oops.");
-			if (j > i) result.addHalfEdge(i, j);
+			if (j > i) {
+				result.addHalfEdge(i, j);
+				INFO("\draw [normaledge] (n", i, ") edge (n", j, ")");
+
+			}
 		}
 
 	}
