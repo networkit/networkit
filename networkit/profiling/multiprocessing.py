@@ -18,7 +18,7 @@ class Worker(multiprocessing.Process):
 		self.__tasks = tasks
 		self.__results = results
 
-		
+
 	def run(self):
 		while True:
 			task = self.__tasks.get()
@@ -37,14 +37,28 @@ class Worker(multiprocessing.Process):
 
 
 class ThreadPool():
-	""" 
+	"""
 		Suggested Syntax:
-		
+
 		n = multiprocessing.numberOfProcessors() * 2
 		pool = multiprocessing.ThreadPool(n)
-		
-		for i in list:
-			pool.put(task[i])
+
+		class Job:
+			def run(self):
+				...
+				return ...
+
+			def getType(self):
+				...
+
+			def getName(self):
+				...
+
+		tasks = []
+		tasks.append(Job())
+
+		for task in tasks:
+			pool.put(task)
 		while pool.numberOfTasks() > 0:
 			(type, name, data) = pool.get()
 			try:
@@ -63,23 +77,25 @@ class ThreadPool():
 		for w in self.__workers:
 			w.deamon = True
 			w.start()
-	
-	
+
+
 	def numberOfTasks(self):
+		""" Current number of unfinished tasks """
 		return self.__numberOfTasks
-	
-	
+
+
 	def put(self, task):
+		""" Assign a task """
 		self.__tasks.put(task)
 		self.__numberOfTasks += 1
-		
-	
+
+
 	def get(self):
 		result = self.__results.get()
 		self.__numberOfTasks -= 1
 		return result;
 
-	
+
 	def join(self):
 		for i in range(self.__numberOfWorkers):
 			self.__tasks.put(None)

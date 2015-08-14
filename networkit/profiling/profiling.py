@@ -18,10 +18,10 @@ def readfile(postfix):
 	with open(__file__[:__file__.rfind(".py")] + "." + postfix, "r") as file:
 		return " ".join(file.read().split())
 
-		
+
 try:
 	__IPYTHON__
-	
+
 	def _initHeader(tag, type, data):
 		""" private helper function for notebook hack: create content of extended header """
 		result = """
@@ -39,7 +39,7 @@ try:
 		"""
 		return result
 
-		
+
 	def _initOverlay(name, data):
 		""" private helper function for notebook hack: create content of overlay """
 		result = """
@@ -59,7 +59,7 @@ try:
 		"""
 		return result
 
-		
+
 	display_html(
 		HTML("""
 			<script type="text/javascript">
@@ -73,7 +73,7 @@ try:
 	)
 except Exception as e:
 	print(str(e))
-	
+
 
 class Profile:
 	""" TODO: """
@@ -117,11 +117,9 @@ class Profile:
 			("Node Centrality",	"Page Rank",					True,	funcScores,	"Score",	centrality.PageRank, 					(G, )),
 			("Node Centrality",	"K-Path Centrality",			True,	funcScores,	"Score",	centrality.KPathCentrality,				(G, )),
 			("Node Centrality",	"Katz Centrality",				True,	funcScores,	"Score",	centrality.KatzCentrality,				(G, )),
-			("Node Centrality",	"Betweenness",					True,	funcScores,	"Score",	centrality.ApproxBetweenness2,			(G, max(42, G.numberOfNodes() / 10000), False)),
-		#	("Partition",		"Community",					False,	funcSizes,	"Nodes Per Community",	community.LPDegreeOrdered, 				(G, )),
-		#	("Partition",		"Community",					False,	funcSizes,	"Nodes Per Community",	community.PLP, 							(G, )),
-			("Partition",		"Community",					False,	funcSizes,	"Nodes Per Community",	community.PLM, 							(G, )),
-			("Partition",		"Connected Components",			False,	funcSizes,	"Connected Nodes",	classConnectedComponents,				(G, ))
+			("Node Centrality",	"Betweenness",					True,	funcScores,	"Score",	centrality.ApproxBetweenness2,			(G, max(42, G.numberOfNodes() / 10000), True)),
+			("Partition",		"Communities",					False,	funcSizes,	"Nodes Per Community",	community.PLM, 				(G, )),
+			("Partition",		"Connected Components",			False,	funcSizes,	"Connected Nodes",	classConnectedComponents,		(G, ))
 		]: result.__addMeasure(parameter, exclude)
 
 		result.__loadProperties()
@@ -177,13 +175,13 @@ class Profile:
 			__IPYTHON__
 		except:
 			raise RuntimeError("this function cannot be used outside ipython notebook")
-			
+
 		if self.__verbose:
 			timerAll = stopwatch.Timer()
-			
+
 		theme = plot.Theme()
 		theme.set(style, color)
-		
+
 		pool = multiprocessing.ThreadPool(self.__parallel)
 		for name in self.__measures:
 			category = self.__measures[name]["category"]
@@ -202,7 +200,7 @@ class Profile:
 					self.__measures[name]["label"],
 					theme
 				))
-			)				
+			)
 			if category == "Partition":
 				pool.put(
 					plot.Measure(name, (
@@ -216,7 +214,7 @@ class Profile:
 			(type, name, data) = pool.get()
 			try:
 				category = self.__measures[name]["category"]
-				
+
 				if type == "Plot.Measure":
 					(index, image) = data
 					self.__measures[name]["image"][index] = image
@@ -251,9 +249,9 @@ class Profile:
 						result += "<div class=\"HeatCellName\">" + keyB + "</div><br>"
 				result += "</div>"
 				return result
-			results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Pearson's Correlation Coefficient")
-			results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Spearman's Rang Correlation Coefficient")
-			results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Fechner's Correlation Coefficient")
+			# results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Pearson's Correlation Coefficient")
+			results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Spearman's Rank Correlation Coefficient")
+			# results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Fechner's Correlation Coefficient")
 
 			def funcScatterPlot(category):
 				result = ""
@@ -278,19 +276,19 @@ class Profile:
 			image = measure["image"]
 			stat = measure["stat"]
 			assortativity = measure["assortativity"]
-			
+
 			try:
 				with open(__file__[:__file__.rfind("/")] + "/description/" + key + ".txt") as file:
 					description = file.read()
-			except: 
+			except:
 				# description = measure["class"].__doc__
 				description = "N/A"
-			
+
 			try:
 				extentions = "<div class=\"PartitionPie\"><img src=\"data:image/svg+xml;utf8," + image[2] + "\" /></div>"
 			except:
 				extentions = ""
-			
+
 			results[category]["Measures"] += self.__formatMeasureTemplate(
 				templateMeasure,
 				key,
@@ -360,7 +358,7 @@ class Profile:
 		self.__properties["Weighted"] = self.__G.isWeighted()
 		self.__properties["Density"] = properties.density(self.__G)
 		self.__properties["Self Loops"] = self.__G.numberOfSelfLoops()
-	
+
 		try:
 			diameter = properties.Diameter.estimatedDiameterRange(self.__G, error=0.1)
 		except:
@@ -393,13 +391,13 @@ class Profile:
 				if self.__verbose:
 					print("(removed)\n>> " + str(e), flush=True)
 				continue
-			
+
 			timerInstance = stopwatch.Timer()
 			instance.run()
 			elapsedMain = timerInstance.elapsed
 			if self.__verbose:
 				print("{:.2F} s (Post: ".format(elapsedMain), end="", flush=True)
-			
+
 			timerPost = stopwatch.Timer()
 			measure["data"]["sample"] = measure["getter"](instance)
 			measure["data"]["sorted"] = stat.sorted(measure["data"]["sample"])
@@ -413,7 +411,7 @@ class Profile:
 			elapsedPost = timerPost.elapsed
 			if self.__verbose:
 				print("{:.2F} s)".format(elapsedPost), flush=True)
-			
+
 			measure["time"] = (elapsedMain, elapsedPost)
 
 		if self.__verbose:
@@ -438,16 +436,16 @@ class Profile:
 						# self.__measures[name]["data"]["ranged"],
 						# category == "Partition"
 				# )).run()
-				
+
 		while pool.numberOfTasks() > 0:
 			(type, name, data) = pool.get()
-			
+
 			try:
 				category = self.__measures[name]["category"]
 
 				if type == "Stat":
 					self.__measures[name]["stat"] = data
-					funcPrint("Stat: " + name)					
+					funcPrint("Stat: " + name)
 					if self.__measures[name]["correlate"]:
 						for key in self.__correlations[category]:
 							self.__correlations[category][key][name] = {}
@@ -475,7 +473,7 @@ class Profile:
 						self.__correlations[category][name] = {}
 						self.__correlations[category][name][name] = {}
 						self.__correlations[category][name][name]["stat"] = {
-							"Spearman's Rang Correlation Coefficient": 1,
+							"Spearman's Rank Correlation Coefficient": 1,
 							"Pearson's Correlation Coefficient": 1,
 							"Fechner's Correlation Coefficient": 1
 						}
@@ -493,7 +491,7 @@ class Profile:
 			except Exception as e:
 				print("Error (Post Processing): " + type + " - " + name)
 				print(str(e))
-		
+
 		pool.join()
 
 		if self.__verbose:
