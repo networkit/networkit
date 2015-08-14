@@ -119,7 +119,7 @@ TEST_F(IOBenchmark, benchRasterReader) {
 		EXPECT_EQ(xcoords.size(), ycoords.size());
 
 		const count n = xcoords.size();
-		count numRuns = 10;
+		count numRuns = 1;
 
 		for (index run = 0; run < numRuns; run++) {
 			//transform into polar coordinates
