@@ -13,7 +13,7 @@ def sorted(sample):
 	return result
 
 
-def ranged(sample):
+def ranked(sample):
 	""" TODO: """
 	n = len(sample)
 	result = []
@@ -56,7 +56,7 @@ class Stat:
 		return "Stat"
 
 	def run(self):
-		(sample, sampleSorted, sampleRanged, calculatePie) = self.__params
+		(sample, sampleSorted, sampleRanked, calculatePie) = self.__params
 		n = len(sample)
 
 		results = {}
@@ -102,10 +102,10 @@ class Stat:
 		else:
 			results["Location"]["Harmonic Mean"] = harmonicMean = float("nan")
 
-		def funcArithmeticMeanRang():
+		def funcArithmeticMeanRank():
 			result = (n + 1) / 2
 			return result
-		results["Location"]["Arithmetic Mean (Rang)"] = arithmeticMean_Rang = funcArithmeticMeanRang()
+		results["Location"]["Arithmetic Mean (Rank)"] = arithmeticMean_Rank = funcArithmeticMeanRank()
 
 		def funcUncorrectedVariance(sample, arithmeticMean):
 			result = 0
@@ -114,21 +114,21 @@ class Stat:
 			result /= n
 			return result
 		results["Dispersion"]["Uncorrected Variance"] = variance_uncorrected = funcUncorrectedVariance(sample, arithmeticMean)
-		results["Dispersion"]["Uncorrected Variance (Rang)"] = variance_Rang_uncorrected = funcUncorrectedVariance(sampleRanged, arithmeticMean_Rang)
+		results["Dispersion"]["Uncorrected Variance (Rank)"] = variance_Rank_uncorrected = funcUncorrectedVariance(sampleRanked, arithmeticMean_Rank)
 
 		def funcVariance(variance_uncorrected):
 			result = variance_uncorrected * besselsCorrection
 			return result
 		results["Dispersion"]["Variance"] = variance = funcVariance(variance_uncorrected)
-		results["Dispersion"]["Variance (Rang)"] = variance_Rang = funcVariance(variance_Rang_uncorrected)
+		results["Dispersion"]["Variance (Rank)"] = variance_Rank = funcVariance(variance_Rank_uncorrected)
 
 		def funcStandardDeviation(variance):
 			result = math.sqrt(variance)
 			return result
 		results["Dispersion"]["Standard Deviation"] = s_n = funcStandardDeviation(variance)
-		results["Dispersion"]["Standard Deviation (Rang)"] = s_n_Rang = funcStandardDeviation(variance_Rang)
+		results["Dispersion"]["Standard Deviation (Rank)"] = s_n_Rank = funcStandardDeviation(variance_Rank)
 		results["Dispersion"]["Uncorrected Standard Deviation"] = s_n_uncorrected = funcStandardDeviation(variance_uncorrected)
-		results["Dispersion"]["Uncorrected Standard Deviation (Rang)"] = s_n_Rang_uncorrected = funcStandardDeviation(variance_Rang_uncorrected)
+		results["Dispersion"]["Uncorrected Standard Deviation (Rank)"] = s_n_Rank_uncorrected = funcStandardDeviation(variance_Rank_uncorrected)
 
 		def funcCoefficientOfVariation(s_n, arithmeticMean):
 			result = float("nan")
@@ -136,9 +136,10 @@ class Stat:
 				result = s_n / arithmeticMean
 			return result
 		results["Dispersion"]["Coefficient Of Variation"] = c_v = funcCoefficientOfVariation(s_n, arithmeticMean)
-		results["Dispersion"]["Coefficient Of Variation (Rang)"] = c_v_Rang = funcCoefficientOfVariation(s_n_Rang, arithmeticMean_Rang)
+		results["Dispersion"]["Coefficient Of Variation (Rank)"] = c_v_Rank = funcCoefficientOfVariation(s_n_Rank, arithmeticMean_Rank)
 		results["Dispersion"]["Uncorrected Coefficient Of Variation"] = c_v = funcCoefficientOfVariation(s_n_uncorrected, arithmeticMean)
-		results["Dispersion"]["Uncorrected Coefficient Of Variation (Rang)"] = c_v_Rang = funcCoefficientOfVariation(s_n_Rang_uncorrected, arithmeticMean_Rang)
+		results["Dispersion"]["Uncorrected Coefficient Of Variation (Rank)"] = c_v_Rank = funcCoefficientOfVariation(s_n_Rank_uncorrected, arithmeticMean_Rank)
+		
 		def funcAlphaQuartile(alpha):
 			k_real = (alpha * n)
 			k = math.floor(k_real)
@@ -452,7 +453,7 @@ class Correlation:
 		return "Correlation"
 
 	def run(self):
-		(nameB, sample_1, sampleRanged_1, stat_1, sample_2, sampleRanged_2, stat_2) = self.__params
+		(nameB, sample_1, sampleRanked_1, stat_1, sample_2, sampleRanked_2, stat_2) = self.__params
 		n = len(sample_1)
 		assert (n == len(sample_2)), "sample sizes are not equal"
 
@@ -470,11 +471,11 @@ class Correlation:
 			sample_2,
 			stat_2["Location"]["Arithmetic Mean"]
 		)
-		results["Covariance (Rang)"] = covarianceRanged = funcCovariance(
-			sampleRanged_1,
-			stat_1["Location"]["Arithmetic Mean (Rang)"],
-			sampleRanged_2,
-			stat_2["Location"]["Arithmetic Mean (Rang)"]
+		results["Covariance (Rank)"] = covarianceRanked = funcCovariance(
+			sampleRanked_1,
+			stat_1["Location"]["Arithmetic Mean (Rank)"],
+			sampleRanked_2,
+			stat_2["Location"]["Arithmetic Mean (Rank)"]
 		)
 
 		def funcPearsonsCorrelationCoefficient(covariance, uncorrectedStandardDeviation_1, uncorrectedStandardDeviation_2):
@@ -488,9 +489,9 @@ class Correlation:
 			stat_2["Dispersion"]["Uncorrected Standard Deviation"]
 		)
 		results["Spearman's Rank Correlation Coefficient"] = funcPearsonsCorrelationCoefficient(
-			covarianceRanged,
-			stat_1["Dispersion"]["Uncorrected Standard Deviation (Rang)"],
-			stat_2["Dispersion"]["Uncorrected Standard Deviation (Rang)"]
+			covarianceRanked,
+			stat_1["Dispersion"]["Uncorrected Standard Deviation (Rank)"],
+			stat_2["Dispersion"]["Uncorrected Standard Deviation (Rank)"]
 		)
 
 		def funcFechnersCorrelationCoefficent(arithmeticMean_1, arithmeticMean_2):

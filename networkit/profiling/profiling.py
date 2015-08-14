@@ -404,7 +404,7 @@ class Profile:
 			timerPost = stopwatch.Timer()
 			measure["data"]["sample"] = measure["getter"](instance)
 			measure["data"]["sorted"] = stat.sorted(measure["data"]["sample"])
-			measure["data"]["ranged"] = stat.ranged(measure["data"]["sample"])
+			measure["data"]["ranked"] = stat.ranked(measure["data"]["sample"])
 			if self.__measures[name]["category"] == "Node Centrality":
 				assortativity = properties.Assortativity(self.__G, measure["data"]["sample"])
 				assortativity.run()
@@ -429,14 +429,14 @@ class Profile:
 					stat.Stat(name, (
 						self.__measures[name]["data"]["sample"],
 						self.__measures[name]["data"]["sorted"],
-						self.__measures[name]["data"]["ranged"],
+						self.__measures[name]["data"]["ranked"],
 						category == "Partition"
 					))
 				)
 				# stat.Stat(name, (
 						# self.__measures[name]["data"]["sample"],
 						# self.__measures[name]["data"]["sorted"],
-						# self.__measures[name]["data"]["ranged"],
+						# self.__measures[name]["data"]["ranked"],
 						# category == "Partition"
 				# )).run()
 
@@ -457,10 +457,10 @@ class Profile:
 								stat.Correlation(key, (
 									name,
 									self.__measures[key]["data"]["sample"],
-									self.__measures[key]["data"]["ranged"],
+									self.__measures[key]["data"]["ranked"],
 									self.__measures[key]["stat"],
 									self.__measures[name]["data"]["sample"],
-									self.__measures[name]["data"]["ranged"],
+									self.__measures[name]["data"]["ranked"],
 									self.__measures[name]["stat"]
 								))
 							)
