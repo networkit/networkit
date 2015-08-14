@@ -12,7 +12,7 @@ def sorted(sample):
 	result.sort()
 	return result
 
-	
+
 def ranged(sample):
 	""" TODO: """
 	n = len(sample)
@@ -228,7 +228,7 @@ class Stat:
 			return result
 		results["Binning"]["Intervals Histogram"] = intervalsHistogram = funcIntervals(k_Bins_Histogram)
 		intervalsCDF = funcIntervals(k_Bins_CDF)
-				
+
 		def funcBinAbsoluteFrequencies(numberOfBins, intervals, comulative):
 			result = []
 			index = 0
@@ -244,7 +244,7 @@ class Stat:
 			return result
 		results["Binning"]["Absolute Frequencies Histogram"] = absoluteFrequenciesHistogram = funcBinAbsoluteFrequencies(k_Bins_Histogram, intervalsHistogram, False)
 		absoluteFrequenciesCDF = funcBinAbsoluteFrequencies(k_Bins_CDF, intervalsCDF, True)
-		
+
 		def funcJoinEmptyBins(k_Bin, intervals, frequencies, commulative):
 			result = k_Bin
 			value = 0
@@ -259,7 +259,7 @@ class Stat:
 		results["Binning"]["Number CDF"] = k_Bins_CDF = funcJoinEmptyBins(k_Bins_CDF, intervalsCDF, absoluteFrequenciesCDF, True)
 		results["Binning"]["Absolute Frequencies CDF"] = absoluteFrequenciesCDF
 		results["Binning"]["Intervals CDF"] = intervalsCDF
-		
+
 		def funcBinRelativeFrequencies(absoluteFrequencies):
 			result = []
 			for H in absoluteFrequencies:
@@ -278,7 +278,7 @@ class Stat:
 			result = ((intervalsHistogram[index]+intervalsHistogram[index+1]) / 2, max)
 			return result
 		results["Binning"]["Mode"] = mode = funcMode()
-		
+
 		def funcLowerOutliers():
 			lowerBound = Q1 - IQR * 3
 			upperBound = Q1 - IQR * 1.5
@@ -288,14 +288,14 @@ class Stat:
 			for i in range(n):
 				value = sampleSorted[i]
 				if value >= lowerBound and state == 0:
-					result_lower = value 
+					result_lower = value
 					state = 1
 				if value >= upperBound and state == 1:
 					result_upper = value
 					break
 			return (result_lower, result_upper)
 		results["Location"]["Outlier (Lower)"] = funcLowerOutliers()
-		
+
 		def funcUpperOutliers():
 			lowerBound = Q3 + IQR * 1.5
 			upperBound = Q3 + IQR * 3
@@ -312,9 +312,9 @@ class Stat:
 					break
 			return (result_upper, result_lower)
 		results["Location"]["Outlier (Upper)"] = funcUpperOutliers()
-			
+
 		if calculatePie:
-			def funcPie():	
+			def funcPie():
 				n = len(sample)
 				sum = 0
 				for i in range(n):
@@ -334,8 +334,8 @@ class Stat:
 						relativeFrequencies.append(value)
 				return (relativeFrequencies, cutSize)
 			results["Binning"]["Pie"] = funcPie()
-		
-			
+
+
 		# Chi-Squared-Test <- Correct Binning
 		# For Test-Case Purpose
 		# n = 100
@@ -471,7 +471,7 @@ class Correlation:
 			stat_1["Dispersion"]["Uncorrected Standard Deviation"],
 			stat_2["Dispersion"]["Uncorrected Standard Deviation"]
 		)
-		results["Spearman's Rang Correlation Coefficient"] = funcPearsonsCorrelationCoefficient(
+		results["Spearman's Rank Correlation Coefficient"] = funcPearsonsCorrelationCoefficient(
 			covarianceRanged,
 			stat_1["Dispersion"]["Uncorrected Standard Deviation (Rang)"],
 			stat_2["Dispersion"]["Uncorrected Standard Deviation (Rang)"]

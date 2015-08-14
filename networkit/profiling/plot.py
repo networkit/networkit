@@ -17,8 +17,8 @@ class Theme:
 	""" TODO: """
 	def __init__(self):
 		self.set()
-    
-	
+
+
 	@classmethod
 	def RGBA2RGB(cls, color, alpha, background):
 		result = (
@@ -27,20 +27,20 @@ class Theme:
 			color[2] * alpha + background[2] * (1-alpha),
 			1
 		)
-		return result		
-	
-	
+		return result
+
+
 	def set(self, style="light", color=(0, 0, 1)):
 		optionsStyle = ["light", "system"]
 		if style not in optionsStyle:
 			raise ValueError("possible style options: " + str(optionsStyle))
 		if len(color) != 3:
 			raise ValueError("(r,g,b) tuple required")
-				
+
 		if style == "system":
 			self.__rcParams = mpl.rcParams
 			raise ValueError("not implemented, yet")
-			
+
 		if style == "light":
 			self.__defaultColor = (0, 0, 0)
 			self.__defaultWidth = 1
@@ -51,23 +51,23 @@ class Theme:
 			self.__faceColorGray = "lightgray"
 			self.__edgeColor = (color[0], color[1], color[2], 0.6)
 			self.__edgeColorGray = (0, 0, 0)
-			self.__edgeWidth = 2
+			self.__edgeWidth = 1
 			self.__gridColor = "lightgray"
 			self.__fontColor = (0, 0, 0)
 			self.__fontSize = 10
 
 		self.__color = color
 		self.__style = style
-    
-	
+
+
 	def get(self):
 		return (self.__style, self.__color)
 
-		
+
 	def getRcParams():
 		return self.__rcParams
 
-		
+
 	def getDefaultColor(self):
 		return self.__defaultColor
 	def getDefaultWidth(self):
@@ -95,7 +95,7 @@ class Theme:
 	def getFontColor(self):
 		return self.__fontColor
 
-		
+
 class Measure:
 	""" TODO: """
 	def __init__(self, name, params):
@@ -112,7 +112,7 @@ class Measure:
 		(index, stat, label, theme) = self.__params
 		plt.ioff()
 
-		
+
 		def funcSpace(min, max):
 			result = 0.1
 			if min < max:
@@ -123,7 +123,7 @@ class Measure:
 		def funcTicks(min, max, numberOfTicks):
 			result = []
 			if numberOfTicks > 0:
-				value = min    
+				value = min
 				step = (max - min) / numberOfTicks
 				for i in range(numberOfTicks):
 					result.append(min + step*i)
@@ -152,7 +152,7 @@ class Measure:
 			else:
 				axisColor = theme.getBackgroundColor()
 			ax.spines["bottom"].set_color(axisColor)
-			ax.spines["top"].set_color(axisColor) 
+			ax.spines["top"].set_color(axisColor)
 			ax.spines["right"].set_color(axisColor)
 			ax.spines["left"].set_color(axisColor)
 			ax.tick_params(axis="x", colors=theme.getGridColor(), which="both", labelsize=theme.getFontSize())
@@ -162,7 +162,7 @@ class Measure:
 			[x_ticklabel.set_color(theme.getFontColor()) for x_ticklabel in ax.get_xticklabels()]
 			[y_ticklabel.set_color(theme.getFontColor()) for y_ticklabel in ax.get_yticklabels()]
 			fig.set_size_inches(width, height)
-			
+
 
 		def funcPlotBox(ax):
 			q1 = stat["Location"]["1st Quartile"]
@@ -240,9 +240,9 @@ class Measure:
 				edgecolor = theme.getEdgeColor()
 			))
 			ax.set_xlim([x_min-space, x_max+space])
-			ax.set_ylim([0, 1])			
+			ax.set_ylim([0, 1])
 			return ax
-			
+
 
 		def funcPlotPDF(ax):
 			numberOfBins = stat["Binning"]["Number Histogram"]
@@ -295,14 +295,14 @@ class Measure:
 			ax.set_xlim([x_min-x_space, x_max+x_space])
 			ax.set_ylim([0, 1+y_space])
 			return ax
-    
-	
+
+
 		def funcPlotPie(ax):
 			numberOfTooSmallSubsets = stat["Binning"]["Pie"][1]
 			relativeFrequencies = stat["Binning"]["Pie"][0]
 			radius = 2
 			accumulator = 0
-			
+
 			for i in range(len(relativeFrequencies)):
 				value = relativeFrequencies[i]
 				alpha = 360 * value
@@ -323,10 +323,10 @@ class Measure:
 					ha = "left"
 				else:
 					ha = "right"
-				
+
 				if i == 0:
 					ax.add_patch(patches.Wedge(
-						(math.cos(math.pi/180 * (90 + alpha/2)) * radius * 0.1, 
+						(math.cos(math.pi/180 * (90 + alpha/2)) * radius * 0.1,
 						math.sin(math.pi/180 * (90 + alpha/2)) * radius * 0.1),
 						radius,
 						90,
@@ -352,7 +352,7 @@ class Measure:
 						edgecolor = theme.getDefaultColor()
 					))
 				plt.text(
-					math.cos(math.pi/180 * (90 + accumulator + alpha/2)) * labelRadius, 
+					math.cos(math.pi/180 * (90 + accumulator + alpha/2)) * labelRadius,
 					math.sin(math.pi/180 * (90 + accumulator + alpha/2)) * labelRadius,
 					s = label,
 					ha = ha,
@@ -360,17 +360,17 @@ class Measure:
 					size = theme.getFontSize()
 				)
 				accumulator += alpha
-			
+
 			ax.set_xlim([-3.2, 3.2])
 			ax.set_ylim([-2.7, 2.7])
 			ax.set_xticks([])
 			ax.set_yticks([])
 			return ax
-	
-	
+
+
 		if index == 0:
 			fig = plt.figure()
-			
+
 			ax1 = plt.subplot2grid((40, 8), (0, 0), colspan=8, rowspan=3)
 			ax1.set_ylabel('Box')
 			ax1.yaxis.set_label_position("right")
@@ -386,7 +386,7 @@ class Measure:
 				y_showTickLabels = False,
 				showGrid = False
 			)
-			
+
 			ax2 = plt.subplot2grid((40, 8), (3, 0), colspan=8, rowspan=20)
 			ax2.set_ylabel("PDF (absolute)")
 			ax2.yaxis.set_label_position("right")
@@ -413,11 +413,11 @@ class Measure:
 				height = 3
 			)
 			fig.set_size_inches(6, 6)
-		
+
 		elif index == 1:
 			fig = plt.figure()
 			ax = fig.gca()
-			
+
 			ax.set_xlabel(label)
 			# ax.xaxis.set_label_position("top")
 			ax.set_ylabel("PDF (absolute)")
@@ -430,11 +430,11 @@ class Measure:
 				width = 4,
 				height = 2.5
 			)
-		
+
 		elif index == 2:
 			fig = plt.figure()
 			ax = fig.gca()
-			
+
 			funcPlotPie(ax)
 			funcPlotEnd(
 				fig = fig,
@@ -444,7 +444,7 @@ class Measure:
 				height = 5.4*1.5,
 				drawAxis = False
 			)
-	
+
 		fig.tight_layout()
 		imgdata = io.StringIO()
 		fig.savefig(imgdata, format='svg')
@@ -454,7 +454,7 @@ class Measure:
 		encoded = quote(plaintext, safe='');
 		return (index, encoded)
 
-		
+
 class Scatter:
 	""" TODO: """
 	def __init__(self, name, params):
@@ -472,7 +472,7 @@ class Scatter:
 		(nameB, labelA, labelB, sample_1, sample_2) = self.__params
 		plt.ioff()
 
-		
+
 		def hexbin(ax, x, y, color, **kwargs):
 			# cmap = sns.light_palette(color, as_cmap=True)
 			ax.hexbin(x, y, gridsize=32, bins="log", **kwargs)
@@ -487,19 +487,19 @@ class Scatter:
 			ax3 = ax.twiny()
 			ax3.set_xlabel(nameA)
 			ax3.set_xticks([])
-		
-		
+
+
 		fig = plt.figure()
-		ax = fig.gca()	
-		
+		ax = fig.gca()
+
 		hexbin(ax, sample_1, sample_2, "#000070")
 		xfmt = ScalarFormatter(useMathText=True)
 		xfmt.set_powerlimits((-1,1))
 		ax.xaxis.set_major_formatter(xfmt)
 		yfmt = ScalarFormatter(useMathText=True)
 		yfmt.set_powerlimits((-1,1))
-		ax.yaxis.set_major_formatter(yfmt)		
-		
+		ax.yaxis.set_major_formatter(yfmt)
+
 		fig.set_size_inches(4, 3.75)
 
 		fig.tight_layout()
