@@ -240,8 +240,8 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 
 	//just for now, write out coordinates
 	for (index i = 0; i < n; i++) {
-		auto cartesian = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
-		INFO("\node at (", cartesian.getX(), ", ", cartesian.getY(), ") [vertex] (n", i, ") {};");
+		auto cartesian = HyperbolicSpace::polarToCartesian(angles[i], HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[i]));
+		INFO("\\node at (", cartesian.getX(), ", ", cartesian.getY(), ") [vertex] (n", i, ") {};");
 	}
 
 	//get Graph
@@ -255,7 +255,7 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 			if (j >= n) ERROR("Node ", j, " prospective neighbour of ", i, " does not actually exist. Oops.");
 			if (j > i) {
 				result.addHalfEdge(i, j);
-				INFO("\draw [normaledge] (n", i, ") edge (n", j, ")");
+				INFO("\\draw [normaledge] (n", i, ") edge (n", j, ");");
 
 			}
 		}
