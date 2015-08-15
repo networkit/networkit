@@ -356,18 +356,25 @@ class Profile:
 		self.__properties["Name"] = self.__G.getName()
 		self.__properties["Nodes"] = self.__G.numberOfNodes()
 		self.__properties["Edges"] = self.__G.numberOfEdges()
+		self.__properties["Density"] = properties.density(self.__G)
 		self.__properties["Directed"] = self.__G.isDirected()
 		self.__properties["Weighted"] = self.__G.isWeighted()
-		self.__properties["Density"] = properties.density(self.__G)
 		self.__properties["Self Loops"] = self.__G.numberOfSelfLoops()
 
+		timerInstance = stopwatch.Timer()
+		if self.__verbose:
+			print("Diameter".format(elapsedMain), end="", flush=True)
 		try:
 			diameter = properties.Diameter.estimatedDiameterRange(self.__G, error=0.1)
 		except:
 			diameter = "N/A"
+		elapsedMain = timerInstance.elapsed
+		if self.__verbose:
+			print("{:.2F} s".format(elapsedMain), flush=True)
+			print("")
 		self.__properties["Diameter Range"] = diameter
 
-
+			
 	def __loadMeasures(self):
 		""" TODO: """
 		def funcPrint(str):
