@@ -14,39 +14,27 @@
 using std::vector;
 namespace NetworKit {
 
-DynamicHyperbolicGenerator::DynamicHyperbolicGenerator() : nodes(0), currentfactor(0), alpha(1), stretch(1), moveEachStep(0), factorgrowth(0), moveDistance(0) {
-	initializeQuadTree();
-	initializeMovement();
-}
-
-DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(count n, double initialFactor, double alpha, double stretch, double moveEachStep, double factorgrowth, double moveDistance) {
+DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(count n, double avgDegree, double exp, double moveEachStep, double moveDistance) {
 	nodes = n;
-	currentfactor = initialFactor;
-	this->alpha = alpha;
-	this->stretch = stretch;
+	this->alpha = (exp-1)/2;
 	this->moveEachStep = moveEachStep;
-	this->factorgrowth = factorgrowth;
 	this->moveDistance = moveDistance;
 	this->initialized = false;
-	R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(nodes);
+	R = HyperbolicSpace::getTargetRadius(n, n*avgDegree/2, alpha, 0);
 	r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	initializeQuadTree();
 	initializeMovement();
 }
-
-DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(vector<double> &angles, vector<double> &radii, double stretch, double initialFactor, double moveEachStep, double factorgrowth, double moveDistance) {
+DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(std::vector<double> &angles, std::vector<double> &radii, double avgDegree, double exp, double moveEachStep, double moveDistance) {
 	this->angles = angles;
 	this->radii = radii;
 	this->nodes = angles.size();
-	this->stretch = stretch;
+	this->alpha = (exp-1)/2;
 	assert(radii.size() == nodes);
-	R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(nodes);
+	R = HyperbolicSpace::getTargetRadius(nodes, nodes*avgDegree/2, alpha, 0);
 	r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	quad = Quadtree<index>(r);
-	currentfactor = initialFactor;
-	this->alpha = 1;//not needed any more
 	this->moveEachStep = moveEachStep;
-	this->factorgrowth = factorgrowth;
 	this->moveDistance = moveDistance;
 	for (index i = 0; i < nodes; i++) {
 		assert(radii[i] < r);
@@ -70,12 +58,11 @@ void DynamicHyperbolicGenerator::initializeMovement() {
 void DynamicHyperbolicGenerator::initializeQuadTree() {
 	if (initialized) return;
 	else initialized = true;
-	double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(nodes);
 	angles.resize(nodes);
 	radii.resize(nodes);
-	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	quad = Quadtree<index>(r);
-	HyperbolicSpace::fillPoints(angles, radii, stretch, alpha);
+	double oldR = HyperbolicSpace::hyperbolicAreaToRadius(nodes);
+	HyperbolicSpace::fillPoints(angles, radii, R / oldR, alpha);
 	INFO("Generated Points");
 	for (index i = 0; i < nodes; i++) {
 		assert(radii[i] < R);
@@ -85,13 +72,11 @@ void DynamicHyperbolicGenerator::initializeQuadTree() {
 }
 
 Graph DynamicHyperbolicGenerator::getGraph() const {
-	double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(nodes);
-	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	/**
 	 * The next call is unnecessarily expensive, since it constructs a new QuadTree.
 	 * Reduces code duplication, though.
 	 */
-	return HyperbolicGenerator().generate(angles, radii, r, currentfactor*R);
+	return HyperbolicGenerator().generate(angles, radii, r, R);
 }
 
 std::vector<Point<float> > DynamicHyperbolicGenerator::getCoordinates() const {
@@ -124,9 +109,6 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 	vector<GraphEvent> result;
 
 	for (index step = 0; step < nSteps; step++) {
-		if (factorgrowth != 0) {
-			getEventsFromFactorGrowth(result);
-		}
 
 		if (moveEachStep > 0 && moveDistance > 0) {
 			getEventsFromNodeMovement(result);
@@ -134,45 +116,6 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 		result.push_back(GraphEvent(GraphEvent::TIME_STEP));
 	}
 	return result;
-}
-
-void DynamicHyperbolicGenerator::getEventsFromFactorGrowth(vector<GraphEvent> &result) {
-	if (currentfactor == 0 && factorgrowth < 0) {
-		return;
-	}
-	double newfactor = currentfactor + factorgrowth;
-	if (newfactor < 0) newfactor = 0;
-
-	/**
-	 * TODO: get all neighbours in the beginning, sort them by hyperbolic distance, move along edge array.
-	 */
-	#pragma omp parallel for
-	for (index i = 0; i < nodes; i++) {
-		assert(R*newfactor > R*currentfactor);
-		vector<index> oldset = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), R*currentfactor);
-		//we only add new edges, don't remove any. The order of the points should be the same
-		vector<index> newset = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), R*newfactor);
-		assert(newset.size() >= oldset.size());
-		std::sort(oldset.begin(), oldset.end());
-		std::sort(newset.begin(), newset.end());
-		vector<index> difference(newset.size());
-
-		//get new edges
-		auto it = std::set_difference(newset.begin(), newset.end(), oldset.begin(), oldset.end(), difference.begin());
-
-		//keep only those pointing to higher node indices, we don't want any multiedges
-		it = std::remove_if(difference.begin(), it, [i](index edge){return i >= edge;});
-		difference.resize(it - difference.begin());
-
-		#pragma omp critical
-		{
-			for (auto edge : difference) {
-				result.emplace_back(GraphEvent::EDGE_ADDITION, i, edge);
-			}
-		}
-
-	}
-	currentfactor = newfactor;
 }
 
 void DynamicHyperbolicGenerator::moveNode(index toMove) {
@@ -225,16 +168,23 @@ void DynamicHyperbolicGenerator::moveNode(index toMove) {
 }
 
 void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &result) {
+	bool suppressLeft = false;
+	double threshold = R;
+
 	count oldStreamMarker = result.size();
 	vector<index> toWiggle;
 	vector<vector<index> > oldNeighbours;
 	//TODO: One could parallelize this.
 	for (index i = 0; i < nodes; i++) {
 		if (Aux::Random::real(1) < moveEachStep) {
+			vector<index> localOldNeighbors;
 			toWiggle.push_back(i);
-			oldNeighbours.push_back(quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), R*currentfactor));
+			Point2D<double> q = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
+			quad.getElementsInHyperbolicCircle(q, R, suppressLeft, localOldNeighbors);
+			oldNeighbours.push_back(localOldNeighbors);//add temperature
 		}
 	}
+
 	/**
 	 * Tried to parallelize this, didn't bring any benefit.
 	 * Not surprising, since most of the work - manipulating the QuadTree - needs to be done in a critical section
@@ -258,7 +208,10 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
 	//now get the new edges and see what changed
 	#pragma omp parallel for
 	for (index j = 0; j < toWiggle.size(); j++) {
-		vector<index> newNeighbours = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[toWiggle[j]], radii[toWiggle[j]]), R*currentfactor);
+		vector<index> newNeighbours;
+		Point2D<double> q = HyperbolicSpace::polarToCartesian(angles[toWiggle[j]], radii[toWiggle[j]]);
+		quad.getElementsInHyperbolicCircle(q, R, suppressLeft, newNeighbours);
+
 		std::sort(oldNeighbours[j].begin(), oldNeighbours[j].end());
 		std::sort(newNeighbours.begin(), newNeighbours.end());
 		vector<index> newEdges(newNeighbours.size());

@@ -92,11 +92,6 @@ Graph HyperbolicGenerator::generate(count n, double distanceFactor, double alpha
 	return generate(anglecopy, radiicopy, r, R*distanceFactor);
 }
 
-double HyperbolicGenerator::expectedNumberOfEdges(count n, double stretch) {
-	double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(n);
-	return (8 / M_PI) * n * exp(-R/2)*(n/2);
-}
-
 Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<double> &radii, double r, double thresholdDistance) {
 	Aux::Timer timer;
 	timer.start();
