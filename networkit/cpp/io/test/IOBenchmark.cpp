@@ -217,7 +217,16 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 		auto  minmaxy = std::minmax_element (ycoords.begin(),ycoords.end());
 		INFO("Y coordinates range from ", *minmaxy.first, " to ", *minmaxy.second, ".");
 
-		auto edgeProb = [n](double distance) -> double {return (1/distance)*exp(5)/(double)n ;};
+		//set resolution for heat map output
+		double resolution;
+		if (country.compare("usa") == 0) {
+			resolution = 20;
+		} else {
+			resolution = 3;
+		}
+
+		//set neighbor probability
+		auto edgeProb = [n](double distance) -> double {return (1/distance)*exp(4)/(double)n ;};
 
 		//convert coordinates
 		runtime.start();
@@ -306,7 +315,6 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 			}
 
 			//build and write heat map of infections
-			const double resolution = 5;
 			std::string filename = std::string("heatMap-") + country + std::string("-step-") + std::to_string(step) + std::string(".dat");
 			convertToHeatMap(infectedState, xcoords, ycoords, filename, resolution);
 
