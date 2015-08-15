@@ -204,19 +204,15 @@ TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorWithSequentialQuadtree) 
 	EXPECT_EQ(n, G.numberOfNodes());
 }
 
-TEST_F(GeneratorsBenchmark, benchmarkDynamicHyperbolicGeneratorOnFactorGrowth) {
-	count n = 10000;
-	count nSteps = 100;
-	//(count n, double initialFactor = 1, double alpha = 1, double stretch = 1, double moveEachStep = 0, double factorgrowth = 0, double moveDistance = 0);
-	DynamicHyperbolicGenerator dyngen(n,0,1,1,0,0.01,0);
-	dyngen.generate(nSteps);
-}
-
 TEST_F(GeneratorsBenchmark, benchmarkDynamicHyperbolicGeneratorOnNodeMovement) {
-	count n = 10000;
-	count nSteps = 100;
-	//(count n, double initialFactor = 1, double alpha = 1, double stretch = 1, double moveEachStep = 0, double factorgrowth = 0, double moveDistance = 0);
-	DynamicHyperbolicGenerator dyngen(n,1,1,1,0.5,0,0.02);
+	const count n = 10000;
+	const count nSteps = 100;
+	const double k = 6;
+	const double exp = 3;
+	const double T = 0;
+	const double moveEachStep = 0.5;
+	const double moveDistance = 0.02;
+	DynamicHyperbolicGenerator dyngen(n, k, exp, T, moveEachStep, moveDistance);
 	dyngen.generate(nSteps);
 }
 
