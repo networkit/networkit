@@ -123,8 +123,14 @@ class Profile:
 			("Partition",		"Connected Components",			False,	funcSizes,	"Connected Nodes",	classConnectedComponents,		(G, ))
 		]: result.__addMeasure(parameter, exclude)
 
+		if cls.__verbose:
+			timerAll = stopwatch.Timer()
 		result.__loadProperties()
 		result.__loadMeasures()
+		if cls.__verbose:
+			if cls.__verboseLevel < 1:
+				print("")
+			print("\ntotal time (measures + stats + correlations): {:.2F} s".format(timerAll.elapsed))
 		return result;
 
 
@@ -387,9 +393,6 @@ class Profile:
 		kit.setNumberOfThreads(self.__parallel)
 		pool = multiprocessing.ThreadPool(self.__parallel)
 			
-		if self.__verbose:
-			timerAll = stopwatch.Timer()
-
 		for name in self.__measures:
 			measure = self.__measures[name]
 			if self.__verbose:
@@ -404,25 +407,46 @@ class Profile:
 
 			timerInstance = stopwatch.Timer()
 			instance.run()
+			measure["data"]["sample"] = measure["getter"](instance)
 			elapsedMain = timerInstance.elapsed
 			if self.__verbose:
-				print("{:.2F} s (Post: ".format(elapsedMain), end="", flush=True)
-
-			timerPost = stopwatch.Timer()
-			measure["data"]["sample"] = measure["getter"](instance)
+				print("{:.2F} s".format(elapsedMain), flush=True)
+			
+			if self.__verbose:
+				print("    Sort: ", end="", flush=True)
+			timerPostSort = stopwatch.Timer()
 			measure["data"]["sorted"] = stat.sorted(measure["data"]["sample"])
+			elapsedPostSort = timerPostSort.elapsed
+			if self.__verbose:
+				print("{:.2F} s".format(elapsedPostSort), flush=True)
+			
+			if self.__verbose:
+				print("    Rank: ", end="", flush=True)
+			timerPostRank = stopwatch.Timer()
 			measure["data"]["ranked"] = stat.ranked(measure["data"]["sample"])
+			elapsedPostRank = timerPostRank.elapsed
+			if self.__verbose:
+				print("{:.2F} s".format(elapsedPostRank), flush=True)
+			
+			if self.__verbose:
+				print("    Assortativity: ", end="", flush=True)
+			timerPostAssortativity = stopwatch.Timer()
 			if self.__measures[name]["category"] == "Node Centrality":
 				assortativity = properties.Assortativity(self.__G, measure["data"]["sample"])
 				assortativity.run()
 				measure["assortativity"] = assortativity.getCoefficient()
 			else:
 				measure["assortativity"] = float("nan")
-			elapsedPost = timerPost.elapsed
+			elapsedPostAssortativity = timerPostAssortativity.elapsed
 			if self.__verbose:
-				print("{:.2F} s)".format(elapsedPost), flush=True)
+				print("{:.2F} s".format(elapsedPostAssortativity), flush=True)
 
-			measure["time"] = (elapsedMain, elapsedPost)
+			measure["time"] = (
+				elapsedMain,
+				elapsedPostSort,
+				elapsedPostRank,
+				elapsedPostAssortativity
+			)
 
 		if self.__verbose:
 			print("")
@@ -503,8 +527,3 @@ class Profile:
 				print(str(e))
 
 		pool.join()
-
-		if self.__verbose:
-			if self.__verboseLevel < 1:
-				print("")
-			print("\ntotal time (measures + stats + correlations): {:.2F} s".format(timerAll.elapsed))
