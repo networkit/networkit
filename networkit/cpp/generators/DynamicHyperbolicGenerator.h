@@ -31,7 +31,8 @@ public:
 	 * @param factorGrowth increment added to the value of thresholdFactor at each step, should be non-negative
 	 * @param moveDistance base value for the node movements
 	 */
-	DynamicHyperbolicGenerator(count n, double initialFactor = 1, double alpha = 1, double stretch = 1, double moveEachStep = 0, double factorgrowth = 0, double moveDistance = 0);
+
+	DynamicHyperbolicGenerator(count n = 1000, double avgDegree=6, double exp=3, double moveEachStep = 0, double moveDistance = 0);
 
 	/**
 	 * Initialize a dynamic hyperbolic generator with given initial node positions in polar coordinates
@@ -46,7 +47,7 @@ public:
 	 * @param factorGrowth increment added to the value of thresholdFactor at each step, should be non-negative
 	 * @param moveDistance base value for the node movements
 	 */
-	DynamicHyperbolicGenerator(std::vector<double> &angles, std::vector<double> &radii, double stretch, double initialFactor = 1, double moveEachStep = 0, double factorgrowth = 0, double moveDistance = 0);
+	DynamicHyperbolicGenerator(std::vector<double> &angles, std::vector<double> &radii,  double avgDegree=6, double exp=3, double moveEachStep = 0, double moveDistance = 0);
 
 	/**
 	 * Default constructor
@@ -120,11 +121,8 @@ private:
 	void moveNode(index node);
 
 	count nodes;
-	double currentfactor;
 	double alpha;
-	double stretch;
 	double moveEachStep;
-	double factorgrowth;
 	double moveDistance;
 	Quadtree<index> quad;
 	vector<double> angles;
