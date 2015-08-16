@@ -256,9 +256,9 @@ class Profile:
 						result += "<div class=\"HeatCellName\">" + keyB + "</div><br>"
 				result += "</div>"
 				return result
-			# results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Pearson's Correlation Coefficient")
+			results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Pearson's Correlation Coefficient")
 			results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Spearman's Rank Correlation Coefficient")
-			# results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Fechner's Correlation Coefficient")
+			results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Fechner's Correlation Coefficient")
 
 			def funcScatterPlot(category):
 				result = ""
@@ -370,11 +370,10 @@ class Profile:
 		timerInstance = stopwatch.Timer()
 		if self.__verbose:
 			print("Diameter: ", end="", flush=True)
-		# TODO: insert again
-		# try:
-		# diameter = properties.Diameter.estimatedDiameterRange(self.__G, error=0.1)
-		# except:
-		diameter = "N/A"
+		try:
+			diameter = properties.Diameter.estimatedDiameterRange(self.__G, error=0.1)
+		except:
+			diameter = "N/A"
 		elapsedMain = timerInstance.elapsed
 		if self.__verbose:
 			print("{:.2F} s".format(elapsedMain), flush=True)
@@ -475,8 +474,7 @@ class Profile:
 				if type == "Stat":
 					self.__measures[name]["stat"] = data
 					funcPrint("Stat: " + name)
-					# TODO remove "and False"
-					if self.__measures[name]["correlate"] and False:
+					if self.__measures[name]["correlate"]:
 						for key in self.__correlations[category]:
 							self.__correlations[category][key][name] = {}
 							self.__correlations[category][key][name]["stat"] = {}
