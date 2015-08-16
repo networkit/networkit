@@ -58,6 +58,70 @@ def pystring(stdstring):
 	return stdstring.decode("utf-8")
 
 
+cdef extern from "cpp/base/Algorithm.h":
+	cdef cppclass _Algorithm "NetworKit::Algorithm":
+		_Algorithm()
+		void run() nogil except +
+		bool hasFinished() except +
+		string toString() except +
+
+cdef class Algorithm:
+	""" Abstract base class for algorithms """
+	cdef _Algorithm *_this
+
+	def __init__(self, *args, **namedargs):
+		if type(self) == Algorithm:
+			raise RuntimeError("Error, you may not use Algorithm directly, use a sub-class instead")
+
+	def __cinit__(self, *args, **namedargs):
+		self._this = NULL
+
+	def __dealloc__(self):
+		if self._this != NULL:
+			del self._this
+		self._this = NULL
+
+	def run(self):
+		"""
+		Executes the algorithm.
+
+		Returns
+		-------
+		Algorithm:
+			self
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		with nogil:
+			self._this.run()
+		return self
+
+	def hasFinished(self):
+		"""
+		States whether an algorithm has already run.
+
+		Returns
+		-------
+		Algorithm:
+			self
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return self._this.hasFinished()
+
+	def toString(self):
+		""" Get string representation.
+
+		Returns
+		-------
+		string
+			String representation of algorithm and parameters.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return self._this.toString().decode("utf-8")
+
+
 # Function definitions
 
 cdef extern from "cpp/auxiliary/Log.h" namespace "Aux":
@@ -3262,46 +3326,22 @@ cdef class HubDominance:
 
 
 cdef extern from "cpp/community/CommunityDetectionAlgorithm.h":
-	cdef cppclass _CommunityDetectionAlgorithm "NetworKit::CommunityDetectionAlgorithm":
-		_CommunityDetectionAlgorithm() # Workaround for Cython < 0.22
+	cdef cppclass _CommunityDetectionAlgorithm "NetworKit::CommunityDetectionAlgorithm"(_Algorithm):
 		_CommunityDetectionAlgorithm(const _Graph &_G)
-		void run() nogil except +
 		_Partition getPartition() except +
-		string toString() except +
 
 
-cdef class CommunityDetector:
+cdef class CommunityDetector(Algorithm):
 	""" Abstract base class for static community detection algorithms """
-	cdef _CommunityDetectionAlgorithm *_this
 	cdef Graph _G
 
 	def __init__(self, *args, **namedargs):
 		if type(self) == CommunityDetector:
 			raise RuntimeError("Error, you may not use CommunityDetector directly, use a sub-class instead")
 
-	def __cinit__(self, *args, **namedargs):
-		self._this = NULL
-
 	def __dealloc__(self):
-		if self._this != NULL:
-			del self._this
-		self._this = NULL
 		self._G = None # just to be sure the graph is deleted
-
-	def run(self):
-		"""
-		Executes the community detection algorithm.
-
-		Returns
-		-------
-		CommunityDetector:
-			self
-		"""
-		if self._this == NULL:
-			raise RuntimeError("Error, object not properly initialized")
-		with nogil:
-			self._this.run()
-		return self
+		Algorithm.__dealloc__(self)
 
 	def getPartition(self):
 		"""  Returns a partition of the clustering.
@@ -3313,19 +3353,7 @@ cdef class CommunityDetector:
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
-		return Partition().setThis(self._this.getPartition())
-
-	def toString(self):
-		""" Get string representation.
-
-		Returns
-		-------
-		string
-			String representation of algorithm and parameters.
-		"""
-		if self._this == NULL:
-			raise RuntimeError("Error, object not properly initialized")
-		return self._this.toString().decode("utf-8")
+		return Partition().setThis((<_CommunityDetectionAlgorithm*>(self._this)).getPartition())
 
 cdef extern from "cpp/community/PLP.h":
 	cdef cppclass _PLP "NetworKit::PLP"(_CommunityDetectionAlgorithm):
@@ -4256,68 +4284,46 @@ cdef class EffectiveDiameter:
 # Module: centrality
 
 cdef extern from "cpp/centrality/Centrality.h":
-	cdef cppclass _Centrality "NetworKit::Centrality":
+	cdef cppclass _Centrality "NetworKit::Centrality"(_Algorithm):
 		_Centrality(_Graph, bool, bool) except +
-		void run() nogil except +
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
 		double maximum() except +
 
 
-cdef class Centrality:
+cdef class Centrality(Algorithm):
 	""" Abstract base class for centrality measures"""
 
-	cdef _Centrality* _this
 	cdef Graph _G
 
 	def __init__(self, *args, **kwargs):
 		if type(self) == Centrality:
 			raise RuntimeError("Error, you may not use Centrality directly, use a sub-class instead")
 
-	def __cinit__(self, *args, **kwargs):
-		self._this = NULL
-
 	def __dealloc__(self):
-		if self._this != NULL:
-			del self._this
-		self._this = NULL
 		self._G = None # just to be sure the graph is deleted
-
-	def run(self):
-		"""
-		Executes the centrality algorithm.
-
-		Returns
-		-------
-		Centrality:
-			self
-		"""
-		if self._this == NULL:
-			raise RuntimeError("Error, object not properly initialized")
-		with nogil:
-			self._this.run()
-		return self
+		Algorithm.__dealloc__(self)
 
 	def scores(self):
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
-		return self._this.scores()
+		return (<_Centrality*>(self._this)).scores()
 
 	def score(self, v):
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
-		return self._this.score(v)
+		return (<_Centrality*>(self._this)).score(v)
 
 	def ranking(self):
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
-		return self._this.ranking()
+		return (<_Centrality*>(self._this)).ranking()
 
 	def maximum(self):
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
-		return self._this.maximum()
+		return (<_Centrality*>(self._this)).maximum()
 
 
 cdef extern from "cpp/centrality/DegreeCentrality.h":
@@ -5095,28 +5101,21 @@ cdef class GraphUpdater:
 # Module: coarsening
 
 cdef extern from "cpp/coarsening/GraphCoarsening.h":
-	cdef cppclass _GraphCoarsening "NetworKit::GraphCoarsening":
+	cdef cppclass _GraphCoarsening "NetworKit::GraphCoarsening"(_Algorithm):
 		_GraphCoarsening(_Graph) except +
-		void run() nogil except +
 		_Graph getCoarseGraph() except +
 		vector[node] getNodeMapping() except +
 
-cdef class GraphCoarsening:
-	cdef _GraphCoarsening *_this
+cdef class GraphCoarsening(Algorithm):
 	cdef Graph _G
 
 	def __init__(self, *args, **namedargs):
 		if type(self) == GraphCoarsening:
 			raise RuntimeError("Error, you may not use GraphCoarsening directly, use a sub-class instead")
 
-	def __cinit__(self, *args, **namedargs):
-		self._this = NULL
-
 	def __dealloc__(self):
-		if self._this != NULL:
-			del self._this
-		self._this = NULL
 		self._G = None # just to be sure the graph is deleted
+		Algorithm.__dealloc__(self)
 
 	def run(self):
 		"""
@@ -5134,10 +5133,10 @@ cdef class GraphCoarsening:
 		return self
 
 	def getCoarseGraph(self):
-		return Graph(0).setThis(self._this.getCoarseGraph())
+		return Graph(0).setThis((<_GraphCoarsening*>(self._this)).getCoarseGraph())
 
 	def getNodeMapping(self):
-		return self._this.getNodeMapping()
+		return (<_GraphCoarsening*>(self._this)).getNodeMapping()
 
 
 cdef extern from "cpp/coarsening/ParallelPartitionCoarsening.h":
