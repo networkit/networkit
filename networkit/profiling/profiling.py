@@ -368,13 +368,13 @@ class Profile:
 		self.__properties["Self Loops"] = self.__G.numberOfSelfLoops()
 
 		timerInstance = stopwatch.Timer()
+		if self.__verbose:
+			print("Diameter: ", end="", flush=True)
 		# TODO: insert again
-		# if self.__verbose:
-			# print("Diameter: ", end="", flush=True)
 		# try:
-		diameter = properties.Diameter.estimatedDiameterRange(self.__G, error=0.1)
-		except:
-			diameter = "N/A"
+		# diameter = properties.Diameter.estimatedDiameterRange(self.__G, error=0.1)
+		# except:
+		diameter = "N/A"
 		elapsedMain = timerInstance.elapsed
 		if self.__verbose:
 			print("{:.2F} s".format(elapsedMain), flush=True)
