@@ -368,10 +368,11 @@ class Profile:
 		self.__properties["Self Loops"] = self.__G.numberOfSelfLoops()
 
 		timerInstance = stopwatch.Timer()
-		if self.__verbose:
-			print("Diameter: ", end="", flush=True)
-		try:
-			diameter = properties.Diameter.estimatedDiameterRange(self.__G, error=0.1)
+		# TODO: insert again
+		# if self.__verbose:
+			# print("Diameter: ", end="", flush=True)
+		# try:
+		diameter = properties.Diameter.estimatedDiameterRange(self.__G, error=0.1)
 		except:
 			diameter = "N/A"
 		elapsedMain = timerInstance.elapsed
@@ -464,12 +465,6 @@ class Profile:
 						category == "Partition"
 					))
 				)
-				# stat.Stat(name, (
-						# self.__measures[name]["data"]["sample"],
-						# self.__measures[name]["data"]["sorted"],
-						# self.__measures[name]["data"]["ranked"],
-						# category == "Partition"
-				# )).run()
 
 		while pool.numberOfTasks() > 0:
 			(type, name, data) = pool.get()
@@ -480,7 +475,8 @@ class Profile:
 				if type == "Stat":
 					self.__measures[name]["stat"] = data
 					funcPrint("Stat: " + name)
-					if self.__measures[name]["correlate"]:
+					# TODO remove "and False"
+					if self.__measures[name]["correlate"] and False:
 						for key in self.__correlations[category]:
 							self.__correlations[category][key][name] = {}
 							self.__correlations[category][key][name]["stat"] = {}

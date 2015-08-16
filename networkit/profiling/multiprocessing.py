@@ -29,8 +29,8 @@ class Worker(multiprocessing.Process):
 			try:
 				data = task.run()
 			except Exception as e:
-				print("Error: " + task.getType() + " - " + task.getName())
-				print(str(e))
+				print("Error: " + task.getType() + " - " + task.getName(), flush=True)
+				print(str(e), flush=True)
 			result = (task.getType(), task.getName(), data)
 			self.__tasks.task_done()
 			self.__results.put(result)
