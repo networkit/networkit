@@ -3341,7 +3341,6 @@ cdef class CommunityDetector(Algorithm):
 
 	def __dealloc__(self):
 		self._G = None # just to be sure the graph is deleted
-		Algorithm.__dealloc__(self)
 
 	def getPartition(self):
 		"""  Returns a partition of the clustering.
@@ -4303,7 +4302,6 @@ cdef class Centrality(Algorithm):
 
 	def __dealloc__(self):
 		self._G = None # just to be sure the graph is deleted
-		Algorithm.__dealloc__(self)
 
 	def scores(self):
 		if self._this == NULL:
@@ -5115,7 +5113,6 @@ cdef class GraphCoarsening(Algorithm):
 
 	def __dealloc__(self):
 		self._G = None # just to be sure the graph is deleted
-		Algorithm.__dealloc__(self)
 
 	def run(self):
 		"""
