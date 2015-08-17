@@ -2462,7 +2462,7 @@ cdef extern from "cpp/structures/Partition.h":
 		void setUpperBound(index upper) except +
 		index upperBound() except +
 		index lowerBound() except +
-		void compact() except +
+		void compact(bool useTurbo) except +
 		bool contains(index e) except +
 		bool inSameSubset(index e1, index e2) except +
 		vector[count] subsetSizes() except +
@@ -2664,9 +2664,17 @@ cdef class Partition:
 		"""
 		return self._this.lowerBound()
 
-	def compact(self):
-		""" Change subset IDs to be consecutive, starting at 0. """
-		self._this.compact()
+	def compact(self, useTurbo = False):
+		""" Change subset IDs to be consecutive, starting at 0. 
+
+		Parameters
+		----------
+		useTurbo : bool
+			Default: false. If set to true, a vector instead of a map to assign new ids 
+	 		which results in a shorter running time but possibly a large space overhead.
+
+		"""
+		self._this.compact(useTurbo)
 
 	def contains(self, index e):
 		""" Check if partition assigns a valid subset to the element `e`.
