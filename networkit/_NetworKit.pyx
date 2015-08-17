@@ -2808,7 +2808,7 @@ cdef extern from "cpp/structures/Cover.h":
 		void toSingleton(index e) except +
 		void allToSingletons() except +
 		void mergeSubsets(index s, index t) except +
-#		void setUpperBound(index upper) except +
+		void setUpperBound(index upper) except +
 		index upperBound() except +
 		index lowerBound() except +
 #		void compact() except +
@@ -2912,8 +2912,8 @@ cdef class Cover:
 		"""
 		self._this.mergeSubsets(s, t)
 
-#	def setUpperBound(self, index upper):
-#		self._this.setUpperBound(upper)
+	def setUpperBound(self, index upper):
+		self._this.setUpperBound(upper)
 
 	def upperBound(self):
 		""" Get an upper bound for the subset ids that have been assigned.
