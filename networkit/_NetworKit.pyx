@@ -5114,7 +5114,7 @@ cdef class DynamicHyperbolicGenerator:
 		moveDistance: double
 			base value for the node movements
 		"""
-		self._this = new _DynamicHyperbolicGenerator(numNodes, avgDegree, gamma, T, moveEachStep, moveDistance)
+		self._this = new _DynamicHyperbolicGenerator(numNodes, avgDegree = 6, gamma = 3, T = 0, moveEachStep = 1, moveDistance = 0.1)
 
 	def generate(self, nSteps):
 		""" Generate event stream.
