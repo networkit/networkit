@@ -15,6 +15,7 @@
 #include <chrono>
 #include <thread>
 #include <fstream>
+#include <set>
 
 #include "../Log.h"
 #include "../Random.h"
@@ -27,7 +28,7 @@
 #include "../Enforce.h"
 #include "../NumberParsing.h"
 #include "../Enforce.h"
-
+#include "../BloomFilter.h"
 
 TEST_F(AuxGTest, produceRandomIntegers) {
 #if (LOG_LEVEL == LOG_LEVEL_TRACE)
@@ -532,4 +533,30 @@ TEST_F(AuxGTest, testNumberParsingAdvancedReal) {
 	TEST_CASE_REAL(-78400885495186119983104.0);
 #undef TEST_CASE_REAL
 }
+
+TEST_F(AuxGTest, testBloomFilter) {
+	Aux::BloomFilter bf(5);
+	uint64_t size = 750;
+	std::set<uint64_t> randomKeys;
+
+	while (randomKeys.size() < size) {
+		uint64_t key = Aux::Random::integer();
+		bf.insert(key);
+		randomKeys.insert(key);
+	}
+
+	for (auto key: randomKeys) {
+		EXPECT_TRUE(bf.isMember(key));
+	}
+
+	for (uint64_t i = 0; i < size; ++i) {
+		uint64_t key = Aux::Random::integer();
+		if (randomKeys.count(key) == 0) {
+			if (bf.isMember(key)) {
+				WARN("Bloom filter: Maybe only false positive, maybe indication of bug!");
+			}
+		}
+	}
+}
+
 #endif /*NOGTEST */

@@ -84,7 +84,6 @@ private:
 
 	/**
 	 * Returns the edge weight of the outgoing edge of index i in the outgoing edges of node u
-	 *
 	 * @param u The node
 	 * @param i The index
 	 * @return The weight of the outgoing edge or defaultEdgeWeight if the graph is unweighted
@@ -464,7 +463,18 @@ public:
 	 * @param v Node.
 	 * @return @c true if @a v exists, @c false otherwise.
 	 */
+
 	bool hasNode(node v) const { return (v < z) && this->exists[v];	}
+
+
+	/**
+	 * Restores a previously deleted node @a v with its previous id in the graph.
+	 *
+	 * @param v Node.
+	 *
+	 */
+
+	void restoreNode(node v);
 
 
 	/** NODE PROPERTIES **/
@@ -539,6 +549,8 @@ public:
 	/**
 	 * Insert an edge between the nodes @a u and @a v. If the graph is weighted you can optionally
 	 * set a weight for this edge. The default weight is 1.0.
+	 * Note: Multi-edges are not supported and will NOT be handled consistently by the graph data
+	 * structure.
 	 * @param u Endpoint of edge.
 	 * @param v Endpoint of edge.
 	 * @param weight Optional edge weight.
@@ -726,6 +738,7 @@ public:
 
 	/**
 	 * Return edge weight of edge {@a u,@a v}. Returns 0 if edge does not exist.
+	 * BEWARE: Running time is \Theta(deg(u))!
 	 *
 	 * @param u Endpoint of edge.
 	 * @param v Endpoint of edge.
@@ -1407,9 +1420,9 @@ void Graph::BFSEdgesFrom(node r, L handle) const {
 		node u = q.front();
 		q.pop();
 		// apply function
-		forNeighborsOf(u, [&](node v) {
+		forNeighborsOf(u, [&](node v, edgeweight w, edgeid eid) {
 			if (!marked[v]) {
-				handle(u, v);
+				handle(u, v, w, eid);
 				q.push(v);
 				marked[v] = true;
 			}
