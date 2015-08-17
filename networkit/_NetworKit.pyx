@@ -2799,6 +2799,7 @@ cdef extern from "cpp/structures/Cover.h":
 	cdef cppclass _Cover "NetworKit::Cover":
 		_Cover() except +
 		_Cover(_Partition p) except +
+		_Cover(count n) except +
 		set[index] subsetsOf(index e) except +
 #		index extend() except +
 		void remove(index e) except +
@@ -2828,9 +2829,11 @@ cdef class Cover:
 	""" Implements a cover of a set, i.e. an assignment of its elements to possibly overlapping subsets. """
 	cdef _Cover _this
 
-	def __cinit__(self, Partition p = None):
-		if p is not None:
-			self._this = move(_Cover(p._this))
+	def __cinit__(self, n=0):
+		if isinstance(n, Partition):
+			self._this = move(_Cover((<Partition>n)._this))
+		else:
+			self._this = move(_Cover(<count?>n))
 
 	cdef setThis(self, _Cover& other):
 		swap[_Cover](self._this, other)
