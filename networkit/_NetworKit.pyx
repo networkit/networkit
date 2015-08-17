@@ -2804,6 +2804,7 @@ cdef extern from "cpp/structures/Cover.h":
 #		index extend() except +
 		void remove(index e) except +
 		void addToSubset(index s, index e) except +
+		void removeFromSubset(index s, index e) except +
 		void moveToSubset(index s, index e) except +
 		void toSingleton(index e) except +
 		void allToSingletons() except +
@@ -2868,6 +2869,18 @@ cdef class Cover:
 			An element
 		"""
 		self._this.addToSubset(s, e)
+
+	def removeFromSubset(self, s, e):
+		""" Remove the element `e` from the set `s`.
+
+		Parameters
+		----------
+		s : index
+			A subset
+		e : index
+			An element
+		"""
+		self._this.removeFromSubset(s, e)
 
 	def moveToSubset(self, index s, index e):
 		""" Move the element `e` to subset `s`, i.e. remove it from all other subsets and place it in the subset.
