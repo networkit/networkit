@@ -4293,6 +4293,35 @@ cdef class EffectiveDiameter:
 		return hopPlot(G._this, maxDistance, k, r)
 
 
+cdef extern from "cpp/properties/Assortativity.h":
+	cdef cppclass _Assortativity "NetworKit::Assortativity":
+		_Assortativity(_Graph, vector[double]) except +
+		_Assortativity(_Graph, _Partition) except +
+		void run() nogil except +
+		double getCoefficient() except +
+
+cdef class Assortativity:
+	""" """
+	cdef _Assortativity* _this
+	cdef Graph G
+	cdef vector[double] attribute
+	cdef Partition partition
+
+	def __init__(self, Graph G, data):
+		if isinstance(data, Partition):
+			self._this = new _Assortativity(G._this, (<Partition>data)._this)
+			self.partition = <Partition>data
+		else:
+			self.attribute = <vector[double]?>data
+			self._this = new _Assortativity(G._this, self.attribute)
+		self.G = G
+
+	def run(self):
+		self._this.run()
+
+	def getCoefficient(self):
+		return self._this.getCoefficient()
+
 # Module: centrality
 
 cdef extern from "cpp/centrality/Centrality.h":
