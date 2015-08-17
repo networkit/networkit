@@ -1839,7 +1839,7 @@ cdef extern from "cpp/generators/HyperbolicGenerator.h":
 		void setBalance(double balance) except +
 		vector[double] getElapsedMilliseconds() except +
 		_Graph generate() except +
-		_Graph generateExternal(vector[double] angles, vector[double] radii, double r, double thresholdDistance, double T) except +
+		_Graph generateExternal(vector[double] angles, vector[double] radii, double r, double thresholdDistance) except +
 
 cdef class HyperbolicGenerator:
 	""" The Hyperbolic Generator distributes points in hyperbolic space and adds edges between points with a probability depending on their distance. The resulting graphs have a power-law degree distribution, small diameter and high clustering coefficient.
@@ -5084,8 +5084,7 @@ cdef class DynamicPubWebGenerator:
 
 cdef extern from "cpp/generators/DynamicHyperbolicGenerator.h":
 	cdef cppclass _DynamicHyperbolicGenerator "NetworKit::DynamicHyperbolicGenerator":
-		_DynamicHyperbolicGenerator(count numNodes, double initialFactor,
-			double alpha, double stretch, double moveEachStep, double factorGrowth, double moveDistance) except +
+		_DynamicHyperbolicGenerator(count numNodes, double avgDegree, double gamma, double moveEachStep, double moveDistance) except +
 		vector[_GraphEvent] generate(count nSteps) except +
 		_Graph getGraph() except +
 		vector[Point[float]] getCoordinates() except +
@@ -5095,27 +5094,24 @@ cdef extern from "cpp/generators/DynamicHyperbolicGenerator.h":
 cdef class DynamicHyperbolicGenerator:
 	cdef _DynamicHyperbolicGenerator* _this
 
-	def __cinit__(self, numNodes, initialFactor, alpha, stretch, moveFraction, factorGrowth, moveDistance):
+	def __cinit__(self, numNodes, avgDegree, gamma, moveEachStep, moveDistance):
 		""" Dynamic graph generator according to the hyperbolic unit disk model.
 
 		Parameters
 		----------
 		numNodes : count
 			number of nodes
-		initialFactor : double
-			initial value of thresholdFactor
-		alpha : double
-			point dispersion parameter, remaining fixed
-		stretch : double
-			multiplier for the hyperbolic disk, remaining fixed
+		avgDegree : double
+			average degree of the resulting graph
+		gamma : double
+			power-law exponent of the resulting graph
+			temperature, selecting a graph family on the continuum between hyperbolic unit disk graphs and Erdos-Renyi graphs
 		moveFraction : double
 			fraction of nodes to be moved in each time step. The nodes are chosen randomly each step
-		factorGrowth : double
-			increment added to the value of thresholdFactor at each step
 		moveDistance: double
 			base value for the node movements
 		"""
-		self._this = new _DynamicHyperbolicGenerator(numNodes, initialFactor, alpha, stretch, moveFraction, factorGrowth, moveDistance)
+		self._this = new _DynamicHyperbolicGenerator(numNodes, avgDegree, gamma, moveEachStep, moveDistance)
 
 	def generate(self, nSteps):
 		""" Generate event stream.
