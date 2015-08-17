@@ -24,11 +24,13 @@ public:
 	enum Type {
 		NODE_ADDITION,
 		NODE_REMOVAL,
+		NODE_RESTORATION,
 		EDGE_ADDITION,
 		EDGE_REMOVAL,
-		EDGE_WEIGHT_UPDATE, // set edge weight to specified value
-		EDGE_WEIGHT_INCREMENT, // increment of decrement edge weight by specified value
+		EDGE_WEIGHT_UPDATE, 
+		EDGE_WEIGHT_INCREMENT,
 		TIME_STEP
+		
 	};
 
 	Type type;	//!< type of graph event

@@ -33,6 +33,7 @@ private:
 	unsigned int minNotEmpty;				// current min priority
 	int maxNotEmpty;						// current max priority
 	index maxPrio;							// maximum admissible priority
+	count numElems;							// number of elements stored
 
 	/**
 	 * Insert element @a elem with priority @a prio.
@@ -94,6 +95,16 @@ public:
 	 * @param[in] Element whose priority shall be returned.
 	 */
 	index priority(index elem);
+
+	/**
+	 * @return True if priority queue does not contain any elements, otherwise false.
+	 */
+	bool empty() const;
+
+	/**
+	 * @return Number of elements contained in priority queue.
+	 */
+	count size() const;
 };
 
 } /* namespace Aux */

@@ -25,6 +25,10 @@ void GraphUpdater::update(std::vector<GraphEvent>& stream) {
 				G.removeNode(ev.u);
 				break;
 			}
+			case GraphEvent::NODE_RESTORATION :{
+				G.restoreNode(ev.u);
+				break;
+			}
 			case GraphEvent::EDGE_ADDITION : {
 				G.addEdge(ev.u, ev.v, ev.w);
 				break;

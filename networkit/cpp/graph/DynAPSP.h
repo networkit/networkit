@@ -31,10 +31,10 @@ public:
 	DynAPSP(const Graph& G);
 
 	/** Updates the distances after an event.*/
-	void update(const GraphEvent& event);
+	void update(const std::vector<GraphEvent>& batch);
 
 private:
-	void dynamic_sssp(node source, node startbfs);
+	void dynamic_sssp(node root, std::vector<std::pair<node, edgeweight> > batch);
 	std::vector<std::vector<edgeweight> > L;
 	const edgeweight infDist = std::numeric_limits<edgeweight>::max();
 };

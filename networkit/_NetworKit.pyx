@@ -17,8 +17,8 @@ from libcpp.utility cimport pair
 from libcpp.map cimport map
 from libcpp.set cimport set
 from libcpp.string cimport string
-from networkit.unordered_set cimport unordered_set
-from networkit.unordered_map cimport unordered_map
+from libcpp.unordered_set cimport unordered_set
+from libcpp.unordered_map cimport unordered_map
 
 # NetworKit typedefs
 ctypedef uint64_t count
@@ -58,6 +58,70 @@ def stdstring(pystring):
 def pystring(stdstring):
 	""" convert a std::string (= python byte string) to a normal Python string"""
 	return stdstring.decode("utf-8")
+
+
+cdef extern from "cpp/base/Algorithm.h":
+	cdef cppclass _Algorithm "NetworKit::Algorithm":
+		_Algorithm()
+		void run() nogil except +
+		bool hasFinished() except +
+		string toString() except +
+
+cdef class Algorithm:
+	""" Abstract base class for algorithms """
+	cdef _Algorithm *_this
+
+	def __init__(self, *args, **namedargs):
+		if type(self) == Algorithm:
+			raise RuntimeError("Error, you may not use Algorithm directly, use a sub-class instead")
+
+	def __cinit__(self, *args, **namedargs):
+		self._this = NULL
+
+	def __dealloc__(self):
+		if self._this != NULL:
+			del self._this
+		self._this = NULL
+
+	def run(self):
+		"""
+		Executes the algorithm.
+
+		Returns
+		-------
+		Algorithm:
+			self
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		with nogil:
+			self._this.run()
+		return self
+
+	def hasFinished(self):
+		"""
+		States whether an algorithm has already run.
+
+		Returns
+		-------
+		Algorithm:
+			self
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return self._this.hasFinished()
+
+	def toString(self):
+		""" Get string representation.
+
+		Returns
+		-------
+		string
+			String representation of algorithm and parameters.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return self._this.toString().decode("utf-8")
 
 
 # Function definitions
@@ -909,10 +973,10 @@ cdef class Graph:
 		callback : object
 			Any callable object that takes the parameter (node, node)
 		"""
-		cdef NodePairCallbackWrapper *wrapper
+		cdef EdgeCallBackWrapper *wrapper
 		try:
-			wrapper = new NodePairCallbackWrapper(callback)
-			self._this.BFSEdgesFrom[NodePairCallbackWrapper](start, dereference(wrapper))
+			wrapper = new EdgeCallBackWrapper(callback)
+			self._this.BFSEdgesFrom[EdgeCallBackWrapper](start, dereference(wrapper))
 		finally:
 			del wrapper
 
@@ -2122,7 +2186,7 @@ cdef extern from "cpp/io/EdgeListReader.h":
 	cdef cppclass _EdgeListReader "NetworKit::EdgeListReader"(_GraphReader):
 		_EdgeListReader() except +
 		_EdgeListReader(char separator, node firstNode, string commentPrefix, bool continuous, bool directed)
-		unordered_map[node,node] getNodeMap() except +
+		map[string,node] getNodeMap() except +
 
 
 cdef class EdgeListReader(GraphReader):
@@ -2133,10 +2197,11 @@ cdef class EdgeListReader(GraphReader):
 		self._this = new _EdgeListReader(stdstring(separator)[0], firstNode, stdstring(commentPrefix), continuous, directed)
 
 	def getNodeMap(self):
-		cdef unordered_map[node,node] cResult = (<_EdgeListReader*>(self._this)).getNodeMap()
-		result = []
+		cdef map[string,node] cResult = (<_EdgeListReader*>(self._this)).getNodeMap()
+		result = dict()
 		for elem in cResult:
-			result.append((elem.first,elem.second))
+			#result.append((elem.first,elem.second))
+			result[(elem.first).decode("utf-8")] = elem.second
 		return result
 
 cdef extern from "cpp/io/KONECTGraphReader.h":
@@ -2214,22 +2279,6 @@ cdef class DotGraphWriter:
 		cdef string cpath = stdstring(path)
 		with nogil:
 			self._this.write(G._this, cpath)
-
-
-#cdef extern from "cpp/io/VNAGraphWriter.h":
-#	cdef cppclass _VNAGraphWriter "NetworKit::VNAGraphWriter":
-#		_VNAGraphWriter() except +
-#		void write(_Graph G, string path) except +
-
-
-#cdef class VNAGraphWriter:
-#	""" Writes graphs in the VNA format. The VNA format is commonly used by Netdraw, and is very similar to Pajek format.
-#	It defines nodes and edges (ties), and supports attributes. Each section of the file is separated by an asterisk. """
-#	cdef _VNAGraphWriter _this
-
-#	def write(self, Graph G not None, path):
-		 # string needs to be converted to bytes, which are coerced to std::string
-#		self._this.write(G._this, stdstring(path))
 
 
 cdef extern from "cpp/io/GMLGraphWriter.h":
@@ -3358,46 +3407,21 @@ cdef class HubDominance:
 
 
 cdef extern from "cpp/community/CommunityDetectionAlgorithm.h":
-	cdef cppclass _CommunityDetectionAlgorithm "NetworKit::CommunityDetectionAlgorithm":
-		_CommunityDetectionAlgorithm() # Workaround for Cython < 0.22
+	cdef cppclass _CommunityDetectionAlgorithm "NetworKit::CommunityDetectionAlgorithm"(_Algorithm):
 		_CommunityDetectionAlgorithm(const _Graph &_G)
-		void run() nogil except +
 		_Partition getPartition() except +
-		string toString() except +
 
 
-cdef class CommunityDetector:
+cdef class CommunityDetector(Algorithm):
 	""" Abstract base class for static community detection algorithms """
-	cdef _CommunityDetectionAlgorithm *_this
 	cdef Graph _G
 
 	def __init__(self, *args, **namedargs):
 		if type(self) == CommunityDetector:
 			raise RuntimeError("Error, you may not use CommunityDetector directly, use a sub-class instead")
 
-	def __cinit__(self, *args, **namedargs):
-		self._this = NULL
-
 	def __dealloc__(self):
-		if self._this != NULL:
-			del self._this
-		self._this = NULL
 		self._G = None # just to be sure the graph is deleted
-
-	def run(self):
-		"""
-		Executes the community detection algorithm.
-
-		Returns
-		-------
-		CommunityDetector:
-			self
-		"""
-		if self._this == NULL:
-			raise RuntimeError("Error, object not properly initialized")
-		with nogil:
-			self._this.run()
-		return self
 
 	def getPartition(self):
 		"""  Returns a partition of the clustering.
@@ -3409,19 +3433,7 @@ cdef class CommunityDetector:
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
-		return Partition().setThis(self._this.getPartition())
-
-	def toString(self):
-		""" Get string representation.
-
-		Returns
-		-------
-		string
-			String representation of algorithm and parameters.
-		"""
-		if self._this == NULL:
-			raise RuntimeError("Error, object not properly initialized")
-		return self._this.toString().decode("utf-8")
+		return Partition().setThis((<_CommunityDetectionAlgorithm*>(self._this)).getPartition())
 
 cdef extern from "cpp/community/PLP.h":
 	cdef cppclass _PLP "NetworKit::PLP"(_CommunityDetectionAlgorithm):
@@ -4352,68 +4364,45 @@ cdef class EffectiveDiameter:
 # Module: centrality
 
 cdef extern from "cpp/centrality/Centrality.h":
-	cdef cppclass _Centrality "NetworKit::Centrality":
+	cdef cppclass _Centrality "NetworKit::Centrality"(_Algorithm):
 		_Centrality(_Graph, bool, bool) except +
-		void run() nogil except +
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
 		double maximum() except +
 
 
-cdef class Centrality:
+cdef class Centrality(Algorithm):
 	""" Abstract base class for centrality measures"""
 
-	cdef _Centrality* _this
 	cdef Graph _G
 
 	def __init__(self, *args, **kwargs):
 		if type(self) == Centrality:
 			raise RuntimeError("Error, you may not use Centrality directly, use a sub-class instead")
 
-	def __cinit__(self, *args, **kwargs):
-		self._this = NULL
-
 	def __dealloc__(self):
-		if self._this != NULL:
-			del self._this
-		self._this = NULL
 		self._G = None # just to be sure the graph is deleted
-
-	def run(self):
-		"""
-		Executes the centrality algorithm.
-
-		Returns
-		-------
-		Centrality:
-			self
-		"""
-		if self._this == NULL:
-			raise RuntimeError("Error, object not properly initialized")
-		with nogil:
-			self._this.run()
-		return self
 
 	def scores(self):
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
-		return self._this.scores()
+		return (<_Centrality*>(self._this)).scores()
 
 	def score(self, v):
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
-		return self._this.score(v)
+		return (<_Centrality*>(self._this)).score(v)
 
 	def ranking(self):
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
-		return self._this.ranking()
+		return (<_Centrality*>(self._this)).ranking()
 
 	def maximum(self):
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
-		return self._this.maximum()
+		return (<_Centrality*>(self._this)).maximum()
 
 
 cdef extern from "cpp/centrality/DegreeCentrality.h":
@@ -4887,11 +4876,13 @@ cdef extern from "cpp/dynamics/GraphEvent.h":
 	enum _GraphEventType "NetworKit::GraphEvent::Type":
 		NODE_ADDITION,
 		NODE_REMOVAL,
+		NODE_RESTORATION,
 		EDGE_ADDITION,
 		EDGE_REMOVAL,
 		EDGE_WEIGHT_UPDATE,
+		EDGE_WEIGHT_INCREMENT,
 		TIME_STEP
-
+		
 cdef extern from "cpp/dynamics/GraphEvent.h":
 	cdef cppclass _GraphEvent "NetworKit::GraphEvent":
 		node u, v
@@ -4903,13 +4894,14 @@ cdef extern from "cpp/dynamics/GraphEvent.h":
 
 cdef class GraphEvent:
 	cdef _GraphEvent _this
-
 	NODE_ADDITION = 0
 	NODE_REMOVAL = 1
-	EDGE_ADDITION = 2
-	EDGE_REMOVAL = 3
-	EDGE_WEIGHT_UPDATE = 4
-	TIME_STEP = 5
+	NODE_RESTORATION = 2
+	EDGE_ADDITION = 3
+	EDGE_REMOVAL = 4
+	EDGE_WEIGHT_UPDATE = 5
+	EDGE_WEIGHT_INCREMENT = 6
+	TIME_STEP = 7
 
 	property type:
 		def __get__(self):
@@ -5187,24 +5179,53 @@ cdef class GraphUpdater:
 
 # Module: coarsening
 
-cdef extern from "cpp/coarsening/ParallelPartitionCoarsening.h":
-	cdef cppclass _ParallelPartitionCoarsening "NetworKit::ParallelPartitionCoarsening":
-		_ParallelPartitionCoarsening() except +
-		pair[_Graph, vector[node]] run(_Graph, _Partition) except +
+cdef extern from "cpp/coarsening/GraphCoarsening.h":
+	cdef cppclass _GraphCoarsening "NetworKit::GraphCoarsening"(_Algorithm):
+		_GraphCoarsening(_Graph) except +
+		_Graph getCoarseGraph() except +
+		vector[node] getNodeMapping() except +
 
+cdef class GraphCoarsening(Algorithm):
+	cdef Graph _G
 
-cdef class ParallelPartitionCoarsening:
-	cdef _ParallelPartitionCoarsening* _this
-
-	def __cinit__(self):
-		self._this = new _ParallelPartitionCoarsening()
+	def __init__(self, *args, **namedargs):
+		if type(self) == GraphCoarsening:
+			raise RuntimeError("Error, you may not use GraphCoarsening directly, use a sub-class instead")
 
 	def __dealloc__(self):
-		del self._this
+		self._G = None # just to be sure the graph is deleted
 
-	def run(self, Graph G not None, Partition zeta not None):
-		result = self._this.run(G._this, zeta._this)
-		return (Graph(0).setThis(result.first), result.second)
+	def run(self):
+		"""
+		Executes the Graph coarsening algorithm.
+
+		Returns
+		-------
+		GraphCoarsening:
+			self
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		with nogil:
+			self._this.run()
+		return self
+
+	def getCoarseGraph(self):
+		return Graph(0).setThis((<_GraphCoarsening*>(self._this)).getCoarseGraph())
+
+	def getNodeMapping(self):
+		return (<_GraphCoarsening*>(self._this)).getNodeMapping()
+
+
+cdef extern from "cpp/coarsening/ParallelPartitionCoarsening.h":
+	cdef cppclass _ParallelPartitionCoarsening "NetworKit::ParallelPartitionCoarsening"(_GraphCoarsening):
+		_ParallelPartitionCoarsening(_Graph, _Partition, bool) except +
+
+
+cdef class ParallelPartitionCoarsening(GraphCoarsening):
+	def __cinit__(self, Graph G not None, Partition zeta not None, useGraphBuilder = True):
+		self._this = new _ParallelPartitionCoarsening(G._this, zeta._this, useGraphBuilder)
+
 
 # Module: scd
 

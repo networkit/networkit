@@ -20,6 +20,8 @@ std::string GraphEvent::toString() {
 		ss << "an(" << u << ")";
 	} else if (this->type == GraphEvent::NODE_REMOVAL) {
 		ss << "dn(" << u << ")";
+	} else if (this->type == GraphEvent::NODE_RESTORATION) {
+		ss << "rn(" << u << ")";
 	} else if (this->type == GraphEvent::EDGE_ADDITION) {
 		ss << "ae(" << u << "," << v << "," << w << ")";
 	} else if (this->type == GraphEvent::EDGE_REMOVAL) {
