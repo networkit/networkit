@@ -34,12 +34,12 @@ struct RankedEdge {
 
 	bool operator<(const RankedEdge& other) const {
 		return (simmelianness > other.simmelianness)
-				|| (simmelianness == other.simmelianness && alter < other.alter);
+				|| (simmelianness == other.simmelianness && alter > other.alter);
 	}
 
 	bool operator>(const RankedEdge& other) const {
 		return (simmelianness < other.simmelianness)
-				|| (simmelianness == other.simmelianness && alter > other.alter);
+				|| (simmelianness == other.simmelianness && alter < other.alter);
 	}
 
 	bool operator==(const RankedEdge& other) const {

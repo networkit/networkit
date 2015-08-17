@@ -28,9 +28,9 @@ std::vector<RankedNeighbors> SimmelianAttributizer::getRankedNeighborhood(const 
 		//Calculate the ranks.
 		count currentRank = 0;	//Rank 1 is considered the best.
 		count currentSimmelianness = std::numeric_limits<count>::max();
-		count equals = 1;
+		count equals = 0;
 		for (auto& edge : neighbors[u]) {
-			if (edge.simmelianness < currentSimmelianness) {
+			if (edge.simmelianness != currentSimmelianness) {
 				currentRank += equals;
 				currentSimmelianness = edge.simmelianness;
 				equals = 1;
@@ -58,12 +58,13 @@ Redundancy SimmelianAttributizer::getOverlap(	const node& ego,
 	std::set<node> egoNeighborsUnmatched;
 	std::set<node> alterNeighborsUnmatched;
 
-	for (count rank = 1; rank <= maxRank; rank++) {
+	for (count rank = 0; rank <= maxRank; rank++) {
 		matchNeighbors(ego, alter, true, egoIt, neighbors[ego], egoNeighborsUnmatched, alterNeighborsUnmatched, rank, result.overlap);
 		matchNeighbors(alter, ego, false, alterIt, neighbors[alter], alterNeighborsUnmatched, egoNeighborsUnmatched, rank, result.overlap);
 
-		double currentJaccard = double(result.overlap) /
-				double(result.overlap + egoNeighborsUnmatched.size() + alterNeighborsUnmatched.size());
+		double currentJaccard = 0.0;
+		if (result.overlap + egoNeighborsUnmatched.size() + alterNeighborsUnmatched.size() > 0)
+			currentJaccard = double(result.overlap) / double(result.overlap + egoNeighborsUnmatched.size() + alterNeighborsUnmatched.size());
 
 		result.jaccard = std::max(currentJaccard, result.jaccard);
 	}
@@ -87,14 +88,10 @@ void SimmelianAttributizer::matchNeighbors(
 	count& overlap) {
 
 	for (auto egoIt : egoNeighbors) {
-		if (egoIt.rank != rank)
-			continue;
-
 		node other = egoIt.alter;
 
-		//We count nodes that are incident to the currently considered edge, as well.
-		if (reciprocityCheck && other == alter)
-			other = ego;
+		if (other == alter || egoIt.rank != rank)
+			continue;
 
 		if (alterNeighborsUnmatched.erase(other))
 			overlap++;
