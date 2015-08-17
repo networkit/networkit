@@ -64,6 +64,7 @@ cdef extern from "cpp/base/Algorithm.h":
 		void run() nogil except +
 		bool hasFinished() except +
 		string toString() except +
+		bool isParallel() except +
 
 cdef class Algorithm:
 	""" Abstract base class for algorithms """
@@ -120,6 +121,18 @@ cdef class Algorithm:
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return self._this.toString().decode("utf-8")
+
+
+	def isParallel(self):
+		"""
+		Returns
+		-------
+		bool
+			True if algorithm can run multi-threaded
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return self._this.isParallel()
 
 
 # Function definitions
@@ -4801,7 +4814,7 @@ cdef extern from "cpp/dynamics/GraphEvent.h":
 		EDGE_WEIGHT_UPDATE,
 		EDGE_WEIGHT_INCREMENT,
 		TIME_STEP
-		
+
 cdef extern from "cpp/dynamics/GraphEvent.h":
 	cdef cppclass _GraphEvent "NetworKit::GraphEvent":
 		node u, v
