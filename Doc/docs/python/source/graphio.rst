@@ -1,7 +1,7 @@
-networkit.graphio
+NetworKit.graphio
 =================
 
-.. automodule:: networkit.graphio
+.. automodule:: graphio
     :members:
     :imported-members:
     :undoc-members:

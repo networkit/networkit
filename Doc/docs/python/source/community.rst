@@ -1,7 +1,7 @@
-networkit.community
+NetworKit.community
 ===================
 
-.. automodule:: networkit.community
+.. automodule:: community
     :members:
     :imported-members:
     :undoc-members:

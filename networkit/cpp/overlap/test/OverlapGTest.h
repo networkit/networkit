@@ -15,6 +15,7 @@
 
 #include "../RegionGrowingOverlapper.h"
 #include "../HashingOverlapper.h"
+#include "../../graph/GraphGenerator.h"
 #include "../../community/ClusteringGenerator.h"
 
 

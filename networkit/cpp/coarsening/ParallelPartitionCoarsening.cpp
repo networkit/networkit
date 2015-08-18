@@ -13,17 +13,34 @@
 
 namespace NetworKit {
 
-ParallelPartitionCoarsening::ParallelPartitionCoarsening(const Graph& G, const Partition& zeta, bool useGraphBuilder) : GraphCoarsening(G), zeta(zeta),	useGraphBuilder(useGraphBuilder) {
+ParallelPartitionCoarsening::ParallelPartitionCoarsening(bool useGraphBuilder) :
+	useGraphBuilder(useGraphBuilder)
+{}
 
-}
+std::pair<Graph, std::vector<node> > ParallelPartitionCoarsening::run(const Graph& G, const Partition& zeta) {
 
-void ParallelPartitionCoarsening::run() {
 	Aux::Timer timer;
 	timer.start();
 
-	Partition nodeToSuperNode = zeta;
-	nodeToSuperNode.compact(true);
-	count nextNodeId = nodeToSuperNode.upperBound();
+	std::vector<node> subsetToSuperNode(zeta.upperBound(), none); // there is one supernode for each subset
+
+	DEBUG("populate map subset -> supernode");
+	node nextNodeId = 0;
+	G.forNodes([&](node v){
+		index c = zeta.subsetOf(v);
+		if (subsetToSuperNode[c] == none) {
+			subsetToSuperNode[c] = nextNodeId++;
+		}
+	});
+
+	index z = G.upperNodeIdBound();
+	std::vector<node> nodeToSuperNode(z, none);
+
+	// set entries node -> supernode
+	DEBUG("set entries node -> supernode");
+	G.parallelForNodes([&](node v){
+		nodeToSuperNode[v] = subsetToSuperNode[zeta.subsetOf(v)];
+	});
 
 	Graph Gcombined;
 	if (!useGraphBuilder) {
@@ -128,9 +145,9 @@ void ParallelPartitionCoarsening::run() {
 
 	timer.stop();
 	INFO("parallel coarsening took ", timer.elapsedTag());
-	Gcoarsed = std::move(Gcombined);
-	nodeMapping = std::move(nodeToSuperNode.getVector());
-	hasRun = true;
+
+	return {std::move(Gcombined), std::move(nodeToSuperNode)};
+
 }
 
 } /* namespace NetworKit */

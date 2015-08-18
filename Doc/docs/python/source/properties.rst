@@ -1,7 +1,8 @@
-networkit.properties
+NetworKit.properties
 ====================
 
-.. automodule:: networkit.properties
+.. automodule:: properties
     :members:
+    :imported-members:
     :undoc-members:
     :show-inheritance:

@@ -12,6 +12,7 @@
 
 #include "../auxiliary/Timer.h"
 #include "../graph/Graph.h"
+#include "../base/Parameters.h"
 
 namespace NetworKit {
 

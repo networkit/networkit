@@ -1,7 +1,8 @@
-networkit.viztasks
+NetworKit.viztasks
 ==================
 
-.. automodule:: networkit.viztasks
+.. automodule:: viztasks
     :members:
+    :imported-members:
     :undoc-members:
     :show-inheritance:

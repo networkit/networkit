@@ -1,7 +1,7 @@
-networkit.algebraic
+NetworKit.algebraic
 ===================
 
-.. automodule:: networkit.algebraic
+.. automodule:: algebraic
     :members:
     :imported-members:
     :undoc-members:

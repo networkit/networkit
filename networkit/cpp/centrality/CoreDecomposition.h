@@ -14,14 +14,11 @@
 #include <list>
 #include "../graph/Graph.h"
 #include "../centrality/Centrality.h"
-#include "../structures/Partition.h"
-#include "../structures/Cover.h"
-
 
 namespace NetworKit {
 
 /**
- * @ingroup centrality
+ * @ingroup properties
  * Computes k-core decomposition of a graph.
  */
 class CoreDecomposition : public NetworKit::Centrality  {
@@ -29,7 +26,7 @@ class CoreDecomposition : public NetworKit::Centrality  {
 public:
 
 	/**
-	 * Create CoreDecomposition class for graph @a G. The graph may not contain self-loops.
+	 * Create CoreDecomposition class for graph @a G.
 	 *
 	 * @param G The graph.
 	 */
@@ -41,18 +38,18 @@ public:
 	void run();
 
 	/**
-	 * Get the k-cores as a graph cover object.
+	 * Get the k-cores as sets of nodes, indexed by k.
 	 *
-	 * @return the k-cores as a Cover
+	 * @return the k-cores as sets of nodes, indexed by k.
 	 */
-	Cover cores() const;
+	std::vector<std::set<node> > cores() const;
 
 	/**
-	 * Get the k-shells as a partition object
+	 * Get the k-shells as sets of nodes, indexed by k.
 	 *
-	 * @return the k-shells as a Partition
+	 * @return the k-shells as sets of nodes, indexed by k
 	 */
-	Partition shells() const;
+	std::vector<std::set<node> > shells() const;
 
 	/**
 	 * Get maximum core number.
@@ -60,6 +57,7 @@ public:
 	 * @return The maximum core number
 	 */
 	index maxCoreNumber() const;
+
 
 private:
 

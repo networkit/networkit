@@ -1,8 +1,7 @@
-networkit.graph
+NetworKit.graph
 ===============
 
-.. automodule:: networkit.graph
+.. automodule:: graph
     :members:
-    :imported-members:
+    :imported-members:   
     :undoc-members:    
-

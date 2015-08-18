@@ -1,7 +1,8 @@
-networkit.dynamic
+NetworKit.dynamic
 =================
 
-.. automodule:: networkit.dynamic
+.. automodule:: dynamic
     :members:
+    :imported-members:
     :undoc-members:
     :show-inheritance:

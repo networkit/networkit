@@ -13,7 +13,7 @@
 namespace NetworKit {
 
 /**
- * @ingroup centrality
+ * @ingroup graph
  * Interface for dynamic centrality algorithms.
  */
 class DynCentrality {

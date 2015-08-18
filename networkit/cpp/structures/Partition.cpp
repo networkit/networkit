@@ -79,35 +79,21 @@ count Partition::numberOfSubsets() const {
 	return k;
 }
 
-void Partition::compact(bool useTurbo) {
+void Partition::compact() {
+	std::map<index,index> compactingMap; // first index is the old partition index, "value" is the index of the compacted index
 	index i = 0;
-	if (!useTurbo) {
-		std::map<index, index> compactingMap; // first index is the old partition index, "value" is the index of the compacted index
-		this->forEntries([&](index e, index s){ // get assigned SubsetIDs and create a map with new IDs
-			if (s!= none) {
-				auto result = compactingMap.insert(std::make_pair(s,i));
-				if (result.second) ++i;
-			}
-		});
-		this->parallelForEntries([&](index e, index s){ // replace old SubsetIDs with the new IDs
-			if (s != none) {
-				data[e] = compactingMap[s];
-			}
-		});
-	} else {
-		std::vector<index> compactingMap(this->upperBound(), none);
-		this->forEntries([&](index e, index s){
-			if (s != none && compactingMap[s] == none) {
-				compactingMap[s] = i++;
-			}
-		});
-		this->parallelForEntries([&](index e, index s){ // replace old SubsetIDs with the new IDs
-			if (s != none) {
-				data[e] = compactingMap[s];
-			}
-		});
-	}
-	this->setUpperBound(i);
+	this->forEntries([&](index e, index s){ // get assigned SubsetIDs and create a map with new IDs
+		if (s!= none) {
+			auto result = compactingMap.insert(std::make_pair(s,i));
+			if (result.second) ++i;
+		}
+	});
+	this->parallelForEntries([&](index e, index s){ // replace old SubsetIDs with the new IDs
+		if (s != none) {
+			data[e] = compactingMap[s];
+		}
+	});
+	this->setUpperBound(i); // does i contain the right value?
 }
 
 std::vector<count> Partition::subsetSizes() const {

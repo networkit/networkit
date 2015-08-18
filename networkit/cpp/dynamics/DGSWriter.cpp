@@ -14,7 +14,7 @@ namespace NetworKit {
 void DGSWriter::write(std::vector<GraphEvent>& stream, std::string path) {
 	std::ofstream out(path);
 
-	// begin file with
+	// begin file with 
 	std::string cookie = "DGS004";
 	out << cookie << std::endl;
 
@@ -24,15 +24,11 @@ void DGSWriter::write(std::vector<GraphEvent>& stream, std::string path) {
 	for (GraphEvent ev : stream) {
 		switch (ev.type) {
 			case GraphEvent::NODE_ADDITION : {
-				out << "an " << ev.u << std::endl;
+				out << "an " << ev.u << std::endl; 
 				break;
 			}
 			case GraphEvent::NODE_REMOVAL : {
 				out << "dn " << ev.u << std::endl;
-				break;
-			}
-			case GraphEvent::NODE_RESTORATION : {
-				out << "rn" << ev.u << std::endl;
 				break;
 			}
 			case GraphEvent::EDGE_ADDITION : {
@@ -45,10 +41,6 @@ void DGSWriter::write(std::vector<GraphEvent>& stream, std::string path) {
 			}
 			case GraphEvent::EDGE_WEIGHT_UPDATE : {
 				out << "ce " << ev.u << "-" << ev.v  << " weight=" << ev.w << std::endl;
-				break;
-			}
-			case GraphEvent::EDGE_WEIGHT_INCREMENT : {
-				out << "ie " << ev.u << "-" << ev.v  << " weight=" << ev.w << std::endl;
 				break;
 			}
 			case GraphEvent::TIME_STEP : {
@@ -65,3 +57,5 @@ void DGSWriter::write(std::vector<GraphEvent>& stream, std::string path) {
 
 
 } /* namespace NetworKit */
+
+

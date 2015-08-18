@@ -9,7 +9,7 @@
 #define MAXENTSTRESS_H_
 
 #include "Layouter.h"
-#include "../linkprediction/AlgebraicDistanceIndex.h"
+#include "../distmeasures/AlgebraicDistance.h"
 
 namespace NetworKit {
 

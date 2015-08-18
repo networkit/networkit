@@ -61,7 +61,7 @@ public:
 
 
 	/**
-	 * Check if the two nodes @a u and @a v are matched together.
+	 * Check if the two nodes @a u and @a v are matched.
 	 *
 	 * @param[in] u node.
 	 * @param[in] v node.

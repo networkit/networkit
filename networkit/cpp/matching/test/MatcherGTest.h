@@ -12,13 +12,21 @@
 
 #include <gtest/gtest.h>
 
+#include "../Matcher.h"
+#include "../Matching.h"
+#include "../PathGrowingMatcher.h"
+#include "../ParallelMatcher.h"
+#include "../../graph/Graph.h"
+#include "../../graph/GraphGenerator.h"
+#include "../../io/DibapGraphReader.h"
+
 
 namespace NetworKit {
 
 class MatcherGTest: public testing::Test {
 public:
-	MatcherGTest() = default;
-	virtual ~MatcherGTest() = default;
+	MatcherGTest();
+	virtual ~MatcherGTest();
 };
 
 }

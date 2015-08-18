@@ -5,7 +5,7 @@ __author__ = "Christian Staudt"
 
 from _NetworKit import Partition, Coverage, Modularity, CommunityDetector, PLP, LPDegreeOrdered, PLM, PartitionReader, PartitionWriter,\
 	NodeStructuralRandMeasure, GraphStructuralRandMeasure, JaccardMeasure, NMIDistance, AdjustedRandMeasure,\
-	EdgeListPartitionReader, GraphClusteringTools, ClusteringGenerator, PartitionIntersection, HubDominance, CoreDecomposition, CutClustering, ParallelPartitionCoarsening
+	EPPFactory, EdgeListPartitionReader, GraphClusteringTools, ClusteringGenerator, PartitionIntersection, HubDominance, CoreDecomposition, CutClustering, ParallelPartitionCoarsening
 
 # R.I.P.: The CNM (Clauset, Newman, Moore) community detection algorithm - it was always a bit slow, but it broke down in the end. Resurrect it from history (<= 3.4.1) if needed for experimental purposes.
 
@@ -60,9 +60,9 @@ def inspectCommunities(zeta, G):
 
 def communityGraph(G, zeta):
 	""" Create a community graph, i.e. a graph in which one node represents a community and an edge represents the edges between communities, from a given graph and a community detection solution"""
-	cg = ParallelPartitionCoarsening(G, zeta)
-	cg.run()
-	return cg.getCoarseGraph()
+	cg = ParallelPartitionCoarsening()
+	Gcom,_ = cg.run(G, zeta)
+	return Gcom
 
 
 def evalCommunityDetection(algo, G):
@@ -124,7 +124,7 @@ def compareCommunities(G, zeta1, zeta2):
 def kCoreCommunityDetection(G, k, algo=None, inspect=True):
 	""" Perform community detection on the k-core of the graph, which possibly
 		reduces computation time and enhances the result.
-		:param    G    the graph (may not contain self-loops)
+		:param    G    the graph
 		:param		k 	k as in k-core
 		:param     algorithm    community detection algorithm instance
 		:return communities (as type Partition)

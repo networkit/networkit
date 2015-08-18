@@ -12,6 +12,7 @@
 #include <functional>
 
 #include "GeneratorsBenchmark.h"
+#include "../../graph/GraphGenerator.h"
 #include "../BarabasiAlbertGenerator.h"
 #include "../../graph/GraphBuilder.h"
 
@@ -42,7 +43,7 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 
 	count m_actual;
 	uint64_t t1, t2;
-
+	
 	// half parallel way
 	m_actual = 0;
 	t1 = timeOnce([&]() {

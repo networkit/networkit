@@ -29,7 +29,7 @@ Graph DibapGraphReader::read(const std::string& path) {
 	int numE2 = 0;
 
 	// init, try to open file
-	DEBUG("reading graph in DibaP format... ");
+	DEBUG("  reading graph () ");
 	file = fopen(path.c_str(), "r");
 	if (file == NULL) {
 		throw std::runtime_error("cannot open file ");
@@ -46,7 +46,7 @@ Graph DibapGraphReader::read(const std::string& path) {
 	// read number of vertices
 	n = fread(&V, sizeof(int), 1, file);
 	V = ntohl(V);
-	TRACE("(V=%d %d) " , V , ", " , n);
+	DEBUG("(V=%d %d) " , V , ", " , n);
 	if (n != 1) {
 		throw std::runtime_error("bad file structure ");
 		return 0;
@@ -55,7 +55,7 @@ Graph DibapGraphReader::read(const std::string& path) {
 	// read vertex weight dimension
 	n = fread(&dvw, sizeof(int), 1, file);
 	dvw = ntohl(dvw);
-	TRACE("(dvw=%d %d) " , dvw , ", " , n);
+	DEBUG("(dvw=%d %d) " , dvw , ", " , n);
 
 	if (n != 1) {
 		throw std::runtime_error("bad file structure ");
@@ -66,7 +66,7 @@ Graph DibapGraphReader::read(const std::string& path) {
 		// read vertex weights
 		vw.resize(V);
 		n = fread(&vw[0], sizeof(int), V * dvw, file);
-		TRACE("(vw %d) " , n);
+		DEBUG("(vw %d) " , n);
 		if (n != V) {
 			throw std::runtime_error("bad file structure ");
 		}
@@ -76,7 +76,7 @@ Graph DibapGraphReader::read(const std::string& path) {
 
 	of.resize(V + 1);
 	n = fread(&of[0], sizeof(int), V + 1, file);
-	TRACE("(of %d) " , n);
+	DEBUG("(of %d) " , n);
 	if (n != V + 1) {
 		throw std::runtime_error("bad file structure ");
 	}
@@ -86,7 +86,7 @@ Graph DibapGraphReader::read(const std::string& path) {
 	numE2 = of[V];
 	to.resize(numE2);
 	n = fread(&to[0], sizeof(int), numE2, file);
-	TRACE("(to %d) " , n);
+	DEBUG("(to %d) " , n);
 	if (n != numE2) {
 		throw std::runtime_error("bad file structure ");
 	}
@@ -95,7 +95,7 @@ Graph DibapGraphReader::read(const std::string& path) {
 
 	n = fread(&dew, sizeof(int), 1, file);
 	dew = ntohl(dew);
-	TRACE("(dew=%d %d) " , dew , ", " , n);
+	DEBUG("(dew=%d %d) " , dew , ", " , n);
 	if (n != 1) {
 		throw std::runtime_error("bad file structure ");
 	}
@@ -104,7 +104,7 @@ Graph DibapGraphReader::read(const std::string& path) {
 		int numWeights = numE2 * dew;
 		ew.resize(numWeights);
 		n = fread(&ew[0], sizeof(int), numWeights, file);
-		TRACE("(ew %d) " , n);
+		DEBUG("(ew %d) " , n);
 		if (n != numWeights) {
 			throw std::runtime_error("bad file structure ");
 		}
@@ -114,7 +114,7 @@ Graph DibapGraphReader::read(const std::string& path) {
 
 	n = fread(&dxy, sizeof(int), 1, file);
 	dxy = ntohl(dxy);
-	TRACE("(dxy=%d %d) " , dxy , ", " , n);
+	DEBUG("(dxy=%d %d) " , dxy , ", " , n);
 	if (n != 1) {
 		throw std::runtime_error("bad file structure ");
 	}
@@ -123,7 +123,7 @@ Graph DibapGraphReader::read(const std::string& path) {
 		int numCoords = V * dxy;
 		xy.resize(numCoords);
 		n = fread(&xy[0], sizeof(float), numCoords, file);
-		TRACE("(xy %d) " , n);
+		DEBUG("(xy %d) " , n);
 		if (n != numCoords) {
 			throw std::runtime_error("bad file structure ");
 		}

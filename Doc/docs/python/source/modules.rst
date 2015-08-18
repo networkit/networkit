@@ -1,15 +1,13 @@
-Python Documentation
-====================
-
-.. automodule:: networkit
+python
+======
 
 .. toctree::
-   :hidden:
    :maxdepth: 4
 
+   NetworKit
    algebraic
+   auxiliary
    centrality
-   coloring
    community
    dynamic
    engineering
@@ -17,10 +15,13 @@ Python Documentation
    gephi
    graph
    graphio
-   linkprediction
    nxadapter
+   powerlaw
    properties
+   scripts
    stopwatch
    structures
    termgraph
+   toolbox
    viztasks
+   viztools

@@ -1,8 +1,8 @@
-networkit.structures
+NetworKit.structures
 ====================
 
-.. automodule:: networkit.structures
+.. automodule:: structures
     :members:
-    :imported-members:
     :undoc-members:
+    :imported-members:
     :show-inheritance:

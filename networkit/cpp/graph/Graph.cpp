@@ -9,7 +9,6 @@
 #include <random>
 
 #include "Graph.h"
-#include "GraphBuilder.h"
 
 namespace NetworKit {
 
@@ -501,14 +500,6 @@ void Graph::removeNode(node v) {
 	n--;
 }
 
-void Graph::restoreNode(node v){
-	assert(v < z);
-	assert(!exists[v]);
-
-	exists[v] = true;
-	n++;
-}
-
 
 /** NODE PROPERTIES **/
 
@@ -676,16 +667,6 @@ void Graph::removeEdge(node u, node v) {
 	// dose not make a lot of sense do remove attributes,
 	// cause the edge is marked as deleted and we have no null values for the attributes
 }
-
-void Graph::removeSelfLoops() {
-	this->forEdges([&](node u, node v, edgeweight ew) {
-		if (u == v) {
-			removeEdge(u, v);
-		}
-	});
-
-}
-
 
 void Graph::swapEdge(node s1, node t1, node s2, node t2) {
 	index s1t1 = indexInOutEdgeArray(s1, t1);
@@ -883,27 +864,6 @@ std::vector<node> Graph::neighbors(node u) const {
 	return neighbors;
 }
 
-Graph Graph::transpose() const {
-	if (directed == false) {
-		throw std::runtime_error("The transpose of an undirected graph is identical to the original graph.");
-	}
-
-	GraphBuilder gB(z, weighted, true);
-
-	this->forEdges([&](node u, node v) {
-		gB.addHalfEdge(v, u, weight(u,v));
-	});
-
-	Graph GTranspose = gB.toGraph(true);
-	for (node u = 0; u < z; ++u) {
-		if (! exists[u]) {
-			GTranspose.removeNode(u);
-		}
-	}
-	GTranspose.t = t;
-	GTranspose.setName(getName() + "Transpose");
-	return std::move(GTranspose);
-}
 
 Graph Graph::toUndirected() const {
 	if (directed == false) {
