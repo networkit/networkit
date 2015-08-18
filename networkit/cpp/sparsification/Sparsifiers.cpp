@@ -8,7 +8,7 @@
 #include "Sparsifiers.h"
 #include "../edgescores/ChibaNishizekiTriangleCounter.h"
 #include "../edgescores/PrefixJaccardCoefficient.h"
-#include "SimmelianOverlapAttributizer.h"
+#include "SimmelianOverlapScore.h"
 #include "MultiscaleAttributizer.h"
 #include "LocalSimilarityAttributizer.h"
 #include "RandomEdgeAttributizer.h"
@@ -36,7 +36,7 @@ void SimmelianBackboneNonParametric::run() {
 	ChibaNishizekiTriangleCounter triangleAttributizer(inputGraph);
 	std::vector<count> triangles = triangleAttributizer.getAttribute();
 
-	PrefixJaccardCoefficient jaccardScore(inputGraph, triangles);
+	PrefixJaccardCoefficient<count> jaccardScore(inputGraph, triangles);
 	jaccardScore.run();
 	std::vector<double> jaccard = jaccardScore.getAttribute();
 
@@ -53,8 +53,8 @@ void SimmelianBackboneParametric::run() {
 	ChibaNishizekiTriangleCounter triangleAttributizer(inputGraph);
 	std::vector<count> triangles = triangleAttributizer.getAttribute();
 
-	SimmelianOverlapAttributizer overlapAttributizer(inputGraph, triangles, maxRank);
-	std::vector<double> overlap = overlapAttributizer.getAttribute();
+	SimmelianOverlapScore overlapScore(inputGraph, triangles, maxRank);
+	std::vector<double> overlap = overlapScore.scores();
 
 	GlobalThresholdFilter filter(inputGraph, overlap, minOverlap, true);
 	outputGraph = filter.calculate();

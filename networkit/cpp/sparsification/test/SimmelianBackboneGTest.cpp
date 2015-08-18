@@ -30,7 +30,7 @@ TEST_F(SimmelianBackboneGTest, testOverlapCounting) {
 	neighbors[1].push_back(RankedEdge(1,4,2,1));
 	neighbors[1].push_back(RankedEdge(1,3,1,3));
 
-	SimmelianOverlapScore simmel(Graph(0), std::vector<count>());
+	SimmelianOverlapScore simmel(Graph(0), std::vector<count>(), 0);
 	simmel.run();
 	Redundancy r (0, 0.0);
 
@@ -75,7 +75,7 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhood) {
 	std::vector<count> triangles = counter.getAttribute();
 
 	//Actual test: ranked neighborhood
-	SimmelianOverlapScore simmel(g, triangles);
+	SimmelianOverlapScore simmel(g, triangles, 0);
 	simmel.run();
 	std::vector<RankedNeighbors> neighborhood = simmel.getRankedNeighborhood(g, triangles);
 
@@ -116,7 +116,7 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhoodSkippedRanks) {
 	std::vector<count> triangles = counter.getAttribute();
 
 	//Actual test: ranked neighborhood
-	SimmelianOverlapScore simmel(g, triangles);
+	SimmelianOverlapScore simmel(g, triangles, 0);
 	simmel.run();
 	std::vector<RankedNeighbors> neighborhood = simmel.getRankedNeighborhood(g, triangles);
 

@@ -11,7 +11,7 @@
 #include "../../edgescores/ChibaNishizekiTriangleCounter.h"
 #include "../../edgescores/TriangleCounter.h"
 #include "../../edgescores/PrefixJaccardCoefficient.h"
-#include "../SimmelianOverlapAttributizer.h"
+#include "../SimmelianOverlapScore.h"
 #include "../MultiscaleAttributizer.h"
 #include "../LocalSimilarityAttributizer.h"
 #include "../RandomEdgeAttributizer.h"
@@ -50,8 +50,8 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneParametric) {
 	ChibaNishizekiTriangleCounter counter(G);
 	std::vector<count> counts = counter.getAttribute();
 
-	SimmelianOverlapAttributizer attributizer(G, counts, 10);
-	auto attribute = attributizer.getAttribute();
+	SimmelianOverlapScore overlapScore(G, counts, 10);
+	auto scores = overlapScore.getAttribute();
 
 	runtime.stop();
 	INFO("[DONE] completeGraphSimmelianBackboneParametric (" , runtime.elapsed().count() , " ms)");
@@ -189,8 +189,8 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	// --------- Simmelian Backbone (Overlap)
 	std::cout << "[BEGIN] Simmelian Overlap attribute: " << std::endl;
 	runtime.start();
-	SimmelianOverlapAttributizer overlapAttributizer(g, triangles, 10);
-	std::vector<double> overlap = overlapAttributizer.getAttribute();
+	SimmelianOverlapScore overlapScore(g, triangles, 10);
+	std::vector<double> overlap = overlapScore.getAttribute();
 	runtime.stop();
 	std::cout << "[DONE] Simmelian Overlap attribute " << runtime.elapsedTag() << std::endl;
 
