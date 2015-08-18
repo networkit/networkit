@@ -10,7 +10,7 @@
 #include "LocalSimilarityGTest.h"
 
 #include "../LocalSimilarityAttributizer.h"
-#include "../../edgeattributes/ChibaNishizekiTriangleCounter.h"
+#include "../../edgescores/ChibaNishizekiTriangleCounter.h"
 
 
 namespace NetworKit {

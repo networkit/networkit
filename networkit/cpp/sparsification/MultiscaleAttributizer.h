@@ -8,7 +8,7 @@
 #ifndef MULTISCALEATTRIBUTIZER_H_
 #define MULTISCALEATTRIBUTIZER_H_
 
-#include "../edgeattributes/EdgeAttribute.h"
+#include "../edgescores/EdgeAttribute.h"
 
 namespace NetworKit {
 

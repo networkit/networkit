@@ -6,7 +6,7 @@
  */
 
 #include "Sparsifiers.h"
-#include "../edgeattributes/ChibaNishizekiTriangleCounter.h"
+#include "../edgescores/ChibaNishizekiTriangleCounter.h"
 #include "SimmelianJaccardAttributizer.h"
 #include "SimmelianOverlapAttributizer.h"
 #include "MultiscaleAttributizer.h"
@@ -18,10 +18,6 @@
 
 namespace NetworKit {
 
-/**
- * ---------------------------------------------------------------------------
- */
-
 Sparsifier::Sparsifier(const Graph& inputGraph) : inputGraph(inputGraph) {
 }
 
@@ -32,9 +28,6 @@ Graph Sparsifier::getGraph() {
 	return std::move(outputGraph);
 }
 
-/**
- * ---------------------------------------------------------------------------
- */
 
 SimmelianBackboneNonParametric::SimmelianBackboneNonParametric(const Graph& graph, double threshold) :
 		Sparsifier(graph), threshold(threshold) {}
@@ -51,9 +44,6 @@ void SimmelianBackboneNonParametric::run() {
 	hasOutput = true;
 }
 
-/**
- * ---------------------------------------------------------------------------
- */
 
 SimmelianBackboneParametric::SimmelianBackboneParametric(const Graph& graph, int maxRank, int minOverlap) :
 		Sparsifier(graph), maxRank(maxRank), minOverlap(minOverlap) {}
@@ -70,9 +60,6 @@ void SimmelianBackboneParametric::run() {
 	hasOutput = true;
 }
 
-/**
- * ---------------------------------------------------------------------------
- */
 
 MultiscaleBackbone::MultiscaleBackbone(const Graph& graph, double alpha) :
 		Sparsifier(graph), alpha(alpha) {}
@@ -91,9 +78,6 @@ void MultiscaleBackbone::run() {
 	hasOutput = true;
 }
 
-/**
- * ---------------------------------------------------------------------------
- */
 
 LocalSimilarityBackbone::LocalSimilarityBackbone(const Graph& graph, double e) :
 		Sparsifier(graph), e(e) {}
@@ -110,10 +94,6 @@ void LocalSimilarityBackbone::run() {
 	hasOutput = true;
 }
 
-/**
- * ---------------------------------------------------------------------------
- */
-
 SimmelianMultiscaleBackbone::SimmelianMultiscaleBackbone(const Graph& graph, double alpha) :
 		Sparsifier(graph), alpha(alpha) {}
 
@@ -129,10 +109,6 @@ void SimmelianMultiscaleBackbone::run() {
 	outputGraph = filter.calculate();
 	hasOutput = true;
 }
-
-/**
-* ---------------------------------------------------------------------------
-*/
 
 RandomBackbone::RandomBackbone(const Graph& graph, double ratio) :
 		Sparsifier(graph), ratio(ratio) {}

@@ -11,7 +11,7 @@
 
 #include "../Sparsifiers.h"
 #include "../SimmelianJaccardAttributizer.h"
-#include "../../edgeattributes/ChibaNishizekiTriangleCounter.h"
+#include "../../edgescores/ChibaNishizekiTriangleCounter.h"
 
 namespace NetworKit {
 
