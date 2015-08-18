@@ -46,13 +46,8 @@ TEST_F(CliqueGTest, testMaxCliqueOnSmallerGraphs) {
 	count maxCliqueSizeHamming = mcHamming.getMaxCliqueSize();
 
 	//EXPECT_EQ(11,maxCliqueSizeKeller) << "maximum clique size on graph keller4 is not correct";
-	EXPECT_EQ(14u,maxCliqueSizeJohnson) << "maximum clique size on graph johnson8-4-4 is not correct";
-	EXPECT_EQ(4u,maxCliqueSizeHamming) << "maximum clique size on graph hamming6-4 is not correct";
-
-	std::unordered_set<node> cliqueJohnson = mcJohnson.getMaxClique();
-	std::unordered_set<node> cliqueHamming = mcHamming.getMaxClique();
-	EXPECT_EQ(14u, cliqueJohnson.size());
-	EXPECT_EQ(4u, cliqueHamming.size());
+	EXPECT_EQ(14,maxCliqueSizeJohnson) << "maximum clique size on graph johnson8-4-4 is not correct";
+	EXPECT_EQ(4,maxCliqueSizeHamming) << "maximum clique size on graph hamming6-4 is not correct";
 }
 
 

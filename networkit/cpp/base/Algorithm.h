@@ -39,11 +39,6 @@ public:
 	 * @return The string representation of the algorithm.
 	 */
 	virtual std::string toString() const;
-
-	/**
-	 * @return True if algorithm can run multi-threaded. 
-	 */
-	virtual bool isParallel() const;
 };
 
 } /* NetworKit */

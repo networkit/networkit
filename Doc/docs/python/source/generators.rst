@@ -1,7 +1,7 @@
-networkit.generators
+NetworKit.generators
 ====================
 
-.. automodule:: networkit.generators
+.. automodule:: generators
     :members:
     :imported-members:
     :undoc-members:

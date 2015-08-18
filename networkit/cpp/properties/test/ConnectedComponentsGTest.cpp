@@ -16,6 +16,7 @@
 #include "../../generators/HavelHakimiGenerator.h"
 #include "../../auxiliary/Log.h"
 #include "../../generators/DorogovtsevMendesGenerator.h"
+#include "../../graph/GraphGenerator.h"
 
 namespace NetworKit {
 
@@ -150,11 +151,8 @@ TEST_F(ConnectedComponentsGTest, testParallelConnectedComponents) {
 }
 
 TEST_F(ConnectedComponentsGTest, testParallelConnectedComponentsWithDeletedNodes) {
-    Graph G(100);
-    G.forNodePairs([&](node u, node v){
-        G.addEdge(u,v);
-    });
-
+	GraphGenerator generator;
+	Graph G = generator.makeCompleteGraph(100);
 
 	{
 		ParallelConnectedComponents cc(G);

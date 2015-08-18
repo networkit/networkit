@@ -20,16 +20,12 @@ std::string GraphEvent::toString() {
 		ss << "an(" << u << ")";
 	} else if (this->type == GraphEvent::NODE_REMOVAL) {
 		ss << "dn(" << u << ")";
-	} else if (this->type == GraphEvent::NODE_RESTORATION) {
-		ss << "rn(" << u << ")";
 	} else if (this->type == GraphEvent::EDGE_ADDITION) {
 		ss << "ae(" << u << "," << v << "," << w << ")";
 	} else if (this->type == GraphEvent::EDGE_REMOVAL) {
 		ss << "de(" << u << "," << v << ")";
 	} else if (this->type == GraphEvent::EDGE_WEIGHT_UPDATE) {
 		ss << "ce(" << u << "," << v << ")";
-	} else if (this->type == GraphEvent::EDGE_WEIGHT_INCREMENT) {
-		ss << "ie(" << u << "," << v << ")";
 	} else if (this->type == GraphEvent::TIME_STEP) {
 		ss << "st";
 	}
@@ -38,3 +34,4 @@ std::string GraphEvent::toString() {
 
 
 } /* namespace NetworKit */
+

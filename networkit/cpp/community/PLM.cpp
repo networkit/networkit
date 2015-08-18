@@ -18,11 +18,11 @@
 
 namespace NetworKit {
 
-PLM::PLM(const Graph& G, bool refine, double gamma, std::string par, count maxIter, bool turbo, bool recurse) : CommunityDetectionAlgorithm(G), parallelism(par), refine(refine), gamma(gamma), maxIter(maxIter), turbo(turbo), recurse(recurse) {
+PLM::PLM(const Graph& G, bool refine, double gamma, std::string par, count maxIter, bool turbo) : CommunityDetectionAlgorithm(G), parallelism(par), refine(refine), gamma(gamma), maxIter(maxIter), turbo(turbo) {
 
 }
 
-PLM::PLM(const Graph& G, const PLM& other) : CommunityDetectionAlgorithm(G), parallelism(other.parallelism), refine(other.refine), gamma(other.gamma), maxIter(other.maxIter), turbo(other.turbo), recurse(other.recurse) {
+PLM::PLM(const Graph& G, const PLM& other) : CommunityDetectionAlgorithm(G), parallelism(other.parallelism), refine(other.refine), gamma(other.gamma), maxIter(other.maxIter), turbo(other.turbo){
 
 }
 
@@ -250,7 +250,7 @@ void PLM::run() {
 	timer.stop();
 	timing["move"].push_back(timer.elapsedMilliseconds());
 	handler.assureRunning();
-	if (recurse && change) {
+	if (change) {
 		INFO("nodes moved, so begin coarsening and recursive call");
 
 		timer.start();
@@ -277,7 +277,7 @@ void PLM::run() {
 		}
 
 
-		INFO("coarse graph has ", coarsened.first.numberOfNodes(), " nodes and ", coarsened.first.numberOfEdges(), " edges");
+		INFO("coarse graph has ", coarsened.first.numberOfEdges(), " edges");
 		zeta = prolong(coarsened.first, zetaCoarse, G, coarsened.second); // unpack communities in coarse graph onto fine graph
 		// refinement phase
 		if (refine) {
@@ -318,18 +318,14 @@ std::string NetworKit::PLM::toString() const {
 	if (turbo) {
 		stream << "," << "turbo";
 	}
-	if (!recurse) {
-		stream << "," << "non-recursive";
-	}
 	stream << ")";
 
 	return stream.str();
 }
 
 std::pair<Graph, std::vector<node> > PLM::coarsen(const Graph& G, const Partition& zeta) {
-	ParallelPartitionCoarsening parCoarsening(G, zeta);
-	parCoarsening.run();
-	return {parCoarsening.getCoarseGraph(),parCoarsening.getNodeMapping()};
+	ParallelPartitionCoarsening parCoarsening(true);
+	return parCoarsening.run(G, zeta);
 }
 
 Partition PLM::prolong(const Graph& Gcoarse, const Partition& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode) {

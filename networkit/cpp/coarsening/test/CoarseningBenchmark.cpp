@@ -38,20 +38,20 @@ TEST_F(CoarseningBenchmark, benchmarkCoarsening) {
 
 	Aux::Timer timer;
 	INFO("parallel coarsening");
+	ParallelPartitionCoarsening coarsening(false);
 	timer.start();
-	ParallelPartitionCoarsening coarsening(G, zeta, false);
-	coarsening.run();
+	auto result2 = coarsening.run(G, zeta);
 	timer.stop();
-	Graph Gc2 = coarsening.getCoarseGraph();
+	Graph Gc2 = result2.first;
 	INFO("parallel coarsening: ", timer.elapsedTag());
 	EXPECT_EQ(k, Gc2.numberOfNodes());
 
 	INFO("parallel coarsening using GraphBuilder");
+	ParallelPartitionCoarsening gbCoarsening(true);
 	timer.start();
-	ParallelPartitionCoarsening gbCoarsening(G, zeta, true);
-	gbCoarsening.run();
+	auto result3 = gbCoarsening.run(G, zeta);
 	timer.stop();
-	Graph Gc3 = gbCoarsening.getCoarseGraph();
+	Graph Gc3 = result3.first;
 	INFO("parallel coarsening: ", timer.elapsedTag());
 	EXPECT_EQ(k, Gc3.numberOfNodes());
 

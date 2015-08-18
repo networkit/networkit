@@ -8,19 +8,12 @@ from networkit import *
 
 class Test_SelfLoops(unittest.TestCase):
 
-	def checkCovers(self, c1, c2):
-		if not c1.numberOfElements() == c2.numberOfElements(): return False
-		if not c1.numberOfSubsets() == c2. numberOfSubsets(): return False
-		for i in range(0,c1.numberOfElements()):
-			if not c1.subsetsOf(i) == c2.subsetsOf(i): return False
-		return True
-
 	def setUp(self):
 		# toggle the comment/uncomment to test on small or large test cases
 		#self.L = readGraph("PGPgiantcompo.graph", Format.METIS) #without self-loops
 		#self.LL = readGraph("PGPConnectedCompoLoops.gml", Format.GML) #with self-loops sprinkled in
-		self.L = readGraph("input/looptest1.gml", Format.GML) #without self-loops
-		self.LL = readGraph("input/looptest2.gml", Format.GML) #with self-loops sprinkled in
+		self.L = readGraph("../../input/looptest1.gml", Format.GML) #without self-loops
+		self.LL = readGraph("../../input/looptest2.gml", Format.GML) #with self-loops sprinkled in
 
 	def test_centrality_Betweenness(self):
 		CL = centrality.Betweenness(self.L)
@@ -51,15 +44,9 @@ class Test_SelfLoops(unittest.TestCase):
 	def test_centrality_CoreDecomposition(self):
 		CL = centrality.CoreDecomposition(self.L)
 		CL.run()
-		try:
-			CLL = centrality.CoreDecomposition(self.LL)
-		except RuntimeError:
-			import copy
-			tmp = copy.deepcopy(self.LL)
-			tmp.removeSelfLoops()
-			CLL = centrality.CoreDecomposition(tmp)
-			CLL.run()
-			self.assertTrue(self.checkCovers(CL.cores(),CLL.cores()))
+		CLL = centrality.CoreDecomposition(self.LL)
+		CLL.run()
+		self.assertEqual(CL.cores(),CL.cores())
 
 
 	def test_centrality_EigenvectorCentrality(self):
@@ -198,6 +185,29 @@ class Test_SelfLoops(unittest.TestCase):
 		self.assertEqual(set(self.LL.nodes()), set(reconstructedSet))
 
 
+	def test_community_EPPFactory(self):
+		EPPFactory = community.EPPFactory()
+		CL = EPPFactory.make(self.L, 2, baseAlgorithm=u'PLP', finalAlgorithm=u'PLM')
+		CLL = EPPFactory.make(self.LL, 2, baseAlgorithm=u'PLP', finalAlgorithm=u'PLM')
+		CL.run()
+		CLL.run()
+		CLP = CL.getPartition()
+		CLLP = CLL.getPartition()
+		self.assertIsNot(CLP.getSubsetIds(), None)
+		self.assertIsNot(CLLP.getSubsetIds(), None)
+		# test if partitions add up to original set
+		reconstructedSet = []
+		for i in CLP.getSubsetIds():
+			for j in CLP.getMembers(i):
+				reconstructedSet.append(j)
+		self.assertEqual(set(self.L.nodes()), set(reconstructedSet))
+		reconstructedSet = []
+		for i in CLLP.getSubsetIds():
+			for j in CLLP.getMembers(i):
+				reconstructedSet.append(j)
+		self.assertEqual(set(self.LL.nodes()), set(reconstructedSet))
+
+
 	def test_community_GraphClusteringTools(self):
 		PLMLL = community.PLM(self.LL)
 		PLMLL.run()
@@ -264,6 +274,7 @@ class Test_SelfLoops(unittest.TestCase):
 				reconstructedSet.append(j)
 		self.assertEqual(set(self.LL.nodes()), set(reconstructedSet))
 
+
 	def test_community_Modularity(self):
 		PLPLL = community.PLP(self.LL)
 		PLPLL.run()
@@ -308,8 +319,7 @@ class Test_SelfLoops(unittest.TestCase):
 
 
 	def test_community_kCoreCommunityDetection(self):
-		with self.assertRaises(RuntimeError) as cm:
-			kCCD = community.kCoreCommunityDetection(self.LL, 1, inspect=False)
+		kCCD = community.kCoreCommunityDetection(self.LL, 1, inspect=False)
 
 
 	def test_flow_EdmondsKarp(self):
@@ -338,8 +348,7 @@ class Test_SelfLoops(unittest.TestCase):
 		CL.approxAvgLocal(self.L, 5)
 		CL.approxAvgLocal(self.LL, 5)
 		CL.avgLocal(self.L)
-		with self.assertRaises(RuntimeError) as cm:
-			CL.avgLocal(self.LL)
+		CL.avgLocal(self.LL)
 		CL.sequentialAvgLocal(self.L)
 		CL.sequentialAvgLocal(self.LL)
 

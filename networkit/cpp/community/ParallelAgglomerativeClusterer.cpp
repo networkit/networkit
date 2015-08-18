@@ -43,17 +43,16 @@ void ParallelAgglomerativeClusterer::run() {
 
 		// FIXME: so far only sequential
 		// compute matching
-		PathGrowingMatcher parMatcher(Gcopy);
-		Matching M = parMatcher.run();
+		PathGrowingMatcher parMatcher;
+		Matching M = parMatcher.run(Gcopy);
 
 		// contract graph according to matching, TODO: (and star-like structures)
-		MatchingContracter matchingContracter(Gcopy, M);
-		matchingContracter.run();
-		Graph Gcombined = matchingContracter.getCoarseGraph();
+		MatchingContracter matchingContracter;
+		auto GandMap = matchingContracter.run(Gcopy, M);
 
 		// determine if it makes sense to proceed
 		count n = Gcopy.numberOfNodes();
-		count cn = Gcombined.numberOfNodes();
+		count cn = GandMap.first.numberOfNodes();
 		count diff = n - cn;
 		repeat = ((diff > 0) &&
 				(cn >= MIN_NUM_COMMUNITIES) &&
@@ -62,8 +61,8 @@ void ParallelAgglomerativeClusterer::run() {
 
 		// prepare next iteration if there is one
 		if (repeat) {
-			Gcopy = Gcombined;
-			mapHierarchy.push_back(matchingContracter.getNodeMapping());
+			Gcopy = GandMap.first;
+			mapHierarchy.push_back(GandMap.second);
 			TRACE("Repeat agglomeration with graph of size " , Gcopy.numberOfNodes());
 		}
 	} while (repeat);

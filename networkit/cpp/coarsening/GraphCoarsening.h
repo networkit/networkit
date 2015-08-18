@@ -9,7 +9,6 @@
 #define GRAPHCOARSENING_H_
 
 #include "../graph/Graph.h"
-#include "../base/Algorithm.h"
 
 namespace NetworKit {
 
@@ -17,28 +16,14 @@ namespace NetworKit {
  * @ingroup coarsening
  * Abstract base class for graph coarsening/contraction algorithms.
  */
-class GraphCoarsening : public Algorithm {
+class GraphCoarsening {
 
 public:
 
-	GraphCoarsening(const Graph& G);
-
 	virtual ~GraphCoarsening() = default;
 
-	virtual void run() = 0;
-
-	Graph getCoarseGraph() const;
-
-	std::vector<node> getNodeMapping() const;
-
-	virtual std::string toString() const;
-
-protected:
-	const Graph& G;
-	Graph Gcoarsed;
-	std::vector<node> nodeMapping;
-
 };
+
 
 } // namespace
 

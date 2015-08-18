@@ -9,11 +9,7 @@
 
 namespace NetworKit {
 
-MatchingContracter::MatchingContracter(const Graph& G, const Matching& M, bool noSelfLoops) : GraphCoarsening(G), M(M), noSelfLoops(noSelfLoops) {
-
-}
-
-void MatchingContracter::run() {
+std::pair<Graph, std::vector<node> > MatchingContracter::run(Graph& G, Matching& M, bool noSelfLoops) {
 	count n = G.numberOfNodes();
 	index z = G.upperNodeIdBound();
 	count cn = n - M.size();
@@ -41,17 +37,17 @@ void MatchingContracter::run() {
 //	std::cout << "matching size: " << M.matchingSize() << std::endl;
 
 	G.forNodes([&](node v) { // TODO: difficult in parallel
-		G.forNeighborsOf(v, [&](node u, edgeweight ew) {
+		G.forNeighborsOf(v, [&](node u) {
 			node cv = mapFineToCoarse[v];
 			node cu = mapFineToCoarse[u];
+			edgeweight ew = G.weight(v, u);
 			if (! noSelfLoops || (cv != cu)) {
-				cG.increaseWeight(cv, cu, ew);
+				cG.setWeight(cv, cu, cG.weight(cv, cu) + ew);
 			}
 		});
 	});
 
-	Gcoarsed = std::move(cG);
-	nodeMapping = std::move(mapFineToCoarse);
+	return std::make_pair(cG, mapFineToCoarse);
 }
 
 } /* namespace NetworKit */

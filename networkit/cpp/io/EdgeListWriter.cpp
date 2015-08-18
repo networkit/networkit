@@ -20,16 +20,9 @@ void EdgeListWriter::write(const Graph& G, std::string path) {
     std::ofstream file(path);
     Aux::enforceOpened(file);
 
-    if (G.isWeighted()) {
-        G.forEdges([&](node u, node v, double weight){
-            file << (u + firstNode) << separator << (v + firstNode) << weight << std::endl;
-        });
-    } else {
-        G.forEdges([&](node u, node v){
-        	file << (u + firstNode) << separator << (v + firstNode) << std::endl;
-        });
-    }
-
+    G.forEdges([&](node u, node v){
+    	file << (u + firstNode) << separator << (v + firstNode) << std::endl;
+    });
 
     file.close();
 

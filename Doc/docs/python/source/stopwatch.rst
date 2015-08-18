@@ -1,7 +1,8 @@
-networkit.stopwatch
-====================
+NetworKit.stopwatch
+===================
 
-.. automodule:: networkit.stopwatch
+.. automodule:: stopwatch
     :members:
+    :imported-members:
     :undoc-members:
     :show-inheritance:

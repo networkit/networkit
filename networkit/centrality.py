@@ -6,7 +6,7 @@ __author__ = "Christian Staudt"
 __credits__ = ["Christian Staudt", "Elisabetta Bergamini", "Henning Meyerhenke", "Marc Nemes"]
 
 # extension imports
-from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2, ApproxCloseness, DynApproxBetweenness, Closeness, KPathCentrality, CoreDecomposition, KatzCentrality, LocalClusteringCoefficient
+from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2, DynApproxBetweenness, Closeness, KPathCentrality, CoreDecomposition, KatzCentrality, LocalClusteringCoefficient
 
 
 # local imports
@@ -142,7 +142,6 @@ class SpectralCentrality:
 
 		self.scoreList = None
 		self.rankList = None
-		self.evz = {}
 
 	def prepareSpectrum(self):
 		""" Method that must be implemented to set the following values:
@@ -173,13 +172,15 @@ class SpectralCentrality:
 
 	def scores(self):
 		if self.scoreList is None:
-			self.scoreList = [v for k,v in self.evz.items()]
+			self.scoreList = [abs(self.evz[v]) for v in self.graph.nodes()] # TODO bad! This depends on iteration order...
 
 		return self.scoreList
 
 	def ranking(self):
 		if self.rankList is None:
-			self.rankList = sorted(self.evz.items(),key=lambda x: float(x[1]), reverse=True)
+			self.rankList = [(v, abs(self.evz[v])) for v in self.graph.nodes()]
+			self.rankList.sort(key=lambda x: float(x[1]), reverse=True)
+
 		return self.rankList
 
 

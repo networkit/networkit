@@ -6,80 +6,66 @@
  */
 
 #include "PathGrowingMatcher.h"
-#include "../auxiliary/PrioQueueForInts.h"
 
 namespace NetworKit {
 
-PathGrowingMatcher::PathGrowingMatcher(Graph& G): Matcher(G) {
-}
 
-Matching PathGrowingMatcher::run() {
+Matching PathGrowingMatcher::run(Graph& G) {
 	// make copy since graph will be transformed
-	count z = G.upperNodeIdBound();
+	// copy graph because we make changes due to merges
+	Graph graph(G.numberOfNodes(), true); // make weighted copy
+	G.forEdges([&](node u, node v, edgeweight w){
+		graph.addEdge(u, v, w);
+	});
+	const count n = graph.numberOfNodes();
 
 	// init matching to empty
-	Matching m1(z);
-	Matching m2(z);
-	bool takeM1 = true;
-
-	// degrees tracks degree of vertices,
-	// avoids to make a copy of the graph and
-	// delete vertices and edges explicitly.
-	// Init to none important because deleted nodes
-	// must have value none for priority queue.
-	std::vector<count> degrees(z, none);
-	G.parallelForNodes([&](node u) {
-		degrees[u] = G.degree(u);
-	});
-
-	// alive tracks if vertices are alive or not in the algorithm
-	std::vector<bool> alive(z, true);
-	count numEdges = G.numberOfEdges();
-
-	// PQ to retrieve vertices with degree > 0 quickly
-	Aux::PrioQueueForInts bpq(degrees, z-1);
+	Matching m1(n);
+	Matching m2(n);
+	bool smaller = true;
 
 	// main loop
-	while (numEdges > 0) {
-		// use vertex with positive degree
-		node v = bpq.extractMax();
-		assert(v != none);
+	while (graph.numberOfEdges() > 0) {
+		TRACE("Remaining edges: " , graph.numberOfEdges());
+
+		// use arbitrary vertex with positive degree
+		node v = 0;
+		while (graph.degree(v) == 0 && v < n) {
+			++v;
+		}
 
 		// path growing
-		while (degrees[v] > 0) {
+		while (graph.degree(v) > 0) {
+			TRACE("Current vertex: " , v);
+
 			// find heaviest incident edge
 			node bestNeighbor = 0;
 			edgeweight bestWeight = 0;
-			G.forEdgesOf(v, [&](node v, node u, edgeweight weight) {
-				if (alive[u]) {
-					if (weight > bestWeight) {
-						bestNeighbor = u;
-						bestWeight = weight;
-					}
+			graph.forEdgesOf(v, [&](node v, node u, edgeweight weight) {
+				if (weight > bestWeight) {
+					bestNeighbor = u;
+					bestWeight = weight;
 				}
 			});
 
-			if (takeM1) {
+			if (smaller) {
 				// add edge to m1
 				m1.match(v, bestNeighbor);
-				takeM1 = false;
+				smaller = false;
 			}
 			else {
 				// add edge to m2
 				m2.match(v, bestNeighbor);
-				takeM1 = true;
+				smaller = true;
 			}
 
 			// remove current vertex and its incident edges from graph
-			G.forEdgesOf(v, [&](node v, node u) {
-				if (alive[u]) {
-					degrees[u]--;
-					numEdges--;
-					bpq.changePrio(u, degrees[u]);
-				}
+			TRACE("Remove edges of node " , v , ", which has degree " , graph.degree(v));
+			graph.forEdgesOf(v, [&](node v, node u) {
+				graph.removeEdge(v, u);
 			});
-			alive[v] = false;
-			bpq.remove(v);
+			TRACE("Remove node " , v , " of degree " , graph.degree(v));
+			graph.removeNode(v);
 
 			// start next iteration from best neighbor
 			v = bestNeighbor;
@@ -96,4 +82,3 @@ Matching PathGrowingMatcher::run() {
 }
 
 } /* namespace NetworKit */
-

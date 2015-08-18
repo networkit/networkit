@@ -1,7 +1,7 @@
-networkit.centrality
+NetworKit.centrality
 ====================
 
-.. automodule:: networkit.centrality
+.. automodule:: centrality
     :members:
     :imported-members:
     :undoc-members:
