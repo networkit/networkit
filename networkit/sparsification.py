@@ -491,7 +491,7 @@ class LocalDegreeSparsifier(Sparsifier):
 		G -- the input graph
 		"""
 
-		localDegree = LocalDegreeScore(G)
+		localDegree = LocalDegreeScore(G).run();
 		localDegreeScore = localDegree.scores()
 		return localDegreeScore
 

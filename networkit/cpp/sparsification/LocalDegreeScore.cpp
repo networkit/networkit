@@ -14,6 +14,8 @@ LocalDegreeScore::LocalDegreeScore(const Graph& graph) : graph(graph) {
 }
 
 std::vector<double> LocalDegreeScore::scores() {
+	if (!hasRun)
+		throw std::runtime_error("Scores have not been calculated - run() needs to be called first");
 	return scoreData;
 }
 
