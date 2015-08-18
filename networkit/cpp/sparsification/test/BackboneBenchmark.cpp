@@ -51,6 +51,7 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneParametric) {
 	std::vector<count> counts = counter.getAttribute();
 
 	SimmelianOverlapScore overlapScore(G, counts, 10);
+	overlapScore.run();
 	auto scores = overlapScore.scores();
 
 	runtime.stop();
