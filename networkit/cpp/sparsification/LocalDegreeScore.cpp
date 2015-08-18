@@ -10,14 +10,9 @@
 
 namespace NetworKit {
 
-LocalDegreeScore::LocalDegreeScore(const Graph& graph) : graph(graph) {
+LocalDegreeScore::LocalDegreeScore(const Graph& G) : EdgeScore<double>(G) {
 }
 
-std::vector<double> LocalDegreeScore::scores() {
-	if (!hasRun)
-		throw std::runtime_error("Scores have not been calculated - run() needs to be called first");
-	return scoreData;
-}
 
 double LocalDegreeScore::score(node u, node v) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
@@ -28,23 +23,23 @@ double LocalDegreeScore::score(edgeid eid) {
 }
 
 void LocalDegreeScore::run() {
-	if (!graph.hasEdgeIds()) {
+	if (!G.hasEdgeIds()) {
 		throw std::runtime_error("edges have not been indexed - call indexEdges first");
 	}
 
-	scoreData.resize(graph.upperEdgeIdBound(), 0.0);
+	scoreData.resize(G.upperEdgeIdBound(), 0.0);
 
-	graph.balancedParallelForNodes([&](node i) {
-		count d = graph.degree(i);
+	G.balancedParallelForNodes([&](node i) {
+		count d = G.degree(i);
 
 		/**
 		 *  The top d^e edges (sorted by degree)
 		 * are to be kept in the backbone */
 
 		std::vector<AttributizedEdge<count>> neighbors;
-		graph.forNeighborsOf(i, [&](node _i, node j, edgeid eid) {
-			if (graph.degree(j) > d)
-				neighbors.push_back(AttributizedEdge<count>(i, j, eid, graph.degree(j)));
+		G.forNeighborsOf(i, [&](node _i, node j, edgeid eid) {
+			if (G.degree(j) > d)
+				neighbors.push_back(AttributizedEdge<count>(i, j, eid, G.degree(j)));
 		});
 		std::sort(neighbors.begin(), neighbors.end());
 
