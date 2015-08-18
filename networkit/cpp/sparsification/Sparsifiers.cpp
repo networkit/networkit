@@ -7,7 +7,7 @@
 
 #include "Sparsifiers.h"
 #include "../edgescores/ChibaNishizekiTriangleCounter.h"
-#include "SimmelianJaccardAttributizer.h"
+#include "../edgescores/PrefixJaccardCoefficient.h"
 #include "SimmelianOverlapAttributizer.h"
 #include "MultiscaleAttributizer.h"
 #include "LocalSimilarityAttributizer.h"
@@ -36,8 +36,9 @@ void SimmelianBackboneNonParametric::run() {
 	ChibaNishizekiTriangleCounter triangleAttributizer(inputGraph);
 	std::vector<count> triangles = triangleAttributizer.getAttribute();
 
-	SimmelianJaccardAttributizer jaccardAttributizer(inputGraph, triangles);
-	std::vector<double> jaccard = jaccardAttributizer.getAttribute();
+	PrefixJaccardCoefficient jaccardScore(inputGraph, triangles);
+	jaccardScore.run();
+	std::vector<double> jaccard = jaccardScore.getAttribute();
 
 	GlobalThresholdFilter filter(inputGraph, jaccard, threshold, true);
 	outputGraph = filter.calculate();

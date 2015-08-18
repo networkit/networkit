@@ -10,7 +10,7 @@
 #include "BackboneBenchmark.h"
 #include "../../edgescores/ChibaNishizekiTriangleCounter.h"
 #include "../../edgescores/TriangleCounter.h"
-#include "../SimmelianJaccardAttributizer.h"
+#include "../../edgescores/PrefixJaccardCoefficient.h"
 #include "../SimmelianOverlapAttributizer.h"
 #include "../MultiscaleAttributizer.h"
 #include "../LocalSimilarityAttributizer.h"
@@ -69,8 +69,9 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneNonParametric) {
 	ChibaNishizekiTriangleCounter counter(G);
 	std::vector<count> counts = counter.getAttribute();
 
-	SimmelianJaccardAttributizer attributizer(G, counts);
-	auto attribute = attributizer.getAttribute();
+	PrefixJaccardCoefficient jaccard(G, counts);
+	jaccard.run();
+	auto attribute = jaccard.getAttribute();
 
 	runtime.stop();
 	INFO("[DONE] SimmelianBackboneNonParametric (" , runtime.elapsed().count() , " ms)");
@@ -172,7 +173,8 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	// --------- Simmelian Backbone (Jaccard)
 	std::cout << "[BEGIN] Simmelian Jaccard attribute: " << std::endl;
 	runtime.start();
-	SimmelianJaccardAttributizer jaccardAttributizer(g, triangles);
+	PrefixJaccardCoefficient jaccardAttributizer(g, triangles);
+	jaccardAttributizer.run();
 	std::vector<double> jaccard = jaccardAttributizer.getAttribute();
 	runtime.stop();
 	std::cout << "[DONE] Simmelian Jaccard attribute " << runtime.elapsedTag() << std::endl;
