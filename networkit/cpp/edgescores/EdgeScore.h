@@ -30,14 +30,14 @@ public:
 	/** Get a vector containing the score for each edge in the graph.
 	@Return the edge scores calculated by @link run().
 	*/
-	virtual std::vector<T> getEdgeScores() = 0;
+	virtual std::vector<T> scores() = 0;
 
 	/** Get the edge score of the edge with the given edge id.
 	*/
-	virtual T getEdgeScore() = 0;
+	virtual T score() = 0;
 
-	std::vector<T>* _getEdgeScores() {
-		return new std::vector<T>{std::move(getEdgeScores())};
+	std::vector<T>* _scores() {
+		return new std::vector<T>{std::move(scores())};
 	};
 
 };
