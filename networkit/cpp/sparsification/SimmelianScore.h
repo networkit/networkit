@@ -8,7 +8,7 @@
 #ifndef SIMMELIANATTRIBUTIZER_H_
 #define SIMMELIANATTRIBUTIZER_H_
 
-#include "../edgescores/EdgeAttribute.h"
+#include "../edgescores/EdgeScore.h"
 #include <set>
 
 namespace NetworKit {
@@ -64,13 +64,13 @@ struct Redundancy {
 /**
  * Abstract base class for the two variants of Simmelian backbones (OverlapFilter, JaccardFilter).
  */
-class SimmelianAttributizer : public EdgeAttribute<double> {
+class SimmelianScore : public EdgeScore<double> {
 
 public:
 
-	SimmelianAttributizer(const Graph& graph, const std::vector<count>& attribute);
+	SimmelianScore(const Graph& graph, const std::vector<count>& attribute);
 
-	virtual std::vector<double> getAttribute() = 0;
+	//virtual std::vector<double> scores() = 0;
 
 	std::vector<RankedNeighbors> getRankedNeighborhood(const Graph& g, const std::vector<count>& triangles);
 
@@ -92,11 +92,10 @@ public:
 			count& overlap);
 
 protected:
-	const Graph& graph;
 	const std::vector<count>& triangles;
 
 };
 
 } /* namespace NetworKit */
 
-#endif /* SIMMELIANATTRIBUTIZER_H_ */
+#endif /* SIMMELIANSCORE_H_ */
