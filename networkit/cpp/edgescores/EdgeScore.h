@@ -32,6 +32,10 @@ public:
 	*/
 	virtual std::vector<T> getEdgeScores() = 0;
 
+	/** Get the edge score of the edge with the given edge id.
+	*/
+	virtual T getEdgeScore() = 0;
+
 	std::vector<T>* _getEdgeScores() {
 		return new std::vector<T>{std::move(getEdgeScores())};
 	};
