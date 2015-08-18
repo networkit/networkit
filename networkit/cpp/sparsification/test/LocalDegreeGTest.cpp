@@ -41,6 +41,7 @@ TEST_F(LocalDegreeGTest, testAttributeSimple) {
 	g.indexEdges();
 
 	LocalDegreeScore localDegree(g);
+	localDegree.run();
 	std::vector<double> scores = localDegree.scores();
 
 	EXPECT_DOUBLE_EQ(LocalDegreeGTest::getScore(g, 0, 1, 1, 2), scores[g.edgeId(0, 1)]);
