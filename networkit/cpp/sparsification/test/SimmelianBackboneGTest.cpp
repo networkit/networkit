@@ -30,7 +30,10 @@ TEST_F(SimmelianBackboneGTest, testOverlapCounting) {
 	neighbors[1].push_back(RankedEdge(1,4,2,1));
 	neighbors[1].push_back(RankedEdge(1,3,1,3));
 
-	SimmelianOverlapScore simmel(Graph(0), std::vector<count>(), 0);
+	Graph G(0);
+	G.indexEdges();
+
+	SimmelianOverlapScore simmel(G, std::vector<count>(), 0);
 	simmel.run();
 	Redundancy r (0, 0.0);
 

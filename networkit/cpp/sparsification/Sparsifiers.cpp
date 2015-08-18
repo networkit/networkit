@@ -54,6 +54,7 @@ void SimmelianBackboneParametric::run() {
 	std::vector<count> triangles = triangleAttributizer.getAttribute();
 
 	SimmelianOverlapScore overlapScore(inputGraph, triangles, maxRank);
+	overlapScore.run();
 	std::vector<double> overlap = overlapScore.scores();
 
 	GlobalThresholdFilter filter(inputGraph, overlap, minOverlap, true);
