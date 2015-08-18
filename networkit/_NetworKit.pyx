@@ -1371,6 +1371,62 @@ cdef class DynDijkstra:
 			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
 		self._this.update(_batch)
 
+cdef extern from "cpp/graph/APSP.h":
+	cdef cppclass _APSP "NetworKit::APSP"(_Algorithm):
+		_APSP(_Graph G) except +
+		vector[vector[edgeweight]] getDistances() except +
+		edgeweight getDistance(node u, node v) except +
+
+cdef class APSP(Algorithm):
+	""" An implementation of Dijkstra's SSSP algorithm for the All-Pairs Shortest-Paths problem.
+	Returns a list of lists of weighted distances from node source, i.e. the length of the shortest path from source to
+	any other node.
+
+    APSP(G)
+
+    Creates Dijkstra for `G` and source node `source`.
+
+    Parameters
+	----------
+	G : Graph
+		The graph.
+    """
+	cdef Graph _G
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _APSP(G._this)
+
+	def __dealloc__(self):
+		self._G = None
+
+	def getDistances(self):
+		""" Returns a vector of vectors of weighted distances from the source node, i.e. the
+ 	 	length of the shortest path from the source node to any other node.
+
+ 	 	Returns
+ 	 	-------
+ 	 	vector of vectors
+ 	 		The weighted distances from the nodes to any other node in the graph.
+		"""
+		return (<_APSP*>(self._this)).getDistances()
+
+	def getDistance(self, node u, node v):
+		""" Returns the length of the shortest path from source 'u' to target `v`.
+
+		Parameters
+		----------
+		u : node
+			Source node.
+		v : node
+			Target node.
+
+		Returns
+		-------
+		int or float
+			The distance from 'u' to 'v'.
+		"""
+		return (<_APSP*>(self._this)).getDistance(u, v)
 
 cdef extern from "cpp/graph/Subgraph.h" namespace "NetworKit::Subgraph":
 		_Graph _SubGraphFromNodes "NetworKit::Subgraph::fromNodes"(_Graph G, unordered_set[node] nodes)  except +
@@ -2665,12 +2721,12 @@ cdef class Partition:
 		return self._this.lowerBound()
 
 	def compact(self, useTurbo = False):
-		""" Change subset IDs to be consecutive, starting at 0. 
+		""" Change subset IDs to be consecutive, starting at 0.
 
 		Parameters
 		----------
 		useTurbo : bool
-			Default: false. If set to true, a vector instead of a map to assign new ids 
+			Default: false. If set to true, a vector instead of a map to assign new ids
 	 		which results in a shorter running time but possibly a large space overhead.
 
 		"""
