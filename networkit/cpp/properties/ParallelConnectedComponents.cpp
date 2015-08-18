@@ -80,14 +80,16 @@ void ParallelConnectedComponents::run() {
 	}
 	if (coarsening && numIterations == 8) { // TODO: externalize constant
 		// coarsen and make recursive call
-		ParallelPartitionCoarsening con;
-		std::pair<Graph, std::vector<node> > coarse = con.run(G, component);
-		ParallelConnectedComponents cc(coarse.first);
+		ParallelPartitionCoarsening con(G, component);
+		con.run();
+		auto Gcon = con.getCoarseGraph();
+		ParallelConnectedComponents cc(Gcon);
 		cc.run();
 
 		// apply to current graph
+		auto nodeMapping = con.getNodeMapping();
 		G.parallelForNodes([&](node u) {
-			component[u] = cc.componentOfNode(coarse.second[u]);
+			component[u] = cc.componentOfNode(nodeMapping[u]);
 		});
 	}
 }
@@ -150,13 +152,16 @@ void ParallelConnectedComponents::runSequential() {
 	}
 	if (coarsening && numIterations == 8) { // TODO: externalize constant
 		// coarsen and make recursive call
-		ParallelPartitionCoarsening con(false);
-		std::pair<Graph, std::vector<node> > coarse = con.run(G, component);
-		ParallelConnectedComponents cc(coarse.first);
+		ParallelPartitionCoarsening con(G, component, false);
+		con.run();
+		auto Gcon = con.getCoarseGraph();
+		ParallelConnectedComponents cc(Gcon);
 		cc.run();
+
 		// apply to current graph
+		auto nodeMapping = con.getNodeMapping();
 		G.forNodes([&](node u) {
-			component[u] = cc.componentOfNode(coarse.second[u]);
+			component[u] = cc.componentOfNode(nodeMapping[u]);
 		});
 	}
 }

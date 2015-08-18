@@ -36,8 +36,10 @@ void NetworKit::PageRank::run() {
 		handler.assureRunning();
 		G.balancedParallelForNodes([&](node u) {
 			pr[u] = 0.0;
-			G.forInEdgesOf(u, [&](node u, node v) {
-				pr[u] += scoreData[v] * G.weight(v, u) / deg[v];
+			G.forInEdgesOf(u, [&](node u, node v, edgeweight w) {
+				// note: inconsistency in definition in Newman's book (Ch. 7) regarding directed graphs
+				// we follow the verbal description, which requires to sum over the incoming edges
+				pr[u] += scoreData[v] * w / deg[v];
 			});
 			pr[u] *= damp;
 			pr[u] += teleportProb;

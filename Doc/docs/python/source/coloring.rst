@@ -1,7 +1,7 @@
-networkit.auxiliary
-===================
+networkit.coloring
+==================
 
-.. automodule:: networkit.auxiliary
+.. automodule:: networkit.coloring
     :members:
     :imported-members:
     :undoc-members:

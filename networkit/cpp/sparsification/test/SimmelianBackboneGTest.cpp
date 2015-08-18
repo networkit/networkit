@@ -12,46 +12,45 @@
 #include "../Sparsifiers.h"
 #include "../SimmelianJaccardAttributizer.h"
 #include "../../edgeattributes/ChibaNishizekiTriangleCounter.h"
-#include "../../graph/GraphGenerator.h"
 
 namespace NetworKit {
 
 TEST_F(SimmelianBackboneGTest, testOverlapCounting) {
 	//Build up a ranked neighborhood graph. Notation: Ego/Alter/Simmeliannes/Rank
 	std::vector<RankedNeighbors> neighbors(2);
-	neighbors[0].push_back(RankedEdge(0,1,3,1));
-	neighbors[0].push_back(RankedEdge(0,2,2,2));
-	neighbors[0].push_back(RankedEdge(0,5,2,2));
-	neighbors[0].push_back(RankedEdge(0,3,1,4));
-	neighbors[0].push_back(RankedEdge(0,6,1,4));
+	neighbors[0].push_back(RankedEdge(0,1,3,0));
+	neighbors[0].push_back(RankedEdge(0,2,2,1));
+	neighbors[0].push_back(RankedEdge(0,5,2,1));
+	neighbors[0].push_back(RankedEdge(0,3,1,3));
+	neighbors[0].push_back(RankedEdge(0,6,1,3));
 
-	neighbors[1].push_back(RankedEdge(1,0,3,1));
-	neighbors[1].push_back(RankedEdge(1,2,2,2));
-	neighbors[1].push_back(RankedEdge(1,4,2,2));
-	neighbors[1].push_back(RankedEdge(1,3,1,4));
+	neighbors[1].push_back(RankedEdge(1,0,3,0));
+	neighbors[1].push_back(RankedEdge(1,2,2,1));
+	neighbors[1].push_back(RankedEdge(1,4,2,1));
+	neighbors[1].push_back(RankedEdge(1,3,1,3));
 
 	SimmelianJaccardAttributizer simmel(Graph(0), std::vector<count>());
 	Redundancy r (0, 0.0);
 
+	r = simmel.getOverlap(0, 1, neighbors, 0);
+	EXPECT_EQ(0, r.overlap) << "wrong overlap";
+	EXPECT_DOUBLE_EQ(0.0, r.jaccard) << "wrong jaccard index";
+
+	r = simmel.getOverlap(1, 0, neighbors, 0);
+	EXPECT_EQ(0, r.overlap) << "wrong overlap";
+	EXPECT_DOUBLE_EQ(0.0, r.jaccard) << "wrong jaccard index";
+
 	r = simmel.getOverlap(0, 1, neighbors, 1);
 	EXPECT_EQ(1, r.overlap) << "wrong overlap";
-	EXPECT_DOUBLE_EQ((1.0/1.0), r.jaccard) << "wrong jaccard index";
-
-	r = simmel.getOverlap(1, 0, neighbors, 1);
-	EXPECT_EQ(1, r.overlap) << "wrong overlap";
-	EXPECT_DOUBLE_EQ((1.0/1.0), r.jaccard) << "wrong jaccard index";
+	EXPECT_DOUBLE_EQ((1.0/3.0), r.jaccard) << "wrong jaccard index";
 
 	r = simmel.getOverlap(0, 1, neighbors, 2);
-	EXPECT_EQ(2, r.overlap) << "wrong overlap";
-	EXPECT_DOUBLE_EQ((1.0/1.0), r.jaccard) << "wrong jaccard index";
+	EXPECT_EQ(1, r.overlap) << "wrong overlap";
+	EXPECT_DOUBLE_EQ((1.0/3.0), r.jaccard) << "wrong jaccard index";
 
 	r = simmel.getOverlap(0, 1, neighbors, 3);
 	EXPECT_EQ(2, r.overlap) << "wrong overlap";
-	EXPECT_DOUBLE_EQ((1.0/1.0), r.jaccard) << "wrong jaccard index";
-
-	r = simmel.getOverlap(0, 1, neighbors, 4);
-	EXPECT_EQ(3, r.overlap) << "wrong overlap";
-	EXPECT_DOUBLE_EQ((1.0/1.0), r.jaccard) << "wrong jaccard index";
+	EXPECT_DOUBLE_EQ((2.0/5.0), r.jaccard) << "wrong jaccard index";
 }
 
 TEST_F(SimmelianBackboneGTest, testRankedNeighborhood) {
@@ -79,17 +78,17 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhood) {
 
 	//Neighborhood of 4
 	EXPECT_EQ(5, neighborhood[4].size());
-	EXPECT_EQ(RankedEdge(4, 8, 2, 1), neighborhood[4][0]);
-	EXPECT_EQ(RankedEdge(4, 5, 1, 2), neighborhood[4][1]);
-	EXPECT_EQ(RankedEdge(4, 6, 1, 2), neighborhood[4][2]);
-	EXPECT_EQ(RankedEdge(4, 7, 1, 2), neighborhood[4][3]);
-	EXPECT_EQ(RankedEdge(4, 9, 1, 2), neighborhood[4][4]);
+	EXPECT_EQ(RankedEdge(4, 8, 2, 0), neighborhood[4][0]);
+	EXPECT_EQ(RankedEdge(4, 9, 1, 1), neighborhood[4][1]);
+	EXPECT_EQ(RankedEdge(4, 7, 1, 1), neighborhood[4][2]);
+	EXPECT_EQ(RankedEdge(4, 6, 1, 1), neighborhood[4][3]);
+	EXPECT_EQ(RankedEdge(4, 5, 1, 1), neighborhood[4][4]);
 
 	//Neighborhood of 8
 	EXPECT_EQ(3, neighborhood[8].size());
-	EXPECT_EQ(RankedEdge(8, 4, 2, 1), neighborhood[8][0]);
-	EXPECT_EQ(RankedEdge(8, 7, 1, 2), neighborhood[8][1]);
-	EXPECT_EQ(RankedEdge(8, 9, 1, 2), neighborhood[8][2]);
+	EXPECT_EQ(RankedEdge(8, 4, 2, 0), neighborhood[8][0]);
+	EXPECT_EQ(RankedEdge(8, 9, 1, 1), neighborhood[8][1]);
+	EXPECT_EQ(RankedEdge(8, 7, 1, 1), neighborhood[8][2]);
 }
 
 TEST_F(SimmelianBackboneGTest, testRankedNeighborhoodSkippedRanks) {
@@ -119,19 +118,20 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhoodSkippedRanks) {
 
 	//Neighborhood of 0
 	EXPECT_EQ(6, neighborhood[0].size());
-	EXPECT_EQ(RankedEdge(0, 4, 3, 1), neighborhood[0][0]);
-	EXPECT_EQ(RankedEdge(0, 2, 2, 2), neighborhood[0][1]);
-	EXPECT_EQ(RankedEdge(0, 3, 2, 2), neighborhood[0][2]);
-	EXPECT_EQ(RankedEdge(0, 1, 1, 4), neighborhood[0][3]);
-	EXPECT_EQ(RankedEdge(0, 5, 1, 4), neighborhood[0][4]);
-	EXPECT_EQ(RankedEdge(0, 6, 1, 4), neighborhood[0][5]);
+	EXPECT_EQ(RankedEdge(0, 4, 3, 0), neighborhood[0][0]);
+	EXPECT_EQ(RankedEdge(0, 3, 2, 1), neighborhood[0][1]);
+	EXPECT_EQ(RankedEdge(0, 2, 2, 1), neighborhood[0][2]);
+	EXPECT_EQ(RankedEdge(0, 6, 1, 3), neighborhood[0][3]);
+	EXPECT_EQ(RankedEdge(0, 5, 1, 3), neighborhood[0][4]);
+	EXPECT_EQ(RankedEdge(0, 1, 1, 3), neighborhood[0][5]);
 
 	//Neighborhood of 4
 	EXPECT_EQ(4, neighborhood[4].size());
-	EXPECT_EQ(RankedEdge(4, 0, 3, 1), neighborhood[4][0]);
-	EXPECT_EQ(RankedEdge(4, 3, 1, 2), neighborhood[4][1]);
-	EXPECT_EQ(RankedEdge(4, 5, 1, 2), neighborhood[4][2]);
-	EXPECT_EQ(RankedEdge(4, 6, 1, 2), neighborhood[4][3]);
+	EXPECT_EQ(RankedEdge(4, 0, 3, 0), neighborhood[4][0]);
+	EXPECT_EQ(RankedEdge(4, 6, 1, 1), neighborhood[4][1]);
+	EXPECT_EQ(RankedEdge(4, 5, 1, 1), neighborhood[4][2]);
+	EXPECT_EQ(RankedEdge(4, 3, 1, 1), neighborhood[4][3]);
+
 }
 
 TEST_F(SimmelianBackboneGTest, testOverlapFiltering) {
@@ -200,8 +200,12 @@ TEST_F(SimmelianBackboneGTest, testBackboneTrivial) {
 }
 
 TEST_F(SimmelianBackboneGTest, testBackboneConnectedGraph) {
-	GraphGenerator graphGen;
-	Graph g = graphGen.makeCompleteGraph(25);
+	Graph g(25);
+	g.forNodePairs([&](node u, node v){
+		g.addEdge(u,v);
+	});
+	g.shrinkToFit();
+
 	g.indexEdges();
 
 	//Parametric
