@@ -7123,12 +7123,12 @@ cdef class ForestFireAttributizer:
 	def getAttribute(self):
 		return self._this.getAttribute()
 
-cdef extern from "cpp/sparsification/LocalDegreeAttributizer.h":
-	cdef cppclass _LocalDegreeAttributizer "NetworKit::LocalDegreeAttributizer":
-		_LocalDegreeAttributizer(const _Graph& G) except +
-		vector[double] getAttribute() except +
+cdef extern from "cpp/sparsification/LocalDegreeScore.h":
+	cdef cppclass _LocalDegreeScore "NetworKit::LocalDegreeScore":
+		_LocalDegreeScore(const _Graph& G) except +
+		vector[double] scores() except +
 
-cdef class LocalDegreeAttributizer:
+cdef class LocalDegreeScore:
 	"""
 	The LocalDegree sparsification approach is based on the idea of hub nodes.
 	This attributizer calculates for each edge the maximum parameter value
@@ -7140,18 +7140,18 @@ cdef class LocalDegreeAttributizer:
 		The graph to apply the Local Degree  algorithm to.
 	"""
 
-	cdef _LocalDegreeAttributizer* _this
+	cdef _LocalDegreeScore* _this
 	cdef Graph _G
 
 	def __cinit__(self, Graph G):
 		self._G = G
-		self._this = new _LocalDegreeAttributizer(G._this)
+		self._this = new _LocalDegreeScore(G._this)
 
 	def __dealloc__(self):
 		del self._this
 
-	def getAttribute(self):
-		return self._this.getAttribute()
+	def scores(self):
+		return self._this.scores()
 
 cdef extern from "cpp/distmeasures/JaccardDistance.h":
 	cdef cppclass _JaccardDistance "NetworKit::JaccardDistance":

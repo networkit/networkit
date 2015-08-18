@@ -1,5 +1,5 @@
 /*
- * LocalDegreeAttributizer.cpp
+ * LocalDegreeScore.cpp
  *
  *  Created on: 28.08.2014
  *      Author: Gerd Lindner
