@@ -6939,46 +6939,11 @@ cdef class ChungLuAttributizer:
 	def getAttribute(self):
 		return self._this.getAttribute()
 
-cdef extern from "cpp/sparsification/SimmelianJaccardAttributizer.h":
-	cdef cppclass _SimmelianJaccardAttributizer "NetworKit::SimmelianJaccardAttributizer":
-		_SimmelianJaccardAttributizer(const _Graph& G, const vector[count]& triangles) except +
-		vector[double] getAttribute() except +
+cdef extern from "cpp/sparsification/SimmelianOverlapScore.h":
+	cdef cppclass _SimmelianOverlapScore "NetworKit::SimmelianOverlapScore"(_EdgeScore[double]):
+		_SimmelianOverlapScore(const _Graph& G, const vector[count]& triangles, count maxRank) except +
 
-cdef class SimmelianJaccardAttributizer:
-	"""
-	An implementation of the non-parametric variant of Simmelian Backbones. Calculates
-	for each edge the minimum parameter value such that the edge is still contained in
-	the sparsified graph.
-
-	Parameters
-	----------
-	G : Graph
-		The graph to apply the Simmelian Backbone algorithm to.
-	triangles : vector[count]
-		Previously calculated edge triangle counts on G.
-	"""
-
-	cdef _SimmelianJaccardAttributizer* _this
-	cdef Graph _G
-	cdef vector[count] _triangles
-
-	def __cinit__(self, Graph G, vector[count] triangles):
-		self._G = G
-		self._triangles = triangles
-		self._this = new _SimmelianJaccardAttributizer(G._this, self._triangles)
-
-	def __dealloc__(self):
-		del self._this
-
-	def getAttribute(self):
-		return self._this.getAttribute()
-
-cdef extern from "cpp/sparsification/SimmelianOverlapAttributizer.h":
-	cdef cppclass _SimmelianOverlapAttributizer "NetworKit::SimmelianOverlapAttributizer":
-		_SimmelianOverlapAttributizer(const _Graph& G, const vector[count]& triangles, count maxRank) except +
-		vector[double] getAttribute() except +
-
-cdef class SimmelianOverlapAttributizer:
+cdef class SimmelianOverlapScore(EdgeScore):
 	"""
 	An implementation of the parametric variant of Simmelian Backbones. Calculates
 	for each edge the minimum parameter value such that the edge is still contained in
@@ -6991,22 +6956,13 @@ cdef class SimmelianOverlapAttributizer:
 	triangles : vector[count]
 		Previously calculated edge triangle counts on G.
 	"""
-
-	cdef _SimmelianOverlapAttributizer* _this
-	cdef Graph _G
-	cdef vector[count] _triangles
-
 	def __cinit__(self, Graph G, vector[count] triangles, count maxRank):
 		self._G = G
 		self._triangles = triangles
-		self._this = new _SimmelianOverlapAttributizer(G._this, self._triangles, maxRank)
+		self._this = new _SimmelianOverlapScore(G._this, self._triangles, maxRank)
 
-	def __dealloc__(self):
-		del self._this
-
-	def getAttribute(self):
-		return self._this.getAttribute()
-
+	cdef bool isDoubleValue(self):
+		return True;
 
 cdef extern from "cpp/edgescores/PrefixJaccardCoefficient.h":
 	cdef cppclass _PrefixJaccardCoefficient "NetworKit::PrefixJaccardCoefficient<double>":
