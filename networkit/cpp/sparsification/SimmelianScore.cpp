@@ -1,19 +1,19 @@
 /*
- * SimmelianAttributizer.cpp
+ * SimmelianScore.cpp
  *
  *  Created on: 21.05.2014
  *      Author: Gerd Lindner
  */
 
-#include "SimmelianAttributizer.h"
+#include "SimmelianScore.h"
 #include <limits>
 
 namespace NetworKit {
 
-SimmelianAttributizer::SimmelianAttributizer(const Graph& graph, const std::vector<count>& triangles) : graph(graph), triangles(triangles) {
+SimmelianScore::SimmelianScore(const Graph& G, const std::vector<count>& triangles) : EdgeScore<double>(G), triangles(triangles) {
 }
 
-std::vector<RankedNeighbors> SimmelianAttributizer::getRankedNeighborhood(const Graph& g, const std::vector<count>& triangles) {
+std::vector<RankedNeighbors> SimmelianScore::getRankedNeighborhood(const Graph& g, const std::vector<count>& triangles) {
 	std::vector<RankedNeighbors> neighbors;
 	neighbors.resize(g.upperNodeIdBound());
 
@@ -26,7 +26,7 @@ std::vector<RankedNeighbors> SimmelianAttributizer::getRankedNeighborhood(const 
 		std::sort(neighbors[u].begin(), neighbors[u].end());
 
 		//Calculate the ranks.
-		count currentRank = 0;	//Rank 1 is considered the best.
+		count currentRank = 0;	//Rank 0 is considered the best.
 		count currentSimmelianness = std::numeric_limits<count>::max();
 		count equals = 0;
 		for (auto& edge : neighbors[u]) {
@@ -45,7 +45,7 @@ std::vector<RankedNeighbors> SimmelianAttributizer::getRankedNeighborhood(const 
 
 }
 
-Redundancy SimmelianAttributizer::getOverlap(	const node& ego,
+Redundancy SimmelianScore::getOverlap(	const node& ego,
 												const node& alter,
 												const std::vector<RankedNeighbors>& neighbors,
 												const count& maxRank) {
@@ -76,7 +76,7 @@ Redundancy SimmelianAttributizer::getOverlap(	const node& ego,
  * Helper function used in getOverlap. Adds the intersection of
  * egoNeighbors and alterNeighborsUnmatched to overlap.
  */
-void SimmelianAttributizer::matchNeighbors(
+void SimmelianScore::matchNeighbors(
 	const node& ego,
 	const node& alter,
 	const bool& reciprocityCheck,

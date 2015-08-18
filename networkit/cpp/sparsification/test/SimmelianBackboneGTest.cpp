@@ -10,7 +10,8 @@
 #include "SimmelianBackboneGTest.h"
 
 #include "../Sparsifiers.h"
-#include "../SimmelianJaccardAttributizer.h"
+#include "../SimmelianOverlapScore.h"
+#include "../../edgescores/PrefixJaccardCoefficient.h"
 #include "../../edgescores/ChibaNishizekiTriangleCounter.h"
 
 namespace NetworKit {
@@ -29,7 +30,8 @@ TEST_F(SimmelianBackboneGTest, testOverlapCounting) {
 	neighbors[1].push_back(RankedEdge(1,4,2,1));
 	neighbors[1].push_back(RankedEdge(1,3,1,3));
 
-	SimmelianJaccardAttributizer simmel(Graph(0), std::vector<count>());
+	SimmelianOverlapScore simmel(Graph(0), std::vector<count>(), 0);
+	simmel.run();
 	Redundancy r (0, 0.0);
 
 	r = simmel.getOverlap(0, 1, neighbors, 0);
@@ -73,7 +75,8 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhood) {
 	std::vector<count> triangles = counter.getAttribute();
 
 	//Actual test: ranked neighborhood
-	SimmelianJaccardAttributizer simmel(g, triangles);
+	SimmelianOverlapScore simmel(g, triangles, 0);
+	simmel.run();
 	std::vector<RankedNeighbors> neighborhood = simmel.getRankedNeighborhood(g, triangles);
 
 	//Neighborhood of 4
@@ -113,7 +116,8 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhoodSkippedRanks) {
 	std::vector<count> triangles = counter.getAttribute();
 
 	//Actual test: ranked neighborhood
-	SimmelianJaccardAttributizer simmel(g, triangles);
+	SimmelianOverlapScore simmel(g, triangles, 0);
+	simmel.run();
 	std::vector<RankedNeighbors> neighborhood = simmel.getRankedNeighborhood(g, triangles);
 
 	//Neighborhood of 0
