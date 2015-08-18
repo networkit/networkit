@@ -5,20 +5,32 @@
  *      Author: Gerd Lindner
  */
 
-#include "LocalDegreeAttributizer.h"
+#include "LocalDegreeScore.h"
 #include "LocalSimilarityAttributizer.h"
 
 namespace NetworKit {
 
-LocalDegreeAttributizer::LocalDegreeAttributizer(const Graph& graph) : graph(graph) {
+LocalDegreeScore::LocalDegreeScore(const Graph& graph) : graph(graph) {
 }
 
-std::vector<double> LocalDegreeAttributizer::getAttribute() {
+std::vector<double> LocalDegreeScore::scores() {
+	return scoreData;
+}
+
+double LocalDegreeScore::score(node u, node v) {
+	throw std::runtime_error("Not implemented: Use scores() instead.");
+}
+
+double LocalDegreeScore::score(edgeid eid) {
+	throw std::runtime_error("Not implemented: Use scores() instead.");
+}
+
+void LocalDegreeScore::run() {
 	if (!graph.hasEdgeIds()) {
 		throw std::runtime_error("edges have not been indexed - call indexEdges first");
 	}
 
-	std::vector<double> sparsificationExp(graph.upperEdgeIdBound(), 0.0);
+	scoreData.resize(graph.upperEdgeIdBound(), 0.0);
 
 	graph.balancedParallelForNodes([&](node i) {
 		count d = graph.degree(i);
@@ -49,14 +61,13 @@ std::vector<double> LocalDegreeAttributizer::getAttribute() {
 			if (d > 1)
 				e = 1.0 - (log(rank) / log(d));
 
-			sparsificationExp[eid] = std::max(e, sparsificationExp[eid]);
+			scoreData[eid] = std::max(e, scoreData[eid]);
 			rank++;
 		}
 
 	});
 
-	return sparsificationExp;
-
+	hasRun = true;
 }
 
 } /* namespace NetworKit */
