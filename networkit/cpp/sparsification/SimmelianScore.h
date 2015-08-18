@@ -70,7 +70,7 @@ public:
 
 	SimmelianScore(const Graph& graph, const std::vector<count>& attribute);
 
-	virtual std::vector<double> scores() = 0;
+	//virtual std::vector<double> scores() = 0;
 
 	std::vector<RankedNeighbors> getRankedNeighborhood(const Graph& g, const std::vector<count>& triangles);
 

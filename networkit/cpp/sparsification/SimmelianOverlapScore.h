@@ -25,10 +25,6 @@ public:
 	 * @param maxRank 		the maximum rank that is considered for overlap calculation
 	 */
 	SimmelianOverlapScore(const Graph& graph, const std::vector<count>& triangles, count maxRank);
-
-	virtual std::vector<double> scores() override;
-	virtual double score(edgeid eid) override;
-	virtual double score(node u, node v) override;
 	virtual void run() override;
 
 private:
