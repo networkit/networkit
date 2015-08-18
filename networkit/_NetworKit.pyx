@@ -6491,6 +6491,48 @@ cdef class PredictionsSorter:
 
 # Module: edgeattributes
 
+cdef extern from "cpp/edgescores/EdgeScore.h":
+	cdef cppclass _EdgeScore "NetworKit::EdgeScore"[T](_Algorithm):
+		_EdgeScore(const _Graph& G) except +
+		vector[T] scores() except +
+		T score(edgeid eid) except +
+		T score(node u, node v) except +
+
+cdef class EdgeScore(Algorithm):
+	"""
+	TODO DOCSTIRNG
+	"""
+	cdef Graph _G
+
+	cdef bool isDoubleValue(self):
+		raise RuntimeError("Implement in subclass")
+
+	def __init__(self, *args, **namedargs):
+		if type(self) == EdgeScore:
+			raise RuntimeError("Error, you may not use EdgeScore directly, use a sub-class instead")
+
+	def __dealloc__(self):
+		self._G = None # just to be sure the graph is deleted
+
+	def score(self, u, v = None):
+		if v is None:
+			if self.isDoubleValue():
+				return (<_EdgeScore[double]*>(self._this)).score(u)
+			else:
+				return (<_EdgeScore[count]*>(self._this)).score(u)
+		else:
+			if self.isDoubleValue():
+				return (<_EdgeScore[double]*>(self._this)).score(u, v)
+			else:
+				return (<_EdgeScore[count]*>(self._this)).score(u, v)
+
+	def scores(self):
+		if self.isDoubleValue():
+			return (<_EdgeScore[double]*>(self._this)).scores()
+		else:
+			return (<_EdgeScore[count]*>(self._this)).scores()
+
+
 cdef extern from "cpp/edgescores/ChibaNishizekiTriangleCounter.h":
 	cdef cppclass _ChibaNishizekiTriangleCounter "NetworKit::ChibaNishizekiTriangleCounter":
 		_ChibaNishizekiTriangleCounter(const _Graph& G) except +
@@ -7088,13 +7130,11 @@ cdef class LocalSimilarityAttributizer:
 	def getAttribute(self):
 		return self._this.getAttribute()
 
-cdef extern from "cpp/sparsification/ForestFireAttributizer.h":
-	cdef cppclass _ForestFireAttributizer "NetworKit::ForestFireAttributizer":
-		_ForestFireAttributizer(const _Graph& G, double pf, double tebr) except +
-		#void run() except +
-		vector[double] getAttribute() except +
+cdef extern from "cpp/sparsification/ForestFireScore.h":
+	cdef cppclass _ForestFireScore "NetworKit::ForestFireScore"(_EdgeScore[double]):
+		_ForestFireScore(const _Graph& G, double pf, double tebr) except +
 
-cdef class ForestFireAttributizer:
+cdef class ForestFireScore(EdgeScore):
 	"""
 	A variant of the Forest Fire sparsification approach that is based on random walks.
 	This attributizer calculates for each edge the minimum parameter value
@@ -7110,18 +7150,12 @@ cdef class ForestFireAttributizer:
 		The Forest Fire will burn until tebr * numberOfEdges edges have been burnt.
 	"""
 
-	cdef _ForestFireAttributizer* _this
-	cdef Graph _G
-
 	def __cinit__(self, Graph G, double pf, double tebr):
 		self._G = G
-		self._this = new _ForestFireAttributizer(G._this, pf, tebr)
+		self._this = new _ForestFireScore(G._this, pf, tebr)
 
-	def __dealloc__(self):
-		del self._this
-
-	def getAttribute(self):
-		return self._this.getAttribute()
+	cdef bool isDoubleValue(self):
+		return True
 
 cdef extern from "cpp/sparsification/LocalDegreeScore.h":
 	cdef cppclass _LocalDegreeScore "NetworKit::LocalDegreeScore":
