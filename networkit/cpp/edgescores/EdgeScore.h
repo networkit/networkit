@@ -21,42 +21,23 @@ class EdgeScore  : public Algorithm {
 
 public:
 
-	EdgeScore(const Graph& G) : Algorithm(), G(G), scoreData() {
-		if (G.isDirected()) {
-			WARN("Application to directed graphs is not well tested");
-		}
-	}
+	EdgeScore(const Graph& G);
 
 	/** Compute the edge score. */
-	virtual void run() {
-		// empty run method for edge scoring methods that do not require preprocessing but calculate score(u,v) on the fly
-		hasRun = true;
-	};
+	virtual void run();
 
 	/** Get a vector containing the score for each edge in the graph.
 	@Return the edge scores calculated by @link run().
 	*/
-	virtual std::vector<T> scores() const {
-		if (!hasRun) {
-			throw std::runtime_error("Call run method first");
-		}
-		return scoreData;
-	}
+	virtual std::vector<T> scores() const;
 
 	/** Get the edge score of the edge with the given edge id.
 	*/
-	virtual T score(edgeid eid) {
-		if (!hasRun) {
-			throw std::runtime_error("Call run method first");
-		}
-		return scoreData[eid];
-	};
+	virtual T score(edgeid eid);
 
 	/** Get the edge score of the given edge.
 	*/
-	virtual T score(node u, node v) {
-		return score(G.edgeId(u,v));
-	};
+	virtual T score(node u, node v);
 
 protected:
 	const Graph& G;
