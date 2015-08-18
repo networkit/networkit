@@ -4882,7 +4882,7 @@ cdef extern from "cpp/dynamics/GraphEvent.h":
 		EDGE_WEIGHT_UPDATE,
 		EDGE_WEIGHT_INCREMENT,
 		TIME_STEP
-		
+
 cdef extern from "cpp/dynamics/GraphEvent.h":
 	cdef cppclass _GraphEvent "NetworKit::GraphEvent":
 		node u, v
@@ -6491,7 +6491,7 @@ cdef class PredictionsSorter:
 
 # Module: edgeattributes
 
-cdef extern from "cpp/edgeattributes/ChibaNishizekiTriangleCounter.h":
+cdef extern from "cpp/edgescores/ChibaNishizekiTriangleCounter.h":
 	cdef cppclass _ChibaNishizekiTriangleCounter "NetworKit::ChibaNishizekiTriangleCounter":
 		_ChibaNishizekiTriangleCounter(const _Graph& G) except +
 		void run() except +
@@ -6531,7 +6531,7 @@ cdef class ChibaNishizekiTriangleCounter:
 		"""
 		return self._this.getAttribute()
 
-cdef extern from "cpp/edgeattributes/ChibaNishizekiQuadrangleCounter.h":
+cdef extern from "cpp/edgescores/ChibaNishizekiQuadrangleCounter.h":
 	cdef cppclass _ChibaNishizekiQuadrangleCounter "NetworKit::ChibaNishizekiQuadrangleCounter":
 		_ChibaNishizekiQuadrangleCounter(const _Graph& G) except +
 		vector[count] getAttribute() except +
@@ -6570,7 +6570,7 @@ cdef class ChibaNishizekiQuadrangleCounter:
 		"""
 		return self._this.getAttribute()
 
-cdef extern from "cpp/edgeattributes/TriangleCounter.h":
+cdef extern from "cpp/edgescores/TriangleCounter.h":
 	cdef cppclass _TriangleCounter "NetworKit::TriangleCounter":
 		_TriangleCounter(const _Graph& G) except +
 		#void run() except +
@@ -6611,7 +6611,7 @@ cdef class TriangleCounter:
 		"""
 		return self._this.getAttribute()
 
-cdef extern from "cpp/edgeattributes/EdgeAttributeLinearizer.h":
+cdef extern from "cpp/edgescores/EdgeAttributeLinearizer.h":
 	cdef cppclass _EdgeAttributeLinearizer "NetworKit::EdgeAttributeLinearizer":
 		_EdgeAttributeLinearizer(const _Graph& G, const vector[double]& attribute, bool inverse) except +
 		vector[double] getAttribute() except +
@@ -6651,7 +6651,7 @@ cdef class EdgeAttributeLinearizer:
 		return self._this.getAttribute()
 
 
-cdef extern from "cpp/edgeattributes/EdgeAttributeNormalizer.h":
+cdef extern from "cpp/edgescores/EdgeAttributeNormalizer.h":
 	cdef cppclass _EdgeAttributeNormalizer "NetworKit::EdgeAttributeNormalizer<double>":
 		_EdgeAttributeNormalizer(const _Graph&, const vector[double]&, bool inverse, double lower, double upper) except +
 		void run() except +
@@ -6699,7 +6699,7 @@ cdef class EdgeAttributeNormalizer:
 		"""
 		return self._this.getAttribute()
 
-cdef extern from "cpp/edgeattributes/EdgeAttributeBlender.h":
+cdef extern from "cpp/edgescores/EdgeAttributeBlender.h":
 	cdef cppclass _EdgeAttributeBlender "NetworKit::EdgeAttributeBlender":
 		_EdgeAttributeBlender(const _Graph&, const vector[double]&, const vector[double]&, const vector[bool]&) except +
 		void run()
@@ -6745,7 +6745,7 @@ cdef class EdgeAttributeBlender:
 		return self._this.getAttribute()
 
 
-cdef extern from "cpp/edgeattributes/GeometricMeanAttributizer.h":
+cdef extern from "cpp/edgescores/GeometricMeanAttributizer.h":
 	cdef cppclass _GeometricMeanAttributizer "NetworKit::GeometricMeanAttributizer":
 		_GeometricMeanAttributizer(const _Graph& G, const vector[double]& a) except +
 		vector[double] getAttribute() except +
@@ -6782,7 +6782,7 @@ cdef class GeometricMeanAttributizer:
 		"""
 		return self._this.getAttribute()
 
-cdef extern from "cpp/edgeattributes/EdgeAttributeAsWeight.h":
+cdef extern from "cpp/edgescores/EdgeAttributeAsWeight.h":
 	cdef cppclass _EdgeAttributeAsWeight "NetworKit::EdgeAttributeAsWeight":
 		_EdgeAttributeAsWeight(const _Graph& G, const vector[double]& attribute, bool squared, edgeweight offset, edgeweight factor) except +
 		_Graph calculate() except +
@@ -6966,7 +6966,7 @@ cdef class SimmelianOverlapAttributizer:
 		return self._this.getAttribute()
 
 
-cdef extern from "cpp/edgeattributes/PrefixJaccardCoefficient.h":
+cdef extern from "cpp/edgescores/PrefixJaccardCoefficient.h":
 	cdef cppclass _PrefixJaccardCoefficient "NetworKit::PrefixJaccardCoefficient<double>":
 		_PrefixJaccardCoefficient(const _Graph& G, const vector[double]& a) except +
 		void run() except +
