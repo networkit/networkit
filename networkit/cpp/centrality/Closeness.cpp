@@ -26,6 +26,7 @@ void Closeness::run() {
 	count z = G.upperNodeIdBound();
 	scoreData.clear();
 	scoreData.resize(z);
+	edgeweight infDist = std::numeric_limits<edgeweight>::max();
 
 	G.parallelForNodes([&](node s) {
 		std::unique_ptr<SSSP> sssp;
@@ -40,7 +41,9 @@ void Closeness::run() {
 
 		double sum = 0;
 		for (auto dist : distances) {
-			sum += dist;
+			if (dist != infDist ) {
+				sum += dist;
+			}
 		}
 		scoreData[s] = 1 / sum;
 

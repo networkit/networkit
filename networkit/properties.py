@@ -299,7 +299,7 @@ def overview(G, settings=collections.defaultdict(lambda: True), showDegreeHistog
 		["density", "{0:.6f}".format(props["dens"]) if props["dens"] else None],
 		["clustering coefficient", "Not implemented for directed graphs" if not props["avglcc"] else "{0:.6f}".format(props["avglcc"])],
 		["max. core number", props["degeneracy"]],
-		["{0}connected components".format("strongly " if G.isDirected() else None), props["nComponents"]],
+		["{0}connected components".format("strongly " if G.isDirected() else ""), props["nComponents"]],
 		["size of largest component", "{0} ({1:.2f} %)".format(props["sizeLargestComponent"], (props["sizeLargestComponent"] / props["n"]) * 100)],
 		["estimated diameter range", str(props["dia"])],
 	]

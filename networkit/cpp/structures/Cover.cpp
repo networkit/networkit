@@ -57,6 +57,13 @@ void Cover::addToSubset(index s, index e) {
 	data[e].insert(s);
 }
 
+void Cover::removeFromSubset(index s, index e) {
+	assert (e <= z);
+	assert (s <= omega);
+	data[e].erase(s);
+}
+
+
 void Cover::moveToSubset(index s, index e) {
 	assert (e <= z);
 	assert (s <= omega);
