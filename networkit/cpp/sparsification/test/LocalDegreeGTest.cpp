@@ -8,7 +8,7 @@
 #ifndef NOGTEST
 
 #include "LocalDegreeGTest.h"
-#include "../LocalDegreeAttributizer.h"
+#include "../LocalDegreeScore.h"
 #include <math.h>
 
 namespace NetworKit {
@@ -40,12 +40,12 @@ TEST_F(LocalDegreeGTest, testAttributeSimple) {
 	g.addEdge(3, 21);
 	g.indexEdges();
 
-	LocalDegreeAttributizer localDegree(g);
-	std::vector<double> attribute = localDegree.getAttribute();
+	LocalDegreeScore localDegree(g);
+	std::vector<double> scores = localDegree.scores();
 
-	EXPECT_DOUBLE_EQ(LocalDegreeGTest::getScore(g, 0, 1, 1, 2), attribute[g.edgeId(0, 1)]);
-	EXPECT_DOUBLE_EQ(LocalDegreeGTest::getScore(g, 2, 4, 1, 4), attribute[g.edgeId(2, 4)]);
-	EXPECT_DOUBLE_EQ(LocalDegreeGTest::getScore(g, 4, 7, 2, 2), attribute[g.edgeId(4, 7)]);
+	EXPECT_DOUBLE_EQ(LocalDegreeGTest::getScore(g, 0, 1, 1, 2), scores[g.edgeId(0, 1)]);
+	EXPECT_DOUBLE_EQ(LocalDegreeGTest::getScore(g, 2, 4, 1, 4), scores[g.edgeId(2, 4)]);
+	EXPECT_DOUBLE_EQ(LocalDegreeGTest::getScore(g, 4, 7, 2, 2), scores[g.edgeId(4, 7)]);
 }
 
 /***

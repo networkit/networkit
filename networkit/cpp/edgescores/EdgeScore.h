@@ -34,11 +34,11 @@ public:
 
 	/** Get the edge score of the edge with the given edge id.
 	*/
-	virtual T score() = 0;
+	virtual T score(edgeid eid) = 0;
 
-	std::vector<T>* _scores() {
-		return new std::vector<T>{std::move(scores())};
-	};
+	/** Get the edge score of the given edge.
+	*/
+	virtual T score(node u, node v) = 0;
 
 };
 
