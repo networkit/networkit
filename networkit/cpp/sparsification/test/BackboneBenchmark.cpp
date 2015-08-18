@@ -51,7 +51,7 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneParametric) {
 	std::vector<count> counts = counter.getAttribute();
 
 	SimmelianOverlapScore overlapScore(G, counts, 10);
-	auto scores = overlapScore.getAttribute();
+	auto scores = overlapScore.scores();
 
 	runtime.stop();
 	INFO("[DONE] completeGraphSimmelianBackboneParametric (" , runtime.elapsed().count() , " ms)");
@@ -69,7 +69,7 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneNonParametric) {
 	ChibaNishizekiTriangleCounter counter(G);
 	std::vector<count> counts = counter.getAttribute();
 
-	PrefixJaccardCoefficient jaccard(G, counts);
+	PrefixJaccardCoefficient<count> jaccard(G, counts);
 	jaccard.run();
 	auto attribute = jaccard.getAttribute();
 
@@ -173,7 +173,7 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	// --------- Simmelian Backbone (Jaccard)
 	std::cout << "[BEGIN] Simmelian Jaccard attribute: " << std::endl;
 	runtime.start();
-	PrefixJaccardCoefficient jaccardAttributizer(g, triangles);
+	PrefixJaccardCoefficient<count> jaccardAttributizer(g, triangles);
 	jaccardAttributizer.run();
 	std::vector<double> jaccard = jaccardAttributizer.getAttribute();
 	runtime.stop();
@@ -190,7 +190,7 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	std::cout << "[BEGIN] Simmelian Overlap attribute: " << std::endl;
 	runtime.start();
 	SimmelianOverlapScore overlapScore(g, triangles, 10);
-	std::vector<double> overlap = overlapScore.getAttribute();
+	std::vector<double> overlap = overlapScore.scores();
 	runtime.stop();
 	std::cout << "[DONE] Simmelian Overlap attribute " << runtime.elapsedTag() << std::endl;
 
