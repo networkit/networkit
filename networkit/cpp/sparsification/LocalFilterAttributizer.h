@@ -8,7 +8,7 @@
 #ifndef LOCALLOGATTRIBUTIZER_H
 #define LOCALLOGATTRIBUTIZER_H
 
-#include "../edgeattributes/EdgeAttribute.h"
+#include "../edgescores/EdgeAttribute.h"
 
 namespace NetworKit {
 

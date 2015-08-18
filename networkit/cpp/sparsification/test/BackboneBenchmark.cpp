@@ -8,8 +8,8 @@
 #ifndef NOGTEST
 
 #include "BackboneBenchmark.h"
-#include "../../edgeattributes/ChibaNishizekiTriangleCounter.h"
-#include "../../edgeattributes/TriangleCounter.h"
+#include "../../edgescores/ChibaNishizekiTriangleCounter.h"
+#include "../../edgescores/TriangleCounter.h"
 #include "../SimmelianJaccardAttributizer.h"
 #include "../SimmelianOverlapAttributizer.h"
 #include "../MultiscaleAttributizer.h"

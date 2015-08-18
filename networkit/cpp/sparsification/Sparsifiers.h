@@ -44,11 +44,8 @@ protected:
 
 
 /**
- * --------------------------------------------------------------------------------------
  * Simmelian Backbone: Non-parametric variant (Jaccard)
- * --------------------------------------------------------------------------------------
  */
-
 class SimmelianBackboneNonParametric : public Sparsifier {
 
 public:
@@ -67,11 +64,8 @@ private:
 };
 
 /**
- * --------------------------------------------------------------------------------------
  * Simmelian Backbone: Parametric variant (Top-k neighborhood overlap)
- * --------------------------------------------------------------------------------------
  */
-
 class SimmelianBackboneParametric : public Sparsifier {
 
 public:
@@ -93,11 +87,8 @@ private:
 };
 
 /**
- * --------------------------------------------------------------------------------------
  * Multiscale Backbone
- * --------------------------------------------------------------------------------------
  */
-
 class MultiscaleBackbone : public Sparsifier {
 
 public:
@@ -116,11 +107,8 @@ private:
 };
 
 /**
- * --------------------------------------------------------------------------------------
  * Local Similarity Backbone
- * --------------------------------------------------------------------------------------
  */
-
 class LocalSimilarityBackbone : public Sparsifier {
 
 public:
@@ -139,11 +127,8 @@ private:
 };
 
 /**
- * --------------------------------------------------------------------------------------
  * Multiscale backbone using simmelianness as weight
- * --------------------------------------------------------------------------------------
  */
-
 class SimmelianMultiscaleBackbone : public Sparsifier {
 
 public:
@@ -162,13 +147,10 @@ private:
 };
 
 /**
-* --------------------------------------------------------------------------------------
 * Backbone that contains approximately a given percentage
 * of edges of the original graph (mainly for comparison purposes).
 * The edges are selected unformly at random.
-* --------------------------------------------------------------------------------------
 */
-
 class RandomBackbone : public Sparsifier {
 
 public:
@@ -185,8 +167,6 @@ private:
 	double ratio;
 
 };
-
-
 
 } /* namespace NetworKit */
 #endif /* SPARSIFIERS_H_ */
