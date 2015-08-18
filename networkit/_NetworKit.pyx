@@ -7127,6 +7127,7 @@ cdef extern from "cpp/sparsification/LocalDegreeScore.h":
 	cdef cppclass _LocalDegreeScore "NetworKit::LocalDegreeScore":
 		_LocalDegreeScore(const _Graph& G) except +
 		vector[double] scores() except +
+		void run() nogil except +
 
 cdef class LocalDegreeScore:
 	"""
@@ -7149,6 +7150,14 @@ cdef class LocalDegreeScore:
 
 	def __dealloc__(self):
 		del self._this
+
+	def run(self):
+		"""
+		Calculates the LocalDegree edge score.
+		"""
+		with nogil:
+			self._this.run()
+		return self
 
 	def scores(self):
 		return self._this.scores()
