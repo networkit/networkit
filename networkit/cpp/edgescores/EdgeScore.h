@@ -21,7 +21,7 @@ class EdgeScore  : public Algorithm {
 
 public:
 
-	EdgeScore(const Graph& G) : Algorithm(), G(G) {
+	EdgeScore(const Graph& G) : Algorithm(), G(G), scoreData() {
 		if (G.isDirected()) {
 			WARN("Application to directed graphs is not well tested");
 		}
@@ -45,11 +45,18 @@ public:
 
 	/** Get the edge score of the edge with the given edge id.
 	*/
-	virtual T score(edgeid eid) = 0;
+	virtual T score(edgeid eid) {
+		if (!hasRun) {
+			throw std::runtime_error("Call run method first");
+		}
+		return scoreData[eid];
+	};
 
 	/** Get the edge score of the given edge.
 	*/
-	virtual T score(node u, node v) = 0;
+	virtual T score(node u, node v) {
+		return score(G.edgeId(u,v));
+	};
 
 protected:
 	const Graph& G;

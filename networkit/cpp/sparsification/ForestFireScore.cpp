@@ -1,11 +1,11 @@
 /*
- * ForestFireAttributizer.cpp
+ * ForestFireScore.cpp
  *
  *  Created on: 26.08.2014
  *      Author: Gerd Lindner
  */
 
-#include "ForestFireAttributizer.h"
+#include "ForestFireScore.h"
 #include <limits>
 #include <set>
 #include <queue>
@@ -13,25 +13,25 @@
 
 namespace NetworKit {
 
-ForestFireAttributizer::ForestFireAttributizer(const Graph& graph, double pf, double targetBurntRatio): graph(graph), pf(pf), targetBurntRatio(targetBurntRatio) {}
+ForestFireScore::ForestFireScore(const Graph& G, double pf, double targetBurntRatio): EdgeScore<double>(G), pf(pf), targetBurntRatio(targetBurntRatio) {}
 
-std::vector<double> ForestFireAttributizer::getAttribute() {
-	if (!graph.hasEdgeIds()) {
+void ForestFireScore::run() {
+	if (!G.hasEdgeIds()) {
 		throw std::runtime_error("edges have not been indexed - call indexEdges first");
 	}
 
-	std::vector<count> burnt (graph.upperEdgeIdBound(), 0);
+	std::vector<count> burnt (G.upperEdgeIdBound(), 0);
 	count edgesBurnt = 0;
 
-	while (edgesBurnt < targetBurntRatio * graph.numberOfEdges()) {
+	while (edgesBurnt < targetBurntRatio * G.numberOfEdges()) {
 		//Start a new fire
 		std::queue<node> activeNodes;
-		std::vector<bool> visited (graph.upperNodeIdBound(), false);
-		activeNodes.push(graph.randomNode());
+		std::vector<bool> visited (G.upperNodeIdBound(), false);
+		activeNodes.push(G.randomNode());
 
 		auto forwardNeighbors = [&](node u) {
 			std::vector<node> validEdges;
-			graph.forNeighborsOf(u, [&](node x){
+			G.forNeighborsOf(u, [&](node x){
 				if (! visited[x]) {
 					validEdges.push_back(x);
 				}
@@ -58,14 +58,14 @@ std::vector<double> ForestFireAttributizer::getAttribute() {
 
 			for (node x : burntNeighbors) {
 				activeNodes.push(x);
-				burnt[graph.edgeId(v, x)]++;
+				burnt[G.edgeId(v, x)]++;
 				edgesBurnt++;
 				visited[x] = true;
 			}
 		}
 	}
 
-	std::vector<double> burntNormalized (graph.numberOfEdges(), 0.0);
+	std::vector<double> burntNormalized (G.numberOfEdges(), 0.0);
 	double maxv = (double) *std::max_element(std::begin(burnt), std::end(burnt));
 
 	if (maxv > 0) {
@@ -75,7 +75,7 @@ std::vector<double> ForestFireAttributizer::getAttribute() {
 		}
 	}
 
-	return burntNormalized;
+	scoreData = std::move(burntNormalized);
 }
 
 } /* namespace NetworKit */
