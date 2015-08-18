@@ -2,7 +2,7 @@
 
 __author__ = "Gerd Lindner"
 
-from _NetworKit import ChibaNishizekiTriangleCounter, SimmelianJaccardAttributizer, GlobalThresholdFilter, LocalSimilarityAttributizer, MultiscaleAttributizer, SimmelianOverlapAttributizer, RandomEdgeAttributizer, LocalDegreeAttributizer, ForestFireAttributizer, \
+from _NetworKit import ChibaNishizekiTriangleCounter, SimmelianJaccardAttributizer, GlobalThresholdFilter, LocalSimilarityAttributizer, MultiscaleAttributizer, SimmelianOverlapAttributizer, RandomEdgeAttributizer, LocalDegreeScore, ForestFireAttributizer, \
 	EdgeAttributeAsWeight, EdgeAttributeLinearizer, JaccardSimilarityAttributizer, LocalFilterAttributizer, AdamicAdarDistance, ChanceCorrectedTriangleAttributizer, NodeNormalizedTriangleAttributizer, TriangleCounter, RandomNodeEdgeAttributizer, ChungLuAttributizer, ChibaNishizekiQuadrangleCounter, GeometricMeanAttributizer, \
 	EdgeAttributeNormalizer, EdgeAttributeBlender, PrefixJaccardCoefficient, SCANStructuralSimilarityAttributizer
 
@@ -479,21 +479,21 @@ class ForestFireBackbone(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		 return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
-class LocalDegreeBackbone(Sparsifier):
+class LocalDegreeSparsifier(Sparsifier):
 
-	""" An implementation of the Local Degree backbone algorithm. """
+	""" An implementation of the Local Degree sparsification algorithm. """
 
 	def getAttribute(self, G):
-		""" Returns an edge attribute that holds for each edge the minimum parameter value
+		""" Returns an edge score that holds for each edge the minimum parameter value
 		such that the edge is contained in the sparsified graph.
 
 		Keyword arguments:
 		G -- the input graph
 		"""
 
-		attributizer_ld = LocalDegreeAttributizer(G)
-		a_ld = attributizer_ld.getAttribute()
-		return a_ld
+		localDegree = LocalDegreeScore(G)
+		localDegreeScore = localDegree.scores()
+		return localDegreeScore
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
 		gf = GlobalThresholdFilter(G, attribute, parameter, True)

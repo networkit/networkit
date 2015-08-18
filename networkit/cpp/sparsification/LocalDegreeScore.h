@@ -33,4 +33,4 @@ private:
 
 }
 /* namespace NetworKit */
-#endif /* LOCALDEGREEATTRIBUTIZER_H_ */
+#endif /* LOCALDEGREESCORE_H_ */
