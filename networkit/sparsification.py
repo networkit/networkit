@@ -2,7 +2,7 @@
 
 __author__ = "Gerd Lindner"
 
-from _NetworKit import ChibaNishizekiTriangleCounter, SimmelianJaccardAttributizer, GlobalThresholdFilter, LocalSimilarityAttributizer, MultiscaleAttributizer, SimmelianOverlapAttributizer, RandomEdgeAttributizer, LocalDegreeScore, ForestFireScore, \
+from _NetworKit import ChibaNishizekiTriangleCounter, GlobalThresholdFilter, LocalSimilarityAttributizer, MultiscaleAttributizer, SimmelianOverlapScore, RandomEdgeAttributizer, LocalDegreeScore, ForestFireScore, \
 	EdgeAttributeAsWeight, EdgeAttributeLinearizer, JaccardSimilarityAttributizer, LocalFilterAttributizer, AdamicAdarDistance, ChanceCorrectedTriangleAttributizer, NodeNormalizedTriangleAttributizer, TriangleCounter, RandomNodeEdgeAttributizer, ChungLuAttributizer, ChibaNishizekiQuadrangleCounter, GeometricMeanAttributizer, \
 	EdgeAttributeNormalizer, EdgeAttributeBlender, PrefixJaccardCoefficient, SCANStructuralSimilarityAttributizer
 
@@ -226,9 +226,10 @@ class SimmelianBackboneParametric(Sparsifier):
 
 		chiba = ChibaNishizekiTriangleCounter(G)
 		triangles = chiba.getAttribute()
-		so = SimmelianOverlapAttributizer(G, triangles, self.maxRank)
-		a_so = so.getAttribute()
-		return a_so
+
+		simmelianOverlap = SimmelianOverlapScore(G, triangles, self.maxRank)
+		simmelianOverlap.run()
+		return simmelianOverlap.scores()
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
 		gf = GlobalThresholdFilter(G, attribute, parameter, True)
