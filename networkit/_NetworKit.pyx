@@ -7033,12 +7033,11 @@ cdef class RandomEdgeScore(EdgeScore):
 	cdef bool isDoubleValue(self):
 		return True
 
-cdef extern from "cpp/sparsification/LocalSimilarityAttributizer.h":
-	cdef cppclass _LocalSimilarityAttributizer "NetworKit::LocalSimilarityAttributizer":
-		_LocalSimilarityAttributizer(const _Graph& G, const vector[count]& triangles) except +
-		vector[double] getAttribute() except +
+cdef extern from "cpp/sparsification/LocalSimilarityScore.h":
+	cdef cppclass _LocalSimilarityScore "NetworKit::LocalSimilarityScore"(_EdgeScore[double]):
+		_LocalSimilarityScore(const _Graph& G, const vector[count]& triangles) except +
 
-cdef class LocalSimilarityAttributizer:
+cdef class LocalSimilarityScore(EdgeScore):
 	"""
 	An implementation of the Local Simlarity sparsification approach.
 	This attributizer calculates for each edge the maximum parameter value
@@ -7051,22 +7050,15 @@ cdef class LocalSimilarityAttributizer:
 	triangles : vector[count]
 		Previously calculated edge triangle counts.
 	"""
-
-	cdef _LocalSimilarityAttributizer* _this
-
-	cdef Graph _G
 	cdef vector[count] _triangles
 
 	def __cinit__(self, Graph G, vector[count] triangles):
 		self._G = G
 		self._triangles = triangles
-		self._this = new _LocalSimilarityAttributizer(G._this, self._triangles)
+		self._this = new _LocalSimilarityScore(G._this, self._triangles)
 
-	def __dealloc__(self):
-		del self._this
-
-	def getAttribute(self):
-		return self._this.getAttribute()
+	cdef bool isDoubleValue(self):
+		return True
 
 cdef extern from "cpp/sparsification/ForestFireScore.h":
 	cdef cppclass _ForestFireScore "NetworKit::ForestFireScore"(_EdgeScore[double]):
@@ -7117,6 +7109,7 @@ cdef class LocalDegreeScore(EdgeScore):
 
 	cdef bool isDoubleValue(self):
 		return True
+
 cdef extern from "cpp/distmeasures/JaccardDistance.h":
 	cdef cppclass _JaccardDistance "NetworKit::JaccardDistance":
 		_JaccardDistance(const _Graph& G, const vector[count]& triangles) except +
