@@ -3,7 +3,7 @@
 __author__ = "Gerd Lindner"
 
 from _NetworKit import ChibaNishizekiTriangleCounter, GlobalThresholdFilter, LocalSimilarityScore, MultiscaleScore, SimmelianOverlapScore, RandomEdgeScore, LocalDegreeScore, ForestFireScore, \
-	EdgeAttributeAsWeight, EdgeAttributeLinearizer, JaccardSimilarityScore, LocalFilterScore, AdamicAdarDistance, ChanceCorrectedTriangleScore, NodeNormalizedTriangleScore, TriangleCounter, RandomNodeEdgeScore, ChungLuScore, ChibaNishizekiQuadrangleCounter, GeometricMeanScore, \
+	EdgeAttributeAsWeight, EdgeAttributeLinearizer, LocalFilterScore, AdamicAdarDistance, ChanceCorrectedTriangleScore, NodeNormalizedTriangleScore, TriangleCounter, RandomNodeEdgeScore, ChungLuScore, ChibaNishizekiQuadrangleCounter, GeometricMeanScore, \
 	EdgeAttributeNormalizer, EdgeAttributeBlender, PrefixJaccardCoefficient, SCANStructuralSimilarityScore
 
 # local imports
@@ -254,7 +254,7 @@ class SimmelianSparsifierNonParametric(Sparsifier):
 		chiba = ChibaNishizekiTriangleCounter(G)
 		triangles = chiba.scores()
 		a_sj = PrefixJaccardCoefficient(G, triangles).run().scores()
-		
+
 		return a_sj
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
