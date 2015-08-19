@@ -1,4 +1,6 @@
-""" This module contains algorithms for the sparsification, i.e. edge filtering, of networks. """
+""" This module contains algorithms for the sparsification, i.e. edge filtering, of networks. The methods are described in detail in the publication
+	` Structure-Preserving Sparsification of Social Networks` at http://arxiv.org/abs/1505.00564
+"""
 
 __author__ = "Gerd Lindner"
 
