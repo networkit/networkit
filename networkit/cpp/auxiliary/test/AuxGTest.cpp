@@ -31,6 +31,7 @@
 #include "../BloomFilter.h"
 
 TEST_F(AuxGTest, produceRandomIntegers) {
+	Aux::Random::setSeed(1, false);
 #if (LOG_LEVEL == LOG_LEVEL_TRACE)
 	int64_t l = 0; 	// lower bound
 	int64_t u = 100;	// upper bound
@@ -46,6 +47,7 @@ TEST_F(AuxGTest, produceRandomIntegers) {
 }
 
 TEST_F(AuxGTest, testRandomInteger) {
+	Aux::Random::setSeed(1, false);
 	int64_t l = 0; 	// lower bound
 	int64_t u = 10;	// upper bound
 	std::vector<int64_t> rVector;
@@ -73,6 +75,7 @@ TEST_F(AuxGTest, testRandomInteger) {
 }
 
 TEST_F(AuxGTest, testRandomReal) {
+	Aux::Random::setSeed(1, false);
 	std::vector<double> rVector;
 	int n = 1000;
 	for (int i = 0; i < n; ++i) {
@@ -92,6 +95,7 @@ TEST_F(AuxGTest, testRandomReal) {
 }
 
 TEST_F(AuxGTest, testRandomProbability) {
+	Aux::Random::setSeed(1, false);
 	std::vector<double> rVector;
 	int n = 1000;
 	for (int i = 0; i < n; ++i) {
@@ -338,6 +342,7 @@ TEST_F(AuxGTest, testRandomWeightedChoice) {
 
 TEST_F(AuxGTest, testRandomIndex) {
 	using namespace Aux::Random;
+	setSeed(1, false);
 	
 	for (unsigned i = 0; i < 10; i++) {
 		EXPECT_EQ(0u, index(1));
@@ -535,6 +540,7 @@ TEST_F(AuxGTest, testNumberParsingAdvancedReal) {
 }
 
 TEST_F(AuxGTest, testBloomFilter) {
+	Aux::Random::setSeed(1, false);
 	Aux::BloomFilter bf(5);
 	uint64_t size = 750;
 	std::set<uint64_t> randomKeys;

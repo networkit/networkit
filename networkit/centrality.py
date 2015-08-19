@@ -185,8 +185,20 @@ class SpectralCentrality:
 
 
 class SciPyEVZ(SpectralCentrality):
-	# TODO: docstring
+	"""
+	Compute Eigenvector centrality using algebraic meh
+
+	Parameters
+	----------
+	G : graph
+		The graph of which to compute the centrality
+	normalized : boolean
+				 Whether to normalize the results or not
+
+	"""
 	def __init__(self, G, normalized=False):
+		if G.isDirected():
+			raise NotImplementedError("Not implemented for directed graphs; use centrality.EigenvectorCentrality instead")
 		super(SciPyEVZ, self).__init__(G, normalized=normalized)
 
 	def _length(self, vector):
