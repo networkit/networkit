@@ -9,7 +9,7 @@
 #include "../edgescores/ChibaNishizekiTriangleCounter.h"
 #include "../edgescores/PrefixJaccardCoefficient.h"
 #include "SimmelianOverlapScore.h"
-#include "MultiscaleAttributizer.h"
+#include "MultiscaleScore.h"
 #include "LocalSimilarityAttributizer.h"
 #include "RandomEdgeScore.h"
 #include "GlobalThresholdFilter.h"
@@ -72,8 +72,9 @@ void MultiscaleBackbone::run() {
 		weight[eid] = inputGraph.weight(u, v);
 	});
 
-	MultiscaleAttributizer multiscaleAttributizer(inputGraph, weight);
-	std::vector<double> multiscale = multiscaleAttributizer.getAttribute();
+	MultiscaleScore multiscaleScorer(inputGraph, weight);
+	multiscaleScorer.run();
+	std::vector<double> multiscale = multiscaleScorer.scores();
 
 	GlobalThresholdFilter filter(inputGraph, multiscale, alpha, true);
 	outputGraph = filter.calculate();
@@ -104,8 +105,9 @@ void SimmelianMultiscaleBackbone::run() {
 	std::vector<count> triangles = triangleAttributizer.getAttribute();
 	std::vector<double> triangles_d = std::vector<double>(triangles.begin(), triangles.end());
 
-	MultiscaleAttributizer multiscaleAttributizer (inputGraph, triangles_d);
-	std::vector<double> multiscale = multiscaleAttributizer.getAttribute();
+	MultiscaleScore multiscaleScorer (inputGraph, triangles_d);
+	multiscaleScorer.run();
+	std::vector<double> multiscale = multiscaleScorer.scores();
 
 	GlobalThresholdFilter filter(inputGraph, multiscale, alpha, true);
 	outputGraph = filter.calculate();
@@ -116,8 +118,9 @@ RandomBackbone::RandomBackbone(const Graph& graph, double ratio) :
 		Sparsifier(graph), ratio(ratio) {}
 
 void RandomBackbone::run() {
-	RandomEdgeScore randomScore (inputGraph);
-	std::vector<double> random = randomScore.scores();
+	RandomEdgeScore randomScorer (inputGraph);
+	randomScorer.run();
+	std::vector<double> random = randomScorer.scores();
 
 	GlobalThresholdFilter filter(inputGraph, random, ratio, true);
 	outputGraph = filter.calculate();
