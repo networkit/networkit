@@ -10,7 +10,7 @@
 #include "LocalSimilarityGTest.h"
 
 #include "../LocalSimilarityScore.h"
-#include "../../edgescores/ChibaNishizekiTriangleCounter.h"
+#include "../../edgescores/ChibaNishizekiTriangleEdgeScore.h"
 
 
 namespace NetworKit {
@@ -24,8 +24,9 @@ TEST_F(LocalSimilarityGTest, testAttributeSimple) {
 	g.addEdge(1, 2);
 	g.indexEdges();
 
-	ChibaNishizekiTriangleCounter triangleCounter(g);
-	std::vector<count> triangles = triangleCounter.getAttribute();
+	ChibaNishizekiTriangleEdgeScore triangleEdgeScore(g);
+	triangleEdgeScore.run();
+	std::vector<count> triangles = triangleEdgeScore.scores();
 
 	LocalSimilarityScore localSim(g, triangles);
 	localSim.run();

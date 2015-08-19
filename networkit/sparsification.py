@@ -2,8 +2,8 @@
 
 __author__ = "Gerd Lindner"
 
-from _NetworKit import ChibaNishizekiTriangleCounter, GlobalThresholdFilter, LocalSimilarityScore, MultiscaleScore, SimmelianOverlapScore, RandomEdgeScore, LocalDegreeScore, ForestFireScore, \
-	EdgeAttributeAsWeight, EdgeAttributeLinearizer, LocalFilterScore, AdamicAdarDistance, ChanceCorrectedTriangleScore, NodeNormalizedTriangleScore, TriangleCounter, RandomNodeEdgeScore, ChungLuScore, ChibaNishizekiQuadrangleCounter, GeometricMeanScore, \
+from _NetworKit import ChibaNishizekiTriangleEdgeScore, GlobalThresholdFilter, LocalSimilarityScore, MultiscaleScore, SimmelianOverlapScore, RandomEdgeScore, LocalDegreeScore, ForestFireScore, \
+	EdgeAttributeAsWeight, EdgeAttributeLinearizer, JaccardSimilarityScore, LocalFilterScore, AdamicAdarDistance, ChanceCorrectedTriangleScore, NodeNormalizedTriangleScore, TriangleCounter, RandomNodeEdgeScore, ChungLuScore, ChibaNishizekiQuadrangleEdgeScore, GeometricMeanScore, \
 	EdgeAttributeNormalizer, EdgeAttributeBlender, PrefixJaccardCoefficient, SCANStructuralSimilarityScore
 
 # local imports
@@ -223,9 +223,7 @@ class SimmelianSparsifierParametric(Sparsifier):
 		Keyword arguments:
 		G -- the input graph
 		"""
-
-		chiba = ChibaNishizekiTriangleCounter(G)
-		triangles = chiba.scores()
+		triangles = ChibaNishizekiTriangleEdgeScore(G).run().scores()
 
 		simmelianOverlap = SimmelianOverlapScore(G, triangles, self.maxRank)
 		simmelianOverlap.run()
@@ -250,9 +248,7 @@ class SimmelianSparsifierNonParametric(Sparsifier):
 		Keyword arguments:
 		G -- the input graph
 		"""
-
-		chiba = ChibaNishizekiTriangleCounter(G)
-		triangles = chiba.scores()
+		triangles = ChibaNishizekiTriangleEdgeScore(G).run().scores()
 		a_sj = PrefixJaccardCoefficient(G, triangles).run().scores()
 
 		return a_sj
@@ -274,7 +270,7 @@ class QuadrilateralSimmelianSparsifier(Sparsifier):
 		Keyword arguments:
 		G -- the input graph
 		"""
-		quadrangles = ChibaNishizekiQuadrangleCounter(G).scores()
+		quadrangles = ChibaNishizekiQuadrangleEdgeScore(G).run().scores()
 		meanQuadrangles = GeometricMeanScore(G, quadrangles).run().scores()
 		quadranglePrefixJaccard = PrefixJaccardCoefficient(G, meanQuadrangles).run().scores()
 		return quadranglePrefixJaccard
@@ -297,9 +293,7 @@ class SimmelianMultiscaleSparsifier(Sparsifier):
 		Keyword arguments:
 		G -- the input graph
 		"""
-
-		chiba = ChibaNishizekiTriangleCounter(G)
-		triangles = chiba.scores()
+		triangles = ChibaNishizekiTriangleEdgeScore(G).run().scores()
 		ms = MultiscaleScore(G, triangles)
 		ms.run()
 		a_ms = ms.scores()
@@ -358,9 +352,7 @@ class LocalSimilaritySparsifier(Sparsifier):
 		Keyword arguments:
 		G -- the input graph
 		"""
-
-		chiba = ChibaNishizekiTriangleCounter(G)
-		triangles = chiba.scores()
+		triangles = ChibaNishizekiTriangleEdgeScore(G).run().scores()
 		localSimScore = LocalSimilarityScore(G, triangles)
 		localSimScore.run()
 		return localSimScore.scores()
@@ -517,9 +509,7 @@ class SCANSparsifier(Sparsifier):
 		Keyword arguments:
 		G -- the input graph
 		"""
-
-		chiba = ChibaNishizekiTriangleCounter(G)
-		a_triangles = chiba.scores()
+		a_triangles = ChibaNishizekiTriangleEdgeScore(G).run().scores()
 
 		scanScore = SCANStructuralSimilarityScore(G, a_triangles)
 		scanScore.run()
