@@ -6908,17 +6908,17 @@ cdef class SimmelianOverlapScore(EdgeScore):
 	cdef bool isDoubleValue(self):
 		return True
 
-cdef extern from "cpp/edgescores/PrefixJaccardCoefficient.h":
-	cdef cppclass _PrefixJaccardCoefficient "NetworKit::PrefixJaccardCoefficient<double>"(_EdgeScore[double]):
-		_PrefixJaccardCoefficient(const _Graph& G, const vector[double]& a) except +
+cdef extern from "cpp/edgescores/PrefixJaccardScore.h":
+	cdef cppclass _PrefixJaccardScore "NetworKit::PrefixJaccardScore<double>"(_EdgeScore[double]):
+		_PrefixJaccardScore(const _Graph& G, const vector[double]& a) except +
 
-cdef class PrefixJaccardCoefficient(EdgeScore):
+cdef class PrefixJaccardScore(EdgeScore):
 	cdef vector[double] _attribute
 
 	def __cinit__(self, Graph G, vector[double] attribute):
 		self._G = G
 		self._attribute = attribute
-		self._this = new _PrefixJaccardCoefficient(G._this, self._attribute)
+		self._this = new _PrefixJaccardScore(G._this, self._attribute)
 
 	cdef bool isDoubleValue(self):
 		return True

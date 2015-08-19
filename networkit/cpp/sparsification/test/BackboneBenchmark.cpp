@@ -10,7 +10,7 @@
 #include "BackboneBenchmark.h"
 #include "../../edgescores/ChibaNishizekiTriangleEdgeScore.h"
 #include "../../edgescores/TriangleEdgeScore.h"
-#include "../../edgescores/PrefixJaccardCoefficient.h"
+#include "../../edgescores/PrefixJaccardScore.h"
 #include "../SimmelianOverlapScore.h"
 #include "../MultiscaleScore.h"
 #include "../LocalSimilarityScore.h"
@@ -72,7 +72,7 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneNonParametric) {
 	counter.run();
 	std::vector<count> counts = counter.scores();
 
-	PrefixJaccardCoefficient<count> jaccard(G, counts);
+	PrefixJaccardScore<count> jaccard(G, counts);
 	jaccard.run();
 	auto attribute = jaccard.scores();
 
@@ -182,7 +182,7 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	// --------- Simmelian Backbone (Jaccard)
 	std::cout << "[BEGIN] Simmelian Jaccard attribute: " << std::endl;
 	runtime.start();
-	PrefixJaccardCoefficient<count> jaccardAttributizer(g, triangles);
+	PrefixJaccardScore<count> jaccardAttributizer(g, triangles);
 	jaccardAttributizer.run();
 	std::vector<double> jaccard = jaccardAttributizer.scores();
 	runtime.stop();
