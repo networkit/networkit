@@ -6536,8 +6536,6 @@ cdef class EdgeScore(Algorithm):
 cdef extern from "cpp/edgescores/ChibaNishizekiTriangleEdgeScore.h":
 	cdef cppclass _ChibaNishizekiTriangleEdgeScore "NetworKit::ChibaNishizekiTriangleEdgeScore"(_EdgeScore):
 		_ChibaNishizekiTriangleEdgeScore(const _Graph& G) except +
-		void run() except +
-		vector[count] getAttribute() except +
 
 cdef class ChibaNishizekiTriangleEdgeScore(EdgeScore):
 	"""
@@ -6563,7 +6561,6 @@ cdef class ChibaNishizekiTriangleEdgeScore(EdgeScore):
 cdef extern from "cpp/edgescores/ChibaNishizekiQuadrangleEdgeScore.h":
 	cdef cppclass _ChibaNishizekiQuadrangleEdgeScore "NetworKit::ChibaNishizekiQuadrangleEdgeScore"(_EdgeScore):
 		_ChibaNishizekiQuadrangleEdgeScore(const _Graph& G) except +
-		vector[count] getAttribute() except +
 
 cdef class ChibaNishizekiQuadrangleEdgeScore(EdgeScore):
 	"""
@@ -6703,13 +6700,11 @@ cdef class EdgeAttributeNormalizer:
 		"""
 		return self._this.getAttribute()
 
-cdef extern from "cpp/edgescores/EdgeAttributeBlender.h":
-	cdef cppclass _EdgeAttributeBlender "NetworKit::EdgeAttributeBlender":
-		_EdgeAttributeBlender(const _Graph&, const vector[double]&, const vector[double]&, const vector[bool]&) except +
-		void run()
-		vector[double] getAttribute() except +
+cdef extern from "cpp/edgescores/EdgeScoreBlender.h":
+	cdef cppclass _EdgeScoreBlender "NetworKit::EdgeScoreBlender"(_EdgeScore):
+		_EdgeScoreBlender(const _Graph&, const vector[double]&, const vector[double]&, const vector[bool]&) except +
 
-cdef class EdgeAttributeBlender:
+cdef class EdgeScoreBlender(EdgeScore):
 	"""
 	Blends two attribute vectors, the value is chosen depending on the supplied boolean vector
 
@@ -6724,8 +6719,6 @@ cdef class EdgeAttributeBlender:
 	selection : vector[bool]
 		The selection vector
 	"""
-	cdef _EdgeAttributeBlender *_this
-	cdef Graph _G
 	cdef vector[double] _attribute0
 	cdef vector[double] _attribute1
 	cdef vector[bool] _selection
@@ -6736,17 +6729,10 @@ cdef class EdgeAttributeBlender:
 		self._attribute1 = move(attribute1)
 		self._selection = move(selection)
 
-		self._this = new _EdgeAttributeBlender(G._this, self._attribute0, self._attribute1, self._selection)
+		self._this = new _EdgeScoreBlender(G._this, self._attribute0, self._attribute1, self._selection)
 
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		self._this.run()
-		return self
-
-	def getAttribute(self):
-		return self._this.getAttribute()
+	cdef bool isDoubleValue(self):
+		return True
 
 cdef extern from "cpp/edgescores/GeometricMeanScore.h":
 	cdef cppclass _GeometricMeanScore "NetworKit::GeometricMeanScore"(_EdgeScore):
