@@ -6736,21 +6736,21 @@ cdef class GeometricMeanScore(EdgeScore):
 	cdef bool isDoubleValue(self):
 		return True
 
-cdef extern from "cpp/edgescores/EdgeAttributeAsWeight.h":
-	cdef cppclass _EdgeAttributeAsWeight "NetworKit::EdgeAttributeAsWeight":
-		_EdgeAttributeAsWeight(const _Graph& G, const vector[double]& attribute, bool squared, edgeweight offset, edgeweight factor) except +
+cdef extern from "cpp/edgescores/EdgeScoreAsWeight.h":
+	cdef cppclass _EdgeScoreAsWeight "NetworKit::EdgeScoreAsWeight":
+		_EdgeScoreAsWeight(const _Graph& G, const vector[double]& score, bool squared, edgeweight offset, edgeweight factor) except +
 		_Graph calculate() except +
 
-cdef class EdgeAttributeAsWeight:
+cdef class EdgeScoreAsWeight:
 	"""
-	Assigns an edge attribute as edge weight of a graph.
+	Assigns an edge score as edge weight of a graph.
 
 	Parameters
 	----------
 	G : Graph
 		The graph to assign edge weights to.
-	attribute : vector[double]
-		The input edge attribute.
+	score : vector[double]
+		The input edge score.
 	squared : bool
 		Edge weights will be squared if set to True.
 	offset : edgeweight
@@ -6759,14 +6759,14 @@ cdef class EdgeAttributeAsWeight:
 		Each edge weight will be multiplied by this factor.
 	"""
 
-	cdef _EdgeAttributeAsWeight* _this
+	cdef _EdgeScoreAsWeight* _this
 	cdef Graph _G
-	cdef vector[double] _attribute
+	cdef vector[double] _score
 
-	def __cinit__(self, Graph G, vector[double] attribute, bool squared, edgeweight offset, edgeweight factor):
+	def __cinit__(self, Graph G, vector[double] score, bool squared, edgeweight offset, edgeweight factor):
 		self._G = G
-		self._attribute = attribute
-		self._this = new _EdgeAttributeAsWeight(G._this, self._attribute, squared, offset, factor)
+		self._score = score
+		self._this = new _EdgeScoreAsWeight(G._this, self._score, squared, offset, factor)
 
 	def __dealloc__(self):
 		del self._this
