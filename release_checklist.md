@@ -16,9 +16,10 @@
 
 
 ## PyPI related
-1. Run `python setup.py sdist upload -r test` to create the package NetworKit and upload it to the PyPI test server.[*]
-2. Do a test installation with `[sudo] pip[3] install -i https://testpypi.python.org/pypi networkit [--upgrade]` (on multiple systems, if possible).
-3. Upload it to the real PyPI with: `python setup.py sdist upload`
+1. Make sure there is an up-to-date cythonized version of `_NetworKit.pyx`. This can be achieved with `cython -3 --cplus -o networkit/_NetworKit.cpp networkit/_NetworKit.pyx `.
+2. Run `python setup.py sdist upload -r test` to create the package NetworKit and upload it to the PyPI test server.[*]
+3. Do a test installation with `[sudo] pip[3] install -i https://testpypi.python.org/pypi networkit [--upgrade]` (on multiple systems, if possible).
+4. Upload it to the real PyPI with: `python setup.py sdist upload`
 
 ## Website related
 * Write a news item.
