@@ -23,6 +23,8 @@ public:
 
 	EdgeScore(const Graph& G);
 
+	EdgeScore(const Graph& G, const std::vector<T>& attribute);
+
 	/** Compute the edge score. */
 	virtual void run();
 

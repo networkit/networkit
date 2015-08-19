@@ -6985,12 +6985,11 @@ cdef class PrefixJaccardCoefficient:
 	def getAttribute(self):
 		return self._this.getAttribute()
 
-cdef extern from "cpp/sparsification/MultiscaleAttributizer.h":
-	cdef cppclass _MultiscaleAttributizer "NetworKit::MultiscaleAttributizer":
-		_MultiscaleAttributizer(const _Graph& G, const vector[double]& a) except +
-		vector[double] getAttribute() except +
+cdef extern from "cpp/sparsification/MultiscaleScore.h":
+	cdef cppclass _MultiscaleScore "NetworKit::MultiscaleScore"(_EdgeScore):
+		_MultiscaleScore(const _Graph& G, const vector[double]& a) except +
 
-cdef class MultiscaleAttributizer:
+cdef class MultiscaleScore(EdgeScore):
 	"""
 	An implementation of the Multiscale Backbone. Calculates for each edge the minimum
 	parameter value such that the edge is still contained in the sparsified graph.
@@ -7003,20 +7002,15 @@ cdef class MultiscaleAttributizer:
 		The edge attribute the Multiscale algorithm is to be applied to.
 	"""
 
-	cdef _MultiscaleAttributizer* _this
-	cdef Graph _G
 	cdef vector[double] _attribute
 
 	def __cinit__(self, Graph G, vector[double] attribute):
 		self._G = G
 		self._attribute = attribute
-		self._this = new _MultiscaleAttributizer(G._this, self._attribute)
+		self._this = new _MultiscaleScore(G._this, self._attribute)
 
-	def __dealloc__(self):
-		del self._this
-
-	def getAttribute(self):
-		return self._this.getAttribute()
+	cdef bool isDoubleValue(self):
+		return True
 
 cdef extern from "cpp/sparsification/RandomEdgeScore.h":
 	cdef cppclass _RandomEdgeScore "NetworKit::RandomEdgeScore"(_EdgeScore):

@@ -10,7 +10,7 @@
 #include "MultiscaleBackboneGTest.h"
 
 #include "../Sparsifiers.h"
-#include "../MultiscaleAttributizer.h"
+#include "../MultiscaleScore.h"
 
 
 namespace NetworKit {
@@ -26,8 +26,8 @@ TEST_F(MultiscaleBackboneGTest, testSimpleMultiscaleBackbone) {
 	g.setWeight(3, 5, 0.5);
 	g.indexEdges();
 
-	MultiscaleAttributizer attributizer(g, std::vector<double>());
-	EXPECT_NEAR(0.9121756, attributizer.getProbability(4, 0.5555), 1e-5) << "faulty probability calculation";
+	MultiscaleScore scorer(g, std::vector<double>());
+	EXPECT_NEAR(0.9121756, scorer.getProbability(4, 0.5555), 1e-5) << "faulty probability calculation";
 	/**
 	 * a01 = 0.91896
 	 * a02 = 0.639212

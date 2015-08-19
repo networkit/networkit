@@ -12,7 +12,7 @@
 #include "../../edgescores/TriangleCounter.h"
 #include "../../edgescores/PrefixJaccardCoefficient.h"
 #include "../SimmelianOverlapScore.h"
-#include "../MultiscaleAttributizer.h"
+#include "../MultiscaleScore.h"
 #include "../LocalSimilarityAttributizer.h"
 #include "../RandomEdgeScore.h"
 #include "../GlobalThresholdFilter.h"
@@ -92,8 +92,9 @@ TEST_F(BackboneBenchmark, completeGraphMultiscaleBackbone) {
 		weight[eid] = G.weight(u, v);
 	});
 
-	MultiscaleAttributizer attributizer(G, weight);
-	auto attribute = attributizer.getAttribute();
+	MultiscaleScore scorer(G, weight);
+	scorer.run();
+	auto scores = scorer.scores();
 
 	runtime.stop();
 	INFO("[DONE] MultiscaleBackbone (" , runtime.elapsed().count() , " ms)");
@@ -159,8 +160,9 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	// --------- Multiscale
 	std::cout << "[BEGIN] multiscale attribute: " << std::endl;
 	runtime.start();
-	MultiscaleAttributizer multiscaleAttributizer(g, std::vector<double>(triangles.begin(), triangles.end()));
-	std::vector<double> multiscale = multiscaleAttributizer.getAttribute();
+	MultiscaleScore multiscaleScorer(g, std::vector<double>(triangles.begin(), triangles.end()));
+	multiscaleScorer.run();
+	std::vector<double> multiscale = multiscaleScorer.scores();
 	runtime.stop();
 	std::cout << "[DONE] multiscale attribute " << runtime.elapsedTag() << std::endl;
 
