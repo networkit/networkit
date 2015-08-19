@@ -2,7 +2,7 @@
 
 __author__ = "Gerd Lindner"
 
-from _NetworKit import ChibaNishizekiTriangleCounter, GlobalThresholdFilter, LocalSimilarityAttributizer, MultiscaleAttributizer, SimmelianOverlapScore, RandomEdgeScore, LocalDegreeScore, ForestFireScore, \
+from _NetworKit import ChibaNishizekiTriangleCounter, GlobalThresholdFilter, LocalSimilarityAttributizer, MultiscaleScore, SimmelianOverlapScore, RandomEdgeScore, LocalDegreeScore, ForestFireScore, \
 	EdgeAttributeAsWeight, EdgeAttributeLinearizer, JaccardSimilarityAttributizer, LocalFilterScore, AdamicAdarDistance, ChanceCorrectedTriangleAttributizer, NodeNormalizedTriangleAttributizer, TriangleCounter, RandomNodeEdgeScore, ChungLuScore, ChibaNishizekiQuadrangleCounter, GeometricMeanAttributizer, \
 	EdgeAttributeNormalizer, EdgeAttributeBlender, PrefixJaccardCoefficient, SCANStructuralSimilarityScore
 
@@ -299,8 +299,9 @@ class SimmelianMultiscaleBackbone(Sparsifier):
 
 		chiba = ChibaNishizekiTriangleCounter(G)
 		triangles = chiba.getAttribute()
-		ms = MultiscaleAttributizer(G, triangles)
-		a_ms = ms.getAttribute()
+		ms = MultiscaleScore(G, triangles)
+		ms.run()
+		a_ms = ms.scores()
 		return a_ms
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
@@ -333,8 +334,9 @@ class DegreeMultiscaleBackbone(Sparsifier):
 		for (x,y) in G.edges():
 			inputAttribute[G.edgeId(x,y)] = self.degsToAttrValue(G.degree(x), G.degree(y))
 
-		ms = MultiscaleAttributizer(G, inputAttribute)
-		a_ms = ms.getAttribute()
+		ms = MultiscaleScore(G, inputAttribute)
+		ms.run()
+		a_ms = ms.scores()
 		return a_ms
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
@@ -386,9 +388,10 @@ class MultiscaleBackbone(Sparsifier):
 			edgeId = G.edgeId(edge[0], edge[1])
 			inputAttribute[edgeId] = G.weight(edge[0], edge[1])
 
-		attributizer = MultiscaleAttributizer(G, inputAttribute)
-		attribute = attributizer.getAttribute()
-		return attribute
+		scorer = MultiscaleScore(G, inputAttribute)
+		scorer.run()
+		scores = scorer.scores()
+		return scores
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
 		gf = GlobalThresholdFilter(G, attribute, parameter, True)

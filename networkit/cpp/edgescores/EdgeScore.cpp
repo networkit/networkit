@@ -16,6 +16,13 @@ namespace NetworKit {
 		}
 	}
 
+	template<typename T>
+	EdgeScore<T>::EdgeScore(const Graph& G, const std::vector<T>& attribute) : Algorithm(), G(G), scoreData(attribute) {
+		if (G.isDirected()) {
+			WARN("Application to directed graphs is not well tested");
+		}
+	}
+
 	/** Compute the edge score. */
 	template<typename T>
 	void EdgeScore<T>::run() {

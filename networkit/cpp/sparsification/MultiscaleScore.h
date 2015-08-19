@@ -1,14 +1,14 @@
 /*
- * MultiscaleAttributizer.h
+ * MultiscaleScore.h
  *
  *  Created on: 20.06.2014
  *      Author: Gerd Lindner
  */
 
-#ifndef MULTISCALEATTRIBUTIZER_H_
-#define MULTISCALEATTRIBUTIZER_H_
+#ifndef MULTISCALESCORE_H_
+#define MULTISCALESCORE_H_
 
-#include "../edgescores/EdgeAttribute.h"
+#include "../edgescores/EdgeScore.h"
 
 namespace NetworKit {
 
@@ -19,21 +19,18 @@ namespace NetworKit {
  *
  * See "Extracting the multiscale backbone of complex weighted networks" by Serrano et al.
  */
-class MultiscaleAttributizer : public EdgeAttribute<double> {
+class MultiscaleScore : public EdgeScore<double> {
 
 public:
 
-	MultiscaleAttributizer(const Graph& graph, const std::vector<double>& attribute);
-	virtual std::vector<double> getAttribute() override;
+	MultiscaleScore(const Graph& graph, const std::vector<double>& attribute);
+	virtual double score(edgeid eid) override;
+	virtual double score(node u, node v) override;
+	virtual void run() override;
 	double getProbability(count degree, edgeweight normalizedWeight);
-
-private:
-	const Graph& graph;
-	const std::vector<double>& attribute;
-
 };
 
 }
 /* namespace NetworKit */
 
-#endif /* MULTISCALEATTRIBUTIZER_H_ */
+#endif /* MULTISCALESCORE_H_ */
