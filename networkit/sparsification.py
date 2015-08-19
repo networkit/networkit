@@ -317,10 +317,7 @@ class DegreeMultiscaleBackbone(Sparsifier):
 		"""
 		Creates a new instance of the Degree Multiscale sparsifier.
 		Keyword arguments:
-		attrType -- For each edge (x,y) the following edge value will be used.
-			0: max(d(x), d(y))
-			1: min(d(x), d(y))
-			2: avg(d(x), d(y))
+		degsToAttrValue -- function that maps two node degrees to an edge score.
 		"""
 		self.degsToAttrValue = degsToAttrValue
 
@@ -470,8 +467,9 @@ class ForestFireBackbone(Sparsifier):
 		G -- the input graph
 		"""
 
-		attributizer = ForestFireAttributizer(G, self.burnProbability, self.targetBurntRatio)
-		return attributizer.getAttribute()
+		ffScore = ForestFireScore(G, self.burnProbability, self.targetBurntRatio)
+		ffScore.run()
+		return ffScore.scores()
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
 		gf = GlobalThresholdFilter(G, attribute, parameter, True)
@@ -492,7 +490,8 @@ class LocalDegreeSparsifier(Sparsifier):
 		G -- the input graph
 		"""
 
-		localDegree = LocalDegreeScore(G).run();
+		localDegree = LocalDegreeScore(G)
+		localDegree.run()
 		localDegreeScore = localDegree.scores()
 		return localDegreeScore
 

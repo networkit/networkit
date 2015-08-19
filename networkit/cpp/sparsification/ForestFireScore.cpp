@@ -76,6 +76,7 @@ void ForestFireScore::run() {
 	}
 
 	scoreData = std::move(burntNormalized);
+	hasRun = true;
 }
 
 } /* namespace NetworKit */
