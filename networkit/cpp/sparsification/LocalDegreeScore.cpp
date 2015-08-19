@@ -27,7 +27,7 @@ void LocalDegreeScore::run() {
 		throw std::runtime_error("edges have not been indexed - call indexEdges first");
 	}
 
-	scoreData.resize(G.upperEdgeIdBound(), 0.0);
+	std::vector<double> exponents (G.upperEdgeIdBound(), 0.0);
 
 	G.balancedParallelForNodes([&](node i) {
 		count d = G.degree(i);
@@ -58,12 +58,13 @@ void LocalDegreeScore::run() {
 			if (d > 1)
 				e = 1.0 - (log(rank) / log(d));
 
-			scoreData[eid] = std::max(e, scoreData[eid]);
+			exponents[eid] = std::max(e, exponents[eid]);
 			rank++;
 		}
 
 	});
 
+	scoreData = std::move(exponents);
 	hasRun = true;
 }
 
