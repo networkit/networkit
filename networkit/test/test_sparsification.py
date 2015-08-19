@@ -11,16 +11,25 @@ class Test_Sparsification(unittest.TestCase):
 		self.sparsifiers = [
 			sparsification.SimmelianBackboneParametric(10),
 			sparsification.SimmelianBackboneNonParametric(),
+			sparsification.QuadrilateralSimmelianBackbone(),
+			sparsification.DegreeMultiscaleBackbone(0),
 			sparsification.SimmelianMultiscaleBackbone(),
 			sparsification.LocalSimilarityBackbone(),
 			sparsification.MultiscaleBackbone(),
 			sparsification.RandomEdgeBackbone(),
+			sparsification.RandomNodeEdgeBackbone(),
 			sparsification.ForestFireBackbone(0.6, 5.0),
-			sparsification.LocalDegreeBackbone()
+			sparsification.LocalDegreeSparsifier(),
+			sparsification.SCANBackbone(),
+			sparsification.TriangleBackbone()
 		]
 
 	def test_getSparsifiedGraphOfSize(self):
-		#Verify that the size of the sparsified graphs is approximately the expected size.
+		"""
+		Checks whether the sizes of the sparsified graphs are approximately
+		of the expected size. This test is supposed to verify that all
+		sparsification methods can be run without errors.
+		"""
 
 		minExpectedRatio = 0.15
 		targetRatio = 0.2
