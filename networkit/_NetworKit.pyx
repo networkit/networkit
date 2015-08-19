@@ -6787,12 +6787,11 @@ cdef class EdgeAttributeBlender:
 		return self._this.getAttribute()
 
 
-cdef extern from "cpp/edgescores/GeometricMeanAttributizer.h":
-	cdef cppclass _GeometricMeanAttributizer "NetworKit::GeometricMeanAttributizer":
-		_GeometricMeanAttributizer(const _Graph& G, const vector[double]& a) except +
-		vector[double] getAttribute() except +
+cdef extern from "cpp/edgescores/GeometricMeanScore.h":
+	cdef cppclass _GeometricMeanScore "NetworKit::GeometricMeanScore"(_EdgeScore):
+		_GeometricMeanScore(const _Graph& G, const vector[double]& a) except +
 
-cdef class GeometricMeanAttributizer:
+cdef class GeometricMeanScore(EdgeScore):
 	"""
 	Normalizes the given edge attribute by the geometric average of the sum of the attributes of the incident edges of the incident nodes.
 
@@ -6803,26 +6802,15 @@ cdef class GeometricMeanAttributizer:
 	a : vector[double]
 		Edge attribute that shall be normalized.
 	"""
-	cdef _GeometricMeanAttributizer* _this
-	cdef Graph _G
 	cdef vector[double] _attribute
 
 	def __cinit__(self, Graph G, vector[double] attribute):
 		self._G = G
 		self._attribute = attribute
-		self._this = new _GeometricMeanAttributizer(G._this, self._attribute)
+		self._this = new _GeometricMeanScore(G._this, self._attribute)
 
-	def __dealloc__(self):
-		del self._this
-
-	def getAttribute(self):
-		"""
-		Returns
-		-------
-		vector[double]
-			The edge attribute that contains the normalized attribute.
-		"""
-		return self._this.getAttribute()
+	cdef bool isDoubleValue(self):
+		return True
 
 cdef extern from "cpp/edgescores/EdgeAttributeAsWeight.h":
 	cdef cppclass _EdgeAttributeAsWeight "NetworKit::EdgeAttributeAsWeight":
