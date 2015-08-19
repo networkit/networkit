@@ -7,7 +7,7 @@
 
 #include "Sparsifiers.h"
 #include "../edgescores/ChibaNishizekiTriangleEdgeScore.h"
-#include "../edgescores/PrefixJaccardCoefficient.h"
+#include "../edgescores/PrefixJaccardScore.h"
 #include "SimmelianOverlapScore.h"
 #include "MultiscaleScore.h"
 #include "LocalSimilarityScore.h"
@@ -37,7 +37,7 @@ void SimmelianBackboneNonParametric::run() {
 	triangleEdgeScore.run();
 	std::vector<count> triangles = triangleEdgeScore.scores();
 
-	PrefixJaccardCoefficient<count> jaccardScore(inputGraph, triangles);
+	PrefixJaccardScore<count> jaccardScore(inputGraph, triangles);
 	jaccardScore.run();
 	std::vector<double> jaccard = jaccardScore.scores();
 

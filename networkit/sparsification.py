@@ -4,7 +4,7 @@ __author__ = "Gerd Lindner"
 
 from _NetworKit import ChibaNishizekiTriangleEdgeScore, GlobalThresholdFilter, LocalSimilarityScore, MultiscaleScore, SimmelianOverlapScore, RandomEdgeScore, LocalDegreeScore, ForestFireScore, \
 	EdgeAttributeAsWeight, EdgeAttributeLinearizer, LocalFilterScore, AdamicAdarDistance, ChanceCorrectedTriangleScore, NodeNormalizedTriangleScore, TriangleEdgeScore, RandomNodeEdgeScore, ChungLuScore, ChibaNishizekiQuadrangleEdgeScore, GeometricMeanScore, \
-	EdgeAttributeNormalizer, EdgeAttributeBlender, PrefixJaccardCoefficient, SCANStructuralSimilarityScore
+	EdgeAttributeNormalizer, EdgeAttributeBlender, PrefixJaccardScore, SCANStructuralSimilarityScore
 
 # local imports
 from . import community
@@ -249,7 +249,7 @@ class SimmelianSparsifierNonParametric(Sparsifier):
 		G -- the input graph
 		"""
 		triangles = ChibaNishizekiTriangleEdgeScore(G).run().scores()
-		a_sj = PrefixJaccardCoefficient(G, triangles).run().scores()
+		a_sj = PrefixJaccardScore(G, triangles).run().scores()
 
 		return a_sj
 
@@ -272,7 +272,7 @@ class QuadrilateralSimmelianSparsifier(Sparsifier):
 		"""
 		quadrangles = ChibaNishizekiQuadrangleEdgeScore(G).run().scores()
 		meanQuadrangles = GeometricMeanScore(G, quadrangles).run().scores()
-		quadranglePrefixJaccard = PrefixJaccardCoefficient(G, meanQuadrangles).run().scores()
+		quadranglePrefixJaccard = PrefixJaccardScore(G, meanQuadrangles).run().scores()
 		return quadranglePrefixJaccard
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
