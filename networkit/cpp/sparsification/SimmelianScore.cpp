@@ -100,4 +100,12 @@ void SimmelianScore::matchNeighbors(
 	}
 }
 
+double SimmelianScore::score(node u, node v) {
+	throw std::runtime_error("Not implemented: Use scores() instead.");
+}
+
+double SimmelianScore::score(edgeid eid) {
+	throw std::runtime_error("Not implemented: Use scores() instead.");
+}
+
 } /* namespace NetworKit */
