@@ -6944,6 +6944,8 @@ cdef extern from "cpp/sparsification/SimmelianOverlapScore.h":
 		_SimmelianOverlapScore(const _Graph& G, const vector[count]& triangles, count maxRank) except +
 
 cdef class SimmelianOverlapScore(EdgeScore):
+	cdef vector[count] _triangles
+
 	"""
 	An implementation of the parametric variant of Simmelian Backbones. Calculates
 	for each edge the minimum parameter value such that the edge is still contained in
@@ -6962,7 +6964,7 @@ cdef class SimmelianOverlapScore(EdgeScore):
 		self._this = new _SimmelianOverlapScore(G._this, self._triangles, maxRank)
 
 	cdef bool isDoubleValue(self):
-		return True;
+		return True
 
 cdef extern from "cpp/edgescores/PrefixJaccardCoefficient.h":
 	cdef cppclass _PrefixJaccardCoefficient "NetworKit::PrefixJaccardCoefficient<double>":
