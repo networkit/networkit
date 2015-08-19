@@ -3,7 +3,7 @@
 __author__ = "Gerd Lindner"
 
 from _NetworKit import ChibaNishizekiTriangleCounter, GlobalThresholdFilter, LocalSimilarityScore, MultiscaleScore, SimmelianOverlapScore, RandomEdgeScore, LocalDegreeScore, ForestFireScore, \
-	EdgeAttributeAsWeight, EdgeAttributeLinearizer, JaccardSimilarityAttributizer, LocalFilterScore, AdamicAdarDistance, ChanceCorrectedTriangleScore, NodeNormalizedTriangleScore, TriangleCounter, RandomNodeEdgeScore, ChungLuScore, ChibaNishizekiQuadrangleCounter, GeometricMeanAttributizer, \
+	EdgeAttributeAsWeight, EdgeAttributeLinearizer, JaccardSimilarityAttributizer, LocalFilterScore, AdamicAdarDistance, ChanceCorrectedTriangleScore, NodeNormalizedTriangleScore, TriangleCounter, RandomNodeEdgeScore, ChungLuScore, ChibaNishizekiQuadrangleCounter, GeometricMeanScore, \
 	EdgeAttributeNormalizer, EdgeAttributeBlender, PrefixJaccardCoefficient, SCANStructuralSimilarityScore
 
 # local imports
@@ -274,7 +274,7 @@ class QuadrilateralSimmelianBackbone(Sparsifier):
 		G -- the input graph
 		"""
 		quadrangles = ChibaNishizekiQuadrangleCounter(G).getAttribute()
-		meanQuadrangles = GeometricMeanAttributizer(G, quadrangles).getAttribute()
+		meanQuadrangles = GeometricMeanScore(G, quadrangles).run().scores()
 		quadranglePrefixJaccard = PrefixJaccardCoefficient(G, meanQuadrangles).run().getAttribute()
 		return quadranglePrefixJaccard
 
