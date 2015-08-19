@@ -6571,7 +6571,7 @@ cdef class PredictionsSorter:
 		sortByNodePair(predCopy)
 		predictions[:] = predCopy
 
-# Module: edgeattributes
+# Module: EdgeScore
 
 cdef extern from "cpp/edgescores/EdgeScore.h":
 	cdef cppclass _EdgeScore "NetworKit::EdgeScore"[T](_Algorithm):
@@ -6616,7 +6616,7 @@ cdef class EdgeScore(Algorithm):
 
 
 cdef extern from "cpp/edgescores/ChibaNishizekiTriangleEdgeScore.h":
-	cdef cppclass _ChibaNishizekiTriangleEdgeScore "NetworKit::ChibaNishizekiTriangleEdgeScore"(_EdgeScore):
+	cdef cppclass _ChibaNishizekiTriangleEdgeScore "NetworKit::ChibaNishizekiTriangleEdgeScore"(_EdgeScore[count]):
 		_ChibaNishizekiTriangleEdgeScore(const _Graph& G) except +
 
 cdef class ChibaNishizekiTriangleEdgeScore(EdgeScore):
@@ -6641,7 +6641,7 @@ cdef class ChibaNishizekiTriangleEdgeScore(EdgeScore):
 		return False
 
 cdef extern from "cpp/edgescores/ChibaNishizekiQuadrangleEdgeScore.h":
-	cdef cppclass _ChibaNishizekiQuadrangleEdgeScore "NetworKit::ChibaNishizekiQuadrangleEdgeScore"(_EdgeScore):
+	cdef cppclass _ChibaNishizekiQuadrangleEdgeScore "NetworKit::ChibaNishizekiQuadrangleEdgeScore"(_EdgeScore[count]):
 		_ChibaNishizekiQuadrangleEdgeScore(const _Graph& G) except +
 
 cdef class ChibaNishizekiQuadrangleEdgeScore(EdgeScore):
@@ -6695,7 +6695,7 @@ cdef class TriangleEdgeScore(EdgeScore):
 		return False
 
 cdef extern from "cpp/edgescores/EdgeScoreLinearizer.h":
-	cdef cppclass _EdgeScoreLinearizer "NetworKit::EdgeScoreLinearizer"(_EdgeScore):
+	cdef cppclass _EdgeScoreLinearizer "NetworKit::EdgeScoreLinearizer"(_EdgeScore[double]):
 		_EdgeScoreLinearizer(const _Graph& G, const vector[double]& attribute, bool inverse) except +
 
 cdef class EdgeScoreLinearizer(EdgeScore):
@@ -6760,7 +6760,7 @@ cdef class EdgeScoreNormalizer(EdgeScore):
 		return True
 
 cdef extern from "cpp/edgescores/EdgeScoreBlender.h":
-	cdef cppclass _EdgeScoreBlender "NetworKit::EdgeScoreBlender"(_EdgeScore):
+	cdef cppclass _EdgeScoreBlender "NetworKit::EdgeScoreBlender"(_EdgeScore[double]):
 		_EdgeScoreBlender(const _Graph&, const vector[double]&, const vector[double]&, const vector[bool]&) except +
 
 cdef class EdgeScoreBlender(EdgeScore):
@@ -6794,7 +6794,7 @@ cdef class EdgeScoreBlender(EdgeScore):
 		return True
 
 cdef extern from "cpp/edgescores/GeometricMeanScore.h":
-	cdef cppclass _GeometricMeanScore "NetworKit::GeometricMeanScore"(_EdgeScore):
+	cdef cppclass _GeometricMeanScore "NetworKit::GeometricMeanScore"(_EdgeScore[double]):
 		_GeometricMeanScore(const _Graph& G, const vector[double]& a) except +
 
 cdef class GeometricMeanScore(EdgeScore):
@@ -6906,7 +6906,7 @@ cdef class AdamicAdarDistance:
 # Module: sparsification
 
 cdef extern from "cpp/sparsification/ChungLuScore.h":
-	cdef cppclass _ChungLuScore "NetworKit::ChungLuScore"(_EdgeScore):
+	cdef cppclass _ChungLuScore "NetworKit::ChungLuScore"(_EdgeScore[double]):
 		_ChungLuScore(const _Graph& G) except +
 
 cdef class ChungLuScore(EdgeScore):
@@ -6969,7 +6969,7 @@ cdef class PrefixJaccardScore(EdgeScore):
 		return True
 
 cdef extern from "cpp/sparsification/MultiscaleScore.h":
-	cdef cppclass _MultiscaleScore "NetworKit::MultiscaleScore"(_EdgeScore):
+	cdef cppclass _MultiscaleScore "NetworKit::MultiscaleScore"(_EdgeScore[double]):
 		_MultiscaleScore(const _Graph& G, const vector[double]& a) except +
 
 cdef class MultiscaleScore(EdgeScore):
@@ -6996,7 +6996,7 @@ cdef class MultiscaleScore(EdgeScore):
 		return True
 
 cdef extern from "cpp/sparsification/RandomEdgeScore.h":
-	cdef cppclass _RandomEdgeScore "NetworKit::RandomEdgeScore"(_EdgeScore):
+	cdef cppclass _RandomEdgeScore "NetworKit::RandomEdgeScore"(_EdgeScore[double]):
 		_RandomEdgeScore(const _Graph& G) except +
 
 cdef class RandomEdgeScore(EdgeScore):
@@ -7207,7 +7207,7 @@ cdef class LocalFilterScore(EdgeScore):
 		return True
 
 cdef extern from "cpp/sparsification/ChanceCorrectedTriangleScore.h":
-	cdef cppclass _ChanceCorrectedTriangleScore "NetworKit::ChanceCorrectedTriangleScore"(_EdgeScore):
+	cdef cppclass _ChanceCorrectedTriangleScore "NetworKit::ChanceCorrectedTriangleScore"(_EdgeScore[double]):
 		_ChanceCorrectedTriangleScore(const _Graph& G, const vector[count]& triangles) except +
 
 cdef class ChanceCorrectedTriangleScore(EdgeScore):
@@ -7247,7 +7247,7 @@ cdef class SCANStructuralSimilarityScore(EdgeScore):
 		return True
 
 cdef extern from "cpp/sparsification/NodeNormalizedTriangleScore.h":
-	cdef cppclass _NodeNormalizedTriangleScore "NetworKit::NodeNormalizedTriangleScore"(_EdgeScore):
+	cdef cppclass _NodeNormalizedTriangleScore "NetworKit::NodeNormalizedTriangleScore"(_EdgeScore[double]):
 		_NodeNormalizedTriangleScore(_Graph G, const vector[count]& triangles) except +
 
 cdef class NodeNormalizedTriangleScore(EdgeScore):
