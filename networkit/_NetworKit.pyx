@@ -6612,13 +6612,11 @@ cdef class ChibaNishizekiQuadrangleCounter:
 		"""
 		return self._this.getAttribute()
 
-cdef extern from "cpp/edgescores/TriangleCounter.h":
-	cdef cppclass _TriangleCounter "NetworKit::TriangleCounter":
-		_TriangleCounter(const _Graph& G) except +
-		#void run() except +
-		vector[count] getAttribute() except +
+cdef extern from "cpp/edgescores/TriangleEdgeScore.h":
+	cdef cppclass _TriangleEdgeScore "NetworKit::TriangleEdgeScore"(_EdgeScore[double]):
+		_TriangleEdgeScore(const _Graph& G) except +
 
-cdef class TriangleCounter:
+cdef class TriangleEdgeScore(EdgeScore):
 	"""
 	Triangle counting.
 
@@ -6628,9 +6626,6 @@ cdef class TriangleCounter:
 		The graph to count triangles on.
 	"""
 
-	cdef _TriangleCounter* _this
-	cdef Graph _G
-
 	def __cinit__(self, Graph G):
 		"""
 		Parameters
@@ -6639,19 +6634,10 @@ cdef class TriangleCounter:
 			The graph to count triangles on.
 		"""
 		self._G = G
-		self._this = new _TriangleCounter(G._this)
+		self._this = new _TriangleEdgeScore(G._this)
 
-	def __dealloc__(self):
-		del self._this
-
-	def getAttribute(self):
-		"""
-		Returns
-		----------
-		vector[count]
-			the number of triangles edges are embedded in.
-		"""
-		return self._this.getAttribute()
+	cdef bool isDoubleValue(self):
+		return False
 
 cdef extern from "cpp/edgescores/EdgeAttributeLinearizer.h":
 	cdef cppclass _EdgeAttributeLinearizer "NetworKit::EdgeAttributeLinearizer":
@@ -6787,11 +6773,12 @@ cdef class EdgeAttributeBlender:
 		return self._this.getAttribute()
 
 
-cdef extern from "cpp/edgescores/GeometricMeanScore.h":
-	cdef cppclass _GeometricMeanScore "NetworKit::GeometricMeanScore"(_EdgeScore):
-		_GeometricMeanScore(const _Graph& G, const vector[double]& a) except +
+cdef extern from "cpp/edgescores/GeometricMeanAttributizer.h":
+	cdef cppclass _GeometricMeanAttributizer "NetworKit::GeometricMeanAttributizer":
+		_GeometricMeanAttributizer(const _Graph& G, const vector[double]& a) except +
+		vector[double] getAttribute() except +
 
-cdef class GeometricMeanScore(EdgeScore):
+cdef class GeometricMeanAttributizer:
 	"""
 	Normalizes the given edge attribute by the geometric average of the sum of the attributes of the incident edges of the incident nodes.
 
@@ -6802,15 +6789,26 @@ cdef class GeometricMeanScore(EdgeScore):
 	a : vector[double]
 		Edge attribute that shall be normalized.
 	"""
+	cdef _GeometricMeanAttributizer* _this
+	cdef Graph _G
 	cdef vector[double] _attribute
 
 	def __cinit__(self, Graph G, vector[double] attribute):
 		self._G = G
 		self._attribute = attribute
-		self._this = new _GeometricMeanScore(G._this, self._attribute)
+		self._this = new _GeometricMeanAttributizer(G._this, self._attribute)
 
-	cdef bool isDoubleValue(self):
-		return True
+	def __dealloc__(self):
+		del self._this
+
+	def getAttribute(self):
+		"""
+		Returns
+		-------
+		vector[double]
+			The edge attribute that contains the normalized attribute.
+		"""
+		return self._this.getAttribute()
 
 cdef extern from "cpp/edgescores/EdgeAttributeAsWeight.h":
 	cdef cppclass _EdgeAttributeAsWeight "NetworKit::EdgeAttributeAsWeight":
@@ -7200,11 +7198,12 @@ cdef class LocalFilterScore(EdgeScore):
 	cdef bool isDoubleValue(self):
 		return True
 
-cdef extern from "cpp/sparsification/ChanceCorrectedTriangleScore.h":
-	cdef cppclass _ChanceCorrectedTriangleScore "NetworKit::ChanceCorrectedTriangleScore"(_EdgeScore):
-		_ChanceCorrectedTriangleScore(const _Graph& G, const vector[count]& triangles) except +
+cdef extern from "cpp/sparsification/ChanceCorrectedTriangleAttributizer.h":
+	cdef cppclass _ChanceCorrectedTriangleAttributizer "NetworKit::ChanceCorrectedTriangleAttributizer":
+		_ChanceCorrectedTriangleAttributizer(const _Graph& G, const vector[count]& triangles) except +
+		vector[double] getAttribute() except +
 
-cdef class ChanceCorrectedTriangleScore(EdgeScore):
+cdef class ChanceCorrectedTriangleAttributizer:
 	"""
 	Divide the number of triangles per edge by the expected number of triangles given a random edge distribution.
 
@@ -7215,15 +7214,29 @@ cdef class ChanceCorrectedTriangleScore(EdgeScore):
 	triangles : vector[count]
 		Triangle count.
 	"""
+	cdef _ChanceCorrectedTriangleAttributizer* _this
+	cdef Graph _G
 	cdef vector[count] _triangles
 
 	def __cinit__(self, Graph G, vector[count] triangles):
 		self._G = G
 		self._triangles = triangles
-		self._this = new _ChanceCorrectedTriangleScore(G._this, self._triangles)
+		self._this = new _ChanceCorrectedTriangleAttributizer(G._this, self._triangles)
 
-	cdef bool isDoubleValue(self):
-		return True
+	def __dealloc__(self):
+		del self._this
+
+	def getAttribute(self):
+		"""
+		Gets the edge attribute that can be used for global filtering.
+
+		Returns
+		-------
+		vector[double]
+			The edge attribute that contains the adamic adar similarity.
+
+		"""
+		return self._this.getAttribute()
 
 cdef extern from "cpp/sparsification/SCANStructuralSimilarityScore.h":
 	cdef cppclass _SCANStructuralSimilarityScore "NetworKit::SCANStructuralSimilarityScore"(_EdgeScore[double]):
@@ -7240,11 +7253,12 @@ cdef class SCANStructuralSimilarityScore(EdgeScore):
 	cdef bool isDoubleValue(self):
 		return True
 
-cdef extern from "cpp/sparsification/NodeNormalizedTriangleScore.h":
-	cdef cppclass _NodeNormalizedTriangleScore "NetworKit::NodeNormalizedTriangleScore"(_EdgeScore):
-		_NodeNormalizedTriangleScore(_Graph G, const vector[count]& triangles) except +
+cdef extern from "cpp/sparsification/NodeNormalizedTriangleAttributizer.h":
+	cdef cppclass _NodeNormalizedTriangleAttributizer "NetworKit::NodeNormalizedTriangleAttributizer":
+		_NodeNormalizedTriangleAttributizer(_Graph G, const vector[count]& triangles) except +
+		vector[double] getAttribute() except +
 
-cdef class NodeNormalizedTriangleScore(EdgeScore):
+cdef class NodeNormalizedTriangleAttributizer:
 	"""
 	Divide the number of triangles per edge by the average number of triangles of the incident nodes.
 
@@ -7255,15 +7269,29 @@ cdef class NodeNormalizedTriangleScore(EdgeScore):
 	triangles : vector[count]
 		Triangle count.
 	"""
+	cdef _NodeNormalizedTriangleAttributizer* _this
+	cdef Graph _G
 	cdef vector[count] _triangles
 
 	def __cinit__(self, Graph G, vector[count] triangles):
 		self._G = G
 		self._triangles = triangles
-		self._this = new _NodeNormalizedTriangleScore(G._this, self._triangles)
+		self._this = new _NodeNormalizedTriangleAttributizer(G._this, self._triangles)
 
-	cdef bool isDoubleValue(self):
-		return True
+	def __dealloc__(self):
+		del self._this
+
+	def getAttribute(self):
+		"""
+		Gets the edge attribute that can be used for global filtering.
+
+		Returns
+		-------
+		vector[double]
+			The edge attribute that contains triangle count normalized by average number of triangles of the incident nodes.
+
+		"""
+		return self._this.getAttribute()
 
 cdef extern from "cpp/sparsification/GlobalThresholdFilter.h":
 	cdef cppclass _GlobalThresholdFilter "NetworKit::GlobalThresholdFilter":
