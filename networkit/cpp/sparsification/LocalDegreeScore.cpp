@@ -6,7 +6,7 @@
  */
 
 #include "LocalDegreeScore.h"
-#include "LocalSimilarityAttributizer.h"
+#include "LocalSimilarityScore.h"
 
 namespace NetworKit {
 

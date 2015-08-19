@@ -13,7 +13,7 @@
 #include "../../edgescores/PrefixJaccardCoefficient.h"
 #include "../SimmelianOverlapScore.h"
 #include "../MultiscaleScore.h"
-#include "../LocalSimilarityAttributizer.h"
+#include "../LocalSimilarityScore.h"
 #include "../RandomEdgeScore.h"
 #include "../GlobalThresholdFilter.h"
 #include "../../io/METISGraphReader.h"
@@ -112,8 +112,9 @@ TEST_F(BackboneBenchmark, completeGraphLocalSimilarityBackbone) {
 	ChibaNishizekiTriangleCounter counter(G);
 	std::vector<count> triangles = counter.getAttribute();
 
-	LocalSimilarityAttributizer attributizer(G, triangles);
-	auto attribute = attributizer.getAttribute();
+	LocalSimilarityScore localSimScore(G, triangles);
+	localSimScore.run();
+	auto attribute = localSimScore.scores();
 
 	runtime.stop();
 	INFO("[DONE] LocalSimilarityBackbone (" , runtime.elapsed().count() , " ms)");
@@ -207,8 +208,9 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	// --------- Local similarity Backbone
 	std::cout << "[BEGIN] Local Similarity attribute: " << std::endl;
 	runtime.start();
-	LocalSimilarityAttributizer localSimAttributizer(g, triangles);
-	std::vector<double> minExponent = localSimAttributizer.getAttribute();
+	LocalSimilarityScore localSimScore(g, triangles);
+	localSimScore.run();
+	std::vector<double> minExponent = localSimScore.scores();
 	runtime.stop();
 	std::cout << "[DONE] Local Similarity attribute " << runtime.elapsedTag() << std::endl;
 

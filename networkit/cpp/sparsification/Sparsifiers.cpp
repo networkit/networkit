@@ -10,7 +10,7 @@
 #include "../edgescores/PrefixJaccardCoefficient.h"
 #include "SimmelianOverlapScore.h"
 #include "MultiscaleScore.h"
-#include "LocalSimilarityAttributizer.h"
+#include "LocalSimilarityScore.h"
 #include "RandomEdgeScore.h"
 #include "GlobalThresholdFilter.h"
 
@@ -89,8 +89,9 @@ void LocalSimilarityBackbone::run() {
 	ChibaNishizekiTriangleCounter triangleCounter(inputGraph);
 	std::vector<count> triangles = triangleCounter.getAttribute();
 
-	LocalSimilarityAttributizer localSimAttributizer(inputGraph, triangles);
-	std::vector<double> minExponent = localSimAttributizer.getAttribute();
+	LocalSimilarityScore localSimScore(inputGraph, triangles);
+	localSimScore.run();
+	std::vector<double> minExponent = localSimScore.scores();
 
 	GlobalThresholdFilter filter(inputGraph, minExponent, e, true);
 	outputGraph = filter.calculate();

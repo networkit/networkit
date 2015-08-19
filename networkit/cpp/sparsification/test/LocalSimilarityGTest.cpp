@@ -9,7 +9,7 @@
 
 #include "LocalSimilarityGTest.h"
 
-#include "../LocalSimilarityAttributizer.h"
+#include "../LocalSimilarityScore.h"
 #include "../../edgescores/ChibaNishizekiTriangleCounter.h"
 
 
@@ -26,8 +26,10 @@ TEST_F(LocalSimilarityGTest, testAttributeSimple) {
 
 	ChibaNishizekiTriangleCounter triangleCounter(g);
 	std::vector<count> triangles = triangleCounter.getAttribute();
-	LocalSimilarityAttributizer localSim(g, triangles);
-	std::vector<double> exp = localSim.getAttribute();
+
+	LocalSimilarityScore localSim(g, triangles);
+	localSim.run();
+	std::vector<double> exp = localSim.scores();
 
 	EXPECT_DOUBLE_EQ(1.0, exp[g.edgeId(0, 1)]);
 	EXPECT_NEAR(0.36907025, exp[g.edgeId(0, 2)], 1e-7);

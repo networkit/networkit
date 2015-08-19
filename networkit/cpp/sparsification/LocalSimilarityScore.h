@@ -1,14 +1,14 @@
 /*
- * LocalSimilarityAttributizer.h
+ * LocalSimilarityScore.h
  *
  *  Created on: 26.07.2014
  *      Author: Gerd Lindner
  */
 
-#ifndef LOCALSIMATTRIBUTIZER_H_
-#define LOCALSIMATTRIBUTIZER_H_
+#ifndef LOCALSIMSCORE_H_
+#define LOCALSIMSCORE_H_
 
-#include "../edgescores/EdgeAttribute.h"
+#include "../edgescores/EdgeScore.h"
 
 namespace NetworKit {
 
@@ -47,23 +47,20 @@ struct greater {
 /**
  * Implementation of the Local Sparsification Algorithm by Sataluri et al.
  */
-class LocalSimilarityAttributizer : public EdgeAttribute<double> {
+class LocalSimilarityScore : public EdgeScore<double> {
 
 public:
 
-	/**
-	 * Creates a new instance of the Local Sparsification algorithm.
-	 */
-	LocalSimilarityAttributizer(const Graph &graph, const std::vector<count>& triangles);
-
-	virtual std::vector<double> getAttribute() override;
+	LocalSimilarityScore(const Graph& G, const std::vector<count>& triangles);
+	virtual double score(edgeid eid) override;
+	virtual double score(node u, node v) override;
+	virtual void run() override;
 
 private:
-	const Graph& graph;
 	const std::vector<count>& triangles;
 };
 
 }
 /* namespace NetworKit */
 
-#endif /* LOCALSIMATTRIBUTIZER_H_ */
+#endif /* LOCALSIMSCORE_H_ */
