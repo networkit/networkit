@@ -4,6 +4,7 @@
 #
 
 import multiprocessing
+from collections import deque
 
 
 def numberOfProcessors():
@@ -67,36 +68,57 @@ class ThreadPool():
 				pass
 		pool.join()
 	"""
-
-	def __init__(self, numberOfWorkers):
+	def __init__(self, numberOfWorkers, isParallel=True):
 		self.__numberOfWorkers = numberOfWorkers
 		self.__numberOfTasks = 0
-		self.__tasks = multiprocessing.JoinableQueue()
-		self.__results = multiprocessing.Queue()
-		self.__workers = [Worker(self.__tasks, self.__results) for i in range(self.__numberOfWorkers)]
-		for w in self.__workers:
-			w.deamon = True
-			w.start()
+		self.__isParallel = isParallel
+		if self.__isParallel:
+			self.__tasks = multiprocessing.JoinableQueue()
+			self.__results = multiprocessing.Queue()
+			self.__workers = [Worker(self.__tasks, self.__results) for i in range(self.__numberOfWorkers)]
+			for w in self.__workers:
+				w.deamon = True
+				w.start()
+		else:
+			self.__tasks = deque()
 
 
 	def numberOfTasks(self):
 		""" Current number of unfinished tasks """
 		return self.__numberOfTasks
 
+		
+	def numberOfWorkers(self):
+		""" Initilized number of workers """
+		return self.__numberOfWorkers
+		
 
 	def put(self, task):
 		""" Assign a task """
-		self.__tasks.put(task)
+		if self.__isParallel:
+			self.__tasks.put(task)
+		else:
+			self.__tasks.append(task)
 		self.__numberOfTasks += 1
 
 
 	def get(self):
-		result = self.__results.get()
+		if self.__isParallel:
+			result = self.__results.get()
+		else:
+			task = self.__tasks.popleft()
+			try:
+				data = task.run()
+			except Exception as e:
+				print("Error: " + task.getType() + " - " + task.getName(), flush=True)
+				print(str(e), flush=True)
+			result = (task.getType(), task.getName(), data)
 		self.__numberOfTasks -= 1
 		return result;
 
 
 	def join(self):
-		for i in range(self.__numberOfWorkers):
-			self.__tasks.put(None)
-		self.__tasks.join()
+		if self.__isParallel:
+			for i in range(self.__numberOfWorkers):
+				self.__tasks.put(None)
+			self.__tasks.join()
