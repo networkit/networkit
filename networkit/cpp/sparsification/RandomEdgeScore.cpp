@@ -23,6 +23,7 @@ void RandomEdgeScore::run() {
 		//scoreData[eid] = randomness * r + (1 - randomness) * attribute[eid];
 		scoreData[eid] = Aux::Random::probability();
 	});
+	hasRun = true;
 }
 
 double RandomEdgeScore::score(node u, node v) {
