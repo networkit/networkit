@@ -12,7 +12,7 @@ class Test_Sparsification(unittest.TestCase):
 			sparsification.SimmelianBackboneParametric(10),
 			sparsification.SimmelianBackboneNonParametric(),
 			sparsification.QuadrilateralSimmelianBackbone(),
-			sparsification.DegreeMultiscaleBackbone(0),
+			sparsification.DegreeMultiscaleBackbone(lambda d1, d2: max(d1,d2)),
 			sparsification.SimmelianMultiscaleBackbone(),
 			sparsification.LocalSimilarityBackbone(),
 			sparsification.MultiscaleBackbone(),
