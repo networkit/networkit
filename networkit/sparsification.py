@@ -3,7 +3,7 @@
 __author__ = "Gerd Lindner"
 
 from _NetworKit import ChibaNishizekiTriangleCounter, GlobalThresholdFilter, LocalSimilarityScore, MultiscaleScore, SimmelianOverlapScore, RandomEdgeScore, LocalDegreeScore, ForestFireScore, \
-	EdgeAttributeAsWeight, EdgeAttributeLinearizer, JaccardSimilarityAttributizer, LocalFilterScore, AdamicAdarDistance, ChanceCorrectedTriangleScore, NodeNormalizedTriangleScore, TriangleCounter, RandomNodeEdgeScore, ChungLuScore, ChibaNishizekiQuadrangleCounter, GeometricMeanScore, \
+	EdgeAttributeAsWeight, EdgeAttributeLinearizer, JaccardSimilarityScore, LocalFilterScore, AdamicAdarDistance, ChanceCorrectedTriangleScore, NodeNormalizedTriangleScore, TriangleCounter, RandomNodeEdgeScore, ChungLuScore, ChibaNishizekiQuadrangleCounter, GeometricMeanScore, \
 	EdgeAttributeNormalizer, EdgeAttributeBlender, PrefixJaccardCoefficient, SCANStructuralSimilarityScore
 
 # local imports
@@ -15,7 +15,7 @@ class Sparsifier(object):
 	""" Abstract base class representing a graph sparsification algorithm that
 	uses only one parameter to determine the degree of filtering. """
 
-	def getAttribute(self, G):
+	def scores(self, G):
 		""" Returns an edge attribute. (To be implemented by derived class)
 
 		Keyword arguments:
@@ -50,7 +50,7 @@ class Sparsifier(object):
 		"""
 
 		if attribute is None:
-			attribute = self.getAttribute(G)
+			attribute = self.scores(G)
 
 		return self._getSparsifiedGraph(G, parameter, attribute)
 
@@ -66,7 +66,7 @@ class Sparsifier(object):
 		we will try to calculate it.
 		"""
 		if attribute is None:
-			attribute = self.getAttribute(G)
+			attribute = self.scores(G)
 
 		parameter = self.getParameter(G, edgeRatio, attribute)
 
@@ -77,7 +77,7 @@ class Sparsifier(object):
 		algorithm (if available) to obtain a parameter value that yields a sparsified
 		graph of the desired size. """
 		if attribute is None:
-			attribute = self.getAttribute(G)
+			attribute = self.scores(G)
 
 		paramAlgorithm = self._getParameterizationAlgorithm()
 		parameter = paramAlgorithm.parameterize(self, G, attribute, edgeRatio)
@@ -127,8 +127,8 @@ class BinarySearchParameterization:
 
 		for i in range(0, self.maxSteps):
 			estimation = (lowerBound + upperBound) / 2.0
-			backbone = algorithm._getSparsifiedGraph(G, estimation, attribute)
-			currentEdgeRatio = backbone.numberOfEdges() / G.numberOfEdges()
+			sparsified = algorithm._getSparsifiedGraph(G, estimation, attribute)
+			currentEdgeRatio = sparsified.numberOfEdges() / G.numberOfEdges()
 
 			distance = abs(currentEdgeRatio - edgeRatio)
 
@@ -171,8 +171,8 @@ class CompleteSearchParameterization:
 		minDistance = 100.0
 
 		for i in range(self.lowerParameterBound, self.upperParameterBound + 1):
-			backbone = algorithm._getSparsifiedGraph(G, i, attribute)
-			currentEdgeRatio = backbone.numberOfEdges() / G.numberOfEdges()
+			sparsified = algorithm._getSparsifiedGraph(G, i, attribute)
+			currentEdgeRatio = sparsified.numberOfEdges() / G.numberOfEdges()
 
 			distance = abs(currentEdgeRatio - edgeRatio)
 			if distance < minDistance and abs(currentEdgeRatio) > _ABS_ZERO:
@@ -208,15 +208,15 @@ def getRankAttribute(attribute, reverse = False):
 
 	return result
 
-class SimmelianBackboneParametric(Sparsifier):
+class SimmelianSparsifierParametric(Sparsifier):
 
-	""" An implementation of the Parametric variant of the Simmelian Backbones
+	""" An implementation of the Parametric variant of the Simmelian Sparsifiers
 	 introduced by Nick et al. """
 
 	def __init__(self, maxRank):
 		self.maxRank = maxRank
 
-	def getAttribute(self, G):
+	def scores(self, G):
 		""" Returns an edge attribute that holds for each edge the minimum parameter value
 		such that the edge is contained in the sparsified graph.
 
@@ -225,7 +225,7 @@ class SimmelianBackboneParametric(Sparsifier):
 		"""
 
 		chiba = ChibaNishizekiTriangleCounter(G)
-		triangles = chiba.getAttribute()
+		triangles = chiba.scores()
 
 		simmelianOverlap = SimmelianOverlapScore(G, triangles, self.maxRank)
 		simmelianOverlap.run()
@@ -238,12 +238,12 @@ class SimmelianBackboneParametric(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		return CompleteSearchParameterization(0, self.maxRank)
 
-class SimmelianBackboneNonParametric(Sparsifier):
+class SimmelianSparsifierNonParametric(Sparsifier):
 
-	""" An implementation of the Non-parametric variant of the Simmelian Backbones
+	""" An implementation of the Non-parametric variant of the Simmelian Sparsifiers
 	introduced by Nick et al. """
 
-	def getAttribute(self, G):
+	def scores(self, G):
 		""" Returns an edge attribute that holds for each edge the minimum jaccard filter value
 		such that the edge is contained in the sparsified graph.
 
@@ -252,8 +252,13 @@ class SimmelianBackboneNonParametric(Sparsifier):
 		"""
 
 		chiba = ChibaNishizekiTriangleCounter(G)
+<<<<<<< dest
 		triangles = chiba.getAttribute()
 		a_sj = PrefixJaccardCoefficient(G, triangles).run().scores()
+=======
+		triangles = chiba.scores()
+		a_sj = PrefixJaccardCoefficient(G, triangles).run().scores()
+>>>>>>> source
 		return a_sj
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
@@ -263,17 +268,17 @@ class SimmelianBackboneNonParametric(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
-class QuadrilateralSimmelianBackbone(Sparsifier):
-	""" An implementation of the Simmelian Backbones based on quadrangles. """
+class QuadrilateralSimmelianSparsifier(Sparsifier):
+	""" An implementation of the Simmelian Sparsifiers based on quadrangles. """
 
-	def getAttribute(self, G):
+	def scores(self, G):
 		"""
 		Returns an edge scoring attribute that can be used for global filtering.
 
 		Keyword arguments:
 		G -- the input graph
 		"""
-		quadrangles = ChibaNishizekiQuadrangleCounter(G).getAttribute()
+		quadrangles = ChibaNishizekiQuadrangleCounter(G).scores()
 		meanQuadrangles = GeometricMeanScore(G, quadrangles).run().scores()
 		quadranglePrefixJaccard = PrefixJaccardCoefficient(G, meanQuadrangles).run().scores()
 		return quadranglePrefixJaccard
@@ -285,11 +290,11 @@ class QuadrilateralSimmelianBackbone(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
-class SimmelianMultiscaleBackbone(Sparsifier):
+class SimmelianMultiscaleSparsifier(Sparsifier):
 
-	""" Multiscale Backbone that uses triangle counts as input edge weight. """
+	""" Multiscale Sparsifier that uses triangle counts as input edge weight. """
 
-	def getAttribute(self, G):
+	def scores(self, G):
 		""" Returns an edge attribute that holds for each edge the maximum parameter value
 		such that the edge is contained in the sparsified graph.
 
@@ -298,7 +303,7 @@ class SimmelianMultiscaleBackbone(Sparsifier):
 		"""
 
 		chiba = ChibaNishizekiTriangleCounter(G)
-		triangles = chiba.getAttribute()
+		triangles = chiba.scores()
 		ms = MultiscaleScore(G, triangles)
 		ms.run()
 		a_ms = ms.scores()
@@ -311,8 +316,8 @@ class SimmelianMultiscaleBackbone(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
-class DegreeMultiscaleBackbone(Sparsifier):
-	""" Multiscale Backbone that uses node degrees (mapped to edges) as input edge weight. """
+class DegreeMultiscaleSparsifier(Sparsifier):
+	""" Multiscale Sparsifier that uses node degrees (mapped to edges) as input edge weight. """
 
 	def __init__(self, degsToAttrValue):
 		"""
@@ -322,7 +327,7 @@ class DegreeMultiscaleBackbone(Sparsifier):
 		"""
 		self.degsToAttrValue = degsToAttrValue
 
-	def getAttribute(self, G):
+	def scores(self, G):
 		""" Returns an edge attribute that holds for each edge the maximum parameter value
 		such that the edge is contained in the sparsified graph.
 
@@ -346,11 +351,11 @@ class DegreeMultiscaleBackbone(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
-class LocalSimilarityBackbone(Sparsifier):
+class LocalSimilaritySparsifier(Sparsifier):
 
 	""" An implementation of the Local Similarity sparsification approach introduced by Satuluri et al. """
 
-	def getAttribute(self, G):
+	def scores(self, G):
 		""" Returns an edge attribute that holds for each edge the minimum parameter value
 		such that the edge is contained in the sparsified graph.
 
@@ -359,7 +364,7 @@ class LocalSimilarityBackbone(Sparsifier):
 		"""
 
 		chiba = ChibaNishizekiTriangleCounter(G)
-		triangles = chiba.getAttribute()
+		triangles = chiba.scores()
 		localSimScore = LocalSimilarityScore(G, triangles)
 		localSimScore.run()
 		return localSimScore.scores()
@@ -371,11 +376,11 @@ class LocalSimilarityBackbone(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
-class MultiscaleBackbone(Sparsifier):
+class MultiscaleSparsifier(Sparsifier):
 
 	""" An implementation of the Multiscale backbone approach introduced by Serrano et al. """
 
-	def getAttribute(self, G):
+	def scores(self, G):
 		""" Returns an edge attribute that holds for each edge the minimum parameter value
 		such that the edge is contained in the sparsified graph.
 
@@ -400,11 +405,11 @@ class MultiscaleBackbone(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
-class RandomEdgeBackbone(Sparsifier):
+class RandomEdgeSparsifier(Sparsifier):
 
-	""" Random Edge sampling. Edges to keep in the backbone are selected uniformly at random. """
+	""" Random Edge sampling. Edges to keep in the sparsified graph are selected uniformly at random. """
 
-	def getAttribute(self, G):
+	def scores(self, G):
 		""" Returns an edge attribute that holds for each edge the minimum parameter value
 		such that the edge is contained in the sparsified graph.
 
@@ -423,13 +428,13 @@ class RandomEdgeBackbone(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		return SimpleParameterization()
 
-class RandomNodeEdgeBackbone(Sparsifier):
+class RandomNodeEdgeSparsifier(Sparsifier):
 	""" [TODO not yet documented] """
 
 	def __init__(self, above = True):
 		self.above = above
 
-	def getAttribute(self, G):
+	def scores(self, G):
 		""" Returns an edge attribute that holds for each edge the minimum parameter value
 		such that the edge is contained in the sparsified graph.
 
@@ -448,12 +453,12 @@ class RandomNodeEdgeBackbone(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization((not self.above), 0.0, 1.0, 20)
 
-class ForestFireBackbone(Sparsifier):
+class ForestFireSparsifier(Sparsifier):
 
 	""" A variant of the Forest Fire sparsification approach proposed by Leskovec et al. """
 
 	def __init__(self, burnProbability, targetBurntRatio):
-		""" Creates a new instance of the Edge Forest Fire backbone algorithm.
+		""" Creates a new instance of the Edge Forest Fire sparsification algorithm.
 
 		Keyword arguments:
 		burnProbability -- the probability that the neighbor of a burnt node gets burnt as well.
@@ -462,7 +467,7 @@ class ForestFireBackbone(Sparsifier):
 		self.burnProbability = burnProbability
 		self.targetBurntRatio = targetBurntRatio
 
-	def getAttribute(self, G):
+	def scores(self, G):
 		""" Returns an edge attribute that holds for each edge the maximum parameter value
 		such that the edge is contained in the sparsified graph.
 
@@ -485,7 +490,7 @@ class LocalDegreeSparsifier(Sparsifier):
 
 	""" An implementation of the Local Degree sparsification algorithm. """
 
-	def getAttribute(self, G):
+	def scores(self, G):
 		""" Returns an edge score that holds for each edge the minimum parameter value
 		such that the edge is contained in the sparsified graph.
 
@@ -505,11 +510,11 @@ class LocalDegreeSparsifier(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
-class SCANBackbone(Sparsifier):
+class SCANSparsifier(Sparsifier):
 
 	""" A sparsifiier dervived from 'SCAN: a structural clustering algorithm for networks' """
 
-	def getAttribute(self, G):
+	def scores(self, G):
 		""" Returns an edge attribute that holds for each edge the minimum parameter value
 		such that the edge is contained in the sparsified graph.
 
@@ -518,7 +523,7 @@ class SCANBackbone(Sparsifier):
 		"""
 
 		chiba = ChibaNishizekiTriangleCounter(G)
-		a_triangles = chiba.getAttribute()
+		a_triangles = chiba.scores()
 
 		scanScore = SCANStructuralSimilarityScore(G, a_triangles)
 		scanScore.run()
@@ -532,13 +537,13 @@ class SCANBackbone(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
-class TriangleBackbone(Sparsifier):
+class TriangleSparsifier(Sparsifier):
 	"""  Allows for global filtering with respect to triangle counts. """
 
-	def getAttribute(self, G):
+	def scores(self, G):
 		""" Returns the triangle counts of the input graph. """
 		attributizer_t = TriangleCounter(G)
-		a_t = attributizer_t.getAttribute()
+		a_t = attributizer_t.scores()
 		return a_t
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
@@ -548,11 +553,11 @@ class TriangleBackbone(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		raise NotImplementedError("parameterization method not yet implemented.")
 
-class ModularityPartitionAttributizer():
+class ModularityPartitionScore():
 
 	"""  """
 
-	def getAttribute(self, G):
+	def scores(self, G):
 		""" Returns an edge attribute that holds for each edge the minimum parameter value
 		such that the edge is contained in the sparsified graph.
 
@@ -576,7 +581,7 @@ class ModularityPartitionAttributizer():
 			edgeScores[G.edgeId(u, v)] = together(u, v)
 		return edgeScores
 
-class ConstantAttributizer():
+class ConstantScore():
 	""" Assigns as an attribute the same value to each edge (for sanity checks) """
 
 	def __init__(self, constValue = 1.0):
@@ -585,7 +590,7 @@ class ConstantAttributizer():
 		"""
 		self.constValue = constValue
 
-	def getAttribute(self, G):
+	def scores(self, G):
 		""" Returns an edge attribute that holds for each edge the constant value given
 		in the constructor.
 		"""
