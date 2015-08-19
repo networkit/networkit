@@ -6612,44 +6612,30 @@ cdef class TriangleEdgeScore(EdgeScore):
 	cdef bool isDoubleValue(self):
 		return False
 
-cdef extern from "cpp/edgescores/EdgeAttributeLinearizer.h":
-	cdef cppclass _EdgeAttributeLinearizer "NetworKit::EdgeAttributeLinearizer":
-		_EdgeAttributeLinearizer(const _Graph& G, const vector[double]& attribute, bool inverse) except +
-		vector[double] getAttribute() except +
+cdef extern from "cpp/edgescores/EdgeScoreLinearizer.h":
+	cdef cppclass _EdgeScoreLinearizer "NetworKit::EdgeScoreLinearizer"(_EdgeScore):
+		_EdgeScoreLinearizer(const _Graph& G, const vector[double]& attribute, bool inverse) except +
 
-cdef class EdgeAttributeLinearizer:
+cdef class EdgeScoreLinearizer(EdgeScore):
 	"""
-	Linearizes an attribute such that values are evenly distributed between 0 and 1.
+	Linearizes a score such that values are evenly distributed between 0 and 1.
 
 	Parameters
 	----------
 	G : Graph
 		The input graph.
 	a : vector[double]
-		Edge attribute that shall be linearized.
+		Edge score that shall be linearized.
 	"""
-	cdef _EdgeAttributeLinearizer* _this
-	cdef Graph _G
-	cdef vector[double] _attribute
+	cdef vector[double] _score
 
-	def __cinit__(self, Graph G, vector[double] attribute, inverse = False):
+	def __cinit__(self, Graph G, vector[double] score, inverse = False):
 		self._G = G
-		self._attribute = attribute
-		self._this = new _EdgeAttributeLinearizer(G._this, self._attribute, inverse)
+		self._score = score
+		self._this = new _EdgeScoreLinearizer(G._this, self._score, inverse)
 
-	def __dealloc__(self):
-		del self._this
-
-	def getAttribute(self):
-		"""
-		Gets the edge attribute that can be used for global filtering.
-
-		Returns
-		-------
-		vector[double]
-			The edge attribute that contains the linearized attribute.
-		"""
-		return self._this.getAttribute()
+	cdef bool isDoubleValue(self):
+		return True
 
 
 cdef extern from "cpp/edgescores/EdgeAttributeNormalizer.h":
