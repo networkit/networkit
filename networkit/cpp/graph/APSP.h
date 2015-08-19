@@ -9,7 +9,7 @@
 #define APSP_H_
 
 #include "Graph.h"
-
+#include "../base/Algorithm.h"
 
 namespace NetworKit {
 
@@ -17,7 +17,7 @@ namespace NetworKit {
  * @ingroup graph
  * Class for all-pair shortest path algorithm.
  */
-class APSP {
+class APSP: public Algorithm {
 
 public:
 
@@ -34,6 +34,11 @@ public:
 	void run();
 
 	/**
+	* @return string representation of algorithm and parameters.
+	*/
+	virtual std::string toString() const override;
+
+	/**
 	 * Returns a vector of weighted distances from the source node, i.e. the
  	 * length of the shortest path from the source node to any other node.
  	 *
@@ -47,6 +52,12 @@ public:
 	 *
 	 */
 	edgeweight getDistance(node u, node v) const { return distances[u][v];}
+
+	/**
+	* @return True if algorithm can run multi-threaded.
+	*/
+	virtual bool isParallel() const {return true;}
+
 
 protected:
 
