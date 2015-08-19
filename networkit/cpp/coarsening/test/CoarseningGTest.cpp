@@ -179,12 +179,12 @@ TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnRealGraphWithGraphBuild
 	ParallelPartitionCoarsening parCoarsening(G, random, true);
 	parCoarsening.run();
 	Graph Gpar = parCoarsening.getCoarseGraph();
-	EXPECT_EQ(k, Gpar.numberOfNodes());
+	EXPECT_EQ(random.numberOfSubsets(), Gpar.numberOfNodes());
 
 	ParallelPartitionCoarsening seqCoarsening(G, random, false);
 	seqCoarsening.run();
 	Graph Gseq = seqCoarsening.getCoarseGraph();
-	EXPECT_EQ(k, Gseq.numberOfNodes());
+	EXPECT_EQ(random.numberOfSubsets(), Gseq.numberOfNodes());
 
 	EXPECT_EQ(Gseq.numberOfEdges(), Gpar.numberOfEdges()) << "sequential and parallel coarsening should produce the same number of edges";
 
@@ -209,12 +209,12 @@ TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnRealGraphWithGraphBuild
 	ParallelPartitionCoarsening parCoarsening(G, random, true);
 	parCoarsening.run();
 	Graph Gpar = parCoarsening.getCoarseGraph();
-	EXPECT_EQ(k, Gpar.numberOfNodes());
+	EXPECT_EQ(random.numberOfSubsets(), Gpar.numberOfNodes());
 
 	ParallelPartitionCoarsening seqCoarsening(G, random, false);
 	seqCoarsening.run();
 	Graph Gseq = seqCoarsening.getCoarseGraph();
-	EXPECT_EQ(k, Gseq.numberOfNodes());
+	EXPECT_EQ(random.numberOfSubsets(), Gseq.numberOfNodes());
 
 	EXPECT_EQ(Gseq.numberOfEdges(), Gpar.numberOfEdges()) << "sequential and parallel coarsening should produce the same number of edges";
 
