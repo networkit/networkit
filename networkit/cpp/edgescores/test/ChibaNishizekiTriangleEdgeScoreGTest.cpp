@@ -1,5 +1,5 @@
 /*
- * ChibaNishizekiCounterGTest.cpp
+ * ChibaNishizekiEdgeScoreGTest.cpp
  *
  *  Created on: 23.05.2014
  *      Author: Gerd Lindner
@@ -7,14 +7,14 @@
 
 #ifndef NOGTEST
 
-#include "ChibaNishizekiTriangleCounterGTest.h"
+#include "ChibaNishizekiTriangleEdgeScoreGTest.h"
 
-#include "../ChibaNishizekiTriangleCounter.h"
+#include "../ChibaNishizekiTriangleEdgeScore.h"
 #include "../TriangleCounter.h"
 
 namespace NetworKit {
 
-TEST_F(ChibaNishizekiTriangleCounterGTest, testTriangleCountsTrivial) {
+TEST_F(ChibaNishizekiTriangleEdgeScoreGTest, testTriangleCountsTrivial) {
 	Graph g(5);
 
 	g.addEdge(0,1);
@@ -23,15 +23,16 @@ TEST_F(ChibaNishizekiTriangleCounterGTest, testTriangleCountsTrivial) {
 
 	g.indexEdges();
 
-	ChibaNishizekiTriangleCounter counter(g);
-	std::vector<count> counts = counter.getAttribute();
+	ChibaNishizekiTriangleEdgeScore counter(g);
+	counter.run();
+	std::vector<count> counts = counter.scores();
 
 	EXPECT_EQ(1, (counts[g.edgeId(0,1)])) << "wrong triangle count";
 	EXPECT_EQ(1, (counts[g.edgeId(0,2)])) << "wrong triangle count";
 	EXPECT_EQ(1, (counts[g.edgeId(1,2)])) << "wrong triangle count";
 }
 
-TEST_F(ChibaNishizekiTriangleCounterGTest, testNewTriangleCountsTrivial) {
+TEST_F(ChibaNishizekiTriangleEdgeScoreGTest, testNewTriangleCountsTrivial) {
 	Graph g(5);
 
 	g.addEdge(0,1);
@@ -51,7 +52,7 @@ TEST_F(ChibaNishizekiTriangleCounterGTest, testNewTriangleCountsTrivial) {
 }
 
 
-TEST_F(ChibaNishizekiTriangleCounterGTest, testTriangleCountsSimple) {
+TEST_F(ChibaNishizekiTriangleEdgeScoreGTest, testTriangleCountsSimple) {
 	int64_t n = 6;
 	Graph g(n);
 
@@ -70,8 +71,9 @@ TEST_F(ChibaNishizekiTriangleCounterGTest, testTriangleCountsSimple) {
 
 	EXPECT_EQ(8, g.numberOfEdges()) << "wrong edge count";
 
-	ChibaNishizekiTriangleCounter counter(g);
-	std::vector<count> counts = counter.getAttribute();
+	ChibaNishizekiTriangleEdgeScore counter(g);
+	counter.run();
+	std::vector<count> counts = counter.scores();
 
 	EXPECT_EQ(6, g.numberOfNodes()) << "undesired side effect";
 	EXPECT_EQ(8, g.numberOfEdges()) << "undesired side effect";
@@ -100,7 +102,7 @@ TEST_F(ChibaNishizekiTriangleCounterGTest, testTriangleCountsSimple) {
 	EXPECT_EQ(1, (counts[g.edgeId(5,4)])) << "wrong triangle count";
 }
 
-TEST_F(ChibaNishizekiTriangleCounterGTest, testNewTriangleCountsSimple) {
+TEST_F(ChibaNishizekiTriangleEdgeScoreGTest, testNewTriangleCountsSimple) {
 	int64_t n = 6;
 	Graph g(n);
 

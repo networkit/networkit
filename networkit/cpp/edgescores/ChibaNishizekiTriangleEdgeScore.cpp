@@ -1,18 +1,20 @@
 /*
- * ChibaNishizekiQuadrangleCounter.cpp
+ * ChibaNishizekiTriangleEdgeScore.cpp
  *
- *  Created on: 18.11.2014
- *      Author: Michael Hamann, Gerd Lindner
+ *  Created on: 22.05.2014
+ *      Author: Gerd Lindner
  */
 
-#include "ChibaNishizekiQuadrangleCounter.h"
+#include "ChibaNishizekiTriangleEdgeScore.h"
+#include "../auxiliary/Log.h"
+#include "../auxiliary/Timer.h"
 
 namespace NetworKit {
 
-ChibaNishizekiQuadrangleCounter::ChibaNishizekiQuadrangleCounter(const Graph& G) : G(G) {
+ChibaNishizekiTriangleEdgeScore::ChibaNishizekiTriangleEdgeScore(const Graph& G) : EdgeScore<count>(G) {
 }
 
-std::vector<count> NetworKit::ChibaNishizekiQuadrangleCounter::getAttribute() {
+void ChibaNishizekiTriangleEdgeScore::run() {
 	if (!G.hasEdgeIds()) {
 		throw std::runtime_error("edges have not been indexed - call indexEdges first");
 	}
@@ -28,10 +30,10 @@ std::vector<count> NetworKit::ChibaNishizekiQuadrangleCounter::getAttribute() {
 	});
 
 	//Node attribute: marker
-	std::vector<count> nodeMarker(G.upperNodeIdBound(), 0);
+	std::vector<edgeid> nodeMarker(G.upperNodeIdBound(), none);
 
 	//Edge attribute: triangle count
-	std::vector<count> quandrangleCount(G.upperEdgeIdBound(), 0);
+	scoreData.resize(G.upperEdgeIdBound(), 0);
 
 	// bucket sort
 	count n = G.numberOfNodes();
@@ -60,6 +62,12 @@ std::vector<count> NetworKit::ChibaNishizekiQuadrangleCounter::getAttribute() {
 	}
 
 	for (node u : sortedNodes) {
+		//Mark all neighbors
+		for (auto uv : edges[u]) {
+			nodeMarker[uv.first] = uv.second;
+		}
+
+		//For all neighbors: check for already marked neighbors.
 		for (auto uv : edges[u]) {
 			for (auto vw = edges[uv.first].begin(); vw != edges[uv.first].end(); ++vw) {
 				// delete the edge to u as we do not need to consider it again.
@@ -73,27 +81,28 @@ std::vector<count> NetworKit::ChibaNishizekiQuadrangleCounter::getAttribute() {
 						break;
 				}
 
-				++nodeMarker[vw->first];
-			}
-		}
+				if (nodeMarker[vw->first] != none) { // triangle found - count it!
+					edgeid eid_uw = nodeMarker[vw->first];
 
-		for (auto uv : edges[u]) {
-			for (auto vw : edges[uv.first]) {
-				if (nodeMarker[vw.first] > 1) {
-					quandrangleCount[uv.second] += nodeMarker[vw.first] - 1;
-					quandrangleCount[vw.second] += nodeMarker[vw.first] - 1;
+					++scoreData[uv.second];
+					++scoreData[eid_uw];
+					++scoreData[vw->second];
 				}
 			}
-		}
 
-		for (auto uv : edges[u]) {
-			for (auto vw : edges[uv.first]) {
-				nodeMarker[vw.first] = 0;
-			}
+			nodeMarker[uv.first] = none; // all triangles with u and v have been counted already
 		}
 	}
 
-	return quandrangleCount;
+	hasRun = true;
 }
 
-}/* namespace NetworKit */
+count ChibaNishizekiTriangleEdgeScore::score(node u, node v) {
+	throw std::runtime_error("Not implemented: Use scores() instead.");
+}
+
+count ChibaNishizekiTriangleEdgeScore::score(edgeid eid) {
+	throw std::runtime_error("Not implemented: Use scores() instead.");
+}
+
+} /* namespace NetworKit */

@@ -1,5 +1,5 @@
 /*
- * ChibaNishizekiCounterGTest.cpp
+ * ChibaNishizekiEdgeScoreGTest.cpp
  *
  *  Created on: 23.05.2014
  *      Author: Gerd Lindner
@@ -7,13 +7,13 @@
 
 #ifndef NOGTEST
 
-#include "ChibaNishizekiQuadrangleCounterGTest.h"
+#include "ChibaNishizekiQuadrangleEdgeScoreGTest.h"
 
-#include "../ChibaNishizekiQuadrangleCounter.h"
+#include "../ChibaNishizekiQuadrangleEdgeScore.h"
 
 namespace NetworKit {
 
-TEST_F(ChibaNishizekiQuadrangleCounterGTest, testQuadrangleCountsTrivial) {
+TEST_F(ChibaNishizekiQuadrangleEdgeScoreGTest, testQuadrangleCountsTrivial) {
 	Graph g(5);
 
 	g.addEdge(0,1);
@@ -23,8 +23,9 @@ TEST_F(ChibaNishizekiQuadrangleCounterGTest, testQuadrangleCountsTrivial) {
 
 	g.indexEdges();
 
-	ChibaNishizekiQuadrangleCounter counter(g);
-	std::vector<count> counts = counter.getAttribute();
+	ChibaNishizekiQuadrangleEdgeScore counter(g);
+	counter.run();
+	std::vector<count> counts = counter.scores();
 
 	EXPECT_EQ(1, (counts[g.edgeId(0,1)])) << "wrong quadrangle count";
 	EXPECT_EQ(1, (counts[g.edgeId(0,2)])) << "wrong quadrangle count";
@@ -34,7 +35,7 @@ TEST_F(ChibaNishizekiQuadrangleCounterGTest, testQuadrangleCountsTrivial) {
 	//TODO: edge ids for non-existing edges currently result in unexpected behaviour.
 }
 
-TEST_F(ChibaNishizekiQuadrangleCounterGTest, testQuadrangleCountsSimple) {
+TEST_F(ChibaNishizekiQuadrangleEdgeScoreGTest, testQuadrangleCountsSimple) {
 	count n = 7;
 	Graph g(n);
 
@@ -53,8 +54,9 @@ TEST_F(ChibaNishizekiQuadrangleCounterGTest, testQuadrangleCountsSimple) {
 
 	EXPECT_EQ(10, g.numberOfEdges()) << "wrong edge count";
 
-	ChibaNishizekiQuadrangleCounter counter(g);
-	std::vector<count> counts = counter.getAttribute();
+	ChibaNishizekiQuadrangleEdgeScore counter(g);
+	counter.run();
+	std::vector<count> counts = counter.scores();
 
 	EXPECT_EQ(7, g.numberOfNodes()) << "undesired side effect";
 	EXPECT_EQ(10, g.numberOfEdges()) << "undesired side effect";

@@ -11,7 +11,7 @@
 
 #include "../Sparsifiers.h"
 #include "../SimmelianOverlapScore.h"
-#include "../../edgescores/ChibaNishizekiTriangleCounter.h"
+#include "../../edgescores/ChibaNishizekiTriangleEdgeScore.h"
 
 namespace NetworKit {
 
@@ -73,8 +73,9 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhood) {
 	g.indexEdges();
 
 	//Apply triangle counting algorithm
-	ChibaNishizekiTriangleCounter counter(g);
-	std::vector<count> triangles = counter.getAttribute();
+	ChibaNishizekiTriangleEdgeScore counter(g);
+	counter.run();
+	std::vector<count> triangles = counter.scores();
 
 	//Actual test: ranked neighborhood
 	SimmelianOverlapScore simmel(g, triangles, 0);
@@ -114,8 +115,9 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhoodSkippedRanks) {
 	g.indexEdges();
 
 	//Apply triangle counting algorithm
-	ChibaNishizekiTriangleCounter counter(g);
-	std::vector<count> triangles = counter.getAttribute();
+	ChibaNishizekiTriangleEdgeScore counter(g);
+	counter.run();
+	std::vector<count> triangles = counter.scores();
 
 	//Actual test: ranked neighborhood
 	SimmelianOverlapScore simmel(g, triangles, 0);

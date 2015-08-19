@@ -6,7 +6,7 @@
  */
 
 #include "Sparsifiers.h"
-#include "../edgescores/ChibaNishizekiTriangleCounter.h"
+#include "../edgescores/ChibaNishizekiTriangleEdgeScore.h"
 #include "../edgescores/PrefixJaccardCoefficient.h"
 #include "SimmelianOverlapScore.h"
 #include "MultiscaleScore.h"
@@ -33,8 +33,9 @@ SimmelianBackboneNonParametric::SimmelianBackboneNonParametric(const Graph& grap
 		Sparsifier(graph), threshold(threshold) {}
 
 void SimmelianBackboneNonParametric::run() {
-	ChibaNishizekiTriangleCounter triangleAttributizer(inputGraph);
-	std::vector<count> triangles = triangleAttributizer.getAttribute();
+	ChibaNishizekiTriangleEdgeScore triangleEdgeScore(inputGraph);
+	triangleEdgeScore.run();
+	std::vector<count> triangles = triangleEdgeScore.scores();
 
 	PrefixJaccardCoefficient<count> jaccardScore(inputGraph, triangles);
 	jaccardScore.run();
@@ -50,8 +51,9 @@ SimmelianBackboneParametric::SimmelianBackboneParametric(const Graph& graph, int
 		Sparsifier(graph), maxRank(maxRank), minOverlap(minOverlap) {}
 
 void SimmelianBackboneParametric::run() {
-	ChibaNishizekiTriangleCounter triangleAttributizer(inputGraph);
-	std::vector<count> triangles = triangleAttributizer.getAttribute();
+	ChibaNishizekiTriangleEdgeScore triangleEdgeScore(inputGraph);
+	triangleEdgeScore.run();
+	std::vector<count> triangles = triangleEdgeScore.scores();
 
 	SimmelianOverlapScore overlapScore(inputGraph, triangles, maxRank);
 	overlapScore.run();
@@ -86,8 +88,9 @@ LocalSimilarityBackbone::LocalSimilarityBackbone(const Graph& graph, double e) :
 		Sparsifier(graph), e(e) {}
 
 void LocalSimilarityBackbone::run() {
-	ChibaNishizekiTriangleCounter triangleCounter(inputGraph);
-	std::vector<count> triangles = triangleCounter.getAttribute();
+	ChibaNishizekiTriangleEdgeScore triangleEdgeScore(inputGraph);
+	triangleEdgeScore.run();
+	std::vector<count> triangles = triangleEdgeScore.scores();
 
 	LocalSimilarityScore localSimScore(inputGraph, triangles);
 	localSimScore.run();
@@ -102,8 +105,9 @@ SimmelianMultiscaleBackbone::SimmelianMultiscaleBackbone(const Graph& graph, dou
 		Sparsifier(graph), alpha(alpha) {}
 
 void SimmelianMultiscaleBackbone::run() {
-	ChibaNishizekiTriangleCounter triangleAttributizer(inputGraph);
-	std::vector<count> triangles = triangleAttributizer.getAttribute();
+	ChibaNishizekiTriangleEdgeScore triangleEdgeScore(inputGraph);
+	triangleEdgeScore.run();
+	std::vector<count> triangles = triangleEdgeScore.scores();
 	std::vector<double> triangles_d = std::vector<double>(triangles.begin(), triangles.end());
 
 	MultiscaleScore multiscaleScorer (inputGraph, triangles_d);

@@ -1,5 +1,5 @@
 /*
- * ChibaNishizekiQuadrangleCounterGTest.h
+ * ChibaNishizekiQuadrangleEdgeScoreGTest.h
  *
  *  Created on: 23.05.2014
  *      Author: Gerd Lindner
@@ -14,7 +14,7 @@
 
 namespace NetworKit {
 
-class ChibaNishizekiQuadrangleCounterGTest: public testing::Test {
+class ChibaNishizekiQuadrangleEdgeScoreGTest: public testing::Test {
 
 };
 
