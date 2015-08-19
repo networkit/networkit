@@ -18,10 +18,10 @@ Graph GlobalThresholdFilter::calculate() {
 		throw std::runtime_error("edges have not been indexed - call indexEdges first");
 	}
 
-	//Create an edge-less backbone graph.
+	//Create an edge-less graph.
 	GraphBuilder builder(graph.upperNodeIdBound(), false);
 
-	//Re-add the backbone edges.
+	//Re-add the edges of the sparsified graph.
 	graph.balancedParallelForNodes([&](node u) {
 		// add each edge in both directions
 		graph.forEdgesOf(u, [&](node u, node v, edgeid eid) {
@@ -32,24 +32,24 @@ Graph GlobalThresholdFilter::calculate() {
 		});
 	});
 
-	Graph backboneGraph = builder.toGraph(false);
-	backboneGraph.parallelForNodes([&](node u) {
+	Graph sGraph = builder.toGraph(false);
+	sGraph.parallelForNodes([&](node u) {
 		if (!graph.hasNode(u)) {
-			backboneGraph.removeNode(u);
+			sGraph.removeNode(u);
 		}
 	});
 
-	return backboneGraph;
+	return sGraph;
 }
 
 Graph GlobalThresholdFilter::cloneNodes(const Graph& graph, bool weighted) {
-	Graph backboneGraph (graph.upperNodeIdBound(), weighted, false);
+	Graph sparsifiedGraph (graph.upperNodeIdBound(), weighted, false);
 
 	for (node i = 0; i < graph.upperNodeIdBound(); i++) {
 		if (!graph.hasNode(i))
-			backboneGraph.removeNode(i);
+			sparsifiedGraph.removeNode(i);
 	}
-	return backboneGraph;
+	return sparsifiedGraph;
 }
 
 } /* namespace NetworKit */

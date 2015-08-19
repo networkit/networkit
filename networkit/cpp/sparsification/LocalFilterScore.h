@@ -26,7 +26,7 @@ public:
 
 		/*
 		* For each edge, we calculate the minimum required sparsification exponent e
-		* such that the edge is contained in the backbone.
+		* such that the edge is contained in the sparse graph.
 		*/
 
 		std::vector<double> sparsificationExp(G.upperEdgeIdBound(), (bothRequired ? .0 : 1.0));
@@ -37,7 +37,7 @@ public:
 
 			/*
 			 * The top d^e edges (sorted by similarity in descending order)
-			 * are to be kept in the backbone.
+			 * are to be kept in the sparse graph.
 			 */
 
 			std::vector<std::tuple<double, count, index> > neighbors;

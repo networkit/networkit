@@ -18,42 +18,42 @@ void RandomNodeEdgeScore::run() {
 		throw std::runtime_error("edges have not been indexed - call indexEdges first");
 	}
 
-	Graph backbone = G;
+	Graph sparseGraph = G;
 	std::vector<double> workScores(G.upperEdgeIdBound(), 0);
 	count numRemoved = 0;
 	std::vector< std::pair<node, node> > uniformlyRandomEdges;
 
-	while (backbone.numberOfEdges() > 0) {
+	while (sparseGraph.numberOfEdges() > 0) {
 		if (Aux::Random::real() >= rneRatio) { // uniformly random
 			bool edgeFound = false;
 
 			while (!edgeFound) {
 				if (uniformlyRandomEdges.empty()) {
-					uniformlyRandomEdges = backbone.randomEdges(backbone.numberOfEdges() * (1.0 - rneRatio) + 20);
+					uniformlyRandomEdges = sparseGraph.randomEdges(sparseGraph.numberOfEdges() * (1.0 - rneRatio) + 20);
 				}
 
 				auto edge = uniformlyRandomEdges.back();
 				uniformlyRandomEdges.pop_back();
 
-				if (backbone.hasEdge(edge.first, edge.second)) {
-					edgeid id = backbone.edgeId(edge.first, edge.second);
+				if (sparseGraph.hasEdge(edge.first, edge.second)) {
+					edgeid id = sparseGraph.edgeId(edge.first, edge.second);
 
 					workScores[id] = numRemoved * 1.0 / G.numberOfEdges();
 
-					backbone.removeEdge(edge.first, edge.second);
+					sparseGraph.removeEdge(edge.first, edge.second);
 
 					edgeFound = true;
 					++numRemoved;
 				}
 			}
 		} else { // random node - edge
-			auto edge = backbone.randomEdge();
+			auto edge = sparseGraph.randomEdge();
 
-			edgeid id = backbone.edgeId(edge.first, edge.second);
+			edgeid id = sparseGraph.edgeId(edge.first, edge.second);
 
 			workScores[id] = numRemoved * 1.0 / G.numberOfEdges();
 
-			backbone.removeEdge(edge.first, edge.second);
+			sparseGraph.removeEdge(edge.first, edge.second);
 
 			++numRemoved;
 		}

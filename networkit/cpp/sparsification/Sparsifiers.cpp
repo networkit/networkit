@@ -29,10 +29,10 @@ Graph Sparsifier::getGraph() {
 }
 
 
-SimmelianBackboneNonParametric::SimmelianBackboneNonParametric(const Graph& graph, double threshold) :
+SimmelianSparsifierNonParametric::SimmelianSparsifierNonParametric(const Graph& graph, double threshold) :
 		Sparsifier(graph), threshold(threshold) {}
 
-void SimmelianBackboneNonParametric::run() {
+void SimmelianSparsifierNonParametric::run() {
 	ChibaNishizekiTriangleEdgeScore triangleEdgeScore(inputGraph);
 	triangleEdgeScore.run();
 	std::vector<count> triangles = triangleEdgeScore.scores();
@@ -47,10 +47,10 @@ void SimmelianBackboneNonParametric::run() {
 }
 
 
-SimmelianBackboneParametric::SimmelianBackboneParametric(const Graph& graph, int maxRank, int minOverlap) :
+SimmelianSparsifierParametric::SimmelianSparsifierParametric(const Graph& graph, int maxRank, int minOverlap) :
 		Sparsifier(graph), maxRank(maxRank), minOverlap(minOverlap) {}
 
-void SimmelianBackboneParametric::run() {
+void SimmelianSparsifierParametric::run() {
 	ChibaNishizekiTriangleEdgeScore triangleEdgeScore(inputGraph);
 	triangleEdgeScore.run();
 	std::vector<count> triangles = triangleEdgeScore.scores();
@@ -65,10 +65,10 @@ void SimmelianBackboneParametric::run() {
 }
 
 
-MultiscaleBackbone::MultiscaleBackbone(const Graph& graph, double alpha) :
+MultiscaleSparsifier::MultiscaleSparsifier(const Graph& graph, double alpha) :
 		Sparsifier(graph), alpha(alpha) {}
 
-void MultiscaleBackbone::run() {
+void MultiscaleSparsifier::run() {
 	std::vector<double> weight(inputGraph.upperEdgeIdBound());
 	inputGraph.forEdges([&](node u, node v, edgeid eid) {
 		weight[eid] = inputGraph.weight(u, v);
@@ -84,10 +84,10 @@ void MultiscaleBackbone::run() {
 }
 
 
-LocalSimilarityBackbone::LocalSimilarityBackbone(const Graph& graph, double e) :
+LocalSimilaritySparsifier::LocalSimilaritySparsifier(const Graph& graph, double e) :
 		Sparsifier(graph), e(e) {}
 
-void LocalSimilarityBackbone::run() {
+void LocalSimilaritySparsifier::run() {
 	ChibaNishizekiTriangleEdgeScore triangleEdgeScore(inputGraph);
 	triangleEdgeScore.run();
 	std::vector<count> triangles = triangleEdgeScore.scores();
@@ -101,10 +101,10 @@ void LocalSimilarityBackbone::run() {
 	hasOutput = true;
 }
 
-SimmelianMultiscaleBackbone::SimmelianMultiscaleBackbone(const Graph& graph, double alpha) :
+SimmelianMultiscaleSparsifier::SimmelianMultiscaleSparsifier(const Graph& graph, double alpha) :
 		Sparsifier(graph), alpha(alpha) {}
 
-void SimmelianMultiscaleBackbone::run() {
+void SimmelianMultiscaleSparsifier::run() {
 	ChibaNishizekiTriangleEdgeScore triangleEdgeScore(inputGraph);
 	triangleEdgeScore.run();
 	std::vector<count> triangles = triangleEdgeScore.scores();
@@ -119,10 +119,10 @@ void SimmelianMultiscaleBackbone::run() {
 	hasOutput = true;
 }
 
-RandomBackbone::RandomBackbone(const Graph& graph, double ratio) :
+RandomSparsifier::RandomSparsifier(const Graph& graph, double ratio) :
 		Sparsifier(graph), ratio(ratio) {}
 
-void RandomBackbone::run() {
+void RandomSparsifier::run() {
 	RandomEdgeScore randomScorer (inputGraph);
 	randomScorer.run();
 	std::vector<double> random = randomScorer.scores();

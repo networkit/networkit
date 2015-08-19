@@ -13,7 +13,7 @@
 namespace NetworKit {
 
 /**
- * Calculates the multiscale backbone attribute for a given graph. Each edge is
+ * Calculates the multiscale edge score for a given graph. Each edge is
  * assigned the maximum filter value in [0,1] for which the edge will be contained
  * in the multiscale backbone.
  *

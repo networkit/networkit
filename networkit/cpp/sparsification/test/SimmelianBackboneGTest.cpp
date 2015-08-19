@@ -174,7 +174,7 @@ TEST_F(SimmelianBackboneGTest, testOverlapFiltering) {
 	g.addEdge(5,1);
 	g.indexEdges();
 
-	SimmelianBackboneParametric simmel(g, 2, 1);
+	SimmelianSparsifierParametric simmel(g, 2, 1);
 	simmel.run();
 	Graph b = simmel.getGraph();
 
@@ -200,7 +200,7 @@ TEST_F(SimmelianBackboneGTest, testBackboneTrivial) {
 	g.indexEdges();
 
 	//Parametric
-	SimmelianBackboneParametric simmel(g, 1, 0);
+	SimmelianSparsifierParametric simmel(g, 1, 0);
 	simmel.run();
 	Graph b = simmel.getGraph();
 	EXPECT_EQ(3, b.numberOfEdges()) << "wrong edge count in backbone";
@@ -217,7 +217,7 @@ TEST_F(SimmelianBackboneGTest, testBackboneConnectedGraph) {
 	g.indexEdges();
 
 	//Parametric
-	SimmelianBackboneParametric simmel(g, 25, 5);
+	SimmelianSparsifierParametric simmel(g, 25, 5);
 	simmel.run();
 	Graph b = simmel.getGraph();
 	EXPECT_EQ(300, b.numberOfEdges()) << "wrong edge count in backbone";

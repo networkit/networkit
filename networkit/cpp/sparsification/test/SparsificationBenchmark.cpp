@@ -1,5 +1,5 @@
 /*
- * BackboneBenchmark.cpp
+ * SparsificationBenchmark.cpp
  *
  *  Created on: 31.07.2014
  *      Author: Gerd Lindner
@@ -7,7 +7,7 @@
 
 #ifndef NOGTEST
 
-#include "BackboneBenchmark.h"
+#include "SparsificationBenchmark.h"
 #include "../../edgescores/ChibaNishizekiTriangleEdgeScore.h"
 #include "../../edgescores/TriangleEdgeScore.h"
 #include "../../edgescores/PrefixJaccardScore.h"
@@ -21,15 +21,15 @@
 
 namespace NetworKit {
 
-BackboneBenchmark::BackboneBenchmark() {
+SparsificationBenchmark::SparsificationBenchmark() {
 	this->n = 250;
 	INFO("n = " , this->n);
 }
 
-BackboneBenchmark::~BackboneBenchmark() {
+SparsificationBenchmark::~SparsificationBenchmark() {
 }
 
-Graph BackboneBenchmark::makeCompleteGraph(count n) {
+Graph SparsificationBenchmark::makeCompleteGraph(count n) {
 	Graph G(n);
 	G.forNodePairs([&](node u, node v){
 		G.addEdge(u,v);
@@ -38,11 +38,11 @@ Graph BackboneBenchmark::makeCompleteGraph(count n) {
 	return G;
 }
 
-TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneParametric) {
+TEST_F(SparsificationBenchmark, completeGraphSimmelianSparsificationParametric) {
 	int64_t n = this->n;
 	Aux::Timer runtime;
 
-	Graph G = BackboneBenchmark::makeCompleteGraph(n);
+	Graph G = SparsificationBenchmark::makeCompleteGraph(n);
 	G.indexEdges();
 
 	runtime.start();
@@ -56,14 +56,14 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneParametric) {
 	auto scores = overlapScore.scores();
 
 	runtime.stop();
-	INFO("[DONE] completeGraphSimmelianBackboneParametric (" , runtime.elapsed().count() , " ms)");
+	INFO("[DONE] completeGraphSimmelianSparsificationParametric (" , runtime.elapsed().count() , " ms)");
 }
 
-TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneNonParametric) {
+TEST_F(SparsificationBenchmark, completeGraphSimmelianSparsificationNonParametric) {
 	int64_t n = this->n;
 	Aux::Timer runtime;
 
-	Graph G = BackboneBenchmark::makeCompleteGraph(n);
+	Graph G = SparsificationBenchmark::makeCompleteGraph(n);
 	G.indexEdges();
 
 	runtime.start();
@@ -77,14 +77,14 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneNonParametric) {
 	auto attribute = jaccard.scores();
 
 	runtime.stop();
-	INFO("[DONE] SimmelianBackboneNonParametric (" , runtime.elapsed().count() , " ms)");
+	INFO("[DONE] SimmelianSparsificationNonParametric (" , runtime.elapsed().count() , " ms)");
 }
 
-TEST_F(BackboneBenchmark, completeGraphMultiscaleBackbone) {
+TEST_F(SparsificationBenchmark, completeGraphMultiscaleSparsification) {
 	int64_t n = this->n;
 	Aux::Timer runtime;
 
-	Graph G = BackboneBenchmark::makeCompleteGraph(n);
+	Graph G = SparsificationBenchmark::makeCompleteGraph(n);
 	G.indexEdges();
 
 	runtime.start();
@@ -99,14 +99,14 @@ TEST_F(BackboneBenchmark, completeGraphMultiscaleBackbone) {
 	auto scores = scorer.scores();
 
 	runtime.stop();
-	INFO("[DONE] MultiscaleBackbone (" , runtime.elapsed().count() , " ms)");
+	INFO("[DONE] MultiscaleSparsification (" , runtime.elapsed().count() , " ms)");
 }
 
-TEST_F(BackboneBenchmark, completeGraphLocalSimilarityBackbone) {
+TEST_F(SparsificationBenchmark, completeGraphLocalSimilaritySparsification) {
 	int64_t n = this->n;
 	Aux::Timer runtime;
 
-	Graph G = BackboneBenchmark::makeCompleteGraph(n);
+	Graph G = SparsificationBenchmark::makeCompleteGraph(n);
 	G.indexEdges();
 
 	runtime.start();
@@ -120,10 +120,10 @@ TEST_F(BackboneBenchmark, completeGraphLocalSimilarityBackbone) {
 	auto attribute = localSimScore.scores();
 
 	runtime.stop();
-	INFO("[DONE] LocalSimilarityBackbone (" , runtime.elapsed().count() , " ms)");
+	INFO("[DONE] LocalSimilaritySparsification (" , runtime.elapsed().count() , " ms)");
 }
 
-TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
+TEST_F(SparsificationBenchmark, SparsificationBenchmarkGraphFile) {
 	std::string path = "";
 
 	std::cout << "[INPUT] .graph file path >" << std::endl;
@@ -179,7 +179,7 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	runtime.stop();
 	std::cout << "[DONE] global filter (multiscale attribute) " << runtime.elapsedTag() << std::endl;
 
-	// --------- Simmelian Backbone (Jaccard)
+	// --------- Simmelian Sparsification (Jaccard)
 	std::cout << "[BEGIN] Simmelian Jaccard attribute: " << std::endl;
 	runtime.start();
 	PrefixJaccardScore<count> jaccardAttributizer(g, triangles);
@@ -195,7 +195,7 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	runtime.stop();
 	std::cout << "[DONE] global filter (simmelian jaccard attribute) " << runtime.elapsedTag() << std::endl;
 
-	// --------- Simmelian Backbone (Overlap)
+	// --------- Simmelian Sparsification (Overlap)
 	std::cout << "[BEGIN] Simmelian Overlap attribute: " << std::endl;
 	runtime.start();
 	SimmelianOverlapScore overlapScore(g, triangles, 10);
@@ -210,7 +210,7 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	runtime.stop();
 	std::cout << "[DONE] global filter (simmelian overlap attribute) " << runtime.elapsedTag() << std::endl;
 
-	// --------- Local similarity Backbone
+	// --------- Local similarity Sparsification
 	std::cout << "[BEGIN] Local Similarity attribute: " << std::endl;
 	runtime.start();
 	LocalSimilarityScore localSimScore(g, triangles);

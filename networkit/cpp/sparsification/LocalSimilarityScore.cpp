@@ -21,7 +21,7 @@ void LocalSimilarityScore::run() {
 
 	/*
 	 * For each edge, we calculate the minimum required sparsification exponent e
-	 * such that the edge is contained in the backbone.
+	 * such that the edge is contained in the sparse graph.
 	 */
 
 	std::vector<double> sparsificationExp(G.upperEdgeIdBound(), 0.0);
@@ -30,7 +30,7 @@ void LocalSimilarityScore::run() {
 		count d = G.degree(i);
 
 		/* The top d^e edges (sorted by similarity)
-		 * are to be kept in the backbone */
+		 * are to be kept in the graph. */
 
 		std::vector<AttributizedEdge<double>> neighbors;
 		neighbors.reserve(G.degree(i));

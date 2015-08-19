@@ -25,7 +25,7 @@ void LocalDegreeScore::run() {
 
 		/**
 		 *  The top d^e edges (sorted by degree)
-		 * are to be kept in the backbone */
+		 * are to be kept in the graph */
 
 		std::vector<AttributizedEdge<count>> neighbors;
 		G.forNeighborsOf(i, [&](node _i, node j, edgeid eid) {

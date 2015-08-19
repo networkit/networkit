@@ -13,8 +13,8 @@
 namespace NetworKit {
 
 /**
- * Here, we combine attribute generators and edge attribute filters into different
- * backbone algorithms.
+ * In this file, edge score calculators and edge score filters are combined
+ * into different sparsification algorithms.
  */
 
 /**
@@ -44,9 +44,10 @@ protected:
 
 
 /**
- * Simmelian Backbone: Non-parametric variant (Jaccard)
+ * Imlementation of the non-parametric variant of Simmelian Backbones,
+ * as introduced by Nick et al.
  */
-class SimmelianBackboneNonParametric : public Sparsifier {
+class SimmelianSparsifierNonParametric : public Sparsifier {
 
 public:
 	/**
@@ -54,7 +55,7 @@ public:
 	 * @param graph			the input graph
 	 * @param threshold		the jaccard index threshold.
 	 */
-	SimmelianBackboneNonParametric(const Graph& graph, double threshold);
+	SimmelianSparsifierNonParametric(const Graph& graph, double threshold);
 
 	virtual void run() override;
 
@@ -63,10 +64,11 @@ private:
 
 };
 
-/**
- * Simmelian Backbone: Parametric variant (Top-k neighborhood overlap)
- */
-class SimmelianBackboneParametric : public Sparsifier {
+ /**
+  * Imlementation of the parametric variant (Top-k neighborhood overlap)
+  * of Simmelian Backbones, as introduced by Nick et al.
+  */
+class SimmelianSparsifierParametric : public Sparsifier {
 
 public:
 	/**
@@ -74,9 +76,9 @@ public:
 	 * @param graph			the input graph
 	 * @param maxRank 		the maximum rank that is considered for overlap calculation
 	 * @param minOverlap	the minimum overlap of the top-k neighbors for an edge to be
-		 	 	 	 	 	 	contained in the backbone.
+		 	 	 	 	 	 	contained in the sparsified graph.
 	 */
-	SimmelianBackboneParametric(const Graph& graph, int maxRank, int minOverlap);
+	SimmelianSparsifierParametric(const Graph& graph, int maxRank, int minOverlap);
 
 	virtual void run() override;
 
@@ -87,17 +89,17 @@ private:
 };
 
 /**
- * Multiscale Backbone
+ * Implementation of the Multiscale Backbone, as introduced by Serrano et al.
  */
-class MultiscaleBackbone : public Sparsifier {
+class MultiscaleSparsifier : public Sparsifier {
 
 public:
 	/**
-	 * Creates a new instance of the parametric variant of the Simmelian Backbone calculator.
+	 * Creates a new instance of the Multiscale Backbone calculator.
 	 * @param graph			the input graph
 	 * @param alpha 		the probability threshold
 	 */
-	MultiscaleBackbone(const Graph& graph, double alpha);
+	MultiscaleSparsifier(const Graph& graph, double alpha);
 
 	virtual void run() override;
 
@@ -107,17 +109,17 @@ private:
 };
 
 /**
- * Local Similarity Backbone
+ * Local Similarity Sparsification as introduced by Satuluri et al.
  */
-class LocalSimilarityBackbone : public Sparsifier {
+class LocalSimilaritySparsifier : public Sparsifier {
 
 public:
 	/**
-	 * Creates a new instance of the Local Similarity Backbone calculator
+	 * Creates a new instance of the Local Similarity sparsifier.
 	 * @param graph			the input graph
 	 * @param e				the threshold value
 	 */
-	LocalSimilarityBackbone(const Graph& graph, double e);
+	LocalSimilaritySparsifier(const Graph& graph, double e);
 
 	virtual void run() override;
 
@@ -127,9 +129,9 @@ private:
 };
 
 /**
- * Multiscale backbone using simmelianness as weight
+ * Multiscale backbone using simmelianness as input weight.
  */
-class SimmelianMultiscaleBackbone : public Sparsifier {
+class SimmelianMultiscaleSparsifier : public Sparsifier {
 
 public:
 	/**
@@ -137,7 +139,7 @@ public:
 	 * @param graph			the input graph
 	 * @param alpha			the threshold value for multiscale filtering
 	 */
-	SimmelianMultiscaleBackbone(const Graph& graph, double alpha);
+	SimmelianMultiscaleSparsifier(const Graph& graph, double alpha);
 
 	virtual void run() override;
 
@@ -147,19 +149,18 @@ private:
 };
 
 /**
-* Backbone that contains approximately a given percentage
-* of edges of the original graph (mainly for comparison purposes).
-* The edges are selected unformly at random.
+* Produces sparsified graphs that contain approximately a given percentage
+* of edges of the original graph. The edges are selected unformly at random.
 */
-class RandomBackbone : public Sparsifier {
+class RandomSparsifier : public Sparsifier {
 
 public:
 	/**
-	* Creates a new instance of the Random Backbone calculator
+	* Creates a new instance of the Random Sparsifier.
 	* @param graph			the input graph
-	* @param ratio			edge ratio in [0,1] to be kept in backbone.
+	* @param ratio			edge ratio in [0,1] to be kept in the sparse graph.
 	*/
-	RandomBackbone(const Graph& graph, double ratio);
+	RandomSparsifier(const Graph& graph, double ratio);
 
 	virtual void run() override;
 

@@ -43,18 +43,18 @@ TEST_F(MultiscaleBackboneGTest, testSimpleMultiscaleBackbone) {
 
 	//Compare the backbone graph to the expected backbone.
 
-	MultiscaleBackbone backbone(g, 0.5);
-	backbone.run();
-	Graph b = backbone.getGraph();
+	MultiscaleSparsifier sparsifier(g, 0.5);
+	sparsifier.run();
+	Graph b = sparsifier.getGraph();
 
 	EXPECT_EQ(3, b.numberOfEdges());
 	EXPECT_TRUE(b.hasEdge(0, 4));
 	EXPECT_TRUE(b.hasEdge(0, 3));
 	EXPECT_TRUE(b.hasEdge(4, 5));
 
-	MultiscaleBackbone backbone2(g, 0.7);
-	backbone2.run();
-	b = backbone2.getGraph();
+	MultiscaleSparsifier sparsifier2(g, 0.7);
+	sparsifier2.run();
+	b = sparsifier2.getGraph();
 	EXPECT_EQ(2, b.numberOfEdges());
 	EXPECT_TRUE(b.hasEdge(0, 4));
 	EXPECT_TRUE(b.hasEdge(0, 3));
