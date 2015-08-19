@@ -66,6 +66,7 @@ cdef extern from "cpp/base/Algorithm.h":
 		void run() nogil except +
 		bool hasFinished() except +
 		string toString() except +
+		bool isParallel() except +
 
 cdef class Algorithm:
 	""" Abstract base class for algorithms """
@@ -122,6 +123,18 @@ cdef class Algorithm:
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return self._this.toString().decode("utf-8")
+
+
+	def isParallel(self):
+		"""
+		Returns
+		-------
+		bool
+			True if algorithm can run multi-threaded
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return self._this.isParallel()
 
 
 # Function definitions
@@ -1018,16 +1031,15 @@ cdef class Graph:
 
 cdef extern from "cpp/graph/BFS.h":
 	cdef cppclass _BFS "NetworKit::BFS":
-		_BFS(_Graph G, node source, bool storePaths, bool storeStack) except +
+		_BFS(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
 		void run() nogil except +
-		void run(node t) nogil except +
 		vector[edgeweight] getDistances() except +
 		vector[node] getPath(node t) except +
 
 cdef class BFS:
 	""" Simple breadth-first search on a Graph from a given source
 
-	BFS(G, source, [storePaths], [storeStack])
+	BFS(G, source, [storePaths], [storeStack], target)
 
 	Create BFS for `G` and source node `source`.
 
@@ -1039,19 +1051,21 @@ cdef class BFS:
 		The source node of the breadth-first search.
 	storePaths : bool
 		store paths and number of paths?
+	target: node
+		terminate search when the target has been reached
 
 	"""
 	cdef _BFS* _this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False):
+	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False, target=none):
 		self._G = G
-		self._this = new _BFS(G._this, source, storePaths, storeStack)
+		self._this = new _BFS(G._this, source, storePaths, storeStack, target)
 
 	def __dealloc__(self):
 		del self._this
 
-	def run(self, t = None):
+	def run(self):
 		"""
 		Breadth-first search from source.
 
@@ -1061,14 +1075,8 @@ cdef class BFS:
 			Vector of unweighted distances from source node, i.e. the
 	 		length (number of edges) of the shortest path from source to any other node.
 		"""
-		cdef node ct
-		if t == None:
-			with nogil:
-				self._this.run()
-		else:
-			ct = <node>t
-			with nogil:
-				self._this.run(ct)
+		with nogil:
+			self._this.run()
 		return self
 
 	def getDistances(self):
@@ -1191,9 +1199,8 @@ cdef class DynBFS:
 
 cdef extern from "cpp/graph/Dijkstra.h":
 	cdef cppclass _Dijkstra "NetworKit::Dijkstra":
-		_Dijkstra(_Graph G, node source, bool storePaths, bool storeStack) except +
+		_Dijkstra(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
 		void run() nogil except +
-		void run(node t) nogil except +
 		vector[edgeweight] getDistances() except +
 		vector[node] getPath(node t) except +
 
@@ -1202,7 +1209,7 @@ cdef class Dijkstra:
 	Returns list of weighted distances from node source, i.e. the length of the shortest path from source to
 	any other node.
 
-    Dijkstra(G, source, [storePaths], [storeStack])
+    Dijkstra(G, source, [storePaths], [storeStack], target)
 
     Creates Dijkstra for `G` and source node `source`.
 
@@ -1216,18 +1223,20 @@ cdef class Dijkstra:
 		store paths and number of paths?
 	storeStack : bool
 		maintain a stack of nodes in order of decreasing distance?
+	target : node
+		target node. Search ends when target node is reached. t is set to None by default.
     """
 	cdef _Dijkstra* _this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False):
+	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False, node target=none):
 		self._G = G
-		self._this = new _Dijkstra(G._this, source, storePaths, storeStack)
+		self._this = new _Dijkstra(G._this, source, storePaths, storeStack, target)
 
 	def __dealloc__(self):
 		del self._this
 
-	def run(self, t = None):
+	def run(self):
 		"""
 		Breadth-first search from source.
 
@@ -1237,15 +1246,8 @@ cdef class Dijkstra:
 			Vector of unweighted distances from source node, i.e. the
 	 		length (number of edges) of the shortest path from source to any other node.
 		"""
-		cdef node ct
-		if t == None:
-			with nogil:
-				self._this.run()
-		else:
-			ct = <node>t
-			with nogil:
-				self._this.run(ct)
-		return self
+		with nogil:
+			self._this.run()
 
 	def getDistances(self):
 		""" Returns a vector of weighted distances from the source node, i.e. the
@@ -1360,6 +1362,62 @@ cdef class DynDijkstra:
 			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
 		self._this.update(_batch)
 
+cdef extern from "cpp/graph/APSP.h":
+	cdef cppclass _APSP "NetworKit::APSP"(_Algorithm):
+		_APSP(_Graph G) except +
+		vector[vector[edgeweight]] getDistances() except +
+		edgeweight getDistance(node u, node v) except +
+
+cdef class APSP(Algorithm):
+	""" An implementation of Dijkstra's SSSP algorithm for the All-Pairs Shortest-Paths problem.
+	Returns a list of lists of weighted distances from node source, i.e. the length of the shortest path from source to
+	any other node.
+
+    APSP(G)
+
+    Creates Dijkstra for `G` and source node `source`.
+
+    Parameters
+	----------
+	G : Graph
+		The graph.
+    """
+	cdef Graph _G
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _APSP(G._this)
+
+	def __dealloc__(self):
+		self._G = None
+
+	def getDistances(self):
+		""" Returns a vector of vectors of weighted distances from the source node, i.e. the
+ 	 	length of the shortest path from the source node to any other node.
+
+ 	 	Returns
+ 	 	-------
+ 	 	vector of vectors
+ 	 		The weighted distances from the nodes to any other node in the graph.
+		"""
+		return (<_APSP*>(self._this)).getDistances()
+
+	def getDistance(self, node u, node v):
+		""" Returns the length of the shortest path from source 'u' to target `v`.
+
+		Parameters
+		----------
+		u : node
+			Source node.
+		v : node
+			Target node.
+
+		Returns
+		-------
+		int or float
+			The distance from 'u' to 'v'.
+		"""
+		return (<_APSP*>(self._this)).getDistance(u, v)
 
 cdef extern from "cpp/graph/Subgraph.h" namespace "NetworKit::Subgraph":
 		_Graph _SubGraphFromNodes "NetworKit::Subgraph::fromNodes"(_Graph G, unordered_set[node] nodes)  except +
@@ -2530,7 +2588,7 @@ cdef extern from "cpp/structures/Partition.h":
 		void setUpperBound(index upper) except +
 		index upperBound() except +
 		index lowerBound() except +
-		void compact() except +
+		void compact(bool useTurbo) except +
 		bool contains(index e) except +
 		bool inSameSubset(index e1, index e2) except +
 		vector[count] subsetSizes() except +
@@ -2732,9 +2790,17 @@ cdef class Partition:
 		"""
 		return self._this.lowerBound()
 
-	def compact(self):
-		""" Change subset IDs to be consecutive, starting at 0. """
-		self._this.compact()
+	def compact(self, useTurbo = False):
+		""" Change subset IDs to be consecutive, starting at 0.
+
+		Parameters
+		----------
+		useTurbo : bool
+			Default: false. If set to true, a vector instead of a map to assign new ids
+	 		which results in a shorter running time but possibly a large space overhead.
+
+		"""
+		self._this.compact(useTurbo)
 
 	def contains(self, index e):
 		""" Check if partition assigns a valid subset to the element `e`.
@@ -2867,15 +2933,17 @@ cdef extern from "cpp/structures/Cover.h":
 	cdef cppclass _Cover "NetworKit::Cover":
 		_Cover() except +
 		_Cover(_Partition p) except +
+		_Cover(count n) except +
 		set[index] subsetsOf(index e) except +
 #		index extend() except +
 		void remove(index e) except +
 		void addToSubset(index s, index e) except +
+		void removeFromSubset(index s, index e) except +
 		void moveToSubset(index s, index e) except +
 		void toSingleton(index e) except +
 		void allToSingletons() except +
 		void mergeSubsets(index s, index t) except +
-#		void setUpperBound(index upper) except +
+		void setUpperBound(index upper) except +
 		index upperBound() except +
 		index lowerBound() except +
 #		void compact() except +
@@ -2896,9 +2964,11 @@ cdef class Cover:
 	""" Implements a cover of a set, i.e. an assignment of its elements to possibly overlapping subsets. """
 	cdef _Cover _this
 
-	def __cinit__(self, Partition p = None):
-		if p is not None:
-			self._this = move(_Cover(p._this))
+	def __cinit__(self, n=0):
+		if isinstance(n, Partition):
+			self._this = move(_Cover((<Partition>n)._this))
+		else:
+			self._this = move(_Cover(<count?>n))
 
 	cdef setThis(self, _Cover& other):
 		swap[_Cover](self._this, other)
@@ -2933,6 +3003,18 @@ cdef class Cover:
 			An element
 		"""
 		self._this.addToSubset(s, e)
+
+	def removeFromSubset(self, s, e):
+		""" Remove the element `e` from the set `s`.
+
+		Parameters
+		----------
+		s : index
+			A subset
+		e : index
+			An element
+		"""
+		self._this.removeFromSubset(s, e)
 
 	def moveToSubset(self, index s, index e):
 		""" Move the element `e` to subset `s`, i.e. remove it from all other subsets and place it in the subset.
@@ -2977,8 +3059,8 @@ cdef class Cover:
 		"""
 		self._this.mergeSubsets(s, t)
 
-#	def setUpperBound(self, index upper):
-#		self._this.setUpperBound(upper)
+	def setUpperBound(self, index upper):
+		self._this.setUpperBound(upper)
 
 	def upperBound(self):
 		""" Get an upper bound for the subset ids that have been assigned.

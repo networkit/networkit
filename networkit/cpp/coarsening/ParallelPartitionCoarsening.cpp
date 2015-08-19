@@ -22,7 +22,7 @@ void ParallelPartitionCoarsening::run() {
 	timer.start();
 
 	Partition nodeToSuperNode = zeta;
-	nodeToSuperNode.compact(true);
+	nodeToSuperNode.compact((zeta.upperBound() <= G.upperNodeIdBound())); // use turbo if the upper id bound is <= number of nodes
 	count nextNodeId = nodeToSuperNode.upperBound();
 
 	Graph Gcombined;
