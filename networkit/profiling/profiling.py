@@ -12,6 +12,7 @@ from . import plot
 
 from IPython.core.display import *
 import collections
+import math
 
 
 def readfile(postfix):
@@ -100,7 +101,7 @@ class Profile:
 		""" TODO: """
 		result = cls(G, cls.__TOKEN)
 		kit.setNumberOfThreads(result.__parallel)
-		
+
 		def funcScores(instance):
 			return instance.scores()
 
@@ -119,7 +120,7 @@ class Profile:
 			("Node Centrality",	"Page Rank",					True,	funcScores,	"Score",	centrality.PageRank, 					(G, )),
 			("Node Centrality",	"K-Path Centrality",			True,	funcScores,	"Score",	centrality.KPathCentrality,				(G, )),
 			("Node Centrality",	"Katz Centrality",				True,	funcScores,	"Score",	centrality.KatzCentrality,				(G, )),
-			("Node Centrality",	"Betweenness",					True,	funcScores,	"Score",	centrality.ApproxBetweenness2,			(G, max(42, G.numberOfNodes() / 10000), True)),
+			("Node Centrality",	"Betweenness",					True,	funcScores,	"Score",	centrality.ApproxBetweenness2,			(G, max(42, math.log(G.numberOfNodes())**2, True)),
 			("Partition",		"Communities",					False,	funcSizes,	"Nodes Per Community",	community.PLM, 				(G, )),
 			("Partition",		"Connected Components",			False,	funcSizes,	"Connected Nodes",	classConnectedComponents,		(G, ))
 		]: result.__addMeasure(parameter, exclude)
@@ -381,7 +382,7 @@ class Profile:
 			print("")
 		self.__properties["Diameter Range"] = diameter
 
-			
+
 	def __loadMeasures(self):
 		""" TODO: """
 		def funcPrint(str):
@@ -392,7 +393,7 @@ class Profile:
 					print(".", end="", flush=True)
 
 		pool = multiprocessing.ThreadPool(self.__parallel, False)
-			
+
 		for name in self.__measures:
 			measure = self.__measures[name]
 			if self.__verbose:
@@ -411,7 +412,7 @@ class Profile:
 			elapsedMain = timerInstance.elapsed
 			if self.__verbose:
 				print("{:.2F} s".format(elapsedMain), flush=True)
-			
+
 			if self.__verbose:
 				print("    Sort: ", end="", flush=True)
 			timerPostSort = stopwatch.Timer()
@@ -419,7 +420,7 @@ class Profile:
 			elapsedPostSort = timerPostSort.elapsed
 			if self.__verbose:
 				print("{:.2F} s".format(elapsedPostSort), flush=True)
-			
+
 			if self.__verbose:
 				print("    Rank: ", end="", flush=True)
 			timerPostRank = stopwatch.Timer()
@@ -427,7 +428,7 @@ class Profile:
 			elapsedPostRank = timerPostRank.elapsed
 			if self.__verbose:
 				print("{:.2F} s".format(elapsedPostRank), flush=True)
-			
+
 			if self.__verbose:
 				print("    Assortativity: ", end="", flush=True)
 			timerPostAssortativity = stopwatch.Timer()
