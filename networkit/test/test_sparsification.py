@@ -6,7 +6,7 @@ from networkit import *
 class Test_Sparsification(unittest.TestCase):
 
 	def setUp(self):
-		self.G = readGraph("input/MIT8.edgelist", Format.EdgeListTabZero)
+		self.G = readGraph("input/jazz.graph", Format.METIS)
 		self.G.indexEdges()
 		self.sparsifiers = [
 			sparsification.SimmelianBackboneParametric(10),
@@ -20,8 +20,7 @@ class Test_Sparsification(unittest.TestCase):
 			sparsification.RandomNodeEdgeBackbone(),
 			sparsification.ForestFireBackbone(0.6, 5.0),
 			sparsification.LocalDegreeSparsifier(),
-			sparsification.SCANBackbone(),
-			sparsification.TriangleBackbone()
+			sparsification.SCANBackbone()
 		]
 
 	def test_getSparsifiedGraphOfSize(self):
@@ -38,5 +37,5 @@ class Test_Sparsification(unittest.TestCase):
 		for sparsifier in self.sparsifiers:
 			S = sparsifier.getSparsifiedGraphOfSize(self.G, targetRatio)
 			ratio = S.numberOfEdges() / self.G.numberOfEdges()
-			self.assertTrue(ratio >= minExpectedRatio)
-			self.assertTrue(ratio <= maxExpectedRatio)
+			self.assertGreaterEqual(ratio, minExpectedRatio)
+			self.assertLessEqual(ratio, maxExpectedRatio)

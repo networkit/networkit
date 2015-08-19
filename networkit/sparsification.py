@@ -467,8 +467,9 @@ class ForestFireBackbone(Sparsifier):
 		G -- the input graph
 		"""
 
-		attributizer = ForestFireAttributizer(G, self.burnProbability, self.targetBurntRatio)
-		return attributizer.getAttribute()
+		ffScore = ForestFireScore(G, self.burnProbability, self.targetBurntRatio)
+		ffScore.run()
+		return ffScore.scores()
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
 		gf = GlobalThresholdFilter(G, attribute, parameter, True)
@@ -489,7 +490,8 @@ class LocalDegreeSparsifier(Sparsifier):
 		G -- the input graph
 		"""
 
-		localDegree = LocalDegreeScore(G).run();
+		localDegree = LocalDegreeScore(G)
+		localDegree.run()
 		localDegreeScore = localDegree.scores()
 		return localDegreeScore
 
