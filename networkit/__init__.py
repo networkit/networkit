@@ -29,7 +29,7 @@ __credits__ = ["Lukas Barth", "Miriam Beddig", "Elisabetta Bergamini", "Stefan B
 	"Guido Brückner", "Patrick Flick", "Michael Hamann", "Lukas Hartmann", "Daniel Hoske", "Gerd Lindner", "Moritz v. Looz", "Yassine Marrakchi", "Henning Meyerhenke", \
 	"Marcel Radermacher", "Klara Reichard", "Marvin Ritter", "Aleksejs Sazonovs", "Florian Weber", "Michael Wegner", "Jörg Weisbarth"]
 __license__ = "MIT"
-__version__ = "3.6"
+__version__ = "3.5"
 
 
 # standard library modules
@@ -54,10 +54,11 @@ from . import partitioning
 from . import coloring
 from . import workflows
 from . import flow
-from . import distmeasures
 from . import plot
+from . import sparsification
 from . import scd
 from . import clique
+from . import linkprediction
 from . import profiling
 
 try:
@@ -80,15 +81,10 @@ except ImportError as importError:
 # extension imports
 from _NetworKit import getLogLevel, setLogLevel, setPrintLocation, enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads, none, setSeed
 
-# local imports
+# local imports into the top namespace
 from .graph import Graph
-#try:
+from .structures import Partition, Cover
 from .graphio import readGraph, writeGraph, Format
-#except ImportError:
-#	from _graphio33 import readGraph, writeGraph, Format
-from .nxadapter import nk2nx, nx2nk
-from .workflows import batch
-from .community import detectCommunities
 
 
 #-------- Setup ---------- #

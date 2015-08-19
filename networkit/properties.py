@@ -7,13 +7,18 @@ from . import centrality
 from . import termgraph
 from . import auxiliary
 from . import nxadapter
-from . import powerlaw
 
 # other modules
 import textwrap
 import collections
 import math
 import logging
+
+try:
+	import powerlaw
+except ImportError:
+	logging.warning("""WARNING: module 'powerlaw' not installed, which is required by some
+						functions.""")
 
 try:
 	import networkx as nx
@@ -35,11 +40,6 @@ except ImportError:
 
 ########  PROPERTIES ########
 
-def size(G):
-	""" Return number of nodes and number of edges"""
-	n = G.numberOfNodes()
-	m = G.numberOfEdges()
-	return (n, m)
 
 def degrees(G):
 	""" Return min/max/avg degree"""
@@ -61,14 +61,17 @@ def degreeSequence(G):
 
 
 def density(G):
-	""" Return the density of the graph"""
-	(n, m) = size(G)
+	""" Return the density of the graph."""
+	(n, m) = G.size()
+	loops = G.numberOfSelfLoops()
+	m -= loops
 	if G.isDirected():
 		d = m / (n * (n-1))
 	else:
 		d = (2 * m) / (n * (n-1))
 	return d
 
+# TODO: move to profiling module
 def components(G):
 	""" Find and analyze detected components.
 		Returns the number of components and the sizes
@@ -158,7 +161,10 @@ def degreeAssortativity(G):
 
 def degeneracy(G):
 	""" degeneracy of an undirected graph is defined as the largest k for which
-	the graph has a non-empty k-core"""
+	the graph has a non-empty k-core. Degeneracy is only implemented for graphs without
+	self-loops."""
+	if G.numberOfSelfLoops() > 0:
+		raise NotImplementedError("Call Graph.removeSelfLoops() first.")
 	coreDec = centrality.CoreDecomposition(G)
 	coreDec.run()
 	return coreDec.maxCoreNumber()
@@ -172,7 +178,7 @@ def properties(G, settings):
 	logging.info("[...] calculating properties")
 
 	# size
-	n, m = size(G)    # n and m
+	n, m = G.size()   # n and m
 
 	logging.info("[...] determining degree distribution")
 	# degrees
@@ -293,7 +299,7 @@ def overview(G, settings=collections.defaultdict(lambda: True), showDegreeHistog
 		["density", "{0:.6f}".format(props["dens"]) if props["dens"] else None],
 		["clustering coefficient", "Not implemented for directed graphs" if not props["avglcc"] else "{0:.6f}".format(props["avglcc"])],
 		["max. core number", props["degeneracy"]],
-		["{0}connected components".format("strongly " if G.isDirected() else None), props["nComponents"]],
+		["{0}connected components".format("strongly " if G.isDirected() else ""), props["nComponents"]],
 		["size of largest component", "{0} ({1:.2f} %)".format(props["sizeLargestComponent"], (props["sizeLargestComponent"] / props["n"]) * 100)],
 		["estimated diameter range", str(props["dia"])],
 	]

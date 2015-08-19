@@ -19,7 +19,6 @@
 #include "../graph/Graph.h"
 #include "../structures/Partition.h"
 #include "../community/ClusteringGenerator.h"
-#include "../distmeasures/AlgebraicDistance.h"
 
 namespace NetworKit {
 

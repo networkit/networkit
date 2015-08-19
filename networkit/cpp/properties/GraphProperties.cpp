@@ -35,6 +35,7 @@ std::vector<count> GraphProperties::degreeDistribution(const Graph& G) {
 
 
 std::vector<double> GraphProperties::localClusteringCoefficients(const Graph& G) {
+	if (G.numberOfSelfLoops()) throw std::runtime_error("Local Clustering Coefficient implementation does not supprt graphs with self-loops. Call Graph.removeSelfLoops() first.");
 	count n = G.upperNodeIdBound();
 	std::vector<double> numerator(n); //
 	std::vector<double> denominator(n); // $\deg(u) \cdot ( \deg(u) - 1 )$
@@ -69,7 +70,7 @@ std::vector<double> GraphProperties::localClusteringCoefficients(const Graph& G)
 }
 
 std::vector<double> GraphProperties::localClusteringCoefficientPerDegree(const Graph& G) {
-
+	if (G.numberOfSelfLoops()) throw std::runtime_error("Local Clustering Coefficient implementation does not supprt graphs with self-loops. Call Graph.removeSelfLoops() first.");
 	std::vector<count> degDist = degreeDistribution(G);
 	std::vector<double> coefficient;
 	std::vector<double> perDegree(degDist.size(), 0.0);
@@ -102,6 +103,7 @@ std::vector<double> GraphProperties::localClusteringCoefficientPerDegree(const G
 }
 
 double GraphProperties::averageLocalClusteringCoefficient(const Graph& G) {
+	if (G.numberOfSelfLoops()) throw std::runtime_error("Local Clustering Coefficient implementation does not supprt graphs with self-loops. Call Graph.removeSelfLoops() first.");
 	std::vector<double> coefficients = GraphProperties::localClusteringCoefficients(G);
 	double sum = 0.0;
 	for (double c : coefficients) {

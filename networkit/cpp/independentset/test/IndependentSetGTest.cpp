@@ -9,23 +9,17 @@
 
 #include "IndependentSetGTest.h"
 #include "../../auxiliary/Log.h"
+#include "../../generators/ErdosRenyiGenerator.h"
 
 namespace NetworKit {
 
-IndependentSetGTest::IndependentSetGTest() {
-	// TODO Auto-generated constructor stub
-
-}
-
-IndependentSetGTest::~IndependentSetGTest() {
-	// TODO Auto-generated destructor stub
-}
 
 
 TEST_F(IndependentSetGTest, tryLuby) {
 	count n = 500;
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeRandomGraph(n, 0.001);
+	ErdosRenyiGenerator generator(n, 0.001);
+	Graph G = generator.generate();
+
 	INFO("G: " , G.toString());
 
 	Luby luby;
@@ -44,8 +38,9 @@ TEST_F(IndependentSetGTest, tryLuby) {
 
 TEST_F(IndependentSetGTest, tryLubyWithSelfLoops) {
 	count n = 500;
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeRandomGraph(n, 0.001);
+	ErdosRenyiGenerator generator(n, 0.001);
+	Graph G = generator.generate();
+
 	G.forNodes([&](node u){
 		G.addEdge(u,u);
 	});
@@ -69,4 +64,3 @@ TEST_F(IndependentSetGTest, tryLubyWithSelfLoops) {
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
-

@@ -16,4 +16,9 @@ namespace NetworKit {
 		return "Algorithm base class";
 	}
 
+	bool Algorithm::isParallel() const {
+		throw std::runtime_error("TODO: Implement in subclass");
+		return false;
+	}
+
 } /* NetworKit */

@@ -22,6 +22,7 @@ double Centrality::score(node v) {
 }
 
 std::vector<std::pair<node, double> > Centrality::ranking() {
+	if (!hasRun) throw std::runtime_error("Call run method first");
 	std::vector<std::pair<node, double> > ranking;
 	G.forNodes([&](node v){
 		ranking.push_back({v, scoreData[v]});
@@ -36,6 +37,7 @@ std::vector<double> Centrality::scores() {
 }
 
 std::vector<double> Centrality::edgeScores() {
+	if (!hasRun) throw std::runtime_error("Call run method first");
 	return edgeScoreData;
 }
 

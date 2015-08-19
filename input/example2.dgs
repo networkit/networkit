@@ -13,3 +13,6 @@ an 4
 ae 3-4 3 4 weight=5
 an 5
 ae 5-3 5 3 weight=2
+an 6
+dn 6
+rn 6

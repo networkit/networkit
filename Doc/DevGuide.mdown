@@ -207,7 +207,7 @@ This command will compile the _NetworKit extension and then run all test cases o
 
 ### Test-driven development
 
-If you implement a new feature for NetworKit, we encourage you to adapt your development process to test driven development. This means that you start with a one ore ideally several test-cases for your feature and then write the feature for the test case(s). If your feature is mostly implemented in C++, you should write your test cases there. If you expose your feature to Python, you should also write a test case for the extension module on the Python layer. The same applies for features in Pyton.
+If you implement a new feature for NetworKit, we encourage you to adapt your development process to test driven development. This means that you start with a one or ideally several test-cases for your feature and then write the feature for the test case(s). If your feature is mostly implemented in C++, you should write your test cases there. If you expose your feature to Python, you should also write a test case for the extension module on the Python layer. The same applies for features in Pyton.
 
 
 ### Code Style

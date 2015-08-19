@@ -14,9 +14,11 @@
 namespace NetworKit {
 
 TEST_F(OverlapGTest, testRegionGrowingOverlapperOnOneClustering) {
-	GraphGenerator graphGen;
 	int64_t n = 10;
-	Graph G = graphGen.makeCompleteGraph(n);
+	Graph G(n);
+	G.forNodePairs([&](node u, node v){
+		G.addEdge(u,v);
+	});
 
 	ClusteringGenerator clusterGen;
 	std::vector<Partition> clusterings;
@@ -45,9 +47,11 @@ TEST_F(OverlapGTest, testRegionGrowingOverlapperOnOneClustering) {
 
 
 TEST_F(OverlapGTest, testRegionGrowingOverlapperOnSingletonClustering) {
-	GraphGenerator graphGen;
 	int64_t n = 10;
-	Graph G = graphGen.makeCompleteGraph(n);
+	Graph G(n);
+	G.forNodePairs([&](node u, node v){
+		G.addEdge(u,v);
+	});
 
 	ClusteringGenerator clusterGen;
 	std::vector<Partition> clusterings;
@@ -72,9 +76,11 @@ TEST_F(OverlapGTest, testRegionGrowingOverlapperOnSingletonClustering) {
 
 
 TEST_F(OverlapGTest, testHashingOverlapperOnSingletonClusterings) {
-	GraphGenerator graphGen;
 	int64_t n = 10;
-	Graph G = graphGen.makeCompleteGraph(n);
+	Graph G(n);
+	G.forNodePairs([&](node u, node v){
+		G.addEdge(u,v);
+	});
 
 	ClusteringGenerator clusterGen;
 	std::vector<Partition> clusterings;
@@ -97,9 +103,11 @@ TEST_F(OverlapGTest, testHashingOverlapperOnSingletonClusterings) {
 
 
 TEST_F(OverlapGTest, testHashingOverlapperOnOneClusterings) {
-	GraphGenerator graphGen;
 	int64_t n = 10;
-	Graph G = graphGen.makeCompleteGraph(n);
+	Graph G(n);
+	G.forNodePairs([&](node u, node v){
+		G.addEdge(u,v);
+	});
 
 	ClusteringGenerator clusterGen;
 	std::vector<Partition> clusterings;

@@ -84,7 +84,6 @@ private:
 
 	/**
 	 * Returns the edge weight of the outgoing edge of index i in the outgoing edges of node u
-	 *
 	 * @param u The node
 	 * @param i The index
 	 * @return The weight of the outgoing edge or defaultEdgeWeight if the graph is unweighted
@@ -464,7 +463,18 @@ public:
 	 * @param v Node.
 	 * @return @c true if @a v exists, @c false otherwise.
 	 */
+
 	bool hasNode(node v) const { return (v < z) && this->exists[v];	}
+
+
+	/**
+	 * Restores a previously deleted node @a v with its previous id in the graph.
+	 *
+	 * @param v Node.
+	 *
+	 */
+
+	void restoreNode(node v);
 
 
 	/** NODE PROPERTIES **/
@@ -539,6 +549,8 @@ public:
 	/**
 	 * Insert an edge between the nodes @a u and @a v. If the graph is weighted you can optionally
 	 * set a weight for this edge. The default weight is 1.0.
+	 * Note: Multi-edges are not supported and will NOT be handled consistently by the graph data
+	 * structure.
 	 * @param u Endpoint of edge.
 	 * @param v Endpoint of edge.
 	 * @param weight Optional edge weight.
@@ -551,6 +563,11 @@ public:
 	 * @param v Endpoint of edge.
 	 */
 	void removeEdge(node u, node v);
+
+	/**
+	 * Removes all self-loops in the graph.
+	 */
+	void removeSelfLoops();
 
 	/**
 	 * Changes the edges {@a s1, @a t1} into {@a s1, @a t2} and the edge {@a s2, @a t2} into {@a s2, @a t1}.
@@ -616,6 +633,12 @@ public:
 	 * @return The number of edges.
 	 */
 	count numberOfEdges() const { return m; }
+
+
+	/**
+	* @return a pair (n, m) where n is the number of nodes and m is the number of edges
+	*/
+	std::pair<count, count> const size() { return {n, m}; };
 
 	/**
 	 * Return the number of loops {v,v} in the graph.
@@ -715,6 +738,7 @@ public:
 
 	/**
 	 * Return edge weight of edge {@a u,@a v}. Returns 0 if edge does not exist.
+	 * BEWARE: Running time is \Theta(deg(u))!
 	 *
 	 * @param u Endpoint of edge.
 	 * @param v Endpoint of edge.
@@ -785,6 +809,12 @@ public:
 	*/
 	Graph toUndirected() const;
 
+	/**
+	 * Return the transpose of this graph. The graph must be directed.
+	 *
+	 * @return transpose of the graph.
+	 */
+	Graph transpose() const;
 
 	/* NODE ITERATORS */
 
@@ -1390,9 +1420,9 @@ void Graph::BFSEdgesFrom(node r, L handle) const {
 		node u = q.front();
 		q.pop();
 		// apply function
-		forNeighborsOf(u, [&](node v) {
+		forNeighborsOf(u, [&](node v, edgeweight w, edgeid eid) {
 			if (!marked[v]) {
-				handle(u, v);
+				handle(u, v, w, eid);
 				q.push(v);
 				marked[v] = true;
 			}
