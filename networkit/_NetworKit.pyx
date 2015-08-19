@@ -6638,53 +6638,44 @@ cdef class EdgeScoreLinearizer(EdgeScore):
 		return True
 
 
-cdef extern from "cpp/edgescores/EdgeAttributeNormalizer.h":
-	cdef cppclass _EdgeAttributeNormalizer "NetworKit::EdgeAttributeNormalizer<double>":
-		_EdgeAttributeNormalizer(const _Graph&, const vector[double]&, bool inverse, double lower, double upper) except +
-		void run() except +
-		vector[double] getAttribute() except +
+cdef extern from "cpp/edgescores/EdgeScoreNormalizer.h":
+	cdef cppclass _EdgeScoreNormalizer "NetworKit::EdgeScoreNormalizer"[T](_EdgeScore[double]):
+		_EdgeScoreNormalizer(const _Graph&, const vector[T]&, bool inverse, double lower, double upper) except +
 
-cdef class EdgeAttributeNormalizer:
+cdef class EdgeScoreNormalizer(EdgeScore):
 	"""
-	Normalize an edge attribute such that it is in a certain range.
+	Normalize an edge score such that it is in a certain range.
 
 	Parameters
 	----------
 	G : Graph
-		The graph the edge attribute is defined on.
-	attribute : vector[double]
-		The edge attribute to normalize.
+		The graph the edge score is defined on.
+	score : vector[double]
+		The edge score to normalize.
 	inverse
-		Set to True in order to inverse the resulting attribute.
+		Set to True in order to inverse the resulting score.
 	lower
 		Lower bound of the target range.
 	upper
 		Upper bound of the target range.
 	"""
-	cdef _EdgeAttributeNormalizer *_this
-	cdef Graph _G
-	cdef vector[double] _inAttribute
+	cdef vector[double] _inScoreDouble
+	cdef vector[count] _inScoreCount
 
-	def __cinit__(self, Graph G not None, vector[double] attribute, bool inverse = False, double lower = 0.0, double upper = 1.0):
-		self._inAttribute = move(attribute)
+	def __cinit__(self, Graph G not None, score, bool inverse = False, double lower = 0.0, double upper = 1.0):
 		self._G = G
-		self._this = new _EdgeAttributeNormalizer(G._this, self._inAttribute, inverse, lower, upper)
-
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		self._this.run()
-		return self
-
-	def getAttribute(self):
-		"""
-		Returns
-		-------
-		vector
-			The normalized edge attribute.
-		"""
-		return self._this.getAttribute()
+		try:
+			self._inScoreDouble = move(<vector[double]?>score)
+			self._this = new _EdgeScoreNormalizer[double](G._this, self._inScoreDouble, inverse, lower, upper)
+		except TypeError:
+			try:
+				self._inScoreCount = move(<vector[count]?>score)
+				self._this = new _EdgeScoreNormalizer[count](G._this, self._inScoreCount, inverse, lower, upper)
+			except TypeError:
+				raise TypeError("score must be either a vector of integer or float")
+				
+	cdef bool isDoubleValue(self):
+		return True
 
 cdef extern from "cpp/edgescores/EdgeScoreBlender.h":
 	cdef cppclass _EdgeScoreBlender "NetworKit::EdgeScoreBlender"(_EdgeScore):
