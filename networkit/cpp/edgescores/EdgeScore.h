@@ -17,13 +17,11 @@ namespace NetworKit {
  * Abstract base class for an edge score.
  */
 template<typename T>
-class EdgeScore  : public Algorithm {
+class EdgeScore : public Algorithm {
 
 public:
 
 	EdgeScore(const Graph& G);
-
-	EdgeScore(const Graph& G, const std::vector<T>& attribute);
 
 	/** Compute the edge score. */
 	virtual void run();
@@ -44,7 +42,6 @@ public:
 protected:
 	const Graph& G;
 	std::vector<T> scoreData;
-
 
 };
 
