@@ -19,7 +19,7 @@ class LocalClusteringCoefficient: public NetworKit::Centrality {
 public:
 	/**
 	 * Constructs the LocalClusteringCoefficient class for the given Graph @a G. If the local clustering coefficient scores should be normalized,
-	 * then set @a normalized to <code>true</code>.
+	 * then set @a normalized to <code>true</code>. The graph may not contain self-loops. 
 	 *
 	 * @param G The graph.
 	 */

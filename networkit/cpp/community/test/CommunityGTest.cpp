@@ -12,12 +12,9 @@
 #include "../ParallelAgglomerativeClusterer.h"
 #include "../../community/Modularity.h"
 #include "../../community/EdgeCut.h"
-#include "../../graph/GraphGenerator.h"
 #include "../../community/ClusteringGenerator.h"
 #include "../../io/METISGraphReader.h"
-#include "../EPP.h"
 #include "../../overlap/HashingOverlapper.h"
-#include "../EPPFactory.h"
 #include "../PLM.h"
 #include "../../community/GraphClusteringTools.h"
 #include "../../auxiliary/Log.h"
@@ -28,7 +25,6 @@
 #include "../JaccardMeasure.h"
 #include "../NodeStructuralRandMeasure.h"
 #include "../GraphStructuralRandMeasure.h"
-#include "../../graph/GraphGenerator.h"
 #include "../NMIDistance.h"
 #include "../DynamicNMIDistance.h"
 #include "../../auxiliary/NumericTools.h"
@@ -38,90 +34,20 @@
 #include "../../community/GraphClusteringTools.h"
 #include "../PartitionIntersection.h"
 #include "../HubDominance.h"
+#include "../../generators/ClusteredRandomGraphGenerator.h"
+#include "../../generators/ErdosRenyiGenerator.h"
 
 namespace NetworKit {
 
-TEST_F(CommunityGTest, testEnsemblePreprocessing) {
-	count n = 1000;
-	count k = 10;
-	double pin = 1.0;
-	double pout = 0.0;
 
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
 
-	EPP ensemble(G);
 
-	count b = 4;
-	for (count i = 0; i < b; ++i) {
-		auto p = new PLP(G);
-		std::unique_ptr<CommunityDetectionAlgorithm> base(p);
-		ensemble.addBaseClusterer(base);
-	}
-
-	auto p = new PLM(G);
-	std::unique_ptr<CommunityDetectionAlgorithm> final(p);
-	ensemble.setFinalClusterer(final);
-
-	auto overlap = new HashingOverlapper;
-	std::unique_ptr<Overlapper> overlap_ptr(overlap);
-	ensemble.setOverlapper(overlap_ptr);
-
-	ensemble.run();
-	Partition zeta = ensemble.getPartition();
-
-	INFO("number of clusters:" , zeta.numberOfSubsets());
-
-	Modularity modularity;
-	INFO("modularity: " , modularity.getQuality(zeta, G));
-
-}
-
-TEST_F(CommunityGTest, tryEnsemblePreprocessingCorrectness) {
-	count n = 10000;
-	count k = 1000;
-	double pin = 1.0;
-	double pout = 0.0;
-
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
-
-	EPP ensemble(G);
-
-	count b = 4;
-	for (count i = 0; i < b; ++i) {
-		auto p = new PLP(G);
-		std::unique_ptr<CommunityDetectionAlgorithm> base(p);
-		ensemble.addBaseClusterer(base);
-	}
-
-	auto p = new PLM(G);
-	std::unique_ptr<CommunityDetectionAlgorithm> final(p);
-	ensemble.setFinalClusterer(final);
-	auto overlap = new HashingOverlapper;
-	std::unique_ptr<Overlapper> overlap_ptr(overlap);
-	ensemble.setOverlapper(overlap_ptr);
-
-	ensemble.run();
-	Partition zeta = ensemble.getPartition();
-
-	Modularity modularity;
-	PLP plp(G);
-	plp.run();
-	Partition plpClus = plp.getPartition();
-	INFO("modularity of PLP clusters: ", modularity.getQuality(plpClus, G));
-	EXPECT_EQ(k, plpClus.numberOfSubsets()) << "In this simple setting (clusters are cliques), PLP should detect all 1000 clusters";
-	INFO("modularity: " , modularity.getQuality(zeta, G));
-
-	EXPECT_EQ(k, zeta.numberOfSubsets()) << "In this simple setting (clusters are cliques), EPP should detect all 1000 clusters";
-}
 
 
 
 TEST_F(CommunityGTest, testLabelPropagationOnUniformGraph) {
-	GraphGenerator graphGenerator;
-	int n = 100;
-	Graph G = graphGenerator.makeErdosRenyiGraph(n, 0.2);
+	ErdosRenyiGenerator graphGen(100, 0.2);
+	Graph G = graphGen.generate();
 
 	PLP lp(G);
 	lp.run();
@@ -138,10 +64,11 @@ TEST_F(CommunityGTest, testLabelPropagationOnUniformGraph) {
 
 
 TEST_F(CommunityGTest, testLabelPropagationOnClusteredGraph_ForNumberOfClusters) {
-	GraphGenerator graphGenerator;
 	int64_t n = 100;
 	count k = 3; // number of clusters
-	Graph G = graphGenerator.makeClusteredRandomGraph(n, k, 1.0, 0.00);
+
+	ClusteredRandomGraphGenerator graphGen(n, k, 1.0, 0.00);
+	Graph G = graphGen.generate();
 
 	PLP lp(G);
 	lp.run();
@@ -154,42 +81,14 @@ TEST_F(CommunityGTest, testLabelPropagationOnClusteredGraph_ForNumberOfClusters)
 	EXPECT_EQ(k, zeta.numberOfSubsets()) << " " << k << " clusters are easy to detect";
 }
 
-TEST_F(CommunityGTest, testLabelPropagationOnClusteredGraph_ForEquality) {
-	int64_t n = 100;
-
-	GraphGenerator graphGen;
-	Graph Gtrash = graphGen.makeCompleteGraph(n);
-
-	count k = 3; // number of clusters
-	ClusteringGenerator clusteringGen;
-	Partition reference = clusteringGen.makeRandomClustering(Gtrash, k);
-	if (reference.numberOfSubsets() != k) {
-		WARN("random clustering does not contain k=",k," cluster: ",reference.numberOfSubsets());
-		k = reference.numberOfSubsets();
-	}
-
-	Graph G = graphGen.makeClusteredRandomGraph(reference, 1.0, 0.0);	// LabelPropagation is very bad at discerning clusters and needs this large pin/pout difference
-
-	PLP lp(G);
-	lp.run();
-	Partition zeta = lp.getPartition();
-
-	Modularity modularity;
-	DEBUG("modularity produced by LabelPropagation: " , modularity.getQuality(zeta, G));
-	DEBUG("number of clusters produced by LabelPropagation: k=" , zeta.numberOfSubsets());
-
-	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta)) << "the resulting partition should be a proper clustering";
-	EXPECT_TRUE(GraphClusteringTools::equalClusterings(zeta, reference, G)) << "LP should detect exactly the reference clustering";
-
-}
-
 
 
 TEST_F(CommunityGTest, testLabelPropagationOnDisconnectedGraph) {
-	GraphGenerator graphGenerator;
 	count n = 100;
 	count k = 2; // number of clusters
-	Graph G = graphGenerator.makeClusteredRandomGraph(n, k, 1.0, 0.0);
+	ClusteredRandomGraphGenerator graphGen(n, k, 1.0, 0.00);
+	Graph G = graphGen.generate();
+
 
 	PLP lp(G);
 	lp.run();
@@ -228,20 +127,21 @@ TEST_F(CommunityGTest, testLabelPropagationOnManySmallClusters) {
 	double pin = 1.0;
 	double pout = 0.0;
 
-	GraphGenerator graphGen;
-	std::pair<Graph, Partition> G_ref = graphGen.makeClusteredRandomGraphWithReferenceClustering(n, k, pin, pout);
+	ClusteredRandomGraphGenerator graphGen(n, k, pin, pout);
+	Graph G = graphGen.generate();
+	Partition reference = graphGen.getCommunities();
 
 
-	PLP lp(G_ref.first);
+	PLP lp(G);
 	lp.run();
 	Partition zeta = lp.getPartition();
 
 	Modularity modularity;
-	DEBUG("modularity produced by LabelPropagation: " , modularity.getQuality(zeta, G_ref.first));
+	DEBUG("modularity produced by LabelPropagation: " , modularity.getQuality(zeta, G));
 	DEBUG("number of clusters produced by LabelPropagation: k=" , zeta.numberOfSubsets());
 
-	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G_ref.first, zeta)) << "the resulting partition should be a proper clustering";
-	EXPECT_TRUE(GraphClusteringTools::equalClusterings(zeta, G_ref.second, G_ref.first)) << "Can LabelPropagation detect the reference clustering?";
+	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta)) << "the resulting partition should be a proper clustering";
+	EXPECT_TRUE(GraphClusteringTools::equalClusterings(zeta, reference, G)) << "Can LabelPropagation detect the reference clustering?";
 
 }
 
@@ -268,24 +168,6 @@ TEST_F(CommunityGTest, testLouvainParallel2Naive) {
 }
 */
 
-
-
-
-
-
-TEST_F(CommunityGTest, testEPPFactory) {
-	METISGraphReader reader;
-	Graph jazz = reader.read("input/jazz.graph");
-
-	EPP epp = EPPFactory::make(jazz, 4, "PLP", "PLM");
-
-	epp.run();
-	Partition zeta = epp.getPartition();
-
-	INFO("number of clusters: " , zeta.numberOfSubsets());
-
-	EXPECT_TRUE(GraphClusteringTools::isProperClustering(jazz, zeta));
-}
 
 
 
@@ -342,14 +224,16 @@ TEST_F(CommunityGTest, testDeletedNodesPLM) {
 }
 
 TEST_F(CommunityGTest, testModularity) {
-	GraphGenerator graphGenerator;
 
 	count n = 100;
 
 	DEBUG("testing modularity on clustering of complete graph with " , n , " nodes");
 
-
-	Graph G = graphGenerator.makeCompleteGraph(n);
+	// make complete graph
+	Graph G = Graph(n);
+	G.forNodePairs([&](node u, node v) {
+		G.addEdge(u,v);
+	});
 	DEBUG("total edge weight: " , G.totalEdgeWeight());
 
 	ClusteringGenerator clusteringGenerator;
@@ -375,14 +259,16 @@ TEST_F(CommunityGTest, testModularity) {
 }
 
 TEST_F(CommunityGTest, testCoverage) {
-	GraphGenerator graphGenerator;
 
 	count n = 100;
 
 	DEBUG("testing coverage on clustering of complete graph with " , n , " nodes");
 
-
-	Graph G = graphGenerator.makeCompleteGraph(n);
+	// make complete graph
+	Graph G = Graph(n);
+	G.forNodePairs([&](node u, node v) {
+		G.addEdge(u,v);
+	});
 
 	ClusteringGenerator clusteringGenerator;
 
@@ -409,8 +295,12 @@ TEST_F(CommunityGTest, testCoverage) {
 // TODO necessary testcase? move equals to some class ?
 TEST_F(CommunityGTest, testClusteringEquality) {
 	count n = 100;
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeCompleteGraph(n);
+
+	// make complete graph
+	Graph G = Graph(n);
+	G.forNodePairs([&](node u, node v) {
+		G.addEdge(u,v);
+	});
 
 	ClusteringGenerator clusteringGen;
 	Partition one1 = clusteringGen.makeOneClustering(G);
@@ -460,8 +350,11 @@ TEST_F(CommunityGTest, testEdgeCutMeasure) {
 
 TEST_F(CommunityGTest, testJaccardMeasure) {
 	count n = 100;
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeCompleteGraph(n);
+	// make complete graph
+	Graph G = Graph(n);
+	G.forNodePairs([&](node u, node v) {
+		G.addEdge(u,v);
+	});
 
 	ClusteringGenerator clusteringGen;
 	Partition singleton = clusteringGen.makeSingletonClustering(G);
@@ -477,8 +370,11 @@ TEST_F(CommunityGTest, testJaccardMeasure) {
 
 TEST_F(CommunityGTest, testNodeStructuralRandMeasure) {
 	count n = 100;
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeCompleteGraph(n);
+	// make complete graph
+	Graph G = Graph(n);
+	G.forNodePairs([&](node u, node v) {
+		G.addEdge(u,v);
+	});
 
 	ClusteringGenerator clusteringGen;
 	Partition one1 = clusteringGen.makeOneClustering(G);
@@ -493,8 +389,11 @@ TEST_F(CommunityGTest, testNodeStructuralRandMeasure) {
 
 TEST_F(CommunityGTest, testGraphStructuralRandMeasure) {
 	count n = 100;
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeCompleteGraph(n);
+	// make complete graph
+	Graph G = Graph(n);
+	G.forNodePairs([&](node u, node v) {
+		G.addEdge(u,v);
+	});
 
 	ClusteringGenerator clusteringGen;
 	Partition one1 = clusteringGen.makeOneClustering(G);
@@ -612,9 +511,12 @@ TEST_F(CommunityGTest, testNMIDistance) {
 
 
 TEST_F(CommunityGTest, testSampledRandMeasures) {
-	GraphGenerator graphGenerator;
 	count n = 42;
-	Graph G = graphGenerator.makeCompleteGraph(n);
+	// make complete graph
+	Graph G = Graph(n);
+	G.forNodePairs([&](node u, node v) {
+		G.addEdge(u,v);
+	});
 	ClusteringGenerator clusteringGenerator;
 	Partition one = clusteringGenerator.makeOneClustering(G);
 	Partition singleton = clusteringGenerator.makeSingletonClustering(G);
@@ -667,8 +569,13 @@ TEST_F(CommunityGTest, tryParallelAgglomerativeAndPLM) {
 
 TEST_F(CommunityGTest, testClusteringIntersection) {
 	PartitionIntersection intersection;
-	GraphGenerator graphGenerator;
-	Graph G = graphGenerator.makeCompleteGraph(1200);
+	// make complete graph
+	count n = 1200;
+	Graph G = Graph(n);
+	G.forNodePairs([&](node u, node v) {
+		G.addEdge(u,v);
+	});
+
 	ClusteringGenerator clusteringGenerator;
 	Partition twelve = clusteringGenerator.makeContinuousBalancedClustering(G, 12);
 	Partition singleton = clusteringGenerator.makeSingletonClustering(G);
@@ -691,8 +598,13 @@ TEST_F(CommunityGTest, testClusteringIntersection) {
 
 TEST_F(CommunityGTest, testMakeNoncontinuousClustering) {
 	ClusteringGenerator generator;
-	GraphGenerator graphGenerator;
-	Graph G = graphGenerator.makeCompleteGraph(100);
+	// make complete graph
+	count n = 100;
+	Graph G = Graph(n);
+	G.forNodePairs([&](node u, node v) {
+		G.addEdge(u,v);
+	});
+
 	Partition con = generator.makeContinuousBalancedClustering(G, 10);
 	Partition nonCon = generator.makeNoncontinuousBalancedClustering(G, 10);
 	PartitionIntersection intersection;
@@ -705,8 +617,13 @@ TEST_F(CommunityGTest, testMakeNoncontinuousClustering) {
 
 TEST_F(CommunityGTest, testHubDominance) {
 	ClusteringGenerator generator;
-	GraphGenerator graphGenerator;
-	Graph G = graphGenerator.makeCompleteGraph(100);
+
+	// make complete graph
+	count n = 100;
+	Graph G = Graph(n);
+	G.forNodePairs([&](node u, node v) {
+		G.addEdge(u,v);
+	});
 	Partition con = generator.makeContinuousBalancedClustering(G, 10);
 
 	HubDominance hub;

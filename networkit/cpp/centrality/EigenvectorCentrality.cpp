@@ -21,12 +21,6 @@ void EigenvectorCentrality::run() {
 	std::vector<double> values(z, 1.0);
 	scoreData = values;
 
-	// do not execute algorithm on directed graphs since this is error prone
-	// and can yield misleading results (wrong metric, not implementation fault!)
-	if (G.isDirected()) {
-		return;
-	}
-
 	double length = 0.0;
 	double oldLength = 0.0;
 
@@ -41,8 +35,8 @@ void EigenvectorCentrality::run() {
 		// iterate matrix-vector product
 		G.parallelForNodes([&](node u) {
 			values[u] = 0.0;
-			G.forNeighborsOf(u, [&](node v) {
-				values[u] += G.weight(u, v) * scoreData[v];
+			G.forInEdgesOf(u, [&](node u, node v, edgeweight ew) {
+				values[u] += ew * scoreData[v];
 			});
 		});
 

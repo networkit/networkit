@@ -25,7 +25,7 @@ Partition EdgeListPartitionReader::read(std::string path) {
 	Partition zeta(0); // start without nodes
 	while(std::getline(file, line)) {
 		std::vector<std::string> split = Aux::StringTools::split(line, sepChar);
-		if (split.size() == 2 && split[0] != "#") {
+		if (split[0] != "#") {
 			index c = std::atoi(split[1].c_str());
 			// NetworKit uses zero-based node ids, adapt input accordingly
 			index v = std::atoi(split[0].c_str()) - firstNode;

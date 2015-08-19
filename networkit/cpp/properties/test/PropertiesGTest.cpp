@@ -21,7 +21,6 @@
 #include "../../auxiliary/Timer.h"
 #include "../../auxiliary/Log.h"
 #include "../../generators/ErdosRenyiGenerator.h"
-#include "../../graph/GraphGenerator.h"
 #include "../../io/METISGraphReader.h"
 #include "../../io/KONECTGraphReader.h"
 
@@ -41,14 +40,13 @@ PropertiesGTest::~PropertiesGTest() {
 
 TEST_F(PropertiesGTest, testClusteringCoefficient) {
 
-	GraphGenerator gen;
-	Graph G = gen.makeErdosRenyiGraph(10, 1.0);
+	ErdosRenyiGenerator graphGen(10, 1.0);
+	Graph G = graphGen.generate();
 
 	ClusteringCoefficient clusteringCoefficient;
 	double cc = clusteringCoefficient.avgLocal(G);
 
 	EXPECT_EQ(1.0, cc);
-
 }
 
 TEST_F(PropertiesGTest, testDegreeDistribution) {
@@ -61,16 +59,16 @@ TEST_F(PropertiesGTest, testDegreeDistribution) {
 	EXPECT_EQ(0u, degreeDist[0]);
 	EXPECT_EQ(0u, degreeDist[1]);
 	EXPECT_EQ(3u, degreeDist[2]);
-
 }
 
 
 
 TEST_F(PropertiesGTest, testLocalClusteringCoefficients) {
-
 	// Test case for a complete graph
-	GraphGenerator gen;
-	Graph G_complete = gen.makeCompleteGraph(4);
+	Graph G_complete(4);
+	G_complete.forNodePairs([&](node u, node v){
+		G_complete.addEdge(u,v);
+	});
 
 	std::vector<double> coefficients = GraphProperties::localClusteringCoefficients(G_complete);
 	for (double cc : coefficients) {
@@ -103,6 +101,11 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficients) {
 	EXPECT_EQ(0.0, coefficients_G2[1]);
 	EXPECT_EQ(0.0, coefficients_G2[2]);
 
+	// test throw runtime error for self-loop in graph
+	Graph H(2);
+	H.addEdge(0, 1);
+	H.addEdge(1, 1);
+	EXPECT_ANY_THROW(GraphProperties::localClusteringCoefficients(H));
 }
 
 
@@ -149,8 +152,10 @@ TEST_F(PropertiesGTest, testCoreDecompositionOnGraphFiles) {
 TEST_F(PropertiesGTest, testAverageLocalClusteringCoefficient) {
 
 	// Test case for a complete graph
-	GraphGenerator gen;
-	Graph G_complete = gen.makeCompleteGraph(4);
+	Graph G_complete(4);
+	G_complete.forNodePairs([&](node u, node v){
+		G_complete.addEdge(u,v);
+	});
 
 	EXPECT_EQ(1.0, GraphProperties::averageLocalClusteringCoefficient(G_complete)) << "should be 1.0 for a complete graph";
 
@@ -173,13 +178,21 @@ TEST_F(PropertiesGTest, testAverageLocalClusteringCoefficient) {
 
 	EXPECT_EQ(0.0, GraphProperties::averageLocalClusteringCoefficient(G_path_isolated)) << "should be 0.0 for a path";
 
+	// test throw runtime error for self-loop in graph
+	Graph H(2);
+	H.addEdge(0, 1);
+	H.addEdge(1, 1);
+	EXPECT_ANY_THROW(GraphProperties::averageLocalClusteringCoefficient(H));
 
 }
 
 
 TEST_F(PropertiesGTest, testLocalClusteringCoefficientPerDegree) {
-	GraphGenerator gen;
-	Graph G = gen.makeCompleteGraph(5);
+	Graph G(5);
+	G.forNodePairs([&](node u, node v){
+		G.addEdge(u,v);
+	});
+
 
 	std::vector<double> coefficients = GraphProperties::localClusteringCoefficientPerDegree(G);
 
@@ -209,6 +222,11 @@ TEST_F(PropertiesGTest, testLocalClusteringCoefficientPerDegree) {
 	EXPECT_EQ(0, coefficients1[1]);
 	EXPECT_EQ(1.0, coefficients1[2]);
 
+	// test throw runtime error for self-loop in graph
+	Graph H(2);
+	H.addEdge(0, 1);
+	H.addEdge(1, 1);
+	EXPECT_ANY_THROW(GraphProperties::localClusteringCoefficientPerDegree(H));
 }
 
 TEST_F(PropertiesGTest, testLocalClusteringCoefficientOnARealGraph) {
