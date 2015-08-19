@@ -1,18 +1,14 @@
 NetworKit
 =========
 
-[NetworKit][networkit] is a growing open-source toolkit for high-performance
+[NetworKit][networkit] is an open-source tool suite for high-performance
 network analysis. Its aim is to provide tools for the analysis of large
 networks in the size range from thousands to billions of edges. For this
 purpose, it implements efficient graph algorithms, many of them parallel to
 utilize multicore architectures. These are meant to compute standard measures
-of network analysis, such as degree sequences, clustering coefficients and
-centrality (see next sections of this document for a list of existing features
-and a roadmap of planned features). In this respect, NetworKit is comparable
-to packages such as [NetworkX][networkx], albeit with a focus on parallelism
-and scalability. NetworKit is also a testbed for algorithm engineering and
-contains novel algorithms from recently published research, especially
-in the area of community detection (see list of publications below).
+of network analysis. NetworKit is focused on scalability and comprehensiveness.
+NetworKit is also a testbed for algorithm engineering and
+contains novel algorithms from recently published research (see list of publications below).
 
 NetworKit is a Python module. High-performance algorithms are written in C++ and exposed to Python
 via the Cython toolchain. Python in turn gives us the ability to work interactively and a
@@ -190,8 +186,8 @@ NetworKit in the directory `include `is a symlink to the directory `networkit/cp
 		-L/path/to/repository LibDemo.cpp -lNetworKit -fopenmp
 
 ## Known Issues
-- Mac OS X 10.10 "Yosemite": Some users have reported compilation problems on Yosemite with g++ 4.9. The compiler errors mention register problems. 
-  While the exact reason remains unclear, the actual issue seems to be that the compiler tries to perform a dual architecture build. 
+- Mac OS X 10.10 "Yosemite": Some users have reported compilation problems on Yosemite with g++ 4.9. The compiler errors mention register problems.
+  While the exact reason remains unclear, the actual issue seems to be that the compiler tries to perform a dual architecture build.
   Fix: Enforce a 64-bit build by prepending `ARCHFLAGS="-arch x86_64"` to your setup/pip command, e.g. as in
   `sudo ARCHFLAGS="-arch x86_64" python3 setup.py build_ext --inplace -j4` or `sudo ARCHFLAGS="-arch x86_64" pip3 install networkit`.
 
@@ -200,12 +196,6 @@ Contribute
 ----------
 
 We would like to encourage contributions to the NetworKit source code. See the development guide (`DevGuide.mdown`) for instructions. For support please contact `christian.staudt @ kit.edu`.
-
-
-Development History
--------------------
-
-For history and possible future features, refer to the `Roadmap`.
 
 
 Credits
