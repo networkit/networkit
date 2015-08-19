@@ -1,5 +1,5 @@
 /*
- * ChibaNishizekiTriangleCounterGTest.h
+ * ChibaNishizekiTriangleEdgeScoreGTest.h
  *
  *  Created on: 23.05.2014
  *      Author: Gerd Lindner
@@ -14,7 +14,7 @@
 
 namespace NetworKit {
 
-class ChibaNishizekiTriangleCounterGTest: public testing::Test {
+class ChibaNishizekiTriangleEdgeScoreGTest: public testing::Test {
 
 };
 
