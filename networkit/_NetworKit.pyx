@@ -7208,10 +7208,12 @@ cdef class RandomNodeEdgeScore(EdgeScore):
 	G : Graph
 		The graph to calculate the Random Edge attribute for.
 	"""
-
 	def __cinit__(self, Graph G):
 		self._G = G
 		self._this = new _RandomNodeEdgeScore(G._this)
+
+	cdef bool isDoubleValue(self):
+		return True
 
 ctypedef fused DoubleInt:
 	int
@@ -7301,6 +7303,9 @@ cdef class SCANStructuralSimilarityScore(EdgeScore):
 		self._G = G
 		self._triangles = triangles
 		self._this = new _SCANStructuralSimilarityScore(G._this, self._triangles)
+
+	cdef bool isDoubleValue(self):
+		return True
 
 cdef extern from "cpp/sparsification/NodeNormalizedTriangleAttributizer.h":
 	cdef cppclass _NodeNormalizedTriangleAttributizer "NetworKit::NodeNormalizedTriangleAttributizer":
