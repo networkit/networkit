@@ -14,6 +14,7 @@ namespace NetworKit {
 
 /**
  * Local Degree sparsification method.
+ * See 'Structure-Preserving Sparsification of Social Networks' by Lindner, Staudt, Hamann.
  */
 class LocalDegreeScore : public EdgeScore<double> {
 

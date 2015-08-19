@@ -13,7 +13,7 @@
 namespace NetworKit {
 
 /**
- * Calculates a sparsified graph by applying a global threshold to an edge attribute.
+ * Calculates a sparsified graph by applying a global threshold to an edge score.
  */
 class GlobalThresholdFilter {
 

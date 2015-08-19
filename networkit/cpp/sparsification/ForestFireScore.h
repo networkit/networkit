@@ -13,7 +13,8 @@
 namespace NetworKit {
 
 /**
- * Experimental
+ * Based on the Forest Fire algorithm introduced by Leskovec et al.
+ * The burn frequency of the edges is used as edge score.
  */
 class ForestFireScore : public EdgeScore<double> {
 
