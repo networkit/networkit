@@ -38,7 +38,7 @@ void SimmelianBackboneNonParametric::run() {
 
 	PrefixJaccardCoefficient<count> jaccardScore(inputGraph, triangles);
 	jaccardScore.run();
-	std::vector<double> jaccard = jaccardScore.getAttribute();
+	std::vector<double> jaccard = jaccardScore.scores();
 
 	GlobalThresholdFilter filter(inputGraph, jaccard, threshold, true);
 	outputGraph = filter.calculate();

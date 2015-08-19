@@ -6960,14 +6960,10 @@ cdef class SimmelianOverlapScore(EdgeScore):
 		return True
 
 cdef extern from "cpp/edgescores/PrefixJaccardCoefficient.h":
-	cdef cppclass _PrefixJaccardCoefficient "NetworKit::PrefixJaccardCoefficient<double>":
+	cdef cppclass _PrefixJaccardCoefficient "NetworKit::PrefixJaccardCoefficient<double>"(_EdgeScore[double]):
 		_PrefixJaccardCoefficient(const _Graph& G, const vector[double]& a) except +
-		void run() except +
-		vector[double] getAttribute() except +
 
-cdef class PrefixJaccardCoefficient:
-	cdef _PrefixJaccardCoefficient *_this
-	cdef Graph _G
+cdef class PrefixJaccardCoefficient(EdgeScore):
 	cdef vector[double] _attribute
 
 	def __cinit__(self, Graph G, vector[double] attribute):
@@ -6975,15 +6971,8 @@ cdef class PrefixJaccardCoefficient:
 		self._attribute = attribute
 		self._this = new _PrefixJaccardCoefficient(G._this, self._attribute)
 
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		self._this.run()
-		return self
-
-	def getAttribute(self):
-		return self._this.getAttribute()
+	cdef bool isDoubleValue(self):
+		return True
 
 cdef extern from "cpp/sparsification/MultiscaleScore.h":
 	cdef cppclass _MultiscaleScore "NetworKit::MultiscaleScore"(_EdgeScore):

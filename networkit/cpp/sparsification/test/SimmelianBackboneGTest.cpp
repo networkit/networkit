@@ -11,7 +11,6 @@
 
 #include "../Sparsifiers.h"
 #include "../SimmelianOverlapScore.h"
-#include "../../edgescores/PrefixJaccardCoefficient.h"
 #include "../../edgescores/ChibaNishizekiTriangleCounter.h"
 
 namespace NetworKit {

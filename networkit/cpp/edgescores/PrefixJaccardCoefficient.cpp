@@ -1,22 +1,26 @@
 /*
+ * PrefixJaccardCoefficient.h
  *
+ *  Created on: 26.09.2014
+ *      Author: Michael Hamann
  */
 
 #include "PrefixJaccardCoefficient.h"
 
-
 namespace NetworKit {
 
 template <typename AttributeT>
-PrefixJaccardCoefficient<AttributeT>::PrefixJaccardCoefficient(const Graph &G, const std::vector< AttributeT > &attribute) : G(G), inAttribute(attribute) {
+PrefixJaccardCoefficient<AttributeT>::PrefixJaccardCoefficient(const Graph &G, const std::vector< AttributeT > &attribute) :
+	EdgeScore<double>(G), inAttribute(attribute) {
 }
 
 template <typename AttributeT>
 void PrefixJaccardCoefficient<AttributeT>::run() {
-	if (!G.hasEdgeIds()) throw std::runtime_error("Error, edges need to be indexed first");
+	//this-> required to access members of base class, since this is a template class.
+	if (!this->G.hasEdgeIds()) throw std::runtime_error("Error, edges need to be indexed first");
 
-	outAttribute.clear();
-	outAttribute.resize(G.upperEdgeIdBound());
+	this->scoreData.clear();
+	this->scoreData.resize(this->G.upperEdgeIdBound());
 
 	struct RankedEdge {
 		node u;
@@ -34,14 +38,14 @@ void PrefixJaccardCoefficient<AttributeT>::run() {
 		};
 	};
 
-	std::vector<std::vector<RankedEdge> > rankedEdges(G.upperNodeIdBound());
+	std::vector<std::vector<RankedEdge> > rankedEdges(this->G.upperNodeIdBound());
 
-	G.balancedParallelForNodes([&](node u) {
-		if (G.degree(u) == 0) return;
+	this->G.balancedParallelForNodes([&](node u) {
+		if (this->G.degree(u) == 0) return;
 
-		rankedEdges[u].reserve(G.degree(u));
+		rankedEdges[u].reserve(this->G.degree(u));
 
-		G.forEdgesOf(u, [&](node _u, node w, edgeid eid) {
+		this->G.forEdgesOf(u, [&](node _u, node w, edgeid eid) {
 			rankedEdges[u].emplace_back(w, inAttribute[eid], 0);
 		});
 
@@ -63,7 +67,7 @@ void PrefixJaccardCoefficient<AttributeT>::run() {
 		}
 	});
 
-	G.parallelForEdges([&](node u, node v, edgeid eid) {
+	this->G.parallelForEdges([&](node u, node v, edgeid eid) {
 		std::set<node> uNeighbors, vNeighbors;
 		count curRank = 0;
 		double bestJaccard = 0;
@@ -108,20 +112,21 @@ void PrefixJaccardCoefficient<AttributeT>::run() {
 			++curRank;
 		}
 
-		outAttribute[eid] = bestJaccard;
+		this->scoreData[eid] = bestJaccard;
 	});
 
-	hasRun = true;
+	this->hasRun = true;
 }
-
 
 template <typename AttributeT>
-std::vector< double > PrefixJaccardCoefficient<AttributeT>::getAttribute() {
-	if (!hasRun) throw std::runtime_error("Error, run must be called first");
-
-	return outAttribute;
+double PrefixJaccardCoefficient<AttributeT>::score(node u, node v) {
+	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 
+template <typename AttributeT>
+double PrefixJaccardCoefficient<AttributeT>::score(edgeid eid) {
+	throw std::runtime_error("Not implemented: Use scores() instead.");
+}
 
 template class PrefixJaccardCoefficient<double>;
 template class PrefixJaccardCoefficient<count>;

@@ -72,7 +72,7 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneNonParametric) {
 
 	PrefixJaccardCoefficient<count> jaccard(G, counts);
 	jaccard.run();
-	auto attribute = jaccard.getAttribute();
+	auto attribute = jaccard.scores();
 
 	runtime.stop();
 	INFO("[DONE] SimmelianBackboneNonParametric (" , runtime.elapsed().count() , " ms)");
@@ -179,7 +179,7 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	runtime.start();
 	PrefixJaccardCoefficient<count> jaccardAttributizer(g, triangles);
 	jaccardAttributizer.run();
-	std::vector<double> jaccard = jaccardAttributizer.getAttribute();
+	std::vector<double> jaccard = jaccardAttributizer.scores();
 	runtime.stop();
 	std::cout << "[DONE] Simmelian Jaccard attribute " << runtime.elapsedTag() << std::endl;
 
