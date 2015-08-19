@@ -252,13 +252,9 @@ class SimmelianSparsifierNonParametric(Sparsifier):
 		"""
 
 		chiba = ChibaNishizekiTriangleCounter(G)
-<<<<<<< dest
-		triangles = chiba.getAttribute()
-		a_sj = PrefixJaccardCoefficient(G, triangles).run().scores()
-=======
 		triangles = chiba.scores()
 		a_sj = PrefixJaccardCoefficient(G, triangles).run().scores()
->>>>>>> source
+		
 		return a_sj
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):

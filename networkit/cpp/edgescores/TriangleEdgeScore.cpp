@@ -1,21 +1,21 @@
 /*
- * TriangleCounter.cpp
+ * TriangleEdgeScore.cpp
  *
  *  Created on: 29.08.2014
  *      Author: Michael Hamann, Gerd Lindner
  */
 
-#include "TriangleCounter.h"
+#include "TriangleEdgeScore.h"
 #include "../auxiliary/Log.h"
 #include "../auxiliary/Timer.h"
 #include <omp.h>
 
 namespace NetworKit {
 
-TriangleCounter::TriangleCounter(const Graph& G) : G(G) {
+TriangleEdgeScore::TriangleEdgeScore(const Graph& G) : EdgeScore<count>(G) {
 }
 
-std::vector<count> TriangleCounter::getAttribute() {
+void TriangleEdgeScore::run() {
 	if (!G.hasEdgeIds()) {
 		throw std::runtime_error("edges have not been indexed - call indexEdges first");
 	}
@@ -40,7 +40,7 @@ std::vector<count> TriangleCounter::getAttribute() {
 				++nodePos[deg];
 			}
 		});
-		
+
 		// bucket sort
 		// exclusive prefix sum
 		index tmp = nodePos[0];
@@ -113,7 +113,16 @@ std::vector<count> TriangleCounter::getAttribute() {
 		}
 	});
 
-	return triangleCount;
+	scoreData = std::move(triangleCount);
+	hasRun = true;
+}
+
+count TriangleEdgeScore::score(node u, node v) {
+	throw std::runtime_error("Not implemented: Use scores() instead.");
+}
+
+count TriangleEdgeScore::score(edgeid eid) {
+	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 
 } /* namespace NetworKit */

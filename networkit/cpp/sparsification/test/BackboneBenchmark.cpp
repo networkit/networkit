@@ -9,7 +9,7 @@
 
 #include "BackboneBenchmark.h"
 #include "../../edgescores/ChibaNishizekiTriangleCounter.h"
-#include "../../edgescores/TriangleCounter.h"
+#include "../../edgescores/TriangleEdgeScore.h"
 #include "../../edgescores/PrefixJaccardCoefficient.h"
 #include "../SimmelianOverlapScore.h"
 #include "../MultiscaleScore.h"
@@ -153,8 +153,9 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	// --------- Triangle counting
 	std::cout << "[BEGIN] triangle counting: " << std::endl;
 	runtime.start();
-	TriangleCounter triangleAttributizer(g);
-	std::vector<count> triangles = triangleAttributizer.getAttribute();
+	TriangleEdgeScore triangleScore(g);
+	triangleScore.run();
+	std::vector<count> triangles = triangleScore.scores();
 	runtime.stop();
 	std::cout << "[DONE] triangle counting " << runtime.elapsedTag() << std::endl;
 

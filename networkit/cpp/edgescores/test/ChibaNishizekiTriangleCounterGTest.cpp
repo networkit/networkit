@@ -8,9 +8,8 @@
 #ifndef NOGTEST
 
 #include "ChibaNishizekiTriangleCounterGTest.h"
-
 #include "../ChibaNishizekiTriangleCounter.h"
-#include "../TriangleCounter.h"
+#include "../TriangleEdgeScore.h"
 
 namespace NetworKit {
 
@@ -40,8 +39,9 @@ TEST_F(ChibaNishizekiTriangleCounterGTest, testNewTriangleCountsTrivial) {
 
 	g.indexEdges();
 
-	TriangleCounter counter(g);
-	std::vector<count> counts = counter.getAttribute();
+	TriangleEdgeScore counter(g);
+	counter.run();
+	std::vector<count> counts = counter.scores();
 
 	EXPECT_EQ(1, (counts[g.edgeId(0,1)])) << "wrong triangle count";
 	EXPECT_EQ(1, (counts[g.edgeId(0,2)])) << "wrong triangle count";
@@ -119,8 +119,9 @@ TEST_F(ChibaNishizekiTriangleCounterGTest, testNewTriangleCountsSimple) {
 
 	EXPECT_EQ(8, g.numberOfEdges()) << "wrong edge count";
 
-	TriangleCounter counter(g);
-	std::vector<count> counts = counter.getAttribute();
+	TriangleEdgeScore counter(g);
+	counter.run();
+	std::vector<count> counts = counter.scores();
 
 	EXPECT_EQ(6, g.numberOfNodes()) << "undesired side effect";
 	EXPECT_EQ(8, g.numberOfEdges()) << "undesired side effect";

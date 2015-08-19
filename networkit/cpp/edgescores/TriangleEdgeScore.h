@@ -1,5 +1,5 @@
 /*
- * TriangleCounter.h
+ * TriangleEdgeScore.h
  *
  *  Created on: 22.05.2014
  *      Author: Gerd Lindner, Michael Hamann
@@ -8,24 +8,22 @@
 #ifndef TRIANGLE_COUNTER_H_
 #define TRIANGLE_COUNTER_H_
 
-#include "../graph/Graph.h"
-#include "EdgeAttribute.h"
+#include "EdgeScore.h"
 
 namespace NetworKit {
 
 /**
  * An implementation of the triangle counting algorithm by Ortmann et al.
  */
-class TriangleCounter : public EdgeAttribute<count> {
-
-protected:
-	const Graph& G;
+class TriangleEdgeScore : public EdgeScore<count> {
 
 public:
 
-	TriangleCounter(const Graph& G);
+	TriangleEdgeScore(const Graph& G);
+	virtual count score(edgeid eid) override;
+	virtual count score(node u, node v) override;
+	virtual void run() override;
 
-	virtual std::vector<count> getAttribute() override;
 };
 
 } /* namespace NetworKit */
