@@ -99,7 +99,8 @@ class Profile:
 	def create(cls, G, exclude=["KPathCentrality", "KatzCentrality"]):
 		""" TODO: """
 		result = cls(G, cls.__TOKEN)
-
+		kit.setNumberOfThreads(result.__parallel)
+		
 		def funcScores(instance):
 			return instance.scores()
 
@@ -390,8 +391,7 @@ class Profile:
 				else:
 					print(".", end="", flush=True)
 
-		kit.setNumberOfThreads(self.__parallel)
-		pool = multiprocessing.ThreadPool(self.__parallel)
+		pool = multiprocessing.ThreadPool(self.__parallel, False)
 			
 		for name in self.__measures:
 			measure = self.__measures[name]
