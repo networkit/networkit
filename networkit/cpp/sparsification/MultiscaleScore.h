@@ -28,6 +28,9 @@ public:
 	virtual double score(node u, node v) override;
 	virtual void run() override;
 	double getProbability(count degree, edgeweight normalizedWeight);
+
+private:
+	const std::vector<double>& attribute;
 };
 
 }

@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-MultiscaleScore::MultiscaleScore(const Graph& G, const std::vector<double>& attribute) : EdgeScore<double>(G, attribute) {}
+MultiscaleScore::MultiscaleScore(const Graph& G, const std::vector<double>& attribute) : EdgeScore<double>(G), attribute(attribute) {}
 
 void MultiscaleScore::run() {
 	if (!G.hasEdgeIds()) {
@@ -28,10 +28,10 @@ void MultiscaleScore::run() {
 		//Normalize edgeweights of N(u)
 		edgeweight sum = 0.0;
 		G.forNeighborsOf(u, [&](node _u, node v, edgeid eid) {
-			sum += scoreData[eid];
+			sum += attribute[eid];
 		});
 		G.forNeighborsOf(u, [&](node _u, node v, edgeid eid) {
-			normalizedWeights[v] = scoreData[eid] / sum;
+			normalizedWeights[v] = attribute[eid] / sum;
 		});
 
 		//Filter edges by probability
