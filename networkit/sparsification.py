@@ -2,7 +2,7 @@
 
 __author__ = "Gerd Lindner"
 
-from _NetworKit import ChibaNishizekiTriangleCounter, GlobalThresholdFilter, LocalSimilarityAttributizer, MultiscaleAttributizer, SimmelianOverlapScore, RandomEdgeAttributizer, LocalDegreeScore, ForestFireScore, \
+from _NetworKit import ChibaNishizekiTriangleCounter, GlobalThresholdFilter, LocalSimilarityAttributizer, MultiscaleAttributizer, SimmelianOverlapScore, RandomEdgeScore, LocalDegreeScore, ForestFireScore, \
 	EdgeAttributeAsWeight, EdgeAttributeLinearizer, JaccardSimilarityAttributizer, LocalFilterAttributizer, AdamicAdarDistance, ChanceCorrectedTriangleAttributizer, NodeNormalizedTriangleAttributizer, TriangleCounter, RandomNodeEdgeAttributizer, ChungLuScore, ChibaNishizekiQuadrangleCounter, GeometricMeanAttributizer, \
 	EdgeAttributeNormalizer, EdgeAttributeBlender, PrefixJaccardCoefficient, SCANStructuralSimilarityAttributizer
 
@@ -409,7 +409,7 @@ class RandomEdgeBackbone(Sparsifier):
 		G -- the input graph
 		"""
 
-		attributizer = RandomEdgeAttributizer(G)
+		attributizer = RandomEdgeScore(G)
 		a_r = attributizer.getAttribute()
 		return a_r
 

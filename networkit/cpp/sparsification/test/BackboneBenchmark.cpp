@@ -14,7 +14,7 @@
 #include "../SimmelianOverlapScore.h"
 #include "../MultiscaleAttributizer.h"
 #include "../LocalSimilarityAttributizer.h"
-#include "../RandomEdgeAttributizer.h"
+#include "../RandomEdgeScore.h"
 #include "../GlobalThresholdFilter.h"
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/Log.h"

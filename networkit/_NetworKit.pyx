@@ -7018,12 +7018,11 @@ cdef class MultiscaleAttributizer:
 	def getAttribute(self):
 		return self._this.getAttribute()
 
-cdef extern from "cpp/sparsification/RandomEdgeAttributizer.h":
-	cdef cppclass _RandomEdgeAttributizer "NetworKit::RandomEdgeAttributizer":
-		_RandomEdgeAttributizer(const _Graph& G) except +
-		vector[double] getAttribute() except +
+cdef extern from "cpp/sparsification/RandomEdgeScore.h":
+	cdef cppclass _RandomEdgeScore "NetworKit::RandomEdgeScore"(_EdgeScore):
+		_RandomEdgeScore(const _Graph& G) except +
 
-cdef class RandomEdgeAttributizer:
+cdef class RandomEdgeScore(EdgeScore):
 	"""
 	[todo]
 
@@ -7033,18 +7032,12 @@ cdef class RandomEdgeAttributizer:
 		The graph to calculate the Random Edge attribute for.
 	"""
 
-	cdef _RandomEdgeAttributizer* _this
-	cdef Graph _G
-
 	def __cinit__(self, Graph G):
 		self._G = G
-		self._this = new _RandomEdgeAttributizer(G._this)
+		self._this = new _RandomEdgeScore(G._this)
 
-	def __dealloc__(self):
-		del self._this
-
-	def getAttribute(self):
-		return self._this.getAttribute()
+	cdef bool isDoubleValue(self):
+		return True
 
 cdef extern from "cpp/sparsification/LocalSimilarityAttributizer.h":
 	cdef cppclass _LocalSimilarityAttributizer "NetworKit::LocalSimilarityAttributizer":

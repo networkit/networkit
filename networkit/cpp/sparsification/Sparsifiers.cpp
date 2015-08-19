@@ -11,7 +11,7 @@
 #include "SimmelianOverlapScore.h"
 #include "MultiscaleAttributizer.h"
 #include "LocalSimilarityAttributizer.h"
-#include "RandomEdgeAttributizer.h"
+#include "RandomEdgeScore.h"
 #include "GlobalThresholdFilter.h"
 
 #include "../auxiliary/Random.h"
@@ -116,8 +116,8 @@ RandomBackbone::RandomBackbone(const Graph& graph, double ratio) :
 		Sparsifier(graph), ratio(ratio) {}
 
 void RandomBackbone::run() {
-	RandomEdgeAttributizer randomAttributizer (inputGraph);
-	std::vector<double> random = randomAttributizer.getAttribute();
+	RandomEdgeScore randomScore (inputGraph);
+	std::vector<double> random = randomScore.scores();
 
 	GlobalThresholdFilter filter(inputGraph, random, ratio, true);
 	outputGraph = filter.calculate();
