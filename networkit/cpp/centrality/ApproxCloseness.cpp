@@ -18,6 +18,8 @@
 namespace NetworKit {
 
 ApproxCloseness::ApproxCloseness(const Graph& G, count nSamples, bool normalized) : Centrality(G, normalized), nSamples(nSamples) {
+	// TODO: fix
+	ERROR("Algorithm seems to be defective, do not use results. TODO: fix for next release");
 	if (G.isDirected()) {
 		throw std::runtime_error("Graph is directed. ApproxCloseness only runs on undirected graphs.");
 	}
