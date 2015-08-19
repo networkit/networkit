@@ -317,10 +317,7 @@ class DegreeMultiscaleBackbone(Sparsifier):
 		"""
 		Creates a new instance of the Degree Multiscale sparsifier.
 		Keyword arguments:
-		attrType -- For each edge (x,y) the following edge value will be used.
-			0: max(d(x), d(y))
-			1: min(d(x), d(y))
-			2: avg(d(x), d(y))
+		degsToAttrValue -- function that maps two node degrees to an edge score.
 		"""
 		self.degsToAttrValue = degsToAttrValue
 
