@@ -6612,13 +6612,11 @@ cdef class ChibaNishizekiQuadrangleCounter:
 		"""
 		return self._this.getAttribute()
 
-cdef extern from "cpp/edgescores/TriangleCounter.h":
-	cdef cppclass _TriangleCounter "NetworKit::TriangleCounter":
-		_TriangleCounter(const _Graph& G) except +
-		#void run() except +
-		vector[count] getAttribute() except +
+cdef extern from "cpp/edgescores/TriangleEdgeScore.h":
+	cdef cppclass _TriangleEdgeScore "NetworKit::TriangleEdgeScore"(_EdgeScore[double]):
+		_TriangleEdgeScore(const _Graph& G) except +
 
-cdef class TriangleCounter:
+cdef class TriangleEdgeScore(EdgeScore):
 	"""
 	Triangle counting.
 
@@ -6628,9 +6626,6 @@ cdef class TriangleCounter:
 		The graph to count triangles on.
 	"""
 
-	cdef _TriangleCounter* _this
-	cdef Graph _G
-
 	def __cinit__(self, Graph G):
 		"""
 		Parameters
@@ -6639,19 +6634,10 @@ cdef class TriangleCounter:
 			The graph to count triangles on.
 		"""
 		self._G = G
-		self._this = new _TriangleCounter(G._this)
+		self._this = new _TriangleEdgeScore(G._this)
 
-	def __dealloc__(self):
-		del self._this
-
-	def getAttribute(self):
-		"""
-		Returns
-		----------
-		vector[count]
-			the number of triangles edges are embedded in.
-		"""
-		return self._this.getAttribute()
+	cdef bool isDoubleValue(self):
+		return False
 
 cdef extern from "cpp/edgescores/EdgeAttributeLinearizer.h":
 	cdef cppclass _EdgeAttributeLinearizer "NetworKit::EdgeAttributeLinearizer":
