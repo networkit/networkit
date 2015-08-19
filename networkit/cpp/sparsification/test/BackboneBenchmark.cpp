@@ -8,7 +8,7 @@
 #ifndef NOGTEST
 
 #include "BackboneBenchmark.h"
-#include "../../edgescores/ChibaNishizekiTriangleCounter.h"
+#include "../../edgescores/ChibaNishizekiTriangleEdgeScore.h"
 #include "../../edgescores/TriangleEdgeScore.h"
 #include "../../edgescores/PrefixJaccardCoefficient.h"
 #include "../SimmelianOverlapScore.h"
@@ -47,8 +47,9 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneParametric) {
 
 	runtime.start();
 
-	ChibaNishizekiTriangleCounter counter(G);
-	std::vector<count> counts = counter.getAttribute();
+	ChibaNishizekiTriangleEdgeScore counter(G);
+	counter.run();
+	std::vector<count> counts = counter.scores();
 
 	SimmelianOverlapScore overlapScore(G, counts, 10);
 	overlapScore.run();
@@ -67,8 +68,9 @@ TEST_F(BackboneBenchmark, completeGraphSimmelianBackboneNonParametric) {
 
 	runtime.start();
 
-	ChibaNishizekiTriangleCounter counter(G);
-	std::vector<count> counts = counter.getAttribute();
+	ChibaNishizekiTriangleEdgeScore counter(G);
+	counter.run();
+	std::vector<count> counts = counter.scores();
 
 	PrefixJaccardCoefficient<count> jaccard(G, counts);
 	jaccard.run();
@@ -109,8 +111,9 @@ TEST_F(BackboneBenchmark, completeGraphLocalSimilarityBackbone) {
 
 	runtime.start();
 
-	ChibaNishizekiTriangleCounter counter(G);
-	std::vector<count> triangles = counter.getAttribute();
+	ChibaNishizekiTriangleEdgeScore counter(G);
+	counter.run();
+	std::vector<count> triangles = counter.scores();
 
 	LocalSimilarityScore localSimScore(G, triangles);
 	localSimScore.run();
@@ -145,8 +148,9 @@ TEST_F(BackboneBenchmark, backboneBenchmarkGraphFile) {
 	// --------- Triangle counting
 	std::cout << "[BEGIN] triangle counting: " << std::endl;
 	runtime.start();
-	ChibaNishizekiTriangleCounter oldTriangleAttributizer(g);
-	std::vector<count> oldTriangles = oldTriangleAttributizer.getAttribute();
+	ChibaNishizekiTriangleEdgeScore oldTriangleAttributizer(g);
+	oldTriangleAttributizer.run();
+	std::vector<count> oldTriangles = oldTriangleAttributizer.scores();
 	runtime.stop();
 	std::cout << "[DONE] Chiba Nishizeki triangle counting " << runtime.elapsedTag() << std::endl;
 

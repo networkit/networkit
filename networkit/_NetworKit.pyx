@@ -6533,13 +6533,13 @@ cdef class EdgeScore(Algorithm):
 			return (<_EdgeScore[count]*>(self._this)).scores()
 
 
-cdef extern from "cpp/edgescores/ChibaNishizekiTriangleCounter.h":
-	cdef cppclass _ChibaNishizekiTriangleCounter "NetworKit::ChibaNishizekiTriangleCounter":
-		_ChibaNishizekiTriangleCounter(const _Graph& G) except +
+cdef extern from "cpp/edgescores/ChibaNishizekiTriangleEdgeScore.h":
+	cdef cppclass _ChibaNishizekiTriangleEdgeScore "NetworKit::ChibaNishizekiTriangleEdgeScore"(_EdgeScore):
+		_ChibaNishizekiTriangleEdgeScore(const _Graph& G) except +
 		void run() except +
 		vector[count] getAttribute() except +
 
-cdef class ChibaNishizekiTriangleCounter:
+cdef class ChibaNishizekiTriangleEdgeScore(EdgeScore):
 	"""
 	Calculates for each edge the number of triangles it is embedded in.
 
@@ -6549,36 +6549,23 @@ cdef class ChibaNishizekiTriangleCounter:
 		The graph to count triangles on.
 	"""
 
-	cdef _ChibaNishizekiTriangleCounter* _this
-	cdef Graph _G
-
 	def __cinit__(self, Graph G):
 		"""
 		G : Graph
 			The graph to count triangles on.
 		"""
 		self._G = G
-		self._this = new _ChibaNishizekiTriangleCounter(G._this)
+		self._this = new _ChibaNishizekiTriangleEdgeScore(G._this)
 
-	def __dealloc__(self):
-		del self._this
+	cdef bool isDoubleValue(self):
+		return False
 
-	def getAttribute(self):
-		"""
-		Returns
-		----------
-		vector[count]
-			the number of triangles edges are embedded in.
-
-		"""
-		return self._this.getAttribute()
-
-cdef extern from "cpp/edgescores/ChibaNishizekiQuadrangleCounter.h":
-	cdef cppclass _ChibaNishizekiQuadrangleCounter "NetworKit::ChibaNishizekiQuadrangleCounter":
-		_ChibaNishizekiQuadrangleCounter(const _Graph& G) except +
+cdef extern from "cpp/edgescores/ChibaNishizekiQuadrangleEdgeScore.h":
+	cdef cppclass _ChibaNishizekiQuadrangleEdgeScore "NetworKit::ChibaNishizekiQuadrangleEdgeScore"(_EdgeScore):
+		_ChibaNishizekiQuadrangleEdgeScore(const _Graph& G) except +
 		vector[count] getAttribute() except +
 
-cdef class ChibaNishizekiQuadrangleCounter:
+cdef class ChibaNishizekiQuadrangleEdgeScore(EdgeScore):
 	"""
 	Calculates for each edge the number of quadrangles (circles of length 4) it is embedded in.
 
@@ -6587,8 +6574,6 @@ cdef class ChibaNishizekiQuadrangleCounter:
 	G : Graph
 		The graph to count quadrangles on.
 	"""
-	cdef _ChibaNishizekiQuadrangleCounter* _this
-	cdef Graph _G
 
 	def __cinit__(self, Graph G):
 		"""
@@ -6598,19 +6583,10 @@ cdef class ChibaNishizekiQuadrangleCounter:
 			The graph to count quadrangles on.
 		"""
 		self._G = G
-		self._this = new _ChibaNishizekiQuadrangleCounter(G._this)
+		self._this = new _ChibaNishizekiQuadrangleEdgeScore(G._this)
 
-	def __dealloc__(self):
-		del self._this
-
-	def getAttribute(self):
-		"""
-		Returns
-		----------
-		vector
-			the number of quadrangles edges are embedded in.
-		"""
-		return self._this.getAttribute()
+	cdef bool isDoubleValue(self):
+		return False
 
 cdef extern from "cpp/edgescores/TriangleEdgeScore.h":
 	cdef cppclass _TriangleEdgeScore "NetworKit::TriangleEdgeScore"(_EdgeScore[double]):
