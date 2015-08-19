@@ -87,7 +87,10 @@ def PageRankMatrix(G, damp=0.85):
 	stochastify = scipy.sparse.lil_matrix((n,n))
 	for v in G.nodes():
 		neighbors = G.degree(v)
-		stochastify[v,v] = 1.0 / neighbors
+		if neighbors == 0:
+			stochastify[v,v] = 0.0	# TODO: check correctness
+		else:
+			stochastify[v,v] = 1.0 / neighbors
 	stochastify = stochastify.tocsr()
 
 	stochastic = A * stochastify
