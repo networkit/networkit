@@ -7212,38 +7212,29 @@ ctypedef fused DoubleInt:
 	int
 	double
 
-cdef extern from "cpp/sparsification/LocalFilterAttributizer.h":
-	cdef cppclass _LocalFilterAttributizerDouble "NetworKit::LocalFilterAttributizer<double>":
-		_LocalFilterAttributizerDouble(const _Graph& G, const vector[double]& a, bool logarithmic,  bool bothRequired) except +
-		inline vector[double] getAttribute() except +
+cdef extern from "cpp/sparsification/LocalFilterScore.h":
+	cdef cppclass _LocalFilterScoreDouble "NetworKit::LocalFilterScore<double>"(_EdgeScore[double]):
+		_LocalFilterScoreDouble(const _Graph& G, const vector[double]& a, bool logarithmic,  bool bothRequired) except +
 
-	cdef cppclass _LocalFilterAttributizerInt "NetworKit::LocalFilterAttributizer<int>":
-		_LocalFilterAttributizerInt(const _Graph& G, const vector[double]& a, bool logarithmic,  bothRequired) except +
-		inline vector[double] getAttribute() except +
+	cdef cppclass _LocalFilterScoreInt "NetworKit::LocalFilterScore<int>"(_EdgeScore[count]):
+		_LocalFilterScoreInt(const _Graph& G, const vector[double]& a, bool logarithmic,  bothRequired) except +
 
-cdef class LocalFilterAttributizer:
+cdef class LocalFilterScore(EdgeScore):
+	cdef vector[double] _a
+
 	"""
 	TODO
 	"""
-	cdef _LocalFilterAttributizerDouble* _thisDouble
-	#cdef _LocalFilterAttributizerInt _thisInt
-
-	cdef Graph _G
-	cdef vector[double] _a
-
 	def __init__(self, Graph G, vector[double] a, bool logarithmic = True, bool bothRequired = False):
 		self._G = G
 		self._a = a
-		self._thisDouble = new _LocalFilterAttributizerDouble(G._this, a, logarithmic, bothRequired)
+		self._this = new _LocalFilterScoreDouble(G._this, a, logarithmic, bothRequired)
 
 	def __dealloc__(self):
 		del self._thisDouble
 
-	def getAttribute(self):
-		#if DoubleInt is int:
-		#	return self._thisInt.getAttribute(G._this, a)
-		#else:
-		return self._thisDouble.getAttribute()
+	cdef bool isDoubleValue(self):
+		return True
 
 cdef extern from "cpp/sparsification/ChanceCorrectedTriangleAttributizer.h":
 	cdef cppclass _ChanceCorrectedTriangleAttributizer "NetworKit::ChanceCorrectedTriangleAttributizer":
