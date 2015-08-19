@@ -7109,12 +7109,10 @@ cdef class ForestFireScore(EdgeScore):
 		return True
 
 cdef extern from "cpp/sparsification/LocalDegreeScore.h":
-	cdef cppclass _LocalDegreeScore "NetworKit::LocalDegreeScore":
+	cdef cppclass _LocalDegreeScore "NetworKit::LocalDegreeScore"(_EdgeScore[double]):
 		_LocalDegreeScore(const _Graph& G) except +
-		vector[double] scores() except +
-		void run() nogil except +
 
-cdef class LocalDegreeScore:
+cdef class LocalDegreeScore(EdgeScore):
 	"""
 	The LocalDegree sparsification approach is based on the idea of hub nodes.
 	This attributizer calculates for each edge the maximum parameter value
@@ -7126,27 +7124,12 @@ cdef class LocalDegreeScore:
 		The graph to apply the Local Degree  algorithm to.
 	"""
 
-	cdef _LocalDegreeScore* _this
-	cdef Graph _G
-
 	def __cinit__(self, Graph G):
 		self._G = G
 		self._this = new _LocalDegreeScore(G._this)
 
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		"""
-		Calculates the LocalDegree edge score.
-		"""
-		with nogil:
-			self._this.run()
-		return self
-
-	def scores(self):
-		return self._this.scores()
-
+	cdef bool isDoubleValue(self):
+		return True
 cdef extern from "cpp/distmeasures/JaccardDistance.h":
 	cdef cppclass _JaccardDistance "NetworKit::JaccardDistance":
 		_JaccardDistance(const _Graph& G, const vector[count]& triangles) except +
@@ -7211,12 +7194,11 @@ cdef class JaccardSimilarityAttributizer:
 		self._this.preprocess()
 		return [1 - x for x in self._this.getEdgeAttribute()]
 
-cdef extern from "cpp/sparsification/RandomNodeEdgeAttributizer.h":
-	cdef cppclass _RandomNodeEdgeAttributizer "NetworKit::RandomNodeEdgeAttributizer":
-		_RandomNodeEdgeAttributizer(const _Graph& G) except +
-		vector[double] getAttribute() except +
+cdef extern from "cpp/sparsification/RandomNodeEdgeScore.h":
+	cdef cppclass _RandomNodeEdgeScore "NetworKit::RandomNodeEdgeScore"(_EdgeScore[double]):
+		_RandomNodeEdgeScore(const _Graph& G) except +
 
-cdef class RandomNodeEdgeAttributizer:
+cdef class RandomNodeEdgeScore(EdgeScore):
 	"""
 	Random Edge sampling. This attributizer returns edge attributes where
 	each value is selected uniformly at random from [0,1].
@@ -7227,18 +7209,9 @@ cdef class RandomNodeEdgeAttributizer:
 		The graph to calculate the Random Edge attribute for.
 	"""
 
-	cdef _RandomNodeEdgeAttributizer* _this
-	cdef Graph _G
-
 	def __cinit__(self, Graph G):
 		self._G = G
-		self._this = new _RandomNodeEdgeAttributizer(G._this)
-
-	def __dealloc__(self):
-		del self._this
-
-	def getAttribute(self):
-		return self._this.getAttribute()
+		self._this = new _RandomNodeEdgeScore(G._this)
 
 ctypedef fused DoubleInt:
 	int
@@ -7317,36 +7290,17 @@ cdef class ChanceCorrectedTriangleAttributizer:
 		"""
 		return self._this.getAttribute()
 
-cdef extern from "cpp/sparsification/SCANStructuralSimilarityAttributizer.h":
-	cdef cppclass _SCANStructuralSimilarityAttributizer "NetworKit::SCANStructuralSimilarityAttributizer":
-		_SCANStructuralSimilarityAttributizer(_Graph G, const vector[count]& triangles) except +
-		vector[double] getAttribute() except +
+cdef extern from "cpp/sparsification/SCANStructuralSimilarityScore.h":
+	cdef cppclass _SCANStructuralSimilarityScore "NetworKit::SCANStructuralSimilarityScore"(_EdgeScore[double]):
+		_SCANStructuralSimilarityScore(_Graph G, const vector[count]& triangles) except +
 
-cdef class SCANStructuralSimilarityAttributizer:
-	cdef _SCANStructuralSimilarityAttributizer* _this
-	cdef Graph _G
+cdef class SCANStructuralSimilarityScore(EdgeScore):
 	cdef vector[count] _triangles
 
 	def __cinit__(self, Graph G, vector[count] triangles):
 		self._G = G
 		self._triangles = triangles
-		self._this = new _SCANStructuralSimilarityAttributizer(G._this, self._triangles)
-
-	def __dealloc__(self):
-		del self._this
-
-	def getAttribute(self):
-		"""
-		Gets the edge attribute that can be used for global filtering.
-
-		Returns
-		-------
-		vector[double]
-			The edge attribute
-
-		"""
-		return self._this.getAttribute()
-
+		self._this = new _SCANStructuralSimilarityScore(G._this, self._triangles)
 
 cdef extern from "cpp/sparsification/NodeNormalizedTriangleAttributizer.h":
 	cdef cppclass _NodeNormalizedTriangleAttributizer "NetworKit::NodeNormalizedTriangleAttributizer":
