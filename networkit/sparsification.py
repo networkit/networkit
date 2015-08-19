@@ -3,8 +3,8 @@
 __author__ = "Gerd Lindner"
 
 from _NetworKit import ChibaNishizekiTriangleCounter, GlobalThresholdFilter, LocalSimilarityAttributizer, MultiscaleAttributizer, SimmelianOverlapScore, RandomEdgeAttributizer, LocalDegreeScore, ForestFireScore, \
-	EdgeAttributeAsWeight, EdgeAttributeLinearizer, JaccardSimilarityAttributizer, LocalFilterAttributizer, AdamicAdarDistance, ChanceCorrectedTriangleAttributizer, NodeNormalizedTriangleAttributizer, TriangleCounter, RandomNodeEdgeAttributizer, ChungLuScore, ChibaNishizekiQuadrangleCounter, GeometricMeanAttributizer, \
-	EdgeAttributeNormalizer, EdgeAttributeBlender, PrefixJaccardCoefficient, SCANStructuralSimilarityAttributizer
+	EdgeAttributeAsWeight, EdgeAttributeLinearizer, JaccardSimilarityAttributizer, LocalFilterAttributizer, AdamicAdarDistance, ChanceCorrectedTriangleAttributizer, NodeNormalizedTriangleAttributizer, TriangleCounter, RandomNodeEdgeScore, ChungLuScore, ChibaNishizekiQuadrangleCounter, GeometricMeanAttributizer, \
+	EdgeAttributeNormalizer, EdgeAttributeBlender, PrefixJaccardCoefficient, SCANStructuralSimilarityScore
 
 # local imports
 from . import community
@@ -434,9 +434,9 @@ class RandomNodeEdgeBackbone(Sparsifier):
 		G -- the input graph
 		"""
 
-		attributizer = RandomNodeEdgeAttributizer(G)
-		rneAttribute = attributizer.getAttribute()
-		return rneAttribute
+		rneScore = RandomNodeEdgeScore(G)
+		rneScore.run()
+		return rneScore.scores()
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
 		gf = GlobalThresholdFilter(G, attribute, parameter, self.above)
@@ -517,10 +517,10 @@ class SCANBackbone(Sparsifier):
 		chiba = ChibaNishizekiTriangleCounter(G)
 		a_triangles = chiba.getAttribute()
 
-		attributizer_scan = SCANStructuralSimilarityAttributizer(G, a_triangles)
-		a_scan = attributizer_scan.getAttribute()
+		scanScore = SCANStructuralSimilarityScore(G, a_triangles)
+		scanScore.run()
 
-		return a_scan
+		return scanScore.scores()
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
 		gf = GlobalThresholdFilter(G, attribute, parameter, True)

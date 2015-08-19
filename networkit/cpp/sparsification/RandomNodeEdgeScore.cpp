@@ -19,7 +19,7 @@ void RandomNodeEdgeScore::run() {
 	}
 
 	Graph backbone = G;
-	std::vector<double> scores(G.upperEdgeIdBound());
+	std::vector<double> workScores(G.upperEdgeIdBound(), 0);
 	count numRemoved = 0;
 	std::vector< std::pair<node, node> > uniformlyRandomEdges;
 
@@ -38,7 +38,7 @@ void RandomNodeEdgeScore::run() {
 				if (backbone.hasEdge(edge.first, edge.second)) {
 					edgeid id = backbone.edgeId(edge.first, edge.second);
 
-					scores[id] = numRemoved * 1.0 / G.numberOfEdges();
+					workScores[id] = numRemoved * 1.0 / G.numberOfEdges();
 
 					backbone.removeEdge(edge.first, edge.second);
 
@@ -51,7 +51,7 @@ void RandomNodeEdgeScore::run() {
 
 			edgeid id = backbone.edgeId(edge.first, edge.second);
 
-			scores[id] = numRemoved * 1.0 / G.numberOfEdges();
+			workScores[id] = numRemoved * 1.0 / G.numberOfEdges();
 
 			backbone.removeEdge(edge.first, edge.second);
 
@@ -59,7 +59,7 @@ void RandomNodeEdgeScore::run() {
 		}
 	}
 
-	scoreData = std::move(scores);
+	scoreData = std::move(workScores);
 	hasRun = true;
 }
 
