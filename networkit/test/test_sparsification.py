@@ -9,18 +9,18 @@ class Test_Sparsification(unittest.TestCase):
 		self.G = readGraph("input/jazz.graph", Format.METIS)
 		self.G.indexEdges()
 		self.sparsifiers = [
-			sparsification.SimmelianBackboneParametric(10),
-			sparsification.SimmelianBackboneNonParametric(),
-			sparsification.QuadrilateralSimmelianBackbone(),
-			sparsification.DegreeMultiscaleBackbone(lambda d1, d2: max(d1,d2)),
-			sparsification.SimmelianMultiscaleBackbone(),
-			sparsification.LocalSimilarityBackbone(),
-			sparsification.MultiscaleBackbone(),
-			sparsification.RandomEdgeBackbone(),
-			sparsification.RandomNodeEdgeBackbone(),
-			sparsification.ForestFireBackbone(0.6, 5.0),
+			sparsification.SimmelianSparsifierParametric(10),
+			sparsification.SimmelianSparsifierNonParametric(),
+			sparsification.QuadrilateralSimmelianSparsifier(),
+			sparsification.DegreeMultiscaleSparsifier(lambda d1, d2: max(d1,d2)),
+			sparsification.SimmelianMultiscaleSparsifier(),
+			sparsification.LocalSimilaritySparsifier(),
+			sparsification.MultiscaleSparsifier(),
+			sparsification.RandomEdgeSparsifier(),
+			sparsification.RandomNodeEdgeSparsifier(),
+			sparsification.ForestFireSparsifier(0.6, 5.0),
 			sparsification.LocalDegreeSparsifier(),
-			sparsification.SCANBackbone()
+			sparsification.SCANSparsifier()
 		]
 
 	def test_getSparsifiedGraphOfSize(self):
