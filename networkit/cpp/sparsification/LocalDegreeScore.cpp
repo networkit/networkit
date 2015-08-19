@@ -13,15 +13,6 @@ namespace NetworKit {
 LocalDegreeScore::LocalDegreeScore(const Graph& G) : EdgeScore<double>(G) {
 }
 
-
-double LocalDegreeScore::score(node u, node v) {
-	throw std::runtime_error("Not implemented: Use scores() instead.");
-}
-
-double LocalDegreeScore::score(edgeid eid) {
-	throw std::runtime_error("Not implemented: Use scores() instead.");
-}
-
 void LocalDegreeScore::run() {
 	if (!G.hasEdgeIds()) {
 		throw std::runtime_error("edges have not been indexed - call indexEdges first");
@@ -66,6 +57,14 @@ void LocalDegreeScore::run() {
 
 	scoreData = std::move(exponents);
 	hasRun = true;
+}
+
+double LocalDegreeScore::score(node u, node v) {
+	throw std::runtime_error("Not implemented: Use scores() instead.");
+}
+
+double LocalDegreeScore::score(edgeid eid) {
+	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 
 } /* namespace NetworKit */

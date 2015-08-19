@@ -20,7 +20,6 @@ class ForestFireScore : public EdgeScore<double> {
 public:
 
 	ForestFireScore(const Graph& graph, double pf, double targetBurntRatio);
-	
 	virtual double score(edgeid eid) override;
 	virtual double score(node u, node v) override;
 	virtual void run() override;

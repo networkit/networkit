@@ -1,29 +1,26 @@
 /*
- * RandomNodeEdgeAttributizer.cpp
+ * RandomNodeEdgeScore.cpp
  *
  *  Created on: 20.11.2014
  *      Author: Michael Hamann
  */
 
-#include "RandomNodeEdgeAttributizer.h"
+#include "RandomNodeEdgeScore.h"
 #include "../auxiliary/Random.h"
 
 namespace NetworKit {
 
-RandomNodeEdgeAttributizer::RandomNodeEdgeAttributizer(const Graph& graph, double rneRatio) : graph(graph), rneRatio(rneRatio) {
+RandomNodeEdgeScore::RandomNodeEdgeScore(const Graph& G, double rneRatio) : EdgeScore<double>(G), rneRatio(rneRatio) {
 }
 
-std::vector< double > RandomNodeEdgeAttributizer::getAttribute() {
-	if (!graph.hasEdgeIds()) {
+void RandomNodeEdgeScore::run() {
+	if (!G.hasEdgeIds()) {
 		throw std::runtime_error("edges have not been indexed - call indexEdges first");
 	}
 
-	Graph backbone = graph;
-
-	std::vector<double> edgeAttribute(graph.upperEdgeIdBound());
-
+	Graph backbone = G;
+	std::vector<double> workScores(G.upperEdgeIdBound(), 0);
 	count numRemoved = 0;
-
 	std::vector< std::pair<node, node> > uniformlyRandomEdges;
 
 	while (backbone.numberOfEdges() > 0) {
@@ -41,7 +38,7 @@ std::vector< double > RandomNodeEdgeAttributizer::getAttribute() {
 				if (backbone.hasEdge(edge.first, edge.second)) {
 					edgeid id = backbone.edgeId(edge.first, edge.second);
 
-					edgeAttribute[id] = numRemoved * 1.0 / graph.numberOfEdges();
+					workScores[id] = numRemoved * 1.0 / G.numberOfEdges();
 
 					backbone.removeEdge(edge.first, edge.second);
 
@@ -54,7 +51,7 @@ std::vector< double > RandomNodeEdgeAttributizer::getAttribute() {
 
 			edgeid id = backbone.edgeId(edge.first, edge.second);
 
-			edgeAttribute[id] = numRemoved * 1.0 / graph.numberOfEdges();
+			workScores[id] = numRemoved * 1.0 / G.numberOfEdges();
 
 			backbone.removeEdge(edge.first, edge.second);
 
@@ -62,7 +59,16 @@ std::vector< double > RandomNodeEdgeAttributizer::getAttribute() {
 		}
 	}
 
-	return edgeAttribute;
+	scoreData = std::move(workScores);
+	hasRun = true;
+}
+
+double RandomNodeEdgeScore::score(node u, node v) {
+	throw std::runtime_error("Not implemented: Use scores() instead.");
+}
+
+double RandomNodeEdgeScore::score(edgeid eid) {
+	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 
 } /* namespace NetworKit */
