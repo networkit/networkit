@@ -6911,14 +6911,13 @@ cdef class AdamicAdarDistance:
 
 # Module: sparsification
 
-cdef extern from "cpp/sparsification/ChungLuAttributizer.h":
-	cdef cppclass _ChungLuAttributizer "NetworKit::ChungLuAttributizer":
-		_ChungLuAttributizer(const _Graph& G) except +
-		vector[double] getAttribute() except +
+cdef extern from "cpp/sparsification/ChungLuScore.h":
+	cdef cppclass _ChungLuScore "NetworKit::ChungLuScore"(_EdgeScore):
+		_ChungLuScore(const _Graph& G) except +
 
-cdef class ChungLuAttributizer:
+cdef class ChungLuScore(EdgeScore):
 	"""
-	Chung-Lu based attributizer.
+	Chung-Lu based score.
 
 	Parameters
 	----------
@@ -6926,18 +6925,12 @@ cdef class ChungLuAttributizer:
 		The input graph.
 	"""
 
-	cdef _ChungLuAttributizer* _this
-	cdef Graph _G
-
 	def __cinit__(self, Graph G):
 		self._G = G
-		self._this = new _ChungLuAttributizer(G._this)
+		self._this = new _ChungLuScore(G._this)
 
-	def __dealloc__(self):
-		del self._this
-
-	def getAttribute(self):
-		return self._this.getAttribute()
+	cdef bool isDoubleValue(self):
+		return True
 
 cdef extern from "cpp/sparsification/SimmelianOverlapScore.h":
 	cdef cppclass _SimmelianOverlapScore "NetworKit::SimmelianOverlapScore"(_EdgeScore[double]):
