@@ -1029,16 +1029,15 @@ cdef class Graph:
 
 cdef extern from "cpp/graph/BFS.h":
 	cdef cppclass _BFS "NetworKit::BFS":
-		_BFS(_Graph G, node source, bool storePaths, bool storeStack) except +
+		_BFS(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
 		void run() nogil except +
-		void run(node t) nogil except +
 		vector[edgeweight] getDistances() except +
 		vector[node] getPath(node t) except +
 
 cdef class BFS:
 	""" Simple breadth-first search on a Graph from a given source
 
-	BFS(G, source, [storePaths], [storeStack])
+	BFS(G, source, [storePaths], [storeStack], target)
 
 	Create BFS for `G` and source node `source`.
 
@@ -1050,19 +1049,21 @@ cdef class BFS:
 		The source node of the breadth-first search.
 	storePaths : bool
 		store paths and number of paths?
+	target: node
+		terminate search when the target has been reached
 
 	"""
 	cdef _BFS* _this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False):
+	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False, target=none):
 		self._G = G
-		self._this = new _BFS(G._this, source, storePaths, storeStack)
+		self._this = new _BFS(G._this, source, storePaths, storeStack, target)
 
 	def __dealloc__(self):
 		del self._this
 
-	def run(self, t = None):
+	def run(self):
 		"""
 		Breadth-first search from source.
 
@@ -1072,14 +1073,8 @@ cdef class BFS:
 			Vector of unweighted distances from source node, i.e. the
 	 		length (number of edges) of the shortest path from source to any other node.
 		"""
-		cdef node ct
-		if t == None:
-			with nogil:
-				self._this.run()
-		else:
-			ct = <node>t
-			with nogil:
-				self._this.run(ct)
+		with nogil:
+			self._this.run()
 		return self
 
 	def getDistances(self):
@@ -1202,9 +1197,8 @@ cdef class DynBFS:
 
 cdef extern from "cpp/graph/Dijkstra.h":
 	cdef cppclass _Dijkstra "NetworKit::Dijkstra":
-		_Dijkstra(_Graph G, node source, bool storePaths, bool storeStack) except +
+		_Dijkstra(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
 		void run() nogil except +
-		void run(node t) nogil except +
 		vector[edgeweight] getDistances() except +
 		vector[node] getPath(node t) except +
 
@@ -1213,7 +1207,7 @@ cdef class Dijkstra:
 	Returns list of weighted distances from node source, i.e. the length of the shortest path from source to
 	any other node.
 
-    Dijkstra(G, source, [storePaths], [storeStack])
+    Dijkstra(G, source, [storePaths], [storeStack], target)
 
     Creates Dijkstra for `G` and source node `source`.
 
@@ -1227,18 +1221,20 @@ cdef class Dijkstra:
 		store paths and number of paths?
 	storeStack : bool
 		maintain a stack of nodes in order of decreasing distance?
+	target : node
+		target node. Search ends when target node is reached. t is set to None by default.
     """
 	cdef _Dijkstra* _this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False):
+	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False, node target=none):
 		self._G = G
-		self._this = new _Dijkstra(G._this, source, storePaths, storeStack)
+		self._this = new _Dijkstra(G._this, source, storePaths, storeStack, target)
 
 	def __dealloc__(self):
 		del self._this
 
-	def run(self, t = None):
+	def run(self):
 		"""
 		Breadth-first search from source.
 
@@ -1248,15 +1244,8 @@ cdef class Dijkstra:
 			Vector of unweighted distances from source node, i.e. the
 	 		length (number of edges) of the shortest path from source to any other node.
 		"""
-		cdef node ct
-		if t == None:
-			with nogil:
-				self._this.run()
-		else:
-			ct = <node>t
-			with nogil:
-				self._this.run(ct)
-		return self
+		with nogil:
+			self._this.run()
 
 	def getDistances(self):
 		""" Returns a vector of weighted distances from the source node, i.e. the
