@@ -87,7 +87,7 @@ class Profile:
 	__verbose = False
 	__verboseLevel = 0
 	__verboseFilename = ""
-	__parallel = multiprocessing.numberOfProcessors() * 2
+	__parallel = multiprocessing.numberOfProcessors()
 
 
 	def __init__(self, G, token=object()):
@@ -256,7 +256,7 @@ class Profile:
 		theme = plot.Theme()
 		theme.set(style, color)
 		
-		pool = multiprocessing.ThreadPool(self.__parallel)
+		pool = multiprocessing.ThreadPool(self.__parallel, False)
 		for name in self.__measures:
 			category = self.__measures[name]["category"]
 			pool.put(
