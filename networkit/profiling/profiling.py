@@ -86,7 +86,7 @@ class Profile:
 	__pageCount = 0
 	__verbose = False
 	__verboseLevel = 0
-	__verboseFile = ""
+	__verboseFilename = ""
 	__parallel = multiprocessing.numberOfProcessors() * 2
 
 
@@ -293,8 +293,8 @@ class Profile:
 					(index, image) = data
 					self.__measures[name]["image"][index] = image
 			except Exception as e:
-				print("Error (Post Processing): " + plotType + " - " + name)
-				print(str(e))
+				self.__verbosePrint("Error (Post Processing): " + plotType + " - " + name, level=-1)
+				self.___verbosePrint(str(e), level=-1)
 		pool.join()
 
 		if type == "HTML":
@@ -324,7 +324,7 @@ class Profile:
 									value = self.__correlations[category][keyA][keyB]
 								except:
 									value = self.__correlations[category][keyB][keyA]
-								result += "<div class=\"HeatCell\" title=\"" + keyB + " - " + keyA + "\" data-image=\"data:image/svg+xml;utf8," + value["image"] + "\" data-heat=\"{:+.3F}\"></div>".format(value["stat"][correlationName])
+								result += "<div class=\"HeatCell\" title=\"" + keyB + " - " + keyA + "\" data-heat=\"{:+.3F}\"></div>".format(value["stat"][correlationName])
 							result += "<div class=\"HeatCellName\">" + keyB + "</div><br>"
 					result += "</div>"
 
@@ -585,7 +585,7 @@ class Profile:
 		if self.__verbose or level < 0:
 			print(text, end="", flush=True)
 			
-		if self.__verboseFile != "":
+		if self.__verboseFilename != "":
 			with open(self.__verboseFilename, 'a+') as file:
 				file.write(text)
 

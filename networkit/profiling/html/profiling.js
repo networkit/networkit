@@ -24,21 +24,15 @@ function NetworKit_pageEmbed(id)
 	
 	elements = document.getElementById(id).getElementsByClassName("HeatCell");
 	for (i=0; i<elements.length; i++) {
-		var data;
-		
-		data = Math.abs(parseFloat(elements[i].getAttribute("data-heat")));
-		elements[i].style.backgroundColor = (data <= 1) ? "hsl(" + (240 + 120 * data) + ", 60%, 70%)" : "#00FF00";
-		
-		data = elements[i].getAttribute("data-image").split("|");
-		elements[i].removeAttribute("data-image");
-		elements[i].setAttribute("data-image-index", 0);
-		elements[i].setAttribute("data-image-length", data.length);
-		for (j=0; j<data.length; j++) {
-			elements[i].setAttribute("data-image-" + j, data[j]);
+		var data = parseFloat(elements[i].getAttribute("data-heat"));
+		var color = "#00FF00";
+		if (data <= 1 && data > 0) {
+			color = "hsla(0, 100%, 75%, " + (data) + ")"; 
 		}
-		elements[i].onclick = function (e) {
-			NetworKit_overlayShow((e.target) ? e.target : e.srcElement);
+		else if (data <= 0 && data >= -1) {
+			color = "hsla(240, 100%, 75%, " + (-data) + ")";
 		}
+		elements[i].style.backgroundColor = color;
 	}
 	
 	elements = document.getElementById(id).getElementsByClassName("Details");
