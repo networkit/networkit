@@ -139,7 +139,7 @@ class Measure:
 				ax.set_xticklabels([])
 			else:
 				xfmt = ScalarFormatter(useMathText=True)
-				xfmt.set_powerlimits((-3,3))
+				xfmt.set_powerlimits((-2,3))
 				ax.xaxis.set_major_formatter(xfmt)
 			if not y_showTicks:
 				ax.set_yticks([])

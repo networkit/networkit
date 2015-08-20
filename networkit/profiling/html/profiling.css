@@ -1,29 +1,3 @@
-/*
-	file: profiling.css
-	author: Mark Erb
-		
-	This file contains all CSS rules for the profiling layout 
-	
-	The data will be automatically embedded as singelton into the original
-	IPython Layout 
-	
-		html > head > style id="NetworKit_style"
-		
-	Every rule should be hosted by one of the following terms at least:
-		
-		.NetworKit_Page    (=> Page)
-		#NetworKit_Overlay (=> Overlay)
-		
-	See the following files for possible id/class names:
-		
-		profiling.profile.html
-		profiling.overlay.html
-		profiling.js
-*/
-
-
-/* --- Page ---------------------------------------------------------------- */
-
 .NetworKit_Page {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 14px;
@@ -97,12 +71,16 @@
 }
 
 .NetworKit_Page .Block .Thumbnail_Overview,
-.NetworKit_Page .Block .Thumbnail_ScatterPlot  {
+.NetworKit_Page .Block .Thumbnail_ScatterPlot {
 	width: 260px;
 	float: left;
-	/*margin-right: 16px;
-	adding-bottom: 16px;*/
 }
+
+.NetworKit_Page .Block .Thumbnail_Overview img,
+.NetworKit_Page .Block .Thumbnail_ScatterPlot img {
+	width: 260px;
+}
+
 
 .NetworKit_Page .Block .Thumbnail_Overview:before,
 .NetworKit_Page .Block .Thumbnail_ScatterPlot:before {
@@ -113,13 +91,6 @@
 
 .NetworKit_Page .Block .Thumbnail_Overview:before {
 	content: attr(data-title);
-}
-
-.NetworKit_Page .Block .Thumbnail_ScatterPlot:before {
-	/*
-	content: attr(data-title) "\\a" attr(data-title-second);
-	white-space: pre;
-	*/
 }
 
 .NetworKit_Page .HeatCell {
@@ -274,8 +245,6 @@
 .NetworKit_Page .PartitionPie img {
 	width: 600px;
 }
-
-/* --- Overlay ------------------------------------------------------------- */
 
 #NetworKit_Overlay {
 	left: 0px;
