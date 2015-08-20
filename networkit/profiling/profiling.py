@@ -12,6 +12,7 @@ from . import plot
 
 from IPython.core.display import *
 import collections
+import math
 
 
 def readfile(filename, removeWS=False):
@@ -104,7 +105,7 @@ class Profile:
 		""" TODO: """
 		result = cls(G, cls.__TOKEN)
 		kit.setNumberOfThreads(result.__parallel)
-		
+
 		def funcScores(instance):
 			return instance.scores()
 
@@ -123,7 +124,7 @@ class Profile:
 			("Node Centrality",	"Page Rank",					True,	funcScores,	"Score",	centrality.PageRank, 					(G, )),
 			("Node Centrality",	"K-Path Centrality",			True,	funcScores,	"Score",	centrality.KPathCentrality,				(G, )),
 			("Node Centrality",	"Katz Centrality",				True,	funcScores,	"Score",	centrality.KatzCentrality,				(G, )),
-			("Node Centrality",	"Betweenness",					True,	funcScores,	"Score",	centrality.ApproxBetweenness2,			(G, max(42, G.numberOfNodes() / 10000), True)),
+			("Node Centrality",	"Betweenness",					True,	funcScores,	"Score",	centrality.ApproxBetweenness2,			(G, max(42, math.log(G.numberOfNodes())**2, True))),
 			("Partition",		"Communities",					False,	funcSizes,	"Nodes Per Community",	community.PLM, 				(G, )),
 			("Partition",		"Connected Components",			False,	funcSizes,	"Connected Nodes",	classConnectedComponents,		(G, ))
 		]: result.__addMeasure(parameter, exclude)
@@ -450,7 +451,7 @@ class Profile:
 		self.__verbosePrint("")
 		self.__properties["Diameter Range"] = diameter
 
-			
+
 	def __loadMeasures(self):
 		""" TODO: """
 		pool = multiprocessing.ThreadPool(self.__parallel, False)
@@ -587,3 +588,4 @@ class Profile:
 		if self.__verboseFile != "":
 			with open(self.__verboseFilename, 'a+') as file:
 				file.write(text)
+
