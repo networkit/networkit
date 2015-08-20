@@ -183,7 +183,7 @@ class Profile:
 		return self.__measures[measure]["time"]
 		
 		
-	def output(self, type, directory, style="light", color=(0, 0, 1)):
+	def output(self, type, directory, style="light", color=(0, 0, 1), parallel=False):
 		""" TODO """
 		options_type = ["HTML", "LaTeX", None]
 		for o in options_type:
@@ -200,7 +200,8 @@ class Profile:
 			directory = directory,
 			style = style,
 			color = color,
-			pageIndex = 0
+			pageIndex = 0,
+			parallel = parallel
 		)
 		
 		if type == "HTML":
@@ -232,7 +233,7 @@ class Profile:
 		with open(directory + "/" + filename, 'w') as file:
 			file.write(result)
 		
-	def show(self, style="light", color=(0, 0, 1)):
+	def show(self, style="light", color=(0, 0, 1), parallel=False):
 		""" TODO: """
 		try:
 			__IPYTHON__
@@ -244,19 +245,20 @@ class Profile:
 			directory = "",
 			style = style,
 			color = color,
-			pageIndex = self.__pageCount
+			pageIndex = self.__pageCount,
+			parallel = parallel
 		)
 		
 		display_html(HTML(result))
 		self.__pageCount = self.__pageCount + 1
 
 		
-	def __format(self, type, directory, style, color, pageIndex):
+	def __format(self, type, directory, style, color, pageIndex, parallel):
 		""" TODO """
 		theme = plot.Theme()
 		theme.set(style, color)
 		
-		pool = multiprocessing.ThreadPool(self.__parallel, False)
+		pool = multiprocessing.ThreadPool(self.__parallel, parallel)
 		for name in self.__measures:
 			category = self.__measures[name]["category"]
 			pool.put(

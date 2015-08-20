@@ -76,9 +76,16 @@ class ThreadPool():
 			self.__tasks = multiprocessing.JoinableQueue()
 			self.__results = multiprocessing.Queue()
 			self.__workers = [Worker(self.__tasks, self.__results) for i in range(self.__numberOfWorkers)]
+			count = 0
 			for w in self.__workers:
 				w.deamon = True
-				w.start()
+				try:
+					w.start()
+					count += 1
+				except Exception as e:
+					if count < 1:
+						raise RuntimeError(e)
+					break
 		else:
 			self.__tasks = deque()
 
@@ -122,3 +129,5 @@ class ThreadPool():
 			for i in range(self.__numberOfWorkers):
 				self.__tasks.put(None)
 			self.__tasks.join()
+			self.__tasks.close()
+			self.__results.close()
