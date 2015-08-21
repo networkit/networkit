@@ -24,38 +24,62 @@ DirOptBFS::DirOptBFS(const Graph& G, node source, bool storePaths, bool storeSta
 }
 
 void DirOptBFS::run() {
+	edgeweight infDist = std::numeric_limits<edgeweight>::max();
+	count z = G.upperNodeIdBound();
 	count currentDistance = 0;
+
+	std::vector<bool> visited(z,false);
+
+	auto wasVisited = [&](node v) {
+		// numerous criteria could be used
+		//return !previous[v].empty();
+		//return distances[v] != infDist;
+		return visited[v];
+	};
 	auto doTopDownStep = [&]() {
-		topdown = topdown?(m_f < (m_u/alpha)):(n_f < rhs_C_BT);
-		/*if (topdown) {
+		//topdown = topdown?(m_f < (m_u/alpha)):(n_f < rhs_C_BT);
+		if (topdown) {
 			count m_f = 0;
-			// manual computation of m_f is no bookkeeping is done
+			// manual computation of m_f if no bookkeeping is done
 			// set would be better as one doesn't have to do a whole scan
 			#pragma omp parallel for reduction(+:m_f)
-			for (count u = 0; u < frontier.size(); ++u) {
-				if (frontier[u]) m_f += G.degree(u);
+			for (count u = 0; u < qFrontier.size(); ++u) {
+				m_f += G.degree(u);
 			}
-			// manual computation of m_u is no bookkeeping is done
-			count m_u = G.parallelSumForNodes([&](node v){
-				return (previous[v].empty()?G.degree(v):0);
-			});
+			// manual computation of m_u if no bookkeeping is done
+			count m_u = 0;
+			#pragma omp parallel for reduction(+:m_u) 
+			for (count u = 0; u < z; ++u) {
+				m_u += (G.hasNode(u)&&!wasVisited(u))?G.degree(u):0;
+			}
+			//INFO("m_f > (m_u / alpha): ",m_f," / (",m_u," / ",alpha,")");
 			topdown = !(m_f > (m_u / alpha));
 		} else {
-			count n = G.numberOfNodes();
-			count n_f = 0;
+			//count n = G.numberOfNodes();
+			count n_f = qFrontier.size();
 			// manual computation of n_f is no bookkeeping is done
-			#pragma omp parallel for reduction(+:n_f)
-			for (count u = 0; u < frontier.size(); ++u) {
+			/*#pragma omp parallel for reduction(+:n_f)
+			for (count u = 0; u < qFrontier.size(); ++u) {
 				n_f += frontier[u];
-			}
+			}*/
 			topdown = n_f < rhs_C_BT;
-		}*/
+		}
 		// reset bookkeeping variables that are computed for each iteration
-		m_f = 0;
-		n_f = 0;
+		//m_f = 0;
+		//n_f = 0;
+		//INFO("topdown? ", topdown);
 		return topdown;
 	};
 
+
+	auto relax = [&](node v) {
+		if (!wasVisited(v)) {
+			visited[v] = true;
+			distances[v] = currentDistance;
+			#pragma omp critical
+			qNext.push_back(v);
+		}
+	};
 
 	auto bottomUpStep = [&](){
 		// this probably could be parallelized, however the following stuff needs to be sorted out
@@ -64,24 +88,20 @@ void DirOptBFS::run() {
 		// - synchronisation of bookkeeping variables m_f, n_f, m_u. The order of writes do not matter at all,
 		//   however they need to be taken care of when parallelized. - These are the problem. Simply parallelizing this will result in
 		//   wrong results due to race conditions. However, can the
+		//G.forNodes([&](node v){
 		G.balancedParallelForNodes([&](node v){
 			// iterate over all nodes v that haven't been visited yet
-			if (previous[v].empty()) { // TODO: is it necessary to rely on the "previous" array here?
+			if (!wasVisited(v)) {
 				// iterate over their neighbours u ...
+				// G.forNeighborsOf is not an option because you can't "break" it
 				for (auto &u : G.neighbors(v)) {
 					// ... and if one of them belongs to the frontier ...
 					if (frontier[u]) {
 						// ... visit v
+						relax(v);
 						previous[v].push_back(u);
-						distances[v] = currentDistance + 1;
-						// add it to the frontier for the next iteration.
-						next[v] = true;
-						// do some "bookkeeping" for the direction optimizing heuristic
-						m_f += G.degree(v);
-						n_f++;
-						hasQueuedNodes = true;
-						m_u -= G.degree(u);
-						break; // if we only want one predecessor/bfs tree, we break the loop here.
+						// if we only want one predecessor/bfs tree, we break the loop here.
+						//break;
 					}
 				}
 			}
@@ -89,59 +109,43 @@ void DirOptBFS::run() {
 	};
 
 	auto topDownStep = [&]() {
-		// TODO:
-		// this scan could only be avoided with a queue or set-like data structure
-		// however, this will degrade performance as the current frontier[u]-accesses in the bottom-up-step
-		// will result in "frontier.find(u) != frontier.end()" which seems to be way more expensive
-		for (count u = 0, end = frontier.size(); u < end; ++u) { // TODO: why not use the node iterator here? This probably fails if there are deleted nodes.
-			// if the node is not in the frontier, just continue
-			if(!frontier[u]) continue;
-			// unset the node in the frontier
-			frontier[u] = false;
-			G.forNeighborsOf(u,[&](node v) {
-				// if the node hasn't been visited yet...
-				if (previous[v].empty()) {
-					// ... visit it
-					previous[v].push_back(u);
-					distances[v] = currentDistance + 1;
-					// add it to the frontier for the next iteration.
-					next[v] = true;
-					// do some "bookkeeping" for the direction optimizing heuristic
-					n_f++;
-					m_f += G.degree(v);
-					hasQueuedNodes = true;
-
-				}
+		for (auto& current : qFrontier) {
+			G.forNeighborsOf(current,[&](node v){
+				relax(v);
+				previous[v].push_back(current);
 			});
-			m_u -= G.degree(u);
 		}
 	};
 
-	edgeweight infDist = std::numeric_limits<edgeweight>::max();
-	count z = G.upperNodeIdBound();
+	auto convertQueue = [&]() {
+		for (auto& current : qFrontier) {
+			frontier[current] = true;
+		}
+	};
+
 	distances.clear();
 	distances.resize(z, infDist);
 	previous.clear();
 	previous.resize(z);
 	frontier.clear();
 	frontier.resize(z,false);
-	next.clear();
-	next.resize(z,false);
 
-/*	std::vector<bool> visited;
-	visited.resize(z, false);*/
-	frontier[source] = true;
-	hasQueuedNodes = true;
+	qFrontier.push_back(source);
+	//hasQueuedNodes = true;
 	previous[source] = {source};
 	distances[source] = currentDistance;
+	visited[source] = true;
 /*	count time_topstep = 0;
 	count time_botstep = 0;
 	count n_top = 0;
 	count n_bot = 0;
 	Aux::Timer timer;*/
-	m_u = G.numberOfEdges() * 2;
-	while (hasQueuedNodes) {
-		hasQueuedNodes = false;
+	//m_u = G.numberOfEdges() * 2;
+	while (!qFrontier.empty()) {
+	//while (hasQueuedNodes) {
+		//hasQueuedNodes = false;
+		//INFO("level: ",currentDistance, "\tsize of frontier: ",qFrontier.size());
+		++currentDistance;
 		if (doTopDownStep()) {
 //			timer.start();
 			topDownStep();
@@ -149,6 +153,7 @@ void DirOptBFS::run() {
 			time_topstep += timer.elapsedMilliseconds();
 			n_top += n_f;*/
 		} else {
+			convertQueue();
 //			timer.start();
 			bottomUpStep();
 /*			timer.stop();
@@ -158,8 +163,8 @@ void DirOptBFS::run() {
 			// therefore, clear the frontier now. TODO: can this be done any cheaper?
 			frontier.assign(z,false);
 		}
-		++currentDistance;
-		std::swap(frontier,next);
+		qFrontier.erase(qFrontier.begin(),qFrontier.end());
+		std::swap(qFrontier,qNext);
 	}
 /*	INFO("time spent in top-down  steps:\t",time_topstep,"ms");
 	INFO("nodes claimed in top-down  steps:\t",n_top);

@@ -228,22 +228,56 @@ TEST_F(SSSPGTest, testDirOptBFS) {
 
 TEST_F(SSSPGTest, benchDirOptBFS) {
 	METISGraphReader reader;
-	Graph G = reader.read("input/caidaRouterLevel.graph");
+	Graph G = reader.read("input/as-Skitter.metis.graph");
+	//Graph G = reader.read("input/caidaRouterLevel.graph");
 	Aux::Timer t;
+	count startNode = 100000;
 
-	BFS bfs_ref(G, 100000);
+	auto minimal_bfs = [](const Graph& G, count source) {
+		count z = G.upperNodeIdBound();
+		std::vector<double> distances(z,std::numeric_limits<edgeweight>::max());
+		std::vector<bool> visited(z,false);
+		distances[source] = 0;
+		visited[source] = true;
+		std::queue<node> q;
+		q.push(source);
+		while(!q.empty()) {
+			auto current = q.front();
+			q.pop();
+			G.forNeighborsOf(current,[&](node v) {
+				if (!visited[v]) {
+					visited[v] = true;
+					q.push(v);
+					distances[v] = distances[current] + 1;
+				}
+			});
+		}
+		return std::move(distances);
+	};
+
+	t.start();
+	auto min_dist = minimal_bfs(G,startNode);
+	t.stop();
+	INFO("bfs_min took:\t",t.elapsedTag());
+
+	BFS bfs_ref(G, startNode);
 	t.start();
 	bfs_ref.run();
 	t.stop();
 	INFO("bfs_ref took:\t",t.elapsedTag());
 
-	DirOptBFS bfs_diropt(G, 100000);
+	DirOptBFS bfs_diropt(G, startNode);
 	t.start();
 	bfs_diropt.run();
 	t.stop();
 	INFO("bfs_diropt took:\t",t.elapsedTag());
 
-	EXPECT_EQ(bfs_ref.getDistances(),bfs_diropt.getDistances());
+	auto ref_dist = bfs_ref.getDistances();
+	auto do_dist = bfs_diropt.getDistances();
+	G.forNodes([&](node v){
+		EXPECT_EQ(ref_dist[v],min_dist[v]) << "min_dist differ at node " << v;
+		EXPECT_EQ(ref_dist[v],do_dist[v]) << "diropt_dist differ at node " << v;
+	});
 }
 
 } /* namespace NetworKit */

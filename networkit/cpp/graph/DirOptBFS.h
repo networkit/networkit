@@ -24,7 +24,8 @@ friend class DynBFS;
 
 private:
 	std::vector<bool> frontier; //TODO: doc
-	std::vector<bool> next; // TODO: doc
+	std::vector<node> qFrontier;
+	std::vector<node> qNext;
 
 	/**
 	 * Indicates if the BFS is finished yet.
