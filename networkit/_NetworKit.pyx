@@ -4806,8 +4806,8 @@ cdef class EigenvectorCentrality(Centrality):
 cdef extern from "cpp/centrality/CoreDecomposition.h":
 	cdef cppclass _CoreDecomposition "NetworKit::CoreDecomposition" (_Centrality):
 		_CoreDecomposition(_Graph) except +
-		_Cover cores() except +
-		_Partition shells() except +
+		_Cover getCover() except +
+		_Partition getPartition() except +
 		index maxCoreNumber() except +
 
 cdef class CoreDecomposition(Centrality):
@@ -4837,17 +4837,17 @@ cdef class CoreDecomposition(Centrality):
 		"""
 		return (<_CoreDecomposition*>(self._this)).maxCoreNumber()
 
-	def cores(self):
-		""" Get the k-cores as sets of nodes, indexed by k.
+	def getCover(self):
+		""" Get the k-cores as cover.
 
 		Returns
 		-------
 		vector
 			The k-cores as sets of nodes, indexed by k.
 		"""
-		return Cover().setThis((<_CoreDecomposition*>(self._this)).cores())
+		return Cover().setThis((<_CoreDecomposition*>(self._this)).getCover())
 
-	def shells(self):
+	def getPartition(self):
 		""" Get the k-shells as a partition object.
 
 		Returns
@@ -4855,7 +4855,7 @@ cdef class CoreDecomposition(Centrality):
 		Partition
 			The k-shells
 		"""
-		return Partition().setThis((<_CoreDecomposition*>(self._this)).shells())
+		return Partition().setThis((<_CoreDecomposition*>(self._this)).getPartition())
 
 cdef extern from "cpp/centrality/LocalClusteringCoefficient.h":
 	cdef cppclass _LocalClusteringCoefficient "NetworKit::LocalClusteringCoefficient" (_Centrality):
@@ -6784,7 +6784,7 @@ cdef class EdgeScoreNormalizer(EdgeScore):
 				self._this = new _EdgeScoreNormalizer[count](G._this, self._inScoreCount, inverse, lower, upper)
 			except TypeError:
 				raise TypeError("score must be either a vector of integer or float")
-				
+
 	cdef bool isDoubleValue(self):
 		return True
 

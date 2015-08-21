@@ -112,21 +112,24 @@ class Profile:
 		def funcSizes(instance):
 			return sorted(instance.getPartition().subsetSizes())
 
+
+
 		if G.isDirected():
 			classConnectedComponents = properties.StronglyConnectedComponents
 		else:
 			classConnectedComponents = properties.ConnectedComponents
 
 		for parameter in [
-			("Node Centrality",	"Degree Centrality",			True,	funcScores,	"Score",	centrality.DegreeCentrality, 			(G, )),
-			("Node Centrality",	"K-Core Decomposition",			True,	funcScores,	"Score",	centrality.CoreDecomposition, 			(G, )),
-			("Node Centrality",	"Local Clustering Coefficient",	True,	funcScores,	"Score",	centrality.LocalClusteringCoefficient,	(G, )),
-			("Node Centrality",	"Page Rank",					True,	funcScores,	"Score",	centrality.PageRank, 					(G, )),
-			("Node Centrality",	"K-Path Centrality",			True,	funcScores,	"Score",	centrality.KPathCentrality,				(G, )),
-			("Node Centrality",	"Katz Centrality",				True,	funcScores,	"Score",	centrality.KatzCentrality,				(G, )),
-			("Node Centrality",	"Betweenness",					True,	funcScores,	"Score",	centrality.ApproxBetweenness2,			(G, max(42, math.log(G.numberOfNodes())**2, True))),
-			("Partition",		"Communities",					False,	funcSizes,	"Nodes Per Community",	community.PLM, 				(G, )),
-			("Partition",		"Connected Components",			False,	funcSizes,	"Connected Nodes",	classConnectedComponents,		(G, ))
+			("Node Centrality",	"Degree Centrality",			True,	funcScores,	"Score",				centrality.DegreeCentrality, 			(G, )),
+			("Node Centrality",	"K-Core Decomposition",			True,	funcScores,	"Score",				centrality.CoreDecomposition, 			(G, )),
+			("Node Centrality",	"Local Clustering Coefficient",	True,	funcScores,	"Score",				centrality.LocalClusteringCoefficient,	(G, )),
+			("Node Centrality",	"Page Rank",					True,	funcScores,	"Score",				centrality.PageRank, 					(G, )),
+			("Node Centrality",	"K-Path Centrality",			True,	funcScores,	"Score",				centrality.KPathCentrality,				(G, )),
+			("Node Centrality",	"Katz Centrality",				True,	funcScores,	"Score",				centrality.KatzCentrality,				(G, )),
+			("Node Centrality",	"Betweenness",					True,	funcScores,	"Score",				centrality.ApproxBetweenness2,			(G, max(42, math.log(G.numberOfNodes())**2, True))),
+			("Partition",		"Communities",					False,	funcSizes,	"Nodes per Community",	community.PLM,			 				(G, )),
+			("Partition",		"Connected Components",			False,	funcSizes,	"Nodes per Component",	classConnectedComponents,				(G, )),
+			("Partition",		"K-Core Decomposition",			False,	funcSizes,	"Nodes per Shell",		centrality.CoreDecomposition, 			(G, ))
 		]: result.__addMeasure(parameter, exclude)
 
 		if cls.__verbose:
@@ -146,7 +149,7 @@ class Profile:
 		cls.__verbose = verbose
 		cls.__verboseLevel = level
 		cls.__verboseFilename = filename
-		
+
 
 	@classmethod
 	def getVerbose(cls):
@@ -181,8 +184,8 @@ class Profile:
 	def getElapsedTime(self, measure):
 		""" TODO: """
 		return self.__measures[measure]["time"]
-		
-		
+
+
 	def output(self, type, directory, style="light", color=(0, 0, 1), parallel=False):
 		""" TODO """
 		options_type = ["HTML", "LaTeX", None]
@@ -194,7 +197,7 @@ class Profile:
 
 		if type == "LaTeX":
 			raise RuntimeError("not implemented, yet")
-				
+
 		result = self.__format(
 			type = type,
 			directory = directory,
@@ -203,7 +206,7 @@ class Profile:
 			pageIndex = 0,
 			parallel = parallel
 		)
-		
+
 		if type == "HTML":
 			js = readfile("html/profiling.js", False).replace("\\\\", "\\")
 			css = readfile("html/profiling.css", False).replace("\\\\", "\\")
@@ -229,10 +232,10 @@ class Profile:
 				</html>
 			"""
 			filename  = "index.html"
-			
+
 		with open(directory + "/" + filename, 'w') as file:
 			file.write(result)
-		
+
 	def show(self, style="light", color=(0, 0, 1), parallel=False):
 		""" TODO: """
 		try:
@@ -248,16 +251,16 @@ class Profile:
 			pageIndex = self.__pageCount,
 			parallel = parallel
 		)
-		
+
 		display_html(HTML(result))
 		self.__pageCount = self.__pageCount + 1
 
-		
+
 	def __format(self, type, directory, style, color, pageIndex, parallel):
 		""" TODO """
 		theme = plot.Theme()
 		theme.set(style, color)
-		
+
 		pool = multiprocessing.ThreadPool(self.__parallel, parallel)
 		for name in self.__measures:
 			category = self.__measures[name]["category"]
@@ -302,7 +305,7 @@ class Profile:
 		if type == "HTML":
 			templateProfile = readfile("html/profile.html", False)
 			templateMeasure = readfile("html/measure.html", False)
-			
+
 		results = {}
 		for category in self.__correlations:
 			results[category] = {}
@@ -350,7 +353,7 @@ class Profile:
 									except:
 										value = self.__correlations[category][keyB][keyA]
 									result += "<div class=\"Thumbnail_ScatterPlot\" data-title=\"" + keyB + "\" data-title-second=\"" + keyA + "\"><img src=\"data:image/svg+xml;utf8," + value["image"] + "\" /></div>"
-				
+
 				return result
 			results[category]["Correlations"]["ScatterPlots"] += funcScatterPlot(category)
 
@@ -395,8 +398,8 @@ class Profile:
 			results
 		)
 		return result
-		
-		
+
+
 	def __formatMeasureTemplate(self, template, pageIndex, key, name, image, stat, assortativity, extentions, description):
 		""" TODO: """
 		result = template.format(**locals())
@@ -457,7 +460,7 @@ class Profile:
 	def __loadMeasures(self):
 		""" TODO: """
 		pool = multiprocessing.ThreadPool(self.__parallel, False)
-			
+
 		for name in self.__measures:
 			measure = self.__measures[name]
 			self.__verbosePrint(name + ": ", end="")
@@ -473,19 +476,19 @@ class Profile:
 			measure["data"]["sample"] = measure["getter"](instance)
 			elapsedMain = timerInstance.elapsed
 			self.__verbosePrint("{:.2F} s".format(elapsedMain))
-			
+
 			self.__verbosePrint("    Sort: ", end="")
 			timerPostSort = stopwatch.Timer()
 			measure["data"]["sorted"] = stat.sorted(measure["data"]["sample"])
 			elapsedPostSort = timerPostSort.elapsed
 			self.__verbosePrint("{:.2F} s".format(elapsedPostSort))
-			
+
 			self.__verbosePrint("    Rank: ", end="")
 			timerPostRank = stopwatch.Timer()
 			measure["data"]["ranked"] = stat.ranked(measure["data"]["sample"])
 			elapsedPostRank = timerPostRank.elapsed
 			self.__verbosePrint("{:.2F} s".format(elapsedPostRank))
-			
+
 			self.__verbosePrint("    Assortativity: ", end="")
 			timerPostAssortativity = stopwatch.Timer()
 			if self.__measures[name]["category"] == "Node Centrality":
@@ -576,18 +579,17 @@ class Profile:
 				self.__verbosePrint(str(e), level=-1)
 
 		pool.join()
-		
-		
+
+
 	def __verbosePrint(self, text, end="\n", level=0):
 		if self.__verboseLevel >= level:
 			text = text + end
 		else:
 			text = "."
-			
+
 		if self.__verbose or level < 0:
 			print(text, end="", flush=True)
-			
+
 		if self.__verboseFilename != "":
 			with open(self.__verboseFilename, 'a+') as file:
 				file.write(text)
-
