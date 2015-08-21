@@ -17,9 +17,9 @@ DirOptBFS::DirOptBFS(const Graph& G, node source, bool storePaths, bool storeSta
 	topdown(true),
 	alpha(alpha),
 	beta(beta),
-	m_f(0),
+	m_f(G.degree(source)),
 	m_u(0),
-	n_f(0),
+	n_f(1),
 	rhs_C_BT(G.numberOfNodes()/beta) {
 }
 
@@ -38,13 +38,11 @@ void DirOptBFS::run() {
 	count max_threads = omp_get_max_threads();
 	std::vector<std::vector<node>> threadLocalNext(max_threads);
 
-	//qFrontier.push_back(source);
 	qNext.push_back(source);
-	hasQueuedNodes = true;
 	previous[source] = {source};
 	distances[source] = currentDistance;
 	visited[source] = true;
-	bool wasTopDown = false;
+	bool wasTopDown = true;
 
 	auto wasVisited = [&](node v) {
 		// numerous criteria could be used
@@ -52,75 +50,37 @@ void DirOptBFS::run() {
 		//return distances[v] != infDist;
 		return visited[v];
 	};
-	auto doTopDownStep = [&]() {
-		//topdown = topdown?(m_f < (m_u/alpha)):(n_f < rhs_C_BT);
+
+	auto isFinished = [&]() {
 		if (topdown) {
-			count m_f = 0;
-			// manual computation of m_f if no bookkeeping is done
-			// set would be better as one doesn't have to do a whole scan
-			if (wasTopDown) {
-				#pragma omp parallel for reduction(+:m_f)
-				for (count u = 0; u < qNext.size(); ++u) {
-					m_f += G.degree(u);
-				}
-			} else {
-				for (auto& q : threadLocalNext) {
-					#pragma omp parallel for reduction(+:m_f)
-					for (count u = 0; u < q.size(); ++u) {
-						m_f += G.degree(u);
-					}	
-				}
+			return qNext.empty();
+		} else {
+			for (auto &q : threadLocalNext) {
+				if (!q.empty()) return false;
 			}
-			// manual computation of m_u if no bookkeeping is done
+			return true;
+		}
+	};
+
+	auto determineNextStep = [&]() {
+		if (topdown) {
+			// manual computation of m_u
+			// TODO: can this be computed on the fly?
 			count m_u = 0;
 			#pragma omp parallel for reduction(+:m_u) 
 			for (count u = 0; u < z; ++u) {
 				m_u += (G.hasNode(u)&&!wasVisited(u))?G.degree(u):0;
 			}
-			//INFO("m_f > (m_u / alpha): ",m_f," / (",m_u," / ",alpha,")");
-			topdown = !(m_f > (m_u / alpha));
+			topdown = m_f < (m_u / alpha);
 		} else {
-			//count n = G.numberOfNodes();
-			count n_ff = 0;
-			if (wasTopDown)
-				n_ff = qNext.size();
-			else {
-				for (auto& q : threadLocalNext) {
-					n_ff += q.size();
-				}
+			for (auto& q : threadLocalNext) {
+				n_f += q.size();
 			}
-			// manual computation of n_f is no bookkeeping is done
-			/*#pragma omp parallel for reduction(+:n_f)
-			for (count u = 0; u < qFrontier.size(); ++u) {
-				n_f += frontier[u];
-			}*/
-			topdown = n_ff < rhs_C_BT;
-		}
-		// reset bookkeeping variables that are computed for each iteration
-		//m_f = 0;
-		//n_f = 0;
-		//INFO("topdown? ", topdown);
-		return topdown;
-	};
-
-
-	auto relax = [&](node v) {
-		if (!wasVisited(v)) {
-			hasQueuedNodes = true;
-			visited[v] = true;
-			distances[v] = currentDistance;
-			qNext.push_back(v);
+			topdown = n_f < rhs_C_BT;
 		}
 	};
 
 	auto bottomUpStep = [&](){
-		// this probably could be parallelized, however the following stuff needs to be sorted out
-		// - concurrent writes on different indices vector<bool> and vector in general ? - Not a problem on general vectors (indices are different). But vector<bool>
-		//    has a different implementation from all other vectors to save space, so this needs to be tested.
-		// - synchronisation of bookkeeping variables m_f, n_f, m_u. The order of writes do not matter at all,
-		//   however they need to be taken care of when parallelized. - These are the problem. Simply parallelizing this will result in
-		//   wrong results due to race conditions. However, can the
-		//G.forNodes([&](node v){
 		G.balancedParallelForNodes([&](node v){
 			// iterate over all nodes v that haven't been visited yet
 			if (!wasVisited(v)) {
@@ -131,7 +91,6 @@ void DirOptBFS::run() {
 					if (frontier[u]) {
 						// ... visit v
 						if (!wasVisited(v)) {
-							hasQueuedNodes = true;
 							visited[v] = true;
 							distances[v] = currentDistance;
 							count tid = omp_get_thread_num();
@@ -146,6 +105,15 @@ void DirOptBFS::run() {
 		});
 	};
 
+	auto relax = [&](node v) {
+		if (!wasVisited(v)) {
+			visited[v] = true;
+			distances[v] = currentDistance;
+			qNext.push_back(v);
+			m_f += G.degree(v);
+		}
+	};
+
 	auto topDownStep = [&]() {
 		for (auto& current : qFrontier) {
 			G.forNeighborsOf(current,[&](node v){
@@ -155,18 +123,19 @@ void DirOptBFS::run() {
 		}
 	};
 
-	auto convertQueue = [&]() {
+	auto prepareDatastructure = [&]() {
 		if (topdown) {
-			qFrontier.erase(qFrontier.begin(),qFrontier.end());
+			qFrontier.clear();
 			if (wasTopDown) {
 				// qNext -> qFrontier
 				std::swap(qFrontier,qNext);
 			} else {
 				// threadLocalNext -> qFrontier
+				qFrontier.reserve(n_f);
 				for (auto& q : threadLocalNext) {
 					qFrontier.insert(qFrontier.end(),q.begin(),q.end());
 				}
-				threadLocalNext.erase(threadLocalNext.begin(),threadLocalNext.end());
+				threadLocalNext.clear();
 				threadLocalNext.resize(max_threads);
 			}
 		} else {
@@ -176,7 +145,7 @@ void DirOptBFS::run() {
 				for (auto& current : qNext) {
 					frontier[current] = true;
 				}
-				qNext.erase(qNext.begin(),qNext.end());
+				qNext.clear();
 			} else {
 				// threadLocalNext -> frontier
 				for (auto& q : threadLocalNext) {
@@ -184,10 +153,11 @@ void DirOptBFS::run() {
 						frontier[current] = true;
 					}
 				}
-				threadLocalNext.erase(threadLocalNext.begin(),threadLocalNext.end());
+				threadLocalNext.clear();
 				threadLocalNext.resize(max_threads);
 			}
 		}
+		n_f = 0;
 	};
 
 /*	count time_topstep = 0;
@@ -196,14 +166,13 @@ void DirOptBFS::run() {
 	count n_bot = 0;
 	Aux::Timer timer;*/
 	//m_u = G.numberOfEdges() * 2;
-	while (hasQueuedNodes) {
-		hasQueuedNodes = false;
+	while (!isFinished()) {
 		++currentDistance;
 		wasTopDown = topdown;
-		doTopDownStep();
-		INFO("last step was topdown? ",wasTopDown,"\tnext step is topdown? ",topdown);
-		convertQueue();
+		determineNextStep();
+		prepareDatastructure();
 		if (topdown) {
+			m_f = 0;
 //			timer.start();
 			topDownStep();
 /*			timer.stop();
@@ -215,11 +184,7 @@ void DirOptBFS::run() {
 /*			timer.stop();
 			time_botstep += timer.elapsedMilliseconds();
 			n_bot += n_f;*/
-			// during a bottom-up step, we don't really handle the nodes in the frontier and clean it up
-			// therefore, clear the frontier now. TODO: can this be done any cheaper?
 		}
-		//qFrontier.erase(qFrontier.begin(),qFrontier.end());
-		//std::swap(qFrontier,qNext);
 	}
 /*	INFO("time spent in top-down  steps:\t",time_topstep,"ms");
 	INFO("nodes claimed in top-down  steps:\t",n_top);
