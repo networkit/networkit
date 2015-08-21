@@ -766,4 +766,58 @@ TEST_F(QuadTreeGTest, testQuadTreePolarEuclidInsertion) {
 	}
 }
 
+TEST_F(QuadTreeGTest, testQuadNodeHyperbolicDistances) {
+	double minR, maxR, minPhi, maxPhi;
+	std::tie(minPhi, minR, maxPhi, maxR) = std::make_tuple(6.1850105367549055, 0.0, 6.2831853071795862, 0.99998090224083802);
+	ASSERT_LE(minPhi, maxPhi);
+	ASSERT_LE(minR, maxR);
+
+	Point2D<double> query(0.99999879353779952, 0.0011511619164281455);
+	double phi_q, r_q;
+	HyperbolicSpace::cartesianToPolar(query, phi_q, r_q);
+
+	QuadNode<index> node(minPhi, minR, maxPhi, maxR, 1000, 0);
+	count steps = 100;
+	Point2D<double> posAtMin = HyperbolicSpace::polarToCartesian(minPhi, minR);
+	double minDistance = HyperbolicSpace::poincareMetric(query, posAtMin);
+	double minR_Hyper = HyperbolicSpace::EuclideanRadiusToHyperbolic(minR);
+
+	double phiStep = (maxPhi-minPhi)/steps;
+	double rStep = (HyperbolicSpace::EuclideanRadiusToHyperbolic(maxR) - minR_Hyper) / steps;
+	for (index i = 0; i <= steps; i++) {
+		double phi = minPhi + i*phiStep;
+		for (index j = 0; j <= steps; j++) {
+			double r =  HyperbolicSpace::hyperbolicRadiusToEuclidean(minR_Hyper + j*rStep);
+			if (i < steps && j < steps) {
+				EXPECT_TRUE(node.responsible(phi, r));
+			} else {
+				EXPECT_FALSE(node.responsible(phi, r));
+			}
+			Point2D<double> pos = HyperbolicSpace::polarToCartesian(phi, r);
+			double distance =  HyperbolicSpace::poincareMetric(query, pos);
+			if (distance < minDistance) {
+				minDistance = distance;
+				posAtMin = pos;
+			}
+		}
+	}
+
+	double phiAtMin, rAtMin;
+	HyperbolicSpace::cartesianToPolar(posAtMin, phiAtMin, rAtMin);
+	DEBUG("Point in Cell at minimal distance at (", phiAtMin, ", ", rAtMin, ") on the poincare disk, which is ", HyperbolicSpace::EuclideanRadiusToHyperbolic(rAtMin), " in native radius.");
+
+	Point2D<double> p(0.99983582188685627, -0.0020919222764388666);
+	double phi, r;
+	HyperbolicSpace::cartesianToPolar(p, phi, r);
+
+	EXPECT_TRUE(node.responsible(phi, r));
+	double distanceQueryToCell = node.hyperbolicDistances(phi_q, r_q).first;
+	double distanceQueryToPoint = HyperbolicSpace::poincareMetric(query, p);
+
+	//node.addContent(1, phi, r);
+	EXPECT_LE(distanceQueryToCell, distanceQueryToPoint);
+
+
+}
+
 } /* namespace NetworKit */
