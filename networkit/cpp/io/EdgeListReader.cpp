@@ -29,7 +29,8 @@ Graph EdgeListReader::read(const std::string& path) {
 	}
 }
 
-std::unordered_map<index,node> EdgeListReader::getNodeMap() {
+std::map<std::string,node> EdgeListReader::getNodeMap() {
+	if (this->continuous) throw std::runtime_error("Input files are assumed to have continuous node ids, therefore no node mapping has been created.");
 	return this->mapNodeIds;
 }
 
@@ -41,8 +42,9 @@ Graph EdgeListReader::readContinuous(const std::string& path) {
 	// read file once to get to the last line and figure out the number of nodes
 	// unfortunately there is an empty line at the ending of the file, so we need to get the line before that
 
-	std::string previousLine;
 	node maxNode = 0;
+	bool weighted;
+	bool checkedWeighted = false;
 
 	DEBUG("separator: " , this->separator);
 	DEBUG("first node: " , this->firstNode);
@@ -60,7 +62,16 @@ Graph EdgeListReader::readContinuous(const std::string& path) {
 			// TRACE("ignoring empty line");
 		} else {
 			std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
-			if (split.size() == 2) {
+			if (!checkedWeighted) {
+				if (split.size() == 2) {
+					weighted = false;
+				} else if (split.size() == 3) {
+					INFO("Identified graph as weighted.");
+					weighted = true;
+				}
+				checkedWeighted = true;
+			}
+			if (split.size() == 2 || split.size() == 3) {
 				TRACE("split into : " , split[0] , " and " , split[1]);
 				node u = std::stoul(split[0]);
 				if (u > maxNode) {
@@ -83,7 +94,7 @@ Graph EdgeListReader::readContinuous(const std::string& path) {
 	maxNode = maxNode - this->firstNode + 1;
 	DEBUG("max. node id found: " , maxNode);
 
-	Graph G(maxNode, false, directed);
+	Graph G(maxNode, weighted, directed);
 
 	DEBUG("second pass");
 	file.open(path);
@@ -96,12 +107,18 @@ Graph EdgeListReader::readContinuous(const std::string& path) {
 		} else {
 			// TRACE("edge line: " , line);
 			std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
-			std::string splitZero = split[0];
 			if (split.size() == 2) {
 				node u = std::stoul(split[0]) - this->firstNode;
 				node v = std::stoul(split[1]) - this->firstNode;
-			        if (!G.hasEdge(u,v)) {
+			    if (!G.hasEdge(u,v)) {
 					G.addEdge(u, v);
+				}
+			} else if (weighted && split.size() == 3) {
+				node u = std::stoul(split[0]) - this->firstNode;
+				node v = std::stoul(split[1]) - this->firstNode;
+				double weight = std::stod(split[2]);
+			    if (!G.hasEdge(u,v)) {
+					G.addEdge(u, v, weight);
 				}
 			} else {
 				std::stringstream message;
@@ -124,9 +141,10 @@ Graph EdgeListReader::readNonContinuous(const std::string& path) {
 	Aux::enforceOpened(file);
 	DEBUG("file is opened, proceed");
 	std::string line; // the current line
-	std::string previousLine;
-	node maxNode = 0;
 	node consecutiveID = 0;
+
+	bool weighted = false;
+	bool checkedWeighted = false;
 
 	// first find out the maximum node id
 	DEBUG("first pass: create node ID mapping");
@@ -141,19 +159,19 @@ Graph EdgeListReader::readNonContinuous(const std::string& path) {
         		// TRACE("ignoring empty line");
 		} else {
 			std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
-
-			if (split.size() == 2) {
+			if (!checkedWeighted) {
+				if (split.size() == 2) {
+					weighted = false;
+				} else if (split.size() == 3) {
+					INFO("Identified graph as weighted.");
+					weighted = true;
+				}
+				checkedWeighted = true;
+			}
+			if (split.size() == 2 || split.size() == 3) {
         			TRACE("split into : " , split[0] , " and " , split[1]);
-				node u = std::stoul(split[0]);
-				if(this->mapNodeIds.insert(std::make_pair(u,consecutiveID)).second) consecutiveID++;
-				if (u > maxNode) {
-					maxNode = u;
-				}
-				node v = std::stoul(split[1]);
-				if(this->mapNodeIds.insert(std::make_pair(v,consecutiveID)).second) consecutiveID++;
-				if (v > maxNode) {
-					maxNode = v;
-				}
+				if(this->mapNodeIds.insert(std::make_pair(split[0],consecutiveID)).second) ++consecutiveID;
+				if(this->mapNodeIds.insert(std::make_pair(split[1],consecutiveID)).second) ++consecutiveID;
 			} else {
 				std::stringstream message;
 				message << "malformed line ";
@@ -166,7 +184,7 @@ Graph EdgeListReader::readNonContinuous(const std::string& path) {
 	file.close();
 
 	DEBUG("found ",this->mapNodeIds.size()," unique node ids");
-	Graph G(this->mapNodeIds.size());
+	Graph G(this->mapNodeIds.size(), weighted, directed);
 
 	DEBUG("second pass: add edges");
 	file.open(path);
@@ -180,12 +198,18 @@ Graph EdgeListReader::readNonContinuous(const std::string& path) {
 		} else {
 			// TRACE("edge line: " , line);
 			std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
-			std::string splitZero = split[0];
 			if (split.size() == 2) {
-				node u = this->mapNodeIds[std::stoul(split[0])];
-				node v = this->mapNodeIds[std::stoul(split[1])];
-				if (!G.hasEdge(u,v) && !G.hasEdge(v,u)) {
+				node u = this->mapNodeIds[split[0]];
+				node v = this->mapNodeIds[split[1]];
+				if (!G.hasEdge(u,v)) {
 					G.addEdge(u, v);
+				}
+			} else if (weighted && split.size() == 3) {
+				node u = this->mapNodeIds[split[0]];
+				node v = this->mapNodeIds[split[1]];
+				double weight = std::stod(split[2]);
+			    if (!G.hasEdge(u,v)) {
+					G.addEdge(u, v, weight);
 				}
 			} else {
 				std::stringstream message;

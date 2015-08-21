@@ -15,6 +15,9 @@ namespace NetworKit {
 /**
  * @ingroup centrality
  * Computes the Katz centrality of the graph.
+ * NOTE: There is an inconsistency in the definition in Newman's book (Ch. 7) regarding
+ * directed graphs; we follow the verbal description, which requires to sum over the incoming
+ * edges (as opposed to outgoing ones).
  */
 class KatzCentrality: public Centrality {
 protected:

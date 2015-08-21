@@ -27,12 +27,11 @@ template<class Key, class Val>
 class PrioQueue {
 	typedef std::pair<Key, Val> ElemType;
 
-protected:
+private:
 	std::set<ElemType> pqset;
 	std::vector<Key> mapValToKey;
 
 	const Key undefined = std::numeric_limits<Key>::max(); // TODO: make static
-
 
 public:
 	/**

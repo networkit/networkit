@@ -11,6 +11,7 @@
 #include "../graph/Graph.h"
 #include "../graph/BFS.h"
 #include "../structures/Partition.h"
+#include "../base/Algorithm.h"
 
 namespace NetworKit {
 
@@ -18,7 +19,7 @@ namespace NetworKit {
  * @ingroup properties
  * Determines the connected components of an undirected graph.
  */
-class ConnectedComponents {
+class ConnectedComponents : public Algorithm {
 public:
 	/**
 	 * Create ConnectedComponents class for Graph @a G.

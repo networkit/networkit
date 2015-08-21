@@ -17,7 +17,7 @@ def column(matrix, i):
 
 
 def adjacencyMatrix(G):
-	""" Get the adjacency matrix of the undirected graph `G`.
+	""" Get the adjacency matrix of the graph `G`.
 
 	Parameters
 	----------
@@ -29,24 +29,33 @@ def adjacencyMatrix(G):
 	:py:class:`scipy.sparse.csr_matrix`
 		The adjacency matrix of the graph.
 	"""
-	if G.isDirected():
-		raise NotImplementedError("TODO: implement for directed graphs")
+	#if G.isDirected():
+	#	raise NotImplementedError("TODO: implement for directed graphs")
 	n = G.numberOfNodes()
 	A = scipy.sparse.lil_matrix((n,n))
 	# TODO: replace .edges() with efficient iterations
 	if G.isWeighted():
-		for (u, v) in G.edges():
-			A[u, v] = G.weight(u, v)
-			A[v, u] = G.weight(v, u)
+		if G.isDirected():
+			def processEdge(u,v,w,id):
+				A[u, v] = w
+		else:
+			def processEdge(u,v,w,id):
+				A[u, v] = w
+				A[v, u] = w
 	else:
-		for (u, v) in G.edges():
-			A[u, v] = 1
-			A[v, u] = 1
+		if G.isDirected():
+			def processEdge(u,v,w,id):
+				A[u, v] = 1
+		else:
+			def processEdge(u,v,w,id):
+				A[u, v] = 1
+				A[v, u] = 1
+	G.forEdges(processEdge)
 	A = A.tocsr()  # convert to CSR for more efficient arithmetic operations
 	return A
 
 def laplacianMatrix(G):
-	""" Get the laplacian matrix of the undirected graph `G`.
+	""" Get the laplacian matrix of the graph `G`.
 
 	Parameters
 	----------
@@ -64,7 +73,7 @@ def laplacianMatrix(G):
 	A = adjacencyMatrix(G)
 	return scipy.sparse.csgraph.laplacian(A)
 
-def PageRankMatrix(G, damp):
+def PageRankMatrix(G, damp=0.85):
 	"""
 	Builds the PageRank matrix of the undirected Graph `G`. This matrix corresponds with the
 	PageRank matrix used in the C++ backend.
@@ -74,7 +83,8 @@ def PageRankMatrix(G, damp):
 	----------
 	G : Graph
 		The graph.
-
+	damp:
+		Damping factor of the PageRank algorithm (0.85 by default)
 	Returns
 	-------
 	pr : ndarray
@@ -86,7 +96,10 @@ def PageRankMatrix(G, damp):
 	stochastify = scipy.sparse.lil_matrix((n,n))
 	for v in G.nodes():
 		neighbors = G.degree(v)
-		stochastify[v,v] = 1.0 / neighbors
+		if neighbors == 0:
+			stochastify[v,v] = 0.0	# TODO: check correctness
+		else:
+			stochastify[v,v] = 1.0 / neighbors
 	stochastify = stochastify.tocsr()
 
 	stochastic = A * stochastify
@@ -135,18 +148,68 @@ def symmetricEigenvectors(matrix, cutoff=-1, reverse=False):
 
 	return (orderedW, orderedV)
 
+def eigenvectors(matrix, cutoff=-1, reverse=False):
+	"""
+	Computes eigenvectors and -values of matrices.
+
+	Parameters
+	----------
+	matrix : sparse matrix
+			 The matrix to compute the eigenvectors of
+	cutoff : int
+			 The maximum (or minimum) magnitude of the eigenvectors needed
+	reverse : boolean
+			  If set to true, the smaller eigenvalues will be computed before the larger ones
+
+	Returns
+	-------
+	pr : ( [ float ], [ ndarray ] )
+		 A tuple of ordered lists, the first containing the eigenvalues in descending (ascending) magnitude, the
+		 second one holding the corresponding eigenvectors
+
+	"""
+	if cutoff == -1:
+		cutoff = matrix.shape[0] - 2
+
+	if reverse:
+		mode = "SR"
+	else:
+		mode = "LR"
+
+	w, v = scipy.sparse.linalg.eigs(matrix, cutoff + 1, which=mode)
+
+	orderlist = zip(w, range(0, len(w)))
+	orderlist = sorted(orderlist)
+
+	orderedW = column(orderlist, 0)
+	orderedV = [v[:,i] for i in column(orderlist, 1)]
+
+	return (orderedW, orderedV)
+
 def laplacianEigenvectors(G, cutoff=-1, reverse=False):
-	return symmetricEigenvectors(laplacianMatrix(G), cutoff=cutoff, reverse=reverse)
+	if G.isDirected():
+		return eigenvectors(laplacianMatrix(G), cutoff=cutoff, reverse=reverse)
+	else:
+		return symmetricEigenvectors(laplacianMatrix(G), cutoff=cutoff, reverse=reverse)
 
 def adjacencyEigenvectors(G, cutoff=-1, reverse=False):
-	return symmetricEigenvectors(adjacencyMatrix(G), cutoff=cutoff, reverse=reverse)
+	if G.isDirected():
+		return eigenvectors(adjacencyMatrix(G), cutoff=cutoff, reverse=reverse)
+	else:
+		return symmetricEigenvectors(adjacencyMatrix(G), cutoff=cutoff, reverse=reverse)
 
 def laplacianEigenvector(G, order, reverse=False):
-	spectrum = symmetricEigenvectors(laplacianMatrix(G), cutoff=order, reverse=reverse)
+	if G.isDirected():
+		spectrum = eigenvectors(laplacianMatrix(G), cutoff=order, reverse=reverse)
+	else:
+		spectrum = symmetricEigenvectors(laplacianMatrix(G), cutoff=order, reverse=reverse)
 
 	return (spectrum[0][order], spectrum[1][order])
 
 def adjacencyEigenvector(G, order, reverse=False):
-	spectrum = symmetricEigenvectors(adjacencyMatrix(G), cutoff=order, reverse=reverse)
+	if G.isDirected():
+		spectrum = eigenvectors(adjacencyMatrix(G), cutoff=order, reverse=reverse)
+	else:
+		spectrum = symmetricEigenvectors(adjacencyMatrix(G), cutoff=order, reverse=reverse)
 
 	return (spectrum[0][order], spectrum[1][order])

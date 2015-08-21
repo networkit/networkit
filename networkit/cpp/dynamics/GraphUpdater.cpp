@@ -18,13 +18,15 @@ void GraphUpdater::update(std::vector<GraphEvent>& stream) {
 		TRACE("event: " , ev.toString());
 		switch (ev.type) {
 			case GraphEvent::NODE_ADDITION : {
-				node u = G.addNode();
-				TRACE("added node " , u, ", ev.u: ", ev.u);
-				assert (u == ev.u);
+				G.addNode();
 				break;
 			}
 			case GraphEvent::NODE_REMOVAL : {
 				G.removeNode(ev.u);
+				break;
+			}
+			case GraphEvent::NODE_RESTORATION :{
+				G.restoreNode(ev.u);
 				break;
 			}
 			case GraphEvent::EDGE_ADDITION : {
@@ -37,6 +39,10 @@ void GraphUpdater::update(std::vector<GraphEvent>& stream) {
 			}
 			case GraphEvent::EDGE_WEIGHT_UPDATE : {
 				G.setWeight(ev.u, ev.v, ev.w);
+				break;
+			}
+			case GraphEvent::EDGE_WEIGHT_INCREMENT : {
+				G.setWeight(ev.u, ev.v, G.weight(ev.u, ev.v) + ev.w);
 				break;
 			}
 			case GraphEvent::TIME_STEP : {
@@ -57,6 +63,3 @@ std::vector<std::pair<count, count> > GraphUpdater::getSizeTimeline() {
 }
 
 } /* namespace NetworKit */
-
-
-

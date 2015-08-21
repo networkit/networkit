@@ -15,7 +15,7 @@
 
 namespace NetworKit {
 
-// stub 
+// stub
 /*TEST_F(CoverGTest, *) {
 }*/
 
@@ -73,6 +73,10 @@ TEST_F(CoverGTest, testToSingleton) {
 	count n = 10;
 	Cover c(n);
 	c.allToSingletons();
+	std::set<index> controlSet2;
+	controlSet2.insert(1);
+	DEBUG("c[0] ", c[0], " and controlSet2 ", controlSet2);
+	EXPECT_TRUE(c[0] == controlSet2);
 	c.addToSubset(5,0);
 	c.addToSubset(2,0);
 	c.addToSubset(3,0);
@@ -81,6 +85,7 @@ TEST_F(CoverGTest, testToSingleton) {
 	c.toSingleton(0);
 	std::set<index> controlSet;
 	controlSet.insert(11);
+	DEBUG("c[0] ", c[0], " and controlSet ", controlSet);
 	EXPECT_TRUE(c[0] == controlSet);
 }
 
@@ -216,7 +221,7 @@ TEST_F(CoverGTest, testMergeSubsetsAndGetMembers) {
 	c.mergeSubsets(1,3);
 	c.mergeSubsets(5,11);
 	auto c11 = c.getMembers(11);
-	std::vector<index> controlSetSizes = {2,2,2,3,2,3,2,6}; 
+	std::vector<index> controlSetSizes = {2,2,2,3,2,3,2,6};
 	// remaining subset IDs 2,4,6,7,8,9,10,12
 	// their sizes          2,2,2,3,2,3,2,6
 	std::set<index> controlSetMembers = {0,1,2,3,4,5};
@@ -281,11 +286,11 @@ TEST_F(CoverGTest, testInSameSubset) {
 	c.mergeSubsets(1,3);
 	EXPECT_TRUE(c.inSameSubset(0,1));
 	EXPECT_TRUE(c.inSameSubset(0,2));
-	EXPECT_FALSE(c.inSameSubset(1,5));	
+	EXPECT_FALSE(c.inSameSubset(1,5));
 	c.mergeSubsets(5,11);
 	EXPECT_TRUE(c.inSameSubset(0,1));
 	EXPECT_TRUE(c.inSameSubset(0,2));
-	EXPECT_TRUE(c.inSameSubset(1,5));	
+	EXPECT_TRUE(c.inSameSubset(1,5));
 }
 
 

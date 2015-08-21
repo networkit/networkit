@@ -16,6 +16,11 @@ namespace NetworKit {
 ParallelAgglomerativeClusterer::ParallelAgglomerativeClusterer(const Graph& G) : CommunityDetectionAlgorithm(G) {};
 
 void ParallelAgglomerativeClusterer::run() {
+
+	count MIN_NUM_COMMUNITIES = 2;
+	double REL_REPEAT_THRSH = 5e-3; ///< threshold for minimum number of matching edges relative to number of vertices to proceed agglomeration
+
+
 	// copy graph because we make changes due to merges
 	Graph Gcopy(G.numberOfNodes(), true); // make weighted copy
 	G.forEdges([&](node u, node v, edgeweight w){
@@ -38,16 +43,17 @@ void ParallelAgglomerativeClusterer::run() {
 
 		// FIXME: so far only sequential
 		// compute matching
-		PathGrowingMatcher parMatcher;
-		Matching M = parMatcher.run(Gcopy);
+		PathGrowingMatcher parMatcher(Gcopy);
+		Matching M = parMatcher.run();
 
 		// contract graph according to matching, TODO: (and star-like structures)
-		MatchingContracter matchingContracter;
-		auto GandMap = matchingContracter.run(Gcopy, M);
+		MatchingContracter matchingContracter(Gcopy, M);
+		matchingContracter.run();
+		Graph Gcombined = matchingContracter.getCoarseGraph();
 
 		// determine if it makes sense to proceed
 		count n = Gcopy.numberOfNodes();
-		count cn = GandMap.first.numberOfNodes();
+		count cn = Gcombined.numberOfNodes();
 		count diff = n - cn;
 		repeat = ((diff > 0) &&
 				(cn >= MIN_NUM_COMMUNITIES) &&
@@ -56,8 +62,8 @@ void ParallelAgglomerativeClusterer::run() {
 
 		// prepare next iteration if there is one
 		if (repeat) {
-			Gcopy = GandMap.first;
-			mapHierarchy.push_back(GandMap.second);
+			Gcopy = Gcombined;
+			mapHierarchy.push_back(matchingContracter.getNodeMapping());
 			TRACE("Repeat agglomeration with graph of size " , Gcopy.numberOfNodes());
 		}
 	} while (repeat);

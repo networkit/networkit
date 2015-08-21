@@ -15,10 +15,11 @@
 #include "../MaxentStress.h"
 #include "../MultilevelLayouter.h"
 #include "../../graph/Graph.h"
-#include "../../graph/GraphGenerator.h"
 #include "../../community/ClusteringGenerator.h"
+#include "../../generators/ClusteredRandomGraphGenerator.h"
 #include "../../io/PartitionWriter.h"
 #include "../../io/METISGraphReader.h"
+#include "../../io/METISGraphWriter.h"
 #include "../../io/DibapGraphReader.h"
 #include "../../generators/PubWebGenerator.h"
 #include "../../auxiliary/Random.h"
@@ -36,14 +37,15 @@ VizGTest::~VizGTest() {
 
 
 TEST_F(VizGTest, testPostscriptWriterOnRandomGraph) {
+	Aux::Random::setSeed(1, false);
 	// create graph
 	count n = 60;
 	count numClusters = 3;
 	double pin = 0.35;
 	double pout = 0.05;
 
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeClusteredRandomGraph(n, numClusters, pin, pout);
+	ClusteredRandomGraphGenerator graphGen(n, numClusters, pin, pout);
+	Graph G = graphGen.generate();
 	G.initCoordinates();
 
 	// create coordinates
@@ -88,8 +90,8 @@ TEST_F(VizGTest, testFRLayouter) {
  	double pin = 0.175;
  	double pout = 0.005;
 
- 	GraphGenerator graphGen;
- 	Graph G = graphGen.makeClusteredRandomGraph(n, numClusters, pin, pout);
+	ClusteredRandomGraphGenerator graphGen(n, numClusters, pin, pout);
+	Graph G = graphGen.generate();
  	G.initCoordinates();
  	INFO("Number of edges: ", G.numberOfEdges());
 
@@ -116,8 +118,8 @@ TEST_F(VizGTest, testFRLayouter) {
   	double pin = 0.175;
   	double pout = 0.005;
 
-  	GraphGenerator graphGen;
-  	Graph G = graphGen.makeClusteredRandomGraph(n, numClusters, pin, pout);
+	ClusteredRandomGraphGenerator graphGen(n, numClusters, pin, pout);
+	Graph G = graphGen.generate();
   	G.initCoordinates();
   	INFO("Number of edges: ", G.numberOfEdges());
 
@@ -144,8 +146,8 @@ TEST_F(VizGTest, testFRLayouter) {
   	double pin = 0.1;
   	double pout = 0.005;
 
-  	GraphGenerator graphGen;
-  	Graph G = graphGen.makeClusteredRandomGraph(n, numClusters, pin, pout);
+	ClusteredRandomGraphGenerator graphGen(n, numClusters, pin, pout);
+	Graph G = graphGen.generate();
   	G.initCoordinates();
   	INFO("Number of edges: ", G.numberOfEdges());
 
@@ -205,5 +207,3 @@ TEST_F(VizGTest, testFRLayouter) {
 
 
 #endif /*NOGTEST */
-
-

@@ -11,8 +11,6 @@
 
 #include "../../generators/ErdosRenyiGenerator.h"
 #include "../../community/ClusteringGenerator.h"
-#include "../../coarsening/ClusterContractor.h"
-#include "../../coarsening/PartitionCoarsening.h"
 #include "../../coarsening/ParallelPartitionCoarsening.h"
 #include "../../coarsening/ClusteringProjector.h"
 #include "../../community/ClusteringGenerator.h"
@@ -21,7 +19,7 @@
 
 namespace NetworKit {
 
-TEST_F(CoarseningBenchmark, benchmarkClusterContractor) {
+TEST_F(CoarseningBenchmark, benchmarkCoarsening) {
 	std::cout << "enter number of nodes: ";
 	count n;
 	std::cin >> n;
@@ -38,32 +36,22 @@ TEST_F(CoarseningBenchmark, benchmarkClusterContractor) {
 	//count k = zeta.numberOfSubsets();
 	DEBUG("number of subsets: ", k);
 
-	INFO("sequential coarsening");
 	Aux::Timer timer;
-	ClusterContractor contracter;
-	timer.start();
-	auto result1 = contracter.run(G, zeta);
-	timer.stop();
-	INFO("sequential coarsening: ", timer.elapsedTag());
-
-	Graph Gc1 = result1.first;
-
 	INFO("parallel coarsening");
-	PartitionCoarsening coarsening;
 	timer.start();
-	auto result2 = coarsening.run(G, zeta);
+	ParallelPartitionCoarsening coarsening(G, zeta, false);
+	coarsening.run();
 	timer.stop();
-	Graph Gc2 = result2.first;
+	Graph Gc2 = coarsening.getCoarseGraph();
 	INFO("parallel coarsening: ", timer.elapsedTag());
-	EXPECT_EQ(k, Gc1.numberOfNodes());
 	EXPECT_EQ(k, Gc2.numberOfNodes());
 
 	INFO("parallel coarsening using GraphBuilder");
-	ParallelPartitionCoarsening gbCoarsening(true);
 	timer.start();
-	auto result3 = gbCoarsening.run(G, zeta);
+	ParallelPartitionCoarsening gbCoarsening(G, zeta, true);
+	gbCoarsening.run();
 	timer.stop();
-	Graph Gc3 = result3.first;
+	Graph Gc3 = gbCoarsening.getCoarseGraph();
 	INFO("parallel coarsening: ", timer.elapsedTag());
 	EXPECT_EQ(k, Gc3.numberOfNodes());
 

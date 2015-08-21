@@ -10,8 +10,8 @@
 
 namespace NetworKit {
 
-SSSP::SSSP(const Graph& G, node s, bool storePaths, bool storeStack) : G(G), source(s), storePaths(storePaths), storeStack(storeStack) {
-
+SSSP::SSSP(const Graph& G, node s, bool storePaths, bool storeStack, node target) : Algorithm(), G(G), source(s), target(target), storePaths(storePaths), storeStack(storeStack) {
+	INFO("Constructing instance of SSSP with s, storePaths, storeStack, target ", s, " ", storePaths, " ", storeStack, " ", target);
 }
 
 std::vector<edgeweight> SSSP::getDistances() const {

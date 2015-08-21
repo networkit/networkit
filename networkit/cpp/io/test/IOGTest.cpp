@@ -32,10 +32,10 @@
 #include "../GMLGraphReader.h"
 #include "../GraphToolBinaryReader.h"
 #include "../GraphToolBinaryWriter.h"
+#include "../../generators/ErdosRenyiGenerator.h"
 
 #include "../../community/GraphClusteringTools.h"
 #include "../../auxiliary/Log.h"
-#include "../../graph/GraphGenerator.h"
 #include "../../community/ClusteringGenerator.h"
 #include "../../structures/Partition.h"
 #include "../../community/Modularity.h"
@@ -45,8 +45,9 @@
 namespace NetworKit {
 
 TEST_F(IOGTest, testGraphIOEdgeList) {
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeCircularGraph(20);
+	ErdosRenyiGenerator graphGen(100, 0.1);
+	Graph G = graphGen.generate();
+
 	GraphIO graphio;
 	std::string path = "output/edgelist.txt";
 	graphio.writeEdgeList(G, path);
@@ -60,8 +61,8 @@ TEST_F(IOGTest, testGraphIOEdgeList) {
 }
 
 TEST_F(IOGTest, testGraphIOAdjacencyList) {
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeCircularGraph(20);
+	ErdosRenyiGenerator graphGen(100, 0.1);
+	Graph G = graphGen.generate();
 	GraphIO graphio;
 	std::string path = "output/circular.adjlist";
 	graphio.writeAdjacencyList(G, path);
@@ -76,7 +77,6 @@ TEST_F(IOGTest, testGraphIOAdjacencyList) {
 
 
 TEST_F(IOGTest, testGraphIOForIsolatedNodes) {
-	GraphGenerator graphGen;
 	Graph G(20);
 	GraphIO graphio;
 	std::string path = "output/isolated.adjlist";
@@ -266,10 +266,10 @@ TEST_F(IOGTest, testPartitionWriterAndReader) {
 	// write clustering first
 	std::string path = "output/example.clust";
 
-	GraphGenerator graphGen;
 	count n = 100;
 	count k = 3;
-	Graph G = graphGen.makeCompleteGraph(n);
+	ErdosRenyiGenerator graphGen(n, 0.1);
+	Graph G = graphGen.generate();
 
 	ClusteringGenerator clusteringGen;
 	Partition zeta = clusteringGen.makeRandomClustering(G, k);
@@ -296,8 +296,8 @@ TEST_F(IOGTest, testPartitionWriterAndReader) {
 
 
 TEST_F(IOGTest, testDotGraphWriter) {
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeCompleteGraph(42);
+	ErdosRenyiGenerator graphGen(100, 0.1);
+	Graph G = graphGen.generate();
 
 	std::string path = "output/example.dot";
 
@@ -369,6 +369,14 @@ TEST_F(IOGTest, testEdgeListReader) {
 	Graph G3 = reader3.read(path);
 	EXPECT_EQ(10u, G3.numberOfEdges());
 	EXPECT_TRUE(G3.hasEdge(0, 4));
+
+	path = "input/spaceseparated_weighted.edgelist";
+	DEBUG("reading file: " , path);
+	Graph G32 = reader3.read(path);
+	EXPECT_TRUE(G32.isWeighted());
+	EXPECT_EQ(2,G32.weight(0,1));
+	EXPECT_EQ(4,G32.weight(0,2));
+	EXPECT_EQ(3,G32.weight(1,2));
 
 	path = "input/comments.edgelist";
 	DEBUG("reading file: " , path);

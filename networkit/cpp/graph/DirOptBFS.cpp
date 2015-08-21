@@ -11,8 +11,8 @@
 
 namespace NetworKit {
 
-DirOptBFS::DirOptBFS(const Graph& G, node source, bool storePaths, bool storeStack, count alpha, count beta) :
-	SSSP(G, source, storePaths, storeStack),
+DirOptBFS::DirOptBFS(const Graph& G, node source, bool storePaths, bool storeStack, count alpha, count beta, node target) :
+	SSSP(G, source, storePaths, storeStack, target),
 	hasQueuedNodes(false),
 	topdown(true),
 	alpha(alpha),
@@ -23,7 +23,7 @@ DirOptBFS::DirOptBFS(const Graph& G, node source, bool storePaths, bool storeSta
 	rhs_C_BT(G.numberOfNodes()/beta) {
 }
 
-void DirOptBFS::run(node t) {
+void DirOptBFS::run() {
 	count currentDistance = 0;
 	auto doTopDownStep = [&]() {
 		topdown = topdown?(m_f < (m_u/alpha)):(n_f < rhs_C_BT);
