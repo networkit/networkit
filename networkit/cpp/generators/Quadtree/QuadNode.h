@@ -379,7 +379,7 @@ public:
 
 		b = sinhr*cosDiffRight;
 		extremum = log((coshr+b)/(coshr-b))/2;
-		if (extremum < maxR && extremum >= minR) {
+		if (extremum < maxRHyper && extremum >= minRHyper) {
 			double extremeDistance = cosh(extremum)*coshr-sinh(extremum)*sinhr*cosDiffRight;
 			//double extremeDistance = HyperbolicSpace::poincareMetric(rightAngle, extremum, phi, r);
 			coshMinDistance = min(coshMinDistance, extremeDistance);
