@@ -274,10 +274,12 @@ TEST_F(SSSPGTest, benchDirOptBFS) {
 
 	auto ref_dist = bfs_ref.getDistances();
 	auto do_dist = bfs_diropt.getDistances();
-	G.forNodes([&](node v){
+	/*G.forNodes([&](node v){
 		EXPECT_EQ(ref_dist[v],min_dist[v]) << "min_dist differ at node " << v;
 		EXPECT_EQ(ref_dist[v],do_dist[v]) << "diropt_dist differ at node " << v;
-	});
+	});*/
+	EXPECT_EQ(ref_dist,min_dist);
+	EXPECT_EQ(ref_dist,do_dist);
 }
 
 } /* namespace NetworKit */

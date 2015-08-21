@@ -4,7 +4,7 @@
  *  Created on: Feb 21, 2015
  *      Author: Maximilian Vogel
  */
-
+#include <omp.h>
 #include <queue>
 #include "DirOptBFS.h"
 #include "../auxiliary/Timer.h"
@@ -28,7 +28,23 @@ void DirOptBFS::run() {
 	count z = G.upperNodeIdBound();
 	count currentDistance = 0;
 
+	distances.clear();
+	distances.resize(z, infDist);
+	previous.clear();
+	previous.resize(z);
+	frontier.clear();
+	frontier.resize(z,false);
 	std::vector<bool> visited(z,false);
+	count max_threads = omp_get_max_threads();
+	std::vector<std::vector<node>> threadLocalNext(max_threads);
+
+	//qFrontier.push_back(source);
+	qNext.push_back(source);
+	hasQueuedNodes = true;
+	previous[source] = {source};
+	distances[source] = currentDistance;
+	visited[source] = true;
+	bool wasTopDown = false;
 
 	auto wasVisited = [&](node v) {
 		// numerous criteria could be used
@@ -42,9 +58,18 @@ void DirOptBFS::run() {
 			count m_f = 0;
 			// manual computation of m_f if no bookkeeping is done
 			// set would be better as one doesn't have to do a whole scan
-			#pragma omp parallel for reduction(+:m_f)
-			for (count u = 0; u < qFrontier.size(); ++u) {
-				m_f += G.degree(u);
+			if (wasTopDown) {
+				#pragma omp parallel for reduction(+:m_f)
+				for (count u = 0; u < qNext.size(); ++u) {
+					m_f += G.degree(u);
+				}
+			} else {
+				for (auto& q : threadLocalNext) {
+					#pragma omp parallel for reduction(+:m_f)
+					for (count u = 0; u < q.size(); ++u) {
+						m_f += G.degree(u);
+					}	
+				}
 			}
 			// manual computation of m_u if no bookkeeping is done
 			count m_u = 0;
@@ -56,13 +81,20 @@ void DirOptBFS::run() {
 			topdown = !(m_f > (m_u / alpha));
 		} else {
 			//count n = G.numberOfNodes();
-			count n_f = qFrontier.size();
+			count n_ff = 0;
+			if (wasTopDown)
+				n_ff = qNext.size();
+			else {
+				for (auto& q : threadLocalNext) {
+					n_ff += q.size();
+				}
+			}
 			// manual computation of n_f is no bookkeeping is done
 			/*#pragma omp parallel for reduction(+:n_f)
 			for (count u = 0; u < qFrontier.size(); ++u) {
 				n_f += frontier[u];
 			}*/
-			topdown = n_f < rhs_C_BT;
+			topdown = n_ff < rhs_C_BT;
 		}
 		// reset bookkeeping variables that are computed for each iteration
 		//m_f = 0;
@@ -74,9 +106,9 @@ void DirOptBFS::run() {
 
 	auto relax = [&](node v) {
 		if (!wasVisited(v)) {
+			hasQueuedNodes = true;
 			visited[v] = true;
 			distances[v] = currentDistance;
-			#pragma omp critical
 			qNext.push_back(v);
 		}
 	};
@@ -98,7 +130,13 @@ void DirOptBFS::run() {
 					// ... and if one of them belongs to the frontier ...
 					if (frontier[u]) {
 						// ... visit v
-						relax(v);
+						if (!wasVisited(v)) {
+							hasQueuedNodes = true;
+							visited[v] = true;
+							distances[v] = currentDistance;
+							count tid = omp_get_thread_num();
+							threadLocalNext[tid].push_back(v);
+						}
 						previous[v].push_back(u);
 						// if we only want one predecessor/bfs tree, we break the loop here.
 						//break;
@@ -118,42 +156,60 @@ void DirOptBFS::run() {
 	};
 
 	auto convertQueue = [&]() {
-		for (auto& current : qFrontier) {
-			frontier[current] = true;
+		if (topdown) {
+			qFrontier.erase(qFrontier.begin(),qFrontier.end());
+			if (wasTopDown) {
+				// qNext -> qFrontier
+				std::swap(qFrontier,qNext);
+			} else {
+				// threadLocalNext -> qFrontier
+				for (auto& q : threadLocalNext) {
+					qFrontier.insert(qFrontier.end(),q.begin(),q.end());
+				}
+				threadLocalNext.erase(threadLocalNext.begin(),threadLocalNext.end());
+				threadLocalNext.resize(max_threads);
+			}
+		} else {
+			frontier.assign(z,false);
+			if (wasTopDown) {
+				// qNext -> frontier
+				for (auto& current : qNext) {
+					frontier[current] = true;
+				}
+				qNext.erase(qNext.begin(),qNext.end());
+			} else {
+				// threadLocalNext -> frontier
+				for (auto& q : threadLocalNext) {
+					for (auto& current : q) {
+						frontier[current] = true;
+					}
+				}
+				threadLocalNext.erase(threadLocalNext.begin(),threadLocalNext.end());
+				threadLocalNext.resize(max_threads);
+			}
 		}
 	};
 
-	distances.clear();
-	distances.resize(z, infDist);
-	previous.clear();
-	previous.resize(z);
-	frontier.clear();
-	frontier.resize(z,false);
-
-	qFrontier.push_back(source);
-	//hasQueuedNodes = true;
-	previous[source] = {source};
-	distances[source] = currentDistance;
-	visited[source] = true;
 /*	count time_topstep = 0;
 	count time_botstep = 0;
 	count n_top = 0;
 	count n_bot = 0;
 	Aux::Timer timer;*/
 	//m_u = G.numberOfEdges() * 2;
-	while (!qFrontier.empty()) {
-	//while (hasQueuedNodes) {
-		//hasQueuedNodes = false;
-		//INFO("level: ",currentDistance, "\tsize of frontier: ",qFrontier.size());
+	while (hasQueuedNodes) {
+		hasQueuedNodes = false;
 		++currentDistance;
-		if (doTopDownStep()) {
+		wasTopDown = topdown;
+		doTopDownStep();
+		INFO("last step was topdown? ",wasTopDown,"\tnext step is topdown? ",topdown);
+		convertQueue();
+		if (topdown) {
 //			timer.start();
 			topDownStep();
 /*			timer.stop();
 			time_topstep += timer.elapsedMilliseconds();
 			n_top += n_f;*/
 		} else {
-			convertQueue();
 //			timer.start();
 			bottomUpStep();
 /*			timer.stop();
@@ -161,10 +217,9 @@ void DirOptBFS::run() {
 			n_bot += n_f;*/
 			// during a bottom-up step, we don't really handle the nodes in the frontier and clean it up
 			// therefore, clear the frontier now. TODO: can this be done any cheaper?
-			frontier.assign(z,false);
 		}
-		qFrontier.erase(qFrontier.begin(),qFrontier.end());
-		std::swap(qFrontier,qNext);
+		//qFrontier.erase(qFrontier.begin(),qFrontier.end());
+		//std::swap(qFrontier,qNext);
 	}
 /*	INFO("time spent in top-down  steps:\t",time_topstep,"ms");
 	INFO("nodes claimed in top-down  steps:\t",n_top);
