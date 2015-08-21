@@ -10,11 +10,11 @@
 
 namespace NetworKit {
 
-BFS::BFS(const Graph& G, node source, bool storePaths, bool storeStack) : SSSP(G, source, storePaths, storeStack) {
+BFS::BFS(const Graph& G, node source, bool storePaths, bool storeStack, node target) : SSSP(G, source, storePaths, storeStack, target) {
 }
 
 
-void BFS::run(node t) {
+void BFS::run() {
 	edgeweight infDist = std::numeric_limits<edgeweight>::max();
 	count z = G.upperNodeIdBound();
 	distances.clear();
@@ -40,7 +40,7 @@ void BFS::run(node t) {
 	q.push(source);
 	visited[source] = true;
 	distances[source] = 0;
-	bool breakWhenFound = (t != none);
+	bool breakWhenFound = (target != none);
 	while (! q.empty()) {
 		node u = q.front();
 		q.pop();
@@ -48,7 +48,7 @@ void BFS::run(node t) {
 		if (storeStack) {
 			stack.push(u);
 		}
-		if (breakWhenFound && t == u) {
+		if (breakWhenFound && target == u) {
 			break;
 		}
 
