@@ -30,14 +30,14 @@ public:
 	 * @param storePaths	store paths and number of paths?
 	 * @param storeStack	maintain a stack of nodes in decreasing order of distance
 	 */
-	BFS(const Graph& G, node source, bool storePaths=true, bool storeStack=false);
+	BFS(const Graph& G, node source, bool storePaths=true, bool storeStack=false, node target = none);
 
 	/**
 	 * Breadth-first search from @a source.
 	 * @return Vector of unweighted distances from node @a source, i.e. the
 	 * length (number of edges) of the shortest path from @a source to any other node.
 	 */
-	virtual void run(node t = none);
+	virtual void run();
 
 };
 
