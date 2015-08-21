@@ -8,7 +8,7 @@
 2. Make sure, that the all the Unit tests (option '-t/--tests') run properly.
 3. If not done in the branches and forks: Document changes relevant to the user in the appropriate files (markdown, PDF, IPython notebook).
 4. Make sure, that the user guide Notebook runs properly.
-5. Update version number in setup.py and version.py.
+5. Update version number in __init__.py and version.py.
 6. Merge Dev branch into default (release) branch. [hg update default; hg merge Dev]
 7. Set version tag in default branch. [hg tag MAJOR.MINOR]
 8. Merge default branch back into Dev branch. It's not really clear, if this necessary at all. [hg update Dev; hg merge default]

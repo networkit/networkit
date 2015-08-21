@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-    DynSSSP::DynSSSP(const Graph& G, node source, bool storePredecessors) : SSSP(G, source),
+    DynSSSP::DynSSSP(const Graph& G, node source, bool storePredecessors, node target) : SSSP(G, source, true, false, target),
     storePreds(storePredecessors) {
 
     }

@@ -74,13 +74,13 @@ void ApproxBetweenness::run() {
 		// runs faster for unweighted graphs
 		std::unique_ptr<SSSP> sssp;
 		if (G.isWeighted()) {
-			sssp.reset(new Dijkstra(G, u));
+			sssp.reset(new Dijkstra(G, u, true, false, v));
 		} else {
-			sssp.reset(new BFS(G, u));
+			sssp.reset(new BFS(G, u, true, false, v));
 		}
 		DEBUG("running shortest path algorithm for node ", u);
 		if (!handler.isRunning()) continue;
-		sssp->run(v);
+		sssp->run();
 		if (!handler.isRunning()) continue;
 		if (sssp->numberOfPaths(v) > 0) { // at least one path between {u, v} exists
 			DEBUG("updating estimate for path ", u, " <-> ", v);
