@@ -10,7 +10,6 @@ from cython.operator import dereference
 from libc.stdint cimport uint64_t
 from libc.stdint cimport int64_t
 
-
 # the C++ standard library
 from libcpp cimport bool
 from libcpp.vector cimport vector
@@ -39,6 +38,9 @@ cdef extern from "<algorithm>" namespace "std":
 	_Graph move( _Graph t ) nogil # specialized declaration as general declaration disables template argument deduction and doesn't work
 	_Partition move( _Partition t) nogil
 	_Cover move(_Cover t) nogil
+	vector[double] move(vector[double])
+	vector[bool] move(vector[bool])
+	vector[count] move(vector[count])
 	pair[_Graph, vector[node]] move(pair[_Graph, vector[node]]) nogil
 	vector[pair[pair[node, node], double]] move(vector[pair[pair[node, node], double]]) nogil
 	vector[pair[node, node]] move(vector[pair[node, node]]) nogil
@@ -1029,16 +1031,15 @@ cdef class Graph:
 
 cdef extern from "cpp/graph/BFS.h":
 	cdef cppclass _BFS "NetworKit::BFS":
-		_BFS(_Graph G, node source, bool storePaths, bool storeStack) except +
+		_BFS(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
 		void run() nogil except +
-		void run(node t) nogil except +
 		vector[edgeweight] getDistances() except +
 		vector[node] getPath(node t) except +
 
 cdef class BFS:
 	""" Simple breadth-first search on a Graph from a given source
 
-	BFS(G, source, [storePaths], [storeStack])
+	BFS(G, source, [storePaths], [storeStack], target)
 
 	Create BFS for `G` and source node `source`.
 
@@ -1050,19 +1051,21 @@ cdef class BFS:
 		The source node of the breadth-first search.
 	storePaths : bool
 		store paths and number of paths?
+	target: node
+		terminate search when the target has been reached
 
 	"""
 	cdef _BFS* _this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False):
+	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False, target=none):
 		self._G = G
-		self._this = new _BFS(G._this, source, storePaths, storeStack)
+		self._this = new _BFS(G._this, source, storePaths, storeStack, target)
 
 	def __dealloc__(self):
 		del self._this
 
-	def run(self, t = None):
+	def run(self):
 		"""
 		Breadth-first search from source.
 
@@ -1072,14 +1075,8 @@ cdef class BFS:
 			Vector of unweighted distances from source node, i.e. the
 	 		length (number of edges) of the shortest path from source to any other node.
 		"""
-		cdef node ct
-		if t == None:
-			with nogil:
-				self._this.run()
-		else:
-			ct = <node>t
-			with nogil:
-				self._this.run(ct)
+		with nogil:
+			self._this.run()
 		return self
 
 	def getDistances(self):
@@ -1202,9 +1199,8 @@ cdef class DynBFS:
 
 cdef extern from "cpp/graph/Dijkstra.h":
 	cdef cppclass _Dijkstra "NetworKit::Dijkstra":
-		_Dijkstra(_Graph G, node source, bool storePaths, bool storeStack) except +
+		_Dijkstra(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
 		void run() nogil except +
-		void run(node t) nogil except +
 		vector[edgeweight] getDistances() except +
 		vector[node] getPath(node t) except +
 
@@ -1213,7 +1209,7 @@ cdef class Dijkstra:
 	Returns list of weighted distances from node source, i.e. the length of the shortest path from source to
 	any other node.
 
-    Dijkstra(G, source, [storePaths], [storeStack])
+    Dijkstra(G, source, [storePaths], [storeStack], target)
 
     Creates Dijkstra for `G` and source node `source`.
 
@@ -1227,18 +1223,20 @@ cdef class Dijkstra:
 		store paths and number of paths?
 	storeStack : bool
 		maintain a stack of nodes in order of decreasing distance?
+	target : node
+		target node. Search ends when target node is reached. t is set to None by default.
     """
 	cdef _Dijkstra* _this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False):
+	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False, node target=none):
 		self._G = G
-		self._this = new _Dijkstra(G._this, source, storePaths, storeStack)
+		self._this = new _Dijkstra(G._this, source, storePaths, storeStack, target)
 
 	def __dealloc__(self):
 		del self._this
 
-	def run(self, t = None):
+	def run(self):
 		"""
 		Breadth-first search from source.
 
@@ -1248,15 +1246,8 @@ cdef class Dijkstra:
 			Vector of unweighted distances from source node, i.e. the
 	 		length (number of edges) of the shortest path from source to any other node.
 		"""
-		cdef node ct
-		if t == None:
-			with nogil:
-				self._this.run()
-		else:
-			ct = <node>t
-			with nogil:
-				self._this.run(ct)
-		return self
+		with nogil:
+			self._this.run()
 
 	def getDistances(self):
 		""" Returns a vector of weighted distances from the source node, i.e. the
@@ -1482,13 +1473,92 @@ cdef class SpanningForest:
 		self._G = G
 		self._this = new _SpanningForest(G._this)
 
+
 	def __dealloc__(self):
 		del self._this
 
 	def generate(self):
 		return Graph().setThis(self._this.generate());
 
+cdef extern from "cpp/graph/UMST.h":
+	cdef cppclass _UMST "NetworKit::UMST<double>":
+		_UMST(_Graph) except +
+		_UMST(_Graph, vector[double]) except +
+		void run() except +
+		_Graph getUMST(bool move) except +
+		vector[bool] getAttribute(bool move) except +
+		bool inUMST(edgeid eid) except +
+		bool inUMST(node u, node v) except +
 
+cdef class UMST:
+	cdef _UMST* _this
+
+	def __cinit__(self, Graph G not None, vector[double] attribute = vector[double]()):
+		if attribute.empty():
+			self._this = new _UMST(G._this)
+		else:
+			self._this = new _UMST(G._this, attribute)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		self._this.run()
+		return self
+
+	def getUMST(self, bool move = False):
+		return Graph().setThis(self._this.getUMST(move))
+
+	def getAttribute(self, bool move = False):
+		return self._this.getAttribute(move)
+
+	def inUMST(self, node u, node v = _none):
+		if v == _none:
+			return self._this.inUMST(u)
+		else:
+			return self._this.inUMST(u, v)
+
+cdef extern from "cpp/graph/MST.h":
+	cdef cppclass _MST "NetworKit::MST":
+		_MST(_Graph) except +
+		_MST(_Graph, vector[double]) except +
+		void run() except +
+		_Graph getMST(bool move) except +
+		vector[bool] getAttribute(bool move) except +
+		bool inMST(edgeid eid) except +
+		bool inMST(node u, node v) except +
+
+cdef class MST:
+	cdef _MST* _this
+	cdef vector[double] _attribute
+	cdef Graph _G
+
+	def __cinit__(self, Graph G not None, vector[double] attribute = vector[double]()):
+		self._G = G
+		if attribute.empty():
+			self._this = new _MST(G._this)
+		else:
+			self._attribute = move(attribute)
+			self._this = new _MST(G._this, self._attribute)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		self._this.run()
+		return self
+
+	def getMST(self, bool move = False):
+		return Graph().setThis(self._this.getMST(move))
+
+	def getAttribute(self, bool move = False):
+		return self._this.getAttribute(move)
+
+	def inMST(self, node u, node v = _none):
+		if v == _none:
+			return self._this.inMST(u)
+		else:
+			return self._this.inMST(u, v)
 
 
 cdef extern from "cpp/independentset/Luby.h":
@@ -5332,7 +5402,6 @@ cdef class GCE:
 		seeds : the seed node ids.
 		"""
 		return self._this.run(seeds)
-
 # Module: clique
 
 cdef extern from "cpp/clique/MaxClique.h":
@@ -6530,3 +6599,740 @@ cdef class PredictionsSorter:
 		cdef vector[pair[pair[node, node], double]] predCopy = predictions
 		sortByNodePair(predCopy)
 		predictions[:] = predCopy
+
+# Module: EdgeScore
+
+cdef extern from "cpp/edgescores/EdgeScore.h":
+	cdef cppclass _EdgeScore "NetworKit::EdgeScore"[T](_Algorithm):
+		_EdgeScore(const _Graph& G) except +
+		vector[T] scores() except +
+		T score(edgeid eid) except +
+		T score(node u, node v) except +
+
+cdef class EdgeScore(Algorithm):
+	"""
+	TODO DOCSTIRNG
+	"""
+	cdef Graph _G
+
+	cdef bool isDoubleValue(self):
+		raise RuntimeError("Implement in subclass")
+
+	def __init__(self, *args, **namedargs):
+		if type(self) == EdgeScore:
+			raise RuntimeError("Error, you may not use EdgeScore directly, use a sub-class instead")
+
+	def __dealloc__(self):
+		self._G = None # just to be sure the graph is deleted
+
+	def score(self, u, v = None):
+		if v is None:
+			if self.isDoubleValue():
+				return (<_EdgeScore[double]*>(self._this)).score(u)
+			else:
+				return (<_EdgeScore[count]*>(self._this)).score(u)
+		else:
+			if self.isDoubleValue():
+				return (<_EdgeScore[double]*>(self._this)).score(u, v)
+			else:
+				return (<_EdgeScore[count]*>(self._this)).score(u, v)
+
+	def scores(self):
+		if self.isDoubleValue():
+			return (<_EdgeScore[double]*>(self._this)).scores()
+		else:
+			return (<_EdgeScore[count]*>(self._this)).scores()
+
+
+cdef extern from "cpp/edgescores/ChibaNishizekiTriangleEdgeScore.h":
+	cdef cppclass _ChibaNishizekiTriangleEdgeScore "NetworKit::ChibaNishizekiTriangleEdgeScore"(_EdgeScore[count]):
+		_ChibaNishizekiTriangleEdgeScore(const _Graph& G) except +
+
+cdef class ChibaNishizekiTriangleEdgeScore(EdgeScore):
+	"""
+	Calculates for each edge the number of triangles it is embedded in.
+
+	Parameters
+	----------
+	G : Graph
+		The graph to count triangles on.
+	"""
+
+	def __cinit__(self, Graph G):
+		"""
+		G : Graph
+			The graph to count triangles on.
+		"""
+		self._G = G
+		self._this = new _ChibaNishizekiTriangleEdgeScore(G._this)
+
+	cdef bool isDoubleValue(self):
+		return False
+
+cdef extern from "cpp/edgescores/ChibaNishizekiQuadrangleEdgeScore.h":
+	cdef cppclass _ChibaNishizekiQuadrangleEdgeScore "NetworKit::ChibaNishizekiQuadrangleEdgeScore"(_EdgeScore[count]):
+		_ChibaNishizekiQuadrangleEdgeScore(const _Graph& G) except +
+
+cdef class ChibaNishizekiQuadrangleEdgeScore(EdgeScore):
+	"""
+	Calculates for each edge the number of quadrangles (circles of length 4) it is embedded in.
+
+	Parameters
+	----------
+	G : Graph
+		The graph to count quadrangles on.
+	"""
+
+	def __cinit__(self, Graph G):
+		"""
+		Parameters
+		----------
+		G : Graph
+			The graph to count quadrangles on.
+		"""
+		self._G = G
+		self._this = new _ChibaNishizekiQuadrangleEdgeScore(G._this)
+
+	cdef bool isDoubleValue(self):
+		return False
+
+cdef extern from "cpp/edgescores/TriangleEdgeScore.h":
+	cdef cppclass _TriangleEdgeScore "NetworKit::TriangleEdgeScore"(_EdgeScore[double]):
+		_TriangleEdgeScore(const _Graph& G) except +
+
+cdef class TriangleEdgeScore(EdgeScore):
+	"""
+	Triangle counting.
+
+	Parameters
+	----------
+	G : Graph
+		The graph to count triangles on.
+	"""
+
+	def __cinit__(self, Graph G):
+		"""
+		Parameters
+		----------
+		G : Graph
+			The graph to count triangles on.
+		"""
+		self._G = G
+		self._this = new _TriangleEdgeScore(G._this)
+
+	cdef bool isDoubleValue(self):
+		return False
+
+cdef extern from "cpp/edgescores/EdgeScoreLinearizer.h":
+	cdef cppclass _EdgeScoreLinearizer "NetworKit::EdgeScoreLinearizer"(_EdgeScore[double]):
+		_EdgeScoreLinearizer(const _Graph& G, const vector[double]& attribute, bool inverse) except +
+
+cdef class EdgeScoreLinearizer(EdgeScore):
+	"""
+	Linearizes a score such that values are evenly distributed between 0 and 1.
+
+	Parameters
+	----------
+	G : Graph
+		The input graph.
+	a : vector[double]
+		Edge score that shall be linearized.
+	"""
+	cdef vector[double] _score
+
+	def __cinit__(self, Graph G, vector[double] score, inverse = False):
+		self._G = G
+		self._score = score
+		self._this = new _EdgeScoreLinearizer(G._this, self._score, inverse)
+
+	cdef bool isDoubleValue(self):
+		return True
+
+
+cdef extern from "cpp/edgescores/EdgeScoreNormalizer.h":
+	cdef cppclass _EdgeScoreNormalizer "NetworKit::EdgeScoreNormalizer"[T](_EdgeScore[double]):
+		_EdgeScoreNormalizer(const _Graph&, const vector[T]&, bool inverse, double lower, double upper) except +
+
+cdef class EdgeScoreNormalizer(EdgeScore):
+	"""
+	Normalize an edge score such that it is in a certain range.
+
+	Parameters
+	----------
+	G : Graph
+		The graph the edge score is defined on.
+	score : vector[double]
+		The edge score to normalize.
+	inverse
+		Set to True in order to inverse the resulting score.
+	lower
+		Lower bound of the target range.
+	upper
+		Upper bound of the target range.
+	"""
+	cdef vector[double] _inScoreDouble
+	cdef vector[count] _inScoreCount
+
+	def __cinit__(self, Graph G not None, score, bool inverse = False, double lower = 0.0, double upper = 1.0):
+		self._G = G
+		try:
+			self._inScoreDouble = move(<vector[double]?>score)
+			self._this = new _EdgeScoreNormalizer[double](G._this, self._inScoreDouble, inverse, lower, upper)
+		except TypeError:
+			try:
+				self._inScoreCount = move(<vector[count]?>score)
+				self._this = new _EdgeScoreNormalizer[count](G._this, self._inScoreCount, inverse, lower, upper)
+			except TypeError:
+				raise TypeError("score must be either a vector of integer or float")
+				
+	cdef bool isDoubleValue(self):
+		return True
+
+cdef extern from "cpp/edgescores/EdgeScoreBlender.h":
+	cdef cppclass _EdgeScoreBlender "NetworKit::EdgeScoreBlender"(_EdgeScore[double]):
+		_EdgeScoreBlender(const _Graph&, const vector[double]&, const vector[double]&, const vector[bool]&) except +
+
+cdef class EdgeScoreBlender(EdgeScore):
+	"""
+	Blends two attribute vectors, the value is chosen depending on the supplied boolean vector
+
+	Parameters
+	----------
+	G : Graph
+		The graph for which the attribute shall be blended
+	attribute0 : vector[double]
+		The first attribute (chosen for selection[eid] == false)
+	attribute1 : vector[double]
+		The second attribute (chosen for selection[eid] == true)
+	selection : vector[bool]
+		The selection vector
+	"""
+	cdef vector[double] _attribute0
+	cdef vector[double] _attribute1
+	cdef vector[bool] _selection
+
+	def __cinit__(self, Graph G not None, vector[double] attribute0, vector[double] attribute1, vector[bool] selection):
+		self._G = G
+		self._attribute0 = move(attribute0)
+		self._attribute1 = move(attribute1)
+		self._selection = move(selection)
+
+		self._this = new _EdgeScoreBlender(G._this, self._attribute0, self._attribute1, self._selection)
+
+	cdef bool isDoubleValue(self):
+		return True
+
+cdef extern from "cpp/edgescores/GeometricMeanScore.h":
+	cdef cppclass _GeometricMeanScore "NetworKit::GeometricMeanScore"(_EdgeScore[double]):
+		_GeometricMeanScore(const _Graph& G, const vector[double]& a) except +
+
+cdef class GeometricMeanScore(EdgeScore):
+	"""
+	Normalizes the given edge attribute by the geometric average of the sum of the attributes of the incident edges of the incident nodes.
+
+	Parameters
+	----------
+	G : Graph
+		The input graph.
+	a : vector[double]
+		Edge attribute that shall be normalized.
+	"""
+	cdef vector[double] _attribute
+
+	def __cinit__(self, Graph G, vector[double] attribute):
+		self._G = G
+		self._attribute = attribute
+		self._this = new _GeometricMeanScore(G._this, self._attribute)
+
+	cdef bool isDoubleValue(self):
+		return True
+
+cdef extern from "cpp/edgescores/EdgeScoreAsWeight.h":
+	cdef cppclass _EdgeScoreAsWeight "NetworKit::EdgeScoreAsWeight":
+		_EdgeScoreAsWeight(const _Graph& G, const vector[double]& score, bool squared, edgeweight offset, edgeweight factor) except +
+		_Graph calculate() except +
+
+cdef class EdgeScoreAsWeight:
+	"""
+	Assigns an edge score as edge weight of a graph.
+
+	Parameters
+	----------
+	G : Graph
+		The graph to assign edge weights to.
+	score : vector[double]
+		The input edge score.
+	squared : bool
+		Edge weights will be squared if set to True.
+	offset : edgeweight
+		This offset will be added to each edge weight.
+	factor : edgeweight
+		Each edge weight will be multiplied by this factor.
+	"""
+
+	cdef _EdgeScoreAsWeight* _this
+	cdef Graph _G
+	cdef vector[double] _score
+
+	def __cinit__(self, Graph G, vector[double] score, bool squared, edgeweight offset, edgeweight factor):
+		self._G = G
+		self._score = score
+		self._this = new _EdgeScoreAsWeight(G._this, self._score, squared, offset, factor)
+
+	def __dealloc__(self):
+		del self._this
+
+	def getWeightedGraph(self):
+		"""
+		Returns
+		-------
+		Graph
+			The weighted result graph.
+		"""
+		return Graph(0).setThis(self._this.calculate())
+
+# Module: distmeasures
+cdef extern from "cpp/distmeasures/AdamicAdarDistance.h":
+	cdef cppclass _AdamicAdarDistance "NetworKit::AdamicAdarDistance":
+		_AdamicAdarDistance(const _Graph& G) except +
+		void preprocess() except +
+		double distance(node u, node v) except +
+		vector[double] getEdgeAttribute() except +
+
+cdef class AdamicAdarDistance:
+	"""
+	Calculate the adamic adar similarity.
+
+	Parameters
+	----------
+	G : Graph
+		The input graph.
+	"""
+	cdef _AdamicAdarDistance* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _AdamicAdarDistance(G._this)
+
+	def __dealloc__(self):
+		del self._this
+
+	def preprocess(self):
+		self._this.preprocess()
+
+	def getAttribute(self):
+		"""
+		Returns
+		-------
+		vector[double]
+			The edge attribute that contains the adamic adar similarity.
+
+		"""
+		#### TODO: convert distance to similarity!?! ####
+		return self._this.getEdgeAttribute()
+
+# Module: sparsification
+
+cdef extern from "cpp/sparsification/ChungLuScore.h":
+	cdef cppclass _ChungLuScore "NetworKit::ChungLuScore"(_EdgeScore[double]):
+		_ChungLuScore(const _Graph& G) except +
+
+cdef class ChungLuScore(EdgeScore):
+	"""
+	Chung-Lu based score.
+
+	Parameters
+	----------
+	G : Graph
+		The input graph.
+	"""
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _ChungLuScore(G._this)
+
+	cdef bool isDoubleValue(self):
+		return True
+
+cdef extern from "cpp/sparsification/SimmelianOverlapScore.h":
+	cdef cppclass _SimmelianOverlapScore "NetworKit::SimmelianOverlapScore"(_EdgeScore[double]):
+		_SimmelianOverlapScore(const _Graph& G, const vector[count]& triangles, count maxRank) except +
+
+cdef class SimmelianOverlapScore(EdgeScore):
+	cdef vector[count] _triangles
+
+	"""
+	An implementation of the parametric variant of Simmelian Backbones. Calculates
+	for each edge the minimum parameter value such that the edge is still contained in
+	the sparsified graph.
+
+	Parameters
+	----------
+	G : Graph
+		The graph to apply the Simmelian Backbone algorithm to.
+	triangles : vector[count]
+		Previously calculated edge triangle counts on G.
+	"""
+	def __cinit__(self, Graph G, vector[count] triangles, count maxRank):
+		self._G = G
+		self._triangles = triangles
+		self._this = new _SimmelianOverlapScore(G._this, self._triangles, maxRank)
+
+	cdef bool isDoubleValue(self):
+		return True
+
+cdef extern from "cpp/edgescores/PrefixJaccardScore.h":
+	cdef cppclass _PrefixJaccardScore "NetworKit::PrefixJaccardScore<double>"(_EdgeScore[double]):
+		_PrefixJaccardScore(const _Graph& G, const vector[double]& a) except +
+
+cdef class PrefixJaccardScore(EdgeScore):
+	cdef vector[double] _attribute
+
+	def __cinit__(self, Graph G, vector[double] attribute):
+		self._G = G
+		self._attribute = attribute
+		self._this = new _PrefixJaccardScore(G._this, self._attribute)
+
+	cdef bool isDoubleValue(self):
+		return True
+
+cdef extern from "cpp/sparsification/MultiscaleScore.h":
+	cdef cppclass _MultiscaleScore "NetworKit::MultiscaleScore"(_EdgeScore[double]):
+		_MultiscaleScore(const _Graph& G, const vector[double]& a) except +
+
+cdef class MultiscaleScore(EdgeScore):
+	"""
+	An implementation of the Multiscale Backbone. Calculates for each edge the minimum
+	parameter value such that the edge is still contained in the sparsified graph.
+
+	Parameters
+	----------
+	G : Graph
+		The graph to apply the Multiscale algorithm to.
+	attribute : vector[double]
+		The edge attribute the Multiscale algorithm is to be applied to.
+	"""
+
+	cdef vector[double] _attribute
+
+	def __cinit__(self, Graph G, vector[double] attribute):
+		self._G = G
+		self._attribute = attribute
+		self._this = new _MultiscaleScore(G._this, self._attribute)
+
+	cdef bool isDoubleValue(self):
+		return True
+
+cdef extern from "cpp/sparsification/RandomEdgeScore.h":
+	cdef cppclass _RandomEdgeScore "NetworKit::RandomEdgeScore"(_EdgeScore[double]):
+		_RandomEdgeScore(const _Graph& G) except +
+
+cdef class RandomEdgeScore(EdgeScore):
+	"""
+	[todo]
+
+	Parameters
+	----------
+	G : Graph
+		The graph to calculate the Random Edge attribute for.
+	"""
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _RandomEdgeScore(G._this)
+
+	cdef bool isDoubleValue(self):
+		return True
+
+cdef extern from "cpp/sparsification/LocalSimilarityScore.h":
+	cdef cppclass _LocalSimilarityScore "NetworKit::LocalSimilarityScore"(_EdgeScore[double]):
+		_LocalSimilarityScore(const _Graph& G, const vector[count]& triangles) except +
+
+cdef class LocalSimilarityScore(EdgeScore):
+	"""
+	An implementation of the Local Simlarity sparsification approach.
+	This attributizer calculates for each edge the maximum parameter value
+	such that the edge is still contained in the sparsified graph.
+
+	Parameters
+	----------
+	G : Graph
+		The graph to apply the Local Similarity algorithm to.
+	triangles : vector[count]
+		Previously calculated edge triangle counts.
+	"""
+	cdef vector[count] _triangles
+
+	def __cinit__(self, Graph G, vector[count] triangles):
+		self._G = G
+		self._triangles = triangles
+		self._this = new _LocalSimilarityScore(G._this, self._triangles)
+
+	cdef bool isDoubleValue(self):
+		return True
+
+cdef extern from "cpp/sparsification/ForestFireScore.h":
+	cdef cppclass _ForestFireScore "NetworKit::ForestFireScore"(_EdgeScore[double]):
+		_ForestFireScore(const _Graph& G, double pf, double tebr) except +
+
+cdef class ForestFireScore(EdgeScore):
+	"""
+	A variant of the Forest Fire sparsification approach that is based on random walks.
+	This attributizer calculates for each edge the minimum parameter value
+	such that the edge is still contained in the sparsified graph.
+
+	Parameters
+	----------
+	G : Graph
+		The graph to apply the Forest Fire algorithm to.
+	pf : double
+		The probability for neighbor nodes to get burned aswell.
+	tebr : double
+		The Forest Fire will burn until tebr * numberOfEdges edges have been burnt.
+	"""
+
+	def __cinit__(self, Graph G, double pf, double tebr):
+		self._G = G
+		self._this = new _ForestFireScore(G._this, pf, tebr)
+
+	cdef bool isDoubleValue(self):
+		return True
+
+cdef extern from "cpp/sparsification/LocalDegreeScore.h":
+	cdef cppclass _LocalDegreeScore "NetworKit::LocalDegreeScore"(_EdgeScore[double]):
+		_LocalDegreeScore(const _Graph& G) except +
+
+cdef class LocalDegreeScore(EdgeScore):
+	"""
+	The LocalDegree sparsification approach is based on the idea of hub nodes.
+	This attributizer calculates for each edge the maximum parameter value
+	such that the edge is still contained in the sparsified graph.
+
+	Parameters
+	----------
+	G : Graph
+		The graph to apply the Local Degree  algorithm to.
+	"""
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _LocalDegreeScore(G._this)
+
+	cdef bool isDoubleValue(self):
+		return True
+
+cdef extern from "cpp/distmeasures/JaccardDistance.h":
+	cdef cppclass _JaccardDistance "NetworKit::JaccardDistance":
+		_JaccardDistance(const _Graph& G, const vector[count]& triangles) except +
+		void preprocess() except +
+		vector[double] getEdgeAttribute() except +
+
+cdef class JaccardDistance:
+	"""
+	The Jaccard distance measure assigns to each edge the jaccard coefficient
+	of the neighborhoods of the two adjacent nodes.
+
+	Parameters
+	----------
+	G : Graph
+		The graph to calculate Jaccard distances for.
+	triangles : vector[count]
+		Previously calculated edge triangle counts.
+	"""
+
+	cdef _JaccardDistance* _this
+	cdef Graph _G
+	cdef vector[count] triangles
+
+	def __cinit__(self, Graph G, vector[count] triangles):
+		self._G = G
+		self._triangles = triangles
+		self._this = new _JaccardDistance(G._this, self._triangles)
+
+	def __dealloc__(self):
+		del self._this
+
+	def getAttribute(self):
+		return self._this.getEdgeAttribute()
+
+cdef class JaccardSimilarityAttributizer:
+	"""
+	The Jaccard similarity measure assigns to each edge (1 - the jaccard coefficient
+	of the neighborhoods of the two adjacent nodes).
+
+	Parameters
+	----------
+	G : Graph
+		The graph to calculate Jaccard similarities for.
+	triangles : vector[count]
+		Previously calculated edge triangle counts.
+	"""
+
+	cdef _JaccardDistance* _this
+	cdef Graph _G
+	cdef vector[count] _triangles
+
+	def __cinit__(self, Graph G, vector[count] triangles):
+		self._G = G
+		self._triangles = triangles
+		self._this = new _JaccardDistance(G._this, self._triangles)
+
+	def __dealloc__(self):
+		del self._this
+
+	def getAttribute(self):
+		#convert distance to similarity
+		self._this.preprocess()
+		return [1 - x for x in self._this.getEdgeAttribute()]
+
+cdef extern from "cpp/sparsification/RandomNodeEdgeScore.h":
+	cdef cppclass _RandomNodeEdgeScore "NetworKit::RandomNodeEdgeScore"(_EdgeScore[double]):
+		_RandomNodeEdgeScore(const _Graph& G) except +
+
+cdef class RandomNodeEdgeScore(EdgeScore):
+	"""
+	Random Edge sampling. This attributizer returns edge attributes where
+	each value is selected uniformly at random from [0,1].
+
+	Parameters
+	----------
+	G : Graph
+		The graph to calculate the Random Edge attribute for.
+	"""
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _RandomNodeEdgeScore(G._this)
+
+	cdef bool isDoubleValue(self):
+		return True
+
+ctypedef fused DoubleInt:
+	int
+	double
+
+cdef extern from "cpp/sparsification/LocalFilterScore.h":
+	cdef cppclass _LocalFilterScoreDouble "NetworKit::LocalFilterScore<double>"(_EdgeScore[double]):
+		_LocalFilterScoreDouble(const _Graph& G, const vector[double]& a, bool logarithmic,  bool bothRequired) except +
+
+	cdef cppclass _LocalFilterScoreInt "NetworKit::LocalFilterScore<int>"(_EdgeScore[count]):
+		_LocalFilterScoreInt(const _Graph& G, const vector[double]& a, bool logarithmic,  bothRequired) except +
+
+cdef class LocalFilterScore(EdgeScore):
+	cdef vector[double] _a
+
+	"""
+	TODO
+	"""
+	def __init__(self, Graph G, vector[double] a, bool logarithmic = True, bool bothRequired = False):
+		self._G = G
+		self._a = a
+		self._this = new _LocalFilterScoreDouble(G._this, a, logarithmic, bothRequired)
+
+	def __dealloc__(self):
+		del self._thisDouble
+
+	cdef bool isDoubleValue(self):
+		return True
+
+cdef extern from "cpp/sparsification/ChanceCorrectedTriangleScore.h":
+	cdef cppclass _ChanceCorrectedTriangleScore "NetworKit::ChanceCorrectedTriangleScore"(_EdgeScore[double]):
+		_ChanceCorrectedTriangleScore(const _Graph& G, const vector[count]& triangles) except +
+
+cdef class ChanceCorrectedTriangleScore(EdgeScore):
+	"""
+	Divide the number of triangles per edge by the expected number of triangles given a random edge distribution.
+
+	Parameters
+	----------
+	G : Graph
+		The input graph.
+	triangles : vector[count]
+		Triangle count.
+	"""
+	cdef vector[count] _triangles
+
+	def __cinit__(self, Graph G, vector[count] triangles):
+		self._G = G
+		self._triangles = triangles
+		self._this = new _ChanceCorrectedTriangleScore(G._this, self._triangles)
+
+	cdef bool isDoubleValue(self):
+		return True
+
+cdef extern from "cpp/sparsification/SCANStructuralSimilarityScore.h":
+	cdef cppclass _SCANStructuralSimilarityScore "NetworKit::SCANStructuralSimilarityScore"(_EdgeScore[double]):
+		_SCANStructuralSimilarityScore(_Graph G, const vector[count]& triangles) except +
+
+cdef class SCANStructuralSimilarityScore(EdgeScore):
+	cdef vector[count] _triangles
+
+	def __cinit__(self, Graph G, vector[count] triangles):
+		self._G = G
+		self._triangles = triangles
+		self._this = new _SCANStructuralSimilarityScore(G._this, self._triangles)
+
+	cdef bool isDoubleValue(self):
+		return True
+
+cdef extern from "cpp/sparsification/NodeNormalizedTriangleScore.h":
+	cdef cppclass _NodeNormalizedTriangleScore "NetworKit::NodeNormalizedTriangleScore"(_EdgeScore[double]):
+		_NodeNormalizedTriangleScore(_Graph G, const vector[count]& triangles) except +
+
+cdef class NodeNormalizedTriangleScore(EdgeScore):
+	"""
+	Divide the number of triangles per edge by the average number of triangles of the incident nodes.
+
+	Parameters
+	----------
+	G : Graph
+		The input graph.
+	triangles : vector[count]
+		Triangle count.
+	"""
+	cdef vector[count] _triangles
+
+	def __cinit__(self, Graph G, vector[count] triangles):
+		self._G = G
+		self._triangles = triangles
+		self._this = new _NodeNormalizedTriangleScore(G._this, self._triangles)
+
+	cdef bool isDoubleValue(self):
+		return True
+
+cdef extern from "cpp/sparsification/GlobalThresholdFilter.h":
+	cdef cppclass _GlobalThresholdFilter "NetworKit::GlobalThresholdFilter":
+		_GlobalThresholdFilter(const _Graph& G, const vector[double]& a, double alpha, bool above) except +
+		_Graph calculate() except +
+
+cdef class GlobalThresholdFilter:
+	"""
+	Calculates a sparsified graph by filtering globally using a constant threshold value
+	and a given edge attribute.
+
+	Parameters
+	----------
+	G : Graph
+		The graph to sparsify.
+	attribute : vector[double]
+		The edge attribute to consider for filtering.
+	e : double
+		Threshold value.
+	above : bool
+		If set to True (False), all edges with an attribute value equal to or above (below)
+		will be kept in the sparsified graph.
+	"""
+	cdef _GlobalThresholdFilter* _this
+	cdef Graph _G
+	cdef vector[double] _attribute
+
+	def __cinit__(self, Graph G not None, vector[double] attribute, double e, bool above):
+		self._G = G
+		self._attribute = attribute
+		self._this = new _GlobalThresholdFilter(G._this, self._attribute, e, above)
+
+	def __dealloc__(self):
+		del self._this
+
+	def calculate(self):
+		return Graph().setThis(self._this.calculate())

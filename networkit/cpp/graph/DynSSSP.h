@@ -33,7 +33,7 @@ public:
      * @param	source	    source vertex.
      * @param   storePredecessors   keep track of the lists of predecessors?
      */
-    DynSSSP(const Graph& G, node source, bool storePredecessors = true);
+    DynSSSP(const Graph& G, node source, bool storePredecessors = true, node target = none);
 
     virtual ~DynSSSP() = default;
 
