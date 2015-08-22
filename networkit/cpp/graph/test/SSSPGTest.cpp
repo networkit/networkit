@@ -228,7 +228,8 @@ TEST_F(SSSPGTest, testDirOptBFS) {
 
 TEST_F(SSSPGTest, benchDirOptBFS) {
 	METISGraphReader reader;
-	Graph G = reader.read("input/as-Skitter.metis.graph");
+	//Graph G = reader.read("input/as-Skitter.metis.graph");
+	Graph G = reader.read("/algoDaten/staudt/Graphs/Collections/NwkBenchmark/uk-2002.metis.graph");
 	//Graph G = reader.read("input/caidaRouterLevel.graph");
 	Aux::Timer t;
 	count startNode = 100000;

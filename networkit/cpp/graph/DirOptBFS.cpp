@@ -43,6 +43,8 @@ void DirOptBFS::run() {
 	distances[source] = currentDistance;
 	visited[source] = true;
 	bool wasTopDown = true;
+	count lastFrontierSize = 0;
+	bool growing;
 
 	auto wasVisited = [&](node v) {
 		// numerous criteria could be used
@@ -64,6 +66,8 @@ void DirOptBFS::run() {
 
 	auto determineNextStep = [&]() {
 		if (topdown) {
+			growing = qNext.size() > lastFrontierSize;
+			lastFrontierSize = qNext.size();
 			// manual computation of m_u
 			// TODO: can this be computed on the fly?
 			count m_u = 0;
@@ -71,12 +75,14 @@ void DirOptBFS::run() {
 			for (count u = 0; u < z; ++u) {
 				m_u += (G.hasNode(u)&&!wasVisited(u))?G.degree(u):0;
 			}
-			topdown = m_f < (m_u / alpha);
+			topdown = m_f < (m_u / alpha) && growing;
 		} else {
 			for (auto& q : threadLocalNext) {
 				n_f += q.size();
 			}
-			topdown = n_f < rhs_C_BT;
+			growing = n_f > lastFrontierSize;
+			lastFrontierSize = n_f;
+			topdown = n_f < rhs_C_BT && !growing;
 		}
 	};
 
@@ -157,7 +163,6 @@ void DirOptBFS::run() {
 				threadLocalNext.resize(max_threads);
 			}
 		}
-		n_f = 0;
 	};
 
 /*	count time_topstep = 0;
@@ -179,6 +184,7 @@ void DirOptBFS::run() {
 			time_topstep += timer.elapsedMilliseconds();
 			n_top += n_f;*/
 		} else {
+			n_f = 0;
 //			timer.start();
 			bottomUpStep();
 /*			timer.stop();
