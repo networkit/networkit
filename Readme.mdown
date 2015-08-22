@@ -244,12 +244,13 @@ Credits
 ### External Code
 
 The program source includes:
-- the *[The Lean Mean C++ Option Parser][optparse]* by Matthias S. Benkmann.
-- a Python 3 version of the *[powerlaw][powerlaw]* Python module by Jeff Alstott, Ed Bullmore, Dietmar Plenz
 
-[powerlaw]: https://pypi.python.org/pypi/powerlaw#downloads
+- the *[The Lean Mean C++ Option Parser][optparse]* by Matthias S. Benkmann
+- the *[TTMath]* bignum library by Tomasz Sowa
+
 [mitlicense]: http://opensource.org/licenses/MIT
 [optparse]: http://optionparser.sourceforge.net/
+[ttmath]: http://www.ttmath.org/
 
 License
 -------

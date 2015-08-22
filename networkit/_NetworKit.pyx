@@ -16,6 +16,7 @@ from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 from libcpp.map cimport map
 from libcpp.set cimport set
+from libcpp.stack cimport stack
 from libcpp.string cimport string
 from libcpp.unordered_set cimport unordered_set
 from libcpp.unordered_map cimport unordered_map
@@ -1029,14 +1030,111 @@ cdef class Graph:
 
 # TODO: expose all methods
 
-cdef extern from "cpp/graph/BFS.h":
-	cdef cppclass _BFS "NetworKit::BFS":
-		_BFS(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
+cdef extern from "cpp/graph/SSSP.h":
+	cdef cppclass _SSSP "NetworKit::SSSP"(_Algorithm):
+		_SSSP(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
 		void run() nogil except +
 		vector[edgeweight] getDistances() except +
-		vector[node] getPath(node t) except +
+		edgeweight distance(node t) except +
+		vector[node] getPredecessors(node t) except +
+		vector[node] getPath(node t, bool forward) except +
+		set[vector[node]] getPaths(node t, bool forward) except +
+		stack[node] getStack() except +
 
-cdef class BFS:
+cdef class SSSP(Algorithm):
+	""" Base class for single source shortest path algorithms. """
+
+	cdef Graph _G
+
+	def __init__(self, *args, **namedargs):
+		if type(self) == SSSP:
+			raise RuntimeError("Error, you may not use SSSP directly, use a sub-class instead")
+
+	def __dealloc__(self):
+		self._G = None # just to be sure the graph is deleted
+
+	def getDistances(self):
+		"""
+		Returns a vector of weighted distances from the source node, i.e. the
+ 	 	length of the shortest path from the source node to any other node.
+
+ 	 	Returns
+ 	 	-------
+ 	 	vector
+ 	 		The weighted distances from the source node to any other node in the graph.
+		"""
+		return (<_SSSP*>(self._this)).getDistances()
+
+	def distance(self, t):
+		return (<_SSSP*>(self._this)).distance(t)
+
+	def getPredecessors(self, t):
+		return (<_SSSP*>(self._this)).getPredecessors(t)
+
+	def getPath(self, t, forward=True):
+		""" Returns a shortest path from source to `t` and an empty path if source and `t` are not connected.
+
+		Parameters
+		----------
+		t : node
+			Target node.
+
+		Returns
+		-------
+		vector
+			A shortest path from source to `t or an empty path.
+		"""
+		return (<_SSSP*>(self._this)).getPath(t, forward)
+
+	def getPaths(self, t, forward=True):
+		return (<_SSSP*>(self._this)).getPaths(t, forward)
+
+	def getStack(self, t):
+		# TODO: find a more eficient way to do this
+		cdef stack[node] stack = (<_SSSP*>(self._this)).getStack()
+		result = []
+		while not stack.empty():
+			result.append(stack.top())
+			stack.pop()
+		return result.reverse()
+
+cdef extern from "cpp/graph/DynSSSP.h":
+	cdef cppclass _DynSSSP "NetworKit::DynSSSP"(_SSSP):
+		_DynSSSP(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
+		void update(vector[_GraphEvent] batch) except +
+		bool modified() except +
+		void setTargetNode(node t) except +
+
+cdef class DynSSSP(SSSP):
+	""" Base class for single source shortest path algorithms in dynamic graphs. """
+	def __init__(self, *args, **namedargs):
+		if type(self) == SSSP:
+			raise RuntimeError("Error, you may not use DynSSSP directly, use a sub-class instead")
+
+	""" Updates shortest paths with the batch `batch` of edge insertions.
+
+		Parameters
+		----------
+		batch : list of GraphEvent.
+		"""
+	def update(self, batch):
+		cdef vector[_GraphEvent] _batch
+		for ev in batch:
+			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+		(<_DynSSSP*>(self._this)).update(_batch)
+
+	def modified(self):
+		return (<_DynSSSP*>(self._this)).modified()
+
+	def setTargetNode(self, t):
+		(<_DynSSSP*>(self._this)).setTargetNode(t)
+
+
+cdef extern from "cpp/graph/BFS.h":
+	cdef cppclass _BFS "NetworKit::BFS"(_SSSP):
+		_BFS(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
+
+cdef class BFS(SSSP):
 	""" Simple breadth-first search on a Graph from a given source
 
 	BFS(G, source, [storePaths], [storeStack], target)
@@ -1053,68 +1151,18 @@ cdef class BFS:
 		store paths and number of paths?
 	target: node
 		terminate search when the target has been reached
-
 	"""
-	cdef _BFS* _this
-	cdef Graph _G
 
 	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False, target=none):
 		self._G = G
 		self._this = new _BFS(G._this, source, storePaths, storeStack, target)
 
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		"""
-		Breadth-first search from source.
-
-		Returns
-		-------
-		vector
-			Vector of unweighted distances from source node, i.e. the
-	 		length (number of edges) of the shortest path from source to any other node.
-		"""
-		with nogil:
-			self._this.run()
-		return self
-
-	def getDistances(self):
-		"""
-		Returns a vector of weighted distances from the source node, i.e. the
- 	 	length of the shortest path from the source node to any other node.
-
- 	 	Returns
- 	 	-------
- 	 	vector
- 	 		The weighted distances from the source node to any other node in the graph.
-		"""
-		return self._this.getDistances()
-
-	def getPath(self, t):
-		""" Returns a shortest path from source to `t` and an empty path if source and `t` are not connected.
-
-		Parameters
-		----------
-		t : node
-			Target node.
-
-		Returns
-		-------
-		vector
-			A shortest path from source to `t or an empty path.
-		"""
-		return self._this.getPath(t)
-
 
 cdef extern from "cpp/graph/DirOptBFS.h":
-	cdef cppclass _DirOptBFS "NetworKit::DirOptBFS":
-		_DirOptBFS(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
-		void run() except +
-		vector[edgeweight] getDistances() except +
-		vector[node] getPath(node t) except +
+	cdef cppclass _DirOptBFS "NetworKit::DirOptBFS"(_SSSP):
+		_DirOptBFS(_Graph G, node source, node target) except +
 
-cdef class DirOptBFS:
+cdef class DirOptBFS(SSSP):
 	""" Simple breadth-first search on a Graph from a given source
 
 	DirOptBFS(G, source, [storePaths], [storeStack])
@@ -1131,66 +1179,16 @@ cdef class DirOptBFS:
 		store paths and number of paths?
 
 	"""
-	cdef _DirOptBFS* _this
-	cdef Graph _G
-
-	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False, target = None):
+	def __cinit__(self, Graph G, source, target = None):
 		self._G = G
-		self._this = new _DirOptBFS(G._this, source, storePaths, storeStack, target)
-
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		"""
-		Breadth-first search from source.
-
-		Returns
-		-------
-		vector
-			Vector of unweighted distances from source node, i.e. the
-			length (number of edges) of the shortest path from source to any other node.
-		"""
-		self._this.run()
-
-	def getDistances(self):
-		"""
-		Returns a vector of weighted distances from the source node, i.e. the
-		length of the shortest path from the source node to any other node.
-
-		Returns
-		-------
-		vector
-			The weighted distances from the source node to any other node in the graph.
-		"""
-		return self._this.getDistances()
-
-	def getPath(self, t):
-		""" Returns a shortest path from source to `t` and an empty path if source and `t` are not connected.
-
-		Parameters
-		----------
-		t : node
-			Target node.
-
-		Returns
-		-------
-		vector
-			A shortest path from source to `t or an empty path.
-		"""
-		return self._this.getPath(t)
-
+		self._this = new _DirOptBFS(G._this, source, target)
 
 
 cdef extern from "cpp/graph/DynBFS.h":
-	cdef cppclass _DynBFS "NetworKit::DynBFS":
+	cdef cppclass _DynBFS "NetworKit::DynBFS"(_DynSSSP):
 		_DynBFS(_Graph G, node source) except +
-		void run() nogil except +
-		vector[edgeweight] getDistances() except +
-		vector[node] getPath(node t) except +
-		void update(vector[_GraphEvent]) except +
 
-cdef class DynBFS:
+cdef class DynBFS(DynSSSP):
 	""" Dynamic version of BFS.
 
 	DynBFS(G, source)
@@ -1206,80 +1204,16 @@ cdef class DynBFS:
 	storeStack : bool
 		maintain a stack of nodes in order of decreasing distance?
 	"""
-	cdef _DynBFS* _this
-	cdef Graph _G
-
 	def __cinit__(self, Graph G, source):
 		self._G = G
 		self._this = new _DynBFS(G._this, source)
 
-	# this is necessary so that the C++ object gets properly garbage collected
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		"""
-		Breadth-first search from source.
-
-		Returns
-		-------
-		vector
-			Vector of unweighted distances from source node, i.e. the
-			length (number of edges) of the shortest path from source to any other node.
-		"""
-		with nogil:
-			self._this.run()
-		return self
-
-	def getDistances(self):
-		"""
-		Returns a vector of weighted distances from the source node, i.e. the
-			length of the shortest path from the source node to any other node.
-
-			Returns
-			-------
-			vector
-				The weighted distances from the source node to any other node in the graph.
-		"""
-		return self._this.getDistances()
-
-	def getPath(self, t):
-		""" Returns a shortest path from source to `t` and an empty path if source and `t` are not connected.
-
-		Parameters
-		----------
-		t : node
-			Target node.
-
-		Returns
-		-------
-		vector
-			A shortest path from source to `t or an empty path.
-		"""
-		return self._this.getPath(t)
-
-	def update(self, batch):
-		""" Updates shortest paths with the batch `batch` of edge insertions.
-
-		Parameters
-		----------
-		batch : list of GraphEvent.
-		"""
-		cdef vector[_GraphEvent] _batch
-		for ev in batch:
-			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-		self._this.update(_batch)
-
-
 
 cdef extern from "cpp/graph/Dijkstra.h":
-	cdef cppclass _Dijkstra "NetworKit::Dijkstra":
+	cdef cppclass _Dijkstra "NetworKit::Dijkstra"(_SSSP):
 		_Dijkstra(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
-		void run() nogil except +
-		vector[edgeweight] getDistances() except +
-		vector[node] getPath(node t) except +
 
-cdef class Dijkstra:
+cdef class Dijkstra(SSSP):
 	""" Dijkstra's SSSP algorithm.
 	Returns list of weighted distances from node source, i.e. the length of the shortest path from source to
 	any other node.
@@ -1301,65 +1235,15 @@ cdef class Dijkstra:
 	target : node
 		target node. Search ends when target node is reached. t is set to None by default.
     """
-	cdef _Dijkstra* _this
-	cdef Graph _G
-
 	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False, node target=none):
 		self._G = G
 		self._this = new _Dijkstra(G._this, source, storePaths, storeStack, target)
 
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		"""
-		Breadth-first search from source.
-
-		Returns
-		-------
-		vector
-			Vector of unweighted distances from source node, i.e. the
-	 		length (number of edges) of the shortest path from source to any other node.
-		"""
-		with nogil:
-			self._this.run()
-
-	def getDistances(self):
-		""" Returns a vector of weighted distances from the source node, i.e. the
- 	 	length of the shortest path from the source node to any other node.
-
- 	 	Returns
- 	 	-------
- 	 	vector
- 	 		The weighted distances from the source node to any other node in the graph.
-		"""
-		return self._this.getDistances()
-
-	def getPath(self, t):
-		""" Returns a shortest path from source to `t` and an empty path if source and `t` are not connected.
-
-		Parameters
-		----------
-		t : node
-			Target node.
-
-		Returns
-		-------
-		vector
-			A shortest path from source to `t or an empty path.
-		"""
-		return self._this.getPath(t)
-
-
 cdef extern from "cpp/graph/DynDijkstra.h":
-	cdef cppclass _DynDijkstra "NetworKit::DynDijkstra":
+	cdef cppclass _DynDijkstra "NetworKit::DynDijkstra"(_DynSSSP):
 		_DynDijkstra(_Graph G, node source) except +
-		void run() nogil except +
-		vector[edgeweight] getDistances() except +
-		vector[node] getPath(node t) except +
-		void update(vector[_GraphEvent]) except +
 
-cdef class DynDijkstra:
+cdef class DynDijkstra(DynSSSP):
 	""" Dynamic version of Dijkstra.
 
 	DynDijkstra(G, source)
@@ -1374,68 +1258,10 @@ cdef class DynDijkstra:
 		The source node of the breadth-first search.
 
 	"""
-	cdef _DynDijkstra* _this
-	cdef Graph _G
-
 	def __cinit__(self, Graph G, source):
 		self._G = G
 		self._this = new _DynDijkstra(G._this, source)
 
-	# this is necessary so that the C++ object gets properly garbage collected
-	def __dealloc__(self):
-		del self._this
-
-	def init(self):
-		"""
-		SSSP search from source.
-
-		Returns
-		-------
-		vector
-			Vector of distances from source node, i.e. the length of the
-			shortest path from source to any other node.
-		"""
-		with nogil:
-			self._this.run()
-
-	def getDistances(self):
-		"""
-		Returns a vector of weighted distances from the source node, i.e. the
-			length of the shortest path from the source node to any other node.
-
-		Returns
-		-------
-		vector
-			The weighted distances from the source node to any other node in the graph.
-		"""
-		return self._this.getDistances()
-
-	def getPath(self, t):
-		""" Returns a shortest path from source to `t` and an empty path if source and `t` are not connected.
-
-		Parameters
-		----------
-		t : node
-			Target node.
-
-		Returns
-		-------
-		vector
-			A shortest path from source to `t or an empty path.
-		"""
-		return self._this.getPath(t)
-
-	def update(self, batch):
-		""" Updates shortest paths with the batch `batch` of edge insertions.
-
-		Parameters
-		----------
-		batch : list of GraphEvent.
-		"""
-		cdef vector[_GraphEvent] _batch
-		for ev in batch:
-			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-		self._this.update(_batch)
 
 cdef extern from "cpp/graph/APSP.h":
 	cdef cppclass _APSP "NetworKit::APSP"(_Algorithm):
