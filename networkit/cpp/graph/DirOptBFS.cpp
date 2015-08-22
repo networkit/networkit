@@ -75,14 +75,14 @@ void DirOptBFS::run() {
 			for (count u = 0; u < z; ++u) {
 				m_u += (G.hasNode(u)&&!wasVisited(u))?G.degree(u):0;
 			}
-			topdown = m_f < (m_u / alpha) && growing;
+			topdown = growing && m_f < (m_u / alpha);
 		} else {
 			for (auto& q : threadLocalNext) {
 				n_f += q.size();
 			}
 			growing = n_f > lastFrontierSize;
 			lastFrontierSize = n_f;
-			topdown = n_f < rhs_C_BT && !growing;
+			topdown = !growing && n_f < rhs_C_BT;
 		}
 	};
 
