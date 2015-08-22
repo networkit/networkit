@@ -11,9 +11,8 @@
 
 namespace NetworKit {
 
-DirOptBFS::DirOptBFS(const Graph& G, node source, bool storePaths, bool storeStack, count alpha, count beta, node target) :
-	SSSP(G, source, storePaths, storeStack, target),
-	hasQueuedNodes(false),
+DirOptBFS::DirOptBFS(const Graph& G, node source, count alpha, count beta, node target) :
+	SSSP(G, source, false, false, target),
 	topdown(true),
 	alpha(alpha),
 	beta(beta),
@@ -30,16 +29,17 @@ void DirOptBFS::run() {
 
 	distances.clear();
 	distances.resize(z, infDist);
-	previous.clear();
-	previous.resize(z);
+	//previous.clear();
+	//previous.resize(z);
 	frontier.clear();
-	frontier.resize(z,false);
+	frontier.reserve(z);
+	//frontier.resize(z,false);
 	std::vector<bool> visited(z,false);
 	count max_threads = omp_get_max_threads();
 	std::vector<std::vector<node>> threadLocalNext(max_threads);
 
 	qNext.push_back(source);
-	previous[source] = {source};
+	//previous[source] = {source};
 	distances[source] = currentDistance;
 	visited[source] = true;
 	bool wasTopDown = true;
@@ -102,9 +102,9 @@ void DirOptBFS::run() {
 							count tid = omp_get_thread_num();
 							threadLocalNext[tid].push_back(v);
 						}
-						previous[v].push_back(u);
+						//previous[v].push_back(u);
 						// if we only want one predecessor/bfs tree, we break the loop here.
-						//break;
+						break;
 					}
 				}
 			}
@@ -124,7 +124,7 @@ void DirOptBFS::run() {
 		for (auto& current : qFrontier) {
 			G.forNeighborsOf(current,[&](node v){
 				relax(v);
-				previous[v].push_back(current);
+				//previous[v].push_back(current);
 			});
 		}
 	};

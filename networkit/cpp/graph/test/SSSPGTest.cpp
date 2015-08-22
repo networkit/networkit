@@ -14,9 +14,10 @@
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/Log.h"
 #include "../../auxiliary/Timer.h"
+#include "../../auxiliary/Random.h"
 
 #include <stack>
-
+#include <string>
 
 namespace NetworKit {
 
@@ -227,13 +228,6 @@ TEST_F(SSSPGTest, testDirOptBFS) {
 }
 
 TEST_F(SSSPGTest, benchDirOptBFS) {
-	METISGraphReader reader;
-	//Graph G = reader.read("input/as-Skitter.metis.graph");
-	Graph G = reader.read("/algoDaten/staudt/Graphs/Collections/NwkBenchmark/uk-2002.metis.graph");
-	//Graph G = reader.read("input/caidaRouterLevel.graph");
-	Aux::Timer t;
-	count startNode = 100000;
-
 	auto minimal_bfs = [](const Graph& G, count source) {
 		count z = G.upperNodeIdBound();
 		std::vector<double> distances(z,std::numeric_limits<edgeweight>::max());
@@ -256,6 +250,58 @@ TEST_F(SSSPGTest, benchDirOptBFS) {
 		return std::move(distances);
 	};
 
+
+	std::string base = "/algoDaten/staudt/Graphs/Collections/NwkBenchmark/";
+	std::vector<std::string> datasets = { "caidaRouterLevel.metis.graph", "coAuthorsDBLP.metis.graph", "in-2004.metis.graph", "con-fiber_big.metis.graph", "uk-2002.metis.graph" };
+	METISGraphReader reader;
+	//Graph G = reader.read("input/as-Skitter.metis.graph");
+	//Graph G = reader.read("/algoDaten/staudt/Graphs/Collections/NwkBenchmark/uk-2002.metis.graph");
+	//Graph G = reader.read("input/caidaRouterLevel.graph");
+	Aux::Timer t;
+	Aux::Random::setSeed(42, false);
+
+	for (auto& file : datasets) {
+		Graph G = reader.read(base+file);
+		count nRuns = 100;
+		std::cout << "benchmarking BFS variants: " << nRuns << " runs on " << G.toString() << ", reporting average time in ms" << std::endl;
+		std::vector<node> startNodes(nRuns);
+		// generate startNode sequence
+		for (index i = 0; i < nRuns; ++i) {
+			startNodes[i] = Aux::Random::integer(0,G.numberOfNodes());
+		}
+		t.start();
+		for (index i = 0; i < nRuns; ++i) {
+			std::ignore = minimal_bfs(G,startNodes[i]);
+		}
+		t.stop();
+		count avg_time_minbfs = t.elapsedMilliseconds() / nRuns;
+		std::cout << "minimal bfs:\t" << avg_time_minbfs << std::endl;
+
+		t.start();
+		for (index i = 0; i < nRuns; ++i) {
+			BFS bfs(G,startNodes[i],false);
+			bfs.run();
+		}
+		t.stop();
+		count avg_time_refbfs = t.elapsedMilliseconds() / nRuns;
+		std::cout << "reference bfs:\t" << avg_time_refbfs << std::endl;
+
+//		std::vector<count> threads = {1,2,4,8,16,32};
+		t.start();
+		for (index i = 0; i < nRuns; ++i) {
+			DirOptBFS bfs(G,startNodes[i]);
+			bfs.run();
+		}
+		t.stop();
+		count avg_time_dobfs = t.elapsedMilliseconds() / nRuns;
+		std::cout << "diropt bfs :\t" << avg_time_dobfs << std::endl;
+		std::cout << "----------------------------------------------" << std::endl;
+	}
+
+
+
+
+/*
 	t.start();
 	auto min_dist = minimal_bfs(G,startNode);
 	t.stop();
@@ -274,13 +320,13 @@ TEST_F(SSSPGTest, benchDirOptBFS) {
 	INFO("bfs_diropt took:\t",t.elapsedTag());
 
 	auto ref_dist = bfs_ref.getDistances();
-	auto do_dist = bfs_diropt.getDistances();
+	auto do_dist = bfs_diropt.getDistances();*/
 	/*G.forNodes([&](node v){
 		EXPECT_EQ(ref_dist[v],min_dist[v]) << "min_dist differ at node " << v;
 		EXPECT_EQ(ref_dist[v],do_dist[v]) << "diropt_dist differ at node " << v;
 	});*/
-	EXPECT_EQ(ref_dist,min_dist);
-	EXPECT_EQ(ref_dist,do_dist);
+//	EXPECT_EQ(ref_dist,min_dist);
+//	EXPECT_EQ(ref_dist,do_dist);
 }
 
 } /* namespace NetworKit */

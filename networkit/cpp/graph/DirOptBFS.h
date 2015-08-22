@@ -28,11 +28,6 @@ private:
 	std::vector<node> qNext;
 
 	/**
-	 * Indicates if the BFS is finished yet.
-	 */
-	bool hasQueuedNodes;
-
-	/**
 	 * Indicates the direction of the next step.
 	 */
 	bool topdown;
@@ -76,7 +71,7 @@ public:
 	 * @param storePaths	store paths and number of paths?
 	 * @param storeStack	maintain a stack of nodes in decreasing order of distance
 	 */
-	DirOptBFS(const Graph& G, node source, bool storePaths=true, bool storeStack=false, count alphe = 12, count beta = 24, node target = none);
+	DirOptBFS(const Graph& G, node source, count alphe = 12, count beta = 24, node target = none);
 
 	/**
 	 * Breadth-first search from @a source.
