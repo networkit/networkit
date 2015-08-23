@@ -11,8 +11,8 @@
 
 namespace NetworKit {
 
-DirOptBFS::DirOptBFS(const Graph& G, node source, count alpha, count beta, node target) :
-	SSSP(G, source, false, false, target),
+DirOptBFS::DirOptBFS(const Graph& G, node source, bool storeStack, count alpha, count beta, node target) :
+	SSSP(G, source, false, storeStack, target),
 	topdown(true),
 	alpha(alpha),
 	beta(beta),
@@ -39,6 +39,8 @@ void DirOptBFS::run() {
 	std::vector<std::vector<node>> threadLocalNext(max_threads);
 
 	qNext.push_back(source);
+	if (storeStack)
+		stack.push(source);
 	//previous[source] = {source};
 	distances[source] = currentDistance;
 	visited[source] = true;
@@ -117,6 +119,8 @@ void DirOptBFS::run() {
 			distances[v] = currentDistance;
 			qNext.push_back(v);
 			m_f += G.degree(v);
+			if (storeStack)
+				stack.push(v);
 		}
 	};
 
@@ -143,6 +147,8 @@ void DirOptBFS::run() {
 				}
 				threadLocalNext.clear();
 				threadLocalNext.resize(max_threads);
+				if (storeStack)
+					for (auto& u : qFrontier) stack.push(u);
 			}
 		} else {
 			frontier.assign(z,false);
@@ -157,6 +163,8 @@ void DirOptBFS::run() {
 				for (auto& q : threadLocalNext) {
 					for (auto& current : q) {
 						frontier[current] = true;
+						if (storeStack)
+							stack.push(current);
 					}
 				}
 				threadLocalNext.clear();

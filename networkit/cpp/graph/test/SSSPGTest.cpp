@@ -218,13 +218,27 @@ TEST_F(SSSPGTest, testDirOptBFS) {
 	G.addEdge(0, 6);
 
 
-	BFS bfs_ref(G, 5);
+	BFS bfs_ref(G, 5, false, true);
 	bfs_ref.run();
 
-	DirOptBFS bfs_diropt(G, 5);
+	DirOptBFS bfs_diropt(G, 5, true);
 	bfs_diropt.run();
 
-	EXPECT_EQ(bfs_ref.getDistances(),bfs_diropt.getDistances());
+	auto ref_distances = bfs_ref.getDistances();
+	auto do_distances = bfs_diropt.getDistances();
+
+	auto ref_stack = bfs_ref.getStack();
+	auto do_stack = bfs_diropt.getStack();
+
+	EXPECT_EQ(ref_distances, do_distances);
+
+	while (!ref_stack.empty()) {
+		auto ref_top = ref_stack.top();
+		auto do_top = do_stack.top();
+		EXPECT_EQ(bfs_ref.distance(ref_top),bfs_diropt.distance(do_top));
+		ref_stack.pop(); do_stack.pop();
+	}
+
 }
 
 TEST_F(SSSPGTest, benchDirOptBFS) {
