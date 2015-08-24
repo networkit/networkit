@@ -820,4 +820,53 @@ TEST_F(QuadTreeGTest, testQuadNodeHyperbolicDistances) {
 
 }
 
+TEST_F(QuadTreeGTest, testQuadNodeCartesianDistances) {
+	Point2D<double> lower(0.24997519780061023, 0.7499644402803205);
+	Point2D<double> upper(0.49995039560122045, 0.99995258704042733);
+
+	ASSERT_LE(lower.getX(), upper.getX());
+	ASSERT_LE(lower.getY(), upper.getY());
+
+	Point2D<double> query(0.81847946542324035, 0.91885035291473593);
+
+	QuadNodeCartesianEuclid<index> node(lower, upper, 1000);
+	count steps = 100;
+	Point2D<double> posAtMin = lower;
+	double minDistance = posAtMin.distance(query);
+
+	double xStep = (upper.getX()-lower.getX())/steps;
+	double yStep = (upper.getY()-lower.getY())/steps;
+	for (index i = 0; i <= steps; i++) {
+		double x = lower.getX() + i*xStep;
+		for (index j = 0; j <= steps; j++) {
+			double y = lower.getY() + j*yStep;
+			Point2D<double> pos(x,y);
+			if (i < steps && j < steps) {
+				EXPECT_TRUE(node.responsible(pos));
+			} else {
+				EXPECT_FALSE(node.responsible(pos));
+			}
+			double distance =  pos.distance(query);
+			if (distance < minDistance) {
+				minDistance = distance;
+				posAtMin = pos;
+			}
+		}
+	}
+
+	DEBUG("Point in Cell at minimal distance at (", posAtMin.getX(), ", ", posAtMin.getY(), "), distance is ", minDistance);
+
+	Point2D<double> p(0.49969783875749996, 0.87199796797360407);
+
+	EXPECT_TRUE(node.responsible(p));
+	double distanceQueryToCell = node.EuclideanDistances(query).first;
+	double distanceQueryToPoint = query.distance(p);
+
+	//node.addContent(1, phi, r);
+	EXPECT_LE(distanceQueryToCell, distanceQueryToPoint);
+	EXPECT_LE(distanceQueryToCell, minDistance);
+
+
+}
+
 } /* namespace NetworKit */
