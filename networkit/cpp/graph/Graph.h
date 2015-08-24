@@ -799,6 +799,8 @@ public:
 	 */
 	std::vector<node> neighbors(node u) const;
 
+	std::vector<node> inNeighbors(node u) const;
+
 
 	/* Derivative Graphs */
 

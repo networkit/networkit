@@ -11,8 +11,8 @@
 
 namespace NetworKit {
 
-DirOptBFS::DirOptBFS(const Graph& G, node source, bool storeStack, count alpha, count beta, node target) :
-	SSSP(G, source, false, storeStack, target),
+DirOptBFS::DirOptBFS(const Graph& G, node source, bool storePaths, bool storeStack, count alpha, count beta, node target) :
+	SSSP(G, source, storePaths, storeStack, target),
 	topdown(true),
 	alpha(alpha),
 	beta(beta),
@@ -29,31 +29,33 @@ void DirOptBFS::run() {
 
 	distances.clear();
 	distances.resize(z, infDist);
-	//previous.clear();
-	//previous.resize(z);
+	if (storePaths) {
+		previous.clear();
+		previous.resize(z);
+		npaths.clear();
+		npaths.resize(z,0);
+		previous[source] = {source};
+		npaths[source] = 1;
+	}
+
+	if (storeStack) {
+		std::stack<node> empty;
+		std::swap(stack, empty);
+	}
 	frontier.clear();
 	frontier.reserve(z);
-	//frontier.resize(z,false);
-	std::vector<bool> visited(z,false);
+	frontier.resize(z,false);
+	//std::vector<bool> visited(z,false);
 	count max_threads = omp_get_max_threads();
 	std::vector<std::vector<node>> threadLocalNext(max_threads);
 
 	qNext.push_back(source);
-	if (storeStack)
-		stack.push(source);
-	//previous[source] = {source};
 	distances[source] = currentDistance;
-	visited[source] = true;
+	//visited[source] = true;
+
 	bool wasTopDown = true;
 	count lastFrontierSize = 0;
 	bool growing;
-
-	auto wasVisited = [&](node v) {
-		// numerous criteria could be used
-		//return !previous[v].empty();
-		//return distances[v] != infDist;
-		return visited[v];
-	};
 
 	auto isFinished = [&]() {
 		if (topdown) {
@@ -68,44 +70,56 @@ void DirOptBFS::run() {
 
 	auto determineNextStep = [&]() {
 		if (topdown) {
-			growing = qNext.size() > lastFrontierSize;
+			growing = qNext.size() >= lastFrontierSize;
 			lastFrontierSize = qNext.size();
 			// manual computation of m_u
 			// TODO: can this be computed on the fly?
 			count m_u = 0;
 			#pragma omp parallel for reduction(+:m_u) 
 			for (count u = 0; u < z; ++u) {
-				m_u += (G.hasNode(u)&&!wasVisited(u))?G.degree(u):0;
+				m_u += (G.hasNode(u)&&previous[u].empty())?G.degree(u):0;
 			}
-			topdown = growing && m_f < (m_u / alpha);
+			topdown = !growing || m_f < (m_u / alpha);
 		} else {
 			for (auto& q : threadLocalNext) {
 				n_f += q.size();
 			}
-			growing = n_f > lastFrontierSize;
+			growing = n_f >= lastFrontierSize;
 			lastFrontierSize = n_f;
 			topdown = !growing && n_f < rhs_C_BT;
 		}
 	};
 
+	auto bottomUpStepWithPaths = [&](){
+		G.balancedParallelForNodes([&](node v){
+			for (auto &u : G.inNeighbors(v)) {
+				if (frontier[u]) {
+					if (previous[v].empty()) {
+						//visited[v] = true;
+						distances[v] = currentDistance;
+						count tid = omp_get_thread_num();
+						threadLocalNext[tid].push_back(v);
+						previous[v] = {u};
+						npaths[v] = npaths[u];
+					} else if (distances[v]-1 == distances[u]) {
+						// TODO: is this condition trivially satisfied?
+						previous[v].push_back(u);
+						npaths[v] += npaths[u];
+					}
+				}
+			}
+		});
+	};
+
 	auto bottomUpStep = [&](){
 		G.balancedParallelForNodes([&](node v){
-			// iterate over all nodes v that haven't been visited yet
-			if (!wasVisited(v)) {
-				// iterate over their neighbours u ...
-				// G.forNeighborsOf is not an option because you can't "break" it
-				for (auto &u : G.neighbors(v)) {
-					// ... and if one of them belongs to the frontier ...
+			if (previous[v].empty()) {
+				for (auto &u : G.inNeighbors(v)) {
 					if (frontier[u]) {
-						// ... visit v
-						if (!wasVisited(v)) {
-							visited[v] = true;
-							distances[v] = currentDistance;
-							count tid = omp_get_thread_num();
-							threadLocalNext[tid].push_back(v);
-						}
-						//previous[v].push_back(u);
-						// if we only want one predecessor/bfs tree, we break the loop here.
+						//visited[v] = true;
+						distances[v] = currentDistance;
+						count tid = omp_get_thread_num();
+						threadLocalNext[tid].push_back(v);
 						break;
 					}
 				}
@@ -113,29 +127,33 @@ void DirOptBFS::run() {
 		});
 	};
 
-	auto relax = [&](node v) {
-		if (!wasVisited(v)) {
-			visited[v] = true;
-			distances[v] = currentDistance;
-			qNext.push_back(v);
-			m_f += G.degree(v);
-			if (storeStack)
-				stack.push(v);
-		}
-	};
 
 	auto topDownStep = [&]() {
-		for (auto& current : qFrontier) {
+		while (!qFrontier.empty()) {
+			auto current = qFrontier.back();
+			qFrontier.pop_back();
+
 			G.forNeighborsOf(current,[&](node v){
-				relax(v);
-				//previous[v].push_back(current);
+				if (previous[v].empty()) {
+					//visited[v] = true;
+					distances[v] = currentDistance;
+					qNext.push_back(v);
+					m_f += G.degree(v);
+					if (storePaths) {
+						previous[v] = {current};
+						npaths[v] = npaths[current];
+					}
+				} else if (storePaths && distances[v]-1 == distances[current]) {
+						previous[v].push_back(current);
+						npaths[v] += npaths[current];
+				}
 			});
 		}
 	};
 
 	auto prepareDatastructure = [&]() {
 		if (topdown) {
-			qFrontier.clear();
+			//qFrontier.clear();
 			if (wasTopDown) {
 				// qNext -> qFrontier
 				std::swap(qFrontier,qNext);
@@ -147,8 +165,11 @@ void DirOptBFS::run() {
 				}
 				threadLocalNext.clear();
 				threadLocalNext.resize(max_threads);
-				if (storeStack)
-					for (auto& u : qFrontier) stack.push(u);
+			}
+			if (storeStack) {
+				for (auto& u : qFrontier) {
+					stack.push(u);
+				}
 			}
 		} else {
 			frontier.assign(z,false);
@@ -156,6 +177,9 @@ void DirOptBFS::run() {
 				// qNext -> frontier
 				for (auto& current : qNext) {
 					frontier[current] = true;
+					if (storeStack) {
+							stack.push(current);
+					}
 				}
 				qNext.clear();
 			} else {
@@ -163,8 +187,9 @@ void DirOptBFS::run() {
 				for (auto& q : threadLocalNext) {
 					for (auto& current : q) {
 						frontier[current] = true;
-						if (storeStack)
+						if (storeStack) {
 							stack.push(current);
+						}
 					}
 				}
 				threadLocalNext.clear();
@@ -194,7 +219,8 @@ void DirOptBFS::run() {
 		} else {
 			n_f = 0;
 //			timer.start();
-			bottomUpStep();
+			if (storePaths)	bottomUpStepWithPaths();
+			else bottomUpStep();
 /*			timer.stop();
 			time_botstep += timer.elapsedMilliseconds();
 			n_bot += n_f;*/

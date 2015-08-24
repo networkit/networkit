@@ -71,7 +71,7 @@ public:
 	 * @param storePaths	store paths and number of paths?
 	 * @param storeStack	maintain a stack of nodes in decreasing order of distance
 	 */
-	DirOptBFS(const Graph& G, node source, bool storeStack=false, count alpha = 12, count beta = 24, node target = none);
+	DirOptBFS(const Graph& G, node source, bool storePaths=false, bool storeStack=false, count alpha = 12, count beta = 24, node target = none);
 
 	/**
 	 * Breadth-first search from @a source.
