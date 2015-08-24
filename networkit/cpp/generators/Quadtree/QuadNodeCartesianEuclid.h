@@ -275,8 +275,8 @@ public:
 		 * Vertical boundaries
 		 */
 		if (query.getY() > minY && query.getY() < maxY) {
-			Point2D<double> left(query.getY(), maxX);
-			Point2D<double> right(query.getY(), minX);
+			Point2D<double> left(maxX, query.getY());
+			Point2D<double> right(minX, query.getY());
 			updateMinMax(left);
 			updateMinMax(right);
 		}
@@ -421,8 +421,8 @@ public:
 				//see where we've arrived
 				candidatesTested++;
 				double distance = positions[i].distance(euQuery);
-				//assert(distance >= distancePair.first);//TODO: These should not fail!
-				//assert(distance <= distancePair.second);
+				assert(distance >= distancePair.first);//TODO: These should not fail!
+				assert(distance <= distancePair.second);
 				double q = prob(distance);
 				q = q / probUB; //since the candidate was selected by the jumping process, we have to adjust the probabilities
 				assert(q <= 1);
