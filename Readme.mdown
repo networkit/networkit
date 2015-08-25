@@ -1,3 +1,7 @@
+Generator of Hyperbolic Random Graphs
+=========
+The implementation of the generator for hyperbolic random graphs can currently be found at networkit/cpp/generators/HyperbolicGenerator.cpp.
+
 Probabilistic Neighborhood Queries (PNQs)
 =========
 The implementation of the quadtree handling the probabilistic neighborhood queries can currently be found at networkit/cpp/generators/Quadtree. A test case for the disease propagation simulation is in networkit/cpp/io/test/IOBenchmark.cpp.
