@@ -22,7 +22,7 @@ using std::cos;
 
 namespace NetworKit {
 
-template <class T>
+template <class T, bool poincare = true>
 class QuadNode {
 	friend class QuadTreeGTest;
 private:
@@ -82,6 +82,7 @@ public:
 	 */
 	QuadNode(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity = 1000, bool splitTheoretical = false, double alpha = 1, double balance = 0.5) {
 		if (balance <= 0 || balance >= 1) throw std::runtime_error("Quadtree balance parameter must be between 0 and 1.");
+		if (poincare && maxR > 1) throw std::runtime_error("The Poincare disk has a radius of 1, cannot create quadtree larger than that!");
 		this->leftAngle = leftAngle;
 		this->minR = minR;
 		this->maxR = maxR;
@@ -111,10 +112,14 @@ public:
 
 		double middleR;
 		if (splitTheoretical) {
-			double hyperbolicOuter = HyperbolicSpace::EuclideanRadiusToHyperbolic(maxR);
-			double hyperbolicInner = HyperbolicSpace::EuclideanRadiusToHyperbolic(minR);
-			double hyperbolicMiddle = acosh((1-balance)*cosh(alpha*hyperbolicOuter) + balance*cosh(alpha*hyperbolicInner))/alpha;
-			middleR = HyperbolicSpace::hyperbolicRadiusToEuclidean(hyperbolicMiddle);
+			if (poincare) {
+				double hyperbolicOuter = HyperbolicSpace::EuclideanRadiusToHyperbolic(maxR);
+				double hyperbolicInner = HyperbolicSpace::EuclideanRadiusToHyperbolic(minR);
+				double hyperbolicMiddle = acosh((1-balance)*cosh(alpha*hyperbolicOuter) + balance*cosh(alpha*hyperbolicInner))/alpha;
+				middleR = HyperbolicSpace::hyperbolicRadiusToEuclidean(hyperbolicMiddle);
+			} else {
+				middleR = acosh((1-balance)*cosh(alpha*maxR) + balance*cosh(alpha*minR))/alpha;
+			}
 		} else {
 			double nom = maxR - minR;
 			double denom = pow((1-maxR*maxR)/(1-minR*minR), 0.5)+1;
@@ -265,6 +270,9 @@ public:
 		HyperbolicSpace::cartesianToPolar(query, phi, r);
 		if (responsible(phi, r)) return false;
 
+		//if using native coordinates, call distance calculation
+		if (!poincare) return hyperbolicDistances(phi, r).first > radius;
+
 		//get four edge points
 		double topDistance, bottomDistance, leftDistance, rightDistance;
 
@@ -321,9 +329,16 @@ public:
 	 * @param r_h radial coordinate of query point in poincare disk
 	 */
 	std::pair<double, double> hyperbolicDistances(double phi, double r) const {
-		double minRHyper=HyperbolicSpace::EuclideanRadiusToHyperbolic(this->minR);
-		double maxRHyper=HyperbolicSpace::EuclideanRadiusToHyperbolic(this->maxR);
-		double r_h = HyperbolicSpace::EuclideanRadiusToHyperbolic(r);
+		double minRHyper, maxRHyper, r_h;
+		if (poincare) {
+			minRHyper=HyperbolicSpace::EuclideanRadiusToHyperbolic(this->minR);
+			maxRHyper=HyperbolicSpace::EuclideanRadiusToHyperbolic(this->maxR);
+			r_h = HyperbolicSpace::EuclideanRadiusToHyperbolic(r);
+		} else {
+			minRHyper=this->minR;
+			maxRHyper=this->maxR;
+			r_h = r;
+		}
 
 		double coshr = cosh(r_h);
 		double sinhr = sinh(r_h);
@@ -515,6 +530,7 @@ public:
 	 * @param highR Optional value for the maximum radial coordinate of the query region
 	 */
 	void getElementsInEuclideanCircle(Point2D<double> center, double radius, vector<T> &result, double minAngle=0, double maxAngle=2*M_PI, double lowR=0, double highR = 1) const {
+		if (!poincare) throw std::runtime_error("Euclidean query circles not yet implemented for native hyperbolic coordinates.");
 		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR < lowerBoundR) return;
 		if (outOfReach(center, radius)) {
 			return;
@@ -582,7 +598,12 @@ public:
 
 				//see where we've arrived
 				candidatesTested++;
-				double distance = HyperbolicSpace::poincareMetric(positions[i], euQuery);
+				double distance;
+				if (poincare) {
+					distance = HyperbolicSpace::poincareMetric(positions[i], euQuery);
+				} else {
+					throw new std::runtime_error("Not implemented for native coordinates");
+				}
 				assert(distance >= distancePair.first);
 
 				double q = prob(distance);
@@ -627,7 +648,13 @@ public:
 		TRACE("Maybe get element ", k, " with upper Bound ", upperBound);
 		assert(k < size());
 		if (isLeaf) {
-			double acceptance = prob(HyperbolicSpace::poincareMetric(euQuery, positions[k]))/upperBound;
+			double distance;
+			if (poincare) {
+				distance = HyperbolicSpace::poincareMetric(positions[k], euQuery);
+			} else {
+				throw new std::runtime_error("Not implemented for native coordinates");
+			}
+			double acceptance = prob(distance)/upperBound;
 			TRACE("Is leaf, accept with ", acceptance);
 			if (Aux::Random::real() < acceptance) circleDenizens.push_back(content[k]);
 		} else {
