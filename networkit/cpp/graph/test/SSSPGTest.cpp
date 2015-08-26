@@ -392,15 +392,25 @@ TEST_F(SSSPGTest, benchDirOptBFS) {
 		return std::move(distances);
 	};
 
-
-	std::string base = "/algoDaten/staudt/Graphs/Collections/NwkBenchmark/";
-	std::vector<std::string> datasets = { "caidaRouterLevel.metis.graph", "coAuthorsDBLP.metis.graph", "in-2004.metis.graph", "con-fiber_big.metis.graph", "uk-2002.metis.graph" };
+	bool local = true;
+	std::string base;
+	std::vector<std::string> datasets;
+	if (!local) {
+		base = "/algoDaten/staudt/Graphs/Collections/NwkBenchmark/";
+		datasets = { "caidaRouterLevel.metis.graph", "coAuthorsDBLP.metis.graph", "in-2004.metis.graph", "con-fiber_big.metis.graph", "uk-2002.metis.graph" };
+	} else {
+		base = "input/";
+		datasets = {"PGPgiantcompo.graph","astro-ph.graph", "wing.graph", "caidaRouterLevel.graph","as-Skitter.metis.graph"};
+	}
 	METISGraphReader reader;
 	//Graph G = reader.read("input/as-Skitter.metis.graph");
 	//Graph G = reader.read("/algoDaten/staudt/Graphs/Collections/NwkBenchmark/uk-2002.metis.graph");
 	//Graph G = reader.read("input/caidaRouterLevel.graph");
 	Aux::Timer t;
 	Aux::Random::setSeed(42, false);
+
+	bool storePaths = true;
+	bool storeStack = true;
 
 	for (auto& file : datasets) {
 		Graph G = reader.read(base+file);
@@ -421,7 +431,7 @@ TEST_F(SSSPGTest, benchDirOptBFS) {
 
 		t.start();
 		for (index i = 0; i < nRuns; ++i) {
-			BFS bfs(G,startNodes[i],false);
+			BFS bfs(G,startNodes[i],storePaths,storeStack);
 			bfs.run();
 		}
 		t.stop();
@@ -431,7 +441,7 @@ TEST_F(SSSPGTest, benchDirOptBFS) {
 //		std::vector<count> threads = {1,2,4,8,16,32};
 		t.start();
 		for (index i = 0; i < nRuns; ++i) {
-			DirOptBFS bfs(G,startNodes[i]);
+			DirOptBFS bfs(G,startNodes[i],storePaths,storeStack);
 			bfs.run();
 		}
 		t.stop();

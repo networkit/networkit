@@ -45,13 +45,13 @@ void DirOptBFS::run() {
 	frontier.clear();
 	frontier.reserve(z);
 	frontier.resize(z,false);
-	//std::vector<bool> visited(z,false);
+	std::vector<char> visited(z,0);
 	count max_threads = omp_get_max_threads();
 	std::vector<std::vector<node>> threadLocalNext(max_threads);
 
 	qNext.push_back(source);
 	distances[source] = currentDistance;
-	//visited[source] = true;
+	visited[source] = 1;
 
 	bool wasTopDown = true;
 	count lastFrontierSize = 0;
@@ -77,7 +77,8 @@ void DirOptBFS::run() {
 			count m_u = 0;
 			#pragma omp parallel for reduction(+:m_u) 
 			for (count u = 0; u < z; ++u) {
-				m_u += (G.hasNode(u)&&previous[u].empty())?G.degree(u):0;
+				//m_u += (G.hasNode(u)&&previous[u].empty())?G.degree(u):0;
+				m_u += (G.hasNode(u)&&!visited[u])?G.degree(u):0;
 			}
 			topdown = !growing || m_f < (m_u / alpha);
 		} else {
@@ -94,8 +95,9 @@ void DirOptBFS::run() {
 		G.balancedParallelForNodes([&](node v){
 			for (auto &u : G.inNeighbors(v)) {
 				if (frontier[u]) {
-					if (previous[v].empty()) {
-						//visited[v] = true;
+					//if (previous[v].empty()) {
+					if (!visited[v]) {
+						visited[v] = 1;
 						distances[v] = currentDistance;
 						count tid = omp_get_thread_num();
 						threadLocalNext[tid].push_back(v);
@@ -113,10 +115,11 @@ void DirOptBFS::run() {
 
 	auto bottomUpStep = [&](){
 		G.balancedParallelForNodes([&](node v){
-			if (previous[v].empty()) {
+			//if (previous[v].empty()) {
+			if (!visited[v]) {
 				for (auto &u : G.inNeighbors(v)) {
 					if (frontier[u]) {
-						//visited[v] = true;
+						visited[v] = 1;
 						distances[v] = currentDistance;
 						count tid = omp_get_thread_num();
 						threadLocalNext[tid].push_back(v);
@@ -134,8 +137,9 @@ void DirOptBFS::run() {
 			qFrontier.pop_back();
 
 			G.forNeighborsOf(current,[&](node v){
-				if (previous[v].empty()) {
-					//visited[v] = true;
+				//if (previous[v].empty()) {
+				if (!visited[v]) {
+					visited[v] = 1;
 					distances[v] = currentDistance;
 					qNext.push_back(v);
 					m_f += G.degree(v);
