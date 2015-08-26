@@ -35,7 +35,7 @@ public:
 	 *
 	 */
 	Quadtree(double maxR,bool theoreticalSplit=false, double alpha=1, count capacity=1000, double balance = 0.5) {
-		root = QuadNode<T>(0, 0, 2*M_PI, maxR, capacity, 0,theoreticalSplit,alpha,balance);
+		root = QuadNode<T>(0, 0, 2*M_PI, maxR, capacity, theoreticalSplit,alpha,balance);
 		this->maxRadius = maxR;
 	}
 
@@ -82,7 +82,7 @@ public:
 		double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 		count numberOfThreads = omp_get_max_threads();
 		//double k = ceil(log(numberOfThreads)/log(4));
-		root = QuadNode<T>(0, 0, 2*M_PI, r, capacity, 0,theoreticalSplit,alpha,balance);
+		root = QuadNode<T>(0, 0, 2*M_PI, r, capacity, theoreticalSplit,alpha,balance);
 		maxRadius = r;
 		count result;
 		#pragma omp parallel
@@ -103,7 +103,7 @@ public:
 		assert(radii.size() == content.size());
 		double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(n);
 		double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
-		root = QuadNode<T>(0, 0, 2*M_PI, r, capacity, 0,theoreticalSplit,alpha,balance);
+		root = QuadNode<T>(0, 0, 2*M_PI, r, capacity, theoreticalSplit,alpha,balance);
 		maxRadius = r;
 		for (index i = 0; i < n; i++) {
 			assert(content[i] < n);
