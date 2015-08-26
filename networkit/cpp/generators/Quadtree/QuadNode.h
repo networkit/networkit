@@ -602,7 +602,7 @@ public:
 				if (poincare) {
 					distance = HyperbolicSpace::poincareMetric(positions[i], euQuery);
 				} else {
-					throw new std::runtime_error("Not implemented for native coordinates");
+					distance = HyperbolicSpace::nativeDistance(angles[i], radii[i], phi_q, r_q);
 				}
 				assert(distance >= distancePair.first);
 
@@ -652,7 +652,9 @@ public:
 			if (poincare) {
 				distance = HyperbolicSpace::poincareMetric(positions[k], euQuery);
 			} else {
-				throw new std::runtime_error("Not implemented for native coordinates");
+				double phi_q, r_q;
+				HyperbolicSpace::cartesianToPolar(euQuery, phi_q, r_q);
+				distance = HyperbolicSpace::nativeDistance(angles[k], radii[k], phi_q, r_q);
 			}
 			double acceptance = prob(distance)/upperBound;
 			TRACE("Is leaf, accept with ", acceptance);
