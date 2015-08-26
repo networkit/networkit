@@ -886,6 +886,19 @@ TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {
 	}
 }
 
+TEST_F(GeneratorsGTest, tryHyperbolicHighTemperatureGraphs) {
+	count n = 10000;
+	double k = 10;
+	double gamma = 3;
+	count m = n*k/2;
+	for (double T = 0; T < 10; T += 0.1) {
+		if (std::abs(T-1) < 0.00001) continue;
+		HyperbolicGenerator gen(n, k, gamma, T);
+		Graph G = gen.generate();
+		EXPECT_NEAR(G.numberOfEdges(), m, m/10);
+	}
+}
+
 TEST_F(GeneratorsGTest, tryGiganticCollectionOfHyperbolicTemperatureGraphs) {
 	for (index i = 0; i < 30; i++) {
 		count n = 10000;
