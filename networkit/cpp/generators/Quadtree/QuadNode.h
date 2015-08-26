@@ -34,7 +34,6 @@ private:
 	unsigned capacity;
 	static const unsigned coarsenLimit = 4;
 	static const long unsigned sanityNodeLimit = 10E15; //just assuming, for debug purposes, that this algorithm never runs on machines with more than 4 Petabyte RAM
-	double minRegion;//the minimal region a QuadNode should cover. If it is smaller, don't bother splitting up.
 	count subTreeSize;
 	std::vector<T> content;
 	std::vector<Point2D<double> > positions;
@@ -58,7 +57,6 @@ public:
 		maxR = 0;
 		capacity = 20;
 		isLeaf = true;
-		minRegion = 0;
 		subTreeSize = 0;
 		balance = 0.5;
 		splitTheoretical = false;
@@ -82,7 +80,7 @@ public:
 	 * @param diagnostics Count how many necessary and unnecessary comparisons happen in leaf cells? Will cause race condition and false sharing in parallel use
 	 *
 	 */
-	QuadNode(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity, double minDiameter, bool splitTheoretical = false, double alpha = 1, double balance = 0.5) {
+	QuadNode(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity = 1000, bool splitTheoretical = false, double alpha = 1, double balance = 0.5) {
 		if (balance <= 0 || balance >= 1) throw std::runtime_error("Quadtree balance parameter must be between 0 and 1.");
 		this->leftAngle = leftAngle;
 		this->minR = minR;
@@ -93,7 +91,6 @@ public:
 		this->c = HyperbolicSpace::polarToCartesian(rightAngle, maxR);
 		this->d = HyperbolicSpace::polarToCartesian(leftAngle, maxR);
 		this->capacity = capacity;
-		this->minRegion = minDiameter;
 		this->alpha = alpha;
 		this->splitTheoretical = splitTheoretical;
 		this->balance = balance;
@@ -129,10 +126,10 @@ public:
 		assert(middleR < maxR);
 		assert(middleR > minR);
 
-		QuadNode southwest(leftAngle, minR, middleAngle, middleR, capacity, minRegion, splitTheoretical, alpha, balance);
-		QuadNode southeast(middleAngle, minR, rightAngle, middleR, capacity, minRegion, splitTheoretical, alpha, balance);
-		QuadNode northwest(leftAngle, middleR, middleAngle, maxR, capacity, minRegion, splitTheoretical, alpha, balance);
-		QuadNode northeast(middleAngle, middleR, rightAngle, maxR, capacity, minRegion, splitTheoretical, alpha, balance);
+		QuadNode southwest(leftAngle, minR, middleAngle, middleR, capacity, splitTheoretical, alpha, balance);
+		QuadNode southeast(middleAngle, minR, rightAngle, middleR, capacity, splitTheoretical, alpha, balance);
+		QuadNode northwest(leftAngle, middleR, middleAngle, maxR, capacity, splitTheoretical, alpha, balance);
+		QuadNode northeast(middleAngle, middleR, rightAngle, maxR, capacity, splitTheoretical, alpha, balance);
 		children = {southwest, southeast, northwest, northeast};
 		isLeaf = false;
 	}
@@ -149,13 +146,14 @@ public:
 		assert(this->responsible(angle, R));
 		if (lowerBoundR > R) lowerBoundR = R;
 		if (isLeaf) {
-			if (content.size() + 1 < capacity ||  HyperbolicSpace::poincareMetric(leftAngle, minR, rightAngle, maxR) < minRegion) {
+			if (content.size() + 1 < capacity) {
 				content.push_back(input);
 				angles.push_back(angle);
 				radii.push_back(R);
 				Point2D<double> pos = HyperbolicSpace::polarToCartesian(angle, R);
 				positions.push_back(pos);
 			} else {
+
 				split();
 
 				for (index i = 0; i < content.size(); i++) {
@@ -237,9 +235,10 @@ public:
 					allAngles.insert(allAngles.end(), children[i].angles.begin(), children[i].angles.end());
 					allRadii.insert(allRadii.end(), children[i].radii.begin(), children[i].radii.end());
 				}
-				assert(allContent.size() == allPositions.size());
-				assert(allContent.size() == allAngles.size());
-				assert(allContent.size() == allRadii.size());
+				assert(subTreeSize == allContent.size());
+				assert(subTreeSize == allPositions.size());
+				assert(subTreeSize == allAngles.size());
+				assert(subTreeSize == allRadii.size());
 				children.clear();
 				content.swap(allContent);
 				positions.swap(allPositions);
@@ -345,8 +344,6 @@ public:
 		//Left border
 		double lowerLeftDistance = coshMinR*coshr-sinhMinR*sinhr*cosDiffLeft;
 		double upperLeftDistance = coshMaxR*coshr-sinhMaxR*sinhr*cosDiffLeft;
-		//double lowerLeftDistance = HyperbolicSpace::poincareMetric(leftAngle, minR, phi, r);
-		//double upperLeftDistance = HyperbolicSpace::poincareMetric(leftAngle, maxR, phi, r);
 		if (responsible(phi, r)) coshMinDistance = 1; //strictly speaking, this is wrong
 		else coshMinDistance = min(lowerLeftDistance, upperLeftDistance);
 
@@ -356,7 +353,6 @@ public:
 		double extremum = log((coshr+b)/(coshr-b))/2;
 		if (extremum < maxRHyper && extremum >= minRHyper) {
 			double extremeDistance = cosh(extremum)*coshr-sinh(extremum)*sinhr*cosDiffLeft;
-			//double extremeDistance = HyperbolicSpace::poincareMetric(leftAngle, extremum, phi, r);
 			coshMinDistance = min(coshMinDistance, extremeDistance);
 			coshMaxDistance = max(coshMaxDistance, extremeDistance);
 		}
@@ -370,8 +366,6 @@ public:
 		//Right border
 		double lowerRightDistance = coshMinR*coshr-sinhMinR*sinhr*cosDiffRight;
 		double upperRightDistance = coshMaxR*coshr-sinhMaxR*sinhr*cosDiffRight;
-		//double lowerRightDistance = HyperbolicSpace::poincareMetric(rightAngle, minR, phi, r);
-		//double upperRightDistance = HyperbolicSpace::poincareMetric(rightAngle, maxR, phi, r);
 		coshMinDistance = min(coshMinDistance, lowerRightDistance);
 		coshMinDistance = min(coshMinDistance, upperRightDistance);
 		coshMaxDistance = max(coshMaxDistance, lowerRightDistance);
@@ -381,7 +375,6 @@ public:
 		extremum = log((coshr+b)/(coshr-b))/2;
 		if (extremum < maxRHyper && extremum >= minRHyper) {
 			double extremeDistance = cosh(extremum)*coshr-sinh(extremum)*sinhr*cosDiffRight;
-			//double extremeDistance = HyperbolicSpace::poincareMetric(rightAngle, extremum, phi, r);
 			coshMinDistance = min(coshMinDistance, extremeDistance);
 			coshMaxDistance = max(coshMaxDistance, extremeDistance);
 		}
@@ -393,11 +386,6 @@ public:
 		if (phi >= leftAngle && phi < rightAngle) {
 			double lower = cosh(abs(r_h-minRHyper));
 			double upper = cosh(abs(r_h-maxRHyper));
-			//double lower = coshMinR*coshr-sinhMinR*sinhr*cos(0);
-			//double upper = coshMaxR*coshr-sinhMaxR*sinhr*cos(0);
-
-			//double lower = HyperbolicSpace::poincareMetric(phi, minR, phi, r);
-			//double upper = HyperbolicSpace::poincareMetric(phi, maxR, phi, r);
 			coshMinDistance = min(coshMinDistance, lower);
 			coshMinDistance = min(coshMinDistance, upper);
 			coshMaxDistance = max(coshMaxDistance, upper);
@@ -414,8 +402,6 @@ public:
 		if (mirrorphi >= leftAngle && mirrorphi < rightAngle) {
 			double lower = coshMinR*coshr+sinhMinR*sinhr;
 			double upper = coshMaxR*coshr+sinhMaxR*sinhr;
-			//double lower = HyperbolicSpace::poincareMetric(mirrorphi, minR, phi, r);
-			//double upper = HyperbolicSpace::poincareMetric(mirrorphi, maxR, phi, r);
 			coshMinDistance = min(coshMinDistance, lower);
 			coshMinDistance = min(coshMinDistance, upper);
 			coshMaxDistance = max(coshMaxDistance, upper);
@@ -569,7 +555,10 @@ public:
 		if (probUB == 0) return 0;
 		//TODO: return whole if probLB == 1
 		double probdenom = std::log(1-probUB);
-		if (probdenom == 0) return 0;//there is a very small probability, but we cannot process it.
+		if (probdenom == 0) {
+			DEBUG(probUB, " not zero, but too small too process. Ignoring.");
+			return 0;
+		}
 		TRACE("probUB: ", probUB, ", probdenom: ", probdenom);
 
 		count expectedNeighbours = probUB*size();

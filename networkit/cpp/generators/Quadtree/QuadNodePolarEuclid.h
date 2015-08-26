@@ -36,7 +36,6 @@ private:
 	unsigned capacity;
 	static const unsigned coarsenLimit = 4;
 	static const long unsigned sanityNodeLimit = 10E15; //just assuming, for debug purposes, that this algorithm never runs on machines with more than 4 Petabyte RAM
-	double minRegion;//the minimal region a QuadNode should cover. If it is smaller, don't bother splitting up.
 	count subTreeSize;
 	std::vector<T> content;
 	std::vector<Point2D<double> > positions;
@@ -59,7 +58,6 @@ public:
 		maxR = 0;
 		capacity = 20;
 		isLeaf = true;
-		minRegion = 0;
 		subTreeSize = 0;
 		balance = 0.5;
 		splitTheoretical = false;
@@ -82,7 +80,7 @@ public:
 	 * @param diagnostics Count how many necessary and unnecessary comparisons happen in leaf cells? Will cause race condition and false sharing in parallel use
 	 *
 	 */
-	QuadNodePolarEuclid(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity, bool splitTheoretical = false, double balance = 0.5) {
+	QuadNodePolarEuclid(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity = 1000, bool splitTheoretical = false, double balance = 0.5) {
 		if (balance <= 0 || balance >= 1) throw std::runtime_error("Quadtree balance parameter must be between 0 and 1.");
 		this->leftAngle = leftAngle;
 		this->minR = minR;
@@ -118,8 +116,8 @@ public:
 			std::sort(sortedRadii.begin(), sortedRadii.end());
 			middleR = sortedRadii[sortedRadii.size()/2];
 		}
-		assert(middleR > minR);
 		assert(middleR < maxR);
+		assert(middleR > minR);
 
 		QuadNodePolarEuclid southwest(leftAngle, minR, middleAngle, middleR, capacity, splitTheoretical, balance);
 		QuadNodePolarEuclid southeast(middleAngle, minR, rightAngle, middleR, capacity, splitTheoretical, balance);
@@ -154,6 +152,7 @@ public:
 				for (index i = 0; i < content.size(); i++) {
 					this->addContent(content[i], angles[i], radii[i]);
 				}
+				assert(subTreeSize == content.size());//we have added everything twice
 				subTreeSize = content.size();
 				content.clear();
 				angles.clear();
@@ -229,9 +228,10 @@ public:
 					allAngles.insert(allAngles.end(), children[i].angles.begin(), children[i].angles.end());
 					allRadii.insert(allRadii.end(), children[i].radii.begin(), children[i].radii.end());
 				}
-				assert(allContent.size() == allPositions.size());
-				assert(allContent.size() == allAngles.size());
-				assert(allContent.size() == allRadii.size());
+				assert(subTreeSize == allContent.size());
+				assert(subTreeSize == allPositions.size());
+				assert(subTreeSize == allAngles.size());
+				assert(subTreeSize == allRadii.size());
 				children.clear();
 				content.swap(allContent);
 				positions.swap(allPositions);
@@ -483,7 +483,7 @@ public:
 		double probUB = prob(distancePair.first);
 		double probLB = prob(distancePair.second);
 		assert(probLB <= probUB);
-		if (probUB > 0.5) probUB = 1;
+		if (probUB > 0.5) probUB = 1;//if we are going to take every second element anyway, no use in calculating expensive jumps
 		if (probUB == 0) return 0;
 		//TODO: return whole if probLB == 1
 		double probdenom = std::log(1-probUB);
@@ -504,6 +504,7 @@ public:
 				if (probUB < 1) {
 					double random = Aux::Random::real();
 					double delta = std::log(random) / probdenom;
+					assert(delta == delta);
 					assert(delta >= 0);
 					i += delta;
 					if (i >= lsize) break;
@@ -517,6 +518,7 @@ public:
 				double q = prob(distance);
 				q = q / probUB; //since the candidate was selected by the jumping process, we have to adjust the probabilities
 				assert(q <= 1);
+				assert(q >= 0);
 
 				//accept?
 				double acc = Aux::Random::real();
