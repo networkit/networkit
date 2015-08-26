@@ -31,6 +31,7 @@ DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(std::vector<double> &angl
 	this->radii = radii;
 	this->nodes = angles.size();
 	this->alpha = (exp-1)/2;
+	this->T = T;
 	assert(radii.size() == nodes);
 	R = HyperbolicSpace::getTargetRadius(nodes, nodes*avgDegree/2, alpha, T);
 	r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
@@ -172,7 +173,10 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
 	bool suppressLeft = false;
 	//now define lambda
 	double beta = 1/T;
-	assert(beta == beta);
+	if (!(beta == beta)) {
+		DEBUG("Value of beta is ", beta, ", which is invalid. T=", T);
+	}
+	assert(T == 0 || beta == beta);
 	double threshold = R;
 	auto edgeProb = [beta, threshold](double distance) -> double {return 1 / (exp(beta*(distance-threshold)/2)+1);};
 
