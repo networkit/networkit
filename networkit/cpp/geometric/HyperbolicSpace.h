@@ -55,12 +55,24 @@ public:
 	static double poincareMetric(double firstangle, double firstR, double secondangle, double secondR);
 
 	/**
+	 * @param firstangle angular coordinate of the first point
+	 * @param firstR radial coordiante of the first point
+	 * @param secondangle angular coordinate of the second point
+	 * @param secondR radial coordinate of the second point
+	 *
+	 * @return distance between two points in native hyperbolic representation
+	 */
+	static double nativeDistance(double firstangle, double firstR, double secondangle, double secondR);
+
+	/**
 	 * @param a first point in cartesian coordinates
 	 * @param b second point in cartesian coordinates
 	 *
 	 * @return distance between a and b in the poincare metric
 	 */
 	static double poincareMetric(Point2D<double> a, Point2D<double> b);
+
+
 
 	/**
 	 * @param phi angular coordinate of point
