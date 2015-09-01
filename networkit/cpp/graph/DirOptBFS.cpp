@@ -72,15 +72,27 @@ void DirOptBFS::run() {
 		if (topdown) {
 			growing = qNext.size() >= lastFrontierSize;
 			lastFrontierSize = qNext.size();
-			// manual computation of m_u
-			// TODO: can this be computed on the fly?
-			count m_u = 0;
-			#pragma omp parallel for reduction(+:m_u) 
-			for (count u = 0; u < z; ++u) {
-				//m_u += (G.hasNode(u)&&previous[u].empty())?G.degree(u):0;
-				m_u += (G.hasNode(u)&&!visited[u])?G.degree(u):0;
+			// since there are two conditions of which only one needs to be satisfied, this can be short-circuited:
+			// only compute m_u and the evaluate the second condition, when the frontier is in fact growing.
+			if (growing) {
+				// TODO: can this be computed on the fly?
+				// manual computation of m_u
+				// m_u = the number of edges to be looked at from unvisited nodes is
+				// the sum of degrees from unvisited nodes + the sum of degrees from nodes in the queue
+				count m_u = 0;
+				#pragma omp parallel for reduction(+:m_u)
+				for (node u = 0; u < z; ++u) {
+					m_u += (G.hasNode(u)&&!visited[u])?G.degree(u):0;
+				}
+				#pragma omp parallel for reduction(+:m_u) 
+				for (index i = 0; i < qNext.size(); ++i) {
+					m_u += G.degree(qNext[i]);
+				}
+				topdown = m_f < (m_u / alpha);
+			} else {
+				topdown = true;
 			}
-			topdown = !growing || m_f < (m_u / alpha);
+			//topdown = !growing || m_f < (m_u / alpha);
 		} else {
 			for (auto& q : threadLocalNext) {
 				n_f += q.size();
@@ -95,7 +107,6 @@ void DirOptBFS::run() {
 		G.balancedParallelForNodes([&](node v){
 			for (auto &u : G.inNeighbors(v)) {
 				if (frontier[u]) {
-					//if (previous[v].empty()) {
 					if (!visited[v]) {
 						visited[v] = 1;
 						distances[v] = currentDistance;
@@ -104,7 +115,6 @@ void DirOptBFS::run() {
 						previous[v] = {u};
 						npaths[v] = npaths[u];
 					} else if (distances[v]-1 == distances[u]) {
-						// TODO: is this condition trivially satisfied?
 						previous[v].push_back(u);
 						npaths[v] += npaths[u];
 					}
@@ -115,7 +125,6 @@ void DirOptBFS::run() {
 
 	auto bottomUpStep = [&](){
 		G.balancedParallelForNodes([&](node v){
-			//if (previous[v].empty()) {
 			if (!visited[v]) {
 				for (auto &u : G.inNeighbors(v)) {
 					if (frontier[u]) {
@@ -137,7 +146,6 @@ void DirOptBFS::run() {
 			qFrontier.pop_back();
 
 			G.forNeighborsOf(current,[&](node v){
-				//if (previous[v].empty()) {
 				if (!visited[v]) {
 					visited[v] = 1;
 					distances[v] = currentDistance;
@@ -157,7 +165,6 @@ void DirOptBFS::run() {
 
 	auto prepareDatastructure = [&]() {
 		if (topdown) {
-			//qFrontier.clear();
 			if (wasTopDown) {
 				// qNext -> qFrontier
 				std::swap(qFrontier,qNext);
@@ -207,7 +214,6 @@ void DirOptBFS::run() {
 	count n_top = 0;
 	count n_bot = 0;
 	Aux::Timer timer;*/
-	//m_u = G.numberOfEdges() * 2;
 	while (!isFinished()) {
 		++currentDistance;
 		wasTopDown = topdown;
