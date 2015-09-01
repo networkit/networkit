@@ -126,8 +126,8 @@ class Profile:
 			("Node Centrality",	"Page Rank",					True,	funcScores,	"Score",				centrality.PageRank, 					(G, )),
 			("Node Centrality",	"K-Path Centrality",			True,	funcScores,	"Score",				centrality.KPathCentrality,				(G, )),
 			("Node Centrality",	"Katz Centrality",				True,	funcScores,	"Score",				centrality.KatzCentrality,				(G, )),
-			("Node Centrality",	"Betweenness",					True,	funcScores,	"Score",				centrality.ApproxBetweenness2,			(G, max(42, math.log(G.numberOfNodes())**2, True))),
-			("Node Centrality",	"Closeness",					True,	funcScores,	"Score",				centrality.ApproxCloseness,			(G, max(42, math.log(G.numberOfNodes())**2, True))),
+			("Node Centrality",	"Betweenness",					True,	funcScores,	"Score",				centrality.ApproxBetweenness2,			(G, max(42, math.log(G.numberOfNodes()), True))),
+			("Node Centrality",	"Closeness",					True,	funcScores,	"Score",				centrality.ApproxCloseness,			(G, max(42, math.log(G.numberOfNodes()), True))),
 			("Partition",		"Communities",					False,	funcSizes,	"Nodes per Community",	community.PLM,			 				(G, )),
 			("Partition",		"Connected Components",			False,	funcSizes,	"Nodes per Component",	classConnectedComponents,				(G, )),
 			("Partition",		"K-Core Decomposition",			False,	funcSizes,	"Nodes per Shell",		centrality.CoreDecomposition, 			(G, ))
