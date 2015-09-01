@@ -392,7 +392,7 @@ TEST_F(SSSPGTest, benchDirOptBFS) {
 		return std::move(distances);
 	};
 
-	bool local = true;
+	bool local = false;
 	std::string base;
 	std::vector<std::string> datasets;
 	if (!local) {
@@ -429,24 +429,27 @@ TEST_F(SSSPGTest, benchDirOptBFS) {
 		count avg_time_minbfs = t.elapsedMilliseconds() / nRuns;
 		std::cout << "minimal bfs:\t" << avg_time_minbfs << std::endl;
 
-		t.start();
-		for (index i = 0; i < nRuns; ++i) {
-			BFS bfs(G,startNodes[i],storePaths,storeStack);
-			bfs.run();
-		}
-		t.stop();
-		count avg_time_refbfs = t.elapsedMilliseconds() / nRuns;
-		std::cout << "reference bfs:\t" << avg_time_refbfs << std::endl;
+		for (int k = 0; k < 2; ++k) {
+			for (int j = 0; j < 2; ++j) {
+				t.start();
+				for (index i = 0; i < nRuns; ++i) {
+					BFS bfs(G,startNodes[i],k,j);
+					bfs.run();
+				}
+				t.stop();
+				count avg_time_refbfs = t.elapsedMilliseconds() / nRuns;
+				std::cout << "reference bfs(storePaths=" << k << ",storeStack=" << j <<"):\t" << avg_time_refbfs << std::endl;
 
-//		std::vector<count> threads = {1,2,4,8,16,32};
-		t.start();
-		for (index i = 0; i < nRuns; ++i) {
-			DirOptBFS bfs(G,startNodes[i],storePaths,storeStack);
-			bfs.run();
+				t.start();
+				for (index i = 0; i < nRuns; ++i) {
+					DirOptBFS bfs(G,startNodes[i],k,j);
+					bfs.run();
+				}
+				t.stop();
+				count avg_time_dobfs = t.elapsedMilliseconds() / nRuns;
+				std::cout << "diropt bfs(storePaths=" << k << ",storeStack=" << j <<"):\t" << avg_time_dobfs << std::endl;
+			}
 		}
-		t.stop();
-		count avg_time_dobfs = t.elapsedMilliseconds() / nRuns;
-		std::cout << "diropt bfs :\t" << avg_time_dobfs << std::endl;
 		std::cout << "----------------------------------------------" << std::endl;
 	}
 
