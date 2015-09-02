@@ -19,8 +19,6 @@
 #include "HyperbolicGenerator.h"
 #include "Quadtree/Quadtree.h"
 #include "../auxiliary/Random.h"
-#include "../auxiliary/ProgressMeter.h"
-
 
 namespace NetworKit {
 
@@ -125,9 +123,8 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	Aux::Timer timer;
 	timer.start();
 	vector<double> empty;
-	GraphBuilder result(n, false, false, true);
+	GraphBuilder result(n, false, false);
 
-	Aux::ProgressMeter progress(n, 10000);
 	#pragma omp parallel
 	{
 		index id = omp_get_thread_num();
@@ -144,19 +141,12 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 			//count realDegree = near.size();
 			//std::swap(expectedDegree, realDegree);//dummy statement for debugging
 			result.swapNeighborhood(i, near, empty, false);
-
-			if (i % 10000 == 0) {
-				#pragma omp critical (progress)
-				{
-					progress.signal(i);
-				}
-			}
 		}
 		threadtimers[id].stop();
 	}
 
 	timer.stop();
 	INFO("Generating Edges took ", timer.elapsedMilliseconds(), " milliseconds.");
-	return result.toGraph(true);
+	return result.toGraph(false, true);
 }
 }

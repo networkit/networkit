@@ -25,13 +25,13 @@ def nx2nk(nxG, weightAttr=None):
 	# print("z = {0}".format(z))
 
 	if weightAttr is not None:
-		nkG = graph.Graph(z, weighted=True)
+		nkG = graph.Graph(z, weighted=True, directed=nxG.is_directed())
 		for (u_, v_) in nxG.edges():
 			u, v = idmap[u_], idmap[v_]
 			w = nxG.edge[u_][v_][weightAttr]
 			nkG.addEdge(u, v, w)
 	else:
-		nkG = graph.Graph(z)
+		nkG = graph.Graph(z, directed=nxG.is_directed())
 		for (u_, v_) in nxG.edges():
 			u, v = idmap[u_], idmap[v_]
 			# print(u_, v_, u, v)
@@ -46,11 +46,17 @@ def nx2nk(nxG, weightAttr=None):
 
 def nk2nx(nkG):
 	""" Convert a NetworKit.Graph to a networkx.Graph """
-	nxG = nx.Graph()
+	if nkG.isDirected():
+		nxG = nx.DiGraph()
+	else:
+		nxG = nx.Graph()
+	nxG.add_nodes_from(nkG.nodes())
 	if nkG.isWeighted():
 		for (u, v) in nkG.edges():
 			nxG.add_edge(u, v, weight=nkG.weight(u, v))
 	else:
-		for (u, v) in nkG.edges():
-			nxG.add_edge(u, v)
+		nxG.add_edges_from(nkG.edges())
+
+	assert (nkG.numberOfNodes() == nxG.number_of_nodes())
+	assert (nkG.numberOfEdges() == nxG.number_of_edges())
 	return nxG

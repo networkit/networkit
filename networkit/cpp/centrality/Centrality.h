@@ -9,6 +9,7 @@
 #define CENTRALITY_H_
 
 #include "../graph/Graph.h"
+#include "../base/Algorithm.h"
 
 namespace NetworKit {
 
@@ -16,7 +17,7 @@ namespace NetworKit {
  * @ingroup centrality
  * Abstract base class for centrality measures.
  */
-class Centrality {
+class Centrality : public Algorithm {
 public:
 	/**
 	 * Constructs the Centrality class for the given Graph @a G. If the betweenness scores should be normalized,

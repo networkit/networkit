@@ -1,7 +1,7 @@
-NetworKit.engineering
+networkit.engineering
 =====================
 
-.. automodule:: engineering
+.. automodule:: networkit.engineering
     :members:
     :imported-members:
     :undoc-members:

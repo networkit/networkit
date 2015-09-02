@@ -117,6 +117,8 @@ class GephiStreamingClient:
                     self._pygephi.delete_edge(edgeId)
                 elif ev.type == ev.EDGE_WEIGHT_UPDATE:
                     print("Edge weights not yet supported in gephi streaming!")
+                elif ev.type == ev.EDGE_WEIGHT_INCREMENT:
+                    print("Edge weights not yet supported in gephi streaming!")
                 elif ev.type == ev.TIME_STEP:
                     self._pygephi.flush()
                     if timeStepDelay > 0:

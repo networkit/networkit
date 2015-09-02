@@ -8,25 +8,26 @@
 #include "PLM.h"
 #include <omp.h>
 #include "../coarsening/ParallelPartitionCoarsening.h"
-#include "../coarsening/ClusterContractor.h"
 #include "../coarsening/ClusteringProjector.h"
 #include "../auxiliary/Log.h"
 #include "../auxiliary/Timer.h"
+#include "../auxiliary/SignalHandling.h"
 
 
 #include <sstream>
 
 namespace NetworKit {
 
-PLM::PLM(const Graph& G, bool refine, double gamma, std::string par, count maxIter, bool parallelCoarsening, bool turbo) : CommunityDetectionAlgorithm(G), parallelism(par), refine(refine), gamma(gamma), maxIter(maxIter), parallelCoarsening(parallelCoarsening), turbo(turbo) {
+PLM::PLM(const Graph& G, bool refine, double gamma, std::string par, count maxIter, bool turbo, bool recurse) : CommunityDetectionAlgorithm(G), parallelism(par), refine(refine), gamma(gamma), maxIter(maxIter), turbo(turbo), recurse(recurse) {
 
 }
 
-PLM::PLM(const Graph& G, const PLM& other) : CommunityDetectionAlgorithm(G), parallelism(other.parallelism), refine(other.refine), gamma(other.gamma), maxIter(other.maxIter), parallelCoarsening(other.parallelCoarsening), turbo(other.turbo){
+PLM::PLM(const Graph& G, const PLM& other) : CommunityDetectionAlgorithm(G), parallelism(other.parallelism), refine(other.refine), gamma(other.gamma), maxIter(other.maxIter), turbo(other.turbo), recurse(other.recurse) {
 
 }
 
 void PLM::run() {
+	Aux::SignalHandler handler;
 	DEBUG("calling run method on " , G.toString());
 
 	count z = G.upperNodeIdBound();
@@ -236,10 +237,10 @@ void PLM::run() {
 				WARN("move phase aborted after ", maxIter, " iterations");
 			}
 			iter += 1;
-		} while (moved && (iter <= maxIter));
+		} while (moved && (iter <= maxIter) && handler.isRunning());
 		DEBUG("iterations in move phase: ", iter);
 	};
-
+	handler.assureRunning();
 	// first move phase
 	Aux::Timer timer;
 	timer.start();
@@ -248,18 +249,18 @@ void PLM::run() {
 	//
 	timer.stop();
 	timing["move"].push_back(timer.elapsedMilliseconds());
-
-	if (change) {
+	handler.assureRunning();
+	if (recurse && change) {
 		INFO("nodes moved, so begin coarsening and recursive call");
 
 		timer.start();
 		//
-		std::pair<Graph, std::vector<node>> coarsened = coarsen(G, zeta, parallelCoarsening);	// coarsen graph according to communitites
+		std::pair<Graph, std::vector<node>> coarsened = coarsen(G, zeta);	// coarsen graph according to communitites
 		//
 		timer.stop();
 		timing["coarsen"].push_back(timer.elapsedMilliseconds());
 
-		PLM onCoarsened(coarsened.first, this->refine, this->gamma, this->parallelism, this->maxIter, this->parallelCoarsening, this->turbo);
+		PLM onCoarsened(coarsened.first, this->refine, this->gamma, this->parallelism, this->maxIter, this->turbo);
 		onCoarsened.run();
 		Partition zetaCoarse = onCoarsened.getPartition();
 
@@ -276,7 +277,7 @@ void PLM::run() {
 		}
 
 
-		INFO("coarse graph has ", coarsened.first.numberOfEdges(), " edges");
+		INFO("coarse graph has ", coarsened.first.numberOfNodes(), " nodes and ", coarsened.first.numberOfEdges(), " edges");
 		zeta = prolong(coarsened.first, zetaCoarse, G, coarsened.second); // unpack communities in coarse graph onto fine graph
 		// refinement phase
 		if (refine) {
@@ -292,7 +293,6 @@ void PLM::run() {
 					volCommunity[C] += volN;
 				}
 			});
-
 			// second move phase
 			timer.start();
 			//
@@ -314,27 +314,21 @@ std::string NetworKit::PLM::toString() const {
 	if (refine) {
 		stream << "," << "refine";
 	}
-	if (parallelCoarsening) {
-		stream << "," << "pc";
-	}
+	stream << "," << "pc";
 	if (turbo) {
 		stream << "," << "turbo";
+	}
+	if (!recurse) {
+		stream << "," << "non-recursive";
 	}
 	stream << ")";
 
 	return stream.str();
 }
 
-std::pair<Graph, std::vector<node> > PLM::coarsen(const Graph& G, const Partition& zeta, bool parallel) {
-	if (parallel) {
-		ParallelPartitionCoarsening parCoarsening(true);
-		return parCoarsening.run(G, zeta);
-	} else {
-		ClusterContractor seqCoarsening;
-		return seqCoarsening.run(G, zeta);
-	}
-
-
+std::pair<Graph, std::vector<node> > PLM::coarsen(const Graph& G, const Partition& zeta) {
+	ParallelPartitionCoarsening parCoarsening(true);
+	return parCoarsening.run(G, zeta);
 }
 
 Partition PLM::prolong(const Graph& Gcoarse, const Partition& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode) {

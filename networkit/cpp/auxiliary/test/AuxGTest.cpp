@@ -21,6 +21,7 @@
 #include "../Timer.h"
 #include "../MissingMath.h"
 #include "../PrioQueue.h"
+#include "../PrioQueueForInts.h"
 #include "../StringTools.h"
 #include "../SetIntersector.h"
 #include "../Enforce.h"
@@ -29,12 +30,18 @@
 
 
 TEST_F(AuxGTest, produceRandomIntegers) {
+#if (LOG_LEVEL == LOG_LEVEL_TRACE)
 	int64_t l = 0; 	// lower bound
 	int64_t u = 100;	// upper bound
 
 	for (int i = 0; i < 100; ++i) {
 		TRACE(Aux::Random::integer(l, u));
 	}
+#else
+	for (int i = 0; i < 100; ++i) {
+		TRACE(Aux::Random::integer(1, 100));
+	}
+#endif
 }
 
 TEST_F(AuxGTest, testRandomInteger) {
@@ -203,6 +210,71 @@ TEST_F(AuxGTest, testPriorityQueue) {
 	EXPECT_EQ(2.5, elem.first);
 	EXPECT_EQ(3u, elem.second);
 	EXPECT_EQ(pq.size(), vec.size() - 5);
+}
+
+TEST_F(AuxGTest, testPrioQueueForInts) {
+	// fill vector with priorities
+	std::vector<uint64_t> vec;
+
+	// 0-4
+	vec.push_back(17);
+	vec.push_back(4);
+	vec.push_back(1);
+	vec.push_back(5);
+	vec.push_back(3);
+
+	// 5-9
+	vec.push_back(11);
+	vec.push_back(9);
+	vec.push_back(19);
+	vec.push_back(9);
+	vec.push_back(1);
+
+	// 10-14
+	vec.push_back(4);
+	vec.push_back(17);
+	vec.push_back(8);
+	vec.push_back(8);
+	vec.push_back(12);
+
+	// 15-19
+	vec.push_back(16);
+	vec.push_back(14);
+	vec.push_back(11);
+	vec.push_back(7);
+	vec.push_back(7);
+
+	// 20-23
+	vec.push_back(7);
+	vec.push_back(4);
+	vec.push_back(8);
+	vec.push_back(0);
+
+	// construct pq from vector
+	Aux::PrioQueueForInts pq(vec, 20);
+
+	// check op: extractMin
+	NetworKit::index min = pq.extractMin();
+	EXPECT_EQ(min, 23u);
+	min = pq.extractMin();
+	EXPECT_EQ(min, 9u);
+
+	// check op: extractMax
+	NetworKit::index max = pq.extractMax();
+	EXPECT_EQ(max, 7u);
+	max = pq.extractMax();
+	max = pq.extractMax();
+	max = pq.extractMax();
+	EXPECT_EQ(max, 15u);
+
+	// check op: priority, changePrio
+	EXPECT_EQ(pq.priority(3), 5u);
+	pq.changePrio(3, 6u);
+	EXPECT_EQ(pq.priority(3), 6u);
+
+	// check op: extractAt
+	EXPECT_EQ(pq.extractAt(6u), 3u);
+	EXPECT_EQ(pq.extractAt(6u), NetworKit::none);
 }
 
 //FIXME make this working again
