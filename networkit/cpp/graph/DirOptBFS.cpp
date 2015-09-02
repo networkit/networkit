@@ -72,29 +72,7 @@ void DirOptBFS::run() {
 		if (topdown) {
 			growing = qNext.size() >= lastFrontierSize;
 			lastFrontierSize = qNext.size();
-			// since there are two conditions of which only one needs to be satisfied, this can be short-circuited:
-			// only compute m_u and the evaluate the second condition, when the frontier is in fact growing.
-			if (growing) {
-				// TODO: can this be computed on the fly?
-				// manual computation of m_u
-				// m_u = the number of edges to be looked at from unvisited nodes is
-				// the sum of degrees from unvisited nodes + the sum of degrees from nodes in the queue
-				count tmp = 0;
-				#pragma omp parallel for reduction(+:tmp)
-				for (node u = 0; u < z; ++u) {
-					tmp += (G.hasNode(u)&&!visited[u])?G.degree(u):0;
-				}
-				#pragma omp parallel for reduction(+:tmp)
-				for (index i = 0; i < qNext.size(); ++i) {
-					tmp += G.degree(qNext[i]);
-				}
-				std::cout << "explicit m_u: " << tmp << "\ton-the-fly m_u: " << m_u << "\tlast top? " << topdown << std::endl;
-				topdown = m_f < (tmp / alpha);
-				//topdown = m_f < (m_u / alpha);
-			} else {
-				topdown = true;
-			}
-			//topdown = !growing || m_f < (m_u / alpha);
+			topdown = !growing || m_f < (m_u / alpha);
 		} else {
 			for (auto& q : threadLocalNext) {
 				n_f += q.size();
