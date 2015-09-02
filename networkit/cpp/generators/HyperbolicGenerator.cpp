@@ -65,11 +65,14 @@ Graph HyperbolicGenerator::generate() {
 
 Graph HyperbolicGenerator::generate(count n, double distanceFactor, double alpha, double stretchradius) {
 	double R = stretchradius*HyperbolicSpace::hyperbolicAreaToRadius(n);
+	assert(R > 0);
 	vector<double> angles(n);
 	vector<double> radii(n);
 	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
-	//sample points randomly
+	assert(r > 0);
+	assert(r < 1);
 
+	//sample points randomly
 	HyperbolicSpace::fillPoints(angles, radii, stretchradius, alpha);
 	vector<index> permutation(n);
 

@@ -162,6 +162,7 @@ public:
 				content.clear();
 				angles.clear();
 				radii.clear();
+				positions.clear();
 				this->addContent(input, angle, R);
 			}
 		}
