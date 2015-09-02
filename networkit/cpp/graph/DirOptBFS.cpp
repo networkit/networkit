@@ -17,7 +17,7 @@ DirOptBFS::DirOptBFS(const Graph& G, node source, bool storePaths, bool storeSta
 	alpha(alpha),
 	beta(beta),
 	m_f(G.degree(source)),
-	m_u(0),
+	m_u((G.isDirected()?1:2) * G.numberOfEdges()),
 	n_f(1),
 	rhs_C_BT(G.numberOfNodes()/beta) {
 }
@@ -79,16 +79,18 @@ void DirOptBFS::run() {
 				// manual computation of m_u
 				// m_u = the number of edges to be looked at from unvisited nodes is
 				// the sum of degrees from unvisited nodes + the sum of degrees from nodes in the queue
-				count m_u = 0;
-				#pragma omp parallel for reduction(+:m_u)
+				count tmp = 0;
+				#pragma omp parallel for reduction(+:tmp)
 				for (node u = 0; u < z; ++u) {
-					m_u += (G.hasNode(u)&&!visited[u])?G.degree(u):0;
+					tmp += (G.hasNode(u)&&!visited[u])?G.degree(u):0;
 				}
-				#pragma omp parallel for reduction(+:m_u) 
+				#pragma omp parallel for reduction(+:tmp)
 				for (index i = 0; i < qNext.size(); ++i) {
-					m_u += G.degree(qNext[i]);
+					tmp += G.degree(qNext[i]);
 				}
-				topdown = m_f < (m_u / alpha);
+				std::cout << "explicit m_u: " << tmp << "\ton-the-fly m_u: " << m_u << "\tlast top? " << topdown << std::endl;
+				topdown = m_f < (tmp / alpha);
+				//topdown = m_f < (m_u / alpha);
 			} else {
 				topdown = true;
 			}
@@ -160,6 +162,7 @@ void DirOptBFS::run() {
 						npaths[v] += npaths[current];
 				}
 			});
+			m_u -= G.degree(current);
 		}
 	};
 
@@ -188,6 +191,7 @@ void DirOptBFS::run() {
 				// qNext -> frontier
 				for (auto& current : qNext) {
 					frontier[current] = true;
+					m_u -= G.degree(current);
 					if (storeStack) {
 							stack.push(current);
 					}
@@ -198,6 +202,7 @@ void DirOptBFS::run() {
 				for (auto& q : threadLocalNext) {
 					for (auto& current : q) {
 						frontier[current] = true;
+						m_u -= G.degree(current);
 						if (storeStack) {
 							stack.push(current);
 						}

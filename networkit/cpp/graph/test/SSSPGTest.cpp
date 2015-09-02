@@ -220,7 +220,7 @@ TEST_F(SSSPGTest, testDirOptBFS) {
 
 
 	bool storeStack = false;
-	bool storePaths = true;
+	bool storePaths = false;
 
 	BFS bfs_ref(G, 5, storePaths, storeStack);
 	bfs_ref.run();
@@ -272,7 +272,7 @@ TEST_F(SSSPGTest, testDirOptBFSOnRealGraph) {
 	Graph G = reader.read("input/PGPgiantcompo.graph");
 
 	bool storeStack = false;
-	bool storePaths = true;
+	bool storePaths = false;
 
 	BFS bfs_ref(G, 5, storePaths, storeStack);
 	bfs_ref.run();
@@ -323,7 +323,7 @@ TEST_F(SSSPGTest, testDirOptBFSOnDirectedRealGraph) {
 	Graph G = reader.read("input/foodweb-baydry.konect");
 
 	bool storeStack = false;
-	bool storePaths = true;
+	bool storePaths = false;
 
 	BFS bfs_ref(G, 5, storePaths, storeStack);
 	bfs_ref.run();
