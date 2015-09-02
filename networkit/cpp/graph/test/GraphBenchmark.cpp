@@ -147,8 +147,10 @@ TEST_F(GraphBenchmark, edgeInsertions_standard_seq) {
 
 TEST_F(GraphBenchmark, weightedDegree_standard_seq) {
 	int64_t n = this->n;
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeCompleteGraph(n);
+	Graph G(n);
+	G.forNodePairs([&](node u, node v){
+		G.addEdge(u,v);
+	});
 
 	Aux::Timer runtime;
 
@@ -180,8 +182,10 @@ TEST_F(GraphBenchmark, weightedDegree_standard_seq) {
 
 TEST_F(GraphBenchmark, weightedDegree_standard_par) {
 	int64_t n = this->n;
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeCompleteGraph(n);
+	Graph G(n);
+	G.forNodePairs([&](node u, node v){
+		G.addEdge(u,v);
+	});
 
 	Aux::Timer runtime;
 

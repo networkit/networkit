@@ -18,11 +18,9 @@ Dy * GeneratorsTest.cpp
 #include "../WattsStrogatzGenerator.h"
 #include "../RegularRingLatticeGenerator.h"
 #include "../../properties/ClusteringCoefficient.h"
-#include "../../properties/CoreDecomposition.h"
 #include "../../community/PLM.h"
 #include "../../community/Modularity.h"
 #include "../StochasticBlockmodel.h"
-#include "../../properties/ConnectedComponents.h"
 #include "../ConfigurationModelGenerator.h"
 
 
@@ -884,9 +882,6 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorConsistency) {
 	HyperbolicGenerator gen(n, n*3);
 	Graph G = gen.generate();
 	ASSERT_TRUE(G.checkConsistency());
-	CoreDecomposition cd(G);
-	cd.run();
-	EXPECT_LE(cd.maxCoreNumber(), n); //actually testing for crashes here
 }
 
 TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {

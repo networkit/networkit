@@ -26,13 +26,10 @@ BarabasiAlbertGenerator::BarabasiAlbertGenerator(count k,
 Graph BarabasiAlbertGenerator::generate() {
 	Graph G = initializeGraph();
 	assert (G.numberOfNodes() >= k);
-	Aux::ProgressMeter progress(nMax, 200);
 
 	for (count i = n0; i < nMax; i++) {
 		count degreeSum = G.numberOfEdges() * 2;
-		//DEBUG("Random")ProgressMeter
 		node u = G.addNode();
-		progress.signal(u);
 		std::set<node> targets;
 		targets.insert(u);
 		int j = 0;
@@ -81,4 +78,3 @@ Graph BarabasiAlbertGenerator::initializeGraph() {
 
 
 } /* namespace NetworKit */
-

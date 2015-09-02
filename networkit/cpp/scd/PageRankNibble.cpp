@@ -23,8 +23,7 @@ PageRankNibble::~PageRankNibble() {
 
 
 std::set<node> PageRankNibble::bestSweepSet(std::vector<std::pair<node, double>>& pr) {
-	count suppSize = pr.size();
-	TRACE("Support size: ", suppSize);
+	TRACE("Support size: ", pr.size());
 
 
 	// order vertices
