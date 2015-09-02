@@ -871,19 +871,6 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorConsistency) {
 	HyperbolicGenerator gen(n, n*3);
 	Graph G = gen.generate();
 	ASSERT_TRUE(G.checkConsistency());
-	CoreDecomposition cd(G);
-	cd.run();
-	EXPECT_LE(cd.maxCoreNumber(), n); //actually testing for crashes here
-}
-
-TEST_F(GeneratorsGTest, testHyperbolicGeneratorMechanicGraphs) {
-	count n = 20000;
-	HyperbolicGenerator gen(n, n*3);
-	Graph G = gen.generateTemperate(1);
-	ASSERT_TRUE(G.checkConsistency());
-	CoreDecomposition cd(G);
-	cd.run();
-	EXPECT_LE(cd.maxCoreNumber(), n); //actually testing for crashes here
 }
 
 TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {
