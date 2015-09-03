@@ -204,7 +204,7 @@ void GraphBuilder::toGraphParallel(Graph& G) {
 	// basic idea of the parallelization:
 	// 1) each threads collects its own data
 	// 2) each node collects all its data from all threads
-	TRACE("Called toGraphParallel");
+
 	int maxThreads = omp_get_max_threads();
 
 	using Adjacencylists = std::vector< std::vector<node> >;
@@ -213,7 +213,7 @@ void GraphBuilder::toGraphParallel(Graph& G) {
 	std::vector<Adjacencylists> inEdgesPerThread(maxThreads, Adjacencylists(n));
 	std::vector<Weightlists> inWeightsPerThread(weighted ? maxThreads : 0, Weightlists(n));
 	std::vector<count> numberOfSelfLoopsPerThread(maxThreads, 0);
-	TRACE("Allocated vectors for ", maxThreads, " threads.");
+
 	// step 1
 	parallelForNodes([&](node v) {
 		int tid = omp_get_thread_num();
@@ -232,7 +232,6 @@ void GraphBuilder::toGraphParallel(Graph& G) {
 		}
 	});
 
-	TRACE("First step complete");
 	// we have already half of the edges
 	G.outEdges.swap(outEdges);
 	G.outEdgeWeights.swap(outEdgeWeights);
@@ -289,9 +288,6 @@ void GraphBuilder::toGraphParallel(Graph& G) {
 			}
 		}
 	});
-
-	TRACE("Second step complete.");
-
 	count numSelfLoops = 0;
 	#pragma omp parallel for reduction(+:numSelfLoops)
 	for (int i = 0; i < maxThreads; ++i)
