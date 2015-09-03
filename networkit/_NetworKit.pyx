@@ -4467,7 +4467,9 @@ cdef class Assortativity:
 		self.G = G
 
 	def run(self):
-		self._this.run()
+		with nogil:
+			self._this.run()
+		return self
 
 	def getCoefficient(self):
 		return self._this.getCoefficient()
