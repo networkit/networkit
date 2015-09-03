@@ -10,7 +10,6 @@
 #include "../ConnectedComponents.h"
 #include "../ParallelConnectedComponents.h"
 #include "../StronglyConnectedComponents.h"
-#include "../GraphProperties.h"
 #include "../Diameter.h"
 #include "../../io/METISGraphReader.h"
 #include "../../generators/HavelHakimiGenerator.h"
@@ -187,44 +186,6 @@ TEST_F(ConnectedComponentsGTest, benchConnectedComponents) {
 	cc.run();
 	DEBUG("Number of components: ", cc.numberOfComponents());
 	EXPECT_EQ(1u, cc.numberOfComponents());
-}
-
-TEST_F(ConnectedComponentsGTest, benchHHConnectedComponents) {
-	// construct graph
-	METISGraphReader reader;
-	Graph G = reader.read("input/coAuthorsDBLP.graph");
-	ConnectedComponents cc(G);
-
-	// run CC algo on original
-	cc.run();
-	DEBUG("Number of components in original: ", cc.numberOfComponents());
-
-	// compute HH graph and apply CC algo
-	std::vector<count> sequence = GraphProperties::degreeSequence(G);
-	HavelHakimiGenerator hhgen(sequence, true);
-	Graph G2 = hhgen.generate();
-	ConnectedComponents cc2(G2);
-	cc2.run();
-	DEBUG("Number of components in HH generated: ", cc2.numberOfComponents());
-}
-
-TEST_F(ConnectedComponentsGTest, benchLiveJConnectedComponents) {
-	// construct graph
-	METISGraphReader reader;
-	Graph G = reader.read("../graphs/ascii/soc-LiveJournal1_symm_or.graph");
-	ConnectedComponents cc(G);
-
-	// run CC algo on original
-	cc.run();
-	DEBUG("Number of components in original: ", cc.numberOfComponents());
-
-	// compute HH graph and apply CC algo
-	std::vector<count> sequence = GraphProperties::degreeSequence(G);
-	HavelHakimiGenerator hhgen(sequence, true);
-	Graph G2 = hhgen.generate();
-	ConnectedComponents cc2(G2);
-	cc2.run();
-	DEBUG("Number of components in HH generated: ", cc2.numberOfComponents());
 }
 
 
