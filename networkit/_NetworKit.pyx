@@ -1937,7 +1937,9 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 
 	cdef _HyperbolicGenerator* _this
 
-	def __cinit__(self,  n, k=6, gamma=3):		
+	def __cinit__(self,  n, k=6, gamma=3):
+		if gamma <= 2:
+				raise ValueError("Exponent of power-law degree distribution must be > 2")
 		self._this = new _HyperbolicGenerator(n, k, gamma)
 
 	def setLeafCapacity(self, capacity):
@@ -5136,6 +5138,8 @@ cdef class DynamicHyperbolicGenerator:
 		moveDistance: double
 			base value for the node movements
 		"""
+		if gamma <= 2:
+				raise ValueError("Exponent of power-law degree distribution must be > 2")
 		self._this = new _DynamicHyperbolicGenerator(numNodes, avgDegree = 6, gamma = 3, moveEachStep = 1, moveDistance = 0.1)
 
 	def generate(self, nSteps):
