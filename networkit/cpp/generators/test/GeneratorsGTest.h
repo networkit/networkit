@@ -30,7 +30,6 @@
 #include "../BarabasiAlbertGenerator.h"
 #include "../../io/GraphIO.h"
 #include "../../io/METISGraphReader.h"
-#include "../../properties/GraphProperties.h"
 #include "../../community/Modularity.h"
 #include "../../dynamics/GraphUpdater.h"
 #include "../../auxiliary/MissingMath.h"

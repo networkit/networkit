@@ -344,7 +344,10 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRealSequence) {
 	for (auto path : graphs) {
 		Graph G = reader.read(path);
 		count n = G.numberOfNodes();
-		std::vector<count> sequence = GraphProperties::degreeSequence(G);
+		std::vector<count> sequence;
+		G.forNodes([&](node u){
+			sequence[u] = G.degree(u);
+		});
 
 		HavelHakimiGenerator hhgen(sequence);
 		Graph G2 = hhgen.generate();
@@ -353,7 +356,10 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRealSequence) {
 		EXPECT_EQ(volume, 2 * G2.numberOfEdges());
 
 		if (volume < 50000) {
-			std::vector<count> testSequence = GraphProperties::degreeSequence(G2);
+			std::vector<count> testSequence;
+			G2.forNodes([&](node u){
+				sequence[u] = G2.degree(u);
+			});
 
 			for (index i = 0; i < n; ++i) {
 				EXPECT_EQ(sequence[i], testSequence[i]);
@@ -528,7 +534,10 @@ TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {
 	for (auto path : graphs) {
 		Graph G = reader.read(path);
 		count n = G.numberOfNodes();
-		std::vector<count> sequence = GraphProperties::degreeSequence(G);
+		std::vector<count> sequence;
+		G.forNodes([&](node u){
+			sequence[u] = G.degree(u);
+		});
 
 		bool skipTest = false;
 		ConfigurationModelGenerator gen(sequence, skipTest);
@@ -538,7 +547,10 @@ TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {
 		EXPECT_EQ(volume, 2 * G2.numberOfEdges());
 
 		if (volume < 50000) {
-			std::vector<count> testSequence = GraphProperties::degreeSequence(G2);
+			std::vector<count> testSequence;
+			G2.forNodes([&](node u){
+				testSequence[u] = G2.degree(u);
+			});
 			std::sort(testSequence.begin(), testSequence.end(), std::greater<count>());
 			std::sort(sequence.begin(), sequence.end(), std::greater<count>());
 
