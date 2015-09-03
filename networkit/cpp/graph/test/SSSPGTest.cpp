@@ -16,7 +16,7 @@
 #include "../../auxiliary/Log.h"
 #include "../../auxiliary/Timer.h"
 #include "../../auxiliary/Random.h"
-
+#include "../../auxiliary/Parallelism.h"
 #include <stack>
 #include <string>
 
@@ -403,15 +403,9 @@ TEST_F(SSSPGTest, benchDirOptBFS) {
 		datasets = {"PGPgiantcompo.graph","astro-ph.graph", "wing.graph", "caidaRouterLevel.graph","as-Skitter.metis.graph"};
 	}
 	METISGraphReader reader;
-	//Graph G = reader.read("input/as-Skitter.metis.graph");
-	//Graph G = reader.read("/algoDaten/staudt/Graphs/Collections/NwkBenchmark/uk-2002.metis.graph");
-	//Graph G = reader.read("input/caidaRouterLevel.graph");
 	Aux::Timer t;
+
 	Aux::Random::setSeed(42, false);
-
-	bool storePaths = true;
-	bool storeStack = true;
-
 	for (auto& file : datasets) {
 		Graph G = reader.read(base+file);
 		count nRuns = 100;
@@ -452,36 +446,60 @@ TEST_F(SSSPGTest, benchDirOptBFS) {
 		}
 		std::cout << "----------------------------------------------" << std::endl;
 	}
-
-
-
-
-/*
-	t.start();
-	auto min_dist = minimal_bfs(G,startNode);
-	t.stop();
-	INFO("bfs_min took:\t",t.elapsedTag());
-
-	BFS bfs_ref(G, startNode);
-	t.start();
-	bfs_ref.run();
-	t.stop();
-	INFO("bfs_ref took:\t",t.elapsedTag());
-
-	DirOptBFS bfs_diropt(G, startNode);
-	t.start();
-	bfs_diropt.run();
-	t.stop();
-	INFO("bfs_diropt took:\t",t.elapsedTag());
-
-	auto ref_dist = bfs_ref.getDistances();
-	auto do_dist = bfs_diropt.getDistances();*/
-	/*G.forNodes([&](node v){
-		EXPECT_EQ(ref_dist[v],min_dist[v]) << "min_dist differ at node " << v;
-		EXPECT_EQ(ref_dist[v],do_dist[v]) << "diropt_dist differ at node " << v;
-	});*/
-//	EXPECT_EQ(ref_dist,min_dist);
-//	EXPECT_EQ(ref_dist,do_dist);
 }
+
+TEST_F(SSSPGTest, benchDirOptBFSThreading) {
+	std::vector<std::string> datasets = {
+		"input/PGPgiantcompo.graph",
+		"input/astro-ph.graph",
+		"input/caidaRouterLevel.graph",
+		"/algoDaten/staudt/Graphs/Collections/NwkBenchmark/in-2004.metis.graph",
+		"/algoDaten/staudt/Graphs/Collections/NwkBenchmark/con-fiber_big.metis.graph",
+		"/algoDaten/staudt/Graphs/Collections/NwkBenchmark/uk-2002.metis.graph"
+	};
+	METISGraphReader reader;
+	Aux::Timer t;
+	Aux::Random::setSeed(42, false);
+
+	for (auto& file : datasets) {
+		Graph G = reader.read(file);
+		count nRuns = 30;
+		std::cout << "benchmarking BFS variants: " << nRuns << " runs on " << G.toString() << ", reporting average time in ms" << std::endl;
+		std::vector<node> startNodes(nRuns);
+		// generate startNode sequence
+		for (index i = 0; i < nRuns; ++i) {
+			startNodes[i] = Aux::Random::integer(0,G.numberOfNodes());
+		}
+
+		for (int k = 0; k < 2; ++k) {
+			for (int j = 0; j < 2; ++j) {
+				t.start();
+				for (index i = 0; i < nRuns; ++i) {
+					BFS bfs(G,startNodes[i],k,j);
+					bfs.run();
+				}
+				t.stop();
+				count avg_time_refbfs = t.elapsedMilliseconds() / nRuns;
+				std::cout << "reference bfs(storePaths=" << k << ",storeStack=" << j <<"):\t" << avg_time_refbfs << std::endl;
+
+				auto threads = {1,2,4,8,16};
+				for (auto& current : threads) {
+					Aux::setNumberOfThreads(current);
+					t.start();
+					for (index i = 0; i < nRuns; ++i) {
+						DirOptBFS bfs(G,startNodes[i],k,j);
+						bfs.run();
+					}
+					t.stop();
+					count avg_time_dobfs = t.elapsedMilliseconds() / nRuns;
+					std::cout << "diropt bfs(storePaths=" << k << ",storeStack=" << j << ",threads=" << current << "):\t" << avg_time_dobfs << std::endl;
+				}
+			}
+		}
+		std::cout << "----------------------------------------------" << std::endl;
+	}
+}
+
+
 
 } /* namespace NetworKit */
