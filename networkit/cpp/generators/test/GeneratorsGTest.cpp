@@ -297,62 +297,6 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
 	}
 }
 
-///**
-// * When using a dynamic graph generator, generating many time steps at once should have the same output as calling the generation method for one step multiple times.
-// */
-//TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorCollectedSteps) {
-//	count n = 10;
-//	count nSteps = 100;
-//
-//	const double k = 6;
-//	const double alpha = 1;
-//	const double exp = 2*alpha+1;
-//	const double T = 0;
-//	const double R = HyperbolicSpace::getTargetRadius(n, n*k/2, alpha, T);
-//	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
-//	double stretch = R / HyperbolicSpace::hyperbolicAreaToRadius(n);
-//
-//	vector<double> angles(n, -1);
-//	vector<double> radii(n, -1);
-//	HyperbolicSpace::fillPoints(angles, radii, stretch, alpha);
-//	DynamicHyperbolicGenerator dynGen(angles, radii, k, exp, T, movedShare, moveDistance);
-//
-//	DynamicHyperbolicGenerator dynGen(angles, radii, k, exp, T, movedShare, moveDistance);
-//
-//	std::vector<GraphEvent> stream;
-//
-//	//generate steps one at a time
-//	for (index i = 0; i < nSteps; i++) {
-//		std::vector<GraphEvent> stepStream = dyngen.generate(1);
-//		stream.insert(stream.end(), stepStream.begin(), stepStream.end());
-//	}
-//
-//	//generate steps all at once
-//	std::vector<GraphEvent> comparison = copy.generate(nSteps);
-//	EXPECT_EQ(stream.size(), comparison.size());
-//
-//	//sort graph events to compare them
-//	std::sort(stream.begin(), stream.end(), GraphEvent::compare);
-//	std::sort(comparison.begin(), comparison.end(), GraphEvent::compare);
-//	vector<GraphEvent> diff(stream.size()+comparison.size());
-//	auto newend = std::set_difference(stream.begin(), stream.end(), comparison.begin(), comparison.end(), diff.begin(), GraphEvent::equal);
-//	diff.resize(newend - diff.begin());
-//	for (auto event : diff) {
-//		DEBUG("Found ", event.toString(), " in one but not other.");
-//	}
-//	if (diff.size() > 0) {
-//		DEBUG("G:");
-//		for (auto orig : stream) {
-//			DEBUG(orig.toString());
-//		}
-//		DEBUG("Comparison:");
-//		for (auto orig : comparison) {
-//			DEBUG(orig.toString());
-//		}
-//	}
-//	EXPECT_TRUE(std::equal(stream.begin(), stream.end(), comparison.begin(), GraphEvent::equal));
-//}
-
 TEST_F(GeneratorsGTest, testBarabasiAlbertGenerator) {
 	count k = 3;
 	count nMax = 100;
