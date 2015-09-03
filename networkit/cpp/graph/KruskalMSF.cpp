@@ -39,7 +39,7 @@ NetworKit::KruskalMSF::KruskalMSF(const Graph& G): G(G) {
 }
 
 void NetworKit::KruskalMSF::run() {
-	if (G.isWeighted()) {
+	if (true || G.isWeighted()) { // FIXME: remove true when SpanningForest is fixed!
 		count z = G.upperNodeIdBound();
 		tree = G.copyNodes();
 		UnionFind uf(z);
