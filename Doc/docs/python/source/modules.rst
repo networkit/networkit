@@ -10,11 +10,15 @@ Python Documentation
    algebraic
    centrality
    coloring
+   components
+   correlation
    community
+   distance
    dynamic
    engineering
    generators
    gephi
+   globals
    graph
    graphio
    linkprediction
