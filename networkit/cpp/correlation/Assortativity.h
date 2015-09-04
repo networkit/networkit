@@ -16,7 +16,7 @@
 namespace NetworKit {
 
 /**
- * @ingroup properties
+ * @ingroup correlation
  *
  * Assortativity computes a coefficient that expresses the correlation of a
  * node attribute among connected pairs of nodes.
@@ -54,6 +54,13 @@ public:
 	*/
 	double getCoefficient() const;
 
+	/**
+	 * Returns a string with the algorithm's name and its parameters, if there are any. Subclasses should override it.
+	 * @return The string representation of the algorithm.
+	 */
+	std::string toString() const override;
+
+	bool isParallel() const override;
 
 
 private:

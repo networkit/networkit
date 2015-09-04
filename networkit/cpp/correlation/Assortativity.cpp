@@ -95,5 +95,13 @@ double Assortativity::getCoefficient() const {
 	return coefficient;
 }
 
+std::string Assortativity::toString() const {
+	return (std::string)"Assortativity("+((nominal)?"nominal":"ordinal")+")";
+}
+
+bool Assortativity::isParallel() const {
+	return false;
+}
+
 
 }

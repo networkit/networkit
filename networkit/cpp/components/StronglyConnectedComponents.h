@@ -14,6 +14,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup components
  * Determines the strongly connected components of an directed graph.
  */
 class StronglyConnectedComponents {

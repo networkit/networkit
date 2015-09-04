@@ -13,6 +13,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup distance
+ */
 class EffectiveDiameter {
 
 	/*

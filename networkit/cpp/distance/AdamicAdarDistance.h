@@ -14,6 +14,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup distance
  * An implementation of the Adamic Adar distance measure.
  */
 class AdamicAdarDistance : public NodeDistance {

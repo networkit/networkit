@@ -15,7 +15,7 @@
 namespace NetworKit {
 
 /**
- * @ingroup properties
+ * @ingroup distance
  */
 class Diameter {
 
