@@ -1,7 +1,8 @@
-# NetworKit native classes and functions
-from _NetworKit import ConnectedComponents, ParallelConnectedComponents, StronglyConnectedComponents, ClusteringCoefficient, Diameter, Eccentricity, EffectiveDiameter, Assortativity
-
 # other submodules
+from .components import ConnectedComponents, ParallelConnectedComponents, StronglyConnectedComponents
+from .globals import ClusteringCoefficient
+from .distance import Diameter, Eccentricity, EffectiveDiameter
+from .correlation import Assortativity
 from . import community
 from . import centrality
 from . import termgraph
@@ -39,26 +40,6 @@ except ImportError:
 
 
 ########  PROPERTIES ########
-
-
-def degrees(G):
-	""" Return min/max/avg degree"""
-	avgDeg = GraphProperties.averageDegree(G)
-	if G.isDirected():
-		minMaxDeg = GraphProperties.minMaxDegreeDirected(G)
-	else:
-		minMaxDeg = GraphProperties.minMaxDegree(G)
-	return (minMaxDeg[0], minMaxDeg[1], avgDeg)
-
-def degreeDistribution(G):
-	""" Return the degree distribution of a graph"""
-	return GraphProperties.degreeDistribution(G)
-
-
-def degreeSequence(G):
-	""" Return the degree sequence of a graph"""
-	return GraphProperties.degreeSequence(G)
-
 
 def density(G):
 	""" Return the density of the graph."""
@@ -112,39 +93,6 @@ def clustering(G, error=0.01):
 		nSamples = math.ceil(math.log(10) / (error**2)) # fixed confidence of 90%
 		logging.info("taking {0} samples".format(nSamples))
 		return ClusteringCoefficient().approxAvgLocal(G, nSamples)
-
-
-def degreePowerLaw(G, dd=None):
-	""" Check if a power law is a good fit for the degree distribution.
-
-	Returns
-	-------
-	answer: bool
-		whether a power law is a good fit
-	R : double
-		goodness of the fit, i.e.
-		the loglikelihood ratio between the two candidate distributions. This number will be positive if the data is more likely in the first distribution, and negative if the data is more likely in the 		  	 	second distribution. The exponential distribution is the absolute minimum alternative candidate for evaluating the heavy- tailedness of the distribution. The reason is definitional: the typical quantitative definition of a ”heavy- tail” is that it is not exponentially bounded. Thus if a power law is not a better fit than an exponential distribution (as in the above example) there is scarce ground for considering the distribution to be heavy-tailed at all, let alone a power law.
-	gamma : double
-		the degree power law exponent
-	"""
-	if not dd:
-		dd = degreeSequence(G)
-	fit = powerlaw.Fit(dd)
-	R, p = fit.distribution_compare("power_law", "exponential", normalized_ratio=True)
-	gamma = fit.alpha
-	return ((R > 0), R, gamma)
-
-
-
-def degreeAssortativity(G):
-	""" Returns the degree assortativity coefficient """
-	if G.isDirected():
-		results = []
-		results.append(GraphProperties.degreeAssortativityDirected(G,0,0))
-		results.append(GraphProperties.degreeAssortativityDirected(G,1,1))
-		return results
-	else:
-		return GraphProperties.degreeAssortativity(G, G.isWeighted())
 
 
 def degeneracy(G):
