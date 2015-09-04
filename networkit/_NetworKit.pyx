@@ -3930,7 +3930,7 @@ cdef class EdmondsKarp:
 
 # Module: properties
 
-cdef extern from "cpp/properties/ConnectedComponents.h":
+cdef extern from "cpp/components/ConnectedComponents.h":
 	cdef cppclass _ConnectedComponents "NetworKit::ConnectedComponents":
 		_ConnectedComponents(_Graph G) except +
 		void run() nogil except +
@@ -4158,7 +4158,7 @@ cdef class ClusteringCoefficient:
 		return ret
 
 
-cdef extern from "cpp/properties/Diameter.h" namespace "NetworKit::Diameter":
+cdef extern from "cpp/distance/Diameter.h" namespace "NetworKit::Diameter":
 	pair[count, count] estimatedDiameterRange(_Graph G, double error, pair[node,node] *proof) nogil except +
 	count exactDiameter(_Graph G) nogil except +
 	edgeweight estimatedVertexDiameter(_Graph G, count) nogil except +
@@ -6784,8 +6784,8 @@ cdef class EdgeScoreAsWeight:
 		"""
 		return Graph(0).setThis(self._this.calculate())
 
-# Module: distmeasures
-cdef extern from "cpp/distmeasures/AdamicAdarDistance.h":
+# Module: distances
+cdef extern from "cpp/distance/AdamicAdarDistance.h":
 	cdef cppclass _AdamicAdarDistance "NetworKit::AdamicAdarDistance":
 		_AdamicAdarDistance(const _Graph& G) except +
 		void preprocess() except +
@@ -7015,7 +7015,7 @@ cdef class LocalDegreeScore(EdgeScore):
 	cdef bool isDoubleValue(self):
 		return True
 
-cdef extern from "cpp/distmeasures/JaccardDistance.h":
+cdef extern from "cpp/distance/JaccardDistance.h":
 	cdef cppclass _JaccardDistance "NetworKit::JaccardDistance":
 		_JaccardDistance(const _Graph& G, const vector[count]& triangles) except +
 		void preprocess() except +

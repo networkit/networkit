@@ -6,7 +6,7 @@
 */
 
 #include "EffectiveDiameter.h"
-#include "ConnectedComponents.h"
+#include "../components/ConnectedComponents.h"
 #include "../auxiliary/Random.h"
 
 #include <math.h>

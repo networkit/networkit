@@ -13,7 +13,7 @@
 namespace NetworKit {
 
 /**
- * @ingroup distmeasures
+ * @ingroup distances
  * Abstract base class for node distance measures.
  */
 class NodeDistance {

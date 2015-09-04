@@ -13,7 +13,7 @@
 #include <string>
 
 #include "PropertiesGTest.h"
-#include "../Diameter.h"
+#include "../../distance/Diameter.h"
 #include "../ClusteringCoefficient.h"
 #include "../EffectiveDiameter.h"
 #include "../../auxiliary/Timer.h"

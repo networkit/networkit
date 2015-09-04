@@ -7,10 +7,10 @@
 #ifndef NOGTEST
 
 #include "ConnectedComponentsGTest.h"
-#include "../ConnectedComponents.h"
+#include "../../components/ConnectedComponents.h"
 #include "../ParallelConnectedComponents.h"
 #include "../StronglyConnectedComponents.h"
-#include "../Diameter.h"
+#include "../../distance/Diameter.h"
 #include "../../io/METISGraphReader.h"
 #include "../../generators/HavelHakimiGenerator.h"
 #include "../../auxiliary/Log.h"
