@@ -10,7 +10,7 @@
 #include "../Betweenness.h"
 #include "../../generators/ErdosRenyiGenerator.h"
 #include "../../generators/DorogovtsevMendesGenerator.h"
-#include "../../properties/Diameter.h"
+#include "../../distance/Diameter.h"
 
 namespace NetworKit {
 

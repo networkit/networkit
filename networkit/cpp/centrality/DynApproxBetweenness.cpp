@@ -7,7 +7,7 @@
 
 #include "DynApproxBetweenness.h"
 #include "../auxiliary/Random.h"
-#include "../properties/Diameter.h"
+#include "../distance/Diameter.h"
 #include "../graph/Sampling.h"
 #include "../graph/DynDijkstra.h"
 #include "../graph/DynBFS.h"

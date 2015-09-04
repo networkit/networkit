@@ -11,7 +11,7 @@
 #include "Eccentricity.h"
 #include "../graph/BFS.h"
 #include "../graph/Dijkstra.h"
-#include "../properties/ConnectedComponents.h"
+#include "../components/ConnectedComponents.h"
 #include "../structures/Partition.h"
 #include "../graph/BFS.h"
 

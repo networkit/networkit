@@ -16,7 +16,7 @@
 namespace NetworKit {
 
 /**
- * @ingroup distmeasures
+ * @ingroup distances
  * Jaccard distance assigns a distance value to pairs of nodes
  * according to the similarity of their neighborhoods. Note that we define the JaccardDistance as 1-JaccardSimilarity.
  */
