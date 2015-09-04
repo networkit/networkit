@@ -24,6 +24,7 @@ Python Documentation
    linkprediction
    nxadapter
    properties
+   profiling
    stopwatch
    structures
    termgraph
