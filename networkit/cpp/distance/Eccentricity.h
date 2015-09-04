@@ -13,7 +13,7 @@
 namespace NetworKit {
 
 /**
- * @ingroup properties
+  * @ingroup distance
  */
 class Eccentricity {
 

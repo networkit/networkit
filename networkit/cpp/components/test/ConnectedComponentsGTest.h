@@ -12,8 +12,6 @@
 
 #include <gtest/gtest.h>
 
-//#include "../../io/METISGraphReader.h"
-
 namespace NetworKit {
 
 class ConnectedComponentsGTest: public testing::Test {

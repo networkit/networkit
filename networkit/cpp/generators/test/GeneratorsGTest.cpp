@@ -7,21 +7,44 @@ Dy * GeneratorsTest.cpp
 
 #ifndef NOGTEST
 
-#include <numeric>
 
 #include "GeneratorsGTest.h"
 
+#include <numeric>
+#include <cmath>
+
+#include "../DynamicGraphSource.h"
+#include "../DynamicBarabasiAlbertGenerator.h"
+#include "../PubWebGenerator.h"
+#include "../DynamicPubWebGenerator.h"
+#include "../ErdosRenyiGenerator.h"
+#include "../ChungLuGenerator.h"
+#include "../HavelHakimiGenerator.h"
+#include "../RmatGenerator.h"
+#include "../BarabasiAlbertGenerator.h"
 #include "../DynamicPathGenerator.h"
 #include "../DynamicForestFireGenerator.h"
 #include "../DynamicDorogovtsevMendesGenerator.h"
 #include "../DorogovtsevMendesGenerator.h"
 #include "../WattsStrogatzGenerator.h"
 #include "../RegularRingLatticeGenerator.h"
-#include "../../properties/ClusteringCoefficient.h"
-#include "../../community/PLM.h"
-#include "../../community/Modularity.h"
 #include "../StochasticBlockmodel.h"
 #include "../ConfigurationModelGenerator.h"
+
+#include "../../viz/PostscriptWriter.h"
+#include "../../community/ClusteringGenerator.h"
+#include "../../community/PLP.h"
+#include "../../community/PLM.h"
+#include "../../io/METISGraphWriter.h"
+#include "../../io/DotGraphWriter.h"
+#include "../../io/GraphIO.h"
+#include "../../io/METISGraphReader.h"
+#include "../../community/Modularity.h"
+#include "../../dynamics/GraphUpdater.h"
+#include "../../auxiliary/MissingMath.h"
+#include "../../global/ClusteringCoefficient.h"
+#include "../../community/PLM.h"
+#include "../../community/Modularity.h"
 
 
 namespace NetworKit {
@@ -344,9 +367,10 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRealSequence) {
 	for (auto path : graphs) {
 		Graph G = reader.read(path);
 		count n = G.numberOfNodes();
-		std::vector<count> sequence;
+		std::vector<count> sequence(n);
 		G.forNodes([&](node u){
 			sequence[u] = G.degree(u);
+			
 		});
 
 		HavelHakimiGenerator hhgen(sequence);
@@ -356,9 +380,9 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRealSequence) {
 		EXPECT_EQ(volume, 2 * G2.numberOfEdges());
 
 		if (volume < 50000) {
-			std::vector<count> testSequence;
+			std::vector<count> testSequence(n);
 			G2.forNodes([&](node u){
-				sequence[u] = G2.degree(u);
+				testSequence[u] = G2.degree(u);
 			});
 
 			for (index i = 0; i < n; ++i) {
@@ -534,7 +558,7 @@ TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {
 	for (auto path : graphs) {
 		Graph G = reader.read(path);
 		count n = G.numberOfNodes();
-		std::vector<count> sequence;
+		std::vector<count> sequence(n);
 		G.forNodes([&](node u){
 			sequence[u] = G.degree(u);
 		});
@@ -547,7 +571,7 @@ TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {
 		EXPECT_EQ(volume, 2 * G2.numberOfEdges());
 
 		if (volume < 50000) {
-			std::vector<count> testSequence;
+			std::vector<count> testSequence(n);
 			G2.forNodes([&](node u){
 				testSequence[u] = G2.degree(u);
 			});

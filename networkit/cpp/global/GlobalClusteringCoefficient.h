@@ -12,7 +12,7 @@
 namespace NetworKit {
 
 /**
- * @ingroup properties
+ * @ingroup global
  */
 class GlobalClusteringCoefficient {
 

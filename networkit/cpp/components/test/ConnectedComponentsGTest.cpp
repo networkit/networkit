@@ -7,9 +7,11 @@
 #ifndef NOGTEST
 
 #include "ConnectedComponentsGTest.h"
-#include "../../components/ConnectedComponents.h"
+
+#include "../ConnectedComponents.h"
 #include "../ParallelConnectedComponents.h"
 #include "../StronglyConnectedComponents.h"
+
 #include "../../distance/Diameter.h"
 #include "../../io/METISGraphReader.h"
 #include "../../generators/HavelHakimiGenerator.h"
@@ -54,72 +56,6 @@ namespace NetworKit {
  	EXPECT_TRUE(ccs.componentOfNode(3) == ccs.componentOfNode(7));
  }
 
-TEST_F(ConnectedComponentsGTest, testVertexDiameterPedantically) {
-    METISGraphReader reader;
-    DorogovtsevMendesGenerator generator(1000);
-    Graph G1 = generator.generate();
-    Graph G = Graph(G1, true, false);
-    count vd = Diameter::estimatedVertexDiameterPedantic(G);
-    EXPECT_EQ(1000, vd);
-}
-
-// TEST_F(ConnectedComponentsGTest, testGraphWithoutEdges) {
-// 	// construct graph
-// 	Graph g;
-// 	for (count i = 0; i < 20; i++) {
-// 		g.addNode();
-// 	}
-
-// 	// initialize ConnectedComponents
-// 	ConnectedComponents ccs;
-// 	ccs.run(g);
-
-// 	// check result
-// 	EXPECT_TRUE(ccs.numberOfComponents() == 20);
-// 	EXPECT_TRUE(ccs.componentOfNode(0) != ccs.componentOfNode(19));
-// 	EXPECT_TRUE(ccs.componentOfNode(3) != ccs.componentOfNode(7));
-// }
-
-// TEST_F(ConnectedComponentsGTest, testGetComponent) {
-// 	// construct graph
-// 	Graph g;
-// 	for (count i = 0; i < 20; i++) {
-// 		g.addNode();
-// 	}
-// 	g.addEdge(0,1,0);
-// 	g.addEdge(1,2,0);
-// 	g.addEdge(2,4,0);
-// 	g.addEdge(4,8,0);
-// 	g.addEdge(8,16,0);
-// 	g.addEdge(16,19,0);
-
-// 	g.addEdge(3,5,0);
-// 	g.addEdge(5,6,0);
-// 	g.addEdge(6,7,0);
-// 	g.addEdge(7,9,0);
-
-// 	g.addEdge(10,11,0);
-// 	g.addEdge(10,18,0);
-// 	g.addEdge(10,12,0);
-// 	g.addEdge(18,17,0);
-
-// 	g.addEdge(13,14,0);
-
-// 	// initialize ConnectedComponents
-// 	ConnectedComponents ccs;
-// 	ccs.run(g);
-
-// 	// check result
-// 	std::vector<node> comp = ccs.getComponent(0);
-// 	EXPECT_TRUE(comp.size() == ccs.sizeOfComponent(0));
-// 	EXPECT_TRUE(comp.at(0) == 0);
-// 	EXPECT_TRUE(comp.at(1) == 1);
-// 	EXPECT_TRUE(comp.at(2) == 2);
-// 	EXPECT_TRUE(comp.at(3) == 4);
-// 	EXPECT_TRUE(comp.at(4) == 8);
-// 	EXPECT_TRUE(comp.at(5) == 16);
-// 	EXPECT_TRUE(comp.at(6) == 19);
-// }
 
 TEST_F(ConnectedComponentsGTest, testConnectedComponents) {
 	// construct graph

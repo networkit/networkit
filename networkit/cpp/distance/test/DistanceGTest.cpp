@@ -1,54 +1,31 @@
 /*
- * PropertiesGTest.cpp
+ * DistanceGTest.cpp
  *
- *  Created on: 03.06.2013
- *      Author: cls
+ *  Created on: Sep 04, 2015
+ *      Author: Maximilian Vogel
  */
-
 #ifndef NOGTEST
-#include <algorithm> // for copy
-#include <iterator> // for ostream_iterator
-#include <fstream> // for ofstream
-#include <list>
-#include <string>
 
-#include "PropertiesGTest.h"
-#include "../../distance/Diameter.h"
-#include "../ClusteringCoefficient.h"
+#include "DistanceGTest.h"
+
+#include "../Diameter.h"
 #include "../EffectiveDiameter.h"
-#include "../../auxiliary/Timer.h"
-#include "../../auxiliary/Log.h"
+
+#include "../../generators/DorogovtsevMendesGenerator.h"
 #include "../../generators/ErdosRenyiGenerator.h"
 #include "../../io/METISGraphReader.h"
-#include "../../io/KONECTGraphReader.h"
-
-
-
 
 namespace NetworKit {
 
-PropertiesGTest::PropertiesGTest() {
-
+TEST_F(DistanceGTest, testVertexDiameterPedantically) {
+    DorogovtsevMendesGenerator generator(1000);
+    Graph G1 = generator.generate();
+    Graph G = Graph(G1, true, false);
+    count vd = Diameter::estimatedVertexDiameterPedantic(G);
+    EXPECT_EQ(1000, vd);
 }
 
-PropertiesGTest::~PropertiesGTest() {
-
-}
-
-
-TEST_F(PropertiesGTest, testClusteringCoefficient) {
-
-	ErdosRenyiGenerator graphGen(10, 1.0);
-	Graph G = graphGen.generate();
-
-	ClusteringCoefficient clusteringCoefficient;
-	double cc = clusteringCoefficient.avgLocal(G);
-
-	EXPECT_EQ(1.0, cc);
-}
-
-
-TEST_F(PropertiesGTest, testExactDiameter) {
+TEST_F(DistanceGTest, testExactDiameter) {
 
    using namespace std;
 
@@ -66,7 +43,7 @@ TEST_F(PropertiesGTest, testExactDiameter) {
 }
 
 
-TEST_F(PropertiesGTest, testEstimatedDiameterRange) {
+TEST_F(DistanceGTest, testEstimatedDiameterRange) {
 
    using namespace std;
 
@@ -83,7 +60,7 @@ TEST_F(PropertiesGTest, testEstimatedDiameterRange) {
        EXPECT_LE(testInstance.second, range.second);
    }
 }
-TEST_F(PropertiesGTest, testPedanticDiameterErdos) {
+TEST_F(DistanceGTest, testPedanticDiameterErdos) {
 	count n = 5000;
 	ErdosRenyiGenerator gen(n,0.001);
 	Graph G1 = gen.generate();
@@ -93,7 +70,7 @@ TEST_F(PropertiesGTest, testPedanticDiameterErdos) {
 
 
 
-TEST_F(PropertiesGTest, testEffectiveDiameter) {
+TEST_F(DistanceGTest, testEffectiveDiameter) {
 
 using namespace std;
 
@@ -108,7 +85,7 @@ for (auto testInstance : testInstances) {
 }
 }
 
-TEST_F(PropertiesGTest, testEffectiveDiameterExact) {
+TEST_F(DistanceGTest, testEffectiveDiameterExact) {
 
 using namespace std;
 
@@ -218,7 +195,7 @@ Number of steps needed per node: (1-21)
 	EXPECT_NEAR(5.619047, effective2, tol);
 }
 
-TEST_F(PropertiesGTest, testHopPlot) {
+TEST_F(DistanceGTest, testHopPlot) {
 	using namespace std;
 
 	vector<string> testInstances= {"celegans_metabolic", "power", "lesmis"};
@@ -235,11 +212,6 @@ TEST_F(PropertiesGTest, testHopPlot) {
 	}
 }
 
-
-
-
-
-
 } /* namespace NetworKit */
 
-#endif /*NOGTEST*/
+#endif /*NOGTEST */

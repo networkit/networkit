@@ -16,6 +16,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup components
  * Determines the connected components of an undirected graph.
  */
 class ParallelConnectedComponents : public Algorithm {

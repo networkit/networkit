@@ -4000,7 +4000,7 @@ cdef class ConnectedComponents:
 		return self._this.getComponentSizes()
 
 
-cdef extern from "cpp/properties/ParallelConnectedComponents.h":
+cdef extern from "cpp/components/ParallelConnectedComponents.h":
 	cdef cppclass _ParallelConnectedComponents "NetworKit::ParallelConnectedComponents":
 		_ParallelConnectedComponents(_Graph G, bool coarsening) except +
 		void run() nogil except +
@@ -4038,7 +4038,7 @@ cdef class ParallelConnectedComponents:
 		return self._this.componentOfNode(v)
 
 
-cdef extern from "cpp/properties/StronglyConnectedComponents.h":
+cdef extern from "cpp/components/StronglyConnectedComponents.h":
 	cdef cppclass _StronglyConnectedComponents "NetworKit::StronglyConnectedComponents":
 		_StronglyConnectedComponents(_Graph G) except +
 		void run() nogil except +
@@ -4077,7 +4077,7 @@ cdef class StronglyConnectedComponents:
 
 
 
-cdef extern from "cpp/properties/ClusteringCoefficient.h" namespace "NetworKit::ClusteringCoefficient":
+cdef extern from "cpp/global/ClusteringCoefficient.h" namespace "NetworKit::ClusteringCoefficient":
 		double avgLocal(_Graph G) nogil except +
 		double sequentialAvgLocal(_Graph G) nogil except +
 		double approxAvgLocal(_Graph G, count trials) nogil except +
@@ -4247,7 +4247,7 @@ cdef class Diameter:
 				diam = estimatedVertexDiameter(G._this, samples)
 		return diam
 
-cdef extern from "cpp/properties/Eccentricity.h" namespace "NetworKit::Eccentricity":
+cdef extern from "cpp/distance/Eccentricity.h" namespace "NetworKit::Eccentricity":
 	pair[node, count] getValue(_Graph G, node v) except +
 
 cdef class Eccentricity:
@@ -4262,7 +4262,7 @@ cdef class Eccentricity:
 
 
 
-cdef extern from "cpp/properties/EffectiveDiameter.h" namespace "NetworKit::EffectiveDiameter":
+cdef extern from "cpp/distance/EffectiveDiameter.h" namespace "NetworKit::EffectiveDiameter":
 	double effectiveDiameter (_Graph G, double ratio, count k, count r) nogil except +
 	double effectiveDiameterExact(_Graph G, double ratio) nogil except +
 	map[count, double] hopPlot(_Graph G, count maxDistance, count k, count r) except +
@@ -4334,21 +4334,20 @@ cdef class EffectiveDiameter:
 		return hopPlot(G._this, maxDistance, k, r)
 
 
-cdef extern from "cpp/properties/Assortativity.h":
-	cdef cppclass _Assortativity "NetworKit::Assortativity":
+cdef extern from "cpp/correlation/Assortativity.h":
+	cdef cppclass _Assortativity "NetworKit::Assortativity"(_Algorithm):
 		_Assortativity(_Graph, vector[double]) except +
 		_Assortativity(_Graph, _Partition) except +
 		void run() nogil except +
 		double getCoefficient() except +
 
-cdef class Assortativity:
+cdef class Assortativity(Algorithm):
 	""" """
-	cdef _Assortativity* _this
 	cdef Graph G
 	cdef vector[double] attribute
 	cdef Partition partition
 
-	def __init__(self, Graph G, data):
+	def __cinit__(self, Graph G, data):
 		if isinstance(data, Partition):
 			self._this = new _Assortativity(G._this, (<Partition>data)._this)
 			self.partition = <Partition>data
@@ -4357,13 +4356,8 @@ cdef class Assortativity:
 			self._this = new _Assortativity(G._this, self.attribute)
 		self.G = G
 
-	def run(self):
-		with nogil:
-			self._this.run()
-		return self
-
 	def getCoefficient(self):
-		return self._this.getCoefficient()
+		return (<_Assortativity*>(self._this)).getCoefficient()
 
 # Module: centrality
 
