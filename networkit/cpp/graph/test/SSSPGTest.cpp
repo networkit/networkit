@@ -482,7 +482,7 @@ TEST_F(SSSPGTest, benchDirOptBFSThreading) {
 				count avg_time_refbfs = t.elapsedMilliseconds() / nRuns;
 				std::cout << "reference bfs(storePaths=" << k << ",storeStack=" << j <<"):\t" << avg_time_refbfs << std::endl;
 
-				auto threads = {1,2,4,8,16};
+				auto threads = {1,2,4,8,16,32};
 				for (auto& current : threads) {
 					Aux::setNumberOfThreads(current);
 					t.start();
