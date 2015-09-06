@@ -64,7 +64,7 @@ public:
     /**
      * @return Vector of components, each stored as (unordered) set of nodes.
      */
-    std::vector<std::unordered_set<node> > getComponents();
+    std::vector<std::vector<node> > getComponents();
 
 
 private:
