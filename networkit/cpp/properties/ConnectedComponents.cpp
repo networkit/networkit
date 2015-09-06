@@ -47,14 +47,14 @@ Partition ConnectedComponents::getPartition() {
 }
 
 
-std::vector<std::unordered_set<node> > ConnectedComponents::getComponents() {
+std::vector<std::vector<node> > ConnectedComponents::getComponents() {
 	if (!hasRun) throw std::runtime_error("run method has not been called");
 
 	// transform partition into vector of unordered_set
-	std::vector<std::unordered_set<node> > result(numComponents);
+	std::vector<std::vector<node> > result(numComponents);
 
 	G.forNodes([&](node u) {
-		result[component[u]].insert(u);
+		result[component[u]].push_back(u);
 	});
 
 	return result;
