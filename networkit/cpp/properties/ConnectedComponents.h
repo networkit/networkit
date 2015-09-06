@@ -12,6 +12,7 @@
 #include "../graph/BFS.h"
 #include "../structures/Partition.h"
 #include "../base/Algorithm.h"
+#include <unordered_set>
 
 namespace NetworKit {
 
@@ -59,6 +60,11 @@ public:
      *Return the map from component to size
      */
     std::map<index, count> getComponentSizes();
+
+    /**
+     * @return Vector of components, each stored as (unordered) set of nodes.
+     */
+    std::vector<std::unordered_set<node> > getComponents();
 
 
 private:
