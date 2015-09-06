@@ -30,7 +30,7 @@ TEST_F(SpanningGTest, testKruskalMinSpanningForest) {
 	}
 }
 
-TEST_F(SpanningGTest, testSpanningForest) {
+TEST_F(SpanningGTest, testBfsSpanningForest) {
 	METISGraphReader reader;
 	std::vector<std::string> graphs = {"karate", "jazz", "celegans_metabolic"};
 
