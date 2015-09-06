@@ -7,7 +7,7 @@
 
 #include "SpanningGTest.h"
 #include "../KruskalMSF.h"
-#include "../SpanningForest.h"
+#include "../BfsSpanningForest.h"
 #include "../../io/METISGraphReader.h"
 
 namespace NetworKit {
@@ -37,7 +37,7 @@ TEST_F(SpanningGTest, testSpanningForest) {
 	for (auto graphname: graphs) {
 		std::string filename = "input/" + graphname + ".graph";
 		Graph G = reader.read(filename);
-		SpanningForest msf(G);
+		BfsSpanningForest msf(G);
 		Graph T = msf.generate();
 
 		INFO("tree / graph edges: ", T.numberOfEdges(), " / ", G.numberOfEdges());

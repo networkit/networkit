@@ -98,7 +98,7 @@ Graph METISGraphReader::read(const std::string& path) {
 	auto G = b.toGraph(false);
 
 	if (G.numberOfEdges() != m) {
-		ERROR("METIS file is corrupted: actual number of added edges doesn't match the specifed number of edges");
+		ERROR("METIS file ", path," is corrupted: actual number of added edges doesn't match the specifed number of edges");
 	}
 	if (edgeCounter != 2 * m) {
 		WARN("METIS file is corrupted: not every edge is listed twice");

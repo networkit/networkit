@@ -1,12 +1,12 @@
 /*
- * SpanningForest.h
+ * BfsSpanningForest.h
  *
  *  Created on: Aug 7, 2014
  *      Author: Christian Staudt
  */
 
-#ifndef SPANNINGFOREST_H_
-#define SPANNINGFOREST_H_
+#ifndef BFSSPANNINGFOREST_H_
+#define BFSSPANNINGFOREST_H_
 
 #include "Graph.h"
 
@@ -16,10 +16,10 @@ namespace NetworKit {
  * @ingroup graph
  * Creates a spanning forest (or tree).
  */
-class SpanningForest {
+class BfsSpanningForest {
 public:
 
-	SpanningForest(const Graph& G);
+	BfsSpanningForest(const Graph& G);
 
 	Graph generate();
 
@@ -31,4 +31,4 @@ protected:
 
 
 } /* namespace NetworKit */
-#endif /* SPANNINGFOREST_H_ */
+#endif /* BFSSPANNINGFOREST_H_ */

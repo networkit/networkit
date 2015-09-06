@@ -1,19 +1,19 @@
 /*
-* SpanningForest.cpp
+* BfsSpanningForest.cpp
 *
 *  Created on: Aug 7, 2014
 *      Author: Christian Staudt
 */
-#include "SpanningForest.h"
+#include "BfsSpanningForest.h"
 
 namespace NetworKit {
 
 
-SpanningForest::SpanningForest(const Graph& G) : G(G) {
+BfsSpanningForest::BfsSpanningForest(const Graph& G) : G(G) {
 
 }
 
-Graph SpanningForest::generate() {
+Graph BfsSpanningForest::generate() {
 	Graph F = G.copyNodes();
 	std::vector<bool> visited(G.upperNodeIdBound(), false);
 
