@@ -10,21 +10,16 @@
 
 #include "../Globals.h"
 #include "Graph.h"
+#include "SpanningForest.h"
 
 namespace NetworKit {
 
-class KruskalMSF {
-protected:
-	const Graph& G;
-	Graph tree;
-
+class KruskalMSF: public SpanningForest {
 public:
 	KruskalMSF(const Graph& G);
 	virtual ~KruskalMSF() = default;
 
-	void run();
-
-	Graph getTree();
+	virtual void run() override;
 };
 
 } /* namespace NetworKit */

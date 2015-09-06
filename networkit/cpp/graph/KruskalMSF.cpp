@@ -34,14 +34,14 @@ struct MyEdge {
 };
 
 
-NetworKit::KruskalMSF::KruskalMSF(const Graph& G): G(G) {
+NetworKit::KruskalMSF::KruskalMSF(const Graph& G): SpanningForest(G) {
 
 }
 
 void NetworKit::KruskalMSF::run() {
 	if (true || G.isWeighted()) { // FIXME: remove true when SpanningForest is fixed!
 		count z = G.upperNodeIdBound();
-		tree = G.copyNodes();
+		forest = G.copyNodes();
 		UnionFind uf(z);
 
 		// sort edges in decreasing weight order
@@ -61,19 +61,15 @@ void NetworKit::KruskalMSF::run() {
 
 			// if edge does not close cycle, add it to tree
 			if (uf.find(u) != uf.find(v)) {
-				tree.addEdge(u, v);
+				forest.addEdge(u, v);
 				uf.merge(u, v);
 			}
 		}
 	}
 	else {
 		BfsSpanningForest sf(G);
-		tree = sf.generate();
+		forest = sf.generate();
 	}
-}
-
-Graph NetworKit::KruskalMSF::getTree() {
-	return tree;
 }
 
 } /* namespace NetworKit */

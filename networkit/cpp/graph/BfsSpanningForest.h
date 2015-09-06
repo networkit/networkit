@@ -16,7 +16,7 @@ namespace NetworKit {
  * @ingroup graph
  * Creates a spanning forest (or tree).
  */
-class BfsSpanningForest {
+class BfsSpanningForest { // TODO: derive from SpanningForest when fixed
 public:
 
 	BfsSpanningForest(const Graph& G);
