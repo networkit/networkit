@@ -7,7 +7,7 @@
 
 #include "RandomSpanningForest.h"
 #include "../graph/Sampling.h"
-#include "../properties/ConnectedComponents.h"
+#include "../components/ConnectedComponents.h"
 #include <unordered_set>
 
 namespace NetworKit {
