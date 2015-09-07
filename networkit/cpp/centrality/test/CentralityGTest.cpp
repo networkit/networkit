@@ -526,8 +526,8 @@ TEST_F(CentralityGTest, testCoreDecomposition) {
 	std::vector<double> coreness = coreDec.scores();
 	// init cores
 	// init shells
-	Cover cores = coreDec.cores();
-	Partition shells = coreDec.shells();
+	Cover cores = coreDec.getCover();
+	Partition shells = coreDec.getPartition();
 
 	EXPECT_EQ(0u, coreness[0]) << "expected coreness";
 	EXPECT_EQ(0u, coreness[1]) << "expected coreness";

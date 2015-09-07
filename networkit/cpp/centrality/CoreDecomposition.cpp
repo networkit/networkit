@@ -125,7 +125,7 @@ void CoreDecomposition::run() {
 }
 
 
-Cover CoreDecomposition::cores() const {
+Cover CoreDecomposition::getCover() const {
 	if (! hasRun) throw std::runtime_error("call run method first");
 	// initialize Cover
 	index z = G.upperNodeIdBound();
@@ -145,7 +145,7 @@ Cover CoreDecomposition::cores() const {
 	return coverData;
 }
 
-Partition CoreDecomposition::shells() const {
+Partition CoreDecomposition::getPartition() const {
 	if (! hasRun) throw std::runtime_error("call run method first");
 	// initialize Partition
 	index z = G.upperNodeIdBound();
