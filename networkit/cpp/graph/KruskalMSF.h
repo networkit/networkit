@@ -10,21 +10,22 @@
 
 #include "../Globals.h"
 #include "Graph.h"
+#include "SpanningForest.h"
 
 namespace NetworKit {
 
-class KruskalMSF {
-protected:
-	const Graph& G;
-	Graph tree;
-
+class KruskalMSF: public SpanningForest {
 public:
 	KruskalMSF(const Graph& G);
 	virtual ~KruskalMSF() = default;
 
-	void run();
-
-	Graph getTree();
+	/**
+	 * Computes for each component a minimum weight spanning tree
+	 * (or simply a spanning tree in unweighted graphs).
+	 * Uses Kruskal's algorithm.
+	 * Time complexity: sort(n) + n * inverse Ackermann(n, m).
+	 */
+	virtual void run() override;
 };
 
 } /* namespace NetworKit */
