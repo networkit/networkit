@@ -58,8 +58,12 @@ from . import plot
 from . import sparsification
 from . import scd
 from . import clique
+from . import distance
+from . import globals
+from . import components
 from . import linkprediction
-from . import profiling
+from . import correlation
+from .profiling import profiling
 
 try:
 	from . import viztasks
