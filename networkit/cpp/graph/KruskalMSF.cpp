@@ -6,7 +6,7 @@
  */
 
 #include "KruskalMSF.h"
-#include "BfsSpanningForest.h"
+#include "SpanningForest.h"
 #include "../structures/UnionFind.h"
 
 namespace NetworKit {
@@ -67,7 +67,7 @@ void NetworKit::KruskalMSF::run() {
 		}
 	}
 	else {
-		BfsSpanningForest sf(G);
+		SpanningForest sf(G);
 		forest = sf.generate();
 	}
 }
