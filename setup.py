@@ -133,7 +133,7 @@ def build_NetworKit():
 		# minimal builder as fallback for scons
 		def_compile_flags = ["-c", "-std=c++11", "-Wall", "-fmessage-length=0", "-fPIC", "-fopenmp"]
 		release_compile_flags = ["-O3", "-DNDEBUG", "-DLOG_LEVEL=LOG_LEVEL_INFO"]
-		builder = MinimalBuildEnvironment(def_compile_flags,"",release_compile_flags,"","Opt","g++", "networkit/cpp")
+		builder = MinimalBuildEnvironment(def_compile_flags,"",release_compile_flags,"","Opt", cppcompiler, "networkit/cpp")
 		builder.compile("Core")
 
 # this defintion probably has to stand here...

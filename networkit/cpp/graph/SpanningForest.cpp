@@ -27,6 +27,8 @@ Graph SpanningForest::generate() {
 		}
 	});
 
+	INFO("tree edges in SpanningForest: ", F.numberOfEdges());
+
 	return F;
 }
 
