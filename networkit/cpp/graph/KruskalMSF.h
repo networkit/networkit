@@ -14,6 +14,10 @@
 
 namespace NetworKit {
 
+/**
+ * Creates a minimum spanning tree for each connected component.
+ * @ingroup graph
+ */
 class KruskalMSF: public SpanningForest {
 public:
 	KruskalMSF(const Graph& G);
