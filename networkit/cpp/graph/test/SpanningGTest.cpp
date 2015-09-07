@@ -8,7 +8,7 @@
 #include "SpanningGTest.h"
 #include "../KruskalMSF.h"
 #include "../RandomSpanningForest.h"
-#include "../BfsSpanningForest.h"
+#include "../SpanningForest.h"
 #include "../../io/METISGraphReader.h"
 
 namespace NetworKit {
@@ -49,14 +49,14 @@ TEST_F(SpanningGTest, testRandomSpanningTree) {
 	}
 }
 
-TEST_F(SpanningGTest, testBfsSpanningForest) {
+TEST_F(SpanningGTest, testSpanningForest) {
 	METISGraphReader reader;
 	std::vector<std::string> graphs = {"karate", "jazz", "celegans_metabolic"};
 
 	for (auto graphname: graphs) {
 		std::string filename = "input/" + graphname + ".graph";
 		Graph G = reader.read(filename);
-		BfsSpanningForest msf(G);
+		SpanningForest msf(G);
 		Graph T = msf.generate();
 
 		INFO("tree / graph edges: ", T.numberOfEdges(), " / ", G.numberOfEdges());

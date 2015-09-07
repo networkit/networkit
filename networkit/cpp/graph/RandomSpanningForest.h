@@ -13,6 +13,10 @@
 
 namespace NetworKit {
 
+/**
+ * Creates a random spanning tree for each connected component.
+ * @ingroup graph
+ */
 class RandomSpanningForest: public SpanningForest {
 public:
 	RandomSpanningForest(const Graph& G);
