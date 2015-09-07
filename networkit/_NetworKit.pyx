@@ -3804,116 +3804,7 @@ cdef class EdmondsKarp:
 
 # Module: properties
 
-# this is an example for using static methods
-cdef extern from "cpp/properties/GraphProperties.h" namespace "NetworKit::GraphProperties":
-	# static methods live in the class namespace, so declare them here
-	pair[count, count] minMaxDegree(_Graph _G) except +
-	pair[pair[count, count], pair[count, count]] minMaxDegreeDirected(_Graph _G) except +
-	double averageDegree(_Graph _G) except +
-	vector[count] degreeDistribution(_Graph _G) except +
-	vector[count] degreeSequence(_Graph _G) except +
-	vector[double] localClusteringCoefficients(_Graph _G) except +
-	double averageLocalClusteringCoefficient(_Graph _G) except +
-	vector[double] localClusteringCoefficientPerDegree(_Graph _G) except +
-	double degreeAssortativity(_Graph G, bool) except +
-	double degreeAssortativityDirected(_Graph G, bool, bool) except +
-
-	cdef cppclass _GraphProperties "NetworKit::GraphProperties":
-		pass
-
-cdef class GraphProperties:
-	""" Collects various functions for basic graph properties """
-
-	# TODO: this class should become obsolete with the new profiling module
-
-	@staticmethod
-	def minMaxDegree(Graph G not None):
-		return minMaxDegree(G._this)
-
-	@staticmethod
-	def minMaxDegreeDirected(Graph G not None):
-		return minMaxDegreeDirected(G._this)
-
-	@staticmethod
-	def averageDegree(Graph G not None):
-		return averageDegree(G._this)
-
-	@staticmethod
-	def degreeDistribution(Graph G not None):
-		return degreeDistribution(G._this)
-
-	@staticmethod
-	def degreeSequence(Graph G not None):
-		return degreeSequence(G._this)
-
-	@staticmethod
-	def averageLocalClusteringCoefficient(Graph G not None):
-		""" The average local clustering coefficient for the graph `G`. The graph may
-		not contain self-loops.
-
-		Parameters
-		----------
-		G : Graph
-			The graph.
-
-		Notes
-		-----
-
-		.. math:: \\frac{1}{n} \cdot \sum_{v \in V} c_v
-
-		"""
-		return averageLocalClusteringCoefficient(G._this)
-
-	@staticmethod
-	def degreeAssortativity(Graph G, bool useWeights):
-		""" Get degree assortativity of the undirected graph `G`.
-
-		Parameters
-		----------
-		G : Graph
-			The undirected graph
-		useWeights : bool
-			If True, the weights are considered for calculation.
-
-		Returns
-		-------
-		double
-			Degree assortativity of the graph `G`.
-
-		Notes
-		-----
-		Degree assortativity based on description in Newman: Networks. An Introduction. Chapter 8.7.
-		"""
-		return degreeAssortativity(G._this, useWeights)
-
-	@staticmethod
-	def degreeAssortativityDirected(Graph G, bool alpha, bool beta):
-		""" Get degree assortativity of the directed graph `G`.
-
-		Parameters
-		----------
-		G : Graph
-			The directed graph
-		alpha : bool
-			When iterating over edges (u,v), if alpha is True, the out degree of u will be considered.
-		beta : bool
-			When iterating over edges (u,v), if beta is True, the out degree of v will be considered.
-
-		Returns
-		-------
-		double
-			Degree assortativity of the graph `G`.
-
-		Notes
-		-----
-		Degree assortativity for directed graphs based on http://www.pnas.org/content/107/24/10815.full
-		"""
-		return degreeAssortativityDirected(G._this, alpha, beta)
-
-
-
-
-cdef extern from "cpp/properties/ConnectedComponents.h":
+cdef extern from "cpp/components/ConnectedComponents.h":
 	cdef cppclass _ConnectedComponents "NetworKit::ConnectedComponents":
 		_ConnectedComponents(_Graph G) except +
 		void run() nogil except +
@@ -3983,7 +3874,7 @@ cdef class ConnectedComponents:
 		return self._this.getComponentSizes()
 
 
-cdef extern from "cpp/properties/ParallelConnectedComponents.h":
+cdef extern from "cpp/components/ParallelConnectedComponents.h":
 	cdef cppclass _ParallelConnectedComponents "NetworKit::ParallelConnectedComponents":
 		_ParallelConnectedComponents(_Graph G, bool coarsening) except +
 		void run() nogil except +
@@ -4021,7 +3912,7 @@ cdef class ParallelConnectedComponents:
 		return self._this.componentOfNode(v)
 
 
-cdef extern from "cpp/properties/StronglyConnectedComponents.h":
+cdef extern from "cpp/components/StronglyConnectedComponents.h":
 	cdef cppclass _StronglyConnectedComponents "NetworKit::StronglyConnectedComponents":
 		_StronglyConnectedComponents(_Graph G) except +
 		void run() nogil except +
@@ -4060,7 +3951,7 @@ cdef class StronglyConnectedComponents:
 
 
 
-cdef extern from "cpp/properties/ClusteringCoefficient.h" namespace "NetworKit::ClusteringCoefficient":
+cdef extern from "cpp/global/ClusteringCoefficient.h" namespace "NetworKit::ClusteringCoefficient":
 		double avgLocal(_Graph G) nogil except +
 		double sequentialAvgLocal(_Graph G) nogil except +
 		double approxAvgLocal(_Graph G, count trials) nogil except +
@@ -4141,7 +4032,7 @@ cdef class ClusteringCoefficient:
 		return ret
 
 
-cdef extern from "cpp/properties/Diameter.h" namespace "NetworKit::Diameter":
+cdef extern from "cpp/distance/Diameter.h" namespace "NetworKit::Diameter":
 	pair[count, count] estimatedDiameterRange(_Graph G, double error, pair[node,node] *proof) nogil except +
 	count exactDiameter(_Graph G) nogil except +
 	edgeweight estimatedVertexDiameter(_Graph G, count) nogil except +
@@ -4230,7 +4121,7 @@ cdef class Diameter:
 				diam = estimatedVertexDiameter(G._this, samples)
 		return diam
 
-cdef extern from "cpp/properties/Eccentricity.h" namespace "NetworKit::Eccentricity":
+cdef extern from "cpp/distance/Eccentricity.h" namespace "NetworKit::Eccentricity":
 	pair[node, count] getValue(_Graph G, node v) except +
 
 cdef class Eccentricity:
@@ -4245,7 +4136,7 @@ cdef class Eccentricity:
 
 
 
-cdef extern from "cpp/properties/EffectiveDiameter.h" namespace "NetworKit::EffectiveDiameter":
+cdef extern from "cpp/distance/EffectiveDiameter.h" namespace "NetworKit::EffectiveDiameter":
 	double effectiveDiameter (_Graph G, double ratio, count k, count r) nogil except +
 	double effectiveDiameterExact(_Graph G, double ratio) nogil except +
 	map[count, double] hopPlot(_Graph G, count maxDistance, count k, count r) except +
@@ -4316,6 +4207,31 @@ cdef class EffectiveDiameter:
 		"""
 		return hopPlot(G._this, maxDistance, k, r)
 
+
+cdef extern from "cpp/correlation/Assortativity.h":
+	cdef cppclass _Assortativity "NetworKit::Assortativity"(_Algorithm):
+		_Assortativity(_Graph, vector[double]) except +
+		_Assortativity(_Graph, _Partition) except +
+		void run() nogil except +
+		double getCoefficient() except +
+
+cdef class Assortativity(Algorithm):
+	""" """
+	cdef Graph G
+	cdef vector[double] attribute
+	cdef Partition partition
+
+	def __cinit__(self, Graph G, data):
+		if isinstance(data, Partition):
+			self._this = new _Assortativity(G._this, (<Partition>data)._this)
+			self.partition = <Partition>data
+		else:
+			self.attribute = <vector[double]?>data
+			self._this = new _Assortativity(G._this, self.attribute)
+		self.G = G
+
+	def getCoefficient(self):
+		return (<_Assortativity*>(self._this)).getCoefficient()
 
 # Module: centrality
 
@@ -4651,8 +4567,8 @@ cdef class EigenvectorCentrality(Centrality):
 cdef extern from "cpp/centrality/CoreDecomposition.h":
 	cdef cppclass _CoreDecomposition "NetworKit::CoreDecomposition" (_Centrality):
 		_CoreDecomposition(_Graph) except +
-		_Cover cores() except +
-		_Partition shells() except +
+		_Cover getCover() except +
+		_Partition getPartition() except +
 		index maxCoreNumber() except +
 
 cdef class CoreDecomposition(Centrality):
@@ -4682,17 +4598,17 @@ cdef class CoreDecomposition(Centrality):
 		"""
 		return (<_CoreDecomposition*>(self._this)).maxCoreNumber()
 
-	def cores(self):
-		""" Get the k-cores as sets of nodes, indexed by k.
+	def getCover(self):
+		""" Get the k-cores as cover.
 
 		Returns
 		-------
 		vector
 			The k-cores as sets of nodes, indexed by k.
 		"""
-		return Cover().setThis((<_CoreDecomposition*>(self._this)).cores())
+		return Cover().setThis((<_CoreDecomposition*>(self._this)).getCover())
 
-	def shells(self):
+	def getPartition(self):
 		""" Get the k-shells as a partition object.
 
 		Returns
@@ -4700,7 +4616,7 @@ cdef class CoreDecomposition(Centrality):
 		Partition
 			The k-shells
 		"""
-		return Partition().setThis((<_CoreDecomposition*>(self._this)).shells())
+		return Partition().setThis((<_CoreDecomposition*>(self._this)).getPartition())
 
 cdef extern from "cpp/centrality/LocalClusteringCoefficient.h":
 	cdef cppclass _LocalClusteringCoefficient "NetworKit::LocalClusteringCoefficient" (_Centrality):
@@ -6629,7 +6545,7 @@ cdef class EdgeScoreNormalizer(EdgeScore):
 				self._this = new _EdgeScoreNormalizer[count](G._this, self._inScoreCount, inverse, lower, upper)
 			except TypeError:
 				raise TypeError("score must be either a vector of integer or float")
-				
+
 	cdef bool isDoubleValue(self):
 		return True
 
@@ -6736,8 +6652,8 @@ cdef class EdgeScoreAsWeight:
 		"""
 		return Graph(0).setThis(self._this.calculate())
 
-# Module: distmeasures
-cdef extern from "cpp/distmeasures/AdamicAdarDistance.h":
+# Module: distances
+cdef extern from "cpp/distance/AdamicAdarDistance.h":
 	cdef cppclass _AdamicAdarDistance "NetworKit::AdamicAdarDistance":
 		_AdamicAdarDistance(const _Graph& G) except +
 		void preprocess() except +
@@ -6967,7 +6883,7 @@ cdef class LocalDegreeScore(EdgeScore):
 	cdef bool isDoubleValue(self):
 		return True
 
-cdef extern from "cpp/distmeasures/JaccardDistance.h":
+cdef extern from "cpp/distance/JaccardDistance.h":
 	cdef cppclass _JaccardDistance "NetworKit::JaccardDistance":
 		_JaccardDistance(const _Graph& G, const vector[count]& triangles) except +
 		void preprocess() except +

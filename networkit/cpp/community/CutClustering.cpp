@@ -4,7 +4,7 @@
 
 #include "CutClustering.h"
 #include "../flow/EdmondsKarp.h"
-#include "../properties/ConnectedComponents.h"
+#include "../components/ConnectedComponents.h"
 #include "../auxiliary/Log.h"
 
 #include <sstream>
