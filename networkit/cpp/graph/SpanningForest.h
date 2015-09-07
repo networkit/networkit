@@ -24,7 +24,12 @@ public:
 	SpanningForest(const Graph& G);
 	virtual ~SpanningForest() = default;
 
-	virtual void run() = 0;
+	virtual void run();
+
+	/**
+	 * Deprecated. Please integrate into run method.
+	 */
+	Graph generate();
 
 	/**
 	 * @return Forest computed by run method.
