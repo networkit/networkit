@@ -28,7 +28,7 @@ struct MyEdge {
 		weight = 0;
 	}
 
-	bool operator<(const MyEdge& other) {
+	bool operator<(const MyEdge& other) const {
 		return this->weight > other.weight; // Note the switch in the operator!
 	}
 };
