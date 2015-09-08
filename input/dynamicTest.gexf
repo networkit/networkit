@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
+    <meta lastmodifieddate="2009-03-20">
+        <creator>Gexf.net</creator>
+        <description>A Web network changing over time</description>
+    </meta>
+    <graph mode="dynamic" defaultedgetype="directed" timeformat="date">
+        <attributes class="node" mode="static">
+            <attribute id="0" title="url" type="string"/>
+            <attribute id="1" title="frog" type="boolean">
+                <default>true</default>
+            </attribute>
+		</attributes>
+        <attributes class="node" mode="dynamic">
+            <attribute id="2" title="indegree" type="float"/>
+        </attributes>
+        <nodes>
+            <node id="0" label="Gephi" startopen="2009-03-01">
+                <attvalues>
+                    <attvalue for="0" value="http://gephi.org"/>
+                    <attvalue for="2" value="1"/>
+                </attvalues>
+            </node>
+            <node id="1" label="Network">
+                <attvalues>
+                    <attvalue for="2" value="1" end="2009-03-01"/>
+                    <attvalue for="2" value="2" start="2009-03-01" end="2009-03-10"/>
+                    <attvalue for="2" value="1" start="2009-03-10"/>
+                </attvalues>
+            </node>
+            <node id="2" label="Visualization">
+                <attvalues>
+                    <attvalue for="2" value="0" end="2009-03-01"/>
+                    <attvalue for="2" value="1" start="2009-03-01"/>
+                </attvalues>
+                <spells>
+                    <spell end="2009-03-01"/>
+                    <spell start="2009-03-05" endopen="2009-03-10" />
+                </spells>
+            </node>
+            <node id="3" label="Graph">
+                <attvalues>
+                    <attvalue for="1" value="false"/>
+                    <attvalue for="2" value="0" end="2009-03-01"/>
+                    <attvalue for="2" value="1" start="2009-03-01"/>
+                </attvalues>
+            </node>
+        </nodes>
+        <edges>
+            <edge id="0" source="0" target="1" start="2009-03-01"/>
+            <edge id="1" source="0" target="2" start="2009-03-01" end="2009-03-10"/>
+            <edge id="2" source="1" target="0" start="2009-03-01"/>
+            <edge id="3" source="2" target="1" end="2009-03-10"/>
+            <edge id="4" source="0" target="3" start="2009-03-01"/>
+        </edges>
+    </graph>
+</gexf>
