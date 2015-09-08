@@ -18,6 +18,8 @@
 namespace NetworKit {
 
 ApproxCloseness::ApproxCloseness(const Graph& G, count nSamples, bool normalized) : Centrality(G, normalized), nSamples(nSamples) {
+	// TODO: fix
+	ERROR("Algorithm seems to be defective, do not use results. TODO: fix for next release");
 	if (G.isDirected()) {
 		throw std::runtime_error("Graph is directed. ApproxCloseness only runs on undirected graphs.");
 	}
@@ -25,16 +27,13 @@ ApproxCloseness::ApproxCloseness(const Graph& G, count nSamples, bool normalized
 
 void ApproxCloseness::run() {
 	Aux::SignalHandler handler;
-
 	scoreData = std::vector<double>(G.upperNodeIdBound(), 0.0);
-
+	edgeweight infDist = std::numeric_limits<edgeweight>::max();
 	std::vector<node> sampledNodes;
-
 	// sample nodes
 	for (count i = 0; i <= nSamples; ++i) {
 	 	sampledNodes.push_back(G.randomNode());
 	}
-
 	for (node s : sampledNodes) {
 		handler.assureRunning();
 		// run single-source shortest path algorithm
@@ -44,20 +43,17 @@ void ApproxCloseness::run() {
 		} else {
 			sssp.reset(new BFS(G, s));
 		}
-
 		sssp->run();
-
 		// increment scoreData with SSSP values
 		std::vector<edgeweight> distances = sssp->getDistances();
 		DEBUG("distances: ", distances);
 		G.forNodes([&](node u){
-			scoreData[u] += distances[u];
+			if (distances[u] != infDist ) {
+				scoreData[u] += distances[u];
+			}
 		});
 		DEBUG("scoreData[", s, "]: ", scoreData[s]);
-
-
 	} // end for sampled nodes
-
 	// Compute estimated closeness centrality scores.
   count nNodes = G.numberOfNodes();
 	if (normalized) {
@@ -69,7 +65,6 @@ void ApproxCloseness::run() {
 			scoreData[u] = nSamples / (scoreData[u] * nNodes);
 		});
 	}
-
 	hasRun = true;
 }
 
