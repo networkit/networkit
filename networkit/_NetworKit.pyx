@@ -1907,6 +1907,67 @@ cdef class ConfigurationModelGenerator:
 		return Graph().setThis(self._this.generate())
 
 
+cdef extern from "cpp/generators/HyperbolicGenerator.h":
+	cdef cppclass _HyperbolicGenerator "NetworKit::HyperbolicGenerator":
+		# TODO: revert to count when cython issue fixed
+		_HyperbolicGenerator(unsigned int nodes,  double k, double gamma) except +
+		void setLeafCapacity(unsigned int capacity) except +
+		void setTheoreticalSplit(bool split) except +
+		void setBalance(double balance) except +
+		vector[double] getElapsedMilliseconds() except +
+		_Graph generate() except +
+		_Graph generateExternal(vector[double] angles, vector[double] radii, double r, double thresholdDistance) except +
+
+cdef class HyperbolicGenerator:
+	""" The Hyperbolic Generator distributes points in hyperbolic space and adds edges between points with a probability depending on their distance. The resulting graphs have a power-law degree distribution, small diameter and high clustering coefficient.
+For a temperature of 0, the model resembles a unit-disk model in hyperbolic space.
+
+ 		HyperbolicGenerator(n, k=6, gamma=3)
+
+ 		Parameters
+		----------
+		n : integer
+			number of nodes
+		k : double
+			average degree
+		gamma : double
+			exponent of power-law degree distribution
+			
+	"""
+
+	cdef _HyperbolicGenerator* _this
+
+	def __cinit__(self,  n, k=6, gamma=3):
+		if gamma <= 2:
+				raise ValueError("Exponent of power-law degree distribution must be > 2")
+		self._this = new _HyperbolicGenerator(n, k, gamma)
+
+	def setLeafCapacity(self, capacity):
+		self._this.setLeafCapacity(capacity)
+
+	def setBalance(self, balance):
+		self._this.setBalance(balance)
+
+	def setTheoreticalSplit(self, theoreticalSplit):
+		self._this.setTheoreticalSplit(theoreticalSplit)
+
+	def getElapsedMilliseconds(self):
+		return self._this.getElapsedMilliseconds()
+
+	def generate(self):
+		""" Generates hyperbolic unit disk graph
+
+		Returns
+		-------
+		Graph
+		
+		"""
+		return Graph(0).setThis(self._this.generate())
+
+	def generateExternal(self, angles, radii, k, gamma):
+		return Graph(0).setThis(self._this.generateExternal(angles, radii, k, gamma))
+	
+
 cdef extern from "cpp/generators/RmatGenerator.h":
 	cdef cppclass _RmatGenerator "NetworKit::RmatGenerator":
 		_RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d) except +
@@ -4964,7 +5025,59 @@ cdef class DynamicPubWebGenerator:
 	def getGraph(self):
 		return Graph().setThis(self._this.getGraph())
 
+cdef extern from "cpp/generators/DynamicHyperbolicGenerator.h":
+	cdef cppclass _DynamicHyperbolicGenerator "NetworKit::DynamicHyperbolicGenerator":
+		_DynamicHyperbolicGenerator(count numNodes, double avgDegree, double gamma, double moveEachStep, double moveDistance) except +
+		vector[_GraphEvent] generate(count nSteps) except +
+		_Graph getGraph() except +
+		vector[Point[float]] getCoordinates() except +
+		vector[Point[float]] getHyperbolicCoordinates() except +
 
+
+cdef class DynamicHyperbolicGenerator:
+	cdef _DynamicHyperbolicGenerator* _this
+
+	def __cinit__(self, numNodes, avgDegree, gamma, moveEachStep, moveDistance):
+		""" Dynamic graph generator according to the hyperbolic unit disk model.
+
+		Parameters
+		----------
+		numNodes : count
+			number of nodes
+		avgDegree : double
+			average degree of the resulting graph
+		gamma : double
+			power-law exponent of the resulting graph
+			temperature, selecting a graph family on the continuum between hyperbolic unit disk graphs and Erdos-Renyi graphs
+		moveFraction : double
+			fraction of nodes to be moved in each time step. The nodes are chosen randomly each step
+		moveDistance: double
+			base value for the node movements
+		"""
+		if gamma <= 2:
+				raise ValueError("Exponent of power-law degree distribution must be > 2")
+		self._this = new _DynamicHyperbolicGenerator(numNodes, avgDegree = 6, gamma = 3, moveEachStep = 1, moveDistance = 0.1)
+
+	def generate(self, nSteps):
+		""" Generate event stream.
+
+		Parameters
+		----------
+		nSteps : count
+			Number of time steps in the event stream.
+		"""
+		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
+
+	def getGraph(self):
+		return Graph().setThis(self._this.getGraph())
+
+	def getCoordinates(self):
+		""" Get coordinates in the Poincare disk"""
+		return [(p[0], p[1]) for p in self._this.getCoordinates()]
+
+	def getHyperbolicCoordinates(self):
+		""" Get coordinates in the hyperbolic disk"""
+		return [(p[0], p[1]) for p in self._this.getHyperbolicCoordinates()]
 
 
 
