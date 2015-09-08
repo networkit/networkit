@@ -19,9 +19,25 @@
  */
 
 /**
+ * @defgroup components Connected Components
+ * @brief Various algorithms for detection of connected components.
+ */
+
+/**
+ * @defgroup correlation Correlation
+ * @brief Various algorithms computing the correlation of node attributes.
+ */
+
+/**
+ * @defgroup distance Distances
+ * @brief Various distance related algorithms, e.g. Eccentricity and Diameter.
+ */
+
+/**
  * @defgroup dynamics Dynamics
  * @brief TODO
  */
+
 
 /**
  * @defgroup flow Flow
@@ -31,6 +47,11 @@
 /**
  * @defgroup generators Generators
  * @brief Various graph generators.
+ */
+
+/**
+ * @defgroup global Global
+ * @brief Currently ClusteringCoefficient and GlobalClusteringCoefficient.
  */
 
 /**
@@ -59,23 +80,13 @@
  */
 
 /**
- * @defgroup properties Properties
- * @brief Collection of methods for basic network properties.
- */
-
-/**
- * @defgroup scd PageRank
- * @brief PageRank algorithms.
- */
-
-/**
  * @defgroup scoring Scoring
  * @brief TODO
  */
 
 /**
  * @defgroup structures Structures
- * @brief TODO
+ * @brief Implementations of useful data structures.
  */
 
 /**

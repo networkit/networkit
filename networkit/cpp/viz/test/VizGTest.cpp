@@ -37,6 +37,7 @@ VizGTest::~VizGTest() {
 
 
 TEST_F(VizGTest, testPostscriptWriterOnRandomGraph) {
+	Aux::Random::setSeed(1, false);
 	// create graph
 	count n = 60;
 	count numClusters = 3;

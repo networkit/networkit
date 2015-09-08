@@ -7,23 +7,42 @@ Dy * GeneratorsTest.cpp
 
 #ifndef NOGTEST
 
-#include <numeric>
 
 #include "GeneratorsGTest.h"
 
+#include <numeric>
+#include <cmath>
+
+#include "../DynamicGraphSource.h"
+#include "../DynamicBarabasiAlbertGenerator.h"
+#include "../PubWebGenerator.h"
+#include "../DynamicPubWebGenerator.h"
+#include "../ErdosRenyiGenerator.h"
+#include "../ChungLuGenerator.h"
+#include "../HavelHakimiGenerator.h"
+#include "../RmatGenerator.h"
+#include "../BarabasiAlbertGenerator.h"
 #include "../DynamicPathGenerator.h"
 #include "../DynamicForestFireGenerator.h"
 #include "../DynamicDorogovtsevMendesGenerator.h"
 #include "../DorogovtsevMendesGenerator.h"
 #include "../WattsStrogatzGenerator.h"
 #include "../RegularRingLatticeGenerator.h"
-#include "../../properties/ClusteringCoefficient.h"
-#include "../../centrality/CoreDecomposition.h"
-#include "../../community/PLM.h"
-#include "../../community/Modularity.h"
 #include "../StochasticBlockmodel.h"
-#include "../../properties/ConnectedComponents.h"
 #include "../ConfigurationModelGenerator.h"
+
+#include "../../viz/PostscriptWriter.h"
+#include "../../community/ClusteringGenerator.h"
+#include "../../community/PLP.h"
+#include "../../community/PLM.h"
+#include "../../io/METISGraphWriter.h"
+#include "../../io/DotGraphWriter.h"
+#include "../../io/GraphIO.h"
+#include "../../io/METISGraphReader.h"
+#include "../../community/Modularity.h"
+#include "../../dynamics/GraphUpdater.h"
+#include "../../auxiliary/MissingMath.h"
+#include "../../global/ClusteringCoefficient.h"
 
 
 namespace NetworKit {
@@ -299,62 +318,6 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
 	}
 }
 
-///**
-// * When using a dynamic graph generator, generating many time steps at once should have the same output as calling the generation method for one step multiple times.
-// */
-//TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorCollectedSteps) {
-//	count n = 10;
-//	count nSteps = 100;
-//
-//	const double k = 6;
-//	const double alpha = 1;
-//	const double exp = 2*alpha+1;
-//	const double T = 0;
-//	const double R = HyperbolicSpace::getTargetRadius(n, n*k/2, alpha, T);
-//	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
-//	double stretch = R / HyperbolicSpace::hyperbolicAreaToRadius(n);
-//
-//	vector<double> angles(n, -1);
-//	vector<double> radii(n, -1);
-//	HyperbolicSpace::fillPoints(angles, radii, stretch, alpha);
-//	DynamicHyperbolicGenerator dynGen(angles, radii, k, exp, T, movedShare, moveDistance);
-//
-//	DynamicHyperbolicGenerator dynGen(angles, radii, k, exp, T, movedShare, moveDistance);
-//
-//	std::vector<GraphEvent> stream;
-//
-//	//generate steps one at a time
-//	for (index i = 0; i < nSteps; i++) {
-//		std::vector<GraphEvent> stepStream = dyngen.generate(1);
-//		stream.insert(stream.end(), stepStream.begin(), stepStream.end());
-//	}
-//
-//	//generate steps all at once
-//	std::vector<GraphEvent> comparison = copy.generate(nSteps);
-//	EXPECT_EQ(stream.size(), comparison.size());
-//
-//	//sort graph events to compare them
-//	std::sort(stream.begin(), stream.end(), GraphEvent::compare);
-//	std::sort(comparison.begin(), comparison.end(), GraphEvent::compare);
-//	vector<GraphEvent> diff(stream.size()+comparison.size());
-//	auto newend = std::set_difference(stream.begin(), stream.end(), comparison.begin(), comparison.end(), diff.begin(), GraphEvent::equal);
-//	diff.resize(newend - diff.begin());
-//	for (auto event : diff) {
-//		DEBUG("Found ", event.toString(), " in one but not other.");
-//	}
-//	if (diff.size() > 0) {
-//		DEBUG("G:");
-//		for (auto orig : stream) {
-//			DEBUG(orig.toString());
-//		}
-//		DEBUG("Comparison:");
-//		for (auto orig : comparison) {
-//			DEBUG(orig.toString());
-//		}
-//	}
-//	EXPECT_TRUE(std::equal(stream.begin(), stream.end(), comparison.begin(), GraphEvent::equal));
-//}
-
 TEST_F(GeneratorsGTest, testBarabasiAlbertGenerator) {
 	count k = 3;
 	count nMax = 100;
@@ -512,7 +475,11 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRealSequence) {
 	for (auto path : graphs) {
 		Graph G = reader.read(path);
 		count n = G.numberOfNodes();
-		std::vector<count> sequence = GraphProperties::degreeSequence(G);
+		std::vector<count> sequence(n);
+		G.forNodes([&](node u){
+			sequence[u] = G.degree(u);
+			
+		});
 
 		HavelHakimiGenerator hhgen(sequence);
 		Graph G2 = hhgen.generate();
@@ -522,7 +489,10 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRealSequence) {
 		EXPECT_EQ(volume, 2 * G2.numberOfEdges());
 
 		if (volume < 50000) {
-			std::vector<count> testSequence = GraphProperties::degreeSequence(G2);
+			std::vector<count> testSequence(n);
+			G2.forNodes([&](node u){
+				testSequence[u] = G2.degree(u);
+			});
 
 			for (index i = 0; i < n; ++i) {
 				EXPECT_EQ(sequence[i], testSequence[i]);
@@ -724,10 +694,6 @@ TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
 	EXPECT_EQ(G.numberOfNodes(), n);
 	EXPECT_TRUE(G.checkConsistency());
 	EXPECT_NEAR(G.numberOfEdges(), m, m/10);
-	CoreDecomposition decomp(G);
-	decomp.run();
-	EXPECT_GE(decomp.maxCoreNumber(), 0);
-	DEBUG("Actual: ", G.numberOfEdges());
 }
 
 TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithSequentialQuadtree) {
@@ -839,9 +805,6 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorConsistency) {
 	Graph G = gen.generate();
 	EXPECT_NEAR(G.numberOfEdges(), m, m/10);
 	ASSERT_TRUE(G.checkConsistency());
-	CoreDecomposition cd(G);
-	cd.run();
-	EXPECT_LE(cd.maxCoreNumber(), n); //actually testing for crashes here
 }
 
 TEST_F(GeneratorsGTest, testHyperbolicGeneratorMechanicGraphs) {
@@ -852,9 +815,6 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorMechanicGraphs) {
 	Graph G = gen.generate();
 	EXPECT_NEAR(G.numberOfEdges(), m, m/10);
 	ASSERT_TRUE(G.checkConsistency());
-	CoreDecomposition cd(G);
-	cd.run();
-	EXPECT_LE(cd.maxCoreNumber(), n); //actually testing for crashes here
 }
 
 TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {
@@ -865,7 +825,10 @@ TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {
 	for (auto path : graphs) {
 		Graph G = reader.read(path);
 		count n = G.numberOfNodes();
-		std::vector<count> sequence = GraphProperties::degreeSequence(G);
+		std::vector<count> sequence(n);
+		G.forNodes([&](node u){
+			sequence[u] = G.degree(u);
+		});
 
 		bool skipTest = false;
 		ConfigurationModelGenerator gen(sequence, skipTest);
@@ -875,7 +838,10 @@ TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {
 		EXPECT_EQ(volume, 2 * G2.numberOfEdges());
 
 		if (volume < 50000) {
-			std::vector<count> testSequence = GraphProperties::degreeSequence(G2);
+			std::vector<count> testSequence(n);
+			G2.forNodes([&](node u){
+				testSequence[u] = G2.degree(u);
+			});
 			std::sort(testSequence.begin(), testSequence.end(), std::greater<count>());
 			std::sort(sequence.begin(), sequence.end(), std::greater<count>());
 

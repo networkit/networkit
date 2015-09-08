@@ -7,7 +7,6 @@
 
 #include <sstream>
 #include <random>
-#include <unordered_set>
 
 #include "Graph.h"
 #include "GraphBuilder.h"
@@ -915,51 +914,6 @@ Graph Graph::toUndirected() const {
 }
 
 bool Graph::checkConsistency() const {
-	//TODO: as of now, only works for undirected graphs
-	std::vector<std::unordered_set<node> > neighborsets(z);
-
-	bool nodeMissing = false;
-	parallelForNodes([&](node u) {
-		if (exists[u]) {
-			forNeighborsOf(u, [&](node v){
-				if (!exists[v]) {
-					nodeMissing = true;
-					WARN("Node ", v, " is missing, but node ", u, " has an edge to it!");
-				} else if (v != u) {
-					neighborsets[u].insert(v);
-				}
-			});
-		}
-	});
-	if (nodeMissing) return false;
-
-	bool edgeMissing = false;
-	forNodes([&](node u) {
-		assert(u < z);
-		std::vector<node> comp = this->directed ? inEdges[u] : outEdges[u];
-		for (node v : comp) {
-			if (v != none && v != u) {
-				auto it = neighborsets[v].find(u);
-				if (it == neighborsets[v].end()) {
-					WARN("Edge from ", u, " to ", v,  ", but not from ", v , " to ", u, "!");
-					edgeMissing = true;
-				} else {
-					neighborsets[v].erase(it);
-				}
-			}
-		}
-	});
-
-	bool nonEmpty = false;
-	forNodes([&](node u) {
-		if (exists[u] && !neighborsets[u].empty()) {
-			WARN("Node ", u, " had unresolved edges.");
-			nonEmpty = true;
-		}
-	});
-	if (nonEmpty) return false;
-	if (edgeMissing) return false;
-
 	// check for multi-edges
 	std::vector<node> lastSeen(z, none);
 	bool noMultiEdges = true;
@@ -968,7 +922,7 @@ bool Graph::checkConsistency() const {
 		forNeighborsOf(v, [&](node u) {
 			if (lastSeen[u] == v) {
 				noMultiEdges = false;
-				WARN("Multiedge found!");
+				DEBUG("Multiedge found!");
 			}
 			lastSeen[u] = v;
 		});

@@ -11,11 +11,11 @@
 
 namespace NetworKit {
 
-Dijkstra::Dijkstra(const Graph& G, node source, bool storePaths, bool storeStack) : SSSP(G, source, storePaths, storeStack) {
+Dijkstra::Dijkstra(const Graph& G, node source, bool storePaths, bool storeStack, node target) : SSSP(G, source, storePaths, storeStack, target) {
 
 }
 
-void Dijkstra::run(node t) {
+void Dijkstra::run() {
 
 	TRACE("initializing Dijkstra data structures");
 	// init distances
@@ -57,14 +57,14 @@ void Dijkstra::run(node t) {
 		}
 	});
 
-	bool breakWhenFound = (t != none);
+	bool breakWhenFound = (target != none);
 	TRACE("traversing graph");
 	while (pq.size() > 0) {
 		TRACE("pq size: ", pq.size());
 		node current = pq.extractMin().second;
 		TRACE("current node in Dijkstra: " , current);
 		TRACE("pq size: ", pq.size());
-		if (breakWhenFound && t == current) {
+		if (breakWhenFound && target == current) {
 			break;
 		}
 

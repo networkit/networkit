@@ -17,10 +17,7 @@ DynBFS::DynBFS(const Graph& G, node s, bool storePredecessors) : DynSSSP(G, s, s
 color(G.upperNodeIdBound(), WHITE) {
 }
 
-void DynBFS::run(node t) {
-	if (t != none) {
-		throw std::runtime_error("Invalid argument: DynBFS doesn't work with a target node.");
-	}
+void DynBFS::run() {
 	BFS bfs(G, source, true);
 	bfs.run();
 	distances = bfs.distances;

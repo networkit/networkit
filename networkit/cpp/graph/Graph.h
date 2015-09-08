@@ -549,6 +549,8 @@ public:
 	/**
 	 * Insert an edge between the nodes @a u and @a v. If the graph is weighted you can optionally
 	 * set a weight for this edge. The default weight is 1.0.
+	 * Note: Multi-edges are not supported and will NOT be handled consistently by the graph data
+	 * structure.
 	 * @param u Endpoint of edge.
 	 * @param v Endpoint of edge.
 	 * @param weight Optional edge weight.
