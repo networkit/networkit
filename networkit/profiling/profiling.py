@@ -120,13 +120,13 @@ class Profile:
 			classConnectedComponents = properties.ConnectedComponents
 
 		for parameter in [
-			("Node Centrality",	"Degree Centrality",			True,	funcScores,	"Score",				centrality.DegreeCentrality, 			(G, )),
+			("Node Centrality",	"Degree",						True,	funcScores,	"Score",				centrality.DegreeCentrality, 			(G, )),
 			("Node Centrality",	"K-Core Decomposition",			True,	funcScores,	"Score",				centrality.CoreDecomposition, 			(G, )),
 			("Node Centrality",	"Local Clustering Coefficient",	True,	funcScores,	"Score",				centrality.LocalClusteringCoefficient,	(G, )),
-			("Node Centrality",	"Page Rank",					True,	funcScores,	"Score",				centrality.PageRank, 					(G, )),
+			("Node Centrality",	"PageRank",					True,	funcScores,	"Score",				centrality.PageRank, 					(G, )),
 			("Node Centrality",	"K-Path Centrality",			True,	funcScores,	"Score",				centrality.KPathCentrality,				(G, )),
 			("Node Centrality",	"Katz Centrality",				True,	funcScores,	"Score",				centrality.KatzCentrality,				(G, )),
-			("Node Centrality",	"Betweenness",					True,	funcScores,	"Score",				centrality.ApproxBetweenness2,			(G, max(42, math.log(G.numberOfNodes()), True))),
+			("Node Centrality",	"Betweenness (ap.)",					True,	funcScores,	"Score",				centrality.ApproxBetweenness2,			(G, max(42, math.log(G.numberOfNodes()), True))),
 			#("Node Centrality",	"Closeness",					True,	funcScores,	"Score",				centrality.ApproxCloseness,			(G, max(42, math.log(G.numberOfNodes()), True))),
 			("Partition",		"Communities",					False,	funcSizes,	"Nodes per Community",	community.PLM,			 				(G, )),
 			("Partition",		"Connected Components",			False,	funcSizes,	"Nodes per Component",	classConnectedComponents,				(G, )),
