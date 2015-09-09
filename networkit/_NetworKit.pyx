@@ -4549,14 +4549,14 @@ cdef class ApproxBetweenness2(Centrality):
 
 cdef extern from "cpp/centrality/ApproxCloseness.h":
 	cdef cppclass _ApproxCloseness "NetworKit::ApproxCloseness" (_Centrality):
-		_ApproxCloseness(_Graph, count, bool, bool) except +
+		_ApproxCloseness(_Graph, count, bool) except +
 
 
 cdef class ApproxCloseness(Centrality):
 	""" Approximation of closeness centrality according to algorithm described in
   Eppstein, Wang: Fast Approximation of Centrality.
 
-	ApproxCloseness(G, nSamples, normalized=False, checkConnectedness=True)
+	ApproxCloseness(G, nSamples, normalized=False)
 
 	The algorithm approximates the closeness of all nodes, by taking samples
   uniformly at random and solving the SSSP problem for each. More samples
@@ -4570,13 +4570,11 @@ cdef class ApproxCloseness(Centrality):
 		user defined number of samples
 	normalized : bool, optional
 		normalize centrality values in interval [0,1]
- 	checkConnectedness : bool, optional
-		turn this off if you know the graph is connected
 	"""
 
-	def __cinit__(self, Graph G, nSamples, normalized=False, checkConnectedness=True):
+	def __cinit__(self, Graph G, nSamples, normalized=False):
 		self._G = G
-		self._this = new _ApproxCloseness(G._this, nSamples, normalized, checkConnectedness)
+		self._this = new _ApproxCloseness(G._this, nSamples, normalized)
 
 
 cdef extern from "cpp/centrality/PageRank.h":

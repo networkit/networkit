@@ -348,7 +348,7 @@ TEST_F(CentralityGTest, testApproxClosenessCentralityOnToyGraph) {
  /* Graph:
     0    3
      \  / \
-      2    5
+      2    5     7 (isolated node)
      /  \ /
     1    4
  */
@@ -368,7 +368,7 @@ TEST_F(CentralityGTest, testApproxClosenessCentralityOnToyGraph) {
 
 		double maximum = acc.maximum();
 
-    const double tol = 0.15;
+    const double tol = 0.2;
     EXPECT_NEAR(0.1, cc[0], tol);
     EXPECT_NEAR(0.1, cc[1], tol);
     EXPECT_NEAR(0.166667, cc[2], tol);
@@ -392,6 +392,23 @@ TEST_F(CentralityGTest, testApproxClosenessCentralityOnToyGraph) {
 		EXPECT_NEAR(0.2, maximum2, tol);
 }
 
+TEST_F(CentralityGTest, testApproxClosenessCentralityOnDisconnectedGraph) {
+	count n = 5;
+	Graph G(n);
+
+	G.addEdge(0, 1);
+	G.addEdge(2, 3);
+
+	ApproxCloseness acc(G, 100, false);
+	acc.run();
+	std::vector<double> cc = acc.scores();
+
+	double maximum = acc.maximum();
+
+	const double tol = 0.35;
+	EXPECT_NEAR(0, cc[4], tol);
+	EXPECT_NEAR(1.0, cc[1], tol);
+}
 
 TEST_F(CentralityGTest, testEdgeBetweennessCentrality) {
  /* Graph:

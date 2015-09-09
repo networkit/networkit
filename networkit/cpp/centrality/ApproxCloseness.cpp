@@ -18,19 +18,9 @@
 
 namespace NetworKit {
 
-ApproxCloseness::ApproxCloseness(const Graph& G, count nSamples, bool normalized, bool checkConnectedness) : Centrality(G, normalized), nSamples(nSamples) {
-	// TODO: fix
-	ERROR("Algorithm seems to be defective, do not use results. TODO: fix for next release");
+ApproxCloseness::ApproxCloseness(const Graph& G, count nSamples, bool normalized) : Centrality(G, normalized), nSamples(nSamples) {
 	if (G.isDirected()) {
 		throw std::runtime_error("Graph is directed. ApproxCloseness only runs on undirected graphs.");
-	}
-
-	if (checkConnectedness) {
-		ConnectedComponents compo(G);
-		compo.run();
-		if (compo.numberOfComponents() != 1) {
-			throw std::runtime_error("Closeness is undefined on disconnected graphs");
-		}
 	}
 }
 
@@ -55,23 +45,25 @@ void ApproxCloseness::run() {
 		sssp->run();
 		// increment scoreData with SSSP values
 		std::vector<edgeweight> distances = sssp->getDistances();
-		DEBUG("distances: ", distances);
 		G.forNodes([&](node u){
 			if (distances[u] != infDist ) {
 				scoreData[u] += distances[u];
 			}
 		});
-		DEBUG("scoreData[", s, "]: ", scoreData[s]);
 	} // end for sampled nodes
 	// Compute estimated closeness centrality scores.
   count nNodes = G.numberOfNodes();
 	if (normalized) {
 		G.parallelForNodes([&](node u){
-			scoreData[u] = (nSamples * (nNodes - 1)) / (scoreData[u] * nNodes);
+			if (scoreData[u] != 0) {
+				scoreData[u] = (nSamples * (nNodes - 1)) / (scoreData[u] * nNodes);
+			}
 		});
 	} else {
 		G.parallelForNodes([&](node u){
-			scoreData[u] = nSamples / (scoreData[u] * nNodes);
+			if (scoreData[u] != 0 ) {
+				scoreData[u] = nSamples / (scoreData[u] * nNodes);
+			}
 		});
 	}
 	hasRun = true;
