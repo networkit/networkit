@@ -11,17 +11,26 @@
 #include "../graph/Dijkstra.h"
 #include "../graph/SSSP.h"
 #include "../auxiliary/SignalHandling.h"
+#include "../components/ConnectedComponents.h"
 
 
 #include <memory>
 
 namespace NetworKit {
 
-ApproxCloseness::ApproxCloseness(const Graph& G, count nSamples, bool normalized) : Centrality(G, normalized), nSamples(nSamples) {
+ApproxCloseness::ApproxCloseness(const Graph& G, count nSamples, bool normalized, bool checkConnectedness) : Centrality(G, normalized), nSamples(nSamples) {
 	// TODO: fix
 	ERROR("Algorithm seems to be defective, do not use results. TODO: fix for next release");
 	if (G.isDirected()) {
 		throw std::runtime_error("Graph is directed. ApproxCloseness only runs on undirected graphs.");
+	}
+
+	if (checkConnectedness) {
+		ConnectedComponents compo(G);
+		compo.run();
+		if (compo.numberOfComponents() != 1) {
+			throw std::runtime_error("Closeness is undefined on disconnected graphs");
+		}
 	}
 }
 

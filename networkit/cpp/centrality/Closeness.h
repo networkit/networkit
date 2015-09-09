@@ -23,8 +23,11 @@ public:
 	 *
 	 * @param G The graph.
 	 * @param normalized Set this parameter to <code>true</code> if scores should be normalized in the interval [0,1].
+	 * @param	checkConnectedness	turn this off if you know the graph is connected
+	 *
+	 * TODO: extend definition of closeness to disconnected graphs
 	 */
-	Closeness(const Graph& G, bool normalized=false);
+	Closeness(const Graph& G, bool normalized=false, bool checkConnectedness=true);
 
 
 
