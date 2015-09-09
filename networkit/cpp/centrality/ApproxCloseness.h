@@ -30,8 +30,11 @@ public:
 	 * @param	graph		input graph
 	 * @param	nSamples	 user defined number of samples
 	 * @param	normalized   normalize centrality values in interval [0,1] ?
+	 * @param	checkConnectedness	turn this off if you know the graph is connected
+	 *
+	 * TODO: extend definition of closeness to disconnected graphs
 	 */
-	ApproxCloseness(const Graph& G, count nSamples, bool normalized=false);
+	ApproxCloseness(const Graph& G, count nSamples, bool normalized=false, bool checkConnectedness=true);
 
 
 	/**

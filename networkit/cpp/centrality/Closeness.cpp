@@ -15,11 +15,20 @@
 #include "../graph/SSSP.h"
 #include "../graph/Dijkstra.h"
 #include "../graph/BFS.h"
+#include "../components/ConnectedComponents.h"
+
 
 namespace NetworKit {
 
-Closeness::Closeness(const Graph& G, bool normalized) : Centrality(G, normalized) {
-
+Closeness::Closeness(const Graph& G, bool normalized, bool checkConnectedness) : Centrality(G, normalized) {
+	// TODO: extend closeness definition to make check for connectedness unnecessary
+	if (checkConnectedness) {
+		ConnectedComponents compo(G);
+		compo.run();
+		if (compo.numberOfComponents() != 1) {
+			throw std::runtime_error("Closeness is undefined on disconnected graphs");
+		}
+	}
 }
 
 void Closeness::run() {

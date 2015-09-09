@@ -1932,7 +1932,7 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 			average degree
 		gamma : double
 			exponent of power-law degree distribution
-			
+
 	"""
 
 	cdef _HyperbolicGenerator* _this
@@ -1960,13 +1960,13 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		Returns
 		-------
 		Graph
-		
+
 		"""
 		return Graph(0).setThis(self._this.generate())
 
 	def generateExternal(self, angles, radii, k, gamma):
 		return Graph(0).setThis(self._this.generateExternal(angles, radii, k, gamma))
-	
+
 
 cdef extern from "cpp/generators/RmatGenerator.h":
 	cdef cppclass _RmatGenerator "NetworKit::RmatGenerator":
@@ -4405,11 +4405,11 @@ cdef class Betweenness(Centrality):
 
 cdef extern from "cpp/centrality/Closeness.h":
 	cdef cppclass _Closeness "NetworKit::Closeness" (_Centrality):
-		_Closeness(_Graph, bool) except +
+		_Closeness(_Graph, bool, bool) except +
 
 cdef class Closeness(Centrality):
 	"""
-		Closeness(G, normalized=False)
+		Closeness(G, normalized=False, checkConnectedness=True)
 
 		Constructs the Closeness class for the given Graph `G`. If the Closeness scores should be normalized,
   		then set `normalized` to True.
@@ -4420,11 +4420,13 @@ cdef class Closeness(Centrality):
 	 		The graph.
 	 	normalized : bool, optional
 	 		Set this parameter to True if scores should be normalized in the interval [0,1]. Normalization only for unweighted networks.
+	 	checkConnectedness : bool, optional
+			turn this off if you know the graph is connected
 	"""
 
-	def __cinit__(self, Graph G, normalized=False):
+	def __cinit__(self, Graph G, normalized=False, checkConnectedness=True):
 		self._G = G
-		self._this = new _Closeness(G._this, normalized)
+		self._this = new _Closeness(G._this, normalized, checkConnectedness)
 
 
 cdef extern from "cpp/centrality/KPathCentrality.h":
@@ -4547,14 +4549,14 @@ cdef class ApproxBetweenness2(Centrality):
 
 cdef extern from "cpp/centrality/ApproxCloseness.h":
 	cdef cppclass _ApproxCloseness "NetworKit::ApproxCloseness" (_Centrality):
-		_ApproxCloseness(_Graph, count, bool) except +
+		_ApproxCloseness(_Graph, count, bool, bool) except +
 
 
 cdef class ApproxCloseness(Centrality):
 	""" Approximation of closeness centrality according to algorithm described in
   Eppstein, Wang: Fast Approximation of Centrality.
 
-	ApproxCloseness(G, nSamples, normalized=False)
+	ApproxCloseness(G, nSamples, normalized=False, checkConnectedness=True)
 
 	The algorithm approximates the closeness of all nodes, by taking samples
   uniformly at random and solving the SSSP problem for each. More samples
@@ -4568,11 +4570,13 @@ cdef class ApproxCloseness(Centrality):
 		user defined number of samples
 	normalized : bool, optional
 		normalize centrality values in interval [0,1]
+ 	checkConnectedness : bool, optional
+		turn this off if you know the graph is connected
 	"""
 
-	def __cinit__(self, Graph G, nSamples, normalized=False):
+	def __cinit__(self, Graph G, nSamples, normalized=False, checkConnectedness=True):
 		self._G = G
-		self._this = new _ApproxCloseness(G._this, nSamples, normalized)
+		self._this = new _ApproxCloseness(G._this, nSamples, normalized, checkConnectedness)
 
 
 cdef extern from "cpp/centrality/PageRank.h":
