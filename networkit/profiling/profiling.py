@@ -187,7 +187,7 @@ class Profile:
 		return self.__measures[measure]["time"]
 
 
-	def output(self, type, directory, style="light", color=(0, 0, 1), parallel=False):
+	def output(self, type, directory, filename=None, style="light", color=(0, 0, 1), parallel=False):
 		""" TODO """
 		options_type = ["HTML", "LaTeX", None]
 		for o in options_type:
@@ -232,7 +232,10 @@ class Profile:
 					</body>
 				</html>
 			"""
-			filename  = "index.html"
+			if filename is None:
+				filename  = "profile-{0}.html".format(self.__G.getName())
+		else:
+			raise Error("unknown output type")
 
 		with open(directory + "/" + filename, 'w') as file:
 			file.write(result)
