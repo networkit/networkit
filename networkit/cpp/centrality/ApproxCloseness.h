@@ -34,7 +34,7 @@ public:
 	 *
 	 * TODO: extend definition of closeness to disconnected graphs
 	 */
-	ApproxCloseness(const Graph& G, count nSamples, bool normalized=false, bool checkConnectedness=true);
+	ApproxCloseness(const Graph& G, count nSamples, bool normalized=false);
 
 
 	/**
