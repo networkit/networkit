@@ -141,6 +141,7 @@ class Profile:
 			if cls.__verboseLevel < 1:
 				print("")
 			print("\ntotal time (measures + stats + correlations): {:.2F} s".format(timerAll.elapsed))
+			print("\ntotal speed: {:.2F} edges/s".format(self.__G.numberOfEdges / timerAll.elapsed))
 		return result;
 
 
