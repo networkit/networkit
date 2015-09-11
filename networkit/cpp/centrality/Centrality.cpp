@@ -45,6 +45,25 @@ double Centrality::maximum() {
 	throw std::runtime_error("Not implemented: Compute the maximum centrality score in the respective centrality subclass.");
 }
 
+double Centrality::centralization() {
+	if (!hasRun) throw std::runtime_error("Call run method first");
+	double centerScore = 0.0;
+	G.forNodes([&](node v){
+		if (scoreData[v] > centerScore) {
+			centerScore = scoreData[v];
+		}
+	});
+	INFO("center score: ", centerScore);
+	double maxScore = maximum();
+	double diff1 = 0.0;
+	double diff2 = 0.0;
+	G.forNodes([&](node v){
+		diff1 += (centerScore - scoreData[v]);
+		diff2 += (maxScore - scoreData[v]);
+	});
+	return diff1 / diff2;
+}
+
 
 
 } /* namespace NetworKit */

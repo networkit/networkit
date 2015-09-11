@@ -32,7 +32,7 @@ void DegreeCentrality::run() {
 
 
 double DegreeCentrality::maximum() {
-	return G.numberOfNodes();
+	return G.numberOfNodes() - 1;
 }
 
 

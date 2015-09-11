@@ -61,6 +61,13 @@ public:
 	 */
 	index maxCoreNumber() const;
 
+	/**
+	* Get the theoretical maximum of centrality score in the given graph.
+	*
+	* @return The theoretical maximum centrality score.
+	*/
+	double maximum();
+
 private:
 
 	index maxCore; // maximum core number of any node in the graph
