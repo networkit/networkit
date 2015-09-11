@@ -227,6 +227,7 @@ cdef extern from "cpp/graph/Graph.h":
 		count numberOfNodes() except +
 		count numberOfEdges() except +
 		pair[count, count] size() except +
+		double density() except +
 		index upperNodeIdBound() except +
 		index upperEdgeIdBound() except +
 		count degree(node u) except +
@@ -452,6 +453,17 @@ cdef class Graph:
 	 		a pair (n, m) where n is the number of nodes and m is the number of edges
 		"""
 		return self._this.size()
+
+
+	def density(self):
+		"""
+		Get the density of the graph.
+
+	 	Returns
+	 	-------
+	 	double
+		"""
+		return self._this.density()
 
 	def upperNodeIdBound(self):
 		"""
