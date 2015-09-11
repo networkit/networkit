@@ -362,6 +362,7 @@ class Profile:
 				return result
 			results[category]["Correlations"]["ScatterPlots"] += funcScatterPlot(category)
 
+		# TODO: documentation
 		for key in self.__measures:
 			measure = self.__measures[key]
 			name = measure["name"]
@@ -369,6 +370,8 @@ class Profile:
 			image = measure["image"]
 			stat = measure["stat"]
 			assortativity = measure["assortativity"]
+			centralization = measure["centralization"]
+
 
 			description = "N/A"
 			try:
@@ -391,6 +394,7 @@ class Profile:
 				image,
 				stat,
 				assortativity,
+				centralization,
 				extentions,
 				description
 			)
@@ -405,7 +409,7 @@ class Profile:
 		return result
 
 
-	def __formatMeasureTemplate(self, template, pageIndex, key, name, image, stat, assortativity, extentions, description):
+	def __formatMeasureTemplate(self, template, pageIndex, key, name, image, stat, assortativity, centralization, extentions, description):
 		""" TODO: """
 		result = template.format(**locals())
 		return result
@@ -505,11 +509,23 @@ class Profile:
 			elapsedPostAssortativity = timerPostAssortativity.elapsed
 			self.__verbosePrint("{:.2F} s".format(elapsedPostAssortativity))
 
+			# self.__verbosePrint("    Centralization: ", end="")
+			timerPostCentralization = stopwatch.Timer()
+			if self.__measures[name]["category"] == "Node Centrality":
+				try:
+					measure["centralization"] = instance.centralization()
+				except:
+					self.__verbosePrint("Centrality.centralization not properly defined for {0}".format(name), level=0)
+					measure["centralization"] = float("nan")
+			else:
+				measure["centralization"] = float("nan")
+			elapsedPostCentralization = timerPostCentralization.elapsed
+
 			measure["time"] = (
 				elapsedMain,
 				elapsedPostSort,
 				elapsedPostRank,
-				elapsedPostAssortativity
+				elapsedPostAssortativity,
 			)
 
 		self.__verbosePrint("")
