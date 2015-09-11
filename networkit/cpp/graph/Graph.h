@@ -640,6 +640,24 @@ public:
 	*/
 	std::pair<count, count> const size() { return {n, m}; };
 
+
+	/**
+	 * @return the density of the graph
+	 */
+	double density() const {
+		count n = numberOfNodes();
+		count m = numberOfEdges();
+		count loops = numberOfSelfLoops();
+		m -= loops;
+		double d;
+		if (isDirected()) {
+			d = m / (n * (n-1));
+		} else {
+			d = (2 * m) / (n * (n-1));
+		}
+		return d;
+	}
+
 	/**
 	 * Return the number of loops {v,v} in the graph.
 	 * @return The number of loops.

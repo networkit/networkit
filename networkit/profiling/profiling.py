@@ -449,7 +449,7 @@ class Profile:
 		self.__properties["Name"] = self.__G.getName()
 		self.__properties["Nodes"] = self.__G.numberOfNodes()
 		self.__properties["Edges"] = self.__G.numberOfEdges()
-		self.__properties["Density"] = properties.density(self.__G)
+		self.__properties["Density"] = self.__G.density()
 		self.__properties["Directed"] = self.__G.isDirected()
 		self.__properties["Weighted"] = self.__G.isWeighted()
 		self.__properties["Self Loops"] = self.__G.numberOfSelfLoops()
