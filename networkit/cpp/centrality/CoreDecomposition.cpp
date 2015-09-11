@@ -166,4 +166,8 @@ index CoreDecomposition::maxCoreNumber() const {
 	return maxCore;
 }
 
+double CoreDecomposition::maximum() {
+	return G.numberOfNodes() - 1;
+}
+
 } /* namespace NetworKit */

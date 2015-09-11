@@ -4303,6 +4303,7 @@ cdef extern from "cpp/centrality/Centrality.h":
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
 		double maximum() except +
+		double centralization() except +
 
 
 cdef class Centrality(Algorithm):
@@ -4337,6 +4338,20 @@ cdef class Centrality(Algorithm):
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_Centrality*>(self._this)).maximum()
 
+	def centralization(self):
+		"""
+		Compute the centralization of a network with respect to some centrality measure.
+
+	 	The centralization of any network is a measure of how central its most central
+	 	node is in relation to how central all the other nodes are.
+	 	Centralization measures then (a) calculate the sum in differences
+	 	in centrality between the most central node in a network and all other nodes;
+	 	and (b) divide this quantity by the theoretically largest such sum of
+	 	differences in any network of the same size.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return (<_Centrality*>(self._this)).centralization()
 
 cdef extern from "cpp/centrality/DegreeCentrality.h":
 	cdef cppclass _DegreeCentrality "NetworKit::DegreeCentrality" (_Centrality):
