@@ -1070,33 +1070,33 @@ void Graph::parallelForNodePairs(L handle) const {
 template<bool hasWeights> // implementation for weighted == true
 inline edgeweight Graph::getOutEdgeWeight(node u, index i) const {
 	return outEdgeWeights[u][i];
-};
+}
 
 template<> // implementation for weighted == false
 inline edgeweight Graph::getOutEdgeWeight<false>(node, index) const {
 	return defaultEdgeWeight;
-};
+}
 
 template<bool hasWeights> // implementation for weighted == true
 inline edgeweight Graph::getInEdgeWeight(node u, index i) const {
 	return inEdgeWeights[u][i];
-};
+}
 
 template<> // implementation for weighted == false
 inline edgeweight Graph::getInEdgeWeight<false>(node, index) const {
 	return defaultEdgeWeight;
-};
+}
 
 
 template<bool graphHasEdgeIds> // implementation for hasEdgeIds == true
 inline edgeid Graph::getOutEdgeId(node u, index i) const {
 	return outEdgeIds[u][i];
-};
+}
 
 template<> // implementation for hasEdgeIds == false
 inline edgeid Graph::getOutEdgeId<false>(node, index) const {
 	return 0;
-};
+}
 
 template<bool graphHasEdgeIds> // implementation for hasEdgeIds == true
 inline edgeid Graph::getInEdgeId(node u, index i) const {
