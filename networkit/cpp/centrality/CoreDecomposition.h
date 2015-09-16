@@ -73,7 +73,7 @@ public:
 	 * the bucket PQ based one cannot.
 	 */
 	virtual bool isParallel() const {
-		return (! enforceBucketQueueAlgorithm && (G.numberOfNodes() == G.upperNodeIdBound())) ;
+		return canRunInParallel;
 	}
 
 private:
@@ -81,6 +81,8 @@ private:
 	index maxCore; // maximum core number of any node in the graph
 
 	bool enforceBucketQueueAlgorithm; // in case one wants to switch to the alternative algorithm
+
+	bool canRunInParallel; // signifies if a parallel algorithm can be used
 
 	/**
 	 * Perform k-core decomposition of graph passed in constructor.
