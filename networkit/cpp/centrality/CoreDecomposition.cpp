@@ -17,6 +17,7 @@ CoreDecomposition::CoreDecomposition(const Graph& G, bool enforceBucketQueueAlgo
 		Centrality(G, false), maxCore(0), enforceBucketQueueAlgorithm(enforceBucketQueueAlgorithm)
 {
 	if (G.numberOfSelfLoops()) throw std::runtime_error("Core Decomposition implementation does not support graphs with self-loops. Call Graph.removeSelfLoops() first.");
+	canRunInParallel = (! enforceBucketQueueAlgorithm && (G.numberOfNodes() == G.upperNodeIdBound()));
 }
 
 void CoreDecomposition::run() {
@@ -37,7 +38,6 @@ void CoreDecomposition::runWithParK() {
 	std::vector<node> next; // nodes to be processed next
 	index level = 0; // current level
 	count size = 0;  // number of nodes currently processed
-	const bool enforceSeq = (G.numberOfNodes() != G.upperNodeIdBound());
 
 	// fill in degrees
 	std::vector<count> degrees(z);
@@ -48,7 +48,7 @@ void CoreDecomposition::runWithParK() {
 	// main loop
 	while (nUnprocessed > 0) {
 		// find nodes with degree == current level
-		if (enforceSeq || z <= 256) {
+		if (! canRunInParallel || z <= 256) {
 			scan(level, degrees, curr);
 		}
 		else {
@@ -59,7 +59,7 @@ void CoreDecomposition::runWithParK() {
 		size = curr.size();
 		while (size > 0) {
 			nUnprocessed -= size;
-			if (enforceSeq || size <= 256) {
+			if (! canRunInParallel || size <= 256) {
 				processSublevel(level, degrees, curr, next);
 			}
 			else {
