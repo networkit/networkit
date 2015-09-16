@@ -9,14 +9,163 @@
 #include <set>
 
 #include "CoreDecomposition.h"
+#include "../auxiliary/PrioQueueForInts.h"
 
 namespace NetworKit {
 
-CoreDecomposition::CoreDecomposition(const Graph& G) : Centrality(G, false), maxCore(0) {
+CoreDecomposition::CoreDecomposition(const Graph& G, bool enforceBucketQueueAlgorithm) :
+		Centrality(G, false), maxCore(0), enforceBucketQueueAlgorithm(enforceBucketQueueAlgorithm)
+{
 	if (G.numberOfSelfLoops()) throw std::runtime_error("Core Decomposition implementation does not support graphs with self-loops. Call Graph.removeSelfLoops() first.");
 }
 
 void CoreDecomposition::run() {
+	if (G.isDirected() || enforceBucketQueueAlgorithm) {
+		runWithBucketQueues();
+	}
+	else {
+		runWithParK();
+	}
+}
+
+void CoreDecomposition::runWithParK() {
+	count z = G.upperNodeIdBound();
+	scoreData.resize(z); // TODO: move to base class
+
+	count nUnprocessed = G.numberOfNodes();
+	std::vector<node> curr; // currently processed nodes
+	std::vector<node> next; // nodes to be processed next
+	index level = 0; // current level
+	count size = 0;  // number of nodes currently processed
+	const bool enforceSeq = (G.numberOfNodes() != G.upperNodeIdBound());
+
+	// fill in degrees
+	std::vector<count> degrees(z);
+	G.parallelForNodes([&](node u) {
+		degrees[u] = G.degree(u);
+	});
+
+	// main loop
+	while (nUnprocessed > 0) {
+		// find nodes with degree == current level
+		if (enforceSeq || z <= 256) {
+			scan(level, degrees, curr);
+		}
+		else {
+			scanParallel(level, degrees, curr);
+		}
+
+		// process such nodes in curr
+		size = curr.size();
+		while (size > 0) {
+			nUnprocessed -= size;
+			if (enforceSeq || size <= 256) {
+				processSublevel(level, degrees, curr, next);
+			}
+			else {
+				processSublevelParallel(level, degrees, curr, next);
+			}
+
+			curr = next;
+			size = curr.size();
+			next.clear();
+		}
+		++level;
+	}
+
+	maxCore = level-1;
+	hasRun = true;
+}
+
+void NetworKit::CoreDecomposition::scan(index level, const std::vector<count>& degrees,
+		std::vector<node>& curr)
+{
+	G.forNodes([&](node u) {
+		if (degrees[u] == level) {
+			curr.push_back(u);
+		}
+	});
+}
+
+void NetworKit::CoreDecomposition::scanParallel(index level, const std::vector<count>& degrees,
+		std::vector<node>& curr)
+{
+	index idx = 0;
+	const count z = G.upperNodeIdBound();
+	curr.resize(G.numberOfNodes());
+
+#pragma omp parallel for schedule(guided)
+	for (index u = 0; u < z; ++u) {
+		if (degrees[u] == level) {
+			index tmp;
+#pragma omp atomic capture
+			tmp = idx++;
+
+			curr[tmp] = u;
+		}
+	}
+
+	// Note by HM: fixed vector size (without resizing) and keeping track of "alive" entries
+	// is slower on my machine (for whatever reason...)
+	curr.resize(idx);
+}
+
+void NetworKit::CoreDecomposition::processSublevel(index level,
+		std::vector<count>& degrees, const std::vector<node>& curr,
+		std::vector<node>& next)
+{
+	// check for each neighbor of vertices in curr if their updated degree reaches level;
+	// if so, process them next
+
+	for (auto u: curr) {
+		scoreData[u] = level;
+		G.forNeighborsOf(u, [&](node v) {
+			if (degrees[v] > level) {
+				degrees[v]--;
+				if (degrees[v] == level) {
+					next.push_back(v);
+				}
+			}
+		});
+	}
+}
+
+void NetworKit::CoreDecomposition::processSublevelParallel(index level,
+		std::vector<count>& degrees, const std::vector<node>& curr,
+		std::vector<node>& next)
+{
+	// check for each neighbor of vertices in curr if their updated degree reaches level;
+	// if so, process them next
+
+	const count size = curr.size();
+	index idx = 0;
+	next.resize(G.numberOfNodes());
+
+#pragma omp parallel for schedule(guided)
+	for (index i = 0; i < size; ++i) {
+		node u = curr[i];
+		scoreData[u] = level;
+		G.forNeighborsOf(u, [&](node v) {
+			if (degrees[v] > level) {
+				index tmp;
+#pragma omp atomic capture
+				tmp = --degrees[v];
+
+				// ensure that neighbor is inserted exactly once if necessary
+				if (tmp == level) { // error in external publication on ParK fixed here
+#pragma omp atomic capture
+					tmp = idx++;
+
+					next[tmp] = v;
+				}
+			}
+		});
+	}
+
+	next.resize(idx);
+}
+
+void CoreDecomposition::runWithBucketQueues() {
 	/* Main data structure: buckets of nodes indexed by their remaining degree. */
 	typedef std::list<node> Bucket;
 	index z = G.upperNodeIdBound();
@@ -81,7 +230,7 @@ void CoreDecomposition::run() {
 					}
 				});
 			} else {
-			/* graph is directed */
+				/* graph is directed */
 				G.forNeighborsOf(u, [&](node v) {
 					if (alive[v]) {
 						count deg = degree[v];
@@ -171,3 +320,4 @@ double CoreDecomposition::maximum() {
 }
 
 } /* namespace NetworKit */
+

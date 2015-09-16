@@ -24,6 +24,9 @@
 #include "../LocalClusteringCoefficient.h"
 #include "../../structures/Cover.h"
 #include "../../structures/Partition.h"
+#include "../../auxiliary/Timer.h"
+#include "../../generators/ErdosRenyiGenerator.h"
+
 
 namespace NetworKit {
 
@@ -183,7 +186,7 @@ TEST_F(CentralityGTest, testKatzCentralityDirected) {
 	std::vector<std::pair<node, double> > kc_ranking = kc.ranking();
 	std::vector<double> kc_scores = kc.scores();
 
-	EXPECT_EQ(kc_ranking[0].first, 699);
+	EXPECT_EQ(kc_ranking[0].first, 699u);
 }
 
 TEST_F(CentralityGTest, testPageRankDirected) {
@@ -197,7 +200,7 @@ TEST_F(CentralityGTest, testPageRankDirected) {
 	std::vector<std::pair<node, double> > pr_ranking = pr.ranking();
 
 	const double tol = 1e-3;
-	EXPECT_EQ(pr_ranking[0].first, 699);
+	EXPECT_EQ(pr_ranking[0].first, 699u);
 	EXPECT_NEAR(pr_ranking[0].second, 0.00432, tol);
 }
 
@@ -403,7 +406,7 @@ TEST_F(CentralityGTest, testApproxClosenessCentralityOnDisconnectedGraph) {
 	acc.run();
 	std::vector<double> cc = acc.scores();
 
-	double maximum = acc.maximum();
+	double maximum = acc.maximum(); // FIXME: unused var!
 
 	const double tol = 0.35;
 	EXPECT_NEAR(0, cc[4], tol);
@@ -574,9 +577,33 @@ TEST_F(CentralityGTest, testCoreDecomposition) {
 	H.addEdge(0, 1);
 	H.addEdge(1, 1);
 	EXPECT_ANY_THROW(CoreDecomposition CoreDec(H));
-
-
 }
+
+TEST_F(CentralityGTest, benchCoreDecomposition) {
+	METISGraphReader reader;
+	std::string filenames[6] = {"coPapersCiteseer", "coAuthorsDBLP", "in-2004", "kkt_power", "audikw1", "europe.osm"};
+	for (auto f: filenames) {
+		std::string filename("input/" + f + ".graph");
+		Graph G = reader.read(filename);
+		CoreDecomposition coreDec(G);
+		Aux::Timer timer;
+		timer.start();
+		coreDec.run();
+		timer.stop();
+		INFO("Time for ParK of ", filename, ": ", timer.elapsedTag());
+
+		CoreDecomposition coreDec2(G, true);
+		timer.start();
+		coreDec2.run();
+		timer.stop();
+		INFO("Time for bucket queue based k-core decomposition of ", filename, ": ", timer.elapsedTag());
+
+		G.forNodes([&](node u) {
+			EXPECT_EQ(coreDec.score(u), coreDec2.score(u));
+		});
+	}
+}
+
 
 TEST_F(CentralityGTest, testCoreDecompositionDirected) {
 	count n = 16;
