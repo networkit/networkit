@@ -585,7 +585,7 @@ TEST_F(CentralityGTest, benchCoreDecomposition) {
 	for (auto f: filenames) {
 		std::string filename("input/" + f + ".graph");
 		Graph G = reader.read(filename);
-		CoreDecomposition coreDec(G);
+		CoreDecomposition coreDec(G, false);
 		Aux::Timer timer;
 		timer.start();
 		coreDec.run();
