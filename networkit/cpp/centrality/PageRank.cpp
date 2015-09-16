@@ -70,4 +70,8 @@ void NetworKit::PageRank::run() {
 	hasRun = true;
 }
 
+double PageRank::maximum() {
+	return 1.0;	// upper bound, could be tighter by assuming e.g. a star graph with n nodes
+}
+
 } /* namespace NetworKit */

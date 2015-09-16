@@ -651,9 +651,9 @@ public:
 		m -= loops;
 		double d;
 		if (isDirected()) {
-			d = m / (n * (n-1));
+			d = m / (double) (n * (n-1));
 		} else {
-			d = (2 * m) / (n * (n-1));
+			d = (2 * m) / (double) (n * (n-1));
 		}
 		return d;
 	}
