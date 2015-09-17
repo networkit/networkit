@@ -579,12 +579,15 @@ TEST_F(CentralityGTest, testCoreDecomposition) {
 	EXPECT_ANY_THROW(CoreDecomposition CoreDec(H));
 }
 
-TEST_F(CentralityGTest, benchCoreDecomposition) {
-	METISGraphReader reader;
-	std::string filenames[6] = {"coPapersCiteseer", "coAuthorsDBLP", "in-2004", "kkt_power", "audikw1", "europe.osm"};
+TEST_F(CentralityGTest, benchCoreDecompositionSnapGraphs) {
+	SNAPGraphReader reader;
+	std::vector<std::string> filenames = {"soc-LiveJournal1.edgelist-t0.graph", "cit-Patents.txt", "com-orkut.ungraph.txt", "web-BerkStan.edgelist-t0.graph"};
+
 	for (auto f: filenames) {
-		std::string filename("input/" + f + ".graph");
+		std::string filename("/home/i11/staudt/Graphs/Static/SNAP/" + f);
+		DEBUG("about to read file ", filename);
 		Graph G = reader.read(filename);
+		G.removeSelfLoops();
 		CoreDecomposition coreDec(G, false);
 		Aux::Timer timer;
 		timer.start();
@@ -604,6 +607,34 @@ TEST_F(CentralityGTest, benchCoreDecomposition) {
 	}
 }
 
+TEST_F(CentralityGTest, benchCoreDecompositionDimacsGraphs) {
+  METISGraphReader reader;
+  std::vector<std::string> filenames = {"eu-2005", "coPapersDBLP", "uk-2002", "europe-osm", "cage15"};
+
+  for (auto f: filenames) {
+    std::string filename("/home/i11/staudt/Graphs/Static/DIMACS/Large/" + f + ".metis.graph");
+    DEBUG("about to read file ", filename);
+    Graph G = reader.read(filename);
+    G.removeSelfLoops();
+    CoreDecomposition coreDec(G, false);
+    Aux::Timer timer;
+    timer.start();
+    coreDec.run();
+    timer.stop();
+    INFO("Time for ParK of ", filename, ": ", timer.elapsedTag());
+    
+    CoreDecomposition coreDec2(G, true);
+    timer.start();
+    coreDec2.run();
+    timer.stop();
+    INFO("Time for bucket queue based k-core decomposition of ", filename, ": ", timer.elapsedTag());
+    
+    G.forNodes([&](node u) {
+	EXPECT_EQ(coreDec.score(u), coreDec2.score(u));
+      });
+  }
+}
+  
 
 TEST_F(CentralityGTest, testCoreDecompositionDirected) {
 	count n = 16;
