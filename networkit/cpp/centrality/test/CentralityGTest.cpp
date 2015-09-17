@@ -635,6 +635,33 @@ TEST_F(CentralityGTest, benchCoreDecompositionDimacsGraphs) {
   }
 }
   
+TEST_F(CentralityGTest, benchCoreDecompositionLocal) {
+  METISGraphReader reader;
+  std::vector<std::string> filenames = {"coPapersCiteseer", "in-2004", "coAuthorsDBLP", "audikw1"};
+
+  for (auto f: filenames) {
+    std::string filename("input/" + f + ".graph");
+    DEBUG("about to read file ", filename);
+    Graph G = reader.read(filename);
+    G.removeSelfLoops();
+    CoreDecomposition coreDec(G, false);
+    Aux::Timer timer;
+    timer.start();
+    coreDec.run();
+    timer.stop();
+    INFO("Time for ParK of ", filename, ": ", timer.elapsedTag());
+
+    CoreDecomposition coreDec2(G, true);
+    timer.start();
+    coreDec2.run();
+    timer.stop();
+    INFO("Time for bucket queue based k-core decomposition of ", filename, ": ", timer.elapsedTag());
+
+    G.forNodes([&](node u) {
+	EXPECT_EQ(coreDec.score(u), coreDec2.score(u));
+      });
+  }
+}
 
 TEST_F(CentralityGTest, testCoreDecompositionDirected) {
 	count n = 16;
