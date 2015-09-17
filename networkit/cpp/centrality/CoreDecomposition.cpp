@@ -10,6 +10,7 @@
 
 #include "CoreDecomposition.h"
 #include "../auxiliary/PrioQueueForInts.h"
+#include <omp.h>
 
 namespace NetworKit {
 
@@ -66,7 +67,7 @@ void CoreDecomposition::runWithParK() {
 				processSublevelParallel(level, degrees, curr, next);
 			}
 
-			curr = next;
+			std::swap(curr, next);
 			size = curr.size();
 			next.clear();
 		}
@@ -90,24 +91,20 @@ void NetworKit::CoreDecomposition::scan(index level, const std::vector<count>& d
 void NetworKit::CoreDecomposition::scanParallel(index level, const std::vector<count>& degrees,
 		std::vector<node>& curr)
 {
-	index idx = 0;
 	const count z = G.upperNodeIdBound();
-	curr.resize(G.numberOfNodes());
+	std::vector<std::vector<node>> next(omp_get_max_threads());
+	curr.clear();
 
 #pragma omp parallel for schedule(guided)
 	for (index u = 0; u < z; ++u) {
 		if (degrees[u] == level) {
-			index tmp;
-#pragma omp atomic capture
-			tmp = idx++;
-
-			curr[tmp] = u;
+			auto tid = omp_get_thread_num();
+			next[tid].push_back(u);
 		}
 	}
-
-	// Note by HM: fixed vector size (without resizing) and keeping track of "alive" entries
-	// is slower on my machine (for whatever reason...)
-	curr.resize(idx);
+	for (auto& n : next) {
+		curr.insert(curr.end(),n.begin(),n.end());
+	}
 }
 
 void NetworKit::CoreDecomposition::processSublevel(index level,
@@ -116,7 +113,6 @@ void NetworKit::CoreDecomposition::processSublevel(index level,
 {
 	// check for each neighbor of vertices in curr if their updated degree reaches level;
 	// if so, process them next
-
 	for (auto u: curr) {
 		scoreData[u] = level;
 		G.forNeighborsOf(u, [&](node v) {
@@ -138,8 +134,7 @@ void NetworKit::CoreDecomposition::processSublevelParallel(index level,
 	// if so, process them next
 
 	const count size = curr.size();
-	index idx = 0;
-	next.resize(G.numberOfNodes());
+	std::vector<std::vector<node>> localNext(omp_get_max_threads());
 
 #pragma omp parallel for schedule(guided)
 	for (index i = 0; i < size; ++i) {
@@ -153,16 +148,15 @@ void NetworKit::CoreDecomposition::processSublevelParallel(index level,
 
 				// ensure that neighbor is inserted exactly once if necessary
 				if (tmp == level) { // error in external publication on ParK fixed here
-#pragma omp atomic capture
-					tmp = idx++;
-
-					next[tmp] = v;
+					auto tid = omp_get_thread_num();
+					localNext[tid].push_back(v);
 				}
 			}
 		});
 	}
-
-	next.resize(idx);
+	for (auto& n : localNext) {
+		next.insert(next.end(), n.begin(), n.end());
+	}
 }
 
 void CoreDecomposition::runWithBucketQueues() {
