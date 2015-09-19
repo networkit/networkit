@@ -37,6 +37,7 @@ void CoreDecomposition::runWithParK() {
 	count nUnprocessed = G.numberOfNodes();
 	std::vector<node> curr; // currently processed nodes
 	std::vector<node> next; // nodes to be processed next
+	std::vector<char> active(z,0);
 	index level = 0; // current level
 	count size = 0;  // number of nodes currently processed
 
@@ -44,6 +45,7 @@ void CoreDecomposition::runWithParK() {
 	std::vector<count> degrees(z);
 	G.parallelForNodes([&](node u) {
 		degrees[u] = G.degree(u);
+		active[u] = 1;
 	});
 
 	// main loop
@@ -53,7 +55,7 @@ void CoreDecomposition::runWithParK() {
 			scan(level, degrees, curr);
 		}
 		else {
-			scanParallel(level, degrees, curr);
+			scanParallel(level, degrees, curr, active);
 		}
 
 		// process such nodes in curr
@@ -64,7 +66,7 @@ void CoreDecomposition::runWithParK() {
 				processSublevel(level, degrees, curr, next);
 			}
 			else {
-				processSublevelParallel(level, degrees, curr, next);
+				processSublevelParallel(level, degrees, curr, next, active);
 			}
 
 			std::swap(curr, next);
@@ -89,7 +91,7 @@ void NetworKit::CoreDecomposition::scan(index level, const std::vector<count>& d
 }
 
 void NetworKit::CoreDecomposition::scanParallel(index level, const std::vector<count>& degrees,
-		std::vector<node>& curr)
+		std::vector<node>& curr, std::vector<char>& active)
 {
 	const count z = G.upperNodeIdBound();
 	std::vector<std::vector<node>> next(omp_get_max_threads());
@@ -97,7 +99,7 @@ void NetworKit::CoreDecomposition::scanParallel(index level, const std::vector<c
 
 #pragma omp parallel for schedule(guided)
 	for (index u = 0; u < z; ++u) {
-		if (degrees[u] == level) {
+		if (active[u] && degrees[u] == level) {
 			auto tid = omp_get_thread_num();
 			next[tid].push_back(u);
 		}
@@ -128,7 +130,7 @@ void NetworKit::CoreDecomposition::processSublevel(index level,
 
 void NetworKit::CoreDecomposition::processSublevelParallel(index level,
 		std::vector<count>& degrees, const std::vector<node>& curr,
-		std::vector<node>& next)
+		std::vector<node>& next, std::vector<char>& active)
 {
 	// check for each neighbor of vertices in curr if their updated degree reaches level;
 	// if so, process them next
@@ -139,6 +141,7 @@ void NetworKit::CoreDecomposition::processSublevelParallel(index level,
 #pragma omp parallel for schedule(guided)
 	for (index i = 0; i < size; ++i) {
 		node u = curr[i];
+		active[u] = 0;
 		scoreData[u] = level;
 		G.forNeighborsOf(u, [&](node v) {
 			if (degrees[v] > level) {

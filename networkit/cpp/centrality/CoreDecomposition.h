@@ -112,7 +112,7 @@ private:
 	 * @param[in] degrees Remaining degree for each node.
 	 * @param[inout] curr Nodes to be processed in current level.
 	 */
-	void scanParallel(index level, const std::vector<count>& degrees, std::vector<node>& curr);
+	void scanParallel(index level, const std::vector<count>& degrees, std::vector<node>& curr, std::vector<char>& active);
 
 	/**
 	 * Processes nodes (and their neighbors) identified by previous scan.
@@ -130,7 +130,7 @@ private:
 	 * @param[in] curr Nodes to be processed in this call.
 	 * @param[inout] next Nodes to be processed next in current level (certain neighbors of nodes in curr).
 	 */
-	void processSublevelParallel(index level, std::vector<count>& degrees, const std::vector<node>& curr, std::vector<node>& next);
+	void processSublevelParallel(index level, std::vector<count>& degrees, const std::vector<node>& curr, std::vector<node>& next, std::vector<char>& active);
 };
 
 } /* namespace NetworKit */
