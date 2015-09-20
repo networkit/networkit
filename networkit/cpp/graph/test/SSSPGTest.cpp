@@ -217,7 +217,7 @@ TEST_F(SSSPGTest, testDirOptBFS) {
 	G.addEdge(5, 6);
 	G.addEdge(5, 7);
 	G.addEdge(0, 6);
-
+	G.indexEdges();
 
 	bool storeStack = false;
 	bool storePaths = true;
@@ -270,6 +270,7 @@ TEST_F(SSSPGTest, testDirOptBFS) {
 TEST_F(SSSPGTest, testDirOptBFSOnRealGraph) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/PGPgiantcompo.graph");
+	G.indexEdges();
 
 	bool storeStack = false;
 	bool storePaths = true;
@@ -321,6 +322,7 @@ TEST_F(SSSPGTest, testDirOptBFSOnRealGraph) {
 TEST_F(SSSPGTest, testDirOptBFSOnDirectedRealGraph) {
 	KONECTGraphReader reader(' ');
 	Graph G = reader.read("input/foodweb-baydry.konect");
+	G.indexEdges();
 
 	bool storeStack = false;
 	bool storePaths = true;
@@ -408,7 +410,8 @@ TEST_F(SSSPGTest, benchDirOptBFS) {
 	Aux::Random::setSeed(42, false);
 	for (auto& file : datasets) {
 		Graph G = reader.read(base+file);
-		count nRuns = 100;
+		G.indexEdges();
+		count nRuns = 10;
 		std::cout << "benchmarking BFS variants: " << nRuns << " runs on " << G.toString() << ", reporting average time in ms" << std::endl;
 		std::vector<node> startNodes(nRuns);
 		// generate startNode sequence
@@ -463,7 +466,8 @@ TEST_F(SSSPGTest, benchDirOptBFSThreading) {
 
 	for (auto& file : datasets) {
 		Graph G = reader.read(file);
-		count nRuns = 30;
+		G.indexEdges();
+		count nRuns = 10;
 		std::cout << "benchmarking BFS variants: " << nRuns << " runs on " << G.toString() << ", reporting average time in ms" << std::endl;
 		std::vector<node> startNodes(nRuns);
 		// generate startNode sequence

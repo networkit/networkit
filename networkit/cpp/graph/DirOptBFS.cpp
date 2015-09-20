@@ -5,7 +5,6 @@
  *      Author: Maximilian Vogel
  */
 #include <omp.h>
-#include <algorithm>
 #include <queue>
 #include "DirOptBFS.h"
 #include "../auxiliary/Timer.h"
@@ -30,7 +29,9 @@ void DirOptBFS::run() {
 
 	distances.clear();
 	distances.resize(z, infDist);
-	std::vector<count> degrees;
+	std::vector<char> edgeActive;
+	if (G.hasEdgeIds())
+		edgeActive.resize(G.upperEdgeIdBound(),1);
 	if (storePaths) {
 		previous.clear();
 		previous.resize(z);
@@ -38,16 +39,12 @@ void DirOptBFS::run() {
 		npaths.resize(z,0);
 		previous[source] = {source};
 		npaths[source] = 1;
-		degrees.resize(z,0);
 	}
 
 	if (storeStack) {
 		std::stack<node> empty;
 		std::swap(stack, empty);
 	}
-
-	std::vector<node> activeNodes = G.nodes();
-
 	frontier.clear();
 	frontier.reserve(z);
 	frontier.resize(z,false);
@@ -90,11 +87,11 @@ void DirOptBFS::run() {
 	};
 
 	auto bottomUpStepWithPaths = [&](){
-		#pragma omp parallel for schedule(dynamic, 500)
-		for (index i = 0; i < activeNodes.size();++i) {
-			node v = activeNodes[i];
-			for (auto &u : G.inNeighbors(v)) {
-				if (frontier[u]) {
+		G.balancedParallelForNodes([&](node v){
+			G.forInNeighborsOf(v,[&](node v, node u, edgeid eid){
+			//for (auto &u : G.inNeighbors(v)) {
+				if (edgeActive[eid] && frontier[u]) {
+					edgeActive[eid] = 0;
 					if (!visited[v]) {
 						visited[v] = 1;
 						distances[v] = currentDistance;
@@ -102,31 +99,36 @@ void DirOptBFS::run() {
 						threadLocalNext[tid].push_back(v);
 						previous[v] = {u};
 						npaths[v] = npaths[u];
-						degrees[v] += 1;
 					} else if (distances[v]-1 == distances[u]) {
 						previous[v].push_back(u);
 						npaths[v] += npaths[u];
-						degrees[v] += 1;
 					}
 				}
-			}
-		}
+			//}
+			});
+		});
 	};
 
 	auto bottomUpStep = [&](){
-		#pragma omp parallel for schedule(dynamic, 500)
-		for (index i = 0; i < activeNodes.size();++i) {
-			node v = activeNodes[i];
-			for (auto &u : G.inNeighbors(v)) {
-				if (frontier[u]) {
-					visited[v] = 1;
-					distances[v] = currentDistance;
-					count tid = omp_get_thread_num();
-					threadLocalNext[tid].push_back(v);
-					break;
-				}
+		G.balancedParallelForNodes([&](node v){
+			if (!visited[v]) {
+				bool found = false;
+				G.forInNeighborsOf(v,[&](node v, node u, edgeid eid) {
+				//for (auto &u : G.inNeighbors(v)) {
+					if (edgeActive[eid] && frontier[u]) {
+						edgeActive[eid] = 0;
+						if (!found) {
+							visited[v] = 1;
+							distances[v] = currentDistance;
+							count tid = omp_get_thread_num();
+							threadLocalNext[tid].push_back(v);
+							found = true;
+						}
+					}
+				//}
+				});
 			}
-		};
+		});
 	};
 
 
@@ -135,21 +137,22 @@ void DirOptBFS::run() {
 			auto current = qFrontier.back();
 			qFrontier.pop_back();
 
-			G.forNeighborsOf(current,[&](node v){
-				if (!visited[v]) {
-					visited[v] = 1;
-					distances[v] = currentDistance;
-					qNext.push_back(v);
-					m_f += G.degree(v);
-					if (storePaths) {
-						previous[v] = {current};
-						npaths[v] = npaths[current];
-						degrees[v] += 1;
+			G.forNeighborsOf(current,[&](node, node v, edgeid eid){
+				if (edgeActive[eid]) {
+					edgeActive[eid] = 0;
+					if (!visited[v]) {
+						visited[v] = 1;
+						distances[v] = currentDistance;
+						qNext.push_back(v);
+						m_f += G.degree(v);
+						if (storePaths) {
+							previous[v] = {current};
+							npaths[v] = npaths[current];
+						}
+					} else if (storePaths && distances[v]-1 == distances[current]) {
+							previous[v].push_back(current);
+							npaths[v] += npaths[current];
 					}
-				} else if (storePaths && distances[v]-1 == distances[current]) {
-						previous[v].push_back(current);
-						npaths[v] += npaths[current];
-						degrees[v] += 1;
 				}
 			});
 			m_u -= G.degree(current);
@@ -218,20 +221,14 @@ void DirOptBFS::run() {
 			m_f = 0;
 //			timer.start();
 			topDownStep();
-			activeNodes.erase(std::remove_if(activeNodes.begin(),activeNodes.end(),[&](node u){return visited[u];}), activeNodes.end());
 /*			timer.stop();
 			time_topstep += timer.elapsedMilliseconds();
 			n_top += n_f;*/
 		} else {
 			n_f = 0;
 //			timer.start();
-			if (storePaths) {
-				bottomUpStepWithPaths();
-				activeNodes.erase(std::remove_if(activeNodes.begin(),activeNodes.end(),[&](node u){return visited[u] && degrees[u] >= G.degree(u);}), activeNodes.end());
-			} else {
-				bottomUpStep();
-				activeNodes.erase(std::remove_if(activeNodes.begin(),activeNodes.end(),[&](node u){return visited[u];}), activeNodes.end());
-			}
+			if (storePaths)	bottomUpStepWithPaths();
+			else bottomUpStep();
 /*			timer.stop();
 			time_botstep += timer.elapsedMilliseconds();
 			n_bot += n_f;*/
