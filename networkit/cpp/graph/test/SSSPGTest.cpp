@@ -219,51 +219,53 @@ TEST_F(SSSPGTest, testDirOptBFS) {
 	G.addEdge(0, 6);
 	G.indexEdges();
 
-	bool storeStack = false;
-	bool storePaths = true;
+	for (unsigned int storePaths = 0; storePaths < 2; ++storePaths) {
+		for (unsigned int storeStack = 0; storeStack < 2; ++storeStack) {
 
-	BFS bfs_ref(G, 5, storePaths, storeStack);
-	bfs_ref.run();
+			BFS bfs_ref(G, 5, storePaths, storeStack);
+			bfs_ref.run();
 
-	DirOptBFS bfs_diropt(G, 5, storePaths, storeStack);
-	bfs_diropt.run();
+			DirOptBFS bfs_diropt(G, 5, storePaths, storeStack);
+			bfs_diropt.run();
 
-	auto ref_distances = bfs_ref.getDistances();
-	auto do_distances = bfs_diropt.getDistances();
+			auto ref_distances = bfs_ref.getDistances();
+			auto do_distances = bfs_diropt.getDistances();
 
-	auto ref_stack = bfs_ref.getStack();
-	auto do_stack = bfs_diropt.getStack();
+			auto ref_stack = bfs_ref.getStack();
+			auto do_stack = bfs_diropt.getStack();
 
-	// computed distances from both BFS should be the same
-	// tests: SSSP.getDistances();
-	EXPECT_EQ(ref_distances, do_distances) << "distances from source are supposed to be the same";
+			// computed distances from both BFS should be the same
+			// tests: SSSP.getDistances();
+			EXPECT_EQ(ref_distances, do_distances) << "distances from source are supposed to be the same";
 
-	if (storeStack) {
-		EXPECT_EQ(ref_stack.size(),do_stack.size());
-		auto &min_stack = (ref_stack.size() < do_stack.size())?ref_stack:do_stack;
-		// the exact order of the stack is unlikely to be the same
-		// however, the distance of stack.top() should be the same in both BFS
-		// tests: SSSP.getStack();
-		while (!min_stack.empty()) {
-			auto ref_top = ref_stack.top();
-			auto do_top = do_stack.top();
-			EXPECT_EQ(bfs_ref.distance(ref_top),bfs_diropt.distance(do_top));
-			ref_stack.pop(); do_stack.pop();
+			if (storeStack) {
+				EXPECT_EQ(ref_stack.size(),do_stack.size());
+				auto &min_stack = (ref_stack.size() < do_stack.size())?ref_stack:do_stack;
+				// the exact order of the stack is unlikely to be the same
+				// however, the distance of stack.top() should be the same in both BFS
+				// tests: SSSP.getStack();
+				while (!min_stack.empty()) {
+					auto ref_top = ref_stack.top();
+					auto do_top = do_stack.top();
+					EXPECT_EQ(bfs_ref.distance(ref_top),bfs_diropt.distance(do_top));
+					ref_stack.pop(); do_stack.pop();
+				}
+			}
+
+			if (storePaths) {
+				// for both BFS, the number of paths for each node should be the same
+				// tests: SSSP.numberOfPaths(t)
+				count counter = 0;
+				count counter_smaller = 0;
+				G.forNodes([&](node v){
+					//EXPECT_EQ(bfs_ref.numberOfPaths(v),bfs_diropt.numberOfPaths(v)) << "number of paths for node " << v << " differ";
+					counter += bfs_ref.numberOfPaths(v) != bfs_diropt.numberOfPaths(v);
+					counter_smaller += bfs_ref.numberOfPaths(v) > bfs_diropt.numberOfPaths(v);
+				});
+				EXPECT_EQ(0,counter) << "of " << G.numberOfNodes() << " are wrong";
+				EXPECT_EQ(0,counter_smaller) << "are smaller than the actual number of paths";
+			}
 		}
-	}
-
-	if (storePaths) {
-		// for both BFS, the number of paths for each node should be the same
-		// tests: SSSP.numberOfPaths(t)
-		count counter = 0;
-		count counter_smaller = 0;
-		G.forNodes([&](node v){
-			//EXPECT_EQ(bfs_ref.numberOfPaths(v),bfs_diropt.numberOfPaths(v)) << "number of paths for node " << v << " differ";
-			counter += bfs_ref.numberOfPaths(v) != bfs_diropt.numberOfPaths(v);
-			counter_smaller += bfs_ref.numberOfPaths(v) > bfs_diropt.numberOfPaths(v);
-		});
-		EXPECT_EQ(0,counter) << "of " << G.numberOfNodes() << " are wrong";
-		EXPECT_EQ(0,counter_smaller) << "are smaller than the actual number of paths";
 	}
 }
 
@@ -272,50 +274,51 @@ TEST_F(SSSPGTest, testDirOptBFSOnRealGraph) {
 	Graph G = reader.read("input/PGPgiantcompo.graph");
 	G.indexEdges();
 
-	bool storeStack = false;
-	bool storePaths = true;
+	for (unsigned int storePaths = 0; storePaths < 2; ++storePaths) {
+		for (unsigned int storeStack = 0; storeStack < 2; ++storeStack) {
+			BFS bfs_ref(G, 5, storePaths, storeStack);
+			bfs_ref.run();
 
-	BFS bfs_ref(G, 5, storePaths, storeStack);
-	bfs_ref.run();
+			DirOptBFS bfs_diropt(G, 5, storePaths, storeStack);
+			bfs_diropt.run();
 
-	DirOptBFS bfs_diropt(G, 5, storePaths, storeStack);
-	bfs_diropt.run();
+			auto ref_distances = bfs_ref.getDistances();
+			auto do_distances = bfs_diropt.getDistances();
 
-	auto ref_distances = bfs_ref.getDistances();
-	auto do_distances = bfs_diropt.getDistances();
+			auto ref_stack = bfs_ref.getStack();
+			auto do_stack = bfs_diropt.getStack();
 
-	auto ref_stack = bfs_ref.getStack();
-	auto do_stack = bfs_diropt.getStack();
+			// computed distances from both BFS should be the same
+			// tests: SSSP.getDistances();
+			EXPECT_EQ(ref_distances, do_distances) << "distances from source are supposed to be the same";
 
-	// computed distances from both BFS should be the same
-	// tests: SSSP.getDistances();
-	EXPECT_EQ(ref_distances, do_distances) << "distances from source are supposed to be the same";
+			if (storeStack) {
+				auto &min_stack = (ref_stack.size() < do_stack.size())?ref_stack:do_stack;
+				// the exact order of the stack is unlikely to be the same
+				// however, the distance of stack.top() should be the same in both BFS
+				// tests: SSSP.getStack();
+				while (!min_stack.empty()) {
+					auto ref_top = ref_stack.top();
+					auto do_top = do_stack.top();
+					EXPECT_EQ(bfs_ref.distance(ref_top),bfs_diropt.distance(do_top));
+					ref_stack.pop(); do_stack.pop();
+				}
+			}
 
-	if (storeStack) {
-		auto &min_stack = (ref_stack.size() < do_stack.size())?ref_stack:do_stack;
-		// the exact order of the stack is unlikely to be the same
-		// however, the distance of stack.top() should be the same in both BFS
-		// tests: SSSP.getStack();
-		while (!min_stack.empty()) {
-			auto ref_top = ref_stack.top();
-			auto do_top = do_stack.top();
-			EXPECT_EQ(bfs_ref.distance(ref_top),bfs_diropt.distance(do_top));
-			ref_stack.pop(); do_stack.pop();
+			if (storePaths) {
+				// for both BFS, the number of paths for each node should be the same
+				// tests: SSSP.numberOfPaths(t)
+				count counter = 0;
+				count counter_smaller = 0;
+				G.forNodes([&](node v){
+					//EXPECT_EQ(bfs_ref.numberOfPaths(v),bfs_diropt.numberOfPaths(v)) << "number of paths for node " << v << " differ";
+					counter += bfs_ref.numberOfPaths(v) != bfs_diropt.numberOfPaths(v);
+					counter_smaller += bfs_ref.numberOfPaths(v) > bfs_diropt.numberOfPaths(v);
+				});
+				EXPECT_EQ(0,counter) << "of " << G.numberOfNodes() << " are wrong";
+				EXPECT_EQ(0,counter_smaller) << "are smaller than the actual number of paths";
+			}
 		}
-	}
-
-	if (storePaths) {
-		// for both BFS, the number of paths for each node should be the same
-		// tests: SSSP.numberOfPaths(t)
-		count counter = 0;
-		count counter_smaller = 0;
-		G.forNodes([&](node v){
-			//EXPECT_EQ(bfs_ref.numberOfPaths(v),bfs_diropt.numberOfPaths(v)) << "number of paths for node " << v << " differ";
-			counter += bfs_ref.numberOfPaths(v) != bfs_diropt.numberOfPaths(v);
-			counter_smaller += bfs_ref.numberOfPaths(v) > bfs_diropt.numberOfPaths(v);
-		});
-		EXPECT_EQ(0,counter) << "of " << G.numberOfNodes() << " are wrong";
-		EXPECT_EQ(0,counter_smaller) << "are smaller than the actual number of paths";
 	}
 }
 
@@ -324,50 +327,51 @@ TEST_F(SSSPGTest, testDirOptBFSOnDirectedRealGraph) {
 	Graph G = reader.read("input/foodweb-baydry.konect");
 	G.indexEdges();
 
-	bool storeStack = false;
-	bool storePaths = true;
+	for (unsigned int storePaths = 0; storePaths < 2; ++storePaths) {
+		for (unsigned int storeStack = 0; storeStack < 2; ++storeStack) {
+			BFS bfs_ref(G, 5, storePaths, storeStack);
+			bfs_ref.run();
 
-	BFS bfs_ref(G, 5, storePaths, storeStack);
-	bfs_ref.run();
+			DirOptBFS bfs_diropt(G, 5, storePaths, storeStack);
+			bfs_diropt.run();
 
-	DirOptBFS bfs_diropt(G, 5, storePaths, storeStack);
-	bfs_diropt.run();
+			auto ref_distances = bfs_ref.getDistances();
+			auto do_distances = bfs_diropt.getDistances();
 
-	auto ref_distances = bfs_ref.getDistances();
-	auto do_distances = bfs_diropt.getDistances();
+			auto ref_stack = bfs_ref.getStack();
+			auto do_stack = bfs_diropt.getStack();
 
-	auto ref_stack = bfs_ref.getStack();
-	auto do_stack = bfs_diropt.getStack();
+			// computed distances from both BFS should be the same
+			// tests: SSSP.getDistances();
+			EXPECT_EQ(ref_distances, do_distances) << "distances from source are supposed to be the same";
 
-	// computed distances from both BFS should be the same
-	// tests: SSSP.getDistances();
-	EXPECT_EQ(ref_distances, do_distances) << "distances from source are supposed to be the same";
+			if (storeStack) {
+				auto &min_stack = (ref_stack.size() < do_stack.size())?ref_stack:do_stack;
+				// the exact order of the stack is unlikely to be the same
+				// however, the distance of stack.top() should be the same in both BFS
+				// tests: SSSP.getStack();
+				while (!min_stack.empty()) {
+					auto ref_top = ref_stack.top();
+					auto do_top = do_stack.top();
+					EXPECT_EQ(bfs_ref.distance(ref_top),bfs_diropt.distance(do_top));
+					ref_stack.pop(); do_stack.pop();
+				}
+			}
 
-	if (storeStack) {
-		auto &min_stack = (ref_stack.size() < do_stack.size())?ref_stack:do_stack;
-		// the exact order of the stack is unlikely to be the same
-		// however, the distance of stack.top() should be the same in both BFS
-		// tests: SSSP.getStack();
-		while (!min_stack.empty()) {
-			auto ref_top = ref_stack.top();
-			auto do_top = do_stack.top();
-			EXPECT_EQ(bfs_ref.distance(ref_top),bfs_diropt.distance(do_top));
-			ref_stack.pop(); do_stack.pop();
+			if (storePaths) {
+				// for both BFS, the number of paths for each node should be the same
+				// tests: SSSP.numberOfPaths(t)
+				count counter = 0;
+				count counter_smaller = 0;
+				G.forNodes([&](node v){
+					//EXPECT_EQ(bfs_ref.numberOfPaths(v),bfs_diropt.numberOfPaths(v)) << "number of paths for node " << v << " differ";
+					counter += bfs_ref.numberOfPaths(v) != bfs_diropt.numberOfPaths(v);
+					counter_smaller += bfs_ref.numberOfPaths(v) > bfs_diropt.numberOfPaths(v);
+				});
+				EXPECT_EQ(0,counter) << "of " << G.numberOfNodes() << " are wrong";
+				EXPECT_EQ(0,counter_smaller) << "are smaller than the actual number of paths";
+			}
 		}
-	}
-
-	if (storePaths) {
-		// for both BFS, the number of paths for each node should be the same
-		// tests: SSSP.numberOfPaths(t)
-		count counter = 0;
-		count counter_smaller = 0;
-		G.forNodes([&](node v){
-			//EXPECT_EQ(bfs_ref.numberOfPaths(v),bfs_diropt.numberOfPaths(v)) << "number of paths for node " << v << " differ";
-			counter += bfs_ref.numberOfPaths(v) != bfs_diropt.numberOfPaths(v);
-			counter_smaller += bfs_ref.numberOfPaths(v) > bfs_diropt.numberOfPaths(v);
-		});
-		EXPECT_EQ(0,counter) << "of " << G.numberOfNodes() << " are wrong";
-		EXPECT_EQ(0,counter_smaller) << "are smaller than the actual number of paths";
 	}
 }
 
