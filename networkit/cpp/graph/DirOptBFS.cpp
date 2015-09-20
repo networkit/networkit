@@ -46,11 +46,12 @@ void DirOptBFS::run() {
 		std::swap(stack, empty);
 	}
 	frontier.clear();
-	frontier.reserve(z);
-	frontier.resize(z,false);
-	std::vector<char> visited(z,0);
+	frontier.resize(z, 0);
+	next.clear();
+	next.resize(z, 0);
+	std::vector<char> visited(z, 0);
 	count max_threads = omp_get_max_threads();
-	std::vector<std::vector<node>> threadLocalNext(max_threads);
+	std::vector<count> threadLocalCounter(max_threads, 0);
 
 	qNext.push_back(source);
 	distances[source] = currentDistance;
@@ -64,8 +65,8 @@ void DirOptBFS::run() {
 		if (topdown) {
 			return qNext.empty();
 		} else {
-			for (auto &q : threadLocalNext) {
-				if (!q.empty()) return false;
+			for (auto &s : threadLocalCounter) {
+				if (s > 0) return false;
 			}
 			return true;
 		}
@@ -77,9 +78,12 @@ void DirOptBFS::run() {
 			lastFrontierSize = qNext.size();
 			topdown = !growing || m_f < (m_u / alpha);
 		} else {
-			for (auto& q : threadLocalNext) {
-				n_f += q.size();
+			count tmp = 0;
+			#pragma omp parallel for reduction(+:tmp)
+			for (index i = 0; i < max_threads; ++i) {
+				tmp += threadLocalCounter[i];
 			}
+			n_f = std::move(tmp);
 			growing = n_f >= lastFrontierSize;
 			lastFrontierSize = n_f;
 			topdown = !growing && n_f < rhs_C_BT;
@@ -96,7 +100,8 @@ void DirOptBFS::run() {
 						visited[v] = 1;
 						distances[v] = currentDistance;
 						count tid = omp_get_thread_num();
-						threadLocalNext[tid].push_back(v);
+						threadLocalCounter[tid] += 1;
+						next[v] = 1;
 						previous[v] = {u};
 						npaths[v] = npaths[u];
 					} else if (distances[v]-1 == distances[u]) {
@@ -121,7 +126,8 @@ void DirOptBFS::run() {
 							visited[v] = 1;
 							distances[v] = currentDistance;
 							count tid = omp_get_thread_num();
-							threadLocalNext[tid].push_back(v);
+							threadLocalCounter[tid] += 1;
+							next[v] = 1;
 							found = true;
 						}
 					}
@@ -165,13 +171,11 @@ void DirOptBFS::run() {
 				// qNext -> qFrontier
 				std::swap(qFrontier,qNext);
 			} else {
-				// threadLocalNext -> qFrontier
-				qFrontier.reserve(n_f);
-				for (auto& q : threadLocalNext) {
-					qFrontier.insert(qFrontier.end(),q.begin(),q.end());
+				// next -> qFrontier
+				for (index i = 0; i < z; ++i) {
+					if (next[i]) qFrontier.push_back(i);
 				}
-				threadLocalNext.clear();
-				threadLocalNext.resize(max_threads);
+				threadLocalCounter.assign(max_threads,0);
 			}
 			if (storeStack) {
 				for (auto& u : qFrontier) {
@@ -191,18 +195,22 @@ void DirOptBFS::run() {
 				}
 				qNext.clear();
 			} else {
-				// threadLocalNext -> frontier
-				for (auto& q : threadLocalNext) {
-					for (auto& current : q) {
-						frontier[current] = true;
-						m_u -= G.degree(current);
-						if (storeStack) {
-							stack.push(current);
+				// next -> frontier
+				if (storeStack) {
+					for (index i = 0; i < z; ++i) {
+						if (next[i]) {
+							stack.push(i);
+							frontier[i] = 1;
+						} else {
+							frontier[i] = 0;
 						}
+						next[i] = 0;
 					}
+				} else {
+					std::swap(frontier, next);
+					next.assign(z,0);
 				}
-				threadLocalNext.clear();
-				threadLocalNext.resize(max_threads);
+				threadLocalCounter.assign(max_threads,0);
 			}
 		}
 	};

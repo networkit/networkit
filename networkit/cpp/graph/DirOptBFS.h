@@ -23,7 +23,8 @@ class DirOptBFS : public SSSP {
 friend class DynBFS;
 
 private:
-	std::vector<bool> frontier; //TODO: doc
+	std::vector<char> next;
+	std::vector<char> frontier;
 	std::vector<node> qFrontier;
 	std::vector<node> qNext;
 
