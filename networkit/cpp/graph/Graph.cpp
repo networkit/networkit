@@ -883,15 +883,6 @@ std::vector<node> Graph::neighbors(node u) const {
 	return neighbors;
 }
 
-std::vector<node> Graph::inNeighbors(node u) const {
-	std::vector<node> neighbors;
-	neighbors.reserve(degree(u));
-	this->forInNeighborsOf(u, [&](node v) {
-		neighbors.push_back(v);
-	});
-	return neighbors;
-}
-
 Graph Graph::transpose() const {
 	if (directed == false) {
 		throw std::runtime_error("The transpose of an undirected graph is identical to the original graph.");
