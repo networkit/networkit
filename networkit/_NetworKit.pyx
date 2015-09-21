@@ -1169,6 +1169,33 @@ cdef class BFS(SSSP):
 		self._G = G
 		self._this = new _BFS(G._this, source, storePaths, storeStack, target)
 
+
+cdef extern from "cpp/graph/DirOptBFS.h":
+	cdef cppclass _DirOptBFS "NetworKit::DirOptBFS"(_SSSP):
+		_DirOptBFS(_Graph G, node source, bool storePaths, bool storeStack) except +
+
+cdef class DirOptBFS(SSSP):
+	""" Simple breadth-first search on a Graph from a given source
+
+	DirOptBFS(G, source, [storePaths], [storeStack])
+
+	Create DirOptBFS for `G` and source node `source`.
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	source : node
+		The source node of the breadth-first search.
+	storePaths : bool
+		store paths and number of paths
+
+	"""
+	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False):
+		self._G = G
+		self._this = new _DirOptBFS(G._this, source, storePaths, storeStack)
+
+
 cdef extern from "cpp/graph/DynBFS.h":
 	cdef cppclass _DynBFS "NetworKit::DynBFS"(_DynSSSP):
 		_DynBFS(_Graph G, node source) except +
