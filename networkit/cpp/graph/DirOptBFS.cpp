@@ -196,21 +196,16 @@ void DirOptBFS::run() {
 				qNext.clear();
 			} else {
 				// next -> frontier
+				std::swap(frontier, next);
+				next.assign(z,0);
+				threadLocalCounter.assign(max_threads,0);
 				if (storeStack) {
 					for (index i = 0; i < z; ++i) {
-						if (next[i]) {
+						if (frontier[i]) {
 							stack.push(i);
-							frontier[i] = 1;
-						} else {
-							frontier[i] = 0;
 						}
-						next[i] = 0;
 					}
-				} else {
-					std::swap(frontier, next);
-					next.assign(z,0);
 				}
-				threadLocalCounter.assign(max_threads,0);
 			}
 		}
 	};
