@@ -11,8 +11,8 @@
 
 namespace NetworKit {
 
-DirOptBFS::DirOptBFS(const Graph& G, node source, bool storePaths, bool storeStack, count alpha, count beta, node target) :
-	SSSP(G, source, storePaths, storeStack, target),
+DirOptBFS::DirOptBFS(const Graph& G, node source, bool storePaths, bool storeStack, count alpha, count beta) :
+	SSSP(G, source, storePaths, storeStack, none),
 	topdown(true),
 	alpha(alpha),
 	beta(beta),
@@ -20,18 +20,24 @@ DirOptBFS::DirOptBFS(const Graph& G, node source, bool storePaths, bool storeSta
 	m_u((G.isDirected()?1:2) * G.numberOfEdges()),
 	n_f(1),
 	rhs_C_BT(G.numberOfNodes()/beta) {
+		if (!G.hasEdgeIds()) {
+			throw std::runtime_error("edges need to be indexed - call G.indexEdges() first");
+		}
 }
 
 void DirOptBFS::run() {
 	edgeweight infDist = std::numeric_limits<edgeweight>::max();
 	count z = G.upperNodeIdBound();
 	count currentDistance = 0;
+	count max_threads = omp_get_max_threads();
+	bool wasTopDown = true;
+	count lastFrontierSize = 0;
 
+	// prepare distance data structure
 	distances.clear();
 	distances.resize(z, infDist);
-	std::vector<char> edgeActive;
-	if (G.hasEdgeIds())
-		edgeActive.resize(G.upperEdgeIdBound(),1);
+
+	// prepare data structures to store the paths
 	if (storePaths) {
 		previous.clear();
 		previous.resize(z);
@@ -41,59 +47,59 @@ void DirOptBFS::run() {
 		npaths[source] = 1;
 	}
 
+	// prepare the data structure to store the stack
 	if (storeStack) {
 		std::stack<node> empty;
 		std::swap(stack, empty);
 	}
+
+	// prepare data structures to run the algorithm such as the visited flags for edges and nodes,
+	// counters and queues
 	frontier.clear();
 	frontier.resize(z, 0);
 	next.clear();
 	next.resize(z, 0);
+	std::vector<char> edgeActive(G.upperEdgeIdBound(),1);
 	std::vector<char> visited(z, 0);
-	count max_threads = omp_get_max_threads();
 	std::vector<count> threadLocalCounter(max_threads, 0);
 
+	// initialize the values for the source node
 	qNext.push_back(source);
 	distances[source] = currentDistance;
 	visited[source] = 1;
 
-	bool wasTopDown = true;
-	count lastFrontierSize = 0;
-	bool growing;
-
+	// stopping criterion: no new nodes have been added to the queue; depends on the step
 	auto isFinished = [&]() {
 		if (topdown) {
 			return qNext.empty();
 		} else {
-			for (auto &s : threadLocalCounter) {
-				if (s > 0) return false;
-			}
-			return true;
+			return n_f == 0;
 		}
 	};
 
+	// implementation of section V of the paper.
+	// note:
+	//  - m_f is computed on the fly during the top-down step
+	//  - m_u is computed during top-down step and, as it is easier, during prepareDatastructure instead of bottom-up step
+	//  - n_f is not needed in the top-down step as it just the number of elements in the vector
+	//  - n_f in bottom-up step is computed and reset in the else-case in the main loop.
 	auto determineNextStep = [&]() {
+		bool growing;
 		if (topdown) {
 			growing = qNext.size() >= lastFrontierSize;
 			lastFrontierSize = qNext.size();
 			topdown = !growing || m_f < (m_u / alpha);
 		} else {
-			count tmp = 0;
-			#pragma omp parallel for reduction(+:tmp)
-			for (index i = 0; i < max_threads; ++i) {
-				tmp += threadLocalCounter[i];
-			}
-			n_f = std::move(tmp);
 			growing = n_f >= lastFrontierSize;
 			lastFrontierSize = n_f;
 			topdown = !growing && n_f < rhs_C_BT;
 		}
 	};
 
+	// implementation of the bottom-up step with paths 
 	auto bottomUpStepWithPaths = [&](){
 		G.balancedParallelForNodes([&](node v){
-			G.forInNeighborsOf(v,[&](node v, node u, edgeid eid){
-			//for (auto &u : G.inNeighbors(v)) {
+			G.forInNeighborsOf(v,[&](node, node u, edgeid eid){
 				if (edgeActive[eid] && frontier[u]) {
 					edgeActive[eid] = 0;
 					if (!visited[v]) {
@@ -109,17 +115,16 @@ void DirOptBFS::run() {
 						npaths[v] += npaths[u];
 					}
 				}
-			//}
 			});
 		});
 	};
 
+	// implementation of the bottom-up step
 	auto bottomUpStep = [&](){
 		G.balancedParallelForNodes([&](node v){
 			if (!visited[v]) {
 				bool found = false;
-				G.forInNeighborsOf(v,[&](node v, node u, edgeid eid) {
-				//for (auto &u : G.inNeighbors(v)) {
+				G.forInNeighborsOf(v,[&](node, node u, edgeid eid) {
 					if (edgeActive[eid] && frontier[u]) {
 						edgeActive[eid] = 0;
 						if (!found) {
@@ -131,13 +136,13 @@ void DirOptBFS::run() {
 							found = true;
 						}
 					}
-				//}
 				});
 			}
 		});
 	};
 
 
+	// implementation of the top-down step
 	auto topDownStep = [&]() {
 		while (!qFrontier.empty()) {
 			auto current = qFrontier.back();
@@ -165,6 +170,7 @@ void DirOptBFS::run() {
 		}
 	};
 
+	// depending on the last step and the next step, data structures have to be swapped or converted
 	auto prepareDatastructure = [&]() {
 		if (topdown) {
 			if (wasTopDown) {
@@ -190,15 +196,13 @@ void DirOptBFS::run() {
 					frontier[current] = true;
 					m_u -= G.degree(current);
 					if (storeStack) {
-							stack.push(current);
+						stack.push(current);
 					}
 				}
 				qNext.clear();
 			} else {
 				// next -> frontier
 				std::swap(frontier, next);
-				next.assign(z,0);
-				threadLocalCounter.assign(max_threads,0);
 				if (storeStack) {
 					for (index i = 0; i < z; ++i) {
 						if (frontier[i]) {
@@ -210,11 +214,7 @@ void DirOptBFS::run() {
 		}
 	};
 
-/*	count time_topstep = 0;
-	count time_botstep = 0;
-	count n_top = 0;
-	count n_bot = 0;
-	Aux::Timer timer;*/
+	// main loop
 	while (!isFinished()) {
 		++currentDistance;
 		wasTopDown = topdown;
@@ -222,25 +222,20 @@ void DirOptBFS::run() {
 		prepareDatastructure();
 		if (topdown) {
 			m_f = 0;
-//			timer.start();
 			topDownStep();
-/*			timer.stop();
-			time_topstep += timer.elapsedMilliseconds();
-			n_top += n_f;*/
 		} else {
 			n_f = 0;
-//			timer.start();
 			if (storePaths)	bottomUpStepWithPaths();
 			else bottomUpStep();
-/*			timer.stop();
-			time_botstep += timer.elapsedMilliseconds();
-			n_bot += n_f;*/
+			count tmp = 0;
+			#pragma omp parallel for reduction(+:tmp)
+			for (index i = 0; i < max_threads; ++i) {
+				tmp += threadLocalCounter[i];
+			}
+			threadLocalCounter.assign(max_threads,0);
+			n_f = std::move(tmp);
 		}
 	}
-/*	INFO("time spent in top-down  steps:\t",time_topstep,"ms");
-	INFO("nodes claimed in top-down  steps:\t",n_top);
-	INFO("time spent in bottom-up steps:\t",time_botstep,"ms");
-	INFO("nodes claimed in bottom-up steps:\t",n_bot);*/
 }
 
 } /* namespace NetworKit */

@@ -23,9 +23,24 @@ class DirOptBFS : public SSSP {
 friend class DynBFS;
 
 private:
+	/**
+	 * The frontier representing the nodes queued for the next iteration during a bottom-up step.
+	 */
 	std::vector<char> next;
+
+	/**
+	 * The frontier representing queued nodes in the current iteration during a bottum-up step.
+	 */
 	std::vector<char> frontier;
+
+	/**
+	 * The frontier representing queued nodes in the current iteration during a top-down step.
+	 */
 	std::vector<node> qFrontier;
+
+	/**
+	 * The frontier representing the nodes queued for the next iteration during a top-down step.
+	 */
 	std::vector<node> qNext;
 
 	/**
@@ -44,12 +59,12 @@ private:
 	count beta;
 
 	/**
-	 * Number of edges to be visited from the frontier (to be computed on the fly).
+	 * Number of edges to be visited from the frontier.
 	 */
 	count m_f;
 
 	/**
-	 * Number of edges to be visited from unvisited nodes (should decrease monotonously?).
+	 * Number of edges to be visited from unvisited nodes.
 	 */
 	count m_u;
 
@@ -69,10 +84,10 @@ public:
 	 *
 	 * @param G The graph.
 	 * @param source The source node of the breadth-first search.
-	 * @param storePaths	store paths and number of paths?
+	 * @param storePaths	store paths and number of paths
 	 * @param storeStack	maintain a stack of nodes in decreasing order of distance
 	 */
-	DirOptBFS(const Graph& G, node source, bool storePaths=false, bool storeStack=false, count alpha = 12, count beta = 24, node target = none);
+	DirOptBFS(const Graph& G, node source, bool storePaths=false, bool storeStack=false, count alpha = 12, count beta = 24);
 
 	/**
 	 * Breadth-first search from @a source.
