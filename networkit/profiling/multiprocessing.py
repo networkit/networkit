@@ -69,9 +69,12 @@ class ThreadPool():
 		pool.join()
 	"""
 	def __init__(self, numberOfWorkers, isParallel=True):
-		self.__numberOfWorkers = numberOfWorkers
 		self.__numberOfTasks = 0
+		self.__numberOfWorkers = numberOfWorkers
 		self.__isParallel = isParallel
+		if self.__numberOfWorkers < 1:
+			self.__numberOfWorkers = 0
+			self.__isParallel = False
 		if self.__isParallel:
 			self.__tasks = multiprocessing.JoinableQueue()
 			self.__results = multiprocessing.Queue()
@@ -83,10 +86,17 @@ class ThreadPool():
 					w.start()
 					count += 1
 				except Exception as e:
+					self.__numberOfWorkers = count
 					if count < 1:
-						raise RuntimeError(e)
+						self.__tasks.close()
+						self.__results.close()
+						self.__isParallel = False
+						self.__tasks = None
+						self.__results = None
+						self.__workers = None
+					print(e)
 					break
-		else:
+		if not self.__isParallel:
 			self.__tasks = deque()
 
 
@@ -98,6 +108,11 @@ class ThreadPool():
 	def numberOfWorkers(self):
 		""" Initilized number of workers """
 		return self.__numberOfWorkers
+		
+		
+	def isParallel(self):
+		""" TODO: """
+		return self.__isParallel
 		
 
 	def put(self, task):
@@ -119,6 +134,7 @@ class ThreadPool():
 			except Exception as e:
 				print("Error: " + task.getType() + " - " + task.getName(), flush=True)
 				print(str(e), flush=True)
+				data = None
 			result = (task.getType(), task.getName(), data)
 		self.__numberOfTasks -= 1
 		return result;
