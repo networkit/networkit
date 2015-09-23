@@ -49,7 +49,7 @@ void ApproxBetweenness::run() {
 	}
 
 	INFO("estimated diameter: ", vd);
-	r = ceil((c / (epsilon * epsilon)) * (floor(log2(vd - 2)) + 1 + log(1 / delta)));
+	r = ceil((c / (epsilon * epsilon)) * (floor(log2(vd - 2)) + 1 - log(delta)));
 
 	INFO("taking ", r, " path samples");
 	// parallelization:
