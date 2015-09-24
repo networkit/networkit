@@ -45,7 +45,7 @@ public:
 			double treeArea = HyperbolicSpace::effectiveAreaInCell(currentNode.getLeftAngle(), currentNode.getRightAngle(), currentNode.getMinR(), currentNode.getMaxR(), alpha);
 			count coveredPoints = 0;
 			double coveredArea = 0;
-			for (int i = 0; i < currentNode.children.size(); i++) {
+			for (index i = 0; i < currentNode.children.size(); i++) {
 				count pointsInSubtree;
 				if (i < currentNode.children.size()-1) {
 					double subTreeArea = HyperbolicSpace::effectiveAreaInCell(currentNode.children[i].getLeftAngle(), currentNode.children[i].getRightAngle(), currentNode.children[i].getMinR(), currentNode.children[i].getMaxR(), alpha);

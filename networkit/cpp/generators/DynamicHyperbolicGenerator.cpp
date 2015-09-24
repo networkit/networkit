@@ -169,7 +169,6 @@ void DynamicHyperbolicGenerator::moveNode(index toMove) {
 
 void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &result) {
 	bool suppressLeft = false;
-	double threshold = R;
 
 	count oldStreamMarker = result.size();
 	vector<index> toWiggle;
