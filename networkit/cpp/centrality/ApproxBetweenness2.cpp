@@ -8,6 +8,7 @@
 
 #include "ApproxBetweenness2.h"
 #include "../graph/BFS.h"
+#include "../graph/DirOptBFS.h"
 #include "../graph/Dijkstra.h"
 #include "../graph/SSSP.h"
 #include "../auxiliary/SignalHandling.h"
@@ -17,7 +18,7 @@
 
 namespace NetworKit {
 
-ApproxBetweenness2::ApproxBetweenness2(const Graph& G, count nSamples, bool normalized) : Centrality(G, normalized), nSamples(nSamples) {
+ApproxBetweenness2::ApproxBetweenness2(const Graph& G, count nSamples, bool normalized, bool useDirOptBFS) : Centrality(G, normalized), nSamples(nSamples), useDirOptBFS(useDirOptBFS) {
 }
 
 void ApproxBetweenness2::run() {
@@ -40,7 +41,11 @@ void ApproxBetweenness2::run() {
 		if (G.isWeighted()) {
 			sssp.reset(new Dijkstra(G, s));
 		} else {
-			sssp.reset(new BFS(G, s));
+			if (!useDirOptBFS) {
+				sssp.reset(new BFS(G, s));
+			} else {
+				sssp.reset(new DirOptBFS(G, s));
+			}
 		}
 
 		sssp->run();

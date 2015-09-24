@@ -796,4 +796,91 @@ TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected2) {
  	EXPECT_EQ(reference,lccScores);
  }
 
+ TEST_F(CentralityGTest, benchCompareApproxBetweenness2WithDifferentBFS) {
+	std::vector<std::string> datasets = {
+		"input/PGPgiantcompo.graph",
+		"input/astro-ph.graph",
+		"input/caidaRouterLevel.graph",
+		"/algoDaten/staudt/Graphs/Collections/NwkBenchmark/coAuthorsDBLP.metis.graph",
+		"/algoDaten/staudt/Graphs/Collections/NwkBenchmark/in-2004.metis.graph"
+	};
+	METISGraphReader reader;
+	Aux::Timer t;
+
+	Aux::Random::setSeed(42, false);
+	for (auto& file : datasets) {
+		Graph G = reader.read(file);
+		G.indexEdges();
+		count nRuns = 5;
+		std::cout << "benchmarking ApproxBetweenness2 with different BFS: " << nRuns << " runs on " << G.toString() << ", reporting average time in ms" << std::endl;
+		std::vector<node> startNodes(nRuns);
+		count nSamples = std::min((count)50000,G.numberOfNodes()/10);
+		// generate startNode sequence
+		for (index i = 0; i < nRuns; ++i) {
+			startNodes[i] = Aux::Random::integer(0,G.numberOfNodes());
+		}
+		t.start();
+		for (index i = 0; i < nRuns; ++i) {
+			ApproxBetweenness2 ab(G,nSamples,true);
+			ab.run();
+		}
+		t.stop();
+		count elapsed = t.elapsedMilliseconds() / nRuns;
+		std::cout << "ApproxBetweenness2 with DirOptBFS\t" << elapsed << std::endl;
+
+		t.start();
+		for (index i = 0; i < nRuns; ++i) {
+			ApproxBetweenness2 ab(G,nSamples);
+			ab.run();
+		}
+		t.stop();
+		elapsed = t.elapsedMilliseconds() / nRuns;
+		std::cout << "ApproxBetweenness2 with default BFS\t" << elapsed << std::endl;
+		std::cout << "----------------------------------------------" << std::endl;
+	}
+}
+
+TEST_F(CentralityGTest, benchCompareApproxBetweennessWithDifferentBFS) {
+	std::vector<std::string> datasets = {
+		"input/PGPgiantcompo.graph",
+		"input/astro-ph.graph",
+		"input/caidaRouterLevel.graph",
+		"/algoDaten/staudt/Graphs/Collections/NwkBenchmark/coAuthorsDBLP.metis.graph",
+		"/algoDaten/staudt/Graphs/Collections/NwkBenchmark/in-2004.metis.graph"
+	};
+	METISGraphReader reader;
+	Aux::Timer t;
+
+	Aux::Random::setSeed(42, false);
+	for (auto& file : datasets) {
+		Graph G = reader.read(file);
+		G.indexEdges();
+		count nRuns = 5;
+		std::cout << "benchmarking ApproxBetweenness with different BFS: " << nRuns << " runs on " << G.toString() << ", reporting average time in ms" << std::endl;
+		std::vector<node> startNodes(nRuns);
+		// generate startNode sequence
+		for (index i = 0; i < nRuns; ++i) {
+			startNodes[i] = Aux::Random::integer(0,G.numberOfNodes());
+		}
+		t.start();
+		for (index i = 0; i < nRuns; ++i) {
+			ApproxBetweenness ab(G,true);
+			ab.run();
+		}
+		t.stop();
+		count elapsed = t.elapsedMilliseconds() / nRuns;
+		std::cout << "ApproxBetweenness with DirOptBFS\t" << elapsed << std::endl;
+
+		t.start();
+		for (index i = 0; i < nRuns; ++i) {
+			ApproxBetweenness ab(G);
+			ab.run();
+		}
+		t.stop();
+		elapsed = t.elapsedMilliseconds() / nRuns;
+		std::cout << "ApproxBetweenness with default BFS\t" << elapsed << std::endl;
+		std::cout << "----------------------------------------------" << std::endl;
+	}
+}
+
 } /* namespace NetworKit */

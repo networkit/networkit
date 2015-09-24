@@ -11,6 +11,7 @@
 #include "../graph/Sampling.h"
 #include "../graph/Dijkstra.h"
 #include "../graph/BFS.h"
+#include "../graph/DirOptBFS.h"
 #include "../graph/SSSP.h"
 #include "../auxiliary/Log.h"
 #include "../auxiliary/SignalHandling.h"
@@ -22,7 +23,7 @@
 
 namespace NetworKit {
 
-ApproxBetweenness::ApproxBetweenness(const Graph& G, double epsilon, double delta, count diameterSamples) : Centrality(G, true), epsilon(epsilon), delta(delta), diameterSamples(diameterSamples) {
+ApproxBetweenness::ApproxBetweenness(const Graph& G, double epsilon, double delta, count diameterSamples, bool useDirOptBFS) : Centrality(G, true), epsilon(epsilon), delta(delta), diameterSamples(diameterSamples), useDirOptBFS(useDirOptBFS) {
 
 }
 
@@ -76,7 +77,11 @@ void ApproxBetweenness::run() {
 		if (G.isWeighted()) {
 			sssp.reset(new Dijkstra(G, u, true, false, v));
 		} else {
-			sssp.reset(new BFS(G, u, true, false, v));
+			if (!useDirOptBFS) {
+				sssp.reset(new BFS(G, u, true, false, v));
+			} else {
+				sssp.reset(new DirOptBFS(G, u, true, false));
+			}
 		}
 		DEBUG("running shortest path algorithm for node ", u);
 		if (!handler.isRunning()) continue;
