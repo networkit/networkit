@@ -812,16 +812,13 @@ TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected2) {
 		Graph G = reader.read(file);
 		G.indexEdges();
 		count nRuns = 5;
-		std::cout << "benchmarking ApproxBetweenness2 with different BFS: " << nRuns << " runs on " << G.toString() << ", reporting average time in ms" << std::endl;
-		std::vector<node> startNodes(nRuns);
-		count nSamples = std::min((count)50000,G.numberOfNodes()/10);
-		// generate startNode sequence
-		for (index i = 0; i < nRuns; ++i) {
-			startNodes[i] = Aux::Random::integer(0,G.numberOfNodes());
-		}
+		count nSamples = std::min((count)50000, G.numberOfNodes()/10);
+		std::cout << "benchmarking ApproxBetweenness2 with different BFS: " << nRuns << " runs; " << G.toString() << "; average time in ms; nSamples: ";
+		std::cout << nSamples << std::endl;
+
 		t.start();
 		for (index i = 0; i < nRuns; ++i) {
-			ApproxBetweenness2 ab(G,nSamples,true);
+			ApproxBetweenness2 ab(G, nSamples, false, true);
 			ab.run();
 		}
 		t.stop();
@@ -830,7 +827,7 @@ TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected2) {
 
 		t.start();
 		for (index i = 0; i < nRuns; ++i) {
-			ApproxBetweenness2 ab(G,nSamples);
+			ApproxBetweenness2 ab(G, nSamples, false, false);
 			ab.run();
 		}
 		t.stop();
@@ -857,14 +854,10 @@ TEST_F(CentralityGTest, benchCompareApproxBetweennessWithDifferentBFS) {
 		G.indexEdges();
 		count nRuns = 5;
 		std::cout << "benchmarking ApproxBetweenness with different BFS: " << nRuns << " runs on " << G.toString() << ", reporting average time in ms" << std::endl;
-		std::vector<node> startNodes(nRuns);
-		// generate startNode sequence
-		for (index i = 0; i < nRuns; ++i) {
-			startNodes[i] = Aux::Random::integer(0,G.numberOfNodes());
-		}
+
 		t.start();
 		for (index i = 0; i < nRuns; ++i) {
-			ApproxBetweenness ab(G,true);
+			ApproxBetweenness ab(G, 0.01, 0.1,0, true);
 			ab.run();
 		}
 		t.stop();
@@ -873,7 +866,7 @@ TEST_F(CentralityGTest, benchCompareApproxBetweennessWithDifferentBFS) {
 
 		t.start();
 		for (index i = 0; i < nRuns; ++i) {
-			ApproxBetweenness ab(G);
+			ApproxBetweenness ab(G, 0.01, 0.1,0, false);
 			ab.run();
 		}
 		t.stop();

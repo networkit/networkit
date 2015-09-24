@@ -6,8 +6,8 @@
  */
 #include <omp.h>
 #include <queue>
+#include <sstream>
 #include "DirOptBFS.h"
-#include "../auxiliary/Timer.h"
 
 namespace NetworKit {
 
@@ -236,6 +236,14 @@ void DirOptBFS::run() {
 			n_f = std::move(tmp);
 		}
 	}
+
+	hasRun = true;
+}
+
+std::string DirOptBFS::toString() const {
+	std::stringstream ss;
+	ss << "DirOptBFS(storePaths=" << storePaths << ", storeStack=" << storeStack << ")";
+	return ss.str();
 }
 
 } /* namespace NetworKit */

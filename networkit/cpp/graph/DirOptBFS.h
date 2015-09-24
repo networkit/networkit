@@ -96,6 +96,8 @@ public:
 	 */
 	virtual void run() override;
 
+	std::string toString() const override;
+
 };
 
 } /* namespace NetworKit */

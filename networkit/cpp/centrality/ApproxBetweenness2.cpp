@@ -44,7 +44,7 @@ void ApproxBetweenness2::run() {
 			if (!useDirOptBFS) {
 				sssp.reset(new BFS(G, s));
 			} else {
-				sssp.reset(new DirOptBFS(G, s));
+				sssp.reset(new DirOptBFS(G, s, true));
 			}
 		}
 

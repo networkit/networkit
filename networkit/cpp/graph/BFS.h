@@ -39,6 +39,8 @@ public:
 	 */
 	virtual void run();
 
+	std::string toString() const override;
+
 };
 
 } /* namespace NetworKit */

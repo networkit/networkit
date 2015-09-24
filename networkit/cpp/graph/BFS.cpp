@@ -6,6 +6,7 @@
  */
 
 #include <queue>
+#include <sstream>
 #include "BFS.h"
 
 namespace NetworKit {
@@ -73,6 +74,12 @@ void BFS::run() {
 			}
 		});
 	}
+}
+
+std::string BFS::toString() const {
+	std::stringstream ss;
+	ss << "BFS(storePaths=" << storePaths << ", storeStack=" << storeStack << ")";
+	return ss.str();
 }
 
 } /* namespace NetworKit */
