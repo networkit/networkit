@@ -32,7 +32,7 @@ void ApproxBetweenness::run() {
 	scoreData.clear();
 	scoreData.resize(G.upperNodeIdBound());
 
-	double c = 0.5; // universal positive constant - see reference in paper
+	const double c = 0.5; // universal positive constant - see reference in paper
 
 	edgeweight vd = 0;
 	if (diameterSamples == 0) {
@@ -49,7 +49,7 @@ void ApproxBetweenness::run() {
 	}
 
 	INFO("estimated diameter: ", vd);
-	r = ceil((c / (epsilon * epsilon)) * (floor(log(vd - 2)) + 1 + log(1 / delta)));
+	r = ceil((c / (epsilon * epsilon)) * (floor(log2(vd - 2)) + 1 - log(delta)));
 
 	INFO("taking ", r, " path samples");
 	// parallelization:

@@ -468,8 +468,7 @@ class Scatter:
 		return "Plot.Scatter"
 
 	def run(self):
-		nameA = self.__name
-		(nameB, labelA, labelB, sample_1, sample_2) = self.__params
+		(name, nameA, nameB, labelA, labelB, sample_1, sample_2) = self.__params
 		plt.ioff()
 
 
@@ -509,4 +508,4 @@ class Scatter:
 		plaintext = imgdata.getvalue()
 		plaintext = " ".join(plaintext[plaintext.find("<svg "):].split())
 		encoded = quote(plaintext, safe='');
-		return (nameB, encoded)
+		return (name, encoded)

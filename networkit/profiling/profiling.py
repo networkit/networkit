@@ -6,6 +6,8 @@
 from networkit import *
 import networkit as kit
 
+import os as os
+
 from . import multiprocessing
 from . import stat
 from . import plot
@@ -80,6 +82,58 @@ except Exception as e:
 	print(str(e))
 
 
+class Config:
+	def __init__(self):
+		self.__options_Properties = {
+			"Diameter": False
+		}
+		self.__options_Measures = {
+			"Centrality.Degree": False,
+			"Centrality.CoreDecomposition": False,
+			"Centrality.ClusteringCoefficient": False,
+			"Centrality.PageRank": False,
+			"Centrality.KPath": False,
+			"Centrality.Katz": False,
+			"Centrality.Betweenness": False,
+			"Centrality.Closeness": False,
+			"Partition.Communities": False,
+			"Partition.ConnectedComponents": False,
+			"Partition.CoreDecomposition": False
+		}
+		self.__options_MeasureCorrelations = {
+			"Pearson": False,
+			"Spearman": False,
+			"Fechner": False
+		}
+		
+		
+	def setProperty(self, id, enabled=True):
+		if id in self.__options_Properties:
+			self.__options_Properties[id] = enabled
+	
+	
+	def getProperty(self, id):
+		return self.__options_Properties[id]
+		
+	
+	def setMeasure(self, id, enabled=True):
+		if id in self.__options_Measures:
+			self.__options_Measures[id] = enabled
+	
+	
+	def getMeasure(self, id):
+		return self.__options_Measures[id]
+	
+	
+	def setMeasureCorrelation(self, id, enabled=True):
+		if id in self.__options_MeasureCorrelations:
+			self.__options_MeasureCorrelations[id] = enabled
+			
+			
+	def getMeasureCorrelation(self, id):
+		return self.__options_MeasureCorrelations[id]
+	
+	
 class Profile:
 	""" TODO: """
 	__TOKEN = object();
@@ -99,11 +153,72 @@ class Profile:
 		self.__measures = collections.OrderedDict()
 		self.__correlations = {}
 
-
+	
 	@classmethod
-	def create(cls, G, exclude=["KPathCentrality"]):
+	def createConfig(cls, preset="None"):
+		result = Config()
+		
+		if preset == "Full":
+			result.setProperty("Diameter")
+			result.setMeasure("Centrality.Degree"),
+			result.setMeasure("Centrality.CoreDecomposition"),
+			result.setMeasure("Centrality.ClusteringCoefficient")
+			result.setMeasure("Centrality.PageRank")
+			result.setMeasure("Centrality.KPath")
+			result.setMeasure("Centrality.Katz")
+			result.setMeasure("Centrality.Betweenness")
+			result.setMeasure("Centrality.Closeness")
+			result.setMeasure("Partition.Communities")
+			result.setMeasure("Partition.ConnectedComponents")
+			result.setMeasure("Partition.CoreDecomposition")
+			result.setMeasureCorrelation("Pearson")
+			result.setMeasureCorrelation("Spearman")
+			result.setMeasureCorrelation("Fechner")
+		
+		else:
+			pass
+			
+		return result
+
+		
+	@classmethod
+	def walk(cls, directory, config=Config(), type="HTML", style="light", color=(0, 0, 1), recursive=True, parallel=False):
+		for (dirpath, dirnames, filenames) in os.walk(directory):
+			for filename in filenames:
+				try:
+					seperations = filename.split(".")
+					if seperations[-1] != "graph":
+						continue
+					del seperations[-1]
+					
+					file = dirpath + "/" + filename
+					cls.__verbosePrint("[ " + file + " ]")
+					G = kit.readGraph(file, kit.Format[seperations[-1]])
+					pf = cls.create(G, config=config)
+					del seperations[-1]
+					
+					pf.output(
+						type = type,
+						directory = dirpath,
+						style = style,
+						color = color,
+						parallel = parallel
+					)
+					cls.__verbosePrint("\n")
+				except Exception as e:
+					cls.__verbosePrint("=> an error occured: " + str(e))
+					cls.__verbosePrint("\n")
+			if not recursive:
+				break;
+		
+		
+	@classmethod
+	def create(cls, G, config=Config()):
 		""" TODO: """
 		result = cls(G, cls.__TOKEN)
+		# TODO: use copy constructor instead
+		result.__config = config
+		
 		kit.setNumberOfThreads(result.__parallel)
 
 		def funcScores(instance):
@@ -112,26 +227,35 @@ class Profile:
 		def funcSizes(instance):
 			return sorted(instance.getPartition().subsetSizes())
 
-
-
 		if G.isDirected():
 			classConnectedComponents = properties.StronglyConnectedComponents
 		else:
 			classConnectedComponents = properties.ConnectedComponents
 
 		for parameter in [
-			("Node Centrality",	"Degree",						True,	funcScores,	"Score",				centrality.DegreeCentrality, 			(G, )),
-			("Node Centrality",	"K-Core Decomposition",			True,	funcScores,	"Score",				centrality.CoreDecomposition, 			(G, )),
-			("Node Centrality",	"Local Clustering Coefficient",	True,	funcScores,	"Score",				centrality.LocalClusteringCoefficient,	(G, )),
-			("Node Centrality",	"PageRank",					True,	funcScores,	"Score",				centrality.PageRank, 					(G, )),
-			("Node Centrality",	"K-Path Centrality",			True,	funcScores,	"Score",				centrality.KPathCentrality,				(G, )),
-			("Node Centrality",	"Katz Centrality",				True,	funcScores,	"Score",				centrality.KatzCentrality,				(G, )),
-			("Node Centrality",	"Betweenness (ap.)",					True,	funcScores,	"Score",				centrality.ApproxBetweenness2,			(G, max(42, math.log(G.numberOfNodes()), True))),
-			("Node Centrality",	"Closeness",					True,	funcScores,	"Score",				centrality.ApproxCloseness,			(G, max(42, math.log(G.numberOfNodes()), True))),
-			("Partition",		"Communities",					False,	funcSizes,	"Nodes per Community",	community.PLM,			 				(G, )),
-			("Partition",		"Connected Components",			False,	funcSizes,	"Nodes per Component",	classConnectedComponents,				(G, )),
-			("Partition",		"K-Core Decomposition",			False,	funcSizes,	"Nodes per Shell",		centrality.CoreDecomposition, 			(G, ))
-		]: result.__addMeasure(parameter, exclude)
+			("Centrality.Degree",					"Node Centrality",	"Degree",
+				True,	funcScores,	"Score",				centrality.DegreeCentrality, 			(G, )),
+			("Centrality.CoreDecomposition",		"Node Centrality",	"K-Core Decomposition",
+				True,	funcScores,	"Score",				centrality.CoreDecomposition, 			(G, )),
+			("Centrality.ClusteringCoefficient",	"Node Centrality",	"Local Clustering Coefficient",
+				True,	funcScores,	"Score",				centrality.LocalClusteringCoefficient,	(G, )),
+			("Centrality.PageRank", 				"Node Centrality",	"Page Rank",
+				True,	funcScores,	"Score",				centrality.PageRank, 					(G, )),
+			("Centrality.KPath", 					"Node Centrality",	"K-Path Centrality",
+				True,	funcScores,	"Score",				centrality.KPathCentrality,				(G, )),
+			("Centrality.Katz",						"Node Centrality",	"Katz Centrality",
+				True,	funcScores,	"Score",				centrality.KatzCentrality,				(G, )),
+			("Centrality.Betweenness", 				"Node Centrality",	"Betweenness",
+				True,	funcScores,	"Score",				centrality.ApproxBetweenness2,			(G, max(42, math.log(G.numberOfNodes()), True))),
+			("Centrality.Closeness",				"Node Centrality",	"Closeness",
+				True,	funcScores,	"Score",				centrality.ApproxCloseness,				(G, max(42, math.log(G.numberOfNodes()), True))),
+			("Partition.Communities", 				"Partition",		"Communities",
+				False,	funcSizes,	"Nodes per Community",	community.PLM,			 				(G, )),
+			("Partition.ConnectedComponents", 		"Partition",		"Connected Components",
+				False,	funcSizes,	"Nodes per Component",	classConnectedComponents,				(G, )),
+			("Partition.CoreDecomposition", 		"Partition",		"K-Core Decomposition",
+				False,	funcSizes,	"Nodes per Shell",		centrality.CoreDecomposition, 			(G, ))
+		]: result.__addMeasure(parameter)
 
 		if cls.__verbose:
 			timerAll = stopwatch.Timer()
@@ -189,7 +313,7 @@ class Profile:
 
 
 	def output(self, type, directory, filename=None, style="light", color=(0, 0, 1), parallel=False):
-		""" TODO """
+		""" TODO: type -> enum """
 		options_type = ["HTML", "LaTeX", None]
 		for o in options_type:
 			if o is None:
@@ -234,13 +358,14 @@ class Profile:
 				</html>
 			"""
 			if filename is None:
-				filename  = "profile-{0}.html".format(self.__G.getName())
+				filename  = "{0}.html".format(self.__G.getName())
 		else:
 			raise Error("unknown output type")
 
 		with open(directory + "/" + filename, 'w') as file:
 			file.write(result)
 
+			
 	def show(self, style="light", color=(0, 0, 1), parallel=False):
 		""" TODO: """
 		try:
@@ -334,14 +459,19 @@ class Profile:
 									value = self.__correlations[category][keyA][keyB]
 								except:
 									value = self.__correlations[category][keyB][keyA]
-								result += "<div class=\"HeatCell\" title=\"" + keyB + " - " + keyA + "\" data-heat=\"{:+.3F}\"></div>".format(value["stat"][correlationName])
-							result += "<div class=\"HeatCellName\">" + keyB + "</div><br>"
+								nameA = self.__measures[keyA]["name"]
+								nameB = self.__measures[keyB]["name"]
+								result += "<div class=\"HeatCell\" title=\"" + nameB + " - " + nameA + "\" data-heat=\"{:+.3F}\"></div>".format(value["stat"][correlationName])
+							result += "<div class=\"HeatCellName\">" + nameB + "</div><br>"
 					result += "</div>"
 
 				return result
-			results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Pearson's Correlation Coefficient")
-			results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Spearman's Rank Correlation Coefficient")
-			results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Fechner's Correlation Coefficient")
+			if self.__config.getMeasureCorrelation("Pearson"):
+				results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Pearson's Correlation Coefficient")
+			if self.__config.getMeasureCorrelation("Spearman"):
+				results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Spearman's Rank Correlation Coefficient")
+			if self.__config.getMeasureCorrelation("Fechner"):
+				results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Fechner's Correlation Coefficient")
 
 			def funcScatterPlot(category):
 				result = ""
@@ -371,7 +501,7 @@ class Profile:
 			stat = measure["stat"]
 			assortativity = measure["assortativity"]
 			centralization = measure["centralization"]
-
+			algorithm = measure["class"].__name__
 
 			description = "N/A"
 			try:
@@ -396,7 +526,8 @@ class Profile:
 				assortativity,
 				centralization,
 				extentions,
-				description
+				description,
+				algorithm
 			)
 			if type == "HTML":
 				results[category]["Overview"] += "<div class=\"Thumbnail_Overview\" data-title=\"" + name + "\"><a href=\"#NetworKit_Page_" + str(pageIndex) + "_" + key + "\"><img src=\"data:image/svg+xml;utf8," + image[1] + "\" /></a></div>"
@@ -409,7 +540,7 @@ class Profile:
 		return result
 
 
-	def __formatMeasureTemplate(self, template, pageIndex, key, name, image, stat, assortativity, centralization, extentions, description):
+	def __formatMeasureTemplate(self, template, pageIndex, key, name, image, stat, assortativity, centralization, extentions, description, algorithm):
 		""" TODO: """
 		result = template.format(**locals())
 		return result
@@ -422,11 +553,10 @@ class Profile:
 		return result
 
 
-	def __addMeasure(self, args, exclude):
+	def __addMeasure(self, args):
 		""" TODO: """
-		(measureCategory, measureName, correlate, getter, label, measureClass, parameters) = args
-		measureKey = measureClass.__name__
-		if measureKey not in exclude:
+		(measureKey, measureCategory, measureName, correlate, getter, label, measureClass, parameters) = args
+		if self.__config.getMeasure(measureKey):
 			measure = {}
 			measure["name"] = measureName
 			measure["category"] = measureCategory
@@ -457,7 +587,10 @@ class Profile:
 		timerInstance = stopwatch.Timer()
 		self.__verbosePrint("Diameter: ", end="")
 		try:
-			diameter = properties.Diameter.estimatedDiameterRange(self.__G, error=0.1)
+			if self.__config.getProperty("Diameter"):
+				diameter = properties.Diameter.estimatedDiameterRange(self.__G, error=0.1)
+			else:
+				diameter = "N/A"
 		except:
 			diameter = "N/A"
 		elapsedMain = timerInstance.elapsed
@@ -509,23 +642,25 @@ class Profile:
 			elapsedPostAssortativity = timerPostAssortativity.elapsed
 			self.__verbosePrint("{:.2F} s".format(elapsedPostAssortativity))
 
-			# self.__verbosePrint("    Centralization: ", end="")
+			self.__verbosePrint("    Centralization: ", end="")
 			timerPostCentralization = stopwatch.Timer()
 			if self.__measures[name]["category"] == "Node Centrality":
 				try:
 					measure["centralization"] = instance.centralization()
 				except:
-					self.__verbosePrint("Centrality.centralization not properly defined for {0}".format(name), level=0)
+					self.__verbosePrint("Centrality.centralization not properly defined for {0}. ".format(name), level=0, end="")
 					measure["centralization"] = float("nan")
 			else:
 				measure["centralization"] = float("nan")
 			elapsedPostCentralization = timerPostCentralization.elapsed
+			self.__verbosePrint("{:.2F} s".format(elapsedPostCentralization))
 
 			measure["time"] = (
 				elapsedMain,
 				elapsedPostSort,
 				elapsedPostRank,
 				elapsedPostAssortativity,
+				elapsedPostCentralization
 			)
 
 		self.__verbosePrint("")
@@ -571,6 +706,8 @@ class Profile:
 							pool.put(
 								plot.Scatter(key, (
 									name,
+									self.__measures[key]["name"],
+									self.__measures[name]["name"],
 									self.__measures[key]["label"],
 									self.__measures[name]["label"],
 									self.__measures[key]["data"]["sample"],
@@ -602,15 +739,16 @@ class Profile:
 		pool.join()
 
 
-	def __verbosePrint(self, text, end="\n", level=0):
-		if self.__verboseLevel >= level:
+	@classmethod
+	def __verbosePrint(cls, text="", end="\n", level=0):
+		if cls.__verboseLevel >= level:
 			text = text + end
 		else:
 			text = "."
 
-		if self.__verbose or level < 0:
+		if cls.__verbose or level < 0:
 			print(text, end="", flush=True)
 
-		if self.__verboseFilename != "":
-			with open(self.__verboseFilename, 'a+') as file:
+		if cls.__verboseFilename != "":
+			with open(cls.__verboseFilename, 'a+') as file:
 				file.write(text)
