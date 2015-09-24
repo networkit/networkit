@@ -14,7 +14,7 @@
 
 namespace NetworKit {
 
-EdgeListReader::EdgeListReader(char separator, node firstNode, std::string commentPrefix, bool continuous, bool directed) :
+EdgeListReader::EdgeListReader(const char separator, const node firstNode, const std::string commentPrefix, const bool continuous, const bool directed) :
 	separator(separator), commentPrefix(commentPrefix), firstNode(firstNode), continuous(continuous), mapNodeIds(), directed(directed) {
 //	this->mapNodeIds;i
 }

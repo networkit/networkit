@@ -6,6 +6,8 @@
 from networkit import *
 import networkit as kit
 
+import os as os
+
 from . import multiprocessing
 from . import stat
 from . import plot
@@ -153,7 +155,7 @@ class Profile:
 
 	
 	@classmethod
-	def getConfig(cls, preset="None"):
+	def createConfig(cls, preset="None"):
 		result = Config()
 		
 		if preset == "Full":
@@ -178,6 +180,37 @@ class Profile:
 			
 		return result
 
+		
+	@classmethod
+	def walk(cls, directory, config=Config(), type="HTML", style="light", color=(0, 0, 1), recursive=True, parallel=False):
+		for (dirpath, dirnames, filenames) in os.walk(directory):
+			for filename in filenames:
+				try:
+					seperations = filename.split(".")
+					if seperations[-1] != "graph":
+						continue
+					del seperations[-1]
+					
+					file = dirpath + "/" + filename
+					cls.__verbosePrint("[ " + file + " ]")
+					G = kit.readGraph(file, kit.Format[seperations[-1]])
+					pf = cls.create(G, config=config)
+					del seperations[-1]
+					
+					pf.output(
+						type = type,
+						directory = dirpath,
+						style = style,
+						color = color,
+						parallel = parallel
+					)
+					cls.__verbosePrint("\n")
+				except Exception as e:
+					cls.__verbosePrint("=> an error occured: " + str(e))
+					cls.__verbosePrint("\n")
+			if not recursive:
+				break;
+		
 		
 	@classmethod
 	def create(cls, G, config=Config()):
@@ -218,9 +251,9 @@ class Profile:
 				True,	funcScores,	"Score",				centrality.ApproxCloseness,				(G, max(42, math.log(G.numberOfNodes()), True))),
 			("Partition.Communities", 				"Partition",		"Communities",
 				False,	funcSizes,	"Nodes per Community",	community.PLM,			 				(G, )),
-			("Partition.ConnectedComponents", 							"Partition",		"Connected Components",
+			("Partition.ConnectedComponents", 		"Partition",		"Connected Components",
 				False,	funcSizes,	"Nodes per Component",	classConnectedComponents,				(G, )),
-			("Partition.CoreDecomposition", 							"Partition",		"K-Core Decomposition",
+			("Partition.CoreDecomposition", 		"Partition",		"K-Core Decomposition",
 				False,	funcSizes,	"Nodes per Shell",		centrality.CoreDecomposition, 			(G, ))
 		]: result.__addMeasure(parameter)
 
@@ -280,7 +313,7 @@ class Profile:
 
 
 	def output(self, type, directory, filename=None, style="light", color=(0, 0, 1), parallel=False):
-		""" TODO """
+		""" TODO: type -> enum """
 		options_type = ["HTML", "LaTeX", None]
 		for o in options_type:
 			if o is None:
@@ -325,13 +358,14 @@ class Profile:
 				</html>
 			"""
 			if filename is None:
-				filename  = "profile-{0}.html".format(self.__G.getName())
+				filename  = "{0}.html".format(self.__G.getName())
 		else:
 			raise Error("unknown output type")
 
 		with open(directory + "/" + filename, 'w') as file:
 			file.write(result)
 
+			
 	def show(self, style="light", color=(0, 0, 1), parallel=False):
 		""" TODO: """
 		try:
@@ -467,6 +501,7 @@ class Profile:
 			stat = measure["stat"]
 			assortativity = measure["assortativity"]
 			centralization = measure["centralization"]
+			algorithm = measure["class"].__name__
 
 			description = "N/A"
 			try:
@@ -491,7 +526,8 @@ class Profile:
 				assortativity,
 				centralization,
 				extentions,
-				description
+				description,
+				algorithm
 			)
 			if type == "HTML":
 				results[category]["Overview"] += "<div class=\"Thumbnail_Overview\" data-title=\"" + name + "\"><a href=\"#NetworKit_Page_" + str(pageIndex) + "_" + key + "\"><img src=\"data:image/svg+xml;utf8," + image[1] + "\" /></a></div>"
@@ -504,7 +540,7 @@ class Profile:
 		return result
 
 
-	def __formatMeasureTemplate(self, template, pageIndex, key, name, image, stat, assortativity, centralization, extentions, description):
+	def __formatMeasureTemplate(self, template, pageIndex, key, name, image, stat, assortativity, centralization, extentions, description, algorithm):
 		""" TODO: """
 		result = template.format(**locals())
 		return result
@@ -703,15 +739,16 @@ class Profile:
 		pool.join()
 
 
-	def __verbosePrint(self, text, end="\n", level=0):
-		if self.__verboseLevel >= level:
+	@classmethod
+	def __verbosePrint(cls, text="", end="\n", level=0):
+		if cls.__verboseLevel >= level:
 			text = text + end
 		else:
 			text = "."
 
-		if self.__verbose or level < 0:
+		if cls.__verbose or level < 0:
 			print(text, end="", flush=True)
 
-		if self.__verboseFilename != "":
-			with open(self.__verboseFilename, 'a+') as file:
+		if cls.__verboseFilename != "":
+			with open(cls.__verboseFilename, 'a+') as file:
 				file.write(text)
