@@ -24,21 +24,18 @@ void MatchingContracter::run() {
 	std::vector<node> mapFineToCoarse(z, none);
 	G.forNodes([&](node v) { // TODO: difficult in parallel
 		index mate = M.mate(v);
-		if ((mate == none) || (v < mate)) {
-			// vertex is carried over to the new level
+//		TRACE("v: ", v, ", mate: ", mate);
+		if ((mate == none) || (v <= mate)) {
+			// vertex v is carried over to the new level
 			mapFineToCoarse[v] = idx;
 			++idx;
 		}
 		else {
-			// vertex is not carried over, receives ID of mate
+			// vertex v is not carried over, receives ID of mate
 			mapFineToCoarse[v] = mapFineToCoarse[mate];
 		}
+//		TRACE(v, " maps to ", mapFineToCoarse[v]);
 	});
-
-//	for (node v = 0; v < n; ++v) {
-//		std::cout << v << " maps to " << mapFineToCoarse[v] << std::endl;
-//	}
-//	std::cout << "matching size: " << M.matchingSize() << std::endl;
 
 	G.forNodes([&](node v) { // TODO: difficult in parallel
 		G.forNeighborsOf(v, [&](node u, edgeweight ew) {
@@ -52,6 +49,8 @@ void MatchingContracter::run() {
 
 	Gcoarsed = std::move(cG);
 	nodeMapping = std::move(mapFineToCoarse);
+
+	hasRun = true;
 }
 
 } /* namespace NetworKit */
