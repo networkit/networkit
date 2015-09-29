@@ -245,6 +245,23 @@ const vector<Instance> WALSHAW { // http://staffweb.cms.gre.ac.uk/~wc06/partitio
 	{"instances/walshaw/wing.graph", NETWORK}
 };
 
+const vector<Instance> SNAP {
+	{"Brightkite_edges.snap", NETWORK},
+	{"CA-AstroPh.snap", NETWORK},
+	{"CA-CondMat.snap", NETWORK},
+	{"CA-GrQc.snap", NETWORK},
+	{"CA-HepPh.snap", NETWORK},
+	{"CA-HepTh.snap", NETWORK},
+	{"Email-Enron.snap", NETWORK},
+	{"Gowalla_edges.snap", NETWORK},
+	{"as-skitter.snap", NETWORK},
+	{"com-amazon.ungraph.snap", NETWORK},
+	{"com-orkut.ungraph.snap", NETWORK},
+	{"com-youtube.ungraph.snap", NETWORK},
+	{"roadNet-CA.snap", NETWORK},
+	{"roadNet-PA.snap", NETWORK},
+	{"roadNet-TX.snap", NETWORK},
+};
 
 
 
