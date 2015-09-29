@@ -440,7 +440,7 @@ string benchmark(const CSRMatrix &matrix, const Vector &initialX, const Vector &
 		for (index j = 0; j < numSolvesPerSetup; ++j) {
 			Vector x = initialX;
 			solverStati[i * numSolvesPerSetup + j].maxConvergenceTime = MAX_CONVERGENCE_TIME;
-			solverStati[i * numSolvesPerSetup + j].desiredResidual = desiredResidual;
+			solverStati[i * numSolvesPerSetup + j].desiredResidualReduction = desiredResidual;
 
 			tSolve.start();
 				solver.solve(x, b, solverStati[i * numSolvesPerSetup + j]);
@@ -511,11 +511,10 @@ string benchmark(Benchmark &bench) {
 
 		Graph Gcheck = matrixToGraph(L);
 		ConnectedComponents con(Gcheck);
-		INFO("checking connected components");
 		con.run();
-		INFO("done");
 		if (con.numberOfComponents() == 1) { // LAMG solver currently only supports connected graphs
 			output += benchmark(L, x, b, G.getName(), bench.setupTries, bench.solveTriesPerSetup, *smoother, bench.residual);
+			INFO(output);
 		} else {
 			output += " -  & - & - & - \\\\ \n";
 		}
