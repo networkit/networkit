@@ -281,6 +281,7 @@ class Bench:
             plt.savefig(os.path.join(self.plotDir, "{algoName}-eps.pdf".format(**locals())), bbox_inches="tight")
 
     def plot(self, algoName):
+        print(algoName)
         self.timePlot(algoName)
         self.epsPlot(algoName)
 
