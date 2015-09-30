@@ -40,7 +40,7 @@ class bCoreDecomposition(Algo):
 	name = "CoreDecomposition" + framework
 
 	def run(self, G):
-		cd = networkit.properties.CoreDecomposition(G)
+		cd = networkit.centrality.CoreDecomposition(G)
 		cd.run()
 
 
