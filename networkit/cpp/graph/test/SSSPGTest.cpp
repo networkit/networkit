@@ -44,10 +44,10 @@ TEST_F(SSSPGTest, testDijkstra) {
 
 	Dijkstra sssp(G, 5, true, true);
 	sssp.run();
-	std::stack<node> stack = sssp.getStack();
+	std::vector<node> stack = sssp.getStack();
 	while (!stack.empty()) {
-		node t = stack.top();
-		stack.pop();
+		node t = stack.back();
+		stack.pop_back();
 		DEBUG(t);
 	}
 }

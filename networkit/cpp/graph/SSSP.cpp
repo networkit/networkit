@@ -77,7 +77,7 @@ std::set<std::vector<node>> SSSP::getPaths(node t, bool forward) const {
 }
 
 
-std::stack<node> SSSP::getStack() const {
+std::vector<node> SSSP::getStack() const {
 	return stack;
 }
 
