@@ -11,7 +11,7 @@
 
 namespace NetworKit {
 
-DirOptBFS::DirOptBFS(const Graph& G, node source, bool storePaths, bool storeStack, count alpha, count beta) :
+DirOptBFS::DirOptBFS(const Graph& G, node source, bool storePaths, bool storeStack, count alpha, count beta, count max_threads) :
 	SSSP(G, source, storePaths, storeStack, none),
 	topdown(true),
 	alpha(alpha),
@@ -19,17 +19,18 @@ DirOptBFS::DirOptBFS(const Graph& G, node source, bool storePaths, bool storeSta
 	m_f(G.degree(source)),
 	m_u((G.isDirected()?1:2) * G.numberOfEdges()),
 	n_f(1),
-	rhs_C_BT(G.numberOfNodes()/beta) {
-		if (!G.hasEdgeIds()) {
-			throw std::runtime_error("edges need to be indexed - call G.indexEdges() first");
-		}
+	rhs_C_BT(G.numberOfNodes()/beta),
+	max_threads((max_threads==0)?omp_get_max_threads():max_threads)
+{
+	if (!G.hasEdgeIds()) {
+		throw std::runtime_error("edges need to be indexed - call G.indexEdges() first");
+	}
 }
 
 void DirOptBFS::run() {
 	edgeweight infDist = std::numeric_limits<edgeweight>::max();
 	count z = G.upperNodeIdBound();
 	count currentDistance = 0;
-	count max_threads = omp_get_max_threads();
 	bool wasTopDown = true;
 	count lastFrontierSize = 0;
 

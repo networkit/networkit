@@ -78,6 +78,11 @@ private:
 	 */
 	count rhs_C_BT;
 
+	/**
+	 * The number of threads this BFS may use; to be used when this BFS imbedded in other parallel algorithms.
+	 */
+	count max_threads;
+
 public:
 	/**
 	 * Constructs the BFS class for @a G and source node @a source.
@@ -87,7 +92,7 @@ public:
 	 * @param storePaths	store paths and number of paths
 	 * @param storeStack	maintain a stack of nodes in decreasing order of distance
 	 */
-	DirOptBFS(const Graph& G, node source, bool storePaths=false, bool storeStack=false, count alpha = 12, count beta = 24);
+	DirOptBFS(const Graph& G, node source, bool storePaths=false, bool storeStack=false, count alpha=12, count beta=24, count max_threads=0);
 
 	/**
 	 * Breadth-first search from @a source.

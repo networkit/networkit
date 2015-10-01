@@ -54,12 +54,18 @@ void ApproxBetweenness::run() {
 
 	INFO("taking ", r, " path samples");
 	// parallelization:
-	count maxThreads = omp_get_max_threads();
+	count maxThreads;
+	count threadPerBFS = 4;
+	if (useDirOptBFS) {
+		maxThreads = omp_get_max_threads() * 2 / threadPerBFS;
+	} else {
+		maxThreads = omp_get_max_threads();
+	}
 	DEBUG("max threads: ", maxThreads);
 	std::vector<std::vector<double> > scorePerThread(maxThreads, std::vector<double>(G.upperNodeIdBound()));
 	DEBUG("score per thread size: ", scorePerThread.size());
 	handler.assureRunning();
-	#pragma omp parallel for
+	#pragma omp parallel for num_threads(maxThreads)
 	for (count i = 1; i <= r; i++) {
 		count thread = omp_get_thread_num();
 		DEBUG("sample ", i);
@@ -80,7 +86,7 @@ void ApproxBetweenness::run() {
 			if (!useDirOptBFS) {
 				sssp.reset(new BFS(G, u, true, false, v));
 			} else {
-				sssp.reset(new DirOptBFS(G, u, true, false));
+				sssp.reset(new DirOptBFS(G, u, true, false, 12, 24, threadPerBFS));
 			}
 		}
 		DEBUG("running shortest path algorithm for node ", u);
