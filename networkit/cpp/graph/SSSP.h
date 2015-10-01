@@ -61,6 +61,14 @@ public:
 	bigfloat numberOfPaths(node t) const;
 
 	/**
+	 * Returns the number of shortest paths between the source node and @a t
+	 * as a double value. Workaround for Cython
+	 * @param  t Target node.
+	 * @return The number of shortest paths between source and @a t.
+	 */
+	double _numberOfPaths(node t) const;
+
+	/**
 	 * Returns the predecessor nodes of @a t on all shortest paths from source to @a t.
 	 * @param t Target node.
 	 * @return The predecessors of @a t on all shortest paths from source to @a t.
@@ -119,6 +127,19 @@ inline bigfloat SSSP::numberOfPaths(node t) const {
 		throw std::runtime_error("number of paths have not been stored");
 	}
 	return npaths[t];
+}
+
+inline double SSSP::_numberOfPaths(node t) const {
+	if (! storePaths) {
+		throw std::runtime_error("number of paths have not been stored");
+	}
+	bigfloat limit = std::numeric_limits<double>::max();
+	if (npaths[t] > limit) {
+		throw std::overflow_error("number of paths do not fit into a double");
+	}
+	double res;
+	npaths[t].ToDouble(res);
+	return res;
 }
 
 inline std::vector<node> SSSP::getPredecessors(node t) const {

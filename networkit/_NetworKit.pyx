@@ -1052,6 +1052,7 @@ cdef extern from "cpp/graph/SSSP.h":
 		vector[node] getPath(node t, bool forward) except +
 		set[vector[node]] getPaths(node t, bool forward) except +
 		stack[node] getStack() except +
+		double _numberOfPaths(node t) except +
 
 cdef class SSSP(Algorithm):
 	""" Base class for single source shortest path algorithms. """
@@ -1109,6 +1110,9 @@ cdef class SSSP(Algorithm):
 			result.append(stack.top())
 			stack.pop()
 		return result.reverse()
+
+	def numberOfPaths(self, t):
+		return (<_SSSP*>(self._this))._numberOfPaths(t)
 
 cdef extern from "cpp/graph/DynSSSP.h":
 	cdef cppclass _DynSSSP "NetworKit::DynSSSP"(_SSSP):
