@@ -59,10 +59,10 @@ void Betweenness::run() {
 		sssp->run();
 		if (!handler.isRunning()) return;
 		// compute dependencies for nodes in order of decreasing distance from s
-		std::stack<node> stack = sssp->getStack();
+		std::vector<node> stack = sssp->getStack();
 		while (!stack.empty()) {
-			node t = stack.top();
-			stack.pop();
+			node t = stack.back();
+			stack.pop_back();
 			for (node p : sssp->getPredecessors(t)) {
 				// workaround for integer overflow in large graphs
 				bigfloat tmp = sssp->numberOfPaths(p) / sssp->numberOfPaths(t);

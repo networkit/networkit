@@ -101,7 +101,7 @@ public:
 	*
 	* @return stack of nodes
 	*/
-	virtual std::stack<node> getStack() const;
+	virtual std::vector<node> getStack() const;
 
 protected:
 
@@ -112,7 +112,7 @@ protected:
 	std::vector<std::vector<node> > previous; // predecessors on shortest path
 	std::vector<bigfloat> npaths;
 
-	std::stack<node> stack;
+	std::vector<node> stack;
 
 	bool storePaths;		//!< if true, paths are reconstructable and the number of paths is stored
 	bool storeStack;		//!< if true, store a stack of nodes ordered in decreasing distance from the source

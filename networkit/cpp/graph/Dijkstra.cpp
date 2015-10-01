@@ -31,7 +31,7 @@ void Dijkstra::run() {
 	}
 
 	if (storeStack) {
-		std::stack<node> empty;
+		std::vector<node> empty;
 		std::swap(stack, empty);
 	}
 	distances[source] = 0;
@@ -69,7 +69,7 @@ void Dijkstra::run() {
 		}
 
 		if (storeStack) {
-			stack.push(current);
+			stack.push_back(current);
 		}
 
 		G.forEdgesOf(current, relax);

@@ -1051,7 +1051,7 @@ cdef extern from "cpp/graph/SSSP.h":
 		vector[node] getPredecessors(node t) except +
 		vector[node] getPath(node t, bool forward) except +
 		set[vector[node]] getPaths(node t, bool forward) except +
-		stack[node] getStack() except +
+		vector[node] getStack() except +
 		double _numberOfPaths(node t) except +
 
 cdef class SSSP(Algorithm):
@@ -1100,16 +1100,11 @@ cdef class SSSP(Algorithm):
 		return (<_SSSP*>(self._this)).getPath(t, forward)
 
 	def getPaths(self, t, forward=True):
+		# FIXME: automatic conversion of set[vector[node]] to set of lists doesn't work
 		return (<_SSSP*>(self._this)).getPaths(t, forward)
 
-	def getStack(self, t):
-		# TODO: find a more eficient way to do this
-		cdef stack[node] stack = (<_SSSP*>(self._this)).getStack()
-		result = []
-		while not stack.empty():
-			result.append(stack.top())
-			stack.pop()
-		return result.reverse()
+	def getStack(self):
+		return (<_SSSP*>(self._this)).getStack()
 
 	def numberOfPaths(self, t):
 		return (<_SSSP*>(self._this))._numberOfPaths(t)
