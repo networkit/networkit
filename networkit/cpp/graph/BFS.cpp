@@ -33,7 +33,7 @@ void BFS::run() {
 	}
 
 	if (storeStack) {
-		std::stack<node> empty;
+		std::vector<node> empty;
 		std::swap(stack, empty);
 	}
 
@@ -47,7 +47,7 @@ void BFS::run() {
 		q.pop();
 
 		if (storeStack) {
-			stack.push(u);
+			stack.push_back(u);
 		}
 		if (breakWhenFound && target == u) {
 			break;

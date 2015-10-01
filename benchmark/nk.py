@@ -40,24 +40,8 @@ class bCoreDecomposition(Algo):
 	name = "CoreDecomposition" + framework
 
 	def run(self, G):
-		cd = networkit.properties.CoreDecomposition(G)
+		cd = networkit.centrality.CoreDecomposition(G)
 		cd.run()
-
-# - degree distribution power-law estimation (properties.powerLawExponent)
-
-class bPowerLaw(Algo):
-	name = "PowerLaw" + framework
-
-	def run(self, G):
-		return networkit.properties.degreePowerLaw(G)
-
-# - degree assortativity (properties.degreeAssortativity)
-
-class bDegreeAssortativity(Algo):
-	name = "DegreeAssortativity" + framework
-
-	def run(self, G):
-		return networkit.properties.degreeAssortativity(G)
 
 
 # - BFS & Dijkstra (graph.BFS, graph.Dijkstra)
@@ -75,15 +59,15 @@ class bCommunityDetectionLM(Algo):
 	name = "CommunityDetectionLM" + framework
 
 	def run(self, G):
-		plm = networkit.community.PLM(turbo=True)
-		plm.run(G)
+		plm = networkit.community.PLM(G, turbo=True)
+		plm.run()
 
 class bCommunityDetectionLP(Algo):
 	name = "CommunityDetectionLP" + framework
 
 	def run(self, G):
-		plm = networkit.community.PLP()
-		plm.run(G)
+		plm = networkit.community.PLP(G)
+		plm.run()
 
 # - diameter, exact (properties.Diameter.exactDiameter) and estimate (properties.Diameter.estimatedDiameterRange)
 

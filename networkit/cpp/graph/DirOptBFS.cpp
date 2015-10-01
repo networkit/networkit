@@ -49,8 +49,7 @@ void DirOptBFS::run() {
 
 	// prepare the data structure to store the stack
 	if (storeStack) {
-		std::stack<node> empty;
-		std::swap(stack, empty);
+		stack.reserve(G.numberOfNodes());
 	}
 
 	// prepare data structures to run the algorithm such as the visited flags for edges and nodes,
@@ -178,36 +177,51 @@ void DirOptBFS::run() {
 				std::swap(qFrontier,qNext);
 			} else {
 				// next -> qFrontier
+				qFrontier.reserve(n_f);
+				std::vector<std::vector<node>> threadLocalQueue(max_threads);
+				#pragma omp parallel for schedule(guided)
 				for (index i = 0; i < z; ++i) {
-					if (next[i]) qFrontier.push_back(i);
+					if (next[i]) threadLocalQueue[omp_get_thread_num()].push_back(i);
+				}
+				for (const auto& q : threadLocalQueue) {
+					qFrontier.insert(qFrontier.end(),q.begin(),q.end());
 				}
 				threadLocalCounter.assign(max_threads,0);
 			}
 			if (storeStack) {
-				for (auto& u : qFrontier) {
-					stack.push(u);
-				}
+				stack.insert(stack.end(),qFrontier.begin(),qFrontier.end());
 			}
 		} else {
 			frontier.assign(z,false);
 			if (wasTopDown) {
 				// qNext -> frontier
-				for (auto& current : qNext) {
+				std::vector<count> mu(max_threads,0);
+				#pragma omp parallel for schedule(guided)
+				for (index i = 0; i < qNext.size(); ++i) {
+					node current = qNext[i];
 					frontier[current] = true;
-					m_u -= G.degree(current);
-					if (storeStack) {
-						stack.push(current);
-					}
+					mu[omp_get_thread_num()] += G.degree(current);
+				}
+				for (const auto& m : mu) {
+					m_u -= m;
+				}
+				if (storeStack) {
+					stack.insert(stack.end(),qNext.begin(),qNext.end());
 				}
 				qNext.clear();
 			} else {
 				// next -> frontier
 				std::swap(frontier, next);
 				if (storeStack) {
+					std::vector<std::vector<node>> threadLocalStack(max_threads);
+					#pragma omp parallel for schedule(guided)
 					for (index i = 0; i < z; ++i) {
 						if (frontier[i]) {
-							stack.push(i);
+							threadLocalStack[omp_get_thread_num()].push_back(i);
 						}
+					}
+					for (const auto& s : threadLocalStack) {
+						stack.insert(stack.end(),s.begin(),s.end());
 					}
 				}
 			}

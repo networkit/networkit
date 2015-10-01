@@ -1046,12 +1046,13 @@ cdef extern from "cpp/graph/SSSP.h":
 	cdef cppclass _SSSP "NetworKit::SSSP"(_Algorithm):
 		_SSSP(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
 		void run() nogil except +
-		vector[edgeweight] getDistances() except +
+		vector[edgeweight] getDistances(bool moveOut) except +
 		edgeweight distance(node t) except +
 		vector[node] getPredecessors(node t) except +
 		vector[node] getPath(node t, bool forward) except +
 		set[vector[node]] getPaths(node t, bool forward) except +
-		stack[node] getStack() except +
+		vector[node] getStack(bool moveOut) except +
+		double _numberOfPaths(node t) except +
 
 cdef class SSSP(Algorithm):
 	""" Base class for single source shortest path algorithms. """
@@ -1065,7 +1066,7 @@ cdef class SSSP(Algorithm):
 	def __dealloc__(self):
 		self._G = None # just to be sure the graph is deleted
 
-	def getDistances(self):
+	def getDistances(self, moveOut=True):
 		"""
 		Returns a vector of weighted distances from the source node, i.e. the
  	 	length of the shortest path from the source node to any other node.
@@ -1075,7 +1076,7 @@ cdef class SSSP(Algorithm):
  	 	vector
  	 		The weighted distances from the source node to any other node in the graph.
 		"""
-		return (<_SSSP*>(self._this)).getDistances()
+		return (<_SSSP*>(self._this)).getDistances(moveOut)
 
 	def distance(self, t):
 		return (<_SSSP*>(self._this)).distance(t)
@@ -1099,16 +1100,14 @@ cdef class SSSP(Algorithm):
 		return (<_SSSP*>(self._this)).getPath(t, forward)
 
 	def getPaths(self, t, forward=True):
+		# FIXME: automatic conversion of set[vector[node]] to set of lists doesn't work
 		return (<_SSSP*>(self._this)).getPaths(t, forward)
 
-	def getStack(self, t):
-		# TODO: find a more eficient way to do this
-		cdef stack[node] stack = (<_SSSP*>(self._this)).getStack()
-		result = []
-		while not stack.empty():
-			result.append(stack.top())
-			stack.pop()
-		return result.reverse()
+	def getStack(self, moveOut=True):
+		return (<_SSSP*>(self._this)).getStack(moveOut)
+
+	def numberOfPaths(self, t):
+		return (<_SSSP*>(self._this))._numberOfPaths(t)
 
 cdef extern from "cpp/graph/DynSSSP.h":
 	cdef cppclass _DynSSSP "NetworKit::DynSSSP"(_SSSP):

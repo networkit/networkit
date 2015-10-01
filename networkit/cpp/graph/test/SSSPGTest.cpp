@@ -48,10 +48,10 @@ TEST_F(SSSPGTest, testDijkstra) {
 
 	Dijkstra sssp(G, 5, true, true);
 	sssp.run();
-	std::stack<node> stack = sssp.getStack();
+	std::vector<node> stack = sssp.getStack();
 	while (!stack.empty()) {
-		node t = stack.top();
-		stack.pop();
+		node t = stack.back();
+		stack.pop_back();
 		DEBUG(t);
 	}
 }
@@ -231,24 +231,24 @@ TEST_F(SSSPGTest, testDirOptBFS) {
 			auto ref_distances = bfs_ref.getDistances();
 			auto do_distances = bfs_diropt.getDistances();
 
-			auto ref_stack = bfs_ref.getStack();
-			auto do_stack = bfs_diropt.getStack();
 
 			// computed distances from both BFS should be the same
 			// tests: SSSP.getDistances();
 			EXPECT_EQ(ref_distances, do_distances) << "distances from source are supposed to be the same";
 
 			if (storeStack) {
+				auto ref_stack = bfs_ref.getStack();
+				auto do_stack = bfs_diropt.getStack();
 				EXPECT_EQ(ref_stack.size(),do_stack.size());
 				auto &min_stack = (ref_stack.size() < do_stack.size())?ref_stack:do_stack;
 				// the exact order of the stack is unlikely to be the same
 				// however, the distance of stack.top() should be the same in both BFS
 				// tests: SSSP.getStack();
 				while (!min_stack.empty()) {
-					auto ref_top = ref_stack.top();
-					auto do_top = do_stack.top();
-					EXPECT_EQ(bfs_ref.distance(ref_top),bfs_diropt.distance(do_top));
-					ref_stack.pop(); do_stack.pop();
+					auto ref_top = ref_stack.back();
+					auto do_top = do_stack.back();
+					EXPECT_EQ(ref_distances[ref_top],do_distances[do_top]);
+					ref_stack.pop_back(); do_stack.pop_back();
 				}
 			}
 
@@ -285,23 +285,23 @@ TEST_F(SSSPGTest, testDirOptBFSOnRealGraph) {
 			auto ref_distances = bfs_ref.getDistances();
 			auto do_distances = bfs_diropt.getDistances();
 
-			auto ref_stack = bfs_ref.getStack();
-			auto do_stack = bfs_diropt.getStack();
 
 			// computed distances from both BFS should be the same
 			// tests: SSSP.getDistances();
 			EXPECT_EQ(ref_distances, do_distances) << "distances from source are supposed to be the same";
 
 			if (storeStack) {
+				auto ref_stack = bfs_ref.getStack();
+				auto do_stack = bfs_diropt.getStack();
 				auto &min_stack = (ref_stack.size() < do_stack.size())?ref_stack:do_stack;
 				// the exact order of the stack is unlikely to be the same
 				// however, the distance of stack.top() should be the same in both BFS
 				// tests: SSSP.getStack();
 				while (!min_stack.empty()) {
-					auto ref_top = ref_stack.top();
-					auto do_top = do_stack.top();
-					EXPECT_EQ(bfs_ref.distance(ref_top),bfs_diropt.distance(do_top));
-					ref_stack.pop(); do_stack.pop();
+					auto ref_top = ref_stack.back();
+					auto do_top = do_stack.back();
+					EXPECT_EQ(ref_distances[ref_top],do_distances[do_top]);
+					ref_stack.pop_back(); do_stack.pop_back();
 				}
 			}
 
@@ -338,23 +338,23 @@ TEST_F(SSSPGTest, testDirOptBFSOnDirectedRealGraph) {
 			auto ref_distances = bfs_ref.getDistances();
 			auto do_distances = bfs_diropt.getDistances();
 
-			auto ref_stack = bfs_ref.getStack();
-			auto do_stack = bfs_diropt.getStack();
 
 			// computed distances from both BFS should be the same
 			// tests: SSSP.getDistances();
 			EXPECT_EQ(ref_distances, do_distances) << "distances from source are supposed to be the same";
 
 			if (storeStack) {
+				auto ref_stack = bfs_ref.getStack();
+				auto do_stack = bfs_diropt.getStack();
 				auto &min_stack = (ref_stack.size() < do_stack.size())?ref_stack:do_stack;
 				// the exact order of the stack is unlikely to be the same
 				// however, the distance of stack.top() should be the same in both BFS
 				// tests: SSSP.getStack();
 				while (!min_stack.empty()) {
-					auto ref_top = ref_stack.top();
-					auto do_top = do_stack.top();
-					EXPECT_EQ(bfs_ref.distance(ref_top),bfs_diropt.distance(do_top));
-					ref_stack.pop(); do_stack.pop();
+					auto ref_top = ref_stack.back();
+					auto do_top = do_stack.back();
+					EXPECT_EQ(ref_distances[ref_top],do_distances[do_top]);
+					ref_stack.pop_back(); do_stack.pop_back();
 				}
 			}
 

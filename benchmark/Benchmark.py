@@ -281,6 +281,7 @@ class Bench:
             plt.savefig(os.path.join(self.plotDir, "{algoName}-eps.pdf".format(**locals())), bbox_inches="tight")
 
     def plot(self, algoName):
+        print(algoName)
         self.timePlot(algoName)
         self.epsPlot(algoName)
 
@@ -302,7 +303,7 @@ class Bench:
         plt.gca().xaxis.get_major_formatter().set_powerlimits((3, 3))
         plt.xscale("log")
         plt.xlabel("edges/s")
-        seaborn.boxplot([vals.dropna() for col, vals in epsSummary.reindex_axis(sorted(epsSummary.columns), axis=1).iteritems()], names=sorted(epsSummary.columns), linewidth=1.5, widths=.25, color=green, vert=False)
+        seaborn.boxplot(epsSummary, linewidth=1.5, width=.25, color=green, vert=False)
         if self.save:
             plt.savefig(os.path.join(self.plotDir, "epsSummary.pdf".format(**locals())), bbox_inches="tight")
 
