@@ -42,9 +42,10 @@ public:
 	 * Returns a vector of weighted distances from the source node, i.e. the
  	 * length of the shortest path from the source node to any other node.
  	 *
+ 	 * @param moveOut If set to true, the container will be moved out of the class instead of copying it; default=true.
  	 * @return The weighted distances from the source node to any other node in the graph.
 	 */
-	virtual std::vector<edgeweight> getDistances() const;
+	virtual std::vector<edgeweight> getDistances(bool moveOut=true);
 
 	/**
 	 * Returns the distance from the source node to @a t.
@@ -99,9 +100,10 @@ public:
 	/**
 	* Returns a stack of nodes ordered in decreasing distance from the source
 	*
+	* @param moveOut If set to true, the container will be moved out of the class instead of copying it; default=true.
 	* @return stack of nodes
 	*/
-	virtual std::vector<node> getStack() const;
+	virtual std::vector<node> getStack(bool moveOut=true);
 
 protected:
 
