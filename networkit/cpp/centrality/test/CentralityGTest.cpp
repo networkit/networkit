@@ -811,8 +811,8 @@ TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected2) {
 	for (auto& file : datasets) {
 		Graph G = reader.read(file);
 		G.indexEdges();
-		count nRuns = 5;
-		count nSamples = std::min((count)50000, G.numberOfNodes()/10);
+		count nRuns = 3;
+		count nSamples = std::min((count)2000, G.numberOfNodes()/10);
 		std::cout << "benchmarking ApproxBetweenness2 with different BFS: " << nRuns << " runs; " << G.toString() << "; average time in ms; nSamples: ";
 		std::cout << nSamples << std::endl;
 
@@ -852,7 +852,7 @@ TEST_F(CentralityGTest, benchCompareApproxBetweennessWithDifferentBFS) {
 	for (auto& file : datasets) {
 		Graph G = reader.read(file);
 		G.indexEdges();
-		count nRuns = 5;
+		count nRuns = 3;
 		std::cout << "benchmarking ApproxBetweenness with different BFS: " << nRuns << " runs on " << G.toString() << ", reporting average time in ms" << std::endl;
 
 		t.start();

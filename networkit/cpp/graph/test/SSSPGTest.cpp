@@ -462,7 +462,8 @@ TEST_F(SSSPGTest, benchDirOptBFSThreading) {
 		"input/caidaRouterLevel.graph",
 		"/algoDaten/staudt/Graphs/Collections/NwkBenchmark/in-2004.metis.graph",
 		"/algoDaten/staudt/Graphs/Collections/NwkBenchmark/con-fiber_big.metis.graph",
-		"/algoDaten/staudt/Graphs/Collections/NwkBenchmark/uk-2002.metis.graph"
+		//"/algoDaten/staudt/Graphs/Collections/NwkBenchmark/uk-2002.metis.graph"
+		"/algoDaten/staudt/Graphs/Static/DIMACS/XLarge/uk-2007-05.metis.graph"
 	};
 	METISGraphReader reader;
 	Aux::Timer t;
