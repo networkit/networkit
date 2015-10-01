@@ -148,11 +148,10 @@ class Bench:
 
     """
 
-    def __init__(self, graphDir, graphMeta, defaultGraphs, outDir, save=True, nRuns=5, cacheGraphs=False, timeout=None):
+    def __init__(self, graphDir, defaultGraphs, outDir, save=True, nRuns=5, cacheGraphs=False, timeout=None):
         self.defaultGraphs = defaultGraphs
         self.nRuns = nRuns  # default number of runs for each algo
         self.graphDir = graphDir
-        self.graphMeta = graphMeta  # data frame with graph metadata
         # store result data of benchmarks
         self.data = {}
         self.outDir = outDir
@@ -189,6 +188,12 @@ class Bench:
                 self.graphCache[key] = G
             return G
 
+    def getSize(self, G):
+        if isinstance(G, networkit.Graph):
+            return G.size()
+        else:
+            raise Error("cannot get graph size - unknown object type")
+
     def clearCache(self):
         """ Delete all stored graphs to free memory """
         del self.graphCache
@@ -210,7 +215,7 @@ class Bench:
         for graphName in graphs:
             try:
                 G = self.getGraph(graphName, algo)
-                m = float(self.graphMeta[self.graphMeta["name"] == graphName]["m"])
+                (n, m) = self.getSize(G)
                 try:
                     self.info("running {algo.name} {nRuns}x on {graphName}".format(**locals()))
                     for i in range(nRuns):
