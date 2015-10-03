@@ -183,7 +183,9 @@ class Bench:
             return G
         else:
             self.info("loading {0}".format(graphName))
-            G = algo.loadGraph(os.path.join(self.graphDir, "{0}.gml.graph".format(graphName)))
+            with Timer() as t:
+                G = algo.loadGraph(os.path.join(self.graphDir, "{0}.gml.graph".format(graphName)))
+                self.debug("reading took {0} s".format(t.elapsed))
             if self.cacheGraphs:
                 self.graphCache[key] = G
             return G
@@ -253,6 +255,7 @@ class Bench:
         # store data frame on disk
         if self.save:
             df.to_csv(os.path.join(self.outDataDir, "{algo.name}.csv".format(**locals())))
+        self.log("Done")
 
 
     def log(self, message):
@@ -284,6 +287,11 @@ class Bench:
         epsPlot(averageRuns(self.data[algoName]))
         if self.save:
             plt.savefig(os.path.join(self.plotDir, "{algoName}-eps.pdf".format(**locals())), bbox_inches="tight")
+
+    def graphPlot(self):
+        epsPlot(averageRuns(self.data))
+        if self.save:
+            plt.savefig(os.path.join(self.plotDir, "graphs.pdf".format(**locals())), bbox_inches="tight")
 
     def plot(self, algoName):
         print(algoName)
