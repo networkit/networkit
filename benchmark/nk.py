@@ -131,5 +131,5 @@ class bApproxBetweenness(Algo):
 	name = "BetweennessApprox" + framework
 
 	def run(self, G):
-		bc = networkit.centrality.ApproxBetweenness(G, epsilon=0.1, delta=0.1)
+		bc = networkit.centrality.ApproxBetweenness2(G, nSamples=10)
 		bc.run()
