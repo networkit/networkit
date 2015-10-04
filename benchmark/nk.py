@@ -116,6 +116,20 @@ class bPageRank(Algo):
 
 # 	- Eigenvector centrality (centrality.EigenvectorCentrality, centrality.SciPyEVZ)
 
+class bEigenvectorCentrality(Algo):
+	name = "EigenvectorCentrality" + framework
+
+	def run(self, G):
+		evc = networkit.centrality.EigenvectorCentrality(G, tol=1e-06)
+		evc.run()
+
+class bKatzCentrality(Algo):
+	name = "KatzCentrality" + framework
+
+	def run(self, G):
+		kc = networkit.centrality.KatzCentrality(G, tol=1e-06)
+		kc.run()
+
 
 # 	- betweenness,  exact (centrality.Betweenness) and approximated (centrality.ApproxBetweenness, centrality.ApproxBetweenness2)
 
