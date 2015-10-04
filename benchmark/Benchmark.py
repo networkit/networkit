@@ -229,7 +229,7 @@ class Bench:
                                 signal.alarm(int(timeout * 60))  # timeout in seconds
                             with Timer() as t:
                                 result = algo.run(G)
-                            self.debug("took {0} s".format(t.elapsed))
+                            self.info("took {0} s".format(t.elapsed))
                             # store data
                             row["time"] = t.elapsed
                             row["eps"] =  m / t.elapsed  # calculate edges per second
