@@ -32,7 +32,9 @@ public:
 	 * Indicates whether an algorithm has completed computation or not.
 	 * @return The Value of @hasRun.
 	 */
-	bool hasFinished() const;
+	bool hasFinished() const {
+		return hasRun;
+	};
 
 	/**
 	 * Returns a string with the algorithm's name and its parameters, if there are any. Subclasses should override it.
