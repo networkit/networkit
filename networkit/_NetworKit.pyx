@@ -3775,6 +3775,165 @@ cdef class AdjustedRandMeasure(DissimilarityMeasure):
 			ret = self._this.getDissimilarity(G._this, first._this, second._this)
 		return ret
 
+cdef extern from "cpp/community/LocalCommunityEvaluation.h":
+	cdef cppclass _LocalCommunityEvaluation "NetworKit::LocalCommunityEvaluation"(_Algorithm):
+		double getWeightedAverage() except +
+		double getUnweightedAverage() except +
+		double getMaximumValue() except +
+		double getMinimumValue() except +
+		double getValue(index i) except +
+		vector[double] getValues() except +
+		bool isSmallBetter() except +
+
+cdef class LocalCommunityEvaluation(Algorithm):
+	"""
+	Virtual base class of all evaluation methods for a single clustering which is based on the evaluation of single clusters.
+	This is the base class both for Partitions as well as for Covers.
+	"""
+	def __init__(self, *args, **namedargs):
+		if type(self) == LocalCommunityEvaluation:
+			raise RuntimeError("Error, you may not use LocalCommunityEvaluation directly, use a sub-class instead")
+
+	def getWeightedAverage(self):
+		""" Get the average value weighted by cluster size.
+
+		Returns
+		-------
+		double:
+			The weighted average value.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return (<_LocalCommunityEvaluation*>(self._this)).getWeightedAverage()
+
+	def getUnweightedAverage(self):
+		""" Get the (unweighted) average value of all clusters.
+
+		Returns
+		-------
+		double:
+			The unweighted average value.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return (<_LocalCommunityEvaluation*>(self._this)).getUnweightedAverage()
+
+	def getMaximumValue(self):
+		""" Get the maximum value of all clusters.
+
+		Returns
+		-------
+		double:
+			The maximum value.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return (<_LocalCommunityEvaluation*>(self._this)).getMaximumValue()
+
+	def getMinimumValue(self):
+		""" Get the minimum value of all clusters.
+
+		Returns
+		-------
+		double:
+			The minimum value.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return (<_LocalCommunityEvaluation*>(self._this)).getMinimumValue()
+
+	def getValue(self, index i):
+		""" Get the value of the specified cluster.
+
+		Parameters
+		----------
+		i : index
+			The cluster to get the value for.
+
+		Returns
+		-------
+		double:
+			The value of cluster i.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return (<_LocalCommunityEvaluation*>(self._this)).getValue(i)
+
+	def getValues(self):
+		""" Get the values of all clusters.
+
+		Returns
+		-------
+		list[double]:
+			The values of all clusters.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return (<_LocalCommunityEvaluation*>(self._this)).getValues()
+
+	def isSmallBetter(self):
+		""" If small values are better (otherwise large values are better).
+
+		Returns
+		-------
+		bool:
+			If small values are better.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return (<_LocalCommunityEvaluation*>(self._this)).isSmallBetter()
+
+cdef extern from "cpp/community/LocalPartitionEvaluation.h":
+	cdef cppclass _LocalPartitionEvaluation "NetworKit::LocalPartitionEvaluation"(_LocalCommunityEvaluation):
+		pass
+
+cdef class LocalPartitionEvaluation(LocalCommunityEvaluation):
+	"""
+	Virtual base class of all evaluation methods for a single clustering which is based on the evaluation of single clusters.
+	This is the base class for Partitions.
+	"""
+	cdef Graph _G
+	cdef Partition _P
+
+	def __init__(self, *args, **namedargs):
+		if type(self) == LocalPartitionEvaluation:
+			raise RuntimeError("Error, you may not use LocalPartitionEvaluation directly, use a sub-class instead")
+
+	def __cinit__(self, Graph G not None, Partition P not None, *args, **namedargs):
+		self._G = G
+		self._P = P
+
+	def __dealloc__(self):
+		# Just to be sure that everything is properly deleted
+		self._G = None
+		self._P = None
+
+
+cdef extern from "cpp/community/LocalCoverEvaluation.h":
+	cdef cppclass _LocalCoverEvaluation "NetworKit::LocalCoverEvaluation"(_LocalCommunityEvaluation):
+		pass
+
+
+cdef class LocalCoverEvaluation(LocalCommunityEvaluation):
+	"""
+	Virtual base class of all evaluation methods for a single clustering which is based on the evaluation of single clusters.
+	This is the base class for Covers.
+	"""
+	cdef Graph _G
+	cdef Cover _C
+
+	def __init__(self, *args, **namedargs):
+		if type(self) == LocalCoverEvaluation:
+			raise RuntimeError("Error, you may not use LocalCoverEvaluation directly, use a sub-class instead")
+
+	def __cinit__(self, Graph G not None, Cover C not None, *args, **namedargs):
+		self._G = G
+		self._C = C
+
+	def __dealloc__(self):
+		# Just to be sure that everything is properly deleted
+		self._G = None
+		self._C = None
 
 # Module: flows
 
