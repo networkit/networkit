@@ -4028,6 +4028,61 @@ cdef class IsolatedInterpartitionExpansion(LocalPartitionEvaluation):
 	def __cinit__(self):
 		self._this = new _IsolatedInterpartitionExpansion(self._G._this, self._P._this)
 
+cdef extern from "cpp/community/CoverHubDominance.h":
+	cdef cppclass _CoverHubDominance "NetworKit::CoverHubDominance"(_LocalCoverEvaluation):
+		_CoverHubDominance(_Graph G, _Cover C) except +
+
+cdef class CoverHubDominance(LocalCoverEvaluation):
+	"""
+	A quality measure that measures the dominance of hubs in clusters. The hub dominance of a single
+	cluster is defined as the maximum cluster-internal degree of a node in that cluster divided by
+	the maximum cluster-internal degree, i.e. the number of nodes in the cluster minus one. The
+	value for all clusters is defined as the average of all clusters.
+	This implementation is a natural generalization of this measure for covers.
+	Strictly speaking this is not a quality measure as this is rather dependent on the type of the
+	considered graph, for more information see
+	Lancichinetti A, Kivelä M, Saramäki J, Fortunato S (2010)
+	Characterizing the Community Structure of Complex Networks
+	PLoS ONE 5(8): e11976. doi: 10.1371/journal.pone.0011976
+	http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0011976
+
+	Parameters
+	----------
+	G : Graph
+		The graph on which the measure shall be evaluated
+	C : Cover
+		The cover that shall be evaluated
+	"""
+	def __cinit__(self):
+		self._this = new _CoverHubDominance(self._G._this, self._C._this)
+
+cdef extern from "cpp/community/PartitionHubDominance.h":
+	cdef cppclass _PartitionHubDominance "NetworKit::PartitionHubDominance"(_LocalPartitionEvaluation):
+		_PartitionHubDominance(_Graph G, _Partition C) except +
+
+cdef class PartitionHubDominance(LocalPartitionEvaluation):
+	"""
+	A quality measure that measures the dominance of hubs in clusters. The hub dominance of a single
+	cluster is defined as the maximum cluster-internal degree of a node in that cluster divided by
+	the maximum cluster-internal degree, i.e. the number of nodes in the cluster minus one. The
+	value for all clusters is defined as the average of all clusters.
+	Strictly speaking this is not a quality measure as this is rather dependent on the type of the
+	considered graph, for more information see
+	Lancichinetti A, Kivelä M, Saramäki J, Fortunato S (2010)
+	Characterizing the Community Structure of Complex Networks
+	PLoS ONE 5(8): e11976. doi: 10.1371/journal.pone.0011976
+	http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0011976
+
+	Parameters
+	----------
+	G : Graph
+		The graph on which the measure shall be evaluated
+	P : Partition
+		The partition that shall be evaluated
+	"""
+	def __cinit__(self):
+		self._this = new _PartitionHubDominance(self._G._this, self._P._this)
+
 # Module: flows
 
 cdef extern from "cpp/flow/EdmondsKarp.h":
