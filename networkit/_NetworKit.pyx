@@ -3998,6 +3998,36 @@ cdef class IsolatedInterpartitionConductance(LocalPartitionEvaluation):
 	def __cinit__(self):
 		self._this = new _IsolatedInterpartitionConductance(self._G._this, self._P._this)
 
+cdef extern from "cpp/community/IsolatedInterpartitionExpansion.h":
+	cdef cppclass _IsolatedInterpartitionExpansion "NetworKit::IsolatedInterpartitionExpansion"(_LocalPartitionEvaluation):
+		_IsolatedInterpartitionExpansion(_Graph G, _Partition P) except +
+
+cdef class IsolatedInterpartitionExpansion(LocalPartitionEvaluation):
+	"""
+	Isolated inter-partition expansion is a measure for how well a partition
+	(communtiy/cluster) is separated from the rest of the graph.
+
+	The expansion of a partition is defined as the weight of the cut divided
+	by number of nodes in the partition or in the rest of the graph, whatever
+	is smaller. Small values thus indicate that the cut is small compared to
+	the size of the smaller of the separated parts. For the whole partitions
+	usually the maximum or the unweighted average is used. Note that expansion
+	values can be larger than 1.
+
+	See also Experiments on Density-Constrained Graph Clustering,
+	Robert Görke, Andrea Kappes and Dorothea Wagner, JEA 2015:
+	http://dx.doi.org/10.1145/2638551
+
+	Parameters
+	----------
+	G : Graph
+		The graph on which the measure shall be evaluated
+	P : Partition
+		The partition that shall be evaluated
+	"""
+	def __cinit__(self):
+		self._this = new _IsolatedInterpartitionExpansion(self._G._this, self._P._this)
+
 # Module: flows
 
 cdef extern from "cpp/flow/EdmondsKarp.h":
