@@ -3967,6 +3967,37 @@ cdef class IntrapartitionDensity(LocalPartitionEvaluation):
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_IntrapartitionDensity*>(self._this)).getGlobal()
 
+
+cdef extern from "cpp/community/IsolatedInterpartitionConductance.h":
+	cdef cppclass _IsolatedInterpartitionConductance "NetworKit::IsolatedInterpartitionConductance"(_LocalPartitionEvaluation):
+		_IsolatedInterpartitionConductance(_Graph G, _Partition P) except +
+
+cdef class IsolatedInterpartitionConductance(LocalPartitionEvaluation):
+	"""
+	Isolated inter-partition conductance is a measure for how well a partition
+	(communtiy/cluster) is separated from the rest of the graph.
+
+	The conductance of a partition is defined as the weight of the cut divided
+	by the volume (the sum of the degrees) of the nodes in the partition or the
+	nodes in the rest of the graph, whatever is smaller. Small values thus indicate
+	that the cut is small compared to the volume of the smaller of the separated
+	parts. For the whole partitions usually the maximum or the unweighted average
+	is used.
+
+	See also Experiments on Density-Constrained Graph Clustering,
+	Robert Görke, Andrea Kappes and  Dorothea Wagner, JEA 2015:
+	http://dx.doi.org/10.1145/2638551
+
+	Parameters
+	----------
+	G : Graph
+		The graph on which the measure shall be evaluated
+	P : Partition
+		The partition that shall be evaluated
+	"""
+	def __cinit__(self):
+		self._this = new _IsolatedInterpartitionConductance(self._G._this, self._P._this)
+
 # Module: flows
 
 cdef extern from "cpp/flow/EdmondsKarp.h":
