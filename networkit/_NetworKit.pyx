@@ -4102,6 +4102,47 @@ cdef class PartitionFragmentation(LocalPartitionEvaluation):
 	def __cinit__(self):
 		self._this = new _PartitionFragmentation(self._G._this, self._P._this)
 
+cdef extern from "cpp/community/StablePartitionNodes.h":
+	cdef cppclass _StablePartitionNodes "NetworKit::StablePartitionNodes"(_LocalPartitionEvaluation):
+		_StablePartitionNodes(_Graph G, _Partition C) except +
+		bool isStable(node u) except +
+
+cdef class StablePartitionNodes(LocalPartitionEvaluation):
+	"""
+	Evaluates how stable a given partition is. A node is considered to be stable if it has strictly more connections
+	to its own partition than to other partitions. Isolated nodes are considered to be stable.
+	The value of a cluster is the percentage of stable nodes in the cluster.
+	Larger values indicate that a clustering is more stable and thus better defined.
+
+	Parameters
+	----------
+	G : Graph
+		The graph on which the measure shall be evaluated
+	P : Partition
+		The partition that shall be evaluated
+	"""
+	def __cinit__(self):
+		self._this = new _StablePartitionNodes(self._G._this, self._P._this)
+
+
+	def isStable(self, node u):
+		"""
+		Check if a given node is stable, i.e. more connected to its own partition than to other partitions.
+
+		Parameters
+		----------
+		u : node
+			The node to check
+
+		Returns
+		-------
+		bool
+			If the node u is stable.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return (<_StablePartitionNodes*>(self._this)).isStable(u)
+
 # Module: flows
 
 cdef extern from "cpp/flow/EdmondsKarp.h":
