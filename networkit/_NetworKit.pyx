@@ -4083,6 +4083,25 @@ cdef class PartitionHubDominance(LocalPartitionEvaluation):
 	def __cinit__(self):
 		self._this = new _PartitionHubDominance(self._G._this, self._P._this)
 
+cdef extern from "cpp/community/PartitionFragmentation.h":
+	cdef cppclass _PartitionFragmentation "NetworKit::PartitionFragmentation"(_LocalPartitionEvaluation):
+		_PartitionFragmentation(_Graph G, _Partition C) except +
+
+cdef class PartitionFragmentation(LocalPartitionEvaluation):
+	"""
+	This measure evaluates how fragmented a partition is. The fragmentation of a single cluster is defined as one minus the
+	number of nodes in its maximum connected componented divided by its total number of nodes. Smaller values thus indicate a smaller fragmentation.
+
+	Parameters
+	----------
+	G : Graph
+		The graph on which the measure shall be evaluated
+	P : Partition
+		The partition that shall be evaluated
+	"""
+	def __cinit__(self):
+		self._this = new _PartitionFragmentation(self._G._this, self._P._this)
+
 # Module: flows
 
 cdef extern from "cpp/flow/EdmondsKarp.h":
