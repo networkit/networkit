@@ -3935,6 +3935,38 @@ cdef class LocalCoverEvaluation(LocalCommunityEvaluation):
 		self._G = None
 		self._C = None
 
+cdef extern from "cpp/community/IntrapartitionDensity.h":
+	cdef cppclass _IntrapartitionDensity "NetworKit::IntrapartitionDensity"(_LocalPartitionEvaluation):
+		_IntrapartitionDensity(_Graph G, _Partition P) except +
+		double getGlobal() except +
+
+cdef class IntrapartitionDensity(LocalPartitionEvaluation):
+	"""
+	The intra-cluster density of a partition is defined as the number of existing edges divided by the number of possible edges.
+	The global value is the sum of all existing intra-cluster edges divided by the sum of all possible intra-cluster edges.
+
+	Parameters
+	----------
+	G : Graph
+		The graph on which the measure shall be evaluated
+	P : Partition
+		The partition that shall be evaluated
+	"""
+	def __cinit__(self):
+		self._this = new _IntrapartitionDensity(self._G._this, self._P._this)
+
+	def getGlobal(self):
+		""" Get the global intra-cluster density.
+
+		Returns
+		-------
+		double:
+			The global intra-cluster density.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return (<_IntrapartitionDensity*>(self._this)).getGlobal()
+
 # Module: flows
 
 cdef extern from "cpp/flow/EdmondsKarp.h":
