@@ -1,0 +1,69 @@
+\documentclass[12pt,a4paper,twoside]{{scrartcl}}
+
+% Diese (und weitere) Eingabedateien sind in UTF-8
+\usepackage[utf8]{{inputenc}}
+
+% Verwende gute Type 1 Font: Latin Modern
+\usepackage[T1]{{fontenc}}
+\usepackage{{lmodern}}
+
+% Sprache des Dokuments (für Silbentrennung und mehr)
+\usepackage[german,english]{{babel}}
+
+% Seitengröße - verwende fast die ganze A4 Seite
+\usepackage[tmargin=22mm,bmargin=22mm,lmargin=20mm,rmargin=20mm]{{geometry}}
+
+% Einrückung und Abstand zwischen Paragraphen
+\setlength\parskip{{\smallskipamount}}
+\setlength\parindent{{0pt}}
+
+% Einige Standard-Mathematik Pakete
+\usepackage{{latexsym,amsmath,amssymb,textcomp}}
+
+% Unterstützung für Sätze und Definitionen
+\usepackage{{amsthm}}
+
+\usepackage{{graphicx}}
+
+
+%=== BEGIN ===================================================================
+
+\begin{{document}}
+
+%<div class="NetworKit_Page" id="NetworKit_Page_{pageIndex}">
+Network Properties
+		
+Name: {properties[Name]}
+
+%		<div class="Value" data-title="Nodes">{properties[Nodes]}</div>
+%		<div class="Value" data-title="Edges">{properties[Edges]}</div>
+%		<div class="Value" data-title="Density">{properties[Density]:g}</div>
+%		<div class="Value" data-title="Directed">{properties[Directed]}</div>
+%		<div class="Value" data-title="Weighted">{properties[Weighted]}</div>
+%		<div class="Value" data-title="Self Loops">{properties[Self Loops]:g}</div>
+%		<div class="Value" data-title="Diameter Range">{properties[Diameter Range]}</div>
+%	</div>
+%	<div class="Category" data-title="Overview">
+%		<div class="Block SubCategory" data-title="Node Centrality Measures">
+			{results[Node Centrality][Overview]}
+%		</div>
+%		<div class="Block SubCategory" data-title="Partions">
+			{results[Partition][Overview]}
+%		</div>
+%	</div>
+%	<div class="Category" data-title="Node Centrality Measures">
+		{results[Node Centrality][Measures]}
+%		<div class="Block SubCategory" data-title="Node Centrality Correlations">
+%			{results[Node Centrality][Correlations][HeatMaps]}
+%			{results[Node Centrality][Correlations][ScatterPlots]}
+%		</div>
+%	</div>
+%	<div class="Category" data-title="Partitions">
+%		{results[Partition][Measures]}
+%	</div>
+%</div>
+
+
+%=== END =====================================================================
+
+\end{{document}}
