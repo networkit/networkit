@@ -32,7 +32,16 @@ public:
 	 * Indicates whether an algorithm has completed computation or not.
 	 * @return The Value of @hasRun.
 	 */
-	bool hasFinished() const;
+	bool hasFinished() const {
+		return hasRun;
+	};
+
+	/**
+	 * Assure that the algorithm has been run, throws a std::runtime_error otherwise.
+	 */
+	void assureFinished() const {
+		if (!hasRun) throw std::runtime_error("Error, run must be called first");
+	};
 
 	/**
 	 * Returns a string with the algorithm's name and its parameters, if there are any. Subclasses should override it.

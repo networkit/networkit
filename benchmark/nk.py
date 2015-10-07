@@ -40,24 +40,8 @@ class bCoreDecomposition(Algo):
 	name = "CoreDecomposition" + framework
 
 	def run(self, G):
-		cd = networkit.properties.CoreDecomposition(G)
+		cd = networkit.centrality.CoreDecomposition(G)
 		cd.run()
-
-# - degree distribution power-law estimation (properties.powerLawExponent)
-
-class bPowerLaw(Algo):
-	name = "PowerLaw" + framework
-
-	def run(self, G):
-		return networkit.properties.degreePowerLaw(G)
-
-# - degree assortativity (properties.degreeAssortativity)
-
-class bDegreeAssortativity(Algo):
-	name = "DegreeAssortativity" + framework
-
-	def run(self, G):
-		return networkit.properties.degreeAssortativity(G)
 
 
 # - BFS & Dijkstra (graph.BFS, graph.Dijkstra)
@@ -75,15 +59,15 @@ class bCommunityDetectionLM(Algo):
 	name = "CommunityDetectionLM" + framework
 
 	def run(self, G):
-		plm = networkit.community.PLM(turbo=True)
-		plm.run(G)
+		plm = networkit.community.PLM(G, turbo=True)
+		plm.run()
 
 class bCommunityDetectionLP(Algo):
 	name = "CommunityDetectionLP" + framework
 
 	def run(self, G):
-		plm = networkit.community.PLP()
-		plm.run(G)
+		plm = networkit.community.PLP(G)
+		plm.run()
 
 # - diameter, exact (properties.Diameter.exactDiameter) and estimate (properties.Diameter.estimatedDiameterRange)
 
@@ -132,6 +116,20 @@ class bPageRank(Algo):
 
 # 	- Eigenvector centrality (centrality.EigenvectorCentrality, centrality.SciPyEVZ)
 
+class bEigenvectorCentrality(Algo):
+	name = "EigenvectorCentrality" + framework
+
+	def run(self, G):
+		evc = networkit.centrality.EigenvectorCentrality(G, tol=1e-06)
+		evc.run()
+
+class bKatzCentrality(Algo):
+	name = "KatzCentrality" + framework
+
+	def run(self, G):
+		kc = networkit.centrality.KatzCentrality(G, tol=1e-06)
+		kc.run()
+
 
 # 	- betweenness,  exact (centrality.Betweenness) and approximated (centrality.ApproxBetweenness, centrality.ApproxBetweenness2)
 
@@ -147,5 +145,5 @@ class bApproxBetweenness(Algo):
 	name = "BetweennessApprox" + framework
 
 	def run(self, G):
-		bc = networkit.centrality.ApproxBetweenness(G, epsilon=0.1, delta=0.1)
+		bc = networkit.centrality.ApproxBetweenness2(G, nSamples=10)
 		bc.run()
