@@ -1046,12 +1046,13 @@ cdef extern from "cpp/graph/SSSP.h":
 	cdef cppclass _SSSP "NetworKit::SSSP"(_Algorithm):
 		_SSSP(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
 		void run() nogil except +
-		vector[edgeweight] getDistances() except +
+		vector[edgeweight] getDistances(bool moveOut) except +
 		edgeweight distance(node t) except +
 		vector[node] getPredecessors(node t) except +
 		vector[node] getPath(node t, bool forward) except +
 		set[vector[node]] getPaths(node t, bool forward) except +
-		stack[node] getStack() except +
+		vector[node] getStack(bool moveOut) except +
+		double _numberOfPaths(node t) except +
 
 cdef class SSSP(Algorithm):
 	""" Base class for single source shortest path algorithms. """
@@ -1065,7 +1066,7 @@ cdef class SSSP(Algorithm):
 	def __dealloc__(self):
 		self._G = None # just to be sure the graph is deleted
 
-	def getDistances(self):
+	def getDistances(self, moveOut=True):
 		"""
 		Returns a vector of weighted distances from the source node, i.e. the
  	 	length of the shortest path from the source node to any other node.
@@ -1075,7 +1076,7 @@ cdef class SSSP(Algorithm):
  	 	vector
  	 		The weighted distances from the source node to any other node in the graph.
 		"""
-		return (<_SSSP*>(self._this)).getDistances()
+		return (<_SSSP*>(self._this)).getDistances(moveOut)
 
 	def distance(self, t):
 		return (<_SSSP*>(self._this)).distance(t)
@@ -1099,16 +1100,14 @@ cdef class SSSP(Algorithm):
 		return (<_SSSP*>(self._this)).getPath(t, forward)
 
 	def getPaths(self, t, forward=True):
+		# FIXME: automatic conversion of set[vector[node]] to set of lists doesn't work
 		return (<_SSSP*>(self._this)).getPaths(t, forward)
 
-	def getStack(self, t):
-		# TODO: find a more eficient way to do this
-		cdef stack[node] stack = (<_SSSP*>(self._this)).getStack()
-		result = []
-		while not stack.empty():
-			result.append(stack.top())
-			stack.pop()
-		return result.reverse()
+	def getStack(self, moveOut=True):
+		return (<_SSSP*>(self._this)).getStack(moveOut)
+
+	def numberOfPaths(self, t):
+		return (<_SSSP*>(self._this))._numberOfPaths(t)
 
 cdef extern from "cpp/graph/DynSSSP.h":
 	cdef cppclass _DynSSSP "NetworKit::DynSSSP"(_SSSP):
@@ -3776,6 +3775,373 @@ cdef class AdjustedRandMeasure(DissimilarityMeasure):
 			ret = self._this.getDissimilarity(G._this, first._this, second._this)
 		return ret
 
+cdef extern from "cpp/community/LocalCommunityEvaluation.h":
+	cdef cppclass _LocalCommunityEvaluation "NetworKit::LocalCommunityEvaluation"(_Algorithm):
+		double getWeightedAverage() except +
+		double getUnweightedAverage() except +
+		double getMaximumValue() except +
+		double getMinimumValue() except +
+		double getValue(index i) except +
+		vector[double] getValues() except +
+		bool isSmallBetter() except +
+
+cdef class LocalCommunityEvaluation(Algorithm):
+	"""
+	Virtual base class of all evaluation methods for a single clustering which is based on the evaluation of single clusters.
+	This is the base class both for Partitions as well as for Covers.
+	"""
+	def __init__(self, *args, **namedargs):
+		if type(self) == LocalCommunityEvaluation:
+			raise RuntimeError("Error, you may not use LocalCommunityEvaluation directly, use a sub-class instead")
+
+	def getWeightedAverage(self):
+		""" Get the average value weighted by cluster size.
+
+		Returns
+		-------
+		double:
+			The weighted average value.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return (<_LocalCommunityEvaluation*>(self._this)).getWeightedAverage()
+
+	def getUnweightedAverage(self):
+		""" Get the (unweighted) average value of all clusters.
+
+		Returns
+		-------
+		double:
+			The unweighted average value.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return (<_LocalCommunityEvaluation*>(self._this)).getUnweightedAverage()
+
+	def getMaximumValue(self):
+		""" Get the maximum value of all clusters.
+
+		Returns
+		-------
+		double:
+			The maximum value.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return (<_LocalCommunityEvaluation*>(self._this)).getMaximumValue()
+
+	def getMinimumValue(self):
+		""" Get the minimum value of all clusters.
+
+		Returns
+		-------
+		double:
+			The minimum value.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return (<_LocalCommunityEvaluation*>(self._this)).getMinimumValue()
+
+	def getValue(self, index i):
+		""" Get the value of the specified cluster.
+
+		Parameters
+		----------
+		i : index
+			The cluster to get the value for.
+
+		Returns
+		-------
+		double:
+			The value of cluster i.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return (<_LocalCommunityEvaluation*>(self._this)).getValue(i)
+
+	def getValues(self):
+		""" Get the values of all clusters.
+
+		Returns
+		-------
+		list[double]:
+			The values of all clusters.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return (<_LocalCommunityEvaluation*>(self._this)).getValues()
+
+	def isSmallBetter(self):
+		""" If small values are better (otherwise large values are better).
+
+		Returns
+		-------
+		bool:
+			If small values are better.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return (<_LocalCommunityEvaluation*>(self._this)).isSmallBetter()
+
+cdef extern from "cpp/community/LocalPartitionEvaluation.h":
+	cdef cppclass _LocalPartitionEvaluation "NetworKit::LocalPartitionEvaluation"(_LocalCommunityEvaluation):
+		pass
+
+cdef class LocalPartitionEvaluation(LocalCommunityEvaluation):
+	"""
+	Virtual base class of all evaluation methods for a single clustering which is based on the evaluation of single clusters.
+	This is the base class for Partitions.
+	"""
+	cdef Graph _G
+	cdef Partition _P
+
+	def __init__(self, *args, **namedargs):
+		if type(self) == LocalPartitionEvaluation:
+			raise RuntimeError("Error, you may not use LocalPartitionEvaluation directly, use a sub-class instead")
+
+	def __cinit__(self, Graph G not None, Partition P not None, *args, **namedargs):
+		self._G = G
+		self._P = P
+
+	def __dealloc__(self):
+		# Just to be sure that everything is properly deleted
+		self._G = None
+		self._P = None
+
+
+cdef extern from "cpp/community/LocalCoverEvaluation.h":
+	cdef cppclass _LocalCoverEvaluation "NetworKit::LocalCoverEvaluation"(_LocalCommunityEvaluation):
+		pass
+
+
+cdef class LocalCoverEvaluation(LocalCommunityEvaluation):
+	"""
+	Virtual base class of all evaluation methods for a single clustering which is based on the evaluation of single clusters.
+	This is the base class for Covers.
+	"""
+	cdef Graph _G
+	cdef Cover _C
+
+	def __init__(self, *args, **namedargs):
+		if type(self) == LocalCoverEvaluation:
+			raise RuntimeError("Error, you may not use LocalCoverEvaluation directly, use a sub-class instead")
+
+	def __cinit__(self, Graph G not None, Cover C not None, *args, **namedargs):
+		self._G = G
+		self._C = C
+
+	def __dealloc__(self):
+		# Just to be sure that everything is properly deleted
+		self._G = None
+		self._C = None
+
+cdef extern from "cpp/community/IntrapartitionDensity.h":
+	cdef cppclass _IntrapartitionDensity "NetworKit::IntrapartitionDensity"(_LocalPartitionEvaluation):
+		_IntrapartitionDensity(_Graph G, _Partition P) except +
+		double getGlobal() except +
+
+cdef class IntrapartitionDensity(LocalPartitionEvaluation):
+	"""
+	The intra-cluster density of a partition is defined as the number of existing edges divided by the number of possible edges.
+	The global value is the sum of all existing intra-cluster edges divided by the sum of all possible intra-cluster edges.
+
+	Parameters
+	----------
+	G : Graph
+		The graph on which the measure shall be evaluated
+	P : Partition
+		The partition that shall be evaluated
+	"""
+	def __cinit__(self):
+		self._this = new _IntrapartitionDensity(self._G._this, self._P._this)
+
+	def getGlobal(self):
+		""" Get the global intra-cluster density.
+
+		Returns
+		-------
+		double:
+			The global intra-cluster density.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return (<_IntrapartitionDensity*>(self._this)).getGlobal()
+
+
+cdef extern from "cpp/community/IsolatedInterpartitionConductance.h":
+	cdef cppclass _IsolatedInterpartitionConductance "NetworKit::IsolatedInterpartitionConductance"(_LocalPartitionEvaluation):
+		_IsolatedInterpartitionConductance(_Graph G, _Partition P) except +
+
+cdef class IsolatedInterpartitionConductance(LocalPartitionEvaluation):
+	"""
+	Isolated inter-partition conductance is a measure for how well a partition
+	(communtiy/cluster) is separated from the rest of the graph.
+
+	The conductance of a partition is defined as the weight of the cut divided
+	by the volume (the sum of the degrees) of the nodes in the partition or the
+	nodes in the rest of the graph, whatever is smaller. Small values thus indicate
+	that the cut is small compared to the volume of the smaller of the separated
+	parts. For the whole partitions usually the maximum or the unweighted average
+	is used.
+
+	See also Experiments on Density-Constrained Graph Clustering,
+	Robert Görke, Andrea Kappes and  Dorothea Wagner, JEA 2015:
+	http://dx.doi.org/10.1145/2638551
+
+	Parameters
+	----------
+	G : Graph
+		The graph on which the measure shall be evaluated
+	P : Partition
+		The partition that shall be evaluated
+	"""
+	def __cinit__(self):
+		self._this = new _IsolatedInterpartitionConductance(self._G._this, self._P._this)
+
+cdef extern from "cpp/community/IsolatedInterpartitionExpansion.h":
+	cdef cppclass _IsolatedInterpartitionExpansion "NetworKit::IsolatedInterpartitionExpansion"(_LocalPartitionEvaluation):
+		_IsolatedInterpartitionExpansion(_Graph G, _Partition P) except +
+
+cdef class IsolatedInterpartitionExpansion(LocalPartitionEvaluation):
+	"""
+	Isolated inter-partition expansion is a measure for how well a partition
+	(communtiy/cluster) is separated from the rest of the graph.
+
+	The expansion of a partition is defined as the weight of the cut divided
+	by number of nodes in the partition or in the rest of the graph, whatever
+	is smaller. Small values thus indicate that the cut is small compared to
+	the size of the smaller of the separated parts. For the whole partitions
+	usually the maximum or the unweighted average is used. Note that expansion
+	values can be larger than 1.
+
+	See also Experiments on Density-Constrained Graph Clustering,
+	Robert Görke, Andrea Kappes and Dorothea Wagner, JEA 2015:
+	http://dx.doi.org/10.1145/2638551
+
+	Parameters
+	----------
+	G : Graph
+		The graph on which the measure shall be evaluated
+	P : Partition
+		The partition that shall be evaluated
+	"""
+	def __cinit__(self):
+		self._this = new _IsolatedInterpartitionExpansion(self._G._this, self._P._this)
+
+cdef extern from "cpp/community/CoverHubDominance.h":
+	cdef cppclass _CoverHubDominance "NetworKit::CoverHubDominance"(_LocalCoverEvaluation):
+		_CoverHubDominance(_Graph G, _Cover C) except +
+
+cdef class CoverHubDominance(LocalCoverEvaluation):
+	"""
+	A quality measure that measures the dominance of hubs in clusters. The hub dominance of a single
+	cluster is defined as the maximum cluster-internal degree of a node in that cluster divided by
+	the maximum cluster-internal degree, i.e. the number of nodes in the cluster minus one. The
+	value for all clusters is defined as the average of all clusters.
+	This implementation is a natural generalization of this measure for covers.
+	Strictly speaking this is not a quality measure as this is rather dependent on the type of the
+	considered graph, for more information see
+	Lancichinetti A, Kivelä M, Saramäki J, Fortunato S (2010)
+	Characterizing the Community Structure of Complex Networks
+	PLoS ONE 5(8): e11976. doi: 10.1371/journal.pone.0011976
+	http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0011976
+
+	Parameters
+	----------
+	G : Graph
+		The graph on which the measure shall be evaluated
+	C : Cover
+		The cover that shall be evaluated
+	"""
+	def __cinit__(self):
+		self._this = new _CoverHubDominance(self._G._this, self._C._this)
+
+cdef extern from "cpp/community/PartitionHubDominance.h":
+	cdef cppclass _PartitionHubDominance "NetworKit::PartitionHubDominance"(_LocalPartitionEvaluation):
+		_PartitionHubDominance(_Graph G, _Partition C) except +
+
+cdef class PartitionHubDominance(LocalPartitionEvaluation):
+	"""
+	A quality measure that measures the dominance of hubs in clusters. The hub dominance of a single
+	cluster is defined as the maximum cluster-internal degree of a node in that cluster divided by
+	the maximum cluster-internal degree, i.e. the number of nodes in the cluster minus one. The
+	value for all clusters is defined as the average of all clusters.
+	Strictly speaking this is not a quality measure as this is rather dependent on the type of the
+	considered graph, for more information see
+	Lancichinetti A, Kivelä M, Saramäki J, Fortunato S (2010)
+	Characterizing the Community Structure of Complex Networks
+	PLoS ONE 5(8): e11976. doi: 10.1371/journal.pone.0011976
+	http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0011976
+
+	Parameters
+	----------
+	G : Graph
+		The graph on which the measure shall be evaluated
+	P : Partition
+		The partition that shall be evaluated
+	"""
+	def __cinit__(self):
+		self._this = new _PartitionHubDominance(self._G._this, self._P._this)
+
+cdef extern from "cpp/community/PartitionFragmentation.h":
+	cdef cppclass _PartitionFragmentation "NetworKit::PartitionFragmentation"(_LocalPartitionEvaluation):
+		_PartitionFragmentation(_Graph G, _Partition C) except +
+
+cdef class PartitionFragmentation(LocalPartitionEvaluation):
+	"""
+	This measure evaluates how fragmented a partition is. The fragmentation of a single cluster is defined as one minus the
+	number of nodes in its maximum connected componented divided by its total number of nodes. Smaller values thus indicate a smaller fragmentation.
+
+	Parameters
+	----------
+	G : Graph
+		The graph on which the measure shall be evaluated
+	P : Partition
+		The partition that shall be evaluated
+	"""
+	def __cinit__(self):
+		self._this = new _PartitionFragmentation(self._G._this, self._P._this)
+
+cdef extern from "cpp/community/StablePartitionNodes.h":
+	cdef cppclass _StablePartitionNodes "NetworKit::StablePartitionNodes"(_LocalPartitionEvaluation):
+		_StablePartitionNodes(_Graph G, _Partition C) except +
+		bool isStable(node u) except +
+
+cdef class StablePartitionNodes(LocalPartitionEvaluation):
+	"""
+	Evaluates how stable a given partition is. A node is considered to be stable if it has strictly more connections
+	to its own partition than to other partitions. Isolated nodes are considered to be stable.
+	The value of a cluster is the percentage of stable nodes in the cluster.
+	Larger values indicate that a clustering is more stable and thus better defined.
+
+	Parameters
+	----------
+	G : Graph
+		The graph on which the measure shall be evaluated
+	P : Partition
+		The partition that shall be evaluated
+	"""
+	def __cinit__(self):
+		self._this = new _StablePartitionNodes(self._G._this, self._P._this)
+
+
+	def isStable(self, node u):
+		"""
+		Check if a given node is stable, i.e. more connected to its own partition than to other partitions.
+
+		Parameters
+		----------
+		u : node
+			The node to check
+
+		Returns
+		-------
+		bool
+			If the node u is stable.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return (<_StablePartitionNodes*>(self._this)).isStable(u)
 
 # Module: flows
 
@@ -4744,7 +5110,7 @@ cdef class DynApproxBetweenness:
 	""" New dynamic algorithm for the approximation of betweenness centrality with
 	a guaranteed error
 
-	DynApproxBetweenness(G, epsiolon=0.01, delta=0.1, [storePredecessors])
+	DynApproxBetweenness(G, epsilon=0.01, delta=0.1, [storePredecessors])
 
 	The algorithm approximates the betweenness of all vertices so that the scores are
 	within an additive error epsilon with probability at least (1- delta).

@@ -148,11 +148,10 @@ class Bench:
 
     """
 
-    def __init__(self, graphDir, graphMeta, defaultGraphs, outDir, save=True, nRuns=5, cacheGraphs=False, timeout=None):
+    def __init__(self, graphDir, defaultGraphs, outDir, save=True, nRuns=5, cacheGraphs=False, timeout=None):
         self.defaultGraphs = defaultGraphs
         self.nRuns = nRuns  # default number of runs for each algo
         self.graphDir = graphDir
-        self.graphMeta = graphMeta  # data frame with graph metadata
         # store result data of benchmarks
         self.data = {}
         self.outDir = outDir
@@ -189,6 +188,12 @@ class Bench:
                 self.graphCache[key] = G
             return G
 
+    def getSize(self, G):
+        if isinstance(G, networkit.Graph):
+            return G.size()
+        else:
+            raise Error("cannot get graph size - unknown object type")
+
     def clearCache(self):
         """ Delete all stored graphs to free memory """
         del self.graphCache
@@ -210,7 +215,7 @@ class Bench:
         for graphName in graphs:
             try:
                 G = self.getGraph(graphName, algo)
-                m = float(self.graphMeta[self.graphMeta["name"] == graphName]["m"])
+                (n, m) = self.getSize(G)
                 try:
                     self.info("running {algo.name} {nRuns}x on {graphName}".format(**locals()))
                     for i in range(nRuns):
@@ -224,7 +229,7 @@ class Bench:
                                 signal.alarm(int(timeout * 60))  # timeout in seconds
                             with Timer() as t:
                                 result = algo.run(G)
-                            self.debug("took {0} s".format(t.elapsed))
+                            self.info("took {0} s".format(t.elapsed))
                             # store data
                             row["time"] = t.elapsed
                             row["eps"] =  m / t.elapsed  # calculate edges per second
@@ -248,6 +253,7 @@ class Bench:
         # store data frame on disk
         if self.save:
             df.to_csv(os.path.join(self.outDataDir, "{algo.name}.csv".format(**locals())))
+        self.log("Done")
 
 
     def log(self, message):
@@ -280,7 +286,13 @@ class Bench:
         if self.save:
             plt.savefig(os.path.join(self.plotDir, "{algoName}-eps.pdf".format(**locals())), bbox_inches="tight")
 
+    def graphPlot(self):
+        epsPlot(averageRuns(self.data))
+        if self.save:
+            plt.savefig(os.path.join(self.plotDir, "graphs.pdf".format(**locals())), bbox_inches="tight")
+
     def plot(self, algoName):
+        print(algoName)
         self.timePlot(algoName)
         self.epsPlot(algoName)
 
@@ -302,7 +314,7 @@ class Bench:
         plt.gca().xaxis.get_major_formatter().set_powerlimits((3, 3))
         plt.xscale("log")
         plt.xlabel("edges/s")
-        seaborn.boxplot([vals.dropna() for col, vals in epsSummary.reindex_axis(sorted(epsSummary.columns), axis=1).iteritems()], names=sorted(epsSummary.columns), linewidth=1.5, widths=.25, color=green, vert=False)
+        seaborn.boxplot(epsSummary, linewidth=1.5, width=.25, color=green, vert=False)
         if self.save:
             plt.savefig(os.path.join(self.plotDir, "epsSummary.pdf".format(**locals())), bbox_inches="tight")
 

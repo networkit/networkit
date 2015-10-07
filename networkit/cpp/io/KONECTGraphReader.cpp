@@ -15,6 +15,8 @@
 
 #include "../auxiliary/Enforce.h"
 
+#include <algorithm>
+
 namespace NetworKit {
 
     KONECTGraphReader::KONECTGraphReader(char separator, bool ignoreLoops) :
@@ -103,6 +105,7 @@ namespace NetworKit {
                 // TRACE("ignoring empty line");
             } else {
                 std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
+                split.erase(std::remove_if(split.begin(),split.end(),[](const std::string& s){return s.empty();}),split.end());
 
 		if(detectSeparatorAttempt) {
                     // one attempt is made to detect if, instead of a space, 
@@ -137,7 +140,10 @@ namespace NetworKit {
                     message << "malformed line (expecting ";
                     message << minValuesPerLine << "-4 values, ";
                     message << split.size() << " given) ";
-                    message << i << ": " << line;
+                    message << i << ": ";
+                    for (const auto& s : split) {
+                        message << s <<", ";
+                    }
                     throw std::runtime_error(message.str());
                 }
             }
@@ -160,7 +166,7 @@ namespace NetworKit {
             } else {
                 // TRACE("edge line: " , line);
                 std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
-
+                split.erase(std::remove_if(split.begin(),split.end(),[](const std::string& s){return s.empty();}),split.end());
                 // correct number of values?
                 if (split.size() >= minValuesPerLine && split.size() <= 4) {
                     node u = std::stoul(split[0]) - this->firstNode;
