@@ -1963,16 +1963,16 @@ cdef class HavelHakimiGenerator:
 		"""
 		return Graph(0).setThis(self._this.generate())
 
-cdef extern from "cpp/generators/ConfigurationModelGenerator.h":
-	cdef cppclass _ConfigurationModelGenerator "NetworKit::ConfigurationModelGenerator":
-		_ConfigurationModelGenerator(vector[count] degreeSequence, bool ignoreIfRealizable) except +
+cdef extern from "cpp/generators/EdgeSwitchingMarkovChainGenerator.h":
+	cdef cppclass _EdgeSwitchingMarkovChainGenerator "NetworKit::EdgeSwitchingMarkovChainGenerator":
+		_EdgeSwitchingMarkovChainGenerator(vector[count] degreeSequence, bool ignoreIfRealizable) except +
 		_Graph generate() except +
 		bool isRealizable() except +
 		bool getRealizable() except +
 
-cdef class ConfigurationModelGenerator:
+cdef class EdgeSwitchingMarkovChainGenerator:
 	"""
-	Configuration model graph generator for generating a random simple graph with exactly the given degree sequence.
+	Graph generator for generating a random simple graph with exactly the given degree sequence based on the Edge-Switching Markov-Chain method.
 
 	This implementation is based on the paper
 	"Random generation of large connected simple graphs with prescribed degree distribution" by Fabien Viger and Matthieu Latapy,
@@ -1994,10 +1994,10 @@ cdef class ConfigurationModelGenerator:
 	ignoreIfRealizable : bool, optional
 		If true, generate the graph even if the degree sequence is not realizable. Some nodes may get lower degrees than requested in the sequence.
 	"""
-	cdef _ConfigurationModelGenerator *_this
+	cdef _EdgeSwitchingMarkovChainGenerator *_this
 
 	def __cinit__(self, vector[count] degreeSequence, bool ignoreIfRealizable = False):
-		self._this = new _ConfigurationModelGenerator(degreeSequence, ignoreIfRealizable)
+		self._this = new _EdgeSwitchingMarkovChainGenerator(degreeSequence, ignoreIfRealizable)
 
 	def __dealloc__(self):
 		del self._this
