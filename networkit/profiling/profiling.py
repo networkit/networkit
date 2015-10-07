@@ -483,10 +483,10 @@ class Profile:
 
 			def funcHeatMap(category, correlationName):
 				result = ""
-
+				keyBList = []
+				
 				if type == "HTML":
 					result += "<div class=\"SubCategory HeatTable\" data-title=\"" + correlationName + "\">"
-					keyBList = []
 					for keyA in self.__measures:
 						if self.__measures[keyA]["category"] == category and self.__measures[keyA]["correlate"]:
 							keyBList.append(keyA)
@@ -500,7 +500,25 @@ class Profile:
 								result += "<div class=\"HeatCell\" title=\"" + nameB + " - " + nameA + "\" data-heat=\"{:+.3F}\"></div>".format(value["stat"][correlationName])
 							result += "<div class=\"HeatCellName\">" + nameB + "</div><br>"
 					result += "</div>"
-
+				elif type == "LaTeX":
+					i = 0
+					n = len(self.__measures)
+					result += correlationName
+					result += "\\begin{tabular}{" + ("l" * (n+1)) +"}"
+					for keyA in self.__measures:
+						if self.__measures[keyA]["category"] == category and self.__measures[keyA]["correlate"]:
+							keyBList.append(keyA)
+							for keyB in keyBList:
+								try:
+									value = self.__correlations[category][keyA][keyB]
+								except:
+									value = self.__correlations[category][keyB][keyA]
+								nameA = self.__measures[keyA]["name"]
+								nameB = self.__measures[keyB]["name"]
+								result += "{:+.3F} & ".format(value["stat"][correlationName])
+							result += "\\multicolumn{" + str(n-i) + "}" + "{l}{" + nameB + "} \\\\"
+						i += 1
+					result += "\\end{tabular}"
 				return result
 			if self.__config.getMeasureCorrelation("Pearson"):
 				results[category]["Correlations"]["HeatMaps"] += funcHeatMap(category, "Pearson's Correlation Coefficient")
