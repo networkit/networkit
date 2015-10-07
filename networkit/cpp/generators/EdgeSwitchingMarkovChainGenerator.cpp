@@ -2,15 +2,15 @@
  *
  */
 
-#include "ConfigurationModelGenerator.h"
+#include "EdgeSwitchingMarkovChainGenerator.h"
 #include "HavelHakimiGenerator.h"
 #include "../auxiliary/Random.h"
 
-NetworKit::ConfigurationModelGenerator::ConfigurationModelGenerator(const std::vector< NetworKit::count > &sequence, bool ignoreIfRealizable): StaticDegreeSequenceGenerator(sequence), ignoreIfRealizable(ignoreIfRealizable) {
+NetworKit::EdgeSwitchingMarkovChainGenerator::EdgeSwitchingMarkovChainGenerator(const std::vector< NetworKit::count > &sequence, bool ignoreIfRealizable): StaticDegreeSequenceGenerator(sequence), ignoreIfRealizable(ignoreIfRealizable) {
 
 }
 
-NetworKit::Graph NetworKit::ConfigurationModelGenerator::generate() {
+NetworKit::Graph NetworKit::EdgeSwitchingMarkovChainGenerator::generate() {
 	Graph result(HavelHakimiGenerator(seq, ignoreIfRealizable).generate());
 
 	count neededSwaps = result.numberOfEdges() * 10;

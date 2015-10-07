@@ -29,7 +29,7 @@ Dy * GeneratorsTest.cpp
 #include "../WattsStrogatzGenerator.h"
 #include "../RegularRingLatticeGenerator.h"
 #include "../StochasticBlockmodel.h"
-#include "../ConfigurationModelGenerator.h"
+#include "../EdgeSwitchingMarkovChainGenerator.h"
 
 #include "../../viz/PostscriptWriter.h"
 #include "../../community/ClusteringGenerator.h"
@@ -823,7 +823,7 @@ TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {
 		});
 
 		bool skipTest = false;
-		ConfigurationModelGenerator gen(sequence, skipTest);
+		EdgeSwitchingMarkovChainGenerator gen(sequence, skipTest);
 		Graph G2 = gen.generate();
 
 		count volume = std::accumulate(sequence.begin(), sequence.end(), 0);
