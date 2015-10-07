@@ -70,8 +70,8 @@ MultiscaleSparsifier::MultiscaleSparsifier(const Graph& graph, double alpha) :
 
 void MultiscaleSparsifier::run() {
 	std::vector<double> weight(inputGraph.upperEdgeIdBound());
-	inputGraph.forEdges([&](node u, node v, edgeid eid) {
-		weight[eid] = inputGraph.weight(u, v);
+	inputGraph.forEdges([&](node u, node v, edgeweight w, edgeid eid) {
+		weight[eid] = w;
 	});
 
 	MultiscaleScore multiscaleScorer(inputGraph, weight);
