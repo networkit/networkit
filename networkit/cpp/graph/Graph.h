@@ -228,7 +228,8 @@ private:
 	template<class F,
 			 typename std::enable_if<
 			 (Aux::FunctionTraits<F>::arity >= 2) &&
-			 std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<2>::type>::value
+			 std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<2>::type>::value &&
+			 std::is_same<node, typename Aux::FunctionTraits<F>::template arg<1>::type>::value /* prevent f(v, weight, eid) */
 			 >::type* = (void*)0>
 	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, v, id)) {
 		return f(u, v, id);
@@ -1438,7 +1439,7 @@ void Graph::BFSEdgesFrom(node r, L handle) const {
 		node u = q.front();
 		q.pop();
 		// apply function
-		forNeighborsOf(u, [&](node v, edgeweight w, edgeid eid) {
+		forNeighborsOf(u, [&](node, node v, edgeweight w, edgeid eid) {
 			if (!marked[v]) {
 				handle(u, v, w, eid);
 				q.push(v);
