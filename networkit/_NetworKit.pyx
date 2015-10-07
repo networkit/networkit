@@ -1365,85 +1365,177 @@ cdef class SpanningForest:
 	def generate(self):
 		return Graph().setThis(self._this.generate());
 
-cdef extern from "cpp/graph/UMST.h":
-	cdef cppclass _UMST "NetworKit::UMST<double>":
-		_UMST(_Graph) except +
-		_UMST(_Graph, vector[double]) except +
-		void run() except +
-		_Graph getUMST(bool move) except +
+cdef extern from "cpp/graph/UnionMaximumSpanningForest.h":
+	cdef cppclass _UnionMaximumSpanningForest "NetworKit::UnionMaximumSpanningForest"(_Algorithm):
+		_UnionMaximumSpanningForest(_Graph) except +
+		_UnionMaximumSpanningForest(_Graph, vector[double]) except +
+		_Graph getUMSF(bool move) except +
 		vector[bool] getAttribute(bool move) except +
-		bool inUMST(edgeid eid) except +
-		bool inUMST(node u, node v) except +
+		bool inUMSF(edgeid eid) except +
+		bool inUMSF(node u, node v) except +
 
-cdef class UMST:
-	cdef _UMST* _this
+cdef class UnionMaximumSpanningForest(Algorithm):
+	"""
+	Union maximum-weight spanning forest algorithm, computes the union of all maximum-weight spanning forests using Kruskal's algorithm.
+
+	Parameters
+	----------
+	G : Graph
+		The input graph.
+	attribute : list
+		If given, this edge attribute is used instead of the edge weights.
+	"""
+	cdef Graph _G
 
 	def __cinit__(self, Graph G not None, vector[double] attribute = vector[double]()):
+		self._G = G
+
 		if attribute.empty():
-			self._this = new _UMST(G._this)
+			self._this = new _UnionMaximumSpanningForest(G._this)
 		else:
-			self._this = new _UMST(G._this, attribute)
+			self._this = new _UnionMaximumSpanningForest(G._this, attribute)
 
-	def __dealloc__(self):
-		del self._this
+	def getUMSF(self, bool move = False):
+		"""
+		Gets the union of all maximum-weight spanning forests as graph.
 
-	def run(self):
-		self._this.run()
-		return self
+		Parameters
+		----------
+		move : boolean
+			If the graph shall be moved out of the algorithm instance.
 
-	def getUMST(self, bool move = False):
-		return Graph().setThis(self._this.getUMST(move))
+		Returns
+		-------
+		Graph
+			The calculated union of all maximum-weight spanning forests.
+		"""
+		return Graph().setThis((<_UnionMaximumSpanningForest*>(self._this)).getUMSF(move))
 
 	def getAttribute(self, bool move = False):
-		return self._this.getAttribute(move)
+		"""
+		Get a boolean attribute that indicates for each edge if it is part of any maximum-weight spanning forest.
+
+		This attribute is only calculated and can thus only be request if the supplied graph has edge ids.
+
+		Parameters
+		----------
+		move : boolean
+			If the attribute shall be moved out of the algorithm instance.
+
+		Returns
+		-------
+		list
+			The list with the boolean attribute for each edge.
+		"""
+		return (<_UnionMaximumSpanningForest*>(self._this)).getAttribute(move)
 
 	def inUMST(self, node u, node v = _none):
+		"""
+		Checks if the edge (u, v) or the edge with id u is part of any maximum-weight spanning forest.
+
+		Parameters
+		----------
+		u : node or edgeid
+			The first node of the edge to check or the edge id of the edge to check
+		v : node
+			The second node of the edge to check (only if u is not an edge id)
+
+		Returns
+		-------
+		boolean
+			If the edge is part of any maximum-weight spanning forest.
+		"""
 		if v == _none:
-			return self._this.inUMST(u)
+			return (<_UnionMaximumSpanningForest*>(self._this)).inUMSF(u)
 		else:
-			return self._this.inUMST(u, v)
+			return (<_UnionMaximumSpanningForest*>(self._this)).inUMSF(u, v)
 
-cdef extern from "cpp/graph/MST.h":
-	cdef cppclass _MST "NetworKit::MST":
-		_MST(_Graph) except +
-		_MST(_Graph, vector[double]) except +
+cdef extern from "cpp/graph/RandomMaximumSpanningForest.h":
+	cdef cppclass _RandomMaximumSpanningForest "NetworKit::RandomMaximumSpanningForest"(_Algorithm):
+		_RandomMaximumSpanningForest(_Graph) except +
+		_RandomMaximumSpanningForest(_Graph, vector[double]) except +
 		void run() except +
-		_Graph getMST(bool move) except +
+		_Graph getMSF(bool move) except +
 		vector[bool] getAttribute(bool move) except +
-		bool inMST(edgeid eid) except +
-		bool inMST(node u, node v) except +
+		bool inMSF(edgeid eid) except +
+		bool inMSF(node u, node v) except +
 
-cdef class MST:
-	cdef _MST* _this
+cdef class RandomMaximumSpanningForest(Algorithm):
+	"""
+	Computes a random maximum-weight spanning forest using Kruskal's algorithm by randomizing the order of edges of the same weight.
+
+	Parameters
+	----------
+	G : Graph
+		The input graph.
+	attribute : list
+		If given, this edge attribute is used instead of the edge weights.
+	"""
 	cdef vector[double] _attribute
 	cdef Graph _G
 
 	def __cinit__(self, Graph G not None, vector[double] attribute = vector[double]()):
 		self._G = G
 		if attribute.empty():
-			self._this = new _MST(G._this)
+			self._this = new _RandomMaximumSpanningForest(G._this)
 		else:
 			self._attribute = move(attribute)
-			self._this = new _MST(G._this, self._attribute)
+			self._this = new _RandomMaximumSpanningForest(G._this, self._attribute)
 
-	def __dealloc__(self):
-		del self._this
+	def getMSF(self, bool move = False):
+		"""
+		Gets the calculated maximum-weight spanning forest as graph.
 
-	def run(self):
-		self._this.run()
-		return self
+		Parameters
+		----------
+		move : boolean
+			If the graph shall be moved out of the algorithm instance.
 
-	def getMST(self, bool move = False):
-		return Graph().setThis(self._this.getMST(move))
+		Returns
+		-------
+		Graph
+			The calculated maximum-weight spanning forest.
+		"""
+		return Graph().setThis((<_RandomMaximumSpanningForest*>(self._this)).getMSF(move))
 
 	def getAttribute(self, bool move = False):
-		return self._this.getAttribute(move)
+		"""
+		Get a boolean attribute that indicates for each edge if it is part of the calculated maximum-weight spanning forest.
 
-	def inMST(self, node u, node v = _none):
+		This attribute is only calculated and can thus only be request if the supplied graph has edge ids.
+
+		Parameters
+		----------
+		move : boolean
+			If the attribute shall be moved out of the algorithm instance.
+
+		Returns
+		-------
+		list
+			The list with the boolean attribute for each edge.
+		"""
+		return (<_RandomMaximumSpanningForest*>(self._this)).getAttribute(move)
+
+	def inMSF(self, node u, node v = _none):
+		"""
+		Checks if the edge (u, v) or the edge with id u is part of the calculated maximum-weight spanning forest.
+
+		Parameters
+		----------
+		u : node or edgeid
+			The first node of the edge to check or the edge id of the edge to check
+		v : node
+			The second node of the edge to check (only if u is not an edge id)
+
+		Returns
+		-------
+		boolean
+			If the edge is part of the calculated maximum-weight spanning forest.
+		"""
 		if v == _none:
-			return self._this.inMST(u)
+			return (<_RandomMaximumSpanningForest*>(self._this)).inMSF(u)
 		else:
-			return self._this.inMST(u, v)
+			return (<_RandomMaximumSpanningForest*>(self._this)).inMSF(u, v)
 
 
 cdef extern from "cpp/independentset/Luby.h":
