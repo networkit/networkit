@@ -12,6 +12,8 @@ void NetworKit::IntrapartitionDensity::run() {
 
 	minimumValue = std::numeric_limits< double >::max();
 	maximumValue  = std::numeric_limits< double >::lowest();
+	unweightedAverage = 0;
+	weightedAverage = 0;
 	values.clear();
 
 	std::vector<count> clusterSizes(P.upperBound(), 0);
