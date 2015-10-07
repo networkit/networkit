@@ -30,38 +30,31 @@
 
 \begin{{document}}
 
-%<div class="NetworKit_Page" id="NetworKit_Page_{pageIndex}">
 Network Properties
 		
 Name: {properties[Name]}
+Nodes: {properties[Nodes]}
+Edges: {properties[Edges]}
+Density: {properties[Density]:g}
+Directed: {properties[Directed]}
+Weighted: {properties[Weighted]}
+Self Loops: {properties[Self Loops]:g}
+Diameter Range: {properties[Diameter Range]}
 
-%		<div class="Value" data-title="Nodes">{properties[Nodes]}</div>
-%		<div class="Value" data-title="Edges">{properties[Edges]}</div>
-%		<div class="Value" data-title="Density">{properties[Density]:g}</div>
-%		<div class="Value" data-title="Directed">{properties[Directed]}</div>
-%		<div class="Value" data-title="Weighted">{properties[Weighted]}</div>
-%		<div class="Value" data-title="Self Loops">{properties[Self Loops]:g}</div>
-%		<div class="Value" data-title="Diameter Range">{properties[Diameter Range]}</div>
-%	</div>
-%	<div class="Category" data-title="Overview">
-%		<div class="Block SubCategory" data-title="Node Centrality Measures">
-			{results[Node Centrality][Overview]}
-%		</div>
-%		<div class="Block SubCategory" data-title="Partions">
-			{results[Partition][Overview]}
-%		</div>
-%	</div>
-%	<div class="Category" data-title="Node Centrality Measures">
-		{results[Node Centrality][Measures]}
-%		<div class="Block SubCategory" data-title="Node Centrality Correlations">
-%			{results[Node Centrality][Correlations][HeatMaps]}
-%			{results[Node Centrality][Correlations][ScatterPlots]}
-%		</div>
-%	</div>
-%	<div class="Category" data-title="Partitions">
-%		{results[Partition][Measures]}
-%	</div>
-%</div>
+Overview
+	Node Centrality Measures
+		{results[Node Centrality][Overview]}
+	Partions
+		{results[Partition][Overview]}
+
+
+Node Centrality Measures
+	{results[Node Centrality][Measures]}
+	{results[Node Centrality][Correlations][HeatMaps]}
+	{results[Node Centrality][Correlations][ScatterPlots]}
+
+Partitions
+	{results[Partition][Measures]}
 
 
 %=== END =====================================================================
