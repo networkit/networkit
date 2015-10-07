@@ -7,6 +7,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.ticker import FormatStrFormatter, ScalarFormatter
+from matplotlib.backends.backend_pdf import PdfPages
 
 import io
 from urllib.parse import quote
@@ -98,7 +99,9 @@ class Theme:
 
 class Measure:
 	""" TODO: """
-	def __init__(self, name, params):
+	def __init__(self, plottype, options, name, params):
+		self.__plottype = plottype
+		self.__options = options
 		self.__name = name
 		self.__params = params
 
@@ -109,9 +112,10 @@ class Measure:
 		return "Plot.Measure"
 
 	def run(self):
-		(index, stat, label, theme) = self.__params
+		(index, stat, category, name, label, theme) = self.__params
 		plt.ioff()
 
+		plottype = "plot"
 
 		def funcSpace(min, max):
 			result = 0.1
@@ -304,6 +308,9 @@ class Measure:
 			accumulator = 0
 
 			for i in range(len(relativeFrequencies)):
+				if i == 0 and numberOfTooSmallSubsets == 0:
+					continue
+				
 				value = relativeFrequencies[i]
 				alpha = 360 * value
 				label = "{:1.1f}%".format(value * 100)
@@ -413,7 +420,8 @@ class Measure:
 				height = 3
 			)
 			fig.set_size_inches(6, 6)
-
+			plottype = "stat"
+			
 		elif index == 1:
 			fig = plt.figure()
 			ax = fig.gca()
@@ -430,6 +438,7 @@ class Measure:
 				width = 4,
 				height = 2.5
 			)
+			plottype = "thumb"
 
 		elif index == 2:
 			fig = plt.figure()
@@ -444,20 +453,22 @@ class Measure:
 				height = 5.4*1.5,
 				drawAxis = False
 			)
+			plottype = "pie"
 
-		fig.tight_layout()
-		imgdata = io.StringIO()
-		fig.savefig(imgdata, format='svg')
-		plt.close(fig)
-		plaintext = imgdata.getvalue()
-		plaintext = " ".join(plaintext[plaintext.find("<svg "):].split())
-		encoded = quote(plaintext, safe='');
-		return (index, encoded)
-
+		return save(
+			index,
+			fig,
+			self.__plottype,
+			self.__options,
+			plottype + "." + category + "." + name
+		)
+		
 
 class Scatter:
 	""" TODO: """
-	def __init__(self, name, params):
+	def __init__(self, plottype, options, name, params):
+		self.__plottype = plottype
+		self.__options = options
 		self.__name = name
 		self.__params = params
 
@@ -501,11 +512,37 @@ class Scatter:
 
 		fig.set_size_inches(4, 3.75)
 
-		fig.tight_layout()
+		return save(
+			name,
+			fig,
+			self.__plottype,
+			self.__options,
+			"scatter." + nameA + " - " + nameB
+		)
+
+		
+def save(id, fig, plottype, options, extention):
+	""" TODO: """
+	result = ""
+
+	fig.tight_layout()
+	
+	if plottype == "SVG":
 		imgdata = io.StringIO()
 		fig.savefig(imgdata, format='svg')
-		plt.close(fig)
+		
 		plaintext = imgdata.getvalue()
 		plaintext = " ".join(plaintext[plaintext.find("<svg "):].split())
-		encoded = quote(plaintext, safe='');
-		return (name, encoded)
+		result = quote(plaintext, safe='')
+	
+	if plottype == "PDF":
+		filename = options[1] + extention
+		with PdfPages(options[0] + "/" + filename + ".pdf") as pdf:
+			pdf.savefig(fig)
+		result = filename
+		
+	else:
+		pass
+		
+	plt.close(fig)
+	return (id, result)

@@ -194,7 +194,12 @@ class Profile:
 					file = dirpath + "/" + filename
 					cls.__verbosePrint("[ " + file + " ]")
 					G = kit.readGraph(file, kit.Format[seperations[-1]])
-					pf = cls.create(G, config=config)
+					pf = cls.create(
+						G,
+						config = config,
+						type = type,
+						directory = dirpath,
+						token = cls.__TOKEN)
 					del seperations[-1]
 					
 					pf.output(
@@ -202,7 +207,8 @@ class Profile:
 						directory = dirpath,
 						style = style,
 						color = color,
-						parallel = parallel
+						parallel = parallel,
+						token = cls.__TOKEN
 					)
 					cls.__verbosePrint("\n")
 				except Exception as e:
@@ -213,8 +219,15 @@ class Profile:
 		
 		
 	@classmethod
-	def create(cls, G, config=Config()):
+	def create(cls, G, config=Config(), type="HTML", directory="", token=object()):
 		""" TODO: """
+		
+		if token is not cls.__TOKEN:
+			if type != "HTML" or directory != "":
+				raise ValueError("support for \"type\" and \"directory\" is not implemented");
+		
+		filename  = "{0}.".format(G.getName())
+		
 		result = cls(G, cls.__TOKEN)
 		# TODO: use copy constructor instead
 		result.__config = config
@@ -260,7 +273,7 @@ class Profile:
 		if cls.__verbose:
 			timerAll = stopwatch.Timer()
 		result.__loadProperties()
-		result.__loadMeasures()
+		result.__loadMeasures(type, directory, filename)
 		if cls.__verbose:
 			if cls.__verboseLevel < 1:
 				print("")
@@ -312,7 +325,7 @@ class Profile:
 		return self.__measures[measure]["time"]
 
 
-	def output(self, type, directory, filename=None, style="light", color=(0, 0, 1), parallel=False):
+	def output(self, type, directory, style="light", color=(0, 0, 1), parallel=False, token=object()):
 		""" TODO: type -> enum """
 		options_type = ["HTML", "LaTeX", None]
 		for o in options_type:
@@ -320,19 +333,23 @@ class Profile:
 				raise ValueError("unknown type: options are " + str(options_type[0:len(options_type)-1]))
 			if o == type:
 				break;
+				
+		if token is not self.__TOKEN:
+			if type != "HTML":
+				raise ValueError(type + " support is not implemented");
 
-		if type == "LaTeX":
-			raise RuntimeError("not implemented, yet")
-
+		filename  = "{0}.".format(self.__G.getName())				
+		
 		result = self.__format(
 			type = type,
 			directory = directory,
+			filename = filename,
 			style = style,
 			color = color,
 			pageIndex = 0,
 			parallel = parallel
 		)
-
+		
 		if type == "HTML":
 			js = readfile("html/profiling.js", False).replace("\\\\", "\\")
 			css = readfile("html/profiling.css", False).replace("\\\\", "\\")
@@ -357,8 +374,10 @@ class Profile:
 					</body>
 				</html>
 			"""
-			if filename is None:
-				filename  = "{0}.html".format(self.__G.getName())
+			filename += "html"
+		elif type == "LaTeX":
+			result = result
+			filename += "tex"
 		else:
 			raise Error("unknown output type")
 
@@ -376,6 +395,7 @@ class Profile:
 		result = self.__format(
 			type = "HTML",
 			directory = "",
+			filename = "",
 			style = style,
 			color = color,
 			pageIndex = self.__pageCount,
@@ -386,35 +406,48 @@ class Profile:
 		self.__pageCount = self.__pageCount + 1
 
 
-	def __format(self, type, directory, style, color, pageIndex, parallel):
+	def __format(self, type, directory, filename, style, color, pageIndex, parallel):
 		""" TODO """
 		theme = plot.Theme()
 		theme.set(style, color)
-
+		
+		if type == "HTML":
+			plottype = "SVG"
+			options = []
+		elif type == "LaTeX":
+			plottype = "PDF"
+			options = [directory, filename]
+		
 		pool = multiprocessing.ThreadPool(self.__parallel, parallel)
 		for name in self.__measures:
 			category = self.__measures[name]["category"]
 			pool.put(
-				plot.Measure(name, (
+				plot.Measure(plottype, options, name, (
 					0,
 					self.__measures[name]["stat"],
+					category,
+					self.__measures[name]["name"],
 					self.__measures[name]["label"],
 					theme
 				))
 			)
 			pool.put(
-				plot.Measure(name, (
+				plot.Measure(plottype, options, name, (
 					1,
 					self.__measures[name]["stat"],
+					category,
+					self.__measures[name]["name"],
 					self.__measures[name]["label"],
 					theme
 				))
 			)
 			if category == "Partition":
 				pool.put(
-					plot.Measure(name, (
+					plot.Measure(plottype, options, name, (
 						2,
 						self.__measures[name]["stat"],
+						category,
+						self.__measures[name]["name"],
 						self.__measures[name]["label"],
 						theme
 					))
@@ -429,12 +462,15 @@ class Profile:
 					self.__measures[name]["image"][index] = image
 			except Exception as e:
 				self.__verbosePrint("Error (Post Processing): " + plotType + " - " + name, level=-1)
-				self.___verbosePrint(str(e), level=-1)
+				self.__verbosePrint(str(e), level=-1)
 		pool.join()
 
 		if type == "HTML":
 			templateProfile = readfile("html/profile.html", False)
 			templateMeasure = readfile("html/measure.html", False)
+		elif type == "LaTeX":
+			templateProfile = readfile("latex/profile.tex", False)
+			templateMeasure = readfile("latex/measure.tex", False)
 
 		results = {}
 		for category in self.__correlations:
@@ -513,6 +549,9 @@ class Profile:
 			try:
 				if type == "HTML":
 					extentions = "<div class=\"PartitionPie\"><img src=\"data:image/svg+xml;utf8," + image[2] + "\" /></div>"
+				elif type == "LaTeX":
+					extentions = "\\includegraphics{{" + image[2] + "}.pdf}"
+			
 			except:
 				pass
 
@@ -531,7 +570,9 @@ class Profile:
 			)
 			if type == "HTML":
 				results[category]["Overview"] += "<div class=\"Thumbnail_Overview\" data-title=\"" + name + "\"><a href=\"#NetworKit_Page_" + str(pageIndex) + "_" + key + "\"><img src=\"data:image/svg+xml;utf8," + image[1] + "\" /></a></div>"
-
+			elif type == "LaTeX":
+				results[category]["Overview"] += "\\includegraphics{{" + image[1] + "}.pdf}"
+				
 		result = self.__formatProfileTemplate(
 			templateProfile,
 			pageIndex,
@@ -599,10 +640,17 @@ class Profile:
 		self.__properties["Diameter Range"] = diameter
 
 
-	def __loadMeasures(self):
+	def __loadMeasures(self, type, directory, filename):
 		""" TODO: """
 		pool = multiprocessing.ThreadPool(self.__parallel, False)
 
+		if type == "HTML":
+			plottype = "SVG"
+			options = []
+		elif type == "LaTeX":
+			plottype = "PDF"
+			options = [directory, filename]
+		
 		for name in self.__measures:
 			measure = self.__measures[name]
 			self.__verbosePrint(name + ": ", end="")
@@ -684,7 +732,7 @@ class Profile:
 
 			try:
 				category = self.__measures[name]["category"]
-
+				
 				if type == "Stat":
 					self.__measures[name]["stat"] = data
 					self.__verbosePrint("Stat: " + name, level=1)
@@ -704,7 +752,7 @@ class Profile:
 								))
 							)
 							pool.put(
-								plot.Scatter(key, (
+								plot.Scatter(plottype, options, key, (
 									name,
 									self.__measures[key]["name"],
 									self.__measures[name]["name"],
