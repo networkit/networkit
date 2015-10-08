@@ -154,6 +154,7 @@ class Bench:
         self.graphDir = graphDir
         # store result data of benchmarks
         self.data = {}
+        self.loadTimes = []
         self.outDir = outDir
         self.save = save  # store data frames on disk if true
         # create output directory if it does not exist
@@ -183,7 +184,9 @@ class Bench:
             return G
         else:
             self.info("loading {0}".format(graphName))
-            G = algo.loadGraph(os.path.join(self.graphDir, "{0}.gml.graph".format(graphName)))
+            with Timer() as t:
+                G = algo.loadGraph(os.path.join(self.graphDir, "{0}.gml.graph".format(graphName)))
+            self.loadTimes.append({"framework" : algo.framework, "graph" : graphName, "time": t.elapsed})
             if self.cacheGraphs:
                 self.graphCache[key] = G
             return G
@@ -321,6 +324,11 @@ class Bench:
     def plotAll(self):
         for key in self.data.keys():
             self.plot(key)
+
+
+    def getLoadTimes(self):
+        """ Get input times for graphs"""
+        return pandas.DataFrame(self.loadTimes)
 
 
 
