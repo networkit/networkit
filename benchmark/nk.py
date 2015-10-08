@@ -155,5 +155,16 @@ class bApproxBetweenness(Algo):
 	name = "BetweennessApprox" + framework
 
 	def run(self, G):
-		bc = networkit.centrality.ApproxBetweenness2(G, nSamples=10)
+		bc = networkit.centrality.ApproxBetweenness2(G, nSamples=42)
 		bc.run()
+
+
+class bApproxBetweennessSeq(Algo):
+	name = "BetweennessApproxSeq" + framework
+
+	def run(self, G):
+		mt = networkit.getMaxNumberOfThreads()
+		networkit.setNumberOfThreads(1)
+		bc = networkit.centrality.ApproxBetweenness2(G, nSamples=42)
+		bc.run()
+		networkit.setNumberOfThreads(mt)
