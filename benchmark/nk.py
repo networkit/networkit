@@ -90,8 +90,8 @@ class bClusteringCoefficient(Algo):
 	name = "ClusteringCoefficient" + framework
 
 	def run(self, G):
-		c = networkit.properties.ClusteringCoefficient.avgLocal(G)
-		return c
+		networkit.centrality.LocalClusteringCoefficient(G).run()
+
 
 class bApproxClusteringCoefficient(Algo):
 	name = "ClusteringCoefficientApprox" + framework
