@@ -4,7 +4,7 @@ import random
 
 # - connected components (properties.ConnectedComponents, properties.ParallelConnectedComponents)
 
-framework = " (gt)"
+framework = "(gt)"
 
 
 class Algo:
