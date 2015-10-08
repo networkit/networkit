@@ -186,8 +186,9 @@ class Bench:
             self.info("loading {0}".format(graphName))
             with Timer() as t:
                 G = algo.loadGraph(os.path.join(self.graphDir, "{0}.gml.graph".format(graphName)))
-            self.info("loading graph {0} took {1} s".format(graphName, t.elapsed))
-            self.loadTimes.append({"framework" : algo.framework, "graph" : graphName, "time": t.elapsed})
+            self.info("\t took {1} s".format(graphName, t.elapsed))
+            eps = self.getSize(G)[1] / t.elapsed
+            self.loadTimes.append({"framework" : algo.framework, "graph" : graphName, "time": t.elapsed, "eps": eps})
             if self.cacheGraphs:
                 self.graphCache[key] = G
             return G
@@ -233,7 +234,7 @@ class Bench:
                                 signal.alarm(int(timeout * 60))  # timeout in seconds
                             with Timer() as t:
                                 result = algo.run(G)
-                            self.info("took {0} s".format(t.elapsed))
+                            self.info("\t took {0} s".format(t.elapsed))
                             # store data
                             row["time"] = t.elapsed
                             row["eps"] =  m / t.elapsed  # calculate edges per second
@@ -310,6 +311,7 @@ class Bench:
 
         # data frame
         self.epsSummary = epsSummary
+        self.epsSummary.reindex_axis(sorted(self.epsSummary.columns), axis=1)
         if self.save:
             epsSummary.to_csv(os.path.join(self.outDataDir, "epsSummary.csv".format(**locals())))
         # plot
