@@ -14,6 +14,7 @@
 
 
 #include <memory>
+#include <omp.h>
 
 namespace NetworKit {
 
@@ -33,7 +34,13 @@ void ApproxBetweenness2::run() {
 	 	sampledNodes.push_back(G.randomNode());
 	}
 
-	for (node s : sampledNodes) {
+
+	// thread-local scores for efficient parallelism
+	count maxThreads = omp_get_max_threads();
+	std::vector<std::vector<double> > scorePerThread(maxThreads, std::vector<double>(G.upperNodeIdBound()));
+
+
+	auto computeDependencies = [&](node s){
 		handler.assureRunning();
 		// run single-source shortest path algorithm
 		std::unique_ptr<SSSP> sssp;
@@ -67,10 +74,22 @@ void ApproxBetweenness2::run() {
 
 				dependency[p] += (double(sssp->distance(p)) / sssp->distance(t)) * weight * (1 + dependency[t]);
 			}
-			scoreData[t] += dependency[t];
+			scorePerThread[omp_get_thread_num()][t] += dependency[t];
 		}
+	};
 
-	} // end for sampled nodes
+	#pragma omp parallel for
+	for (index i = 0; i < sampledNodes.size(); ++i) {
+		computeDependencies(sampledNodes[i]);
+	}
+
+
+	// add up all thread-local values
+	for (auto local : scorePerThread) {
+		G.parallelForNodes([&](node v){
+			scoreData[v] += local[v];
+		});
+	}
 
 	// extrapolate
 	G.forNodes([&](node v) {
