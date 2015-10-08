@@ -4849,7 +4849,7 @@ cdef class KPathCentrality(Centrality):
 
 cdef extern from "cpp/centrality/KatzCentrality.h":
 	cdef cppclass _KatzCentrality "NetworKit::KatzCentrality" (_Centrality):
-		_KatzCentrality(_Graph, double, count) except +
+		_KatzCentrality(_Graph, double, double, double) except +
 
 cdef class KatzCentrality(Centrality):
 	"""
@@ -4869,9 +4869,9 @@ cdef class KatzCentrality(Centrality):
 			The tolerance for convergence.
 	"""
 
-	def __cinit__(self, Graph G, alpha=0.2, k=0):
+	def __cinit__(self, Graph G, alpha=0.2, beta=0.1, tol=1e-8):
 		self._G = G
-		self._this = new _KatzCentrality(G._this, alpha, k)
+		self._this = new _KatzCentrality(G._this, alpha, beta, tol)
 
 
 
