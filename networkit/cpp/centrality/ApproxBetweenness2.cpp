@@ -45,22 +45,22 @@ void ApproxBetweenness2::run() {
 		// run single-source shortest path algorithm
 		std::unique_ptr<SSSP> sssp;
 		if (G.isWeighted()) {
-			sssp.reset(new Dijkstra(G, s));
+			sssp.reset(new Dijkstra(G, s, true, true));
 		} else {
-			sssp.reset(new BFS(G, s));
+			sssp.reset(new BFS(G, s, true, true));
 		}
-
+		if (!handler.isRunning()) return;
 		sssp->run();
+		if (!handler.isRunning()) return;
+
 
 		// create stack of nodes in non-decreasing order of distance
-		std::vector<node> stack = G.nodes();
-		std::sort(stack.begin(), stack.end(), [&](node u, node v){
-			return (sssp->distance(u) > sssp->distance(v));
-		});
+		std::vector<node> stack = sssp->getStack(true);
 
 		// compute dependencies and add the contributions to the centrality score
 		std::vector<double> dependency(G.upperNodeIdBound(), 0.0);
-		for (node t : stack) {
+		for (auto it = stack.rbegin(); it != stack.rend(); ++it) {
+			node t = *it;
 			if (t == s){
 				continue;
 			}
@@ -104,7 +104,7 @@ void ApproxBetweenness2::run() {
 			scoreData[u] = scoreData[u] / pairs;
 		});
 	}
-
+	handler.assureRunning();
 	hasRun = true;
 }
 
