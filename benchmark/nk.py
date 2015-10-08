@@ -3,7 +3,7 @@ import networkit
 from util import *
 import base
 
-framework = " (nk)"
+framework = "(nk)"
 
 # - connected components (properties.ConnectedComponents, properties.ParallelConnectedComponents)
 
@@ -26,13 +26,6 @@ class bConnectedComponents(Algo):
 		cc.run()
 		return cc.numberOfComponents()
 
-class bParallelConnectedComponents(Algo):
-	name = "ParallelConnectedComponents" + framework
-
-	def run(self, G):
-		cc = networkit.properties.ParallelConnectedComponents(G)
-		cc.run()
-		return cc.numberOfComponents()
 
 # - k-core decomposition (properties.CoreDecomposition)
 
@@ -131,6 +124,13 @@ class bKatzCentrality(Algo):
 		kc.run()
 
 
+class bDegreeAssortativity(Algo):
+	name = "DegreeAssortativity" + framework
+
+	def run(self, G):
+		networkit.correlation.Assortativity(G, networkit.centrality.DegreeCentrality(G).scores()).run()
+
+
 # 	- betweenness,  exact (centrality.Betweenness) and approximated (centrality.ApproxBetweenness, centrality.ApproxBetweenness2)
 
 class bBetweenness(Algo):
@@ -139,6 +139,16 @@ class bBetweenness(Algo):
 	def run(self, G):
 		bc = networkit.centrality.Betweenness(G)
 		bc.run()
+
+class bBetweennessSeq(Algo):
+	name = "BetweennessSeq" + framework
+
+	def run(self, G):
+		mt = networkit.getMaxNumberOfThreads()
+		networkit.setNumberOfThreads(1)
+		bc = networkit.centrality.Betweenness(G)
+		bc.run()
+		networkit.setNumberOfThreads(mt)
 
 
 class bApproxBetweenness(Algo):

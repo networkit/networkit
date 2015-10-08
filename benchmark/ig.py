@@ -5,7 +5,7 @@ except ImportError as ex:
 
 import random
 
-framework = " (ig)"
+framework = "(ig)"
 
 
 class Algo:
