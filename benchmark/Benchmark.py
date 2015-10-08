@@ -186,6 +186,7 @@ class Bench:
             self.info("loading {0}".format(graphName))
             with Timer() as t:
                 G = algo.loadGraph(os.path.join(self.graphDir, "{0}.gml.graph".format(graphName)))
+            self.info("loading graph {0} took {1} s".format(graphName, t.elapsed))
             self.loadTimes.append({"framework" : algo.framework, "graph" : graphName, "time": t.elapsed})
             if self.cacheGraphs:
                 self.graphCache[key] = G
