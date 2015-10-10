@@ -3,7 +3,7 @@ to the network """
 
 
 __author__ = "Christian Staudt"
-__credits__ = ["Christian Staudt", "Elisabetta Bergamini", "Henning Meyerhenke", "Marc Nemes"]
+__credits__ = ["Christian Staudt", "Elisabetta Bergamini", "Henning Meyerhenke", "Marc Nemes", "Maximilian Vogel"]
 
 # extension imports
 # TODO: (+) ApproxCloseness

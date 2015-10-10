@@ -36,6 +36,13 @@ class bCoreDecomposition(Algo):
 		cd = networkit.centrality.CoreDecomposition(G)
 		cd.run()
 
+class bCoreDecompositionSeq(Algo):
+	name = "CoreDecompositionSeq" + framework
+
+	def run(self, G):
+		cd = networkit.centrality.CoreDecomposition(G, enforceBucketQueueAlgorithm=True)
+		cd.run()
+
 
 # - BFS & Dijkstra (graph.BFS, graph.Dijkstra)
 class bBFS(Algo):

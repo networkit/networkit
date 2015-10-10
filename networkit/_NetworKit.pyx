@@ -5114,7 +5114,7 @@ cdef class EigenvectorCentrality(Centrality):
 
 cdef extern from "cpp/centrality/CoreDecomposition.h":
 	cdef cppclass _CoreDecomposition "NetworKit::CoreDecomposition" (_Centrality):
-		_CoreDecomposition(_Graph) except +
+		_CoreDecomposition(_Graph, bool) except +
 		_Cover getCover() except +
 		_Partition getPartition() except +
 		index maxCoreNumber() except +
@@ -5132,9 +5132,9 @@ cdef class CoreDecomposition(Centrality):
 		The graph.
 	"""
 
-	def __cinit__(self, Graph G):
+	def __cinit__(self, Graph G, bool enforceBucketQueueAlgorithm=False):
 		self._G = G
-		self._this = new _CoreDecomposition(G._this)
+		self._this = new _CoreDecomposition(G._this, enforceBucketQueueAlgorithm)
 
 	def maxCoreNumber(self):
 		""" Get maximum core number.
