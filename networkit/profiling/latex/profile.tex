@@ -27,11 +27,16 @@
 
 \usepackage{{ifthen}}
 
+\usepackage[table]{{xcolor}}
+
+
 %=== MACROS ==================================================================
 
 % TODO: trim whitespaces around #2
 \newcommand{{\nkvalue}}[2]{{\ifthenelse{{\equal{{#2}}{{ nan }}}}{{}}{{$#1 = #2$}}}}
 
+\definecolor{red}{RGB}{255,80,80}
+\definecolor{blue}{RGB}{80,80,255}
 
 %=== BEGIN ===================================================================
 
