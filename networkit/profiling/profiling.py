@@ -515,6 +515,10 @@ class Profile:
 									value = self.__correlations[category][keyB][keyA]
 								nameA = self.__measures[keyA]["name"]
 								nameB = self.__measures[keyB]["name"]
+								result += "\\cellcolor{"
+								result += "red" if value["stat"][correlationName] > 0 else "blue"
+								result += "!" + str(abs(value["stat"][correlationName]) * 100)
+								result += "}"
 								result += "{:+.3F} & ".format(value["stat"][correlationName])
 							result += "\\multicolumn{" + str(n-i) + "}" + "{l}{" + nameB + "} \\\\"
 						i += 1
@@ -543,7 +547,7 @@ class Profile:
 									if type == "HTML":
 										result += "<div class=\"Thumbnail_ScatterPlot\" data-title=\"" + keyB + "\" data-title-second=\"" + keyA + "\"><img src=\"data:image/svg+xml;utf8," + value["image"] + "\" /></div>"
 									elif type == "LaTeX":
-										result += "\\includegraphics{{" + value["image"] + "}.pdf}"
+										result += "\\includegraphics{{\"" + value["image"] + "\"}.pdf}"
 				return result
 			results[category]["Correlations"]["ScatterPlots"] += funcScatterPlot(category)
 
@@ -569,7 +573,7 @@ class Profile:
 				if type == "HTML":
 					extentions = "<div class=\"PartitionPie\"><img src=\"data:image/svg+xml;utf8," + image[2] + "\" /></div>"
 				elif type == "LaTeX":
-					extentions = "\\includegraphics{{" + image[2] + "}.pdf}"
+					extentions = "\\includegraphics{{\"" + image[2] + "\"}.pdf}"
 			
 			except:
 				pass
@@ -590,7 +594,7 @@ class Profile:
 			if type == "HTML":
 				results[category]["Overview"] += "<div class=\"Thumbnail_Overview\" data-title=\"" + name + "\"><a href=\"#NetworKit_Page_" + str(pageIndex) + "_" + key + "\"><img src=\"data:image/svg+xml;utf8," + image[1] + "\" /></a></div>"
 			elif type == "LaTeX":
-				results[category]["Overview"] += "\\includegraphics{{" + image[1] + "}.pdf}"
+				results[category]["Overview"] += "\\includegraphics{{\"" + image[1] + "\"}.pdf}"
 				
 		result = self.__formatProfileTemplate(
 			templateProfile,
