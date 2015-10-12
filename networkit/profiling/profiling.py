@@ -753,18 +753,21 @@ class Profile:
 		self.__verbosePrint("")
 
 		for name in self.__measures:
-			if len(self.__measures[name]["data"]["sample"]) <= 1:	# for case connected graph...
-				del self.__measures[name]
-			else:
-				category = self.__measures[name]["category"]
-				pool.put(
-					stat.Stat(name, (
-						self.__measures[name]["data"]["sample"],
-						self.__measures[name]["data"]["sorted"],
-						self.__measures[name]["data"]["ranked"],
-						category == "Partition"
-					))
-				)
+			# the fix below avoids a cake-diagram for connected graphs,
+			# as there is no other other way to include connected components for now,
+			# the detailed output for connected graphs is accepted
+			#if len(self.__measures[name]["data"]["sample"]) <= 1:	# for case connected graph...
+			#	del self.__measures[name]
+			#else:
+			category = self.__measures[name]["category"]
+			pool.put(
+				stat.Stat(name, (
+					self.__measures[name]["data"]["sample"],
+					self.__measures[name]["data"]["sorted"],
+					self.__measures[name]["data"]["ranked"],
+					category == "Partition"
+				))
+			)
 
 		while pool.numberOfTasks() > 0:
 			(type, name, data) = pool.get()
