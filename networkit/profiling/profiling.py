@@ -172,7 +172,7 @@ class Config:
 
 class Profile:
 	""" TODO: """
-	__TOKEN = object();
+	__TOKEN = object()	# TODO: documentation: why is this token needed?
 	__pageCount = 0
 	__verbose = False
 	__verboseLevel = 0
@@ -189,38 +189,38 @@ class Profile:
 		self.__correlations = {}
 
 	@classmethod
-	def walk(cls, directory, config=Config(), type="HTML", style="light", color=(0, 0, 1), recursive=True, parallel=False):
+	def walk(cls, directory, config=Config(), outputType="HTML", style="light", color=(0, 0, 1), recursive=True, parallel=False):
 		for (dirpath, dirnames, filenames) in os.walk(directory):
 			for filename in filenames:
-				try:
-					seperations = filename.split(".")
-					if seperations[-1] != "graph":
-						continue
-					del seperations[-1]
+				#try:
+				seperations = filename.split(".")
+				if seperations[-1] != "graph":
+					continue
+				del seperations[-1]
 
-					file = dirpath + "/" + filename
-					cls.__verbosePrint("[ " + file + " ]")
-					G = kit.readGraph(file, kit.Format[seperations[-1]])
-					pf = cls.create(
-						G,
-						config = config,
-						type = type,
-						directory = dirpath,
-						token = cls.__TOKEN)
-					del seperations[-1]
+				file = dirpath + "/" + filename
+				cls.__verbosePrint("[ " + file + " ]")
+				G = kit.readGraph(file, kit.Format[seperations[-1]])
+				pf = cls.create(
+					G,
+					config = config,
+					type = outputType,
+					directory = dirpath,
+					token = cls.__TOKEN)
+				del seperations[-1]
 
-					pf.output(
-						type = type,
-						directory = dirpath,
-						style = style,
-						color = color,
-						parallel = parallel,
-						token = cls.__TOKEN
-					)
-					cls.__verbosePrint("\n")
-				except Exception as e:
-					cls.__verbosePrint("=> an error occured: " + str(e))
-					cls.__verbosePrint("\n")
+				pf.output(
+					outputType = outputType,
+					directory = dirpath,
+					style = style,
+					color = color,
+					parallel = parallel,
+					token = cls.__TOKEN
+				)
+				cls.__verbosePrint("\n")
+				#except Exception as e:
+				#	cls.__verbosePrint("=> an error occured: {0} of type {1}".format(e, type(e)))
+				#	cls.__verbosePrint("\n")
 			if not recursive:
 				break;
 
@@ -332,23 +332,25 @@ class Profile:
 		return self.__measures[measure]["time"]
 
 
-	def output(self, type, directory, style="light", color=(0, 0, 1), parallel=False, token=object()):
-		""" TODO: type -> enum """
+	def output(self, outputType, directory, style="light", color=(0, 0, 1), parallel=False, token=object()):
+		""" TODO:  """
+		# TODO: type -> enum
 		options_type = ["HTML", "LaTeX", None]
 		for o in options_type:
 			if o is None:
-				raise ValueError("unknown type: options are " + str(options_type[0:len(options_type)-1]))
-			if o == type:
+				raise ValueError("unknown output type: options are " + str(options_type[0:len(options_type)-1]))
+			if o == outputType:
 				break;
 
+		# FIXME: why this complicated construction?
 		if token is not self.__TOKEN:
-			if type != "HTML":
-				raise ValueError(type + " support is not implemented");
+			if outputType != "HTML":
+				raise ValueError(outputType + " support is not implemented");
 
 		filename  = "{0}.".format(self.__G.getName())
 
 		result = self.__format(
-			type = type,
+			type = outputType,
 			directory = directory,
 			filename = filename,
 			style = style,
@@ -357,7 +359,7 @@ class Profile:
 			parallel = parallel
 		)
 
-		if type == "HTML":
+		if outputType == "HTML":
 			js = readfile("html/profiling.js", False).replace("\\\\", "\\")
 			css = readfile("html/profiling.css", False).replace("\\\\", "\\")
 			result = """
@@ -382,7 +384,7 @@ class Profile:
 				</html>
 			"""
 			filename += "html"
-		elif type == "LaTeX":
+		elif outputType == "LaTeX":
 			result = result
 			filename += "tex"
 		else:
