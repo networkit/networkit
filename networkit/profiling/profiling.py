@@ -131,6 +131,7 @@ class Config:
 		elif preset == "default":
 			result.setProperty("Diameter")
 			result.setMeasure("Centrality.Degree")
+			result.setMeasure("Centrality.ClusteringCoefficient")
 			result.setMeasure("Centrality.PageRank")
 			result.setMeasure("Centrality.Betweenness")
 			result.setMeasure("Centrality.Katz")
