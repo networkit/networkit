@@ -188,29 +188,25 @@ class Profile:
 		self.__correlations = {}
 
 	@classmethod
-	def walk(cls, directory, config=Config(), outputType="HTML", style="light", color=(0, 0, 1), recursive=True, parallel=False,output_dir=None):
+	def walk(cls, directory, config=Config(), outputType="HTML", style="light", color=(0, 0, 1), recursive=True, parallel=False, output_dir=None, graph_format=None):
 		if output_dir is None:
 			raise ValueError("output directory (parameter: output_dir) not specified")
 		elif not os.path.isdir(output_dir):
 			raise IOError("output directory doesn't exist")
+		if graph_format is None:
+			raise ValueError("no graph format has been specified")
 		for (dirpath, dirnames, filenames) in os.walk(directory):
 			for filename in filenames:
 				#try:
-				seperations = filename.split(".")
-				if seperations[-1] != "graph":
-					continue
-				del seperations[-1]
-
 				file = dirpath + "/" + filename
 				cls.__verbosePrint("[ " + file + " ]")
-				G = kit.readGraph(file, kit.Format[seperations[-1]])
+				G = kit.readGraph(file, graph_format)
 				pf = cls.create(
 					G,
 					config = config,
 					type = outputType,
 					directory = dirpath,
 					token = cls.__TOKEN)
-				del seperations[-1]
 
 				pf.output(
 					outputType = outputType,
