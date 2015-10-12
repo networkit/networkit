@@ -60,7 +60,7 @@ TEST_F(ConnectedComponentsGTest, testConnectedComponentsTiny) {
  }
 
 TEST_F(ConnectedComponentsGTest, benchCompareBFS) {
-    std::string base = "/home/i11/staudt/Graphs/Collections/NwkBenchmark/"
+    std::string base = "/home/i11/staudt/Graphs/Collections/NwkBenchmark/";
     std::vector<std::string> datasets = {
         "fb-MIT8.gml.graph",
         "caidaRouterLevel.gml.graph",
@@ -85,7 +85,7 @@ TEST_F(ConnectedComponentsGTest, benchCompareBFS) {
     }
 
     for (auto& file : datasets) {
-        Graph G = reader.read(file);
+        Graph G = reader.read(base+file);
         t.start();
         G.indexEdges(true);
         t.stop();
