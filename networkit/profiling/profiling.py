@@ -258,9 +258,10 @@ class Profile:
 			"""Return partition subset sizes"""
 			return sorted(instance.getPartition().subsetSizes())
 
-		classConnectedComponents = components.ConnectedComponents
 		if G.isDirected():
 			classConnectedComponents = components.StronglyConnectedComponents
+		else:
+			classConnectedComponents = components.ConnectedComponents
 
 		for parameter in [
 			("Centrality.Degree",					"Node Centrality",	"Degree",
@@ -430,7 +431,13 @@ class Profile:
 			options = []
 		elif type == "LaTeX":
 			plottype = "PDF"
-			options = [directory, filename]
+			if directory[-1] == "/":
+				output_dir = directory + "plots"
+			else:
+				output_dir = directory + "/plots"
+			if not os.path.isdir(output_dir):
+				os.mkdir(output_dir)
+			options = [output_dir, filename]
 
 		pool = multiprocessing.ThreadPool(self.__parallel, parallel)
 		for name in self.__measures:
@@ -662,20 +669,38 @@ class Profile:
 		self.__properties["Weighted"] = self.__G.isWeighted()
 		self.__properties["Self Loops"] = self.__G.numberOfSelfLoops()
 
-		timerInstance = stopwatch.Timer()
-		self.__verbosePrint("Diameter: ", end="")
-		try:
-			if self.__config.getProperty("Diameter"):
+		if self.__config.getProperty("Diameter"):
+			try:
+				timerInstance = stopwatch.Timer()
+				self.__verbosePrint("Diameter: ", end="")
 				diameter = properties.Diameter.estimatedDiameterRange(self.__G, error=0.1)
-			else:
+				elapsedMain = timerInstance.elapsed
+				self.__verbosePrint("{:.2F} s".format(elapsedMain))
+				self.__verbosePrint("")
+			except:
+				self.__verbosePrint("Diameter raised exception")
 				diameter = "N/A"
-		except:
-			self.__verbosePrint("Diameter raised exception")
+		else:
 			diameter = "N/A"
+		self.__properties["Diameter Range"] = diameter
+
+
+		timerInstance = stopwatch.Timer()
+		self.__verbosePrint("Connected Components: ", end="")
+		try:
+			if self.__G.isDirected():
+				cc = components.StronglyConnectedComponents(self.__G)
+			else:
+				cc = components.ConnectedComponents(self.__G)
+			cc.run()
+			num = cc.numberOfComponents()
+		except:
+			self.__verbosePrint("ConnectedComponents raised exception")
+			num = "N/A"
 		elapsedMain = timerInstance.elapsed
 		self.__verbosePrint("{:.2F} s".format(elapsedMain))
 		self.__verbosePrint("")
-		self.__properties["Diameter Range"] = diameter
+		self.__properties["Connected Components"] = num
 
 
 	def __loadMeasures(self, type, directory, filename):
@@ -687,7 +712,14 @@ class Profile:
 			options = []
 		elif type == "LaTeX":
 			plottype = "PDF"
-			options = [directory, filename]
+			if directory[-1] == "/":
+				output_dir = directory + "plots"
+			else:
+				output_dir = directory + "/plots"
+			if not os.path.isdir(output_dir):
+				os.mkdir(output_dir)
+			options = [output_dir, filename]
+
 
 		for name in self.__measures:
 			measure = self.__measures[name]
