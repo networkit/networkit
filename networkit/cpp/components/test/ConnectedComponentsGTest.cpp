@@ -16,6 +16,8 @@
 #include "../../io/METISGraphReader.h"
 #include "../../generators/HavelHakimiGenerator.h"
 #include "../../auxiliary/Log.h"
+#include "../../auxiliary/Parallelism.h"
+#include "../../auxiliary/Timer.h"
 #include "../../generators/DorogovtsevMendesGenerator.h"
 
 namespace NetworKit {
@@ -45,7 +47,7 @@ namespace NetworKit {
  	g.addEdge(18,17,0);
 
  	g.addEdge(13,14,0);
-
+    g.indexEdges();
  	// initialize ConnectedComponents
  	ConnectedComponents ccs(g);
  	ccs.run();
@@ -56,11 +58,68 @@ namespace NetworKit {
  	EXPECT_TRUE(ccs.componentOfNode(3) == ccs.componentOfNode(7));
  }
 
+TEST_F(ConnectedComponentsGTest, benchCompareBFS) {
+    std::vector<std::string> datasets = {
+        "input/PGPgiantcompo.graph",
+        "input/astro-ph.graph",
+        "input/caidaRouterLevel.graph",
+        "/algoDaten/staudt/Graphs/Collections/NwkBenchmark/in-2004.metis.graph",
+        "/algoDaten/staudt/Graphs/Collections/NwkBenchmark/con-fiber_big.metis.graph",
+        //"/algoDaten/staudt/Graphs/Collections/NwkBenchmark/uk-2002.metis.graph"
+        "/algoDaten/staudt/Graphs/Static/DIMACS/XLarge/uk-2007-05.metis.graph"
+    };
+    METISGraphReader reader;
+    Aux::Timer t;
+
+    count max_threads = Aux::getMaxNumberOfThreads();
+    count i = 1;
+    std::vector<count> threads = {i};
+    while (i <= max_threads) {
+        i *= 2;
+        threads.push_back(i);
+    }
+
+    for (auto& file : datasets) {
+        Graph G = reader.read(file);
+        t.start();
+        G.indexEdges(true);
+        t.stop();
+        count t_indexEdges = t.elapsedMilliseconds();
+        count nRuns = 5;
+        std::cout << "benchmarking ConnectedComponents variants: " << nRuns << " runs on " << G.toString() << ", reporting average time in ms" << std::endl;
+        // generate startNode sequence
+        t.start();
+        for (index i = 0; i < nRuns; ++i) {
+            ConnectedComponents cc(G, false);
+            cc.run();
+        }
+        t.stop();
+        count avg_time_gbfs = t.elapsedMilliseconds() / nRuns;
+        std::cout << "connected components with graph's BFS:\t" << avg_time_gbfs << std::endl;
+
+
+        for (auto& current : threads) {
+            Aux::setNumberOfThreads(current);
+            t.start();
+            for (index i = 0; i < nRuns; ++i) {
+                ConnectedComponents cc(G, true);
+                cc.run();
+            }
+            t.stop();
+            count avg_time_dobfs = t.elapsedMilliseconds() / nRuns;
+                std::cout << "connected components with DirOptBFS(threads=" << current << ") and indexEdges:\t(";
+                std::cout << avg_time_dobfs << " + "<< t_indexEdges << ") = " << avg_time_dobfs+t_indexEdges << std::endl;
+        }
+        std::cout << "----------------------------------------------" << std::endl;
+    }
+}
+
 
 TEST_F(ConnectedComponentsGTest, testConnectedComponents) {
 	// construct graph
 	METISGraphReader reader;
 	Graph G = reader.read("input/astro-ph.graph");
+    G.indexEdges();
 	ConnectedComponents cc(G);
 	cc.run();
 	DEBUG("Number of components: ", cc.numberOfComponents());

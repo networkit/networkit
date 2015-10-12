@@ -9,10 +9,8 @@
 #define CONNECTEDCOMPONENTS_H_
 
 #include "../graph/Graph.h"
-#include "../graph/BFS.h"
 #include "../structures/Partition.h"
 #include "../base/Algorithm.h"
-#include <unordered_set>
 
 namespace NetworKit {
 
@@ -27,7 +25,7 @@ public:
 	 *
 	 * @param G The graph.
 	 */
-	ConnectedComponents(const Graph& G);
+	ConnectedComponents(const Graph& G, bool useDirOptBFS = false);
 
 	/**
 	 * This method determines the connected components for the graph given in the constructor.
@@ -72,6 +70,7 @@ private:
 	Partition component;
 	count numComponents;
 	bool hasRun;
+	bool useDirOptBFS;
 };
 
 inline count ConnectedComponents::componentOfNode(node u) {
