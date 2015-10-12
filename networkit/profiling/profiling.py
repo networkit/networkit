@@ -707,29 +707,32 @@ class Profile:
 			elapsedPostRank = timerPostRank.elapsed
 			self.__verbosePrint("{:.2F} s".format(elapsedPostRank))
 
-			self.__verbosePrint("    Assortativity: ", end="")
-			timerPostAssortativity = stopwatch.Timer()
 			if self.__measures[name]["category"] == "Node Centrality":
+				self.__verbosePrint("    Assortativity: ", end="")
+				timerPostAssortativity = stopwatch.Timer()
 				assortativity = properties.Assortativity(self.__G, measure["data"]["sample"])
 				assortativity.run()
 				measure["assortativity"] = assortativity.getCoefficient()
+				elapsedPostAssortativity = timerPostAssortativity.elapsed
+				self.__verbosePrint("{:.2F} s".format(elapsedPostAssortativity))
 			else:
 				measure["assortativity"] = float("nan")
-			elapsedPostAssortativity = timerPostAssortativity.elapsed
-			self.__verbosePrint("{:.2F} s".format(elapsedPostAssortativity))
 
-			self.__verbosePrint("    Centralization: ", end="")
-			timerPostCentralization = stopwatch.Timer()
+
+
 			if self.__measures[name]["category"] == "Node Centrality":
+				self.__verbosePrint("    Centralization: ", end="")
+				timerPostCentralization = stopwatch.Timer()
 				try:
 					measure["centralization"] = instance.centralization()
 				except:
 					self.__verbosePrint("Centrality.centralization not properly defined for {0}. ".format(name), level=0, end="")
 					measure["centralization"] = float("nan")
+				elapsedPostCentralization = timerPostCentralization.elapsed
+				self.__verbosePrint("{:.2F} s".format(elapsedPostCentralization))
 			else:
 				measure["centralization"] = float("nan")
-			elapsedPostCentralization = timerPostCentralization.elapsed
-			self.__verbosePrint("{:.2F} s".format(elapsedPostCentralization))
+
 
 			measure["time"] = (
 				elapsedMain,
