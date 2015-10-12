@@ -117,7 +117,6 @@ class Config:
 			result.setMeasure("Centrality.CoreDecomposition")
 			result.setMeasure("Centrality.ClusteringCoefficient")
 			result.setMeasure("Centrality.PageRank")
-			result.setMeasure("Centrality.KPath")
 			result.setMeasure("Centrality.Katz")
 			result.setMeasure("Centrality.Betweenness")
 			result.setMeasure("Centrality.Closeness")
@@ -133,6 +132,7 @@ class Config:
 			result.setMeasure("Centrality.Degree")
 			result.setMeasure("Centrality.PageRank")
 			result.setMeasure("Centrality.Betweenness")
+			result.setMeasure("Centrality.Katz")
 			result.setMeasure("Centrality.CoreDecomposition")
 			result.setMeasure("Partition.ConnectedComponents")
 			result.setMeasure("Partition.Communities")
@@ -341,12 +341,7 @@ class Profile:
 			if o is None:
 				raise ValueError("unknown output type: options are " + str(options_type[0:len(options_type)-1]))
 			if o == outputType:
-				break;
-
-		# FIXME: why this complicated construction?
-		if token is not self.__TOKEN:
-			if outputType != "HTML":
-				raise ValueError(outputType + " support is not implemented");
+				break
 
 		filename  = "{0}.".format(self.__G.getName())
 
