@@ -254,13 +254,13 @@ class Profile:
 		for parameter in [
 			("Centrality.Degree",					"Node Centrality",	"Degree",
 				True,	funcScores,	"Score",				centrality.DegreeCentrality, 			(G, )),
-			("Centrality.CoreDecomposition",		"Node Centrality",	"K-Core Decomposition",
+			("Centrality.CoreDecomposition",		"Node Centrality",	"k-Core Decomposition",
 				True,	funcScores,	"Score",				centrality.CoreDecomposition, 			(G, )),
 			("Centrality.ClusteringCoefficient",	"Node Centrality",	"Local Clustering Coefficient",
 				True,	funcScores,	"Score",				centrality.LocalClusteringCoefficient,	(G, )),
 			("Centrality.PageRank", 				"Node Centrality",	"Page Rank",
 				True,	funcScores,	"Score",				centrality.PageRank, 					(G, )),
-			("Centrality.KPath", 					"Node Centrality",	"K-Path Centrality",
+			("Centrality.KPath", 					"Node Centrality",	"k-Path Centrality",
 				True,	funcScores,	"Score",				centrality.KPathCentrality,				(G, )),
 			("Centrality.Katz",						"Node Centrality",	"Katz Centrality",
 				True,	funcScores,	"Score",				centrality.KatzCentrality,				(G, )),
@@ -272,7 +272,7 @@ class Profile:
 				False,	funcSizes,	"Nodes per Community",	community.PLM,			 				(G, )),
 			("Partition.ConnectedComponents", 		"Partition",		"Connected Components",
 				False,	funcSizes,	"Nodes per Component",	classConnectedComponents,				(G, )),
-			("Partition.CoreDecomposition", 		"Partition",		"K-Core Decomposition",
+			("Partition.CoreDecomposition", 		"Partition",		"k-Core Decomposition",
 				False,	funcSizes,	"Nodes per Shell",		centrality.CoreDecomposition, 			(G, ))
 		]: result.__addMeasure(parameter)
 
