@@ -7697,3 +7697,32 @@ cdef class GlobalThresholdFilter:
 
 	def calculate(self):
 		return Graph().setThis(self._this.calculate())
+
+def ranked(sample):
+	""" TODO: """
+	cdef count n = len(sample)
+	result = []
+	for i in range(n):
+		result.append([sample[i], i, -1])
+	result.sort(key=lambda x: x[0])
+	value = result[0][0]
+	cdef double summ = 0
+	cdef count length = 0
+	for i in range(n):
+		if value == result[i][0]:
+			summ += (i+1)
+			length += 1
+		else:
+			summ /= length
+			for j in range(length):
+				result[i-j-1][2] = summ
+			value = result[i][0]
+			summ = (i+1)
+			length = 1
+	summ /= length
+	for i in range(length):
+		result[n-i-1][2] = summ
+	result.sort(key=lambda x: x[1])
+	for i in range(n):
+		result[i] = result[i][2]
+	return result
