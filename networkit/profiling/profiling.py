@@ -241,9 +241,11 @@ class Profile:
 		kit.setNumberOfThreads(result.__parallel)
 
 		def funcScores(instance):
+			""" Return node scores"""
 			return instance.scores()
 
 		def funcSizes(instance):
+			"""Return partition subset sizes"""
 			return sorted(instance.getPartition().subsetSizes())
 
 		classConnectedComponents = components.ConnectedComponents
@@ -689,9 +691,11 @@ class Profile:
 				self.__verbosePrint("(removed)\n>> " + str(e))
 				continue
 
+			# run algorithm and get result
 			timerInstance = stopwatch.Timer()
 			instance.run()
 			measure["data"]["sample"] = measure["getter"](instance)
+			#self.__verbosePrint("{0} called on {1}".format(measure["getter"], instance))
 			elapsedMain = timerInstance.elapsed
 			self.__verbosePrint("{:.2F} s".format(elapsedMain))
 
@@ -745,7 +749,7 @@ class Profile:
 		self.__verbosePrint("")
 
 		for name in self.__measures:
-			if len(self.__measures[name]["data"]["sample"]) <= 1:
+			if len(self.__measures[name]["data"]["sample"]) <= 1:	# for case connected graph...
 				del self.__measures[name]
 			else:
 				category = self.__measures[name]["category"]
