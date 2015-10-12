@@ -109,7 +109,7 @@ class Config:
 	@classmethod
 	def createConfig(cls, preset="default"):
 		result = Config()
-		
+
 		if preset == "complete":
 			result.setProperty("Diameter")
 			result.setMeasure("Centrality.Degree"),
@@ -131,39 +131,40 @@ class Config:
 			result.setMeasure("Partition.ConnectedComponents")
 		elif preset == "default":
 			result.setMeasure("Centrality.Degree")
-			result.setMeasure("Partition.ConnectedComponents")
 			result.setMeasure("Centrality.PageRank")
 			result.setMeasure("Centrality.Betweenness")
 			result.setMeasure("Centrality.CoreDecomposition")
+			result.setMeasure("Partition.ConnectedComponents")
 			result.setMeasure("Partition.Communities")
+			result.setMeasure("Partition.CoreDecomposition")
 		else:
 			raise Error("no preset given")
-			
+
 		return result
 
 	def setProperty(self, id, enabled=True):
 		if id in self.__options_Properties:
 			self.__options_Properties[id] = enabled
-	
-	
+
+
 	def getProperty(self, id):
 		return self.__options_Properties[id]
-		
-	
+
+
 	def setMeasure(self, id, enabled=True):
 		if id in self.__options_Measures:
 			self.__options_Measures[id] = enabled
-	
-	
+
+
 	def getMeasure(self, id):
 		return self.__options_Measures[id]
-	
-	
+
+
 	def setMeasureCorrelation(self, id, enabled=True):
 		if id in self.__options_MeasureCorrelations:
 			self.__options_MeasureCorrelations[id] = enabled
-			
-			
+
+
 	def getMeasureCorrelation(self, id):
 		return self.__options_MeasureCorrelations[id]
 
@@ -196,7 +197,7 @@ class Profile:
 					if seperations[-1] != "graph":
 						continue
 					del seperations[-1]
-					
+
 					file = dirpath + "/" + filename
 					cls.__verbosePrint("[ " + file + " ]")
 					G = kit.readGraph(file, kit.Format[seperations[-1]])
@@ -207,7 +208,7 @@ class Profile:
 						directory = dirpath,
 						token = cls.__TOKEN)
 					del seperations[-1]
-					
+
 					pf.output(
 						type = type,
 						directory = dirpath,
@@ -226,17 +227,17 @@ class Profile:
 	@classmethod
 	def create(cls, G, config=Config(), type="HTML", directory="", token=object()):
 		""" TODO: """
-		
+
 		if token is not cls.__TOKEN:
 			if type != "HTML" or directory != "":
 				raise ValueError("support for \"type\" and \"directory\" is not implemented");
-		
+
 		filename  = "{0}.".format(G.getName())
-		
+
 		result = cls(G, cls.__TOKEN)
 		# TODO: use copy constructor instead
 		result.__config = config
-		
+
 		kit.setNumberOfThreads(result.__parallel)
 
 		def funcScores(instance):
@@ -338,13 +339,13 @@ class Profile:
 				raise ValueError("unknown type: options are " + str(options_type[0:len(options_type)-1]))
 			if o == type:
 				break;
-				
+
 		if token is not self.__TOKEN:
 			if type != "HTML":
 				raise ValueError(type + " support is not implemented");
 
-		filename  = "{0}.".format(self.__G.getName())				
-		
+		filename  = "{0}.".format(self.__G.getName())
+
 		result = self.__format(
 			type = type,
 			directory = directory,
@@ -354,7 +355,7 @@ class Profile:
 			pageIndex = 0,
 			parallel = parallel
 		)
-		
+
 		if type == "HTML":
 			js = readfile("html/profiling.js", False).replace("\\\\", "\\")
 			css = readfile("html/profiling.css", False).replace("\\\\", "\\")
@@ -389,7 +390,7 @@ class Profile:
 		with open(directory + "/" + filename, 'w') as file:
 			file.write(result)
 
-			
+
 	def show(self, style="light", color=(0, 0, 1), parallel=False):
 		""" TODO: """
 		try:
@@ -415,14 +416,14 @@ class Profile:
 		""" TODO """
 		theme = plot.Theme()
 		theme.set(style, color)
-		
+
 		if type == "HTML":
 			plottype = "SVG"
 			options = []
 		elif type == "LaTeX":
 			plottype = "PDF"
 			options = [directory, filename]
-		
+
 		pool = multiprocessing.ThreadPool(self.__parallel, parallel)
 		for name in self.__measures:
 			category = self.__measures[name]["category"]
@@ -489,7 +490,7 @@ class Profile:
 			def funcHeatMap(category, correlationName):
 				result = ""
 				keyBList = []
-				
+
 				if type == "HTML":
 					result += "<div class=\"SubCategory HeatTable\" data-title=\"" + correlationName + "\">"
 					for keyA in self.__measures:
@@ -579,7 +580,7 @@ class Profile:
 					extentions = "<div class=\"PartitionPie\"><img src=\"data:image/svg+xml;utf8," + image[2] + "\" /></div>"
 				elif type == "LaTeX":
 					extentions = "\\includegraphics{{\"" + image[2] + "\"}.pdf}"
-			
+
 			except:
 				pass
 
@@ -600,7 +601,7 @@ class Profile:
 				results[category]["Overview"] += "<div class=\"Thumbnail_Overview\" data-title=\"" + name + "\"><a href=\"#NetworKit_Page_" + str(pageIndex) + "_" + key + "\"><img src=\"data:image/svg+xml;utf8," + image[1] + "\" /></a></div>"
 			elif type == "LaTeX":
 				results[category]["Overview"] += "\\includegraphics{{\"" + image[1] + "\"}.pdf}"
-				
+
 		result = self.__formatProfileTemplate(
 			templateProfile,
 			pageIndex,
@@ -678,7 +679,7 @@ class Profile:
 		elif type == "LaTeX":
 			plottype = "PDF"
 			options = [directory, filename]
-		
+
 		for name in self.__measures:
 			measure = self.__measures[name]
 			self.__verbosePrint(name + ": ", end="")
@@ -760,7 +761,7 @@ class Profile:
 
 			try:
 				category = self.__measures[name]["category"]
-				
+
 				if type == "Stat":
 					self.__measures[name]["stat"] = data
 					self.__verbosePrint("Stat: " + name, level=1)
