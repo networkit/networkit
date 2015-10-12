@@ -7,6 +7,7 @@ from networkit import *
 import networkit as kit
 
 import os as os
+import sys
 
 from . import multiprocessing
 from . import stat
@@ -128,6 +129,7 @@ class Config:
 			result.setMeasure("Centrality.Degree")
 			result.setMeasure("Partition.ConnectedComponents")
 		elif preset == "default":
+			result.setProperty("Diameter")
 			result.setMeasure("Centrality.Degree")
 			result.setMeasure("Centrality.PageRank")
 			result.setMeasure("Centrality.Betweenness")
@@ -664,6 +666,7 @@ class Profile:
 			else:
 				diameter = "N/A"
 		except:
+			self.__verbosePrint("Diameter raised exception")
 			diameter = "N/A"
 		elapsedMain = timerInstance.elapsed
 		self.__verbosePrint("{:.2F} s".format(elapsedMain))
