@@ -16,6 +16,7 @@ from . import plot
 from IPython.core.display import *
 import collections
 import math
+import fnmatch
 
 
 def readfile(filename, removeWS=False):
@@ -190,40 +191,48 @@ class Profile:
 		self.__correlations = {}
 
 	@classmethod
-	def walk(cls, directory, config=Config(), outputType="HTML", style="light", color=(0, 0, 1), recursive=True, parallel=False, output_dir=None, graph_format=None):
-		if output_dir is None:
-			raise ValueError("output directory (parameter: output_dir) not specified")
-		elif not os.path.isdir(output_dir):
+	def walk(cls, inputDir, filePattern="*", outputDir=None, config=Config(), outputType="HTML", style="light", color=(0, 0, 1), recursive=True, parallel=False,  graphFormat=None):
+		if outputDir is None:
+			raise ValueError("output directory (parameter: outputDir) not specified")
+		elif not os.path.isdir(outputDir):
 			raise IOError("output directory doesn't exist")
-		if graph_format is None:
+		if graphFormat is None:
 			raise ValueError("no graph format has been specified")
-		for (dirpath, dirnames, filenames) in os.walk(directory):
+		for (dirpath, dirnames, filenames) in os.walk(inputDir):
 			for filename in filenames:
-				#try:
-				file = dirpath + "/" + filename
-				cls.__verbosePrint("[ " + file + " ]")
-				G = kit.readGraph(file, graph_format)
-				pf = cls.create(
-					G,
-					config = config,
-					type = outputType,
-					directory = dirpath,
-					token = cls.__TOKEN)
+				if fnmatch.fnmatch(filename, filePattern):
+					cls.__verbosePrint("at {0}".format(filename))
+					#try:
+					file = dirpath + "/" + filename
+					cls.__verbosePrint("[ " + file + " ]")
+					try:
+						G = kit.readGraph(file, graphFormat)
+					except:
+						cls.__verbosePrint("could not read {0}".format(filename))
+					pf = cls.create(
+						G,
+						config = config,
+						type = outputType,
+						directory = dirpath,
+						token = cls.__TOKEN)
 
-				pf.output(
-					outputType = outputType,
-					directory = output_dir,
-					style = style,
-					color = color,
-					parallel = parallel,
-					token = cls.__TOKEN
-				)
-				cls.__verbosePrint("\n")
-				#except Exception as e:
-				#	cls.__verbosePrint("=> an error occured: {0} of type {1}".format(e, type(e)))
-				#	cls.__verbosePrint("\n")
-			if not recursive:
-				break;
+					pf.output(
+						outputType = outputType,
+						directory = outputDir,
+						style = style,
+						color = color,
+						parallel = parallel,
+						token = cls.__TOKEN
+					)
+					cls.__verbosePrint("\n")
+					#except Exception as e:
+					#	cls.__verbosePrint("=> an error occured: {0} of type {1}".format(e, type(e)))
+					#	cls.__verbosePrint("\n")
+				else:
+					cls.__verbosePrint("skipping {0} as it does not match filePattern".format(filename))
+				if not recursive:
+					break;
+
 
 	@classmethod
 	def create(cls, G, config=Config(), type="HTML", directory="", token=object()):
