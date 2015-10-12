@@ -105,8 +105,42 @@ class Config:
 			"Spearman": False,
 			"Fechner": False
 		}
+
+	@classmethod
+	def createConfig(cls, preset="default"):
+		result = Config()
 		
-		
+		if preset == "complete":
+			result.setProperty("Diameter")
+			result.setMeasure("Centrality.Degree"),
+			result.setMeasure("Centrality.CoreDecomposition")
+			result.setMeasure("Centrality.ClusteringCoefficient")
+			result.setMeasure("Centrality.PageRank")
+			result.setMeasure("Centrality.KPath")
+			result.setMeasure("Centrality.Katz")
+			result.setMeasure("Centrality.Betweenness")
+			result.setMeasure("Centrality.Closeness")
+			result.setMeasure("Partition.Communities")
+			result.setMeasure("Partition.ConnectedComponents")
+			result.setMeasure("Partition.CoreDecomposition")
+			result.setMeasureCorrelation("Pearson")
+			result.setMeasureCorrelation("Spearman")
+			result.setMeasureCorrelation("Fechner")
+		elif preset == "minimal":
+			result.setMeasure("Centrality.Degree")
+			result.setMeasure("Partition.ConnectedComponents")
+		elif preset == "default"
+			result.setMeasure("Centrality.Degree")
+			result.setMeasure("Partition.ConnectedComponents")
+			result.setMeasure("Centrality.PageRank")
+			result.setMeasure("Centrality.Betweenness")
+			result.setMeasure("Centrality.CoreDecomposition")
+			result.setMeasure("Partition.Communities")
+		else:
+			raise Error("no preset given")
+			
+		return result
+
 	def setProperty(self, id, enabled=True):
 		if id in self.__options_Properties:
 			self.__options_Properties[id] = enabled
@@ -132,8 +166,9 @@ class Config:
 			
 	def getMeasureCorrelation(self, id):
 		return self.__options_MeasureCorrelations[id]
-	
-	
+
+
+
 class Profile:
 	""" TODO: """
 	__TOKEN = object();
@@ -142,7 +177,6 @@ class Profile:
 	__verboseLevel = 0
 	__verboseFilename = ""
 	__parallel = multiprocessing.numberOfProcessors()
-
 
 	def __init__(self, G, token=object()):
 		""" TODO: """
@@ -153,34 +187,6 @@ class Profile:
 		self.__measures = collections.OrderedDict()
 		self.__correlations = {}
 
-	
-	@classmethod
-	def createConfig(cls, preset="None"):
-		result = Config()
-		
-		if preset == "Full":
-			result.setProperty("Diameter")
-			result.setMeasure("Centrality.Degree"),
-			result.setMeasure("Centrality.CoreDecomposition"),
-			result.setMeasure("Centrality.ClusteringCoefficient")
-			result.setMeasure("Centrality.PageRank")
-			result.setMeasure("Centrality.KPath")
-			result.setMeasure("Centrality.Katz")
-			result.setMeasure("Centrality.Betweenness")
-			result.setMeasure("Centrality.Closeness")
-			result.setMeasure("Partition.Communities")
-			result.setMeasure("Partition.ConnectedComponents")
-			result.setMeasure("Partition.CoreDecomposition")
-			result.setMeasureCorrelation("Pearson")
-			result.setMeasureCorrelation("Spearman")
-			result.setMeasureCorrelation("Fechner")
-		
-		else:
-			pass
-			
-		return result
-
-		
 	@classmethod
 	def walk(cls, directory, config=Config(), type="HTML", style="light", color=(0, 0, 1), recursive=True, parallel=False):
 		for (dirpath, dirnames, filenames) in os.walk(directory):
@@ -216,8 +222,7 @@ class Profile:
 					cls.__verbosePrint("\n")
 			if not recursive:
 				break;
-		
-		
+
 	@classmethod
 	def create(cls, G, config=Config(), type="HTML", directory="", token=object()):
 		""" TODO: """
