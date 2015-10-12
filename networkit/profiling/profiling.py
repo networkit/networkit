@@ -192,7 +192,7 @@ class Profile:
 		self.__correlations = {}
 
 	@classmethod
-	def walk(cls, inputDir, filePattern="*", outputDir=None, config=Config(), outputType="HTML", style="light", color=(0, 0, 1), recursive=True, parallel=False,  graphFormat=None):
+	def walk(cls, inputDir, filePattern="*", outputDir=None, config=Config(), outputType="HTML", style="light", color=(0, 0, 1), recursive=False, parallel=False,  graphFormat=None):
 		if outputDir is None:
 			raise ValueError("output directory (parameter: outputDir) not specified")
 		elif not os.path.isdir(outputDir):
@@ -393,6 +393,10 @@ class Profile:
 			filename += "html"
 		elif outputType == "LaTeX":
 			result = result
+			if directory[-1] == "/":
+				directory += filename[:-1]
+			else:
+				directory += "/" + filename[:-1]
 			filename += "tex"
 		else:
 			raise Error("unknown output type")
@@ -433,9 +437,9 @@ class Profile:
 		elif type == "LaTeX":
 			plottype = "PDF"
 			if directory[-1] == "/":
-				output_dir = directory + "plots"
+				output_dir = directory + filename[:-1]
 			else:
-				output_dir = directory + "/plots"
+				output_dir = directory + "/" + filename[:-1]
 			if not os.path.isdir(output_dir):
 				os.mkdir(output_dir)
 			options = [output_dir, filename]
@@ -714,9 +718,9 @@ class Profile:
 		elif type == "LaTeX":
 			plottype = "PDF"
 			if directory[-1] == "/":
-				output_dir = directory + "plots"
+				output_dir = directory + filename[:-1]
 			else:
-				output_dir = directory + "/plots"
+				output_dir = directory + "/" + filename[:-1]
 			if not os.path.isdir(output_dir):
 				os.mkdir(output_dir)
 			options = [output_dir, filename]
