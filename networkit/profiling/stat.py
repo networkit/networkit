@@ -4,42 +4,12 @@
 #
 
 import math
-
+from _NetworKit import ranked
 
 def sorted(sample):
 	""" TODO: """
 	result = list(sample)
 	result.sort()
-	return result
-
-
-def ranked(sample):
-	""" TODO: """
-	n = len(sample)
-	result = []
-	for i in range(n):
-		result.append([sample[i], i, -1])
-	result.sort(key=lambda x: x[0])
-	value = result[0][0]
-	sum = 0
-	length = 0
-	for i in range(n):
-		if value == result[i][0]:
-			sum += (i+1)
-			length += 1
-		else:
-			sum /= length
-			for j in range(length):
-				result[i-j-1][2] = sum
-			value = result[i][0]
-			sum = (i+1)
-			length = 1
-	sum /= length
-	for i in range(length):
-		result[n-i-1][2] = sum
-	result.sort(key=lambda x: x[1])
-	for i in range(n):
-		result[i] = result[i][2]
 	return result
 
 
