@@ -188,7 +188,11 @@ class Profile:
 		self.__correlations = {}
 
 	@classmethod
-	def walk(cls, directory, config=Config(), outputType="HTML", style="light", color=(0, 0, 1), recursive=True, parallel=False):
+	def walk(cls, directory, config=Config(), outputType="HTML", style="light", color=(0, 0, 1), recursive=True, parallel=False,output_dir=None):
+		if output_dir is None:
+			raise ValueError("output directory (parameter: output_dir) not specified")
+		elif not os.path.isdir(output_dir):
+			raise IOError("output directory doesn't exist")
 		for (dirpath, dirnames, filenames) in os.walk(directory):
 			for filename in filenames:
 				#try:
@@ -210,7 +214,7 @@ class Profile:
 
 				pf.output(
 					outputType = outputType,
-					directory = dirpath,
+					directory = output_dir,
 					style = style,
 					color = color,
 					parallel = parallel,
