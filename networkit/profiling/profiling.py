@@ -123,9 +123,7 @@ class Config:
 			result.setMeasure("Partition.Communities")
 			result.setMeasure("Partition.ConnectedComponents")
 			result.setMeasure("Partition.CoreDecomposition")
-			result.setMeasureCorrelation("Pearson")
 			result.setMeasureCorrelation("Spearman")
-			result.setMeasureCorrelation("Fechner")
 		elif preset == "minimal":
 			result.setMeasure("Centrality.Degree")
 			result.setMeasure("Partition.ConnectedComponents")
@@ -137,6 +135,7 @@ class Config:
 			result.setMeasure("Partition.ConnectedComponents")
 			result.setMeasure("Partition.Communities")
 			result.setMeasure("Partition.CoreDecomposition")
+			result.setMeasureCorrelation("Spearman")
 		else:
 			raise Error("no preset given")
 
