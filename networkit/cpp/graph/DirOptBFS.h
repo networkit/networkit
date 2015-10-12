@@ -83,6 +83,8 @@ private:
 	 */
 	count max_threads;
 
+	std::function<void(count)> handle;
+
 public:
 	/**
 	 * Constructs the BFS class for @a G and source node @a source.
@@ -93,6 +95,8 @@ public:
 	 * @param storeStack	maintain a stack of nodes in decreasing order of distance
 	 */
 	DirOptBFS(const Graph& G, node source, bool storePaths=false, bool storeStack=false, count alpha=12, count beta=24, count max_threads=0);
+
+	void registerCallback(std::function<void(node)> handle);
 
 	/**
 	 * Breadth-first search from @a source.

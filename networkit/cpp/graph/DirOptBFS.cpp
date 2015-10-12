@@ -25,6 +25,12 @@ DirOptBFS::DirOptBFS(const Graph& G, node source, bool storePaths, bool storeSta
 	if (!G.hasEdgeIds()) {
 		throw std::runtime_error("edges need to be indexed - call G.indexEdges() first");
 	}
+
+	handle = [](node v) {};
+}
+
+void DirOptBFS::registerCallback(std::function<void(node)> handle) {
+	this->handle = handle;
 }
 
 void DirOptBFS::run() {
@@ -67,6 +73,7 @@ void DirOptBFS::run() {
 	qNext.push_back(source);
 	distances[source] = currentDistance;
 	visited[source] = 1;
+	handle(source);
 
 	// stopping criterion: no new nodes have been added to the queue; depends on the step
 	auto isFinished = [&]() {
@@ -103,6 +110,7 @@ void DirOptBFS::run() {
 				if (edgeActive[eid] && frontier[u]) {
 					edgeActive[eid] = 0;
 					if (!visited[v]) {
+						handle(v);
 						visited[v] = 1;
 						distances[v] = currentDistance;
 						count tid = omp_get_thread_num();
@@ -134,6 +142,7 @@ void DirOptBFS::run() {
 							threadLocalCounter[tid] += 1;
 							next[v] = 1;
 							found = true;
+							handle(v);
 						}
 					}
 				});
@@ -152,6 +161,7 @@ void DirOptBFS::run() {
 				if (edgeActive[eid]) {
 					edgeActive[eid] = 0;
 					if (!visited[v]) {
+						handle(v);
 						visited[v] = 1;
 						distances[v] = currentDistance;
 						qNext.push_back(v);

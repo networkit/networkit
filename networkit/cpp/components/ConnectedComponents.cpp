@@ -40,13 +40,12 @@ void ConnectedComponents::run() {
 			if (component[u] == none) {
 				component.setUpperBound(numComponents+1);
 				index c = numComponents;
-				DirOptBFS bfs(G, u, false, true);
+				DirOptBFS bfs(G, u, false, false);
+				std::function<void(node)> callback = [&](node v) {
+					component[v] = c;
+				};
+				bfs.registerCallback(callback);
 				bfs.run();
-				auto processed_nodes = bfs.getStack();
-				#pragma omp parallel for
-				for (index i = 0; i < processed_nodes.size(); ++i) {
-					component[processed_nodes[i]] = c;
-				}
 				assert (component[u] != none);
 				++numComponents;
 			}
