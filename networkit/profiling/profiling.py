@@ -246,10 +246,9 @@ class Profile:
 		def funcSizes(instance):
 			return sorted(instance.getPartition().subsetSizes())
 
+		classConnectedComponents = components.ConnectedComponents
 		if G.isDirected():
-			classConnectedComponents = properties.StronglyConnectedComponents
-		else:
-			classConnectedComponents = properties.ConnectedComponents
+			classConnectedComponents = components.StronglyConnectedComponents
 
 		for parameter in [
 			("Centrality.Degree",					"Node Centrality",	"Degree",
