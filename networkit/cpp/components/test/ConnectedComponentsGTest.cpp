@@ -14,6 +14,7 @@
 
 #include "../../distance/Diameter.h"
 #include "../../io/METISGraphReader.h"
+#include "../../io/GMLGraphReader.h"
 #include "../../generators/HavelHakimiGenerator.h"
 #include "../../auxiliary/Log.h"
 #include "../../auxiliary/Parallelism.h"
@@ -23,7 +24,7 @@
 namespace NetworKit {
 
 
- TEST_F(ConnectedComponentsGTest, testConnectedComponentsTiny) {
+TEST_F(ConnectedComponentsGTest, testConnectedComponentsTiny) {
  	// construct graph
  	Graph g;
  	for (count i = 0; i < 20; i++) {
@@ -59,16 +60,20 @@ namespace NetworKit {
  }
 
 TEST_F(ConnectedComponentsGTest, benchCompareBFS) {
+    std::string base = "/home/i11/staudt/Graphs/Collections/NwkBenchmark/"
     std::vector<std::string> datasets = {
-        "input/PGPgiantcompo.graph",
-        "input/astro-ph.graph",
-        "input/caidaRouterLevel.graph",
-        "/algoDaten/staudt/Graphs/Collections/NwkBenchmark/in-2004.metis.graph",
-        "/algoDaten/staudt/Graphs/Collections/NwkBenchmark/con-fiber_big.metis.graph",
-        //"/algoDaten/staudt/Graphs/Collections/NwkBenchmark/uk-2002.metis.graph"
-        "/algoDaten/staudt/Graphs/Static/DIMACS/XLarge/uk-2007-05.metis.graph"
+        "fb-MIT8.gml.graph",
+        "caidaRouterLevel.gml.graph",
+        "actor-collaboration.gml.graph",
+        "coAuthorsDBLP.gml.graph",
+        "fb-Texas84.gml.graph",
+        "in-2004.gml.graph",
+        "cit-Patents.gml.graph",
+        "con-fiber_big.gml.graph",
+        "soc-LiveJournal.gml.graph",
+        "uk-2002.gml.graph"
     };
-    METISGraphReader reader;
+    GMLGraphReader reader;
     Aux::Timer t;
 
     count max_threads = Aux::getMaxNumberOfThreads();
@@ -85,7 +90,7 @@ TEST_F(ConnectedComponentsGTest, benchCompareBFS) {
         G.indexEdges(true);
         t.stop();
         count t_indexEdges = t.elapsedMilliseconds();
-        count nRuns = 5;
+        count nRuns = 3;
         std::cout << "benchmarking ConnectedComponents variants: " << nRuns << " runs on " << G.toString() << ", reporting average time in ms" << std::endl;
         // generate startNode sequence
         t.start();
