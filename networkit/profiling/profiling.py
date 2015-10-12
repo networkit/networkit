@@ -129,7 +129,7 @@ class Config:
 		elif preset == "minimal":
 			result.setMeasure("Centrality.Degree")
 			result.setMeasure("Partition.ConnectedComponents")
-		elif preset == "default"
+		elif preset == "default":
 			result.setMeasure("Centrality.Degree")
 			result.setMeasure("Partition.ConnectedComponents")
 			result.setMeasure("Centrality.PageRank")
