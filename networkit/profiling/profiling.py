@@ -201,38 +201,36 @@ class Profile:
 			raise ValueError("no graph format has been specified")
 		for (dirpath, dirnames, filenames) in os.walk(inputDir):
 			for filename in filenames:
+				file = dirpath + "/" + filename
 				if fnmatch.fnmatch(filename, filePattern):
-					cls.__verbosePrint("at {0}".format(filename))
-					#try:
-					file = dirpath + "/" + filename
-					cls.__verbosePrint("[ " + file + " ]")
+					cls.__verbosePrint("\n[ " + file + " ]")
 					try:
 						G = kit.readGraph(file, graphFormat)
-					except:
-						cls.__verbosePrint("could not read {0}".format(filename))
-					pf = cls.create(
-						G,
-						config = config,
-						type = outputType,
-						directory = dirpath,
-						token = cls.__TOKEN)
+						try:
+							pf = cls.create(
+								G,
+								config = config,
+								type = outputType,
+								directory = outputDir,
+								token = cls.__TOKEN)
 
-					pf.output(
-						outputType = outputType,
-						directory = outputDir,
-						style = style,
-						color = color,
-						parallel = parallel,
-						token = cls.__TOKEN
-					)
+							pf.output(
+								outputType = outputType,
+								directory = outputDir,
+								style = style,
+								color = color,
+								parallel = parallel,
+								token = cls.__TOKEN
+							)
+						except Exception as e:
+							cls.__verbosePrint("=> an error occured: {0} of type {1}".format(e, type(e)))
+					except:
+						cls.__verbosePrint("could not read {0}".format(file))
 					cls.__verbosePrint("\n")
-					#except Exception as e:
-					#	cls.__verbosePrint("=> an error occured: {0} of type {1}".format(e, type(e)))
-					#	cls.__verbosePrint("\n")
 				else:
-					cls.__verbosePrint("skipping {0} as it does not match filePattern".format(filename))
-				if not recursive:
-					break;
+					cls.__verbosePrint("skipping {0} as it does not match filePattern".format(file))
+			if not recursive:
+				break;
 
 
 	@classmethod
@@ -529,7 +527,7 @@ class Profile:
 				elif type == "LaTeX":
 					i = 0
 					n = len(self.__measures)
-					result += correlationName
+					result += "\\subsection{" + correlationName + "}\n"
 					result += "\\begin{tabular}{" + ("l" * (n+1)) +"}"
 					for keyA in self.__measures:
 						if self.__measures[keyA]["category"] == category and self.__measures[keyA]["correlate"]:
@@ -573,7 +571,7 @@ class Profile:
 									if type == "HTML":
 										result += "<div class=\"Thumbnail_ScatterPlot\" data-title=\"" + keyB + "\" data-title-second=\"" + keyA + "\"><img src=\"data:image/svg+xml;utf8," + value["image"] + "\" /></div>"
 									elif type == "LaTeX":
-										result += "\\includegraphics{{\"" + value["image"] + "\"}.pdf}"
+										result += "\n\\includegraphics[width=0.5\\textwidth]{{\"" + value["image"] + "\"}.pdf}"
 				return result
 			results[category]["Correlations"]["ScatterPlots"] += funcScatterPlot(category)
 
@@ -599,7 +597,7 @@ class Profile:
 				if type == "HTML":
 					extentions = "<div class=\"PartitionPie\"><img src=\"data:image/svg+xml;utf8," + image[2] + "\" /></div>"
 				elif type == "LaTeX":
-					extentions = "\\includegraphics{{\"" + image[2] + "\"}.pdf}"
+					extentions = "\n\\includegraphics[width=0.5\\textwidth]{{\"" + image[2] + "\"}.pdf}"
 
 			except:
 				pass
@@ -620,7 +618,7 @@ class Profile:
 			if type == "HTML":
 				results[category]["Overview"] += "<div class=\"Thumbnail_Overview\" data-title=\"" + name + "\"><a href=\"#NetworKit_Page_" + str(pageIndex) + "_" + key + "\"><img src=\"data:image/svg+xml;utf8," + image[1] + "\" /></a></div>"
 			elif type == "LaTeX":
-				results[category]["Overview"] += "\\includegraphics{{\"" + image[1] + "\"}.pdf}"
+				results[category]["Overview"] += "\n\\includegraphics[width=0.5\\textwidth]{{\"" + image[1] + "\"}.pdf}\n"
 
 		result = self.__formatProfileTemplate(
 			templateProfile,
