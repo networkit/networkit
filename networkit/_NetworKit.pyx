@@ -7737,6 +7737,8 @@ def ranked2(sample):
 	"""
 	cdef map[double,vector[index]] buckets
 	cdef vector[double] result = vector[double](len(sample))
+	cdef count size = 0
+	cdef double rank = 0.0
 	# sort the numbers into buckets
 	for i in range(len(sample)):
 		buckets[sample[i]].push_back(i)
