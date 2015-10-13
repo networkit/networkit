@@ -29,43 +29,48 @@
 
 \usepackage[table]{{xcolor}}
 
+\usepackage{{multicol}}
+
 
 %=== MACROS ==================================================================
 
+% Remove Elements with nan-Values
 % TODO: trim whitespaces around #2
 \newcommand{{\nkvalue}}[2]{{\ifthenelse{{\equal{{#2}}{{ nan }}}}{{}}{{$#1 = #2$}}}}
+
+\definecolor{{red}}{{RGB}}{{255,80,80}}
+\definecolor{{blue}}{{RGB}}{{80,80,255}}
 
 
 %=== BEGIN ===================================================================
 
 \begin{{document}}
 
-Network Properties
+\section{{Network Properties}}
 
-Name: {properties[Name]}
-Nodes: {properties[Nodes]}
-Edges: {properties[Edges]}
-Density: {properties[Density]:g}
-Directed: {properties[Directed]}
-Weighted: {properties[Weighted]}
-Self Loops: {properties[Self Loops]:g}
-Diameter Range: {properties[Diameter Range]}
+Name: {properties[Name]} \\
+Nodes: {properties[Nodes]} \\
+Edges: {properties[Edges]} \\
+Density: {properties[Density]:g} \\
+Directed: {properties[Directed]} \\
+Weighted: {properties[Weighted]} \\
+Self Loops: {properties[Self Loops]:g} \\
+Diameter Range: {properties[Diameter Range]} \\
 (Strongly) Conencted Components: {properties[Connected Components]}
 
-Overview
-	Node Centrality Measures
-		{results[Node Centrality][Overview]}
-	Partitions
-		{results[Partition][Overview]}
+\section{{Overview}}
+\subsection{{Node Centrality Measures}}
+{results[Node Centrality][Overview]}
+\subsection{{Partitions}}
+{results[Partition][Overview]}
 
+\section{{Node Centrality Measures}}
+{results[Node Centrality][Measures]}
+{results[Node Centrality][Correlations][HeatMaps]}
+{results[Node Centrality][Correlations][ScatterPlots]}
 
-Node Centrality Measures
-	{results[Node Centrality][Measures]}
-	{results[Node Centrality][Correlations][HeatMaps]}
-	{results[Node Centrality][Correlations][ScatterPlots]}
-
-Partitions
-	{results[Partition][Measures]}
+\section{{Partitions}}
+{results[Partition][Measures]}
 
 
 %=== END =====================================================================
