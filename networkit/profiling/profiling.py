@@ -269,7 +269,7 @@ class Profile:
 				True,	funcScores,	"Score",				centrality.CoreDecomposition, 			(G, )),
 			("Centrality.ClusteringCoefficient",	"Node Centrality",	"Local Clustering Coefficient",
 				True,	funcScores,	"Score",				centrality.LocalClusteringCoefficient,	(G, )),
-			("Centrality.PageRank", 				"Node Centrality",	"Page Rank",
+			("Centrality.PageRank", 				"Node Centrality",	"PageRank",
 				True,	funcScores,	"Score",				centrality.PageRank, 					(G, )),
 			("Centrality.KPath", 					"Node Centrality",	"k-Path Centrality",
 				True,	funcScores,	"Score",				centrality.KPathCentrality,				(G, )),
