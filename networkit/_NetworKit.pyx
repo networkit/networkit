@@ -7699,7 +7699,10 @@ cdef class GlobalThresholdFilter:
 		return Graph().setThis(self._this.calculate())
 
 def ranked(sample):
-	""" TODO: """
+	"""
+		Given a list of numbers, this function computes the rank of each value
+		and returns a list of ranks where result[i] is the rank of sample[i]
+	"""
 	cdef count n = len(sample)
 	result = []
 	for i in range(n):
@@ -7725,4 +7728,25 @@ def ranked(sample):
 	result.sort(key=lambda x: x[1])
 	for i in range(n):
 		result[i] = result[i][2]
+	return result
+
+def ranked2(sample):
+	"""
+		Given a list of numbers, this function computes the rank of each value
+		and returns a list of ranks where result[i] is the rank of sample[i]
+	"""
+	cdef map[double,vector[index]] buckets
+	cdef vector[double] result = vector[double](len(sample))
+	# sort the numbers into buckets
+	for i in range(len(sample)):
+		buckets[sample[i]].push_back(i)
+	cdef count n_processed = 0
+	# compute the rank for each bucket
+	for key,val in buckets:
+		size = len(val)
+		rank = (size * (size+1) / 2 + size * n_processed) / size
+		# and write the rank into the result
+		for elem in val:
+			result[elem] = rank
+		n_processed += size
 	return result

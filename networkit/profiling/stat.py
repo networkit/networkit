@@ -4,7 +4,7 @@
 #
 
 import math
-from _NetworKit import ranked
+from _NetworKit import ranked2 as ranked
 
 def sorted(sample):
 	""" TODO: """
