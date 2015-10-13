@@ -5,13 +5,13 @@
 
 import math
 from _NetworKit import ranked2 as ranked
+from _NetworKit import sort2
 
 def sorted(sample):
-	""" TODO: """
-	result = list(sample)
-	result.sort()
-	return result
-
+	"""
+		Sorts a given list of numbers.
+	"""
+	return sort2(sample)
 
 class Stat:
 	""" TODO: """

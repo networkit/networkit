@@ -20,6 +20,7 @@ from libcpp.stack cimport stack
 from libcpp.string cimport string
 from libcpp.unordered_set cimport unordered_set
 from libcpp.unordered_map cimport unordered_map
+from libcpp.algorithm cimport sort
 
 # NetworKit typedefs
 ctypedef uint64_t count
@@ -7701,7 +7702,9 @@ cdef class GlobalThresholdFilter:
 def ranked(sample):
 	"""
 		Given a list of numbers, this function computes the rank of each value
-		and returns a list of ranks where result[i] is the rank of sample[i]
+		and returns a list of ranks where result[i] is the rank of
+		the i-th element in sample.
+		Previously used as profiling.stat.ranked.
 	"""
 	cdef count n = len(sample)
 	result = []
@@ -7733,7 +7736,9 @@ def ranked(sample):
 def ranked2(sample):
 	"""
 		Given a list of numbers, this function computes the rank of each value
-		and returns a list of ranks where result[i] is the rank of sample[i]
+		and returns a list of ranks where result[i] is the rank of
+		the i-th element in sample.
+		Currently used as profiling.stat.ranked.
 	"""
 	cdef map[double,vector[index]] buckets
 	cdef vector[double] result = vector[double](len(sample))
@@ -7752,3 +7757,15 @@ def ranked2(sample):
 			result[elem] = rank
 		n_processed += size
 	return result
+
+def sort2(sample):
+	"""
+		Sorts a given list of numbers.
+		Currently used in profiling.stat.sorted.
+	"""
+	cdef vector[double] result = vector[double](len(sample))
+	cdef count i = 0
+	for elem in sample:
+		result[i] = <double>elem
+		i += 1
+	return sort(result.begin(),result.end())
