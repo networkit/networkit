@@ -6,6 +6,8 @@
 import multiprocessing
 from collections import deque
 
+import sys, traceback
+
 
 def numberOfProcessors():
 	return multiprocessing.cpu_count()
@@ -32,6 +34,7 @@ class Worker(multiprocessing.Process):
 			except Exception as e:
 				print("Error: " + task.getType() + " - " + task.getName(), flush=True)
 				print(str(e), flush=True)
+				print(traceback.format_exc(), flush=True)
 			result = (task.getType(), task.getName(), data)
 			self.__tasks.task_done()
 			self.__results.put(result)
@@ -134,6 +137,7 @@ class ThreadPool():
 			except Exception as e:
 				print("Error: " + task.getType() + " - " + task.getName(), flush=True)
 				print(str(e), flush=True)
+				print(traceback.format_exc(), flush=True)
 				data = None
 			result = (task.getType(), task.getName(), data)
 		self.__numberOfTasks -= 1
