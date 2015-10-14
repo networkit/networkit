@@ -25,8 +25,8 @@ import networkit
 from util import *
 import nk
 #import nx
-#import ig
-#import gt
+import ig
+import gt
 
 # helper function
 
