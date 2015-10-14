@@ -196,7 +196,7 @@ class Profile:
 		if outputDir is None:
 			raise ValueError("output directory (parameter: outputDir) not specified")
 		elif not os.path.isdir(outputDir):
-			raise IOError("output directory doesn't exist")
+			os.mkdir(outputDir)
 		if graphFormat is None:
 			raise ValueError("no graph format has been specified")
 		for (dirpath, dirnames, filenames) in os.walk(inputDir):
