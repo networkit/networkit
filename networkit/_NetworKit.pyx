@@ -7768,4 +7768,5 @@ def sort2(sample):
 	for elem in sample:
 		result[i] = <double>elem
 		i += 1
-	return sort(result.begin(),result.end())
+	sort(result.begin(),result.end())
+	return result
