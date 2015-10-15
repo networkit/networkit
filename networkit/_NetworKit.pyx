@@ -164,6 +164,8 @@ cdef extern from "cpp/auxiliary/Parallelism.h" namespace "Aux":
 	int _getCurrentNumberOfThreads "Aux::getCurrentNumberOfThreads" ()
 	int _getMaxNumberOfThreads "Aux::getMaxNumberOfThreads" ()
 	void _enableNestedParallelism "Aux::enableNestedParallelism" ()
+	void _enableParallelism "Aux::enableParallelism" ()
+	void _disableParallelism "Aux::disableParallelism" ()
 
 def setNumberOfThreads(nThreads):
 	""" Set the number of OpenMP threads """
@@ -180,6 +182,15 @@ def getMaxNumberOfThreads():
 def enableNestedParallelism():
 	""" Enable nested parallelism for OpenMP"""
 	_enableNestedParallelism()
+
+def disableParallelism():
+	""" Disable parallelism for OpenMP"""
+	_disableParallelism()
+
+def enableParallelism():
+	""" Enable parallelism for OpenMP"""
+	_enableParallelism()
+
 
 
 cdef extern from "cpp/auxiliary/Random.h" namespace "Aux::Random":
@@ -5025,9 +5036,11 @@ cdef class ApproxBetweenness2(Centrality):
 		user defined number of samples
 	normalized : bool, optional
 		normalize centrality values in interval [0,1]
+	parallel : bool, optional
+		run in parallel with additional memory cost z + 3z * t
 	"""
 
-	def __cinit__(self, Graph G, nSamples, normalized=False):
+	def __cinit__(self, Graph G, nSamples, normalized=False, parallel=False):
 		self._G = G
 		self._this = new _ApproxBetweenness2(G._this, nSamples, normalized)
 

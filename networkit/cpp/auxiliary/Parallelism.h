@@ -21,14 +21,14 @@ namespace Aux {
 void setNumberOfThreads(int nThreads);
 
 /**
- * 
+ *
  * @return The number of threads currently running.
  */
 int getCurrentNumberOfThreads();
 
 
 /**
- * 
+ *
  * @return The maximum number of threads available to the program.
  */
 int getMaxNumberOfThreads();
@@ -36,6 +36,15 @@ int getMaxNumberOfThreads();
 
 /** Enable OpenMP nested parallelism */
 void enableNestedParallelism();
+
+
+/** Enable OpenMP  parallelism */
+void enableParallelism();
+
+/** Disable OpenMP parallelism */
+void disableParallelism();
+
+
 
 }
 
