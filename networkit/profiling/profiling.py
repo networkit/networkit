@@ -230,7 +230,8 @@ class Profile:
 				else:
 					cls.__verbosePrint("skipping {0} as it does not match filePattern".format(file))
 			if not recursive:
-				break;
+				break
+		print("Done")
 
 
 	@classmethod

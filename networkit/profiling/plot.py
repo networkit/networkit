@@ -310,7 +310,7 @@ class Measure:
 			for i in range(len(relativeFrequencies)):
 				if i == 0 and numberOfTooSmallSubsets == 0:
 					continue
-				
+
 				value = relativeFrequencies[i]
 				alpha = 360 * value
 				label = "{:1.1f}%".format(value * 100)
@@ -421,7 +421,7 @@ class Measure:
 			)
 			fig.set_size_inches(6, 6)
 			plottype = "stat"
-			
+
 		elif index == 1:
 			fig = plt.figure()
 			ax = fig.gca()
@@ -460,9 +460,9 @@ class Measure:
 			fig,
 			self.__plottype,
 			self.__options,
-			plottype + "." + category + "." + name
+			plottype + "-" + category + "-" + name
 		)
-		
+
 
 class Scatter:
 	""" TODO: """
@@ -520,29 +520,29 @@ class Scatter:
 			"scatter." + nameA + " - " + nameB
 		)
 
-		
+
 def save(id, fig, plottype, options, extention):
 	""" TODO: """
 	result = ""
 
 	fig.tight_layout()
-	
+
 	if plottype == "SVG":
 		imgdata = io.StringIO()
 		fig.savefig(imgdata, format='svg')
-		
+
 		plaintext = imgdata.getvalue()
 		plaintext = " ".join(plaintext[plaintext.find("<svg "):].split())
 		result = quote(plaintext, safe='')
-	
+
 	if plottype == "PDF":
 		filename = options[1] + extention
 		with PdfPages(options[0] + "/" + filename + ".pdf") as pdf:
 			pdf.savefig(fig)
 		result = filename
-		
+
 	else:
 		pass
-		
+
 	plt.close(fig)
 	return (id, result)
