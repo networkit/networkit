@@ -17,7 +17,7 @@ class Algo:
 		raise Exception("Not implemented")
 
 	def loadGraph(self, path):
-		G = igraph.read(path, format="gml")  # Check if the format is actually edgelist
+		G = igraph.read(path, format="gml")
 		return G
 
 
