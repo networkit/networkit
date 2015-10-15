@@ -11,6 +11,7 @@
 #include "../graph/Dijkstra.h"
 #include "../graph/SSSP.h"
 #include "../auxiliary/SignalHandling.h"
+#include "../auxiliary/Parallelism.h"
 
 
 #include <memory>
@@ -18,10 +19,11 @@
 
 namespace NetworKit {
 
-ApproxBetweenness2::ApproxBetweenness2(const Graph& G, count nSamples, bool normalized) : Centrality(G, normalized), nSamples(nSamples) {
+ApproxBetweenness2::ApproxBetweenness2(const Graph& G, count nSamples, bool normalized, bool parallel) : Centrality(G, normalized), nSamples(nSamples), parallel(parallel) {
 }
 
 void ApproxBetweenness2::run() {
+
 	Aux::SignalHandler handler;
 
 	scoreData = std::vector<double>(G.upperNodeIdBound(), 0.0);
@@ -78,11 +80,18 @@ void ApproxBetweenness2::run() {
 		}
 	};
 
+	if (!parallel) {
+		Aux::disableParallelism();
+	}
+
 	#pragma omp parallel for
 	for (index i = 0; i < sampledNodes.size(); ++i) {
 		computeDependencies(sampledNodes[i]);
 	}
 
+	if (!parallel) {
+		Aux::enableParallelism();
+	}
 
 	// add up all thread-local values
 	for (auto local : scorePerThread) {
