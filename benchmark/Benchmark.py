@@ -28,6 +28,16 @@ import nk
 import ig
 import gt
 
+try:
+	import igraph
+except ImportError as ex:
+	print("igraph not available")
+try:
+	import graph_tool
+except ImportError as ex:
+	print("graph_tool not available")
+
+
 # helper function
 
 
@@ -197,8 +207,12 @@ class Bench:
     def getSize(self, G):
         if isinstance(G, networkit.Graph):
             return G.size()
+        elif isinstance(G, igraph.Graph):
+            return (G.vcount(), G.ecount())
+        elif isinstance(G, graph_tool.Graph):
+            return (G.num_vertices(), G.num_edges())
         else:
-            raise Error("cannot get graph size - unknown object type")
+            raise NotImplementedError("cannot get graph size - unknown object type")
 
     def clearCache(self):
         """ Delete all stored graphs to free memory """
@@ -312,7 +326,7 @@ class Bench:
 
         # data frame
         self.epsSummary = epsSummary
-        self.epsSummary.reindex_axis(sorted(self.epsSummary.columns), axis=1)
+        self.epsSummary = self.epsSummary.reindex_axis(sorted(self.epsSummary.columns), axis=1)
         if self.save:
             epsSummary.to_csv(os.path.join(self.outDataDir, "epsSummary.csv".format(**locals())))
         # plot
@@ -321,7 +335,7 @@ class Bench:
         plt.gca().xaxis.get_major_formatter().set_powerlimits((3, 3))
         plt.xscale("log")
         plt.xlabel("edges/s")
-        seaborn.boxplot(epsSummary, linewidth=1.5, width=.25, color=green, vert=False)
+        seaborn.boxplot(epsSummary, order=self.epsSummary.columns, linewidth=1.5, width=.25, color=green, vert=False)
         if self.save:
             plt.savefig(os.path.join(self.plotDir, "epsSummary.pdf".format(**locals())), bbox_inches="tight")
 
