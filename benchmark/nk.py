@@ -135,7 +135,7 @@ class bDegreeAssortativity(Algo):
 	name = "DegreeAssortativity" + framework
 
 	def run(self, G):
-		networkit.correlation.Assortativity(G, networkit.centrality.DegreeCentrality(G).scores()).run()
+		networkit.correlation.Assortativity(G, networkit.centrality.DegreeCentrality(G).run().scores()).run()
 
 
 # 	- betweenness,  exact (centrality.Betweenness) and approximated (centrality.ApproxBetweenness, centrality.ApproxBetweenness2)
