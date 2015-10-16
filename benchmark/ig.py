@@ -108,7 +108,7 @@ class bPageRank(Algo):
 	name = "PageRank" + framework
 
 	def run(self, G):
-		pr = igraph.Graph.pagerank(G)	# this leads to a segfault -seems buggy
+		pr = igraph.Graph.pagerank(G, damping=0.85, eps=1e-06)	# this leads to a segfault -seems buggy
 
 # 	- Eigenvector centrality (centrality.EigenvectorCentrality, centrality.SciPyEVZ)
 
