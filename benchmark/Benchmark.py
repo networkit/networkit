@@ -241,6 +241,7 @@ class Bench:
                     for i in range(nRuns):
                         row = {}    # benchmark data row
                         row["algo"] = algo.name
+						row["framework"] = algo.framework
                         row["graph"] = graphName
                         row["m"] = m
                         try: # timeout
@@ -317,6 +318,7 @@ class Bench:
         self.epsPlot(algoName)
 
     def plotSummary(self, algoNames=None, figsize=None):
+		""" Plot a summary of algorithm performances"""
         if algoNames is None:
             algoNames = list(self.data.keys())
         epsSummary = pandas.DataFrame()
