@@ -97,7 +97,7 @@ class bPageRank(Algo):
 	name = "PageRank" + framework
 
 	def run(self, G):
-		pr = graph_tool.centrality.pagerank(G)
+		pr = graph_tool.centrality.pagerank(G, damping=0.85, epsilon=1e-06)
 
 # 	- Eigenvector centrality (centrality.EigenvectorCentrality, centrality.SciPyEVZ)
 
