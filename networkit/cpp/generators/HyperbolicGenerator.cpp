@@ -23,21 +23,6 @@
 
 namespace NetworKit {
 
-HyperbolicGenerator::HyperbolicGenerator() {
-	stretch = 1;
-	alpha = 1;
-	factor = 1;
-	nodeCount = 10000;
-	initialize();
-}
-
-HyperbolicGenerator::HyperbolicGenerator(count n) {
-	nodeCount = n;
-	alpha = 1;
-	factor = 1;
-	stretch=1;
-	initialize();
-}
 /**
  * Construct a generator for n nodes and m edges
  */

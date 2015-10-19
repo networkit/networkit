@@ -22,18 +22,12 @@ typedef index node; // node indices are 0-based
 
 class HyperbolicGenerator: public NetworKit::StaticGraphGenerator {
 public:
-	HyperbolicGenerator();
-
-	/**
-	 * @param[in] n Number of nodes
-	 */
-	HyperbolicGenerator(count n);
 
 	/**
 	 * @param[in] n Number of nodes
 	 * @param[in] m Target number of edges
 	 */
-	HyperbolicGenerator(count n, double avgDegree=6, double exp=3);
+	HyperbolicGenerator(count n=10000, double avgDegree=6, double exp=3);
 
 
 	Graph generate(const vector<double> &angles, const vector<double> &radii, Quadtree<index> &quad, double thresholdDistance);
