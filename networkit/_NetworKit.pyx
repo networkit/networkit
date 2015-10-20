@@ -7309,27 +7309,6 @@ cdef class AdamicAdarDistance:
 
 # Module: sparsification
 
-cdef extern from "cpp/sparsification/ChungLuScore.h":
-	cdef cppclass _ChungLuScore "NetworKit::ChungLuScore"(_EdgeScore[double]):
-		_ChungLuScore(const _Graph& G) except +
-
-cdef class ChungLuScore(EdgeScore):
-	"""
-	Chung-Lu based score.
-
-	Parameters
-	----------
-	G : Graph
-		The input graph.
-	"""
-
-	def __cinit__(self, Graph G):
-		self._G = G
-		self._this = new _ChungLuScore(G._this)
-
-	cdef bool isDoubleValue(self):
-		return True
-
 cdef extern from "cpp/sparsification/SimmelianOverlapScore.h":
 	cdef cppclass _SimmelianOverlapScore "NetworKit::SimmelianOverlapScore"(_EdgeScore[double]):
 		_SimmelianOverlapScore(const _Graph& G, const vector[count]& triangles, count maxRank) except +
@@ -7646,31 +7625,6 @@ cdef class SCANStructuralSimilarityScore(EdgeScore):
 		self._G = G
 		self._triangles = triangles
 		self._this = new _SCANStructuralSimilarityScore(G._this, self._triangles)
-
-	cdef bool isDoubleValue(self):
-		return True
-
-cdef extern from "cpp/sparsification/NodeNormalizedTriangleScore.h":
-	cdef cppclass _NodeNormalizedTriangleScore "NetworKit::NodeNormalizedTriangleScore"(_EdgeScore[double]):
-		_NodeNormalizedTriangleScore(_Graph G, const vector[count]& triangles) except +
-
-cdef class NodeNormalizedTriangleScore(EdgeScore):
-	"""
-	Divide the number of triangles per edge by the average number of triangles of the incident nodes.
-
-	Parameters
-	----------
-	G : Graph
-		The input graph.
-	triangles : vector[count]
-		Triangle count.
-	"""
-	cdef vector[count] _triangles
-
-	def __cinit__(self, Graph G, vector[count] triangles):
-		self._G = G
-		self._triangles = triangles
-		self._this = new _NodeNormalizedTriangleScore(G._this, self._triangles)
 
 	cdef bool isDoubleValue(self):
 		return True
