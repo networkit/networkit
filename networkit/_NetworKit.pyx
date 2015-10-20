@@ -2237,7 +2237,7 @@ cdef class PowerlawDegreeSequence:
 		return self._this.getDegree()
 
 cdef extern from "cpp/generators/LFRGenerator.h":
-	cdef cppclass _LFRGenerator "NetworKit::LFRGenerator":
+	cdef cppclass _LFRGenerator "NetworKit::LFRGenerator"(_Algorithm):
 		_LFRGenerator(count n) except +
 		void setDegreeSequence(vector[count] degreeSequence) nogil except +
 		void generatePowerlawDegreeSequence(count avgDegree, count maxDegree, double nodeDegreeExp) nogil except +
@@ -2247,11 +2247,10 @@ cdef extern from "cpp/generators/LFRGenerator.h":
 		void setMu(double mu) nogil except +
 		void setMu(const vector[double] & mu) nogil except +
 		void setMuWithBinomialDistribution(double mu) nogil except +
-		void run() nogil except +
 		_Graph getGraph() except +
 		_Partition getPartition() except +
 
-cdef class LFRGenerator:
+cdef class LFRGenerator(Algorithm):
 	"""
 	The LFR clustered graph generator as introduced by Andrea Lancichinetti, Santo Fortunato, and Filippo Radicchi.
 
@@ -2262,91 +2261,135 @@ cdef class LFRGenerator:
 	but other parts differ, for example some more checks for the realizability of the community and degree size distributions are done
 	instead of heavily modifying the distributions.
 
-	The configuration model implementation in NetworKit is used which is different from the implementation in the original LFR benchmark.
+	The edge-switching markov-chain algorithm implementation in NetworKit is used which is different from the implementation in the original LFR benchmark.
+
+	You need to set a degree sequence, a community size sequence and a mu using the additionally provided set- or generate-methods.
 
 	Parameters
 	----------
 	n : count
 		The number of nodes
-	avgDegree : count
-		The average degree of the created graph
-	maxDegree : count
-		The maximum degree of the created graph
-	mu : double
-		The mixing coefficient, i.e. the factor of the degree that shall be inter-cluster degree
-	nodeDegreeExp : double
-		The (negative) exponent of the power law degree distribution of the node degrees
-	communitySizeExp : double
-		The (negative) community size exponent of the power law degree distribution of the community sizes
-	minCommunitySize : count
-		The minimum community size
-	maxCommunitySize : count
-		The maximum community size
 	"""
-	cdef _LFRGenerator *_this
-
 	def __cinit__(self, count n):
 		self._this = new _LFRGenerator(n)
 
-	def __dealloc__(self):
-		del self._this
-
 	def setDegreeSequence(self, vector[count] degreeSequence):
+		"""
+		Set the given degree sequence.
+
+		Parameters
+		----------
+		degreeSequence : collections.Iterable
+			The degree sequence that shall be used by the generator
+		"""
 		with nogil:
-			self._this.setDegreeSequence(degreeSequence)
+			(<_LFRGenerator*>(self._this)).setDegreeSequence(degreeSequence)
 		return self
 
 	def generatePowerlawDegreeSequence(self, count avgDegree, count maxDegree, double nodeDegreeExp):
+		"""
+		Generate and set a power law degree sequence using the given average and maximum degree with the given exponent.
+
+
+		Parameters
+		----------
+		avgDegree : count
+			The average degree of the created graph
+		maxDegree : count
+			The maximum degree of the created graph
+		nodeDegreeExp : double
+			The (negative) exponent of the power law degree distribution of the node degrees
+		"""
 		with nogil:
-			self._this.generatePowerlawDegreeSequence(avgDegree, maxDegree, nodeDegreeExp)
+			(<_LFRGenerator*>(self._this)).generatePowerlawDegreeSequence(avgDegree, maxDegree, nodeDegreeExp)
 		return self
 
 	def setCommunitySizeSequence(self, vector[count] communitySizeSequence):
+		"""
+		Set the given community size sequence.
+
+		Parameters
+		----------
+		communitySizeSequence : collections.Iterable
+			The community sizes that shall be used.
+		"""
 		with nogil:
-			self._this.setCommunitySizeSequence(communitySizeSequence)
+			(<_LFRGenerator*>(self._this)).setCommunitySizeSequence(communitySizeSequence)
 		return self
 
 	def setPartition(self, Partition zeta not None):
+		"""
+		Set the partition, this replaces the community size sequence and the random assignment of the nodes to communities.
+
+		Parameters
+		----------
+		zeta : Partition
+			The partition to use
+		"""
 		with nogil:
-			self._this.setPartition(zeta._this)
+			(<_LFRGenerator*>(self._this)).setPartition(zeta._this)
 		return self
 
 	def generatePowerlawCommunitySizeSequence(self, count minCommunitySize, count maxCommunitySize, double communitySizeExp):
+		"""
+		Generate a powerlaw community size sequence with the given minimum and maximum size and the given exponent.
+
+		Parameters
+		----------
+		minCommunitySize : count
+			The minimum community size
+		maxCommunitySize : count
+			The maximum community size
+		communitySizeExp : double
+			The (negative) community size exponent of the power law degree distribution of the community sizes
+		"""
 		with nogil:
-			self._this.generatePowerlawCommunitySizeSequence(minCommunitySize, maxCommunitySize, communitySizeExp)
+			(<_LFRGenerator*>(self._this)).generatePowerlawCommunitySizeSequence(minCommunitySize, maxCommunitySize, communitySizeExp)
 		return self
 
 	def setMu(self, mu):
+		"""
+		Set the mixing parameter, this is the fraction of neighbors of each node that do not belong to the node's own community.
+
+		This can either be one value for all nodes or an iterable of values for each node.
+
+		Parameters
+		----------
+		mu : double or collections.Iterable
+			The mixing coefficient(s), i.e. the factor of the degree that shall be inter-cluster degree
+		"""
 		if isinstance(mu, collections.Iterable):
-			self._this.setMu(<vector[double]>mu)
+			(<_LFRGenerator*>(self._this)).setMu(<vector[double]>mu)
 		else:
-			self._this.setMu(<double>mu)
+			(<_LFRGenerator*>(self._this)).setMu(<double>mu)
 		return self
 
 	def setMuWithBinomialDistribution(self, double mu):
-		with nogil:
-			self._this.setMuWithBinomialDistribution(mu)
-		return self
+		"""
+		Set the internal degree of each node using a binomial distribution such that the expected mixing parameter is the given @a mu.
 
-	def run(self):
-		"""
-		Run the generator
+		The mixing parameter is for each node the fraction of neighbors that do not belong to the node's own community.
+
+		Parameters
+		----------
+		mu : double
+			The expected mu that shall be used.
 		"""
 		with nogil:
-			self._this.run()
+			(<_LFRGenerator*>(self._this)).setMuWithBinomialDistribution(mu)
 		return self
 
 	def getGraph(self):
 		"""
 		Return the generated Graph.
 		"""
-		return Graph().setThis(self._this.getGraph())
+		return Graph().setThis((<_LFRGenerator*>(self._this)).getGraph())
 
 	def getPartition(self):
 		"""
 		Return the generated Partiton.
 		"""
-		return Partition().setThis(self._this.getPartition())
+		return Partition().setThis((<_LFRGenerator*>(self._this)).getPartition())
 
 # Module: graphio
 
