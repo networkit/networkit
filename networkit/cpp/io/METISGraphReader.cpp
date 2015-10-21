@@ -80,6 +80,8 @@ Graph METISGraphReader::read(const std::string& path) {
 					continue;
 				}
 				node v = adjacencies[i].first- 1; 	// METIS-indices are 1-based
+				// correct edgeCounter for selfloops
+				edgeCounter += (u == v);
 				double weight = adjacencies[i].second;
 				Aux::Checkers::Enforcer::enforce(v >= 0 && v < n);
 				b.addHalfEdge(u, v, weight);
