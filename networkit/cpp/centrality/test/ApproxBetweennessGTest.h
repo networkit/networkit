@@ -14,8 +14,8 @@ namespace NetworKit {
 
 class ApproxBetweennessGTest : public testing::Test {
 public:
-	ApproxBetweennessGTest();
-	virtual ~ApproxBetweennessGTest();
+	ApproxBetweennessGTest() = default;
+	virtual ~ApproxBetweennessGTest() = default;
 };
 
 }

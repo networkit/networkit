@@ -8,7 +8,6 @@
 #include "SolverLamg.h"
 #include "LAMGSettings.h"
 #include "../CG.h"
-#include "../Preconditioner.h"
 
 #include <fstream>
 #include <iostream>

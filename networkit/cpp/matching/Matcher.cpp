@@ -11,3 +11,7 @@ namespace NetworKit {
 
 
 } /* namespace NetworKit */
+
+NetworKit::Matcher::Matcher(Graph& G): G(G) {
+
+}

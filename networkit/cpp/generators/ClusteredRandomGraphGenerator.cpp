@@ -40,10 +40,17 @@ Graph ClusteredRandomGraphGenerator::generate() {
 		}
 	});
 
+	this->zeta = std::move(zeta);
+
 	G.shrinkToFit();
 	return G;
 
 }
+
+Partition ClusteredRandomGraphGenerator::getCommunities() {
+	return zeta;
+}
+
 
 } /* namespace NetworKit */
 

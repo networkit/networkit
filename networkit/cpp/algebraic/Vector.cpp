@@ -12,7 +12,7 @@ namespace NetworKit {
 
 Vector::Vector() : values(0), transposed(false) {}
 
-Vector::Vector(const uint64_t dimension, const double initialValue, const bool transpose) : values(dimension, initialValue), transposed(transpose) {}
+Vector::Vector(const count dimension, const double initialValue, const bool transpose) : values(dimension, initialValue), transposed(transpose) {}
 
 Vector::Vector(const std::vector<double> &values, const bool transpose) : values(values), transposed(transpose) {
 }
@@ -67,17 +67,24 @@ double Vector::innerProduct(const Vector &v1, const Vector &v2) {
 	return scalar;
 }
 
+Matrix Vector::outerProduct(const Vector &v1, const Vector &v2) {
+	std::vector<Vector> rows(v1.getDimension(), Vector(v2.getDimension(), 0.0));
+
+#pragma omp parallel for
+	for (index i = 0; i < v1.getDimension(); ++i) {
+		for (index j = 0; j < v2.getDimension(); ++j) {
+			rows[i][j] = v1[i] * v2[j];
+		}
+	}
+
+	return Matrix(rows);
+}
+
 double Vector::operator*(const Vector &other) const {
 	assert(isTransposed() && !other.isTransposed()); // vectors must be transposed correctly for inner product
 	assert(getDimension() == other.getDimension()); // dimensions of vectors must match
 
-	double result = 0.0;
-#pragma omp parallel for reduction(+:result)
-	for (count i = 0; i < getDimension(); ++i) {
-		result += values[i] * other[i];
-	}
-
-	return result;
+	return innerProduct(*this, other);
 }
 
 Vector Vector::operator*(const Matrix &matrix) const {

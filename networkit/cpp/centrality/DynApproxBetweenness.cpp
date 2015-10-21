@@ -7,7 +7,7 @@
 
 #include "DynApproxBetweenness.h"
 #include "../auxiliary/Random.h"
-#include "../properties/Diameter.h"
+#include "../distance/Diameter.h"
 #include "../graph/Sampling.h"
 #include "../graph/DynDijkstra.h"
 #include "../graph/DynBFS.h"
@@ -19,24 +19,33 @@ namespace NetworKit {
 
 DynApproxBetweenness::DynApproxBetweenness(const Graph& G, double epsilon, double delta, bool storePredecessors) : Centrality(G, true),
 storePreds(storePredecessors), epsilon(epsilon), delta(delta) {
+  INFO("Constructing DynApproxBetweenness. storePredecessors = ", storePredecessors);
+}
 
+
+count DynApproxBetweenness::getNumberOfSamples() {
+    return r;
 }
 
 
 void DynApproxBetweenness::run() {
+  INFO("Inside DynApproxBetweenness. storePreds = ", storePreds);
+    if (G.isDirected()) {
+        throw std::runtime_error("Invalid argument: G must be undirected.");
+    }
     scoreData.clear();
     scoreData.resize(G.upperNodeIdBound());
     u.clear();
     v.clear();
     sampledPaths.clear();
 
-    double c = 0.5; // universal positive constant - see reference in paper
+    const double c = 0.5; // universal positive constant - see reference in paper
 
 
     edgeweight vd = Diameter::estimatedVertexDiameterPedantic(G);
 
     INFO("estimated diameter: ", vd);
-    r = ceil((c / (epsilon * epsilon)) * (floor(log(vd - 2)) + 1 + log(1 / delta)));
+    r = ceil((c / (epsilon * epsilon)) * (floor(log2(vd - 2)) + 1 - log(delta)));
     INFO("taking ", r, " path samples");
     sssp.clear();
     sssp.resize(r);
@@ -52,19 +61,27 @@ void DynApproxBetweenness::run() {
             v[i] = Sampling::randomNode(G);
         } while (v[i] == u[i]);
         if (G.isWeighted()) {
+            INFO("Calling DynDijkstra inside run DynApproxBet");
             sssp[i].reset(new DynDijkstra(G, u[i], storePreds));
         } else {
+            INFO("Calling DynBFS inside run DynApproxBet");
             sssp[i].reset(new DynBFS(G, u[i], storePreds));
         }
         DEBUG("running shortest path algorithm for node ", u[i]);
+
+        INFO("Calling setTargetNodeon sssp instance inside run DynApproxBet");
         sssp[i]->setTargetNode(v[i]);
+        INFO("Calling run on sssp instance inside run DynApproxBet");
         sssp[i]->run();
+        INFO("Ran sssp");
         if (sssp[i]->distances[v[i]] > 0) { // at least one path between {u, v} exists
             DEBUG("updating estimate for path ", u[i], " <-> ", v[i]);
+            INFO("Entered if statement.");
             // random path sampling and estimation update
             sampledPaths[i].clear();
             node t = v[i];
             while (t != u[i])  {
+              INFO("Entered while statement");
                 // sample z in P_u(t) with probability sigma_uz / sigma_us
                 std::vector<std::pair<node, double> > choices;
                 if (storePreds) {
@@ -78,10 +95,13 @@ void DynApproxBetweenness::run() {
                     }
                 }
                 else {
-                G.forEdgesOf(t, [&](node t, node z, edgeweight w){
+                  INFO("Storepreds is false");
+                  G.forInEdgesOf(t, [&](node t, node z, edgeweight w){
                         if (Aux::NumericTools::logically_equal(sssp[i]->distances[t], sssp[i]->distances[z] + w)) {
                             // workaround for integer overflow in large graphs
+                            INFO("Calling number of paths");
                             bigfloat tmp = sssp[i]->numberOfPaths(z) / sssp[i]->numberOfPaths(t);
+                            INFO("Called number of paths");
                             double weight;
                             tmp.ToDouble(weight);
 
@@ -90,6 +110,8 @@ void DynApproxBetweenness::run() {
 
                     });
                 }
+                INFO("Node considered: ", t);
+                INFO("Source considered: ", u[i]);
                 assert (choices.size() > 0);
                 node z = Aux::Random::weightedChoice(choices);
                 assert (z <= G.upperNodeIdBound());
@@ -101,6 +123,8 @@ void DynApproxBetweenness::run() {
             }
         }
     }
+
+    hasRun = true;
 
 }
 
@@ -130,7 +154,7 @@ void DynApproxBetweenness::update(const std::vector<GraphEvent>& batch) {
                     }
                 }
                 else {
-                    G.forEdgesOf(t, [&](node t, node z, edgeweight w){
+                    G.forInEdgesOf(t, [&](node t, node z, edgeweight w){
                         if (Aux::NumericTools::logically_equal(sssp[i]->distances[t], sssp[i]->distances[z] + w)) {
                             // workaround for integer overflow in large graphs
                             bigfloat tmp = sssp[i]->numberOfPaths(z) / sssp[i]->numberOfPaths(t);

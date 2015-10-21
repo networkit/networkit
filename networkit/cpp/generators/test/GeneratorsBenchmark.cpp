@@ -12,7 +12,10 @@
 #include <functional>
 
 #include "GeneratorsBenchmark.h"
-#include "../../graph/GraphGenerator.h"
+#include "../../auxiliary/Log.h"
+
+#include "../HyperbolicGenerator.h"
+#include "../DynamicHyperbolicGenerator.h"
 #include "../BarabasiAlbertGenerator.h"
 #include "../../graph/GraphBuilder.h"
 
@@ -43,7 +46,7 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 
 	count m_actual;
 	uint64_t t1, t2;
-	
+
 	// half parallel way
 	m_actual = 0;
 	t1 = timeOnce([&]() {
@@ -52,17 +55,16 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 			int tid = omp_get_thread_num();
 			double rdn = randomPerThread[tid]();
 			if (rdn <= p) {
-				builder.addEdge(u, v);
+				builder.addHalfEdge(u, v);
 			}
 		});
 	});
 	t2 = timeOnce([&]() {
-		G = builder.toGraph(false);
+		G = builder.toGraph(true);
 	});
 	m_actual = G.numberOfEdges();
 	EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
 	std::cout << "parallelForNodePairs + toGraphSequentiel:\t\t" << t1 << " + " << t2 << " = " << (t1 + t2) << " ms\n";
-	// printf("parallelForNodePairs + toGraphSequentiel:\t\t%" PRIu64 " + %" PRIu64 " = %" PRIu64 " ms\n", t1, t2, t1 + t2);
 
 	// fully parallel way
 	m_actual = 0;
@@ -72,29 +74,29 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 			int tid = omp_get_thread_num();
 			double rdn = randomPerThread[tid]();
 			if (rdn <= p) {
-				builder.addEdge(u, v);
+				builder.addHalfEdge(u, v);
 			}
 		});
 	});
 	t2 = timeOnce([&]() {
-		G = builder.toGraph();
+		G = builder.toGraph(true, false);
 	});
 	m_actual = G.numberOfEdges();
 	EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
 	std::cout << "parallelForNodePairs + toGraphParallel:\t\t" << t1 << " + " << t2 << " = " << (t1 + t2) << " ms\n";
 
 	// old way
-	// t1 = timeOnce([&]() {
-	// 	G = Graph(n);
-	// 	G.forNodePairs([&](node u, node v) {
-	// 		if (randomPerThread[0]() <= p) {
-	// 			G.addEdge(u, v);
-	// 		}
-	// 	});
-	// });
-	// m_actual = G.numberOfEdges();
-	// EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
-	// std::cout << "forNodePairs + Graph.addEdge:\t\t\t\t" << t1 << " ms\n";
+	t1 = timeOnce([&]() {
+		G = Graph(n);
+		G.forNodePairs([&](node u, node v) {
+			if (randomPerThread[0]() <= p) {
+				G.addEdge(u, v);
+			}
+		});
+	});
+	m_actual = G.numberOfEdges();
+	EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
+	std::cout << "forNodePairs + Graph.addEdge:\t\t\t\t" << t1 << " ms\n";
 }
 
 TEST_F(GeneratorsBenchmark, benchmarkBarabasiAlbertGenerator) {
@@ -111,6 +113,130 @@ TEST_F(GeneratorsBenchmark, benchmarkBarabasiAlbertGenerator) {
 
 	EXPECT_EQ(nMax, G.numberOfNodes());
 	EXPECT_EQ( ((n0-1) + ((nMax - n0) * k)), G.numberOfEdges());
+
+}
+
+TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGenerator) {
+	count n = 100000;
+	HyperbolicGenerator gen;
+	Graph G = gen.generate(n,1,1);
+	EXPECT_EQ(G.numberOfNodes(), n);
+}
+
+TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorWithSortedNodes) {
+	count n = 100000;
+	double s = 1.0;
+	double alpha = 1.0;
+	double t = 1.0;
+	vector<double> angles(n);
+	vector<double> radii(n);
+	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
+	//sample points randomly
+
+	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
+	vector<index> permutation(n);
+
+	index p = 0;
+	std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
+
+	//can probably be parallelized easily, but doesn't bring much benefit
+	std::sort(permutation.begin(), permutation.end(), [&angles,&radii](index i, index j){return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);});
+
+	vector<double> anglecopy(n);
+	vector<double> radiicopy(n);
+
+	#pragma omp parallel for
+	for (index j = 0; j < n; j++) {
+		anglecopy[j] = angles[permutation[j]];
+		radiicopy[j] = radii[permutation[j]];
+	}
+
+	Graph G = HyperbolicGenerator().generate(anglecopy, radiicopy, r, R*t);
+	EXPECT_EQ(G.numberOfNodes(), n);
+}
+
+TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorWithParallelQuadtree) {
+	count n = 100000;
+	double s = 1.0;
+	Quadtree<index> quad(n,s);
+	vector<double> angles;
+	vector<double> radii;
+	quad.trim();
+	quad.sortPointsInLeaves();
+	quad.reindex();
+	quad.extractCoordinates(angles, radii);
+	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
+
+	HyperbolicGenerator gen;
+	Graph G = gen.generate(angles, radii, quad, R);
+
+	EXPECT_EQ(n, G.numberOfNodes());
+}
+
+TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorWithSequentialQuadtree) {
+	count n = 100000;
+	double s = 1.0;
+	double alpha = 1;
+
+	vector<double> angles(n);
+	vector<double> radii(n);
+	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
+	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
+	Quadtree<index> quad(r);
+
+	for (index i = 0; i < n; i++) {
+		quad.addContent(i, angles[i], radii[i]);
+	}
+
+	angles.clear();
+	radii.clear();
+
+	quad.trim();
+	quad.sortPointsInLeaves();
+	quad.reindex();
+	quad.extractCoordinates(angles, radii);
+
+	HyperbolicGenerator gen;
+	Graph G = gen.generate(angles, radii, quad, R);
+
+	EXPECT_EQ(n, G.numberOfNodes());
+}
+
+TEST_F(GeneratorsBenchmark, benchmarkDynamicHyperbolicGeneratorOnNodeMovement) {
+	const count n = 10000;
+	const count nSteps = 100;
+	const double k = 6;
+	const double exp = 3;
+	const double moveEachStep = 0.5;
+	const double moveDistance = 0.02;
+	DynamicHyperbolicGenerator dyngen(n, k, exp, moveEachStep, moveDistance);
+	dyngen.generate(nSteps);
+}
+
+TEST_F(GeneratorsBenchmark, benchmarkParallelQuadtreeConstruction) {
+	count n = 33554432;
+	Quadtree<index> quad(n,1.0);
+	EXPECT_EQ(quad.size(), n);
+}
+
+TEST_F(GeneratorsBenchmark, benchmarkSequentialQuadtreeConstruction) {
+	count n = 33554432;
+	count capacity = 1000;
+	double s =1;
+	double alpha = 1;
+	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
+	vector<double> angles(n);
+	vector<double> radii(n);
+	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
+
+	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R),false,alpha,capacity);
+
+	for (index i = 0; i < n; i++) {
+		quad.addContent(i, angles[i], radii[i]);
+	}
+	EXPECT_EQ(quad.size(), n);
 }
 
 } /* namespace NetworKit */

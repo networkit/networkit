@@ -11,7 +11,6 @@
 #include "../../io/LineFileReader.h"
 #include "../../auxiliary/Timer.h"
 
-#include "../NearlyLinearLaplacianSmoother.h"
 #include "../GaussSeidelRelaxation.h"
 
 namespace NetworKit {

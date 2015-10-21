@@ -10,16 +10,11 @@
 
 namespace NetworKit {
 
-SSSP::SSSP(const Graph& G, node s, bool storePaths, bool storeStack) : G(G), sources {s}, storePaths(storePaths), storeStack(storeStack) {
-	
+SSSP::SSSP(const Graph& G, node s, bool storePaths, bool storeStack, node target) : Algorithm(), G(G), source(s), target(target), storePaths(storePaths), storeStack(storeStack) {
 }
 
-SSSP::SSSP(const Graph& G, const std::vector<node>& sources) : G(G), sources(sources) {
-
-}
-
-std::vector<edgeweight> SSSP::getDistances() const {
-	return distances;
+std::vector<edgeweight> SSSP::getDistances(bool moveOut) {
+	return (moveOut)?std::move(distances):distances;
 }
 
 
@@ -29,16 +24,15 @@ std::vector<node> SSSP::getPath(node t, bool forward) const {
 	}
 	std::vector<node> path;
 	if (previous[t].empty()) { // t is not reachable from source
-    //WARN("there is no path from ", source, " to ", t);
-    WARN("there is no path from to ", t);
+		WARN("there is no path from ", source, " to ", t);
 		return path;
 	}
 	node v = t;
-  while (v != sources.front()) {
+	while (v != source) {
 		path.push_back(v);
 		v = previous[v].front();
 	}
-  path.push_back(sources.front());
+	path.push_back(source);
 
 	if (forward) {
 		std::reverse(path.begin(), path.end());
@@ -51,15 +45,14 @@ std::set<std::vector<node>> SSSP::getPaths(node t, bool forward) const {
 
 	std::set<std::vector<node>> paths;
 	if (previous[t].empty()) { // t is not reachable from source
-    //WARN("there is no path from ", source, " to ", t);
-    WARN("there is no path from to ", t);
+		WARN("there is no path from ", source, " to ", t);
 		return paths;
 	}
 
 	std::function<void (std::vector<node> suffix, node v) > trace = [&](std::vector<node> suffix, node v) {
 		// base case
 		suffix.push_back(v);
-    if (v == sources.front()) {
+		if (v == source) {
 			paths.insert(suffix);
 			return;
 		}
@@ -83,18 +76,12 @@ std::set<std::vector<node>> SSSP::getPaths(node t, bool forward) const {
 	return paths;
 }
 
-std::vector<node> SSSP::getCanonicalPredecessors() const {
-  std::vector<node> out(G.numberOfNodes(), -1);
-  for (node u = 0; u < G.numberOfNodes(); ++u) {
-    if (!previous[u].empty()) {
-      out[u] = previous[u][0];
-    }
-  }
-  return out;
-}
 
-std::stack<node> SSSP::getStack() const {
-	return stack;
+std::vector<node> SSSP::getStack(bool moveOut) {
+	if (!storeStack) {
+		throw std::runtime_error("stack has not been stored");
+	}
+	return (moveOut)?std::move(stack):stack;
 }
 
 } /* namespace NetworKit */

@@ -29,7 +29,8 @@ public:
 	 */
 	DynDijkstra(const Graph& G, node s, bool storePredecessors = true);
 
-	void run(node t = none) override;
+	// TODO the run method could take a vector of distances as an input and in that case just use those distances instead of computing dijkstra from scratch
+	void run() override;
 
 	/** Updates the distances after an event.*/
 	void update(const std::vector<GraphEvent>& batch) override;
@@ -37,7 +38,6 @@ public:
 protected:
 	enum Color {WHITE, BLACK};
 	std::vector<Color> color;
-
 };
 
 

@@ -30,10 +30,12 @@
 #include "../CoverReader.h"
 #include "../CoverWriter.h"
 #include "../GMLGraphReader.h"
+#include "../GraphToolBinaryReader.h"
+#include "../GraphToolBinaryWriter.h"
+#include "../../generators/ErdosRenyiGenerator.h"
 
 #include "../../community/GraphClusteringTools.h"
 #include "../../auxiliary/Log.h"
-#include "../../graph/GraphGenerator.h"
 #include "../../community/ClusteringGenerator.h"
 #include "../../structures/Partition.h"
 #include "../../community/Modularity.h"
@@ -43,8 +45,9 @@
 namespace NetworKit {
 
 TEST_F(IOGTest, testGraphIOEdgeList) {
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeCircularGraph(20);
+	ErdosRenyiGenerator graphGen(100, 0.1);
+	Graph G = graphGen.generate();
+
 	GraphIO graphio;
 	std::string path = "output/edgelist.txt";
 	graphio.writeEdgeList(G, path);
@@ -58,8 +61,8 @@ TEST_F(IOGTest, testGraphIOEdgeList) {
 }
 
 TEST_F(IOGTest, testGraphIOAdjacencyList) {
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeCircularGraph(20);
+	ErdosRenyiGenerator graphGen(100, 0.1);
+	Graph G = graphGen.generate();
 	GraphIO graphio;
 	std::string path = "output/circular.adjlist";
 	graphio.writeAdjacencyList(G, path);
@@ -74,7 +77,6 @@ TEST_F(IOGTest, testGraphIOAdjacencyList) {
 
 
 TEST_F(IOGTest, testGraphIOForIsolatedNodes) {
-	GraphGenerator graphGen;
 	Graph G(20);
 	GraphIO graphio;
 	std::string path = "output/isolated.adjlist";
@@ -264,10 +266,10 @@ TEST_F(IOGTest, testPartitionWriterAndReader) {
 	// write clustering first
 	std::string path = "output/example.clust";
 
-	GraphGenerator graphGen;
 	count n = 100;
 	count k = 3;
-	Graph G = graphGen.makeCompleteGraph(n);
+	ErdosRenyiGenerator graphGen(n, 0.1);
+	Graph G = graphGen.generate();
 
 	ClusteringGenerator clusteringGen;
 	Partition zeta = clusteringGen.makeRandomClustering(G, k);
@@ -294,8 +296,8 @@ TEST_F(IOGTest, testPartitionWriterAndReader) {
 
 
 TEST_F(IOGTest, testDotGraphWriter) {
-	GraphGenerator graphGen;
-	Graph G = graphGen.makeCompleteGraph(42);
+	ErdosRenyiGenerator graphGen(100, 0.1);
+	Graph G = graphGen.generate();
 
 	std::string path = "output/example.dot";
 
@@ -367,6 +369,14 @@ TEST_F(IOGTest, testEdgeListReader) {
 	Graph G3 = reader3.read(path);
 	EXPECT_EQ(10u, G3.numberOfEdges());
 	EXPECT_TRUE(G3.hasEdge(0, 4));
+
+	path = "input/spaceseparated_weighted.edgelist";
+	DEBUG("reading file: " , path);
+	Graph G32 = reader3.read(path);
+	EXPECT_TRUE(G32.isWeighted());
+	EXPECT_EQ(2,G32.weight(0,1));
+	EXPECT_EQ(4,G32.weight(0,2));
+	EXPECT_EQ(3,G32.weight(1,2));
 
 	path = "input/comments.edgelist";
 	DEBUG("reading file: " , path);
@@ -475,8 +485,9 @@ TEST_F(IOGTest, tryReadingLFR) {
 	Graph G = graphReader.read(graphPath);
 	Partition truth = clusteringReader.read(clustPath);
 
-	PLP PLP;
-	Partition zeta = PLP.run(G);
+	PLP PLP(G);
+	PLP.run();
+	Partition zeta = PLP.getPartition();
 
 	Modularity mod;
 	INFO("static clustering quality: " , mod.getQuality(zeta, G));
@@ -608,13 +619,106 @@ TEST_F(IOGTest, testGMLGraphReaderDirected) {
 
 }
 
+TEST_F(IOGTest, testGraphToolBinaryReader) {
+	std::string path = "input/power.gt";
+	GraphToolBinaryReader reader;
+	Graph G = reader.read(path);
+	EXPECT_EQ(4941,G.numberOfNodes());
+	EXPECT_EQ(6594,G.numberOfEdges());
+	EXPECT_FALSE(G.isDirected());
+}
 
-//TEST_F(IOGTest, testEdgeListReaderOnSNAP) {
-//	std::string path = "/home/birderon/Downloads/com-amazon.ungraph.txt";
-//	EdgeListReader reader('\t',0,"#",false);
-//	Graph G = reader.read(path);
-//}
+TEST_F(IOGTest, testGraphToolBinaryWriter) {
+	Graph G(10,false,false);
+	G.addEdge(0,1);
+	G.addEdge(2,1);
+	G.addEdge(2,3);
+	G.addEdge(3,4);
+	G.addEdge(5,4);
+	G.addEdge(5,6);
+	G.addEdge(7,6);
+	G.addEdge(8,6);
+	G.addEdge(7,8);
+	G.addEdge(9,8);
+	G.addEdge(9,0);
+	GraphToolBinaryReader reader;
+	GraphToolBinaryWriter writer;
+	std::string path = "output/test.gt";
+	writer.write(G,path);
+	Graph Gread = reader.read(path);
+	EXPECT_EQ(G.numberOfNodes(),Gread.numberOfNodes());
+	EXPECT_EQ(G.numberOfEdges(),Gread.numberOfEdges());
+	EXPECT_EQ(G.isDirected(),Gread.isDirected());
+	EXPECT_EQ(G.isWeighted(),Gread.isWeighted());
+}
 
+TEST_F(IOGTest, testGraphToolBinaryWriterWithDeletedNodes) {
+	Graph G(10,false,false);
+	G.removeNode(0);
+	G.addEdge(2,1);
+	G.addEdge(2,3);
+	G.removeNode(4);
+	G.addEdge(5,6);
+	G.addEdge(7,6);
+	G.addEdge(8,6);
+	G.addEdge(7,8);
+	G.removeNode(9);
+	GraphToolBinaryReader reader;
+	GraphToolBinaryWriter writer;
+	std::string path = "output/test.gt";
+	writer.write(G,path);
+	Graph Gread = reader.read(path);
+	EXPECT_EQ(G.numberOfNodes(),Gread.numberOfNodes());
+	EXPECT_EQ(G.numberOfEdges(),Gread.numberOfEdges());
+	EXPECT_EQ(G.isDirected(),Gread.isDirected());
+	EXPECT_EQ(G.isWeighted(),Gread.isWeighted());
+}
+
+TEST_F(IOGTest, testGraphToolBinaryWriterDirected) {
+	Graph G(10,false,true);
+	G.addEdge(0,1);
+	G.addEdge(2,1);
+	G.addEdge(2,3);
+	G.addEdge(3,4);
+	G.addEdge(5,4);
+	G.addEdge(5,6);
+	G.addEdge(7,6);
+	G.addEdge(8,6);
+	G.addEdge(7,8);
+	G.addEdge(9,8);
+	G.addEdge(9,0);
+	GraphToolBinaryReader reader;
+	GraphToolBinaryWriter writer;
+	std::string path = "output/test.gt";
+	writer.write(G,path);
+	Graph Gread = reader.read(path);
+	EXPECT_EQ(G.numberOfNodes(),Gread.numberOfNodes());
+	EXPECT_EQ(G.numberOfEdges(),Gread.numberOfEdges());
+	EXPECT_EQ(G.isDirected(),Gread.isDirected());
+	EXPECT_EQ(G.isWeighted(),Gread.isWeighted());
+}
+
+TEST_F(IOGTest, testGraphToolBinaryWriterWithDeletedNodesDirected) {
+	Graph G(10,false,true);
+	G.removeNode(0);
+	G.addEdge(2,1);
+	G.addEdge(2,3);
+	G.removeNode(4);
+	G.addEdge(5,6);
+	G.addEdge(7,6);
+	G.addEdge(8,6);
+	G.addEdge(7,8);
+	G.removeNode(9);
+	GraphToolBinaryReader reader;
+	GraphToolBinaryWriter writer;
+	std::string path = "output/test.gt";
+	writer.write(G,path);
+	Graph Gread = reader.read(path);
+	EXPECT_EQ(G.numberOfNodes(),Gread.numberOfNodes());
+	EXPECT_EQ(G.numberOfEdges(),Gread.numberOfEdges());
+	EXPECT_EQ(G.isDirected(),Gread.isDirected());
+	EXPECT_EQ(G.isWeighted(),Gread.isWeighted());
+}
 
 } /* namespace NetworKit */
 

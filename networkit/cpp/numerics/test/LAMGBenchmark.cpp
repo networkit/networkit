@@ -15,7 +15,7 @@
 #include <algorithm>
 #include <iomanip>
 
-#include "../../properties/ConnectedComponents.h"
+#include "../../components/ConnectedComponents.h"
 #include "../../auxiliary/Timer.h"
 #include "../../auxiliary/StringTools.h"
 #include "../../graph/Graph.h"

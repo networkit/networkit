@@ -14,7 +14,7 @@
 #include "../../io/METISGraphReader.h"
 #include "../../io/METISGraphWriter.h"
 #include "../../generators/BarabasiAlbertGenerator.h"
-#include "../../properties/ConnectedComponents.h"
+#include "../../components/ConnectedComponents.h"
 #include "../../structures/Partition.h"
 
 using namespace std;

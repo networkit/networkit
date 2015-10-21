@@ -1,7 +1,10 @@
 # local imports
 from . import nxadapter
 from . import community
-from . import viztools
+from _NetworKit import ParallelPartitionCoarsening
+
+# external imports
+import networkx
 
 def save(name, dir="."):
 	""" Save a figure """
@@ -19,32 +22,15 @@ def coloringToColorList(G, coloring):
 	return clist
 
 
-def drawGraph(G, figsize=(7,7), labelled=False, nodeSizes=None, layout=None, coloring=None):
-	""" Draw a graph"""
+def drawGraph(G, **kwargs):
+	""" Draw a graph via networkX. It is possible to pass any optional parameters that networkx.draw(...) takes."""
 	nxG = nxadapter.nk2nx(G)
+	networkx.draw(nxG, **kwargs)
 
-	if layout is None:
-		pos = None
-	else:
-		pos = layout.layout(G)
-
-	if not coloring is None:
-		colors = coloringToColorList(G, coloring)
-	else:
-		colors = None
-
-	drawer = viztools.drawing.GraphDrawer(size=figsize, labelled=labelled)
-	drawer.draw(nxG, nodeSizes=nodeSizes, pos=pos, nodeColors=colors)
-
-
-def drawCommunityGraph(G, zeta, labelled=False, figsize=(7,7)):
-	cg = community.CommunityGraph() #convert communities to nodes
-	cg.run(G, zeta)
-	graph = cg.getGraph()
-	comGraph = nxadapter.nk2nx(graph) #Convert a NetworKit.Graph to a networkx.Graph
-	drawer = viztools.drawing.GraphDrawer(size=figsize, labelled=labelled)
-	if graph.isWeighted():
-		drawer.drawWeighted(comGraph)
-	else:
-		drawer.draw(comGraph, nodeSizes=[size*2 for size in list(zeta.subsetSizeMap().values())])
-
+def drawCommunityGraph(G, zeta, **kwargs):
+	""" Draws the community graph of a given graph and partition. Takes the same optional parameters as networkx.draw(...) except node_size."""
+	cg = ParallelPartitionCoarsening() 
+	graph,_ = cg.run(G,zeta) # convert communities to nodes
+	comGraph = nxadapter.nk2nx(graph)
+	kwargs["node_size"] = [size*2 for size in list(zeta.subsetSizeMap().values())]
+	networkx.draw(comGraph, **kwargs)

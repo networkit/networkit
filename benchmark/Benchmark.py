@@ -24,9 +24,19 @@ import networkit
 
 from util import *
 import nk
-import nx
+#import nx
 import ig
 import gt
+
+try:
+	import igraph
+except ImportError as ex:
+	print("igraph not available")
+try:
+	import graph_tool
+except ImportError as ex:
+	print("graph_tool not available")
+
 
 # helper function
 
@@ -85,6 +95,7 @@ seaborn.set_style("whitegrid")
 ### Colors
 lightred = seaborn.xkcd_rgb["red"]
 darkred = seaborn.xkcd_rgb["crimson"]
+green = seaborn.xkcd_rgb["teal"]
 orange = seaborn.xkcd_rgb["bright orange"]
 
 # plot functions
@@ -107,7 +118,7 @@ def epsPlot(data, size=(6,3)):
     labels = list(data["graph"])
     plt.figure(figsize=size)
     plt.xscale("log")
-    plt.barh(pos, data["eps"], align='center', height=0.25, color=darkred)    # notice the 'height' argument
+    plt.barh(pos, data["eps"], align='center', height=0.25, color=green)    # notice the 'height' argument
     plt.yticks(pos, labels)
     plt.gca().xaxis.set_minor_locator(plt.LogLocator(subs=[0,1,2,3,4,5,6,7,8,9,10]))
     #gca().xaxis.set_minor_formatter(FormatStrFormatter("%.2f"))
@@ -147,13 +158,13 @@ class Bench:
 
     """
 
-    def __init__(self, graphDir, graphMeta, defaultGraphs, outDir, save=True, nRuns=5, cacheGraphs=False, timeout=None):
+    def __init__(self, graphDir, defaultGraphs, outDir, save=True, nRuns=5, cacheGraphs=False, timeout=None):
         self.defaultGraphs = defaultGraphs
         self.nRuns = nRuns  # default number of runs for each algo
         self.graphDir = graphDir
-        self.graphMeta = graphMeta  # data frame with graph metadata
         # store result data of benchmarks
         self.data = {}
+        self.loadTimes = []
         self.outDir = outDir
         self.save = save  # store data frames on disk if true
         # create output directory if it does not exist
@@ -176,16 +187,32 @@ class Bench:
 
     def getGraph(self, graphName, algo):
         """" Get the graph from disk or from in-memory cache"""
-        if graphName in self.graphCache:
+        key = algo.framework + graphName
+        if key in self.graphCache:
             self.info("getting {0} from cache".format(graphName))
-            G = self.graphCache[algo.frameworkPrefix + graphName]
+            G = self.graphCache[key]
             return G
         else:
-            self.info("loading {0}".format(graphName))
-            G = algo.loadGraph(os.path.join(self.graphDir, "{0}.gml.graph".format(graphName)))
+            graphPath = os.path.join(self.graphDir, "{0}.gml.graph".format(graphName))
+            self.info("loading {0} from {1}".format(graphName, graphPath))
+            with Timer() as t:
+                G = algo.loadGraph(graphPath)
+            self.info("\t took {1} s".format(graphName, t.elapsed))
+            eps = self.getSize(G)[1] / t.elapsed
+            self.loadTimes.append({"framework" : algo.framework, "graph" : graphName, "time": t.elapsed, "eps": eps})
             if self.cacheGraphs:
-                self.graphCache[algo.frameworkPrefix + graphName] = G
+                self.graphCache[key] = G
             return G
+
+    def getSize(self, G):
+        if isinstance(G, networkit.Graph):
+            return G.size()
+        elif isinstance(G, igraph.Graph):
+            return (G.vcount(), G.ecount())
+        elif isinstance(G, graph_tool.Graph):
+            return (G.num_vertices(), G.num_edges())
+        else:
+            raise NotImplementedError("cannot get graph size - unknown object type")
 
     def clearCache(self):
         """ Delete all stored graphs to free memory """
@@ -208,12 +235,13 @@ class Bench:
         for graphName in graphs:
             try:
                 G = self.getGraph(graphName, algo)
-                m = float(self.graphMeta[self.graphMeta["name"] == graphName]["m"])
+                (n, m) = self.getSize(G)
                 try:
                     self.info("running {algo.name} {nRuns}x on {graphName}".format(**locals()))
                     for i in range(nRuns):
                         row = {}    # benchmark data row
                         row["algo"] = algo.name
+						row["framework"] = algo.framework
                         row["graph"] = graphName
                         row["m"] = m
                         try: # timeout
@@ -222,7 +250,7 @@ class Bench:
                                 signal.alarm(int(timeout * 60))  # timeout in seconds
                             with Timer() as t:
                                 result = algo.run(G)
-                            self.debug("took {0} s".format(t.elapsed))
+                            self.info("\t took {0} s".format(t.elapsed))
                             # store data
                             row["time"] = t.elapsed
                             row["eps"] =  m / t.elapsed  # calculate edges per second
@@ -246,6 +274,7 @@ class Bench:
         # store data frame on disk
         if self.save:
             df.to_csv(os.path.join(self.outDataDir, "{algo.name}.csv".format(**locals())))
+        self.log("Done")
 
 
     def log(self, message):
@@ -278,31 +307,103 @@ class Bench:
         if self.save:
             plt.savefig(os.path.join(self.plotDir, "{algoName}-eps.pdf".format(**locals())), bbox_inches="tight")
 
+    def graphPlot(self):
+        epsPlot(averageRuns(self.data))
+        if self.save:
+            plt.savefig(os.path.join(self.plotDir, "graphs.pdf".format(**locals())), bbox_inches="tight")
+
     def plot(self, algoName):
+        print(algoName)
         self.timePlot(algoName)
         self.epsPlot(algoName)
 
-    def plotSummary(self, algoNames=None):
+    def plotSummary(self, algoNames=None, figsize=None):
+		""" Plot a summary of algorithm performances"""
         if algoNames is None:
             algoNames = list(self.data.keys())
         epsSummary = pandas.DataFrame()
         for (algoName, algoData) in self.data.items():
             if algoName in algoNames:
                 epsSummary[algoName] = pandas.Series(self.data[algoName]["eps"])
+
+        # data frame
+        self.epsSummary = epsSummary
+        self.epsSummary = self.epsSummary.reindex_axis(sorted(self.epsSummary.columns), axis=1)
         if self.save:
-            epsSummary.to_csv(os.path.join(self.outDataDir, "epsSummary.csv".format(**locals())))
+            self.epsSummary.to_csv(os.path.join(self.outDataDir, "epsSummary.csv".format(**locals())))
+        # plot
+        if figsize:
+            plt.figure(figsize=figsize)
         plt.gca().xaxis.get_major_formatter().set_powerlimits((3, 3))
         plt.xscale("log")
         plt.xlabel("edges/s")
-        seaborn.boxplot(epsSummary, linewidth=1.5, widths=.25, color=darkred, vert=False)
+        seaborn.boxplot(self.epsSummary, order=self.epsSummary.columns, linewidth=1.5, width=.25, color=green, vert=False)
         if self.save:
             plt.savefig(os.path.join(self.plotDir, "epsSummary.pdf".format(**locals())), bbox_inches="tight")
-        return epsSummary
+
+    def plotAll(self):
+        for key in self.data.keys():
+            self.plot(key)
+
+
+    def getLoadTimes(self):
+        """ Get input times for graphs"""
+        return pandas.DataFrame(self.loadTimes)
 
 
 
-    def generatorBenchmark(self, generator, argtuples):
-        pass
+    def generatorBenchmark(self, generator, argtuples, nRuns=None, timeout=None):
+        """ Run a kernel represented by an algorithm benchmark object """
+        # set the defaults
+        if nRuns is None:
+            nRuns = self.nRuns  # lets argument override the default nRuns
+        if timeout is None:
+            timeout = self.timeout
+
+        genName = str(generator)
+
+        self.info("benchmarking {genName}".format(**locals()))
+        table = []  # list of dictionaries, to be converted to a DataFrame
+
+        for param in argtuples:
+            try:
+                gen = generator(*param)
+                row = {}    # benchmark data row
+                row["graph"] = str(param)
+                try:
+                    self.info("running {genName} {nRuns} times".format(**locals()))
+                    for i in range(nRuns):
+                        row["algo"] = genName
+                        try: # timeout
+                            result = None
+                            if timeout:
+                                signal.signal(signal.SIGALRM, timeoutHandler)
+                                signal.alarm(int(timeout * 60))  # timeout in seconds
+                            with Timer() as t:
+                                result = gen.generate()
+                            self.debug("took {0} s".format(t.elapsed))
+                            # store data
+                            row["m"] = result.numberOfNodes()
+                            row["time"] = t.elapsed
+                            row["result"] = result
+                        except Timeout as tx:
+                            self.error("{genName} timed out after {timeout} minutes".format(**locals()))
+                            row["time"] = None
+                            row["result"] = None
+                        finally:
+                            table.append(row)
+                            signal.alarm(int(1e9))    # in any case, cancel the timeout alarm by setting it to a ridiculously high time
+                except Exception as ex:
+                    self.error("generator {genName} failed with exception: {ex}".format(**locals()))
+            except Exception as ex:
+                self.error("initializing generator {genName} failed with exception: {ex}".format(**locals()))
+
+        df = pandas.DataFrame(table)
+        self.data[genName] = df
+        # store data frame on disk
+        if self.save:
+            df.to_csv(os.path.join(self.outDataDir, "{genName}.csv".format(**locals())))
+
 
 
 # - generators

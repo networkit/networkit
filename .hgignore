@@ -5,9 +5,9 @@ syntax: regexp
 \.mk$
 \.o$
 .DS_Store
-\.pyc
-\.a
-\.so
+\.pyc$
+\.a$
+\.so$
 \checkpoint.ipynb
 build.conf
 .sconsign.dblite
@@ -23,6 +23,22 @@ bench*
 .settings*
 Benchmark*
 plots
+\.out$
+\.egg$
+\~$
+\.dot$
+\.project$
+\.cproject$
+^tracelog
+\.json$
+\.csv
+\.dat
+
+scripts/SparsificationEvaluation/input/
+scripts/SparsificationEvaluation/output/
+scripts/SparsificationEvaluation/figures
+input/backbones/
+build/
 
 syntax: regexp
 ^output$
@@ -50,3 +66,4 @@ syntax: regexp
 
 syntax: glob
 NetworKit-Tests-*
+include/NetworKit

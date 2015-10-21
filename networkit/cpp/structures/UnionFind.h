@@ -3,6 +3,8 @@
  *
  *  Created on: 11.08.2014
  *      Author: Marcel Radermacher
+ *      Changed a bit by Henning Meyerhenke to reflect union by rank and path compression
+ *        as taught in "Algorithms 1"
  */
 
 #ifndef UNIONFIND_H_
@@ -16,19 +18,22 @@ namespace NetworKit {
 
 /**
  * @ingroup structures
- * Implements the Union Find Datastructure to maintain disjoint sets efficiently.
+ * Implements the Union Find data structure to maintain disjoint sets efficiently.
+ * Uses path compression and union by rank to achieve running time linear in
+ * the number of elements times the inverse Ackermann function.
  */
 class UnionFind {
 private:
-	std::vector<int> data;
+	std::vector<index> parent;
+	std::vector<unsigned char> rank;
 public:
 		
 	/**
 	 * Create a new set representation with not more the @max_element elements.
-	 * Initialy every element is in its own set.
+	 * Initially every element is in its own set.
 	 * @param max_element maximum number of elements 
 	 */
-	UnionFind(index max_element) : data(max_element) {
+	UnionFind(index max_element) : parent(max_element), rank(max_element, 0) {
 		allToSingletons();
 	}
 
@@ -40,9 +45,9 @@ public:
 	void allToSingletons();
 
 	/**
-	 * Find the represetive to element @u
+	 * Find the representative to element @u
 	 * @param u element
-	 * @return representive of set containing @u
+	 * @return representative of set containing @u
 	 */	
 	index find(index u);
 	
@@ -54,8 +59,8 @@ public:
 	void merge(index u, index v);
 
 	/**
-	 * Convert the Union Find Datastructure to a Partition
-	 * @return Partiion equivalent of the union find datastructure
+	 * Convert the Union Find data structure to a Partition
+	 * @return Partition equivalent to the union find data structure
 	 * */	
 	Partition toPartition();
 };

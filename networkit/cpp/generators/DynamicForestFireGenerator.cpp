@@ -16,7 +16,7 @@ namespace NetworKit {
 
 typedef std::function<std::vector<node>(node)> neighborFunction;
 
-DynamicForestFireGenerator::DynamicForestFireGenerator(double p, bool directed, double r) :p(p), directed(directed), firstCall(true) {
+DynamicForestFireGenerator::DynamicForestFireGenerator(double p, bool directed, double r) :p(p), directed(directed), r(r), firstCall(true) {
 	G = Graph(0, false, directed);
 }
 
@@ -37,7 +37,7 @@ std::vector<GraphEvent> DynamicForestFireGenerator::generate(count nSteps) {
 		 * and the new node will connect to
 		 */
 		std::vector<node> burnedNodes;
-	
+
 		auto forwardNeighbors = [&](node u) {
 			std::vector<node> validEdges;
 			G.forNeighborsOf(u, [&](node x){
@@ -47,17 +47,17 @@ std::vector<GraphEvent> DynamicForestFireGenerator::generate(count nSteps) {
 			});
 			return validEdges;
 		};
-	
+
 		auto backwardNeighbors = [&](node u) {
 			std::vector<node> validEdges;
-			G.forInNeighborsOf(u, [&](node x){
+			G.forInNeighborsOf(u, [&](node u, node x){
 				if (! visited[x]) {
 					validEdges.push_back(x);
 				}
 			});
 			return validEdges;
 		};
-		
+
 		// select "edges" of node u
 		auto selectEdges = [&](node u, double prob, neighborFunction getNeighbors) {
 			/* combine all valid edges (edges to non-visited nodes)
@@ -66,7 +66,7 @@ std::vector<GraphEvent> DynamicForestFireGenerator::generate(count nSteps) {
 			std::vector<node> validEdges = getNeighbors(u);
 			std::set<node> edges;
 			while (true) {
-				/* get geometric distribution by burning edges 
+				/* get geometric distribution by burning edges
 				 * until first failure
 				 */
 				double q = Aux::Random::real(1.0);
@@ -97,7 +97,7 @@ std::vector<GraphEvent> DynamicForestFireGenerator::generate(count nSteps) {
 		visited[a] = true;
 		activeNodes.push(a);
 		burnedNodes.push_back(a);
-		
+
 		// burn through the graph in a BFS-like fashion
 		while (! activeNodes.empty()) {
 			node w = activeNodes.front();
@@ -121,11 +121,12 @@ std::vector<GraphEvent> DynamicForestFireGenerator::generate(count nSteps) {
 	};
 
 	// initial graph
-	if (firstCall) {
+	if (firstCall && nSteps > 0) {
 		node s = G.addNode();
 	 	stream.push_back(GraphEvent(GraphEvent::NODE_ADDITION, s));
 		stream.push_back(GraphEvent(GraphEvent::TIME_STEP));
 		firstCall = false;
+		--nSteps;
 	}
 
 
@@ -133,10 +134,9 @@ std::vector<GraphEvent> DynamicForestFireGenerator::generate(count nSteps) {
 		connectNewNode();
 		stream.push_back(GraphEvent(GraphEvent::TIME_STEP));
 	}
-	
+
 	return stream;
 }
 
 
 } /* namespace NetworKit */
-

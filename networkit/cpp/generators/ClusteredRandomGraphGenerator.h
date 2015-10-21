@@ -9,6 +9,7 @@
 #define CLUSTEREDRANDOMGRAPHGENERATOR_H_
 
 #include "StaticGraphGenerator.h"
+#include "../structures/Partition.h"
 
 namespace NetworKit {
 
@@ -36,12 +37,19 @@ public:
 	 */
 	Graph generate() override;
 
+	/**
+	 * Returns the generated ground truth communities.
+	 * @return The generated partition
+	 */
+	Partition getCommunities();
+
 private:
 
 	count n;
 	count k;
 	double pin;
 	double pout;
+	Partition zeta;
 };
 
 } /* namespace NetworKit */

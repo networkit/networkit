@@ -7,7 +7,7 @@
 
 #include "Lamg.h"
 
-#include "../../properties/ConnectedComponents.h"
+#include "../../components/ConnectedComponents.h"
 #include "../GaussSeidelRelaxation.h"
 
 namespace NetworKit {

@@ -3,9 +3,11 @@ to the network """
 
 
 __author__ = "Christian Staudt"
+__credits__ = ["Christian Staudt", "Elisabetta Bergamini", "Henning Meyerhenke", "Marc Nemes", "Maximilian Vogel"]
 
 # extension imports
-from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2, DynBetweenness, DynApproxBetweenness
+# TODO: (+) ApproxCloseness
+from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2,  DynApproxBetweenness, Closeness, KPathCentrality, CoreDecomposition, KatzCentrality, LocalClusteringCoefficient, ApproxCloseness
 
 
 # local imports
@@ -28,37 +30,61 @@ def scores(G, algorithm=Betweenness, normalized=False):
 	return centrality.scores()
 
 
-def centralization(G, centralityMeasure):
-	"""
-	Compute the centralization of a network with respect to some centrality measure.
 
-	The centralization of any network is a measure of how central its most central
-	node is in relation to how central all the other nodes are.
-	Centralization measures then (a) calculate the sum in differences
-	in centrality between the most central node in a network and all other nodes;
-	and (b) divide this quantity by the theoretically largest such sum of
-	differences in any network of the same size.
+def rankPerNode(ranking):
+	"""
+	Parameters
+	----------
+ 	ranking: ordered list of tuples (node, score)
+
+	Returns
+	_______
+	for each node (sorted by node ID), the ranking of the node
+
+	"""
+	n_nodes = len(ranking)
+	ranking_id = [0]*n_nodes
+	for index, pair in enumerate(ranking):
+		ranking_id[pair[0]] = index
+	#we assign to all nodes the ranking of the first node with the same score
+	for index, pair in enumerate(ranking):
+			if index == 0:
+				continue
+			if pair[1] == ranking[index-1][1]:
+				prev_node = ranking[index-1][0]
+				ranking_id[pair[0]] = ranking_id[prev_node]
+	return ranking_id
+
+
+def relativeRankErrors(rx, ry):
+	"""
+	Let $r_x(u)$ be the rank of node $u$ in ranking $x$.
+	The relative rank error of node $u$ is defined as
+		$$r_x(u) / r_y(u)$$
+
 
 	Parameters
 	----------
-	G : graph
-		The graph of which to compute the centrality
-	centralityMeasure : instance of Centrality (sub)class
-				initialized algorithm object will be run
+	rx : list
+		ranking - ordered list of tuples (node, score)
+
+	ry:  list
+		ranking - ordered list of tuples (node, score)
 
 	Returns
-	-------
-	double
-		centralization score
+	_______
+	list of rank errors ordered by node ID
 
 	"""
-	centralityMeasure.run()
-	ranking = centralityMeasure.ranking()
-	(center, centerScore) = ranking[0]
-	maxScore = centralityMeasure.maximum()
-	diff1 = sum([(centerScore - c) for (u, c) in ranking])
-	diff2 = sum([(maxScore - c) for (u, c) in ranking])
-	return diff1 / diff2
+	diff = []
+	n = len(rx)
+	if not(n == len(ry)):
+		return diff
+	rnode_x = rankPerNode(rx)
+	rnode_y = rankPerNode(ry)
+	for i in range(n):
+		diff.append((rnode_x[i]+1)/(rnode_y[i]+1))
+	return diff
 
 
 class SpectralCentrality:
@@ -73,7 +99,7 @@ class SpectralCentrality:
 		Parameters
 		----------
 		G : graph
-		    The graph of which to compute the centrality
+			The graph of which to compute the centrality
 		normalized : boolean
 					 Whether to normalize the results or not
 
@@ -85,6 +111,7 @@ class SpectralCentrality:
 
 		self.scoreList = None
 		self.rankList = None
+		self.evz = {}
 
 	def prepareSpectrum(self):
 		""" Method that must be implemented to set the following values:
@@ -111,23 +138,35 @@ class SpectralCentrality:
 
 		for v in self.graph.nodes():
 			self.evz[v] = self.eigenvector[v] * normFactor
+		return self
 
 	def scores(self):
 		if self.scoreList is None:
-			self.scoreList = [abs(self.evz[v]) for v in self.graph.nodes()] # TODO bad! This depends on iteration order...
+			self.scoreList = [v for k,v in self.evz.items()]
 
 		return self.scoreList
 
 	def ranking(self):
 		if self.rankList is None:
-			self.rankList = [(v, abs(self.evz[v])) for v in self.graph.nodes()]
-			self.rankList.sort(key=lambda x: float(x[1]), reverse=True)
-
+			self.rankList = sorted(self.evz.items(),key=lambda x: float(x[1]), reverse=True)
 		return self.rankList
 
 
 class SciPyEVZ(SpectralCentrality):
+	"""
+	Compute Eigenvector centrality using algebraic meh
+
+	Parameters
+	----------
+	G : graph
+		The graph of which to compute the centrality
+	normalized : boolean
+				 Whether to normalize the results or not
+
+	"""
 	def __init__(self, G, normalized=False):
+		if G.isDirected():
+			raise NotImplementedError("Not implemented for directed graphs; use centrality.EigenvectorCentrality instead")
 		super(SciPyEVZ, self).__init__(G, normalized=normalized)
 
 	def _length(self, vector):
@@ -143,6 +182,7 @@ class SciPyEVZ(SpectralCentrality):
 		self.eigenvalue = spectrum[0]
 
 class SciPyPageRank(SpectralCentrality):
+	# TODO: docstring
 	def __init__(self, G, damp=0.95, normalized=False):
 		super(SciPyPageRank, self).__init__(G, normalized=normalized)
 

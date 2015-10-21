@@ -25,8 +25,17 @@ private:
 
 
 public:
+	/**
+	 * Constructor to the degree ordered label propagation community detection algorithm.
+	 *
+	 * @param[in]	G	input graph
+	 */
+	LPDegreeOrdered(const Graph& G);
 
-	virtual Partition run(const Graph& G);
+	/**
+	 * Detect communities.
+	 */
+	virtual void run();
 
 	/**
 	* Get number of iterations in last run.
@@ -34,6 +43,8 @@ public:
 	* @return Number of iterations.
 	*/
 	virtual count numberOfIterations();
+
+	virtual std::string toString();
 
 };
 
