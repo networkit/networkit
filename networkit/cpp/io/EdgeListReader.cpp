@@ -55,6 +55,7 @@ Graph EdgeListReader::readContinuous(const std::string& path) {
 	while (file.good()) {
 		++i;
 		std::getline(file, line);
+		if(*line.rbegin() == '\r') line.pop_back();
 		// TRACE("read line: " , line);
 		if (line.compare(0, this->commentPrefix.length(), this->commentPrefix) == 0) {
 			// TRACE("ignoring comment: " , line);
@@ -101,6 +102,7 @@ Graph EdgeListReader::readContinuous(const std::string& path) {
 	// split the line into start and end node. since the edges are sorted, the start node has the highest id of all nodes
 	i = 0; // count lines
 	while(std::getline(file,line)){
+		if(*line.rbegin() == '\r') line.pop_back();
 		++i;
 		if (line.compare(0, this->commentPrefix.length(), this->commentPrefix) == 0) {
 			// TRACE("ignoring comment: " , line);
@@ -152,6 +154,7 @@ Graph EdgeListReader::readNonContinuous(const std::string& path) {
 	while (file.good()) {
 		++i;
 		std::getline(file, line);
+		if(*line.rbegin() == '\r') line.pop_back();
 		// TRACE("read line: " , line);
 		if (line.compare(0, this->commentPrefix.length(), this->commentPrefix) == 0) {
 			// TRACE("ignoring comment: " , line);
@@ -192,7 +195,8 @@ Graph EdgeListReader::readNonContinuous(const std::string& path) {
 	// split the line into start and end node. since the edges are sorted, the start node has the highest id of all nodes
 	i = 0; // count lines
 	while(std::getline(file,line)){
-        	++i;
+		if(*line.rbegin() == '\r') line.pop_back();
+        ++i;
 		if (line.compare(0, this->commentPrefix.length(), this->commentPrefix) == 0) {
 			// TRACE("ignoring comment: " , line);
 		} else {
