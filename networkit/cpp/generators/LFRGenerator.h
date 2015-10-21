@@ -4,6 +4,7 @@
 #include "../graph/Graph.h"
 #include "../structures/Partition.h"
 #include "../base/Algorithm.h"
+#include "StaticGraphGenerator.h"
 
 namespace NetworKit {
 
@@ -19,7 +20,7 @@ namespace NetworKit {
  *
  * The edge-switching markov-chain algorithm implementation in NetworKit is used which is different from the implementation in the original LFR benchmark.
  */
-class LFRGenerator : public Algorithm {
+class LFRGenerator : public Algorithm, public StaticGraphGenerator {
 public:
 	/**
 	 * Initialize the LFR generator for @a n nodes.
@@ -96,6 +97,13 @@ public:
 	 * Generates the graph and the community structure.
 	 */
 	virtual void run() override;
+
+	/**
+	 * Generates and returns the graph.
+	 *
+	 * @return The generated graph.
+	 */
+	virtual Graph generate() override;
 
 	/**
 	 * Returns (a copy of) the generated graph.

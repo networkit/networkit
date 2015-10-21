@@ -2249,6 +2249,7 @@ cdef extern from "cpp/generators/LFRGenerator.h":
 		void setMuWithBinomialDistribution(double mu) nogil except +
 		_Graph getGraph() except +
 		_Partition getPartition() except +
+		_Graph generate() except +
 
 cdef class LFRGenerator(Algorithm):
 	"""
@@ -2382,12 +2383,33 @@ cdef class LFRGenerator(Algorithm):
 	def getGraph(self):
 		"""
 		Return the generated Graph.
+
+		Returns
+		-------
+		Graph
+			The generated graph.
 		"""
 		return Graph().setThis((<_LFRGenerator*>(self._this)).getGraph())
+
+	def generate(self):
+		"""
+		Generates and returns the graph. Wrapper for the StaticGraphGenerator interface.
+
+		Returns
+		-------
+		Graph
+			The generated graph.
+		"""
+		return Graph().setThis((<_LFRGenerator*>(self._this)).generate())
 
 	def getPartition(self):
 		"""
 		Return the generated Partiton.
+
+		Returns
+		-------
+		Partition
+			The generated partition.
 		"""
 		return Partition().setThis((<_LFRGenerator*>(self._this)).getPartition())
 
