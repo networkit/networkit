@@ -26,7 +26,7 @@ TEST(SnapConverter, convert) {
 		filePath = "/Users/Michael/Downloads/SNAP/" + filePath;
 		INFO("Reading ", filePath);
 		Graph G = snapReader.read(filePath);
-		string newFilePath = filePath.substr(0, filePath.find_last_not_of("."));
+		string newFilePath = filePath.substr(0, filePath.find_last_of("."));
 		metisWriter.write(G, newFilePath + ".graph");
 	}
 }

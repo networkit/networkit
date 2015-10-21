@@ -346,6 +346,15 @@ Graph CSRMatrix::laplacianToGraph(const CSRMatrix &laplacian) {
 	return G;
 }
 
+Graph CSRMatrix::matrixToGraph(const CSRMatrix &matrix) {
+	Graph G(std::max(matrix.numberOfRows(), matrix.numberOfColumns()), true, true);
+	matrix.forNonZeroElementsInRowOrder([&](node u, node v, edgeweight weight) {
+		G.addEdge(u, v, weight);
+	});
+
+	return G;
+}
+
 CSRMatrix CSRMatrix::transpose() const {
 //	Matrix transposedMatrix(numberOfColumns(), numberOfRows());
 //	parallelForNonZeroElementsInRowOrder([&](index i, index j, edgeweight weight){

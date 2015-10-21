@@ -16,11 +16,7 @@ LinearSolver::~LinearSolver(){
 }
 
 void LinearSolver::setup(const Graph &graph) {
-	setup(LaplacianMatrix(graph));
-}
-
-bool LinearSolver::isConverged(const Vector &residual) const {
-	return residual.length() <= tolerance;
+	setup(CSRMatrix::graphLaplacian(graph));
 }
 
 } /* namespace NetworKit */

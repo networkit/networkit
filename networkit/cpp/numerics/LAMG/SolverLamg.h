@@ -67,6 +67,16 @@ public:
 	 */
 	SolverLamg(LevelHierarchy &hierarchy, const Smoother &smoother);
 
+	SolverLamg (const SolverLamg &other) = default;
+
+	SolverLamg (SolverLamg &&other) = default;
+
+	virtual ~SolverLamg() = default;
+
+	SolverLamg& operator=(SolverLamg &&other) = default;
+
+	SolverLamg& operator=(const SolverLamg &other) = default;
+
 	/**
 	 * Solves the system A*x = b for the given initial @a x and right-hand side @a b. More parameters can be specified
 	 * in @a status and additional output is also stored in @a status. After the solver finished, the approximate

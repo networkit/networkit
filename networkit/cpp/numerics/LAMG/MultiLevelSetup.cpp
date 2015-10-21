@@ -608,8 +608,7 @@ bool MultiLevelSetup::isRelaxationFast(const CSRMatrix &A, index lvlIndex, Vecto
 	tv = smoother.relax(A, b, x, tvNu - initial);
 	Vector y = smoother.relax(A, b, tv, nu - tvNu);
 	double relaxAcf = std::pow((y - y.mean()).length() / (x - x.mean()).length(), (double) 1.0 / (double) (nu - initial));
-
-	return relaxAcf <= SETUP_MAX_COARSE_RELAX_ACF;
+	return relaxAcf <= SETUP_MAX_COARSE_RELAX_ACF || !canCoarsen(A);
 }
 
 void MultiLevelSetup::galerkinOperator(const CSRMatrix &P, const CSRMatrix &A, const std::vector<index> &PColIndex, const std::vector<std::vector<index>> &PRowIndex, CSRMatrix &B) const {

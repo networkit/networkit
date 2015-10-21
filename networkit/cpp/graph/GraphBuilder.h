@@ -166,7 +166,7 @@ private:
 template <typename T>
 void GraphBuilder::copyAndClear(std::vector<T>& source, std::vector<T>& target) {
 	std::copy(source.begin(), source.end(), std::back_inserter(target));
-	source.clear();	
+	source.clear();
 }
 
 template<typename L>
