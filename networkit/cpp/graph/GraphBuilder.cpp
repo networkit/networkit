@@ -161,7 +161,7 @@ void GraphBuilder::toGraphParallel(Graph &G) {
 			if (weighted) {
 				for (int tid = 0; tid < maxThreads; tid++) {
 					copyAndClear(inWeightsPerThread[tid][v], G.inEdgeWeights[v]);
-				}	
+				}
 			}
 		} else {
 			G.outDeg[v] = inDeg + outDeg;
@@ -273,7 +273,7 @@ void GraphBuilder::toGraphSequential(Graph &G) {
 		});
 	}
 
-	// calculate correct m	
+	// calculate correct m
 	correctNumberOfEdges(G, numberOfSelfLoops);
 
 	// bring the builder into an empty, but valid state

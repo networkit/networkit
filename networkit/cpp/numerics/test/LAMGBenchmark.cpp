@@ -22,6 +22,7 @@
 #include "../../io/METISGraphReader.h"
 #include "../../io/MatrixMarketReader.h"
 #include "../GaussSeidelRelaxation.h"
+#include "../LAMG/Lamg.h"
 
 using namespace std;
 
@@ -121,6 +122,14 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		1e-6,
 		GAUSS_SEIDEL,
 		WALSHAW
+	},
+	{ // 9
+		"Snap",
+		10,
+		5,
+		1e-6,
+		GAUSS_SEIDEL,
+		SNAP
 	}
 };
 
@@ -406,12 +415,24 @@ string printTableRow(const vector<LAMGSolverStatus> &solverStati, double avgSetu
 	return ss.str();
 }
 
+string printTableRow(const SolverStatus &status, double avgSetupTime, double avgSolveTime) {
+	stringstream ss;
+	ss.precision(16);
+
+	double numIters = status.numIters;
+	double finalResidual = status.residual;
+
+	ss << numprint(avgSetupTime) << " & " << numprint(avgSolveTime) << " & " << numprint(numIters) << " & " << numprint(finalResidual, true) << " \\\\ \n";
+
+	return ss.str();
+}
+
 void outputPlotData(const LAMGSolverStatus &status, const string &filename) {
 	ofstream output;
 	output.open(filename);
 	output << setprecision(16);
 	std::vector<double> residualHistory = status.residualHistory;
-	for (int i = 0; i < residualHistory.size(); ++i) {
+	for (index i = 0; i < residualHistory.size(); ++i) {
 		output << i << "\t" << residualHistory[i] << endl;
 	}
 
@@ -425,25 +446,19 @@ string benchmark(const CSRMatrix &matrix, const Vector &initialX, const Vector &
 
 	count setupTime = 0;
 	count solveTime = 0;
-	vector<LAMGSolverStatus> solverStati(numSetups * numSolvesPerSetup);
 
+	Lamg lamg(desiredResidual);
+	SolverStatus status;
 	for (index i = 0; i < numSetups; ++i) {
-		MultiLevelSetup setup(smoother);
-		LevelHierarchy hierarchy;
-
 		tSetup.start();
-			setup.setup(matrix, hierarchy);
-			SolverLamg solver(hierarchy, smoother);
+			lamg.setup(matrix);
 		tSetup.stop();
 		setupTime += tSetup.elapsedMilliseconds();
 
 		for (index j = 0; j < numSolvesPerSetup; ++j) {
 			Vector x = initialX;
-			solverStati[i * numSolvesPerSetup + j].maxConvergenceTime = MAX_CONVERGENCE_TIME;
-			solverStati[i * numSolvesPerSetup + j].desiredResidualReduction = desiredResidual;
-
 			tSolve.start();
-				solver.solve(x, b, solverStati[i * numSolvesPerSetup + j]);
+				status = lamg.solve(b, x, MAX_CONVERGENCE_TIME);
 			tSolve.stop();
 			solveTime += tSolve.elapsedMilliseconds();
 		}
@@ -454,7 +469,103 @@ string benchmark(const CSRMatrix &matrix, const Vector &initialX, const Vector &
 
 	stringstream ss;
 	ss << graphPath.substr(0, graphPath.find_last_of(".")) << ".plot";
-	outputPlotData(solverStati[0], ss.str());
+	//outputPlotData(solverStati[0], ss.str());
+
+	return printTableRow(status, avgSetupTime, avgSolveTime);
+}
+
+string benchmarkDisconnected(const Graph &G, Partition &partition, const Vector &initialX, const Vector &b, const string &graphPath, count numSetups, count numSolvesPerSetup, const Smoother &smoother, double desiredResidual) {
+	Aux::Timer tSetup;
+	Aux::Timer tSolve;
+
+	count setupTime = 0;
+	count solveTime = 0;
+
+	tSetup.start();
+	vector<set<index>> components;
+	for (index id : partition.getSubsetIds()) {
+		components.push_back(partition.getMembers(id));
+	}
+	vector<index> graphToSubGraph(G.numberOfNodes());
+	vector<vector<index>> subGraphToGraph(components.size());
+
+	vector<CSRMatrix> compMatrices(components.size());
+	vector<Vector> initialVecs(components.size());
+	vector<Vector> bs(components.size());
+
+	for (index i = 0; i < components.size(); ++i) {
+		set<index> component = components[i];
+
+		vector<pair<index,index>> positions;
+		vector<double> values;
+		subGraphToGraph[i] = vector<index>(component.size());
+
+		index idx = 0;
+		for (node u : component) {
+			graphToSubGraph[u] = idx;
+			subGraphToGraph[i][idx] = u;
+			initialVecs[i][idx] = initialX[u];
+			bs[i][idx] = b[u];
+			idx++;
+		}
+
+		for (node u : component) {
+			G.forNeighborsOf(u, [&](node v, edgeweight w) {
+				positions.push_back(make_pair(u,v));
+				values.push_back(w);
+			});
+		}
+
+		compMatrices[i] = CSRMatrix(component.size(), component.size(), positions, values);
+	}
+
+	tSetup.stop();
+	setupTime += tSetup.elapsedMilliseconds();
+
+	vector<LAMGSolverStatus> solverStati(numSetups * numSolvesPerSetup);
+
+	vector<MultiLevelSetup> setups(components.size(), MultiLevelSetup(smoother));
+	vector<LevelHierarchy> hierarchies(components.size());
+	vector<Vector> xRes(components.size());
+	double residual = 0.0;
+	for (index i = 0; i < numSetups; ++i) {
+		vector<SolverLamg> solvers;
+
+		for (index k = 0; k < components.size(); ++k) {
+			tSetup.start();
+			setups[k].setup(compMatrices[k], hierarchies[k]);
+			solvers.push_back(SolverLamg(hierarchies[k], smoother));
+			tSetup.stop();
+			setupTime += tSetup.elapsedMilliseconds();
+		}
+
+		for (index j = 0; j < numSolvesPerSetup; ++j) {
+			for (index k = 0; k < components.size(); ++k) {
+				solverStati[i * numSolvesPerSetup + j].maxConvergenceTime = MAX_CONVERGENCE_TIME;
+				solverStati[i * numSolvesPerSetup + j].desiredResidualReduction = desiredResidual * components[k].size() / G.numberOfNodes();
+				xRes[k] = initialVecs[k];
+
+				tSolve.start();
+				solvers[k].solve(xRes[k], bs[k], solverStati[i * numSolvesPerSetup + j]);
+				tSolve.stop();
+				solveTime += tSolve.elapsedMilliseconds();
+			}
+		}
+
+		Vector x(G.numberOfNodes());
+		for (index k = 0; k < components.size(); ++k) {
+			for (index i = 0; i < components[i].size(); ++i) {
+				x[subGraphToGraph[k][i]] = xRes[k][i];
+			}
+		}
+
+		CSRMatrix A = CSRMatrix::adjacencyMatrix(G);
+		residual = (b - A*x).length();
+	}
+
+	double avgSetupTime = (double) setupTime / (double) numSetups;
+	double avgSolveTime = (double) solveTime / (double) (numSetups*numSolvesPerSetup);
+	INFO("tSetup = ", avgSetupTime, " tSolve = ", avgSolveTime, " res = ", residual);
 
 	return printTableRow(solverStati, avgSetupTime, avgSolveTime);
 }
@@ -509,15 +620,19 @@ string benchmark(Benchmark &bench) {
 
 		INFO(graphFile);
 
-		Graph Gcheck = matrixToGraph(L);
-		ConnectedComponents con(Gcheck);
-		con.run();
-		if (con.numberOfComponents() == 1) { // LAMG solver currently only supports connected graphs
+//		Graph Gcheck = matrixToGraph(L);
+//		ConnectedComponents con(Gcheck);
+//		con.run();
+//		if (con.numberOfComponents() == 1) { // LAMG solver currently only supports connected graphs
 			output += benchmark(L, x, b, G.getName(), bench.setupTries, bench.solveTriesPerSetup, *smoother, bench.residual);
-			INFO(output);
-		} else {
-			output += " -  & - & - & - \\\\ \n";
-		}
+//			INFO(output);
+//		} else {
+//			INFO("not connected");
+//			Partition p = con.getPartition();
+//			output += benchmarkDisconnected(G, p, x, b, G.getName(), bench.setupTries, bench.solveTriesPerSetup, *smoother, bench.residual);
+//
+//			//output += " -  & - & - & - \\\\ \n";
+//		}
 		ss.str("");
 	}
 
@@ -531,7 +646,7 @@ TEST_F(LAMGBenchmark, bench) {
 	string texContent = printLatexDocumentHeader();
 	stringstream ss;
 
-	Benchmark bench = BENCHS[5]; // walshaw
+	Benchmark bench = BENCHS[9]; // snap
 	texContent += benchmark(bench);
 	ss << bench.name;
 

@@ -2,7 +2,7 @@
  * SnapConverter.h
  *
  *  Created on: Sep 29, 2015
- *      Author: Michael
+ *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
 #ifndef NETWORKIT_CPP_NUMERICS_TEST_SNAPCONVERTER_H_

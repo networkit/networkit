@@ -168,6 +168,8 @@ public:
 
 	static Graph laplacianToGraph(const CSRMatrix &laplacian);
 
+	static Graph matrixToGraph(const CSRMatrix &matrix);
+
 	CSRMatrix transpose() const;
 
 	/**

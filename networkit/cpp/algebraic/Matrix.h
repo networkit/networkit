@@ -199,8 +199,6 @@ public:
 
 	static Vector mTvMultiply(const Matrix &matrix, const Vector &vector);
 
-//	static Matrix mmTMultiply(const Matrix &A, const Matrix &B);
-
 	Matrix transpose() const;
 
 	/**

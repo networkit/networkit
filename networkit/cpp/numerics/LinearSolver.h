@@ -8,12 +8,19 @@
 #ifndef LINEARSOLVER_H_
 #define LINEARSOLVER_H_
 
-#include "../algebraic/Matrix.h"
+#include "../algebraic/CSRMatrix.h"
 #include "../algebraic/LaplacianMatrix.h"
 #include "../algebraic/Vector.h"
 #include "../graph/Graph.h"
+#include <limits>
 
 namespace NetworKit {
+
+struct SolverStatus {
+	count numIters; // number of iterations needed during solve phase
+	double residual; // absolute final residual
+	bool converged; // flag of conversion status
+};
 
 class LinearSolver {
 protected:
@@ -23,13 +30,11 @@ public:
 	LinearSolver(const double tolerance);
 	virtual ~LinearSolver();
 
-	virtual void setup(const Matrix &matrix) = 0;
+	virtual void setup(const CSRMatrix &matrix) = 0;
 	virtual void setup(const Graph &graph);
 
 
-	virtual bool solve(const Vector &rhs, Vector &result, count maxIterations = 20) = 0;
-
-	bool isConverged(const Vector &residual) const;
+	virtual SolverStatus solve(const Vector &rhs, Vector &result, count maxConvergenceTime = 5 * 60 * 1000, count maxIterations = std::numeric_limits<count>::max()) = 0;
 };
 
 } /* namespace NetworKit */
