@@ -58,14 +58,14 @@ public:
 	 * of seconds from the instance creation until stop() was called.
 	 */
 	virtual uint64_t elapsedMilliseconds() const;
-	
+
 	/**
 	 * The number of microseconds since the current time that the Timer
 	 * object was created. If stop() was called, it is the number
 	 * of seconds from the instance creation until stop() was called.
 	 */
 	virtual uint64_t elapsedMicroseconds();
-	
+
 	/**
 	 * The number of nanoseconds since the current time that the Timer
 	 * object was created. If stop() was called, it is the number

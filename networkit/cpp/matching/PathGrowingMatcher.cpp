@@ -96,4 +96,3 @@ Matching PathGrowingMatcher::run() {
 }
 
 } /* namespace NetworKit */
-

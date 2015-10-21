@@ -25,6 +25,52 @@
 
 namespace NetworKit {
 
+
+/**
+ * A weighted edge used for the graph constructor with
+ * initializer list syntax.
+ */
+struct WeightedEdge {
+  node u, v;
+  edgeweight weight;
+
+  WeightedEdge(node u, node v, edgeweight w) : u(u), v(v), weight(w) {
+  }
+};
+inline bool operator<(const WeightedEdge& e1, const WeightedEdge& e2) {
+  return e1.weight < e2.weight;
+}
+struct Edge {
+  node u, v;
+
+  Edge(node _u, node _v, bool sorted = false) {
+    if (sorted) {
+      u = std::min(_u, _v);
+      v = std::max(_u, _v);
+    } else {
+      u = _u;
+      v = _v;
+    }
+  }
+};
+inline bool operator==(const Edge& e1, const Edge& e2) {
+  return e1.u == e2.u && e1.v == e2.v;
+}
+}
+
+namespace std {
+  template<>
+  struct hash<NetworKit::Edge> {
+    size_t operator()(const NetworKit::Edge& e) const {
+      return hash_node(e.u) ^ hash_node(e.v);
+    }
+
+    hash<NetworKit::node> hash_node;
+  };
+}
+
+namespace NetworKit {
+
 /**
  * @ingroup graph
  * A graph (with optional weights) and parallel iterator methods.
@@ -318,6 +364,16 @@ public:
 	Graph(count n = 0, bool weighted = false, bool directed = false);
 
 	Graph(const Graph& G, bool weighted, bool directed);
+
+	Graph(count n, const std::vector<std::pair<node, node>> &edges, const std::vector<edgeweight> &weights);
+
+	/**
+	   * Generate a weighted graph from a list of edges. (Useful for small
+	   * graphs in unit tests that you do not want to read from a file.)
+	   *
+	   * @param[in] edges list of weighted edges
+	   */
+	  Graph(std::initializer_list<WeightedEdge> edges);
 
 
 	/**

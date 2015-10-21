@@ -53,6 +53,56 @@ Graph::Graph(count n, bool weighted, bool directed) :
 	name = sstm.str();
 }
 
+Graph::Graph(count n, const std::vector<std::pair<node, node>> &edges, const std::vector<edgeweight> &weights) : Graph(n, true, true) {
+	for (std::pair<node, node> edge : edges) {
+		outDeg[edge.first]++;
+		inDeg[edge.second]++;
+		m++;
+	}
+
+#pragma omp parallel for
+	for (index i = 0; i < n; ++i) {
+		outEdges[i] = std::vector<node>(outDeg[i], 0);
+		outEdgeWeights[i] = std::vector<edgeweight>(outDeg[i], 0);
+		inEdges[i] = std::vector<node>(inDeg[i], 0);
+		inEdgeWeights[i] = std::vector<edgeweight>(inDeg[i], 0);
+	}
+
+	std::vector<index> outIdx(n, 0);
+	std::vector<index> inIdx(n, 0);
+	for (index k = 0; k < edges.size(); ++k) {
+		std::pair<node, node> edge = edges[k];
+		node u = edge.first;
+		node v = edge.second;
+
+		outEdges[u][outIdx[u]] = v;
+		outEdgeWeights[u][outIdx[u]] = weights[k];
+
+		inEdges[v][inIdx[v]] = u;
+		inEdgeWeights[v][inIdx[v]] = weights[k];
+
+		outIdx[u]++;
+		inIdx[v]++;
+	}
+}
+
+Graph::Graph(std::initializer_list<WeightedEdge> edges) : Graph(0, true) {
+  using namespace std;
+
+  /* Number of nodes = highest node index + 1 */
+  for (const auto& edge: edges) {
+    node x = max(edge.u, edge.v);
+    while (numberOfNodes() <= x) {
+      addNode();
+    }
+  }
+
+  /* Now add all of the edges */
+  for (const auto& edge: edges) {
+    addEdge(edge.u, edge.v, edge.weight);
+  }
+}
+
 Graph::Graph(const Graph& G, bool weighted, bool directed) :
 	n(G.n),
 	m(G.m),

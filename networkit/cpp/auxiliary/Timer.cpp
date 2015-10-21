@@ -55,4 +55,3 @@ std::string Timer::elapsedTag() {
 
 
 } /* namespace Aux */
-
