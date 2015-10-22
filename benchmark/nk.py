@@ -3,7 +3,7 @@ import networkit
 from util import *
 import base
 
-framework = "(nk)"
+framework = "networkit"
 
 # - connected components (properties.ConnectedComponents, properties.ParallelConnectedComponents)
 
@@ -19,7 +19,7 @@ class Algo(base.Algo):
 		return G
 
 class bConnectedComponents(Algo):
-	name = "ConnectedComponents" + framework
+	name = "ConnectedComponents"
 
 	def run(self, G):
 		cc = networkit.properties.ConnectedComponents(G)
@@ -30,14 +30,14 @@ class bConnectedComponents(Algo):
 # - k-core decomposition (properties.CoreDecomposition)
 
 class bCoreDecomposition(Algo):
-	name = "CoreDecomposition" + framework
+	name = "CoreDecomposition"
 
 	def run(self, G):
 		cd = networkit.centrality.CoreDecomposition(G)
 		cd.run()
 
 class bCoreDecompositionSeq(Algo):
-	name = "CoreDecompositionSeq" + framework
+	name = "CoreDecompositionSeq"
 
 	def run(self, G):
 		cd = networkit.centrality.CoreDecomposition(G, enforceBucketQueueAlgorithm=True)
@@ -46,7 +46,7 @@ class bCoreDecompositionSeq(Algo):
 
 # - BFS & Dijkstra (graph.BFS, graph.Dijkstra)
 class bBFS(Algo):
-	name = "BFS" + framework
+	name = "BFS"
 
 	def run(self, G):
 		bfs = networkit.graph.BFS(G, G.randomNode(), storePaths=False)
@@ -56,14 +56,14 @@ class bBFS(Algo):
 # - community detection (community.PLM, community.PLP)
 
 class bCommunityDetectionLM(Algo):
-	name = "CommunityDetectionLM" + framework
+	name = "CommunityDetectionLM"
 
 	def run(self, G):
 		plm = networkit.community.PLM(G, turbo=True)
 		plm.run()
 
 class bCommunityDetectionLP(Algo):
-	name = "CommunityDetectionLP" + framework
+	name = "CommunityDetectionLP"
 
 	def run(self, G):
 		plm = networkit.community.PLP(G)
@@ -72,14 +72,14 @@ class bCommunityDetectionLP(Algo):
 # - diameter, exact (properties.Diameter.exactDiameter) and estimate (properties.Diameter.estimatedDiameterRange)
 
 class bDiameter(Algo):
-	name = "Diameter" + framework
+	name = "Diameter"
 
 	def run(self, G):
 		return networkit.properties.Diameter.exactDiameter(G)
 
 
 class bDiameterEstimate(Algo):
-	name = "DiameterEstimate" + framework
+	name = "DiameterEstimate"
 
 	def run(self, G):
 		return networkit.properties.Diameter.estimatedDiameterRange(G)
@@ -87,14 +87,14 @@ class bDiameterEstimate(Algo):
 # - clustering coefficients (average local), exact (properties.ClusteringCoefficient.avgLocal) and approximated (properties.ClusteringCoefficient.approxAvgLocal)
 
 class bClusteringCoefficient(Algo):
-	name = "ClusteringCoefficient" + framework
+	name = "ClusteringCoefficient"
 
 	def run(self, G):
 		networkit.centrality.LocalClusteringCoefficient(G).run()
 
 
 class bApproxClusteringCoefficient(Algo):
-	name = "ClusteringCoefficientApprox" + framework
+	name = "ClusteringCoefficientApprox"
 
 	def run(self, G):
 		# TODO: specify number of trials
@@ -108,7 +108,7 @@ class bApproxClusteringCoefficient(Algo):
 # 	- PageRank (centrality.PageRank, centrality.SciPyPageRank)
 
 class bPageRank(Algo):
-	name = "PageRank" + framework
+	name = "PageRank"
 
 	def run(self, G):
 		pr = networkit.centrality.PageRank(G, damp=0.85, tol=1e-06)
@@ -117,14 +117,14 @@ class bPageRank(Algo):
 # 	- Eigenvector centrality (centrality.EigenvectorCentrality, centrality.SciPyEVZ)
 
 class bEigenvectorCentrality(Algo):
-	name = "EigenvectorCentrality" + framework
+	name = "EigenvectorCentrality"
 
 	def run(self, G):
 		evc = networkit.centrality.EigenvectorCentrality(G, tol=1e-06)
 		evc.run()
 
 class bKatzCentrality(Algo):
-	name = "KatzCentrality" + framework
+	name = "KatzCentrality"
 
 	def run(self, G):
 		kc = networkit.centrality.KatzCentrality(G, tol=1e-06)
@@ -132,7 +132,7 @@ class bKatzCentrality(Algo):
 
 
 class bDegreeAssortativity(Algo):
-	name = "DegreeAssortativity" + framework
+	name = "DegreeAssortativity"
 
 	def run(self, G):
 		networkit.correlation.Assortativity(G, networkit.centrality.DegreeCentrality(G).run().scores()).run()
@@ -141,14 +141,14 @@ class bDegreeAssortativity(Algo):
 # 	- betweenness,  exact (centrality.Betweenness) and approximated (centrality.ApproxBetweenness, centrality.ApproxBetweenness2)
 
 class bBetweenness(Algo):
-	name = "Betweenness" + framework
+	name = "Betweenness"
 
 	def run(self, G):
 		bc = networkit.centrality.Betweenness(G)
 		bc.run()
 
 class bBetweennessSeq(Algo):
-	name = "BetweennessSeq" + framework
+	name = "BetweennessSeq"
 
 	def run(self, G):
 		mt = networkit.getMaxNumberOfThreads()
@@ -159,7 +159,7 @@ class bBetweennessSeq(Algo):
 
 
 class bApproxBetweenness(Algo):
-	name = "BetweennessApprox" + framework
+	name = "BetweennessApprox"
 
 	def run(self, G):
 		bc = networkit.centrality.ApproxBetweenness2(G, nSamples=42)
@@ -167,7 +167,7 @@ class bApproxBetweenness(Algo):
 
 
 class bApproxBetweennessSeq(Algo):
-	name = "BetweennessApproxSeq" + framework
+	name = "BetweennessApproxSeq"
 
 	def run(self, G):
 		mt = networkit.getMaxNumberOfThreads()
