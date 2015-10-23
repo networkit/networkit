@@ -30,9 +30,9 @@ private:
 	std::vector<Vector> initialVectors;
 	std::vector<Vector> rhsVectors;
 
+	count numComponents;
 	std::vector<std::vector<index>> components;
 	std::vector<index> graph2Components;
-//	std::vector<std::vector<index>> components2Graph;
 
 public:
 	Lamg(const double desiredResidualRed = 1e-6);
