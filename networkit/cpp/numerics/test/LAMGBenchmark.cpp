@@ -171,75 +171,8 @@ Vector randVector(count dimension) {
 	return randVector;
 }
 
-bool isSymmetric(const CSRMatrix& A) {
-	bool output = true;
-	A.forNonZeroElementsInRowOrder([&] (index i, index j, edgeweight w) {
-		if (A(j, i) != w) {
-			output = false;
-		}
-	});
-	if (!output) INFO("not symmetric!");
-	return output;
-}
-
-bool isLaplacian(const CSRMatrix& A) {
-	if (!isSymmetric(A)) {
-		return false;
-	}
-
-	/* Criterion: \forall_i \sum_j A_ij = 0  */
-	vector<double> row_sum(A.numberOfRows());
-	atomic<bool> right_sign(true);
-	A.parallelForNonZeroElementsInRowOrder([&] (node i, node j, double value) {
-		if (i != j && value > EPSILON) {
-			right_sign = false;
-		}
-		row_sum[i] += value;
-	});
-
-	return right_sign && all_of(row_sum.begin(), row_sum.end(), [] (double val) {return abs(val) < EPSILON;});
-}
-
-bool isSDD(const CSRMatrix& A) {
-  if (!isSymmetric(A)) {
-    return false;
-  }
-
-  /* Criterion: a_ii >= \sum_{j != i} a_ij */
-  vector<double> row_sum(A.numberOfRows());
-  A.parallelForNonZeroElementsInRowOrder([&] (node i, node j, double value) {
-    if (i == j) {
-      row_sum[i] += value;
-    } else {
-      row_sum[i] -= abs(value);
-    }
-  });
-
-  return all_of(row_sum.begin(), row_sum.end(), [] (double val) {return val > -EPSILON;});
-}
-
-Graph laplacianToGraph(const CSRMatrix &matrix) {
-	Graph G(max(matrix.numberOfRows(), matrix.numberOfColumns()), true, true);
-	matrix.forNonZeroElementsInRowOrder([&](node u, node v, double val) {
-		if (v != u) {
-			G.addEdge(u, v, -val);
-		}
-	});
-
-	return G;
-}
-
-Graph matrixToGraph(const CSRMatrix &matrix) {
-	Graph G(max(matrix.numberOfRows(), matrix.numberOfColumns()), true, true);
-	matrix.forNonZeroElementsInRowOrder([&](node u, node v, double val) {
-		G.addEdge(u, v, val);
-	});
-
-	return G;
-}
-
 Graph sddToLaplacian(const CSRMatrix& A) {
-  assert(isSDD(A));
+  assert(CSRMatrix::isSDD(A));
   count n = A.numberOfColumns();
 
   /* Compute row sum and excess */
@@ -286,9 +219,9 @@ Graph readGraph(Instance& instance) {
 		Graph G = reader.read(instance.path);
 		if (instance.type == MATRIX) {
 			CSRMatrix A = CSRMatrix::adjacencyMatrix(G);
-			if (isLaplacian(A)) {
+			if (CSRMatrix::isLaplacian(A)) {
 				instance.type = LAPLACIAN;
-			} else if (isSDD(A)) {
+			} else if (CSRMatrix::isSDD(A)) {
 				instance.type = SDD;
 			} else {
 				INFO(instance.path, " is unknown");
@@ -302,15 +235,15 @@ Graph readGraph(Instance& instance) {
 		INFO("reading ", instance.path);
 		CSRMatrix M = reader.read(instance.path);
 		INFO("done");
-		if (isLaplacian(M)) {
+		if (CSRMatrix::isLaplacian(M)) {
 			instance.type = LAPLACIAN;
-		} else if (isSDD(M)) {
+		} else if (CSRMatrix::isSDD(M)) {
 			instance.type = SDD;
 		} else {
 			instance.type = UNKNOWN;
 		}
 
-		return matrixToGraph(M);
+		return CSRMatrix::matrixToGraph(M);
 	} else {
 		throw std::runtime_error("unknown graph format " + instance.path);
 	}
@@ -474,102 +407,6 @@ string benchmark(const CSRMatrix &matrix, const Vector &initialX, const Vector &
 	return printTableRow(status, avgSetupTime, avgSolveTime);
 }
 
-string benchmarkDisconnected(const Graph &G, Partition &partition, const Vector &initialX, const Vector &b, const string &graphPath, count numSetups, count numSolvesPerSetup, const Smoother &smoother, double desiredResidual) {
-	Aux::Timer tSetup;
-	Aux::Timer tSolve;
-
-	count setupTime = 0;
-	count solveTime = 0;
-
-	tSetup.start();
-	vector<set<index>> components;
-	for (index id : partition.getSubsetIds()) {
-		components.push_back(partition.getMembers(id));
-	}
-	vector<index> graphToSubGraph(G.numberOfNodes());
-	vector<vector<index>> subGraphToGraph(components.size());
-
-	vector<CSRMatrix> compMatrices(components.size());
-	vector<Vector> initialVecs(components.size());
-	vector<Vector> bs(components.size());
-
-	for (index i = 0; i < components.size(); ++i) {
-		set<index> component = components[i];
-
-		vector<pair<index,index>> positions;
-		vector<double> values;
-		subGraphToGraph[i] = vector<index>(component.size());
-
-		index idx = 0;
-		for (node u : component) {
-			graphToSubGraph[u] = idx;
-			subGraphToGraph[i][idx] = u;
-			initialVecs[i][idx] = initialX[u];
-			bs[i][idx] = b[u];
-			idx++;
-		}
-
-		for (node u : component) {
-			G.forNeighborsOf(u, [&](node v, edgeweight w) {
-				positions.push_back(make_pair(u,v));
-				values.push_back(w);
-			});
-		}
-
-		compMatrices[i] = CSRMatrix(component.size(), component.size(), positions, values);
-	}
-
-	tSetup.stop();
-	setupTime += tSetup.elapsedMilliseconds();
-
-	vector<LAMGSolverStatus> solverStati(numSetups * numSolvesPerSetup);
-
-	vector<MultiLevelSetup> setups(components.size(), MultiLevelSetup(smoother));
-	vector<LevelHierarchy> hierarchies(components.size());
-	vector<Vector> xRes(components.size());
-	double residual = 0.0;
-	for (index i = 0; i < numSetups; ++i) {
-		vector<SolverLamg> solvers;
-
-		for (index k = 0; k < components.size(); ++k) {
-			tSetup.start();
-			setups[k].setup(compMatrices[k], hierarchies[k]);
-			solvers.push_back(SolverLamg(hierarchies[k], smoother));
-			tSetup.stop();
-			setupTime += tSetup.elapsedMilliseconds();
-		}
-
-		for (index j = 0; j < numSolvesPerSetup; ++j) {
-			for (index k = 0; k < components.size(); ++k) {
-				solverStati[i * numSolvesPerSetup + j].maxConvergenceTime = MAX_CONVERGENCE_TIME;
-				solverStati[i * numSolvesPerSetup + j].desiredResidualReduction = desiredResidual * components[k].size() / G.numberOfNodes();
-				xRes[k] = initialVecs[k];
-
-				tSolve.start();
-				solvers[k].solve(xRes[k], bs[k], solverStati[i * numSolvesPerSetup + j]);
-				tSolve.stop();
-				solveTime += tSolve.elapsedMilliseconds();
-			}
-		}
-
-		Vector x(G.numberOfNodes());
-		for (index k = 0; k < components.size(); ++k) {
-			for (index i = 0; i < components[i].size(); ++i) {
-				x[subGraphToGraph[k][i]] = xRes[k][i];
-			}
-		}
-
-		CSRMatrix A = CSRMatrix::adjacencyMatrix(G);
-		residual = (b - A*x).length();
-	}
-
-	double avgSetupTime = (double) setupTime / (double) numSetups;
-	double avgSolveTime = (double) solveTime / (double) (numSetups*numSolvesPerSetup);
-	INFO("tSetup = ", avgSetupTime, " tSolve = ", avgSolveTime, " res = ", residual);
-
-	return printTableRow(solverStati, avgSetupTime, avgSolveTime);
-}
-
 string benchmark(Benchmark &bench) {
 	string output = "";
 	output += printBenchHeader(bench);
@@ -605,7 +442,7 @@ string benchmark(Benchmark &bench) {
 
 		string path = bench.instances[i].path;
 		G.setName(path);
-		Vector b = randZeroSum(matrixToGraph(L), 12345);
+		Vector b = randZeroSum(CSRMatrix::matrixToGraph(L), 12345);
 		Vector x = randVector(L.numberOfColumns());
 
 		INFO("L = ", L.numberOfRows(), "x", L.numberOfColumns(), "; x = ", x.getDimension(), "; b = ", b.getDimension());
@@ -646,7 +483,7 @@ TEST_F(LAMGBenchmark, bench) {
 	string texContent = printLatexDocumentHeader();
 	stringstream ss;
 
-	Benchmark bench = BENCHS[9]; // snap
+	Benchmark bench = BENCHS[8]; // snap
 	texContent += benchmark(bench);
 	ss << bench.name;
 
