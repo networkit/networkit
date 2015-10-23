@@ -170,6 +170,12 @@ public:
 
 	static Graph matrixToGraph(const CSRMatrix &matrix);
 
+	static bool isSymmetric(const CSRMatrix &matrix);
+
+	static bool isSDD(const CSRMatrix &matrix);
+
+	static bool isLaplacian(const CSRMatrix &matrix);
+
 	CSRMatrix transpose() const;
 
 	/**
