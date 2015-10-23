@@ -27,6 +27,7 @@ count SolverLamg::coarsestSolve = 0;
 #endif
 
 SolverLamg::SolverLamg(LevelHierarchy &hierarchy, const Smoother &smoother) : hierarchy(hierarchy), smoother(smoother) {
+
 }
 
 void SolverLamg::solve(Vector &x, const Vector &b, LAMGSolverStatus &status) {
@@ -233,7 +234,7 @@ void SolverLamg::cycle(Vector &x, const Vector &b, int finest, int coarsest, std
 	} // while
 
 	// post-cycle finest
-	if (hierarchy.size() > finest + 1 && hierarchy.getType(finest+1) != ELIMINATION) { // do an iterate recombination on calculated solutions
+	if ((int64_t) hierarchy.size() > finest + 1 && hierarchy.getType(finest+1) != ELIMINATION) { // do an iterate recombination on calculated solutions
 		minRes(finest, X[finest], B[finest] - hierarchy.at(finest).getLaplacian() * X[finest]);
 	}
 
