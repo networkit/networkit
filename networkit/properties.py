@@ -16,12 +16,6 @@ import math
 import logging
 
 try:
-	import powerlaw
-except ImportError:
-	logging.warning("""WARNING: module 'powerlaw' not installed, which is required by some
-						functions.""")
-
-try:
 	import networkx as nx
 except ImportError:
 	logging.warning("""WARNING: module 'networkx' not installed, which is required by some
