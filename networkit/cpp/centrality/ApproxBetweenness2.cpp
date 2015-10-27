@@ -23,10 +23,9 @@ ApproxBetweenness2::ApproxBetweenness2(const Graph& G, count nSamples, bool norm
 }
 
 void ApproxBetweenness2::run() {
+	hasRun = false;
 
 	Aux::SignalHandler handler;
-
-	scoreData = std::vector<double>(G.upperNodeIdBound(), 0.0);
 
 	//std::vector<node> sampledNodes = G.nodes();
 	std::vector<node> sampledNodes;
@@ -39,11 +38,11 @@ void ApproxBetweenness2::run() {
 
 	// thread-local scores for efficient parallelism
 	count maxThreads = omp_get_max_threads();
+	if (!parallel) maxThreads = 1;
 	std::vector<std::vector<double> > scorePerThread(maxThreads, std::vector<double>(G.upperNodeIdBound()));
 
 
 	auto computeDependencies = [&](node s){
-		handler.assureRunning();
 		// run single-source shortest path algorithm
 		std::unique_ptr<SSSP> sssp;
 		if (G.isWeighted()) {
@@ -80,39 +79,43 @@ void ApproxBetweenness2::run() {
 		}
 	};
 
-	if (!parallel) {
-		Aux::disableParallelism();
+
+	if (parallel) {
+		#pragma omp parallel for
+		for (index i = 0; i < sampledNodes.size(); ++i) {
+			computeDependencies(sampledNodes[i]);
+		}
+
+		scoreData = std::vector<double>(G.upperNodeIdBound(), 0.0);
+
+		// add up all thread-local values
+		for (const auto &local : scorePerThread) {
+			G.parallelForNodes([&](node v){
+				scoreData[v] += local[v];
+			});
+		}
+	} else {
+		for (auto u : sampledNodes) {
+			computeDependencies(u);
+		}
+
+		scoreData.swap(scorePerThread[0]);
 	}
 
-	#pragma omp parallel for
-	for (index i = 0; i < sampledNodes.size(); ++i) {
-		computeDependencies(sampledNodes[i]);
-	}
 
-	if (!parallel) {
-		Aux::enableParallelism();
-	}
-
-	// add up all thread-local values
-	for (auto local : scorePerThread) {
-		G.parallelForNodes([&](node v){
-			scoreData[v] += local[v];
-		});
-	}
+	const count n = G.numberOfNodes();
+	const count pairs = (n-2) * (n-1);
 
 	// extrapolate
-	G.forNodes([&](node v) {
-		scoreData[v] = scoreData[v] * (2 * G.numberOfNodes() / double(nSamples));
+	G.parallelForNodes([&](node u) {
+		scoreData[u] = scoreData[u] * (2 * n / double(nSamples));
+
+		if (normalized) {
+			// divide by the number of possible pairs
+			scoreData[u] = scoreData[u] / pairs;
+		}
 	});
 
-	if (normalized) {
-		// divide by the number of possible pairs
-		count n = G.numberOfNodes();
-		count pairs = (n-2) * (n-1);
-		G.parallelForNodes([&](node u){
-			scoreData[u] = scoreData[u] / pairs;
-		});
-	}
 	handler.assureRunning();
 	hasRun = true;
 }
