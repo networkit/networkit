@@ -88,21 +88,34 @@ const vector<Instance> DIMACS_SPARSE { // http://www.cc.gatech.edu/dimacs10/arch
 //	{"instances/dimacs_sparse_matrices/thermal2.mtx", MATRIX} // no sdd matrix
 };
 
+const vector<Instance> DIMACS_CITATION {
+	{"instances/dimacs_citation_networks/citationCiteseer.graph", NETWORK},
+	{"instances/dimacs_citation_networks/coAuthorsCiteseer.graph", NETWORK},
+	{"instances/dimacs_citation_networks/coAuthorsDBLP.graph", NETWORK},
+	{"instances/dimacs_citation_networks/coPapersCiteseer.graph", NETWORK},
+	{"instances/dimacs_citation_networks/coPapersDBLP.graph", NETWORK},	
+};
+
 const vector<Instance> DIMACS_CLUSTERING { // http://www.cc.gatech.edu/dimacs10/archive/clustering.shtml
 	{"instances/dimacs_clustering/as-22july06.graph", NETWORK},
+	{"instances/dimacs_clustering/astro-ph.graph", NETWORK},
 	{"instances/dimacs_clustering/cnr-2000.graph", NETWORK},
+	{"instances/dimacs_clustering/hep-th.graph", NETWORK},
 	{"instances/dimacs_clustering/in-2004.graph", NETWORK},
 	{"instances/dimacs_clustering/PGPgiantcompo.graph", NETWORK},
 	{"instances/dimacs_clustering/preferentialAttachment.graph", NETWORK},
-	{"instances/dimacs_clustering/smallworld.graph", NETWORK},
+	{"instances/dimacs_clustering/smallworld.graph", NETWORK}
 //	{"instances/dimacs_clustering/uk-2002.graph", NETWORK}
 };
 
 const vector<Instance> DIMACS_STREET_NETWORKS { // http://www.cc.gatech.edu/dimacs10/archive/streets.shtml
+	{"instances/dimacs_street_networks/asia.osm.graph", NETWORK},
 	{"instances/dimacs_street_networks/belgium.osm.graph", NETWORK},
 	{"instances/dimacs_street_networks/europe.osm.graph", NETWORK},
+	{"instances/dimacs_street_networks/germany.osm.graph", NETWORK},
 	{"instances/dimacs_street_networks/great-britain.osm.graph", NETWORK},
-	{"instances/dimacs_street_networks/luxembourg.osm.graph", NETWORK}
+	{"instances/dimacs_street_networks/luxembourg.osm.graph", NETWORK},
+	{"instances/dimacs_street_networks/netherlands.osm.graph", NETWORK}
 };
 
 const vector<Instance> FACEBOOK100 {

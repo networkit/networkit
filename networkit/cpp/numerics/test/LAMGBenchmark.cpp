@@ -92,6 +92,14 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		DIMACS_SPARSE
 	},
 	{ // 5
+                "Dimacs Citation",
+                10,
+                5,
+                1e-6,
+                GAUSS_SEIDEL,
+                DIMACS_CITATION
+        },
+	{ // 6
 		"Dimacs Clustering",
 		10,
 		5,
@@ -99,7 +107,7 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		GAUSS_SEIDEL,
 		DIMACS_CLUSTERING
 	},
-	{ // 6
+	{ // 7
 		"Dimacs Street",
 		10,
 		5,
@@ -107,7 +115,7 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		GAUSS_SEIDEL,
 		DIMACS_STREET_NETWORKS
 	},
-	{ // 7
+	{ // 8
 		"Facebook100",
 		10,
 		5,
@@ -115,7 +123,7 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		GAUSS_SEIDEL,
 		FACEBOOK100
 	},
-	{ // 8
+	{ // 9
 		"Walshaw",
 		10,
 		5,
@@ -123,7 +131,7 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		GAUSS_SEIDEL,
 		WALSHAW
 	},
-	{ // 9
+	{ // 10
 		"Snap",
 		10,
 		5,
@@ -483,7 +491,7 @@ TEST_F(LAMGBenchmark, bench) {
 	string texContent = printLatexDocumentHeader();
 	stringstream ss;
 
-	Benchmark bench = BENCHS[8]; // snap
+	Benchmark bench = BENCHS[5]; // snap
 	texContent += benchmark(bench);
 	ss << bench.name;
 
