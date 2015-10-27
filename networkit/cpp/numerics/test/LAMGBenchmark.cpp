@@ -507,19 +507,7 @@ string benchmark(Benchmark &bench) {
 
 		INFO(graphFile);
 
-//		Graph Gcheck = matrixToGraph(L);
-//		ConnectedComponents con(Gcheck);
-//		con.run();
-//		if (con.numberOfComponents() == 1) { // LAMG solver currently only supports connected graphs
-			output += benchmark(L, x, b, G.getName(), bench.setupTries, bench.solveTriesPerSetup, *smoother, bench.residual, bench.instances[i].isConnected);
-//			INFO(output);
-//		} else {
-//			INFO("not connected");
-//			Partition p = con.getPartition();
-//			output += benchmarkDisconnected(G, p, x, b, G.getName(), bench.setupTries, bench.solveTriesPerSetup, *smoother, bench.residual);
-//
-//			//output += " -  & - & - & - \\\\ \n";
-//		}
+		output += benchmark(L, x, b, G.getName(), bench.setupTries, bench.solveTriesPerSetup, *smoother, bench.residual, bench.instances[i].isConnected);
 		ss.str("");
 	}
 
@@ -533,7 +521,7 @@ TEST_F(LAMGBenchmark, bench) {
 	string texContent = printLatexDocumentHeader();
 	stringstream ss;
 
-	Benchmark bench = BENCHS[10]; // snap
+	Benchmark bench = BENCHS[9]; // snap
 	texContent += benchmark(bench);
 	ss << bench.name;
 
