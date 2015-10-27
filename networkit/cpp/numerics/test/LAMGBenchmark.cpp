@@ -430,8 +430,8 @@ string benchmark(const CSRMatrix &matrix, const Vector &initialX, const Vector &
 		LevelHierarchy hierarchy;
 
 		tSetup.start();
-			setup.setup(matrix, hierarchy);
-			SolverLamg solver(hierarchy, smoother);
+		setup.setup(matrix, hierarchy);
+		SolverLamg solver(hierarchy, smoother);
 		tSetup.stop();
 		setupTime += tSetup.elapsedMilliseconds();
 

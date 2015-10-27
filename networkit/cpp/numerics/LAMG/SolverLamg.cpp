@@ -59,6 +59,8 @@ void SolverLamg::solveCycle(Vector &x, const Vector &b, int finest, LAMGSolverSt
 	Aux::Timer timer;
 	timer.start();
 
+	DEBUG("finest: ", finest);
+
 	// data structures for iterate recombination
 	history = std::vector<std::vector<Vector>>(hierarchy.size());
 	rHistory = std::vector<std::vector<Vector>>(hierarchy.size());

@@ -46,7 +46,7 @@ double Vector::mean() const {
 bool Vector::operator==(const Vector &other) const {
 	if (getDimension() != other.getDimension() || isTransposed() != other.isTransposed()) return false;
 
-	for (count i = 0; i < getDimension(); i++) {
+	for (index i = 0; i < getDimension(); i++) {
 		if (values[i] != other[i]) return false;
 	}
 
