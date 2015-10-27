@@ -73,20 +73,20 @@ const vector<Instance> DIMACS_NUMERICS { // http://www.cc.gatech.edu/dimacs10/ar
 };
 
 
-const vector<Instance> DIMACS_SPARSE { // http://www.cc.gatech.edu/dimacs10/archive/MATRIX, true.shtml
-//	{"instances/dimacs_sparse_matrices/af_shell9.mtx", MATRIX, true}, // no sdd MATRIX, true
-//	{"instances/dimacs_sparse_matrices/af_shell10.mtx", MATRIX, true}, // no sdd MATRIX, true
-//	{"instances/dimacs_sparse_matrices/audikw_1.mtx", MATRIX, true}, // no sdd MATRIX, true
-//	{"instances/dimacs_sparse_matrices/cage15.mtx", MATRIX, true}, // no sdd MATRIX, true
+const vector<Instance> DIMACS_SPARSE { // http://www.cc.gatech.edu/dimacs10/archive/matrix.shtml
+//	{"instances/dimacs_sparse_matrices/af_shell9.mtx", MATRIX, true}, // no sdd matrix
+//	{"instances/dimacs_sparse_matrices/af_shell10.mtx", MATRIX, true}, // no sdd matrix
+//	{"instances/dimacs_sparse_matrices/audikw_1.mtx", MATRIX, true}, // no sdd matrix
+//	{"instances/dimacs_sparse_matrices/cage15.mtx", MATRIX, true}, // no sdd matrix
 	{"instances/dimacs_sparse_matrices/ecology1.mtx", MATRIX, true},
 	{"instances/dimacs_sparse_matrices/ecology2.mtx", MATRIX, true},
 //	{"instances/dimacs_sparse_matrices/G3_circuit.mtx", MATRIX, true},
-//	{"instances/dimacs_sparse_matrices/kkt_power.mtx", MATRIX, true}, // no sdd MATRIX, true
+//	{"instances/dimacs_sparse_matrices/kkt_power.mtx", MATRIX, true}, // no sdd matrix
 //	{"instances/dimacs_sparse_matrices/ldoor.graph", MATRIX, true},
-//	{"instances/dimacs_sparse_matrices/nlpkkt120.mtx", MATRIX, true}, // no sdd MATRIX, true
-//	{"instances/dimacs_sparse_matrices/nlpkkt160.mtx", MATRIX, true}, // 1,75 GB, no sdd MATRIX, true
+//	{"instances/dimacs_sparse_matrices/nlpkkt120.mtx", MATRIX, true}, // no sdd matrix
+//	{"instances/dimacs_sparse_matrices/nlpkkt160.mtx", MATRIX, true}, // 1,75 GB, no sdd matrix
 //	{"instances/dimacs_sparse_matrices/nlpkkt200.graph", MATRIX, true}, // 3,61 GB
-//	{"instances/dimacs_sparse_matrices/thermal2.mtx", MATRIX, true} // no sdd MATRIX, true
+//	{"instances/dimacs_sparse_matrices/thermal2.mtx", MATRIX, true} // no sdd matrix
 };
 
 const vector<Instance> DIMACS_CITATION {
@@ -101,6 +101,7 @@ const vector<Instance> DIMACS_CLUSTERING { // http://www.cc.gatech.edu/dimacs10/
 	{"instances/dimacs_clustering/as-22july06.graph", NETWORK, true},
 	{"instances/dimacs_clustering/astro-ph.graph", NETWORK, true},
 	{"instances/dimacs_clustering/cnr-2000.graph", NETWORK, true},
+	{"instances/dimacs_clustering/eu-2005.graph", NETWORK, true},
 	{"instances/dimacs_clustering/hep-th.graph", NETWORK, true},
 	{"instances/dimacs_clustering/in-2004.graph", NETWORK, true},
 	{"instances/dimacs_clustering/PGPgiantcompo.graph", NETWORK, true},
