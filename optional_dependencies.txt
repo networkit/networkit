@@ -1,0 +1,4 @@
+seaborn
+tabulate
+matplotlib
+pandas
