@@ -2401,6 +2401,25 @@ cdef class LFRGenerator(Algorithm):
 		"""
 		return Partition().setThis((<_LFRGenerator*>(self._this)).getPartition())
 
+
+
+cdef extern from "cpp/generators/MultiscaleGenerator.h":
+	cdef cppclass _MultiscaleGenerator "NetworKit::MultiscaleGenerator":
+		_MultiscaleGenerator(_Graph) except +
+		_Graph generate() except +
+
+cdef class MultiscaleGenerator:
+	""" TODO
+	 """
+	cdef _MultiscaleGenerator* _this
+
+	def __cinit__(self, Graph G):
+		self._this = new _MultiscaleGenerator(G._this)
+
+	def generate(self):
+		return Graph().setThis(self._this.generate());
+
+
 # Module: graphio
 
 cdef extern from "cpp/io/GraphReader.h":
