@@ -268,7 +268,29 @@ void writeVector(const Vector &vector, const string &filename) {
 	outStream.close();
 }
 
-void writeProblemVectors(const Vector &b, const Vector &x, const string graphFilepath) {
+bool readVector(Vector &v, const string &filename) {
+	ifstream inStream;
+	inStream.precision(16);
+	inStream.open(filename);
+
+	string data;
+	if (inStream.good()) {
+		getline(inStream, data);
+		inStream.close();
+		vector<string> elements = Aux::StringTools::split(data, ',');
+		if (v.getDimension() == elements.size()) {
+			for (index i = 0; i < elements.size(); ++i) {
+				v[i] = stod(elements[i]);
+			}
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void writeProblemVectors(const Vector &b, const Vector &x, const string &graphFilepath) {
 	string filepath = graphFilepath.substr(0, graphFilepath.find_last_of("."));
 	stringstream ss;
 	ss << filepath << "_x";
@@ -277,6 +299,19 @@ void writeProblemVectors(const Vector &b, const Vector &x, const string graphFil
 	ss.str("");
 	ss << filepath << "_b";
 	writeVector(b, ss.str());
+}
+
+bool readProblemVectors(Vector &b, Vector &x, const string &graphFilepath) {
+	string filepath = graphFilepath.substr(0, graphFilepath.find_last_of("."));
+	stringstream ss;
+	ss << filepath << "_x";
+	if (readVector(x, ss.str())) {
+		ss.str("");
+		ss << filepath << "_b";
+		return readVector(b, ss.str());
+	}
+
+	return false;
 }
 
 void writeBenchmarkResults(string texContent, string filename) {
@@ -381,7 +416,7 @@ void outputPlotData(const LAMGSolverStatus &status, const string &filename) {
 }
 
 
-string benchmark(const CSRMatrix &matrix, const Vector &initialX, const Vector &b, const string &graphPath, count numSetups, count numSolvesPerSetup, const Smoother &smoother, double desiredResidual) {
+string benchmark(const CSRMatrix &matrix, const Vector &initialX, const Vector &b, const string &graphPath, count numSetups, count numSolvesPerSetup, const Smoother &smoother, double desiredResidual, bool isConnected) {
 	Aux::Timer tSetup;
 	Aux::Timer tSolve;
 
@@ -392,7 +427,11 @@ string benchmark(const CSRMatrix &matrix, const Vector &initialX, const Vector &
 	SolverStatus status;
 	for (index i = 0; i < numSetups; ++i) {
 		tSetup.start();
-			lamg.setup(matrix);
+			if (isConnected) {
+				lamg.setupConnected(matrix);
+			} else {
+				lamg.setup(matrix);
+			}
 		tSetup.stop();
 		setupTime += tSetup.elapsedMilliseconds();
 
@@ -450,12 +489,15 @@ string benchmark(Benchmark &bench) {
 
 		string path = bench.instances[i].path;
 		G.setName(path);
-		Vector b = randZeroSum(CSRMatrix::matrixToGraph(L), 12345);
-		Vector x = randVector(L.numberOfColumns());
 
-		INFO("L = ", L.numberOfRows(), "x", L.numberOfColumns(), "; x = ", x.getDimension(), "; b = ", b.getDimension());
+		Vector b(L.numberOfRows());
+		Vector x(L.numberOfColumns());
 
-		writeProblemVectors(b, x, G.getName());
+		if (!readProblemVectors(b, x, G.getName())) { // create new problem vectors if not present
+			b = randZeroSum(CSRMatrix::matrixToGraph(L), 12345);
+			x = randVector(L.numberOfColumns());
+			writeProblemVectors(b, x, G.getName());
+		}
 
 		string graphFile = G.getName().substr(path.find_last_of("/") + 1, path.length());
 		output += graphFile.substr(0, graphFile.find_last_of("."));
@@ -469,7 +511,7 @@ string benchmark(Benchmark &bench) {
 //		ConnectedComponents con(Gcheck);
 //		con.run();
 //		if (con.numberOfComponents() == 1) { // LAMG solver currently only supports connected graphs
-			output += benchmark(L, x, b, G.getName(), bench.setupTries, bench.solveTriesPerSetup, *smoother, bench.residual);
+			output += benchmark(L, x, b, G.getName(), bench.setupTries, bench.solveTriesPerSetup, *smoother, bench.residual, bench.instances[i].isConnected);
 //			INFO(output);
 //		} else {
 //			INFO("not connected");
@@ -491,7 +533,7 @@ TEST_F(LAMGBenchmark, bench) {
 	string texContent = printLatexDocumentHeader();
 	stringstream ss;
 
-	Benchmark bench = BENCHS[5]; // snap
+	Benchmark bench = BENCHS[10]; // snap
 	texContent += benchmark(bench);
 	ss << bench.name;
 
