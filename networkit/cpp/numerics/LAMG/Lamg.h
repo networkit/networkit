@@ -34,11 +34,14 @@ private:
 	std::vector<std::vector<index>> components;
 	std::vector<index> graph2Components;
 
+	void initializeForOneComponent();
+
 public:
 	Lamg(const double desiredResidualRed = 1e-6);
 	~Lamg() = default;
 
 	void setup(const CSRMatrix &laplacianMatrix);
+	void setupConnected(const CSRMatrix &laplacianMatrix);
 
 	SolverStatus solve(const Vector &rhs, Vector &result, count maxConvergenceTime = 5 * 60 * 1000, count maxIterations = std::numeric_limits<count>::max());
 
