@@ -7,7 +7,6 @@
 
 #include "Lamg.h"
 
-#include "../../components/ConnectedComponents.h"
 #include "../../components/ParallelConnectedComponents.h"
 #include "../GaussSeidelRelaxation.h"
 
@@ -17,18 +16,27 @@ namespace NetworKit {
 Lamg::Lamg(const double desiredResidualRed) : LinearSolver(desiredResidualRed), validSetup(false), lamgSetup(smoother), numComponents(0) {
 }
 
+void Lamg::initializeForOneComponent() {
+	compHierarchies = std::vector<LevelHierarchy>(1);
+	lamgSetup.setup(laplacianMatrix, compHierarchies[0]);
+	compSolvers.clear();
+	compSolvers.push_back(SolverLamg(compHierarchies[0], smoother));
+	validSetup = true;
+}
+
+void Lamg::setupConnected(const CSRMatrix &laplacianMatrix) {
+	this->laplacianMatrix = laplacianMatrix;
+	initializeForOneComponent();
+}
+
 void Lamg::setup(const CSRMatrix &laplacianMatrix) {
 	this->laplacianMatrix = laplacianMatrix;
 	Graph G = CSRMatrix::matrixToGraph(laplacianMatrix);
 	ParallelConnectedComponents con(G, false);
 	con.run();
 	numComponents = con.numberOfComponents();
-
 	if (numComponents == 1) {
-		compHierarchies = std::vector<LevelHierarchy>(1);
-		lamgSetup.setup(laplacianMatrix, compHierarchies[0]);
-		compSolvers.clear();
-		compSolvers.push_back(SolverLamg(compHierarchies[0], smoother));
+		initializeForOneComponent();
 	} else {
 		graph2Components = std::vector<index>(G.numberOfNodes());
 
@@ -71,14 +79,14 @@ void Lamg::setup(const CSRMatrix &laplacianMatrix) {
 
 			compIdx++;
 		}
-	}
 
-	validSetup = true;
+		validSetup = true;
+	}
 }
 
 SolverStatus Lamg::solve(const Vector &rhs, Vector &result, count maxConvergenceTime, count maxIterations) {
 	if (!validSetup || result.getDimension() != laplacianMatrix.numberOfColumns()
-								|| rhs.getDimension() != laplacianMatrix.numberOfRows()) {
+			|| rhs.getDimension() != laplacianMatrix.numberOfRows()) {
 		throw std::runtime_error("No or wrong matrix is setup for given vectors.");
 	}
 
