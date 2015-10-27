@@ -14,7 +14,7 @@ void NetworKit::CoverHubDominance::run() {
 
 	handler.assureRunning();
 
-	G.parallelForNodes([&](node u) {
+	G.balancedParallelForNodes([&](node u) {
 		for (index c : C[u]) {
 			count internalDeg = 0;
 			G.forNeighborsOf(u, [&](node v) {
