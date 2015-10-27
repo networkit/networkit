@@ -27,6 +27,7 @@ void Lamg::initializeForOneComponent() {
 void Lamg::setupConnected(const CSRMatrix &laplacianMatrix) {
 	this->laplacianMatrix = laplacianMatrix;
 	initializeForOneComponent();
+	numComponents = 1;
 }
 
 void Lamg::setup(const CSRMatrix &laplacianMatrix) {
