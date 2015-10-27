@@ -20,8 +20,11 @@ namespace NetworKit {
 class MultiscaleGenerator: public NetworKit::StaticGraphGenerator {
 private:
 
+    const Graph& original;
+
 public:
-	MultiscaleGenerator();
+    // TODO: parameters: retainIntermediates, coarseningScheme,
+	MultiscaleGenerator(const Graph& original);
 
 	Graph generate() override;
 };

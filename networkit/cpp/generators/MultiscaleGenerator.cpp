@@ -11,6 +11,10 @@
 namespace NetworKit {
 
 
+MultiscaleGenerator::MultiscaleGenerator(const Graph& original) : original(original) {
+    
+}
+
 Graph MultiscaleGenerator::generate() {
     // TODO:
 	return Graph();
