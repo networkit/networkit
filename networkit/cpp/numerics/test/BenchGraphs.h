@@ -90,11 +90,11 @@ const vector<Instance> DIMACS_SPARSE { // http://www.cc.gatech.edu/dimacs10/arch
 };
 
 const vector<Instance> DIMACS_CITATION {
-	{"instances/dimacs_citation_NETWORK, trues/citationCiteseer.graph", NETWORK, true},
-	{"instances/dimacs_citation_NETWORK, trues/coAuthorsCiteseer.graph", NETWORK, true},
-	{"instances/dimacs_citation_NETWORK, trues/coAuthorsDBLP.graph", NETWORK, true},
-	{"instances/dimacs_citation_NETWORK, trues/coPapersCiteseer.graph", NETWORK, true},
-	{"instances/dimacs_citation_NETWORK, trues/coPapersDBLP.graph", NETWORK, true},	
+	{"instances/dimacs_citation_networks/citationCiteseer.graph", NETWORK, true},
+	{"instances/dimacs_citation_networks/coAuthorsCiteseer.graph", NETWORK, true},
+	{"instances/dimacs_citation_networks/coAuthorsDBLP.graph", NETWORK, true},
+	{"instances/dimacs_citation_networks/coPapersCiteseer.graph", NETWORK, true},
+	{"instances/dimacs_citation_networks/coPapersDBLP.graph", NETWORK, true},	
 };
 
 const vector<Instance> DIMACS_CLUSTERING { // http://www.cc.gatech.edu/dimacs10/archive/clustering.shtml
@@ -110,13 +110,13 @@ const vector<Instance> DIMACS_CLUSTERING { // http://www.cc.gatech.edu/dimacs10/
 };
 
 const vector<Instance> DIMACS_STREET_NETWORKS { // http://www.cc.gatech.edu/dimacs10/archive/streets.shtml
-	{"instances/dimacs_street_NETWORK, trues/asia.osm.graph", NETWORK, true},
-	{"instances/dimacs_street_NETWORK, trues/belgium.osm.graph", NETWORK, true},
-	{"instances/dimacs_street_NETWORK, trues/europe.osm.graph", NETWORK, true},
-	{"instances/dimacs_street_NETWORK, trues/germany.osm.graph", NETWORK, true},
-	{"instances/dimacs_street_NETWORK, trues/great-britain.osm.graph", NETWORK, true},
-	{"instances/dimacs_street_NETWORK, trues/luxembourg.osm.graph", NETWORK, true},
-	{"instances/dimacs_street_NETWORK, trues/netherlands.osm.graph", NETWORK, true}
+	{"instances/dimacs_street_networks/asia.osm.graph", NETWORK, true},
+	{"instances/dimacs_street_networks/belgium.osm.graph", NETWORK, true},
+	{"instances/dimacs_street_networks/europe.osm.graph", NETWORK, true},
+	{"instances/dimacs_street_networks/germany.osm.graph", NETWORK, true},
+	{"instances/dimacs_street_networks/great-britain.osm.graph", NETWORK, true},
+	{"instances/dimacs_street_networks/luxembourg.osm.graph", NETWORK, true},
+	{"instances/dimacs_street_networks/netherlands.osm.graph", NETWORK, true}
 };
 
 const vector<Instance> FACEBOOK100 {
@@ -229,34 +229,34 @@ const vector<Instance> WALSHAW { // http://staffweb.cms.gre.ac.uk/~wc06/partitio
 	{"instances/walshaw/598a.graph", NETWORK, true},
 	{"instances/walshaw/add20.graph", NETWORK, true},
 	{"instances/walshaw/add32.graph", NETWORK, true},
-//	{"instances/walshaw/auto.graph", NETWORK, true},
-////	{"instances/walshaw/bcsstk29.graph", NETWORK, true},
-////	{"instances/walshaw/bcsstk30.graph", NETWORK, true},
-////	{"instances/walshaw/bcsstk31.graph", NETWORK, true},
-//	{"instances/walshaw/bcsstk32.graph", NETWORK, true},
-//	{"instances/walshaw/bcsstk33.graph", NETWORK, true},
-//	{"instances/walshaw/brack2.graph", NETWORK, true},
-//	{"instances/walshaw/crack.graph", NETWORK, true},
-//	{"instances/walshaw/cs4.graph", NETWORK, true},
-//	{"instances/walshaw/cti.graph", NETWORK, true},
-//	{"instances/walshaw/data.graph", NETWORK, true},
-//	{"instances/walshaw/fe_4elt2.graph", NETWORK, true},
-////	{"instances/walshaw/fe_body.graph", NETWORK, true},
-//	{"instances/walshaw/fe_ocean.graph", NETWORK, true},
-////	{"instances/walshaw/fe_pwt.graph", NETWORK, true},
-//	{"instances/walshaw/fe_rotor.graph", NETWORK, true},
-//	{"instances/walshaw/fe_sphere.graph", NETWORK, true},
-//	{"instances/walshaw/fe_tooth.graph", NETWORK, true},
-//	{"instances/walshaw/finan512.graph", NETWORK, true},
-//	{"instances/walshaw/m14b.graph", NETWORK, true},
-//	{"instances/walshaw/memplus.graph", NETWORK, true},
-//	{"instances/walshaw/t60k.graph", NETWORK, true},
-//	{"instances/walshaw/uk.graph", NETWORK, true},
-//	{"instances/walshaw/vibrobox.graph", NETWORK, true},
-//	{"instances/walshaw/wave.graph", NETWORK, true},
-//	{"instances/walshaw/whitaker3.graph", NETWORK, true},
-//	{"instances/walshaw/wing_nodal.graph", NETWORK, true},
-//	{"instances/walshaw/wing.graph", NETWORK, true}
+	{"instances/walshaw/auto.graph", NETWORK, true},
+	{"instances/walshaw/bcsstk29.graph", NETWORK, false},
+	{"instances/walshaw/bcsstk30.graph", NETWORK, false},
+	{"instances/walshaw/bcsstk31.graph", NETWORK, false},
+	{"instances/walshaw/bcsstk32.graph", NETWORK, true},
+	{"instances/walshaw/bcsstk33.graph", NETWORK, true},
+	{"instances/walshaw/brack2.graph", NETWORK, true},
+	{"instances/walshaw/crack.graph", NETWORK, true},
+	{"instances/walshaw/cs4.graph", NETWORK, true},
+	{"instances/walshaw/cti.graph", NETWORK, true},
+	{"instances/walshaw/data.graph", NETWORK, true},
+	{"instances/walshaw/fe_4elt2.graph", NETWORK, true},
+	{"instances/walshaw/fe_body.graph", NETWORK, false},
+	{"instances/walshaw/fe_ocean.graph", NETWORK, true},
+	{"instances/walshaw/fe_pwt.graph", NETWORK, false},
+	{"instances/walshaw/fe_rotor.graph", NETWORK, true},
+	{"instances/walshaw/fe_sphere.graph", NETWORK, true},
+	{"instances/walshaw/fe_tooth.graph", NETWORK, true},
+	{"instances/walshaw/finan512.graph", NETWORK, true},
+	{"instances/walshaw/m14b.graph", NETWORK, true},
+	{"instances/walshaw/memplus.graph", NETWORK, true},
+	{"instances/walshaw/t60k.graph", NETWORK, true},
+	{"instances/walshaw/uk.graph", NETWORK, true},
+	{"instances/walshaw/vibrobox.graph", NETWORK, true},
+	{"instances/walshaw/wave.graph", NETWORK, true},
+	{"instances/walshaw/whitaker3.graph", NETWORK, true},
+	{"instances/walshaw/wing_nodal.graph", NETWORK, true},
+	{"instances/walshaw/wing.graph", NETWORK, true}
 };
 
 const vector<Instance> SNAP {
