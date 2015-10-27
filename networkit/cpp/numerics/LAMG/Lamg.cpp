@@ -8,6 +8,7 @@
 #include "Lamg.h"
 
 #include "../../components/ConnectedComponents.h"
+#include "../../components/ParallelConnectedComponents.h"
 #include "../GaussSeidelRelaxation.h"
 
 namespace NetworKit {
@@ -19,7 +20,7 @@ Lamg::Lamg(const double desiredResidualRed) : LinearSolver(desiredResidualRed), 
 void Lamg::setup(const CSRMatrix &laplacianMatrix) {
 	this->laplacianMatrix = laplacianMatrix;
 	Graph G = CSRMatrix::matrixToGraph(laplacianMatrix);
-	ConnectedComponents con(G);
+	ParallelConnectedComponents con(G, false);
 	con.run();
 	numComponents = con.numberOfComponents();
 
