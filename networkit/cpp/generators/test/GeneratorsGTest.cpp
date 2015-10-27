@@ -859,6 +859,7 @@ TEST_F(GeneratorsGTest, tryGiganticCollectionOfHyperbolicUnitDiskGraphs) {
 }
 
 TEST_F(GeneratorsGTest, testLFRGenerator) {
+	Aux::Random::setSeed(42, true);
 	LFRGenerator gen(1000);
 	gen.generatePowerlawDegreeSequence(20, 50, -2);
 	gen.generatePowerlawCommunitySizeSequence(10, 50, -1);
@@ -873,6 +874,7 @@ TEST_F(GeneratorsGTest, testLFRGenerator) {
 }
 
 TEST_F(GeneratorsGTest, testLFRGeneratorImpossibleSequence) {
+	Aux::Random::setSeed(42, true);
 	LFRGenerator gen(1000);
 	gen.generatePowerlawDegreeSequence(35, 98, -2);
 	gen.generatePowerlawCommunitySizeSequence(10, 50, -3);
