@@ -30,10 +30,10 @@ void ForestFireScore::run() {
 		activeNodes.push(G.randomNode());
 
 		auto forwardNeighbors = [&](node u) {
-			std::vector<node> validEdges;
-			G.forNeighborsOf(u, [&](node x){
+			std::vector<std::pair<node, edgeid>> validEdges;
+			G.forNeighborsOf(u, [&](node, node x, edgeid eid){
 				if (! visited[x]) {
-					validEdges.push_back(x);
+					validEdges.emplace_back(x, eid);
 				}
 			});
 			return validEdges;
@@ -43,29 +43,31 @@ void ForestFireScore::run() {
 			node v = activeNodes.front();
 			activeNodes.pop();
 
-			std::vector<node> validNeighbors = forwardNeighbors(v);
-			std::set<node> burntNeighbors;
+			std::vector<std::pair<node, edgeid>> validNeighbors = forwardNeighbors(v);
 			while (true) {
 				double q = Aux::Random::real(1.0);
 				if (q > pf || validNeighbors.empty()) {
 					break;
 				}
 				count index = Aux::Random::integer(validNeighbors.size() - 1);
-				burntNeighbors.insert(validNeighbors[index]);
+
+				{ // mark node as visited, burn edge
+					node x;
+					edgeid eid;
+					std::tie(x, eid) = validNeighbors[index];
+					activeNodes.push(x);
+					burnt[eid]++;
+					edgesBurnt++;
+					visited[x] = true;
+				}
+
 				validNeighbors[index] = validNeighbors.back();
 				validNeighbors.pop_back();
-			}
-
-			for (node x : burntNeighbors) {
-				activeNodes.push(x);
-				burnt[G.edgeId(v, x)]++;
-				edgesBurnt++;
-				visited[x] = true;
 			}
 		}
 	}
 
-	std::vector<double> burntNormalized (G.numberOfEdges(), 0.0);
+	std::vector<double> burntNormalized (G.upperEdgeIdBound(), 0.0);
 	double maxv = (double) *std::max_element(std::begin(burnt), std::end(burnt));
 
 	if (maxv > 0) {
