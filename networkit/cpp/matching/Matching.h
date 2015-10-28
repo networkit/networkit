@@ -75,7 +75,7 @@ public:
 	 * @paramt[in]	G	A graph.
 	 * @param[out]		@c true if this is a proper matching.
 	 */
-	bool isProper(Graph& G) const;
+	bool isProper(const Graph& G) const;
 
 
 	/**

@@ -170,7 +170,7 @@ void Partition::allToOnePartition() {
 	});
 }
 
-std::set<index> Partition::getSubsetIds() {
+std::set<index> Partition::getSubsetIds() const {
 	std::set<index> ids;
 	for (index id : data) {
 		if (id != none) {
