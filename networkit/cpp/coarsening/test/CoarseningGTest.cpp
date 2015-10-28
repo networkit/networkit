@@ -16,6 +16,8 @@
 #include "../../generators/ErdosRenyiGenerator.h"
 #include "../../coarsening/ParallelPartitionCoarsening.h"
 #include "../../io/METISGraphReader.h"
+#include "../../matching/LocalMaxMatcher.h"
+#include "../MatchingContracter.h"
 
 namespace NetworKit {
 
@@ -225,6 +227,27 @@ TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnRealGraphWithGraphBuild
 		EXPECT_EQ(Gseq.weightedDegree(u), Gpar.weightedDegree(u)) << "Weighted degrees should be equal for node " << u;
 		EXPECT_EQ(parMapping[u], seqMapping[u]) << "mapping is equal";
 	});
+}
+
+TEST_F(CoarseningGTest, testMatchingContractor) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/celegans_metabolic.graph");
+
+	LocalMaxMatcher matcher(G);
+    Matching matching = matcher.run();
+    ASSERT_TRUE(matching.isProper(G));
+
+    MatchingContracter coarsener(G, matching);
+    coarsener.run();
+    Graph coarseG = coarsener.getCoarseGraph();
+    std::vector<node> fineToCoarse = coarsener.getNodeMapping();
+
+   EXPECT_GE(coarseG.numberOfNodes(), 0.5*G.numberOfNodes());
+   EXPECT_EQ(G.totalEdgeWeight(), coarseG.totalEdgeWeight());
+   if (G.numberOfEdges() > 0) {
+	   EXPECT_LT(coarseG.numberOfNodes(), G.numberOfNodes());
+   }
+
 }
 
 } /* namespace NetworKit */
