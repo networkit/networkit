@@ -5471,6 +5471,28 @@ cdef class DynApproxBetweenness:
 
 		return self._this.getNumberOfSamples()
 
+cdef extern from "cpp/centrality/LocalPartitionCoverage.h":
+	cdef cppclass _LocalPartitionCoverage "NetworKit::LocalPartitionCoverage" (_Centrality):
+		_LocalPartitionCoverage(_Graph, _Partition) except +
+
+cdef class LocalPartitionCoverage(Centrality):
+	"""
+	The local partition coverage is the amount of neighbors of a node u that are in the same partition as u.
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	P : Partition
+		The partition to use
+	"""
+	cdef Partition _P
+
+	def __cinit__(self, Graph G not None, Partition P not None):
+		self._G = G
+		self._P = P
+		self._this = new _LocalPartitionCoverage(G._this, P._this)
+
 # Module: dynamic
 
 cdef extern from "cpp/dynamics/GraphEvent.h":
