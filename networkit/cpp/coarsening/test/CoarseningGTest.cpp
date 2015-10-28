@@ -17,7 +17,7 @@
 #include "../../coarsening/ParallelPartitionCoarsening.h"
 #include "../../io/METISGraphReader.h"
 #include "../../matching/LocalMaxMatcher.h"
-#include "../MatchingContracter.h"
+#include "../MatchingCoarsening.h"
 
 namespace NetworKit {
 
@@ -237,7 +237,7 @@ TEST_F(CoarseningGTest, testMatchingContractor) {
     Matching matching = matcher.run();
     ASSERT_TRUE(matching.isProper(G));
 
-    MatchingContracter coarsener(G, matching);
+    MatchingCoarsening coarsener(G, matching);
     coarsener.run();
     Graph coarseG = coarsener.getCoarseGraph();
     std::vector<node> fineToCoarse = coarsener.getNodeMapping();
