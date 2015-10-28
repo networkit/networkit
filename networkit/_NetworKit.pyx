@@ -5414,24 +5414,36 @@ cdef class CoreDecomposition(Centrality):
 
 cdef extern from "cpp/centrality/LocalClusteringCoefficient.h":
 	cdef cppclass _LocalClusteringCoefficient "NetworKit::LocalClusteringCoefficient" (_Centrality):
-		_LocalClusteringCoefficient(_Graph) except +
+		_LocalClusteringCoefficient(_Graph, bool) except +
 
 cdef class LocalClusteringCoefficient(Centrality):
 	"""
 		LocalClusteringCoefficient(G, normalized=False, computeEdgeCentrality=False)
 
 		Constructs the LocalClusteringCoefficient class for the given Graph `G`. If the local clustering coefficient values should be normalized,
-  		then set `normalized` to True. The graph may not contain self-loops.
+		then set `normalized` to True. The graph may not contain self-loops.
+
+		There are two algorithms available. The trivial (parallel) algorithm needs only a small amount of additional memory.
+		The turbo mode adds a (sequential, but fast) pre-processing step using ideas from [0]. This reduces the running time
+		significantly for most graphs. However, the turbo mode needs O(m) additional memory. In practice this should be a bit
+		less than half of the memory that is needed for the graph itself. The turbo mode is particularly effective for graphs
+		with nodes of very high degree and a very skewed degree distribution.
+
+		[0] Triangle Listing Algorithms: Back from the Diversion
+		Mark Ortmann and Ulrik Brandes                                                                          *
+		2014 Proceedings of the Sixteenth Workshop on Algorithm Engineering and Experiments (ALENEX). 2014, 1-8
 
 	 	Parameters
 	 	----------
 	 	G : Graph
 	 		The graph.
+		turbo : bool
+			If the turbo mode shall be activated.
 	"""
 
-	def __cinit__(self, Graph G):
+	def __cinit__(self, Graph G, bool turbo = False):
 		self._G = G
-		self._this = new _LocalClusteringCoefficient(G._this)
+		self._this = new _LocalClusteringCoefficient(G._this, turbo)
 
 
 cdef extern from "cpp/centrality/DynApproxBetweenness.h":

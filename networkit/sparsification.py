@@ -225,7 +225,7 @@ class SimmelianSparsifierParametric(Sparsifier):
 		Keyword arguments:
 		G -- the input graph
 		"""
-		triangles = ChibaNishizekiTriangleEdgeScore(G).run().scores()
+		triangles = TriangleEdgeScore(G).run().scores()
 
 		simmelianOverlap = SimmelianOverlapScore(G, triangles, self.maxRank)
 		simmelianOverlap.run()
@@ -250,7 +250,7 @@ class SimmelianSparsifierNonParametric(Sparsifier):
 		Keyword arguments:
 		G -- the input graph
 		"""
-		triangles = ChibaNishizekiTriangleEdgeScore(G).run().scores()
+		triangles = TriangleEdgeScore(G).run().scores()
 		a_sj = PrefixJaccardScore(G, triangles).run().scores()
 
 		return a_sj
@@ -295,7 +295,7 @@ class SimmelianMultiscaleSparsifier(Sparsifier):
 		Keyword arguments:
 		G -- the input graph
 		"""
-		triangles = ChibaNishizekiTriangleEdgeScore(G).run().scores()
+		triangles = TriangleEdgeScore(G).run().scores()
 		ms = MultiscaleScore(G, triangles)
 		ms.run()
 		a_ms = ms.scores()
@@ -354,7 +354,7 @@ class LocalSimilaritySparsifier(Sparsifier):
 		Keyword arguments:
 		G -- the input graph
 		"""
-		triangles = ChibaNishizekiTriangleEdgeScore(G).run().scores()
+		triangles = TriangleEdgeScore(G).run().scores()
 		localSimScore = LocalSimilarityScore(G, triangles)
 		localSimScore.run()
 		return localSimScore.scores()
@@ -511,7 +511,7 @@ class SCANSparsifier(Sparsifier):
 		Keyword arguments:
 		G -- the input graph
 		"""
-		a_triangles = ChibaNishizekiTriangleEdgeScore(G).run().scores()
+		a_triangles = TriangleEdgeScore(G).run().scores()
 
 		scanScore = SCANStructuralSimilarityScore(G, a_triangles)
 		scanScore.run()
