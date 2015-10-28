@@ -1693,6 +1693,16 @@ cdef class ErdosRenyiGenerator:
 	def generate(self):
 		return Graph(0).setThis(self._this.generate())
 
+	@classmethod
+	def fit(cls, Graph G):
+		""" Fit model to input graph"""
+		(n, m) = G.size()
+		if G.isDirected():
+			p = p = m / (n * (n-1))
+		else:
+			p = m / ((n * (n-1)) / 2)
+		return cls(n, p)
+
 cdef extern from "cpp/generators/DorogovtsevMendesGenerator.h":
 	cdef cppclass _DorogovtsevMendesGenerator "NetworKit::DorogovtsevMendesGenerator":
 		_DorogovtsevMendesGenerator(count nNodes) except +
@@ -1900,6 +1910,13 @@ cdef class ChungLuGenerator:
 		"""
 		return Graph(0).setThis(self._this.generate())
 
+	@classmethod
+	def fit(cls, Graph G):
+		""" Fit model to input graph"""
+		(n, m) = G.size()
+		degSeq = DegreeCentrality(G).run().scores()
+		return cls(degSeq)
+
 
 cdef extern from "cpp/generators/HavelHakimiGenerator.h":
 	cdef cppclass _HavelHakimiGenerator "NetworKit::HavelHakimiGenerator":
@@ -2070,7 +2087,17 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		return Graph(0).setThis(self._this.generate())
 
 	def generateExternal(self, angles, radii, k, gamma):
+		# TODO: documentation
 		return Graph(0).setThis(self._this.generateExternal(angles, radii, k, gamma))
+
+	@classmethod
+	def fit(cls, Graph G):
+		""" Fit model to input graph"""
+		(n, m) = G.size()
+		degSeq = DegreeCentrality(G).run().scores()
+		k = sum(degSeq) / len(degSeq) #average degree
+		gamma = 3	# TODO: improve
+		return cls(n, k, gamma)
 
 
 cdef extern from "cpp/generators/RmatGenerator.h":
@@ -2400,6 +2427,44 @@ cdef class LFRGenerator(Algorithm):
 			The generated partition.
 		"""
 		return Partition().setThis((<_LFRGenerator*>(self._this)).getPartition())
+
+
+	@classmethod
+	def fit(cls, Graph G):
+		""" Fit model to input graph"""
+		(n, m) = G.size()
+		# detect communities
+		communities = PLM(G).run().getPartition()
+		gen = cls(n)
+		gen.setPartition(communities)
+		# degree sequence
+		degSeq = DegreeCentrality(G).run().scores()
+		gen.setDegreeSequence(degSeq)
+		# mixing parameter
+		localCoverage = LocalPartitionCoverage(G, communities).run().scores()
+		gen.setMu((1.0 - x for x in localCoverage))
+		return gen
+
+
+
+
+
+cdef extern from "cpp/generators/MultiscaleGenerator.h":
+	cdef cppclass _MultiscaleGenerator "NetworKit::MultiscaleGenerator":
+		_MultiscaleGenerator(_Graph) except +
+		_Graph generate() except +
+
+cdef class MultiscaleGenerator:
+	""" TODO
+	 """
+	cdef _MultiscaleGenerator* _this
+
+	def __cinit__(self, Graph G):
+		self._this = new _MultiscaleGenerator(G._this)
+
+	def generate(self):
+		return Graph().setThis(self._this.generate());
+
 
 # Module: graphio
 
