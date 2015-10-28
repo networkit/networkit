@@ -12,10 +12,16 @@ namespace NetworKit {
 
 
 MultiscaleGenerator::MultiscaleGenerator(const Graph& original) : original(original) {
-    
+
 }
 
 Graph MultiscaleGenerator::generate() {
+
+    // coarsen graph
+    //      aggregation scheme:
+    // coarse level edits
+    //      
+
     // TODO:
 	return Graph();
 }
