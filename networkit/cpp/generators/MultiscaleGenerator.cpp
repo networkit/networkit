@@ -2,10 +2,14 @@
  * MultiscaleGenerator.h
  *
  *  Created on: Oct 27, 2015
- *      Author: Christian Staut
+ *      Author: Christian Staudt
  */
 
 #include "MultiscaleGenerator.h"
+
+#include <memory>
+#include "../coarsening/GraphCoarsening.h"
+#include "../coarsening/ParallelPartitionCoarsening.h"
 
 
 namespace NetworKit {
@@ -17,12 +21,15 @@ MultiscaleGenerator::MultiscaleGenerator(const Graph& original) : original(origi
 
 Graph MultiscaleGenerator::generate() {
 
-    // coarsen graph
-    //      aggregation scheme:
-    // coarse level edits
-    //      
+	std::unique_ptr<GraphCoarsening> coarseningScheme;
 
-    // TODO:
+	// coarsen graph
+	//      aggregation scheme: return Partition
+	//
+	// coarse level edits
+	//
+	//
+	// TODO:
 	return Graph();
 }
 
