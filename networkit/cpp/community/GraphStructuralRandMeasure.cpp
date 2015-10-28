@@ -13,7 +13,9 @@ namespace NetworKit {
 double GraphStructuralRandMeasure::getDissimilarity(const Graph& G, const Partition& first,
 		const Partition& second) {
 	count m = G.numberOfEdges();
-	assert (m > 0);
+	if (m == 0) {
+		throw std::runtime_error("The graph-structural rand measure is not defined for graphs without edges.");
+	}
 
 	count e11 = 0; 	// number of connected node pairs for which clusterings aggree
 	count e00 = 0;	// number of connected node pairs for which clusterings disagree
