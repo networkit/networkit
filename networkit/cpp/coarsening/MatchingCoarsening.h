@@ -1,5 +1,5 @@
 /*
- * MatchingContracter.h
+ * MatchingCoarsening.h
  *
  *  Created on: 30.10.2012
  *      Author: Christian Staudt (christian.staudt@kit.edu)
@@ -18,10 +18,10 @@ namespace NetworKit {
  * @ingroup coarsening
  * Contracts graph according to a matching.
  */
-class MatchingContracter: public GraphCoarsening {
+class MatchingCoarsening: public GraphCoarsening {
 
 public:
-	MatchingContracter(const Graph& G, const Matching& M, bool noSelfLoops = false);
+	MatchingCoarsening(const Graph& G, const Matching& M, bool noSelfLoops = false);
 
 	/**
 	 * Contracts graph according to a matching.

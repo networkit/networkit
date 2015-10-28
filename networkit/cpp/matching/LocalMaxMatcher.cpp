@@ -11,7 +11,7 @@ namespace NetworKit {
 
 LocalMaxMatcher::LocalMaxMatcher(const Graph& graph): Matcher(graph)
 {
-	//TODO: check for self loops here, issue a warning
+	if (graph.isDirected()) throw std::runtime_error("Matcher only defined for undirected graphs");
 }
 
 // TODO: update to new edge attribute system
@@ -61,7 +61,7 @@ Matching LocalMaxMatcher::run() {
 		for (auto edge: edges) {
 			node u = edge.s;
 			node v = edge.t;
-			if (candidates[u].t == v && candidates[v].t == u) {
+			if (candidates[u].t == v && candidates[v].t == u && u != v) {
 				// both nodes agree
 				M.match(u, v);
 			}

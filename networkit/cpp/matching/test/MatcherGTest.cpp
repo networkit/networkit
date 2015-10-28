@@ -49,6 +49,12 @@ TEST_F(MatcherGTest, testLocalMaxMatching) {
 #endif
 }
 
+TEST_F(MatcherGTest, testLocalMaxMatchingDirectedWarning) {
+	Graph G(2, false, true);
+	G.addEdge(0,1);
+	EXPECT_THROW(LocalMaxMatcher localMaxMatcher(G), std::runtime_error);
+}
+
 
 TEST_F(MatcherGTest, testPgaMatching) {
 	count n = 50;
