@@ -21,10 +21,16 @@ MultiscaleGenerator::MultiscaleGenerator(const Graph& original) : original(origi
 
 Graph MultiscaleGenerator::generate() {
 
-	std::unique_ptr<GraphCoarsening> coarseningScheme;
+	std::vector<Graph> coarseGraphs;
+	std::vector<Graph> fineGraphs;
 
 	// coarsen graph
 	//      aggregation scheme: return Partition
+	std::unique_ptr<GraphCoarsening> coarsening;
+
+	Graph C = coarsening.getCoarseGraph();
+
+
 	//
 	// coarse level edits
 	//
