@@ -45,6 +45,7 @@ try:
 		LFR = ()
 		KONECT = ()
 		GraphToolBinary = ()
+		MAT = ()
 
 except ImportError:
 	print("Update to Python >=3.4 recommended - support for < 3.4 may be discontinued in the future")
@@ -65,6 +66,7 @@ except ImportError:
 		LFR = "edgelist-t1"
 		KONECT = "konect"
 		GraphToolBinary = "gtbin"
+		MAT = "mat"
 
 
 
@@ -87,7 +89,8 @@ def getReader(fileformat, **kwargs):
 			Format.LFR:			EdgeListReader('\t',1),
 			Format.KONECT:			KONECTGraphReader(' '),
 			Format.GML:			GMLGraphReader(),
-			Format.GraphToolBinary:		GraphToolBinaryReader()
+			Format.GraphToolBinary:		GraphToolBinaryReader(),
+			Format.MAT:			MatReader()
 			}
 
 	try:
@@ -153,6 +156,13 @@ def readGraphs(dirPath, pattern, fileformat, some=None, **kwargs):
 						return graphs
 	return graphs
 
+
+class MatReader:
+	def __init__(self, key = "A"):
+		self.key = key
+
+	def read(self, path):
+		return readMat(path, self.key)
 
 def readMat(path, key="A"):
 	""" Reads a Graph from a matlab object file containing an adjacency matrix and returns a NetworKit::Graph
