@@ -291,7 +291,7 @@ public:
 	 *
 	 * @return A set of ids of nonempty subsets.
 	 */
-	std::set<index> getSubsetIds();
+	std::set<index> getSubsetIds() const;
 
 	/**
 	 * Set a human-readable identifier @a name for the instance.

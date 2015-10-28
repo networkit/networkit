@@ -24,7 +24,7 @@ namespace NetworKit {
 class LocalMaxMatcher: public NetworKit::Matcher {
 public:
 
-	LocalMaxMatcher(Graph& G);
+	LocalMaxMatcher(const Graph& G);
 
 
 	virtual Matching run();

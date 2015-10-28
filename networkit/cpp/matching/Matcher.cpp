@@ -12,6 +12,6 @@ namespace NetworKit {
 
 } /* namespace NetworKit */
 
-NetworKit::Matcher::Matcher(Graph& G): G(G) {
+NetworKit::Matcher::Matcher(const Graph& G): G(G) {
 
 }

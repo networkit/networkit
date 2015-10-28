@@ -16,7 +16,7 @@ bool Matching::isMatched(const node& u) const {
 	return (this->data[u] != none);
 }
 
-bool Matching::isProper(Graph& G) const {
+bool Matching::isProper(const Graph& G) const {
 	/**
 	 * The content of this data structure represents a matching iff
 	 * 	(for all v in V: M[v] = v or M[M[v]] = v) and
@@ -55,8 +55,8 @@ void Matching::match(const node& u, const node& v) {
 }
 
 void Matching::unmatch(const node& u, const node& v) {
-	data[u] = u;
-	data[v] = v;
+	data[u] = none;
+	data[v] = none;
 }
 
 bool Matching::areMatched(const node& u, const node& v) const {
