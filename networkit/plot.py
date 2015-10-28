@@ -58,8 +58,8 @@ def coreDecompositionSequence(G, **kwargs):
 
 def clusteringPerDegree(G, **kwargs):
 	""" Plots the local clustering coefficient for nodes with specific degree"""
-	degs = properties.degreeSequence(G)
-	cc = properties.ClusteringCoefficient.exactLocal(G)
+	degs = centrality.DegreeCentrality(G).run().scores()
+	cc = centrality.LocalClusteringCoefficient(G).run().scores()
 	data = pandas.DataFrame({"deg": degs, "cc" : cc})
 	data = data.groupby("deg", as_index=False).mean()
 	jointplot = seaborn.jointplot("deg", "cc", data, kind="reg", ylim=(0, 1), **kwargs)
