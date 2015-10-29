@@ -768,6 +768,10 @@ TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected) {
 
  	EXPECT_EQ(reference,lccScores);
 
+	LocalClusteringCoefficient lccTurbo(G, true);
+	lccTurbo.run();
+	EXPECT_EQ(reference, lccTurbo.scores());
+
 	// test throw runtime error for self-loop in graph
 	Graph H(2);
 	H.addEdge(0, 1);
