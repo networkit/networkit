@@ -247,7 +247,25 @@ TEST_F(CoarseningGTest, testMatchingContractor) {
    if (G.numberOfEdges() > 0) {
 	   EXPECT_LT(coarseG.numberOfNodes(), G.numberOfNodes());
    }
+}
 
+TEST_F(CoarseningGTest, testMatchingContractorWithSelfLoop) {
+	Graph G(2, true);
+	G.addEdge(0,1,1);
+	G.addEdge(0,0,2);
+
+	LocalMaxMatcher matcher(G);
+    Matching matching = matcher.run();
+    EXPECT_FALSE(matching.areMatched(0,0));
+    EXPECT_TRUE(matching.areMatched(1,0));
+    ASSERT_TRUE(matching.isProper(G));
+
+    MatchingContracter coarsener(G, matching);
+    coarsener.run();
+    Graph coarseG = coarsener.getCoarseGraph();
+    EXPECT_EQ(1, coarseG.numberOfNodes());
+
+    EXPECT_EQ(G.totalEdgeWeight(), coarseG.totalEdgeWeight());
 }
 
 } /* namespace NetworKit */
