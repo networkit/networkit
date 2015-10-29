@@ -164,108 +164,101 @@ void NetworKit::CoreDecomposition::processSublevelParallel(index level,
 
 void CoreDecomposition::runWithBucketQueues() {
 	/* Main data structure: buckets of nodes indexed by their remaining degree. */
-	typedef std::list<node> Bucket;
 	index z = G.upperNodeIdBound();
-	std::vector<Bucket> buckets(z);
-	std::vector<Bucket::iterator> nodePtr(z);
+	std::vector<node> queue(G.numberOfNodes());
+	std::vector<index> nodePtr(z);
+	std::vector<index> degreeBegin(G.numberOfNodes());
+	std::vector<count> degree(z);       // tracks degree during algo
+
+	bool directed = G.isDirected();
+
+	/* Bucket sort  by degree */
+	/* 1) bucket sizes */
+	G.forNodes([&](node u) {
+		count deg = G.degree(u);
+
+		if (directed) {
+			deg += G.degreeIn(u);
+		}
+
+		degree[u] = deg;
+		++degreeBegin[deg];
+	});
+
+	index sum = 0; // 2) exclusive in-place prefix sum
+	for (index i = 0; i < degreeBegin.size(); ++i) {
+		index tmp = degreeBegin[i];
+		degreeBegin[i] = sum;
+		sum += tmp;
+	}
+
+	/* 3) Sort nodes/place them in queue */
+	G.forNodes([&](node u) {
+		count deg = degree[u];
+		index pos = degreeBegin[deg];
+		++degreeBegin[deg];
+		queue[pos] = u;
+		nodePtr[u] = pos;
+	});
+
+	/* 4) restore exclusive prefix sum */
+	index tmp = 0; // move all one forward
+	for (index i = 0; i < degreeBegin.size(); ++i) {
+		std::swap(tmp, degreeBegin[i]);
+	}
 
 	/* Current core and and computed scoreData values. */
-	index core = std::numeric_limits<index>::max();
+	index core = 0;
 	scoreData.clear();
 	scoreData.resize(z);
 
-	std::vector<count> degree(z);       // tracks degree during algo
-	std::vector<bool> alive(z, true);   // tracks if node is deleted (alive) or not
-	count numAlive = G.numberOfNodes(); // tracks number of alive nodes
-
-	/* Insert nodes into their initial buckets. */
-	if (!G.isDirected()) {
-		G.forNodes([&](node v) {
-			count deg = G.degree(v);
-			degree[v] = deg;
-			buckets[deg].push_front(v);
-			core = std::min(core, deg);
-			nodePtr[v] = buckets[deg].begin();
-		});
-	} else {
-		G.forNodes([&](node v) {
-			count deg = G.degreeIn(v) + G.degreeOut(v); // TODO: Document this behavior for directed graph
-			degree[v] = deg;
-			buckets[deg].push_front(v);
-			core = std::min(core, deg);
-			nodePtr[v] = buckets[deg].begin();
-		});
-
-	}
-
 	/* Main loop: Successively "remove" nodes by setting them not alive after processing them. */
-	while (numAlive > 0) {
-		Bucket& cur_bucket = buckets[core];
+	for (index i = 0; i < G.numberOfNodes(); ++i) {
+		node u = queue[i];
+		core = std::max(core, degree[u]); // core is maximum of all previously seen degrees
 
-		/* Remove nodes with remaining degree <= core. */
-		while (!cur_bucket.empty()) {
-			/* scoreData for node u is current core value. */
-			node u = cur_bucket.front();
-			cur_bucket.pop_front();
-			scoreData[u] = core;
+		scoreData[u] = core;
 
-			/* Remove u and its incident edges. */
-			/* graph is undirected */
-			if (!G.isDirected()) {
-				G.forNeighborsOf(u, [&](node v) {
-					if (alive[v]) {
-						count deg = degree[v];
-						degree[v]--;
+		/* Remove a neighbor by decreasing its degree and changing its position in the queue */
+		auto removeNeighbor = [&](node v) {
+			if (nodePtr[v] > i) { // only nodes that are after the current node need to be considered
+				// adjust the degree
+				count oldDeg = degree[v];
+				--degree[v];
+				count newDeg = oldDeg - 1;
 
-						/* Shift node v into new bucket.
-					   Optimisation: Need not move to buckets < core. */
-						if (deg > core) {
-							buckets[deg].erase(nodePtr[v]);
-							buckets[deg - 1].push_front(v);
-							nodePtr[v] = buckets[deg - 1].begin();
-						}
-					}
-				});
-			} else {
-				/* graph is directed */
-				G.forNeighborsOf(u, [&](node v) {
-					if (alive[v]) {
-						count deg = degree[v];
-						degree[v]--;
+				// Degrees smaller than the current degree can be before the current position
+				// Correct those that we need. Note that as we decrease degrees only by one
+				// all degreeBegin values larger than oldDeg will have been adjusted already.
+				if (degreeBegin[oldDeg] <= i) {
+					degreeBegin[oldDeg] = i + 1;
+				}
 
-						/* Shift node v into new bucket.
-					   Optimisation: Need not move to buckets < core. */
-						if (deg > core) {
-							buckets[deg].erase(nodePtr[v]);
-							buckets[deg - 1].push_front(v);
-							nodePtr[v] = buckets[deg - 1].begin();
-						}
-					}
-				});
-				G.forInNeighborsOf(u, [&](node u, node v) {
-					if (alive[v]) {
-						count deg = degree[v];
-						degree[v]--;
+				if (degreeBegin[newDeg] <= i) {
+					degreeBegin[newDeg] = i + 1;
+				}
 
-						/* Shift node v into new bucket.
-					   Optimisation: Need not move to buckets < core. */
-						if (deg > core) {
-							buckets[deg].erase(nodePtr[v]);
-							buckets[deg - 1].push_front(v);
-							nodePtr[v] = buckets[deg - 1].begin();
-						}
-					}
-				});
+				// Swap v with beginning of the current bucket.
+				index oldPos = nodePtr[v];
+				index newPos = degreeBegin[oldDeg];
+				node nodeToSwap = queue[newPos];
+				std::swap(queue[oldPos], queue[newPos]);
+				std::swap(nodePtr[nodeToSwap], nodePtr[v]);
+
+				// Move bucket border, v is now in the previous bucket, i.e. the bucket of its new degree
+				++degreeBegin[oldDeg];
 			}
+		};
 
-			// "delete" current node
-			alive[u] = false;
-			--numAlive;
+		/* Remove u and its incident edges. */
+		G.forNeighborsOf(u, removeNeighbor);
+		if (directed) {
+			/* graph is directed */
+			G.forInNeighborsOf(u, removeNeighbor);
 		}
-		core++;
 	}
 
-	maxCore = core - 1;
+	maxCore = core;
 
 	hasRun = true;
 }
