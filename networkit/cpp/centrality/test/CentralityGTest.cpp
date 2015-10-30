@@ -11,32 +11,23 @@
 #include "../DynApproxBetweenness.h"
 #include "../ApproxBetweenness.h"
 #include "../ApproxBetweenness2.h"
-<<<<<<< local
 #include "../Spanning.h"
-=======
 #include "../ApproxCloseness.h"
->>>>>>> other
 #include "../EigenvectorCentrality.h"
 #include "../KatzCentrality.h"
 #include "../PageRank.h"
+#include "../KPathCentrality.h"
+#include "../CoreDecomposition.h"
+#include "../LocalClusteringCoefficient.h"
 #include "../../io/METISGraphReader.h"
 #include "../../io/SNAPGraphReader.h"
 #include "../../generators/ErdosRenyiGenerator.h"
 #include "../../auxiliary/Log.h"
-<<<<<<< local
-=======
-#include "../KPathCentrality.h"
-#include "../CoreDecomposition.h"
-#include "../LocalClusteringCoefficient.h"
 #include "../../structures/Cover.h"
 #include "../../structures/Partition.h"
->>>>>>> other
 #include "../../auxiliary/Timer.h"
-<<<<<<< local
-=======
 #include "../../generators/ErdosRenyiGenerator.h"
 
->>>>>>> other
 
 namespace NetworKit {
 
