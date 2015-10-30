@@ -2,15 +2,22 @@
  * EdmondsKarp.cpp
  *
  *  Created on: 11.06.2014
- *      Author: Michael Wegner (michael.wegner@student.kit.edu)
+ *      Author: Michael Wegner (michael.wegner@student.kit.edu), Michael Hamann <michael.hamann@kit.edu>
  */
 
 #include "EdmondsKarp.h"
+#include <limits>
+#include <algorithm>
+#include <stdexcept>
 
 namespace NetworKit {
 
-edgeweight EdmondsKarp::BFS(const Graph &graph, std::vector<edgeweight> &flow, std::vector<edgeweight> &residFlow, node source, node sink, std::vector<node> &pred) const {
-	pred = std::vector<node>(graph.upperNodeIdBound(), none);
+EdmondsKarp::EdmondsKarp(const Graph &graph, node source, node sink) : graph(graph), source(source), sink(sink) {
+}
+
+edgeweight EdmondsKarp::BFS(std::vector<edgeweight> &residFlow, std::vector<node> &pred) const {
+	pred.clear();
+	pred.resize(graph.upperNodeIdBound(), none);
 	std::vector<edgeweight> gain(graph.upperNodeIdBound(), 0);
 
 	std::queue<node> Q;
@@ -44,20 +51,20 @@ edgeweight EdmondsKarp::BFS(const Graph &graph, std::vector<edgeweight> &flow, s
 	return 0.0;
 }
 
-edgeweight EdmondsKarp::solveMaxFlow(const Graph &graph, const node source, const node sink, std::vector<edgeweight> &flow) const {
+void EdmondsKarp::run() {
 	if (!graph.hasEdgeIds()) { throw std::runtime_error("edges have not been indexed - call indexEdges first"); }
 	flow.clear();
 	flow.resize(graph.upperEdgeIdBound(), 0.0);
 
 	std::vector<edgeweight> residFlow(graph.upperEdgeIdBound(), 0.0);
 
-	edgeweight maxFlow = 0;
+	flowValue = 0;
 	while (true) {
 		std::vector<node> pred;
-		edgeweight gain = BFS(graph, flow, residFlow, source, sink, pred);
+		edgeweight gain = BFS(residFlow, pred);
 		if (gain == 0) break;
 
-		maxFlow += gain;
+		flowValue += gain;
 		node v = sink;
 		while (v != source) {
 			node u = pred[v];
@@ -76,14 +83,18 @@ edgeweight EdmondsKarp::solveMaxFlow(const Graph &graph, const node source, cons
 	graph.parallelForEdges([&](node u, node v, edgeid eid) {
 		flow[eid] = std::max(flow[eid], residFlow[eid]);
 	});
-
-	return maxFlow;
 }
 
-void EdmondsKarp::computeSourceSet(const Graph &graph, const node source, const node sink, const std::vector<edgeweight> &flow, std::vector<node> &sourceSet) const {
+edgeweight EdmondsKarp::getMaxFlow() const {
+	return flowValue;
+}
+
+
+std::vector<node> EdmondsKarp::getSourceSet() const {
 	// perform bfs from source
 	std::vector<bool> visited(graph.upperNodeIdBound(), false);
-	sourceSet.clear();
+	std::vector<node> sourceSet;
+
 	std::queue<node> Q;
 	Q.push(source);
 	visited[source] = true;
@@ -98,34 +109,16 @@ void EdmondsKarp::computeSourceSet(const Graph &graph, const node source, const 
 			}
 		});
 	}
+
+	return sourceSet;
 }
 
-edgeweight EdmondsKarp::run(const Graph &graph, const node source, const node sink) const {
-	std::vector<edgeweight> flow;
-	return solveMaxFlow(graph, source, sink, flow);
+edgeweight EdmondsKarp::getFlow(node u, node v) const {
+	return flow[graph.edgeId(u, v)];
 }
 
-edgeweight EdmondsKarp::run(const Graph &graph, const node source, const node sink, std::vector<node> &sourceSet) const {
-	std::vector<edgeweight> flow;
-	edgeweight maxFlow = solveMaxFlow(graph, source, sink, flow);
-	computeSourceSet(graph, source, sink, flow, sourceSet);
-
-	return maxFlow;
+std::vector<edgeweight> EdmondsKarp::getFlowVector() const {
+	return flow;
 }
-
-edgeweight EdmondsKarp::run(const NetworKit::Graph &graph, const node source, const node sink, std::vector< NetworKit::edgeweight > &flow) const {
-	edgeweight maxFlow = solveMaxFlow(graph, source, sink, flow);
-
-	return maxFlow;
-}
-
-edgeweight EdmondsKarp::run(const NetworKit::Graph &graph, node source, node sink, std::vector< NetworKit::node > &sourceSet, std::vector< NetworKit::edgeweight > &flow) const {
-	edgeweight maxFlow = solveMaxFlow(graph, source, sink, flow);
-
-	computeSourceSet(graph, source, sink, flow, sourceSet);
-
-	return maxFlow;
-}
-
 
 } /* namespace NetworKit */

@@ -6,7 +6,7 @@
  */
 
 #include "DegreeCentrality.h"
-#include "../properties/GraphProperties.h"
+#include <algorithm>
 
 namespace NetworKit {
 
@@ -21,18 +21,18 @@ void DegreeCentrality::run() {
 	});
 
 	if (normalized) {
-		count maxDeg = GraphProperties::minMaxDegree(G).second;
+		count maxDeg = *std::max_element(scoreData.begin(), scoreData.end());
 		G.parallelForNodes([&](node u) {
 			scoreData[u] = scoreData[u] / maxDeg;
 		});
 	}
 
-
+	hasRun = true;
 }
 
 
 double DegreeCentrality::maximum() {
-	return G.numberOfNodes();
+	return G.numberOfNodes() - 1;
 }
 
 

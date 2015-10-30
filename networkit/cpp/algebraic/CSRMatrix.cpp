@@ -6,11 +6,14 @@
  */
 
 #include "CSRMatrix.h"
-#include "SparseAccumulator.h"
 
 #include <cassert>
+#include <atomic>
 
 namespace NetworKit {
+
+/** Floating point epsilon to use in comparisons. */
+constexpr double EPSILON = 1e-9;
 
 CSRMatrix::CSRMatrix() : rowIdx(0), columnIdx(0), nonZeros(0), nRows(0), nCols(0) {
 }
@@ -137,23 +140,23 @@ Vector CSRMatrix::diagonal() const {
 
 CSRMatrix CSRMatrix::operator+(const CSRMatrix &other) const {
 	assert(nRows == other.nRows && nCols == other.nCols);
-	return CSRMatrix::binaryOperator(*this, other, [&](double val1, double val2) {return val1 + val2;});
+	return CSRMatrix::binaryOperator(*this, other, [](double val1, double val2) {return val1 + val2;});
 }
 
 CSRMatrix& CSRMatrix::operator+=(const CSRMatrix &other) {
 	assert(nRows == other.nRows && nCols == other.nCols);
-	*this = CSRMatrix::binaryOperator(*this, other, [&](double val1, double val2) {return val1 + val2;});
+	*this = CSRMatrix::binaryOperator(*this, other, [](double val1, double val2) {return val1 + val2;});
 	return *this;
 }
 
 CSRMatrix CSRMatrix::operator-(const CSRMatrix &other) const {
 	assert(nRows == other.nRows && nCols == other.nCols);
-	return CSRMatrix::binaryOperator(*this, other, [&](double val1, double val2) {return val1 - val2;});
+	return CSRMatrix::binaryOperator(*this, other, [](double val1, double val2) {return val1 - val2;});
 }
 
 CSRMatrix& CSRMatrix::operator-=(const CSRMatrix &other) {
 	assert(nRows == other.nRows && nCols == other.nCols);
-	*this = CSRMatrix::binaryOperator(*this, other, [&](double val1, double val2) {return val1 + val2;});
+	*this = CSRMatrix::binaryOperator(*this, other, [](double val1, double val2) {return val1 - val2;});
 	return *this;
 }
 
@@ -339,21 +342,87 @@ CSRMatrix CSRMatrix::adjacencyMatrix(const Graph &graph) {
 }
 
 Graph CSRMatrix::laplacianToGraph(const CSRMatrix &laplacian) {
-	Graph G(std::max(laplacian.numberOfRows(), laplacian.numberOfColumns()), true, true);
+	assert(isLaplacian(laplacian));
+	Graph G(std::max(laplacian.numberOfRows(), laplacian.numberOfColumns()), true, false);
 	laplacian.forNonZeroElementsInRowOrder([&](node u, node v, edgeweight weight) {
-		G.addEdge(u, v, -weight);
+		if (u != v) { // exclude diagonal
+			if (u < v) {
+				G.addEdge(u, v, -weight);
+			}
+		}
 	});
 
 	return G;
 }
 
+Graph CSRMatrix::matrixToGraph(const CSRMatrix &matrix) {
+	bool directed = !isSymmetric(matrix);
+	Graph G(std::max(matrix.numberOfRows(), matrix.numberOfColumns()), true, directed);
+	matrix.forNonZeroElementsInRowOrder([&](node u, node v, edgeweight weight) {
+		if (directed || u <= v) {
+			G.addEdge(u, v, weight);
+		}
+	});
+
+	return G;
+}
+
+bool CSRMatrix::isSymmetric(const CSRMatrix &matrix) {
+	bool output = true;
+	matrix.forNonZeroElementsInRowOrder([&] (index i, index j, edgeweight w) {
+		if (matrix(j, i) != w) {
+			output = false;
+		}
+	});
+	if (!output) INFO("not symmetric!");
+	return output;
+}
+
+bool CSRMatrix::isSDD(const CSRMatrix &matrix) {
+	if (!isSymmetric(matrix)) {
+		return false;
+	}
+
+	/* Criterion: a_ii >= \sum_{j != i} a_ij */
+	std::vector<double> row_sum(matrix.numberOfRows());
+	matrix.parallelForNonZeroElementsInRowOrder([&] (node i, node j, double value) {
+		if (i == j) {
+			row_sum[i] += value;
+		} else {
+			row_sum[i] -= abs(value);
+		}
+	});
+
+	return std::all_of(row_sum.begin(), row_sum.end(), [] (double val) {return val > -EPSILON;});
+}
+
+bool CSRMatrix::isLaplacian(const CSRMatrix &matrix) {
+	if (!isSymmetric(matrix)) {
+		return false;
+	}
+
+	/* Criterion: \forall_i \sum_j A_ij = 0  */
+	std::vector<double> row_sum(matrix.numberOfRows());
+	std::atomic<bool> right_sign(true);
+	matrix.parallelForNonZeroElementsInRowOrder([&] (node i, node j, double value) {
+		if (i != j && value > EPSILON) {
+			right_sign = false;
+		}
+		row_sum[i] += value;
+	});
+
+	return right_sign && std::all_of(row_sum.begin(), row_sum.end(), [] (double val) {return abs(val) < EPSILON;});
+}
+
 CSRMatrix CSRMatrix::transpose() const {
-//	Matrix transposedMatrix(numberOfColumns(), numberOfRows());
-//	parallelForNonZeroElementsInRowOrder([&](index i, index j, edgeweight weight){
-//		transposedMatrix.graph.addEdge(i,j,weight);
-//	});
-//
-//	return transposedMatrix;
+	std::vector<std::pair<index, index>> positions(nonZeros.size());
+
+	index idx = 0;
+	forNonZeroElementsInRowOrder([&](index i, index j, double value) {
+		positions[idx++] = std::make_pair(j, i);
+	});
+
+	return CSRMatrix(nCols, nRows, positions, nonZeros);
 }
 
 

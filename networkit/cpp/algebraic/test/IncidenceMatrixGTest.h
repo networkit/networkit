@@ -5,6 +5,8 @@
  *      Author: Michael
  */
 
+#ifndef NOGTEST
+
 #ifndef INCIDENCEMATRIXGTEST_H_
 #define INCIDENCEMATRIXGTEST_H_
 
@@ -38,3 +40,5 @@ public:
 } /* namespace NetworKit */
 
 #endif /* INCIDENCEMATRIXGTEST_H_ */
+
+#endif

@@ -25,6 +25,13 @@ namespace Aux {
 namespace Random {
 
 /**
+ * Sets the random seed that is used globally.
+ * @param seed The seed value
+ * @param useThreadId If the thread id shall be added to the seed value
+ */
+void setSeed(uint64_t seed, bool useThreadId);
+
+/**
  * @returns a high-quality random seed for an URNG.
  */
 uint64_t getSeed();

@@ -200,11 +200,12 @@ public:
 		return 0;
 	}
 
-
 	/**
 	 * Change subset IDs to be consecutive, starting at 0.
+	 * @param useTurbo Default: false. If set to true, a vector instead of a map to assign new ids 
+	 * which results in a shorter running time but possibly a large space overhead.
 	 */
-	void compact();
+	void compact(bool useTurbo = false);
 
 
 	/**
@@ -282,7 +283,7 @@ public:
 	/**
 	 * @return the subsets of the partition as a set of sets.
 	 */
-	std::set<std::set<index> > getSubsets();
+	std::set<std::set<index> > getSubsets() const;
 
 
 	/**

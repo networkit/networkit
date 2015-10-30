@@ -29,7 +29,7 @@ public:
 
 	void addFinestLevel(const CSRMatrix &A);
 	void addEliminationLevel(const CSRMatrix &A, const std::vector<EliminationStage> &coarseningStages);
-	void addAggregationLevel(const CSRMatrix &A, const CSRMatrix &P);
+	void addAggregationLevel(const CSRMatrix &A, const CSRMatrix &P, const CSRMatrix &R);
 
 	count size() const;
 	LevelType getType(index levelIdx) const;

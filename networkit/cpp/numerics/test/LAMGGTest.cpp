@@ -11,7 +11,6 @@
 #include "../../io/LineFileReader.h"
 #include "../../auxiliary/Timer.h"
 
-#include "../NearlyLinearLaplacianSmoother.h"
 #include "../GaussSeidelRelaxation.h"
 
 namespace NetworKit {
@@ -87,7 +86,7 @@ TEST_F(LAMGGTest, testSmallGraphs) {
 
 		LAMGSolverStatus status;
 		status.maxConvergenceTime = 10 * 60 * 1000;
-		status.desiredResidual = 1e-6;
+		status.desiredResidualReduction = 1e-6;
 
 		Vector result = x;
 		INFO("Solving equation system - Gauss-Seidel");
@@ -95,6 +94,8 @@ TEST_F(LAMGGTest, testSmallGraphs) {
 		solver.solve(result, b, status);
 		timer.stop();
 		INFO("solve time\t ", timer.elapsedMilliseconds());
+		INFO("final residual = ", status.residual);
+		INFO("numIters = ", status.numIters);
 		INFO("DONE");
 
 	}

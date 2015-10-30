@@ -19,7 +19,7 @@ class JaccardMeasure: public NetworKit::DissimilarityMeasure {
 
 public:
 
-	double getDissimilarity(const Graph& G, const Partition& first, const Partition& second) override;
+	double getDissimilarity(const NetworKit::Graph &G, const NetworKit::Partition &zeta, const NetworKit::Partition &eta) override;
 };
 
 } /* namespace NetworKit */

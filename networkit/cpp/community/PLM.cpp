@@ -8,20 +8,26 @@
 #include "PLM.h"
 #include <omp.h>
 #include "../coarsening/ParallelPartitionCoarsening.h"
-#include "../coarsening/ClusterContractor.h"
 #include "../coarsening/ClusteringProjector.h"
 #include "../auxiliary/Log.h"
+#include "../auxiliary/Timer.h"
+#include "../auxiliary/SignalHandling.h"
+
 
 #include <sstream>
 
 namespace NetworKit {
 
-PLM::PLM(bool refine, double gamma, std::string par, count maxIter, bool parallelCoarsening, bool turbo) : parallelism(par), refine(refine), gamma(gamma), maxIter(maxIter), parallelCoarsening(parallelCoarsening), turbo(turbo) {
+PLM::PLM(const Graph& G, bool refine, double gamma, std::string par, count maxIter, bool turbo, bool recurse) : CommunityDetectionAlgorithm(G), parallelism(par), refine(refine), gamma(gamma), maxIter(maxIter), turbo(turbo), recurse(recurse) {
 
 }
 
+PLM::PLM(const Graph& G, const PLM& other) : CommunityDetectionAlgorithm(G), parallelism(other.parallelism), refine(other.refine), gamma(other.gamma), maxIter(other.maxIter), turbo(other.turbo), recurse(other.recurse) {
 
-Partition PLM::run(const Graph& G) {
+}
+
+void PLM::run() {
+	Aux::SignalHandler handler;
 	DEBUG("calling run method on " , G.toString());
 
 	count z = G.upperNodeIdBound();
@@ -63,7 +69,7 @@ Partition PLM::run(const Graph& G) {
 
 
 	if (turbo) {
-		if (this->parallelism != "none") { // initialize arrays for all threads only when actually needed
+		if (this->parallelism != "none" && this->parallelism != "none randomized") { // initialize arrays for all threads only when actually needed
 			turboAffinity.resize(omp_get_max_threads());
 			neigh_comm.resize(omp_get_max_threads());
 			for (auto &it : turboAffinity) {
@@ -219,6 +225,8 @@ Partition PLM::run(const Graph& G) {
 				G.parallelForNodes(tryMove);
 			} else if (this->parallelism == "balanced") {
 				G.balancedParallelForNodes(tryMove);
+			} else if (this->parallelism == "none randomized") {
+				G.forNodesInRandomOrder(tryMove);
 			} else {
 				ERROR("unknown parallelization strategy: " , this->parallelism);
 				throw std::runtime_error("unknown parallelization strategy");
@@ -229,20 +237,47 @@ Partition PLM::run(const Graph& G) {
 				WARN("move phase aborted after ", maxIter, " iterations");
 			}
 			iter += 1;
-		} while (moved && (iter <= maxIter));
+		} while (moved && (iter <= maxIter) && handler.isRunning());
 		DEBUG("iterations in move phase: ", iter);
 	};
-
+	handler.assureRunning();
 	// first move phase
+	Aux::Timer timer;
+	timer.start();
+	//
 	movePhase();
-
-	if (change) {
+	//
+	timer.stop();
+	timing["move"].push_back(timer.elapsedMilliseconds());
+	handler.assureRunning();
+	if (recurse && change) {
 		INFO("nodes moved, so begin coarsening and recursive call");
-		std::pair<Graph, std::vector<node>> coarsened = coarsen(G, zeta, parallelCoarsening);	// coarsen graph according to communitites
 
-		Partition zetaCoarse = run(coarsened.first);
+		timer.start();
+		//
+		std::pair<Graph, std::vector<node>> coarsened = coarsen(G, zeta);	// coarsen graph according to communitites
+		//
+		timer.stop();
+		timing["coarsen"].push_back(timer.elapsedMilliseconds());
 
-		INFO("coarse graph has ", coarsened.first.numberOfEdges(), " edges");
+		PLM onCoarsened(coarsened.first, this->refine, this->gamma, this->parallelism, this->maxIter, this->turbo);
+		onCoarsened.run();
+		Partition zetaCoarse = onCoarsened.getPartition();
+
+		// get timings
+		auto tim = onCoarsened.getTiming();
+		for (count t : tim["move"]) {
+			timing["move"].push_back(t);
+		}
+		for (count t : tim["coarsen"]) {
+			timing["coarsen"].push_back(t);
+		}
+		for (count t : tim["refine"]) {
+			timing["refine"].push_back(t);
+		}
+
+
+		INFO("coarse graph has ", coarsened.first.numberOfNodes(), " nodes and ", coarsened.first.numberOfEdges(), " edges");
 		zeta = prolong(coarsened.first, zetaCoarse, G, coarsened.second); // unpack communities in coarse graph onto fine graph
 		// refinement phase
 		if (refine) {
@@ -258,44 +293,43 @@ Partition PLM::run(const Graph& G) {
 					volCommunity[C] += volN;
 				}
 			});
-
 			// second move phase
+			timer.start();
+			//
 			movePhase();
+			//
+			timer.stop();
+			timing["refine"].push_back(timer.elapsedMilliseconds());
+
 		}
 	}
-	return zeta;
+	result = std::move(zeta);
+	hasRun = true;
 }
 
 std::string NetworKit::PLM::toString() const {
-	std::string refined;
-	if (refine) {
-		refined = "refinement";
-	} else {
-		refined = "";
-	}
-	std::string parCoarsening;
-	if (parallelCoarsening) {
-		parCoarsening = "parallel coarsening";
-	} else {
-		parCoarsening = "";
-	}
-
 	std::stringstream stream;
-	stream << "PLM(" << parallelism << "," << refined << "," << parCoarsening << ")";
+	stream << "PLM(";
+	stream << parallelism;
+	if (refine) {
+		stream << "," << "refine";
+	}
+	stream << "," << "pc";
+	if (turbo) {
+		stream << "," << "turbo";
+	}
+	if (!recurse) {
+		stream << "," << "non-recursive";
+	}
+	stream << ")";
 
 	return stream.str();
 }
 
-std::pair<Graph, std::vector<node> > PLM::coarsen(const Graph& G, const Partition& zeta, bool parallel) {
-	if (parallel) {
-		ParallelPartitionCoarsening parCoarsening(true);
-		return parCoarsening.run(G, zeta);
-	} else {
-		ClusterContractor seqCoarsening;
-		return seqCoarsening.run(G, zeta);
-	}
-
-
+std::pair<Graph, std::vector<node> > PLM::coarsen(const Graph& G, const Partition& zeta) {
+	ParallelPartitionCoarsening parCoarsening(G, zeta);
+	parCoarsening.run();
+	return {parCoarsening.getCoarseGraph(),parCoarsening.getNodeMapping()};
 }
 
 Partition PLM::prolong(const Graph& Gcoarse, const Partition& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode) {
@@ -310,6 +344,12 @@ Partition PLM::prolong(const Graph& Gcoarse, const Partition& zetaCoarse, const 
 
 
 	return zetaFine;
+}
+
+
+
+std::map<std::string, std::vector<count> > PLM::getTiming() {
+	return timing;
 }
 
 } /* namespace NetworKit */

@@ -3,9 +3,12 @@
 __author__ = "Christian Staudt"
 
 
-from _NetworKit import Partition, Coverage, Modularity, CommunityDetector, PLP, LPDegreeOrdered, PLM, CNM, PartitionReader, PartitionWriter,\
-	NodeStructuralRandMeasure, GraphStructuralRandMeasure, JaccardMeasure, NMIDistance,\
-	EPP, EPPFactory, CommunityGraph, EdgeListPartitionReader, GraphClusteringTools, ClusteringGenerator, PartitionIntersection, HubDominance, CoreDecomposition, CutClustering
+from _NetworKit import Partition, Coverage, Modularity, CommunityDetector, PLP, LPDegreeOrdered, PLM, PartitionReader, PartitionWriter,\
+	NodeStructuralRandMeasure, GraphStructuralRandMeasure, JaccardMeasure, NMIDistance, AdjustedRandMeasure,\
+	StablePartitionNodes, IntrapartitionDensity, PartitionHubDominance, CoverHubDominance, PartitionFragmentation, IsolatedInterpartitionExpansion, IsolatedInterpartitionConductance,\
+	EdgeListPartitionReader, GraphClusteringTools, ClusteringGenerator, PartitionIntersection, HubDominance, CoreDecomposition, CutClustering, ParallelPartitionCoarsening
+
+# R.I.P.: The CNM (Clauset, Newman, Moore) community detection algorithm - it was always a bit slow, but it broke down in the end. Resurrect it from history (<= 3.4.1) if needed for experimental purposes.
 
 # local imports
 #from .properties import CoreDecomposition, overview
@@ -14,6 +17,7 @@ from . import stopwatch
 
 # external imports
 import os
+import math
 try:
 	import tabulate
 except ImportError:
@@ -26,9 +30,10 @@ def detectCommunities(G, algo=None, inspect=True):
 		:return communities (as type Partition)
 		"""
 	if algo is None:
-		algo = PLM(refine=False)
+		algo = PLM(G, refine=False)
 	t = stopwatch.Timer()
-	zeta = algo.run(G)
+	algo.run()
+	zeta = algo.getPartition()
 	t.stop()
 	print("{0} detected communities in {1} [s]".format(algo.toString(), t.elapsed))
 	if inspect:
@@ -56,16 +61,17 @@ def inspectCommunities(zeta, G):
 
 def communityGraph(G, zeta):
 	""" Create a community graph, i.e. a graph in which one node represents a community and an edge represents the edges between communities, from a given graph and a community detection solution"""
-	cg = CommunityGraph()
-	cg.run(G, zeta)
-	return cg.getGraph()
+	cg = ParallelPartitionCoarsening(G, zeta)
+	cg.run()
+	return cg.getCoarseGraph()
 
 
 def evalCommunityDetection(algo, G):
 	""" Evaluate a community detection algorithm """
 
 	t = stopwatch.Timer()
-	zeta = algo.run(G)
+	algo.run()
+	zeta = algo.getPartition()
 	t.stop()
 	results = [
 		["time [s]", t.elapsed],
@@ -78,10 +84,10 @@ def evalCommunityDetection(algo, G):
 def readCommunities(path, format="default"):
 	""" Read a partition into communities from a file"""
 	readers =  {"default": PartitionReader(),
-		"edgelist-t1": EdgeListPartitionReader(1),
-		"edgelist-t0": EdgeListPartitionReader(0),
-		"edgelist-s1": EdgeListPartitionReader(1),
-		"edgelist-s0": EdgeListPartitionReader(0),
+		"edgelist-t1": EdgeListPartitionReader(1, '\t'),
+		"edgelist-t0": EdgeListPartitionReader(0, '\t'),
+		"edgelist-s1": EdgeListPartitionReader(1, ' '),
+		"edgelist-s0": EdgeListPartitionReader(0, ' '),
 		}
 	# get reader
 	try:
@@ -119,7 +125,7 @@ def compareCommunities(G, zeta1, zeta2):
 def kCoreCommunityDetection(G, k, algo=None, inspect=True):
 	""" Perform community detection on the k-core of the graph, which possibly
 		reduces computation time and enhances the result.
-		:param    G    the graph
+		:param    G    the graph (may not contain self-loops)
 		:param		k 	k as in k-core
 		:param     algorithm    community detection algorithm instance
 		:return communities (as type Partition)
@@ -138,3 +144,23 @@ def kCoreCommunityDetection(G, k, algo=None, inspect=True):
 	#properties.overview(C)
 
 	return detectCommunities(C, algo, inspect)
+
+
+def mesoscopicResponseFunction(G, samples=100):
+	"""
+	"""
+	raise NotImplementedError("work in progress")
+	m = G.numberOfEdges()
+	gammaRangeLow = [math.e**x for x in range(-10, 0)]
+	gammaRangeHigh = [math.e**x for x in range(0, math.ceil(math.log(2*m)))]
+	gammaRange = gammaRangeLow + gammaRangeHigh
+	print(gammaRange)
+	nCom = []
+
+	for gamma in gammaRange:
+		communityDetector = PLM(G, gamma=gamma)
+		communityDetector.run()
+		communities = communityDetector.getPartition()
+		nCom.append(communities.numberOfSubsets())
+
+	return (gammaRange, nCom)

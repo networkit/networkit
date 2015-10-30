@@ -5,15 +5,40 @@ syntax: regexp
 \.mk$
 \.o$
 .DS_Store
-\.pyc
-\.a
-\.so
+\.pyc$
+\.a$
+\.so$
 \checkpoint.ipynb
 build.conf
 .sconsign.dblite
 /_NetworKit.cpp$
 src/python/NetworKit.egg-info/
 NetworKit-Tests-D
+lamg-2.2-2
+CMG_101014
+instances
+bench*
+.cproject
+.project
+.settings*
+Benchmark*
+plots
+\.out$
+\.egg$
+\~$
+\.dot$
+\.project$
+\.cproject$
+^tracelog
+\.json$
+\.csv
+\.dat
+
+scripts/SparsificationEvaluation/input/
+scripts/SparsificationEvaluation/output/
+scripts/SparsificationEvaluation/figures
+input/backbones/
+build/
 
 syntax: regexp
 ^output$
@@ -41,3 +66,4 @@ syntax: regexp
 
 syntax: glob
 NetworKit-Tests-*
+include/NetworKit

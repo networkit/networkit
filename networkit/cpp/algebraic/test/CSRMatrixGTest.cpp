@@ -553,6 +553,39 @@ TEST(CSRMatrixGTest, testBigMatrixMultiplication) {
 	ASSERT_EQ(mat.numberOfColumns(), result.numberOfColumns());
 }
 
+TEST(CSRMatrixGTest, testTransposition) {
+	//
+	//	   1  2  3  1  1
+	// 	   0  2  0  0  0
+	// mat 4  0  3 -1  0
+	//	   0  0  0  4 -1
+	//
+	std::vector<std::pair<index, index> > positions;
+	std::vector<double> values = {1, 2, 3, 1, 1, 2, 4, 3, -1, 4, -1};
+
+	positions.push_back(std::make_pair(0,0));
+	positions.push_back(std::make_pair(0,1));
+	positions.push_back(std::make_pair(0,2));
+	positions.push_back(std::make_pair(0,3));
+	positions.push_back(std::make_pair(0,4));
+	positions.push_back(std::make_pair(1,1));
+	positions.push_back(std::make_pair(2,0));
+	positions.push_back(std::make_pair(2,2));
+	positions.push_back(std::make_pair(2,3));
+	positions.push_back(std::make_pair(3,3));
+	positions.push_back(std::make_pair(3,4));
+
+	CSRMatrix mat(4, 5, positions, values);
+	CSRMatrix matT = mat.transpose();
+
+	EXPECT_EQ(5u, matT.numberOfRows());
+	EXPECT_EQ(4u, matT.numberOfColumns());
+
+	mat.forNonZeroElementsInRowOrder([&](index i, index j, double value) {
+		EXPECT_EQ(value, matT(j,i));
+	});
+}
+
 TEST(CSRMatrixGTest, testMatrixTransposeMatrixMultiplication) {
 	std::vector<std::pair<index,index>> positions = {std::make_pair(0,0), std::make_pair(0,1), std::make_pair(0,2), std::make_pair(1,1), std::make_pair(2,0), std::make_pair(3,2)};
 	std::vector<double> values = {1.0, 2.0, 3.0, 2.0, 3.0, -1.0};

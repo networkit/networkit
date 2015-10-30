@@ -20,17 +20,15 @@ public:
 	 *
 	 * @param alpha The parameter for the cut clustering
 	 */
-	CutClustering(edgeweight alpha);
+	CutClustering(const Graph& G, edgeweight alpha);
 
 	/**
 	 * Apply algorithm to graph
 	 *
 	 * Warning: due to numerical errors the resulting clusters might not be correct.
 	 * This implementation uses the Edmonds-Karp algorithm for the cut calculation.
-	 *
-	 * @return partition of the node set
 	 */
-	virtual Partition run(const Graph& G) override;
+	virtual void run() override;
 
 	/**
 	 * @return string representation of algorithm and parameters.

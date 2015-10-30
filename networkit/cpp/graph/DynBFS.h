@@ -30,7 +30,7 @@ public:
 	 */
 	DynBFS(const Graph& G, node s, bool storePredecessors = true);
 
-	void run(node t = none) override;
+	void run() override;
 
 	/** Updates the distances after an event.*/
 	void update(const std::vector<GraphEvent>& batch) override;

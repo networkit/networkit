@@ -4,16 +4,16 @@
 
 #include "CutClustering.h"
 #include "../flow/EdmondsKarp.h"
-#include "../properties/ConnectedComponents.h"
+#include "../components/ConnectedComponents.h"
 #include "../auxiliary/Log.h"
 
 #include <sstream>
 #include <stdexcept>
 #include <limits>
 
-NetworKit::CutClustering::CutClustering(NetworKit::edgeweight alpha) : alpha(alpha) { }
+NetworKit::CutClustering::CutClustering(const Graph& G, NetworKit::edgeweight alpha) : CommunityDetectionAlgorithm(G), alpha(alpha) { }
 
-NetworKit::Partition NetworKit::CutClustering::run(const NetworKit::Graph &G) {
+void NetworKit::CutClustering::run() {
 	Partition result(G.upperNodeIdBound());
 	result.setUpperBound(G.upperNodeIdBound());
 
@@ -33,9 +33,6 @@ NetworKit::Partition NetworKit::CutClustering::run(const NetworKit::Graph &G) {
 	// Index edges (needed by Edmonds-Karp implementation)
 	graph.indexEdges();
 
-	// The Edmonds-Karp implementation
-	EdmondsKarp flowAlgo;
-	
 	// sort nodes by degree, this (heuristically) reduces the number of needed cut calculations
 	// bucket sort
 	count n = G.numberOfNodes();
@@ -68,8 +65,9 @@ NetworKit::Partition NetworKit::CutClustering::run(const NetworKit::Graph &G) {
 		// is already in a cluster will always produce a source side that is completely
 		// contained in its cluster
 		if (!result.contains(u)) {
-			std::vector<node> sourceSet;
-			flowAlgo.run(graph, u, t, sourceSet);
+			EdmondsKarp flowAlgo(graph, u, t);
+			flowAlgo.run();
+			std::vector<node> sourceSet(flowAlgo.getSourceSet());
 
 			// all nodes in the source side form a new cluster, this cluster might absorb other clusters
 			for (node v : sourceSet) {
@@ -77,8 +75,8 @@ NetworKit::Partition NetworKit::CutClustering::run(const NetworKit::Graph &G) {
 			}
 		}
 	}
-	
-	return result;
+	this->result = std::move(result);
+	hasRun = true;
 }
 
 std::map< NetworKit::edgeweight, NetworKit::Partition > NetworKit::CutClustering::getClusterHierarchy(const NetworKit::Graph &G) {
@@ -212,7 +210,9 @@ void NetworKit::CutClustering::clusterHierarchyRecursion(const NetworKit::Graph 
 		}
 
 		// calculate the clustering at the calculated breakpoint
-		Partition middleClusters(CutClustering(middle).run(G)); // FIXME using a single cut clustering instance such that G is not always copied is probably faster
+		CutClustering middleClusterer(G, middle);
+		middleClusterer.run();
+		Partition middleClusters(middleClusterer.getPartition()); // FIXME using a single cut clustering instance such that G is not always copied is probably faster
 
 		INFO("Calculated clustering for alpha value ", middle);
 

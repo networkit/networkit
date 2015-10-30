@@ -24,10 +24,13 @@ public:
 	enum Type {
 		NODE_ADDITION,
 		NODE_REMOVAL,
+		NODE_RESTORATION,
 		EDGE_ADDITION,
 		EDGE_REMOVAL,
-		EDGE_WEIGHT_UPDATE,
+		EDGE_WEIGHT_UPDATE, 
+		EDGE_WEIGHT_INCREMENT,
 		TIME_STEP
+		
 	};
 
 	Type type;	//!< type of graph event
@@ -39,6 +42,9 @@ public:
 	GraphEvent() = default;
 
 	GraphEvent(Type type, node u = none, node v = none, edgeweight w = 1.0);
+
+	static bool compare(GraphEvent a, GraphEvent b);
+	static bool equal(GraphEvent a, GraphEvent b);
 
 	/**
 	 * Return string representation.

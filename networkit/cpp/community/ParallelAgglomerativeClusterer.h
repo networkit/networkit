@@ -19,8 +19,17 @@ namespace NetworKit {
 class ParallelAgglomerativeClusterer: public NetworKit::CommunityDetectionAlgorithm {
 
 public:
+	/**
+	 * Constructor to the parallel agglomerative clusterer.
+	 *
+	 * @param[in]	G	input graph
+	 */
+	ParallelAgglomerativeClusterer(const Graph& G);
 
-	virtual Partition run(const Graph& G);
+	/**
+	 * Detect communities.
+	 */
+	virtual void run();
 
 	virtual std::string toString() const;
 };
