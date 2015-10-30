@@ -12,6 +12,7 @@
 #include <stack>
 
 #include "Graph.h"
+#include "../base/Algorithm.h"
 
 
 namespace NetworKit {
@@ -20,7 +21,7 @@ namespace NetworKit {
  * @ingroup graph
  * Abstract base class for single-source shortest path algorithms.
  */
-class SSSP {
+class SSSP: public Algorithm {
 
 public:
 
@@ -29,29 +30,22 @@ public:
 	 *
 	 * @param G The graph.
 	 * @param s The source node.
-   * @param storePaths
-   * @param storeStack
 	 */
-	SSSP(const Graph& G, node s, bool storePaths=true, bool storeStack=false);
+	SSSP(const Graph& G, node s, bool storePaths=true, bool storeStack=false, node target = none);
 
-  /**
-   * Creates the SSSP class for @a G and sources @a sources.
-   *
-   * @param G The graph.
-   * @param sources The source nodes.
-   */
-  SSSP(const Graph& G, const std::vector<node>& sources);
+	virtual ~SSSP() = default;
 
 	/** Computes the shortest paths from the source to all other nodes. */
-	virtual void run(node t = none) = 0;
+	virtual void run() = 0;
 
 	/**
 	 * Returns a vector of weighted distances from the source node, i.e. the
  	 * length of the shortest path from the source node to any other node.
  	 *
+ 	 * @param moveOut If set to true, the container will be moved out of the class instead of copying it; default=true.
  	 * @return The weighted distances from the source node to any other node in the graph.
 	 */
-	virtual std::vector<edgeweight> getDistances() const;
+	virtual std::vector<edgeweight> getDistances(bool moveOut=true);
 
 	/**
 	 * Returns the distance from the source node to @a t.
@@ -66,6 +60,14 @@ public:
 	 * @return The number of shortest paths between source and @a t.
 	 */
 	bigfloat numberOfPaths(node t) const;
+
+	/**
+	 * Returns the number of shortest paths between the source node and @a t
+	 * as a double value. Workaround for Cython
+	 * @param  t Target node.
+	 * @return The number of shortest paths between source and @a t.
+	 */
+	double _numberOfPaths(node t) const;
 
 	/**
 	 * Returns the predecessor nodes of @a t on all shortest paths from source to @a t.
@@ -92,33 +94,30 @@ public:
 	 */
 	virtual std::set<std::vector<node> > getPaths(node t, bool forward=true) const;
 
-  /**
-   * @return a canonical shortest-path predecessor for each node.
-   */
-  virtual std::vector<node> getCanonicalPredecessors() const;
-
-  inline bigfloat getNumberOfPaths(node t) const;
+	/* Returns the number of shortest paths to node t.*/
+	bigfloat getNumberOfPaths(node t) const;
 
 	/**
 	* Returns a stack of nodes ordered in decreasing distance from the source
 	*
-  * @return stack of nodes
+	* @param moveOut If set to true, the container will be moved out of the class instead of copying it; default=true.
+	* @return stack of nodes
 	*/
-	virtual std::stack<node> getStack() const;
+	virtual std::vector<node> getStack(bool moveOut=true);
 
-public:
-//protected:
+protected:
 
 	const Graph& G;
-  const std::vector<node> sources;
+	const node source;
+	node target;
 	std::vector<edgeweight> distances;
 	std::vector<std::vector<node> > previous; // predecessors on shortest path
 	std::vector<bigfloat> npaths;
 
-	std::stack<node> stack;
+	std::vector<node> stack;
 
-  bool storePaths = true;		//!< if true, paths are reconstructable and the number of paths is stored
-  bool storeStack = false;		//!< if true, store a stack of nodes ordered in decreasing distance from the source
+	bool storePaths;		//!< if true, paths are reconstructable and the number of paths is stored
+	bool storeStack;		//!< if true, store a stack of nodes ordered in decreasing distance from the source
 };
 
 inline edgeweight SSSP::distance(node t) const {
@@ -130,6 +129,19 @@ inline bigfloat SSSP::numberOfPaths(node t) const {
 		throw std::runtime_error("number of paths have not been stored");
 	}
 	return npaths[t];
+}
+
+inline double SSSP::_numberOfPaths(node t) const {
+	if (! storePaths) {
+		throw std::runtime_error("number of paths have not been stored");
+	}
+	bigfloat limit = std::numeric_limits<double>::max();
+	if (npaths[t] > limit) {
+		throw std::overflow_error("number of paths do not fit into a double");
+	}
+	double res;
+	npaths[t].ToDouble(res);
+	return res;
 }
 
 inline std::vector<node> SSSP::getPredecessors(node t) const {

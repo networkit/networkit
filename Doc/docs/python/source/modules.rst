@@ -1,27 +1,31 @@
-python
-======
+Python Documentation
+====================
+
+.. automodule:: networkit
 
 .. toctree::
+   :hidden:
    :maxdepth: 4
 
-   NetworKit
    algebraic
-   auxiliary
    centrality
+   coloring
+   components
+   correlation
    community
+   distance
    dynamic
    engineering
    generators
    gephi
+   globals
    graph
    graphio
+   linkprediction
    nxadapter
-   powerlaw
    properties
-   scripts
+   profiling
    stopwatch
    structures
    termgraph
-   toolbox
    viztasks
-   viztools

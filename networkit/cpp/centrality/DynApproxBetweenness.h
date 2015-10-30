@@ -21,7 +21,7 @@
 namespace NetworKit {
 
 /**
- * @ingroup graph
+ * @ingroup centrality
  * Interface for dynamic approximated betweenness centrality algorithm.
  */
 class DynApproxBetweenness: public Centrality, public DynCentrality {
@@ -50,6 +50,11 @@ public:
     * @param batch The batch of edge insertions.
     */
     void update(const std::vector<GraphEvent>& batch);
+
+    /**
+    * Get number of path samples used for last calculation
+    */
+    count getNumberOfSamples();
 
 private:
     bool storePreds = true;

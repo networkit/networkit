@@ -2,7 +2,7 @@
  * CSRMatrix.h
  *
  *  Created on: May 6, 2015
- *      Author: Michael
+ *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
 #ifndef CSRMATRIX_H_
@@ -12,6 +12,7 @@
 #include "../Globals.h"
 #include "Vector.h"
 #include "../graph/Graph.h"
+#include "../algebraic/SparseAccumulator.h"
 
 namespace NetworKit {
 
@@ -166,6 +167,14 @@ public:
 	static CSRMatrix adjacencyMatrix(const Graph &graph);
 
 	static Graph laplacianToGraph(const CSRMatrix &laplacian);
+
+	static Graph matrixToGraph(const CSRMatrix &matrix);
+
+	static bool isSymmetric(const CSRMatrix &matrix);
+
+	static bool isSDD(const CSRMatrix &matrix);
+
+	static bool isLaplacian(const CSRMatrix &matrix);
 
 	CSRMatrix transpose() const;
 

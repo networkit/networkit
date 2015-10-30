@@ -23,8 +23,9 @@ public:
 	 *
 	 * @param G The graph.
 	 * @param normalized Set this parameter to <code>true</code> if scores should be normalized in the interval [0,1].
+	 * @param computeEdgeCentrality Set this parameter to <code>true</code> if edge betweenness should be computed as well.
 	 */
-	Betweenness(const Graph& G, bool normalized=false);
+	Betweenness(const Graph& G, bool normalized=false, bool computeEdgeCentrality=false);
 
 
 
@@ -33,6 +34,11 @@ public:
 	*
 	*/
 	void run() override;
+
+	/*
+	* Returns the maximum possible Betweenness a node can have in a graph with the same amount of nodes (=a star)
+	*/
+	double maximum();
 
 };
 

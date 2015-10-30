@@ -5,9 +5,10 @@ except ImportError:
 
 import random
 
+framework = " (nx)"
 
 class Algo:
-	frameworkPrefix = "nx:"
+	framework = framework
 
 	""" runner for an algorithm"""
 	def run(self, G):
@@ -27,7 +28,7 @@ class Algo:
 # - connected components (properties.ConnectedComponents, properties.ParallelConnectedComponents)
 
 class bConnectedComponents(Algo):
-	name = "nx:ConnectedComponents"
+	name = "ConnectedComponents" + framework
 
 	def run(self, G):
 		cc = networkx.number_connected_components(G)
@@ -36,7 +37,7 @@ class bConnectedComponents(Algo):
 # - k-core decomposition (properties.CoreDecomposition)
 
 class bCoreDecomposition(Algo):
-	name = "nx:CoreDecomposition"
+	name = "CoreDecomposition" + framework
 
 	def run(self, G):
 		cn = networkx.core_number(G)
@@ -49,7 +50,7 @@ class bCoreDecomposition(Algo):
 # - degree assortativity (properties.degreeAssortativity)
 
 class bDegreeAssortativity(Algo):
-	name = "nx:DegreeAssortativity"
+	name = "DegreeAssortativity" + framework
 
 	def run(self, G):
 		ac = networkx.degree_assortativity_coefficient(G)
@@ -58,7 +59,7 @@ class bDegreeAssortativity(Algo):
 
 # - BFS & Dijkstra (graph.BFS, graph.Dijkstra)
 class bBFS(Algo):
-	name = "nx:BFS"
+	name = "BFS" + framework
 
 	def run(self, G):
 		s = random.randint(0, G.number_of_nodes())
@@ -71,7 +72,7 @@ class bBFS(Algo):
 # - diameter, exact (properties.Diameter.exactDiameter) and estimate (properties.Diameter.estimatedDiameterRange)
 
 class bDiameter(Algo):
-	name = "nx:Diameter"
+	name = "Diameter" + framework
 
 	def run(self, G):
 		d = networkx.diameter(G)
@@ -83,14 +84,14 @@ class bDiameter(Algo):
 # - clustering coefficients (average local), exact (properties.ClusteringCoefficient.avgLocal) and approximated (properties.ClusteringCoefficient.approxAvgLocal)
 
 class bClusteringCoefficient(Algo):
-	name = "nx:ClusteringCoefficient"
+	name = "ClusteringCoefficient" + framework
 
 	def run(self, G):
 		c = networkx.average_clustering(G)
 		return c
 
 class bApproxClusteringCoefficient(Algo):
-	name = "nx:ApproxClusteringCoefficient"
+	name = "ApproxClusteringCoefficient" + framework
 
 	def run(self, G):
 		c = networkx.average_clustering(G, trials=1000)
@@ -103,7 +104,7 @@ class bApproxClusteringCoefficient(Algo):
 # 	- PageRank (centrality.PageRank, centrality.SciPyPageRank)
 
 class bPageRank(Algo):
-	name = "nx:PageRank"
+	name = "PageRank" + framework
 
 	def run(self, G):
 		pr = networkx.pagerank(G, alpha=0.85, tol=1e-06)
@@ -114,7 +115,7 @@ class bPageRank(Algo):
 # 	- betweenness,  exact (centrality.Betweenness) and approximated (centrality.ApproxBetweenness, centrality.ApproxBetweenness2)
 
 class bBetweenness(Algo):
-	name = "nx:Betweenness"
+	name = "Betweenness" + framework
 
 	def run(self, G):
 		networkx.betweenness_centrality(G)

@@ -9,7 +9,6 @@
 #define MATRIX_H_
 
 #include "../graph/Graph.h"
-#include "../auxiliary/Log.h"
 #include "Vector.h"
 #include "SparseAccumulator.h"
 
@@ -17,7 +16,7 @@ namespace NetworKit {
 
 /**
  * @ingroup algebraic
- * The matrix class represents a matrix which is optimized for sparse matrices. *
+ * The matrix class represents a matrix which is optimized for sparse matrices.
  */
 class Matrix {
 protected:
@@ -198,8 +197,6 @@ public:
 	static Matrix mmTMultiply(const Matrix &A, const Matrix &B);
 
 	static Vector mTvMultiply(const Matrix &matrix, const Vector &vector);
-
-//	static Matrix mmTMultiply(const Matrix &A, const Matrix &B);
 
 	Matrix transpose() const;
 

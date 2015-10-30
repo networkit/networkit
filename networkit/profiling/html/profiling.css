@@ -1,0 +1,326 @@
+.NetworKit_Page {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+}
+
+.NetworKit_Page .Value:before {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 1.05em;
+	content: attr(data-title) ":";
+	margin-left: -2.5em;
+	padding-right: 0.5em;
+}
+
+.NetworKit_Page .Details .Value:before {
+	display: block;
+}
+
+.NetworKit_Page .Value {
+	font-family: monospace;
+	white-space: pre;
+	padding-left: 2.5em;
+	white-space: -moz-pre-wrap !important;
+	white-space: -pre-wrap;
+	white-space: -o-pre-wrap;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	tab-size: 4;
+	-moz-tab-size: 4;
+}
+
+.NetworKit_Page .Category {
+	clear: both;
+	padding-left: 1em;
+	margin-bottom: 1.5em;
+}
+
+.NetworKit_Page .Category:before {
+	content: attr(data-title);
+	font-size: 1.75em;
+	display: block;
+	margin-left: -0.8em;
+	margin-bottom: 0.5em;
+}
+
+.NetworKit_Page .SubCategory {
+	margin-bottom: 1.5em;
+	padding-left: 1em;
+}
+
+.NetworKit_Page .SubCategory:before {
+	font-size: 1.6em;
+	display: block;
+	margin-left: -0.8em;
+	margin-bottom: 0.5em;
+}
+
+.NetworKit_Page .SubCategory[data-title]:before {
+	content: attr(data-title);
+}
+
+.NetworKit_Page .Block {
+	display: block;
+}
+
+.NetworKit_Page .Block:after {
+	content: "."; 
+	visibility: hidden; 
+	display: block; 
+	height: 0; 
+	clear: both;
+}
+
+.NetworKit_Page .Block .Thumbnail_Overview,
+.NetworKit_Page .Block .Thumbnail_ScatterPlot {
+	width: 260px;
+	float: left;
+}
+
+.NetworKit_Page .Block .Thumbnail_Overview img,
+.NetworKit_Page .Block .Thumbnail_ScatterPlot img {
+	width: 260px;
+}
+
+
+.NetworKit_Page .Block .Thumbnail_Overview:before,
+.NetworKit_Page .Block .Thumbnail_ScatterPlot:before {
+	display: block;
+	text-align: center;
+	font-weight: bold;
+}
+
+.NetworKit_Page .Block .Thumbnail_Overview:before {
+	content: attr(data-title);
+}
+
+.NetworKit_Page .HeatCell {
+	font-family: "Courier New", Courier, monospace;
+	cursor: pointer;
+}
+
+.NetworKit_Page .HeatCell,
+.NetworKit_Page .HeatCellName {
+	display: inline;
+	padding: 0.1em;
+	margin-right: 2px;
+	background-color: #FFFFFF
+}
+
+.NetworKit_Page .HeatCellName {
+	margin-left: 0.25em;
+}
+
+.NetworKit_Page .HeatCell:before {
+	content: attr(data-heat);
+	display: inline-block;
+	color: #000000;
+	width: 4em;
+	text-align: center;
+}
+
+.NetworKit_Page .Measure {
+	clear: both;
+}
+
+.NetworKit_Page .Measure .Details {
+	cursor: pointer;
+}
+
+.NetworKit_Page .Measure .Details:before {
+	content: "[" attr(data-title) "]";
+	display: block;
+}
+
+.NetworKit_Page .Measure .Details .Value {
+	border-left: 1px dotted black;
+	margin-left: 0.4em;
+	padding-left: 3.5em;
+	pointer-events: none;
+}
+
+.NetworKit_Page .Measure .Details .Spacer:before {
+	content: ".";
+	opacity: 0.0;
+	pointer-events: none;
+}
+
+.NetworKit_Page .Measure .Plot {
+	width: 440px;
+	height: 440px;
+	cursor: pointer;
+	float: left;
+	margin-left: -0.9em;
+	margin-right: 20px;
+}
+
+.NetworKit_Page .Measure .Plot .Image {
+	background-repeat: no-repeat;
+    background-position: center center;
+	background-size: contain;
+	height: 100%;
+    pointer-events: none;
+}
+
+.NetworKit_Page .Measure .Stat {
+	width: 500px;
+	float: left;
+}
+
+.NetworKit_Page .Measure .Stat .Group { 
+	padding-left: 1.25em;
+	margin-bottom: 0.75em;
+}
+
+.NetworKit_Page .Measure .Stat .Group .Title { 
+	font-size: 1.1em;
+	display: block;
+	margin-bottom: 0.3em;
+	margin-left: -0.75em;
+	border-right-style: dotted;
+    border-right-width: 1px;
+	border-bottom-style: dotted;
+    border-bottom-width: 1px;
+	background-color: #D0D0D0;
+	padding-left: 0.2em;
+}
+
+.NetworKit_Page .Measure .Stat .Group .List { 
+	-webkit-column-count: 3;
+    -moz-column-count: 3;
+    column-count: 3;
+}
+
+.NetworKit_Page .Measure .Stat .Group .List .Entry {
+	position: relative;
+	line-height: 1.75em;
+}
+
+.NetworKit_Page .Measure .Stat .Group .List .Entry[data-tooltip]:before {
+	position: absolute;
+	left: 0;
+	top: -40px;
+	background-color: #808080;
+	color: #ffffff;
+	height: 30px;
+	line-height: 30px;
+	border-radius: 5px;
+	padding: 0 15px;
+	content: attr(data-tooltip);
+	white-space: nowrap;
+	display: none;
+}
+
+.NetworKit_Page .Measure .Stat .Group .List .Entry[data-tooltip]:after {
+	position: absolute;
+	left: 15px;
+	top: -10px;
+	border-top: 7px solid #808080;
+	border-left: 7px solid transparent;
+	border-right: 7px solid transparent;
+	content: "";
+	display: none;
+}
+
+.NetworKit_Page .Measure .Stat .Group .List .Entry[data-tooltip]:hover:after,
+.NetworKit_Page .Measure .Stat .Group .List .Entry[data-tooltip]:hover:before {
+	display: block;
+}
+
+.NetworKit_Page .Measure .Stat .Group .List .Entry .MathValue {
+	font-family: "Courier New", Courier, monospace;
+}
+
+.NetworKit_Page .Measure:after {
+	content: "."; 
+	visibility: hidden; 
+	display: block; 
+	height: 0; 
+	clear: both;
+}
+
+.NetworKit_Page .PartitionPie {
+	clear: both;
+}
+
+.NetworKit_Page .PartitionPie img {
+	width: 600px;
+}
+
+#NetworKit_Overlay {
+	left: 0px;
+	top: 0px;
+	display: none;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0,0,0,0.6);
+	z-index: 1000;
+}
+
+#NetworKit_Overlay_Title {
+	position: absolute;
+	color: white;
+	transform: rotate(-90deg);
+	width: 32em;
+	height: 32em;
+	padding-right: 0.5em;
+	padding-top: 0.5em;
+	text-align: right;
+	font-size: 40px;
+}
+
+#NetworKit_Overlay .button {
+	background: white;
+	cursor: pointer;
+}
+
+#NetworKit_Overlay .button:before {
+	size: 13px;
+	display: inline-block;
+	text-align: center;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+	width: 1.5em;
+	height: 1.5em;
+}
+
+#NetworKit_Overlay .icon-close:before { content: "X"; }
+#NetworKit_Overlay .icon-previous:before { content: "P"; }
+#NetworKit_Overlay .icon-next:before { content: "N"; }
+#NetworKit_Overlay .icon-save:before { content: "S"; }
+
+#NetworKit_Overlay_Toolbar_Top,
+#NetworKit_Overlay_Toolbar_Bottom {
+	position: absolute;
+	width: 40px;
+	right: 13px;
+	text-align: right;
+	z-index: 1100;
+}
+
+#NetworKit_Overlay_Toolbar_Top {
+	top: 0.5em;
+}
+
+#NetworKit_Overlay_Toolbar_Bottom {
+	Bottom: 0.5em;
+}
+
+#NetworKit_Overlay_ImageContainer {
+	position: absolute;
+	top: 5%;
+	left: 5%;
+	height: 90%;
+	width: 90%;
+	background-repeat: no-repeat;
+    background-position: center center;
+	background-size: contain;
+}
+
+#NetworKit_Overlay_Image {
+	height: 100%;
+	width: 100%;
+	background-repeat: no-repeat;
+    background-position: center center;
+	background-size: contain;
+}

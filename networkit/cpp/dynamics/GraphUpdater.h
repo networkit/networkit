@@ -26,6 +26,9 @@ public:
 
 	std::vector<std::pair<count, count> > getSizeTimeline();
 
+	static bool compare(GraphEvent a, GraphEvent b);
+	static bool equal(GraphEvent a, GraphEvent b);
+
 private:
 
 	Graph& G;

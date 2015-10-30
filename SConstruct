@@ -120,14 +120,14 @@ env.Append(LINKFLAGS = ["-std=c++11"])
 commonCFlags = ["-c", "-fmessage-length=0", "-std=c99", "-fPIC"]
 commonCppFlags = ["-std=c++11", "-Wall", "-c", "-fmessage-length=0", "-fPIC"]
 
-debugCppFlags = ["-O0", "-g3", "-DLOG_LEVEL=LOG_LEVEL_TRACE"]
+debugCppFlags = ["-O0", "-g3", "-DNPROFILE", "-DLOG_LEVEL=LOG_LEVEL_TRACE"]
 debugCFlags = ["-O0", "-g3"]
 
-optimizedCppFlags = ["-O3", "-DNDEBUG", "-DLOG_LEVEL=LOG_LEVEL_INFO"]
+optimizedCppFlags = ["-O3", "-DNPROFILE", "-DNDEBUG", "-DLOG_LEVEL=LOG_LEVEL_INFO"]
 optimizedCFlags = ["-O3"]
 
-profileCppFlags = ["-O2", "-DNDEBUG", "-g", "-pg", "-DLOG_LEVEL=LOG_LEVEL_INFO"]
-profileCFlags = ["-O2", "-DNDEBUG", "-g", "-pg"]
+profileCppFlags = ["-O2", "-DNPROFILE", "-DNDEBUG", "-g", "-pg", "-DLOG_LEVEL=LOG_LEVEL_INFO"]
+profileCFlags = ["-O2", "-DNDEBUG", "-DNPROFILE", "-g", "-pg"]
 
 
 # select configuration
@@ -257,13 +257,21 @@ if target in availableTargets:
 			os.symlink(libFileToLink,libFileTarget)
 			# SCons does not support python 3 yet...
 			#os.symlink("src/cpp","NetworKit",True)
-			if os.path.isdir("NetworKit"):
-				#print("sym link for include stuff exists already")
-				os.remove("NetworKit")
-			subprocess.call(["ln","-s","networkit/cpp","NetworKit"])
+			# to support case insensitive file systems
+			# place the symlink for the include path in the folder include
+			if os.path.isdir("include"):
+				try:
+					os.remove("include/NetworKit")
+				except:
+					pass
+				os.rmdir("include")
+			os.mkdir("include")
+			os.chdir("include")
+			subprocess.call(["ln","-s","../networkit/cpp","NetworKit"])
+			os.chdir("../")
 
 	else:
 		env.Program(targetName, source)
 else:
 	print("ERROR: unknown target: {0}".format(target))
-	exit()
+	exit(1)

@@ -20,11 +20,8 @@ color(G.upperNodeIdBound(), WHITE) {
 
 }
 
-void DynDijkstra::run(node t) {
-	if (t != none) {
-		throw std::runtime_error("Invalid argument: DynDijkstra doesn't work with a target node.");
-	}
-  Dijkstra dij(G, sources.front(), true);
+void DynDijkstra::run() {
+	Dijkstra dij(G, source, true);
 	dij.run();
 	distances = dij.distances;
 	npaths = dij.npaths;
@@ -70,7 +67,7 @@ void DynDijkstra::update(const std::vector<GraphEvent>& batch) {
 			previous[current].clear();
 		}
 		npaths[current] = 0;
-		G.forNeighborsOf(current, [&](node z, edgeweight w){
+		G.forInNeighborsOf(current, [&](node current, node z, edgeweight w){
 			//z is a predecessor of current node
 			if (Aux::NumericTools::equal(distances[current], distances[z]+w, 0.000001)) {
 				if (storePreds) {

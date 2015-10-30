@@ -7,12 +7,13 @@
 
 #include "ApproxBetweenness.h"
 #include "../auxiliary/Random.h"
-#include "../properties/Diameter.h"
+#include "../distance/Diameter.h"
 #include "../graph/Sampling.h"
 #include "../graph/Dijkstra.h"
 #include "../graph/BFS.h"
 #include "../graph/SSSP.h"
 #include "../auxiliary/Log.h"
+#include "../auxiliary/SignalHandling.h"
 
 #include <math.h>
 #include <algorithm>
@@ -27,10 +28,11 @@ ApproxBetweenness::ApproxBetweenness(const Graph& G, double epsilon, double delt
 
 
 void ApproxBetweenness::run() {
+	Aux::SignalHandler handler;
 	scoreData.clear();
 	scoreData.resize(G.upperNodeIdBound());
 
-	double c = 0.5; // universal positive constant - see reference in paper
+	const double c = 0.5; // universal positive constant - see reference in paper
 
 	edgeweight vd = 0;
 	if (diameterSamples == 0) {
@@ -47,7 +49,7 @@ void ApproxBetweenness::run() {
 	}
 
 	INFO("estimated diameter: ", vd);
-	r = ceil((c / (epsilon * epsilon)) * (floor(log(vd - 2)) + 1 + log(1 / delta)));
+	r = ceil((c / (epsilon * epsilon)) * (floor(log2(vd - 2)) + 1 - log(delta)));
 
 	INFO("taking ", r, " path samples");
 	// parallelization:
@@ -55,7 +57,7 @@ void ApproxBetweenness::run() {
 	DEBUG("max threads: ", maxThreads);
 	std::vector<std::vector<double> > scorePerThread(maxThreads, std::vector<double>(G.upperNodeIdBound()));
 	DEBUG("score per thread size: ", scorePerThread.size());
-
+	handler.assureRunning();
 	#pragma omp parallel for
 	for (count i = 1; i <= r; i++) {
 		count thread = omp_get_thread_num();
@@ -72,12 +74,14 @@ void ApproxBetweenness::run() {
 		// runs faster for unweighted graphs
 		std::unique_ptr<SSSP> sssp;
 		if (G.isWeighted()) {
-			sssp.reset(new Dijkstra(G, u));
+			sssp.reset(new Dijkstra(G, u, true, false, v));
 		} else {
-			sssp.reset(new BFS(G, u));
+			sssp.reset(new BFS(G, u, true, false, v));
 		}
 		DEBUG("running shortest path algorithm for node ", u);
-		sssp->run(v);
+		if (!handler.isRunning()) continue;
+		sssp->run();
+		if (!handler.isRunning()) continue;
 		if (sssp->numberOfPaths(v) > 0) { // at least one path between {u, v} exists
 			DEBUG("updating estimate for path ", u, " <-> ", v);
 			// random path sampling and estimation update
@@ -102,15 +106,17 @@ void ApproxBetweenness::run() {
 			}
 		}
 	}
+	handler.assureRunning();
 
 	INFO("adding thread-local scores");
 	// add up all thread-local values
-	for (auto local : scorePerThread) {
+	for (auto &local : scorePerThread) {
 		G.parallelForNodes([&](node v){
 			scoreData[v] += local[v];
 		});
 	}
 
+	hasRun = true;
 }
 
 

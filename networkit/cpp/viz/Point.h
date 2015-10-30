@@ -30,6 +30,10 @@ typedef uint64_t count; // more expressive name for an integer quantity
 
 /**
  * @ingroup viz
+ *
+ * DEPRECATED: To take advantage of automatic mapping between C++ and Python data structures, use
+ * standard library containers (std::pair, std::tuple..) instead.
+ *
  * Points in any dimension of templated type.
  */
 template<class T>
@@ -53,11 +57,13 @@ public:
 	Point& scale(const T factor);
 
 	Point operator-(const Point<T>& other);
+	Point operator+(const Point<T>& other);
 
 	T length() const;
 	T squaredLength() const;
 
 	T& operator[](const index i);
+	T& at(const index i);
 
 	/**
 	 * Default point to string conversion.
@@ -143,6 +149,16 @@ Point<T> Point<T>::operator-(const Point<T>& other) {
 	return result;
 }
 
+template<class T>
+Point<T> Point<T>::operator+(const Point<T>& other) {
+	Point<T> result(*this);
+	assert(result.data.size() == other.data.size());
+	for (index i = 0; i < result.data.size(); ++i) {
+		result.data[i] += other.data[i];
+	}
+	return result;
+}
+
 
 template<class T>
 Point<T>& Point<T>::scale(const T factor) {
@@ -154,6 +170,12 @@ Point<T>& Point<T>::scale(const T factor) {
 
 template<class T>
 inline T& Point<T>::operator [](index i) {
+	assert(i >= 0 && i < data.size());
+	return data[i];
+}
+
+template<class T>
+inline T& Point<T>::at(index i) {
 	assert(i >= 0 && i < data.size());
 	return data[i];
 }

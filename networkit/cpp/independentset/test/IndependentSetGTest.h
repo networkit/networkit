@@ -13,15 +13,13 @@
 #include <gtest/gtest.h>
 
 #include "../../graph/Graph.h"
-#include "../../graph/GraphGenerator.h"
 #include "../../independentset/Luby.h"
 
 namespace NetworKit {
 
 class IndependentSetGTest: public testing::Test {
 public:
-	IndependentSetGTest();
-	virtual ~IndependentSetGTest();
+
 };
 
 } /* namespace NetworKit */

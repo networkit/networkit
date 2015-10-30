@@ -5,6 +5,8 @@
  *      Author: Michael
  */
 
+#ifndef NOGTEST
+
 #ifndef ADJACENCYMATRIXGTEST_H_
 #define ADJACENCYMATRIXGTEST_H_
 
@@ -26,3 +28,5 @@ public:
 } /* namespace NetworKit */
 
 #endif /* ADJACENCYMATRIXGTEST_H_ */
+
+#endif

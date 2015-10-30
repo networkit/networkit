@@ -1,8 +1,8 @@
 /*
  * SpanningForest.h
  *
- *  Created on: Aug 7, 2014
- *      Author: Christian Staudt
+ *  Created on: 06.09.2015
+ *      Author: Henning
  */
 
 #ifndef SPANNINGFOREST_H_
@@ -13,22 +13,30 @@
 namespace NetworKit {
 
 /**
- * @ingroup graph
- * Creates a spanning forest (or tree).
+ * Base class for spanning forest/tree algorithms.
  */
 class SpanningForest {
+protected:
+	const Graph& G;
+	Graph forest;
+
 public:
-
 	SpanningForest(const Graph& G);
+	virtual ~SpanningForest() = default;
 
+	virtual void run();
+
+	/**
+	 * Deprecated. Please integrate into run method.
+	 */
 	Graph generate();
 
-protected:
-
-	const Graph& G;
-
+	/**
+	 * @return Forest computed by run method.
+	 * Note: So far no explicit check if run method has been invoked before.
+	 */
+	Graph getForest();
 };
-
 
 } /* namespace NetworKit */
 #endif /* SPANNINGFOREST_H_ */
