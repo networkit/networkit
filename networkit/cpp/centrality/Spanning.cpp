@@ -44,7 +44,7 @@ void Spanning::run() {
 	// set up solution vector and status
 	Vector solution(n);
 	LAMGSolverStatus status;
-	status.desiredResidual = tol;
+	status.desiredResidualReduction = tol;
 
 	Vector rhs(n, 0.0);
 	Vector zeroVector(n, 0.0);
@@ -73,7 +73,7 @@ void Spanning::runApproximation() {
 	const count k = 8 * ceil(log(n));
 	double randTab[3] = {0, 1/sqrt(k), -1/sqrt(k)};
 	LAMGSolverStatus status;
-	status.desiredResidual = tol;
+	status.desiredResidualReduction = tol;
 	Vector solution(n);
 	scoreData.clear();
 	scoreData.resize(m, 0.0);
@@ -152,7 +152,7 @@ double Spanning::runForEdge(node u, node v) {
 	Vector rhs(n, 0.0);
 
 	LAMGSolverStatus status;
-	status.desiredResidual = tol;
+	status.desiredResidualReduction = tol;
 
 	// set up right-hand side
 	rhs[u] = +1.0;
