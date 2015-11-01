@@ -2093,10 +2093,12 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 	@classmethod
 	def fit(cls, Graph G):
 		""" Fit model to input graph"""
-		(n, m) = G.size()
+		import powerlaw
 		degSeq = DegreeCentrality(G).run().scores()
-		k = sum(degSeq) / len(degSeq) #average degree
-		gamma = 3	# TODO: improve
+		fit = powerlaw.Fit(degSeq)
+		gamma = fit.alpha
+		(n, m) = G.size()
+		k = 2 * (m / n)
 		return cls(n, k, gamma)
 
 
