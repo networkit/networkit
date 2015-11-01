@@ -31,7 +31,7 @@ public:
 	 * for graph @a G.
 	 * @return Matching (at least half as heavy as maximum weight matching).
 	 */
-	virtual Matching run();
+	virtual void run();
 };
 
 } /* namespace NetworKit */
