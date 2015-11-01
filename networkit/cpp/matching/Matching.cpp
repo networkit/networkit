@@ -9,14 +9,14 @@
 
 namespace NetworKit {
 
-Matching::Matching(uint64_t n) : data(n, none), n(n) {
+Matching::Matching(const Graph& G) : G(G), data(G.upperNodeIdBound(), none) {
 }
 
 bool Matching::isMatched(const node& u) const {
 	return (this->data[u] != none);
 }
 
-bool Matching::isProper(const Graph& G) const {
+bool Matching::isProper() const {
 	/**
 	 * The content of this data structure represents a matching iff
 	 * 	(for all v in V: M[v] = v or M[M[v]] = v) and
@@ -25,17 +25,19 @@ bool Matching::isProper(const Graph& G) const {
 	 */
 	bool sym = true;
 	// check if entries are symmetric
-	for (node v = 0; v < G.numberOfNodes(); ++v) {
+
+	G.forNodes([&](node v) {
 		sym = ((data[v] == none) || (data[data[v]] == v));
 		if (!sym) {
 			DEBUG("node " , v , " is not symmetrically matched");
 			return false;
 		}
-	}
+	});
+
 
 	bool inGraph = true;
 	// check if every pair exists as an edge
-	for (node v = 0; v < G.numberOfNodes(); ++v) {
+	G.forNodes([&](node v){
 		node w = data[v];
 		if ((v != w) && (w != none)) {
 			inGraph = G.hasEdge(v, w);
@@ -43,8 +45,10 @@ bool Matching::isProper(const Graph& G) const {
 				DEBUG("matched pair (" , v , "," , w , ") is not an edge");
 				return false;
 			}
-		}
-	}
+		}		
+	});
+
+
 
 	return (sym && inGraph);
 }
@@ -65,11 +69,11 @@ bool Matching::areMatched(const node& u, const node& v) const {
 
 count Matching::size() const {
 	count size = 0;
-	for (index i = 0; i < n; ++i) { // TODO: parallel
-		if (isMatched(i)) {
+	G.forNodes([&](node v) {
+		if (isMatched(v)) {
 			++size;
 		}
-	}
+	});
 	return size / 2;
 }
 
@@ -80,14 +84,14 @@ index Matching::mate(node v) const {
 	else return none;
 }
 
-edgeweight Matching::weight(const Graph& g) const {
+edgeweight Matching::weight() const {
 	edgeweight weight = 0;
 
-	for (index i = 0; i < n; ++i) {
-		if (isMatched(i) && i < mate(i)) {
-			weight += g.weight(i, mate(i));
+	G.forNodes([&](node v){
+		if (isMatched(v) && v < mate(v)) {
+			weight += G.weight(v, mate(v));
 		}
-	}
+	});
 
 	return weight;
 }

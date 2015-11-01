@@ -19,6 +19,7 @@ namespace NetworKit {
 class Matcher {
 protected:
 	const Graph& G;
+	Matching M;
 
 public:
 	/**
@@ -34,7 +35,10 @@ public:
 	 * Run the matching algorithm on the stored graph and return a matching.
 	 * @return A matching of the stored graph.
 	 */
-	virtual Matching run() = 0;
+	virtual void run() = 0;
+
+
+	Matching getMatching() const;
 };
 
 } /* namespace NetworKit */
