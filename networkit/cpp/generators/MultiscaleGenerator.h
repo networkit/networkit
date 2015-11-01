@@ -18,7 +18,8 @@ namespace NetworKit {
  * TODO: doc
  */
 class MultiscaleGenerator: public NetworKit::StaticGraphGenerator {
-private:
+
+protected:
 
     // parameters
     const Graph& original;
@@ -27,6 +28,7 @@ private:
     // const double nodeEditingRate;
     // const double edgeEditingRate;
     // const count levels;     // levels of hierarchy
+    std::string aggregationScheme = "matching";
 
 public:
     // TODO: parameters: retainIntermediates, coarseningScheme,
