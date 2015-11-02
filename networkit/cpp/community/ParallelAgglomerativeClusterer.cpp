@@ -9,7 +9,7 @@
 #include "ParallelAgglomerativeClusterer.h"
 #include "../scoring/ModularityScoring.h"
 #include "../matching/PathGrowingMatcher.h"
-#include "../coarsening/MatchingContracter.h"
+#include "../coarsening/MatchingCoarsening.h"
 #include "../coarsening/ClusteringProjector.h"
 
 namespace NetworKit {
@@ -47,7 +47,7 @@ void ParallelAgglomerativeClusterer::run() {
 		Matching M = parMatcher.run();
 
 		// contract graph according to matching, TODO: (and star-like structures)
-		MatchingContracter matchingContracter(Gcopy, M);
+		MatchingCoarsening matchingContracter(Gcopy, M);
 		matchingContracter.run();
 		Graph Gcombined = matchingContracter.getCoarseGraph();
 

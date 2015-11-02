@@ -33,14 +33,14 @@ public:
 	 *
 	 * @param[in]	path	input file path
 	 */
-	void write(Graph& G, const std::string& path);
+	void write(const Graph& G, const std::string& path);
 
 protected:
 	bool littleEndianness;
 
 
 private:
-	void writeAdjacencies(std::ofstream& file, Graph& G);
+	void writeAdjacencies(std::ofstream& file, const Graph& G);
 
 	uint8_t getAdjacencyWidth(uint64_t n);
 

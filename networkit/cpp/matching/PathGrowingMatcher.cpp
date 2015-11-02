@@ -18,8 +18,8 @@ Matching PathGrowingMatcher::run() {
 	count z = G.upperNodeIdBound();
 
 	// init matching to empty
-	Matching m1(z);
-	Matching m2(z);
+	Matching m1(G);
+	Matching m2(G);
 	bool takeM1 = true;
 
 	// degrees tracks degree of vertices,
@@ -87,8 +87,8 @@ Matching PathGrowingMatcher::run() {
 	}
 
 	// return the heavier one of the two
-	edgeweight weight1 = m1.weight(G);
-	edgeweight weight2 = m2.weight(G);
+	edgeweight weight1 = m1.weight();
+	edgeweight weight2 = m2.weight();
 	if (weight1 > weight2)
 		return m1;
 	else
@@ -96,4 +96,3 @@ Matching PathGrowingMatcher::run() {
 }
 
 } /* namespace NetworKit */
-

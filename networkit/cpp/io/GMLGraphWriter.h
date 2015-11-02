@@ -31,7 +31,7 @@ public:
 	 * @param[in]	G		Graph of type NetworKit with 2D coordinates.
 	 * @param[in]	path	Path to file.
 	 */
-	virtual void write(Graph& G, const std::string& path) override;
+	virtual void write(const Graph& G, const std::string& path) override;
 };
 
 } /* namespace NetworKit */

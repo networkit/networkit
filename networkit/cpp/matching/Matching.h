@@ -15,7 +15,6 @@ namespace NetworKit {
 
 /**
  * @ingroup matching
- * FIXME: Could be better to store a reference to the according graph;
  */
 class Matching {
 
@@ -27,9 +26,8 @@ public:
 	 *
 	 * @param[in]	n 	Maximum number of nodes.
 	 */
-	Matching(uint64_t n);
+	Matching(const Graph& G);
 
-	/** Default destructor */
 	virtual ~Matching() = default;
 
 
@@ -75,7 +73,7 @@ public:
 	 * @paramt[in]	G	A graph.
 	 * @param[out]		@c true if this is a proper matching.
 	 */
-	bool isProper(const Graph& G) const;
+	bool isProper() const;
 
 
 	/**
@@ -97,12 +95,13 @@ public:
 	 * @param[in] g The corresponding graph.
 	 * @return Total weight of edges in this matching.
 	 */
-	edgeweight weight(const Graph& g) const;
+	edgeweight weight() const;
 
 protected:
 
+	Graph& G;		// reference to graph
 	std::vector<node> data; //!< storage of matching nodes
-	count n; //!< number of nodes
+	// count n; //!< number of nodes
 };
 
 } /* namespace NetworKit */

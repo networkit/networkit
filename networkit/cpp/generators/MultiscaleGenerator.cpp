@@ -10,6 +10,10 @@
 #include <memory>
 #include "../coarsening/GraphCoarsening.h"
 #include "../coarsening/ParallelPartitionCoarsening.h"
+#include "../coarsening/MatchingCoarsening.h"
+#include "../matching/Matching.h"
+#include "../matching/LocalMaxMatcher.h"
+#include "../community/PLP.h"
 
 
 namespace NetworKit {
@@ -25,10 +29,22 @@ Graph MultiscaleGenerator::generate() {
 	std::vector<Graph> fineGraphs;
 
 	// coarsen graph
-	//      aggregation scheme: return Partition
+	//      aggregation scheme
 	std::unique_ptr<GraphCoarsening> coarsening;
 
-	Graph C = coarsening.getCoarseGraph();
+	if (aggregationScheme == "matching") {
+		// LocalMaxMatcher matcher(original);
+		// Matching matching = matcher.run();
+		// coarsening.reset(new MatchingCoarsening(original, matching));
+	} else if (aggregationScheme == "communities") {
+		PLP plp(original);
+		plp.run();
+		coarsening.reset(new ParallelPartitionCoarsening(original, plp.getPartition()));
+	}
+	coarsening->run();
+
+
+	Graph C = coarsening->getCoarseGraph();
 
 
 	//
@@ -36,7 +52,7 @@ Graph MultiscaleGenerator::generate() {
 	//
 	//
 	// TODO:
-	return Graph();
+	return C;
 }
 
 

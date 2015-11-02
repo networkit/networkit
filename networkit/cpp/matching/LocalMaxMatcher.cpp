@@ -1,27 +1,25 @@
 /*
- * ParallelMatcher.cpp
+ * LocalMaxMatcher.cpp
  *
  *  Created on: 05.12.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "LocalMaxMatcher.h"
 
 namespace NetworKit {
 
-LocalMaxMatcher::LocalMaxMatcher(const Graph& graph): Matcher(graph)
+LocalMaxMatcher::LocalMaxMatcher(const Graph& G): Matcher(G)
 {
-	//TODO: check for self loops here, issue a warning
+	if (graph.isDirected()) throw std::runtime_error("Matcher only defined for undirected graphs");
 }
 
 // TODO: update to new edge attribute system
 // TODO: make local max matching parallel
 
 
-Matching LocalMaxMatcher::run() {
+LocalMaxMatcher::run() {
 	int64_t z = G.upperNodeIdBound();
 	count E = G.numberOfEdges();
-	Matching M(z);
 
 	// put edges into array of triples
 	struct MyEdge {
@@ -61,7 +59,7 @@ Matching LocalMaxMatcher::run() {
 		for (auto edge: edges) {
 			node u = edge.s;
 			node v = edge.t;
-			if (candidates[u].t == v && candidates[v].t == u) {
+			if (candidates[u].t == v && candidates[v].t == u && u != v) {
 				// both nodes agree
 				M.match(u, v);
 			}
@@ -81,7 +79,6 @@ Matching LocalMaxMatcher::run() {
 		E = edges.size();
 	}
 
-	return M;
 }
 
 } /* namespace NetworKit */
