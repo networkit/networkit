@@ -5932,7 +5932,7 @@ cdef extern from "cpp/coarsening/GraphCoarsening.h":
 	cdef cppclass _GraphCoarsening "NetworKit::GraphCoarsening"(_Algorithm):
 		_GraphCoarsening(_Graph) except +
 		_Graph getCoarseGraph() except +
-		vector[node] getNodeMapping() except +
+		vector[node] getFineToCoarseNodeMapping() except +
 
 cdef class GraphCoarsening(Algorithm):
 	cdef Graph _G
@@ -5962,8 +5962,8 @@ cdef class GraphCoarsening(Algorithm):
 	def getCoarseGraph(self):
 		return Graph(0).setThis((<_GraphCoarsening*>(self._this)).getCoarseGraph())
 
-	def getNodeMapping(self):
-		return (<_GraphCoarsening*>(self._this)).getNodeMapping()
+	def getFineToCoarseNodeMapping(self):
+		return (<_GraphCoarsening*>(self._this)).getFineToCoarseNodeMapping()
 
 
 cdef extern from "cpp/coarsening/ParallelPartitionCoarsening.h":

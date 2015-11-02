@@ -49,7 +49,7 @@ void MatchingCoarsening::run() {
 		});
 	});
 
-	Gcoarsed = std::move(cG);
+	Gcoarsened = std::move(cG);
 	nodeMapping = std::move(mapFineToCoarse);
 
 	hasRun = true;

@@ -29,13 +29,21 @@ public:
 
 	Graph getCoarseGraph() const;
 
-	std::vector<node> getNodeMapping() const;
+	/**
+	 * Get mapping from fine to coarse node.
+	 */
+	std::vector<node> getFineToCoarseNodeMapping() const;
+
+	/**
+	 * Get mapping from coarse node to collection of fine nodes.
+	 */
+	std::map<node, std::vector<node> > getCoarseToFineNodeMapping() const;
 
 	virtual std::string toString() const;
 
 protected:
 	const Graph& G;
-	Graph Gcoarsed;
+	Graph Gcoarsened;
 	std::vector<node> nodeMapping;
 
 };

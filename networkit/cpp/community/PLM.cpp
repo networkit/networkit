@@ -329,7 +329,7 @@ std::string NetworKit::PLM::toString() const {
 std::pair<Graph, std::vector<node> > PLM::coarsen(const Graph& G, const Partition& zeta) {
 	ParallelPartitionCoarsening parCoarsening(G, zeta);
 	parCoarsening.run();
-	return {parCoarsening.getCoarseGraph(),parCoarsening.getNodeMapping()};
+	return {parCoarsening.getCoarseGraph(),parCoarsening.getFineToCoarseNodeMapping()};
 }
 
 Partition PLM::prolong(const Graph& Gcoarse, const Partition& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode) {
