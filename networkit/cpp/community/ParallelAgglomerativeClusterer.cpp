@@ -64,7 +64,7 @@ void ParallelAgglomerativeClusterer::run() {
 		// prepare next iteration if there is one
 		if (repeat) {
 			Gcopy = Gcombined;
-			mapHierarchy.push_back(matchingContracter.getNodeMapping());
+			mapHierarchy.push_back(matchingContracter.getFineToCoarseNodeMapping());
 			TRACE("Repeat agglomeration with graph of size " , Gcopy.numberOfNodes());
 		}
 	} while (repeat);

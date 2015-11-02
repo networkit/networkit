@@ -128,7 +128,7 @@ void ParallelPartitionCoarsening::run() {
 
 	timer.stop();
 	INFO("parallel coarsening took ", timer.elapsedTag());
-	Gcoarsed = std::move(Gcombined);
+	Gcoarsened = std::move(Gcombined);
 	nodeMapping = std::move(nodeToSuperNode.getVector());
 	hasRun = true;
 }
