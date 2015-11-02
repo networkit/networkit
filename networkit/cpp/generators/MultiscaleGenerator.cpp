@@ -25,34 +25,43 @@ MultiscaleGenerator::MultiscaleGenerator(const Graph& original) : original(origi
 
 Graph MultiscaleGenerator::generate() {
 
-	std::vector<Graph> coarseGraphs;
-	std::vector<Graph> fineGraphs;
+	// V-cycle of coarsening and uncoarsening
+	std::vector<Graph> down;
+	std::vector<Graph> up;
 
-	// coarsen graph
-	//      aggregation scheme
-	std::unique_ptr<GraphCoarsening> coarsening;
+	for (index level = 0; level < maxLevels; ++level) {
 
-	if (aggregationScheme == "matching") {
-		// LocalMaxMatcher matcher(original);
-		// Matching matching = matcher.run();
-		// coarsening.reset(new MatchingCoarsening(original, matching));
-	} else if (aggregationScheme == "communities") {
-		PLP plp(original);
-		plp.run();
-		coarsening.reset(new ParallelPartitionCoarsening(original, plp.getPartition()));
+		// coarsen graph
+		std::unique_ptr<GraphCoarsening> coarsening;
+
+		//      select aggregation scheme
+		if (aggregationScheme == "matching") {
+			// LocalMaxMatcher matcher(original);
+			// Matching matching = matcher.run();
+			// coarsening.reset(new MatchingCoarsening(original, matching));
+		} else if (aggregationScheme == "communities") {
+			PLP plp(original);
+			plp.run();
+			coarsening.reset(new ParallelPartitionCoarsening(original, plp.getPartition()));
+		}
+		coarsening->run();
+
+
+		down[level] = coarsening->getCoarseGraph();
+
+
+
 	}
-	coarsening->run();
 
 
-	Graph C = coarsening->getCoarseGraph();
 
 
 	//
 	// coarse level edits
 	//
 	//
-	// TODO:
-	return C;
+	// TODO: return replica
+	return original;
 }
 
 
