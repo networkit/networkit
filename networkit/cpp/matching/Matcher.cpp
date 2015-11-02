@@ -9,11 +9,11 @@
 
 namespace NetworKit {
 
-Matcher::Matcher(const Graph& G): G(G), M(G) {
+Matcher::Matcher(const Graph& G): G(G), M(G.upperNodeIdBound()) {
 
 }
 
-Matcher::getMatching() const {
+Matching Matcher::getMatching() const {
     return M;
 }
 

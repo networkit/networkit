@@ -44,7 +44,8 @@ void ParallelAgglomerativeClusterer::run() {
 		// FIXME: so far only sequential
 		// compute matching
 		PathGrowingMatcher parMatcher(Gcopy);
-		Matching M = parMatcher.run();
+		parMatcher.run();
+		Matching M = parMatcher.getMatching();
 
 		// contract graph according to matching, TODO: (and star-like structures)
 		MatchingCoarsening matchingContracter(Gcopy, M);
