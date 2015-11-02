@@ -30,7 +30,8 @@ TEST_F(MatcherGTest, testLocalMaxMatching) {
 	LocalMaxMatcher localMaxMatcher(G);
 
 	TRACE("Start localMax matching");
-	Matching M = localMaxMatcher.run();
+	localMaxMatcher.run();
+	Matching M = localMaxMatcher.getMatching();
 	TRACE("Finished localMax matching");
 
 	count numExpEdges = n / 2;
@@ -65,7 +66,9 @@ TEST_F(MatcherGTest, testPgaMatching) {
 	PathGrowingMatcher pgaMatcher(G);
 
 	DEBUG("Start PGA matching on 50-clique");
-	Matching M = pgaMatcher.run();
+
+	pgaMatcher.run();
+	Matching M = pgaMatcher.getMatching();
 
 	count numExpEdges = n / 2;
 	bool isProper = M.isProper(G);
@@ -90,7 +93,8 @@ TEST_F(MatcherGTest, tryValidMatching) {
 	Graph G = reader.read("coAuthorsDBLP.graph");
 
 	LocalMaxMatcher pmatcher(G);
-	Matching M = pmatcher.run();
+	pmatcher.run();
+	Matching M = pmatcher.getMatching();
 
 	bool isProper = M.isProper(G);
 	EXPECT_TRUE(isProper);
