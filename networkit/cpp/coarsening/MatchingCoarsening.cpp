@@ -16,7 +16,7 @@ MatchingCoarsening::MatchingCoarsening(const Graph& G, const Matching& M, bool n
 void MatchingCoarsening::run() {
 	count n = G.numberOfNodes();
 	index z = G.upperNodeIdBound();
-	count cn = n - M.size();
+	count cn = n - M.size(G);
 	Graph cG(cn, true);
 
 	// compute map: old ID -> new coarse ID

@@ -10,14 +10,14 @@ namespace NetworKit {
 
 LocalMaxMatcher::LocalMaxMatcher(const Graph& G): Matcher(G)
 {
-	if (graph.isDirected()) throw std::runtime_error("Matcher only defined for undirected graphs");
+	if (G.isDirected()) throw std::runtime_error("Matcher only defined for undirected graphs");
 }
 
 // TODO: update to new edge attribute system
 // TODO: make local max matching parallel
 
 
-LocalMaxMatcher::run() {
+void LocalMaxMatcher::run() {
 	int64_t z = G.upperNodeIdBound();
 	count E = G.numberOfEdges();
 
