@@ -24,11 +24,9 @@ public:
 	/**
 	 * Construct new Matching.
 	 *
-	 * @param[in]	n 	Maximum number of nodes.
+	 * @param[in]	z	Maximum number of nodes.
 	 */
-	Matching(const Graph& G);
-
-	virtual ~Matching() = default;
+	Matching(count z);
 
 
 	/**
@@ -73,14 +71,14 @@ public:
 	 * @paramt[in]	G	A graph.
 	 * @param[out]		@c true if this is a proper matching.
 	 */
-	bool isProper() const;
+	bool isProper(const Graph& G) const;
 
 
 	/**
 	 * Get the number of edges in this matching.
 	 * @return Number of edges in matching.
 	 */
-	count size() const;
+	count size(const Graph& G) const;
 
 	/**
 	 * Get the matched neighbor of @a v if it exists, otherwise @c none.
@@ -95,11 +93,11 @@ public:
 	 * @param[in] g The corresponding graph.
 	 * @return Total weight of edges in this matching.
 	 */
-	edgeweight weight() const;
+	edgeweight weight(const Graph& G) const;
 
 protected:
 
-	Graph& G;		// reference to graph
+//	const Graph& G;		// reference to graph
 	std::vector<node> data; //!< storage of matching nodes
 	// count n; //!< number of nodes
 };

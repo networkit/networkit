@@ -9,20 +9,21 @@
 
 namespace NetworKit {
 
-Matching::Matching(const Graph& G) : G(G), data(G.upperNodeIdBound(), none) {
+Matching::Matching(count z) : data(z, none) {
 }
 
 bool Matching::isMatched(const node& u) const {
 	return (this->data[u] != none);
 }
 
-bool Matching::isProper() const {
+bool Matching::isProper(const Graph& G) const {
 	/**
 	 * The content of this data structure represents a matching iff
 	 * 	(for all v in V: M[v] = v or M[M[v]] = v) and
 	 * 	(for all (u,v) in M): (u,v) in E
 	 *
 	 */
+	bool isProper = true;
 	bool sym = true;
 	// check if entries are symmetric
 
@@ -30,10 +31,9 @@ bool Matching::isProper() const {
 		sym = ((data[v] == none) || (data[data[v]] == v));
 		if (!sym) {
 			DEBUG("node " , v , " is not symmetrically matched");
-			return false;
+			isProper = false;
 		}
 	});
-
 
 	bool inGraph = true;
 	// check if every pair exists as an edge
@@ -43,14 +43,13 @@ bool Matching::isProper() const {
 			inGraph = G.hasEdge(v, w);
 			if (!inGraph) {
 				DEBUG("matched pair (" , v , "," , w , ") is not an edge");
-				return false;
+				isProper = false;
 			}
-		}		
+		}
 	});
 
 
-
-	return (sym && inGraph);
+	return isProper;
 }
 
 void Matching::match(const node& u, const node& v) {
@@ -67,7 +66,7 @@ bool Matching::areMatched(const node& u, const node& v) const {
 	return (data[u] == v);
 }
 
-count Matching::size() const {
+count Matching::size(const Graph& G) const {
 	count size = 0;
 	G.forNodes([&](node v) {
 		if (isMatched(v)) {
@@ -84,7 +83,7 @@ index Matching::mate(node v) const {
 	else return none;
 }
 
-edgeweight Matching::weight() const {
+edgeweight Matching::weight(const Graph& G) const {
 	edgeweight weight = 0;
 
 	G.forNodes([&](node v){
