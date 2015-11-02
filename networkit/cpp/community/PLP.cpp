@@ -15,11 +15,9 @@
 
 namespace NetworKit {
 
-PLP::PLP(const Graph& G, count theta) : CommunityDetectionAlgorithm(G), updateThreshold(theta) {
+PLP::PLP(const Graph& G, count theta, count maxIterations) : CommunityDetectionAlgorithm(G), updateThreshold(theta), maxIterations(maxIterations) {
 }
 
-PLP::PLP(const Graph& G, const PLP& other) : CommunityDetectionAlgorithm(G, other.result), updateThreshold(other.updateThreshold) {
-}
 
 PLP::PLP(const Graph& G, const Partition baseClustering, count theta) : CommunityDetectionAlgorithm(G, baseClustering), updateThreshold(theta) {
 }
@@ -68,7 +66,7 @@ void PLP::run() {
 	Aux::Timer runtime;
 
 	// propagate labels
-	while (nUpdated > this->updateThreshold) { // as long as a label has changed...
+	while ((nUpdated > this->updateThreshold)  && (nIterations < maxIterations)) { // as long as a label has changed... or maximum iterations reached
 		runtime.start();
 		nIterations += 1;
 		INFO("[BEGIN] LabelPropagation: iteration #" , nIterations);

@@ -3803,10 +3803,8 @@ cdef class CommunityDetector(Algorithm):
 
 cdef extern from "cpp/community/PLP.h":
 	cdef cppclass _PLP "NetworKit::PLP"(_CommunityDetectionAlgorithm):
-		_PLP(_Graph _G) except +
-		_PLP(_Graph _G, count updateThreshold) except +
+		_PLP(_Graph _G, count updateThreshold, count maxIterations) except +
 		_PLP(_Graph _G, _Partition baseClustering, count updateThreshold) except +
-		_PLP(_Graph _G, _Partition baseClustering) except +
 		count numberOfIterations() except +
 		vector[count] getTiming() except +
 
@@ -3825,7 +3823,7 @@ cdef class PLP(CommunityDetector):
  	has the label that at least half of its neighbors have.
 	"""
 
-	def __cinit__(self, Graph G not None, Partition baseClustering=None, updateThreshold=None):
+	def __cinit__(self, Graph G not None, count updateThreshold=none, count maxIterations=none, Partition baseClustering=None,):
 		"""
 		Constructor to the Parallel label propagation community detection algorithm.
 
@@ -3833,22 +3831,19 @@ cdef class PLP(CommunityDetector):
 		----------
 		G : Graph
 			The graph on which the algorithm has to run.
-		baseClustering : Partition
-			PLP needs a base clustering to start from; if none is given the algorithm will run on a singleton clustering.
 		updateThreshold : integer
 			number of nodes that have to be changed in each iteration so that a new iteration starts.
+		baseClustering : Partition
+			PLP needs a base clustering to start from; if none is given the algorithm will run on a singleton clustering.
 		"""
 		self._G = G
 
-		if updateThreshold is None and baseClustering is None:
-			self._this = new _PLP(G._this)
-		elif updateThreshold is None and baseClustering is not None:
-			self._this = new _PLP(G._this, baseClustering._this)
-		elif updateThreshold is not None and baseClustering is None:
-			p = Partition(0)
-			self._this = new _PLP(G._this, p._this, updateThreshold)
+
+		if baseClustering is None:
+			self._this = new _PLP(G._this, updateThreshold, maxIterations)
 		else:
 			self._this = new _PLP(G._this, baseClustering._this, updateThreshold)
+
 
 	def numberOfIterations(self):
 		""" Get number of iterations in last run.
