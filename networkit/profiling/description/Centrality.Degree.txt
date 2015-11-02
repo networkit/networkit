@@ -1,0 +1,1 @@
+Node centrality index which ranks nodes by their degree.
