@@ -3,29 +3,39 @@
 # author: Mark Erb
 #
 
+from . import job
+
 import math
-from _NetworKit import ranked2 as ranked
+import matplotlib.pyplot as plt
+
 from _NetworKit import sort2
+from _NetworKit import ranked2
+
 
 def sorted(sample):
-	"""
-		Sorts a given list of numbers.
-	"""
+	"""	returns a sorted list of given numbers """
 	return sort2(sample)
+	
+	
+def ranked(sample):
+	""" returns a ranked list of given numbers """
+	return ranked2(sample)
 
-class Stat:
-	""" TODO: """
+	
+class Stat(job.Job):
+	""" statistical computation object """
+	
 	def __init__(self, name, params):
-		self.__name = name
+		""" constructor: see PlotJob and .run() """
+		job.Job.__init__(
+			self,
+			"Stat",
+			name
+		)
 		self.__params = params
 
-	def getName(self):
-		return self.__name
-
-	def getType(self):
-		return "Stat"
-
 	def run(self):
+		""" computation """
 		(sample, sampleSorted, sampleRanked, calculatePie) = self.__params
 		n = len(sample)
 
@@ -307,8 +317,10 @@ class Stat:
 			results["Binning"]["Pie"] = funcPie()
 
 
+		# The following code within this class is experimental and under develop
+		#
 		# Chi-Squared-Test <- Correct Binning
-		# For Test-Case Purpose
+		# For Test-Case Purpose uncomment the following lines 
 		# n = 100
 		# arithmeticMean = 51.05
 		# s_n = 1.209
@@ -410,24 +422,27 @@ class Stat:
 		return results
 
 
-class Correlation:
-	""" TODO: """
+class Correlation(job.Job):
+	""" correlation computation object """
+	
 	def __init__(self, name, params):
-		self.__name = name
+		""" constructor: see PlotJob and .run() """
+		job.Job.__init__(
+			self,
+			"Correlation",
+			name
+		)
 		self.__params = params
 
-	def getName(self):
-		return self.__name
-
-	def getType(self):
-		return "Correlation"
-
+		
 	def run(self):
+		""" computation """
 		(nameB, sample_1, sampleRanked_1, stat_1, sample_2, sampleRanked_2, stat_2) = self.__params
 		n = len(sample_1)
 		assert (n == len(sample_2)), "sample sizes are not equal"
 
 		results = {}
+		results["Value"] = {}
 
 		def funcCovariance(sample_1, arithmeticMean_1, sample_2, arithmeticMean_2):
 			result = 0
@@ -435,13 +450,13 @@ class Correlation:
 				result += (sample_1[i]- arithmeticMean_1) * (sample_2[i] - arithmeticMean_2)
 			result /= n
 			return result
-		results["Covariance"] = covariance = funcCovariance(
+		results["Value"]["Covariance"] = covariance = funcCovariance(
 			sample_1,
 			stat_1["Location"]["Arithmetic Mean"],
 			sample_2,
 			stat_2["Location"]["Arithmetic Mean"]
 		)
-		results["Covariance (Rank)"] = covarianceRanked = funcCovariance(
+		results["Value"]["Covariance (Rank)"] = covarianceRanked = funcCovariance(
 			sampleRanked_1,
 			stat_1["Location"]["Arithmetic Mean (Rank)"],
 			sampleRanked_2,
@@ -453,12 +468,12 @@ class Correlation:
 			if uncorrectedStandardDeviation_1 * uncorrectedStandardDeviation_2 != 0:
 				result = covariance / (uncorrectedStandardDeviation_1 * uncorrectedStandardDeviation_2)
 			return result
-		results["Pearson's Correlation Coefficient"] = funcPearsonsCorrelationCoefficient(
+		results["Value"]["Pearson's Correlation Coefficient"] = funcPearsonsCorrelationCoefficient(
 			covariance,
 			stat_1["Dispersion"]["Uncorrected Standard Deviation"],
 			stat_2["Dispersion"]["Uncorrected Standard Deviation"]
 		)
-		results["Spearman's Rank Correlation Coefficient"] = funcPearsonsCorrelationCoefficient(
+		results["Value"]["Spearman's Rank Correlation Coefficient"] = funcPearsonsCorrelationCoefficient(
 			covarianceRanked,
 			stat_1["Dispersion"]["Uncorrected Standard Deviation (Rank)"],
 			stat_2["Dispersion"]["Uncorrected Standard Deviation (Rank)"]
@@ -470,9 +485,44 @@ class Correlation:
 				result += math.copysign(1.0, (sample_1[i] - arithmeticMean_1) * (sample_2[i] - arithmeticMean_2))
 			result /= n
 			return result
-		results["Fechner's Correlation Coefficient"] = funcFechnersCorrelationCoefficent(
+		results["Value"]["Fechner's Correlation Coefficient"] = funcFechnersCorrelationCoefficent(
 			stat_1["Location"]["Arithmetic Mean"],
 			stat_2["Location"]["Arithmetic Mean"]
 		)
+		
+		def funcHexBinning(sample_1, sample_2):
+			""" binning for scatter plots """
+			result = {}
+			n = 32
+			
+			fig = plt.figure()
+			extent = [
+				stat_1["Location"]["Min"],
+				stat_1["Location"]["Max"],
+				stat_2["Location"]["Min"],
+				stat_2["Location"]["Max"]
+			]
+			image = plt.hexbin(
+				sample_1,
+				sample_2,
+				gridsize = n,
+				extent = extent
+			)
+			
+			result["Grid Size"] = n
+			result["Absolute Frequencies"] = frequencies = image.get_array()
+			max = 0
+			for value in frequencies:
+				if max < value:
+					max = value
+			result["Max Frequency"] = max
+			result["Offsets"] = image.get_offsets()
+			result["Paths"] = image.get_paths()[0]
+			plt.close(fig)
+			return result
+		results["Binning"] = funcHexBinning(
+			sample_1,
+			sample_2
+		) 
 
 		return (nameB, results)

@@ -3,6 +3,8 @@
 # author: Mark Erb
 #
 
+from . import job
+
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -15,13 +17,15 @@ import math
 
 
 class Theme:
-	""" TODO: """
+	""" layout theme for plots """
+	
 	def __init__(self):
+		""" constructor """
 		self.set()
-
 
 	@classmethod
 	def RGBA2RGB(cls, color, alpha, background):
+		""" converts a color with an given alpha to RGB for an fixed RGB background color """
 		result = (
 			color[0] * alpha + background[0] * (1-alpha),
 			color[1] * alpha + background[1] * (1-alpha),
@@ -32,6 +36,12 @@ class Theme:
 
 
 	def set(self, style="light", color=(0, 0, 1)):
+		""" sets style and color of the theme 
+		
+		Args:
+			style: ("light")
+			color: RGB tuple
+		"""
 		optionsStyle = ["light", "system"]
 		if style not in optionsStyle:
 			raise ValueError("possible style options: " + str(optionsStyle))
@@ -62,62 +72,158 @@ class Theme:
 
 
 	def get(self):
+		""" return style and color """
 		return (self.__style, self.__color)
 
-
+		
 	def getRcParams():
+		""" return  matlibplot system parameters used in the theme """
 		return self.__rcParams
 
-
+		
 	def getDefaultColor(self):
+		""" returns the default color value of the theme """
 		return self.__defaultColor
+		
+		
 	def getDefaultWidth(self):
+		""" returns the default width value of the theme """
 		return self.__defaultWidth
+		
+		
 	def getPlotColor(self):
+		""" returns the plot color value of the theme """
 		return self.__plotColor
+		
+		
 	def getPlotWidth(self):
+		""" returns the plot width value of the theme """
 		return self.__plotWidth
+		
+		
 	def getFaceColor(self):
+		""" returns the face color value of the theme """
 		return self.__faceColor
+		
+		
 	def getFaceColorGray(self):
+		""" returns the face color (gray) value of the theme """
 		return self.__faceColorGray
+		
+		
 	def getEdgeColor(self):
+		""" returns the edge color value of the theme """
 		return self.__edgeColor
+		
+		
 	def getEdgeColorGray(self):
+		""" returns the edge color (gray) value of the theme """
 		return self.__edgeColorGray
+		
+		
 	def getEdgeWidth(self):
+		""" returns the edge width value of the theme """
 		return self.__edgeWidth
+		
+		
 	def getBackgroundColor(self):
+		""" returns the background color value of the theme """
 		return self.__backgroundColor
+		
+		
 	def getGridColor(self):
+		""" returns the grid color value of the theme """
 		return self.__gridColor
+		
+		
 	def getFontSize(self):
+		""" returns the font size value of the theme """
 		return self.__fontSize
+		
+		
 	def getFontColor(self):
+		""" returns the font color value of the theme """
 		return self.__fontColor
 
-
-class Measure:
-	""" TODO: """
-	def __init__(self, plottype, options, name, params):
+		
+class PlotJob(job.Job):
+	def __init__(self, typename, plottype, options, name, params):
+		""" constructor 
+		
+		Arg:
+			typename: job type name
+			plottype: "SVG" / "PDF"
+			options: format dependent
+			name: name of the measure
+			params: a tuple of additional parameters
+		"""
+		job.Job.__init__(
+			self,
+			typename,
+			name
+		)
 		self.__plottype = plottype
 		self.__options = options
-		self.__name = name
 		self.__params = params
+		
+		
+	def getParams(self):
+		""" returns params """
+		return self.__params		
+	
+	
+	def save(self, id, fig, extention):
+		""" generate plot output """
+		result = ""
 
-	def getName(self):
-		return self.__name
+		fig.tight_layout()
 
-	def getType(self):
-		return "Plot.Measure"
+		if self.__plottype == "SVG":
+			imgdata = io.StringIO()
+			fig.savefig(imgdata, format='svg')
+
+			plaintext = imgdata.getvalue()
+			plaintext = " ".join(plaintext[plaintext.find("<svg "):].split())
+			result = quote(plaintext, safe='')
+
+		elif self.__plottype == "PDF":
+			filename = self.__options[1] + extention
+			with PdfPages(self.__options[0] + "/" + filename + ".pdf") as pdf:
+				pdf.savefig(fig)
+			result = filename
+
+		else:
+			pass
+
+		plt.close(fig)
+		return (id, result)
+
+
+		
+class Measure(PlotJob):
+	""" plot generation object for measures """
+	
+	def __init__(self, plottype, options, name, params):
+		""" constructor: see PlotJob and .run() """
+		PlotJob.__init__(
+			self,
+			"Plot.Measure",
+			plottype,
+			options,
+			name,
+			params
+		)
+
 
 	def run(self):
-		(index, stat, category, name, label, theme) = self.__params
+		""" computation """
+		(index, stat, category, name, label, theme) = self.getParams()
 		plt.ioff()
 
 		plottype = "plot"
 
 		def funcSpace(min, max):
+			""" returns space within plot """
 			result = 0.1
 			if min < max:
 				result = (max - min) * 0.04
@@ -125,6 +231,7 @@ class Measure:
 
 
 		def funcTicks(min, max, numberOfTicks):
+			""" returns ticks """
 			result = []
 			if numberOfTicks > 0:
 				value = min
@@ -137,6 +244,7 @@ class Measure:
 
 
 		def funcPlotEnd(fig, ax, theme, width, height, x_showTicks=True, x_showTickLabels=True, y_showTicks=True, y_showTickLabels=True, drawAxis=True, showGrid=True):
+			""" set some layout options """
 			if not x_showTicks:
 				ax.set_xticks([])
 			if not x_showTickLabels:
@@ -169,6 +277,7 @@ class Measure:
 
 
 		def funcPlotBox(ax):
+			""" Box Plot """
 			q1 = stat["Location"]["1st Quartile"]
 			q3 = stat["Location"]["3rd Quartile"]
 			median = stat["Location"]["Median"]
@@ -249,6 +358,7 @@ class Measure:
 
 
 		def funcPlotPDF(ax):
+			""" Histogram Plot """
 			numberOfBins = stat["Binning"]["Number Histogram"]
 			intervals = stat["Binning"]["Intervals Histogram"]
 			absoluteFrequencies = stat["Binning"]["Absolute Frequencies Histogram"]
@@ -274,6 +384,7 @@ class Measure:
 
 
 		def funcPlotCDF(ax):
+			""" Histogram Plot (commulativ) """
 			numberOfBins = stat["Binning"]["Number CDF"]
 			intervals = stat["Binning"]["Intervals CDF"]
 			comulativeRelativeFrequencies = stat["Binning"]["Relative Frequencies CDF"]
@@ -302,6 +413,7 @@ class Measure:
 
 
 		def funcPlotPie(ax):
+			""" Pie Plot """
 			numberOfTooSmallSubsets = stat["Binning"]["Pie"][1]
 			relativeFrequencies = stat["Binning"]["Pie"][0]
 			radius = 2
@@ -455,42 +567,63 @@ class Measure:
 			)
 			plottype = "pie"
 
-		return save(
+		return self.save(
 			index,
 			fig,
-			self.__plottype,
-			self.__options,
 			plottype + "-" + category + "-" + name
 		)
 
 
-class Scatter:
-	""" TODO: """
+class Scatter(PlotJob):
+	""" plot generation object for scatter plots between measures """
+	
 	def __init__(self, plottype, options, name, params):
-		self.__plottype = plottype
-		self.__options = options
-		self.__name = name
-		self.__params = params
-
-	def getName(self):
-		return self.__name
-
-	def getType(self):
-		return "Plot.Scatter"
-
+		""" constructor: see PlotJob and .run() """
+		PlotJob.__init__(
+			self,
+			"Plot.Scatter",
+			plottype,
+			options,
+			name,
+			params
+		)
+		
+		
 	def run(self):
-		(name, nameA, nameB, labelA, labelB, sample_1, sample_2) = self.__params
+		""" computation """
+		(name, nameA, nameB, labelA, labelB, stat_1, stat_2, correlation, theme) = self.getParams()
 		plt.ioff()
 
-
-		def hexbin(ax, x, y, color, **kwargs):
-			# cmap = sns.light_palette(color, as_cmap=True)
-			ax.hexbin(x, y, gridsize=32, bins="log", **kwargs)
-			# ax = plt.hexbin(x, y, gridsize=32, bins="log", cmap=cmap, **kwargs)
+		def funcHexBin(ax):
+			gridsize = correlation["Binning"]["Grid Size"]
+			frequencies = correlation["Binning"]["Absolute Frequencies"]
+			max  = correlation["Binning"]["Max Frequency"]
+			offsets = correlation["Binning"]["Offsets"]
+			paths = correlation["Binning"]["Paths"]
+			x_min = stat_1["Location"]["Min"]
+			x_max = stat_1["Location"]["Max"]
+			y_min = stat_2["Location"]["Min"]
+			y_max = stat_2["Location"]["Max"]
+			for i in range(len(frequencies)):
+				color = Theme.RGBA2RGB(
+					theme.getPlotColor(),
+					math.log(frequencies[i]+1,10)/math.log(max+1,10),
+					theme.getBackgroundColor()
+				)
+				path = paths.transformed(mpl.transforms.Affine2D().translate(
+					offsets[i][0],
+					offsets[i][1]
+				)) 
+				ax.add_patch(patches.PathPatch(
+					path,
+					facecolor = color,
+					linestyle = "solid",
+					linewidth = 0			
+				))
+			ax.set_xlim([x_min, x_max])
+			ax.set_ylim([y_min, y_max])
 			ax.set_xlabel(labelA)
-			# ax.xaxis.set_label_position("top")
 			ax.set_ylabel(labelB)
-			# ax.yaxis.set_label_position("right")
 			ax2 = ax.twinx()
 			ax2.set_ylabel(nameB)
 			ax2.set_yticks([])
@@ -498,11 +631,10 @@ class Scatter:
 			ax3.set_xlabel(nameA)
 			ax3.set_xticks([])
 
-
 		fig = plt.figure()
 		ax = fig.gca()
 
-		hexbin(ax, sample_1, sample_2, "#000070")
+		funcHexBin(ax)
 		xfmt = ScalarFormatter(useMathText=True)
 		xfmt.set_powerlimits((-1,1))
 		ax.xaxis.set_major_formatter(xfmt)
@@ -512,37 +644,8 @@ class Scatter:
 
 		fig.set_size_inches(4, 3.75)
 
-		return save(
+		return self.save(
 			name,
 			fig,
-			self.__plottype,
-			self.__options,
 			"scatter." + nameA + " - " + nameB
 		)
-
-
-def save(id, fig, plottype, options, extention):
-	""" TODO: """
-	result = ""
-
-	fig.tight_layout()
-
-	if plottype == "SVG":
-		imgdata = io.StringIO()
-		fig.savefig(imgdata, format='svg')
-
-		plaintext = imgdata.getvalue()
-		plaintext = " ".join(plaintext[plaintext.find("<svg "):].split())
-		result = quote(plaintext, safe='')
-
-	if plottype == "PDF":
-		filename = options[1] + extention
-		with PdfPages(options[0] + "/" + filename + ".pdf") as pdf:
-			pdf.savefig(fig)
-		result = filename
-
-	else:
-		pass
-
-	plt.close(fig)
-	return (id, result)

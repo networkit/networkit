@@ -7,7 +7,7 @@ from networkit import *
 import networkit as kit
 
 import os as os
-import sys
+import sys, traceback
 
 from . import multiprocessing
 from . import stat
@@ -32,7 +32,7 @@ try:
 	__IPYTHON__
 
 	def _initHeader(tag, type, data):
-		""" private helper function for notebook hack: create content of extended header """
+		""" private helper function for ipython/jupyther-notebook hack: create content of extended header """
 		result = """
 			{
 				var element = document.getElementById('NetworKit_""" + tag + """');
@@ -50,7 +50,7 @@ try:
 
 
 	def _initOverlay(name, data):
-		""" private helper function for notebook hack: create content of overlay """
+		""" private helper function for ipython/jupyther-notebook hack: create content of overlay """
 		result = """
 			{
 				var element = document.getElementById('NetworKit_""" + name + """');
@@ -68,7 +68,7 @@ try:
 		"""
 		return result
 
-
+	# load headers/scripts
 	display_html(
 		HTML("""
 			<script type="text/javascript">
@@ -85,7 +85,10 @@ except Exception as e:
 
 
 class Config:
+	""" object to control profiling.Profile behaviour """
+	
 	def __init__(self):
+		""" constructor: all options off """
 		self.__options_Properties = {
 			"Diameter": False
 		}
@@ -110,6 +113,7 @@ class Config:
 
 	@classmethod
 	def createConfig(cls, preset="default"):
+		""" create a config object by selection a named preset of predefined options (complete/minimal/default) """
 		result = Config()
 
 		if preset == "complete":
@@ -125,9 +129,11 @@ class Config:
 			result.setMeasure("Partition.ConnectedComponents")
 			result.setMeasure("Partition.CoreDecomposition")
 			result.setMeasureCorrelation("Spearman")
+		
 		elif preset == "minimal":
 			result.setMeasure("Centrality.Degree")
 			result.setMeasure("Partition.ConnectedComponents")
+		
 		elif preset == "default":
 			result.setProperty("Diameter")
 			result.setMeasure("Centrality.Degree")
@@ -145,45 +151,54 @@ class Config:
 
 		return result
 
+		
 	def setProperty(self, id, enabled=True):
+		""" enable/disable given property option """
 		if id in self.__options_Properties:
 			self.__options_Properties[id] = enabled
 
 
 	def getProperty(self, id):
+		""" return state of given property option """
 		return self.__options_Properties[id]
 
 
 	def setMeasure(self, id, enabled=True):
+		""" enable/disable given measure option """
 		if id in self.__options_Measures:
 			self.__options_Measures[id] = enabled
 
 
 	def getMeasure(self, id):
+		""" return state of given measure option """
 		return self.__options_Measures[id]
 
 
 	def setMeasureCorrelation(self, id, enabled=True):
+		""" enable/disable given correlation (measure) option """
 		if id in self.__options_MeasureCorrelations:
 			self.__options_MeasureCorrelations[id] = enabled
 
 
 	def getMeasureCorrelation(self, id):
+		""" return state of given correlation (measure) option """
 		return self.__options_MeasureCorrelations[id]
 
 
 
 class Profile:
-	""" TODO: """
-	__TOKEN = object()	# TODO: documentation: why is this token needed?
+	""" automated network profiling class """
+	
+	__TOKEN = object()	# see __init__(): prevent this class from being instanced directly
 	__pageCount = 0
 	__verbose = False
 	__verboseLevel = 0
 	__verboseFilename = ""
 	__parallel = multiprocessing.numberOfProcessors()
 
+	
 	def __init__(self, G, token=object()):
-		""" TODO: """
+		""" constructor: don't call this method directly - use create instead """
 		if token is not self.__TOKEN:
 			raise ValueError("call create(G) to create an instance")
 		self.__G = G
@@ -191,14 +206,31 @@ class Profile:
 		self.__measures = collections.OrderedDict()
 		self.__correlations = {}
 
+		
 	@classmethod
-	def walk(cls, inputDir, filePattern="*", outputDir=None, config=Config(), outputType="HTML", style="light", color=(0, 0, 1), recursive=False, parallel=False,  graphFormat=None):
+	def walk(cls, inputDir, filePattern="*", outputDir=None, config=Config(), outputType="HTML", style="light", color=(0, 0, 1), recursive=False, parallel=False, graphFormat=None):
+		""" tests all files of a directory for the given conditions and generates a profile when matching
+		
+		Args:
+			inputDir: the directory to search
+			filePattern: specify accepted file names, e.g.: *.METIS.graph
+			outputDir: directory to write the generated profiles
+			config: object to control some aspects of the generation behaviour (Config)
+			outputType: profile output format ("HTML", "LaTeX")
+			style: style of generated output ("light")
+			color: mainly used color of given style
+			recursive: also search in subfolders for matching files
+			parallel: run some additional parts of the generation in parallel (experimental)
+			graphFormat: format of matching files (e.g.: Format.METIS)
+		"""
+		
 		if outputDir is None:
 			raise ValueError("output directory (parameter: outputDir) not specified")
 		elif not os.path.isdir(outputDir):
 			os.mkdir(outputDir)
 		if graphFormat is None:
 			raise ValueError("no graph format has been specified")
+		
 		for (dirpath, dirnames, filenames) in os.walk(inputDir):
 			for filename in filenames:
 				file = dirpath + "/" + filename
@@ -209,21 +241,19 @@ class Profile:
 						try:
 							pf = cls.create(
 								G,
-								config = config,
-								type = outputType,
-								directory = outputDir,
-								token = cls.__TOKEN)
-
+								config = config
+							)
+							cls.__verbosePrint("");
 							pf.output(
 								outputType = outputType,
 								directory = outputDir,
 								style = style,
 								color = color,
-								parallel = parallel,
-								token = cls.__TOKEN
+								parallel = parallel
 							)
 						except Exception as e:
 							cls.__verbosePrint("=> an error occured: {0} of type {1}".format(e, type(e)))
+							cls.__verbosePrint(traceback.format_exc())
 					except:
 						cls.__verbosePrint("could not read {0}".format(file))
 					cls.__verbosePrint("\n")
@@ -235,14 +265,15 @@ class Profile:
 
 
 	@classmethod
-	def create(cls, G, config=Config(), type="HTML", directory="", token=object()):
-		""" TODO: """
-
-		if token is not cls.__TOKEN:
-			if type != "HTML" or directory != "":
-				raise ValueError("support for \"type\" and \"directory\" is not implemented");
-
-		filename  = "{0}.".format(G.getName())
+	def create(cls, G, config=Config()):
+		""" creates a profile object
+		
+		Args:
+			G: graph to profile
+			config: object to control some aspects of the generation behaviour (Config)
+		Returns:
+			profile object
+		"""
 
 		result = cls(G, cls.__TOKEN)
 		# TODO: use copy constructor instead
@@ -251,11 +282,11 @@ class Profile:
 		kit.setNumberOfThreads(result.__parallel)
 
 		def funcScores(instance):
-			""" Return node scores"""
+			""" returns node scores """
 			return instance.scores()
 
 		def funcSizes(instance):
-			"""Return partition subset sizes"""
+			""" returns partition subset sizes """
 			return sorted(instance.getPartition().subsetSizes())
 
 		if G.isDirected():
@@ -263,6 +294,8 @@ class Profile:
 		else:
 			classConnectedComponents = components.ConnectedComponents
 
+		# internal unique name | category name | display name | 
+		# compute correlation within same category | value function for measures | display name (axis) | class name of measure | parameter of constructor
 		for parameter in [
 			("Centrality.Degree",					"Node Centrality",	"Degree",
 				True,	funcScores,	"Score",				centrality.DegreeCentrality, 			(G, )),
@@ -291,7 +324,7 @@ class Profile:
 		if cls.__verbose:
 			timerAll = stopwatch.Timer()
 		result.__loadProperties()
-		result.__loadMeasures(type, directory, filename)
+		result.__loadMeasures()
 		if cls.__verbose:
 			if cls.__verboseLevel < 1:
 				print("")
@@ -302,7 +335,13 @@ class Profile:
 
 	@classmethod
 	def setVerbose(cls, verbose=False, level=0, filename=""):
-		""" TODO: """
+		""" set verbose behaviour of all public methods 
+		
+		Args:
+			verbose: enable/disable display verbose
+			level: set level of verbose (0, 1)
+			filename: enable/disable additional logfile support to given file
+		"""
 		cls.__verbose = verbose
 		cls.__verboseLevel = level
 		cls.__verboseFilename = filename
@@ -310,13 +349,13 @@ class Profile:
 
 	@classmethod
 	def getVerbose(cls):
-		""" TODO: """
+		""" returns verbose settings """
 		return (cls.__verbose, cls.__verboseLevel, cls.__verboseFilename)
 
 
 	@classmethod
 	def setParallel(cls, parallel):
-		""" TODO: """
+		""" set the number of parallel threads/processes to use """
 		if (parallel < 1):
 			raise ValueError("parallel < 1");
 		cls.__parallel = parallel
@@ -324,27 +363,36 @@ class Profile:
 
 	@classmethod
 	def getParallel(cls):
-		""" TODO: """
+		""" returns the number of parallel threads/processes to use """
 		return cls.__parallel
 
 
 	def getStat(self, measure):
-		""" TODO: """
+		""" returns an directory of all computed measure values """
 		return self.__measures[measure]["stat"]
 
 
 	def getCategory(self, measure):
-		""" TODO: """
+		""" returns the category of an given measure """
 		return self.__measures[measure]["category"]
 
 
 	def getElapsedTime(self, measure):
-		""" TODO: """
+		""" returns the elapsed computation times of an given measure """
 		return self.__measures[measure]["time"]
 
 
-	def output(self, outputType, directory, style="light", color=(0, 0, 1), parallel=False, token=object()):
-		""" TODO:  """
+	def output(self, outputType, directory, style="light", color=(0, 0, 1), parallel=False):
+		""" outputs a computed profile to disk
+		
+		Args:
+			outputType: profile output format ("HTML", "LaTeX")
+			directory: directory to write
+			style: style of generated output ("light")
+			color: mainly used color of given style
+			arallel: run some additional parts of the generation in parallel (experimental)
+		"""
+		
 		# TODO: type -> enum
 		options_type = ["HTML", "LaTeX", None]
 		for o in options_type:
@@ -405,7 +453,13 @@ class Profile:
 
 
 	def show(self, style="light", color=(0, 0, 1), parallel=False):
-		""" TODO: """
+		""" display computed profile
+		
+		Args:
+			style: style of generated output ("light")
+			color: mainly used color of given style
+			parallel: run some additional parts of the generation in parallel (experimental)
+		"""
 		try:
 			__IPYTHON__
 		except:
@@ -426,13 +480,16 @@ class Profile:
 
 
 	def __format(self, type, directory, filename, style, color, pageIndex, parallel):
-		""" TODO """
+		""" layouts the profile	"""
 		theme = plot.Theme()
 		theme.set(style, color)
 
+		# TODO: refactor and use decorator design pattern instead if an 3rd format is supported 
 		if type == "HTML":
 			plottype = "SVG"
 			options = []
+			templateProfile = readfile("html/profile.html", False)
+			templateMeasure = readfile("html/measure.html", False)
 		elif type == "LaTeX":
 			plottype = "PDF"
 			if directory[-1] == "/":
@@ -442,7 +499,10 @@ class Profile:
 			if not os.path.isdir(output_dir):
 				os.mkdir(output_dir)
 			options = [output_dir, filename]
+			templateProfile = readfile("latex/profile.tex", False)
+			templateMeasure = readfile("latex/measure.tex", False)
 
+		# generate plots
 		pool = multiprocessing.ThreadPool(self.__parallel, parallel)
 		for name in self.__measures:
 			category = self.__measures[name]["category"]
@@ -477,26 +537,54 @@ class Profile:
 						theme
 					))
 				)
+		for category in self.__correlations:
+			keyBList = []
+			for keyA in self.__measures:
+				if self.__measures[keyA]["category"] == category and self.__measures[keyA]["correlate"]:
+					keyBList.append(keyA)
+					for keyB in keyBList:
+						if keyA != keyB:
+							try:
+								value = self.__correlations[category][keyA][keyB]
+								keyFirst = keyA
+								keySecond = keyB
+							except:
+								value = self.__correlations[category][keyB][keyA]
+								keyFirst = keyB
+								keySecond = keyA
+							pool.put(
+								plot.Scatter(plottype, options, keyFirst, (
+									keySecond,
+									self.__measures[keyFirst]["name"],
+									self.__measures[keySecond]["name"],
+									self.__measures[keyFirst]["label"],
+									self.__measures[keySecond]["label"],
+									self.__measures[keyFirst]["stat"],
+									self.__measures[keySecond]["stat"],
+									value["stat"],
+									theme
+								))
+							)
 		while pool.numberOfTasks() > 0:
-			(plotType, name, data) = pool.get()
+			(taskType, name, data) = pool.get()
 			try:
 				category = self.__measures[name]["category"]
 
-				if plotType == "Plot.Measure":
+				if taskType == "Plot.Measure":
 					(index, image) = data
+					self.__verbosePrint("Plot.Measure", level=1)
 					self.__measures[name]["image"][index] = image
+				
+				elif taskType == "Plot.Scatter":
+					(nameB, image) = data
+					self.__verbosePrint("Plot.Scatter (" + name + " <-> " + nameB + ")", level=1)
+					self.__correlations[category][name][nameB]["image"] = image
 			except Exception as e:
-				self.__verbosePrint("Error (Post Processing): " + plotType + " - " + name, level=-1)
+				self.__verbosePrint("Error (Post Processing): " + taskType + " - " + name, level=-1)
 				self.__verbosePrint(str(e), level=-1)
 		pool.join()
 
-		if type == "HTML":
-			templateProfile = readfile("html/profile.html", False)
-			templateMeasure = readfile("html/measure.html", False)
-		elif type == "LaTeX":
-			templateProfile = readfile("latex/profile.tex", False)
-			templateMeasure = readfile("latex/measure.tex", False)
-
+		# outline results
 		results = {}
 		for category in self.__correlations:
 			results[category] = {}
@@ -522,7 +610,7 @@ class Profile:
 									value = self.__correlations[category][keyB][keyA]
 								nameA = self.__measures[keyA]["name"]
 								nameB = self.__measures[keyB]["name"]
-								result += "<div class=\"HeatCell\" title=\"" + nameB + " - " + nameA + "\" data-heat=\"{:+.3F}\"></div>".format(value["stat"][correlationName])
+								result += "<div class=\"HeatCell\" title=\"" + nameB + " - " + nameA + "\" data-heat=\"{:+.3F}\"></div>".format(value["stat"]["Value"][correlationName])
 							result += "<div class=\"HeatCellName\">" + nameB + "</div><br>"
 					result += "</div>"
 				elif type == "LaTeX":
@@ -541,10 +629,10 @@ class Profile:
 								nameA = self.__measures[keyA]["name"]
 								nameB = self.__measures[keyB]["name"]
 								result += "\\cellcolor{"
-								result += "red" if value["stat"][correlationName] > 0 else "blue"
-								result += "!" + str(abs(value["stat"][correlationName]) * 100)
+								result += "red" if value["stat"]["Value"][correlationName] > 0 else "blue"
+								result += "!" + str(abs(value["stat"]["Value"][correlationName]) * 100)
 								result += "}"
-								result += "{:+.3F} & ".format(value["stat"][correlationName])
+								result += "{:+.3F} & ".format(value["stat"]["Value"][correlationName])
 							result += "\\multicolumn{" + str(n-i) + "}" + "{l}{" + nameB + "} \\\\"
 						i += 1
 					result += "\\end{tabular}"
@@ -569,14 +657,14 @@ class Profile:
 									value = self.__correlations[category][keyA][keyB]
 								except:
 									value = self.__correlations[category][keyB][keyA]
-									if type == "HTML":
-										result += "<div class=\"Thumbnail_ScatterPlot\" data-title=\"" + keyB + "\" data-title-second=\"" + keyA + "\"><img src=\"data:image/svg+xml;utf8," + value["image"] + "\" /></div>"
-									elif type == "LaTeX":
-										result += "\n\\includegraphics[width=0.5\\textwidth]{{\"" + value["image"] + "\"}.pdf}"
+								if type == "HTML":
+									result += "<div class=\"Thumbnail_ScatterPlot\" data-title=\"" + keyB + "\" data-title-second=\"" + keyA + "\"><img src=\"data:image/svg+xml;utf8," + value["image"] + "\" /></div>"
+								elif type == "LaTeX":
+									result += "\n\\includegraphics[width=0.5\\textwidth]{{\"" + value["image"] + "\"}.pdf}"
 				return result
 			results[category]["Correlations"]["ScatterPlots"] += funcScatterPlot(category)
 
-		# TODO: documentation
+		# group results to fit templates (measure)
 		for key in self.__measures:
 			measure = self.__measures[key]
 			name = measure["name"]
@@ -602,7 +690,7 @@ class Profile:
 
 			except:
 				pass
-
+				
 			results[category]["Measures"] += self.__formatMeasureTemplate(
 				templateMeasure,
 				pageIndex,
@@ -630,20 +718,20 @@ class Profile:
 
 
 	def __formatMeasureTemplate(self, template, pageIndex, key, name, image, stat, assortativity, centralization, extentions, description, algorithm):
-		""" TODO: """
+		""" format measure template - all function parameters, are available for the template """
 		result = template.format(**locals())
 		return result
 
 
 	def __formatProfileTemplate(self, template, pageIndex, results):
-		""" TODO: """
+		""" format profile template - all function parameters, are available for the template """
 		properties = self.__properties
 		result = template.format(**locals())
 		return result
 
 
 	def __addMeasure(self, args):
-		""" TODO: """
+		""" add a measure if it is enabled in the given config object """
 		(measureKey, measureCategory, measureName, correlate, getter, label, measureClass, parameters) = args
 		if self.__config.getMeasure(measureKey):
 			measure = {}
@@ -664,7 +752,7 @@ class Profile:
 
 
 	def __loadProperties(self):
-		""" TODO: """
+		""" calculate the network properties """
 		self.__properties["Name"] = self.__G.getName()
 		self.__properties["Nodes"] = self.__G.numberOfNodes()
 		self.__properties["Edges"] = self.__G.numberOfEdges()
@@ -707,23 +795,9 @@ class Profile:
 		self.__properties["Connected Components"] = num
 
 
-	def __loadMeasures(self, type, directory, filename):
-		""" TODO: """
+	def __loadMeasures(self):
+		""" calculate the network measures and stats """
 		pool = multiprocessing.ThreadPool(self.__parallel, False)
-
-		if type == "HTML":
-			plottype = "SVG"
-			options = []
-		elif type == "LaTeX":
-			plottype = "PDF"
-			if directory[-1] == "/":
-				output_dir = directory + filename[:-1]
-			else:
-				output_dir = directory + "/" + filename[:-1]
-			if not os.path.isdir(output_dir):
-				os.mkdir(output_dir)
-			options = [output_dir, filename]
-
 
 		for name in self.__measures:
 			measure = self.__measures[name]
@@ -766,8 +840,6 @@ class Profile:
 			else:
 				measure["assortativity"] = float("nan")
 
-
-
 			if self.__measures[name]["category"] == "Node Centrality":
 				self.__verbosePrint("    Centralization: ", end="")
 				timerPostCentralization = stopwatch.Timer()
@@ -780,7 +852,6 @@ class Profile:
 				self.__verbosePrint("{:.2F} s".format(elapsedPostCentralization))
 			else:
 				measure["centralization"] = float("nan")
-
 
 			measure["time"] = (
 				elapsedMain,
@@ -833,20 +904,10 @@ class Profile:
 									self.__measures[name]["stat"]
 								))
 							)
-							pool.put(
-								plot.Scatter(plottype, options, key, (
-									name,
-									self.__measures[key]["name"],
-									self.__measures[name]["name"],
-									self.__measures[key]["label"],
-									self.__measures[name]["label"],
-									self.__measures[key]["data"]["sample"],
-									self.__measures[name]["data"]["sample"]
-								))
-							)
 						self.__correlations[category][name] = {}
 						self.__correlations[category][name][name] = {}
-						self.__correlations[category][name][name]["stat"] = {
+						self.__correlations[category][name][name]["stat"] = {}
+						self.__correlations[category][name][name]["stat"]["Value"] = {
 							"Spearman's Rank Correlation Coefficient": 1,
 							"Pearson's Correlation Coefficient": 1,
 							"Fechner's Correlation Coefficient": 1
@@ -857,13 +918,8 @@ class Profile:
 					(nameB, correlation) = data
 					self.__verbosePrint("Correlation: " + name + " <-> " + nameB, level=1)
 					self.__correlations[category][name][nameB]["stat"] = correlation
-
-				elif type == "Plot.Scatter":
-					(nameB, image) = data
-					self.__verbosePrint("Plot.Scatter: " + name, level=1)
-					self.__correlations[category][name][nameB]["image"] = image
 			except Exception as e:
-				self.__verbosePrint("Error (Post Processing): " + type + " - " + name, level=-1)
+				self.__verbosePrint("Error (Post Processing): " + type + " - " + nam-e, level=-1)
 				self.__verbosePrint(str(e), level=-1)
 
 		pool.join()
@@ -871,6 +927,7 @@ class Profile:
 
 	@classmethod
 	def __verbosePrint(cls, text="", end="\n", level=0):
+		""" print for verbose output """
 		if cls.__verboseLevel >= level:
 			text = text + end
 		else:

@@ -10,19 +10,22 @@ import sys, traceback
 
 
 def numberOfProcessors():
+	""" return the number of Processors """
 	return multiprocessing.cpu_count()
 
 
 class Worker(multiprocessing.Process):
-	""" TODO: """
+	""" Worker Process """
 
 	def __init__(self, tasks, results):
+		""" constructor: init worker with task and result queue """
 		multiprocessing.Process.__init__(self)
 		self.__tasks = tasks
 		self.__results = results
 
 
 	def run(self):
+		""" gain tasks and compute them until ThreadPool sends termination signal """
 		while True:
 			task = self.__tasks.get()
 			if task is None:
@@ -41,37 +44,38 @@ class Worker(multiprocessing.Process):
 
 
 class ThreadPool():
+	""" Threadpool
+	
+	suggested usage:
+		
+	from . import job
+
+	n = multiprocessing.numberOfProcessors() * 2
+	pool = multiprocessing.ThreadPool(n)
+
+	class Foo(job.Job):
+		...
+
+	tasks = []
+	tasks.append(Foo())
+
+	for task in tasks:
+		pool.put(task)
+	while pool.numberOfTasks() > 0:
+		(type, name, data) = pool.get()
+		try:
+			... unpack data & post processing ...
+		except:
+			pass
+	pool.join()
 	"""
-		Suggested Syntax:
 
-		n = multiprocessing.numberOfProcessors() * 2
-		pool = multiprocessing.ThreadPool(n)
-
-		class Job:
-			def run(self):
-				...
-				return ...
-
-			def getType(self):
-				...
-
-			def getName(self):
-				...
-
-		tasks = []
-		tasks.append(Job())
-
-		for task in tasks:
-			pool.put(task)
-		while pool.numberOfTasks() > 0:
-			(type, name, data) = pool.get()
-			try:
-				... unpack data & post processing ...
-			except:
-				pass
-		pool.join()
-	"""
 	def __init__(self, numberOfWorkers, isParallel=True):
+		""" constructor
+		Args:
+			numberOfWorkers: number of workers to create 
+			isParallel: parallel or sequential task computation
+		"""
 		self.__numberOfTasks = 0
 		self.__numberOfWorkers = numberOfWorkers
 		self.__isParallel = isParallel
@@ -104,22 +108,22 @@ class ThreadPool():
 
 
 	def numberOfTasks(self):
-		""" Current number of unfinished tasks """
+		""" current number of unfinished tasks """
 		return self.__numberOfTasks
 
 		
 	def numberOfWorkers(self):
-		""" Initilized number of workers """
+		""" initilized number of workers """
 		return self.__numberOfWorkers
 		
 		
 	def isParallel(self):
-		""" TODO: """
+		""" are the workers run parallel or sequencial  """
 		return self.__isParallel
 		
 
 	def put(self, task):
-		""" Assign a task """
+		""" assign a task """
 		if self.__isParallel:
 			self.__tasks.put(task)
 		else:
@@ -128,6 +132,7 @@ class ThreadPool():
 
 
 	def get(self):
+		""" gains results from workers """
 		if self.__isParallel:
 			result = self.__results.get()
 		else:
@@ -145,6 +150,7 @@ class ThreadPool():
 
 
 	def join(self):
+		""" wait for workers to finish and close ThreadPool """
 		if self.__isParallel:
 			for i in range(self.__numberOfWorkers):
 				self.__tasks.put(None)
