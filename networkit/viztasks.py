@@ -29,8 +29,9 @@ def drawGraph(G, **kwargs):
 
 def drawCommunityGraph(G, zeta, **kwargs):
 	""" Draws the community graph of a given graph and partition. Takes the same optional parameters as networkx.draw(...) except node_size."""
-	cg = ParallelPartitionCoarsening() 
-	graph,_ = cg.run(G,zeta) # convert communities to nodes
+	cg = ParallelPartitionCoarsening(G,zeta) 
+	cg.run() # convert communities to nodes
+	graph = cg.getCoarseGraph()
 	comGraph = nxadapter.nk2nx(graph)
 	kwargs["node_size"] = [size*2 for size in list(zeta.subsetSizeMap().values())]
 	networkx.draw(comGraph, **kwargs)
