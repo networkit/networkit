@@ -80,8 +80,8 @@ try:
 			</script>
 		""")
 	)
-except Exception as e:
-	print(str(e))
+except NameError as e:
+	pass
 
 
 class Config:
