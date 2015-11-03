@@ -6,6 +6,7 @@
  */
 
 #include "NeighborhoodUtility.h"
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -14,8 +15,8 @@ std::pair<std::vector<node>, std::vector<node>> NeighborhoodUtility::getSortedNe
   std::vector<node> vNeighbors = G.neighbors(v);
   // We have no guarantee that the neighbor-vectors are sorted so we have to
   // sort them in order for set-functions to work properly.
-  std::sort(uNeighbors.begin(), uNeighbors.end());
-  std::sort(vNeighbors.begin(), vNeighbors.end());
+  Aux::Parallel::sort(uNeighbors.begin(), uNeighbors.end());
+  Aux::Parallel::sort(vNeighbors.begin(), vNeighbors.end());
   return std::make_pair(uNeighbors, vNeighbors);
 }
 

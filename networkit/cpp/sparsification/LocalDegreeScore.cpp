@@ -7,6 +7,7 @@
 
 #include "LocalDegreeScore.h"
 #include "LocalSimilarityScore.h"
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -32,7 +33,7 @@ void LocalDegreeScore::run() {
 			if (G.degree(j) > d)
 				neighbors.push_back(AttributizedEdge<count>(i, j, eid, G.degree(j)));
 		});
-		std::sort(neighbors.begin(), neighbors.end());
+		Aux::Parallel::sort(neighbors.begin(), neighbors.end());
 
 		count rank = 1;
 

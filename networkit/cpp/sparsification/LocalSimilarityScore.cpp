@@ -8,6 +8,7 @@
 #include "LocalSimilarityScore.h"
 #include <math.h> //log
 #include <set>
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -38,7 +39,7 @@ void LocalSimilarityScore::run() {
 			double sim = triangles[eid] * 1.0 / (G.degree(i) + G.degree(j) - triangles[eid]);
 			neighbors.emplace_back(i, j, eid, sim);
 		});
-		std::sort(neighbors.begin(), neighbors.end());
+		Aux::Parallel::sort(neighbors.begin(), neighbors.end());
 
 		count rank = 1;
 

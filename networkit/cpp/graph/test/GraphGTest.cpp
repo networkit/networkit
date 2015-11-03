@@ -14,6 +14,7 @@
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/NumericTools.h"
 #include "../../graph/DynBFS.h"
+#include "../../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -1213,7 +1214,7 @@ TEST_P(GraphGTest, testParallelForNodes) {
 		visited.push_back(u);
 	});
 
-	std::sort(visited.begin(), visited.end());
+	Aux::Parallel::sort(visited.begin(), visited.end());
 
 	ASSERT_EQ(5u, visited.size());
 	for (index i = 0; i < this->Ghouse.upperNodeIdBound(); i++) {
@@ -1395,7 +1396,7 @@ TEST_P(GraphGTest, testForNeighborsOf){
 		visited.push_back(u);
 	});
 
-	std::sort(visited.begin(), visited.end());
+	Aux::Parallel::sort(visited.begin(), visited.end());
 
 	if (isDirected()) {
 		ASSERT_EQ(2u, visited.size());
@@ -1416,7 +1417,7 @@ TEST_P(GraphGTest, testForWeightedNeighborsOf){
 	});
 
 	// should sort after the first element
-	std::sort(visited.begin(), visited.end());
+	Aux::Parallel::sort(visited.begin(), visited.end());
 
 	if (isGraph()) {
 		ASSERT_EQ(3u, visited.size());
@@ -1573,7 +1574,7 @@ TEST_P(GraphGTest, testForInNeighborsOf) {
 	this->Ghouse.forInNeighborsOf(2, [&](node v){
 		visited.push_back(v);
 	});
-	std::sort(visited.begin(), visited.end());
+	Aux::Parallel::sort(visited.begin(), visited.end());
 
 	if (isDirected()) {
 		EXPECT_EQ(2u, visited.size());
@@ -1593,7 +1594,7 @@ TEST_P(GraphGTest, testForWeightedInNeighborsOf) {
 	this->Ghouse.forInNeighborsOf(3, [&](node v, edgeweight ew) {
 		visited.push_back({v, ew});
 	});
-	std::sort(visited.begin(), visited.end());
+	Aux::Parallel::sort(visited.begin(), visited.end());
 
 	if (isGraph()) {
 		ASSERT_EQ(3u, visited.size());
@@ -2116,7 +2117,7 @@ TEST_P(GraphGTest, testSortEdges) {
 				outEdges.emplace_back(v, w, eid);
 			});
 
-			std::sort(outEdges.begin(), outEdges.end());
+			Aux::Parallel::sort(outEdges.begin(), outEdges.end());
 
 			for (auto x : outEdges) {
 				edges.emplace_back(u, std::get<0>(x), std::get<1>(x), std::get<2>(x));
@@ -2128,7 +2129,7 @@ TEST_P(GraphGTest, testSortEdges) {
 				outEdges.emplace_back(v, w, eid);
 			});
 
-			std::sort(outEdges.begin(), outEdges.end());
+			Aux::Parallel::sort(outEdges.begin(), outEdges.end());
 
 			for (auto x : outEdges) {
 				edges.emplace_back(u, std::get<0>(x), std::get<1>(x), std::get<2>(x));

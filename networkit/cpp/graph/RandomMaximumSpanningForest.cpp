@@ -4,6 +4,7 @@
 
 #include "RandomMaximumSpanningForest.h"
 #include "../auxiliary/SignalHandling.h"
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -64,7 +65,7 @@ void RandomMaximumSpanningForest::run() {
 		calculateAttribute = true;
 	}
 
-	std::sort(weightedEdges.begin(), weightedEdges.end(), std::greater<weightedEdge>());
+	Aux::Parallel::sort(weightedEdges.begin(), weightedEdges.end(), std::greater<weightedEdge>());
 
 	handler.assureRunning();
 
