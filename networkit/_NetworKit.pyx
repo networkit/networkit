@@ -22,7 +22,7 @@ from libcpp.stack cimport stack
 from libcpp.string cimport string
 from libcpp.unordered_set cimport unordered_set
 from libcpp.unordered_map cimport unordered_map
-from libcpp.algorithm cimport sort
+from libcpp.algorithm cimport sort as stdsort
 
 # NetworKit typedefs
 ctypedef uint64_t count
@@ -48,6 +48,10 @@ cdef extern from "<algorithm>" namespace "std":
 	pair[_Graph, vector[node]] move(pair[_Graph, vector[node]]) nogil
 	vector[pair[pair[node, node], double]] move(vector[pair[pair[node, node], double]]) nogil
 	vector[pair[node, node]] move(vector[pair[node, node]]) nogil
+
+cdef extern from "cpp/auxiliary/Parallel.h" namespace "Aux::Parallel":
+	void sort[Iter](Iter begin, Iter end) nogil
+	void sort[Iter, Comp](Iter begin, Iter end, Comp compare) nogil
 
 cdef extern from "cython_helper.h":
 	void throw_runtime_error(string message)
