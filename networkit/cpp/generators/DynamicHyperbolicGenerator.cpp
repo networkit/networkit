@@ -10,6 +10,7 @@
 #include "DynamicHyperbolicGenerator.h"
 #include "HyperbolicGenerator.h"
 #include "../geometric/HyperbolicSpace.h"
+#include "../auxiliary/Parallel.h"
 
 using std::vector;
 namespace NetworKit {
@@ -211,8 +212,8 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
 		Point2D<double> q = HyperbolicSpace::polarToCartesian(angles[toWiggle[j]], radii[toWiggle[j]]);
 		quad.getElementsInHyperbolicCircle(q, R, suppressLeft, newNeighbours);
 
-		std::sort(oldNeighbours[j].begin(), oldNeighbours[j].end());
-		std::sort(newNeighbours.begin(), newNeighbours.end());
+		Aux::Parallel::sort(oldNeighbours[j].begin(), oldNeighbours[j].end());
+		Aux::Parallel::sort(newNeighbours.begin(), newNeighbours.end());
 		vector<index> newEdges(newNeighbours.size());
 		auto it = std::set_difference(newNeighbours.begin(), newNeighbours.end(), oldNeighbours[j].begin(), oldNeighbours[j].end(), newEdges.begin());
 		newEdges.erase(it, newEdges.end());//trim empty space
@@ -240,7 +241,7 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
 	for (auto it = result.begin()+oldStreamMarker; it < result.end(); it++) {
 		if (it->u > it->v) std::swap(it->u, it->v);
 	}
-	std::sort(result.begin()+oldStreamMarker, result.end(), GraphEvent::compare);
+	Aux::Parallel::sort(result.begin()+oldStreamMarker, result.end(), GraphEvent::compare);
 	auto end = std::unique(result.begin()+oldStreamMarker, result.end(), GraphEvent::equal);
 	result.erase(end, result.end());
 }

@@ -6,6 +6,7 @@
  */
 
 #include "MissingLinksFinder.h"
+#include "../auxiliary/Parallel.h"
 
 #include <algorithm>
 #include <random>
@@ -33,7 +34,7 @@ std::vector<std::pair<node, node>> MissingLinksFinder::findAtDistance(count k) {
     missingLinks.insert(missingLinks.end(), missingLinksPrivate.begin(), missingLinksPrivate.end());
   }
   DEBUG("Found ", missingLinks.size(), " missing links with distance ", k, ".");
-  std::sort(missingLinks.begin(), missingLinks.end());
+  Aux::Parallel::sort(missingLinks.begin(), missingLinks.end());
   return missingLinks;
 }
 

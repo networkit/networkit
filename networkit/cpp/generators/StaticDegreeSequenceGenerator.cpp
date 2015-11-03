@@ -7,6 +7,7 @@
 
 #include "StaticDegreeSequenceGenerator.h"
 #include "../auxiliary/Log.h"
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -45,7 +46,7 @@ bool StaticDegreeSequenceGenerator::isRealizable() {
 	/* Second inequality. */
 	// this inequality needs a sorted sequence
 	std::vector<count> sortedSeq = seq;
-	std::sort(sortedSeq.begin(), sortedSeq.end(), std::greater<count>());
+	Aux::Parallel::sort(sortedSeq.begin(), sortedSeq.end(), std::greater<count>());
 
 	deg_sum = 0;
 	for (count j = 0; j < n; ++j) {

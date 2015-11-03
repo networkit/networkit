@@ -11,6 +11,7 @@
 
 #include "GraphBuilderDirectSwapGTest.h"
 #include "../../auxiliary/Random.h"
+#include "../../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -504,7 +505,7 @@ TEST_P(GraphBuilderDirectSwapGTest, testParallelForNodes) {
 		visited.push_back(u);
 	});
 
-	std::sort(visited.begin(), visited.end());
+	Aux::Parallel::sort(visited.begin(), visited.end());
 
 	ASSERT_EQ(5u, visited.size());
 	for (index i = 0; i < this->bHouse.upperNodeIdBound(); i++) {

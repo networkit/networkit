@@ -7,6 +7,7 @@
 
 #include "PrefixJaccardScore.h"
 #include <omp.h>
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -59,7 +60,7 @@ void PrefixJaccardScore<AttributeT>::run() {
 		const auto beginIt = rankedEdges.begin() + rankedEdgeBegin[u];
 		const auto endIt = rankedEdges.begin() + rankedEdgeBegin[u+1];
 
-		std::sort(beginIt, endIt, std::greater<RankedEdge>());
+		Aux::Parallel::sort(beginIt, endIt, std::greater<RankedEdge>());
 
 		AttributeT curVal = beginIt->att;
 		count curRank = 0;
