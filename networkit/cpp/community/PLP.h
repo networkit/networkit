@@ -28,6 +28,7 @@ class PLP: public NetworKit::CommunityDetectionAlgorithm {
 protected:
 
 	count updateThreshold = 0;
+	count maxIterations;
 	count nIterations = 0; //!< number of iterations in last run
 	std::vector<count> timing;	//!< running times for each iteration
 
@@ -40,9 +41,7 @@ public:
 	 * @param[in]	G	input graph
 	 * @param[in]	theta	updateThreshold: number of nodes that have to be changed in each iteration so that a new iteration starts.
 	 */
-	PLP(const Graph& G, count theta = none);
-
-	PLP(const Graph& G, const PLP& other);
+	PLP(const Graph& G, count theta = none, count maxIterations=none);
 
 	/**
 	 * Constructor to the label propagation community detection algorithm.

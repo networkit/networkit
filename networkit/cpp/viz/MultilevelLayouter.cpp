@@ -59,7 +59,7 @@ void MultilevelLayouter::drawInternal(Graph& G, count level) {
 		ParallelPartitionCoarsening contracter(G, clustering);
 		contracter.run();
 		Graph Gcon = contracter.getCoarseGraph();
-		std::vector<node> mapping = contracter.getNodeMapping();
+		std::vector<node> mapping = contracter.getFineToCoarseNodeMapping();
 
 		// make recursive call
 		drawInternal(Gcon, level + 1);
