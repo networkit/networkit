@@ -7777,6 +7777,42 @@ cdef class JaccardDistance:
 	def getAttribute(self):
 		return self._this.getEdgeAttribute()
 
+
+cdef extern from "cpp/distance/AlgebraicDistance.h":
+	cdef cppclass _AlgebraicDistance "NetworKit::AlgebraicDistance":
+		_AlgebraicDistance(_Graph G, count numberSystems, count numberIterations, double omega, index norm) except +
+		void preprocess() except +
+		double distance(node, node) except +
+
+
+cdef class AlgebraicDistance:
+	"""
+
+	Parameters
+	----------
+	G : Graph
+		The graph to calculate Jaccard distances for.
+
+	"""
+
+	cdef _AlgebraicDistance* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, count numberSystems=10, count numberIterations=30, double omega=0.5, index norm=0):
+		self._G = G
+		self._this = new _AlgebraicDistance(G._this, numberSystems, numberIterations, omega, norm)
+
+	def __dealloc__(self):
+		del self._this
+
+	def preprocess(self):
+		self._this.preprocess()
+
+	def distance(self, node u, node v):
+		return self._this.distance(u, v)
+
+
+
 cdef class JaccardSimilarityAttributizer:
 	"""
 	The Jaccard similarity measure assigns to each edge (1 - the jaccard coefficient
