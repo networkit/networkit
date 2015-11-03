@@ -51,7 +51,7 @@ double NetworKit::AdjustedRandMeasure::getDissimilarity(const NetworKit::Graph &
 	if (maxIndex == 0) { // both clusterings are singleton clusterings
 		return 0.0;
 	} else if (maxIndex == expectedIndex) { // both partitions contain one cluster the whole graph
-		return 1.0;
+		return 0.0;
 	} else {
 		return 1.0 - (randIndex - expectedIndex) / (maxIndex - expectedIndex);
 	}

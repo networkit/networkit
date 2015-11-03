@@ -30,6 +30,9 @@ Dy * GeneratorsTest.cpp
 #include "../RegularRingLatticeGenerator.h"
 #include "../StochasticBlockmodel.h"
 #include "../EdgeSwitchingMarkovChainGenerator.h"
+#include "../MultiscaleGenerator.h"
+#include "../LFRGenerator.h"
+
 
 #include "../../viz/PostscriptWriter.h"
 #include "../../community/ClusteringGenerator.h"
@@ -45,7 +48,6 @@ Dy * GeneratorsTest.cpp
 #include "../../global/ClusteringCoefficient.h"
 #include "../../community/PLM.h"
 #include "../../community/Modularity.h"
-#include "../LFRGenerator.h"
 
 
 namespace NetworKit {
@@ -481,7 +483,7 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRealSequence) {
 		std::vector<count> sequence(n);
 		G.forNodes([&](node u){
 			sequence[u] = G.degree(u);
-			
+
 		});
 
 		HavelHakimiGenerator hhgen(sequence);
@@ -999,6 +1001,14 @@ TEST_F(GeneratorsGTest, testLFRGeneratorWithRealData) {
 	gen.setMu(mu);
 	gen.run();
 }
+
+TEST_F(GeneratorsGTest, testMultiscaleGenerator) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/lesmis.graph");
+	MultiscaleGenerator gen(G);
+	Graph R = gen.generate();
+}
+
 
 } /* namespace NetworKit */
 
