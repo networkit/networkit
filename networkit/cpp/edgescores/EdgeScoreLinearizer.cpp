@@ -6,10 +6,10 @@
  */
 
 #include "EdgeScoreLinearizer.h"
-#include <algorithm>
 #include <numeric>
 #include <tuple>
 #include "../auxiliary/Random.h"
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -38,9 +38,9 @@ void EdgeScoreLinearizer::run() {
 		});
 
 		if (inverse) {
-			std::sort(sorted.begin(), sorted.end(), std::greater<edgeTuple>());
+			Aux::Parallel::sort(sorted.begin(), sorted.end(), std::greater<edgeTuple>());
 		} else {
-			std::sort(sorted.begin(), sorted.end());
+			Aux::Parallel::sort(sorted.begin(), sorted.end());
 		}
 
 		#pragma omp parallel for
