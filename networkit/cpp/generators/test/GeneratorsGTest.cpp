@@ -1002,7 +1002,7 @@ TEST_F(GeneratorsGTest, testLFRGeneratorWithRealData) {
 	gen.run();
 }
 
-TEST_F(GeneratorsGTest, testMultiscaleGenerator) {
+TEST_F(GeneratorsGTest, tryMultiscaleGenerator) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/lesmis.graph");
 	MultiscaleGenerator gen(G);
