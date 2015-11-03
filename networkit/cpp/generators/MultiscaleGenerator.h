@@ -27,8 +27,9 @@ protected:
     // const double edgeGrowthRate;
     // const double nodeEditingRate;
     // const double edgeEditingRate;
-    // const count levels;     // levels of hierarchy
+    const count maxLevels = 2;     // TODO: levels of hierarchy
     std::string aggregationScheme = "matching";
+
 
 public:
     // TODO: parameters: retainIntermediates, coarseningScheme,
