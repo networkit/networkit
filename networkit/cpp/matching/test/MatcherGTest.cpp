@@ -30,22 +30,24 @@ TEST_F(MatcherGTest, testLocalMaxMatching) {
 	LocalMaxMatcher localMaxMatcher(G);
 
 	TRACE("Start localMax matching");
-	Matching M = localMaxMatcher.run();
+	localMaxMatcher.run();
+	Matching M = localMaxMatcher.getMatching();
 	TRACE("Finished localMax matching");
 
 	count numExpEdges = n / 2;
 	bool isProper = M.isProper(G);
 	EXPECT_TRUE(isProper);
-	EXPECT_EQ(M.size(), numExpEdges);
+	EXPECT_EQ(M.size(G), numExpEdges);
 
 #if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
 	DibapGraphReader reader;
 	Graph airfoil1 = reader.read("input/airfoil1.gi");
 	LocalMaxMatcher lmm(airfoil1);
-	M = lmm.run();
+	lmm.run();
+	M = lmm.getMatching();
 	isProper = M.isProper(airfoil1);
 	EXPECT_TRUE(isProper);
-	DEBUG("LocalMax on airfoil1 produces matching of size: " , M.size());
+	DEBUG("LocalMax on airfoil1 produces matching of size: " , M.size(G));
 #endif
 }
 
@@ -65,12 +67,14 @@ TEST_F(MatcherGTest, testPgaMatching) {
 	PathGrowingMatcher pgaMatcher(G);
 
 	DEBUG("Start PGA matching on 50-clique");
-	Matching M = pgaMatcher.run();
+
+	pgaMatcher.run();
+	Matching M = pgaMatcher.getMatching();
 
 	count numExpEdges = n / 2;
 	bool isProper = M.isProper(G);
 	EXPECT_TRUE(isProper);
-	EXPECT_EQ(M.size(), numExpEdges);
+	EXPECT_EQ(M.size(G), numExpEdges);
 	DEBUG("Finished PGA matching on 50-clique");
 
 
@@ -78,10 +82,11 @@ TEST_F(MatcherGTest, testPgaMatching) {
 	DibapGraphReader reader;
 	Graph airfoil1 = reader.read("input/airfoil1.gi");
 	PathGrowingMatcher pga2(airfoil1);
-	M = pga2.run();
+	pga2.run();
+	M = pga2.getMatching();
 	isProper = M.isProper(airfoil1);
 	EXPECT_TRUE(isProper);
-	DEBUG("PGA on airfoil1 produces matching of size: " , M.size());
+	DEBUG("PGA on airfoil1 produces matching of size: " , M.size(G));
 #endif
 }
 
@@ -90,7 +95,8 @@ TEST_F(MatcherGTest, tryValidMatching) {
 	Graph G = reader.read("coAuthorsDBLP.graph");
 
 	LocalMaxMatcher pmatcher(G);
-	Matching M = pmatcher.run();
+	pmatcher.run();
+	Matching M = pmatcher.getMatching();
 
 	bool isProper = M.isProper(G);
 	EXPECT_TRUE(isProper);

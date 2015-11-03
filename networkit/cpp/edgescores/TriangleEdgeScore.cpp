@@ -20,97 +20,84 @@ void TriangleEdgeScore::run() {
 		throw std::runtime_error("edges have not been indexed - call indexEdges first");
 	}
 
+	// direct edge from high to low-degree nodes
 	auto isOutEdge = [&](node u, node v) {
 		return G.degree(u) > G.degree(v) || (G.degree(u) == G.degree(v) && u < v);
 	};
 
-	std::vector<std::vector<std::pair<node, edgeid> > > inEdges(G.upperNodeIdBound());
+	// Store in-edges explicitly. Idea: all nodes have (relatively) low in-degree
+	std::vector<index> inBegin(G.upperNodeIdBound() + 1);
+	std::vector<node> inEdges(G.numberOfEdges());
 
-	G.balancedParallelForNodes([&](node u) {
-		// bucket sort
-		std::vector<count> nodePos(1);
-
-		G.forEdgesOf(u, [&](node _u, node v, edgeid eid){
-			if (isOutEdge(v, u)) {
-				count deg = G.degree(v);
-				if (nodePos.size() < deg + 1) {
-					nodePos.resize(deg + 1);
-				}
-
-				++nodePos[deg];
+	{
+		index pos = 0;
+		for (index u = 0; u < G.upperNodeIdBound(); ++u) {
+			inBegin[u] = pos;
+			if (G.hasNode(u)) {
+				G.forEdgesOf(u, [&](node, node v, edgeid eid) {
+					if (isOutEdge(v, u)) {
+						inEdges[pos++] = v;
+					}
+				});
 			}
-		});
-
-		// bucket sort
-		// exclusive prefix sum
-		index tmp = nodePos[0];
-		index sum = tmp;
-		nodePos[0] = 0;
-		for (index i = 1; i < nodePos.size(); ++i) {
-			tmp = nodePos[i];
-			nodePos[i] = sum;
-			sum += tmp;
 		}
-
-		inEdges[u].resize(sum);
-
-		G.forEdgesOf(u, [&](node _u, node v, edgeid eid){
-			if (isOutEdge(v, u)) {
-				inEdges[u][nodePos[G.degree(v)]++] = std::make_pair(v, eid);
-			}
-		});
-	});
+		inBegin[G.upperNodeIdBound()] = pos;
+	}
 
 	//Edge attribute: triangle count
 	std::vector<count> triangleCount(G.upperEdgeIdBound(), 0);
-
-	std::vector<std::vector<edgeid> > nodeMarker;
-
-	#pragma omp parallel
-	{
-		#pragma omp single
-		{
-			nodeMarker.resize(omp_get_num_threads());
-		}
-
-		nodeMarker[omp_get_thread_num()].resize(G.upperNodeIdBound(), none);
-	}
+	// Store the id of the out-edges of the current node for fast access later.
+	// Due to the parallel iteration this is needed for all thread separately
+	// Special values: none = no neighbor. none-1: incoming neighbor.
+	std::vector<std::vector<edgeid> > outEdgeId(omp_get_max_threads(), std::vector<count>(G.upperNodeIdBound(), none));
 
 	G.balancedParallelForNodes([&](node u) {
 		auto tid = omp_get_thread_num();
-		count degU = G.degree(u);
-		std::vector<std::pair<node, edgeid> > outEdges;
-		outEdges.reserve(degU - inEdges[u].size());
 
+		// mark nodes as outgoing neighbor (eid) or incoming neighbor (none-1)
 		G.forEdgesOf(u, [&](node _u, node v, edgeid eid) {
 			if (isOutEdge(u, v)) {
-				outEdges.emplace_back(v, eid);
-				nodeMarker[tid][v] = 0;
+				outEdgeId[tid][v] = eid;
+			} else {
+				outEdgeId[tid][v] = none - 1;
 			}
 		});
 
-		//For all neighbors: check for already marked neighbors.
-		for (auto uv : outEdges) {
-			for (auto vw : inEdges[uv.first]) {
-				if (G.degree(vw.first) > degU) break;
+		// Find all triangles of the form u-v-w-u where (v, w) is an in-edge.
+		// Note that we find each triangle u is part of once.
+		G.forEdgesOf(u, [&](node, node v, edgeid eid) {
+			// if the edge (u, v) is an out edge (it cannot be none as v is a neighbor)
+			bool uvIsOut = (outEdgeId[tid][v] != none - 1);
 
-				if (nodeMarker[tid][vw.first] != none) {
+			// for all in-edges (v, w).
+			for (index i = inBegin[v]; i < inBegin[v + 1]; ++i) {
+				auto w = inEdges[i];
 
-					++nodeMarker[tid][uv.first];
-					++nodeMarker[tid][vw.first];
-					#pragma omp atomic update
-					++triangleCount[vw.second];
+				edgeid uwid = outEdgeId[tid][w];
+
+				if (uwid != none) {
+					// we have found a triangle u-v-w-u
+
+					// record triangle count only for out-edges from u
+					// This means that for (v, w) we never record a triangle.
+					// The count on (v, w) is updated when w is the central node
+					// Record triangle for (u, v)
+					if (uvIsOut) {
+						++triangleCount[eid];
+					}
+
+					// Record triangle for (u, w) if (u, w) is an out-edge, i.e. the out edge id is not none-1
+					if (uwid != none - 1) {
+						++triangleCount[uwid];
+					}
 				}
 			}
-		}
+		});
 
-		for (auto uv : outEdges) {
-			if (nodeMarker[tid][uv.first] > 0) {
-				#pragma omp atomic update
-				triangleCount[uv.second] += nodeMarker[tid][uv.first];
-			}
-			nodeMarker[tid][uv.first] = none;
-		}
+		// Unset all out edge ids
+		G.forEdgesOf(u, [&](node, node v, edgeid eid) {
+			outEdgeId[tid][v] = none;
+		});
 	});
 
 	scoreData = std::move(triangleCount);

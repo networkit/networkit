@@ -17,7 +17,7 @@
 #include "../../coarsening/ParallelPartitionCoarsening.h"
 #include "../../io/METISGraphReader.h"
 #include "../../matching/LocalMaxMatcher.h"
-#include "../MatchingContracter.h"
+#include "../MatchingCoarsening.h"
 
 namespace NetworKit {
 
@@ -234,10 +234,11 @@ TEST_F(CoarseningGTest, testMatchingContractor) {
 	Graph G = reader.read("input/celegans_metabolic.graph");
 
 	LocalMaxMatcher matcher(G);
-    Matching matching = matcher.run();
+	matcher.run();
+    Matching matching = matcher.getMatching();
     ASSERT_TRUE(matching.isProper(G));
 
-    MatchingContracter coarsener(G, matching);
+    MatchingCoarsening coarsener(G, matching);
     coarsener.run();
     Graph coarseG = coarsener.getCoarseGraph();
     std::vector<node> fineToCoarse = coarsener.getNodeMapping();
@@ -255,12 +256,13 @@ TEST_F(CoarseningGTest, testMatchingContractorWithSelfLoop) {
 	G.addEdge(0,0,2);
 
 	LocalMaxMatcher matcher(G);
-    Matching matching = matcher.run();
+	matcher.run();
+    Matching matching = matcher.getMatching();
     EXPECT_FALSE(matching.areMatched(0,0));
     EXPECT_TRUE(matching.areMatched(1,0));
     ASSERT_TRUE(matching.isProper(G));
 
-    MatchingContracter coarsener(G, matching);
+    MatchingCoarsening coarsener(G, matching);
     coarsener.run();
     Graph coarseG = coarsener.getCoarseGraph();
     EXPECT_EQ(1, coarseG.numberOfNodes());

@@ -9,9 +9,14 @@
 
 namespace NetworKit {
 
-
-} /* namespace NetworKit */
-
-NetworKit::Matcher::Matcher(const Graph& G): G(G) {
+Matcher::Matcher(const Graph& G): G(G), M(G.upperNodeIdBound()) {
 
 }
+
+Matching Matcher::getMatching() const {
+    return M;
+}
+
+
+
+} /* namespace NetworKit */

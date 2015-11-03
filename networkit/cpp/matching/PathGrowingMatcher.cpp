@@ -13,7 +13,7 @@ namespace NetworKit {
 PathGrowingMatcher::PathGrowingMatcher(Graph& G): Matcher(G) {
 }
 
-Matching PathGrowingMatcher::run() {
+void PathGrowingMatcher::run() {
 	// make copy since graph will be transformed
 	count z = G.upperNodeIdBound();
 
@@ -90,10 +90,9 @@ Matching PathGrowingMatcher::run() {
 	edgeweight weight1 = m1.weight(G);
 	edgeweight weight2 = m2.weight(G);
 	if (weight1 > weight2)
-		return m1;
+		M = m1;
 	else
-		return m2;
+		M = m2;
 }
 
 } /* namespace NetworKit */
-

@@ -27,7 +27,10 @@ public:
 	LocalMaxMatcher(const Graph& G);
 
 
-	virtual Matching run();
+	virtual void run();
+
+protected:
+
 };
 
 } /* namespace NetworKit */
