@@ -931,4 +931,9 @@ bool Graph::checkConsistency() const {
 	return noMultiEdges;
 }
 
+void Graph::append(const Graph& G) {
+	
+}
+
+
 } /* namespace NetworKit */
