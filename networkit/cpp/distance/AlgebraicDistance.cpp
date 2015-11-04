@@ -14,7 +14,7 @@
 namespace NetworKit {
 
 AlgebraicDistance::AlgebraicDistance(const Graph& G, count numberSystems, count numberIterations, double omega, index norm) : NodeDistance(G), numSystems(numberSystems), numIters(numberIterations), omega(omega), norm(norm) {
-	if (omega < 0.0) || (omega > 1.0) throw std::invalid_argument("omega must be in [0,1]")
+	if ((omega < 0.0) || (omega > 1.0)) throw std::invalid_argument("omega must be in [0,1]");
 }
 
 void AlgebraicDistance::randomInit() {
@@ -59,6 +59,18 @@ void AlgebraicDistance::preprocess() {
 			});
 		}
 	}
+
+	// calculate edge scores
+	if (!G.hasEdgeIds()) {
+		throw std::runtime_error("edges have not been indexed - call indexEdges first");
+	}
+
+	edgeScores.resize(G.upperEdgeIdBound(), none);
+
+	G.parallelForEdges([&](node u, node v, edgeid eid) {
+		edgeScores[eid] = distance(u, v);
+	});
+
 	running1.stop();
 	INFO("elapsed millisecs for AD preprocessing: ", running1.elapsedMilliseconds(), "\n");
 }
@@ -85,6 +97,11 @@ double AlgebraicDistance::distance(node u, node v) {
 	}
 
 	return std::isnan(result) ? 0 : result;
+}
+
+
+std::vector<double> AlgebraicDistance::getEdgeAttribute() {
+	return edgeScores;
 }
 
 
