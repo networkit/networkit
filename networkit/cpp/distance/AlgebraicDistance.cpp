@@ -60,6 +60,19 @@ void AlgebraicDistance::preprocess() {
 		}
 	}
 
+	// rescale coordinates to [0,1]
+
+	for (index sys = 0; sys < numSystems; ++sys) {
+		// new value: new = (min - old) / (min - max)
+		auto minmax = std::minmax(loads[sys].begin(), loads[sys].end());
+		double a = *minmax.first;
+		double b = *minmax.second; // seriously, C++?
+		G.forNodes([&](node u){
+			loads[sys][u] = (a - loads[sys][u]) / (a - b);
+		});
+	}
+
+
 	// calculate edge scores
 	if (!G.hasEdgeIds()) {
 		throw std::runtime_error("edges have not been indexed - call indexEdges first");
