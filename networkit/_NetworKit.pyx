@@ -7787,12 +7787,22 @@ cdef extern from "cpp/distance/AlgebraicDistance.h":
 
 cdef class AlgebraicDistance:
 	"""
+	Algebraic distance assigns a distance value to pairs of nodes
+    according to their structural closeness in the graph.
+    Algebraic distances will become small within dense subgraphs.
 
 	Parameters
 	----------
 	G : Graph
 		The graph to calculate Jaccard distances for.
-
+	numberSystems : count
+	 	Number of vectors/systems used for algebraic iteration.
+	numberIterations : count
+	 	Number of iterations in each system.
+	omega : double
+	 	attenuation factor in [0,1] influencing convergence speed.
+	norm : index
+		The norm factor of the extended algebraic distance.
 	"""
 
 	cdef _AlgebraicDistance* _this
