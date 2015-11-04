@@ -7783,6 +7783,7 @@ cdef extern from "cpp/distance/AlgebraicDistance.h":
 		_AlgebraicDistance(_Graph G, count numberSystems, count numberIterations, double omega, index norm) except +
 		void preprocess() except +
 		double distance(node, node) except +
+		vector[double] getEdgeAttribute() except +
 
 
 cdef class AlgebraicDistance:
@@ -7817,10 +7818,13 @@ cdef class AlgebraicDistance:
 
 	def preprocess(self):
 		self._this.preprocess()
+		return self
 
 	def distance(self, node u, node v):
 		return self._this.distance(u, v)
 
+	def getEdgeAttribute(self):
+		return self._this.getEdgeAttribute()
 
 
 cdef class JaccardSimilarityAttributizer:
