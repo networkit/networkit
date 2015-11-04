@@ -15,8 +15,10 @@ namespace Aux {
 	namespace Parallel {
 		#ifdef NETWORKIT_NO_PARALLEL_STL
 		using std::sort;
+		using std::max_element;
 		#else
 		using __gnu_parallel::sort;
+		using __gnu_parallel::max_element;
 		#endif
 	}
 }
