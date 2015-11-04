@@ -445,6 +445,7 @@ public:
 	 * Add a new node to the graph with coordinates @a x and @y and return it.
 	 */
 	// TODO: remove method
+	[[deprecated("Replaced by bar, which has an improved interface")]]
 	node addNode(float x, float y);
 
 	/**
@@ -705,6 +706,7 @@ public:
 	 * @param value The coordinate of @a v.
 	 */
 	// TODO: remove method
+	[[deprecated("Replaced by bar, which has an improved interface")]]
 	void setCoordinate(node v, Point<float> value) { coordinates.setCoordinate(v, value); }
 
 
@@ -729,6 +731,7 @@ public:
 	 * @return The minimum coordinate in dimension @a dim.
 	 */
 	// TODO: remove method
+	[[deprecated("Replaced by bar, which has an improved interface")]]
 	float minCoordinate(count dim) { return coordinates.minCoordinate(dim); }
 
 	/**
@@ -740,6 +743,7 @@ public:
 	 * @return The maximum coordinate in dimension @a dim.
 	 */
 	// TODO: remove method
+	[[deprecated("Replaced by bar, which has an improved interface")]]
 	float maxCoordinate(count dim) { return coordinates.maxCoordinate(dim); }
 
 	/**
@@ -751,6 +755,7 @@ public:
 	 * been added.
 	 */
 	// TODO: remove method
+	[[deprecated("Replaced by bar, which has an improved interface")]]
 	void initCoordinates() { coordinates.init(z); }
 
 
