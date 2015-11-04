@@ -717,6 +717,7 @@ public:
 	 * @return The coordinate of @a v.
 	 */
 	// TODO: remove method
+	[[deprecated("Replaced by bar, which has an improved interface")]]
 	Point<float>& getCoordinate(node v) { return coordinates.getCoordinate(v); }
 
 	/**

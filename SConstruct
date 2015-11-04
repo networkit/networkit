@@ -113,12 +113,12 @@ else:
 	env.Append(LIBS = ["gtest"])
 	env.Append(LIBPATH = [gtestLib, tbbLib])
 
-env.Append(LINKFLAGS = ["-std=c++11"])
+env.Append(LINKFLAGS = ["-std=c++14"])
 
 ## CONFIGURATIONS
 
 commonCFlags = ["-c", "-fmessage-length=0", "-std=c99", "-fPIC"]
-commonCppFlags = ["-std=c++11", "-Wall", "-c", "-fmessage-length=0", "-fPIC"]
+commonCppFlags = ["-std=c++14", "-Wall", "-c", "-fmessage-length=0", "-fPIC"]
 
 debugCppFlags = ["-O0", "-g3", "-DLOG_LEVEL=LOG_LEVEL_TRACE"]
 debugCFlags = ["-O0", "-g3"]
