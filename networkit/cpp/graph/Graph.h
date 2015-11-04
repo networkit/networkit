@@ -478,6 +478,11 @@ public:
 	void restoreNode(node v);
 
 
+	// SET OPERATIONS
+
+	void append(const Graph& G);
+
+
 	/** NODE PROPERTIES **/
 
 	/**
@@ -1488,6 +1493,9 @@ void Graph::DFSEdgesFrom(node r, L handle) const {
 		});
 	} while (!s.empty());
 }
+
+
+
 
 } /* namespace NetworKit */
 
