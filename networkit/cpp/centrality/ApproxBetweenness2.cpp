@@ -80,12 +80,12 @@ void ApproxBetweenness2::run() {
 	};
 
 
-	if (parallel) {
-		#pragma omp parallel for
-		for (index i = 0; i < sampledNodes.size(); ++i) {
-			computeDependencies(sampledNodes[i]);
-		}
+	#pragma omp parallel for if(parallel)
+	for (index i = 0; i < sampledNodes.size(); ++i) {
+		computeDependencies(sampledNodes[i]);
+	}
 
+	if (parallel) {
 		scoreData = std::vector<double>(G.upperNodeIdBound(), 0.0);
 
 		// add up all thread-local values
@@ -95,10 +95,6 @@ void ApproxBetweenness2::run() {
 			});
 		}
 	} else {
-		for (auto u : sampledNodes) {
-			computeDependencies(u);
-		}
-
 		scoreData.swap(scorePerThread[0]);
 	}
 
