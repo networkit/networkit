@@ -50,14 +50,27 @@ void PathGrowingMatcher::run() {
 			// find heaviest incident edge
 			node bestNeighbor = 0;
 			edgeweight bestWeight = 0;
-			G.forEdgesOf(v, [&](node v, node u, edgeweight weight) {
-				if (alive[u]) {
-					if (weight > bestWeight) {
-						bestNeighbor = u;
-						bestWeight = weight;
+
+			if (edgeScoresAsWeights) {
+				G.forEdgesOf(v, [&](node v, node u, edgeid eid) {
+					if (alive[u]) {
+						if (edgeScores[eid] > bestWeight) {
+							bestNeighbor = u;
+							bestWeight = edgeScores[eid];
+						}
 					}
-				}
-			});
+				});
+			} else {
+				G.forEdgesOf(v, [&](node v, node u, edgeweight weight) {
+					if (alive[u]) {
+						if (weight > bestWeight) {
+							bestNeighbor = u;
+							bestWeight = weight;
+						}
+					}
+				});
+			}
+
 
 			if (takeM1) {
 				// add edge to m1
@@ -87,8 +100,22 @@ void PathGrowingMatcher::run() {
 	}
 
 	// return the heavier one of the two
-	edgeweight weight1 = m1.weight(G);
-	edgeweight weight2 = m2.weight(G);
+	edgeweight weight1;
+	if (edgeScoresAsWeights) {
+		G.forEdges([&](node u, node v, edgeid eid){
+			weight1 += edgeScores[eid];
+		});
+	} else {
+		weight1 = m1.weight(G);
+	}
+	edgeweight weight2;
+	if (edgeScoresAsWeights) {
+		G.forEdges([&](node u, node v, edgeid eid){
+			weight2 += edgeScores[eid];
+		});
+	} else {
+		weight2 = m1.weight(G);
+	}
 	if (weight1 > weight2)
 		M = m1;
 	else
