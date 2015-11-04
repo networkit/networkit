@@ -29,7 +29,7 @@ public:
 	 * @param numberSystems Number of vectors/systems used for algebraic iteration.
 	 * @param numberIterations Number of iterations in each system.
 	 * @param omega attenuation factor influencing convergence speed.
-	 * @param norm The norm factor of the extended algebraic distance. 
+	 * @param norm The norm factor of the extended algebraic distance.
 	 */
 	AlgebraicDistance(const Graph& G, count numberSystems, count numberIterations, double omega, index norm);
 
@@ -44,7 +44,7 @@ public:
 	virtual double distance(node u, node v);
 
 
-	virtual std::vector<double> getEdgeAttribute() { throw std::runtime_error("Not implemented"); };
+	virtual std::vector<double> getEdgeAttribute();
 
 
 protected:
@@ -62,6 +62,7 @@ protected:
 
 	std::vector<std::vector<double> > loads; //!< loads[i]: vector of loads of length n for one system
 
+	std::vector<double> edgeScores; //!< distance(u,v) for edge {u,v}
 
 };
 
