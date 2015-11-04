@@ -29,8 +29,7 @@ public:
 	 * @param numberSystems Number of vectors/systems used for algebraic iteration.
 	 * @param numberIterations Number of iterations in each system.
 	 * @param omega attenuation factor influencing convergence speed.
-	 * @param norm The norm factor of the extended algebraic distance. Available options:
-	 *             "max": max norm
+	 * @param norm The norm factor of the extended algebraic distance. 
 	 */
 	AlgebraicDistance(const Graph& G, count numberSystems, count numberIterations, double omega, index norm);
 
