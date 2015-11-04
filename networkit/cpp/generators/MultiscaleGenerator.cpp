@@ -12,8 +12,9 @@
 #include "../coarsening/ParallelPartitionCoarsening.h"
 #include "../coarsening/MatchingCoarsening.h"
 #include "../matching/Matching.h"
-#include "../matching/LocalMaxMatcher.h"
+#include "../matching/PathGrowingMatcher.h"
 #include "../community/PLM.h"
+#include "../distance/AlgebraicDistance.h"
 
 
 namespace NetworKit {
@@ -35,10 +36,12 @@ Graph MultiscaleGenerator::generate() {
 	};
 
 	// V-cycle of coarsening and uncoarsening
-	std::vector<Graph> down;
-	std::vector<Graph> up;
+	std::vector<Graph> coarse;
+	std::vector<Graph> fine;
 	std::vector<std::vector<node>> nodeMapping;
 	std::vector<std::map<node, std::vector<node>>> reverseNodeMapping;
+
+	coarse[0] = original; 	// FIXME: possibly avoid copy of the graph
 
 	for (index level = 0; level < maxLevels; ++level) {
 
@@ -48,9 +51,12 @@ Graph MultiscaleGenerator::generate() {
 		//      select aggregation scheme
 		if (aggregationScheme == "matching") {
 			// TODO: select edge weighting scheme
-			// PathGrowingMatcher matcher(original);
-			// Matching matching = matcher.run();
-			// coarsening.reset(new MatchingCoarsening(original, matching));
+			AlgebraicDistance ad(coarse[level]);
+			ad.preprocess();
+			PathGrowingMatcher matcher(coarse[level], ad.getEdgeAttribute());
+			matcher.run();
+			Matching matching = matcher.getMatching();
+			coarsening.reset(new MatchingCoarsening(original, matching));
 		} else if (aggregationScheme == "communities") {
 			PLM plm(original, false, 1.0, "balanced", 32, false, false);	// recurse = false
 			plm.run();
@@ -59,7 +65,7 @@ Graph MultiscaleGenerator::generate() {
 		coarsening->run();
 
 
-		down[level] = coarsening->getCoarseGraph();
+		coarse[level] = coarsening->getCoarseGraph();
 		nodeMapping[level] = coarsening->getFineToCoarseNodeMapping();	// fine node -> coarse node
 		reverseNodeMapping[level] = coarsening->getCoarseToFineNodeMapping();	//	coarse node -> collection of fine nodes
 

@@ -10,11 +10,14 @@
 
 namespace NetworKit {
 
-PathGrowingMatcher::PathGrowingMatcher(Graph& G): Matcher(G) {
+PathGrowingMatcher::PathGrowingMatcher(const Graph& G): Matcher(G) {
+}
+
+
+PathGrowingMatcher::PathGrowingMatcher(const Graph& G, const std::vector<double>& edgeScores): Matcher(G, edgeScores) {
 }
 
 void PathGrowingMatcher::run() {
-	// make copy since graph will be transformed
 	count z = G.upperNodeIdBound();
 
 	// init matching to empty

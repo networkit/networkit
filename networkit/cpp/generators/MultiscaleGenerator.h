@@ -30,10 +30,10 @@ protected:
     const count maxLevels = 2;     // TODO: levels of hierarchy
     std::string aggregationScheme = "matching";
 
-
 public:
     // TODO: parameters: retainIntermediates, coarseningScheme,
 	MultiscaleGenerator(const Graph& original);
+
 
 	Graph generate() override;
 };
