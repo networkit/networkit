@@ -60,7 +60,7 @@ protected:
 	index norm;
 	const index MAX_NORM = 0;
 
-	std::vector<std::vector<double> > loads; //!< loads[i]: vector of loads of length n for one system
+	std::vector<double> loads; //!< loads[u*numSystems..(u+1)*numSystems]: loads for node u
 
 	std::vector<double> edgeScores; //!< distance(u,v) for edge {u,v}
 
