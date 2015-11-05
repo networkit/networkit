@@ -518,19 +518,21 @@ string benchmark(Benchmark &bench) {
 }
 
 TEST_F(LAMGBenchmark, bench) {
-	string texContent = printLatexDocumentHeader();
-	stringstream ss;
+	vector<index> benchmarks = {6}; // snap
+	for (auto idx : benchmarks) {
+		string texContent = printLatexDocumentHeader();
+       		stringstream ss;
+		Benchmark bench = BENCHS[idx]; 
+		INFO("Benchmark ", bench.name);
+		texContent += benchmark(bench);
+		ss << bench.name;
+		texContent += printLatexDocumentFooter();
 
-	Benchmark bench = BENCHS[9]; // snap
-	texContent += benchmark(bench);
-	ss << bench.name;
+		ss << ".tex";
+		string filename = "benchmark_" + ss.str();
 
-	texContent += printLatexDocumentFooter();
-
-	ss << ".tex";
-	string filename = "benchmark_" + ss.str();
-
-	writeBenchmarkResults(texContent, filename);
+		writeBenchmarkResults(texContent, filename);
+	}
 }
 
 } /* namespace NetworKit */
