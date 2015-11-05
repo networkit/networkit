@@ -16,7 +16,7 @@ struct MyEdge {
 	node from;
 	node to;
 	edgeweight weight;
-	bool operator<(const MyEdge& other) {
+	bool operator<(const MyEdge& other) const {
 		return this->weight >= other.weight; // FIXME
 	}
 };
