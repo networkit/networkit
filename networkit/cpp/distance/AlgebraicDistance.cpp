@@ -18,18 +18,12 @@ AlgebraicDistance::AlgebraicDistance(const Graph& G, count numberSystems, count 
 }
 
 void AlgebraicDistance::randomInit() {
-	count z = G.upperNodeIdBound();
-
 	// allocate space for loads
-	loads.resize(numSystems);
-	for (index i = 0; i < numSystems; ++i) {
-		loads[i].resize(z);
-	}
+	loads.resize(numSystems*G.upperNodeIdBound());
 
-	for (index i = 0; i < numSystems; ++i) {
-		G.forNodes([&](node v) {
-			loads[i][v] = Aux::Random::real();
-		});
+	#pragma omp parallel for
+	for (index i = 0; i < loads.size(); ++i) {
+		loads[i] = Aux::Random::real();
 	}
 }
 
@@ -40,22 +34,33 @@ void AlgebraicDistance::preprocess() {
 	randomInit();
 
 	// main loop
-	for (index iter = 0; iter < numIters; ++iter) {
-		// store previous iteration
-		std::vector<std::vector<double> > oldLoads = loads;
 
-		for (index sys = 0; sys < numSystems; ++sys) {
-			G.forNodes([&](node u) {
-				double val = 0.0;
+	{
+		std::vector<double> oldLoads(loads.size());
 
+		for (index iter = 0; iter < numIters; ++iter) {
+			// store previous iteration
+			loads.swap(oldLoads);
+
+			G.balancedParallelForNodes([&](node u) {
+				std::vector<double> val(numSystems, 0.0);
+
+				double weightedDeg = 0;
 				// step 1
 				G.forNeighborsOf(u, [&](node v, edgeweight weight) {
-					val += weight * oldLoads[sys][v];
-				});
-				val /= G.weightedDegree(u);
+					for (index i = 0; i < numSystems; ++i) {
+						val[i] += weight * oldLoads[v*numSystems + i];
+					}
 
-				// step 2
-				loads[sys][u] = (1 - omega) * oldLoads[sys][u] + omega * val;
+					weightedDeg += weight;
+				});
+
+				for (index i = 0; i < numSystems; ++i) {
+					val[i] /= weightedDeg;
+
+					// step 2
+					loads[u*numSystems + i] = (1 - omega) * oldLoads[u*numSystems + i] + omega * val[i];
+				}
 			});
 		}
 	}
@@ -83,14 +88,14 @@ double AlgebraicDistance::distance(node u, node v) {
 
 	if (norm == MAX_NORM) {
 		for (index sys = 0; sys < numSystems; ++sys) {
-			double absDiff = fabs(loads[sys][u] - loads[sys][v]);
+			double absDiff = fabs(loads[u*numSystems + sys] - loads[u*numSystems + sys]);
 			if (absDiff > result) {
 				result = absDiff;
 			}
 		}
 	} else {
 		for (index sys = 0; sys < numSystems; ++sys) {
-			double absDiff = fabs(loads[sys][u] - loads[sys][v]);
+			double absDiff = fabs(loads[u*numSystems + sys] - loads[v*numSystems + sys]);
 			result += pow(absDiff, norm);
 		}
 		result = pow(result, 1.0 / (double) norm);
