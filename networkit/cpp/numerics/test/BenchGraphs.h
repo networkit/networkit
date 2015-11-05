@@ -99,11 +99,14 @@ const vector<Instance> DIMACS_CITATION {
 
 const vector<Instance> DIMACS_CLUSTERING { // http://www.cc.gatech.edu/dimacs10/archive/clustering.shtml
 	{"instances/dimacs_clustering/as-22july06.graph", NETWORK, true},
-	{"instances/dimacs_clustering/astro-ph.graph", NETWORK, true},
+	{"instances/dimacs_clustering/astro-ph_comp.graph", NETWORK, true},
+	//{"instances/dimacs_clustering/astro-ph.graph", NETWORK, false},
 	{"instances/dimacs_clustering/cnr-2000.graph", NETWORK, true},
 	{"instances/dimacs_clustering/eu-2005.graph", NETWORK, true},
-	{"instances/dimacs_clustering/hep-th.graph", NETWORK, true},
-	{"instances/dimacs_clustering/in-2004.graph", NETWORK, true},
+	{"instances/dimacs_clustering/hep-th_comp.graph", NETWORK, true},
+        {"instances/dimacs_clustering/in-2004_comp.graph", NETWORK, true},
+	//{"instances/dimacs_clustering/hep-th.graph", NETWORK, false},
+//	{"instances/dimacs_clustering/in-2004.graph", NETWORK, false},
 	{"instances/dimacs_clustering/PGPgiantcompo.graph", NETWORK, true},
 	{"instances/dimacs_clustering/preferentialAttachment.graph", NETWORK, true},
 	{"instances/dimacs_clustering/smallworld.graph", NETWORK, true}
@@ -261,21 +264,22 @@ const vector<Instance> WALSHAW { // http://staffweb.cms.gre.ac.uk/~wc06/partitio
 };
 
 const vector<Instance> SNAP {
-//	{"Brightkite_edges.snap", NETWORK, true},
-//	{"CA-AstroPh.snap", NETWORK, true},
-//	{"CA-CondMat.snap", NETWORK, true},
-	{"/Users/Michael/Downloads/SNAP/CA-GrQc.graph", NETWORK, false},
-//	{"/Users/Michael/Downloads/SNAP/CA-HepPh.graph", NETWORK, true},
-//	{"/Users/Michael/Downloads/SNAP/CA-HepTh.sna.graph", NETWORK, true},
-//	{"Email-Enron.snap", NETWORK, true},
-//	{"Gowalla_edges.snap", NETWORK, true},
-//	{"as-skitter.snap", NETWORK, true},
-	{"/Users/Michael/Downloads/SNAP/com-amazon.ungraph.graph", NETWORK, false},
-//	{"com-orkut.ungraph.snap", NETWORK, true},
-//	{"com-youtube.ungraph.snap", NETWORK, true},
-//	{"roadNet-CA.snap", NETWORK, true},
-//	{"roadNet-PA.snap", NETWORK, true},
-//	{"roadNet-TX.snap", NETWORK, true},
+//	{"instances/SNAP/as-caida20071105.graph", NETWORK, true},
+	{"instances/SNAP/as-skitter_comp.graph", NETWORK, true},
+	{"instances/SNAP/Brightkite_edges_comp.graph", NETWORK, true},
+	{"instances/SNAP/CA-AstroPh_comp.graph", NETWORK, true},
+	{"instances/SNAP/CA-CondMat_comp.graph", NETWORK, true},
+	{"instances/SNAP/CA-GrQc_comp.graph", NETWORK, true},
+	{"instances/SNAP/CA-HepPh_comp.graph", NETWORK, true},
+	{"instances/SNAP/CA-HepTh_comp.graph", NETWORK, true},
+	{"instances/SNAP/com-amazon.ungraph.graph", NETWORK, true},
+	{"instances/SNAP/com-orkut.ungraph.graph", NETWORK, true},
+	{"instances/SNAP/com-youtube.ungraph.graph", NETWORK, true},
+	{"instances/SNAP/Email-Enron_comp.graph", NETWORK, true},
+	{"instances/SNAP/Gowalla_edges.graph", NETWORK, true},
+	{"instances/SNAP/roadNet-CA_comp.graph", NETWORK, true},
+	{"instances/SNAP/roadNet-PA_comp.graph", NETWORK, true},
+	{"instances/SNAP/roadNet-TX_comp.graph", NETWORK, true},
 };
 
 
