@@ -45,7 +45,6 @@ from . import graphio
 from . import community
 from . import centrality
 from . import generators
-from . import properties
 from . import structures
 from . import engineering
 from . import dynamic
