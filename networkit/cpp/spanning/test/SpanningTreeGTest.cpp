@@ -38,8 +38,8 @@ TEST_F(SpanningTreeGTest, testRandomSpanningTree) {
 			r2 = Sampling::randomNode(G);
 		}
 
-		BFS bfs(T, r1);
-		bfs.run(r2);
+		BFS bfs(T, r1, false, false, r2);
+		bfs.run();
 		EXPECT_LE(bfs.distance(r2), G.numberOfNodes() - 1);
 	}
 }
