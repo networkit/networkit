@@ -44,6 +44,7 @@ struct Benchmark {
 	// LAMG settings
 	count setupTries;
 	count solveTriesPerSetup;
+	count workflowSolves;
 	double residual;
 	SmootherType smootherType;
 
@@ -55,6 +56,7 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		"Grids",
 		10,
 		5,
+		20,
 		1e-6,
 		GAUSS_SEIDEL,
 		GRIDS
@@ -63,6 +65,7 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		"Barabasi",
 		10,
 		5,
+		20,
 		1e-6,
 		GAUSS_SEIDEL,
 		BARABASI
@@ -71,6 +74,7 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		"Laplace",
 		10,
 		5,
+		20,
 		1e-6,
 		GAUSS_SEIDEL,
 		LAPLACE
@@ -79,6 +83,7 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		"Dimacs Numerics",
 		10,
 		5,
+		20,
 		1e-6,
 		GAUSS_SEIDEL,
 		DIMACS_NUMERICS
@@ -87,22 +92,25 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		"Dimacs Sparse",
 		10,
 		5,
+		20,
 		1e-6,
 		GAUSS_SEIDEL,
 		DIMACS_SPARSE
 	},
 	{ // 5
-                "Dimacs Citation",
-                10,
-                5,
-                1e-6,
-                GAUSS_SEIDEL,
-                DIMACS_CITATION
-        },
+		"Dimacs Citation",
+		10,
+		5,
+		20,
+		1e-6,
+		GAUSS_SEIDEL,
+		DIMACS_CITATION
+	},
 	{ // 6
 		"Dimacs Clustering",
 		10,
 		5,
+		20,
 		1e-6,
 		GAUSS_SEIDEL,
 		DIMACS_CLUSTERING
@@ -111,6 +119,7 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		"Dimacs Street",
 		10,
 		5,
+		20,
 		1e-6,
 		GAUSS_SEIDEL,
 		DIMACS_STREET_NETWORKS
@@ -119,6 +128,7 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		"Facebook100",
 		10,
 		5,
+		20,
 		1e-6,
 		GAUSS_SEIDEL,
 		FACEBOOK100
@@ -127,6 +137,7 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		"Walshaw",
 		10,
 		5,
+		20,
 		1e-6,
 		GAUSS_SEIDEL,
 		WALSHAW
@@ -135,6 +146,7 @@ const vector<Benchmark> BENCHS = { // available benchmarks for different graph t
 		"Snap",
 		10,
 		5,
+		20,
 		1e-6,
 		GAUSS_SEIDEL,
 		SNAP
@@ -364,6 +376,15 @@ string printBenchHeader(const Benchmark &bench) {
 	return ss.str();
 }
 
+string printBenchWorkflowHeader(const Benchmark &bench) {
+	stringstream ss;
+	ss << "\\begin{table}[h] \n";
+	ss << "\\begin{tabularx}{\\textwidth}{l r r r} \n";
+	ss << "Graph & 1solve & "<< bench.workflowSolves << "solves & residual \\\\ \\hline \n";
+
+	return ss.str();
+}
+
 string printBenchFooter(const Benchmark &bench) {
 	stringstream ss;
 	ss << "\\end{tabularx} \n";
@@ -400,6 +421,14 @@ string printTableRow(const SolverStatus &status, double avgSetupTime, double avg
 
 	ss << numprint(avgSetupTime) << " & " << numprint(avgSolveTime) << " & " << numprint(numIters) << " & " << numprint(finalResidual, true) << " \\\\ \n";
 
+	return ss.str();
+}
+
+string printTableRowWorkflow(const count tOneSolve, const count tMultSolves, const double residual) {
+	stringstream ss;
+	ss.precision(16);
+
+	ss << numprint(tOneSolve) << " & " << numprint(tMultSolves) << " & " << numprint(residual) << " \\\\ \n";
 	return ss.str();
 }
 
@@ -447,11 +476,57 @@ string benchmark(const CSRMatrix &matrix, const Vector &initialX, const Vector &
 	double avgSetupTime = (double) setupTime / (double) numSetups;
 	double avgSolveTime = (double) solveTime / (double) (numSetups*numSolvesPerSetup);
 
-	stringstream ss;
-	ss << graphPath.substr(0, graphPath.find_last_of(".")) << ".plot";
+//	stringstream ss;
+//	ss << graphPath.substr(0, graphPath.find_last_of(".")) << ".plot";
 	//outputPlotData(solverStati[0], ss.str());
 
 	return printTableRow(status, avgSetupTime, avgSolveTime);
+}
+
+string benchmarkWorkflow(const CSRMatrix &matrix, const Vector &initialX, const Vector &b, count numSolves, const Smoother &smoother, double desiredResidual, bool isConnected) {
+	count tOneSolve = 0;
+	count tMultSolve = 0;
+	Aux::Timer t;
+
+	Lamg lamg(desiredResidual);
+
+	// setup + solve
+	SolverStatus status;
+	Vector x = initialX;
+	t.start();
+	if (isConnected) {
+		lamg.setupConnected(matrix);
+	} else {
+		lamg.setup(matrix);
+	}
+
+	status = lamg.solve(b, x, MAX_CONVERGENCE_TIME);
+	t.stop();
+	tOneSolve = t.elapsedMilliseconds();
+
+	// setup + numSolves solve
+	t.start();
+	if (isConnected) {
+		lamg.setupConnected(matrix);
+	} else {
+		lamg.setup(matrix);
+	}
+	t.stop();
+	tMultSolve += t.elapsedMilliseconds();
+
+	double multSolveResidual = 0.0;
+	for (index i = 0; i < numSolves; ++i) {
+		Vector x = initialX;
+		t.start();
+		status = lamg.solve(b, x, MAX_CONVERGENCE_TIME);
+		t.stop();
+		tMultSolve += t.elapsedMilliseconds();
+		multSolveResidual += status.residual;
+	}
+
+	multSolveResidual /= numSolves;
+
+	return printTableRowWorkflow(tOneSolve, tMultSolve, multSolveResidual);
 }
 
 string benchmark(Benchmark &bench) {
@@ -517,14 +592,77 @@ string benchmark(Benchmark &bench) {
 	return output;
 }
 
+string benchmarkWorkflow(Benchmark &bench) {
+	string output = "";
+	output += printBenchWorkflowHeader(bench);
+
+	Smoother *smoother;
+	switch(bench.smootherType) {
+	case GAUSS_SEIDEL:
+		smoother = new GaussSeidelRelaxation();
+		break;
+	default:
+		smoother = new GaussSeidelRelaxation();
+		break;
+	}
+
+	stringstream ss;
+	for (index i = 0; i < bench.instances.size(); ++i) {
+		Graph G = readGraph(bench.instances[i]);
+		CSRMatrix L;
+		switch(bench.instances[i].type) {
+		case LAPLACIAN:
+			L = CSRMatrix::adjacencyMatrix(G);
+			break;
+		case SDD:
+			L = CSRMatrix::adjacencyMatrix(sddToLaplacian(CSRMatrix::adjacencyMatrix(G)));
+			break;
+		case NETWORK:
+			L = CSRMatrix::graphLaplacian(G);
+			break;
+		default:
+			INFO(bench.instances[i].path, " is unknown matrix. Will not solve this!");
+			continue;
+		}
+
+		string path = bench.instances[i].path;
+		G.setName(path);
+
+		Vector b(L.numberOfRows());
+		Vector x(L.numberOfColumns());
+
+		if (!readProblemVectors(b, x, G.getName())) { // create new problem vectors if not present
+			b = randZeroSum(CSRMatrix::matrixToGraph(L), 12345);
+			x = randVector(L.numberOfColumns());
+			writeProblemVectors(b, x, G.getName());
+		}
+
+		string graphFile = G.getName().substr(path.find_last_of("/") + 1, path.length());
+		output += graphFile.substr(0, graphFile.find_last_of("."));
+		ss << " & " << L.numberOfRows() << " x " << L.numberOfColumns() << " & ";
+		ss << L.nnz() << " & ";
+		output += ss.str();
+
+		INFO(graphFile);
+
+		output += benchmarkWorkflow(L, x, b, bench.workflowSolves, *smoother, bench.residual, bench.instances[i].isConnected);
+		ss.str("");
+	}
+
+	output += printBenchFooter(bench);
+	delete smoother;
+
+	return output;
+}
+
 TEST_F(LAMGBenchmark, bench) {
-	vector<index> benchmarks = {6}; // snap
+	vector<index> benchmarks = {5}; // citation
 	for (auto idx : benchmarks) {
 		string texContent = printLatexDocumentHeader();
-       		stringstream ss;
+       	stringstream ss;
 		Benchmark bench = BENCHS[idx]; 
 		INFO("Benchmark ", bench.name);
-		texContent += benchmark(bench);
+		texContent += benchmarkWorkflow(bench);
 		ss << bench.name;
 		texContent += printLatexDocumentFooter();
 
