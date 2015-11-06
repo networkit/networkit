@@ -7898,10 +7898,7 @@ cdef class LocalFilterScore(EdgeScore):
 	def __init__(self, Graph G, vector[double] a, bool logarithmic = True, bool bothRequired = False):
 		self._G = G
 		self._a = a
-		self._this = new _LocalFilterScoreDouble(G._this, a, logarithmic, bothRequired)
-
-	def __dealloc__(self):
-		del self._thisDouble
+		self._this = new _LocalFilterScoreDouble(G._this, self._a, logarithmic, bothRequired)
 
 	cdef bool isDoubleValue(self):
 		return True
