@@ -10,6 +10,7 @@
 #include <set>
 #include <queue>
 #include "../auxiliary/Log.h"
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -23,6 +24,7 @@ void ForestFireScore::run() {
 	std::vector<count> burnt (G.upperEdgeIdBound(), 0);
 	count edgesBurnt = 0;
 
+	#pragma omp parallel
 	while (edgesBurnt < targetBurntRatio * G.numberOfEdges()) {
 		//Start a new fire
 		std::queue<node> activeNodes;
@@ -38,6 +40,8 @@ void ForestFireScore::run() {
 			});
 			return validEdges;
 		};
+
+		count localEdgesBurnt = 0;
 
 		while (! activeNodes.empty()) {
 			node v = activeNodes.front();
@@ -56,8 +60,9 @@ void ForestFireScore::run() {
 					edgeid eid;
 					std::tie(x, eid) = validNeighbors[index];
 					activeNodes.push(x);
+					#pragma omp atomic update
 					burnt[eid]++;
-					edgesBurnt++;
+					localEdgesBurnt++;
 					visited[x] = true;
 				}
 
@@ -65,15 +70,18 @@ void ForestFireScore::run() {
 				validNeighbors.pop_back();
 			}
 		}
+
+		#pragma omp atomic update
+		edgesBurnt += localEdgesBurnt;
 	}
 
 	std::vector<double> burntNormalized (G.upperEdgeIdBound(), 0.0);
-	double maxv = (double) *std::max_element(std::begin(burnt), std::end(burnt));
+	double maxv = (double) *Aux::Parallel::max_element(std::begin(burnt), std::end(burnt));
 
 	if (maxv > 0) {
-		count idx = 0;
-		for (auto& b : burnt) {
-			burntNormalized[idx++] = b / maxv;
+		#pragma omp parallel for
+		for (index i = 0; i < burnt.size(); ++i) {
+			burntNormalized[i] = burnt[i] / maxv;
 		}
 	}
 

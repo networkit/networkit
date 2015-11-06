@@ -46,57 +46,51 @@ void TriangleEdgeScore::run() {
 
 	//Edge attribute: triangle count
 	std::vector<count> triangleCount(G.upperEdgeIdBound(), 0);
-	// Store the id of the out-edges of the current node for fast access later.
-	// Due to the parallel iteration this is needed for all thread separately
-	// Special values: none = no neighbor. none-1: incoming neighbor.
-	std::vector<std::vector<edgeid> > outEdgeId(omp_get_max_threads(), std::vector<count>(G.upperNodeIdBound(), none));
+	// Store triangle counts of edges incident to the current node indexed by the adjacent node
+	// none indicates that the edge to that node does not exist
+	std::vector<std::vector<count> > incidentTriangleCount(omp_get_max_threads(), std::vector<count>(G.upperNodeIdBound(), none));
 
 	G.balancedParallelForNodes([&](node u) {
 		auto tid = omp_get_thread_num();
 
-		// mark nodes as outgoing neighbor (eid) or incoming neighbor (none-1)
-		G.forEdgesOf(u, [&](node _u, node v, edgeid eid) {
-			if (isOutEdge(u, v)) {
-				outEdgeId[tid][v] = eid;
-			} else {
-				outEdgeId[tid][v] = none - 1;
-			}
+		// mark nodes as neighbors
+		G.forEdgesOf(u, [&](node, node v) {
+			incidentTriangleCount[tid][v] = 0;
 		});
 
 		// Find all triangles of the form u-v-w-u where (v, w) is an in-edge.
 		// Note that we find each triangle u is part of once.
-		G.forEdgesOf(u, [&](node, node v, edgeid eid) {
-			// if the edge (u, v) is an out edge (it cannot be none as v is a neighbor)
-			bool uvIsOut = (outEdgeId[tid][v] != none - 1);
-
+		G.forEdgesOf(u, [&](node, node v) {
 			// for all in-edges (v, w).
 			for (index i = inBegin[v]; i < inBegin[v + 1]; ++i) {
 				auto w = inEdges[i];
 
-				edgeid uwid = outEdgeId[tid][w];
-
-				if (uwid != none) {
+				if (incidentTriangleCount[tid][w] != none) {
 					// we have found a triangle u-v-w-u
 
-					// record triangle count only for out-edges from u
-					// This means that for (v, w) we never record a triangle.
-					// The count on (v, w) is updated when w is the central node
-					// Record triangle for (u, v)
-					if (uvIsOut) {
-						++triangleCount[eid];
+					// Record triangle count only for edges outgoing edges from u that should have consecutive edge ids
+					// This should be the same condition as in Graph::useEdgeInIteration and in Graph::indexEdges
+					// The count on (v, w) is updated when v or w is the central node
+
+					// Possibly record triangle for (u, v)
+					if (u >= v) {
+						++incidentTriangleCount[tid][v];
 					}
 
-					// Record triangle for (u, w) if (u, w) is an out-edge, i.e. the out edge id is not none-1
-					if (uwid != none - 1) {
-						++triangleCount[uwid];
+					// Possibly record triangle for (u, w)
+					if (u >= w) {
+						++incidentTriangleCount[tid][w];
 					}
 				}
 			}
 		});
 
-		// Unset all out edge ids
+		// Write local triangle counts into global array, unset local counters
 		G.forEdgesOf(u, [&](node, node v, edgeid eid) {
-			outEdgeId[tid][v] = none;
+			if (incidentTriangleCount[tid][v] > 0) {
+				triangleCount[eid] += incidentTriangleCount[tid][v];
+			}
+			incidentTriangleCount[tid][v] = none;
 		});
 	});
 
