@@ -564,6 +564,33 @@ class AlgebraicDistanceSparsifier(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
+class LocalSparsifier(Sparsifier):
+       def __init__(self, sparsifier):
+               self.sparsifier = sparsifier
+
+       def scores(self, G):
+               """ Returns an edge attribute that holds for each edge 1 - the minimum parameter value
+               such that the edge is contained in the sparsified graph.
+
+               Note that - like for all sparsifiers - edges with the highest score are the most important ones.
+
+               Keyword arguments:
+               G -- the input graph
+               """
+               originalScores = self.sparsifier.scores(G)
+               localFilterScore = LocalFilterScore(G, originalScores)
+               localFilterScore.run()
+
+               return localFilterScore.scores()
+
+       def _getSparsifiedGraph(self, G, parameter, attribute):
+               gf = GlobalThresholdFilter(G, attribute, parameter, True)
+               return gf.calculate()
+
+       def _getParameterizationAlgorithm(self):
+               return BinarySearchParameterization(False, 0.0, 1.0, 20)
+
+
 class ModularityPartitionScore():
 
 	"""  """
