@@ -7890,18 +7890,30 @@ cdef extern from "cpp/sparsification/LocalFilterScore.h":
 		_LocalFilterScoreInt(const _Graph& G, const vector[double]& a, bool logarithmic,  bothRequired) except +
 
 cdef class LocalFilterScore(EdgeScore):
+	"""
+	Local filtering edge scoring. Edges with high score are more important.
+
+	Edges are ranked locally, the top d^e (logarithmic, default) or 1+e*(d-1) edges (non-logarithmic) are kept.
+	For equal attribute values, neighbors of low degree are preferred.
+	If bothRequired is set (default: false), both neighbors need to indicate that they want to keep the edge.
+
+	Parameters
+	----------
+	G : Graph
+		The input graph
+	a : list
+		The input attribute according to which the edges shall be fitlered locally.
+	logarithmic : bool
+		If the score shall be logarithmic in the rank (then d^e edges are kept). Linear otherwise.
+	bothRequired : bool
+		if both neighbors need to indicate that they want to keep an edge (default: one suffices).
+	"""
 	cdef vector[double] _a
 
-	"""
-	TODO
-	"""
-	def __init__(self, Graph G, vector[double] a, bool logarithmic = True, bool bothRequired = False):
+	def __cinit__(self, Graph G, vector[double] a, bool logarithmic = True, bool bothRequired = False):
 		self._G = G
 		self._a = a
-		self._this = new _LocalFilterScoreDouble(G._this, a, logarithmic, bothRequired)
-
-	def __dealloc__(self):
-		del self._thisDouble
+		self._this = new _LocalFilterScoreDouble(G._this, self._a, logarithmic, bothRequired)
 
 	cdef bool isDoubleValue(self):
 		return True

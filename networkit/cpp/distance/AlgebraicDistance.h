@@ -2,7 +2,7 @@
  * AlgebraicDistance.h
  *
  *  Created on: 03.11.2015
- *      Author: Henning Meyerhenke, Christian Staudt
+ *      Author: Henning Meyerhenke, Christian Staudt, Michael Hamann
  */
 
 #ifndef ALGEBRAICDISTANCE_H_
@@ -31,7 +31,7 @@ public:
 	 * @param omega attenuation factor influencing convergence speed.
 	 * @param norm The norm factor of the extended algebraic distance.
 	 */
-	AlgebraicDistance(const Graph& G, count numberSystems=10, count numberIterations=30, double omega=0.5, index norm=0);
+	AlgebraicDistance(const Graph& G, count numberSystems, count numberIterations, double omega, index norm);
 
 	/**
 	 *
@@ -60,7 +60,7 @@ protected:
 	index norm;
 	const index MAX_NORM = 0;
 
-	std::vector<std::vector<double> > loads; //!< loads[i]: vector of loads of length n for one system
+	std::vector<double> loads; //!< loads[u*numSystems..(u+1)*numSystems]: loads for node u
 
 	std::vector<double> edgeScores; //!< distance(u,v) for edge {u,v}
 
