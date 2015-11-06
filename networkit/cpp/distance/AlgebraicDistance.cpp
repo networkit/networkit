@@ -119,7 +119,7 @@ double AlgebraicDistance::distance(node u, node v) {
 
 	if (norm == MAX_NORM) {
 		for (index sys = 0; sys < numSystems; ++sys) {
-			double absDiff = fabs(loads[u*numSystems + sys] - loads[u*numSystems + sys]);
+			double absDiff = fabs(loads[u*numSystems + sys] - loads[v*numSystems + sys]);
 			if (absDiff > result) {
 				result = absDiff;
 			}
