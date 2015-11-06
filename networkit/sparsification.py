@@ -10,6 +10,7 @@ from _NetworKit import ChibaNishizekiTriangleEdgeScore, GlobalThresholdFilter, L
 
 # local imports
 from . import community
+from . import distance
 
 _ABS_ZERO = 1e-7
 
@@ -540,6 +541,28 @@ class TriangleSparsifier(Sparsifier):
 
 	def _getParameterizationAlgorithm(self):
 		raise NotImplementedError("parameterization method not yet implemented.")
+
+class AlgebraicDistanceSparsifier(Sparsifier):
+	""" Allows for global filtering with respect to (inverted) algebraic distances. """
+
+	def __init__(self, numberSystems=10, numberIterations=30, omega=0.5, norm=0):
+		self.numberSystems = numberSystems
+		self.numberIterations = numberIterations
+		self.omega = omega
+		self.norm = norm
+
+	def scores(self, G):
+		""" Returns the inverted algebraic distance score of the input graph. """
+		algDist = distance.AlgebraicDistance(G, self.numberSystems, self.numberIterations, self.omega, self.norm)
+		algDist.preprocess()
+		return [1.0 - d for d in algDist.getEdgeAttribute()]
+
+	def _getSparsifiedGraph(self, G, parameter, attribute):
+		gf = GlobalThresholdFilter(G, attribute, parameter, True)
+		return gf.calculate()
+
+	def _getParameterizationAlgorithm(self):
+		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
 class ModularityPartitionScore():
 
