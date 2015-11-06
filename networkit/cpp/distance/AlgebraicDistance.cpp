@@ -9,6 +9,7 @@
 #include "AlgebraicDistance.h"
 
 #include "../auxiliary/Timer.h"
+#include <omp.h>
 
 
 namespace NetworKit {
@@ -64,6 +65,36 @@ void AlgebraicDistance::preprocess() {
 			});
 		}
 	}
+
+	// normalization. Compute min/max over all nodes per system (and per thread)
+	std::vector<std::vector<double>> minPerThread(omp_get_max_threads(), std::vector<double>(numSystems, std::numeric_limits<double>::max()));
+	std::vector<std::vector<double>> maxPerThread(omp_get_max_threads(), std::vector<double>(numSystems, std::numeric_limits<double>::lowest()));
+	G.parallelForNodes([&](node u) {
+		auto tid = omp_get_thread_num();
+		const index startId = u*numSystems;
+		for (index sys = 0; sys < numSystems; ++sys) {
+			minPerThread[tid][sys] = std::min(minPerThread[tid][sys], loads[startId + sys]);
+			maxPerThread[tid][sys] = std::max(maxPerThread[tid][sys], loads[startId + sys]);
+		}
+	});
+
+	std::vector<double> minPerSystem = std::move(minPerThread[0]);
+	std::vector<double> maxPerSystem = std::move(maxPerThread[0]);
+	for (index i = 1; i < minPerThread.size(); ++i) {
+		for (index sys = 0; sys < numSystems; ++sys) {
+			minPerSystem[sys] = std::min(minPerSystem[sys], minPerThread[i][sys]);
+			maxPerSystem[sys] = std::max(maxPerSystem[sys], maxPerThread[i][sys]);
+		}
+	}
+
+	// set normalized values: new = (min - old) / (min - max)
+	// normalization is per system
+	G.parallelForNodes([&](node u) {
+		const index startId = u*numSystems;
+		for (index sys = 0; sys < numSystems; ++sys) {
+			loads[startId + sys] = (minPerSystem[sys] - loads[startId + sys]) / (minPerSystem[sys] - maxPerSystem[sys]);
+		}
+	});
 
 	// calculate edge scores
 	if (!G.hasEdgeIds()) {
