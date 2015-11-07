@@ -483,48 +483,53 @@ string benchmark(const CSRMatrix &matrix, const Vector &initialX, const Vector &
 	return printTableRow(status, avgSetupTime, avgSolveTime);
 }
 
-string benchmarkWorkflow(const CSRMatrix &matrix, const Vector &initialX, const Vector &b, count numSolves, const Smoother &smoother, double desiredResidual, bool isConnected) {
-	count tOneSolve = 0;
-	count tMultSolve = 0;
+string benchmarkWorkflow(const CSRMatrix &matrix, const Vector &initialX, const Vector &b, count numSolves, count numRepetitions, const Smoother &smoother, double desiredResidual, bool isConnected) {
+	double tOneSolve = 0;
+	double tMultSolve = 0;
+	double multSolveResidual = 0.0;
 	Aux::Timer t;
 
 	Lamg lamg(desiredResidual);
-
-	// setup + solve
 	SolverStatus status;
-	Vector x = initialX;
-	t.start();
-	if (isConnected) {
-		lamg.setupConnected(matrix);
-	} else {
-		lamg.setup(matrix);
-	}
 
-	status = lamg.solve(b, x, MAX_CONVERGENCE_TIME);
-	t.stop();
-	tOneSolve = t.elapsedMilliseconds();
-
-	// setup + numSolves solve
-	t.start();
-	if (isConnected) {
-		lamg.setupConnected(matrix);
-	} else {
-		lamg.setup(matrix);
-	}
-	t.stop();
-	tMultSolve += t.elapsedMilliseconds();
-
-	double multSolveResidual = 0.0;
-	for (index i = 0; i < numSolves; ++i) {
+	for (index i = 0; i < numRepetitions; ++i) {
+		// setup + solve
 		Vector x = initialX;
 		t.start();
+		if (isConnected) {
+			lamg.setupConnected(matrix);
+		} else {
+			lamg.setup(matrix);
+		}
+
 		status = lamg.solve(b, x, MAX_CONVERGENCE_TIME);
 		t.stop();
+		tOneSolve += t.elapsedMilliseconds();
+
+		// setup + numSolves solve
+		t.start();
+		if (isConnected) {
+			lamg.setupConnected(matrix);
+		} else {
+			lamg.setup(matrix);
+		}
+		t.stop();
 		tMultSolve += t.elapsedMilliseconds();
-		multSolveResidual += status.residual;
+
+
+		for (index i = 0; i < numSolves; ++i) {
+			Vector x = initialX;
+			t.start();
+			status = lamg.solve(b, x, MAX_CONVERGENCE_TIME);
+			t.stop();
+			tMultSolve += t.elapsedMilliseconds();
+			multSolveResidual += status.residual;
+		}
 	}
 
-	multSolveResidual /= numSolves;
+	tOneSolve /= numRepetitions;
+	tMultSolve /= numRepetitions;
+	multSolveResidual /= (numSolves * numRepetitions);
 
 	return printTableRowWorkflow(tOneSolve, tMultSolve, multSolveResidual);
 }
@@ -645,7 +650,7 @@ string benchmarkWorkflow(Benchmark &bench) {
 
 		INFO(graphFile);
 		output += " & ";
-		output += benchmarkWorkflow(L, x, b, bench.workflowSolves, *smoother, bench.residual, bench.instances[i].isConnected);
+		output += benchmarkWorkflow(L, x, b, bench.workflowSolves, bench.solveTriesPerSetup, *smoother, bench.residual, bench.instances[i].isConnected);
 		//ss.str("");
 	}
 
