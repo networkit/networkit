@@ -428,7 +428,7 @@ string printTableRowWorkflow(const count tOneSolve, const count tMultSolves, con
 	stringstream ss;
 	ss.precision(16);
 
-	ss << numprint(tOneSolve) << " & " << numprint(tMultSolves) << " & " << numprint(residual) << " \\\\ \n";
+	ss << numprint(tOneSolve) << " & " << numprint(tMultSolves) << " & " << numprint(residual, true) << " \\\\ \n";
 	return ss.str();
 }
 
@@ -639,14 +639,14 @@ string benchmarkWorkflow(Benchmark &bench) {
 
 		string graphFile = G.getName().substr(path.find_last_of("/") + 1, path.length());
 		output += graphFile.substr(0, graphFile.find_last_of("."));
-		ss << " & " << L.numberOfRows() << " x " << L.numberOfColumns() << " & ";
-		ss << L.nnz() << " & ";
-		output += ss.str();
+		//ss << " & " << L.numberOfRows() << " x " << L.numberOfColumns() << " & ";
+		//ss << L.nnz() << " & ";
+		//output += ss.str();
 
 		INFO(graphFile);
-
+		output += " & ";
 		output += benchmarkWorkflow(L, x, b, bench.workflowSolves, *smoother, bench.residual, bench.instances[i].isConnected);
-		ss.str("");
+		//ss.str("");
 	}
 
 	output += printBenchFooter(bench);
@@ -656,7 +656,7 @@ string benchmarkWorkflow(Benchmark &bench) {
 }
 
 TEST_F(LAMGBenchmark, bench) {
-	vector<index> benchmarks = {5}; // citation
+	vector<index> benchmarks = {5,6,7,10}; // citation,clustering,street,snap
 	for (auto idx : benchmarks) {
 		string texContent = printLatexDocumentHeader();
        	stringstream ss;
@@ -667,7 +667,7 @@ TEST_F(LAMGBenchmark, bench) {
 		texContent += printLatexDocumentFooter();
 
 		ss << ".tex";
-		string filename = "benchmark_" + ss.str();
+		string filename = "benchmark_workflow_" + ss.str();
 
 		writeBenchmarkResults(texContent, filename);
 	}
