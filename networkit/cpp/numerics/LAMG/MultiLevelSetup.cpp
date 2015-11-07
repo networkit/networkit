@@ -128,11 +128,10 @@ bool MultiLevelSetup::coarseningElimination(CSRMatrix &matrix, LevelHierarchy &h
 		subMatrix(matrix, cSet, cSet, coarseIndex, Acc);
 		subMatrix(matrix, cSet, fSet, coarseIndex, Acf);
 
-		CSRMatrix temp = Acf * P;
 #ifndef NPROFILE
 		schurTimer.start();
 #endif
-		matrix = Acc + temp;
+		matrix = Acc + Acf * P;
 #ifndef NPROFILE
 		schurTimer.stop();
 #endif
