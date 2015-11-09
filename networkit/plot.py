@@ -19,7 +19,7 @@ def nodeProperty(data, label, sorted=True, yscale="linear", xscale="linear"):
 	plt.xlabel("nodes")
 	plt.ylabel(label)
 	if sorted:
-		data = data.sort(ascending=False, inplace=False)
+		data.sort(reverse=True)
 	plt.plot(data)
 
 
@@ -34,7 +34,7 @@ def degreeDistribution(G, **kwargs):
 
 def connectedComponentsSizes(G, **kwargs):
 	""" Plot the size distribution of connected components as a pie chart """
-	csizes = properties.ConnectedComponents(G).run().getComponentSizes()
+	csizes = components.ConnectedComponents(G).run().getComponentSizes()
 	colors = seaborn.color_palette("Set2", 10)
 	data = list(csizes.values())
 	# explode the largest component pie piece
@@ -49,7 +49,7 @@ def connectedComponentsSizes(G, **kwargs):
 
 def coreDecompositionSequence(G, **kwargs):
 	""" Plots the core decomposition sequence of G, i.e. the size of the k-shell for the core number k"""
-	shells = properties.CoreDecomposition(G).run().shells()
+	shells = centrality.CoreDecomposition(G).run().shells()
 	data = pandas.DataFrame({"k": range(len(shells)), "n_k": [len(shell) for shell in shells]})
 	plt.xlabel("core number")
 	plt.ylabel("number of nodes")
@@ -68,8 +68,13 @@ def clusteringPerDegree(G, **kwargs):
 def hopPlot(G, **kwargs):
 	""" Prints the hop-plot"""
 	#hop-plot
-	if properties.numberOfComponents(G) == 1:
-		hopPlot = properties.EffectiveDiameter.hopPlot(G, maxDistance=0, k=64, r=7)
+	if G.isDirected():
+		cc = components.StronglyConnectedComponents(G)
+	else:
+		cc = components.ConnectedComponents(G)
+	cc.run()
+	if cc.numberOfComponents() == 1:
+		hopPlot = distance.EffectiveDiameter.hopPlot(G, maxDistance=0, k=64, r=7)
 	else:
 		hopPlot = {}
 	plt.xlabel('distance')
