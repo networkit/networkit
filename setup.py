@@ -131,7 +131,7 @@ def build_NetworKit():
 	else:
 		from mbe import MinimalBuildEnvironment
 		# minimal builder as fallback for scons
-		def_compile_flags = ["-c", "-std=c++14", "-Wall", "-fmessage-length=0", "-fPIC", "-fopenmp"]
+		def_compile_flags = ["-c", "-std=c++11", "-Wall", "-fmessage-length=0", "-fPIC", "-fopenmp"]
 		release_compile_flags = ["-O3", "-DNDEBUG", "-DLOG_LEVEL=LOG_LEVEL_INFO"]
 		builder = MinimalBuildEnvironment(def_compile_flags,"",release_compile_flags,"","Opt", cppcompiler, "networkit/cpp")
 		builder.compile("Core")
@@ -248,8 +248,8 @@ else:
 modules = [Extension("_NetworKit",
 	src,
 	language = "c++",
-	extra_compile_args=["-fopenmp", "-std=c++14", "-O3", "-DNOGTEST"],
-	extra_link_args=["-fopenmp", "-std=c++14"],
+	extra_compile_args=["-fopenmp", "-std=c++11", "-O3", "-DNOGTEST"],
+	extra_link_args=["-fopenmp", "-std=c++11"],
 	libraries=["NetworKit-Core-{0}".format(optimize)],
 	library_dirs=["./"])]
 
