@@ -31,7 +31,7 @@ public:
 	 * @param omega attenuation factor influencing convergence speed.
 	 * @param norm The norm factor of the extended algebraic distance.
 	 */
-	AlgebraicDistance(const Graph& G, count numberSystems, count numberIterations, double omega, index norm);
+	AlgebraicDistance(const Graph& G, count numberSystems=10, count numberIterations=30, double omega=0.5, index norm=0);
 
 	/**
 	 *

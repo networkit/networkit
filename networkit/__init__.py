@@ -47,6 +47,8 @@ from . import centrality
 from . import generators
 from . import structures
 from . import engineering
+from . import distance
+from . import components
 from . import dynamic
 from . import gephi
 from . import partitioning
@@ -57,9 +59,7 @@ from . import plot
 from . import sparsification
 from . import scd
 from . import clique
-from . import distance
 from . import globals
-from . import components
 from . import linkprediction
 from . import correlation
 from .profiling import profiling
