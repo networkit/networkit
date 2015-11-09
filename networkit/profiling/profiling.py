@@ -31,8 +31,8 @@ def readfile(filename, removeWS=False):
 try:
 	__IPYTHON__
 
-	def _initHeader(tag, type, data):
-		""" private helper function for ipython/jupyther-notebook hack: create content of extended header """
+	def _initHeader(tag, docType, data):
+		""" private helper function for ipython/jupyter-notebook hack: create content of extended header """
 		result = """
 			{
 				var element = document.getElementById('NetworKit_""" + tag + """');
@@ -40,7 +40,7 @@ try:
 					element.parentNode.removeChild(element);
 				}
 				element = document.createElement('""" + tag + """');
-				element.type = 'text/""" + type + """';
+				element.type = 'text/""" + docType + """';
 				element.innerHTML = '""" + data + """';
 				element.setAttribute('id', 'NetworKit_""" + tag + """');
 				document.head.appendChild(element);
@@ -411,7 +411,7 @@ class Profile:
 		filename  = "{0}.".format(self.__G.getName())
 
 		result = self.__format(
-			type = outputType,
+			outputType = outputType,
 			directory = directory,
 			filename = filename,
 			style = style,
@@ -473,7 +473,7 @@ class Profile:
 			raise RuntimeError("this function cannot be used outside ipython notebook")
 
 		result = self.__format(
-			type = "HTML",
+			outputType = "HTML",
 			directory = "",
 			filename = "",
 			style = style,
@@ -486,18 +486,18 @@ class Profile:
 		self.__pageCount = self.__pageCount + 1
 
 
-	def __format(self, type, directory, filename, style, color, pageIndex, parallel):
+	def __format(self, outputType, directory, filename, style, color, pageIndex, parallel):
 		""" layouts the profile	"""
 		theme = plot.Theme()
 		theme.set(style, color)
 
 		# TODO: refactor and use decorator design pattern instead if an 3rd format is supported
-		if type == "HTML":
+		if outputType == "HTML":
 			plottype = "SVG"
 			options = []
 			templateProfile = readfile("html/profile.html", False)
 			templateMeasure = readfile("html/measure.html", False)
-		elif type == "LaTeX":
+		elif outputType == "LaTeX":
 			plottype = "PDF"
 			if directory[-1] == "/":
 				output_dir = directory + filename[:-1]
@@ -605,7 +605,7 @@ class Profile:
 				result = ""
 				keyBList = []
 
-				if type == "HTML":
+				if outputType == "HTML":
 					result += "<div class=\"SubCategory HeatTable\" data-title=\"" + correlationName + "\">"
 					for keyA in self.__measures:
 						if self.__measures[keyA]["category"] == category and self.__measures[keyA]["correlate"]:
@@ -620,7 +620,7 @@ class Profile:
 								result += "<div class=\"HeatCell\" title=\"" + nameB + " - " + nameA + "\" data-heat=\"{:+.3F}\"></div>".format(value["stat"]["Value"][correlationName])
 							result += "<div class=\"HeatCellName\">" + nameB + "</div><br>"
 					result += "</div>"
-				elif type == "LaTeX":
+				elif outputType == "LaTeX":
 					i = 0
 					n = len(self.__measures)
 					result += "\\subsection{" + correlationName + "}\n"
@@ -664,9 +664,9 @@ class Profile:
 									value = self.__correlations[category][keyA][keyB]
 								except:
 									value = self.__correlations[category][keyB][keyA]
-								if type == "HTML":
+								if outputType == "HTML":
 									result += "<div class=\"Thumbnail_ScatterPlot\" data-title=\"" + keyB + "\" data-title-second=\"" + keyA + "\"><img src=\"data:image/svg+xml;utf8," + value["image"] + "\" /></div>"
-								elif type == "LaTeX":
+								elif outputType == "LaTeX":
 									result += "\n\\includegraphics[width=0.5\\textwidth]{{\"" + value["image"] + "\"}.pdf}"
 				return result
 			results[category]["Correlations"]["ScatterPlots"] += funcScatterPlot(category)
@@ -690,9 +690,9 @@ class Profile:
 
 			extentions = ""
 			try:
-				if type == "HTML":
+				if outputType == "HTML":
 					extentions = "<div class=\"PartitionPie\"><img src=\"data:image/svg+xml;utf8," + image[2] + "\" /></div>"
-				elif type == "LaTeX":
+				elif outputType == "LaTeX":
 					extentions = "\n\\includegraphics[width=0.5\\textwidth]{{\"" + image[2] + "\"}.pdf}"
 
 			except:
@@ -711,9 +711,9 @@ class Profile:
 				description,
 				algorithm
 			)
-			if type == "HTML":
+			if outputType == "HTML":
 				results[category]["Overview"] += "<div class=\"Thumbnail_Overview\" data-title=\"" + name + "\"><a href=\"#NetworKit_Page_" + str(pageIndex) + "_" + key + "\"><img src=\"data:image/svg+xml;utf8," + image[1] + "\" /></a></div>"
-			elif type == "LaTeX":
+			elif outputType == "LaTeX":
 				results[category]["Overview"] += "\n\\includegraphics[width=0.5\\textwidth]{{\"" + image[1] + "\"}.pdf}\n"
 
 		result = self.__formatProfileTemplate(
@@ -888,12 +888,12 @@ class Profile:
 			)
 
 		while pool.numberOfTasks() > 0:
-			(type, name, data) = pool.get()
+			(jobType, name, data) = pool.get()
 
 			try:
 				category = self.__measures[name]["category"]
 
-				if type == "Stat":
+				if jobType == "Stat":
 					self.__measures[name]["stat"] = data
 					self.__verbosePrint("Stat: " + name, level=1)
 					if self.__measures[name]["correlate"]:
@@ -921,12 +921,12 @@ class Profile:
 						}
 						self.__correlations[category][name][name]["image"] = ""
 
-				elif type == "Correlation":
+				elif jobType == "Correlation":
 					(nameB, correlation) = data
 					self.__verbosePrint("Correlation: " + name + " <-> " + nameB, level=1)
 					self.__correlations[category][name][nameB]["stat"] = correlation
 			except Exception as e:
-				self.__verbosePrint("Error (Post Processing): " + type + " - " + nam-e, level=-1)
+				self.__verbosePrint("Error (Post Processing): " + jobType + " - " + nam-e, level=-1)
 				self.__verbosePrint(str(e), level=-1)
 
 		pool.join()
