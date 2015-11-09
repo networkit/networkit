@@ -86,7 +86,7 @@ except NameError as e:
 
 class Config:
 	""" object to control profiling.Profile behaviour """
-	
+
 	def __init__(self):
 		""" constructor: all options off """
 		self.__options_Properties = {
@@ -129,11 +129,11 @@ class Config:
 			result.setMeasure("Partition.ConnectedComponents")
 			result.setMeasure("Partition.CoreDecomposition")
 			result.setMeasureCorrelation("Spearman")
-		
+
 		elif preset == "minimal":
 			result.setMeasure("Centrality.Degree")
 			result.setMeasure("Partition.ConnectedComponents")
-		
+
 		elif preset == "default":
 			result.setProperty("Diameter")
 			result.setMeasure("Centrality.Degree")
@@ -151,7 +151,7 @@ class Config:
 
 		return result
 
-		
+
 	def setProperty(self, id, enabled=True):
 		""" enable/disable given property option """
 		if id in self.__options_Properties:
@@ -187,8 +187,10 @@ class Config:
 
 
 class Profile:
-	""" automated network profiling class """
-	
+	""" Automated network profiling class.
+
+	Call Profile.create to instantiate a profile. """
+
 	__TOKEN = object()	# see __init__(): prevent this class from being instanced directly
 	__pageCount = 0
 	__verbose = False
@@ -196,7 +198,7 @@ class Profile:
 	__verboseFilename = ""
 	__parallel = multiprocessing.numberOfProcessors()
 
-	
+
 	def __init__(self, G, token=object()):
 		""" constructor: don't call this method directly - use create instead """
 		if token is not self.__TOKEN:
@@ -206,11 +208,11 @@ class Profile:
 		self.__measures = collections.OrderedDict()
 		self.__correlations = {}
 
-		
+
 	@classmethod
 	def walk(cls, inputDir, filePattern="*", outputDir=None, config=Config(), outputType="HTML", style="light", color=(0, 0, 1), recursive=False, parallel=False, graphFormat=None):
 		""" tests all files of a directory for the given conditions and generates a profile when matching
-		
+
 		Args:
 			inputDir: the directory to search
 			filePattern: specify accepted file names, e.g.: *.METIS.graph
@@ -223,14 +225,14 @@ class Profile:
 			parallel: run some additional parts of the generation in parallel (experimental)
 			graphFormat: format of matching files (e.g.: Format.METIS)
 		"""
-		
+
 		if outputDir is None:
 			raise ValueError("output directory (parameter: outputDir) not specified")
 		elif not os.path.isdir(outputDir):
 			os.mkdir(outputDir)
 		if graphFormat is None:
 			raise ValueError("no graph format has been specified")
-		
+
 		for (dirpath, dirnames, filenames) in os.walk(inputDir):
 			for filename in filenames:
 				file = dirpath + "/" + filename
@@ -265,15 +267,20 @@ class Profile:
 
 
 	@classmethod
-	def create(cls, G, config=Config()):
+	def create(cls, G, preset="default", config=None):
 		""" creates a profile object
-		
+
 		Args:
 			G: graph to profile
+			preset: name of preset configuration: "complete", "minimal", "default"
 			config: object to control some aspects of the generation behaviour (Config)
 		Returns:
 			profile object
 		"""
+
+		# if no custom config is given, use a preconfigured config according to preset name
+		if not config:
+			config = Config.createConfig(preset)
 
 		result = cls(G, cls.__TOKEN)
 		# TODO: use copy constructor instead
@@ -294,7 +301,7 @@ class Profile:
 		else:
 			classConnectedComponents = components.ConnectedComponents
 
-		# internal unique name | category name | display name | 
+		# internal unique name | category name | display name |
 		# compute correlation within same category | value function for measures | display name (axis) | class name of measure | parameter of constructor
 		for parameter in [
 			("Centrality.Degree",					"Node Centrality",	"Degree",
@@ -335,8 +342,8 @@ class Profile:
 
 	@classmethod
 	def setVerbose(cls, verbose=False, level=0, filename=""):
-		""" set verbose behaviour of all public methods 
-		
+		""" set verbose behaviour of all public methods
+
 		Args:
 			verbose: enable/disable display verbose
 			level: set level of verbose (0, 1)
@@ -384,7 +391,7 @@ class Profile:
 
 	def output(self, outputType, directory, style="light", color=(0, 0, 1), parallel=False):
 		""" outputs a computed profile to disk
-		
+
 		Args:
 			outputType: profile output format ("HTML", "LaTeX")
 			directory: directory to write
@@ -392,7 +399,7 @@ class Profile:
 			color: mainly used color of given style
 			arallel: run some additional parts of the generation in parallel (experimental)
 		"""
-		
+
 		# TODO: type -> enum
 		options_type = ["HTML", "LaTeX", None]
 		for o in options_type:
@@ -454,7 +461,7 @@ class Profile:
 
 	def show(self, style="light", color=(0, 0, 1), parallel=False):
 		""" display computed profile
-		
+
 		Args:
 			style: style of generated output ("light")
 			color: mainly used color of given style
@@ -484,7 +491,7 @@ class Profile:
 		theme = plot.Theme()
 		theme.set(style, color)
 
-		# TODO: refactor and use decorator design pattern instead if an 3rd format is supported 
+		# TODO: refactor and use decorator design pattern instead if an 3rd format is supported
 		if type == "HTML":
 			plottype = "SVG"
 			options = []
@@ -574,7 +581,7 @@ class Profile:
 					(index, image) = data
 					self.__verbosePrint("Plot.Measure", level=1)
 					self.__measures[name]["image"][index] = image
-				
+
 				elif taskType == "Plot.Scatter":
 					(nameB, image) = data
 					self.__verbosePrint("Plot.Scatter (" + name + " <-> " + nameB + ")", level=1)
@@ -690,7 +697,7 @@ class Profile:
 
 			except:
 				pass
-				
+
 			results[category]["Measures"] += self.__formatMeasureTemplate(
 				templateMeasure,
 				pageIndex,
