@@ -765,7 +765,7 @@ class Profile:
 			try:
 				timerInstance = stopwatch.Timer()
 				self.__verbosePrint("Diameter: ", end="")
-				diameter = properties.Diameter.estimatedDiameterRange(self.__G, error=0.1)
+				diameter = distance.Diameter.estimatedDiameterRange(self.__G, error=0.1)
 				elapsedMain = timerInstance.elapsed
 				self.__verbosePrint("{:.2F} s".format(elapsedMain))
 				self.__verbosePrint("")
@@ -832,7 +832,7 @@ class Profile:
 			if self.__measures[name]["category"] == "Node Centrality":
 				self.__verbosePrint("    Assortativity: ", end="")
 				timerPostAssortativity = stopwatch.Timer()
-				assortativity = properties.Assortativity(self.__G, measure["data"]["sample"])
+				assortativity = kit.correlation.Assortativity(self.__G, measure["data"]["sample"])
 				assortativity.run()
 				measure["assortativity"] = assortativity.getCoefficient()
 				elapsedPostAssortativity = timerPostAssortativity.elapsed
