@@ -209,57 +209,6 @@ class Profile:
 		self.__correlations = {}
 
 
-	@classmethod
-	def walk(cls, inputDir, outputDir, graphFormat, filePattern="*",  config=Config(), outputType="HTML", style="light", color=(0, 0, 1), recursive=False, parallel=False):
-		""" tests all files of a directory for the given conditions and generates a profile when matching
-
-		Args:
-			inputDir: the directory to search
-			filePattern: specify accepted file names, e.g.: *.METIS.graph
-			outputDir: directory to write the generated profiles
-			config: object to control some aspects of the generation behaviour (Config)
-			outputType: profile output format ("HTML", "LaTeX")
-			style: style of generated output ("light")
-			color: mainly used color of given style
-			recursive: also search in subfolders for matching files
-			parallel: run some additional parts of the generation in parallel (experimental)
-			graphFormat: format of matching files (e.g.: Format.METIS)
-		"""
-
-		if not os.path.isdir(outputDir):
-			os.mkdir(outputDir)
-
-		for (dirpath, dirnames, filenames) in os.walk(inputDir):
-			for filename in filenames:
-				file = dirpath + "/" + filename
-				if fnmatch.fnmatch(filename, filePattern):
-					cls.__verbosePrint("\n[ " + file + " ]")
-					try:
-						G = kit.readGraph(file, graphFormat)
-						try:
-							pf = cls.create(
-								G,
-								config = config
-							)
-							cls.__verbosePrint("");
-							pf.output(
-								outputType = outputType,
-								directory = outputDir,
-								style = style,
-								color = color,
-								parallel = parallel
-							)
-						except Exception as e:
-							cls.__verbosePrint("=> an error occured: {0} of type {1}".format(e, type(e)))
-							cls.__verbosePrint(traceback.format_exc())
-					except:
-						cls.__verbosePrint("could not read {0}".format(file))
-					cls.__verbosePrint("\n")
-				else:
-					cls.__verbosePrint("skipping {0} as it does not match filePattern".format(file))
-			if not recursive:
-				break
-		print("Done")
 
 
 	@classmethod
@@ -313,9 +262,9 @@ class Profile:
 			("Centrality.Katz",						"Node Centrality",	"Katz Centrality",
 				True,	funcScores,	"Score",				centrality.KatzCentrality,				(G, )),
 			("Centrality.Betweenness", 				"Node Centrality",	"Betweenness",
-				True,	funcScores,	"Score",				centrality.ApproxBetweenness2,			(G, 10, True))),
+				True,	funcScores,	"Score",				centrality.ApproxBetweenness2,			(G, 10, True)),
 			("Centrality.Closeness",				"Node Centrality",	"Closeness",
-				True,	funcScores,	"Score",				centrality.ApproxCloseness,				(G, 10, True))),
+				True,	funcScores,	"Score",				centrality.ApproxCloseness,				(G, 10, True)),
 			("Partition.Communities", 				"Partition",		"Communities",
 				False,	funcSizes,	"Nodes per Community",	community.PLM,			 				(G, )),
 			("Partition.ConnectedComponents", 		"Partition",		"Connected Components",
@@ -575,16 +524,16 @@ class Profile:
 
 				if taskType == "Plot.Measure":
 					(index, image) = data
-					self.__verbosePrint("Plot.Measure", level=1)
+					self.verbosePrint("Plot.Measure", level=1)
 					self.__measures[name]["image"][index] = image
 
 				elif taskType == "Plot.Scatter":
 					(nameB, image) = data
-					self.__verbosePrint("Plot.Scatter (" + name + " <-> " + nameB + ")", level=1)
+					self.verbosePrint("Plot.Scatter (" + name + " <-> " + nameB + ")", level=1)
 					self.__correlations[category][name][nameB]["image"] = image
 			except Exception as e:
-				self.__verbosePrint("Error (Post Processing): " + taskType + " - " + name, level=-1)
-				self.__verbosePrint(str(e), level=-1)
+				self.verbosePrint("Error (Post Processing): " + taskType + " - " + name, level=-1)
+				self.verbosePrint(str(e), level=-1)
 		pool.join()
 
 		# outline results
@@ -767,13 +716,13 @@ class Profile:
 		if self.__config.getProperty("Diameter"):
 			try:
 				timerInstance = stopwatch.Timer()
-				self.__verbosePrint("Diameter: ", end="")
+				self.verbosePrint("Diameter: ", end="")
 				diameter = distance.Diameter.estimatedDiameterRange(self.__G, error=0.1)
 				elapsedMain = timerInstance.elapsed
-				self.__verbosePrint("{:.2F} s".format(elapsedMain))
-				self.__verbosePrint("")
+				self.verbosePrint("{:.2F} s".format(elapsedMain))
+				self.verbosePrint("")
 			except:
-				self.__verbosePrint("Diameter raised exception")
+				self.verbosePrint("Diameter raised exception")
 				diameter = "N/A"
 		else:
 			diameter = "N/A"
@@ -781,7 +730,7 @@ class Profile:
 
 
 		timerInstance = stopwatch.Timer()
-		self.__verbosePrint("Connected Components: ", end="")
+		self.verbosePrint("Connected Components: ", end="")
 		try:
 			if self.__G.isDirected():
 				cc = components.StronglyConnectedComponents(self.__G)
@@ -790,11 +739,11 @@ class Profile:
 			cc.run()
 			num = cc.numberOfComponents()
 		except:
-			self.__verbosePrint("ConnectedComponents raised exception")
+			self.verbosePrint("ConnectedComponents raised exception")
 			num = "N/A"
 		elapsedMain = timerInstance.elapsed
-		self.__verbosePrint("{:.2F} s".format(elapsedMain))
-		self.__verbosePrint("")
+		self.verbosePrint("{:.2F} s".format(elapsedMain))
+		self.verbosePrint("")
 		self.__properties["Connected Components"] = num
 
 
@@ -804,55 +753,55 @@ class Profile:
 
 		for name in self.__measures:
 			measure = self.__measures[name]
-			self.__verbosePrint(name + ": ", end="")
+			self.verbosePrint(name + ": ", end="")
 			try:
 				instance = measure["class"](*measure["parameters"])
 			except Exception as e:
 				del self.__measures[name]
-				self.__verbosePrint("(removed)\n>> " + str(e))
+				self.verbosePrint("(removed)\n>> " + str(e))
 				continue
 
 			# run algorithm and get result
 			timerInstance = stopwatch.Timer()
 			instance.run()
 			measure["data"]["sample"] = measure["getter"](instance)
-			#self.__verbosePrint("{0} called on {1}".format(measure["getter"], instance))
+			#self.verbosePrint("{0} called on {1}".format(measure["getter"], instance))
 			elapsedMain = timerInstance.elapsed
-			self.__verbosePrint("{:.2F} s".format(elapsedMain))
+			self.verbosePrint("{:.2F} s".format(elapsedMain))
 
-			self.__verbosePrint("    Sort: ", end="")
+			self.verbosePrint("    Sort: ", end="")
 			timerPostSort = stopwatch.Timer()
 			measure["data"]["sorted"] = stat.sorted(measure["data"]["sample"])
 			elapsedPostSort = timerPostSort.elapsed
-			self.__verbosePrint("{:.2F} s".format(elapsedPostSort))
+			self.verbosePrint("{:.2F} s".format(elapsedPostSort))
 
-			self.__verbosePrint("    Rank: ", end="")
+			self.verbosePrint("    Rank: ", end="")
 			timerPostRank = stopwatch.Timer()
 			measure["data"]["ranked"] = stat.ranked(measure["data"]["sample"])
 			elapsedPostRank = timerPostRank.elapsed
-			self.__verbosePrint("{:.2F} s".format(elapsedPostRank))
+			self.verbosePrint("{:.2F} s".format(elapsedPostRank))
 
 			if self.__measures[name]["category"] == "Node Centrality":
-				self.__verbosePrint("    Assortativity: ", end="")
+				self.verbosePrint("    Assortativity: ", end="")
 				timerPostAssortativity = stopwatch.Timer()
 				assortativity = kit.correlation.Assortativity(self.__G, measure["data"]["sample"])
 				assortativity.run()
 				measure["assortativity"] = assortativity.getCoefficient()
 				elapsedPostAssortativity = timerPostAssortativity.elapsed
-				self.__verbosePrint("{:.2F} s".format(elapsedPostAssortativity))
+				self.verbosePrint("{:.2F} s".format(elapsedPostAssortativity))
 			else:
 				measure["assortativity"] = float("nan")
 
 			if self.__measures[name]["category"] == "Node Centrality":
-				self.__verbosePrint("    Centralization: ", end="")
+				self.verbosePrint("    Centralization: ", end="")
 				timerPostCentralization = stopwatch.Timer()
 				try:
 					measure["centralization"] = instance.centralization()
 				except:
-					self.__verbosePrint("Centrality.centralization not properly defined for {0}. ".format(name), level=0, end="")
+					self.verbosePrint("Centrality.centralization not properly defined for {0}. ".format(name), level=0, end="")
 					measure["centralization"] = float("nan")
 				elapsedPostCentralization = timerPostCentralization.elapsed
-				self.__verbosePrint("{:.2F} s".format(elapsedPostCentralization))
+				self.verbosePrint("{:.2F} s".format(elapsedPostCentralization))
 			else:
 				measure["centralization"] = float("nan")
 
@@ -864,7 +813,7 @@ class Profile:
 				elapsedPostCentralization
 			)
 
-		self.__verbosePrint("")
+		self.verbosePrint("")
 
 		for name in self.__measures:
 			# the fix below avoids a cake-diagram for connected graphs,
@@ -891,7 +840,7 @@ class Profile:
 
 				if jobType == "Stat":
 					self.__measures[name]["stat"] = data
-					self.__verbosePrint("Stat: " + name, level=1)
+					self.verbosePrint("Stat: " + name, level=1)
 					if self.__measures[name]["correlate"]:
 						for key in self.__correlations[category]:
 							self.__correlations[category][key][name] = {}
@@ -919,17 +868,17 @@ class Profile:
 
 				elif jobType == "Correlation":
 					(nameB, correlation) = data
-					self.__verbosePrint("Correlation: " + name + " <-> " + nameB, level=1)
+					self.verbosePrint("Correlation: " + name + " <-> " + nameB, level=1)
 					self.__correlations[category][name][nameB]["stat"] = correlation
 			except Exception as e:
-				self.__verbosePrint("Error (Post Processing): " + jobType + " - " + nam-e, level=-1)
-				self.__verbosePrint(str(e), level=-1)
+				self.verbosePrint("Error (Post Processing): " + jobType + " - " + nam-e, level=-1)
+				self.verbosePrint(str(e), level=-1)
 
 		pool.join()
 
 
 	@classmethod
-	def __verbosePrint(cls, text="", end="\n", level=0):
+	def verbosePrint(cls, text="", end="\n", level=0):
 		""" print for verbose output """
 		if cls.__verboseLevel >= level:
 			text = text + end
@@ -942,3 +891,55 @@ class Profile:
 		if cls.__verboseFilename != "":
 			with open(cls.__verboseFilename, 'a+') as file:
 				file.write(text)
+
+
+def walk(inputDir, outputDir, graphFormat, filePattern="*",  config=Config(), outputType="HTML", style="light", color=(0, 0, 1), recursive=False, parallel=False):
+	""" tests all files of a directory for the given conditions and generates a profile when matching
+
+	Args:
+		inputDir: the directory to search
+		filePattern: specify accepted file names, e.g.: *.METIS.graph
+		outputDir: directory to write the generated profiles
+		config: object to control some aspects of the generation behaviour (Config)
+		outputType: profile output format ("HTML", "LaTeX")
+		style: style of generated output ("light")
+		color: mainly used color of given style
+		recursive: also search in subfolders for matching files
+		parallel: run some additional parts of the generation in parallel (experimental)
+		graphFormat: format of matching files (e.g.: Format.METIS)
+	"""
+
+	if not os.path.isdir(outputDir):
+		os.mkdir(outputDir)
+
+	for (dirpath, dirnames, filenames) in os.walk(inputDir):
+		for filename in filenames:
+			file = dirpath + "/" + filename
+			if fnmatch.fnmatch(filename, filePattern):
+				Profile.verbosePrint("\n[ " + file + " ]")
+				try:
+					G = kit.readGraph(file, graphFormat)
+					try:
+						pf = Profile.create(
+							G,
+							config = config
+						)
+						Profile.verbosePrint("");
+						pf.output(
+							outputType = outputType,
+							directory = outputDir,
+							style = style,
+							color = color,
+							parallel = parallel
+						)
+					except Exception as e:
+						Profile.verbosePrint("=> an error occured: {0} of type {1}".format(e, type(e)))
+						Profile.verbosePrint(traceback.format_exc())
+				except:
+					Profile.verbosePrint("could not read {0}".format(file))
+				Profile.verbosePrint("\n")
+			else:
+				Profile.verbosePrint("skipping {0} as it does not match filePattern".format(file))
+		if not recursive:
+			break
+	print("Done")
