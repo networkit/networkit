@@ -30,7 +30,6 @@ Dy * GeneratorsTest.cpp
 #include "../RegularRingLatticeGenerator.h"
 #include "../StochasticBlockmodel.h"
 #include "../EdgeSwitchingMarkovChainGenerator.h"
-#include "../MultiscaleGenerator.h"
 #include "../LFRGenerator.h"
 
 
@@ -1001,13 +1000,6 @@ TEST_F(GeneratorsGTest, testLFRGeneratorWithRealData) {
 	gen.setPartition(C);
 	gen.setMu(mu);
 	gen.run();
-}
-
-TEST_F(GeneratorsGTest, tryMultiscaleGenerator) {
-	METISGraphReader reader;
-	Graph G = reader.read("input/lesmis.graph");
-	MultiscaleGenerator gen(G);
-	Graph R = gen.generate();
 }
 
 
