@@ -9,7 +9,7 @@ import networkit as kit
 import os as os
 import sys, traceback
 
-from . import multiprocessing
+from . import multiprocessing_helper
 from . import stat
 from . import plot
 
@@ -202,7 +202,7 @@ class Profile:
 	__verbose = False
 	__verboseLevel = 0
 	__verboseFilename = ""
-	__parallel = multiprocessing.numberOfProcessors()
+	__parallel = multiprocessing_helper.numberOfProcessors()
 
 
 	def __init__(self, G, token=object()):
@@ -461,7 +461,7 @@ class Profile:
 			templateMeasure = readfile("latex/measure.tex", False)
 
 		# generate plots
-		pool = multiprocessing.ThreadPool(self.__parallel, parallel)
+		pool = multiprocessing_helper.ThreadPool(self.__parallel, parallel)
 		for name in self.__measures:
 			category = self.__measures[name]["category"]
 			pool.put(
@@ -755,7 +755,7 @@ class Profile:
 
 	def __loadMeasures(self):
 		""" calculate the network measures and stats """
-		pool = multiprocessing.ThreadPool(self.__parallel, False)
+		pool = multiprocessing_helper.ThreadPool(self.__parallel, False)
 
 		for name in self.__measures:
 			measure = self.__measures[name]
