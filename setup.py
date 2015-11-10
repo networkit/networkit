@@ -71,13 +71,58 @@ if sys.platform == 'Windows' and not scons_available:
 	errorMessages.append("ERROR: Build system SCons is not installed. Please install and rerun")
 
 
+# compiler candidates
+# this list serves as a fallback when neither $CXX is set nor build.conf exists
+candidates = ["g++", "g++-5.2", "g++-5.1", "g++-5", "g++-4.9", "g++-4.8"]
+stdflag = None
+
+#######################################
+# read the build.conf IFF it exists
+#######################################
+if os.path.isfile("build.conf"):
+	import configparser
+	confPath = "build.conf"
+
+	conf = configparser.ConfigParser()
+	conf.read([confPath])     # read the configuration file
+
+	cppComp = conf.get("compiler", "cpp")
+	if not cppComp in candidates:
+		# insert specified compiler from build.conf at the beginning
+		candidates.insert(0, cppComp)
+	else:
+		# move candidate to the beginning
+		candidates.insert(0, candidates.pop(candidates.index(cppComp)))
+
+	## C++14 support
+	if stdflag is None:
+		try:
+			stdflag = conf.get("compiler", "std14")
+		except:
+			pass
+
+
 #######################################
 # determine and set compiler or exit if there is no suitable compiler
 #######################################
 # temporarily disable compiler check on windows.
 if not sys.platform == 'Windows':
-	candidates = ["g++", "g++-4.9", "g++-4.8"]  # , "g++-4.7"
-	cppcompiler = determineCompiler(candidates)
+	# check CXX environment variable for default C++ compiler
+	try:
+		default_candidate = os.environ["CXX"]
+		if not default_candidate in candidates:
+			# insert specified compiler from build.conf at the beginning
+			candidates.insert(0, default_candidate)
+		else:
+			# move candidate to the beginning
+			candidates.insert(0, candidates.pop(candidates.index(default_candidate)))
+	except:
+		pass
+	# check if the specified compiler is suitable
+	if stdflag is None or len(stdflag) == 0:
+		cppcompiler, stdflag = determineCompiler(candidates, ["c++14","c++11"])
+	else:
+		cppcompiler,_ = determineCompiler(candidates, [stdflag])
 	if cppcompiler is not None:
 		os.environ["CC"] = cppcompiler
 		os.environ["CXX"] = cppcompiler
@@ -124,6 +169,7 @@ def build_NetworKit():
 			# we assume, we're in a clone of the repository or in an archived copy of the repository and the user/developer has NOT created a build.conf
 			# and therefore needs the information about the compiler
 			comp_cmd.append("--compiler={0}".format(cppcompiler))
+			comp_cmd.append("--std={0}".format(stdflag))
 		print("initializing NetworKit compilation with: {0}".format(" ".join(comp_cmd)))
 		if not subprocess.call(comp_cmd) == 0:
 			print("scons returned an error, exiting setup.py")
@@ -131,7 +177,7 @@ def build_NetworKit():
 	else:
 		from mbe import MinimalBuildEnvironment
 		# minimal builder as fallback for scons
-		def_compile_flags = ["-c", "-std=c++11", "-Wall", "-fmessage-length=0", "-fPIC", "-fopenmp"]
+		def_compile_flags = ["-c", "-std={}".format(stdflag), "-Wall", "-fmessage-length=0", "-fPIC", "-fopenmp"]
 		release_compile_flags = ["-O3", "-DNDEBUG", "-DLOG_LEVEL=LOG_LEVEL_INFO"]
 		builder = MinimalBuildEnvironment(def_compile_flags,"",release_compile_flags,"","Opt", cppcompiler, "networkit/cpp")
 		builder.compile("Core")
@@ -248,8 +294,8 @@ else:
 modules = [Extension("_NetworKit",
 	src,
 	language = "c++",
-	extra_compile_args=["-fopenmp", "-std=c++11", "-O3", "-DNOGTEST"],
-	extra_link_args=["-fopenmp", "-std=c++11"],
+	extra_compile_args=["-fopenmp", "-std={}".format(stdflag), "-O3", "-DNOGTEST"],
+	extra_link_args=["-fopenmp", "-std={}".format(stdflag)],
 	libraries=["NetworKit-Core-{0}".format(optimize)],
 	library_dirs=["./"])]
 
