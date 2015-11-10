@@ -19,6 +19,12 @@ import math
 import fnmatch
 
 
+# colors
+colors = {
+	"green" : (0.003, 0.474, 0.435),
+	"red" : (0.501, 0, 0)
+}
+
 def readfile(filename, removeWS=False):
 	""" private helper function for file-loading """
 	with open(__file__[:__file__.rfind("/")+1] + filename, "r") as file:
@@ -334,7 +340,7 @@ class Profile:
 		return self.__measures[measure]["time"]
 
 
-	def output(self, outputType, directory, style="light", color=(0, 0, 1), parallel=False):
+	def output(self, outputType, directory, style="light", color=colors["green"], parallel=False):
 		""" outputs a computed profile to disk
 
 		Args:
@@ -404,12 +410,12 @@ class Profile:
 			file.write(result)
 
 
-	def show(self, style="light", color=(0, 0, 1), parallel=False):
+	def show(self, style="light", color=colors["green"], parallel=False):
 		""" display computed profile
 
 		Args:
 			style: style of generated output ("light")
-			color: mainly used color of given style
+			color: mainly used color of given style (RGB values in [0,1])
 			parallel: run some additional parts of the generation in parallel (experimental)
 		"""
 		try:
@@ -893,7 +899,7 @@ class Profile:
 				file.write(text)
 
 
-def walk(inputDir, outputDir, graphFormat, filePattern="*",  preset="default", config=None, outputType="HTML", style="light", color=(0, 0, 1), recursive=False, parallel=False):
+def walk(inputDir, outputDir, graphFormat, filePattern="*",  preset="default", config=None, outputType="HTML", style="light", color=colors["green"], recursive=False, parallel=False):
 	""" tests all files of a directory for the given conditions and generates a profile when matching
 
 	Args:
@@ -904,7 +910,7 @@ def walk(inputDir, outputDir, graphFormat, filePattern="*",  preset="default", c
 		config: object for fine-grained control over profile content (Config) -- overrides preset
 		outputType: profile output format ("HTML", "LaTeX")
 		style: style of generated output ("light")
-		color: mainly used color of given style
+		color: mainly used color of given style (RGB values in [0,1])
 		recursive: also search in subfolders for matching files
 		parallel: run some additional parts of the generation in parallel (experimental)
 		graphFormat: format of matching files (e.g.: Format.METIS)
