@@ -104,6 +104,7 @@ AddOption("--std",
 
 env = Environment()
 compiler = GetOption("compiler")
+stdflag = GetOption("std")
 
 if not os.path.isfile("build.conf") and not compiler == None:
 	#print("{0} has been passed via command line".format(compiler))
@@ -130,7 +131,6 @@ else:
 
 
 	## C++14 support
-	stdflag = GetOption("std")
 	if stdflag is None:
 		try:
 			stdflag = conf.get("compiler", "std14")
