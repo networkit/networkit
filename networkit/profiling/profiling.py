@@ -893,14 +893,15 @@ class Profile:
 				file.write(text)
 
 
-def walk(inputDir, outputDir, graphFormat, filePattern="*",  config=Config(), outputType="HTML", style="light", color=(0, 0, 1), recursive=False, parallel=False):
+def walk(inputDir, outputDir, graphFormat, filePattern="*",  preset="default", config=None, outputType="HTML", style="light", color=(0, 0, 1), recursive=False, parallel=False):
 	""" tests all files of a directory for the given conditions and generates a profile when matching
 
 	Args:
 		inputDir: the directory to search
 		filePattern: specify accepted file names, e.g.: *.METIS.graph
 		outputDir: directory to write the generated profiles
-		config: object to control some aspects of the generation behaviour (Config)
+		preset: config preset ("minimal", "default", "full")
+		config: object for fine-grained control over profile content (Config) -- overrides preset
 		outputType: profile output format ("HTML", "LaTeX")
 		style: style of generated output ("light")
 		color: mainly used color of given style
@@ -908,6 +909,10 @@ def walk(inputDir, outputDir, graphFormat, filePattern="*",  config=Config(), ou
 		parallel: run some additional parts of the generation in parallel (experimental)
 		graphFormat: format of matching files (e.g.: Format.METIS)
 	"""
+
+	# if no custom config is given, use a preconfigured config according to preset name
+	if not config:
+		config = Config.createConfig(preset)
 
 	if not os.path.isdir(outputDir):
 		os.mkdir(outputDir)
