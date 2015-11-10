@@ -222,6 +222,7 @@ Credits
 - Andreas Bilke
 - Simon Bischof
 - Guido Brückner
+- Mark Erb
 - Kolja Esders
 - Patrick Flick
 - Michael Hamann
