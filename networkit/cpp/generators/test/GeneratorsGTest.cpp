@@ -269,7 +269,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	EXPECT_EQ(G.numberOfEdges(), comparison.numberOfEdges());
 
 	//heuristic criterion: Number of edges may change, but should not change much
-	EXPECT_NEAR(G.numberOfEdges(), initialEdgeCount, initialEdgeCount/10);
+	EXPECT_NEAR(G.numberOfEdges(), initialEdgeCount, initialEdgeCount/5);
 }
 
 /**
