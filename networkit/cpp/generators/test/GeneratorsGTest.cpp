@@ -242,7 +242,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	Graph G = HyperbolicGenerator().generate(angles, radii, r, R);
 	count initialEdgeCount = G.numberOfEdges();
 	count expected = n*HyperbolicSpace::getExpectedDegree(n, alpha, R)*0.5;
-	EXPECT_NEAR(initialEdgeCount, expected, expected/10);
+	EXPECT_NEAR(initialEdgeCount, expected, expected/5);
 	GraphUpdater gu(G);
 	std::vector<GraphEvent> stream;
 
@@ -269,7 +269,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	EXPECT_EQ(G.numberOfEdges(), comparison.numberOfEdges());
 
 	//heuristic criterion: Number of edges may change, but should not change much
-	EXPECT_NEAR(G.numberOfEdges(), initialEdgeCount, initialEdgeCount/10);
+	EXPECT_NEAR(G.numberOfEdges(), initialEdgeCount, initialEdgeCount/5);
 }
 
 /**
@@ -699,7 +699,7 @@ TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
 	Graph G = gen.generate();
 	EXPECT_EQ(G.numberOfNodes(), n);
 	EXPECT_TRUE(G.checkConsistency());
-	EXPECT_NEAR(G.numberOfEdges(), m, m/10);
+	EXPECT_NEAR(G.numberOfEdges(), m, m/5);
 }
 
 TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithSequentialQuadtree) {
@@ -730,7 +730,7 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithSequentialQuadtree) {
 	Graph G = gen.generate(angles, radii, quad, R);
 	count expected = n*HyperbolicSpace::getExpectedDegree(n, alpha, R)*0.5;
 	EXPECT_EQ(n, G.numberOfNodes());
-	EXPECT_NEAR(G.numberOfEdges(), expected, expected/10);
+	EXPECT_NEAR(G.numberOfEdges(), expected, expected/5);
 	EXPECT_TRUE(G.checkConsistency());
 }
 
@@ -762,7 +762,7 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithDataFromParallelQuadtree) {
 	Graph G = gen.generate(angles, radii, r, R);
 	count expected = n*HyperbolicSpace::getExpectedDegree(n, alpha, R)*0.5;
 	EXPECT_EQ(n, G.numberOfNodes());
-	EXPECT_NEAR(G.numberOfEdges(), expected, expected/10);
+	EXPECT_NEAR(G.numberOfEdges(), expected, expected/5);
 	EXPECT_TRUE(G.checkConsistency());
 }
 
@@ -795,7 +795,7 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithParallelQuadtree) {
 	Graph G = gen.generate(angles, radii, quad, R);
 	count expected = n*HyperbolicSpace::getExpectedDegree(n, alpha, R)*0.5;
 	EXPECT_EQ(n, G.numberOfNodes());
-	EXPECT_NEAR(G.numberOfEdges(), expected, expected/10);
+	EXPECT_NEAR(G.numberOfEdges(), expected, expected/5);
 	EXPECT_TRUE(G.checkConsistency());
 	omp_set_num_threads(oldthreads);
 }
@@ -809,7 +809,7 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorConsistency) {
 	count m = n*k/2;
 	HyperbolicGenerator gen(n, k);
 	Graph G = gen.generate();
-	EXPECT_NEAR(G.numberOfEdges(), m, m/10);
+	EXPECT_NEAR(G.numberOfEdges(), m, m/5);
 	ASSERT_TRUE(G.checkConsistency());
 }
 
@@ -855,7 +855,7 @@ TEST_F(GeneratorsGTest, tryGiganticCollectionOfHyperbolicUnitDiskGraphs) {
 		count m = n*k/2;
 		HyperbolicGenerator gen(n, k, 7);
 		Graph G = gen.generate();
-		EXPECT_NEAR(G.numberOfEdges(), m, m/10);
+		EXPECT_NEAR(G.numberOfEdges(), m, m/5);
 		EXPECT_TRUE(G.checkConsistency());
 		k *= 2;
 	}

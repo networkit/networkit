@@ -43,8 +43,7 @@ def collectExternalPackageStatus():
 		warnMessages.append("WARNING: tabulate is not installed; to use all of networkit, please install tabulate")
 	return warnMessages
 
-# candidates = ["g++","g++-4.9", "g++-4.8", "g++-4.7"]
-def determineCompiler(candidates):
+def determineCompiler(candidates, stdFlags):
 	""" This function tests a list of candidates, whether they are sufficient to the requirements of 
 		NetworKit and focuses on C++11 and OpenMP support."""
 	#prepare sample.cpp file necessary to determine gcc
@@ -65,7 +64,14 @@ def determineCompiler(candidates):
 	******************************************************************************/
 	#include <omp.h>
 	#include <iostream>
+
+	[[deprecated("use the function body directly instead of wrapping it in a function.")]]
+	void helloWorld() {
+		std::cout << "Hello world" << std::endl;
+	}
+
 	int main (int argc, char *argv[]) {
+		helloWorld();
 		int nthreads, tid;
 		/* Fork a team of threads giving them their own copies of variables */
 		#pragma omp parallel private(nthreads, tid)
@@ -84,18 +90,27 @@ def determineCompiler(candidates):
 
 	compiler_version_satisfied = False
 	compiler = None
+	stdflag = None
 	v = 0
-	while not compiler_version_satisfied and v < len(candidates):
-		try:
-			if subprocess.call([candidates[v],"-o","test_build","-std=c++11","-fopenmp","sample.cpp"],stdout=DEVNULL,stderr=DEVNULL) == 0:
-				compiler_version_satisfied = True
-				compiler = "{0}".format(candidates[v])
-				#print("your latest gcc is {0}".format(compiler))
-		except:
-			foo = 0
-			#print("{0} is not installed".format(candidates[v]))
-		v += 1
+	i = 0
+	while not compiler_version_satisfied and i < len(stdFlags):
+		while not compiler_version_satisfied and v < len(candidates):
+			#print("testing\t{}".format(candidates[v]))
+			try:
+				if subprocess.call([candidates[v],"-o","test_build","-std={}".format(stdFlags[i]),"-fopenmp","sample.cpp"],stdout=DEVNULL,stderr=DEVNULL) == 0:
+					compiler_version_satisfied = True
+					compiler = candidates[v]
+					stdflag = stdFlags[i]
+					print("your latest gcc is {0}".format(candidates[v]))
+			except:
+				#print("{0} is not installed".format(candidates[v]))
+				pass
+			v += 1
+		i += 1
+		v = 0
+
 	os.remove("sample.cpp")
 	if compiler_version_satisfied:
 		os.remove("test_build")
-	return compiler
+	return compiler, stdflag
+
