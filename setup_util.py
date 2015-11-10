@@ -107,8 +107,10 @@ def determineCompiler(candidates, stdFlags):
 				pass
 			v += 1
 		i += 1
+		v = 0
 
 	os.remove("sample.cpp")
 	if compiler_version_satisfied:
 		os.remove("test_build")
 	return compiler, stdflag
+
