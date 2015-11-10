@@ -50,7 +50,7 @@ try:
 
 
 	def _initOverlay(name, data):
-		""" private helper function for ipython/jupyther-notebook hack: create content of overlay """
+		""" private helper function for ipython/jupyter-notebook hack: create content of overlay """
 		result = """
 			{
 				var element = document.getElementById('NetworKit_""" + name + """');
@@ -210,7 +210,7 @@ class Profile:
 
 
 	@classmethod
-	def walk(cls, inputDir, filePattern="*", outputDir=None, config=Config(), outputType="HTML", style="light", color=(0, 0, 1), recursive=False, parallel=False, graphFormat=None):
+	def walk(cls, inputDir, outputDir, graphFormat, filePattern="*",  config=Config(), outputType="HTML", style="light", color=(0, 0, 1), recursive=False, parallel=False):
 		""" tests all files of a directory for the given conditions and generates a profile when matching
 
 		Args:
@@ -226,12 +226,8 @@ class Profile:
 			graphFormat: format of matching files (e.g.: Format.METIS)
 		"""
 
-		if outputDir is None:
-			raise ValueError("output directory (parameter: outputDir) not specified")
-		elif not os.path.isdir(outputDir):
+		if not os.path.isdir(outputDir):
 			os.mkdir(outputDir)
-		if graphFormat is None:
-			raise ValueError("no graph format has been specified")
 
 		for (dirpath, dirnames, filenames) in os.walk(inputDir):
 			for filename in filenames:
