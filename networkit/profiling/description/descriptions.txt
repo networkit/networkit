@@ -1,0 +1,13 @@
+[kernel descriptions]
+Centrality.Degree = Node centrality index which ranks nodes by their degree.
+Centrality.CoreDecomposition = abcde 
+Centrality.ClusteringCoefficient = foo
+Centrality.PageRank = bar
+Centrality.EigenvectorCentrality = Computes the leading eigenvector of the graph's adjacency matrix (normalized in 2-norm).
+Centrality.KPath = test
+Centrality.Katz = 42
+Centrality.Betweenness = placeholder
+Centrality.Closeness = stakeholder
+Partition.Communities = communities
+Partition.ConnectedComponents = cc
+Partition.CoreDecomposition = shells

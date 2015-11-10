@@ -8,6 +8,7 @@ import networkit as kit
 
 import os as os
 import sys, traceback
+import configparser
 
 from . import multiprocessing_helper
 from . import stat
@@ -25,13 +26,17 @@ colors = {
 	"red" : (0.501, 0, 0)
 }
 
+def getfilepath(filename):
+	return __file__[:__file__.rfind("/")+1] + filename
+
 def readfile(filename, removeWS=False):
 	""" private helper function for file-loading """
-	with open(__file__[:__file__.rfind("/")+1] + filename, "r") as file:
+	with open(getfilepath(filename), "r") as file:
 		result = file.read()
 		if removeWS:
 			result = " ".join(result.split())
 		return result
+
 
 
 try:
@@ -439,6 +444,8 @@ class Profile:
 
 	def __format(self, outputType, directory, filename, style, color, pageIndex, parallel):
 		""" layouts the profile	"""
+		confParser = configparser.ConfigParser()
+		confParser.read(getfilepath("description/descriptions.txt"))
 		theme = plot.Theme()
 		theme.set(style, color)
 
@@ -635,8 +642,9 @@ class Profile:
 
 			description = "N/A"
 			try:
-				description = readfile("description/" + key + ".txt")
+				description = confParser.get("kernel descriptions", key)
 			except:
+				print("couldn't read description for\t{}".format(key))
 				pass
 
 			extentions = ""
