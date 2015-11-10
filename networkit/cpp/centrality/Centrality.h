@@ -39,9 +39,10 @@ public:
 
 	/**
 	 * Get a vector containing the betweenness score for each node in the graph.
+	 * @param moveOut Return the actual internal data instead of a copy. Resets the hasRun-state. Default: false.
 	 * @return The betweenness scores calculated by @link run().
 	 */
-	virtual std::vector<double> scores();
+	virtual std::vector<double> scores(bool moveOut = false);
 
 	/**
 	 * Get a vector containing the edge betweenness score for each edge in the graph.
