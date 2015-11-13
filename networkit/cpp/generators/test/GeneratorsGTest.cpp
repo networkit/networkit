@@ -356,9 +356,11 @@ TEST_F(GeneratorsGTest, generatetBarabasiAlbertGeneratorGraph) {
 TEST_F(GeneratorsGTest, testDynamicPathGenerator) {
 	DynamicPathGenerator gen;
 	auto stream = gen.generate(42);
+#if LOG_LEVEL == LOG_LEVEL_TRACE
 	for (auto ev : stream) {
 		TRACE(ev.toString());
 	}
+#endif
 }
 
 TEST_F(GeneratorsGTest, testErdosRenyiGenerator) {
