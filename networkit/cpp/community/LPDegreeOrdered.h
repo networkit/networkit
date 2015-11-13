@@ -35,7 +35,7 @@ public:
 	/**
 	 * Detect communities.
 	 */
-	virtual void run();
+	virtual void run() override;
 
 	/**
 	* Get number of iterations in last run.
@@ -44,7 +44,7 @@ public:
 	*/
 	virtual count numberOfIterations();
 
-	virtual std::string toString();
+	std::string toString() const override;
 
 };
 

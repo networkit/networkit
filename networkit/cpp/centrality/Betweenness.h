@@ -38,7 +38,7 @@ public:
 	/*
 	* Returns the maximum possible Betweenness a node can have in a graph with the same amount of nodes (=a star)
 	*/
-	double maximum();
+	double maximum() override;
 
 };
 
