@@ -183,7 +183,7 @@ Graph GraphBuilder::toGraph(bool autoCompleteEdges, bool parallel) {
 	
 	reset();
 
-	return std::move(G);
+	return G;
 }
 
 void GraphBuilder::toGraphDirectSwap(Graph& G) {

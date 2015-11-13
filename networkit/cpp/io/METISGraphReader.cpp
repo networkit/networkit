@@ -107,7 +107,7 @@ Graph METISGraphReader::read(const std::string& path) {
 	}
 
 	INFO("\n[DONE]\n");
-	return std::move(G);
+	return G;
 }
 
 } /* namespace NetworKit */
