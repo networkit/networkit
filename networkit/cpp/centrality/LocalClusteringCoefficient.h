@@ -50,7 +50,7 @@ public:
 	*
 	* @return The maximum centrality score.
 	*/
-	virtual double maximum();
+	virtual double maximum() override;
 protected:
 	bool turbo;
 

@@ -15,8 +15,6 @@ namespace Aux {
 		void assureRunning();
 
 		bool isRunning();
-	private:
-		uint64_t caller;
 	};
 	
 namespace SignalHandling {

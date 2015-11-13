@@ -78,9 +78,9 @@ count Matrix::numberOfColumns() const {
 }
 
 double Matrix::operator()(const index &i, const index &j) const {
-	if (i < 0 || i >= numberOfRows()) {
+	if (i >= numberOfRows()) {
 		throw std::out_of_range("Matrix(i,j): Row index out of range");
-	} else if (j< 0 || j >= numberOfColumns()) {
+	} else if (j >= numberOfColumns()) {
 		throw std::out_of_range("Matrix(i,j): Column index out of range");
 	}
 
@@ -88,10 +88,10 @@ double Matrix::operator()(const index &i, const index &j) const {
 }
 
 void Matrix::setValue(const index &i, const index &j, const double &value) {
-	if (i < 0 || i >= numberOfRows()) {
+	if (i >= numberOfRows()) {
 		throw std::out_of_range("Matrix::setValue(const index &i, const index &j, const double &value): "
 																						"Row index out of range");
-	} else if (j< 0 || j >= numberOfColumns()) {
+	} else if (j >= numberOfColumns()) {
 		throw std::out_of_range("Matrix::setValue(const index &i, const index &j, const double &value): "
 																						"Column index out of range");
 	}
@@ -100,7 +100,7 @@ void Matrix::setValue(const index &i, const index &j, const double &value) {
 }
 
 Vector Matrix::row(const index &i) const {
-	if (i < 0 || i >= numberOfRows()) {
+	if (i >= numberOfRows()) {
 		throw std::out_of_range("Matrix::row(const index &i): Row index out of range");
 	}
 
@@ -113,7 +113,7 @@ Vector Matrix::row(const index &i) const {
 }
 
 Vector Matrix::column(const index &j) const {
-	if (j < 0 || j >= numberOfColumns()) {
+	if (j >= numberOfColumns()) {
 		throw std::out_of_range("Matrix::column(const index &j): Column index out of range");
 	}
 
