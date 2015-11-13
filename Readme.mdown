@@ -234,6 +234,7 @@ Credits
 - Mustafa Özdayi
 - Marcel Radermacher
 - Klara Reichard
+- Matteo Riondato
 - Marvin Ritter
 - Aleksejs Sazonovs
 - Arie Slobbe
