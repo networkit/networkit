@@ -29,8 +29,12 @@ Graph MultiscaleGenerator::generate() {
 
 
 	// @param[in]	u_	coarse node
-	auto replicateSubgraph = [&](node u_) {
+	auto replicateSubgraph = [&](node u_, index level) {
 		std::map<node, node> localNodeMap;
+		// for (node u : reverseNodeMapping[level][u_]) {
+
+		//}
+
 
 
 	};
