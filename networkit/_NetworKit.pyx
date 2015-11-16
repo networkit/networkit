@@ -227,7 +227,7 @@ cdef extern from "cpp/graph/Graph.h":
 		_Graph(count, bool, bool) except +
 		_Graph(const _Graph& other) except +
 		_Graph(const _Graph& other, bool weighted, bool directed) except +
-		void indexEdges() except +
+		void indexEdges(bool) except +
 		bool hasEdgeIds() except +
 		edgeid edgeId(node, node) except +
 		count numberOfNodes() except +
@@ -400,12 +400,17 @@ cdef class Graph:
 		"""
 		return Graph().setThis(self._this.copyNodes())
 
-	def indexEdges(self):
+	def indexEdges(self, bool force = False):
 		"""
 		Assign integer ids to edges.
 
+		Parameters
+		----------
+		force : bool
+			Force re-indexing of edges.
+
 		"""
-		self._this.indexEdges()
+		self._this.indexEdges(force)
 
 	def hasEdgeIds(self):
 		"""
@@ -2453,23 +2458,6 @@ cdef class LFRGenerator(Algorithm):
 
 
 
-
-
-cdef extern from "cpp/generators/MultiscaleGenerator.h":
-	cdef cppclass _MultiscaleGenerator "NetworKit::MultiscaleGenerator":
-		_MultiscaleGenerator(_Graph) except +
-		_Graph generate() except +
-
-cdef class MultiscaleGenerator:
-	""" TODO
-	 """
-	cdef _MultiscaleGenerator* _this
-
-	def __cinit__(self, Graph G):
-		self._this = new _MultiscaleGenerator(G._this)
-
-	def generate(self):
-		return Graph().setThis(self._this.generate());
 
 
 # Module: graphio

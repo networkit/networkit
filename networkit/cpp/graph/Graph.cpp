@@ -902,7 +902,7 @@ Graph Graph::transpose() const {
 	}
 	GTranspose.t = t;
 	GTranspose.setName(getName() + "Transpose");
-	return std::move(GTranspose);
+	return GTranspose;
 }
 
 Graph Graph::toUndirected() const {
@@ -910,7 +910,7 @@ Graph Graph::toUndirected() const {
 		throw std::runtime_error("this graph is already undirected");
 	}
 	Graph U(*this, weighted, false);
-	return std::move(U);
+	return U;
 }
 
 bool Graph::checkConsistency() const {

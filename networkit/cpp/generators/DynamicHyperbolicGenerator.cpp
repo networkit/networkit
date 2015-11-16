@@ -81,8 +81,7 @@ Graph DynamicHyperbolicGenerator::getGraph() const {
 }
 
 std::vector<Point<float> > DynamicHyperbolicGenerator::getCoordinates() const {
-	count n = angles.size();
-	assert(radii.size() == n);
+	assert(radii.size() == angles.size());
 	std::vector<Point<float> > result;
 	for (index i = 0; i < angles.size(); i++) {
 		Point2D<double> coord = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
@@ -93,8 +92,7 @@ std::vector<Point<float> > DynamicHyperbolicGenerator::getCoordinates() const {
 }
 
 std::vector<Point<float> > DynamicHyperbolicGenerator::getHyperbolicCoordinates() const {
-	count n = angles.size();
-	assert(radii.size() == n);
+	assert(radii.size() == angles.size());
 	std::vector<Point<float> > result;
 	for (index i = 0; i < angles.size(); i++) {
 		Point2D<double> coord = HyperbolicSpace::polarToCartesian(angles[i], HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[i]));

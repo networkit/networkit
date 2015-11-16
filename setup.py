@@ -315,6 +315,7 @@ setup(
 	long_description= version.long_description,
 	license			= version.license,
 	packages		= find_packages(),
+	package_data	= {'networkit.profiling': ['html/*','latex/*','description/*']},
 	keywords		= version.keywords,
 	platforms		= version.platforms,
 	classifiers		= version.classifiers,

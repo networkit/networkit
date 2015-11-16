@@ -25,6 +25,8 @@ void TriangleEdgeScore::run() {
 		return G.degree(u) > G.degree(v) || (G.degree(u) == G.degree(v) && u < v);
 	};
 
+	Aux::Timer filterEdgesTimer;
+	filterEdgesTimer.start();
 	// Store in-edges explicitly. Idea: all nodes have (relatively) low in-degree
 	std::vector<index> inBegin(G.upperNodeIdBound() + 1);
 	std::vector<node> inEdges(G.numberOfEdges());
@@ -44,11 +46,17 @@ void TriangleEdgeScore::run() {
 		inBegin[G.upperNodeIdBound()] = pos;
 	}
 
+	filterEdgesTimer.stop();
+	INFO("Needed ", filterEdgesTimer.elapsedMilliseconds(), "ms for filtering edges");
+
 	//Edge attribute: triangle count
 	std::vector<count> triangleCount(G.upperEdgeIdBound(), 0);
 	// Store triangle counts of edges incident to the current node indexed by the adjacent node
 	// none indicates that the edge to that node does not exist
 	std::vector<std::vector<count> > incidentTriangleCount(omp_get_max_threads(), std::vector<count>(G.upperNodeIdBound(), none));
+
+	Aux::Timer triangleTimer;
+	triangleTimer.start();
 
 	G.balancedParallelForNodes([&](node u) {
 		auto tid = omp_get_thread_num();
@@ -93,6 +101,9 @@ void TriangleEdgeScore::run() {
 			incidentTriangleCount[tid][v] = none;
 		});
 	});
+
+	triangleTimer.stop();
+	INFO("Needed ", triangleTimer.elapsedMilliseconds(), "ms for counting triangles");
 
 	scoreData = std::move(triangleCount);
 	hasRun = true;

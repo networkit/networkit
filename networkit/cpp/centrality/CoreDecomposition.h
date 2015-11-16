@@ -31,6 +31,9 @@ public:
 	/**
 	 * Create CoreDecomposition class for graph @a G. The graph may not contain self-loops.
 	 *
+	 * Contains the parallel algorithm by
+	 * Dasari, N.S.; Desh, R.; Zubair, M., "ParK: An efficient algorithm for k-core decomposition on multicore processors," in Big Data (Big Data), * 2014 IEEE International Conference on , vol., no., pp.9-16, 27-30 Oct. 2014 doi: 10.1109/BigData.2014.7004366
+	 *
 	 * @param G The graph.
 	 */
 	CoreDecomposition(const Graph& G, bool enforceBucketQueueAlgorithm = false);

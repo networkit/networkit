@@ -30,7 +30,6 @@ Dy * GeneratorsTest.cpp
 #include "../RegularRingLatticeGenerator.h"
 #include "../StochasticBlockmodel.h"
 #include "../EdgeSwitchingMarkovChainGenerator.h"
-#include "../MultiscaleGenerator.h"
 #include "../LFRGenerator.h"
 
 
@@ -357,9 +356,11 @@ TEST_F(GeneratorsGTest, generatetBarabasiAlbertGeneratorGraph) {
 TEST_F(GeneratorsGTest, testDynamicPathGenerator) {
 	DynamicPathGenerator gen;
 	auto stream = gen.generate(42);
+#if LOG_LEVEL == LOG_LEVEL_TRACE
 	for (auto ev : stream) {
 		TRACE(ev.toString());
 	}
+#endif
 }
 
 TEST_F(GeneratorsGTest, testErdosRenyiGenerator) {
@@ -1001,13 +1002,6 @@ TEST_F(GeneratorsGTest, testLFRGeneratorWithRealData) {
 	gen.setPartition(C);
 	gen.setMu(mu);
 	gen.run();
-}
-
-TEST_F(GeneratorsGTest, tryMultiscaleGenerator) {
-	METISGraphReader reader;
-	Graph G = reader.read("input/lesmis.graph");
-	MultiscaleGenerator gen(G);
-	Graph R = gen.generate();
 }
 
 

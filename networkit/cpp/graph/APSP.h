@@ -31,7 +31,7 @@ public:
 	virtual ~APSP() = default;
 
 	/** Computes the shortest paths from each node to all other nodes. */
-	void run();
+	void run() override;
 
 	/**
 	* @return string representation of algorithm and parameters.
@@ -56,7 +56,7 @@ public:
 	/**
 	* @return True if algorithm can run multi-threaded.
 	*/
-	virtual bool isParallel() const {return true;}
+	virtual bool isParallel() const override { return true; }
 
 
 protected:
