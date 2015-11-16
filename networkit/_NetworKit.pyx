@@ -2457,6 +2457,28 @@ cdef class LFRGenerator(Algorithm):
 		return gen
 
 
+cdef extern from "cpp/generators/MultiscaleGenerator.h":
+	cdef cppclass _MultiscaleGenerator "NetworKit::MultiscaleGenerator":
+		_MultiscaleGenerator(_Graph O) except +
+
+
+cdef class MultiscaleGenerator:
+	"""
+	TODO:
+	"""
+	cdef _MultiscaleGenerator *_this
+
+	def __cinit__(self, Graph O):
+		self._this = new _MultiscaleGenerator(O._this)
+		self.O = O	# store reference to input graph to not let it be garbage-collection
+
+	def generate(self):
+		pass
+
+	@classmethod
+	def fit(cls, Graph G):
+		return cls(G)
+
 
 
 
