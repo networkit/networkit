@@ -24,7 +24,12 @@ public:
 	/**
 	 * @param[in] G Graph for which matching is computed.
 	 */
-	PathGrowingMatcher(Graph& G);
+	PathGrowingMatcher(const Graph& G);
+
+	/**
+	 * @param[in] G Graph for which matching is computed.
+	 */
+	PathGrowingMatcher(const Graph& G, const std::vector<double>& edgeScores);
 
 	/**
 	 * Runs path growing algorithm to compute approximate maximum weight matching
