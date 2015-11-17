@@ -30,8 +30,9 @@ public:
 	 * @param numberIterations Number of iterations in each system.
 	 * @param omega attenuation factor influencing convergence speed.
 	 * @param norm The norm factor of the extended algebraic distance.
+	 * @param withEdgeScores	 calculate array of scores for edges {u,v} that equal ad(u,v)
 	 */
-	AlgebraicDistance(const Graph& G, count numberSystems=10, count numberIterations=30, double omega=0.5, index norm=0);
+	AlgebraicDistance(const Graph& G, count numberSystems=10, count numberIterations=30, double omega=0.5, index norm=0, bool withEdgeScores=false);
 
 	/**
 	 *
@@ -59,6 +60,7 @@ protected:
 	double omega; //!< attenuation factor influencing the speed of convergence
 	index norm;
 	const index MAX_NORM = 0;
+	bool withEdgeScores;
 
 	std::vector<double> loads; //!< loads[u*numSystems..(u+1)*numSystems]: loads for node u
 

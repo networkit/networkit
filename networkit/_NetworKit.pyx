@@ -244,6 +244,9 @@ cdef extern from "cpp/graph/Graph.h":
 		node addNode() except +
 		void removeNode(node u) except +
 		bool hasNode(node u) except +
+		void restoreNode(v) except +
+		void append(_Graph) except +
+		void merge(_Graph) except +
 		void addEdge(node u, node v, edgeweight w) except +
 		void setWeight(node u, node v, edgeweight w) except +
 		void removeEdge(node u, node v) except +
@@ -576,6 +579,25 @@ cdef class Graph:
 			If the Graph has the node `u`
 		"""
 		return self._this.hasNode(u)
+
+	def append(self, Graph G):
+		""" Appends another graph to this graph as a new subgraph. Performs node id remapping.
+
+		Parameters
+		----------
+		G : Graph
+		"""
+		self._this.append(G._this)
+
+	def merge(self, Graph G):
+		""" Modifies this graph to be the union of it and another graph.
+			Nodes with the same ids are identified with each other.
+
+		Parameters
+		----------
+		G : Graph
+		"""
+		self._this.merge(G._this)
 
 	def addEdge(self, u, v, w=1.0):
 		""" Insert an undirected edge between the nodes `u` and `v`. If the graph is weighted you can optionally
@@ -6503,7 +6525,7 @@ cdef class VDegreeIndex(LinkPredictor):
 cdef extern from "cpp/linkprediction/AlgebraicDistanceIndex.h":
 	cdef cppclass _AlgebraicDistanceIndex "NetworKit::AlgebraicDistanceIndex"(_LinkPredictor):
 		_AlgebraicDistanceIndex(count numberSystems, count numberIterations, double omega, index norm) except +
-		_AlgebraicDistanceIndex(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm) except +
+		_AlgebraicDistanceIndex(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm, ) except +
 		void preprocess() except +
 		double run(node u, node v) except +
 
@@ -7792,7 +7814,7 @@ cdef class JaccardDistance:
 
 cdef extern from "cpp/distance/AlgebraicDistance.h":
 	cdef cppclass _AlgebraicDistance "NetworKit::AlgebraicDistance":
-		_AlgebraicDistance(_Graph G, count numberSystems, count numberIterations, double omega, index norm) except +
+		_AlgebraicDistance(_Graph G, count numberSystems, count numberIterations, double omega, index norm, bool withEdgeScores) except +
 		void preprocess() except +
 		double distance(node, node) except +
 		vector[double] getEdgeAttribute() except +
@@ -7816,14 +7838,16 @@ cdef class AlgebraicDistance:
 	 	attenuation factor in [0,1] influencing convergence speed.
 	norm : index
 		The norm factor of the extended algebraic distance.
+	withEdgeScores : bool
+		calculate array of scores for edges {u,v} that equal ad(u,v)
 	"""
 
 	cdef _AlgebraicDistance* _this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, count numberSystems=10, count numberIterations=30, double omega=0.5, index norm=0):
+	def __cinit__(self, Graph G, count numberSystems=10, count numberIterations=30, double omega=0.5, index norm=0, bool withEdgeScores=False):
 		self._G = G
-		self._this = new _AlgebraicDistance(G._this, numberSystems, numberIterations, omega, norm)
+		self._this = new _AlgebraicDistance(G._this, numberSystems, numberIterations, omega, norm, withEdgeScores)
 
 	def __dealloc__(self):
 		del self._this

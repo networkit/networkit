@@ -479,6 +479,23 @@ public:
 	void restoreNode(node v);
 
 
+	// SET OPERATIONS
+
+	/**
+	 * Appends another graph to this graph as a new subgraph. Performs node
+	 * id remapping.
+	 * @param G [description]
+	 */
+	void append(const Graph& G);
+
+	/**
+	 * Modifies this graph to be the union of it and another graph.
+	 * Nodes with the same ids are identified with each other.
+	 * @param G [description]
+	 */
+	void merge(const Graph& G);
+
+
 	/** NODE PROPERTIES **/
 
 	/**
@@ -1494,6 +1511,9 @@ void Graph::DFSEdgesFrom(node r, L handle) const {
 		});
 	} while (!s.empty());
 }
+
+
+
 
 } /* namespace NetworKit */
 
