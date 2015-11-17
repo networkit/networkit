@@ -6501,7 +6501,7 @@ cdef class VDegreeIndex(LinkPredictor):
 cdef extern from "cpp/linkprediction/AlgebraicDistanceIndex.h":
 	cdef cppclass _AlgebraicDistanceIndex "NetworKit::AlgebraicDistanceIndex"(_LinkPredictor):
 		_AlgebraicDistanceIndex(count numberSystems, count numberIterations, double omega, index norm) except +
-		_AlgebraicDistanceIndex(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm) except +
+		_AlgebraicDistanceIndex(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm, ) except +
 		void preprocess() except +
 		double run(node u, node v) except +
 
@@ -7790,7 +7790,7 @@ cdef class JaccardDistance:
 
 cdef extern from "cpp/distance/AlgebraicDistance.h":
 	cdef cppclass _AlgebraicDistance "NetworKit::AlgebraicDistance":
-		_AlgebraicDistance(_Graph G, count numberSystems, count numberIterations, double omega, index norm) except +
+		_AlgebraicDistance(_Graph G, count numberSystems, count numberIterations, double omega, index norm, bool withEdgeScores) except +
 		void preprocess() except +
 		double distance(node, node) except +
 		vector[double] getEdgeAttribute() except +
@@ -7814,14 +7814,16 @@ cdef class AlgebraicDistance:
 	 	attenuation factor in [0,1] influencing convergence speed.
 	norm : index
 		The norm factor of the extended algebraic distance.
+	withEdgeScores : bool
+		calculate array of scores for edges {u,v} that equal ad(u,v)
 	"""
 
 	cdef _AlgebraicDistance* _this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, count numberSystems=10, count numberIterations=30, double omega=0.5, index norm=0):
+	def __cinit__(self, Graph G, count numberSystems=10, count numberIterations=30, double omega=0.5, index norm=0, bool withEdgeScores=False):
 		self._G = G
-		self._this = new _AlgebraicDistance(G._this, numberSystems, numberIterations, omega, norm)
+		self._this = new _AlgebraicDistance(G._this, numberSystems, numberIterations, omega, norm, withEdgeScores)
 
 	def __dealloc__(self):
 		del self._this
