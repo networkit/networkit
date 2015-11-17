@@ -244,6 +244,9 @@ cdef extern from "cpp/graph/Graph.h":
 		node addNode() except +
 		void removeNode(node u) except +
 		bool hasNode(node u) except +
+		void restoreNode(v) except +
+		void append(_Graph) except +
+		void merge(_Graph) except +
 		void addEdge(node u, node v, edgeweight w) except +
 		void setWeight(node u, node v, edgeweight w) except +
 		void removeEdge(node u, node v) except +
@@ -576,6 +579,25 @@ cdef class Graph:
 			If the Graph has the node `u`
 		"""
 		return self._this.hasNode(u)
+
+	def append(self, Graph G):
+		""" Appends another graph to this graph as a new subgraph. Performs node id remapping.
+
+		Parameters
+		----------
+		G : Graph
+		"""
+		self._this.append(G._this)
+
+	def merge(self, Graph G):
+		""" Modifies this graph to be the union of it and another graph.
+			Nodes with the same ids are identified with each other.
+
+		Parameters
+		----------
+		G : Graph
+		"""
+		self._this.merge(G._this)
 
 	def addEdge(self, u, v, w=1.0):
 		""" Insert an undirected edge between the nodes `u` and `v`. If the graph is weighted you can optionally

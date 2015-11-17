@@ -932,7 +932,24 @@ bool Graph::checkConsistency() const {
 }
 
 void Graph::append(const Graph& G) {
-	
+	std::map<node,node> nodeMap;
+	G.forNodes([&](node u) {
+		node u_ = this->addNode();
+		nodeMap[u] = u_;
+	});
+	G.forEdges([&](node u, node v){
+		this->addEdge(nodeMap[u], nodeMap[v]);
+	});
+}
+
+void Graph::merge(const Graph& G) {
+	// TODO: handle edge weights
+	G.forEdges([&](node u, node v) {
+		// naive implementation takes $O(m \cdot d)$ for $m$ edges and max. degree $d$ in this graph
+		if (!this->hasEdge(u, v)) {
+			this->addEdge(u, v);
+		}
+	});
 }
 
 
