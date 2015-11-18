@@ -2,7 +2,6 @@
  * Matching.cpp
  *
  *  Created on: 03.12.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "Matching.h"
@@ -14,7 +13,7 @@ Matching::Matching(count z) : data(z, none) {
 }
 
 bool Matching::isMatched(node u) const {
-	return (this->data[u] != none);
+	return (this->data.at(u) != none);
 }
 
 bool Matching::isProper(const Graph& G) const {
@@ -29,7 +28,7 @@ bool Matching::isProper(const Graph& G) const {
 	// check if entries are symmetric
 
 	G.forNodes([&](node v) {
-		sym = ((data[v] == none) || (data[data[v]] == v));
+		sym = ((data.at(v) == none) || (data[data.at(v)] == v));
 		if (!sym) {
 			DEBUG("node " , v , " is not symmetrically matched");
 			isProper = false;
@@ -39,7 +38,7 @@ bool Matching::isProper(const Graph& G) const {
 	bool inGraph = true;
 	// check if every pair exists as an edge
 	G.forNodes([&](node v){
-		node w = data[v];
+		node w = data.at(v);
 		if ((v != w) && (w != none)) {
 			inGraph = G.hasEdge(v, w);
 			if (!inGraph) {
@@ -54,17 +53,17 @@ bool Matching::isProper(const Graph& G) const {
 }
 
 void Matching::match(node u, node v) {
-	data[u] = v;
-	data[v] = u;
+	data.at(u) = v;
+	data.at(v) = u;
 }
 
 void Matching::unmatch(node u, node v) {
-	data[u] = none;
-	data[v] = none;
+	data.at(u) = none;
+	data.at(v) = none;
 }
 
 bool Matching::areMatched(node u, node v) const {
-	return (data[u] == v);
+	return (data.at(u) == v);
 }
 
 count Matching::size(const Graph& G) const {
@@ -79,7 +78,7 @@ count Matching::size(const Graph& G) const {
 
 index Matching::mate(node v) const {
 	if (isMatched(v)) {
-		return data[v];
+		return data.at(v);
 	}
 	else return none;
 }
