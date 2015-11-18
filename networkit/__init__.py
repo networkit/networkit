@@ -62,6 +62,7 @@ from . import clique
 from . import globals
 from . import linkprediction
 from . import correlation
+from . import matching
 from .profiling import profiling
 
 try:

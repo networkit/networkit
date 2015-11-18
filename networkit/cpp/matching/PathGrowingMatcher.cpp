@@ -119,10 +119,15 @@ void PathGrowingMatcher::run() {
 	} else {
 		weight2 = m1.weight(G);
 	}
+	INFO("weight of first matching: ", weight1);
+	INFO("weight of second matching: ", weight2);
+
 	if (weight1 > weight2)
 		M = m1;
 	else
 		M = m2;
+
+	hasRun = true;
 }
 
 } /* namespace NetworKit */
