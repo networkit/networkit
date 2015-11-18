@@ -26,7 +26,7 @@ public:
 	 *
 	 * @param[in]	z	Maximum number of nodes.
 	 */
-	Matching(count z);
+	Matching(count z=0);
 
 
 	/**
@@ -35,7 +35,7 @@ public:
 	 * @param[in] u node.
 	 * @param[in] v node.
 	 */
-	void match(const node& u, const node& v);
+	void match(node u, node v);
 
 
 	/**
@@ -44,7 +44,7 @@ public:
 	 * @param[in] u node.
 	 * @param[in] v node.
 	 */
-	void unmatch(const node& u, const node& v);
+	void unmatch(node u, node v);
 
 
 	/**
@@ -53,7 +53,7 @@ public:
 	 * @param[in]	u 	node.
 	 * @return @c true if u is matched.
 	 */
-	bool isMatched(const node& u) const;
+	bool isMatched(node u) const;
 
 
 	/**
@@ -62,7 +62,7 @@ public:
 	 * @param[in] u node.
 	 * @param[in] v node.
 	 */
-	bool areMatched(const node& u, const node& v) const;
+	bool areMatched(node u, node v) const;
 
 	/**
 	 * Check whether this is a proper matching
