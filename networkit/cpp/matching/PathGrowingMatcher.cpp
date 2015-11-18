@@ -57,9 +57,9 @@ void PathGrowingMatcher::run() {
 			if (edgeScoresAsWeights) {
 				G.forEdgesOf(v, [&](node v, node u, edgeid eid) {
 					if (alive[u]) {
-						if (edgeScores[eid] > bestWeight) {
+						if (edgeScores.at(eid) > bestWeight) {
 							bestNeighbor = u;
-							bestWeight = edgeScores[eid];
+							bestWeight = edgeScores.at(eid);
 						}
 					}
 				});
@@ -106,7 +106,7 @@ void PathGrowingMatcher::run() {
 	edgeweight weight1;
 	if (edgeScoresAsWeights) {
 		G.forEdges([&](node u, node v, edgeid eid){
-			weight1 += edgeScores[eid];
+			weight1 += edgeScores.at(eid);
 		});
 	} else {
 		weight1 = m1.weight(G);
@@ -114,7 +114,7 @@ void PathGrowingMatcher::run() {
 	edgeweight weight2;
 	if (edgeScoresAsWeights) {
 		G.forEdges([&](node u, node v, edgeid eid){
-			weight2 += edgeScores[eid];
+			weight2 += edgeScores.at(eid);
 		});
 	} else {
 		weight2 = m1.weight(G);
