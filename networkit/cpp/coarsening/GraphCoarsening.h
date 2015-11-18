@@ -39,8 +39,6 @@ public:
 	 */
 	std::map<node, std::vector<node> > getCoarseToFineNodeMapping() const;
 
-	virtual std::string toString() const;
-
 protected:
 	const Graph& G;
 	Graph Gcoarsened;

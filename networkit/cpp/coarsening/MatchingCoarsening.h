@@ -16,7 +16,7 @@ namespace NetworKit {
 
 /**
  * @ingroup coarsening
- * Contracts graph according to a matching.
+ * Coarsens graph according to a matching.
  */
 class MatchingCoarsening: public GraphCoarsening {
 

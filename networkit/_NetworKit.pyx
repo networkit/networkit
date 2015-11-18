@@ -5972,6 +5972,7 @@ cdef extern from "cpp/coarsening/GraphCoarsening.h":
 		_GraphCoarsening(_Graph) except +
 		_Graph getCoarseGraph() except +
 		vector[node] getFineToCoarseNodeMapping() except +
+		map[node, vector[node]] getCoarseToFineNodeMapping() except +
 
 cdef class GraphCoarsening(Algorithm):
 	cdef Graph _G
@@ -6004,6 +6005,9 @@ cdef class GraphCoarsening(Algorithm):
 	def getFineToCoarseNodeMapping(self):
 		return (<_GraphCoarsening*>(self._this)).getFineToCoarseNodeMapping()
 
+	def getCoarseToFineNodeMapping(self):
+		return (<_GraphCoarsening*>(self._this)).getCoarseToFineNodeMapping()
+
 
 cdef extern from "cpp/coarsening/ParallelPartitionCoarsening.h":
 	cdef cppclass _ParallelPartitionCoarsening "NetworKit::ParallelPartitionCoarsening"(_GraphCoarsening):
@@ -6013,6 +6017,24 @@ cdef extern from "cpp/coarsening/ParallelPartitionCoarsening.h":
 cdef class ParallelPartitionCoarsening(GraphCoarsening):
 	def __cinit__(self, Graph G not None, Partition zeta not None, useGraphBuilder = True):
 		self._this = new _ParallelPartitionCoarsening(G._this, zeta._this, useGraphBuilder)
+
+cdef extern from "cpp/coarsening/MatchingCoarsening.h":
+	cdef cppclass _MatchingCoarsening "NetworKit::MatchingCoarsening"(_GraphCoarsening):
+		_MatchingCoarsening(_Graph, _Matching, bool) except +
+
+
+cdef class MatchingCoarsening(GraphCoarsening):
+	"""Coarsens graph according to a matching.
+ 	Parameters
+ 	----------
+ 	G : Graph
+	M : Matching
+ 	noSelfLoops : bool, optional
+		if true, self-loops are not produced
+	"""
+
+	def __cinit__(self, Graph G not None, Matching M not None, bool noSelfLoops=False):
+		self._this = new _MatchingCoarsening(G._this, M._this, noSelfLoops)
 
 
 # Module: scd
@@ -8139,10 +8161,6 @@ cdef class PathGrowingMatcher(Matcher):
 			self._this = new _PathGrowingMatcher(G._this, edgeScores)
 		else:
 			self._this = new _PathGrowingMatcher(G._this)
-
-
-
-
 
 # profiling
 
