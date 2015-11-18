@@ -8073,8 +8073,45 @@ cdef class Matching:
 
 cdef extern from "cpp/matching/Matcher.h":
 	cdef cppclass _Matcher "NetworKit::Matcher"(_Algorithm):
-		_Matcher(const _Graph &_G) except +
+		_Matcher(const _Graph _G) except +
 		_Matching getMatching() except +
+
+cdef class Matcher(Algorithm):
+	""" Abstract base class for matching algorithms """
+	cdef Graph G
+
+	def __init__(self, *args, **namedargs):
+		if type(self) == Matcher:
+			raise RuntimeError("Instantiation of abstract base class")
+
+	def __dealloc__(self):
+		self.G = None # just to be sure the graph is deleted
+
+	def getMatching(self):
+		"""  Returns the matching.
+
+		Returns
+		-------
+		Matching
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return Matching().setThis((<_Matcher*>(self._this)).getMatching())
+
+
+cdef extern from "cpp/matching/PathGrowingMatcher.h":
+	cdef cppclass _PathGrowingMatcher "NetworKit::PathGrowingMatcher"(_Matcher):
+		_PathGrowingMatcher(_Graph _G) except +
+
+cdef class PathGrowingMatcher(Matcher):
+	"""
+	Path growing matching algorithm as described by  Hougardy and Drake.
+	Computes an approximate maximum weight matching with guarantee 1/2.
+	"""
+	def __cinit__(self, Graph G not None):
+		self.G = G
+		self._this = new _PathGrowingMatcher(G._this)
+
 
 
 

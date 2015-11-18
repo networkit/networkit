@@ -93,6 +93,8 @@ void PathGrowingMatcher::run() {
 		M = m1;
 	else
 		M = m2;
+
+	hasRun = true;
 }
 
 } /* namespace NetworKit */

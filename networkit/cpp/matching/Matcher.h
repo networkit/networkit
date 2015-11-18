@@ -9,6 +9,8 @@
 #define MATCHER_H_
 
 #include "Matching.h"
+#include "../base/Algorithm.h"
+
 
 namespace NetworKit {
 
@@ -16,7 +18,7 @@ namespace NetworKit {
  * @ingroup matching
  * Abstract base class for matching algorithms.
  */
-class Matcher {
+class Matcher : public Algorithm {
 protected:
 	const Graph& G;
 	Matching M;
