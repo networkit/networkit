@@ -42,6 +42,7 @@ cdef extern from "<algorithm>" namespace "std":
 	_Graph move( _Graph t ) nogil # specialized declaration as general declaration disables template argument deduction and doesn't work
 	_Partition move( _Partition t) nogil
 	_Cover move(_Cover t) nogil
+	_Matching move(_Matching) nogil
 	vector[double] move(vector[double])
 	vector[bool] move(vector[bool])
 	vector[count] move(vector[count])
@@ -8006,6 +8007,79 @@ cdef class GlobalThresholdFilter:
 
 	def calculate(self):
 		return Graph().setThis(self._this.calculate())
+
+# matching
+
+cdef extern from "cpp/matching/Matching.h":
+	cdef cppclass _Matching "NetworKit::Matching":
+		_Matching() except +
+		_Matching(count) except +
+		void match(node, node) except +
+		void unmatch(node, node) except +
+		bool isMatched(node) except +
+		bool areMatched(node, node) except +
+		bool isProper(_Graph) except +
+		count size(_Graph) except +
+		index mate(node) except +
+		edgeweight weight(_Graph) except +
+
+cdef class Matching:
+	""" Implements a graph matching.
+
+ 		Matching(z=0)
+
+ 		Create a new matching data structure for `z` elements.
+
+		Parameters
+		----------
+		z : index, optional
+			Maximum number of nodes.
+	"""
+	cdef _Matching _this
+
+	def __cinit__(self, index z=0):
+		self._this = move(_Matching(z))
+
+	cdef setThis(self,  _Matching& other):
+		swap[_Matching](self._this,  other)
+		return self
+
+	def match(self, node u, node v):
+		self._this.match(u,v)
+
+	def unmatch(self, node u,  node v):
+		self._this.unmatch(u, v)
+
+	def isMatched(self, node u):
+		return self._this.isMatched(u)
+
+	def areMatched(self, node u, node v):
+		return self._this.areMatched(u,v)
+
+	def isProper(self, Graph G):
+		return self._this.isProper(G._this)
+
+	def size(self, Graph G):
+		return self._this.size(G._this)
+
+	def mate(self, node v):
+		return self._this.mate(v)
+
+	def weight(self, Graph G):
+		return self._this.weight(G._this)
+
+
+
+
+cdef extern from "cpp/matching/Matcher.h":
+	cdef cppclass _Matcher "NetworKit::Matcher"(_Algorithm):
+		_Matcher(const _Graph &_G) except +
+		_Matching getMatching() except +
+
+
+
+
+# profiling
 
 def ranked(sample):
 	"""

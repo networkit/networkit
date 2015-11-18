@@ -9,10 +9,11 @@
 
 namespace NetworKit {
 
+
 Matching::Matching(count z) : data(z, none) {
 }
 
-bool Matching::isMatched(const node& u) const {
+bool Matching::isMatched(node u) const {
 	return (this->data[u] != none);
 }
 
@@ -52,17 +53,17 @@ bool Matching::isProper(const Graph& G) const {
 	return isProper;
 }
 
-void Matching::match(const node& u, const node& v) {
+void Matching::match(node u, node v) {
 	data[u] = v;
 	data[v] = u;
 }
 
-void Matching::unmatch(const node& u, const node& v) {
+void Matching::unmatch(node u, node v) {
 	data[u] = none;
 	data[v] = none;
 }
 
-bool Matching::areMatched(const node& u, const node& v) const {
+bool Matching::areMatched(node u, node v) const {
 	return (data[u] == v);
 }
 
