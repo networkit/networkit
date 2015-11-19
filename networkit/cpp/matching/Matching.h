@@ -2,7 +2,6 @@
  * Matching.h
  *
  *  Created on: 03.12.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef MATCHING_H_
