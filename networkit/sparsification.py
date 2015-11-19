@@ -6,7 +6,7 @@ __author__ = "Gerd Lindner"
 
 from _NetworKit import ChibaNishizekiTriangleEdgeScore, GlobalThresholdFilter, LocalSimilarityScore, MultiscaleScore, SimmelianOverlapScore, RandomEdgeScore, LocalDegreeScore, ForestFireScore, \
 	EdgeScoreAsWeight, EdgeScoreLinearizer, LocalFilterScore, AdamicAdarDistance, ChanceCorrectedTriangleScore, TriangleEdgeScore, RandomNodeEdgeScore, ChibaNishizekiQuadrangleEdgeScore, GeometricMeanScore, \
-	EdgeScoreNormalizer, EdgeScoreBlender, PrefixJaccardScore, SCANStructuralSimilarityScore
+	EdgeScoreNormalizer, EdgeScoreBlender, PrefixJaccardScore, SCANStructuralSimilarityScore, JaccardSimilarityAttributizer
 
 # local imports
 from . import community
@@ -343,6 +343,22 @@ class DegreeMultiscaleSparsifier(Sparsifier):
 
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
+
+class JaccardSimilaritySparsifier(Sparsifier):
+	""" An implementation of the Jaccard Similarity sparsification approach introduced by Satuluri et al. """
+
+	def scores(self, G):
+		""" Returns the jaccard coefficient of the neighborhoods of the two incident nodes """
+		triangles = TriangleEdgeScore(G).run().scores()
+		return JaccardSimilarityAttributizer(G, triangles).getAttribute()
+
+	def _getSparsifiedGraph(self, G, parameter, attribute):
+		gf = GlobalThresholdFilter(G, attribute, parameter, True)
+		return gf.calculate()
+
+	def _getParameterizationAlgorithm(self):
+		return BinarySearchParameterization(False, 0.0, 1.0, 20)
+
 
 class LocalSimilaritySparsifier(Sparsifier):
 
