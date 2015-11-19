@@ -11,10 +11,16 @@
 namespace NetworKit {
 
 PathGrowingMatcher::PathGrowingMatcher(const Graph& G): Matcher(G) {
+	if (G.numberOfSelfLoops() > 0) {
+		throw std::invalid_argument("G has self-loops and cannot be processed");
+	}
 }
 
 
 PathGrowingMatcher::PathGrowingMatcher(const Graph& G, const std::vector<double>& edgeScores): Matcher(G, edgeScores) {
+	if (G.numberOfSelfLoops() > 0) {
+		throw std::invalid_argument("G has self-loops and cannot be processed");
+	}
 }
 
 void PathGrowingMatcher::run() {
@@ -32,7 +38,7 @@ void PathGrowingMatcher::run() {
 	// must have value none for priority queue.
 	std::vector<count> degrees(z, none);
 	G.parallelForNodes([&](node u) {
-		degrees[u] = G.degree(u);
+		degrees.at(u) = G.degree(u);
 	});
 
 	// alive tracks if vertices are alive or not in the algorithm
@@ -56,7 +62,7 @@ void PathGrowingMatcher::run() {
 
 			if (edgeScoresAsWeights) {
 				G.forEdgesOf(v, [&](node v, node u, edgeid eid) {
-					if (alive[u]) {
+					if (alive.at(u)) {
 						if (edgeScores.at(eid) > bestWeight) {
 							bestNeighbor = u;
 							bestWeight = edgeScores.at(eid);
@@ -65,7 +71,7 @@ void PathGrowingMatcher::run() {
 				});
 			} else {
 				G.forEdgesOf(v, [&](node v, node u, edgeweight weight) {
-					if (alive[u]) {
+					if (alive.at(u)) {
 						if (weight > bestWeight) {
 							bestNeighbor = u;
 							bestWeight = weight;
@@ -88,10 +94,10 @@ void PathGrowingMatcher::run() {
 
 			// remove current vertex and its incident edges from graph
 			G.forEdgesOf(v, [&](node v, node u) {
-				if (alive[u]) {
-					degrees[u]--;
+				if (alive.at(u)) {
+					degrees.at(u)--;
 					numEdges--;
-					bpq.changePrio(u, degrees[u]);
+					bpq.changePrio(u, degrees.at(u));
 				}
 			});
 			alive[v] = false;
