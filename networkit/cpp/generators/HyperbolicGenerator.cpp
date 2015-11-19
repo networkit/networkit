@@ -15,7 +15,7 @@
 #include <assert.h>
 #include <omp.h>
 #include <algorithm>
-
+#include <iostream>
 #include "../graph/GraphBuilder.h"
 #include "HyperbolicGenerator.h"
 #include "Quadtree/Quadtree.h"
@@ -208,7 +208,6 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 		}
 		threadtimers[id].stop();
 	}
-
 	timer.stop();
 	INFO("Generating Edges took ", timer.elapsedMilliseconds(), " milliseconds.");
 	return result.toGraph(!directSwap, true);

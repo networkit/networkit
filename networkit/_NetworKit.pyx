@@ -1486,7 +1486,8 @@ cdef extern from "cpp/generators/BarabasiAlbertGenerator.h":
 		_Graph generate() except +
 
 cdef class BarabasiAlbertGenerator:
-	""" Generates a scale-free graph using the Barabasi-Albert preferential attachment model.
+	"""
+	Generates a scale-free graph using the Barabasi-Albert preferential attachment model.
 
 	Parameters
 	----------
@@ -1496,7 +1497,9 @@ cdef class BarabasiAlbertGenerator:
 		maximum number of nodes produced
 	n0 : count
 		number of starting nodes
-	 """
+	"""
+	
+	 
 	cdef _BarabasiAlbertGenerator _this
 
 	def __cinit__(self, k, nMax, n0):
@@ -1968,7 +1971,51 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 
 	def generateExternal(self, angles, radii, k, gamma, T=0):
 		return Graph(0).setThis(self._this.generateExternal(angles, radii, k, gamma, T))
-	
+
+cdef extern from "cpp/generators/RHGGenerator.h":
+	cdef cppclass _RHGGenerator "NetworKit::RHGGenerator":
+		# TODO: revert to count when cython issue fixed
+		_RHGGenerator(unsigned int nodes,  double k, double gamma) except +
+		vector[double] getElapsedMilliseconds() except +
+		_Graph generate() except +
+
+cdef class RHGGenerator:
+	""" The Hyperbolic Generator distributes points in hyperbolic space and adds edges between points with a probability depending on their distance. The resulting graphs have a power-law degree distribution, small diameter and high clustering coefficient.
+For a temperature of 0, the model resembles a unit-disk model in hyperbolic space.
+
+ 		HyperbolicGenerator(n, k=6, gamma=3)
+
+ 		Parameters
+		----------
+		n : integer
+			number of nodes
+		k : double
+			average degree
+		gamma : double
+			exponent of power-law degree distribution
+			
+	"""
+
+	cdef _RHGGenerator* _this
+
+	def __cinit__(self,  n, k=6, gamma=3):
+		if gamma <= 2:
+				raise ValueError("Exponent of power-law degree distribution must be > 2")
+		self._this = new _RHGGenerator(n, k, gamma)
+
+	def getElapsedMilliseconds(self):
+		return self._this.getElapsedMilliseconds()
+
+	def generate(self):
+		""" Generates hyperbolic graph
+
+		Returns
+		-------
+		Graph
+		
+		"""
+		return Graph(0).setThis(self._this.generate())
+
 
 cdef extern from "cpp/generators/RmatGenerator.h":
 	cdef cppclass _RmatGenerator "NetworKit::RmatGenerator":
