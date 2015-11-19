@@ -2,4 +2,4 @@
 
 __author__ = "Christian Staudt"
 
-from _NetworKit import Matching
+from _NetworKit import Matching, Matcher, PathGrowingMatcher
