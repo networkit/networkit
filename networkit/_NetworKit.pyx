@@ -1778,6 +1778,10 @@ cdef class DorogovtsevMendesGenerator:
 		"""
 		return Graph(0).setThis(self._this.generate())
 
+	@classmethod
+	def fit(cls, Graph G):
+		return cls(G.numberOfNodes())
+
 
 cdef extern from "cpp/generators/RegularRingLatticeGenerator.h":
 	cdef cppclass _RegularRingLatticeGenerator "NetworKit::RegularRingLatticeGenerator":
