@@ -4,6 +4,7 @@
 #includes
 # needed for collections.Iterable
 import collections
+import math
 
 # C++ operators
 from cython.operator import dereference
@@ -1640,7 +1641,12 @@ cdef class BarabasiAlbertGenerator:
 		self._this = _BarabasiAlbertGenerator(k, nMax, n0)
 
 	def generate(self):
-		return Graph().setThis(self._this.generate());
+		return Graph().setThis(self._this.generate())
+
+	@classmethod
+	def fit(cls, Graph G):
+		(n, m) = G.size()
+		return cls(nMax=n, k=math.floor(m / n), n0=2)
 
 
 cdef extern from "cpp/generators/PubWebGenerator.h":
@@ -2001,6 +2007,11 @@ cdef class HavelHakimiGenerator:
 			Graph with degree sequence seq or modified sequence if ignoreIfRealizable is true and the sequence is not realizable.
 		"""
 		return Graph(0).setThis(self._this.generate())
+
+	@classmethod
+	def fit(cls, Graph G):
+		degSeq = DegreeCentrality(G).run().scores()
+		return cls(degSeq, ignoreIfRealizable=True)
 
 cdef extern from "cpp/generators/EdgeSwitchingMarkovChainGenerator.h":
 	cdef cppclass _EdgeSwitchingMarkovChainGenerator "NetworKit::EdgeSwitchingMarkovChainGenerator":
