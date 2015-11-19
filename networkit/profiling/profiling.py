@@ -18,7 +18,7 @@ from IPython.core.display import *
 import collections
 import math
 import fnmatch
-
+import random
 
 # colors
 colors = {
@@ -204,6 +204,7 @@ class Profile:
 
 	__TOKEN = object()	# see __init__(): prevent this class from being instanced directly
 	__pageCount = 0
+	__token = ""
 	__verbose = False
 	__verboseLevel = 0
 	__verboseFilename = ""
@@ -219,6 +220,7 @@ class Profile:
 		self.__measures = collections.OrderedDict()
 		self.__correlations = {}
 
+		self.__token = ''.join(random.choice('0123456789abcdef') for n in range(16))
 
 
 
@@ -434,6 +436,7 @@ class Profile:
 			filename = "",
 			style = style,
 			color = color,
+			token = self.__token,
 			pageIndex = self.__pageCount,
 			parallel = parallel
 		)
@@ -442,7 +445,7 @@ class Profile:
 		self.__pageCount = self.__pageCount + 1
 
 
-	def __format(self, outputType, directory, filename, style, color, pageIndex, parallel):
+	def __format(self, outputType, directory, filename, style, color, token, pageIndex, parallel):
 		""" layouts the profile	"""
 		confParser = configparser.ConfigParser()
 		confParser.read(getfilepath("description/descriptions.txt"))
@@ -677,6 +680,7 @@ class Profile:
 
 		result = self.__formatProfileTemplate(
 			templateProfile,
+			token,
 			pageIndex,
 			results
 		)
@@ -689,7 +693,7 @@ class Profile:
 		return result
 
 
-	def __formatProfileTemplate(self, template, pageIndex, results):
+	def __formatProfileTemplate(self, template, token, pageIndex, results):
 		""" format profile template - all function parameters, are available for the template """
 		properties = self.__properties
 		result = template.format(**locals())
