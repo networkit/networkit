@@ -10,11 +10,20 @@
 
 namespace NetworKit {
 
-PathGrowingMatcher::PathGrowingMatcher(Graph& G): Matcher(G) {
+PathGrowingMatcher::PathGrowingMatcher(const Graph& G): Matcher(G) {
+	if (G.numberOfSelfLoops() > 0) {
+		throw std::invalid_argument("G has self-loops and cannot be processed");
+	}
+}
+
+
+PathGrowingMatcher::PathGrowingMatcher(const Graph& G, const std::vector<double>& edgeScores): Matcher(G, edgeScores) {
+	if (G.numberOfSelfLoops() > 0) {
+		throw std::invalid_argument("G has self-loops and cannot be processed");
+	}
 }
 
 void PathGrowingMatcher::run() {
-	// make copy since graph will be transformed
 	count z = G.upperNodeIdBound();
 
 	// init matching to empty
@@ -29,7 +38,7 @@ void PathGrowingMatcher::run() {
 	// must have value none for priority queue.
 	std::vector<count> degrees(z, none);
 	G.parallelForNodes([&](node u) {
-		degrees[u] = G.degree(u);
+		degrees.at(u) = G.degree(u);
 	});
 
 	// alive tracks if vertices are alive or not in the algorithm
@@ -50,14 +59,27 @@ void PathGrowingMatcher::run() {
 			// find heaviest incident edge
 			node bestNeighbor = 0;
 			edgeweight bestWeight = 0;
-			G.forEdgesOf(v, [&](node v, node u, edgeweight weight) {
-				if (alive[u]) {
-					if (weight > bestWeight) {
-						bestNeighbor = u;
-						bestWeight = weight;
+
+			if (edgeScoresAsWeights) {
+				G.forEdgesOf(v, [&](node v, node u, edgeid eid) {
+					if (alive.at(u)) {
+						if (edgeScores.at(eid) > bestWeight) {
+							bestNeighbor = u;
+							bestWeight = edgeScores.at(eid);
+						}
 					}
-				}
-			});
+				});
+			} else {
+				G.forEdgesOf(v, [&](node v, node u, edgeweight weight) {
+					if (alive.at(u)) {
+						if (weight > bestWeight) {
+							bestNeighbor = u;
+							bestWeight = weight;
+						}
+					}
+				});
+			}
+
 
 			if (takeM1) {
 				// add edge to m1
@@ -72,10 +94,10 @@ void PathGrowingMatcher::run() {
 
 			// remove current vertex and its incident edges from graph
 			G.forEdgesOf(v, [&](node v, node u) {
-				if (alive[u]) {
-					degrees[u]--;
+				if (alive.at(u)) {
+					degrees.at(u)--;
 					numEdges--;
-					bpq.changePrio(u, degrees[u]);
+					bpq.changePrio(u, degrees.at(u));
 				}
 			});
 			alive[v] = false;
@@ -87,10 +109,25 @@ void PathGrowingMatcher::run() {
 	}
 
 	// return the heavier one of the two
-	edgeweight weight1 = m1.weight(G);
-	edgeweight weight2 = m2.weight(G);
+	edgeweight weight1;
+	if (edgeScoresAsWeights) {
+		G.forEdges([&](node u, node v, edgeid eid){
+			weight1 += edgeScores.at(eid);
+		});
+	} else {
+		weight1 = m1.weight(G);
+	}
+	edgeweight weight2;
+	if (edgeScoresAsWeights) {
+		G.forEdges([&](node u, node v, edgeid eid){
+			weight2 += edgeScores.at(eid);
+		});
+	} else {
+		weight2 = m1.weight(G);
+	}
 	INFO("weight of first matching: ", weight1);
 	INFO("weight of second matching: ", weight2);
+
 	if (weight1 > weight2)
 		M = m1;
 	else

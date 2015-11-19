@@ -4,6 +4,7 @@
 #includes
 # needed for collections.Iterable
 import collections
+import math
 
 # C++ operators
 from cython.operator import dereference
@@ -1640,7 +1641,13 @@ cdef class BarabasiAlbertGenerator:
 		self._this = _BarabasiAlbertGenerator(k, nMax, n0)
 
 	def generate(self):
-		return Graph().setThis(self._this.generate());
+		return Graph().setThis(self._this.generate())
+
+	@classmethod
+	def fit(cls, Graph G):
+		(n, m) = G.size()
+		k = math.floor(m / n)
+		return cls(nMax=n, k=k, n0=k)
 
 
 cdef extern from "cpp/generators/PubWebGenerator.h":
@@ -1770,6 +1777,10 @@ cdef class DorogovtsevMendesGenerator:
 			The generated graph.
 		"""
 		return Graph(0).setThis(self._this.generate())
+
+	@classmethod
+	def fit(cls, Graph G):
+		return cls(G.numberOfNodes())
 
 
 cdef extern from "cpp/generators/RegularRingLatticeGenerator.h":
@@ -2001,6 +2012,11 @@ cdef class HavelHakimiGenerator:
 			Graph with degree sequence seq or modified sequence if ignoreIfRealizable is true and the sequence is not realizable.
 		"""
 		return Graph(0).setThis(self._this.generate())
+
+	@classmethod
+	def fit(cls, Graph G):
+		degSeq = DegreeCentrality(G).run().scores()
+		return cls(degSeq, ignoreIfRealizable=True)
 
 cdef extern from "cpp/generators/EdgeSwitchingMarkovChainGenerator.h":
 	cdef cppclass _EdgeSwitchingMarkovChainGenerator "NetworKit::EdgeSwitchingMarkovChainGenerator":
@@ -2479,6 +2495,30 @@ cdef class LFRGenerator(Algorithm):
 		gen.setMu((1.0 - x for x in localCoverage))
 		return gen
 
+
+cdef extern from "cpp/generators/MultiscaleGenerator.h":
+	cdef cppclass _MultiscaleGenerator "NetworKit::MultiscaleGenerator":
+		_MultiscaleGenerator(_Graph O) except +
+		_Graph generate() except +
+
+
+cdef class MultiscaleGenerator:
+	"""
+	TODO:
+	"""
+	cdef _MultiscaleGenerator *_this
+	cdef Graph O	# store reference to input graph to not let it be garbage-collection
+
+	def __cinit__(self, Graph O):
+		self._this = new _MultiscaleGenerator(O._this)
+		self.O = O
+
+	def generate(self):
+		return Graph(0).setThis(self._this.generate())
+
+	@classmethod
+	def fit(cls, Graph G):
+		return cls(G)
 
 
 
@@ -5948,6 +5988,7 @@ cdef extern from "cpp/coarsening/GraphCoarsening.h":
 		_GraphCoarsening(_Graph) except +
 		_Graph getCoarseGraph() except +
 		vector[node] getFineToCoarseNodeMapping() except +
+		map[node, vector[node]] getCoarseToFineNodeMapping() except +
 
 cdef class GraphCoarsening(Algorithm):
 	cdef Graph _G
@@ -5980,6 +6021,9 @@ cdef class GraphCoarsening(Algorithm):
 	def getFineToCoarseNodeMapping(self):
 		return (<_GraphCoarsening*>(self._this)).getFineToCoarseNodeMapping()
 
+	def getCoarseToFineNodeMapping(self):
+		return (<_GraphCoarsening*>(self._this)).getCoarseToFineNodeMapping()
+
 
 cdef extern from "cpp/coarsening/ParallelPartitionCoarsening.h":
 	cdef cppclass _ParallelPartitionCoarsening "NetworKit::ParallelPartitionCoarsening"(_GraphCoarsening):
@@ -5989,6 +6033,24 @@ cdef extern from "cpp/coarsening/ParallelPartitionCoarsening.h":
 cdef class ParallelPartitionCoarsening(GraphCoarsening):
 	def __cinit__(self, Graph G not None, Partition zeta not None, useGraphBuilder = True):
 		self._this = new _ParallelPartitionCoarsening(G._this, zeta._this, useGraphBuilder)
+
+cdef extern from "cpp/coarsening/MatchingCoarsening.h":
+	cdef cppclass _MatchingCoarsening "NetworKit::MatchingCoarsening"(_GraphCoarsening):
+		_MatchingCoarsening(_Graph, _Matching, bool) except +
+
+
+cdef class MatchingCoarsening(GraphCoarsening):
+	"""Coarsens graph according to a matching.
+ 	Parameters
+ 	----------
+ 	G : Graph
+	M : Matching
+ 	noSelfLoops : bool, optional
+		if true, self-loops are not produced
+	"""
+
+	def __cinit__(self, Graph G not None, Matching M not None, bool noSelfLoops=False):
+		self._this = new _MatchingCoarsening(G._this, M._this, noSelfLoops)
 
 
 # Module: scd
@@ -8101,20 +8163,20 @@ cdef class Matcher(Algorithm):
 
 cdef extern from "cpp/matching/PathGrowingMatcher.h":
 	cdef cppclass _PathGrowingMatcher "NetworKit::PathGrowingMatcher"(_Matcher):
-		_PathGrowingMatcher(_Graph _G) except +
+		_PathGrowingMatcher(_Graph) except +
+		_PathGrowingMatcher(_Graph, vector[double]) except +
 
 cdef class PathGrowingMatcher(Matcher):
 	"""
 	Path growing matching algorithm as described by  Hougardy and Drake.
 	Computes an approximate maximum weight matching with guarantee 1/2.
 	"""
-	def __cinit__(self, Graph G not None):
+	def __cinit__(self, Graph G not None, edgeScores=None):
 		self.G = G
-		self._this = new _PathGrowingMatcher(G._this)
-
-
-
-
+		if edgeScores:
+			self._this = new _PathGrowingMatcher(G._this, edgeScores)
+		else:
+			self._this = new _PathGrowingMatcher(G._this)
 
 # profiling
 

@@ -937,9 +937,15 @@ void Graph::append(const Graph& G) {
 		node u_ = this->addNode();
 		nodeMap[u] = u_;
 	});
-	G.forEdges([&](node u, node v){
-		this->addEdge(nodeMap[u], nodeMap[v]);
-	});
+	if (this->isWeighted()) {
+		G.forEdges([&](node u, node v, edgeweight ew){
+			this->addEdge(nodeMap[u], nodeMap[v], ew);
+		});
+	} else {
+		G.forEdges([&](node u, node v){
+			this->addEdge(nodeMap[u], nodeMap[v]);
+		});
+	}
 }
 
 void Graph::merge(const Graph& G) {
