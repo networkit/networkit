@@ -1646,7 +1646,8 @@ cdef class BarabasiAlbertGenerator:
 	@classmethod
 	def fit(cls, Graph G):
 		(n, m) = G.size()
-		return cls(nMax=n, k=math.floor(m / n), n0=2)
+		k = math.floor(m / n)
+		return cls(nMax=n, k=k, n0=k)
 
 
 cdef extern from "cpp/generators/PubWebGenerator.h":
