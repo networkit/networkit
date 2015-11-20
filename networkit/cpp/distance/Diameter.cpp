@@ -15,6 +15,7 @@
 #include "../structures/Partition.h"
 #include "../graph/BFS.h"
 #include "../auxiliary/Parallel.h"
+#include <omp.h>
 
 namespace NetworKit {
 
@@ -66,99 +67,108 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworK
 	 * http://www.sciencedirect.com/science/article/pii/S0304397515001644
 	 */
 
-	std::vector<count> sum(G.upperNodeIdBound(), 0);
-	std::vector<count> eccLowerBound(G.upperNodeIdBound(), 0), eccUpperBound(G.upperNodeIdBound(), std::numeric_limits<count>::max());
+	std::vector<std::atomic<count>> sum(G.upperNodeIdBound());
+	std::vector<std::atomic<count>> eccLowerBound(G.upperNodeIdBound()), eccUpperBound(G.upperNodeIdBound());
+	std::vector<std::atomic<bool>> finished(G.upperNodeIdBound());
 
-	#pragma omp parallel for
 	for (node u = 0; u < G.upperNodeIdBound(); ++u) {
-		if (!G.hasNode(u)) {
-			eccUpperBound[u] = 0;
+		if (G.hasNode(u)) {
+			eccUpperBound[u] = G.numberOfNodes();
 		}
 	}
 
-	std::vector<count> distances(G.upperNodeIdBound(), 0);
-	std::vector<bool> finished(G.upperNodeIdBound(), false);
 	count k = 4;
-
 
 	ConnectedComponents comp(G);
 	comp.run();
 	count numberOfComponents = comp.numberOfComponents();
-	std::vector<node> startNodes(numberOfComponents, 0), maxDist(numberOfComponents, 0);
-	std::vector<node> firstDeg2Node(numberOfComponents, none);
-	std::vector<node> distFirst(numberOfComponents, 0);
-	std::vector<node> ecc(numberOfComponents, 0);
 
 
-	auto updateBounds = [&]() {
-		G.parallelForNodes([&](node u) {
+	std::vector<std::vector<count>> distFirst(omp_get_max_threads(), std::vector<count>(numberOfComponents, 0));
+	std::vector<std::vector<count>> ecc(omp_get_max_threads(), std::vector<count>(numberOfComponents, 0));
+	std::vector<std::vector<count>> distances(omp_get_max_threads(), std::vector<count>(G.upperNodeIdBound(), 0));
+
+	auto runBFS = [&](const std::vector<node> &startNodes) {
+		auto tid = omp_get_thread_num();
+		std::vector<bool> foundFirstDeg2Node(numberOfComponents, false);
+
+		auto &localDistances = distances[tid];
+		auto &localEcc = ecc[tid];
+		auto &localDistFirst = distFirst[tid];
+
+		G.BFSfrom(startNodes, [&](node v, count dist) {
+			localDistances[v] = dist;
+
+			index c = comp.componentOfNode(v);
+			localEcc[c] = std::max(dist, localEcc[c]);
+
+			if (!foundFirstDeg2Node[c] && G.degree(v) > 1) {
+				foundFirstDeg2Node[c] = true;
+				localDistFirst[c] = dist;
+			}
+		});
+
+		G.forNodes([&](node u) {
+			sum[u] += localDistances[u]; // atomic operation
+
 			if (finished[u]) return;
 
 			auto c = comp.componentOfNode(u);
 
-			if (distances[u] <= distFirst[c]) {
-				eccUpperBound[u] = std::max(distances[u], ecc[c] - distances[u]);
-				eccLowerBound[u] = eccUpperBound[u];
+			if (localDistances[u] <= localDistFirst[c]) {
+				// this is the final value, no extra care needed because of atomics
+				auto eccValue = std::max(localDistances[u], localEcc[c] - localDistances[u]);
+				eccUpperBound[u] = eccValue;
+				eccLowerBound[u] = eccValue;
 				finished[u] = true;
 			} else {
-				eccUpperBound[u] = std::min(distances[u] + ecc[c] - 2 * distFirst[c], eccUpperBound[u]);
-				eccLowerBound[u] = std::max(eccLowerBound[u], distances[u]);
-				finished[u] = (eccUpperBound[u] == eccLowerBound[u]);
+				// use atomic min/max here
+				Aux::Parallel::atomic_min(eccUpperBound[u], localDistances[u] + localEcc[c] - 2 * localDistFirst[c]);
+				Aux::Parallel::atomic_max(eccLowerBound[u], localDistances[u]);
+
+				if (eccUpperBound[u] == eccLowerBound[u]) {
+					finished[u] = true; // this is only set to true, no problem with atomics/multi-threading here
+				}
 			}
 		});
 
-		ecc.clear();
-		ecc.resize(numberOfComponents, 0);
-		distFirst.clear();
-		distFirst.resize(numberOfComponents, 0);
+		localEcc.clear();
+		localEcc.resize(numberOfComponents, 0);
+		localDistFirst.clear();
+		localDistFirst.resize(numberOfComponents, 0);
 	};
 
 	auto diameterBounds = [&]() {
-		auto maxExact = *Aux::Parallel::max_element(eccLowerBound.begin(), eccLowerBound.end());
-		auto maxPotential = *Aux::Parallel::max_element(eccUpperBound.begin(), eccUpperBound.end());
+		count maxExact = *std::max_element(eccLowerBound.begin(), eccLowerBound.end());
+		count maxPotential = *std::max_element(eccUpperBound.begin(), eccUpperBound.end());
 		return std::make_pair(maxExact, maxPotential);
 	};
 
-	auto visitNode = [&](node v, count dist) {
-		sum[v] += dist;
-		distances[v] = dist;
+	std::vector<node> startNodes(numberOfComponents, 0), maxDist(numberOfComponents, 0);
+	std::vector<count> minDeg(numberOfComponents, G.numberOfNodes());
 
-		index c = comp.componentOfNode(v);
-		ecc[c] = std::max(dist, ecc[c]);
-		if (firstDeg2Node[c] == none && G.degree(v) > 1) {
-			firstDeg2Node[c] = v;
-			distFirst[c] = dist;
+	// for each component, find the node with the minimum degreee and add it as start node
+	G.forNodes([&](node v) {
+		count d = G.degree(v);
+		count c = comp.componentOfNode(v);
+		if (d < minDeg[c]) {
+			startNodes[c] = v;
+			minDeg[c] = d;
 		}
-	};
+	});
 
 	for (index i = 0; i < k; ++i) {
 		handler.assureRunning();
-		if (i == 0) {
-			std::vector<count> minDeg(numberOfComponents, G.numberOfNodes());
+		runBFS(startNodes);
 
-			// for each component, find the node with the minimum degreee and add it as start node
-			G.forNodes([&](node v) {
-				count d = G.degree(v);
-				count c = comp.componentOfNode(v);
-				if (d < minDeg[c]) {
-					startNodes[c] = v;
-					minDeg[c] = d;
-				}
-			});
-		}
-
-		G.BFSfrom(startNodes, [&](node v, count dist) {
-			visitNode(v, dist);
+		G.forNodes([&](node v) {
 			index c = comp.componentOfNode(v);
 			if (sum[v] >= maxDist[c]) {
 				maxDist[c] = sum[v];
 				startNodes[c] = v;
 			}
 		});
-
-		updateBounds();
 	}
-
 
 	handler.assureRunning();
 
@@ -173,8 +183,7 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworK
 
 	handler.assureRunning();
 
-	G.BFSfrom(startNodes, visitNode);
-	updateBounds();
+	runBFS(startNodes);
 
 	count lb, ub;
 	std::tie(lb, ub) = diameterBounds();
@@ -202,11 +211,7 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworK
 
 		handler.assureRunning();
 
-		G.BFSfrom(startNodes, visitNode);
-
-		handler.assureRunning();
-
-		updateBounds();
+		runBFS(startNodes);
 
 		std::tie(lb, ub) = diameterBounds();
 	}
