@@ -14,6 +14,7 @@
 #include "../components/ConnectedComponents.h"
 #include "../structures/Partition.h"
 #include "../graph/BFS.h"
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -52,96 +53,166 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 
 
 
-std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworKit::Graph &G, double error, std::pair< NetworKit::node, NetworKit::node > *proof) {
+std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworKit::Graph &G, double error) {
 	// TODO: make abortable with ctrl+c using SignalHandling code
 	if (G.isDirected()) {
 		throw std::runtime_error("Error, the diameter of directed graphs cannot be computed yet.");
 	}
-	/*
-	 * This is an implementation of the iFub-algorithm by
-	 * Pilu Crescenzi, Roberto Grossi, Michel Habib, Leonardo Lanzi, Andrea Marino:
-	 * On computing the diameter of real-world undirected graphs,
-	 * Theoretical Computer Science, Volume 514, 25 November 2013, Pages 84-95, ISSN 0304-3975,
-	 * http://dx.doi.org/10.1016/j.tcs.2012.09.018.
-	 * (http://www.sciencedirect.com/science/article/pii/S0304397512008687)
-	 */
-	// start node selection. Here the very simple variant with the node of max. degree
-	// for each component
-	std::vector<node> startNodes;
-	{
-		ConnectedComponents comp(G);
-		comp.run();
-		count numberOfComponents = comp.numberOfComponents();
-		startNodes.resize(numberOfComponents, 0);
-		std::vector<count> maxDeg(numberOfComponents, 0);
 
-		// for each component, find the node with the maximum degreee and add it as start node
-		G.forNodes([&](node v) {
-			count d = G.degree(v);
-			count c = comp.componentOfNode(v);
-			if (d > maxDeg[c]) {
-				startNodes[c] = v;
-				maxDeg[c] = d;
+	Aux::SignalHandler handler;
+	/*
+	 * This is an implementation of a slightly modified version of the exactSumSweep algorithm as presented in
+	 * Fast diameter and radius BFS-based computation in (weakly connected) real-world graphs: With an application to the six degrees of separation games
+	 * by Michele Borassi, Pierluigi Crescenzi, Michel Habib, Walter A. Kosters, Andrea Marino, Frank W. Takes
+	 * http://www.sciencedirect.com/science/article/pii/S0304397515001644
+	 */
+
+	std::vector<count> sum(G.upperNodeIdBound(), 0);
+	std::vector<count> eccLowerBound(G.upperNodeIdBound(), 0), eccUpperBound(G.upperNodeIdBound(), std::numeric_limits<count>::max());
+
+	#pragma omp parallel for
+	for (node u = 0; u < G.upperNodeIdBound(); ++u) {
+		if (!G.hasNode(u)) {
+			eccUpperBound[u] = 0;
+		}
+	}
+
+	std::vector<count> distances(G.upperNodeIdBound(), 0);
+	std::vector<bool> finished(G.upperNodeIdBound(), false);
+	count k = 4;
+
+
+	ConnectedComponents comp(G);
+	comp.run();
+	count numberOfComponents = comp.numberOfComponents();
+	std::vector<node> startNodes(numberOfComponents, 0), maxDist(numberOfComponents, 0);
+	std::vector<node> firstDeg2Node(numberOfComponents, none);
+	std::vector<node> distFirst(numberOfComponents, 0);
+	std::vector<node> ecc(numberOfComponents, 0);
+
+
+	auto updateBounds = [&]() {
+		G.parallelForNodes([&](node u) {
+			if (finished[u]) return;
+
+			auto c = comp.componentOfNode(u);
+
+			if (distances[u] <= distFirst[c]) {
+				eccUpperBound[u] = std::max(distances[u], ecc[c] - distances[u]);
+				eccLowerBound[u] = eccUpperBound[u];
+				finished[u] = true;
+			} else {
+				eccUpperBound[u] = std::min(distances[u] + ecc[c] - 2 * distFirst[c], eccUpperBound[u]);
+				eccLowerBound[u] = std::max(eccLowerBound[u], distances[u]);
+				finished[u] = (eccUpperBound[u] == eccLowerBound[u]);
 			}
 		});
-	}
 
-	// simple BFS from all start nodes, store all levels (needed later)
-	std::vector<std::vector<node> > level(1);
-	G.BFSfrom(startNodes, [&](node v, count dist) {
-		if (level.size() < dist+1) level.emplace_back();
-		level[dist].push_back(v);
-	});
-	count eccStart = level.size()-1;
+		ecc.clear();
+		ecc.resize(numberOfComponents, 0);
+		distFirst.clear();
+		distFirst.resize(numberOfComponents, 0);
+	};
 
-	// set initial lower and upper bound
-	count lb = eccStart, ub = 2*eccStart;
+	auto diameterBounds = [&]() {
+		auto maxExact = *Aux::Parallel::max_element(eccLowerBound.begin(), eccLowerBound.end());
+		auto maxPotential = *Aux::Parallel::max_element(eccUpperBound.begin(), eccUpperBound.end());
+		return std::make_pair(maxExact, maxPotential);
+	};
 
-	// calculate the ecc for the nodes in each level starting with the highest level
-	// until either the bound is tight or all nodes have been considered
-	for (count i = eccStart; ub > (lb + error * lb) && i > 0; --i) {
-		// we need to wait until here as otherwise after a break in the inner loop the wrong ub might
-		// be returned if it was decreased too early
-		ub = 2*i;
-		INFO("New upper bound ", ub);
-		// second possibility, if we did not meet the break condition we might now meet it
-		if (ub <= (lb + error * lb)) {
-			break;
+	auto visitNode = [&](node v, count dist) {
+		sum[v] += dist;
+		distances[v] = dist;
+
+		index c = comp.componentOfNode(v);
+		ecc[c] = std::max(dist, ecc[c]);
+		if (firstDeg2Node[c] == none && G.degree(v) > 1) {
+			firstDeg2Node[c] = v;
+			distFirst[c] = dist;
 		}
+	};
 
-		bool aborted = false;
+	for (index i = 0; i < k; ++i) {
+		handler.assureRunning();
+		if (i == 0) {
+			std::vector<count> minDeg(numberOfComponents, G.numberOfNodes());
 
-		#pragma omp parallel for schedule(guided)
-		for (index j = 0; j < level[i].size(); ++j) {
-			#pragma omp flush (aborted)
-			if (!aborted) {
-				node v = level[i][j];
-				count ecc = 0;
-				node w = none;
-				std::tie(w, ecc) = Eccentricity::getValue(G, v);
-				// check if the lower bound has been improved and if yes, if the upper bound has been met
-				if (ecc > lb) {
-					#pragma omp critical
-					if (ecc > lb) {
-						lb = ecc;
-
-						INFO("Found new lower bound ", lb);
-
-						if (proof != NULL) {
-							proof->first = v;
-							proof->second = w;
-						}
-
-						if (ub <= (lb + error * lb)) {
-							aborted = true;
-						}
-					}
+			// for each component, find the node with the minimum degreee and add it as start node
+			G.forNodes([&](node v) {
+				count d = G.degree(v);
+				count c = comp.componentOfNode(v);
+				if (d < minDeg[c]) {
+					startNodes[c] = v;
+					minDeg[c] = d;
 				}
-			}
+			});
 		}
+
+		G.BFSfrom(startNodes, [&](node v, count dist) {
+			visitNode(v, dist);
+			index c = comp.componentOfNode(v);
+			if (sum[v] >= maxDist[c]) {
+				maxDist[c] = sum[v];
+				startNodes[c] = v;
+			}
+		});
+
+		updateBounds();
 	}
 
-	return {lb, std::max(ub, lb)};
+
+	handler.assureRunning();
+
+	std::vector<count> minDist(numberOfComponents, G.numberOfNodes());
+	G.forNodes([&](node u) {
+		auto c = comp.componentOfNode(u);
+		if (sum[u] < minDist[c]) {
+			minDist[c] = sum[u];
+			startNodes[c] = u;
+		}
+	});
+
+	handler.assureRunning();
+
+	G.BFSfrom(startNodes, visitNode);
+	updateBounds();
+
+	count lb, ub;
+	std::tie(lb, ub) = diameterBounds();
+
+	for (index i = 0; i < G.numberOfNodes() && ub > (lb + error*lb); ++i) {
+		handler.assureRunning();
+		startNodes.clear();
+		startNodes.resize(numberOfComponents, none);
+
+		if ((i % 2) == 0) {
+			G.forNodes([&](node u) {
+				auto c = comp.componentOfNode(u);
+				if (startNodes[c] == none || std::tie(eccUpperBound[u], sum[u]) > std::tie(eccUpperBound[startNodes[c]], sum[startNodes[c]])) {
+					startNodes[c] = u;
+				}
+			});
+		} else {
+			G.forNodes([&](node u) {
+				auto c = comp.componentOfNode(u);
+				if (startNodes[c] == none || std::tie(eccLowerBound[u], sum[u]) < std::tie(eccLowerBound[startNodes[c]], sum[startNodes[c]])) {
+					startNodes[c] = u;
+				}
+			});
+		}
+
+		handler.assureRunning();
+
+		G.BFSfrom(startNodes, visitNode);
+
+		handler.assureRunning();
+
+		updateBounds();
+
+		std::tie(lb, ub) = diameterBounds();
+	}
+
+	return {lb, ub};
 }
 
 

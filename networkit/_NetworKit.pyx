@@ -4827,7 +4827,7 @@ cdef class ClusteringCoefficient:
 
 
 cdef extern from "cpp/distance/Diameter.h" namespace "NetworKit::Diameter":
-	pair[count, count] estimatedDiameterRange(_Graph G, double error, pair[node,node] *proof) nogil except +
+	pair[count, count] estimatedDiameterRange(_Graph G, double error) nogil except +
 	count exactDiameter(_Graph G) nogil except +
 	edgeweight estimatedVertexDiameter(_Graph G, count) nogil except +
 	edgeweight estimatedVertexDiameterPedantic(_Graph G) nogil except +
@@ -4839,9 +4839,21 @@ cdef class Diameter:
 
 	@staticmethod
 	def estimatedDiameterRange(Graph G, double error=0.1):
-		""" Estimates a range for the diameter of @a G. Based on the algorithm suggested in
-		C. Magnien, M. Latapy, M. Habib: Fast Computation of Empirically Tight Bounds for
-		the Diameter of Massive Graphs. Journal of Experimental Algorithmics, Volume 13, Feb 2009.
+		""" Estimates a range for the diameter of @a G.
+
+		The algorithm is based on the ExactSumSweep algorithm presented in
+		Michele Borassi, Pierluigi Crescenzi, Michel Habib, Walter A. Kosters, Andrea Marino, Frank W. Takes,
+		Fast diameter and radius BFS-based computation in (weakly connected) real-world graphs: With an application to the six degrees of separation games,
+		Theoretical Computer Science, Volume 586, 27 June 2015, Pages 59-80, ISSN 0304-3975,
+		http://dx.doi.org/10.1016/j.tcs.2015.02.033.
+		(http://www.sciencedirect.com/science/article/pii/S0304397515001644)
+
+		Parameters
+		----------
+		G : Graph
+			The graph
+		error : double
+			The maximum allowed relative error. Set to 0 for the exact diameter.
 
 		Returns
 		-------
@@ -4850,24 +4862,8 @@ cdef class Diameter:
 		"""
 		cdef pair[count, count] ret
 		with nogil:
-			ret = estimatedDiameterRange(G._this, error, NULL)
+			ret = estimatedDiameterRange(G._this, error)
 		return ret
-
-	@staticmethod
-	def estimatedDiameterRangeWithProof(Graph G, double error=0.1):
-		""" Estimates a range for the diameter of @a G like estimatedDiameterRange but also
-		returns a pair of nodes that has the reported lower bound as distance if the graph is non-trivial.
-
-		Returns
-		-------
-		tuple
-			Tuple of two tuples, the first is the result and contains lower and upper bound, the second contains the two nodes whose distance is the reported lower bound
-		"""
-		cdef pair[node, node] proof
-		cdef pair[count, count] result
-		with nogil:
-			result = estimatedDiameterRange(G._this, error, &proof)
-		return (result, proof)
 
 	@staticmethod
 	def exactDiameter(Graph G):
