@@ -22,15 +22,17 @@ class Diameter {
 public:
 
 	/**
-	 * Get the an estimation of the diameter of the graph @a G. The algorithm is based on the iFub algorithm suggested in
-	 * Pilu Crescenzi, Roberto Grossi, Michel Habib, Leonardo Lanzi, Andrea Marino:
-	 * On computing the diameter of real-world undirected graphs,
-	 * Theoretical Computer Science, Volume 514, 25 November 2013, Pages 84-95, ISSN 0304-3975,
-	 * http://dx.doi.org/10.1016/j.tcs.2012.09.018
-	 * @param[out]	proof			A pair of nodes that has the reported minimum distance
+	 * Get the an estimation of the diameter of the graph @a G. The algorithm is based on the ExactSumSweep algorithm presented in
+	 * Michele Borassi, Pierluigi Crescenzi, Michel Habib, Walter A. Kosters, Andrea Marino, Frank W. Takes,
+	 * Fast diameter and radius BFS-based computation in (weakly connected) real-world graphs: With an application to the six degrees of separation games,
+	 * Theoretical Computer Science, Volume 586, 27 June 2015, Pages 59-80, ISSN 0304-3975,
+	 * http://dx.doi.org/10.1016/j.tcs.2015.02.033.
+	 * (http://www.sciencedirect.com/science/article/pii/S0304397515001644)
+	 * @param G The graph.
+	 * @param error The maximum allowed relative error. Set to 0 for the exact diameter.
 	 * @return Pair of lower and upper bound for diameter.
 	 */
-	static std::pair<edgeweight, edgeweight> estimatedDiameterRange(const Graph& G, double error, std::pair<node, node> *proof = NULL);
+	static std::pair<edgeweight, edgeweight> estimatedDiameterRange(const Graph& G, double error);
 
 	/**
 	 * Get the exact diameter of the graph @a G. The algorithm for unweighted graphs is the same as
