@@ -145,15 +145,15 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworK
 	};
 
 	std::vector<node> startNodes(numberOfComponents, 0), maxDist(numberOfComponents, 0);
-	std::vector<count> minDeg(numberOfComponents, G.numberOfNodes());
+	std::vector<count> maxDeg(numberOfComponents, 0);
 
 	// for each component, find the node with the minimum degreee and add it as start node
 	G.forNodes([&](node v) {
 		count d = G.degree(v);
 		count c = comp.componentOfNode(v);
-		if (d < minDeg[c]) {
+		if (d >= maxDeg[c]) {
 			startNodes[c] = v;
-			minDeg[c] = d;
+			maxDeg[c] = d;
 		}
 	});
 
