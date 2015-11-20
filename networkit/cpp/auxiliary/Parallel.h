@@ -24,7 +24,7 @@ namespace Aux {
 		#endif
 
 		template <typename ValueType, typename Comp>
-		void atomic_set(std::atomic<ValueType> &target, ValueType &input, Comp shallSet) {
+		void atomic_set(std::atomic<ValueType> &target, const ValueType &input, Comp shallSet) {
 			// load current value
 			auto curValue = target.load(std::memory_order_relaxed);
 
@@ -35,12 +35,12 @@ namespace Aux {
 		}
 
 		template <typename ValueType>
-		void atomic_max(std::atomic<ValueType> &target, ValueType &input) {
+		void atomic_max(std::atomic<ValueType> &target, const ValueType &input) {
 			atomic_set(target, input, std::greater<ValueType>());
 		}
 
 		template <typename ValueType>
-		void atomic_min(std::atomic<ValueType> &target, ValueType &input) {
+		void atomic_min(std::atomic<ValueType> &target, const ValueType &input) {
 			atomic_set(target, input, std::less<ValueType>());
 		}
 
