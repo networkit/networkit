@@ -54,9 +54,8 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 
 
 std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworKit::Graph &G, double error) {
-	// TODO: make abortable with ctrl+c using SignalHandling code
-	if (G.isDirected()) {
-		throw std::runtime_error("Error, the diameter of directed graphs cannot be computed yet.");
+	if (G.isDirected() || G.isWeighted()) {
+		throw std::runtime_error("Error, the diameter of directed or weighted graphs cannot be computed yet.");
 	}
 
 	Aux::SignalHandler handler;
