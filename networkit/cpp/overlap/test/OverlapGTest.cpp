@@ -13,66 +13,6 @@
 
 namespace NetworKit {
 
-TEST_F(OverlapGTest, testRegionGrowingOverlapperOnOneClustering) {
-	int64_t n = 10;
-	Graph G(n);
-	G.forNodePairs([&](node u, node v){
-		G.addEdge(u,v);
-	});
-
-	ClusteringGenerator clusterGen;
-	std::vector<Partition> clusterings;
-	int z = 3; // number of clusterings
-	for (int i = 0; i < z; ++i) {
- 		clusterings.push_back(clusterGen.makeOneClustering(G));
-	}
-	DEBUG("end of loop");
-
-	RegionGrowingOverlapper over;
-	Partition core = over.run(G, clusterings);
-
-	// test if core clustering is one-clustering
-	node v = 1;
-	index one = core.subsetOf(v);
-	bool isOneClustering = true; //TODO replaces with function call?
-	G.forNodes([&](node v) {
-		index c = core.subsetOf(v);
-		DEBUG("CLUSTER! c = " , c);
-		isOneClustering = isOneClustering && (c == one);
-	});
-
-	EXPECT_TRUE(isOneClustering) << "overlap of multiple 1-clustering should be a 1-clustering";
-
-}
-
-
-TEST_F(OverlapGTest, testRegionGrowingOverlapperOnSingletonClustering) {
-	int64_t n = 10;
-	Graph G(n);
-	G.forNodePairs([&](node u, node v){
-		G.addEdge(u,v);
-	});
-
-	ClusteringGenerator clusterGen;
-	std::vector<Partition> clusterings;
-	int z = 3; // number of clusterings
-	for (int i = 0; i < z; ++i) {
-		Partition zeta = clusterGen.makeSingletonClustering(G);
-		clusterings.push_back(zeta);
-	}
-
-	RegionGrowingOverlapper over;
-	Partition core = over.run(G, clusterings);
-
-	// test if core clustering is singleton-clustering
-	bool isSingleton = true; //TODO function call?
-	G.forEdges([&](node u, node v) {
-		isSingleton = isSingleton && (core.subsetOf(u) != core.subsetOf(v));
-	});
-
-	EXPECT_TRUE(isSingleton) << "overlap of multiple  singleton clusterings should be a singleton clustering";
-
-}
 
 
 TEST_F(OverlapGTest, testHashingOverlapperOnSingletonClusterings) {
