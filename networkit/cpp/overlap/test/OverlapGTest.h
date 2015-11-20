@@ -13,7 +13,6 @@
 #include <gtest/gtest.h>
 #include <functional>
 
-#include "../RegionGrowingOverlapper.h"
 #include "../HashingOverlapper.h"
 #include "../../community/ClusteringGenerator.h"
 
