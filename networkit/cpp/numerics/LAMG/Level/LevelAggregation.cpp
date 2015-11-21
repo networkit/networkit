@@ -17,7 +17,6 @@ void LevelAggregation::coarseType(const Vector &xf, Vector &xc) const {
 }
 
 void LevelAggregation::restrict(const Vector &bf, Vector &bc) {
-	//bc = CSRMatrix::mTvMultiply(P, bf);
 	bc = R * bf;
 }
 

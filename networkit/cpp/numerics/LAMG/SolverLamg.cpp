@@ -73,20 +73,18 @@ void SolverLamg::solve(Vector &x, const Vector &b, LAMGSolverStatus &status) {
 
 	double residual = (b - hierarchy.at(0).getLaplacian() * x).length();
 	status.residual = residual;
-	DEBUG("final residual\t ", residual);
 #ifndef NPROFILE
-	DEBUG("minResTime: ", minResTime / 1000);
-	DEBUG("interpolationTime: ", interpolationTime / 1000);
-	DEBUG("restrictionTime: ", restrictionTime / 1000);
-	DEBUG("coarsestSolve: ", coarsestSolve / 1000);
+	INFO("final residual\t ", residual);
+	INFO("minResTime: ", minResTime / 1000);
+	INFO("interpolationTime: ", interpolationTime / 1000);
+	INFO("restrictionTime: ", restrictionTime / 1000);
+	INFO("coarsestSolve: ", coarsestSolve / 1000);
 #endif
 }
 
 void SolverLamg::solveCycle(Vector &x, const Vector &b, int finest, LAMGSolverStatus &status) {
 	Aux::Timer timer;
 	timer.start();
-
-	DEBUG("finest: ", finest);
 
 	// data structures for iterate recombination
 	history = std::vector<std::vector<Vector>>(hierarchy.size());
@@ -106,18 +104,25 @@ void SolverLamg::solveCycle(Vector &x, const Vector &b, int finest, LAMGSolverSt
 	Vector r = b - hierarchy.at(finest).getLaplacian() * x;
 	double residual = r.length();
 	double finalResidual = residual * status.desiredResidualReduction;
-	double lastResidual = std::numeric_limits<double>::max();
+	double bestResidual = std::numeric_limits<double>::max();
 
 	count iterations = 0;
 	status.residualHistory.emplace_back(residual);
-	while (residual > finalResidual && residual < lastResidual && iterations < status.maxIters && timer.elapsedMilliseconds() <= status.maxConvergenceTime ) {
-		DEBUG("iter ", iterations, " r=", residual);
-		lastResidual = residual;
-
+	count noResReduction = 0;
+	while (residual > finalResidual && noResReduction < 5 && iterations < status.maxIters && timer.elapsedMilliseconds() <= status.maxConvergenceTime ) {
+#ifndef NPROFILE
+		INFO("iter ", iterations, " r=", residual);
+#endif
 		cycle(x, b, finest, coarsest, numVisits, X, B, status);
 		r = b - hierarchy.at(finest).getLaplacian() * x;
 		residual = r.length();
 		status.residualHistory.emplace_back(residual);
+		if (residual < bestResidual) {
+			noResReduction = 0;
+			bestResidual = residual;
+		} else {
+			++noResReduction;
+		}
 		iterations++;
 	}
 
@@ -126,7 +131,9 @@ void SolverLamg::solveCycle(Vector &x, const Vector &b, int finest, LAMGSolverSt
 	status.numIters = iterations;
 	status.residual = r.length();
 	status.converged = r.length() <= finalResidual;
-	DEBUG("nIter\t ", iterations);
+#ifndef NPROFILE
+	INFO("nIter\t ", iterations);
+#endif
 }
 
 void SolverLamg::cycle(Vector &x, const Vector &b, int finest, int coarsest, std::vector<count> &numVisits, std::vector<Vector> &X, std::vector<Vector> &B, const LAMGSolverStatus &status) {
@@ -201,13 +208,13 @@ void SolverLamg::cycle(Vector &x, const Vector &b, int finest, int coarsest, std
 			restrictionTime += t.elapsedMicroseconds();
 #endif
 		} else { // postProcess
-#ifndef NPROFILE
-			t.start();
-#endif
-
 			if (currLvl == coarsest || hierarchy.getType(currLvl+1) != ELIMINATION) {
 				minRes(currLvl, X[currLvl], B[currLvl] - hierarchy.at(currLvl).getLaplacian() * X[currLvl]);
 			}
+
+#ifndef NPROFILE
+			t.start();
+#endif
 
 			if (nextLvl > finest) {
 				saveIterate(nextLvl, X[nextLvl], B[nextLvl] - hierarchy.at(nextLvl).getLaplacian() * X[nextLvl]);
@@ -273,32 +280,77 @@ void SolverLamg::minRes(index level, Vector &x, const Vector &r) {
 #endif
 	if (numActiveIterates[level] > 0) {
 		count n = numActiveIterates[level];
-		std::vector<std::pair<index, index>> AEpos;
-		std::vector<double> AEvalues;
 
-		std::vector<std::pair<index, index>> Epos;
-		std::vector<double> Evalues;
+		std::vector<index> ARowIdx(r.getDimension()+1);
+		std::vector<index> ERowIdx(r.getDimension()+1);
 
+#pragma omp parallel for
 		for (index i = 0; i < r.getDimension(); ++i) {
 			for (index k = 0; k < n; ++k) {
 				double AEvalue = r[i] - rHistory[level][k][i];
 				if (std::abs(AEvalue) > 1e-9) {
-					AEpos.push_back(std::make_pair(i, k));
-					AEvalues.push_back(AEvalue);
+					++ARowIdx[i+1];
 				}
 
 				double Eval = history[level][k][i] - x[i];
 				if (std::abs(Eval) > 1e-9) {
-					Epos.push_back(std::make_pair(i, k));
-					Evalues.push_back(Eval);
+					++ERowIdx[i+1];
 				}
 			}
 		}
 
+		for (index i = 0; i < r.getDimension(); ++i) {
+			ARowIdx[i+1] += ARowIdx[i];
+			ERowIdx[i+1] += ERowIdx[i];
+		}
+
+		std::vector<index> AColumnIdx(ARowIdx[r.getDimension()]);
+		std::vector<double> ANonZeros(ARowIdx[r.getDimension()]);
+
+		std::vector<index> EColumnIdx(ERowIdx[r.getDimension()]);
+		std::vector<double> ENonZeros(ERowIdx[r.getDimension()]);
+
+#pragma omp parallel for
+		for (index i = 0; i < r.getDimension(); ++i) {
+			for (index k = 0, aIdx = ARowIdx[i], eIdx = ERowIdx[i]; k < n; ++k) {
+				double AEvalue = r[i] - rHistory[level][k][i];
+				if (std::abs(AEvalue) > 1e-9) {
+					AColumnIdx[aIdx] = k;
+					ANonZeros[aIdx] = AEvalue;
+					++aIdx;
+				}
+
+				double Eval = history[level][k][i] - x[i];
+				if (std::abs(Eval) > 1e-9) {
+					EColumnIdx[eIdx] = k;
+					ENonZeros[eIdx] = Eval;
+					++eIdx;
+				}
+			}
+		}
+
+//		std::vector<CSRMatrix::Triple> AEtriples;
+//
+//		std::vector<CSRMatrix::Triple> Etriples;
+//
+//		for (index i = 0; i < r.getDimension(); ++i) {
+//			for (index k = 0; k < n; ++k) {
+//				double AEvalue = r[i] - rHistory[level][k][i];
+//				if (std::abs(AEvalue) > 1e-9) {
+//					AEtriples.push_back({i,k,AEvalue});
+//				}
+//
+//				double Eval = history[level][k][i] - x[i];
+//				if (std::abs(Eval) > 1e-9) {
+//					Etriples.push_back({i,k,Eval});
+//				}
+//			}
+//		}
+//
 
 
-		CSRMatrix AE(r.getDimension(), n, AEpos, AEvalues);
-		CSRMatrix E(r.getDimension(), n, Epos, Evalues);
+		CSRMatrix AE(r.getDimension(), n, ARowIdx, AColumnIdx, ANonZeros, true);
+		CSRMatrix E(r.getDimension(), n, ERowIdx, EColumnIdx, ENonZeros, true);
 
 		Vector alpha = smoother.relax(CSRMatrix::mTmMultiply(AE, AE), CSRMatrix::mTvMultiply(AE, r), Vector(n, 0.0), 10);
 		x += E * alpha;
