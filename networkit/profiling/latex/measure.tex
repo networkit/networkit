@@ -1,0 +1,91 @@
+\subsection{{ {name} }}
+% Description: {description}
+% Algorithm: {algorithm}
+
+\includegraphics[width=0.5\textwidth]{{{{"{image[0]}"}}.pdf}}
+
+\begin{{multicols}}{{3}}[\textbf{{Properties}}]
+% Sample Size
+\nkvalue{{ n }}{{ {stat[Properties][Size]:g} }}
+% Bessel's Correction"
+\nkvalue{{ f_{{BC}} }}{{ {stat[Properties][Bessel's Correction]:g} }}
+% Assortativity
+\nkvalue{{ r }}{{ {assortativity:g} }}
+% Centralization
+\nkvalue{{ C }}{{ {centralization:g} }}
+\end{{multicols}}
+
+\begin{{multicols}}{{3}}[\textbf{{Location}}]
+% Minimum
+\nkvalue{{ x_{{(1)}} }}{{ {stat[Location][Min]:g} }}
+% Maximum
+\nkvalue{{ x_{{(n)}} }}{{ {stat[Location][Max]:g} }}
+% Smallest Mild Outlier
+\nkvalue{{ \widetilde{{x}}_{{O_{{min}}}} }}{{ {stat[Location][Outlier (Lower)][0]:g} }}
+% Smallest Non Outlier
+\nkvalue{{ \widetilde{{x}}_{{N_{{min}}}} }}{{ {stat[Location][Outlier (Lower)][1]:g} }}
+% 1st Quartile
+\nkvalue{{ \widetilde{{x}}_{{0.25}} }}{{ {stat[Location][1st Quartile]:g} }}
+% 2nd Quartile / Median
+\nkvalue{{ \widetilde{{x}}_{{Med}} }}{{ {stat[Location][Median]:g} }}
+% 3rd Quartile
+\nkvalue{{ \widetilde{{x}}_{{0.75}} }}{{ {stat[Location][3rd Quartile]:g} }}
+% Biggest Non Outlier
+\nkvalue{{ \widetilde{{x}}_{{N_{{max}}}} }}{{ {stat[Location][Outlier (Upper)][1]:g} }}
+% Biggest Mild Outlier
+\nkvalue{{ \widetilde{{x}}_{{O_{{max}}}} }}{{ {stat[Location][Outlier (Upper)][0]:g} }}
+% Arithmetic Mean
+\nkvalue{{ \overline{{x}} }}{{ {stat[Location][Arithmetic Mean]:g} }}
+% Interquartile Mean
+\nkvalue{{ \overline{{x}}_{{IQ}} }}{{ {stat[Location][Interquartile Mean]:g} }}
+% Sample Mid-Range
+\nkvalue{{ \overline{{x}}_{{R}} }}{{ {stat[Location][Mid-Range]:g} }}
+% Harmonic Mean
+\nkvalue{{ \overline{{x}}_{{H^{{-1}}}} }}{{ {stat[Location][Harmonic Mean]:g} }}
+% Quadratic Mean / Root Mean Square
+\nkvalue{{ \overline{{x}}_{{H^{{2}}}} }}{{ {stat[Location][Quadratic Mean]:g} }}
+% Cubic Mean
+\nkvalue{{ \overline{{x}}_{{H^{{3}}}} }}{{ {stat[Location][Cubic Mean]:g} }}
+\end{{multicols}}
+
+\begin{{multicols}}{{3}}[\textbf{{Dispersion}}]
+% Unbiased Sample Variance
+\nkvalue{{ s^{{2}}_{{x}} }}{{ {stat[Dispersion][Variance]:g} }}
+% Unbiased Standard Deviation
+\nkvalue{{ s_{{x}} }}{{ {stat[Dispersion][Standard Deviation]:g} }}
+% Unbiased Coefficient Of Variation
+\nkvalue{{ v_{{x}} }}{{ {stat[Dispersion][Coefficient Of Variation]:g} }}
+% Sample Range
+\nkvalue{{ R }}{{ {stat[Dispersion][Sample Range]:g} }}
+% Interquartile Range
+\nkvalue{{ R_{{IQ}} }}{{ {stat[Dispersion][Interquartile Range]:g} }}
+\end{{multicols}}
+
+\begin{{multicols}}{{3}}[\textbf{{Shape}}]
+% Skewness (Yule-Pearson)
+\nkvalue{{ S_{{YP}} }}{{ {stat[Shape][Skewness YP]:g} }}
+% Skewness (3rd Momentum)
+\nkvalue{{ S_{{M}} }}{{ {stat[Shape][Skewness M]:g} }}
+% Kurtotis (Excess)
+\nkvalue{{ \gamma }}{{ {stat[Shape][Kurtosis]:g} }}
+\end{{multicols}}
+
+\begin{{multicols}}{{3}}[\textbf{{Rank}}]
+% Unbiased Variance (Rank)
+\nkvalue{{ s^{{2}}_{{rk_{{x}}}} }}{{ {stat[Dispersion][Variance (Rank)]:g} }}
+% Unbiased Standard Deviation (Rank)
+\nkvalue{{ s_{{rk_{{x}}}} }}{{ {stat[Dispersion][Standard Deviation (Rank)]:g} }}
+% Unbiased Coefficient Of Variation (Rank)
+\nkvalue{{ v_{{rk_{{x}}}} }}{{ {stat[Dispersion][Coefficient Of Variation (Rank)]:g} }}
+\end{{multicols}}
+
+\begin{{multicols}}{{3}}[\textbf{{Binning}}]
+% Number Of Bins (PDF)
+\nkvalue{{ k_{{PDF}} }}{{ {stat[Binning][Number Histogram]:g} }}
+% Number Of Bins (CDF)
+\nkvalue{{ k_{{CDF}} }}{{ {stat[Binning][Number CDF]:g} }}
+% Mode (Binning)
+\nkvalue{{ x_{{D_{{PDF}}}} }}{{ {stat[Binning][Mode][0]:g} }}
+\end{{multicols}}
+
+{extentions}
