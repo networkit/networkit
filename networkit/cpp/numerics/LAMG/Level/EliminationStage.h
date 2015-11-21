@@ -17,6 +17,7 @@ namespace NetworKit {
 class EliminationStage {
 private:
 	CSRMatrix P; // interpolation matrix
+	CSRMatrix R;
 	Vector q; // coarse result correction vector
 	std::vector<index> fSet;
 	std::vector<index> cSet;
@@ -25,7 +26,8 @@ public:
 	EliminationStage(const CSRMatrix &P, const Vector &q, const std::vector<index> &fSet, const std::vector<index> &cSet);
 
 	const CSRMatrix& getP() const;
-	const Vector& getQ() const;
+	const CSRMatrix& getR() const;
+ 	const Vector& getQ() const;
 	const std::vector<index>& getFSet() const;
 	const std::vector<index>& getCSet() const;
 

@@ -21,6 +21,7 @@
 
 #include <cstdio>
 #include <set>
+#include "omp.h"
 
 namespace NetworKit {
 
@@ -40,17 +41,22 @@ void MultiLevelSetup::setup(const Graph &G, LevelHierarchy &hierarchy) const {
 void MultiLevelSetup::setup(const CSRMatrix &matrix, LevelHierarchy &hierarchy) const {
 	CSRMatrix A = matrix;
 	hierarchy.addFinestLevel(A);
-	DEBUG("FINEST\t", matrix.numberOfRows(), "\t", matrix.nnz());
+#ifndef NPROFILE
+	INFO("FINEST\t", matrix.numberOfRows(), "\t", matrix.nnz());
+#endif
 
 	bool doneCoarsening = false;
 	count numTVs = TV_NUM;
 	index level = 0;
+	A.sort();
 	while (!doneCoarsening) {
 		// ELIMINATION
 		if (coarseningElimination(A, hierarchy)) {
 			if (!canCoarsen(A)) doneCoarsening = true;
 			level++;
-			DEBUG(level, " ELIM\t\t", A.numberOfRows(), "\t", A.nnz() / 2);
+#ifndef NPROFILE
+			INFO(level, " ELIM\t\t", A.numberOfRows(), "\t", A.nnz() / 2);
+#endif
 		}
 
 		// AGGREGATION
@@ -60,7 +66,9 @@ void MultiLevelSetup::setup(const CSRMatrix &matrix, LevelHierarchy &hierarchy) 
 		} else {
 			coarseningAggregation(A, hierarchy, tv, numTVs);
 			level++;
-			DEBUG(level, " AGG\t\t", A.numberOfRows(), "\t", A.nnz() / 2);
+#ifndef NPROFILE
+			INFO(level, " AGG\t\t", A.numberOfRows(), "\t", A.nnz() / 2);
+#endif
 			if (numTVs < TV_MAX) {
 				numTVs += TV_INC;
 			}
@@ -70,9 +78,9 @@ void MultiLevelSetup::setup(const CSRMatrix &matrix, LevelHierarchy &hierarchy) 
 	}
 
 #ifndef NPROFILE
-	DEBUG("Elimination: ", eliminationTime);
-	DEBUG("Schur: ", schurComplementTime);
-	DEBUG("Aggregation: ", aggregationTime);
+	INFO("Elimination: ", eliminationTime);
+	INFO("Schur: ", schurComplementTime);
+	INFO("Aggregation: ", aggregationTime);
 #endif
 }
 
@@ -86,7 +94,6 @@ bool MultiLevelSetup::coarseningElimination(CSRMatrix &matrix, LevelHierarchy &h
 	count stageNum = 0;
 	while (stageNum < SETUP_ELIMINATION_MAX_STAGES) {
 		if (matrix.numberOfRows() <= MAX_DIRECT_SOLVE_SIZE) break; // we do not need to coarsen the matrix any further
-
 		std::vector<bool> fNode;
 		count nf = lowDegreeSweep(matrix, fNode, stageNum);
 		count nc = matrix.numberOfRows() - nf;
@@ -101,10 +108,12 @@ bool MultiLevelSetup::coarseningElimination(CSRMatrix &matrix, LevelHierarchy &h
 		std::vector<index> cSet(nc);
 
 		std::vector<index> coarseIndex(matrix.numberOfRows());
+		count numFNodes = 0;
 		for (index i = 0, fIndex = 0, cIndex = 0; i < matrix.numberOfRows(); ++i) {
 			if (fNode[i] && fIndex < nf) {
 				coarseIndex[i] = fIndex;
 				fSet[fIndex++] = i;
+				numFNodes++;
 			} else {
 				coarseIndex[i] = cIndex;
 				cSet[cIndex++] = i;
@@ -120,32 +129,19 @@ bool MultiLevelSetup::coarseningElimination(CSRMatrix &matrix, LevelHierarchy &h
 		eliminationOperators(matrix, fSet, coarseIndex, P, q);
 		coarseningStages.push_back(EliminationStage(P, q, fSet, cSet));
 
-
-		CSRMatrix Acc; // Schur complement
-		CSRMatrix Acf; // Schur complement
-
-
-		subMatrix(matrix, cSet, cSet, coarseIndex, Acc);
-		subMatrix(matrix, cSet, fSet, coarseIndex, Acf);
-
 #ifndef NPROFILE
 		schurTimer.start();
 #endif
+
+		CSRMatrix Acc = matrix.subMatrix(cSet, cSet); // Schur complement
+		CSRMatrix Acf = matrix.subMatrix(cSet, fSet); // Schur complement
+
 		matrix = Acc + Acf * P;
+
 #ifndef NPROFILE
 		schurTimer.stop();
+		schurComplementTime += schurTimer.elapsedMilliseconds();
 #endif
-
-		// check that sum of each row is zero (matrix is laplacian)
-		for (index i = 0; i < matrix.numberOfRows(); ++i) {
-			double sum = 0.0;
-			matrix.forNonZeroElementsInRow(i, [&](index j, double value){
-				sum += value;
-			});
-
-			sum -= matrix(i,i);
-			matrix.setValue(i, i, -sum);
-		}
 
 		stageNum++;
 	}
@@ -155,14 +151,14 @@ bool MultiLevelSetup::coarseningElimination(CSRMatrix &matrix, LevelHierarchy &h
 #ifndef NPROFILE
 		elimTimer.stop();
 		eliminationTime += elimTimer.elapsedMilliseconds();
-		schurComplementTime += schurTimer.elapsedMilliseconds();
+		//schurComplementTime += schurTimer.elapsedMilliseconds();
 #endif
 		return true;
 	}
 #ifndef NPROFILE
 	elimTimer.stop();
 	eliminationTime += elimTimer.elapsedMilliseconds();
-	schurComplementTime += schurTimer.elapsedMilliseconds();
+	//schurComplementTime += schurTimer.elapsedMilliseconds();
 #endif
 
 	return false;
@@ -190,41 +186,37 @@ count MultiLevelSetup::lowDegreeSweep(const CSRMatrix &matrix, std::vector<bool>
 }
 
 void MultiLevelSetup::eliminationOperators(const CSRMatrix &matrix, const std::vector<index> &fSet, const std::vector<index> &coarseIndex, CSRMatrix &P, Vector &q) const {
-	std::vector<std::pair<index, index>> positions;
-	std::vector<double> values;
+	std::vector<CSRMatrix::Triple> triples;
 	q = Vector(fSet.size());
 	for (index k = 0; k < fSet.size(); ++k) { // Afc
 		matrix.forNonZeroElementsInRow(fSet[k], [&](index j, edgeweight w){
 			if (fSet[k] == j) {
 				q[k] = 1.0 / w;
 			} else {
-				positions.push_back(std::make_pair(k,coarseIndex[j]));
-				values.push_back(w);
+				triples.push_back({k, coarseIndex[j], w});
 			}
 		});
 	}
 
-	for (index i = 0; i < values.size(); ++i) { // * -Aff^-1
-		values[i] *= -q[positions[i].first];
+	for (index i = 0; i < triples.size(); ++i) { // * -Aff^-1
+		triples[i].value *= -q[triples[i].row];
 	}
 
-	P = CSRMatrix(fSet.size(), coarseIndex.size() - fSet.size(), positions, values);
+	P = CSRMatrix(fSet.size(), coarseIndex.size() - fSet.size(), triples, matrix.sorted());
 }
 
 void MultiLevelSetup::subMatrix(const CSRMatrix &matrix, const std::vector<index> &rows, const std::vector<index> &columns, const std::vector<index> &coarseIndex, CSRMatrix &result) const {
-	std::vector<std::pair<index, index>> positions;
-	std::vector<double> values;
+	std::vector<CSRMatrix::Triple> triples;
 
 	for (index k = 0; k < rows.size(); ++k) {
 		matrix.forNonZeroElementsInRow(rows[k], [&](index j, edgeweight value) {
 			if (coarseIndex[j] < columns.size() && columns[coarseIndex[j]] == j) { // check if neighbor is in columns
-				positions.push_back(std::make_pair(k,coarseIndex[j]));
-				values.push_back(value);
+				triples.push_back({k, coarseIndex[j], value});
 			}
 		});
 	}
 
-	result = CSRMatrix(rows.size(), columns.size(), positions, values);
+	result = CSRMatrix(rows.size(), columns.size(), triples, matrix.sorted());
 }
 
 void MultiLevelSetup::coarseningAggregation(CSRMatrix &matrix, LevelHierarchy &hierarchy, Vector &tv, count numTVVectors) const {
@@ -241,6 +233,8 @@ void MultiLevelSetup::coarseningAggregation(CSRMatrix &matrix, LevelHierarchy &h
 	double maxCoarseningRatio = SETUP_COARSENING_WORK_GUARD / SETUP_CYCLE_INDEX;
 	count stage = 0;
 	count nC = matrix.numberOfRows();
+
+
 
 	// generate TVs
 	std::vector<Vector> tVs = generateTVs(matrix, tv, numTVVectors);
@@ -259,7 +253,6 @@ void MultiLevelSetup::coarseningAggregation(CSRMatrix &matrix, LevelHierarchy &h
 
 	// aggregate all loose nodes
 	aggregateLooseNodes(Wstrong, status, nC);
-
 
 	nc[0] = nC;
 	while (stage < SETUP_MIN_AGGREGATION_STAGES || (alpha >= maxCoarseningRatio && stage < SETUP_MAX_AGGREGATION_STAGES)) {
@@ -306,36 +299,28 @@ void MultiLevelSetup::coarseningAggregation(CSRMatrix &matrix, LevelHierarchy &h
 	assert(newIndex == nc[bestAggregate]);
 
 	// create interpolation matrix
-	std::vector<std::pair<index, index>> pPositions(matrix.numberOfRows());
-	std::vector<std::pair<index, index>> rPositions(matrix.numberOfRows());
-	std::vector<double> pValues(matrix.numberOfRows());
+	std::vector<CSRMatrix::Triple> pTriples(matrix.numberOfRows());
+	std::vector<CSRMatrix::Triple> rTriples(matrix.numberOfRows());
 	std::vector<index> PColIndex(matrix.numberOfRows());
 	std::vector<std::vector<index>> PRowIndex(nc[bestAggregate]);
+
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
-		pPositions[i] = std::make_pair(i, status[i]);
-		rPositions[i] = std::make_pair(status[i], i);
-		pValues[i] = 1;
+		pTriples[i] = {i, status[i], 1};
+		rTriples[i] = {status[i], i, 1};
 		PColIndex[i] = status[i];
 		PRowIndex[status[i]].push_back(i);
 	}
 
-	CSRMatrix P(matrix.numberOfRows(), nc[bestAggregate], pPositions, pValues);
-	CSRMatrix R(nc[bestAggregate], matrix.numberOfRows(), rPositions, pValues);
+	CSRMatrix P(matrix.numberOfRows(), nc[bestAggregate], pTriples, matrix.sorted());
+	CSRMatrix R(nc[bestAggregate], matrix.numberOfRows(), rTriples, matrix.sorted());
+
+
 
 	// create coarsened laplacian
 	galerkinOperator(P, matrix, PColIndex, PRowIndex, matrix);
 
-	// check that sum of each row is zero (matrix is laplacian)
-	for (index i = 0; i < matrix.numberOfRows(); ++i) {
-		edgeweight sum = 0.0;
-		matrix.forNonZeroElementsInRow(i, [&](index j, edgeweight value){
-			sum += value;
-		});
-
-		sum -= matrix(i,i);
-		matrix.setValue(i, i, -sum);
-	}
 	hierarchy.addAggregationLevel(matrix, P, R);
+
 #ifndef NPROFILE
 	aggTimer.stop();
 	aggregationTime += aggTimer.elapsedMilliseconds();
@@ -363,6 +348,7 @@ std::vector<Vector> MultiLevelSetup::generateTVs(const CSRMatrix &matrix, Vector
 
 void MultiLevelSetup::addHighDegreeSeedNodes(const CSRMatrix &matrix, std::vector<int64_t> &status) const {
 	std::vector<count> deg(matrix.numberOfRows());
+#pragma omp parallel for
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
 		deg[i] = matrix.nnzInRow(i) - 1;
 	}
@@ -405,15 +391,15 @@ void MultiLevelSetup::aggregateLooseNodes(const CSRMatrix &strongAdjMatrix, std:
 			status[looseNodes[k]] = looseNodes[0]; // first loose nodes becomes seed
 		}
 
-		nc -= looseNodes.size() + 1;
+		nc -= looseNodes.size() - 1;
 	}
 }
 
 void MultiLevelSetup::computeStrongAdjacencyMatrix(const CSRMatrix &matrix, CSRMatrix &strongAdjMatrix) const {
-	std::vector<std::pair<index,index>> positions;
-	std::vector<double> values;
+	std::vector<CSRMatrix::Triple> triples;
 
 	std::vector<double> maxNeighbor(matrix.numberOfRows(), std::numeric_limits<double>::min());
+#pragma omp parallel for
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
 		matrix.forNonZeroElementsInRow(i, [&](index j, double value) {
 			if (-value > maxNeighbor[i]) {
@@ -422,33 +408,64 @@ void MultiLevelSetup::computeStrongAdjacencyMatrix(const CSRMatrix &matrix, CSRM
 		});
 	}
 
-
-	matrix.forNonZeroElementsInRowOrder([&](index i, index j, double value) {
+	std::vector<index> rowIdx(matrix.numberOfRows()+1, 0);
+	matrix.parallelForNonZeroElementsInRowOrder([&](index i, index j, double value) {
 		if (i != j && std::abs(value) >= 0.1 * std::min(maxNeighbor[i], maxNeighbor[j])) {
-			positions.push_back(std::make_pair(i,j));
-			values.push_back(-value);
+			++rowIdx[i+1];
 		}
 	});
 
+	for (index i = 0; i < matrix.numberOfRows(); ++i) {
+		rowIdx[i+1] += rowIdx[i];
+	}
 
-	strongAdjMatrix = CSRMatrix(matrix.numberOfRows(), matrix.numberOfColumns(), positions, values);
+	count nnz = rowIdx[matrix.numberOfRows()];
+	std::vector<index> columnIdx(nnz);
+	std::vector<double> nonZeros(nnz);
+
+#pragma omp parallel for
+	for (index i = 0; i < matrix.numberOfRows(); ++i) {
+		index cIdx = rowIdx[i];
+		matrix.forNonZeroElementsInRow(i, [&](index j, double value) {
+			if (i != j && std::abs(value) >= 0.1 * std::min(maxNeighbor[i], maxNeighbor[j])) {
+				columnIdx[cIdx] = j;
+				nonZeros[cIdx] = -value;
+				++cIdx;
+			}
+		});
+	}
+
+	strongAdjMatrix = CSRMatrix(matrix.numberOfRows(), matrix.numberOfColumns(), rowIdx, columnIdx, nonZeros, matrix.sorted());
 }
 
 void MultiLevelSetup::computeAffinityMatrix(const CSRMatrix &matrix, const std::vector<Vector> &tVs, CSRMatrix &affinityMatrix) const {
 	assert(tVs.size() > 0);
 
-	std::vector<std::pair<index,index>> positions(matrix.nnz());
-	std::vector<double> values(matrix.nnz());
+	std::vector<index> rowIdx(matrix.numberOfRows()+1);
+	std::vector<index> columnIdx(matrix.nnz());
+	std::vector<double> nonZeros(matrix.nnz());
+
+#pragma omp parallel for
+	for (index i = 0; i < matrix.numberOfRows(); ++i) {
+		rowIdx[i+1] = matrix.nnzInRow(i);
+	}
+
+	for (index i = 0; i < matrix.numberOfRows(); ++i) {
+		rowIdx[i+1] += rowIdx[i];
+	}
 
 	std::vector<double> normSquared(matrix.numberOfRows(), 0.0);
+#pragma omp parallel for
 	for (index k = 0; k < tVs.size(); ++k) {
 		for (index i = 0; i < matrix.numberOfRows(); ++i) {
 			normSquared[i] += tVs[k][i] * tVs[k][i];
 		}
 	}
-	index valIndex = 0;
+
+#pragma omp parallel for
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
 		double nir = 1.0 / normSquared[i];
+		index cIdx = rowIdx[i];
 		matrix.forNonZeroElementsInRow(i, [&](index j, double val) {
 			double ij = 0.0;
 			for (index k = 0; k < tVs.size(); ++k) {
@@ -456,13 +473,13 @@ void MultiLevelSetup::computeAffinityMatrix(const CSRMatrix &matrix, const std::
 			}
 
 			double value = (ij * ij) * nir / normSquared[j];
-			positions[valIndex] = std::make_pair(i,j);
-			values[valIndex] = value;
-			valIndex++;
+			columnIdx[cIdx] = j;
+			nonZeros[cIdx] = value;
+			++cIdx;
 		});
 	}
 
-	affinityMatrix = CSRMatrix(matrix.numberOfRows(), matrix.numberOfColumns(), positions, values);
+	affinityMatrix = CSRMatrix(matrix.numberOfRows(), matrix.numberOfColumns(), rowIdx, columnIdx, nonZeros, matrix.sorted());
 }
 
 void MultiLevelSetup::aggregationStage(const CSRMatrix &matrix, count &nc, const CSRMatrix &strongAdjMatrix, const CSRMatrix &affinityMatrix, std::vector<Vector> &tVs, std::vector<int64_t> &status) const {
@@ -470,6 +487,7 @@ void MultiLevelSetup::aggregationStage(const CSRMatrix &matrix, count &nc, const
 	computeStrongNeighbors(affinityMatrix, status, bins);
 
 	std::vector<double> diag(matrix.numberOfRows(), 0.0);
+#pragma omp parallel for
 	for (index i = 0 ; i < matrix.numberOfRows(); ++i) {
 		diag[i] = matrix(i,i);
 	}
@@ -502,7 +520,7 @@ void MultiLevelSetup::computeStrongNeighbors(const CSRMatrix &affinityMatrix, co
 	double overallMax = 0.0;
 	double overallMin = std::numeric_limits<double>::max();
 
-	affinityMatrix.forNonZeroElementsInRowOrder([&](index i, index j, double value) { // determine the highest affinity neighbor of each node
+	affinityMatrix.parallelForNonZeroElementsInRowOrder([&](index i, index j, double value) { // determine the highest affinity neighbor of each node
 		if (status[i] == UNDECIDED && (status[j] == UNDECIDED || status[j] == j)) { // i is UNDECIDED and its neighbor j is also UNDECIDED or SEED
 			if (value > maxNeighbor[i]) {
 				maxNeighbor[i] = value;
@@ -611,8 +629,7 @@ bool MultiLevelSetup::isRelaxationFast(const CSRMatrix &A, index lvlIndex, Vecto
 }
 
 void MultiLevelSetup::galerkinOperator(const CSRMatrix &P, const CSRMatrix &A, const std::vector<index> &PColIndex, const std::vector<std::vector<index>> &PRowIndex, CSRMatrix &B) const {
-	std::vector<std::pair<index,index>> positions;
-	std::vector<double> values;
+	std::vector<CSRMatrix::Triple> triples;
 	SparseAccumulator spa(P.numberOfColumns());
 	for (index i = 0; i < P.numberOfColumns(); ++i) {
 		for (index k : PRowIndex[i]) {
@@ -624,14 +641,13 @@ void MultiLevelSetup::galerkinOperator(const CSRMatrix &P, const CSRMatrix &A, c
 		}
 
 		spa.gather([&](index i, index j, double value) {
-			positions.push_back(std::make_pair(i,j));
-			values.push_back(value);
+			triples.push_back({i,j,value});
 		});
 
 		spa.increaseRow();
 	}
 
-	B = CSRMatrix(P.numberOfColumns(), P.numberOfColumns(), positions, values);
+	B = CSRMatrix(P.numberOfColumns(), P.numberOfColumns(), triples, true);
 }
 
 
