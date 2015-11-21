@@ -8,9 +8,9 @@
 #ifndef SPARSEACCUMULATOR_H_
 #define SPARSEACCUMULATOR_H_
 
-#include <list>
+#include <vector>
+#include <algorithm>
 #include <cassert>
-
 
 namespace NetworKit {
 
@@ -31,7 +31,7 @@ protected:
 	std::vector<count> occupied; // b
 
 	/** unordered list to store the position of valid values in values vector */
-	std::list<index> indices; // LS
+	std::vector<index> indices; // LS
 
 public:
 	/**
@@ -65,6 +65,7 @@ public:
 	 */
 	template<typename L> count gather(L handle) {
 		count nonZeros = 0;
+		std::sort(indices.begin(), indices.end());
 		for (index idx : indices) {
 			handle(row - 1, idx, values[idx]);
 			nonZeros++;

@@ -163,6 +163,9 @@ TEST(CSRMatrixGTest, testMatrixAddition) {
 	CSRMatrix mat1(100000, 100000, positions1, values1);
 	CSRMatrix mat2(100000, 100000, positions2, values2);
 
+	mat1.sort();
+	mat2.sort();
+
 	CSRMatrix result = mat1 + mat2;
 	ASSERT_EQ(mat1.numberOfRows(), result.numberOfRows());
 	ASSERT_EQ(mat1.numberOfColumns(), result.numberOfColumns());
@@ -189,6 +192,9 @@ TEST(CSRMatrixGTest, testMatrixAddition) {
 	values2 = {1.0, 1.0};
 	mat2 = CSRMatrix(2, 5, positions2, values2);
 
+	mat1.sort();
+	mat2.sort();
+
 	result = mat1 + mat2;
 
 	ASSERT_EQ(2u, result.numberOfRows());
@@ -210,6 +216,9 @@ TEST(CSRMatrixGTest, testMatrixAddition) {
 	positions2 = {std::make_pair(2,0), std::make_pair(2,1)};
 	values2 = {1.0, 1.0};
 	mat2 = CSRMatrix(5, 2, positions2, values2);
+
+	mat1.sort();
+	mat2.sort();
 
 	result = mat1 + mat2;
 
@@ -246,6 +255,9 @@ TEST(CSRMatrixGTest, testMatrixSubtraction) {
 	CSRMatrix mat1(100000, 100000, positions1, values1);
 	CSRMatrix mat2(100000, 100000, positions2, values2);
 
+	mat1.sort();
+	mat2.sort();
+
 	CSRMatrix result = mat2 - mat1;
 	ASSERT_EQ(mat1.numberOfRows(), result.numberOfRows());
 	ASSERT_EQ(mat1.numberOfColumns(), result.numberOfColumns());
@@ -271,6 +283,9 @@ TEST(CSRMatrixGTest, testMatrixSubtraction) {
 	values2 = {1.0, 1.0};
 	mat2 = CSRMatrix(2, 5, positions2, values2);
 
+	mat1.sort();
+	mat2.sort();
+
 	result = mat1 - mat2;
 
 	ASSERT_EQ(2u, result.numberOfRows());
@@ -292,6 +307,9 @@ TEST(CSRMatrixGTest, testMatrixSubtraction) {
 	positions2 = {std::make_pair(2,0), std::make_pair(2,1)};
 	values2 = {1.0, 1.0};
 	mat2 = CSRMatrix(5, 2, positions2, values2);
+
+	mat1.sort();
+	mat2.sort();
 
 	result = mat1 - mat2;
 
@@ -496,6 +514,7 @@ TEST(CSRMatrixGTest, testMatrixMultiplication) {
 	CSRMatrix result = mat1 * mat2;
 	ASSERT_EQ(mat1.numberOfRows(), result.numberOfRows());
 	ASSERT_EQ(mat1.numberOfColumns(), result.numberOfColumns());
+	EXPECT_EQ(14, result.nnz());
 
 	EXPECT_EQ(14, result(0,0));
 	EXPECT_EQ(6, result(0,1));

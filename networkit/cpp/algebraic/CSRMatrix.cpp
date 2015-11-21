@@ -9,6 +9,7 @@
 
 #include <cassert>
 #include <atomic>
+#include "omp.h"
 
 namespace NetworKit {
 
@@ -18,7 +19,7 @@ constexpr double EPSILON = 1e-9;
 CSRMatrix::CSRMatrix() : rowIdx(0), columnIdx(0), nonZeros(0), nRows(0), nCols(0) {
 }
 
-CSRMatrix::CSRMatrix(const count nRows, const count nCols, const std::vector<std::pair<index, index>> &positions, const std::vector<double> &values) : nRows(nRows), nCols(nCols) {
+CSRMatrix::CSRMatrix(const count nRows, const count nCols, const std::vector<std::pair<index, index>> &positions, const std::vector<double> &values, bool isSorted) : nRows(nRows), nCols(nCols), isSorted(isSorted) {
 	count nnz = values.size();
 	rowIdx = std::vector<index>(nRows + 1, 0);
 	columnIdx = std::vector<index>(nnz);
@@ -52,7 +53,41 @@ CSRMatrix::CSRMatrix(const count nRows, const count nCols, const std::vector<std
 	}
 }
 
-CSRMatrix::CSRMatrix(const count nRows, const count nCols, const std::vector<std::vector<index>> &columnIdx, const std::vector<std::vector<double>> &values) : nRows(nRows), nCols(nCols) {
+CSRMatrix::CSRMatrix(const count nRows, const count nCols, const std::vector<Triple> &triples, bool isSorted) : nRows(nRows), nCols(nCols), isSorted(isSorted) {
+	count nnz = triples.size();
+	rowIdx = std::vector<index>(nRows + 1, 0);
+	columnIdx = std::vector<index>(nnz);
+	nonZeros = std::vector<double>(nnz);
+
+	for (index i = 0; i < nnz; ++i) {
+		rowIdx[triples[i].row]++;
+	}
+
+	for (index i = 0, prefixSum = 0; i < nRows; ++i) {
+		count nnzInRow = rowIdx[i];
+		rowIdx[i] = prefixSum;
+		prefixSum += nnzInRow;
+	}
+	rowIdx[nRows] = nnz;
+
+	for (index i = 0; i < nnz; ++i) {
+		index row = triples[i].row;
+		index dest = rowIdx[row];
+
+		columnIdx[dest] = triples[i].column;
+		nonZeros[dest] = triples[i].value;
+
+		rowIdx[row]++;
+	}
+
+	for (index i = 0, firstIdxOfRow = 0; i <= nRows; ++i) {
+		index newRow = rowIdx[i];
+		rowIdx[i] = firstIdxOfRow;
+		firstIdxOfRow = newRow;
+	}
+}
+
+CSRMatrix::CSRMatrix(const count nRows, const count nCols, const std::vector<std::vector<index>> &columnIdx, const std::vector<std::vector<double>> &values, bool isSorted) : nRows(nRows), nCols(nCols), isSorted(isSorted) {
 	 rowIdx = std::vector<index>(nRows + 1, 0);
 	 count nnz = columnIdx[0].size();
 	 for (index i = 1; i < columnIdx.size(); ++i) {
@@ -71,6 +106,9 @@ CSRMatrix::CSRMatrix(const count nRows, const count nCols, const std::vector<std
 			 nonZeros[rowIdx[i] + k] = values[i][k];
 		 }
 	 }
+}
+
+CSRMatrix::CSRMatrix(const count nRows, const count nCols, const std::vector<index> &rowIdx, const std::vector<index> &columnIdx, const std::vector<double> &nonZeros, bool isSorted) : rowIdx(rowIdx), columnIdx(columnIdx), nonZeros(nonZeros), nRows(nRows), nCols(nCols), isSorted(isSorted) {
 }
 
 count CSRMatrix::nnzInRow(const index i) const {
@@ -106,6 +144,61 @@ void CSRMatrix::setValue(const index i, const index j, const double value) {
 //	graph.setWeight(i, j, value);
 }
 
+void CSRMatrix::quicksort(index left, index right) {
+//	INFO("quicksort(", left, ",", right,")");
+	if (left >= right) return;
+	index pivotIdx = partition(left, right);
+	if (pivotIdx != 0) {
+		quicksort(left, pivotIdx-1);
+	}
+	quicksort(pivotIdx+1, right);
+}
+
+index CSRMatrix::partition(index left, index right) {
+	index mid = (left + right) / 2;
+	index pivot = columnIdx[mid];
+	std::swap(columnIdx[mid], columnIdx[right]);
+	std::swap(nonZeros[mid], nonZeros[right]);
+
+	index i = left;
+	for (index j = left; j < right; ++j) {
+		if (columnIdx[j] <= pivot) {
+			std::swap(columnIdx[i], columnIdx[j]);
+			std::swap(nonZeros[i], nonZeros[j]);
+			++i;
+		}
+	}
+	std::swap(columnIdx[i], columnIdx[right]);
+	std::swap(nonZeros[i], nonZeros[right]);
+	return i;
+}
+
+void CSRMatrix::sort() {
+#pragma omp parallel for
+	for (index i = 0; i < nRows; ++i) {
+		if (rowIdx[i+1] - rowIdx[i] > 1) {
+			quicksort(rowIdx[i], rowIdx[i+1]-1);
+		}
+	}
+
+	isSorted = true;
+}
+
+bool CSRMatrix::sorted() const {
+//	bool sorted = true;
+//#pragma omp parallel for
+//	for (index i = 0; i < nRows; ++i) {
+//		for (index j = rowIdx[i]+1; j < rowIdx[i+1]; ++j) {
+//			if (columnIdx[j-1] > columnIdx[j]) {
+//				sorted = false;
+//				break;
+//			}
+//		}
+//	}
+
+	return isSorted;
+}
+
 Vector CSRMatrix::row(const index i) const {
 	assert(i >= 0 && i < nRows);
 
@@ -131,6 +224,7 @@ Vector CSRMatrix::column(const index j) const {
 
 Vector CSRMatrix::diagonal() const {
 	Vector diag(std::min(nRows, nCols), 0.0);
+#pragma omp parallel for
 	for (index i = 0; i < diag.getDimension(); ++i) {
 		diag[i] = (*this)(i,i);
 	}
@@ -178,9 +272,14 @@ Vector CSRMatrix::operator*(const Vector &vector) const {
 	assert(nCols == vector.getDimension());
 
 	Vector result(nRows, 0.0);
-	parallelForNonZeroElementsInRowOrder([&](node i, node j, double value) {
-		result[i] += value * vector[j];
-	});
+#pragma omp parallel for
+	for (index i = 0; i < numberOfRows(); ++i) {
+		double sum = 0.0;
+		for (index cIdx = rowIdx[i]; cIdx < rowIdx[i+1]; ++cIdx) {
+			sum += nonZeros[cIdx] * vector[columnIdx[cIdx]];
+		}
+		result[i] = sum;
+	}
 
 	return result;
 }
@@ -188,26 +287,94 @@ Vector CSRMatrix::operator*(const Vector &vector) const {
 CSRMatrix CSRMatrix::operator*(const CSRMatrix &other) const {
 	assert(nCols == other.nRows);
 
-	std::vector<std::pair<index,index>> positions;
-	std::vector<double> values;
+	std::vector<index> rowIdx(numberOfRows()+1, 0);
+	std::vector<index> columnIdx;
+	std::vector<double> nonZeros;
 
-	SparseAccumulator spa(numberOfRows());
-	for (index i = 0; i < numberOfRows(); ++i) {
-		forNonZeroElementsInRow(i, [&](index k, double val1) {
-			other.forNonZeroElementsInRow(k, [&](index j, double val2) {
-				spa.scatter(val1 * val2, j);
-			});
-		});
+#pragma omp parallel
+	{
+		std::vector<int64_t> marker(other.numberOfColumns(), -1);
+		count numThreads = omp_get_num_threads();
+		index threadId = omp_get_thread_num();
 
-		spa.gather([&](index i, index j, double value){
-			positions.push_back(std::make_pair(i,j));
-			values.push_back(value);
-		});
+		count chunkSize = (numberOfRows() + numThreads - 1) / numThreads;
+		index chunkStart = threadId * chunkSize;
+		index chunkEnd = std::min(numberOfRows(), chunkStart + chunkSize);
 
-		spa.increaseRow();
+		for (index i = chunkStart; i < chunkEnd; ++i) {
+			for (index jA = this->rowIdx[i]; jA < this->rowIdx[i+1]; ++jA) {
+				index k = this->columnIdx[jA];
+				for (index jB = other.rowIdx[k]; jB < other.rowIdx[k+1]; ++jB) {
+					index j = other.columnIdx[jB];
+					if (marker[j] != (int64_t) i) {
+						marker[j] = i;
+						++rowIdx[i+1];
+					}
+				}
+			}
+		}
+
+		std::fill(marker.begin(), marker.end(), -1);
+
+#pragma omp barrier
+#pragma omp single
+		{
+			for (index i = 0; i < numberOfRows(); ++i) {
+				rowIdx[i+1] += rowIdx[i];
+			}
+
+			columnIdx = std::vector<index>(rowIdx[numberOfRows()]);
+			nonZeros = std::vector<double>(rowIdx[numberOfRows()]);
+		}
+
+		for (index i = chunkStart; i < chunkEnd; ++i) {
+			index rowBegin = rowIdx[i];
+			index rowEnd = rowBegin;
+
+			for (index jA = this->rowIdx[i]; jA < this->rowIdx[i+1]; ++jA) {
+				index k = this->columnIdx[jA];
+				double valA = this->nonZeros[jA];
+
+				for (index jB = other.rowIdx[k]; jB < other.rowIdx[k+1]; ++jB) {
+					index j = other.columnIdx[jB];
+					double valB = other.nonZeros[jB];
+
+					if (marker[j] < (int64_t) rowBegin) {
+						marker[j] = rowEnd;
+						columnIdx[rowEnd] = j;
+						nonZeros[rowEnd] = valA * valB;
+						++rowEnd;
+					} else {
+						nonZeros[marker[j]] += valA * valB;
+					}
+				}
+			}
+		}
 	}
 
-	return CSRMatrix(nRows, other.nCols, positions, values);
+	CSRMatrix result(numberOfRows(), other.numberOfColumns(), rowIdx, columnIdx, nonZeros);
+	result.sort();
+	return result;
+
+
+//	std::vector<Triple> triples;
+//
+//	SparseAccumulator spa(numberOfRows());
+//	for (index i = 0; i < numberOfRows(); ++i) {
+//		forNonZeroElementsInRow(i, [&](index k, double val1) {
+//			other.forNonZeroElementsInRow(k, [&](index j, double val2) {
+//				spa.scatter(val1 * val2, j);
+//			});
+//		});
+//
+//		spa.gather([&](index i, index j, double value){
+//			triples.push_back({i,j,value});
+//		});
+//
+//		spa.increaseRow();
+//	}
+//
+//	return CSRMatrix(nRows, other.nCols, triples, true);
 }
 
 CSRMatrix CSRMatrix::operator/(const double &divisor) const {
@@ -218,7 +385,48 @@ CSRMatrix& CSRMatrix::operator/=(const double &divisor) {
 	return *this *= 1.0 / divisor;
 }
 
+CSRMatrix CSRMatrix::subMatrix(const std::vector<index> &rows, const std::vector<index> &columns) const {
+	index invalid = std::numeric_limits<index>::max();
+	std::vector<index> columnMapping(numberOfColumns(), invalid);
+	std::vector<index> rowIdx(rows.size() + 1, 0);
 
+#pragma omp parallel for
+	for (index j = 0; j < columns.size(); ++j) {
+		columnMapping[columns[j]] = j;
+	}
+
+
+#pragma omp parallel for
+	for (index i = 0; i < rows.size(); ++i) {
+		forNonZeroElementsInRow(rows[i], [&](index j, double val) {
+			if (columnMapping[j] != invalid) {
+				rowIdx[i+1]++;
+			}
+		});
+	}
+
+	for (index i = 0; i < rows.size(); ++i) {
+		rowIdx[i+1] += rowIdx[i];
+	}
+
+	count nnz = rowIdx[rows.size()];
+	std::vector<index> columnIdx(nnz);
+	std::vector<double> nonZeros(nnz);
+
+#pragma omp parallel for
+	for (index i = 0; i < rows.size(); ++i) {
+		index cIdx = rowIdx[i];
+		forNonZeroElementsInRow(rows[i], [&](index j, double val) {
+			if (columnMapping[j] != invalid) { // column is present in submatrix
+				columnIdx[cIdx] = columnMapping[j];
+				nonZeros[cIdx] = val;
+				cIdx++;
+			}
+		});
+	}
+
+	return CSRMatrix(rows.size(), columns.size(), rowIdx, columnIdx, nonZeros, sorted());
+}
 
 CSRMatrix CSRMatrix::mTmMultiply(const CSRMatrix &A, const CSRMatrix &B) {
 	assert(A.nRows == B.nRows);
@@ -370,7 +578,7 @@ Graph CSRMatrix::matrixToGraph(const CSRMatrix &matrix) {
 bool CSRMatrix::isSymmetric(const CSRMatrix &matrix) {
 	bool output = true;
 	matrix.forNonZeroElementsInRowOrder([&] (index i, index j, edgeweight w) {
-		if (matrix(j, i) != w) {
+		if (abs(matrix(j, i)-w) > EPSILON) {
 			output = false;
 		}
 	});
