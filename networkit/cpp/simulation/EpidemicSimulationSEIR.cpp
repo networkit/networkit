@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-EpidemicSimulationSEIR::EpidemicSimulationSEIR(const Graph& G, count tMax, double transP, count eTime, count iTime) : Algorithm(), G(G), tMax(tMax), transP(transP), eTime(eTime), iTime(iTime)  {
+EpidemicSimulationSEIR::EpidemicSimulationSEIR(const Graph& G, count tMax, double transP, count eTime, count iTime, node zero) : Algorithm(), G(G), tMax(tMax), transP(transP), eTime(eTime), iTime(iTime), zero(zero)  {
 }
 
 void EpidemicSimulationSEIR::run() {
@@ -40,7 +40,7 @@ void EpidemicSimulationSEIR::run() {
 		}
 	};
 
-
+	// update state of nodes
 	auto sweep = [&](node u) {
 		if (state[u] == State::S) {
 			// do nothing
@@ -67,12 +67,37 @@ void EpidemicSimulationSEIR::run() {
 		}
 	};
 
+
+	auto census = [&]() {
+		std::vector<count> data = {0, 0, 0, 0, 0};
+		G.forNodes([&](node v) {
+			data[(index) state[v]] += 1;
+		});
+		return data;
+	};
+
+
+	// if starting node node provided, start with random node
+	if (zero == none) {
+		zero = G.randomNode();
+	}
+	setState(zero, State::I);	// infect node zero
+
 	while (t < tMax) {
 		G.forNodes(sweep);
+		auto data = census();
+		data.push_back(t);
+		data.push_back(zero);
+		stats.push_back(data);
 		t += 1;
 	}
 
 	hasRun = true;
+}
+
+
+std::vector<std::vector<count>> EpidemicSimulationSEIR::getStats() {
+	return stats;
 }
 
 
