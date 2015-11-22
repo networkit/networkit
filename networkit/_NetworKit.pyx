@@ -5,6 +5,13 @@
 # needed for collections.Iterable
 import collections
 
+
+try:
+	import pandas
+except ImportError:
+	print(""" WARNING: module 'pandas' not found, some functionality will be restricted """)
+
+
 # C++ operators
 from cython.operator import dereference
 
@@ -8196,7 +8203,7 @@ def sort2(sample):
 cdef extern from "cpp/simulation/EpidemicSimulationSEIR.h":
 	cdef cppclass _EpidemicSimulationSEIR "NetworKit::EpidemicSimulationSEIR" (_Algorithm):
 		_EpidemicSimulationSEIR(_Graph, count, double, count, count, node) except +
-		vector[vector[count]] getStats() except +
+		vector[vector[count]] getData() except +
 
 cdef class EpidemicSimulationSEIR(Algorithm):
 	"""
@@ -8223,5 +8230,5 @@ cdef class EpidemicSimulationSEIR(Algorithm):
 		self.G = G
 		self._this = new _EpidemicSimulationSEIR(G._this, tMax, transP, eTime, iTime, zero)
 
-	def getStats(self):
-		return (<_EpidemicSimulationSEIR*>(self._this)).getStats()
+	def getData(self):
+		return pandas.DataFrame((<_EpidemicSimulationSEIR*>(self._this)).getData(), columns=["zero", "time", "state", "count"])

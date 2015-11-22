@@ -31,7 +31,7 @@ public:
 	void run() override;
 
 
-	std::vector<std::vector<count>> getStats();
+	std::vector<std::vector<count>> getData();
 
 protected:
 
@@ -45,6 +45,7 @@ protected:
 	std::vector<State> state;
 	std::vector<index> timestamp;
 	std::vector<std::vector<count>> stats;
+	bool randStartNode;
 
 };
 

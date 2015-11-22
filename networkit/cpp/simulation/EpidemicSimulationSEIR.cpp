@@ -85,10 +85,13 @@ void EpidemicSimulationSEIR::run() {
 
 	while (t < tMax) {
 		G.forNodes(sweep);
-		auto data = census();
-		data.push_back(t);
-		data.push_back(zero);
-		stats.push_back(data);
+		auto populations = census();
+
+		for (int s = (int) State::S; s != (int) State::U; ++s) {
+			std::vector<count> data = {zero, t, s, populations[s]};
+			stats.push_back(data);
+		}
+
 		t += 1;
 	}
 
@@ -96,7 +99,7 @@ void EpidemicSimulationSEIR::run() {
 }
 
 
-std::vector<std::vector<count>> EpidemicSimulationSEIR::getStats() {
+std::vector<std::vector<count>> EpidemicSimulationSEIR::getData() {
 	return stats;
 }
 
