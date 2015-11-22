@@ -64,6 +64,7 @@ from . import linkprediction
 from . import correlation
 from . import matching
 from . import coarsening
+from . import simulation
 from .profiling import profiling
 
 try:

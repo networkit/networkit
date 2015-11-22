@@ -6,6 +6,13 @@
 import collections
 import math
 
+
+try:
+	import pandas
+except ImportError:
+	print(""" WARNING: module 'pandas' not found, some functionality will be restricted """)
+
+
 # C++ operators
 from cython.operator import dereference
 
@@ -8251,3 +8258,39 @@ def sort2(sample):
 		i += 1
 	sort(result.begin(),result.end())
 	return result
+
+
+# simulation
+
+cdef extern from "cpp/simulation/EpidemicSimulationSEIR.h":
+	cdef cppclass _EpidemicSimulationSEIR "NetworKit::EpidemicSimulationSEIR" (_Algorithm):
+		_EpidemicSimulationSEIR(_Graph, count, double, count, count, node) except +
+		vector[vector[count]] getData() except +
+
+cdef class EpidemicSimulationSEIR(Algorithm):
+	"""
+
+ 	Parameters
+ 	----------
+ 	G : Graph
+ 		The graph.
+ 	tMax : count
+ 		max. number of timesteps
+	transP : double
+		transmission probability
+	eTime : count
+		exposed time
+	iTime : count
+		infectious time
+	zero : node
+		starting node
+	"""
+
+	cdef Graph G
+
+	def __cinit__(self, Graph G, count tMax, double transP=0.5, count eTime=2, count iTime=7, node zero=none):
+		self.G = G
+		self._this = new _EpidemicSimulationSEIR(G._this, tMax, transP, eTime, iTime, zero)
+
+	def getData(self):
+		return pandas.DataFrame((<_EpidemicSimulationSEIR*>(self._this)).getData(), columns=["zero", "time", "state", "count"])
