@@ -80,7 +80,7 @@ for (auto testInstance : testInstances) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/" + testInstance + ".graph");
 	double effective = EffectiveDiameter::effectiveDiameter(G);
-	count exact = Diameter::estimatedDiameterRange(G, 0).first;
+	count exact = Diameter::exactDiameter(G);
 	EXPECT_LE(effective, exact);
 }
 }
@@ -95,7 +95,7 @@ for (auto testInstance : testInstances) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/" + testInstance + ".graph");
 	double effective = EffectiveDiameter::effectiveDiameterExact(G);
-	count exact = Diameter::estimatedDiameterRange(G, 0).first;
+	count exact = Diameter::exactDiameter(G);
 	EXPECT_LE(effective, exact);
 }
 
