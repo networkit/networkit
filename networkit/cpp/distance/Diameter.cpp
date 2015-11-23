@@ -138,7 +138,17 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworK
 	std::vector<node> startNodes(numberOfComponents, 0), maxDist(numberOfComponents, 0);
 	std::vector<count> maxDeg(numberOfComponents, 0);
 
-	// for each component, find the node with the minimum degreee and add it as start node
+	count lb = 0, ub = G.numberOfNodes();
+
+	auto printStartNodes = [&]() {
+		DEBUG("Start nodes (lb = ", lb, ", ub = ", ub, "): ");
+		for (node u : startNodes) {
+			(void)u; // prevent unused variable warning
+			DEBUG("Node ", u, " with distance sum ", sum[u], ", lower bound ", eccLowerBound[u], ", upper bound ", eccUpperBound[u]);
+		}
+	};
+
+	// for each component, find the node with the maximum degreee and add it as start node
 	G.forNodes([&](node v) {
 		count d = G.degree(v);
 		count c = comp.componentOfNode(v);
@@ -176,7 +186,6 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworK
 
 	runBFS(startNodes);
 
-	count lb, ub;
 	std::tie(lb, ub) = diameterBounds();
 
 	for (index i = 0; i < G.numberOfNodes() && ub > (lb + error*lb); ++i) {
@@ -202,6 +211,7 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworK
 
 		handler.assureRunning();
 
+		printStartNodes();
 		runBFS(startNodes);
 
 		std::tie(lb, ub) = diameterBounds();
