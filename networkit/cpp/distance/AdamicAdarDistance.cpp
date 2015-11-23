@@ -63,7 +63,7 @@ double AdamicAdarDistance::distance(node u, node v) {
 }
 
 
-std::vector< double > AdamicAdarDistance::getEdgeAttribute() {
+std::vector< double > AdamicAdarDistance::getEdgeScores() {
 	return aaDistance;
 }
 

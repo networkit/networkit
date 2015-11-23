@@ -7557,7 +7557,7 @@ cdef extern from "cpp/distance/AdamicAdarDistance.h":
 		_AdamicAdarDistance(const _Graph& G) except +
 		void preprocess() except +
 		double distance(node u, node v) except +
-		vector[double] getEdgeAttribute() except +
+		vector[double] getEdgeScores() except +
 
 cdef class AdamicAdarDistance:
 	"""
@@ -7590,7 +7590,7 @@ cdef class AdamicAdarDistance:
 
 		"""
 		#### TODO: convert distance to similarity!?! ####
-		return self._this.getEdgeAttribute()
+		return self._this.getEdgeScores()
 
 # Module: sparsification
 
@@ -7765,7 +7765,7 @@ cdef extern from "cpp/distance/JaccardDistance.h":
 	cdef cppclass _JaccardDistance "NetworKit::JaccardDistance":
 		_JaccardDistance(const _Graph& G, const vector[count]& triangles) except +
 		void preprocess() except +
-		vector[double] getEdgeAttribute() except +
+		vector[double] getEdgeScores() except +
 
 cdef class JaccardDistance:
 	"""
@@ -7793,7 +7793,7 @@ cdef class JaccardDistance:
 		del self._this
 
 	def getAttribute(self):
-		return self._this.getEdgeAttribute()
+		return self._this.getEdgeScores()
 
 
 cdef extern from "cpp/distance/AlgebraicDistance.h":
@@ -7801,7 +7801,7 @@ cdef extern from "cpp/distance/AlgebraicDistance.h":
 		_AlgebraicDistance(_Graph G, count numberSystems, count numberIterations, double omega, index norm, bool withEdgeScores) except +
 		void preprocess() except +
 		double distance(node, node) except +
-		vector[double] getEdgeAttribute() except +
+		vector[double] getEdgeScores() except +
 
 
 cdef class AlgebraicDistance:
@@ -7843,8 +7843,8 @@ cdef class AlgebraicDistance:
 	def distance(self, node u, node v):
 		return self._this.distance(u, v)
 
-	def getEdgeAttribute(self):
-		return self._this.getEdgeAttribute()
+	def getEdgeScores(self):
+		return self._this.getEdgeScores()
 
 
 cdef class JaccardSimilarityAttributizer:
@@ -7875,7 +7875,7 @@ cdef class JaccardSimilarityAttributizer:
 	def getAttribute(self):
 		#convert distance to similarity
 		self._this.preprocess()
-		return [1 - x for x in self._this.getEdgeAttribute()]
+		return [1 - x for x in self._this.getEdgeScores()]
 
 cdef extern from "cpp/sparsification/RandomNodeEdgeScore.h":
 	cdef cppclass _RandomNodeEdgeScore "NetworKit::RandomNodeEdgeScore"(_EdgeScore[double]):
