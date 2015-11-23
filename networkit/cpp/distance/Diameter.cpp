@@ -65,7 +65,6 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworK
 	 * http://www.sciencedirect.com/science/article/pii/S0304397515001644
 	 */
 
-	std::vector<count> sum(G.upperNodeIdBound());
 	std::vector<count> eccLowerBound(G.upperNodeIdBound()), eccUpperBound(G.upperNodeIdBound());
 	std::vector<bool> finished(G.upperNodeIdBound());
 
@@ -74,8 +73,6 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworK
 			eccUpperBound[u] = G.numberOfNodes();
 		}
 	}
-
-	count k = 4;
 
 	ConnectedComponents comp(G);
 	comp.run();
@@ -102,8 +99,6 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworK
 		});
 
 		G.forNodes([&](node u) {
-			sum[u] += distances[u];
-
 			if (finished[u]) return;
 
 			auto c = comp.componentOfNode(u);
@@ -152,30 +147,6 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworK
 		if (d >= maxDeg[c]) {
 			startNodes[c] = v;
 			maxDeg[c] = d;
-		}
-	});
-
-	for (index i = 0; i < k; ++i) {
-		handler.assureRunning();
-		runBFS(startNodes);
-
-		G.forNodes([&](node v) {
-			index c = comp.componentOfNode(v);
-			if (sum[v] >= maxDist[c]) {
-				maxDist[c] = sum[v];
-				startNodes[c] = v;
-			}
-		});
-	}
-
-	handler.assureRunning();
-
-	std::vector<count> minDist(numberOfComponents, G.numberOfNodes());
-	G.forNodes([&](node u) {
-		auto c = comp.componentOfNode(u);
-		if (sum[u] < minDist[c]) {
-			minDist[c] = sum[u];
-			startNodes[c] = u;
 		}
 	});
 
