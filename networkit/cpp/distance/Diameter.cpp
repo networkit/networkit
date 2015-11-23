@@ -108,19 +108,16 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworK
 
 			auto c = comp.componentOfNode(u);
 
+			auto eccValue = std::max(distances[u], ecc[c] - distances[u]);
+			eccLowerBound[u] = std::max(eccValue, eccLowerBound[u]);
+
 			if (distances[u] <= distFirst[c]) {
-				auto eccValue = std::max(distances[u], ecc[c] - distances[u]);
 				eccUpperBound[u] = eccValue;
-				eccLowerBound[u] = eccValue;
-				finished[u] = true;
 			} else {
 				eccUpperBound[u] = std::min(eccUpperBound[u], distances[u] + ecc[c] - 2 * distFirst[c]);
-				eccLowerBound[u] = std::max(eccLowerBound[u], distances[u]);
-
-				if (eccUpperBound[u] == eccLowerBound[u]) {
-					finished[u] = true; // this is only set to true, no problem with atomics/multi-threading here
-				}
 			}
+
+			finished[u] = (eccUpperBound[u] == eccLowerBound[u]);
 		});
 
 		ecc.clear();
