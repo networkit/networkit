@@ -185,7 +185,7 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworK
 
 	std::tie(lb, ub) = diameterBounds();
 
-	for (index i = 0; i < G.numberOfNodes() && ub > (lb + error*lb); ++i) {
+	for (index i = 0; i < 2*G.numberOfNodes() && ub > (lb + error*lb); ++i) {
 		handler.assureRunning();
 		startNodes.clear();
 		startNodes.resize(numberOfComponents, none);
@@ -193,14 +193,17 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworK
 		if ((i % 2) == 0) {
 			G.forNodes([&](node u) {
 				auto c = comp.componentOfNode(u);
-				if (startNodes[c] == none || std::tie(eccUpperBound[u], sum[u]) > std::tie(eccUpperBound[startNodes[c]], sum[startNodes[c]])) {
+				if (startNodes[c] == none || std::tie(eccUpperBound[u], distances[u]) > std::tie(eccUpperBound[startNodes[c]], distances[startNodes[c]])) {
 					startNodes[c] = u;
 				}
 			});
 		} else {
 			G.forNodes([&](node u) {
 				auto c = comp.componentOfNode(u);
-				if (startNodes[c] == none || std::tie(eccLowerBound[u], sum[u]) < std::tie(eccLowerBound[startNodes[c]], sum[startNodes[c]])) {
+				// Idea: we select a node that is central (i.e. has a low lower bound) but that is also close to the previous, non-central node.
+				// More generally, the best upper bound we can hope for a node v is eccLowerBound[u] + distance(u, v).
+				// We select the node the provides the best upper bound for the previous node u in the hope that in its neighborhood there are more nodes for which the bounds can be decreased.
+				if (startNodes[c] == none || eccLowerBound[u] + distances[u] < eccLowerBound[startNodes[c]] + distances[startNodes[c]]) {
 					startNodes[c] = u;
 				}
 			});
