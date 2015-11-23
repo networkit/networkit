@@ -571,7 +571,7 @@ class AlgebraicDistanceSparsifier(Sparsifier):
 		""" Returns the inverted algebraic distance score of the input graph. """
 		algDist = distance.AlgebraicDistance(G, self.numberSystems, self.numberIterations, self.omega, self.norm, withEdgeScores=True)
 		algDist.preprocess()
-		return [1.0 - d for d in algDist.getEdgeAttribute()]
+		return [1.0 - d for d in algDist.getEdgeScores()]
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
 		gf = GlobalThresholdFilter(G, attribute, parameter, True)
