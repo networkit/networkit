@@ -139,7 +139,7 @@ double AlgebraicDistance::distance(node u, node v) {
 }
 
 
-std::vector<double> AlgebraicDistance::getEdgeAttribute() {
+std::vector<double> AlgebraicDistance::getEdgeScores() {
 	if (!withEdgeScores) throw std::runtime_error("set constructor parameter 'withEdgeScores' to true");
 	return edgeScores;
 }

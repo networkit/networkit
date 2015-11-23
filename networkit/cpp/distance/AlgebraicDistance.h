@@ -45,7 +45,7 @@ public:
 	virtual double distance(node u, node v);
 
 
-	virtual std::vector<double> getEdgeAttribute();
+	virtual std::vector<double> getEdgeScores();
 
 
 protected:
