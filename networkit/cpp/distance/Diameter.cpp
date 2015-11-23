@@ -203,7 +203,9 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworK
 				// Idea: we select a node that is central (i.e. has a low lower bound) but that is also close to the previous, non-central node.
 				// More generally, the best upper bound we can hope for a node v is eccLowerBound[u] + distance(u, v).
 				// We select the node the provides the best upper bound for the previous node u in the hope that in its neighborhood there are more nodes for which the bounds can be decreased.
-				if (startNodes[c] == none || eccLowerBound[u] + distances[u] < eccLowerBound[startNodes[c]] + distances[startNodes[c]]) {
+				// Among all these nodes we select the one that has the largest distance to the previous start node.
+				auto compU = eccLowerBound[u] + distances[u], compStart = eccLowerBound[startNodes[c]] + distances[startNodes[c]];
+				if (startNodes[c] == none || compU < compStart || (compU == compStart && distances[u] > distances[startNodes[c]])) {
 					startNodes[c] = u;
 				}
 			});
