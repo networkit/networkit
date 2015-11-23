@@ -1,0 +1,13 @@
+[kernel descriptions]
+Centrality.Degree = Node centrality index which ranks nodes by their degree.
+Centrality.CoreDecomposition = k-cores result from successively peeling away nodes of degree k. It also categorizes nodes according to the highest-order core in which they are contained, assigning a core number to each node.
+Centrality.ClusteringCoefficient = The local clustering coefficient of a node is the fraction of edges that exist between neighbors of that node (or, equivalently, closed triangles centered on that node)
+Centrality.PageRank = PageRank assigns relative importance to nodes according to their connections, incorporating the idea that edges to high-scoring nodes contribute more.
+Centrality.EigenvectorCentrality = Computes the leading eigenvector of the graph's adjacency matrix (normalized in 2-norm).
+Centrality.KPath =
+Centrality.Katz =
+Centrality.Betweenness = Betweenness centrality is the fraction of shortest paths between any pair of nodes that passes through a node.
+Centrality.Closeness = In connected graphs there is a natural distance metric between all pairs of nodes, defined by the length of their shortest paths. The farness of a node is defined as the sum of its distances from all other nodes, and its closeness is defined as the reciprocal of the farness.
+Partition.Communities = Community detection is the task of identifying groups of nodes in the network which are significantly more densely connected among each other than to the rest of nodes.
+Partition.ConnectedComponents = All nodes in a connected component are reachable from each other.
+Partition.CoreDecomposition = k-cores result from successively peeling away nodes of degree k. It also categorizes nodes according to the highest-order core in which they are contained, assigning a core number to each node.
