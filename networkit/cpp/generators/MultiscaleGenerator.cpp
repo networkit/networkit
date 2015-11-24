@@ -57,7 +57,7 @@ Graph MultiscaleGenerator::generate() {
 			// TODO: select edge weighting scheme
 			AlgebraicDistance ad(coarse[level]);
 			ad.preprocess();
-			PathGrowingMatcher matcher(coarse[level], ad.getEdgeAttribute());
+			PathGrowingMatcher matcher(coarse[level], ad.getEdgeScores());
 			matcher.run();
 			Matching matching = matcher.getMatching();
 			coarsening.reset(new MatchingCoarsening(original, matching));
