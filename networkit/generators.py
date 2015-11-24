@@ -36,7 +36,7 @@ class MultiscaleGenerator:
 	TODO:
 	"""
 
-	def __init__(self, O, withADWeights=True):
+	def __init__(self, O, maxLevel, withADWeights=True):
 		self.O = O				# original graph
 
 		# hierarchy
@@ -47,9 +47,13 @@ class MultiscaleGenerator:
 		self.down = []			# mapping: coarse node -> fine node
 		self.nodeWeights = []
 
+		# state
+		self.levels = 0		# actual number of levels
+
 		# parameters
 		self.withADWeights = True
-		self.maxLevel = 10
+		self.maxLevel = maxLevel
+
 
 	def _weightsFromADScores(self, scores, G):
 		""" turns (modified) AD distance scores into edge weights for matching """
@@ -67,15 +71,27 @@ class MultiscaleGenerator:
 
 		k = 4
 		gs = gridspec.GridSpec(k, k)
-		plt.figure(figsize=(12,12))
-		i = 0
-		for i in range(self.maxLevel):
+		plt.figure(figsize=(14,14))
+		for i in range(self.levels):
 			plt.subplot(gs[math.floor(i / k), i % k])
-			networkx.draw(nxadapter.nk2nx(self.Gc[i]), node_size=[self.nodeWeights[i] for v in self.Gc[i].nodes()], node_color="gray")
-			i += 1
+			networkx.draw(nxadapter.nk2nx(self.Gc[i]), node_size=[(self.nodeWeights[i][v] + 5) for v in self.Gc[i].nodes()], node_color="gray")
+
+	def _showFineSequence(self):
+		import matplotlib.pyplot as plt
+		import matplotlib.gridspec as gridspec
+		import networkx
+
+		k = 4
+		gs = gridspec.GridSpec(k, k)
+		plt.figure(figsize=(14,14))
+		for i in range(self.levels-1, -1, -1):
+			print("level ", i)
+			plt.subplot(gs[math.floor(i / k), i % k])
+			networkx.draw(nxadapter.nk2nx(self.Gf[i]), node_size=[(self.nodeWeights[i][v] + 5) for v in self.Gf[i].nodes()], node_color="gray")
 
 	def _buildCoarseSequence(self):
 		for i in range(self.maxLevel):
+			self.levels += 1
 			print("level: ", i)
 			if i is 0:
 				self.Gc.append(self.O)
@@ -104,14 +120,30 @@ class MultiscaleGenerator:
 				# set node weights
 				nw = [0 for v in range(self.Gc[i].upperNodeIdBound())]
 				def updateNodeWeights(v):
-					nw[v] += sum(self.nodeWeights[i-1][v_] for v_ in self.down[v])
-				self.Gc[i].forNodes(lambda v: updateNodeWeights)
+					nw[v] += sum(self.nodeWeights[i-1][v_] for v_ in self.down[i][v])
+				self.Gc[i].forNodes(lambda v: updateNodeWeights(v))
 				self.nodeWeights.append(nw)
 
 				# stop if there's no change from level to level
 				if (self.Gc[i].size() == self.Gc[i-1].size()):
 					print("stopping at level ", i)
 					break
+
+	def _uncoarsen(self, Gc):
+		return Gc
+
+
+	def _buildFineSequence(self):
+		print(self.levels)
+		# preallocate
+		self.Gf = [None for i in range(self.levels)]
+		for i in range(self.levels - 1, -1, -1):	# count down levels
+			print("level ", i)
+			if i == self.levels:
+				self.Gf[i] = self.Gc[i]
+			else:
+				self.Gf[i] = self._uncoarsen(self.Gc[i])
+
 
 
 	def generate(self):
