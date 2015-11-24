@@ -48,9 +48,5 @@ std::map<node, std::vector<node> > GraphCoarsening::getCoarseToFineNodeMapping()
 	return reverseMap;
 }
 
-std::string GraphCoarsening::toString() const {
-	throw std::runtime_error("implement in subclass");
-	return "GraphCoarsening base class";
-}
 
 }
