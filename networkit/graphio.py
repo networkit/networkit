@@ -10,8 +10,14 @@ from .GEXFIO import GEXFReader, GEXFWriter
 # external imports
 import os
 import logging
-import numpy
-import scipy.io
+try:
+	import numpy
+except ImportError:
+	print("module 'numpy' not available - some functionality will be restricted")
+try:
+	import scipy.io
+except ImportError:
+	print("module 'scipy' not available - some functionality will be restricted")
 import fnmatch
 
 try:

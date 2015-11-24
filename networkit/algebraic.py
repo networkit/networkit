@@ -6,8 +6,14 @@ __author__ = "Christian Staudt"
 # local imports
 
 # external imports
-import scipy.sparse
-import numpy as np
+try:
+	import scipy.sparse
+except ImportError:
+	print("module 'scipy' not available -- some functionality will be restricted")
+try:
+	import numpy as np
+except ImportError:
+	print("module 'numpy' not available -- some functionality will be restricted")
 
 
 
