@@ -7,6 +7,10 @@ __author__ = "Christian Staudt"
 # extension imports
 from _NetworKit import Graph, BarabasiAlbertGenerator, PubWebGenerator, ErdosRenyiGenerator, ClusteredRandomGraphGenerator, DorogovtsevMendesGenerator, DynamicPubWebGenerator, DynamicPathGenerator, ChungLuGenerator, HyperbolicGenerator, DynamicHyperbolicGenerator, HavelHakimiGenerator, DynamicDorogovtsevMendesGenerator, RmatGenerator, DynamicForestFireGenerator, RegularRingLatticeGenerator, WattsStrogatzGenerator, PowerlawDegreeSequence, EdgeSwitchingMarkovChainGenerator, EdgeSwitchingMarkovChainGenerator as ConfigurationModelGenerator, LFRGenerator
 
+from networkit import distance, coarsening, matching, nxadapter
+
+import math
+
 
 class StarGraphGenerator:
 	"""
@@ -34,6 +38,8 @@ class MultiscaleGenerator:
 
 	def __init__(self, O, withADWeights=True):
 		self.O = O				# original graph
+
+		# hierarchy
 		self.Gc = []			# hierarchy of coarse graphs
 		self.Gf = []			# hierarchy of fine graphs
 		self.matching = []
@@ -41,32 +47,72 @@ class MultiscaleGenerator:
 		self.down = []			# mapping: coarse node -> fine node
 		self.nodeWeights = []
 
-	def _buildCoarseSequence(self, maxLevel):
-		for i in range(maxLevel):
+		# parameters
+		self.withADWeights = True
+		self.maxLevel = 10
+
+	def _weightsFromADScores(self, scores, G):
+		""" turns (modified) AD distance scores into edge weights for matching """
+		epsilon = 1e-12
+		weights = [None for i in range(G.upperEdgeIdBound())]
+		def setWeight(u,v,w,eid):
+			weights[eid] = (1 / (scores[eid] + epsilon) * math.sqrt(G.degree(u) * G.degree(v)))
+		G.forEdges(lambda u,v,w,eid: setWeight(u,v,w,eid))
+		return weights
+
+	def _showCoarseSequence(self):
+		import matplotlib.pyplot as plt
+		import matplotlib.gridspec as gridspec
+		import networkx
+
+		k = 4
+		gs = gridspec.GridSpec(k, k)
+		plt.figure(figsize=(12,12))
+		i = 0
+		for i in range(self.maxLevel):
+			plt.subplot(gs[math.floor(i / k), i % k])
+			networkx.draw(nxadapter.nk2nx(self.Gc[i]), node_size=[self.nodeWeights[i] for v in self.Gc[i].nodes()], node_color="gray")
+			i += 1
+
+	def _buildCoarseSequence(self):
+		for i in range(self.maxLevel):
+			print("level: ", i)
 			if i is 0:
 				self.Gc.append(self.O)
 				self.up.append({})
 				self.down.append({})
 				self.nodeWeights.append([1 for v in range(self.Gc[i].upperNodeIdBound())])
 			else:
+				# matching and coarsening
 				if self.withADWeights:
-					ad = distance.AlgebraicDistance(self.Gc[i], withEdgeScores=True).preprocess()
-					matcher = matching.PathGrowingMatcher(self.Gc[i], weightsFromADScores(ad.getEdgeScores(), self.Gc[i]))
+					# index edges if not already happened
+					if not self.Gc[i-1].hasEdgeIds():
+						self.Gc[i-1].indexEdges()
+					ad = distance.AlgebraicDistance(self.Gc[i-1], withEdgeScores=True).preprocess()
+					matcher = matching.PathGrowingMatcher(self.Gc[i-1], self._weightsFromADScores(ad.getEdgeScores(), self.Gc[i-1]))
 				else:
-					matcher = matching.PathGrowingMatcher(self.Gc[i])
+					matcher = matching.PathGrowingMatcher(self.Gc[i-1])
 				self.matching.append(matcher.run().getMatching())
-				coarsening = coarsening.MatchingCoarsening(self.Gc[i], self.matching[i], noSelfLoops=True)
-				coarsening.run()
-				self.Gc.append(coarsening.getCoarseGraph())
-				self.Gc[i].indexEdges()
-				self.up[i], self.down[i] = coarsening.getFineToCoarseNodeMapping(), coarsening.getCoarseToFineNodeMapping()
-				if (self.Gc[i].size() == self.Gc[h-1].size()):
-					print("stopping at level ", h)
+				coarseningAlgo = coarsening.MatchingCoarsening(self.Gc[i-1], self.matching[i-1], noSelfLoops=True)
+				coarseningAlgo.run()
+				self.Gc.append(coarseningAlgo.getCoarseGraph())
+
+				# set node mappings
+				self.up.append(coarseningAlgo.getFineToCoarseNodeMapping())
+				self.down.append(coarseningAlgo.getCoarseToFineNodeMapping())
+
+				# set node weights
+				nw = [0 for v in range(self.Gc[i].upperNodeIdBound())]
+				def updateNodeWeights(v):
+					nw[v] += sum(self.nodeWeights[i-1][v_] for v_ in self.down[v])
+				self.Gc[i].forNodes(lambda v: updateNodeWeights)
+				self.nodeWeights.append(nw)
+
+				# stop if there's no change from level to level
+				if (self.Gc[i].size() == self.Gc[i-1].size()):
+					print("stopping at level ", i)
 					break
-				else:
-					pass
-					#nodeWeights = [0 for v in range(G.upperNodeIdBound())]
-					#self.Gc[i].forNodes(lambda v: nodeWeights[v] += sum())
+
 
 	def generate(self):
 		return None
