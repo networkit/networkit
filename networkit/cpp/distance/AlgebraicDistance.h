@@ -2,7 +2,7 @@
  * AlgebraicDistance.h
  *
  *  Created on: 03.11.2015
- *      Author: Henning Meyerhenke, Christian Staudt
+ *      Author: Henning Meyerhenke, Christian Staudt, Michael Hamann
  */
 
 #ifndef ALGEBRAICDISTANCE_H_
