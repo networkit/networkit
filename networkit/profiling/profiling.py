@@ -375,7 +375,8 @@ class Profile:
 			style = style,
 			color = color,
 			pageIndex = 0,
-			parallel = parallel
+			parallel = parallel,
+			token = self.__token,
 		)
 
 		if outputType == "HTML":
