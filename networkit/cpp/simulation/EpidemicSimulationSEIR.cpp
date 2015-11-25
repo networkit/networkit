@@ -81,6 +81,7 @@ void EpidemicSimulationSEIR::run() {
 	if (zero == none) {
 		zero = G.randomNode();
 	}
+	INFO("zero node: ", zero);
 	setState(zero, State::I);	// infect node zero
 
 	while (t < tMax) {
