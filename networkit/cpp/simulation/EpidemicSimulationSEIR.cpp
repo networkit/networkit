@@ -81,10 +81,11 @@ void EpidemicSimulationSEIR::run() {
 	if (zero == none) {
 		zero = G.randomNode();
 	}
+	INFO("zero node: ", zero);
 	setState(zero, State::I);	// infect node zero
 
 	while (t < tMax) {
-		G.forNodes(sweep);
+		G.parallelForNodes(sweep);
 		auto populations = census();
 
 		for (int s = (int) State::S; s != (int) State::U; ++s) {
