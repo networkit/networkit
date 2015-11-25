@@ -10,7 +10,7 @@ from _NetworKit import Graph, BarabasiAlbertGenerator, PubWebGenerator, ErdosRen
 from networkit import distance, coarsening, matching, nxadapter
 
 import math
-
+import logging
 
 class StarGraphGenerator:
 	"""
@@ -71,7 +71,7 @@ class MultiscaleGenerator:
 
 		k = 4
 		gs = gridspec.GridSpec(k, k)
-		plt.figure(figsize=(14,14))
+		plt.figure(figsize=(12,12))
 		for i in range(self.levels):
 			plt.subplot(gs[math.floor(i / k), i % k])
 			networkx.draw(nxadapter.nk2nx(self.Gc[i]), node_size=[(self.nodeWeights[i][v] + 5) for v in self.Gc[i].nodes()], node_color="gray")
@@ -83,24 +83,27 @@ class MultiscaleGenerator:
 
 		k = 4
 		gs = gridspec.GridSpec(k, k)
-		plt.figure(figsize=(14,14))
+		plt.figure(figsize=(12,12))
 		for i in range(self.levels-1, -1, -1):
 			print("level ", i)
 			plt.subplot(gs[math.floor(i / k), i % k])
-			networkx.draw(nxadapter.nk2nx(self.Gf[i]), node_size=[(self.nodeWeights[i][v] + 5) for v in self.Gf[i].nodes()], node_color="gray")
+			nodeSizes = [(self.nodeWeights[i][v] + 5) for v in self.Gf[i].nodes()]
+			networkx.draw(nxadapter.nk2nx(self.Gf[i]), node_size=nodeSizes, node_color="gray")
 
 	def _buildCoarseSequence(self):
+		logging.info("building coarse sequence")
 		for i in range(self.maxLevel):
 			self.levels += 1
-			print("level: ", i)
+			logging.info("level: ", i)
 			if i is 0:
 				self.Gc.append(self.O)
 				self.up.append({})
 				self.down.append({})
 				self.nodeWeights.append([1 for v in range(self.Gc[i].upperNodeIdBound())])
 			else:
-				# matching and coarsening
+				logging.info("\t matching")
 				if self.withADWeights:
+					logging.info("\t calculating algebraic distance weights")
 					# index edges if not already happened
 					if not self.Gc[i-1].hasEdgeIds():
 						self.Gc[i-1].indexEdges()
@@ -108,7 +111,10 @@ class MultiscaleGenerator:
 					matcher = matching.PathGrowingMatcher(self.Gc[i-1], self._weightsFromADScores(ad.getEdgeScores(), self.Gc[i-1]))
 				else:
 					matcher = matching.PathGrowingMatcher(self.Gc[i-1])
-				self.matching.append(matcher.run().getMatching())
+				matcher.run()
+				self.matching.append(matcher.getMatching())
+
+				logging.info("\t coarsening")
 				coarseningAlgo = coarsening.MatchingCoarsening(self.Gc[i-1], self.matching[i-1], noSelfLoops=True)
 				coarseningAlgo.run()
 				self.Gc.append(coarseningAlgo.getCoarseGraph())
@@ -118,6 +124,7 @@ class MultiscaleGenerator:
 				self.down.append(coarseningAlgo.getCoarseToFineNodeMapping())
 
 				# set node weights
+				logging.info("updating node weights")
 				nw = [0 for v in range(self.Gc[i].upperNodeIdBound())]
 				def updateNodeWeights(v):
 					nw[v] += sum(self.nodeWeights[i-1][v_] for v_ in self.down[i][v])
