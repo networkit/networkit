@@ -135,7 +135,8 @@ Matrix& Matrix::operator+=(const Matrix &other) {
 		throw std::runtime_error("Matrix::operator+=(const Matrix &other): Dimensions of matrices do not match");
 	}
 
-	other.parallelForNonZeroElementsInRowOrder([&](node i, node j, double value) {
+	// WARNING: this must not be done in parallel as increaseWeight can create new edges which may lead to vector re-allocations
+	other.forNonZeroElementsInRowOrder([&](node i, node j, double value) {
 		graph.increaseWeight(i, j, value);
 	});
 
@@ -151,7 +152,8 @@ Matrix& Matrix::operator-=(const Matrix &other) {
 		throw std::runtime_error("Matrix::operator-=(const Matrix &other): Dimensions of matrices do not match");
 	}
 
-	other.parallelForNonZeroElementsInRowOrder([&](node i, node j, double value) {
+	// WARNING: this must not be done in parallel as increaseWeight can create new edges which may lead to vector re-allocations
+	other.forNonZeroElementsInRowOrder([&](node i, node j, double value) {
 		graph.increaseWeight(i, j, -value);
 	});
 
