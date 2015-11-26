@@ -210,8 +210,8 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
 		Point2D<double> q = HyperbolicSpace::polarToCartesian(angles[toWiggle[j]], radii[toWiggle[j]]);
 		quad.getElementsInHyperbolicCircle(q, R, suppressLeft, newNeighbours);
 
-		Aux::Parallel::sort(oldNeighbours[j].begin(), oldNeighbours[j].end());
-		Aux::Parallel::sort(newNeighbours.begin(), newNeighbours.end());
+		std::sort(oldNeighbours[j].begin(), oldNeighbours[j].end());
+		std::sort(newNeighbours.begin(), newNeighbours.end());
 		vector<index> newEdges(newNeighbours.size());
 		auto it = std::set_difference(newNeighbours.begin(), newNeighbours.end(), oldNeighbours[j].begin(), oldNeighbours[j].end(), newEdges.begin());
 		newEdges.erase(it, newEdges.end());//trim empty space
