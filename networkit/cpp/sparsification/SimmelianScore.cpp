@@ -7,7 +7,6 @@
 
 #include "SimmelianScore.h"
 #include <limits>
-#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -24,7 +23,7 @@ std::vector<RankedNeighbors> SimmelianScore::getRankedNeighborhood(const Graph& 
 			count triangleCount = round(triangles[eid]);
 			neighbors[u].push_back(RankedEdge(u, v, triangleCount));
 		});
-		Aux::Parallel::sort(neighbors[u].begin(), neighbors[u].end());
+		std::sort(neighbors[u].begin(), neighbors[u].end());
 
 		//Calculate the ranks.
 		count currentRank = 0;	//Rank 0 is considered the best.

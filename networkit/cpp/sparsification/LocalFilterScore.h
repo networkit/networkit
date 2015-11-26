@@ -9,7 +9,6 @@
 #define LOCALLOGSCORE_H
 
 #include "../edgescores/EdgeScore.h"
-#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -64,7 +63,7 @@ public:
 			G.forNeighborsOf(i, [&](node _i, node j, edgeid eid) {
 				neighbors.emplace_back(attribute[eid], n - d, eid); // if in doubt, prefer links to low-degree nodes
 			});
-			Aux::Parallel::sort(neighbors.begin(), neighbors.end(), std::greater<std::tuple<double, count, index> >());
+			std::sort(neighbors.begin(), neighbors.end(), std::greater<std::tuple<double, count, index> >());
 
 			count rank = 1;
 
