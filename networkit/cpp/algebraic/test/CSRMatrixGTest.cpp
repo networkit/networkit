@@ -514,7 +514,7 @@ TEST(CSRMatrixGTest, testMatrixMultiplication) {
 	CSRMatrix result = mat1 * mat2;
 	ASSERT_EQ(mat1.numberOfRows(), result.numberOfRows());
 	ASSERT_EQ(mat1.numberOfColumns(), result.numberOfColumns());
-	EXPECT_EQ(14, result.nnz());
+	EXPECT_EQ(14u, result.nnz());
 
 	EXPECT_EQ(14, result(0,0));
 	EXPECT_EQ(6, result(0,1));
@@ -663,6 +663,42 @@ TEST(CSRMatrixGTest, testMatrixTransposeVectorMultiplication) {
 	ASSERT_EQ(2u, res.getDimension());
 	EXPECT_EQ(0, res[0]);
 	EXPECT_EQ(6, res[1]);
+}
+
+TEST(CSRMatrixGTest, testMatrixDiagonal) {
+	//
+	//	   1  2  3  1  1
+	// 	   0  2  0  0  0
+	// mat 4  0  0 -1  0
+	//	   0  0  0  4 -1
+	//
+	std::vector<std::pair<index, index> > positions;
+	std::vector<double> values = {1, 2, 3, 1, 1, 2, 4, -1, 4, -1};
+
+	positions.push_back(std::make_pair(0,0));
+	positions.push_back(std::make_pair(0,1));
+	positions.push_back(std::make_pair(0,2));
+	positions.push_back(std::make_pair(0,3));
+	positions.push_back(std::make_pair(0,4));
+	positions.push_back(std::make_pair(1,1));
+	positions.push_back(std::make_pair(2,0));
+	positions.push_back(std::make_pair(2,3));
+	positions.push_back(std::make_pair(3,3));
+	positions.push_back(std::make_pair(3,4));
+
+	CSRMatrix mat(4, 5, positions, values);
+
+	Vector diag1 = mat.diagonal();
+	EXPECT_EQ(1, diag1[0]);
+	EXPECT_EQ(2, diag1[1]);
+	EXPECT_EQ(0, diag1[2]);
+	EXPECT_EQ(4, diag1[3]);
+
+	mat.sort();
+	Vector diag2 = mat.diagonal();
+	for (index i = 0; i < diag2.getDimension(); ++i) {
+		EXPECT_EQ(diag1[i], diag2[i]);
+	}
 }
 
 } /* namespace NetworKit */

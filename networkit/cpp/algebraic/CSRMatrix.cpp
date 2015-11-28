@@ -224,9 +224,33 @@ Vector CSRMatrix::column(const index j) const {
 
 Vector CSRMatrix::diagonal() const {
 	Vector diag(std::min(nRows, nCols), 0.0);
+
+	if (sorted()) {
 #pragma omp parallel for
-	for (index i = 0; i < diag.getDimension(); ++i) {
-		diag[i] = (*this)(i,i);
+		for (index i = 0; i < diag.getDimension(); ++i) {
+			index left = rowIdx[i];
+			index right = rowIdx[i+1]-1;
+			index mid = (left + right) / 2;
+			while (left <= right) {
+				if (columnIdx[mid] == i) {
+					diag[i] = nonZeros[mid];
+					break;
+				}
+
+				if (columnIdx[mid] < i) {
+					left = mid+1;
+				} else {
+					right = mid-1;
+				}
+
+				mid = (left + right) / 2;
+			}
+		}
+	} else {
+#pragma omp parallel for
+		for (index i = 0; i < diag.getDimension(); ++i) {
+			diag[i] = (*this)(i,i);
+		}
 	}
 
 	return diag;
@@ -287,94 +311,95 @@ Vector CSRMatrix::operator*(const Vector &vector) const {
 CSRMatrix CSRMatrix::operator*(const CSRMatrix &other) const {
 	assert(nCols == other.nRows);
 
-	std::vector<index> rowIdx(numberOfRows()+1, 0);
-	std::vector<index> columnIdx;
-	std::vector<double> nonZeros;
+	if (nCols > OMP_MIN_SIZE) {
+		std::vector<index> rowIdx(numberOfRows()+1, 0);
+		std::vector<index> columnIdx;
+		std::vector<double> nonZeros;
 
-#pragma omp parallel
-	{
-		std::vector<int64_t> marker(other.numberOfColumns(), -1);
-		count numThreads = omp_get_num_threads();
-		index threadId = omp_get_thread_num();
-
-		count chunkSize = (numberOfRows() + numThreads - 1) / numThreads;
-		index chunkStart = threadId * chunkSize;
-		index chunkEnd = std::min(numberOfRows(), chunkStart + chunkSize);
-
-		for (index i = chunkStart; i < chunkEnd; ++i) {
-			for (index jA = this->rowIdx[i]; jA < this->rowIdx[i+1]; ++jA) {
-				index k = this->columnIdx[jA];
-				for (index jB = other.rowIdx[k]; jB < other.rowIdx[k+1]; ++jB) {
-					index j = other.columnIdx[jB];
-					if (marker[j] != (int64_t) i) {
-						marker[j] = i;
-						++rowIdx[i+1];
-					}
-				}
-			}
-		}
-
-		std::fill(marker.begin(), marker.end(), -1);
-
-#pragma omp barrier
-#pragma omp single
+	#pragma omp parallel
 		{
-			for (index i = 0; i < numberOfRows(); ++i) {
-				rowIdx[i+1] += rowIdx[i];
+			std::vector<int64_t> marker(other.numberOfColumns(), -1);
+			count numThreads = omp_get_num_threads();
+			index threadId = omp_get_thread_num();
+
+			count chunkSize = (numberOfRows() + numThreads - 1) / numThreads;
+			index chunkStart = threadId * chunkSize;
+			index chunkEnd = std::min(numberOfRows(), chunkStart + chunkSize);
+
+			for (index i = chunkStart; i < chunkEnd; ++i) {
+				for (index jA = this->rowIdx[i]; jA < this->rowIdx[i+1]; ++jA) {
+					index k = this->columnIdx[jA];
+					for (index jB = other.rowIdx[k]; jB < other.rowIdx[k+1]; ++jB) {
+						index j = other.columnIdx[jB];
+						if (marker[j] != (int64_t) i) {
+							marker[j] = i;
+							++rowIdx[i+1];
+						}
+					}
+				}
 			}
 
-			columnIdx = std::vector<index>(rowIdx[numberOfRows()]);
-			nonZeros = std::vector<double>(rowIdx[numberOfRows()]);
-		}
+			std::fill(marker.begin(), marker.end(), -1);
 
-		for (index i = chunkStart; i < chunkEnd; ++i) {
-			index rowBegin = rowIdx[i];
-			index rowEnd = rowBegin;
+	#pragma omp barrier
+	#pragma omp single
+			{
+				for (index i = 0; i < numberOfRows(); ++i) {
+					rowIdx[i+1] += rowIdx[i];
+				}
 
-			for (index jA = this->rowIdx[i]; jA < this->rowIdx[i+1]; ++jA) {
-				index k = this->columnIdx[jA];
-				double valA = this->nonZeros[jA];
+				columnIdx = std::vector<index>(rowIdx[numberOfRows()]);
+				nonZeros = std::vector<double>(rowIdx[numberOfRows()]);
+			}
 
-				for (index jB = other.rowIdx[k]; jB < other.rowIdx[k+1]; ++jB) {
-					index j = other.columnIdx[jB];
-					double valB = other.nonZeros[jB];
+			for (index i = chunkStart; i < chunkEnd; ++i) {
+				index rowBegin = rowIdx[i];
+				index rowEnd = rowBegin;
 
-					if (marker[j] < (int64_t) rowBegin) {
-						marker[j] = rowEnd;
-						columnIdx[rowEnd] = j;
-						nonZeros[rowEnd] = valA * valB;
-						++rowEnd;
-					} else {
-						nonZeros[marker[j]] += valA * valB;
+				for (index jA = this->rowIdx[i]; jA < this->rowIdx[i+1]; ++jA) {
+					index k = this->columnIdx[jA];
+					double valA = this->nonZeros[jA];
+
+					for (index jB = other.rowIdx[k]; jB < other.rowIdx[k+1]; ++jB) {
+						index j = other.columnIdx[jB];
+						double valB = other.nonZeros[jB];
+
+						if (marker[j] < (int64_t) rowBegin) {
+							marker[j] = rowEnd;
+							columnIdx[rowEnd] = j;
+							nonZeros[rowEnd] = valA * valB;
+							++rowEnd;
+						} else {
+							nonZeros[marker[j]] += valA * valB;
+						}
 					}
 				}
 			}
 		}
+
+		CSRMatrix result(numberOfRows(), other.numberOfColumns(), rowIdx, columnIdx, nonZeros);
+		result.sort();
+		return result;
+	} else {
+		std::vector<Triple> triples;
+
+		SparseAccumulator spa(numberOfRows());
+		for (index i = 0; i < numberOfRows(); ++i) {
+			forNonZeroElementsInRow(i, [&](index k, double val1) {
+				other.forNonZeroElementsInRow(k, [&](index j, double val2) {
+					spa.scatter(val1 * val2, j);
+				});
+			});
+
+			spa.gather([&](index i, index j, double value){
+				triples.push_back({i,j,value});
+			});
+
+			spa.increaseRow();
+		}
+
+		return CSRMatrix(nRows, other.nCols, triples, true);
 	}
-
-	CSRMatrix result(numberOfRows(), other.numberOfColumns(), rowIdx, columnIdx, nonZeros);
-	result.sort();
-	return result;
-
-
-//	std::vector<Triple> triples;
-//
-//	SparseAccumulator spa(numberOfRows());
-//	for (index i = 0; i < numberOfRows(); ++i) {
-//		forNonZeroElementsInRow(i, [&](index k, double val1) {
-//			other.forNonZeroElementsInRow(k, [&](index j, double val2) {
-//				spa.scatter(val1 * val2, j);
-//			});
-//		});
-//
-//		spa.gather([&](index i, index j, double value){
-//			triples.push_back({i,j,value});
-//		});
-//
-//		spa.increaseRow();
-//	}
-//
-//	return CSRMatrix(nRows, other.nCols, triples, true);
 }
 
 CSRMatrix CSRMatrix::operator/(const double &divisor) const {
@@ -390,13 +415,13 @@ CSRMatrix CSRMatrix::subMatrix(const std::vector<index> &rows, const std::vector
 	std::vector<index> columnMapping(numberOfColumns(), invalid);
 	std::vector<index> rowIdx(rows.size() + 1, 0);
 
-#pragma omp parallel for
+#pragma omp parallel for if (columns.size() > OMP_MIN_SIZE)
 	for (index j = 0; j < columns.size(); ++j) {
 		columnMapping[columns[j]] = j;
 	}
 
 
-#pragma omp parallel for
+#pragma omp parallel for if (columns.size() > OMP_MIN_SIZE)
 	for (index i = 0; i < rows.size(); ++i) {
 		forNonZeroElementsInRow(rows[i], [&](index j, double val) {
 			if (columnMapping[j] != invalid) {
@@ -413,7 +438,7 @@ CSRMatrix CSRMatrix::subMatrix(const std::vector<index> &rows, const std::vector
 	std::vector<index> columnIdx(nnz);
 	std::vector<double> nonZeros(nnz);
 
-#pragma omp parallel for
+#pragma omp parallel for if (columns.size() > OMP_MIN_SIZE)
 	for (index i = 0; i < rows.size(); ++i) {
 		index cIdx = rowIdx[i];
 		forNonZeroElementsInRow(rows[i], [&](index j, double val) {
@@ -623,14 +648,35 @@ bool CSRMatrix::isLaplacian(const CSRMatrix &matrix) {
 }
 
 CSRMatrix CSRMatrix::transpose() const {
-	std::vector<std::pair<index, index>> positions(nonZeros.size());
+	std::vector<index> rowIdx(numberOfColumns()+1);
+	for (index i = 0; i < nnz(); ++i) {
+		++rowIdx[columnIdx[i]+1];
+	}
 
-	index idx = 0;
-	forNonZeroElementsInRowOrder([&](index i, index j, double value) {
-		positions[idx++] = std::make_pair(j, i);
-	});
+	for (index i = 0; i < numberOfColumns(); ++i) {
+		rowIdx[i+1] += rowIdx[i];
+	}
 
-	return CSRMatrix(nCols, nRows, positions, nonZeros);
+	std::vector<index> columnIdx(rowIdx[numberOfColumns()]);
+	std::vector<double> nonZeros(rowIdx[numberOfColumns()]);
+
+	for (index i = 0; i < numberOfRows(); ++i) {
+		for (index j = this->rowIdx[i]; j < this->rowIdx[i+1]; ++j) {
+			index colIdx = this->columnIdx[j];
+			columnIdx[rowIdx[colIdx]] = i;
+			nonZeros[rowIdx[colIdx]] = this->nonZeros[j];
+			++rowIdx[colIdx];
+		}
+	}
+	index shift = 0;
+	for (index i = 0; i < numberOfColumns(); ++i) {
+		index temp = rowIdx[i];
+		rowIdx[i] = shift;
+		shift = temp;
+	}
+	rowIdx[numberOfColumns()] = nonZeros.size();
+
+	return CSRMatrix(nCols, nRows, rowIdx, columnIdx, nonZeros);
 }
 
 
