@@ -159,7 +159,15 @@ void SolverLamg::cycle(Vector &x, const Vector &b, int finest, int coarsest, std
 			if (currLvl == finest) { // finest level
 				X[currLvl] = smoother.relax(hierarchy.at(currLvl).getLaplacian(), B[currLvl], X[currLvl], status.numPreSmoothIters);
 			} else {
-				X[currLvl] = smoother.relax(hierarchy.at(currLvl).getLaplacian(), B[currLvl], X[currLvl], 50);
+				Vector bCoarse(B[currLvl].getDimension()+1, 0.0);
+				for (index i = 0; i < B[currLvl].getDimension(); ++i) {
+					bCoarse[i] = B[currLvl][i];
+				}
+
+				Vector xCoarse = DenseMatrix::LUSolve(hierarchy.getCoarseMatrix(), bCoarse);
+				for (index i = 0; i < X[currLvl].getDimension(); ++i) {
+					X[currLvl][i] = xCoarse[i];
+				}
 			}
 #ifndef NPROFILE
 			t.stop();
@@ -200,9 +208,6 @@ void SolverLamg::cycle(Vector &x, const Vector &b, int finest, int coarsest, std
 			hierarchy.at(nextLvl).coarseType(X[currLvl], X[nextLvl]);
 
 			clearHistory(nextLvl);
-			if (currLvl > finest) {
-				clearHistory(currLvl);
-			}
 #ifndef NPROFILE
 			t.stop();
 			restrictionTime += t.elapsedMicroseconds();
@@ -274,10 +279,6 @@ void SolverLamg::clearHistory(index level) {
 }
 
 void SolverLamg::minRes(index level, Vector &x, const Vector &r) {
-#ifndef NPROFILE
-	Aux::Timer t;
-	t.start();
-#endif
 	if (numActiveIterates[level] > 0) {
 		count n = numActiveIterates[level];
 
@@ -348,17 +349,22 @@ void SolverLamg::minRes(index level, Vector &x, const Vector &r) {
 //		}
 //
 
-
 		CSRMatrix AE(r.getDimension(), n, ARowIdx, AColumnIdx, ANonZeros, true);
 		CSRMatrix E(r.getDimension(), n, ERowIdx, EColumnIdx, ENonZeros, true);
+#ifndef NPROFILE
+	Aux::Timer t;
+	t.start();
+#endif
 
 		Vector alpha = smoother.relax(CSRMatrix::mTmMultiply(AE, AE), CSRMatrix::mTvMultiply(AE, r), Vector(n, 0.0), 10);
 		x += E * alpha;
-	}
+
 #ifndef NPROFILE
 	t.stop();
 	minResTime += t.elapsedMicroseconds();
 #endif
+	}
+
 }
 
 } /* namespace NetworKit */

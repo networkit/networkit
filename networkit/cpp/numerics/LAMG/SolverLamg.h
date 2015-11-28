@@ -10,6 +10,7 @@
 
 #include "LevelHierarchy.h"
 #include "../Smoother.h"
+#include "../../algebraic/DenseMatrix.h"
 
 namespace NetworKit {
 

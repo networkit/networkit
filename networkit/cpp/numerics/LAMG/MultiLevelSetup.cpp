@@ -11,6 +11,7 @@
 #include "LAMGSettings.h"
 #include "../../algebraic/LaplacianMatrix.h"
 #include "../../io/LineFileReader.h"
+#include "../../auxiliary/StringTools.h"
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -76,6 +77,8 @@ void MultiLevelSetup::setup(const CSRMatrix &matrix, LevelHierarchy &hierarchy) 
 
 		if (!canCoarsen(A)) doneCoarsening = true;
 	}
+
+	hierarchy.setLastAsCoarsest();
 
 #ifndef NPROFILE
 	INFO("Elimination: ", eliminationTime);
@@ -235,7 +238,6 @@ void MultiLevelSetup::coarseningAggregation(CSRMatrix &matrix, LevelHierarchy &h
 	count nC = matrix.numberOfRows();
 
 
-
 	// generate TVs
 	std::vector<Vector> tVs = generateTVs(matrix, tv, numTVVectors);
 
@@ -246,7 +248,6 @@ void MultiLevelSetup::coarseningAggregation(CSRMatrix &matrix, LevelHierarchy &h
 	// compute affinityMatrix
 	CSRMatrix affinityMatrix;
 	computeAffinityMatrix(Wstrong, tVs, affinityMatrix);
-
 
 	// mark all locally high-degree nodes as seeds
 	addHighDegreeSeedNodes(matrix, status);
@@ -314,8 +315,6 @@ void MultiLevelSetup::coarseningAggregation(CSRMatrix &matrix, LevelHierarchy &h
 	CSRMatrix P(matrix.numberOfRows(), nc[bestAggregate], pTriples, matrix.sorted());
 	CSRMatrix R(nc[bestAggregate], matrix.numberOfRows(), rTriples, matrix.sorted());
 
-
-
 	// create coarsened laplacian
 	galerkinOperator(P, matrix, PColIndex, PRowIndex, matrix);
 
@@ -329,11 +328,12 @@ void MultiLevelSetup::coarseningAggregation(CSRMatrix &matrix, LevelHierarchy &h
 
 std::vector<Vector> MultiLevelSetup::generateTVs(const CSRMatrix &matrix, Vector &tv, count numVectors) const {
 	std::vector<Vector> testVectors(numVectors, Vector(matrix.numberOfColumns()));
+
 	testVectors[0] = tv;
 
 	if (numVectors > 1) {
 		Vector b(matrix.numberOfColumns(), 0.0);
-#pragma omp parallel for
+#pragma omp parallel for if (matrix.numberOfRows() > SETUP_OMP_MIN)
 		for (count i = 1; i < numVectors; ++i) {
 			for (count j = 0; j < matrix.numberOfColumns(); ++j) {
 				testVectors[i][j] = 2 * Aux::Random::probability() - 1;
@@ -348,12 +348,12 @@ std::vector<Vector> MultiLevelSetup::generateTVs(const CSRMatrix &matrix, Vector
 
 void MultiLevelSetup::addHighDegreeSeedNodes(const CSRMatrix &matrix, std::vector<int64_t> &status) const {
 	std::vector<count> deg(matrix.numberOfRows());
-#pragma omp parallel for
+#pragma omp parallel for if (matrix.numberOfRows() > SETUP_OMP_MIN)
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
 		deg[i] = matrix.nnzInRow(i) - 1;
 	}
 
-#pragma omp parallel for
+#pragma omp parallel for if (matrix.numberOfRows() > SETUP_OMP_MIN)
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
 		double num = 0.0;
 		double denom = 0.0;
@@ -396,13 +396,11 @@ void MultiLevelSetup::aggregateLooseNodes(const CSRMatrix &strongAdjMatrix, std:
 }
 
 void MultiLevelSetup::computeStrongAdjacencyMatrix(const CSRMatrix &matrix, CSRMatrix &strongAdjMatrix) const {
-	std::vector<CSRMatrix::Triple> triples;
-
 	std::vector<double> maxNeighbor(matrix.numberOfRows(), std::numeric_limits<double>::min());
-#pragma omp parallel for
+#pragma omp parallel for if (matrix.numberOfRows() > SETUP_OMP_MIN)
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
 		matrix.forNonZeroElementsInRow(i, [&](index j, double value) {
-			if (-value > maxNeighbor[i]) {
+			if (i != j && -value > maxNeighbor[i]) {
 				maxNeighbor[i] = -value;
 			}
 		});
@@ -423,7 +421,7 @@ void MultiLevelSetup::computeStrongAdjacencyMatrix(const CSRMatrix &matrix, CSRM
 	std::vector<index> columnIdx(nnz);
 	std::vector<double> nonZeros(nnz);
 
-#pragma omp parallel for
+#pragma omp parallel for if (matrix.numberOfRows() > SETUP_OMP_MIN)
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
 		index cIdx = rowIdx[i];
 		matrix.forNonZeroElementsInRow(i, [&](index j, double value) {
@@ -445,7 +443,7 @@ void MultiLevelSetup::computeAffinityMatrix(const CSRMatrix &matrix, const std::
 	std::vector<index> columnIdx(matrix.nnz());
 	std::vector<double> nonZeros(matrix.nnz());
 
-#pragma omp parallel for
+#pragma omp parallel for if (matrix.numberOfRows() > SETUP_OMP_MIN)
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
 		rowIdx[i+1] = matrix.nnzInRow(i);
 	}
@@ -455,14 +453,14 @@ void MultiLevelSetup::computeAffinityMatrix(const CSRMatrix &matrix, const std::
 	}
 
 	std::vector<double> normSquared(matrix.numberOfRows(), 0.0);
-#pragma omp parallel for
+#pragma omp parallel for if (matrix.numberOfRows() > SETUP_OMP_MIN)
 	for (index k = 0; k < tVs.size(); ++k) {
 		for (index i = 0; i < matrix.numberOfRows(); ++i) {
 			normSquared[i] += tVs[k][i] * tVs[k][i];
 		}
 	}
 
-#pragma omp parallel for
+#pragma omp parallel for if (matrix.numberOfRows() > SETUP_OMP_MIN)
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
 		double nir = 1.0 / normSquared[i];
 		index cIdx = rowIdx[i];
@@ -487,7 +485,7 @@ void MultiLevelSetup::aggregationStage(const CSRMatrix &matrix, count &nc, const
 	computeStrongNeighbors(affinityMatrix, status, bins);
 
 	std::vector<double> diag(matrix.numberOfRows(), 0.0);
-#pragma omp parallel for
+#pragma omp parallel for if (matrix.numberOfRows() > SETUP_OMP_MIN)
 	for (index i = 0 ; i < matrix.numberOfRows(); ++i) {
 		diag[i] = matrix(i,i);
 	}

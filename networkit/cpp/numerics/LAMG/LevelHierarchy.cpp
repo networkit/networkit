@@ -29,6 +29,27 @@ void LevelHierarchy::addAggregationLevel(const CSRMatrix &A, const CSRMatrix &P,
 	aggregationLevels.push_back(LevelAggregation(A, P, R));
 }
 
+void LevelHierarchy::setLastAsCoarsest() {
+	CSRMatrix A = this->at(size()-1).getLaplacian();
+	count n = A.numberOfRows() + 1;
+	std::vector<double> entries(n*n, 0.0);
+	A.parallelForNonZeroElementsInRowOrder([&](index i, index j, double value) {
+		entries[i * n + j] = value;
+	});
+
+	for (index i = 0; i < n-1; ++i) {
+		entries[i * n + n-1] = 1;
+		entries[(n-1)*n + i] = 1;
+	}
+
+	coarseLUMatrix = DenseMatrix(n, n, entries);
+	DenseMatrix::LUDecomposition(coarseLUMatrix);
+}
+
+DenseMatrix& LevelHierarchy::getCoarseMatrix() {
+	return coarseLUMatrix;
+}
+
 count LevelHierarchy::size() const {
 	return levelType.size() + 1; // elimination + aggregation levels + finestLevel
 }
