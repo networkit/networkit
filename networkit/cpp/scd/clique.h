@@ -3,8 +3,6 @@
 
 #include "../graph/Graph.h"
 
-#include <set>
-
 namespace NetworKit {
 
 class Clique {

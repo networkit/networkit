@@ -1,8 +1,6 @@
 
 #include "clique.h"
 
-#include <algorithm>
-
 namespace NetworKit {
 
 Clique::Clique(const Graph& G, const unsigned int missingEdges) : G(G), missingEdges(missingEdges) {
@@ -11,6 +9,16 @@ Clique::Clique(const Graph& G, const unsigned int missingEdges) : G(G), missingE
 std::vector<std::set<node> > Clique::run(node& seed) {
 	std::set<std::set<node> > oldsets;
 	std::set<std::set<node> > newsets;
+
+	auto unset_intersect = [&] (const std::set<node>& seta, const std::set<node>& setb) {
+		std::set<node> result;
+		for (auto a : seta) {
+			if (setb.find(a) != setb.end()) {
+				result.insert(a);
+			}
+		}
+		return result;
+	};
 
 	// create first set of (not maximum) cliques
 	for (auto u : G.neighbors(seed)) {
@@ -25,14 +33,13 @@ std::vector<std::set<node> > Clique::run(node& seed) {
 		oldsets = newsets;
 		newsets = std::set<std::set<node> >();
 
-		for (auto oldset : oldsets) {
+		for (const auto& oldset : oldsets) {
 			for (auto u : oldset) {
 				for (auto v : G.neighbors(u)) {
 					if (oldset.find(v) != oldset.end())
 						break;
-					auto nu = G.neighbors(v);
-					std::set<node> intersection;
-					std::set_intersection(oldset.begin(), oldset.end(), nu.begin(), nu.end(), std::inserter(intersection, intersection.begin()));
+					auto nv = G.neighbors(v);
+					auto intersection = unset_intersect(oldset, std::set<node>(nv.begin(), nv.end()));
 					if (intersection.size() == oldset.size()) {
 						auto baum = oldset;
 						baum.insert(v);
@@ -44,19 +51,15 @@ std::vector<std::set<node> > Clique::run(node& seed) {
 	}
 
 	// extend search allowing 'missingEdges'
-	newsets = oldsets;
-	while (!newsets.empty()) {
-		oldsets = newsets;
-		newsets = std::set<std::set<node> >();
+	if (missingEdges > 0) {
 
-		for (auto oldset : oldsets) {
-			for (auto u : oldset) {
+		for (const auto& oldset : oldsets) {
+			for (const auto u : oldset) {
 				for (auto v : G.neighbors(u)) {
 					if (oldset.find(v) != oldset.end())
 						break;
-					auto nu = G.neighbors(v);
-					std::set<node> intersection;
-					std::set_intersection(oldset.begin(), oldset.end(), nu.begin(), nu.end(), std::inserter(intersection, intersection.begin()));
+					auto nv = G.neighbors(v);
+					auto intersection = unset_intersect(oldset, std::set<node>(nv.begin(), nv.end()));
 					if (intersection.size() >= oldset.size() - missingEdges) {
 						auto baum = oldset;
 						baum.insert(v);
@@ -64,6 +67,9 @@ std::vector<std::set<node> > Clique::run(node& seed) {
 					}
 				}
 			}
+		}
+		if (!newsets.empty()) {
+			oldsets = newsets;
 		}
 	}
 
