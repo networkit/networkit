@@ -226,7 +226,7 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 		}
 
 		//set neighbor probability
-		auto edgeProb = [n](double distance) -> double {return (1/distance)*exp(4)/(double)n ;};
+		auto edgeProb = [n](double distance) -> double {return (1/distance)*exp(-11);};
 
 		//convert coordinates
 		runtime.start();
@@ -319,6 +319,10 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 			convertToHeatMap(infectedState, xcoords, ycoords, filename, resolution);
 
 			step++;
+			if (step == 5000) {
+				runtime.stop();
+				INFO("5000 steps took:", runtime.elapsedTag());
+			}
 		}
 		INFO("Total infections: ", std::count(wasEverInfected.begin(), wasEverInfected.end(), true));
 	}
