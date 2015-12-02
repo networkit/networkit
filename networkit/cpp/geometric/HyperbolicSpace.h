@@ -163,6 +163,9 @@ public:
 		return currentR;
 	}
 
+	/**
+	 * TODO: refactor this to accept gamma instead of alpha
+	 */
 	static double getTargetRadius(double n, double m, double alpha=1, double T=0, double epsilon = 0.01) {
 		double result;
 		double plexp = 2*alpha+1;
