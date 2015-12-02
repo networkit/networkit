@@ -45,10 +45,15 @@ HyperbolicGenerator::HyperbolicGenerator(count n) {
  */
 HyperbolicGenerator::HyperbolicGenerator(count n, double avgDegree, double plexp, double T) {
 	nodeCount = n;
-	if (plexp < 2) throw std::runtime_error("Exponent of power-law degree distribution must be >= 2");
+	if (plexp < 2) throw std::runtime_error("Exponent of power-law degree distribution must be > 2");
 	if (T < 0 || T == 1) throw std::runtime_error("Temperature must be non-negative and not 1.");//Really necessary? Graphs with T=1 can be generated, only their degree is not controllable
 	if (avgDegree > n) throw std::runtime_error("Average Degree must be at most n");
-	alpha = (plexp-1)/2;
+	if (T < 1) {
+		alpha = 0.5*(plexp-1);
+	} else {
+		alpha = 0.5*(plexp-1)/T;
+	}
+
 	double R = HyperbolicSpace::hyperbolicAreaToRadius(n);
 	double targetR = HyperbolicSpace::getTargetRadius(n, n*avgDegree/2, alpha, T);// 2*log(8*n / (M_PI*(m/n)*2));
 	stretch = targetR / R;
