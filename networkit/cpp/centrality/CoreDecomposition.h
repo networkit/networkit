@@ -45,14 +45,14 @@ public:
 	 *
 	 * @return the k-cores as a Cover
 	 */
-	Cover cores() const;
+	Cover getCover() const;
 
 	/**
 	 * Get the k-shells as a partition object
 	 *
 	 * @return the k-shells as a Partition
 	 */
-	Partition shells() const;
+	Partition getPartition() const;
 
 	/**
 	 * Get maximum core number.

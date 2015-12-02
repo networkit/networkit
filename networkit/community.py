@@ -60,9 +60,9 @@ def inspectCommunities(zeta, G):
 
 def communityGraph(G, zeta):
 	""" Create a community graph, i.e. a graph in which one node represents a community and an edge represents the edges between communities, from a given graph and a community detection solution"""
-	cg = ParallelPartitionCoarsening()
-	Gcom,_ = cg.run(G, zeta)
-	return Gcom
+	cg = ParallelPartitionCoarsening(G, zeta)
+	cg.run()
+	return cg.getCoarseGraph()
 
 
 def evalCommunityDetection(algo, G):

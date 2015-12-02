@@ -117,6 +117,14 @@ public:
 
 
 	/**
+	 * Remove the element @a e from the set @a s.
+	 * @param[in]	s	a subset
+	 * @param[in]	e	an element
+	 */
+	void removeFromSubset(index s, index e);
+
+
+	/**
 	 * Move the element @a e to subset @a s, i.e. remove it from all
 	 * other subsets and place it in the subset.
 	 * 	@param[in]	s	a subset

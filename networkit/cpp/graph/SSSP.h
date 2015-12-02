@@ -12,6 +12,7 @@
 #include <stack>
 
 #include "Graph.h"
+#include "../base/Algorithm.h"
 
 
 namespace NetworKit {
@@ -20,7 +21,7 @@ namespace NetworKit {
  * @ingroup graph
  * Abstract base class for single-source shortest path algorithms.
  */
-class SSSP {
+class SSSP: public Algorithm {
 
 public:
 
@@ -30,12 +31,12 @@ public:
 	 * @param G The graph.
 	 * @param s The source node.
 	 */
-	SSSP(const Graph& G, node s, bool storePaths=true, bool storeStack=false);
+	SSSP(const Graph& G, node s, bool storePaths=true, bool storeStack=false, node target = none);
 
 	virtual ~SSSP() = default;
 
 	/** Computes the shortest paths from the source to all other nodes. */
-	virtual void run(node t = none) = 0;
+	virtual void run() = 0;
 
 	/**
 	 * Returns a vector of weighted distances from the source node, i.e. the
@@ -98,6 +99,7 @@ protected:
 
 	const Graph& G;
 	const node source;
+	node target;
 	std::vector<edgeweight> distances;
 	std::vector<std::vector<node> > previous; // predecessors on shortest path
 	std::vector<bigfloat> npaths;

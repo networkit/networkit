@@ -94,6 +94,18 @@ void GraphBuilder::addHalfInEdge(node u, node v, edgeweight ew) {
 	}
 }
 
+void GraphBuilder::swapNeighborhood(node u, std::vector<node> &neighbours, std::vector<edgeweight> &weights, bool selfloop) {
+	if (weighted) assert(neighbours.size() == weights.size());
+	outEdges[u].swap(neighbours);
+	if (weighted) {
+		outEdgeWeights[u].swap(weights);
+	}
+
+	if (selfloop) {
+	#pragma omp atomic
+		selfloops++;
+	}
+}
 void GraphBuilder::setOutWeight(node u, node v, edgeweight ew) {
 	assert(isWeighted());
 	index vi = indexInOutEdgeArray(u, v);
@@ -232,6 +244,8 @@ void GraphBuilder::toGraphParallel(Graph& G) {
 			inDeg += inEdgesPerThread[tid][v].size();
 		}
 
+		assert(inDeg <= n);
+		assert(outDeg <= n);
 		// allocate enough memory for all edges/weights
 		if (directed) {
 			G.inEdges[v].reserve(inDeg);
@@ -252,16 +266,21 @@ void GraphBuilder::toGraphParallel(Graph& G) {
 			for (int tid = 0; tid < maxThreads; tid++) {
 				copyAndClear(inEdgesPerThread[tid][v], G.inEdges[v]);
 			}
+			assert(G.inDeg[v] == G.inEdges[v].size());
 			if (weighted) {
 				for (int tid = 0; tid < maxThreads; tid++) {
 					copyAndClear(inWeightsPerThread[tid][v], G.inEdgeWeights[v]);
-				}	
+				}
+				assert(G.inDeg[v] == G.inEdgeWeights[v].size());
 			}
+
 		} else {
 			G.outDeg[v] = inDeg + outDeg;
+			assert(G.outDeg[v] <= n);
 			for (int tid = 0; tid < maxThreads; tid++) {
 				copyAndClear(inEdgesPerThread[tid][v], G.outEdges[v]);
 			}
+			assert(G.outDeg[v] == G.outEdges[v].size());
 			if (weighted) {
 				for (int tid = 0; tid < maxThreads; tid++) {
 					copyAndClear(inWeightsPerThread[tid][v], G.outEdgeWeights[v]);

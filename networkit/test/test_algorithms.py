@@ -59,7 +59,7 @@ class Test_SelfLoops(unittest.TestCase):
 			tmp.removeSelfLoops()
 			CLL = centrality.CoreDecomposition(tmp)
 			CLL.run()
-			self.assertTrue(self.checkCovers(CL.cores(),CLL.cores()))
+			self.assertTrue(self.checkCovers(CL.getCover(),CLL.getCover()))
 
 
 	def test_centrality_EigenvectorCentrality(self):

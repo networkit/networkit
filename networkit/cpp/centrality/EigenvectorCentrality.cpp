@@ -13,11 +13,7 @@ namespace NetworKit {
 EigenvectorCentrality::EigenvectorCentrality(const Graph& G, double tol):
 		Centrality(G, true), tol(tol)
 {
-	// do not execute algorithm on directed graphs since this is error prone
-	// and can yield misleading results (wrong metric, not implementation fault!)
-	if (G.isDirected()) {
-		throw std::runtime_error("This algorithm does not work on directed graphs.");
-	}
+
 }
 
 void EigenvectorCentrality::run() {
@@ -39,7 +35,7 @@ void EigenvectorCentrality::run() {
 		// iterate matrix-vector product
 		G.parallelForNodes([&](node u) {
 			values[u] = 0.0;
-			G.forNeighborsOf(u, [&](node v, edgeweight ew) {
+			G.forInEdgesOf(u, [&](node u, node v, edgeweight ew) {
 				values[u] += ew * scoreData[v];
 			});
 		});

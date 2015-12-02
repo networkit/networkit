@@ -324,6 +324,7 @@ TEST_P(GraphBuilderAutoCompleteGTest, testSetWeight) {
 /** toGraph **/
 
 TEST_P(GraphBuilderAutoCompleteGTest, testSameAsGraph) {
+	Aux::Random::setSeed(1, false);
 	const double epsilon = 1e-6;
 	const count runs = 100;
 	const count n_max = 100;

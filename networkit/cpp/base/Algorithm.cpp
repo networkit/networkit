@@ -13,7 +13,12 @@ namespace NetworKit {
 	}
 
 	std::string Algorithm::toString() const {
-		return "Algorithm base class";
+		throw std::runtime_error("TODO: implement in subclass and return string representation");
+	}
+
+	bool Algorithm::isParallel() const {
+		throw std::runtime_error("TODO: Implement in subclass");
+		return false;
 	}
 
 } /* NetworKit */

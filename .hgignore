@@ -13,6 +13,7 @@ build.conf
 .sconsign.dblite
 /_NetworKit.cpp$
 src/python/NetworKit.egg-info/
+NetworKit-Tests-D
 \.out$
 \.egg$
 \~$
@@ -23,6 +24,12 @@ src/python/NetworKit.egg-info/
 \.json$
 \.csv
 \.dat
+
+scripts/SparsificationEvaluation/input/
+scripts/SparsificationEvaluation/output/
+scripts/SparsificationEvaluation/figures
+input/backbones/
+build/
 
 syntax: regexp
 ^output$
@@ -47,10 +54,6 @@ syntax: regexp
 /*.eps
 syntax: regexp
 ^doxygen$
-syntax: regexp
-^cachegrind.out
-syntax: regexp
-^networkit.egg-info
 
 syntax: glob
 NetworKit-Tests-*

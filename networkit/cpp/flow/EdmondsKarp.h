@@ -14,6 +14,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup flow
  * The EdmondsKarp class implements the maximum flow algorithm by Edmonds and Karp.
  */
 class EdmondsKarp {

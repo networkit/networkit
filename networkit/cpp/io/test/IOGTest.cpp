@@ -370,6 +370,14 @@ TEST_F(IOGTest, testEdgeListReader) {
 	EXPECT_EQ(10u, G3.numberOfEdges());
 	EXPECT_TRUE(G3.hasEdge(0, 4));
 
+	path = "input/spaceseparated_weighted.edgelist";
+	DEBUG("reading file: " , path);
+	Graph G32 = reader3.read(path);
+	EXPECT_TRUE(G32.isWeighted());
+	EXPECT_EQ(2,G32.weight(0,1));
+	EXPECT_EQ(4,G32.weight(0,2));
+	EXPECT_EQ(3,G32.weight(1,2));
+
 	path = "input/comments.edgelist";
 	DEBUG("reading file: " , path);
 	EdgeListReader reader4('\t', 1);

@@ -73,9 +73,13 @@ TEST_F(DynBetweennessGTest, testDynVsStatic) {
 
 	double epsilon = 0.1; // error
 	double delta = 0.1; // confidence
+	INFO("Initializing DynApproxBetweenness");
 	DynApproxBetweenness dynbc(G, epsilon, delta, false);
+	INFO("Initializing ApproxBetweenness");
 	ApproxBetweenness bc(G, epsilon, delta);
+	INFO("Running DynApproxBetweenness");
 	dynbc.run();
+	INFO("Running ApproxBetweenness");
 	bc.run();
 	std::vector<double> dynbc_scores = dynbc.scores();
 	std::vector<double> bc_scores = bc.scores();
@@ -97,9 +101,13 @@ TEST_F(DynBetweennessGTest, testDynVsStatic) {
 			i++;
 		}
 	}
+	INFO("Running ApproxBetweenness (again)");
 	bc.run();
+	INFO("Updating DynApproxBetweenness");
 	dynbc.update(batch);
+	INFO("Calling DynApproxBetweenness Scores");
 	dynbc_scores = dynbc.scores();
+	INFO("Calling ApproxBetweenness Scores");
 	bc_scores = bc.scores();
 	err1 = 0;
 	for(count i=0; i<n; i++) {

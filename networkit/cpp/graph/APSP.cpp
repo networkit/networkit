@@ -11,19 +11,21 @@
 
 namespace NetworKit {
 
-APSP::APSP(const Graph& G) : G(G) {}
+APSP::APSP(const Graph& G) : Algorithm(), G(G) {}
 
 void APSP::run() {
 	std::vector<edgeweight> distanceVector(G.upperNodeIdBound(), 0.0);
-	std::vector<std::vector<edgeweight> > distanceMatrix(G.upperNodeIdBound(), distanceVector);
+	distances.resize(G.upperNodeIdBound(), distanceVector);
 	G.parallelForNodes([&](node u){
 		Dijkstra dijk(G, u);
 		dijk.run();
-		distanceMatrix[u] = dijk.getDistances();
+		distances[u] = dijk.getDistances();
 	});
+	hasRun = true;
+}
 
-
-	distances = distanceMatrix;
+std::string NetworKit::APSP::toString() const {
+	return "All-Pairs Shortest Path Algorithm";
 }
 
 } /* namespace NetworKit */

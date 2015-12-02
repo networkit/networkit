@@ -21,6 +21,8 @@ namespace NetworKit {
 class MatchingContracter: public GraphCoarsening {
 
 public:
+	MatchingContracter(const Graph& G, const Matching& M, bool noSelfLoops = false);
+
 	/**
 	 * Contracts graph according to a matching.
 	 *
@@ -30,8 +32,11 @@ public:
 	 *
 	 * @return		coarse graph
 	 */
-	virtual std::pair<Graph, std::vector<node> > run(Graph& G, Matching& M,
-			bool noSelfLoops = false);
+	virtual void run();
+
+private:
+	const Matching& M;
+	bool noSelfLoops;
 };
 
 } /* namespace NetworKit */

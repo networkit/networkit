@@ -20,10 +20,7 @@ color(G.upperNodeIdBound(), WHITE) {
 
 }
 
-void DynDijkstra::run(node t) {
-	if (t != none) {
-		throw std::runtime_error("Invalid argument: DynDijkstra doesn't work with a target node.");
-	}
+void DynDijkstra::run() {
 	Dijkstra dij(G, source, true);
 	dij.run();
 	distances = dij.distances;

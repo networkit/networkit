@@ -12,7 +12,7 @@ namespace Aux {
 
 PrioQueueForInts::PrioQueueForInts(std::vector<index>& prios, index maxPrio):
 		buckets(maxPrio+1), nodePtr(prios.size()), myBucket(prios.size(), NetworKit::none),
-		minNotEmpty(maxPrio+1), maxNotEmpty(-1), maxPrio(maxPrio)
+		minNotEmpty(maxPrio+1), maxNotEmpty(-1), maxPrio(maxPrio), numElems(0)
 {
 	for (index i = 0; i < prios.size(); ++i) {
 		if (prios[i] != NetworKit::none) {
@@ -34,6 +34,7 @@ void PrioQueueForInts::insert(index elem, index prio) {
 	buckets[prio].push_front(elem);
 	nodePtr[elem] = buckets[prio].begin();
 	myBucket[elem] = prio;
+	++numElems;
 
 	// bookkeeping
 	if (prio < minNotEmpty || minNotEmpty > maxPrio) {
@@ -76,6 +77,7 @@ void PrioQueueForInts::remove(index elem) {
 		index prio = myBucket[elem];
 		buckets[prio].erase(nodePtr[elem]);
 		myBucket[elem] = NetworKit::none;
+		--numElems;
 
 		// adjust max pointer if necessary
 		while (buckets[maxNotEmpty].empty() && maxNotEmpty >= 0) {
@@ -104,6 +106,14 @@ index PrioQueueForInts::extractAt(index prio) {
 
 index PrioQueueForInts::priority(index elem) {
 	return myBucket[elem];
+}
+
+bool PrioQueueForInts::empty() const {
+	return (numElems == 0);
+}
+
+count PrioQueueForInts::size() const {
+	return numElems;
 }
 
 } /* namespace Aux */

@@ -6,7 +6,8 @@ __author__ = "Christian Staudt"
 __credits__ = ["Christian Staudt", "Elisabetta Bergamini", "Henning Meyerhenke", "Marc Nemes"]
 
 # extension imports
-from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2, ApproxCloseness, DynApproxBetweenness, Closeness, KPathCentrality, CoreDecomposition, KatzCentrality, LocalClusteringCoefficient
+# TODO: (+) ApproxCloseness
+from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2,  DynApproxBetweenness, Closeness, KPathCentrality, CoreDecomposition, KatzCentrality, LocalClusteringCoefficient, ApproxCloseness
 
 
 # local imports
@@ -142,6 +143,7 @@ class SpectralCentrality:
 
 		self.scoreList = None
 		self.rankList = None
+		self.evz = {}
 
 	def prepareSpectrum(self):
 		""" Method that must be implemented to set the following values:
@@ -172,21 +174,31 @@ class SpectralCentrality:
 
 	def scores(self):
 		if self.scoreList is None:
-			self.scoreList = [abs(self.evz[v]) for v in self.graph.nodes()] # TODO bad! This depends on iteration order...
+			self.scoreList = [v for k,v in self.evz.items()]
 
 		return self.scoreList
 
 	def ranking(self):
 		if self.rankList is None:
-			self.rankList = [(v, abs(self.evz[v])) for v in self.graph.nodes()]
-			self.rankList.sort(key=lambda x: float(x[1]), reverse=True)
-
+			self.rankList = sorted(self.evz.items(),key=lambda x: float(x[1]), reverse=True)
 		return self.rankList
 
 
 class SciPyEVZ(SpectralCentrality):
-	# TODO: docstring
+	"""
+	Compute Eigenvector centrality using algebraic meh
+
+	Parameters
+	----------
+	G : graph
+		The graph of which to compute the centrality
+	normalized : boolean
+				 Whether to normalize the results or not
+
+	"""
 	def __init__(self, G, normalized=False):
+		if G.isDirected():
+			raise NotImplementedError("Not implemented for directed graphs; use centrality.EigenvectorCentrality instead")
 		super(SciPyEVZ, self).__init__(G, normalized=normalized)
 
 	def _length(self, vector):

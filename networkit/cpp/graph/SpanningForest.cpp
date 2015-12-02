@@ -1,18 +1,27 @@
 /*
-* SpanningForest.cpp
-*
-*  Created on: Aug 7, 2014
-*      Author: Christian Staudt
-*/
+ * SpanningForest.cpp
+ *
+ *  Created on: 06.09.2015
+ *      Author: Henning
+ */
+
 #include "SpanningForest.h"
 
 namespace NetworKit {
 
-
-SpanningForest::SpanningForest(const Graph& G) : G(G) {
+SpanningForest::SpanningForest(const Graph& G): G(G) {
 
 }
 
+Graph SpanningForest::getForest() {
+	return forest;
+}
+
+void SpanningForest::run() {
+	forest = generate();
+}
+
+// CLS's code for generating spanning forest with BFS, please fixme!
 Graph SpanningForest::generate() {
 	Graph F = G.copyNodes();
 	std::vector<bool> visited(G.upperNodeIdBound(), false);
@@ -27,7 +36,10 @@ Graph SpanningForest::generate() {
 		}
 	});
 
+	INFO("tree edges in SpanningForest: ", F.numberOfEdges());
+
 	return F;
+
 }
 
 } /* namespace NetworKit */

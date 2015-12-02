@@ -16,7 +16,6 @@ namespace NetworKit {
  * @ingroup centrality
  * Computes the leading eigenvector of the graph's adjacency matrix (normalized in 2-norm).
  * Interpreted as eigenvector centrality score.
- * Should NOT be used for directed graphs!
  */
 class EigenvectorCentrality: public Centrality {
 protected:

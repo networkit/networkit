@@ -32,12 +32,12 @@ public:
 	 * @param source The source node.
 	 * @param storePaths	store paths and number of paths?
 	 */
-	Dijkstra(const Graph& G, node source, bool storePaths=true, bool storeStack=false);
+	Dijkstra(const Graph& G, node source, bool storePaths=true, bool storeStack=false, node target = none);
 
 	/**
 	 * Performs the Dijkstra SSSP algorithm on the graph given in the constructor.
 	 */
-	virtual void run(node t = none);
+	virtual void run();
 };
 
 } /* namespace NetworKit */

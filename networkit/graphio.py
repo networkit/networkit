@@ -38,11 +38,9 @@ try:
 		GraphML = ()
 		GEXF = ()
 		GML = ()
-	#	VNA = ()
 		EdgeListCommaOne = ()
 		GraphViz = ()
 		DOT = ()
-	#	GDF = ()
 		EdgeList = ()
 		LFR = ()
 		KONECT = ()
@@ -196,8 +194,6 @@ def getWriter(fileformat, **kwargs):
 			Format.GML:			GMLGraphWriter(),
 			Format.LFR:			EdgeListWriter('\t',1),
 			Format.GraphToolBinary:		GraphToolBinaryWriter()
-#			Format.GDF:			GDFGraphWriter(),
-#			Format.VNA:			VNAGraphWriter(),
 			}
 	try:
 		# special case for custom Edge Lists
