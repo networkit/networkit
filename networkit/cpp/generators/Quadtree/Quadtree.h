@@ -18,12 +18,12 @@
 
 namespace NetworKit {
 
-template <class T>
+template <class T, bool poincare=true>
 class Quadtree {
 	friend class QuadTreeGTest;
 public:
 	Quadtree() {
-		root = QuadNode<T>();
+		root = QuadNode<T, poincare>();
 		this->maxRadius = 1;
 	}
 
@@ -35,7 +35,7 @@ public:
 	 *
 	 */
 	Quadtree(double maxR,bool theoreticalSplit=false, double alpha=1, count capacity=1000, double balance = 0.5) {
-		root = QuadNode<T>(0, 0, 2*M_PI, maxR, capacity, theoreticalSplit,alpha,balance);
+		root = QuadNode<T,poincare>(0, 0, 2*M_PI, maxR, capacity, theoreticalSplit,alpha,balance);
 		this->maxRadius = maxR;
 	}
 
@@ -82,7 +82,7 @@ public:
 		double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 		count numberOfThreads = omp_get_max_threads();
 		//double k = ceil(log(numberOfThreads)/log(4));
-		root = QuadNode<T>(0, 0, 2*M_PI, r, capacity, theoreticalSplit,alpha,balance);
+		root = QuadNode<T,poincare>(0, 0, 2*M_PI, r, capacity, theoreticalSplit,alpha,balance);
 		maxRadius = r;
 		count result;
 		#pragma omp parallel
