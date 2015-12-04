@@ -62,8 +62,6 @@ namespace NetworKit {
 
 #define SETUP_RELAX_COARSEST_SWEEPS 400
 
-#define SETUP_OMP_MIN 40000
-
 }
 
 

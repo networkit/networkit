@@ -311,95 +311,94 @@ Vector CSRMatrix::operator*(const Vector &vector) const {
 CSRMatrix CSRMatrix::operator*(const CSRMatrix &other) const {
 	assert(nCols == other.nRows);
 
-	if (nCols > OMP_MIN_SIZE) {
-		std::vector<index> rowIdx(numberOfRows()+1, 0);
-		std::vector<index> columnIdx;
-		std::vector<double> nonZeros;
+	std::vector<index> rowIdx(numberOfRows()+1, 0);
+	std::vector<index> columnIdx;
+	std::vector<double> nonZeros;
 
-	#pragma omp parallel
+#pragma omp parallel
+	{
+		std::vector<int64_t> marker(other.numberOfColumns(), -1);
+		count numThreads = omp_get_num_threads();
+		index threadId = omp_get_thread_num();
+
+		count chunkSize = (numberOfRows() + numThreads - 1) / numThreads;
+		index chunkStart = threadId * chunkSize;
+		index chunkEnd = std::min(numberOfRows(), chunkStart + chunkSize);
+
+		for (index i = chunkStart; i < chunkEnd; ++i) {
+			for (index jA = this->rowIdx[i]; jA < this->rowIdx[i+1]; ++jA) {
+				index k = this->columnIdx[jA];
+				for (index jB = other.rowIdx[k]; jB < other.rowIdx[k+1]; ++jB) {
+					index j = other.columnIdx[jB];
+					if (marker[j] != (int64_t) i) {
+						marker[j] = i;
+						++rowIdx[i+1];
+					}
+				}
+			}
+		}
+
+		std::fill(marker.begin(), marker.end(), -1);
+
+#pragma omp barrier
+#pragma omp single
 		{
-			std::vector<int64_t> marker(other.numberOfColumns(), -1);
-			count numThreads = omp_get_num_threads();
-			index threadId = omp_get_thread_num();
-
-			count chunkSize = (numberOfRows() + numThreads - 1) / numThreads;
-			index chunkStart = threadId * chunkSize;
-			index chunkEnd = std::min(numberOfRows(), chunkStart + chunkSize);
-
-			for (index i = chunkStart; i < chunkEnd; ++i) {
-				for (index jA = this->rowIdx[i]; jA < this->rowIdx[i+1]; ++jA) {
-					index k = this->columnIdx[jA];
-					for (index jB = other.rowIdx[k]; jB < other.rowIdx[k+1]; ++jB) {
-						index j = other.columnIdx[jB];
-						if (marker[j] != (int64_t) i) {
-							marker[j] = i;
-							++rowIdx[i+1];
-						}
-					}
-				}
+			for (index i = 0; i < numberOfRows(); ++i) {
+				rowIdx[i+1] += rowIdx[i];
 			}
 
-			std::fill(marker.begin(), marker.end(), -1);
+			columnIdx = std::vector<index>(rowIdx[numberOfRows()]);
+			nonZeros = std::vector<double>(rowIdx[numberOfRows()]);
+		}
 
-	#pragma omp barrier
-	#pragma omp single
-			{
-				for (index i = 0; i < numberOfRows(); ++i) {
-					rowIdx[i+1] += rowIdx[i];
-				}
+		for (index i = chunkStart; i < chunkEnd; ++i) {
+			index rowBegin = rowIdx[i];
+			index rowEnd = rowBegin;
 
-				columnIdx = std::vector<index>(rowIdx[numberOfRows()]);
-				nonZeros = std::vector<double>(rowIdx[numberOfRows()]);
-			}
+			for (index jA = this->rowIdx[i]; jA < this->rowIdx[i+1]; ++jA) {
+				index k = this->columnIdx[jA];
+				double valA = this->nonZeros[jA];
 
-			for (index i = chunkStart; i < chunkEnd; ++i) {
-				index rowBegin = rowIdx[i];
-				index rowEnd = rowBegin;
+				for (index jB = other.rowIdx[k]; jB < other.rowIdx[k+1]; ++jB) {
+					index j = other.columnIdx[jB];
+					double valB = other.nonZeros[jB];
 
-				for (index jA = this->rowIdx[i]; jA < this->rowIdx[i+1]; ++jA) {
-					index k = this->columnIdx[jA];
-					double valA = this->nonZeros[jA];
-
-					for (index jB = other.rowIdx[k]; jB < other.rowIdx[k+1]; ++jB) {
-						index j = other.columnIdx[jB];
-						double valB = other.nonZeros[jB];
-
-						if (marker[j] < (int64_t) rowBegin) {
-							marker[j] = rowEnd;
-							columnIdx[rowEnd] = j;
-							nonZeros[rowEnd] = valA * valB;
-							++rowEnd;
-						} else {
-							nonZeros[marker[j]] += valA * valB;
-						}
+					if (marker[j] < (int64_t) rowBegin) {
+						marker[j] = rowEnd;
+						columnIdx[rowEnd] = j;
+						nonZeros[rowEnd] = valA * valB;
+						++rowEnd;
+					} else {
+						nonZeros[marker[j]] += valA * valB;
 					}
 				}
 			}
 		}
-
-		CSRMatrix result(numberOfRows(), other.numberOfColumns(), rowIdx, columnIdx, nonZeros);
-		result.sort();
-		return result;
-	} else {
-		std::vector<Triple> triples;
-
-		SparseAccumulator spa(numberOfRows());
-		for (index i = 0; i < numberOfRows(); ++i) {
-			forNonZeroElementsInRow(i, [&](index k, double val1) {
-				other.forNonZeroElementsInRow(k, [&](index j, double val2) {
-					spa.scatter(val1 * val2, j);
-				});
-			});
-
-			spa.gather([&](index i, index j, double value){
-				triples.push_back({i,j,value});
-			});
-
-			spa.increaseRow();
-		}
-
-		return CSRMatrix(nRows, other.nCols, triples, true);
 	}
+
+	CSRMatrix result(numberOfRows(), other.numberOfColumns(), rowIdx, columnIdx, nonZeros);
+	result.sort();
+	return result;
+
+//	std::vector<Triple> triples;
+//
+//	SparseAccumulator spa(numberOfRows());
+//	for (index i = 0; i < numberOfRows(); ++i) {
+//		forNonZeroElementsInRow(i, [&](index k, double val1) {
+//			other.forNonZeroElementsInRow(k, [&](index j, double val2) {
+//				spa.scatter(val1 * val2, j);
+//			});
+//		});
+//
+//		spa.gather([&](index i, index j, double value){
+//			triples.push_back({i,j,value});
+//		});
+//
+//		spa.increaseRow();
+//	}
+//
+//	return CSRMatrix(nRows, other.nCols, triples, true);
+
 }
 
 CSRMatrix CSRMatrix::operator/(const double &divisor) const {
@@ -415,13 +414,13 @@ CSRMatrix CSRMatrix::subMatrix(const std::vector<index> &rows, const std::vector
 	std::vector<index> columnMapping(numberOfColumns(), invalid);
 	std::vector<index> rowIdx(rows.size() + 1, 0);
 
-#pragma omp parallel for if (columns.size() > OMP_MIN_SIZE)
+#pragma omp parallel for
 	for (index j = 0; j < columns.size(); ++j) {
 		columnMapping[columns[j]] = j;
 	}
 
 
-#pragma omp parallel for if (columns.size() > OMP_MIN_SIZE)
+#pragma omp parallel for
 	for (index i = 0; i < rows.size(); ++i) {
 		forNonZeroElementsInRow(rows[i], [&](index j, double val) {
 			if (columnMapping[j] != invalid) {
@@ -438,7 +437,7 @@ CSRMatrix CSRMatrix::subMatrix(const std::vector<index> &rows, const std::vector
 	std::vector<index> columnIdx(nnz);
 	std::vector<double> nonZeros(nnz);
 
-#pragma omp parallel for if (columns.size() > OMP_MIN_SIZE)
+#pragma omp parallel for
 	for (index i = 0; i < rows.size(); ++i) {
 		index cIdx = rowIdx[i];
 		forNonZeroElementsInRow(rows[i], [&](index j, double val) {

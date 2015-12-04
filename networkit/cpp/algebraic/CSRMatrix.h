@@ -30,8 +30,6 @@ private:
 	void quicksort(index left, index right);
 	index partition(index left, index right);
 
-	static constexpr index OMP_MIN_SIZE = 40000;
-
 public:
 	struct Triple {
 		index row;
@@ -229,135 +227,134 @@ public:
 template<typename L> inline CSRMatrix NetworKit::CSRMatrix::binaryOperator(const CSRMatrix &A, const CSRMatrix &B, L binaryOp) {
 	assert(A.nRows == B.nRows && A.nCols == B.nCols);
 
-	if (A.numberOfRows() > OMP_MIN_SIZE) {
-		if (!A.sorted() || !B.sorted()) throw std::runtime_error("The matrices must be sorted for this operation");
-		std::vector<index> rowIdx(A.nRows+1);
-		std::vector<std::vector<index>> columns(A.nRows);
+	if (!A.sorted() || !B.sorted()) throw std::runtime_error("The matrices must be sorted for this operation");
+	std::vector<index> rowIdx(A.nRows+1);
+	std::vector<std::vector<index>> columns(A.nRows);
 
-		rowIdx[0] = 0;
+	rowIdx[0] = 0;
 #pragma omp parallel for
-		for (index i = 0; i < A.nRows; ++i) {
-			index k = A.rowIdx[i];
-			index l = B.rowIdx[i];
-			while (k < A.rowIdx[i+1] && l < B.rowIdx[i+1]) {
-				if (A.columnIdx[k] < B.columnIdx[l]) {
-					columns[i].push_back(A.columnIdx[k]);
-					++k;
-				} else if (A.columnIdx[k] > B.columnIdx[l]) {
-					columns[i].push_back(B.columnIdx[l]);
-					++l;
-				} else { // A.columnIdx[k] == B.columnIdx[l]
-					columns[i].push_back(A.columnIdx[k]);
-					++k;
-					++l;
-				}
-				++rowIdx[i+1];
-			}
-
-			while (k < A.rowIdx[i+1]) {
+	for (index i = 0; i < A.nRows; ++i) {
+		index k = A.rowIdx[i];
+		index l = B.rowIdx[i];
+		while (k < A.rowIdx[i+1] && l < B.rowIdx[i+1]) {
+			if (A.columnIdx[k] < B.columnIdx[l]) {
 				columns[i].push_back(A.columnIdx[k]);
 				++k;
-				++rowIdx[i+1];
-			}
-
-			while (l < B.rowIdx[i+1]) {
+			} else if (A.columnIdx[k] > B.columnIdx[l]) {
 				columns[i].push_back(B.columnIdx[l]);
 				++l;
-				++rowIdx[i+1];
+			} else { // A.columnIdx[k] == B.columnIdx[l]
+				columns[i].push_back(A.columnIdx[k]);
+				++k;
+				++l;
 			}
+			++rowIdx[i+1];
 		}
 
-
-		for (index i = 0; i < A.nRows; ++i) {
-			rowIdx[i+1] += rowIdx[i];
+		while (k < A.rowIdx[i+1]) {
+			columns[i].push_back(A.columnIdx[k]);
+			++k;
+			++rowIdx[i+1];
 		}
 
-		count nnz = rowIdx[A.nRows];
-		std::vector<index> columnIdx(nnz);
-		std::vector<double> nonZeros(nnz, 0.0);
-
-#pragma omp parallel for
-		for (index i = 0; i < A.nRows; ++i) {
-			for (index cIdx = rowIdx[i], j = 0; cIdx < rowIdx[i+1]; ++cIdx, ++j) {
-				columnIdx[cIdx] = columns[i][j];
-			}
-			columns[i].clear();
-			columns[i].resize(0);
-			columns[i].shrink_to_fit();
+		while (l < B.rowIdx[i+1]) {
+			columns[i].push_back(B.columnIdx[l]);
+			++l;
+			++rowIdx[i+1];
 		}
-
-#pragma omp parallel for
-		for (index i = 0; i < A.nRows; ++i) {
-			index k = A.rowIdx[i];
-			index l = B.rowIdx[i];
-			for (index cIdx = rowIdx[i]; cIdx < rowIdx[i+1]; ++cIdx) {
-				if (k < A.rowIdx[i+1] && columnIdx[cIdx] == A.columnIdx[k]) {
-					nonZeros[cIdx] = A.nonZeros[k];
-					++k;
-				}
-
-				if (l < B.rowIdx[i+1] && columnIdx[cIdx] == B.columnIdx[l]) {
-					nonZeros[cIdx] = binaryOp(nonZeros[cIdx], B.nonZeros[l]);
-					++l;
-				}
-			}
-		}
-
-		return CSRMatrix(A.nRows, A.nCols, rowIdx, columnIdx, nonZeros, true);
-
-	} else {
-		std::vector<int64_t> columnPointer(A.nCols, -1);
-		std::vector<double> Arow(A.nCols, 0.0);
-		std::vector<double> Brow(A.nCols, 0.0);
-		std::vector<Triple> triples;
-
-		for (index i = 0; i < A.nRows; ++i) {
-			index listHead = 0;
-			count nnz = 0;
-
-			// search for nonZeros in our own matrix
-			for (index k = A.rowIdx[i]; k < A.rowIdx[i+1]; ++k) {
-				index j = A.columnIdx[k];
-				Arow[j] = A.nonZeros[k];
-
-				columnPointer[j] = listHead;
-				listHead = j;
-				nnz++;
-			}
-
-			// search for nonZeros in the other matrix
-			for (index k = B.rowIdx[i]; k < B.rowIdx[i+1]; ++k) {
-				index j = B.columnIdx[k];
-				Brow[j] = B.nonZeros[k];
-
-				if (columnPointer[j] == -1) { // our own matrix does not have a nonZero entry in column j
-					columnPointer[j] = listHead;
-					listHead = j;
-					nnz++;
-				}
-			}
-
-			// apply operator on the found nonZeros in A and B
-			for (count k = 0; k < nnz; ++k) {
-				double value = binaryOp(Arow[listHead], Brow[listHead]);
-				if (value != 0.0) {
-					triples.push_back({i, listHead, value});
-				}
-
-				index temp = listHead;
-				listHead = columnPointer[listHead];
-
-				// reset for next row
-				columnPointer[temp] = -1;
-				Arow[temp] = 0.0;
-				Brow[temp] = 0.0;
-			}
-
-			nnz = 0;
-		}
-
-		return CSRMatrix(A.nRows, A.nCols, triples);
 	}
+
+
+	for (index i = 0; i < A.nRows; ++i) {
+		rowIdx[i+1] += rowIdx[i];
+	}
+
+	count nnz = rowIdx[A.nRows];
+	std::vector<index> columnIdx(nnz);
+	std::vector<double> nonZeros(nnz, 0.0);
+
+#pragma omp parallel for
+	for (index i = 0; i < A.nRows; ++i) {
+		for (index cIdx = rowIdx[i], j = 0; cIdx < rowIdx[i+1]; ++cIdx, ++j) {
+			columnIdx[cIdx] = columns[i][j];
+		}
+		columns[i].clear();
+		columns[i].resize(0);
+		columns[i].shrink_to_fit();
+	}
+
+#pragma omp parallel for
+	for (index i = 0; i < A.nRows; ++i) {
+		index k = A.rowIdx[i];
+		index l = B.rowIdx[i];
+		for (index cIdx = rowIdx[i]; cIdx < rowIdx[i+1]; ++cIdx) {
+			if (k < A.rowIdx[i+1] && columnIdx[cIdx] == A.columnIdx[k]) {
+				nonZeros[cIdx] = A.nonZeros[k];
+				++k;
+			}
+
+			if (l < B.rowIdx[i+1] && columnIdx[cIdx] == B.columnIdx[l]) {
+				nonZeros[cIdx] = binaryOp(nonZeros[cIdx], B.nonZeros[l]);
+				++l;
+			}
+		}
+	}
+
+	return CSRMatrix(A.nRows, A.nCols, rowIdx, columnIdx, nonZeros, true);
+
+
+//	std::vector<int64_t> columnPointer(A.nCols, -1);
+//	std::vector<double> Arow(A.nCols, 0.0);
+//	std::vector<double> Brow(A.nCols, 0.0);
+//	std::vector<Triple> triples;
+//
+//	for (index i = 0; i < A.nRows; ++i) {
+//		index listHead = 0;
+//		count nnz = 0;
+//
+//		// search for nonZeros in our own matrix
+//		for (index k = A.rowIdx[i]; k < A.rowIdx[i+1]; ++k) {
+//			index j = A.columnIdx[k];
+//			Arow[j] = A.nonZeros[k];
+//
+//			columnPointer[j] = listHead;
+//			listHead = j;
+//			nnz++;
+//		}
+//
+//		// search for nonZeros in the other matrix
+//		for (index k = B.rowIdx[i]; k < B.rowIdx[i+1]; ++k) {
+//			index j = B.columnIdx[k];
+//			Brow[j] = B.nonZeros[k];
+//
+//			if (columnPointer[j] == -1) { // our own matrix does not have a nonZero entry in column j
+//				columnPointer[j] = listHead;
+//				listHead = j;
+//				nnz++;
+//			}
+//		}
+//
+//		// apply operator on the found nonZeros in A and B
+//		for (count k = 0; k < nnz; ++k) {
+//			double value = binaryOp(Arow[listHead], Brow[listHead]);
+//			if (value != 0.0) {
+//				triples.push_back({i, listHead, value});
+//			}
+//
+//			index temp = listHead;
+//			listHead = columnPointer[listHead];
+//
+//			// reset for next row
+//			columnPointer[temp] = -1;
+//			Arow[temp] = 0.0;
+//			Brow[temp] = 0.0;
+//		}
+//
+//		nnz = 0;
+//	}
+//
+//	return CSRMatrix(A.nRows, A.nCols, triples);
+
 }
 
 } /* namespace NetworKit */
