@@ -333,7 +333,7 @@ std::vector<Vector> MultiLevelSetup::generateTVs(const CSRMatrix &matrix, Vector
 
 	if (numVectors > 1) {
 		Vector b(matrix.numberOfColumns(), 0.0);
-#pragma omp parallel for if (matrix.numberOfRows() > SETUP_OMP_MIN)
+#pragma omp parallel for
 		for (count i = 1; i < numVectors; ++i) {
 			for (count j = 0; j < matrix.numberOfColumns(); ++j) {
 				testVectors[i][j] = 2 * Aux::Random::probability() - 1;
@@ -348,12 +348,12 @@ std::vector<Vector> MultiLevelSetup::generateTVs(const CSRMatrix &matrix, Vector
 
 void MultiLevelSetup::addHighDegreeSeedNodes(const CSRMatrix &matrix, std::vector<int64_t> &status) const {
 	std::vector<count> deg(matrix.numberOfRows());
-#pragma omp parallel for if (matrix.numberOfRows() > SETUP_OMP_MIN)
+#pragma omp parallel for
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
 		deg[i] = matrix.nnzInRow(i) - 1;
 	}
 
-#pragma omp parallel for if (matrix.numberOfRows() > SETUP_OMP_MIN)
+#pragma omp parallel for
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
 		double num = 0.0;
 		double denom = 0.0;
@@ -397,7 +397,7 @@ void MultiLevelSetup::aggregateLooseNodes(const CSRMatrix &strongAdjMatrix, std:
 
 void MultiLevelSetup::computeStrongAdjacencyMatrix(const CSRMatrix &matrix, CSRMatrix &strongAdjMatrix) const {
 	std::vector<double> maxNeighbor(matrix.numberOfRows(), std::numeric_limits<double>::min());
-#pragma omp parallel for if (matrix.numberOfRows() > SETUP_OMP_MIN)
+#pragma omp parallel for
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
 		matrix.forNonZeroElementsInRow(i, [&](index j, double value) {
 			if (i != j && -value > maxNeighbor[i]) {
@@ -421,7 +421,7 @@ void MultiLevelSetup::computeStrongAdjacencyMatrix(const CSRMatrix &matrix, CSRM
 	std::vector<index> columnIdx(nnz);
 	std::vector<double> nonZeros(nnz);
 
-#pragma omp parallel for if (matrix.numberOfRows() > SETUP_OMP_MIN)
+#pragma omp parallel for
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
 		index cIdx = rowIdx[i];
 		matrix.forNonZeroElementsInRow(i, [&](index j, double value) {
@@ -443,7 +443,7 @@ void MultiLevelSetup::computeAffinityMatrix(const CSRMatrix &matrix, const std::
 	std::vector<index> columnIdx(matrix.nnz());
 	std::vector<double> nonZeros(matrix.nnz());
 
-#pragma omp parallel for if (matrix.numberOfRows() > SETUP_OMP_MIN)
+#pragma omp parallel for
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
 		rowIdx[i+1] = matrix.nnzInRow(i);
 	}
@@ -453,14 +453,14 @@ void MultiLevelSetup::computeAffinityMatrix(const CSRMatrix &matrix, const std::
 	}
 
 	std::vector<double> normSquared(matrix.numberOfRows(), 0.0);
-#pragma omp parallel for if (matrix.numberOfRows() > SETUP_OMP_MIN)
+#pragma omp parallel for
 	for (index k = 0; k < tVs.size(); ++k) {
 		for (index i = 0; i < matrix.numberOfRows(); ++i) {
 			normSquared[i] += tVs[k][i] * tVs[k][i];
 		}
 	}
 
-#pragma omp parallel for if (matrix.numberOfRows() > SETUP_OMP_MIN)
+#pragma omp parallel for
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
 		double nir = 1.0 / normSquared[i];
 		index cIdx = rowIdx[i];
@@ -485,7 +485,7 @@ void MultiLevelSetup::aggregationStage(const CSRMatrix &matrix, count &nc, const
 	computeStrongNeighbors(affinityMatrix, status, bins);
 
 	std::vector<double> diag(matrix.numberOfRows(), 0.0);
-#pragma omp parallel for if (matrix.numberOfRows() > SETUP_OMP_MIN)
+#pragma omp parallel for
 	for (index i = 0 ; i < matrix.numberOfRows(); ++i) {
 		diag[i] = matrix(i,i);
 	}
