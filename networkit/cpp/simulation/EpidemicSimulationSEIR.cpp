@@ -89,7 +89,7 @@ void EpidemicSimulationSEIR::run() {
 		auto populations = census();
 
 		for (int s = (int) State::S; s != (int) State::U; ++s) {
-			std::vector<count> data = {zero, t, s, populations[s]};
+			std::vector<count> data = {zero, t, (count)s, populations[s]};
 			stats.push_back(data);
 		}
 
