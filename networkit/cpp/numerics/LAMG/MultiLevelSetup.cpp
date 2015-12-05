@@ -484,7 +484,12 @@ void MultiLevelSetup::aggregationStage(const CSRMatrix &matrix, count &nc, const
 	std::vector<std::vector<index>> bins(10);
 	computeStrongNeighbors(affinityMatrix, status, bins);
 
-	std::vector<double> diag = matrix.diagonal();
+	std::vector<double> diag(matrix.numberOfRows(), 0.0);
+#pragma omp parallel for
+	for (index i = 0 ; i < matrix.numberOfRows(); ++i) {
+		diag[i] = matrix(i,i);
+	}
+
 	for (index k = bins.size(); k-- > 0;) { // iterate over undecided nodes with strong neighbors in decreasing order of strongest neighbor
 		for (index i : bins[k]) {
 			if (status[i] == UNDECIDED) { // node is still undecided
