@@ -12,8 +12,11 @@
 #include "../../auxiliary/Timer.h"
 
 #include "../GaussSeidelRelaxation.h"
+#include "LAMGBenchmark.h"
 
 namespace NetworKit {
+
+extern bool readProblemVectors(Vector &b, Vector &x, const string &graphFilepath);
 
 TEST_F(LAMGGTest, testSmallGraphs) {
 	METISGraphReader reader;
@@ -38,51 +41,14 @@ TEST_F(LAMGGTest, testSmallGraphs) {
 		timer.stop();
 		INFO("setup time\t ", timer.elapsedMilliseconds());
 
-		Vector b = randZeroSum(G, 1234);
+		Vector b(G.numberOfNodes());
+		Vector x(G.numberOfNodes());
 
+		if (!readProblemVectors(b, x, "instances/"+graph)) { // create new problem vectors if not present
+			b = randZeroSum(G, 12345);
+			x = randVector(G.numberOfNodes(), -1, 1);
+		}
 
-//		Vector b(G.numberOfNodes());
-//		LineFileReader reader;
-//		std::vector<string> lines = reader.read("instances/facebook100/Auburn71.mat.txt_b");
-//		std::string input = lines[0];
-//		std::string current = "";
-//		int idx = 0;
-//		for (int i = 0; i < input.size(); ++i) {
-//			if (input[i] != ',') {
-//				current += input[i];
-//			} else {
-//				b[idx++] = std::stod(current);
-//				current = "";
-//			}
-//		}
-//		b[b.getDimension() - 1] = std::stod(current);
-
-//		INFO("b ", b.length());
-
-
-
-
-		Vector x = randVector(G.upperNodeIdBound(), -1, 1);
-
-
-//		Vector x(G.numberOfNodes());
-//		lines = reader.read("instances/facebook100/Auburn71.mat.txt_x");
-//		input = lines[0];
-//		current = "";
-//		idx = 0;
-//		for (int i = 0; i < input.size(); ++i) {
-//			if (input[i] != ',') {
-//				current += input[i];
-//			} else {
-//				x[idx++] = std::stod(current);
-//				current = "";
-//			}
-//		}
-//		x[x.getDimension() - 1] = std::stod(current);
-//
-//		INFO("x ", x.length());
-
-//		Vector result(G.upperNodeIdBound());
 
 		LAMGSolverStatus status;
 		status.maxConvergenceTime = 10 * 60 * 1000;
