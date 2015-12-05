@@ -2,7 +2,7 @@
  * MultiLevelSetup.cpp
  *
  *  Created on: 10.01.2015
- *      Author: Michael
+ *      Author: Michael Wegner (michael,wegner@student.kit.edu)
  */
 
 #include "MultiLevelSetup.h"
@@ -263,7 +263,7 @@ void MultiLevelSetup::coarseningAggregation(CSRMatrix &matrix, LevelHierarchy &h
 		aggregationStage(matrix, nC, Wstrong, affinityMatrix, tVs, status);
 
 		alpha = (double) nC / (double) matrix.numberOfRows();
-		alpha <= maxCoarseningRatio? B[stage] = 1-alpha : B[stage] = 1+alpha;
+		alpha <= maxCoarseningRatio? B[stage] = 1.0-alpha : B[stage] = 1.0+alpha;
 
 		S[stage] = status;
 		nc[stage] = nC;
@@ -454,8 +454,8 @@ void MultiLevelSetup::computeAffinityMatrix(const CSRMatrix &matrix, const std::
 
 	std::vector<double> normSquared(matrix.numberOfRows(), 0.0);
 #pragma omp parallel for
-	for (index k = 0; k < tVs.size(); ++k) {
-		for (index i = 0; i < matrix.numberOfRows(); ++i) {
+	for (index i = 0; i < matrix.numberOfRows(); ++i) {
+		for (index k = 0; k < tVs.size(); ++k) {
 			normSquared[i] += tVs[k][i] * tVs[k][i];
 		}
 	}
@@ -484,12 +484,7 @@ void MultiLevelSetup::aggregationStage(const CSRMatrix &matrix, count &nc, const
 	std::vector<std::vector<index>> bins(10);
 	computeStrongNeighbors(affinityMatrix, status, bins);
 
-	std::vector<double> diag(matrix.numberOfRows(), 0.0);
-#pragma omp parallel for
-	for (index i = 0 ; i < matrix.numberOfRows(); ++i) {
-		diag[i] = matrix(i,i);
-	}
-
+	std::vector<double> diag = matrix.diagonal();
 	for (index k = bins.size(); k-- > 0;) { // iterate over undecided nodes with strong neighbors in decreasing order of strongest neighbor
 		for (index i : bins[k]) {
 			if (status[i] == UNDECIDED) { // node is still undecided
