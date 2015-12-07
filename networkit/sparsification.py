@@ -629,10 +629,8 @@ class ModularityPartitionScore():
 			else:
 				return 0.0
 
-		# FIXME: with respect to performance, the following is wrong on so many levels - don't try this at home
 		edgeScores = [None for i in range(G.upperEdgeIdBound())]
-		for (u, v) in G.edges():
-			edgeScores[G.edgeId(u, v)] = together(u, v)
+		G.forEdges(lambda u, v, w, eid: edgeScores.__setitem__(eid, together(u, v)))
 		return edgeScores
 
 class ConstantScore():
