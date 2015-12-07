@@ -48,7 +48,6 @@ public:
 		*/
 
 		std::vector<double> sparsificationExp(G.upperEdgeIdBound(), (bothRequired ? 1.0 : .0));
-		count n = G.numberOfNodes();
 
 		G.balancedParallelForNodes([&](node i) {
 			count d = G.degree(i);
@@ -58,18 +57,28 @@ public:
 			 * are to be kept in the sparse graph.
 			 */
 
-			std::vector<std::tuple<double, count, index> > neighbors;
+			std::vector<edgeid> neighbors;
 			neighbors.reserve(d);
 			G.forNeighborsOf(i, [&](node _i, node j, edgeid eid) {
-				neighbors.emplace_back(attribute[eid], n - d, eid); // if in doubt, prefer links to low-degree nodes
+				neighbors.emplace_back(eid);
 			});
-			std::sort(neighbors.begin(), neighbors.end(), std::greater<std::tuple<double, count, index> >());
 
-			count rank = 1;
+			std::sort(neighbors.begin(), neighbors.end(), [&](const edgeid& e1, const edgeid& e2) {
+				return attribute[e1] > attribute[e2];
+			});
+
+			count rank = 0;
+			count numSame = 1;
+			InType oldValue = std::numeric_limits<InType>::lowest();
 
 			#pragma omp critical // each value is set twice, the value can be wrong if the wrong thread wins
-			for (auto it : neighbors) {
-				edgeid eid = std::get<2>(it);
+			for (edgeid eid : neighbors) {
+				if (attribute[eid] != oldValue) {
+					rank += numSame;
+					numSame = 1;
+				} else {
+					++numSame;
+				}
 
 				double e = 1.0;
 
@@ -84,8 +93,6 @@ public:
 				if ((e < sparsificationExp[eid]) == bothRequired) {
 					sparsificationExp[eid] = e; // do not always write in order to avoid cache synchronization
 				}
-
-				rank++;
 			}
 
 		});
