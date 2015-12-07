@@ -619,7 +619,7 @@ class ModularityPartitionScore():
 		G -- the input graph
 		"""
 
-		cdAlgo = community.PLM(G, refine=True, turbo=True)
+		cdAlgo = community.PLM(G, par="none randomized", refine=True, turbo=True)
 		cdAlgo.run()
 		partition = cdAlgo.getPartition()
 
