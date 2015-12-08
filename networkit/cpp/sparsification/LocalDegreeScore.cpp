@@ -28,21 +28,30 @@ void LocalDegreeScore::run() {
 		 * are to be kept in the graph */
 
 		std::vector<AttributizedEdge<count>> neighbors;
+		neighbors.reserve(G.degree(i));
 		G.forNeighborsOf(i, [&](node _i, node j, edgeid eid) {
-			if (G.degree(j) > d)
-				neighbors.push_back(AttributizedEdge<count>(i, j, eid, G.degree(j)));
+			neighbors.push_back(AttributizedEdge<count>(i, j, eid, G.degree(j)));
 		});
 		std::sort(neighbors.begin(), neighbors.end());
-
-		count rank = 1;
 
 		/**
 		 * By convention, we want to the edges with highest "similarity" or "cohesion" to have values close to 1,
 		 * so we invert the range.
 		 */
 
+		count rank = 0;
+		count numSame = 1;
+		count oldValue = 0; // none of the neighbors will have degree 0, so 0 is a safe start value
+
 		#pragma omp critical
 		for (auto neighborEdge : neighbors) {
+			if (neighborEdge.value != oldValue) {
+				rank += numSame;
+				numSame = 1;
+			} else {
+				++numSame;
+			}
+
 			edgeid eid = neighborEdge.eid;
 
 			double e = 1.0; // If the node has only one neighbor, the edge should be kept anyway.
@@ -50,7 +59,6 @@ void LocalDegreeScore::run() {
 				e = 1.0 - (log(rank) / log(d));
 
 			exponents[eid] = std::max(e, exponents[eid]);
-			rank++;
 		}
 
 	});
