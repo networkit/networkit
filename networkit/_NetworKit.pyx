@@ -14,7 +14,7 @@ except:
 
 
 # C++ operators
-from cython.operator import dereference
+from cython.operator import dereference, preincrement
 
 # type imports
 from libc.stdint cimport uint64_t
@@ -8192,6 +8192,7 @@ def ranked(sample):
 	"""
 	cdef count n = len(sample)
 	result = []
+	cdef count i
 	for i in range(n):
 		result.append([sample[i], i, -1])
 	result.sort(key=lambda x: x[0])
@@ -8228,18 +8229,22 @@ def ranked2(sample):
 	cdef vector[double] result = vector[double](len(sample))
 	cdef count size = 0
 	cdef double rank = 0.0
+	cdef index elem = 0
+	cdef count i
 	# sort the numbers into buckets
 	for i in range(len(sample)):
 		buckets[sample[i]].push_back(i)
 	cdef count n_processed = 0
 	# compute the rank for each bucket
-	for key,val in buckets:
-		size = len(val)
-		rank = (size * (size+1) / 2 + size * n_processed) / size
+	cdef map[double, vector[index]].iterator it = buckets.begin()
+	while it != buckets.end():
+		size = dereference(it).second.size()
+		rank = (size * (size+1) / 2 + size * n_processed) * 1.0 / size
 		# and write the rank into the result
-		for elem in val:
+		for elem in dereference(it).second:
 			result[elem] = rank
 		n_processed += size
+		preincrement(it)
 	return result
 
 def sort2(sample):
@@ -8247,11 +8252,7 @@ def sort2(sample):
 		Sorts a given list of numbers.
 		Currently used in profiling.stat.sorted.
 	"""
-	cdef vector[double] result = vector[double](len(sample))
-	cdef count i = 0
-	for elem in sample:
-		result[i] = <double>elem
-		i += 1
+	cdef vector[double] result = <vector[double]?>sample
 	sort(result.begin(),result.end())
 	return result
 
