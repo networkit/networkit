@@ -7962,10 +7962,10 @@ ctypedef fused DoubleInt:
 
 cdef extern from "cpp/sparsification/LocalFilterScore.h":
 	cdef cppclass _LocalFilterScoreDouble "NetworKit::LocalFilterScore<double>"(_EdgeScore[double]):
-		_LocalFilterScoreDouble(const _Graph& G, const vector[double]& a, bool logarithmic,  bool bothRequired) except +
+		_LocalFilterScoreDouble(const _Graph& G, const vector[double]& a, bool logarithmic) except +
 
 	cdef cppclass _LocalFilterScoreInt "NetworKit::LocalFilterScore<int>"(_EdgeScore[count]):
-		_LocalFilterScoreInt(const _Graph& G, const vector[double]& a, bool logarithmic,  bothRequired) except +
+		_LocalFilterScoreInt(const _Graph& G, const vector[double]& a, bool logarithmic) except +
 
 cdef class LocalFilterScore(EdgeScore):
 	"""
@@ -7983,15 +7983,13 @@ cdef class LocalFilterScore(EdgeScore):
 		The input attribute according to which the edges shall be fitlered locally.
 	logarithmic : bool
 		If the score shall be logarithmic in the rank (then d^e edges are kept). Linear otherwise.
-	bothRequired : bool
-		if both neighbors need to indicate that they want to keep an edge (default: one suffices).
 	"""
 	cdef vector[double] _a
 
-	def __cinit__(self, Graph G, vector[double] a, bool logarithmic = True, bool bothRequired = False):
+	def __cinit__(self, Graph G, vector[double] a, bool logarithmic = True):
 		self._G = G
 		self._a = a
-		self._this = new _LocalFilterScoreDouble(G._this, self._a, logarithmic, bothRequired)
+		self._this = new _LocalFilterScoreDouble(G._this, self._a, logarithmic)
 
 	cdef bool isDoubleValue(self):
 		return True
