@@ -6,9 +6,23 @@
  */
 
 #include "LocalDegreeScore.h"
-#include "LocalSimilarityScore.h"
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
+
+template<typename T>
+struct AttributizedEdge {
+	edgeid eid;
+	T value;
+
+	AttributizedEdge(edgeid eid, T v) :
+			eid(eid), value(v) {
+	}
+
+	bool operator<(const AttributizedEdge<T>& other) const {
+		return (value > other.value);
+	}
+};
 
 LocalDegreeScore::LocalDegreeScore(const Graph& G) : EdgeScore<double>(G) {
 }
@@ -18,7 +32,7 @@ void LocalDegreeScore::run() {
 		throw std::runtime_error("edges have not been indexed - call indexEdges first");
 	}
 
-	std::vector<double> exponents (G.upperEdgeIdBound(), 0.0);
+	std::vector<std::atomic<double>> exponents (G.upperEdgeIdBound());
 
 	G.balancedParallelForNodes([&](node i) {
 		count d = G.degree(i);
@@ -30,7 +44,7 @@ void LocalDegreeScore::run() {
 		std::vector<AttributizedEdge<count>> neighbors;
 		neighbors.reserve(G.degree(i));
 		G.forNeighborsOf(i, [&](node _i, node j, edgeid eid) {
-			neighbors.push_back(AttributizedEdge<count>(i, j, eid, G.degree(j)));
+			neighbors.emplace_back(eid, G.degree(j));
 		});
 		std::sort(neighbors.begin(), neighbors.end());
 
@@ -43,7 +57,6 @@ void LocalDegreeScore::run() {
 		count numSame = 1;
 		count oldValue = 0; // none of the neighbors will have degree 0, so 0 is a safe start value
 
-		#pragma omp critical
 		for (auto neighborEdge : neighbors) {
 			if (neighborEdge.value != oldValue) {
 				rank += numSame;
@@ -58,12 +71,19 @@ void LocalDegreeScore::run() {
 			if (d > 1)
 				e = 1.0 - (log(rank) / log(d));
 
-			exponents[eid] = std::max(e, exponents[eid]);
+			Aux::Parallel::atomic_max(exponents[eid], e);
 		}
 
 	});
 
-	scoreData = std::move(exponents);
+	scoreData.clear();
+	scoreData.resize(G.upperEdgeIdBound());
+
+	#pragma omp parallel for
+	for (index i = 0; i < scoreData.size(); ++i) {
+		scoreData[i] = exponents[i];
+	}
+
 	hasRun = true;
 }
 
