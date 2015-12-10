@@ -9,8 +9,6 @@
 #include <cmath>
 #include <tuple>
 #include <utility>
-#include <iostream>
-
 
 #include "../auxiliary/Log.h"
 
@@ -26,19 +24,9 @@ namespace NetworKit {
 
 	class RHGGenerator: public NetworKit::StaticGraphGenerator {
 	public:
-		RHGGenerator();
 
-		/**
-		* @param[in] n Number of nodes
-		*/
-		RHGGenerator(count n);
 
-		/**
-		* @param[in] n Number of nodes
-		* @param[in] m Target number of edges
-		*/
-		RHGGenerator(count n, double avgDegree=6, double exp=3);
-
+		RHGGenerator(count n, double avgDegree=6, double plexp=3);
 
 		Graph generate(const vector<double> &angles, const vector<double> &radii, const vector<vector<Point2D<double>>> &bands, const vector<double> &bandRadius, double thresholdDistance);
 
@@ -110,27 +98,34 @@ namespace NetworKit {
 		}
 
 		std::tuple<double, double> getMinMaxTheta(double angle, double radius, double cLow, double thresholdDistance){
-			/*
-			Calculates the angles that are enclosing the intersection of the
-			hyperbolic disk that is around point v and the bands.
-			Calculation is as follows:
-			1. For the most inner band, return [0, 2pi]
-			2. For other bands, consider the point P which lies on the tangent from origin to the disk of point v.
-			Its radial coordinates would be(cHigh, point[1]+deltaTheta). We're looking for the deltaTheta.
-			We know the distance from point v to P is R. Thus, we can solve the hyperbolic distance of (v, P)
-			for deltaTheta. Then, thetaMax is simply point[1] + deltaTheta and thetaMin is point[1] - deltaTheta
-			*/
+		  /*
+			  Calculates the angles that are enclosing the intersection of the
+			  hyperbolic disk that is around point v and the bands.
+			  Calculation is as follows:
+			  1. For the most inner band, return [0, 2pi]
+			  2. For other bands, consider the point P which lies on the tangent from origin to the disk of point v.
+			  Its radial coordinates would be(cHigh, point[1]+deltaTheta). We're looking for the deltaTheta.
+			  We know the distance from point v to P is R. Thus, we can solve the hyperbolic distance of (v, P)
+			  for deltaTheta. Then, thetaMax is simply point[1] + deltaTheta and thetaMin is point[1] - deltaTheta
+		  */
 
-			//Most innerband is defined by cLow = 0
-			double minTheta, maxTheta;
-			if (cLow == 0)
-			return std::make_tuple(0, 2* M_PI);
+		  //Most innerband is defined by cLow = 0
+		  double minTheta, maxTheta;
+		  if (cLow == 0)
+		  return std::make_tuple(0, 2* M_PI);
 
-			double a = acos((cosh(radius)*cosh(cLow) - cosh(thresholdDistance))/(sinh(radius)*sinh(cLow)));
-			maxTheta = angle + a;
-			minTheta = angle - a;
-			return std::make_tuple(minTheta, maxTheta);
+		  double a = (cosh(radius)*cosh(cLow) - cosh(thresholdDistance))/(sinh(radius)*sinh(cLow));
+		  //handle floating point error
+		  if(a < -1)
+		    a = -1;
+		  else if(a > 1)
+		    a = 1;
+		  a = acos(a);
+		  maxTheta = angle + a;
+		  minTheta = angle - a;
+		  return std::make_tuple(minTheta, maxTheta);
 		}
+
 
 
 		void getPointsWithinAngles(double minTheta, double maxTheta, const vector<Point2D<double>> &band, vector<double> &bandAngles, vector<Point2D<double>> &slab){
@@ -139,10 +134,13 @@ namespace NetworKit {
 			in the supplied band(That area is called as slab)
 			*/
 			//TODO: There should be a better way to write the whole thing. Find it.
+			//TODO: This can be done faster. Instead of returning the copying to slab array, just return the indexes and iterate over the band array
 
 			std::vector<double>::iterator low;
 			std::vector<double>::iterator high;
 
+			if(minTheta == -2*M_PI)
+				minTheta = 0;
 			//Case 1: We do not have overlap 2pi, simply put all the points between min and max to the list
 			if(maxTheta <= 2*M_PI && minTheta >= 0){
 				low = std::lower_bound(bandAngles.begin(), bandAngles.end(), minTheta);
@@ -174,8 +172,8 @@ namespace NetworKit {
 			}
 			//Case 3: We have 'backward' overlap at 2pi, that is minTheta < 0
 			else if (minTheta < 0){
-				//1. Get points from 2pi - minTheta to 2pi
-				minTheta = (2*M_PI) - minTheta;
+				//1. Get points from 2pi + minTheta to 2pi
+				minTheta = (2*M_PI) + minTheta;
 				low = std::lower_bound(bandAngles.begin(), bandAngles.end(), minTheta);
 				high = std::upper_bound(bandAngles.begin(), bandAngles.end(), 2*M_PI);
 				std::vector<Point2D<double>>::const_iterator first = band.begin() + (low - bandAngles.begin());
@@ -201,13 +199,7 @@ namespace NetworKit {
 			return distance;
 		}
 
-
-		/*
-		* Modified methods from HyperbolicSpace.h
-		* Native representation of the hyperbolic disk
-		* is used instead of the Poincare
-		*
-		*/
+		/* Modified this method so that it uses native rep. of hyperbolic unit disk instead of Poincare */
 		void fillPoints(vector<double> &angles, vector<double> &radii, double stretch, double alpha) {
 			uint64_t n = radii.size();
 			double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(n);
@@ -241,6 +233,7 @@ namespace NetworKit {
 				assert(radii[i] < r);
 			}
 		}
+
 	};
 }
 #endif /* RHGGenerator_H_ */

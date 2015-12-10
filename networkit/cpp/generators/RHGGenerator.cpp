@@ -14,29 +14,15 @@ using std::vector;
 
 namespace NetworKit {
 
-	RHGGenerator::RHGGenerator() {
-		stretch = 1;
-		alpha = 1;
-		factor = 1;
-		nodeCount = 10000;
-	}
 
-	RHGGenerator::RHGGenerator(count n) {
-		nodeCount = n;
-		alpha = 1;
-		factor = 1;
-		stretch = 1;
-	}
-	/**
-	* Construct a generator for n nodes and m edges
-	*/
 
 	RHGGenerator::RHGGenerator(count n, double avgDegree, double plexp) {
 		nodeCount = n;
 		if (plexp < 2) throw std::runtime_error("Exponent of power-law degree distribution must be >= 2");
 		alpha = (plexp-1)/2;
 		double R = HyperbolicSpace::hyperbolicAreaToRadius(n);
-		double targetR = HyperbolicSpace::getTargetRadius(n, n*avgDegree/2, alpha, 0);// 2*log(8*n / (M_PI*(m/n)*2));
+		double targetR = HyperbolicSpace::getTargetRadius(n, n*avgDegree/2, alpha);
+
 		stretch = targetR / R;
 		factor = 1;
 		threadtimers.resize(omp_get_max_threads());
@@ -70,6 +56,7 @@ namespace NetworKit {
 			anglecopy[j] = angles[permutation[j]];
 			radiicopy[j] = radii[permutation[j]];
 		}
+
 		INFO("Generated Points");
 		return generate(anglecopy, radiicopy, R*distanceFactor);
 	}
@@ -89,7 +76,7 @@ namespace NetworKit {
 			for(index j = 0; j < bands.size(); j++){
 				if(radii[i] >= bandRadius[j] && radii[i] <= bandRadius[j+1]){
 					bands[j].push_back(Point2D<double>(angles[i], radii[i], i));
-					break;
+						break;
 				}
 			}
 		}
@@ -99,7 +86,6 @@ namespace NetworKit {
 		return generate(angles, radii, bands, bandRadius, thresholdDistance);
 	}
 
-
 	Graph RHGGenerator::generate(const vector<double> &angles, const vector<double> &radii, const vector<vector<Point2D<double>>> &bands, const vector<double> &bandRadius,
 		double thresholdDistance) {
 
@@ -108,7 +94,6 @@ namespace NetworKit {
 			Aux::Timer timer;
 			vector<double> empty;
 			GraphBuilder result(n, false, false);
-			timer.start();
 
 			//1.Extract band angles to use it later without increasing complexity, can create a band class to handle this more elegantly
 			vector<vector<double>> bandAngles(bands.size());
@@ -118,13 +103,14 @@ namespace NetworKit {
 			}
 
 			//2.Insert edges
+			timer.start();
 			#pragma omp parallel
 			{
 				index id = omp_get_thread_num();
 				threadtimers[id].start();
 				#pragma omp for schedule(guided) nowait
 				for (index i = 0; i < n; i++) {
-					count expectedDegree = (4/M_PI)*n*exp(-(radii[i])/2);//TODO: adapt for alpha!=1
+					count expectedDegree = (4/M_PI)*n*exp(-(radii[i])/2);
 					vector<index> near;
 					near.reserve(expectedDegree*1.1);
 					Point2D<double> pointV(angles[i], radii[i], i);
@@ -132,6 +118,8 @@ namespace NetworKit {
 						if(bandRadius[j+1] > radii[i]){
 							double minTheta, maxTheta;
 							std::tie (minTheta, maxTheta) = getMinMaxTheta(angles[i], radii[i], bandRadius[j], thresholdDistance);
+							//minTheta = 0;
+							//maxTheta = 2*M_PI;
 							vector<Point2D<double>> slab;
 							getPointsWithinAngles(minTheta, maxTheta, bands[j], bandAngles[j], slab);
 							for(index w = 0; w < slab.size(); w++){
