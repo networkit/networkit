@@ -1,2 +1,2 @@
-_NetworKit
 networkit
+_NetworKit
