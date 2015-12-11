@@ -2,7 +2,7 @@
  * Lamg.cpp
  *
  *  Created on: Oct 20, 2015
- *      Author: Michael
+ *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
 #include "Lamg.h"
