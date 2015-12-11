@@ -16,7 +16,7 @@ namespace NetworKit {
 /** Floating point epsilon to use in comparisons. */
 constexpr double EPSILON = 1e-9;
 
-CSRMatrix::CSRMatrix() : rowIdx(0), columnIdx(0), nonZeros(0), nRows(0), nCols(0) {
+CSRMatrix::CSRMatrix() : rowIdx(0), columnIdx(0), nonZeros(0), nRows(0), nCols(0), isSorted(true) {
 }
 
 CSRMatrix::CSRMatrix(const count nRows, const count nCols, const std::vector<std::pair<index, index>> &positions, const std::vector<double> &values, bool isSorted) : nRows(nRows), nCols(nCols), isSorted(isSorted) {
@@ -185,16 +185,20 @@ void CSRMatrix::sort() {
 }
 
 bool CSRMatrix::sorted() const {
-//	bool sorted = true;
-//#pragma omp parallel for
-//	for (index i = 0; i < nRows; ++i) {
-//		for (index j = rowIdx[i]+1; j < rowIdx[i+1]; ++j) {
-//			if (columnIdx[j-1] > columnIdx[j]) {
-//				sorted = false;
-//				break;
-//			}
-//		}
-//	}
+#ifndef NDEBUG
+	bool sorted = true;
+#pragma omp parallel for
+	for (index i = 0; i < nRows; ++i) {
+		for (index j = rowIdx[i]+1; j < rowIdx[i+1]; ++j) {
+			if (columnIdx[j-1] > columnIdx[j]) {
+				sorted = false;
+				break;
+			}
+		}
+	}
+
+	return sorted;
+#endif
 
 	return isSorted;
 }
@@ -514,7 +518,7 @@ CSRMatrix CSRMatrix::mmTMultiply(const CSRMatrix &A, const CSRMatrix &B) {
 }
 
 Vector CSRMatrix::mTvMultiply(const CSRMatrix &matrix, const Vector &vector) {
-	assert(matrix.nRows == vector.getDimension());
+	assert(matrix.nRows == vector.getDimension() && !vector.isTransposed());
 
 	Vector result(matrix.numberOfColumns(), 0.0);
 	for (index k = 0; k < matrix.numberOfRows(); ++k) {

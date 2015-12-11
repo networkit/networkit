@@ -2,7 +2,7 @@
  * DenseMatrix.h
  *
  *  Created on: Nov 25, 2015
- *      Author: Michael
+ *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
 #ifndef NETWORKIT_CPP_ALGEBRAIC_DENSEMATRIX_H_
@@ -16,6 +16,10 @@
 
 namespace NetworKit {
 
+/**
+ * Represents a dense matrix. Use this matrix to run LU decompositions and LU solves.
+ * Note that most matrices are rather sparse s.t. CSRMatrix might be a better representation.
+ */
 class DenseMatrix {
 private:
 	count nRows;
@@ -26,16 +30,29 @@ public:
 	/** Default constructor */
 	DenseMatrix();
 
+	/**
+	 * Constructs an instance of DenseMatrix given the number of rows (@a nRows) and the number of columns (@a nCols) and its
+	 * values (@a entries).
+	 * @param nRows Number of rows.
+	 * @param nCols Number of columns.
+	 * @param entries Entries of the matrix.
+	 * @note The size of the @a entries vector should be equal to @a nRows * @a nCols.
+	 */
 	DenseMatrix(const count nRows, const count nCols, const std::vector<double> &entries);
 
+	/** Default destructor */
 	virtual ~DenseMatrix() = default;
 
+	/** Default copy constructor */
 	DenseMatrix (const DenseMatrix &other) = default;
 
+	/** Default move constructor */
 	DenseMatrix (DenseMatrix &&other) = default;
 
+	/** Default copy assignment operator */
 	DenseMatrix& operator=(DenseMatrix &&other) = default;
 
+	/** Default move assignment operator */
 	DenseMatrix& operator=(const DenseMatrix &other) = default;
 
 	/**
@@ -139,17 +156,38 @@ public:
 	 */
 	DenseMatrix& operator/=(const double &divisor);
 
+	/**
+	 * Decomposes the given @a matrix into lower L and upper U matrix (in-place).
+	 * @param matrix The matrix to decompose into LU.
+	 */
 	static void LUDecomposition(DenseMatrix &matrix);
 
+	/**
+	 * Computes the solution vector x to the system @a LU * x = @a b where @a LU is a matrix decomposed into L and U.
+	 * @param LU Matrix decomposed into lower L and upper U matrix.
+	 * @param b Right-hand side.
+	 * @return Solution vector x to the linear equation system LU * x = b.
+	 */
 	static Vector LUSolve(const DenseMatrix &LU, const Vector &b);
 
+	/**
+	 * Computes @a A @a binaryOp @a B on the elements of matrix @a A and matrix @a B.
+	 * @param A
+	 * @param B
+	 * @param binaryOp Function handling (double, double) -> double
+	 * @return @a A @a binaryOp @a B.
+	 * @note @a A and @a B must have the same dimensions.
+	 */
 	template<typename L> static DenseMatrix binaryOperator(const DenseMatrix &A, const DenseMatrix &B, L binaryOp);
 
 	/**
-	 * Iterate over all non-zero elements of row @a row in the matrix and call handler(index row, index column, double value)
+	 * Iterate over all non-zero elements of row @a row in the matrix and call handler(index column, double value)
 	 */
 	template<typename L> void forElementsInRow(index i, L handle) const;
 
+	/**
+	 * Iterate in parallel over all non-zero elements of row @a row in the matrix and call handler(index column, double value)
+	 */
 	template<typename L> void parallelForElementsInRow(index i, L handle) const;
 
 	/**

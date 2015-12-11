@@ -2,7 +2,7 @@
  * DenseMatrixGTest.cpp
  *
  *  Created on: Nov 25, 2015
- *      Author: Michael
+ *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
 #include "DenseMatrixGTest.h"
