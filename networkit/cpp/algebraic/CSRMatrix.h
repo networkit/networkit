@@ -17,6 +17,11 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup algebraic
+ * The CSRMatrix class represents a sparse matrix stored in CSR-Format (i.e. compressed sparse row).
+ * If speed is important, use this CSRMatrix instead of the Matrix class.
+ */
 class CSRMatrix {
 private:
 	std::vector<index> rowIdx;
@@ -31,13 +36,12 @@ private:
 	index partition(index left, index right);
 
 public:
+	/** Represents a matrix entry s.t. matrix(row, column) = value */
 	struct Triple {
 		index row;
 		index column;
 		double value;
 	};
-
-
 
 	/** Default constructor */
 	CSRMatrix();
@@ -50,9 +54,9 @@ public:
 
 	CSRMatrix(const count nRows, const count nCols, const std::vector<index> &rowIdx, const std::vector<index> &columnIdx, const std::vector<double> &nonZeros, bool isSorted = false);
 
-	CSRMatrix (const CSRMatrix &other) = default;//: rowIdx(other.rowIdx), columnIdx(other.columnIdx), nonZeros(other.nonZeros), nRows(other.nRows), nCols(other.nCols), isSorted(other.isSorted) {}
+	CSRMatrix (const CSRMatrix &other) = default;
 
-	CSRMatrix (CSRMatrix &&other) = default; // noexcept : rowIdx(std::move(other.rowIdx)), columnIdx(std::move(other.columnIdx)), nonZeros(std::move(other.nonZeros)), nRows(std::move(other.nRows)), nCols(std::move(other.nCols)), isSorted(std::move(other.isSorted)){}
+	CSRMatrix (CSRMatrix &&other) = default;
 
 	virtual ~CSRMatrix() = default;
 
@@ -95,8 +99,14 @@ public:
 	 */
 	void setValue(const index i, const index j, const double value);
 
+	/**
+	 * Sorts the column indices in each row for faster access.
+	 */
 	void sort();
 
+	/**
+	 * @return True if the matrix is sorted, otherwise false.
+	 */
 	bool sorted() const;
 
 	/**
@@ -175,37 +185,114 @@ public:
 	 */
 	CSRMatrix& operator/=(const double &divisor);
 
+	/**
+	 * Creates a submatrix of this matrix consisting of the rows specified in @a rows and columns specified in @a columns.
+	 * @param rows The row indices referencing the rows to include in the submatrix.
+	 * @param columns The column indices referencing the columns to include in the submatrix.
+	 * @return The submatrix of this matrix consisting of @a rows and @a columns.
+	 */
 	CSRMatrix subMatrix(const std::vector<index> &rows, const std::vector<index> &columns) const;
 
+	/**
+	 * Computes @a A @a binaryOp @a B on the elements of matrix @a A and matrix @a B.
+	 * @param A Sorted CSRMatrix.
+	 * @param B Sorted CSRMatrix.
+	 * @param binaryOp Function handling (double, double) -> double
+	 * @return @a A @a binaryOp @a B.
+	 * @note @a A and @a B must have the same dimensions and must be sorted.
+	 */
 	template<typename L> static CSRMatrix binaryOperator(const CSRMatrix &A, const CSRMatrix &B, L binaryOp);
 
+	/**
+	 * Computes @a A^T * @a B.
+	 * @param A
+	 * @param B
+	 * @return @a A^T * @a B.
+	 * @note The number of rows of @a A must be equal to the number of rows of @a B.
+	 */
 	static CSRMatrix mTmMultiply(const CSRMatrix &A, const CSRMatrix &B);
 
+	/**
+	 * Computes @a A * @a B^T.
+	 * @param A
+	 * @param B
+	 * @return @a A * @a B^T.
+	 * @note The number of columns of @a A must be equal to the number of columns of @a B.
+	 */
 	static CSRMatrix mmTMultiply(const CSRMatrix &A, const CSRMatrix &B);
 
+	/**
+	 * Computes @a matrix^T * @a vector.
+	 * @param matrix
+	 * @param vector
+	 * @return @a matrix^T * @a vector.
+	 * @note The number of rows of @a matrix must be equal to the dimension of @a vector.
+	 */
 	static Vector mTvMultiply(const CSRMatrix &matrix, const Vector &vector);
 
+	/**
+	 * Compute the (weighted) Laplacian of the (weighted) @a graph.
+	 * @param graph
+	 * @return The (weighted) Laplacian.
+	 */
 	static CSRMatrix graphLaplacian(const Graph &graph);
 
+	/**
+	 * Compute the (weighted) adjacency matrix of the (weighted) @a graph.
+	 * @param graph
+	 * @return The (weighted) adjacency matrix.
+	 */
 	static CSRMatrix adjacencyMatrix(const Graph &graph);
 
+	/**
+	 * Computes a graph having the given @a laplacian.
+	 * @param laplacian
+	 * @return The graph having a Laplacian equal to @a laplacian.
+	 */
 	static Graph laplacianToGraph(const CSRMatrix &laplacian);
 
+	/**
+	 * Interprets the @a matrix as adjacency matrix of a graph. If @a matrix is non-symmetric, the graph will be directed.
+	 * @param matrix
+	 * @return The graph having an adjacency matrix equal to @a matrix.
+	 */
 	static Graph matrixToGraph(const CSRMatrix &matrix);
 
+	/**
+	 * Checks if @a matrix is symmetric.
+	 * @param matrix
+	 * @return True if @a matrix is symmetric, otherwise false.
+	 */
 	static bool isSymmetric(const CSRMatrix &matrix);
 
+	/**
+	 * Checks if @a matrix is symmetric diagonally dominant (SDD).
+	 * @param matrix
+	 * @return True if @a matrix is SDD, false otherwise.
+	 */
 	static bool isSDD(const CSRMatrix &matrix);
 
+	/**
+	 * Checks if @a matrix is a Laplacian matrix.
+	 * @param matrix
+	 * @return True if @a matrix is a Laplacian matrix, false otherwise.
+	 */
 	static bool isLaplacian(const CSRMatrix &matrix);
 
+	/**
+	 * Transposes this matrix and returns it.
+	 * @return The transposed matrix of this matrix.
+	 */
 	CSRMatrix transpose() const;
 
 	/**
-	 * Iterate over all non-zero elements of row @a row in the matrix and call handler(index row, index column, double value)
+	 * Iterate over all non-zero elements of row @a row in the matrix and call handler(index column, double value)
 	 */
 	template<typename L> void forNonZeroElementsInRow(index i, L handle) const;
 
+	/**
+	 * Iterate in parallel over all non-zero elements of row @a row in the matrix and call handler(index column, double value)
+	 */
 	template<typename L> void parallelForNonZeroElementsInRow(index i, L handle) const;
 
 	/**

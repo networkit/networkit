@@ -2,7 +2,7 @@
  * DenseMatrixGTest.h
  *
  *  Created on: Nov 25, 2015
- *      Author: Michael
+ *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
 #ifndef NETWORKIT_CPP_ALGEBRAIC_TEST_DENSEMATRIXGTEST_H_
