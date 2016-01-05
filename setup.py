@@ -73,7 +73,7 @@ if sys.platform == 'Windows' and not scons_available:
 
 # compiler candidates
 # this list serves as a fallback when neither $CXX is set nor build.conf exists
-candidates = ["g++", "g++-5.2", "g++-5.1", "g++-5", "g++-4.9", "g++-4.8"]
+candidates = ["g++", "g++-5.3", "g++-5.2", "g++-5.1", "g++-5", "g++-4.9", "g++-4.8", "clang++", "clang++-3.7"]
 stdflag = None
 
 #######################################
@@ -127,7 +127,7 @@ if not sys.platform == 'Windows':
 		os.environ["CC"] = cppcompiler
 		os.environ["CXX"] = cppcompiler
 	else:
-		errorMessages.append("ERROR: Please install GCC/g++ 4.8 or later and rerun")
+		errorMessages.append("ERROR: Test compilation with the following binary names was unsuccessful: {}. Make sure you have either g++ (>= 4.8) or clang++ (>= 3.7) properly installed".format(", ".join(candidates)))
 		abort_installation = True
 
 # early abort installation in case the compiler requirements aren't satisfied
