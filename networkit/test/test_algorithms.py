@@ -329,8 +329,8 @@ class Test_SelfLoops(unittest.TestCase):
 		clique.MaxClique(self.LL).run()
 
 
-	def test_properties_ClusteringCoefficient(self):
-		CL = properties.ClusteringCoefficient()
+	def test_globals_ClusteringCoefficient(self):
+		CL = globals.ClusteringCoefficient()
 		CL.exactGlobal(self.L)
 		CL.exactGlobal(self.LL)
 		CL.approxGlobal(self.L, 5)
@@ -344,8 +344,8 @@ class Test_SelfLoops(unittest.TestCase):
 		CL.sequentialAvgLocal(self.LL)
 
 
-	def test_properties_ConnectedComponents(self):
-		CC = properties.ConnectedComponents(self.LL)
+	def test_components_ConnectedComponents(self):
+		CC = components.ConnectedComponents(self.LL)
 		CC.run()
 		CC.componentOfNode(1)
 		CC.getComponentSizes()
@@ -353,21 +353,21 @@ class Test_SelfLoops(unittest.TestCase):
 		CC.numberOfComponents()
 
 
-	def test_properties_Diameter(self):
-		D = properties.Diameter()
+	def test_distance_Diameter(self):
+		D = distance.Diameter()
 		D.estimatedDiameterRange(self.LL)
 		D.estimatedDiameterRangeWithProof(self.LL)
 		D.estimatedVertexDiameter(self.LL, 5)
 		D.exactDiameter(self.LL)
 
 
-	def test_properties_Eccentricity(self):
-		E = properties.Eccentricity()
+	def test_distance_Eccentricity(self):
+		E = distance.Eccentricity()
 		E.getValue(self.LL, 0)
 
 
-	def test_properties_EffectiveDiameter(self):
-		ED = properties.EffectiveDiameter()
+	def test_distance_EffectiveDiameter(self):
+		ED = distance.EffectiveDiameter()
 		EDL = ED.effectiveDiameter(self.L)
 		EDLL = ED.effectiveDiameter(self.LL)
 

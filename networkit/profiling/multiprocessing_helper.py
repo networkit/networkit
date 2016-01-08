@@ -1,5 +1,5 @@
 #
-# file: multiprocessing.py
+# file: multiprocessing_helper.py
 # author: Mark Erb
 #
 
@@ -45,9 +45,9 @@ class Worker(multiprocessing.Process):
 
 class ThreadPool():
 	""" Threadpool
-	
+
 	suggested usage:
-		
+
 	from . import job
 
 	n = multiprocessing.numberOfProcessors() * 2
@@ -73,7 +73,7 @@ class ThreadPool():
 	def __init__(self, numberOfWorkers, isParallel=True):
 		""" constructor
 		Args:
-			numberOfWorkers: number of workers to create 
+			numberOfWorkers: number of workers to create
 			isParallel: parallel or sequential task computation
 		"""
 		self.__numberOfTasks = 0
@@ -111,16 +111,16 @@ class ThreadPool():
 		""" current number of unfinished tasks """
 		return self.__numberOfTasks
 
-		
+
 	def numberOfWorkers(self):
 		""" initilized number of workers """
 		return self.__numberOfWorkers
-		
-		
+
+
 	def isParallel(self):
 		""" are the workers run parallel or sequencial  """
 		return self.__isParallel
-		
+
 
 	def put(self, task):
 		""" assign a task """

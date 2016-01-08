@@ -49,7 +49,7 @@ public:
     *
     * @param batch The batch of edge insertions.
     */
-    void update(const std::vector<GraphEvent>& batch);
+    void update(const std::vector<GraphEvent>& batch) override;
 
     /**
     * Get number of path samples used for last calculation

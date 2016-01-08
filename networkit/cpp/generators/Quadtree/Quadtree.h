@@ -15,6 +15,7 @@
 #include <functional>
 #include "QuadNode.h"
 #include "../../geometric/HyperbolicSpace.h"
+#include "../../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -200,7 +201,7 @@ public:
 
 		//we have sort(deg(v)) here! This is not good, but does not make the asymptotical complexity of O(deg(v) log n) worse.
 		if (wraparound) {
-			std::sort(circleDenizens.begin(), circleDenizens.end());
+			Aux::Parallel::sort(circleDenizens.begin(), circleDenizens.end());
 			auto newend = unique(circleDenizens.begin(), circleDenizens.end());
 			circleDenizens.resize(newend - circleDenizens.begin());
 		}

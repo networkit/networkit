@@ -45,11 +45,12 @@ TEST_F(SSSPGTest, testDijkstra) {
 	Dijkstra sssp(G, 5, true, true);
 	sssp.run();
 	std::vector<node> stack = sssp.getStack();
+#if LOG_LEVEL >= LOG_LEVEL_DEBUG
 	while (!stack.empty()) {
-		node t = stack.back();
+		DEBUG(stack.back());
 		stack.pop_back();
-		DEBUG(t);
 	}
+#endif
 }
 
 TEST_F(SSSPGTest, testShortestPaths) {

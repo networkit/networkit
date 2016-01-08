@@ -7,6 +7,7 @@
 
 #include "EvaluationMetric.h"
 #include "PredictionsSorter.h"
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -160,9 +161,9 @@ void EvaluationMetric::sortPointsOfCurve(std::pair<std::vector<double>, std::vec
   // Create a permutation that you would use in sorting the x-values ascendingly
   std::vector<int> permutation(curve.first.size());
   std::iota(permutation.begin(), permutation.end(), 0);
-  std::sort(permutation.begin(), permutation.end(), [&](int i, int j){ return curve.first[i] < curve.first[j]; });
+  Aux::Parallel::sort(permutation.begin(), permutation.end(), [&](int i, int j){ return curve.first[i] < curve.first[j]; });
   // Actually sort x-vector
-  std::sort(curve.first.begin(), curve.first.end());
+  Aux::Parallel::sort(curve.first.begin(), curve.first.end());
   // Apply the permutation to the y-vector
   std::vector<double> sortedY(permutation.size());
   std::transform(permutation.begin(), permutation.end(), sortedY.begin(), [&](int i){ return curve.second[i]; });

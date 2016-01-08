@@ -173,7 +173,6 @@ TEST_F(DynSSSPGTest, testDynamicBFSGeneratedGraph) {
 	dyn_bfs.run();
 	bfs.run();
 	DEBUG("Before the edge insertion: ");
-	GraphEvent ev;
 	count nInsertions = 1000, i = 0;
 	while (i < nInsertions) {
 		DEBUG("Sampling a new edge");
@@ -211,7 +210,6 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraGeneratedGraph) {
 	dyn_dij.run();
 	dij.run();
 	DEBUG("Before the edge insertion: ");
-	GraphEvent ev;
 	count nInsertions = 10, i = 0;
 	while (i < nInsertions) {
 		DEBUG("Sampling a new edge");
@@ -254,7 +252,6 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraBatches) {
 		dyn_dij.run();
 		dij.run();
 		DEBUG("Before the edge insertion: ");
-		GraphEvent ev;
 		count batchSize = 8;
 		count nBatches = 1, i = 0;
 		for (count j=0; j<nBatches; j++) {

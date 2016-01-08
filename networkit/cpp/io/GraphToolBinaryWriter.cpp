@@ -54,8 +54,9 @@ void GraphToolBinaryWriter::writeComment(std::ofstream& file) {
 	std::string s = "";
 	uint64_t size = (uint64_t)s.size();
 	writeType<uint64_t>(file,8,size);
-	if (size > 0);
+	if (size > 0) {
 		file.write(s.c_str(),size);
+	}
 }
 
 void GraphToolBinaryWriter::writeAdjacencies(std::ofstream& file, const Graph& G) {

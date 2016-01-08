@@ -6,9 +6,23 @@
  */
 
 #include "LocalDegreeScore.h"
-#include "LocalSimilarityScore.h"
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
+
+template<typename T>
+struct AttributizedEdge {
+	edgeid eid;
+	T value;
+
+	AttributizedEdge(edgeid eid, T v) :
+			eid(eid), value(v) {
+	}
+
+	bool operator<(const AttributizedEdge<T>& other) const {
+		return (value > other.value);
+	}
+};
 
 LocalDegreeScore::LocalDegreeScore(const Graph& G) : EdgeScore<double>(G) {
 }
@@ -18,7 +32,7 @@ void LocalDegreeScore::run() {
 		throw std::runtime_error("edges have not been indexed - call indexEdges first");
 	}
 
-	std::vector<double> exponents (G.upperEdgeIdBound(), 0.0);
+	std::vector<std::atomic<double>> exponents (G.upperEdgeIdBound());
 
 	G.balancedParallelForNodes([&](node i) {
 		count d = G.degree(i);
@@ -28,34 +42,48 @@ void LocalDegreeScore::run() {
 		 * are to be kept in the graph */
 
 		std::vector<AttributizedEdge<count>> neighbors;
+		neighbors.reserve(G.degree(i));
 		G.forNeighborsOf(i, [&](node _i, node j, edgeid eid) {
-			if (G.degree(j) > d)
-				neighbors.push_back(AttributizedEdge<count>(i, j, eid, G.degree(j)));
+			neighbors.emplace_back(eid, G.degree(j));
 		});
 		std::sort(neighbors.begin(), neighbors.end());
-
-		count rank = 1;
 
 		/**
 		 * By convention, we want to the edges with highest "similarity" or "cohesion" to have values close to 1,
 		 * so we invert the range.
 		 */
 
-		#pragma omp critical
+		count rank = 0;
+		count numSame = 1;
+		count oldValue = 0; // none of the neighbors will have degree 0, so 0 is a safe start value
+
 		for (auto neighborEdge : neighbors) {
+			if (neighborEdge.value != oldValue) {
+				rank += numSame;
+				numSame = 1;
+			} else {
+				++numSame;
+			}
+
 			edgeid eid = neighborEdge.eid;
 
 			double e = 1.0; // If the node has only one neighbor, the edge should be kept anyway.
 			if (d > 1)
 				e = 1.0 - (log(rank) / log(d));
 
-			exponents[eid] = std::max(e, exponents[eid]);
-			rank++;
+			Aux::Parallel::atomic_max(exponents[eid], e);
 		}
 
 	});
 
-	scoreData = std::move(exponents);
+	scoreData.clear();
+	scoreData.resize(G.upperEdgeIdBound());
+
+	#pragma omp parallel for
+	for (index i = 0; i < scoreData.size(); ++i) {
+		scoreData[i] = exponents[i];
+	}
+
 	hasRun = true;
 }
 

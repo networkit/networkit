@@ -15,6 +15,7 @@
 #include "../../graph/Graph.h"
 #include "../../io/DibapGraphReader.h"
 #include "../../io/METISGraphReader.h"
+#include "../../auxiliary/Random.h"
 
 
 namespace NetworKit {
@@ -55,6 +56,30 @@ TEST_F(MatcherGTest, testLocalMaxMatchingDirectedWarning) {
 	Graph G(2, false, true);
 	G.addEdge(0,1);
 	EXPECT_THROW(LocalMaxMatcher localMaxMatcher(G), std::runtime_error);
+}
+
+
+TEST_F(MatcherGTest, testPgaMatchingOnWeightedGraph) {
+	count n = 50;
+	Graph G(n);
+	G.forNodePairs([&](node u, node v){
+		G.addEdge(u,v, Aux::Random::real());
+	});
+	PathGrowingMatcher pgaMatcher(G);
+	pgaMatcher.run();
+}
+
+TEST_F(MatcherGTest, testPgaMatchingWithSelfLoops) {
+	count n = 50;
+	Graph G(n);
+	G.forNodePairs([&](node u, node v){
+		G.addEdge(u,v, Aux::Random::real());
+	});
+	G.forNodes([&](node u){
+		G.addEdge(u,u);
+	});
+	PathGrowingMatcher pgaMatcher(G);
+	pgaMatcher.run();
 }
 
 
