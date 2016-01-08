@@ -7,10 +7,11 @@ __author__ = "Christian Staudt"
 # extension imports
 from _NetworKit import Graph, BarabasiAlbertGenerator, PubWebGenerator, ErdosRenyiGenerator, ClusteredRandomGraphGenerator, DorogovtsevMendesGenerator, DynamicPubWebGenerator, DynamicPathGenerator, ChungLuGenerator, HyperbolicGenerator, DynamicHyperbolicGenerator, HavelHakimiGenerator, DynamicDorogovtsevMendesGenerator, RmatGenerator, DynamicForestFireGenerator, RegularRingLatticeGenerator, WattsStrogatzGenerator, PowerlawDegreeSequence, EdgeSwitchingMarkovChainGenerator, EdgeSwitchingMarkovChainGenerator as ConfigurationModelGenerator, LFRGenerator
 
-from networkit import distance, coarsening, matching, nxadapter
+from networkit import distance, coarsening, matching, nxadapter, graphio
 
 import math
 import logging
+import subprocess
 
 class StarGraphGenerator:
 	"""
@@ -165,3 +166,27 @@ class MultiscaleGenerator:
 	@classmethod
 	def fit(cls, G):
 		return cls(G)
+
+class BTERReplicator:
+
+	scriptname = '../scripts/bter_wrapper.m'
+	matlabname = 'matlab'
+	tempFileOut = '../scripts/bter_output'
+	tempFileIn = 'bter_input.mat'
+
+
+	def __init__(self, G):
+		self.G = G
+
+	def generate(self):
+		graphio.writeMat(self.G, self.tempFileIn)
+		subprocess.call([self.matlabname, '-nosplash', '-nodisplay', '-r "run(\''+self.scriptname+'\');"'])
+		G_bter = graphio.readMat(self.tempFileOut, key='G_bter')
+		subprocess.call(['rm', self.tempFileOut])
+		subprocess.call(['rm', self.tempFileIn])
+		return G
+
+	@classmethod
+	def fit(cls, G):
+		return cls(G)
+
