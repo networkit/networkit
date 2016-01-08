@@ -9,6 +9,7 @@
 
 #include "LPDegreeOrdered.h"
 #include "../auxiliary/Log.h"
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -65,7 +66,7 @@ void LPDegreeOrdered::run() {
 		nodes.push_back(v);
 	});
 
-	std::sort(nodes.begin(), nodes.end(), [&](node u, node v) {
+	Aux::Parallel::sort(nodes.begin(), nodes.end(), [&](node u, node v) {
 		return G.degree(u) < G.degree(v); // lower degree before higher degree
 	});
 
@@ -89,7 +90,7 @@ count LPDegreeOrdered::numberOfIterations() {
 	return this->nIterations;
 }
 
-std::string LPDegreeOrdered::toString() {
+std::string LPDegreeOrdered::toString() const {
 	return "LPDegreeOrdered()";
 }
 

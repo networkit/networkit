@@ -4,6 +4,7 @@
 
 #include "CoverHubDominance.h"
 #include "../auxiliary/SignalHandling.h"
+#include "../auxiliary/Parallel.h"
 #include <atomic>
 
 void NetworKit::CoverHubDominance::run() {
@@ -23,14 +24,7 @@ void NetworKit::CoverHubDominance::run() {
 				}
 			});
 
-			// atomic max operation
-			// current maximum value
-			count cMaxInt = maxInternalDeg[c].load(std::memory_order_relaxed);
-
-			do {
-				if (cMaxInt >= internalDeg) break; // skip if current max is already large enough
-			// set new max unless current max has been changed in the meantime, if current max has changed load it (so we can compare again)
-			} while (!maxInternalDeg[c].compare_exchange_weak(cMaxInt, internalDeg, std::memory_order_release, std::memory_order_relaxed));
+			Aux::Parallel::atomic_max(maxInternalDeg[c], internalDeg);
 		}
 	});
 

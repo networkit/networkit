@@ -902,7 +902,7 @@ Graph Graph::transpose() const {
 	}
 	GTranspose.t = t;
 	GTranspose.setName(getName() + "Transpose");
-	return std::move(GTranspose);
+	return GTranspose;
 }
 
 Graph Graph::toUndirected() const {
@@ -910,7 +910,7 @@ Graph Graph::toUndirected() const {
 		throw std::runtime_error("this graph is already undirected");
 	}
 	Graph U(*this, weighted, false);
-	return std::move(U);
+	return U;
 }
 
 bool Graph::checkConsistency() const {
@@ -930,5 +930,33 @@ bool Graph::checkConsistency() const {
 
 	return noMultiEdges;
 }
+
+void Graph::append(const Graph& G) {
+	std::map<node,node> nodeMap;
+	G.forNodes([&](node u) {
+		node u_ = this->addNode();
+		nodeMap[u] = u_;
+	});
+	if (this->isWeighted()) {
+		G.forEdges([&](node u, node v, edgeweight ew){
+			this->addEdge(nodeMap[u], nodeMap[v], ew);
+		});
+	} else {
+		G.forEdges([&](node u, node v){
+			this->addEdge(nodeMap[u], nodeMap[v]);
+		});
+	}
+}
+
+void Graph::merge(const Graph& G) {
+	// TODO: handle edge weights
+	G.forEdges([&](node u, node v) {
+		// naive implementation takes $O(m \cdot d)$ for $m$ edges and max. degree $d$ in this graph
+		if (!this->hasEdge(u, v)) {
+			this->addEdge(u, v);
+		}
+	});
+}
+
 
 } /* namespace NetworKit */

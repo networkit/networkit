@@ -8,6 +8,7 @@
 #include "PageRankNibble.h"
 #include "ApproximatePageRank.h"
 #include "../community/Conductance.h"
+#include "../auxiliary/Parallel.h"
 #include <cmath>
 #include <vector>
 
@@ -31,7 +32,7 @@ std::set<node> PageRankNibble::bestSweepSet(std::vector<std::pair<node, double>>
 	auto comp([&](const std::pair<node, double>& a, const std::pair<node, double>& b) {
 		return (a.second / G.degree(a.first)) > (b.second / G.degree(b.first));
 	});
-	std::sort(pr.begin(), pr.end(), comp);
+	Aux::Parallel::sort(pr.begin(), pr.end(), comp);
 	TRACE("After sorting");
 
 	for (std::vector<std::pair<node, double>>::iterator it = pr.begin(); it != pr.end(); it++) {

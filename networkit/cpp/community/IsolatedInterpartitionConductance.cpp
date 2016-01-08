@@ -53,6 +53,7 @@ void NetworKit::IsolatedInterpartitionConductance::run() {
 				cond = values[i] / denominator;
 			}
 
+			values[i] = cond;
 			unweightedAverage += cond;
 			weightedAverage += clusterSize[i] * cond;
 			maximumValue = std::max(maximumValue, cond);

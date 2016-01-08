@@ -24,15 +24,29 @@ void ConnectedComponents::run() {
 	component = Partition(G.upperNodeIdBound(), none);
 	numComponents = 0;
 
+	std::queue<node> q;
+
 	// perform breadth-first searches
 	G.forNodes([&](node u) {
 		if (component[u] == none) {
 			component.setUpperBound(numComponents+1);
 			index c = numComponents;
-			G.BFSfrom(u, [&](node v) {
-				component[v] = c;
-			});
-			assert (component[u] != none);
+
+			q.push(u);
+			component[u] = c;
+
+			do {
+				node u = q.front();
+				q.pop();
+				// enqueue neighbors, set component
+				G.forNeighborsOf(u, [&](node v) {
+					if (component[v] == none) {
+						q.push(v);
+						component[v] = c;
+					}
+				});
+			} while (!q.empty());
+
 			++numComponents;
 		}
 	});

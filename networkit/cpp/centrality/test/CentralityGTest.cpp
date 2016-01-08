@@ -406,8 +406,6 @@ TEST_F(CentralityGTest, testApproxClosenessCentralityOnDisconnectedGraph) {
 	acc.run();
 	std::vector<double> cc = acc.scores();
 
-	double maximum = acc.maximum(); // FIXME: unused var!
-
 	const double tol = 0.35;
 	EXPECT_NEAR(0, cc[4], tol);
 	EXPECT_NEAR(1.0, cc[1], tol);

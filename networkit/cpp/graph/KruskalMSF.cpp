@@ -8,6 +8,7 @@
 #include "KruskalMSF.h"
 #include "SpanningForest.h"
 #include "../structures/UnionFind.h"
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -51,7 +52,7 @@ void NetworKit::KruskalMSF::run() {
 			MyEdge myEdge(u, v, ew);
 			sortedEdges.push_back(myEdge);
 		});
-		std::sort(sortedEdges.begin(), sortedEdges.end());
+		Aux::Parallel::sort(sortedEdges.begin(), sortedEdges.end());
 
 		// process in decreasing weight order
 		for (auto e: sortedEdges) {

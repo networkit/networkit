@@ -23,8 +23,6 @@ private:
 	count k; //!< Attachments made per node
 	count nMax; //!< The maximal number of nodes attached
 	count n0; //!< The number of initial connected nodes
-	count degreeSum; //!< Degree sum of the current graph
-
 
 	Graph initializeGraph();
 

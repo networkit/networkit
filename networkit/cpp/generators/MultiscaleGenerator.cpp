@@ -12,8 +12,9 @@
 #include "../coarsening/ParallelPartitionCoarsening.h"
 #include "../coarsening/MatchingCoarsening.h"
 #include "../matching/Matching.h"
-#include "../matching/LocalMaxMatcher.h"
-#include "../community/PLP.h"
+#include "../matching/PathGrowingMatcher.h"
+#include "../community/PLM.h"
+#include "../distance/AlgebraicDistance.h"
 
 
 namespace NetworKit {
@@ -25,34 +26,68 @@ MultiscaleGenerator::MultiscaleGenerator(const Graph& original) : original(origi
 
 Graph MultiscaleGenerator::generate() {
 
-	std::vector<Graph> coarseGraphs;
-	std::vector<Graph> fineGraphs;
 
-	// coarsen graph
-	//      aggregation scheme
-	std::unique_ptr<GraphCoarsening> coarsening;
 
-	if (aggregationScheme == "matching") {
-		// LocalMaxMatcher matcher(original);
-		// Matching matching = matcher.run();
-		// coarsening.reset(new MatchingCoarsening(original, matching));
-	} else if (aggregationScheme == "communities") {
-		PLP plp(original);
-		plp.run();
-		coarsening.reset(new ParallelPartitionCoarsening(original, plp.getPartition()));
+	// @param[in]	u_	coarse node
+	auto replicateSubgraph = [&](node u_, index level) {
+		std::map<node, node> localNodeMap;
+		// for (node u : reverseNodeMapping[level][u_]) {
+
+		//}
+
+
+
+	};
+
+	// V-cycle of coarsening and uncoarsening
+	std::vector<Graph> coarse;
+	std::vector<Graph> fine;
+	std::vector<std::vector<node>> nodeMapping;
+	std::vector<std::map<node, std::vector<node>>> reverseNodeMapping;
+
+	coarse[0] = original; 	// FIXME: possibly avoid copy of the graph
+
+	for (index level = 0; level < maxLevels; ++level) {
+
+		// coarsen graph
+		std::unique_ptr<GraphCoarsening> coarsening;
+
+		//      select aggregation scheme
+		if (aggregationScheme == "matching") {
+			// TODO: select edge weighting scheme
+			AlgebraicDistance ad(coarse[level]);
+			ad.preprocess();
+			PathGrowingMatcher matcher(coarse[level], ad.getEdgeScores());
+			matcher.run();
+			Matching matching = matcher.getMatching();
+			coarsening.reset(new MatchingCoarsening(original, matching));
+		} else if (aggregationScheme == "communities") {
+			PLM plm(original, false, 1.0, "balanced", 32, false, false);	// recurse = false
+			plm.run();
+			coarsening.reset(new ParallelPartitionCoarsening(original, plm.getPartition()));
+		}
+		coarsening->run();
+
+
+		coarse[level] = coarsening->getCoarseGraph();
+		nodeMapping[level] = coarsening->getFineToCoarseNodeMapping();	// fine node -> coarse node
+		reverseNodeMapping[level] = coarsening->getCoarseToFineNodeMapping();	//	coarse node -> collection of fine nodes
+
+		// TODO: coarsest-level edits: delete nodes, add nodes
+
+		// TODO: editing parameters, growth/shrink
+
 	}
-	coarsening->run();
 
 
-	Graph C = coarsening->getCoarseGraph();
 
 
 	//
 	// coarse level edits
 	//
 	//
-	// TODO:
-	return C;
+	// TODO: return replica
+	return original;
 }
 
 

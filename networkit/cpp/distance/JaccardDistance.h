@@ -31,7 +31,7 @@ public:
 	JaccardDistance(const Graph& G, const std::vector<count>& triangles);
 
 	/**
-	 * REQ: Needs to be called before getEdgeAttribute delivers meaningful results.
+	 * REQ: Needs to be called before getEdgeScores delivers meaningful results.
 	 */
 	virtual void preprocess();
 
@@ -45,7 +45,7 @@ public:
 	 * Returns the Jaccard distances between all connected nodes.
 	 * @return Vector containing the Jaccard distances between all connected pairs of nodes.
 	 */
-	std::vector<double> getEdgeAttribute();
+	std::vector<double> getEdgeScores();
 
 protected:
 	const std::vector<count>& triangles;

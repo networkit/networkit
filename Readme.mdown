@@ -222,6 +222,7 @@ Credits
 - Andreas Bilke
 - Simon Bischof
 - Guido Brückner
+- Mark Erb
 - Kolja Esders
 - Patrick Flick
 - Michael Hamann
@@ -233,6 +234,7 @@ Credits
 - Mustafa Özdayi
 - Marcel Radermacher
 - Klara Reichard
+- Matteo Riondato
 - Marvin Ritter
 - Aleksejs Sazonovs
 - Arie Slobbe

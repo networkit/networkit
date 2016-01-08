@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <random>
 #include "../auxiliary/SignalHandling.h"
+#include "../auxiliary/Parallel.h"
 
 NetworKit::LFRGenerator::LFRGenerator(NetworKit::count n) :
 n(n), hasDegreeSequence(false), hasCommunitySizeSequence(false), hasInternalDegreeSequence(false), hasGraph(false), hasPartition(false) { }
@@ -377,12 +378,12 @@ void NetworKit::LFRGenerator::run() {
 		handler.assureRunning();
 
 		std::vector<count> sortedInternalDegreeSequence = internalDegreeSequence;
-		std::sort(sortedInternalDegreeSequence.begin(), sortedInternalDegreeSequence.end());
+		Aux::Parallel::sort(sortedInternalDegreeSequence.begin(), sortedInternalDegreeSequence.end());
 
 		handler.assureRunning();
 
 		std::vector<count> sortedCommunitySizes = communitySizeSequence;
-		std::sort(sortedCommunitySizes.begin(), sortedCommunitySizes.end());
+		Aux::Parallel::sort(sortedCommunitySizes.begin(), sortedCommunitySizes.end());
 
 		handler.assureRunning();
 

@@ -4,9 +4,17 @@
 #includes
 # needed for collections.Iterable
 import collections
+import math
+
+
+try:
+	import pandas
+except:
+	print(""" WARNING: module 'pandas' not found, some functionality will be restricted """)
+
 
 # C++ operators
-from cython.operator import dereference
+from cython.operator import dereference, preincrement
 
 # type imports
 from libc.stdint cimport uint64_t
@@ -22,7 +30,7 @@ from libcpp.stack cimport stack
 from libcpp.string cimport string
 from libcpp.unordered_set cimport unordered_set
 from libcpp.unordered_map cimport unordered_map
-from libcpp.algorithm cimport sort
+from libcpp.algorithm cimport sort as stdsort
 
 # NetworKit typedefs
 ctypedef uint64_t count
@@ -42,12 +50,17 @@ cdef extern from "<algorithm>" namespace "std":
 	_Graph move( _Graph t ) nogil # specialized declaration as general declaration disables template argument deduction and doesn't work
 	_Partition move( _Partition t) nogil
 	_Cover move(_Cover t) nogil
+	_Matching move(_Matching) nogil
 	vector[double] move(vector[double])
 	vector[bool] move(vector[bool])
 	vector[count] move(vector[count])
 	pair[_Graph, vector[node]] move(pair[_Graph, vector[node]]) nogil
 	vector[pair[pair[node, node], double]] move(vector[pair[pair[node, node], double]]) nogil
 	vector[pair[node, node]] move(vector[pair[node, node]]) nogil
+
+cdef extern from "cpp/auxiliary/Parallel.h" namespace "Aux::Parallel":
+	void sort[Iter](Iter begin, Iter end) nogil
+	void sort[Iter, Comp](Iter begin, Iter end, Comp compare) nogil
 
 cdef extern from "cython_helper.h":
 	void throw_runtime_error(string message)
@@ -223,7 +236,7 @@ cdef extern from "cpp/graph/Graph.h":
 		_Graph(count, bool, bool) except +
 		_Graph(const _Graph& other) except +
 		_Graph(const _Graph& other, bool weighted, bool directed) except +
-		void indexEdges() except +
+		void indexEdges(bool) except +
 		bool hasEdgeIds() except +
 		edgeid edgeId(node, node) except +
 		count numberOfNodes() except +
@@ -240,6 +253,9 @@ cdef extern from "cpp/graph/Graph.h":
 		node addNode() except +
 		void removeNode(node u) except +
 		bool hasNode(node u) except +
+		void restoreNode(v) except +
+		void append(_Graph) except +
+		void merge(_Graph) except +
 		void addEdge(node u, node v, edgeweight w) except +
 		void setWeight(node u, node v, edgeweight w) except +
 		void removeEdge(node u, node v) except +
@@ -396,12 +412,17 @@ cdef class Graph:
 		"""
 		return Graph().setThis(self._this.copyNodes())
 
-	def indexEdges(self):
+	def indexEdges(self, bool force = False):
 		"""
 		Assign integer ids to edges.
 
+		Parameters
+		----------
+		force : bool
+			Force re-indexing of edges.
+
 		"""
-		self._this.indexEdges()
+		self._this.indexEdges(force)
 
 	def hasEdgeIds(self):
 		"""
@@ -567,6 +588,25 @@ cdef class Graph:
 			If the Graph has the node `u`
 		"""
 		return self._this.hasNode(u)
+
+	def append(self, Graph G):
+		""" Appends another graph to this graph as a new subgraph. Performs node id remapping.
+
+		Parameters
+		----------
+		G : Graph
+		"""
+		self._this.append(G._this)
+
+	def merge(self, Graph G):
+		""" Modifies this graph to be the union of it and another graph.
+			Nodes with the same ids are identified with each other.
+
+		Parameters
+		----------
+		G : Graph
+		"""
+		self._this.merge(G._this)
 
 	def addEdge(self, u, v, w=1.0):
 		""" Insert an undirected edge between the nodes `u` and `v`. If the graph is weighted you can optionally
@@ -1608,7 +1648,13 @@ cdef class BarabasiAlbertGenerator:
 		self._this = _BarabasiAlbertGenerator(k, nMax, n0)
 
 	def generate(self):
-		return Graph().setThis(self._this.generate());
+		return Graph().setThis(self._this.generate())
+
+	@classmethod
+	def fit(cls, Graph G):
+		(n, m) = G.size()
+		k = math.floor(m / n)
+		return cls(nMax=n, k=k, n0=k)
 
 
 cdef extern from "cpp/generators/PubWebGenerator.h":
@@ -1738,6 +1784,10 @@ cdef class DorogovtsevMendesGenerator:
 			The generated graph.
 		"""
 		return Graph(0).setThis(self._this.generate())
+
+	@classmethod
+	def fit(cls, Graph G):
+		return cls(G.numberOfNodes())
 
 
 cdef extern from "cpp/generators/RegularRingLatticeGenerator.h":
@@ -1969,6 +2019,11 @@ cdef class HavelHakimiGenerator:
 			Graph with degree sequence seq or modified sequence if ignoreIfRealizable is true and the sequence is not realizable.
 		"""
 		return Graph(0).setThis(self._this.generate())
+
+	@classmethod
+	def fit(cls, Graph G):
+		degSeq = DegreeCentrality(G).run().scores()
+		return cls(degSeq, ignoreIfRealizable=True)
 
 cdef extern from "cpp/generators/EdgeSwitchingMarkovChainGenerator.h":
 	cdef cppclass _EdgeSwitchingMarkovChainGenerator "NetworKit::EdgeSwitchingMarkovChainGenerator":
@@ -2448,24 +2503,31 @@ cdef class LFRGenerator(Algorithm):
 		return gen
 
 
+# cdef extern from "cpp/generators/MultiscaleGenerator.h":
+# 	cdef cppclass _MultiscaleGenerator "NetworKit::MultiscaleGenerator":
+# 		_MultiscaleGenerator(_Graph O) except +
+# 		_Graph generate() except +
+#
+#
+# cdef class MultiscaleGenerator:
+# 	"""
+# 	TODO:
+# 	"""
+# 	cdef _MultiscaleGenerator *_this
+# 	cdef Graph O	# store reference to input graph to not let it be garbage-collection
+#
+# 	def __cinit__(self, Graph O):
+# 		self._this = new _MultiscaleGenerator(O._this)
+# 		self.O = O
+#
+# 	def generate(self):
+# 		return Graph(0).setThis(self._this.generate())
+#
+# 	@classmethod
+# 	def fit(cls, Graph G):
+# 		return cls(G)
 
 
-
-cdef extern from "cpp/generators/MultiscaleGenerator.h":
-	cdef cppclass _MultiscaleGenerator "NetworKit::MultiscaleGenerator":
-		_MultiscaleGenerator(_Graph) except +
-		_Graph generate() except +
-
-cdef class MultiscaleGenerator:
-	""" TODO
-	 """
-	cdef _MultiscaleGenerator* _this
-
-	def __cinit__(self, Graph G):
-		self._this = new _MultiscaleGenerator(G._this)
-
-	def generate(self):
-		return Graph().setThis(self._this.generate());
 
 
 # Module: graphio
@@ -3803,10 +3865,8 @@ cdef class CommunityDetector(Algorithm):
 
 cdef extern from "cpp/community/PLP.h":
 	cdef cppclass _PLP "NetworKit::PLP"(_CommunityDetectionAlgorithm):
-		_PLP(_Graph _G) except +
-		_PLP(_Graph _G, count updateThreshold) except +
+		_PLP(_Graph _G, count updateThreshold, count maxIterations) except +
 		_PLP(_Graph _G, _Partition baseClustering, count updateThreshold) except +
-		_PLP(_Graph _G, _Partition baseClustering) except +
 		count numberOfIterations() except +
 		vector[count] getTiming() except +
 
@@ -3825,7 +3885,7 @@ cdef class PLP(CommunityDetector):
  	has the label that at least half of its neighbors have.
 	"""
 
-	def __cinit__(self, Graph G not None, Partition baseClustering=None, updateThreshold=None):
+	def __cinit__(self, Graph G not None, count updateThreshold=none, count maxIterations=none, Partition baseClustering=None,):
 		"""
 		Constructor to the Parallel label propagation community detection algorithm.
 
@@ -3833,22 +3893,19 @@ cdef class PLP(CommunityDetector):
 		----------
 		G : Graph
 			The graph on which the algorithm has to run.
-		baseClustering : Partition
-			PLP needs a base clustering to start from; if none is given the algorithm will run on a singleton clustering.
 		updateThreshold : integer
 			number of nodes that have to be changed in each iteration so that a new iteration starts.
+		baseClustering : Partition
+			PLP needs a base clustering to start from; if none is given the algorithm will run on a singleton clustering.
 		"""
 		self._G = G
 
-		if updateThreshold is None and baseClustering is None:
-			self._this = new _PLP(G._this)
-		elif updateThreshold is None and baseClustering is not None:
-			self._this = new _PLP(G._this, baseClustering._this)
-		elif updateThreshold is not None and baseClustering is None:
-			p = Partition(0)
-			self._this = new _PLP(G._this, p._this, updateThreshold)
+
+		if baseClustering is None:
+			self._this = new _PLP(G._this, updateThreshold, maxIterations)
 		else:
 			self._this = new _PLP(G._this, baseClustering._this, updateThreshold)
+
 
 	def numberOfIterations(self):
 		""" Get number of iterations in last run.
@@ -4810,7 +4867,7 @@ cdef class ClusteringCoefficient:
 
 
 cdef extern from "cpp/distance/Diameter.h" namespace "NetworKit::Diameter":
-	pair[count, count] estimatedDiameterRange(_Graph G, double error, pair[node,node] *proof) nogil except +
+	pair[count, count] estimatedDiameterRange(_Graph G, double error) nogil except +
 	count exactDiameter(_Graph G) nogil except +
 	edgeweight estimatedVertexDiameter(_Graph G, count) nogil except +
 	edgeweight estimatedVertexDiameterPedantic(_Graph G) nogil except +
@@ -4822,9 +4879,21 @@ cdef class Diameter:
 
 	@staticmethod
 	def estimatedDiameterRange(Graph G, double error=0.1):
-		""" Estimates a range for the diameter of @a G. Based on the algorithm suggested in
-		C. Magnien, M. Latapy, M. Habib: Fast Computation of Empirically Tight Bounds for
-		the Diameter of Massive Graphs. Journal of Experimental Algorithmics, Volume 13, Feb 2009.
+		""" Estimates a range for the diameter of @a G.
+
+		The algorithm is based on the ExactSumSweep algorithm presented in
+		Michele Borassi, Pierluigi Crescenzi, Michel Habib, Walter A. Kosters, Andrea Marino, Frank W. Takes,
+		Fast diameter and radius BFS-based computation in (weakly connected) real-world graphs: With an application to the six degrees of separation games,
+		Theoretical Computer Science, Volume 586, 27 June 2015, Pages 59-80, ISSN 0304-3975,
+		http://dx.doi.org/10.1016/j.tcs.2015.02.033.
+		(http://www.sciencedirect.com/science/article/pii/S0304397515001644)
+
+		Parameters
+		----------
+		G : Graph
+			The graph
+		error : double
+			The maximum allowed relative error. Set to 0 for the exact diameter.
 
 		Returns
 		-------
@@ -4833,24 +4902,8 @@ cdef class Diameter:
 		"""
 		cdef pair[count, count] ret
 		with nogil:
-			ret = estimatedDiameterRange(G._this, error, NULL)
+			ret = estimatedDiameterRange(G._this, error)
 		return ret
-
-	@staticmethod
-	def estimatedDiameterRangeWithProof(Graph G, double error=0.1):
-		""" Estimates a range for the diameter of @a G like estimatedDiameterRange but also
-		returns a pair of nodes that has the reported lower bound as distance if the graph is non-trivial.
-
-		Returns
-		-------
-		tuple
-			Tuple of two tuples, the first is the result and contains lower and upper bound, the second contains the two nodes whose distance is the reported lower bound
-		"""
-		cdef pair[node, node] proof
-		cdef pair[count, count] result
-		with nogil:
-			result = estimatedDiameterRange(G._this, error, &proof)
-		return (result, proof)
 
 	@staticmethod
 	def exactDiameter(Graph G):
@@ -5937,7 +5990,8 @@ cdef extern from "cpp/coarsening/GraphCoarsening.h":
 	cdef cppclass _GraphCoarsening "NetworKit::GraphCoarsening"(_Algorithm):
 		_GraphCoarsening(_Graph) except +
 		_Graph getCoarseGraph() except +
-		vector[node] getNodeMapping() except +
+		vector[node] getFineToCoarseNodeMapping() except +
+		map[node, vector[node]] getCoarseToFineNodeMapping() except +
 
 cdef class GraphCoarsening(Algorithm):
 	cdef Graph _G
@@ -5967,8 +6021,11 @@ cdef class GraphCoarsening(Algorithm):
 	def getCoarseGraph(self):
 		return Graph(0).setThis((<_GraphCoarsening*>(self._this)).getCoarseGraph())
 
-	def getNodeMapping(self):
-		return (<_GraphCoarsening*>(self._this)).getNodeMapping()
+	def getFineToCoarseNodeMapping(self):
+		return (<_GraphCoarsening*>(self._this)).getFineToCoarseNodeMapping()
+
+	def getCoarseToFineNodeMapping(self):
+		return (<_GraphCoarsening*>(self._this)).getCoarseToFineNodeMapping()
 
 
 cdef extern from "cpp/coarsening/ParallelPartitionCoarsening.h":
@@ -5979,6 +6036,24 @@ cdef extern from "cpp/coarsening/ParallelPartitionCoarsening.h":
 cdef class ParallelPartitionCoarsening(GraphCoarsening):
 	def __cinit__(self, Graph G not None, Partition zeta not None, useGraphBuilder = True):
 		self._this = new _ParallelPartitionCoarsening(G._this, zeta._this, useGraphBuilder)
+
+cdef extern from "cpp/coarsening/MatchingCoarsening.h":
+	cdef cppclass _MatchingCoarsening "NetworKit::MatchingCoarsening"(_GraphCoarsening):
+		_MatchingCoarsening(_Graph, _Matching, bool) except +
+
+
+cdef class MatchingCoarsening(GraphCoarsening):
+	"""Coarsens graph according to a matching.
+ 	Parameters
+ 	----------
+ 	G : Graph
+	M : Matching
+ 	noSelfLoops : bool, optional
+		if true, self-loops are not produced
+	"""
+
+	def __cinit__(self, Graph G not None, Matching M not None, bool noSelfLoops=False):
+		self._this = new _MatchingCoarsening(G._this, M._this, noSelfLoops)
 
 
 # Module: scd
@@ -6492,7 +6567,7 @@ cdef class VDegreeIndex(LinkPredictor):
 cdef extern from "cpp/linkprediction/AlgebraicDistanceIndex.h":
 	cdef cppclass _AlgebraicDistanceIndex "NetworKit::AlgebraicDistanceIndex"(_LinkPredictor):
 		_AlgebraicDistanceIndex(count numberSystems, count numberIterations, double omega, index norm) except +
-		_AlgebraicDistanceIndex(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm) except +
+		_AlgebraicDistanceIndex(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm, ) except +
 		void preprocess() except +
 		double run(node u, node v) except +
 
@@ -7540,7 +7615,7 @@ cdef extern from "cpp/distance/AdamicAdarDistance.h":
 		_AdamicAdarDistance(const _Graph& G) except +
 		void preprocess() except +
 		double distance(node u, node v) except +
-		vector[double] getEdgeAttribute() except +
+		vector[double] getEdgeScores() except +
 
 cdef class AdamicAdarDistance:
 	"""
@@ -7573,7 +7648,7 @@ cdef class AdamicAdarDistance:
 
 		"""
 		#### TODO: convert distance to similarity!?! ####
-		return self._this.getEdgeAttribute()
+		return self._this.getEdgeScores()
 
 # Module: sparsification
 
@@ -7748,7 +7823,7 @@ cdef extern from "cpp/distance/JaccardDistance.h":
 	cdef cppclass _JaccardDistance "NetworKit::JaccardDistance":
 		_JaccardDistance(const _Graph& G, const vector[count]& triangles) except +
 		void preprocess() except +
-		vector[double] getEdgeAttribute() except +
+		vector[double] getEdgeScores() except +
 
 cdef class JaccardDistance:
 	"""
@@ -7776,7 +7851,59 @@ cdef class JaccardDistance:
 		del self._this
 
 	def getAttribute(self):
-		return self._this.getEdgeAttribute()
+		return self._this.getEdgeScores()
+
+
+cdef extern from "cpp/distance/AlgebraicDistance.h":
+	cdef cppclass _AlgebraicDistance "NetworKit::AlgebraicDistance":
+		_AlgebraicDistance(_Graph G, count numberSystems, count numberIterations, double omega, index norm, bool withEdgeScores) except +
+		void preprocess() except +
+		double distance(node, node) except +
+		vector[double] getEdgeScores() except +
+
+
+cdef class AlgebraicDistance:
+	"""
+	Algebraic distance assigns a distance value to pairs of nodes
+    according to their structural closeness in the graph.
+    Algebraic distances will become small within dense subgraphs.
+
+	Parameters
+	----------
+	G : Graph
+		The graph to calculate Jaccard distances for.
+	numberSystems : count
+	 	Number of vectors/systems used for algebraic iteration.
+	numberIterations : count
+	 	Number of iterations in each system.
+	omega : double
+	 	attenuation factor in [0,1] influencing convergence speed.
+	norm : index
+		The norm factor of the extended algebraic distance.
+	withEdgeScores : bool
+		calculate array of scores for edges {u,v} that equal ad(u,v)
+	"""
+
+	cdef _AlgebraicDistance* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, count numberSystems=10, count numberIterations=30, double omega=0.5, index norm=0, bool withEdgeScores=False):
+		self._G = G
+		self._this = new _AlgebraicDistance(G._this, numberSystems, numberIterations, omega, norm, withEdgeScores)
+
+	def __dealloc__(self):
+		del self._this
+
+	def preprocess(self):
+		self._this.preprocess()
+		return self
+
+	def distance(self, node u, node v):
+		return self._this.distance(u, v)
+
+	def getEdgeScores(self):
+		return self._this.getEdgeScores()
+
 
 cdef class JaccardSimilarityAttributizer:
 	"""
@@ -7806,7 +7933,7 @@ cdef class JaccardSimilarityAttributizer:
 	def getAttribute(self):
 		#convert distance to similarity
 		self._this.preprocess()
-		return [1 - x for x in self._this.getEdgeAttribute()]
+		return [1 - x for x in self._this.getEdgeScores()]
 
 cdef extern from "cpp/sparsification/RandomNodeEdgeScore.h":
 	cdef cppclass _RandomNodeEdgeScore "NetworKit::RandomNodeEdgeScore"(_EdgeScore[double]):
@@ -7835,24 +7962,34 @@ ctypedef fused DoubleInt:
 
 cdef extern from "cpp/sparsification/LocalFilterScore.h":
 	cdef cppclass _LocalFilterScoreDouble "NetworKit::LocalFilterScore<double>"(_EdgeScore[double]):
-		_LocalFilterScoreDouble(const _Graph& G, const vector[double]& a, bool logarithmic,  bool bothRequired) except +
+		_LocalFilterScoreDouble(const _Graph& G, const vector[double]& a, bool logarithmic) except +
 
 	cdef cppclass _LocalFilterScoreInt "NetworKit::LocalFilterScore<int>"(_EdgeScore[count]):
-		_LocalFilterScoreInt(const _Graph& G, const vector[double]& a, bool logarithmic,  bothRequired) except +
+		_LocalFilterScoreInt(const _Graph& G, const vector[double]& a, bool logarithmic) except +
 
 cdef class LocalFilterScore(EdgeScore):
+	"""
+	Local filtering edge scoring. Edges with high score are more important.
+
+	Edges are ranked locally, the top d^e (logarithmic, default) or 1+e*(d-1) edges (non-logarithmic) are kept.
+	For equal attribute values, neighbors of low degree are preferred.
+	If bothRequired is set (default: false), both neighbors need to indicate that they want to keep the edge.
+
+	Parameters
+	----------
+	G : Graph
+		The input graph
+	a : list
+		The input attribute according to which the edges shall be fitlered locally.
+	logarithmic : bool
+		If the score shall be logarithmic in the rank (then d^e edges are kept). Linear otherwise.
+	"""
 	cdef vector[double] _a
 
-	"""
-	TODO
-	"""
-	def __init__(self, Graph G, vector[double] a, bool logarithmic = True, bool bothRequired = False):
+	def __cinit__(self, Graph G, vector[double] a, bool logarithmic = True):
 		self._G = G
 		self._a = a
-		self._this = new _LocalFilterScoreDouble(G._this, a, logarithmic, bothRequired)
-
-	def __dealloc__(self):
-		del self._thisDouble
+		self._this = new _LocalFilterScoreDouble(G._this, self._a, logarithmic)
 
 	cdef bool isDoubleValue(self):
 		return True
@@ -7934,6 +8071,116 @@ cdef class GlobalThresholdFilter:
 	def calculate(self):
 		return Graph().setThis(self._this.calculate())
 
+# matching
+
+cdef extern from "cpp/matching/Matching.h":
+	cdef cppclass _Matching "NetworKit::Matching":
+		_Matching() except +
+		_Matching(count) except +
+		void match(node, node) except +
+		void unmatch(node, node) except +
+		bool isMatched(node) except +
+		bool areMatched(node, node) except +
+		bool isProper(_Graph) except +
+		count size(_Graph) except +
+		index mate(node) except +
+		edgeweight weight(_Graph) except +
+
+cdef class Matching:
+	""" Implements a graph matching.
+
+ 		Matching(z=0)
+
+ 		Create a new matching data structure for `z` elements.
+
+		Parameters
+		----------
+		z : index, optional
+			Maximum number of nodes.
+	"""
+	cdef _Matching _this
+
+	def __cinit__(self, index z=0):
+		self._this = move(_Matching(z))
+
+	cdef setThis(self,  _Matching& other):
+		swap[_Matching](self._this,  other)
+		return self
+
+	def match(self, node u, node v):
+		self._this.match(u,v)
+
+	def unmatch(self, node u,  node v):
+		self._this.unmatch(u, v)
+
+	def isMatched(self, node u):
+		return self._this.isMatched(u)
+
+	def areMatched(self, node u, node v):
+		return self._this.areMatched(u,v)
+
+	def isProper(self, Graph G):
+		return self._this.isProper(G._this)
+
+	def size(self, Graph G):
+		return self._this.size(G._this)
+
+	def mate(self, node v):
+		return self._this.mate(v)
+
+	def weight(self, Graph G):
+		return self._this.weight(G._this)
+
+
+
+
+cdef extern from "cpp/matching/Matcher.h":
+	cdef cppclass _Matcher "NetworKit::Matcher"(_Algorithm):
+		_Matcher(const _Graph _G) except +
+		_Matching getMatching() except +
+
+cdef class Matcher(Algorithm):
+	""" Abstract base class for matching algorithms """
+	cdef Graph G
+
+	def __init__(self, *args, **namedargs):
+		if type(self) == Matcher:
+			raise RuntimeError("Instantiation of abstract base class")
+
+	def __dealloc__(self):
+		self.G = None # just to be sure the graph is deleted
+
+	def getMatching(self):
+		"""  Returns the matching.
+
+		Returns
+		-------
+		Matching
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return Matching().setThis((<_Matcher*>(self._this)).getMatching())
+
+
+cdef extern from "cpp/matching/PathGrowingMatcher.h":
+	cdef cppclass _PathGrowingMatcher "NetworKit::PathGrowingMatcher"(_Matcher):
+		_PathGrowingMatcher(_Graph) except +
+		_PathGrowingMatcher(_Graph, vector[double]) except +
+
+cdef class PathGrowingMatcher(Matcher):
+	"""
+	Path growing matching algorithm as described by  Hougardy and Drake.
+	Computes an approximate maximum weight matching with guarantee 1/2.
+	"""
+	def __cinit__(self, Graph G not None, edgeScores=None):
+		self.G = G
+		if edgeScores:
+			self._this = new _PathGrowingMatcher(G._this, edgeScores)
+		else:
+			self._this = new _PathGrowingMatcher(G._this)
+
+# profiling
+
 def ranked(sample):
 	"""
 		Given a list of numbers, this function computes the rank of each value
@@ -7943,6 +8190,7 @@ def ranked(sample):
 	"""
 	cdef count n = len(sample)
 	result = []
+	cdef count i
 	for i in range(n):
 		result.append([sample[i], i, -1])
 	result.sort(key=lambda x: x[0])
@@ -7979,18 +8227,22 @@ def ranked2(sample):
 	cdef vector[double] result = vector[double](len(sample))
 	cdef count size = 0
 	cdef double rank = 0.0
+	cdef index elem = 0
+	cdef count i
 	# sort the numbers into buckets
 	for i in range(len(sample)):
 		buckets[sample[i]].push_back(i)
 	cdef count n_processed = 0
 	# compute the rank for each bucket
-	for key,val in buckets:
-		size = len(val)
-		rank = (size * (size+1) / 2 + size * n_processed) / size
+	cdef map[double, vector[index]].iterator it = buckets.begin()
+	while it != buckets.end():
+		size = dereference(it).second.size()
+		rank = (size * (size+1) / 2 + size * n_processed) * 1.0 / size
 		# and write the rank into the result
-		for elem in val:
+		for elem in dereference(it).second:
 			result[elem] = rank
 		n_processed += size
+		preincrement(it)
 	return result
 
 def sort2(sample):
@@ -7998,10 +8250,42 @@ def sort2(sample):
 		Sorts a given list of numbers.
 		Currently used in profiling.stat.sorted.
 	"""
-	cdef vector[double] result = vector[double](len(sample))
-	cdef count i = 0
-	for elem in sample:
-		result[i] = <double>elem
-		i += 1
+	cdef vector[double] result = <vector[double]?>sample
 	sort(result.begin(),result.end())
 	return result
+
+
+# simulation
+
+cdef extern from "cpp/simulation/EpidemicSimulationSEIR.h":
+	cdef cppclass _EpidemicSimulationSEIR "NetworKit::EpidemicSimulationSEIR" (_Algorithm):
+		_EpidemicSimulationSEIR(_Graph, count, double, count, count, node) except +
+		vector[vector[count]] getData() except +
+
+cdef class EpidemicSimulationSEIR(Algorithm):
+	"""
+
+ 	Parameters
+ 	----------
+ 	G : Graph
+ 		The graph.
+ 	tMax : count
+ 		max. number of timesteps
+	transP : double
+		transmission probability
+	eTime : count
+		exposed time
+	iTime : count
+		infectious time
+	zero : node
+		starting node
+	"""
+
+	cdef Graph G
+
+	def __cinit__(self, Graph G, count tMax, double transP=0.5, count eTime=2, count iTime=7, node zero=none):
+		self.G = G
+		self._this = new _EpidemicSimulationSEIR(G._this, tMax, transP, eTime, iTime, zero)
+
+	def getData(self):
+		return pandas.DataFrame((<_EpidemicSimulationSEIR*>(self._this)).getData(), columns=["zero", "time", "state", "count"])

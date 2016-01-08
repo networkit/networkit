@@ -1,31 +1,11 @@
 
 #include "UnionMaximumSpanningForest.h"
 #include "../auxiliary/SignalHandling.h"
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
 UnionMaximumSpanningForest::UnionMaximumSpanningForest(const Graph &G) : G(G), hasWeightedEdges(false), hasUMSF(false), hasAttribute(false) { };
-
-template <typename A>
-UnionMaximumSpanningForest::UnionMaximumSpanningForest(const Graph &G, const std::vector< A > &attribute) : G(G), hasWeightedEdges(false), hasUMSF(false), hasAttribute(false) {
-	if (!G.hasEdgeIds()) {
-		throw std::runtime_error("Error: Edges of G must be indexed for using edge attributes");
-	}
-
-	weightedEdges.reserve(G.numberOfEdges());
-
-	G.forEdges([&](node u, node v, edgeid eid) {
-		weightedEdges.emplace_back(u, v, attribute[eid], eid);
-	});
-
-	INFO(weightedEdges.size(), " weighted edges saved");
-
-	hasWeightedEdges = true;
-}
-
-// instantiate for count and edgeweight
-template UnionMaximumSpanningForest::UnionMaximumSpanningForest<edgeweight>(const Graph &G, const std::vector<edgeweight>&);
-template UnionMaximumSpanningForest::UnionMaximumSpanningForest<count>(const Graph &G, const std::vector<count>&);
 
 void UnionMaximumSpanningForest::run() {
 	hasRun = false;
@@ -61,7 +41,7 @@ void UnionMaximumSpanningForest::run() {
 		calculateAttribute = true;
 	}
 
-	std::sort(weightedEdges.begin(), weightedEdges.end(), std::greater<weightedEdge>());
+	Aux::Parallel::sort(weightedEdges.begin(), weightedEdges.end(), std::greater<weightedEdge>());
 
 	handler.assureRunning();
 

@@ -445,6 +445,7 @@ public:
 	 * Add a new node to the graph with coordinates @a x and @y and return it.
 	 */
 	// TODO: remove method
+	// [[deprecated("Deprecated: Node coordinates should be stored externally like any other node attribute")]]
 	node addNode(float x, float y);
 
 	/**
@@ -476,6 +477,23 @@ public:
 	 */
 
 	void restoreNode(node v);
+
+
+	// SET OPERATIONS
+
+	/**
+	 * Appends another graph to this graph as a new subgraph. Performs node
+	 * id remapping.
+	 * @param G [description]
+	 */
+	void append(const Graph& G);
+
+	/**
+	 * Modifies this graph to be the union of it and another graph.
+	 * Nodes with the same ids are identified with each other.
+	 * @param G [description]
+	 */
+	void merge(const Graph& G);
 
 
 	/** NODE PROPERTIES **/
@@ -705,6 +723,7 @@ public:
 	 * @param value The coordinate of @a v.
 	 */
 	// TODO: remove method
+	// [[deprecated("Deprecated: Node coordinates should be stored externally like any other node attribute")]]
 	void setCoordinate(node v, Point<float> value) { coordinates.setCoordinate(v, value); }
 
 
@@ -717,6 +736,7 @@ public:
 	 * @return The coordinate of @a v.
 	 */
 	// TODO: remove method
+	// [[deprecated("Deprecated: Node coordinates should be stored externally like any other node attribute")]]
 	Point<float>& getCoordinate(node v) { return coordinates.getCoordinate(v); }
 
 	/**
@@ -728,6 +748,7 @@ public:
 	 * @return The minimum coordinate in dimension @a dim.
 	 */
 	// TODO: remove method
+	// [[deprecated("Deprecated: Node coordinates should be stored externally like any other node attribute")]]
 	float minCoordinate(count dim) { return coordinates.minCoordinate(dim); }
 
 	/**
@@ -739,6 +760,7 @@ public:
 	 * @return The maximum coordinate in dimension @a dim.
 	 */
 	// TODO: remove method
+	// [[deprecated("Deprecated: Node coordinates should be stored externally like any other node attribute")]]
 	float maxCoordinate(count dim) { return coordinates.maxCoordinate(dim); }
 
 	/**
@@ -750,6 +772,7 @@ public:
 	 * been added.
 	 */
 	// TODO: remove method
+	// [[deprecated("Deprecated: Node coordinates should be stored externally like any other node attribute")]]
 	void initCoordinates() { coordinates.init(z); }
 
 
@@ -1488,6 +1511,9 @@ void Graph::DFSEdgesFrom(node r, L handle) const {
 		});
 	} while (!s.empty());
 }
+
+
+
 
 } /* namespace NetworKit */
 
