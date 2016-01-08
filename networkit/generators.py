@@ -136,8 +136,14 @@ class MultiscaleGenerator:
 					print("stopping at level ", i)
 					break
 
-	def _uncoarsen(self, Gc):
-		return Gc
+	def _uncoarsen(self, i):
+		self.Gf[i] = Graph()
+		Gc = self.Gc[i]
+		Gf = self.Gf[i]
+		for v in Gf.nodes():
+			(v1, v2) = Gf.addNode(), Gf.addNode()
+			Gf.addEdge(v1, v2)
+		
 
 
 	def _buildFineSequence(self):
@@ -149,7 +155,7 @@ class MultiscaleGenerator:
 			if i == self.levels:
 				self.Gf[i] = self.Gc[i]
 			else:
-				self.Gf[i] = self._uncoarsen(self.Gc[i])
+				self._uncoarsen(i)
 
 
 
