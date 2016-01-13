@@ -1,6 +1,7 @@
 #include "clique.h"
 
 #include <iostream>
+#include <cassert>
 
 namespace NetworKit {
 
@@ -46,6 +47,28 @@ std::vector<std::vector<node> > Clique::run(node& seed) {
 				pcount += 1;
 			}
 		});
+
+		#ifndef NDEBUG
+		bool inRange = false;
+		bool wasInRange = false;
+		for (node v : pxvector) {
+			if (G.hasEdge(u, v)) {
+				assert(!wasInRange);
+
+				inRange = true;
+				if (v < u) {
+					assert(pxlookup[v] < xpbound);
+				} else {
+					assert(pxlookup[v] >= xpbound);
+				}
+			} else {
+				if (inRange) {
+					wasInRange = true;
+					inRange = false;
+				}
+			}
+		}
+		#endif
 
 		std::vector<node> r;
 		r.push_back(u);
