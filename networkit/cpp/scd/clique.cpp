@@ -1,5 +1,7 @@
 #include "clique.h"
 
+#include <iostream>
+
 namespace NetworKit {
 
 Clique::Clique(const Graph& G) : G(G) {
@@ -25,8 +27,9 @@ std::vector<std::vector<node> > Clique::run(node& seed) {
 
 	//TODO: use degeneracy ordering of vertices.
 	for (const node& u : G.nodes()) {
+		auto pxvec2 = pxvector[0];
 		std::swap(pxvector[pxlookup[u]], pxvector[0]);
-		std::swap(pxlookup[u], pxlookup[pxvector[0]]);
+		std::swap(pxlookup[u], pxlookup[pxvec2]);
 
 		uint32_t xcount = 0;
 		uint32_t pcount = 0;
@@ -35,10 +38,12 @@ std::vector<std::vector<node> > Clique::run(node& seed) {
 				auto pxvec2 = pxvector[xpbound - xcount - 1];
 				std::swap(pxvector[pxlookup[v]], pxvector[xpbound - xcount - 1]);
 				std::swap(pxlookup[v], pxlookup[pxvec2]);
+				xcount += 1;
 			} else { // v is in P
 				auto pxvec2 = pxvector[xpbound + pcount];
 				std::swap(pxvector[pxlookup[v]], pxvector[xpbound + pcount]);
 				std::swap(pxlookup[v], pxlookup[pxvec2]);
+				pcount += 1;
 			}
 		});
 
@@ -58,6 +63,7 @@ std::vector<std::vector<node> > Clique::tomita(std::vector<node>& pxvector, std:
 		result.push_back(r);
 		return result;
 	}
+
 	node u = findPivot(pxvector, pxlookup, neighbors, xbound, xpbound, pbound);
 	std::vector<node> movedNodes;
 	for (uint32_t i = xpbound; i < pbound; i++) {
@@ -70,10 +76,12 @@ std::vector<std::vector<node> > Clique::tomita(std::vector<node>& pxvector, std:
 				auto pxvec2 = pxvector[xpbound - xcount - 1];
 				std::swap(pxvector[pxlookup[v]], pxvector[xpbound - xcount - 1]);
 				std::swap(pxlookup[v], pxlookup[pxvec2]);
+				xcount += 1;
 			} else { // v is in P
 				auto pxvec2 = pxvector[xpbound + pcount];
 				std::swap(pxvector[pxlookup[v]], pxvector[xpbound + pcount]);
 				std::swap(pxlookup[v], pxlookup[pxvec2]);
+				pcount += 1;
 			}
 		});
 		std::vector<node> rplusv(r);
