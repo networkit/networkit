@@ -15,7 +15,7 @@ TEST_F(CliqueTest, testClique) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/hep-th.graph");
 
-	node seed = 36;
+	node seed = 2;
 	auto sn = G.neighbors(seed);
 	auto sneighbors = std::unordered_set<node>(sn.begin(), sn.end());
 	sneighbors.insert(seed);

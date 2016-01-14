@@ -19,6 +19,8 @@ protected:
 
 	node findPivot(std::vector<node>& pxvector, std::vector<node>& pxlookup, std::vector<std::vector<node> >& neighbors, uint32_t xbound, uint32_t xpbound, uint32_t pbound);
 
+	std::vector<node> getDegeneracyOrdering(std::vector<node> nodes);
+
 };
 
 }
