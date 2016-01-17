@@ -256,7 +256,9 @@ TEST(CSRMatrixGTest, testMatrixSubtraction) {
 	CSRMatrix mat2(100000, 100000, positions2, values2);
 
 	mat1.sort();
+	EXPECT_TRUE(mat1.sorted());
 	mat2.sort();
+	EXPECT_TRUE(mat2.sorted());
 
 	CSRMatrix result = mat2 - mat1;
 	ASSERT_EQ(mat1.numberOfRows(), result.numberOfRows());
@@ -673,10 +675,10 @@ TEST(CSRMatrixGTest, testMatrixDiagonal) {
 	//	   0  0  0  4 -1
 	//
 	std::vector<std::pair<index, index> > positions;
-	std::vector<double> values = {1, 2, 3, 1, 1, 2, 4, -1, 4, -1};
+	std::vector<double> values = {2, 1, 3, 1, 1, 2, 4, -1, 4, -1};
 
-	positions.push_back(std::make_pair(0,0));
 	positions.push_back(std::make_pair(0,1));
+	positions.push_back(std::make_pair(0,0));
 	positions.push_back(std::make_pair(0,2));
 	positions.push_back(std::make_pair(0,3));
 	positions.push_back(std::make_pair(0,4));
@@ -694,7 +696,9 @@ TEST(CSRMatrixGTest, testMatrixDiagonal) {
 	EXPECT_EQ(0, diag1[2]);
 	EXPECT_EQ(4, diag1[3]);
 
+	EXPECT_FALSE(mat.sorted());
 	mat.sort();
+	EXPECT_TRUE(mat.sorted());
 	Vector diag2 = mat.diagonal();
 	for (index i = 0; i < diag2.getDimension(); ++i) {
 		EXPECT_EQ(diag1[i], diag2[i]);

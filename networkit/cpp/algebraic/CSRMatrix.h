@@ -34,6 +34,7 @@ private:
 
 	void quicksort(index left, index right);
 	index partition(index left, index right);
+	void bubbleSort(index left, index right);
 
 public:
 	/** Represents a matrix entry s.t. matrix(row, column) = value */
