@@ -23,9 +23,9 @@ TEST_F(CliqueTest, testClique) {
 
 	Clique clique(subG);
 
-	DEBUG("Call Clique(", seed, ")");
+	DEBUG("Call Clique()");
 
-	auto result = clique.run(seed);
+	auto result = clique.run();
 
 	EXPECT_GT(result.size(), 0);
 
@@ -35,6 +35,7 @@ TEST_F(CliqueTest, testClique) {
 		auto cliqueGraph = Subgraph::fromNodes(G, cli);
 
 		EXPECT_EQ(cliqueGraph.numberOfEdges(), (cliqueGraph.numberOfNodes() * (cliqueGraph.numberOfNodes() - 1) / 2));
+		EXPECT_EQ(cli.count(seed), 1);
 	}
 }
 
