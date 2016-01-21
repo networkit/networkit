@@ -1,6 +1,6 @@
 #include "CliqueGTest.h"
 
-#include "../clique.h"
+#include "../MaximalCliques.h"
 #include "../../graph/Graph.h"
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/Log.h"
@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-TEST_F(CliqueTest, testClique) {
+TEST_F(MaximalCliquesGTest, testMaximalCliques) {
 
 	METISGraphReader reader;
 	Graph G = reader.read("input/hep-th.graph");
@@ -21,9 +21,9 @@ TEST_F(CliqueTest, testClique) {
 	sneighbors.insert(seed);
 	auto subG = Subgraph::fromNodes(G, sneighbors);
 
-	Clique clique(subG);
+	MaximalCliques clique(subG);
 
-	DEBUG("Call Clique()");
+	DEBUG("Call MaximalCliques()");
 
 	auto result = clique.run();
 

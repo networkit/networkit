@@ -7,10 +7,10 @@
 
 namespace NetworKit {
 
-class Clique {
+class MaximalCliques {
 
 public:
-	Clique(const Graph& G);
+	MaximalCliques(const Graph& G);
 
 	std::vector<std::vector<node> > run();
 

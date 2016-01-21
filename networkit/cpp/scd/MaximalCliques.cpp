@@ -1,16 +1,16 @@
-#include "clique.h"
+#include "MaximalCliques.h"
 
 #include <cassert>
 #include <algorithm>
 
 namespace NetworKit {
 
-Clique::Clique(const Graph& G) : G(G) {
+MaximalCliques::MaximalCliques(const Graph& G) : G(G) {
 }
 
 //TODO: neighbors currently a dummy vector
 
-std::vector<std::vector<node> > Clique::run() {
+std::vector<std::vector<node> > MaximalCliques::run() {
 	std::vector<std::vector<node> > result;
 
 	auto orderedNodes = getDegeneracyOrdering();
@@ -104,7 +104,7 @@ std::vector<std::vector<node> > Clique::run() {
 	return result;
 }
 
-std::vector<std::vector<node> > Clique::tomita(std::vector<node>& pxvector, std::unordered_map<node, uint32_t>& pxlookup, std::vector<std::vector<node> >& neighbors, uint32_t xbound, uint32_t xpbound, uint32_t pbound, std::vector<node>& r) {
+std::vector<std::vector<node> > MaximalCliques::tomita(std::vector<node>& pxvector, std::unordered_map<node, uint32_t>& pxlookup, std::vector<std::vector<node> >& neighbors, uint32_t xbound, uint32_t xpbound, uint32_t pbound, std::vector<node>& r) {
 	std::vector<std::vector<node> > result;
 	if (xbound == pbound) { //if (X, P are empty)
 		result.push_back(r);
@@ -190,7 +190,7 @@ std::vector<std::vector<node> > Clique::tomita(std::vector<node>& pxvector, std:
 	return result;
 }
 
-node Clique::findPivot(std::vector<node>& pxvector, std::unordered_map<node, uint32_t>& pxlookup, std::vector<std::vector<node> >& neighbors, uint32_t xbound, uint32_t xpbound, uint32_t pbound) {
+node MaximalCliques::findPivot(std::vector<node>& pxvector, std::unordered_map<node, uint32_t>& pxlookup, std::vector<std::vector<node> >& neighbors, uint32_t xbound, uint32_t xpbound, uint32_t pbound) {
 	node maxnode = G.upperNodeIdBound() + 1;
 	int32_t maxval = -1;
 
@@ -215,7 +215,7 @@ node Clique::findPivot(std::vector<node>& pxvector, std::unordered_map<node, uin
 	return maxnode;
 }
 
-std::vector<node> Clique::getDegeneracyOrdering() {
+std::vector<node> MaximalCliques::getDegeneracyOrdering() {
 	std::vector<node> result;
 	Graph dG(G);
 	

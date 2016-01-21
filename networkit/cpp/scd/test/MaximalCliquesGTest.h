@@ -7,7 +7,7 @@
 
 namespace NetworKit {
 
-class CliqueTest: public testing::Test {
+class MaximalCliquesGTest: public testing::Test {
 
 };
 
