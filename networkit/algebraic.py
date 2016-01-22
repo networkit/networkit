@@ -29,6 +29,8 @@ def adjacencyMatrix(G, matrixType="sparse"):
 	----------
 	G : Graph
 		The graph.
+	matrixType : string
+		represent"sparse" or "dense"
 
 	Returns
 	-------
