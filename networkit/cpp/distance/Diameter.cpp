@@ -83,7 +83,10 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworK
 	std::vector<count> ecc(numberOfComponents, 0);
 	std::vector<count> distances(G.upperNodeIdBound(), 0);
 
+	count numBFS = 0;
+
 	auto runBFS = [&](const std::vector<node> &startNodes) {
+		++numBFS;
 		std::vector<bool> foundFirstDeg2Node(numberOfComponents, false);
 
 		G.BFSfrom(startNodes, [&](node v, count dist) {
@@ -193,6 +196,8 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworK
 
 		std::tie(lb, ub) = diameterBounds();
 	}
+
+	INFO(numBFS, " BFS used");
 
 	return {lb, ub};
 }
