@@ -5501,6 +5501,28 @@ cdef class LocalClusteringCoefficient(Centrality):
 		self._this = new _LocalClusteringCoefficient(G._this, turbo)
 
 
+cdef extern from "cpp/centrality/Sfigality.h":
+	cdef cppclass _Sfigality "NetworKit::Sfigality" (_Centrality):
+		_Sfigality(_Graph) except +
+
+cdef class Sfigality(Centrality):
+	"""
+	Sfigality is a new type of node centrality measures that is high if neighboring nodes have a higher degree, e.g. in social networks, if your friends have more friends than you. Formally:
+
+		$$\sigma(u) = \frac{| \{ v: \{u,v\} \in E, deg(u) < deg(v) \} |}{ deg(u) }$$
+
+ 	Parameters
+ 	----------
+ 	G : Graph
+ 		The graph.
+	"""
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _Sfigality(G._this)
+
+
+
 cdef extern from "cpp/centrality/DynApproxBetweenness.h":
 	cdef cppclass _DynApproxBetweenness "NetworKit::DynApproxBetweenness":
 		_DynApproxBetweenness(_Graph, double, double, bool) except +
@@ -5624,6 +5646,7 @@ cdef class LocalPartitionCoverage(Centrality):
 		self._G = G
 		self._P = P
 		self._this = new _LocalPartitionCoverage(G._this, P._this)
+
 
 # Module: dynamic
 
