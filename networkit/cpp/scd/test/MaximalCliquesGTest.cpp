@@ -1,4 +1,4 @@
-#include "CliqueGTest.h"
+#include "MaximalCliquesGTest.h"
 
 #include "../MaximalCliques.h"
 #include "../../graph/Graph.h"
