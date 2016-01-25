@@ -12,6 +12,7 @@ from networkit import distance, coarsening, matching, nxadapter, graphio
 import math
 import logging
 import subprocess
+import os
 
 class StarGraphGenerator:
 	"""
@@ -144,7 +145,7 @@ class MultiscaleGenerator:
 		for v in Gf.nodes():
 			(v1, v2) = Gf.addNode(), Gf.addNode()
 			Gf.addEdge(v1, v2)
-		
+
 
 
 	def _buildFineSequence(self):
@@ -169,24 +170,39 @@ class MultiscaleGenerator:
 
 class BTERReplicator:
 
-	scriptname = '../scripts/bter_wrapper.m'
 	matlabname = 'matlab'
-	tempFileOut = '../scripts/bter_output'
-	tempFileIn = 'bter_input.mat'
+	matlabScript = """
+	addpath('{0}')
+	filename = 'bter_input.mat'
+	load(filename)
+	addpath('{1}')
+	[ccd,gcc] = ccperdeg(G);
+	nd = accumarray(nonzeros(sum(G,2)),1);
+	[E1,E2] = bter(nd,ccd);
+	G_bter = bter_edges2graph(E1,E2);
+	save('bter_output', 'G_bter')
+	exit
+	"""
 
-
-	def __init__(self, G):
+	def __init__(self, G, feastpackPath, workingDir="/tmp"):
 		self.G = G
+		self.feastpackPath = feastpackPath
+		self.workingDir = workingDir
+		self.scriptPath = os.path.join(workingDir, "bter_wrapper.m")
+		# write MATLAB script
+		with open(self.scriptPath, 'w') as matlabScriptFile:
+			matlabScriptFile.write(self.matlabScript.format(self.workingDir, self.feastpackPath))
+		self.tempFileOut = os.path.join(self.workingDir, 'bter_output')
+		self.tempFileIn = os.path.join(self.workingDir, 'bter_input.mat')
 
 	def generate(self):
 		graphio.writeMat(self.G, self.tempFileIn)
-		subprocess.call([self.matlabname, '-nosplash', '-nodisplay', '-r "run(\''+self.scriptname+'\');"'])
+		subprocess.call([self.matlabname, '-nosplash', '-nodisplay', '-r "run(\''+self.scriptPath+'\');"'])
 		G_bter = graphio.readMat(self.tempFileOut, key='G_bter')
 		subprocess.call(['rm', self.tempFileOut])
 		subprocess.call(['rm', self.tempFileIn])
-		return G
+		return G_bter
 
 	@classmethod
 	def fit(cls, G):
 		return cls(G)
-
