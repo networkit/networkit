@@ -105,6 +105,7 @@ class Config:
 		}
 		self.__options_Measures = {
 			"Centrality.Degree": False,
+			"Centrality.Sfigality": False,
 			"Centrality.CoreDecomposition": False,
 			"Centrality.ClusteringCoefficient": False,
 			"Centrality.PageRank": False,
@@ -130,6 +131,7 @@ class Config:
 		if preset == "complete":
 			result.setProperty("Diameter")
 			result.setMeasure("Centrality.Degree"),
+			result.setMeasure("Centrality.Sfigality"),
 			result.setMeasure("Centrality.CoreDecomposition")
 			result.setMeasure("Centrality.ClusteringCoefficient")
 			result.setMeasure("Centrality.PageRank")
@@ -264,6 +266,8 @@ class Profile:
 		for parameter in [
 			("Centrality.Degree",					"Node Centrality",	"Degree",
 				True,	funcScores,	"Score",				centrality.DegreeCentrality, 			(G, )),
+			("Centrality.Sfigality",					"Node Centrality",	"Sfigality",
+				True,	funcScores,	"Score",				centrality.Sfigality, 			(G, )),
 			("Centrality.CoreDecomposition",		"Node Centrality",	"k-Core Decomposition",
 				True,	funcScores,	"Score",				centrality.CoreDecomposition, 			(G, )),
 			("Centrality.ClusteringCoefficient",	"Node Centrality",	"Local Clustering Coefficient",
