@@ -183,12 +183,18 @@ class BTERReplicator:
 	save('bter_output', 'G_bter')
 	exit
 	"""
+	feastpackPath = "."
+	workingDir = "."
 
-	def __init__(self, G, feastpackPath, workingDir="/tmp"):
+
+	@classmethod
+	def setPaths(cls, feastpackPath, workingDir="/tmp"):
+		cls.feastpackPath = feastpackPath
+		cls.workingDir = workingDir
+
+	def __init__(self, G):
 		self.G = G
-		self.feastpackPath = feastpackPath
-		self.workingDir = workingDir
-		self.scriptPath = os.path.join(workingDir, "bter_wrapper.m")
+		self.scriptPath = os.path.join(self.workingDir, "bter_wrapper.m")
 		# write MATLAB script
 		with open(self.scriptPath, 'w') as matlabScriptFile:
 			matlabScriptFile.write(self.matlabScript.format(self.workingDir, self.feastpackPath))
