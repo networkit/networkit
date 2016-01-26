@@ -8,33 +8,27 @@
 
 #include "Spanning.h"
 #include "../auxiliary/Log.h"
-#include "../numerics/LAMG/SolverLamg.h"
-#include "../numerics/LAMG/MultiLevelSetup.h"
-#include "../numerics/GaussSeidelRelaxation.h"
-#include "../algebraic/LaplacianMatrix.h"
+#include "../auxiliary/Timer.h"
 #include "../spanning/RandomSpanningTree.h"
 #include "../spanning/PseudoRandomSpanningTree.h"
 
+#include <fstream>
+#include <sstream>
+
 namespace NetworKit {
 
-Spanning::Spanning(const Graph& G, double tol): Centrality(G), tol(tol) {
+Spanning::Spanning(const Graph& G, double tol): Centrality(G), tol(tol), lamg(1e-5) {
 	// prepare LAMG
-	smoother = new GaussSeidelRelaxation(tol);
 	CSRMatrix matrix = CSRMatrix::graphLaplacian(G);
+	Aux::Timer t;
+	t.start();
+	lamg.setupConnected(matrix);
+	t.stop();
 
-	MultiLevelSetup setup(*smoother);
-	hierarchy = new LevelHierarchy();
-	setup.setup(matrix, *hierarchy);
-	solver = new SolverLamg(*hierarchy, *smoother);
+	setupTime = t.elapsedMilliseconds();
+
 	DEBUG("done setting up Spanning");
 }
-
-Spanning::~Spanning() {
-	delete smoother;
-	delete solver;
-	delete hierarchy;
-}
-
 
 void Spanning::run() {
 	count n = G.numberOfNodes();
@@ -43,8 +37,6 @@ void Spanning::run() {
 
 	// set up solution vector and status
 	Vector solution(n);
-	LAMGSolverStatus status;
-	status.desiredResidualReduction = tol;
 
 	Vector rhs(n, 0.0);
 	Vector zeroVector(n, 0.0);
@@ -58,22 +50,26 @@ void Spanning::run() {
 
 		solution = zeroVector;
 
-		solver->solve(solution, rhs, status);
+		lamg.solve(rhs, solution);
 		double diff = solution[u] - solution[v];
 		scoreData[e] = fabs(diff); // TODO: check unweighted, fix weighted case, fix edge IDs!
 		rhs[u] = 0.0;
 		rhs[v] = 0.0;
 	});
+
+	hasRun = true;
 }
 
+uint64_t Spanning::getSetupTime() const {
+	return setupTime;
+}
 
 void Spanning::runApproximation() {
 	const count n = G.numberOfNodes();
 	const count m = G.numberOfEdges();
-	const count k = 8 * ceil(log(n));
-	double randTab[3] = {0, 1/sqrt(k), -1/sqrt(k)};
-	LAMGSolverStatus status;
-	status.desiredResidualReduction = tol;
+	double epsilon2 = tol * tol;
+	const count k = ceil(log(n)) / epsilon2;
+	double randTab[3] = {1/sqrt(k), -1/sqrt(k)};
 	Vector solution(n);
 	scoreData.clear();
 	scoreData.resize(m, 0.0);
@@ -84,7 +80,8 @@ void Spanning::runApproximation() {
 		// rhs(v) = \sum_e=1 ^m q(e) * B(e, v)
 		//        = +/- q(e)
 		G.forEdges([&](node u, node v) {
-			double r = randTab[Aux::Random::integer(2)];
+			double r = randTab[Aux::Random::integer(1)];
+
 			if (u < v) {
 				rhs[u] += r;
 				rhs[v] -= r;
@@ -95,13 +92,57 @@ void Spanning::runApproximation() {
 			}
 		});
 
-		solver->solve(solution, rhs, status);
+		lamg.solve(rhs, solution);
 
 		G.forEdges([&](node u, node v, edgeid e) {
 			double diff = solution[u] - solution[v];
 			scoreData[e] += diff * diff; // TODO: fix weighted case!
 		});
 	}
+
+	hasRun = true;
+}
+
+void Spanning::runParallelApproximation() {
+	const count n = G.numberOfNodes();
+	const count m = G.numberOfEdges();
+	double epsilon2 = tol * tol;
+	const count k = ceil(log(n)) / epsilon2;
+	double randTab[3] = {1/sqrt(k), -1/sqrt(k)};
+	std::vector<Vector> solutions(k, Vector(n));
+	std::vector<Vector> rhs(k, Vector(n));
+	scoreData.clear();
+	scoreData.resize(m, 0.0);
+
+#pragma omp parallel for
+	for (index i = 0; i < k; ++i) {
+		// rhs(v) = \sum_e=1 ^m q(e) * B(e, v)
+		//        = +/- q(e)
+		G.forEdges([&](node u, node v) {
+			double r = randTab[Aux::Random::integer(1)];
+
+			if (u < v) {
+				rhs[i][u] += r;
+				rhs[i][v] -= r;
+			}
+			else {
+				rhs[i][u] -= r;
+				rhs[i][v] += r;
+			}
+		});
+	}
+
+	lamg.parallelSolve(rhs, solutions);
+
+#pragma omp parallel for
+	for (index i = 0; i < k; ++i) {
+		G.forEdges([&](node u, node v, edgeid e) {
+			double diff = solutions[i][u] - solutions[i][v];
+			scoreData[e] += diff * diff; // TODO: fix weighted case!
+		});
+	}
+
+	hasRun = true;
 }
 
 void Spanning::runTreeApproximation() {
@@ -122,6 +163,50 @@ void Spanning::runTreeApproximation() {
 	G.forEdges([&](node u, node v, edgeid e) {
 		scoreData[e] /= reps;
 	});
+
+	hasRun = true;
+}
+
+uint64_t Spanning::runApproximationAndWriteVectors(const std::string &graphPath) {
+	Aux::Timer t;
+	const count n = G.numberOfNodes();
+	const count m = G.numberOfEdges();
+	const double epsilon2 = tol * tol;
+	const count k = ceil(log(n)) / epsilon2;
+	double randTab[3] = {1/sqrt(k), -1/sqrt(k)};
+	Vector solution(n);
+	scoreData.clear();
+	scoreData.resize(m, 0.0);
+
+	t.start();
+	for (index i = 0; i < k; ++i) {
+		Vector rhs(n, 0.0);
+
+		// rhs(v) = \sum_e=1 ^m q(e) * B(e, v)
+		//        = +/- q(e)
+		G.forEdges([&](node u, node v) {
+			double r = randTab[Aux::Random::integer(1)];
+			if (u < v) {
+				rhs[u] += r;
+				rhs[v] -= r;
+			}
+			else {
+				rhs[u] -= r;
+				rhs[v] += r;
+			}
+		});
+
+		lamg.solve(rhs, solution);
+
+		G.forEdges([&](node u, node v, edgeid e) {
+			double diff = solution[u] - solution[v];
+			scoreData[e] += diff * diff; // TODO: fix weighted case!
+		});
+	}
+	t.stop();
+	hasRun = true;
+
+	return t.elapsedMilliseconds();
 }
 
 void Spanning::runPseudoTreeApproximation() {
@@ -142,6 +227,8 @@ void Spanning::runPseudoTreeApproximation() {
 	G.forEdges([&](node u, node v, edgeid e) {
 		scoreData[e] /= reps;
 	});
+
+	hasRun = true;
 }
 
 double Spanning::runForEdge(node u, node v) {
@@ -151,15 +238,12 @@ double Spanning::runForEdge(node u, node v) {
 	Vector solution(n, 0.0);
 	Vector rhs(n, 0.0);
 
-	LAMGSolverStatus status;
-	status.desiredResidualReduction = tol;
-
 	// set up right-hand side
 	rhs[u] = +1.0;
 	rhs[v] = -1.0;
 	TRACE("before solve for ", u, " and ", v);
 
-	solver->solve(solution, rhs, status);
+	lamg.solve(rhs, solution);
 	return fabs(solution[u] - solution[v]); // TODO: fix weighted case, fix edge IDs!
 }
 
