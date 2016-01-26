@@ -28,6 +28,10 @@
 #include "../../auxiliary/Timer.h"
 #include "../../generators/ErdosRenyiGenerator.h"
 
+#include <iostream>
+#include <iomanip>
+
+
 
 namespace NetworKit {
 
@@ -796,43 +800,5 @@ TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected2) {
 
  	EXPECT_EQ(reference,lccScores);
  }
-
-TEST_F(CentralityGTest, benchSpanning) {
-	METISGraphReader reader;
-
-	std::string graphFiles[2] = {"input/jazz.graph", "input/power.graph"};
-
-	for (auto graphFile: graphFiles) {
-		Graph G = reader.read(graphFile);
-		G.indexEdges();
-		Aux::Timer timer;
-		Spanning cen(G);
-
-		timer.start();
-		cen.runApproximation();
-		timer.stop();
-		INFO("approx spanning edge centrality time: ", timer.elapsedTag());
-		INFO("approx spanning edge centrality ranking: ", cen.ranking());
-
-		timer.start();
-		cen.runTreeApproximation();
-		timer.stop();
-		INFO("tree approx spanning edge centrality time: ", timer.elapsedTag());
-		INFO("tree approx spanning edge centrality ranking: ", cen.ranking());
-
-		timer.start();
-		cen.runPseudoTreeApproximation();
-		timer.stop();
-		INFO("pseudo tree approx spanning edge centrality time: ", timer.elapsedTag());
-		INFO("pseudo tree approx spanning edge centrality ranking: ", cen.ranking());
-
-		timer.start();
-		cen.run();
-		timer.stop();
-		INFO("spanning edge centrality ranking time: ", timer.elapsedTag());
-		INFO("spanning edge centrality ranking: ", cen.ranking());
-	}
-}
-
 
 } /* namespace NetworKit */
