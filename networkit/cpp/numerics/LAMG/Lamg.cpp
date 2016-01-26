@@ -9,6 +9,7 @@
 
 #include "../../components/ParallelConnectedComponents.h"
 #include "../GaussSeidelRelaxation.h"
+#include "omp.h"
 
 namespace NetworKit {
 
@@ -129,6 +130,43 @@ SolverStatus Lamg::solve(const Vector &rhs, Vector &result, count maxConvergence
 	}
 
 	return status;
+}
+
+void Lamg::parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results, count maxConvergenceTime, count maxIterations) {
+	if (numComponents == 1) {
+		assert(rhs.size == results.size());
+//		LAMGSolverStatus stat;
+//		stat.desiredResidualReduction = tolerance;
+//		stat.maxIters = maxIterations;
+//		stat.maxConvergenceTime = maxConvergenceTime;
+		const int numThreads = omp_get_max_threads();
+		INFO("Running with ", numThreads, " threads.");
+		if (compSolvers.size() != numThreads) {
+			compSolvers.clear();
+
+			for (index i = 0; i < (index) numThreads; ++i) {
+				compSolvers.push_back(SolverLamg(compHierarchies[0], smoother));
+			}
+		}
+
+		INFO("Running lamg in parallel with ", compSolvers.size(), " solvers.");
+
+		Aux::Timer t;
+		t.start();
+#pragma omp parallel for schedule(guided)
+		for (index i = 0; i < results.size(); ++i) {
+			index curThreadNum = omp_get_thread_num();
+			LAMGSolverStatus stat;
+			stat.desiredResidualReduction = tolerance;
+			stat.maxIters = maxIterations;
+			stat.maxConvergenceTime = maxConvergenceTime;
+			compSolvers[curThreadNum].solve(results[i], rhs[i], stat);
+		}
+		t.stop();
+
+		INFO("Done in ", t.elapsedMilliseconds());
+
+	}
 }
 
 

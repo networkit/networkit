@@ -77,6 +77,9 @@ public:
 	 */
 	SolverStatus solve(const Vector &rhs, Vector &result, count maxConvergenceTime = 5 * 60 * 1000, count maxIterations = std::numeric_limits<count>::max());
 
+	// TODO: parallelSolve?
+	void parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results, count maxConvergenceTime = 5 * 60 * 1000, count maxIterations = std::numeric_limits<count>::max());
+
 };
 
 } /* namespace NetworKit */
