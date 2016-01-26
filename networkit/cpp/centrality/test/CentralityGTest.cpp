@@ -23,6 +23,7 @@
 #include "../CoreDecomposition.h"
 #include "../LocalClusteringCoefficient.h"
 #include "../../structures/Cover.h"
+#include "../PermanenceCentrality.h"
 #include "../../structures/Partition.h"
 #include "../../auxiliary/Timer.h"
 #include "../../generators/ErdosRenyiGenerator.h"
@@ -797,5 +798,67 @@ TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected2) {
 
  	EXPECT_EQ(reference,lccScores);
  }
+
+TEST_F(CentralityGTest, testSimplePermanence) {
+	Graph G(15, false, false);
+	G.addEdge(0, 1);
+	G.addEdge(1, 2);
+	G.addEdge(2, 0);
+	G.addEdge(2, 3);
+	node v = 4;
+	node u = 5;
+	G.addEdge(v, 0);
+	G.addEdge(v, 1);
+	G.addEdge(v, 2);
+	G.addEdge(u, 3);
+	G.addEdge(u, 2);
+	G.addEdge(u, 0);
+	G.addEdge(6, 7);
+	G.addEdge(7, 8);
+	G.addEdge(u, 6);
+	G.addEdge(u, 7);
+	G.addEdge(u, 8);
+	G.addEdge(v, 6);
+	G.addEdge(v, 7);
+	G.addEdge(9, 10);
+	G.addEdge(10, 11);
+	G.addEdge(u, 9);
+	G.addEdge(v, 10);
+	G.addEdge(v, 11);
+	G.addEdge(12, 13);
+	G.addEdge(13, 14);
+	G.addEdge(12, 14);
+	G.addEdge(v, 12);
+	G.addEdge(v, 14);
+
+	Partition P(G.upperNodeIdBound());
+	P.setUpperBound(4);
+	P[0] = 0;
+	P[1] = 0;
+	P[2] = 0;
+	P[3] = 0;
+	P[v] = 0;
+	P[u] = 0;
+	P[6] = 1;
+	P[7] = 1;
+	P[8] = 1;
+	P[9] = 2;
+	P[10] = 2;
+	P[11] = 2;
+	P[12] = 3;
+	P[13] = 3;
+	P[14] = 3;
+
+	ASSERT_EQ(9, G.degree(v));
+	ASSERT_EQ(7, G.degree(u));
+
+	PermanenceCentrality perm(G, P);
+	perm.run();
+	EXPECT_DOUBLE_EQ(2.0/3.0, perm.getIntraClustering(u));
+	EXPECT_DOUBLE_EQ(1, perm.getIntraClustering(v));
+
+	EXPECT_NEAR(-0.19048, perm.getPermanence(u), 0.0005);
+	EXPECT_NEAR(0.167, perm.getPermanence(v), 0.0005);
+}
 
 } /* namespace NetworKit */
