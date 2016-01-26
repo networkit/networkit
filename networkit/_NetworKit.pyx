@@ -5622,8 +5622,51 @@ cdef class DynApproxBetweenness:
 		"""
 		Get number of path samples used in last calculation.
 		"""
-
 		return self._this.getNumberOfSamples()
+
+cdef extern from "cpp/centrality/PermanenceCentrality.h":
+	cdef cppclass _PermanenceCentrality "NetworKit::PermanenceCentrality":
+		_PermanenceCentrality(const _Graph& G, const _Partition& P) except +
+		void run() nogil except +
+		double getIntraClustering(node u) except +
+		double getPermanence(node u) except +
+
+cdef class PermanenceCentrality:
+	"""
+	Permanence centrality
+
+	This centrality measure measure how well a vertex belongs to its community. The values are calculated on the fly, the partion may be changed in between the requests.
+	For details see
+
+	Tanmoy Chakraborty, Sriram Srinivasan, Niloy Ganguly, Animesh Mukherjee, and Sanjukta Bhowmick. 2014.
+	On the permanence of vertices in network communities.
+	In Proceedings of the 20th ACM SIGKDD international conference on Knowledge discovery and data mining (KDD '14).
+	ACM, New York, NY, USA, 1396-1405. DOI: http://dx.doi.org/10.1145/2623330.2623707
+
+	FIXME: does not use the common centrality interface yet.
+	"""
+	cdef _PermanenceCentrality *_this
+	cdef Graph _G
+	cdef Partition _P
+
+	def __cinit__(self, Graph G, Partition P):
+		self._this = new _PermanenceCentrality(G._this, P._this)
+		self._G = G
+		self._P = P
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		with nogil:
+			self._this.run()
+		return self
+
+	def getIntraClustering(self, node u):
+		return self._this.getIntraClustering(u)
+
+	def getPermanence(self, node u):
+		return self._this.getPermanence(u)
 
 cdef extern from "cpp/centrality/LocalPartitionCoverage.h":
 	cdef cppclass _LocalPartitionCoverage "NetworKit::LocalPartitionCoverage" (_Centrality):
