@@ -8,18 +8,36 @@
 #ifndef DIAMETER_H_
 #define DIAMETER_H_
 
+#include "../base/Algorithm.h"
 #include "../graph/Graph.h"
 #include "../auxiliary/SignalHandling.h"
 
 
 namespace NetworKit {
+enum DiameterAlgo {automatic = 0, exact = 1, estimatedRange = 2, estimatedSamples = 3, estimatedPedantic = 4};
 
 /**
  * @ingroup distance
  */
-class Diameter {
+class Diameter : public Algorithm {
 
 public:
+	
+	Diameter(const Graph& G, DiameterAlgo algo = DiameterAlgo::automatic, double error = -1.f, count nSamples = 0);
+
+	void run() override;
+
+	std::string toString() const override;
+
+	std::pair<count, count> getDiameter() const;
+
+
+private:
+	const Graph& G;
+	DiameterAlgo algo;
+	double error;
+	count nSamples;
+	std::pair<count, count> diameterBounds;
 
 	/**
 	 * Get the an estimation of the diameter of the graph @a G. The algorithm is based on the ExactSumSweep algorithm presented in
@@ -32,7 +50,7 @@ public:
 	 * @param error The maximum allowed relative error. Set to 0 for the exact diameter.
 	 * @return Pair of lower and upper bound for diameter.
 	 */
-	static std::pair<edgeweight, edgeweight> estimatedDiameterRange(const Graph& G, double error);
+	std::pair<edgeweight, edgeweight> estimatedDiameterRange(const Graph& G, double error);
 
 	/**
 	 * Get the exact diameter of the graph @a G. The algorithm for unweighted graphs is the same as
@@ -41,7 +59,7 @@ public:
 	 * @param G The graph.
 	 * @return exact diameter of the graph @a G
 	 */
-	static edgeweight exactDiameter(const Graph& G);
+	edgeweight exactDiameter(const Graph& G);
 
 
 	/**
@@ -54,18 +72,18 @@ public:
 	 *							with the largest diameter ist high.
 	 * @return A 2-approximation of the vertex diameter (unweighted diameter) of @a G.
 	 */
-	static edgeweight estimatedVertexDiameter(const Graph& G, count samples);
+	edgeweight estimatedVertexDiameter(const Graph& G, count samples);
 
 
 	/** @return a 2-approximation of the vertex diameter (unweighted diameter) of @a G.
 			Considers each connected component and returns the maximum diameter.
 	 */
-	static edgeweight estimatedVertexDiameterPedantic(const Graph& G);
+	edgeweight estimatedVertexDiameterPedantic(const Graph& G);
 
 	/** @return a 2-approximation of the vertex diameter (unweighted diameter) of @a G.
 			Considers each connected component and returns the maximum diameter.
 	*/
-	static edgeweight estimatedVertexDiameterPedantic2(const Graph& G);
+	edgeweight estimatedVertexDiameterPedantic2(const Graph& G);
 };
 
 } /* namespace NetworKit */

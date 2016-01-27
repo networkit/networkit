@@ -17,6 +17,31 @@
 
 namespace NetworKit {
 
+Diameter::Diameter(const Graph& G, DiameterAlgo algo, double error, count nSamples) : Algorithm(), G(G), algo(algo), error(error), nSamples(nSamples) {
+	if (algo == DiameterAlgo::automatic) {
+		algo = DiameterAlgo::exact;
+	}
+}
+
+void Diameter::run() {
+	diameterBounds = {0, 0};
+	if (algo == DiameterAlgo::exact) {
+		std::get<0>(diameterBounds) = this->exactDiameter(G);
+	} else if (algo == DiameterAlgo::estimatedRange) {
+		diameterBounds = this->estimatedDiameterRange(G, error);
+	} else if (algo == DiameterAlgo::estimatedSamples) {
+		std::get<0>(diameterBounds) = this->estimatedVertexDiameter(G, nSamples);
+	} else if (algo == DiameterAlgo::estimatedPedantic) {
+		std::get<0>(diameterBounds) = this->estimatedVertexDiameterPedantic(G);
+	} else {
+		throw std::runtime_error("should never reach this code as the algorithm should be set correctly in the constructor or fail there");
+	}
+	hasRun = true;
+}
+
+std::pair<count, count> Diameter::getDiameter() const {
+	return diameterBounds;
+}
 
 edgeweight Diameter::exactDiameter(const Graph& G) {
 	using namespace std;
@@ -38,7 +63,7 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 		 			diameter = distance;
 		 		}
 		 	}
-//			DEBUG("ecc(", v, "): ", *std::max_element(distances.begin(), distances.end()), " of ", distances);
+			//DEBUG("ecc(", v, "): ", *std::max_element(distances.begin(), distances.end()), " of ", distances);
 		 });
 	}
 
@@ -47,10 +72,6 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 	}
 	return diameter;
 }
-
-
-
-
 
 std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworKit::Graph &G, double error) {
 	if (G.isDirected() || G.isWeighted()) {
@@ -202,7 +223,6 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworK
 	return {lb, ub};
 }
 
-
 edgeweight Diameter::estimatedVertexDiameter(const Graph& G, count samples) {
 
 	edgeweight infDist = std::numeric_limits<edgeweight>::max();
@@ -244,7 +264,6 @@ edgeweight Diameter::estimatedVertexDiameter(const Graph& G, count samples) {
 	}
 
 	return vdMax;
-
 }
 
 edgeweight Diameter::estimatedVertexDiameterPedantic(const Graph& G) {
@@ -291,6 +310,10 @@ edgeweight Diameter::estimatedVertexDiameterPedantic(const Graph& G) {
 		vd = largest_comp_size;
 	}
 	return vd;
+}
+
+std::string Diameter::toString() const {
+	return "Diameter()";
 }
 
 } /* namespace NetworKit */
