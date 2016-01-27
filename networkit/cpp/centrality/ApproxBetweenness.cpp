@@ -37,7 +37,9 @@ void ApproxBetweenness::run() {
 	edgeweight vd = 0;
 	if (diameterSamples == 0) {
 		INFO("estimating vertex diameter pedantically");
-		vd = Diameter::estimatedVertexDiameterPedantic(G);
+		Diameter diam(G, DiameterAlgo::estimatedPedantic);
+		diam.run();
+		vd = diam.getDiameter().first;
 	} else {
 		/**
 		* This is an optimization which deviates from the original algorithm.
@@ -45,7 +47,9 @@ void ApproxBetweenness::run() {
 		* we sample the graph and take the maximum diameter found. This has a high chance of  hitting the component with the maximum vertex diameter.
 		*/
 		INFO("estimating vertex diameter roughly");
-		vd = Diameter::estimatedVertexDiameter(G, diameterSamples);
+		Diameter diam(G, DiameterAlgo::estimatedSamples, -1.f, diameterSamples);
+		diam.run();
+		vd = diam.getDiameter().first;
 	}
 
 	INFO("estimated diameter: ", vd);

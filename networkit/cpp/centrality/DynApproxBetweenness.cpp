@@ -42,7 +42,9 @@ void DynApproxBetweenness::run() {
     const double c = 0.5; // universal positive constant - see reference in paper
 
 
-    edgeweight vd = Diameter::estimatedVertexDiameterPedantic(G);
+    Diameter diam(G, DiameterAlgo::estimatedPedantic);
+    diam.run();
+    edgeweight vd = diam.getDiameter().first;
 
     INFO("estimated diameter: ", vd);
     r = ceil((c / (epsilon * epsilon)) * (floor(log2(vd - 2)) + 1 - log(delta)));
