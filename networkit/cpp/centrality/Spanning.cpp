@@ -68,7 +68,7 @@ void Spanning::runApproximation() {
 	const count n = G.numberOfNodes();
 	const count m = G.numberOfEdges();
 	double epsilon2 = tol * tol;
-	const count k = ceil(log(n)) / epsilon2;
+	const count k = ceil(log2(n)) / epsilon2;
 	double randTab[3] = {1/sqrt(k), -1/sqrt(k)};
 	Vector solution(n);
 	scoreData.clear();
