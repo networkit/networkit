@@ -4865,91 +4865,38 @@ cdef class ClusteringCoefficient:
 			ret = approxGlobal(G._this, trials)
 		return ret
 
+cdef extern from "cpp/distance/Diameter.h" namespace "NetworKit":
+	cdef enum DiameterAlgo:
+		automatic = 0
+		exact = 1
+		estimatedRange = 2
+		estimatedSamples = 3
+		estimatedPedantic = 4
 
-cdef extern from "cpp/distance/Diameter.h" namespace "NetworKit::Diameter":
-	pair[count, count] estimatedDiameterRange(_Graph G, double error) nogil except +
-	count exactDiameter(_Graph G) nogil except +
-	edgeweight estimatedVertexDiameter(_Graph G, count) nogil except +
-	edgeweight estimatedVertexDiameterPedantic(_Graph G) nogil except +
+class _DiameterAlgo(object):
+	Automatic = automatic
+	Exact = exact
+	EstimatedRange = estimatedRange
+	EstimatedSamples = estimatedSamples
+	EstimatedPedantic = estimatedPedantic
 
-cdef class Diameter:
+cdef extern from "cpp/distance/Diameter.h" namespace "NetworKit::Diameter":		
+	cdef cppclass _Diameter "NetworKit::Diameter"(_Algorithm):
+		_Diameter(_Graph G, DiameterAlgo algo, double error, count nSamples)
+		pair[count, count] getDiameter() nogil except +
+
+cdef class Diameter(Algorithm):
+	cdef Graph _G
 	"""
 	TODO: docstring
 	"""
+	def __cinit__(self, Graph G not None, algo = automatic, error = -1., nSamples = 0):
+		self._G = G
+		self._this = new _Diameter(G._this, algo, error, nSamples)
 
-	@staticmethod
-	def estimatedDiameterRange(Graph G, double error=0.1):
-		""" Estimates a range for the diameter of @a G.
+	def getDiameter(self):
+		return (<_Diameter*>(self._this)).getDiameter()
 
-		The algorithm is based on the ExactSumSweep algorithm presented in
-		Michele Borassi, Pierluigi Crescenzi, Michel Habib, Walter A. Kosters, Andrea Marino, Frank W. Takes,
-		Fast diameter and radius BFS-based computation in (weakly connected) real-world graphs: With an application to the six degrees of separation games,
-		Theoretical Computer Science, Volume 586, 27 June 2015, Pages 59-80, ISSN 0304-3975,
-		http://dx.doi.org/10.1016/j.tcs.2015.02.033.
-		(http://www.sciencedirect.com/science/article/pii/S0304397515001644)
-
-		Parameters
-		----------
-		G : Graph
-			The graph
-		error : double
-			The maximum allowed relative error. Set to 0 for the exact diameter.
-
-		Returns
-		-------
-		pair
-			Pair of lower and upper bound for diameter.
-		"""
-		cdef pair[count, count] ret
-		with nogil:
-			ret = estimatedDiameterRange(G._this, error)
-		return ret
-
-	@staticmethod
-	def exactDiameter(Graph G):
-		""" Get the exact diameter of the graph `G`.
-
-		Parameters
-		----------
-		G : Graph
-			The graph.
-
-		Returns
-		-------
-		edgeweight
-			Exact diameter of the graph `G`.
-		"""
-		cdef edgeweight diam
-		with nogil:
-			diam = exactDiameter(G._this)
-		return diam
-
-	@staticmethod
-	def estimatedVertexDiameter(Graph G, count samples):
-		""" Get a 2-approximation of the node diameter (unweighted diameter) of `G`.
-
-		Parameters
-		----------
-		G : Graph
-			The graph.
-		samples : count
-			One sample is enough if the graph is connected. If there
-			are multiple connected components, then the number of samples
-			must be chosen so that the probability of sampling the component
-			with the largest diameter ist high.
-
-		Returns
-		-------
-		edgeweight
-			A 2-approximation of the vertex diameter (unweighted diameter) of `G`.
-		"""
-		cdef edgeweight diam
-		with nogil:
-			if samples == 0:
-				diam = estimatedVertexDiameterPedantic(G._this)
-			else:
-				diam = estimatedVertexDiameter(G._this, samples)
-		return diam
 
 cdef extern from "cpp/distance/Eccentricity.h" namespace "NetworKit::Eccentricity":
 	pair[node, count] getValue(_Graph G, node v) except +
@@ -4962,8 +4909,6 @@ cdef class Eccentricity:
 	@staticmethod
 	def getValue(Graph G, v):
 		return getValue(G._this, v)
-
-
 
 
 cdef extern from "cpp/distance/EffectiveDiameter.h" namespace "NetworKit::EffectiveDiameter":
