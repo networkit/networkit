@@ -354,11 +354,12 @@ class Test_SelfLoops(unittest.TestCase):
 
 
 	def test_distance_Diameter(self):
-		D = distance.Diameter()
-		D.estimatedDiameterRange(self.LL)
-		D.estimatedDiameterRangeWithProof(self.LL)
-		D.estimatedVertexDiameter(self.LL, 5)
-		D.exactDiameter(self.LL)
+		D = distance.Diameter(self.LL, distance.DiameterAlgo.EstimatedRange, error = 0.1)
+		D.run()
+		D = distance.Diameter(self.LL, distance.DiameterAlgo.EstimatedSamples, nSamples = 5)
+		D.run()
+		D = distance.Diameter(self.LL, distance.DiameterAlgo.Exact)
+		D.run()
 
 
 	def test_distance_Eccentricity(self):
