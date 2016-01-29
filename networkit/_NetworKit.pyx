@@ -4882,7 +4882,7 @@ class _DiameterAlgo(object):
 
 cdef extern from "cpp/distance/Diameter.h" namespace "NetworKit::Diameter":		
 	cdef cppclass _Diameter "NetworKit::Diameter"(_Algorithm):
-		_Diameter(_Graph G, DiameterAlgo algo, double error, count nSamples)
+		_Diameter(_Graph G, DiameterAlgo algo, double error, count nSamples) except +
 		pair[count, count] getDiameter() nogil except +
 
 cdef class Diameter(Algorithm):
@@ -4890,7 +4890,7 @@ cdef class Diameter(Algorithm):
 	"""
 	TODO: docstring
 	"""
-	def __cinit__(self, Graph G not None, algo = automatic, error = -1., nSamples = 0):
+	def __cinit__(self, Graph G not None, algo = _DiameterAlgo.Automatic, error = -1., nSamples = 0):
 		self._G = G
 		self._this = new _Diameter(G._this, algo, error, nSamples)
 

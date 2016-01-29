@@ -17,9 +17,16 @@
 
 namespace NetworKit {
 
-Diameter::Diameter(const Graph& G, DiameterAlgo algo, double error, count nSamples) : Algorithm(), G(G), algo(algo), error(error), nSamples(nSamples) {
+Diameter::Diameter(const Graph& G, DiameterAlgo algo, double error, count nSamples) : Algorithm(), G(G), error(error), nSamples(nSamples) {
 	if (algo == DiameterAlgo::automatic) {
-		algo = DiameterAlgo::exact;
+		this->algo = DiameterAlgo::exact;
+	} else {
+		this->algo = algo;
+		if (this->algo == DiameterAlgo::estimatedRange) {
+			if (error == -1.f) throw std::invalid_argument("For Diameter::estimatedRange the parameter error(>=0) has to be supplied");
+		} else if (this->algo == DiameterAlgo::estimatedSamples) {
+			if (nSamples == 0) throw std::invalid_argument("For Diameter::estimatedSamples the parameter nSamples(>0) has to be supplied");
+		}
 	}
 }
 
