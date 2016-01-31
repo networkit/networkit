@@ -15,6 +15,8 @@
 #include <fstream>
 #include <sstream>
 
+#include "omp.h"
+
 namespace NetworKit {
 
 Spanning::Spanning(const Graph& G, double tol): Centrality(G), tol(tol), lamg(1e-5) {
@@ -107,7 +109,7 @@ void Spanning::runParallelApproximation() {
 	const count n = G.numberOfNodes();
 	const count m = G.numberOfEdges();
 	double epsilon2 = tol * tol;
-	const count k = ceil(log(n)) / epsilon2;
+	const count k = ceil(log2(n)) / epsilon2;
 	double randTab[3] = {1/sqrt(k), -1/sqrt(k)};
 	std::vector<Vector> solutions(k, Vector(n));
 	std::vector<Vector> rhs(k, Vector(n));
@@ -134,9 +136,8 @@ void Spanning::runParallelApproximation() {
 
 	lamg.parallelSolve(rhs, solutions);
 
-#pragma omp parallel for
 	for (index i = 0; i < k; ++i) {
-		G.forEdges([&](node u, node v, edgeid e) {
+		G.parallelForEdges([&](node u, node v, edgeid e) {
 			double diff = solutions[i][u] - solutions[i][v];
 			scoreData[e] += diff * diff; // TODO: fix weighted case!
 		});
