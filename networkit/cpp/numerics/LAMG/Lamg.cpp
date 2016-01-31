@@ -147,8 +147,6 @@ void Lamg::parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &re
 		bool nested = omp_get_nested();
 		if (nested) omp_set_nested(false);
 
-		Aux::Timer t;
-		t.start();
 #pragma omp parallel
 		{
 			count numThreads = omp_get_num_threads();
@@ -166,9 +164,6 @@ void Lamg::parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &re
 			}
 		}
 		if (nested) omp_set_nested(true);
-
-		INFO("Done in ", t.elapsedMilliseconds());
-
 	}
 }
 
