@@ -135,12 +135,7 @@ SolverStatus Lamg::solve(const Vector &rhs, Vector &result, count maxConvergence
 void Lamg::parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results, count maxConvergenceTime, count maxIterations) {
 	if (numComponents == 1) {
 		assert(rhs.size == results.size());
-//		LAMGSolverStatus stat;
-//		stat.desiredResidualReduction = tolerance;
-//		stat.maxIters = maxIterations;
-//		stat.maxConvergenceTime = maxConvergenceTime;
-		const int numThreads = omp_get_max_threads();
-		INFO("Running with ", numThreads, " threads.");
+		const index numThreads = omp_get_max_threads();
 		if (compSolvers.size() != numThreads) {
 			compSolvers.clear();
 
@@ -149,20 +144,28 @@ void Lamg::parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &re
 			}
 		}
 
-		INFO("Running lamg in parallel with ", compSolvers.size(), " solvers.");
+		bool nested = omp_get_nested();
+		if (nested) omp_set_nested(false);
 
 		Aux::Timer t;
 		t.start();
-#pragma omp parallel for schedule(guided)
-		for (index i = 0; i < results.size(); ++i) {
-			index curThreadNum = omp_get_thread_num();
+#pragma omp parallel
+		{
+			count numThreads = omp_get_num_threads();
+			index threadId = omp_get_thread_num();
+
+			count chunkSize = (rhs.size() + numThreads - 1) / numThreads;
+			index chunkStart = threadId * chunkSize;
+			index chunkEnd = std::min((index) rhs.size(), chunkStart + chunkSize);
 			LAMGSolverStatus stat;
-			stat.desiredResidualReduction = tolerance;
-			stat.maxIters = maxIterations;
-			stat.maxConvergenceTime = maxConvergenceTime;
-			compSolvers[curThreadNum].solve(results[i], rhs[i], stat);
+			for (index i = chunkStart; i < chunkEnd; ++i) {
+				stat.desiredResidualReduction = tolerance;
+				stat.maxIters = maxIterations;
+				stat.maxConvergenceTime = maxConvergenceTime;
+				compSolvers[threadId].solve(results[i], rhs[i], stat);
+			}
 		}
-		t.stop();
+		if (nested) omp_set_nested(true);
 
 		INFO("Done in ", t.elapsedMilliseconds());
 
