@@ -2190,7 +2190,7 @@ cdef class RmatGenerator:
 	"""
 
 	cdef _RmatGenerator* _this
-	workingDir = None
+	paths = {"workingDir" : None, "kronfitPath" : None}
 
 	def __cinit__(self, count scale, count edgeFactor, double a, double b, double c, double d):
 		self._this = new _RmatGenerator(scale, edgeFactor, a, b, c, d)
@@ -2210,31 +2210,40 @@ cdef class RmatGenerator:
 
 	@classmethod
 	def setPaths(cls, kronfitPath, workingDir="/tmp"):
-		cls.kronfitPath = kronfitPath
-		cls.workingDir = workingDir
+		cls.paths["kronfitPath"] = kronfitPath
+		cls.paths["workingDir"] = workingDir
 
 	@classmethod
 	def fit(cls, G, iterations=10):
+		import math
 		import re
 		import subprocess
 		import os
 		from networkit import graphio
-		if cls.workingDir is None:
+		if cls.paths["workingDir"] is None:
 			raise RuntimeError("call setPaths class method first to configure")
 		# write graph
-		tmpGraphPath = os.path.join(cls.workingDir, "{0}.edgelist".format(G.name()))
+		tmpGraphPath = os.path.join(cls.paths["workingDir"], "{0}.edgelist".format(G.getName()))
 		graphio.writeGraph(G, tmpGraphPath, graphio.Format.EdgeListTabOne)
 		# call kronfit
-		subprocess.call([cls.kronfitPath, "-i", tmpGraphPath, "-gi", iterations])
+		args = [cls.paths["kronfitPath"], "-i:{0}".format(tmpGraphPath), "-gi:{0}".format(str(iterations))]
+		print(args)
+		subprocess.call(args)
 		# read estimated parameters
-		with open("KronFit-{0}.tab".format(G.name())) as resultFile:
+		with open("KronFit-{0}.tab".format(G.getName())) as resultFile:
 			for i, line in enumerate(resultFile):
-				if i == 5:
+				if i == 7:
 					matches = re.findall("\d+\.\d+", line)
 					weights = [float(s) for s in matches]
-					print(weights)
 		# normalize
-		return None
+		s = sum(weights)
+		nweights = [w / s for w in weights]
+		(a,b,c,d) = nweights
+		# other parameters
+		(n,m) = G.size()
+		scale = math.log(n, 2)
+		edgeFactor = m / n
+		return RmatGenerator(scale, edgeFactor, a, b, c, d)
 
 cdef extern from "cpp/generators/PowerlawDegreeSequence.h":
 	cdef cppclass _PowerlawDegreeSequence "NetworKit::PowerlawDegreeSequence":
