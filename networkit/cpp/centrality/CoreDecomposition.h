@@ -36,7 +36,7 @@ public:
 	 *
 	 * @param G The graph.
 	 */
-	CoreDecomposition(const Graph& G, bool enforceBucketQueueAlgorithm = false);
+	CoreDecomposition(const Graph& G, bool normalized=false, bool enforceBucketQueueAlgorithm = false);
 
 	/**
 	 * Perform k-core decomposition of graph passed in constructor.

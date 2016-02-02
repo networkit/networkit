@@ -2190,6 +2190,7 @@ cdef class RmatGenerator:
 	"""
 
 	cdef _RmatGenerator* _this
+	workingDir = None
 
 	def __cinit__(self, count scale, count edgeFactor, double a, double b, double c, double d):
 		self._this = new _RmatGenerator(scale, edgeFactor, a, b, c, d)
@@ -2206,6 +2207,34 @@ cdef class RmatGenerator:
 			The generated graph.
 		"""
 		return Graph(0).setThis(self._this.generate())
+
+	@classmethod
+	def setPaths(cls, kronfitPath, workingDir="/tmp"):
+		cls.kronfitPath = kronfitPath
+		cls.workingDir = workingDir
+
+	@classmethod
+	def fit(cls, G, iterations=10):
+		import re
+		import subprocess
+		import os
+		from networkit import graphio
+		if cls.workingDir is None:
+			raise RuntimeError("call setPaths class method first to configure")
+		# write graph
+		tmpGraphPath = os.path.join(cls.workingDir, "{0}.edgelist".format(G.name()))
+		graphio.writeGraph(G, tmpGraphPath, graphio.Format.EdgeListTabOne)
+		# call kronfit
+		subprocess.call([cls.kronfitPath, "-i", tmpGraphPath, "-gi", iterations])
+		# read estimated parameters
+		with open("KronFit-{0}.tab".format(G.name())) as resultFile:
+			for i, line in enumerate(resultFile):
+				if i == 5:
+					matches = re.findall("\d+\.\d+", line)
+					weights = [float(s) for s in matches]
+					print(weights)
+		# normalize
+		return None
 
 cdef extern from "cpp/generators/PowerlawDegreeSequence.h":
 	cdef cppclass _PowerlawDegreeSequence "NetworKit::PowerlawDegreeSequence":
@@ -4880,7 +4909,7 @@ class _DiameterAlgo(object):
 	EstimatedSamples = estimatedSamples
 	EstimatedPedantic = estimatedPedantic
 
-cdef extern from "cpp/distance/Diameter.h" namespace "NetworKit::Diameter":		
+cdef extern from "cpp/distance/Diameter.h" namespace "NetworKit::Diameter":
 	cdef cppclass _Diameter "NetworKit::Diameter"(_Algorithm):
 		_Diameter(_Graph G, DiameterAlgo algo, double error, count nSamples) except +
 		pair[count, count] getDiameter() nogil except +
@@ -5360,7 +5389,7 @@ cdef class EigenvectorCentrality(Centrality):
 
 cdef extern from "cpp/centrality/CoreDecomposition.h":
 	cdef cppclass _CoreDecomposition "NetworKit::CoreDecomposition" (_Centrality):
-		_CoreDecomposition(_Graph, bool) except +
+		_CoreDecomposition(_Graph, bool, bool) except +
 		_Cover getCover() except +
 		_Partition getPartition() except +
 		index maxCoreNumber() except +
@@ -5376,11 +5405,15 @@ cdef class CoreDecomposition(Centrality):
 	----------
 	G : Graph
 		The graph.
+	normalized : boolean
+		Divide each core number by the maximum degree.
+	enforceBucketQueueAlgorithm : boolean
+		enforce switch to sequential algorithm
 	"""
 
-	def __cinit__(self, Graph G, bool enforceBucketQueueAlgorithm=False):
+	def __cinit__(self, Graph G, bool normalized=False, bool enforceBucketQueueAlgorithm=False):
 		self._G = G
-		self._this = new _CoreDecomposition(G._this, enforceBucketQueueAlgorithm)
+		self._this = new _CoreDecomposition(G._this, normalized, enforceBucketQueueAlgorithm)
 
 	def maxCoreNumber(self):
 		""" Get maximum core number.
