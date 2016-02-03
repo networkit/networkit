@@ -212,3 +212,24 @@ class BTERReplicator:
 	@classmethod
 	def fit(cls, G):
 		return cls(G)
+
+class MUSKETEERAdapter:
+
+	def __init__(self, O):
+		self.O = nxadapter.nk2nx(O)
+
+	def generate(self):
+		import importlib.util
+		spec = importlib.util.spec_from_file_location("algorithms", os.path.join(self.musketeerPath, "algorithms.py"))
+		musketeerModule = importlib.util.module_from_spec(spec)
+		spec.loader.exec_module(musketeerModule)
+		R = musketeerModule.generate_graph(self.O)
+		return nxadapter.nx2nk(R)
+
+	@classmethod
+	def setPaths(cls, musketeerPath):
+		cls.musketeerPath = musketeerPath
+
+	@classmethod
+	def fit(cls, G):
+		return cls(G)
