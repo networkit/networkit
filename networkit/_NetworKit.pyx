@@ -2227,7 +2227,6 @@ cdef class RmatGenerator:
 		graphio.writeGraph(G, tmpGraphPath, graphio.Format.EdgeListTabOne)
 		# call kronfit
 		args = [cls.paths["kronfitPath"], "-i:{0}".format(tmpGraphPath), "-gi:{0}".format(str(iterations))]
-		print(args)
 		subprocess.call(args)
 		# read estimated parameters
 		with open("KronFit-{0}.tab".format(G.getName())) as resultFile:
