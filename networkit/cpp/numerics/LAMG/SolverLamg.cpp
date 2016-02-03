@@ -26,11 +26,11 @@ count SolverLamg::restrictionTime = 0;
 count SolverLamg::coarsestSolve = 0;
 #endif
 
-SolverLamg::SolverLamg(LevelHierarchy &hierarchy, const Smoother &smoother) : hierarchy(hierarchy), smoother(smoother) {
-
+SolverLamg::SolverLamg(LevelHierarchy &hierarchy, const Smoother &smoother) : hierarchy(hierarchy), smoother(smoother), bStages(hierarchy.size(), std::vector<Vector>()) {
 }
 
 void SolverLamg::solve(Vector &x, const Vector &b, LAMGSolverStatus &status) {
+	bStages = std::vector<std::vector<Vector>>(hierarchy.size(), std::vector<Vector>());
 	if (hierarchy.size() >= 2) {
 		Vector bc = b;
 		Vector xc = x;
@@ -40,7 +40,7 @@ void SolverLamg::solve(Vector &x, const Vector &b, LAMGSolverStatus &status) {
 #ifndef NPROFILE
 			Aux::Timer t; t.start();
 #endif
-			hierarchy.at(1).restrict(b, bc);
+			hierarchy.at(1).restrict(b, bc, bStages[1]);
 			if (hierarchy.at(1).getLaplacian().numberOfRows() == 1) {
 				x = 0.0;
 				return;
@@ -59,7 +59,7 @@ void SolverLamg::solve(Vector &x, const Vector &b, LAMGSolverStatus &status) {
 #ifndef NPROFILE
 			Aux::Timer t; t.start();
 #endif
-			hierarchy.at(1).interpolate(xc, x);
+			hierarchy.at(1).interpolate(xc, x, bStages[1]);
 #ifndef NPROFILE
 			t.stop();
 			interpolationTime += t.elapsedMicroseconds();
@@ -200,7 +200,7 @@ void SolverLamg::cycle(Vector &x, const Vector &b, int finest, int coarsest, std
 			}
 
 			if (hierarchy.getType(nextLvl) == ELIMINATION) {
-				hierarchy.at(nextLvl).restrict(B[currLvl], B[nextLvl]);
+				hierarchy.at(nextLvl).restrict(B[currLvl], B[nextLvl], bStages[nextLvl]);
 			} else {
 				hierarchy.at(nextLvl).restrict(B[currLvl] - hierarchy.at(currLvl).getLaplacian() * X[currLvl], B[nextLvl]);
 			}
@@ -227,7 +227,7 @@ void SolverLamg::cycle(Vector &x, const Vector &b, int finest, int coarsest, std
 
 
 			if (hierarchy.getType(currLvl) == ELIMINATION) {
-				hierarchy.at(currLvl).interpolate(X[currLvl], X[nextLvl]);
+				hierarchy.at(currLvl).interpolate(X[currLvl], X[nextLvl], bStages[currLvl]);
 			} else {
 				Vector xf = X[nextLvl];
 				hierarchy.at(currLvl).interpolate(X[currLvl], xf);

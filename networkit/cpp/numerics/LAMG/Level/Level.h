@@ -34,9 +34,13 @@ public:
 
 	virtual void coarseType(const Vector &xf, Vector &xc) const = 0;
 
-	virtual void restrict(const Vector &bf, Vector &bc) = 0;
+	virtual void restrict(const Vector &bf, Vector &bc) const;
 
-	virtual void interpolate(const Vector &xc, Vector &xf) const = 0;
+	virtual void restrict(const Vector &bf, Vector &bc, std::vector<Vector> &bStages) const;
+
+	virtual void interpolate(const Vector &xc, Vector &xf) const;
+
+	virtual void interpolate(const Vector &xc, Vector &xf, const std::vector<Vector> &bStages) const;
 
 
 };
