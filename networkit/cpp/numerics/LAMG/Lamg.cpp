@@ -147,22 +147,33 @@ void Lamg::parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &re
 		bool nested = omp_get_nested();
 		if (nested) omp_set_nested(false);
 
-#pragma omp parallel
-		{
-			count numThreads = omp_get_num_threads();
+#pragma omp parallel for
+		for (index i = 0; i < rhs.size(); ++i) {
 			index threadId = omp_get_thread_num();
-
-			count chunkSize = (rhs.size() + numThreads - 1) / numThreads;
-			index chunkStart = threadId * chunkSize;
-			index chunkEnd = std::min((index) rhs.size(), chunkStart + chunkSize);
 			LAMGSolverStatus stat;
-			for (index i = chunkStart; i < chunkEnd; ++i) {
-				stat.desiredResidualReduction = tolerance;
-				stat.maxIters = maxIterations;
-				stat.maxConvergenceTime = maxConvergenceTime;
-				compSolvers[threadId].solve(results[i], rhs[i], stat);
-			}
+			stat.desiredResidualReduction = tolerance;
+			stat.maxIters = maxIterations;
+			stat.maxConvergenceTime = maxConvergenceTime;
+			compSolvers[threadId].solve(results[i], rhs[i], stat);
 		}
+
+//
+//#pragma omp parallel
+//		{
+//			count numThreads = omp_get_num_threads();
+//			index threadId = omp_get_thread_num();
+//
+//			count chunkSize = (rhs.size() + numThreads - 1) / numThreads;
+//			index chunkStart = threadId * chunkSize;
+//			index chunkEnd = std::min((index) rhs.size(), chunkStart + chunkSize);
+//			LAMGSolverStatus stat;
+//			for (index i = chunkStart; i < chunkEnd; ++i) {
+//				stat.desiredResidualReduction = tolerance;
+//				stat.maxIters = maxIterations;
+//				stat.maxConvergenceTime = maxConvergenceTime;
+//				compSolvers[threadId].solve(results[i], rhs[i], stat);
+//			}
+//		}
 		if (nested) omp_set_nested(true);
 	}
 }

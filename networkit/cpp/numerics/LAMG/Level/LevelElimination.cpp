@@ -35,7 +35,7 @@ void LevelElimination::coarseType(const Vector &xf, Vector &xc) const {
 	}
 }
 
-void LevelElimination::restrict(const Vector &bf, Vector &bc) {
+void LevelElimination::restrict(const Vector &bf, Vector &bc, std::vector<Vector> &bStages) const {
 	bStages.resize(coarseningStages.size() + 1);
 	bStages[0] = bf;
 	bc = bf;
@@ -54,7 +54,7 @@ void LevelElimination::restrict(const Vector &bf, Vector &bc) {
 	}
 }
 
-void LevelElimination::interpolate(const Vector &xc, Vector &xf) const {
+void LevelElimination::interpolate(const Vector &xc, Vector &xf, const std::vector<Vector> &bStages) const {
 	Vector currX = xc;
 	for (index k = coarseningStages.size(); k-- > 0;) {
 		EliminationStage s = coarseningStages[k];

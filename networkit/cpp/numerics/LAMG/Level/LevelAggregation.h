@@ -22,7 +22,7 @@ public:
 
 	void coarseType(const Vector &xf, Vector &xc) const;
 
-	void restrict(const Vector &bf, Vector &bc);
+	void restrict(const Vector &bf, Vector &bc) const;
 
 	void interpolate(const Vector &xc, Vector &xf) const;
 

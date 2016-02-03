@@ -24,6 +24,18 @@ count Level::getNumberOfNodes() const {
 	return A.numberOfRows();
 }
 
+void Level::restrict(const Vector &bf, Vector &bc) const {
+}
+
+void Level::restrict(const Vector &bf, Vector &bc, std::vector<Vector> &bStages) const {
+}
+
+void Level::interpolate(const Vector &xc, Vector &xf) const {
+}
+
+void Level::interpolate(const Vector &xc, Vector &xf, const std::vector<Vector> &bStages) const {
+}
+
 
 
 } /* namespace NetworKit */

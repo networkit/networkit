@@ -16,7 +16,7 @@ void LevelAggregation::coarseType(const Vector &xf, Vector &xc) const {
 	xc = Vector(P.numberOfColumns(), 0.0);
 }
 
-void LevelAggregation::restrict(const Vector &bf, Vector &bc) {
+void LevelAggregation::restrict(const Vector &bf, Vector &bc) const {
 	bc = R * bf;
 }
 
