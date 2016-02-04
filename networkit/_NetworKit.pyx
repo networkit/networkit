@@ -1651,10 +1651,10 @@ cdef class BarabasiAlbertGenerator:
 		return Graph().setThis(self._this.generate())
 
 	@classmethod
-	def fit(cls, Graph G):
+	def fit(cls, Graph G, scale=1):
 		(n, m) = G.size()
 		k = math.floor(m / n)
-		return cls(nMax=n, k=k, n0=k)
+		return cls(nMax=scale * n, k=k, n0=k)
 
 
 cdef extern from "cpp/generators/PubWebGenerator.h":
@@ -1740,14 +1740,14 @@ cdef class ErdosRenyiGenerator:
 		return Graph(0).setThis(self._this.generate())
 
 	@classmethod
-	def fit(cls, Graph G):
+	def fit(cls, Graph G, scale=1):
 		""" Fit model to input graph"""
 		(n, m) = G.size()
 		if G.isDirected():
 			p = p = m / (n * (n-1))
 		else:
 			p = m / ((n * (n-1)) / 2)
-		return cls(n, p)
+		return cls(scale * n, p)
 
 cdef extern from "cpp/generators/DorogovtsevMendesGenerator.h":
 	cdef cppclass _DorogovtsevMendesGenerator "NetworKit::DorogovtsevMendesGenerator":
@@ -1786,8 +1786,8 @@ cdef class DorogovtsevMendesGenerator:
 		return Graph(0).setThis(self._this.generate())
 
 	@classmethod
-	def fit(cls, Graph G):
-		return cls(G.numberOfNodes())
+	def fit(cls, Graph G, scale=1):
+		return cls(scale * G.numberOfNodes())
 
 
 cdef extern from "cpp/generators/RegularRingLatticeGenerator.h":
@@ -1961,11 +1961,11 @@ cdef class ChungLuGenerator:
 		return Graph(0).setThis(self._this.generate())
 
 	@classmethod
-	def fit(cls, Graph G):
+	def fit(cls, Graph G, scale=1):
 		""" Fit model to input graph"""
 		(n, m) = G.size()
 		degSeq = DegreeCentrality(G).run().scores()
-		return cls(degSeq)
+		return cls(degSeq * scale)
 
 
 cdef extern from "cpp/generators/HavelHakimiGenerator.h":
@@ -2021,9 +2021,9 @@ cdef class HavelHakimiGenerator:
 		return Graph(0).setThis(self._this.generate())
 
 	@classmethod
-	def fit(cls, Graph G):
+	def fit(cls, Graph G, scale=1):
 		degSeq = DegreeCentrality(G).run().scores()
-		return cls(degSeq, ignoreIfRealizable=True)
+		return cls(degSeq * scale, ignoreIfRealizable=True)
 
 cdef extern from "cpp/generators/EdgeSwitchingMarkovChainGenerator.h":
 	cdef cppclass _EdgeSwitchingMarkovChainGenerator "NetworKit::EdgeSwitchingMarkovChainGenerator":
@@ -2146,7 +2146,7 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		return Graph(0).setThis(self._this.generateExternal(angles, radii, k, gamma))
 
 	@classmethod
-	def fit(cls, Graph G):
+	def fit(cls, Graph G, scale=1):
 		""" Fit model to input graph"""
 		import powerlaw
 		degSeq = DegreeCentrality(G).run().scores()
@@ -2154,7 +2154,7 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		gamma = fit.alpha
 		(n, m) = G.size()
 		k = 2 * (m / n)
-		return cls(n, k, gamma)
+		return cls(n * scale, k, gamma)
 
 
 cdef extern from "cpp/generators/RmatGenerator.h":
@@ -2214,7 +2214,7 @@ cdef class RmatGenerator:
 		cls.paths["workingDir"] = workingDir
 
 	@classmethod
-	def fit(cls, G, iterations=10):
+	def fit(cls, G, iterations=10, scale=1):
 		import math
 		import re
 		import subprocess
@@ -2240,9 +2240,9 @@ cdef class RmatGenerator:
 		(a,b,c,d) = nweights
 		# other parameters
 		(n,m) = G.size()
-		scale = math.log(n, 2)
+		scaleParameter = math.floor(math.log(n, 2)) + math.floor(math.log(scale, 2))
 		edgeFactor = m / n
-		return RmatGenerator(scale, edgeFactor, a, b, c, d)
+		return RmatGenerator(scaleParameter, edgeFactor, a, b, c, d)
 
 cdef extern from "cpp/generators/PowerlawDegreeSequence.h":
 	cdef cppclass _PowerlawDegreeSequence "NetworKit::PowerlawDegreeSequence":
@@ -2960,6 +2960,7 @@ cdef extern from "cpp/structures/Partition.h":
 		_Partition() except +
 		_Partition(index) except +
 		_Partition(_Partition) except +
+		_Partition(vector[index]) except +
 		index subsetOf(index e) except +
 		index extend() except +
 		void remove(index e) except +
