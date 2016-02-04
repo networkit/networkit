@@ -219,11 +219,20 @@ class MUSKETEERAdapter:
 		self.O = nxadapter.nk2nx(O)
 
 	def generate(self):
-		import importlib.util
-		spec = importlib.util.spec_from_file_location("algorithms", os.path.join(self.musketeerPath, "algorithms.py"))
-		musketeerModule = importlib.util.module_from_spec(spec)
-		spec.loader.exec_module(musketeerModule)
-		R = musketeerModule.generate_graph(self.O)
+		import sys
+		currentDir = os.getcwd()
+		os.chdir(self.musketeerPath)
+		if sys.version_info >= (3,5):
+			import importlib.util
+			spec = importlib.util.spec_from_file_location("algorithms", os.path.join(self.musketeerPath, "algorithms.py"))
+			musketeerModule = importlib.util.module_from_spec(spec)
+			spec.loader.exec_module(musketeerModule)
+		else:
+			from importlib.machinery import SourceFileLoader
+			musketeerModule = SourceFileLoader("algorithms", os.path.join(self.musketeerPath, "algorithms.py")).load_module()
+		os.chdir(currentDir)
+		params = {'node_edit_rate': [0, 0.05, 0.05, 0.05], 'edge_edit_rate': [0, 0.05, 0.05, 0.05]}
+		R = musketeerModule.generate_graph(self.O, params)
 		return nxadapter.nx2nk(R)
 
 	@classmethod
