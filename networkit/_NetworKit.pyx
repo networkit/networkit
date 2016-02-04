@@ -2524,19 +2524,31 @@ cdef class LFRGenerator(Algorithm):
 
 
 	@classmethod
-	def fit(cls, Graph G):
+	def fit(cls, Graph G, scale=1):
 		""" Fit model to input graph"""
 		(n, m) = G.size()
 		# detect communities
 		communities = PLM(G).run().getPartition()
-		gen = cls(n)
-		gen.setPartition(communities)
+		gen = cls(n * scale)
+		if scale > 1:
+			# scale communities
+			cData = communities.getVector()
+			cDataCopy = cData[:]
+			for s in range(scale - 1):
+				cDataExtend = cDataCopy
+				b = communities.upperBound()
+				cDataExtend = [i + b * s for i in cData]
+				cData = cData + cDataExtend
+			assert (len(cData) == n * scale)
+			gen.setPartition(Partition(0, cData))
+		else:
+			gen.setPartition(communities)
 		# degree sequence
 		degSeq = DegreeCentrality(G).run().scores()
-		gen.setDegreeSequence(degSeq)
+		gen.setDegreeSequence(degSeq * scale)
 		# mixing parameter
 		localCoverage = LocalPartitionCoverage(G, communities).run().scores()
-		gen.setMu((1.0 - x for x in localCoverage))
+		gen.setMu([1.0 - x for x in localCoverage] * scale)
 		return gen
 
 
@@ -3002,8 +3014,11 @@ cdef class Partition:
 	"""
 	cdef _Partition _this
 
-	def __cinit__(self, index size=0):
-		self._this = move(_Partition(size))
+	def __cinit__(self, index size=0, vector[index] data=[]):
+		if data.size() != 0:
+			self._this = move(_Partition(data))
+		else:
+			self._this = move(_Partition(size))
 
 	def __len__(self):
 		"""
