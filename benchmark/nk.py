@@ -75,7 +75,7 @@ class bDiameter(Algo):
 	name = "Diameter"
 
 	def run(self, G):
-		return networkit.properties.Diameter.exactDiameter(G)
+		return networkit.distance.Diameter(G).run()
 
 
 class bDiameterEstimate(Algo):
