@@ -22,7 +22,7 @@ class bConnectedComponents(Algo):
 	name = "ConnectedComponents"
 
 	def run(self, G):
-		cc = networkit.properties.ConnectedComponents(G)
+		cc = networkit.components.ConnectedComponents(G)
 		cc.run()
 		return cc.numberOfComponents()
 
