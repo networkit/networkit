@@ -53,7 +53,7 @@ public:
 	Partition(index z, index defaultValue);
 
 
-	Partition(std::vector<index>& data);
+	Partition(const std::vector<index>& data);
 
 	/**
 	 *  Index operator.
