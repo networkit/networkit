@@ -322,14 +322,14 @@ class Bench:
         if self.save:
             self.dataFrame.to_csv(os.path.join(self.outDataDir, "data.csv".format(**locals())))
 
-    def plotSummary2(self, figsize=None, groupby="framework"):
+    def plotSummary2(self, figsize=None, groupby="framework", palette="Greens_d"):
         """ Plot a summary of algorithm performances"""
         if figsize:
             plt.figure(figsize=figsize)
         plt.gca().xaxis.get_major_formatter().set_powerlimits((3, 3))
         plt.xscale("log")
         plt.xlabel("edges/s")
-        ax = seaborn.boxplot(y="algorithm", x="edges/s", hue=groupby, data=self.dataFrame, linewidth=1, width=.5, palette="Greens_d")
+        ax = seaborn.boxplot(y="algorithm", x="edges/s", hue=groupby, data=self.dataFrame, linewidth=1, width=.5, palette=palette)
         if self.save:
             plt.savefig(os.path.join(self.plotDir, "epsSummary.pdf".format(**locals())), bbox_inches="tight")
 
