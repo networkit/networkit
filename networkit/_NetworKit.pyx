@@ -2533,16 +2533,12 @@ cdef class LFRGenerator(Algorithm):
 		if scale > 1:
 			# scale communities
 			cData = communities.getVector()
-			print(cData)
 			cDataCopy = cData[:]
-			print(cDataCopy)
 			b = communities.upperBound()
 			for s in range(1, scale):
 				cDataExtend = [i + (b * s) for i in cDataCopy]
 				cData = cData + cDataExtend
-				print(s, ":", cData)
 			assert (len(cData) == n * scale)
-			print("setting partition")
 			gen.setPartition(Partition(0, cData))
 		else:
 			gen.setPartition(communities)
