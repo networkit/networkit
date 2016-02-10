@@ -2214,7 +2214,7 @@ cdef class RmatGenerator:
 		cls.paths["workingDir"] = workingDir
 
 	@classmethod
-	def fit(cls, G, iterations=10, scale=1):
+	def fit(cls, G, iterations=5, scale=1):
 		import math
 		import re
 		import subprocess
