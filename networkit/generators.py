@@ -178,6 +178,8 @@ class BTERReplicator:
 	addpath('{1}')
 	[ccd,gcc] = ccperdeg(G);
 	nd = accumarray(nonzeros(sum(G,2)),1);
+	nd = repmat(nd, {2}, 1);
+	ccd = repmat(ccd, {2}, 1);
 	[E1,E2] = bter(nd,ccd);
 	G_bter = bter_edges2graph(E1,E2);
 	save('bter_output', 'G_bter')
@@ -192,12 +194,12 @@ class BTERReplicator:
 		cls.feastpackPath = feastpackPath
 		cls.workingDir = workingDir
 
-	def __init__(self, G):
+	def __init__(self, G, scale=1):
 		self.G = G
 		self.scriptPath = os.path.join(self.workingDir, "bter_wrapper.m")
 		# write MATLAB script
 		with open(self.scriptPath, 'w') as matlabScriptFile:
-			matlabScriptFile.write(self.matlabScript.format(self.workingDir, self.feastpackPath))
+			matlabScriptFile.write(self.matlabScript.format(self.workingDir, self.feastpackPath, scale))
 		self.tempFileOut = os.path.join(self.workingDir, 'bter_output')
 		self.tempFileIn = os.path.join(self.workingDir, 'bter_input.mat')
 
@@ -210,8 +212,8 @@ class BTERReplicator:
 		return G_bter
 
 	@classmethod
-	def fit(cls, G):
-		return cls(G)
+	def fit(cls, G, scale=1):
+		return cls(G, scale)
 
 class MUSKETEERAdapter:
 
