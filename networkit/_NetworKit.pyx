@@ -2241,7 +2241,7 @@ cdef class RmatGenerator:
 		# other parameters
 		(n,m) = G.size()
 		scaleParameter = math.floor(math.log(n, 2)) + math.floor(math.log(scale, 2))
-		edgeFactor = m / n
+		edgeFactor = math.floor(m / n)
 		return RmatGenerator(scaleParameter, edgeFactor, a, b, c, d)
 
 cdef extern from "cpp/generators/PowerlawDegreeSequence.h":
