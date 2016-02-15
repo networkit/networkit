@@ -5266,14 +5266,14 @@ cdef class KatzCentrality(Centrality):
 
 cdef extern from "cpp/centrality/ApproxBetweenness.h":
 	cdef cppclass _ApproxBetweenness "NetworKit::ApproxBetweenness" (_Centrality):
-		_ApproxBetweenness(_Graph, double, double, count) except +
+		_ApproxBetweenness(_Graph, double, double, count, double) except +
 		count numberOfSamples() except +
 
 cdef class ApproxBetweenness(Centrality):
 	""" Approximation of betweenness centrality according to algorithm described in
  	Matteo Riondato and Evgenios M. Kornaropoulos: Fast Approximation of Betweenness Centrality through Sampling
 
- 	ApproxBetweenness(G, epsilon=0.01, delta=0.1)
+ 	ApproxBetweenness(G, epsilon=0.01, delta=0.1, diameterSamples=0, universalConstant=1.0)
 
  	The algorithm approximates the betweenness of all vertices so that the scores are
 	within an additive error epsilon with probability at least (1- delta).
@@ -5287,11 +5287,22 @@ cdef class ApproxBetweenness(Centrality):
 		maximum additive error
 	delta : double, optional
 		probability that the values are within the error guarantee
+	diameterSamples: count, optional
+		if 0 (the default), use the possibly slow estimation of the
+		vertex diameter which definitely  guarantees approximation
+		quality. Otherwise, use a fast heuristic that has a higher
+		chance of getting the estimate right the higher the number of
+		samples (note: there is no approximation guarantee when using
+		the heuristic).
+	universalConstant: double, optional
+		the universal constant to be used in computing the sample size.
+		It is 1 by default. Some references suggest using 0.5, but there
+		is no guarantee in this case.
 	"""
 
-	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, diameterSamples=0):
+	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, diameterSamples=0, universalConstant=1.0):
 		self._G = G
-		self._this = new _ApproxBetweenness(G._this, epsilon, delta, diameterSamples)
+		self._this = new _ApproxBetweenness(G._this, epsilon, delta, diameterSamples, universalConstant)
 
 	def numberOfSamples(self):
 		return (<_ApproxBetweenness*>(self._this)).numberOfSamples()
@@ -5526,7 +5537,7 @@ cdef class Sfigality(Centrality):
 
 cdef extern from "cpp/centrality/DynApproxBetweenness.h":
 	cdef cppclass _DynApproxBetweenness "NetworKit::DynApproxBetweenness":
-		_DynApproxBetweenness(_Graph, double, double, bool) except +
+		_DynApproxBetweenness(_Graph, double, double, bool, double) except +
 		void run() nogil except +
 		void update(vector[_GraphEvent]) except +
 		vector[double] scores() except +
@@ -5538,7 +5549,7 @@ cdef class DynApproxBetweenness:
 	""" New dynamic algorithm for the approximation of betweenness centrality with
 	a guaranteed error
 
-	DynApproxBetweenness(G, epsilon=0.01, delta=0.1, [storePredecessors])
+	DynApproxBetweenness(G, epsilon=0.01, delta=0.1, storePredecessors=True, universalConstant=1.0)
 
 	The algorithm approximates the betweenness of all vertices so that the scores are
 	within an additive error epsilon with probability at least (1- delta).
@@ -5552,15 +5563,19 @@ cdef class DynApproxBetweenness:
 		maximum additive error
 	delta : double, optional
 		probability that the values are within the error guarantee
-	storePredecessors : bool
+	storePredecessors : bool, optional
 		store lists of predecessors?
+	universalConstant: double, optional
+		the universal constant to be used in computing the sample size.
+		It is 1 by default. Some references suggest using 0.5, but there
+		is no guarantee in this case.
 	"""
 	cdef _DynApproxBetweenness* _this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, storePredecessors = True):
+	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, storePredecessors = True, universalConstant=1.0):
 		self._G = G
-		self._this = new _DynApproxBetweenness(G._this, epsilon, delta, storePredecessors)
+		self._this = new _DynApproxBetweenness(G._this, epsilon, delta, storePredecessors, universalConstant)
 
 	# this is necessary so that the C++ object gets properly garbage collected
 	def __dealloc__(self):

@@ -22,7 +22,7 @@
 
 namespace NetworKit {
 
-ApproxBetweenness::ApproxBetweenness(const Graph& G, double epsilon, double delta, count diameterSamples) : Centrality(G, true), epsilon(epsilon), delta(delta), diameterSamples(diameterSamples) {
+ApproxBetweenness::ApproxBetweenness(const Graph& G, const double epsilon, const double delta, const count diameterSamples, const double universalConstant) : Centrality(G, true), epsilon(epsilon), delta(delta), diameterSamples(diameterSamples), universalConstant(universalConstant) {
 
 }
 
@@ -31,8 +31,6 @@ void ApproxBetweenness::run() {
 	Aux::SignalHandler handler;
 	scoreData.clear();
 	scoreData.resize(G.upperNodeIdBound());
-
-	const double c = 0.5; // universal positive constant - see reference in paper
 
 	edgeweight vd = 0;
 	if (diameterSamples == 0) {
@@ -53,7 +51,7 @@ void ApproxBetweenness::run() {
 	}
 
 	INFO("estimated diameter: ", vd);
-	r = ceil((c / (epsilon * epsilon)) * (floor(log2(vd - 2)) + 1 - log(delta)));
+	r = ceil((universalConstant / (epsilon * epsilon)) * (floor(log2(vd - 2)) + 1 - log(delta)));
 
 	INFO("taking ", r, " path samples");
 	// parallelization:
