@@ -15,7 +15,7 @@ class Algo:
 	def run(self, G):
 		raise Exception("Not implemented")
 
-	def loadGraph(self, path):
+	def loadGraph(self, path, graphFormat="gml"):
 		G = graph_tool.load_graph(path, fmt="gml")
 		return G
 

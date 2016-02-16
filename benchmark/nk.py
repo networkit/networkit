@@ -12,9 +12,9 @@ class Algo(base.Algo):
 
 	framework = framework
 
-	def loadGraph(self, path):
+	def loadGraph(self, path, graphFormat=networkit.Format.GML):
 		with Timer() as t:
-			G = networkit.readGraph(path, networkit.Format.GML)
+			G = networkit.readGraph(path, graphFormat)
 		debug("reading {path} took {t.elapsed} s".format(**locals()))
 		return G
 
