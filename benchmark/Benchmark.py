@@ -158,7 +158,8 @@ class Bench:
 
     """
 
-    def __init__(self, graphDir, defaultGraphs, outDir, save=True, nRuns=5, cacheGraphs=False, timeout=None):
+    def __init__(self, graphDir, defaultGraphs, outDir, save=True, nRuns=5, cacheGraphs=False, timeout=None, graphFormat=networkit.Format.GML):
+		self.graphFormat = graphFormat
         self.defaultGraphs = defaultGraphs
         self.nRuns = nRuns  # default number of runs for each algo
         self.graphDir = graphDir
@@ -196,7 +197,7 @@ class Bench:
             graphPath = os.path.join(self.graphDir, "{0}.gml.graph".format(graphName))
             self.info("loading {0} from {1}".format(graphName, graphPath))
             with Timer() as t:
-                G = algo.loadGraph(graphPath)
+                G = algo.loadGraph(graphPath, self.graphFormat)
             self.info("\t took {1} s".format(graphName, t.elapsed))
             eps = self.getSize(G)[1] / t.elapsed
             self.loadTimes.append({"framework" : algo.framework, "graph" : graphName, "time": t.elapsed, "edges/s": eps})
