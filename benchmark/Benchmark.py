@@ -158,8 +158,9 @@ class Bench:
 
 	"""
 
-	def __init__(self, graphDir, defaultGraphs, outDir, save=True, nRuns=5, cacheGraphs=False, timeout=None, graphFormat=networkit.Format.GML):
+	def __init__(self, graphDir, defaultGraphs, outDir, save=True, nRuns=5, cacheGraphs=False, timeout=None, fileEnding="gml.graph", graphFormat=networkit.Format.GML):
 		self.graphFormat = graphFormat
+		self.fileEnding = fileEnding
 		self.defaultGraphs = defaultGraphs
 		self.nRuns = nRuns  # default number of runs for each algo
 		self.graphDir = graphDir
@@ -194,7 +195,7 @@ class Bench:
 			G = self.graphCache[key]
 			return G
 		else:
-			graphPath = os.path.join(self.graphDir, "{0}.gml.graph".format(graphName))
+			graphPath = os.path.join(self.graphDir, "{0}.{1}".format(graphName, self.fileEnding))
 			self.info("loading {0} from {1}".format(graphName, graphPath))
 			with Timer() as t:
 				G = algo.loadGraph(graphPath, self.graphFormat)
