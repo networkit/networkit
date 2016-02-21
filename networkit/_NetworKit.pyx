@@ -294,6 +294,7 @@ cdef extern from "cpp/graph/Graph.h":
 		void BFSEdgesFrom[Callback](node r, Callback c) except +
 		void DFSfrom[Callback](node r, Callback c) except +
 		void DFSEdgesFrom[Callback](node r, Callback c) except +
+		bool checkConsistency() except +
 
 cdef cppclass EdgeCallBackWrapper:
 	void* callback
@@ -1081,6 +1082,12 @@ cdef class Graph:
 			self._this.DFSEdgesFrom(start, dereference(wrapper))
 		finally:
 			del wrapper
+
+	def checkConsistency(self):
+		"""
+		Check for invalid graph states, such as multi-edges.
+		"""
+		return self._this.checkConsistency()
 
 # TODO: expose all methods
 
