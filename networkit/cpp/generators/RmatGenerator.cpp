@@ -12,8 +12,8 @@
 
 namespace NetworKit {
 
-RmatGenerator::RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d):
-	scale(scale), edgeFactor(edgeFactor), a(a), b(b), c(c), d(d)
+RmatGenerator::RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d, bool weighted):
+	scale(scale), edgeFactor(edgeFactor), a(a), b(b), c(c), d(d), weighted(weighted)
 {
     if (scale > 63) throw std::runtime_error("Cannot generate more than 2^63 nodes");
 	double sum = a+b+c+d;
@@ -66,6 +66,14 @@ Graph RmatGenerator::generate() {
 	}
 
 	G.shrinkToFit();
+
+
+	if (!weighted) {
+		// set unit weights
+		G.forEdges([&](node u, node v) {
+			G.setWeight(u, v, 1.0);
+		});
+	}
 	return G;
 }
 

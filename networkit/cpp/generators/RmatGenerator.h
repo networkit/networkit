@@ -27,6 +27,7 @@ protected:
 	count edgeFactor;
 	double a, b, c, d; ///< probabilities
 	double defaultEdgeWeight;
+	bool weighted;
 
 public:
 
@@ -37,8 +38,9 @@ public:
 	 * @param[in] b Probability for quadrant upper right
 	 * @param[in] c Probability for quadrant lower left
 	 * @param[in] d Probability for quadrant lower right
+	 * @param[in] weighted	result graph weighted?
 	 */
-	RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d);
+	RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d, bool weighted=false);
 
 	/**
 	 * @return Graph to be generated according to parameters specified in constructor.

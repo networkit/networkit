@@ -2166,7 +2166,7 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 
 cdef extern from "cpp/generators/RmatGenerator.h":
 	cdef cppclass _RmatGenerator "NetworKit::RmatGenerator":
-		_RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d) except +
+		_RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d, bool weighted) except +
 		_Graph generate() except +
 
 cdef class RmatGenerator:
@@ -2193,14 +2193,15 @@ cdef class RmatGenerator:
 		Probability for quadrant lower left
 	d : double
 		Probability for quadrant lower right
-
+	weighted : bool
+		result graph weighted?
 	"""
 
 	cdef _RmatGenerator* _this
 	paths = {"workingDir" : None, "kronfitPath" : None}
 
-	def __cinit__(self, count scale, count edgeFactor, double a, double b, double c, double d):
-		self._this = new _RmatGenerator(scale, edgeFactor, a, b, c, d)
+	def __cinit__(self, count scale, count edgeFactor, double a, double b, double c, double d, bool weighted=False):
+		self._this = new _RmatGenerator(scale, edgeFactor, a, b, c, d, weighted)
 
 	def __dealloc__(self):
 		del self._this
