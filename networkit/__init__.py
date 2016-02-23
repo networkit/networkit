@@ -90,7 +90,7 @@ from _NetworKit import getLogLevel, setLogLevel, setPrintLocation, enableNestedP
 # local imports into the top namespace
 from .graph import Graph
 from .structures import Partition, Cover
-from .graphio import readGraph, writeGraph, Format
+from .graphio import readGraph, writeGraph, readGraphs, Format
 
 
 #-------- Setup ---------- #
