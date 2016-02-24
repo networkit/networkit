@@ -2090,6 +2090,11 @@ cdef class EdgeSwitchingMarkovChainGenerator:
 		"""
 		return Graph().setThis(self._this.generate())
 
+	@classmethod
+	def fit(cls, Graph G, scale=1):
+		degSeq = DegreeCentrality(G).run().scores()
+		return cls(degSeq * scale, ignoreIfRealizable=True)
+
 
 cdef extern from "cpp/generators/HyperbolicGenerator.h":
 	cdef cppclass _HyperbolicGenerator "NetworKit::HyperbolicGenerator":
