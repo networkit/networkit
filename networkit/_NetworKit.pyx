@@ -1633,8 +1633,7 @@ cdef class Luby:
 cdef extern from "cpp/generators/BarabasiAlbertGenerator.h":
 	cdef cppclass _BarabasiAlbertGenerator "NetworKit::BarabasiAlbertGenerator":
 		_BarabasiAlbertGenerator() except +
-		_BarabasiAlbertGenerator(count k, count nMax, count n0) except +
-		#_Graph* _generate()
+		_BarabasiAlbertGenerator(count k, count nMax, count n0, bool batagelj) except +
 		_Graph generate() except +
 
 cdef class BarabasiAlbertGenerator:
@@ -1648,11 +1647,13 @@ cdef class BarabasiAlbertGenerator:
 		maximum number of nodes produced
 	n0 : count
 		number of starting nodes
+	batagelj : bool
+		Specifies whether to use batagelj's method or the original one.
 	 """
 	cdef _BarabasiAlbertGenerator _this
 
-	def __cinit__(self, k, nMax, n0):
-		self._this = _BarabasiAlbertGenerator(k, nMax, n0)
+	def __cinit__(self, k, nMax, n0=0, batagelj=False):
+		self._this = _BarabasiAlbertGenerator(k, nMax, n0, batagelj)
 
 	def generate(self):
 		return Graph().setThis(self._this.generate())
