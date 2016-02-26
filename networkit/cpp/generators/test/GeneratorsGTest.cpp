@@ -45,6 +45,7 @@ Dy * GeneratorsTest.cpp
 #include "../../dynamics/GraphUpdater.h"
 #include "../../auxiliary/MissingMath.h"
 #include "../../auxiliary/Parallel.h"
+#include "../../auxiliary/Random.h"
 #include "../../global/ClusteringCoefficient.h"
 #include "../../community/PLM.h"
 #include "../../community/Modularity.h"
@@ -124,6 +125,30 @@ TEST_F(GeneratorsGTest, viewDynamicBarabasiAlbertGenerator) {
 	writer.write(*G, "output/BATest.graph");
 
 	delete G;
+}
+
+TEST_F(GeneratorsGTest, benchBarabasiAlbertGeneratorBatagelj) {
+	for (index i = 0; i < 10; ++i) {
+		Aux::Random::setSeed(i, false);
+		count n = Aux::Random::integer(100, 10000);
+		count k = n / Aux::Random::integer(5, 20);
+		BarabasiAlbertGenerator gen(k, n, 0, true);
+		auto G = gen.generate();
+		//G.checkConsistency();
+		INFO(G.toString());
+	}
+}
+
+TEST_F(GeneratorsGTest, benchBarabasiAlbertGenerator) {
+	for (index i = 0; i < 10; ++i) {
+		Aux::Random::setSeed(i, false);
+		count n = Aux::Random::integer(100, 10000);
+		count k = n / Aux::Random::integer(5, 20);
+		BarabasiAlbertGenerator gen(k, n, k);
+		auto G = gen.generate();
+		//G.checkConsistency();
+		INFO(G.toString());
+	}
 }
 
 
