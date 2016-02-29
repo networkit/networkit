@@ -28,7 +28,7 @@ private:
 	Graph initializeGraph();
 
 	/**
-	 * Implementation of ALG 5 of https://kops.uni-konstanz.de/bitstream/handle/123456789/5799/random.pdf?sequence=1
+	 * Implementation of ALG 5 of Batagelj, Brandes: Efficient Generation of Large Random Networks https://kops.uni-konstanz.de/bitstream/handle/123456789/5799/random.pdf?sequence=1
 	 * Running time is O(n+m)
 	 * @return The generated graph
 	 */
@@ -43,9 +43,9 @@ public:
 	 * @param k Number of attachments per node
 	 * @param nMax Maximum number of nodes in the graph
 	 * @param n0 Number of connected nodes to begin with
-	 * @param batagelj Specifies whether to use batagelj's method or the original one; default: false
+	 * @param batagelj Specifies whether to use batagelj's method or the original one; default: true
 	 */
-	BarabasiAlbertGenerator(count k, count nMax, count n0 = 0, bool batagelj=false);
+	BarabasiAlbertGenerator(count k, count nMax, count n0 = 0, bool batagelj=true);
 
 	Graph generate() override;
 };

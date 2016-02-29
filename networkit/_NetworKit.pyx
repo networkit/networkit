@@ -1652,7 +1652,7 @@ cdef class BarabasiAlbertGenerator:
 	 """
 	cdef _BarabasiAlbertGenerator _this
 
-	def __cinit__(self, k, nMax, n0=0, batagelj=False):
+	def __cinit__(self, k, nMax, n0=0, batagelj=True):
 		self._this = _BarabasiAlbertGenerator(k, nMax, n0, batagelj)
 
 	def generate(self):
