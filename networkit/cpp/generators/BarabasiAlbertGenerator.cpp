@@ -18,26 +18,65 @@ BarabasiAlbertGenerator::BarabasiAlbertGenerator() {
 }
 
 
-BarabasiAlbertGenerator::BarabasiAlbertGenerator(count k, count nMax, count n0, bool batagelj) : k(k), nMax(nMax), batagelj(batagelj) {
+BarabasiAlbertGenerator::BarabasiAlbertGenerator(count k, count nMax, count n0, bool batagelj) : initGraph(0), k(k), nMax(nMax), batagelj(batagelj) {
+	if (k > nMax)
+		throw std::runtime_error("k (number of attachments per node) may not be larger than the number of nodes in the target graph (nMax)");
+	if (n0 > nMax)
+		throw std::runtime_error("n0 (number of initially connected nodes) may not be larger than the number of nodes in the target graph (nMax)");
 	if (batagelj) {
 		this->n0 = n0;
 	} else {
-		if (n0 == 0) {
+		if (n0 < k) {
+			if (n0 > 0) {
+				WARN("given n0 is smaller than k, setting n0 = k");
+			}
 			this->n0 = k;
+		} else {
+			this->n0 = n0;
 		}
+	}
+}
+
+BarabasiAlbertGenerator::BarabasiAlbertGenerator(count k, count nMax, const Graph& initGraph, bool batagelj) : initGraph(initGraph), k(k), nMax(nMax), n0(0), batagelj(batagelj) {
+	if (initGraph.numberOfNodes() != initGraph.upperNodeIdBound())
+		throw std::runtime_error("initGraph is expected to have consecutive node ids");
+	if (k > nMax)
+		throw std::runtime_error("k (number of attachments per node) may not be larger than the number of nodes in the target graph (nMax)");
+	if (initGraph.numberOfNodes() > nMax)
+		throw std::runtime_error("initialization graph cannot have more nodes than the target graph (nMax)");
+	if (!batagelj && initGraph.numberOfNodes() < k) {
+		throw std::runtime_error("initialization graph for the original method needs at least k nodes");
 	}
 }
 
 Graph BarabasiAlbertGenerator::generate() {
 	if (batagelj) {
 		return generateBatagelj();
+	} else {
+		return generateOriginal();
 	}
-	Graph G = initializeGraph();
+}
+
+Graph BarabasiAlbertGenerator::generateOriginal() {
+	Graph G(nMax);
+	if (n0 != 0) {
+		// initialize the graph with n0 connected nodes
+		for (count i = 1; i < n0; i++) {
+			G.addEdge(i-1, i);
+		}
+	} else {
+		// initialize the graph with the edges from initGraph
+		// and set n0 accordingly
+		initGraph.forEdges([&G](node u, node v) {
+			G.addEdge(u, v);
+		});
+		n0 = initGraph.upperNodeIdBound();
+	}
 	assert (G.numberOfNodes() >= k);
 
 	for (count i = n0; i < nMax; i++) {
 		count degreeSum = G.numberOfEdges() * 2;
-		node u = G.addNode();
+		node u = i;
 		std::set<node> targets;
 		targets.insert(u);
 		int j = 0;
@@ -79,10 +118,20 @@ Graph BarabasiAlbertGenerator::generateBatagelj() {
 	std::set<std::pair<node, node>> uniqueEdges;
 	//std::unordered_set<node> uniqueEdges;
 
-	// initialize n0 connected nodes
-	for (index v = 0; v < n0; ++v) {
-		M[2 * v ] = v;
-		M[2 * v + 1] = v + 1;
+	if (initGraph.numberOfNodes() == 0) {
+		// initialize n0 connected nodes
+		for (index v = 0; v < n0; ++v) {
+			M[2 * v ] = v;
+			M[2 * v + 1] = v + 1;
+		}
+	} else {
+		index i = 0;
+		initGraph.forEdges([&M,&i](node u, node v){
+			M[2 * i] = u;
+			M[2 * i +1] = v;
+			++i;
+		});
+		n0 = i;
 	}
 
 	// "draw" the edges
@@ -113,11 +162,7 @@ Graph BarabasiAlbertGenerator::generateBatagelj() {
 Graph BarabasiAlbertGenerator::initializeGraph() {
 	Graph G(0);
 
-	// initialize the graph with n0 connected nodes
-	for (count i = 0; i < n0; i++) {
-		node v = G.addNode();
-		if (i > 0) G.addEdge(v, v - 1);
-	}
+
 
 	return G;
 }

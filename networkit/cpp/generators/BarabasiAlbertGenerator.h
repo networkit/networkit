@@ -20,6 +20,7 @@ namespace NetworKit {
  */
 class BarabasiAlbertGenerator: public NetworKit::StaticGraphGenerator {
 private:
+	Graph initGraph;
 	count k; //!< Attachments made per node
 	count nMax; //!< The maximal number of nodes attached
 	count n0; //!< The number of initial connected nodes
@@ -34,6 +35,8 @@ private:
 	 */
 	Graph generateBatagelj();
 
+	Graph generateOriginal();
+
 public:
 	BarabasiAlbertGenerator();
 
@@ -46,6 +49,8 @@ public:
 	 * @param batagelj Specifies whether to use batagelj's method or the original one; default: true
 	 */
 	BarabasiAlbertGenerator(count k, count nMax, count n0 = 0, bool batagelj=true);
+
+	BarabasiAlbertGenerator(count k, count nMax, const Graph& initGraph, bool batagelj=true);
 
 	Graph generate() override;
 };
