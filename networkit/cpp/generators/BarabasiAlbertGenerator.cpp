@@ -9,7 +9,7 @@
 
 #include "BarabasiAlbertGenerator.h"
 
-#include <unordered_set>
+#include <set>
 
 
 namespace NetworKit {
@@ -104,7 +104,6 @@ Graph BarabasiAlbertGenerator::generateOriginal() {
 		for (node x : targets) {
 			G.addEdge(u, x);
 		}
-
 	}
 
 	G.shrinkToFit();
@@ -116,7 +115,6 @@ Graph BarabasiAlbertGenerator::generateBatagelj() {
 	Graph G(nMax);
 	std::vector<node> M(2 * k * n);
 	std::set<std::pair<node, node>> uniqueEdges;
-	//std::unordered_set<node> uniqueEdges;
 
 	if (initGraph.numberOfNodes() == 0) {
 		// initialize n0 connected nodes
@@ -126,7 +124,7 @@ Graph BarabasiAlbertGenerator::generateBatagelj() {
 		}
 	} else {
 		index i = 0;
-		initGraph.forEdges([&M,&i](node u, node v){
+		initGraph.forEdges( [&M,&i] (node u, node v) {
 			M[2 * i] = u;
 			M[2 * i +1] = v;
 			++i;
@@ -143,29 +141,18 @@ Graph BarabasiAlbertGenerator::generateBatagelj() {
 		}
 	}
 
-	// remove duplicates;
-	// for some reason, it is faster with a separate loop when compared to integrating it in the loop aboce
+	// remove duplicates and avoid selfloops
+	// for some reason, it seems to be faster with a separate loop when compared to integrating it in the loop above
 	for (index i = 0; i < (k*n); ++i) {
-		//if (!G.hasEdge(M[2*i], M[2*i+1])) G.addEdge(M[2*i], M[2*i+1]);
-		uniqueEdges.insert({M[2 * i], M[2 * i + 1]});
-		//uniqueEdges.insert(M[2 * i] * nMax + M[2 * i + 1]);
+		if (M[2 * i] != M[2 * i + 1])
+			uniqueEdges.insert( {M[2 * i], M[2 * i + 1]} );
 	}
 	// add the edges to the graph
 	for (const auto& edge : uniqueEdges) {
 		G.addEdge(edge.first, edge.second);
-		//G.addEdge(edge / nMax, edge % nMax);
 	}
 	G.shrinkToFit();
 	return G;
 }
-
-Graph BarabasiAlbertGenerator::initializeGraph() {
-	Graph G(0);
-
-
-
-	return G;
-}
-
 
 } /* namespace NetworKit */

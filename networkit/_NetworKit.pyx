@@ -1634,10 +1634,17 @@ cdef extern from "cpp/generators/BarabasiAlbertGenerator.h":
 	cdef cppclass _BarabasiAlbertGenerator "NetworKit::BarabasiAlbertGenerator":
 		_BarabasiAlbertGenerator() except +
 		_BarabasiAlbertGenerator(count k, count nMax, count n0, bool batagelj) except +
+		#_BarabasiAlbertGenerator(count k, count nMax, const _Graph & initGraph, bool batagelj) except +
 		_Graph generate() except +
 
 cdef class BarabasiAlbertGenerator:
-	""" Generates a scale-free graph using the Barabasi-Albert preferential attachment model.
+	"""
+	This generator implements the preferential attachment model as introduced by Barabasi and Albert[1]. 
+	The original algorithm is very slow and thus, the much faster method from Batagelj and Brandes[2] is 
+	implemented and the current default. 
+	The original method can be chosen by setting \p batagelj to false.
+	[1] Barabasi, Albert: Emergence of Scaling in Random Networks http://arxiv.org/pdf/cond-mat/9910332.pdf
+	[2] ALG 5 of Batagelj, Brandes: Efficient Generation of Large Random Networks https://kops.uni-konstanz.de/bitstream/handle/123456789/5799/random.pdf?sequence=1
 
 	Parameters
 	----------
@@ -1649,11 +1656,14 @@ cdef class BarabasiAlbertGenerator:
 		number of starting nodes
 	batagelj : bool
 		Specifies whether to use batagelj's method or the original one.
-	 """
+	"""
 	cdef _BarabasiAlbertGenerator _this
 
 	def __cinit__(self, k, nMax, n0=0, batagelj=True):
-		self._this = _BarabasiAlbertGenerator(k, nMax, n0, batagelj)
+		#if isinstance(n0, Graph):
+		#	self._this = _BarabasiAlbertGenerator(k, nMax, (<Graph>n0)._this, batagelj)
+		#else:
+		self._this = _BarabasiAlbertGenerator(k, nMax, <count>n0, batagelj)
 
 	def generate(self):
 		return Graph().setThis(self._this.generate())
