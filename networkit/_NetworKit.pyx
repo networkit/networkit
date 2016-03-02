@@ -1634,7 +1634,7 @@ cdef extern from "cpp/generators/BarabasiAlbertGenerator.h":
 	cdef cppclass _BarabasiAlbertGenerator "NetworKit::BarabasiAlbertGenerator":
 		_BarabasiAlbertGenerator() except +
 		_BarabasiAlbertGenerator(count k, count nMax, count n0, bool batagelj) except +
-		#_BarabasiAlbertGenerator(count k, count nMax, const _Graph & initGraph, bool batagelj) except +
+		_BarabasiAlbertGenerator(count k, count nMax, const _Graph & initGraph, bool batagelj) except +
 		_Graph generate() except +
 
 cdef class BarabasiAlbertGenerator:
@@ -1659,11 +1659,11 @@ cdef class BarabasiAlbertGenerator:
 	"""
 	cdef _BarabasiAlbertGenerator _this
 
-	def __cinit__(self, k, nMax, n0=0, batagelj=True):
-		#if isinstance(n0, Graph):
-		#	self._this = _BarabasiAlbertGenerator(k, nMax, (<Graph>n0)._this, batagelj)
-		#else:
-		self._this = _BarabasiAlbertGenerator(k, nMax, <count>n0, batagelj)
+	def __cinit__(self, count k, count nMax, n0=0, bool batagelj=True):
+		if isinstance(n0, Graph):
+			self._this = _BarabasiAlbertGenerator(k, nMax, (<Graph>n0)._this, batagelj)
+		else:
+			self._this = _BarabasiAlbertGenerator(k, nMax, <count>n0, batagelj)
 
 	def generate(self):
 		return Graph().setThis(self._this.generate())
