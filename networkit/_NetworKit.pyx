@@ -4873,7 +4873,7 @@ cdef class StronglyConnectedComponents:
 
 
 cdef extern from "cpp/global/ClusteringCoefficient.h" namespace "NetworKit::ClusteringCoefficient":
-		double avgLocal(_Graph G) nogil except +
+		double avgLocal(_Graph G, bool turbo) nogil except +
 		double sequentialAvgLocal(_Graph G) nogil except +
 		double approxAvgLocal(_Graph G, count trials) nogil except +
 		double exactGlobal(_Graph G) nogil except +
@@ -4881,7 +4881,7 @@ cdef extern from "cpp/global/ClusteringCoefficient.h" namespace "NetworKit::Clus
 
 cdef class ClusteringCoefficient:
 	@staticmethod
-	def avgLocal(Graph G):
+	def avgLocal(Graph G, bool turbo = False):
 		"""
 		DEPRECATED: Use centrality.LocalClusteringCoefficient and take average.
 
@@ -4904,7 +4904,7 @@ cdef class ClusteringCoefficient:
 		"""
 		cdef double ret
 		with nogil:
-			ret = avgLocal(G._this)
+			ret = avgLocal(G._this, turbo)
 		return ret
 
 	@staticmethod
