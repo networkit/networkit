@@ -217,8 +217,11 @@ class BTERReplicator:
 
 class MUSKETEERAdapter:
 
-	def __init__(self, O):
+	def __init__(self, O, **params):
 		self.O = nxadapter.nk2nx(O)
+		defaultParams = {'node_edit_rate': [0, 0.05, 0.05, 0.05], 'edge_edit_rate': [0, 0.05, 0.05, 0.05]}
+		self.params = dict(**defaultParams, **params)
+
 
 	def generate(self):
 		import sys
@@ -233,8 +236,7 @@ class MUSKETEERAdapter:
 			from importlib.machinery import SourceFileLoader
 			musketeerModule = SourceFileLoader("algorithms", os.path.join(self.musketeerPath, "algorithms.py")).load_module()
 		os.chdir(currentDir)
-		params = {'node_edit_rate': [0, 0.05, 0.05, 0.05], 'edge_edit_rate': [0, 0.05, 0.05, 0.05]}
-		R = musketeerModule.generate_graph(self.O, params)
+		R = musketeerModule.generate_graph(self.O, self.params)
 		return nxadapter.nx2nk(R)
 
 	@classmethod
@@ -242,5 +244,8 @@ class MUSKETEERAdapter:
 		cls.musketeerPath = musketeerPath
 
 	@classmethod
-	def fit(cls, G):
-		return cls(G)
+	def fit(cls, G, scale=1):
+		params = {}
+		if scale > 1:
+			params = {"node_growth_rate": [0, 0.0, 0.0, scale]}
+		return cls(G, **params)

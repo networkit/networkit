@@ -444,6 +444,20 @@ TEST_F(CentralityGTest, testEdgeBetweennessCentrality) {
 }
 
 
+TEST_F(CentralityGTest, tryEdgeBetweennessCentrality) {
+    auto path = "input/PGPgiantcompo.graph";
+    METISGraphReader reader;
+    Graph G = reader.read(path);
+    G.indexEdges();
+
+	Betweenness centrality(G,false,true);
+	centrality.run();
+	std::vector<double> bc = centrality.edgeScores();
+
+}
+
+
+
 TEST_F(CentralityGTest, testClosenessCentrality) {
  /* Graph:
     0    3
@@ -621,19 +635,19 @@ TEST_F(CentralityGTest, benchCoreDecompositionDimacsGraphs) {
     coreDec.run();
     timer.stop();
     INFO("Time for ParK of ", filename, ": ", timer.elapsedTag());
-    
+
     CoreDecomposition coreDec2(G, true);
     timer.start();
     coreDec2.run();
     timer.stop();
     INFO("Time for bucket queue based k-core decomposition of ", filename, ": ", timer.elapsedTag());
-    
+
     G.forNodes([&](node u) {
 	EXPECT_EQ(coreDec.score(u), coreDec2.score(u));
       });
   }
 }
-  
+
 TEST_F(CentralityGTest, benchCoreDecompositionLocal) {
   METISGraphReader reader;
   std::vector<std::string> filenames = {"coPapersCiteseer", "in-2004", "coAuthorsDBLP", "audikw1"};
