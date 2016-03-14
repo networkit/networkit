@@ -220,7 +220,8 @@ class MUSKETEERAdapter:
 	def __init__(self, O, **params):
 		self.O = nxadapter.nk2nx(O)
 		defaultParams = {'node_edit_rate': [0, 0.05, 0.05, 0.05], 'edge_edit_rate': [0, 0.05, 0.05, 0.05]}
-		self.params = dict(**defaultParams, **params)
+		self.params = defaultParams.copy()
+		self.params.update(params)
 
 
 	def generate(self):
