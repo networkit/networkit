@@ -1639,9 +1639,9 @@ cdef extern from "cpp/generators/BarabasiAlbertGenerator.h":
 
 cdef class BarabasiAlbertGenerator:
 	"""
-	This generator implements the preferential attachment model as introduced by Barabasi and Albert[1]. 
-	The original algorithm is very slow and thus, the much faster method from Batagelj and Brandes[2] is 
-	implemented and the current default. 
+	This generator implements the preferential attachment model as introduced by Barabasi and Albert[1].
+	The original algorithm is very slow and thus, the much faster method from Batagelj and Brandes[2] is
+	implemented and the current default.
 	The original method can be chosen by setting \p batagelj to false.
 	[1] Barabasi, Albert: Emergence of Scaling in Random Networks http://arxiv.org/pdf/cond-mat/9910332.pdf
 	[2] ALG 5 of Batagelj, Brandes: Efficient Generation of Large Random Networks https://kops.uni-konstanz.de/bitstream/handle/123456789/5799/random.pdf?sequence=1
@@ -5335,7 +5335,7 @@ cdef class ApproxBetweenness(Centrality):
 		is no guarantee in this case.
 	"""
 
-	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, diameterSamples=0, universalConstant=1.0):
+	def __cinit__(self, Graph G, epsilon=0.1, delta=0.1, diameterSamples=0, universalConstant=1.0):
 		self._G = G
 		self._this = new _ApproxBetweenness(G._this, epsilon, delta, diameterSamples, universalConstant)
 
