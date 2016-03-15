@@ -244,6 +244,7 @@ Vector CSRMatrix::diagonal() const {
 	if (sorted()) {
 #pragma omp parallel for
 		for (index i = 0; i < diag.getDimension(); ++i) {
+			if (rowIdx[i] == rowIdx[i+1]) continue; // no entry in row i
 			index left = rowIdx[i];
 			index right = rowIdx[i+1]-1;
 			index mid = (left + right) / 2;
