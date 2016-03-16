@@ -258,6 +258,7 @@ cdef extern from "cpp/graph/Graph.h":
 		void merge(_Graph) except +
 		void addEdge(node u, node v, edgeweight w) except +
 		void setWeight(node u, node v, edgeweight w) except +
+		void increaseWeight(node u, node v, edgeweight w) except +
 		void removeEdge(node u, node v) except +
 		void removeSelfLoops() except +
 		void swapEdge(node s1, node t1, node s2, node t2) except +
@@ -637,6 +638,20 @@ cdef class Graph:
 			Edge weight.
 		"""
 		self._this.setWeight(u, v, w)
+
+	def increaseWeight(self, u, v, w):
+		""" Increase the weight of an edge. If the edge does not exist, it will be inserted.
+
+		Parameters
+		----------
+		u : node
+			Endpoint of edge.
+		v : node
+			Endpoint of edge.
+		w : edgeweight
+			Edge weight.
+		"""
+		self._this.increaseWeight(u, v, w)
 
 	def removeEdge(self, u, v):
 		""" Removes the undirected edge {`u`,`v`}.
