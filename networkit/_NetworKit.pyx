@@ -4089,7 +4089,7 @@ cdef class PLM(CommunityDetector):
 			use recursive coarsening, see http://journals.aps.org/pre/abstract/10.1103/PhysRevE.89.049902 for some explanations (default: true)
 	"""
 
-	def __cinit__(self, Graph G not None, refine=False, gamma=1.0, par="balanced", maxIter=32, turbo=False, recurse=True):
+	def __cinit__(self, Graph G not None, refine=False, gamma=1.0, par="balanced", maxIter=32, turbo=True, recurse=True):
 		self._G = G
 		self._this = new _PLM(G._this, refine, gamma, stdstring(par), maxIter, turbo, recurse)
 
