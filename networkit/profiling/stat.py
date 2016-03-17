@@ -9,19 +9,13 @@ import math
 import matplotlib.pyplot as plt
 
 from _NetworKit import sort2
-from _NetworKit import ranked2
+from _NetworKit import ranked
 
 
 def sorted(sample):
 	"""	returns a sorted list of given numbers """
 	return sort2(sample)
-	
-	
-def ranked(sample):
-	""" returns a ranked list of given numbers """
-	return ranked2(sample)
 
-	
 class Stat(job.Job):
 	""" statistical computation object """
 	
