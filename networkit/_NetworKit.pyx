@@ -8317,70 +8317,37 @@ def ranked(sample):
 	"""
 		Given a list of numbers, this function computes the rank of each value
 		and returns a list of ranks where result[i] is the rank of
-		the i-th element in sample.
-		Previously used as profiling.stat.ranked.
+		the i-th element in the given sample.
+		Currently used in profiling.stat.
 	"""
-	cdef count n = len(sample)
-	result = []
-	cdef count i
-	for i in range(n):
-		result.append([sample[i], i, -1])
-	result.sort(key=lambda x: x[0])
-	value = result[0][0]
-	cdef double summ = 0
+	cdef vector[pair[double, count]] helper = vector[pair[double, count]](len(sample))
+	cdef vector[double] result = vector[double](len(sample), 0)
+	for i in range(len(sample)):
+		helper[i] = <pair[double, count]?>(sample[i], i)
+	sort(helper.begin(), helper.end())
+	cdef double value = helper[0].first
+	cdef double summ = 0.
 	cdef count length = 0
-	for i in range(n):
-		if value == result[i][0]:
+	for i in range(len(sample)):
+		if value == helper[i].first:
 			summ += (i+1)
 			length += 1
 		else:
 			summ /= length
 			for j in range(length):
-				result[i-j-1][2] = summ
-			value = result[i][0]
-			summ = (i+1)
+				result[helper[i-j-1].second] = summ
+			value = helper[i].first
+			summ = i+1
 			length = 1
 	summ /= length
-	for i in range(length):
-		result[n-i-1][2] = summ
-	result.sort(key=lambda x: x[1])
-	for i in range(n):
-		result[i] = result[i][2]
-	return result
-
-def ranked2(sample):
-	"""
-		Given a list of numbers, this function computes the rank of each value
-		and returns a list of ranks where result[i] is the rank of
-		the i-th element in sample.
-		Currently used as profiling.stat.ranked.
-	"""
-	cdef map[double,vector[index]] buckets
-	cdef vector[double] result = vector[double](len(sample))
-	cdef count size = 0
-	cdef double rank = 0.0
-	cdef index elem = 0
-	cdef count i
-	# sort the numbers into buckets
-	for i in range(len(sample)):
-		buckets[sample[i]].push_back(i)
-	cdef count n_processed = 0
-	# compute the rank for each bucket
-	cdef map[double, vector[index]].iterator it = buckets.begin()
-	while it != buckets.end():
-		size = dereference(it).second.size()
-		rank = (size * (size+1) / 2 + size * n_processed) * 1.0 / size
-		# and write the rank into the result
-		for elem in dereference(it).second:
-			result[elem] = rank
-		n_processed += size
-		preincrement(it)
+	for j in range(length):
+		result[helper[len(sample)-j-1].second] = summ
 	return result
 
 def sort2(sample):
 	"""
 		Sorts a given list of numbers.
-		Currently used in profiling.stat.sorted.
+		Currently used as profiling.stat.sorted.
 	"""
 	cdef vector[double] result = <vector[double]?>sample
 	sort(result.begin(),result.end())
