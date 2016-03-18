@@ -8217,6 +8217,8 @@ cdef extern from "cpp/matching/Matching.h":
 		count size(_Graph) except +
 		index mate(node) except +
 		edgeweight weight(_Graph) except +
+		_Partition toPartition(_Graph) except +
+		vector[node] getVector() except +
 
 cdef class Matching:
 	""" Implements a graph matching.
@@ -8262,6 +8264,20 @@ cdef class Matching:
 
 	def weight(self, Graph G):
 		return self._this.weight(G._this)
+
+	def toPartition(self, Graph G):
+		return Partition().setThis(self._this.toPartition(G._this))
+
+	def getVector(self):
+		""" Get the vector storing the data
+
+		Returns
+		-------
+		vector
+			Vector indexed by node id to node id of mate or none if unmatched
+		"""
+		return self._this.getVector()
+
 
 
 
