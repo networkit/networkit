@@ -9,6 +9,7 @@
 
 # include "../auxiliary/Log.h"
 #include "../graph/Graph.h"
+#include "../structures/Partition.h"
 
 namespace NetworKit {
 
@@ -93,6 +94,19 @@ public:
 	 * @return Total weight of edges in this matching.
 	 */
 	edgeweight weight(const Graph& G) const;
+
+	/**
+	 * Convert matching to a Partition object where matched nodes
+	 * belong to the same subset and unmatched nodes belong to a singleton subset.
+	 * @return Partition
+	 */
+	Partition toPartition(const Graph& G) const;
+
+	/**
+	 * Get the actual vector storing the data.
+	 * @return vector
+	 */
+	std::vector<node> getVector() const;
 
 protected:
 
