@@ -15,6 +15,7 @@
 #include <utility>
 #include <stdexcept>
 #include <functional>
+#include <unordered_set>
 
 #include "../Globals.h"
 #include "Coordinates.h"
@@ -494,6 +495,11 @@ public:
 	 * @param G [description]
 	 */
 	void merge(const Graph& G);
+
+
+	// SUBGRAPHS
+
+	Graph subgraphFromNodes(const std::unordered_set<node>& nodes) const;
 
 
 	/** NODE PROPERTIES **/

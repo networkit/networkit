@@ -296,6 +296,7 @@ cdef extern from "cpp/graph/Graph.h":
 		void DFSfrom[Callback](node r, Callback c) except +
 		void DFSEdgesFrom[Callback](node r, Callback c) except +
 		bool checkConsistency() except +
+		_Graph subgraphFromNodes(unordered_set[node] nodes)  except +
 
 cdef cppclass EdgeCallBackWrapper:
 	void* callback
@@ -599,6 +600,7 @@ cdef class Graph:
 		G : Graph
 		"""
 		self._this.append(G._this)
+		return self
 
 	def merge(self, Graph G):
 		""" Modifies this graph to be the union of it and another graph.
@@ -609,6 +611,7 @@ cdef class Graph:
 		G : Graph
 		"""
 		self._this.merge(G._this)
+		return self
 
 	def addEdge(self, u, v, w=1.0):
 		""" Insert an undirected edge between the nodes `u` and `v`. If the graph is weighted you can optionally
@@ -624,6 +627,7 @@ cdef class Graph:
 			Edge weight.
 		"""
 		self._this.addEdge(u, v, w)
+		return self
 
 	def setWeight(self, u, v, w):
 		""" Set the weight of an edge. If the edge does not exist, it will be inserted.
@@ -638,6 +642,7 @@ cdef class Graph:
 			Edge weight.
 		"""
 		self._this.setWeight(u, v, w)
+		return self
 
 	def increaseWeight(self, u, v, w):
 		""" Increase the weight of an edge. If the edge does not exist, it will be inserted.
@@ -652,6 +657,7 @@ cdef class Graph:
 			Edge weight.
 		"""
 		self._this.increaseWeight(u, v, w)
+		return self
 
 	def removeEdge(self, u, v):
 		""" Removes the undirected edge {`u`,`v`}.
@@ -664,6 +670,7 @@ cdef class Graph:
 			Endpoint of edge.
 		"""
 		self._this.removeEdge(u, v)
+		return self
 
 	def removeSelfLoops(self):
 		""" Removes all self-loops from the graph.
@@ -688,6 +695,7 @@ cdef class Graph:
 			Target node of the second edge
 		"""
 		self._this.swapEdge(s1, t1, s2, t2)
+		return self
 
 	def compactEdges(self):
 		"""
@@ -1104,6 +1112,30 @@ cdef class Graph:
 		"""
 		return self._this.checkConsistency()
 
+
+	def subgraphFromNodes(self, nodes):
+		""" Create a subgraph induced by the set `nodes`.
+
+		Parameters
+		----------
+		nodes : list
+			A subset of nodes of `G` which induce the subgraph.
+
+		Returns
+		-------
+		Graph
+			The subgraph induced by `nodes`.
+
+		Notes
+		-----
+		The returned graph G' is isomorphic (structurally identical) to the subgraph in G,
+		but node indices are not preserved.
+		"""
+		cdef unordered_set[node] nnodes
+		for node in nodes:
+			nnodes.insert(node);
+		return Graph().setThis(self._this.subgraphFromNodes(nnodes))
+
 # TODO: expose all methods
 
 cdef extern from "cpp/graph/SSSP.h":
@@ -1368,36 +1400,6 @@ cdef class APSP(Algorithm):
 		"""
 		return (<_APSP*>(self._this)).getDistance(u, v)
 
-cdef extern from "cpp/graph/Subgraph.h" namespace "NetworKit::Subgraph":
-		_Graph _SubGraphFromNodes "NetworKit::Subgraph::fromNodes"(_Graph G, unordered_set[node] nodes)  except +
-
-cdef class Subgraph:
-	""" Methods for creating subgraphs """
-
-	def fromNodes(self, Graph G, nodes): #unordered_set[node]
-		""" Create a subgraph induced by the set `nodes`.
-
-	 	Parameters
-	 	----------
-	 	G : Graph
-	 		The graph.
- 		nodes : list
- 			A subset of nodes of `G` which induce the subgraph.
-
-		Returns
-		-------
-		Graph
-			The subgraph induced by `nodes`.
-
-		Notes
-		-----
-		The returned graph G' is isomorphic (structurally identical) to the subgraph in G,
-	 	but node indices are not preserved.
-		"""
-		cdef unordered_set[node] nnodes
-		for node in nodes:
-			nnodes.insert(node);
-		return Graph().setThis(_SubGraphFromNodes(G._this, nnodes))
 
 
 cdef extern from "cpp/graph/SpanningForest.h":
