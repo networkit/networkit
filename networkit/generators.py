@@ -7,7 +7,7 @@ __author__ = "Christian Staudt"
 # extension imports
 from _NetworKit import Graph, BarabasiAlbertGenerator, PubWebGenerator, ErdosRenyiGenerator, ClusteredRandomGraphGenerator, DorogovtsevMendesGenerator, DynamicPubWebGenerator, DynamicPathGenerator, ChungLuGenerator, HyperbolicGenerator, DynamicHyperbolicGenerator, HavelHakimiGenerator, DynamicDorogovtsevMendesGenerator, RmatGenerator, DynamicForestFireGenerator, RegularRingLatticeGenerator, WattsStrogatzGenerator, PowerlawDegreeSequence, EdgeSwitchingMarkovChainGenerator, EdgeSwitchingMarkovChainGenerator as ConfigurationModelGenerator, LFRGenerator
 
-from networkit import distance, coarsening, matching, nxadapter, graphio
+from networkit import distance, coarsening, matching, nxadapter, graphio, graph
 
 import math
 import logging
@@ -38,15 +38,16 @@ class MultiscaleGenerator:
 	TODO:
 	"""
 
-	def __init__(self, O, maxLevel, withADWeights=True):
+	def __init__(self, O, maxLevel=4, withADWeights=True):
 		self.O = O				# original graph
 
 		# hierarchy
 		self.Gc = []			# hierarchy of coarse graphs
 		self.Gf = []			# hierarchy of fine graphs
 		self.matching = []
+		self.aggregates = []	# hierarchy of aggregates
 		self.up = []			# mapping: fine node -> coarse node
-		self.down = []			# mapping: coarse node -> fine node
+		self.down = []			# mapping: coarse node -> fine nodes
 		self.nodeWeights = []
 
 		# state
@@ -55,6 +56,7 @@ class MultiscaleGenerator:
 		# parameters
 		self.withADWeights = True
 		self.maxLevel = maxLevel
+		self.aggregationScheme = "matching"
 
 
 	def _weightsFromADScores(self, scores, G):
@@ -65,6 +67,10 @@ class MultiscaleGenerator:
 			weights[eid] = (1 / (scores[eid] + epsilon) * math.sqrt(G.degree(u) * G.degree(v)))
 		G.forEdges(lambda u,v,w,eid: setWeight(u,v,w,eid))
 		return weights
+
+	def _printHierarchy(self):
+		for i in range(self.maxLevel):
+			print("{0}\t{1}\t{2}".format(i, self.Gc[i].size(), self.Gf[i].size()))
 
 	def _showCoarseSequence(self):
 		import matplotlib.pyplot as plt
@@ -103,23 +109,28 @@ class MultiscaleGenerator:
 				self.down.append({})
 				self.nodeWeights.append([1 for v in range(self.Gc[i].upperNodeIdBound())])
 			else:
-				logging.info("\t matching")
-				if self.withADWeights:
-					logging.info("\t calculating algebraic distance weights")
-					# index edges if not already happened
-					if not self.Gc[i-1].hasEdgeIds():
-						self.Gc[i-1].indexEdges()
-					ad = distance.AlgebraicDistance(self.Gc[i-1], withEdgeScores=True).preprocess()
-					matcher = matching.PathGrowingMatcher(self.Gc[i-1], self._weightsFromADScores(ad.getEdgeScores(), self.Gc[i-1]))
-				else:
-					matcher = matching.PathGrowingMatcher(self.Gc[i-1])
-				matcher.run()
-				self.matching.append(matcher.getMatching())
+				if self.aggregationScheme == "matching":
+					# perform matching
+					logging.info("\t matching")
+					if self.withADWeights:
+						logging.info("\t calculating algebraic distance weights")
+						# index edges if not already happened
+						if not self.Gc[i-1].hasEdgeIds():
+							self.Gc[i-1].indexEdges()
+						ad = distance.AlgebraicDistance(self.Gc[i-1], withEdgeScores=True).preprocess()
+						matcher = matching.PathGrowingMatcher(self.Gc[i-1], self._weightsFromADScores(ad.getEdgeScores(), self.Gc[i-1]))
+					else:
+						matcher = matching.PathGrowingMatcher(self.Gc[i-1])
+					matcher.run()
+					self.matching.append(matcher.getMatching())
 
-				logging.info("\t coarsening")
-				coarseningAlgo = coarsening.MatchingCoarsening(self.Gc[i-1], self.matching[i-1], noSelfLoops=True)
-				coarseningAlgo.run()
-				self.Gc.append(coarseningAlgo.getCoarseGraph())
+					# perform coarsening
+					logging.info("\t coarsening")
+					coarseningAlgo = coarsening.MatchingCoarsening(self.Gc[i-1], self.matching[i-1], noSelfLoops=True)
+					coarseningAlgo.run()
+					self.Gc.append(coarseningAlgo.getCoarseGraph())
+				else:
+					raise Error("unknown aggregation scheme")
 
 				# set node mappings
 				self.up.append(coarseningAlgo.getFineToCoarseNodeMapping())
@@ -142,14 +153,14 @@ class MultiscaleGenerator:
 		self.Gf[i] = Graph()
 		Gc = self.Gc[i]
 		Gf = self.Gf[i]
-		for v in Gf.nodes():
-			(v1, v2) = Gf.addNode(), Gf.addNode()
-			Gf.addEdge(v1, v2)
+
+		for v in Gc.nodes():
+			# every coarse node corresponds to a subgraph in the next finer level
+			S = graph.Subgraph.fromNodes(self.down[i][v])
 
 
 
 	def _buildFineSequence(self):
-		print(self.levels)
 		# preallocate
 		self.Gf = [None for i in range(self.levels)]
 		for i in range(self.levels - 1, -1, -1):	# count down levels
@@ -162,11 +173,14 @@ class MultiscaleGenerator:
 
 
 	def generate(self):
-		return None
+		self._buildCoarseSequence()
+		self._buildFineSequence()
+		return self.Gf[0]
 
 	@classmethod
 	def fit(cls, G):
 		return cls(G)
+
 
 class BTERReplicator:
 

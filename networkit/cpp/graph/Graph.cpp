@@ -959,4 +959,29 @@ void Graph::merge(const Graph& G) {
 }
 
 
+// SUBGRAPHS
+
+
+Graph Graph::subgraphFromNodes(const std::unordered_set<node>& nodes) const {
+
+	Graph S(upperNodeIdBound(), isWeighted(), isDirected());
+	// delete all nodes that are not in the node set
+	S.forNodes([&](node u) {
+		if (nodes.find(u) == nodes.end()) {
+			S.removeNode(u);
+		}
+	});
+
+	forEdges([&](node u, node v, edgeweight w) {
+		// if both end nodes are in the node set
+		if (nodes.find(u) != nodes.end() && nodes.find(v) != nodes.end()) {
+			S.addEdge(u, v, w);
+		}
+	});
+
+	return S;
+}
+
+
+
 } /* namespace NetworKit */
