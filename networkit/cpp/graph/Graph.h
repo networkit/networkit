@@ -857,6 +857,14 @@ public:
 	*/
 	Graph toUndirected() const;
 
+
+	/**
+	* Return an unweighted version of this graph.
+	*
+	* @return unweighted graph.
+	*/
+	Graph toUnweighted() const;
+
 	/**
 	 * Return the transpose of this graph. The graph must be directed.
 	 *

@@ -913,6 +913,15 @@ Graph Graph::toUndirected() const {
 	return U;
 }
 
+
+Graph Graph::toUnweighted() const {
+	if (weighted == false) {
+		throw std::runtime_error("this graph is already unweighted");
+	}
+	Graph U(*this, false, directed);
+	return U;
+}
+
 bool Graph::checkConsistency() const {
 	// check for multi-edges
 	std::vector<node> lastSeen(z, none);
