@@ -4,7 +4,6 @@
 #include "../../graph/Graph.h"
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/Log.h"
-#include "../../graph/Subgraph.h"
 
 #ifndef NOGTEST
 
@@ -19,7 +18,7 @@ TEST_F(MaximalCliquesGTest, testMaximalCliques) {
 	auto sn = G.neighbors(seed);
 	auto sneighbors = std::unordered_set<node>(sn.begin(), sn.end());
 	sneighbors.insert(seed);
-	auto subG = Subgraph::fromNodes(G, sneighbors);
+	auto subG = G.subgraphFromNodes(sneighbors);
 
 	MaximalCliques clique(subG);
 
