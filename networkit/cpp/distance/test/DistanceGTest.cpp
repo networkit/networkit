@@ -10,6 +10,8 @@
 
 #include "../Diameter.h"
 #include "../EffectiveDiameter.h"
+#include "../ApproxEffectiveDiameter.h"
+#include "../ApproxHopPlot.h"
 
 #include "../../generators/DorogovtsevMendesGenerator.h"
 #include "../../generators/ErdosRenyiGenerator.h"
@@ -77,6 +79,22 @@ TEST_F(DistanceGTest, testPedanticDiameterErdos) {
 }
 
 
+TEST_F(DistanceGTest, testEffectiveDiameterMinimal) {
+	// Minimal example from the paper
+	Graph G(5);
+	G.addEdge(0,1);
+	G.addEdge(1,2);
+	G.addEdge(2,3);
+	G.addEdge(3,4);
+	G.addEdge(4,0);
+	ApproxEffectiveDiameter aef(G);
+	aef.run();
+	double effective = aef.getEffectiveDiameter();
+	Diameter diam(G, DiameterAlgo::exact);
+	diam.run();
+	count exact = diam.getDiameter().first;
+	EXPECT_LE(effective, exact);
+}
 
 TEST_F(DistanceGTest, testEffectiveDiameter) {
 
@@ -87,7 +105,9 @@ vector<string> testInstances= {"celegans_metabolic", "jazz", "lesmis"};
 for (auto testInstance : testInstances) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/" + testInstance + ".graph");
-	double effective = EffectiveDiameter::effectiveDiameter(G);
+	ApproxEffectiveDiameter aef(G);
+	aef.run();
+	double effective = aef.getEffectiveDiameter();
 	Diameter diam(G, DiameterAlgo::exact);
 	diam.run();
 	count exact = diam.getDiameter().first;
@@ -104,7 +124,9 @@ TEST_F(DistanceGTest, testEffectiveDiameterExact) {
 	for (auto testInstance : testInstances) {
 		METISGraphReader reader;
 		Graph G = reader.read("input/" + testInstance + ".graph");
-		double effective = EffectiveDiameter::effectiveDiameterExact(G);
+		EffectiveDiameter ed(G);
+		ed.run();
+		double effective = ed.getEffectiveDiameter();
 		Diameter diam(G, DiameterAlgo::exact);
 		diam.run();
 		count exact = diam.getDiameter().first;
@@ -156,7 +178,9 @@ TEST_F(DistanceGTest, testEffectiveDiameterExact) {
 		G1.addEdge(16,18);
 		G1.addEdge(16,19);
 
-		double effective1 = EffectiveDiameter::effectiveDiameterExact(G1);
+		EffectiveDiameter ed(G1);
+		ed.run();
+		double effective1 = ed.getEffectiveDiameter();
 		EXPECT_NEAR(5.4, effective1, tol);
 
 		/* Graph: n=21, threshold: 21*0.9 = 18.9 => 19 nodes
@@ -203,7 +227,9 @@ TEST_F(DistanceGTest, testEffectiveDiameterExact) {
 		G2.addEdge(16,19);
 		G2.addEdge(17,20);
 
-		double effective2 = EffectiveDiameter::effectiveDiameterExact(G2);
+		EffectiveDiameter ed2(G2);
+		ed2.run();
+		double effective2 = ed2.getEffectiveDiameter();
 		EXPECT_NEAR(5.619047, effective2, tol);
 }
 
@@ -217,7 +243,9 @@ TEST_F(DistanceGTest, testHopPlot) {
 	for (auto& testInstance : testInstances) {
 		METISGraphReader reader;
 		Graph G = reader.read("input/" + testInstance + ".graph");
-		map<count, double> hopPlot = EffectiveDiameter::hopPlot(G);
+		ApproxHopPlot hp(G);
+		hp.run();
+		map<count, double> hopPlot = hp.getHopPlot();
 		for (count i=1; i < hopPlot.size(); i++) {
 			EXPECT_LE(hopPlot[i-1], hopPlot[i]+tol);
 		}

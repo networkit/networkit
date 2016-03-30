@@ -5028,14 +5028,44 @@ cdef class Eccentricity:
 
 
 cdef extern from "cpp/distance/EffectiveDiameter.h" namespace "NetworKit::EffectiveDiameter":
-	double effectiveDiameter (_Graph G, double ratio, count k, count r) nogil except +
-	double effectiveDiameterExact(_Graph G, double ratio) nogil except +
-	map[count, double] hopPlot(_Graph G, count maxDistance, count k, count r) except +
+	cdef cppclass _EffectiveDiameter "NetworKit::EffectiveDiameter"(_Algorithm):
+		_EffectiveDiameter(_Graph& G, double ratio) except +
+		void run() nogil except +
+		double getEffectiveDiameter() except +
 
-cdef class EffectiveDiameter:
+cdef class EffectiveDiameter(Algorithm):
+	cdef _Graph _G
 
-	@staticmethod
-	def effectiveDiameter(Graph G, double ratio=0.9, count k=64, count r=7):
+	def __cinit__(self, Graph G, double ratio=0.9):
+		""" Calculates the number of edges on average needed to reach 90% of all other nodes
+		Parameters
+		----------
+		G : Graph
+			The graph.
+		ratio : double
+			The percentage of nodes that shall be within stepwith
+		Returns
+		-------
+		double
+			the effective diameter
+		"""
+		self._G = G._this
+		self._this = new _EffectiveDiameter(G._this, ratio)
+
+	def getEffectiveDiameter(self):
+		return (<_EffectiveDiameter*>(self._this)).getEffectiveDiameter()
+
+
+cdef extern from "cpp/distance/ApproxEffectiveDiameter.h" namespace "NetworKit::ApproxEffectiveDiameter":
+	cdef cppclass _ApproxEffectiveDiameter "NetworKit::ApproxEffectiveDiameter"(_Algorithm):
+		_ApproxEffectiveDiameter(_Graph& G, double ratio, count k, count r) except +
+		void run() nogil except +
+		double getEffectiveDiameter() except +
+
+cdef class ApproxEffectiveDiameter(Algorithm):
+	cdef _Graph _G
+
+	def __cinit__(self, Graph G, double ratio=0.9, count k=64, count r=7):
 		""" Estimates the number of edges on average needed to reach 90% of all other nodes with a variaton of the ANF algorithm presented in the paper A Fast and Scalable Tool for Data Mining
 			in Massive Graphs by Palmer, Gibbons and Faloutsos
 		Parameters
@@ -5053,32 +5083,23 @@ cdef class EffectiveDiameter:
 		double
 			the estimated effective diameter
 		"""
-		cdef double diam
-		with nogil:
-			diam = effectiveDiameter(G._this, ratio, k, r)
-		return diam
+		self._G = G._this
+		self._this = new _ApproxEffectiveDiameter(G._this, ratio, k, r)
 
-	@staticmethod
-	def effectiveDiameterExact(Graph G, double ratio=0.9):
-		""" Calculates the number of edges on average needed to reach 90% of all other nodes
-		Parameters
-		----------
-		G : Graph
-			The graph.
-		ratio : double
-			The percentage of nodes that shall be within stepwith
-		Returns
-		-------
-		double
-			the effective diameter
-		"""
-		cdef double diam
-		with nogil:
-			diam = effectiveDiameterExact(G._this, ratio)
-		return diam
+	def getEffectiveDiameter(self):
+		return (<_ApproxEffectiveDiameter*>(self._this)).getEffectiveDiameter()
 
-	@staticmethod
-	def hopPlot(Graph G, maxDistance=0, k=64, r=7):
+
+cdef extern from "cpp/distance/ApproxHopPlot.h" namespace "NetworKit::ApproxHopPlot":
+	cdef cppclass _ApproxHopPlot "NetworKit::ApproxHopPlot"(_Algorithm):
+		_ApproxHopPlot(_Graph& G, count maxDistance, count k, count r) except +
+		void run() nogil except +
+		map[count, double] getHopPlot() except +
+
+cdef class ApproxHopPlot(Algorithm):
+	cdef _Graph _G
+
+	def __cinit__(self, Graph G, count maxDistance=0, count k=64, count r=7):
 		""" Calculates the number of connected nodes for each distance between 0 and the diameter of the graph
 		Parameters
 		----------
@@ -5096,7 +5117,15 @@ cdef class EffectiveDiameter:
 		map
 			number of connected nodes for each distance
 		"""
-		return hopPlot(G._this, maxDistance, k, r)
+		self._G = G._this
+		self._this = new _ApproxHopPlot(G._this, maxDistance, k, r)
+
+	def getHopPlot(self):
+		cdef map[count, double] hp = (<_ApproxHopPlot*>(self._this)).getHopPlot()
+		result = dict()
+		for elem in hp:
+			result[elem.first] = elem.second
+		return result
 
 
 cdef extern from "cpp/correlation/Assortativity.h":
