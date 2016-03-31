@@ -132,6 +132,9 @@ void ApproxNeighborhoodFunction::run() {
 }
 
 std::vector<count> ApproxNeighborhoodFunction::getNeighborhoodFunction() const {
+	if(!hasRun) {
+		throw std::runtime_error("Call run()-function first.");
+	}
 	return result;
 }
 

@@ -138,9 +138,13 @@ void ApproxHopPlot::run() {
 		mPrev = mCurr;
 		h++;
 	}
+	hasRun = true;
 }
 
 std::map<count, double> ApproxHopPlot::getHopPlot() const {
+	if(!hasRun) {
+		throw std::runtime_error("Call run()-function first.");
+	}
 	return hopPlot;
 }
 

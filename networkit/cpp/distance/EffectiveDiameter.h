@@ -20,15 +20,19 @@ class EffectiveDiameter : public Algorithm {
 
 public:
 	/**
-	* computes the effective diameter exactly
+	* Computes the effective diameter exactly.
+	* The effective diameter is defined as the number of edges on average to reach \p ratio of all other nodes.
 	* @param G the given graph
-	* @param ratio the ratio of nodes that should be connected (0,1]
-	* @return the exact effective diameter of the graph
+	* @param ratio the ratio of nodes that should be connected (0,1], default = 0.9
 	*/
 	EffectiveDiameter(const Graph& G, const double ratio=0.9);
 
 	void run() override;
 
+	/**
+	 * Returns the exact effective diameter of the graph.
+	 * @return the exact effective diameter of the graph
+	 */
 	double getEffectiveDiameter() const;
 
 private:
