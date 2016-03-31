@@ -12,6 +12,8 @@
 #include "../EffectiveDiameter.h"
 #include "../ApproxEffectiveDiameter.h"
 #include "../ApproxHopPlot.h"
+#include "../NeighborhoodFunction.h"
+#include "../ApproxNeighborhoodFunction.h"
 
 #include "../../generators/DorogovtsevMendesGenerator.h"
 #include "../../generators/ErdosRenyiGenerator.h"
@@ -250,6 +252,18 @@ TEST_F(DistanceGTest, testHopPlot) {
 			EXPECT_LE(hopPlot[i-1], hopPlot[i]+tol);
 		}
 	}
+}
+
+TEST_F(DistanceGTest, testApproxNeighborhoodFunction) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/lesmis.graph").toUnweighted();
+	NeighborhoodFunction nf(G);
+	nf.run();
+	auto exact = nf.getNeighborhoodFunction();
+	ApproxNeighborhoodFunction anf(G);
+	anf.run();
+	auto approximated = anf.getNeighborhoodFunction();
+	EXPECT_EQ(exact.size(), approximated.size());
 }
 
 } /* namespace NetworKit */
