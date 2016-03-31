@@ -20,15 +20,21 @@ class NeighborhoodFunction : public Algorithm {
 
 public:
 	/**
-	* computes the effective diameter exactly
+	* Computes the neighborhood function exactly.
+	* The neighborhood function N of a graph G for a given distance t is defined
+	* as the number of node pairs (u,v) that can be reached within distance t.
+	*
 	* @param G the given graph
-	* @param ratio the ratio of nodes that should be connected (0,1]
 	* @return the exact effective diameter of the graph
 	*/
 	NeighborhoodFunction(const Graph& G);
 
 	void run() override;
 
+	/**
+	 * Returns the neighborhood function of the graph.
+	 * @return the neighborhood function of the graph
+	 */
 	std::vector<count> getNeighborhoodFunction() const;
 
 private:

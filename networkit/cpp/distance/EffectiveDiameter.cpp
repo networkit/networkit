@@ -88,6 +88,9 @@ void EffectiveDiameter::run() {
 }
 
 double EffectiveDiameter::getEffectiveDiameter() const {
+	if(!hasRun) {
+		throw std::runtime_error("Call run()-function first.");
+	}
 	return effectiveDiameter;
 }
 

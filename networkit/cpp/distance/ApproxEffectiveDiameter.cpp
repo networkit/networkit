@@ -109,9 +109,13 @@ void ApproxEffectiveDiameter::run() {
 		h++;
 	}
 	effectiveDiameter /= G.numberOfNodes();
+	hasRun = true;
 }
 
 double ApproxEffectiveDiameter::getEffectiveDiameter() const {
+	if(!hasRun) {
+		throw std::runtime_error("Call run()-function first.");
+	}
 	return effectiveDiameter;
 }
 
