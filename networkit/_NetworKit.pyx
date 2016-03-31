@@ -5128,6 +5128,74 @@ cdef class ApproxHopPlot(Algorithm):
 		return result
 
 
+cdef extern from "cpp/distance/NeighborhoodFunction.h" namespace "NetworKit::NeighborhoodFunction":
+	cdef cppclass _NeighborhoodFunction "NetworKit::NeighborhoodFunction"(_Algorithm):
+		_NeighborhoodFunction(_Graph& G) except +
+		void run() nogil except +
+		vector[count] getNeighborhoodFunction() except +
+
+cdef class NeighborhoodFunction(Algorithm):
+	cdef _Graph _G
+
+	def __cinit__(self, Graph G):
+		""" Calculates the number of connected nodes for each distance between 0 and the diameter of the graph
+		Parameters
+		----------
+		G : Graph
+			The graph.
+		maxDistance : double
+			maximum distance between considered nodes
+			set to 0 or negative to get the hop-plot for the entire graph so that each node can reach each other node
+		k : count
+			number of parallel approximations, bigger k -> longer runtime, more precise result
+		r : count
+			number of additional bits, important in tiny graphs
+		Returns
+		-------
+		map
+			number of connected nodes for each distance
+		"""
+		self._G = G._this
+		self._this = new _NeighborhoodFunction(G._this)
+
+	def getNeighborhoodFunction(self):
+		return (<_NeighborhoodFunction*>(self._this)).getNeighborhoodFunction()
+
+
+cdef extern from "cpp/distance/ApproxNeighborhoodFunction.h" namespace "NetworKit::ApproxNeighborhoodFunction":
+	cdef cppclass _ApproxNeighborhoodFunction "NetworKit::ApproxNeighborhoodFunction"(_Algorithm):
+		_ApproxNeighborhoodFunction(_Graph& G, count k, count r) except +
+		void run() nogil except +
+		vector[count] getNeighborhoodFunction() except +
+
+cdef class ApproxNeighborhoodFunction(Algorithm):
+	cdef _Graph _G
+
+	def __cinit__(self, Graph G, count k=64, count r=7):
+		""" Calculates the number of connected nodes for each distance between 0 and the diameter of the graph
+		Parameters
+		----------
+		G : Graph
+			The graph.
+		maxDistance : double
+			maximum distance between considered nodes
+			set to 0 or negative to get the hop-plot for the entire graph so that each node can reach each other node
+		k : count
+			number of parallel approximations, bigger k -> longer runtime, more precise result
+		r : count
+			number of additional bits, important in tiny graphs
+		Returns
+		-------
+		map
+			number of connected nodes for each distance
+		"""
+		self._G = G._this
+		self._this = new _ApproxNeighborhoodFunction(G._this, k, r)
+
+	def getNeighborhoodFunction(self):
+		return (<_ApproxNeighborhoodFunction*>(self._this)).getNeighborhoodFunction()
+
+
 cdef extern from "cpp/correlation/Assortativity.h":
 	cdef cppclass _Assortativity "NetworKit::Assortativity"(_Algorithm):
 		_Assortativity(_Graph, vector[double]) except +
