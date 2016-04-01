@@ -189,8 +189,9 @@ class InfomapAdapter:
 			graph_filename = os.path.join(tempdir, "network.txt")
 			graphio.writeGraph(self.G, graph_filename, fileformat=graphio.Format.EdgeListSpaceZero)
 			subprocess.call([self.infomapPath, "-s", str(random.randint(-2**31, 2**31)), "-2", "-z", "--clu", graph_filename, tempdir])
-			result = readCommunities(os.path.join(tempdir, "network.clu"), format="edgelist-s0")
-			while result.numberOfElements() < self.G.upperNodeIdBound():
-				result.toSingleton(result.extend())
+			self.result = readCommunities(os.path.join(tempdir, "network.clu"), format="edgelist-s0")
+			while self.result.numberOfElements() < self.G.upperNodeIdBound():
+				self.result.toSingleton(result.extend())
 
-			return result
+	def getCommunities(self):
+		return self.result
