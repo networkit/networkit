@@ -1791,9 +1791,9 @@ cdef class ErdosRenyiGenerator:
 		""" Fit model to input graph"""
 		(n, m) = G.size()
 		if G.isDirected():
-			p = (scale**2 * m) / (n * (n-1))
+			raise Exception("TODO: figure out scaling scheme for directed graphs")
 		else:
-			p = (scale**2 * m) / ((scale**2 * n * (n-1)) / 2)
+			p = (2 * m) / (scale * n * (n-1))
 		return cls(scale * n, p)
 
 cdef extern from "cpp/generators/DorogovtsevMendesGenerator.h":
