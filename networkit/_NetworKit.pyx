@@ -5037,7 +5037,7 @@ cdef class EffectiveDiameter(Algorithm):
 	cdef _Graph _G
 
 	def __cinit__(self, Graph G, double ratio=0.9):
-		""" 
+		"""
 		Calculates the effective diameter of a graph.
 		The effective diameter is defined as the number of edges on average to reach a given ratio of all other nodes.
 
@@ -5074,9 +5074,9 @@ cdef class ApproxEffectiveDiameter(Algorithm):
 		"""
 		Calculates the effective diameter of a graph.
 		The effective diameter is defined as the number of edges on average to reach a given ratio of all other nodes.
-		
+
 		Implementation after the ANF algorithm presented in the paper "A Fast and Scalable Tool for Data Mining in Massive Graphs"[1]
-	
+
 		[1] by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
 
 		Parameters
@@ -5117,11 +5117,11 @@ cdef class ApproxHopPlot(Algorithm):
 		Computes an approxmation of the hop-plot of a given graph.
 		The hop-plot is the set of pairs (d, g(g)) for each natural number d
 		and where g(d) is the fraction of connected node pairs whose shortest connecting path has length at most d.
-		
+
 		Implementation after the ANF algorithm presented in the paper "A Fast and Scalable Tool for Data Mining in Massive Graphs"[1]
 
 		[1] by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
-		
+
 		Parameters
 		----------
 		G : Graph
@@ -8504,6 +8504,21 @@ def sort2(sample):
 	cdef vector[double] result = <vector[double]?>sample
 	sort(result.begin(),result.end())
 	return result
+
+# stats
+
+
+def gini(values):
+	"""
+	Computes the Gini coefficient for the distribution given as a list of values. 
+	"""
+	sorted_list = sorted(list_of_values)
+	height, area = 0, 0
+	for value in sorted_list:
+		height += value
+		area += height - value / 2.
+	fair_area = height * len(list_of_values) / 2
+	return (fair_area - area) / fair_area
 
 
 # simulation

@@ -65,6 +65,7 @@ from . import correlation
 from . import matching
 from . import coarsening
 from . import simulation
+from . import stats
 from .profiling import profiling
 
 try:
