@@ -192,6 +192,7 @@ class InfomapAdapter:
 			self.result = readCommunities(os.path.join(tempdir, "network.clu"), format="edgelist-s0")
 			while self.result.numberOfElements() < self.G.upperNodeIdBound():
 				self.result.toSingleton(result.extend())
+		return self
 
 	def getPartition(self):
 		return self.result
