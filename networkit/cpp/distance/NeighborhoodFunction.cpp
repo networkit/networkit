@@ -36,7 +36,7 @@ void NeighborhoodFunction::run() {
 	});
 	count size = 0;
 	for (index i = 0; i < max_threads; ++i) {
-		size = std::max(size, nf[i].size());
+		size = std::max(size, (count)nf[i].size());
 	}
 	result = std::vector<count>(size-1, 0);
 	for (const auto& local_nf : nf) {
