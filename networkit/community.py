@@ -193,5 +193,5 @@ class InfomapAdapter:
 			while self.result.numberOfElements() < self.G.upperNodeIdBound():
 				self.result.toSingleton(result.extend())
 
-	def getCommunities(self):
+	def getPartition(self):
 		return self.result
