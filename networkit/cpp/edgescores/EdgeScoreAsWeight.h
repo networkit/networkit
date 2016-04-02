@@ -16,7 +16,7 @@ class EdgeScoreAsWeight {
 
 public:
 	EdgeScoreAsWeight(const Graph& G, const std::vector<double>& score, bool squared = false, edgeweight offset = 1, edgeweight factor = 1);
-	virtual Graph calculate();
+	Graph calculate();
 
 private:
 	const Graph& G;
