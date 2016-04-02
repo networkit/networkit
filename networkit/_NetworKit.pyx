@@ -3217,10 +3217,6 @@ cdef class Partition:
 		"""
 		self._this.mergeSubsets(s, t)
 
-	def __getitem__(self, index):
-		return self._this[index]
-
-
 	def setUpperBound(self, index upper):
 		""" Sets an upper bound for the subset ids that **can** be assigned.
 
