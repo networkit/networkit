@@ -7866,6 +7866,8 @@ cdef class EdgeScoreAsWeight:
 		self._this = new _EdgeScoreAsWeight(G._this, self._score, squared, offset, factor)
 
 	def __dealloc__(self):
+		self._G = None
+		self._score = None
 		del self._this
 
 	def getWeightedGraph(self):
