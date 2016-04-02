@@ -5034,20 +5034,20 @@ cdef extern from "cpp/distance/EffectiveDiameter.h" namespace "NetworKit::Effect
 		double getEffectiveDiameter() except +
 
 cdef class EffectiveDiameter(Algorithm):
+	"""
+	Calculates the effective diameter of a graph.
+	The effective diameter is defined as the number of edges on average to reach a given ratio of all other nodes.
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	ratio : double
+		The percentage of nodes that shall be within stepwidth; default = 0.9
+	"""
 	cdef _Graph _G
 
 	def __cinit__(self, Graph G, double ratio=0.9):
-		"""
-		Calculates the effective diameter of a graph.
-		The effective diameter is defined as the number of edges on average to reach a given ratio of all other nodes.
-
-		Parameters
-		----------
-		G : Graph
-			The graph.
-		ratio : double
-			The percentage of nodes that shall be within stepwidth; default = 0.9
-		"""
 		self._G = G._this
 		self._this = new _EffectiveDiameter(G._this, ratio)
 
@@ -5068,28 +5068,28 @@ cdef extern from "cpp/distance/ApproxEffectiveDiameter.h" namespace "NetworKit::
 		double getEffectiveDiameter() except +
 
 cdef class ApproxEffectiveDiameter(Algorithm):
+	"""
+	Calculates the effective diameter of a graph.
+	The effective diameter is defined as the number of edges on average to reach a given ratio of all other nodes.
+
+	Implementation after the ANF algorithm presented in the paper "A Fast and Scalable Tool for Data Mining in Massive Graphs"[1]
+
+	[1] by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	ratio : double
+		The percentage of nodes that shall be within stepwidth, default = 0.9
+	k : count
+		number of parallel approximations, bigger k -> longer runtime, more precise result; default = 64
+	r : count
+		number of additional bits, important in tiny graphs; default = 7
+	"""
 	cdef _Graph _G
 
 	def __cinit__(self, Graph G, double ratio=0.9, count k=64, count r=7):
-		"""
-		Calculates the effective diameter of a graph.
-		The effective diameter is defined as the number of edges on average to reach a given ratio of all other nodes.
-
-		Implementation after the ANF algorithm presented in the paper "A Fast and Scalable Tool for Data Mining in Massive Graphs"[1]
-
-		[1] by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
-
-		Parameters
-		----------
-		G : Graph
-			The graph.
-		ratio : double
-			The percentage of nodes that shall be within stepwidth, default = 0.9
-		k : count
-			number of parallel approximations, bigger k -> longer runtime, more precise result; default = 64
-		r : count
-			number of additional bits, important in tiny graphs; default = 7
-		"""
 		self._G = G._this
 		self._this = new _ApproxEffectiveDiameter(G._this, ratio, k, r)
 
@@ -5110,30 +5110,30 @@ cdef extern from "cpp/distance/ApproxHopPlot.h" namespace "NetworKit::ApproxHopP
 		map[count, double] getHopPlot() except +
 
 cdef class ApproxHopPlot(Algorithm):
+	"""
+	Computes an approxmation of the hop-plot of a given graph.
+	The hop-plot is the set of pairs (d, g(g)) for each natural number d
+	and where g(d) is the fraction of connected node pairs whose shortest connecting path has length at most d.
+
+	Implementation after the ANF algorithm presented in the paper "A Fast and Scalable Tool for Data Mining in Massive Graphs"[1]
+
+	[1] by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	maxDistance : double
+		maximum distance between considered nodes
+		set to 0 or negative to get the hop-plot for the entire graph so that each node can reach each other node
+	k : count
+		number of parallel approximations, bigger k -> longer runtime, more precise result; default = 64
+	r : count
+		number of additional bits, important in tiny graphs; default = 7
+	"""
 	cdef _Graph _G
 
 	def __cinit__(self, Graph G, count maxDistance=0, count k=64, count r=7):
-		"""
-		Computes an approxmation of the hop-plot of a given graph.
-		The hop-plot is the set of pairs (d, g(g)) for each natural number d
-		and where g(d) is the fraction of connected node pairs whose shortest connecting path has length at most d.
-
-		Implementation after the ANF algorithm presented in the paper "A Fast and Scalable Tool for Data Mining in Massive Graphs"[1]
-
-		[1] by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
-
-		Parameters
-		----------
-		G : Graph
-			The graph.
-		maxDistance : double
-			maximum distance between considered nodes
-			set to 0 or negative to get the hop-plot for the entire graph so that each node can reach each other node
-		k : count
-			number of parallel approximations, bigger k -> longer runtime, more precise result; default = 64
-		r : count
-			number of additional bits, important in tiny graphs; default = 7
-		"""
 		self._G = G._this
 		self._this = new _ApproxHopPlot(G._this, maxDistance, k, r)
 
@@ -5158,19 +5158,19 @@ cdef extern from "cpp/distance/NeighborhoodFunction.h" namespace "NetworKit::Nei
 		vector[count] getNeighborhoodFunction() except +
 
 cdef class NeighborhoodFunction(Algorithm):
+	"""
+	Computes the neighborhood function exactly.
+	The neighborhood function N of a graph G for a given distance t is defined
+	as the number of node pairs (u,v) that can be reached within distance t.
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	"""
 	cdef _Graph _G
 
 	def __cinit__(self, Graph G):
-		"""
-		Computes the neighborhood function exactly.
-		The neighborhood function N of a graph G for a given distance t is defined
-		as the number of node pairs (u,v) that can be reached within distance t.
-
-		Parameters
-		----------
-		G : Graph
-			The graph.
-		"""
 		self._G = G._this
 		self._this = new _NeighborhoodFunction(G._this)
 
@@ -5191,23 +5191,27 @@ cdef extern from "cpp/distance/ApproxNeighborhoodFunction.h" namespace "NetworKi
 		vector[count] getNeighborhoodFunction() except +
 
 cdef class ApproxNeighborhoodFunction(Algorithm):
+	"""
+	Computes the neighborhood function exactly.
+	The neighborhood function N of a graph G for a given distance t is defined
+	as the number of node pairs (u,v) that can be reached within distance t.
+
+	Implementation after the ANF algorithm presented in the paper "A Fast and Scalable Tool for Data Mining in Massive Graphs"[1]
+
+	[1] by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	k : count
+		number of parallel approximations, bigger k -> longer runtime, more precise result; default = 64
+	r : count
+		number of additional bits, important in tiny graphs; default = 7
+	"""
 	cdef _Graph _G
 
 	def __cinit__(self, Graph G, count k=64, count r=7):
-		"""
-		Computes the neighborhood function exactly.
-		The neighborhood function N of a graph G for a given distance t is defined
-		as the number of node pairs (u,v) that can be reached within distance t.
-
-		Parameters
-		----------
-		G : Graph
-			The graph.
-		k : count
-			number of parallel approximations, bigger k -> longer runtime, more precise result; default = 64
-		r : count
-			number of additional bits, important in tiny graphs; default = 7
-		"""
 		self._G = G._this
 		self._this = new _ApproxNeighborhoodFunction(G._this, k, r)
 
