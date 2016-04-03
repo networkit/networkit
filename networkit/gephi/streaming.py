@@ -70,8 +70,8 @@ class GephiStreamingClient:
         #x and y: it's impossible to seperate the nodes (even using force atlas), if they have the same coordinates!
         #default viewport: approx -2000 to 2000
         nodeNumber = 0
-        for node in nodes():
-            nAttrx['x'] = (nodeNumber % nodesPerSquareSide) * stepSize
+        for node in nodes:
+            nAttrs['x'] = (nodeNumber % nodesPerSquareSide) * stepSize
             nAttrs['y'] = (nodeNumber // nodesPerSquareSide) * stepSize
             self._pygephi.add_node(str(node), **nAttrs)
 
