@@ -25,7 +25,9 @@ class GephiStreamingClient:
         self.graphExported = False
 
     def _urlError(self, e):
-        print("Could not connect to the gephi streaming plugin. Did you start the streaming master server in gephi?")
+        print("Could not connect to the gephi streaming plugin.")
+        print("Did you start the streaming master server in gephi and provide the name of your workspace?")
+        print("If the workspace is named 'Workspace 0', the corresponding url is http://localhost:8080/workspace0 (adapt port)")
 
     def exportGraph(self, graph):
         """ Exports the given graph to gephi. No attributes or weights are exported.
