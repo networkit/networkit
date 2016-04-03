@@ -12,8 +12,6 @@ import math
 
 from . import pyclient as _gephipyclient   # we want to hide these from the user
 
-_NODE_AREA_SIZE = 2000
-
 class GephiStreamingClient:
 
     """
@@ -24,8 +22,6 @@ class GephiStreamingClient:
     def __init__(self, url='http://localhost:8080/workspace0'):
         #Disabling Flushing means quite a good performance boost.
         self._pygephi = _gephipyclient.GephiClient(url, autoflush=10000)
-        #f = open('out.txt','w')
-        #self._pygephi = _gephipyclient.GephiFileHandler(f)
         self.graphExported = False
 
     def _urlError(self, e):
@@ -64,14 +60,11 @@ class GephiStreamingClient:
         # distribute the nodes in that area. Since Gephi 0.9, no nodes
         # may have exactly the same coordinates, thus a deterministic
         # distribution scheme is used.
+        NODE_AREA_SIZE = 2000
         nodesPerSquareSide = 0 if len(nodes) == 0 else math.ceil(math.sqrt(len(nodes)))
-        stepSize = _NODE_AREA_SIZE / nodesPerSquareSide
-        offset = _NODE_AREA_SIZE / 2
+        stepSize = NODE_AREA_SIZE / nodesPerSquareSide
+        offset = NODE_AREA_SIZE / 2
 
-        #size: anything >= 5 works. maybe i just don't find the nodes if the size is smaller?
-        #rgb: color now defaults to black instead of gray.
-        #x and y: it's impossible to seperate the nodes (even using force atlas), if they have the same coordinates!
-        #default viewport: approx -2000 to 2000
         nodeNumber = 0
         for node in nodes:
             nAttrs['x'] = (nodeNumber % nodesPerSquareSide) * stepSize - offset
