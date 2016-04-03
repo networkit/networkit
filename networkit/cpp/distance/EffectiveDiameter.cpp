@@ -19,17 +19,17 @@ namespace NetworKit {
 
 EffectiveDiameter::EffectiveDiameter(const Graph& G, const double ratio) : Algorithm(), G(G), ratio(ratio) {
 	if (G.isDirected()) throw std::runtime_error("current implementation can only deal with undirected graphs");
-	if (G.numberOfNodes() != G.upperNodeIdBound()) throw std::runtime_error("current implementation needs continuous node ids");
 	ConnectedComponents cc(G);
 	cc.run();
 	if (cc.getPartition().numberOfSubsets() > 1) throw std::runtime_error("current implementation only runs on graphs with 1 connected component");
 }
 
 void EffectiveDiameter::run() {
+	count z = G.upperNodeIdBound();
 	// saves the reachable nodes of the current iteration
-	std::vector<std::vector<bool> > mCurr;
+	std::vector<std::vector<bool> > mCurr(z);
 	// saves the reachable nodes of the previous iteration
-	std::vector<std::vector<bool> > mPrev;
+	std::vector<std::vector<bool> > mPrev(z);
 	// sums over the number of edges needed to reach 90% of all other nodes
 	effectiveDiameter = 0;
 	// the current distance of the neighborhoods
@@ -43,11 +43,11 @@ void EffectiveDiameter::run() {
 	G.forNodes([&](node v){
 		std::vector<bool> connectedNodes;
 		// initialize n entries with value 0
-		connectedNodes.assign(G.upperNodeIdBound(),0);
+		connectedNodes.assign(z, 0);
 		// the node is always connected to itself
 		connectedNodes[v] = 1;
-		mCurr.push_back(connectedNodes);
-		mPrev.push_back(connectedNodes);
+		mCurr[v] = connectedNodes;
+		mPrev[v] = connectedNodes;
 		activeNodes.push_back(v);
 	});
 

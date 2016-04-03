@@ -19,19 +19,19 @@ namespace NetworKit {
 
 ApproxHopPlot::ApproxHopPlot(const Graph& G, const count maxDistance, const count k, const count r): Algorithm(), G(G), maxDistance(maxDistance), k(k), r(r) {
 	if (G.isDirected()) throw std::runtime_error("current implementation can only deal with undirected graphs");
-	if (G.numberOfNodes() != G.upperNodeIdBound()) throw std::runtime_error("current implementation needs continuous node ids");
 	ConnectedComponents cc(G);
 	cc.run();
 	if (cc.getPartition().numberOfSubsets() > 1) throw std::runtime_error("current implementation only runs on graphs with 1 connected component");
 }
 
 void ApproxHopPlot::run() {
+	count z = G.upperNodeIdBound();
 	// the length of the bitmask where the number of connected nodes is saved
 	count lengthOfBitmask = (count) ceil(log2(G.numberOfNodes()));
 	// saves all k bitmasks for every node of the current iteration
-	std::vector<std::vector<unsigned int> > mCurr;
+	std::vector<std::vector<unsigned int> > mCurr(z);
 	// saves all k bitmasks for every node of the previous iteration
-	std::vector<std::vector<unsigned int> > mPrev;
+	std::vector<std::vector<unsigned int> > mPrev(z);
 	// the maximum possible bitmask based on the random initialization of all k bitmasks
 	std::vector<count> highestCount;
 	// the current distance of the neighborhoods
@@ -52,8 +52,8 @@ void ApproxHopPlot::run() {
 	G.forNodes([&](node v) {
 		std::vector<unsigned int> bitmasks;
 		bitmasks.assign(k, 0);
-		mCurr.push_back(bitmasks);
-		mPrev.push_back(bitmasks);
+		mCurr[v] = bitmasks;
+		mPrev[v] = bitmasks;
 		activeNodes.push_back(v);
 
 		// set one bit in each bitmask with probability P(bit i=1) = 0.5^(i+1), i=0,..
