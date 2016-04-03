@@ -12,8 +12,10 @@ import math
 
 from . import pyclient as _gephipyclient   # we want to hide these from the user
 
+_NODE_AREA_SIZE = 2000
 
 class GephiStreamingClient:
+
     """
      A python singleton providing access to a running Master instance of the Gephi
      Streaming plugin
@@ -21,7 +23,7 @@ class GephiStreamingClient:
 
     def __init__(self, url='http://localhost:8080/workspace0'):
         #Disabling Flushing means quite a good performance boost.
-        self._pygephi = _gephipyclient.GephiClient(url, autoflush=True)
+        self._pygephi = _gephipyclient.GephiClient(url, autoflush=10000)
         #f = open('out.txt','w')
         #self._pygephi = _gephipyclient.GephiFileHandler(f)
         self.graphExported = False
@@ -56,14 +58,15 @@ class GephiStreamingClient:
             self._urlError(e)
 
     def _exportNodes(self, nodes):
-        nAttrs = {'size': 1, 'y':1.0}
+        nAttrs = {'size': 2.0, 'r': 0.6, 'g': 0.6, 'b': 0.6, 'y':1.0}
 
         # the default approximately shows -2000 to 2000, so we want to
         # distribute the nodes in that area. Since Gephi 0.9, no nodes
         # may have exactly the same coordinates, thus a deterministic
         # distribution scheme is used.
         nodesPerSquareSide = 0 if len(nodes) == 0 else math.ceil(math.sqrt(len(nodes)))
-        stepSize = 2000 / nodesPerSquareSide
+        stepSize = _NODE_AREA_SIZE / nodesPerSquareSide
+        offset = _NODE_AREA_SIZE / 2
 
         #size: anything >= 5 works. maybe i just don't find the nodes if the size is smaller?
         #rgb: color now defaults to black instead of gray.
@@ -71,8 +74,9 @@ class GephiStreamingClient:
         #default viewport: approx -2000 to 2000
         nodeNumber = 0
         for node in nodes:
-            nAttrs['x'] = (nodeNumber % nodesPerSquareSide) * stepSize
-            nAttrs['y'] = (nodeNumber // nodesPerSquareSide) * stepSize
+            nAttrs['x'] = (nodeNumber % nodesPerSquareSide) * stepSize - offset
+            nAttrs['y'] = (nodeNumber // nodesPerSquareSide) * stepSize - offset
+            nodeNumber += 1
             self._pygephi.add_node(str(node), **nAttrs)
 
     def exportAdditionalEdge(self, u, v):
