@@ -19,7 +19,6 @@ namespace NetworKit {
 
 ApproxNeighborhoodFunction::ApproxNeighborhoodFunction(const Graph& G, const count k, const count r) : Algorithm(), G(G), k(k), r(r), result() {
 	if (G.isDirected()) throw std::runtime_error("current implementation can only deal with undirected graphs");
-	if (G.numberOfNodes() != G.upperNodeIdBound()) throw std::runtime_error("current implementation needs continuous node ids");
 	ConnectedComponents cc(G);
 	cc.run();
 	if (cc.getPartition().numberOfSubsets() > 1) throw std::runtime_error("current implementation only runs on graphs with 1 connected component");
