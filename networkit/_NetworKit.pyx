@@ -5041,10 +5041,10 @@ cdef class EffectiveDiameter(Algorithm):
 	ratio : double
 		The percentage of nodes that shall be within stepwidth; default = 0.9
 	"""
-	cdef _Graph _G
+	cdef Graph _G
 
-	def __cinit__(self, Graph G, double ratio=0.9):
-		self._G = G._this
+	def __cinit__(self, Graph G not None, double ratio=0.9):
+		self._G = G
 		self._this = new _EffectiveDiameter(G._this, ratio)
 
 	def getEffectiveDiameter(self):
@@ -5083,10 +5083,10 @@ cdef class ApproxEffectiveDiameter(Algorithm):
 	r : count
 		number of additional bits, important in tiny graphs; default = 7
 	"""
-	cdef _Graph _G
+	cdef Graph _G
 
-	def __cinit__(self, Graph G, double ratio=0.9, count k=64, count r=7):
-		self._G = G._this
+	def __cinit__(self, Graph G not None, double ratio=0.9, count k=64, count r=7):
+		self._G = G
 		self._this = new _ApproxEffectiveDiameter(G._this, ratio, k, r)
 
 	def getEffectiveDiameter(self):
@@ -5127,10 +5127,10 @@ cdef class ApproxHopPlot(Algorithm):
 	r : count
 		number of additional bits, important in tiny graphs; default = 7
 	"""
-	cdef _Graph _G
+	cdef Graph _G
 
-	def __cinit__(self, Graph G, count maxDistance=0, count k=64, count r=7):
-		self._G = G._this
+	def __cinit__(self, Graph G not None, count maxDistance=0, count k=64, count r=7):
+		self._G = G
 		self._this = new _ApproxHopPlot(G._this, maxDistance, k, r)
 
 	def getHopPlot(self):
@@ -5164,10 +5164,10 @@ cdef class NeighborhoodFunction(Algorithm):
 	G : Graph
 		The graph.
 	"""
-	cdef _Graph _G
+	cdef Graph _G
 
-	def __cinit__(self, Graph G):
-		self._G = G._this
+	def __cinit__(self, Graph G not None):
+		self._G = G
 		self._this = new _NeighborhoodFunction(G._this)
 
 	def getNeighborhoodFunction(self):
@@ -5205,10 +5205,10 @@ cdef class ApproxNeighborhoodFunction(Algorithm):
 	r : count
 		number of additional bits, important in tiny graphs; default = 7
 	"""
-	cdef _Graph _G
+	cdef Graph _G
 
-	def __cinit__(self, Graph G, count k=64, count r=7):
-		self._G = G._this
+	def __cinit__(self, Graph G not None, count k=64, count r=7):
+		self._G = G
 		self._this = new _ApproxNeighborhoodFunction(G._this, k, r)
 
 	def getNeighborhoodFunction(self):
