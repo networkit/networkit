@@ -62,14 +62,14 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 	} else {
 		G.forNodes([&](node v) {
 			handler.assureRunning();
-		 	Dijkstra dijkstra(G, v);
-		 	dijkstra.run();
+			Dijkstra dijkstra(G, v);
+			dijkstra.run();
 			auto distances = dijkstra.getDistances();
-		 	G.forNodes([&](node u) {
-		 		if (diameter < distances[u]) {
-		 			diameter = distances[u];
- 		 		}
-		 	});
+			G.forNodes([&](node u) {
+				if (diameter < distances[u]) {
+					diameter = distances[u];
+				}
+			});
 		});
 	}
 
