@@ -101,7 +101,8 @@ class Config:
 	def __init__(self):
 		""" constructor: all options off """
 		self.__options_Properties = {
-			"Diameter": False
+			"Diameter": False,
+			"EffectiveDiameter": False
 		}
 		self.__options_Measures = {
 			"Centrality.Degree": False,
@@ -129,6 +130,7 @@ class Config:
 
 		if preset == "complete":
 			result.setProperty("Diameter")
+			result.setProperty("EffectiveDiameter")
 			result.setMeasure("Centrality.Degree"),
 			result.setMeasure("Centrality.CoreDecomposition")
 			result.setMeasure("Centrality.ClusteringCoefficient")
@@ -736,17 +738,33 @@ class Profile:
 			try:
 				timerInstance = stopwatch.Timer()
 				self.verbosePrint("Diameter: ", end="")
-				diam = distance.Diameter(self.__G, distance.Diameter.DiameterAlgo.EstimatedRange, error = 0.1)
+				diam = distance.Diameter(self.__G, distance.DiameterAlgo.EstimatedRange, error = 0.1)
 				diameter = diam.run().getDiameter()
 				elapsedMain = timerInstance.elapsed
 				self.verbosePrint("{:.2F} s".format(elapsedMain))
 				self.verbosePrint("")
-			except:
-				self.verbosePrint("Diameter raised exception")
+			except Exception as e:
+				self.verbosePrint("Diameter raised exception: {}".format(e))
 				diameter = "N/A"
 		else:
 			diameter = "N/A"
 		self.__properties["Diameter Range"] = diameter
+
+		if self.__config.getProperty("EffectiveDiameter"):
+			try:
+				timerInstance = stopwatch.Timer()
+				self.verbosePrint("EffectiveDiameter: ", end="")
+				diam = distance.ApproxEffectiveDiameter(self.__G)
+				diameter = diam.run().getEffectiveDiameter()
+				elapsedMain = timerInstance.elapsed
+				self.verbosePrint("{:.2F} s".format(elapsedMain))
+				self.verbosePrint("")
+			except:
+				self.verbosePrint("EffectiveDiameter raised exception")
+				diameter = "N/A"
+		else:
+			diameter = "N/A"
+		self.__properties["Effective Diameter"] = diameter
 
 
 		timerInstance = stopwatch.Timer()
