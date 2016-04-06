@@ -38,24 +38,24 @@ class MultiscaleGenerator:
 	TODO:
 	"""
 
-	def __init__(self, O, maxLevel=4, withADWeights=True):
+	def __init__(self, O, limitLevels=4, withADWeights=True):
 		self.O = O				# original graph
 
 		# hierarchy
-		self.Gc = []			# hierarchy of coarse graphs
+		self.Gc = []			# hierarchy of coarse graphs: self.Gc[self.maxLevel]
 		self.Gf = []			# hierarchy of fine graphs
 		self.matching = []
 		self.aggregates = []	# hierarchy of aggregates
-		self.up = []			# mapping: fine node -> coarse node
-		self.down = []			# mapping: coarse node -> fine nodes
+		self.up = []			# (in v cycle): up[i][u] maps node u of fine graph at level i to set of nodes of finer graph at level i+1
+		self.down = []			# (in v cycle): down[i][u] maps node u of coarse graph at level i to node v of coarser graph at level i+1
 		self.nodeWeights = []
 
 		# state
-		self.levels = 0		# actual number of levels
+		self.maxLevel = 0		# actual index of highest level
 
 		# parameters
 		self.withADWeights = True
-		self.maxLevel = maxLevel
+		self.limitLevels = limitLevels
 		self.aggregationScheme = "matching"
 
 
@@ -69,8 +69,9 @@ class MultiscaleGenerator:
 		return weights
 
 	def _printHierarchy(self):
+		""" DEBUG method: print the coarsening hierarchy"""
 		for i in range(self.maxLevel):
-			print("{0}\t{1}\t{2}".format(i, self.Gc[i].size(), self.Gf[i].size()))
+			print("{0}\t\t{1}\t\t{2}".format(i, self.Gc[i], self.Gf[i]))
 
 	def _showCoarseSequence(self):
 		import matplotlib.pyplot as plt
@@ -80,7 +81,7 @@ class MultiscaleGenerator:
 		k = 4
 		gs = gridspec.GridSpec(k, k)
 		plt.figure(figsize=(12,12))
-		for i in range(self.levels):
+		for i in range(self.maxLevel+1):
 			plt.subplot(gs[math.floor(i / k), i % k])
 			networkx.draw(nxadapter.nk2nx(self.Gc[i]), node_size=[(self.nodeWeights[i][v] + 5) for v in self.Gc[i].nodes()], node_color="gray")
 
@@ -92,7 +93,7 @@ class MultiscaleGenerator:
 		k = 4
 		gs = gridspec.GridSpec(k, k)
 		plt.figure(figsize=(12,12))
-		for i in range(self.levels-1, -1, -1):
+		for i in range(self.maxLevel, -1, -1):
 			print("level ", i)
 			plt.subplot(gs[math.floor(i / k), i % k])
 			nodeSizes = [(self.nodeWeights[i][v] + 5) for v in self.Gf[i].nodes()]
@@ -100,13 +101,13 @@ class MultiscaleGenerator:
 
 	def _buildCoarseSequence(self):
 		logging.info("building coarse sequence")
-		for i in range(self.maxLevel):
-			self.levels += 1
+		for i in range(self.limitLevels):
+			self.maxLevel += 1
 			logging.info("level: ", i)
 			if i is 0:
 				self.Gc.append(self.O)
-				self.up.append({})
 				self.down.append({})
+				self.up.append({})
 				self.nodeWeights.append([1 for v in range(self.Gc[i].upperNodeIdBound())])
 			else:
 				if self.aggregationScheme == "matching":
@@ -133,14 +134,14 @@ class MultiscaleGenerator:
 					raise Error("unknown aggregation scheme")
 
 				# set node mappings
-				self.up.append(coarseningAlgo.getFineToCoarseNodeMapping())
-				self.down.append(coarseningAlgo.getCoarseToFineNodeMapping())
+				self.down.append(coarseningAlgo.getFineToCoarseNodeMapping())
+				self.up.append(coarseningAlgo.getCoarseToFineNodeMapping())
 
 				# set node weights
 				logging.info("updating node weights")
 				nw = [0 for v in range(self.Gc[i].upperNodeIdBound())]
 				def updateNodeWeights(v):
-					nw[v] += sum(self.nodeWeights[i-1][v_] for v_ in self.down[i][v])
+					nw[v] += sum(self.nodeWeights[i-1][v_] for v_ in self.up[i][v])
 				self.Gc[i].forNodes(lambda v: updateNodeWeights(v))
 				self.nodeWeights.append(nw)
 
@@ -150,22 +151,24 @@ class MultiscaleGenerator:
 					break
 
 	def _uncoarsen(self, i):
+		""" """
 		self.Gf[i] = Graph()
-		Gc = self.Gc[i]
+		Gc = self.Gf[i]
 		Gf = self.Gf[i]
 
 		for v in Gc.nodes():
 			# every coarse node corresponds to a subgraph in the next finer level
-			S = graph.Subgraph.fromNodes(self.down[i][v])
+			S = self.Gc[i-1].subgraphFromNodes(self.up[i][v])
+			Gf.append(S)
 
 
 
 	def _buildFineSequence(self):
 		# preallocate
-		self.Gf = [None for i in range(self.levels)]
-		for i in range(self.levels - 1, -1, -1):	# count down levels
+		self.Gf = [None for i in range(self.maxLevel + 1)]
+		for i in range(self.maxLevel, -1, -1):	# count down levels
 			print("level ", i)
-			if i == self.levels:
+			if i == self.maxLevel:
 				self.Gf[i] = self.Gc[i]
 			else:
 				self._uncoarsen(i)
