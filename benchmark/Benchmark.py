@@ -24,16 +24,21 @@ import networkit
 
 from util import *
 import nk
-#import nx
-import ig
-import gt
+
+try:
+	import networkx
+	import nx
+except ImportError as ex:
+	print("networkx not available")
 
 try:
 	import igraph
+	import ig
 except ImportError as ex:
 	print("igraph not available")
 try:
 	import graph_tool
+	import gt
 except ImportError as ex:
 	print("graph_tool not available")
 
@@ -48,11 +53,11 @@ def averageRuns(df, groupby=["graph"]):
 	return df
 
 
-def graphMeta(graphNames, graphDir):
+def graphMeta(graphNames, graphDir, fileEnding=".gml.graph", graphFormat=networkit.Format.GML):
 	meta = []
 	for name in graphNames:
 		info("loading {name}".format(**locals()))
-		G = networkit.readGraph(os.path.join(graphDir, "{0}.gml.graph".format(name)), networkit.Format.GML)
+		G = networkit.readGraph(os.path.join(graphDir, "{0}{1}".format(name, fileEnding)), graphFormat)
 		(n, m) = networkit.properties.size(G)
 		meta.append({"name" : name, "n" : n, "m" : m})
 	info("done")

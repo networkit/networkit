@@ -75,14 +75,14 @@ class bDiameter(Algo):
 	name = "Diameter"
 
 	def run(self, G):
-		return networkit.distance.Diameter(G).run()
+		return networkit.distance.Diameter(G, networkit.distance.DiameterAlgo.exact).run()
 
 
 class bDiameterEstimate(Algo):
 	name = "DiameterEstimate"
 
 	def run(self, G):
-		return networkit.properties.Diameter.estimatedDiameterRange(G)
+		return networkit.distance.Diameter(G, networkit.distance.DiameterAlgo.estimatedRange, error=0.1).run()
 
 # - clustering coefficients (average local), exact (properties.ClusteringCoefficient.avgLocal) and approximated (properties.ClusteringCoefficient.approxAvgLocal)
 
