@@ -368,9 +368,39 @@ class Test_SelfLoops(unittest.TestCase):
 
 
 	def test_distance_EffectiveDiameter(self):
-		ED = distance.EffectiveDiameter()
-		EDL = ED.effectiveDiameter(self.L)
-		EDLL = ED.effectiveDiameter(self.LL)
+		algo = distance.EffectiveDiameter(self.L)
+		algo.run()
+		algo = distance.EffectiveDiameter(self.LL)
+		algo.run()
+
+
+	def test_distance_ApproxEffectiveDiameter(self):
+		algo = distance.ApproxEffectiveDiameter(self.L)
+		algo.run()
+		algo = distance.ApproxEffectiveDiameter(self.LL)
+		algo.run()
+
+
+	def test_distance_ApproxHopPlot(self):
+		algo = distance.ApproxHopPlot(self.L)
+		algo.run()
+		algo = distance.ApproxHopPlot(self.LL)
+		algo.run()
+
+
+	def test_distance_NeighborhoodFunction(self):
+		algo = distance.NeighborhoodFunction(self.L)
+		algo.run()
+		algo = distance.NeighborhoodFunction(self.LL)
+		algo.run()
+
+
+	def test_distance_ApproxNeighborhoodFunction(self):
+		algo = distance.ApproxNeighborhoodFunction(self.L)
+		algo.run()
+		algo = distance.ApproxNeighborhoodFunction(self.LL)
+		algo.run()
+
 
 if __name__ == "__main__":
 	unittest.main()
