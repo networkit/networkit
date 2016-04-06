@@ -201,15 +201,15 @@ class MatWriter:
 		writeMat(path, key)
 
 def writeMat(G, path, key="G"):
-	""" Writes a NetworKit::Graph to a Matlab object file. 
+	""" Writes a NetworKit::Graph to a Matlab object file.
 		Parameters:
 		- G: The graph
 		- path: Path of the matlab file
-		- key: Dictionary Key  
+		- key: Dictionary Key
 	"""
 	matrix = algebraic.adjacencyMatrix(G, matrixType='sparse')
 	scipy.io.savemat(path, {key : matrix})
-	
+
 
 # writing
 def getWriter(fileformat, **kwargs):
@@ -309,11 +309,3 @@ def writeStream(stream, path):
 		Write a graph event stream to a file.
 	"""
 	DGSWriter().write(stream, path)
-
-
-def graphFromStreamFile(path, mapped=True, baseIndex=0):
-	stream = readStream(path, mapped, baseIndex)
-	G = __Graph()
-	gu = GraphUpdater(G)
-	gu.update(stream)
-	return G

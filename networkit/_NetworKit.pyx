@@ -2267,7 +2267,7 @@ cdef class RmatGenerator:
 		cls.paths["workingDir"] = workingDir
 
 	@classmethod
-	def fit(cls, G, scale=1, kronfit=True, iterations=5):
+	def fit(cls, G, scale=1, kronfit=True, iterations=50):
 		import math
 		import re
 		import subprocess
@@ -2588,30 +2588,51 @@ cdef class LFRGenerator(Algorithm):
 
 
 	@classmethod
-	def fit(cls, Graph G, scale=1):
+	def fit(cls, Graph G, scale=1, vanilla=False, communityDetectionAlgorithm=PLM):
 		""" Fit model to input graph"""
 		(n, m) = G.size()
 		# detect communities
-		communities = PLM(G).run().getPartition()
-		gen = cls(n * scale)
-		if scale > 1:
-			# scale communities
-			cData = communities.getVector()
-			cDataCopy = cData[:]
-			b = communities.upperBound()
-			for s in range(1, scale):
-				cDataExtend = [i + (b * s) for i in cDataCopy]
-				cData = cData + cDataExtend
-			assert (len(cData) == n * scale)
-			gen.setPartition(Partition(0, cData))
-		else:
-			gen.setPartition(communities)
-		# degree sequence
+		communities = communityDetectionAlgorithm(G).run().getPartition()
+		# get degree sequence
 		degSeq = DegreeCentrality(G).run().scores()
-		gen.setDegreeSequence(degSeq * scale)
-		# mixing parameter
-		localCoverage = LocalPartitionCoverage(G, communities).run().scores()
-		gen.setMu([1.0 - x for x in localCoverage] * scale)
+		# set number of nodes
+		gen = cls(n * scale)
+		if vanilla:
+			import powerlaw
+			# fit power law to degree distribution and generate degree sequence accordingly
+			print("fit power law to degree distribution and generate degree sequence accordingly")
+			avgDegree = int(sum(degSeq) / len(degSeq))
+			maxDegree = max(degSeq)
+			nodeDegreeExp = powerlaw.Fit(degSeq).alpha
+			print(avgDegree, maxDegree, nodeDegreeExp)
+			gen.generatePowerlawDegreeSequence(avgDegree, maxDegree, nodeDegreeExp)
+			# fit power law to community size sequence and generate accordingly
+			print("fit power law to community size sequence and generate accordingly")
+			communitySize = communities.subsetSizes()
+			gen.generatePowerlawCommunitySizeSequence(minCommunitySize=min(communitySize), maxCommunitySize=max(communitySize), communitySizeExp=powerlaw.Fit(communitySize).alpha)
+			# mixing parameter
+			print("mixing parameter")
+			localCoverage = LocalPartitionCoverage(G, communities).run().scores()
+			mu = sum(localCoverage) / len(localCoverage)
+			gen.setMu(mu)
+		else:
+			if scale > 1:
+				# scale communities
+				cData = communities.getVector()
+				cDataCopy = cData[:]
+				b = communities.upperBound()
+				for s in range(1, scale):
+					cDataExtend = [i + (b * s) for i in cDataCopy]
+					cData = cData + cDataExtend
+				assert (len(cData) == n * scale)
+				gen.setPartition(Partition(0, cData))
+			else:
+				gen.setPartition(communities)
+			# degree sequence
+			gen.setDegreeSequence(degSeq * scale)
+			# mixing parameter
+			localCoverage = LocalPartitionCoverage(G, communities).run().scores()
+			gen.setMu([1.0 - x for x in localCoverage] * scale)
 		return gen
 
 
