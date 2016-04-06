@@ -58,7 +58,7 @@ def graphMeta(graphNames, graphDir, fileEnding=".gml.graph", graphFormat=network
 	for name in graphNames:
 		info("loading {name}".format(**locals()))
 		G = networkit.readGraph(os.path.join(graphDir, "{0}{1}".format(name, fileEnding)), graphFormat)
-		(n, m) = networkit.properties.size(G)
+		(n, m) = G.size()
 		meta.append({"name" : name, "n" : n, "m" : m})
 	info("done")
 	return pandas.DataFrame(meta, columns=["name", "n", "m"])

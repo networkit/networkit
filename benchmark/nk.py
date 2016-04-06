@@ -115,7 +115,7 @@ class bNeighborhoodFunction(Algo):
 
 
 class bApproxNeighborhoodFunction(Algo):
-	name = "NeighborhoodFunction"
+	name = "ApproxNeighborhoodFunction"
 
 	def run(self, G):
 		return networkit.distance.ApproxNeighborhoodFunction(G).run().getNeighborhoodFunction()
