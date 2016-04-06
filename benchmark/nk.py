@@ -69,7 +69,8 @@ class bCommunityDetectionLP(Algo):
 		plm = networkit.community.PLP(G)
 		plm.run()
 
-# - diameter, exact (properties.Diameter.exactDiameter) and estimate (properties.Diameter.estimatedDiameterRange)
+
+# distance module
 
 class bDiameter(Algo):
 	name = "Diameter"
@@ -83,6 +84,43 @@ class bDiameterEstimate(Algo):
 
 	def run(self, G):
 		return networkit.distance.Diameter(G, networkit.distance.DiameterAlgo.estimatedRange, error=0.1).run()
+
+
+class bEffectiveDiameter(Algo):
+	name = "EffectiveDiameter"
+
+	def run(self, G):
+		return networkit.distance.EffectiveDiameter(G).run().getEffectiveDiameter()
+
+
+class bApproxEffectiveDiameter(Algo):
+	name = "ApproxEffectiveDiameter"
+
+	def run(self, G):
+		return networkit.distance.ApproxEffectiveDiameter(G).run().getEffectiveDiameter()
+
+
+class bApproxHopPlot(Algo):
+	name = "ApproxHopPlot"
+
+	def run(self, G):
+		return networkit.distance.ApproxHopPlot(G).run().getHopPlot()
+
+
+class bNeighborhoodFunction(Algo):
+	name = "NeighborhoodFunction"
+
+	def run(self, G):
+		return networkit.distance.NeighborhoodFunction(G).run().getNeighborhoodFunction()
+
+
+class bApproxNeighborhoodFunction(Algo):
+	name = "NeighborhoodFunction"
+
+	def run(self, G):
+		return networkit.distance.ApproxNeighborhoodFunction(G).run().getNeighborhoodFunction()
+
+
 
 # - clustering coefficients (average local), exact (properties.ClusteringCoefficient.avgLocal) and approximated (properties.ClusteringCoefficient.approxAvgLocal)
 
