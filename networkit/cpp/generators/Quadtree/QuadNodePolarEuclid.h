@@ -1,19 +1,20 @@
 /*
- * QuadNode.h
+ * QuadNodePolarEuclid.h
  *
  *  Created on: 21.05.2014
  *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
+ *
+ *  Note: This is similar enough to QuadNode.h that one could merge these two classes.
  */
 
-#ifndef QUADNODE_H_
-#define QUADNODE_H_
+#ifndef QUADNODEPOLAREUCLID_H_
+#define QUADNODEPOLAREUCLID_H_
 
 #include <vector>
 #include <algorithm>
 #include <functional>
 #include <assert.h>
 #include "../../auxiliary/Log.h"
-#include "../../auxiliary/Parallel.h"
 #include "../../geometric/HyperbolicSpace.h"
 
 using std::vector;
@@ -23,8 +24,8 @@ using std::cos;
 
 namespace NetworKit {
 
-template <class T, bool poincare = true>
-class QuadNode {
+template <class T>
+class QuadNodePolarEuclid {
 	friend class QuadTreeGTest;
 private:
 	double leftAngle;
@@ -42,15 +43,14 @@ private:
 	std::vector<double> radii;
 	bool isLeaf;
 	bool splitTheoretical;
-	double alpha;
 	double balance;
 	index ID;
 	double lowerBoundR;
 
 public:
-	std::vector<QuadNode> children;
+	std::vector<QuadNodePolarEuclid> children;
 
-	QuadNode() {
+	QuadNodePolarEuclid() {
 		//This should never be called.
 		leftAngle = 0;
 		rightAngle = 0;
@@ -61,7 +61,6 @@ public:
 		subTreeSize = 0;
 		balance = 0.5;
 		splitTheoretical = false;
-		alpha = 1;
 		lowerBoundR = maxR;
 		ID = 0;
 	}
@@ -81,9 +80,8 @@ public:
 	 * @param diagnostics Count how many necessary and unnecessary comparisons happen in leaf cells? Will cause race condition and false sharing in parallel use
 	 *
 	 */
-	QuadNode(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity = 1000, bool splitTheoretical = false, double alpha = 1, double balance = 0.5) {
+	QuadNodePolarEuclid(double leftAngle, double minR, double rightAngle, double maxR, unsigned capacity = 1000, bool splitTheoretical = false, double balance = 0.5) {
 		if (balance <= 0 || balance >= 1) throw std::runtime_error("Quadtree balance parameter must be between 0 and 1.");
-		if (poincare && maxR > 1) throw std::runtime_error("The Poincare disk has a radius of 1, cannot create quadtree larger than that!");
 		this->leftAngle = leftAngle;
 		this->minR = minR;
 		this->maxR = maxR;
@@ -93,7 +91,6 @@ public:
 		this->c = HyperbolicSpace::polarToCartesian(rightAngle, maxR);
 		this->d = HyperbolicSpace::polarToCartesian(leftAngle, maxR);
 		this->capacity = capacity;
-		this->alpha = alpha;
 		this->splitTheoretical = splitTheoretical;
 		this->balance = balance;
 		this->lowerBoundR = maxR;
@@ -105,37 +102,27 @@ public:
 	void split() {
 		assert(isLeaf);
 		//heavy lifting: split up!
-		double middleAngle = (rightAngle - leftAngle) / 2 + leftAngle;
-		/**
-		 * we want to make sure the space is evenly divided to obtain a balanced tree
-		 * Simply halving the radius will cause a larger space for the outer Quadnode, resulting in an unbalanced tree
-		 */
-
-		double middleR;
+		double middleAngle, middleR;
 		if (splitTheoretical) {
-			if (poincare) {
-				double hyperbolicOuter = HyperbolicSpace::EuclideanRadiusToHyperbolic(maxR);
-				double hyperbolicInner = HyperbolicSpace::EuclideanRadiusToHyperbolic(minR);
-				double hyperbolicMiddle = acosh((1-balance)*cosh(alpha*hyperbolicOuter) + balance*cosh(alpha*hyperbolicInner))/alpha;
-				middleR = HyperbolicSpace::hyperbolicRadiusToEuclidean(hyperbolicMiddle);
-			} else {
-				middleR = acosh((1-balance)*cosh(alpha*maxR) + balance*cosh(alpha*minR))/alpha;
-			}
+			//Euclidean space is distributed equally
+			middleAngle = (rightAngle - leftAngle) / 2 + leftAngle;
+			middleR = pow(maxR*maxR*(1-balance)+minR*minR*balance, 0.5);
 		} else {
-			double nom = maxR - minR;
-			double denom = pow((1-maxR*maxR)/(1-minR*minR), 0.5)+1;
-			middleR = nom/denom + minR;
+			//median of points
+			vector<double> sortedAngles = angles;
+			std::sort(sortedAngles.begin(), sortedAngles.end());
+			middleAngle = sortedAngles[sortedAngles.size()/2];
+			vector<double> sortedRadii = radii;
+			std::sort(sortedRadii.begin(), sortedRadii.end());
+			middleR = sortedRadii[sortedRadii.size()/2];
 		}
-
-		//one could also use the median here. Results in worse asymptotical complexity, but maybe better runtime?
-
 		assert(middleR < maxR);
 		assert(middleR > minR);
 
-		QuadNode southwest(leftAngle, minR, middleAngle, middleR, capacity, splitTheoretical, alpha, balance);
-		QuadNode southeast(middleAngle, minR, rightAngle, middleR, capacity, splitTheoretical, alpha, balance);
-		QuadNode northwest(leftAngle, middleR, middleAngle, maxR, capacity, splitTheoretical, alpha, balance);
-		QuadNode northeast(middleAngle, middleR, rightAngle, maxR, capacity, splitTheoretical, alpha, balance);
+		QuadNodePolarEuclid southwest(leftAngle, minR, middleAngle, middleR, capacity, splitTheoretical, balance);
+		QuadNodePolarEuclid southeast(middleAngle, minR, rightAngle, middleR, capacity, splitTheoretical, balance);
+		QuadNodePolarEuclid northwest(leftAngle, middleR, middleAngle, maxR, capacity, splitTheoretical, balance);
+		QuadNodePolarEuclid northeast(middleAngle, middleR, rightAngle, maxR, capacity, splitTheoretical, balance);
 		children = {southwest, southeast, northwest, northeast};
 		isLeaf = false;
 	}
@@ -271,9 +258,6 @@ public:
 		HyperbolicSpace::cartesianToPolar(query, phi, r);
 		if (responsible(phi, r)) return false;
 
-		//if using native coordinates, call distance calculation
-		if (!poincare) return hyperbolicDistances(phi, r).first > radius;
-
 		//get four edge points
 		double topDistance, bottomDistance, leftDistance, rightDistance;
 
@@ -324,114 +308,75 @@ public:
 		return outOfReach(query, radius);
 	}
 
-
 	/**
 	 * @param phi Angular coordinate of query point
-	 * @param r_h radial coordinate of query point in poincare disk
+	 * @param r_h radial coordinate of query point
 	 */
-	std::pair<double, double> hyperbolicDistances(double phi, double r) const {
-		double minRHyper, maxRHyper, r_h;
-		if (poincare) {
-			minRHyper=HyperbolicSpace::EuclideanRadiusToHyperbolic(this->minR);
-			maxRHyper=HyperbolicSpace::EuclideanRadiusToHyperbolic(this->maxR);
-			r_h = HyperbolicSpace::EuclideanRadiusToHyperbolic(r);
-		} else {
-			minRHyper=this->minR;
-			maxRHyper=this->maxR;
-			r_h = r;
-		}
-
-		double coshr = cosh(r_h);
-		double sinhr = sinh(r_h);
-		double coshMinR = cosh(minRHyper);
-		double coshMaxR = cosh(maxRHyper);
-		double sinhMinR = sinh(minRHyper);
-		double sinhMaxR = sinh(maxRHyper);
-		double cosDiffLeft = cos(phi - leftAngle);
-		double cosDiffRight = cos(phi - rightAngle);
-
+	std::pair<double, double> EuclideanDistances(double phi, double r) const {
 		/**
 		 * If the query point is not within the quadnode, the distance minimum is on the border.
-		 * Need to check whether extremum is between corners:
+		 * Need to check whether extremum is between corners.
 		 */
+		double maxDistance = 0;
+		double minDistance = std::numeric_limits<double>::max();
 
-		double coshMinDistance, coshMaxDistance;
+		if (responsible(phi, r)) minDistance = 0;
 
-		//Left border
-		double lowerLeftDistance = coshMinR*coshr-sinhMinR*sinhr*cosDiffLeft;
-		double upperLeftDistance = coshMaxR*coshr-sinhMaxR*sinhr*cosDiffLeft;
-		if (responsible(phi, r)) coshMinDistance = 1; //strictly speaking, this is wrong
-		else coshMinDistance = min(lowerLeftDistance, upperLeftDistance);
+		auto euclidDistancePolar = [](double phi_a, double r_a, double phi_b, double r_b){
+			return pow(r_a*r_a+r_b*r_b-2*r_a*r_b*cos(phi_a-phi_b), 0.5);
+		};
 
-		coshMaxDistance = max(lowerLeftDistance, upperLeftDistance);
-		//double a = cosh(r_h);
-		double b = sinhr*cosDiffLeft;
-		double extremum = log((coshr+b)/(coshr-b))/2;
-		if (extremum < maxRHyper && extremum >= minRHyper) {
-			double extremeDistance = cosh(extremum)*coshr-sinh(extremum)*sinhr*cosDiffLeft;
-			coshMinDistance = min(coshMinDistance, extremeDistance);
-			coshMaxDistance = max(coshMaxDistance, extremeDistance);
-		}
+		auto updateMinMax = [&minDistance, &maxDistance, phi, r, euclidDistancePolar](double phi_b, double r_b){
+			double extremalValue = euclidDistancePolar(phi, r, phi_b, r_b);
+			//assert(extremalValue <= r + r_b);
+			maxDistance = std::max(extremalValue, maxDistance);
+			minDistance = std::min(minDistance, extremalValue);
+		};
+
 		/**
-		 * cosh is a function from [0,\infty) to [1, \infty)
-		 * Variables thus need
+		 * angular boundaries
 		 */
-		assert(coshMaxDistance >= 1);
-		assert(coshMinDistance >= 1);
-
-		//Right border
-		double lowerRightDistance = coshMinR*coshr-sinhMinR*sinhr*cosDiffRight;
-		double upperRightDistance = coshMaxR*coshr-sinhMaxR*sinhr*cosDiffRight;
-		coshMinDistance = min(coshMinDistance, lowerRightDistance);
-		coshMinDistance = min(coshMinDistance, upperRightDistance);
-		coshMaxDistance = max(coshMaxDistance, lowerRightDistance);
-		coshMaxDistance = max(coshMaxDistance, upperRightDistance);
-
-		b = sinhr*cosDiffRight;
-		extremum = log((coshr+b)/(coshr-b))/2;
-		if (extremum < maxRHyper && extremum >= minRHyper) {
-			double extremeDistance = cosh(extremum)*coshr-sinh(extremum)*sinhr*cosDiffRight;
-			coshMinDistance = min(coshMinDistance, extremeDistance);
-			coshMaxDistance = max(coshMaxDistance, extremeDistance);
+		//left
+		double extremum = r*cos(this->leftAngle - phi);
+		if (extremum < maxR && extremum > minR) {
+			updateMinMax(this->leftAngle, extremum);
 		}
 
-		assert(coshMaxDistance >= 1);
-		assert(coshMinDistance >= 1);
-
-		//upper and lower borders
-		if (phi >= leftAngle && phi < rightAngle) {
-			double lower = cosh(abs(r_h-minRHyper));
-			double upper = cosh(abs(r_h-maxRHyper));
-			coshMinDistance = min(coshMinDistance, lower);
-			coshMinDistance = min(coshMinDistance, upper);
-			coshMaxDistance = max(coshMaxDistance, upper);
-			coshMaxDistance = max(coshMaxDistance, lower);
+		//right
+		extremum = r*cos(this->rightAngle - phi);
+		if (extremum < maxR && extremum > minR) {
+			updateMinMax(this->leftAngle, extremum);
 		}
 
-		assert(coshMaxDistance >= 1);
-		assert(coshMinDistance >= 1);
 
-		//again with mirrored phi
-		double mirrorphi;
-		if (phi >= M_PI) mirrorphi = phi - M_PI;
-		else mirrorphi = phi + M_PI;
-		if (mirrorphi >= leftAngle && mirrorphi < rightAngle) {
-			double lower = coshMinR*coshr+sinhMinR*sinhr;
-			double upper = coshMaxR*coshr+sinhMaxR*sinhr;
-			coshMinDistance = min(coshMinDistance, lower);
-			coshMinDistance = min(coshMinDistance, upper);
-			coshMaxDistance = max(coshMaxDistance, upper);
-			coshMaxDistance = max(coshMaxDistance, lower);
+		/**
+		 * radial boundaries.
+		 */
+		if (phi > leftAngle && phi < rightAngle) {
+			updateMinMax(phi, maxR);
+			updateMinMax(phi, minR);
+		}
+		if (phi + M_PI > leftAngle && phi + M_PI < rightAngle) {
+			updateMinMax(phi + M_PI, maxR);
+			updateMinMax(phi + M_PI, minR);
+		}
+		if (phi - M_PI > leftAngle && phi -M_PI < rightAngle) {
+			updateMinMax(phi - M_PI, maxR);
+			updateMinMax(phi - M_PI, minR);
 		}
 
-		assert(coshMaxDistance >= 1);
-		assert(coshMinDistance >= 1);
+		/**
+		 * corners
+		 */
+		updateMinMax(leftAngle, maxR);
+		updateMinMax(rightAngle, maxR);
+		updateMinMax(leftAngle, minR);
+		updateMinMax(rightAngle, minR);
 
-		double minDistance, maxDistance;
-		minDistance = acosh(coshMinDistance);
-		maxDistance = acosh(coshMaxDistance);
-		assert(maxDistance >= 0);
-		assert(minDistance >= 0);
+		//double shortCutGainMax = maxR + r - maxDistance;
+		//assert(minDistance <= minR + r);
+		//assert(maxDistance <= maxR + r);
+		assert(minDistance < maxDistance);
 		return std::pair<double, double>(minDistance, maxDistance);
 	}
 
@@ -486,35 +431,6 @@ public:
 	}
 
 	/**
-	 * Don't use this!
-	 * Code is still in here for a unit test.
-	 *
-	 * Get copy of the leaf cell responsible for a point at (angle, r).
-	 * Expensive because it copies the whole subtree, causes assertion failure if called with the wrong arguments
-	 *
-	 * @param angle Angular coordinate of point
-	 * @param r Radial coordinate of point
-	 *
-	 * @return Copy of leaf cell containing point, or dummy cell not responsible for point
-	 *
-	 */
-	QuadNode<T>& getAppropriateLeaf(double angle, double r) {
-		assert(this->responsible(angle, r));
-		if (isLeaf) return *this;//will this return the reference to the subtree itself or to a copy?
-		else {
-			for (index i = 0; i < children.size(); i++) {
-				bool foundResponsibleChild = false;
-				if (children[i].responsible(angle, r)) {
-					assert(foundResponsibleChild == false);
-					foundResponsibleChild = true;
-					return children[i].getAppropriateLeaf(angle, r);
-				}
-			}
-			throw std::runtime_error("No responsible child found.");
-		}
-	}
-
-	/**
 	 * Main query method, get points lying in a Euclidean circle around the center point.
 	 * Optional limits can be given to get a different result or to reduce unnecessary comparisons
 	 *
@@ -531,7 +447,6 @@ public:
 	 * @param highR Optional value for the maximum radial coordinate of the query region
 	 */
 	void getElementsInEuclideanCircle(Point2D<double> center, double radius, vector<T> &result, double minAngle=0, double maxAngle=2*M_PI, double lowR=0, double highR = 1) const {
-		if (!poincare) throw std::runtime_error("Euclidean query circles not yet implemented for native hyperbolic coordinates.");
 		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR < lowerBoundR) return;
 		if (outOfReach(center, radius)) {
 			return;
@@ -543,7 +458,7 @@ public:
 			const double queryY = center[1];
 			const count cSize = content.size();
 
-			for (index i = 0; i < cSize; i++) {
+			for (int i=0; i < cSize; i++) {
 				const double deltaX = positions[i].getX() - queryX;
 				const double deltaY = positions[i].getY() - queryY;
 				if (deltaX*deltaX + deltaY*deltaY < rsq) {
@@ -563,8 +478,8 @@ public:
 		double phi_q, r_q;
 		HyperbolicSpace::cartesianToPolar(euQuery, phi_q, r_q);
 		if (suppressLeft && phi_q > rightAngle) return 0;
-		TRACE("Getting hyperbolic distances");
-		auto distancePair = hyperbolicDistances(phi_q, r_q);
+		TRACE("Getting Euclidean distances");
+		auto distancePair = EuclideanDistances(phi_q, r_q);
 		double probUB = prob(distancePair.first);
 		double probLB = prob(distancePair.second);
 		assert(probLB <= probUB);
@@ -599,14 +514,7 @@ public:
 
 				//see where we've arrived
 				candidatesTested++;
-				double distance;
-				if (poincare) {
-					distance = HyperbolicSpace::poincareMetric(positions[i], euQuery);
-				} else {
-					distance = HyperbolicSpace::nativeDistance(angles[i], radii[i], phi_q, r_q);
-				}
-				assert(distance >= distancePair.first);
-
+				double distance = positions[i].distance(euQuery);
 				double q = prob(distance);
 				q = q / probUB; //since the candidate was selected by the jumping process, we have to adjust the probabilities
 				assert(q <= 1);
@@ -620,7 +528,7 @@ public:
 				}
 			}
 		}	else {
-			if (expectedNeighbours < 1) {//select candidates directly instead of calling recursively
+			if (expectedNeighbours < 4 || probUB < 1/1000) {//select candidates directly instead of calling recursively
 				TRACE("probUB = ", probUB,  ", switching to direct candidate selection.");
 				assert(probUB < 1);
 				const count stsize = size();
@@ -649,15 +557,7 @@ public:
 		TRACE("Maybe get element ", k, " with upper Bound ", upperBound);
 		assert(k < size());
 		if (isLeaf) {
-			double distance;
-			if (poincare) {
-				distance = HyperbolicSpace::poincareMetric(positions[k], euQuery);
-			} else {
-				double phi_q, r_q;
-				HyperbolicSpace::cartesianToPolar(euQuery, phi_q, r_q);
-				distance = HyperbolicSpace::nativeDistance(angles[k], radii[k], phi_q, r_q);
-			}
-			double acceptance = prob(distance)/upperBound;
+			double acceptance = prob(euQuery.distance(positions[k]))/upperBound;
 			TRACE("Is leaf, accept with ", acceptance);
 			if (Aux::Random::real() < acceptance) circleDenizens.push_back(content[k]);
 		} else {
@@ -808,7 +708,7 @@ public:
 				std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
 
 				//can probably be parallelized easily, but doesn't bring much benefit
-				Aux::Parallel::sort(permutation.begin(), permutation.end(), [this](index i, index j){return angles[i] < angles[j];});
+				std::sort(permutation.begin(), permutation.end(), [this](index i, index j){return angles[i] < angles[j];});
 
 				//There ought to be a way to do this more elegant with some algorithm header, but I didn't find any
 

@@ -2139,19 +2139,19 @@ cdef class EdgeSwitchingMarkovChainGenerator:
 cdef extern from "cpp/generators/HyperbolicGenerator.h":
 	cdef cppclass _HyperbolicGenerator "NetworKit::HyperbolicGenerator":
 		# TODO: revert to count when cython issue fixed
-		_HyperbolicGenerator(unsigned int nodes,  double k, double gamma) except +
+		_HyperbolicGenerator(unsigned int nodes,  double k, double gamma, double T) except +
 		void setLeafCapacity(unsigned int capacity) except +
 		void setTheoreticalSplit(bool split) except +
 		void setBalance(double balance) except +
 		vector[double] getElapsedMilliseconds() except +
 		_Graph generate() except +
-		_Graph generateExternal(vector[double] angles, vector[double] radii, double r, double thresholdDistance) except +
+		_Graph generateExternal(vector[double] angles, vector[double] radii, double r, double thresholdDistance, double T) except +
 
 cdef class HyperbolicGenerator:
 	""" The Hyperbolic Generator distributes points in hyperbolic space and adds edges between points with a probability depending on their distance. The resulting graphs have a power-law degree distribution, small diameter and high clustering coefficient.
 For a temperature of 0, the model resembles a unit-disk model in hyperbolic space.
 
- 		HyperbolicGenerator(n, k=6, gamma=3)
+ 		HyperbolicGenerator(n, k=6, gamma=3, T=0)
 
  		Parameters
 		----------
@@ -2161,15 +2161,17 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 			average degree
 		gamma : double
 			exponent of power-law degree distribution
-
+		T : double
+			temperature of statistical model
+			
 	"""
 
 	cdef _HyperbolicGenerator* _this
 
-	def __cinit__(self,  n, k=6, gamma=3):
+	def __cinit__(self,  n, k=6, gamma=3, T=0):
 		if gamma <= 2:
 				raise ValueError("Exponent of power-law degree distribution must be > 2")
-		self._this = new _HyperbolicGenerator(n, k, gamma)
+		self._this = new _HyperbolicGenerator(n, k, gamma, T)
 
 	def setLeafCapacity(self, capacity):
 		self._this.setLeafCapacity(capacity)
@@ -2184,18 +2186,18 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		return self._this.getElapsedMilliseconds()
 
 	def generate(self):
-		""" Generates hyperbolic unit disk graph
+		""" Generates hyperbolic graph
 
 		Returns
 		-------
 		Graph
-
+		
 		"""
 		return Graph(0).setThis(self._this.generate())
 
-	def generateExternal(self, angles, radii, k, gamma):
+	def generateExternal(self, angles, radii, k, gamma, T=0):
 		# TODO: documentation
-		return Graph(0).setThis(self._this.generateExternal(angles, radii, k, gamma))
+		return Graph(0).setThis(self._this.generateExternal(angles, radii, k, gamma, T))
 
 	@classmethod
 	def fit(cls, Graph G, scale=1):

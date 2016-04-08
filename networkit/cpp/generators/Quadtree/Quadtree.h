@@ -19,12 +19,12 @@
 
 namespace NetworKit {
 
-template <class T>
+template <class T, bool poincare=true>
 class Quadtree {
 	friend class QuadTreeGTest;
 public:
 	Quadtree() {
-		root = QuadNode<T>();
+		root = QuadNode<T, poincare>();
 		this->maxRadius = 1;
 	}
 
@@ -36,7 +36,7 @@ public:
 	 *
 	 */
 	Quadtree(double maxR,bool theoreticalSplit=false, double alpha=1, count capacity=1000, double balance = 0.5) {
-		root = QuadNode<T>(0, 0, 2*M_PI, maxR, capacity, 0,theoreticalSplit,alpha,balance);
+		root = QuadNode<T,poincare>(0, 0, 2*M_PI, maxR, capacity, theoreticalSplit,alpha,balance);
 		this->maxRadius = maxR;
 	}
 
@@ -83,7 +83,7 @@ public:
 		double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 		count numberOfThreads = omp_get_max_threads();
 		//double k = ceil(log(numberOfThreads)/log(4));
-		root = QuadNode<T>(0, 0, 2*M_PI, r, capacity, 0,theoreticalSplit,alpha,balance);
+		root = QuadNode<T,poincare>(0, 0, 2*M_PI, r, capacity, theoreticalSplit,alpha,balance);
 		maxRadius = r;
 		count result;
 		#pragma omp parallel
@@ -104,7 +104,7 @@ public:
 		assert(radii.size() == content.size());
 		double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(n);
 		double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
-		root = QuadNode<T>(0, 0, 2*M_PI, r, capacity, 0,theoreticalSplit,alpha,balance);
+		root = QuadNode<T>(0, 0, 2*M_PI, r, capacity, theoreticalSplit,alpha,balance);
 		maxRadius = r;
 		for (index i = 0; i < n; i++) {
 			assert(content[i] < n);
@@ -157,6 +157,7 @@ public:
 	}
 
 	void getElementsInHyperbolicCircle(const Point2D<double> circleCenter, const double hyperbolicRadius, const bool suppressLeft, vector<T> &circleDenizens) const {
+		assert(circleDenizens.empty());
 		double cc_phi, cc_r;
 		HyperbolicSpace::cartesianToPolar(circleCenter, cc_phi, cc_r);
 		//Transform hyperbolic circle into Euclidean circle
@@ -199,16 +200,45 @@ public:
 			wraparound = true;
 		}
 
+		for (T denizen : circleDenizens) {
+			if (denizen >= size()) {
+				DEBUG("Content ", denizen, " found in quadtree of size ", size(), ", as one of ", circleDenizens.size(), " neighbours.");
+			}
+			assert(denizen < size());//TODO: remove this after debugging, in general the quadtree should handle arbitrary contents
+		}
+
 		//we have sort(deg(v)) here! This is not good, but does not make the asymptotical complexity of O(deg(v) log n) worse.
 		if (wraparound) {
 			Aux::Parallel::sort(circleDenizens.begin(), circleDenizens.end());
 			auto newend = unique(circleDenizens.begin(), circleDenizens.end());
-			circleDenizens.resize(newend - circleDenizens.begin());
+			count toRemove = circleDenizens.end() - newend;
+			count remaining = newend - circleDenizens.begin();
+			if (toRemove > 0) {
+				DEBUG("Removing, ", toRemove, " duplicate entries, keeping ", remaining);
+				circleDenizens.resize(remaining);
+			}
+		}
+
+		for (T denizen : circleDenizens) {
+			if (denizen >= size()) DEBUG("Content ", denizen, " found in quadtree of size ", size(), ", as one of ", circleDenizens.size(), " neighbours, after sorting");
+			assert(denizen < size());//TODO: remove this after debugging, in general the quadtree should handle arbitrary contents
 		}
 	}
 
 	void getElementsInHyperbolicCircle(const Point2D<double> circleCenter, const double hyperbolicRadius, vector<T> &circleDenizens) const {
 		getElementsInHyperbolicCircle(circleCenter, hyperbolicRadius, false, circleDenizens);
+	}
+
+	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &circleDenizens) {
+		return root.getElementsProbabilistically(euQuery, prob, false, circleDenizens);
+	}
+
+	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, bool suppressLeft, vector<T> &circleDenizens) {
+		return root.getElementsProbabilistically(euQuery, prob, suppressLeft, circleDenizens);
+	}
+
+	void recount() {
+		root.recount();
 	}
 
 	count size() const {
@@ -229,6 +259,10 @@ public:
 
 	index getCellID(double phi, double r) const {
 		return root.getCellID(phi, r);
+	}
+
+	double getMaxRadius() const {
+		return maxRadius;
 	}
 
 	void sortPointsInLeaves() {
