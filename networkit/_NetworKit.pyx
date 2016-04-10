@@ -2600,7 +2600,7 @@ cdef class LFRGenerator(Algorithm):
 
 
 	@classmethod
-	def fit(cls, Graph G, scale=1, vanilla=False, communityDetectionAlgorithm=PLM):
+	def fit(cls, Graph G, scale=1, vanilla=False, communityDetectionAlgorithm=PLM, plfit=False):
 		""" Fit model to input graph"""
 		(n, m) = G.size()
 		# detect communities
@@ -2615,7 +2615,10 @@ cdef class LFRGenerator(Algorithm):
 			#print("fit power law to degree distribution and generate degree sequence accordingly")
 			avgDegree = int(sum(degSeq) / len(degSeq))
 			maxDegree = max(degSeq)
-			nodeDegreeExp = powerlaw.Fit(degSeq).alpha
+			if plfit:
+				nodeDegreeExp = powerlaw.Fit(degSeq).alpha
+			else:
+				nodeDegreeExp = 2
 			print(avgDegree, maxDegree, nodeDegreeExp)
 			gen.generatePowerlawDegreeSequence(avgDegree, maxDegree, -1 * nodeDegreeExp)
 			# fit power law to community size sequence and generate accordingly
@@ -2623,7 +2626,10 @@ cdef class LFRGenerator(Algorithm):
 			communitySize = communities.subsetSizes()
 			communityAvgSize = int(sum(communitySize) / len(communitySize))
 			communityMaxSize = max(communitySize)
-			communityExp = powerlaw.Fit(communitySize).alpha
+			if plfit:
+				communityExp = powerlaw.Fit(communitySize).alpha
+			else:
+				communityExp = 1
 			communityMinSize = 1
 			pl = PowerlawDegreeSequence(1, communityMaxSize, -1 * communityExp)
 			try:
