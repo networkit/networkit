@@ -2621,7 +2621,19 @@ cdef class LFRGenerator(Algorithm):
 			# fit power law to community size sequence and generate accordingly
 			#print("fit power law to community size sequence and generate accordingly")
 			communitySize = communities.subsetSizes()
-			gen.generatePowerlawCommunitySizeSequence(minCommunitySize=min(communitySize), maxCommunitySize=max(communitySize), communitySizeExp=-1 * powerlaw.Fit(communitySize).alpha)
+			communityAvgSize = int(sum(communitySize) / len(communitySize))
+			communityMaxSize = max(communitySize)
+			communityExp = powerlaw.Fit(communitySize).alpha
+			communityMinSize = 1
+			pl = PowerlawDegreeSequence(1, communityMaxSize, -1 * communityExp)
+			try:
+				pl.setMinimumFromAverageDegree(communityAvgSize)
+				communityMinSize = pl.getMinimumDegree()
+			except RuntimeError: # if average is too low with chosen exponent, this might not work...
+				pl.run()
+				print("Could not set desired average community size {}, average will be {} instead".format(communityAvgSize, pl.getExpectedAverageDegree()))
+
+			gen.generatePowerlawCommunitySizeSequence(minCommunitySize=communityMinSize, maxCommunitySize=communityMaxSize, communitySizeExp=-1 * communityExp)
 			# mixing parameter
 			#print("mixing parameter")
 			localCoverage = LocalPartitionCoverage(G, communities).run().scores()
