@@ -2639,7 +2639,7 @@ cdef class LFRGenerator(Algorithm):
 			localCoverage = LocalPartitionCoverage(G, communities).run().scores()
 			mu = sum(localCoverage) / len(localCoverage)
 			gen.setMu(mu)
-			refImplParams = "-N {0} -k {1} -maxk {2} -mu {3} -minc {4} -maxc {5}".format(n * scale, avgDegree, maxDegree, mu, min(communitySize), max(communitySize))
+			refImplParams = "-N {0} -k {1} -maxk {2} -mu {3} -minc {4} -maxc {5} -t1 {6} -t2 {7}".format(n * scale, avgDegree, maxDegree, mu, communityMinSize, communityMaxSize, nodeDegreeExp, communityExp)
 			cls.params["refImplParams"] = refImplParams
 			print(refImplParams)
 		else:
