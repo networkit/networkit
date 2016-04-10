@@ -5,6 +5,7 @@
 # needed for collections.Iterable
 import collections
 import math
+import os
 
 
 try:
@@ -2444,6 +2445,9 @@ cdef class LFRGenerator(Algorithm):
 	n : count
 		The number of nodes
 	"""
+	params = {}
+	paths = {}
+
 	def __cinit__(self, count n):
 		self._this = new _LFRGenerator(n)
 
@@ -2564,7 +2568,7 @@ cdef class LFRGenerator(Algorithm):
 		"""
 		return Graph().setThis((<_LFRGenerator*>(self._this)).getGraph())
 
-	def generate(self):
+	def generate(self, useReferenceImplementation=False):
 		"""
 		Generates and returns the graph. Wrapper for the StaticGraphGenerator interface.
 
@@ -2573,6 +2577,10 @@ cdef class LFRGenerator(Algorithm):
 		Graph
 			The generated graph.
 		"""
+		if useReferenceImplementation:
+			from networkit import graphio
+			os.system("{0}/benchmark {1}".format(self.paths["refImplDir"], self.params["refImplParams"]))
+			return graphio.readGraph("network.dat", graphio.Format.EdgeListTabOne)
 		return Graph().setThis((<_LFRGenerator*>(self._this)).generate())
 
 	def getPartition(self):
@@ -2585,6 +2593,10 @@ cdef class LFRGenerator(Algorithm):
 			The generated partition.
 		"""
 		return Partition().setThis((<_LFRGenerator*>(self._this)).getPartition())
+
+	@classmethod
+	def setPathToReferenceImplementationDir(cls, path):
+		cls.paths["refImplDir"] = path
 
 
 	@classmethod
@@ -2615,7 +2627,9 @@ cdef class LFRGenerator(Algorithm):
 			localCoverage = LocalPartitionCoverage(G, communities).run().scores()
 			mu = sum(localCoverage) / len(localCoverage)
 			gen.setMu(mu)
-			print("-N {0} -k {1} -maxk {2} -mu {3} -minc {4} -maxc {5} -C 0.7 ".format(n * scale, avgDegree, maxDegree, mu, min(communitySize), max(communitySize)))
+			refImplParams = "-N {0} -k {1} -maxk {2} -mu {3} -minc {4} -maxc {5}".format(n * scale, avgDegree, maxDegree, mu, min(communitySize), max(communitySize))
+			cls.params["refImplParams"] = refImplParams
+			print(refImplParams)
 		else:
 			if scale > 1:
 				# scale communities
