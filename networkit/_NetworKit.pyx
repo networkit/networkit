@@ -2600,21 +2600,22 @@ cdef class LFRGenerator(Algorithm):
 		if vanilla:
 			import powerlaw
 			# fit power law to degree distribution and generate degree sequence accordingly
-			print("fit power law to degree distribution and generate degree sequence accordingly")
+			#print("fit power law to degree distribution and generate degree sequence accordingly")
 			avgDegree = int(sum(degSeq) / len(degSeq))
 			maxDegree = max(degSeq)
 			nodeDegreeExp = powerlaw.Fit(degSeq).alpha
 			print(avgDegree, maxDegree, nodeDegreeExp)
-			gen.generatePowerlawDegreeSequence(avgDegree, maxDegree, nodeDegreeExp)
+			gen.generatePowerlawDegreeSequence(avgDegree, maxDegree, -1 * nodeDegreeExp)
 			# fit power law to community size sequence and generate accordingly
-			print("fit power law to community size sequence and generate accordingly")
+			#print("fit power law to community size sequence and generate accordingly")
 			communitySize = communities.subsetSizes()
-			gen.generatePowerlawCommunitySizeSequence(minCommunitySize=min(communitySize), maxCommunitySize=max(communitySize), communitySizeExp=powerlaw.Fit(communitySize).alpha)
+			gen.generatePowerlawCommunitySizeSequence(minCommunitySize=min(communitySize), maxCommunitySize=max(communitySize), communitySizeExp=-1 * powerlaw.Fit(communitySize).alpha)
 			# mixing parameter
-			print("mixing parameter")
+			#print("mixing parameter")
 			localCoverage = LocalPartitionCoverage(G, communities).run().scores()
 			mu = sum(localCoverage) / len(localCoverage)
 			gen.setMu(mu)
+			print("-N {0} -k {1} -maxk {2} -mu {3} -minc {4} -maxc {5} -C 0.7 ".format(n * scale, avgDegree, maxDegree, mu, min(communitySize), max(communitySize)))
 		else:
 			if scale > 1:
 				# scale communities
