@@ -2201,10 +2201,8 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 	@classmethod
 	def fit(cls, Graph G, scale=1):
 		""" Fit model to input graph"""
-		import powerlaw
 		degSeq = DegreeCentrality(G).run().scores()
-		fit = powerlaw.Fit(degSeq)
-		gamma = fit.alpha
+		gamma = max(-1 * PowerlawDegreeSequence(degSeq).getGamma(), 2.1)
 		(n, m) = G.size()
 		k = 2 * (m / n)
 		return cls(n * scale, k, gamma)
@@ -2312,9 +2310,15 @@ cdef class RmatGenerator:
 cdef extern from "cpp/generators/PowerlawDegreeSequence.h":
 	cdef cppclass _PowerlawDegreeSequence "NetworKit::PowerlawDegreeSequence":
 		_PowerlawDegreeSequence(count minDeg, count maxDeg, double gamma) except +
+		_PowerlawDegreeSequence(_Graph) except +
+		_PowerlawDegreeSequence(vector[double]) except +
 		void setMinimumFromAverageDegree(double avgDeg) nogil except +
+		void setGammaFromAverageDegree(double avgDeg, double minGamma, double maxGamma) nogil except +
 		double getExpectedAverageDegree() except +
 		count getMinimumDegree() const
+		count getMaximumDegree() const
+		double getGamma() const
+		double setGamma(double) const
 		void run() nogil except +
 		vector[count] getDegreeSequence(count numNodes) except +
 		count getDegree() except +
@@ -2323,19 +2327,27 @@ cdef class PowerlawDegreeSequence:
 	"""
 	Generates a powerlaw degree sequence with the given minimum and maximum degree, the powerlaw exponent gamma
 
+	If a list of degrees or a graph is given instead of a minimum degree, the class uses the minimum and maximum
+	value of the sequence and fits the exponent such that the expected average degree is the actual average degree.
+
 	Parameters
 	----------
-	minDeg : count
-		The minium degree
+	minDeg : count, list or Graph
+		The minium degree, or a list of degrees to fit or graphs
 	maxDeg : count
 		The maximum degree
 	gamma : double
-		The powerlaw exponent
+		The powerlaw exponent, default: -2
 	"""
 	cdef _PowerlawDegreeSequence *_this
 
-	def __cinit__(self, count minDeg, count maxDeg, double gamma):
-		self._this = new _PowerlawDegreeSequence(minDeg, maxDeg, gamma)
+	def __cinit__(self, minDeg, count maxDeg = 0, double gamma = -2):
+		if isinstance(minDeg, Graph):
+			self._this = new _PowerlawDegreeSequence((<Graph>minDeg)._this)
+		elif isinstance(minDeg, collections.Iterable):
+			self._this = new _PowerlawDegreeSequence(<vector[double]?>minDeg)
+		else:
+			self._this = new _PowerlawDegreeSequence((<count?>minDeg), maxDeg, gamma)
 
 	def __dealloc__(self):
 		del self._this
@@ -2351,6 +2363,23 @@ cdef class PowerlawDegreeSequence:
 		"""
 		with nogil:
 			self._this.setMinimumFromAverageDegree(avgDeg)
+		return self
+
+	def setGammaFromAverageDegree(self, double avgDeg, double minGamma = -1, double maxGamma = -6):
+		"""
+		Tries to set the powerlaw exponent gamma such that the specified average degree is expected.
+
+		Parameters
+		----------
+		avgDeg : double
+			The average degree that shall be approximated
+		minGamma : double
+			The minimum gamma to use, default: -1
+		maxGamma : double
+			The maximum gamma to use, default: -6
+		"""
+		with nogil:
+			self._this.setGammaFromAverageDegree(avgDeg, minGamma, maxGamma)
 		return self
 
 	def getExpectedAverageDegree(self):
@@ -2374,6 +2403,40 @@ cdef class PowerlawDegreeSequence:
 			The minimum degree
 		"""
 		return self._this.getMinimumDegree()
+
+	def setGamma(self, double gamma):
+		"""
+		Set the exponent gamma
+
+		Parameters
+		----------
+		gamma : double
+			The exponent to set
+		"""
+		self._this.setGamma(gamma)
+		return self
+
+	def getGamma(self):
+		"""
+		Get the exponent gamma.
+
+		Returns
+		-------
+		double
+			The exponent gamma
+		"""
+		return self._this.getGamma()
+
+	def getMaximumDegree(self):
+		"""
+		Get the maximum degree
+
+		Returns
+		-------
+		count
+			The maximum degree
+		"""
+		return self._this.getMaximumDegree()
 
 	def run(self):
 		"""
@@ -2610,29 +2673,32 @@ cdef class LFRGenerator(Algorithm):
 		# set number of nodes
 		gen = cls(n * scale)
 		if vanilla:
-			import powerlaw
 			# fit power law to degree distribution and generate degree sequence accordingly
 			#print("fit power law to degree distribution and generate degree sequence accordingly")
 			avgDegree = int(sum(degSeq) / len(degSeq))
 			maxDegree = max(degSeq)
 			if plfit:
-				nodeDegreeExp = powerlaw.Fit(degSeq).alpha
+				degSeqGen = PowerlawDegreeSequence(G)
+				nodeDegreeExp = -1 * degSeqGen.getGamma()
+				degSeqGen.run()
+				gen.setDegreeSequence(degSeqGen.getDegreeSequence(n * scale))
 			else:
 				nodeDegreeExp = 2
+				gen.generatePowerlawDegreeSequence(avgDegree, maxDegree, -1 * nodeDegreeExp)
 			print(avgDegree, maxDegree, nodeDegreeExp)
-			gen.generatePowerlawDegreeSequence(avgDegree, maxDegree, -1 * nodeDegreeExp)
 			# fit power law to community size sequence and generate accordingly
 			#print("fit power law to community size sequence and generate accordingly")
 			communitySize = communities.subsetSizes()
 			communityAvgSize = int(sum(communitySize) / len(communitySize))
 			communityMaxSize = max(communitySize)
+			communityMinSize = min(communitySize)
 			if plfit:
-				communityExp = powerlaw.Fit(communitySize).alpha
+				communityExp = -1 * PowerlawDegreeSequence(communitySize).getGamma()
 			else:
 				communityExp = 1
-			communityMinSize = 1
-			pl = PowerlawDegreeSequence(1, communityMaxSize, -1 * communityExp)
-			try:
+			pl = PowerlawDegreeSequence(communityMinSize, communityMaxSize, -1 * communityExp)
+
+			try: # it can be that the exponent is -1 because the average would be too low otherwise, increase minimum to ensure average fits.
 				pl.setMinimumFromAverageDegree(communityAvgSize)
 				communityMinSize = pl.getMinimumDegree()
 			except RuntimeError: # if average is too low with chosen exponent, this might not work...
