@@ -14,7 +14,7 @@
 namespace NetworKit {
 
 
-Lamg::Lamg(const double desiredResidualRed) : LinearSolver(desiredResidualRed), validSetup(false), lamgSetup(smoother), numComponents(0) {
+Lamg::Lamg(const double tolerance) : LinearSolver(tolerance), validSetup(false), lamgSetup(smoother), numComponents(0) {
 }
 
 void Lamg::initializeForOneComponent() {
@@ -96,7 +96,7 @@ SolverStatus Lamg::solve(const Vector &rhs, Vector &result, count maxConvergence
 
 	if (numComponents == 1) {
 		LAMGSolverStatus stat;
-		stat.desiredResidualReduction = tolerance;
+		stat.desiredResidualReduction = tolerance * rhs.length() / (laplacianMatrix * result - rhs).length();
 		stat.maxIters = maxIterations;
 		stat.maxConvergenceTime = maxConvergenceTime;
 		compSolvers[0].solve(result, rhs, stat);
@@ -113,6 +113,8 @@ SolverStatus Lamg::solve(const Vector &rhs, Vector &result, count maxConvergence
 				rhsVectors[i][graph2Components[element]] = rhs[element];
 			}
 
+			double resReduction = tolerance * rhsVectors[i].length() / (compHierarchies[i].at(0).getLaplacian() * initialVectors[i] - rhsVectors[i]).length();
+			compStati[i].desiredResidualReduction = resReduction * components[i].size() / laplacianMatrix.numberOfRows();
 			compStati[i].maxIters = maxIterations;
 			compStati[i].maxConvergenceTime = maxConvergenceTime;
 			compSolvers[i].solve(initialVectors[i], rhsVectors[i], compStati[i]);
@@ -151,29 +153,12 @@ void Lamg::parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &re
 		for (index i = 0; i < rhs.size(); ++i) {
 			index threadId = omp_get_thread_num();
 			LAMGSolverStatus stat;
-			stat.desiredResidualReduction = tolerance;
+			stat.desiredResidualReduction = tolerance * rhs[i].length() / (laplacianMatrix * results[i] - rhs[i]).length();
 			stat.maxIters = maxIterations;
 			stat.maxConvergenceTime = maxConvergenceTime;
 			compSolvers[threadId].solve(results[i], rhs[i], stat);
 		}
 
-//
-//#pragma omp parallel
-//		{
-//			count numThreads = omp_get_num_threads();
-//			index threadId = omp_get_thread_num();
-//
-//			count chunkSize = (rhs.size() + numThreads - 1) / numThreads;
-//			index chunkStart = threadId * chunkSize;
-//			index chunkEnd = std::min((index) rhs.size(), chunkStart + chunkSize);
-//			LAMGSolverStatus stat;
-//			for (index i = chunkStart; i < chunkEnd; ++i) {
-//				stat.desiredResidualReduction = tolerance;
-//				stat.maxIters = maxIterations;
-//				stat.maxConvergenceTime = maxConvergenceTime;
-//				compSolvers[threadId].solve(results[i], rhs[i], stat);
-//			}
-//		}
 		if (nested) omp_set_nested(true);
 	}
 }
