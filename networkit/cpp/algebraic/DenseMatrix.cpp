@@ -133,7 +133,7 @@ DenseMatrix& DenseMatrix::operator/=(const double &divisor) {
 }
 
 void DenseMatrix::LUDecomposition(DenseMatrix &matrix) {
-	assert(matrix.numberOfRows == matrix.numberOfColumns());
+	assert(matrix.numberOfRows() == matrix.numberOfColumns());
 	for (index k = 0; k < matrix.numberOfRows()-1; ++k) {
 		for (index i = k+1; i < matrix.numberOfRows(); ++i) {
 			matrix.setValue(i, k, matrix(i,k) / matrix(k,k));
