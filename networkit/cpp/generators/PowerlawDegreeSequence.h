@@ -3,6 +3,7 @@
 
 #include "../Globals.h"
 #include <vector>
+#include "../graph/Graph.h"
 
 namespace NetworKit {
 
@@ -18,12 +19,35 @@ public:
 	PowerlawDegreeSequence(count minDeg, count maxDeg, double gamma);
 
 	/**
+	 * Generates a powerlaw degree sequence that fits the given degree sequence in terms of minimum, maximum and average degree.
+	 *
+	 * @param degreeSequence The degree sequence to fit.
+	 */
+	PowerlawDegreeSequence(const std::vector<double>& degreeSequence);
+
+	/**
+	 * Generates a powerlaw degree sequence that fits the degree sequence of the given graph in terms of minimum, maximum and average degree.
+	 *
+	 * @param g The input graph to fit
+	 */
+	PowerlawDegreeSequence(const Graph& g);
+
+	/**
 	 * Tries to set the minimum degree such that the specified average degree is expected.
 	 *
 	 * @throws std::runtime_error If it is not possible to find a minimum degree such that the expected average is @a avgDeg.
 	 * @param avgDeg   The average degree
 	 */
 	void setMinimumFromAverageDegree(double avgDeg);
+
+	/**
+	 * Tries to set the powerlaw exponent gamma such that the specified average degree is expected.
+	 *
+	 * @param avgDeg The average degree
+	 * @param minGamma The minimum gamma to use, default: -1
+	 * @param maxGamma The maximum gamma to use, default: -6
+	 */
+	void setGammaFromAverageDegree(double avgDeg, double minGamma = -1, double maxGamma = -6);
 
 	/**
 	 * Sets the minimum degree.
@@ -38,6 +62,27 @@ public:
 	 * @return The minimum degree.
 	 */
 	count getMinimumDegree() const;
+
+	/**
+	 * Gets the maximum degree.
+	 *
+	 * @return The maximum degree.
+	 */
+	 count getMaximumDegree() const { return maxDeg; };
+
+	 /**
+	  * Sets the exponent gamma.
+	  *
+	  * @param gamma The exponent, must be negative.
+	  */
+	void setGamma(double gamma);
+
+	 /**
+	  * Gets the exponent gamma.
+	  *
+	  * @return gamma
+	  */
+	double getGamma() const { return gamma; };
 
 	/**
 	 * Execute the generation process
