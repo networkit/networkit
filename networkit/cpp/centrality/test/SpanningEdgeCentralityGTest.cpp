@@ -64,7 +64,7 @@ TEST_F(SpanningEdgeCentralityGTest, testSpanningOnSmallGraphs) {
 		INFO("spanning edge centrality ranking time: ", timer.elapsedTag());
 
 		timer.start();
-		cen.runApproximation();
+		cen.runParallelApproximation();
 		timer.stop();
 		INFO("approx spanning edge centrality time: ", timer.elapsedTag());
 
@@ -107,48 +107,7 @@ TEST_F(SpanningEdgeCentralityGTest, testSpanningOnSmallGraphs) {
 		});
 		error /= G.numberOfEdges();
 		INFO("Avg. relative error: ", error);
-
-
-
 	}
-}
-
-TEST_F(SpanningEdgeCentralityGTest, benchSpanning) {
-	METISGraphReader reader;
-	string benchFolder = "";
-	std::ofstream output("/Users/Michael/Downloads/SNAP/spanningBenchmark" + "_0.1");
-	if (!output.is_open()) {
-		ERROR("Could not open output file");
-		return;
-	}
-
-	Aux::Timer t;
-	for (const string &instance : instances) {
-		Graph G = reader.read(instance);
-		G.indexEdges();
-
-
-		Spanning sp(G);
-		t.start();
-		sp.runApproximation();
-		t.stop();
-
-		output << instance << "\t" << sp.getSetupTime() << "\t" << t.elapsedMilliseconds() << std::endl;
-		output.flush();
-
-		if (instance.find_first_of("CA-GrQc") != instance.npos) {
-			std::ofstream scoreOutput(benchFolder + "_GrQC_scores_LAMG");
-			if (scoreOutput.is_open()) {
-				scoreOutput << std::setprecision(16);
-				G.forEdges([&](node u, node v, edgeid e) {
-					scoreOutput << u << " " << v << " " << sp.score(e) << std::endl;
-				});
-				scoreOutput.close();
-			}
-		}
-	}
-
-	output.close();
 }
 
 } /* namespace NetworKit */
