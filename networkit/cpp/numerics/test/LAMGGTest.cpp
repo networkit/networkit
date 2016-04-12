@@ -26,7 +26,7 @@ TEST_F(LAMGGTest, testSmallGraphs) {
 	Aux::Timer timer;
 	for (index i = 0; i < GRAPH_INSTANCES.size(); ++i) {
 		string graph = GRAPH_INSTANCES[i];
-		Graph G = reader.read("instances/" + graph);
+		Graph G = reader.read(graph);
 		ConnectedComponents con(G);
 		con.run();
 		Partition comps = con.getPartition();
@@ -44,15 +44,13 @@ TEST_F(LAMGGTest, testSmallGraphs) {
 		Vector b(G.numberOfNodes());
 		Vector x(G.numberOfNodes());
 
-		if (!readProblemVectors(b, x, "instances/"+graph)) { // create new problem vectors if not present
-			b = randZeroSum(G, 12345);
-			x = randVector(G.numberOfNodes(), -1, 1);
-		}
+		b = randZeroSum(G, 12345);
+		x = randVector(G.numberOfNodes(), -1, 1);
 
 
 		LAMGSolverStatus status;
 		status.maxConvergenceTime = 10 * 60 * 1000;
-		status.desiredResidualReduction = 1e-6;
+		status.desiredResidualReduction = 1e-6 * b.length() / (hierarchy.at(0).getLaplacian() * x - b).length(); // needed for getting a relative residual <= 1e-6
 
 		Vector result = x;
 		INFO("Solving equation system - Gauss-Seidel");
@@ -71,20 +69,6 @@ TEST_F(LAMGGTest, testSmallGraphs) {
 
 
 
-//TEST_F(LAMGGTest, generateGraphs) {
-//	for (count size : grid2DSizes) {
-//		genGrid2D(size);
-//	}
-//
-//	for (count size : grid3DSizes) {
-//		genGrid3D(size);
-//	}
-//
-//	for (count size : barabasiSizes) {
-//		genBarabasi(size);
-//	}
-//}
-
 Vector LAMGGTest::randVector(count dimension, double lower, double upper) const {
 	Vector randVector(dimension);
 	for (index i = 0; i < dimension; ++i) {
@@ -99,35 +83,6 @@ Vector LAMGGTest::randVector(count dimension, double lower, double upper) const 
 	return randVector;
 }
 
-Vector LAMGGTest::capacitanceProblem(const Graph &graph) const {
-	Vector b(graph.upperNodeIdBound(), 0.0);
-	ConnectedComponents con(graph);
-	count n = graph.upperNodeIdBound();
-	con.run();
-	Partition comps = con.getPartition();
-
-	for (index i : comps.getSubsetIds()) {
-		std::set<index> members = comps.getMembers(i);
-		if (members.size() > 2) {
-			count i = 0;
-			for (index element : members) {
-				if (i == 0) {
-					b[element] = 1;
-					i++;
-				}
-
-				if (i == 1) {
-					b[element] = -1;
-					break;
-				}
-			}
-
-			break;
-		}
-	}
-
-	return b;
-}
 
 Vector LAMGGTest::randZeroSum(const Graph& G, size_t seed) const {
 	mt19937 rand(seed);
@@ -152,63 +107,6 @@ Vector LAMGGTest::randZeroSum(const Graph& G, size_t seed) const {
 	}
 
 	return b;
-}
-
-// 2D-Grid with unit weights
-void LAMGGTest::genGrid2D(count n) const {
-  Graph G(n*n);
-  for (index i = 0; i < n; ++i) {
-    for (index j = 0; j < n; ++j) {
-      if (i < n-1) {
-        G.addEdge(i*n + j, (i+1)*n + j);
-      }
-      if (j < n-1) {
-        G.addEdge(i*n + j, i*n + (j+1));
-      }
-    }
-  }
-
-  METISGraphWriter writer;
-  writer.write(G, false, Aux::toStringF("instances/grid/Laplace_%sx%s.graph", n, n));
-}
-
-// 3D-Grid with unit weights
-void LAMGGTest::genGrid3D(count n) const {
-  Graph G(n*n*n);
-  for (index i = 0; i < n; ++i) {
-    for (index j = 0; j < n; ++j) {
-      for (index k = 0; k < n; ++k) {
-        if (i < n-1) {
-          G.addEdge(i*n*n + j*n + k, (i+1)*n*n + j*n + k);
-        }
-        if (j < n-1) {
-          G.addEdge(i*n*n + j*n + k, i*n*n + (j+1)*n + k);
-        }
-        if (k < n-1) {
-          G.addEdge(i*n*n + j*n + k, i*n*n + j*n + k+1);
-        }
-      }
-    }
-  }
-
-  METISGraphWriter writer;
-  writer.write(G, false, Aux::toStringF("instances/grid3/Laplace_%sx%sx%s.graph", n, n, n));
-}
-
-/* Preferential attachment random graph with random weights */
-void LAMGGTest::genBarabasi(count n, count attachment) const {
-  random_device rd;
-  mt19937 engine(rd());
-  auto rand_weight = uniform_real_distribution<edgeweight>(0.1, 10.0);
-
-  BarabasiAlbertGenerator gen(attachment /* degree */, n, attachment);
-  Graph G = Graph(gen.generate(), true, false);
-  G.forEdges([&] (node u, node v) {
-    G.setWeight(u, v, rand_weight(engine));
-  });
-
-  METISGraphWriter writer;
-  writer.write(G, true, Aux::toStringF("instances/barabasi/%s_att_%s_unweighted.graph", n, attachment));
 }
 
 } /* namespace NetworKit */
