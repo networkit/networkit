@@ -43,10 +43,11 @@ private:
 
 public:
 	/**
-	 * Construct a solver with the desired residual reduction @a desiredResidualRed.
-	 * @param desiredResidualRed
+	 * Construct a solver with the given @a tolerance. The relative residual ||Ax-b||/||b|| will be less than or equal to
+	 * @a tolerance after the solver finished.
+	 * @param tolerance
 	 */
-	Lamg(const double desiredResidualRed = 1e-6);
+	Lamg(const double tolerance = 1e-6);
 	/** Default destructor */
 	~Lamg() = default;
 
