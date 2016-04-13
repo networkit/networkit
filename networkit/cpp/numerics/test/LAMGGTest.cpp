@@ -12,11 +12,8 @@
 #include "../../auxiliary/Timer.h"
 
 #include "../GaussSeidelRelaxation.h"
-#include "LAMGBenchmark.h"
 
 namespace NetworKit {
-
-extern bool readProblemVectors(Vector &b, Vector &x, const string &graphFilepath);
 
 TEST_F(LAMGGTest, testSmallGraphs) {
 	METISGraphReader reader;
