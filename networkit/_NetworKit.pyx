@@ -2210,7 +2210,7 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 
 cdef extern from "cpp/generators/RmatGenerator.h":
 	cdef cppclass _RmatGenerator "NetworKit::RmatGenerator":
-		_RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d, bool weighted) except +
+		_RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d, bool weighted, count reduceNodes) except +
 		_Graph generate() except +
 
 cdef class RmatGenerator:
@@ -2244,8 +2244,8 @@ cdef class RmatGenerator:
 	cdef _RmatGenerator* _this
 	paths = {"workingDir" : None, "kronfitPath" : None}
 
-	def __cinit__(self, count scale, count edgeFactor, double a, double b, double c, double d, bool weighted=False):
-		self._this = new _RmatGenerator(scale, edgeFactor, a, b, c, d, weighted)
+	def __cinit__(self, count scale, count edgeFactor, double a, double b, double c, double d, bool weighted=False, count reduceNodes=0):
+		self._this = new _RmatGenerator(scale, edgeFactor, a, b, c, d, weighted, reduceNodes)
 
 	def __dealloc__(self):
 		del self._this
@@ -2295,17 +2295,15 @@ cdef class RmatGenerator:
 		s = sum(weights)
 		nweights = [w / s for w in weights]
 		(a,b,c,d) = nweights
+		print("using initiator matrix [{0},{1};{2},{3}]".format(a,b,c,d))
 		# other parameters
 		(n,m) = G.size()
-		s1 = math.floor(math.log(n, 2))
-		s2 = math.ceil(math.log(n, 2))
-		if abs(n - s1) > abs(n - s2):
-			scaleParam1 = s2
-		else:
-			scaleParam1 = s1
-		scaleParameter = scaleParam1 + math.floor(math.log(scale, 2))
+		s = math.ceil(math.log(n, 2))
+		scaleParameter = s + math.floor(math.log(scale, 2))
 		edgeFactor = math.floor(m / n)
-		return RmatGenerator(scaleParameter, edgeFactor, a, b, c, d)
+		reduceNodes = (2**scaleParameter) - (scale * n)
+		print("random nodes to delete to achieve target node count: ", reduceNodes)
+		return RmatGenerator(scaleParameter, edgeFactor, a, b, c, d, False, reduceNodes)
 
 cdef extern from "cpp/generators/PowerlawDegreeSequence.h":
 	cdef cppclass _PowerlawDegreeSequence "NetworKit::PowerlawDegreeSequence":
