@@ -9,7 +9,7 @@
 #include "../../graph/Graph.h"
 #include "../../io/METISGraphReader.h"
 #include "../../centrality/Spanning.h"
-
+#include <math.h>
 #include <fstream>
 #include <iomanip>
 
@@ -48,12 +48,12 @@ TEST_F(CommuteTimeDistanceGTest, testOnToyGraph) {
 
 	CommuteTimeDistance ctd(G);
 	ctd.run();
-	EXPECT_NEAR(1.0 * G.numberOfEdges(), ctd.distance(0, 2), 1e-4);
-	EXPECT_NEAR(1.0 * G.numberOfEdges(), ctd.distance(1, 2), 1e-4);
-	EXPECT_NEAR(0.75 * G.numberOfEdges(), ctd.distance(2, 3), 1e-4);
-	EXPECT_NEAR(0.75 * G.numberOfEdges(), ctd.distance(2, 4), 1e-4);
-	EXPECT_NEAR(0.75 * G.numberOfEdges(), ctd.distance(3, 5), 1e-4);
-	EXPECT_NEAR(0.75 * G.numberOfEdges(), ctd.distance(4, 5), 1e-4);
+	EXPECT_NEAR(sqrt(1.0 * G.numberOfEdges()), ctd.distance(0, 2), 1e-4);
+	EXPECT_NEAR(sqrt(1.0 * G.numberOfEdges()), ctd.distance(1, 2), 1e-4);
+	EXPECT_NEAR(sqrt(0.75 * G.numberOfEdges()), ctd.distance(2, 3), 1e-4);
+	EXPECT_NEAR(sqrt(0.75 * G.numberOfEdges()), ctd.distance(2, 4), 1e-4);
+	EXPECT_NEAR(sqrt(0.75 * G.numberOfEdges()), ctd.distance(3, 5), 1e-4);
+	EXPECT_NEAR(sqrt(0.75 * G.numberOfEdges()), ctd.distance(4, 5), 1e-4);
 }
 
 TEST_F(CommuteTimeDistanceGTest, testECTDOnSmallGraphs) {
@@ -82,7 +82,7 @@ TEST_F(CommuteTimeDistanceGTest, testECTDOnSmallGraphs) {
 		G.forNodes([&](node u){
 			G.forNodes([&](node v) {
 				double relError = fabs(cen.distance(u,v) - exact.distance(u,v));
-				INFO("Approximated: ", cen.distance(u,v), ", exact: ", exact.distance(u,v));
+			//	INFO("Approximated: ", cen.distance(u,v), ", exact: ", exact.distance(u,v));
 				if (fabs(exact.distance(u,v)) > 1e-9) {
 					relError /= exact.distance(u,v);
 				}
