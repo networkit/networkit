@@ -49,7 +49,7 @@ TEST_F(SpanningEdgeCentralityGTest, testOnToyGraph) {
 TEST_F(SpanningEdgeCentralityGTest, testSpanningOnSmallGraphs) {
 	METISGraphReader reader;
 
-	std::string graphFiles[2] = {"input/jazz.graph", "input/power.graph"};
+	std::string graphFiles[2] = {"input/karate.graph", "input/tiny_01.graph"};
 
 	for (auto graphFile: graphFiles) {
 		Graph G = reader.read(graphFile);
