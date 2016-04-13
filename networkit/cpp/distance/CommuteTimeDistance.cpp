@@ -12,6 +12,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <math.h>
 
 #include "omp.h"
 
@@ -160,7 +161,7 @@ void CommuteTimeDistance::runParallelApproximation() {
 
 double CommuteTimeDistance::distance(node u, node v) {
 	if (!hasRun) throw std::runtime_error("Call run method first");
-	return G.numberOfEdges()*distances[u][v]; // TODO fix weighted case: volume is the sum of the weights of the edges
+	return sqrt(G.numberOfEdges()*distances[u][v]); // TODO fix weighted case: volume is the sum of the weights of the edges
 }
 
 }
