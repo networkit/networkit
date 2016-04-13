@@ -136,7 +136,7 @@ SolverStatus Lamg::solve(const Vector &rhs, Vector &result, count maxConvergence
 
 void Lamg::parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results, count maxConvergenceTime, count maxIterations) {
 	if (numComponents == 1) {
-		assert(rhs.size == results.size());
+		assert(rhs.size() == results.size());
 		const index numThreads = omp_get_max_threads();
 		if (compSolvers.size() != numThreads) {
 			compSolvers.clear();
