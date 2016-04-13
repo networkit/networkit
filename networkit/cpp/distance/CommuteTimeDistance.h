@@ -9,6 +9,8 @@
 #define COMMUTETIMEDIST_H_
 
 #include "../numerics/LAMG/Lamg.h"
+#include "../graph/Graph.h"
+#include "../base/Algorithm.h"
 
 
 namespace NetworKit {
@@ -19,7 +21,7 @@ namespace NetworKit {
  * CommuteTimeDistance edge centrality.
  *
  */
-class CommuteTimeDistance {
+class CommuteTimeDistance: public Algorithm {
 
 public:
 	/**
