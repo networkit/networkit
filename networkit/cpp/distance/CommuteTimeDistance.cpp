@@ -9,8 +9,6 @@
 #include "CommuteTimeDistance.h"
 #include "../auxiliary/Log.h"
 #include "../auxiliary/Timer.h"
-#include "../spanning/RandomSpanningTree.h"
-#include "../spanning/PseudoRandomSpanningTree.h"
 
 #include <fstream>
 #include <sstream>
@@ -88,19 +86,17 @@ void CommuteTimeDistance::runApproximation() {
 		// matrix vector product of q
 		// rhs(v) = \sum_e=1 ^m q(e) * B(e, v)
 		//        = +/- q(e)
-		G.forNodes([&](node u) {
-			G.forNodes([&](node v) {
-				double r = randTab[Aux::Random::integer(1)];
+		G.forEdges([&](node u, node v) {
+			double r = randTab[Aux::Random::integer(1)];
 
-				if (u < v) {
-					rhs[u] += r;
-					rhs[v] -= r;
-				}
-				else {
-					rhs[u] -= r;
-					rhs[v] += r;
-				}
-			});
+			if (u < v) {
+				rhs[u] += r;
+				rhs[v] -= r;
+			}
+			else {
+				rhs[u] -= r;
+				rhs[v] += r;
+			}
 		});
 
 		lamg.solve(rhs, solution);
@@ -134,19 +130,17 @@ void CommuteTimeDistance::runParallelApproximation() {
 	for (index i = 0; i < k; ++i) {
 		// rhs(v) = \sum_e=1 ^m q(e) * B(e, v)
 		//        = +/- q(e)
-		G.forNodes([&](node u) {
-			G.forNodes([&](node v) {
-				double r = randTab[Aux::Random::integer(1)];
+		G.forEdges([&](node u, node v) {
+			double r = randTab[Aux::Random::integer(1)];
 
-				if (u < v) {
-					rhs[i][u] += r;
-					rhs[i][v] -= r;
-				}
-				else {
-					rhs[i][u] -= r;
-					rhs[i][v] += r;
-				}
-			});
+			if (u < v) {
+				rhs[i][u] += r;
+				rhs[i][v] -= r;
+			}
+			else {
+				rhs[i][u] -= r;
+				rhs[i][v] += r;
+			}
 		});
 	}
 
