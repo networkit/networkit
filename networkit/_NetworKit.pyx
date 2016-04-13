@@ -2266,35 +2266,37 @@ cdef class RmatGenerator:
 		cls.paths["workingDir"] = workingDir
 
 	@classmethod
-	def fit(cls, G, scale=1, kronfit=True, iterations=50):
+	def fit(cls, G, scale=1, initiator=None, kronfit=True, iterations=50):
 		import math
 		import re
 		import subprocess
 		import os
 		import random
 		from networkit import graphio
-		if kronfit:
-			if cls.paths["workingDir"] is None:
-				raise RuntimeError("call setPaths class method first to configure")
-			# write graph
-			tmpGraphPath = os.path.join(cls.paths["workingDir"], "{0}.edgelist".format(G.getName()))
-			graphio.writeGraph(G, tmpGraphPath, graphio.Format.EdgeListTabOne)
-			# call kronfit
-			args = [cls.paths["kronfitPath"], "-i:{0}".format(tmpGraphPath), "-gi:{0}".format(str(iterations))]
-			subprocess.call(args)
-			# read estimated parameters
-			with open("KronFit-{0}.tab".format(G.getName())) as resultFile:
-				for i, line in enumerate(resultFile):
-					if i == 7:
-						matches = re.findall("\d+\.\d+", line)
-						weights = [float(s) for s in matches]
+		if initiator:
+			(a,b,c,d) = initiator
 		else:
-			# random weights because kronfit is slow
-			weights = (random.random(), random.random(), random.random(), random.random())
-		# normalize
-		s = sum(weights)
-		nweights = [w / s for w in weights]
-		(a,b,c,d) = nweights
+			if kronfit:
+				if cls.paths["workingDir"] is None:
+					raise RuntimeError("call setPaths class method first to configure")
+				# write graph
+				tmpGraphPath = os.path.join(cls.paths["workingDir"], "{0}.edgelist".format(G.getName()))
+				graphio.writeGraph(G, tmpGraphPath, graphio.Format.EdgeListTabOne)
+				# call kronfit
+				args = [cls.paths["kronfitPath"], "-i:{0}".format(tmpGraphPath), "-gi:{0}".format(str(iterations))]
+				subprocess.call(args)
+				# read estimated parameters
+				with open("KronFit-{0}.tab".format(G.getName())) as resultFile:
+					for i, line in enumerate(resultFile):
+						if i == 7:
+							matches = re.findall("\d+\.\d+", line)
+							weights = [float(s) for s in matches]
+			else:
+				# random weights because kronfit is slow
+				weights = (random.random(), random.random(), random.random(), random.random())
+			# normalize
+			nweights = [w / sum(weights) for w in weights]
+			(a,b,c,d) = nweights
 		print("using initiator matrix [{0},{1};{2},{3}]".format(a,b,c,d))
 		# other parameters
 		(n,m) = G.size()
