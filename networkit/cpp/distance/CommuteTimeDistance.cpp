@@ -18,7 +18,7 @@
 
 namespace NetworKit {
 
-CommuteTimeDistance::CommuteTimeDistance(const Graph& G, double tol): G(G), tol(tol), lamg(1e-5) {
+CommuteTimeDistance::CommuteTimeDistance(const Graph& G, double tol): Algorithm(), G(G), tol(tol), lamg(1e-5) {
 	// prepare LAMG
 	CSRMatrix matrix = CSRMatrix::graphLaplacian(G);
 	Aux::Timer t;
@@ -46,21 +46,20 @@ void CommuteTimeDistance::run() {
 	Vector zeroVector(n, 0.0);
 
 	// solve for each pair of nodes
-	G.forNodes([&](node u) {
-		G.forNodes([&](node v) {
-			// set up right-hand side
-			rhs[u] = +1.0;
-			rhs[v] = -1.0;
-			TRACE("before solve for ", u, " and ", v);
+	G.forNodePairs([&](node u, node v){
+		// set up right-hand side
+		rhs[u] = +1.0;
+		rhs[v] = -1.0;
+		TRACE("before solve for ", u, " and ", v);
 
-			solution = zeroVector;
+		solution = zeroVector;
 
-			lamg.solve(rhs, solution);
-			double diff = solution[u] - solution[v];
-			distances[u][v] = fabs(diff); // TODO: check unweighted, fix weighted case!
-			rhs[u] = 0.0;
-			rhs[v] = 0.0;
-		});
+		lamg.solve(rhs, solution);
+		double diff = solution[u] - solution[v];
+		distances[u][v] = fabs(diff); // TODO: check unweighted, fix weighted case!
+		distances[v][u] = fabs(diff); // TODO: check unweighted, fix weighted case!
+		rhs[u] = 0.0;
+		rhs[v] = 0.0;
 	});
 	hasRun = true;
 }
@@ -102,11 +101,10 @@ void CommuteTimeDistance::runApproximation() {
 
 		lamg.solve(rhs, solution);
 
-		G.forNodes([&](node u) {
-			G.forNodes([&](node v) {
+		G.forNodePairs([&](node u, node v){
 				double diff = solution[u] - solution[v];
 				distances[u][v] += diff * diff; // TODO: fix weighted case!
-			});
+				distances[v][u] += diff * diff; // TODO: fix weighted case!
 		});
 	}
 
@@ -148,11 +146,10 @@ void CommuteTimeDistance::runParallelApproximation() {
 	lamg.parallelSolve(rhs, solutions);
 
 	for (index i = 0; i < k; ++i) {
-		G.parallelForNodes([&](node u) {
-				G.forNodes([&](node v) {
-				double diff = solutions[i][u] - solutions[i][v];
-				distances[u][v] += diff * diff; // TODO: fix weighted case!
-			});
+		G.parallelForNodePairs([&](node u, node v){
+			double diff = solutions[i][u] - solutions[i][v];
+			distances[u][v] += diff * diff; // TODO: fix weighted case!
+			distances[v][u] += diff * diff; // TODO: fix weighted case!
 		});
 	}
 

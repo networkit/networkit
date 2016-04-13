@@ -7916,3 +7916,57 @@ def sort2(sample):
 		i += 1
 	sort(result.begin(),result.end())
 	return result
+
+cdef extern from "cpp/distance/CommuteTimeDistance.h":
+	cdef cppclass _CommuteTimeDistance "NetworKit::CommuteTimeDistance":
+		_CommuteTimeDistance(_Graph G, double tol) except +
+		void run() nogil except +
+		void runApproximation() except +
+		void runParallelApproximation() except +
+		double distance(node, node) except +
+
+
+cdef class CommuteTimeDistance:
+	""" Computes the Euclidean Commute Time Distance between each pair of nodes for an undirected unweighted graph.
+
+	CommuteTimeDistance(G)
+
+	Create CommuteTimeDistance for Graph `G`.
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	tol: double
+	"""
+	cdef _CommuteTimeDistance* _this
+	cdef Graph _G
+	
+	def __cinit__(self,  Graph G, double tol = 0.1):
+		self._G = G
+		self._this = new _CommuteTimeDistance(G._this, tol)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		""" This method computes ECTD exactly. """
+		with nogil:
+			self._this.run()
+		return self
+
+	def runApproximation(self):
+		""" Computes approximation of the ECTD. """
+		return self._this.runApproximation()
+
+	def runParallelApproximation(self):
+		""" Computes approximation (in parallel) of the ECTD. """
+		return self._this.runParallelApproximation()
+
+	def distance(self, u, v):
+		"""  Returns the ECTD between node u and node v.
+
+		u : node
+		v : node
+		"""
+		return self._this.distance(u, v)
