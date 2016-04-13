@@ -17,7 +17,8 @@ RmatGenerator::RmatGenerator(count scale, count edgeFactor, double a, double b, 
 {
     if (scale > 63) throw std::runtime_error("Cannot generate more than 2^63 nodes");
 	double sum = a+b+c+d;
-	if (!Aux::NumericTools::equal(sum, 1.0)) throw std::runtime_error("Probabilities in Rmat have to sum to 1!");
+	INFO("sum of probabilities: ", sum);
+	if (!Aux::NumericTools::equal(sum, 1.0, 0.0001)) throw std::runtime_error("Probabilities in Rmat have to sum to 1.");
 	defaultEdgeWeight = 1.0;
 }
 
