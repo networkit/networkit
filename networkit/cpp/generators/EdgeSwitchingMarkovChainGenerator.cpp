@@ -14,7 +14,7 @@ NetworKit::Graph NetworKit::EdgeSwitchingMarkovChainGenerator::generate() {
 	Graph result(HavelHakimiGenerator(seq, ignoreIfRealizable).generate());
 
 	count neededSwaps = result.numberOfEdges() * 10;
-	count maxTry = neededSwaps * 200;
+	count maxTry = neededSwaps * 2;
 	count performedSwaps = 0;
 
 	std::vector<node> nodeSelection;
