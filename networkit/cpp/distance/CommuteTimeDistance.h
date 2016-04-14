@@ -62,8 +62,10 @@ protected:
 	Lamg lamg;
 	uint64_t setupTime;
 	std::vector<std::vector<double>> distances;
+	std::vector<Vector> solutions;
 	bool hasRun = false;
-
+	bool exactly;
+	count k;
 };
 
 } /* namespace NetworKit */

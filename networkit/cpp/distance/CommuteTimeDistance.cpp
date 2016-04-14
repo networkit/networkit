@@ -61,6 +61,7 @@ void CommuteTimeDistance::run() {
 		rhs[u] = 0.0;
 		rhs[v] = 0.0;
 	});
+	exactly = true;
 	hasRun = true;
 }
 
@@ -70,15 +71,16 @@ uint64_t CommuteTimeDistance::getSetupTime() const {
 
 void CommuteTimeDistance::runApproximation() {
 	count n = G.numberOfNodes();
-	distances.clear();
-	distances.resize(n);
-	G.forNodes([&](node v){
-		distances[v].resize(n, 0.0);
-	});
+	// distances.clear();
+	// distances.resize(n);
+	// G.forNodes([&](node v){
+	// 	distances[v].resize(n, 0.0);
+	// });
 	double epsilon2 = tol * tol;
-	const count k = ceil(log2(n)) / epsilon2;
+	k = ceil(log2(n)) / epsilon2;
 	double randTab[3] = {1/sqrt(k), -1/sqrt(k)};
-	Vector solution(n);
+	solutions.clear();
+	solutions.resize(k, Vector(n));
 
 	for (index i = 0; i < k; ++i) {
 		Vector rhs(n, 0.0);
@@ -99,32 +101,33 @@ void CommuteTimeDistance::runApproximation() {
 			}
 		});
 
-		lamg.solve(rhs, solution);
+		lamg.solve(rhs, solutions[i]);
 
-		G.forNodePairs([&](node u, node v){
-				double diff = solution[u] - solution[v];
-				distances[u][v] += diff * diff; // TODO: fix weighted case!
-				distances[v][u] += diff * diff; // TODO: fix weighted case!
-		});
+		// G.forNodePairs([&](node u, node v){
+		// 		double diff = solutions[i][u] - solutions[i][v];
+		// 		distances[u][v] += diff * diff; // TODO: fix weighted case!
+		// 		distances[v][u] += diff * diff; // TODO: fix weighted case!
+		// });
 	}
-
+	exactly = false;
 	hasRun = true;
 }
 
 void CommuteTimeDistance::runParallelApproximation() {
 	count n = G.numberOfNodes();
-	distances.clear();
-	distances.resize(n);
-	G.forNodes([&](node v){
-		distances[v].resize(n, 0.0);
-	});
+	// distances.clear();
+	// distances.resize(n);
+	// G.forNodes([&](node v){
+	// 	distances[v].resize(n, 0.0);
+	// });
 	double epsilon2 = tol * tol;
-	const count k = ceil(log2(n)) / epsilon2;
+	k = ceil(log2(n)) / epsilon2;
 	double randTab[3] = {1/sqrt(k), -1/sqrt(k)};
-	std::vector<Vector> solutions(k, Vector(n));
+	solutions.clear();
+	solutions.resize(k, Vector(n));
 	std::vector<Vector> rhs(k, Vector(n));
 
-
+	INFO("Number k of iterations: ", k);
 #pragma omp parallel for
 	for (index i = 0; i < k; ++i) {
 		// rhs(v) = \sum_e=1 ^m q(e) * B(e, v)
@@ -142,23 +145,33 @@ void CommuteTimeDistance::runParallelApproximation() {
 			}
 		});
 	}
-
+	INFO("Starting the solve phase");
 	lamg.parallelSolve(rhs, solutions);
+	INFO("Done with the solve phase");
 
-	for (index i = 0; i < k; ++i) {
-		G.parallelForNodePairs([&](node u, node v){
-			double diff = solutions[i][u] - solutions[i][v];
-			distances[u][v] += diff * diff; // TODO: fix weighted case!
-			distances[v][u] += diff * diff; // TODO: fix weighted case!
-		});
-	}
-
+	// for (index i = 0; i < k; ++i) {
+	// 	G.parallelForNodePairs([&](node u, node v){
+	// 		double diff = solutions[i][u] - solutions[i][v];
+	// 		distances[u][v] += diff * diff; // TODO: fix weighted case!
+	// 		distances[v][u] += diff * diff; // TODO: fix weighted case!
+	// 	});
+	// }
+	exactly = false;
 	hasRun = true;
 }
 
 double CommuteTimeDistance::distance(node u, node v) {
 	if (!hasRun) throw std::runtime_error("Call run method first");
-	return sqrt(G.numberOfEdges()*distances[u][v]); // TODO fix weighted case: volume is the sum of the weights of the edges
+	if (exactly) {
+		return sqrt(G.numberOfEdges()*distances[u][v]); // TODO fix weighted case: volume is the sum of the weights of the edges
+	} else {
+		double dist = 0;
+		for (index i = 0; i < k; ++i) {
+			double diff = solutions[i][u] - solutions[i][v];
+			dist += diff * diff;
+		}
+		return sqrt(G.numberOfEdges()*dist);
+	}
 }
 
 }
