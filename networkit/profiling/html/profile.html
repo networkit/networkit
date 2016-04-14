@@ -1,0 +1,35 @@
+<div class="NetworKit_Page" id="NetworKit_Page_{pageIndex}">
+	<div class="Category" data-title="Global Properties">
+		<div class="Value" data-title="Name">{properties[Name]}</div>
+		<div class="Value" data-title="Nodes">{properties[Nodes]}</div>
+		<div class="Value" data-title="Edges">{properties[Edges]}</div>
+		<div class="Value" data-title="Density">{properties[Density]:g}</div>
+		<div class="Value" data-title="Directed">{properties[Directed]}</div>
+		<div class="Value" data-title="Weighted">{properties[Weighted]}</div>
+		<div class="Value" data-title="Self Loops">{properties[Self Loops]:g}</div>
+		<div class="Value" data-title="Diameter Range">{properties[Diameter Range]}</div>
+		<div class="Value" data-title="(Strongly) Connected Components">{properties[Connected Components]}</div>
+	</div>
+	<div class="Category" data-title="Overview">
+		<div class="Block SubCategory" data-title="Node Centrality Measures">
+			{results[Node Centrality][Overview]}
+		</div>
+		<div class="Block SubCategory" data-title="Partitions">
+			{results[Partition][Overview]}
+		</div>
+	</div>
+	<div class="Category" data-title="Node Centrality Measures">
+		{results[Node Centrality][Measures]}
+		<div class="Block SubCategory" data-title="Node Centrality Correlations">
+			{results[Node Centrality][Correlations][HeatMaps]}
+			{results[Node Centrality][Correlations][ScatterPlots]}
+		</div>
+	</div>
+	<div class="Category" data-title="Partitions">
+		{results[Partition][Measures]}
+	</div>
+</div>
+
+<script language="javascript" type="text/javascript">
+	NetworKit_pageEmbed("NetworKit_Page_{pageIndex}");
+</script>
