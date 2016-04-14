@@ -74,6 +74,44 @@ TEST_F(CommuteTimeDistanceGTest, testECTDOnSmallGraphs) {
 		INFO("ECTD time: ", timer.elapsedTag());
 
 		timer.start();
+		cen.runApproximation();
+		timer.stop();
+		INFO("approx ECTD time: ", timer.elapsedTag());
+
+		double error = 0.0;
+		G.forNodes([&](node u){
+			G.forNodes([&](node v) {
+				double relError = fabs(cen.distance(u,v) - exact.distance(u,v));
+			//	INFO("Approximated: ", cen.distance(u,v), ", exact: ", exact.distance(u,v));
+				if (fabs(exact.distance(u,v)) > 1e-9) {
+					relError /= exact.distance(u,v);
+				}
+				error += relError;
+			});
+		});
+		error /= G.numberOfNodes()*G.numberOfNodes();
+		INFO("Avg. relative error: ", error);
+	}
+}
+
+TEST_F(CommuteTimeDistanceGTest, testECTDParallelOnSmallGraphs) {
+	METISGraphReader reader;
+
+	std::string graphFiles[2] = {"input/karate.graph", "input/tiny_01.graph"};
+
+	for (auto graphFile: graphFiles) {
+		Graph G = reader.read(graphFile);
+		G.indexEdges();
+		Aux::Timer timer;
+		CommuteTimeDistance exact(G);
+		CommuteTimeDistance cen(G);
+
+		timer.start();
+		exact.run();
+		timer.stop();
+		INFO("ECTD time: ", timer.elapsedTag());
+
+		timer.start();
 		cen.runParallelApproximation();
 		timer.stop();
 		INFO("approx ECTD time: ", timer.elapsedTag());
