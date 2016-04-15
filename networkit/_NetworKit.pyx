@@ -39,6 +39,7 @@ cdef extern from "<algorithm>" namespace "std":
 	_Graph move( _Graph t ) nogil # specialized declaration as general declaration disables template argument deduction and doesn't work
 	_Partition move( _Partition t) nogil
 	_Cover move(_Cover t) nogil
+	_UnionFind move(_UnionFind t) nogil
 	vector[double] move(vector[double])
 	vector[bool] move(vector[bool])
 	vector[count] move(vector[count])
@@ -3128,6 +3129,34 @@ cdef class Cover:
 			A set of ids of nonempty subsets.
 		"""
 		return self._this.getSubsetIds()
+
+cdef extern from "cpp/structures/UnionFind.h":
+	cdef cppclass _UnionFind "NetworKit::UnionFind":
+		_UnionFind() except +
+		_UnionFind(index max_element) except +
+		void allToSingletons() except +
+		index find(index u) except +
+		void merge(index u, index v) except +
+		_Partition toPartition() except +		
+
+cdef class UnionFind:
+	""" Union-Find data structure"""
+	cdef _UnionFind _this
+
+	def __cinit__(self, count n):
+		self._this = move(_UnionFind(n))
+
+	def allToSingletons(self):
+		self._this.allToSingletons()
+
+	def find(self, index u):
+		return self._this.find(u)
+
+	def merge(self, index u, index v):
+		self._this.merge(u,v)
+
+	def toPartition(self):
+		return Partition().setThis(self._this.toPartition())
 
 
 # Module: community
