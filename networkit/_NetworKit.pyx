@@ -2300,8 +2300,7 @@ cdef class RmatGenerator:
 		print("using initiator matrix [{0},{1};{2},{3}]".format(a,b,c,d))
 		# other parameters
 		(n,m) = G.size()
-		s = math.ceil(math.log(n, 2))
-		scaleParameter = s + math.floor(math.log(scale, 2))
+		scaleParameter = math.ceil(math.log(n * scale, 2))
 		edgeFactor = math.floor(m / n)
 		reduceNodes = (2**scaleParameter) - (scale * n)
 		print("random nodes to delete to achieve target node count: ", reduceNodes)
