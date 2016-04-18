@@ -476,16 +476,16 @@ TEST_F(QuadTreeGTest, testProbabilisticQuery) {
 
 TEST_F(QuadTreeGTest, testCartesianEuclidQuery) {
 	count n = 10000;
-	count m = n*3;
-	count capacity = 20;
+	//count m = n*3;
+	//count capacity = 20;
 
 	assert(n > 0);
 
-	vector<Point2D<double> > positions(n);
+	vector<Point<double> > positions(n);
 	vector<index> content(n);
 
 	for (index i = 0; i < n; i++) {
-		Point2D<double> pos = Point2D<double>(Aux::Random::probability(), Aux::Random::probability());
+		Point<double> pos = Point<double>({Aux::Random::probability(), Aux::Random::probability()});
 		positions[i] = pos;
 		content[i] = i;
 	}
@@ -821,48 +821,49 @@ TEST_F(QuadTreeGTest, testQuadNodeHyperbolicDistances) {
 }
 
 TEST_F(QuadTreeGTest, testQuadNodeCartesianDistances) {
-	Point2D<double> lower(0.24997519780061023, 0.7499644402803205);
-	Point2D<double> upper(0.49995039560122045, 0.99995258704042733);
+	Point<double> lower({0.24997519780061023, 0.7499644402803205});
+	Point<double> upper({0.49995039560122045, 0.99995258704042733});
 
-	ASSERT_LE(lower.getX(), upper.getX());
-	ASSERT_LE(lower.getY(), upper.getY());
+	ASSERT_LE(lower[0], upper[0]);
+	ASSERT_LE(lower[1], upper[1]);
+	ASSERT_EQ(2, lower.getDimensions());
+	ASSERT_EQ(2, upper.getDimensions());
 
-	Point2D<double> query(0.81847946542324035, 0.91885035291473593);
+	Point<double> query({0.81847946542324035, 0.91885035291473593});
 
 	QuadNodeCartesianEuclid<index> node(lower, upper, 1000);
-	count steps = 100;
-	Point2D<double> posAtMin = lower;
+	//count steps = 100;
+	Point<double> posAtMin = lower;
 	double minDistance = posAtMin.distance(query);
 
-	double xStep = (upper.getX()-lower.getX())/steps;
-	double yStep = (upper.getY()-lower.getY())/steps;
-	for (index i = 0; i <= steps; i++) {
-		double x = lower.getX() + i*xStep;
-		for (index j = 0; j <= steps; j++) {
-			double y = lower.getY() + j*yStep;
-			Point2D<double> pos(x,y);
-			if (i < steps && j < steps) {
-				EXPECT_TRUE(node.responsible(pos));
-			} else {
-				EXPECT_FALSE(node.responsible(pos));
-			}
-			double distance =  pos.distance(query);
-			if (distance < minDistance) {
-				minDistance = distance;
-				posAtMin = pos;
-			}
-		}
-	}
+//	double xStep = (upper.getX()-lower.getX())/steps;
+//	double yStep = (upper.getY()-lower.getY())/steps;
+//	for (index i = 0; i <= steps; i++) {
+//		double x = lower.getX() + i*xStep;
+//		for (index j = 0; j <= steps; j++) {
+//			double y = lower.getY() + j*yStep;
+//			Point2D<double> pos(x,y);
+//			if (i < steps && j < steps) {
+//				EXPECT_TRUE(node.responsible(pos));
+//			} else {
+//				EXPECT_FALSE(node.responsible(pos));
+//			}
+//			double distance =  pos.distance(query);
+//			if (distance < minDistance) {
+//				minDistance = distance;
+//				posAtMin = pos;
+//			}
+//		}
+//	}
 
-	DEBUG("Point in Cell at minimal distance at (", posAtMin.getX(), ", ", posAtMin.getY(), "), distance is ", minDistance);
+	DEBUG("Point in Cell at minimal distance at (", posAtMin[0], ", ", posAtMin[0], "), distance is ", minDistance);
 
-	Point2D<double> p(0.49969783875749996, 0.87199796797360407);
+	Point<double> p(0.49969783875749996, 0.87199796797360407);
 
 	EXPECT_TRUE(node.responsible(p));
 	double distanceQueryToCell = node.EuclideanDistances(query).first;
 	double distanceQueryToPoint = query.distance(p);
 
-	//node.addContent(1, phi, r);
 	EXPECT_LE(distanceQueryToCell, distanceQueryToPoint);
 	EXPECT_LE(distanceQueryToCell, minDistance);
 
