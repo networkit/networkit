@@ -51,6 +51,7 @@ cdef extern from "<algorithm>" namespace "std":
 	_Partition move( _Partition t) nogil
 	_Cover move(_Cover t) nogil
 	_Matching move(_Matching) nogil
+	_UnionFind move(_UnionFind t) nogil
 	vector[double] move(vector[double])
 	vector[bool] move(vector[bool])
 	vector[count] move(vector[count])
@@ -3673,6 +3674,34 @@ cdef class Cover:
 		"""
 		return self._this.getSubsetIds()
 
+cdef extern from "cpp/structures/UnionFind.h":
+	cdef cppclass _UnionFind "NetworKit::UnionFind":
+		_UnionFind() except +
+		_UnionFind(index max_element) except +
+		void allToSingletons() except +
+		index find(index u) except +
+		void merge(index u, index v) except +
+		_Partition toPartition() except +		
+
+cdef class UnionFind:
+	""" Union-Find data structure"""
+	cdef _UnionFind _this
+
+	def __cinit__(self, count n):
+		self._this = move(_UnionFind(n))
+
+	def allToSingletons(self):
+		self._this.allToSingletons()
+
+	def find(self, index u):
+		return self._this.find(u)
+
+	def merge(self, index u, index v):
+		self._this.merge(u,v)
+
+	def toPartition(self):
+		return Partition().setThis(self._this.toPartition())
+
 
 # Module: community
 
@@ -6140,7 +6169,7 @@ cdef class DynamicPubWebGenerator:
 
 cdef extern from "cpp/generators/DynamicHyperbolicGenerator.h":
 	cdef cppclass _DynamicHyperbolicGenerator "NetworKit::DynamicHyperbolicGenerator":
-		_DynamicHyperbolicGenerator(count numNodes, double avgDegree, double gamma, double moveEachStep, double moveDistance) except +
+		_DynamicHyperbolicGenerator(count numNodes, double avgDegree, double gamma, double T, double moveEachStep, double moveDistance) except +
 		vector[_GraphEvent] generate(count nSteps) except +
 		_Graph getGraph() except +
 		vector[Point[float]] getCoordinates() except +
@@ -6150,7 +6179,7 @@ cdef extern from "cpp/generators/DynamicHyperbolicGenerator.h":
 cdef class DynamicHyperbolicGenerator:
 	cdef _DynamicHyperbolicGenerator* _this
 
-	def __cinit__(self, numNodes, avgDegree, gamma, moveEachStep, moveDistance):
+	def __cinit__(self, numNodes, avgDegree, gamma, T, moveEachStep, moveDistance):
 		""" Dynamic graph generator according to the hyperbolic unit disk model.
 
 		Parameters
@@ -6161,6 +6190,7 @@ cdef class DynamicHyperbolicGenerator:
 			average degree of the resulting graph
 		gamma : double
 			power-law exponent of the resulting graph
+		T : double
 			temperature, selecting a graph family on the continuum between hyperbolic unit disk graphs and Erdos-Renyi graphs
 		moveFraction : double
 			fraction of nodes to be moved in each time step. The nodes are chosen randomly each step
@@ -6169,7 +6199,7 @@ cdef class DynamicHyperbolicGenerator:
 		"""
 		if gamma <= 2:
 				raise ValueError("Exponent of power-law degree distribution must be > 2")
-		self._this = new _DynamicHyperbolicGenerator(numNodes, avgDegree = 6, gamma = 3, moveEachStep = 1, moveDistance = 0.1)
+		self._this = new _DynamicHyperbolicGenerator(numNodes, avgDegree = 6, gamma = 3, T = 0, moveEachStep = 1, moveDistance = 0.1)
 
 	def generate(self, nSteps):
 		""" Generate event stream.
@@ -6858,7 +6888,7 @@ cdef class VDegreeIndex(LinkPredictor):
 cdef extern from "cpp/linkprediction/AlgebraicDistanceIndex.h":
 	cdef cppclass _AlgebraicDistanceIndex "NetworKit::AlgebraicDistanceIndex"(_LinkPredictor):
 		_AlgebraicDistanceIndex(count numberSystems, count numberIterations, double omega, index norm) except +
-		_AlgebraicDistanceIndex(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm, ) except +
+		_AlgebraicDistanceIndex(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm) except +
 		void preprocess() except +
 		double run(node u, node v) except +
 

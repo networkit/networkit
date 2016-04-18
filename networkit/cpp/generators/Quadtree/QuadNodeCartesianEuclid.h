@@ -28,16 +28,15 @@ template <class T>
 class QuadNodeCartesianEuclid {
 	friend class QuadTreeGTest;
 private:
-	double minX;
-	double minY;
-	double maxX;
-	double maxY;
+	Point<double> minPoint;
+	Point<double> maxPoint;
+	count dimension;
 	unsigned capacity;
 	static const unsigned coarsenLimit = 4;
 	static const long unsigned sanityNodeLimit = 10E15; //just assuming, for debug purposes, that this algorithm never runs on machines with more than 4 Petabyte RAM
 	count subTreeSize;
 	std::vector<T> content;
-	std::vector<Point2D<double> > positions;
+	std::vector<Point<double> > positions;
 	bool isLeaf;
 	bool splitTheoretical;
 	index ID;
@@ -45,19 +44,6 @@ private:
 
 public:
 	std::vector<QuadNodeCartesianEuclid> children;
-
-	QuadNodeCartesianEuclid() {
-		//This should never be called.
-		minX = 0;
-		maxX = 0;
-		minY = 0;
-		maxY = 0;
-		capacity = 20;
-		isLeaf = true;
-		subTreeSize = 0;
-		splitTheoretical = false;
-		ID = 0;
-	}
 
 	/**
 	 * Construct a QuadNode for polar coordinates.
@@ -74,11 +60,11 @@ public:
 	 * @param diagnostics Count how many necessary and unnecessary comparisons happen in leaf cells? Will cause race condition and false sharing in parallel use
 	 *
 	 */
-	QuadNodeCartesianEuclid(Point2D<double> lower, Point2D<double> upper, unsigned capacity, bool splitTheoretical = false) {
-		this->minX = lower.getX();
-		this->minY = lower.getY();
-		this->maxX = upper.getX();
-		this->maxY = upper.getY();
+	QuadNodeCartesianEuclid(Point<double> lower = Point<double>({0.0, 0.0}), Point<double> upper = Point<double>({1.0, 1.0}), unsigned capacity = 1000, bool splitTheoretical = false) {
+		this->minPoint = lower;
+		this->maxPoint = upper;
+		this->dimension = minPoint.getDimensions();
+		assert(maxPoint.getDimensions() == dimension);
 		this->capacity = capacity;
 		this->splitTheoretical = splitTheoretical;
 		this->ID = 0;
@@ -88,40 +74,48 @@ public:
 
 	void split() {
 		assert(isLeaf);
-		//heavy lifting: split up!
-		double middleX, middleY;
+		assert(children.size() == 0);
+		vector<double> middle(dimension);
 		if (splitTheoretical) {
 			//Euclidean space is distributed equally
-			middleX = (minX + maxX) / 2;
-			middleY = (minY + maxY) / 2;
+			for (index d = 0; d < dimension; d++) {
+				middle[d] = (minPoint[d] + maxPoint[d]) / 2;
+			}
 		} else {
 			//median of points
 			const count numPoints = positions.size();
-			vector<double> sortedX(numPoints);
-			vector<double> sortedY(numPoints);
-			for (index i = 0; i < numPoints; i++) {
-				sortedX[i] = positions[i].getX();
-				sortedY[i] = positions[i].getY();
+			assert(numPoints > 0);//otherwise, why split?
+			vector<vector<double> > sorted(dimension);
+			for (index d = 0; d < dimension; d++) {
+				sorted[d].resize(numPoints);
+				for (index i = 0; i < numPoints; i++) {
+					sorted[d][i] = positions[i][d];
+				}
+				std::sort(sorted[d].begin(), sorted[d].end());
+				middle[d] = sorted[d][numPoints/2];//this will crash if no points are there!
+				assert(middle[d] <= maxPoint[d]);
+				assert(middle[d] >= minPoint[d]);
 			}
-			std::sort(sortedX.begin(), sortedX.end());
-			std::sort(sortedY.begin(), sortedY.end());
-			assert(sortedX.size() == numPoints);
-			assert(sortedY.size() == numPoints);
-			middleX = sortedX[numPoints/2];
-			middleY = sortedY[numPoints/2];
 		}
-		assert(middleX > minX);
-		assert(middleX < maxX);
-		assert(middleY > minY);
-		assert(middleY < maxY);
-		Point2D<double> middle(middleX, middleY);
-
-		QuadNodeCartesianEuclid southwest(Point2D<double>(minX, minY), middle, capacity, splitTheoretical);
-		QuadNodeCartesianEuclid southeast(Point2D<double>(middleX, minY), Point2D<double>(maxX, middleY), capacity, splitTheoretical);
-		QuadNodeCartesianEuclid northwest(Point2D<double>(minX, middleY), Point2D<double>(middleX, maxY), capacity, splitTheoretical);
-		QuadNodeCartesianEuclid northeast(middle, Point2D<double>(maxX, maxY), capacity, splitTheoretical);
-		children = {southwest, southeast, northwest, northeast};
-		for (auto child : children) assert(child.isLeaf);
+		count childCount = pow(2,dimension);
+		for (index i = 0; i < childCount; i++) {
+			vector<double> lowerValues(dimension);
+			vector<double> upperValues(dimension);
+			index bitCopy = i;
+			for (index d = 0; d < dimension; d++) {
+				if (bitCopy & 1) {
+					lowerValues[d] = middle[d];
+					upperValues[d] = maxPoint[d];
+				} else {
+					lowerValues[d] = minPoint[d];
+					upperValues[d] = middle[d];
+				}
+				bitCopy = bitCopy >> 1;
+			}
+			QuadNodeCartesianEuclid child(Point<double>(lowerValues), Point<double>(upperValues), capacity, splitTheoretical);
+			assert(child.isLeaf);
+			children.push_back(child);
+		}
 		isLeaf = false;
 	}
 
@@ -132,7 +126,7 @@ public:
 	 * @param angle angular coordinate of point, between 0 and 2 pi.
 	 * @param R radial coordinate of point, between 0 and 1.
 	 */
-	void addContent(T input, Point2D<double> pos) {
+	void addContent(T input, Point<double> pos) {
 		assert(input < sanityNodeLimit);
 		assert(content.size() == positions.size());
 		assert(this->responsible(pos));
@@ -161,8 +155,6 @@ public:
 					foundResponsibleChild = true;
 					children[i].addContent(input, pos);
 					break;
-				} else {
-					TRACE("Child not responsible for (", pos.getX(), ", ", pos.getY(), ").");
 				}
 			}
 			assert(foundResponsibleChild);
@@ -171,15 +163,14 @@ public:
 	}
 
 	/**
-	 * Remove content at polar coordinates (angle, R). May cause coarsening of the quadtree
+	 * Remove content at coordinate pos. May cause coarsening of the quadtree
 	 *
 	 * @param input Content to be removed
-	 * @param angle Angular coordinate
-	 * @param R Radial coordinate
+	 * @param pos Coordinate of content
 	 *
 	 * @return True if content was found and removed, false otherwise
 	 */
-	bool removeContent(T input, Point2D<double> pos) {
+	bool removeContent(T input, Point<double> pos) {
 		if (!responsible(pos)) return false;
 		if (isLeaf) {
 			index i = 0;
@@ -213,7 +204,7 @@ public:
 				//coarsen!!
 				//why not assert empty containers and then insert directly?
 				vector<T> allContent;
-				vector<Point2D<double> > allPositions;
+				vector<Point<double> > allPositions;
 				for (index i = 0; i < children.size(); i++) {
 					allContent.insert(allContent.end(), children[i].content.begin(), children[i].content.end());
 					allPositions.insert(allPositions.end(), children[i].positions.begin(), children[i].positions.end());
@@ -238,59 +229,50 @@ public:
 	 *
 	 * @return True if the region managed by this node lies completely outside of the circle
 	 */
-	bool outOfReach(Point2D<double> query, double radius) const {
+	bool outOfReach(Point<double> query, double radius) const {
 		return EuclideanDistances(query).first > radius;
 	}
 
 	/**
 	 * @param query Position of the query point
 	 */
-	std::pair<double, double> EuclideanDistances(Point2D<double> query) const {
+	std::pair<double, double> EuclideanDistances(Point<double> query) const {
 		/**
 		 * If the query point is not within the quadnode, the distance minimum is on the border.
 		 * Need to check whether extremum is between corners.
 		 */
 		double maxDistance = 0;
 		double minDistance = std::numeric_limits<double>::max();
+		//Point<double> minCopy(minPoint);
+		//Point<double> maxCopy(minPoint);
 
 		if (responsible(query)) minDistance = 0;
 
-		auto updateMinMax = [&minDistance, &maxDistance, query](Point2D<double> pos){
+		auto updateMinMax = [&minDistance, &maxDistance, query](Point<double> pos){
 			double extremalValue = pos.distance(query);
 			maxDistance = std::max(extremalValue, maxDistance);
 			minDistance = std::min(minDistance, extremalValue);
 		};
 
-		/**
-		 * Horizontal boundaries
-		 */
-		if (query.getX() > minX && query.getX() < maxX) {
-			Point2D<double> upper(query.getX(), maxY);
-			Point2D<double> lower(query.getX(), minY);
-			updateMinMax(upper);
-			updateMinMax(lower);
+		vector<double> closestValues(dimension);
+		vector<double> farthestValues(dimension);
+
+		for (index d = 0; d < dimension; d++) {
+			if (std::abs(query[d] - minPoint.at(d)) < std::abs(query[d] - maxPoint.at(d))) {
+				closestValues[d] = minPoint.at(d);
+				farthestValues[d] = maxPoint.at(d);
+			} else {
+				farthestValues[d] = minPoint.at(d);
+				closestValues[d] = maxPoint.at(d);
+			}
+			if (query[d] >= minPoint.at(d) && query[d] <= maxPoint.at(d)) {
+				closestValues[d] = query[d];
+			}
 		}
+		updateMinMax(Point<double>(closestValues));
+		updateMinMax(Point<double>(farthestValues));
 
-		/**
-		 * Vertical boundaries
-		 */
-		if (query.getY() > minY && query.getY() < maxY) {
-			Point2D<double> left(maxX, query.getY());
-			Point2D<double> right(minX, query.getY());
-			updateMinMax(left);
-			updateMinMax(right);
-		}
-
-
-		/**
-		 * corners
-		 */
-		updateMinMax(Point2D<double>(minX, minY));
-		updateMinMax(Point2D<double>(minX, maxY));
-		updateMinMax(Point2D<double>(maxX, minY));
-		updateMinMax(Point2D<double>(maxX, maxY));
-
-		assert(minDistance < query.length() + Point2D<double>(maxX, maxY).length());
+		assert(minDistance < query.length() + maxPoint.length());
 		assert(minDistance < maxDistance);
 		return std::pair<double, double>(minDistance, maxDistance);
 	}
@@ -304,8 +286,11 @@ public:
 	 *
 	 * @return True if input point lies within the region of this QuadNode
 	 */
-	bool responsible(Point2D<double> pos) const {
-		return (pos.getX() >= minX && pos.getY() >= minY && pos.getX() < maxX && pos.getY() < maxY);
+	bool responsible(Point<double> pos) const {
+		for (index d = 0; d < dimension; d++) {
+			if (pos[d] < minPoint.at(d) || pos[d] >= maxPoint.at(d)) return false;
+		}
+		return true;
 	}
 
 	/**
@@ -328,7 +313,7 @@ public:
 		}
 	}
 
-	void getCoordinates(vector<Point2D<double> > &pointContainer) const {
+	void getCoordinates(vector<Point<double> > &pointContainer) const {
 		if (isLeaf) {
 			pointContainer.insert(pointContainer.end(), positions.begin(), positions.end());
 		}
@@ -345,7 +330,8 @@ public:
 	 * Main query method, get points lying in a Euclidean circle around the center point.
 	 * Optional limits can be given to get a different result or to reduce unnecessary comparisons
 	 *
-	 * Elements are pushed onto a vector which is a required argument. This is done to reduce copying
+	 * Elements are pushed onto a vector which is a required argument. This is done to reduce copying.
+	 * (Maybe not necessary due to copy elisison)
 	 *
 	 * Safe to call in parallel.
 	 *
@@ -357,21 +343,17 @@ public:
 	 * @param lowR Optional value for the minimum radial coordinate of the query region
 	 * @param highR Optional value for the maximum radial coordinate of the query region
 	 */
-	void getElementsInEuclideanCircle(Point2D<double> center, double radius, vector<T> &result) const {
+	void getElementsInEuclideanCircle(Point<double> center, double radius, vector<T> &result) const {
 		if (outOfReach(center, radius)) {
 			return;
 		}
 
 		if (isLeaf) {
 			const double rsq = radius*radius;
-			const double queryX = center[0];
-			const double queryY = center[1];
 			const count cSize = content.size();
 
 			for (int i=0; i < cSize; i++) {
-				const double deltaX = positions[i].getX() - queryX;
-				const double deltaY = positions[i].getY() - queryY;
-				if (deltaX*deltaX + deltaY*deltaY < rsq) {
+				if (positions[i].squaredDistance(center) < rsq) {
 					result.push_back(content[i]);
 					if (content[i] >= sanityNodeLimit) DEBUG("Quadnode content ", content[i], " found, suspiciously high!");
 					assert(content[i] < sanityNodeLimit);
@@ -384,7 +366,7 @@ public:
 		}
 	}
 
-	count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &result) const {
+	count getElementsProbabilistically(Point<double> euQuery, std::function<double(double)> prob, vector<T> &result) const {
 		TRACE("Getting Euclidean distances");
 		auto distancePair = EuclideanDistances(euQuery);
 		double probUB = prob(distancePair.first);
@@ -461,7 +443,7 @@ public:
 	}
 
 
-	void maybeGetKthElement(double upperBound, Point2D<double> euQuery, std::function<double(double)> prob, index k, vector<T> &circleDenizens) const {
+	void maybeGetKthElement(double upperBound, Point<double> euQuery, std::function<double(double)> prob, index k, vector<T> &circleDenizens) const {
 		TRACE("Maybe get element ", k, " with upper Bound ", upperBound);
 		assert(k < size());
 		if (isLeaf) {
@@ -538,7 +520,7 @@ public:
 
 	index indexSubtree(index nextID) {
 		index result = nextID;
-		assert(children.size() == 4 || children.size() == 0);
+		assert(children.size() == pow(2,dimension) || children.size() == 0);
 		for (int i = 0; i < children.size(); i++) {
 			result = children[i].indexSubtree(result);
 		}
@@ -546,11 +528,11 @@ public:
 		return result+1;
 	}
 
-	index getCellID(Point2D<double> pos) const {
+	index getCellID(Point<double> pos) const {
 		if (!responsible(pos)) return -1;
 		if (isLeaf) return getID();
 		else {
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < children.size(); i++) {
 				index childresult = children[i].getCellID(pos);
 				if (childresult >= 0) return childresult;
 			}
@@ -563,7 +545,7 @@ public:
 		if (isLeaf) return getID();
 		else {
 			index result = -1;
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < children.size(); i++) {
 				result = std::max(children[i].getMaxIDInSubtree(), result);
 			}
 			return std::max(result, getID());
@@ -580,7 +562,7 @@ public:
 			}
 			offset += size();
 		} else {
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < children.size(); i++) {
 				offset = children[i].reindex(offset);
 			}
 		}
@@ -598,12 +580,12 @@ public:
 				std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
 
 				//can probably be parallelized easily, but doesn't bring much benefit
-				std::sort(permutation.begin(), permutation.end(), [this](index i, index j){return positions[i].getX() < positions[j].getX();});
+				std::sort(permutation.begin(), permutation.end(), [this](index i, index j){return positions[i][0] < positions[j][0];});
 
 				//There ought to be a way to do this more elegant with some algorithm header, but I didn't find any
 
 				std::vector<T> contentcopy(cs);
-				std::vector<Point2D<double> > positioncopy(cs);
+				std::vector<Point<double> > positioncopy(cs);
 
 				for (index i = 0; i < cs; i++) {
 					const index perm = permutation[i];
@@ -616,7 +598,7 @@ public:
 			}
 
 		} else {
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < children.size(); i++) {
 				children[i].sortPointsInLeaves();
 			}
 		}
