@@ -156,7 +156,7 @@ def readGraphs(dirPath, pattern, fileformat, some=None, exclude=None, **kwargs):
 	for root, dirs, files in os.walk(dirPath):
 		for file in files:
 			if fnmatch.fnmatch(file, pattern):
-				if (not fnmatch.fnmatch(file, exclude)) or (exclude is None):
+				if (exclude is None) or (not fnmatch.fnmatch(file, exclude)):
 					G = readGraph(os.path.join(root, file), fileformat, **kwargs)
 					graphs[G.getName()] = G
 					if some:
