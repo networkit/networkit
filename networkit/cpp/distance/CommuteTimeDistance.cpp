@@ -195,7 +195,7 @@ double CommuteTimeDistance::runSinglePair(node u, node v) {
 
 double CommuteTimeDistance::runSingleSource(node u) {
 	count n = G.numberOfNodes();
-	ount maxThreads = omp_get_max_threads();
+	count maxThreads = omp_get_max_threads();
 	std::vector<double> scorePerThread(maxThreads, 0.0);
 	DEBUG("score per thread: ", scorePerThread.size());
 	double dist = 0.0;
