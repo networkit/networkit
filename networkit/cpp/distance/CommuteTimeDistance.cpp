@@ -190,7 +190,7 @@ double CommuteTimeDistance::runSinglePair(node u, node v) {
 	lamg.solve(rhs, solution);
 	double diff = solution[u] - solution[v];
 	dist = fabs(diff); // TODO: check unweighted, fix weighted case!
-	return dist;
+	return sqrt(G.numberOfEdges()*dist);
 }
 
 }
