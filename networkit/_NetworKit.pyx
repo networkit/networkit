@@ -7924,6 +7924,7 @@ cdef extern from "cpp/distance/CommuteTimeDistance.h":
 		void runApproximation() except +
 		void runParallelApproximation() except +
 		double distance(node, node) except +
+		double runSinglePair(node, node) except +
 
 
 cdef class CommuteTimeDistance:
@@ -7941,7 +7942,7 @@ cdef class CommuteTimeDistance:
 	"""
 	cdef _CommuteTimeDistance* _this
 	cdef Graph _G
-	
+
 	def __cinit__(self,  Graph G, double tol = 0.1):
 		self._G = G
 		self._this = new _CommuteTimeDistance(G._this, tol)
@@ -7970,3 +7971,11 @@ cdef class CommuteTimeDistance:
 		v : node
 		"""
 		return self._this.distance(u, v)
+
+	def runSinglePair(self, u, v):
+		"""  Returns the ECTD between node u and node v, without preprocessing.
+
+		u : node
+		v : node
+		"""
+		return self._this.runSinglePair(u, v)

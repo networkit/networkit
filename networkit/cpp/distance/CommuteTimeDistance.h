@@ -55,6 +55,12 @@ public:
 	 * @return commute time distance between the two nodes.
 	 */
  	double distance(node u, node v);
+	/**
+	 * Returns the commute time distance between node @a u and node @a v.
+	 This method does not need the initial preprocessing.
+	 * @return commute time distance between the two nodes.
+	 */
+	double runSinglePair(node u, node v);
 
 protected:
 	const Graph& G;

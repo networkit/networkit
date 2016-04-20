@@ -174,4 +174,23 @@ double CommuteTimeDistance::distance(node u, node v) {
 	}
 }
 
+double CommuteTimeDistance::runSinglePair(node u, node v) {
+	count n = G.numberOfNodes();
+	double dist = 0.0;
+
+	// set up solution vector and status
+	Vector solution(n);
+
+	Vector rhs(n, 0.0);
+	Vector zeroVector(n, 0.0);
+	rhs[u] = +1.0;
+	rhs[v] = -1.0;
+	// set up right-hand side
+	solution = zeroVector;
+	lamg.solve(rhs, solution);
+	double diff = solution[u] - solution[v];
+	dist = fabs(diff); // TODO: check unweighted, fix weighted case!
+	return dist;
+}
+
 }
