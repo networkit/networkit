@@ -132,4 +132,27 @@ TEST_F(CommuteTimeDistanceGTest, testECTDParallelOnSmallGraphs) {
 	}
 }
 
+TEST_F(CommuteTimeDistanceGTest, testECTDSingleSource) {
+	METISGraphReader reader;
+
+	std::string graphFiles[2] = {"input/karate.graph", "input/tiny_01.graph"};
+
+	for (auto graphFile: graphFiles) {
+		Graph G = reader.read(graphFile);
+		Aux::Timer timer;
+		CommuteTimeDistance ectd(G);
+		node u = G.randomNode();
+		double sum1 = ectd.runSingleSource(u);
+		double sum2 = 0.0;
+		G.forNodes([&](node v){
+			if (u != v) {
+				sum2 += ectd.runSinglePair(u,v);
+			}
+		});
+		INFO("sum1 = ", sum1);
+		INFO("sum2 = ", sum2);
+	//	INFO("Avg. relative error: ", error);
+	}
+}
+
 } /* namespace NetworKit */
