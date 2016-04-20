@@ -212,7 +212,6 @@ double CommuteTimeDistance::runSingleSource(node u) {
 			double diff = solution[u] - solution[v];
 			dist = fabs(diff); // TODO: check unweighted, fix weighted case!
 			sum += dist;
-			return sqrt(G.numberOfEdges()*dist);
 			rhs[u] = 0.0;
 			rhs[v] = 0.0;
 		}
