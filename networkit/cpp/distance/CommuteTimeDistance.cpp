@@ -195,6 +195,9 @@ double CommuteTimeDistance::runSinglePair(node u, node v) {
 
 double CommuteTimeDistance::runSingleSource(node u) {
 	count n = G.numberOfNodes();
+	ount maxThreads = omp_get_max_threads();
+	std::vector<double> scorePerThread(maxThreads, 0.0);
+	DEBUG("score per thread: ", scorePerThread.size());
 	double dist = 0.0;
 	double sum = 0.0;
 	// set up solution vector and status
@@ -202,7 +205,7 @@ double CommuteTimeDistance::runSingleSource(node u) {
 
 	Vector rhs(n, 0.0);
 	Vector zeroVector(n, 0.0);
-	G.parallelForNodes([&](node v){
+	G.balancedParallelForNodes([&](node v){
 		if (u != v) {
 			rhs[u] = +1.0;
 			rhs[v] = -1.0;
@@ -211,11 +214,14 @@ double CommuteTimeDistance::runSingleSource(node u) {
 			lamg.solve(rhs, solution);
 			double diff = solution[u] - solution[v];
 			dist = fabs(diff); // TODO: check unweighted, fix weighted case!
-			sum += dist;
+			scorePerThread[omp_get_thread_num()] += dist;
 			rhs[u] = 0.0;
 			rhs[v] = 0.0;
 		}
 	});
+	for (count i = 0; i < maxThreads; i ++) {
+		sum += scorePerThread[i];
+	}
 	return sum;
 }
 
