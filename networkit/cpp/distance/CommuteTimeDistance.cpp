@@ -195,33 +195,32 @@ double CommuteTimeDistance::runSinglePair(node u, node v) {
 
 double CommuteTimeDistance::runSingleSource(node u) {
 	count n = G.numberOfNodes();
-	count maxThreads = omp_get_max_threads();
-	std::vector<double> scorePerThread(maxThreads, 0.0);
-	DEBUG("score per thread: ", scorePerThread.size());
 	double dist = 0.0;
 	double sum = 0.0;
-	// set up solution vector and status
-	Vector solution(n);
-
-	Vector rhs(n, 0.0);
 	Vector zeroVector(n, 0.0);
-	G.balancedParallelForNodes([&](node v){
-		if (u != v) {
-			rhs[u] = +1.0;
-			rhs[v] = -1.0;
-			// set up right-hand side
-			solution = zeroVector;
-			lamg.solve(rhs, solution);
-			double diff = solution[u] - solution[v];
-			dist = fabs(diff); // TODO: check unweighted, fix weighted case!
-			scorePerThread[omp_get_thread_num()] += dist;
-			rhs[u] = 0.0;
-			rhs[v] = 0.0;
+	// set up solution vector and status
+	std::vector<Vector> rhs(n, Vector(n));
+	std::vector<Vector> solution(n, Vector(n));
+	G.forNodes([&](node i){
+		rhs[i] = zeroVector;
+		solution[i] = zeroVector;
+		rhs[i][u] = +1.0;
+		if (i != u) {
+			rhs[i][i] = -1.0;
+		} else {
+			rhs[i][0] = -1.0;
 		}
 	});
-	for (count i = 0; i < maxThreads; i ++) {
-		sum += scorePerThread[i];
-	}
+	INFO("rhs.size() = ", rhs.size());
+	INFO("solutions.size() = ", solution.size());
+	lamg.parallelSolve(rhs, solution);
+	G.forNodes([&](node i){
+		if (i != u) {
+			double diff = solution[i][u] - solution[i][i];
+			dist = fabs(diff); // TODO: check unweighted, fix weighted case!
+			sum += dist;
+		}
+	});
 	return sum;
 }
 
