@@ -163,14 +163,14 @@ void CommuteTimeDistance::runParallelApproximation() {
 double CommuteTimeDistance::distance(node u, node v) {
 	if (!hasRun) throw std::runtime_error("Call run method first");
 	if (exactly) {
-		return sqrt(G.numberOfEdges()*distances[u][v]); // TODO fix weighted case: volume is the sum of the weights of the edges
+		return distances[u][v]; // TODO fix weighted case: volume is the sum of the weights of the edges
 	} else {
 		double dist = 0;
 		for (index i = 0; i < k; ++i) {
 			double diff = solutions[i][u] - solutions[i][v];
 			dist += diff * diff;
 		}
-		return sqrt(G.numberOfEdges()*dist);
+		return dist;
 	}
 }
 
@@ -190,7 +190,34 @@ double CommuteTimeDistance::runSinglePair(node u, node v) {
 	lamg.solve(rhs, solution);
 	double diff = solution[u] - solution[v];
 	dist = fabs(diff); // TODO: check unweighted, fix weighted case!
-	return sqrt(G.numberOfEdges()*dist);
+	return dist;
+}
+
+double CommuteTimeDistance::runSingleSource(node u) {
+	count n = G.numberOfNodes();
+	double dist = 0.0;
+	double sum = 0.0;
+	// set up solution vector and status
+	Vector solution(n);
+
+	Vector rhs(n, 0.0);
+	Vector zeroVector(n, 0.0);
+	G.parallelForNodes([&](node v){
+		if (u != v) {
+			rhs[u] = +1.0;
+			rhs[v] = -1.0;
+			// set up right-hand side
+			solution = zeroVector;
+			lamg.solve(rhs, solution);
+			double diff = solution[u] - solution[v];
+			dist = fabs(diff); // TODO: check unweighted, fix weighted case!
+			sum += dist;
+			return sqrt(G.numberOfEdges()*dist);
+			rhs[u] = 0.0;
+			rhs[v] = 0.0;
+		}
+	});
+	return sum;
 }
 
 }

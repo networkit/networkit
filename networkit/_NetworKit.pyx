@@ -7925,6 +7925,7 @@ cdef extern from "cpp/distance/CommuteTimeDistance.h":
 		void runParallelApproximation() except +
 		double distance(node, node) except +
 		double runSinglePair(node, node) except +
+		double runSingleSource(node) except +
 
 
 cdef class CommuteTimeDistance:
@@ -7979,3 +7980,10 @@ cdef class CommuteTimeDistance:
 		v : node
 		"""
 		return self._this.runSinglePair(u, v)
+
+	def runSingleSource(self, u):
+		"""  Returns the sum of the ECTDs from u, without preprocessing.
+
+		u : node
+		"""
+		return self._this.runSingleSource(u)

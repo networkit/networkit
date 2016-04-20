@@ -62,6 +62,13 @@ public:
 	 */
 	double runSinglePair(node u, node v);
 
+	/**
+	 * Returns the the sum of the distances from node @a u.
+	 This method does not need the initial preprocessing.
+	 * @return commute sum of the distances from the node.
+	 */
+	double runSingleSource(node u);
+
 protected:
 	const Graph& G;
 	double tol;
