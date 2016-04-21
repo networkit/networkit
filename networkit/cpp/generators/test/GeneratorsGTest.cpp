@@ -78,12 +78,12 @@ TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGeneratorSingleStep) {
 	EXPECT_EQ(nPre + 1, nPost) << "one more node should have been added";
 	EXPECT_EQ(mPre + k, mPost) << "k edges should have been added";
 
+	delete gen;
+	delete Gproxy;
 	delete G;
 }
 
 TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGenerator) {
-
-
 	DynamicGraphSource* gen = new DynamicBarabasiAlbertGenerator(2);
 
 	GraphEventProxy* Gproxy = gen->newGraph();
@@ -109,6 +109,10 @@ TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGenerator) {
 		return (G->numberOfNodes() < 2 * n);
 	});
 	EXPECT_EQ(2 * n, G->numberOfNodes());
+
+	delete gen;
+	delete Gproxy;
+	delete G;
 }
 
 
@@ -124,6 +128,8 @@ TEST_F(GeneratorsGTest, viewDynamicBarabasiAlbertGenerator) {
 	METISGraphWriter writer;
 	writer.write(*G, "output/BATest.graph");
 
+	delete gen;
+	delete Gproxy;
 	delete G;
 }
 
