@@ -43,7 +43,7 @@ Graph EdgeListReader::readContinuous(const std::string& path) {
 	// unfortunately there is an empty line at the ending of the file, so we need to get the line before that
 
 	node maxNode = 0;
-	bool weighted;
+	bool weighted = false;
 	bool checkedWeighted = false;
 
 	DEBUG("separator: " , this->separator);
