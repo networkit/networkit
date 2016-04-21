@@ -105,7 +105,8 @@ public:
 		root.getElementsInEuclideanCircle(circleCenter, radius, circleDenizens);
 	}
 
-	count getElementsProbabilistically(Point<double> euQuery, std::function<double(double)> prob, vector<T> &circleDenizens) {
+	template<typename L>
+	count getElementsProbabilistically(Point<double> euQuery, L prob, vector<T> &circleDenizens) {
 		return root.getElementsProbabilistically(euQuery, prob, circleDenizens);
 	}
 

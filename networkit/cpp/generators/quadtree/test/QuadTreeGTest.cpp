@@ -838,26 +838,6 @@ TEST_F(QuadTreeGTest, testQuadNodeCartesianDistances) {
 	Point<double> posAtMin = lower;
 	double minDistance = posAtMin.distance(query);
 
-//	double xStep = (upper.getX()-lower.getX())/steps;
-//	double yStep = (upper.getY()-lower.getY())/steps;
-//	for (index i = 0; i <= steps; i++) {
-//		double x = lower.getX() + i*xStep;
-//		for (index j = 0; j <= steps; j++) {
-//			double y = lower.getY() + j*yStep;
-//			Point2D<double> pos(x,y);
-//			if (i < steps && j < steps) {
-//				EXPECT_TRUE(node.responsible(pos));
-//			} else {
-//				EXPECT_FALSE(node.responsible(pos));
-//			}
-//			double distance =  pos.distance(query);
-//			if (distance < minDistance) {
-//				minDistance = distance;
-//				posAtMin = pos;
-//			}
-//		}
-//	}
-
 	DEBUG("Point in Cell at minimal distance at (", posAtMin[0], ", ", posAtMin[0], "), distance is ", minDistance);
 
 	Point<double> p(0.49969783875749996, 0.87199796797360407);

@@ -12,7 +12,7 @@
 #include "../geometric/HyperbolicSpace.h"
 #include "StaticGraphGenerator.h"
 #include "../auxiliary/Timer.h"
-#include "Quadtree/Quadtree.h"
+#include "quadtree/Quadtree.h"
 
 namespace NetworKit {
 

@@ -13,8 +13,8 @@
 
 #include "IOBenchmark.h"
 #include "../RasterReader.h"
-#include "../../generators/Quadtree/QuadtreePolarEuclid.h"
-#include "../../generators/Quadtree/QuadtreeCartesianEuclid.h"
+#include "../../generators/quadtree/QuadtreePolarEuclid.h"
+#include "../../generators/quadtree/QuadtreeCartesianEuclid.h"
 #include "../../geometric/HyperbolicSpace.h"
 
 namespace NetworKit {

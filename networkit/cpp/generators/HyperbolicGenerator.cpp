@@ -18,7 +18,6 @@
 
 #include "../graph/GraphBuilder.h"
 #include "HyperbolicGenerator.h"
-#include "Quadtree/Quadtree.h"
 #include "../auxiliary/Random.h"
 #include "../auxiliary/Parallel.h"
 
