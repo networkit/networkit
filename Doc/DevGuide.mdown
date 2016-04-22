@@ -276,8 +276,6 @@ To discuss important changes to NetworKit, use the [developers e-mail list][list
 
 [list]: https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit-dev
 
-To suggest improvements to workflows and conventions, write to `christian.staudt @ kit.edu`.
-
 
 ## Further Reading
 
