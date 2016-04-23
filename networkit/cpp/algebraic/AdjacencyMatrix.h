@@ -9,7 +9,7 @@
 #define ADJACENCYMATRIX_H_
 
 #include "../graph/Graph.h"
-#include "GraphMatrix.h"
+#include "Matrix.h"
 
 namespace NetworKit {
 
