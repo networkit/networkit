@@ -39,7 +39,7 @@ class SolverLamg {
 private:
 	LevelHierarchy &hierarchy;
 	const Smoother &smoother;
-#ifndef NPROFILE
+#ifndef NDEBUG
 	static count minResTime;
 	static count interpolationTime;
 	static count restrictionTime;

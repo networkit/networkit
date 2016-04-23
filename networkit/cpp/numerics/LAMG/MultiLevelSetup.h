@@ -10,12 +10,13 @@
 
 #include "LevelHierarchy.h"
 #include "../Smoother.h"
-
 #include "../../algebraic/CSRMatrix.h"
+
+#include <limits>
 
 namespace NetworKit {
 
-#define UNDECIDED -1
+#define UNDECIDED std::numeric_limits<index>::max()
 
 /**
  * Implements the setup phase of LAMG (Lean Algebraic Multigrid by Livne et al.).
@@ -24,7 +25,7 @@ class MultiLevelSetup {
 
 private:
 	const Smoother &smoother;
-#ifndef NPROFILE
+#ifndef NDEBUG
 	static count eliminationTime;
 	static count schurComplementTime;
 	static count aggregationTime;
@@ -100,7 +101,7 @@ private:
 	 * @param matrix Laplacian matrix.
 	 * @param status[out] High degree nodes are flagged as seed.
 	 */
-	void addHighDegreeSeedNodes(const CSRMatrix &matrix, std::vector<int64_t> &status) const;
+	void addHighDegreeSeedNodes(const CSRMatrix &matrix, std::vector<index> &status) const;
 
 	/**
 	 * Aggregates loose nodes (nodes with low adjacency) together.
@@ -108,7 +109,7 @@ private:
 	 * @param status[out] Aggregates loose nodes together and labels them in @a status accordingly.
 	 * @param nc[out] The altered number of coarse nodes.
 	 */
-	void aggregateLooseNodes(const CSRMatrix &strongAdjMatrix, std::vector<int64_t> &status, count &nc) const;
+	void aggregateLooseNodes(const CSRMatrix &strongAdjMatrix, std::vector<index> &status, count &nc) const;
 
 	/**
 	 * Computes the strong adjacency matrix for the given Laplacian matrix @a matrix.
@@ -134,7 +135,7 @@ private:
 	 * @param tVs[out] Test vectors.
 	 * @param status[out] Aggregation labels.
 	 */
-	void aggregationStage(const CSRMatrix &matrix, count &nc, const CSRMatrix &strongAdjMatrix, const CSRMatrix &affinityMatrix, std::vector<Vector> &tVs, std::vector<int64_t> &status) const;
+	void aggregationStage(const CSRMatrix &matrix, count &nc, const CSRMatrix &strongAdjMatrix, const CSRMatrix &affinityMatrix, std::vector<Vector> &tVs, std::vector<index> &status) const;
 
 	/**
 	 * Computes strong (cf. LAMG paper) neighbors and stores them sorted into @a bins.
@@ -142,7 +143,7 @@ private:
 	 * @param status Aggregation labels.
 	 * @param bins[out] Strong neighbors sorted into bins.
 	 */
-	void computeStrongNeighbors(const CSRMatrix &affinityMatrix, const std::vector<int64_t> &status, std::vector<std::vector<index>> &bins) const;
+	void computeStrongNeighbors(const CSRMatrix &affinityMatrix, const std::vector<index> &status, std::vector<std::vector<index>> &bins) const;
 
 	/**
 	 * Finds the best seed for node @a u and stores it in @a s.
@@ -155,7 +156,7 @@ private:
 	 * @param s[out] The best seed for node @a u.
 	 * @return @code{True} if a seed has been found for @a u, @code{false} otherwise.
 	 */
-	bool findBestSeedEnergyCorrected(const CSRMatrix &strongAdjMatrix, const CSRMatrix &affinityMatrix, const std::vector<double> &diag, const std::vector<Vector> &tVs, const std::vector<int64_t> &status, const index u, index &s) const;
+	bool findBestSeedEnergyCorrected(const CSRMatrix &strongAdjMatrix, const CSRMatrix &affinityMatrix, const std::vector<double> &diag, const std::vector<Vector> &tVs, const std::vector<index> &status, const index u, index &s) const;
 
 
 	/**

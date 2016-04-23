@@ -54,6 +54,9 @@ TEST_F(LAMGGTest, testSmallGraphs) {
 		timer.start();
 		solver.solve(result, b, status);
 		timer.stop();
+
+		EXPECT_TRUE(status.converged);
+
 		INFO("solve time\t ", timer.elapsedMilliseconds());
 		INFO("final residual = ", status.residual);
 		INFO("numIters = ", status.numIters);
