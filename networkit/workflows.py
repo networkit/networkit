@@ -12,7 +12,7 @@ import fnmatch
 
 
 
-from networkit import properties, graph, generators
+from networkit import graph, generators, components
 
 def extractLargestComponent(G):
 	"""
@@ -28,13 +28,13 @@ def extractLargestComponent(G):
 		Subgraph of largest component, preserving node ids of orignal graph.
 	"""
 
-	cc = properties.ConnectedComponents(G)
+	cc = components.ConnectedComponents(G)
 	cc.run()
 	cSizes = cc.getComponentSizes()
 	(largestCompo, size) = max(cSizes.items(), key=operator.itemgetter(1))
 	logging.info("extracting component {0} containing {1} nodes".format(largestCompo, size))
 	compoNodes = [v for v in G.nodes() if cc.componentOfNode(v) is largestCompo]
-	C = graph.Subgraph().fromNodes(G, compoNodes)
+	C = G.subgraphFromNodes(compoNodes)
 	return C
 
 
@@ -78,7 +78,7 @@ class TestWorkflows(unittest.TestCase):
 	def testExtractLargestComponent(self):
 		G = generators.DorogovtsevMendesGenerator(100).generate()
 		C = extractLargestComponent(G)
-		self.assertEqual(properties.size(C), properties.size(G))
+		self.assertEqual(C.size(), G.size())
 
 if __name__ == '__main__':
     unittest.main()

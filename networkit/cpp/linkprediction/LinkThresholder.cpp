@@ -7,6 +7,7 @@
 
 #include "LinkThresholder.h"
 #include "PredictionsSorter.h"
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -21,7 +22,7 @@ std::vector<std::pair<node, node>> byScore(std::vector<LinkPredictor::prediction
   selectedLinks.reserve(predictionsList.size());
   std::transform(predictionsList.begin(), predictionsList.end(), std::back_inserter(selectedLinks),
       [](const LinkPredictor::prediction& p){ return p.first; });
-  std::sort(selectedLinks.begin(), selectedLinks.end());
+  Aux::Parallel::sort(selectedLinks.begin(), selectedLinks.end());
   return selectedLinks;
 }
 
@@ -35,7 +36,7 @@ std::vector<std::pair<node, node>> byCount(std::vector<LinkPredictor::prediction
   selectedLinks.reserve(selectedPredictions.size());
   std::transform(selectedPredictions.begin(), selectedPredictions.end(), std::back_inserter(selectedLinks),
       [](const LinkPredictor::prediction& p){ return p.first; });
-  std::sort(selectedLinks.begin(), selectedLinks.end());
+  Aux::Parallel::sort(selectedLinks.begin(), selectedLinks.end());
   return selectedLinks;
 }
 

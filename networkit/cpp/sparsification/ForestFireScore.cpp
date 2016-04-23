@@ -10,6 +10,7 @@
 #include <set>
 #include <queue>
 #include "../auxiliary/Log.h"
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -23,6 +24,7 @@ void ForestFireScore::run() {
 	std::vector<count> burnt (G.upperEdgeIdBound(), 0);
 	count edgesBurnt = 0;
 
+	#pragma omp parallel
 	while (edgesBurnt < targetBurntRatio * G.numberOfEdges()) {
 		//Start a new fire
 		std::queue<node> activeNodes;
@@ -30,48 +32,56 @@ void ForestFireScore::run() {
 		activeNodes.push(G.randomNode());
 
 		auto forwardNeighbors = [&](node u) {
-			std::vector<node> validEdges;
-			G.forNeighborsOf(u, [&](node x){
+			std::vector<std::pair<node, edgeid>> validEdges;
+			G.forNeighborsOf(u, [&](node, node x, edgeid eid){
 				if (! visited[x]) {
-					validEdges.push_back(x);
+					validEdges.emplace_back(x, eid);
 				}
 			});
 			return validEdges;
 		};
 
+		count localEdgesBurnt = 0;
+
 		while (! activeNodes.empty()) {
 			node v = activeNodes.front();
 			activeNodes.pop();
 
-			std::vector<node> validNeighbors = forwardNeighbors(v);
-			std::set<node> burntNeighbors;
+			std::vector<std::pair<node, edgeid>> validNeighbors = forwardNeighbors(v);
 			while (true) {
 				double q = Aux::Random::real(1.0);
 				if (q > pf || validNeighbors.empty()) {
 					break;
 				}
 				count index = Aux::Random::integer(validNeighbors.size() - 1);
-				burntNeighbors.insert(validNeighbors[index]);
+
+				{ // mark node as visited, burn edge
+					node x;
+					edgeid eid;
+					std::tie(x, eid) = validNeighbors[index];
+					activeNodes.push(x);
+					#pragma omp atomic update
+					burnt[eid]++;
+					localEdgesBurnt++;
+					visited[x] = true;
+				}
+
 				validNeighbors[index] = validNeighbors.back();
 				validNeighbors.pop_back();
 			}
-
-			for (node x : burntNeighbors) {
-				activeNodes.push(x);
-				burnt[G.edgeId(v, x)]++;
-				edgesBurnt++;
-				visited[x] = true;
-			}
 		}
+
+		#pragma omp atomic update
+		edgesBurnt += localEdgesBurnt;
 	}
 
-	std::vector<double> burntNormalized (G.numberOfEdges(), 0.0);
-	double maxv = (double) *std::max_element(std::begin(burnt), std::end(burnt));
+	std::vector<double> burntNormalized (G.upperEdgeIdBound(), 0.0);
+	double maxv = (double) *Aux::Parallel::max_element(std::begin(burnt), std::end(burnt));
 
 	if (maxv > 0) {
-		count idx = 0;
-		for (auto& b : burnt) {
-			burntNormalized[idx++] = b / maxv;
+		#pragma omp parallel for
+		for (index i = 0; i < burnt.size(); ++i) {
+			burntNormalized[i] = burnt[i] / maxv;
 		}
 	}
 

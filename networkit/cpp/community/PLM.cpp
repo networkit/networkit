@@ -76,13 +76,9 @@ void PLM::run() {
 				// resize to maximum community id
 				it.resize(zeta.upperBound());
 			}
-			for (auto &it : neigh_comm) {
-				// resize to maximum size so no further memory allocation is needed
-				it.resize(G.upperNodeIdBound());
-			}
 		} else { // initialize array only for first thread
 			turboAffinity.emplace_back(zeta.upperBound());
-			neigh_comm.emplace_back(G.upperNodeIdBound());
+			neigh_comm.emplace_back();
 		}
 	}
 
@@ -93,10 +89,9 @@ void PLM::run() {
 
 		// collect edge weight to neighbor clusters
 		std::map<index, edgeweight> affinity;
-		// only for turbo mode, stores the number of neighbors
-		index numNeighbors = 0;
 
 		if (turbo) {
+			neigh_comm[tid].clear();
 			G.forNeighborsOf(u, [&](node v) {
 				turboAffinity[tid][zeta[v]] = -1; // set all to -1 so we can see when we get to it the first time
 			});
@@ -107,7 +102,7 @@ void PLM::run() {
 					if (turboAffinity[tid][C] == -1) {
 						// found the neighbor for the first time, initialize to 0 and add to list of neighboring communities
 						turboAffinity[tid][C] = 0;
-						neigh_comm[tid][numNeighbors++] = C;
+						neigh_comm[tid].push_back(C);
 					}
 					turboAffinity[tid][C] += weight;
 				}
@@ -152,7 +147,6 @@ void PLM::run() {
 
 		index best = none;
 		index C = none;
-		index D = none;
 		double deltaBest = -1;
 
 		C = zeta[u];
@@ -160,9 +154,7 @@ void PLM::run() {
 		if (turbo) {
 			edgeweight affinityC = turboAffinity[tid][C];
 
-			for (index i = 0; i < numNeighbors; ++i) {
-				D = neigh_comm[tid][i];
-
+			for (index D : neigh_comm[tid]) {
 				if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
 					double delta = modGain(u, C, D, affinityC, turboAffinity[tid][D]);
 
@@ -178,7 +170,7 @@ void PLM::run() {
 
 //			TRACE("Processing neighborhood of node " , u , ", which is in cluster " , C);
 			for (auto it : affinity) {
-				D = it.first;
+				index D = it.first;
 				if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
 					double delta = modGain(u, C, D, affinityC, it.second);
 					// TRACE("mod gain: " , delta);
@@ -329,7 +321,7 @@ std::string NetworKit::PLM::toString() const {
 std::pair<Graph, std::vector<node> > PLM::coarsen(const Graph& G, const Partition& zeta) {
 	ParallelPartitionCoarsening parCoarsening(G, zeta);
 	parCoarsening.run();
-	return {parCoarsening.getCoarseGraph(),parCoarsening.getNodeMapping()};
+	return {parCoarsening.getCoarseGraph(),parCoarsening.getFineToCoarseNodeMapping()};
 }
 
 Partition PLM::prolong(const Graph& Gcoarse, const Partition& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode) {

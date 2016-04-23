@@ -43,7 +43,7 @@ Graph EdgeListReader::readContinuous(const std::string& path) {
 	// unfortunately there is an empty line at the ending of the file, so we need to get the line before that
 
 	node maxNode = 0;
-	bool weighted;
+	bool weighted = false;
 	bool checkedWeighted = false;
 
 	DEBUG("separator: " , this->separator);
@@ -55,40 +55,42 @@ Graph EdgeListReader::readContinuous(const std::string& path) {
 	while (file.good()) {
 		++i;
 		std::getline(file, line);
-		if(*line.rbegin() == '\r') line.pop_back();
-		// TRACE("read line: " , line);
-		if (line.compare(0, this->commentPrefix.length(), this->commentPrefix) == 0) {
-			// TRACE("ignoring comment: " , line);
-		} else if (line.length() == 0) {
-			// TRACE("ignoring empty line");
-		} else {
-			std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
-			if (!checkedWeighted) {
-				if (split.size() == 2) {
-					weighted = false;
-				} else if (split.size() == 3) {
-					INFO("Identified graph as weighted.");
-					weighted = true;
-				}
-				checkedWeighted = true;
-			}
-			if (split.size() == 2 || split.size() == 3) {
-				TRACE("split into : " , split[0] , " and " , split[1]);
-				node u = std::stoul(split[0]);
-				if (u > maxNode) {
-					maxNode = u;
-				}
-				node v = std::stoul(split[1]);
-				if (v > maxNode) {
-					maxNode = v;
-				}
+		TRACE("read line: " , line);
+		if (!line.empty()) {
+			if (line.back() == '\r') line.pop_back();
+			if (line.compare(0, this->commentPrefix.length(), this->commentPrefix) == 0) {
+				TRACE("ignoring comment: " , line);
 			} else {
-				std::stringstream message;
-				message << "malformed line ";
-				message << i << ": ";
-				message << line;
-				throw std::runtime_error(message.str());
+				std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
+				if (!checkedWeighted) {
+					if (split.size() == 2) {
+						weighted = false;
+					} else if (split.size() == 3) {
+						INFO("Identified graph as weighted.");
+						weighted = true;
+					}
+					checkedWeighted = true;
+				}
+				if (split.size() == 2 || split.size() == 3) {
+					TRACE("split into : " , split[0] , " and " , split[1]);
+					node u = std::stoul(split[0]);
+					if (u > maxNode) {
+						maxNode = u;
+					}
+					node v = std::stoul(split[1]);
+					if (v > maxNode) {
+						maxNode = v;
+					}
+				} else {
+					std::stringstream message;
+					message << "malformed line ";
+					message << i << ": ";
+					message << line;
+					throw std::runtime_error(message.str());
+				}
 			}
+		} else {
+			DEBUG("line ", i, " is empty.");
 		}
 	}
 	file.close();
@@ -154,34 +156,38 @@ Graph EdgeListReader::readNonContinuous(const std::string& path) {
 	while (file.good()) {
 		++i;
 		std::getline(file, line);
-		if(*line.rbegin() == '\r') line.pop_back();
-		// TRACE("read line: " , line);
-		if (line.compare(0, this->commentPrefix.length(), this->commentPrefix) == 0) {
-			// TRACE("ignoring comment: " , line);
-	        } else if (line.length() == 0) {
-        		// TRACE("ignoring empty line");
-		} else {
-			std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
-			if (!checkedWeighted) {
-				if (split.size() == 2) {
-					weighted = false;
-				} else if (split.size() == 3) {
-					INFO("Identified graph as weighted.");
-					weighted = true;
-				}
-				checkedWeighted = true;
-			}
-			if (split.size() == 2 || split.size() == 3) {
-        			TRACE("split into : " , split[0] , " and " , split[1]);
-				if(this->mapNodeIds.insert(std::make_pair(split[0],consecutiveID)).second) ++consecutiveID;
-				if(this->mapNodeIds.insert(std::make_pair(split[1],consecutiveID)).second) ++consecutiveID;
+		TRACE("read line: " , line);
+		if (!line.empty()) {
+			if(line.back() == '\r') line.pop_back();
+			if (line.compare(0, this->commentPrefix.length(), this->commentPrefix) == 0) {
+				 TRACE("ignoring comment: " , line);
+			} else if (line.length() == 0) {
+				TRACE("ignoring empty line");
 			} else {
-				std::stringstream message;
-				message << "malformed line ";
-				message << i << ": ";
-				message << line;
-				throw std::runtime_error(message.str());
+				std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
+				if (!checkedWeighted) {
+					if (split.size() == 2) {
+						weighted = false;
+					} else if (split.size() == 3) {
+						INFO("Identified graph as weighted.");
+						weighted = true;
+					}
+					checkedWeighted = true;
+				}
+				if (split.size() == 2 || split.size() == 3) {
+					TRACE("split into : " , split[0] , " and " , split[1]);
+					if(this->mapNodeIds.insert(std::make_pair(split[0],consecutiveID)).second) ++consecutiveID;
+					if(this->mapNodeIds.insert(std::make_pair(split[1],consecutiveID)).second) ++consecutiveID;
+				} else {
+					std::stringstream message;
+					message << "malformed line ";
+					message << i << ": ";
+					message << line;
+					throw std::runtime_error(message.str());
+				}
 			}
+		} else {
+			DEBUG("line ", i, " is empty.");
 		}
 	}
 	file.close();

@@ -24,6 +24,13 @@ TEST_F(PartitionGTest, testConstructor) {
 	EXPECT_EQ(1u ,p.upperBound());
 }
 
+TEST_F(PartitionGTest, testVectorConstructor) {
+	Partition p(10);
+	Partition p2(p.getVector());
+	EXPECT_EQ(0u ,p2.lowerBound());
+	EXPECT_EQ(1u ,p2.upperBound());
+}
+
 
 TEST_F(PartitionGTest, testAllToSingletons) {
 	Partition p(10);
@@ -38,7 +45,7 @@ TEST_F(PartitionGTest, testAddToSubsetSuccess) {
 	Partition p(10);
 	p.addToSubset(0,8);
 	p.addToSubset(0,3);
-	EXPECT_EQ(p[8],p[3]);	
+	EXPECT_EQ(p[8],p[3]);
 }
 
 TEST_F(PartitionGTest, testMoveToSubsetSuccess) {
@@ -222,7 +229,7 @@ TEST_F(PartitionGTest, testCompact) {
 	p.forEntries([&](index e,index s){
 		EXPECT_EQ(controlSet[e],s);
 	});
-} 
+}
 
 
 TEST_F(PartitionGTest, testSubsetSizes) {

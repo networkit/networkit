@@ -2,94 +2,116 @@
  * Matching.cpp
  *
  *  Created on: 03.12.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "Matching.h"
 
 namespace NetworKit {
 
-Matching::Matching(uint64_t n) : data(n, none), n(n) {
+
+Matching::Matching(count z) : data(z, none) {
 }
 
-bool Matching::isMatched(const node& u) const {
-	return (this->data[u] != none);
+bool Matching::isMatched(node u) const {
+	return (this->data.at(u) != none);
 }
 
-bool Matching::isProper(Graph& G) const {
+bool Matching::isProper(const Graph& G) const {
 	/**
 	 * The content of this data structure represents a matching iff
 	 * 	(for all v in V: M[v] = v or M[M[v]] = v) and
 	 * 	(for all (u,v) in M): (u,v) in E
 	 *
 	 */
+	bool isProper = true;
 	bool sym = true;
 	// check if entries are symmetric
-	for (node v = 0; v < G.numberOfNodes(); ++v) {
-		sym = ((data[v] == none) || (data[data[v]] == v));
+
+	G.forNodes([&](node v) {
+		sym = ((data.at(v) == none) || (data[data.at(v)] == v));
 		if (!sym) {
 			DEBUG("node " , v , " is not symmetrically matched");
-			return false;
+			isProper = false;
 		}
-	}
+	});
 
 	bool inGraph = true;
 	// check if every pair exists as an edge
-	for (node v = 0; v < G.numberOfNodes(); ++v) {
-		node w = data[v];
+	G.forNodes([&](node v){
+		node w = data.at(v);
 		if ((v != w) && (w != none)) {
 			inGraph = G.hasEdge(v, w);
 			if (!inGraph) {
 				DEBUG("matched pair (" , v , "," , w , ") is not an edge");
-				return false;
+				isProper = false;
 			}
 		}
-	}
+	});
 
-	return (sym && inGraph);
+
+	return isProper;
 }
 
-void Matching::match(const node& u, const node& v) {
-	data[u] = v;
-	data[v] = u;
+void Matching::match(node u, node v) {
+	data.at(u) = v;
+	data.at(v) = u;
 }
 
-void Matching::unmatch(const node& u, const node& v) {
-	data[u] = u;
-	data[v] = v;
+void Matching::unmatch(node u, node v) {
+	data.at(u) = none;
+	data.at(v) = none;
 }
 
-bool Matching::areMatched(const node& u, const node& v) const {
-	return (data[u] == v);
+bool Matching::areMatched(node u, node v) const {
+	return (data.at(u) == v);
 }
 
-count Matching::size() const {
+count Matching::size(const Graph& G) const {
 	count size = 0;
-	for (index i = 0; i < n; ++i) { // TODO: parallel
-		if (isMatched(i)) {
+	G.forNodes([&](node v) {
+		if (isMatched(v)) {
 			++size;
 		}
-	}
+	});
 	return size / 2;
 }
 
 index Matching::mate(node v) const {
-	if (isMatched(v)) {
-		return data[v];
-	}
-	else return none;
+	return data.at(v);
 }
 
-edgeweight Matching::weight(const Graph& g) const {
+edgeweight Matching::weight(const Graph& G) const {
 	edgeweight weight = 0;
 
-	for (index i = 0; i < n; ++i) {
-		if (isMatched(i) && i < mate(i)) {
-			weight += g.weight(i, mate(i));
+	G.forNodes([&](node v){
+		if (isMatched(v) && v < mate(v)) {
+			weight += G.weight(v, mate(v));
 		}
-	}
+	});
 
 	return weight;
+}
+
+Partition Matching::toPartition(const Graph& G) const {
+	Partition partition(G.upperNodeIdBound());
+	std::vector<bool> visited(G.upperNodeIdBound(), false);
+	G.forNodes([&](node u){
+		if (!visited[u]) {
+			if (mate(u) == none) {
+				partition.addToSubset(u,u);
+			} else {
+				partition.addToSubset(u,u);
+				partition.addToSubset(u, mate(u));
+				visited[u] = true;
+				visited[mate(u)] = true;
+			}
+		}
+	});
+	return partition;
+}
+
+std::vector<node> Matching::getVector() const {
+	return this->data; //FIXME is this appropriate? - why not?
 }
 
 }

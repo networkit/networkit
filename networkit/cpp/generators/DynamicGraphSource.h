@@ -33,6 +33,8 @@ public:
 
 	// DynamicGraphGenerator(GraphEventProxy& proxy);
 
+	virtual ~DynamicGraphSource() = default;
+
 	/**
 	 * After constructing a DynamicGraphGenerator, call this to set a new
 	 * a Graph and GraphEventProxy instance and get access to them.

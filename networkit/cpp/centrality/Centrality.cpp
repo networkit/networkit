@@ -6,6 +6,7 @@
  */
 
 #include "Centrality.h"
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -27,13 +28,14 @@ std::vector<std::pair<node, double> > Centrality::ranking() {
 	G.forNodes([&](node v){
 		ranking.push_back({v, scoreData[v]});
 	});
-	std::sort(ranking.begin(), ranking.end(), [](std::pair<node, double> x, std::pair<node, double> y) { return x.second > y.second; });
+	Aux::Parallel::sort(ranking.begin(), ranking.end(), [](std::pair<node, double> x, std::pair<node, double> y) { return x.second > y.second; });
 	return ranking;
 }
 
-std::vector<double> Centrality::scores() {
+std::vector<double> Centrality::scores(bool moveOut) {
 	if (!hasRun) throw std::runtime_error("Call run method first");
-	return scoreData;
+	hasRun = !moveOut;
+	return moveOut ? std::move(scoreData) :  scoreData;
 }
 
 std::vector<double> Centrality::edgeScores() {

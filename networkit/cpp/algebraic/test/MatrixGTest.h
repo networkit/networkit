@@ -11,7 +11,7 @@
 #define MATRIXGTEST_H_
 
 #include "gtest/gtest.h"
-#include "../Matrix.h"
+#include "../GraphMatrix.h"
 #include "../../graph/Graph.h"
 #include "../../io/METISGraphReader.h"
 #include "../AdjacencyMatrix.h"
