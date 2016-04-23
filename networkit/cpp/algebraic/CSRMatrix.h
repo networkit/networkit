@@ -34,7 +34,6 @@ private:
 
 	void quicksort(index left, index right);
 	index partition(index left, index right);
-	void bubbleSort(index left, index right);
 
 public:
 	/** Represents a matrix entry s.t. matrix(row, column) = value */
@@ -94,11 +93,6 @@ public:
 	 * @return Value at matrix position (i,j).
 	 */
 	double operator()(const index i, const index j) const;
-
-	/**
-	 * Set the matrix at position (@a i, @a j) to @a value.
-	 */
-	void setValue(const index i, const index j, const double value);
 
 	/**
 	 * Sorts the column indices in each row for faster access.

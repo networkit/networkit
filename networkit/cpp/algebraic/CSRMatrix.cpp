@@ -135,17 +135,7 @@ double CSRMatrix::operator()(const index i, const index j) const {
 	return value;
 }
 
-void CSRMatrix::setValue(const index i, const index j, const double value) {
-//	assert(i >= 0 && i < nRows);
-//	assert(j >= 0 && j < nCols);
-//
-//
-//
-//	graph.setWeight(i, j, value);
-}
-
 void CSRMatrix::quicksort(index left, index right) {
-//	INFO("quicksort(", left, ",", right,")");
 	if (left >= right) return;
 	index pivotIdx = partition(left, right);
 	if (pivotIdx != 0) {
@@ -173,23 +163,11 @@ index CSRMatrix::partition(index left, index right) {
 	return i;
 }
 
-void CSRMatrix::bubbleSort(index left, index right) {
-	for (index i = left; i <= right; ++i) {
-		for (index j = left; j < right; ++j) {
-			if (columnIdx[j] > columnIdx[j+1]) {
-				std::swap(columnIdx[j], columnIdx[j+1]);
-				std::swap(nonZeros[j], nonZeros[j+1]);
-			}
-		}
-	}
-}
-
 void CSRMatrix::sort() {
 #pragma omp parallel for schedule(guided)
 	for (index i = 0; i < nRows; ++i) {
 		if (rowIdx[i+1] - rowIdx[i] > 1) {
 			quicksort(rowIdx[i], rowIdx[i+1]-1);
-			//bubbleSort(rowIdx[i], rowIdx[i+1]-1);
 		}
 	}
 
