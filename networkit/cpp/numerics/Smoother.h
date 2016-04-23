@@ -16,6 +16,10 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup numerics
+ * Abstract base class of a smoother.
+ */
 class Smoother {
 public:
 	Smoother() {}

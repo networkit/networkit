@@ -19,4 +19,10 @@ void LinearSolver::setup(const Graph &graph) {
 	setup(CSRMatrix::graphLaplacian(graph));
 }
 
+void LinearSolver::parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results, count maxConvergenceTime, count maxIterations) {
+	for (index i = 0; i < rhs.size(); ++i) {
+		solve(rhs[i], results[i], maxConvergenceTime, maxIterations);
+	}
+}
+
 } /* namespace NetworKit */

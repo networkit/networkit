@@ -7,12 +7,10 @@
 
 #include "SolverLamg.h"
 #include "LAMGSettings.h"
-#include "../CG.h"
 
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include "../../io/LineFileReader.h"
 
 #include "../../auxiliary/Enforce.h"
 #include "../../auxiliary/Timer.h"
