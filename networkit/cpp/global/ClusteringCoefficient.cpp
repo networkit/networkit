@@ -100,12 +100,16 @@ double ClusteringCoefficient::sequentialAvgLocal(const Graph &G) {
 		}
 	});
 
+	if (size == 0) {
+		return 0; // no triangle exists
+	}
+
 	return coefficient / size;
 }
 
-double ClusteringCoefficient::avgLocal(Graph& G) {
+double ClusteringCoefficient::avgLocal(Graph& G, bool turbo) {
     WARN("DEPRECATED: use centrality.LocalClusteringCoefficient and take average");
-	LocalClusteringCoefficient lcc(G);
+	LocalClusteringCoefficient lcc(G, turbo);
 	lcc.run();
 	auto coefficients = lcc.scores(); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 
@@ -118,6 +122,10 @@ double ClusteringCoefficient::avgLocal(Graph& G) {
 			size++;
 		}
 	});
+
+	if (size == 0) {
+		return 0; // no triangle exists
+	}
 
 	return sum / (double) size;
 }
@@ -200,6 +208,10 @@ double ClusteringCoefficient::exactGlobal(Graph& G) {
 		return triangles[u];
 	});
 
+	if (denominator == 0) {
+		return 0; // no triangle exists
+	}
+
 	cc /= denominator;
 
 	return cc;
@@ -216,6 +228,8 @@ double ClusteringCoefficient::approxGlobal(Graph& G, const count trials) {
 		psum += G.degree(v) * (G.degree(v) - 1);
 		weight[v] = psum;
 	});
+
+	if (psum == 0) return 0; // no node has degree > 1 - no triangle exists!
 
 	// WARNING: I assume RAND_MAX to be larger than PSUM. If this should not hold for an application
 	// or implementation of the standard library, a more sophisticated version of determining a

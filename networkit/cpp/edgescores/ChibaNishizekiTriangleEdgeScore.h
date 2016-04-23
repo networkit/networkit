@@ -15,6 +15,8 @@ namespace NetworKit {
 
 /**
  * An implementation of the triangle counting algorithm by Chiba/Nishizeki.
+ *
+ * @deprecated Use TriangleEdgeScore instead which is parallelized and has a similar performance even in the sequential case.
  */
 class ChibaNishizekiTriangleEdgeScore : public EdgeScore<count> {
 

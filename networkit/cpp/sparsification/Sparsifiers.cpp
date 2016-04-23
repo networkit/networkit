@@ -6,7 +6,7 @@
  */
 
 #include "Sparsifiers.h"
-#include "../edgescores/ChibaNishizekiTriangleEdgeScore.h"
+#include "../edgescores/TriangleEdgeScore.h"
 #include "../edgescores/PrefixJaccardScore.h"
 #include "SimmelianOverlapScore.h"
 #include "MultiscaleScore.h"
@@ -33,7 +33,7 @@ SimmelianSparsifierNonParametric::SimmelianSparsifierNonParametric(const Graph& 
 		Sparsifier(graph), threshold(threshold) {}
 
 void SimmelianSparsifierNonParametric::run() {
-	ChibaNishizekiTriangleEdgeScore triangleEdgeScore(inputGraph);
+	TriangleEdgeScore triangleEdgeScore(inputGraph);
 	triangleEdgeScore.run();
 	std::vector<count> triangles = triangleEdgeScore.scores();
 
@@ -51,7 +51,7 @@ SimmelianSparsifierParametric::SimmelianSparsifierParametric(const Graph& graph,
 		Sparsifier(graph), maxRank(maxRank), minOverlap(minOverlap) {}
 
 void SimmelianSparsifierParametric::run() {
-	ChibaNishizekiTriangleEdgeScore triangleEdgeScore(inputGraph);
+	TriangleEdgeScore triangleEdgeScore(inputGraph);
 	triangleEdgeScore.run();
 	std::vector<count> triangles = triangleEdgeScore.scores();
 
@@ -88,7 +88,7 @@ LocalSimilaritySparsifier::LocalSimilaritySparsifier(const Graph& graph, double 
 		Sparsifier(graph), e(e) {}
 
 void LocalSimilaritySparsifier::run() {
-	ChibaNishizekiTriangleEdgeScore triangleEdgeScore(inputGraph);
+	TriangleEdgeScore triangleEdgeScore(inputGraph);
 	triangleEdgeScore.run();
 	std::vector<count> triangles = triangleEdgeScore.scores();
 
@@ -105,7 +105,7 @@ SimmelianMultiscaleSparsifier::SimmelianMultiscaleSparsifier(const Graph& graph,
 		Sparsifier(graph), alpha(alpha) {}
 
 void SimmelianMultiscaleSparsifier::run() {
-	ChibaNishizekiTriangleEdgeScore triangleEdgeScore(inputGraph);
+	TriangleEdgeScore triangleEdgeScore(inputGraph);
 	triangleEdgeScore.run();
 	std::vector<count> triangles = triangleEdgeScore.scores();
 	std::vector<double> triangles_d = std::vector<double>(triangles.begin(), triangles.end());

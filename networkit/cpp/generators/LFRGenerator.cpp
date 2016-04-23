@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <random>
 #include "../auxiliary/SignalHandling.h"
+#include "../auxiliary/Parallel.h"
 
 NetworKit::LFRGenerator::LFRGenerator(NetworKit::count n) :
 n(n), hasDegreeSequence(false), hasCommunitySizeSequence(false), hasInternalDegreeSequence(false), hasGraph(false), hasPartition(false) { }
@@ -377,12 +378,12 @@ void NetworKit::LFRGenerator::run() {
 		handler.assureRunning();
 
 		std::vector<count> sortedInternalDegreeSequence = internalDegreeSequence;
-		std::sort(sortedInternalDegreeSequence.begin(), sortedInternalDegreeSequence.end());
+		Aux::Parallel::sort(sortedInternalDegreeSequence.begin(), sortedInternalDegreeSequence.end());
 
 		handler.assureRunning();
 
 		std::vector<count> sortedCommunitySizes = communitySizeSequence;
-		std::sort(sortedCommunitySizes.begin(), sortedCommunitySizes.end());
+		Aux::Parallel::sort(sortedCommunitySizes.begin(), sortedCommunitySizes.end());
 
 		handler.assureRunning();
 
@@ -442,7 +443,9 @@ void NetworKit::LFRGenerator::run() {
 	}
 
 	// generate intra-cluster edges
-	for (auto & communityNodes : communityNodeList) {
+	#pragma omp parallel for // note: parallelization only works because the communities are non-overlapping
+	for (index i = 0; i < communityNodeList.size(); ++i) {
+		const auto &communityNodes = communityNodeList[i];
 		if (communityNodes.empty()) continue;
 
 		std::vector<count> intraDeg;
@@ -458,9 +461,12 @@ void NetworKit::LFRGenerator::run() {
 
 		handler.assureRunning();
 
-		intraG.forEdges([&](node i, node j) {
-			G.addEdge(communityNodes[i], communityNodes[j]);
-		});
+		#pragma omp critical (generators_lfr_intra_to_global)
+		{ // FIXME: if we used a graph builder here, we would not need any critical section (only needed for global edge counter)
+			intraG.forEdges([&](node i, node j) {
+				G.addEdge(communityNodes[i], communityNodes[j]);
+			});
+		}
 
 		handler.assureRunning();
 	}

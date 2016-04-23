@@ -37,15 +37,6 @@ int getMaxNumberOfThreads();
 /** Enable OpenMP nested parallelism */
 void enableNestedParallelism();
 
-
-/** Enable OpenMP  parallelism */
-void enableParallelism();
-
-/** Disable OpenMP parallelism */
-void disableParallelism();
-
-
-
 }
 
 #endif

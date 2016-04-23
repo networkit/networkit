@@ -26,7 +26,7 @@ def computeEdgeCut(partition, graph):
 	return cut
 
 def computeImbalance(partition, graph):
-	desired = graph.numberOfNodes() / float(partition.numberOfSubsets())
+	desired = math.ceil(graph.numberOfNodes() / float(partition.numberOfSubsets()))
 
 	maximum = max(partition.subsetSizes())
 

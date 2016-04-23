@@ -5,6 +5,40 @@ import ConfigParser
 
 home_path = os.environ['HOME']
 
+def checkStd(compiler):
+	sample = open("sample.cpp", "w")
+	sample.write("""
+	#include <iostream>
+
+	[[deprecated("use the function body directly instead of wrapping it in a function.")]]
+	void helloWorld() {
+		std::cout << "Hello world" << std::endl;
+	}
+
+	int main (int argc, char *argv[]) {
+		helloWorld();
+		return 0;
+	}""")
+	sample.close()
+	FNULL = open(os.devnull, 'w')
+	if subprocess.call([compiler,"-o","test_build","-std=c++14","sample.cpp"],stdout=FNULL,stderr=FNULL) == 0:
+		stdflag = "c++14"
+	elif subprocess.call([compiler,"-o","test_build","-std=c++11","sample.cpp"],stdout=FNULL,stderr=FNULL) == 0:
+		stdflag = "c++11"
+	else:
+		# possibility to print warning/error
+		# assume c++11
+		stdflag = "c++11"
+	# clean up
+	FNULL.close()
+	os.remove("sample.cpp")
+	try:
+		os.remove("test_build")
+	except:
+		pass
+	return stdflag
+
+
 # SOURCE files (including executable) will be gathered here
 srcDir = "networkit/cpp"
 def getSourceFiles(target, optimize):
@@ -57,18 +91,20 @@ AddOption("--compiler",
 	action="store",
 	help="used to pass gcc version from setup.py to SConstruct")
 
+AddOption("--std",
+	dest="std",
+	type="string",
+	nargs=1,
+	action="store",
+	help="used to pass std flag from setup.py to SConstruct")
 
 # ENVIRONMENT
 
 ## read environment settings from configuration file
 
 env = Environment()
-#print(get
-compiler = ""
-try:
-	compiler = GetOption("compiler")
-except:
-	compiler = None
+compiler = GetOption("compiler")
+stdflag = GetOption("std")
 
 if not os.path.isfile("build.conf") and not compiler == None:
 	#print("{0} has been passed via command line".format(compiler))
@@ -85,10 +121,26 @@ else:
 	conf.read([confPath])     # read the configuration file
 
 	## compiler
-	cppComp = conf.get("compiler", "cpp", "gcc")
+	if compiler is None:
+		cppComp = conf.get("compiler", "cpp", "gcc")
+	else:
+		cppComp = compiler
 	defines = conf.get("compiler", "defines", [])		# defines are optional
 	if defines is not []:
 		defines = defines.split(",")
+
+
+	## C++14 support
+	if stdflag is None:
+		try:
+			stdflag = conf.get("compiler", "std14")
+		except:
+			pass
+	if stdflag is None or len(stdflag) == 0:
+		# do test compile
+		stdflag = checkStd(cppComp)
+		# and store it in the configuration
+		conf.set("compiler","std14", stdflag)
 
 	## includes
 	stdInclude = conf.get("includes", "std", "")      # includes for the standard library - may not be needed
@@ -113,12 +165,15 @@ else:
 	env.Append(LIBS = ["gtest"])
 	env.Append(LIBPATH = [gtestLib, tbbLib])
 
-env.Append(LINKFLAGS = ["-std=c++11"])
+	with open(confPath, "w") as f:
+		conf.write(f)
+
+env.Append(LINKFLAGS = ["-std={}".format(stdflag)])
 
 ## CONFIGURATIONS
 
 commonCFlags = ["-c", "-fmessage-length=0", "-std=c99", "-fPIC"]
-commonCppFlags = ["-std=c++11", "-Wall", "-c", "-fmessage-length=0", "-fPIC"]
+commonCppFlags = ["-std={}".format(stdflag), "-Wall", "-c", "-fmessage-length=0", "-fPIC"]
 
 debugCppFlags = ["-O0", "-g3", "-DLOG_LEVEL=LOG_LEVEL_TRACE"]
 debugCFlags = ["-O0", "-g3"]

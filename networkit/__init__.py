@@ -26,10 +26,10 @@ Usage examples can be found on http://nbviewer.ipython.org/urls/networkit.iti.ki
 __author__ = "Christian Staudt"
 __copyright__ = "Copyright (c) 2014 Christan Staudt"
 __credits__ = ["Lukas Barth", "Miriam Beddig", "Elisabetta Bergamini", "Stefan Bertsch", "Pratistha Bhattarai", "Andreas Bilke", "Simon Bischof", \
-	"Guido Brückner", "Patrick Flick", "Michael Hamann", "Lukas Hartmann", "Daniel Hoske", "Gerd Lindner", "Moritz v. Looz", "Yassine Marrakchi", "Henning Meyerhenke", \
+	"Guido Brückner", "Mark Erb", "Patrick Flick", "Michael Hamann", "Lukas Hartmann", "Daniel Hoske", "Gerd Lindner", "Moritz v. Looz", "Yassine Marrakchi", "Henning Meyerhenke", \
 	"Marcel Radermacher", "Klara Reichard", "Marvin Ritter", "Aleksejs Sazonovs", "Florian Weber", "Michael Wegner", "Jörg Weisbarth"]
 __license__ = "MIT"
-__version__ = "3.6"
+__version__ = "4.0.1"
 
 
 # standard library modules
@@ -45,9 +45,10 @@ from . import graphio
 from . import community
 from . import centrality
 from . import generators
-from . import properties
 from . import structures
 from . import engineering
+from . import distance
+from . import components
 from . import dynamic
 from . import gephi
 from . import partitioning
@@ -58,11 +59,14 @@ from . import plot
 from . import sparsification
 from . import scd
 from . import clique
-from . import distance
 from . import globals
-from . import components
 from . import linkprediction
 from . import correlation
+from . import matching
+from . import coarsening
+from . import simulation
+from . import stats
+from . import sampling
 from .profiling import profiling
 
 try:
@@ -88,7 +92,7 @@ from _NetworKit import getLogLevel, setLogLevel, setPrintLocation, enableNestedP
 # local imports into the top namespace
 from .graph import Graph
 from .structures import Partition, Cover
-from .graphio import readGraph, writeGraph, Format
+from .graphio import readGraph, writeGraph, readGraphs, Format
 
 
 #-------- Setup ---------- #

@@ -8,8 +8,8 @@
 #ifndef ELIMINATIONSTAGE_H_
 #define ELIMINATIONSTAGE_H_
 
-#include "../../../algebraic/Matrix.h"
 #include "../../../algebraic/CSRMatrix.h"
+#include "../../../algebraic/GraphMatrix.h"
 #include "../../../algebraic/Vector.h"
 
 namespace NetworKit {

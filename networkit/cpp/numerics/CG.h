@@ -11,9 +11,9 @@
 #include <cstdint>
 #include <utility>
 
-#include "../algebraic/Matrix.h"
 #include "../algebraic/Vector.h"
 #include "../algebraic/CSRMatrix.h"
+#include "../algebraic/GraphMatrix.h"
 
 namespace NetworKit {
 

@@ -1,6 +1,6 @@
 name='networkit'
 
-version='3.6'
+version='4.0.1'
 
 url='https://networkit.iti.kit.edu/'
 
@@ -43,6 +43,7 @@ classifiers = [
 'Operating System :: OS Independent', 'Programming Language :: C++',
 'Programming Language :: Python :: 3.3',
 'Programming Language :: Python :: 3.4',
+'Programming Language :: Python :: 3.5',
 'Topic :: Software Development :: Libraries :: Python Modules',
 'Topic :: Scientific/Engineering :: Bio-Informatics',
 'Topic :: Scientific/Engineering :: Chemistry',

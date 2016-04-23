@@ -8,7 +8,7 @@
 #ifndef DIAGONALMATRIX_H_
 #define DIAGONALMATRIX_H_
 
-#include "Matrix.h"
+#include "GraphMatrix.h"
 
 namespace NetworKit {
 

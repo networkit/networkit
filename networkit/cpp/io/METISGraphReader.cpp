@@ -81,11 +81,11 @@ Graph METISGraphReader::read(const std::string& path) {
 					ERROR("METIS Node ID should not be 0, edge ignored.");
 					continue;
 				}
-				node v = adjacencies[i].first- 1; 	// METIS-indices are 1-based
+				Aux::Checkers::Enforcer::enforce(adjacencies[i].first > 0 && adjacencies[i].first <= n);
+				node v = adjacencies[i].first - 1; 	// METIS-indices are 1-based
 				// correct edgeCounter for selfloops
 				edgeCounter += (u == v);
 				double weight = adjacencies[i].second;
-				Aux::Checkers::Enforcer::enforce(v >= 0 && v < n);
 				b.addHalfEdge(u, v, weight);
 				TRACE("(",u,",",v,",",adjacencies[i].second,")");
 			}
@@ -109,7 +109,7 @@ Graph METISGraphReader::read(const std::string& path) {
 	}
 
 	INFO("\n[DONE]\n");
-	return std::move(G);
+	return G;
 }
 
 } /* namespace NetworKit */

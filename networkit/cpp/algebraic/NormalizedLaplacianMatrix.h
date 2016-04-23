@@ -8,9 +8,9 @@
 #ifndef NORMALIZEDLAPLACIANMATRIX_H_
 #define NORMALIZEDLAPLACIANMATRIX_H_
 
-#include "Matrix.h"
 #include "../graph/Graph.h"
 #include <cmath>
+#include "GraphMatrix.h"
 
 namespace NetworKit {
 
