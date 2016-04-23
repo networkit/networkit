@@ -30,18 +30,15 @@ LaplacianMatrix::LaplacianMatrix(const Graph &graph) : Matrix(graph.upperNodeIdB
 		values.push_back(weightedDegree - selfLoopWeight); // degree matrix
 	});
 
-	this->graph = Graph(graph.upperNodeIdBound(), positions, values);
+	graph.forNodes([&](const index i){
+		double weightedDegree = graph.weightedDegree(i);
 
+		graph.forNeighborsOf(i, [&](const index j, double weight) { // - adjacency matrix
+			setValue(i, j, -weight);
+		});
 
-//	graph.forNodes([&](const index i){
-//		double weightedDegree = graph.weightedDegree(i);
-//
-//		graph.forNeighborsOf(i, [&](const index j, double weight) { // - adjacency matrix
-//			setValue(i, j, -weight);
-//		});
-//
-//		setValue(i, i, weightedDegree - graph.weight(i, i)); // degree matrix
-//	});
+		setValue(i, i, weightedDegree - graph.weight(i, i)); // degree matrix
+	});
 }
 
 

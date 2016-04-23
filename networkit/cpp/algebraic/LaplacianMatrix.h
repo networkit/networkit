@@ -10,7 +10,7 @@
 
 #include "../graph/Graph.h"
 #include <cmath>
-#include "GraphMatrix.h"
+#include "Matrix.h"
 
 namespace NetworKit {
 
