@@ -9,17 +9,14 @@
 #include "Level/LevelElimination.h"
 #include "Level/EliminationStage.h"
 #include "LAMGSettings.h"
-#include "../../algebraic/LaplacianMatrix.h"
-#include "../../io/LineFileReader.h"
 #include "../../auxiliary/StringTools.h"
-#include <fstream>
-#include <iostream>
-#include <sstream>
-
 #include "../../auxiliary/Enforce.h"
 #include "../../auxiliary/Timer.h"
 #include "../../algebraic/CSRMatrix.h"
 
+#include <fstream>
+#include <iostream>
+#include <sstream>
 #include <cstdio>
 #include <set>
 #include "omp.h"
@@ -173,7 +170,7 @@ count MultiLevelSetup::lowDegreeSweep(const CSRMatrix &matrix, std::vector<bool>
 	int degreeOffset = stage != 0;
 
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
-		if ((int) matrix.nnzInRow(i) - degreeOffset <= SETUP_ELIMINATION_MAX_DEGREE && fNode[i]) { // node i has degree <= 4 and can be eliminated
+		if ((int) matrix.nnzInRow(i) - degreeOffset <= (int)SETUP_ELIMINATION_MAX_DEGREE && fNode[i]) { // node i has degree <= 4 and can be eliminated
 			numFNodes++;
 			matrix.forNonZeroElementsInRow(i, [&](index j, edgeweight w){ // to maintain independence, mark all neighbors as not eliminated
 				if (j != i)	{ // all neighbors of this f node are c nodes

@@ -18,6 +18,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup numerics
  * Represents the interface to the Lean Algebraic Multigrid (LAMG) graph Laplacian linear solver
  * by Oren E. Livne and Achi Brandt.
  * @see Livne, Oren E., and Achi Brandt. "Lean algebraic multigrid (LAMG): Fast graph Laplacian linear solver." SIAM Journal on Scientific Computing 34.4 (2012): B499-B522.
@@ -52,7 +53,7 @@ public:
 	~Lamg() = default;
 
 	/**
-	 * Compute the multigrid hierarchy for te given Laplacian matrix @a laplacianMatrix.
+	 * Compute the multigrid hierarchy for the given Laplacian matrix @a laplacianMatrix.
 	 * @param laplacianMatrix
 	 * @note This method also works for disconnected graphs. If you know that the graph is connected,
 	 * if is faster to use @ref setupConnected instead.
@@ -78,7 +79,15 @@ public:
 	 */
 	SolverStatus solve(const Vector &rhs, Vector &result, count maxConvergenceTime = 5 * 60 * 1000, count maxIterations = std::numeric_limits<count>::max());
 
-	// TODO: parallelSolve?
+	/**
+	 * Compute the @a results for the matrix currently setup and the right-hand sides @a rhs.
+	 * The maximum spent time for each system can be specified by @a maxConvergenceTime and the maximum number of iterations can be set
+	 * by @a maxIterations.
+	 * @param rhs
+	 * @param results
+	 * @param maxConvergenceTime
+	 * @param maxIterations
+	 */
 	void parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results, count maxConvergenceTime = 5 * 60 * 1000, count maxIterations = std::numeric_limits<count>::max());
 
 };

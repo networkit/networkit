@@ -33,6 +33,7 @@ struct LAMGSolverStatus {
 };
 
 /**
+ * @ingroup numerics
  * Implements the solve phase of LAMG (Lean Algebraic Multigrid by Livne et al.).
  */
 class SolverLamg {

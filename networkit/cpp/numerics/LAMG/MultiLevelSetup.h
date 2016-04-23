@@ -19,6 +19,7 @@ namespace NetworKit {
 #define UNDECIDED std::numeric_limits<index>::max()
 
 /**
+ * @ingroup
  * Implements the setup phase of LAMG (Lean Algebraic Multigrid by Livne et al.).
  */
 class MultiLevelSetup {

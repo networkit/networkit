@@ -18,6 +18,10 @@ enum LevelType {FINEST, // original problem
 	COARSEST // coarsest level
 };
 
+/**
+ * @ingroup numerics
+ * Abstract base class for an LAMG Level.
+ */
 class Level {
 protected:
 	LevelType type;
