@@ -5,6 +5,7 @@
 # needed for collections.Iterable
 import collections
 import math
+import os
 
 
 try:
@@ -2204,10 +2205,8 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 	@classmethod
 	def fit(cls, Graph G, scale=1):
 		""" Fit model to input graph"""
-		import powerlaw
 		degSeq = DegreeCentrality(G).run().scores()
-		fit = powerlaw.Fit(degSeq)
-		gamma = fit.alpha
+		gamma = max(-1 * PowerlawDegreeSequence(degSeq).getGamma(), 2.1)
 		(n, m) = G.size()
 		k = 2 * (m / n)
 		return cls(n * scale, k, gamma)
@@ -2215,7 +2214,7 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 
 cdef extern from "cpp/generators/RmatGenerator.h":
 	cdef cppclass _RmatGenerator "NetworKit::RmatGenerator":
-		_RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d, bool weighted) except +
+		_RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d, bool weighted, count reduceNodes) except +
 		_Graph generate() except +
 
 cdef class RmatGenerator:
@@ -2249,8 +2248,8 @@ cdef class RmatGenerator:
 	cdef _RmatGenerator* _this
 	paths = {"workingDir" : None, "kronfitPath" : None}
 
-	def __cinit__(self, count scale, count edgeFactor, double a, double b, double c, double d, bool weighted=False):
-		self._this = new _RmatGenerator(scale, edgeFactor, a, b, c, d, weighted)
+	def __cinit__(self, count scale, count edgeFactor, double a, double b, double c, double d, bool weighted=False, count reduceNodes=0):
+		self._this = new _RmatGenerator(scale, edgeFactor, a, b, c, d, weighted, reduceNodes)
 
 	def __dealloc__(self):
 		del self._this
@@ -2271,53 +2270,58 @@ cdef class RmatGenerator:
 		cls.paths["workingDir"] = workingDir
 
 	@classmethod
-	def fit(cls, G, scale=1, kronfit=True, iterations=50):
+	def fit(cls, G, scale=1, initiator=None, kronfit=True, iterations=50):
 		import math
 		import re
 		import subprocess
 		import os
 		import random
 		from networkit import graphio
-		if kronfit:
-			if cls.paths["workingDir"] is None:
-				raise RuntimeError("call setPaths class method first to configure")
-			# write graph
-			tmpGraphPath = os.path.join(cls.paths["workingDir"], "{0}.edgelist".format(G.getName()))
-			graphio.writeGraph(G, tmpGraphPath, graphio.Format.EdgeListTabOne)
-			# call kronfit
-			args = [cls.paths["kronfitPath"], "-i:{0}".format(tmpGraphPath), "-gi:{0}".format(str(iterations))]
-			subprocess.call(args)
-			# read estimated parameters
-			with open("KronFit-{0}.tab".format(G.getName())) as resultFile:
-				for i, line in enumerate(resultFile):
-					if i == 7:
-						matches = re.findall("\d+\.\d+", line)
-						weights = [float(s) for s in matches]
+		if initiator:
+			(a,b,c,d) = initiator
 		else:
-			# random weights because kronfit is slow
-			weights = (random.random(), random.random(), random.random(), random.random())
-		# normalize
-		s = sum(weights)
-		nweights = [w / s for w in weights]
-		(a,b,c,d) = nweights
+			if kronfit:
+				if cls.paths["workingDir"] is None:
+					raise RuntimeError("call setPaths class method first to configure")
+				# write graph
+				tmpGraphPath = os.path.join(cls.paths["workingDir"], "{0}.edgelist".format(G.getName()))
+				graphio.writeGraph(G, tmpGraphPath, graphio.Format.EdgeListTabOne)
+				# call kronfit
+				args = [cls.paths["kronfitPath"], "-i:{0}".format(tmpGraphPath), "-gi:{0}".format(str(iterations))]
+				subprocess.call(args)
+				# read estimated parameters
+				with open("KronFit-{0}.tab".format(G.getName())) as resultFile:
+					for i, line in enumerate(resultFile):
+						if i == 7:
+							matches = re.findall("\d+\.\d+", line)
+							weights = [float(s) for s in matches]
+			else:
+				# random weights because kronfit is slow
+				weights = (random.random(), random.random(), random.random(), random.random())
+			# normalize
+			nweights = [w / sum(weights) for w in weights]
+			(a,b,c,d) = nweights
+		print("using initiator matrix [{0},{1};{2},{3}]".format(a,b,c,d))
 		# other parameters
 		(n,m) = G.size()
-		s1 = math.floor(math.log(n, 2))
-		s2 = math.ceil(math.log(n, 2))
-		if abs(n - s1) > abs(n - s2):
-			scaleParam1 = s2
-		else:
-			scaleParam1 = s1
-		scaleParameter = scaleParam1 + math.floor(math.log(scale, 2))
+		scaleParameter = math.ceil(math.log(n * scale, 2))
 		edgeFactor = math.floor(m / n)
-		return RmatGenerator(scaleParameter, edgeFactor, a, b, c, d)
+		reduceNodes = (2**scaleParameter) - (scale * n)
+		print("random nodes to delete to achieve target node count: ", reduceNodes)
+		return RmatGenerator(scaleParameter, edgeFactor, a, b, c, d, False, reduceNodes)
 
 cdef extern from "cpp/generators/PowerlawDegreeSequence.h":
 	cdef cppclass _PowerlawDegreeSequence "NetworKit::PowerlawDegreeSequence":
 		_PowerlawDegreeSequence(count minDeg, count maxDeg, double gamma) except +
+		_PowerlawDegreeSequence(_Graph) except +
+		_PowerlawDegreeSequence(vector[double]) except +
 		void setMinimumFromAverageDegree(double avgDeg) nogil except +
+		void setGammaFromAverageDegree(double avgDeg, double minGamma, double maxGamma) nogil except +
 		double getExpectedAverageDegree() except +
 		count getMinimumDegree() const
+		count getMaximumDegree() const
+		double getGamma() const
+		double setGamma(double) const
 		void run() nogil except +
 		vector[count] getDegreeSequence(count numNodes) except +
 		count getDegree() except +
@@ -2326,19 +2330,27 @@ cdef class PowerlawDegreeSequence:
 	"""
 	Generates a powerlaw degree sequence with the given minimum and maximum degree, the powerlaw exponent gamma
 
+	If a list of degrees or a graph is given instead of a minimum degree, the class uses the minimum and maximum
+	value of the sequence and fits the exponent such that the expected average degree is the actual average degree.
+
 	Parameters
 	----------
-	minDeg : count
-		The minium degree
+	minDeg : count, list or Graph
+		The minium degree, or a list of degrees to fit or graphs
 	maxDeg : count
 		The maximum degree
 	gamma : double
-		The powerlaw exponent
+		The powerlaw exponent, default: -2
 	"""
 	cdef _PowerlawDegreeSequence *_this
 
-	def __cinit__(self, count minDeg, count maxDeg, double gamma):
-		self._this = new _PowerlawDegreeSequence(minDeg, maxDeg, gamma)
+	def __cinit__(self, minDeg, count maxDeg = 0, double gamma = -2):
+		if isinstance(minDeg, Graph):
+			self._this = new _PowerlawDegreeSequence((<Graph>minDeg)._this)
+		elif isinstance(minDeg, collections.Iterable):
+			self._this = new _PowerlawDegreeSequence(<vector[double]?>minDeg)
+		else:
+			self._this = new _PowerlawDegreeSequence((<count?>minDeg), maxDeg, gamma)
 
 	def __dealloc__(self):
 		del self._this
@@ -2354,6 +2366,23 @@ cdef class PowerlawDegreeSequence:
 		"""
 		with nogil:
 			self._this.setMinimumFromAverageDegree(avgDeg)
+		return self
+
+	def setGammaFromAverageDegree(self, double avgDeg, double minGamma = -1, double maxGamma = -6):
+		"""
+		Tries to set the powerlaw exponent gamma such that the specified average degree is expected.
+
+		Parameters
+		----------
+		avgDeg : double
+			The average degree that shall be approximated
+		minGamma : double
+			The minimum gamma to use, default: -1
+		maxGamma : double
+			The maximum gamma to use, default: -6
+		"""
+		with nogil:
+			self._this.setGammaFromAverageDegree(avgDeg, minGamma, maxGamma)
 		return self
 
 	def getExpectedAverageDegree(self):
@@ -2377,6 +2406,40 @@ cdef class PowerlawDegreeSequence:
 			The minimum degree
 		"""
 		return self._this.getMinimumDegree()
+
+	def setGamma(self, double gamma):
+		"""
+		Set the exponent gamma
+
+		Parameters
+		----------
+		gamma : double
+			The exponent to set
+		"""
+		self._this.setGamma(gamma)
+		return self
+
+	def getGamma(self):
+		"""
+		Get the exponent gamma.
+
+		Returns
+		-------
+		double
+			The exponent gamma
+		"""
+		return self._this.getGamma()
+
+	def getMaximumDegree(self):
+		"""
+		Get the maximum degree
+
+		Returns
+		-------
+		count
+			The maximum degree
+		"""
+		return self._this.getMaximumDegree()
 
 	def run(self):
 		"""
@@ -2448,6 +2511,9 @@ cdef class LFRGenerator(Algorithm):
 	n : count
 		The number of nodes
 	"""
+	params = {}
+	paths = {}
+
 	def __cinit__(self, count n):
 		self._this = new _LFRGenerator(n)
 
@@ -2568,7 +2634,7 @@ cdef class LFRGenerator(Algorithm):
 		"""
 		return Graph().setThis((<_LFRGenerator*>(self._this)).getGraph())
 
-	def generate(self):
+	def generate(self, useReferenceImplementation=False):
 		"""
 		Generates and returns the graph. Wrapper for the StaticGraphGenerator interface.
 
@@ -2577,6 +2643,10 @@ cdef class LFRGenerator(Algorithm):
 		Graph
 			The generated graph.
 		"""
+		if useReferenceImplementation:
+			from networkit import graphio
+			os.system("{0}/benchmark {1}".format(self.paths["refImplDir"], self.params["refImplParams"]))
+			return graphio.readGraph("network.dat", graphio.Format.EdgeListTabOne)
 		return Graph().setThis((<_LFRGenerator*>(self._this)).generate())
 
 	def getPartition(self):
@@ -2590,9 +2660,13 @@ cdef class LFRGenerator(Algorithm):
 		"""
 		return Partition().setThis((<_LFRGenerator*>(self._this)).getPartition())
 
+	@classmethod
+	def setPathToReferenceImplementationDir(cls, path):
+		cls.paths["refImplDir"] = path
+
 
 	@classmethod
-	def fit(cls, Graph G, scale=1, vanilla=False, communityDetectionAlgorithm=PLM):
+	def fit(cls, Graph G, scale=1, vanilla=False, communityDetectionAlgorithm=PLM, plfit=False):
 		""" Fit model to input graph"""
 		(n, m) = G.size()
 		# detect communities
@@ -2602,23 +2676,47 @@ cdef class LFRGenerator(Algorithm):
 		# set number of nodes
 		gen = cls(n * scale)
 		if vanilla:
-			import powerlaw
 			# fit power law to degree distribution and generate degree sequence accordingly
-			print("fit power law to degree distribution and generate degree sequence accordingly")
+			#print("fit power law to degree distribution and generate degree sequence accordingly")
 			avgDegree = int(sum(degSeq) / len(degSeq))
 			maxDegree = max(degSeq)
-			nodeDegreeExp = powerlaw.Fit(degSeq).alpha
+			if plfit:
+				degSeqGen = PowerlawDegreeSequence(G)
+				nodeDegreeExp = -1 * degSeqGen.getGamma()
+				degSeqGen.run()
+				gen.setDegreeSequence(degSeqGen.getDegreeSequence(n * scale))
+			else:
+				nodeDegreeExp = 2
+				gen.generatePowerlawDegreeSequence(avgDegree, maxDegree, -1 * nodeDegreeExp)
 			print(avgDegree, maxDegree, nodeDegreeExp)
-			gen.generatePowerlawDegreeSequence(avgDegree, maxDegree, nodeDegreeExp)
 			# fit power law to community size sequence and generate accordingly
-			print("fit power law to community size sequence and generate accordingly")
+			#print("fit power law to community size sequence and generate accordingly")
 			communitySize = communities.subsetSizes()
-			gen.generatePowerlawCommunitySizeSequence(minCommunitySize=min(communitySize), maxCommunitySize=max(communitySize), communitySizeExp=powerlaw.Fit(communitySize).alpha)
+			communityAvgSize = int(sum(communitySize) / len(communitySize))
+			communityMaxSize = max(communitySize)
+			communityMinSize = min(communitySize)
+			if plfit:
+				communityExp = -1 * PowerlawDegreeSequence(communitySize).getGamma()
+			else:
+				communityExp = 1
+			pl = PowerlawDegreeSequence(communityMinSize, communityMaxSize, -1 * communityExp)
+
+			try: # it can be that the exponent is -1 because the average would be too low otherwise, increase minimum to ensure average fits.
+				pl.setMinimumFromAverageDegree(communityAvgSize)
+				communityMinSize = pl.getMinimumDegree()
+			except RuntimeError: # if average is too low with chosen exponent, this might not work...
+				pl.run()
+				print("Could not set desired average community size {}, average will be {} instead".format(communityAvgSize, pl.getExpectedAverageDegree()))
+
+			gen.generatePowerlawCommunitySizeSequence(minCommunitySize=communityMinSize, maxCommunitySize=communityMaxSize, communitySizeExp=-1 * communityExp)
 			# mixing parameter
-			print("mixing parameter")
+			#print("mixing parameter")
 			localCoverage = LocalPartitionCoverage(G, communities).run().scores()
 			mu = sum(localCoverage) / len(localCoverage)
 			gen.setMu(mu)
+			refImplParams = "-N {0} -k {1} -maxk {2} -mu {3} -minc {4} -maxc {5} -t1 {6} -t2 {7}".format(n * scale, avgDegree, maxDegree, mu, communityMinSize, communityMaxSize, nodeDegreeExp, communityExp)
+			cls.params["refImplParams"] = refImplParams
+			print(refImplParams)
 		else:
 			if scale > 1:
 				# scale communities

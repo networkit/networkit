@@ -15,8 +15,42 @@ NetworKit::PowerlawDegreeSequence::PowerlawDegreeSequence(NetworKit::count minDe
 	if (gamma > -1) throw std::runtime_error("Error: gamma must be lower than -1");
 }
 
+NetworKit::PowerlawDegreeSequence::PowerlawDegreeSequence(const std::vector< double > &degreeSequence) : minDeg(std::numeric_limits<count>::max()), maxDeg(std::numeric_limits<count>::min()) {
+	count sum = 0;
+	for (auto &d : degreeSequence) {
+		if (d < minDeg) minDeg = d;
+		if (d > maxDeg) maxDeg = d;
+		sum += d;
+	}
+
+	double avg = sum * 1.0 / degreeSequence.size();
+
+	setGammaFromAverageDegree(avg);
+}
+
+NetworKit::PowerlawDegreeSequence::PowerlawDegreeSequence(const NetworKit::Graph &g) : minDeg(std::numeric_limits<count>::max()), maxDeg(std::numeric_limits<count>::min()) {
+	count sum = 0;
+	g.forNodes([&](node u) {
+		count d = g.degree(u);
+		if (d < minDeg) minDeg = d;
+		if (d > maxDeg) maxDeg = d;
+		sum += d;
+	});
+
+	double avg = sum * 1.0 / g.numberOfNodes();
+
+	setGammaFromAverageDegree(avg);
+}
+
+
+
 void NetworKit::PowerlawDegreeSequence::setMinimumDegree(NetworKit::count minDeg) {
 	this->minDeg = minDeg;
+	hasRun = false;
+}
+
+void NetworKit::PowerlawDegreeSequence::setGamma(double gamma) {
+	this->gamma = gamma;
 	hasRun = false;
 }
 
@@ -58,6 +92,47 @@ void NetworKit::PowerlawDegreeSequence::setMinimumFromAverageDegree(double avgDe
 
 	hasRun = false;
 }
+
+void NetworKit::PowerlawDegreeSequence::setGammaFromAverageDegree(double avgDeg, double minGamma, double maxGamma) {
+	double gamma_l = maxGamma;
+	double gamma_r = minGamma;
+	setGamma(gamma_l); run();
+	double average_l = getExpectedAverageDegree();
+	setGamma(gamma_r); run();
+	double average_r = getExpectedAverageDegree();
+
+	// Note: r is the larger expected average degree!
+	if (avgDeg > average_r) {
+		setGamma(gamma_r);
+		return;
+	}
+
+	if (avgDeg < average_l) {
+		setGamma(gamma_l);
+		return;
+	}
+
+	while (gamma_l + 0.001 < gamma_r) {
+		setGamma((gamma_r + gamma_l) * 0.5); run();
+
+		double avg = getExpectedAverageDegree();
+
+		if (avg > avgDeg) {
+			average_r = avg;
+			gamma_r = gamma;
+		} else {
+			average_l = avg;
+			gamma_l = gamma;
+		}
+	}
+
+	if (avgDeg - average_l < average_r - avgDeg) {
+		setGamma(gamma_l);
+	} else {
+		setGamma(gamma_r);
+	}
+}
+
 
 NetworKit::count NetworKit::PowerlawDegreeSequence::getMinimumDegree() const {
 	return minDeg;

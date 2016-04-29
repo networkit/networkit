@@ -141,7 +141,7 @@ def readGraph(path, fileformat, **kwargs):
 				raise IOError("{0} is not a valid {1} file: {2}".format(path,fileformat,e))
 	return None
 
-def readGraphs(dirPath, pattern, fileformat, some=None, **kwargs):
+def readGraphs(dirPath, pattern, fileformat, some=None, exclude=None, **kwargs):
 	"""
 	Read all graph files contained in a directory whose filename contains the pattern, return a dictionary of name to Graph object.
     Parameters:
@@ -156,11 +156,12 @@ def readGraphs(dirPath, pattern, fileformat, some=None, **kwargs):
 	for root, dirs, files in os.walk(dirPath):
 		for file in files:
 			if fnmatch.fnmatch(file, pattern):
-				G = readGraph(os.path.join(root, file), fileformat, **kwargs)
-				graphs[G.getName()] = G
-				if some:
-					if len(graphs) == some:
-						return graphs
+				if (exclude is None) or (not fnmatch.fnmatch(file, exclude)):
+					G = readGraph(os.path.join(root, file), fileformat, **kwargs)
+					graphs[G.getName()] = G
+					if some:
+						if len(graphs) == some:
+							return graphs
 	return graphs
 
 
