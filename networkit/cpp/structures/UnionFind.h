@@ -33,7 +33,7 @@ public:
 	 * Initially every element is in its own set.
 	 * @param max_element maximum number of elements 
 	 */
-	UnionFind(index max_element) : parent(max_element), rank(max_element, 0) {
+	UnionFind(index max_element = 0) : parent(max_element), rank(max_element, 0) {
 		allToSingletons();
 	}
 

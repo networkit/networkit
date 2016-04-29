@@ -52,6 +52,7 @@ cdef extern from "<algorithm>" namespace "std":
 	_Partition move( _Partition t) nogil
 	_Cover move(_Cover t) nogil
 	_Matching move(_Matching) nogil
+	_UnionFind move(_UnionFind t) nogil
 	vector[double] move(vector[double])
 	vector[bool] move(vector[bool])
 	vector[count] move(vector[count])
@@ -228,6 +229,7 @@ cdef extern from "cpp/viz/Point.h" namespace "NetworKit":
 	cdef cppclass Point[T]:
 		Point()
 		Point(T x, T y)
+		Point(vector[T] values)
 		T& operator[](const index i) except +
 		T& at(const index i) except +
 
@@ -2140,19 +2142,19 @@ cdef class EdgeSwitchingMarkovChainGenerator:
 cdef extern from "cpp/generators/HyperbolicGenerator.h":
 	cdef cppclass _HyperbolicGenerator "NetworKit::HyperbolicGenerator":
 		# TODO: revert to count when cython issue fixed
-		_HyperbolicGenerator(unsigned int nodes,  double k, double gamma) except +
+		_HyperbolicGenerator(unsigned int nodes,  double k, double gamma, double T) except +
 		void setLeafCapacity(unsigned int capacity) except +
 		void setTheoreticalSplit(bool split) except +
 		void setBalance(double balance) except +
 		vector[double] getElapsedMilliseconds() except +
 		_Graph generate() except +
-		_Graph generateExternal(vector[double] angles, vector[double] radii, double r, double thresholdDistance) except +
+		_Graph generateExternal(vector[double] angles, vector[double] radii, double r, double thresholdDistance, double T) except +
 
 cdef class HyperbolicGenerator:
 	""" The Hyperbolic Generator distributes points in hyperbolic space and adds edges between points with a probability depending on their distance. The resulting graphs have a power-law degree distribution, small diameter and high clustering coefficient.
 For a temperature of 0, the model resembles a unit-disk model in hyperbolic space.
 
- 		HyperbolicGenerator(n, k=6, gamma=3)
+ 		HyperbolicGenerator(n, k=6, gamma=3, T=0)
 
  		Parameters
 		----------
@@ -2162,15 +2164,17 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 			average degree
 		gamma : double
 			exponent of power-law degree distribution
-
+		T : double
+			temperature of statistical model
+			
 	"""
 
 	cdef _HyperbolicGenerator* _this
 
-	def __cinit__(self,  n, k=6, gamma=3):
+	def __cinit__(self,  n, k=6, gamma=3, T=0):
 		if gamma <= 2:
 				raise ValueError("Exponent of power-law degree distribution must be > 2")
-		self._this = new _HyperbolicGenerator(n, k, gamma)
+		self._this = new _HyperbolicGenerator(n, k, gamma, T)
 
 	def setLeafCapacity(self, capacity):
 		self._this.setLeafCapacity(capacity)
@@ -2185,18 +2189,18 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		return self._this.getElapsedMilliseconds()
 
 	def generate(self):
-		""" Generates hyperbolic unit disk graph
+		""" Generates hyperbolic graph
 
 		Returns
 		-------
 		Graph
-
+		
 		"""
 		return Graph(0).setThis(self._this.generate())
 
-	def generateExternal(self, angles, radii, k, gamma):
+	def generateExternal(self, angles, radii, k, gamma, T=0):
 		# TODO: documentation
-		return Graph(0).setThis(self._this.generateExternal(angles, radii, k, gamma))
+		return Graph(0).setThis(self._this.generateExternal(angles, radii, k, gamma, T))
 
 	@classmethod
 	def fit(cls, Graph G, scale=1):
@@ -3505,6 +3509,51 @@ cdef class Partition:
 		"""
 		return self._this.getSubsetIds()
 
+cdef extern from "cpp/generators/quadtree/QuadtreeCartesianEuclid.h":
+	cdef cppclass _QuadtreeCartesianEuclid "NetworKit::QuadtreeCartesianEuclid"[T]:
+		_QuadtreeCartesianEuclid() except +
+		_QuadtreeCartesianEuclid(Point[double] lower, Point[double] upper) except +
+		void addContent(T newcomer, Point[double] pos) except +
+		count getElementsProbabilistically[Callback](Point[double] euQuery, Callback prob, vector[T] &circleDenizens) except +
+
+cdef cppclass DistanceCallBackWrapper:
+	void* callback
+	__init__(object callback):
+		this.callback = <void*>callback
+	double cython_call_operator(double dist):
+		cdef bool error = False
+		cdef string message
+		try:
+			return (<object>callback)(dist)
+		except Exception as e:
+			error = True
+			message = stdstring("An Exception occurred, aborting execution of distance lambda: {0}".format(e))
+		if (error):
+			throw_runtime_error(message)
+
+cdef class QuadtreeCartesianEuclid:
+	cdef _QuadtreeCartesianEuclid[double] _this
+
+	def __cinit__(self, lower, upper):
+		cdef Point[double] lowerPoint = Point[double](lower)
+		cdef Point[double] upperPoint = Point[double](upper)
+		self._this = _QuadtreeCartesianEuclid[double](lowerPoint, upperPoint)
+
+	def addContent(self, content, pos):
+		cdef Point[double] posPoint = Point[double](pos)
+		self._this.addContent(content, posPoint)
+
+	def getElementsProbabilistically(self, query, object callback):
+		cdef DistanceCallBackWrapper* wrapper
+		cdef Point[double] queryPoint = Point[double](query)
+		cdef vector[double] resultlist = []
+		try:
+			wrapper = new DistanceCallBackWrapper(callback)
+			self._this.getElementsProbabilistically[DistanceCallBackWrapper](queryPoint, dereference(wrapper), resultlist)
+		finally:
+			del wrapper
+			return resultlist
+
 
 cdef extern from "cpp/structures/Cover.h":
 	cdef cppclass _Cover "NetworKit::Cover":
@@ -3768,6 +3817,34 @@ cdef class Cover:
 			A set of ids of nonempty subsets.
 		"""
 		return self._this.getSubsetIds()
+
+cdef extern from "cpp/structures/UnionFind.h":
+	cdef cppclass _UnionFind "NetworKit::UnionFind":
+		_UnionFind() except +
+		_UnionFind(index max_element) except +
+		void allToSingletons() except +
+		index find(index u) except +
+		void merge(index u, index v) except +
+		_Partition toPartition() except +		
+
+cdef class UnionFind:
+	""" Union-Find data structure"""
+	cdef _UnionFind _this
+
+	def __cinit__(self, count n):
+		self._this = move(_UnionFind(n))
+
+	def allToSingletons(self):
+		self._this.allToSingletons()
+
+	def find(self, index u):
+		return self._this.find(u)
+
+	def merge(self, index u, index v):
+		self._this.merge(u,v)
+
+	def toPartition(self):
+		return Partition().setThis(self._this.toPartition())
 
 
 # Module: community
@@ -6236,7 +6313,7 @@ cdef class DynamicPubWebGenerator:
 
 cdef extern from "cpp/generators/DynamicHyperbolicGenerator.h":
 	cdef cppclass _DynamicHyperbolicGenerator "NetworKit::DynamicHyperbolicGenerator":
-		_DynamicHyperbolicGenerator(count numNodes, double avgDegree, double gamma, double moveEachStep, double moveDistance) except +
+		_DynamicHyperbolicGenerator(count numNodes, double avgDegree, double gamma, double T, double moveEachStep, double moveDistance) except +
 		vector[_GraphEvent] generate(count nSteps) except +
 		_Graph getGraph() except +
 		vector[Point[float]] getCoordinates() except +
@@ -6246,7 +6323,7 @@ cdef extern from "cpp/generators/DynamicHyperbolicGenerator.h":
 cdef class DynamicHyperbolicGenerator:
 	cdef _DynamicHyperbolicGenerator* _this
 
-	def __cinit__(self, numNodes, avgDegree, gamma, moveEachStep, moveDistance):
+	def __cinit__(self, numNodes, avgDegree, gamma, T, moveEachStep, moveDistance):
 		""" Dynamic graph generator according to the hyperbolic unit disk model.
 
 		Parameters
@@ -6257,6 +6334,7 @@ cdef class DynamicHyperbolicGenerator:
 			average degree of the resulting graph
 		gamma : double
 			power-law exponent of the resulting graph
+		T : double
 			temperature, selecting a graph family on the continuum between hyperbolic unit disk graphs and Erdos-Renyi graphs
 		moveFraction : double
 			fraction of nodes to be moved in each time step. The nodes are chosen randomly each step
@@ -6265,7 +6343,7 @@ cdef class DynamicHyperbolicGenerator:
 		"""
 		if gamma <= 2:
 				raise ValueError("Exponent of power-law degree distribution must be > 2")
-		self._this = new _DynamicHyperbolicGenerator(numNodes, avgDegree = 6, gamma = 3, moveEachStep = 1, moveDistance = 0.1)
+		self._this = new _DynamicHyperbolicGenerator(numNodes, avgDegree = 6, gamma = 3, T = 0, moveEachStep = 1, moveDistance = 0.1)
 
 	def generate(self, nSteps):
 		""" Generate event stream.
@@ -6954,7 +7032,7 @@ cdef class VDegreeIndex(LinkPredictor):
 cdef extern from "cpp/linkprediction/AlgebraicDistanceIndex.h":
 	cdef cppclass _AlgebraicDistanceIndex "NetworKit::AlgebraicDistanceIndex"(_LinkPredictor):
 		_AlgebraicDistanceIndex(count numberSystems, count numberIterations, double omega, index norm) except +
-		_AlgebraicDistanceIndex(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm, ) except +
+		_AlgebraicDistanceIndex(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm) except +
 		void preprocess() except +
 		double run(node u, node v) except +
 
