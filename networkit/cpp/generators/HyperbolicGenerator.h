@@ -16,10 +16,6 @@
 
 namespace NetworKit {
 
-typedef uint64_t index; // more expressive name for an index into an array
-typedef uint64_t count; // more expressive name for an integer quantity
-typedef index node; // node indices are 0-based
-
 class HyperbolicGenerator: public NetworKit::StaticGraphGenerator {
 public:
 
