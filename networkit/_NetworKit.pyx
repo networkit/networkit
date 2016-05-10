@@ -1209,8 +1209,11 @@ cdef class SSSP(Algorithm):
 		return (<_SSSP*>(self._this)).getPath(t, forward)
 
 	def getPaths(self, t, forward=True):
-		# FIXME: automatic conversion of set[vector[node]] to set of lists doesn't work
-		return (<_SSSP*>(self._this)).getPaths(t, forward)
+		cdef set[vector[node]] paths = (<_SSSP*>(self._this)).getPaths(t, forward)
+		result = []
+		for elem in paths:
+			result.append(list(elem))
+		return result
 
 	def getStack(self, moveOut=True):
 		return (<_SSSP*>(self._this)).getStack(moveOut)
