@@ -214,13 +214,9 @@ namespace NetworKit {
 			//do not transform to Poincare
 			double r = maxR;
 
+			#pragma omp parallel for
 			for (uint64_t i = 0; i < n; i++) {
 				angles[i] = phidist(Aux::Random::getURNG());
-				/**
-				* for the radial coordinate distribution, I took the probability density from Greedy Forwarding in Dynamic Scale-Free Networks Embedded in Hyperbolic Metric Spaces
-				* f (r) = sinh r/(cosh R − 1)
-				* \int sinh = cosh+const
-				*/
 
 				double random = rdist(Aux::Random::getURNG());
 				double radius = (acosh(random)/alpha);
