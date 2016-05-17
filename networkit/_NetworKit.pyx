@@ -2107,10 +2107,10 @@ cdef class EdgeSwitchingMarkovChainGenerator:
 	ignoreIfRealizable : bool, optional
 		If true, generate the graph even if the degree sequence is not realizable. Some nodes may get lower degrees than requested in the sequence.
 	"""
-	cdef _ConfigurationModelGenerator *_this
+	cdef _EdgeSwitchingMarkovChainGenerator *_this
 
 	def __cinit__(self, vector[count] degreeSequence, bool ignoreIfRealizable = False):
-		self._this = new _ConfigurationModelGenerator(degreeSequence, ignoreIfRealizable)
+		self._this = new _EdgeSwitchingMarkovChainGenerator(degreeSequence, ignoreIfRealizable)
 
 	def __dealloc__(self):
 		del self._this
