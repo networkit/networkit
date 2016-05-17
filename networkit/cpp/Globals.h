@@ -19,7 +19,7 @@ namespace NetworKit {
 	/** Typedefs **/
 	typedef uint64_t index; // more expressive name for an index into an array
 	typedef uint64_t count; // more expressive name for an integer quantity
-	typedef ttmath::Big<1,1> bigfloat;	// big floating point number
+	typedef ttmath::Big<TTMATH_BITS(64),TTMATH_BITS(64)> bigfloat;	// big floating point number
 	typedef index node; // node indices are 0-based
 	typedef double edgeweight; // edge weight type
 	typedef index edgeid;	// edge id
@@ -33,7 +33,7 @@ namespace NetworKit {
 #ifdef __INTEL_COMPILER
 constexpr double PI = 3.141592653589793238462643383279502884197169399375105820974944592307816406286;
 #else
-constexpr double PI = 2.0*std::acos(0);
+const double PI = 2.0*std::acos(0);
 #endif
 
 // CODE STYLE GUIDELINES: Do not rely on global variables for algorithm parametrization.

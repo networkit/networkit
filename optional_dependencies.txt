@@ -1,5 +1,4 @@
 seaborn
 tabulate
-powerlaw
 matplotlib
 pandas

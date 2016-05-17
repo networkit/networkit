@@ -6,11 +6,11 @@ class Timer:
 	with this timer. """
 
 	def __enter__(self):
-		self.start = time.clock()
+		self.start = time.time()
 		return self
 
 	def __exit__(self, *args):
-		self.end = time.clock()
+		self.end = time.time()
 		self.elapsed = round(self.end - self.start, 6)
 
 

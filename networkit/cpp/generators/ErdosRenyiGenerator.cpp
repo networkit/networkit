@@ -50,7 +50,7 @@ Graph ErdosRenyiGenerator::generate() {
 	}
 
 	G.shrinkToFit();
-	return std::move(G);
+	return G;
 }
 
 } /* namespace NetworKit */

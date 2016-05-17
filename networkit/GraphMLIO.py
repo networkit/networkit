@@ -104,15 +104,20 @@ class GraphMLWriter:
 		self.edgeIdCounter = 0
 		self.dir_str = ''
 
-	def write(self, graph, fname):
+	def write(self, graph, fname, nodeAttributes = {}, edgeAttributes = {}):
 		""" Writes a NetworKit graph to the specified file fname. 
 			Parameters:
 				- graph: a NetworKit::Graph python object 
 				- fname: the desired file path and name to be written to
+				- nodeAttributes: optional dictionary of node attributes in the form attribute name => list of attribute values
+				- edgeAttributes: optional dictionary of edge attributes in the form attribute name => list of attribute values
 		"""
 		# reset some internal variables in case more graphs are written with the same instance
 		self.edgeIdCounter = 0
 		self.dir_str = ''
+
+		if len(edgeAttributes) > 0 and not graph.hasEdgeIds():
+			raise RuntimeError("Error, graph must have edge ids if edge attributes are given")
 
 		# start with the root element and the right header information
 		root = ET.Element('graphml')
@@ -121,6 +126,7 @@ class GraphMLWriter:
 		root.set("xsi:schemaLocation","http://graphml.graphdrawing.org/xmlns \
 			http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd")
 
+		maxAttrKey = 1
 		# if the graph is weighted, add the attribute
 		if graph.isWeighted():
 			attrElement = ET.SubElement(root,'key')
@@ -128,6 +134,35 @@ class GraphMLWriter:
 			attrElement.set('id', 'd1')
 			attrElement.set('attr.name','weight')
 			attrElement.set('attr.type','double')
+			maxAttrKey += 1
+
+		attrKeys = {}
+		import numbers
+		import itertools
+		for attType, attName, attData in itertools.chain(
+			map(lambda d : ('node', d[0], d[1]), nodeAttributes.items()),
+			map(lambda d : ('edge', d[0], d[1]), edgeAttributes.items())):
+
+			attrElement = ET.SubElement(root, 'key')
+			attrElement.set('for', attType)
+			attrElement.set('id', 'd{0}'.format(maxAttrKey))
+			attrKeys[(attType, attName)] = 'd{0}'.format(maxAttrKey)
+			maxAttrKey += 1
+			attrElement.set('attr.name', attName)
+			if isinstance(attData[0], bool):
+				attrElement.set('attr.type', 'boolean')
+				# special handling for boolean attributes: convert boolean into lowercase string
+				if attType == 'edge':
+					edgeAttributes[attName] = [ str(d).lower() for d in attData ]
+				else:
+					nodeAttributes[attName] = [ str(d).lower() for d in attData ]
+			elif isinstance(attData[0], numbers.Integral):
+				attrElement.set('attr.type', 'int')
+			elif isinstance(attData[0], numbers.Real):
+				attrElement.set('attr.type', 'double')
+			else:
+				attrElement.set('attr.type', 'string')
+
 
 		# create graph element with appropriate information
 		graphElement = ET.SubElement(root,"graph")
@@ -143,6 +178,10 @@ class GraphMLWriter:
 		for n in graph.nodes():
 			nodeElement = ET.SubElement(graphElement,'node')
 			nodeElement.set('id', str(n))
+			for attName, attData in nodeAttributes.items():
+				dataElement = ET.SubElement(nodeElement, 'data')
+				dataElement.set('key', attrKeys[('node', attName)])
+				dataElement.text = str(attData[n])
 
 		# in the future: more attributes
 	        #for a in n.attributes():
@@ -153,26 +192,26 @@ class GraphMLWriter:
         	#        node.appendChild(data)
 
 		# Add edges
-		if graph.isWeighted():
-			for e in graph.edges():
-				edgeElement = ET.SubElement(graphElement,'edge')
-				edgeElement.set('directed', self.dir_str)
-				edgeElement.set('target', str(e[1]))
-				edgeElement.set('source', str(e[0]))
+		def addEdge(u, v, w, eid):
+			edgeElement = ET.SubElement(graphElement,'edge')
+			edgeElement.set('directed', self.dir_str)
+			edgeElement.set('target', str(v))
+			edgeElement.set('source', str(u))
+			if graph.hasEdgeIds():
+				edgeElement.set('id', "e{0}".format(eid))
+			else:
 				edgeElement.set('id', "e{0}".format(self.edgeIdCounter))
 				self.edgeIdCounter += 1
+			if graph.isWeighted():
 				# add edge weight
 				dataElement = ET.SubElement(edgeElement,'data')
 				dataElement.set('key','d1')
-				dataElement.text = str(graph.weight(e[0],e[1]))
-		else:
-			for e in graph.edges():
-				edgeElement = ET.SubElement(graphElement,'edge')
-				edgeElement.set('directed', self.dir_str)
-				edgeElement.set('target', str(e[1]))
-				edgeElement.set('source', str(e[0]))
-				edgeElement.set('id', "e{0}".format(self.edgeIdCounter))
-				self.edgeIdCounter += 1
+				dataElement.text = str(w)
+			for attName, attData in edgeAttributes.items():
+				dataElement = ET.SubElement(edgeElement, 'data')
+				dataElement.set('key', attrKeys[('edge', attName)])
+				dataElement.text = str(attData[eid])
+		graph.forEdges(addEdge)
 
 	#TODO: optional prettify function for formatted output of xml files
 		tree = ET.ElementTree(root)

@@ -37,7 +37,7 @@ public:
 	 * @param[in]	continuous	boolean to specify, if node ids are continuous
 	 * @param[in]	directed	treat graph as directed
 	 */
-	EdgeListReader(char separator, node firstNode, std::string commentPrefix = "#", bool continuous = true, bool directed = false);
+	EdgeListReader(const char separator, const node firstNode, const std::string commentPrefix = "#", const bool continuous = true, const bool directed = false);
 
 	/**
 	 * Given the path of an input file, read the graph contained.

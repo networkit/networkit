@@ -33,7 +33,7 @@ public:
 	 * @param[in]	recurse	use recursive coarsening, see http://journals.aps.org/pre/abstract/10.1103/PhysRevE.89.049902 for some explanations (default: true)
 	 *
 	 */
-	PLM(const Graph& G, bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32, bool turbo = false, bool recurse = true);
+	PLM(const Graph& G, bool refine=false, double gamma = 1.0, std::string par="balanced", count maxIter=32, bool turbo = true, bool recurse = true);
 
 	PLM(const Graph& G, const PLM& other);
 

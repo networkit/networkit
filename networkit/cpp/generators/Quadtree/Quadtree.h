@@ -15,6 +15,7 @@
 #include <functional>
 #include "QuadNode.h"
 #include "../../geometric/HyperbolicSpace.h"
+#include "../../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -45,7 +46,7 @@ public:
 			double treeArea = HyperbolicSpace::effectiveAreaInCell(currentNode.getLeftAngle(), currentNode.getRightAngle(), currentNode.getMinR(), currentNode.getMaxR(), alpha);
 			count coveredPoints = 0;
 			double coveredArea = 0;
-			for (int i = 0; i < currentNode.children.size(); i++) {
+			for (index i = 0; i < currentNode.children.size(); i++) {
 				count pointsInSubtree;
 				if (i < currentNode.children.size()-1) {
 					double subTreeArea = HyperbolicSpace::effectiveAreaInCell(currentNode.children[i].getLeftAngle(), currentNode.children[i].getRightAngle(), currentNode.children[i].getMinR(), currentNode.children[i].getMaxR(), alpha);
@@ -208,7 +209,7 @@ public:
 
 		//we have sort(deg(v)) here! This is not good, but does not make the asymptotical complexity of O(deg(v) log n) worse.
 		if (wraparound) {
-			std::sort(circleDenizens.begin(), circleDenizens.end());
+			Aux::Parallel::sort(circleDenizens.begin(), circleDenizens.end());
 			auto newend = unique(circleDenizens.begin(), circleDenizens.end());
 			count toRemove = circleDenizens.end() - newend;
 			count remaining = newend - circleDenizens.begin();

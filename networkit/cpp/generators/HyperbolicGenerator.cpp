@@ -15,30 +15,14 @@
 #include <assert.h>
 #include <omp.h>
 #include <algorithm>
-#include <iostream>
+
 #include "../graph/GraphBuilder.h"
 #include "HyperbolicGenerator.h"
 #include "Quadtree/Quadtree.h"
 #include "../auxiliary/Random.h"
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
-
-HyperbolicGenerator::HyperbolicGenerator() {
-	stretch = 1;
-	alpha = 1;
-	factor = 1;
-	nodeCount = 10000;
-	initialize();
-}
-
-HyperbolicGenerator::HyperbolicGenerator(count n) {
-	nodeCount = n;
-	alpha = 1;
-	factor = 1;
-	stretch=1;
-	temperature=0;
-	initialize();
-}
 
 /**
  * Construct a generator for n nodes and m edges
@@ -89,7 +73,7 @@ Graph HyperbolicGenerator::generate(count n, double distanceFactor, double alpha
 	std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
 
 	//can probably be parallelized easily, but doesn't bring much benefit
-	std::sort(permutation.begin(), permutation.end(), [&angles,&radii](index i, index j){return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);});
+	Aux::Parallel::sort(permutation.begin(), permutation.end(), [&angles,&radii](index i, index j){return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);});
 
 	vector<double> anglecopy(n);
 	vector<double> radiicopy(n);
@@ -157,7 +141,7 @@ Graph HyperbolicGenerator::generateExternal(const vector<double> &angles, const 
 }
 
 Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vector<double> &radii, const Quadtree<index> &quad, double thresholdDistance) {
-	index n = angles.size();
+	const count n = angles.size();
 	assert(radii.size() == n);
 	assert(quad.size() == n);
 

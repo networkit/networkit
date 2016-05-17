@@ -30,6 +30,9 @@ public:
 	 * @param	graph		input graph
 	 * @param	nSamples	 user defined number of samples
 	 * @param	normalized   normalize centrality values in interval [0,1] ?
+	 * @param	checkConnectedness	turn this off if you know the graph is connected
+	 *
+	 * TODO: extend definition of closeness to disconnected graphs
 	 */
 	ApproxCloseness(const Graph& G, count nSamples, bool normalized=false);
 
@@ -43,7 +46,7 @@ public:
 	/*
 	 * Returns the maximum possible Closeness a node can have in a graph with the same amount of nodes (=a star)
 	 */
-	double maximum();
+	double maximum() override;
 
 private:
 

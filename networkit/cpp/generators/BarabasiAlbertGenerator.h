@@ -8,8 +8,6 @@
 #ifndef BarabasiAlbertGenerator_H_
 #define BarabasiAlbertGenerator_H_
 
-#include <set>
-
 #include "StaticGraphGenerator.h"
 
 namespace NetworKit {
@@ -20,18 +18,41 @@ namespace NetworKit {
  */
 class BarabasiAlbertGenerator: public NetworKit::StaticGraphGenerator {
 private:
+	Graph initGraph;
 	count k; //!< Attachments made per node
 	count nMax; //!< The maximal number of nodes attached
 	count n0; //!< The number of initial connected nodes
-	count degreeSum; //!< Degree sum of the current graph
+	bool batagelj; //!< Specifies whether to use batagelj's method or the original one
 
+	/**
+	 * Implementation of ALG 5 of Batagelj, Brandes: Efficient Generation of Large Random Networks
+	 * https://kops.uni-konstanz.de/bitstream/handle/123456789/5799/random.pdf?sequence=1
+	 * Running time is O(n+m)
+	 * @return The generated graph
+	 */
+	Graph generateBatagelj();
 
-	Graph initializeGraph();
+	Graph generateOriginal();
 
 public:
 	BarabasiAlbertGenerator();
 
-	BarabasiAlbertGenerator(count k, count nMax, count n0 = 0);
+	/**
+	 * This generator implements the preferential attachment model as introduced by Barabasi and Albert[1].
+	 * The original algorithm is very slow and thus, the much faster method from Batagelj and Brandes[2] is
+	 * implemented and the current default.
+	 * The original method can be chosen by setting \p batagelj to false.
+	 * [1] Barabasi, Albert: Emergence of Scaling in Random Networks http://arxiv.org/pdf/cond-mat/9910332.pdf
+	 * [2] ALG 5 of Batagelj, Brandes: Efficient Generation of Large Random Networks https://kops.uni-konstanz.de/bitstream/handle/123456789/5799/random.pdf?sequence=1
+	 *
+	 * @param k Number of attachments per node
+	 * @param nMax Maximum number of nodes in the graph
+	 * @param n0 Number of connected nodes to begin with
+	 * @param batagelj Specifies whether to use batagelj's method or the original one; default: true
+	 */
+	BarabasiAlbertGenerator(count k, count nMax, count n0 = 0, bool batagelj=true);
+
+	BarabasiAlbertGenerator(count k, count nMax, const Graph& initGraph, bool batagelj=true);
 
 	Graph generate() override;
 };

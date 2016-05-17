@@ -11,10 +11,22 @@ The NetworKit main development repository is at [http://algohub.iti.kit.edu/parc
 
 [algohub.iti.kit.edu](http://algohub.iti.kit.edu) (an installation of [RhodeCode](https://rhodecode.com/)) makes it easy to create and manage forks. Forking is distinct from branching and creates a new repository with a new address, its own access control etc. A fork contains all branches of its parent.
 
+## Project Tracker (Kanboard)
+
+At [kanboard.iti.kit.edu](https://kanboard.iti.kit.edu) we maintain a project task tracker to coordinate development and releases. An account is given on request, please ask on the mailing list. Tasks are moved from left to right to through the columns:
+
+- `Backlog`: improvement ideas, some day maybe, "nice to have"
+- `ToDo`: scheduled improvements
+- `Work in progress`
+- `To Review`: requesting peer review
+- `Ready for Release`
+
+There is the possibility to create "swim lanes" for different releases.
+
 
 ## Branches
 
-Currently, the two most important branches of NetworKit are `Dev` and `default`. 
+Currently, the two most important branches of NetworKit are `Dev` and `default`.
 
 		 ________ 	Dev
 	____/________	default
@@ -55,7 +67,7 @@ Bugfixes are changes that should be immediately visible to users of NetworKit, s
 
 
 Example:
-	
+
 	hg up default
 	...
 	hg com -m "fixed bug xyz"
@@ -67,14 +79,14 @@ Example:
 #### Releasing New Features
 
 When new features should be released, the `Dev` branch is merged into the `default` branch. Additional testing and cleanup is performed before that happens. The new major or minor release is then tagged with a version number.
-			
+
 		  ______________________________________________________ 	Dev
 		 /   ^ new feature    prepare release ^ \ < merge Dev into default
 	____/________________________________________\______________	default
 				   									   ^ tag version
 
 
-Example: 
+Example:
 
 	hg up Dev
 	hg com -m "ready for release X.Y"
@@ -102,7 +114,7 @@ Users of NetworKit are welcome to contribute their modifications. New features m
 
 NetworKit is currently also used as a teaching tool. This section describes the workflow for student teams. Suppose the course is named, "Networks 101", then there will be a dedicated branch `Networks101` for student exercises.
 
-1. Fork the main repository via [algohub.iti.kit.edu](http://algohub.iti.kit.edu) and name the fork according to your team. (On the repository page, click `Options -> Fork)
+1. Fork the main repository via [algohub.iti.kit.edu](http://algohub.iti.kit.edu) and name the fork according to your team. (On the repository page, click `Options -> Fork`)
 2. Make sure that the correct access rights for your team are set. (On the repository page: `Options -> Settings`)
 3. Switch to the appropriate branch for the course (e.g. `hg up Networks101`) and ONLY work on this branch.
 4. Work with the forked repository as you please. Coordinate with your team.
@@ -119,12 +131,12 @@ We also ask student teams to adhere to the following conventions:
 
 ### Reviewing Student Exercises
 
-Incoming pull requests appear as notifications on [algohub.iti.kit.edu](http://algohub.iti.kit.edu). It is also possible to receive notifications via e-mail. 
+Incoming pull requests appear as notifications on [algohub.iti.kit.edu](http://algohub.iti.kit.edu). It is also possible to receive notifications via e-mail.
 
 
 1. Before the course starts, create an appropriate branch for the course (e.g. `Networks101`). Derive the branch from the `Dev` branch.
 2. Receive pull requests from student teams via [algohub.iti.kit.edu](http://algohub.iti.kit.edu).
-3. To review a pull request, switch to the course branch and pull from the forked repository of the student team. Make sure to pull the revision associated with the pull request (e.g. `hg pull -r<rev> <path/to/forked/repo>)
+3. To review a pull request, switch to the course branch and pull from the forked repository of the student team. Make sure to pull the revision associated with the pull request (e.g. `hg pull -r<rev> <path/to/forked/repo>`)
 4. If everything is okay, change the status of the pull request to `Accepted` (click `Change Status` above the comment field). The comment field can be used to send feedback, creators of the request will be notified via email.
 
 Good contributions from the student exercises should be merged back into the `Dev` branch.
@@ -155,7 +167,7 @@ The following general conventions apply to all NetworKit developers.
 ### Versioning
 
 - Before you commit, make sure your code compiles and run the unit tests. Never push code which breaks the build for others.
-- Commit regularly and often to your local repository. 
+- Commit regularly and often to your local repository.
 - Use meaningful commit messages.
 - Get the newest changes from the repository regularly and merge them into your local repository.
 - Make sure that you merged correctly and did not break other people's work.
@@ -166,11 +178,11 @@ The following general conventions apply to all NetworKit developers.
 
 ### Unit Tests and Testing
 
-Every new feature must be covered by a unit test. Omitting unit tests makes it very likely that your feature will break silently as the project develops, leading to unneccessary work in tracing back the source of the error. 
+Every new feature must be covered by a unit test. Omitting unit tests makes it very likely that your feature will break silently as the project develops, leading to unneccessary work in tracing back the source of the error.
 
 Unit tests for the C++ part of NetworKit are based on the `googletest` library. For more information read the [googletest primer](http://code.google.com/p/googletest/wiki/Primer). The Python test framework currently relies on `nose` to collect the tests.
 
-- Each source folder contains a `test` folder with `googletest` classes. Create the unit tests for each feature in the appropriate `test/*GTest` class by adding a `TEST_F` function. 
+- Each source folder contains a `test` folder with `googletest` classes. Create the unit tests for each feature in the appropriate `test/*GTest` class by adding a `TEST_F` function.
 - Prefix standard unit tests with `test` and experimental feature tests with `try`. A `test*` must pass when pushed to the main repository, a `try*` is allowed to fail.
 - Keep the running time of test functions to the minimum needed for testing functionality. Testing should be fast, long-running unit tests look like infinite loops.
 - If the unit test requires a data set, add the file to the `input/` folder. Only small data sets (a few kilobytes maximum) are acceptable in the repository.
@@ -179,8 +191,8 @@ Unit tests for the C++ part of NetworKit are based on the `googletest` library. 
 To build and run the tests you need the [gtest library](https://code.google.com/p/googletest/). Assuming, gtest is successfully installed and you add the paths to your build.conf, the unit tests should be compiled with:
 
 	scons --optimize=Dbg --target=Tests
-	
-To verify that the code was built correctly: Run all unit tests with 
+
+To verify that the code was built correctly: Run all unit tests with
 
 		./NetworKit-Tests-Dbg --tests
 
@@ -238,8 +250,8 @@ The code above exposes the C++ class definition to Cython - but not yet to Pytho
 
 		cdef class Dijkstra:
 			""" Dijkstra's SSSP algorithm.
-	 		    Returns list of weighted distances from node source, 
-			    i.e. the length of the shortest path from @a source 
+	 		    Returns list of weighted distances from node source,
+			    i.e. the length of the shortest path from @a source
 			    to any other node."""
 			cdef _Dijkstra* _this
 			def __cinit__(self, Graph G, source):
@@ -263,8 +275,6 @@ The docstring between the triple quotation marks can be accessed through Python'
 To discuss important changes to NetworKit, use the [developers e-mail list][list] (`networkit-dev@ira.uka.de`).
 
 [list]: https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit-dev
-
-To suggest improvements to workflows and conventions, write to `christian.staudt @ kit.edu`.
 
 
 ## Further Reading

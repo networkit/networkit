@@ -8,11 +8,12 @@ __author__ = "Gerd Lindner, Moritz v.Looz"
 
 import urllib as _urllib
 import time
+import math
 
 from . import pyclient as _gephipyclient   # we want to hide these from the user
 
-
 class GephiStreamingClient:
+
     """
      A python singleton providing access to a running Master instance of the Gephi
      Streaming plugin
@@ -24,7 +25,9 @@ class GephiStreamingClient:
         self.graphExported = False
 
     def _urlError(self, e):
-        print("Could not connect to the gephi streaming plugin. Did you start the streaming master server in gephi?")
+        print("Could not connect to the gephi streaming plugin.")
+        print("Did you start the streaming master server in gephi and provide the name of your workspace?")
+        print("If the workspace is named 'Workspace 0', the corresponding url is http://localhost:8080/workspace0 (adapt port)")
 
     def exportGraph(self, graph):
         """ Exports the given graph to gephi. No attributes or weights are exported.
@@ -38,10 +41,7 @@ class GephiStreamingClient:
             graph.indexEdges()
             self.directed = graph.isDirected()
 
-            nAttrs = {}
-
-            for node in graph.nodes():
-                self._pygephi.add_node(str(node), **nAttrs)
+            self._exportNodes(graph.nodes())
 
             for edge in graph.edges():
                 if self.directed:
@@ -54,6 +54,25 @@ class GephiStreamingClient:
             self.graphExported = True
         except _urllib.error.URLError as e:
             self._urlError(e)
+
+    def _exportNodes(self, nodes):
+        nAttrs = {'size': 2.0, 'r': 0.6, 'g': 0.6, 'b': 0.6, 'y':1.0}
+
+        # the default approximately shows -2000 to 2000, so we want to
+        # distribute the nodes in that area. Since Gephi 0.9, no nodes
+        # may have exactly the same coordinates, thus a deterministic
+        # distribution scheme is used.
+        NODE_AREA_SIZE = 2000
+        nodesPerSquareSide = 0 if len(nodes) == 0 else math.ceil(math.sqrt(len(nodes)))
+        stepSize = NODE_AREA_SIZE / nodesPerSquareSide
+        offset = NODE_AREA_SIZE / 2
+
+        nodeNumber = 0
+        for node in nodes:
+            nAttrs['x'] = (nodeNumber % nodesPerSquareSide) * stepSize - offset
+            nAttrs['y'] = (nodeNumber // nodesPerSquareSide) * stepSize - offset
+            nodeNumber += 1
+            self._pygephi.add_node(str(node), **nAttrs)
 
     def exportAdditionalEdge(self, u, v):
         """ Adds an edge (u,v) in an already exported graph. If the edge is already present, nothing happens.

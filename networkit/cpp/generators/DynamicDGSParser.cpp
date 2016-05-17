@@ -7,6 +7,7 @@
 
 #include "DynamicDGSParser.h"
 #include "../auxiliary/Log.h"
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -215,8 +216,7 @@ void DynamicDGSParser::evaluateClusterings(const std::string path, const Partiti
 			    vals.push_back(pair.second);
 			}
 
-		    std::sort(vals.begin(), vals.end());
-		    std::reverse(vals.begin(), vals.end());
+		    Aux::Parallel::sort(vals.begin(), vals.end(), std::greater<count>());
 
 			int maxCategories = 5;
 			int maxCategoriesCounter = 0;

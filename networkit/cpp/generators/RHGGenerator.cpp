@@ -8,6 +8,7 @@
 #include "../graph/Graph.h"
 #include "RHGGenerator.h"
 #include "../auxiliary/Random.h"
+#include "../auxiliary/Parallel.h"
 #include <set>
 
 using std::vector;
@@ -47,8 +48,7 @@ namespace NetworKit {
 		index p = 0;
 		std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
 
-		//can probably be parallelized easily, but doesn't bring much benefit
-		std::sort(permutation.begin(), permutation.end(), [&angles,&radii](index i, index j){return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);});
+		Aux::Parallel::sort(permutation.begin(), permutation.end(), [&angles,&radii](index i, index j){return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);});
 
 		vector<double> anglecopy(n);
 		vector<double> radiicopy(n);

@@ -12,12 +12,9 @@
 #include <vector>
 #include <string>
 #include <tuple>
+#include "../Globals.h"
 
 namespace NetworKit {
-
-typedef uint64_t index;
-typedef index node;
-typedef uint64_t count;
 
 /**
  * @ingroup io

@@ -15,8 +15,42 @@ NetworKit::PowerlawDegreeSequence::PowerlawDegreeSequence(NetworKit::count minDe
 	if (gamma > -1) throw std::runtime_error("Error: gamma must be lower than -1");
 }
 
+NetworKit::PowerlawDegreeSequence::PowerlawDegreeSequence(const std::vector< double > &degreeSequence) : minDeg(std::numeric_limits<count>::max()), maxDeg(std::numeric_limits<count>::min()) {
+	count sum = 0;
+	for (auto &d : degreeSequence) {
+		if (d < minDeg) minDeg = d;
+		if (d > maxDeg) maxDeg = d;
+		sum += d;
+	}
+
+	double avg = sum * 1.0 / degreeSequence.size();
+
+	setGammaFromAverageDegree(avg);
+}
+
+NetworKit::PowerlawDegreeSequence::PowerlawDegreeSequence(const NetworKit::Graph &g) : minDeg(std::numeric_limits<count>::max()), maxDeg(std::numeric_limits<count>::min()) {
+	count sum = 0;
+	g.forNodes([&](node u) {
+		count d = g.degree(u);
+		if (d < minDeg) minDeg = d;
+		if (d > maxDeg) maxDeg = d;
+		sum += d;
+	});
+
+	double avg = sum * 1.0 / g.numberOfNodes();
+
+	setGammaFromAverageDegree(avg);
+}
+
+
+
 void NetworKit::PowerlawDegreeSequence::setMinimumDegree(NetworKit::count minDeg) {
 	this->minDeg = minDeg;
+	hasRun = false;
+}
+
+void NetworKit::PowerlawDegreeSequence::setGamma(double gamma) {
+	this->gamma = gamma;
 	hasRun = false;
 }
 
@@ -59,6 +93,47 @@ void NetworKit::PowerlawDegreeSequence::setMinimumFromAverageDegree(double avgDe
 	hasRun = false;
 }
 
+void NetworKit::PowerlawDegreeSequence::setGammaFromAverageDegree(double avgDeg, double minGamma, double maxGamma) {
+	double gamma_l = maxGamma;
+	double gamma_r = minGamma;
+	setGamma(gamma_l); run();
+	double average_l = getExpectedAverageDegree();
+	setGamma(gamma_r); run();
+	double average_r = getExpectedAverageDegree();
+
+	// Note: r is the larger expected average degree!
+	if (avgDeg > average_r) {
+		setGamma(gamma_r);
+		return;
+	}
+
+	if (avgDeg < average_l) {
+		setGamma(gamma_l);
+		return;
+	}
+
+	while (gamma_l + 0.001 < gamma_r) {
+		setGamma((gamma_r + gamma_l) * 0.5); run();
+
+		double avg = getExpectedAverageDegree();
+
+		if (avg > avgDeg) {
+			average_r = avg;
+			gamma_r = gamma;
+		} else {
+			average_l = avg;
+			gamma_l = gamma;
+		}
+	}
+
+	if (avgDeg - average_l < average_r - avgDeg) {
+		setGamma(gamma_l);
+	} else {
+		setGamma(gamma_r);
+	}
+}
+
+
 NetworKit::count NetworKit::PowerlawDegreeSequence::getMinimumDegree() const {
 	return minDeg;
 }
@@ -69,7 +144,7 @@ void NetworKit::PowerlawDegreeSequence::run() {
 
 	double sum = 0;
 
-	for (double d = minDeg; d <= maxDeg; ++d) {
+	for (double d = maxDeg; d >= minDeg; --d) {
 		sum += std::pow(d, gamma);
 		cumulativeProbability.push_back(sum);
 	}
@@ -78,15 +153,17 @@ void NetworKit::PowerlawDegreeSequence::run() {
 		prob /= sum;
 	}
 
+	cumulativeProbability.back() = 1.0;
+
 	hasRun= true;
 }
 
 double NetworKit::PowerlawDegreeSequence::getExpectedAverageDegree() const {
 	if (!hasRun) throw std::runtime_error("Error: run needs to be called first");
 
-	double average = cumulativeProbability[0] * minDeg;
+	double average = cumulativeProbability[0] * maxDeg;
 	for (count i = 1; i < cumulativeProbability.size(); ++i) {
-		average += (cumulativeProbability[i] - cumulativeProbability[i-1]) * (i + minDeg);
+		average += (cumulativeProbability[i] - cumulativeProbability[i-1]) * (maxDeg - i);
 	}
 
 	return average;
@@ -115,5 +192,5 @@ std::vector< NetworKit::count > NetworKit::PowerlawDegreeSequence::getDegreeSequ
 NetworKit::count NetworKit::PowerlawDegreeSequence::getDegree() const {
 	if (!hasRun) throw std::runtime_error("Error: run needs to be called first");
 
-	return std::distance(cumulativeProbability.begin(), std::lower_bound(cumulativeProbability.begin(), cumulativeProbability.end(), Aux::Random::probability())) + minDeg;
+	return maxDeg - std::distance(cumulativeProbability.begin(), std::lower_bound(cumulativeProbability.begin(), cumulativeProbability.end(), Aux::Random::probability()));
 }

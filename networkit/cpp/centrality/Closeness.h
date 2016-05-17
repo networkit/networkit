@@ -23,8 +23,11 @@ public:
 	 *
 	 * @param G The graph.
 	 * @param normalized Set this parameter to <code>true</code> if scores should be normalized in the interval [0,1].
+	 * @param	checkConnectedness	turn this off if you know the graph is connected
+	 *
+	 * TODO: extend definition of closeness to disconnected graphs
 	 */
-	Closeness(const Graph& G, bool normalized=false);
+	Closeness(const Graph& G, bool normalized=false, bool checkConnectedness=true);
 
 
 
@@ -37,7 +40,7 @@ public:
 	/*
 	 * Returns the maximum possible Closeness a node can have in a graph with the same amount of nodes (=a star)
 	 */
-	double maximum();
+	double maximum() override;
 };
 
 } /* namespace NetworKit */

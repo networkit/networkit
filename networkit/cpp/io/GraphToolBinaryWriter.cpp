@@ -15,7 +15,7 @@
 namespace NetworKit {
 GraphToolBinaryWriter::GraphToolBinaryWriter(bool littleEndianness) : littleEndianness(littleEndianness) {}
 
-void GraphToolBinaryWriter::write(Graph& G, const std::string& path) {
+void GraphToolBinaryWriter::write(const Graph& G, const std::string& path) {
 	std::ofstream file(path, std::ios::binary | std::ios::out);
 	Aux::enforceOpened(file);
 	writeHeader(file);
@@ -54,11 +54,12 @@ void GraphToolBinaryWriter::writeComment(std::ofstream& file) {
 	std::string s = "";
 	uint64_t size = (uint64_t)s.size();
 	writeType<uint64_t>(file,8,size);
-	if (size > 0);
+	if (size > 0) {
 		file.write(s.c_str(),size);
+	}
 }
 
-void GraphToolBinaryWriter::writeAdjacencies(std::ofstream& file, Graph& G) {
+void GraphToolBinaryWriter::writeAdjacencies(std::ofstream& file, const Graph& G) {
 	// value of numNodes determines the size of the unsigned integer type storing the node ids
 	int width = (int)getAdjacencyWidth(G.numberOfNodes());
 	//DEBUG("width is: ", width);

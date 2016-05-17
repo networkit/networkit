@@ -15,6 +15,7 @@
 #include <utility>
 #include <stdexcept>
 #include <functional>
+#include <unordered_set>
 
 #include "../Globals.h"
 #include "Coordinates.h"
@@ -228,7 +229,8 @@ private:
 	template<class F,
 			 typename std::enable_if<
 			 (Aux::FunctionTraits<F>::arity >= 2) &&
-			 std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<2>::type>::value
+			 std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<2>::type>::value &&
+			 std::is_same<node, typename Aux::FunctionTraits<F>::template arg<1>::type>::value /* prevent f(v, weight, eid) */
 			 >::type* = (void*)0>
 	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, v, id)) {
 		return f(u, v, id);
@@ -444,6 +446,7 @@ public:
 	 * Add a new node to the graph with coordinates @a x and @y and return it.
 	 */
 	// TODO: remove method
+	// [[deprecated("Deprecated: Node coordinates should be stored externally like any other node attribute")]]
 	node addNode(float x, float y);
 
 	/**
@@ -475,6 +478,28 @@ public:
 	 */
 
 	void restoreNode(node v);
+
+
+	// SET OPERATIONS
+
+	/**
+	 * Appends another graph to this graph as a new subgraph. Performs node
+	 * id remapping.
+	 * @param G [description]
+	 */
+	void append(const Graph& G);
+
+	/**
+	 * Modifies this graph to be the union of it and another graph.
+	 * Nodes with the same ids are identified with each other.
+	 * @param G [description]
+	 */
+	void merge(const Graph& G);
+
+
+	// SUBGRAPHS
+
+	Graph subgraphFromNodes(const std::unordered_set<node>& nodes) const;
 
 
 	/** NODE PROPERTIES **/
@@ -640,6 +665,24 @@ public:
 	*/
 	std::pair<count, count> const size() { return {n, m}; };
 
+
+	/**
+	 * @return the density of the graph
+	 */
+	double density() const {
+		count n = numberOfNodes();
+		count m = numberOfEdges();
+		count loops = numberOfSelfLoops();
+		m -= loops;
+		double d;
+		if (isDirected()) {
+			d = m / (double) (n * (n-1));
+		} else {
+			d = (2 * m) / (double) (n * (n-1));
+		}
+		return d;
+	}
+
 	/**
 	 * Return the number of loops {v,v} in the graph.
 	 * @return The number of loops.
@@ -686,6 +729,7 @@ public:
 	 * @param value The coordinate of @a v.
 	 */
 	// TODO: remove method
+	// [[deprecated("Deprecated: Node coordinates should be stored externally like any other node attribute")]]
 	void setCoordinate(node v, Point<float> value) { coordinates.setCoordinate(v, value); }
 
 
@@ -698,6 +742,7 @@ public:
 	 * @return The coordinate of @a v.
 	 */
 	// TODO: remove method
+	// [[deprecated("Deprecated: Node coordinates should be stored externally like any other node attribute")]]
 	Point<float>& getCoordinate(node v) { return coordinates.getCoordinate(v); }
 
 	/**
@@ -709,6 +754,7 @@ public:
 	 * @return The minimum coordinate in dimension @a dim.
 	 */
 	// TODO: remove method
+	// [[deprecated("Deprecated: Node coordinates should be stored externally like any other node attribute")]]
 	float minCoordinate(count dim) { return coordinates.minCoordinate(dim); }
 
 	/**
@@ -720,6 +766,7 @@ public:
 	 * @return The maximum coordinate in dimension @a dim.
 	 */
 	// TODO: remove method
+	// [[deprecated("Deprecated: Node coordinates should be stored externally like any other node attribute")]]
 	float maxCoordinate(count dim) { return coordinates.maxCoordinate(dim); }
 
 	/**
@@ -731,6 +778,7 @@ public:
 	 * been added.
 	 */
 	// TODO: remove method
+	// [[deprecated("Deprecated: Node coordinates should be stored externally like any other node attribute")]]
 	void initCoordinates() { coordinates.init(z); }
 
 
@@ -808,6 +856,14 @@ public:
 	* @return undirected graph.
 	*/
 	Graph toUndirected() const;
+
+
+	/**
+	* Return an unweighted version of this graph.
+	*
+	* @return unweighted graph.
+	*/
+	Graph toUnweighted() const;
 
 	/**
 	 * Return the transpose of this graph. The graph must be directed.
@@ -1052,33 +1108,33 @@ void Graph::parallelForNodePairs(L handle) const {
 template<bool hasWeights> // implementation for weighted == true
 inline edgeweight Graph::getOutEdgeWeight(node u, index i) const {
 	return outEdgeWeights[u][i];
-};
+}
 
 template<> // implementation for weighted == false
 inline edgeweight Graph::getOutEdgeWeight<false>(node, index) const {
 	return defaultEdgeWeight;
-};
+}
 
 template<bool hasWeights> // implementation for weighted == true
 inline edgeweight Graph::getInEdgeWeight(node u, index i) const {
 	return inEdgeWeights[u][i];
-};
+}
 
 template<> // implementation for weighted == false
 inline edgeweight Graph::getInEdgeWeight<false>(node, index) const {
 	return defaultEdgeWeight;
-};
+}
 
 
 template<bool graphHasEdgeIds> // implementation for hasEdgeIds == true
 inline edgeid Graph::getOutEdgeId(node u, index i) const {
 	return outEdgeIds[u][i];
-};
+}
 
 template<> // implementation for hasEdgeIds == false
 inline edgeid Graph::getOutEdgeId<false>(node, index) const {
 	return 0;
-};
+}
 
 template<bool graphHasEdgeIds> // implementation for hasEdgeIds == true
 inline edgeid Graph::getInEdgeId(node u, index i) const {
@@ -1420,7 +1476,7 @@ void Graph::BFSEdgesFrom(node r, L handle) const {
 		node u = q.front();
 		q.pop();
 		// apply function
-		forNeighborsOf(u, [&](node v, edgeweight w, edgeid eid) {
+		forNeighborsOf(u, [&](node, node v, edgeweight w, edgeid eid) {
 			if (!marked[v]) {
 				handle(u, v, w, eid);
 				q.push(v);
@@ -1469,6 +1525,9 @@ void Graph::DFSEdgesFrom(node r, L handle) const {
 		});
 	} while (!s.empty());
 }
+
+
+
 
 } /* namespace NetworKit */
 

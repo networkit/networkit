@@ -3,11 +3,11 @@ to the network """
 
 
 __author__ = "Christian Staudt"
-__credits__ = ["Christian Staudt", "Elisabetta Bergamini", "Henning Meyerhenke", "Marc Nemes"]
+__credits__ = ["Christian Staudt", "Elisabetta Bergamini", "Henning Meyerhenke", "Marc Nemes", "Maximilian Vogel"]
 
 # extension imports
 # TODO: (+) ApproxCloseness
-from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2,  DynApproxBetweenness, Closeness, KPathCentrality, CoreDecomposition, KatzCentrality, LocalClusteringCoefficient, ApproxCloseness
+from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2,  DynApproxBetweenness, Closeness, KPathCentrality, CoreDecomposition, KatzCentrality, LocalClusteringCoefficient, ApproxCloseness, LocalPartitionCoverage, Sfigality, PermanenceCentrality
 
 
 # local imports
@@ -29,38 +29,6 @@ def scores(G, algorithm=Betweenness, normalized=False):
 	centrality.run()
 	return centrality.scores()
 
-
-def centralization(G, centralityMeasure):
-	"""
-	Compute the centralization of a network with respect to some centrality measure.
-
-	The centralization of any network is a measure of how central its most central
-	node is in relation to how central all the other nodes are.
-	Centralization measures then (a) calculate the sum in differences
-	in centrality between the most central node in a network and all other nodes;
-	and (b) divide this quantity by the theoretically largest such sum of
-	differences in any network of the same size.
-
-	Parameters
-	----------
-	G : graph
-		The graph of which to compute the centrality
-	centralityMeasure : instance of Centrality (sub)class
-				initialized algorithm object will be run
-
-	Returns
-	-------
-	double
-		centralization score
-
-	"""
-	centralityMeasure.run()
-	ranking = centralityMeasure.ranking()
-	(center, centerScore) = ranking[0]
-	maxScore = centralityMeasure.maximum()
-	diff1 = sum([(centerScore - c) for (u, c) in ranking])
-	diff2 = sum([(maxScore - c) for (u, c) in ranking])
-	return diff1 / diff2
 
 
 def rankPerNode(ranking):

@@ -23,7 +23,11 @@
 #include "../CoreDecomposition.h"
 #include "../LocalClusteringCoefficient.h"
 #include "../../structures/Cover.h"
+#include "../PermanenceCentrality.h"
 #include "../../structures/Partition.h"
+#include "../../auxiliary/Timer.h"
+#include "../../generators/ErdosRenyiGenerator.h"
+
 
 namespace NetworKit {
 
@@ -183,7 +187,7 @@ TEST_F(CentralityGTest, testKatzCentralityDirected) {
 	std::vector<std::pair<node, double> > kc_ranking = kc.ranking();
 	std::vector<double> kc_scores = kc.scores();
 
-	EXPECT_EQ(kc_ranking[0].first, 699);
+	EXPECT_EQ(kc_ranking[0].first, 699u);
 }
 
 TEST_F(CentralityGTest, testPageRankDirected) {
@@ -197,7 +201,7 @@ TEST_F(CentralityGTest, testPageRankDirected) {
 	std::vector<std::pair<node, double> > pr_ranking = pr.ranking();
 
 	const double tol = 1e-3;
-	EXPECT_EQ(pr_ranking[0].first, 699);
+	EXPECT_EQ(pr_ranking[0].first, 699u);
 	EXPECT_NEAR(pr_ranking[0].second, 0.00432, tol);
 }
 
@@ -348,7 +352,7 @@ TEST_F(CentralityGTest, testApproxClosenessCentralityOnToyGraph) {
  /* Graph:
     0    3
      \  / \
-      2    5
+      2    5     7 (isolated node)
      /  \ /
     1    4
  */
@@ -368,7 +372,7 @@ TEST_F(CentralityGTest, testApproxClosenessCentralityOnToyGraph) {
 
 		double maximum = acc.maximum();
 
-    const double tol = 0.15;
+    const double tol = 0.2;
     EXPECT_NEAR(0.1, cc[0], tol);
     EXPECT_NEAR(0.1, cc[1], tol);
     EXPECT_NEAR(0.166667, cc[2], tol);
@@ -392,6 +396,21 @@ TEST_F(CentralityGTest, testApproxClosenessCentralityOnToyGraph) {
 		EXPECT_NEAR(0.2, maximum2, tol);
 }
 
+TEST_F(CentralityGTest, testApproxClosenessCentralityOnDisconnectedGraph) {
+	count n = 5;
+	Graph G(n);
+
+	G.addEdge(0, 1);
+	G.addEdge(2, 3);
+
+	ApproxCloseness acc(G, 100, false);
+	acc.run();
+	std::vector<double> cc = acc.scores();
+
+	const double tol = 0.35;
+	EXPECT_NEAR(0, cc[4], tol);
+	EXPECT_NEAR(1.0, cc[1], tol);
+}
 
 TEST_F(CentralityGTest, testEdgeBetweennessCentrality) {
  /* Graph:
@@ -423,6 +442,20 @@ TEST_F(CentralityGTest, testEdgeBetweennessCentrality) {
 	EXPECT_NEAR(6.0, bc[4], tol);
 	EXPECT_NEAR(6.0, bc[5], tol);
 }
+
+
+TEST_F(CentralityGTest, tryEdgeBetweennessCentrality) {
+    auto path = "input/PGPgiantcompo.graph";
+    METISGraphReader reader;
+    Graph G = reader.read(path);
+    G.indexEdges();
+
+	Betweenness centrality(G,false,true);
+	centrality.run();
+	std::vector<double> bc = centrality.edgeScores();
+
+}
+
 
 
 TEST_F(CentralityGTest, testClosenessCentrality) {
@@ -557,8 +590,90 @@ TEST_F(CentralityGTest, testCoreDecomposition) {
 	H.addEdge(0, 1);
 	H.addEdge(1, 1);
 	EXPECT_ANY_THROW(CoreDecomposition CoreDec(H));
+}
 
+TEST_F(CentralityGTest, benchCoreDecompositionSnapGraphs) {
+	SNAPGraphReader reader;
+	std::vector<std::string> filenames = {"soc-LiveJournal1.edgelist-t0.graph", "cit-Patents.txt", "com-orkut.ungraph.txt", "web-BerkStan.edgelist-t0.graph"};
 
+	for (auto f: filenames) {
+		std::string filename("/home/i11/staudt/Graphs/Static/SNAP/" + f);
+		DEBUG("about to read file ", filename);
+		Graph G = reader.read(filename);
+		G.removeSelfLoops();
+		CoreDecomposition coreDec(G, false);
+		Aux::Timer timer;
+		timer.start();
+		coreDec.run();
+		timer.stop();
+		INFO("Time for ParK of ", filename, ": ", timer.elapsedTag());
+
+		CoreDecomposition coreDec2(G, true);
+		timer.start();
+		coreDec2.run();
+		timer.stop();
+		INFO("Time for bucket queue based k-core decomposition of ", filename, ": ", timer.elapsedTag());
+
+		G.forNodes([&](node u) {
+			EXPECT_EQ(coreDec.score(u), coreDec2.score(u));
+		});
+	}
+}
+
+TEST_F(CentralityGTest, benchCoreDecompositionDimacsGraphs) {
+  METISGraphReader reader;
+  std::vector<std::string> filenames = {"eu-2005", "coPapersDBLP", "uk-2002", "europe-osm", "cage15"};
+
+  for (auto f: filenames) {
+    std::string filename("/home/i11/staudt/Graphs/Static/DIMACS/Large/" + f + ".metis.graph");
+    DEBUG("about to read file ", filename);
+    Graph G = reader.read(filename);
+    G.removeSelfLoops();
+    CoreDecomposition coreDec(G, false);
+    Aux::Timer timer;
+    timer.start();
+    coreDec.run();
+    timer.stop();
+    INFO("Time for ParK of ", filename, ": ", timer.elapsedTag());
+
+    CoreDecomposition coreDec2(G, true);
+    timer.start();
+    coreDec2.run();
+    timer.stop();
+    INFO("Time for bucket queue based k-core decomposition of ", filename, ": ", timer.elapsedTag());
+
+    G.forNodes([&](node u) {
+	EXPECT_EQ(coreDec.score(u), coreDec2.score(u));
+      });
+  }
+}
+
+TEST_F(CentralityGTest, benchCoreDecompositionLocal) {
+  METISGraphReader reader;
+  std::vector<std::string> filenames = {"coPapersCiteseer", "in-2004", "coAuthorsDBLP", "audikw1"};
+
+  for (auto f: filenames) {
+    std::string filename("input/" + f + ".graph");
+    DEBUG("about to read file ", filename);
+    Graph G = reader.read(filename);
+    G.removeSelfLoops();
+    CoreDecomposition coreDec(G, false);
+    Aux::Timer timer;
+    timer.start();
+    coreDec.run();
+    timer.stop();
+    INFO("Time for ParK of ", filename, ": ", timer.elapsedTag());
+
+    CoreDecomposition coreDec2(G, true);
+    timer.start();
+    coreDec2.run();
+    timer.stop();
+    INFO("Time for bucket queue based k-core decomposition of ", filename, ": ", timer.elapsedTag());
+
+    G.forNodes([&](node u) {
+	EXPECT_EQ(coreDec.score(u), coreDec2.score(u));
+      });
+  }
 }
 
 TEST_F(CentralityGTest, testCoreDecompositionDirected) {
@@ -666,6 +781,10 @@ TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected) {
 
  	EXPECT_EQ(reference,lccScores);
 
+	LocalClusteringCoefficient lccTurbo(G, true);
+	lccTurbo.run();
+	EXPECT_EQ(reference, lccTurbo.scores());
+
 	// test throw runtime error for self-loop in graph
 	Graph H(2);
 	H.addEdge(0, 1);
@@ -693,5 +812,67 @@ TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected2) {
 
  	EXPECT_EQ(reference,lccScores);
  }
+
+TEST_F(CentralityGTest, testSimplePermanence) {
+	Graph G(15, false, false);
+	G.addEdge(0, 1);
+	G.addEdge(1, 2);
+	G.addEdge(2, 0);
+	G.addEdge(2, 3);
+	node v = 4;
+	node u = 5;
+	G.addEdge(v, 0);
+	G.addEdge(v, 1);
+	G.addEdge(v, 2);
+	G.addEdge(u, 3);
+	G.addEdge(u, 2);
+	G.addEdge(u, 0);
+	G.addEdge(6, 7);
+	G.addEdge(7, 8);
+	G.addEdge(u, 6);
+	G.addEdge(u, 7);
+	G.addEdge(u, 8);
+	G.addEdge(v, 6);
+	G.addEdge(v, 7);
+	G.addEdge(9, 10);
+	G.addEdge(10, 11);
+	G.addEdge(u, 9);
+	G.addEdge(v, 10);
+	G.addEdge(v, 11);
+	G.addEdge(12, 13);
+	G.addEdge(13, 14);
+	G.addEdge(12, 14);
+	G.addEdge(v, 12);
+	G.addEdge(v, 14);
+
+	Partition P(G.upperNodeIdBound());
+	P.setUpperBound(4);
+	P[0] = 0;
+	P[1] = 0;
+	P[2] = 0;
+	P[3] = 0;
+	P[v] = 0;
+	P[u] = 0;
+	P[6] = 1;
+	P[7] = 1;
+	P[8] = 1;
+	P[9] = 2;
+	P[10] = 2;
+	P[11] = 2;
+	P[12] = 3;
+	P[13] = 3;
+	P[14] = 3;
+
+	ASSERT_EQ(9, G.degree(v));
+	ASSERT_EQ(7, G.degree(u));
+
+	PermanenceCentrality perm(G, P);
+	perm.run();
+	EXPECT_DOUBLE_EQ(2.0/3.0, perm.getIntraClustering(u));
+	EXPECT_DOUBLE_EQ(1, perm.getIntraClustering(v));
+
+	EXPECT_NEAR(-0.19048, perm.getPermanence(u), 0.0005);
+	EXPECT_NEAR(0.167, perm.getPermanence(v), 0.0005);
+}
 
 } /* namespace NetworKit */

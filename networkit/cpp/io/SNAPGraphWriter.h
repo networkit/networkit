@@ -47,7 +47,7 @@ namespace NetworKit {
 class SNAPGraphWriter: public NetworKit::GraphWriter {
 public:
 	SNAPGraphWriter() = default;
-	virtual void write(Graph& G, const std::string& path) override;
+	virtual void write(const Graph& G, const std::string& path) override;
 
 private:
 

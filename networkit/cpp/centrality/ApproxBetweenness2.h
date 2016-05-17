@@ -29,8 +29,9 @@ public:
 	 * @param	graph		input graph
 	 * @param	nSamples	 user defined number of samples
 	 * @param	normalized   normalize centrality values in interval [0,1] ?
+	 * @param	parallel	if true, run in parallel with additional memory cost z + 3z * t
 	 */
-	ApproxBetweenness2(const Graph& G, count nSamples, bool normalized=false);
+	ApproxBetweenness2(const Graph& G, count nSamples, bool normalized=false, bool parallel=false);
 
 	void run() override;
 
@@ -38,6 +39,7 @@ public:
 private:
 
 	count nSamples;
+	bool parallel;
 
 };
 

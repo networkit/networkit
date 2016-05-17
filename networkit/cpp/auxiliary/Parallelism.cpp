@@ -41,4 +41,3 @@ void Aux::enableNestedParallelism() {
 	ERROR("OpenMP is not available");
 	#endif
 }
-

@@ -6,15 +6,16 @@
  */
 
 #include "PredictionsSorter.h"
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
 void PredictionsSorter::sortByScore(std::vector<LinkPredictor::prediction>& predictions) {
-  std::sort(predictions.begin(), predictions.end(), ConcreteScoreComp);
+  Aux::Parallel::sort(predictions.begin(), predictions.end(), ConcreteScoreComp);
 }
 
 void PredictionsSorter::sortByNodePair(std::vector<LinkPredictor::prediction>& predictions) {
-  std::sort(predictions.begin(), predictions.end(), ConcreteNodePairComp);
+  Aux::Parallel::sort(predictions.begin(), predictions.end(), ConcreteNodePairComp);
 }
 
 } // namespace NetworKit

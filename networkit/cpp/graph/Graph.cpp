@@ -902,7 +902,7 @@ Graph Graph::transpose() const {
 	}
 	GTranspose.t = t;
 	GTranspose.setName(getName() + "Transpose");
-	return std::move(GTranspose);
+	return GTranspose;
 }
 
 Graph Graph::toUndirected() const {
@@ -910,7 +910,16 @@ Graph Graph::toUndirected() const {
 		throw std::runtime_error("this graph is already undirected");
 	}
 	Graph U(*this, weighted, false);
-	return std::move(U);
+	return U;
+}
+
+
+Graph Graph::toUnweighted() const {
+	if (weighted == false) {
+		throw std::runtime_error("this graph is already unweighted");
+	}
+	Graph U(*this, false, directed);
+	return U;
 }
 
 bool Graph::checkConsistency() const {
@@ -930,5 +939,58 @@ bool Graph::checkConsistency() const {
 
 	return noMultiEdges;
 }
+
+void Graph::append(const Graph& G) {
+	std::map<node,node> nodeMap;
+	G.forNodes([&](node u) {
+		node u_ = this->addNode();
+		nodeMap[u] = u_;
+	});
+	if (this->isWeighted()) {
+		G.forEdges([&](node u, node v, edgeweight ew){
+			this->addEdge(nodeMap[u], nodeMap[v], ew);
+		});
+	} else {
+		G.forEdges([&](node u, node v){
+			this->addEdge(nodeMap[u], nodeMap[v]);
+		});
+	}
+}
+
+void Graph::merge(const Graph& G) {
+	// TODO: handle edge weights
+	G.forEdges([&](node u, node v) {
+		// naive implementation takes $O(m \cdot d)$ for $m$ edges and max. degree $d$ in this graph
+		if (!this->hasEdge(u, v)) {
+			this->addEdge(u, v);
+		}
+	});
+}
+
+
+// SUBGRAPHS
+
+
+Graph Graph::subgraphFromNodes(const std::unordered_set<node>& nodes) const {
+
+	Graph S(upperNodeIdBound(), isWeighted(), isDirected());
+	// delete all nodes that are not in the node set
+	S.forNodes([&](node u) {
+		if (nodes.find(u) == nodes.end()) {
+			S.removeNode(u);
+		}
+	});
+
+	forEdges([&](node u, node v, edgeweight w) {
+		// if both end nodes are in the node set
+		if (nodes.find(u) != nodes.end() && nodes.find(v) != nodes.end()) {
+			S.addEdge(u, v, w);
+		}
+	});
+
+	return S;
+}
+
+
 
 } /* namespace NetworKit */

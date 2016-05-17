@@ -39,9 +39,10 @@ public:
 
 	/**
 	 * Get a vector containing the betweenness score for each node in the graph.
+	 * @param moveOut Return the actual internal data instead of a copy. Resets the hasRun-state. Default: false.
 	 * @return The betweenness scores calculated by @link run().
 	 */
-	virtual std::vector<double> scores();
+	virtual std::vector<double> scores(bool moveOut = false);
 
 	/**
 	 * Get a vector containing the edge betweenness score for each edge in the graph.
@@ -70,6 +71,20 @@ public:
 	* @return The maximum centrality score.
 	*/
 	virtual double maximum();
+
+	/**
+	 * 	Compute the centralization of a network with respect to some centrality measure.
+
+	 	The centralization of any network is a measure of how central its most central
+	 	node is in relation to how central all the other nodes are.
+	 	Centralization measures then (a) calculate the sum in differences
+	 	in centrality between the most central node in a network and all other nodes;
+	 	and (b) divide this quantity by the theoretically largest such sum of
+	 	differences in any network of the same size.
+
+	 * @return centrality index
+	 */
+	virtual double centralization();
 
 protected:
 

@@ -16,24 +16,14 @@
 
 namespace NetworKit {
 
-typedef uint64_t index; // more expressive name for an index into an array
-typedef uint64_t count; // more expressive name for an integer quantity
-typedef index node; // node indices are 0-based
-
 class HyperbolicGenerator: public NetworKit::StaticGraphGenerator {
 public:
-	HyperbolicGenerator();
-
-	/**
-	 * @param[in] n Number of nodes
-	 */
-	HyperbolicGenerator(count n);
 
 	/**
 	 * @param[in] n Number of nodes
 	 * @param[in] m Target number of edges
 	 */
-	HyperbolicGenerator(count n, double avgDegree=6, double exp=3, double T=0);
+	HyperbolicGenerator(count n=10000, double avgDegree=6, double exp=3, double T=0);
 
 	Graph generate(const vector<double> &angles, const vector<double> &radii, Quadtree<index> &quad, double thresholdDistance, double T=0);
 	Graph generateCold(const vector<double> &angles, const vector<double> &radii, const Quadtree<index> &quad, double thresholdDistance);

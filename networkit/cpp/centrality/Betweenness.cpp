@@ -39,10 +39,13 @@ void Betweenness::run() {
 	// thread-local scores for efficient parallelism
 	count maxThreads = omp_get_max_threads();
 	std::vector<std::vector<double> > scorePerThread(maxThreads, std::vector<double>(G.upperNodeIdBound()));
-	INFO("score per thread: ", scorePerThread.size());
-	INFO("G.upperEdgeIdBound(): ", G.upperEdgeIdBound());
-	std::vector<std::vector<double> > edgeScorePerThread(maxThreads, std::vector<double>(G.upperEdgeIdBound()));
-	INFO("edge score per thread: ", edgeScorePerThread.size());
+	DEBUG("score per thread: ", scorePerThread.size());
+	DEBUG("G.upperEdgeIdBound(): ", G.upperEdgeIdBound());
+	std::vector<std::vector<double> > edgeScorePerThread;
+	if (computeEdgeCentrality) {
+		edgeScorePerThread.resize(maxThreads, std::vector<double>(G.upperEdgeIdBound()));
+	}
+	DEBUG("edge score per thread: ", edgeScorePerThread.size());
 
 	auto computeDependencies = [&](node s) {
 
@@ -59,10 +62,10 @@ void Betweenness::run() {
 		sssp->run();
 		if (!handler.isRunning()) return;
 		// compute dependencies for nodes in order of decreasing distance from s
-		std::stack<node> stack = sssp->getStack();
+		std::vector<node> stack = sssp->getStack();
 		while (!stack.empty()) {
-			node t = stack.top();
-			stack.pop();
+			node t = stack.back();
+			stack.pop_back();
 			for (node p : sssp->getPredecessors(t)) {
 				// workaround for integer overflow in large graphs
 				bigfloat tmp = sssp->numberOfPaths(p) / sssp->numberOfPaths(t);
@@ -84,15 +87,15 @@ void Betweenness::run() {
 	handler.assureRunning();
 	G.balancedParallelForNodes(computeDependencies);
 	handler.assureRunning();
-	INFO("adding thread-local scores");
+	DEBUG("adding thread-local scores");
 	// add up all thread-local values
-	for (auto local : scorePerThread) {
+	for (const auto &local : scorePerThread) {
 		G.parallelForNodes([&](node v){
 			scoreData[v] += local[v];
 		});
 	}
 	if (computeEdgeCentrality) {
-		for (auto local : edgeScorePerThread) {
+		for (const auto &local : edgeScorePerThread) {
 			for (count i = 0; i < local.size(); i++) {
 				edgeScoreData[i] += local[i];
 			}

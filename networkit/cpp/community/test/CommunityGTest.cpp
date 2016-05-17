@@ -34,6 +34,8 @@
 #include "../../community/GraphClusteringTools.h"
 #include "../PartitionIntersection.h"
 #include "../HubDominance.h"
+#include "../IntrapartitionDensity.h"
+#include "../PartitionFragmentation.h"
 #include "../../generators/ClusteredRandomGraphGenerator.h"
 #include "../../generators/ErdosRenyiGenerator.h"
 
@@ -662,5 +664,89 @@ TEST_F(CommunityGTest, testHubDominance) {
 
 	EXPECT_EQ(1u, hub.getQuality(con, G)) << "The singleton cover has hub dominance 1 by definition.";
 }
+
+TEST_F(CommunityGTest, testIntrapartitionDensity) {
+	Aux::Random::setSeed(42, false);
+	ClusteringGenerator generator;
+	count n = 100;
+	Graph G(n);
+	G.forNodePairs([&](node u, node v) {
+		G.addEdge(u, v);
+	});
+	Partition con(generator.makeContinuousBalancedClustering(G, 10));
+
+	IntrapartitionDensity den(G, con);
+	den.run();
+
+	EXPECT_DOUBLE_EQ(1.0, den.getUnweightedAverage());
+	EXPECT_DOUBLE_EQ(1.0, den.getMinimumValue());
+	EXPECT_DOUBLE_EQ(1.0, den.getGlobal());
+
+	G = Graph(100);
+
+	den.run();
+
+	EXPECT_DOUBLE_EQ(0.0, den.getUnweightedAverage());
+	EXPECT_DOUBLE_EQ(0.0, den.getMinimumValue());
+	EXPECT_DOUBLE_EQ(0.0, den.getGlobal());
+
+	ClusteredRandomGraphGenerator gen(100, 2, 0.1, 0.02);
+	G = gen.generate();
+	auto P = gen.getCommunities();
+
+	IntrapartitionDensity den2(G, P);
+	den2.run();
+
+	EXPECT_GT(1.0, den2.getUnweightedAverage());
+	EXPECT_LT(0.0, den2.getUnweightedAverage());
+	EXPECT_GT(1.0, den2.getMinimumValue());
+	EXPECT_LT(0.0, den2.getMinimumValue());
+	EXPECT_GT(1.0, den2.getGlobal());
+	EXPECT_LT(0.0, den2.getGlobal());
+
+
+	EXPECT_PRED_FORMAT2(::testing::DoubleLE, den.getMinimumValue(), den.getUnweightedAverage());
+}
+
+TEST_F(CommunityGTest, testPartitionFragmentation) {
+	ClusteringGenerator generator;
+	count n = 100;
+	Graph G(n);
+	G.forNodePairs([&](node u, node v) {
+		G.addEdge(u, v);
+	});
+	Partition con(generator.makeContinuousBalancedClustering(G, 10));
+
+	PartitionFragmentation frag1(G, con);
+	frag1.run();
+	EXPECT_EQ(0, frag1.getMaximumValue());
+	EXPECT_EQ(0, frag1.getUnweightedAverage());
+	EXPECT_EQ(0, frag1.getWeightedAverage());
+
+	G = Graph(100);
+	PartitionFragmentation frag2(G, con);
+	frag2.run();
+	EXPECT_DOUBLE_EQ(0.9, frag2.getMaximumValue());
+	EXPECT_DOUBLE_EQ(0.9, frag2.getUnweightedAverage());
+	EXPECT_DOUBLE_EQ(0.9, frag2.getWeightedAverage());
+
+	con.setUpperBound(con.upperBound() + 1);
+	G.forNodes([&](node u) {
+		con[u] += 1;
+	});
+
+	frag2.run();
+
+	EXPECT_DOUBLE_EQ(0.9, frag2.getMaximumValue());
+	EXPECT_DOUBLE_EQ(0.9, frag2.getUnweightedAverage());
+	EXPECT_DOUBLE_EQ(0.9, frag2.getWeightedAverage());
+
+	PartitionFragmentation frag3(G, con);
+	frag3.run();
+	EXPECT_DOUBLE_EQ(0.9, frag3.getMaximumValue());
+	EXPECT_DOUBLE_EQ(0.9, frag3.getUnweightedAverage());
+	EXPECT_DOUBLE_EQ(0.9, frag3.getWeightedAverage());
+}
+
 
 } /* namespace NetworKit */

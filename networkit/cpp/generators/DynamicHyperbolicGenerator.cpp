@@ -10,6 +10,7 @@
 #include "DynamicHyperbolicGenerator.h"
 #include "HyperbolicGenerator.h"
 #include "../geometric/HyperbolicSpace.h"
+#include "../auxiliary/Parallel.h"
 
 using std::vector;
 namespace NetworKit {
@@ -82,10 +83,10 @@ Graph DynamicHyperbolicGenerator::getGraph() const {
 }
 
 std::vector<Point<float> > DynamicHyperbolicGenerator::getCoordinates() const {
-	count n = angles.size();
+	const count n = angles.size();
 	assert(radii.size() == n);
 	std::vector<Point<float> > result;
-	for (index i = 0; i < angles.size(); i++) {
+	for (index i = 0; i < n; i++) {
 		Point2D<double> coord = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
 		Point<float> temp(coord[0], coord[1]);
 		result.push_back(temp);
@@ -94,10 +95,10 @@ std::vector<Point<float> > DynamicHyperbolicGenerator::getCoordinates() const {
 }
 
 std::vector<Point<float> > DynamicHyperbolicGenerator::getHyperbolicCoordinates() const {
-	count n = angles.size();
+	const count n = angles.size();
 	assert(radii.size() == n);
 	std::vector<Point<float> > result;
-	for (index i = 0; i < angles.size(); i++) {
+	for (index i = 0; i < n; i++) {
 		Point2D<double> coord = HyperbolicSpace::polarToCartesian(angles[i], HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[i]));
 		Point<float> temp(coord[0], coord[1]);
 		result.push_back(temp);
@@ -258,7 +259,7 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
 	for (auto it = result.begin()+oldStreamMarker; it < result.end(); it++) {
 		if (it->u > it->v) std::swap(it->u, it->v);
 	}
-	std::sort(result.begin()+oldStreamMarker, result.end(), GraphEvent::compare);
+	Aux::Parallel::sort(result.begin()+oldStreamMarker, result.end(), GraphEvent::compare);
 	auto end = std::unique(result.begin()+oldStreamMarker, result.end(), GraphEvent::equal);
 	result.erase(end, result.end());
 }
