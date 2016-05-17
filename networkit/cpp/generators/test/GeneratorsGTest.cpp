@@ -30,6 +30,7 @@ Dy * GeneratorsTest.cpp
 #include "../RegularRingLatticeGenerator.h"
 #include "../StochasticBlockmodel.h"
 #include "../ConfigurationModelGenerator.h"
+#include "../RHGGenerator.h"
 
 #include "../../viz/PostscriptWriter.h"
 #include "../../community/ClusteringGenerator.h"
@@ -850,6 +851,11 @@ TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {
 			}
 		}
 	}
+}
+
+TEST_F(GeneratorsGTest, testRHGGenerator) {
+	Graph G = RHGGenerator(1000000, 4, 6.6).generate();
+	EXPECT_TRUE(G.checkConsistency());
 }
 
 TEST_F(GeneratorsGTest, tryHyperbolicHighTemperatureGraphs) {

@@ -83,7 +83,7 @@ namespace NetworKit {
 
 		void getBandRadius(int n, vector<double> &bandRadius, double thresholdDistance, double seriesRatio = 0.5) {
 			/*
-			* We asumme band differences form a geometric series.
+			* We assume band differences form a geometric series.
 			* Thus, there is a constant ratio(r) between band length differences
 			* i.e c2-c1/c1-c0 = c3-c2/c2-c1 = r
 			*/
@@ -125,8 +125,6 @@ namespace NetworKit {
 		  minTheta = angle - a;
 		  return std::make_tuple(minTheta, maxTheta);
 		}
-
-
 
 		void getPointsWithinAngles(double minTheta, double maxTheta, const vector<Point2D<double>> &band, vector<double> &bandAngles, vector<Point2D<double>> &slab){
 			/**
