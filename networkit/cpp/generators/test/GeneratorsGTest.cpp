@@ -31,6 +31,7 @@ Dy * GeneratorsTest.cpp
 #include "../StochasticBlockmodel.h"
 #include "../EdgeSwitchingMarkovChainGenerator.h"
 #include "../LFRGenerator.h"
+#include "../RHGGenerator.h"
 
 
 #include "../../viz/PostscriptWriter.h"
@@ -241,7 +242,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	vector<double> radii(n, -1);
 	double stretch = R / HyperbolicSpace::hyperbolicAreaToRadius(n);
 	HyperbolicSpace::fillPoints(angles, radii, stretch, alpha);
-	DynamicHyperbolicGenerator dynGen(angles, radii, k, exp, movedShare, moveDistance);
+	DynamicHyperbolicGenerator dynGen(angles, radii, k, exp, T, movedShare, moveDistance);
 
 	//generate starting graph
 	Graph G = HyperbolicGenerator().generate(angles, radii, r, R);
@@ -298,7 +299,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
 
 	HyperbolicSpace::fillPoints(angles, radii, stretch, alpha);
 
-	DynamicHyperbolicGenerator dynGen(angles, radii, k, exp, movedShare, moveDistance);
+	DynamicHyperbolicGenerator dynGen(angles, radii, k, exp, T, movedShare, moveDistance);
 	Graph G = dynGen.getGraph();
 
 	GraphUpdater gu(G);
@@ -879,6 +880,16 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorConsistency) {
 	count m = n*k/2;
 	HyperbolicGenerator gen(n, k);
 	Graph G = gen.generate();
+	EXPECT_NEAR(G.numberOfEdges(), m, m/10);
+	ASSERT_TRUE(G.checkConsistency());
+}
+
+TEST_F(GeneratorsGTest, testHyperbolicGeneratorMechanicGraphs) {
+	count n = 10000;
+	double k = 6;
+	count m = n*k/2;
+	HyperbolicGenerator gen(n, k, 3, 0.14);
+	Graph G = gen.generate();
 	EXPECT_NEAR(G.numberOfEdges(), m, m/5);
 	ASSERT_TRUE(G.checkConsistency());
 }
@@ -915,6 +926,37 @@ TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {
 				EXPECT_EQ(sequence[i], testSequence[i]);
 			}
 		}
+	}
+}
+
+TEST_F(GeneratorsGTest, testRHGGenerator) {
+	Graph G = RHGGenerator(100000, 4, 6.6).generate();
+	EXPECT_TRUE(G.checkConsistency());
+}
+
+TEST_F(GeneratorsGTest, tryHyperbolicHighTemperatureGraphs) {
+	count n = 10000;
+	double k = 10;
+	double gamma = 3;
+	count m = n*k/2;
+	for (double T = 0; T < 10; T += 0.1) {
+		if (std::abs(T-1) < 0.00001) continue;
+		HyperbolicGenerator gen(n, k, gamma, T);
+		Graph G = gen.generate();
+		EXPECT_NEAR(G.numberOfEdges(), m, m/10);
+	}
+}
+
+TEST_F(GeneratorsGTest, tryGiganticCollectionOfHyperbolicTemperatureGraphs) {
+	for (index i = 0; i < 30; i++) {
+		count n = 10000;
+		double k = 10;
+		double T = 0.1;
+		count m = n*k/2;
+		HyperbolicGenerator gen(n, k, 3, T);
+		Graph G = gen.generate();
+		EXPECT_NEAR(G.numberOfEdges(), m, m/10);
+		//EXPECT_TRUE(G.checkConsistency());
 	}
 }
 

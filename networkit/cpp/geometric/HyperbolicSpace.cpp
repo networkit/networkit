@@ -56,7 +56,6 @@ void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, 
 	std::uniform_real_distribution<double> rdist{mincdf, maxcdf};
 	double r = hyperbolicRadiusToEuclidean(maxR);
 
-	assert(angles.size() == n);
 	for (uint64_t i = 0; i < n; i++) {
 		angles[i] = phidist(Aux::Random::getURNG());
 		/**

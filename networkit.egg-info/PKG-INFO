@@ -1,0 +1,40 @@
+Metadata-Version: 1.1
+Name: networkit
+Version: 3.6
+Summary: NetworKit is a toolbox for high-performance network analysis
+Home-page: https://networkit.iti.kit.edu/
+Author: Christian L. Staudt, Henning Meyerhenke
+Author-email: christian.staudt@kit.edu, meyerhenke@kit.edu
+License: MIT
+Download-URL: https://pypi.python.org/pypi/networkit
+Description: 
+        NetworKit is a growing open-source toolkit for high-performance network analysis.
+        Its aim is to provide tools for the analysis of large networks in the size range
+        from thousands to billions of edges. For this purpose, it implements efficient
+        graph algorithms, many of them parallel to utilize multicore architectures. These
+        are meant to compute standard measures of network analysis, such as degree
+        sequences, clustering coefficients and centrality. In
+        this respect, NetworKit is comparable to packages such as NetworkX, albeit with a
+        focus on parallelism and scalability. NetworKit is also a testbed for algorithm
+        engineering and contains a few novel algorithms from recently published
+        research, especially in the area of community detection.
+Keywords: graph algorithm,network analysis,social network
+Platform: any
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: Environment :: Other Environment
+Classifier: Framework :: IPython
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: C++
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Scientific/Engineering :: Bio-Informatics
+Classifier: Topic :: Scientific/Engineering :: Chemistry
+Classifier: Topic :: Scientific/Engineering :: Information Analysis
+Classifier: Topic :: Scientific/Engineering :: Mathematics
