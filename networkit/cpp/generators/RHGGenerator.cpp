@@ -38,6 +38,8 @@ namespace NetworKit {
 		vector<double> angles(n);
 		vector<double> radii(n);
 
+		Aux::Timer timer;
+		timer.start();
 		//sample points randomly
 		fillPoints(angles, radii, stretchradius, alpha);
 		vector<index> permutation(n);
@@ -56,8 +58,8 @@ namespace NetworKit {
 			anglecopy[j] = angles[permutation[j]];
 			radiicopy[j] = radii[permutation[j]];
 		}
-
-		INFO("Generated Points");
+		timer.stop();
+		INFO("Generated Points, took ", timer.elapsedMilliseconds(), " milliseconds.");
 		return generate(anglecopy, radiicopy, R*distanceFactor);
 	}
 
