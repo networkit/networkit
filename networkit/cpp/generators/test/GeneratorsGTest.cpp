@@ -854,7 +854,7 @@ TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {
 }
 
 TEST_F(GeneratorsGTest, testRHGGenerator) {
-	Graph G = RHGGenerator(1000000, 4, 6.6).generate();
+	Graph G = RHGGenerator(100000, 4, 6.6).generate();
 	EXPECT_TRUE(G.checkConsistency());
 }
 

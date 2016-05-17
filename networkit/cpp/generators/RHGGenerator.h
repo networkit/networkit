@@ -70,7 +70,7 @@ namespace NetworKit {
 		double factor;
 		double alpha;
 
-		static const bool directSwap = false;
+		static const bool directSwap = true;
 
 		/**
 		* times
