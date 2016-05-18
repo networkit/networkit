@@ -17,8 +17,8 @@
 
 namespace NetworKit {
 
-DynApproxBetweenness::DynApproxBetweenness(const Graph& G, double epsilon, double delta, bool storePredecessors) : Centrality(G, true),
-storePreds(storePredecessors), epsilon(epsilon), delta(delta) {
+DynApproxBetweenness::DynApproxBetweenness(const Graph& G, const double epsilon, const double delta, const bool storePredecessors, const double universalConstant) : Centrality(G, true),
+storePreds(storePredecessors), epsilon(epsilon), delta(delta), universalConstant(universalConstant) {
   INFO("Constructing DynApproxBetweenness. storePredecessors = ", storePredecessors);
 }
 
@@ -39,13 +39,12 @@ void DynApproxBetweenness::run() {
     v.clear();
     sampledPaths.clear();
 
-    const double c = 0.5; // universal positive constant - see reference in paper
-
-
-    edgeweight vd = Diameter::estimatedVertexDiameterPedantic(G);
+    Diameter diam(G, DiameterAlgo::estimatedPedantic);
+    diam.run();
+    edgeweight vd = diam.getDiameter().first;
 
     INFO("estimated diameter: ", vd);
-    r = ceil((c / (epsilon * epsilon)) * (floor(log2(vd - 2)) + 1 - log(delta)));
+    r = ceil((universalConstant / (epsilon * epsilon)) * (floor(log2(vd - 2)) + 1 - log(delta)));
     INFO("taking ", r, " path samples");
     sssp.clear();
     sssp.resize(r);

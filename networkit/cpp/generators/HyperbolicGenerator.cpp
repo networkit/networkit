@@ -20,6 +20,7 @@
 #include "HyperbolicGenerator.h"
 #include "Quadtree/Quadtree.h"
 #include "../auxiliary/Random.h"
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -65,7 +66,7 @@ Graph HyperbolicGenerator::generate(count n, double distanceFactor, double alpha
 	std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
 
 	//can probably be parallelized easily, but doesn't bring much benefit
-	std::sort(permutation.begin(), permutation.end(), [&angles,&radii](index i, index j){return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);});
+	Aux::Parallel::sort(permutation.begin(), permutation.end(), [&angles,&radii](index i, index j){return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);});
 
 	vector<double> anglecopy(n);
 	vector<double> radiicopy(n);

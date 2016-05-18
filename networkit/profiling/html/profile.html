@@ -1,4 +1,4 @@
-<div class="NetworKit_Page" id="NetworKit_Page_{pageIndex}">
+<div class="NetworKit_Page" id="NetworKit_Page_{token}_{pageIndex}">
 	<div class="Category" data-title="Global Properties">
 		<div class="Value" data-title="Name">{properties[Name]}</div>
 		<div class="Value" data-title="Nodes">{properties[Nodes]}</div>
@@ -8,7 +8,8 @@
 		<div class="Value" data-title="Weighted">{properties[Weighted]}</div>
 		<div class="Value" data-title="Self Loops">{properties[Self Loops]:g}</div>
 		<div class="Value" data-title="Diameter Range">{properties[Diameter Range]}</div>
-		<div class="Value" data-title="(Strongly) Conencted Components">{properties[Connected Components]}</div>
+		<div class="Value" data-title="Effective Diameter">{properties[Effective Diameter]}</div>
+		<div class="Value" data-title="(Strongly) Connected Components">{properties[Connected Components]}</div>
 	</div>
 	<div class="Category" data-title="Overview">
 		<div class="Block SubCategory" data-title="Node Centrality Measures">
@@ -31,5 +32,5 @@
 </div>
 
 <script language="javascript" type="text/javascript">
-	NetworKit_pageEmbed("NetworKit_Page_{pageIndex}");
+	NetworKit_pageEmbed("NetworKit_Page_{token}_{pageIndex}");
 </script>

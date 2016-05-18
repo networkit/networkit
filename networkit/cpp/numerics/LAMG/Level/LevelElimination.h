@@ -13,6 +13,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup numerics
+ */
 class LevelElimination : public Level {
 private:
 	std::vector<EliminationStage> coarseningStages;

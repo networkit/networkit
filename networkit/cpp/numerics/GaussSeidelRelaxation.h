@@ -12,6 +12,10 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup numerics
+ * Implementation of the Gauss-Seidel smoother.
+ */
 class GaussSeidelRelaxation : public Smoother {
 
 private:

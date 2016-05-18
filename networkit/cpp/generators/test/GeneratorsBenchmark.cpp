@@ -13,6 +13,7 @@
 
 #include "GeneratorsBenchmark.h"
 #include "../../auxiliary/Log.h"
+#include "../../auxiliary/Parallel.h"
 
 #include "../HyperbolicGenerator.h"
 #include "../DynamicHyperbolicGenerator.h"
@@ -104,7 +105,7 @@ TEST_F(GeneratorsBenchmark, benchmarkBarabasiAlbertGenerator) {
 	count nMax = 100000;
 	count n0 = 2;
 
-	BarabasiAlbertGenerator BarabasiAlbert(k, nMax, n0);
+	BarabasiAlbertGenerator BarabasiAlbert(k, nMax, n0, false);
 	Graph G(0);
 	EXPECT_TRUE(G.isEmpty());
 
@@ -113,7 +114,30 @@ TEST_F(GeneratorsBenchmark, benchmarkBarabasiAlbertGenerator) {
 
 	EXPECT_EQ(nMax, G.numberOfNodes());
 	EXPECT_EQ( ((n0-1) + ((nMax - n0) * k)), G.numberOfEdges());
+}
 
+TEST_F(GeneratorsBenchmark, benchBarabasiAlbertGeneratorBatagelj) {
+	for (index i = 0; i < 10; ++i) {
+		Aux::Random::setSeed(i, false);
+		count n = Aux::Random::integer(100, 10000);
+		count k = n / Aux::Random::integer(5, 20);
+		BarabasiAlbertGenerator gen(k, n, 0);
+		auto G = gen.generate();
+		//EXPECT_TRUE(G.checkConsistency());
+		//INFO(G.toString());
+	}
+}
+
+TEST_F(GeneratorsBenchmark, benchBarabasiAlbertGenerator2) {
+	for (index i = 0; i < 10; ++i) {
+		Aux::Random::setSeed(i, false);
+		count n = Aux::Random::integer(100, 10000);
+		count k = n / Aux::Random::integer(5, 20);
+		BarabasiAlbertGenerator gen(k, n, k, false);
+		auto G = gen.generate();
+		//EXPECT_TRUE(G.checkConsistency());
+		//INFO(G.toString());
+	}
 }
 
 TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGenerator) {
@@ -141,7 +165,7 @@ TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorWithSortedNodes) {
 	std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
 
 	//can probably be parallelized easily, but doesn't bring much benefit
-	std::sort(permutation.begin(), permutation.end(), [&angles,&radii](index i, index j){return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);});
+	Aux::Parallel::sort(permutation.begin(), permutation.end(), [&angles,&radii](index i, index j){return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);});
 
 	vector<double> anglecopy(n);
 	vector<double> radiicopy(n);

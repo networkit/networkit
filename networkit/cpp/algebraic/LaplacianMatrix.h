@@ -8,9 +8,9 @@
 #ifndef LAPLACIANMATRIX_H_
 #define LAPLACIANMATRIX_H_
 
-#include "Matrix.h"
 #include "../graph/Graph.h"
 #include <cmath>
+#include "Matrix.h"
 
 namespace NetworKit {
 

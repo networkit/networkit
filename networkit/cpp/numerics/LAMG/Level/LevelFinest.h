@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup numerics
+ */
 class LevelFinest : public Level {
 public:
 	LevelFinest();

@@ -9,6 +9,7 @@
 
 #include "KatzIndex.h"
 #include "PredictionsSorter.h"
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -62,7 +63,7 @@ double KatzIndex::runImpl(node u, node v) {
 std::vector<LinkPredictor::prediction> KatzIndex::runOn(std::vector<std::pair<node, node>> nodePairs) {
   // Make sure the nodePairs are sorted. This will make use of the caching of the Katz index
   // and will exploit locality in the form of cpu caching as well.
-  std::sort(nodePairs.begin(), nodePairs.end());
+  Aux::Parallel::sort(nodePairs.begin(), nodePairs.end());
   std::vector<prediction> predictions(nodePairs.size());
   KatzIndex katz(*G, maxPathLength, dampingValue);
   #pragma omp parallel

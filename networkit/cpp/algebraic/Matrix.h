@@ -33,7 +33,7 @@ public:
 	 * Constructs the Matrix with size @a dimension x @a dimension.
 	 * @param dimension Defines how many rows and columns this matrix has.
 	 */
-	Matrix(const count &dimension);
+	Matrix(const count dimension);
 
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param nRows Number of rows.
 	 * @param nCols Number of columns.
 	 */
-	Matrix(const count &nRows, const count &nCols);
+	Matrix(const count nRows, const count nCols);
 
 	/**
 	 * Constructs the @a dimension x @a dimension Matrix from the elements at position @a positions with values @values.
@@ -49,7 +49,7 @@ public:
 	 * @param positions Defines the position (i,j) of each element specified in @a values.
 	 * @param values The values of the matrix elements.
 	 */
-	Matrix(const count &dimension, const std::vector<std::pair<index, index>> &positions, const std::vector<double> &values);
+	Matrix(const count dimension, const std::vector<std::pair<index, index>> &positions, const std::vector<double> &values);
 
 	/**
 	 * Constructs the @a nRows x @a nCols Matrix from the elements at position @a positions with values @values.
@@ -119,12 +119,12 @@ public:
 	/**
 	 * @return Row @a i of this matrix as vector.
 	 */
-	Vector row(const index &i) const;
+	Vector row(const index i) const;
 
 	/**
 	 * @return Column @a j of this matrix as vector.
 	 */
-	Vector column(const index &j) const;
+	Vector column(const index j) const;
 
 	/**
 	 * @return The main diagonal of this matrix.
@@ -160,13 +160,13 @@ public:
 	 * Multiplies this matrix with a scalar specified in @a scalar and returns the result.
 	 * @return The result of multiplying this matrix with @a scalar.
 	 */
-	Matrix operator*(const double &scalar) const;
+	Matrix operator*(const double scalar) const;
 
 	/**
 	 * Multiplies this matrix with a scalar specified in @a scalar.
 	 * @return Reference to this matrix.
 	 */
-	Matrix& operator*=(const double &scalar);
+	Matrix& operator*=(const double scalar);
 
 	/**
 	 * Multiplies this matrix with @a vector and returns the result.
@@ -184,13 +184,13 @@ public:
 	 * Divides this matrix by a divisor specified in @a divisor and returns the result in a new matrix.
 	 * @return The result of dividing this matrix by @a divisor.
 	 */
-	Matrix operator/(const double &divisor) const;
+	Matrix operator/(const double divisor) const;
 
 	/**
 	 * Divides this matrix by a divisor specified in @a divisor.
 	 * @return Reference to this matrix.
 	 */
-	Matrix& operator/=(const double &divisor);
+	Matrix& operator/=(const double divisor);
 
 	static Matrix mTmMultiply(const Matrix &A, const Matrix &B);
 

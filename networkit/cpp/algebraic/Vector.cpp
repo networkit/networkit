@@ -6,6 +6,7 @@
  */
 
 #include "Vector.h"
+
 #include "Matrix.h"
 
 namespace NetworKit {

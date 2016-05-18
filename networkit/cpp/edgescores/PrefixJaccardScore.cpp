@@ -6,6 +6,7 @@
  */
 
 #include "PrefixJaccardScore.h"
+#include <omp.h>
 
 namespace NetworKit {
 
@@ -38,79 +39,110 @@ void PrefixJaccardScore<AttributeT>::run() {
 		};
 	};
 
-	std::vector<std::vector<RankedEdge> > rankedEdges(this->G.upperNodeIdBound());
+	std::vector<size_t> rankedEdgeBegin(G.upperNodeIdBound() + 1);
+	std::vector<RankedEdge> rankedEdges;
+	rankedEdges.reserve(2*G.numberOfEdges());
+
+	for (node u = 0; u < G.upperNodeIdBound(); ++u) {
+		rankedEdgeBegin[u] = rankedEdges.size();
+		if (G.hasNode(u)) {
+			G.forEdgesOf(u, [&](node, node v, edgeid eid) {
+				rankedEdges.emplace_back(v, inAttribute[eid], 0);
+			});
+		}
+	}
+	rankedEdgeBegin[G.upperNodeIdBound()] = rankedEdges.size();
 
 	this->G.balancedParallelForNodes([&](node u) {
 		if (this->G.degree(u) == 0) return;
 
-		rankedEdges[u].reserve(this->G.degree(u));
+		const auto beginIt = rankedEdges.begin() + rankedEdgeBegin[u];
+		const auto endIt = rankedEdges.begin() + rankedEdgeBegin[u+1];
 
-		this->G.forEdgesOf(u, [&](node _u, node w, edgeid eid) {
-			rankedEdges[u].emplace_back(w, inAttribute[eid], 0);
-		});
+		std::sort(beginIt, endIt, std::greater<RankedEdge>());
 
-		std::sort(rankedEdges[u].begin(), rankedEdges[u].end(), std::greater<RankedEdge>());
-
-		AttributeT curVal = rankedEdges[u].front().att;
+		AttributeT curVal = beginIt->att;
 		count curRank = 0;
 		count numEqual = 0;
-		for (RankedEdge& cur : rankedEdges[u]) {
-			if (curVal != cur.att) {
+		for (auto it = beginIt; it != endIt; ++it) {
+			if (curVal != it->att) {
 				curRank += numEqual;
-				curVal = cur.att;
+				curVal = it->att;
 				numEqual = 1;
 			} else {
 				++numEqual;
 			}
 
-			cur.rank = curRank;
+			it->rank = curRank;
 		}
 	});
 
+	std::vector<std::vector<bool>> uMarker(omp_get_max_threads(), std::vector<bool>(G.upperNodeIdBound(), false));
+	auto vMarker = uMarker;
+
 	this->G.parallelForEdges([&](node u, node v, edgeid eid) {
-		std::set<node> uNeighbors, vNeighbors;
 		count curRank = 0;
 		double bestJaccard = 0;
+		auto tid = omp_get_thread_num();
 
-		auto uIt = rankedEdges[u].begin();
-		auto vIt = rankedEdges[v].begin();
+		auto uIt = rankedEdges.begin() + rankedEdgeBegin[u];
+		auto vIt = rankedEdges.begin() + rankedEdgeBegin[v];
+		const auto uEndIt = rankedEdges.begin() + rankedEdgeBegin[u+1];
+		const auto vEndIt = rankedEdges.begin() + rankedEdgeBegin[v+1];
+
 		count commonNeighbors = 0;
+		count uNeighbors = 0;
+		count vNeighbors = 0;
 
-		while (uIt != rankedEdges[u].end() || vIt != rankedEdges[v].end()) {
-			while (uIt != rankedEdges[u].end() && curRank == uIt->rank) {
+		while (uIt != uEndIt || vIt != vEndIt) {
+			while (uIt != uEndIt && curRank == uIt->rank) {
 				if (uIt->u == v) {
 					++uIt;
 					continue;
 				}
 
-				if (vNeighbors.erase(uIt->u)) {
+				if (vMarker[tid][uIt->u]) {
+					vMarker[tid][uIt->u] = false;
 					++commonNeighbors;
+					--vNeighbors;
 				} else {
-					uNeighbors.insert(uIt->u);
+					uMarker[tid][uIt->u] = true;
+					++uNeighbors;
 				}
 
 				++uIt;
 			}
 
-			while (vIt != rankedEdges[v].end() && curRank == vIt->rank) {
+			while (vIt != vEndIt && curRank == vIt->rank) {
 				if (vIt->u == u) {
 					++vIt;
 					continue;
 				}
 
-				if (uNeighbors.erase(vIt->u)) {
+				if (uMarker[tid][vIt->u]) {
+					uMarker[tid][vIt->u] = false;
 					++commonNeighbors;
+					--uNeighbors;
 				} else {
-					vNeighbors.insert(vIt->u);
+					vMarker[tid][vIt->u] = true;
+					++vNeighbors;
 				}
 
 				++vIt;
 			}
 
-			bestJaccard = std::max(bestJaccard, commonNeighbors * 1.0 / (uNeighbors.size() + vNeighbors.size() + commonNeighbors));
+			bestJaccard = std::max(bestJaccard, commonNeighbors * 1.0 / (uNeighbors + vNeighbors + commonNeighbors));
 
 			++curRank;
 		}
+
+		G.forNeighborsOf(u, [&](node w) {
+			uMarker[tid][w] = false;
+		});
+
+		G.forNeighborsOf(v, [&](node w) {
+			vMarker[tid][w] = false;
+		});
 
 		this->scoreData[eid] = bestJaccard;
 	});

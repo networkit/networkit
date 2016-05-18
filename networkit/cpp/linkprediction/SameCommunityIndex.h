@@ -35,7 +35,7 @@ public:
 
   explicit SameCommunityIndex(const Graph& G);
   
-  virtual void setGraph(const Graph& newGraph);
+  virtual void setGraph(const Graph& newGraph) override;
 
 };
 

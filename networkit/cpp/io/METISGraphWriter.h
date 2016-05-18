@@ -23,9 +23,9 @@ public:
 
 	METISGraphWriter() = default;
 
-	virtual void write(Graph& G, const std::string& path) override;
+	virtual void write(const Graph& G, const std::string& path) override;
 
-	virtual void write(Graph& G, bool weighted, std::string path);
+	virtual void write(const Graph& G, bool weighted, std::string path);
 };
 
 } /* namespace NetworKit */

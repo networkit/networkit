@@ -87,7 +87,7 @@ void ParallelConnectedComponents::run() {
 		cc.run();
 
 		// apply to current graph
-		auto nodeMapping = con.getNodeMapping();
+		auto nodeMapping = con.getFineToCoarseNodeMapping();
 		G.parallelForNodes([&](node u) {
 			component[u] = cc.componentOfNode(nodeMapping[u]);
 		});
@@ -159,7 +159,7 @@ void ParallelConnectedComponents::runSequential() {
 		cc.run();
 
 		// apply to current graph
-		auto nodeMapping = con.getNodeMapping();
+		auto nodeMapping = con.getFineToCoarseNodeMapping();
 		G.forNodes([&](node u) {
 			component[u] = cc.componentOfNode(nodeMapping[u]);
 		});

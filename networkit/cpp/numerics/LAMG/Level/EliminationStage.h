@@ -8,12 +8,14 @@
 #ifndef ELIMINATIONSTAGE_H_
 #define ELIMINATIONSTAGE_H_
 
-#include "../../../algebraic/Matrix.h"
 #include "../../../algebraic/CSRMatrix.h"
 #include "../../../algebraic/Vector.h"
 
 namespace NetworKit {
 
+/**
+ * @ingroup numerics
+ */
 class EliminationStage {
 private:
 	CSRMatrix P; // interpolation matrix

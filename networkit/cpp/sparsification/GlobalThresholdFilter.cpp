@@ -33,7 +33,8 @@ Graph GlobalThresholdFilter::calculate() {
 	});
 
 	Graph sGraph = builder.toGraph(false);
-	sGraph.parallelForNodes([&](node u) {
+	// WARNING: removeNode() must not be called in parallel (writes on vector<bool> and does non-atomic decrement of number of nodes)!
+	sGraph.forNodes([&](node u) {
 		if (!graph.hasNode(u)) {
 			sGraph.removeNode(u);
 		}

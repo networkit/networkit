@@ -27,6 +27,8 @@ protected:
 	count edgeFactor;
 	double a, b, c, d; ///< probabilities
 	double defaultEdgeWeight;
+	bool weighted;
+	count reduceNodes;
 
 public:
 
@@ -37,8 +39,10 @@ public:
 	 * @param[in] b Probability for quadrant upper right
 	 * @param[in] c Probability for quadrant lower left
 	 * @param[in] d Probability for quadrant lower right
+	 * @param[in] weighted	result graph weighted?
+	 * @param[in] reduceNodes	number of random nodes to delete to achieve a given node count
 	 */
-	RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d);
+	RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d, bool weighted=false, count reduceNodes=0);
 
 	/**
 	 * @return Graph to be generated according to parameters specified in constructor.

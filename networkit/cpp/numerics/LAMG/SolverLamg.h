@@ -33,13 +33,14 @@ struct LAMGSolverStatus {
 };
 
 /**
+ * @ingroup numerics
  * Implements the solve phase of LAMG (Lean Algebraic Multigrid by Livne et al.).
  */
 class SolverLamg {
 private:
 	LevelHierarchy &hierarchy;
 	const Smoother &smoother;
-#ifndef NPROFILE
+#ifndef NDEBUG
 	static count minResTime;
 	static count interpolationTime;
 	static count restrictionTime;
