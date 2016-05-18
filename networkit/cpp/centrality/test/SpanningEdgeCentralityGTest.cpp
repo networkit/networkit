@@ -77,10 +77,10 @@ TEST_F(SpanningEdgeCentralityGTest, testSpanningOnSmallGraphs) {
 		error /= G.numberOfEdges();
 		INFO("Avg. relative error: ", error);
 
-
+		count reps = 500;
 
 		timer.start();
-		cen.runTreeApproximation();
+		cen.runTreeApproximation(reps);
 		timer.stop();
 		INFO("tree approx spanning edge centrality time: ", timer.elapsedTag());
 
@@ -95,7 +95,7 @@ TEST_F(SpanningEdgeCentralityGTest, testSpanningOnSmallGraphs) {
 
 
 		timer.start();
-		cen.runPseudoTreeApproximation();
+		cen.runPseudoTreeApproximation(reps);
 		timer.stop();
 		INFO("pseudo tree approx spanning edge centrality time: ", timer.elapsedTag());
 

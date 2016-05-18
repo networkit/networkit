@@ -44,14 +44,45 @@ TEST_F(SpanningTreeGTest, testRandomSpanningTree) {
 	}
 }
 
+TEST_F(SpanningTreeGTest, testRandomSpanningTree2) {
+	METISGraphReader reader;
+	std::vector<std::string> graphs = {"karate", "jazz", "celegans_metabolic"};
+
+	for (auto graphname: graphs) {
+		std::string filename = "input/" + graphname + ".graph";
+		Graph G = reader.read(filename);
+		RandomSpanningTree rst(G);
+		rst.run2();
+		Graph T = rst.getTree();
+		count nNodes = 0, nEdges = 0;
+		T.forNodes([&](node u) {
+			EXPECT_GE(T.degree(u), 1);
+			nNodes ++;
+		});
+		T.forEdges([&](node u, node v){
+			nEdges ++;
+		});
+		EXPECT_EQ(nNodes, nEdges + 1);
+		node r1 = Sampling::randomNode(G);
+		node r2 = Sampling::randomNode(G);
+		while (r1 == r2) {
+			r2 = Sampling::randomNode(G);
+		}
+
+		BFS bfs(T, r1, false, false, r2);
+		bfs.run();
+		EXPECT_LE(bfs.distance(r2), G.numberOfNodes() - 1);
+	}
+}
+
 TEST_F(SpanningTreeGTest, testPseudoRandomSpanningTree) {
   // TODO: see above
 }
 
 TEST_F(SpanningTreeGTest, benchRandomSpanningTree) {
 	METISGraphReader reader;
-	std::vector<std::string> graphs = {"karate", "PGPgiantcompo", "power", "jazz", "celegans_metabolic", "airfoil1"};
-	count reps = 500;
+	std::vector<std::string> graphs = {"karate", "jazz", "celegans_metabolic", "airfoil1","power", "PGPgiantcompo"};
+	count reps = 10;
 
 	for (auto graphname: graphs) {
 		std::string filename = "input/" + graphname + ".graph";
@@ -62,6 +93,7 @@ TEST_F(SpanningTreeGTest, benchRandomSpanningTree) {
 			Gwr.addEdge(u, v, 0.0);
 		});
 		Graph Gwp = Gwr;
+		Graph Gwr2 = Gwr;
 
 		// random sampling
 		double rstTime = 0.0;
@@ -75,6 +107,30 @@ TEST_F(SpanningTreeGTest, benchRandomSpanningTree) {
 				Gwr.setWeight(u, v, 1 + Gwr.weight(u, v));
 			});
 		}
+
+		double bfsTime = 0;
+		for (index i = 0; i < reps; ++i) {
+			node v = G.randomNode();
+			BFS bfs(G, v);
+			double time = omp_get_wtime();
+			bfs.run();
+			bfsTime += omp_get_wtime() - time;
+		}
+
+		// random sampling 2
+		INFO("Starting random sampling 2");
+		double rstTime2 = 0.0;
+		RandomSpanningTree rst2(G);
+		for (index i = 0; i < reps; ++i) {
+			double time = omp_get_wtime();
+			rst2.run2();
+			rstTime2 += omp_get_wtime() - time;
+			Graph tree2 = rst2.getTree();
+			tree2.forEdges([&](node u, node v) {
+				Gwr2.setWeight(u, v, 1 + Gwr2.weight(u, v));
+			});
+		}
+		INFO("Done");
 
 		// sampling of pseudo random trees
 		double prstTime = 0.0;
@@ -121,7 +177,8 @@ TEST_F(SpanningTreeGTest, benchRandomSpanningTree) {
 		gmeanRatio = sqrt(gmeanRatio);
 		INFO(graphname, ", max: ", maxDev, ", l1: ", l1Dev, ", l2: ", l2Dev);
 		INFO(graphname, " ==> time ratio: ", (prstTime / rstTime), ", maxRatio: ", maxRatio, ", minRatio: ", minRatio, ", gmeanRatio: ", gmeanRatio);
-
+		INFO(graphname, " ==> time ratio2: ", (rstTime2 / rstTime));
+		INFO(graphname, " ==> time ratio bfs: ", (bfsTime / rstTime));
 		// TODO: ggf. besser als externes Programm
 		// TODO: random shuffle gemaess Knotengrad, die also weiter nach vorne
 		// mit hoeherer Wkt.

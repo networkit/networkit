@@ -7987,3 +7987,84 @@ cdef class CommuteTimeDistance:
 		u : node
 		"""
 		return self._this.runSingleSource(u)
+
+cdef extern from "cpp/centrality/Spanning.h":
+	cdef cppclass _Spanning "NetworKit::Spanning":
+		_Spanning(_Graph G, double tol) except +
+		void run() nogil except +
+		void runApproximation() except +
+		void runParallelApproximation() except +
+		void runTreeApproximation(count reps) except +
+		void runTreeApproximation2(count reps) except +
+		void runPseudoTreeApproximation(count reps) except +
+		vector[double] scores() except +
+
+
+
+cdef class Spanning:
+	""" Computes the Euclidean Commute Time Distance between each pair of nodes for an undirected unweighted graph.
+
+	Spanning(G)
+
+	Create Spanning Edge Centrality for Graph `G`.
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	tol: double
+	"""
+	cdef _Spanning* _this
+	cdef Graph _G
+
+	def __cinit__(self,  Graph G, double tol = 0.1):
+		self._G = G
+		self._this = new _Spanning(G._this, tol)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		""" This method computes Spanning Edge Centrality exactly. """
+		with nogil:
+			self._this.run()
+		return self
+
+	def runApproximation(self):
+		""" Computes approximation of the Spanning Edge Centrality. """
+		return self._this.runApproximation()
+
+	def runParallelApproximation(self):
+		""" Computes approximation (in parallel) of the Spanning Edge Centrality. """
+		return self._this.runParallelApproximation()
+
+	def runTreeApproximation(self, reps):
+		"""  Returns a Spanning Edge Centrality approximation using spanning trees
+
+		reps : number of iterations
+		"""
+		return self._this.runTreeApproximation(reps)
+
+	def runTreeApproximation2(self, reps):
+		"""  Returns a Spanning Edge Centrality approximation using spanning trees.
+
+		reps : number of iterations
+		"""
+		return self._this.runTreeApproximation2(reps)
+
+	def runPseudoTreeApproximation(self, reps):
+		"""  Returns a Spanning Edge Centrality approximation using spanning trees
+
+		reps : number of iterations
+		"""
+		return self._this.runPseudoTreeApproximation(reps)
+
+	def scores(self):
+		""" Get a vector containing the SEC score for each edge in the graph.
+
+		Returns
+		-------
+		vector
+			The SEC scores.
+		"""
+		return self._this.scores()

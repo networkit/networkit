@@ -146,8 +146,7 @@ void Spanning::runParallelApproximation() {
 	hasRun = true;
 }
 
-void Spanning::runTreeApproximation() {
-	const count reps = 500;
+void Spanning::runTreeApproximation(count reps) {
 	scoreData.clear();
 	scoreData.resize(G.numberOfEdges(), 0.0);
 
@@ -155,6 +154,27 @@ void Spanning::runTreeApproximation() {
 
 	for (index i = 0; i < reps; ++i) {
 		rst.run();
+		Graph tree = rst.getTree();
+		G.forEdges([&](node u, node v, edgeid e) {
+			scoreData[e] += tree.hasEdge(u, v);
+		});
+	}
+
+	G.forEdges([&](node u, node v, edgeid e) {
+		scoreData[e] /= reps;
+	});
+
+	hasRun = true;
+}
+
+void Spanning::runTreeApproximation2(count reps) {
+	scoreData.clear();
+	scoreData.resize(G.numberOfEdges(), 0.0);
+
+	RandomSpanningTree rst(G);
+
+	for (index i = 0; i < reps; ++i) {
+		rst.run2();
 		Graph tree = rst.getTree();
 		G.forEdges([&](node u, node v, edgeid e) {
 			scoreData[e] += tree.hasEdge(u, v);
@@ -210,8 +230,7 @@ uint64_t Spanning::runApproximationAndWriteVectors(const std::string &graphPath)
 	return t.elapsedMilliseconds();
 }
 
-void Spanning::runPseudoTreeApproximation() {
-	const count reps = 500;
+void Spanning::runPseudoTreeApproximation(count reps) {
 	scoreData.clear();
 	scoreData.resize(G.numberOfEdges(), 0.0);
 

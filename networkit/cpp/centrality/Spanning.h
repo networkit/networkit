@@ -44,6 +44,7 @@ public:
 	*/
 	void run() override;
 
+
 	/**
 	 * Compute approximation by projection.
 	 */
@@ -65,9 +66,11 @@ public:
 	 */
 	uint64_t getSetupTime() const;
 
-	void runTreeApproximation();
+	void runTreeApproximation(count reps);
 
-	void runPseudoTreeApproximation();
+	void runTreeApproximation2(count reps);
+
+	void runPseudoTreeApproximation(count reps);
 
 	/**
 	 * Compute value for one edge only.

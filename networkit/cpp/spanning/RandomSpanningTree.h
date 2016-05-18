@@ -19,11 +19,14 @@ public:
 
 	void run();
 
+	void run2();
+
 	Graph getTree();
 
 private:
 	const Graph& g;
 	Graph tree;
+	std::vector<std::pair<node, node>> edges;
 };
 
 } /* namespace NetworKit */
