@@ -45,8 +45,12 @@ namespace NetworKit {
 		fillPoints(angles, radii, stretchradius, alpha);
 		vector<index> permutation(n);
 
-		index p = 0;
-		std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
+		#pragma omp parallel for
+		for (index j = 0; j < n; j++) {
+			permutation[j] = j;
+		}
+		//index p = 0;
+		//std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
 
 		Aux::Parallel::sort(permutation.begin(), permutation.end(), [&angles,&radii](index i, index j){return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);});
 
@@ -91,20 +95,31 @@ namespace NetworKit {
 	Graph RHGGenerator::generate(const vector<double> &angles, const vector<double> &radii, const vector<vector<Point2D<double>>> &bands, const vector<double> &bandRadius,
 		double thresholdDistance) {
 
-			index n = angles.size();
+			const count n = angles.size();
+			const count bandCount = bands.size();
 			assert(radii.size() == n);
-			Aux::Timer timer;
+
+			Aux::Timer bandTimer;
+			bandTimer.start();
+
 			vector<double> empty;
 			GraphBuilder result(n, false, false);
 
 			//1.Extract band angles to use it later without increasing complexity, can create a band class to handle this more elegantly
-			vector<vector<double>> bandAngles(bands.size());
-			for(index i=0; i < bands.size(); i++){
-				for(index j=0; j < bands[i].size(); j++)
-				bandAngles[i].push_back(bands[i][j].getX());
+			vector<vector<double>> bandAngles(bandCount);
+			#pragma omp parallel for
+			for(index i=0; i < bandCount; i++){
+				const count currentBandSize = bands[i].size();
+				bandAngles[i].resize(currentBandSize);
+				for(index j=0; j < currentBandSize; j++) {
+					bandAngles[i][j] = bands[i][j].getX();
+				}
 			}
+			bandTimer.stop();
+			INFO("Extracting band angles took ", bandTimer.elapsedMilliseconds(), " milliseconds.");
 
 			//2.Insert edges
+			Aux::Timer timer;
 			timer.start();
 			#pragma omp parallel
 			{
