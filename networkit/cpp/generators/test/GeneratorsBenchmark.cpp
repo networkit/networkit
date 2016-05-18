@@ -14,7 +14,9 @@
 #include "GeneratorsBenchmark.h"
 #include "../../auxiliary/Log.h"
 #include "../../auxiliary/Parallel.h"
+#include "../../auxiliary/Parallelism.h"
 
+#include "../RHGGenerator.h"
 #include "../HyperbolicGenerator.h"
 #include "../DynamicHyperbolicGenerator.h"
 #include "../BarabasiAlbertGenerator.h"
@@ -272,6 +274,20 @@ TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorMechanicGraphs) {
 	gen.setLeafCapacity(10);
 	Graph G = gen.generate();
 	EXPECT_NEAR(G.numberOfEdges(), m, m/10);
+}
+
+TEST_F(GeneratorsBenchmark, benchmarkRHGscaling) {
+	for (index i = 1; i <= 4; i++) {
+		Aux::setNumberOfThreads(i);
+		Aux::Timer timer;
+		count n = 1000000;
+		count k = 6;
+		timer.start();
+		Graph G = RHGGenerator(n, k).generate();
+		timer.stop();
+		INFO(i, " threads, ", n, " nodes, ", timer.elapsedMilliseconds(), " milliseconds.");
+	}
+
 }
 
 } /* namespace NetworKit */

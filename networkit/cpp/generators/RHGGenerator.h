@@ -70,7 +70,7 @@ namespace NetworKit {
 		double factor;
 		double alpha;
 
-		static const bool directSwap = true;
+		static const bool directSwap = false;//deactivated for now, since it caused missing edges
 
 		/**
 		* times

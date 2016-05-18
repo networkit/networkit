@@ -124,7 +124,8 @@ namespace NetworKit {
 							//maxTheta = 2*M_PI;
 							vector<Point2D<double>> slab;
 							getPointsWithinAngles(minTheta, maxTheta, bands[j], bandAngles[j], slab);
-							for(index w = 0; w < slab.size(); w++){
+							const count sSize = slab.size();
+							for(index w = 0; w < sSize; w++){
 								if(getHyperbolicDistance(pointV, slab[w]) <= thresholdDistance){
 									if(slab[w].getIndice() != i){
 										near.push_back(slab[w].getIndice());
