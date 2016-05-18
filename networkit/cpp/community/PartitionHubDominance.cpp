@@ -4,18 +4,20 @@
 
 #include "PartitionHubDominance.h"
 #include "../auxiliary/SignalHandling.h"
+#include "../auxiliary/Parallel.h"
+#include <atomic>
 
 void NetworKit::PartitionHubDominance::run() {
 	hasRun = false;
 
 	Aux::SignalHandler handler;
 
-	std::vector<count> maxInternalDeg(P.upperBound(), 0);
+	std::vector<std::atomic<count> > maxInternalDeg(P.upperBound());
 	std::vector<count> clusterSizes(P.upperBound(), 0);
 
 	handler.assureRunning();
 
-	G.forNodes([&](node u) {
+	G.balancedParallelForNodes([&](node u) {
 		index c = P[u];
 
 		if (c != none) {
@@ -25,7 +27,10 @@ void NetworKit::PartitionHubDominance::run() {
 					internalDeg++;
 				}
 			});
-			maxInternalDeg[c] = std::max(maxInternalDeg[c], internalDeg);
+
+			Aux::Parallel::atomic_max(maxInternalDeg[c], internalDeg);
+
+			#pragma omp atomic update
 			++clusterSizes[c];
 		}
 	});

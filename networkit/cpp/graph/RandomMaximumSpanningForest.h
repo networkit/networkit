@@ -113,6 +113,22 @@ private:
 	bool hasAttribute;
 };
 
+template <typename A>
+RandomMaximumSpanningForest::RandomMaximumSpanningForest(const Graph &G, const std::vector< A > &attribute) : G(G), hasWeightedEdges(false), hasMSF(false), hasAttribute(false) {
+	if (!G.hasEdgeIds()) {
+		throw std::runtime_error("Error: Edges of G must be indexed for using edge attributes");
+	}
+
+	weightedEdges.reserve(G.numberOfEdges());
+
+	G.forEdges([&](node u, node v, edgeid eid) {
+		weightedEdges.emplace_back(u, v, attribute[eid], eid);
+	});
+
+	INFO(weightedEdges.size(), " weighted edges saved");
+
+	hasWeightedEdges = true;
+}
 
 
 } // namespace NetworKit

@@ -33,7 +33,7 @@ public:
 	/**
 	 * @return the theoretical maximum degree centrality, which is $n$ (including the possibility of a self-loop)
 	 */
-	double maximum();
+	double maximum() override;
 };
 
 } /* namespace NetworKit */

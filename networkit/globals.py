@@ -1,5 +1,9 @@
 from _NetworKit import ClusteringCoefficient
 
+#external imports
+import math
+import logging
+
 def clustering(G, error=0.01):
 	"""
 		Returns approximate average local clustering coefficient

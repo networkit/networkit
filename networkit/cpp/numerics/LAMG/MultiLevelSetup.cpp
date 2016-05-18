@@ -9,24 +9,21 @@
 #include "Level/LevelElimination.h"
 #include "Level/EliminationStage.h"
 #include "LAMGSettings.h"
-#include "../../algebraic/LaplacianMatrix.h"
-#include "../../io/LineFileReader.h"
 #include "../../auxiliary/StringTools.h"
-#include <fstream>
-#include <iostream>
-#include <sstream>
-
 #include "../../auxiliary/Enforce.h"
 #include "../../auxiliary/Timer.h"
 #include "../../algebraic/CSRMatrix.h"
 
+#include <fstream>
+#include <iostream>
+#include <sstream>
 #include <cstdio>
 #include <set>
 #include "omp.h"
 
 namespace NetworKit {
 
-#ifndef NPROFILE
+#ifndef NDEBUG
 count MultiLevelSetup::eliminationTime = 0;
 count MultiLevelSetup::schurComplementTime = 0;
 count MultiLevelSetup::aggregationTime = 0;
@@ -42,8 +39,8 @@ void MultiLevelSetup::setup(const Graph &G, LevelHierarchy &hierarchy) const {
 void MultiLevelSetup::setup(const CSRMatrix &matrix, LevelHierarchy &hierarchy) const {
 	CSRMatrix A = matrix;
 	hierarchy.addFinestLevel(A);
-#ifndef NPROFILE
-	INFO("FINEST\t", matrix.numberOfRows(), "\t", matrix.nnz());
+#ifndef NDEBUG
+	DEBUG("FINEST\t", matrix.numberOfRows(), "\t", matrix.nnz());
 #endif
 
 	bool doneCoarsening = false;
@@ -55,8 +52,8 @@ void MultiLevelSetup::setup(const CSRMatrix &matrix, LevelHierarchy &hierarchy) 
 		if (coarseningElimination(A, hierarchy)) {
 			if (!canCoarsen(A)) doneCoarsening = true;
 			level++;
-#ifndef NPROFILE
-			INFO(level, " ELIM\t\t", A.numberOfRows(), "\t", A.nnz() / 2);
+#ifndef NDEBUG
+			DEBUG(level, " ELIM\t\t", A.numberOfRows(), "\t", A.nnz() / 2);
 #endif
 		}
 
@@ -67,8 +64,8 @@ void MultiLevelSetup::setup(const CSRMatrix &matrix, LevelHierarchy &hierarchy) 
 		} else {
 			coarseningAggregation(A, hierarchy, tv, numTVs);
 			level++;
-#ifndef NPROFILE
-			INFO(level, " AGG\t\t", A.numberOfRows(), "\t", A.nnz() / 2);
+#ifndef NDEBUG
+			DEBUG(level, " AGG\t\t", A.numberOfRows(), "\t", A.nnz() / 2);
 #endif
 			if (numTVs < TV_MAX) {
 				numTVs += TV_INC;
@@ -80,15 +77,15 @@ void MultiLevelSetup::setup(const CSRMatrix &matrix, LevelHierarchy &hierarchy) 
 
 	hierarchy.setLastAsCoarsest();
 
-#ifndef NPROFILE
-	INFO("Elimination: ", eliminationTime);
-	INFO("Schur: ", schurComplementTime);
-	INFO("Aggregation: ", aggregationTime);
+#ifndef NDEBUG
+	DEBUG("Elimination: ", eliminationTime);
+	DEBUG("Schur: ", schurComplementTime);
+	DEBUG("Aggregation: ", aggregationTime);
 #endif
 }
 
 bool MultiLevelSetup::coarseningElimination(CSRMatrix &matrix, LevelHierarchy &hierarchy) const {
-#ifndef NPROFILE
+#ifndef NDEBUG
 	Aux::Timer elimTimer;
 	Aux::Timer schurTimer;
 	elimTimer.start();
@@ -132,7 +129,7 @@ bool MultiLevelSetup::coarseningElimination(CSRMatrix &matrix, LevelHierarchy &h
 		eliminationOperators(matrix, fSet, coarseIndex, P, q);
 		coarseningStages.push_back(EliminationStage(P, q, fSet, cSet));
 
-#ifndef NPROFILE
+#ifndef NDEBUG
 		schurTimer.start();
 #endif
 
@@ -141,7 +138,7 @@ bool MultiLevelSetup::coarseningElimination(CSRMatrix &matrix, LevelHierarchy &h
 
 		matrix = Acc + Acf * P;
 
-#ifndef NPROFILE
+#ifndef NDEBUG
 		schurTimer.stop();
 		schurComplementTime += schurTimer.elapsedMilliseconds();
 #endif
@@ -151,14 +148,14 @@ bool MultiLevelSetup::coarseningElimination(CSRMatrix &matrix, LevelHierarchy &h
 
 	if (stageNum != 0) { // we have coarsened the matrix
 		hierarchy.addEliminationLevel(matrix, coarseningStages);
-#ifndef NPROFILE
+#ifndef NDEBUG
 		elimTimer.stop();
 		eliminationTime += elimTimer.elapsedMilliseconds();
 		//schurComplementTime += schurTimer.elapsedMilliseconds();
 #endif
 		return true;
 	}
-#ifndef NPROFILE
+#ifndef NDEBUG
 	elimTimer.stop();
 	eliminationTime += elimTimer.elapsedMilliseconds();
 	//schurComplementTime += schurTimer.elapsedMilliseconds();
@@ -173,7 +170,7 @@ count MultiLevelSetup::lowDegreeSweep(const CSRMatrix &matrix, std::vector<bool>
 	int degreeOffset = stage != 0;
 
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
-		if ((int) matrix.nnzInRow(i) - degreeOffset <= SETUP_ELIMINATION_MAX_DEGREE && fNode[i]) { // node i has degree <= 4 and can be eliminated
+		if ((int) matrix.nnzInRow(i) - degreeOffset <= (int)SETUP_ELIMINATION_MAX_DEGREE && fNode[i]) { // node i has degree <= 4 and can be eliminated
 			numFNodes++;
 			matrix.forNonZeroElementsInRow(i, [&](index j, edgeweight w){ // to maintain independence, mark all neighbors as not eliminated
 				if (j != i)	{ // all neighbors of this f node are c nodes
@@ -223,13 +220,13 @@ void MultiLevelSetup::subMatrix(const CSRMatrix &matrix, const std::vector<index
 }
 
 void MultiLevelSetup::coarseningAggregation(CSRMatrix &matrix, LevelHierarchy &hierarchy, Vector &tv, count numTVVectors) const {
-#ifndef NPROFILE
+#ifndef NDEBUG
 	Aux::Timer aggTimer;
 	aggTimer.start();
 #endif
 	Vector B(SETUP_MAX_AGGREGATION_STAGES, std::numeric_limits<double>::max());
-	std::vector<std::vector<int64_t>> S(SETUP_MAX_AGGREGATION_STAGES, std::vector<int64_t>(matrix.numberOfRows(), std::numeric_limits<int64_t>::max()));
-	std::vector<int64_t> status(matrix.numberOfRows(), UNDECIDED);
+	std::vector<std::vector<index>> S(SETUP_MAX_AGGREGATION_STAGES, std::vector<index>(matrix.numberOfRows(), std::numeric_limits<index>::max()));
+	std::vector<index> status(matrix.numberOfRows(), UNDECIDED);
 	std::vector<count> nc(SETUP_MAX_AGGREGATION_STAGES, matrix.numberOfRows());
 
 	double alpha = 1.0;
@@ -320,7 +317,7 @@ void MultiLevelSetup::coarseningAggregation(CSRMatrix &matrix, LevelHierarchy &h
 
 	hierarchy.addAggregationLevel(matrix, P, R);
 
-#ifndef NPROFILE
+#ifndef NDEBUG
 	aggTimer.stop();
 	aggregationTime += aggTimer.elapsedMilliseconds();
 #endif
@@ -346,7 +343,7 @@ std::vector<Vector> MultiLevelSetup::generateTVs(const CSRMatrix &matrix, Vector
 	return testVectors;
 }
 
-void MultiLevelSetup::addHighDegreeSeedNodes(const CSRMatrix &matrix, std::vector<int64_t> &status) const {
+void MultiLevelSetup::addHighDegreeSeedNodes(const CSRMatrix &matrix, std::vector<index> &status) const {
 	std::vector<count> deg(matrix.numberOfRows());
 #pragma omp parallel for
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
@@ -372,7 +369,7 @@ void MultiLevelSetup::addHighDegreeSeedNodes(const CSRMatrix &matrix, std::vecto
 	}
 }
 
-void MultiLevelSetup::aggregateLooseNodes(const CSRMatrix &strongAdjMatrix, std::vector<int64_t> &status, count &nc) const {
+void MultiLevelSetup::aggregateLooseNodes(const CSRMatrix &strongAdjMatrix, std::vector<index> &status, count &nc) const {
 	std::vector<index> looseNodes;
 	for (index i = 0; i < strongAdjMatrix.numberOfRows(); ++i) {
 		double max = std::numeric_limits<double>::min();
@@ -480,7 +477,7 @@ void MultiLevelSetup::computeAffinityMatrix(const CSRMatrix &matrix, const std::
 	affinityMatrix = CSRMatrix(matrix.numberOfRows(), matrix.numberOfColumns(), rowIdx, columnIdx, nonZeros, matrix.sorted());
 }
 
-void MultiLevelSetup::aggregationStage(const CSRMatrix &matrix, count &nc, const CSRMatrix &strongAdjMatrix, const CSRMatrix &affinityMatrix, std::vector<Vector> &tVs, std::vector<int64_t> &status) const {
+void MultiLevelSetup::aggregationStage(const CSRMatrix &matrix, count &nc, const CSRMatrix &strongAdjMatrix, const CSRMatrix &affinityMatrix, std::vector<Vector> &tVs, std::vector<index> &status) const {
 	std::vector<std::vector<index>> bins(10);
 	computeStrongNeighbors(affinityMatrix, status, bins);
 
@@ -512,7 +509,7 @@ void MultiLevelSetup::aggregationStage(const CSRMatrix &matrix, count &nc, const
 	} // iterate over bins
 }
 
-void MultiLevelSetup::computeStrongNeighbors(const CSRMatrix &affinityMatrix, const std::vector<int64_t> &status, std::vector<std::vector<index>> &bins) const {
+void MultiLevelSetup::computeStrongNeighbors(const CSRMatrix &affinityMatrix, const std::vector<index> &status, std::vector<std::vector<index>> &bins) const {
 	std::vector<bool> undecided(affinityMatrix.numberOfRows(), false);
 	std::vector<double> maxNeighbor(affinityMatrix.numberOfRows(), std::numeric_limits<double>::min());
 	double overallMax = 0.0;
@@ -550,7 +547,7 @@ void MultiLevelSetup::computeStrongNeighbors(const CSRMatrix &affinityMatrix, co
 	}
 }
 
-bool MultiLevelSetup::findBestSeedEnergyCorrected(const CSRMatrix &strongAdjMatrix, const CSRMatrix &affinityMatrix, const std::vector<double> &diag, const std::vector<Vector> &tVs, const std::vector<int64_t> &status, const index u, index &s) const {
+bool MultiLevelSetup::findBestSeedEnergyCorrected(const CSRMatrix &strongAdjMatrix, const CSRMatrix &affinityMatrix, const std::vector<double> &diag, const std::vector<Vector> &tVs, const std::vector<index> &status, const index u, index &s) const {
 	bool foundSeed = false;
 	std::vector<double> r(tVs.size(), 0.0);
 	std::vector<double> q(tVs.size(), 0.0);

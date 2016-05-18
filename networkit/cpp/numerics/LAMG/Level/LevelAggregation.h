@@ -12,6 +12,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup numerics
+ */
 class LevelAggregation : public Level {
 private:
 	CSRMatrix P; // interpolation matrix (n x nc)

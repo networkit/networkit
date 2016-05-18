@@ -16,6 +16,9 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup numerics
+ */
 class LevelHierarchy {
 private:
 	std::vector<LevelType> levelType;

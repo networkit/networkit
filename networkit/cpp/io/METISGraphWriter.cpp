@@ -12,10 +12,10 @@
 
 namespace NetworKit {
 
-void METISGraphWriter::write(Graph& G, const std::string& path) {
+void METISGraphWriter::write(const Graph& G, const std::string& path) {
 	this->write(G, G.isWeighted(), path);
 }
-void METISGraphWriter::write(Graph& G, bool weighted, std::string path) {
+void METISGraphWriter::write(const Graph& G, bool weighted, std::string path) {
 	if (G.isDirected()) {
 		throw std::invalid_argument{"METIS does not support directed graphs"};
 	}

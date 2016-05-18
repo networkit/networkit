@@ -12,34 +12,34 @@ namespace NetworKit {
 Matrix::Matrix() : graph(0, true, true), nRows(0), nCols(0) {
 }
 
-Matrix::Matrix(const count &dimension) : graph(dimension, true, true), nRows(dimension), nCols(dimension) {
+Matrix::Matrix(const count dimension) : graph(dimension, true, true), nRows(dimension), nCols(dimension) {
 }
 
-Matrix::Matrix(const count &nRows, const count &nCols) : graph(std::max(nRows, nCols), true, true), nRows(nRows), nCols(nCols) {
+Matrix::Matrix(const count nRows, const count nCols) : graph(std::max(nRows, nCols), true, true), nRows(nRows), nCols(nCols) {
 }
 
-Matrix::Matrix(const count &dimension, const std::vector<std::pair<index, index>> &positions,
-					const std::vector<double> &values) : graph(dimension, positions, values), nRows(dimension), nCols(dimension) {
-//	assert(positions.size() == values.size());
-//
-//	for (size_t k = 0; k < positions.size(); ++k) {
-//		assert(positions[k].first >= 0 && positions[k].second >= 0 && positions[k].first < dimension && positions[k].second < dimension);
-//
-//		std::pair<node, node> pos = positions[k];
-//		graph.addEdge(pos.first, pos.second, values[k]);
-//	}
+Matrix::Matrix(const count dimension, const std::vector<std::pair<index, index>> &positions,
+					const std::vector<double> &values) : graph(dimension, true, true), nRows(dimension), nCols(dimension) {
+	assert(positions.size() == values.size());
+
+	for (size_t k = 0; k < positions.size(); ++k) {
+		assert(positions[k].first >= 0 && positions[k].second >= 0 && positions[k].first < dimension && positions[k].second < dimension);
+
+		std::pair<node, node> pos = positions[k];
+		graph.addEdge(pos.first, pos.second, values[k]);
+	}
 }
 
 Matrix::Matrix(const count nRows, const count nCols, const std::vector<std::pair<index, index>> &positions,
-					const std::vector<double> &values) : graph(std::max(nRows, nCols), positions, values), nRows(nRows), nCols(nCols) {
-//	assert(positions.size() == values.size());
-//
-//	for (size_t k = 0; k < positions.size(); ++k) {
-//		assert(positions[k].first >= 0 && positions[k].second >= 0 && positions[k].first < nRows && positions[k].second < nCols);
-//
-//		std::pair<node, node> pos = positions[k];
-//		graph.addEdge(pos.first, pos.second, values[k]);
-//	}
+					const std::vector<double> &values) : graph(std::max(nRows, nCols), true, true), nRows(nRows), nCols(nCols) {
+	assert(positions.size() == values.size());
+
+	for (size_t k = 0; k < positions.size(); ++k) {
+		assert(positions[k].first >= 0 && positions[k].second >= 0 && positions[k].first < nRows && positions[k].second < nCols);
+
+		std::pair<node, node> pos = positions[k];
+		graph.addEdge(pos.first, pos.second, values[k]);
+	}
 }
 
 Matrix::Matrix(const std::vector<Vector> &rows) {
@@ -66,17 +66,6 @@ Matrix::Matrix(const std::vector<Vector> &rows) {
 	}
 }
 
-//Matrix::Matrix(const Matrix &other) : graph(other.graph), nRows(other.nRows), nCols(other.nCols) {
-//}
-
-//count Matrix::numberOfRows() const {
-//	return nRows;
-//}
-//
-//count Matrix::numberOfColumns() const {
-//	return nCols;
-//}
-
 count Matrix::nnzInRow(const index i) const {
 	assert(i >= 0 && i < nRows);
 	return graph.degree(i);
@@ -94,11 +83,6 @@ count Matrix::nnz() const {
 double Matrix::operator()(const index i, const index j) const {
 	assert(i >= 0 && i < nRows);
 	assert(j >= 0 && j < nCols);
-//	if (i < 0 || i >= numberOfRows()) {
-//		throw std::out_of_range("Matrix(i,j): Row index out of range");
-//	} else if (j < 0 || j >= numberOfColumns()) {
-//		throw std::out_of_range("Matrix(i,j): Column index out of range");
-//	}
 
 	return graph.weight(i,j);
 }
@@ -106,22 +90,12 @@ double Matrix::operator()(const index i, const index j) const {
 void Matrix::setValue(const index i, const index j, const double value) {
 	assert(i >= 0 && i < nRows);
 	assert(j >= 0 && j < nCols);
-//	if (i < 0 || i >= numberOfRows()) {
-//		throw std::out_of_range("Matrix::setValue(const index &i, const index &j, const double &value): "
-//																						"Row index out of range");
-//	} else if (j < 0 || j >= numberOfColumns()) {
-//		throw std::out_of_range("Matrix::setValue(const index &i, const index &j, const double &value): "
-//																						"Column index out of range");
-//	}
 
 	graph.setWeight(i, j, value);
 }
 
-Vector Matrix::row(const index &i) const {
+Vector Matrix::row(const index i) const {
 	assert(i >= 0 && i < nRows);
-//	if (i < 0 || i >= numberOfRows()) {
-//		throw std::out_of_range("Matrix::row(const index &i): Row index out of range");
-//	}
 
 	Vector row(numberOfColumns(), 0.0, true);
 	graph.forEdgesOf(i, [&](node i, node j, double value) {
@@ -131,11 +105,8 @@ Vector Matrix::row(const index &i) const {
 	return row;
 }
 
-Vector Matrix::column(const index &j) const {
+Vector Matrix::column(const index j) const {
 	assert(j >= 0 && j < nCols);
-//	if (j < 0 || j >= numberOfColumns()) {
-//		throw std::out_of_range("Matrix::column(const index &j): Column index out of range");
-//	}
 
 	Vector column(numberOfRows());
 #pragma omp parallel for
@@ -161,9 +132,6 @@ Matrix Matrix::operator+(const Matrix &other) const {
 
 Matrix& Matrix::operator+=(const Matrix &other) {
 	assert(nRows == other.nRows && nCols == other.nCols);
-//	if (numberOfRows() != other.numberOfRows() || numberOfColumns() != other.numberOfColumns()) {
-//		throw std::runtime_error("Matrix::operator+=(const Matrix &other): Dimensions of matrices do not match");
-//	}
 
 	other.forNonZeroElementsInRowOrder([&](node i, node j, double value) {
 		graph.increaseWeight(i, j, value);
@@ -178,9 +146,6 @@ Matrix Matrix::operator-(const Matrix &other) const {
 
 Matrix& Matrix::operator-=(const Matrix &other) {
 	assert(nRows == other.nRows && nCols == other.nCols);
-//	if (numberOfRows() != other.numberOfRows() || numberOfColumns() != other.numberOfColumns()) {
-//		throw std::runtime_error("Matrix::operator-=(const Matrix &other): Dimensions of matrices do not match");
-//	}
 
 	other.forNonZeroElementsInRowOrder([&](node i, node j, double value) {
 		graph.increaseWeight(i, j, -value);
@@ -189,11 +154,11 @@ Matrix& Matrix::operator-=(const Matrix &other) {
 	return *this;
 }
 
-Matrix Matrix::operator*(const double &scalar) const {
+Matrix Matrix::operator*(const double scalar) const {
 	return Matrix(*this) *= scalar;
 }
 
-Matrix& Matrix::operator*=(const double &scalar) {
+Matrix& Matrix::operator*=(const double scalar) {
 	graph.parallelForEdges([&](node i, node j, double value) {
 		graph.setWeight(i, j, value * scalar);
 	});
@@ -204,12 +169,6 @@ Matrix& Matrix::operator*=(const double &scalar) {
 Vector Matrix::operator*(const Vector &vector) const {
 	assert(!vector.isTransposed());
 	assert(nCols == vector.getDimension());
-//	if (vector.isTransposed()) {
-//		throw std::runtime_error("operator*(const Vector &vector): Vector is not transposed correctly");
-//	} else if (numberOfColumns() != vector.getDimension()) {
-//		throw std::runtime_error("operator*(const Vector &vector): Dimensions of matrix and vector do not match");
-//	}
-
 	Vector result(numberOfRows(), 0.0);
 
 	parallelForNonZeroElementsInRowOrder([&](node i, node j, double value) {
@@ -221,9 +180,6 @@ Vector Matrix::operator*(const Vector &vector) const {
 
 Matrix Matrix::operator*(const Matrix &other) const {
 	assert(nCols == other.nRows);
-//	if (numberOfColumns() != other.numberOfRows()) {
-//		throw std::runtime_error("Matrix::operator*(const Matrix &other): Dimensions of matrices do not match");
-//	}
 
 	Matrix result(numberOfRows(), other.numberOfColumns());
 	SparseAccumulator spa(numberOfRows());
@@ -245,19 +201,16 @@ Matrix Matrix::operator*(const Matrix &other) const {
 	return result;
 }
 
-Matrix Matrix::operator/(const double &divisor) const {
+Matrix Matrix::operator/(const double divisor) const {
 	return Matrix(*this) /= divisor;
 }
 
-Matrix& Matrix::operator/=(const double &divisor) {
+Matrix& Matrix::operator/=(const double divisor) {
 	return *this *= 1 / divisor;
 }
 
 Matrix Matrix::mTmMultiply(const Matrix &A, const Matrix &B) {
 	assert(A.nRows == B.nRows);
-//	if (A.numberOfRows() != B.numberOfRows()) {
-//		throw std::runtime_error("Matrix::mTmMultiply(const Matrix &A, const Matrix &B): Dimensions of matrices do not match");
-//	}
 
 	Matrix C(A.numberOfColumns(), B.numberOfColumns());
 	for (index k = 0; k < A.numberOfRows(); ++k) {
@@ -273,9 +226,6 @@ Matrix Matrix::mTmMultiply(const Matrix &A, const Matrix &B) {
 
 Matrix Matrix::mmTMultiply(const Matrix &A, const Matrix &B) {
 	assert(A.nCols == B.nCols);
-//	if (A.numberOfColumns() != B.numberOfColumns()) {
-//		throw std::runtime_error("Matrix::mmTMultiply(const Matrix &A, const Matrix &B): Dimensions of matrices do not match");
-//	}
 
 	Matrix C(A.numberOfRows(), B.numberOfRows());
 	for (index i = 0; i < A.numberOfRows(); ++i) {
@@ -294,9 +244,6 @@ Matrix Matrix::mmTMultiply(const Matrix &A, const Matrix &B) {
 
 Vector Matrix::mTvMultiply(const Matrix &matrix, const Vector &vector) {
 	assert(matrix.nRows == vector.getDimension());
-//	if (matrix.numberOfRows() != vector.getDimension()) {
-//		throw std::runtime_error("Matrix::mtvMultiply(const Matrix &matrix, const Vector &vector): Dimensions of matrix and vector do not match");
-//	}
 
 	Vector result(matrix.numberOfColumns(), 0.0);
 	for (index k = 0; k < matrix.numberOfRows(); ++k) {

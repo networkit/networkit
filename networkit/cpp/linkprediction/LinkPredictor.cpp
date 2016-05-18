@@ -9,6 +9,7 @@
 
 #include "LinkPredictor.h"
 #include "../auxiliary/Log.h"
+#include "../auxiliary/Parallel.h"
 
 #include <omp.h>
 
@@ -27,7 +28,7 @@ void LinkPredictor::setGraph(const Graph& newGraph) {
 
 std::vector<LinkPredictor::prediction> LinkPredictor::runOn(std::vector<std::pair<node, node>> nodePairs) {
   std::vector<prediction> predictions(nodePairs.size());
-  std::sort(nodePairs.begin(), nodePairs.end());
+  Aux::Parallel::sort(nodePairs.begin(), nodePairs.end());
   #pragma omp parallel for schedule(dynamic) shared(predictions)
   for (index i = 0; i < nodePairs.size(); ++i) {
     predictions[i] = std::make_pair(nodePairs[i], run(nodePairs[i].first, nodePairs[i].second));
