@@ -209,16 +209,16 @@ namespace NetworKit {
 
 			double mincdf = cosh(alpha*minR);
 			double maxcdf = cosh(alpha*maxR);
-			std::uniform_real_distribution<double> phidist{minPhi, maxPhi};
-			std::uniform_real_distribution<double> rdist{mincdf, maxcdf};
+			//std::uniform_real_distribution<double> phidist{minPhi, maxPhi};
+			//std::uniform_real_distribution<double> rdist{mincdf, maxcdf};
 			//do not transform to Poincare
 			double r = maxR;
 
 			#pragma omp parallel for
 			for (uint64_t i = 0; i < n; i++) {
-				angles[i] = phidist(Aux::Random::getURNG());
+				angles[i] = Aux::Random::real(minPhi, maxPhi);
 
-				double random = rdist(Aux::Random::getURNG());
+				double random = Aux::Random::real(mincdf, maxcdf);// rdist(Aux::Random::getURNG());
 				double radius = (acosh(random)/alpha);
 				//assert(radius < maxR);
 				radii[i] = radius;
