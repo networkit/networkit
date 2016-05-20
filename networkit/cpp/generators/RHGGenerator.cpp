@@ -132,7 +132,7 @@ namespace NetworKit {
 					near.reserve(expectedDegree*1.1);
 					Point2D<double> pointV(angles[i], radii[i], i);
 					for(index j = 0; j < bands.size(); j++){
-						if(bandRadius[j+1] > radii[i]){
+						if(directSwap || bandRadius[j+1] > radii[i]){
 							double minTheta, maxTheta;
 							std::tie (minTheta, maxTheta) = getMinMaxTheta(angles[i], radii[i], bandRadius[j], thresholdDistance);
 							//minTheta = 0;
