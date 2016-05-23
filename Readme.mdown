@@ -1,6 +1,6 @@
 Generator of Hyperbolic Random Graphs
 =========
-The implementation of the generator for hyperbolic random graphs can currently be found at networkit/cpp/generators/RHGGenerator.cpp.
+The implementation of the generator for hyperbolic random graphs can currently be found at networkit/cpp/generators/RHGGenerator.cpp. It is exposed to the python side and has the same interface as the already public class HyperbolicGenerator.cpp.
 
 
 NetworKit
