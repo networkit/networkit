@@ -89,7 +89,7 @@ private:
 	/**
 	 * Generate initial movement vectors for all points
 	 */
-	void initializeBands();
+	void recomputeBands();
 
 	vector<index> getNeighborsInBands(index i, bool bothDirections=true);
 

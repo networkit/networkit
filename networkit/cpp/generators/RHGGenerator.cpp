@@ -46,7 +46,6 @@ namespace NetworKit {
 	}
 
 	Graph RHGGenerator::generate(const vector<double> &angles, const vector<double> &radii, double R) {
-		if (!std::is_sorted(angles.cbegin(), angles.cend())) throw std::runtime_error("Angles must be sorted.");
 		Aux::Timer timer;
 		timer.start();
 		index n = angles.size();
@@ -55,16 +54,27 @@ namespace NetworKit {
 		vector<double> bandRadii = getBandRadii(n, R);
 		//2. Initialize empty bands
 		vector<vector<Point2D<double>>> bands(bandRadii.size() - 1);
+
+
+		//ensure points are sorted
+		vector<index> permutation(n);
+		index p = 0;
+		std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
+
+		if (!std::is_sorted(angles.cbegin(), angles.cend()));
+		Aux::Parallel::sort(permutation.begin(), permutation.end(), [&](index i, index j){return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);});
+
 		//3. Put points to bands
-		for (index i = 0; i < n; i++){
-			for (index j = 0; j < bands.size(); j++){
-				if (radii[i] >= bandRadii[j] && radii[i] <= bandRadii[j+1]){
-					bands[j].push_back(Point2D<double>(angles[i], radii[i], i));
-						break;
+		#pragma omp parallel for
+		for (index j = 0; j < bands.size(); j++){
+			for (index i = 0; i < n; i++){
+				double alias = permutation[i];
+				if (radii[alias] >= bandRadii[j] && radii[alias] <= bandRadii[j+1]){
+					bands[j].push_back(Point2D<double>(angles[alias], radii[alias], alias));
 				}
 			}
 		}
-		//the bands are already sorted since we sorted angles&radii before
+
 		timer.stop();
 		for (index b = 0; b < bands.size(); b++) {
 			INFO("Band ", b, " contains ", bands[b].size(), " points.");
@@ -87,7 +97,7 @@ namespace NetworKit {
 			vector<double> empty;
 			GraphBuilder result(n, false, false);
 
-			//1.Extract band angles to use it later without increasing complexity, can create a band class to handle this more elegantly
+			//1.Extract band angles to use them later, can create a band class to handle this more elegantly
 			vector<vector<double>> bandAngles(bandCount);
 			#pragma omp parallel for
 			for(index i=0; i < bandCount; i++){
@@ -95,6 +105,9 @@ namespace NetworKit {
 				bandAngles[i].resize(currentBandSize);
 				for(index j=0; j < currentBandSize; j++) {
 					bandAngles[i][j] = bands[i][j].getX();
+				}
+				if (!std::is_sorted(bandAngles[i].begin(), bandAngles[i].end())) {
+					throw std::runtime_error("Points in bands must be sorted.");
 				}
 			}
 			bandTimer.stop();

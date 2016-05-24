@@ -24,7 +24,7 @@ DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(count n, double avgDegree
 	R = HyperbolicSpace::getTargetRadius(n, n*avgDegree/2, alpha);
 	initializePoints();
 	initializeMovement();
-	initializeBands();
+	recomputeBands();
 }
 
 DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(std::vector<double> &angles, std::vector<double> &radii, double R, double alpha, double moveEachStep, double moveDistance) {
@@ -44,7 +44,7 @@ DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(std::vector<double> &angl
 	this->initialized = true;
 
 	initializeMovement();
-	initializeBands();
+	recomputeBands();
 }
 
 void DynamicHyperbolicGenerator::initializeMovement() {
@@ -72,7 +72,7 @@ void DynamicHyperbolicGenerator::initializePoints() {
 	INFO("Generated Points");
 }
 
-void DynamicHyperbolicGenerator::initializeBands() {
+void DynamicHyperbolicGenerator::recomputeBands() {
 	//1.Generate bandRadius'
 	bandRadii = RHGGenerator::getBandRadii(nodeCount, R);
 	INFO("Got Band Radii");
@@ -80,17 +80,28 @@ void DynamicHyperbolicGenerator::initializeBands() {
 	//2. Initialize empty bands
 	bands.clear();
 	bands.resize(bandRadii.size() - 1);
+	bandAngles.clear();
 	bandAngles.resize(bandRadii.size() - 1);
 	assert(angles.size() == nodeCount);
 	assert(radii.size() == nodeCount);
+
+	//ensure points are sorted
+	vector<index> permutation(nodeCount);
+
+	index p = 0;
+	std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
+
+	Aux::Parallel::sort(permutation.begin(), permutation.end(), [&](index i, index j){return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);});
+
 	//3. Put points to bands
 	INFO("Starting Point distribution");
 	#pragma omp parallel for
 	for (index j = 0; j < bands.size(); j++){
 		for (index i = 0; i < nodeCount; i++){
-			if (radii[i] >= bandRadii[j] && radii[i] <= bandRadii[j+1]){
-				bands[j].push_back(Point2D<double>(angles[i], radii[i], i));
-				bandAngles[j].push_back(angles[i]);
+			double alias = permutation[i];
+			if (radii[alias] >= bandRadii[j] && radii[alias] <= bandRadii[j+1]){
+				bands[j].push_back(Point2D<double>(angles[alias], radii[alias], alias));
+				bandAngles[j].push_back(angles[alias]);
 			}
 		}
 	}
@@ -102,7 +113,8 @@ Graph DynamicHyperbolicGenerator::getGraph() const {
 	 * The next call is unnecessarily expensive, since it constructs a new QuadTree.
 	 * Reduces code duplication, though.
 	 */
-	return RHGGenerator().generate(angles, radii, R);
+
+	return RHGGenerator().generate(angles, radii, bands, bandRadii, R);
 }
 
 std::vector<Point<float> > DynamicHyperbolicGenerator::getCoordinates() const {
@@ -123,7 +135,7 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 		assert(radii.size() == 0);
 		initializePoints();
 		initializeMovement();
-		initializeBands();
+		recomputeBands();
 	}
 	vector<GraphEvent> result;
 
@@ -184,8 +196,11 @@ void DynamicHyperbolicGenerator::moveNode(index toMove) {
 }
 
 vector<index> DynamicHyperbolicGenerator::getNeighborsInBands(index i, bool bothDirections) {
-	const double phi = angles[i];
 	const double r = radii[i];
+	const double phi = angles[i];
+	const double coshr = cosh(radii[i]);
+	const double sinhr = sinh(radii[i]);
+	const double coshR = cosh(R);
 	assert(bands.size() == bandAngles.size());
 	assert(bands.size() == bandRadii.size() -1);
 	count expectedDegree = (4/M_PI)*nodeCount*exp(-(radii[i])/2);
@@ -223,52 +238,30 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
 	//TODO: One could parallelize this.
 	for (index i = 0; i < nodeCount; i++) {
 		if (Aux::Random::real(1) < moveEachStep) {
-
 			toWiggle.push_back(i);
-			Point2D<double> q = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
 			vector<index> localOldNeighbors = getNeighborsInBands(i, true);
-
 			oldNeighbours.push_back(localOldNeighbors);
 		}
 	}
 
-	/**
-	 * Tried to parallelize this, didn't bring any benefit.
-	 * Not surprising, since most of the work - manipulating the QuadTree - needs to be done in a critical section
-	 */
+
 	#pragma omp parallel for
 	for (index j = 0; j < toWiggle.size(); j++) {
 		//wiggle this node!
 
-		double oldphi = angles[toWiggle[j]];
-		double oldr = radii[toWiggle[j]];
-
-		int bandIndex = -1;
-		for (index j = 0; j < bands.size(); j++){
-			if ((oldr) < bandRadii[j+1]) {
-				bandIndex = oldr;
-				break;
-			}
-		}
-		assert(bandIndex >= 0);
-
-
-
+		//double oldphi = angles[toWiggle[j]];
+		//double oldr = radii[toWiggle[j]];
 		//TODO: find old and new band of wiggled node, find old and new positions
-		//moveNode(toWiggle[j]);
-		//updating Quadtree
-		#pragma omp critical
-		{
-			//bool removed = quad.removeContent(toWiggle[j], oldphi, oldr);
-			//assert(removed);
-			//quad.addContent(toWiggle[j], angles[toWiggle[j]], radii[toWiggle[j]]);
-		}
+
+		moveNode(toWiggle[j]);
 	}
+
+	recomputeBands();//update bands
 
 	//now get the new edges and see what changed
 	#pragma omp parallel for
 	for (index j = 0; j < toWiggle.size(); j++) {
-		vector<index> newNeighbours = getNeighborsInBands(toWiggle[j], true);;
+		vector<index> newNeighbours = getNeighborsInBands(toWiggle[j], true);
 
 		std::sort(oldNeighbours[j].begin(), oldNeighbours[j].end());
 		std::sort(newNeighbours.begin(), newNeighbours.end());

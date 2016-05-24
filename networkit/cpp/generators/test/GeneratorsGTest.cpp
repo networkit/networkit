@@ -245,6 +245,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	count initialEdgeCount = G.numberOfEdges();
 	count expected = n*HyperbolicSpace::getExpectedDegree(n, alpha, R)*0.5;
 	EXPECT_NEAR(initialEdgeCount, expected, expected/5);
+	EXPECT_TRUE(G.checkConsistency());
 	GraphUpdater gu(G);
 	std::vector<GraphEvent> stream;
 
