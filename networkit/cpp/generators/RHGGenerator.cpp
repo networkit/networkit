@@ -25,15 +25,14 @@ namespace NetworKit {
 		double targetR = HyperbolicSpace::getTargetRadius(n, n*avgDegree/2, alpha);
 
 		stretch = targetR / R;
-		factor = 1;
 		threadtimers.resize(omp_get_max_threads());
 	}
 
 	Graph RHGGenerator::generate() {
-		return generate(nodeCount, factor, alpha, stretch);
+		return generate(nodeCount, alpha, stretch);
 	}
 
-	Graph RHGGenerator::generate(count n, double distanceFactor, double alpha, double stretchradius) {
+	Graph RHGGenerator::generate(count n, double alpha, double stretchradius) {
 		double R = stretchradius*HyperbolicSpace::hyperbolicAreaToRadius(n);
 		assert(R > 0);
 		vector<double> angles(n);
@@ -64,17 +63,17 @@ namespace NetworKit {
 		}
 		timer.stop();
 		INFO("Generated Points, took ", timer.elapsedMilliseconds(), " milliseconds.");
-		return generate(anglecopy, radiicopy, R*distanceFactor);
+		return generate(anglecopy, radiicopy, R);
 	}
 
-	Graph RHGGenerator::generate(const vector<double> &angles, const vector<double> &radii, double thresholdDistance) {
+	Graph RHGGenerator::generate(const vector<double> &angles, const vector<double> &radii, double R) {
 		Aux::Timer timer;
 		timer.start();
 		index n = angles.size();
 		assert(radii.size() == n);
 		//1.Generate bandRadius'
 		vector<double> bandRadius;
-		getBandRadius(n, bandRadius, thresholdDistance);
+		getBandRadius(n, bandRadius, R);
 		//2. Initialize empty bands
 		vector<vector<Point2D<double>>> bands(bandRadius.size() - 1);
 		//3. Put points to bands
@@ -89,11 +88,11 @@ namespace NetworKit {
 		//the bands are already sorted since we sorted angle&radii before
 		timer.stop();
 		INFO("Filled bands, took ", timer.elapsedMilliseconds(), " milliseconds.");
-		return generate(angles, radii, bands, bandRadius, thresholdDistance);
+		return generate(angles, radii, bands, bandRadius, R);
 	}
 
 	Graph RHGGenerator::generate(const vector<double> &angles, const vector<double> &radii, const vector<vector<Point2D<double>>> &bands, const vector<double> &bandRadius,
-		double thresholdDistance) {
+		double R) {
 
 			const count n = angles.size();
 			const count bandCount = bands.size();
@@ -134,14 +133,14 @@ namespace NetworKit {
 					for(index j = 0; j < bands.size(); j++){
 						if(directSwap || bandRadius[j+1] > radii[i]){
 							double minTheta, maxTheta;
-							std::tie (minTheta, maxTheta) = getMinMaxTheta(angles[i], radii[i], bandRadius[j], thresholdDistance);
+							std::tie (minTheta, maxTheta) = getMinMaxTheta(angles[i], radii[i], bandRadius[j], R);
 							//minTheta = 0;
 							//maxTheta = 2*M_PI;
-							vector<Point2D<double>> slab;
-							getPointsWithinAngles(minTheta, maxTheta, bands[j], bandAngles[j], slab);
+							vector<Point2D<double>> slab = getPointsWithinAngles(minTheta, maxTheta, bands[j], bandAngles[j]);
+
 							const count sSize = slab.size();
 							for(index w = 0; w < sSize; w++){
-								if(getHyperbolicDistance(pointV, slab[w]) <= thresholdDistance){
+								if(getHyperbolicDistance(pointV, slab[w]) <= R){
 									if(slab[w].getIndice() != i){
 										near.push_back(slab[w].getIndice());
 									}

@@ -46,7 +46,7 @@ namespace NetworKit {
 		* @param[in] stretchradius Stretching the hyperbolic disk results in thinner graphs, default=1
 		* @return Graph to be generated according to parameters
 		*/
-		Graph generate(count n, double distanceFactor=1, double alpha=1, double stretchradius = 1);
+		Graph generate(count n, double alpha=1, double stretchradius = 1);
 
 		/**
 		* @return Graph to be generated according to parameters specified in constructor.
@@ -67,7 +67,6 @@ namespace NetworKit {
 		*/
 		count nodeCount;
 		double stretch;
-		double factor;
 		double alpha;
 
 		static const bool directSwap = false;//deactivated for now, since it caused missing edges
@@ -126,13 +125,15 @@ namespace NetworKit {
 		  return std::make_tuple(minTheta, maxTheta);
 		}
 
-		void getPointsWithinAngles(double minTheta, double maxTheta, const vector<Point2D<double>> &band, vector<double> &bandAngles, vector<Point2D<double>> &slab){
+		vector<Point2D<double>> getPointsWithinAngles(double minTheta, double maxTheta, const vector<Point2D<double>> &band, vector<double> &bandAngles){
 			/**
 			Returns the list of points, w, that lies within minTheta and maxTheta
 			in the supplied band(That area is called as slab)
 			*/
 			//TODO: There should be a better way to write the whole thing. Find it.
 			//TODO: This can be done faster. Instead of returning the copying to slab array, just return the indexes and iterate over the band array
+
+			vector<Point2D<double>> slab;
 
 			std::vector<double>::iterator low;
 			std::vector<double>::iterator high;
@@ -147,7 +148,6 @@ namespace NetworKit {
 				std::vector<Point2D<double>>::const_iterator last = band.begin() + (high - bandAngles.begin());
 				//Q: Does this operation increases the complexity ? It is linear in times of high - low
 				slab.insert(slab.end(), first, last);
-				return;
 			}
 			//Case 2: We have 'forward' overlap at 2pi, that is maxTheta > 2pi
 			else if (maxTheta > 2*M_PI){
@@ -165,8 +165,6 @@ namespace NetworKit {
 				std::vector<Point2D<double>>::const_iterator first2 = band.begin() + (low - bandAngles.begin());
 				std::vector<Point2D<double>>::const_iterator last2 = band.begin() + (high - bandAngles.begin());
 				slab.insert(slab.end(), first2, last2);
-
-				return;
 			}
 			//Case 3: We have 'backward' overlap at 2pi, that is minTheta < 0
 			else if (minTheta < 0){
@@ -183,8 +181,8 @@ namespace NetworKit {
 				std::vector<Point2D<double>>::const_iterator first2 = band.begin() + (low - bandAngles.begin());
 				std::vector<Point2D<double>>::const_iterator last2 = band.begin() + (high - bandAngles.begin());
 				slab.insert(slab.end(), first2, last2);
-				return;
 			}
+			return slab;
 		}
 
 
