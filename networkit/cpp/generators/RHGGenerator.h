@@ -23,10 +23,11 @@ namespace NetworKit {
 	typedef index node; // node indices are 0-based
 
 	class RHGGenerator: public NetworKit::StaticGraphGenerator {
+		friend class DynamicHyperbolicGenerator;
 	public:
 
 
-		RHGGenerator(count n, double avgDegree=6, double plexp=3);
+		RHGGenerator(count n=10000, double avgDegree=6, double plexp=3);
 
 		Graph generate(const vector<double> &angles, const vector<double> &radii, const vector<vector<Point2D<double>>> &bands, const vector<double> &bandRadius, double thresholdDistance);
 
@@ -37,16 +38,7 @@ namespace NetworKit {
 		* @param[in] thresholdDistance Edges are added for nodes closer to each other than this threshold
 		* @return Graph to be generated according to parameters
 		*/
-		Graph generate(const vector<double> &angles, const vector<double> &radii, double thresholdDistance);
-
-		/**
-		* @param[in] n Number of nodes
-		* @param[in] factor Size of neighborhood radius. If factor=1, radius = R
-		* @param[in] alpha Dispersion parameter, default=1
-		* @param[in] stretchradius Stretching the hyperbolic disk results in thinner graphs, default=1
-		* @return Graph to be generated according to parameters
-		*/
-		Graph generate(count n, double alpha=1, double stretchradius = 1);
+		Graph generate(const vector<double> &angles, const vector<double> &radii, double R);
 
 		/**
 		* @return Graph to be generated according to parameters specified in constructor.
@@ -61,12 +53,42 @@ namespace NetworKit {
 			return result;
 		}
 
+		/* Modified this method so that it uses native rep. of hyperbolic unit disk instead of Poincare */
+		static void fillPoints(vector<double> &angles, vector<double> &radii, double R, double alpha) {
+			uint64_t n = radii.size();
+			assert(angles.size() == n);
+			double minPhi = 0;
+			double maxPhi = 2*M_PI;
+			double minR = 0;
+			double maxR = R;
+
+			double mincdf = cosh(alpha*minR);
+			double maxcdf = cosh(alpha*maxR);
+			std::uniform_real_distribution<double> phidist{minPhi, maxPhi};
+			std::uniform_real_distribution<double> rdist{mincdf, maxcdf};
+			//do not transform to Poincare
+			double r = maxR;
+
+			#pragma omp parallel for
+			for (uint64_t i = 0; i < n; i++) {
+				angles[i] = phidist(Aux::Random::getURNG());
+
+				double random = rdist(Aux::Random::getURNG());
+				double radius = (acosh(random)/alpha);
+				//assert(radius < maxR);
+				radii[i] = radius;
+				assert(radii[i] <= r);
+				if (radii[i] == r) radii[i] = std::nextafter(radii[i], 0);
+				assert(radii[i] < r);
+			}
+		}
+
 	private:
 		/**
 		* graph parameters
 		*/
 		count nodeCount;
-		double stretch;
+		double R;
 		double alpha;
 
 		static const bool directSwap = false;//deactivated for now, since it caused missing edges
@@ -77,10 +99,31 @@ namespace NetworKit {
 		vector<Aux::Timer> threadtimers;
 
 		/**
+		* @param[in] n Number of nodes
+		* @param[in] alpha Dispersion parameter
+		* @param[in] R radius of hyperbolic disk
+		* @return Graph to be generated according to parameters
+		*/
+		Graph generate(count n, double alpha, double R);
+
+		/**
 		* helper methods
 		*/
 
-		vector<double> getBandRadius(int n, double R, double seriesRatio = 0.9) {
+		static vector<vector<double> > getBandAngles(const vector<vector<Point2D<double>>> &bands) {
+			vector<vector<double>> bandAngles(bands.size());
+			#pragma omp parallel for
+			for(index i=0; i < bands.size(); i++){
+				const count currentBandSize = bands[i].size();
+				bandAngles[i].resize(currentBandSize);
+				for(index j=0; j < currentBandSize; j++) {
+					bandAngles[i][j] = bands[i][j].getX();
+				}
+			}
+			return bandAngles;
+		}
+
+		static vector<double> getBandRadii(int n, double R, double seriesRatio = 0.9) {
 			/*
 			* We assume band differences form a geometric series.
 			* Thus, there is a constant ratio(r) between band length differences
@@ -99,7 +142,7 @@ namespace NetworKit {
 			return bandRadius;
 		}
 
-		std::tuple<double, double> getMinMaxTheta(double angle, double radius, double cLow, double thresholdDistance){
+		static std::tuple<double, double> getMinMaxTheta(double angle, double radius, double cLow, double thresholdDistance) {
 		  /*
 			  Calculates the angles that are enclosing the intersection of the
 			  hyperbolic disk that is around point v and the bands.
@@ -128,13 +171,14 @@ namespace NetworKit {
 		  return std::make_tuple(minTheta, maxTheta);
 		}
 
-		vector<Point2D<double>> getPointsWithinAngles(double minTheta, double maxTheta, const vector<Point2D<double>> &band, vector<double> &bandAngles){
+		static vector<Point2D<double>> getPointsWithinAngles(double minTheta, double maxTheta, const vector<Point2D<double>> &band, vector<double> &bandAngles){
 			/**
 			Returns the list of points, w, that lies within minTheta and maxTheta
 			in the supplied band(That area is called as slab)
 			*/
 			//TODO: There should be a better way to write the whole thing. Find it.
 			//TODO: This can be done faster. Instead of returning the copying to slab array, just return the indexes and iterate over the band array
+			assert(band.size() == bandAngles.size());
 
 			vector<Point2D<double>> slab;
 
@@ -189,7 +233,7 @@ namespace NetworKit {
 		}
 
 
-		double getHyperbolicDistance(Point2D<double> u, Point2D<double> v) {
+		static double getHyperbolicDistance(Point2D<double> u, Point2D<double> v) {
 			/* Returns the hyperbolic distance between points u and v
 			* 2010 paper, eqn: 5
 			*/
@@ -198,36 +242,7 @@ namespace NetworKit {
 			return distance;
 		}
 
-		/* Modified this method so that it uses native rep. of hyperbolic unit disk instead of Poincare */
-		void fillPoints(vector<double> &angles, vector<double> &radii, double stretch, double alpha) {
-			uint64_t n = radii.size();
-			double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(n);
-			assert(angles.size() == n);
-			double minPhi = 0;
-			double maxPhi = 2*M_PI;
-			double minR = 0;
-			double maxR = R;
 
-			double mincdf = cosh(alpha*minR);
-			double maxcdf = cosh(alpha*maxR);
-			std::uniform_real_distribution<double> phidist{minPhi, maxPhi};
-			std::uniform_real_distribution<double> rdist{mincdf, maxcdf};
-			//do not transform to Poincare
-			double r = maxR;
-
-			#pragma omp parallel for
-			for (uint64_t i = 0; i < n; i++) {
-				angles[i] = phidist(Aux::Random::getURNG());
-
-				double random = rdist(Aux::Random::getURNG());
-				double radius = (acosh(random)/alpha);
-				//assert(radius < maxR);
-				radii[i] = radius;
-				assert(radii[i] <= r);
-				if (radii[i] == r) radii[i] = std::nextafter(radii[i], 0);
-				assert(radii[i] < r);
-			}
-		}
 
 	};
 }
