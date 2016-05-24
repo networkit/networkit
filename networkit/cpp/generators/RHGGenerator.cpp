@@ -72,8 +72,7 @@ namespace NetworKit {
 		index n = angles.size();
 		assert(radii.size() == n);
 		//1.Generate bandRadius'
-		vector<double> bandRadius;
-		getBandRadius(n, bandRadius, R);
+		vector<double> bandRadius = getBandRadius(n, R);
 		//2. Initialize empty bands
 		vector<vector<Point2D<double>>> bands(bandRadius.size() - 1);
 		//3. Put points to bands
