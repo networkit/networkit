@@ -39,29 +39,14 @@ namespace NetworKit {
 		timer.start();
 		//sample points randomly
 		fillPoints(angles, radii, R, alpha);
-		vector<index> permutation(n);
 
-		#pragma omp parallel for
-		for (index j = 0; j < n; j++) {
-			permutation[j] = j;
-		}
-
-		Aux::Parallel::sort(permutation.begin(), permutation.end(), [&angles,&radii](index i, index j){return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);});
-
-		vector<double> anglecopy(n);
-		vector<double> radiicopy(n);
-
-		#pragma omp parallel for
-		for (index j = 0; j < n; j++) {
-			anglecopy[j] = angles[permutation[j]];
-			radiicopy[j] = radii[permutation[j]];
-		}
 		timer.stop();
 		INFO("Generated Points, took ", timer.elapsedMilliseconds(), " milliseconds.");
-		return generate(anglecopy, radiicopy, R);
+		return generate(angles, radii, R);
 	}
 
 	Graph RHGGenerator::generate(const vector<double> &angles, const vector<double> &radii, double R) {
+		if (!std::is_sorted(angles.cbegin(), angles.cend())) throw std::runtime_error("Angles must be sorted.");
 		Aux::Timer timer;
 		timer.start();
 		index n = angles.size();
@@ -93,6 +78,7 @@ namespace NetworKit {
 
 			const count n = angles.size();
 			const count bandCount = bands.size();
+			const double coshR = cosh(R);
 			assert(radii.size() == n);
 
 			Aux::Timer bandTimer;
@@ -123,6 +109,8 @@ namespace NetworKit {
 				threadtimers[id].start();
 				#pragma omp for schedule(guided) nowait
 				for (index i = 0; i < n; i++) {
+					const double coshr = cosh(radii[i]);
+					const double sinhr = sinh(radii[i]);
 					count expectedDegree = (4/M_PI)*n*exp(-(radii[i])/2);
 					vector<index> near;
 					near.reserve(expectedDegree*1.1);
@@ -137,8 +125,9 @@ namespace NetworKit {
 
 							const count sSize = neighborCandidates.size();
 							for(index w = 0; w < sSize; w++){
-								if(getHyperbolicDistance(pointV, neighborCandidates[w]) <= R){
-									if(neighborCandidates[w].getIndex() != i){
+								double deltaPhi = M_PI - abs(M_PI-abs(angles[i] - neighborCandidates[w].getX()));
+								if (coshr*cosh(neighborCandidates[w].getY())-sinhr*sinh(neighborCandidates[w].getY())*cos(deltaPhi) <= coshR) {
+									if (neighborCandidates[w].getIndex() != i){
 										near.push_back(neighborCandidates[w].getIndex());
 									}
 								}

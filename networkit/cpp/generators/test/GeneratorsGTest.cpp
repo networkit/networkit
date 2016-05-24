@@ -229,10 +229,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	const count n = 1000;
 	const double k = 6;
 	const double alpha = 1;
-	const double exp = 2*alpha+1;
-	const double T = 0;
-	const double R = HyperbolicSpace::getTargetRadius(n, n*k/2, alpha, T);
-	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
+	const double R = HyperbolicSpace::getTargetRadius(n, n*k/2, alpha);
 
 	double movedShare = 1;
 	double moveDistance = 0.1;
@@ -240,12 +237,11 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	//set up initial node positions
 	vector<double> angles(n, -1);
 	vector<double> radii(n, -1);
-	double stretch = R / HyperbolicSpace::hyperbolicAreaToRadius(n);
-	HyperbolicSpace::fillPoints(angles, radii, stretch, alpha);
-	DynamicHyperbolicGenerator dynGen(angles, radii, k, exp, T, movedShare, moveDistance);
+	RHGGenerator::fillPoints(angles, radii, R, alpha);
+	DynamicHyperbolicGenerator dynGen(angles, radii, R, alpha, movedShare, moveDistance);
 
 	//generate starting graph
-	Graph G = HyperbolicGenerator().generate(angles, radii, r, R);
+	Graph G = RHGGenerator().generate(angles, radii, R);
 	count initialEdgeCount = G.numberOfEdges();
 	count expected = n*HyperbolicSpace::getExpectedDegree(n, alpha, R)*0.5;
 	EXPECT_NEAR(initialEdgeCount, expected, expected/5);
@@ -271,7 +267,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	//update moved nodes
 	angles = getAngles(dynGen);
 	radii = getRadii(dynGen);
-	Graph comparison = HyperbolicGenerator().generate(angles, radii, r, R);
+	Graph comparison = RHGGenerator().generate(angles, radii, R);
 	EXPECT_EQ(G.numberOfEdges(), comparison.numberOfEdges());
 
 	//heuristic criterion: Number of edges may change, but should not change much
@@ -287,7 +283,6 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
 
 	const double k = 6;
 	const double alpha = 1;
-	const double exp = 2*alpha+1;
 	const double T = 0;
 	const double R = HyperbolicSpace::getTargetRadius(n, n*k/2, alpha, T);
 	double stretch = R / HyperbolicSpace::hyperbolicAreaToRadius(n);
@@ -299,7 +294,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
 
 	HyperbolicSpace::fillPoints(angles, radii, stretch, alpha);
 
-	DynamicHyperbolicGenerator dynGen(angles, radii, k, exp, T, movedShare, moveDistance);
+	DynamicHyperbolicGenerator dynGen(angles, radii, R, alpha, movedShare, moveDistance);
 	Graph G = dynGen.getGraph();
 
 	GraphUpdater gu(G);
@@ -317,7 +312,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
 		gu.update(stream);
 		G.initCoordinates();
 
-		auto coords = dynGen.getHyperbolicCoordinates();
+		auto coords = dynGen.getCoordinates();
 		for (index j = 0; j < coords.size(); j++) {
 			G.setCoordinate(j, coords[j]);
 		}
@@ -930,8 +925,16 @@ TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {
 }
 
 TEST_F(GeneratorsGTest, testRHGGenerator) {
-	Graph G = RHGGenerator(100000, 4, 6.6).generate();
-	EXPECT_TRUE(G.checkConsistency());
+	const count runs = 10;
+	const count n = 20000;
+	for (index i = 0; i < runs; i++) {
+		const double k = Aux::Random::real(1,100);
+		Graph G = RHGGenerator(n, k, 6.6).generate();
+		EXPECT_TRUE(G.checkConsistency());
+		count edges = G.numberOfEdges();
+		count expected = (n*k)/2;
+		EXPECT_NEAR(edges, expected, expected/5);
+	}
 }
 
 TEST_F(GeneratorsGTest, tryHyperbolicHighTemperatureGraphs) {

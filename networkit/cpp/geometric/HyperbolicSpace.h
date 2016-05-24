@@ -62,6 +62,8 @@ public:
 	 */
 	static double poincareMetric(Point2D<double> a, Point2D<double> b);
 
+	static double nativeHyperbolicDistance(double phi_a, double r_a, double phi_b, double r_b);
+
 	/**
 	 * @param phi angular coordinate of point
 	 * @param r radial coordinate of point

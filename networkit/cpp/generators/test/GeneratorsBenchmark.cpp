@@ -235,10 +235,9 @@ TEST_F(GeneratorsBenchmark, benchmarkDynamicHyperbolicGeneratorOnNodeMovement) {
 	const count nSteps = 100;
 	const double k = 6;
 	const double exp = 3;
-	const double T = 0;
 	const double moveEachStep = 0.5;
 	const double moveDistance = 0.02;
-	DynamicHyperbolicGenerator dyngen(n, k, exp, T, moveEachStep, moveDistance);
+	DynamicHyperbolicGenerator dyngen(n, k, exp, moveEachStep, moveDistance);
 	dyngen.generate(nSteps);
 }
 
