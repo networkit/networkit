@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "../auxiliary/Log.h"
+#include "../auxiliary/Parallel.h"
 
 using std::abs;
 using std::max;
@@ -81,6 +82,8 @@ namespace NetworKit {
 				if (radii[i] == r) radii[i] = std::nextafter(radii[i], 0);
 				assert(radii[i] < r);
 			}
+
+			Aux::Parallel::sort(angles.begin(), angles.end());
 		}
 
 	private:
@@ -194,6 +197,7 @@ namespace NetworKit {
 				std::vector<Point2D<double>>::const_iterator first = band.begin() + (low - bandAngles.begin());
 				std::vector<Point2D<double>>::const_iterator last = band.begin() + (high - bandAngles.begin());
 				//Q: Does this operation increases the complexity ? It is linear in times of high - low
+				//Does not increase the complexity, since we have to check these points anyway
 				slab.insert(slab.end(), first, last);
 			}
 			//Case 2: We have 'forward' overlap at 2pi, that is maxTheta > 2pi
@@ -237,8 +241,8 @@ namespace NetworKit {
 			/* Returns the hyperbolic distance between points u and v
 			* 2010 paper, eqn: 5
 			*/
-			double deltaTheta = M_PI - abs(M_PI-abs(u.getX() - v.getX()));
-			double distance = acosh(cosh(u.getY())*cosh(v.getY()) - sinh(u.getY())*sinh(v.getY())*cos(deltaTheta));
+			double deltaPhi = M_PI - abs(M_PI-abs(u.getX() - v.getX()));
+			double distance = acosh(cosh(u.getY())*cosh(v.getY()) - sinh(u.getY())*sinh(v.getY())*cos(deltaPhi));
 			return distance;
 		}
 

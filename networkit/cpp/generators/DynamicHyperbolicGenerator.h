@@ -32,7 +32,7 @@ public:
 	 * @param moveDistance base value for the node movements
 	 */
 
-	DynamicHyperbolicGenerator(count n = 1000, double avgDegree=6, double exp=3, double T=0, double moveEachStep = 0, double moveDistance = 0);
+	DynamicHyperbolicGenerator(count n = 10, double avgDegree=6, double exp=3, double moveEachStep = 0, double moveDistance = 0);
 
 	/**
 	 * Initialize a dynamic hyperbolic generator with given initial node positions in polar coordinates
@@ -47,7 +47,7 @@ public:
 	 * @param factorGrowth increment added to the value of thresholdFactor at each step, should be non-negative
 	 * @param moveDistance base value for the node movements
 	 */
-	DynamicHyperbolicGenerator(std::vector<double> &angles, std::vector<double> &radii,  double avgDegree=6, double exp=3, double T=0, double moveEachStep = 0, double moveDistance = 0);
+	DynamicHyperbolicGenerator(std::vector<double> &angles, std::vector<double> &radii,  double R, double alpha, double moveEachStep = 0, double moveDistance = 0);
 
 	/**
 	 * Default constructor
@@ -70,22 +70,16 @@ public:
 	Graph getGraph() const;
 
 	/**
-	 * Get coordinates within Poincaré disk
-	 * @return vector of 2D-Points in Cartesian coordinates
-	 */
-	std::vector<Point<float> > getCoordinates() const;
-
-	/**
 	 * Get coordinates in native representation
 	 * @return vector of 2D-Points in Cartesian coordinates
 	 */
-	std::vector<Point<float> > getHyperbolicCoordinates() const;
+	std::vector<Point<float> > getCoordinates() const;
 
 private:
 	/**
 	 * Generate initial node positions and fill the quadtree with them
 	 */
-	void initializeQuadTree();
+	void initializePoints();
 
 	/**
 	 * Generate initial movement vectors for all points
@@ -93,11 +87,11 @@ private:
 	void initializeMovement();
 
 	/**
-	 * @return current height of the quadtree. If balanced, should be about ceil(\log_4(n/capacity))
+	 * Generate initial movement vectors for all points
 	 */
-	count quadTreeHeight() {
-		return quad.height();
-	}
+	void initializeBands();
+
+	vector<index> getNeighborsInBands(index i, bool bothDirections=true);
 
 	/**
 	 * Execute node movement part of time step
@@ -113,17 +107,18 @@ private:
 	 */
 	void moveNode(index node);
 
-	count nodes;
+	count nodeCount;
 	double alpha;
-	double T;
 	double moveEachStep;
 	double moveDistance;
-	Quadtree<index> quad;
 	vector<double> angles;
 	vector<double> radii;
 	vector<double> angularMovement;
 	vector<double> radialMovement;
-	double R, r;
+	vector<double> bandRadii;
+	vector<vector<Point2D<double>>> bands;
+	vector<vector<double> > bandAngles;
+	double R;
 	bool initialized;
 };
 

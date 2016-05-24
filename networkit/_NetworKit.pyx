@@ -6285,17 +6285,16 @@ cdef class DynamicPubWebGenerator:
 
 cdef extern from "cpp/generators/DynamicHyperbolicGenerator.h":
 	cdef cppclass _DynamicHyperbolicGenerator "NetworKit::DynamicHyperbolicGenerator":
-		_DynamicHyperbolicGenerator(count numNodes, double avgDegree, double gamma, double T, double moveEachStep, double moveDistance) except +
+		_DynamicHyperbolicGenerator(count numNodes, double avgDegree, double gamma, double moveEachStep, double moveDistance) except +
 		vector[_GraphEvent] generate(count nSteps) except +
 		_Graph getGraph() except +
 		vector[Point[float]] getCoordinates() except +
-		vector[Point[float]] getHyperbolicCoordinates() except +
 
 
 cdef class DynamicHyperbolicGenerator:
 	cdef _DynamicHyperbolicGenerator* _this
 
-	def __cinit__(self, numNodes, avgDegree, gamma, T, moveEachStep, moveDistance):
+	def __cinit__(self, numNodes, avgDegree = 6, gamma = 3, moveEachStep = 1, moveDistance = 0.1):
 		""" Dynamic graph generator according to the hyperbolic unit disk model.
 
 		Parameters
@@ -6306,8 +6305,6 @@ cdef class DynamicHyperbolicGenerator:
 			average degree of the resulting graph
 		gamma : double
 			power-law exponent of the resulting graph
-		T : double
-			temperature, selecting a graph family on the continuum between hyperbolic unit disk graphs and Erdos-Renyi graphs
 		moveFraction : double
 			fraction of nodes to be moved in each time step. The nodes are chosen randomly each step
 		moveDistance: double
@@ -6315,7 +6312,7 @@ cdef class DynamicHyperbolicGenerator:
 		"""
 		if gamma <= 2:
 				raise ValueError("Exponent of power-law degree distribution must be > 2")
-		self._this = new _DynamicHyperbolicGenerator(numNodes, avgDegree = 6, gamma = 3, T = 0, moveEachStep = 1, moveDistance = 0.1)
+		self._this = new _DynamicHyperbolicGenerator(numNodes, avgDegree, gamma, moveEachStep, moveDistance)
 
 	def generate(self, nSteps):
 		""" Generate event stream.
@@ -6333,10 +6330,6 @@ cdef class DynamicHyperbolicGenerator:
 	def getCoordinates(self):
 		""" Get coordinates in the Poincare disk"""
 		return [(p[0], p[1]) for p in self._this.getCoordinates()]
-
-	def getHyperbolicCoordinates(self):
-		""" Get coordinates in the hyperbolic disk"""
-		return [(p[0], p[1]) for p in self._this.getHyperbolicCoordinates()]
 
 
 

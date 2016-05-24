@@ -40,6 +40,15 @@ double HyperbolicSpace::poincareMetric(Point2D<double> a, Point2D<double> b) {
 	return result;
 }
 
+double HyperbolicSpace::nativeHyperbolicDistance(double phi_a, double r_a, double phi_b, double r_b) {
+	/* Returns the hyperbolic distance between points u and v
+	* 2010 paper, eqn: 5
+	*/
+	double deltaPhi = M_PI - abs(M_PI-abs(phi_a - phi_b));
+	double distance = acosh(cosh(r_a)*cosh(r_b) - sinh(r_a)*sinh(r_b)*cos(deltaPhi));
+	return distance;
+}
+
 void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, double stretch, double alpha) {
 	uint64_t n = radii.size();
 	double R = stretch*hyperbolicAreaToRadius(n);

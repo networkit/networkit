@@ -71,7 +71,7 @@ public:
 
 	T getX() const;
 	T getY() const;
-	index getIndice() const;
+	index getIndex() const;
 
 	T& operator[](const index i);
 };
@@ -148,7 +148,7 @@ inline T Point2D<T>::getY() const {
 }
 
 template<class T>
-inline index Point2D<T>::getIndice() const {
+inline index Point2D<T>::getIndex() const {
 	return indice;
 }
 
