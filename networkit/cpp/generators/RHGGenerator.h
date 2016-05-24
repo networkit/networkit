@@ -81,20 +81,20 @@ namespace NetworKit {
 		* helper methods
 		*/
 
-		void getBandRadius(int n, vector<double> &bandRadius, double thresholdDistance, double seriesRatio = 0.5) {
+		void getBandRadius(int n, vector<double> &bandRadius, double R, double seriesRatio = 0.5) {
 			/*
 			* We assume band differences form a geometric series.
 			* Thus, there is a constant ratio(r) between band length differences
-			* i.e c2-c1/c1-c0 = c3-c2/c2-c1 = r
+			* i.e (c2-c1)/(c1-c0) = (c3-c2)/(c2-c1) = r
 			*/
 			bandRadius.push_back(0);
-			double a = thresholdDistance*(1-seriesRatio)/(1-pow(seriesRatio, log(n)));
+			double a = R*(1-seriesRatio)/(1-pow(seriesRatio, log(n)));
 
 			for (int i = 1; i < ceil(log(n)); i++){
 				double c_i = a*((1-pow(seriesRatio, i))/(1-seriesRatio));
 				bandRadius.push_back(c_i);
 			}
-			bandRadius.push_back(thresholdDistance);
+			bandRadius.push_back(R);
 		}
 
 		std::tuple<double, double> getMinMaxTheta(double angle, double radius, double cLow, double thresholdDistance){
