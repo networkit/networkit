@@ -100,13 +100,6 @@ private:
 	}
 
 	/**
-	 * Execute factor growth part of time step
-	 *
-	 * @param result vector to store GraphEvents in
-	 */
-	void getEventsFromFactorGrowth(vector<GraphEvent> &result);
-
-	/**
 	 * Execute node movement part of time step
 	 *
 	 * @param result vector to store GraphEvents in

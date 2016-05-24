@@ -27,6 +27,7 @@ DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(count n, double avgDegree
 	initializeQuadTree();
 	initializeMovement();
 }
+
 DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(std::vector<double> &angles, std::vector<double> &radii, double avgDegree, double exp, double T, double moveEachStep, double moveDistance) {
 	this->angles = angles;
 	this->radii = radii;

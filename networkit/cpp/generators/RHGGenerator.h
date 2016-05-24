@@ -80,7 +80,7 @@ namespace NetworKit {
 		* helper methods
 		*/
 
-		vector<double> getBandRadius(int n, double R, double seriesRatio = 0.5) {
+		vector<double> getBandRadius(int n, double R, double seriesRatio = 0.9) {
 			/*
 			* We assume band differences form a geometric series.
 			* Thus, there is a constant ratio(r) between band length differences
@@ -89,8 +89,9 @@ namespace NetworKit {
 			vector<double> bandRadius;
 			bandRadius.push_back(0);
 			double a = R*(1-seriesRatio)/(1-pow(seriesRatio, log(n)));
+			const double logn = log(n);
 
-			for (int i = 1; i < ceil(log(n)); i++){
+			for (int i = 1; i < logn; i++){
 				double c_i = a*((1-pow(seriesRatio, i))/(1-seriesRatio));
 				bandRadius.push_back(c_i);
 			}

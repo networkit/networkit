@@ -48,8 +48,6 @@ namespace NetworKit {
 		for (index j = 0; j < n; j++) {
 			permutation[j] = j;
 		}
-		//index p = 0;
-		//std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
 
 		Aux::Parallel::sort(permutation.begin(), permutation.end(), [&angles,&radii](index i, index j){return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);});
 
@@ -76,9 +74,9 @@ namespace NetworKit {
 		//2. Initialize empty bands
 		vector<vector<Point2D<double>>> bands(bandRadius.size() - 1);
 		//3. Put points to bands
-		for(index i = 0; i < n; i++){
-			for(index j = 0; j < bands.size(); j++){
-				if(radii[i] >= bandRadius[j] && radii[i] <= bandRadius[j+1]){
+		for (index i = 0; i < n; i++){
+			for (index j = 0; j < bands.size(); j++){
+				if (radii[i] >= bandRadius[j] && radii[i] <= bandRadius[j+1]){
 					bands[j].push_back(Point2D<double>(angles[i], radii[i], i));
 						break;
 				}
@@ -86,6 +84,9 @@ namespace NetworKit {
 		}
 		//the bands are already sorted since we sorted angle&radii before
 		timer.stop();
+		for (index b = 0; b < bands.size(); b++) {
+			INFO("Band ", b, " contains ", bands[b].size(), " points.");
+		}
 		INFO("Filled bands, took ", timer.elapsedMilliseconds(), " milliseconds.");
 		return generate(angles, radii, bands, bandRadius, R);
 	}
