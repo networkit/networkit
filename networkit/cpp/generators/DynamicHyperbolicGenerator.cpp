@@ -198,9 +198,9 @@ void DynamicHyperbolicGenerator::moveNode(index toMove) {
 vector<index> DynamicHyperbolicGenerator::getNeighborsInBands(index i, bool bothDirections) {
 	const double r = radii[i];
 	const double phi = angles[i];
-	const double coshr = cosh(radii[i]);
-	const double sinhr = sinh(radii[i]);
-	const double coshR = cosh(R);
+	//const double coshr = cosh(radii[i]);
+	//const double sinhr = sinh(radii[i]);
+	//const double coshR = cosh(R);
 	assert(bands.size() == bandAngles.size());
 	assert(bands.size() == bandRadii.size() -1);
 	count expectedDegree = (4/M_PI)*nodeCount*exp(-(radii[i])/2);

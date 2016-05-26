@@ -90,7 +90,7 @@ public:
 	 * @param hyperbolicCenter center of the hyperbolic circle, given in cartesian coordinates within the poincare disk
 	 * @param hyperbolicRadius radius of the hyperbolic circle
 	 * @param euclideanCenter point to receive the center of the Euclidean circle, given in cartesian coordinates
-	 * @param euclidenRadius double to receive the radius of the Euclidean circle
+	 * @param euclideanRadius double to receive the radius of the Euclidean circle
 	 */
 	static void getEuclideanCircle(Point2D<double> hyperbolicCenter, double hyperbolicRadius, Point2D<double> &euclideanCenter, double &euclideanRadius);
 	static void getEuclideanCircle(double r_h, double hyperbolicRadius, double &radialCoordOfEuclideanCenter, double &euclideanRadius);
