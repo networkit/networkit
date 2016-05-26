@@ -231,14 +231,21 @@ TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorWithSequentialQuadtree) 
 }
 
 TEST_F(GeneratorsBenchmark, benchmarkDynamicHyperbolicGeneratorOnNodeMovement) {
-	const count n = 10000;
-	const count nSteps = 100;
+	const count runs = 100;
+	const double fractionStep = 0.01;
+	const count stepCount = 100;
+	const count n = 1000000;
 	const double k = 6;
 	const double exp = 3;
-	const double moveEachStep = 0.5;
-	const double moveDistance = 0.02;
-	DynamicHyperbolicGenerator dyngen(n, k, exp, moveEachStep, moveDistance);
-	dyngen.generate(nSteps);
+	const double moveDistance = 0.1;
+
+	for (index i = 0; i < stepCount; i++) {
+		double moveFraction = fractionStep * i;
+		for (index j = 0; j < runs; j++) {
+			DynamicHyperbolicGenerator dyngen(n, k, exp, moveFraction, moveDistance);
+			dyngen.generate(1);
+		}
+	}
 }
 
 TEST_F(GeneratorsBenchmark, benchmarkParallelQuadtreeConstruction) {
