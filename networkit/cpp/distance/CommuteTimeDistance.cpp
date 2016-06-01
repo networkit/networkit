@@ -163,14 +163,14 @@ void CommuteTimeDistance::runParallelApproximation() {
 double CommuteTimeDistance::distance(node u, node v) {
 	if (!hasRun) throw std::runtime_error("Call run method first");
 	if (exactly) {
-		return distances[u][v]; // TODO fix weighted case: volume is the sum of the weights of the edges
+		return sqrt(distances[u][v]* G.numberOfEdges()); // TODO fix weighted case: volume is the sum of the weights of the edges
 	} else {
 		double dist = 0;
 		for (index i = 0; i < k; ++i) {
 			double diff = solutions[i][u] - solutions[i][v];
 			dist += diff * diff;
 		}
-		return dist;
+		return sqrt(dist* G.numberOfEdges());
 	}
 }
 
@@ -190,7 +190,7 @@ double CommuteTimeDistance::runSinglePair(node u, node v) {
 	lamg.solve(rhs, solution);
 	double diff = solution[u] - solution[v];
 	dist = fabs(diff); // TODO: check unweighted, fix weighted case!
-	return dist;
+	return sqrt(dist* G.numberOfEdges());
 }
 
 double CommuteTimeDistance::runSingleSource(node u) {
@@ -218,10 +218,10 @@ double CommuteTimeDistance::runSingleSource(node u) {
 		if (i != u) {
 			double diff = solution[i][u] - solution[i][i];
 			dist = fabs(diff); // TODO: check unweighted, fix weighted case!
-			sum += dist;
+			sum += sqrt(dist);
 		}
 	});
-	return sum;
+	return sum * sqrt(G.numberOfEdges());
 }
 
 }
