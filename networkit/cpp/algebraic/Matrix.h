@@ -11,6 +11,7 @@
 #include "../graph/Graph.h"
 #include "Vector.h"
 #include "SparseAccumulator.h"
+#include "AlgebraicGlobals.h"
 
 namespace NetworKit {
 
@@ -25,6 +26,8 @@ protected:
 	count nRows;
 	count nCols;
 
+	double zero;
+
 public:
 	/** Default constructor */
 	Matrix();
@@ -33,7 +36,7 @@ public:
 	 * Constructs the Matrix with size @a dimension x @a dimension.
 	 * @param dimension Defines how many rows and columns this matrix has.
 	 */
-	Matrix(const count dimension);
+	Matrix(const count dimension, const double zero = 0.0);
 
 
 	/**
@@ -41,30 +44,22 @@ public:
 	 * @param nRows Number of rows.
 	 * @param nCols Number of columns.
 	 */
-	Matrix(const count nRows, const count nCols);
+	Matrix(const count nRows, const count nCols, const double zero = 0.0);
 
 	/**
 	 * Constructs the @a dimension x @a dimension Matrix from the elements at position @a positions with values @values.
 	 * @param dimension Defines how many rows and columns this matrix has.
-	 * @param positions Defines the position (i,j) of each element specified in @a values.
-	 * @param values The values of the matrix elements.
+	 * @param triplets The nonzero elements.
 	 */
-	Matrix(const count dimension, const std::vector<std::pair<index, index>> &positions, const std::vector<double> &values);
+	Matrix(const count dimension, const std::vector<Triplet>& triplets, const double zero = 0.0);
 
 	/**
 	 * Constructs the @a nRows x @a nCols Matrix from the elements at position @a positions with values @values.
 	 * @param nRows Defines how many rows this matrix has.
 	 * @param nCols Defines how many columns this matrix has.
-	 * @param positions Defines the position (i,j) of each element specified in @a values.
-	 * @param values The values of the matrix elements.
+	 * @param triplets The nonzero elements.
 	 */
-	Matrix(const count nRows, const count nCols, const std::vector<std::pair<index, index>> &positions, const std::vector<double> &values);
-
-	/**
-	 * Constructs the Matrix with the rows in @a rows.
-	 * @param rows The rows of the matrix. All rows must have the same dimension.
-	 */
-	Matrix(const std::vector<Vector> &rows);
+	Matrix(const count nRows, const count nCols, const std::vector<Triplet>& triplets, const double zero = 0.0);
 
 	/** Default copy constructor */
 	Matrix(const Matrix &other) = default;
@@ -93,6 +88,13 @@ public:
 	 */
 	inline count numberOfColumns() const {
 		return nCols;
+	}
+
+	/**
+	 * Returns the zero element of the matrix.
+	 */
+	inline double getZero() const {
+		return zero;
 	}
 
 	/**
@@ -201,6 +203,37 @@ public:
 	Matrix transpose() const;
 
 	/**
+	 * Returns the (weighted) adjacency matrix of the (weighted) Graph @a graph.
+	 * @param graph
+	 */
+	static Matrix adjacencyMatrix(const Graph& graph);
+
+	/**
+	 * Creates a diagonal matrix with dimension equal to the dimension of the Vector @a diagonalElements. The values on
+	 * the diagonal are the ones stored in @a diagonalElements (i.e. D(i,i) = diagonalElements[i]).
+	 * @param diagonalElements
+	 */
+	static Matrix diagonalMatrix(const Vector& diagonalElements);
+
+	/**
+	 * Returns the (weighted) incidence matrix of the (weighted) Graph @a graph.
+	 * @param graph
+	 */
+	static Matrix incidenceMatrix(const Graph& graph);
+
+	/**
+	 * Returns the (weighted) Laplacian matrix of the (weighteD) Graph @a graph.
+	 * @param graph
+	 */
+	static Matrix laplacianMatrix(const Graph& graph);
+
+	/**
+	 * Returns the (weighted) normalized Laplacian matrix of the (weighted) Graph @a graph
+	 * @param graph
+	 */
+	static Matrix normalizedLaplacianMatrix(const Graph& graph);
+
+	/**
 	 * Iterate over all non-zero elements of row @a row in the matrix and call handler(index row, index column, double value)
 	 */
 	template<typename L> void forNonZeroElementsInRow(index row, L handle) const;
@@ -214,11 +247,6 @@ public:
 	 * Iterate in parallel over all rows and call handler (lambda closure) on non-zero elements of the matrix.
 	 */
 	template<typename L> void parallelForNonZeroElementsInRowOrder(L handle) const;
-
-	/**
-	 * Iterate in parallel over all rows and call handler (lambda closure) on non-zero elements of the matrix.
-	 */
-	template<typename L> void parallelForNonZeroElementsInRowOrder(L handle);
 };
 
 
@@ -227,7 +255,7 @@ public:
 template<typename L>
 inline void NetworKit::Matrix::forNonZeroElementsInRow(index row, L handle) const {
 	graph.forEdgesOf(row, [&](index j, edgeweight weight){
-		handle(row, j, weight);
+		handle(j, weight);
 	});
 }
 
@@ -249,16 +277,5 @@ inline void NetworKit::Matrix::parallelForNonZeroElementsInRowOrder(L handle) co
 		});
 	}
 }
-
-template<typename L>
-inline void NetworKit::Matrix::parallelForNonZeroElementsInRowOrder(L handle) {
-#pragma omp parallel for
-	for (index i = 0; i < nRows; ++i) {
-		graph.forEdgesOf(i, [&](index j, edgeweight weight){
-			handle(i, j, weight);
-		});
-	}
-}
-
 
 #endif /* MATRIX_H_ */
