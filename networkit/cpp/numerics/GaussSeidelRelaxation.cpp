@@ -36,7 +36,7 @@ Vector GaussSeidelRelaxation::relax(const CSRMatrix &A, const Vector &b, const V
 		}
 
 		iterations++;
-	} while (iterations < maxIterations);
+	} while (iterations < maxIterations && (A*x_new - b).length() / b.length() > tolerance);
 
 	return x_new;
 }
