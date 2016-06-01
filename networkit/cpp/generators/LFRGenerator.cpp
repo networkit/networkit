@@ -184,7 +184,7 @@ NetworKit::Graph NetworKit::LFRGenerator::generateInterClusterGraph(const std::v
 
 
 		count intraRemovalAttempts = 0;
-		count maxIntraRemovelAttempts = n * 10;
+		count maxIntraRemovelAttempts = interG.numberOfEdges() * 10;
 		while (!edgesToRemove.empty()) {
 			index i = Aux::Random::index(edgesToRemove.size());
 			node s1, t1;

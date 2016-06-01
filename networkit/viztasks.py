@@ -24,18 +24,25 @@ def coloringToColorList(G, coloring):
 
 
 def drawGraph(G, **kwargs):
-	""" Draw a graph via networkX. It is possible to pass any optional parameters that networkx.draw(...) takes."""
+	""" Draws a graph via networkX. Passes additional arguments beyond the graph to networkx.draw(...).
+	    By default, node sizes are scaled between 30 and 300 by node degree.
+	"""
 	nxG = nxadapter.nk2nx(G)
-	networkx.draw(nxG,
-				node_size=[s*8 for s in centrality.DegreeCentrality(G).run().scores()],
-				node_color="gray",
-				**kwargs)
+	if not "node_size" in kwargs:
+		kwargs["node_size"] =[30+270*s for s in centrality.DegreeCentrality(G,True).run().scores()],
+	networkx.draw(nxG, **kwargs)
 
 def drawCommunityGraph(G, zeta, **kwargs):
-	""" Draws the community graph of a given graph and partition. Takes the same optional parameters as networkx.draw(...) except node_size."""
+	""" Draws the community graph for a given graph and partition. Passes any additional arguments to networkx.draw(...).
+	    By default, node sizes are scaled between 30 and 500 by community size.
+	"""
 	cg = ParallelPartitionCoarsening(G,zeta)
 	cg.run() # convert communities to nodes
 	graph = cg.getCoarseGraph()
 	comGraph = nxadapter.nk2nx(graph)
-	kwargs["node_size"] = [size*2 for size in list(zeta.subsetSizeMap().values())]
+	if not "node_size" in kwargs:
+		sizes = list(zeta.subsetSizeMap().values())
+		max_size = max(sizes)
+		sizes = [elem/max_size for elem in sizes]
+		kwargs["node_size"] = [30+470*s for s in sizes]
 	networkx.draw(comGraph, **kwargs)
