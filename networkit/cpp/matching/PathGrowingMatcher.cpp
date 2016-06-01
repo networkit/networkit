@@ -123,7 +123,7 @@ void PathGrowingMatcher::run() {
 			weight2 += edgeScores.at(eid);
 		});
 	} else {
-		weight2 = m1.weight(G);
+		weight2 = m2.weight(G);
 	}
 	INFO("weight of first matching: ", weight1);
 	INFO("weight of second matching: ", weight2);
