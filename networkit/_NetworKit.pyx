@@ -8629,8 +8629,80 @@ def sort2(sample):
 	sort(result.begin(),result.end())
 	return result
 
-# stats
 
+cdef extern from "cpp/distance/CommuteTimeDistance.h":
+	cdef cppclass _CommuteTimeDistance "NetworKit::CommuteTimeDistance":
+		_CommuteTimeDistance(_Graph G, double tol) except +
+		void run() nogil except +
+		void runApproximation() except +
+		void runParallelApproximation() except +
+		double distance(node, node) except +
+		double runSinglePair(node, node) except +
+		double runSingleSource(node) except +
+
+
+cdef class CommuteTimeDistance:
+	""" Computes the Euclidean Commute Time Distance between each pair of nodes for an undirected unweighted graph.
+
+	CommuteTimeDistance(G)
+
+	Create CommuteTimeDistance for Graph `G`.
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	tol: double
+	"""
+	cdef _CommuteTimeDistance* _this
+	cdef Graph _G
+
+	def __cinit__(self,  Graph G, double tol = 0.1):
+		self._G = G
+		self._this = new _CommuteTimeDistance(G._this, tol)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		""" This method computes ECTD exactly. """
+		with nogil:
+			self._this.run()
+		return self
+
+	def runApproximation(self):
+		""" Computes approximation of the ECTD. """
+		return self._this.runApproximation()
+
+	def runParallelApproximation(self):
+		""" Computes approximation (in parallel) of the ECTD. """
+		return self._this.runParallelApproximation()
+
+	def distance(self, u, v):
+		"""  Returns the ECTD between node u and node v.
+
+		u : node
+		v : node
+		"""
+		return self._this.distance(u, v)
+
+	def runSinglePair(self, u, v):
+		"""  Returns the ECTD between node u and node v, without preprocessing.
+
+		u : node
+		v : node
+		"""
+		return self._this.runSinglePair(u, v)
+
+	def runSingleSource(self, u):
+		"""  Returns the sum of the ECTDs from u, without preprocessing.
+
+		u : node
+		"""
+		return self._this.runSingleSource(u)
+
+
+# stats
 
 def gini(values):
 	"""
@@ -8646,7 +8718,6 @@ def gini(values):
 
 
 # simulation
-
 cdef extern from "cpp/simulation/EpidemicSimulationSEIR.h":
 	cdef cppclass _EpidemicSimulationSEIR "NetworKit::EpidemicSimulationSEIR" (_Algorithm):
 		_EpidemicSimulationSEIR(_Graph, count, double, count, count, node) except +
@@ -8654,7 +8725,6 @@ cdef extern from "cpp/simulation/EpidemicSimulationSEIR.h":
 
 cdef class EpidemicSimulationSEIR(Algorithm):
 	"""
-
  	Parameters
  	----------
  	G : Graph
@@ -8670,12 +8740,83 @@ cdef class EpidemicSimulationSEIR(Algorithm):
 	zero : node
 		starting node
 	"""
-
 	cdef Graph G
-
 	def __cinit__(self, Graph G, count tMax, double transP=0.5, count eTime=2, count iTime=7, node zero=none):
 		self.G = G
 		self._this = new _EpidemicSimulationSEIR(G._this, tMax, transP, eTime, iTime, zero)
-
 	def getData(self):
 		return pandas.DataFrame((<_EpidemicSimulationSEIR*>(self._this)).getData(), columns=["zero", "time", "state", "count"])
+
+
+
+cdef extern from "cpp/centrality/Spanning.h":
+	cdef cppclass _Spanning "NetworKit::Spanning":
+		_Spanning(_Graph G, double tol) except +
+		void run() nogil except +
+		void runApproximation() except +
+		void runParallelApproximation() except +
+		void runTreeApproximation(count reps) except +
+		void runTreeApproximation2(count reps) except +
+		void runPseudoTreeApproximation(count reps) except +
+		vector[double] scores() except +
+
+cdef class Spanning:
+	""" Computes the Euclidean Commute Time Distance between each pair of nodes for an undirected unweighted graph.
+	Spanning(G)
+	Create Spanning Edge Centrality for Graph `G`.
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	tol: double
+	"""
+	cdef _Spanning* _this
+	cdef Graph _G
+	def __cinit__(self,  Graph G, double tol = 0.1):
+		self._G = G
+		self._this = new _Spanning(G._this, tol)
+	def __dealloc__(self):
+		del self._this
+	def run(self):
+		""" This method computes Spanning Edge Centrality exactly. """
+		with nogil:
+			self._this.run()
+		return self
+	def runApproximation(self):
+		""" Computes approximation of the Spanning Edge Centrality. """
+		return self._this.runApproximation()
+
+	def runParallelApproximation(self):
+		""" Computes approximation (in parallel) of the Spanning Edge Centrality. """
+		return self._this.runParallelApproximation()
+
+	def runTreeApproximation(self, reps):
+		"""  Returns a Spanning Edge Centrality approximation using spanning trees
+
+		reps : number of iterations
+		"""
+		return self._this.runTreeApproximation(reps)
+
+	def runTreeApproximation2(self, reps):
+		"""  Returns a Spanning Edge Centrality approximation using spanning trees.
+
+		reps : number of iterations
+		"""
+		return self._this.runTreeApproximation2(reps)
+
+	def runPseudoTreeApproximation(self, reps):
+		"""  Returns a Spanning Edge Centrality approximation using spanning trees
+
+		reps : number of iterations
+		"""
+		return self._this.runPseudoTreeApproximation(reps)
+
+	def scores(self):
+		""" Get a vector containing the SEC score for each edge in the graph.
+
+		Returns
+		-------
+		vector
+			The SEC scores.
+		"""
+		return self._this.scores()
