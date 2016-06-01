@@ -22,9 +22,32 @@ private:
 	double tolerance;
 
 public:
+	/**
+	 * Constructs a Gauss-Seidel smoother with the given @a tolerance (default: 1e-15).
+	 * @param tolerance
+	 */
 	GaussSeidelRelaxation(double tolerance=1e-15);
 
+	/**
+	 * Utilizes Gauss-Seidel relaxations until the given number of @a maxIterations is reached or the relative residual
+	 * is below the tolerance specified in the constructor. The solver starts with @a initialGuess as intitial guess to
+	 * the solution.
+	 * @param A The matrix.
+	 * @param b The right-hand-side.
+	 * @param initialGuess
+	 * @param maxIterations
+	 * @return The (approximate) solution to the system.
+	 */
 	Vector relax(const CSRMatrix &A, const Vector &b, const Vector &initialGuess, const count maxIterations = std::numeric_limits<count>::max()) const;
+
+	/**
+	 * Utilizes Gauss-Seidel relaxations until the given number of @a maxIterations is reached or the relative residual
+	 * is below the tolerance specified in the constructor.
+	 * @param A The matrix.
+	 * @param b The right-hand-side.
+	 * @param maxIterations
+	 * @return The (approximate) solution to the system.
+	 */
 	Vector relax(const CSRMatrix &A, const Vector &b, const count maxIterations = std::numeric_limits<count>::max()) const;
 
 };
