@@ -16,7 +16,7 @@ LinearSolver::~LinearSolver(){
 }
 
 void LinearSolver::setup(const Graph &graph) {
-	setup(CSRMatrix::graphLaplacian(graph));
+	setup(CSRMatrix::laplacianMatrix(graph));
 }
 
 void LinearSolver::parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results, count maxConvergenceTime, count maxIterations) {
