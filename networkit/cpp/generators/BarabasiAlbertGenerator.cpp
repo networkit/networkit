@@ -145,7 +145,7 @@ Graph BarabasiAlbertGenerator::generateBatagelj() {
 	// for some reason, it seems to be faster with a separate loop when compared to integrating it in the loop above
 	for (index i = 0; i < (k*n); ++i) {
 		if (M[2 * i] != M[2 * i + 1])
-			uniqueEdges.insert( {M[2 * i], M[2 * i + 1]} );
+			uniqueEdges.insert( std::minmax({M[2 * i], M[2 * i + 1]}) );
 	}
 	// add the edges to the graph
 	for (const auto& edge : uniqueEdges) {
