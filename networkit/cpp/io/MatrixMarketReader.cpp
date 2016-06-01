@@ -41,8 +41,7 @@ CSRMatrix MatrixMarketReader::read(std::istream& in) {
 	enum { FIRST_LINE, HEADER, ENTRIES } state = FIRST_LINE;
 
 	count nrows, ncols, nzeroes;
-	std::vector<std::pair<index,index>> positions;
-	std::vector<double> values;
+	std::vector<Triplet> triplets;
 	std::string line;
 	bool weighted = true;
 	bool symmetric = false;
@@ -111,19 +110,17 @@ CSRMatrix MatrixMarketReader::read(std::istream& in) {
 				throw std::runtime_error("invalid index: " + std::to_string(j));
 			}
 
-			positions.push_back(std::make_pair(i,j));
-			values.push_back(val);
+			triplets.push_back({i,j,val});
 
 			if (i != j && symmetric) {
-				positions.push_back(std::make_pair(j,i));
-				values.push_back(val);
+				triplets.push_back({j,i,val});
 			}
 		}
 
 
 	}
 
-	return CSRMatrix(nrows, ncols, positions, values);
+	return CSRMatrix(nrows, ncols, triplets);
 }
 
 }

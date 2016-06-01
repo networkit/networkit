@@ -20,7 +20,7 @@ namespace NetworKit {
 
 CommuteTimeDistance::CommuteTimeDistance(const Graph& G, double tol): Algorithm(), G(G), tol(tol), lamg(1e-5) {
 	// prepare LAMG
-	CSRMatrix matrix = CSRMatrix::graphLaplacian(G);
+	CSRMatrix matrix = CSRMatrix::laplacianMatrix(G);
 	Aux::Timer t;
 	t.start();
 	lamg.setupConnected(matrix);

@@ -7,6 +7,7 @@
 
 #include "Lamg.h"
 
+#include "../../algebraic/MatrixTools.h"
 #include "../../components/ParallelConnectedComponents.h"
 #include "../GaussSeidelRelaxation.h"
 #include "omp.h"
@@ -33,7 +34,7 @@ void Lamg::setupConnected(const CSRMatrix &laplacianMatrix) {
 
 void Lamg::setup(const CSRMatrix &laplacianMatrix) {
 	this->laplacianMatrix = laplacianMatrix;
-	Graph G = CSRMatrix::matrixToGraph(laplacianMatrix);
+	Graph G = MatrixTools::matrixToGraph(laplacianMatrix);
 	ParallelConnectedComponents con(G, false);
 	con.run();
 	numComponents = con.numberOfComponents();
@@ -55,9 +56,7 @@ void Lamg::setup(const CSRMatrix &laplacianMatrix) {
 		for (auto component : con.getPartition().getSubsets()) {
 			components[compIdx] = std::vector<index>(component.begin(), component.end());
 
-			std::vector<std::pair<index,index>> positions;
-			std::vector<double> values;
-
+			std::vector<Triplet> triplets;
 			index idx = 0;
 			for (node u : components[compIdx]) {
 				graph2Components[u] = idx;
@@ -66,11 +65,10 @@ void Lamg::setup(const CSRMatrix &laplacianMatrix) {
 
 			for (node u : components[compIdx]) {
 				G.forNeighborsOf(u, [&](node v, edgeweight w) {
-					positions.push_back(std::make_pair(graph2Components[u], graph2Components[v]));
-					values.push_back(w);
+					triplets.push_back({graph2Components[u], graph2Components[v], w});
 				});
 			}
-			CSRMatrix compMatrix(component.size(), component.size(), positions, values);
+			CSRMatrix compMatrix(component.size(), component.size(), triplets);
 			initialVectors[compIdx] = Vector(component.size());
 			rhsVectors[compIdx] = Vector(component.size());
 			lamgSetup.setup(compMatrix, compHierarchies[compIdx]);

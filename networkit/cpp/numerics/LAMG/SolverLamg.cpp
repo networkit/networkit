@@ -328,8 +328,8 @@ void SolverLamg::minRes(index level, Vector &x, const Vector &r) {
 			}
 		}
 
-		CSRMatrix AE(r.getDimension(), n, ARowIdx, AColumnIdx, ANonZeros, true);
-		CSRMatrix E(r.getDimension(), n, ERowIdx, EColumnIdx, ENonZeros, true);
+		CSRMatrix AE(r.getDimension(), n, ARowIdx, AColumnIdx, ANonZeros, 0.0, true);
+		CSRMatrix E(r.getDimension(), n, ERowIdx, EColumnIdx, ENonZeros, 0.0, true);
 #ifndef NDEBUG
 	Aux::Timer t;
 	t.start();
