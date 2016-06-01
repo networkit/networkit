@@ -12,7 +12,7 @@
 
 #include "gtest/gtest.h"
 
-#include "../../algebraic/GraphMatrix.h"
+#include "../../algebraic/CSRMatrix.h"
 #include "../../algebraic/Vector.h"
 #include "../GaussSeidelRelaxation.h"
 
