@@ -41,10 +41,13 @@ public:
 	 */
 	virtual void run();
 	/**
-	 * Compute approximation by projection.
+	 * Computes approximation by projection.
 	 */
 	void runApproximation();
 
+	/**
+	 * Computes approximation by projection, in parallel.
+	 */
 	void runParallelApproximation();
 	/**
 	 * @return The elapsed time to setup the solver in milliseconds.
@@ -52,19 +55,19 @@ public:
 	uint64_t getSetupTime() const;
 	/**
 	 * Returns the commute time distance between node @a u and node @a v.
-	 * @return commute time distance between the two nodes.
+	 * @return commute time distance between the two nodes. Needs to call run() or runApproximation() first.
 	 */
  	double distance(node u, node v);
 	/**
 	 * Returns the commute time distance between node @a u and node @a v.
-	 This method does not need the initial preprocessing.
+	 * This method does not need the initial preprocessing (no need to call the run() method).
 	 * @return commute time distance between the two nodes.
 	 */
 	double runSinglePair(node u, node v);
 
 	/**
 	 * Returns the the sum of the distances from node @a u.
-	 This method does not need the initial preprocessing.
+	 * This method does not need the initial preprocessing.
 	 * @return commute sum of the distances from the node.
 	 */
 	double runSingleSource(node u);
