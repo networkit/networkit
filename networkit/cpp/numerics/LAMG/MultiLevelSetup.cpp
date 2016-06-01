@@ -33,7 +33,7 @@ MultiLevelSetup::MultiLevelSetup(const Smoother &smoother) : smoother(smoother) 
 }
 
 void MultiLevelSetup::setup(const Graph &G, LevelHierarchy &hierarchy) const {
-	setup(CSRMatrix::graphLaplacian(G), hierarchy);
+	setup(CSRMatrix::laplacianMatrix(G), hierarchy);
 }
 
 void MultiLevelSetup::setup(const CSRMatrix &matrix, LevelHierarchy &hierarchy) const {
@@ -186,7 +186,7 @@ count MultiLevelSetup::lowDegreeSweep(const CSRMatrix &matrix, std::vector<bool>
 }
 
 void MultiLevelSetup::eliminationOperators(const CSRMatrix &matrix, const std::vector<index> &fSet, const std::vector<index> &coarseIndex, CSRMatrix &P, Vector &q) const {
-	std::vector<CSRMatrix::Triple> triples;
+	std::vector<Triplet> triples;
 	q = Vector(fSet.size());
 	for (index k = 0; k < fSet.size(); ++k) { // Afc
 		matrix.forNonZeroElementsInRow(fSet[k], [&](index j, edgeweight w){
@@ -202,11 +202,11 @@ void MultiLevelSetup::eliminationOperators(const CSRMatrix &matrix, const std::v
 		triples[i].value *= -q[triples[i].row];
 	}
 
-	P = CSRMatrix(fSet.size(), coarseIndex.size() - fSet.size(), triples, matrix.sorted());
+	P = CSRMatrix(fSet.size(), coarseIndex.size() - fSet.size(), triples, 0.0, matrix.sorted());
 }
 
 void MultiLevelSetup::subMatrix(const CSRMatrix &matrix, const std::vector<index> &rows, const std::vector<index> &columns, const std::vector<index> &coarseIndex, CSRMatrix &result) const {
-	std::vector<CSRMatrix::Triple> triples;
+	std::vector<Triplet> triples;
 
 	for (index k = 0; k < rows.size(); ++k) {
 		matrix.forNonZeroElementsInRow(rows[k], [&](index j, edgeweight value) {
@@ -216,7 +216,7 @@ void MultiLevelSetup::subMatrix(const CSRMatrix &matrix, const std::vector<index
 		});
 	}
 
-	result = CSRMatrix(rows.size(), columns.size(), triples, matrix.sorted());
+	result = CSRMatrix(rows.size(), columns.size(), triples, 0.0, matrix.sorted());
 }
 
 void MultiLevelSetup::coarseningAggregation(CSRMatrix &matrix, LevelHierarchy &hierarchy, Vector &tv, count numTVVectors) const {
@@ -297,8 +297,8 @@ void MultiLevelSetup::coarseningAggregation(CSRMatrix &matrix, LevelHierarchy &h
 	assert(newIndex == nc[bestAggregate]);
 
 	// create interpolation matrix
-	std::vector<CSRMatrix::Triple> pTriples(matrix.numberOfRows());
-	std::vector<CSRMatrix::Triple> rTriples(matrix.numberOfRows());
+	std::vector<Triplet> pTriples(matrix.numberOfRows());
+	std::vector<Triplet> rTriples(matrix.numberOfRows());
 	std::vector<index> PColIndex(matrix.numberOfRows());
 	std::vector<std::vector<index>> PRowIndex(nc[bestAggregate]);
 
@@ -309,8 +309,8 @@ void MultiLevelSetup::coarseningAggregation(CSRMatrix &matrix, LevelHierarchy &h
 		PRowIndex[status[i]].push_back(i);
 	}
 
-	CSRMatrix P(matrix.numberOfRows(), nc[bestAggregate], pTriples, matrix.sorted());
-	CSRMatrix R(nc[bestAggregate], matrix.numberOfRows(), rTriples, matrix.sorted());
+	CSRMatrix P(matrix.numberOfRows(), nc[bestAggregate], pTriples, 0.0, matrix.sorted());
+	CSRMatrix R(nc[bestAggregate], matrix.numberOfRows(), rTriples, 0.0, matrix.sorted());
 
 	// create coarsened laplacian
 	galerkinOperator(P, matrix, PColIndex, PRowIndex, matrix);
@@ -430,7 +430,7 @@ void MultiLevelSetup::computeStrongAdjacencyMatrix(const CSRMatrix &matrix, CSRM
 		});
 	}
 
-	strongAdjMatrix = CSRMatrix(matrix.numberOfRows(), matrix.numberOfColumns(), rowIdx, columnIdx, nonZeros, matrix.sorted());
+	strongAdjMatrix = CSRMatrix(matrix.numberOfRows(), matrix.numberOfColumns(), rowIdx, columnIdx, nonZeros, 0.0, matrix.sorted());
 }
 
 void MultiLevelSetup::computeAffinityMatrix(const CSRMatrix &matrix, const std::vector<Vector> &tVs, CSRMatrix &affinityMatrix) const {
@@ -474,7 +474,7 @@ void MultiLevelSetup::computeAffinityMatrix(const CSRMatrix &matrix, const std::
 		});
 	}
 
-	affinityMatrix = CSRMatrix(matrix.numberOfRows(), matrix.numberOfColumns(), rowIdx, columnIdx, nonZeros, matrix.sorted());
+	affinityMatrix = CSRMatrix(matrix.numberOfRows(), matrix.numberOfColumns(), rowIdx, columnIdx, nonZeros, 0.0, matrix.sorted());
 }
 
 void MultiLevelSetup::aggregationStage(const CSRMatrix &matrix, count &nc, const CSRMatrix &strongAdjMatrix, const CSRMatrix &affinityMatrix, std::vector<Vector> &tVs, std::vector<index> &status) const {
@@ -624,7 +624,7 @@ bool MultiLevelSetup::isRelaxationFast(const CSRMatrix &A, index lvlIndex, Vecto
 }
 
 void MultiLevelSetup::galerkinOperator(const CSRMatrix &P, const CSRMatrix &A, const std::vector<index> &PColIndex, const std::vector<std::vector<index>> &PRowIndex, CSRMatrix &B) const {
-	std::vector<CSRMatrix::Triple> triples;
+	std::vector<Triplet> triples;
 	SparseAccumulator spa(P.numberOfColumns());
 	for (index i = 0; i < P.numberOfColumns(); ++i) {
 		for (index k : PRowIndex[i]) {
@@ -642,7 +642,7 @@ void MultiLevelSetup::galerkinOperator(const CSRMatrix &P, const CSRMatrix &A, c
 		spa.increaseRow();
 	}
 
-	B = CSRMatrix(P.numberOfColumns(), P.numberOfColumns(), triples, true);
+	B = CSRMatrix(P.numberOfColumns(), P.numberOfColumns(), triples, 0.0, true);
 }
 
 
