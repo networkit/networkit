@@ -16,16 +16,16 @@ DenseMatrixGTest::~DenseMatrixGTest() {
 }
 
 TEST(DenseMatrixGTest, testMatrixDimension) {
-	DenseMatrix mat(10, 10, std::vector<double>());;
+	DenseMatrix mat(10, 10, std::vector<double>(100));
 
 	ASSERT_EQ(10u, mat.numberOfRows());
 	ASSERT_EQ(10u, mat.numberOfColumns());
 
-	mat = DenseMatrix (5, 10, std::vector<double>());;
+	mat = DenseMatrix(5, 10, std::vector<double>(50));
 	ASSERT_EQ(5u, mat.numberOfRows());
 	ASSERT_EQ(10u, mat.numberOfColumns());
 
-	mat = DenseMatrix (10, 5, std::vector<double>());;
+	mat = DenseMatrix(10, 5, std::vector<double>(50));
 	ASSERT_EQ(10u, mat.numberOfRows());
 	ASSERT_EQ(5u, mat.numberOfColumns());
 }
