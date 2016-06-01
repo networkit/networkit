@@ -9,60 +9,22 @@
 
 namespace NetworKit {
 
-Matrix::Matrix() : graph(0, true, true), nRows(0), nCols(0) {
+Matrix::Matrix() : graph(0, true, true), nRows(0), nCols(0), zero(0.0) {
 }
 
-Matrix::Matrix(const count dimension) : graph(dimension, true, true), nRows(dimension), nCols(dimension) {
+Matrix::Matrix(const count dimension, const double zero) : graph(dimension, true, true), nRows(dimension), nCols(dimension), zero(zero) {
 }
 
-Matrix::Matrix(const count nRows, const count nCols) : graph(std::max(nRows, nCols), true, true), nRows(nRows), nCols(nCols) {
+Matrix::Matrix(const count nRows, const count nCols, const double zero) : graph(std::max(nRows, nCols), true, true), nRows(nRows), nCols(nCols), zero(zero) {
 }
 
-Matrix::Matrix(const count dimension, const std::vector<std::pair<index, index>> &positions,
-					const std::vector<double> &values) : graph(dimension, true, true), nRows(dimension), nCols(dimension) {
-	assert(positions.size() == values.size());
-
-	for (size_t k = 0; k < positions.size(); ++k) {
-		assert(positions[k].first >= 0 && positions[k].second >= 0 && positions[k].first < dimension && positions[k].second < dimension);
-
-		std::pair<node, node> pos = positions[k];
-		graph.addEdge(pos.first, pos.second, values[k]);
-	}
+Matrix::Matrix(const count dimension, const std::vector<Triplet>& triplets, const double zero) : Matrix(dimension, dimension, triplets, zero) {
 }
 
-Matrix::Matrix(const count nRows, const count nCols, const std::vector<std::pair<index, index>> &positions,
-					const std::vector<double> &values) : graph(std::max(nRows, nCols), true, true), nRows(nRows), nCols(nCols) {
-	assert(positions.size() == values.size());
-
-	for (size_t k = 0; k < positions.size(); ++k) {
-		assert(positions[k].first >= 0 && positions[k].second >= 0 && positions[k].first < nRows && positions[k].second < nCols);
-
-		std::pair<node, node> pos = positions[k];
-		graph.addEdge(pos.first, pos.second, values[k]);
-	}
-}
-
-Matrix::Matrix(const std::vector<Vector> &rows) {
-	assert(rows.size() > 0);
-
-	nRows = rows.size();
-	nCols = rows[0].getDimension();
-	graph = Graph(std::max(nRows, nCols), true, true);
-
-#pragma omp parallel for
-	for (size_t i = 0; i < nRows; ++i) {
-		if (rows[i].getDimension() != nCols) {
-			throw std::runtime_error("Matrix(const std::vector<Vector> &rows): Column dimensions of one or more rows do not match");
-		}
-	}
-
-	for (index i = 0; i < nRows; ++i) {
-		for (index j = 0; j < nCols; ++j) {
-			double value = rows[i][j];
-			if (value != 0.0) { // do not store 0 values
-				graph.addEdge(i, j, value);
-			}
-		}
+Matrix::Matrix(const count nRows, const count nCols, const std::vector<Triplet>& triplets, const double zero) : graph(std::max(nRows, nCols), true, true), nRows(nRows), nCols(nCols), zero(zero) {
+	for (size_t k = 0; k < triplets.size(); ++k) {
+		assert(triplets[k].row < nRows && triplets[k].column < nCols);
+		graph.addEdge(triplets[k].row, triplets[k].column, triplets[k].value);
 	}
 }
 
@@ -84,7 +46,8 @@ double Matrix::operator()(const index i, const index j) const {
 	assert(i >= 0 && i < nRows);
 	assert(j >= 0 && j < nCols);
 
-	return graph.weight(i,j);
+	double weight = graph.weight(i,j);
+	return weight == nullWeight? zero : weight;
 }
 
 void Matrix::setValue(const index i, const index j, const double value) {
@@ -97,7 +60,7 @@ void Matrix::setValue(const index i, const index j, const double value) {
 Vector Matrix::row(const index i) const {
 	assert(i >= 0 && i < nRows);
 
-	Vector row(numberOfColumns(), 0.0, true);
+	Vector row(numberOfColumns(), zero, true);
 	graph.forEdgesOf(i, [&](node i, node j, double value) {
 		row[j] = value;
 	});
@@ -111,14 +74,15 @@ Vector Matrix::column(const index j) const {
 	Vector column(numberOfRows());
 #pragma omp parallel for
 	for (node i = 0; i < numberOfRows(); ++i) {
-		column[i] = graph.weight(i,j);
+		double val = graph.weight(i,j);
+		column[i] = (val == nullWeight? zero : val);
 	}
 
 	return column;
 }
 
 Vector Matrix::diagonal() const {
-	Vector diag(std::min(nRows, nCols), 0);
+	Vector diag(std::min(nRows, nCols), zero);
 	for (index i = 0; i < diag.getDimension(); ++i) {
 		diag[i] = (*this)(i,i);
 	}
@@ -169,7 +133,7 @@ Matrix& Matrix::operator*=(const double scalar) {
 Vector Matrix::operator*(const Vector &vector) const {
 	assert(!vector.isTransposed());
 	assert(nCols == vector.getDimension());
-	Vector result(numberOfRows(), 0.0);
+	Vector result(numberOfRows(), zero);
 
 	parallelForNonZeroElementsInRowOrder([&](node i, node j, double value) {
 		result[i] += value * vector[j];
@@ -232,7 +196,7 @@ Matrix Matrix::mmTMultiply(const Matrix &A, const Matrix &B) {
 		A.graph.forNeighborsOf(i, [&](index k, edgeweight wA){
 			for (index j = 0; j < B.numberOfRows(); ++j) {
 				edgeweight wB = B(j,k);
-				if (wB != 0.0) {
+				if (wB != A.zero) {
 					C.graph.increaseWeight(i, j, wA * wB);
 				}
 			}
@@ -245,7 +209,7 @@ Matrix Matrix::mmTMultiply(const Matrix &A, const Matrix &B) {
 Vector Matrix::mTvMultiply(const Matrix &matrix, const Vector &vector) {
 	assert(matrix.nRows == vector.getDimension());
 
-	Vector result(matrix.numberOfColumns(), 0.0);
+	Vector result(matrix.numberOfColumns(), matrix.getZero());
 	for (index k = 0; k < matrix.numberOfRows(); ++k) {
 		matrix.graph.forNeighborsOf(k, [&](index j, edgeweight w){
 			result[j] += w * vector[k];
@@ -263,6 +227,103 @@ Matrix Matrix::transpose() const {
 
 	return transposedMatrix;
 }
+
+Matrix Matrix::adjacencyMatrix(const Graph& graph) {
+	Matrix A(graph.upperNodeIdBound());
+	graph.forEdges([&](node u, node v, edgeweight w) {
+		A.setValue(u, v, w);
+		if (!graph.isDirected()) { // add symmetric value at (v, u)
+			A.setValue(v, u, w);
+		}
+	});
+
+	return A;
+}
+
+Matrix Matrix::diagonalMatrix(const Vector& diagonalElements) {
+	Matrix D(diagonalElements.getDimension());
+	for (index i = 0; i < diagonalElements.getDimension(); ++i) {
+		D.setValue(i, i, diagonalElements[i]);
+	}
+
+	return D;
+}
+
+Matrix Matrix::incidenceMatrix(const Graph& graph) {
+	if (!graph.hasEdgeIds()) throw std::runtime_error("Graph has no edge Ids. Index edges first by calling graph.indexEdges()");
+	Matrix I(graph.upperNodeIdBound(), graph.upperEdgeIdBound());
+	if (graph.isDirected()) {
+		graph.forEdges([&](node u, node v, edgeweight weight, edgeid edgeId) {
+			if (u != v) {
+				edgeweight w = sqrt(weight);
+				I.setValue(u, edgeId, w);
+				I.setValue(v, edgeId, -w);
+			}
+		});
+	} else {
+		graph.forEdges([&](node u, node v, edgeweight weight, edgeid edgeId){
+			if (u != v) {
+				edgeweight w = sqrt(weight);
+				if (u < v) { // orientation: small node number -> great node number
+					I.setValue(u, edgeId, w);
+					I.setValue(v, edgeId, -w);
+				} else {
+					I.setValue(u, edgeId, -w);
+					I.setValue(v, edgeId, w);
+				}
+			}
+		});
+	}
+
+	return I;
+}
+
+Matrix Matrix::laplacianMatrix(const Graph& graph) {
+	Matrix L(graph.upperNodeIdBound());
+	graph.forNodes([&](const index i){
+		double weightedDegree = 0.0;
+
+		graph.forNeighborsOf(i, [&](const index j, double weight) { // - adjacency matrix
+			L.setValue(i, j, -weight);
+			if (i != j) { // exclude weight of diagonal since it would be subtracted later
+				weightedDegree += weight;
+			}
+		});
+
+		L.setValue(i, i, weightedDegree); // degree matrix
+	});
+
+	return L;
+}
+
+Matrix Matrix::normalizedLaplacianMatrix(const Graph& graph) {
+	Matrix nL(graph.upperNodeIdBound());
+
+	std::vector<double> weightedDegrees(graph.upperNodeIdBound(), 0.0);
+	graph.parallelForNodes([&](const node u) {
+		weightedDegrees[u] = graph.weightedDegree(u);
+	});
+
+	graph.forNodes([&](const node i){
+		graph.forNeighborsOf(i, [&](const node j, double weight){
+			if (i != j) {
+				nL.setValue(i, j, -weight/sqrt(weightedDegrees[i] * weightedDegrees[j]));
+			}
+		});
+
+		if (weightedDegrees[i] != 0.0) {
+			if (graph.isWeighted()) {
+				nL.setValue(i, i, 1-(graph.weight(i, i)) / weightedDegrees[i]);
+			} else {
+				nL.setValue(i, i, 1);
+			}
+		}
+	});
+
+	return nL;
+}
+
+
 
 
 

@@ -68,38 +68,11 @@ double Vector::innerProduct(const Vector &v1, const Vector &v2) {
 	return scalar;
 }
 
-Matrix Vector::outerProduct(const Vector &v1, const Vector &v2) {
-	std::vector<Vector> rows(v1.getDimension(), Vector(v2.getDimension(), 0.0));
-
-#pragma omp parallel for
-	for (index i = 0; i < v1.getDimension(); ++i) {
-		for (index j = 0; j < v2.getDimension(); ++j) {
-			rows[i][j] = v1[i] * v2[j];
-		}
-	}
-
-	return Matrix(rows);
-}
-
 double Vector::operator*(const Vector &other) const {
 	assert(isTransposed() && !other.isTransposed()); // vectors must be transposed correctly for inner product
 	assert(getDimension() == other.getDimension()); // dimensions of vectors must match
 
 	return innerProduct(*this, other);
-}
-
-Vector Vector::operator*(const Matrix &matrix) const {
-	assert(isTransposed()); // vector must be of the form 1xn
-	assert(getDimension() == matrix.numberOfRows()); // dimensions of vector and matrix must match
-
-	Vector result(matrix.numberOfColumns(), 0.0, true);
-#pragma omp parallel for
-	for (count k = 0; k < matrix.numberOfColumns(); ++k) {
-		Vector column = matrix.column(k);
-		result[k] = (*this) * column;
-	}
-
-	return result;
 }
 
 Vector Vector::operator*(const double &scalar) const {

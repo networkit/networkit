@@ -10,6 +10,7 @@
 
 #include <vector>
 #include "../Globals.h"
+#include "AlgebraicGlobals.h"
 #include "Vector.h"
 #include "../graph/Graph.h"
 #include "../algebraic/SparseAccumulator.h"
@@ -31,37 +32,73 @@ private:
 	count nRows;
 	count nCols;
 	bool isSorted;
+	double zero;
 
 	void quicksort(index left, index right);
 	index partition(index left, index right);
+	index binarySearchColumns(index left, index right, index j) const;
 
 public:
-	/** Represents a matrix entry s.t. matrix(row, column) = value */
-	struct Triple {
-		index row;
-		index column;
-		double value;
-	};
-
 	/** Default constructor */
 	CSRMatrix();
 
-	CSRMatrix(const count nRows, const count nCols, const std::vector<std::pair<index, index>> &positions, const std::vector<double> &values, bool isSorted = false);
+	/**
+	 * Constructs the CSRMatrix with size @a dimension x @a dimension.
+	 * @param dimension Defines how many rows and columns this matrix has.
+	 */
+	CSRMatrix(const count dimension, const double zero = 0.0);
 
-	CSRMatrix(const count nRows, const count nCols, const std::vector<Triple> &triples, bool isSorted = false);
+	/**
+	 * Constructs the CSRMatrix with size @a nRows x @a nCols.
+	 * @param nRows Number of rows.
+	 * @param nCols Number of columns.
+	 */
+	CSRMatrix(const count nRows, const count nCols, const double zero = 0.0);
 
-	CSRMatrix(const count nRows, const count nCols, const std::vector<std::vector<index>> &columnIdx, const std::vector<std::vector<double>> &values, bool isSorted = false);
+	/**
+	 * Constructs the @a dimension x @a dimension Matrix from the elements at position @a positions with values @values.
+	 * @param dimension Defines how many rows and columns this matrix has.
+	 * @param triplets The nonzero elements.
+	 * @param isSorted True, if the triplets are sorted per row. Default is false.
+	 */
+	CSRMatrix(const count dimension, const std::vector<Triplet>& triplets, const double zero = 0.0, bool isSorted = false);
 
-	CSRMatrix(const count nRows, const count nCols, const std::vector<index> &rowIdx, const std::vector<index> &columnIdx, const std::vector<double> &nonZeros, bool isSorted = false);
+	/**
+	 * Constructs the @a nRows x @a nCols Matrix from the elements at position @a positions with values @values.
+	 * @param nRows Defines how many rows this matrix has.
+	 * @param nCols Defines how many columns this matrix has.
+	 * @param triplets The nonzero elements.
+	 * @param isSorted True, if the triplets are sorted per row. Default is false.
+	 */
+	CSRMatrix(const count nRows, const count nCols, const std::vector<Triplet>& triplets, const double zero = 0.0, bool isSorted = false);
 
+	// TODO: Check if this constructor is used anywhere
+	CSRMatrix(const count nRows, const count nCols, const std::vector<std::vector<index>> &columnIdx, const std::vector<std::vector<double>> &values, const double zero = 0.0, bool isSorted = false);
+
+	/**
+	 * Constructs the @a nRows x @a nCols Matrix from the elements at position @a positions with values @values.
+	 * @param nRows Defines how many rows this matrix has.
+	 * @param nCols Defines how many columns this matrix has.
+	 * @param rowIdx The rowIdx vector of the CSR format.
+	 * @param columnIdx The columnIdx vector of the CSR format.
+	 * @param nonZeros The nonZero vector of the CSR format. Should be as long as the @a columnIdx vector.
+	 * @param isSorted True, if the triplets are sorted per row. Default is false.
+	 */
+	CSRMatrix(const count nRows, const count nCols, const std::vector<index>& rowIdx, const std::vector<index>& columnIdx, const std::vector<double>& nonZeros, const double zero = 0.0, bool isSorted = false);
+
+	/** Default copy constructor */
 	CSRMatrix (const CSRMatrix &other) = default;
 
+	/** Default move constructor */
 	CSRMatrix (CSRMatrix &&other) = default;
 
+	/** Default destructor */
 	virtual ~CSRMatrix() = default;
 
+	/** Default move assignment operator */
 	CSRMatrix& operator=(CSRMatrix &&other) = default;
 
+	/** Default copy assignment operator */
 	CSRMatrix& operator=(const CSRMatrix &other) = default;
 
 	/**
@@ -79,6 +116,13 @@ public:
 	}
 
 	/**
+	 * Returns the zero element of the matrix.
+	 */
+	inline double getZero() const {
+		return zero;
+	}
+
+	/**
 	 * @param i The row index.
 	 * @return Number of non-zeros in row @a i.
 	 */
@@ -93,6 +137,12 @@ public:
 	 * @return Value at matrix position (i,j).
 	 */
 	double operator()(const index i, const index j) const;
+
+	/**
+	 * Set the matrix at position (@a i, @a j) to @a value.
+	 * @note This operation can be linear in the number of non-zeros due to vector element movements
+	 */
+	void setValue(const index i, const index j, const double value);
 
 	/**
 	 * Sorts the column indices in each row for faster access.
@@ -226,69 +276,53 @@ public:
 	static Vector mTvMultiply(const CSRMatrix &matrix, const Vector &vector);
 
 	/**
-	 * Compute the (weighted) Laplacian of the (weighted) @a graph.
-	 * @param graph
-	 * @return The (weighted) Laplacian.
-	 */
-	static CSRMatrix graphLaplacian(const Graph &graph);
-
-	/**
-	 * Compute the (weighted) adjacency matrix of the (weighted) @a graph.
-	 * @param graph
-	 * @return The (weighted) adjacency matrix.
-	 */
-	static CSRMatrix adjacencyMatrix(const Graph &graph);
-
-	/**
-	 * Computes a graph having the given @a laplacian.
-	 * @param laplacian
-	 * @return The graph having a Laplacian equal to @a laplacian.
-	 */
-	static Graph laplacianToGraph(const CSRMatrix &laplacian);
-
-	/**
-	 * Interprets the @a matrix as adjacency matrix of a graph. If @a matrix is non-symmetric, the graph will be directed.
-	 * @param matrix
-	 * @return The graph having an adjacency matrix equal to @a matrix.
-	 */
-	static Graph matrixToGraph(const CSRMatrix &matrix);
-
-	/**
-	 * Checks if @a matrix is symmetric.
-	 * @param matrix
-	 * @return True if @a matrix is symmetric, otherwise false.
-	 */
-	static bool isSymmetric(const CSRMatrix &matrix);
-
-	/**
-	 * Checks if @a matrix is symmetric diagonally dominant (SDD).
-	 * @param matrix
-	 * @return True if @a matrix is SDD, false otherwise.
-	 */
-	static bool isSDD(const CSRMatrix &matrix);
-
-	/**
-	 * Checks if @a matrix is a Laplacian matrix.
-	 * @param matrix
-	 * @return True if @a matrix is a Laplacian matrix, false otherwise.
-	 */
-	static bool isLaplacian(const CSRMatrix &matrix);
-
-	/**
 	 * Transposes this matrix and returns it.
 	 * @return The transposed matrix of this matrix.
 	 */
 	CSRMatrix transpose() const;
 
 	/**
+	 * Compute the (weighted) adjacency matrix of the (weighted) Graph @a graph.
+	 * @param graph
+	 */
+	static CSRMatrix adjacencyMatrix(const Graph& graph);
+
+	/**
+	 * Creates a diagonal matrix with dimension equal to the dimension of the Vector @a diagonalElements. The values on
+	 * the diagonal are the ones stored in @a diagonalElements (i.e. D(i,i) = diagonalElements[i]).
+	 * @param diagonalElements
+	 */
+	static CSRMatrix diagonalMatrix(const Vector& diagonalElements);
+
+	/**
+	 * Returns the (weighted) incidence matrix of the (weighted) Graph @a graph.
+	 * @param graph
+	 */
+	static CSRMatrix incidenceMatrix(const Graph& graph);
+
+	/**
+	 * Compute the (weighted) Laplacian of the (weighted) Graph @a graph.
+	 * @param graph
+	 */
+	static CSRMatrix laplacianMatrix(const Graph& graph);
+
+	/**
+	 * Returns the (weighted) normalized Laplacian matrix of the (weighted) Graph @a graph
+	 * @param graph
+	 */
+	static CSRMatrix normalizedLaplacianMatrix(const Graph& graph);
+
+
+
+	/**
 	 * Iterate over all non-zero elements of row @a row in the matrix and call handler(index column, double value)
 	 */
-	template<typename L> void forNonZeroElementsInRow(index i, L handle) const;
+	template<typename L> void forNonZeroElementsInRow(index row, L handle) const;
 
 	/**
 	 * Iterate in parallel over all non-zero elements of row @a row in the matrix and call handler(index column, double value)
 	 */
-	template<typename L> void parallelForNonZeroElementsInRow(index i, L handle) const;
+	template<typename L> void parallelForNonZeroElementsInRow(index row, L handle) const;
 
 	/**
 	 * Iterate over all non-zero elements of the matrix in row order and call handler (lambda closure).
@@ -299,143 +333,140 @@ public:
 	 * Iterate in parallel over all rows and call handler (lambda closure) on non-zero elements of the matrix.
 	 */
 	template<typename L> void parallelForNonZeroElementsInRowOrder(L handle) const;
-
-	/**
-	 * Iterate in parallel over all rows and call handler (lambda closure) on non-zero elements of the matrix.
-	 */
-	template<typename L> void parallelForNonZeroElementsInRowOrder(L handle);
 };
 
 template<typename L> inline CSRMatrix NetworKit::CSRMatrix::binaryOperator(const CSRMatrix &A, const CSRMatrix &B, L binaryOp) {
 	assert(A.nRows == B.nRows && A.nCols == B.nCols);
 
-	if (!A.sorted() || !B.sorted()) throw std::runtime_error("The matrices must be sorted for this operation");
-	std::vector<index> rowIdx(A.nRows+1);
-	std::vector<std::vector<index>> columns(A.nRows);
+	if (A.sorted() && B.sorted()) {
+		std::vector<index> rowIdx(A.nRows+1);
+		std::vector<std::vector<index>> columns(A.nRows);
 
-	rowIdx[0] = 0;
+		rowIdx[0] = 0;
 #pragma omp parallel for
-	for (index i = 0; i < A.nRows; ++i) {
-		index k = A.rowIdx[i];
-		index l = B.rowIdx[i];
-		while (k < A.rowIdx[i+1] && l < B.rowIdx[i+1]) {
-			if (A.columnIdx[k] < B.columnIdx[l]) {
+		for (index i = 0; i < A.nRows; ++i) {
+			index k = A.rowIdx[i];
+			index l = B.rowIdx[i];
+			while (k < A.rowIdx[i+1] && l < B.rowIdx[i+1]) {
+				if (A.columnIdx[k] < B.columnIdx[l]) {
+					columns[i].push_back(A.columnIdx[k]);
+					++k;
+				} else if (A.columnIdx[k] > B.columnIdx[l]) {
+					columns[i].push_back(B.columnIdx[l]);
+					++l;
+				} else { // A.columnIdx[k] == B.columnIdx[l]
+					columns[i].push_back(A.columnIdx[k]);
+					++k;
+					++l;
+				}
+				++rowIdx[i+1];
+			}
+
+			while (k < A.rowIdx[i+1]) {
 				columns[i].push_back(A.columnIdx[k]);
 				++k;
-			} else if (A.columnIdx[k] > B.columnIdx[l]) {
+				++rowIdx[i+1];
+			}
+
+			while (l < B.rowIdx[i+1]) {
 				columns[i].push_back(B.columnIdx[l]);
 				++l;
-			} else { // A.columnIdx[k] == B.columnIdx[l]
-				columns[i].push_back(A.columnIdx[k]);
-				++k;
-				++l;
+				++rowIdx[i+1];
 			}
-			++rowIdx[i+1];
 		}
 
-		while (k < A.rowIdx[i+1]) {
-			columns[i].push_back(A.columnIdx[k]);
-			++k;
-			++rowIdx[i+1];
+
+		for (index i = 0; i < A.nRows; ++i) {
+			rowIdx[i+1] += rowIdx[i];
 		}
 
-		while (l < B.rowIdx[i+1]) {
-			columns[i].push_back(B.columnIdx[l]);
-			++l;
-			++rowIdx[i+1];
-		}
-	}
-
-
-	for (index i = 0; i < A.nRows; ++i) {
-		rowIdx[i+1] += rowIdx[i];
-	}
-
-	count nnz = rowIdx[A.nRows];
-	std::vector<index> columnIdx(nnz);
-	std::vector<double> nonZeros(nnz, 0.0);
+		count nnz = rowIdx[A.nRows];
+		std::vector<index> columnIdx(nnz);
+		std::vector<double> nonZeros(nnz, A.zero);
 
 #pragma omp parallel for
-	for (index i = 0; i < A.nRows; ++i) {
-		for (index cIdx = rowIdx[i], j = 0; cIdx < rowIdx[i+1]; ++cIdx, ++j) {
-			columnIdx[cIdx] = columns[i][j];
+		for (index i = 0; i < A.nRows; ++i) {
+			for (index cIdx = rowIdx[i], j = 0; cIdx < rowIdx[i+1]; ++cIdx, ++j) {
+				columnIdx[cIdx] = columns[i][j];
+			}
+			columns[i].clear();
+			columns[i].resize(0);
+			columns[i].shrink_to_fit();
 		}
-		columns[i].clear();
-		columns[i].resize(0);
-		columns[i].shrink_to_fit();
-	}
 
 #pragma omp parallel for
-	for (index i = 0; i < A.nRows; ++i) {
-		index k = A.rowIdx[i];
-		index l = B.rowIdx[i];
-		for (index cIdx = rowIdx[i]; cIdx < rowIdx[i+1]; ++cIdx) {
-			if (k < A.rowIdx[i+1] && columnIdx[cIdx] == A.columnIdx[k]) {
-				nonZeros[cIdx] = A.nonZeros[k];
-				++k;
-			}
+		for (index i = 0; i < A.nRows; ++i) {
+			index k = A.rowIdx[i];
+			index l = B.rowIdx[i];
+			for (index cIdx = rowIdx[i]; cIdx < rowIdx[i+1]; ++cIdx) {
+				if (k < A.rowIdx[i+1] && columnIdx[cIdx] == A.columnIdx[k]) {
+					nonZeros[cIdx] = A.nonZeros[k];
+					++k;
+				}
 
-			if (l < B.rowIdx[i+1] && columnIdx[cIdx] == B.columnIdx[l]) {
-				nonZeros[cIdx] = binaryOp(nonZeros[cIdx], B.nonZeros[l]);
-				++l;
+				if (l < B.rowIdx[i+1] && columnIdx[cIdx] == B.columnIdx[l]) {
+					nonZeros[cIdx] = binaryOp(nonZeros[cIdx], B.nonZeros[l]);
+					++l;
+				}
 			}
 		}
+
+		return CSRMatrix(A.nRows, A.nCols, rowIdx, columnIdx, nonZeros, A.zero, true);
+	} else { // A or B not sorted
+		std::vector<int64_t> columnPointer(A.nCols, -1);
+		std::vector<double> Arow(A.nCols, A.zero);
+		std::vector<double> Brow(A.nCols, B.zero);
+
+		std::vector<Triplet> triplets;
+
+		for (index i = 0; i < A.nRows; ++i) {
+			index listHead = 0;
+			count nnz = 0;
+
+			// search for nonZeros in our own matrix
+			for (index k = A.rowIdx[i]; k < A.rowIdx[i+1]; ++k) {
+				index j = A.columnIdx[k];
+				Arow[j] = A.nonZeros[k];
+
+				columnPointer[j] = listHead;
+				listHead = j;
+				nnz++;
+			}
+
+			// search for nonZeros in the other matrix
+			for (index k = B.rowIdx[i]; k < B.rowIdx[i+1]; ++k) {
+				index j = B.columnIdx[k];
+				Brow[j] = B.nonZeros[k];
+
+				if (columnPointer[j] == -1) { // our own matrix does not have a nonZero entry in column j
+					columnPointer[j] = listHead;
+					listHead = j;
+					nnz++;
+				}
+			}
+
+			// apply operator on the found nonZeros in A and B
+			for (count k = 0; k < nnz; ++k) {
+				double value = binaryOp(Arow[listHead], Brow[listHead]);
+				if (value != A.zero) {
+					triplets.push_back({i,listHead,value});
+				}
+
+				index temp = listHead;
+				listHead = columnPointer[listHead];
+
+				// reset for next row
+				columnPointer[temp] = -1;
+				Arow[temp] = A.zero;
+				Brow[temp] = B.zero;
+			}
+
+			nnz = 0;
+		}
+
+		return CSRMatrix(A.numberOfRows(), A.numberOfColumns(), triplets);
 	}
 
-	return CSRMatrix(A.nRows, A.nCols, rowIdx, columnIdx, nonZeros, true);
-
-
-//	std::vector<int64_t> columnPointer(A.nCols, -1);
-//	std::vector<double> Arow(A.nCols, 0.0);
-//	std::vector<double> Brow(A.nCols, 0.0);
-//	std::vector<Triple> triples;
-//
-//	for (index i = 0; i < A.nRows; ++i) {
-//		index listHead = 0;
-//		count nnz = 0;
-//
-//		// search for nonZeros in our own matrix
-//		for (index k = A.rowIdx[i]; k < A.rowIdx[i+1]; ++k) {
-//			index j = A.columnIdx[k];
-//			Arow[j] = A.nonZeros[k];
-//
-//			columnPointer[j] = listHead;
-//			listHead = j;
-//			nnz++;
-//		}
-//
-//		// search for nonZeros in the other matrix
-//		for (index k = B.rowIdx[i]; k < B.rowIdx[i+1]; ++k) {
-//			index j = B.columnIdx[k];
-//			Brow[j] = B.nonZeros[k];
-//
-//			if (columnPointer[j] == -1) { // our own matrix does not have a nonZero entry in column j
-//				columnPointer[j] = listHead;
-//				listHead = j;
-//				nnz++;
-//			}
-//		}
-//
-//		// apply operator on the found nonZeros in A and B
-//		for (count k = 0; k < nnz; ++k) {
-//			double value = binaryOp(Arow[listHead], Brow[listHead]);
-//			if (value != 0.0) {
-//				triples.push_back({i, listHead, value});
-//			}
-//
-//			index temp = listHead;
-//			listHead = columnPointer[listHead];
-//
-//			// reset for next row
-//			columnPointer[temp] = -1;
-//			Arow[temp] = 0.0;
-//			Brow[temp] = 0.0;
-//		}
-//
-//		nnz = 0;
-//	}
-//
-//	return CSRMatrix(A.nRows, A.nCols, triples);
 
 }
 
@@ -467,16 +498,6 @@ inline void NetworKit::CSRMatrix::forNonZeroElementsInRowOrder(L handle) const {
 
 template<typename L>
 inline void NetworKit::CSRMatrix::parallelForNonZeroElementsInRowOrder(L handle) const {
-#pragma omp parallel for
-	for (index i = 0; i < nRows; ++i) {
-		for (index k = rowIdx[i]; k < rowIdx[i+1]; ++k) {
-			handle(i, columnIdx[k], nonZeros[k]);
-		}
-	}
-}
-
-template<typename L>
-inline void NetworKit::CSRMatrix::parallelForNonZeroElementsInRowOrder(L handle) {
 #pragma omp parallel for
 	for (index i = 0; i < nRows; ++i) {
 		for (index k = rowIdx[i]; k < rowIdx[i+1]; ++k) {

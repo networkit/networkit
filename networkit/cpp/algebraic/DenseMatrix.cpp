@@ -9,11 +9,43 @@
 
 namespace NetworKit {
 
-DenseMatrix::DenseMatrix() : nRows(0), nCols(0), entries(std::vector<double>(0)) {
+DenseMatrix::DenseMatrix() : nRows(0), nCols(0), entries(std::vector<double>(0)), zero(0.0) {
 }
 
-DenseMatrix::DenseMatrix(const count nRows, const count nCols, const std::vector<double> &entries) : nRows(nRows), nCols(nCols), entries(entries) {
+DenseMatrix::DenseMatrix(const count dimension, const double zero) : nRows(dimension), nCols(dimension), entries(dimension*dimension, zero), zero(zero) {
+}
+
+DenseMatrix::DenseMatrix(const count nRows, const count nCols, const double zero) : nRows(nRows), nCols(nCols), entries(nRows*nCols, zero), zero(zero) {
+}
+
+DenseMatrix::DenseMatrix(const count dimension, const std::vector<Triplet>& triplets, const double zero) : DenseMatrix(dimension, dimension, triplets, zero) {
+}
+
+DenseMatrix::DenseMatrix(const count nRows, const count nCols, const std::vector<Triplet>& triplets, const double zero) : nRows(nRows), nCols(nCols), entries(nRows*nCols, zero), zero(zero) {
+#pragma omp parallel for
+	for (index k = 0; k < triplets.size(); ++k) {
+		entries[triplets[k].row * nCols + triplets[k].column] = triplets[k].value;
+	}
+}
+
+DenseMatrix::DenseMatrix(const count nRows, const count nCols, const std::vector<double> &entries, const double zero) : nRows(nRows), nCols(nCols), entries(entries), zero(zero) {
 	assert(entries.size() == nRows * nCols);
+}
+
+count DenseMatrix::nnzInRow(const index i) const {
+	count nnz = 0;
+	for (index offset = i*numberOfColumns(); offset < (i+1)*numberOfColumns(); ++offset) {
+		if (fabs(entries[offset]) > EPSILON) nnz++; // TODO: not working with other zero values
+	}
+	return nnz;
+}
+
+count DenseMatrix::nnz() const {
+	count nnz = 0;
+	for (index k = 0; k < entries.size(); ++k) {
+		if (fabs(entries[k]) > EPSILON) nnz++; // TODO: not working with other zero values
+	}
+	return nnz;
 }
 
 double DenseMatrix::operator()(const index i, const index j) const {
@@ -25,7 +57,7 @@ void DenseMatrix::setValue(const index i, const index j, const double value) {
 }
 
 Vector DenseMatrix::row(const index i) const {
-	Vector row(numberOfColumns(), 0.0, true);
+	Vector row(numberOfColumns(), zero, true);
 	index offset = i * numberOfColumns();
 #pragma omp parallel for
 	for (index j = 0; j < numberOfColumns(); ++j) {
@@ -36,7 +68,7 @@ Vector DenseMatrix::row(const index i) const {
 }
 
 Vector DenseMatrix::column(const index j) const {
-	Vector column(numberOfRows(), 0.0);
+	Vector column(numberOfRows(), zero);
 #pragma omp parallel for
 	for (index i = 0; i < numberOfRows(); ++i) {
 		column[i] = entries[i * numberOfColumns() + j];
@@ -46,7 +78,7 @@ Vector DenseMatrix::column(const index j) const {
 }
 
 Vector DenseMatrix::diagonal() const {
-	Vector diagonal(std::min(numberOfRows(), numberOfColumns()), 0.0);
+	Vector diagonal(std::min(numberOfRows(), numberOfColumns()), zero);
 #pragma omp parallel for
 	for (index i = 0; i < diagonal.getDimension(); ++i) {
 		diagonal[i] = (*this)(i,i);
@@ -94,7 +126,7 @@ Vector DenseMatrix::operator*(const Vector &vector) const {
 	assert(!vector.isTransposed());
 	assert(numberOfColumns() == vector.getDimension());
 
-	Vector result(numberOfRows(), 0.0);
+	Vector result(numberOfRows(), zero);
 #pragma omp parallel for
 	for (index i = 0; i < numberOfRows(); ++i) {
 		index offset = i * numberOfColumns();
@@ -112,7 +144,7 @@ DenseMatrix DenseMatrix::operator*(const DenseMatrix &other) const {
 
 #pragma omp parallel for
 	for (index i = 0; i < numberOfRows(); ++i) {
-		index offset = i * numberOfRows();
+		index offset = i * other.numberOfColumns();
 		for (index k = 0; k < numberOfColumns(); ++k) {
 			double val_i_k = (*this)(i,k);
 			for (index j = 0; j < other.numberOfColumns(); ++j) {

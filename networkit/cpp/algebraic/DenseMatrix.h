@@ -9,8 +9,8 @@
 #define NETWORKIT_CPP_ALGEBRAIC_DENSEMATRIX_H_
 
 #include "../Globals.h"
+#include "AlgebraicGlobals.h"
 #include "Vector.h"
-
 #include <cassert>
 #include <vector>
 
@@ -25,10 +25,39 @@ private:
 	count nRows;
 	count nCols;
 	std::vector<double> entries;
+	double zero;
 
 public:
 	/** Default constructor */
 	DenseMatrix();
+
+	/**
+	 * Constructs the DenseMatrix with size @a dimension x @a dimension.
+	 * @param dimension Defines how many rows and columns this matrix has.
+	 */
+	DenseMatrix(const count dimension, double zero = 0.0);
+
+	/**
+	 * Constructs the DenseMatrix with size @a nRows x @a nCols.
+	 * @param nRows Number of rows.
+	 * @param nCols Number of columns.
+	 */
+	DenseMatrix(const count nRows, const count nCols, double zero = 0.0);
+
+	/**
+	 * Constructs the @a dimension x @a dimension DenseMatrix from the elements at position @a positions with values @values.
+	 * @param dimension Defines how many rows and columns this matrix has.
+	 * @param triplets The nonzero elements.
+	 */
+	DenseMatrix(const count dimension, const std::vector<Triplet>& triplets, double zero = 0.0);
+
+	/**
+	 * Constructs the @a nRows x @a nCols DenseMatrix from the elements at position @a positions with values @values.
+	 * @param nRows Defines how many rows this matrix has.
+	 * @param nCols Defines how many columns this matrix has.
+	 * @param triplets The nonzero elements.
+	 */
+	DenseMatrix(const count nRows, const count nCols, const std::vector<Triplet>& triplets, double zero = 0.0);
 
 	/**
 	 * Constructs an instance of DenseMatrix given the number of rows (@a nRows) and the number of columns (@a nCols) and its
@@ -38,7 +67,7 @@ public:
 	 * @param entries Entries of the matrix.
 	 * @note The size of the @a entries vector should be equal to @a nRows * @a nCols.
 	 */
-	DenseMatrix(const count nRows, const count nCols, const std::vector<double> &entries);
+	DenseMatrix(const count nRows, const count nCols, const std::vector<double>& entries, double zero = 0.0);
 
 	/** Default destructor */
 	virtual ~DenseMatrix() = default;
@@ -68,6 +97,26 @@ public:
 	inline count numberOfColumns() const {
 		return nCols;
 	}
+
+	/**
+	 * Returns the zero element of the matrix.
+	 */
+	inline double getZero() const {
+		return zero;
+	}
+
+	/**
+	 * @param i The row index.
+	 * @return Number of non-zeros in row @a i.
+	 * @note This function is linear in the number of columns of the matrix.
+	 */
+	count nnzInRow(const index i) const;
+
+	/**
+	 * @return Number of non-zeros in this matrix.
+	 * @note This function takes nRows * nCols operations.
+	 */
+	count nnz() const;
 
 	/**
 	 * @return Value at matrix position (i,j).
@@ -183,12 +232,12 @@ public:
 	/**
 	 * Iterate over all non-zero elements of row @a row in the matrix and call handler(index column, double value)
 	 */
-	template<typename L> void forElementsInRow(index i, L handle) const;
+	template<typename L> void forElementsInRow(index row, L handle) const;
 
 	/**
 	 * Iterate in parallel over all non-zero elements of row @a row in the matrix and call handler(index column, double value)
 	 */
-	template<typename L> void parallelForElementsInRow(index i, L handle) const;
+	template<typename L> void parallelForElementsInRow(index row, L handle) const;
 
 	/**
 	 * Iterate over all non-zero elements of the matrix in row order and call handler (lambda closure).
@@ -199,17 +248,12 @@ public:
 	 * Iterate in parallel over all rows and call handler (lambda closure) on non-zero elements of the matrix.
 	 */
 	template<typename L> void parallelForElementsInRowOrder(L handle) const;
-
-	/**
-	 * Iterate in parallel over all rows and call handler (lambda closure) on non-zero elements of the matrix.
-	 */
-	template<typename L> void parallelForElementsInRowOrder(L handle);
 };
 
 template<typename L> inline DenseMatrix NetworKit::DenseMatrix::binaryOperator(const DenseMatrix &A, const DenseMatrix &B, L binaryOp) {
 	assert(A.nRows == B.nRows && A.nCols == B.nCols);
 
-	std::vector<double> resultEntries(A.numberOfRows() * A.numberOfColumns());
+	std::vector<double> resultEntries(A.numberOfRows() * A.numberOfColumns(), 0.0);
 
 #pragma omp parallel for
 	for (index i = 0; i < A.numberOfRows(); ++i) {
@@ -251,17 +295,6 @@ inline void NetworKit::DenseMatrix::forElementsInRowOrder(L handle) const {
 
 template<typename L>
 inline void NetworKit::DenseMatrix::parallelForElementsInRowOrder(L handle) const {
-#pragma omp parallel for
-	for (index i = 0; i < nRows; ++i) {
-		index offset = i * numberOfColumns();
-		for (index k = offset, j = 0; k < offset + numberOfColumns(); ++k, ++j) {
-			handle(i, j, entries[k]);
-		}
-	}
-}
-
-template<typename L>
-inline void NetworKit::DenseMatrix::parallelForElementsInRowOrder(L handle) {
 #pragma omp parallel for
 	for (index i = 0; i < nRows; ++i) {
 		index offset = i * numberOfColumns();

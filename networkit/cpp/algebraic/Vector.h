@@ -10,6 +10,7 @@
 
 #include <vector>
 #include "../Globals.h"
+#include "AlgebraicGlobals.h"
 #include <cassert>
 
 namespace NetworKit {
@@ -151,7 +152,8 @@ public:
 	 * @param v2 Second Vector.
 	 * @return The resulting matrix from the outer product.
 	 */
-	static Matrix outerProduct(const Vector &v1, const Vector &v2);
+	template<class MATRIX = Matrix>
+	static MATRIX outerProduct(const Vector& v1, const Vector& v2);
 
 	/**
 	 * Computes the inner product (dot product) of the vectors @a v1 and @a v2.
@@ -169,7 +171,8 @@ public:
 	 * Multiplies this vector with @a matrix and returns the result.
 	 * @return The result of multiplying this vector with @a matrix.
 	 */
-	Vector operator*(const Matrix &matrix) const;
+	template<typename MATRIX = Matrix>
+	Vector operator*(const MATRIX& matrix) const;
 
 	/**
 	 * Multiplies this vector with a scalar specified in @a scalar and returns the result in a new vector.
@@ -268,32 +271,61 @@ public:
 
 };
 
-} /* namespace NetworKit */
-
 /**
  * Multiplies the vector @a v with a scalar specified in @a scalar and returns the result.
  * @return The result of multiplying this vector with @a scalar.
  */
-inline NetworKit::Vector operator*(const double &scalar, const NetworKit::Vector &v) {
+inline Vector operator*(const double &scalar, const Vector &v) {
 	return v.operator*(scalar);
 }
 
+template<class MATRIX>
+MATRIX Vector::outerProduct(const Vector& v1, const Vector& v2) {
+	std::vector<Triplet> triplets;
+
+	for (index i = 0; i < v1.getDimension(); ++i) {
+		for (index j = 0; j < v2.getDimension(); ++j) {
+			double result = v1[i] * v2[j];
+			if (fabs(result) >= EPSILON) {
+				triplets.push_back({i,j,result});
+			}
+		}
+	}
+
+	return MATRIX(v1.getDimension(), v2.getDimension(), triplets);
+}
+
+template<class MATRIX>
+Vector Vector::operator*(const MATRIX& matrix) const {
+	assert(isTransposed()); // vector must be of the form 1xn
+	assert(getDimension() == matrix.numberOfRows()); // dimensions of vector and matrix must match
+
+	Vector result(matrix.numberOfColumns(), 0.0, true);
+#pragma omp parallel for
+	for (count k = 0; k < matrix.numberOfColumns(); ++k) {
+		Vector column = matrix.column(k);
+		result[k] = (*this) * column;
+	}
+
+	return result;
+}
+
 template<typename L>
-inline void NetworKit::Vector::forElements(L handle) {
+inline void Vector::forElements(L handle) {
 	for (uint64_t i = 0; i < getDimension(); i++) {
 		handle(values[i]);
 	}
 }
 
 template<typename L>
-inline void NetworKit::Vector::forElements(L handle) const {
+inline void Vector::forElements(L handle) const {
 	for (uint64_t i = 0; i < getDimension(); i++) {
 		handle(values[i]);
 	}
 }
 
 template<typename L>
-inline void NetworKit::Vector::parallelForElements(L handle) {
+inline void Vector::parallelForElements(L handle) {
 #pragma omp parallel for
 	for (uint64_t i = 0; i < getDimension(); i++) {
 		handle(i, values[i]);
@@ -301,11 +333,15 @@ inline void NetworKit::Vector::parallelForElements(L handle) {
 }
 
 template<typename L>
-inline void NetworKit::Vector::parallelForElements(L handle) const {
+inline void Vector::parallelForElements(L handle) const {
 #pragma omp parallel for
 	for (uint64_t i = 0; i < getDimension(); i++) {
 		handle(i, values[i]);
 	}
 }
+
+
+} /* namespace NetworKit */
+
 
 #endif /* VECTOR_H_ */
