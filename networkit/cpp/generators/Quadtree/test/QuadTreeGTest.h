@@ -18,9 +18,6 @@ using std::vector;
 
 namespace NetworKit {
 
-typedef uint64_t index; // more expressive name for an index into an array
-typedef uint64_t count; // more expressive name for an integer quantity
-
 class QuadTreeGTest: public testing::Test {
 public:
 	QuadTreeGTest();
