@@ -11,6 +11,7 @@
 #include <vector>
 #include <algorithm>
 #include <cassert>
+#include "../Globals.h"
 
 namespace NetworKit {
 
@@ -46,6 +47,11 @@ public:
 	 * @param pos The position in values.
 	 */
 	void scatter(double value, index pos) {
+		scatter(value, pos, [](const double a, const double b) {return a+b;});
+	}
+
+	template<typename L>
+	void scatter(double value, index pos, L handle) {
 		assert(pos < values.size());
 
 		if (occupied[pos] < row) {
@@ -53,7 +59,7 @@ public:
 			occupied[pos] = row;
 			indices.push_back(pos);
 		} else {
-			values[pos] += value;
+			values[pos] = handle(values[pos], value);
 		}
 	}
 
