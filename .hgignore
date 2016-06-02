@@ -39,6 +39,7 @@ scripts/SparsificationEvaluation/output/
 scripts/SparsificationEvaluation/figures
 input/backbones/
 build/
+Doc/Website
 
 syntax: regexp
 ^output$
