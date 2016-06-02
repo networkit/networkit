@@ -1,0 +1,131 @@
+
+blockquote p {
+    font-size: 14px !important;
+}
+
+blockquote {
+    margin: 0 0 4px !important;
+}
+
+code {
+    color: #49759c !important;
+    background-color: #f3f5f9 !important;
+}
+
+body {
+  color: #000000;
+}
+
+.rst-content .hidden {
+    display: none;
+}
+
+nav .hidden {
+    display: unset;
+}
+
+.navbar {
+  background: url(bg2.jpg);
+  background-size: cover;
+  background-position: center center;
+  border-radius: 0px;
+}
+
+.home_navbar {
+  background: url(bg1.jpg);
+  background-size: cover;
+  background-position: center center;
+  height: 400px;
+}
+
+/* Adjust Menu colors - Hover */
+.navbar .nav > li > a:hover, .navbar .nav > li > a:hover:first-letter, .navbar-default .navbar-nav>li>a:hover, .navbar-default .navbar-brand:hover {
+color:          white;
+text-shadow:    none;
+text-decoration: none;
+}
+
+.videoWrapper {
+	position: relative;
+	padding-bottom: 56.25%; /* 16:9 */
+	padding-top: 25px;
+	height: 0;
+}
+.videoWrapper iframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+/* Adjust Menu colors - Hover */
+a, a:hover {
+color:          #0C54A6;
+text-shadow:    none;
+text-decoration: none;
+}
+
+.customButton {
+  box-sizing: border-box;
+  margin: 0;
+  text-decoration: none;
+  transition: all 0.5s ease;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  border-radius: 2px;
+  outline: none;
+  padding: 6.25px 10px 5.5px 10px;
+  display: inline-block;
+  background: transparent;
+  border: 1px solid #fff;
+  color: #fff;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+}
+
+.customButton:hover {
+  box-sizing: border-box;
+  margin: 0;
+  text-decoration: none;
+  transition: all 0.5s ease;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  border-radius: 2px;
+  outline: none;
+  padding: 6.25px 10px 5.5px 10px;
+  display: inline-block;
+  background: #fff;
+  border: 1px solid #fff;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+}
+
+
+.navbar-default {
+  color:#ffffff;
+}
+
+.navbar-text {
+  color:#ffffff;
+}
+
+.alert-info {
+    background-color: #adb8cb !important;
+    border-color: #adb8cb !important;
+    color: #2c3e50 !important;
+}
+
+.headerlink:before {
+
+  display: block;
+  context: " ";
+  height: 200px; /*same height as header*/
+  margin-top: -200px; /*same height as header*/
+  visibility: hidden;
+
+}
