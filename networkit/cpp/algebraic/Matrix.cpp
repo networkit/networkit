@@ -222,7 +222,7 @@ Vector Matrix::mTvMultiply(const Matrix &matrix, const Vector &vector) {
 Matrix Matrix::transpose() const {
 	Matrix transposedMatrix(numberOfColumns(), numberOfRows());
 	parallelForNonZeroElementsInRowOrder([&](index i, index j, edgeweight weight){
-		transposedMatrix.graph.addEdge(i,j,weight);
+		transposedMatrix.graph.addEdge(j,i,weight);
 	});
 
 	return transposedMatrix;

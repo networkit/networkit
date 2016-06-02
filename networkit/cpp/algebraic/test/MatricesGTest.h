@@ -30,7 +30,11 @@ public:
 	template<class MATRIX>
 	void testRowAndColumnAccess();
 
-	// TODO: test diagonal!
+	template<class MATRIX>
+	void testDiagonalVector();
+
+	template<class MATRIX>
+	void testTranspose();
 
 	template<class MATRIX>
 	void testMatrixAddition();
@@ -180,6 +184,124 @@ void MatricesGTest::testRowAndColumnAccess() {
 			EXPECT_EQ(0, v[i]);
 		}
 	}
+}
+
+template<class MATRIX>
+void MatricesGTest::testDiagonalVector() {
+	// 1  2  3  0
+	// 2  2  0  0
+	// 3  0  0 -1
+	// 0  0 -1  4
+	std::vector<Triplet> triplets = {{0,0,1}, {0,1,2}, {0,2,3}, {1,0,2}, {1,1,2}, {2,0,3}, {2,3,-1}, {3,2,-1}, {3,3,4}};
+
+	MATRIX mat(4,4,triplets);
+	Vector diagonal = mat.diagonal();
+	EXPECT_EQ(4u, diagonal.getDimension());
+	EXPECT_EQ(1, diagonal[0]);
+	EXPECT_EQ(2, diagonal[1]);
+	EXPECT_EQ(0, diagonal[2]);
+	EXPECT_EQ(4, diagonal[3]);
+
+	// rectangular matrix
+	//
+	// 1 0 0 0 0
+	// 0 0 3 0 0
+	triplets = {{0,0,1}, {1,2,3}};
+	mat = MATRIX(2,5,triplets);
+	diagonal = mat.diagonal();
+	EXPECT_EQ(2u, diagonal.getDimension());
+	EXPECT_EQ(1, diagonal[0]);
+	EXPECT_EQ(0, diagonal[1]);
+
+	// rectangular matrix
+	//
+	// 1 0
+	// 0 -3
+	// 0 0
+	// 0 0
+	// 0 0
+	triplets = {{0,0,1.0}, {1,1,-3.0}};
+	mat = MATRIX(5,2,triplets);
+	diagonal = mat.diagonal();
+	EXPECT_EQ(2u, diagonal.getDimension());
+	EXPECT_EQ(1, diagonal[0]);
+	EXPECT_EQ(-3, diagonal[1]);
+}
+
+template<class MATRIX>
+void MatricesGTest::testTranspose() {
+	// 1  0  1  0
+	// 2  2  0  0
+	// 3  0  0 -1
+	// 0  0  1  4
+	std::vector<Triplet> triplets = {{0,0,1}, {0,2,1}, {1,0,2}, {1,1,2}, {2,0,3}, {2,3,-1}, {3,2,1}, {3,3,4}};
+
+	MATRIX mat(4,4,triplets);
+	MATRIX matT = mat.transpose();
+	EXPECT_EQ(4u, matT.numberOfRows());
+	EXPECT_EQ(4u, matT.numberOfColumns());
+
+	EXPECT_EQ(1, matT(0,0));
+	EXPECT_EQ(2, matT(0,1));
+	EXPECT_EQ(3, matT(0,2));
+	EXPECT_EQ(0, matT(0,3));
+	EXPECT_EQ(0, matT(1,0));
+	EXPECT_EQ(2, matT(1,1));
+	EXPECT_EQ(0, matT(1,2));
+	EXPECT_EQ(0, matT(1,3));
+	EXPECT_EQ(1, matT(2,0));
+	EXPECT_EQ(0, matT(2,1));
+	EXPECT_EQ(0, matT(2,2));
+	EXPECT_EQ(1, matT(2,3));
+	EXPECT_EQ(0, matT(3,0));
+	EXPECT_EQ(0, matT(3,1));
+	EXPECT_EQ(-1, matT(3,2));
+	EXPECT_EQ(4, matT(3,3));
+
+	// rectangular matrix
+	//
+	// 1 0 0 0 0
+	// 0 0 3 0 0
+	triplets = {{0,0,1}, {1,2,3}};
+	mat = MATRIX(2,5,triplets);
+	matT = mat.transpose();
+	EXPECT_EQ(5u, matT.numberOfRows());
+	EXPECT_EQ(2u, matT.numberOfColumns());
+
+	EXPECT_EQ(1, matT(0,0));
+	EXPECT_EQ(0, matT(0,1));
+	EXPECT_EQ(0, matT(1,0));
+	EXPECT_EQ(0, matT(1,1));
+	EXPECT_EQ(0, matT(2,0));
+	EXPECT_EQ(3, matT(2,1));
+	EXPECT_EQ(0, matT(3,0));
+	EXPECT_EQ(0, matT(3,1));
+	EXPECT_EQ(0, matT(4,0));
+	EXPECT_EQ(0, matT(4,1));
+
+	// rectangular matrix
+	//
+	// 1 0
+	// 0 0
+	// 0 3
+	// 0 0
+	// 0 0
+	triplets = {{0,0,1.0}, {2,1,3.0}};
+	mat = MATRIX(5,2,triplets);
+	matT = mat.transpose();
+	EXPECT_EQ(2u, matT.numberOfRows());
+	EXPECT_EQ(5u, matT.numberOfColumns());
+
+	EXPECT_EQ(1, matT(0,0));
+	EXPECT_EQ(0, matT(0,1));
+	EXPECT_EQ(0, matT(0,2));
+	EXPECT_EQ(0, matT(0,3));
+	EXPECT_EQ(0, matT(0,4));
+	EXPECT_EQ(0, matT(1,0));
+	EXPECT_EQ(0, matT(1,1));
+	EXPECT_EQ(3, matT(1,2));
+	EXPECT_EQ(0, matT(1,3));
+	EXPECT_EQ(0, matT(1,4));
 }
 
 template<class MATRIX>

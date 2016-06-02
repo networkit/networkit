@@ -277,7 +277,6 @@ public:
 
 	/**
 	 * Transposes this matrix and returns it.
-	 * @return The transposed matrix of this matrix.
 	 */
 	CSRMatrix transpose() const;
 
