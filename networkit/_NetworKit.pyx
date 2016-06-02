@@ -2045,8 +2045,8 @@ cdef extern from "cpp/generators/HyperbolicGenerator.h":
 		_Graph generateExternal(vector[double] angles, vector[double] radii, double r, double thresholdDistance) except +
 
 cdef class HyperbolicGenerator:
-	""" The Hyperbolic Generator distributes points in hyperbolic space and adds edges between points with a probability depending on their distance. The resulting graphs have a power-law degree distribution, small diameter and high clustering coefficient.
-For a temperature of 0, the model resembles a unit-disk model in hyperbolic space.
+	""" The Hyperbolic Generator distributes points in hyperbolic space and adds edges between points if their hyperbolic distance is below a threshold. The resulting graphs have a power-law degree distribution, small diameter and high clustering coefficient.
+		Geometrically, the model resembles a unit-disk model in hyperbolic space. Time complexity is O((n^(3/2)+m)*log n).
 
  		HyperbolicGenerator(n, k=6, gamma=3)
 
@@ -2069,19 +2069,46 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		self._this = new _HyperbolicGenerator(n, k, gamma)
 
 	def setLeafCapacity(self, capacity):
+		"""
+		Tuning parameter to optimize performance. Default is 1024
+
+		Parameters
+		----------
+		capacity : integer
+			number of nodes that fit in a quadtree cell before it is split
+		"""
 		self._this.setLeafCapacity(capacity)
 
 	def setBalance(self, balance):
+		"""
+		Tuning parameter to optimize performance. Between 0 and 1.
+
+		Parameters
+		----------
+		balance : double
+			ratio of area going to outer nodes in radial split
+		"""
 		self._this.setBalance(balance)
 
 	def setTheoreticalSplit(self, theoreticalSplit):
 		self._this.setTheoreticalSplit(theoreticalSplit)
 
 	def getElapsedMilliseconds(self):
+		"""
+		Returns a list showing the time each thread spent generating the edge lists
+
+		Parameters
+		----------
+		None
+
+		Returns
+		-------
+		list[float]
+		"""
 		return self._this.getElapsedMilliseconds()
 
 	def generate(self):
-		""" Generates hyperbolic unit disk graph
+		""" Generates a hyperbolic unit disk graph
 
 		Returns
 		-------
@@ -2091,7 +2118,28 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		return Graph(0).setThis(self._this.generate())
 
 	def generateExternal(self, angles, radii, k, gamma):
-		# TODO: documentation
+		"""
+		Generates a graph given fixed point coordinates. Results are deterministic.
+
+		Parameters
+		----------
+		angles : list[float]
+			angular coordinates of input points
+		radii : list[float]
+			radial coordinates of input points
+		k : float
+			desired average degree
+		gamma : float
+			desired power-law exponent
+
+		The parameters k and gamma are only needed to calculate the disk radius R.
+		They should be the values used to generate the point coordinates.
+		If they are different, behaviour is undefined.
+
+		Returns
+		-------
+		Graph
+		"""
 		return Graph(0).setThis(self._this.generateExternal(angles, radii, k, gamma))
 
 	@classmethod
