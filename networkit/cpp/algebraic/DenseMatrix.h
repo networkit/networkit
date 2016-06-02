@@ -206,6 +206,11 @@ public:
 	DenseMatrix& operator/=(const double &divisor);
 
 	/**
+	 * Transposes this matrix and returns it.
+	 */
+	DenseMatrix transpose() const;
+
+	/**
 	 * Decomposes the given @a matrix into lower L and upper U matrix (in-place).
 	 * @param matrix The matrix to decompose into LU.
 	 */

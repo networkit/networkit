@@ -31,6 +31,18 @@ TEST_F(MatricesGTest, testRowAndColumnAccess) {
 	testRowAndColumnAccess<DenseMatrix>();
 }
 
+TEST_F(MatricesGTest, testDiagonalVector) {
+	testDiagonalVector<Matrix>();
+	testDiagonalVector<CSRMatrix>();
+	testDiagonalVector<DenseMatrix>();
+}
+
+TEST_F(MatricesGTest, testTranspose) {
+	testTranspose<Matrix>();
+	testTranspose<CSRMatrix>();
+	testTranspose<DenseMatrix>();
+}
+
 TEST_F(MatricesGTest, testMatrixAddition) {
 	testMatrixAddition<Matrix>();
 	testMatrixAddition<CSRMatrix>();

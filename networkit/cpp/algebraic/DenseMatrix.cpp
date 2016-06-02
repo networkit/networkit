@@ -164,6 +164,15 @@ DenseMatrix& DenseMatrix::operator/=(const double &divisor) {
 	return *this *= 1.0 / divisor;
 }
 
+DenseMatrix DenseMatrix::transpose() const {
+	DenseMatrix transposedMatrix(numberOfColumns(), numberOfRows(), std::vector<double>(numberOfRows()*numberOfColumns(), getZero()));
+	parallelForElementsInRowOrder([&](index i, index j, double value) {
+		transposedMatrix.setValue(j,i,value);
+	});
+
+	return transposedMatrix;
+}
+
 void DenseMatrix::LUDecomposition(DenseMatrix &matrix) {
 	assert(matrix.numberOfRows() == matrix.numberOfColumns());
 	for (index k = 0; k < matrix.numberOfRows()-1; ++k) {

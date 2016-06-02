@@ -200,6 +200,9 @@ public:
 
 	static Vector mTvMultiply(const Matrix &matrix, const Vector &vector);
 
+	/**
+	 * Transposes this matrix and returns it.
+	 */
 	Matrix transpose() const;
 
 	/**
