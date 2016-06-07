@@ -166,11 +166,36 @@ DenseMatrix& DenseMatrix::operator/=(const double &divisor) {
 
 DenseMatrix DenseMatrix::transpose() const {
 	DenseMatrix transposedMatrix(numberOfColumns(), numberOfRows(), std::vector<double>(numberOfRows()*numberOfColumns(), getZero()));
-	parallelForElementsInRowOrder([&](index i, index j, double value) {
+	forElementsInRowOrder([&](index i, index j, double value) {
 		transposedMatrix.setValue(j,i,value);
 	});
 
 	return transposedMatrix;
+}
+
+DenseMatrix DenseMatrix::extract(const std::vector<index>& rowIndices, const std::vector<index>& columnIndices) const {
+	DenseMatrix result(rowIndices.size(), columnIndices.size(), std::vector<double>(rowIndices.size() * columnIndices.size(), getZero()));
+	for (index i = 0; i < rowIndices.size(); ++i) {
+		for (index j = 0; j < columnIndices.size(); ++j) {
+			double value = (*this)(rowIndices[i], columnIndices[j]);
+			if (fabs(value - getZero()) > EPSILON) {
+				result.setValue(i,j,value);
+			}
+		}
+	}
+
+	return result;
+}
+
+void DenseMatrix::assign(const std::vector<index>& rowIndices, const std::vector<index>& columnIndices, const DenseMatrix& source) {
+	assert(rowIndices.size() == source.numberOfRows());
+	assert(columnIndices.size() == source.numberOfColumns());
+
+	for (index i = 0; i < rowIndices.size(); ++i) {
+		source.forElementsInRow(i, [&](index j, double value) {
+			setValue(rowIndices[i], columnIndices[j], value);
+		});
+	}
 }
 
 void DenseMatrix::LUDecomposition(DenseMatrix &matrix) {

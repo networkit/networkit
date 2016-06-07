@@ -133,8 +133,8 @@ bool MultiLevelSetup::coarseningElimination(CSRMatrix &matrix, LevelHierarchy &h
 		schurTimer.start();
 #endif
 
-		CSRMatrix Acc = matrix.subMatrix(cSet, cSet); // Schur complement
-		CSRMatrix Acf = matrix.subMatrix(cSet, fSet); // Schur complement
+		CSRMatrix Acc = matrix.extract(cSet, cSet); // Schur complement
+		CSRMatrix Acf = matrix.extract(cSet, fSet); // Schur complement
 
 		matrix = Acc + Acf * P;
 

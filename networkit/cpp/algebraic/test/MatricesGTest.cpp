@@ -43,6 +43,22 @@ TEST_F(MatricesGTest, testTranspose) {
 	testTranspose<DenseMatrix>();
 }
 
+TEST_F(MatricesGTest, testExtract) {
+	testExtract<Matrix>();
+	testExtract<CSRMatrix>();
+}
+
+TEST_F(MatricesGTest, testAssign) {
+	testAssign<Matrix>();
+	testAssign<CSRMatrix>();
+	testAssign<DenseMatrix>();
+}
+
+TEST_F(MatricesGTest, testApply) {
+	testApply<Matrix>();
+	testApply<CSRMatrix>();
+}
+
 TEST_F(MatricesGTest, testMatrixAddition) {
 	testMatrixAddition<Matrix>();
 	testMatrixAddition<CSRMatrix>();
@@ -82,6 +98,21 @@ TEST_F(MatricesGTest, testMatrixMultiplication) {
 TEST_F(MatricesGTest, testBigMatrixMultiplcation) {
 	testBigMatrixMultiplication<Matrix>();
 	testBigMatrixMultiplication<CSRMatrix>();
+}
+
+TEST_F(MatricesGTest, testAdjacencyMatrixOfGraph) {
+	testAdjacencyMatrix<Matrix>();
+	testAdjacencyMatrix<CSRMatrix>();
+}
+
+TEST_F(MatricesGTest, testDiagonalMatrix) {
+	testDiagonalMatrix<Matrix>();
+	testDiagonalMatrix<CSRMatrix>();
+}
+
+TEST_F(MatricesGTest, testIncidenceMatrix) {
+	testIncidenceMatrix<Matrix>();
+	testIncidenceMatrix<CSRMatrix>();
 }
 
 TEST_F(MatricesGTest, testLaplacianMatrixOfGraph) {

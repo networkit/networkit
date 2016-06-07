@@ -35,6 +35,7 @@ public:
 	/**
 	 * Constructs the Matrix with size @a dimension x @a dimension.
 	 * @param dimension Defines how many rows and columns this matrix has.
+	 * @param zero The zero element (default is 0.0).
 	 */
 	Matrix(const count dimension, const double zero = 0.0);
 
@@ -43,6 +44,7 @@ public:
 	 * Constructs the Matrix with size @a nRows x @a nCols.
 	 * @param nRows Number of rows.
 	 * @param nCols Number of columns.
+	 * @param zero The zero element (default is 0.0).
 	 */
 	Matrix(const count nRows, const count nCols, const double zero = 0.0);
 
@@ -50,6 +52,7 @@ public:
 	 * Constructs the @a dimension x @a dimension Matrix from the elements at position @a positions with values @values.
 	 * @param dimension Defines how many rows and columns this matrix has.
 	 * @param triplets The nonzero elements.
+	 * @param zero The zero element (default is 0.0).
 	 */
 	Matrix(const count dimension, const std::vector<Triplet>& triplets, const double zero = 0.0);
 
@@ -58,6 +61,7 @@ public:
 	 * @param nRows Defines how many rows this matrix has.
 	 * @param nCols Defines how many columns this matrix has.
 	 * @param triplets The nonzero elements.
+	 * @param zero The zero element (default is 0.0).
 	 */
 	Matrix(const count nRows, const count nCols, const std::vector<Triplet>& triplets, const double zero = 0.0);
 
@@ -75,6 +79,24 @@ public:
 
 	/** Default copy assignment operator */
 	Matrix& operator=(const Matrix &other) = default;
+
+	bool operator==(const Matrix& other) const {
+		bool graphsEqual = graph.numberOfNodes() == other.graph.numberOfNodes() && graph.numberOfEdges() == other.graph.numberOfEdges();
+		if (graphsEqual) {
+			graph.forEdges([&](node u, node v, edgeweight w) {
+				if (w != other.graph.weight(u, v)) {
+					graphsEqual = false;
+					return;
+				}
+			});
+		}
+
+		return graphsEqual && nRows == other.nRows && nCols == other.nCols && zero == other.zero;
+	}
+
+	bool operator!=(const Matrix& other) const {
+		return !((*this) == other);
+	}
 
 	/**
 	 * @return Number of rows.
@@ -194,10 +216,25 @@ public:
 	 */
 	Matrix& operator/=(const double divisor);
 
+	/**
+	 * Computes A^T * B.
+	 * @param A
+	 * @param B
+	 */
 	static Matrix mTmMultiply(const Matrix &A, const Matrix &B);
 
+	/**
+	 * Computes A * B^T.
+	 * @param A
+	 * @param B
+	 */
 	static Matrix mmTMultiply(const Matrix &A, const Matrix &B);
 
+	/**
+	 * Computes matrix^T * vector
+	 * @param matrix
+	 * @param vector
+	 */
 	static Vector mTvMultiply(const Matrix &matrix, const Vector &vector);
 
 	/**
@@ -206,40 +243,69 @@ public:
 	Matrix transpose() const;
 
 	/**
+	 * Extracts a matrix with rows and columns specified by @a rowIndices and @a columnIndices from this matrix.
+	 * The order of rows and columns is equal to the order in @a rowIndices and @a columnIndices. It is also
+	 * possible to specify a row or column more than once to get duplicates.
+	 * @param rowIndices
+	 * @param columnIndices
+	 */
+	Matrix extract(const std::vector<index>& rowIndices, const std::vector<index>& columnIndices) const;
+
+	/**
+	 * Assign the contents of the matrix @a source to this matrix at rows and columns specified by @a rowIndices and
+	 * @a columnIndices. That is, entry (i,j) of @a source is assigned to entry (rowIndices[i], columnIndices[j]) of
+	 * this matrix. Note that the dimensions of @rowIndices and @a columnIndices must coincide with the number of rows
+	 * and columns of @a source.
+	 * @param rowIndices
+	 * @param columnIndices
+	 * @param source
+	 */
+	void assign(const std::vector<index>& rowIndices, const std::vector<index>& columnIndices, const Matrix& source);
+
+	/**
+	 * Applies the unary function @a unaryElementFunction to each value in the matrix. Note that it must hold that f(0) = 0.
+	 * @param unaryElementFunction
+	 */
+	template<typename F>
+	void apply(const F unaryElementFunction);
+
+	/**
 	 * Returns the (weighted) adjacency matrix of the (weighted) Graph @a graph.
 	 * @param graph
 	 */
-	static Matrix adjacencyMatrix(const Graph& graph);
+	static Matrix adjacencyMatrix(const Graph& graph, double zero = 0.0);
 
 	/**
 	 * Creates a diagonal matrix with dimension equal to the dimension of the Vector @a diagonalElements. The values on
 	 * the diagonal are the ones stored in @a diagonalElements (i.e. D(i,i) = diagonalElements[i]).
 	 * @param diagonalElements
 	 */
-	static Matrix diagonalMatrix(const Vector& diagonalElements);
+	static Matrix diagonalMatrix(const Vector& diagonalElements, double zero = 0.0);
 
 	/**
 	 * Returns the (weighted) incidence matrix of the (weighted) Graph @a graph.
 	 * @param graph
 	 */
-	static Matrix incidenceMatrix(const Graph& graph);
+	static Matrix incidenceMatrix(const Graph& graph, double zero = 0.0);
 
 	/**
 	 * Returns the (weighted) Laplacian matrix of the (weighteD) Graph @a graph.
 	 * @param graph
 	 */
-	static Matrix laplacianMatrix(const Graph& graph);
+	static Matrix laplacianMatrix(const Graph& graph,double zero = 0.0);
 
 	/**
 	 * Returns the (weighted) normalized Laplacian matrix of the (weighted) Graph @a graph
 	 * @param graph
 	 */
-	static Matrix normalizedLaplacianMatrix(const Graph& graph);
+	static Matrix normalizedLaplacianMatrix(const Graph& graph, double zero = 0.0);
 
 	/**
 	 * Iterate over all non-zero elements of row @a row in the matrix and call handler(index row, index column, double value)
 	 */
 	template<typename L> void forNonZeroElementsInRow(index row, L handle) const;
+
+	template<typename L> void forElementsInRow(index i, L handle) const;
 
 	/**
 	 * Iterate over all non-zero elements of the matrix in row order and call handler (lambda closure).
@@ -255,10 +321,26 @@ public:
 
 } /* namespace NetworKit */
 
+template<typename F>
+void NetworKit::Matrix::apply(const F unaryElementFunction) {
+	forNonZeroElementsInRowOrder([&](index i, index j, double value) {
+		setValue(i,j, unaryElementFunction(value));
+	});
+}
+
 template<typename L>
 inline void NetworKit::Matrix::forNonZeroElementsInRow(index row, L handle) const {
 	graph.forEdgesOf(row, [&](index j, edgeweight weight){
 		handle(j, weight);
+	});
+}
+
+template<typename L>
+inline void NetworKit::Matrix::forElementsInRow(index i, L handle) const {
+	Vector rowVector = row(i);
+	index j = 0;
+	rowVector.forElements([&](double value) {
+		handle(j++, value);
 	});
 }
 

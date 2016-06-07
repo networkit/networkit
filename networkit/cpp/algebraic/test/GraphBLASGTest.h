@@ -2,7 +2,7 @@
  * GraphBLASGTest.h
  *
  *  Created on: May 31, 2016
- *      Author: Michael
+ *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
 #ifndef NETWORKIT_CPP_ALGEBRAIC_TEST_GRAPHBLASGTEST_H_

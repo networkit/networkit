@@ -9,6 +9,7 @@
 #define NETWORKIT_CPP_ALGEBRAIC_TEST_MATRICESGTEST_H_
 
 #include "gtest/gtest.h"
+#include "../../auxiliary/Random.h"
 #include "../AlgebraicGlobals.h"
 #include "../Vector.h"
 #include "../../io/METISGraphReader.h"
@@ -17,6 +18,14 @@
 namespace NetworKit {
 
 class MatricesGTest : public testing::Test {
+protected:
+	virtual void SetUp() {
+		METISGraphReader reader;
+		graph = reader.read("input/PGPgiantcompo.graph");
+	}
+
+	Graph graph;
+
 public:
 	MatricesGTest() = default;
 	virtual ~MatricesGTest() = default;
@@ -35,6 +44,15 @@ public:
 
 	template<class MATRIX>
 	void testTranspose();
+
+	template<class MATRIX>
+	void testExtract();
+
+	template<class MATRIX>
+	void testAssign();
+
+	template<class MATRIX>
+	void testApply();
 
 	template<class MATRIX>
 	void testMatrixAddition();
@@ -56,6 +74,15 @@ public:
 
 	template<class MATRIX>
 	void testBigMatrixMultiplication();
+
+	template<class MATRIX>
+	void testAdjacencyMatrix();
+
+	template<class MATRIX>
+	void testDiagonalMatrix();
+
+	template<class MATRIX>
+	void testIncidenceMatrix();
 
 	template<class MATRIX>
 	void testLaplacianOfGraph();
@@ -302,6 +329,129 @@ void MatricesGTest::testTranspose() {
 	EXPECT_EQ(3, matT(1,2));
 	EXPECT_EQ(0, matT(1,3));
 	EXPECT_EQ(0, matT(1,4));
+}
+
+template<class MATRIX>
+void MatricesGTest::testExtract() {
+	MATRIX mat = MATRIX::adjacencyMatrix(graph);
+	std::vector<index> rows(500);
+	std::vector<index> columns(500);
+
+	for (index i = 0; i < 500; ++i) {
+		rows[i] = Aux::Random::integer(graph.numberOfNodes()-1);
+		columns[i] = Aux::Random::integer(graph.numberOfNodes()-1);
+	}
+
+	MATRIX subMatrix = mat.extract(rows, columns);
+	ASSERT_EQ(rows.size(), subMatrix.numberOfRows());
+	ASSERT_EQ(columns.size(), subMatrix.numberOfColumns());
+
+	for (index i = 0; i < subMatrix.numberOfRows(); ++i) {
+		for (index j = 0; j < subMatrix.numberOfColumns(); ++j) {
+			EXPECT_EQ(mat(rows[i], columns[j]), subMatrix(i,j));
+		}
+	}
+
+
+	// 1  0  1  0
+	// 2  2  0  0
+	// 3  0  0 -1
+	// 0  0  1  4
+	std::vector<Triplet> triplets = {{0,0,1}, {0,2,1}, {1,0,2}, {1,1,2}, {2,0,3}, {2,3,-1}, {3,2,1}, {3,3,4}};
+
+	mat = MATRIX(4,4,triplets);
+	rows = {0,2,0};
+	columns = {1,0,2,1};
+
+	//
+	// 0 1 1 0
+	// 0 3 0 0
+	// 0 1 1 0
+	//
+	subMatrix = mat.extract(rows, columns);
+	ASSERT_EQ(3u, subMatrix.numberOfRows());
+	ASSERT_EQ(4u, subMatrix.numberOfColumns());
+
+	EXPECT_EQ(0, subMatrix(0,0));
+	EXPECT_EQ(1, subMatrix(0,1));
+	EXPECT_EQ(1, subMatrix(0,2));
+	EXPECT_EQ(0, subMatrix(0,3));
+	EXPECT_EQ(0, subMatrix(1,0));
+	EXPECT_EQ(3, subMatrix(1,1));
+	EXPECT_EQ(0, subMatrix(1,2));
+	EXPECT_EQ(0, subMatrix(1,3));
+	EXPECT_EQ(0, subMatrix(2,0));
+	EXPECT_EQ(1, subMatrix(2,1));
+	EXPECT_EQ(1, subMatrix(2,2));
+	EXPECT_EQ(0, subMatrix(2,3));
+}
+
+template<class MATRIX>
+void MatricesGTest::testAssign() {
+	// 1  0  1  0
+	// 2  2  0  0
+	// 3  0  0 -1
+	// 0  0  1  4
+	std::vector<Triplet> triplets = {{0,0,1}, {0,2,1}, {1,0,2}, {1,1,2}, {2,0,3}, {2,3,-1}, {3,2,1}, {3,3,4}};
+
+	MATRIX mat(4,4,triplets);
+
+	// -1 1
+	//  3 0
+	std::vector<Triplet> subTriplets = {{0,0,-1}, {0,1,1}, {1,0,3}};
+	MATRIX sourceMat(2,2,subTriplets);
+
+	std::vector<index> rows = {2,3};
+	std::vector<index> columns = {0, 2};
+	mat.assign(rows, columns, sourceMat);
+
+	EXPECT_EQ(1, mat(0,0));
+	EXPECT_EQ(0, mat(0,1));
+	EXPECT_EQ(1, mat(0,2));
+	EXPECT_EQ(0, mat(0,3));
+	EXPECT_EQ(2, mat(1,0));
+	EXPECT_EQ(2, mat(1,1));
+	EXPECT_EQ(0, mat(1,2));
+	EXPECT_EQ(0, mat(1,3));
+	EXPECT_EQ(-1, mat(2,0));
+	EXPECT_EQ(0, mat(2,1));
+	EXPECT_EQ(1, mat(2,2));
+	EXPECT_EQ(-1, mat(2,3));
+	EXPECT_EQ(3, mat(3,0));
+	EXPECT_EQ(0, mat(3,1));
+	EXPECT_EQ(0, mat(3,2));
+	EXPECT_EQ(4, mat(3,3));
+
+	rows = {2,3};
+	columns = {2,3};
+	mat.assign(rows, columns, sourceMat);
+
+	EXPECT_EQ(1, mat(0,0));
+	EXPECT_EQ(0, mat(0,1));
+	EXPECT_EQ(1, mat(0,2));
+	EXPECT_EQ(0, mat(0,3));
+	EXPECT_EQ(2, mat(1,0));
+	EXPECT_EQ(2, mat(1,1));
+	EXPECT_EQ(0, mat(1,2));
+	EXPECT_EQ(0, mat(1,3));
+	EXPECT_EQ(-1, mat(2,0));
+	EXPECT_EQ(0, mat(2,1));
+	EXPECT_EQ(-1, mat(2,2));
+	EXPECT_EQ(1, mat(2,3));
+	EXPECT_EQ(3, mat(3,0));
+	EXPECT_EQ(0, mat(3,1));
+	EXPECT_EQ(3, mat(3,2));
+	EXPECT_EQ(0, mat(3,3));
+}
+
+template<class MATRIX>
+void MatricesGTest::testApply() {
+	MATRIX mat = MATRIX::adjacencyMatrix(graph);
+
+	mat.apply([&](double value) {return 2 * value;});
+	graph.forEdges([&](index i, index j, double value) {
+		EXPECT_EQ(2 * value, mat(i,j));
+	});
 }
 
 template<class MATRIX>
@@ -722,19 +872,184 @@ void MatricesGTest::testMatrixMultiplication() {
 
 template<class MATRIX>
 void MatricesGTest::testBigMatrixMultiplication() {
-	METISGraphReader graphReader;
-	MATRIX mat = MATRIX::adjacencyMatrix(graphReader.read("input/PGPgiantcompo.graph"));
-
+	MATRIX mat = MATRIX::adjacencyMatrix(graph);
 	MATRIX result = mat * mat;
 	ASSERT_EQ(mat.numberOfRows(), result.numberOfRows());
 	ASSERT_EQ(mat.numberOfColumns(), result.numberOfColumns());
+}
+
+template<class MATRIX>
+void MatricesGTest::testAdjacencyMatrix() {
+	Graph G(6);
+	G.addEdge(0,0);
+	G.addEdge(0,1);
+	G.addEdge(0,4);
+	G.addEdge(1,2);
+	G.addEdge(1,4);
+	G.addEdge(2,3);
+	G.addEdge(3,4);
+	G.addEdge(3,5);
+
+	MATRIX mat = MATRIX::adjacencyMatrix(G);
+
+	// first row
+	EXPECT_EQ(1, mat(0,0));
+	EXPECT_EQ(1, mat(0,1));
+	EXPECT_EQ(0, mat(0,2));
+	EXPECT_EQ(0, mat(0,3));
+	EXPECT_EQ(1, mat(0,4));
+	EXPECT_EQ(0, mat(0,5));
+
+	// third row
+	EXPECT_EQ(0, mat(2,0));
+	EXPECT_EQ(1, mat(2,1));
+	EXPECT_EQ(0, mat(2,2));
+	EXPECT_EQ(1, mat(2,3));
+	EXPECT_EQ(0, mat(2,4));
+	EXPECT_EQ(0, mat(2,5));
+
+	// fifth row
+	EXPECT_EQ(1, mat(4,0));
+	EXPECT_EQ(1, mat(4,1));
+	EXPECT_EQ(0, mat(4,2));
+	EXPECT_EQ(1, mat(4,3));
+	EXPECT_EQ(0, mat(4,4));
+	EXPECT_EQ(0, mat(4,5));
+
+
+	// directed, weighted G
+	Graph dGraph(4, true, true);
+	dGraph.addEdge(0,1,2);
+	dGraph.addEdge(0,0, 42);
+	dGraph.addEdge(2,3,-3);
+	dGraph.addEdge(3,2,5);
+
+	mat = MATRIX::adjacencyMatrix(dGraph);
+	ASSERT_EQ(dGraph.numberOfNodes(), mat.numberOfRows());
+	ASSERT_EQ(dGraph.numberOfNodes(), mat.numberOfColumns());
+
+	EXPECT_EQ(2, mat(0,1));
+	EXPECT_EQ(0, mat(1,0));
+	EXPECT_EQ(42, mat(0,0));
+	EXPECT_EQ(-3, mat(2,3));
+	EXPECT_EQ(5, mat(3,2));
+
+	// read lesmis G
+	METISGraphReader graphReader;
+	G = graphReader.read("input/lesmis.graph");
+
+	// create AdjacencyMatrix
+	mat = MATRIX::adjacencyMatrix(G);
+
+	G.forNodes([&](node u) {
+		G.forNodes([&](node v) {
+			if (G.hasEdge(u,v)) {
+				EXPECT_EQ(G.weight(u,v), mat(u,v));
+			} else {
+				EXPECT_EQ(0.0, mat(u,v));
+			}
+		});
+	});
+}
+
+template<class MATRIX>
+void MatricesGTest::testDiagonalMatrix() {
+	Vector diagonal = {1,0,4,-1};
+	MATRIX mat = MATRIX::diagonalMatrix(diagonal);
+	EXPECT_EQ(4u, mat.numberOfRows());
+	EXPECT_EQ(4u, mat.numberOfColumns());
+
+	EXPECT_EQ(1, mat(0,0));
+	EXPECT_EQ(0, mat(1,1));
+	EXPECT_EQ(4, mat(2,2));
+	EXPECT_EQ(-1, mat(3,3));
+
+	for (index i = 0; i < mat.numberOfRows(); ++i) {
+		for (index j = 0; j < mat.numberOfColumns(); ++j) {
+			if (i != j) {
+				EXPECT_EQ(0, mat(i,j));
+			}
+		}
+	}
+}
+
+template<class MATRIX>
+void MatricesGTest::testIncidenceMatrix() {
+	Graph G = NetworKit::Graph(5, true);
+	G.addEdge(0,1, 4.0);
+	G.addEdge(0,2, 9.0);
+	G.addEdge(0,3, 16.0);
+	G.addEdge(2,3, 1.0);
+	G.addEdge(4,1, 25.0);
+	G.addEdge(4,4, 1.0);
+
+	G.indexEdges();
+
+	MATRIX mat = MATRIX::incidenceMatrix(G);
+	ASSERT_EQ(G.numberOfNodes(), mat.numberOfRows());
+	ASSERT_EQ(G.numberOfEdges(), mat.numberOfColumns());
+
+	EXPECT_EQ(sqrt(G.weight(0,1)), mat(0,0));
+	EXPECT_EQ(-sqrt(G.weight(0,1)), mat(1,0));
+	for (uint64_t i = 2; i < mat.numberOfRows(); ++i) {
+		EXPECT_EQ(0.0, mat(i, 0));
+	}
+
+	EXPECT_EQ(-sqrt(G.weight(0,2)), mat(2,1));
+
+	EXPECT_EQ(-sqrt(G.weight(0,3)), mat(3,2));
+	EXPECT_EQ(-sqrt(G.weight(2,3)), mat(3,3));
+
+	for (uint64_t i = 0; i < mat.numberOfRows(); ++i) {
+		EXPECT_EQ(0.0, mat(i, 5));
+	}
+
+	Vector row0 = mat.row(0);
+	ASSERT_EQ(row0.getDimension(), mat.numberOfColumns());
+
+	EXPECT_EQ(sqrt(G.weight(0,1)), row0[0]);
+	EXPECT_EQ(sqrt(G.weight(0,2)), row0[1]);
+	EXPECT_EQ(sqrt(G.weight(0,3)), row0[2]);
+	for (uint64_t j = 3; j < row0.getDimension(); ++j) {
+		EXPECT_EQ(0.0, row0[j]);
+	}
+
+	for (uint64_t j = 0; j < 5; ++j) {
+		Vector column = mat.column(j);
+		ASSERT_EQ(column.getDimension(), mat.numberOfRows());
+
+		double sum = 0.0;
+		for (uint64_t i = 0; i < column.getDimension(); ++i) {
+			sum += column[i];
+		}
+
+		EXPECT_EQ(0.0, sum);
+	}
+
+	Vector column5 = mat.column(5);
+	ASSERT_EQ(column5.getDimension(), mat.numberOfRows());
+
+	for (uint64_t i = 0; i < column5.getDimension(); ++i) {
+		EXPECT_EQ(0.0, column5[i]);
+	}
+
+	Vector v = {12, 3, 9, 28, 0, -1};
+
+	Vector result = mat * v;
+	ASSERT_EQ(result.getDimension(), mat.numberOfRows());
+
+	EXPECT_EQ(69, result[0]);
+	EXPECT_EQ(-24, result[1]);
+	EXPECT_EQ(19, result[2]);
+	EXPECT_EQ(-64, result[3]);
+	EXPECT_EQ(0, result[4]);
 }
 
 
 template<class MATRIX>
 void MatricesGTest::testLaplacianOfGraph() {
 	METISGraphReader graphReader;
-	MATRIX mat = MATRIX::laplacianMatrix(graphReader.read("input/PGPgiantcompo.graph"));
+	MATRIX mat = MATRIX::laplacianMatrix(graph);
 	EXPECT_TRUE(MatrixTools::isLaplacian(mat));
 
 	mat = MATRIX::laplacianMatrix(graphReader.read("input/power.graph"));
