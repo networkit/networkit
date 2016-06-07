@@ -34,8 +34,31 @@ private:
 	bool isSorted;
 	double zero;
 
+	/**
+	 * Quicksort algorithm on columnIdx between [@a left, @a right].
+	 * @param left
+	 * @param right
+	 */
 	void quicksort(index left, index right);
+
+	/**
+	 * Partitions columnIdx between [@a left, @a right] after selecting the pivot in the middle.
+	 * @param left
+	 * @param right
+	 * @return The pivot.
+	 */
 	index partition(index left, index right);
+
+	/**
+	 * Binary search the sorted columnIdx vector between [@a left, @a right] for column @a j.
+	 * If @a j is not present, the index that is immediately left of the place where @a j would be
+	 * is returned. If
+	 * @param left
+	 * @param right
+	 * @param j
+	 * @return The position of column @a j in columnIdx or the element immediately to the left of the place where @a j
+	 * would be.
+	 */
 	index binarySearchColumns(index left, index right, index j) const;
 
 public:
@@ -45,6 +68,7 @@ public:
 	/**
 	 * Constructs the CSRMatrix with size @a dimension x @a dimension.
 	 * @param dimension Defines how many rows and columns this matrix has.
+	 * @param zero The zero element (default = 0.0).
 	 */
 	CSRMatrix(const count dimension, const double zero = 0.0);
 
@@ -52,6 +76,7 @@ public:
 	 * Constructs the CSRMatrix with size @a nRows x @a nCols.
 	 * @param nRows Number of rows.
 	 * @param nCols Number of columns.
+	 * @param zero The zero element (default = 0.0).
 	 */
 	CSRMatrix(const count nRows, const count nCols, const double zero = 0.0);
 
@@ -59,6 +84,7 @@ public:
 	 * Constructs the @a dimension x @a dimension Matrix from the elements at position @a positions with values @values.
 	 * @param dimension Defines how many rows and columns this matrix has.
 	 * @param triplets The nonzero elements.
+	 * @param zero The zero element (default is 0.0).
 	 * @param isSorted True, if the triplets are sorted per row. Default is false.
 	 */
 	CSRMatrix(const count dimension, const std::vector<Triplet>& triplets, const double zero = 0.0, bool isSorted = false);
@@ -68,11 +94,20 @@ public:
 	 * @param nRows Defines how many rows this matrix has.
 	 * @param nCols Defines how many columns this matrix has.
 	 * @param triplets The nonzero elements.
+	 * @param zero The zero element (default is 0.0).
 	 * @param isSorted True, if the triplets are sorted per row. Default is false.
 	 */
 	CSRMatrix(const count nRows, const count nCols, const std::vector<Triplet>& triplets, const double zero = 0.0, bool isSorted = false);
 
-	// TODO: Check if this constructor is used anywhere
+	/**
+	 * Constructs the @a nRows x @a nCols Matrix from the elements stored in @a columnIdx and @a values. @a columnIdx and @a values store the colums and values by row.
+	 * @param nRows
+	 * @param nCols
+	 * @param columnIdx
+	 * @param values
+	 * @param zero The zero element (default is 0.0).
+	 * @param isSorted True if the column indices in @a columnIdx are sorted in every row.
+	 */
 	CSRMatrix(const count nRows, const count nCols, const std::vector<std::vector<index>> &columnIdx, const std::vector<std::vector<double>> &values, const double zero = 0.0, bool isSorted = false);
 
 	/**
@@ -82,6 +117,7 @@ public:
 	 * @param rowIdx The rowIdx vector of the CSR format.
 	 * @param columnIdx The columnIdx vector of the CSR format.
 	 * @param nonZeros The nonZero vector of the CSR format. Should be as long as the @a columnIdx vector.
+	 * @param zero The zero element (default is 0.0).
 	 * @param isSorted True, if the triplets are sorted per row. Default is false.
 	 */
 	CSRMatrix(const count nRows, const count nCols, const std::vector<index>& rowIdx, const std::vector<index>& columnIdx, const std::vector<double>& nonZeros, const double zero = 0.0, bool isSorted = false);
@@ -100,6 +136,24 @@ public:
 
 	/** Default copy assignment operator */
 	CSRMatrix& operator=(const CSRMatrix &other) = default;
+
+	bool operator==(const CSRMatrix& other) const {
+		bool equal = nRows == other.nRows && nCols == other.nCols && zero == other.zero;
+		if (equal) {
+			forNonZeroElementsInRowOrder([&](index i, index j, double value) {
+				if (other(i,j) != value) {
+					equal = false;
+					return;
+				}
+			});
+		}
+
+		return equal;
+	}
+
+	bool operator!=(const CSRMatrix& other) const {
+		return !((*this) == other);
+	}
 
 	/**
 	 * @return Number of rows.
@@ -231,14 +285,6 @@ public:
 	CSRMatrix& operator/=(const double &divisor);
 
 	/**
-	 * Creates a submatrix of this matrix consisting of the rows specified in @a rows and columns specified in @a columns.
-	 * @param rows The row indices referencing the rows to include in the submatrix.
-	 * @param columns The column indices referencing the columns to include in the submatrix.
-	 * @return The submatrix of this matrix consisting of @a rows and @a columns.
-	 */
-	CSRMatrix subMatrix(const std::vector<index> &rows, const std::vector<index> &columns) const;
-
-	/**
 	 * Computes @a A @a binaryOp @a B on the elements of matrix @a A and matrix @a B.
 	 * @param A Sorted CSRMatrix.
 	 * @param B Sorted CSRMatrix.
@@ -281,35 +327,62 @@ public:
 	CSRMatrix transpose() const;
 
 	/**
+	 * Extracts a matrix with rows and columns specified by @a rowIndices and @a columnIndices from this matrix.
+	 * The order of rows and columns is equal to the order in @a rowIndices and @a columnIndices. It is also
+	 * possible to specify a row or column more than once to get duplicates.
+	 * @param rowIndices
+	 * @param columnIndices
+	 */
+	CSRMatrix extract(const std::vector<index>& rowIndices, const std::vector<index>& columnIndices) const;
+
+	/**
+	 * Assign the contents of the matrix @a source to this matrix at rows and columns specified by @a rowIndices and
+	 * @a columnIndices. That is, entry (i,j) of @a source is assigned to entry (rowIndices[i], columnIndices[j]) of
+	 * this matrix. Note that the dimensions of @rowIndices and @a columnIndices must coincide with the number of rows
+	 * and columns of @a source.
+	 * @param rowIndices
+	 * @param columnIndices
+	 * @param source
+	 */
+	void assign(const std::vector<index>& rowIndices, const std::vector<index>& columnIndices, const CSRMatrix& source);
+
+	/**
+	 * Applies the unary function @a unaryElementFunction to each value in the matrix. Note that it must hold that f(0) = 0.
+	 * @param unaryElementFunction
+	 */
+	template<typename F>
+	void apply(const F unaryElementFunction);
+
+	/**
 	 * Compute the (weighted) adjacency matrix of the (weighted) Graph @a graph.
 	 * @param graph
 	 */
-	static CSRMatrix adjacencyMatrix(const Graph& graph);
+	static CSRMatrix adjacencyMatrix(const Graph& graph, double zero = 0.0);
 
 	/**
 	 * Creates a diagonal matrix with dimension equal to the dimension of the Vector @a diagonalElements. The values on
 	 * the diagonal are the ones stored in @a diagonalElements (i.e. D(i,i) = diagonalElements[i]).
 	 * @param diagonalElements
 	 */
-	static CSRMatrix diagonalMatrix(const Vector& diagonalElements);
+	static CSRMatrix diagonalMatrix(const Vector& diagonalElements, double zero = 0.0);
 
 	/**
 	 * Returns the (weighted) incidence matrix of the (weighted) Graph @a graph.
 	 * @param graph
 	 */
-	static CSRMatrix incidenceMatrix(const Graph& graph);
+	static CSRMatrix incidenceMatrix(const Graph& graph, double zero = 0.0);
 
 	/**
 	 * Compute the (weighted) Laplacian of the (weighted) Graph @a graph.
 	 * @param graph
 	 */
-	static CSRMatrix laplacianMatrix(const Graph& graph);
+	static CSRMatrix laplacianMatrix(const Graph& graph, double zero = 0.0);
 
 	/**
 	 * Returns the (weighted) normalized Laplacian matrix of the (weighted) Graph @a graph
 	 * @param graph
 	 */
-	static CSRMatrix normalizedLaplacianMatrix(const Graph& graph);
+	static CSRMatrix normalizedLaplacianMatrix(const Graph& graph, double zero = 0.0);
 
 
 
@@ -322,6 +395,8 @@ public:
 	 * Iterate in parallel over all non-zero elements of row @a row in the matrix and call handler(index column, double value)
 	 */
 	template<typename L> void parallelForNonZeroElementsInRow(index row, L handle) const;
+
+	template<typename L> void forElementsInRow(index i, L handle) const;
 
 	/**
 	 * Iterate over all non-zero elements of the matrix in row order and call handler (lambda closure).
@@ -465,8 +540,14 @@ template<typename L> inline CSRMatrix NetworKit::CSRMatrix::binaryOperator(const
 
 		return CSRMatrix(A.numberOfRows(), A.numberOfColumns(), triplets);
 	}
+}
 
-
+template<typename F>
+void CSRMatrix::apply(const F unaryElementFunction) {
+#pragma omp parallel for
+	for (index k = 0; k < nonZeros.size(); ++k) {
+		nonZeros[k] = unaryElementFunction(nonZeros[k]);
+	}
 }
 
 } /* namespace NetworKit */
@@ -484,6 +565,15 @@ inline void NetworKit::CSRMatrix::parallelForNonZeroElementsInRow(index i, L han
 	for (index k = rowIdx[i]; k < rowIdx[i+1]; ++k) {
 		handle(columnIdx[k], nonZeros[k]);
 	}
+}
+
+template<typename L>
+inline void NetworKit::CSRMatrix::forElementsInRow(index i, L handle) const {
+	Vector rowVector = row(i);
+	index j = 0;
+	rowVector.forElements([&](double val) {
+		handle(j++, val);
+	});
 }
 
 template<typename L>

@@ -47,11 +47,17 @@ public:
 	 * @param pos The position in values.
 	 */
 	void scatter(double value, index pos) {
-		scatter(value, pos, [](const double a, const double b) {return a+b;});
+		if (occupied[pos] < row) {
+			values[pos] = value;
+			occupied[pos] = row;
+			indices.push_back(pos);
+		} else {
+			values[pos] += value;
+		}
 	}
 
 	template<typename L>
-	void scatter(double value, index pos, L handle) {
+	void scatter(double value, index pos, L& handle) {
 		assert(pos < values.size());
 
 		if (occupied[pos] < row) {

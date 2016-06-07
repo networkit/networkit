@@ -14,6 +14,10 @@
 // 					Semiring Definitions
 // *****************************************************
 
+/**
+ * @ingroup algebraic
+ * codomain = (-infty, +infty)
+ */
 class ArithmeticSemiring {
 public:
 	ArithmeticSemiring() = default;
@@ -32,12 +36,16 @@ public:
 	inline static double one() {return 1;};
 };
 
+/**
+ * @ingroup algebraic
+ * codomain = (-infty, +infty]
+ */
 class MinPlusSemiring {
 public:
 	MinPlusSemiring() = default;
 	virtual ~MinPlusSemiring() = default;
 
-	inline static double add(double a, double b) {
+	inline static double add(double a, double b)  {
 		return std::min(a,b);
 	}
 
@@ -52,11 +60,15 @@ public:
 		}
 	}
 
-	inline static double zero() {return std::numeric_limits<double>::max();};
+	inline static double zero() {return std::numeric_limits<double>::infinity();};
 
 	inline static double one() {return 0;};
 };
 
+/**
+ * @ingroup algebraic
+ * codomain = [-infty, +infty)
+ */
 class MaxPlusSemiring {
 public:
 	MaxPlusSemiring() = default;
@@ -77,12 +89,13 @@ public:
 		}
 	}
 
-	inline static double zero() {return -std::numeric_limits<double>::max();};
+	inline static double zero() {return -std::numeric_limits<double>::infinity();};
 
 	inline static double one() {return 0;};
 };
 
 /**
+ * @ingroup algebraic
  * codomain = [0, +infty)
  */
 class MinMaxSemiring {
@@ -98,12 +111,13 @@ public:
 		return std::max(a,b);
 	}
 
-	inline static double zero() {return std::numeric_limits<double>::max();};
+	inline static double zero() {return std::numeric_limits<double>::infinity();};
 
 	inline static double one() {return 0;};
 };
 
 /**
+ * @ingroup algebraic
  * codomain = (-infty, 0]
  */
 class MaxMinSemiring{
@@ -119,11 +133,14 @@ public:
 		return std::min(a,b);
 	}
 
-	inline static double zero() {return -std::numeric_limits<double>::max();};
+	inline static double zero() {return -std::numeric_limits<double>::infinity();};
 
 	inline static double one() {return 0;};
 };
 
+/**
+ * @ingroup algebraic
+ */
 class IntLogicalSemiring {
 public:
 	IntLogicalSemiring() = default;
@@ -142,6 +159,10 @@ public:
 	inline static double one() {return 1;};
 };
 
+/**
+ * @ingroup algebraic
+ * codomain = [0, 1]
+ */
 class GaloisFieldSemiring {
 public:
 	GaloisFieldSemiring() = default;

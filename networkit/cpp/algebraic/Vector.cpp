@@ -32,7 +32,7 @@ Vector Vector::transpose() const {
 }
 
 double Vector::length() const {
-	return std::sqrt(this->transpose() * (*this));
+	return std::sqrt(innerProduct(*this, *this));
 }
 
 double Vector::mean() const {
@@ -130,7 +130,7 @@ Vector Vector::operator-(const Vector &other) const {
 }
 
 Vector Vector::operator-(const double value) const {
-	return Vector(*this) += value;
+	return Vector(*this) -= value;
 }
 
 Vector& Vector::operator-=(const Vector &other) {

@@ -46,15 +46,20 @@ double Matrix::operator()(const index i, const index j) const {
 	assert(i >= 0 && i < nRows);
 	assert(j >= 0 && j < nCols);
 
-	double weight = graph.weight(i,j);
-	return weight == nullWeight? zero : weight;
+	if (!graph.hasEdge(i,j)) return zero;
+
+	return graph.weight(i,j);
 }
 
 void Matrix::setValue(const index i, const index j, const double value) {
 	assert(i >= 0 && i < nRows);
 	assert(j >= 0 && j < nCols);
 
-	graph.setWeight(i, j, value);
+	if (value == getZero() && graph.hasEdge(i,j)) {
+		graph.removeEdge(i,j);
+	} else {
+		graph.setWeight(i, j, value);
+	}
 }
 
 Vector Matrix::row(const index i) const {
@@ -146,7 +151,7 @@ Matrix Matrix::operator*(const Matrix &other) const {
 	assert(nCols == other.nRows);
 
 	Matrix result(numberOfRows(), other.numberOfColumns());
-	SparseAccumulator spa(numberOfRows());
+	SparseAccumulator spa(other.numberOfRows());
 	for (index r = 0; r < numberOfRows(); ++r) {
 		graph.forNeighborsOf(r, [&](node v, double w1){
 			other.graph.forNeighborsOf(v, [&](node u, double w2){
@@ -220,16 +225,49 @@ Vector Matrix::mTvMultiply(const Matrix &matrix, const Vector &vector) {
 }
 
 Matrix Matrix::transpose() const {
-	Matrix transposedMatrix(numberOfColumns(), numberOfRows());
-	parallelForNonZeroElementsInRowOrder([&](index i, index j, edgeweight weight){
+	Matrix transposedMatrix(numberOfColumns(), numberOfRows(), getZero());
+	forNonZeroElementsInRowOrder([&](index i, index j, edgeweight weight){
 		transposedMatrix.graph.addEdge(j,i,weight);
 	});
 
 	return transposedMatrix;
 }
 
-Matrix Matrix::adjacencyMatrix(const Graph& graph) {
-	Matrix A(graph.upperNodeIdBound());
+Matrix Matrix::extract(const std::vector<index>& rowIndices, const std::vector<index>& columnIndices) const {
+	std::vector<Triplet> triplets;
+	std::vector<std::vector<index>> columnMapping(numberOfColumns());
+	for (index j = 0; j < columnIndices.size(); ++j) {
+		assert(columnIndices[j] < numberOfColumns());
+		columnMapping[columnIndices[j]].push_back(j);
+	}
+
+	for (index i = 0; i < rowIndices.size(); ++i) {
+		assert(rowIndices[i] < numberOfRows());
+		(*this).forNonZeroElementsInRow(rowIndices[i], [&](index k, double value) {
+			if (columnMapping[k].size() > 0) {
+				for (index j : columnMapping[k]) {
+					triplets.push_back({i, j, value});
+				}
+			}
+		});
+	}
+
+	return Matrix(rowIndices.size(), columnIndices.size(), triplets);
+}
+
+void Matrix::assign(const std::vector<index>& rowIndices, const std::vector<index>& columnIndices, const Matrix& source) {
+	assert(rowIndices.size() == source.numberOfRows());
+	assert(columnIndices.size() == source.numberOfColumns());
+
+	for (index i = 0; i < rowIndices.size(); ++i) {
+		source.forElementsInRow(i, [&](index j, double value) {
+			setValue(rowIndices[i], columnIndices[j], value);
+		});
+	}
+}
+
+Matrix Matrix::adjacencyMatrix(const Graph& graph, double zero) {
+	Matrix A(graph.upperNodeIdBound(), zero);
 	graph.forEdges([&](node u, node v, edgeweight w) {
 		A.setValue(u, v, w);
 		if (!graph.isDirected()) { // add symmetric value at (v, u)
@@ -240,8 +278,8 @@ Matrix Matrix::adjacencyMatrix(const Graph& graph) {
 	return A;
 }
 
-Matrix Matrix::diagonalMatrix(const Vector& diagonalElements) {
-	Matrix D(diagonalElements.getDimension());
+Matrix Matrix::diagonalMatrix(const Vector& diagonalElements, double zero) {
+	Matrix D(diagonalElements.getDimension(), zero);
 	for (index i = 0; i < diagonalElements.getDimension(); ++i) {
 		D.setValue(i, i, diagonalElements[i]);
 	}
@@ -249,9 +287,9 @@ Matrix Matrix::diagonalMatrix(const Vector& diagonalElements) {
 	return D;
 }
 
-Matrix Matrix::incidenceMatrix(const Graph& graph) {
+Matrix Matrix::incidenceMatrix(const Graph& graph, double zero) {
 	if (!graph.hasEdgeIds()) throw std::runtime_error("Graph has no edge Ids. Index edges first by calling graph.indexEdges()");
-	Matrix I(graph.upperNodeIdBound(), graph.upperEdgeIdBound());
+	Matrix I(graph.upperNodeIdBound(), graph.upperEdgeIdBound(), zero);
 	if (graph.isDirected()) {
 		graph.forEdges([&](node u, node v, edgeweight weight, edgeid edgeId) {
 			if (u != v) {
@@ -278,8 +316,8 @@ Matrix Matrix::incidenceMatrix(const Graph& graph) {
 	return I;
 }
 
-Matrix Matrix::laplacianMatrix(const Graph& graph) {
-	Matrix L(graph.upperNodeIdBound());
+Matrix Matrix::laplacianMatrix(const Graph& graph, double zero) {
+	Matrix L(graph.upperNodeIdBound(), zero);
 	graph.forNodes([&](const index i){
 		double weightedDegree = 0.0;
 
@@ -296,8 +334,8 @@ Matrix Matrix::laplacianMatrix(const Graph& graph) {
 	return L;
 }
 
-Matrix Matrix::normalizedLaplacianMatrix(const Graph& graph) {
-	Matrix nL(graph.upperNodeIdBound());
+Matrix Matrix::normalizedLaplacianMatrix(const Graph& graph, double zero) {
+	Matrix nL(graph.upperNodeIdBound(), zero);
 
 	std::vector<double> weightedDegrees(graph.upperNodeIdBound(), 0.0);
 	graph.parallelForNodes([&](const node u) {

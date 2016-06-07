@@ -2,7 +2,7 @@
  * GraphBLASGTest.cpp
  *
  *  Created on: May 31, 2016
- *      Author: Michael
+ *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
 #include "GraphBLASGTest.h"
@@ -107,6 +107,66 @@ TEST_F(GraphBLASGTest, testMxM) {
 	EXPECT_EQ(MinMaxSemiring::zero(), result(3,1));
 	EXPECT_EQ(3, result(3,2));
 	EXPECT_EQ(1, result(3,3));
+}
+
+TEST_F(GraphBLASGTest, testMxMAccum) {
+	std::vector<Triplet> triplets = {{0,0,1}, {0,1,2}, {0,2,3}, {1,0,2}, {1,1,2}, {2,0,3}, {2,2,3}, {2,3,-1}, {3,2,-1}, {3,3,4}};
+
+	//
+	//				 1  2  3  0
+	// 				 2  2  0  0
+	// mat1 = mat2 = 3  0  3 -1
+	//				 0  0 -1  4
+	//
+	CSRMatrix mat1(4, triplets);
+	CSRMatrix mat2(4, triplets);
+
+	CSRMatrix C = CSRMatrix::diagonalMatrix(Vector({-2,1,3,0}));
+
+	//
+	//			12  6  12  -3
+	//			 6  9   6   0
+	// result = 12  6  22  -7
+	//			-3  0  -7  17
+	//
+	GraphBLAS::MxM(mat1, mat2, C);
+
+	EXPECT_EQ(12, C(0,0));
+	EXPECT_EQ(6, C(0,1));
+	EXPECT_EQ(12, C(0,2));
+	EXPECT_EQ(-3, C(0,3));
+	EXPECT_EQ(6, C(1,0));
+	EXPECT_EQ(9, C(1,1));
+	EXPECT_EQ(6, C(1,2));
+	EXPECT_EQ(0, C(1,3));
+	EXPECT_EQ(12, C(2,0));
+	EXPECT_EQ(6, C(2,1));
+	EXPECT_EQ(22, C(2,2));
+	EXPECT_EQ(-7, C(2,3));
+	EXPECT_EQ(-3, C(3,0));
+	EXPECT_EQ(0, C(3,1));
+	EXPECT_EQ(-7, C(3,2));
+	EXPECT_EQ(17, C(3,3));
+
+
+	GraphBLAS::MxM(mat1, mat2, C, [](const double a, const double b){return b;});
+
+	EXPECT_EQ(14, C(0,0));
+	EXPECT_EQ(6, C(0,1));
+	EXPECT_EQ(12, C(0,2));
+	EXPECT_EQ(-3, C(0,3));
+	EXPECT_EQ(6, C(1,0));
+	EXPECT_EQ(8, C(1,1));
+	EXPECT_EQ(6, C(1,2));
+	EXPECT_EQ(0, C(1,3));
+	EXPECT_EQ(12, C(2,0));
+	EXPECT_EQ(6, C(2,1));
+	EXPECT_EQ(19, C(2,2));
+	EXPECT_EQ(-7, C(2,3));
+	EXPECT_EQ(-3, C(3,0));
+	EXPECT_EQ(0, C(3,1));
+	EXPECT_EQ(-7, C(3,2));
+	EXPECT_EQ(17, C(3,3));
 }
 
 TEST_F(GraphBLASGTest, testMxV) {
@@ -315,6 +375,54 @@ TEST_F(GraphBLASGTest, testEWiseMult) {
 	EXPECT_EQ(MinMaxSemiring::zero(), result(3,1));
 	EXPECT_EQ(1, result(3,2));
 	EXPECT_EQ(4, result(3,3));
+}
+
+TEST_F(GraphBLASGTest, rowReductionTest) {
+	//		  1  2  3  0
+	//        2  2  0  0
+	// mat1 = 3  0  3 -1
+	//		  0  0 -1  4
+	std::vector<Triplet> triplets = {{0,0,1}, {0,1,2}, {0,2,3}, {1,0,2}, {1,1,2}, {2,0,3}, {2,2,3}, {2,3,-1}, {3,2,-1}, {3,3,4}};
+	CSRMatrix mat(4, triplets);
+
+	Vector rowReduction = GraphBLAS::rowReduce(mat);
+	ASSERT_EQ(rowReduction.getDimension(), mat.numberOfRows());
+	EXPECT_EQ(6, rowReduction[0]);
+	EXPECT_EQ(4, rowReduction[1]);
+	EXPECT_EQ(5, rowReduction[2]);
+	EXPECT_EQ(3, rowReduction[3]);
+
+	mat = CSRMatrix(4, triplets, MaxPlusSemiring::zero());
+	rowReduction = GraphBLAS::columnReduce<MaxPlusSemiring>(mat);
+	ASSERT_EQ(rowReduction.getDimension(), mat.numberOfRows());
+	EXPECT_EQ(3, rowReduction[0]);
+	EXPECT_EQ(2, rowReduction[1]);
+	EXPECT_EQ(3, rowReduction[2]);
+	EXPECT_EQ(4, rowReduction[3]);
+}
+
+TEST_F(GraphBLASGTest, columnReductionTest) {
+	//		  1  2  3  0
+	//        2  2  0  0
+	// mat1 = 3  0  3 -1
+	//		  0  0 -1  4
+	std::vector<Triplet> triplets = {{0,0,1}, {0,1,2}, {0,2,3}, {1,0,2}, {1,1,2}, {2,0,3}, {2,2,3}, {2,3,-1}, {3,2,-1}, {3,3,4}};
+	CSRMatrix mat(4, triplets);
+
+	Vector columnReduction = GraphBLAS::columnReduce(mat);
+	ASSERT_EQ(columnReduction.getDimension(), mat.numberOfColumns());
+	EXPECT_EQ(6, columnReduction[0]);
+	EXPECT_EQ(4, columnReduction[1]);
+	EXPECT_EQ(5, columnReduction[2]);
+	EXPECT_EQ(3, columnReduction[3]);
+
+	mat = CSRMatrix(4, triplets, MinMaxSemiring::zero());
+	columnReduction = GraphBLAS::columnReduce<MinMaxSemiring>(mat);
+	ASSERT_EQ(columnReduction.getDimension(), mat.numberOfColumns());
+	EXPECT_EQ(0, columnReduction[0]);
+	EXPECT_EQ(0, columnReduction[1]);
+	EXPECT_EQ(-1, columnReduction[2]);
+	EXPECT_EQ(-1, columnReduction[3]);
 }
 
 } /* namespace NetworKit */
