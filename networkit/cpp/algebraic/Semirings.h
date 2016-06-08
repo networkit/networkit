@@ -45,19 +45,12 @@ public:
 	MinPlusSemiring() = default;
 	virtual ~MinPlusSemiring() = default;
 
-	inline static double add(double a, double b)  {
+	inline static double add(double a, double b) {
 		return std::min(a,b);
 	}
 
 	inline static double mult(double a, double b) {
-		// check whether a or b are the zero element. If yes, return it to conform to the law a x zero() = zero().
-		if (a == zero()) {
-			return a;
-		} else if (b == zero()) {
-			return b;
-		} else {
-			return a+b;
-		}
+		return a+b;
 	}
 
 	inline static double zero() {return std::numeric_limits<double>::infinity();};
@@ -79,14 +72,7 @@ public:
 	}
 
 	inline static double mult(double a, double b) {
-		// check whether a or b are the zero element. If yes, return it to conform to the law a x zero() = zero().
-		if (a == zero()) {
-			return a;
-		} else if (b == zero()) {
-			return b;
-		} else {
-			return a+b;
-		}
+		return a+b;
 	}
 
 	inline static double zero() {return -std::numeric_limits<double>::infinity();};
