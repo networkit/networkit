@@ -14,6 +14,11 @@ code {
 
 body {
   color: #000000;
+  font-size: 16px;
+}
+
+footer {
+  font-size: 15px;
 }
 
 .rst-content .hidden {
@@ -29,6 +34,7 @@ nav .hidden {
   background-size: cover;
   background-position: center center;
   border-radius: 0px;
+  font-size: 16px;
 }
 
 .home_navbar {
@@ -36,6 +42,40 @@ nav .hidden {
   background-size: cover;
   background-position: center center;
   height: 400px;
+  font-size: 16px;
+}
+
+.container h1 {
+  font-size: 18pt;
+}
+
+.container h2 {
+  font-size: 16pt;
+}
+
+.container h3 {
+  font-size: 13pt;
+}
+
+button.btn-link:before
+{
+    content:'Less';
+    display:block;
+}
+
+button.btn-link.collapsed:before
+{
+    content:'More';
+    display:block;
+}
+
+
+.btn-link, .btn-link:hover {
+  color: #0C54A6;
+  text-shadow: none;
+  text-decoration: none;
+  vertical-align: baseline;
+  padding: 0px;
 }
 
 /* Adjust Menu colors - Hover */
@@ -43,20 +83,6 @@ nav .hidden {
 color:          white;
 text-shadow:    none;
 text-decoration: none;
-}
-
-.videoWrapper {
-	position: relative;
-	padding-bottom: 56.25%; /* 16:9 */
-	padding-top: 25px;
-	height: 0;
-}
-.videoWrapper iframe {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
 }
 
 /* Adjust Menu colors - Hover */
@@ -108,6 +134,7 @@ text-decoration: none;
 
 .navbar-default {
   color:#ffffff;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .navbar-text {
@@ -128,4 +155,77 @@ text-decoration: none;
   margin-top: -200px; /*same height as header*/
   visibility: hidden;
 
+}
+
+
+
+
+
+
+article {
+    margin-bottom: 3rem;
+    position: relative;
+    *zoom: 1;
+}
+
+article:before, article:after {
+    content: "";
+    display: table;
+}
+
+article:after { clear: both }
+
+article section:last-of-type {
+    display: none;
+    visibility: hidden;
+}
+
+
+input[type=checkbox] {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    width: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+}
+
+[for="read_more"] {
+    position: absolute;
+    bottom: -3rem;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    padding: .65rem;
+    box-shadow: inset 1px 1px rgba(0, 0, 0, 0.1), inset -1px -1px rgba(0, 0, 0, 0.1);
+}
+
+[for="read_more"]:hover {
+    background: rgba(0,0,0,.5);
+    color: rgb(255,255,255);
+}
+
+[for="read_more"] span:last-of-type {
+    display: none;
+    visibility: hidden;
+}
+
+input[type=checkbox]:checked ~ section {
+    display: block;
+    visibility: visible;
+    width: 100%;
+}
+
+input[type=checkbox]:checked ~ figure { width: 100% }
+
+input[type=checkbox]:checked ~ [for="read_more"] span:first-of-type {
+    display: none;
+    visibility: hidden;
+}
+
+input[type=checkbox]:checked ~ [for="read_more"] span:last-of-type {
+    display: block;
+    visibility: visible;
 }

@@ -12,15 +12,15 @@
           <div style="overflow:hidden; line-height:15px">
               <span style="display:block">
                 <a style="text-decoration: none; padding-top: 19.5px; padding-left:15px; height:30px;" class="navbar-brand" href="{{ pathto(master_doc) }}">
-                  {% if theme_navbar_title -%}{{ theme_navbar_title|e }}{%- else -%}{{ project|e }}{%- endif -%}                   
+                  {% if theme_navbar_title -%}{{ theme_navbar_title|e }}{%- else -%}{{ project|e }}{%- endif -%}
                 </a>
               </span>
-              <div style="font-size:9pt; clear:left;">High Performance Network Analysis</div>              
+              <div style="font-size:9pt; clear:left;">Large-Scale Network Analysis</div>              
           </div>
-        </div>        
+        </div>
       </div>
 
-      
+
 
         <div class="collapse navbar-collapse nav-collapse" style="float:right">
           <ul class="nav navbar-nav">
@@ -29,7 +29,7 @@
                 <li><a href="{{ pathto(*link[1:]) }}">{{ link[0] }}</a></li>
               {%- endfor %}
             {% endif %}
-            {% block navbartoc %}              
+            {% block navbartoc %}
               {% if theme_navbar_pagenav %}
                 {% include "navbartoc.html" %}
               {% endif %}
@@ -38,7 +38,7 @@
               {% block sidebarrel %}
                 {% include "relations.html" %}
               {% endblock %}
-            {% endif %}            
+            {% endif %}
             {% block navbarextra %}
             {% endblock %}
             {% if theme_source_link_position == "nav" %}

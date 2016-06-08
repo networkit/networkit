@@ -33,7 +33,7 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.intersphinx',
               'sphinx.ext.ifconfig',
               'sphinx.ext.mathjax',
-              'sphinx.ext.autosummary',              
+              'sphinx.ext.autosummary',
               ]
 
 # Generate the API documentation when building
@@ -119,10 +119,9 @@ html_theme_options = {
     'navbar_fixed_top': "false",
     'navbar_pagenav': False,
     'navbar_links': [ ("Get Started", "get_started"),
-                      ("API", "api/DevGuide"),
+                      ("Documentation", "api/DevGuide"),
                       ("Features", "features"),
-                      ("News", "news"),
-                      ("Projects", "projects"),
+                      ("News", "news"),                      
                       ("Publications", "publications"),
                       ("Datasets", "datasets"),
                       ("Credits", "credits")],

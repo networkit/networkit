@@ -26,6 +26,22 @@ manage forks. Forking is distinct from branching and creates a new
 repository with a new address, its own access control etc. A fork
 contains all branches of its parent.
 
+Project Tracker (Kanboard)
+--------------------------
+
+At `kanboard.iti.kit.edu <https://kanboard.iti.kit.edu>`__ we maintain a
+project task tracker to coordinate development and releases. An account
+is given on request, please ask on the mailing list. Tasks are moved
+from left to right to through the columns:
+
+-  ``Backlog``: improvement ideas, some day maybe, "nice to have"
+-  ``ToDo``: scheduled improvements
+-  ``Work in progress``
+-  ``To Review``: requesting peer review
+-  ``Ready for Release``
+
+There is the possibility to create "swim lanes" for different releases.
+
 Branches
 --------
 
@@ -51,8 +67,8 @@ suitable for a release in the foreseeable future.
 It can be appropriate to create additional branches for projects,
 features, developer teams etc. Creation of branches should be
 coordinated with the core development team. For this purpose, post to
-the `e-mail
-list <https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit>`__.
+the `developers e-mail
+list <https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit-dev>`__.
 
 Tags
 ----
@@ -162,8 +178,8 @@ for student exercises.
 
 1. Fork the main repository via
    `algohub.iti.kit.edu <http://algohub.iti.kit.edu>`__ and name the
-   fork according to your team. (On the repository page, click \`Options
-   -> Fork)
+   fork according to your team. (On the repository page, click
+   ``Options -> Fork``)
 2. Make sure that the correct access rights for your team are set. (On
    the repository page: ``Options -> Settings``)
 3. Switch to the appropriate branch for the course (e.g.
@@ -184,7 +200,7 @@ We also ask student teams to adhere to the following conventions:
 -  If you plan to make modifications to existing parts of NetworKit,
    discuss them with the core developers first, e.g. by posting to the
    `developers e-mail
-   list <https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit>`__.
+   list <https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit-dev>`__.
 -  Delete forked repositories when they are no longer needed.
 
 Reviewing Student Exercises
@@ -200,7 +216,8 @@ possible to receive notifications via e-mail.
    `algohub.iti.kit.edu <http://algohub.iti.kit.edu>`__.
 3. To review a pull request, switch to the course branch and pull from
    the forked repository of the student team. Make sure to pull the
-   revision associated with the pull request (e.g. \`hg pull -r )
+   revision associated with the pull request (e.g.
+   ``hg pull -r<rev> <path/to/forked/repo>``)
 4. If everything is okay, change the status of the pull request to
    ``Accepted`` (click ``Change Status`` above the comment field). The
    comment field can be used to send feedback, creators of the request
@@ -248,6 +265,8 @@ Versioning
 -  Push correct code early if possible. Merging is easier if all
    developers are up to date.
 -  Never ``push --force`` to the main repository.
+
+.. _devGuide-unitTests:
 
 Unit Tests and Testing
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -431,12 +450,9 @@ human-readable.
 Contact
 -------
 
-To discuss important changes to NetworKit, use the `e-mail
-list <https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit>`__
-(``networkit@ira.uka.de``).
-
-To suggest improvements to workflows and conventions, write to
-``christian.staudt @ kit.edu``.
+To discuss important changes to NetworKit, use the `developers e-mail
+list <https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit-dev>`__
+(``networkit-dev@ira.uka.de``).
 
 Further Reading
 ---------------

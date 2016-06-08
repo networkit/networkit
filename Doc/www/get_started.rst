@@ -9,18 +9,32 @@
 Get Started
 ===========
 
-We support two ways to install NetworKit:
+We support three ways to install NetworKit:
 
-- `Build NetworKit from Source`_: Clone or download the source code of NetworKit and build the C++ and Python modules from source. 
+- `NetworKit Virtual Machine`_: Download and try NetworKit preinstalled on a virtual machine. This is recommended for users using Microsoft Windows.
 
 - `Pip install`_: Download the NetworKit Python package with pip. This is the easier way to get NetworKit but you can only use NetworKit via Python this way.
+
+- `Build NetworKit from Source`_: Clone or download the source code of NetworKit and build the C++ and Python modules from source.
 
 
 
 With NetworKit as a Python extension module, you get access to native high-performance code and can at the same time work interactively in the Python ecosystem. Although the standard Python interpreter works fine, we recommend `IPython <http://ipython.readthedocs.org/en/stable/>`_ as a great environment for scientific computing. View the `IPython Quickstart Guide`_ for installation instructions and how to use NetworKit with IPython.
 
 
-Once you have installed NetworKit, please make sure to check out our `NetworKit UserGuide <http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb>`_ for an overview of the features provided in NetworKit. 
+Once you have installed NetworKit, please make sure to check out our `NetworKit UserGuide <http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb>`_ for an overview of the features provided in NetworKit.
+
+|separator|
+
+.. _NetworKit Virtual Machine:
+
+Install the NetworKit Virtual Machine
+=====================================
+
+If you want a quick and easy way to try NetworKit for your purposes or you use a Microsoft Windows operating system, we recommend the installation of our NetworKit virtual machine.
+
+A detailed installation guide can be found `here <_static/Installation-Guide.pdf>`_.
+
 
 |separator|
 
@@ -35,7 +49,7 @@ Install NetworKit via Pip
 Requirements
 ~~~~~~~~~~~~
 
-You will need the following software to install NetworKit as a python package: 
+You will need the following software to install NetworKit as a python package:
 
 - g++ (>= 4.8) or Clang
 - Python 3 (>= 3.4 is recommended, 3.3 supported)
@@ -69,21 +83,21 @@ You can remove NetworKit completely by using the command :code:`[sudo] pip[3] un
 Build NetworKit from Source
 ===========================
 
-You can clone NetworKit from `AlgoHub <http://algohub.iti.kit.edu/parco/NetworKit/NetworKit/>`_ with Mercurial or download the source code as a `Zip file <https://networkit.iti.kit.edu/data/uploads/networkit.zip>`_. 
+You can clone NetworKit from `AlgoHub <http://algohub.iti.kit.edu/parco/NetworKit/NetworKit/>`_ with Mercurial or download the source code as a `Zip file <https://networkit.iti.kit.edu/data/uploads/networkit.zip>`_.
 
 Requirements
 ~~~~~~~~~~~~
 
-You will need the following software to install NetworKit as a Python package: 
+You will need the following software to install NetworKit as a Python package:
 
-- g++ (>= 4.8) or Clang 
+- g++ (>= 4.8) or Clang
 - `SCons <http://scons.org>`_
 - `Google Test <https://github.com/google/googletest>`_ (only needed if you want to build the unit tests)
 
 Building NetworKit
 ~~~~~~~~~~~~~~~~~~
 
-This section describes on how to build NetworKit including the Python functionality. If you do not wish to install NetworKit as a Python package, please refer to `Building Only the C++ Core`_. 
+This section describes on how to build NetworKit including the Python functionality. If you do not wish to install NetworKit as a Python package, please refer to `Building Only the C++ Core`_.
 
 For building NetworKit including the Python functionality, make sure to also install the software from the `Python Requirements`_ listed in the `Pip install`_.
 
@@ -151,7 +165,7 @@ You actually don't need to build and run our unit tests. However if you experien
 Use NetworKit with IPython
 ==========================
 
-First make sure you have installed IPython, e.g. via pip: :code:`pip3 install ipython`. 
+First make sure you have installed IPython, e.g. via pip: :code:`pip3 install ipython`.
 
 IPython Terminal
 ~~~~~~~~~~~~~~~~
@@ -161,13 +175,13 @@ If you want to use NetworKit in the IPython terminal, type the following command
 	ipython3
 
 .. code-block:: python
-	
+
 	from networkit import *
 
 The first line opens the IPython terminal. The second line imports the *networkit* Python module. After that, you should be able to use NetworKit interactively. For usage examples, refert to the `NetworKit UserGuide <http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb>`_.
 
 IPython Notebook
-~~~~~~~~~~~~~~~~ 
+~~~~~~~~~~~~~~~~
 
 We recommend that you familiarize yourself with NetworKit through experimenting with the interactive IPython Notebook `NetworKit_UserGuide.ipynb <http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb>`_ located in the folder *Doc/Notebooks*. To display and work with these notebooks, you have to start a local notebook server from the terminal with:
 ::
@@ -185,10 +199,3 @@ To show plots within the notebooks, place the following two lines at the beginni
 
 	%matplotlib
 	import matplotlib.pyplot as plt
-
-
-
-
-
-
-

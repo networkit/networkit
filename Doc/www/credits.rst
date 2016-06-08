@@ -8,16 +8,16 @@ Credits
 :hidden:`HiddenBiggerHeadingFont`
 ---------------------------------
 
-Responsible Developers
-~~~~~~~~~~~~~~~~~~~~~~
+Core Development Team
+~~~~~~~~~~~~~~~~~~~~~
 
-- Christian L. Staudt - `Homepage <http://parco.iti.kit.edu/staudt/>`_
+NetworKit is maintained by the `Research Group Parallel Computing <http://parco.iti.kit.edu>`_ of the Institute of Theoretical Informatics at `Karlsruhe Institute of Technology (KIT) <http://www.kit.edu/english/index.php>`_.
 
-- Henning Meyerhenke - `Homepage <http://parco.iti.kit.edu/henningm/>`_
-
-Co-Maintainer
+Maintainers
 ~~~~~~~~~~~~~
 
+- Christian L. Staudt
+- Henning Meyerhenke
 - Maximilian Vogel
 
 Contributors
@@ -62,4 +62,3 @@ License
 ~~~~~~~
 
 The source code of this program is released under the `MIT License <http://opensource.org/licenses/MIT>`_. We ask you to cite us if you use this code in your project. Feedback is also welcome.
-
