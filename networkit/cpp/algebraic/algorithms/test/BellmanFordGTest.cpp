@@ -45,7 +45,7 @@ TEST_F(BellmanFordGTest, testOnToyGraph) {
 
 TEST_F(BellmanFordGTest, benchmark) {
 	METISGraphReader reader;
-	Graph graph = reader.read("input/power.graph");
+	Graph graph = reader.read("input/PGPgiantcompo.graph");
 
 	BellmanFord<CSRMatrix> bf(graph, 0);
 
@@ -61,7 +61,7 @@ TEST_F(BellmanFordGTest, benchmark) {
 	bf.run();
 	t.stop();
 
-	INFO("Took ", t.elapsedMilliseconds(), " ms.");
+	INFO("Algebraic BF took ", t.elapsedMilliseconds(), " ms.");
 
 	Dijkstra dijkstra(graph, 0);
 

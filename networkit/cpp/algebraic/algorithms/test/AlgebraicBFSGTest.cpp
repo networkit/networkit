@@ -65,10 +65,10 @@ TEST(AlgebraicBFSGTest, testOnToyGraph) {
 
 TEST(AlgebraicBFSGTest, benchmarkBFS) {
 	METISGraphReader reader;
-	Graph G = reader.read("input/PGPgiantcompo.graph");
+	Graph G = reader.read("input/caidaRouterLevel.graph");
 
 	Aux::Timer t;
-	BFS bfs(G, 0);
+	BFS bfs(G, 0, false);
 	t.start();
 	bfs.run();
 	t.stop();
@@ -82,7 +82,11 @@ TEST(AlgebraicBFSGTest, benchmarkBFS) {
 	INFO("AlgebraicBFS took ", t.elapsedMilliseconds());
 
 	G.forNodes([&](node u) {
-		EXPECT_EQ(bfs.distance(u), algebraicBfs.distance(u));
+		if (algebraicBfs.distance(u) == std::numeric_limits<double>::infinity()) {
+			EXPECT_EQ(bfs.distance(u), std::numeric_limits<double>::max());
+		} else {
+			EXPECT_EQ(bfs.distance(u), algebraicBfs.distance(u));
+		}
 	});
 
 }
