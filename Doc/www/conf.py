@@ -121,7 +121,7 @@ html_theme_options = {
     'navbar_links': [ ("Get Started", "get_started"),
                       ("Documentation", "api/DevGuide"),
                       ("Features", "features"),
-                      ("News", "news"),                      
+                      ("News", "news"),
                       ("Publications", "publications"),
                       ("Datasets", "datasets"),
                       ("Credits", "credits")],
@@ -215,8 +215,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'networkit.tex', u'NetworKit Documentation',
-   u'Christian Staudt and Henning Meyerhenke', 'manual'),
+  ('api/modules', 'NetworKit-Python.tex', u'NetworKit Python Documentation','', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

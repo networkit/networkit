@@ -13,6 +13,8 @@ make html-networkit
 # sphinx is run twice to make sure references are used correctly
 make html
 
+mkdir ../Website/latex
+
 # Call doxygen to produce the C++ documentation.
 doxygen Doxyfile
 
