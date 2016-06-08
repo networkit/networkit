@@ -40,6 +40,7 @@ scripts/SparsificationEvaluation/figures
 input/backbones/
 build/
 Doc/Website
+Doc/Documentation
 
 syntax: regexp
 ^output$

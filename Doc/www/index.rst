@@ -46,7 +46,9 @@
 
           <div style="padding-top: 15px">Download from <a href="https://algohub.iti.kit.edu/parco/NetworKit/NetworKit">Algohub</a> or as <a href="https://networkit.iti.kit.edu/data/uploads/networkit.zip">Zip file</a></div>
 
-          <div style="padding-top: 15px">Download the <a href="https://networkit.iti.kit.edu/data/uploads/NetworKit-Doc.zip">Class API</a> or <a href="http://arxiv.org/pdf/1403.3005v3.pdf">Technical Report</a></div>
+          <div style="padding-top: 15px">Download the <a href="https://networkit.iti.kit.edu/data/uploads/NetworKit-Doc.zip">Class Documentation</a></div>
+
+          <div style="padding-top: 15px">Download the <a href="http://arxiv.org/pdf/1403.3005v3.pdf">Technical Report</a></div>
 
           <div style="padding-top: 15px;"> <div style="float: left;">Mailing List</div> <div><a style="padding-left: 10px" href="https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit"><img style="padding-bottom:2px" src="_static/mailinglist.png"></a> </div> </div>
 
