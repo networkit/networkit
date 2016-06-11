@@ -5429,7 +5429,7 @@ cdef class Centrality(Algorithm):
 
 cdef extern from "cpp/centrality/DegreeCentrality.h":
 	cdef cppclass _DegreeCentrality "NetworKit::DegreeCentrality" (_Centrality):
-		_DegreeCentrality(_Graph, bool normalized) except +
+		_DegreeCentrality(_Graph, bool normalized, bool outdeg, bool ignoreSelfLoops) except +
 
 cdef class DegreeCentrality(Centrality):
 	""" Node centrality index which ranks nodes by their degree.
@@ -5448,9 +5448,9 @@ cdef class DegreeCentrality(Centrality):
  		Normalize centrality values in the interval [0,1].
 	"""
 
-	def __cinit__(self, Graph G, bool normalized=False):
+	def __cinit__(self, Graph G, bool normalized=False, bool outDeg = True, bool ignoreSelfLoops=True):
 		self._G = G
-		self._this = new _DegreeCentrality(G._this, normalized)
+		self._this = new _DegreeCentrality(G._this, normalized, outDeg, ignoreSelfLoops)
 
 
 
