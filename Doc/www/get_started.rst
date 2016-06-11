@@ -51,10 +51,10 @@ Requirements
 
 You will need the following software to install NetworKit as a python package:
 
-- g++ (>= 4.8) or Clang
+- A modern C++ compiler, e.g.: `g++ <https://gcc.gnu.org>`_ (>= 4.8) or `clang++ <http://clang.llvm.org>`_ (>= 3.7)
 - Python 3 (>= 3.4 is recommended, 3.3 supported)
-- Pip
-- `SCons <http://scons.org>`_
+- `Pip <https://pypi.python.org/pypi/pip>`_
+- `SCons <http://scons.org>`_: Please note that SCons is only available for Python 2. For installation via pip, we have a script that builds the C++ part of NetworKit, so you can try it without SCons.
 
 NetworKit uses some additional external Python packages. While you do not need them to run NetworKit, it is recommended to install them in order to use all the features of NetworKit:
 
@@ -65,7 +65,7 @@ NetworKit uses some additional external Python packages. While you do not need t
 - networkx
 - tabulate
 
-You can use the command :code:`pip3 install scipy numpy readline matplotlib networkx tabulate` on your terminal to install all packages at once. During installation, the setup will check if the external packages NetworKit uses are available and print warnings at the end of the installation process. If you don't see any warnings, your system should be ready to use NetworKit.
+You can use the command :code:`pip3 install scipy numpy readline matplotlib networkx tabulate` on your terminal to install all packages at once. During the installation of NetworKit, the setup will check if the external packages NetworKit uses are available and print warnings at the end of the installation process. If you don't see any warnings, your system should be ready to use NetworKit.
 
 
 Install NetworKit
@@ -90,8 +90,8 @@ Requirements
 
 You will need the following software to install NetworKit as a Python package:
 
-- g++ (>= 4.8) or Clang
-- `SCons <http://scons.org>`_
+- A modern C++ compiler, e.g.: `g++ <https://gcc.gnu.org>`_ (>= 4.8) or `clang++ <http://clang.llvm.org>`_ (>= 3.7)
+- `SCons <http://scons.org>`_: Please note that SCons is only available for Python 2. For the different build targets, SCons is mandatory.
 - `Google Test <https://github.com/google/googletest>`_ (only needed if you want to build the unit tests)
 
 Building NetworKit
@@ -137,13 +137,13 @@ where :code:`<level>` can be
 
 and :code:`target` can be
 
-- :code:`Core` build NetworKit as a library, required by the Python shell.
+- :code:`Core` build NetworKit as a library, required for the Python extenstion through Cython.
 - :code:`Tests` build executable for the unit tests (requires GoogleTest).
 - :code:`Lib` build NetworKit as a library and create symbolic links.
 
 For example, to build NetworKit as an optimized library, run
 ::
-	scons --optimize=Opt --target=Core
+	scons --optimize=Opt --target=Lib
 
 To speed up the compilation on a multicore machine, you can append :code:`-jX` where *X* denotes the number of threads to compile with.
 

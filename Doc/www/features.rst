@@ -53,8 +53,7 @@ Degree Distribution
 ^^^^^^^^^^^^^^^^^^^
 Empirically observed complex networks tend to show a heavy tailed degree distribution which follow a power-law with a characteristic exponent. NetworKit provides functions to analyze the
 degree distribution of a network. For details visit the
-`Degree Distribution <http://nbviewer.jupyter.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb#Degree-Distribution>`_ Section of the User Guide.
-TODO: runtime
+`Degree Distribution <http://nbviewer.jupyter.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb#Degree-Distribution>`_ Section of the User Guide. The algorithm runs in :math:`O(n)`.
 
 Degree Assortativity
 ^^^^^^^^^^^^^^^^^^^^
