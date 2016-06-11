@@ -1,0 +1,239 @@
+<div id="NetworKit_Page_{pageIndex}_{key}" class="SubCategory Measure" data-title="{name}">
+	<div class="Details">
+		<div class="Value" data-title="Description">{description}</div>
+		<div class="Value" data-title="Algorithm">{algorithm}</div>
+		<div class="Spacer"></div>
+	</div>
+	<div class="Plot" title="{key}" data-image="data:image/svg+xml;utf8,{image[0]}|data:image/svg+xml;utf8,{image[1]}"></div>
+	<div class="Stat">
+		<div class="Group">
+			<div class="Title">Properties</div>
+			<div class="List">
+				<div class="Entry" data-tooltip="Sample Size">
+					$ n = $
+					<span class="MathValue">
+						{stat[Properties][Size]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Bessel's Correction">
+					$ f_{{BC}} = $
+					<span class="MathValue">
+						{stat[Properties][Bessel's Correction]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Assortativity">
+					$ r = $
+					<span class="MathValue">
+						{assortativity:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Centralization">
+					$ C = $
+					<span class="MathValue">
+						{centralization:g}
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="Group">
+			<div class="Title">Location</div>
+			<div class="List">
+				<div class="Entry" data-tooltip="Minimum">
+					$ x_{{(1)}} = $
+					<span class="MathValue">
+						{stat[Location][Min]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Maximum">
+					$ x_{{(n)}} = $
+					<span class="MathValue">
+						{stat[Location][Max]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Smallest Mild Outlier">
+					$ \widetilde{{x}}_{{O_{{min}}}} = $
+					<span class="MathValue">
+						{stat[Location][Outlier (Lower)][0]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Smallest Non Outlier">
+					$ \widetilde{{x}}_{{N_{{min}}}} = $
+					<span class="MathValue">
+						{stat[Location][Outlier (Lower)][1]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="1st Quartile">
+					$ \widetilde{{x}}_{{0.25}} = $
+					<span class="MathValue">
+						{stat[Location][1st Quartile]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="2nd Quartile / Median">
+					$ \widetilde{{x}}_{{Med}} = $
+					<span class="MathValue">
+						{stat[Location][Median]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="3rd Quartile">
+					$ \widetilde{{x}}_{{0.75}} = $
+					<span class="MathValue">
+						{stat[Location][3rd Quartile]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Biggest Non Outlier">
+					$ \widetilde{{x}}_{{N_{{max}}}} = $
+					<span class="MathValue">
+						{stat[Location][Outlier (Upper)][1]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Biggest Mild Outlier">
+					$ \widetilde{{x}}_{{O_{{max}}}} = $
+					<span class="MathValue">
+						{stat[Location][Outlier (Upper)][0]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Arithmetic Mean">
+					$ \overline{{x}} = $
+					<span class="MathValue">
+						{stat[Location][Arithmetic Mean]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Interquartile Mean">
+					$ \overline{{x}}_{{IQ}} = $
+					<span class="MathValue">
+						{stat[Location][Interquartile Mean]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Sample Mid-Range">
+					$ \overline{{x}}_{{R}} = $
+					<span class="MathValue">
+						{stat[Location][Mid-Range]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Harmonic Mean">
+					$ \overline{{x}}_{{H^{{-1}}}} = $
+					<span class="MathValue">
+						{stat[Location][Harmonic Mean]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Quadratic Mean / Root Mean Square">
+					$ \overline{{x}}_{{H^{{2}}}} = $
+					<span class="MathValue">
+						{stat[Location][Quadratic Mean]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Cubic Mean">
+					$ \overline{{x}}_{{H^{{3}}}} = $
+					<span class="MathValue">
+						{stat[Location][Cubic Mean]:g}
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="Group">
+			<div class="Title">Dispersion</div>
+			<div class="List">
+				<div class="Entry" data-tooltip="Unbiased Sample Variance">
+					$ s^{{2}}_{{x}} = $
+					<span class="MathValue">
+						{stat[Dispersion][Variance]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Unbiased Standard Deviation">
+					$ s_{{x}} = $
+					<span class="MathValue">
+						{stat[Dispersion][Standard Deviation]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Unbiased Coefficient Of Variation">
+					$ v_{{x}} = $
+					<span class="MathValue">
+						{stat[Dispersion][Coefficient Of Variation]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Sample Range">
+					$ R = $
+					<span class="MathValue">
+						{stat[Dispersion][Sample Range]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Interquartile Range">
+					$ R_{{IQ}} = $
+					<span class="MathValue">
+						{stat[Dispersion][Interquartile Range]:g}
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="Group">
+			<div class="Title">Shape</div>
+			<div class="List">
+				<div class="Entry" data-tooltip="Skewness (Yule-Pearson)">
+					$ S_{{YP}} = $
+					<span class="MathValue">
+						{stat[Shape][Skewness YP]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Skewness (3rd Momentum)">
+					$ S_{{M}} = $
+					<span class="MathValue">
+						{stat[Shape][Skewness M]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Kurtotis (Excess)">
+					$ \gamma = $
+					<span class="MathValue">
+						{stat[Shape][Kurtosis]:g}
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="Group">
+			<div class="Title">Rank</div>
+			<div class="List">
+				<div class="Entry" data-tooltip="Unbiased Variance (Rank)">
+					$ s^{{2}}_{{rk_{{x}}}} = $
+					<span class="MathValue">
+						{stat[Dispersion][Variance (Rank)]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Unbiased Standard Deviation (Rank)">
+					$ s_{{rk_{{x}}}} = $
+					<span class="MathValue">
+						{stat[Dispersion][Standard Deviation (Rank)]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Unbiased Coefficient Of Variation (Rank)">
+					$ v_{{rk_{{x}}}} = $
+					<span class="MathValue">
+						{stat[Dispersion][Coefficient Of Variation (Rank)]:g}
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="Group">
+			<div class="Title">Binning</div>
+			<div class="List">
+				<div class="Entry" data-tooltip="Number Of Bins (PDF)">
+					$ k_{{PDF}} = $
+					<span class="MathValue">
+						{stat[Binning][Number Histogram]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Number Of Bins (CDF)">
+					$ k_{{CDF}} = $
+					<span class="MathValue">
+						{stat[Binning][Number CDF]:g}
+					</span>
+				</div>
+				<div class="Entry" data-tooltip="Mode (Binning)">
+					$ x_{{D_{{PDF}}}} = $
+					<span class="MathValue">
+						{stat[Binning][Mode][0]:g}
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	{extentions}
+</div>
