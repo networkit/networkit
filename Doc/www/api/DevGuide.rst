@@ -4,8 +4,8 @@ NetworKit Development Guide
 ===========================
 
 This text is meant to provide some guidelines for the ongoing
-development of the project. It is meant for core developers, occasional
-contributors, and students working on the code.
+development of the project. It is meant for core developers as well as
+occasional contributors.
 
 The following text assumes some basic familiarity with the Mercurial
 version control software. It is not a Mercurial tutorial, because you
@@ -18,7 +18,7 @@ familiar with the architecture.
 
 If you use NetworKit in your research publications, please cite the
 mentioned techincal report or the specific algorithm. A list of
-publication is available on the `website <TODO:%20add%20link>`__.
+publications is available on the `website <TODO:%20add%20link>`__.
 
 How to contribute
 -----------------
@@ -232,7 +232,7 @@ Versioning
 .. _devGuide-unitTests:
 
 Unit Tests and Testing
-~~~~~~~~~~~~~~~~~~~~~~
+----------------------
 
 Every new feature must be covered by a unit test. Omitting unit tests
 makes it very likely that your feature will break silently as the
@@ -272,30 +272,30 @@ To verify that the code was built correctly: Run all unit tests with
 
 ::
 
-        ./NetworKit-Tests-Dbg --tests
+        ./NetworKit-Tests-Dbg --tests/-t
 
 Performance tests will be selected with
 
 ::
 
-        ./NetworKit-Tests-Dbg --benchmarks
+        ./NetworKit-Tests-Dbg --benchmarks/-b
 
 while experimental tests are called with
 
 ::
 
-        ./NetworKit-Tests-Dbg --trials
+        ./NetworKit-Tests-Dbg --trials/-e
 
 To run only specific unit tests, you can also add a filter expression,
 e. g.:
 
 ::
 
-        ./NetworKit-Tests-Dbg --gtest_filter=*PartitionGTest*
+        ./NetworKit-Tests-Dbg --gtest_filter=*PartitionGTest*/-f*PartitionGTest*
 
 initiates unit tests only for the Partition data structure.
 
-For **Python** unit tests, run:
+For the **Python** unit tests, run:
 
 ::
 
@@ -334,8 +334,32 @@ Code Style
    virtual method in the superclass.
 -  In Python, indent using tabs, not spaces.
 
+Algorithm interface and class hierarchy
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We use the possibilities provided through inheritance to generalize the
+common behaviour of algorithm implementations:
+
+-  Data and paramters should be passed in the constructor.
+-  A void run()-method that takes no parameter triggers the execution.
+-  To retrieve the result(s), getter-functions() may be defined.
+
+The ``Algorithm`` base class also defines a few other other functions to
+query whether the algorithm can be run in parallel or to retrieve a
+string representation.
+
+There may be more levels in the class hierarchy between an algorithm
+implementation and the base class, e.g. a single-source shortest-path
+class ``SSSP`` that generalizes the behaviour of BFS and Dijkstra
+implementations or the ``Centrality`` base class. When implementing new
+features or algorithms, make sure to adapt to the existing class
+hierarchies. The least thing to do is to inherit from the ``Algorithm``
+base class. Changes to existing interfaces or suggestions for new
+interfaces should be discussed through the `mailing
+list <networkit@ira.uka.de>`__.
+
 Exposing C++ Code to Python
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------
 
 Assuming the unit tests for the new feature you implemented are correct
 and successful, you need to make your features available to Python in
@@ -352,12 +376,9 @@ that exposes the class ``NetworKit::Dijkstra``:
 
 ::
 
-        cdef extern from "../cpp/graph/Dijkstra.h":
-            cdef cppclass _Dijkstra "NetworKit::Dijkstra":
-                _Dijkstra(_Graph G, node source) except +
-                void run() except +
-                vector[edgeweight] getDistances() except +
-                vector[node] getPath(node t) except +
+        cdef extern from "cpp/graph/Dijkstra.h":
+            cdef cppclass _Dijkstra "NetworKit::Dijkstra"(_SSSP):
+                _Dijkstra(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
 
 The code above exposes the C++ class definition to Cython - but not yet
 to Python. First of all, Cython needs to know which C++ declarations to
@@ -374,20 +395,68 @@ declarations match the declarations from the referenced header file.
 
 ::
 
-        cdef class Dijkstra:
+        cdef extern from "cpp/graph/SSSP.h":
+            cdef cppclass _SSSP "NetworKit::SSSP"(_Algorithm):
+                _SSSP(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
+                vector[edgeweight] getDistances(bool moveOut) except +
+                [...]
+
+        cdef class SSSP(Algorithm):
+            """ Base class for single source shortest path algorithms. """
+
+            cdef Graph _G
+
+            def __init__(self, *args, **namedargs):
+                if type(self) == SSSP:
+                    raise RuntimeError("Error, you may not use SSSP directly, use a sub-class instead")
+
+            def __dealloc__(self):
+                self._G = None # just to be sure the graph is deleted
+
+            def getDistances(self, moveOut=True):
+                """
+                Returns a vector of weighted distances from the source node, i.e. the
+                length of the shortest path from the source node to any other node.
+
+                Returns
+                -------
+                vector
+                    The weighted distances from the source node to any other node in the graph.
+                """
+                return (<_SSSP*>(self._this)).getDistances(moveOut)
+            [...]
+
+We mirror the class hierarchy of the C++ world also in Cython and
+Python. This also saves some boiler plate wrapping code as the functions
+shared by Dijkstra and BFS only need to be wrapped through SSSP.
+
+::
+
+        cdef class Dijkstra(SSSP):
             """ Dijkstra's SSSP algorithm.
-                Returns list of weighted distances from node source,
-                i.e. the length of the shortest path from @a source
-                to any other node."""
-            cdef _Dijkstra* _this
-            def __cinit__(self, Graph G, source):
-                self._this = new _Dijkstra(dereference(G._this), source)
-            def run(self):
-                self._this.run()
-            def getDistances(self):
-                return self._this.getDistances()
-            def getPath(self, t):
-                return self._this.getPath(t)
+            Returns list of weighted distances from node source, i.e. the length of the shortest path from source to
+            any other node.
+
+            Dijkstra(G, source, [storePaths], [storeStack], target)
+
+            Creates Dijkstra for `G` and source node `source`.
+
+            Parameters
+            ----------
+            G : Graph
+                The graph.
+            source : node
+                The source node.
+            storePaths : bool
+                store paths and number of paths?
+            storeStack : bool
+                maintain a stack of nodes in order of decreasing distance?
+            target : node
+                target node. Search ends when target node is reached. t is set to None by default.
+            """
+            def __cinit__(self, Graph G, source, storePaths=True, storeStack=False, node target=none):
+                self._G = G
+                self._this = new _Dijkstra(G._this, source, storePaths, storeStack, target)
 
 For the class to be accessible from the Python world, you need to define
 a Python wrapper class which delegates method calls to the native class.
@@ -409,6 +478,20 @@ passing around large objects such as graphs. When in doubt, look at
 examples of similar classes already exposed. Listen to the Cython
 compiler - coming from C++, its error messages are in general pleasantly
 human-readable.
+
+Make algorithms interruptable with CTRL+C/SIGINT
+------------------------------------------------
+
+When an algorithms takes too long to produce a result, it can be
+interrupted with a SIGINT signal triggered by CTRL+C. When triggering
+from the Python shell while the runtime is in the C++ domain, execution
+is aborted and even terminates the Python shell. Therefor, we
+implemented a signal handler infrastructure in C++ that raises a special
+exception instead of aborting. When implementing an algorithm, it is
+strongly encouraged to integrate the signal handler into the
+implementation. There are many examples of how to use it, e.g.
+``networkit/cpp/centrality/Betweenness.cpp`` or
+``networkit/cpp/community/PartitionFragmentation.cpp``
 
 Contact
 -------
