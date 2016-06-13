@@ -12,6 +12,22 @@ code {
     background-color: #f3f5f9 !important;
 }
 
+pre {
+  white-space: pre-line;
+  padding: 8px;
+  font-size: 12px;
+  margin: 2px 0 0 0;
+  color: #404848;
+}
+
+.codeSpan {
+  font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-size: 12px;
+  background-color: white;
+  border: none;
+  color: black;
+}
+
 body {
   color: #000000;
   font-size: 16px;
