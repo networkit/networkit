@@ -52,7 +52,7 @@ notebooks:
 	make -C tutorial notebooks
 
 html-networkit:
-	#@cd ../../; python3 setup.py build_ext --inplace
+	@cd ../../; python3 setup.py build_ext --inplace
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
