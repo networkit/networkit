@@ -15,9 +15,9 @@
       <div class="Top_Section" style="padding-top: 30px; padding-bottom: 30px">
         <div class="Introduction_Text" style="border-right: 1px solid #d4d7d9; display: table-cell; width: 66.66%; padding-right: 30px; text-align: justify">
 
-**NetworKit** is a growing open-source toolkit for high-performance network analysis. Its aim is to provide tools for the analysis of large networks in the size range from thousands to billions of edges. For this purpose, it implements efficient graph algorithms, many of them parallel to utilize multicore architectures. These are meant to compute standard measures of network analysis, such as degree sequences, clustering coefficients and centrality. In this respect, NetworKit is comparable to packages such as NetworkX, albeit with a focus on parallelism and scalability. NetworKit is also a testbed for algorithm engineering and contains novel algorithms from recently published research, especially in the area of community detection (see list of :ref:`publications`).
+**NetworKit** is a growing open-source toolkit for large-scale network analysis. Its aim is to provide tools for the analysis of large networks in the size range from thousands to billions of edges. For this purpose, it implements efficient graph algorithms, many of them parallel to utilize multicore architectures. These are meant to compute standard measures of network analysis, such as degree sequences, clustering coefficients, and centrality measures. In this respect, NetworKit is comparable to packages such as NetworkX, albeit with a focus on parallelism and scalability. NetworKit is also a testbed for algorithm engineering and contains novel algorithms from recently published research (see list of :ref:`publications`).
 
-**NetworKit** is a Python module. High-performance algorithms are written in C++ and exposed to Python via the Cython toolchain. Python in turn gives us the ability to work interactively and with a rich environment of tools for data analysis and scientific computing. Furthermore, NetworKit's core can be built and used as a native library if needed.
+**NetworKit** is a Python module. Performance-aware algorithms are written in C++ (often using OpenMP for shared-memory parallelism) and exposed to Python via the Cython toolchain. Python in turn gives us the ability to work interactively and with a rich environment of tools for data analysis. Furthermore, NetworKit's core can be built and used as a native library.
 
 .. raw:: html
 
@@ -67,17 +67,17 @@
           <p style="text-align: center; font-size:14pt">Interactive Workflow</p>
           <p style="word-break: normal; text-align:justify;">
             NetworKit takes inspiration from other software like R, MATLAB or Mathematica and provides an interactive shell via Python. This allows users to
-            freely combine functions from NetworKit and even use the results with other popular Python packages. In combination with Jupyter Notebook, NetworKit
-             provides an easy computing environment for scientific workflows, even on a remote compute server.
+            freely combine functions from NetworKit and also use the results with other popular Python packages. In combination with Jupyter Notebook, NetworKit
+             provides an intuitive computing environment for scientific workflows, even on a remote compute server.
           </p>
         </div>
 
         <div style="border-right: 1px solid #d4d7d9; display: table-cell; width: 33.33%; padding: 20px; padding-bottom: 0px;">
           <p style="text-align: center; font-size:14pt">High Performance</p>
           <p style="word-break: normal; text-align:justify;">
-            In NetworKit, algorithms and data structures are selected and implemented with high performance and parallelism in mind. Some implementations are
+            In NetworKit, algorithms and data structures are selected and implemented with a combination of good software engineering as well as high performance and parallelism in mind. Some implementations are
             among the fastest in published research. For example, community detection in a 3 billion edge web graph can be performed on a 16-core server
-            in a matter of minutes.
+            in a matter of a few minutes.
           </p>
         </div>
 
@@ -170,8 +170,8 @@
           <div style="border-top: 1px solid #d4d7d9; margin-left: 40px; margin-right: 40px; padding-bottom: 30px;"></div>
           <p style="word-break: normal; text-align:justify;">
             Using NetworKit is as simple as importing the networkit Python package. In the example above, we then read a network of autonomous
-            systems from disk and print some very basic statistics about the network. We compute the connected components and output the number
-            of components and the size of the largest component of this network.
+            systems from disk and print some very basic statistics about the network. We go on by computing the connected components and outputting their number
+            and size.
           </p>
         </div>
 
@@ -179,7 +179,7 @@
           <div style="border-top: 1px solid #d4d7d9; margin-left: 40px; margin-right: 40px; padding-bottom: 30px;"></div>
           <p style="word-break: normal; text-align:justify;">
             Continuing with the example on the left, we tell NetworKit to detect communities for the <i>skitter</i> network. Thanks to our parallel
-            community detection algorithms, this takes only about 18 seconds on a consumer notebook even though the network has more than 11 million edges.
+            modularity-driven community detection algorithms, this takes only about 18 seconds on a consumer notebook even though the network has more than 11 million edges.
           </p>
         </div>
 
