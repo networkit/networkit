@@ -101,7 +101,7 @@ def determineCompiler(candidates, stdFlags):
 					compiler_version_satisfied = True
 					compiler = candidates[v]
 					stdflag = stdFlags[i]
-					print("your latest gcc is {0}".format(candidates[v]))
+					#print("using {0} as C++ compiler with the {1} STD flag".format(candidates[v],stdFlags[i]))
 			except:
 				#print("{0} is not installed".format(candidates[v]))
 				pass

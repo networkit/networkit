@@ -13,11 +13,9 @@
 #include <cassert>
 #include <cmath>
 #include <cstdint>
+#include "../Globals.h"
 
 namespace NetworKit {
-
-typedef uint64_t index; // more expressive name for an index into an array
-typedef uint64_t count; // more expressive name for an integer quantity
 
 //template<class T> class Point;
 //

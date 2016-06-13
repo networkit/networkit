@@ -65,6 +65,8 @@ from . import correlation
 from . import matching
 from . import coarsening
 from . import simulation
+from . import stats
+from . import sampling
 from .profiling import profiling
 
 try:
@@ -90,7 +92,7 @@ from _NetworKit import getLogLevel, setLogLevel, setPrintLocation, enableNestedP
 # local imports into the top namespace
 from .graph import Graph
 from .structures import Partition, Cover
-from .graphio import readGraph, writeGraph, Format
+from .graphio import readGraph, writeGraph, readGraphs, Format
 
 
 #-------- Setup ---------- #

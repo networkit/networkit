@@ -12,9 +12,9 @@ class Algo(base.Algo):
 
 	framework = framework
 
-	def loadGraph(self, path):
+	def loadGraph(self, path, graphFormat=networkit.Format.GML):
 		with Timer() as t:
-			G = networkit.readGraph(path, networkit.Format.GML)
+			G = networkit.readGraph(path, graphFormat)
 		debug("reading {path} took {t.elapsed} s".format(**locals()))
 		return G
 
@@ -22,7 +22,7 @@ class bConnectedComponents(Algo):
 	name = "ConnectedComponents"
 
 	def run(self, G):
-		cc = networkit.properties.ConnectedComponents(G)
+		cc = networkit.components.ConnectedComponents(G)
 		cc.run()
 		return cc.numberOfComponents()
 
@@ -69,20 +69,58 @@ class bCommunityDetectionLP(Algo):
 		plm = networkit.community.PLP(G)
 		plm.run()
 
-# - diameter, exact (properties.Diameter.exactDiameter) and estimate (properties.Diameter.estimatedDiameterRange)
+
+# distance module
 
 class bDiameter(Algo):
 	name = "Diameter"
 
 	def run(self, G):
-		return networkit.properties.Diameter.exactDiameter(G)
+		return networkit.distance.Diameter(G, networkit.distance.DiameterAlgo.exact).run()
 
 
 class bDiameterEstimate(Algo):
 	name = "DiameterEstimate"
 
 	def run(self, G):
-		return networkit.properties.Diameter.estimatedDiameterRange(G)
+		return networkit.distance.Diameter(G, networkit.distance.DiameterAlgo.estimatedRange, error=0.1).run()
+
+
+class bEffectiveDiameter(Algo):
+	name = "EffectiveDiameter"
+
+	def run(self, G):
+		return networkit.distance.EffectiveDiameter(G).run().getEffectiveDiameter()
+
+
+class bApproxEffectiveDiameter(Algo):
+	name = "ApproxEffectiveDiameter"
+
+	def run(self, G):
+		return networkit.distance.ApproxEffectiveDiameter(G).run().getEffectiveDiameter()
+
+
+class bApproxHopPlot(Algo):
+	name = "ApproxHopPlot"
+
+	def run(self, G):
+		return networkit.distance.ApproxHopPlot(G).run().getHopPlot()
+
+
+class bNeighborhoodFunction(Algo):
+	name = "NeighborhoodFunction"
+
+	def run(self, G):
+		return networkit.distance.NeighborhoodFunction(G).run().getNeighborhoodFunction()
+
+
+class bApproxNeighborhoodFunction(Algo):
+	name = "ApproxNeighborhoodFunction"
+
+	def run(self, G):
+		return networkit.distance.ApproxNeighborhoodFunction(G).run().getNeighborhoodFunction()
+
+
 
 # - clustering coefficients (average local), exact (properties.ClusteringCoefficient.avgLocal) and approximated (properties.ClusteringCoefficient.approxAvgLocal)
 

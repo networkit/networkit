@@ -107,9 +107,9 @@ double ClusteringCoefficient::sequentialAvgLocal(const Graph &G) {
 	return coefficient / size;
 }
 
-double ClusteringCoefficient::avgLocal(Graph& G) {
+double ClusteringCoefficient::avgLocal(Graph& G, bool turbo) {
     WARN("DEPRECATED: use centrality.LocalClusteringCoefficient and take average");
-	LocalClusteringCoefficient lcc(G);
+	LocalClusteringCoefficient lcc(G, turbo);
 	lcc.run();
 	auto coefficients = lcc.scores(); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
 

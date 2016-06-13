@@ -15,6 +15,12 @@ Partition::Partition() : z(0), omega(0), data(0) {
 }
 
 
+Partition::Partition(const std::vector<index>& data) : z(data.size()), omega(), data(data) {
+	auto max_elem = *std::max_element(data.begin(), data.end());
+	this->omega = (max_elem == none) ? 0 : max_elem;
+}
+
+
 Partition::Partition(index z) : z(z), omega(0), data(z, none) {  //z(z-1);data(z,none);
 
 }

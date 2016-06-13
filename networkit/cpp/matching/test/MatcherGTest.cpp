@@ -78,8 +78,8 @@ TEST_F(MatcherGTest, testPgaMatchingWithSelfLoops) {
 	G.forNodes([&](node u){
 		G.addEdge(u,u);
 	});
-	PathGrowingMatcher pgaMatcher(G);
-	pgaMatcher.run();
+	EXPECT_THROW(PathGrowingMatcher pgaMatcher(G),std::invalid_argument);
+	//pgaMatcher.run();
 }
 
 
