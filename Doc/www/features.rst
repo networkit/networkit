@@ -176,9 +176,9 @@ library for application programming, either at the Python or the C++ level. Thro
 extensive use of closures, using the lambda syntax introduced with C++11. Shared-memory parallelism is realized with OpenMP, providing loop parallelization and synchronization
 constructs while abstracting away the details of thread creation and handling.
 
-.. image:: resources/nk_architecture.png
+.. image:: resources/NetworKit-Architecture.png
 	:align: center
-	:width: 600px
+	:width: 700px
 
 Connecting these native implementations to the Python world is enabled by the `Cython <http://cython.org>`_ toolchain. Among other things, Cython can compile pure Python code to
 C or C++, circumventing the Python interpreter, and also allows for static type annotations – yielding considerable speedup in combination. Currently we use Cython merely to
