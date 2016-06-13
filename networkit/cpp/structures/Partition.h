@@ -52,6 +52,9 @@ public:
 	 */
 	Partition(index z, index defaultValue);
 
+
+	Partition(const std::vector<index>& data);
+
 	/**
 	 *  Index operator.
 	 *
@@ -202,7 +205,7 @@ public:
 
 	/**
 	 * Change subset IDs to be consecutive, starting at 0.
-	 * @param useTurbo Default: false. If set to true, a vector instead of a map to assign new ids 
+	 * @param useTurbo Default: false. If set to true, a vector instead of a map to assign new ids
 	 * which results in a shorter running time but possibly a large space overhead.
 	 */
 	void compact(bool useTurbo = false);

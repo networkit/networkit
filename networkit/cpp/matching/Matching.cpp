@@ -77,10 +77,7 @@ count Matching::size(const Graph& G) const {
 }
 
 index Matching::mate(node v) const {
-	if (isMatched(v)) {
-		return data.at(v);
-	}
-	else return none;
+	return data.at(v);
 }
 
 edgeweight Matching::weight(const Graph& G) const {
@@ -93,6 +90,28 @@ edgeweight Matching::weight(const Graph& G) const {
 	});
 
 	return weight;
+}
+
+Partition Matching::toPartition(const Graph& G) const {
+	Partition partition(G.upperNodeIdBound());
+	std::vector<bool> visited(G.upperNodeIdBound(), false);
+	G.forNodes([&](node u){
+		if (!visited[u]) {
+			if (mate(u) == none) {
+				partition.addToSubset(u,u);
+			} else {
+				partition.addToSubset(u,u);
+				partition.addToSubset(u, mate(u));
+				visited[u] = true;
+				visited[mate(u)] = true;
+			}
+		}
+	});
+	return partition;
+}
+
+std::vector<node> Matching::getVector() const {
+	return this->data; //FIXME is this appropriate? - why not?
 }
 
 }

@@ -14,6 +14,15 @@ build.conf
 /_NetworKit.cpp$
 src/python/NetworKit.egg-info/
 NetworKit-Tests-D
+lamg-2.2-2
+CMG_101014
+instances
+bench*
+.cproject
+.project
+.settings*
+Benchmark*
+plots
 \.out$
 \.egg$
 \~$
@@ -30,6 +39,8 @@ scripts/SparsificationEvaluation/output/
 scripts/SparsificationEvaluation/figures
 input/backbones/
 build/
+Doc/Website
+Doc/Documentation
 
 syntax: regexp
 ^output$
