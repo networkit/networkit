@@ -154,7 +154,7 @@ Logging is enabled by default. If you want to disable logging functionality, add
 Test
 ~~~~
 
-You actually do not need to build and run our unit tests. However if you experience any issues with NetworKit, you might want to check, if NetworKit runs properly. Please refer to the :ref:`devGuide-unitTests` section in our :ref:`devGuide`.
+You actually do not need to build and run our unit tests. However, if you experience any issues with NetworKit, you might want to check, if NetworKit runs properly. Please refer to the :ref:`devGuide-unitTests` section in our :ref:`devGuide`.
 
 
 |separator|

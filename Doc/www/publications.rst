@@ -14,8 +14,8 @@
 Publications
 ============
 
-The following is a list of publications on the basis of NetworKit. We ask you to cite the appropriate ones if you found NetworKit useful for your own research. Also, we would
-appreciate it if you pointed us to your publications in which you used NetworKit and allowed us to reference them on this page.
+The following is a list of publications on the basis of NetworKit. We ask you to **cite** the appropriate ones if you found NetworKit useful for your own research. 
+Also, we would appreciate it if you pointed us to your publications in which you used NetworKit and allowed us to reference them on this page.
 
 Journal Paper on NetworKit as a Software Toolkit
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -281,6 +281,10 @@ Publications Using NetworKit
     <li>
       D. Hoske, D. Lukarski, H. Meyerhenke, M. Wegner: Is Nearly-linear the same in Theory and Practice? A Case Study with a Combinatorial Laplacian Solver. In <i>Proc. 14th Intl.
       Symp. on Experimental Algorithms</i> (SEA 2015). LNCS 9125, pp. 205-218. Springer International Publishing, 2015. [<a href="http://arxiv.org/abs/1502.07888">arXiv</a>]
+       <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
+       <div id="collapseDiv" class="collapse">
+       For the paper follow the arXiv link above. If you are interested in the implementation, see ParCo's <a href="http://parco.iti.kit.edu/software-en.shtml" >software page</a>.
+       </div>
     </li>
 
   </ul>
