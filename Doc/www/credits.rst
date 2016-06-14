@@ -8,17 +8,28 @@ Credits
 :hidden:`HiddenBiggerHeadingFont`
 ---------------------------------
 
-Core Development Team
+History
 ~~~~~~~~~~~~~~~~~~~~~
 
 NetworKit is maintained by the `Research Group Parallel Computing <http://parco.iti.kit.edu>`_ of the Institute of Theoretical Informatics at `Karlsruhe Institute of Technology (KIT) <http://www.kit.edu/english/index.php>`_.
+It was seeded by the project `Parallel analysis of dynamic networks -- Algorithm engineering of efficient combinatorial and numerical methods <http://parco.iti.kit.edu/forschung-en.shtml>`_, for which we acknowledge
+financial support by MWK Baden-Württemberg. In this project Henning Meyerhenke was the principal investigator and Christian L. Staudt was the main PhD student. Since NetworKit's start in 2013, it has grown well 
+beyond the original MWK project and our group, with contributors and users from all over the world.
+
+
+Principal Investigator
+~~~~~~~~~~~~~
+
+- Henning Meyerhenke
+
 
 Maintainers
 ~~~~~~~~~~~~~
 
-- Christian L. Staudt
-- Henning Meyerhenke
+- Elisabetta Bergamini (since March 2016)
 - Maximilian Vogel
+- Christian L. Staudt (until March 2016)
+
 
 Contributors
 ~~~~~~~~~~~~
