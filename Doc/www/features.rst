@@ -10,18 +10,19 @@
 Features and Design Goals
 =========================
 
-**NetworKit** is implemented as a hybrid of high-performance code written in C++ with an interface and additional functionality written in Python. It is distributed
-as a Python package, ready to use interactively from a Python shell, which is the main usage scenario we envision. If you want to know more about our design goals then take
-a look at our `Design Details`_ Section below.
+**NetworKit** is implemented as a hybrid of performance-aware code written in C++ (often parallelized using OpenMP) with an interface and additional functionality written in Python.
+More details and an illustration are provided in the `Design Details`_ Section below.
+NetworKit is distributed as a Python package, ready to use interactively from a Python shell, which is the main usage scenario we envision for domain experts.
+If you want to know more about our design goals, then take a look at our `Design Goals and Principles'_ Section below.
 
 The best way to get an overall picture of a network is to use the *Profiling* module. Take a look at the `Network Profiling`_ Section below. If you are only interested in a
 small subset of network analysis measures, it might be more convenient to compute them separately instead of using the *Profiling* module. Check out the `Network Analytics`_
 Section to get an overview of the most important measures NetworKit supports.
 
-NetworKit also comes with several `community detection algorithms`_ that reveal insights into the community structure of a network. To generate artificial networks with
-certain properties the toolkit provides several `graph generators`_.
+NetworKit also comes with several `community detection algorithms`_ that reveal insights into the community structure of a network. For the generation of synthetic networks with
+specific properties, the toolkit provides several `graph generators`_.
 
-A good introduction to NetworKit and its features is given in the following video.
+A good (albeit in some parts slightly outdated) introduction to NetworKit and its features is given in the following video.
 
 .. raw:: html
 
@@ -116,7 +117,7 @@ Faced with an NP-hard optimization problem, we engineered parallel heuristics wh
   empirically shown to reach a stable solution in only a few iterations. The purely local update rule makes label propagation well suited for a parallel implementation. |br| |br|
 
 * PLM: |br| The Louvain method (PLM) for community detection can be classified as a locally greedy, bottom-up multilevel algorithm. We provide a shared-memory parallelization
-  of PLM in which node moves are evaluated and performed in parallel instead of sequentially. We also extend the method by an optional refinement phase. |br| |br|
+  of PLM in which node moves are evaluated and performed in parallel instead of sequentially. We also extend the method by an optional refinement phase, yielding the PLMR algorithm. |br| |br|
 
 
 |separator|
@@ -167,7 +168,7 @@ TODO: Drawing Graphs with Gephi
 |separator|
 
 
-Design Details
+Architecture
 --------------
 
 With the hybrid approach, we are able to combine the performance of C++ with the easy and interactive environment of Python and Jupyter Notebook. We provide a Python package
@@ -185,3 +186,21 @@ C or C++, circumventing the Python interpreter, and also allows for static type 
 integrate native code by compiling it into a native Python extension module. As a benefit of Python integration, NetworKit's functionality can be accessed interactively. Thus,
 analysis kernels can be freely combined. Furthermore, NetworKit can be seamlessly integrated into the rich Python ecosystem for data analysis. We consider this kind of
 integration crucial for real-world data analysis workflows.
+
+
+|separator|
+
+
+Design Goals and Principles
+--------------
+
+There is a variety of software packages which provide graph algorithms in general and network analysis capabilities in particular. However, NetworKit aims to balance a specific combination of strengths:
+
+* Performance: Algorithms and data structures are selected and implemented with high performance and parallelism in mind. Some implementations are among the fastest in published research. For example, community detection in a $3.3$ billion edge web graph can be performed on a 16-core server in less than three minutes.
+
+* Usability: Networks are as diverse as the series of questions we might ask of them -- e.g. what is the largest connected component, what are the most central nodes in it and how do they connect to each other? A practical tool for network analysis should therefore provide modular functions which do not restrict the user to predefined workflows. An interactive shell, which the Python language provides, is one prerequisite for that. While NetworKit works with the standard Python 3 interpreter, calling the module from the IPython shell and Jupyter Notebook HTML interface allows us to integrate it into a fully fledged computing environment for scientific workflows, from data preparation to creating figures. It is also easy to set up and control a remote compute server.
+
+* Integration: As a Python module, NetworKit can be seamlessly integrated with Python libraries for scientific computing and data analysis, e.g. pandas for data frame processing and analytics, matplotlib for plotting or numpy and scipy for numerical and scientific computing. For certain tasks, we provide interfaces to external tools, e.g. Gephi for graph visualization.
+
+* Design Principles: Our main focus is on scalable algorithms to support network analysis on massive networks. Several algorithm and implementation patterns are used to achieve this goal: parallelism, fast heuristics and approximation algorithms for problems that are otherwise not solvable in nearly-linear time, efficient data structures, and modular software design.
+
