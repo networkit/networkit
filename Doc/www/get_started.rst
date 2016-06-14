@@ -11,7 +11,7 @@ Get Started
 
 We support three ways to install NetworKit:
 
-- `NetworKit Virtual Machine`_: Download and try NetworKit preinstalled on a virtual machine. This is recommended for users using Microsoft Windows.
+- `NetworKit Virtual Machine`_: Download and try NetworKit preinstalled on a virtual machine. This is strongly recommended for users using Microsoft Windows.
 
 - `Pip install`_: Download the NetworKit Python package with pip. This is the easier way to get NetworKit but you can only use NetworKit via Python this way.
 
@@ -19,7 +19,7 @@ We support three ways to install NetworKit:
 
 
 
-With NetworKit as a Python extension module, you get access to native high-performance code and can at the same time work interactively in the Python ecosystem. Although the standard Python interpreter works fine, we recommend `IPython <http://ipython.readthedocs.org/en/stable/>`_ as a great environment for scientific computing. View the `IPython Quickstart Guide`_ for installation instructions and how to use NetworKit with IPython.
+With NetworKit as a Python extension module, you get access to native high-performance code and can at the same time work interactively in the Python ecosystem. Although the standard Python interpreter works fine, we recommend `IPython <http://ipython.readthedocs.org/en/stable/>`_ as a great environment for scientific workflows. View the `IPython Quickstart Guide`_ for installation instructions and how to use NetworKit with IPython.
 
 
 Once you have installed NetworKit, please make sure to check out our `NetworKit UserGuide <http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb>`_ for an overview of the features provided in NetworKit.
@@ -31,7 +31,7 @@ Once you have installed NetworKit, please make sure to check out our `NetworKit 
 Install the NetworKit Virtual Machine
 =====================================
 
-If you want a quick and easy way to try NetworKit for your purposes or you use a Microsoft Windows operating system, we recommend the installation of our NetworKit virtual machine.
+If you want a quick and easy way to try NetworKit for your purposes or you use a Microsoft Windows operating system, we strongly recommend the installation of our NetworKit virtual machine.
 
 A detailed installation guide can be found `here <_static/Installation-Guide.pdf>`_.
 
@@ -56,7 +56,7 @@ You will need the following software to install NetworKit as a python package:
 - `Pip <https://pypi.python.org/pypi/pip>`_
 - `SCons <http://scons.org>`_: Please note that SCons is only available for Python 2. For installation via pip, we have a script that builds the C++ part of NetworKit, so you can try it without SCons.
 
-NetworKit uses some additional external Python packages. While you do not need them to run NetworKit, it is recommended to install them in order to use all the features of NetworKit:
+NetworKit uses some additional external Python packages. While you do not need them to run NetworKit, it is strongly recommended to install them in order to use all the features of NetworKit:
 
 - scipy
 - numpy
@@ -65,7 +65,7 @@ NetworKit uses some additional external Python packages. While you do not need t
 - networkx
 - tabulate
 
-You can use the command :code:`pip3 install scipy numpy readline matplotlib networkx tabulate` on your terminal to install all packages at once. During the installation of NetworKit, the setup will check if the external packages NetworKit uses are available and print warnings at the end of the installation process. If you don't see any warnings, your system should be ready to use NetworKit.
+You can use the command :code:`pip3 install scipy numpy readline matplotlib networkx tabulate` on your terminal to install all packages at once. During the installation of NetworKit, the setup will check if the external packages NetworKit uses are available and print warnings at the end of the installation process. If you do not see any warnings, your system should be ready to use NetworKit.
 
 
 Install NetworKit
@@ -92,12 +92,12 @@ You will need the following software to install NetworKit as a Python package:
 
 - A modern C++ compiler, e.g.: `g++ <https://gcc.gnu.org>`_ (>= 4.8) or `clang++ <http://clang.llvm.org>`_ (>= 3.7)
 - `SCons <http://scons.org>`_: Please note that SCons is only available for Python 2. For the different build targets, SCons is mandatory.
-- `Google Test <https://github.com/google/googletest>`_ (only needed if you want to build the unit tests)
+- `Google Test <https://github.com/google/googletest>`_ (only needed if you want to build the unit tests, which is recommended)
 
 Building NetworKit
 ~~~~~~~~~~~~~~~~~~
 
-This section describes on how to build NetworKit including the Python functionality. If you do not wish to install NetworKit as a Python package, please refer to `Building Only the C++ Core`_.
+This section describes how to build NetworKit including the Python functionality. If you do not wish to install NetworKit as a Python package, please refer to `Building Only the C++ Core`_.
 
 For building NetworKit including the Python functionality, make sure to also install the software from the `Python Requirements`_ listed in the `Pip install`_.
 
@@ -154,7 +154,7 @@ Logging is enabled by default. If you want to disable logging functionality, add
 Test
 ~~~~
 
-You actually don't need to build and run our unit tests. However if you experience any issues with NetworKit, you might want to check, if NetworKit runs properly. Please refer to the :ref:`devGuide-unitTests` section in our :ref:`devGuide`.
+You actually do not need to build and run our unit tests. However if you experience any issues with NetworKit, you might want to check, if NetworKit runs properly. Please refer to the :ref:`devGuide-unitTests` section in our :ref:`devGuide`.
 
 
 |separator|
