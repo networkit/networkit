@@ -78,7 +78,7 @@ You can remove NetworKit completely by using the command :code:`[sudo] pip[3] un
 
 |separator|
 
-
+.. _Build NetworKit from Source:
 
 Build NetworKit from Source
 ===========================
@@ -180,22 +180,52 @@ If you want to use NetworKit in the IPython terminal, type the following command
 
 The first line opens the IPython terminal. The second line imports the *networkit* Python module. After that, you should be able to use NetworKit interactively. For usage examples, refert to the `NetworKit UserGuide <http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb>`_.
 
-IPython Notebook
-~~~~~~~~~~~~~~~~
+IPython Notebook/jupyterhub
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We recommend that you familiarize yourself with NetworKit through experimenting with the interactive IPython Notebook `NetworKit_UserGuide.ipynb <http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb>`_ located in the folder *Doc/Notebooks*. To display and work with these notebooks, you have to start a local notebook server from the terminal with:
+Additionally, we recommend that you familiarize yourself with NetworKit through experimenting with the interactive IPython Notebook `NetworKit_UserGuide.ipynb` located in the folder `Doc/Notebooks`. The user guide also introduces a large portion of NetworKits functionality with usage examples. To display and work with these notebooks, you have to install jupyterhub and start a local notebook server from the terminal with:
 ::
-	ipython3 notebook
+	jupterhub --no-ssl
 
-It can occur, that ipython3 itself works, but the notebook server won't start. In that case, head over to the `IPython website <http://ipython.readthedocs.org/en/stable/>`_ and make sure, you have the listed packages installed. If the notebook server starts as it is supposed to, your default browser should open a web interface named "IPython Dashboard". You can either add *NetworKit_UserGuide.ipynb* from the above mentioned location, or you can point IPython to the location by starting it with
-::
-	ipython3 notebook --notebook-dir=Doc/Notebooks
-
-The notebook appears in the list and you can start it by clicking on it.
+If you run into any problems with jupyterhub, head over to the `jupyterhub documentation <https://jupyterhub.readthedocs.io/en/latest/>`_ and make sure, you have the listed packages installed. If the notebook server starts as it is supposed to, your default browser should open a web interface or you have to open it manually. Then you can add `NetworKit_UserGuide.ipynb` from the above mentioned location or browse to the location through the web interface.
 
 To show plots within the notebooks, place the following two lines at the beginning of your notebook:
 
 .. code-block:: python
 
 	%matplotlib
-	import matplotlib.pyplot as plt
+	matplotlib.pyplot as plt
+
+**Note:** Instead of running jupyterhub, it may still be possible to run :code:`ipython3 notebook`. However, the notebook functionality of the ipython package is deprecated and has been moved to jupyterhub, which we strongly recommend.
+
+Usage Example
+~~~~~~~~~~~~~
+
+Now that you are done installing NetworKit, you might want to try the following example:
+
+	>>> from networkit import *
+	>>> g = generators.HyperbolicGenerator(1e5).generate()
+	>>> overview(g)
+	Network Properties for:		    G#5
+	nodes, edges			        100000, 302148
+	directed?			            False
+	weighted?			            False
+	isolated nodes			        1859
+	self-loops			            0
+	density				            0.000060
+	clustering coefficient		    0.718261
+	min/max/avg degree		        0, 1045, 6.042960
+	degree assortativity		    0.000725
+	number of connected components	4237
+	size of largest component	    77131 (77.13 %)
+	>>> communities = community.detectCommunities(g, inspect=True)
+	PLM(balanced,pc,turbo) detected communities in 0.3781468868255615 [s]
+	solution properties:
+	-------------------  -----------
+	# communities        4468
+	min community size      1
+	max community size   1820
+	avg. community size    22.3814
+	modularity              0.989285
+	-------------------  -----------
+	>>>

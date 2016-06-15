@@ -16,7 +16,6 @@ rich environment of tools for data analysis and scientific computing.
 Furthermore, NetworKit's core can be built and used as a native library if needed.
 
 
-
 ## Installation options
 
 We support three ways to install NetworKit:
@@ -79,6 +78,7 @@ __Note:__ All of the above installation command may require root privileges depe
 
 
 ### Building NetworKit as a Python Module from source
+
 Run the script `setup.py` with the following options:
 
 	python3 setup.py build_ext --inplace [--optimize=V] [-jX]
@@ -93,12 +93,12 @@ will compile NetworKit, build the extensions and on top of that temporarily inst
 	python3 setup.py clean [--optimize=V]
 
 will remove the extensions and its build folder as well as call scons to remove the NetworKit library and its build folder specified by `--optimize=V`.
-	
-### Interactive environment for working with NetworKit
 
-To check that everything works as expected, open a python terminal and run for example:
 
-    python3
+### `jupyterhub`: An interactive environment for working with NetworKit
+
+To check that everything works as expected, open a python terminal and run the example from the beginning of this document or the following lines:
+
     >>> import networkit
     >>> G = networkit.Graph(5)
     >>> G.addEdge(0,1)
@@ -115,8 +115,44 @@ To show plots within the notebooks, place the following two lines at the beginni
 	%matplotlib
 	matplotlib.pyplot as plt
 
+__Note:__ Instead of running jupyterhub, it may still be possible to run `ipython3 notebook`. However, the notebook functionality of the ipython package is deprecated and has been moved to jupyterhub, which we strongly recommend.
+
+
+### Usage example
+
+Now that you are done installing NetworKit, you might want to try the following example:
+
+	>>> from networkit import *
+	>>> g = generators.HyperbolicGenerator(1e5).generate()
+	>>> overview(g)
+	Network Properties for:		    G#5
+	nodes, edges			        100000, 302148
+	directed?			            False
+	weighted?			            False
+	isolated nodes			        1859
+	self-loops			            0
+	density				            0.000060
+	clustering coefficient		    0.718261
+	min/max/avg degree		        0, 1045, 6.042960
+	degree assortativity		    0.000725
+	number of connected components	4237
+	size of largest component	    77131 (77.13 %)
+	>>> communities = community.detectCommunities(g, inspect=True)
+	PLM(balanced,pc,turbo) detected communities in 0.3781468868255615 [s]
+	solution properties:
+	-------------------  -----------
+	# communities        4468
+	min community size      1
+	max community size   1820
+	avg. community size    22.3814
+	modularity              0.989285
+	-------------------  -----------
+	>>>
+
+
 ### Building the C++ Core only
-In case you do not need NetworKit's Python functionality, this section describes how to build the C++ parts only. We recommend [SCons](http://scons.org) for building the C++ part of NetworKit. Individual settings for your environment will be read from a configuration file. As an example, the file `build.conf.example` is provided. Copy this to `build.conf` and edit your environment settings. Then call `scons`.
+
+In case you do not need NetworKit's Python functionality, this section describes how to build the C++ parts only. We recommend [SCons] for building the C++ part of NetworKit. Individual settings for your environment will be read from a configuration file. As an example, the file `build.conf.example` is provided. Copy this to `build.conf` and edit your environment settings. Then call `scons`.
 
 The call to SCons has the following options:
 
