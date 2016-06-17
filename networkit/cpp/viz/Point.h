@@ -45,7 +45,7 @@ public:
 	Point(std::vector<T>& values): data(values) {}
 	virtual ~Point() {}
 
-	count getDimensions() { return data.size(); }
+	count getDimensions() const { return data.size(); }
 
 	T distance(const Point<T>& p) const;
 	T squaredDistance(const Point<T>& p) const;
@@ -61,7 +61,7 @@ public:
 	T squaredLength() const;
 
 	T& operator[](const index i);
-	T& at(const index i);
+	T at(const index i) const;
 
 	/**
 	 * Default point to string conversion.
@@ -173,9 +173,9 @@ inline T& Point<T>::operator [](index i) {
 }
 
 template<class T>
-inline T& Point<T>::at(index i) {
+inline T Point<T>::at(index i) const {
 	assert(i >= 0 && i < data.size());
-	return data[i];
+	return data.at(i);
 }
 
 template<class T>

@@ -15,24 +15,26 @@
 using std::vector;
 namespace NetworKit {
 
-DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(count n, double avgDegree, double exp, double moveEachStep, double moveDistance) {
+DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(count n, double avgDegree, double exp, double T, double moveEachStep, double moveDistance) {
 	nodes = n;
 	this->alpha = (exp-1)/2;
+	this->T = T;
 	this->moveEachStep = moveEachStep;
 	this->moveDistance = moveDistance;
 	this->initialized = false;
-	R = HyperbolicSpace::getTargetRadius(n, n*avgDegree/2, alpha, 0);
+	R = HyperbolicSpace::getTargetRadius(n, n*avgDegree/2, alpha, T);
 	r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	initializeQuadTree();
 	initializeMovement();
 }
-DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(std::vector<double> &angles, std::vector<double> &radii, double avgDegree, double exp, double moveEachStep, double moveDistance) {
+DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(std::vector<double> &angles, std::vector<double> &radii, double avgDegree, double exp, double T, double moveEachStep, double moveDistance) {
 	this->angles = angles;
 	this->radii = radii;
 	this->nodes = angles.size();
 	this->alpha = (exp-1)/2;
+	this->T = T;
 	assert(radii.size() == nodes);
-	R = HyperbolicSpace::getTargetRadius(nodes, nodes*avgDegree/2, alpha, 0);
+	R = HyperbolicSpace::getTargetRadius(nodes, nodes*avgDegree/2, alpha, T);
 	r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	quad = Quadtree<index>(r);
 	this->moveEachStep = moveEachStep;
@@ -77,7 +79,7 @@ Graph DynamicHyperbolicGenerator::getGraph() const {
 	 * The next call is unnecessarily expensive, since it constructs a new QuadTree.
 	 * Reduces code duplication, though.
 	 */
-	return HyperbolicGenerator().generate(angles, radii, r, R);
+	return HyperbolicGenerator().generate(angles, radii, r, R, T);
 }
 
 std::vector<Point<float> > DynamicHyperbolicGenerator::getCoordinates() const {
@@ -168,6 +170,14 @@ void DynamicHyperbolicGenerator::moveNode(index toMove) {
 
 void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &result) {
 	bool suppressLeft = false;
+	//now define lambda
+	double beta = 1/T;
+	if (!(beta == beta)) {
+		DEBUG("Value of beta is ", beta, ", which is invalid. T=", T);
+	}
+	assert(T == 0 || beta == beta);
+	double threshold = R;
+	auto edgeProb = [beta, threshold](double distance) -> double {return 1 / (exp(beta*(distance-threshold)/2)+1);};
 
 	count oldStreamMarker = result.size();
 	vector<index> toWiggle;
@@ -178,7 +188,11 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
 			vector<index> localOldNeighbors;
 			toWiggle.push_back(i);
 			Point2D<double> q = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
-			quad.getElementsInHyperbolicCircle(q, R, suppressLeft, localOldNeighbors);
+			if (T == 0) {
+				quad.getElementsInHyperbolicCircle(q, R, suppressLeft, localOldNeighbors);
+			} else {
+				quad.getElementsProbabilistically(q, edgeProb, suppressLeft, localOldNeighbors);
+			}
 			oldNeighbours.push_back(localOldNeighbors);//add temperature
 		}
 	}
@@ -208,7 +222,11 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
 	for (index j = 0; j < toWiggle.size(); j++) {
 		vector<index> newNeighbours;
 		Point2D<double> q = HyperbolicSpace::polarToCartesian(angles[toWiggle[j]], radii[toWiggle[j]]);
-		quad.getElementsInHyperbolicCircle(q, R, suppressLeft, newNeighbours);
+		if (T == 0) {
+			quad.getElementsInHyperbolicCircle(q, R, suppressLeft, newNeighbours);
+		} else {
+			quad.getElementsProbabilistically(q, edgeProb, suppressLeft, newNeighbours);
+		}
 
 		std::sort(oldNeighbours[j].begin(), oldNeighbours[j].end());
 		std::sort(newNeighbours.begin(), newNeighbours.end());
