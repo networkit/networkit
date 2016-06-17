@@ -58,7 +58,11 @@ void NetworKit::KruskalMSF::run() {
 		for (auto e: sortedEdges) {
 			node u = e.from;
 			node v = e.to;
-//			INFO("process edge (", u, ", ", v, ") with weight ", e.weight);
+			INFO("process edge (", u, ", ", v, ") with weight ", e.weight);
+			assert(u < z);
+			assert(v < z);
+			assert(u >= 0);
+			assert(v >= 0);
 
 			// if edge does not close cycle, add it to tree
 			if (uf.find(u) != uf.find(v)) {
