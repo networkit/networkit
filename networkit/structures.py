@@ -1,2 +1,2 @@
 # extension imports
-from _NetworKit import Partition, Cover, QuadtreeCartesianEuclid
+from _NetworKit import Partition, Cover
