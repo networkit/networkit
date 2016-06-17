@@ -2190,7 +2190,7 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		return self._this.getElapsedMilliseconds()
 
 	def generate(self):
-		""" Generates hyperbolic graph
+		""" Generates hyperbolic random graph
 
 		Returns
 		-------
