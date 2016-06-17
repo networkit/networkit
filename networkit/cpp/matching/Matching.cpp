@@ -63,7 +63,7 @@ void Matching::unmatch(node u, node v) {
 }
 
 bool Matching::areMatched(node u, node v) const {
-	return (data.at(u) == v);
+	return (data.at(u) == v); // TODO: why not also data[v] == u ???
 }
 
 count Matching::size(const Graph& G) const {

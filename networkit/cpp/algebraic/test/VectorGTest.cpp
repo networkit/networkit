@@ -74,11 +74,6 @@ TEST(VectorGTest, testAccessVectorElement) {
 	EXPECT_EQ(4.0, third);
 
 	EXPECT_EQ(5.0, testVector.at(4));
-
-	EXPECT_THROW(testVector.at(5), std::runtime_error);
-	EXPECT_THROW(testVector.at(42), std::runtime_error);
-	EXPECT_THROW(testVector.at(-1), std::runtime_error);
-	EXPECT_THROW(testVector.at(-42), std::runtime_error);
 }
 
 TEST(VectorGTest, testOuterProduct) {
@@ -105,14 +100,8 @@ TEST(VectorGTest, testInnerProduct) {
 	double dotProduct = v1.transpose() * v2;
 	EXPECT_EQ(8.0, dotProduct);
 
-	EXPECT_THROW(v1 * v2, std::runtime_error);
-	EXPECT_THROW(v1 * v2.transpose(), std::runtime_error);
-	EXPECT_THROW(v1.transpose() * v3, std::runtime_error);
-
 	dotProduct = Vector::innerProduct(v1, v2);
 	EXPECT_EQ(8.0, dotProduct);
-
-	EXPECT_THROW(Vector::innerProduct(v1, v3), std::runtime_error);
 }
 
 TEST(VectorGTest, testVectorComparisonOperators) {
@@ -159,9 +148,6 @@ TEST(VectorGTest, testVectorMatrixMultiplication) {
 	EXPECT_EQ(26, result[0]);
 	EXPECT_EQ(40, result[1]);
 	EXPECT_EQ(28, result[2]);
-
-	EXPECT_THROW(v * mat, std::runtime_error);
-	EXPECT_THROW(v2 * mat, std::runtime_error);
 }
 
 TEST(VectorGTest, testVectorDivisionOperator) {
@@ -193,12 +179,6 @@ TEST(VectorGTest, testVectorAddition) {
 
 	v3 = v1.transpose() + v2.transpose();
 	EXPECT_TRUE(v3.isTransposed());
-
-	EXPECT_THROW(v1.transpose() + v2, std::runtime_error);
-	EXPECT_THROW(v1 + v2.transpose(), std::runtime_error);
-
-	EXPECT_THROW(v1 + v4, std::runtime_error);
-	EXPECT_THROW(v4 + v2, std::runtime_error);
 }
 
 TEST(VectorGTest, testVectorSubtraction) {
@@ -217,14 +197,12 @@ TEST(VectorGTest, testVectorSubtraction) {
 		EXPECT_EQ(v3[i], v1[i]);
 	}
 
-	v3 = v1.transpose() - v2.transpose();
-	EXPECT_TRUE(v3.isTransposed());
-
-	EXPECT_THROW(v1.transpose() - v2, std::runtime_error);
-	EXPECT_THROW(v1 - v2.transpose(), std::runtime_error);
-
-	EXPECT_THROW(v1 - v4, std::runtime_error);
-	EXPECT_THROW(v4 - v2, std::runtime_error);
+	v1 = Vector{1.0, 2.0, 3.0, 4.0};
+	v1 -= 1.0;
+	EXPECT_EQ(v1[0], 0.0);
+	EXPECT_EQ(v1[1], 1.0);
+	EXPECT_EQ(v1[2], 2.0);
+	EXPECT_EQ(v1[3], 3.0);
 }
 
 TEST(VectorGTest, testVectorIterators) {
@@ -262,6 +240,12 @@ TEST(VectorGTest, testVectorIterators) {
 	for (uint64_t i = 0; i < v.getDimension(); i++) {
 		EXPECT_EQ((i + 3.0), v[i]);
 	}
+}
+
+TEST(VectorGTest, testMean) {
+	Vector v = {1.0, 2.0, 3.0, 4.0, 5.0};
+	double mean = v.mean();
+	EXPECT_EQ(mean, 3);
 }
 
 

@@ -9,8 +9,8 @@
 #define INCIDENCEMATRIX_H_
 
 #include "../graph/Graph.h"
-#include "Vector.h"
 #include "Matrix.h"
+#include "Vector.h"
 
 namespace NetworKit {
 

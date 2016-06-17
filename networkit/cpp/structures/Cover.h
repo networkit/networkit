@@ -15,12 +15,9 @@
 #include <cassert>
 #include <limits>
 #include "Partition.h"
-
+#include "../Globals.h"
 
 namespace NetworKit {
-
-typedef uint64_t index;
-typedef uint64_t count;
 
 /**
  * @ingroup structures
