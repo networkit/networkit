@@ -144,7 +144,7 @@ void NetworKit::PowerlawDegreeSequence::run() {
 
 	double sum = 0;
 
-	for (double d = minDeg; d <= maxDeg; ++d) {
+	for (double d = maxDeg; d >= minDeg; --d) {
 		sum += std::pow(d, gamma);
 		cumulativeProbability.push_back(sum);
 	}
@@ -153,15 +153,17 @@ void NetworKit::PowerlawDegreeSequence::run() {
 		prob /= sum;
 	}
 
+	cumulativeProbability.back() = 1.0;
+
 	hasRun= true;
 }
 
 double NetworKit::PowerlawDegreeSequence::getExpectedAverageDegree() const {
 	if (!hasRun) throw std::runtime_error("Error: run needs to be called first");
 
-	double average = cumulativeProbability[0] * minDeg;
+	double average = cumulativeProbability[0] * maxDeg;
 	for (count i = 1; i < cumulativeProbability.size(); ++i) {
-		average += (cumulativeProbability[i] - cumulativeProbability[i-1]) * (i + minDeg);
+		average += (cumulativeProbability[i] - cumulativeProbability[i-1]) * (maxDeg - i);
 	}
 
 	return average;
@@ -190,5 +192,5 @@ std::vector< NetworKit::count > NetworKit::PowerlawDegreeSequence::getDegreeSequ
 NetworKit::count NetworKit::PowerlawDegreeSequence::getDegree() const {
 	if (!hasRun) throw std::runtime_error("Error: run needs to be called first");
 
-	return std::distance(cumulativeProbability.begin(), std::lower_bound(cumulativeProbability.begin(), cumulativeProbability.end(), Aux::Random::probability())) + minDeg;
+	return maxDeg - std::distance(cumulativeProbability.begin(), std::lower_bound(cumulativeProbability.begin(), cumulativeProbability.end(), Aux::Random::probability()));
 }

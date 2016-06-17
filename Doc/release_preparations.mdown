@@ -1,4 +1,26 @@
-# RELEASE CHECKLIST
+# Release preparations
+
+## Tags
+
+A tag is nothing more than a “symbolic name” for a revision. In NetworKit tags are used to mark release versions in the `default` branch, with a `MAJOR.MINOR` version name scheme.
+
+## Releasing New Features
+
+When new features should be released, the `Dev` branch is merged into the `default` branch. Additional testing and cleanup is performed before that happens. The new major or minor release is then tagged with a version number.
+
+          ______________________________________________________    Dev
+         /   ^ new feature    prepare release ^ \ < merge Dev into default
+    ____/________________________________________\______________    default
+                                                       ^ tag version
+
+
+Example:
+
+    hg up Dev
+    hg com -m "ready for release X.Y"
+    hg up default
+    hg merge Dev
+    hg com -m "release X.Y"
 
 ## Development related
 
