@@ -38,6 +38,49 @@ def createDevGuide():
                 fout.write(".. _devGuide-unitTests:\n\n")
             fout.write(line + "\n")
 
+def createReadme():
+    with open("get_started.rst", "r") as fin:
+        readme = fin.read()
+
+    readme = readme.splitlines()
+    with open("../../Readme.mdown", "w") as fout:
+        regex = re.compile("`[^<>`]+`_", re.IGNORECASE)
+        for line in readme:
+            match = regex.search(line, re.IGNORECASE)
+            while match:
+                link = match.group(0)[1:-2]
+                for i in range(0, len(readme)):
+                    if readme[i].startswith(".. _" + link + ":"):
+                        for j in range(i+1, len(readme)):
+                            if readme[j]:
+                                replStr = readme[j].lower()
+                                replStr = replStr.replace(" ", "-")
+                                line = regex.sub("`" + link + " <#" + replStr + ">`_", line, 1)
+                                break
+                        break
+                    elif readme[i].startswith(link):
+                        replStr = readme[i].lower()
+                        replStr = replStr.replace(" ", "-")
+                        line = regex.sub("`" + link + " <#" + replStr + ">`_", line, 1)
+                        break
+                match = regex.search(line, re.IGNORECASE)
+            fout.write(line + "\n")
+
+    call(["pandoc", "--from=rst",  "--to=markdown", "--output=../../Readme.mdown", "../../Readme.mdown"])
+    with open("../../Readme.mdown", "r") as fin:
+        readme = fin.read()
+
+    readme = readme.splitlines()
+    with open("../../Readme.mdown", "w") as fout:
+        regex = re.compile("{.sourceCode}", re.IGNORECASE)
+        for line in readme:
+            if not "|separator|" in line:
+                line = regex.sub("", line)
+                fout.write(line + "\n")
+
+    call(["pandoc", "-Vgeometry:margin=1.5cm", "../../Readme.mdown", "--latex-engine=xelatex", "-o../Readme.pdf"])
+
+
 
 def insertPublicationsTags():
     tagIdx = 1
@@ -75,6 +118,7 @@ def removePublicationsTags():
 def prepareBuild():
     insertNewsReferences()
     createDevGuide()
+    createReadme()
     insertPublicationsTags()
 
 def cleanUp():
