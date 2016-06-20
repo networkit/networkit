@@ -1,7 +1,8 @@
-# script that inserts news references into news.rst for sphinx
+# script that prepares some files for parsing with sphinx
 import re
 import os
 from subprocess import call
+from shutil import copyfile
 
 def insertNewsReferences():
     newsIdx = 1
@@ -39,11 +40,28 @@ def createDevGuide():
             fout.write(line + "\n")
 
 def createReadme():
+    # create the README.rst from the get_started.rst
+    copyfile("get_started.rst", "../../README.rst")
+
+    with open("../../README.rst", "r") as fin:
+        readme = fin.read()
+
+    readme = readme.splitlines()
+    with open("../../README.rst", "w") as fout:
+        regex = re.compile("<div")
+        for line in readme:
+            if not "|separator|" in line and regex.search(line) == None:
+                fout.write(line + "\n")
+
+    # Create the ../Readme.pdf
+    #
+    # pandoc can't parse internal references from .rst files so we convert
+    # the .rst file to a .mdown file for creating the pdf file.
     with open("get_started.rst", "r") as fin:
         readme = fin.read()
 
     readme = readme.splitlines()
-    with open("../../Readme.mdown", "w") as fout:
+    with open("Readme.mdown", "w") as fout:
         regex = re.compile("`[^<>`]+`_", re.IGNORECASE)
         for line in readme:
             match = regex.search(line, re.IGNORECASE)
@@ -66,20 +84,20 @@ def createReadme():
                 match = regex.search(line, re.IGNORECASE)
             fout.write(line + "\n")
 
-    call(["pandoc", "--from=rst",  "--to=markdown", "--output=../../Readme.mdown", "../../Readme.mdown"])
-    with open("../../Readme.mdown", "r") as fin:
+    call(["pandoc", "--from=rst",  "--to=markdown", "--output=Readme.mdown", "Readme.mdown"])
+    with open("Readme.mdown", "r") as fin:
         readme = fin.read()
 
     readme = readme.splitlines()
-    with open("../../Readme.mdown", "w") as fout:
+    with open("Readme.mdown", "w") as fout:
         regex = re.compile("{.sourceCode}", re.IGNORECASE)
         for line in readme:
             if not "|separator|" in line:
                 line = regex.sub("", line)
                 fout.write(line + "\n")
 
-    call(["pandoc", "-Vgeometry:margin=1.5cm", "../../Readme.mdown", "--latex-engine=xelatex", "-o../Readme.pdf"])
-
+    call(["pandoc", "-Vgeometry:margin=1.75cm", "--variable", "urlcolor=cyan", "Readme.mdown", "-o../Readme.pdf"])
+    os.remove("Readme.mdown")
 
 
 def insertPublicationsTags():
