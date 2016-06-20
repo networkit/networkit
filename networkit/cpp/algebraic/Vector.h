@@ -249,6 +249,13 @@ public:
 	Vector& operator-=(const double value);
 
 	/**
+	 * Applies the unary function @a unaryElementFunction to each value in the Vector. Note that it must hold that f(0) = 0.
+	 * @param unaryElementFunction
+	 */
+	template<typename F>
+	void apply(const F unaryElementFunction);
+
+	/**
 	 * Iterate over all elements of the vector and call handler (lambda closure).
 	 */
 	template<typename L> void forElements(L handle);
@@ -308,6 +315,14 @@ Vector Vector::operator*(const MATRIX& matrix) const {
 	}
 
 	return result;
+}
+
+template<typename F>
+void Vector::apply(const F unaryElementFunction) {
+#pragma omp parallel for
+	for (index i = 0; i < getDimension(); ++i) {
+		values[i] = unaryElementFunction(values[i]);
+	}
 }
 
 template<typename L>
