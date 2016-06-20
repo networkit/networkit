@@ -71,6 +71,7 @@ nav .hidden {
 
 .container h3 {
   font-size: 13pt;
+  font-weight: bold;
 }
 
 button.btn-link:before
