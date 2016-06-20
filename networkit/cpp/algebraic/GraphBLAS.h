@@ -16,6 +16,7 @@
 
 /**
  * @ingroup algebraic
+ * Implements the GraphBLAS interface. For more information visit https://graphblas.org.
  */
 namespace GraphBLAS {
 
