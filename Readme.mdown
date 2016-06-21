@@ -106,7 +106,7 @@ To check that everything works as expected, open a python terminal and run the e
 
 Additionally, we recommend that you familiarize yourself with NetworKit through experimenting with the interactive IPython Notebook `NetworKit_UserGuide.ipynb` located in the folder `Doc/Notebooks`. The user guide also introduces a large portion of NetworKits functionality with usage examples. To display and work with these notebooks, you have to install jupyterhub and start a local notebook server from the terminal with:
 
-	jupterhub --no-ssl
+	jupyterhub --no-ssl
 
 If you run into any problems with jupyterhub, head over to the [jupyterhub documentation](https://jupyterhub.readthedocs.io/en/latest/) and make sure, you have the listed packages installed. If the notebook server starts as it is supposed to, your default browser should open a web interface or you have to open it manually. Then you can add `NetworKit_UserGuide.ipynb` from the above mentioned location or browse to the location through the web interface.
 
