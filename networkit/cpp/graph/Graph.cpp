@@ -53,6 +53,23 @@ Graph::Graph(count n, bool weighted, bool directed) :
 	name = sstm.str();
 }
 
+Graph::Graph(std::initializer_list<WeightedEdge> edges) : Graph(0, true) {
+  using namespace std;
+
+  /* Number of nodes = highest node index + 1 */
+  for (const auto& edge: edges) {
+    node x = max(edge.u, edge.v);
+    while (numberOfNodes() <= x) {
+      addNode();
+    }
+  }
+
+  /* Now add all of the edges */
+  for (const auto& edge: edges) {
+    addEdge(edge.u, edge.v, edge.weight);
+  }
+}
+
 Graph::Graph(const Graph& G, bool weighted, bool directed) :
 	n(G.n),
 	m(G.m),

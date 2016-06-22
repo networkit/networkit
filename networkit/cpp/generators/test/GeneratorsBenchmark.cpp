@@ -144,8 +144,8 @@ TEST_F(GeneratorsBenchmark, benchBarabasiAlbertGenerator2) {
 
 TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGenerator) {
 	count n = 100000;
-	HyperbolicGenerator gen;
-	Graph G = gen.generate(n,1,1);
+	HyperbolicGenerator gen(n);
+	Graph G = gen.generate();
 	EXPECT_EQ(G.numberOfNodes(), n);
 }
 
@@ -180,54 +180,6 @@ TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorWithSortedNodes) {
 
 	Graph G = HyperbolicGenerator().generate(anglecopy, radiicopy, r, R*t);
 	EXPECT_EQ(G.numberOfNodes(), n);
-}
-
-TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorWithParallelQuadtree) {
-	count n = 100000;
-	double s = 1.0;
-	Quadtree<index> quad(n,s);
-	vector<double> angles;
-	vector<double> radii;
-	quad.trim();
-	quad.sortPointsInLeaves();
-	quad.reindex();
-	quad.extractCoordinates(angles, radii);
-	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
-
-	HyperbolicGenerator gen;
-	Graph G = gen.generate(angles, radii, quad, R);
-
-	EXPECT_EQ(n, G.numberOfNodes());
-}
-
-TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorWithSequentialQuadtree) {
-	count n = 100000;
-	double s = 1.0;
-	double alpha = 1;
-
-	vector<double> angles(n);
-	vector<double> radii(n);
-	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
-	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
-	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
-	Quadtree<index> quad(r);
-
-	for (index i = 0; i < n; i++) {
-		quad.addContent(i, angles[i], radii[i]);
-	}
-
-	angles.clear();
-	radii.clear();
-
-	quad.trim();
-	quad.sortPointsInLeaves();
-	quad.reindex();
-	quad.extractCoordinates(angles, radii);
-
-	HyperbolicGenerator gen;
-	Graph G = gen.generate(angles, radii, quad, R);
-
-	EXPECT_EQ(n, G.numberOfNodes());
 }
 
 TEST_F(GeneratorsBenchmark, benchmarkDynamicHyperbolicGeneratorOnNodeMovement) {
@@ -280,20 +232,6 @@ TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorMechanicGraphs) {
 	gen.setLeafCapacity(10);
 	Graph G = gen.generate();
 	EXPECT_NEAR(G.numberOfEdges(), m, m/10);
-}
-
-TEST_F(GeneratorsBenchmark, benchmarkRHGscaling) {
-	for (index i = 1; i <= 4; i++) {
-		Aux::setNumberOfThreads(i);
-		Aux::Timer timer;
-		count n = 1000000;
-		count k = 6;
-		timer.start();
-		Graph G = RHGGenerator(n, k).generate();
-		timer.stop();
-		INFO(i, " threads, ", n, " nodes, ", timer.elapsedMilliseconds(), " milliseconds.");
-	}
-
 }
 
 } /* namespace NetworKit */

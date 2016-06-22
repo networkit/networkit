@@ -8,8 +8,8 @@
 #ifndef ADJACENCYMATRIX_H_
 #define ADJACENCYMATRIX_H_
 
-#include "Matrix.h"
 #include "../graph/Graph.h"
+#include "Matrix.h"
 
 namespace NetworKit {
 

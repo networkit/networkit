@@ -13,8 +13,8 @@
 
 #include "IOBenchmark.h"
 #include "../RasterReader.h"
-#include "../../generators/Quadtree/QuadtreePolarEuclid.h"
-#include "../../generators/Quadtree/QuadtreeCartesianEuclid.h"
+#include "../../generators/quadtree/QuadtreePolarEuclid.h"
+#include "../../generators/quadtree/QuadtreeCartesianEuclid.h"
 #include "../../geometric/HyperbolicSpace.h"
 
 namespace NetworKit {
@@ -79,6 +79,7 @@ void IOBenchmark::convertToHeatMap(vector<bool> &infected, vector<double> &xcoor
 
 }
 
+
 TEST_F(IOBenchmark, timeMETISGraphReader) {
 	std::string path = "";
 
@@ -139,7 +140,6 @@ TEST_F(IOBenchmark, benchRasterReader) {
 
 			INFO("Converted coordinates", runtime.elapsedTag());
 			//define query function
-			double T = 0.01;
 			auto edgeProb = [n](double distance) -> double {return (1/distance)*exp(5)/(double)n ;};
 			//auto edgeProb = [beta, thresholdDistance](double distance) -> double {return 1 / (exp(beta*(distance-thresholdDistance)/2)+1);};
 
@@ -226,7 +226,7 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 		}
 
 		//set neighbor probability
-		auto edgeProb = [n](double distance) -> double {return (1/distance)*exp(4)/(double)n ;};
+		auto edgeProb = [n](double distance) -> double {return (1/distance)*exp(-11);};
 
 		//convert coordinates
 		runtime.start();
@@ -319,6 +319,10 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 			convertToHeatMap(infectedState, xcoords, ycoords, filename, resolution);
 
 			step++;
+			if (step == 5000) {
+				runtime.stop();
+				INFO("5000 steps took:", runtime.elapsedTag());
+			}
 		}
 		INFO("Total infections: ", std::count(wasEverInfected.begin(), wasEverInfected.end(), true));
 	}

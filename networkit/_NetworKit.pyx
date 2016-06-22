@@ -52,6 +52,7 @@ cdef extern from "<algorithm>" namespace "std":
 	_Partition move( _Partition t) nogil
 	_Cover move(_Cover t) nogil
 	_Matching move(_Matching) nogil
+	_UnionFind move(_UnionFind t) nogil
 	vector[double] move(vector[double])
 	vector[bool] move(vector[bool])
 	vector[count] move(vector[count])
@@ -228,6 +229,7 @@ cdef extern from "cpp/viz/Point.h" namespace "NetworKit":
 	cdef cppclass Point[T]:
 		Point()
 		Point(T x, T y)
+		Point(vector[T] values)
 		T& operator[](const index i) except +
 		T& at(const index i) except +
 
@@ -2149,7 +2151,7 @@ cdef extern from "cpp/generators/HyperbolicGenerator.h":
 		void setBalance(double balance) except +
 		vector[double] getElapsedMilliseconds() except +
 		_Graph generate() except +
-		_Graph generateExternal(vector[double] angles, vector[double] radii, double r, double thresholdDistance, double T) except +
+		_Graph generate(vector[double] angles, vector[double] radii, double R, double T) except +
 
 cdef class HyperbolicGenerator:
 	""" The Hyperbolic Generator distributes points in hyperbolic space and adds edges between points with a probability depending on their distance. The resulting graphs have a power-law degree distribution, small diameter and high clustering coefficient.
@@ -2199,10 +2201,10 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		"""
 		return Graph(0).setThis(self._this.generate())
 
-	def generateExternal(self, angles, radii, k, gamma, T=0):
+	def generate(self, angles, radii, R, T=0):
 		# TODO: documentation
-		return Graph(0).setThis(self._this.generateExternal(angles, radii, k, gamma, T))
-	
+		return Graph(0).setThis(self._this.generate(angles, radii, R, T))
+
 	@classmethod
 	def fit(cls, Graph G, scale=1):
 		""" Fit model to input graph"""
@@ -3554,6 +3556,51 @@ cdef class Partition:
 		"""
 		return self._this.getSubsetIds()
 
+cdef extern from "cpp/generators/quadtree/QuadtreeCartesianEuclid.h":
+	cdef cppclass _QuadtreeCartesianEuclid "NetworKit::QuadtreeCartesianEuclid"[T]:
+		_QuadtreeCartesianEuclid() except +
+		_QuadtreeCartesianEuclid(Point[double] lower, Point[double] upper) except +
+		void addContent(T newcomer, Point[double] pos) except +
+		count getElementsProbabilistically[Callback](Point[double] euQuery, Callback prob, vector[T] &circleDenizens) except +
+
+cdef cppclass DistanceCallBackWrapper:
+	void* callback
+	__init__(object callback):
+		this.callback = <void*>callback
+	double cython_call_operator(double dist):
+		cdef bool error = False
+		cdef string message
+		try:
+			return (<object>callback)(dist)
+		except Exception as e:
+			error = True
+			message = stdstring("An Exception occurred, aborting execution of distance lambda: {0}".format(e))
+		if (error):
+			throw_runtime_error(message)
+
+cdef class QuadtreeCartesianEuclid:
+	cdef _QuadtreeCartesianEuclid[double] _this
+
+	def __cinit__(self, lower, upper):
+		cdef Point[double] lowerPoint = Point[double](lower)
+		cdef Point[double] upperPoint = Point[double](upper)
+		self._this = _QuadtreeCartesianEuclid[double](lowerPoint, upperPoint)
+
+	def addContent(self, content, pos):
+		cdef Point[double] posPoint = Point[double](pos)
+		self._this.addContent(content, posPoint)
+
+	def getElementsProbabilistically(self, query, object callback):
+		cdef DistanceCallBackWrapper* wrapper
+		cdef Point[double] queryPoint = Point[double](query)
+		cdef vector[double] resultlist = []
+		try:
+			wrapper = new DistanceCallBackWrapper(callback)
+			self._this.getElementsProbabilistically[DistanceCallBackWrapper](queryPoint, dereference(wrapper), resultlist)
+		finally:
+			del wrapper
+			return resultlist
+
 
 cdef extern from "cpp/structures/Cover.h":
 	cdef cppclass _Cover "NetworKit::Cover":
@@ -3817,6 +3864,34 @@ cdef class Cover:
 			A set of ids of nonempty subsets.
 		"""
 		return self._this.getSubsetIds()
+
+cdef extern from "cpp/structures/UnionFind.h":
+	cdef cppclass _UnionFind "NetworKit::UnionFind":
+		_UnionFind() except +
+		_UnionFind(index max_element) except +
+		void allToSingletons() except +
+		index find(index u) except +
+		void merge(index u, index v) except +
+		_Partition toPartition() except +		
+
+cdef class UnionFind:
+	""" Union-Find data structure"""
+	cdef _UnionFind _this
+
+	def __cinit__(self, count n):
+		self._this = move(_UnionFind(n))
+
+	def allToSingletons(self):
+		self._this.allToSingletons()
+
+	def find(self, index u):
+		return self._this.find(u)
+
+	def merge(self, index u, index v):
+		self._this.merge(u,v)
+
+	def toPartition(self):
+		return Partition().setThis(self._this.toPartition())
 
 
 # Module: community
@@ -5475,7 +5550,7 @@ cdef class Centrality(Algorithm):
 
 cdef extern from "cpp/centrality/DegreeCentrality.h":
 	cdef cppclass _DegreeCentrality "NetworKit::DegreeCentrality" (_Centrality):
-		_DegreeCentrality(_Graph, bool normalized) except +
+		_DegreeCentrality(_Graph, bool normalized, bool outdeg, bool ignoreSelfLoops) except +
 
 cdef class DegreeCentrality(Centrality):
 	""" Node centrality index which ranks nodes by their degree.
@@ -5494,9 +5569,9 @@ cdef class DegreeCentrality(Centrality):
  		Normalize centrality values in the interval [0,1].
 	"""
 
-	def __cinit__(self, Graph G, bool normalized=False):
+	def __cinit__(self, Graph G, bool normalized=False, bool outDeg = True, bool ignoreSelfLoops=True):
 		self._G = G
-		self._this = new _DegreeCentrality(G._this, normalized)
+		self._this = new _DegreeCentrality(G._this, normalized, outDeg, ignoreSelfLoops)
 
 
 
@@ -6285,7 +6360,7 @@ cdef class DynamicPubWebGenerator:
 
 cdef extern from "cpp/generators/DynamicHyperbolicGenerator.h":
 	cdef cppclass _DynamicHyperbolicGenerator "NetworKit::DynamicHyperbolicGenerator":
-		_DynamicHyperbolicGenerator(count numNodes, double avgDegree, double gamma, double moveEachStep, double moveDistance) except +
+		_DynamicHyperbolicGenerator(count numNodes, double avgDegree, double gamma, double T, double moveEachStep, double moveDistance) except +
 		vector[_GraphEvent] generate(count nSteps) except +
 		_Graph getGraph() except +
 		vector[Point[float]] getCoordinates() except +
@@ -6294,7 +6369,7 @@ cdef extern from "cpp/generators/DynamicHyperbolicGenerator.h":
 cdef class DynamicHyperbolicGenerator:
 	cdef _DynamicHyperbolicGenerator* _this
 
-	def __cinit__(self, numNodes, avgDegree = 6, gamma = 3, moveEachStep = 1, moveDistance = 0.1):
+	def __cinit__(self, numNodes, avgDegree = 6, gamma = 3, T = 0, moveEachStep = 1, moveDistance = 0.1):
 		""" Dynamic graph generator according to the hyperbolic unit disk model.
 
 		Parameters
@@ -6305,6 +6380,8 @@ cdef class DynamicHyperbolicGenerator:
 			average degree of the resulting graph
 		gamma : double
 			power-law exponent of the resulting graph
+		T : double
+			temperature, selecting a graph family on the continuum between hyperbolic unit disk graphs and Erdos-Renyi graphs
 		moveFraction : double
 			fraction of nodes to be moved in each time step. The nodes are chosen randomly each step
 		moveDistance: double
@@ -6312,7 +6389,7 @@ cdef class DynamicHyperbolicGenerator:
 		"""
 		if gamma <= 2:
 				raise ValueError("Exponent of power-law degree distribution must be > 2")
-		self._this = new _DynamicHyperbolicGenerator(numNodes, avgDegree, gamma, moveEachStep, moveDistance)
+		self._this = new _DynamicHyperbolicGenerator(numNodes, avgDegree = 6, gamma = 3, T = 0, moveEachStep = 1, moveDistance = 0.1)
 
 	def generate(self, nSteps):
 		""" Generate event stream.
@@ -6997,7 +7074,7 @@ cdef class VDegreeIndex(LinkPredictor):
 cdef extern from "cpp/linkprediction/AlgebraicDistanceIndex.h":
 	cdef cppclass _AlgebraicDistanceIndex "NetworKit::AlgebraicDistanceIndex"(_LinkPredictor):
 		_AlgebraicDistanceIndex(count numberSystems, count numberIterations, double omega, index norm) except +
-		_AlgebraicDistanceIndex(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm, ) except +
+		_AlgebraicDistanceIndex(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm) except +
 		void preprocess() except +
 		double run(node u, node v) except +
 
@@ -8669,8 +8746,80 @@ def sort2(sample):
 	sort(result.begin(),result.end())
 	return result
 
-# stats
 
+cdef extern from "cpp/distance/CommuteTimeDistance.h":
+	cdef cppclass _CommuteTimeDistance "NetworKit::CommuteTimeDistance":
+		_CommuteTimeDistance(_Graph G, double tol) except +
+		void run() nogil except +
+		void runApproximation() except +
+		void runParallelApproximation() except +
+		double distance(node, node) except +
+		double runSinglePair(node, node) except +
+		double runSingleSource(node) except +
+
+
+cdef class CommuteTimeDistance:
+	""" Computes the Euclidean Commute Time Distance between each pair of nodes for an undirected unweighted graph.
+
+	CommuteTimeDistance(G)
+
+	Create CommuteTimeDistance for Graph `G`.
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	tol: double
+	"""
+	cdef _CommuteTimeDistance* _this
+	cdef Graph _G
+
+	def __cinit__(self,  Graph G, double tol = 0.1):
+		self._G = G
+		self._this = new _CommuteTimeDistance(G._this, tol)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		""" This method computes ECTD exactly. """
+		with nogil:
+			self._this.run()
+		return self
+
+	def runApproximation(self):
+		""" Computes approximation of the ECTD. """
+		return self._this.runApproximation()
+
+	def runParallelApproximation(self):
+		""" Computes approximation (in parallel) of the ECTD. """
+		return self._this.runParallelApproximation()
+
+	def distance(self, u, v):
+		"""  Returns the ECTD between node u and node v.
+
+		u : node
+		v : node
+		"""
+		return self._this.distance(u, v)
+
+	def runSinglePair(self, u, v):
+		"""  Returns the ECTD between node u and node v, without preprocessing.
+
+		u : node
+		v : node
+		"""
+		return self._this.runSinglePair(u, v)
+
+	def runSingleSource(self, u):
+		"""  Returns the sum of the ECTDs from u, without preprocessing.
+
+		u : node
+		"""
+		return self._this.runSingleSource(u)
+
+
+# stats
 
 def gini(values):
 	"""
@@ -8686,7 +8835,6 @@ def gini(values):
 
 
 # simulation
-
 cdef extern from "cpp/simulation/EpidemicSimulationSEIR.h":
 	cdef cppclass _EpidemicSimulationSEIR "NetworKit::EpidemicSimulationSEIR" (_Algorithm):
 		_EpidemicSimulationSEIR(_Graph, count, double, count, count, node) except +
@@ -8694,7 +8842,6 @@ cdef extern from "cpp/simulation/EpidemicSimulationSEIR.h":
 
 cdef class EpidemicSimulationSEIR(Algorithm):
 	"""
-
  	Parameters
  	----------
  	G : Graph
@@ -8710,12 +8857,83 @@ cdef class EpidemicSimulationSEIR(Algorithm):
 	zero : node
 		starting node
 	"""
-
 	cdef Graph G
-
 	def __cinit__(self, Graph G, count tMax, double transP=0.5, count eTime=2, count iTime=7, node zero=none):
 		self.G = G
 		self._this = new _EpidemicSimulationSEIR(G._this, tMax, transP, eTime, iTime, zero)
-
 	def getData(self):
 		return pandas.DataFrame((<_EpidemicSimulationSEIR*>(self._this)).getData(), columns=["zero", "time", "state", "count"])
+
+
+
+cdef extern from "cpp/centrality/Spanning.h":
+	cdef cppclass _Spanning "NetworKit::Spanning":
+		_Spanning(_Graph G, double tol) except +
+		void run() nogil except +
+		void runApproximation() except +
+		void runParallelApproximation() except +
+		void runTreeApproximation(count reps) except +
+		void runTreeApproximation2(count reps) except +
+		void runPseudoTreeApproximation(count reps) except +
+		vector[double] scores() except +
+
+cdef class Spanning:
+	""" Computes the Euclidean Commute Time Distance between each pair of nodes for an undirected unweighted graph.
+	Spanning(G)
+	Create Spanning Edge Centrality for Graph `G`.
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	tol: double
+	"""
+	cdef _Spanning* _this
+	cdef Graph _G
+	def __cinit__(self,  Graph G, double tol = 0.1):
+		self._G = G
+		self._this = new _Spanning(G._this, tol)
+	def __dealloc__(self):
+		del self._this
+	def run(self):
+		""" This method computes Spanning Edge Centrality exactly. """
+		with nogil:
+			self._this.run()
+		return self
+	def runApproximation(self):
+		""" Computes approximation of the Spanning Edge Centrality. """
+		return self._this.runApproximation()
+
+	def runParallelApproximation(self):
+		""" Computes approximation (in parallel) of the Spanning Edge Centrality. """
+		return self._this.runParallelApproximation()
+
+	def runTreeApproximation(self, reps):
+		"""  Returns a Spanning Edge Centrality approximation using spanning trees
+
+		reps : number of iterations
+		"""
+		return self._this.runTreeApproximation(reps)
+
+	def runTreeApproximation2(self, reps):
+		"""  Returns a Spanning Edge Centrality approximation using spanning trees.
+
+		reps : number of iterations
+		"""
+		return self._this.runTreeApproximation2(reps)
+
+	def runPseudoTreeApproximation(self, reps):
+		"""  Returns a Spanning Edge Centrality approximation using spanning trees
+
+		reps : number of iterations
+		"""
+		return self._this.runPseudoTreeApproximation(reps)
+
+	def scores(self):
+		""" Get a vector containing the SEC score for each edge in the graph.
+
+		Returns
+		-------
+		vector
+			The SEC scores.
+		"""
+		return self._this.scores()
