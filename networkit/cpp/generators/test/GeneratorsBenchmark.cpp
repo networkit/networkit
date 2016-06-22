@@ -233,9 +233,10 @@ TEST_F(GeneratorsBenchmark, benchmarkDynamicHyperbolicGeneratorOnNodeMovement) {
 	const count nSteps = 100;
 	const double k = 6;
 	const double exp = 3;
+	const double T = 0;
 	const double moveEachStep = 0.5;
 	const double moveDistance = 0.02;
-	DynamicHyperbolicGenerator dyngen(n, k, exp, moveEachStep, moveDistance);
+	DynamicHyperbolicGenerator dyngen(n, k, exp, T, moveEachStep, moveDistance);
 	dyngen.generate(nSteps);
 }
 
@@ -261,6 +262,16 @@ TEST_F(GeneratorsBenchmark, benchmarkSequentialQuadtreeConstruction) {
 		quad.addContent(i, angles[i], radii[i]);
 	}
 	EXPECT_EQ(quad.size(), n);
+}
+
+TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorMechanicGraphs) {
+	count n = 1000000;
+	double k = 6;
+	count m = n*k/2;
+	HyperbolicGenerator gen(n, k, 3, 0.14);
+	gen.setLeafCapacity(10);
+	Graph G = gen.generate();
+	EXPECT_NEAR(G.numberOfEdges(), m, m/10);
 }
 
 } /* namespace NetworKit */

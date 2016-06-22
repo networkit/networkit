@@ -11,7 +11,7 @@
 #include <map>
 
 #include "DynamicGraphGenerator.h"
-#include "Quadtree/Quadtree.h"
+#include "quadtree/Quadtree.h"
 
 
 namespace NetworKit {
@@ -32,7 +32,7 @@ public:
 	 * @param moveDistance base value for the node movements
 	 */
 
-	DynamicHyperbolicGenerator(count n = 1000, double avgDegree=6, double exp=3, double moveEachStep = 0, double moveDistance = 0);
+	DynamicHyperbolicGenerator(count n = 1000, double avgDegree=6, double exp=3, double T=0, double moveEachStep = 0, double moveDistance = 0);
 
 	/**
 	 * Initialize a dynamic hyperbolic generator with given initial node positions in polar coordinates
@@ -47,7 +47,7 @@ public:
 	 * @param factorGrowth increment added to the value of thresholdFactor at each step, should be non-negative
 	 * @param moveDistance base value for the node movements
 	 */
-	DynamicHyperbolicGenerator(std::vector<double> &angles, std::vector<double> &radii,  double avgDegree=6, double exp=3, double moveEachStep = 0, double moveDistance = 0);
+	DynamicHyperbolicGenerator(std::vector<double> &angles, std::vector<double> &radii,  double avgDegree=6, double exp=3, double T=0, double moveEachStep = 0, double moveDistance = 0);
 
 	/**
 	 * Default constructor
@@ -122,6 +122,7 @@ private:
 
 	count nodes;
 	double alpha;
+	double T;
 	double moveEachStep;
 	double moveDistance;
 	Quadtree<index> quad;

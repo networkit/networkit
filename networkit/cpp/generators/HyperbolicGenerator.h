@@ -12,7 +12,7 @@
 #include "../geometric/HyperbolicSpace.h"
 #include "StaticGraphGenerator.h"
 #include "../auxiliary/Timer.h"
-#include "Quadtree/Quadtree.h"
+#include "quadtree/Quadtree.h"
 
 namespace NetworKit {
 
@@ -23,10 +23,10 @@ public:
 	 * @param[in] n Number of nodes
 	 * @param[in] m Target number of edges
 	 */
-	HyperbolicGenerator(count n=10000, double avgDegree=6, double exp=3);
+	HyperbolicGenerator(count n=10000, double avgDegree=6, double exp=3, double T=0);
 
-
-	Graph generate(const vector<double> &angles, const vector<double> &radii, Quadtree<index> &quad, double thresholdDistance);
+	Graph generate(const vector<double> &angles, const vector<double> &radii, Quadtree<index> &quad, double thresholdDistance, double T=0);
+	Graph generateCold(const vector<double> &angles, const vector<double> &radii, const Quadtree<index> &quad, double thresholdDistance);
 
 	/**
 	 * @param[in] angles Pointer to angles of node positions
@@ -35,8 +35,8 @@ public:
 	 * @param[in] thresholdDistance Edges are added for nodes closer to each other than this threshold
 	 * @return Graph to be generated according to parameters
 	 */
-	Graph generate(const vector<double> &angles, const vector<double> &radii, double r, double thresholdDistance);
-	Graph generateExternal(const vector<double> &angles, const vector<double> &radii, double k, double gamma);
+	Graph generate(const vector<double> &angles, const vector<double> &radii, double r, double thresholdDistance, double T=0);
+	Graph generateExternal(const vector<double> &angles, const vector<double> &radii, double k, double gamma, double T=0);
 
 	/**
 	 * @param[in] n Number of nodes
@@ -45,7 +45,7 @@ public:
 	 * @param[in] stretchradius Stretching the hyperbolic disk results in thinner graphs, default=1
 	 * @return Graph to be generated according to parameters
 	 */
-	Graph generate(count n, double distanceFactor=1, double alpha=1, double stretchradius = 1);
+	Graph generate(count n, double distanceFactor=1, double alpha=1, double stretchradius = 1, double T = 0);
 
 	/**
 	 * @return Graph to be generated according to parameters specified in constructor.
@@ -73,7 +73,7 @@ public:
 		this->balance = balance;
 	}
 
-	vector<double> getElapsedMilliseconds() {
+	vector<double> getElapsedMilliseconds() const {
 		vector<double> result(threadtimers.size());
 		for (index i = 0; i < result.size(); i++) {
 			result[i] = threadtimers[i].elapsedMilliseconds();
@@ -95,6 +95,7 @@ private:
 	double stretch;
 	double factor;
 	double alpha;
+	double temperature;
 
 	/**
 	 * tuning parameters
