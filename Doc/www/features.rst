@@ -11,9 +11,9 @@ Features and Design Goals
 =========================
 
 **NetworKit** is implemented as a hybrid of performance-aware code written in C++ (often parallelized using OpenMP) with an interface and additional functionality written in Python.
-More details and an illustration are provided in the `Design Details`_ Section below.
+More details and an illustration are provided in the `Architecture`_ Section below.
 NetworKit is distributed as a Python package, ready to use interactively from a Python shell, which is the main usage scenario we envision for domain experts.
-If you want to know more about our design goals, then take a look at our `Design Goals and Principles'_ Section below.
+If you want to know more about our design goals, then take a look at our `Design Goals and Principles`_ Section below.
 
 The best way to get an overall picture of a network is to use the *Profiling* module. Take a look at the `Network Profiling`_ Section below. If you are only interested in a
 small subset of network analysis measures, it might be more convenient to compute them separately instead of using the *Profiling* module. Check out the `Network Analytics`_
@@ -169,7 +169,7 @@ TODO: Drawing Graphs with Gephi
 
 
 Architecture
---------------
+------------
 
 With the hybrid approach, we are able to combine the performance of C++ with the easy and interactive environment of Python and Jupyter Notebook. We provide a Python package
 that can be installed easily via pip (see :ref:`Pip install`). This makes it very easy to start working with NetworKit interactively. However, the code can also be used as a
@@ -192,15 +192,14 @@ integration crucial for real-world data analysis workflows.
 
 
 Design Goals and Principles
---------------
+---------------------------
 
 There is a variety of software packages which provide graph algorithms in general and network analysis capabilities in particular. However, NetworKit aims to balance a specific combination of strengths:
 
-* Performance: Algorithms and data structures are selected and implemented with high performance and parallelism in mind. Some implementations are among the fastest in published research. For example, community detection in a $3.3$ billion edge web graph can be performed on a 16-core server in less than three minutes.
+* Performance: Algorithms and data structures are selected and implemented with high performance and parallelism in mind. Some implementations are among the fastest in published research. For example, community detection in a 3.3 billion edge web graph can be performed on a 16-core server in less than three minutes.
 
 * Usability: Networks are as diverse as the series of questions we might ask of them -- e.g. what is the largest connected component, what are the most central nodes in it and how do they connect to each other? A practical tool for network analysis should therefore provide modular functions which do not restrict the user to predefined workflows. An interactive shell, which the Python language provides, is one prerequisite for that. While NetworKit works with the standard Python 3 interpreter, calling the module from the IPython shell and Jupyter Notebook HTML interface allows us to integrate it into a fully fledged computing environment for scientific workflows, from data preparation to creating figures. It is also easy to set up and control a remote compute server.
 
 * Integration: As a Python module, NetworKit can be seamlessly integrated with Python libraries for scientific computing and data analysis, e.g. pandas for data frame processing and analytics, matplotlib for plotting or numpy and scipy for numerical and scientific computing. For certain tasks, we provide interfaces to external tools, e.g. Gephi for graph visualization.
 
 * Design Principles: Our main focus is on scalable algorithms to support network analysis on massive networks. Several algorithm and implementation patterns are used to achieve this goal: parallelism, fast heuristics and approximation algorithms for problems that are otherwise not solvable in nearly-linear time, efficient data structures, and modular software design.
-

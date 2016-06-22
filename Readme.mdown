@@ -25,7 +25,7 @@ We support three ways to install NetworKit:
 -   Build NetworKit from Source: Clone or download the source code of NetworKit and build the C++ and Python modules from source.
 
 More detailed instructions follow after the requirements section.
-With NetworKit as a Python extension module, you get access to native high-performance code and can at the same time work interactively in the Python ecosystem. Although the standard Python interpreter works fine, we recommend [IPython] and [jupyterhub](https://github.com/jupyterhub/jupyterhub) as great environments for scientific computing. 
+With NetworKit as a Python extension module, you get access to native high-performance code and can at the same time work interactively in the Python ecosystem. Although the standard Python interpreter works fine, we recommend [IPython] and [jupyterhub](https://github.com/jupyterhub/jupyterhub) as great environments for scientific computing.
 
 Once you have installed NetworKit, please make sure to check out our [NetworKit UserGuide] for an overview of the features provided in NetworKit.
 
@@ -37,7 +37,7 @@ C++ sources are also documented in [Doxygen](http://www.stack.nl/~dimitri/doxyge
 
 To convert the documentation markdown files to PDF install the [pandoc](http://code.google.com/p/pandoc/downloads/list) utility and call the script `docs2pdf.sh`.
 
-## Contact 
+## Contact
 
 For questions regarding NetworKit, subscribe to our [e-mail list][list] (`networkit@ira.uka.de`) and feel free to ask.
 
@@ -72,7 +72,7 @@ You can use the command `pip3 install scipy numpy readline matplotlib networkx t
 
     [sudo] pip[3] install [--user] networkit
 
-During the installation process, the setup will check if the aforementioned external packages are available and print warnings at the end of the installation process. 
+During the installation process, the setup will check if the aforementioned external packages are available and print warnings at the end of the installation process.
 
 __Note:__ All of the above installation command may require root privileges depending on your system, so try this accordingly. If you do not have root privileges, add `--user` to your command.
 
@@ -106,7 +106,7 @@ To check that everything works as expected, open a python terminal and run the e
 
 Additionally, we recommend that you familiarize yourself with NetworKit through experimenting with the interactive IPython Notebook `NetworKit_UserGuide.ipynb` located in the folder `Doc/Notebooks`. The user guide also introduces a large portion of NetworKits functionality with usage examples. To display and work with these notebooks, you have to install jupyterhub and start a local notebook server from the terminal with:
 
-	jupterhub --no-ssl
+	jupyterhub --no-ssl
 
 If you run into any problems with jupyterhub, head over to the [jupyterhub documentation](https://jupyterhub.readthedocs.io/en/latest/) and make sure, you have the listed packages installed. If the notebook server starts as it is supposed to, your default browser should open a web interface or you have to open it manually. Then you can add `NetworKit_UserGuide.ipynb` from the above mentioned location or browse to the location through the web interface.
 
@@ -171,7 +171,7 @@ and `<target>` can be
 - `Lib`					build NetworKit as a library and create symbolic links
 
 For example, to build NetworKit as an optimized library, run
-	
+
 	scons --optimize=Opt --target=Lib
 
 To speed up the compilation on a multicore machine, you can append `-jX` where X denotes the number of threads to compile with.
@@ -179,7 +179,7 @@ To speed up the compilation on a multicore machine, you can append `-jX` where X
 Logging is enabled by default. If you want to disable logging functionality, add the following to your scons call:
 
 	--logging=no
-	
+
 ### Use NetworKit as a library
 
 It is also possible to use NetworKit as a library. Therefore, choose the target `Lib` when compiling NetworKit. The include directives in your C++\-application look like the following

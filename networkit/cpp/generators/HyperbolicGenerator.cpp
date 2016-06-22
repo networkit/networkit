@@ -3,7 +3,11 @@
  *
  *  Created on: 20.05.2014
  *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
- * This generator is a simplified version of the model presented in
+ * This generator is described in the publication
+ * "Generating Random Hyperbolic Graphs in Subquadratic Time" by
+ * Moritz von Looz, Henning Meyerhenke and Roman Prutkin, presented at ISAAC 2015.
+ *
+ * The model of hyperbolic random graphs is presented in
  * "Hyperbolic geometry of complex networks. Physical Review E, 82:036106, Sep 2010." by
  *   Dmitri Krioukov, Fragkiskos Papadopoulos, Maksim Kitsak, Amin Vahdat, and Marian Boguna
  *
