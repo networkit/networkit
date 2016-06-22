@@ -948,7 +948,7 @@ bool Graph::checkConsistency() const {
 		forNeighborsOf(v, [&](node u) {
 			if (lastSeen[u] == v) {
 				noMultiEdges = false;
-				DEBUG("Multiedge found!");
+				DEBUG("Multiedge found between ", u, " and ", v, "!");
 			}
 			lastSeen[u] = v;
 		});
