@@ -24,7 +24,8 @@ public:
 
 	/**
 	 * The algorithm approximates the betweenness of all nodes, using weighting
-	 * of the contributions to avoid biased estimation.
+	 * of the contributions to avoid biased estimation. The run() method takes O(m)
+	 * time per sample, where  m is the number of edges of the graph.
 	 *
 	 * @param	graph		input graph
 	 * @param	nSamples	 user defined number of samples
