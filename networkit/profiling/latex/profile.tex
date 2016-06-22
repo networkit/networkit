@@ -1,0 +1,72 @@
+\documentclass[12pt,a4paper,twoside]{{scrartcl}}
+
+\usepackage[utf8]{{inputenc}}
+
+\usepackage[T1]{{fontenc}}
+\usepackage{{lmodern}}
+
+\usepackage[german,english]{{babel}}
+
+\usepackage[tmargin=22mm,bmargin=22mm,lmargin=20mm,rmargin=20mm]{{geometry}}
+
+\setlength\parskip{{\smallskipamount}}
+\setlength\parindent{{0pt}}
+
+\usepackage{{latexsym,amsmath,amssymb,textcomp}}
+
+\usepackage{{amsthm}}
+
+\usepackage{{graphicx}}
+
+\usepackage{{ifthen}}
+
+\usepackage[table]{{xcolor}}
+
+\usepackage{{multicol}}
+
+
+%=== MACROS ==================================================================
+
+% Remove Elements with nan-Values
+% TODO: trim whitespaces around #2
+\newcommand{{\nkvalue}}[2]{{\ifthenelse{{\equal{{#2}}{{ nan }}}}{{}}{{$#1 = #2$ \\}}}}
+
+\definecolor{{red}}{{RGB}}{{255,80,80}}
+\definecolor{{blue}}{{RGB}}{{80,80,255}}
+
+
+%=== BEGIN ===================================================================
+
+\begin{{document}}
+
+\section{{Network Properties}}
+
+Name: {properties[Name]} \\
+Nodes: {properties[Nodes]} \\
+Edges: {properties[Edges]} \\
+Density: {properties[Density]:g} \\
+Directed: {properties[Directed]} \\
+Weighted: {properties[Weighted]} \\
+Self Loops: {properties[Self Loops]:g} \\
+Diameter Range: {properties[Diameter Range]} \\
+Effective Diameter: {properties[Effective Diameter]} \\
+(Strongly) Connected Components: {properties[Connected Components]}
+
+\section{{Overview}}
+\subsection{{Node Centrality Measures}}
+{results[Node Centrality][Overview]}
+\subsection{{Partitions}}
+{results[Partition][Overview]}
+
+\section{{Node Centrality Measures}}
+{results[Node Centrality][Measures]}
+{results[Node Centrality][Correlations][HeatMaps]}
+{results[Node Centrality][Correlations][ScatterPlots]}
+
+\section{{Partitions}}
+{results[Partition][Measures]}
+
+
+%=== END =====================================================================
+
+\end{{document}}
