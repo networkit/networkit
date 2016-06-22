@@ -19,14 +19,6 @@
 
 namespace NetworKit {
 
-QuadTreeGTest::QuadTreeGTest() {
-	// TODO Auto-generated constructor stub
-}
-
-QuadTreeGTest::~QuadTreeGTest() {
-	// TODO Auto-generated destructor stub
-}
-
 /**
  * Test whether the elements returned by a quadtree range query are indeed those whose hyperbolic distance to the query point is below a threshold
  */
@@ -119,19 +111,23 @@ TEST_F(QuadTreeGTest, testQuadTreeHyperbolicCircle) {
 TEST_F(QuadTreeGTest, testQuadTreeThresholdGrowth) {
 	count n = 100;
 	double R = HyperbolicSpace::hyperbolicAreaToRadius(n);
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	vector<double> angles(n);
 	vector<double> radii(n);
 	vector<double> indices(n);
-	HyperbolicSpace::fillPoints(angles, radii, 1, 1);
+	HyperbolicSpace::fillPoints(angles, radii, R, 1);
 	double max = 0;
 	for (index i = 0; i < n; i++) {
 		indices[i] = i;
+		radii[i] = HyperbolicSpace::hyperbolicRadiusToEuclidean(radii[i]);
+		if (radii[i] == r) radii[i] = std::nextafter(radii[i], 0);
 		if (radii[i] > max) {
 			max = radii[i];
+			assert(radii[i] < r);
 		}
 	}
 
-	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R));
+	Quadtree<index> quad(r);
 
 	for (index i = 0; i < n; i++) {
 		EXPECT_GE(angles[i], 0);
@@ -172,13 +168,17 @@ TEST_F(QuadTreeGTest, testQuadTreeThresholdGrowth) {
 TEST_F(QuadTreeGTest, testQuadTreeDeletion) {
 	count n = 1000;
 	double R = HyperbolicSpace::hyperbolicAreaToRadius(n);
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	vector<double> angles(n);
 	vector<double> radii(n);
 	vector<double> indices(n);
-	HyperbolicSpace::fillPoints(angles, radii, 1, 1);
+	HyperbolicSpace::fillPoints(angles, radii, R, 1);
 	double max = 0;
 	for (index i = 0; i < n; i++) {
 		indices[i] = i;
+		radii[i] = HyperbolicSpace::hyperbolicRadiusToEuclidean(radii[i]);
+		if (radii[i] == r) radii[i] = std::nextafter(radii[i], 0);
+
 		if (radii[i] > max) {
 			max = radii[i];
 		}
@@ -230,11 +230,15 @@ TEST_F(QuadTreeGTest, testQuadTreeDeletion) {
 TEST_F(QuadTreeGTest, testEuclideanCircle) {
 	count n = 1000;
 	double R = 1;
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	vector<double> angles(n);
 	vector<double> radii(n);
-	HyperbolicSpace::fillPoints(angles, radii, 1, 1);
+	HyperbolicSpace::fillPoints(angles, radii, R, 1);
 	double max = 0;
 	for (index i = 0; i < n; i++) {
+		radii[i] = HyperbolicSpace::hyperbolicRadiusToEuclidean(radii[i]);
+		if (radii[i] == r) radii[i] = std::nextafter(radii[i], 0);
+
 		if (radii[i] > max) {
 			max = radii[i];
 		}
@@ -324,11 +328,14 @@ TEST_F(QuadTreeGTest, testQuadTreeBalance) {
 	double s =1;
 	double alpha = 1;
 	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	vector<double> angles(n);
 	vector<double> radii(n);
-	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
+	HyperbolicSpace::fillPoints(angles, radii, R, alpha);
 	double max = 0;
 	for (index i = 0; i < n; i++) {
+		radii[i] = HyperbolicSpace::hyperbolicRadiusToEuclidean(radii[i]);
+		if (radii[i] == r) radii[i] = std::nextafter(radii[i], 0);
 		if (radii[i] > max) {
 			max = radii[i];
 		}
@@ -409,13 +416,16 @@ TEST_F(QuadTreeGTest, testSequentialQuadTreeConstruction) {
 	double s =1;
 	double alpha = 1;
 	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	vector<double> angles(n);
 	vector<double> radii(n);
-	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
+	HyperbolicSpace::fillPoints(angles, radii, R, alpha);
 
 	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R),false,alpha,capacity);
 
 	for (index i = 0; i < n; i++) {
+		radii[i] = HyperbolicSpace::hyperbolicRadiusToEuclidean(radii[i]);
+		if (radii[i] == r) radii[i] = std::nextafter(radii[i], 0);
 		quad.addContent(i, angles[i], radii[i]);
 	}
 	EXPECT_EQ(quad.size(), n);
@@ -435,18 +445,20 @@ TEST_F(QuadTreeGTest, testProbabilisticQuery) {
 	count n = 10000;
 	count m = n*3;
 	count capacity = 20;
-	double targetR = 2*log(8*n / (M_PI*(m/n)*2));
-	double s = targetR / HyperbolicSpace::hyperbolicAreaToRadius(n);
+	double R = 2*log(8*n / (M_PI*(m/n)*2));
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	double alpha = 1;
 
 	vector<double> angles(n);
 	vector<double> radii(n);
 
-	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
+	HyperbolicSpace::fillPoints(angles, radii, R, alpha);
 
-	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(targetR),false,alpha,capacity);
+	Quadtree<index> quad(r,false,alpha,capacity);
 
 	for (index i = 0; i < n; i++) {
+		radii[i] = HyperbolicSpace::hyperbolicRadiusToEuclidean(radii[i]);
+		if (radii[i] == r) radii[i] = std::nextafter(radii[i], 0);
 		EXPECT_EQ(i, quad.size());
 		quad.addContent(i, angles[i], radii[i]);
 	}
@@ -545,6 +557,7 @@ TEST_F(QuadTreeGTest, testLeftSuppression) {
 	count m = n*k/2;
 	double targetR = HyperbolicSpace::getTargetRadius(n, m);
 	double R = HyperbolicSpace::hyperbolicAreaToRadius(n);
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	double alpha = 1;
 
 	//allocate data structures
@@ -553,10 +566,12 @@ TEST_F(QuadTreeGTest, testLeftSuppression) {
 	/**
 	 * generate values and construct quadtree
 	 */
-	HyperbolicSpace::fillPoints(angles, radii, targetR / R, alpha);
+	HyperbolicSpace::fillPoints(angles, radii, targetR, alpha);
 	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(targetR));
 
 	for (index i = 0; i < n; i++) {
+		radii[i] = HyperbolicSpace::hyperbolicRadiusToEuclidean(radii[i]);
+		if (radii[i] == r) radii[i] = std::nextafter(radii[i], 0);
 		quad.addContent(i, angles[i], radii[i]);
 	}
 	EXPECT_EQ(quad.size(), n);
@@ -588,6 +603,7 @@ TEST_F(QuadTreeGTest, tryTreeExport) {
 	double targetR = HyperbolicSpace::getTargetRadius(n, m);
 
 	double R = HyperbolicSpace::hyperbolicAreaToRadius(n);
+	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	double alpha = 0.7;
 
 	//allocate data structures
@@ -596,10 +612,12 @@ TEST_F(QuadTreeGTest, tryTreeExport) {
 	/**
 	 * generate values and construct quadtree
 	 */
-	HyperbolicSpace::fillPoints(angles, radii, targetR / R, alpha);
+	HyperbolicSpace::fillPoints(angles, radii, targetR, alpha);
 	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(targetR), true, alpha, capacity);
 
 	for (index i = 0; i < n; i++) {
+		radii[i] = HyperbolicSpace::hyperbolicRadiusToEuclidean(radii[i]);
+		if (radii[i] == r) radii[i] = std::nextafter(radii[i], 0);
 		quad.addContent(i, angles[i], radii[i]);
 	}
 
