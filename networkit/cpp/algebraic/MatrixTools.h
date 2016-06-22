@@ -23,7 +23,7 @@ bool isSymmetric(const MATRIX& matrix) {
 	bool output = true;
 	matrix.forNonZeroElementsInRowOrder([&] (NetworKit::index i, NetworKit::index j, NetworKit::edgeweight w) {
 		if (abs(matrix(j, i)-w) > NetworKit::EPSILON) {
-			output = false;
+			return false;
 		}
 	});
 	return output;
