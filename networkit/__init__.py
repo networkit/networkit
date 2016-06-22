@@ -95,6 +95,9 @@ from .structures import Partition, Cover
 from .graphio import readGraph, writeGraph, readGraphs, Format
 
 def overview(G):
+	"""
+		This function collects some basic information about the given graph and prints it to the terminal.
+	"""
 	n = G.numberOfNodes()
 	degrees = centrality.DegreeCentrality(G,ignoreSelfLoops=G.numberOfSelfLoops() == 0).run().scores()
 	def getIsolatedNodes(degrees):
