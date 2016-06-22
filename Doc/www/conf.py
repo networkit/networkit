@@ -123,7 +123,7 @@ html_theme_options = {
                       ("Features", "features"),
                       ("News", "news"),
                       ("Publications", "publications"),
-                      ("Datasets", "datasets"),
+                      ("Data sets", "datasets"),
                       ("Credits", "credits")],
 
     }
