@@ -49,6 +49,7 @@ public:
 
     /**
     * Updates the betweenness centralities after a batch of edge insertions on the graph.
+    * Notice: it works only with edge insertions and the graph has to be connected.
     *
     * @param batch The batch of edge insertions.
     */

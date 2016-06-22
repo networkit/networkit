@@ -24,7 +24,7 @@ Our paper describing NetworKit as a toolkit for large-scale complex network anal
 Apr 12, 2016: **Publication accepted**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Our paper on sparisifcation methods for social networks with NetworKit (authors: Linder, Staudt, Hamann, Meyerhenke, Wagner) has been accepted for publication in Social Network Analysis and Mining. |br| |br|
+Our paper on sparsifcation methods for social networks with NetworKit (authors: Linder, Staudt, Hamann, Meyerhenke, Wagner) has been accepted for publication in Social Network Analysis and Mining. |br| |br|
 
 
 

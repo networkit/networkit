@@ -25,7 +25,8 @@ public:
 	/**
 	 * The algorithm approximates the betweenness of all vertices so that the scores are
 	 * within an additive error @a epsilon with probability at least (1- @a delta).
-	 * The values are normalized by default.
+	 * The values are normalized by default. The run() method takes O(m) time per sample, where  m is
+	 * the number of edges of the graph. The number of samples is proportional to universalConstant/epsilon^2.
 	 *
 	 * @param	G			the graph
 	 * @param	epsilon		maximum additive error
