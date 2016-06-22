@@ -38,7 +38,7 @@ Install the NetworKit Virtual Machine
 If you want a quick and easy way to try NetworKit for your purposes or you use a Microsoft Windows operating system, we strongly recommend the installation of our
 NetworKit virtual machine.
 
-A detailed installation guide can be found `here <_static/Installation-Guide.pdf>`_.
+A detailed installation guide can be found `here <networkit-vm_guide.html>`_.
 
 
 |separator|
