@@ -1,6 +1,6 @@
-========
-Datasets
-========
+=========
+Data sets
+=========
 
 On this page, we provide links to datasets which can be used with NetworKit.
 
@@ -8,4 +8,4 @@ On this page, we provide links to datasets which can be used with NetworKit.
 
 - `Stanford Network Analysis Project <http://snap.stanford.edu/>`_
 
-- `The Koblenz Network Collection <http://konect.uni-koblenz.de/>`_ 
+- `The Koblenz Network Collection <http://konect.uni-koblenz.de/>`_
