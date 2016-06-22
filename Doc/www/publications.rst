@@ -337,4 +337,4 @@ Further projects using NetworKit can be found `here <projects.html>`_.
 Student Theses Using NetworKit
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Student Theses based on NetworKit can be found `here <student_theses.html>`_.
+A list of student theses based on NetworKit can be found `here <student_theses.html>`_.
