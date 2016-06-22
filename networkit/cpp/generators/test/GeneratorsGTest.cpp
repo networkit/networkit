@@ -31,7 +31,6 @@ Dy * GeneratorsTest.cpp
 #include "../StochasticBlockmodel.h"
 #include "../EdgeSwitchingMarkovChainGenerator.h"
 #include "../LFRGenerator.h"
-#include "../RHGGenerator.h"
 
 
 #include "../../viz/PostscriptWriter.h"

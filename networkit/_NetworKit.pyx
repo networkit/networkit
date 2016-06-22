@@ -2214,50 +2214,6 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		k = 2 * (m / n)
 		return cls(n * scale, k, gamma)
 
-cdef extern from "cpp/generators/RHGGenerator.h":
-	cdef cppclass _RHGGenerator "NetworKit::RHGGenerator":
-		# TODO: revert to count when cython issue fixed
-		_RHGGenerator(unsigned int nodes,  double k, double gamma) except +
-		vector[double] getElapsedMilliseconds() except +
-		_Graph generate() except +
-
-cdef class RHGGenerator:
-	""" The Hyperbolic Generator distributes points in hyperbolic space and adds edges between points with a probability depending on their distance. The resulting graphs have a power-law degree distribution, small diameter and high clustering coefficient.
-For a temperature of 0, the model resembles a unit-disk model in hyperbolic space.
-
- 		HyperbolicGenerator(n, k=6, gamma=3)
-
- 		Parameters
-		----------
-		n : integer
-			number of nodes
-		k : double
-			average degree
-		gamma : double
-			exponent of power-law degree distribution
-			
-	"""
-
-	cdef _RHGGenerator* _this
-
-	def __cinit__(self,  n, k=6, gamma=3):
-		if gamma <= 2:
-				raise ValueError("Exponent of power-law degree distribution must be > 2")
-		self._this = new _RHGGenerator(n, k, gamma)
-
-	def getElapsedMilliseconds(self):
-		return self._this.getElapsedMilliseconds()
-
-	def generate(self):
-		""" Generates hyperbolic graph
-
-		Returns
-		-------
-		Graph
-		
-		"""
-		return Graph(0).setThis(self._this.generate())
-
 
 cdef extern from "cpp/generators/RmatGenerator.h":
 	cdef cppclass _RmatGenerator "NetworKit::RmatGenerator":

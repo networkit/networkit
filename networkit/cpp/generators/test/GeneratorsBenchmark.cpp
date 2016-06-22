@@ -16,7 +16,6 @@
 #include "../../auxiliary/Parallel.h"
 #include "../../auxiliary/Parallelism.h"
 
-#include "../RHGGenerator.h"
 #include "../HyperbolicGenerator.h"
 #include "../DynamicHyperbolicGenerator.h"
 #include "../BarabasiAlbertGenerator.h"
