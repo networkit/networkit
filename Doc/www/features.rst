@@ -11,9 +11,9 @@ Features and Design Goals
 =========================
 
 **NetworKit** is implemented as a hybrid of performance-aware code written in C++ (often parallelized using OpenMP) with an interface and additional functionality written in Python.
-More details and an illustration are provided in the `Design Details`_ Section below.
+More details and an illustration are provided in the `Architecture`_ Section below.
 NetworKit is distributed as a Python package, ready to use interactively from a Python shell, which is the main usage scenario we envision for domain experts.
-If you want to know more about our design goals, then take a look at our `Design Goals and Principles'_ Section below.
+If you want to know more about our design goals, then take a look at our `Design Goals and Principles`_ Section below.
 
 The best way to get an overall picture of a network is to use the *Profiling* module. Take a look at the `Network Profiling`_ Section below. If you are only interested in a
 small subset of network analysis measures, it might be more convenient to compute them separately instead of using the *Profiling* module. Check out the `Network Analytics`_
@@ -92,9 +92,9 @@ Centrality
 
 Centrality refers to the relative importance of a node or edge within a network. We distribute efficient implementations for betweenness, closeness, degree, Katz, eigenvector centrality and PageRank.
 
-* Betweenness: |br| Betweenness centrality expresses the concept that a node is important if it lies on many shortest paths between nodes in the network. A naive algorithm for calculating betweeness centrality for all nodes would require cubic time. We implement Brandes's algorithm, by which betweenness centrality can be computed more efficiently. Optionally, our implementation computes the scores for unweighted graphs in parallel, at the expense of a larger memory footprint. Since this is still practically infeasible for the large data sets we target, NetworKit includes also a parallelized implementation of a recent approximation algorithm with probabilistic guarantee such that the error is at most an additive constant. |br| |br|
+* Betweenness: |br| Betweenness centrality expresses the concept that a node is important if it lies on many shortest paths between nodes in the network. A naive algorithm for calculating betweeness centrality for all nodes would require cubic time. We implement Brandes's algorithm, by which betweenness centrality can be computed more efficiently (O(nm) time, where n is the number of nodes and m is the number of edges of the graph). Optionally, our implementation computes the scores in parallel, at the expense of a larger memory footprint. Since this is still practically infeasible for the large data sets we target, NetworKit includes also parallelized implementations of two approximation algorithms. One of them has probabilistic guarantees such that the error is at most an additive constant, whereas the other has no theoretical guarantee but performs very well in practice. |br| |br|
 
-* Closeness: |br| Closeness centrality measures the importance of a node by the average distance to every other node in the graph. A node is therefore important when the distances to the other nodes are rather small. Since many real-world complex networks have a small diameter, the range of closeness values for the nodes of such a network is rather small. Computing the closeness values for all nodes would require to solve a single-source shortest path problem for all nodes which makes it infeasible to compute for large networks. We therefore also provide an approximation algorithm that has a probabilistic error guarantee. |br| |br|
+* Closeness: |br| Closeness centrality measures the importance of a node by the average distance to every other node in the graph. A node is therefore important when the distances to the other nodes are rather small. Computing the closeness values for all nodes requires to solve a single-source shortest path problem for all nodes (O(nm) time, where n is the number of nodes and m is the number of edges of the graph) which makes it infeasible to compute for large networks. We therefore also provide an approximation algorithm with a probabilistic error guarantee. Notice that, since many real-world complex networks have a small diameter, the range of closeness values for the nodes of such a network is rather small. |br| |br|
 
 * Degree: |br| Degree centrality simply ranks the nodes by their degree (i.e. nodes with high degree are more important than nodes having low degrees). The degree centrality can be computed in linear time for all nodes and the algorithm can be parallelized easily. |br| |br|
 
@@ -169,7 +169,7 @@ TODO: Drawing Graphs with Gephi
 
 
 Architecture
---------------
+------------
 
 With the hybrid approach, we are able to combine the performance of C++ with the easy and interactive environment of Python and Jupyter Notebook. We provide a Python package
 that can be installed easily via pip (see :ref:`Pip install`). This makes it very easy to start working with NetworKit interactively. However, the code can also be used as a
@@ -192,15 +192,14 @@ integration crucial for real-world data analysis workflows.
 
 
 Design Goals and Principles
---------------
+---------------------------
 
 There is a variety of software packages which provide graph algorithms in general and network analysis capabilities in particular. However, NetworKit aims to balance a specific combination of strengths:
 
-* Performance: Algorithms and data structures are selected and implemented with high performance and parallelism in mind. Some implementations are among the fastest in published research. For example, community detection in a $3.3$ billion edge web graph can be performed on a 16-core server in less than three minutes.
+* Performance: Algorithms and data structures are selected and implemented with high performance and parallelism in mind. Some implementations are among the fastest in published research. For example, community detection in a 3.3 billion edge web graph can be performed on a 16-core server in less than three minutes.
 
 * Usability: Networks are as diverse as the series of questions we might ask of them -- e.g. what is the largest connected component, what are the most central nodes in it and how do they connect to each other? A practical tool for network analysis should therefore provide modular functions which do not restrict the user to predefined workflows. An interactive shell, which the Python language provides, is one prerequisite for that. While NetworKit works with the standard Python 3 interpreter, calling the module from the IPython shell and Jupyter Notebook HTML interface allows us to integrate it into a fully fledged computing environment for scientific workflows, from data preparation to creating figures. It is also easy to set up and control a remote compute server.
 
 * Integration: As a Python module, NetworKit can be seamlessly integrated with Python libraries for scientific computing and data analysis, e.g. pandas for data frame processing and analytics, matplotlib for plotting or numpy and scipy for numerical and scientific computing. For certain tasks, we provide interfaces to external tools, e.g. Gephi for graph visualization.
 
 * Design Principles: Our main focus is on scalable algorithms to support network analysis on massive networks. Several algorithm and implementation patterns are used to achieve this goal: parallelism, fast heuristics and approximation algorithms for problems that are otherwise not solvable in nearly-linear time, efficient data structures, and modular software design.
-

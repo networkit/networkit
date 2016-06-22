@@ -500,6 +500,25 @@ To discuss important changes to NetworKit, use the `mailing
 list <https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit>`__
 (``networkit-dev@ira.uka.de``).
 
+Building the documentation
+--------------------------
+
+The class documentation and the website can be automatically generated
+with sphinx. You will need the following software to generate the
+documentation and website:
+
+-  `Sphinx <http://www.sphinx-doc.org>`__ (e.g. via
+   ``pip3 install sphinx``)
+-  `Pandoc <http://pandoc.org>`__
+-  `Doxygen <http://www.stack.nl/~dimitri/doxygen/>`__
+
+After you installed the above mentioned software, you can build the
+class documentation by calling ``./make_doc.sh`` in the folder
+``Doc/www``. This will generate the class documentation for C++ and
+Python in ``Doc/Documentation``. Similarly, you can call
+``./make_www.sh`` to build the website. After the build finished, you
+find the generated website in ``Doc/Website/html``.
+
 Further Reading
 ---------------
 
@@ -509,3 +528,4 @@ Further Reading
 -  `Managing releases and branchy
    development <http://hgbook.red-bean.com/read/managing-releases-and-branchy-development.html>`__
 -  `Cython Documentation <http://docs.cython.org/index.html>`__
+

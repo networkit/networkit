@@ -134,9 +134,6 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 	Aux::Timer bandTimer;
 	bandTimer.start();
 
-	vector<double> empty;
-	GraphBuilder result(n, false, false);
-
 	//1.Extract band angles to use them later, can create a band class to handle this more elegantly
 	vector<vector<double>> bandAngles(bandCount);
 	#pragma omp parallel for
@@ -156,6 +153,10 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 	//2.Insert edges
 	Aux::Timer timer;
 	timer.start();
+	vector<double> empty;
+	GraphBuilder result(n, false, false);
+	bool suppressLeft = directSwap ? false : std::is_sorted(angles.begin(), angles.end());//relying on lazy evaluation here
+
 	#pragma omp parallel
 	{
 		index id = omp_get_thread_num();

@@ -1,6 +1,4 @@
-.. |separator| raw:: html
 
-	<div style="padding-top: 25px; border-bottom: 1px solid #d4d7d9;"></div>
 
 
 .. _get_started:
@@ -28,7 +26,6 @@ Once you have installed NetworKit, please make sure to check out our
 `NetworKit UserGuide <http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb>`_ for an overview of the features provided
 in NetworKit.
 
-|separator|
 
 .. _NetworKit Virtual Machine:
 
@@ -41,7 +38,6 @@ NetworKit virtual machine.
 A detailed installation guide can be found `here <networkit-vm_guide.html>`_.
 
 
-|separator|
 
 
 .. _Pip install:
@@ -93,7 +89,6 @@ To check that everything works as expected, open a python terminal and run the f
     G.addEdge(0,1)
     G.toString()
 
-|separator|
 
 .. _Build NetworKit from Source:
 
@@ -235,7 +230,6 @@ We would like to encourage contributions to the NetworKit source code. See the `
 please contact the `mailing list <https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit>`_.
 
 
-|separator|
 
 
 .. _IPython Quickstart Guide:

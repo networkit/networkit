@@ -52,7 +52,6 @@ cdef extern from "<algorithm>" namespace "std":
 	_Partition move( _Partition t) nogil
 	_Cover move(_Cover t) nogil
 	_Matching move(_Matching) nogil
-	_UnionFind move(_UnionFind t) nogil
 	vector[double] move(vector[double])
 	vector[bool] move(vector[bool])
 	vector[count] move(vector[count])
@@ -229,7 +228,6 @@ cdef extern from "cpp/viz/Point.h" namespace "NetworKit":
 	cdef cppclass Point[T]:
 		Point()
 		Point(T x, T y)
-		Point(vector[T] values)
 		T& operator[](const index i) except +
 		T& at(const index i) except +
 
@@ -2192,7 +2190,7 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		return self._this.getElapsedMilliseconds()
 
 	def generate(self):
-		""" Generates hyperbolic graph
+		""" Generates hyperbolic random graph
 
 		Returns
 		-------
@@ -3512,51 +3510,6 @@ cdef class Partition:
 		"""
 		return self._this.getSubsetIds()
 
-cdef extern from "cpp/generators/quadtree/QuadtreeCartesianEuclid.h":
-	cdef cppclass _QuadtreeCartesianEuclid "NetworKit::QuadtreeCartesianEuclid"[T]:
-		_QuadtreeCartesianEuclid() except +
-		_QuadtreeCartesianEuclid(Point[double] lower, Point[double] upper) except +
-		void addContent(T newcomer, Point[double] pos) except +
-		count getElementsProbabilistically[Callback](Point[double] euQuery, Callback prob, vector[T] &circleDenizens) except +
-
-cdef cppclass DistanceCallBackWrapper:
-	void* callback
-	__init__(object callback):
-		this.callback = <void*>callback
-	double cython_call_operator(double dist):
-		cdef bool error = False
-		cdef string message
-		try:
-			return (<object>callback)(dist)
-		except Exception as e:
-			error = True
-			message = stdstring("An Exception occurred, aborting execution of distance lambda: {0}".format(e))
-		if (error):
-			throw_runtime_error(message)
-
-cdef class QuadtreeCartesianEuclid:
-	cdef _QuadtreeCartesianEuclid[double] _this
-
-	def __cinit__(self, lower, upper):
-		cdef Point[double] lowerPoint = Point[double](lower)
-		cdef Point[double] upperPoint = Point[double](upper)
-		self._this = _QuadtreeCartesianEuclid[double](lowerPoint, upperPoint)
-
-	def addContent(self, content, pos):
-		cdef Point[double] posPoint = Point[double](pos)
-		self._this.addContent(content, posPoint)
-
-	def getElementsProbabilistically(self, query, object callback):
-		cdef DistanceCallBackWrapper* wrapper
-		cdef Point[double] queryPoint = Point[double](query)
-		cdef vector[double] resultlist = []
-		try:
-			wrapper = new DistanceCallBackWrapper(callback)
-			self._this.getElementsProbabilistically[DistanceCallBackWrapper](queryPoint, dereference(wrapper), resultlist)
-		finally:
-			del wrapper
-			return resultlist
-
 
 cdef extern from "cpp/structures/Cover.h":
 	cdef cppclass _Cover "NetworKit::Cover":
@@ -3820,34 +3773,6 @@ cdef class Cover:
 			A set of ids of nonempty subsets.
 		"""
 		return self._this.getSubsetIds()
-
-cdef extern from "cpp/structures/UnionFind.h":
-	cdef cppclass _UnionFind "NetworKit::UnionFind":
-		_UnionFind() except +
-		_UnionFind(index max_element) except +
-		void allToSingletons() except +
-		index find(index u) except +
-		void merge(index u, index v) except +
-		_Partition toPartition() except +		
-
-cdef class UnionFind:
-	""" Union-Find data structure"""
-	cdef _UnionFind _this
-
-	def __cinit__(self, count n):
-		self._this = move(_UnionFind(n))
-
-	def allToSingletons(self):
-		self._this.allToSingletons()
-
-	def find(self, index u):
-		return self._this.find(u)
-
-	def merge(self, index u, index v):
-		self._this.merge(u,v)
-
-	def toPartition(self):
-		return Partition().setThis(self._this.toPartition())
 
 
 # Module: community

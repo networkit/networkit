@@ -14,28 +14,28 @@ News
 :hidden:`HiddenBiggerHeadingFont`
 ---------------------------------
 
-May 9, 2016: **NetworKit journal paper accepted**
+May 9, 2016: **NetworKit journal paper accepted at Network Science**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Our paper describing NetworKit as a toolkit for large-scale complex network analysis has been accepted by the Cambride University Press journal Network Science. |br| |br|
 
 
 
-Apr 12, 2016: **Publication accepted**
+Apr 12, 2016: **Publication accepted at SNAM**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Our paper on sparisifcation methods for social networks with NetworKit (authors: Linder, Staudt, Hamann, Meyerhenke, Wagner) has been accepted for publication in Social Network Analysis and Mining. |br| |br|
+Our paper on sparsification methods for social networks with NetworKit (authors: Linder, Staudt, Hamann, Meyerhenke, Wagner) has been accepted for publication in Social Network Analysis and Mining. |br| |br|
 
 
 
-Apr 12, 2016: **Publication accepted**
+Apr 12, 2016: **Publication accepted at Internet Mathematics**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Our paper on approximating betweenness centrality in dynamic networks with NetworKit (authors: Bergamini, Meyerhenke) has been accepted for publication in Internet Mathematics. |br| |br|
 
 
 
-Apr 12, 2016: **Publication accepted**
+Nov 16, 2016: **Publication accepted at ALENEX16**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Our paper on finding the top-k nodes with highest closeness centrality with NetworKit (authors: Bergamini, Borassi, Crescenzi, Marino, Meyerhenke) has been accepted at the 18th Meeting on Algorithm Engineering and Experiments, ALENEX 2016. |br| |br|
@@ -80,7 +80,7 @@ Further Updates:
 - EdgeListReader/Writer now add weights when reading files/writing graphs to file. |br| |br|
 
 
-Jun 16, 2015: **Publication accepted**
+Jun 16, 2015: **Publication accepted at ESA15**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Our paper on the approximation of betweenness centrality in fully-dynamic networks with NetworKit (authors: Bergamini, Meyerhenke) has been accepted at the 23rd European Symposium on Algorithms, ESA 2015. |br| |br|
@@ -166,7 +166,7 @@ Build and Installation
 
 
 
-Oct 21, 2014: **Publication accepted**
+Oct 21, 2014: **Publication accepted at ALENEX15**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Our paper on approximating betweenness centrality in dynamic networks with NetworKit (authors: Bergamini, Meyerhenke, Staudt) has been accepted at the 17th Meeting on Algorithm Engineering and Experiments, ALENEX 2015. |br| |br|
