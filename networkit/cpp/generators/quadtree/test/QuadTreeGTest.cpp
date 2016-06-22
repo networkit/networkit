@@ -14,6 +14,9 @@
 #include "../../../auxiliary/Log.h"
 #include "../../../geometric/HyperbolicSpace.h"
 
+#include "../QuadtreeCartesianEuclid.h"
+#include "../QuadtreePolarEuclid.h"
+
 namespace NetworKit {
 
 QuadTreeGTest::QuadTreeGTest() {
@@ -428,6 +431,110 @@ TEST_F(QuadTreeGTest, testSequentialQuadTreeConstruction) {
 	//EXPECT_TRUE(std::is_permutation(radii.begin(), radii.end(), radiicopy.begin()));
 }
 
+TEST_F(QuadTreeGTest, testProbabilisticQuery) {
+	count n = 10000;
+	count m = n*3;
+	count capacity = 20;
+	double targetR = 2*log(8*n / (M_PI*(m/n)*2));
+	double s = targetR / HyperbolicSpace::hyperbolicAreaToRadius(n);
+	double alpha = 1;
+
+	vector<double> angles(n);
+	vector<double> radii(n);
+
+	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
+
+	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(targetR),false,alpha,capacity);
+
+	for (index i = 0; i < n; i++) {
+		EXPECT_EQ(i, quad.size());
+		quad.addContent(i, angles[i], radii[i]);
+	}
+	EXPECT_EQ(n, quad.size());
+
+	quad.trim();
+
+	for (index i = 0; i < 200; i++) {
+		index query = Aux::Random::integer(n-1);
+		double acc = Aux::Random::probability() ;
+		auto edgeProb = [acc](double distance) -> double {return acc;};
+		vector<index> near;
+		quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[query], radii[query]), edgeProb, near);
+		EXPECT_NEAR(near.size(), acc*n, std::max(acc*n*0.25, 10.0));
+	}
+
+	//TODO: some test about appropriate subtrees and leaves
+
+	auto edgeProb = [](double distance) -> double {return 1;};
+	vector<index> near;
+	quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[0], radii[0]), edgeProb, near);
+	EXPECT_EQ(n, near.size());
+
+	auto edgeProb2 = [](double distance) -> double {return 0;};
+	near.clear();
+	quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[0], radii[0]), edgeProb2, near);
+	EXPECT_EQ(0, near.size());
+}
+
+TEST_F(QuadTreeGTest, testCartesianEuclidQuery) {
+	count n = 10000;
+	//count m = n*3;
+	//count capacity = 20;
+
+	assert(n > 0);
+
+	vector<Point<double> > positions(n);
+	vector<index> content(n);
+
+	for (index i = 0; i < n; i++) {
+		Point<double> pos = Point<double>({Aux::Random::probability(), Aux::Random::probability()});
+		positions[i] = pos;
+		content[i] = i;
+	}
+
+
+	QuadtreeCartesianEuclid<index> quad(positions, content, true);
+
+	EXPECT_EQ(n, quad.size());
+	quad.recount();
+	EXPECT_EQ(n, quad.size());
+
+	quad.trim();
+
+	for (index i = 0; i < 200; i++) {
+		index query = Aux::Random::integer(n-1);
+		double acc = Aux::Random::probability() ;
+		auto edgeProb = [acc](double distance) -> double {return acc;};
+		vector<index> near;
+		quad.getElementsProbabilistically(positions[query], edgeProb, near);
+		EXPECT_NEAR(near.size(), acc*n, std::max(acc*n*0.25, 10.0));
+	}
+
+	for (index i = 0; i < 200; i++) {
+		index query = Aux::Random::integer(n-1);
+		double threshold = Aux::Random::real(0, 1);
+		auto edgeProb = [threshold](double distance) -> double {return distance <= threshold ? 1 : 0;};
+		vector<index> near;
+		quad.getElementsProbabilistically(positions[query], edgeProb, near);
+		vector<index> circleDenizens;
+		quad.getElementsInEuclideanCircle(positions[query], threshold, circleDenizens);
+		EXPECT_EQ(near.size(), circleDenizens.size());
+	}
+
+	//TODO: some test about appropriate subtrees and leaves
+
+	auto edgeProb = [](double distance) -> double {return 1;};
+	vector<index> near;
+	quad.getElementsProbabilistically(positions[0], edgeProb, near);
+	EXPECT_EQ(n, near.size());
+
+	auto edgeProb2 = [](double distance) -> double {return 0;};
+	near.clear();
+	quad.getElementsProbabilistically(positions[0], edgeProb2, near);
+	EXPECT_EQ(0, near.size());
+}
+
+
 
 TEST_F(QuadTreeGTest, testLeftSuppression) {
 	/**
@@ -473,5 +580,276 @@ TEST_F(QuadTreeGTest, testLeftSuppression) {
 	}
 }
 
+TEST_F(QuadTreeGTest, tryTreeExport) {
+	count n = 200;
+	count capacity = 40;
+	double k = 10;
+	count m = n*k/2;
+	double targetR = HyperbolicSpace::getTargetRadius(n, m);
+
+	double R = HyperbolicSpace::hyperbolicAreaToRadius(n);
+	double alpha = 0.7;
+
+	//allocate data structures
+	vector<double> angles(n), radii(n);
+
+	/**
+	 * generate values and construct quadtree
+	 */
+	HyperbolicSpace::fillPoints(angles, radii, targetR / R, alpha);
+	Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(targetR), true, alpha, capacity);
+
+	for (index i = 0; i < n; i++) {
+		quad.addContent(i, angles[i], radii[i]);
+	}
+
+	EXPECT_EQ(quad.size(), n);
+
+	quad.indexSubtree(0);
+
+	count treeheight = quad.height();
+	DEBUG("Quadtree height: ", treeheight);
+	auto deg = [](double rad) -> double {return 180*rad/M_PI;};
+
+
+	index query = Aux::Random::integer(n-1);
+	radii[query] = HyperbolicSpace::hyperbolicRadiusToEuclidean(HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[query])*0.75);
+	DEBUG("Query:", angles[query], ", ", radii[query]);
+	double T = 0.5;
+	double beta = 1/T;
+
+	auto edgeProb = [beta, targetR](double distance) -> double {return 1 / (exp(beta*(distance-targetR)/2)+1);};
+
+	std::stack<std::tuple<QuadNode<index>, count, double, double, index > > quadnodestack;
+	QuadNode<index> root = getRoot(quad);
+	quadnodestack.push(std::make_tuple(root, quad.height(), 0, 0, root.getID()));
+
+	while(!quadnodestack.empty()) {
+		auto currentTuple = quadnodestack.top();
+		quadnodestack.pop();
+		QuadNode<index> current;
+		count remainingHeight;
+		double xoffset, yoffset;
+		index parentID;
+		std::tie(current, remainingHeight, xoffset, yoffset, parentID) = currentTuple;
+
+		DEBUG("Quadtree Cell ", current.getID());
+		double probUB = edgeProb(current.hyperbolicDistances(angles[query], radii[query]).first);
+		DEBUG("\\drawQuadNode{",xoffset,"}{", yoffset, "}{", current.getID(), "}{", parentID, "}{", probUB, "}{", current.size(), "}");
+		DEBUG("\\drawCell{",deg(current.getLeftAngle()), "}{", deg(current.getRightAngle()),"}{", HyperbolicSpace::EuclideanRadiusToHyperbolic(current.getMinR()), "}{", HyperbolicSpace::EuclideanRadiusToHyperbolic(current.getMaxR()), "}");
+		DEBUG("Height: ", current.height());
+		auto distances = current.hyperbolicDistances(angles[query], radii[query]);
+		DEBUG("Mindistance to query:", distances.first);
+		DEBUG("ProbUB:", edgeProb(distances.first), " ProbLB:", edgeProb(distances.second));
+
+		if (current.height() == 1) {
+			index i = 0;
+			for (index elem : current.getElements()) {
+				i++;
+				double p = edgeProb(HyperbolicSpace::poincareMetric(angles[elem], radii[elem], angles[query], radii[query]));
+				DEBUG("\\drawPoint{", deg(angles[elem]), "}{", HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[elem]), "}{", p, "}{", current.getID(), "}{", i, "}");
+				DEBUG("Leaf contains: ", angles[elem], ", ", radii[elem], " p: ", p);
+			}
+		}
+
+		double stepsize = pow(4, remainingHeight-1);
+		double newXOffset = xoffset-1.5*stepsize;
+		double newYOffset = yoffset + 1;
+		for (QuadNode<index> child : current.children) {
+			quadnodestack.push(std::make_tuple(child, remainingHeight-1, newXOffset, newYOffset, current.getID()));
+			newXOffset += stepsize;
+		}
+	}
+
+
+	DEBUG("\\drawQuery{", deg(angles[query]), "}{", HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[query]),"}");
+
+}
+
+TEST_F(QuadTreeGTest, testPolarEuclidQuery) {
+	/**
+	 * setup of data structures and constants
+	 */
+	double maxR = 2;
+	count n = 10000;
+	vector<double> angles(n);
+	vector<double> radii(n);
+	vector<index> content(n);
+
+	double minPhi = 0;
+	double maxPhi = 2*M_PI;
+	double minR = 0;
+
+	/**
+	 * get random number generators
+	 */
+
+	std::uniform_real_distribution<double> phidist{minPhi, maxPhi};
+	std::uniform_real_distribution<double> rdist{minR, maxR};
+
+	/**
+	 * fill vectors
+	 */
+	for (index i = 0; i < n; i++) {
+		angles[i] = phidist(Aux::Random::getURNG());
+		radii[i] = rdist(Aux::Random::getURNG());
+		content[i] = i;
+	}
+
+	const bool splitTheoretical = true;
+	QuadtreePolarEuclid<index> tree(angles, radii, content, splitTheoretical);
+	EXPECT_EQ(n, tree.size());
+
+	tree.trim();
+
+	for (index i = 0; i < 200; i++) {
+		index query = Aux::Random::integer(n-1);
+		double acc = Aux::Random::probability() ;
+		auto edgeProb = [acc](double distance) -> double {return acc;};
+		vector<index> near;
+		tree.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[query], radii[query]), edgeProb, near);
+		EXPECT_NEAR(near.size(), acc*n, std::max(acc*n*0.25, 10.0));
+	}
+
+	//TODO: some test about appropriate subtrees and leaves
+
+	auto edgeProb = [](double distance) -> double {return 1;};
+	vector<index> near;
+	tree.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[0], radii[0]), edgeProb, near);
+	EXPECT_EQ(n, near.size());
+
+	auto edgeProb2 = [](double distance) -> double {return 0;};
+	near.clear();
+	tree.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[0], radii[0]), edgeProb2, near);
+	EXPECT_EQ(0, near.size());
+}
+
+TEST_F(QuadTreeGTest, testQuadTreePolarEuclidInsertion) {
+	/**
+	 * setup of data structures and constants
+	 */
+	double maxR = 2;
+	count n = 1000;
+	vector<double> angles(n);
+	vector<double> radii(n);
+	vector<index> content(n);
+
+	double minPhi = 0;
+	double maxPhi = 2*M_PI;
+	double minR = 0;
+
+	/**
+	 * get random number generators
+	 */
+
+	std::uniform_real_distribution<double> phidist{minPhi, maxPhi};
+	std::uniform_real_distribution<double> rdist{minR, maxR};
+
+	/**
+	 * fill vectors
+	 */
+	for (index i = 0; i < n; i++) {
+		angles[i] = phidist(Aux::Random::getURNG());
+		radii[i] = rdist(Aux::Random::getURNG());
+		content[i] = i;
+	}
+
+	QuadtreePolarEuclid<index> tree(angles, radii, content);
+	EXPECT_EQ(n, tree.size());
+
+	/**
+	 * elements are returned
+	 */
+	vector<index> returned = tree.getElements();
+	EXPECT_EQ(n, returned.size());
+	sort(returned.begin(), returned.end());
+	for (index i = 0; i < returned.size(); i++) {
+		EXPECT_EQ(i, returned[i]);
+	}
+}
+
+TEST_F(QuadTreeGTest, testQuadNodeHyperbolicDistances) {
+	double minR, maxR, minPhi, maxPhi;
+	std::tie(minPhi, minR, maxPhi, maxR) = std::make_tuple(6.1850105367549055, 0.0, 6.2831853071795862, 0.99998090224083802);
+	ASSERT_LE(minPhi, maxPhi);
+	ASSERT_LE(minR, maxR);
+
+	Point2D<double> query(0.99999879353779952, 0.0011511619164281455);
+	double phi_q, r_q;
+	HyperbolicSpace::cartesianToPolar(query, phi_q, r_q);
+
+	QuadNode<index> node(minPhi, minR, maxPhi, maxR, 1000, 0);
+	count steps = 100;
+	Point2D<double> posAtMin = HyperbolicSpace::polarToCartesian(minPhi, minR);
+	double minDistance = HyperbolicSpace::poincareMetric(query, posAtMin);
+	double minR_Hyper = HyperbolicSpace::EuclideanRadiusToHyperbolic(minR);
+
+	double phiStep = (maxPhi-minPhi)/steps;
+	double rStep = (HyperbolicSpace::EuclideanRadiusToHyperbolic(maxR) - minR_Hyper) / steps;
+	for (index i = 0; i <= steps; i++) {
+		double phi = minPhi + i*phiStep;
+		for (index j = 0; j <= steps; j++) {
+			double r =  HyperbolicSpace::hyperbolicRadiusToEuclidean(minR_Hyper + j*rStep);
+			if (i < steps && j < steps) {
+				EXPECT_TRUE(node.responsible(phi, r));
+			} else {
+				EXPECT_FALSE(node.responsible(phi, r));
+			}
+			Point2D<double> pos = HyperbolicSpace::polarToCartesian(phi, r);
+			double distance =  HyperbolicSpace::poincareMetric(query, pos);
+			if (distance < minDistance) {
+				minDistance = distance;
+				posAtMin = pos;
+			}
+		}
+	}
+
+	double phiAtMin, rAtMin;
+	HyperbolicSpace::cartesianToPolar(posAtMin, phiAtMin, rAtMin);
+	DEBUG("Point in Cell at minimal distance at (", phiAtMin, ", ", rAtMin, ") on the poincare disk, which is ", HyperbolicSpace::EuclideanRadiusToHyperbolic(rAtMin), " in native radius.");
+
+	Point2D<double> p(0.99983582188685627, -0.0020919222764388666);
+	double phi, r;
+	HyperbolicSpace::cartesianToPolar(p, phi, r);
+
+	EXPECT_TRUE(node.responsible(phi, r));
+	double distanceQueryToCell = node.hyperbolicDistances(phi_q, r_q).first;
+	double distanceQueryToPoint = HyperbolicSpace::poincareMetric(query, p);
+
+	//node.addContent(1, phi, r);
+	EXPECT_LE(distanceQueryToCell, distanceQueryToPoint);
+
+
+}
+
+TEST_F(QuadTreeGTest, testQuadNodeCartesianDistances) {
+	Point<double> lower({0.24997519780061023, 0.7499644402803205});
+	Point<double> upper({0.49995039560122045, 0.99995258704042733});
+
+	ASSERT_LE(lower[0], upper[0]);
+	ASSERT_LE(lower[1], upper[1]);
+	ASSERT_EQ(2, lower.getDimensions());
+	ASSERT_EQ(2, upper.getDimensions());
+
+	Point<double> query({0.81847946542324035, 0.91885035291473593});
+
+	QuadNodeCartesianEuclid<index> node(lower, upper, 1000);
+	//count steps = 100;
+	Point<double> posAtMin = lower;
+	double minDistance = posAtMin.distance(query);
+
+	DEBUG("Point in Cell at minimal distance at (", posAtMin[0], ", ", posAtMin[0], "), distance is ", minDistance);
+
+	Point<double> p(0.49969783875749996, 0.87199796797360407);
+
+	EXPECT_TRUE(node.responsible(p));
+	double distanceQueryToCell = node.EuclideanDistances(query).first;
+	double distanceQueryToPoint = query.distance(p);
+
+	EXPECT_LE(distanceQueryToCell, distanceQueryToPoint);
+	EXPECT_LE(distanceQueryToCell, minDistance);
+
+
+}
 
 } /* namespace NetworKit */

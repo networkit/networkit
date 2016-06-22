@@ -25,6 +25,12 @@ HyperbolicSpace::~HyperbolicSpace() {
 
 }
 
+double HyperbolicSpace::nativeDistance(double firstangle, double firstR, double secondangle, double secondR) {
+	double result = acosh(cosh(firstR)*cosh(secondR)-sinh(firstR)*sinh(secondR)*cos(firstangle-secondangle));
+	assert(result >= 0);
+	return result;
+}
+
 /**
  * This distance measure is taken from the Poincaré disc model.
  */
@@ -56,7 +62,6 @@ void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, 
 	std::uniform_real_distribution<double> rdist{mincdf, maxcdf};
 	double r = hyperbolicRadiusToEuclidean(maxR);
 
-	assert(angles.size() == n);
 	for (uint64_t i = 0; i < n; i++) {
 		angles[i] = phidist(Aux::Random::getURNG());
 		/**
