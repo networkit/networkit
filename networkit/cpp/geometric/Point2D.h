@@ -69,11 +69,10 @@ public:
 	T length() const;
 	T squaredLength() const;
 
+	T& operator[](const index i);
 	T getX() const;
 	T getY() const;
 	index getIndex() const;
-
-	T& operator[](const index i);
 };
 
 template<class T>

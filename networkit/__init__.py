@@ -94,6 +94,41 @@ from .graph import Graph
 from .structures import Partition, Cover
 from .graphio import readGraph, writeGraph, readGraphs, Format
 
+def overview(G):
+	n = G.numberOfNodes()
+	degrees = centrality.DegreeCentrality(G,ignoreSelfLoops=G.numberOfSelfLoops() == 0).run().scores()
+	def getIsolatedNodes(degrees):
+		sequence = sorted(degrees)
+		i = 0
+		nIsolated = 0
+		while sequence[i] == 0 and i < len(sequence):
+			nIsolated += 1
+			i += 1
+		return nIsolated
+	def getClusteringCoefficient(G):
+		lcc = centrality.LocalClusteringCoefficient(G, True).run().scores()
+		return sum(lcc) / n
+	def getComponentPartition(G):
+		if G.isDirected():
+			cc = components.StronglyConnectedComponents(G).run()
+		else:
+			cc = components.ConnectedComponents(G).run()
+		return cc.getPartition()
+
+	print("Network Properties for:\t\t{}".format(G.getName()))
+	print("nodes, edges\t\t\t{}, {}".format(n, G.numberOfEdges()))
+	print("directed?\t\t\t{}".format("True" if G.isDirected() else "False"))
+	print("weighted?\t\t\t{}".format("True" if G.isWeighted() else "False"))
+	print("isolated nodes\t\t\t{}".format(getIsolatedNodes(degrees)))
+	print("self-loops\t\t\t{}".format(G.numberOfSelfLoops()))
+	print("density\t\t\t\t{:.6f}".format(G.density()))
+	print("clustering coefficient\t\t{:.6f}".format(getClusteringCoefficient(G)))
+	print("min/max/avg degree\t\t{:d}, {:d}, {:.6f}".format(int(min(degrees)), int(max(degrees)), sum(degrees)/n))
+	print("degree assortativity\t\t{:.6f}".format(correlation.Assortativity(G, degrees).run().getCoefficient()))
+	cp = getComponentPartition(G)
+	lcs = max(cp.subsetSizes())
+	print("number of connected components\t{}".format(cp.numberOfSubsets()))
+	print("size of largest component\t{} ({:.2f} %)".format(lcs, 100*lcs/n))
 
 #-------- Setup ---------- #
 
