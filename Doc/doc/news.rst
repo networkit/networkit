@@ -88,7 +88,7 @@ centrality module:
    centrality based on "Computing Classic Closeness Centrality, at
    Scale", Cohen et al.
 
-| 
+|
 
 
 
