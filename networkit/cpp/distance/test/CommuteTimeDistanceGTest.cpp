@@ -8,7 +8,7 @@
 #include "CommuteTimeDistanceGTest.h"
 #include "../../graph/Graph.h"
 #include "../../io/METISGraphReader.h"
-#include "../../centrality/Spanning.h"
+#include "../../centrality/SpanningEdgeCentrality.h"
 #include <math.h>
 #include <fstream>
 #include <iomanip>
@@ -36,7 +36,7 @@ TEST_F(CommuteTimeDistanceGTest, testOnToyGraph) {
 	G.addEdge(3, 5);
 	G.addEdge(4, 5);
 
-	Spanning sp(G);
+	SpanningEdgeCentrality sp(G);
 
 	sp.run();
 	EXPECT_NEAR(1.0, sp.score(0), 1e-5);

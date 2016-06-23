@@ -29,7 +29,7 @@ __credits__ = ["Lukas Barth", "Miriam Beddig", "Elisabetta Bergamini", "Stefan B
 	"Guido Brückner", "Mark Erb", "Patrick Flick", "Michael Hamann", "Lukas Hartmann", "Daniel Hoske", "Gerd Lindner", "Moritz v. Looz", "Yassine Marrakchi", "Henning Meyerhenke", \
 	"Marcel Radermacher", "Klara Reichard", "Marvin Ritter", "Aleksejs Sazonovs", "Florian Weber", "Michael Wegner", "Jörg Weisbarth"]
 __license__ = "MIT"
-__version__ = "4.0.1"
+__version__ = "4.1"
 
 
 # standard library modules
@@ -95,6 +95,9 @@ from .structures import Partition, Cover
 from .graphio import readGraph, writeGraph, readGraphs, Format
 
 def overview(G):
+	"""
+		This function collects some basic information about the given graph and prints it to the terminal.
+	"""
 	n = G.numberOfNodes()
 	degrees = centrality.DegreeCentrality(G,ignoreSelfLoops=G.numberOfSelfLoops() == 0).run().scores()
 	def getIsolatedNodes(degrees):

@@ -35,7 +35,7 @@ Install the NetworKit Virtual Machine
 If you want a quick and easy way to try NetworKit for your purposes or you use a Microsoft Windows operating system, we strongly recommend the installation of our
 NetworKit virtual machine.
 
-A detailed installation guide can be found `here <_static/Installation-Guide.pdf>`_.
+A detailed installation guide can be found `here <networkit-vm_guide.html>`_.
 
 
 
@@ -255,30 +255,27 @@ If you want to use NetworKit in the IPython terminal, type the following command
 The first line opens the IPython terminal. The second line imports the *networkit* Python module. After that, you should be able to use NetworKit interactively.
 For usage examples, refer to the `NetworKit UserGuide <http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb>`_.
 
-IPython Notebook/jupyterhub
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+IPython Notebook/jupyter
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 Additionally, we recommend that you familiarize yourself with NetworKit through experimenting with the interactive IPython Notebook `NetworKit_UserGuide.ipynb` located
 in the folder `Doc/Notebooks`. The user guide also introduces a large portion of NetworKits functionality with usage examples. To display and work with these notebooks,
-you have to install jupyterhub and start a local notebook server from the terminal with:
+you have to install jupyter and start a local notebook server from the terminal with:
 
 .. code-block:: bash
 
-	jupterhub --no-ssl
+	jupyter/ipython3 notebook
 
-If you run into any problems with jupyterhub, head over to the `jupyterhub documentation <https://jupyterhub.readthedocs.io/en/latest/>`_ and make sure, you have the
-listed packages installed. If the notebook server starts as it is supposed to, your default browser should open a web interface or you have to open it manually. Then
-you can add `NetworKit_UserGuide.ipynb` from the above mentioned location or browse to the location through the web interface.
+If you run into any problems with jupyter, head over to the `jupyter documentation <http://jupyter.readthedocs.io/en/latest/install.html>`_. If the notebook server starts as it is supposed to, your default browser should open a web interface or you have to open it manually. Then you can add `NetworKit_UserGuide.ipynb` from the above mentioned location or browse to the location through the web interface.
 
 To show plots within the notebooks, place the following two lines at the beginning of your notebook:
 
 .. code-block:: python
 
-	%matplotlib
+	%matplotlib inline
 	matplotlib.pyplot as plt
 
-**Note:** Instead of running jupyterhub, it may still be possible to run :code:`ipython3 notebook`. However, the notebook functionality of the ipython package is
-deprecated and has been moved to jupyterhub, which we strongly recommend.
+**Note:** Instead of running jupyter, it may still be possible to run :code:`ipython3 notebook`. However, the notebook functionality of the ipython package is deprecated and has been moved to jupyter, which we strongly recommend.
 
 Usage Example
 ~~~~~~~~~~~~~
@@ -290,27 +287,28 @@ Now that you are done installing NetworKit, you might want to try the following 
 	>>> from networkit import *
 	>>> g = generators.HyperbolicGenerator(1e5).generate()
 	>>> overview(g)
-	Network Properties for:		    G#5
-	nodes, edges			        100000, 302148
-	directed?			            False
-	weighted?			            False
-	isolated nodes			        1859
-	self-loops			            0
-	density				            0.000060
-	clustering coefficient		    0.718261
-	min/max/avg degree		        0, 1045, 6.042960
-	degree assortativity		    0.000725
-	number of connected components	4237
-	size of largest component	    77131 (77.13 %)
+	Network Properties for:		G#5
+	nodes, edges			100000, 300036
+	directed?			False
+	weighted?			False
+	isolated nodes			1815
+	self-loops			0
+	density				0.000060
+	clustering coefficient		0.720003
+	min/max/avg degree		0, 1174, 6.000720
+	degree assortativity		0.001383
+	number of connected components	4026
+	size of largest component	78387 (78.39 %)
 
 	>>> communities = community.detectCommunities(g, inspect=True)
-	PLM(balanced,pc,turbo) detected communities in 0.3781468868255615 [s]
+	PLM(balanced,pc,turbo) detected communities in 0.14902853965759277 [s]
 	solution properties:
 	-------------------  -----------
-	# communities        4468
+	# communities        4253
 	min community size      1
-	max community size   1820
-	avg. community size    22.3814
-	modularity              0.989285
+	max community size   1821
+	avg. community size    23.5128
+	modularity              0.987991
 	-------------------  -----------
+	
 	>>>
