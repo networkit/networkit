@@ -14,14 +14,18 @@ from _NetworKit import Partition, Coverage, Modularity, CommunityDetector, PLP, 
 #from .properties import CoreDecomposition, overview
 from . import graph
 from . import stopwatch
+from . import graphio
 
 # external imports
 import os
 import math
+import random
 try:
 	import tabulate
 except ImportError:
 	print(""" WARNING: module 'tabulate' not found, please install it to use the full functionality of NetworKit """)
+import tempfile
+import subprocess
 
 def detectCommunities(G, algo=None, inspect=True):
 	""" Perform high-performance community detection on the graph.
@@ -164,3 +168,31 @@ def mesoscopicResponseFunction(G, samples=100):
 		nCom.append(communities.numberOfSubsets())
 
 	return (gammaRange, nCom)
+
+
+class InfomapAdapter:
+
+	infomapPath = None
+
+	def __init__(self, G):
+		self.G = G
+
+	@classmethod
+	def setPath(cls, infomapPath):
+		cls.infomapPath = infomapPath
+
+	def run(self):
+		if not self.infomapPath:
+			raise Exception("set path to infomap binary with 'setPath' class method")
+		with tempfile.TemporaryDirectory() as tempdir:
+			print("temporary file directory: ", tempdir)
+			graph_filename = os.path.join(tempdir, "network.txt")
+			graphio.writeGraph(self.G, graph_filename, fileformat=graphio.Format.EdgeListSpaceZero)
+			subprocess.call([self.infomapPath, "-s", str(random.randint(-2**31, 2**31)), "-2", "-z", "--clu", graph_filename, tempdir])
+			self.result = readCommunities(os.path.join(tempdir, "network.clu"), format="edgelist-s0")
+			while self.result.numberOfElements() < self.G.upperNodeIdBound():
+				self.result.toSingleton(result.extend())
+		return self
+
+	def getPartition(self):
+		return self.result

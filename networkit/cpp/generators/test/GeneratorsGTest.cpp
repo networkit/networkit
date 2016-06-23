@@ -45,6 +45,7 @@ Dy * GeneratorsTest.cpp
 #include "../../dynamics/GraphUpdater.h"
 #include "../../auxiliary/MissingMath.h"
 #include "../../auxiliary/Parallel.h"
+#include "../../auxiliary/Random.h"
 #include "../../global/ClusteringCoefficient.h"
 #include "../../community/PLM.h"
 #include "../../community/Modularity.h"
@@ -77,12 +78,12 @@ TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGeneratorSingleStep) {
 	EXPECT_EQ(nPre + 1, nPost) << "one more node should have been added";
 	EXPECT_EQ(mPre + k, mPost) << "k edges should have been added";
 
+	delete gen;
+	delete Gproxy;
 	delete G;
 }
 
 TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGenerator) {
-
-
 	DynamicGraphSource* gen = new DynamicBarabasiAlbertGenerator(2);
 
 	GraphEventProxy* Gproxy = gen->newGraph();
@@ -108,6 +109,10 @@ TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGenerator) {
 		return (G->numberOfNodes() < 2 * n);
 	});
 	EXPECT_EQ(2 * n, G->numberOfNodes());
+
+	delete gen;
+	delete Gproxy;
+	delete G;
 }
 
 
@@ -123,9 +128,10 @@ TEST_F(GeneratorsGTest, viewDynamicBarabasiAlbertGenerator) {
 	METISGraphWriter writer;
 	writer.write(*G, "output/BATest.graph");
 
+	delete gen;
+	delete Gproxy;
 	delete G;
 }
-
 
 TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 	count n = 1800;
@@ -225,7 +231,6 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	const double exp = 2*alpha+1;
 	const double T = 0;
 	const double R = HyperbolicSpace::getTargetRadius(n, n*k/2, alpha, T);
-	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 
 	double movedShare = 1;
 	double moveDistance = 0.1;
@@ -233,12 +238,11 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	//set up initial node positions
 	vector<double> angles(n, -1);
 	vector<double> radii(n, -1);
-	double stretch = R / HyperbolicSpace::hyperbolicAreaToRadius(n);
-	HyperbolicSpace::fillPoints(angles, radii, stretch, alpha);
-	DynamicHyperbolicGenerator dynGen(angles, radii, k, exp, movedShare, moveDistance);
+	HyperbolicSpace::fillPoints(angles, radii, R, alpha);
+	DynamicHyperbolicGenerator dynGen(angles, radii, R, alpha, T, movedShare, moveDistance);
 
 	//generate starting graph
-	Graph G = HyperbolicGenerator().generate(angles, radii, r, R);
+	Graph G = HyperbolicGenerator().generate(angles, radii, R);
 	count initialEdgeCount = G.numberOfEdges();
 	count expected = n*HyperbolicSpace::getExpectedDegree(n, alpha, R)*0.5;
 	EXPECT_NEAR(initialEdgeCount, expected, expected/5);
@@ -264,7 +268,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	//update moved nodes
 	angles = getAngles(dynGen);
 	radii = getRadii(dynGen);
-	Graph comparison = HyperbolicGenerator().generate(angles, radii, r, R);
+	Graph comparison = HyperbolicGenerator().generate(angles, radii, R);
 	EXPECT_EQ(G.numberOfEdges(), comparison.numberOfEdges());
 
 	//heuristic criterion: Number of edges may change, but should not change much
@@ -283,16 +287,15 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
 	const double exp = 2*alpha+1;
 	const double T = 0;
 	const double R = HyperbolicSpace::getTargetRadius(n, n*k/2, alpha, T);
-	double stretch = R / HyperbolicSpace::hyperbolicAreaToRadius(n);
 
 	double movedShare = 0.2;
 	double moveDistance = 1;
 	vector<double> angles(n);
 	vector<double> radii(n);
 
-	HyperbolicSpace::fillPoints(angles, radii, stretch, alpha);
+	HyperbolicSpace::fillPoints(angles, radii, R, alpha);
 
-	DynamicHyperbolicGenerator dynGen(angles, radii, k, exp, movedShare, moveDistance);
+	DynamicHyperbolicGenerator dynGen(angles, radii, R, alpha, T, movedShare, moveDistance);
 	Graph G = dynGen.getGraph();
 
 	GraphUpdater gu(G);
@@ -310,7 +313,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
 		gu.update(stream);
 		G.initCoordinates();
 
-		auto coords = dynGen.getHyperbolicCoordinates();
+		auto coords = dynGen.getCoordinates();
 		for (index j = 0; j < coords.size(); j++) {
 			G.setCoordinate(j, coords[j]);
 		}
@@ -323,21 +326,84 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
 	}
 }
 
-TEST_F(GeneratorsGTest, testBarabasiAlbertGenerator) {
+TEST_F(GeneratorsGTest, testBarabasiAlbertGeneratorOriginal) {
 	count k = 3;
 	count nMax = 100;
 	count n0 = 3;
 
-	BarabasiAlbertGenerator BarabasiAlbert(k, nMax, n0);
-	Graph G(0);
-	EXPECT_TRUE(G.isEmpty());
-
-	G = BarabasiAlbert.generate();
+	BarabasiAlbertGenerator BarabasiAlbert(k, nMax, n0, false);
+	Graph G = BarabasiAlbert.generate();
 	EXPECT_FALSE(G.isEmpty());
 
 	EXPECT_EQ(nMax, G.numberOfNodes());
 	EXPECT_EQ( ((n0-1) + ((nMax - n0) * k)), G.numberOfEdges());
 	EXPECT_TRUE(G.checkConsistency());
+
+	Graph initGraph(4);
+	initGraph.addEdge(0,1);
+	initGraph.addEdge(2,1);
+	initGraph.addEdge(2,3);
+	initGraph.addEdge(0,3);
+	BarabasiAlbert = BarabasiAlbertGenerator(k, nMax, initGraph, false);
+	G = BarabasiAlbert.generate();
+
+	EXPECT_EQ(nMax, G.numberOfNodes());
+	EXPECT_EQ(G.numberOfEdges(), (nMax - initGraph.numberOfNodes()) * k + initGraph.numberOfEdges());
+	EXPECT_TRUE(G.checkConsistency());
+}
+
+TEST_F(GeneratorsGTest, testBarabasiAlbertGeneratorConstructor) {
+	// k > nMax
+	EXPECT_THROW(BarabasiAlbertGenerator generator(10, 9, 8, false), std::runtime_error);
+	EXPECT_THROW(BarabasiAlbertGenerator generator(10, 9, 8, true), std::runtime_error);
+
+	// n0 > nMax
+	EXPECT_THROW(BarabasiAlbertGenerator generator(5, 9, 10, false), std::runtime_error);
+	EXPECT_THROW(BarabasiAlbertGenerator generator(5, 9, 10, true), std::runtime_error);
+
+	// n0 = initGraph.numberOfNodes() > nMax
+	Graph initGraph(10);
+	EXPECT_THROW(BarabasiAlbertGenerator generator(6, 9, initGraph, false), std::runtime_error);
+	EXPECT_THROW(BarabasiAlbertGenerator generator(6, 9, initGraph, true), std::runtime_error);
+
+	// initGraph, k > nMax
+	initGraph = Graph(6);
+	EXPECT_THROW(BarabasiAlbertGenerator generator(10, 9, initGraph, false), std::runtime_error);
+	EXPECT_THROW(BarabasiAlbertGenerator generator(10, 9, initGraph, true), std::runtime_error);
+
+	// initGraph, original method, initGraph.numberOfNodes() < k
+	EXPECT_THROW(BarabasiAlbertGenerator generator(8, 9, initGraph, false), std::runtime_error);
+
+	// initGraph does not have consecutive node ids
+	initGraph.removeNode(0);
+	EXPECT_THROW(BarabasiAlbertGenerator generator(3, 9, initGraph, false), std::runtime_error);
+	EXPECT_THROW(BarabasiAlbertGenerator generator(3, 9, initGraph, false), std::runtime_error);
+}
+
+TEST_F(GeneratorsGTest, testBarabasiAlbertGeneratorBatagelj) {
+	count k = 3;
+	count nMax = 100;
+	count n0 = 3;
+
+	BarabasiAlbertGenerator BarabasiAlbert(k, nMax, n0, true);
+	Graph G = BarabasiAlbert.generate();
+
+	EXPECT_EQ(nMax, G.numberOfNodes());
+	EXPECT_LE(G.numberOfEdges(), nMax * k);
+	EXPECT_TRUE(G.checkConsistency());
+
+	Graph initGraph(4);
+	initGraph.addEdge(0,1);
+	initGraph.addEdge(2,1);
+	initGraph.addEdge(2,3);
+	initGraph.addEdge(0,3);
+	BarabasiAlbert = BarabasiAlbertGenerator(k, nMax, initGraph, true);
+	G = BarabasiAlbert.generate();
+
+	EXPECT_EQ(nMax, G.numberOfNodes());
+	EXPECT_LE(G.numberOfEdges(), nMax * k);
+	EXPECT_TRUE(G.checkConsistency());
+
 }
 
 TEST_F(GeneratorsGTest, generatetBarabasiAlbertGeneratorGraph) {
@@ -356,9 +422,11 @@ TEST_F(GeneratorsGTest, generatetBarabasiAlbertGeneratorGraph) {
 TEST_F(GeneratorsGTest, testDynamicPathGenerator) {
 	DynamicPathGenerator gen;
 	auto stream = gen.generate(42);
+#if LOG_LEVEL == LOG_LEVEL_TRACE
 	for (auto ev : stream) {
 		TRACE(ev.toString());
 	}
+#endif
 }
 
 TEST_F(GeneratorsGTest, testErdosRenyiGenerator) {
@@ -678,12 +746,12 @@ TEST_F(GeneratorsGTest, testHyperbolicPointGeneration) {
 	double R = HyperbolicSpace::hyperbolicAreaToRadius(n)*stretch;
 	vector<double> angles(n, -1);
 	vector<double> radii(n, -1);
-	HyperbolicSpace::fillPoints(angles, radii, stretch, alpha);
+	HyperbolicSpace::fillPoints(angles, radii, R, alpha);
 	for (index i = 0; i < n; i++) {
 		EXPECT_GE(angles[i], 0);
 		EXPECT_LT(angles[i], 2*M_PI);
 		EXPECT_GE(radii[i], 0);
-		EXPECT_LE(radii[i], HyperbolicSpace::hyperbolicRadiusToEuclidean(R));
+		EXPECT_LE(radii[i], R);
 	}
 }
 
@@ -701,38 +769,6 @@ TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
 	EXPECT_NEAR(G.numberOfEdges(), m, m/5);
 }
 
-TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithSequentialQuadtree) {
-	count n = 10000;
-	double s = 1.2;
-	double alpha =1;
-
-	vector<double> angles(n);
-	vector<double> radii(n);
-	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
-	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
-	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
-	Quadtree<index> quad(r);
-
-	for (index i = 0; i < n; i++) {
-		quad.addContent(i, angles[i], radii[i]);
-	}
-
-	angles.clear();
-	radii.clear();
-
-	quad.trim();
-	quad.sortPointsInLeaves();
-	quad.reindex();
-	quad.extractCoordinates(angles, radii);
-
-	HyperbolicGenerator gen;
-	Graph G = gen.generate(angles, radii, quad, R);
-	count expected = n*HyperbolicSpace::getExpectedDegree(n, alpha, R)*0.5;
-	EXPECT_EQ(n, G.numberOfNodes());
-	EXPECT_NEAR(G.numberOfEdges(), expected, expected/5);
-	EXPECT_TRUE(G.checkConsistency());
-}
-
 TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithDataFromParallelQuadtree) {
 	const count n = 10000;
 	const double s = 1.2;
@@ -741,62 +777,32 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithDataFromParallelQuadtree) {
 	Quadtree<index> quad(n,s);
 	vector<double> angles;
 	vector<double> radii;
+
 	quad.trim();
 	quad.sortPointsInLeaves();
 	quad.reindex();
 	quad.extractCoordinates(angles, radii);
 	EXPECT_EQ(angles.size(), n);
 	EXPECT_EQ(radii.size(), n);
-
-	vector<index> elements = quad.getElements();
-	EXPECT_EQ(elements.size(), n);
-	for (index i = 0; i < elements.size(); i++) {
-		EXPECT_EQ(elements[i], i);
-	}
 
 	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
 	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 
-	HyperbolicGenerator gen;
-	Graph G = gen.generate(angles, radii, r, R);
-	count expected = n*HyperbolicSpace::getExpectedDegree(n, alpha, R)*0.5;
-	EXPECT_EQ(n, G.numberOfNodes());
-	EXPECT_NEAR(G.numberOfEdges(), expected, expected/5);
-	EXPECT_TRUE(G.checkConsistency());
-}
-
-TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithParallelQuadtree) {
-	count n = 10000;
-	double s = 1.2;
-	const double alpha = 1;
-	count oldthreads = omp_get_max_threads();
-	omp_set_num_threads(8);
-
-	Quadtree<index> quad(n,s);
-	vector<double> angles;
-	vector<double> radii;
-	quad.trim();
-	quad.sortPointsInLeaves();
-	quad.reindex();
-	quad.extractCoordinates(angles, radii);
-	EXPECT_EQ(angles.size(), n);
-	EXPECT_EQ(radii.size(), n);
-
 	vector<index> elements = quad.getElements();
 	EXPECT_EQ(elements.size(), n);
+	vector<double> nativeRadii(n);
 	for (index i = 0; i < elements.size(); i++) {
 		EXPECT_EQ(elements[i], i);
+		EXPECT_LE(radii[i], r);
+		nativeRadii[i] = HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[i]);
 	}
 
-	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
-
 	HyperbolicGenerator gen;
-	Graph G = gen.generate(angles, radii, quad, R);
+	Graph G = gen.generate(angles, nativeRadii, R);
 	count expected = n*HyperbolicSpace::getExpectedDegree(n, alpha, R)*0.5;
 	EXPECT_EQ(n, G.numberOfNodes());
 	EXPECT_NEAR(G.numberOfEdges(), expected, expected/5);
 	EXPECT_TRUE(G.checkConsistency());
-	omp_set_num_threads(oldthreads);
 }
 
 /**
@@ -809,6 +815,16 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorConsistency) {
 	HyperbolicGenerator gen(n, k);
 	Graph G = gen.generate();
 	EXPECT_NEAR(G.numberOfEdges(), m, m/5);
+	ASSERT_TRUE(G.checkConsistency());
+}
+
+TEST_F(GeneratorsGTest, testHyperbolicGeneratorMechanicGraphs) {
+	count n = 10000;
+	double k = 6;
+	count m = n*k/2;
+	HyperbolicGenerator gen(n, k, 3, 0.14);
+	Graph G = gen.generate();
+	EXPECT_NEAR(G.numberOfEdges(), m, m/10);
 	ASSERT_TRUE(G.checkConsistency());
 }
 
@@ -847,6 +863,32 @@ TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {
 	}
 }
 
+TEST_F(GeneratorsGTest, tryHyperbolicHighTemperatureGraphs) {
+	count n = 10000;
+	double k = 10;
+	double gamma = 3;
+	count m = n*k/2;
+	for (double T = 0; T < 10; T += 0.1) {
+		if (std::abs(T-1) < 0.00001) continue;
+		HyperbolicGenerator gen(n, k, gamma, T);
+		Graph G = gen.generate();
+		EXPECT_NEAR(G.numberOfEdges(), m, m/10);
+	}
+}
+
+TEST_F(GeneratorsGTest, tryGiganticCollectionOfHyperbolicTemperatureGraphs) {
+	for (index i = 0; i < 30; i++) {
+		count n = 10000;
+		double k = 10;
+		double T = 0.1;
+		count m = n*k/2;
+		HyperbolicGenerator gen(n, k, 3, T);
+		Graph G = gen.generate();
+		EXPECT_NEAR(G.numberOfEdges(), m, m/10);
+		//EXPECT_TRUE(G.checkConsistency());
+	}
+}
+
 TEST_F(GeneratorsGTest, tryGiganticCollectionOfHyperbolicUnitDiskGraphs) {
 	count n = 1000000;
 	double k = 1;
@@ -875,7 +917,7 @@ TEST_F(GeneratorsGTest, testLFRGenerator) {
 	EXPECT_EQ(G1.numberOfEdges(), G2.numberOfEdges());
 }
 
-TEST_F(GeneratorsGTest, testLFRGeneratorImpossibleSequence) {
+TEST_F(GeneratorsGTest, tryLFRGeneratorImpossibleSequence) {
 	Aux::Random::setSeed(42, true);
 	LFRGenerator gen(1000);
 	gen.generatePowerlawDegreeSequence(35, 98, -2);

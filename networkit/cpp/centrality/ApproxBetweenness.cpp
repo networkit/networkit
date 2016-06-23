@@ -22,7 +22,7 @@
 
 namespace NetworKit {
 
-ApproxBetweenness::ApproxBetweenness(const Graph& G, double epsilon, double delta, count diameterSamples) : Centrality(G, true), epsilon(epsilon), delta(delta), diameterSamples(diameterSamples) {
+ApproxBetweenness::ApproxBetweenness(const Graph& G, const double epsilon, const double delta, const count diameterSamples, const double universalConstant) : Centrality(G, true), epsilon(epsilon), delta(delta), diameterSamples(diameterSamples), universalConstant(universalConstant) {
 
 }
 
@@ -32,12 +32,12 @@ void ApproxBetweenness::run() {
 	scoreData.clear();
 	scoreData.resize(G.upperNodeIdBound());
 
-	const double c = 0.5; // universal positive constant - see reference in paper
-
 	edgeweight vd = 0;
 	if (diameterSamples == 0) {
 		INFO("estimating vertex diameter pedantically");
-		vd = Diameter::estimatedVertexDiameterPedantic(G);
+		Diameter diam(G, DiameterAlgo::estimatedPedantic);
+		diam.run();
+		vd = diam.getDiameter().first;
 	} else {
 		/**
 		* This is an optimization which deviates from the original algorithm.
@@ -45,11 +45,13 @@ void ApproxBetweenness::run() {
 		* we sample the graph and take the maximum diameter found. This has a high chance of  hitting the component with the maximum vertex diameter.
 		*/
 		INFO("estimating vertex diameter roughly");
-		vd = Diameter::estimatedVertexDiameter(G, diameterSamples);
+		Diameter diam(G, DiameterAlgo::estimatedSamples, -1.f, diameterSamples);
+		diam.run();
+		vd = diam.getDiameter().first;
 	}
 
 	INFO("estimated diameter: ", vd);
-	r = ceil((c / (epsilon * epsilon)) * (floor(log2(vd - 2)) + 1 - log(delta)));
+	r = ceil((universalConstant / (epsilon * epsilon)) * (floor(log2(vd - 2)) + 1 - log(delta)));
 
 	INFO("taking ", r, " path samples");
 	// parallelization:

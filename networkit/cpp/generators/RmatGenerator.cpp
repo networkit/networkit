@@ -2,7 +2,7 @@
  * RmatGenerator.cpp
  *
  *  Created on: 18.03.2014
- *      Author: Henning
+ *      Author: Henning, cls
  */
 
 #include "RmatGenerator.h"
@@ -12,12 +12,13 @@
 
 namespace NetworKit {
 
-RmatGenerator::RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d):
-	scale(scale), edgeFactor(edgeFactor), a(a), b(b), c(c), d(d)
+RmatGenerator::RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d, bool weighted, count reduceNodes):
+	scale(scale), edgeFactor(edgeFactor), a(a), b(b), c(c), d(d), weighted(weighted), reduceNodes(reduceNodes)
 {
     if (scale > 63) throw std::runtime_error("Cannot generate more than 2^63 nodes");
 	double sum = a+b+c+d;
-	if (!Aux::NumericTools::equal(sum, 1.0)) throw std::runtime_error("Probabilities in Rmat have to sum to 1!");
+	INFO("sum of probabilities: ", sum);
+	if (!Aux::NumericTools::equal(sum, 1.0, 0.0001)) throw std::runtime_error("Probabilities in Rmat have to sum to 1.");
 	defaultEdgeWeight = 1.0;
 }
 
@@ -63,6 +64,30 @@ Graph RmatGenerator::generate() {
 		std::pair<node, node> drawnEdge = drawEdge();
 //		TRACE("edge drawn: ", drawnEdge.first, " - ", drawnEdge.second);
 		G.increaseWeight(drawnEdge.first, drawnEdge.second, defaultEdgeWeight);
+	}
+
+	// delete random nodes to achieve node count
+	INFO("deleting random nodes: ", reduceNodes);
+	for (count i = 0; i < reduceNodes; ++i) {
+		node u = G.randomNode();
+		std::vector<std::pair<node, node>> incidentEdges;
+		G.forEdgesOf(u, [&](node u, node v) {
+			incidentEdges.push_back({u,v});
+		});
+		for (auto edge : incidentEdges) {
+			node x, y;
+			std::tie(x, y) = edge;
+			G.removeEdge(x, y);
+		}
+		assert (G.degree(u) == 0);
+		G.removeNode(u);
+	}
+
+	if (!weighted) {
+		// set unit weights
+		G.forEdges([&](node u, node v) {
+			G.setWeight(u, v, 1.0);
+		});
 	}
 
 	G.shrinkToFit();

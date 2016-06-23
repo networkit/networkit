@@ -15,9 +15,6 @@
 
 namespace NetworKit {
 
-typedef uint64_t index; // more expressive name for an index into an array
-
-
 /**
  * DEPRECATED: A specialized container for node coordinates is no longer consistent with NetworKit's approach
  * to node attributes. Use standard library containers instead.

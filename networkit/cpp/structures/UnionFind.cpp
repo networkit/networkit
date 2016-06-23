@@ -51,7 +51,7 @@ Partition UnionFind::toPartition() {
 	for (index e = 0; e < parent.size(); ++e) {
 		p.moveToSubset(find(e), e);
 	}	
-	return std::move(p);
+	return p;
 }
 
 

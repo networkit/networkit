@@ -54,7 +54,7 @@ std::vector<node> invertContinuousNodeIds(std::unordered_map<node,node>& nodeIdM
 	for (auto& x : nodeIdMap) {
 		invertedIdMap[x.second] = x.first;
 	}
-	return std::move(invertedIdMap);
+	return invertedIdMap;
 }
 
 Graph restoreGraph(std::vector<node>& invertedIdMap, const Graph& G) {
@@ -71,7 +71,7 @@ Graph restoreGraph(std::vector<node>& invertedIdMap, const Graph& G) {
 			Goriginal.removeNode(u);
 		}
 	});
-	return std::move(Goriginal);
+	return Goriginal;
 }
 
 }

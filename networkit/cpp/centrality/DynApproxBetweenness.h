@@ -33,11 +33,14 @@ public:
       * The values are normalized by default.
       *
       * @param	G			the graph
-      * @param  storePredecessors   keep track of the lists of predecessors?
+      * @param	storePredecessors   keep track of the lists of predecessors?
       * @param	epsilon		maximum additive error
       * @param	delta		probability that the values are within the error guarantee
+      * @param	universalConstant	the universal constant to be used in
+      * computing the sample size. It is 1 by default. Some references suggest
+      * using 0.5, but there is no guarantee in this case.
      */
-    DynApproxBetweenness(const Graph& G, double epsilon=0.01, double delta=0.1, bool storePredecessors = true);
+    DynApproxBetweenness(const Graph& G, const double epsilon=0.01, const double delta=0.1, const bool storePredecessors = true, const double universalConstant = 1.0);
 
     /**
      * Runs the static approximated betweenness centrality algorithm on the initial graph.
@@ -46,10 +49,11 @@ public:
 
     /**
     * Updates the betweenness centralities after a batch of edge insertions on the graph.
+    * Notice: it works only with edge insertions and the graph has to be connected.
     *
     * @param batch The batch of edge insertions.
     */
-    void update(const std::vector<GraphEvent>& batch);
+    void update(const std::vector<GraphEvent>& batch) override;
 
     /**
     * Get number of path samples used for last calculation
@@ -60,6 +64,7 @@ private:
     bool storePreds = true;
     double epsilon; //!< maximum error
     double delta;
+    double universalConstant;
     count r;
     std::vector<std::unique_ptr<DynSSSP>> sssp;
     std::vector<node> u;

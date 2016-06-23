@@ -2,7 +2,6 @@
  * Matching.h
  *
  *  Created on: 03.12.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #ifndef MATCHING_H_
@@ -10,6 +9,7 @@
 
 # include "../auxiliary/Log.h"
 #include "../graph/Graph.h"
+#include "../structures/Partition.h"
 
 namespace NetworKit {
 
@@ -26,7 +26,7 @@ public:
 	 *
 	 * @param[in]	z	Maximum number of nodes.
 	 */
-	Matching(count z);
+	Matching(count z=0);
 
 
 	/**
@@ -35,7 +35,7 @@ public:
 	 * @param[in] u node.
 	 * @param[in] v node.
 	 */
-	void match(const node& u, const node& v);
+	void match(node u, node v);
 
 
 	/**
@@ -44,7 +44,7 @@ public:
 	 * @param[in] u node.
 	 * @param[in] v node.
 	 */
-	void unmatch(const node& u, const node& v);
+	void unmatch(node u, node v);
 
 
 	/**
@@ -53,7 +53,7 @@ public:
 	 * @param[in]	u 	node.
 	 * @return @c true if u is matched.
 	 */
-	bool isMatched(const node& u) const;
+	bool isMatched(node u) const;
 
 
 	/**
@@ -62,7 +62,7 @@ public:
 	 * @param[in] u node.
 	 * @param[in] v node.
 	 */
-	bool areMatched(const node& u, const node& v) const;
+	bool areMatched(node u, node v) const;
 
 	/**
 	 * Check whether this is a proper matching
@@ -94,6 +94,19 @@ public:
 	 * @return Total weight of edges in this matching.
 	 */
 	edgeweight weight(const Graph& G) const;
+
+	/**
+	 * Convert matching to a Partition object where matched nodes
+	 * belong to the same subset and unmatched nodes belong to a singleton subset.
+	 * @return Partition
+	 */
+	Partition toPartition(const Graph& G) const;
+
+	/**
+	 * Get the actual vector storing the data.
+	 * @return vector
+	 */
+	std::vector<node> getVector() const;
 
 protected:
 

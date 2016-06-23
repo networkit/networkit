@@ -19,7 +19,8 @@ class Closeness: public NetworKit::Centrality {
 public:
 	/**
 	 * Constructs the Closeness class for the given Graph @a G. If the closeness scores should be normalized,
-	 * then set @a normalized to <code>true</code>.
+	 * then set @a normalized to <code>true</code>. The run() method takes O(nm) time, where n is the number
+	 * of nodes and m is the number of edges of the graph. 
 	 *
 	 * @param G The graph.
 	 * @param normalized Set this parameter to <code>true</code> if scores should be normalized in the interval [0,1].
@@ -40,7 +41,7 @@ public:
 	/*
 	 * Returns the maximum possible Closeness a node can have in a graph with the same amount of nodes (=a star)
 	 */
-	double maximum();
+	double maximum() override;
 };
 
 } /* namespace NetworKit */

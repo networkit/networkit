@@ -33,7 +33,7 @@ public:
 
 	/**
 	 * Computes the Adamic Adar distances of all connected pairs of nodes.
-	 * REQ: Needs to be called before distance() and getEdgeAttribute() deliver meaningful results!
+	 * REQ: Needs to be called before distance() and getEdgeScores() deliver meaningful results!
 	 */
 	virtual void preprocess();
 
@@ -47,7 +47,7 @@ public:
 	 * Returns the Adamic Adar distances between all connected nodes.
 	 * @return Vector containing the Adamic Adar distances between all connected pairs of nodes.
 	 */
-	virtual std::vector<double> getEdgeAttribute();
+	virtual std::vector<double> getEdgeScores();
 
 };
 

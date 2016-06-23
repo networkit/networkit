@@ -22,7 +22,7 @@ void EdgeListWriter::write(const Graph& G, std::string path) {
 
     if (G.isWeighted()) {
         G.forEdges([&](node u, node v, double weight){
-            file << (u + firstNode) << separator << (v + firstNode) << weight << std::endl;
+            file << (u + firstNode) << separator << (v + firstNode) << separator << weight << std::endl;
         });
     } else {
         G.forEdges([&](node u, node v){

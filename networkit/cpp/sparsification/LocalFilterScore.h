@@ -18,7 +18,6 @@ namespace NetworKit {
  *
  * Edges are ranked locally, the top d^e (logarithmic, default) or 1+e*(d-1) edges (non-logarithmic) are kept.
  * For equal attribute values, neighbors of low degree are preferred.
- * If bothRequired is set (default: false), both neighbors need to indicate that they want to keep the edge.
  */
 template<typename InType>
 class LocalFilterScore : public EdgeScore<double> {
@@ -30,10 +29,9 @@ public:
 	 * @param G The graph for which the score shall be.
 	 * @param attribute The input attribute according to which the edges shall be fitlered locally.
 	 * @param logarithmic If the score shall be logarithmic in the rank (then d^e edges are kept). Linear otherwise.
-	 * @param bothRequired if both neighbors need to indicate that they want to keep an edge (default: one suffices).
 	 */
-	LocalFilterScore(const Graph& G, const std::vector< InType > &attribute, bool logarithmic = true, bool bothRequired = false) :
-		EdgeScore<double>(G), attribute(attribute), bothRequired(bothRequired), logarithmic(logarithmic) {}
+	LocalFilterScore(const Graph& G, const std::vector< InType > &attribute, bool logarithmic = true) :
+		EdgeScore<double>(G), attribute(attribute), logarithmic(logarithmic) {}
 
 	/**
 	 * Execute the algorithm.
@@ -48,8 +46,7 @@ public:
 		* such that the edge is contained in the sparse graph.
 		*/
 
-		std::vector<double> sparsificationExp(G.upperEdgeIdBound(), (bothRequired ? 1.0 : .0));
-		count n = G.numberOfNodes();
+		std::vector<std::atomic<double>> sparsificationExp(G.upperEdgeIdBound());
 
 		G.balancedParallelForNodes([&](node i) {
 			count d = G.degree(i);
@@ -59,18 +56,27 @@ public:
 			 * are to be kept in the sparse graph.
 			 */
 
-			std::vector<std::tuple<double, count, index> > neighbors;
+			std::vector<edgeid> neighbors;
 			neighbors.reserve(d);
 			G.forNeighborsOf(i, [&](node _i, node j, edgeid eid) {
-				neighbors.emplace_back(attribute[eid], n - d, eid); // if in doubt, prefer links to low-degree nodes
+				neighbors.emplace_back(eid);
 			});
-			Aux::Parallel::sort(neighbors.begin(), neighbors.end(), std::greater<std::tuple<double, count, index> >());
 
-			count rank = 1;
+			std::sort(neighbors.begin(), neighbors.end(), [&](const edgeid& e1, const edgeid& e2) {
+				return attribute[e1] > attribute[e2];
+			});
 
-			#pragma omp critical // each value is set twice, the value can be wrong if the wrong thread wins
-			for (auto it : neighbors) {
-				edgeid eid = std::get<2>(it);
+			count rank = 0;
+			count numSame = 1;
+			InType oldValue = std::numeric_limits<InType>::lowest();
+
+			for (edgeid eid : neighbors) {
+				if (attribute[eid] != oldValue) {
+					rank += numSame;
+					numSame = 1;
+				} else {
+					++numSame;
+				}
 
 				double e = 1.0;
 
@@ -82,16 +88,19 @@ public:
 					}
 				}
 
-				if ((e < sparsificationExp[eid]) == bothRequired) {
-					sparsificationExp[eid] = e; // do not always write in order to avoid cache synchronization
-				}
-
-				rank++;
+				Aux::Parallel::atomic_max(sparsificationExp[eid], e);
 			}
 
 		});
 
-		scoreData = std::move(sparsificationExp);
+		scoreData.clear();
+		scoreData.resize(G.upperEdgeIdBound());
+
+		#pragma omp parallel for
+		for (index i = 0; i < scoreData.size(); ++i) {
+			scoreData[i] = sparsificationExp[i];
+		}
+
 		hasRun = true;
 	}
 
@@ -105,7 +114,6 @@ public:
 
 private:
 	const std::vector<InType>& attribute;
-	bool bothRequired;
 	bool logarithmic;
 
 };

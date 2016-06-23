@@ -17,6 +17,38 @@
 
 namespace NetworKit {
 
+Diameter::Diameter(const Graph& G, DiameterAlgo algo, double error, count nSamples) : Algorithm(), G(G), error(error), nSamples(nSamples) {
+	if (algo == DiameterAlgo::automatic) {
+		this->algo = DiameterAlgo::exact;
+	} else {
+		this->algo = algo;
+		if (this->algo == DiameterAlgo::estimatedRange) {
+			if (error == -1.f) throw std::invalid_argument("For Diameter::estimatedRange the parameter error(>=0) has to be supplied");
+		} else if (this->algo == DiameterAlgo::estimatedSamples) {
+			if (nSamples == 0) throw std::invalid_argument("For Diameter::estimatedSamples the parameter nSamples(>0) has to be supplied");
+		}
+	}
+}
+
+void Diameter::run() {
+	diameterBounds = {0, 0};
+	if (algo == DiameterAlgo::exact) {
+		std::get<0>(diameterBounds) = this->exactDiameter(G);
+	} else if (algo == DiameterAlgo::estimatedRange) {
+		diameterBounds = this->estimatedDiameterRange(G, error);
+	} else if (algo == DiameterAlgo::estimatedSamples) {
+		std::get<0>(diameterBounds) = this->estimatedVertexDiameter(G, nSamples);
+	} else if (algo == DiameterAlgo::estimatedPedantic) {
+		std::get<0>(diameterBounds) = this->estimatedVertexDiameterPedantic(G);
+	} else {
+		throw std::runtime_error("should never reach this code as the algorithm should be set correctly in the constructor or fail there");
+	}
+	hasRun = true;
+}
+
+std::pair<count, count> Diameter::getDiameter() const {
+	return diameterBounds;
+}
 
 edgeweight Diameter::exactDiameter(const Graph& G) {
 	using namespace std;
@@ -28,18 +60,17 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 	if (! G.isWeighted()) {
 		std::tie(diameter, std::ignore) = estimatedDiameterRange(G, 0);
 	} else {
-		 G.forNodes([&](node v) {
+		G.forNodes([&](node v) {
 			handler.assureRunning();
-		 	Dijkstra dijkstra(G, v);
-		 	dijkstra.run();
-		 	auto distances = dijkstra.getDistances();
-		 	for (auto distance : distances) {
-		 		if (diameter < distance) {
-		 			diameter = distance;
-		 		}
-		 	}
-//			DEBUG("ecc(", v, "): ", *std::max_element(distances.begin(), distances.end()), " of ", distances);
-		 });
+			Dijkstra dijkstra(G, v);
+			dijkstra.run();
+			auto distances = dijkstra.getDistances();
+			G.forNodes([&](node u) {
+				if (diameter < distances[u]) {
+					diameter = distances[u];
+				}
+			});
+		});
 	}
 
 	if (diameter == std::numeric_limits<edgeweight>::max()) {
@@ -48,102 +79,155 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 	return diameter;
 }
 
-
-
-
-
-std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworKit::Graph &G, double error, std::pair< NetworKit::node, NetworKit::node > *proof) {
-	// TODO: make abortable with ctrl+c using SignalHandling code
-	if (G.isDirected()) {
-		throw std::runtime_error("Error, the diameter of directed graphs cannot be computed yet.");
+std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworKit::Graph &G, double error) {
+	if (G.isDirected() || G.isWeighted()) {
+		throw std::runtime_error("Error, the diameter of directed or weighted graphs cannot be computed yet.");
 	}
-	/*
-	 * This is an implementation of the iFub-algorithm by
-	 * Pilu Crescenzi, Roberto Grossi, Michel Habib, Leonardo Lanzi, Andrea Marino:
-	 * On computing the diameter of real-world undirected graphs,
-	 * Theoretical Computer Science, Volume 514, 25 November 2013, Pages 84-95, ISSN 0304-3975,
-	 * http://dx.doi.org/10.1016/j.tcs.2012.09.018.
-	 * (http://www.sciencedirect.com/science/article/pii/S0304397512008687)
-	 */
-	// start node selection. Here the very simple variant with the node of max. degree
-	// for each component
-	std::vector<node> startNodes;
-	{
-		ConnectedComponents comp(G);
-		comp.run();
-		count numberOfComponents = comp.numberOfComponents();
-		startNodes.resize(numberOfComponents, 0);
-		std::vector<count> maxDeg(numberOfComponents, 0);
 
-		// for each component, find the node with the maximum degreee and add it as start node
-		G.forNodes([&](node v) {
-			count d = G.degree(v);
-			count c = comp.componentOfNode(v);
-			if (d > maxDeg[c]) {
-				startNodes[c] = v;
-				maxDeg[c] = d;
+	Aux::SignalHandler handler;
+	/*
+	 * This is an implementation of a slightly modified version of the exactSumSweep algorithm as presented in
+	 * Fast diameter and radius BFS-based computation in (weakly connected) real-world graphs: With an application to the six degrees of separation games
+	 * by Michele Borassi, Pierluigi Crescenzi, Michel Habib, Walter A. Kosters, Andrea Marino, Frank W. Takes
+	 * http://www.sciencedirect.com/science/article/pii/S0304397515001644
+	 */
+
+	std::vector<count> eccLowerBound(G.upperNodeIdBound()), eccUpperBound(G.upperNodeIdBound());
+	std::vector<bool> finished(G.upperNodeIdBound());
+
+	for (node u = 0; u < G.upperNodeIdBound(); ++u) {
+		if (G.hasNode(u)) {
+			eccUpperBound[u] = G.numberOfNodes();
+		}
+	}
+
+	ConnectedComponents comp(G);
+	comp.run();
+	count numberOfComponents = comp.numberOfComponents();
+
+
+	std::vector<count> distFirst(numberOfComponents, 0);
+	std::vector<count> ecc(numberOfComponents, 0);
+	std::vector<count> distances(G.upperNodeIdBound(), 0);
+
+	count numBFS = 0;
+
+	auto runBFS = [&](const std::vector<node> &startNodes) {
+		++numBFS;
+		std::vector<bool> foundFirstDeg2Node(numberOfComponents, false);
+
+		G.BFSfrom(startNodes, [&](node v, count dist) {
+			distances[v] = dist;
+
+			index c = comp.componentOfNode(v);
+			ecc[c] = std::max(dist, ecc[c]);
+
+			if (!foundFirstDeg2Node[c] && G.degree(v) > 1) {
+				foundFirstDeg2Node[c] = true;
+				distFirst[c] = dist;
 			}
 		});
-	}
 
-	// simple BFS from all start nodes, store all levels (needed later)
-	std::vector<std::vector<node> > level(1);
-	G.BFSfrom(startNodes, [&](node v, count dist) {
-		if (level.size() < dist+1) level.emplace_back();
-		level[dist].push_back(v);
-	});
-	count eccStart = level.size()-1;
+		G.forNodes([&](node u) {
+			if (finished[u]) return;
 
-	// set initial lower and upper bound
-	count lb = eccStart, ub = 2*eccStart;
+			auto c = comp.componentOfNode(u);
 
-	// calculate the ecc for the nodes in each level starting with the highest level
-	// until either the bound is tight or all nodes have been considered
-	for (count i = eccStart; ub > (lb + error * lb) && i > 0; --i) {
-		// we need to wait until here as otherwise after a break in the inner loop the wrong ub might
-		// be returned if it was decreased too early
-		ub = 2*i;
-		INFO("New upper bound ", ub);
-		// second possibility, if we did not meet the break condition we might now meet it
-		if (ub <= (lb + error * lb)) {
-			break;
+			auto eccValue = std::max(distances[u], ecc[c] - distances[u]);
+			eccLowerBound[u] = std::max(eccValue, eccLowerBound[u]);
+
+			if (distances[u] <= distFirst[c]) {
+				eccUpperBound[u] = eccValue;
+			} else {
+				eccUpperBound[u] = std::min(eccUpperBound[u], distances[u] + ecc[c] - 2 * distFirst[c]);
+			}
+
+			finished[u] = (eccUpperBound[u] == eccLowerBound[u]);
+		});
+
+		ecc.clear();
+		ecc.resize(numberOfComponents, 0);
+		distFirst.clear();
+		distFirst.resize(numberOfComponents, 0);
+	};
+
+	auto diameterBounds = [&]() {
+		count maxExact = *std::max_element(eccLowerBound.begin(), eccLowerBound.end());
+		count maxPotential = *std::max_element(eccUpperBound.begin(), eccUpperBound.end());
+		return std::make_pair(maxExact, maxPotential);
+	};
+
+	std::vector<node> startNodes(numberOfComponents, 0), maxDist(numberOfComponents, 0);
+	std::vector<count> maxDeg(numberOfComponents, 0);
+
+	count lb = 0, ub = G.numberOfNodes();
+
+	auto printStartNodes = [&]() {
+		DEBUG("Start nodes (lb = ", lb, ", ub = ", ub, "): ");
+		for (node u : startNodes) {
+			(void)u; // prevent unused variable warning
+			DEBUG("Node ", u, " with distance ", distances[u], ", lower bound ", eccLowerBound[u], ", upper bound ", eccUpperBound[u]);
 		}
+	};
 
-		bool aborted = false;
+	// for each component, find the node with the maximum degreee and add it as start node
+	G.forNodes([&](node v) {
+		count d = G.degree(v);
+		count c = comp.componentOfNode(v);
+		if (d >= maxDeg[c]) {
+			startNodes[c] = v;
+			maxDeg[c] = d;
+		}
+	});
 
-		#pragma omp parallel for schedule(guided)
-		for (index j = 0; j < level[i].size(); ++j) {
-			#pragma omp flush (aborted)
-			if (!aborted) {
-				node v = level[i][j];
-				count ecc = 0;
-				node w = none;
-				std::tie(w, ecc) = Eccentricity::getValue(G, v);
-				// check if the lower bound has been improved and if yes, if the upper bound has been met
-				if (ecc > lb) {
-					#pragma omp critical
-					if (ecc > lb) {
-						lb = ecc;
+	handler.assureRunning();
 
-						INFO("Found new lower bound ", lb);
+	runBFS(startNodes);
 
-						if (proof != NULL) {
-							proof->first = v;
-							proof->second = w;
-						}
+	std::tie(lb, ub) = diameterBounds();
 
-						if (ub <= (lb + error * lb)) {
-							aborted = true;
-						}
+	for (index i = 0; i < 2*G.numberOfNodes() && ub > (lb + error*lb); ++i) {
+		handler.assureRunning();
+		startNodes.clear();
+		startNodes.resize(numberOfComponents, none);
+
+		if ((i % 2) == 0) {
+			G.forNodes([&](node u) {
+				auto c = comp.componentOfNode(u);
+				if (startNodes[c] == none || std::tie(eccUpperBound[u], distances[u]) > std::tie(eccUpperBound[startNodes[c]], distances[startNodes[c]])) {
+					startNodes[c] = u;
+				}
+			});
+		} else {
+			G.forNodes([&](node u) {
+				auto c = comp.componentOfNode(u);
+				// Idea: we select a node that is central (i.e. has a low lower bound) but that is also close to the previous, non-central node.
+				// More generally, the best upper bound we can hope for a node v is eccLowerBound[u] + distance(u, v).
+				// We select the node the provides the best upper bound for the previous node u in the hope that in its neighborhood there are more nodes for which the bounds can be decreased.
+				// Among all these nodes we select the one that has the largest distance to the previous start node.
+				if (startNodes[c] == none) {
+					startNodes[c] = u;
+				} else {
+					auto compU = eccLowerBound[u] + distances[u], compStart = eccLowerBound[startNodes[c]] + distances[startNodes[c]];
+					if (compU < compStart || (compU == compStart && distances[u] > distances[startNodes[c]])) {
+						startNodes[c] = u;
 					}
 				}
-			}
+			});
 		}
+
+		handler.assureRunning();
+
+		printStartNodes();
+		runBFS(startNodes);
+
+		std::tie(lb, ub) = diameterBounds();
 	}
 
-	return {lb, std::max(ub, lb)};
-}
+	INFO(numBFS, " BFS used");
 
+	return {lb, ub};
+}
 
 edgeweight Diameter::estimatedVertexDiameter(const Graph& G, count samples) {
 
@@ -186,7 +270,6 @@ edgeweight Diameter::estimatedVertexDiameter(const Graph& G, count samples) {
 	}
 
 	return vdMax;
-
 }
 
 edgeweight Diameter::estimatedVertexDiameterPedantic(const Graph& G) {
@@ -233,6 +316,10 @@ edgeweight Diameter::estimatedVertexDiameterPedantic(const Graph& G) {
 		vd = largest_comp_size;
 	}
 	return vd;
+}
+
+std::string Diameter::toString() const {
+	return "Diameter()";
 }
 
 } /* namespace NetworKit */

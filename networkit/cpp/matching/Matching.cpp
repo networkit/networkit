@@ -2,18 +2,18 @@
  * Matching.cpp
  *
  *  Created on: 03.12.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
 #include "Matching.h"
 
 namespace NetworKit {
 
+
 Matching::Matching(count z) : data(z, none) {
 }
 
-bool Matching::isMatched(const node& u) const {
-	return (this->data[u] != none);
+bool Matching::isMatched(node u) const {
+	return (this->data.at(u) != none);
 }
 
 bool Matching::isProper(const Graph& G) const {
@@ -28,7 +28,7 @@ bool Matching::isProper(const Graph& G) const {
 	// check if entries are symmetric
 
 	G.forNodes([&](node v) {
-		sym = ((data[v] == none) || (data[data[v]] == v));
+		sym = ((data.at(v) == none) || (data[data.at(v)] == v));
 		if (!sym) {
 			DEBUG("node " , v , " is not symmetrically matched");
 			isProper = false;
@@ -38,7 +38,7 @@ bool Matching::isProper(const Graph& G) const {
 	bool inGraph = true;
 	// check if every pair exists as an edge
 	G.forNodes([&](node v){
-		node w = data[v];
+		node w = data.at(v);
 		if ((v != w) && (w != none)) {
 			inGraph = G.hasEdge(v, w);
 			if (!inGraph) {
@@ -52,18 +52,18 @@ bool Matching::isProper(const Graph& G) const {
 	return isProper;
 }
 
-void Matching::match(const node& u, const node& v) {
-	data[u] = v;
-	data[v] = u;
+void Matching::match(node u, node v) {
+	data.at(u) = v;
+	data.at(v) = u;
 }
 
-void Matching::unmatch(const node& u, const node& v) {
-	data[u] = none;
-	data[v] = none;
+void Matching::unmatch(node u, node v) {
+	data.at(u) = none;
+	data.at(v) = none;
 }
 
-bool Matching::areMatched(const node& u, const node& v) const {
-	return (data[u] == v);
+bool Matching::areMatched(node u, node v) const {
+	return (data.at(u) == v); // TODO: why not also data[v] == u ???
 }
 
 count Matching::size(const Graph& G) const {
@@ -77,10 +77,7 @@ count Matching::size(const Graph& G) const {
 }
 
 index Matching::mate(node v) const {
-	if (isMatched(v)) {
-		return data[v];
-	}
-	else return none;
+	return data.at(v);
 }
 
 edgeweight Matching::weight(const Graph& G) const {
@@ -93,6 +90,28 @@ edgeweight Matching::weight(const Graph& G) const {
 	});
 
 	return weight;
+}
+
+Partition Matching::toPartition(const Graph& G) const {
+	Partition partition(G.upperNodeIdBound());
+	std::vector<bool> visited(G.upperNodeIdBound(), false);
+	G.forNodes([&](node u){
+		if (!visited[u]) {
+			if (mate(u) == none) {
+				partition.addToSubset(u,u);
+			} else {
+				partition.addToSubset(u,u);
+				partition.addToSubset(u, mate(u));
+				visited[u] = true;
+				visited[mate(u)] = true;
+			}
+		}
+	});
+	return partition;
+}
+
+std::vector<node> Matching::getVector() const {
+	return this->data; //FIXME is this appropriate? - why not?
 }
 
 }

@@ -6,7 +6,7 @@ __author__ = "Gerd Lindner"
 
 from _NetworKit import ChibaNishizekiTriangleEdgeScore, GlobalThresholdFilter, LocalSimilarityScore, MultiscaleScore, SimmelianOverlapScore, RandomEdgeScore, LocalDegreeScore, ForestFireScore, \
 	EdgeScoreAsWeight, EdgeScoreLinearizer, LocalFilterScore, AdamicAdarDistance, ChanceCorrectedTriangleScore, TriangleEdgeScore, RandomNodeEdgeScore, ChibaNishizekiQuadrangleEdgeScore, GeometricMeanScore, \
-	EdgeScoreNormalizer, EdgeScoreBlender, PrefixJaccardScore, SCANStructuralSimilarityScore
+	EdgeScoreNormalizer, EdgeScoreBlender, PrefixJaccardScore, SCANStructuralSimilarityScore, JaccardSimilarityAttributizer
 
 # local imports
 from . import community
@@ -344,6 +344,22 @@ class DegreeMultiscaleSparsifier(Sparsifier):
 	def _getParameterizationAlgorithm(self):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
+class JaccardSimilaritySparsifier(Sparsifier):
+	""" An implementation of the Jaccard Similarity sparsification approach introduced by Satuluri et al. """
+
+	def scores(self, G):
+		""" Returns the jaccard coefficient of the neighborhoods of the two incident nodes """
+		triangles = TriangleEdgeScore(G).run().scores()
+		return JaccardSimilarityAttributizer(G, triangles).getAttribute()
+
+	def _getSparsifiedGraph(self, G, parameter, attribute):
+		gf = GlobalThresholdFilter(G, attribute, parameter, True)
+		return gf.calculate()
+
+	def _getParameterizationAlgorithm(self):
+		return BinarySearchParameterization(False, 0.0, 1.0, 20)
+
+
 class LocalSimilaritySparsifier(Sparsifier):
 
 	""" An implementation of the Local Similarity sparsification approach introduced by Satuluri et al. """
@@ -553,9 +569,9 @@ class AlgebraicDistanceSparsifier(Sparsifier):
 
 	def scores(self, G):
 		""" Returns the inverted algebraic distance score of the input graph. """
-		algDist = distance.AlgebraicDistance(G, self.numberSystems, self.numberIterations, self.omega, self.norm)
+		algDist = distance.AlgebraicDistance(G, self.numberSystems, self.numberIterations, self.omega, self.norm, withEdgeScores=True)
 		algDist.preprocess()
-		return [1.0 - d for d in algDist.getEdgeAttribute()]
+		return [1.0 - d for d in algDist.getEdgeScores()]
 
 	def _getSparsifiedGraph(self, G, parameter, attribute):
 		gf = GlobalThresholdFilter(G, attribute, parameter, True)
@@ -603,7 +619,7 @@ class ModularityPartitionScore():
 		G -- the input graph
 		"""
 
-		cdAlgo = community.PLM(G, refine=True, turbo=True)
+		cdAlgo = community.PLM(G, par="none randomized", refine=True, turbo=True)
 		cdAlgo.run()
 		partition = cdAlgo.getPartition()
 
@@ -613,10 +629,8 @@ class ModularityPartitionScore():
 			else:
 				return 0.0
 
-		# FIXME: with respect to performance, the following is wrong on so many levels - don't try this at home
 		edgeScores = [None for i in range(G.upperEdgeIdBound())]
-		for (u, v) in G.edges():
-			edgeScores[G.edgeId(u, v)] = together(u, v)
+		G.forEdges(lambda u, v, w, eid: edgeScores.__setitem__(eid, together(u, v)))
 		return edgeScores
 
 class ConstantScore():

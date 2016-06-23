@@ -11,11 +11,12 @@
 #include "CoreDecomposition.h"
 #include "../auxiliary/PrioQueueForInts.h"
 #include <omp.h>
+#include "../centrality/DegreeCentrality.h"
 
 namespace NetworKit {
 
-CoreDecomposition::CoreDecomposition(const Graph& G, bool enforceBucketQueueAlgorithm) :
-		Centrality(G, false), maxCore(0), enforceBucketQueueAlgorithm(enforceBucketQueueAlgorithm)
+CoreDecomposition::CoreDecomposition(const Graph& G, bool normalized, bool enforceBucketQueueAlgorithm) :
+		Centrality(G, normalized), maxCore(0), enforceBucketQueueAlgorithm(enforceBucketQueueAlgorithm)
 {
 	if (G.numberOfSelfLoops()) throw std::runtime_error("Core Decomposition implementation does not support graphs with self-loops. Call Graph.removeSelfLoops() first.");
 	canRunInParallel = (! enforceBucketQueueAlgorithm && (G.numberOfNodes() == G.upperNodeIdBound()));
@@ -27,6 +28,16 @@ void CoreDecomposition::run() {
 	}
 	else {
 		runWithParK();
+	}
+
+	if (normalized) {
+		DegreeCentrality deg(G);
+		deg.run();
+		auto degrees = deg.scores();
+		count maxDeg = *std::max_element(degrees.begin(), degrees.end());
+		G.parallelForNodes([&](node u) {
+			scoreData[u] = scoreData[u] / maxDeg;
+		});
 	}
 }
 
@@ -310,4 +321,3 @@ double CoreDecomposition::maximum() {
 }
 
 } /* namespace NetworKit */
-

@@ -32,9 +32,10 @@ std::vector<std::pair<node, double> > Centrality::ranking() {
 	return ranking;
 }
 
-std::vector<double> Centrality::scores() {
+std::vector<double> Centrality::scores(bool moveOut) {
 	if (!hasRun) throw std::runtime_error("Call run method first");
-	return scoreData;
+	hasRun = !moveOut;
+	return moveOut ? std::move(scoreData) :  scoreData;
 }
 
 std::vector<double> Centrality::edgeScores() {
