@@ -155,7 +155,6 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 	timer.start();
 	vector<double> empty;
 	GraphBuilder result(n, false, false);
-	bool suppressLeft = directSwap ? false : std::is_sorted(angles.begin(), angles.end());//relying on lazy evaluation here
 
 	#pragma omp parallel
 	{
