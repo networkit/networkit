@@ -1,0 +1,15 @@
+/** @mainpage NetworKit C++ mainpage
+
+\section intro Introduction
+
+Welcome to the NetworKit C++ documentation pages.
+
+\section mods Modules
+
+The best way to start is from the page \subpage modules which gives
+you access to the documentation by category.
+
+*/
+
+/** \page modules Modules
+*/

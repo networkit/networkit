@@ -1,0 +1,71 @@
+
+syntax: regexp
+\.d$
+\.trace$
+\.mk$
+\.o$
+.DS_Store
+\.pyc$
+\.a$
+\.so$
+\checkpoint.ipynb
+build.conf
+.sconsign.dblite
+/_NetworKit.cpp$
+src/python/NetworKit.egg-info/
+NetworKit-Tests-D
+lamg-2.2-2
+CMG_101014
+instances
+bench*
+.cproject
+.project
+.settings*
+Benchmark*
+plots
+\.out$
+\.egg$
+\~$
+\.dot$
+\.project$
+\.cproject$
+^tracelog
+\.json$
+\.csv
+\.dat
+
+scripts/SparsificationEvaluation/input/
+scripts/SparsificationEvaluation/output/
+scripts/SparsificationEvaluation/figures
+input/backbones/
+build/
+Doc/Website
+Doc/Documentation
+
+syntax: regexp
+^output$
+syntax: regexp
+^sandbox$
+syntax: regexp
+^profiling$
+syntax: regexp
+^EnsembleClustering-D$
+syntax: regexp
+^EnsembleClustering-D$
+syntax: regexp
+^EnsembleClustering-D$
+syntax: regexp
+^EnsembleClustering-DPar$
+syntax: regexp
+^EnsembleClustering-O$
+syntax: regexp
+/NetworKit-Comm*$
+syntax: regexp
+/*.orig
+/*.eps
+syntax: regexp
+^doxygen$
+
+syntax: glob
+NetworKit-Tests-*
+include/NetworKit
