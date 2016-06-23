@@ -162,7 +162,7 @@ importing NetworkX. This opens up a wide range of possibilities which are not ye
 Python, its data structures are more memory-intensive and its algorithms do not target very large graphs. You are likely to reach limits of your machine for graphs with millions of edges,
 while NetworKit aims for good performance for three more orders of magnitude.
 
-
+.. TODO: Drawing graphs with Gephi
 
 |separator|
 
