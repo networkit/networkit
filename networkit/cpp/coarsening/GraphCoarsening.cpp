@@ -1,0 +1,52 @@
+/*
+ * GraphCoarsening.cpp
+ *
+ *  Created on: 30.10.2012
+ *      Author: Christian Staudt (christian.staudt@kit.edu)
+ */
+
+#include "GraphCoarsening.h"
+
+namespace NetworKit {
+
+GraphCoarsening::GraphCoarsening(const Graph& G) : Algorithm(), G(G) {
+
+}
+
+Graph GraphCoarsening::getCoarseGraph() const {
+	if(!hasRun) {
+		throw std::runtime_error("Call run()-method first.");
+	}
+	return Gcoarsened;
+}
+
+std::vector<node> GraphCoarsening::getFineToCoarseNodeMapping() const {
+	if(!hasRun) {
+		throw std::runtime_error("Call run()-method first.");
+	}
+	return nodeMapping;
+}
+
+
+std::map<node, std::vector<node> > GraphCoarsening::getCoarseToFineNodeMapping() const {
+	if (!hasRun) {
+		throw std::runtime_error("Call run()-method first.");
+	}
+
+	std::map<node, std::vector<node>> reverseMap;
+	Gcoarsened.forNodes([&](node v_){
+		std::vector<node> empty;
+		reverseMap[v_] = empty;
+	});
+
+
+	G.forNodes([&](node v) {
+		node v_ = nodeMapping[v];
+		reverseMap[v_].push_back(v);
+	});
+
+	return reverseMap;
+}
+
+
+}
