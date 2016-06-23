@@ -70,21 +70,16 @@ public:
 	Graph getGraph() const;
 
 	/**
-	 * Get coordinates within Poincaré disk
-	 * @return vector of 2D-Points in Cartesian coordinates
-	 */
-	std::vector<Point<float> > getCoordinates() const;
-
-	/**
 	 * Get coordinates in native representation
 	 * @return vector of 2D-Points in Cartesian coordinates
 	 */
-	std::vector<Point<float> > getHyperbolicCoordinates() const;
+	std::vector<Point<float> > getCoordinates() const;
 
 private:
 	/**
 	 * Generate initial node positions and fill the quadtree with them
 	 */
+	void initializePoints();
 	void initializeQuadTree();
 
 	/**
@@ -93,18 +88,11 @@ private:
 	void initializeMovement();
 
 	/**
-	 * @return current height of the quadtree. If balanced, should be about ceil(\log_4(n/capacity))
+	 * Generate initial movement vectors for all points
 	 */
-	count quadTreeHeight() {
-		return quad.height();
-	}
+	void recomputeBands();
 
-	/**
-	 * Execute factor growth part of time step
-	 *
-	 * @param result vector to store GraphEvents in
-	 */
-	void getEventsFromFactorGrowth(vector<GraphEvent> &result);
+	vector<index> getNeighborsInBands(index i, bool bothDirections=true);
 
 	/**
 	 * Execute node movement part of time step
@@ -120,17 +108,30 @@ private:
 	 */
 	void moveNode(index node);
 
-	count nodes;
+	//general geometry parameters
+	count nodeCount;
 	double alpha;
+	double R;
 	double T;
+
+	//movement parameters
 	double moveEachStep;
 	double moveDistance;
-	Quadtree<index> quad;
+
+	//coordinates
 	vector<double> angles;
 	vector<double> radii;
+
+	//movement vectors
 	vector<double> angularMovement;
 	vector<double> radialMovement;
-	double R, r;
+
+	//data structures
+	Quadtree<index, false> quad;
+	vector<double> bandRadii;
+	vector<vector<Point2D<double>>> bands;
+	vector<vector<double> > bandAngles;
+
 	bool initialized;
 };
 

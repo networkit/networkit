@@ -158,7 +158,7 @@ Graph GraphBuilder::toGraph(bool autoCompleteEdges, bool parallel) {
 	assert(G.outEdgeWeights.size() == (weighted ? n : 0));
 	assert(G.inEdges.size() == (directed ? n : 0));
 	assert(G.inEdgeWeights.size() == ( (weighted && directed) ? n : 0));
-	
+
 	// copy edges and weights
 	if (autoCompleteEdges) {
 		if (parallel) {
@@ -178,9 +178,9 @@ Graph GraphBuilder::toGraph(bool autoCompleteEdges, bool parallel) {
 	setDegrees(G);
 	G.m = numberOfEdges(G);
 	//G.storedNumberOfSelfLoops = selfloops;
-	
+
 	G.shrinkToFit();
-	
+
 	reset();
 
 	return G;
@@ -284,7 +284,7 @@ void GraphBuilder::toGraphParallel(Graph& G) {
 			if (weighted) {
 				for (int tid = 0; tid < maxThreads; tid++) {
 					copyAndClear(inWeightsPerThread[tid][v], G.outEdgeWeights[v]);
-				}	
+				}
 			}
 		}
 	});

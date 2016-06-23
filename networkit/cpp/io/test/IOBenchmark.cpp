@@ -79,6 +79,7 @@ void IOBenchmark::convertToHeatMap(vector<bool> &infected, vector<double> &xcoor
 
 }
 
+
 TEST_F(IOBenchmark, timeMETISGraphReader) {
 	std::string path = "";
 
@@ -139,7 +140,6 @@ TEST_F(IOBenchmark, benchRasterReader) {
 
 			INFO("Converted coordinates", runtime.elapsedTag());
 			//define query function
-			double T = 0.01;
 			auto edgeProb = [n](double distance) -> double {return (1/distance)*exp(5)/(double)n ;};
 			//auto edgeProb = [beta, thresholdDistance](double distance) -> double {return 1 / (exp(beta*(distance-thresholdDistance)/2)+1);};
 

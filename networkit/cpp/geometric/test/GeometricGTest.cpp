@@ -48,14 +48,18 @@ TEST_F(GeometricGTest, testConversion) {
  * Test numeric stability of Euclidean Circle conversion
  */
 TEST_F(GeometricGTest, testEuclideanCircleConsistency) {
-	count n = 1000000;
+	const count n = 1000000;
 	vector<double> angles(n);
 	vector<double> radii(n);
 	double stretch = 2;
 	double alpha = 3;
 	double epsilon = 10E-6;
 	double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(n);
-	HyperbolicSpace::fillPoints(angles, radii, stretch, alpha);
+	HyperbolicSpace::fillPoints(angles, radii, R, alpha);
+
+	for (index i = 0; i < n; i++) {
+		radii[i] = HyperbolicSpace::hyperbolicRadiusToEuclidean(radii[i]);
+	}
 
 	for (index i = 0; i < n; i++) {
 		Point2D<double> cartesianPoint = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
