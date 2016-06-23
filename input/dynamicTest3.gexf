@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
+    <graph mode="dynamic" defaultedgetype="directed" timeformat="double"> 
+        <nodes>
+            <node id="0" label="Gephi">
+	       <spells>
+                    <spell end="1"/>
+                    <spell start="2" end="4" />
+                </spells>
+	    </node>            
+            <node id="1" label="Visualization">            
+                <spells>
+                    <spell start="1"/>
+                    <spell end="3" start="4" />
+                </spells>
+            </node>         
+        </nodes>
+        <edges>
+            <edge id="0" source="0" target="1" weight="5" start="2" end="3"/>
+        </edges>
+    </graph>
+</gexf>

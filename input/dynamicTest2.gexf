@@ -1,0 +1,1237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://www.gexf.net/1.2draft" version="1.2" xmlns:viz="http://www.gexf.net/1.2draft/viz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd">
+  <meta lastmodifieddate="2015-07-12">
+    <creator>Gephi 0.8.1</creator>
+    <description></description>
+  </meta>
+  <graph defaultedgetype="directed" timeformat="double" mode="dynamic">
+    <attributes class="node" mode="dynamic">
+      <attribute id="score" title="score" type="integer"></attribute>
+    </attributes>
+    <attributes class="edge" mode="dynamic">
+      <attribute id="weight" title="Weight" type="float"></attribute>
+    </attributes>
+    <nodes>
+      <node id="n0" label="n0" start="2004.0" end="2032.0">
+        <attvalues>
+          <attvalue for="score" value="0" start="2004.0" end="2004.0"></attvalue>
+          <attvalue for="score" value="0" start="2005.0" end="2006.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-13.730438" y="-213.151" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n1" label="n1" start="2001.0" end="2024.0">
+        <attvalues>
+          <attvalue for="score" value="0" start="2001.0" end="2003.0"></attvalue>
+          <attvalue for="score" value="0" start="2004.0" end="2008.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-438.23877" y="153.71625" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n2" label="n2" start="2008.0" end="2028.0">
+        <attvalues>
+          <attvalue for="score" value="0" start="2008.0" end="2010.0"></attvalue>
+          <attvalue for="score" value="2" start="2011.0" end="2017.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-130.05096" y="2.2617493" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n3" label="n3" start="2008.0" end="2028.0">
+        <attvalues>
+          <attvalue for="score" value="3" start="2008.0" end="2016.0"></attvalue>
+          <attvalue for="score" value="2" start="2017.0" end="2017.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-104.904236" y="-446.01147" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n4" label="n4" start="2007.0" end="2030.0">
+        <attvalues>
+          <attvalue for="score" value="4" start="2007.0" end="2007.0"></attvalue>
+          <attvalue for="score" value="4" start="2008.0" end="2015.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="178.5307" y="269.6198" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n5" label="n5" start="2003.0" end="2030.0">
+        <attvalues>
+          <attvalue for="score" value="4" start="2003.0" end="2005.0"></attvalue>
+          <attvalue for="score" value="1" start="2006.0" end="2008.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-32.84549" y="-90.55243" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n6" label="n6" start="2007.0" end="2032.0">
+        <attvalues>
+          <attvalue for="score" value="2" start="2007.0" end="2007.0"></attvalue>
+          <attvalue for="score" value="2" start="2008.0" end="2008.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="8.552887" y="25.477417" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n7" label="n7" start="2005.0" end="2028.0">
+        <attvalues>
+          <attvalue for="score" value="1" start="2005.0" end="2008.0"></attvalue>
+          <attvalue for="score" value="1" start="2009.0" end="2012.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="53.50244" y="371.18915" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n8" label="n8" start="2005.0" end="2029.0">
+        <attvalues>
+          <attvalue for="score" value="2" start="2005.0" end="2005.0"></attvalue>
+          <attvalue for="score" value="0" start="2006.0" end="2008.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="271.2312" y="22.671448" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n9" label="n9" start="2008.0" end="2035.0">
+        <attvalues>
+          <attvalue for="score" value="0" start="2008.0" end="2017.0"></attvalue>
+          <attvalue for="score" value="1" start="2018.0" end="2025.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="446.72723" y="375.6374" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n10" label="n10" start="2002.0" end="2027.0">
+        <attvalues>
+          <attvalue for="score" value="4" start="2002.0" end="2005.0"></attvalue>
+          <attvalue for="score" value="0" start="2006.0" end="2006.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-130.89032" y="43.136658" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n11" label="n11" start="2004.0" end="2033.0">
+        <attvalues>
+          <attvalue for="score" value="3" start="2004.0" end="2007.0"></attvalue>
+          <attvalue for="score" value="4" start="2008.0" end="2017.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-454.83615" y="33.535706" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n12" label="n12" start="2001.0" end="2024.0">
+        <attvalues>
+          <attvalue for="score" value="1" start="2001.0" end="2004.0"></attvalue>
+          <attvalue for="score" value="4" start="2005.0" end="2008.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-204.7138" y="270.5454" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n13" label="n13" start="2009.0" end="2032.0">
+        <attvalues>
+          <attvalue for="score" value="2" start="2009.0" end="2015.0"></attvalue>
+          <attvalue for="score" value="0" start="2016.0" end="2025.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="376.11084" y="437.8731" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n14" label="n14" start="2000.0" end="2025.0">
+        <attvalues>
+          <attvalue for="score" value="1" start="2000.0" end="2006.0"></attvalue>
+          <attvalue for="score" value="2" start="2007.0" end="2008.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="193.93817" y="-470.28717" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n15" label="n15" start="2006.0" end="2032.0">
+        <attvalues>
+          <attvalue for="score" value="1" start="2006.0" end="2009.0"></attvalue>
+          <attvalue for="score" value="0" start="2010.0" end="2011.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="47.83014" y="182.15735" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n16" label="n16" start="2008.0" end="2031.0">
+        <attvalues>
+          <attvalue for="score" value="2" start="2008.0" end="2016.0"></attvalue>
+          <attvalue for="score" value="4" start="2017.0" end="2026.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-3.928009" y="495.2143" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n17" label="n17" start="2008.0" end="2033.0">
+        <attvalues>
+          <attvalue for="score" value="1" start="2008.0" end="2015.0"></attvalue>
+          <attvalue for="score" value="3" start="2016.0" end="2023.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="152.94574" y="354.0805" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n18" label="n18" start="2007.0" end="2033.0">
+        <attvalues>
+          <attvalue for="score" value="4" start="2007.0" end="2013.0"></attvalue>
+          <attvalue for="score" value="0" start="2014.0" end="2019.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="475.86194" y="273.42108" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n19" label="n19" start="2002.0" end="2023.0">
+        <attvalues>
+          <attvalue for="score" value="3" start="2002.0" end="2010.0"></attvalue>
+          <attvalue for="score" value="0" start="2011.0" end="2017.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="330.42322" y="149.50507" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n20" label="n20" start="2005.0" end="2026.0">
+        <attvalues>
+          <attvalue for="score" value="2" start="2005.0" end="2014.0"></attvalue>
+          <attvalue for="score" value="1" start="2015.0" end="2017.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-39.35681" y="470.1667" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n21" label="n21" start="2002.0" end="2030.0">
+        <attvalues>
+          <attvalue for="score" value="1" start="2002.0" end="2007.0"></attvalue>
+          <attvalue for="score" value="4" start="2008.0" end="2009.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="34.13568" y="37.83081" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n22" label="n22" start="2004.0" end="2026.0">
+        <attvalues>
+          <attvalue for="score" value="4" start="2004.0" end="2010.0"></attvalue>
+          <attvalue for="score" value="0" start="2011.0" end="2019.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-28.434662" y="-29.484802" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n23" label="n23" start="2006.0" end="2026.0">
+        <attvalues>
+          <attvalue for="score" value="4" start="2006.0" end="2006.0"></attvalue>
+          <attvalue for="score" value="2" start="2007.0" end="2014.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="53.090088" y="102.186646" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n24" label="n24" start="2005.0" end="2033.0">
+        <attvalues>
+          <attvalue for="score" value="2" start="2005.0" end="2009.0"></attvalue>
+          <attvalue for="score" value="2" start="2010.0" end="2017.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="272.11072" y="177.61035" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n25" label="n25" start="2003.0" end="2032.0">
+        <attvalues>
+          <attvalue for="score" value="3" start="2003.0" end="2011.0"></attvalue>
+          <attvalue for="score" value="4" start="2012.0" end="2014.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="481.7082" y="-223.47668" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n26" label="n26" start="2003.0" end="2028.0">
+        <attvalues>
+          <attvalue for="score" value="4" start="2003.0" end="2008.0"></attvalue>
+          <attvalue for="score" value="3" start="2009.0" end="2013.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-341.87384" y="384.34198" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n27" label="n27" start="2003.0" end="2029.0">
+        <attvalues>
+          <attvalue for="score" value="1" start="2003.0" end="2003.0"></attvalue>
+          <attvalue for="score" value="4" start="2004.0" end="2013.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-351.87164" y="-293.43304" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n28" label="n28" start="2006.0" end="2032.0">
+        <attvalues>
+          <attvalue for="score" value="0" start="2006.0" end="2015.0"></attvalue>
+          <attvalue for="score" value="2" start="2016.0" end="2019.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-164.28845" y="284.57397" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n29" label="n29" start="2003.0" end="2025.0">
+        <attvalues>
+          <attvalue for="score" value="0" start="2003.0" end="2004.0"></attvalue>
+          <attvalue for="score" value="1" start="2005.0" end="2008.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-25.687561" y="-127.27551" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n30" label="n30" start="2003.0" end="2028.0">
+        <attvalues>
+          <attvalue for="score" value="1" start="2003.0" end="2007.0"></attvalue>
+          <attvalue for="score" value="2" start="2008.0" end="2009.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="402.2555" y="369.93597" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n31" label="n31" start="2000.0" end="2026.0">
+        <attvalues>
+          <attvalue for="score" value="3" start="2000.0" end="2000.0"></attvalue>
+          <attvalue for="score" value="4" start="2001.0" end="2009.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-136.18576" y="430.41656" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n32" label="n32" start="2007.0" end="2029.0">
+        <attvalues>
+          <attvalue for="score" value="0" start="2007.0" end="2014.0"></attvalue>
+          <attvalue for="score" value="2" start="2015.0" end="2021.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-228.89822" y="103.68927" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n33" label="n33" start="2001.0" end="2027.0">
+        <attvalues>
+          <attvalue for="score" value="4" start="2001.0" end="2007.0"></attvalue>
+          <attvalue for="score" value="4" start="2008.0" end="2017.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="491.38525" y="-53.054474" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n34" label="n34" start="2000.0" end="2029.0">
+        <attvalues>
+          <attvalue for="score" value="0" start="2000.0" end="2001.0"></attvalue>
+          <attvalue for="score" value="0" start="2002.0" end="2003.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-138.22324" y="314.93414" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n35" label="n35" start="2003.0" end="2026.0">
+        <attvalues>
+          <attvalue for="score" value="1" start="2003.0" end="2003.0"></attvalue>
+          <attvalue for="score" value="2" start="2004.0" end="2013.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-196.83572" y="-156.11166" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n36" label="n36" start="2003.0" end="2032.0">
+        <attvalues>
+          <attvalue for="score" value="1" start="2003.0" end="2010.0"></attvalue>
+          <attvalue for="score" value="0" start="2011.0" end="2014.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-484.59616" y="214.43445" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n37" label="n37" start="2009.0" end="2033.0">
+        <attvalues>
+          <attvalue for="score" value="0" start="2009.0" end="2017.0"></attvalue>
+          <attvalue for="score" value="1" start="2018.0" end="2019.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="127.01697" y="-109.8613" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n38" label="n38" start="2007.0" end="2033.0">
+        <attvalues>
+          <attvalue for="score" value="1" start="2007.0" end="2016.0"></attvalue>
+          <attvalue for="score" value="1" start="2017.0" end="2025.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-111.125946" y="-202.40668" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n39" label="n39" start="2004.0" end="2028.0">
+        <attvalues>
+          <attvalue for="score" value="2" start="2004.0" end="2007.0"></attvalue>
+          <attvalue for="score" value="4" start="2008.0" end="2016.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-460.33685" y="-466.8962" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n40" label="n40" start="2001.0" end="2023.0">
+        <attvalues>
+          <attvalue for="score" value="1" start="2001.0" end="2004.0"></attvalue>
+          <attvalue for="score" value="0" start="2005.0" end="2007.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-468.46017" y="170.62042" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n41" label="n41" start="2008.0" end="2030.0">
+        <attvalues>
+          <attvalue for="score" value="4" start="2008.0" end="2016.0"></attvalue>
+          <attvalue for="score" value="1" start="2017.0" end="2019.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-459.4517" y="-295.80554" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n42" label="n42" start="2000.0" end="2020.0">
+        <attvalues>
+          <attvalue for="score" value="0" start="2000.0" end="2006.0"></attvalue>
+          <attvalue for="score" value="3" start="2007.0" end="2007.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="454.64264" y="-487.30942" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n43" label="n43" start="2004.0" end="2031.0">
+        <attvalues>
+          <attvalue for="score" value="3" start="2004.0" end="2006.0"></attvalue>
+          <attvalue for="score" value="2" start="2007.0" end="2015.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-358.01245" y="489.6313" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n44" label="n44" start="2009.0" end="2034.0">
+        <attvalues>
+          <attvalue for="score" value="2" start="2009.0" end="2016.0"></attvalue>
+          <attvalue for="score" value="1" start="2017.0" end="2024.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="266.38104" y="-30.099396" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n45" label="n45" start="2007.0" end="2034.0">
+        <attvalues>
+          <attvalue for="score" value="2" start="2007.0" end="2016.0"></attvalue>
+          <attvalue for="score" value="1" start="2017.0" end="2022.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="200.92932" y="-281.2799" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n46" label="n46" start="2007.0" end="2027.0">
+        <attvalues>
+          <attvalue for="score" value="0" start="2007.0" end="2007.0"></attvalue>
+          <attvalue for="score" value="1" start="2008.0" end="2008.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="364.4712" y="-233.91174" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n47" label="n47" start="2004.0" end="2024.0">
+        <attvalues>
+          <attvalue for="score" value="2" start="2004.0" end="2005.0"></attvalue>
+          <attvalue for="score" value="3" start="2006.0" end="2015.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="189.75793" y="89.13562" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n48" label="n48" start="2000.0" end="2021.0">
+        <attvalues>
+          <attvalue for="score" value="0" start="2000.0" end="2002.0"></attvalue>
+          <attvalue for="score" value="1" start="2003.0" end="2008.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="253.24634" y="211.08673" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="n49" label="n49" start="2002.0" end="2024.0">
+        <attvalues>
+          <attvalue for="score" value="2" start="2002.0" end="2006.0"></attvalue>
+          <attvalue for="score" value="4" start="2007.0" end="2011.0"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-368.128" y="-77.61838" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+    </nodes>
+    <edges>
+      <edge source="n0" target="n44">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n1" target="n25">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n1" target="n33">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n1" target="n47">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="10.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n2" target="n3">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n2" target="n11">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n2" target="n16">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n2" target="n23">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n2" target="n39">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n3" target="n11">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n3" target="n24">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n3" target="n33">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n3" target="n37">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n3" target="n45">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n4" target="n30">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n4" target="n39">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="10.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n4" target="n40">
+        <attvalues>
+          <attvalue for="weight" value="2.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n4" target="n41">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n4" target="n48">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n5" target="n27">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n5" target="n45">
+        <attvalues>
+          <attvalue for="weight" value="2.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n6" target="n23">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n6" target="n28">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="10.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n6" target="n35">
+        <attvalues>
+          <attvalue for="weight" value="2.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n7" target="n24">
+        <attvalues>
+          <attvalue for="weight" value="2.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n8" target="n29">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n9" target="n18">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n10" target="n17">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n10" target="n25">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n10" target="n30">
+        <attvalues>
+          <attvalue for="weight" value="2.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n10" target="n33">
+        <attvalues>
+          <attvalue for="weight" value="2.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="10.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n10" target="n44">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n11" target="n37">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n11" target="n41">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n11" target="n45">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n12" target="n19">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n14" target="n20">
+        <attvalues>
+          <attvalue for="weight" value="2.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n15" target="n30">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n15" target="n32">
+        <attvalues>
+          <attvalue for="weight" value="2.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="10.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n16" target="n21">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n16" target="n26">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n16" target="n27">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n16" target="n40">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="10.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n16" target="n41">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n16" target="n45">
+        <attvalues>
+          <attvalue for="weight" value="2.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n17" target="n32">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n17" target="n35">
+        <attvalues>
+          <attvalue for="weight" value="2.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="10.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n17" target="n49">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="10.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n18" target="n35">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="10.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n18" target="n48">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n20" target="n33">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n21" target="n39">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="10.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n21" target="n44">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="10.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n22" target="n44">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n24" target="n41">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="10.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n27" target="n32">
+        <attvalues>
+          <attvalue for="weight" value="2.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="2.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n29" target="n47">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="10.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n31" target="n47">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="10.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n33" target="n44">
+        <attvalues>
+          <attvalue for="weight" value="2.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n33" target="n47">
+        <attvalues>
+          <attvalue for="weight" value="2.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n34" target="n38">
+        <attvalues>
+          <attvalue for="weight" value="3.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n36" target="n47">
+        <attvalues>
+          <attvalue for="weight" value="2.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="10.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n38" target="n49">
+        <attvalues>
+          <attvalue for="weight" value="2.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="8.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="10.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="n44" target="n47">
+        <attvalues>
+          <attvalue for="weight" value="1.0" start="2010.0" endopen="2012.0"></attvalue>
+          <attvalue for="weight" value="3.0" start="2012.0" endopen="2014.0"></attvalue>
+          <attvalue for="weight" value="4.0" start="2014.0" endopen="2016.0"></attvalue>
+          <attvalue for="weight" value="5.0" start="2016.0" endopen="2018.0"></attvalue>
+          <attvalue for="weight" value="6.0" start="2018.0" endopen="2020.0"></attvalue>
+          <attvalue for="weight" value="7.0" start="2020.0" endopen="2022.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2022.0" endopen="2024.0"></attvalue>
+          <attvalue for="weight" value="9.0" start="2024.0" end="2026.0"></attvalue>
+        </attvalues>
+      </edge>
+    </edges>
+  </graph>
+</gexf>
