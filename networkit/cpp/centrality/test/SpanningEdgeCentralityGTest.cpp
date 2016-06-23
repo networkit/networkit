@@ -35,7 +35,7 @@ TEST_F(SpanningEdgeCentralityGTest, testOnToyGraph) {
 	G.addEdge(3, 5);
 	G.addEdge(4, 5);
 
-	Spanning sp(G);
+	SpanningEdgeCentrality sp(G);
 
 	sp.run();
 	EXPECT_NEAR(1.0, sp.score(0), 1e-5);
@@ -55,8 +55,8 @@ TEST_F(SpanningEdgeCentralityGTest, testSpanningOnSmallGraphs) {
 		Graph G = reader.read(graphFile);
 		G.indexEdges();
 		Aux::Timer timer;
-		Spanning exact(G);
-		Spanning cen(G);
+		SpanningEdgeCentrality exact(G);
+		SpanningEdgeCentrality cen(G);
 
 		timer.start();
 		exact.run();

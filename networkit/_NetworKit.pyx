@@ -8836,9 +8836,9 @@ cdef class EpidemicSimulationSEIR(Algorithm):
 
 
 
-cdef extern from "cpp/centrality/Spanning.h":
-	cdef cppclass _Spanning "NetworKit::Spanning":
-		_Spanning(_Graph G, double tol) except +
+cdef extern from "cpp/centrality/SpanningEdgeCentrality.h":
+	cdef cppclass _SpanningEdgeCentrality "NetworKit::SpanningEdgeCentrality":
+		_SpanningEdgeCentrality(_Graph G, double tol) except +
 		void run() nogil except +
 		void runApproximation() except +
 		void runParallelApproximation() except +
@@ -8847,21 +8847,21 @@ cdef extern from "cpp/centrality/Spanning.h":
 		void runPseudoTreeApproximation(count reps) except +
 		vector[double] scores() except +
 
-cdef class Spanning:
+cdef class SpanningEdgeCentrality:
 	""" Computes the Euclidean Commute Time Distance between each pair of nodes for an undirected unweighted graph.
-	Spanning(G)
-	Create Spanning Edge Centrality for Graph `G`.
+	SpanningEdgeCentrality(G)
+	Create SpanningEdgeCentrality Edge Centrality for Graph `G`.
 	Parameters
 	----------
 	G : Graph
 		The graph.
 	tol: double
 	"""
-	cdef _Spanning* _this
+	cdef _SpanningEdgeCentrality* _this
 	cdef Graph _G
 	def __cinit__(self,  Graph G, double tol = 0.1):
 		self._G = G
-		self._this = new _Spanning(G._this, tol)
+		self._this = new _SpanningEdgeCentrality(G._this, tol)
 	def __dealloc__(self):
 		del self._this
 	def run(self):

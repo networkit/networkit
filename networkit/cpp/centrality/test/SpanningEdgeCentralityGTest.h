@@ -9,7 +9,7 @@
 #define NETWORKIT_CPP_CENTRALITY_TEST_SPANNINGEDGECENTRALITYGTEST_H_
 
 #include "gtest/gtest.h"
-#include "../Spanning.h"
+#include "../SpanningEdgeCentrality.h"
 
 #include <vector>
 #include <string>
