@@ -278,8 +278,22 @@ Publications Using NetworKit
 
   <ul>
     <li>
+      M. Riondato, E. Upfal: ABRA: Approximating Betweenness Centrality in Static and Dynamic Graphs with Rademacher Averages.
+      To appear in <i>Proc. 22nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining</i> (KDD 2016), August 2016. [<a href="http://arxiv.org/abs/1602.05866">arXiv</a>]
+       <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
+       <div id="collapseDiv" class="collapse">
+         <b>Abstract</b> We present ABRA, a suite of algorithms that compute and maintain probabilistically-guaranteed, high-quality, approximations of the betweenness centrality of all nodes
+          (or edges) on both static and fully dynamic graphs. Our algorithms rely on random sampling and their analysis leverages on Rademacher averages and pseudodimension, fundamental
+          concepts from statistical learning theory. To our knowledge, this is the first application of these concepts to the field of graph analysis. The results of our experimental evaluation
+           show that our approach is much faster than exact methods, and vastly outperforms, in both speed and number of samples, current state-of-the-art algorithms with the same quality guarantees.
+       </div>
+    </li>
+
+    <br>
+
+    <li>
       M. von Looz, M. Wolter, C. Jacob, H. Meyerhenke: Better partitions of protein graphs for subsystem quantum chemistry. To appear in <i>Proc. 15th Intl. Symp. on Experimental
-      Algorithms</i> (SEA 2016), June 2016
+      Algorithms</i> (SEA 2016), June 2016.
       <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
       <div id="collapseDiv" class="collapse">
         <b>Abstract</b> Determining the interaction strength between proteins and small molecules is key to analyzing their biological function. Quantum-mechanical calculations
