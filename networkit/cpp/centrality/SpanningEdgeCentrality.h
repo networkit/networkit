@@ -30,6 +30,7 @@ public:
 	/**
 	 * Constructs the SpanningEdgeCentrality class for the given Graph @a G.
 	 * @param G The graph.
+	 * @param tol constant used for the approximation: with probability at least 1-1/n, the approximated scores are within a factor 1+tol from the exact scores
 	 */
 	SpanningEdgeCentrality(const Graph& G, double tol = 0.1);
 
@@ -40,16 +41,19 @@ public:
 
 
 	/**
-	* Compute spanning scores for all edges to desired tolerance.
+	* Compute spanning edge centrality scores exactly for all edges.
 	*/
 	void run() override;
 
 
 	/**
-	 * Compute approximation by projection.
+	 * Compute approximation by JL projection.
 	 */
 	void runApproximation();
 
+	/**
+	 * Compute approximation by JL projection in parallel.
+	 */
 	void runParallelApproximation();
 
 	/**
@@ -65,13 +69,6 @@ public:
 	 * @return The elapsed time to setup the solver in milliseconds.
 	 */
 	uint64_t getSetupTime() const;
-
-	void runTreeApproximation(count reps);
-
-	void runTreeApproximation2(count reps);
-
-	void runPseudoTreeApproximation(count reps);
-
 	/**
 	 * Compute value for one edge only.
 	 * @param[in] u Endpoint of edge.
