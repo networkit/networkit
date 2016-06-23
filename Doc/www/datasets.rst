@@ -2,7 +2,7 @@
 Data sets
 =========
 
-On this page, we provide links to datasets which can be used with NetworKit.
+On this page, we provide links to data sets which can be used with NetworKit.
 
 - `10th DIMACS Implementation Challenge (2010-2012) <http://www.cc.gatech.edu/dimacs10/downloads.shtml>`_
 
