@@ -8842,20 +8842,16 @@ cdef extern from "cpp/centrality/SpanningEdgeCentrality.h":
 		void run() nogil except +
 		void runApproximation() except +
 		void runParallelApproximation() except +
-		void runTreeApproximation(count reps) except +
-		void runTreeApproximation2(count reps) except +
-		void runPseudoTreeApproximation(count reps) except +
 		vector[double] scores() except +
 
 cdef class SpanningEdgeCentrality:
-	""" Computes the Euclidean Commute Time Distance between each pair of nodes for an undirected unweighted graph.
-	SpanningEdgeCentrality(G)
-	Create SpanningEdgeCentrality Edge Centrality for Graph `G`.
+	""" Computes the Spanning Edge centrality for the edges of the graph.
 	Parameters
 	----------
 	G : Graph
 		The graph.
 	tol: double
+		Tolerance used for the approximation
 	"""
 	cdef _SpanningEdgeCentrality* _this
 	cdef Graph _G
@@ -8876,27 +8872,6 @@ cdef class SpanningEdgeCentrality:
 	def runParallelApproximation(self):
 		""" Computes approximation (in parallel) of the Spanning Edge Centrality. """
 		return self._this.runParallelApproximation()
-
-	def runTreeApproximation(self, reps):
-		"""  Returns a Spanning Edge Centrality approximation using spanning trees
-
-		reps : number of iterations
-		"""
-		return self._this.runTreeApproximation(reps)
-
-	def runTreeApproximation2(self, reps):
-		"""  Returns a Spanning Edge Centrality approximation using spanning trees.
-
-		reps : number of iterations
-		"""
-		return self._this.runTreeApproximation2(reps)
-
-	def runPseudoTreeApproximation(self, reps):
-		"""  Returns a Spanning Edge Centrality approximation using spanning trees
-
-		reps : number of iterations
-		"""
-		return self._this.runPseudoTreeApproximation(reps)
 
 	def scores(self):
 		""" Get a vector containing the SEC score for each edge in the graph.

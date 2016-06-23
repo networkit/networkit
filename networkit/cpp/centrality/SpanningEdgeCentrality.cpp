@@ -146,48 +146,6 @@ void SpanningEdgeCentrality::runParallelApproximation() {
 	hasRun = true;
 }
 
-void SpanningEdgeCentrality::runTreeApproximation(count reps) {
-	scoreData.clear();
-	scoreData.resize(G.numberOfEdges(), 0.0);
-
-	RandomSpanningTree rst(G);
-
-	for (index i = 0; i < reps; ++i) {
-		rst.run();
-		Graph tree = rst.getTree();
-		G.forEdges([&](node u, node v, edgeid e) {
-			scoreData[e] += tree.hasEdge(u, v);
-		});
-	}
-
-	G.forEdges([&](node u, node v, edgeid e) {
-		scoreData[e] /= reps;
-	});
-
-	hasRun = true;
-}
-
-void SpanningEdgeCentrality::runTreeApproximation2(count reps) {
-	scoreData.clear();
-	scoreData.resize(G.numberOfEdges(), 0.0);
-
-	RandomSpanningTree rst(G);
-
-	for (index i = 0; i < reps; ++i) {
-		rst.run2();
-		Graph tree = rst.getTree();
-		G.forEdges([&](node u, node v, edgeid e) {
-			scoreData[e] += tree.hasEdge(u, v);
-		});
-	}
-
-	G.forEdges([&](node u, node v, edgeid e) {
-		scoreData[e] /= reps;
-	});
-
-	hasRun = true;
-}
-
 uint64_t SpanningEdgeCentrality::runApproximationAndWriteVectors(const std::string &graphPath) {
 	Aux::Timer t;
 	const count n = G.numberOfNodes();
@@ -230,26 +188,6 @@ uint64_t SpanningEdgeCentrality::runApproximationAndWriteVectors(const std::stri
 	return t.elapsedMilliseconds();
 }
 
-void SpanningEdgeCentrality::runPseudoTreeApproximation(count reps) {
-	scoreData.clear();
-	scoreData.resize(G.numberOfEdges(), 0.0);
-
-	PseudoRandomSpanningTree rst(G);
-
-	for (index i = 0; i < reps; ++i) {
-		rst.run();
-		Graph tree = rst.getTree();
-		G.forEdges([&](node u, node v, edgeid e) {
-			scoreData[e] += tree.hasEdge(u, v);
-		});
-	}
-
-	G.forEdges([&](node u, node v, edgeid e) {
-		scoreData[e] /= reps;
-	});
-
-	hasRun = true;
-}
 
 double SpanningEdgeCentrality::runForEdge(node u, node v) {
 	count n = G.numberOfNodes();
