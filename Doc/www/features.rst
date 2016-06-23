@@ -67,7 +67,7 @@ Diameter
 
 The diameter of a graph is the maximum length of a shortest path between any two nodes. Many real-world complex networks have a very small and often constant diameter.
 NetworKit provides a function to calculate the exact diameter as well as several approximation algorithms for large networks. The exact algorithm runs in :math:`O(n*(n+m))` or
-:math:`O(n*(n*log(n) + m))` if the network is weighted, where :math:`n` and :math:`m` are defined as number of nodes and edges respectively. TODO: runtimes for approximation algorithms.
+:math:`O(n*(n*log(n) + m))` if the network is weighted, where :math:`n` and :math:`m` are defined as number of nodes and edges respectively.
 
 Clustering Coefficients
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -162,7 +162,6 @@ importing NetworkX. This opens up a wide range of possibilities which are not ye
 Python, its data structures are more memory-intensive and its algorithms do not target very large graphs. You are likely to reach limits of your machine for graphs with millions of edges,
 while NetworKit aims for good performance for three more orders of magnitude.
 
-TODO: Drawing Graphs with Gephi
 
 
 |separator|
