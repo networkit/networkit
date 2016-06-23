@@ -10,9 +10,8 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
+import sys, os, inspect
 import sphinx_bootstrap_theme
-from pathlib import Path
 #import matplotlib as mpl
 #mpl.use("Agg")
 
@@ -61,7 +60,10 @@ copyright = u'2016 Karlsruhe Institute of Technology (KIT) - Institute of Theore
 # built documents.
 #
 # The short X.Y version.
-sys.path.insert(0, Path(__file__).parents[2])
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+networkitDir = os.path.dirname(os.path.dirname(currentdir))
+sys.path.insert(0, networkitDir)
+
 import networkit
 version = networkit.__version__
 # The full version, including alpha/beta/rc tags.

@@ -196,6 +196,13 @@ branch. We recommend the following workflow:
 3. make and commit your changes while being on the ``Dev`` branch
 4. send a pull request to the main repository
 
+Student Projects
+~~~~~~~~~~~~~~~~
+
+Students with long-term projects like Bachelor's or Master's theses
+should familiarize themselves with the guidelines and select a
+forking/branching model with their advisor.
+
 Branching Cheat Sheet
 ---------------------
 
@@ -434,6 +441,7 @@ shared by Dijkstra and BFS only need to be wrapped through SSSP.
 
         cdef class Dijkstra(SSSP):
             """ Dijkstra's SSSP algorithm.
+
             Returns list of weighted distances from node source, i.e. the length of the shortest path from source to
             any other node.
 
@@ -496,9 +504,9 @@ implementation. There are many examples of how to use it, e.g.
 Contact
 -------
 
-To discuss important changes to NetworKit, use the `mailing
+To discuss important changes to NetworKit, use the `e-mail
 list <https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit>`__
-(``networkit-dev@ira.uka.de``).
+(``networkit@ira.uka.de``).
 
 Building the documentation
 --------------------------

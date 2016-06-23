@@ -15,16 +15,15 @@ News
 ---------------------------------
 
 
-June 9, 2016: **NetworKit 4.1 released**
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+June 23, 2016: **NetworKit 4.1 released**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Today we announce the next version of NetworKit, the open-source toolkit for large-scale network analysis.
+NetworKit is a Python package, with performance-critical algorithms implemented in C++/OpenMP.
 
-|
-| Today we announce the next version of NetworKit, the open-source
-toolkit for large-scale network analysis. NetworKit is a Python package,
-with performance-critical algorithms implemented in C++/OpenMP.
-| **Release notes**
-| Major:
+**Release notes**
+
+Major:
 
 new website
 
@@ -46,8 +45,10 @@ generator module:
    netwoks based on hyperbolic geometry (Looz, Meyerhenke, Prutkin '15:
    Random Hyperbolic Graphs in Subquadratic Time)
 
-|     
-| Minor:
+|  
+
+   
+Minor:
 
 re-introduced an overview(G)-function that collects and prints some
 infromation about a graph

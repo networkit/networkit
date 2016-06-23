@@ -20,8 +20,7 @@ doxygen Doxyfile
 python3 -c'import sphinxPreparation; sphinxPreparation.cleanUp()'
 rm -rf __pycache__
 
-# remove doctrees (not needed for html) and move html one up
-rm -rf ../Website/doctrees
+# move html one up
 mv ../Website/html/* ../Website/
 rm -rd ../Website/html
 
@@ -43,8 +42,8 @@ zip -r ../Website/uploads/Documentation.zip ../Documentation/
 zip -r ../Website/uploads/NetworKit.zip ../../../
 hg archive -t zip ../Website/uploads/NetworKit.zip
 
-
-
+# remove doctrees (not needed for html)
+rm -rf ../Website/doctrees/
 
 
 
