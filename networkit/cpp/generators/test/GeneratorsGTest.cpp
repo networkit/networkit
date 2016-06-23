@@ -917,7 +917,7 @@ TEST_F(GeneratorsGTest, testLFRGenerator) {
 	EXPECT_EQ(G1.numberOfEdges(), G2.numberOfEdges());
 }
 
-TEST_F(GeneratorsGTest, testLFRGeneratorImpossibleSequence) {
+TEST_F(GeneratorsGTest, tryLFRGeneratorImpossibleSequence) {
 	Aux::Random::setSeed(42, true);
 	LFRGenerator gen(1000);
 	gen.generatePowerlawDegreeSequence(35, 98, -2);
