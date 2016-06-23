@@ -585,7 +585,7 @@ public:
 		if (isLeaf) {
 			const count lsize = content.size();
 			TRACE("Leaf of size ", lsize);
-			for (int i = 0; i < lsize; i++) {
+			for (index i = 0; i < lsize; i++) {
 				//jump!
 				if (probUB < 1) {
 					double random = Aux::Random::real();
@@ -596,7 +596,6 @@ public:
 					if (i >= lsize) break;
 					TRACE("Jumped with delta ", delta, " arrived at ", i);
 				}
-				assert(i >= 0);
 
 				//see where we've arrived
 				candidatesTested++;
