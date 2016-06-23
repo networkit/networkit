@@ -41,7 +41,7 @@ To see the most important features of a network at a glance, NetworKit provides 
 .. image:: resources/profiling_overview.png
 	:align: center
 
-For detailed instructions on how to use the Profiling module take a look at our `Profiling Notebook <http://nbviewer.jupyter.org/urls/networkit.iti.kit.edu/data/uploads/docs/Profiling.ipynb>`_.
+For detailed instructions on how to use the Profiling module take a look at our `Profiling Notebook <http://nbviewer.jupyter.org/urls/networkit.iti.kit.edu/uploads/docs/Profiling.ipynb>`_.
 
 |separator|
 
@@ -54,7 +54,7 @@ Degree Distribution
 ^^^^^^^^^^^^^^^^^^^
 Empirically observed complex networks tend to show a heavy tailed degree distribution which follow a power-law with a characteristic exponent. NetworKit provides functions to analyze the
 degree distribution of a network. For details visit the
-`Degree Distribution <http://nbviewer.jupyter.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb#Degree-Distribution>`_ Section of the User Guide. The algorithm runs in :math:`O(n)`.
+`Degree Distribution <http://nbviewer.jupyter.org/urls/networkit.iti.kit.edu/uploads/docs/NetworKit_UserGuide.ipynb#Degree-Distribution>`_ Section of the User Guide. The algorithm runs in :math:`O(n)`.
 
 (Degree) Assortativity
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -74,17 +74,17 @@ Clustering Coefficients
 
 Clustering coefficients are key figures for the amount of transitivity in networks. NetworKit provides functions for both the global clustering coefficient as well as the local clustering
 coefficient. NetworKit implements the wedge sampling approximation algorithm. It runs in essentially linear or even constant time, depending on the respective measure. For details on the
-usage visit the `Clustering Coefficient <http://nbviewer.jupyter.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb#Transitivity-/-Clustering-Coefficients>`_
+usage visit the `Clustering Coefficient <http://nbviewer.jupyter.org/urls/networkit.iti.kit.edu/uploads/docs/NetworKit_UserGuide.ipynb#Transitivity-/-Clustering-Coefficients>`_
 Section of the User Guide.
 
 Components and Cores
 ^^^^^^^^^^^^^^^^^^^^
 
 We compute connected components in linear time using a parallel label propagation scheme in which each node adopts the maximum label in its neighborhood. Take a look at
-the `Connected Components <http://nbviewer.jupyter.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb#Connected-Components>`_ Section in the User Guide.
+the `Connected Components <http://nbviewer.jupyter.org/urls/networkit.iti.kit.edu/uploads/docs/NetworKit_UserGuide.ipynb#Connected-Components>`_ Section in the User Guide.
 
 The core decomposition algorithm implemented in NetworKit uses a bucket data structure for managing remaining node degrees and has a running time which is linear
-in the number of edges. Visit the `Core Decomposition <http://nbviewer.jupyter.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb#Core-Decomposition>`_
+in the number of edges. Visit the `Core Decomposition <http://nbviewer.jupyter.org/urls/networkit.iti.kit.edu/uploads/docs/NetworKit_UserGuide.ipynb#Core-Decomposition>`_
 Section of the User Guide for usage details.
 
 Centrality

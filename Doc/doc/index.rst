@@ -44,9 +44,9 @@
           <div style="padding-top: 15px">Install via pip</div>
           <span style="display: block;overflow: hidden;"><input onClick="this.setSelectionRange(0, this.value.length)" style="width: 100%" type="text" value="pip install networkit" readonly=""/></span>
 
-          <div style="padding-top: 15px">Download from <a href="https://algohub.iti.kit.edu/parco/NetworKit/NetworKit">Algohub</a> or as <a href="https://networkit.iti.kit.edu/data/uploads/networkit.zip">Zip file</a></div>
+          <div style="padding-top: 15px">Download from <a href="https://algohub.iti.kit.edu/parco/NetworKit/NetworKit">Algohub</a> or as <a href="https://networkit.iti.kit.edu/uploads/NetworKit.zip">Zip file</a></div>
 
-          <div style="padding-top: 15px">Download the <a href="https://networkit.iti.kit.edu/data/uploads/NetworKit-Doc.zip">Class Documentation</a></div>
+          <div style="padding-top: 15px">Download the <a href="https://networkit.iti.kit.edu/uploads/Documentation.zip">Class Documentation</a></div>
 
           <div style="padding-top: 15px">Download the <a href="http://arxiv.org/pdf/1403.3005v3.pdf">Technical Report</a></div>
 
@@ -54,7 +54,7 @@
 
           <div style="padding-top: 15px">View the <a href="https://lists.ira.uni-karlsruhe.de/pipermail/networkit/">mailing list archive</a></div>
 
-          <div style="padding-top: 15px"><a href="http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb">NetworKit UserGuide</a></div>
+          <div style="padding-top: 15px"><a href="http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/uploads/docs/NetworKit_UserGuide.ipynb">NetworKit UserGuide</a></div>
 
         </div>
       </div>
