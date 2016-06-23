@@ -14,6 +14,85 @@ News
 :hidden:`HiddenBiggerHeadingFont`
 ---------------------------------
 
+
+June 9, 2016: **NetworKit 4.1 released**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+|
+| Today we announce the next version of NetworKit, the open-source
+toolkit for large-scale network analysis. NetworKit is a Python package,
+with performance-critical algorithms implemented in C++/OpenMP.
+| **Release notes**
+| Major:
+
+new website
+
+C++ implementation of Lean Algebraic Multigrid (LAMG) by Livne et al.
+for solving large Laplacian systems serves as backend for various
+network analysis kernels
+
+centrality module
+
+-  centrality.TopCloseness: Implementation of a new algorithm for
+   finding the top-k nodes with highest closeness centrality faster than
+   computing it for all nodes (E. Bergamini, M. Borassi, P. Crescenzi,
+   A. Marino, H. Meyerhenke, "Computing Top-k Closeness Centrality
+   Faster in Unweighted Graphs", ALENEX'16)
+
+generator module:
+
+-  generator.HyperbolicGenerator: a fast parallel generator for complex
+   netwoks based on hyperbolic geometry (Looz, Meyerhenke, Prutkin '15:
+   Random Hyperbolic Graphs in Subquadratic Time)
+
+|     
+| Minor:
+
+re-introduced an overview(G)-function that collects and prints some
+infromation about a graph
+
+updated documentation
+
+some IO bugfixes
+
+graph module:
+
+-  Subgraph class has been removed, its functionality is now in
+   Graph::subgraphFromNodes(...)
+
+generator module: 
+
+-  Many graph generators now provide fit(G) method that returns an
+   instance of the generator such that generated graphs are similar to
+   the provided one
+-  Improved performance of the BarabasiAlbert generator by implementing
+   Batagelj's method
+
+distance module:
+
+-  distance.CommuteTimeDistance: a node distance measure, distance is
+   low when there are many short paths connecting two nodes
+-  Adapted Diameter class to Algorithm convention; diameter algorithm
+   can be chosen via enum in the constructor
+-  Adapted EffectiveDiameter class to Algorithm convention resulting in
+   the classes ApproxEffectiveDiameter, ApproxHopPlot,
+   ApproxNeighborhoodFunction; added exact computation of the
+   Neighborhood Function
+
+centrality module:
+
+-  centrality.SpanningEdgeCentraliy: edge centrality measure
+   representing the fraction of spanning trees containing the edge
+-  centrality.ApproxCloseness: new algorithm for approximating closeness
+   centrality based on "Computing Classic Closeness Centrality, at
+   Scale", Cohen et al.
+
+| 
+
+
+
+
 May 9, 2016: **NetworKit journal paper accepted at Network Science**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
