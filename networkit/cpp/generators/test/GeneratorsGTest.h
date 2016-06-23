@@ -29,9 +29,6 @@ public:
 		return dynGen.radii;
 	}
 
-	count getQuadTreeHeight(DynamicHyperbolicGenerator dynGen) {
-		return dynGen.quadTreeHeight();
-	}
 };
 
 } /* namespace NetworKit */

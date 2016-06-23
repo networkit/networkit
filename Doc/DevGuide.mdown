@@ -211,20 +211,20 @@ If you implement a new feature for NetworKit, we encourage you to adapt your dev
 
 ### Algorithm interface and class hierarchy
 
-We use the possibilities provided through inheritance to generalize the common behaviour of algorithm implementations: 
+We use the possibilities provided through inheritance to generalize the common behaviour of algorithm implementations:
 
 - Data and paramters should be passed in the constructor.
 - A void run()-method that takes no parameter triggers the execution.
 - To retrieve the result(s), getter-functions() may be defined.
 
-The `Algorithm` base class also defines a few other other functions to query whether the algorithm can be run in parallel or to retrieve a string representation. 
+The `Algorithm` base class also defines a few other other functions to query whether the algorithm can be run in parallel or to retrieve a string representation.
 
 There may be more levels in the class hierarchy between an algorithm implementation and the base class, e.g. a single-source shortest-path class `SSSP` that generalizes the behaviour of BFS and Dijkstra implementations or the `Centrality` base class. When implementing new features or algorithms, make sure to adapt to the existing class hierarchies. The least thing to do is to inherit from the `Algorithm` base class. Changes to existing interfaces or suggestions for new interfaces should be discussed through the [mailing list](networkit@ira.uka.de).
 
 
 ## Exposing C++ Code to Python
 
-Assuming the unit tests for the new feature you implemented are correct and successful, you need to make your features available to Python in order to use it. NetworKit uses Cython to bridge C++ and Python. All of this bridge code is contained in the Cython code file `src/python/_Networkit.pyx`. The content is automatically translated into C++ and then compiled to a Python extension module. 
+Assuming the unit tests for the new feature you implemented are correct and successful, you need to make your features available to Python in order to use it. NetworKit uses Cython to bridge C++ and Python. All of this bridge code is contained in the Cython code file `src/python/_Networkit.pyx`. The content is automatically translated into C++ and then compiled to a Python extension module.
 
 Cython syntax is a superset of Python that knows about static type declarations and other things from the C/C++ world. The best way to getting used to it is working on examples. Take the most common case of exposing a C++ class as a Python class. Care for the following example that exposes the class `NetworKit::Dijkstra`:
 
@@ -310,6 +310,20 @@ To discuss important changes to NetworKit, use the [mailing list][list] (`networ
 
 [list]: https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit
 [rebase]: https://www.mercurial-scm.org/wiki/RebaseExtension
+
+## Building the documentation
+
+The class documentation and the website can be automatically generated with sphinx. You will need the following
+software to generate the documentation and website:
+
+- [Sphinx](http://www.sphinx-doc.org) (e.g. via `pip3 install sphinx`)
+- [Pandoc](http://pandoc.org)
+- [Doxygen](http://www.stack.nl/~dimitri/doxygen/)
+
+After you installed the above mentioned software, you can build the class documentation by calling `./make_doc.sh`
+in the folder `Doc/doc`. This will generate the class documentation for C++ and Python in `Doc/Documentation`.
+Similarly, you can call `./make_doc.sh` to build the website. After the build finished, you find the generated website
+in `Doc/Website/`.
 
 
 ## Further Reading

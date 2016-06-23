@@ -20,8 +20,8 @@ namespace NetworKit {
 
 class QuadTreeGTest: public testing::Test {
 public:
-	QuadTreeGTest();
-	virtual ~QuadTreeGTest();
+	QuadTreeGTest() = default;
+	virtual ~QuadTreeGTest() = default;
 
 protected:
 	template <class T>

@@ -40,7 +40,7 @@ public:
 		this->maxRadius = maxR;
 	}
 
-	count fillInParallel(count l, double alpha, count seqThreshold, count offset, QuadNode<T> &currentNode) {
+	count fillInParallel(count l, double alpha, count seqThreshold, count offset, QuadNode<T, poincare> &currentNode) {
 		if (l > seqThreshold) {
 			if (currentNode.height() == 1) currentNode.split();
 			double treeArea = HyperbolicSpace::effectiveAreaInCell(currentNode.getLeftAngle(), currentNode.getRightAngle(), currentNode.getMinR(), currentNode.getMaxR(), alpha);
@@ -66,11 +66,10 @@ public:
 				{
 					vector<double> angles(l);
 					vector<double> radii(l);
-					HyperbolicSpace::fillPoints(angles, radii, currentNode.getLeftAngle(), currentNode.getRightAngle(),
-							HyperbolicSpace::EuclideanRadiusToHyperbolic(currentNode.getMinR()),
+					HyperbolicSpace::fillPoints(angles, radii, currentNode.getLeftAngle(), currentNode.getRightAngle(),							HyperbolicSpace::EuclideanRadiusToHyperbolic(currentNode.getMinR()),
 							HyperbolicSpace::EuclideanRadiusToHyperbolic(currentNode.getMaxR()), alpha);
 					for (index i = 0; i < l; i++) {
-						currentNode.addContent(i+offset, angles[i], radii[i]);
+						currentNode.addContent(i+offset, angles[i], HyperbolicSpace::hyperbolicRadiusToEuclidean(radii[i]));
 					}
 				}
 				offset += l;
@@ -79,6 +78,7 @@ public:
 		}
 
 	Quadtree(count n, double stretch, bool theoreticalSplit=false, double alpha=1, count capacity=1000, double balance = 0.5) {
+		static_assert(poincare, "Parallel Quadtree filling only works with Poincaré disk");
 		double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(n);
 		double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 		count numberOfThreads = omp_get_max_threads();
@@ -293,7 +293,7 @@ public:
 	}
 
 private:
-	QuadNode<T> root;
+	QuadNode<T, poincare> root;
 	double maxRadius;
 };
 }

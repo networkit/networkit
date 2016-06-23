@@ -112,19 +112,20 @@ public:
 		 */
 
 		double middleR;
-		if (splitTheoretical) {
-			if (poincare) {
+
+		if (poincare) {
+			if (splitTheoretical) {
 				double hyperbolicOuter = HyperbolicSpace::EuclideanRadiusToHyperbolic(maxR);
 				double hyperbolicInner = HyperbolicSpace::EuclideanRadiusToHyperbolic(minR);
 				double hyperbolicMiddle = acosh((1-balance)*cosh(alpha*hyperbolicOuter) + balance*cosh(alpha*hyperbolicInner))/alpha;
 				middleR = HyperbolicSpace::hyperbolicRadiusToEuclidean(hyperbolicMiddle);
 			} else {
-				middleR = acosh((1-balance)*cosh(alpha*maxR) + balance*cosh(alpha*minR))/alpha;
+				double nom = maxR - minR;
+				double denom = pow((1-maxR*maxR)/(1-minR*minR), 0.5)+1;
+				middleR = nom/denom + minR;
 			}
 		} else {
-			double nom = maxR - minR;
-			double denom = pow((1-maxR*maxR)/(1-minR*minR), 0.5)+1;
-			middleR = nom/denom + minR;
+			middleR = acosh((1-balance)*cosh(alpha*maxR) + balance*cosh(alpha*minR))/alpha;
 		}
 
 		//one could also use the median here. Results in worse asymptotical complexity, but maybe better runtime?
@@ -132,10 +133,10 @@ public:
 		assert(middleR < maxR);
 		assert(middleR > minR);
 
-		QuadNode southwest(leftAngle, minR, middleAngle, middleR, capacity, splitTheoretical, alpha, balance);
-		QuadNode southeast(middleAngle, minR, rightAngle, middleR, capacity, splitTheoretical, alpha, balance);
-		QuadNode northwest(leftAngle, middleR, middleAngle, maxR, capacity, splitTheoretical, alpha, balance);
-		QuadNode northeast(middleAngle, middleR, rightAngle, maxR, capacity, splitTheoretical, alpha, balance);
+		QuadNode<index,poincare> southwest(leftAngle, minR, middleAngle, middleR, capacity, splitTheoretical, alpha, balance);
+		QuadNode<index,poincare> southeast(middleAngle, minR, rightAngle, middleR, capacity, splitTheoretical, alpha, balance);
+		QuadNode<index,poincare> northwest(leftAngle, middleR, middleAngle, maxR, capacity, splitTheoretical, alpha, balance);
+		QuadNode<index,poincare> northeast(middleAngle, middleR, rightAngle, maxR, capacity, splitTheoretical, alpha, balance);
 		children = {southwest, southeast, northwest, northeast};
 		isLeaf = false;
 	}
@@ -584,7 +585,7 @@ public:
 		if (isLeaf) {
 			const count lsize = content.size();
 			TRACE("Leaf of size ", lsize);
-			for (int i = 0; i < lsize; i++) {
+			for (index i = 0; i < lsize; i++) {
 				//jump!
 				if (probUB < 1) {
 					double random = Aux::Random::real();
@@ -595,7 +596,6 @@ public:
 					if (i >= lsize) break;
 					TRACE("Jumped with delta ", delta, " arrived at ", i);
 				}
-				assert(i >= 0);
 
 				//see where we've arrived
 				candidatesTested++;
