@@ -2167,7 +2167,7 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 			exponent of power-law degree distribution
 		T : double
 			temperature of statistical model
-			
+
 	"""
 
 	cdef _HyperbolicGenerator* _this
@@ -2195,7 +2195,7 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		Returns
 		-------
 		Graph
-		
+
 		"""
 		return Graph(0).setThis(self._this.generate())
 
@@ -5428,6 +5428,65 @@ cdef class Centrality(Algorithm):
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_Centrality*>(self._this)).centralization()
+
+cdef extern from "cpp/centrality/TopCloseness.h":
+	cdef cppclass _TopCloseness "NetworKit::TopCloseness":
+		_TopCloseness(_Graph G, count, bool, bool) except +
+		void run() except +
+		node maximum() except +
+		edgeweight maxSum() except +
+		count iterations() except +
+		count operations() except +
+		vector[node] topkNodesList() except +
+		vector[edgeweight] topkScoresList() except +
+
+
+cdef class TopCloseness:
+	"""
+	Finds the top k nodes with highest closeness centrality faster than computing it for all nodes, based on "Computing Top-k Closeness Centrality Faster in Unweighted Graphs", Bergamini et al., ALENEX16.
+	The algorithms is based on two independent heuristics, described in the referenced paper. We recommend to use first_heu = true and second_heu = false for complex networks and first_heu = true and second_heu = true for street networks or networks with large diameters.
+
+	Parameters
+	----------
+	G: An unweighted graph.
+	k: Number of nodes with highest closeness that have to be found. For example, if k = 10, the top 10 nodes with highest closeness will be computed.
+	first_heu: If true, the neighborhood-based lower bound is computed and nodes are sorted according to it. If false, nodes are simply sorted by degree.
+	sec_heu: If true, the BFSbound is re-computed at each iteration. If false, BFScut is used.
+	"""
+	cdef _TopCloseness* _this
+	cdef Graph _G
+
+	def __cinit__(self,  Graph G, k=1, first_heu=True, sec_heu=True):
+		self._G = G
+		self._this = new _TopCloseness(G._this, k, first_heu, sec_heu)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		""" Computes top-k closeness. """
+		self._this.run()
+		return self
+
+	""" Returns a list with the k nodes with highest closeness.
+	Returns
+	-------
+	vector
+		The k nodes with highest closeness.
+	"""
+	def topkNodesList(self):
+		return self._this.topkNodesList()
+
+
+	""" Returns a list with the scores of the k nodes with highest closeness.
+	Returns
+	-------
+	vector
+		The k highest closeness scores.
+	"""
+	def topkScoresList(self):
+		return self._this.topkScoresList()
+
 
 cdef extern from "cpp/centrality/DegreeCentrality.h":
 	cdef cppclass _DegreeCentrality "NetworKit::DegreeCentrality" (_Centrality):

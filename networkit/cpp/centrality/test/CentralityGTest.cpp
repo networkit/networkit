@@ -28,7 +28,8 @@
 #include "../../structures/Partition.h"
 #include "../../auxiliary/Timer.h"
 #include "../../generators/ErdosRenyiGenerator.h"
-
+#include "../../generators/DorogovtsevMendesGenerator.h"
+#include "../TopCloseness.h"
 #include <iostream>
 #include <iomanip>
 
@@ -878,6 +879,56 @@ TEST_F(CentralityGTest, testSimplePermanence) {
 
 	EXPECT_NEAR(-0.19048, perm.getPermanence(u), 0.0005);
 	EXPECT_NEAR(0.167, perm.getPermanence(v), 0.0005);
+}
+
+TEST_F(CentralityGTest, testTopClosenessDirected) {
+    count size = 400;
+    count k = 10;
+    Graph G1 = DorogovtsevMendesGenerator(size).generate();
+    Graph G(G1.upperNodeIdBound(), false, true);
+    G1.forEdges([&](node u, node v){
+        G.addEdge(u, v);
+        G.addEdge(v, u);
+    });
+    INFO("Number of nodes: ", G.upperNodeIdBound(), ", number of edges: ", G.numberOfEdges());
+    Closeness cc(G1, true);
+    cc.run();
+    TopCloseness topcc(G, k, true, true);
+    topcc.run();
+    const edgeweight tol = 1e-7;
+    for (count i = 0; i < k; i++) {
+        EXPECT_NEAR(cc.ranking()[i].second, topcc.topkScoresList()[i], tol);
+    }
+    TopCloseness topcc2(G, k, true, false);
+    topcc2.run();
+    for (count i = 0; i < k; i++) {
+        EXPECT_NEAR(cc.ranking()[i].second, topcc2.topkScoresList()[i], tol);
+    }
+}
+
+TEST_F(CentralityGTest, testTopClosenessUndirected) {
+    count size = 400;
+    count k = 10;
+    Graph G1 = DorogovtsevMendesGenerator(size).generate();
+    Graph G(G1.upperNodeIdBound(), false, false);
+    G1.forEdges([&](node u, node v){
+        G.addEdge(u, v);
+        G.addEdge(v, u);
+    });
+    INFO("Number of nodes: ", G.upperNodeIdBound(), ", number of edges: ", G.numberOfEdges());
+    Closeness cc(G1, true);
+    cc.run();
+    TopCloseness topcc(G, k, true, true);
+    topcc.run();
+    const edgeweight tol = 1e-7;
+    for (count i = 0; i < k; i++) {
+        EXPECT_NEAR(cc.ranking()[i].second, topcc.topkScoresList()[i], tol);
+    }
+    TopCloseness topcc2(G, k, true, false);
+    topcc2.run();
+    for (count i = 0; i < k; i++) {
+        EXPECT_NEAR(cc.ranking()[i].second, topcc2.topkScoresList()[i], tol);
+    }
 }
 
 } /* namespace NetworKit */
