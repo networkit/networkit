@@ -46,7 +46,7 @@ For detailed instructions on how to use the Profiling module take a look at our 
 |separator|
 
 Network Analytics
------------------------------
+-----------------
 
 NetworKit provides a rich set of network analysis methods. For details on the supported measures take a look at the `Technical Report <http://arxiv.org/pdf/1403.3005v1.pdf>`_.
 
@@ -57,7 +57,7 @@ degree distribution of a network. For details visit the
 `Degree Distribution <http://nbviewer.jupyter.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb#Degree-Distribution>`_ Section of the User Guide. The algorithm runs in :math:`O(n)`.
 
 (Degree) Assortativity
-^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
 
 Degree assortativity measures how well nodes with similar node degrees are connected to each other which can point to important aspects such as a hierarchical network composition.
 In NetworKit, we implemented Newman's formulation in linear time (:math:`O(m)`) and constant memory requirements.

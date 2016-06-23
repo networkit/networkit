@@ -8,7 +8,7 @@ rm -rf ../Website
 python3 -c'import sphinxPreparation; sphinxPreparation.prepareBuild()'
 
 # Call sphinx to generate the website. This includes a build of NetworKit as python module to get the latest docstrings.
-make html-networkit
+make html #-networkit
 
 # sphinx is run twice to make sure references are used correctly
 make html
