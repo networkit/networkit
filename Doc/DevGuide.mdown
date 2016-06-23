@@ -113,6 +113,9 @@ Example:
 
 If remote changes have happened in multiple branches and you pull them, these branch will have multiple heads. Merging now needs to happen for each of the affected branches before you can push. Switch to each branch and perform a merge as usual. As an alternative to merging, you may try the `rebase` [extension][rebase].
 
+[rebase]: https://www.mercurial-scm.org/wiki/RebaseExtension
+
+
 
 ### Contributions
 
@@ -122,6 +125,13 @@ Users of NetworKit are welcome to contribute their modifications. New features m
 2. switch to the `Dev` branch
 2. make and commit your changes while being on the `Dev` branch
 3. send a pull request to the main repository
+
+
+
+### Student Projects
+
+Students with long-term projects like Bachelor's or Master's theses should familiarize themselves with the guidelines and select a forking/branching model with their advisor.
+
 
 
 
@@ -269,6 +279,7 @@ We mirror the class hierarchy of the C++ world also in Cython and Python. This a
 
 		cdef class Dijkstra(SSSP):
 			""" Dijkstra's SSSP algorithm.
+
 			Returns list of weighted distances from node source, i.e. the length of the shortest path from source to
 			any other node.
 
@@ -306,10 +317,11 @@ When an algorithms takes too long to produce a result, it can be interrupted wit
 
 ## Contact
 
-To discuss important changes to NetworKit, use the [mailing list][list] (`networkit-dev@ira.uka.de`).
+To discuss important changes to NetworKit, use the [e-mail list][list] (`networkit@ira.uka.de`).
+
 
 [list]: https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit
-[rebase]: https://www.mercurial-scm.org/wiki/RebaseExtension
+
 
 ## Building the documentation
 
