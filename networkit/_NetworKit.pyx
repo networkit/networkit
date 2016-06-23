@@ -5711,19 +5711,29 @@ cdef class ApproxBetweenness2(Centrality):
 
 
 cdef extern from "cpp/centrality/ApproxCloseness.h":
+	enum _ClosenessType "NetworKit::ApproxCloseness::CLOSENESS_TYPE":
+		INBOUND,
+		OUTBOUND,
+		SUM
+
+cdef extern from "cpp/centrality/ApproxCloseness.h":
 	cdef cppclass _ApproxCloseness "NetworKit::ApproxCloseness" (_Centrality):
-		_ApproxCloseness(_Graph, count, bool) except +
+		_ClosenessType type
+		_ApproxCloseness(_Graph, count, float, bool, _ClosenessType type) except +
+		vector[double] getSquareErrorEstimates() except +
+
 
 
 cdef class ApproxCloseness(Centrality):
 	""" Approximation of closeness centrality according to algorithm described in
-  Eppstein, Wang: Fast Approximation of Centrality.
+  Cohen et al., Computing Classic Closeness Centrality, at Scale.
 
-	ApproxCloseness(G, nSamples, normalized=False)
+	ApproxCloseness(G, nSamples, epsilon=0.1, normalized=False, type=OUTBOUND)
 
-	The algorithm approximates the closeness of all nodes, by taking samples
-  uniformly at random and solving the SSSP problem for each. More samples
-  improves the accuracy of the approximation.
+	The algorithm approximates the closeness of all nodes in both directed and undirected graphs using a hybrid estimator.
+	First, it takes nSamples samples. For these sampled nodes, the closeness is computed exactly. The pivot of each of the
+	remaining nodes is the closest sampled node to it. If a node lies very close to its pivot, a sampling approach is used.
+	Otherwise, a pivoting approach is used. Notice that the input graph has to be connected.
 
 	Parameters
 	----------
@@ -5731,13 +5741,33 @@ cdef class ApproxCloseness(Centrality):
 		input graph (undirected)
 	nSamples : count
 		user defined number of samples
+	epsilon : double, optional
+		parameter used for the error guarantee; it is also used to control when to use sampling and when to use pivoting
 	normalized : bool, optional
 		normalize centrality values in interval [0,1]
+	type : _ClosenessType, optional
+		use in- or outbound centrality or the sum of both (see paper) for computing closeness on directed graph. If G is undirected, this can be ignored.
 	"""
 
-	def __cinit__(self, Graph G, nSamples, normalized=False):
+	#cdef _ApproxCloseness _this
+	INBOUND = 0
+	OUTBOUND = 1
+	SUM = 2
+
+	def __cinit__(self, Graph G, nSamples, epsilon=0.1, normalized=False, _ClosenessType type=OUTBOUND):
 		self._G = G
-		self._this = new _ApproxCloseness(G._this, nSamples, normalized)
+		self._this = new _ApproxCloseness(G._this, nSamples, epsilon, normalized, type)
+
+	def getSquareErrorEstimates(self):
+		""" Return a vector containing the square error estimates for all nodes.
+
+		Returns
+		-------
+		vector
+			A vector of doubles.
+		"""
+		return (<_ApproxCloseness*>(self._this)).getSquareErrorEstimates()
+
 
 
 cdef extern from "cpp/centrality/PageRank.h":

@@ -358,7 +358,7 @@ TEST_F(CentralityGTest, testApproxClosenessCentralityOnToyGraph) {
  /* Graph:
     0    3
      \  / \
-      2    5     7 (isolated node)
+      2    5
      /  \ /
     1    4
  */
@@ -372,11 +372,11 @@ TEST_F(CentralityGTest, testApproxClosenessCentralityOnToyGraph) {
     G.addEdge(3, 5);
     G.addEdge(4, 5);
 
-    ApproxCloseness acc(G, 10000, false);
+    ApproxCloseness acc(G, 6, 0.1, false);
     acc.run();
     std::vector<double> cc = acc.scores();
 
-		double maximum = acc.maximum();
+	double maximum = acc.maximum();
 
     const double tol = 0.2;
     EXPECT_NEAR(0.1, cc[0], tol);
@@ -385,37 +385,21 @@ TEST_F(CentralityGTest, testApproxClosenessCentralityOnToyGraph) {
     EXPECT_NEAR(0.125, cc[3], tol);
     EXPECT_NEAR(0.125, cc[4], tol);
     EXPECT_NEAR(0.1, cc[5], tol);
-		EXPECT_NEAR(0.2, maximum, tol);
+	EXPECT_NEAR(0.2, maximum, tol);
 
-		ApproxCloseness acc2(G, 50, true);
-		acc2.run();
-		std::vector<double> cc2 = acc2.scores();
+	ApproxCloseness acc2(G, 4, 0.1, true);
+	acc2.run();
+	std::vector<double> cc2 = acc2.scores();
 
-		double maximum2 = acc2.maximum();
+	double maximum2 = acc2.maximum();
 
-		EXPECT_NEAR(0.5, cc2[0], tol);
-		EXPECT_NEAR(0.5, cc2[1], tol);
-		EXPECT_NEAR(0.833335, cc2[2], tol);
-		EXPECT_NEAR(0.625, cc2[3], tol);
-		EXPECT_NEAR(0.625, cc2[4], tol);
-		EXPECT_NEAR(0.5, cc2[5], tol);
-		EXPECT_NEAR(0.2, maximum2, tol);
-}
-
-TEST_F(CentralityGTest, testApproxClosenessCentralityOnDisconnectedGraph) {
-	count n = 5;
-	Graph G(n);
-
-	G.addEdge(0, 1);
-	G.addEdge(2, 3);
-
-	ApproxCloseness acc(G, 100, false);
-	acc.run();
-	std::vector<double> cc = acc.scores();
-
-	const double tol = 0.35;
-	EXPECT_NEAR(0, cc[4], tol);
-	EXPECT_NEAR(1.0, cc[1], tol);
+	EXPECT_NEAR(0.5, cc2[0], tol);
+	EXPECT_NEAR(0.5, cc2[1], tol);
+	EXPECT_NEAR(0.833335, cc2[2], tol);
+	EXPECT_NEAR(0.625, cc2[3], tol);
+	EXPECT_NEAR(0.625, cc2[4], tol);
+	EXPECT_NEAR(0.5, cc2[5], tol);
+	EXPECT_NEAR(0.2, maximum2, tol);
 }
 
 TEST_F(CentralityGTest, testEdgeBetweennessCentrality) {
