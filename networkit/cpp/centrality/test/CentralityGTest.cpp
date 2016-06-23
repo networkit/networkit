@@ -11,7 +11,7 @@
 #include "../DynApproxBetweenness.h"
 #include "../ApproxBetweenness.h"
 #include "../ApproxBetweenness2.h"
-#include "../Spanning.h"
+#include "../SpanningEdgeCentrality.h"
 #include "../ApproxCloseness.h"
 #include "../EigenvectorCentrality.h"
 #include "../KatzCentrality.h"

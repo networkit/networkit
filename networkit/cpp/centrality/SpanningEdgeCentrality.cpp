@@ -1,12 +1,12 @@
 /*
- * Spanning.cpp
+ * SpanningEdgeCentrality.cpp
  *
  *  Created on: 29.07.2015
  *      Author: henningm
  */
 
 
-#include "Spanning.h"
+#include "SpanningEdgeCentrality.h"
 #include "../auxiliary/Log.h"
 #include "../auxiliary/Timer.h"
 #include "../spanning/RandomSpanningTree.h"
@@ -19,7 +19,7 @@
 
 namespace NetworKit {
 
-Spanning::Spanning(const Graph& G, double tol): Centrality(G), tol(tol), lamg(1e-5) {
+SpanningEdgeCentrality::SpanningEdgeCentrality(const Graph& G, double tol): Centrality(G), tol(tol), lamg(1e-5) {
 	// prepare LAMG
 	CSRMatrix matrix = CSRMatrix::graphLaplacian(G);
 	Aux::Timer t;
@@ -29,10 +29,10 @@ Spanning::Spanning(const Graph& G, double tol): Centrality(G), tol(tol), lamg(1e
 
 	setupTime = t.elapsedMilliseconds();
 
-	DEBUG("done setting up Spanning");
+	DEBUG("done setting up SpanningEdgeCentrality");
 }
 
-void Spanning::run() {
+void SpanningEdgeCentrality::run() {
 	count n = G.numberOfNodes();
 	scoreData.clear();
 	scoreData.resize(G.numberOfEdges(), 0.0);
@@ -62,11 +62,11 @@ void Spanning::run() {
 	hasRun = true;
 }
 
-uint64_t Spanning::getSetupTime() const {
+uint64_t SpanningEdgeCentrality::getSetupTime() const {
 	return setupTime;
 }
 
-void Spanning::runApproximation() {
+void SpanningEdgeCentrality::runApproximation() {
 	const count n = G.numberOfNodes();
 	const count m = G.numberOfEdges();
 	double epsilon2 = tol * tol;
@@ -105,7 +105,7 @@ void Spanning::runApproximation() {
 	hasRun = true;
 }
 
-void Spanning::runParallelApproximation() {
+void SpanningEdgeCentrality::runParallelApproximation() {
 	const count n = G.numberOfNodes();
 	const count m = G.numberOfEdges();
 	double epsilon2 = tol * tol;
@@ -146,49 +146,7 @@ void Spanning::runParallelApproximation() {
 	hasRun = true;
 }
 
-void Spanning::runTreeApproximation(count reps) {
-	scoreData.clear();
-	scoreData.resize(G.numberOfEdges(), 0.0);
-
-	RandomSpanningTree rst(G);
-
-	for (index i = 0; i < reps; ++i) {
-		rst.run();
-		Graph tree = rst.getTree();
-		G.forEdges([&](node u, node v, edgeid e) {
-			scoreData[e] += tree.hasEdge(u, v);
-		});
-	}
-
-	G.forEdges([&](node u, node v, edgeid e) {
-		scoreData[e] /= reps;
-	});
-
-	hasRun = true;
-}
-
-void Spanning::runTreeApproximation2(count reps) {
-	scoreData.clear();
-	scoreData.resize(G.numberOfEdges(), 0.0);
-
-	RandomSpanningTree rst(G);
-
-	for (index i = 0; i < reps; ++i) {
-		rst.run2();
-		Graph tree = rst.getTree();
-		G.forEdges([&](node u, node v, edgeid e) {
-			scoreData[e] += tree.hasEdge(u, v);
-		});
-	}
-
-	G.forEdges([&](node u, node v, edgeid e) {
-		scoreData[e] /= reps;
-	});
-
-	hasRun = true;
-}
-
-uint64_t Spanning::runApproximationAndWriteVectors(const std::string &graphPath) {
+uint64_t SpanningEdgeCentrality::runApproximationAndWriteVectors(const std::string &graphPath) {
 	Aux::Timer t;
 	const count n = G.numberOfNodes();
 	const count m = G.numberOfEdges();
@@ -230,28 +188,8 @@ uint64_t Spanning::runApproximationAndWriteVectors(const std::string &graphPath)
 	return t.elapsedMilliseconds();
 }
 
-void Spanning::runPseudoTreeApproximation(count reps) {
-	scoreData.clear();
-	scoreData.resize(G.numberOfEdges(), 0.0);
 
-	PseudoRandomSpanningTree rst(G);
-
-	for (index i = 0; i < reps; ++i) {
-		rst.run();
-		Graph tree = rst.getTree();
-		G.forEdges([&](node u, node v, edgeid e) {
-			scoreData[e] += tree.hasEdge(u, v);
-		});
-	}
-
-	G.forEdges([&](node u, node v, edgeid e) {
-		scoreData[e] /= reps;
-	});
-
-	hasRun = true;
-}
-
-double Spanning::runForEdge(node u, node v) {
+double SpanningEdgeCentrality::runForEdge(node u, node v) {
 	count n = G.numberOfNodes();
 
 	// set up solution vector and status
