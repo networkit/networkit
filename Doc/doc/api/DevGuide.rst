@@ -514,10 +514,10 @@ documentation and website:
 
 After you installed the above mentioned software, you can build the
 class documentation by calling ``./make_doc.sh`` in the folder
-``Doc/www``. This will generate the class documentation for C++ and
+``Doc/doc``. This will generate the class documentation for C++ and
 Python in ``Doc/Documentation``. Similarly, you can call
-``./make_www.sh`` to build the website. After the build finished, you
-find the generated website in ``Doc/Website/html``.
+``./make_doc.sh`` to build the website. After the build finished, you
+find the generated website in ``Doc/Website/``.
 
 Further Reading
 ---------------
