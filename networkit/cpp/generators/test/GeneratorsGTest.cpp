@@ -779,7 +779,6 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithDataFromParallelQuadtree) {
 	vector<double> radii;
 
 	quad.trim();
-	quad.sortPointsInLeaves();
 	quad.reindex();
 	quad.extractCoordinates(angles, radii);
 	EXPECT_EQ(angles.size(), n);
