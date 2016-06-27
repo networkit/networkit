@@ -431,7 +431,6 @@ TEST_F(QuadTreeGTest, testSequentialQuadTreeConstruction) {
 	EXPECT_EQ(quad.size(), n);
 
 	quad.trim();
-	quad.sortPointsInLeaves();
 	vector<double> anglecopy;
 	vector<double> radiicopy;
 	quad.extractCoordinates(anglecopy, radiicopy);
