@@ -288,10 +288,10 @@ void TopCloseness::BFSbound(node x, std::vector<double> &S2, count *visEdges) {
     // we compute the bound for the first level
     count closeNodes = 0, farNodes = 0;
     for (count j = 0; j <= nLevs; j++) {
-        if (abs(j-1)<=1)  {
+        if (abs((long long)j-1LL)<=1)  {
             closeNodes += nodesPerLev[j];
         } else {
-            farNodes += nodesPerLev[j]*abs(1-j);
+            farNodes += nodesPerLev[j]*abs(1LL-(long long)j);
         }
     }
 
