@@ -33,9 +33,10 @@ Install the NetworKit Virtual Machine
 =====================================
 
 If you want a quick and easy way to try NetworKit for your purposes or you use a Microsoft Windows operating system, we strongly recommend the installation of our
-NetworKit virtual machine.
+NetworKit virtual machine that can be downloaded `here <https://networkit.iti.kit.edu/uploads/networkit-vm.zip>`_.
 
-A detailed installation guide can be found `here <https://networkit.iti.kit.edu/networkit-vm_guide.html>`_.
+Take a look at our `installation guide <https://networkit.iti.kit.edu/networkit-vm_guide.html>`_ for further instructions on installing the virtual machine on your system.
+
 
 
 
