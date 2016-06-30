@@ -71,8 +71,8 @@ public:
 	 *
 	 *
 	 * @param leftAngle Minimal angular coordinate of region, in radians from 0 to 2\pi
-	 * @param rightAngle Maximal angular coordinate of region, in radians from 0 to 2\pi
 	 * @param minR Minimal radial coordinate of region, between 0 and 1
+	 * @param rightAngle Maximal angular coordinate of region, in radians from 0 to 2\pi
 	 * @param maxR Maximal radial coordinate of region, between 0 and 1
 	 * @param capacity Number of points a leaf cell can store before splitting
 	 * @param minDiameter Minimal diameter of a quadtree node. If the node is already smaller, don't split even if over capacity. Default is 0
