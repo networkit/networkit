@@ -1,12 +1,12 @@
 /*
- * Matrix.h
+ * DynamicMatrix.h
  *
  *  Created on: 13.03.2014
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#ifndef MATRIX_H_
-#define MATRIX_H_
+#ifndef DYNAMIC_MATRIX_H_
+#define DYNAMIC_MATRIX_H_
 
 #include "../graph/Graph.h"
 #include "Vector.h"
@@ -17,9 +17,10 @@ namespace NetworKit {
 
 /**
  * @ingroup algebraic
- * The matrix class represents a matrix which is optimized for sparse matrices.
+ * The DynamicMatrix class represents a matrix that is optimized for sparse matrices and internally uses a graph data structure.
+ * DynamicMatrix should be used when changes to the structure of the matrix are frequent.
  */
-class Matrix {
+class DynamicMatrix {
 protected:
 	Graph graph;
 
@@ -30,14 +31,14 @@ protected:
 
 public:
 	/** Default constructor */
-	Matrix();
+	DynamicMatrix();
 
 	/**
 	 * Constructs the Matrix with size @a dimension x @a dimension.
 	 * @param dimension Defines how many rows and columns this matrix has.
 	 * @param zero The zero element (default is 0.0).
 	 */
-	Matrix(const count dimension, const double zero = 0.0);
+	DynamicMatrix(const count dimension, const double zero = 0.0);
 
 
 	/**
@@ -46,7 +47,7 @@ public:
 	 * @param nCols Number of columns.
 	 * @param zero The zero element (default is 0.0).
 	 */
-	Matrix(const count nRows, const count nCols, const double zero = 0.0);
+	DynamicMatrix(const count nRows, const count nCols, const double zero = 0.0);
 
 	/**
 	 * Constructs the @a dimension x @a dimension Matrix from the elements at position @a positions with values @values.
@@ -54,7 +55,7 @@ public:
 	 * @param triplets The nonzero elements.
 	 * @param zero The zero element (default is 0.0).
 	 */
-	Matrix(const count dimension, const std::vector<Triplet>& triplets, const double zero = 0.0);
+	DynamicMatrix(const count dimension, const std::vector<Triplet>& triplets, const double zero = 0.0);
 
 	/**
 	 * Constructs the @a nRows x @a nCols Matrix from the elements at position @a positions with values @values.
@@ -63,24 +64,24 @@ public:
 	 * @param triplets The nonzero elements.
 	 * @param zero The zero element (default is 0.0).
 	 */
-	Matrix(const count nRows, const count nCols, const std::vector<Triplet>& triplets, const double zero = 0.0);
+	DynamicMatrix(const count nRows, const count nCols, const std::vector<Triplet>& triplets, const double zero = 0.0);
 
 	/** Default copy constructor */
-	Matrix(const Matrix &other) = default;
+	DynamicMatrix(const DynamicMatrix &other) = default;
 
 	/** Default move constructor */
-	Matrix(Matrix &&other) = default;
+	DynamicMatrix(DynamicMatrix &&other) = default;
 
 	/** Default destructor */
-	virtual ~Matrix() = default;
+	virtual ~DynamicMatrix() = default;
 
 	/** Default move assignment operator */
-	Matrix& operator=(Matrix &&other) = default;
+	DynamicMatrix& operator=(DynamicMatrix &&other) = default;
 
 	/** Default copy assignment operator */
-	Matrix& operator=(const Matrix &other) = default;
+	DynamicMatrix& operator=(const DynamicMatrix &other) = default;
 
-	bool operator==(const Matrix& other) const {
+	bool operator==(const DynamicMatrix& other) const {
 		bool graphsEqual = graph.numberOfNodes() == other.graph.numberOfNodes() && graph.numberOfEdges() == other.graph.numberOfEdges();
 		if (graphsEqual) {
 			graph.forEdges([&](node u, node v, edgeweight w) {
@@ -94,7 +95,7 @@ public:
 		return graphsEqual && nRows == other.nRows && nCols == other.nCols && zero == other.zero;
 	}
 
-	bool operator!=(const Matrix& other) const {
+	bool operator!=(const DynamicMatrix& other) const {
 		return !((*this) == other);
 	}
 
@@ -159,38 +160,38 @@ public:
 	 * Adds this matrix to @a other and returns the result.
 	 * @return The sum of this matrix and @a other.
 	 */
-	Matrix operator+(const Matrix &other) const;
+	DynamicMatrix operator+(const DynamicMatrix &other) const;
 
 	/**
 	 * Adds @a other to this matrix.
 	 * @return Reference to this matrix.
 	 */
-	Matrix& operator+=(const Matrix &other);
+	DynamicMatrix& operator+=(const DynamicMatrix &other);
 
 	/**
 	 * Subtracts @a other from this matrix and returns the result.
 	 * @return The difference of this matrix and @a other.
 	 *
 	 */
-	Matrix operator-(const Matrix &other) const;
+	DynamicMatrix operator-(const DynamicMatrix &other) const;
 
 	/**
 	 * Subtracts @a other from this matrix.
 	 * @return Reference to this matrix.
 	 */
-	Matrix& operator-=(const Matrix &other);
+	DynamicMatrix& operator-=(const DynamicMatrix &other);
 
 	/**
 	 * Multiplies this matrix with a scalar specified in @a scalar and returns the result.
 	 * @return The result of multiplying this matrix with @a scalar.
 	 */
-	Matrix operator*(const double scalar) const;
+	DynamicMatrix operator*(const double scalar) const;
 
 	/**
 	 * Multiplies this matrix with a scalar specified in @a scalar.
 	 * @return Reference to this matrix.
 	 */
-	Matrix& operator*=(const double scalar);
+	DynamicMatrix& operator*=(const double scalar);
 
 	/**
 	 * Multiplies this matrix with @a vector and returns the result.
@@ -202,45 +203,45 @@ public:
 	 * Multiplies this matrix with @a other and returns the result in a new matrix.
 	 * @return The result of multiplying this matrix with @a other.
 	 */
-	Matrix operator*(const Matrix &other) const;
+	DynamicMatrix operator*(const DynamicMatrix &other) const;
 
 	/**
 	 * Divides this matrix by a divisor specified in @a divisor and returns the result in a new matrix.
 	 * @return The result of dividing this matrix by @a divisor.
 	 */
-	Matrix operator/(const double divisor) const;
+	DynamicMatrix operator/(const double divisor) const;
 
 	/**
 	 * Divides this matrix by a divisor specified in @a divisor.
 	 * @return Reference to this matrix.
 	 */
-	Matrix& operator/=(const double divisor);
+	DynamicMatrix& operator/=(const double divisor);
 
 	/**
 	 * Computes A^T * B.
 	 * @param A
 	 * @param B
 	 */
-	static Matrix mTmMultiply(const Matrix &A, const Matrix &B);
+	static DynamicMatrix mTmMultiply(const DynamicMatrix &A, const DynamicMatrix &B);
 
 	/**
 	 * Computes A * B^T.
 	 * @param A
 	 * @param B
 	 */
-	static Matrix mmTMultiply(const Matrix &A, const Matrix &B);
+	static DynamicMatrix mmTMultiply(const DynamicMatrix &A, const DynamicMatrix &B);
 
 	/**
 	 * Computes matrix^T * vector
 	 * @param matrix
 	 * @param vector
 	 */
-	static Vector mTvMultiply(const Matrix &matrix, const Vector &vector);
+	static Vector mTvMultiply(const DynamicMatrix &matrix, const Vector &vector);
 
 	/**
 	 * Transposes this matrix and returns it.
 	 */
-	Matrix transpose() const;
+	DynamicMatrix transpose() const;
 
 	/**
 	 * Extracts a matrix with rows and columns specified by @a rowIndices and @a columnIndices from this matrix.
@@ -249,7 +250,7 @@ public:
 	 * @param rowIndices
 	 * @param columnIndices
 	 */
-	Matrix extract(const std::vector<index>& rowIndices, const std::vector<index>& columnIndices) const;
+	DynamicMatrix extract(const std::vector<index>& rowIndices, const std::vector<index>& columnIndices) const;
 
 	/**
 	 * Assign the contents of the matrix @a source to this matrix at rows and columns specified by @a rowIndices and
@@ -260,7 +261,7 @@ public:
 	 * @param columnIndices
 	 * @param source
 	 */
-	void assign(const std::vector<index>& rowIndices, const std::vector<index>& columnIndices, const Matrix& source);
+	void assign(const std::vector<index>& rowIndices, const std::vector<index>& columnIndices, const DynamicMatrix& source);
 
 	/**
 	 * Applies the unary function @a unaryElementFunction to each value in the matrix. Note that it must hold that f(0) = 0.
@@ -273,32 +274,32 @@ public:
 	 * Returns the (weighted) adjacency matrix of the (weighted) Graph @a graph.
 	 * @param graph
 	 */
-	static Matrix adjacencyMatrix(const Graph& graph, double zero = 0.0);
+	static DynamicMatrix adjacencyMatrix(const Graph& graph, double zero = 0.0);
 
 	/**
 	 * Creates a diagonal matrix with dimension equal to the dimension of the Vector @a diagonalElements. The values on
 	 * the diagonal are the ones stored in @a diagonalElements (i.e. D(i,i) = diagonalElements[i]).
 	 * @param diagonalElements
 	 */
-	static Matrix diagonalMatrix(const Vector& diagonalElements, double zero = 0.0);
+	static DynamicMatrix diagonalMatrix(const Vector& diagonalElements, double zero = 0.0);
 
 	/**
 	 * Returns the (weighted) incidence matrix of the (weighted) Graph @a graph.
 	 * @param graph
 	 */
-	static Matrix incidenceMatrix(const Graph& graph, double zero = 0.0);
+	static DynamicMatrix incidenceMatrix(const Graph& graph, double zero = 0.0);
 
 	/**
 	 * Returns the (weighted) Laplacian matrix of the (weighteD) Graph @a graph.
 	 * @param graph
 	 */
-	static Matrix laplacianMatrix(const Graph& graph,double zero = 0.0);
+	static DynamicMatrix laplacianMatrix(const Graph& graph,double zero = 0.0);
 
 	/**
 	 * Returns the (weighted) normalized Laplacian matrix of the (weighted) Graph @a graph
 	 * @param graph
 	 */
-	static Matrix normalizedLaplacianMatrix(const Graph& graph, double zero = 0.0);
+	static DynamicMatrix normalizedLaplacianMatrix(const Graph& graph, double zero = 0.0);
 
 	/**
 	 * Iterate over all non-zero elements of row @a row in the matrix and call handler(index row, index column, double value)
@@ -322,21 +323,21 @@ public:
 } /* namespace NetworKit */
 
 template<typename F>
-void NetworKit::Matrix::apply(const F unaryElementFunction) {
+void NetworKit::DynamicMatrix::apply(const F unaryElementFunction) {
 	forNonZeroElementsInRowOrder([&](index i, index j, double value) {
 		setValue(i,j, unaryElementFunction(value));
 	});
 }
 
 template<typename L>
-inline void NetworKit::Matrix::forNonZeroElementsInRow(index row, L handle) const {
+inline void NetworKit::DynamicMatrix::forNonZeroElementsInRow(index row, L handle) const {
 	graph.forEdgesOf(row, [&](index j, edgeweight weight){
 		handle(j, weight);
 	});
 }
 
 template<typename L>
-inline void NetworKit::Matrix::forElementsInRow(index i, L handle) const {
+inline void NetworKit::DynamicMatrix::forElementsInRow(index i, L handle) const {
 	Vector rowVector = row(i);
 	index j = 0;
 	rowVector.forElements([&](double value) {
@@ -345,7 +346,7 @@ inline void NetworKit::Matrix::forElementsInRow(index i, L handle) const {
 }
 
 template<typename L>
-inline void NetworKit::Matrix::forNonZeroElementsInRowOrder(L handle) const {
+inline void NetworKit::DynamicMatrix::forNonZeroElementsInRowOrder(L handle) const {
 	for (index i = 0; i < nRows; ++i) {
 		graph.forEdgesOf(i, [&](index j, edgeweight weight){
 			handle(i, j, weight);
@@ -354,7 +355,7 @@ inline void NetworKit::Matrix::forNonZeroElementsInRowOrder(L handle) const {
 }
 
 template<typename L>
-inline void NetworKit::Matrix::parallelForNonZeroElementsInRowOrder(L handle) const {
+inline void NetworKit::DynamicMatrix::parallelForNonZeroElementsInRowOrder(L handle) const {
 #pragma omp parallel for
 	for (index i = 0; i < nRows; ++i) {
 		graph.forEdgesOf(i, [&](index j, edgeweight weight){
@@ -363,4 +364,4 @@ inline void NetworKit::Matrix::parallelForNonZeroElementsInRowOrder(L handle) co
 	}
 }
 
-#endif /* MATRIX_H_ */
+#endif /* DYNAMIC_MATRIX_H_ */

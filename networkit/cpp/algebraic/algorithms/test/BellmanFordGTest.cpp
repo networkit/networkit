@@ -10,10 +10,10 @@
 #include "../../../io/METISGraphReader.h"
 #include "../../../auxiliary/Timer.h"
 
-#include "../../Matrix.h"
 #include "../../CSRMatrix.h"
 
 #include "../../../graph/Dijkstra.h"
+#include "../../DynamicMatrix.h"
 
 namespace NetworKit {
 

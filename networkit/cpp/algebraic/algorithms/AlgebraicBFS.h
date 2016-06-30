@@ -19,7 +19,7 @@ namespace NetworKit {
  * @ingroup algebraic
  * Implementation of Breadth-First-Search using the GraphBLAS interface.
  */
-template<class MATRIX>
+template<class Matrix>
 class AlgebraicBFS : public Algorithm {
 public:
 	/**
@@ -27,7 +27,7 @@ public:
 	 * @param graph
 	 * @param source
 	 */
-	AlgebraicBFS(const Graph& graph, node source) : At(MATRIX::adjacencyMatrix(graph, MinPlusSemiring::zero()).transpose()), source(source) {}
+	AlgebraicBFS(const Graph& graph, node source) : At(Matrix::adjacencyMatrix(graph, MinPlusSemiring::zero()).transpose()), source(source) {}
 
 	/**
 	 * Runs a bfs using the GraphBLAS interface from the source node.
@@ -45,13 +45,13 @@ public:
 	}
 
 private:
-	MATRIX At;
+	Matrix At;
 	node source;
 	Vector distances;
 };
 
-template<class MATRIX>
-void AlgebraicBFS<MATRIX>::run() {
+template<class Matrix>
+void AlgebraicBFS<Matrix>::run() {
 	count n = At.numberOfRows();
 	distances = Vector(n, std::numeric_limits<double>::infinity());
 	distances[source] = 0;

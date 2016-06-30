@@ -7,116 +7,116 @@
 
 #include "MatricesGTest.h"
 
-#include "../Matrix.h"
 #include "../CSRMatrix.h"
 #include "../DenseMatrix.h"
+#include "../DynamicMatrix.h"
 
 namespace NetworKit {
 
 TEST_F(MatricesGTest, testDimension) {
-	testDimension<Matrix>();
+	testDimension<DynamicMatrix>();
 	testDimension<CSRMatrix>();
 	testDimension<DenseMatrix>();
 }
 
 TEST_F(MatricesGTest, testNNZInRow) {
-	testNNZInRow<Matrix>();
+	testNNZInRow<DynamicMatrix>();
 	testNNZInRow<CSRMatrix>();
 	testNNZInRow<DenseMatrix>();
 }
 
 TEST_F(MatricesGTest, testRowAndColumnAccess) {
-	testRowAndColumnAccess<Matrix>();
+	testRowAndColumnAccess<DynamicMatrix>();
 	testRowAndColumnAccess<CSRMatrix>();
 	testRowAndColumnAccess<DenseMatrix>();
 }
 
 TEST_F(MatricesGTest, testDiagonalVector) {
-	testDiagonalVector<Matrix>();
+	testDiagonalVector<DynamicMatrix>();
 	testDiagonalVector<CSRMatrix>();
 	testDiagonalVector<DenseMatrix>();
 }
 
 TEST_F(MatricesGTest, testTranspose) {
-	testTranspose<Matrix>();
+	testTranspose<DynamicMatrix>();
 	testTranspose<CSRMatrix>();
 	testTranspose<DenseMatrix>();
 }
 
 TEST_F(MatricesGTest, testExtract) {
-	testExtract<Matrix>();
+	testExtract<DynamicMatrix>();
 	testExtract<CSRMatrix>();
 }
 
 TEST_F(MatricesGTest, testAssign) {
-	testAssign<Matrix>();
+	testAssign<DynamicMatrix>();
 	testAssign<CSRMatrix>();
 	testAssign<DenseMatrix>();
 }
 
 TEST_F(MatricesGTest, testApply) {
-	testApply<Matrix>();
+	testApply<DynamicMatrix>();
 	testApply<CSRMatrix>();
 }
 
 TEST_F(MatricesGTest, testMatrixAddition) {
-	testMatrixAddition<Matrix>();
+	testMatrixAddition<DynamicMatrix>();
 	testMatrixAddition<CSRMatrix>();
 	testMatrixAddition<DenseMatrix>();
 }
 
 TEST_F(MatricesGTest, testMatrixSubtraction) {
-	testMatrixSubtraction<Matrix>();
+	testMatrixSubtraction<DynamicMatrix>();
 	testMatrixSubtraction<CSRMatrix>();
 	testMatrixSubtraction<DenseMatrix>();
 }
 
 TEST_F(MatricesGTest, testScalarMultiplication) {
-	testScalarMultiplication<Matrix>();
+	testScalarMultiplication<DynamicMatrix>();
 	testScalarMultiplication<CSRMatrix>();
 	testScalarMultiplication<DenseMatrix>();
 }
 
 TEST_F(MatricesGTest, testMatrixDivisionOperator) {
-	testMatrixDivisionOperator<Matrix>();
+	testMatrixDivisionOperator<DynamicMatrix>();
 	testMatrixDivisionOperator<CSRMatrix>();
 	testMatrixDivisionOperator<DenseMatrix>();
 }
 
 TEST_F(MatricesGTest, testMatrixVectorProduct) {
-	testMatrixVectorProduct<Matrix>();
+	testMatrixVectorProduct<DynamicMatrix>();
 	testMatrixVectorProduct<CSRMatrix>();
 	testMatrixVectorProduct<DenseMatrix>();
 }
 
 TEST_F(MatricesGTest, testMatrixMultiplication) {
-	testMatrixMultiplication<Matrix>();
+	testMatrixMultiplication<DynamicMatrix>();
 	testMatrixMultiplication<CSRMatrix>();
 	testMatrixMultiplication<DenseMatrix>();
 }
 
 TEST_F(MatricesGTest, testBigMatrixMultiplcation) {
-	testBigMatrixMultiplication<Matrix>();
+	testBigMatrixMultiplication<DynamicMatrix>();
 	testBigMatrixMultiplication<CSRMatrix>();
 }
 
 TEST_F(MatricesGTest, testAdjacencyMatrixOfGraph) {
-	testAdjacencyMatrix<Matrix>();
+	testAdjacencyMatrix<DynamicMatrix>();
 	testAdjacencyMatrix<CSRMatrix>();
 }
 
 TEST_F(MatricesGTest, testDiagonalMatrix) {
-	testDiagonalMatrix<Matrix>();
+	testDiagonalMatrix<DynamicMatrix>();
 	testDiagonalMatrix<CSRMatrix>();
 }
 
 TEST_F(MatricesGTest, testIncidenceMatrix) {
-	testIncidenceMatrix<Matrix>();
+	testIncidenceMatrix<DynamicMatrix>();
 	testIncidenceMatrix<CSRMatrix>();
 }
 
 TEST_F(MatricesGTest, testLaplacianMatrixOfGraph) {
-	testLaplacianOfGraph<Matrix>();
+	testLaplacianOfGraph<DynamicMatrix>();
 	testLaplacianOfGraph<CSRMatrix>();
 }
 

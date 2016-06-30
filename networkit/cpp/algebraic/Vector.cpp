@@ -7,7 +7,7 @@
 
 #include "Vector.h"
 
-#include "Matrix.h"
+#include "DynamicMatrix.h"
 
 namespace NetworKit {
 

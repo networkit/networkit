@@ -30,61 +30,61 @@ public:
 	MatricesGTest() = default;
 	virtual ~MatricesGTest() = default;
 
-	template<class MATRIX>
+	template<class Matrix>
 	void testDimension();
 
-	template<class MATRIX>
+	template<class Matrix>
 	void testNNZInRow();
 
-	template<class MATRIX>
+	template<class Matrix>
 	void testRowAndColumnAccess();
 
-	template<class MATRIX>
+	template<class Matrix>
 	void testDiagonalVector();
 
-	template<class MATRIX>
+	template<class Matrix>
 	void testTranspose();
 
-	template<class MATRIX>
+	template<class Matrix>
 	void testExtract();
 
-	template<class MATRIX>
+	template<class Matrix>
 	void testAssign();
 
-	template<class MATRIX>
+	template<class Matrix>
 	void testApply();
 
-	template<class MATRIX>
+	template<class Matrix>
 	void testMatrixAddition();
 
-	template<class MATRIX>
+	template<class Matrix>
 	void testMatrixSubtraction();
 
-	template<class MATRIX>
+	template<class Matrix>
 	void testScalarMultiplication();
 
-	template<class MATRIX>
+	template<class Matrix>
 	void testMatrixDivisionOperator();
 
-	template<class MATRIX>
+	template<class Matrix>
 	void testMatrixVectorProduct();
 
-	template<class MATRIX>
+	template<class Matrix>
 	void testMatrixMultiplication();
 
-	template<class MATRIX>
+	template<class Matrix>
 	void testBigMatrixMultiplication();
 
-	template<class MATRIX>
+	template<class Matrix>
 	void testAdjacencyMatrix();
 
-	template<class MATRIX>
+	template<class Matrix>
 	void testDiagonalMatrix();
 
-	template<class MATRIX>
+	template<class Matrix>
 	void testIncidenceMatrix();
 
-	template<class MATRIX>
+	template<class Matrix>
 	void testLaplacianOfGraph();
 
 	// TODO: Test other matrix classes
@@ -92,23 +92,23 @@ public:
 	// TODO: Test mmT multiplication, etc.!
 };
 
-template<class MATRIX>
+template<class Matrix>
 void MatricesGTest::testDimension() {
-	MATRIX mat(10);
+	Matrix mat(10);
 
 	ASSERT_EQ(10u, mat.numberOfRows());
 	ASSERT_EQ(10u, mat.numberOfColumns());
 
-	mat = MATRIX(5, 10, 0.0);
+	mat = Matrix(5, 10, 0.0);
 	ASSERT_EQ(5u, mat.numberOfRows());
 	ASSERT_EQ(10u, mat.numberOfColumns());
 
-	mat = MATRIX(10, 5, 0.0);
+	mat = Matrix(10, 5, 0.0);
 	ASSERT_EQ(10u, mat.numberOfRows());
 	ASSERT_EQ(5u, mat.numberOfColumns());
 }
 
-template<class MATRIX>
+template<class Matrix>
 void MatricesGTest::testNNZInRow() {
 	/*
 	 * 1.0  0.0  2.0
@@ -118,14 +118,14 @@ void MatricesGTest::testNNZInRow() {
 	 */
 	std::vector<Triplet> triplets = {{0,0,1.0}, {0,2,2.0}, {1,0,4.0}, {3,3,2.0}};
 
-	MATRIX mat(4, triplets);
+	Matrix mat(4, triplets);
 	EXPECT_EQ(2u, mat.nnzInRow(0));
 	EXPECT_EQ(1u, mat.nnzInRow(1));
 	EXPECT_EQ(0u, mat.nnzInRow(2));
 	EXPECT_EQ(1u, mat.nnzInRow(3));
 }
 
-template<class MATRIX>
+template<class Matrix>
 void MatricesGTest::testRowAndColumnAccess() {
 	std::vector<Triplet> triplets;
 
@@ -135,7 +135,7 @@ void MatricesGTest::testRowAndColumnAccess() {
 
 	triplets.push_back({10,10,42.123});
 
-	MATRIX mat(1000, triplets);
+	Matrix mat(1000, triplets);
 
 	Vector v = mat.row(3);
 	ASSERT_EQ(mat.numberOfColumns(), v.getDimension());
@@ -163,7 +163,7 @@ void MatricesGTest::testRowAndColumnAccess() {
 	triplets.push_back({4,9,11});
 	triplets.push_back({0,0,42});
 
-	mat = MATRIX(5, 10, triplets);
+	mat = Matrix(5, 10, triplets);
 	v = mat.row(0);
 	ASSERT_EQ(v.getDimension(), 10u);
 	for (index i = 0; i < v.getDimension(); ++i) {
@@ -191,7 +191,7 @@ void MatricesGTest::testRowAndColumnAccess() {
 	triplets.push_back({9,4,11});
 	triplets.push_back({0,0,42});
 
-	mat = MATRIX(10, 5, triplets);
+	mat = Matrix(10, 5, triplets);
 	v = mat.row(0);
 	ASSERT_EQ(v.getDimension(), 5u);
 	for (index i = 0; i < v.getDimension(); ++i) {
@@ -213,7 +213,7 @@ void MatricesGTest::testRowAndColumnAccess() {
 	}
 }
 
-template<class MATRIX>
+template<class Matrix>
 void MatricesGTest::testDiagonalVector() {
 	// 1  2  3  0
 	// 2  2  0  0
@@ -221,7 +221,7 @@ void MatricesGTest::testDiagonalVector() {
 	// 0  0 -1  4
 	std::vector<Triplet> triplets = {{0,0,1}, {0,1,2}, {0,2,3}, {1,0,2}, {1,1,2}, {2,0,3}, {2,3,-1}, {3,2,-1}, {3,3,4}};
 
-	MATRIX mat(4,4,triplets);
+	Matrix mat(4,4,triplets);
 	Vector diagonal = mat.diagonal();
 	EXPECT_EQ(4u, diagonal.getDimension());
 	EXPECT_EQ(1, diagonal[0]);
@@ -234,7 +234,7 @@ void MatricesGTest::testDiagonalVector() {
 	// 1 0 0 0 0
 	// 0 0 3 0 0
 	triplets = {{0,0,1}, {1,2,3}};
-	mat = MATRIX(2,5,triplets);
+	mat = Matrix(2,5,triplets);
 	diagonal = mat.diagonal();
 	EXPECT_EQ(2u, diagonal.getDimension());
 	EXPECT_EQ(1, diagonal[0]);
@@ -248,14 +248,14 @@ void MatricesGTest::testDiagonalVector() {
 	// 0 0
 	// 0 0
 	triplets = {{0,0,1.0}, {1,1,-3.0}};
-	mat = MATRIX(5,2,triplets);
+	mat = Matrix(5,2,triplets);
 	diagonal = mat.diagonal();
 	EXPECT_EQ(2u, diagonal.getDimension());
 	EXPECT_EQ(1, diagonal[0]);
 	EXPECT_EQ(-3, diagonal[1]);
 }
 
-template<class MATRIX>
+template<class Matrix>
 void MatricesGTest::testTranspose() {
 	// 1  0  1  0
 	// 2  2  0  0
@@ -263,8 +263,8 @@ void MatricesGTest::testTranspose() {
 	// 0  0  1  4
 	std::vector<Triplet> triplets = {{0,0,1}, {0,2,1}, {1,0,2}, {1,1,2}, {2,0,3}, {2,3,-1}, {3,2,1}, {3,3,4}};
 
-	MATRIX mat(4,4,triplets);
-	MATRIX matT = mat.transpose();
+	Matrix mat(4,4,triplets);
+	Matrix matT = mat.transpose();
 	EXPECT_EQ(4u, matT.numberOfRows());
 	EXPECT_EQ(4u, matT.numberOfColumns());
 
@@ -290,7 +290,7 @@ void MatricesGTest::testTranspose() {
 	// 1 0 0 0 0
 	// 0 0 3 0 0
 	triplets = {{0,0,1}, {1,2,3}};
-	mat = MATRIX(2,5,triplets);
+	mat = Matrix(2,5,triplets);
 	matT = mat.transpose();
 	EXPECT_EQ(5u, matT.numberOfRows());
 	EXPECT_EQ(2u, matT.numberOfColumns());
@@ -314,7 +314,7 @@ void MatricesGTest::testTranspose() {
 	// 0 0
 	// 0 0
 	triplets = {{0,0,1.0}, {2,1,3.0}};
-	mat = MATRIX(5,2,triplets);
+	mat = Matrix(5,2,triplets);
 	matT = mat.transpose();
 	EXPECT_EQ(2u, matT.numberOfRows());
 	EXPECT_EQ(5u, matT.numberOfColumns());
@@ -331,9 +331,9 @@ void MatricesGTest::testTranspose() {
 	EXPECT_EQ(0, matT(1,4));
 }
 
-template<class MATRIX>
+template<class Matrix>
 void MatricesGTest::testExtract() {
-	MATRIX mat = MATRIX::adjacencyMatrix(graph);
+	Matrix mat = Matrix::adjacencyMatrix(graph);
 	std::vector<index> rows(500);
 	std::vector<index> columns(500);
 
@@ -342,7 +342,7 @@ void MatricesGTest::testExtract() {
 		columns[i] = Aux::Random::integer(graph.numberOfNodes()-1);
 	}
 
-	MATRIX subMatrix = mat.extract(rows, columns);
+	Matrix subMatrix = mat.extract(rows, columns);
 	ASSERT_EQ(rows.size(), subMatrix.numberOfRows());
 	ASSERT_EQ(columns.size(), subMatrix.numberOfColumns());
 
@@ -359,7 +359,7 @@ void MatricesGTest::testExtract() {
 	// 0  0  1  4
 	std::vector<Triplet> triplets = {{0,0,1}, {0,2,1}, {1,0,2}, {1,1,2}, {2,0,3}, {2,3,-1}, {3,2,1}, {3,3,4}};
 
-	mat = MATRIX(4,4,triplets);
+	mat = Matrix(4,4,triplets);
 	rows = {0,2,0};
 	columns = {1,0,2,1};
 
@@ -386,7 +386,7 @@ void MatricesGTest::testExtract() {
 	EXPECT_EQ(0, subMatrix(2,3));
 }
 
-template<class MATRIX>
+template<class Matrix>
 void MatricesGTest::testAssign() {
 	// 1  0  1  0
 	// 2  2  0  0
@@ -394,12 +394,12 @@ void MatricesGTest::testAssign() {
 	// 0  0  1  4
 	std::vector<Triplet> triplets = {{0,0,1}, {0,2,1}, {1,0,2}, {1,1,2}, {2,0,3}, {2,3,-1}, {3,2,1}, {3,3,4}};
 
-	MATRIX mat(4,4,triplets);
+	Matrix mat(4,4,triplets);
 
 	// -1 1
 	//  3 0
 	std::vector<Triplet> subTriplets = {{0,0,-1}, {0,1,1}, {1,0,3}};
-	MATRIX sourceMat(2,2,subTriplets);
+	Matrix sourceMat(2,2,subTriplets);
 
 	std::vector<index> rows = {2,3};
 	std::vector<index> columns = {0, 2};
@@ -444,9 +444,9 @@ void MatricesGTest::testAssign() {
 	EXPECT_EQ(0, mat(3,3));
 }
 
-template<class MATRIX>
+template<class Matrix>
 void MatricesGTest::testApply() {
-	MATRIX mat = MATRIX::adjacencyMatrix(graph);
+	Matrix mat = Matrix::adjacencyMatrix(graph);
 
 	mat.apply([&](double value) {return 2 * value;});
 	graph.forEdges([&](index i, index j, double value) {
@@ -454,7 +454,7 @@ void MatricesGTest::testApply() {
 	});
 }
 
-template<class MATRIX>
+template<class Matrix>
 void MatricesGTest::testMatrixAddition() {
 	std::vector<Triplet> triplets1;
 	std::vector<Triplet> triplets2;
@@ -467,10 +467,10 @@ void MatricesGTest::testMatrixAddition() {
 	triplets1.push_back({2,71, 1.8});
 	triplets2.push_back({42,43,3.14});
 
-	MATRIX mat1(100, triplets1);
-	MATRIX mat2(100, triplets2);
+	Matrix mat1(100, triplets1);
+	Matrix mat2(100, triplets2);
 
-	MATRIX result = mat1 + mat2;
+	Matrix result = mat1 + mat2;
 	ASSERT_EQ(mat1.numberOfRows(), result.numberOfRows());
 	ASSERT_EQ(mat1.numberOfColumns(), result.numberOfColumns());
 
@@ -494,14 +494,14 @@ void MatricesGTest::testMatrixAddition() {
 	std::vector<Triplet> triplets = {{0,0,1.0}, {1,2,3.0}};
 
 
-	mat1 = MATRIX(2,5,triplets);
+	mat1 = Matrix(2,5,triplets);
 
 	// 0 0 1 0 0
 	// 0 0 1 0 0
 	triplets.clear();
 	triplets = {{0,2,1.0}, {1,2,1.0}};
 
-	mat2 = MATRIX(2,5,triplets);
+	mat2 = Matrix(2,5,triplets);
 
 	result = mat1 + mat2;
 
@@ -527,7 +527,7 @@ void MatricesGTest::testMatrixAddition() {
 	triplets.clear();
 	triplets = {{0,0,1.0}, {2,1,3.0}};
 
-	mat1 = MATRIX(5,2,triplets);
+	mat1 = Matrix(5,2,triplets);
 
 	// 0 0
 	// 0 0
@@ -537,7 +537,7 @@ void MatricesGTest::testMatrixAddition() {
 	triplets.clear();
 	triplets = {{2,0,1.0}, {2,1,1.0}};
 
-	mat2 = MATRIX(5,2,triplets);
+	mat2 = Matrix(5,2,triplets);
 
 	result = mat1 + mat2;
 
@@ -552,7 +552,7 @@ void MatricesGTest::testMatrixAddition() {
 	EXPECT_EQ(0, result(4,1));
 }
 
-template<class MATRIX>
+template<class Matrix>
 void MatricesGTest::testMatrixSubtraction() {
 	std::vector<Triplet> triplets1;
 	std::vector<Triplet> triplets2;
@@ -565,10 +565,10 @@ void MatricesGTest::testMatrixSubtraction() {
 	triplets1.push_back({2,71, 1.8});
 	triplets2.push_back({42,43,3.14});
 
-	MATRIX mat1(100, triplets1);
-	MATRIX mat2(100, triplets2);
+	Matrix mat1(100, triplets1);
+	Matrix mat2(100, triplets2);
 
-	MATRIX result = mat2 - mat1;
+	Matrix result = mat2 - mat1;
 	ASSERT_EQ(mat1.numberOfRows(), result.numberOfRows());
 	ASSERT_EQ(mat1.numberOfColumns(), result.numberOfColumns());
 
@@ -592,14 +592,14 @@ void MatricesGTest::testMatrixSubtraction() {
 	std::vector<Triplet> triplets = {{0,0,1.0}, {1,2,3.0}};
 
 
-	mat1 = MATRIX(2,5,triplets);
+	mat1 = Matrix(2,5,triplets);
 
 	// 0 0 1 0 0
 	// 0 0 1 0 0
 	triplets.clear();
 	triplets = {{0,2,1.0}, {1,2,1.0}};
 
-	mat2 = MATRIX(2,5,triplets);
+	mat2 = Matrix(2,5,triplets);
 
 	result = mat1 - mat2;
 
@@ -625,7 +625,7 @@ void MatricesGTest::testMatrixSubtraction() {
 	triplets.clear();
 	triplets = {{0,0,1.0}, {2,1,3.0}};
 
-	mat1 = MATRIX(5,2,triplets);
+	mat1 = Matrix(5,2,triplets);
 
 	// 0 0
 	// 0 0
@@ -635,7 +635,7 @@ void MatricesGTest::testMatrixSubtraction() {
 	triplets.clear();
 	triplets = {{2,0,1.0}, {2,1,1.0}};
 
-	mat2 = MATRIX(5,2,triplets);
+	mat2 = Matrix(5,2,triplets);
 
 	result = mat1 - mat2;
 
@@ -650,7 +650,7 @@ void MatricesGTest::testMatrixSubtraction() {
 	EXPECT_EQ(0, result(4,1));
 }
 
-template<class MATRIX>
+template<class Matrix>
 void MatricesGTest::testScalarMultiplication() {
 	std::vector<Triplet> triplets;
 
@@ -660,7 +660,7 @@ void MatricesGTest::testScalarMultiplication() {
 
 	triplets.push_back({42,43,42.0});
 
-	MATRIX mat(100, triplets);
+	Matrix mat(100, triplets);
 	mat *= 2;
 	ASSERT_EQ(100u, mat.numberOfRows());
 	ASSERT_EQ(100u, mat.numberOfColumns());
@@ -684,7 +684,7 @@ void MatricesGTest::testScalarMultiplication() {
 	// 1 0 0 0 0
 	// 0 0 3 0 0
 	triplets = {{0,0,1.0}, {1,2,3.0}};
-	mat = MATRIX(2,5,triplets);
+	mat = Matrix(2,5,triplets);
 
 	mat *= 2;
 
@@ -692,7 +692,7 @@ void MatricesGTest::testScalarMultiplication() {
 	EXPECT_EQ(6, mat(1,2));
 }
 
-template<class MATRIX>
+template<class Matrix>
 void MatricesGTest::testMatrixDivisionOperator() {
 	std::vector<Triplet> triplets;
 
@@ -702,7 +702,7 @@ void MatricesGTest::testMatrixDivisionOperator() {
 
 	triplets.push_back({42,43,42.0});
 
-	MATRIX mat(100, triplets);
+	Matrix mat(100, triplets);
 	mat /= (1.0 / 2.0);
 	ASSERT_EQ(100u, mat.numberOfRows());
 	ASSERT_EQ(100u, mat.numberOfColumns());
@@ -726,7 +726,7 @@ void MatricesGTest::testMatrixDivisionOperator() {
 	// 1 0 0 0 0
 	// 0 0 3 0 0
 	triplets = {{0,0,1.0}, {1,2,3.0}};
-	mat = MATRIX(2,5,triplets);
+	mat = Matrix(2,5,triplets);
 
 	mat /= 2;
 
@@ -734,7 +734,7 @@ void MatricesGTest::testMatrixDivisionOperator() {
 	EXPECT_EQ(1.5, mat(1,2));
 }
 
-template<class MATRIX>
+template<class Matrix>
 void MatricesGTest::testMatrixVectorProduct() {
 	std::vector<Triplet> triplets;
 
@@ -747,7 +747,7 @@ void MatricesGTest::testMatrixVectorProduct() {
 	Vector vector(1000, 1.0);
 	vector[500] = 3.5;
 
-	MATRIX mat(1000, triplets);
+	Matrix mat(1000, triplets);
 
 	Vector result = mat * vector;
 	ASSERT_EQ(mat.numberOfRows(), result.getDimension());
@@ -768,7 +768,7 @@ void MatricesGTest::testMatrixVectorProduct() {
 	//		  0  0 -1  4
 	triplets = {{0,0,1}, {0,1,2}, {0,2,3}, {1,0,2}, {1,1,2}, {2,0,3}, {2,2,3}, {2,3,-1}, {3,2,-1}, {3,3,4}};
 
-	MATRIX mat2(4, triplets);
+	Matrix mat2(4, triplets);
 
 	Vector v({1,2,3,0});
 	Vector res = mat2 * v;
@@ -785,7 +785,7 @@ void MatricesGTest::testMatrixVectorProduct() {
 	// 0 0 3 0 0
 
 	triplets = {{0,0,1}, {1,2,3}};
-	mat = MATRIX(2,5,triplets);
+	mat = Matrix(2,5,triplets);
 
 	v = {0,1,2,3,0};
 	res = mat * v;
@@ -795,7 +795,7 @@ void MatricesGTest::testMatrixVectorProduct() {
 	EXPECT_EQ(6, res[1]);
 }
 
-template<class MATRIX>
+template<class Matrix>
 void MatricesGTest::testMatrixMultiplication() {
 	std::vector<Triplet> triplets = {{0,0,1}, {0,1,2}, {0,2,3}, {1,0,2}, {1,1,2}, {2,0,3}, {2,2,3}, {2,3,-1}, {3,2,-1}, {3,3,4}};
 
@@ -805,11 +805,11 @@ void MatricesGTest::testMatrixMultiplication() {
 	// mat1 = mat2 = 3  0  3 -1
 	//				 0  0 -1  4
 	//
-	MATRIX mat1(4, triplets);
+	Matrix mat1(4, triplets);
 	ASSERT_EQ(4u, mat1.numberOfRows());
 	ASSERT_EQ(4u, mat1.numberOfColumns());
 
-	MATRIX mat2(4, triplets);
+	Matrix mat2(4, triplets);
 	ASSERT_EQ(4u, mat2.numberOfRows());
 	ASSERT_EQ(4u, mat2.numberOfColumns());
 
@@ -819,7 +819,7 @@ void MatricesGTest::testMatrixMultiplication() {
 	// result = 12  6  19  -7
 	//			-3  0  -7  17
 	//
-	MATRIX result = mat1 * mat2;
+	Matrix result = mat1 * mat2;
 	ASSERT_EQ(mat1.numberOfRows(), result.numberOfRows());
 	ASSERT_EQ(mat1.numberOfColumns(), result.numberOfColumns());
 
@@ -847,7 +847,7 @@ void MatricesGTest::testMatrixMultiplication() {
 	// 0 0 1 0
 	// 0 2 0 4
 	triplets = {{0,0,1}, {0,3,2}, {1,2,1}, {2,1,2}, {2,3,4}};
-	mat1 = MATRIX(3,4,triplets);
+	mat1 = Matrix(3,4,triplets);
 
 	//
 	// 1  0
@@ -856,7 +856,7 @@ void MatricesGTest::testMatrixMultiplication() {
 	// 42 1
 
 	triplets = {{0,0,1}, {2,1,0.5}, {3,0,42}, {3,1,1}};
-	mat2 = MATRIX(4,2, triplets);
+	mat2 = Matrix(4,2, triplets);
 
 	result = mat1 * mat2;
 	ASSERT_EQ(mat1.numberOfRows(), result.numberOfRows());
@@ -870,15 +870,15 @@ void MatricesGTest::testMatrixMultiplication() {
 	EXPECT_EQ(4, result(2,1));
 }
 
-template<class MATRIX>
+template<class Matrix>
 void MatricesGTest::testBigMatrixMultiplication() {
-	MATRIX mat = MATRIX::adjacencyMatrix(graph);
-	MATRIX result = mat * mat;
+	Matrix mat = Matrix::adjacencyMatrix(graph);
+	Matrix result = mat * mat;
 	ASSERT_EQ(mat.numberOfRows(), result.numberOfRows());
 	ASSERT_EQ(mat.numberOfColumns(), result.numberOfColumns());
 }
 
-template<class MATRIX>
+template<class Matrix>
 void MatricesGTest::testAdjacencyMatrix() {
 	Graph G(6);
 	G.addEdge(0,0);
@@ -890,7 +890,7 @@ void MatricesGTest::testAdjacencyMatrix() {
 	G.addEdge(3,4);
 	G.addEdge(3,5);
 
-	MATRIX mat = MATRIX::adjacencyMatrix(G);
+	Matrix mat = Matrix::adjacencyMatrix(G);
 
 	// first row
 	EXPECT_EQ(1, mat(0,0));
@@ -924,7 +924,7 @@ void MatricesGTest::testAdjacencyMatrix() {
 	dGraph.addEdge(2,3,-3);
 	dGraph.addEdge(3,2,5);
 
-	mat = MATRIX::adjacencyMatrix(dGraph);
+	mat = Matrix::adjacencyMatrix(dGraph);
 	ASSERT_EQ(dGraph.numberOfNodes(), mat.numberOfRows());
 	ASSERT_EQ(dGraph.numberOfNodes(), mat.numberOfColumns());
 
@@ -939,7 +939,7 @@ void MatricesGTest::testAdjacencyMatrix() {
 	G = graphReader.read("input/lesmis.graph");
 
 	// create AdjacencyMatrix
-	mat = MATRIX::adjacencyMatrix(G);
+	mat = Matrix::adjacencyMatrix(G);
 
 	G.forNodes([&](node u) {
 		G.forNodes([&](node v) {
@@ -952,10 +952,10 @@ void MatricesGTest::testAdjacencyMatrix() {
 	});
 }
 
-template<class MATRIX>
+template<class Matrix>
 void MatricesGTest::testDiagonalMatrix() {
 	Vector diagonal = {1,0,4,-1};
-	MATRIX mat = MATRIX::diagonalMatrix(diagonal);
+	Matrix mat = Matrix::diagonalMatrix(diagonal);
 	EXPECT_EQ(4u, mat.numberOfRows());
 	EXPECT_EQ(4u, mat.numberOfColumns());
 
@@ -973,7 +973,7 @@ void MatricesGTest::testDiagonalMatrix() {
 	}
 }
 
-template<class MATRIX>
+template<class Matrix>
 void MatricesGTest::testIncidenceMatrix() {
 	Graph G = NetworKit::Graph(5, true);
 	G.addEdge(0,1, 4.0);
@@ -985,7 +985,7 @@ void MatricesGTest::testIncidenceMatrix() {
 
 	G.indexEdges();
 
-	MATRIX mat = MATRIX::incidenceMatrix(G);
+	Matrix mat = Matrix::incidenceMatrix(G);
 	ASSERT_EQ(G.numberOfNodes(), mat.numberOfRows());
 	ASSERT_EQ(G.numberOfEdges(), mat.numberOfColumns());
 
@@ -1046,13 +1046,13 @@ void MatricesGTest::testIncidenceMatrix() {
 }
 
 
-template<class MATRIX>
+template<class Matrix>
 void MatricesGTest::testLaplacianOfGraph() {
 	METISGraphReader graphReader;
-	MATRIX mat = MATRIX::laplacianMatrix(graph);
+	Matrix mat = Matrix::laplacianMatrix(graph);
 	EXPECT_TRUE(MatrixTools::isLaplacian(mat));
 
-	mat = MATRIX::laplacianMatrix(graphReader.read("input/power.graph"));
+	mat = Matrix::laplacianMatrix(graphReader.read("input/power.graph"));
 	EXPECT_TRUE(MatrixTools::isLaplacian(mat));
 }
 

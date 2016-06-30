@@ -18,12 +18,13 @@ namespace MatrixTools {
  * @param matrix
  * @return True if @a matrix is symmetric, otherwise false.
  */
-template<class MATRIX>
-bool isSymmetric(const MATRIX& matrix) {
+template<class Matrix>
+bool isSymmetric(const Matrix& matrix) {
 	bool output = true;
 	matrix.forNonZeroElementsInRowOrder([&] (NetworKit::index i, NetworKit::index j, NetworKit::edgeweight w) {
-		if (abs(matrix(j, i)-w) > NetworKit::EPSILON) {
-			return false;
+		if (abs(matrix(j, i)-w) > NetworKit::FLOAT_EPSILON) {
+			output = false;
+			return;
 		}
 	});
 	return output;
@@ -34,8 +35,8 @@ bool isSymmetric(const MATRIX& matrix) {
  * @param matrix
  * @return True if @a matrix is SDD, false otherwise.
  */
-template<class MATRIX>
-bool isSDD(const MATRIX& matrix) {
+template<class Matrix>
+bool isSDD(const Matrix& matrix) {
 	if (!isSymmetric(matrix)) {
 		return false;
 	}
@@ -50,7 +51,7 @@ bool isSDD(const MATRIX& matrix) {
 		}
 	});
 
-	return std::all_of(row_sum.begin(), row_sum.end(), [] (double val) {return val > -NetworKit::EPSILON;});
+	return std::all_of(row_sum.begin(), row_sum.end(), [] (double val) {return val > -NetworKit::FLOAT_EPSILON;});
 }
 
 /**
@@ -58,8 +59,8 @@ bool isSDD(const MATRIX& matrix) {
  * @param matrix
  * @return True if @a matrix is a Laplacian matrix, false otherwise.
  */
-template<typename MATRIX>
-bool isLaplacian(const MATRIX& matrix) {
+template<typename Matrix>
+bool isLaplacian(const Matrix& matrix) {
 	if (!isSymmetric(matrix)) {
 		return false;
 	}
@@ -68,13 +69,13 @@ bool isLaplacian(const MATRIX& matrix) {
 	std::vector<double> row_sum(matrix.numberOfRows());
 	std::atomic<bool> right_sign(true);
 	matrix.parallelForNonZeroElementsInRowOrder([&] (NetworKit::node i, NetworKit::node j, double value) {
-		if (i != j && value > NetworKit::EPSILON) {
+		if (i != j && value > NetworKit::FLOAT_EPSILON) {
 			right_sign = false;
 		}
 		row_sum[i] += value;
 	});
 
-	return right_sign && std::all_of(row_sum.begin(), row_sum.end(), [] (double val) {return abs(val) < NetworKit::EPSILON;});
+	return right_sign && std::all_of(row_sum.begin(), row_sum.end(), [] (double val) {return abs(val) < NetworKit::FLOAT_EPSILON;});
 }
 
 /**
@@ -82,8 +83,8 @@ bool isLaplacian(const MATRIX& matrix) {
  * @param laplacian
  * @return The graph having a Laplacian equal to @a laplacian.
  */
-template<class MATRIX>
-NetworKit::Graph laplacianToGraph(const MATRIX& laplacian) {
+template<class Matrix>
+NetworKit::Graph laplacianToGraph(const Matrix& laplacian) {
 	assert(isLaplacian(laplacian));
 	NetworKit::Graph G(std::max(laplacian.numberOfRows(), laplacian.numberOfColumns()), true, false);
 	laplacian.forNonZeroElementsInRowOrder([&](NetworKit::node u, NetworKit::node v, NetworKit::edgeweight weight) {
@@ -102,8 +103,8 @@ NetworKit::Graph laplacianToGraph(const MATRIX& laplacian) {
  * @param matrix
  * @return The graph having an adjacency matrix equal to @a matrix.
  */
-template<class MATRIX>
-NetworKit::Graph matrixToGraph(const MATRIX& matrix) {
+template<class Matrix>
+NetworKit::Graph matrixToGraph(const Matrix& matrix) {
 	bool directed = !isSymmetric(matrix);
 	NetworKit::Graph G(std::max(matrix.numberOfRows(), matrix.numberOfColumns()), true, directed);
 	matrix.forNonZeroElementsInRowOrder([&](NetworKit::node u, NetworKit::node v, NetworKit::edgeweight weight) {
