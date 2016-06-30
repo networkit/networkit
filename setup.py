@@ -73,7 +73,7 @@ if sys.platform == 'Windows' and not scons_available:
 
 # compiler candidates
 # this list serves as a fallback when neither $CXX is set nor build.conf exists
-candidates = ["g++", "g++-5.3", "g++-5.2", "g++-5.1", "g++-5", "g++-4.9", "g++-4.8", "clang++", "clang++-3.7"]
+candidates = ["g++", "g++-6.1", "g++-6", "g++-5.3", "g++-5.2", "g++-5.1", "g++-5", "g++-4.9", "g++-4.8", "clang++", "clang++-3.8", "clang++-3.7"]
 stdflag = None
 
 #######################################
