@@ -32,14 +32,14 @@ namespace GraphBLAS {
  * @param binOp
  * @return The resulting matrix.
  */
-template<class SEMIRING, class MATRIX, typename L>
-MATRIX eWiseBinOp(const MATRIX& A, const MATRIX& B, L binOp) {
+template<class SemiRing, class Matrix, typename L>
+Matrix eWiseBinOp(const Matrix& A, const Matrix& B, L binOp) {
 	assert(A.numberOfRows() == B.numberOfRows() && A.numberOfColumns() == B.numberOfColumns());
-	assert(A.getZero() == B.getZero() && A.getZero() == SEMIRING::zero());
+	assert(A.getZero() == B.getZero() && A.getZero() == SemiRing::zero());
 
 	std::vector<int64_t> columnPointer(A.numberOfColumns(), -1);
-	std::vector<double> Arow(A.numberOfColumns(), SEMIRING::zero());
-	std::vector<double> Brow(A.numberOfColumns(), SEMIRING::zero());
+	std::vector<double> Arow(A.numberOfColumns(), SemiRing::zero());
+	std::vector<double> Brow(A.numberOfColumns(), SemiRing::zero());
 
 	std::vector<NetworKit::Triplet> triplets;
 
@@ -70,7 +70,7 @@ MATRIX eWiseBinOp(const MATRIX& A, const MATRIX& B, L binOp) {
 		// apply operator on the found nonZeros in A and B
 		for (NetworKit::count k = 0; k < nnz; ++k) {
 			double value = binOp(Arow[listHead], Brow[listHead]);
-			if (value != SEMIRING::zero()) {
+			if (value != SemiRing::zero()) {
 				triplets.push_back({i,listHead,value});
 			}
 
@@ -79,14 +79,14 @@ MATRIX eWiseBinOp(const MATRIX& A, const MATRIX& B, L binOp) {
 
 			// reset for next row
 			columnPointer[temp] = -1;
-			Arow[temp] = SEMIRING::zero();
-			Brow[temp] = SEMIRING::zero();
+			Arow[temp] = SemiRing::zero();
+			Brow[temp] = SemiRing::zero();
 		}
 
 		nnz = 0;
 	}
 
-	return MATRIX(A.numberOfRows(), A.numberOfColumns(), triplets, A.getZero());
+	return Matrix(A.numberOfRows(), A.numberOfColumns(), triplets, A.getZero());
 }
 
 /**
@@ -97,17 +97,17 @@ MATRIX eWiseBinOp(const MATRIX& A, const MATRIX& B, L binOp) {
  * @param B
  * @return The result of the multiplication A * B.
  */
-template<class SEMIRING = ArithmeticSemiring, class MATRIX>
-MATRIX MxM(const MATRIX& A, const MATRIX& B) {
+template<class SemiRing = ArithmeticSemiring, class Matrix>
+Matrix MxM(const Matrix& A, const Matrix& B) {
 	assert(A.numberOfColumns() == B.numberOfRows());
-	assert(A.getZero() == SEMIRING::zero() && B.getZero() == SEMIRING::zero());
+	assert(A.getZero() == SemiRing::zero() && B.getZero() == SemiRing::zero());
 
 	std::vector<NetworKit::Triplet> triplets;
 	NetworKit::SparseAccumulator spa(B.numberOfRows());
 	for (NetworKit::index i = 0; i < A.numberOfRows(); ++i) {
 		A.forNonZeroElementsInRow(i, [&](NetworKit::index k, double w1) {
 			B.forNonZeroElementsInRow(k, [&](NetworKit::index j, double w2) {
-				spa.scatter(SEMIRING::mult(w1,w2), j, *SEMIRING::add);
+				spa.scatter(SemiRing::mult(w1,w2), j, *SemiRing::add);
 			});
 		});
 
@@ -118,28 +118,28 @@ MATRIX MxM(const MATRIX& A, const MATRIX& B) {
 		spa.increaseRow();
 	}
 
-	return MATRIX(A.numberOfRows(), B.numberOfColumns(), triplets, A.getZero());
+	return Matrix(A.numberOfRows(), B.numberOfColumns(), triplets, A.getZero());
 }
 
 /**
  * Computes the matrix-matrix multiplication of @a A and @a B and adds it to @a C where
- * the add operation is that of the specified Semiring (i.e. C(i,j) = SEMIRING::add(C(i,j), (A*B)(i,j))).
+ * the add operation is that of the specified Semiring (i.e. C(i,j) = SemiRing::add(C(i,j), (A*B)(i,j))).
  * The default Semiring is the ArithmeticSemiring.
  * @param A
  * @param B
  * @param C
  */
-template<class SEMIRING = ArithmeticSemiring, class MATRIX>
-void MxM(const MATRIX& A, const MATRIX& B, MATRIX& C) {
+template<class SemiRing = ArithmeticSemiring, class Matrix>
+void MxM(const Matrix& A, const Matrix& B, Matrix& C) {
 	assert(A.numberOfColumns() == B.numberOfRows() && A.numberOfRows() == C.numberOfRows() && B.numberOfColumns() == C.numberOfColumns());
-	assert(A.getZero() == SEMIRING::zero() && B.getZero() == SEMIRING::zero() && C.getZero() == SEMIRING::zero());
+	assert(A.getZero() == SemiRing::zero() && B.getZero() == SemiRing::zero() && C.getZero() == SemiRing::zero());
 
 	std::vector<NetworKit::Triplet> triplets;
 	NetworKit::SparseAccumulator spa(B.numberOfRows());
 	for (NetworKit::index i = 0; i < A.numberOfRows(); ++i) {
 		A.forNonZeroElementsInRow(i, [&](NetworKit::index k, double w1) {
 			B.forNonZeroElementsInRow(k, [&](NetworKit::index j, double w2) {
-				spa.scatter(SEMIRING::mult(w1,w2), j, *SEMIRING::add);
+				spa.scatter(SemiRing::mult(w1,w2), j, *SemiRing::add);
 			});
 		});
 
@@ -150,8 +150,8 @@ void MxM(const MATRIX& A, const MATRIX& B, MATRIX& C) {
 		spa.increaseRow();
 	}
 
-	MATRIX temp(A.numberOfRows(), B.numberOfRows(), triplets, A.getZero());
-	C = eWiseBinOp<SEMIRING, MATRIX>(C, temp, *SEMIRING::add);
+	Matrix temp(A.numberOfRows(), B.numberOfRows(), triplets, A.getZero());
+	C = eWiseBinOp<SemiRing, Matrix>(C, temp, *SemiRing::add);
 }
 
 /**
@@ -163,17 +163,17 @@ void MxM(const MATRIX& A, const MATRIX& B, MATRIX& C) {
  * @param C
  * @param accum
  */
-template<class SEMIRING = ArithmeticSemiring, typename F, class MATRIX>
-void MxM(const MATRIX& A, const MATRIX& B, MATRIX& C, F accum) {
+template<class SemiRing = ArithmeticSemiring, typename F, class Matrix>
+void MxM(const Matrix& A, const Matrix& B, Matrix& C, F accum) {
 	assert(A.numberOfColumns() == B.numberOfRows() && A.numberOfRows() == C.numberOfRows() && B.numberOfColumns() == C.numberOfColumns());
-	assert(A.getZero() == SEMIRING::zero() && B.getZero() == SEMIRING::zero() && C.getZero() == SEMIRING::zero());
+	assert(A.getZero() == SemiRing::zero() && B.getZero() == SemiRing::zero() && C.getZero() == SemiRing::zero());
 
 	std::vector<NetworKit::Triplet> triplets;
 	NetworKit::SparseAccumulator spa(B.numberOfRows());
 	for (NetworKit::index i = 0; i < A.numberOfRows(); ++i) {
 		A.forNonZeroElementsInRow(i, [&](NetworKit::index k, double w1) {
 			B.forNonZeroElementsInRow(k, [&](NetworKit::index j, double w2) {
-				spa.scatter(SEMIRING::mult(w1,w2), j, *SEMIRING::add);
+				spa.scatter(SemiRing::mult(w1,w2), j, *SemiRing::add);
 			});
 		});
 
@@ -184,8 +184,8 @@ void MxM(const MATRIX& A, const MATRIX& B, MATRIX& C, F accum) {
 		spa.increaseRow();
 	}
 
-	MATRIX temp(A.numberOfRows(), B.numberOfRows(), triplets, A.getZero());
-	C = eWiseBinOp<SEMIRING, MATRIX>(C, temp, accum);
+	Matrix temp(A.numberOfRows(), B.numberOfRows(), triplets, A.getZero());
+	C = eWiseBinOp<SemiRing, Matrix>(C, temp, accum);
 }
 
 /**
@@ -193,15 +193,15 @@ void MxM(const MATRIX& A, const MATRIX& B, MATRIX& C, F accum) {
  * @param A
  * @param v
  */
-template<class SEMIRING = ArithmeticSemiring, class MATRIX>
-NetworKit::Vector MxV(const MATRIX& A, const NetworKit::Vector& v) {
+template<class SemiRing = ArithmeticSemiring, class Matrix>
+NetworKit::Vector MxV(const Matrix& A, const NetworKit::Vector& v) {
 	assert(!v.isTransposed());
 	assert(A.numberOfColumns() == v.getDimension());
-	assert(A.getZero() == SEMIRING::zero());
+	assert(A.getZero() == SemiRing::zero());
 	NetworKit::Vector result(A.numberOfRows(), A.getZero());
 
 	A.parallelForNonZeroElementsInRowOrder([&](NetworKit::index i, NetworKit::index j, double value) {
-		result[i] = SEMIRING::add(result[i], SEMIRING::mult(value, v[j]));
+		result[i] = SemiRing::add(result[i], SemiRing::mult(value, v[j]));
 	});
 
 	return result;
@@ -209,20 +209,20 @@ NetworKit::Vector MxV(const MATRIX& A, const NetworKit::Vector& v) {
 
 /**
  * Computes the matrix-vector product of matrix @a A and Vector @a v and adds it to @a c where the add operation
- * is that of the specified Semiring (i.e. c[i] = SEMIRING::add(c[i], (A*v)[i]). The default Semiring is the
+ * is that of the specified Semiring (i.e. c[i] = SemiRing::add(c[i], (A*v)[i]). The default Semiring is the
  * ArithmeticSemiring.
  * @param A
  * @param v
  * @param c
  */
-template<class SEMIRING = ArithmeticSemiring, class MATRIX>
-void MxV(const MATRIX& A, const NetworKit::Vector& v, NetworKit::Vector& c) {
+template<class SemiRing = ArithmeticSemiring, class Matrix>
+void MxV(const Matrix& A, const NetworKit::Vector& v, NetworKit::Vector& c) {
 	assert(!v.isTransposed());
 	assert(A.numberOfColumns() == v.getDimension());
-	assert(A.getZero() == SEMIRING::zero());
+	assert(A.getZero() == SemiRing::zero());
 
 	A.parallelForNonZeroElementsInRowOrder([&](NetworKit::index i, NetworKit::index j, double value) {
-		c[i] = SEMIRING::add(c[i], SEMIRING::mult(value, v[j]));
+		c[i] = SemiRing::add(c[i], SemiRing::mult(value, v[j]));
 	});
 }
 
@@ -234,38 +234,38 @@ void MxV(const MATRIX& A, const NetworKit::Vector& v, NetworKit::Vector& c) {
  * @param v
  * @param c
  */
-template<class SEMIRING = ArithmeticSemiring, typename F, class MATRIX>
-void MxV(const MATRIX& A, const NetworKit::Vector& v, NetworKit::Vector& c, F accum) {
+template<class SemiRing = ArithmeticSemiring, typename F, class Matrix>
+void MxV(const Matrix& A, const NetworKit::Vector& v, NetworKit::Vector& c, F accum) {
 	assert(!v.isTransposed());
 	assert(A.numberOfColumns() == v.getDimension());
-	assert(A.getZero() == SEMIRING::zero());
+	assert(A.getZero() == SemiRing::zero());
 
 	A.parallelForNonZeroElementsInRowOrder([&](NetworKit::index i, NetworKit::index j, double value) {
-		c[i] = accum(c[i], SEMIRING::mult(value, v[j]));
+		c[i] = accum(c[i], SemiRing::mult(value, v[j]));
 	});
 }
 
 /**
- * Computes SEMIRING::add(A(i,j), B(i,j)) for all i,j element-wise and returns the resulting matrix. The default
+ * Computes SemiRing::add(A(i,j), B(i,j)) for all i,j element-wise and returns the resulting matrix. The default
  * Semiring is the ArithmeticSemiring.
  * @param A
  * @param B
  */
-template<class SEMIRING = ArithmeticSemiring, class MATRIX>
-MATRIX eWiseAdd(const MATRIX& A, const MATRIX& B) {
-	return eWiseBinOp<SEMIRING, MATRIX>(A, B, [](const double a, const double b) {return SEMIRING::add(a,b);});
+template<class SemiRing = ArithmeticSemiring, class Matrix>
+Matrix eWiseAdd(const Matrix& A, const Matrix& B) {
+	return eWiseBinOp<SemiRing, Matrix>(A, B, [](const double a, const double b) {return SemiRing::add(a,b);});
 }
 
 /**
- * Computes SEMIRING::mult(A(i,j), B(i,j)) for all i,j element-wise and returns the resulting matrix. The default
+ * Computes SemiRing::mult(A(i,j), B(i,j)) for all i,j element-wise and returns the resulting matrix. The default
  * Semiring is the ArithmeticSemiring.
  * @param A
  * @param B
  * @return
  */
-template<class SEMIRING = ArithmeticSemiring, class MATRIX>
-MATRIX eWiseMult(const MATRIX& A, const MATRIX& B) {
-	return eWiseBinOp<SEMIRING, MATRIX>(A, B, [](const double a, const double b) {return SEMIRING::mult(a,b);});
+template<class SemiRing = ArithmeticSemiring, class Matrix>
+Matrix eWiseMult(const Matrix& A, const Matrix& B) {
+	return eWiseBinOp<SemiRing, Matrix>(A, B, [](const double a, const double b) {return SemiRing::mult(a,b);});
 }
 
 /**
@@ -274,15 +274,15 @@ MATRIX eWiseMult(const MATRIX& A, const MATRIX& B) {
  * Semiring. The default Semiring is the ArithmeticSemiring.
  * @param matrix
  */
-template<class SEMIRING = ArithmeticSemiring, class MATRIX>
-NetworKit::Vector rowReduce(const MATRIX& matrix) {
-	assert(matrix.getZero() == SEMIRING::zero());
+template<class SemiRing = ArithmeticSemiring, class Matrix>
+NetworKit::Vector rowReduce(const Matrix& matrix) {
+	assert(matrix.getZero() == SemiRing::zero());
 	NetworKit::Vector rowReduction(matrix.numberOfRows(), 0.0);
 
 #pragma omp parallel for
 	for (NetworKit::index i = 0; i < matrix.numberOfRows(); ++i) {
 		matrix.forNonZeroElementsInRow(i, [&](NetworKit::index j, double value) {
-			rowReduction[i] = SEMIRING::add(rowReduction[i], value);
+			rowReduction[i] = SemiRing::add(rowReduction[i], value);
 		});
 	}
 
@@ -295,13 +295,13 @@ NetworKit::Vector rowReduce(const MATRIX& matrix) {
  * Semiring. The default Semiring is the ArithmeticSemiring.
  * @param matrix
  */
-template<class SEMIRING = ArithmeticSemiring, class MATRIX>
-NetworKit::Vector columnReduce(const MATRIX& matrix) {
-	assert(matrix.getZero() == SEMIRING::zero());
+template<class SemiRing = ArithmeticSemiring, class Matrix>
+NetworKit::Vector columnReduce(const Matrix& matrix) {
+	assert(matrix.getZero() == SemiRing::zero());
 	NetworKit::Vector columnReduction(matrix.numberOfColumns(), 0.0);
 
 	matrix.forNonZeroElementsInRowOrder([&](NetworKit::index i, NetworKit::index j, double value) {
-		columnReduction[j] = SEMIRING::add(columnReduction[j], value);
+		columnReduction[j] = SemiRing::add(columnReduction[j], value);
 	});
 
 	return columnReduction;

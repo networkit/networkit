@@ -20,7 +20,7 @@ namespace NetworKit {
  * @ingroup algebraic
  * Implementation of the Bellman-Ford algorithm using the GraphBLAS interface.
  */
-template<class MATRIX>
+template<class Matrix>
 class BellmanFord : public Algorithm {
 public:
 	/**
@@ -28,7 +28,7 @@ public:
 	 * @param graph
 	 * @param source
 	 */
-	BellmanFord(const Graph& graph, node source) : At(MATRIX::adjacencyMatrix(graph, MinPlusSemiring::zero()).transpose()), source(source), negCycle(false) {}
+	BellmanFord(const Graph& graph, node source) : At(Matrix::adjacencyMatrix(graph, MinPlusSemiring::zero()).transpose()), source(source), negCycle(false) {}
 
 	/** Default destructor */
 	~BellmanFord() = default;
@@ -58,14 +58,14 @@ public:
 	}
 
 private:
-	const MATRIX At;
+	const Matrix At;
 	node source;
 	Vector distances;
 	bool negCycle;
 };
 
-template<class MATRIX>
-void BellmanFord<MATRIX>::run() {
+template<class Matrix>
+void BellmanFord<Matrix>::run() {
 	count n = At.numberOfRows();
 	distances = Vector(n, std::numeric_limits<double>::infinity());
 	distances[source] = 0;

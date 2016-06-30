@@ -81,7 +81,7 @@ TEST(VectorGTest, testOuterProduct) {
 	Vector v1 = {1.0, -1.0};
 	Vector v2 = {1.0, 2.0,  3.0};
 
-	Matrix result = Vector::outerProduct(v1, v2);
+	DynamicMatrix result = Vector::outerProduct(v1, v2);
 	ASSERT_EQ(v1.getDimension(), result.numberOfRows());
 	ASSERT_EQ(v2.getDimension(), result.numberOfColumns());
 
@@ -141,7 +141,7 @@ TEST(VectorGTest, testVectorMatrixMultiplication) {
 	// 4 9 2
 	std::vector<Triplet> triplets = {{0,0,8}, {0,1,3}, {0,2,4}, {1,0,3}, {1,1,5}, {1,2,9}, {2,0,4}, {2,1,9}, {2,2,2}};
 
-	Matrix mat(3,3,triplets);
+	DynamicMatrix mat(3,3,triplets);
 
 	Vector result = v.transpose() * mat;
 	ASSERT_TRUE(result.isTransposed());

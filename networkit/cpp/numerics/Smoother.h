@@ -8,11 +8,11 @@
 #ifndef SMOOTHER_H_
 #define SMOOTHER_H_
 
-#include "../algebraic/Matrix.h"
 #include "../algebraic/CSRMatrix.h"
 #include "../algebraic/Vector.h"
 
 #include <limits>
+#include "../algebraic/DynamicMatrix.h"
 
 namespace NetworKit {
 

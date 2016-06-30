@@ -16,7 +16,7 @@
 namespace NetworKit {
 
 // forward declaration of Matrix class
-class Matrix;
+class DynamicMatrix;
 
 /**
  * @ingroup algebraic
@@ -152,8 +152,8 @@ public:
 	 * @param v2 Second Vector.
 	 * @return The resulting matrix from the outer product.
 	 */
-	template<class MATRIX = Matrix>
-	static MATRIX outerProduct(const Vector& v1, const Vector& v2);
+	template<class Matrix = DynamicMatrix>
+	static Matrix outerProduct(const Vector& v1, const Vector& v2);
 
 	/**
 	 * Computes the inner product (dot product) of the vectors @a v1 and @a v2.
@@ -171,8 +171,8 @@ public:
 	 * Multiplies this vector with @a matrix and returns the result.
 	 * @return The result of multiplying this vector with @a matrix.
 	 */
-	template<typename MATRIX = Matrix>
-	Vector operator*(const MATRIX& matrix) const;
+	template<typename Matrix = DynamicMatrix>
+	Vector operator*(const Matrix& matrix) const;
 
 	/**
 	 * Multiplies this vector with a scalar specified in @a scalar and returns the result in a new vector.
@@ -286,24 +286,24 @@ inline Vector operator*(const double &scalar, const Vector &v) {
 	return v.operator*(scalar);
 }
 
-template<class MATRIX>
-MATRIX Vector::outerProduct(const Vector& v1, const Vector& v2) {
+template<class Matrix>
+Matrix Vector::outerProduct(const Vector& v1, const Vector& v2) {
 	std::vector<Triplet> triplets;
 
 	for (index i = 0; i < v1.getDimension(); ++i) {
 		for (index j = 0; j < v2.getDimension(); ++j) {
 			double result = v1[i] * v2[j];
-			if (fabs(result) >= EPSILON) {
+			if (fabs(result) >= FLOAT_EPSILON) {
 				triplets.push_back({i,j,result});
 			}
 		}
 	}
 
-	return MATRIX(v1.getDimension(), v2.getDimension(), triplets);
+	return Matrix(v1.getDimension(), v2.getDimension(), triplets);
 }
 
-template<class MATRIX>
-Vector Vector::operator*(const MATRIX& matrix) const {
+template<class Matrix>
+Vector Vector::operator*(const Matrix& matrix) const {
 	assert(isTransposed()); // vector must be of the form 1xn
 	assert(getDimension() == matrix.numberOfRows()); // dimensions of vector and matrix must match
 

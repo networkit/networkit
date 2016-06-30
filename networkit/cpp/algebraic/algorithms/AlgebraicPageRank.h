@@ -21,19 +21,19 @@ namespace NetworKit {
  * @ingroup algebraic
  * Implementation of PageRank using the GraphBLAS interface.
  */
-template<class MATRIX>
+template<class Matrix>
 class AlgebraicPageRank : public Algorithm {
 public:
 	AlgebraicPageRank(const Graph& graph, const double damp = 0.85, const double tol = 1e-8) : damp(damp), tol(tol) {
-		MATRIX A = MATRIX::adjacencyMatrix(graph);
+		Matrix A = Matrix::adjacencyMatrix(graph);
 		// normalize At by out-degree
 		Vector outDeg = GraphBLAS::rowReduce(A);
 		std::vector<Triplet> scaleMatrixTriplets(A.numberOfRows());
 		for (index i = 0; i < A.numberOfRows(); ++i) {
 			scaleMatrixTriplets[i] = {i,i,1.0/outDeg[i]};
 		}
-		MATRIX scaleMatrix(A.numberOfRows(), scaleMatrixTriplets);
-		MATRIX P = scaleMatrix * A;
+		Matrix scaleMatrix(A.numberOfRows(), scaleMatrixTriplets);
+		Matrix P = scaleMatrix * A;
 		M = (scaleMatrix * A).transpose() * damp;
 	}
 
@@ -72,7 +72,7 @@ public:
 	}
 
 private:
-	MATRIX M;
+	Matrix M;
 
 	const double damp;
 	const double tol;
@@ -81,8 +81,8 @@ private:
 	std::vector<double> edgeScoreData;
 };
 
-template<class MATRIX>
-void AlgebraicPageRank<MATRIX>::run() {
+template<class Matrix>
+void AlgebraicPageRank<Matrix>::run() {
 	count n = M.numberOfRows();
 	double teleportProb = (1.0 - damp) / (double) n;
 	Vector rank(n, 1.0/(double)n);
@@ -109,15 +109,15 @@ void AlgebraicPageRank<MATRIX>::run() {
 	hasRun = true;
 }
 
-template<class MATRIX>
-std::vector<double> AlgebraicPageRank<MATRIX>::scores(bool moveOut) {
+template<class Matrix>
+std::vector<double> AlgebraicPageRank<Matrix>::scores(bool moveOut) {
 	if (!hasRun) throw std::runtime_error("Call run method first");
 	hasRun = !moveOut;
 	return moveOut ? std::move(scoreData) : scoreData;
 }
 
-template<class MATRIX>
-std::vector<std::pair<node, double>> AlgebraicPageRank<MATRIX>::ranking() {
+template<class Matrix>
+std::vector<std::pair<node, double>> AlgebraicPageRank<Matrix>::ranking() {
 	if (!hasRun) throw std::runtime_error("Call run method first");
 	std::vector<std::pair<node, double> > ranking;
 	for (index i = 0; i < scoreData.size(); ++i) {
@@ -127,8 +127,8 @@ std::vector<std::pair<node, double>> AlgebraicPageRank<MATRIX>::ranking() {
 	return ranking;
 }
 
-template<class MATRIX>
-double AlgebraicPageRank<MATRIX>::score(node v) {
+template<class Matrix>
+double AlgebraicPageRank<Matrix>::score(node v) {
 	if (!hasRun) throw std::runtime_error("Call run method first");
 	return scoreData.at(v);
 }

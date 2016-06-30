@@ -20,7 +20,7 @@ struct Triplet {
 };
 
 /** Floating point epsilon to use in comparisons. */
-constexpr double EPSILON = 1e-9;
+constexpr double FLOAT_EPSILON = 1e-9;
 
 }
 
