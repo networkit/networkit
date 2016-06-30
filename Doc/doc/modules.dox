@@ -1,0 +1,100 @@
+/**
+ * @defgroup algebraic Algebraic
+ * @brief Implementation of special matrices and vector class for dealing with a graph.
+ */
+
+/**
+ * @defgroup centrality Centrality
+ * @brief Implementation of different centrality measures.
+ */
+
+/**
+ * @defgroup coarsening Coarsening
+ * @brief Implementation of various graph coarsening/contraction algorithms.
+ */
+
+/**
+ * @defgroup community Community
+ * @brief Various community detection and graph clustering algorithms.
+ */
+
+/**
+ * @defgroup components Connected Components
+ * @brief Various algorithms for detection of connected components.
+ */
+
+/**
+ * @defgroup correlation Correlation
+ * @brief Various algorithms computing the correlation of node attributes.
+ */
+
+/**
+ * @defgroup distance Distances
+ * @brief Various distance related algorithms, e.g. Eccentricity and Diameter.
+ */
+
+/**
+ * @defgroup dynamics Dynamics
+ * @brief TODO
+ */
+
+
+/**
+ * @defgroup flow Flow
+ * @brief Implementation of flow algorithms.
+ */
+
+/**
+ * @defgroup generators Generators
+ * @brief Various graph generators.
+ */
+
+/**
+ * @defgroup global Global
+ * @brief Currently ClusteringCoefficient and GlobalClusteringCoefficient.
+ */
+
+/**
+ * @defgroup graph Graph
+ * @brief Implementation of the NetworKit graph and some general algorithms operating on graphs.
+ */
+
+/**
+ * @defgroup independentset Independent Set
+ * @brief Algorithms for finding independet sets in graphs.
+ */
+
+/**
+ * @defgroup io Input and Output
+ * @brief Implementations for various input and output formats.
+ */
+
+ /**
+  * @defgroup linkprediction Link Prediction
+  * @brief Algorithms for predicting links in a graph.
+  */
+
+/**
+ * @defgroup matching Matching
+ * @brief Implementation of various matching algorithms.
+ */
+
+/**
+ * @defgroup overlap Overlap
+ * @brief Algorithms for determining the overlap of multiple partitions.
+ */
+
+/**
+ * @defgroup scoring Scoring
+ * @brief TODO
+ */
+
+/**
+ * @defgroup structures Structures
+ * @brief Implementations of useful data structures.
+ */
+
+/**
+ * @defgroup viz Viz
+ * @brief Algorithms for drawing a graph.
+ */
