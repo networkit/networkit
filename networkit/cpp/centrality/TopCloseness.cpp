@@ -441,7 +441,9 @@ void TopCloseness::run() {
         count *distances = NULL;
         node *pred = NULL;
         count visEdges = 0;
+        #if LOG_LEVEL >= LOG_LEVEL_DEBUG
         count iters = 0;
+        #endif
         double farnessS;
 
         if (omp_get_thread_num() == 0) {

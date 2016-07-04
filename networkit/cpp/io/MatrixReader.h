@@ -27,7 +27,7 @@ public:
 
   /** only to be used by cython - this eliminates an unnecessary copy */
   CSRMatrix* _read(const std::string& path) {
-    return new CSRMatrix{std::move(read(path))};
+    return new CSRMatrix{read(path)};
   };
 };
 

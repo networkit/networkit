@@ -20,9 +20,9 @@ public:
 	LevelFinest();
 	LevelFinest(const CSRMatrix &A);
 
-	void coarseType(const Vector &xf, Vector &xc) const;
-	void restrict(const Vector &bf, Vector &bc);
-	void interpolate(const Vector &xc, Vector &xf) const;
+	void coarseType(const Vector &xf, Vector &xc) const override;
+	void restrict(const Vector &bf, Vector &bc) const override;
+	void interpolate(const Vector &xc, Vector &xf) const override;
 };
 
 } /* namespace NetworKit */

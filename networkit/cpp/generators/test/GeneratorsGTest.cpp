@@ -228,7 +228,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	const count n = 1000;
 	const double k = 6;
 	const double alpha = 1;
-	const double exp = 2*alpha+1;
+	//const double exp = 2*alpha+1;
 	const double T = 0;
 	const double R = HyperbolicSpace::getTargetRadius(n, n*k/2, alpha, T);
 
@@ -284,7 +284,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
 
 	const double k = 6;
 	const double alpha = 1;
-	const double exp = 2*alpha+1;
+	//const double exp = 2*alpha+1;
 	const double T = 0;
 	const double R = HyperbolicSpace::getTargetRadius(n, n*k/2, alpha, T);
 
