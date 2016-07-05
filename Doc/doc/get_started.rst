@@ -25,7 +25,7 @@ workflows. View the `IPython Quickstart Guide`_ for installation instructions an
 
 
 Once you have installed NetworKit, please make sure to check out our
-`NetworKit UserGuide <http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb>`_ for an overview of the features provided
+`NetworKit UserGuide <http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/uploads/docs/NetworKit_UserGuide.ipynb>`_ for an overview of the features provided
 in NetworKit.
 
 |separator|
@@ -36,9 +36,10 @@ Install the NetworKit Virtual Machine
 =====================================
 
 If you want a quick and easy way to try NetworKit for your purposes or you use a Microsoft Windows operating system, we strongly recommend the installation of our
-NetworKit virtual machine.
+NetworKit virtual machine that can be downloaded `here <https://networkit.iti.kit.edu/uploads/networkit-vm.zip>`_.
 
-A detailed installation guide can be found `here <networkit-vm_guide.html>`_.
+Take a look at our `installation guide <https://networkit.iti.kit.edu/networkit-vm_guide.html>`_ for further instructions on installing the virtual machine on your system.
+
 
 
 |separator|
@@ -101,7 +102,7 @@ Build NetworKit from Source
 ===========================
 
 You can clone NetworKit from `AlgoHub <http://algohub.iti.kit.edu/parco/NetworKit/NetworKit/>`_ with Mercurial or download the source code as a
-`Zip file <https://networkit.iti.kit.edu/data/uploads/networkit.zip>`_.
+`Zip file <https://networkit.iti.kit.edu/uploads/NetworKit.zip>`_.
 
 Requirements
 ~~~~~~~~~~~~
@@ -212,7 +213,7 @@ Test
 ~~~~
 
 You actually do not need to build and run our unit tests. However, if you experience any issues with NetworKit, you might want to check, if NetworKit runs properly.
-Please refer to the `Unit Tests and Testing <api/DevGuide.html#devguide-unittests>`_ section in our `NetworKit Development Guide <api/DevGuide.html#devGuide>`_.
+Please refer to the `Unit Tests and Testing <https://networkit.iti.kit.edu/api/DevGuide.html#devguide-unittests>`_ section in our `NetworKit Development Guide <https://networkit.iti.kit.edu/api/DevGuide.html#devGuide>`_.
 
 
 Known Issues
@@ -231,7 +232,7 @@ Known Issues
 Contributions
 ~~~~~~~~~~~~~
 
-We would like to encourage contributions to the NetworKit source code. See the `NetworKit Development Guide <api/DevGuide.html#devGuide>`_ for instructions. For support
+We would like to encourage contributions to the NetworKit source code. See the `NetworKit Development Guide <https://networkit.iti.kit.edu/api/DevGuide.html#devGuide>`_ for instructions. For support
 please contact the `mailing list <https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit>`_.
 
 
@@ -259,7 +260,7 @@ If you want to use NetworKit in the IPython terminal, type the following command
 	from networkit import *
 
 The first line opens the IPython terminal. The second line imports the *networkit* Python module. After that, you should be able to use NetworKit interactively.
-For usage examples, refer to the `NetworKit UserGuide <http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb>`_.
+For usage examples, refer to the `NetworKit UserGuide <http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/uploads/docs/NetworKit_UserGuide.ipynb>`_.
 
 IPython Notebook/jupyter
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -316,5 +317,5 @@ Now that you are done installing NetworKit, you might want to try the following 
 	avg. community size    23.5128
 	modularity              0.987991
 	-------------------  -----------
-	
+
 	>>>

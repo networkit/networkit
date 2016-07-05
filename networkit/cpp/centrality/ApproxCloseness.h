@@ -47,7 +47,7 @@ public:
 	/**
 	 * Returns the maximum possible Closeness a node can have in a graph with the same amount of nodes (=a star)
 	 */
-	double maximum();
+	double maximum() override;
 
 	/**
 	 * @return The square error when closeness centrality has been computed for an undirected graph.

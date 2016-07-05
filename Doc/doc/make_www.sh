@@ -20,8 +20,7 @@ doxygen Doxyfile
 python3 -c'import sphinxPreparation; sphinxPreparation.cleanUp()'
 rm -rf __pycache__
 
-# remove doctrees (not needed for html) and move html one up
-rm -rf ../Website/doctrees
+# move html one up
 mv ../Website/html/* ../Website/
 rm -rd ../Website/html
 
@@ -31,20 +30,22 @@ cp ../Notebooks/GephiStreaming_UserGuide.ipynb ../uploads/docs/GephiStreaming_Us
 cp ../Notebooks/SpectralCentrality.ipynb ../uploads/docs/SpectralCentrality.ipynb
 cp ../Notebooks/SpectralCentralityWithPandas.ipynb ../uploads/docs/SpectralCentralityWithPandas.ipynb
 
-# copy uploads folder
+
+# create uploads folder in ../Website
 mkdir ../Website/uploads/
-cp -r ../uploads ../Website/
 
 # create documentation
 ./make_doc.sh
 
 # zip documentation and repository and move it to uploads/
 zip -r ../Website/uploads/Documentation.zip ../Documentation/
-zip -r ../Website/uploads/NetworKit.zip ../../../
 hg archive -t zip ../Website/uploads/NetworKit.zip
 
+# remove doctrees (not needed for html)
+rm -rf ../Website/doctrees/
 
-
+# copy uploads folder 
+cp -a ../uploads ../Website/
 
 
 

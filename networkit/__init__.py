@@ -29,7 +29,7 @@ __credits__ = ["Lukas Barth", "Miriam Beddig", "Elisabetta Bergamini", "Stefan B
 	"Guido Brückner", "Mark Erb", "Patrick Flick", "Michael Hamann", "Lukas Hartmann", "Daniel Hoske", "Gerd Lindner", "Moritz v. Looz", "Yassine Marrakchi", "Henning Meyerhenke", \
 	"Marcel Radermacher", "Klara Reichard", "Marvin Ritter", "Aleksejs Sazonovs", "Florian Weber", "Michael Wegner", "Jörg Weisbarth"]
 __license__ = "MIT"
-__version__ = "4.1"
+__version__ = "4.1.1"
 
 
 # standard library modules

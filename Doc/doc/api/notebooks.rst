@@ -25,34 +25,34 @@ We provide several example notebooks to get started with NetworKit and Jupyter N
 
 .. |userGuide| raw:: html
 
-	<a href="http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb" target="_blank">NetworKit User Guide</a>
+	<a href="http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/uploads/docs/NetworKit_UserGuide.ipynb" target="_blank">NetworKit User Guide</a>
 
 
 .. |gephiStreaming| raw:: html
 
-	<a href="http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/GephiStreaming_UserGuide.ipynb" target="_blank">Gephi Streaming</a>
+	<a href="http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/GephiStreaming_UserGuide.ipynb" target="_blank">Gephi Streaming</a>
 
 
 .. |spectralCentrality| raw:: html
 
-	<a href="http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/SpectralCentrality.ipynb" target="_blank">Spectral Centrality</a>
+	<a href="http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/SpectralCentrality.ipynb" target="_blank">Spectral Centrality</a>
 
 
 .. |spectralCentralityPandas| raw:: html
 
-	<a href="http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/SpectralCentralityWithPandas.ipynb" target="_blank">Spectral Centrality with Pandas</a>
+	<a href="http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/SpectralCentralityWithPandas.ipynb" target="_blank">Spectral Centrality with Pandas</a>
 
 
 .. |spectralColoring| raw:: html
 
-	<a href="http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/SpectralColoring.ipynb" target="_blank">Spectral Coloring</a>
+	<a href="http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/SpectralColoring.ipynb" target="_blank">Spectral Coloring</a>
 
 
 .. |spectralDrawing| raw:: html
 
-	<a href="http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/SpectralDrawing.ipynb" target="_blank">Spectral Drawing</a>
+	<a href="http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/SpectralDrawing.ipynb" target="_blank">Spectral Drawing</a>
 
 
 .. |spectralPartitioning| raw:: html
 
-	<a href="http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/SpectralPartitioning.ipynb" target="_blank">Spectral Partitioning</a>
+	<a href="http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/SpectralPartitioning.ipynb" target="_blank">Spectral Partitioning</a>

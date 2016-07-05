@@ -21,14 +21,13 @@ class DynamicHyperbolicGenerator: public NetworKit::DynamicGraphGenerator  {
 public:
 	/**
 	 * Initialize a dynamic hyperbolic generator and generate initial node positions
-	 * Node movement and change of neighborhood disks happens in discrete time steps
+	 * Node movement happens in discrete time steps
 	 *
 	 * @param n number of nodes
-	 * @param initialFactor initial value of thresholdFactor
-	 * @param alpha dispersion parameter, stays fixed
-	 * @param stretch geometric stretch factor s, stays fixed
+	 * @param avgDegree expected average degree of target graph
+	 * @param exp exponent of power-law degree distribution
+	 * @param T temperature parameter in edge probabilities
 	 * @param moveEachStep fraction of nodes which are moved at each time step, should be non-negative
-	 * @param factorGrowth increment added to the value of thresholdFactor at each step, should be non-negative
 	 * @param moveDistance base value for the node movements
 	 */
 
@@ -36,18 +35,17 @@ public:
 
 	/**
 	 * Initialize a dynamic hyperbolic generator with given initial node positions in polar coordinates
-	 * Node movement and change of neighborhood disks happens in discrete time steps
+	 * Node movement happens in discrete time steps
 	 *
-	 * @param n number of nodes
 	 * @param angles angular coordinates of initial positions
 	 * @param radii radial coordinates of initial positions
-	 * @param stretch geometric stretch factor s, stays fixed
-	 * @param initialFactor initial value of thresholdFactor
+	 * @param R radius of hyperbolic disk
+	 * @param alpha dispersion parameter of point distribution
+	 * @param T temperature parameter in edge probabilities
 	 * @param moveEachStep fraction of nodes which are moved at each time step, should be non-negative
-	 * @param factorGrowth increment added to the value of thresholdFactor at each step, should be non-negative
 	 * @param moveDistance base value for the node movements
 	 */
-	DynamicHyperbolicGenerator(std::vector<double> &angles, std::vector<double> &radii,  double avgDegree=6, double exp=3, double T=0, double moveEachStep = 0, double moveDistance = 0);
+	DynamicHyperbolicGenerator(std::vector<double> &angles, std::vector<double> &radii,  double R, double alpha, double T=0, double moveEachStep = 0, double moveDistance = 0);
 
 	/**
 	 * Default constructor
@@ -102,9 +100,9 @@ private:
 	void getEventsFromNodeMovement(vector<GraphEvent> &result);
 
 	/**
-     * Execute node movement part of time step
+     * Move a single node
 	 *
-	 * @param result vector to store GraphEvents in
+	 * @param node Index of the node that should be moved.
 	 */
 	void moveNode(index node);
 
