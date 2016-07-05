@@ -14,6 +14,13 @@ News
 :hidden:`HiddenBiggerHeadingFont`
 ---------------------------------
 
+July 05, 2016: **NetworKit 4.1.1 released**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is a more of a maintenance release, that fixes the pip package and building with clang is possible again (at least with version 3.8). 
+
+Note: You can control which C++ compiler the setup.py of the networkit package is supposed to use with e.g. :code:`CXX=clang++ pip install networkit`. This may be helpful when the setup fails to detect the compiler.
+
 
 June 23, 2016: **NetworKit 4.1 released**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
