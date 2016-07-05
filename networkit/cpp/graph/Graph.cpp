@@ -813,7 +813,7 @@ void Graph::setWeight(node u, node v, edgeweight ew) {
 
 	index vi = indexInOutEdgeArray(u, v);
 	if (vi == none) {
-		// edge does not exits, create it, but warn user
+		// edge does not exist, create it, but warn user
 		TRACE("Setting edge weight of a nonexisting edge will create the edge.");
 		addEdge(u, v, ew);
 		return;

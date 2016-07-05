@@ -568,41 +568,6 @@ public:
 		}
 		return offset;
 	}
-
-	void sortPointsInLeaves() {
-		if (isLeaf) {
-			#pragma omp task
-			{
-				count cs = content.size();
-				vector<index> permutation(cs);
-
-				index p = 0;
-				std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
-
-				//can probably be parallelized easily, but doesn't bring much benefit
-				std::sort(permutation.begin(), permutation.end(), [this](index i, index j){return positions[i][0] < positions[j][0];});
-
-				//There ought to be a way to do this more elegant with some algorithm header, but I didn't find any
-
-				std::vector<T> contentcopy(cs);
-				std::vector<Point<double> > positioncopy(cs);
-
-				for (index i = 0; i < cs; i++) {
-					const index perm = permutation[i];
-					contentcopy[i] = content[perm];
-					positioncopy[i] = positions[perm];
-				}
-
-				content.swap(contentcopy);
-				positions.swap(positioncopy);
-			}
-
-		} else {
-			for (int i = 0; i < children.size(); i++) {
-				children[i].sortPointsInLeaves();
-			}
-		}
-	}
 };
 }
 

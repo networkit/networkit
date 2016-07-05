@@ -14,17 +14,23 @@ News
 :hidden:`HiddenBiggerHeadingFont`
 ---------------------------------
 
+July 05, 2016: **NetworKit 4.1.1 released**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-June 9, 2016: **NetworKit 4.1 released**
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This is a more of a maintenance release, that fixes the pip package and building with clang is possible again (at least with version 3.8). 
+
+Note: You can control which C++ compiler the setup.py of the networkit package is supposed to use with e.g. :code:`CXX=clang++ pip install networkit`. This may be helpful when the setup fails to detect the compiler.
 
 
-|
-| Today we announce the next version of NetworKit, the open-source
-toolkit for large-scale network analysis. NetworKit is a Python package,
-with performance-critical algorithms implemented in C++/OpenMP.
-| **Release notes**
-| Major:
+June 23, 2016: **NetworKit 4.1 released**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Today we announce the next version of NetworKit, the open-source toolkit for large-scale network analysis.
+NetworKit is a Python package, with performance-critical algorithms implemented in C++/OpenMP.
+
+**Release notes**
+
+Major:
 
 new website
 
@@ -46,8 +52,10 @@ generator module:
    netwoks based on hyperbolic geometry (Looz, Meyerhenke, Prutkin '15:
    Random Hyperbolic Graphs in Subquadratic Time)
 
-|     
-| Minor:
+|  
+
+   
+Minor:
 
 re-introduced an overview(G)-function that collects and prints some
 infromation about a graph

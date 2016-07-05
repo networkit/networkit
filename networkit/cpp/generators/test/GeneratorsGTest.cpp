@@ -228,7 +228,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
 	const count n = 1000;
 	const double k = 6;
 	const double alpha = 1;
-	const double exp = 2*alpha+1;
+	//const double exp = 2*alpha+1;
 	const double T = 0;
 	const double R = HyperbolicSpace::getTargetRadius(n, n*k/2, alpha, T);
 
@@ -284,7 +284,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
 
 	const double k = 6;
 	const double alpha = 1;
-	const double exp = 2*alpha+1;
+	//const double exp = 2*alpha+1;
 	const double T = 0;
 	const double R = HyperbolicSpace::getTargetRadius(n, n*k/2, alpha, T);
 
@@ -767,42 +767,6 @@ TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
 	EXPECT_EQ(G.numberOfNodes(), n);
 	EXPECT_TRUE(G.checkConsistency());
 	EXPECT_NEAR(G.numberOfEdges(), m, m/5);
-}
-
-TEST_F(GeneratorsGTest, testHyperbolicGeneratorWithDataFromParallelQuadtree) {
-	const count n = 10000;
-	const double s = 1.2;
-	const double alpha = 1;
-
-	Quadtree<index> quad(n,s);
-	vector<double> angles;
-	vector<double> radii;
-
-	quad.trim();
-	quad.sortPointsInLeaves();
-	quad.reindex();
-	quad.extractCoordinates(angles, radii);
-	EXPECT_EQ(angles.size(), n);
-	EXPECT_EQ(radii.size(), n);
-
-	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
-	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
-
-	vector<index> elements = quad.getElements();
-	EXPECT_EQ(elements.size(), n);
-	vector<double> nativeRadii(n);
-	for (index i = 0; i < elements.size(); i++) {
-		EXPECT_EQ(elements[i], i);
-		EXPECT_LE(radii[i], r);
-		nativeRadii[i] = HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[i]);
-	}
-
-	HyperbolicGenerator gen;
-	Graph G = gen.generate(angles, nativeRadii, R);
-	count expected = n*HyperbolicSpace::getExpectedDegree(n, alpha, R)*0.5;
-	EXPECT_EQ(n, G.numberOfNodes());
-	EXPECT_NEAR(G.numberOfEdges(), expected, expected/5);
-	EXPECT_TRUE(G.checkConsistency());
 }
 
 /**

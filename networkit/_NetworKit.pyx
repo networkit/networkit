@@ -7971,11 +7971,11 @@ cdef class EdgeScoreNormalizer(EdgeScore):
 	def __cinit__(self, Graph G not None, score, bool inverse = False, double lower = 0.0, double upper = 1.0):
 		self._G = G
 		try:
-			self._inScoreDouble = move(<vector[double]?>score)
+			self._inScoreDouble = <vector[double]?>score
 			self._this = new _EdgeScoreNormalizer[double](G._this, self._inScoreDouble, inverse, lower, upper)
 		except TypeError:
 			try:
-				self._inScoreCount = move(<vector[count]?>score)
+				self._inScoreCount = <vector[count]?>score
 				self._this = new _EdgeScoreNormalizer[count](G._this, self._inScoreCount, inverse, lower, upper)
 			except TypeError:
 				raise TypeError("score must be either a vector of integer or float")

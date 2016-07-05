@@ -394,28 +394,11 @@ TEST_F(QuadTreeGTest, testQuadTreeBalance) {
 	}
 }
 
-
-
-TEST_F(QuadTreeGTest, testParallelQuadTreeConstruction) {
-	count n = 1000000;
-	Quadtree<index> quad(n,1.0);
-	EXPECT_EQ(quad.size(), n);
-	EXPECT_GE(quad.height(), log(n/1000)/log(4));
-	EXPECT_GE(quad.countLeaves(), n/1000);
-	quad.reindex();
-	vector<index> elements = quad.getElements();
-	EXPECT_EQ(elements.size(), n);
-	EXPECT_EQ(*std::min_element(elements.begin(), elements.end()), 0);
-	EXPECT_EQ(*std::max_element(elements.begin(), elements.end()), n-1);
-	EXPECT_TRUE(std::is_sorted(elements.begin(), elements.end()));
-}
-
 TEST_F(QuadTreeGTest, testSequentialQuadTreeConstruction) {
 	count n = 1000000;
 	count capacity = 1000;
-	double s =1;
 	double alpha = 1;
-	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
+	double R = HyperbolicSpace::hyperbolicAreaToRadius(n);
 	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
 	vector<double> angles(n);
 	vector<double> radii(n);
@@ -431,7 +414,6 @@ TEST_F(QuadTreeGTest, testSequentialQuadTreeConstruction) {
 	EXPECT_EQ(quad.size(), n);
 
 	quad.trim();
-	quad.sortPointsInLeaves();
 	vector<double> anglecopy;
 	vector<double> radiicopy;
 	quad.extractCoordinates(anglecopy, radiicopy);
@@ -503,7 +485,6 @@ TEST_F(QuadTreeGTest, testCartesianEuclidQuery) {
 		positions[i] = pos;
 		content[i] = i;
 	}
-
 
 	QuadtreeCartesianEuclid<index> quad(positions, content, true);
 

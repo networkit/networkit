@@ -71,8 +71,8 @@ public:
 	 *
 	 *
 	 * @param leftAngle Minimal angular coordinate of region, in radians from 0 to 2\pi
-	 * @param rightAngle Maximal angular coordinate of region, in radians from 0 to 2\pi
 	 * @param minR Minimal radial coordinate of region, between 0 and 1
+	 * @param rightAngle Maximal angular coordinate of region, in radians from 0 to 2\pi
 	 * @param maxR Maximal radial coordinate of region, between 0 and 1
 	 * @param capacity Number of points a leaf cell can store before splitting
 	 * @param minDiameter Minimal diameter of a quadtree node. If the node is already smaller, don't split even if over capacity. Default is 0
@@ -797,46 +797,6 @@ public:
 		return offset;
 	}
 
-	void sortPointsInLeaves() {
-		if (isLeaf) {
-			#pragma omp task
-			{
-				count cs = content.size();
-				vector<index> permutation(cs);
-
-				index p = 0;
-				std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
-
-				//can probably be parallelized easily, but doesn't bring much benefit
-				Aux::Parallel::sort(permutation.begin(), permutation.end(), [this](index i, index j){return angles[i] < angles[j];});
-
-				//There ought to be a way to do this more elegant with some algorithm header, but I didn't find any
-
-				std::vector<T> contentcopy(cs);
-				std::vector<Point2D<double> > positioncopy(cs);
-				std::vector<double> anglecopy(cs);
-				std::vector<double> radiicopy(cs);
-
-				for (index i = 0; i < cs; i++) {
-					const index perm = permutation[i];
-					contentcopy[i] = content[perm];
-					positioncopy[i] = positions[perm];
-					anglecopy[i] = angles[perm];
-					radiicopy[i] = radii[perm];
-				}
-
-				content.swap(contentcopy);
-				positions.swap(positioncopy);
-				angles.swap(anglecopy);
-				radii.swap(radiicopy);
-			}
-
-		} else {
-			for (int i = 0; i < 4; i++) {
-				children[i].sortPointsInLeaves();
-			}
-		}
-	}
 };
 }
 

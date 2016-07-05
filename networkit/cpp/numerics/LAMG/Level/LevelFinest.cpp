@@ -20,7 +20,7 @@ void LevelFinest::coarseType(const Vector &xf, Vector &xc) const {
 	// do nothing!
 }
 
-void LevelFinest::restrict(const Vector &bf, Vector &bc) {
+void LevelFinest::restrict(const Vector &bf, Vector &bc) const {
 	// do nothing!
 }
 

@@ -49,7 +49,7 @@ Publications on Algorithms Available in NetworKit
 
   <ul>
     <li>
-      M. von Looz, M. Özdayi, S. Laue, H. Meyerhenke:  Generating massive complex networks with hyperbolic geometry faster in practice. To appear at <i><a href="http://ieee-hpec.org/">HPEC</a> '16</i>. Code to appear in NetworKit.
+      M. von Looz, M. Özdayi, S. Laue, H. Meyerhenke:  Generating massive complex networks with hyperbolic geometry faster in practice. To appear at <i><a href="http://ieee-hpec.org/">HPEC</a> '16</i>. [<a href="http://arxiv.org/abs/1606.09481">arXiv</a>]
       <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
       <div id="collapseDiv" class="collapse">
         <b>Abstract.</b> Generative network models play an important role in algorithm development, scaling studies, network analysis, and realistic system benchmarks for graph data sets.   The commonly used graph-based benchmark model R-MAT has some drawbacks concerning realism and the scaling behavior of network properties.
@@ -64,7 +64,7 @@ Publications on Algorithms Available in NetworKit
     <br>
 
     <li>
-      M. von Looz, H. Meyerhenke: Querying Probabilistic Neighborhoods in Spatial Data Sets Efficiently. To appear at <i><a href="http://iwoca2016.cs.helsinki.fi/">IWOCA 2016</a></i>. Code to appear in NetworKit.
+      M. von Looz, H. Meyerhenke: Querying Probabilistic Neighborhoods in Spatial Data Sets Efficiently. To appear at <i><a href="http://iwoca2016.cs.helsinki.fi/">IWOCA 2016</a></i>. [<a href="http://arxiv.org/abs/1509.01990">arXiv</a>]
       <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
       <div id="collapseDiv" class="collapse">
         <b>Abstract.</b> The probability that two spatial objects establish some kind of mutual connection often depends on their proximity.

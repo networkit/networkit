@@ -125,16 +125,6 @@ public:
 		return maxRadius;
 	}
 
-	void sortPointsInLeaves() {
-		#pragma omp parallel
-		{
-			#pragma omp single nowait
-			{
-				root.sortPointsInLeaves();
-			}
-		}
-	}
-
 	void reindex() {
 		#pragma omp parallel
 		{
