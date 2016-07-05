@@ -26,15 +26,15 @@ TEST_F(MaximalCliquesGTest, testMaximalCliques) {
 
 	auto result = clique.run();
 
-	EXPECT_GT(result.size(), 0);
+	EXPECT_GT(result.size(), 0u);
 
 	// check results (are they cliques?)
 	for (auto cliq : result) {
 		auto cli = std::unordered_set<node>(cliq.begin(), cliq.end());
-		auto cliqueGraph = Subgraph::fromNodes(G, cli);
+		auto cliqueGraph = G.subgraphFromNodes(cli);
 
 		EXPECT_EQ(cliqueGraph.numberOfEdges(), (cliqueGraph.numberOfNodes() * (cliqueGraph.numberOfNodes() - 1) / 2));
-		EXPECT_EQ(cli.count(seed), 1);
+		EXPECT_EQ(cli.count(seed), 1u);
 	}
 }
 
