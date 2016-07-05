@@ -1,0 +1,56 @@
+<div class="NetworKit_Page" id="NetworKit_Page_{token}_{pageIndex}">
+	<h1>Network Structural Profile</h1>
+	<br>
+	<!--- HELP --->
+	<b>Navigating the profile</b>
+	<ul>
+		<li>the profile includes the following sections by default:</li>
+			<ul>
+				<li>global properties</li>
+				<li>overview of node centrality and partition distributions</li>
+				<li>detail views of node centrality distributions</li>
+				<li>node centrality correlations </li>
+				<li>detail views of partitions</li>
+			</ul>
+		<li>click [+] for descriptions of measures</li>
+		<li>click on distribution thumbnail for detail view</li>
+		<li>hover over variable name of statistical figures for explanation</li>
+		<li>click on distribution plot for larger view</li>
+	</ul>
+	<br>
+	<!--- END HELP --->
+	<div class="Category" data-title="Global Properties">
+		<div class="Value" data-title="Name">{properties[Name]}</div>
+		<div class="Value" data-title="Nodes">{properties[Nodes]}</div>
+		<div class="Value" data-title="Edges">{properties[Edges]}</div>
+		<div class="Value" data-title="Density">{properties[Density]:g}</div>
+		<div class="Value" data-title="Directed">{properties[Directed]}</div>
+		<div class="Value" data-title="Weighted">{properties[Weighted]}</div>
+		<div class="Value" data-title="Self Loops">{properties[Self Loops]:g}</div>
+		<div class="Value" data-title="Diameter Range">{properties[Diameter Range]}</div>
+		<div class="Value" data-title="Effective Diameter">{properties[Effective Diameter]}</div>
+		<div class="Value" data-title="(Strongly) Connected Components">{properties[Connected Components]}</div>
+	</div>
+	<div class="Category" data-title="Overview">
+		<div class="Block SubCategory" data-title="Node Centrality Measures">
+			{results[Node Centrality][Overview]}
+		</div>
+		<div class="Block SubCategory" data-title="Partitions">
+			{results[Partition][Overview]}
+		</div>
+	</div>
+	<div class="Category" data-title="Node Centrality Measures">
+		{results[Node Centrality][Measures]}
+		<div class="Block SubCategory" data-title="Node Centrality Correlations">
+			{results[Node Centrality][Correlations][HeatMaps]}
+			{results[Node Centrality][Correlations][ScatterPlots]}
+		</div>
+	</div>
+	<div class="Category" data-title="Partitions">
+		{results[Partition][Measures]}
+	</div>
+</div>
+
+<script language="javascript" type="text/javascript">
+	NetworKit_pageEmbed("NetworKit_Page_{token}_{pageIndex}");
+</script>
