@@ -48,6 +48,23 @@ Publications on Algorithms Available in NetworKit
 .. raw:: html
 
   <ul>
+  <li>
+    E. Bergamini, M. Wegner, D. Lukarski, H. Meyerhenke:  Estimating Current-Flow Closeness Centrality with a Multigrid Laplacian Solver. To appear at <i><a href="http://www.eecs.wsu.edu/~assefaw/CSC16/csc16.html">CSC</a> '16</i>.
+    <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
+    <div id="collapseDiv" class="collapse">
+      <b>Abstract.</b> Matrices associated with graphs, such as the Laplacian, lead to numerous interesting graph problems expressed as linear systems. One field where Laplacian linear systems
+      play a role is network analysis, e. g. for certain centrality measures that indicate if a node (or an edge) is important in the network. One such centrality measure is current-flow closeness.
+      To allow network analysis workflows to profit from a fast Laplacian solver, we provide an implementation of the LAMG multigrid solver in the NetworKit package, facilitating the computation
+      of current-flow closeness values or related quantities. Our main contribution consists of two algorithms that accelerate the current-flow computation for one node or a reasonably small node
+      subset significantly. One algorithm is an unbiased estimator using sampling, the other one is based on the Johnson- Lindenstrauss transform. Our inexact algorithms lead to very accurate
+      results in practice. Thanks to them one is now able to compute an estimation of current-flow closeness of one node on networks with tens of millions of nodes and edges within seconds or a
+      few minutes. From a network analytical point of view, our experiments indicate that current-flow closeness can discriminate among different nodes significantly better than traditional
+      shortest-path closeness and is also considerably more resistant to noise – we thus show that two known drawbacks of shortest-path closeness are alleviated by the current-flow variant.
+    </div>
+  </li>
+
+  <br>
+
     <li>
       M. von Looz, M. Özdayi, S. Laue, H. Meyerhenke:  Generating massive complex networks with hyperbolic geometry faster in practice. To appear at <i><a href="http://ieee-hpec.org/">HPEC</a> '16</i>. [<a href="http://arxiv.org/abs/1606.09481">arXiv</a>]
       <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>

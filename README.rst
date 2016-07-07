@@ -79,7 +79,7 @@ Install NetworKit
 
 Run :code:`[sudo] pip[3] install [--user] networkit` from your command line to install the Python package *networkit*.
 
-You can remove NetworKit completely by using the command :code:`[sudo] pip[3] uninstall networkit`. Also note that you can control which C++ compiler the setup.py of the networkit package is supposed to use with e.g. :code:`CXX=clang++ pip install networkit`. This may be helpful when the setup fails to detect the compiler.
+You can remove NetworKit completely by using the command :code:`[sudo] pip[3] uninstall networkit`.
 
 To check that everything works as expected, open a python terminal and run the following lines:
 
