@@ -536,4 +536,3 @@ Further Reading
 -  `Managing releases and branchy
    development <http://hgbook.red-bean.com/read/managing-releases-and-branchy-development.html>`__
 -  `Cython Documentation <http://docs.cython.org/index.html>`__
-
