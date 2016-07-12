@@ -8,7 +8,6 @@
 #ifndef ELIMINATIONSTAGE_H_
 #define ELIMINATIONSTAGE_H_
 
-#include "../../../algebraic/CSRMatrix.h"
 #include "../../../algebraic/Vector.h"
 
 namespace NetworKit {
@@ -16,25 +15,41 @@ namespace NetworKit {
 /**
  * @ingroup numerics
  */
+template<class Matrix>
 class EliminationStage {
 private:
-	CSRMatrix P; // interpolation matrix
-	CSRMatrix R;
+	Matrix P; // interpolation matrix
+	Matrix R;
 	Vector q; // coarse result correction vector
 	std::vector<index> fSet;
 	std::vector<index> cSet;
 
 public:
-	EliminationStage(const CSRMatrix &P, const Vector &q, const std::vector<index> &fSet, const std::vector<index> &cSet);
+	EliminationStage(const Matrix& P, const Vector& q, const std::vector<index>& fSet, const std::vector<index>& cSet) : P(P), R(P.transpose()), q(q), fSet(fSet), cSet(cSet) {}
 
-	const CSRMatrix& getP() const;
-	const CSRMatrix& getR() const;
- 	const Vector& getQ() const;
-	const std::vector<index>& getFSet() const;
-	const std::vector<index>& getCSet() const;
+	inline const Matrix& getP() const {
+		return P;
+	}
 
-	count getN() const;
+	inline const Matrix& getR() const {
+		return R;
+	}
 
+ 	inline const Vector& getQ() const {
+ 		return q;
+ 	}
+
+	inline const std::vector<index>& getFSet() const {
+		return fSet;
+	}
+
+	inline const std::vector<index>& getCSet() const {
+		return cSet;
+	}
+
+	inline count getN() const {
+		return fSet.size() + cSet.size();
+	}
 };
 
 } /* namespace NetworKit */

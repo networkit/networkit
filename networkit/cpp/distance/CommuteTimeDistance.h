@@ -8,6 +8,7 @@
 #ifndef COMMUTETIMEDIST_H_
 #define COMMUTETIMEDIST_H_
 
+#include "../algebraic/CSRMatrix.h"
 #include "../numerics/LAMG/Lamg.h"
 #include "../graph/Graph.h"
 #include "../base/Algorithm.h"
@@ -75,7 +76,7 @@ public:
 protected:
 	const Graph& G;
 	double tol;
-	Lamg lamg;
+	Lamg<CSRMatrix> lamg;
 	uint64_t setupTime;
 	std::vector<std::vector<double>> distances;
 	std::vector<Vector> solutions;

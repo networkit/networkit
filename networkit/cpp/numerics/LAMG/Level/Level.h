@@ -22,32 +22,37 @@ enum LevelType {FINEST, // original problem
  * @ingroup numerics
  * Abstract base class for an LAMG Level.
  */
+template<class Matrix>
 class Level {
 protected:
 	LevelType type;
-	CSRMatrix A;
+	Matrix A;
 
 public:
-	Level(LevelType type);
-	Level(LevelType type, const CSRMatrix &A);
+	Level(LevelType type) : type(type) {}
+	Level(LevelType type, const Matrix& A) : type(type), A(A) {}
 	virtual ~Level() {}
 
-	const CSRMatrix& getLaplacian() const;
+	inline const Matrix& getLaplacian() const {
+		return A;
+	}
 
-	count getNumberOfNodes() const;
+	inline count getNumberOfNodes() const {
+		return A.numberOfRows();
+	}
 
-	virtual void coarseType(const Vector &xf, Vector &xc) const = 0;
+	virtual void coarseType(const Vector& xf, Vector& xc) const {}
 
-	virtual void restrict(const Vector &bf, Vector &bc) const;
+	virtual void restrict(const Vector& bf, Vector& bc) const {}
 
-	virtual void restrict(const Vector &bf, Vector &bc, std::vector<Vector> &bStages) const;
+	virtual void restrict(const Vector& bf, Vector& bc, std::vector<Vector>& bStages) const {}
 
-	virtual void interpolate(const Vector &xc, Vector &xf) const;
+	virtual void interpolate(const Vector& xc, Vector& xf) const {}
 
-	virtual void interpolate(const Vector &xc, Vector &xf, const std::vector<Vector> &bStages) const;
-
-
+	virtual void interpolate(const Vector& xc, Vector& xf, const std::vector<Vector>& bStages) const {}
 };
+
+
 
 } /* namespace NetworKit */
 

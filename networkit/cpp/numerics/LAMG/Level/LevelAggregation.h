@@ -15,21 +15,36 @@ namespace NetworKit {
 /**
  * @ingroup numerics
  */
-class LevelAggregation : public Level {
+template<class Matrix>
+class LevelAggregation : public Level<Matrix> {
 private:
-	CSRMatrix P; // interpolation matrix (n x nc)
-	CSRMatrix R; // restriction matrix (nc x n)
+	Matrix P; // interpolation matrix (n x nc)
+	Matrix R; // restriction matrix (nc x n)
 
 public:
-	LevelAggregation(const CSRMatrix &A, const CSRMatrix &P, const CSRMatrix &R);
+	LevelAggregation(const Matrix& A, const Matrix& P, const Matrix& R) : Level<Matrix>(LevelType::AGGREGATION, A), P(P), R(R) {}
 
-	void coarseType(const Vector &xf, Vector &xc) const;
+	void coarseType(const Vector& xf, Vector& xc) const;
 
-	void restrict(const Vector &bf, Vector &bc) const;
+	void restrict(const Vector& bf, Vector& bc) const;
 
-	void interpolate(const Vector &xc, Vector &xf) const;
-
+	void interpolate(const Vector& xc, Vector& xf) const;
 };
+
+template<class Matrix>
+void LevelAggregation<Matrix>::coarseType(const Vector& xf, Vector& xc) const {
+	xc = Vector(P.numberOfColumns(), 0.0);
+}
+
+template<class Matrix>
+void LevelAggregation<Matrix>::restrict(const Vector& bf, Vector& bc) const {
+	bc = R * bf;
+}
+
+template<class Matrix>
+void LevelAggregation<Matrix>::interpolate(const Vector& xc, Vector& xf) const {
+	xf = P * xc;
+}
 
 } /* namespace NetworKit */
 
