@@ -5,8 +5,6 @@
  *      Author: Michael
  */
 
-#include "BellmanFordGTest.h"
-#include "../BellmanFord.h"
 #include "../../../io/METISGraphReader.h"
 #include "../../../auxiliary/Timer.h"
 
@@ -14,10 +12,12 @@
 
 #include "../../../graph/Dijkstra.h"
 #include "../../DynamicMatrix.h"
+#include "../AlgebraicBellmanFord.h"
+#include "AlgebraicBellmanFordGTest.h"
 
 namespace NetworKit {
 
-TEST_F(BellmanFordGTest, testOnToyGraph) {
+TEST_F(AlgebraicBellmanFordGTest, testOnToyGraph) {
 	Graph G(5, true, true);
 	G.addEdge(0, 1, 6);
 	G.addEdge(0, 3, 7);
@@ -30,7 +30,7 @@ TEST_F(BellmanFordGTest, testOnToyGraph) {
 	G.addEdge(4, 0, 2);
 	G.addEdge(4, 2, 7);
 
-	BellmanFord<CSRMatrix> bf(G, 0);
+	AlgebraicBellmanFord<CSRMatrix> bf(G, 0);
 
 	bf.run();
 
@@ -43,11 +43,11 @@ TEST_F(BellmanFordGTest, testOnToyGraph) {
 	EXPECT_FALSE(bf.hasNegativeCycle());
 }
 
-TEST_F(BellmanFordGTest, benchmark) {
+TEST_F(AlgebraicBellmanFordGTest, benchmark) {
 	METISGraphReader reader;
 	Graph graph = reader.read("input/PGPgiantcompo.graph");
 
-	BellmanFord<CSRMatrix> bf(graph, 0);
+	AlgebraicBellmanFord<CSRMatrix> bf(graph, 0);
 
 	Aux::Timer t;
 
@@ -76,7 +76,7 @@ TEST_F(BellmanFordGTest, benchmark) {
 	}
 }
 
-std::vector<double> BellmanFordGTest::classicBF(const Graph& graph, node s) const {
+std::vector<double> AlgebraicBellmanFordGTest::classicBF(const Graph& graph, node s) const {
 	std::vector<double> dist(graph.numberOfNodes(), std::numeric_limits<double>::infinity());
 	dist[s] = 0;
 

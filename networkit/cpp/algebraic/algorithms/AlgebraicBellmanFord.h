@@ -1,12 +1,12 @@
 /*
- * BellmanFord.h
+ * AlgebraicBellmanFord.h
  *
  *  Created on: Jun 6, 2016
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#ifndef NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_BELLMANFORD_H_
-#define NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_BELLMANFORD_H_
+#ifndef NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICBELLMANFORD_H_
+#define NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICBELLMANFORD_H_
 
 #include "../../base/Algorithm.h"
 #include "../../graph/Graph.h"
@@ -21,17 +21,17 @@ namespace NetworKit {
  * Implementation of the Bellman-Ford algorithm using the GraphBLAS interface.
  */
 template<class Matrix>
-class BellmanFord : public Algorithm {
+class AlgebraicBellmanFord : public Algorithm {
 public:
 	/**
 	 * Construct an instance of the BellmanFord algorithm for the Graph @a graph and the given @a source node.
 	 * @param graph
 	 * @param source
 	 */
-	BellmanFord(const Graph& graph, node source) : At(Matrix::adjacencyMatrix(graph, MinPlusSemiring::zero()).transpose()), source(source), negCycle(false) {}
+	AlgebraicBellmanFord(const Graph& graph, node source) : At(Matrix::adjacencyMatrix(graph, MinPlusSemiring::zero()).transpose()), source(source), negCycle(false) {}
 
 	/** Default destructor */
-	~BellmanFord() = default;
+	~AlgebraicBellmanFord() = default;
 
 	/**
 	 * Compute the shortest path from the source to all other nodes.
@@ -65,7 +65,7 @@ private:
 };
 
 template<class Matrix>
-void BellmanFord<Matrix>::run() {
+void AlgebraicBellmanFord<Matrix>::run() {
 	count n = At.numberOfRows();
 	distances = Vector(n, std::numeric_limits<double>::infinity());
 	distances[source] = 0;
@@ -83,4 +83,4 @@ void BellmanFord<Matrix>::run() {
 
 } /* namespace NetworKit */
 
-#endif /* NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_BELLMANFORD_H_ */
+#endif /* NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICBELLMANFORD_H_ */
