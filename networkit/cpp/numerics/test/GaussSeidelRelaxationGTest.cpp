@@ -20,7 +20,7 @@ TEST(GaussSeidelRelaxationGTest, trySolve) {
 	Vector b = {6, 25, -11, 15};
 	Vector x = {0, 0, 0, 0};
 
-	GaussSeidelRelaxation solver;
+	GaussSeidelRelaxation<CSRMatrix> solver;
 	Vector result = solver.relax(A, b, x);
 
 	EXPECT_EQ(1, std::round(result[0]));
@@ -40,7 +40,7 @@ TEST(GaussSeidelRelaxationGTest, tryIteration) {
 	Vector b = {6, 25, -11, 15};
 	Vector x = {0, 0, 0, 0};
 
-	GaussSeidelRelaxation solver;
+	GaussSeidelRelaxation<CSRMatrix> solver;
 	Vector result = solver.relax(A, b, x, 1);
 
 	EXPECT_TRUE(result[0] > 0);

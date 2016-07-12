@@ -20,13 +20,14 @@ namespace NetworKit {
  * @ingroup numerics
  * Abstract base class of a smoother.
  */
+template<class Matrix>
 class Smoother {
 public:
 	Smoother() {}
 	virtual ~Smoother(){}
 
-	virtual Vector relax(const CSRMatrix &A, const Vector &b, const Vector &initialGuess, const count maxIterations = std::numeric_limits<count>::max()) const = 0;
-	virtual Vector relax(const CSRMatrix &A, const Vector &b, const count maxIterations = std::numeric_limits<count>::max()) const = 0;
+	virtual Vector relax(const Matrix& A, const Vector& b, const Vector& initialGuess, const count maxIterations = std::numeric_limits<count>::max()) const = 0;
+	virtual Vector relax(const Matrix& A, const Vector& b, const count maxIterations = std::numeric_limits<count>::max()) const = 0;
 };
 
 } /* namespace NetworKit */

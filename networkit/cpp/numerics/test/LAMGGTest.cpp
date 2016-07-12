@@ -10,6 +10,7 @@
 #include "../LAMG/SolverLamg.h"
 #include "../../io/LineFileReader.h"
 #include "../../auxiliary/Timer.h"
+#include "../../algebraic/CSRMatrix.h"
 
 #include "../GaussSeidelRelaxation.h"
 
@@ -17,9 +18,9 @@ namespace NetworKit {
 
 TEST_F(LAMGGTest, testSmallGraphs) {
 	METISGraphReader reader;
-	GaussSeidelRelaxation gaussSmoother;
-	Smoother *smoother = new GaussSeidelRelaxation();
-	MultiLevelSetup setup(gaussSmoother);
+	GaussSeidelRelaxation<CSRMatrix> gaussSmoother;
+	Smoother<CSRMatrix> *smoother = new GaussSeidelRelaxation<CSRMatrix>();
+	MultiLevelSetup<CSRMatrix> setup(gaussSmoother);
 	Aux::Timer timer;
 	for (index i = 0; i < GRAPH_INSTANCES.size(); ++i) {
 		string graph = GRAPH_INSTANCES[i];
@@ -31,10 +32,10 @@ TEST_F(LAMGGTest, testSmallGraphs) {
 			continue;
 		}
 
-		LevelHierarchy hierarchy;
+		LevelHierarchy<CSRMatrix> hierarchy;
 		timer.start();
 		setup.setup(G, hierarchy);
-		SolverLamg solver(hierarchy, *smoother);
+		SolverLamg<CSRMatrix> solver(hierarchy, *smoother);
 		timer.stop();
 		INFO("setup time\t ", timer.elapsedMilliseconds());
 
