@@ -28,7 +28,6 @@ public:
 	 * @param tol
 	 */
 	AlgebraicSpanningEdgeCentrality(const Graph& graph, double tol = 0.1) : Centrality(graph), tol(tol) {}
-	virtual ~AlgebraicSpanningEdgeCentrality() = default;
 
 
 	/**
@@ -102,7 +101,7 @@ void AlgebraicSpanningEdgeCentrality<Matrix>::runApproximation() {
 	std::vector<Vector> zRows(k, Vector(n));
 #pragma omp parallel for
 	for (index i = 0; i < k; ++i) {
-		yRows[i] = Y.row(i);
+		yRows[i] = Y.row(i).transpose();
 	}
 
 	Lamg<Matrix> lamg(1e-5);

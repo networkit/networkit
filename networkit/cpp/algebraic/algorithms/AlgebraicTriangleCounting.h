@@ -24,7 +24,6 @@ public:
 	 * @param graph
 	 */
 	AlgebraicTriangleCounting(const Graph& graph) : A(Matrix::adjacencyMatrix(graph)), directed(graph.isDirected()) {}
-	virtual ~AlgebraicTriangleCounting() = default;
 
 	/**
 	 * Computes the number of triangles each node is part of. A triangle is considered as a set of nodes (i.e. if there
