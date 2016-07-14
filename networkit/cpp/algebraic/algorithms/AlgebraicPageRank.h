@@ -27,17 +27,21 @@ public:
 	AlgebraicPageRank(const Graph& graph, const double damp = 0.85, const double tol = 1e-8) : damp(damp), tol(tol) {
 		Matrix A = Matrix::adjacencyMatrix(graph);
 		// normalize At by out-degree
-		Vector outDeg = GraphBLAS::rowReduce(A);
-		std::vector<Triplet> scaleMatrixTriplets(A.numberOfRows());
-		for (index i = 0; i < A.numberOfRows(); ++i) {
-			scaleMatrixTriplets[i] = {i,i,1.0/outDeg[i]};
+		Vector invOutDeg = GraphBLAS::rowReduce(A);
+#pragma omp parallel for
+		for (index i = 0; i < invOutDeg.getDimension(); ++i) {
+			invOutDeg[i] = 1.0/invOutDeg[i];
 		}
-		Matrix scaleMatrix(A.numberOfRows(), scaleMatrixTriplets);
-		Matrix P = scaleMatrix * A;
-		M = (scaleMatrix * A).transpose() * damp;
+		
+		std::vector<Triplet> mTriplets(A.nnz());
+		index idx = 0;
+		A.forNonZeroElementsInRowOrder([&](index i, index j, double value) {
+			mTriplets[idx++] = {j,i, damp * value * invOutDeg[i]};
+		});
+		M = std::move(Matrix(A.numberOfRows(), mTriplets));
 	}
 
-	void run();
+	void run() override;
 
 	/**
 	 * Get a vector containing the betweenness score for each node in the graph.
