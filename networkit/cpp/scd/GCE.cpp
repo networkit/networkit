@@ -12,9 +12,7 @@ namespace NetworKit {
 
 
 GCE::GCE(const Graph& G, std::string objective) : SelectiveCommunityDetector(G), objective(objective), intersector(G.upperNodeIdBound()) {
-	if (G.isWeighted()) {
-		throw std::invalid_argument("Current implementation supports only unweighted graphs!");
-	}
+
 }
 
 std::map<node, std::set<node> >  GCE::run(std::set<unsigned int>& seeds) {
@@ -37,10 +35,10 @@ std::set<node> GCE::expandSeed(node s) {
 	std::set<node> community;
 
 	// values per community
-	count intEdges = 0;
-    count extEdges = 0;
+	double intWeight = 0;
+    double extWeight = 0;
 
-    std::set<node> currentShell;
+    std::unordered_set<node> currentShell;
     G.forNeighborsOf(s, [&](node u) {
     	currentShell.insert(u);
     });
@@ -49,7 +47,7 @@ std::set<node> GCE::expandSeed(node s) {
     double currentQ = 0.0; // current community quality
 
     // values per node
-    count degInt, degExt; // internal, external degree
+    double degInt, degExt; // internal, external degree
 
 
     auto boundary = [&](const std::set<node>& C) {
@@ -64,46 +62,32 @@ std::set<node> GCE::expandSeed(node s) {
 		return sh;
 	};
 
-
-	/** @return the shell of the given community */
-	/*auto shell = [&](const std::set<node>& C) {
-		std::set<node> sh;
-		for (node v : C) {
-			G.forNeighborsOf(v, [&](node u){
-				if (!in(C, u)) {
-					sh.insert(u);
-				}
-			});
-		}
-		return sh;
-	};*/
-
 	/**
-	 * internal and external degree of a node with respect to the community
+	 * internal and external weighted degree of a node with respect to the community
 	 */
 	auto intExtDeg = [&](node v, const std::set<node>& C) {
-		count degInt = 0;
-		count degExt = 0;
-		G.forNeighborsOf(v, [&](node u) {
+		double degInt = 0;
+		double degExt = 0;
+		G.forNeighborsOf(v, [&](node, node u, edgeweight ew) {
 			if (in(C, u)) {
-				degInt += 1;
+				degInt += ew;
 			} else {
-				degExt += 1;
+				degExt += ew;
 			}
 		});
 		return std::make_pair(degInt, degExt);
 	};
 
 
-    auto intExtEdges = [&](const std::set<node>& community) {
-        count internal = 0;
-        count external = 0;
+    auto intExtWeight = [&](const std::set<node>& community) {
+        double internal = 0;
+        double external = 0;
         for (node u : community) {
-            G.forEdgesOf(u, [&](node u, node v) {
+            G.forEdgesOf(u, [&](node, node v, edgeweight ew) {
                 if (in(community, v)) {
-                    internal += 1;
+                    internal += ew;
                 } else {
-                    external += 1;
+                    external += ew;
                 }
             });
         }
@@ -117,7 +101,7 @@ std::set<node> GCE::expandSeed(node s) {
      * @return quality difference for the move of v to C
      */
 	auto deltaM = [&](node v, const std::set<node>& C){
-		double delta = (intEdges + degInt) / (double) (extEdges - degInt + degExt);
+		double delta = (intWeight + degInt) / (double) (extWeight - degInt + degExt);
 		return delta - currentQ;
 	};
 
@@ -128,20 +112,11 @@ std::set<node> GCE::expandSeed(node s) {
      */
     auto deltaL = [&](node v, std::set<node>& C){
     	C.insert(v);
-    	double numerator = 2.0 * (intEdges + degInt) * boundary(C).size();
-    	double denominator = C.size() * (extEdges - degInt + degExt);
+    	double numerator = 2.0 * (intWeight + degInt) * boundary(C).size();
+    	double denominator = C.size() * (extWeight - degInt + degExt);
     	C.erase(v);
         return (numerator / denominator) - currentQ;
     };
-
-
-
-    /*auto acceptability = [&](node v, std::set<node>& C){
-        double intersectSize ;
-        double unionSize;
-        return intersectSize / unionSize;
-    };*/
-
 
     std::function<double(node v, std::set<node>& C)> deltaQ;
     // select quality objective
@@ -163,7 +138,7 @@ std::set<node> GCE::expandSeed(node s) {
 	node vMax;
 	do {
         // get values for current community
-        std::tie(intEdges, extEdges) = intExtEdges(community);
+        std::tie(intWeight, extWeight) = intExtWeight(community);
         // scan shell for node with maximum quality improvement
 		dQMax = 0.0; 	// maximum quality improvement
 		vMax = none;
