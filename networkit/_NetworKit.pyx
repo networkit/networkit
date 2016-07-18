@@ -249,6 +249,7 @@ cdef extern from "cpp/graph/Graph.h":
 		count degree(node u) except +
 		count degreeIn(node u) except +
 		count degreeOut(node u) except +
+		double weightedDegree(node u) except +
 		bool isIsolated(node u) except +
 		_Graph copyNodes() except +
 		node addNode() except +
@@ -536,6 +537,24 @@ cdef class Graph:
 
 	def degreeOut(self, u):
 		return self._this.degreeOut(u)
+
+	def weightedDegree(self, v):
+		"""
+		Returns the weighted degree of v.
+
+		For directed graphs this is the sum of weights of all outgoing edges of v.
+
+		Parameters
+		----------
+		v : node
+			Node.
+
+		Returns
+		-------
+		double
+			The weighted degree of v.
+		"""
+		return self._this.weightedDegree(v)
 
 	def isIsolated(self, u):
 		"""
