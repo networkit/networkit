@@ -228,6 +228,9 @@ Known Issues
 	necessary to build	the Python extensions. Even with the Visual C++ Redistributable our attempts were not successful. Any help is appreciated. It may
 	be possible to build NetworKit as a library on Windows in environments like MinGW or Cygwin.
 
+-	Some algorithms (e.g. StronglyConnectedComponents) are implemented in a recursive manner and for large input may exceed the default stack size on your platform.
+	To work around this issue, you can lift the stack size limit for your terminal process and subsequent child processes with :code:`ulimit -s unlimited` or :code:`ulimit -Hs` (to the hard limit if there is one). It is also possible to change resource limits from Python directly with :code:`import resource; resource.setrlimit(resource.RLIMIT_STACK, (-1, -1))`.
+
 
 Contributions
 ~~~~~~~~~~~~~
