@@ -82,44 +82,31 @@ void AlgebraicSpanningEdgeCentrality<Matrix>::runApproximation() {
 	const count k = ceil(log2(n)) / epsilon2;
 	double randTab[3] = {1.0/sqrt(k), -1.0/sqrt(k)};
 
-	// compute random projection matrix Q
-	std::vector<Triplet> triplets(k*m);
-	index tripletIdx = 0;
-	for (index i = 0; i < k; ++i) {
-		for (index j = 0; j < m; ++j) {
-			double val = randTab[Aux::Random::integer(1)];
-			triplets[tripletIdx++] = {i,j,val};
-		}
-	}
-
-	Matrix Q(k, m, triplets);
-	Matrix B = Matrix::incidenceMatrix(this->G).transpose(); // transposed incidence matrix with dimensions m x n
-
-	Matrix Y = Q * B; // k x n
-
 	std::vector<Vector> yRows(k, Vector(n));
 	std::vector<Vector> zRows(k, Vector(n));
+
+	G.forEdges([&](node u, node v, edgeweight w, index) {
 #pragma omp parallel for
-	for (index i = 0; i < k; ++i) {
-		yRows[i] = Y.row(i).transpose();
-	}
+		for (index i = 0; i < k; ++i) {
+			double rand = randTab[Aux::Random::integer(1)];
+			yRows[i][u] += w * rand;
+			yRows[i][v] -= w * rand;
+		}
+	});
+
 
 	Lamg<Matrix> lamg(1e-5);
-	Matrix laplacian = Matrix::laplacianMatrix(this->G);
-	lamg.setupConnected(laplacian);
+	lamg.setupConnected(Matrix::laplacianMatrix(this->G));
 	lamg.parallelSolve(yRows, zRows);
 
-	std::vector<Vector> zColumns(n, Vector(k));
-#pragma omp parallel for
-	for (index j = 0; j < n; ++j) {
-		for (index i = 0; i < k; ++i) {
-			zColumns[j][i] = zRows[i][j];
-		}
-	}
-
 	this->G.parallelForEdges([&](node u, node v, edgeid e) {
-		double norm = (zColumns[u] - zColumns[v]).length();
-		scoreData[e] = norm * norm;
+		double sqSum = 0.0;
+		for (index i = 0; i < k; ++i) {
+			double diff = (zRows[i][u] - zRows[i][v]);
+			sqSum += diff * diff;
+		}
+
+		scoreData[e] = sqSum;
 	});
 
 	hasRun = true;
