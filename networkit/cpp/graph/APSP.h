@@ -8,8 +8,9 @@
 #ifndef APSP_H_
 #define APSP_H_
 
-#include "Graph.h"
-#include "../base/Algorithm.h"
+#include "APAPP.h"
+#include "../auxiliary/Log.h"
+#include "Dijkstra.h"
 
 namespace NetworKit {
 
@@ -17,7 +18,7 @@ namespace NetworKit {
  * @ingroup graph
  * Class for all-pair shortest path algorithm.
  */
-class APSP: public Algorithm {
+class APSP: public APAPP<edgeweight> {
 
 public:
 
@@ -26,43 +27,34 @@ public:
 	 *
 	 * @param G The graph.
 	 */
-	APSP(const Graph& G);
+	APSP(const Graph& G) : APAPP(G) {
+    }
 
 	virtual ~APSP() = default;
 
 	/** Computes the shortest paths from each node to all other nodes. */
-	void run() override;
+	void run() override {
+        std::vector<edgeweight> distanceVector(G.upperNodeIdBound(), 0.0);
+        distances.resize(G.upperNodeIdBound(), distanceVector);
+        G.parallelForNodes([&](node u){
+            Dijkstra dijk(G, u);
+            dijk.run();
+            distances[u] = dijk.getDistances();
+        });
+        hasRun = true;
+    }
 
 	/**
 	* @return string representation of algorithm and parameters.
 	*/
-	virtual std::string toString() const override;
-
-	/**
-	 * Returns a vector of weighted distances from the source node, i.e. the
- 	 * length of the shortest path from the source node to any other node.
- 	 *
- 	 * @return The weighted distances from the source node to any other node in the graph.
-	 */
-	std::vector<std::vector<edgeweight> > getDistances() const { return distances;}
-
-
-	/**
-	 * Returns all shortest paths from source to @a t and an empty set if source and @a t are not connected.
-	 *
-	 */
-	edgeweight getDistance(node u, node v) const { return distances[u][v];}
-
-	/**
-	* @return True if algorithm can run multi-threaded.
-	*/
-	virtual bool isParallel() const override { return true; }
-
+	virtual std::string toString() const override {
+        return "All-Pairs Shortest Path Algorithm";
+    }
 
 protected:
 
-	const Graph& G;
-	std::vector<std::vector<edgeweight> > distances;
+	using APAPP<edgeweight>::G;
+	using APAPP<edgeweight>::distances;
 };
 
 } /* namespace NetworKit */
