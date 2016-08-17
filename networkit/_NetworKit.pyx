@@ -1151,6 +1151,93 @@ cdef class Graph:
 
 # TODO: expose all methods
 
+# cdef extern from "cpp/graph/SafestPathSemiring.h":
+# 	cdef cppclass _SafestPathSemiring "NetworKit::SafestPathSemiring":
+# 		_SafestPathSemiring() except +
+# 		_SafestPathSemiring(double v) except +
+# 		double value "NetworKit::SafestPathSemiring::value"
+# 
+# cdef extern from "cpp/graph/APP.h" namespace "NetworKit":
+# 	cdef cppclass APP[T] (_Algorithm):
+# 		APP(_Graph G, node source, bool storePaths, bool
+#                         storeStack, node target, vector[T] edgeWeights) except +
+# 		void run() nogil except +
+# 		vector[T] getDistances(bool moveOut) except +
+# 		T distance(node t) except +
+# 		vector[node] getPredecessors(node t) except +
+# 		vector[node] getPath(node t, bool forward) except +
+# 		set[vector[node]] getPaths(node t, bool forward) except +
+# 		vector[node] getStack(bool moveOut) except +
+# 		double _numberOfPaths(node t) except +
+# 
+# cdef extern from "cpp/graph/SemiringDijkstra.h":
+# 	cdef cppclass _SemiringDijkstra[T] (APP[T]):
+# 		_SemiringDijkstra(_Graph G, node source, bool storePaths, bool storeStack, node target, vector[T] edgeWeights) except +
+# 
+# cdef class SafestPathSemiring:
+# 	cdef double _value
+# 
+# 	def __cinit__(self, double v=0):
+# 		self._value = v
+# 		self._this = new _SafestPathSemiring(v)
+# 
+# cdef class SafestPathDijkstra:
+# 
+# 	cdef Graph _G
+# 
+# 	def __init__(self, *args, **namedargs):
+# 		if type(self) == SafestPathDijkstra:
+# 			raise RuntimeError("Error, you may not use SSSP directly, use a sub-class instead")
+# 
+# 	def __dealloc__(self):
+# 		self._G = None # just to be sure the graph is deleted
+# 
+# 	def getDistances(self, moveOut=True):
+# 		"""
+# 		Returns a vector of weighted distances from the source node, i.e. the
+#  	 	length of the shortest path from the source node to any other node.
+# 
+#  	 	Returns
+#  	 	-------
+#  	 	vector
+#  	 		The weighted distances from the source node to any other node in the graph.
+# 		"""
+# 		return (<APP[_SafestPathSemiring]*>(self._this)).getDistances(moveOut)
+# 
+# 	def distance(self, t):
+# 		return (<_SSSP*>(self._this)).distance(t)
+# 
+# 	def getPredecessors(self, t):
+# 		return (<_SSSP*>(self._this)).getPredecessors(t)
+# 
+# 	def getPath(self, t, forward=True):
+# 		""" Returns a shortest path from source to `t` and an empty path if source and `t` are not connected.
+# 
+# 		Parameters
+# 		----------
+# 		t : node
+# 			Target node.
+# 
+# 		Returns
+# 		-------
+# 		vector
+# 			A shortest path from source to `t or an empty path.
+# 		"""
+# 		return (<_SSSP*>(self._this)).getPath(t, forward)
+# 
+# 	def getPaths(self, t, forward=True):
+# 		cdef set[vector[node]] paths = (<_SSSP*>(self._this)).getPaths(t, forward)
+# 		result = []
+# 		for elem in paths:
+# 			result.append(list(elem))
+# 		return result
+# 
+# 	def getStack(self, moveOut=True):
+# 		return (<_SSSP*>(self._this)).getStack(moveOut)
+# 
+# 	def numberOfPaths(self, t):
+# 		return (<_SSSP*>(self._this))._numberOfPaths(t)
+
 cdef extern from "cpp/graph/SSSP.h":
 	cdef cppclass _SSSP "NetworKit::SSSP"(_Algorithm):
 		_SSSP(_Graph G, node source, bool storePaths, bool storeStack, node target) except +

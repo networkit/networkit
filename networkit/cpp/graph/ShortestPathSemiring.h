@@ -5,16 +5,18 @@
 #ifndef SHORTESTPATHSEMIRING_H_
 #define SHORTESTPATHSEMIRING_H_
 
+#include "SelectiveSemiring.h"
+
 #include <iostream>
 #include <algorithm>
 
-class ShortestPathSemiring {
+class ShortestPathSemiring : public SelectiveSemiring<ShortestPathSemiring> {
 
 private:
 
     double value;
-    static constexpr double zero = 0;
-    static constexpr double infinity = std::numeric_limits<double>::max();
+    static constexpr double one = 0;
+    static constexpr double zero = std::numeric_limits<double>::max();
 
 public:
 
@@ -30,18 +32,19 @@ public:
 
     ShortestPathSemiring operator*(ShortestPathSemiring& x);
 
-    friend inline bool operator<(const ShortestPathSemiring& x, const ShortestPathSemiring& y) { return x.value < y.value; }
-    friend inline bool operator> (const ShortestPathSemiring& x, const ShortestPathSemiring& y) { return y < x; }
-    friend inline bool operator<= (const ShortestPathSemiring& x, const ShortestPathSemiring& y) { return !(x < y); }
-    friend inline bool operator>= (const ShortestPathSemiring& x, const ShortestPathSemiring& y) { return !(x > y); }
-    friend inline bool operator== (const ShortestPathSemiring& x, const ShortestPathSemiring& y) { return x.value == y.value; }
-    friend inline bool operator!= (const ShortestPathSemiring& x, const ShortestPathSemiring& y) { return !(x == y); }
+    bool lessThan(const ShortestPathSemiring& x) const;
+
+    bool equals(const ShortestPathSemiring& x) const;
 
     friend std::ostream& operator<<(std::ostream& os, const ShortestPathSemiring& s);
 
-    static ShortestPathSemiring getZero();
+    static ShortestPathSemiring getZero() {
+        return zero;
+    }
 
-    static ShortestPathSemiring getInfinity();
+    static ShortestPathSemiring getOne() {
+        return one;
+    }
 };
 
 #endif /* SHORTESTPATHSEMIRING_H_ */

@@ -5,7 +5,7 @@
 #include "ShortestPathSemiring.h"
 
 ShortestPathSemiring::ShortestPathSemiring() {
-   this->value = std::numeric_limits<double>::max();
+   this->value = zero;
 }
 
 ShortestPathSemiring::ShortestPathSemiring(double v) {
@@ -32,14 +32,16 @@ ShortestPathSemiring ShortestPathSemiring::operator*(ShortestPathSemiring& x) {
     return this->value + x.value;
 }
 
+bool ShortestPathSemiring::lessThan(const ShortestPathSemiring& x) const {
+    return this->value > x.value;
+}
+
+bool ShortestPathSemiring::equals(const ShortestPathSemiring& x) const {
+    return this->value == x.value;
+}
+
 std::ostream& operator<<(std::ostream& os, const ShortestPathSemiring& s) {
     os << s.value;
     return os;
 }
 
-ShortestPathSemiring ShortestPathSemiring::getZero() {
-    return ShortestPathSemiring::zero;
-}
-ShortestPathSemiring ShortestPathSemiring::getInfinity() {
-    return ShortestPathSemiring::infinity;
-}

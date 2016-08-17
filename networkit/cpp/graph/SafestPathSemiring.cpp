@@ -3,10 +3,11 @@
  */
 
 #include "SafestPathSemiring.h"
+
 #include <algorithm>
 
 SafestPathSemiring::SafestPathSemiring() {
-    this->value = 0;
+    this->value = zero;
 }
 
 SafestPathSemiring::SafestPathSemiring(double v) {
@@ -39,15 +40,16 @@ SafestPathSemiring SafestPathSemiring::operator*(SafestPathSemiring& x) {
     return this->value * x.value;
 }
 
+bool SafestPathSemiring::lessThan(const SafestPathSemiring& x) const {
+    return this->value < x.value;
+}
+
+bool SafestPathSemiring::equals(const SafestPathSemiring& x) const {
+    return this->value == x.value;
+}
+
 std::ostream& operator<<(std::ostream& os, const SafestPathSemiring& s) {
     os << s.value;
     return os;
 }
 
-SafestPathSemiring SafestPathSemiring::getZero() {
-    return zero;
-}
-
-SafestPathSemiring SafestPathSemiring::getInfinity() {
-    return infinity;
-}
