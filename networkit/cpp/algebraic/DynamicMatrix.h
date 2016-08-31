@@ -81,6 +81,11 @@ public:
 	/** Default copy assignment operator */
 	DynamicMatrix& operator=(const DynamicMatrix &other) = default;
 
+	/**
+	 * Compares this matrix to @a other and returns true if the shape and zero element are the same as well as
+	 * all entries, otherwise returns false.
+	 * @param other
+	 */
 	bool operator==(const DynamicMatrix& other) const {
 		bool graphsEqual = graph.numberOfNodes() == other.graph.numberOfNodes() && graph.numberOfEdges() == other.graph.numberOfEdges();
 		if (graphsEqual) {
@@ -95,6 +100,11 @@ public:
 		return graphsEqual && nRows == other.nRows && nCols == other.nCols && zero == other.zero;
 	}
 
+	/**
+	 * Compares this matrix to @a other and returns false if the shape and zero element are the same as well as
+	 * all entries, otherwise returns true.
+	 * @param other
+	 */
 	bool operator!=(const DynamicMatrix& other) const {
 		return !((*this) == other);
 	}
@@ -264,7 +274,8 @@ public:
 	void assign(const std::vector<index>& rowIndices, const std::vector<index>& columnIndices, const DynamicMatrix& source);
 
 	/**
-	 * Applies the unary function @a unaryElementFunction to each value in the matrix. Note that it must hold that f(0) = 0.
+	 * Applies the unary function @a unaryElementFunction to each value in the matrix. Note that it must hold that the
+	 * function applied to the zero element of this matrix returns the zero element.
 	 * @param unaryElementFunction
 	 */
 	template<typename F>
@@ -302,19 +313,22 @@ public:
 	static DynamicMatrix normalizedLaplacianMatrix(const Graph& graph, double zero = 0.0);
 
 	/**
-	 * Iterate over all non-zero elements of row @a row in the matrix and call handler(index row, index column, double value)
+	 * Iterate over all non-zero elements of row @a row in the matrix and call handle(index row, index column, double value)
 	 */
 	template<typename L> void forNonZeroElementsInRow(index row, L handle) const;
 
+	/**
+	 * Iterate over all elements in row @a i in the matrix and call handle(index column, double value)
+	 */
 	template<typename L> void forElementsInRow(index i, L handle) const;
 
 	/**
-	 * Iterate over all non-zero elements of the matrix in row order and call handler (lambda closure).
+	 * Iterate over all non-zero elements of the matrix in row order and call handle(index row, index column, double value).
 	 */
 	template<typename L> void forNonZeroElementsInRowOrder(L handle) const;
 
 	/**
-	 * Iterate in parallel over all rows and call handler (lambda closure) on non-zero elements of the matrix.
+	 * Iterate in parallel over all rows and call handle(index row, index column, double value) on non-zero elements of the matrix.
 	 */
 	template<typename L> void parallelForNonZeroElementsInRowOrder(L handle) const;
 };

@@ -15,7 +15,7 @@
 
 namespace NetworKit {
 
-// forward declaration of Matrix class
+// forward declaration of DynamicMatrix class
 class DynamicMatrix;
 
 /**
@@ -249,7 +249,8 @@ public:
 	Vector& operator-=(const double value);
 
 	/**
-	 * Applies the unary function @a unaryElementFunction to each value in the Vector. Note that it must hold that f(0) = 0.
+	 * Applies the unary function @a unaryElementFunction to each value in the Vector. Note that it must hold that the
+	 * function applied to the zero element of this matrix returns the zero element.
 	 * @param unaryElementFunction
 	 */
 	template<typename F>

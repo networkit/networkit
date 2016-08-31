@@ -237,7 +237,8 @@ public:
 	void assign(const std::vector<index>& rowIndices, const std::vector<index>& columnIndices, const DenseMatrix& source);
 
 	/**
-	 * Applies the unary function @a unaryElementFunction to each value in the matrix. Note that it must hold that f(0) = 0.
+	 * Applies the unary function @a unaryElementFunction to each value in the matrix. Note that it must hold that the
+	 * function applied to the zero element of this matrix returns the zero element.
 	 * @param unaryElementFunction
 	 */
 	template<typename F>
