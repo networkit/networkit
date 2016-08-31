@@ -137,6 +137,11 @@ public:
 	/** Default copy assignment operator */
 	CSRMatrix& operator=(const CSRMatrix &other) = default;
 
+	/**
+	 * Compares this matrix to @a other and returns true if the shape and zero element are the same as well as
+	 * all entries, otherwise returns false.
+	 * @param other
+	 */
 	bool operator==(const CSRMatrix& other) const {
 		bool equal = nRows == other.nRows && nCols == other.nCols && zero == other.zero;
 		if (equal) {
@@ -151,6 +156,11 @@ public:
 		return equal;
 	}
 
+	/**
+	 * Compares this matrix to @a other and returns false if the shape and zero element are the same as well as
+	 * all entries, otherwise returns true.
+	 * @param other
+	 */
 	bool operator!=(const CSRMatrix& other) const {
 		return !((*this) == other);
 	}
@@ -347,7 +357,8 @@ public:
 	void assign(const std::vector<index>& rowIndices, const std::vector<index>& columnIndices, const CSRMatrix& source);
 
 	/**
-	 * Applies the unary function @a unaryElementFunction to each value in the matrix. Note that it must hold that f(0) = 0.
+	 * Applies the unary function @a unaryElementFunction to each value in the matrix. Note that it must hold that the
+	 * function applied to the zero element of this matrix returns the zero element.
 	 * @param unaryElementFunction
 	 */
 	template<typename F>
@@ -396,6 +407,9 @@ public:
 	 */
 	template<typename L> void parallelForNonZeroElementsInRow(index row, L handle) const;
 
+	/**
+	 * Iterate over all elements in row @a i in the matrix and call handle(index column, double value)
+	 */
 	template<typename L> void forElementsInRow(index i, L handle) const;
 
 	/**

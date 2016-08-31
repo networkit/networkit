@@ -2,7 +2,7 @@
  * CSRMatrix.cpp
  *
  *  Created on: May 6, 2015
- *      Author: Michael
+ *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
 #include "CSRMatrix.h"
@@ -556,46 +556,6 @@ CSRMatrix CSRMatrix::extract(const std::vector<index>& rowIndices, const std::ve
 	}
 
 	return CSRMatrix(rowIndices.size(), columnIndices.size(), triplets, getZero(), sorted);
-
-//	std::vector<index> rowIdx(rowIndices.size() + 1, 0);
-//
-//#pragma omp parallel for
-//	for (index j = 0; j < columnIndices.size(); ++j) {
-//		columnMapping[columnIndices[j]].push_back(j);
-//	}
-//
-//
-//#pragma omp parallel for
-//	for (index i = 0; i < rowIndices.size(); ++i) {
-//		forNonZeroElementsInRow(rowIndices[i], [&](index j, double val) {
-//			rowIdx[i+1] += columnMapping[j].size();
-////			if (columnMapping[j] != invalid) {
-////				rowIdx[i+1]++;
-////			}
-//		});
-//	}
-//
-//	for (index i = 0; i < rowIndices.size(); ++i) {
-//		rowIdx[i+1] += rowIdx[i];
-//	}
-//
-//	count nnz = rowIdx[rowIndices.size()];
-//	std::vector<index> columnIdx(nnz);
-//	std::vector<double> nonZeros(nnz);
-//
-//#pragma omp parallel for
-//	for (index i = 0; i < rowIndices.size(); ++i) {
-//		index cIdx = rowIdx[i];
-//		forNonZeroElementsInRow(rowIndices[i], [&](index k, double val) {
-//			for (index j : columnMapping[k]) {
-//				columnIdx[cIdx] = j;
-//				nonZeros[cIdx] = val;
-//				cIdx++;
-//			}
-//		});
-//	}
-//
-//	return CSRMatrix(rowIndices.size(), columnIndices.size(), rowIdx, columnIdx, nonZeros, getZero(), sorted());
 }
 
 void CSRMatrix::assign(const std::vector<index>& rowIndices, const std::vector<index>& columnIndices, const CSRMatrix& source) {
