@@ -24,6 +24,14 @@ namespace NetworKit {
 template<class Matrix>
 class AlgebraicPageRank : public Algorithm {
 public:
+
+	/**
+	 * Constructs an instance of AlgebraicPageRank for the given @a graph. Page rank uses the damping factor @a damp
+	 * and the tolerance @a tol.
+	 * @param graph
+	 * @param damp
+	 * @param tol
+	 */
 	AlgebraicPageRank(const Graph& graph, const double damp = 0.85, const double tol = 1e-8) : damp(damp), tol(tol) {
 		Matrix A = Matrix::adjacencyMatrix(graph);
 		// normalize At by out-degree

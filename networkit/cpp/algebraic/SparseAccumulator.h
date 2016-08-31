@@ -56,6 +56,13 @@ public:
 		}
 	}
 
+	/**
+	 * Stores @a value at @a pos. If a valid value is already stored at @a pos then we call the binary handle
+	 * function with the stored value and the new @a value as arguments.
+	 * @param value The value to store or add at @a pos in values.
+	 * @param pos The position in values.
+	 * @param handle (double, double) -> double
+	 */
 	template<typename L>
 	void scatter(double value, index pos, L& handle) {
 		assert(pos < values.size());
