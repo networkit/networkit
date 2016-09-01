@@ -216,6 +216,41 @@ def setSeed(uint64_t seed, bool useThreadId):
 
 # Class definitions
 
+## Module algebraic
+
+cdef extern from "cpp/algebraic/algorithms/AlgebraicBellmanFord.h" namespace "NetworKit":
+	cdef cppclass _AlgebraicBellmanFord "NetworKit::AlgebraicBellmanFord"[Matrix](_Algorithm):
+		_AlgebraicBellmanFord(_Graph G, node source) except +
+		void run() nogil except +
+		double distance(node v) except +
+
+cdef class AlgebraicBellmanFord:
+	""" Bellman-Ford shortest path algorithm making use of the GraphBLAS interface.
+	AlgebraicBellmanFord(G, u)
+	Create AlgebraicBellmanFord for Graph `G` and source node `u`.
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	source: node
+		The source node to start a shortest path search.
+	"""
+	cdef _AlgebraicBellmanFord* _this
+	cdef Graph _G
+	def __cinit__(self,  Graph G, node source):
+		self._G = G
+		self._this = new _AlgebraicBellmanFord(G._this, source)
+	def __dealloc__(self):
+		del self._this
+	def run(self):
+		""" This method runs the Bellman-Ford algorithm from the source given in the constructor. """
+		with nogil:
+			self._this.run()
+		return self
+	def distance(self, v):
+		return self._this.distance(v)
+
 ## Module: engineering
 
 # TODO: timer

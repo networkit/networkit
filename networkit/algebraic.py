@@ -3,6 +3,10 @@
 
 __author__ = "Christian Staudt"
 
+# extension imports
+
+from _NetworKit import AlgebraicBellmanFord
+
 # local imports
 
 # external imports
