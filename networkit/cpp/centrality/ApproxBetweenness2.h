@@ -24,14 +24,15 @@ public:
 
 	/**
 	 * The algorithm approximates the betweenness of all nodes, using weighting
-	 * of the contributions to avoid biased estimation.
+	 * of the contributions to avoid biased estimation. The run() method takes O(m)
+	 * time per sample, where  m is the number of edges of the graph.
 	 *
 	 * @param	graph		input graph
 	 * @param	nSamples	 user defined number of samples
 	 * @param	normalized   normalize centrality values in interval [0,1] ?
-	 * @param	parallel	if true, run in parallel with additional memory cost z + 3z * t
+	 * @param	parallel_flag	if true, run in parallel with additional memory cost z + 3z * t
 	 */
-	ApproxBetweenness2(const Graph& G, count nSamples, bool normalized=false, bool parallel=false);
+	ApproxBetweenness2(const Graph& G, count nSamples, bool normalized=false, bool parallel_flag=false);
 
 	void run() override;
 
@@ -39,7 +40,7 @@ public:
 private:
 
 	count nSamples;
-	bool parallel;
+	bool parallel_flag;
 
 };
 

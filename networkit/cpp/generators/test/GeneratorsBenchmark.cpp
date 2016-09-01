@@ -14,6 +14,7 @@
 #include "GeneratorsBenchmark.h"
 #include "../../auxiliary/Log.h"
 #include "../../auxiliary/Parallel.h"
+#include "../../auxiliary/Parallelism.h"
 
 #include "../HyperbolicGenerator.h"
 #include "../DynamicHyperbolicGenerator.h"
@@ -142,8 +143,8 @@ TEST_F(GeneratorsBenchmark, benchBarabasiAlbertGenerator2) {
 
 TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGenerator) {
 	count n = 100000;
-	HyperbolicGenerator gen;
-	Graph G = gen.generate(n,1,1);
+	HyperbolicGenerator gen(n);
+	Graph G = gen.generate();
 	EXPECT_EQ(G.numberOfNodes(), n);
 }
 
@@ -180,63 +181,22 @@ TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorWithSortedNodes) {
 	EXPECT_EQ(G.numberOfNodes(), n);
 }
 
-TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorWithParallelQuadtree) {
-	count n = 100000;
-	double s = 1.0;
-	Quadtree<index> quad(n,s);
-	vector<double> angles;
-	vector<double> radii;
-	quad.trim();
-	quad.sortPointsInLeaves();
-	quad.reindex();
-	quad.extractCoordinates(angles, radii);
-	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
-
-	HyperbolicGenerator gen;
-	Graph G = gen.generate(angles, radii, quad, R);
-
-	EXPECT_EQ(n, G.numberOfNodes());
-}
-
-TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorWithSequentialQuadtree) {
-	count n = 100000;
-	double s = 1.0;
-	double alpha = 1;
-
-	vector<double> angles(n);
-	vector<double> radii(n);
-	HyperbolicSpace::fillPoints(angles, radii, s, alpha);
-	double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
-	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
-	Quadtree<index> quad(r);
-
-	for (index i = 0; i < n; i++) {
-		quad.addContent(i, angles[i], radii[i]);
-	}
-
-	angles.clear();
-	radii.clear();
-
-	quad.trim();
-	quad.sortPointsInLeaves();
-	quad.reindex();
-	quad.extractCoordinates(angles, radii);
-
-	HyperbolicGenerator gen;
-	Graph G = gen.generate(angles, radii, quad, R);
-
-	EXPECT_EQ(n, G.numberOfNodes());
-}
-
 TEST_F(GeneratorsBenchmark, benchmarkDynamicHyperbolicGeneratorOnNodeMovement) {
-	const count n = 10000;
-	const count nSteps = 100;
+	const count runs = 100;
+	const double fractionStep = 0.01;
+	const count stepCount = 100;
+	const count n = 1000000;
 	const double k = 6;
 	const double exp = 3;
-	const double moveEachStep = 0.5;
-	const double moveDistance = 0.02;
-	DynamicHyperbolicGenerator dyngen(n, k, exp, moveEachStep, moveDistance);
-	dyngen.generate(nSteps);
+	const double moveDistance = 0.1;
+
+	for (index i = 0; i < stepCount; i++) {
+		double moveFraction = fractionStep * i;
+		for (index j = 0; j < runs; j++) {
+			DynamicHyperbolicGenerator dyngen(n, k, exp, moveFraction, moveDistance);
+			dyngen.generate(1);
+		}
+	}
 }
 
 TEST_F(GeneratorsBenchmark, benchmarkParallelQuadtreeConstruction) {
@@ -261,6 +221,16 @@ TEST_F(GeneratorsBenchmark, benchmarkSequentialQuadtreeConstruction) {
 		quad.addContent(i, angles[i], radii[i]);
 	}
 	EXPECT_EQ(quad.size(), n);
+}
+
+TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorMechanicGraphs) {
+	count n = 1000000;
+	double k = 6;
+	count m = n*k/2;
+	HyperbolicGenerator gen(n, k, 3, 0.14);
+	gen.setLeafCapacity(10);
+	Graph G = gen.generate();
+	EXPECT_NEAR(G.numberOfEdges(), m, m/10);
 }
 
 } /* namespace NetworKit */

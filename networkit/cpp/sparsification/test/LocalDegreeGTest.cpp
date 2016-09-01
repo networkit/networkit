@@ -50,11 +50,13 @@ TEST_F(LocalDegreeGTest, testAttributeSimple) {
 }
 
 /***
-Calculates the LD score for an edge.
+Calculates the LD score for a (directed) edge. Note that the actual score
+for an undirected edge is defined as the maximum of the values of the two
+directed edges.
 @param g the graph
 @param x first node
 @param y second node
-@param rankX rank of y in the neighborhood of y (1-based)
+@param rankX rank of x in the neighborhood of y (1-based)
 @param rankY rank of y in the neighborhood of x (1-based)
 **/
 double LocalDegreeGTest::getScore(const Graph& g, node x, node y, count rankX, count rankY) {
@@ -62,14 +64,7 @@ double LocalDegreeGTest::getScore(const Graph& g, node x, node y, count rankX, c
 	if (g.degree(x) == 1 || g.degree(y) == 1)
 		return 1;
 
-	//Use only the edge that leads to the higher-degree-node!
-	if (g.degree(x) > g.degree(y))
-		return 1 - log(rankX) / log(g.degree(y));
-
-	if (g.degree(x) < g.degree(y))
-		return 1 - log(rankY) / log(g.degree(x));
-
-	return -1;
+	return 1 - log(rankX) / log(g.degree(y));
 }
 
 }

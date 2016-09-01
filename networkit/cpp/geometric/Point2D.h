@@ -33,15 +33,23 @@ class Point2D {
 protected:
 	T x;
 	T y;
+	index indice;
 
 public:
 	Point2D()	{
 		x = 0;
 		y = 0;
+		indice = 0;
 	}
 	Point2D(T x, T y) {
 		this->x = x;
 		this->y = y;
+		this->indice = 0;
+	}
+	Point2D(T x, T y, index indice) {
+		this->x = x;
+		this->y = y;
+		this->indice = indice;
 	}
 
 	virtual ~Point2D() {}
@@ -61,10 +69,10 @@ public:
 	T length() const;
 	T squaredLength() const;
 
+	T& operator[](const index i);
 	T getX() const;
 	T getY() const;
-
-	T& operator[](const index i);
+	index getIndex() const;
 };
 
 template<class T>
@@ -123,7 +131,7 @@ Point2D<T>& Point2D<T>::scale(const T factor) {
 
 template<class T>
 inline T& Point2D<T>::operator [](index i) {
-	assert(i >= 0 && i <2);
+	assert(i >= 0 && i < 2);
 	if (i == 0) return x;
 	else return y;
 }
@@ -136,6 +144,11 @@ inline T Point2D<T>::getX() const {
 template<class T>
 inline T Point2D<T>::getY() const {
 	return y;
+}
+
+template<class T>
+inline index Point2D<T>::getIndex() const {
+	return indice;
 }
 
 } /* namespace NetworKit */

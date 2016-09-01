@@ -118,10 +118,12 @@ def readGraph(path, fileformat, **kwargs):
 	    Parameters:
 		- fileformat: An element of the Format enumeration. Currently supported file types:
 		SNAP, EdgeListSpaceZero, EdgeListSpaceOne, EdgeListTabZero, EdgeListTabOne, METIS,
-		GraphML, GEXF, GML, EdgeListCommaOne, GraphViz, DOT, EdgeList, LFR, KONEC, GraphToolBinary
-		- **kwargs: in case of a custom edge list, provide the defining paramaters as follows:
-			"separator=CHAR, firstNode=NODE, commentPrefix=STRING, continuous=BOOL"
-			commentPrefix and continuous are optional
+		GraphML, GEXF, GML, EdgeListCommaOne, GraphViz, DOT, EdgeList, LFR, KONECT, GraphToolBinary
+		- **kwargs: in case of a custom edge list, pass the genereic Fromat.EdgeList accompanied by
+			the defining paramaters as follows:
+			"separator=CHAR, firstNode=NODE, commentPrefix=STRING, continuous=BOOL, directed=BOOL"
+			commentPrefix='#', continuous=True and directed=False are optional because of their default values;
+			firstNode is not needed when continuous=True.
 	"""
 	reader = getReader(fileformat,**kwargs)
 

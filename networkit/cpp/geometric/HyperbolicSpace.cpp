@@ -17,12 +17,25 @@ using std::max;
 
 namespace NetworKit {
 
-HyperbolicSpace::HyperbolicSpace() {
-
-}
-
-HyperbolicSpace::~HyperbolicSpace() {
-
+double HyperbolicSpace::nativeDistance(double firstangle, double firstR, double secondangle, double secondR) {
+	assert(firstR >= 0);
+	assert(secondR >= 0);
+	assert(firstangle >= 0);
+	assert(firstangle < 2*M_PI);
+	assert(secondangle >= 0);
+	assert(secondangle < 2*M_PI);
+	double result;
+	if (firstangle == secondangle) {
+		result = abs(firstR - secondR);
+	}
+	else {
+		double deltaPhi = M_PI - abs(M_PI-abs(firstangle - secondangle));
+		double coshDist = cosh(firstR)*cosh(secondR)-sinh(firstR)*sinh(secondR)*cos(deltaPhi);
+		if (coshDist >= 1) result = acosh(coshDist);
+		else result = 0;
+	}
+	assert(result >= 0);
+	return result;
 }
 
 /**
@@ -35,14 +48,23 @@ double HyperbolicSpace::poincareMetric(double phi_a, double  r_a, double phi_b, 
 }
 
 double HyperbolicSpace::poincareMetric(Point2D<double> a, Point2D<double> b) {
+	assert(a.length() < 1);
+	assert(b.length() < 1);
 	double result = acosh( 1 + 2*a.squaredDistance(b) / ((1 - a.squaredLength())*(1 - b.squaredLength())));
 	assert(result >= 0);
 	return result;
 }
 
-void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, double stretch, double alpha) {
-	uint64_t n = radii.size();
-	double R = stretch*hyperbolicAreaToRadius(n);
+//double HyperbolicSpace::nativeHyperbolicDistance(double phi_a, double r_a, double phi_b, double r_b) {
+//	/* Returns the hyperbolic distance between points u and v
+//	* 2010 paper, eqn: 5
+//	*/
+//	double deltaPhi = M_PI - abs(M_PI-abs(phi_a - phi_b));
+//	double distance = acosh(cosh(r_a)*cosh(r_b) - sinh(r_a)*sinh(r_b)*cos(deltaPhi));
+//	return distance;
+//}
+
+void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, double R, double alpha) {
 	fillPoints(angles, radii, 0, 2*M_PI, 0, R, alpha);
 }
 
@@ -54,9 +76,7 @@ void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, 
 	double maxcdf = cosh(alpha*maxR);
 	std::uniform_real_distribution<double> phidist{minPhi, maxPhi};
 	std::uniform_real_distribution<double> rdist{mincdf, maxcdf};
-	double r = hyperbolicRadiusToEuclidean(maxR);
 
-	assert(angles.size() == n);
 	for (uint64_t i = 0; i < n; i++) {
 		angles[i] = phidist(Aux::Random::getURNG());
 		/**
@@ -65,13 +85,13 @@ void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, 
 		 * \int sinh = cosh+const
 		 */
 		double random = rdist(Aux::Random::getURNG());
-		double radius = (acosh(random)/alpha);
-		//assert(radius < maxR);
-		//now translate into coordinates of Poincaré disc
-		radii[i] = hyperbolicRadiusToEuclidean(radius);
-		assert(radii[i] <= r);
-		if (radii[i] == r) radii[i] = std::nextafter(radii[i], 0);
-		assert(radii[i] < r);
+		radii[i] = (acosh(random)/alpha);
+		assert(radii[i] <= maxR);
+		assert(radii[i] >= minR);
+		assert(angles[i] <= maxPhi);
+		assert(angles[i] >= minPhi);
+		if (radii[i] == maxR) radii[i] = std::nextafter(radii[i], 0);
+		assert(radii[i] < maxR);
 	}
 }
 

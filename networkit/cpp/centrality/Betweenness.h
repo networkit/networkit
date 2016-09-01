@@ -19,7 +19,8 @@ class Betweenness: public NetworKit::Centrality {
 public:
 	/**
 	 * Constructs the Betweenness class for the given Graph @a G. If the betweenness scores should be normalized,
-	 * then set @a normalized to <code>true</code>.
+	 * then set @a normalized to <code>true</code>. The run() method takes O(nm) time, where n is the number
+	 * of nodes and m is the number of edges of the graph.
 	 *
 	 * @param G The graph.
 	 * @param normalized Set this parameter to <code>true</code> if scores should be normalized in the interval [0,1].
@@ -30,7 +31,7 @@ public:
 
 
 	/**
-	* Compute betweenness scores sequential or parallel depending on @a runUnweightedInParallel.
+	* Compute betweenness scores
 	*
 	*/
 	void run() override;
