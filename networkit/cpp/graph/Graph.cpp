@@ -813,7 +813,7 @@ void Graph::setWeight(node u, node v, edgeweight ew) {
 
 	index vi = indexInOutEdgeArray(u, v);
 	if (vi == none) {
-		// edge does not exits, create it, but warn user
+		// edge does not exist, create it, but warn user
 		TRACE("Setting edge weight of a nonexisting edge will create the edge.");
 		addEdge(u, v, ew);
 		return;
@@ -948,7 +948,7 @@ bool Graph::checkConsistency() const {
 		forNeighborsOf(v, [&](node u) {
 			if (lastSeen[u] == v) {
 				noMultiEdges = false;
-				DEBUG("Multiedge found!");
+				DEBUG("Multiedge found between ", u, " and ", v, "!");
 			}
 			lastSeen[u] = v;
 		});

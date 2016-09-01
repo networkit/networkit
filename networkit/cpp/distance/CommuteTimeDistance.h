@@ -28,6 +28,7 @@ public:
 	/**
 	 * Constructs the CommuteTimeDistance class for the given Graph @a G.
 	 * @param G The graph.
+	 * @param tol The tolerance used for the approximation
 	 */
 	CommuteTimeDistance(const Graph& G, double tol = 0.1);
 

@@ -19,7 +19,7 @@
 
 namespace NetworKit {
 
-ApproxBetweenness2::ApproxBetweenness2(const Graph& G, count nSamples, bool normalized, bool parallel) : Centrality(G, normalized), nSamples(nSamples), parallel(parallel) {
+ApproxBetweenness2::ApproxBetweenness2(const Graph& G, count nSamples, bool normalized, bool parallel_flag) : Centrality(G, normalized), nSamples(nSamples), parallel_flag(parallel_flag) {
 }
 
 void ApproxBetweenness2::run() {
@@ -38,7 +38,7 @@ void ApproxBetweenness2::run() {
 
 	// thread-local scores for efficient parallelism
 	count maxThreads = omp_get_max_threads();
-	if (!parallel) maxThreads = 1;
+	if (!parallel_flag) maxThreads = 1;
 	std::vector<std::vector<double> > scorePerThread(maxThreads, std::vector<double>(G.upperNodeIdBound()));
 
 
@@ -80,12 +80,12 @@ void ApproxBetweenness2::run() {
 	};
 
 
-	#pragma omp parallel for if(parallel)
+	#pragma omp parallel for if(parallel_flag)
 	for (index i = 0; i < sampledNodes.size(); ++i) {
 		computeDependencies(sampledNodes[i]);
 	}
 
-	if (parallel) {
+	if (parallel_flag) {
 		scoreData = std::vector<double>(G.upperNodeIdBound(), 0.0);
 
 		// add up all thread-local values

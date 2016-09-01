@@ -57,10 +57,10 @@ Graph METISGraphReader::read(const std::string& path) {
 					ERROR("METIS Node ID should not be 0, edge ignored.");
 					continue;
 				}
+				Aux::Checkers::Enforcer::enforce(adjacencies[i] > 0 && adjacencies[i] <= n);
 				node v = adjacencies[i] - 1; 	// METIS-indices are 1-based
 				// correct edgeCounter for selfloops
 				edgeCounter += (u == v);
-				Aux::Checkers::Enforcer::enforce(v >= 0 && v < n);
 				b.addHalfEdge(u, v);
 			}
 			u++; // next node

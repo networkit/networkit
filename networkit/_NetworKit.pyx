@@ -216,41 +216,6 @@ def setSeed(uint64_t seed, bool useThreadId):
 
 # Class definitions
 
-## Module algebraic
-
-cdef extern from "cpp/algebraic/algorithms/AlgebraicBellmanFord.h" namespace "NetworKit":
-	cdef cppclass _AlgebraicBellmanFord "NetworKit::AlgebraicBellmanFord"[Matrix](_Algorithm):
-		_AlgebraicBellmanFord(_Graph G, node source) except +
-		void run() nogil except +
-		double distance(node v) except +
-
-cdef class AlgebraicBellmanFord:
-	""" Bellman-Ford shortest path algorithm making use of the GraphBLAS interface.
-	AlgebraicBellmanFord(G, u)
-	Create AlgebraicBellmanFord for Graph `G` and source node `u`.
-
-	Parameters
-	----------
-	G : Graph
-		The graph.
-	source: node
-		The source node to start a shortest path search.
-	"""
-	cdef _AlgebraicBellmanFord* _this
-	cdef Graph _G
-	def __cinit__(self,  Graph G, node source):
-		self._G = G
-		self._this = new _AlgebraicBellmanFord(G._this, source)
-	def __dealloc__(self):
-		del self._this
-	def run(self):
-		""" This method runs the Bellman-Ford algorithm from the source given in the constructor. """
-		with nogil:
-			self._this.run()
-		return self
-	def distance(self, v):
-		return self._this.distance(v)
-
 ## Module: engineering
 
 # TODO: timer
@@ -284,6 +249,7 @@ cdef extern from "cpp/graph/Graph.h":
 		count degree(node u) except +
 		count degreeIn(node u) except +
 		count degreeOut(node u) except +
+		double weightedDegree(node u) except +
 		bool isIsolated(node u) except +
 		_Graph copyNodes() except +
 		node addNode() except +
@@ -571,6 +537,24 @@ cdef class Graph:
 
 	def degreeOut(self, u):
 		return self._this.degreeOut(u)
+
+	def weightedDegree(self, v):
+		"""
+		Returns the weighted degree of v.
+
+		For directed graphs this is the sum of weights of all outgoing edges of v.
+
+		Parameters
+		----------
+		v : node
+			Node.
+
+		Returns
+		-------
+		double
+			The weighted degree of v.
+		"""
+		return self._this.weightedDegree(v)
 
 	def isIsolated(self, u):
 		"""
@@ -2178,19 +2162,19 @@ cdef class EdgeSwitchingMarkovChainGenerator:
 cdef extern from "cpp/generators/HyperbolicGenerator.h":
 	cdef cppclass _HyperbolicGenerator "NetworKit::HyperbolicGenerator":
 		# TODO: revert to count when cython issue fixed
-		_HyperbolicGenerator(unsigned int nodes,  double k, double gamma) except +
+		_HyperbolicGenerator(unsigned int nodes,  double k, double gamma, double T) except +
 		void setLeafCapacity(unsigned int capacity) except +
 		void setTheoreticalSplit(bool split) except +
 		void setBalance(double balance) except +
 		vector[double] getElapsedMilliseconds() except +
 		_Graph generate() except +
-		_Graph generateExternal(vector[double] angles, vector[double] radii, double r, double thresholdDistance) except +
+		_Graph generate(vector[double] angles, vector[double] radii, double R, double T) except +
 
 cdef class HyperbolicGenerator:
 	""" The Hyperbolic Generator distributes points in hyperbolic space and adds edges between points with a probability depending on their distance. The resulting graphs have a power-law degree distribution, small diameter and high clustering coefficient.
 For a temperature of 0, the model resembles a unit-disk model in hyperbolic space.
 
- 		HyperbolicGenerator(n, k=6, gamma=3)
+ 		HyperbolicGenerator(n, k=6, gamma=3, T=0)
 
  		Parameters
 		----------
@@ -2200,15 +2184,17 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 			average degree
 		gamma : double
 			exponent of power-law degree distribution
+		T : double
+			temperature of statistical model
 
 	"""
 
 	cdef _HyperbolicGenerator* _this
 
-	def __cinit__(self,  n, k=6, gamma=3):
+	def __cinit__(self,  n, k=6, gamma=3, T=0):
 		if gamma <= 2:
 				raise ValueError("Exponent of power-law degree distribution must be > 2")
-		self._this = new _HyperbolicGenerator(n, k, gamma)
+		self._this = new _HyperbolicGenerator(n, k, gamma, T)
 
 	def setLeafCapacity(self, capacity):
 		self._this.setLeafCapacity(capacity)
@@ -2223,7 +2209,7 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		return self._this.getElapsedMilliseconds()
 
 	def generate(self):
-		""" Generates hyperbolic unit disk graph
+		""" Generates hyperbolic random graph
 
 		Returns
 		-------
@@ -2232,9 +2218,9 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		"""
 		return Graph(0).setThis(self._this.generate())
 
-	def generateExternal(self, angles, radii, k, gamma):
+	def generate(self, angles, radii, R, T=0):
 		# TODO: documentation
-		return Graph(0).setThis(self._this.generateExternal(angles, radii, k, gamma))
+		return Graph(0).setThis(self._this.generate(angles, radii, R, T))
 
 	@classmethod
 	def fit(cls, Graph G, scale=1):
@@ -5462,9 +5448,68 @@ cdef class Centrality(Algorithm):
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_Centrality*>(self._this)).centralization()
 
+cdef extern from "cpp/centrality/TopCloseness.h":
+	cdef cppclass _TopCloseness "NetworKit::TopCloseness":
+		_TopCloseness(_Graph G, count, bool, bool) except +
+		void run() except +
+		node maximum() except +
+		edgeweight maxSum() except +
+		count iterations() except +
+		count operations() except +
+		vector[node] topkNodesList() except +
+		vector[edgeweight] topkScoresList() except +
+
+
+cdef class TopCloseness:
+	"""
+	Finds the top k nodes with highest closeness centrality faster than computing it for all nodes, based on "Computing Top-k Closeness Centrality Faster in Unweighted Graphs", Bergamini et al., ALENEX16.
+	The algorithms is based on two independent heuristics, described in the referenced paper. We recommend to use first_heu = true and second_heu = false for complex networks and first_heu = true and second_heu = true for street networks or networks with large diameters.
+
+	Parameters
+	----------
+	G: An unweighted graph.
+	k: Number of nodes with highest closeness that have to be found. For example, if k = 10, the top 10 nodes with highest closeness will be computed.
+	first_heu: If true, the neighborhood-based lower bound is computed and nodes are sorted according to it. If false, nodes are simply sorted by degree.
+	sec_heu: If true, the BFSbound is re-computed at each iteration. If false, BFScut is used.
+	"""
+	cdef _TopCloseness* _this
+	cdef Graph _G
+
+	def __cinit__(self,  Graph G, k=1, first_heu=True, sec_heu=True):
+		self._G = G
+		self._this = new _TopCloseness(G._this, k, first_heu, sec_heu)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		""" Computes top-k closeness. """
+		self._this.run()
+		return self
+
+	""" Returns a list with the k nodes with highest closeness.
+	Returns
+	-------
+	vector
+		The k nodes with highest closeness.
+	"""
+	def topkNodesList(self):
+		return self._this.topkNodesList()
+
+
+	""" Returns a list with the scores of the k nodes with highest closeness.
+	Returns
+	-------
+	vector
+		The k highest closeness scores.
+	"""
+	def topkScoresList(self):
+		return self._this.topkScoresList()
+
+
 cdef extern from "cpp/centrality/DegreeCentrality.h":
 	cdef cppclass _DegreeCentrality "NetworKit::DegreeCentrality" (_Centrality):
-		_DegreeCentrality(_Graph, bool normalized) except +
+		_DegreeCentrality(_Graph, bool normalized, bool outdeg, bool ignoreSelfLoops) except +
 
 cdef class DegreeCentrality(Centrality):
 	""" Node centrality index which ranks nodes by their degree.
@@ -5483,9 +5528,9 @@ cdef class DegreeCentrality(Centrality):
  		Normalize centrality values in the interval [0,1].
 	"""
 
-	def __cinit__(self, Graph G, bool normalized=False):
+	def __cinit__(self, Graph G, bool normalized=False, bool outDeg = True, bool ignoreSelfLoops=True):
 		self._G = G
-		self._this = new _DegreeCentrality(G._this, normalized)
+		self._this = new _DegreeCentrality(G._this, normalized, outDeg, ignoreSelfLoops)
 
 
 
@@ -5685,19 +5730,29 @@ cdef class ApproxBetweenness2(Centrality):
 
 
 cdef extern from "cpp/centrality/ApproxCloseness.h":
+	enum _ClosenessType "NetworKit::ApproxCloseness::CLOSENESS_TYPE":
+		INBOUND,
+		OUTBOUND,
+		SUM
+
+cdef extern from "cpp/centrality/ApproxCloseness.h":
 	cdef cppclass _ApproxCloseness "NetworKit::ApproxCloseness" (_Centrality):
-		_ApproxCloseness(_Graph, count, bool) except +
+		_ClosenessType type
+		_ApproxCloseness(_Graph, count, float, bool, _ClosenessType type) except +
+		vector[double] getSquareErrorEstimates() except +
+
 
 
 cdef class ApproxCloseness(Centrality):
 	""" Approximation of closeness centrality according to algorithm described in
-  Eppstein, Wang: Fast Approximation of Centrality.
+  Cohen et al., Computing Classic Closeness Centrality, at Scale.
 
-	ApproxCloseness(G, nSamples, normalized=False)
+	ApproxCloseness(G, nSamples, epsilon=0.1, normalized=False, type=OUTBOUND)
 
-	The algorithm approximates the closeness of all nodes, by taking samples
-  uniformly at random and solving the SSSP problem for each. More samples
-  improves the accuracy of the approximation.
+	The algorithm approximates the closeness of all nodes in both directed and undirected graphs using a hybrid estimator.
+	First, it takes nSamples samples. For these sampled nodes, the closeness is computed exactly. The pivot of each of the
+	remaining nodes is the closest sampled node to it. If a node lies very close to its pivot, a sampling approach is used.
+	Otherwise, a pivoting approach is used. Notice that the input graph has to be connected.
 
 	Parameters
 	----------
@@ -5705,13 +5760,33 @@ cdef class ApproxCloseness(Centrality):
 		input graph (undirected)
 	nSamples : count
 		user defined number of samples
+	epsilon : double, optional
+		parameter used for the error guarantee; it is also used to control when to use sampling and when to use pivoting
 	normalized : bool, optional
 		normalize centrality values in interval [0,1]
+	type : _ClosenessType, optional
+		use in- or outbound centrality or the sum of both (see paper) for computing closeness on directed graph. If G is undirected, this can be ignored.
 	"""
 
-	def __cinit__(self, Graph G, nSamples, normalized=False):
+	#cdef _ApproxCloseness _this
+	INBOUND = 0
+	OUTBOUND = 1
+	SUM = 2
+
+	def __cinit__(self, Graph G, nSamples, epsilon=0.1, normalized=False, _ClosenessType type=OUTBOUND):
 		self._G = G
-		self._this = new _ApproxCloseness(G._this, nSamples, normalized)
+		self._this = new _ApproxCloseness(G._this, nSamples, epsilon, normalized, type)
+
+	def getSquareErrorEstimates(self):
+		""" Return a vector containing the square error estimates for all nodes.
+
+		Returns
+		-------
+		vector
+			A vector of doubles.
+		"""
+		return (<_ApproxCloseness*>(self._this)).getSquareErrorEstimates()
+
 
 
 cdef extern from "cpp/centrality/PageRank.h":
@@ -6274,17 +6349,16 @@ cdef class DynamicPubWebGenerator:
 
 cdef extern from "cpp/generators/DynamicHyperbolicGenerator.h":
 	cdef cppclass _DynamicHyperbolicGenerator "NetworKit::DynamicHyperbolicGenerator":
-		_DynamicHyperbolicGenerator(count numNodes, double avgDegree, double gamma, double moveEachStep, double moveDistance) except +
+		_DynamicHyperbolicGenerator(count numNodes, double avgDegree, double gamma, double T, double moveEachStep, double moveDistance) except +
 		vector[_GraphEvent] generate(count nSteps) except +
 		_Graph getGraph() except +
 		vector[Point[float]] getCoordinates() except +
-		vector[Point[float]] getHyperbolicCoordinates() except +
 
 
 cdef class DynamicHyperbolicGenerator:
 	cdef _DynamicHyperbolicGenerator* _this
 
-	def __cinit__(self, numNodes, avgDegree, gamma, moveEachStep, moveDistance):
+	def __cinit__(self, numNodes, avgDegree = 6, gamma = 3, T = 0, moveEachStep = 1, moveDistance = 0.1):
 		""" Dynamic graph generator according to the hyperbolic unit disk model.
 
 		Parameters
@@ -6295,6 +6369,7 @@ cdef class DynamicHyperbolicGenerator:
 			average degree of the resulting graph
 		gamma : double
 			power-law exponent of the resulting graph
+		T : double
 			temperature, selecting a graph family on the continuum between hyperbolic unit disk graphs and Erdos-Renyi graphs
 		moveFraction : double
 			fraction of nodes to be moved in each time step. The nodes are chosen randomly each step
@@ -6303,7 +6378,7 @@ cdef class DynamicHyperbolicGenerator:
 		"""
 		if gamma <= 2:
 				raise ValueError("Exponent of power-law degree distribution must be > 2")
-		self._this = new _DynamicHyperbolicGenerator(numNodes, avgDegree = 6, gamma = 3, moveEachStep = 1, moveDistance = 0.1)
+		self._this = new _DynamicHyperbolicGenerator(numNodes, avgDegree = 6, gamma = 3, T = 0, moveEachStep = 1, moveDistance = 0.1)
 
 	def generate(self, nSteps):
 		""" Generate event stream.
@@ -6321,10 +6396,6 @@ cdef class DynamicHyperbolicGenerator:
 	def getCoordinates(self):
 		""" Get coordinates in the Poincare disk"""
 		return [(p[0], p[1]) for p in self._this.getCoordinates()]
-
-	def getHyperbolicCoordinates(self):
-		""" Get coordinates in the hyperbolic disk"""
-		return [(p[0], p[1]) for p in self._this.getHyperbolicCoordinates()]
 
 
 
@@ -6992,7 +7063,7 @@ cdef class VDegreeIndex(LinkPredictor):
 cdef extern from "cpp/linkprediction/AlgebraicDistanceIndex.h":
 	cdef cppclass _AlgebraicDistanceIndex "NetworKit::AlgebraicDistanceIndex"(_LinkPredictor):
 		_AlgebraicDistanceIndex(count numberSystems, count numberIterations, double omega, index norm) except +
-		_AlgebraicDistanceIndex(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm, ) except +
+		_AlgebraicDistanceIndex(const _Graph& G, count numberSystems, count numberIterations, double omega, index norm) except +
 		void preprocess() except +
 		double run(node u, node v) except +
 
@@ -7919,11 +7990,11 @@ cdef class EdgeScoreNormalizer(EdgeScore):
 	def __cinit__(self, Graph G not None, score, bool inverse = False, double lower = 0.0, double upper = 1.0):
 		self._G = G
 		try:
-			self._inScoreDouble = move(<vector[double]?>score)
+			self._inScoreDouble = <vector[double]?>score
 			self._this = new _EdgeScoreNormalizer[double](G._this, self._inScoreDouble, inverse, lower, upper)
 		except TypeError:
 			try:
-				self._inScoreCount = move(<vector[count]?>score)
+				self._inScoreCount = <vector[count]?>score
 				self._this = new _EdgeScoreNormalizer[count](G._this, self._inScoreCount, inverse, lower, upper)
 			except TypeError:
 				raise TypeError("score must be either a vector of integer or float")
@@ -8784,32 +8855,28 @@ cdef class EpidemicSimulationSEIR(Algorithm):
 
 
 
-cdef extern from "cpp/centrality/Spanning.h":
-	cdef cppclass _Spanning "NetworKit::Spanning":
-		_Spanning(_Graph G, double tol) except +
+cdef extern from "cpp/centrality/SpanningEdgeCentrality.h":
+	cdef cppclass _SpanningEdgeCentrality "NetworKit::SpanningEdgeCentrality":
+		_SpanningEdgeCentrality(_Graph G, double tol) except +
 		void run() nogil except +
 		void runApproximation() except +
 		void runParallelApproximation() except +
-		void runTreeApproximation(count reps) except +
-		void runTreeApproximation2(count reps) except +
-		void runPseudoTreeApproximation(count reps) except +
 		vector[double] scores() except +
 
-cdef class Spanning:
-	""" Computes the Euclidean Commute Time Distance between each pair of nodes for an undirected unweighted graph.
-	Spanning(G)
-	Create Spanning Edge Centrality for Graph `G`.
+cdef class SpanningEdgeCentrality:
+	""" Computes the Spanning Edge centrality for the edges of the graph.
 	Parameters
 	----------
 	G : Graph
 		The graph.
 	tol: double
+		Tolerance used for the approximation
 	"""
-	cdef _Spanning* _this
+	cdef _SpanningEdgeCentrality* _this
 	cdef Graph _G
 	def __cinit__(self,  Graph G, double tol = 0.1):
 		self._G = G
-		self._this = new _Spanning(G._this, tol)
+		self._this = new _SpanningEdgeCentrality(G._this, tol)
 	def __dealloc__(self):
 		del self._this
 	def run(self):
@@ -8824,27 +8891,6 @@ cdef class Spanning:
 	def runParallelApproximation(self):
 		""" Computes approximation (in parallel) of the Spanning Edge Centrality. """
 		return self._this.runParallelApproximation()
-
-	def runTreeApproximation(self, reps):
-		"""  Returns a Spanning Edge Centrality approximation using spanning trees
-
-		reps : number of iterations
-		"""
-		return self._this.runTreeApproximation(reps)
-
-	def runTreeApproximation2(self, reps):
-		"""  Returns a Spanning Edge Centrality approximation using spanning trees.
-
-		reps : number of iterations
-		"""
-		return self._this.runTreeApproximation2(reps)
-
-	def runPseudoTreeApproximation(self, reps):
-		"""  Returns a Spanning Edge Centrality approximation using spanning trees
-
-		reps : number of iterations
-		"""
-		return self._this.runPseudoTreeApproximation(reps)
 
 	def scores(self):
 		""" Get a vector containing the SEC score for each edge in the graph.

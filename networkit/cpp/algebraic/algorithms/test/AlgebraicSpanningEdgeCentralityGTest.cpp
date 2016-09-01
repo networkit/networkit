@@ -11,7 +11,7 @@
 #include "../../CSRMatrix.h"
 
 #include "../../../io/METISGraphReader.h"
-#include "../../../centrality/Spanning.h"
+#include "../../../centrality/SpanningEdgeCentrality.h"
 
 namespace NetworKit {
 
@@ -56,7 +56,7 @@ TEST(AlgebraicSpanningEdgeCentralityGTest, benchmarkSpanning) {
 		G.indexEdges();
 		Aux::Timer timer;
 
-		Spanning exact(G);
+		SpanningEdgeCentrality exact(G);
 		timer.start();
 		exact.run();
 		timer.stop();
@@ -78,7 +78,7 @@ TEST(AlgebraicSpanningEdgeCentralityGTest, benchmarkSpanning) {
 		error /= G.numberOfEdges();
 		INFO("Avg. relative error: ", error);
 
-		Spanning sp(G);
+		SpanningEdgeCentrality sp(G);
 		timer.start();
 		sp.runParallelApproximation();
 		timer.stop();

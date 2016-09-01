@@ -22,17 +22,17 @@ namespace NetworKit {
 
 class HyperbolicSpace {
 public:
-	HyperbolicSpace();
-	virtual ~HyperbolicSpace();
+	HyperbolicSpace() = default;
+	virtual ~HyperbolicSpace() = default;
 	/**
 	 * @param angles empty vector to hold angular coordinates of generated points
 	 * @param radii empty vector to hold radial coordinates of generated points
-	 * @param stretch multiplier for the radius of the hyperbolic disk
+	 * @param R radius of the hyperbolic disk
 	 * @param alpha dispersion parameter for the node positions
 	 *
-	 * Fill preallocated vectors with randomly sampled points in the poincare disk
+	 * Fill preallocated vectors with randomly sampled points in native coordinates
 	 */
-	static void fillPoints(vector<double> &angles, vector<double> &radii, double stretch, double alpha);
+	static void fillPoints(vector<double> &angles, vector<double> &radii, double R, double alpha);
 
 	/**
 	 * @param angles empty vector to hold angular coordinates of generated points
@@ -40,7 +40,7 @@ public:
 	 * @param stretch multiplier for the radius of the hyperbolic disk
 	 * @param alpha dispersion parameter for the node positions
 	 *
-	 * Fill preallocated vectors with randomly sampled points in the poincare disk
+	 * Fill preallocated vectors with randomly sampled points in native coordinates
 	 */
 	static void fillPoints(vector<double> &angles, vector<double> &radii, double minPhi, double maxPhi, double minR, double maxR, double alpha);
 
@@ -55,12 +55,24 @@ public:
 	static double poincareMetric(double firstangle, double firstR, double secondangle, double secondR);
 
 	/**
+	 * @param firstangle angular coordinate of the first point
+	 * @param firstR radial coordiante of the first point
+	 * @param secondangle angular coordinate of the second point
+	 * @param secondR radial coordinate of the second point
+	 *
+	 * @return distance between two points in native hyperbolic representation
+	 */
+	static double nativeDistance(double firstangle, double firstR, double secondangle, double secondR);
+
+	/**
 	 * @param a first point in cartesian coordinates
 	 * @param b second point in cartesian coordinates
 	 *
 	 * @return distance between a and b in the poincare metric
 	 */
 	static double poincareMetric(Point2D<double> a, Point2D<double> b);
+
+
 
 	/**
 	 * @param phi angular coordinate of point
