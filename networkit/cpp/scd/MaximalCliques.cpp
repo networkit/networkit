@@ -36,7 +36,6 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 	for (const node& u : orderedNodes) {
 		auto pxvec2 = pxvector[xpbound - 1];
 		std::swap(pxvector[pxlookup[u]], pxvector[xpbound - 1]);
-		//std::swap(pxlookup[u], pxlookup[pxvec2]);
 		pxlookup[pxvec2] = pxlookup[u];
 		pxlookup[u] = xpbound - 1;
 
@@ -64,14 +63,12 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 			if (pxlookup[v] < xpbound) { // v is in X
 				auto pxvec2 = pxvector[xpbound - xcount - 1];
 				std::swap(pxvector[pxlookup[v]], pxvector[xpbound - xcount - 1]);
-				//std::swap(pxlookup[v], pxlookup[pxvec2]);
 				pxlookup[pxvec2] = pxlookup[v];
 				pxlookup[v] = xpbound - xcount - 1;
 				xcount += 1;
 			} else { // v is in P
 				auto pxvec2 = pxvector[xpbound + pcount];
 				std::swap(pxvector[pxlookup[v]], pxvector[xpbound + pcount]);
-				//std::swap(pxlookup[v], pxlookup[pxvec2]);
 				pxlookup[pxvec2] = pxlookup[v];
 				pxlookup[v] = xpbound + pcount;
 				pcount += 1;
@@ -217,22 +214,28 @@ node MaximalCliques::findPivot(std::vector<node>& pxvector, std::unordered_map<n
 
 std::vector<node> MaximalCliques::getDegeneracyOrdering() {
 	std::vector<node> result;
-	Graph dG(G);
 	
-	while (dG.numberOfNodes() > 0) {
-		count minDegree = dG.numberOfNodes();
+	count n = G.numberOfNodes();
+	std::unordered_map<node, count> degrees;
+	G.forNodes([&] (node u) {
+		degrees[u] = G.degree(u);
+	});
+	
+	while (result.size() < n) {
+		count minDegree = n; // - result.size();
 		node minNode = 0;
-		dG.forNodes([&] (node u) {
-			if (dG.degree(u) < minDegree) {
-				minDegree = dG.degree(u);
-				minNode = u;
+		for (auto it : degrees) {
+			if (it.second < minDegree) {
+				minDegree = it.second;
+				minNode = it.first;
 			}
-		});
+		};
+
 		result.push_back(minNode);
-		dG.forNeighborsOf(minNode, [&] (node v) {
-			dG.removeEdge(minNode, v);
+		degrees.erase(minNode);
+		G.forNeighborsOf(minNode, [&] (node v) {
+			degrees[v] -= 1;
 		});
-		dG.removeNode(minNode);
 	}
 
 	return result;
