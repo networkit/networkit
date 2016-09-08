@@ -16,7 +16,7 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 	auto orderedNodes = getDegeneracyOrdering();
 	
 	std::vector<node> pxvector(G.numberOfNodes());
-	std::unordered_map<node, uint32_t> pxlookup;
+	std::vector<index> pxlookup(G.numberOfNodes());
 	std::vector<std::vector<node> > neighbors(pxvector.size());
 	uint32_t ii = 0;
 	for (const node u : orderedNodes) {
@@ -101,7 +101,7 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 	return result;
 }
 
-std::vector<std::vector<node> > MaximalCliques::tomita(std::vector<node>& pxvector, std::unordered_map<node, uint32_t>& pxlookup, std::vector<std::vector<node> >& neighbors, uint32_t xbound, uint32_t xpbound, uint32_t pbound, std::vector<node>& r) {
+std::vector<std::vector<node> > MaximalCliques::tomita(std::vector<node>& pxvector, std::vector<index>& pxlookup, std::vector<std::vector<node> >& neighbors, uint32_t xbound, uint32_t xpbound, uint32_t pbound, std::vector<node>& r) {
 	std::vector<std::vector<node> > result;
 	if (xbound == pbound) { //if (X, P are empty)
 		result.push_back(r);
@@ -133,14 +133,12 @@ std::vector<std::vector<node> > MaximalCliques::tomita(std::vector<node>& pxvect
 			if (pxlookup[v] < xpbound && pxlookup[v] >= xbound) { // v is in X
 				auto pxvec2 = pxvector[xpbound - xcount - 1];
 				std::swap(pxvector[pxlookup[v]], pxvector[xpbound - xcount - 1]);
-				//std::swap(pxlookup[v], pxlookup[pxvec2]);
 				pxlookup[pxvec2] = pxlookup[v];
 				pxlookup[v] = xpbound - xcount - 1;
 				xcount += 1;
 			} else if (pxlookup[v] >= xpbound && pxlookup[v] < pbound){ // v is in P
 				auto pxvec2 = pxvector[xpbound + pcount];
 				std::swap(pxvector[pxlookup[v]], pxvector[xpbound + pcount]);
-				//std::swap(pxlookup[v], pxlookup[pxvec2]);
 				pxlookup[pxvec2] = pxlookup[v];
 				pxlookup[v] = xpbound + pcount;
 				pcount += 1;
@@ -160,7 +158,6 @@ std::vector<std::vector<node> > MaximalCliques::tomita(std::vector<node>& pxvect
 
 		auto pxvec2 = pxvector[xpbound];
 		std::swap(pxvector[pxlookup[pxveci]], pxvector[xpbound]);
-		//std::swap(pxlookup[pxveci], pxlookup[pxvector[xpbound]]);
 		pxlookup[pxvec2] = pxlookup[pxveci];
 		pxlookup[pxveci] = xpbound;
 		xpbound += 1;
@@ -171,7 +168,6 @@ std::vector<std::vector<node> > MaximalCliques::tomita(std::vector<node>& pxvect
 		//move from X -> P
 		auto pxvec2 = pxvector[xpbound - 1];
 		std::swap(pxvector[pxlookup[v]], pxvector[xpbound - 1]);
-		//std::swap(pxlookup[v], pxlookup[pxvec2]);
 		pxlookup[pxvec2] = pxlookup[v];
 		pxlookup[v] = xpbound - 1;
 		xpbound -= 1;
@@ -187,7 +183,7 @@ std::vector<std::vector<node> > MaximalCliques::tomita(std::vector<node>& pxvect
 	return result;
 }
 
-node MaximalCliques::findPivot(std::vector<node>& pxvector, std::unordered_map<node, uint32_t>& pxlookup, std::vector<std::vector<node> >& neighbors, uint32_t xbound, uint32_t xpbound, uint32_t pbound) {
+node MaximalCliques::findPivot(std::vector<node>& pxvector, std::vector<index>& pxlookup, std::vector<std::vector<node> >& neighbors, uint32_t xbound, uint32_t xpbound, uint32_t pbound) {
 	node maxnode = G.upperNodeIdBound() + 1;
 	int32_t maxval = -1;
 
