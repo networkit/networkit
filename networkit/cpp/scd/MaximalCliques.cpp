@@ -236,30 +236,90 @@ node MaximalCliques::findPivot(std::vector<node>& pxvector, std::vector<index>& 
 
 std::vector<node> MaximalCliques::getDegeneracyOrdering() {
 	std::vector<node> result;
-	
-	count n = G.numberOfNodes();
-	std::unordered_map<node, count> degrees;
-	G.forNodes([&] (node u) {
-		degrees[u] = G.degree(u);
+	result.reserve(G.numberOfNodes());
+
+	/* Main data structure: buckets of nodes indexed by their remaining degree. */
+	index z = G.upperNodeIdBound();
+	std::vector<node> queue(G.numberOfNodes());
+	std::vector<index> nodePtr(z);
+	std::vector<index> degreeBegin(G.numberOfNodes());
+	std::vector<count> degree(z);       // tracks degree during algo
+
+	/* Bucket sort  by degree */
+	/* 1) bucket sizes */
+	G.forNodes([&](node u) {
+		count deg = G.degree(u);
+		degree[u] = deg;
+		++degreeBegin[deg];
 	});
-	
-	while (result.size() < n) {
-		count minDegree = n; // - result.size();
-		node minNode = 0;
-		for (auto it : degrees) {
-			if (it.second < minDegree) {
-				minDegree = it.second;
-				minNode = it.first;
+
+	index sum = 0; // 2) exclusive in-place prefix sum
+	for (index i = 0; i < degreeBegin.size(); ++i) {
+		index tmp = degreeBegin[i];
+		degreeBegin[i] = sum;
+		sum += tmp;
+	}
+
+	/* 3) Sort nodes/place them in queue */
+	G.forNodes([&](node u) {
+		count deg = degree[u];
+		index pos = degreeBegin[deg];
+		++degreeBegin[deg];
+		queue[pos] = u;
+		nodePtr[u] = pos;
+	});
+
+	/* 4) restore exclusive prefix sum */
+	index tmp = 0; // move all one forward
+	for (index i = 0; i < degreeBegin.size(); ++i) {
+		std::swap(tmp, degreeBegin[i]);
+	}
+
+	/* Current core and and computed scoreData values. */
+	index core = 0;
+
+	/* Main loop: Successively "remove" nodes by setting them not alive after processing them. */
+	for (index i = 0; i < G.numberOfNodes(); ++i) {
+		node u = queue[i];
+		core = std::max(core, degree[u]); // core is maximum of all previously seen degrees
+
+		result.emplace_back(u);
+
+		/* Remove a neighbor by decreasing its degree and changing its position in the queue */
+		auto removeNeighbor = [&](node v) {
+			if (nodePtr[v] > i) { // only nodes that are after the current node need to be considered
+				// adjust the degree
+				count oldDeg = degree[v];
+				--degree[v];
+				count newDeg = oldDeg - 1;
+
+				// Degrees smaller than the current degree can be before the current position
+				// Correct those that we need. Note that as we decrease degrees only by one
+				// all degreeBegin values larger than oldDeg will have been adjusted already.
+				if (degreeBegin[oldDeg] <= i) {
+					degreeBegin[oldDeg] = i + 1;
+				}
+
+				if (degreeBegin[newDeg] <= i) {
+					degreeBegin[newDeg] = i + 1;
+				}
+
+				// Swap v with beginning of the current bucket.
+				index oldPos = nodePtr[v];
+				index newPos = degreeBegin[oldDeg];
+				node nodeToSwap = queue[newPos];
+				std::swap(queue[oldPos], queue[newPos]);
+				std::swap(nodePtr[nodeToSwap], nodePtr[v]);
+
+				// Move bucket border, v is now in the previous bucket, i.e. the bucket of its new degree
+				++degreeBegin[oldDeg];
 			}
 		};
 
-		result.push_back(minNode);
-		degrees.erase(minNode);
-		G.forNeighborsOf(minNode, [&] (node v) {
-			degrees[v] -= 1;
-		});
+		/* Remove u and its incident edges. */
+		G.forNeighborsOf(u, removeNeighbor);
 	}
-
+	
 	return result;
 }
 
