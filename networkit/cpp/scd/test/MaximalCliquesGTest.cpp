@@ -38,6 +38,28 @@ TEST_F(MaximalCliquesGTest, testMaximalCliques) {
 	}
 }
 
+TEST_F(MaximalCliquesGTest, testMaximalCliquesOnWholeGraph) {
+
+	METISGraphReader reader;
+	Graph G = reader.read("input/hep-th.graph");
+
+	MaximalCliques clique(G);
+
+	DEBUG("Call MaximalCliques()");
+
+	auto result = clique.run();
+
+	EXPECT_GT(result.size(), 0u);
+
+	// check results (are they cliques?)
+	for (auto cliq : result) {
+		auto cli = std::unordered_set<node>(cliq.begin(), cliq.end());
+		auto cliqueGraph = G.subgraphFromNodes(cli);
+
+		EXPECT_EQ(cliqueGraph.numberOfEdges(), (cliqueGraph.numberOfNodes() * (cliqueGraph.numberOfNodes() - 1) / 2));
+	}
+}
+
 }
 
 #endif /* NOGTEST */
