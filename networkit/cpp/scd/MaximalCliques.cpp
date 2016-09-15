@@ -16,7 +16,7 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 	auto orderedNodes = getDegeneracyOrdering();
 	
 	std::vector<node> pxvector(G.numberOfNodes());
-	std::vector<index> pxlookup(G.numberOfNodes());
+	std::vector<index> pxlookup(G.upperNodeIdBound());
 	std::vector<std::vector<node> > neighbors(pxvector.size());
 	uint32_t ii = 0;
 	for (const node u : orderedNodes) {
