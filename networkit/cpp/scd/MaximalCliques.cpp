@@ -113,10 +113,12 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 		}
 		#endif
 
-		std::vector<node> r;
-		r.push_back(u);
+		std::vector<node> r = {u};
 		auto tmp = tomita(pxvector, pxlookup, xpbound - xcount, xpbound, xpbound + pcount, r);
-		result.insert(result.end(), tmp.begin(), tmp.end());
+		for (auto &t : tmp) {
+			result.emplace_back(std::move(t));
+		}
+
 		xpbound += 1;
 	}
 
@@ -178,7 +180,9 @@ std::vector<std::vector<node> > MaximalCliques::tomita(std::vector<node>& pxvect
 		#endif
 
 		auto tmp = tomita(pxvector, pxlookup, xpbound - xcount, xpbound, xpbound + pcount, rplusv);
-		result.insert(result.end(), tmp.begin(), tmp.end());
+		for (auto &t : tmp) {
+			result.emplace_back(std::move(t));
+		}
 
 		auto pxvec2 = pxvector[xpbound];
 		std::swap(pxvector[pxlookup[pxveci]], pxvector[xpbound]);
