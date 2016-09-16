@@ -41,11 +41,9 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 	
 	std::vector<node> pxvector(G.numberOfNodes());
 	std::vector<index> pxlookup(G.upperNodeIdBound());
-	std::vector<std::vector<node> > neighbors(pxvector.size());
 	uint32_t ii = 0;
 	for (const node u : orderedNodes) {
 		pxvector[ii] = u;
-		neighbors[ii] = G.neighbors(u);
 		pxlookup[u] = ii;
 		ii += 1;
 	}
@@ -117,7 +115,7 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 
 		std::vector<node> r;
 		r.push_back(u);
-		auto tmp = tomita(pxvector, pxlookup, neighbors, xpbound - xcount, xpbound, xpbound + pcount, r);
+		auto tmp = tomita(pxvector, pxlookup, xpbound - xcount, xpbound, xpbound + pcount, r);
 		result.insert(result.end(), tmp.begin(), tmp.end());
 		xpbound += 1;
 	}
@@ -127,7 +125,7 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 	return result;
 }
 
-std::vector<std::vector<node> > MaximalCliques::tomita(std::vector<node>& pxvector, std::vector<index>& pxlookup, std::vector<std::vector<node> >& neighbors, uint32_t xbound, uint32_t xpbound, uint32_t pbound, std::vector<node>& r) {
+std::vector<std::vector<node> > MaximalCliques::tomita(std::vector<node>& pxvector, std::vector<index>& pxlookup, uint32_t xbound, uint32_t xpbound, uint32_t pbound, std::vector<node>& r) {
 	std::vector<std::vector<node> > result;
 	if (xbound == pbound) { //if (X, P are empty)
 		result.push_back(r);
@@ -141,7 +139,7 @@ std::vector<std::vector<node> > MaximalCliques::tomita(std::vector<node>& pxvect
 	assert(pbound <= pxvector.size());
 	#endif
 
-	node u = findPivot(pxvector, pxlookup, neighbors, xbound, xpbound, pbound);
+	node u = findPivot(pxvector, pxlookup, xbound, xpbound, pbound);
 	std::vector<node> movedNodes;
 
 	// this step is necessary as the next loop changes pxvector,
@@ -179,7 +177,7 @@ std::vector<std::vector<node> > MaximalCliques::tomita(std::vector<node>& pxvect
 		assert(xpbound - xcount >= xbound);
 		#endif
 
-		auto tmp = tomita(pxvector, pxlookup, neighbors, xpbound - xcount, xpbound, xpbound + pcount, rplusv);
+		auto tmp = tomita(pxvector, pxlookup, xpbound - xcount, xpbound, xpbound + pcount, rplusv);
 		result.insert(result.end(), tmp.begin(), tmp.end());
 
 		auto pxvec2 = pxvector[xpbound];
@@ -209,7 +207,7 @@ std::vector<std::vector<node> > MaximalCliques::tomita(std::vector<node>& pxvect
 	return result;
 }
 
-node MaximalCliques::findPivot(std::vector<node>& pxvector, std::vector<index>& pxlookup, std::vector<std::vector<node> >& neighbors, uint32_t xbound, uint32_t xpbound, uint32_t pbound) {
+node MaximalCliques::findPivot(std::vector<node>& pxvector, std::vector<index>& pxlookup, uint32_t xbound, uint32_t xpbound, uint32_t pbound) {
 	node maxnode = G.upperNodeIdBound() + 1;
 	int32_t maxval = -1;
 
