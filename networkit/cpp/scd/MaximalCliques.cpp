@@ -114,10 +114,7 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 		#endif
 
 		std::vector<node> r = {u};
-		auto tmp = tomita(pxvector, pxlookup, xpbound - xcount, xpbound, xpbound + pcount, r);
-		for (auto &t : tmp) {
-			result.emplace_back(std::move(t));
-		}
+		tomita(pxvector, pxlookup, xpbound - xcount, xpbound, xpbound + pcount, r, result);
 
 		xpbound += 1;
 	}
@@ -127,11 +124,10 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 	return result;
 }
 
-std::vector<std::vector<node> > MaximalCliques::tomita(std::vector<node>& pxvector, std::vector<index>& pxlookup, uint32_t xbound, uint32_t xpbound, uint32_t pbound, std::vector<node>& r) {
-	std::vector<std::vector<node> > result;
+void MaximalCliques::tomita(std::vector<node>& pxvector, std::vector<index>& pxlookup, uint32_t xbound, uint32_t xpbound, uint32_t pbound, std::vector<node>& r, std::vector<std::vector<node>>& result) {
 	if (xbound == pbound) { //if (X, P are empty)
 		result.push_back(r);
-		return result;
+		return;
 	}
 
 	#ifndef NDEBUG
@@ -179,10 +175,7 @@ std::vector<std::vector<node> > MaximalCliques::tomita(std::vector<node>& pxvect
 		assert(xpbound - xcount >= xbound);
 		#endif
 
-		auto tmp = tomita(pxvector, pxlookup, xpbound - xcount, xpbound, xpbound + pcount, rplusv);
-		for (auto &t : tmp) {
-			result.emplace_back(std::move(t));
-		}
+		tomita(pxvector, pxlookup, xpbound - xcount, xpbound, xpbound + pcount, rplusv, result);
 
 		auto pxvec2 = pxvector[xpbound];
 		std::swap(pxvector[pxlookup[pxveci]], pxvector[xpbound]);
@@ -207,8 +200,6 @@ std::vector<std::vector<node> > MaximalCliques::tomita(std::vector<node>& pxvect
 		assert(pxlookup[v] < pbound);
 	}
 	#endif
-
-	return result;
 }
 
 node MaximalCliques::findPivot(std::vector<node>& pxvector, std::vector<index>& pxlookup, uint32_t xbound, uint32_t xpbound, uint32_t pbound) {
