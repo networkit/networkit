@@ -16,7 +16,7 @@ class ScopedTimer {
 		ScopedTimer(const std::string& message) : start(std::chrono::high_resolution_clock::now()), message(message) {};
 		~ScopedTimer() {
 			std::chrono::duration<double> elapsed_seconds = std::chrono::high_resolution_clock::now()-start;
-			std::cout << message << " needed: " << elapsed_seconds.count() << "s" << std::endl;
+			INFO(message, " needed: ", elapsed_seconds.count(), "s");
 
 		};
 };
