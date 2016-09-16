@@ -3,25 +3,6 @@
 #include <cassert>
 #include <algorithm>
 
-namespace {
-#include <string>
-#include <chrono>
-#include <iostream>
-
-class ScopedTimer { 
-	private:
-		std::chrono::time_point<std::chrono::high_resolution_clock> start;
-		std::string message;
-	public:
-		ScopedTimer(const std::string& message) : start(std::chrono::high_resolution_clock::now()), message(message) {};
-		~ScopedTimer() {
-			std::chrono::duration<double> elapsed_seconds = std::chrono::high_resolution_clock::now()-start;
-			INFO(message, " needed: ", elapsed_seconds.count(), "s");
-
-		};
-};
-};
-
 namespace NetworKit {
 
 MaximalCliques::MaximalCliques(const Graph& G) : G(G) {
@@ -32,13 +13,8 @@ MaximalCliques::MaximalCliques(const Graph& G) : G(G) {
 std::vector<std::vector<node> > MaximalCliques::run() {
 	std::vector<std::vector<node> > result;
 
-	ScopedTimer *timer = new ScopedTimer("Degeneracy ordering");
-
 	auto orderedNodes = getDegeneracyOrdering();
 
-	delete timer;
-	timer = new ScopedTimer("Actual clique finding");
-	
 	std::vector<node> pxvector(G.numberOfNodes());
 	std::vector<index> pxlookup(G.upperNodeIdBound());
 	uint32_t ii = 0;
@@ -118,8 +94,6 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 
 		xpbound += 1;
 	}
-
-	delete timer;
 
 	return result;
 }
