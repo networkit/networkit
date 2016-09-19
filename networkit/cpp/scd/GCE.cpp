@@ -11,7 +11,7 @@
 namespace NetworKit {
 
 
-GCE::GCE(const Graph& G, std::string objective) : SelectiveCommunityDetector(G), objective(objective), intersector(G.upperNodeIdBound()) {
+GCE::GCE(const Graph& G, std::string objective) : SelectiveCommunityDetector(G), objective(objective) {
 
 }
 
