@@ -6,13 +6,16 @@
 
 
 #include "GCE.h"
+#include <unordered_map>
 
 
 namespace NetworKit {
 
 
 GCE::GCE(const Graph& G, std::string objective) : SelectiveCommunityDetector(G), objective(objective) {
-
+	if (G.numberOfSelfLoops() > 0) {
+		throw std::runtime_error("Graphs with self-loops are not supported in GCE");
+	}
 }
 
 std::map<node, std::set<node> >  GCE::run(std::set<unsigned int>& seeds) {
@@ -37,30 +40,34 @@ std::set<node> GCE::expandSeed(node s) {
 	double intWeight = 0;
     double extWeight = 0;
 
-    std::unordered_set<node> currentShell;
-    G.forNeighborsOf(s, [&](node u) {
-    	currentShell.insert(u);
-    });
+	struct node_property_t {
+		double degInt;
+		double degExt;
+	};
+
+	std::unordered_map<node, node_property_t> currentShell;
+
+	G.forNeighborsOf(s, [&](node, node u, edgeweight ew) {
+		currentShell.insert(std::make_pair(u, node_property_t {.degInt =  ew, .degExt = G.weightedDegree(u) - ew}));
+		extWeight += ew;
+	});
 
 
     double currentQ = 0.0; // current community quality
 
-    // values per node
-    double degInt, degExt; // internal, external degree
-
-
     auto boundary = [&](const std::set<node>& C) {
 		std::set<node> sh;
-		for (node v : currentShell) {
-			G.forNeighborsOf(v, [&](node u){
+		for (const auto &s : currentShell) {
+			G.forNeighborsOf(s.first, [&](node u){
 				if (!in(C, u)) {
-					sh.insert(v);
+					sh.insert(s.first);
 				}
 			});
 		}
 		return sh;
 	};
 
+#ifndef NDEBUG
 	/**
 	 * internal and external weighted degree of a node with respect to the community
 	 */
@@ -77,7 +84,6 @@ std::set<node> GCE::expandSeed(node s) {
 		return std::make_pair(degInt, degExt);
 	};
 
-
     auto intExtWeight = [&](const std::set<node>& community) {
         double internal = 0;
         double external = 0;
@@ -93,13 +99,14 @@ std::set<node> GCE::expandSeed(node s) {
         internal = internal / 2;    // internal edges were counted twice
         return std::make_pair(internal, external);
     };
+#endif
 
 
     /*
      * objective function M
      * @return quality difference for the move of v to C
      */
-	auto deltaM = [&](node v, const std::set<node>& C){
+	auto deltaM = [&](node, double degInt, double degExt, const std::set<node>& C){
 		double delta = (intWeight + degInt) / (double) (extWeight - degInt + degExt);
 		return delta - currentQ;
 	};
@@ -109,7 +116,7 @@ std::set<node> GCE::expandSeed(node s) {
      * objective function L
      * @return quality difference for the move of v to C
      */
-    auto deltaL = [&](node v, std::set<node>& C){
+    auto deltaL = [&](node v, double degInt, double degExt, std::set<node>& C){
     	C.insert(v);
     	double numerator = 2.0 * (intWeight + degInt) * boundary(C).size();
     	double denominator = C.size() * (extWeight - degInt + degExt);
@@ -117,7 +124,7 @@ std::set<node> GCE::expandSeed(node s) {
         return (numerator / denominator) - currentQ;
     };
 
-    std::function<double(node v, std::set<node>& C)> deltaQ;
+    std::function<double(node v, double degInt, double degExt, std::set<node>& C)> deltaQ;
     // select quality objective
     if (objective == "M") {
         deltaQ = deltaM;
@@ -137,18 +144,19 @@ std::set<node> GCE::expandSeed(node s) {
 	node vMax;
 	do {
         // get values for current community
-        std::tie(intWeight, extWeight) = intExtWeight(community);
+        assert(std::make_pair(intWeight, extWeight) == intExtWeight(community));
         // scan shell for node with maximum quality improvement
 		dQMax = 0.0; 	// maximum quality improvement
 		vMax = none;
 //		for (node v : shell(community)) {
-		for (node v : currentShell) {
+		for (const auto& vs : currentShell) {
             // get values for current node
-            std::tie(degInt, degExt) =  intExtDeg(v, community);
-			double dQ = deltaQ(v, community);
+			assert(intExtDeg(vs.first, community) == std::make_pair(vs.second.degInt, vs.second.degExt));
+
+			double dQ = deltaQ(vs.first, vs.second.degInt, vs.second.degExt, community);
 			TRACE("dQ: ", dQ);
 			if (dQ >= dQMax) {
-				vMax = v;
+				vMax = vs.first;
 				dQMax = dQ;
 			}
 		}
@@ -156,10 +164,25 @@ std::set<node> GCE::expandSeed(node s) {
 		TRACE("dQMax: ", dQMax);
 		if (vMax != none) {
 			community.insert(vMax); 	// add best node to community
+
 			currentShell.erase(vMax);	// remove best node from shell
-			G.forNeighborsOf(vMax, [&](node v) { // insert external neighbors of vMax into shell
+
+			G.forNeighborsOf(vMax, [&](node, node v, edgeweight ew) { // insert external neighbors of vMax into shell
 				if (!in(community, v)) {
-					currentShell.insert(v);
+					auto it = currentShell.find(v);
+					if (it == currentShell.end()) {
+						currentShell.insert(std::make_pair(v, node_property_t {.degInt = ew, .degExt = G.weightedDegree(v) - ew}));
+					} else {
+						it->second.degInt += ew;
+						it->second.degExt -= ew;
+					}
+
+					extWeight += ew;
+
+					assert(intExtDeg(v, community) == std::make_pair(currentShell[v].degInt, currentShell[v].degExt));
+				} else {
+					intWeight += ew;
+					extWeight -= ew;
 				}
 			});
             currentQ += dQMax;     // update current community quality
