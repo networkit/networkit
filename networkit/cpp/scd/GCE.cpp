@@ -18,8 +18,7 @@ GCE::GCE(const Graph& G, std::string objective) : SelectiveCommunityDetector(G),
 std::map<node, std::set<node> >  GCE::run(std::set<unsigned int>& seeds) {
     std::map<node, std::set<node> > result;
     for (auto seed : seeds) {
-        auto community = expandSeed(seed);
-        result[seed] = community;
+        result[seed] = expandSeed(seed);
     }
     return result;
 }
