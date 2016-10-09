@@ -1,6 +1,8 @@
 {# Import the theme's layout. #}
 {% extends "!layout.html" %}
 
+{% set script_files = script_files + ["_static/particles.min.js", "_static/custom.js"] %}
+
 {# Custom CSS overrides #}
 {% set bootswatch_css_custom = ['_static/style.css'] %}
 
