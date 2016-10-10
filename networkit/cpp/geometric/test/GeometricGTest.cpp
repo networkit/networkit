@@ -9,15 +9,6 @@
 
 namespace NetworKit {
 
-GeometricGTest::GeometricGTest() {
-	// TODO Auto-generated constructor stub
-
-}
-
-GeometricGTest::~GeometricGTest() {
-	// TODO Auto-generated destructor stub
-}
-
 /**
  * test conversion of polar coordinates to cartesian coordinates and back
  */
@@ -76,7 +67,14 @@ TEST_F(GeometricGTest, testEuclideanCircleConsistency) {
 		EXPECT_GE(HyperbolicSpace::poincareMetric(cartesianPoint, counterPointOutside), R);
 
 	}
+}
 
+TEST_F(GeometricGTest, testHyperbolicTargetRadius) {
+	const count n = 5000;
+	const double T = 10;
+	const double k = 5;
+	const double alpha = 1;
+	double R = HyperbolicSpace::getTargetRadius(n, (n*k)/2, alpha, T);
 }
 
 } /* namespace NetworKit */

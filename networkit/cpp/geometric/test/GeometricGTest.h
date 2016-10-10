@@ -20,8 +20,8 @@ namespace NetworKit {
 
 class GeometricGTest: public testing::Test {
 public:
-	GeometricGTest();
-	virtual ~GeometricGTest();
+	GeometricGTest() = default;
+	virtual ~GeometricGTest() = default;
 };
 
 } /* namespace NetworKit */
