@@ -49,15 +49,10 @@ public:
 	 * Construct a QuadNode for polar coordinates.
 	 *
 	 *
-	 * @param leftAngle Minimal angular coordinate of region, in radians from 0 to 2\pi
-	 * @param rightAngle Maximal angular coordinate of region, in radians from 0 to 2\pi
-	 * @param minR Minimal radial coordinate of region, between 0 and 1
-	 * @param maxR Maximal radial coordinate of region, between 0 and 1
+	 * @param lower Minimal coordinates of region
+	 * @param upper Maximal coordinates of region (excluded)
 	 * @param capacity Number of points a leaf cell can store before splitting
-	 * @param minDiameter Minimal diameter of a quadtree node. If the node is already smaller, don't split even if over capacity. Default is 0
 	 * @param splitTheoretical Whether to split in a theoretically optimal way or in a way to decrease measured running times
-	 * @param alpha dispersion Parameter of the point distribution. Only has an effect if theoretical split is true
-	 * @param diagnostics Count how many necessary and unnecessary comparisons happen in leaf cells? Will cause race condition and false sharing in parallel use
 	 *
 	 */
 	QuadNodeCartesianEuclid(Point<double> lower = Point<double>({0.0, 0.0}), Point<double> upper = Point<double>({1.0, 1.0}), unsigned capacity = 1000, bool splitTheoretical = false) {

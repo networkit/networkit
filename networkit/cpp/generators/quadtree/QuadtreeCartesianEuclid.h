@@ -22,10 +22,10 @@ class QuadtreeCartesianEuclid {
 	friend class QuadTreeCartesianEuclidGTest;
 public:
 	/**
-	 * @param maxR Radius of the managed area. Must be smaller than 1.
-	 * @param theoreticalSplit If true, split cells to get the same area in each child cell. Default is false
-	 * @param alpha dispersion Parameter of the point distribution. Only has an effect if theoretical split is true
-	 * @param capacity How many points can inhabit a leaf cell before it is split up?
+	 * @param lower Minimal coordinates of region
+	 * @param upper Maximal coordinates of region (excluded)
+	 * @param capacity Number of points a leaf cell can store before splitting
+	 * @param splitTheoretical Whether to split in a theoretically optimal way or in a way to decrease measured running times
 	 *
 	 */
 	QuadtreeCartesianEuclid(Point<double> lower = Point<double>({0.0, 0.0}), Point<double> upper = Point<double>({1.0, 1.0}), bool theoreticalSplit=false, count capacity=1000) {
