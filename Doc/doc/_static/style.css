@@ -253,6 +253,9 @@ input[type=checkbox]:checked ~ [for="read_more"] span:last-of-type {
   z-index: -1;
   height: 400px;
   width: 100%;
+  background: url(bg1.jpg);
+  background-size: cover;
+  background-position: center center;
 }
 
 #fancy-particles canvas {
