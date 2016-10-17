@@ -177,7 +177,7 @@ void MaximalCliques::tomita(std::vector<node>& pxvector, std::vector<index>& pxl
 }
 
 node MaximalCliques::findPivot(std::vector<node>& pxvector, std::vector<index>& pxlookup, uint32_t xbound, uint32_t xpbound, uint32_t pbound) {
-	node maxnode = G.upperNodeIdBound() + 1;
+	node maxnode = none;
 	int32_t maxval = -1;
 
 	for (uint32_t i = xbound; i < pbound; i++) {
