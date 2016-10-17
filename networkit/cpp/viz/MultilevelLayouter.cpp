@@ -43,7 +43,7 @@ void MultilevelLayouter::drawInternal(Graph& G, count level) {
 		initLayouter.draw(G);
 		PostscriptWriter writer;
 		writer.write(G, "output/test-multi-coarsest-FR.eps");
-		MaxentStress layouter(bottomLeft, topRight, true);
+		FruchtermanReingold layouter(bottomLeft, topRight, true);
 		layouter.draw(G);
 		writer.write(G, "output/test-multi-coarsest-ME.eps");
 	}
