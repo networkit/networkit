@@ -52,6 +52,18 @@ public:
 	virtual void setup(const Graph& graph);
 
 	/**
+	 * Sets the solver up for the specified @a matrix where the underlying graph has to be connected.
+	 * @param matrix
+	 */
+	virtual void setupConnected(const Matrix& matrix) = 0;
+
+	/**
+	 * Sets the solver up for the Laplacian matrix of the @a graph specified. The graph has to be connected.
+	 * @param graph
+	 */
+	virtual void setupConnected(const Graph& graph);
+
+	/**
 	 * Abstract solve function that computes @a result for the given right-hand side @a rhs and the matrix that has been setup in @ref setup.
 	 * @param rhs
 	 * @param result
@@ -77,6 +89,11 @@ public:
 template<class Matrix>
 void LinearSolver<Matrix>::setup(const Graph& graph) {
 	setup(Matrix::laplacianMatrix(graph));
+}
+
+template<class Matrix>
+void LinearSolver<Matrix>::setupConnected(const Graph &graph) {
+	setupConnected(Matrix::laplacianMatrix(graph));
 }
 
 template<class Matrix>

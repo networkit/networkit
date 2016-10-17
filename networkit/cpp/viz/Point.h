@@ -15,9 +15,11 @@
 #include <cstdint>
 #include <iostream>
 #include <sstream>
-#include "../Globals.h"
 
 namespace NetworKit {
+
+typedef uint64_t index; // more expressive name for an index into an array
+typedef uint64_t count; // more expressive name for an integer quantity
 
 //template<class T> class Point;
 //
@@ -42,6 +44,7 @@ protected:
 public:
 	Point() { data = {0.0, 0.0}; }
 	Point(T x, T y) { data = {x, y}; }
+	Point(count dimension) : data(std::vector<T>(dimension, 0.0)) {}
 	Point(std::vector<T>& values): data(values) {}
 	virtual ~Point() {}
 
@@ -57,10 +60,20 @@ public:
 	Point operator-(const Point<T>& other);
 	Point operator+(const Point<T>& other);
 
+	Point operator*(const double scalar) const;
+
+	bool operator==(const Point<T>& other) const;
+	bool operator!=(const Point<T>& other) const;
+
+	void operator=(const Point<T>& other);
+
 	T length() const;
 	T squaredLength() const;
 
 	T& operator[](const index i);
+	T& at(const index i);
+
+	T operator[](const index i) const;
 	T at(const index i) const;
 
 	/**
@@ -157,6 +170,35 @@ Point<T> Point<T>::operator+(const Point<T>& other) {
 	return result;
 }
 
+template<typename T>
+Point<T> Point<T>::operator*(const double scalar) const {
+	Point<T> result(*this);
+	for (index i = 0; i < getDimensions(); ++i) {
+		result.data[i] = data[i] * scalar;
+	}
+
+	return result;
+}
+
+template<typename T>
+bool Point<T>::operator==(const Point<T>& other) const {
+	if (getDimensions() != other.getDimensions()) return false;
+	for (index i = 0; i < data.size(); ++i) {
+		if (data[i] != other.data[i]) return false;
+	}
+	return true;
+}
+
+template<typename T>
+bool Point<T>::operator!=(const Point<T>& other) const {
+	return !(*this == other);
+}
+
+template<typename T>
+void Point<T>::operator=(const Point& other) {
+	this->data = other.data;
+}
+
 
 template<class T>
 Point<T>& Point<T>::scale(const T factor) {
@@ -173,9 +215,21 @@ inline T& Point<T>::operator [](index i) {
 }
 
 template<class T>
+inline T& Point<T>::at(index i) {
+	assert(i >= 0 && i < data.size());
+	return data[i];
+}
+
+template<class T>
+inline T Point<T>::operator [](index i) const {
+	assert(i >= 0 && i < data.size());
+	return data[i];
+}
+
+template<class T>
 inline T Point<T>::at(index i) const {
 	assert(i >= 0 && i < data.size());
-	return data.at(i);
+	return data[i];
 }
 
 template<class T>

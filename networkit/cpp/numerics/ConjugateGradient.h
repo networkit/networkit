@@ -31,6 +31,11 @@ public:
 		precond = Preconditioner(matrix);
 	}
 
+	void setupConnected(const Matrix& matrix) {
+		this->matrix = matrix;
+		precond = Preconditioner(matrix);
+	}
+
 	/**
 	 * Solves the linear system \f$Ax = b\f$ using the conjugate gradient method
 	 * with a given preconditioner and with initial value \f$(0, \dots, 0)^T\f$.
@@ -64,7 +69,7 @@ SolverStatus ConjugateGradient<Matrix, Preconditioner>::solve(const Vector& rhs,
 	assert(matrix.numberOfRows() == rhs.getDimension());
 
 	// Absolute residual to achieve
-	double sqr_desired_residual = tolerance * tolerance * (rhs.length() * rhs.length());
+	double sqr_desired_residual = this->tolerance * this->tolerance * (rhs.length() * rhs.length());
 
 	// Main loop. See: http://en.wikipedia.org/wiki/Conjugate_gradient_method#The_resulting_algorithm
 	Vector residual_dir = rhs - matrix*result;
@@ -95,7 +100,7 @@ SolverStatus ConjugateGradient<Matrix, Preconditioner>::solve(const Vector& rhs,
 	SolverStatus status;
 	status.numIters = niters;
 	status.residual = (rhs - matrix*result).length();
-	status.converged = status.residual / rhs.length() <= tolerance;
+	status.converged = status.residual / rhs.length() <= this->tolerance;
 
 	return status;
 }

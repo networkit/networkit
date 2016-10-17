@@ -111,34 +111,6 @@ TEST_F(VizGTest, testFRLayouter) {
  	EXPECT_LE(avg, 0.25);
 }
 
- TEST_F(VizGTest, tryMaxentLayouter) {
-  	// create graph
-  	count n = 80;
-  	count numClusters = 3;
-  	double pin = 0.175;
-  	double pout = 0.005;
-
-	ClusteredRandomGraphGenerator graphGen(n, numClusters, pin, pout);
-	Graph G = graphGen.generate();
-  	G.initCoordinates();
-  	INFO("Number of edges: ", G.numberOfEdges());
-
-  	// draw (independent of clustering) and write again
-  	Point<float> bl(0.0, 0.0);
-  	Point<float> tr(1.0, 1.0);
-
-  	MaxentStress msLayouter(bl, tr);
- 	msLayouter.draw(G);
-  	PostscriptWriter psWriter(true);
-  	psWriter.write(G, "output/testMaxentGraph.eps");
-
- 	// test edge distances
- 	float dist = edgeDistanceSum(G);
- 	float avg = dist / (float) G.numberOfEdges();
- 	DEBUG("avg edge length: ", avg);
- 	EXPECT_LE(avg, 0.25);
-}
-
  TEST_F(VizGTest, tryMultilevelLayouter) {
   	// create graph
   	count n = 300;
