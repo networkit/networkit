@@ -26,7 +26,9 @@ std::map<node, std::set<node> >  GCE::run(std::set<unsigned int>& seeds) {
     return result;
 }
 
-std::set<node> GCE::expandSeed(node s) {
+
+template <bool objectiveIsM>
+std::set<node> expandseed_internal(const Graph&G, node s) {
     /**
     * Check if set contains node.
     */
@@ -124,16 +126,14 @@ std::set<node> GCE::expandSeed(node s) {
         return (numerator / denominator) - currentQ;
     };
 
-    std::function<double(node v, double degInt, double degExt, std::set<node>& C)> deltaQ;
     // select quality objective
-    if (objective == "M") {
-        deltaQ = deltaM;
-    } else if (objective == "L") {
-        deltaQ = deltaL;
-    } else {
-        throw std::runtime_error("unknown objective function");
-    }
-
+    auto deltaQ = [&](node v, double degInt, double degExt, std::set<node>& C) -> double {
+	if (objectiveIsM) {
+	    return deltaM(v, degInt, degExt, C);
+	} else {
+	    return deltaL(v, degInt, degExt, C);
+	}
+    };
 
     // insert seed
     community.insert(s);
@@ -192,5 +192,15 @@ std::set<node> GCE::expandSeed(node s) {
 
 	return community;
 }
+
+std::set<node> GCE::expandSeed(node s) {
+    if (objective == "M") {
+        return expandseed_internal<true>(G, s);
+    } else if (objective == "L") {
+        return expandseed_internal<false>(G, s);
+    } else {
+        throw std::runtime_error("unknown objective function");
+    }
+};
 
 } /* namespace NetworKit */
