@@ -10,6 +10,7 @@
 
 #include "ChungLuGenerator.h"
 #include "../graph/GraphBuilder.h"
+#include "../auxiliary/Parallel.h"
 
 namespace NetworKit {
 
@@ -19,18 +20,40 @@ ChungLuGenerator::ChungLuGenerator(const std::vector< NetworKit::count > &degree
 	n = (count) seq.size();
 }
 
-Graph ChungLuGenerator::generate() {
-	GraphBuilder gB(n);
+	Graph ChungLuGenerator::generate() {
+		GraphBuilder gB(n);
 
-	gB.parallelForNodePairs([&](node u, node v) {
-		/* Random number in [0, 1] */
-		double randVal = Aux::Random::probability();
-		/* Probability of edge (u, v): d(u)*d(v)/sum_deg */
-		if (randVal < double(seq[u] * seq[v]) / sum_deg) {
-			gB.addHalfOutEdge(u, v);
+		/* We need a sorted list in descending order for this algorithm */
+		Aux::Parallel::sort(seq.begin(), seq.end(), [](count a, count b){ return a > b;});
+
+		for (node u = 0; u <= n - 2; u++) {
+			node v = u + 1;
+			/* Apparently it is necessary to include all these casts for
+             * the probability to be properly calculated */
+			double p = std::min(((double) seq[u]) * ((double) seq[v]) / sum_deg, 1.0);
+
+			while (v < n && p > 0) {
+				if (p != 1.0) {
+					double randVal = Aux::Random::probability();
+					/* Calculate the distance to the next potential neighbour*/
+					v = v + (node) std::floor(log(randVal)/log(1 - p));
+				}
+				if ((count) v < n) {
+					double q = std::min(((double) seq[u]) * ((double) seq[v]) / sum_deg, 1.0);
+					double randVal2 = Aux::Random::probability();
+					/* The potential neighbour was selected with the probability p.
+                     * In order to see if this neighbour should be rejected or accepted
+                     * we correct the probability using q */
+					if (randVal2 < q / p) {
+						gB.addHalfOutEdge(u, v);
+					}
+					p = q;
+					v++;
+				}
+			}
 		}
-	});
-	return gB.toGraph(true,true);
-}
+
+		return gB.toGraph(true,true);
+	}
 
 } /* namespace NetworKit */

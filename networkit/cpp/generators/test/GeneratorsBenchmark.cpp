@@ -19,6 +19,7 @@
 #include "../HyperbolicGenerator.h"
 #include "../DynamicHyperbolicGenerator.h"
 #include "../BarabasiAlbertGenerator.h"
+#include "../ChungLuGenerator.h"
 #include "../../graph/GraphBuilder.h"
 
 namespace NetworKit {
@@ -231,6 +232,20 @@ TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorMechanicGraphs) {
 	gen.setLeafCapacity(10);
 	Graph G = gen.generate();
 	EXPECT_NEAR(G.numberOfEdges(), m, m/10);
+}
+
+TEST_F(GeneratorsBenchmark, benchmarkChungLuGenerator) {
+	count n = 100000;
+    int maxDegree = 100;
+	std::vector<count> vec;
+	/* Creates a random weight list */
+	for (int i = 0; i < n; i++){
+	int grad = Aux::Random::integer(1, maxDegree);
+		vec.push_back(grad);
+	}
+	ChungLuGenerator generator(vec);
+	Graph G = generator.generate();
+	EXPECT_EQ(G.numberOfNodes(), n);
 }
 
 } /* namespace NetworKit */

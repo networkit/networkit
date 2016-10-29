@@ -22,7 +22,14 @@ namespace NetworKit {
  * and Chung, Lu: Connected Components in Random Graphs with Given Expected Degree Sequences.
  * Aiello, Chung, Lu: A Random Graph Model for Massive Graphs describes a different generative model
  * which is basically asymptotically equivalent but produces multi-graphs.
+ *
+ * This follows the implementation of Joel Miller and Aric Hagberg's
+ * "Efficient Generation of Networks with Given Expected Degrees" (2011)
+ * http://aric.hagberg.org/papers/miller-2011-efficient.pdf .
+ * It gives a complexity of O(n+m) as opposed to quadratic.
+ *
  */
+
 class ChungLuGenerator: public StaticDegreeSequenceGenerator {
 protected:
 	count sum_deg;
