@@ -514,6 +514,46 @@ TEST_F(GeneratorsGTest, testChungLuGenerator) {
 	INFO("expected volume: ", expVolume, ", actual volume: ", actualVolume);
 }
 
+TEST_F(GeneratorsGTest, testChungLuGeneratorDegreeConsistency) {
+    count n = 1000;
+    std::vector<count> vec;
+    count maxDegree = n / 8;
+    /* Creates a random sequence of weights */
+    for (int i = 0; i < n; i++){
+        int grad = Aux::Random::integer(1, maxDegree);
+        vec.push_back(grad);
+    }
+    ChungLuGenerator generator(vec);
+    Graph G = generator.generate();
+    /* We check to see if the actual degrees of our nodes vary too much from the expected ones.
+    * However, we need to sort the expected degrees first, since the algorithm does this as well
+    * and the nodes with the highest degrees are added first. */
+    Aux::Parallel::sort(vec.begin(), vec.end(), [](count a, count b){ return a > b;});
+    /* Check if node degree is more than 50% off from the expected degree of that node. */
+    // TODO Should we be looking for something better than a 50% range here?
+    G.forNodes([&] (node v) {
+    EXPECT_NEAR(G.degree(v), vec[v], (0.5 * maxDegree));
+    });
+}
+
+TEST_F(GeneratorsGTest, testChungLuGeneratorVolumeConsistency) {
+    count n = 1000;
+    std::vector<count> vec;
+    count maxDegree = n / 8;
+    count expectedVolume = 0;
+    /* Creates a random sequence of weights */
+    for (int i = 0; i < n; i++){
+        int grad = Aux::Random::integer(1, maxDegree);
+        vec.push_back(grad);
+        expectedVolume += grad;
+    }
+    ChungLuGenerator generator(vec);
+    Graph G = generator.generate();
+    /* Check if volume is more than 10% off from the expected volume. */
+    //TODO Is a 20% offset here sufficient? */
+    EXPECT_NEAR(G.numberOfEdges() * 2, expectedVolume, 0.2 * expectedVolume);
+}
+
 TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRandomSequence) {
 	count n = 400;
 	count maxDegree = n / 10;
