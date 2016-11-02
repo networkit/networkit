@@ -295,6 +295,21 @@ Publications Using NetworKit
 
   <ul>
     <li>
+      M. Lozano, C. García-Martínez, F. J. Rodríguez, H. M. Trujillo: Optimizing network attacks by artificial bee colony.
+      To appear in <i>Information Sciences, Volume 377</i>, pp. 30-50, January 2017.
+       <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
+       <div id="collapseDiv" class="collapse">
+         <b>Abstract</b> Over the past few years, the task of conceiving effective attacks to complex networks has arisen as an optimization problem. Attacks are modelled as the process of removing a number k of vertices, from the graph that represents the network, and the goal is to maximise or minimise the value of a predefined metric over the graph. In this work, we present an optimization problem that concerns the selection of nodes to be removed to minimise the maximum betweenness
+         centrality value of the residual graph. This metric evaluates the participation of the nodes in the communications through the shortest paths of the network.
+        <br>
+         To address the problem we propose an artificial bee colony algorithm, which is a swarm intelligence approach inspired in the foraging behaviour of honeybees. In this framework, bees produce new candidate solutions for the problem by exploring the vicinity of previous ones, called food sources. The proposed method exploits useful problem knowledge in this neighbourhood exploration by considering the partial destruction and heuristic reconstruction of selected solutions. The
+         performance of the method, with respect to other models from the literature that can be adapted to face this problem, such as sequential centrality-based attacks, module-based attacks, a genetic algorithm, a simulated annealing approach, and a variable neighbourhood search, is empirically shown.
+       </div>
+    </li>
+
+    <br>
+
+    <li>
       M. Riondato, E. Upfal: ABRA: Approximating Betweenness Centrality in Static and Dynamic Graphs with Rademacher Averages.
       To appear in <i>Proc. 22nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining</i> (KDD 2016), August 2016. [<a href="http://arxiv.org/abs/1602.05866">arXiv</a>]
        <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
