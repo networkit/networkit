@@ -300,12 +300,12 @@ void SolverLamg<Matrix>::minRes(index level, Vector& x, const Vector& r) {
 		for (index i = 0; i < r.getDimension(); ++i) {
 			for (index k = 0; k < n; ++k) {
 				double AEvalue = r[i] - rHistory[level][k][i];
-				if (std::abs(AEvalue) > 1e-9) {
+				if (std::fabs(AEvalue) > 1e-25) {
 					++ARowIdx[i+1];
 				}
 
 				double Eval = history[level][k][i] - x[i];
-				if (std::abs(Eval) > 1e-9) {
+				if (std::fabs(Eval) > 1e-25) {
 					++ERowIdx[i+1];
 				}
 			}
@@ -326,14 +326,14 @@ void SolverLamg<Matrix>::minRes(index level, Vector& x, const Vector& r) {
 		for (index i = 0; i < r.getDimension(); ++i) {
 			for (index k = 0, aIdx = ARowIdx[i], eIdx = ERowIdx[i]; k < n; ++k) {
 				double AEvalue = r[i] - rHistory[level][k][i];
-				if (std::abs(AEvalue) > 1e-9) {
+				if (std::fabs(AEvalue) > 1e-25) {
 					AColumnIdx[aIdx] = k;
 					ANonZeros[aIdx] = AEvalue;
 					++aIdx;
 				}
 
 				double Eval = history[level][k][i] - x[i];
-				if (std::abs(Eval) > 1e-9) {
+				if (std::fabs(Eval) > 1e-25) {
 					EColumnIdx[eIdx] = k;
 					ENonZeros[eIdx] = Eval;
 					++eIdx;
