@@ -46,9 +46,7 @@ nav .hidden {
 }
 
 .navbar {
-  background: url(bg2.jpg);
-  background-size: cover;
-  background-position: center center;
+  background-color: #104870;
   border-radius: 0px;
   font-size: 16px;
 }
@@ -151,7 +149,6 @@ text-decoration: none;
 
 .navbar-default {
   color:#ffffff;
-  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .navbar-text {
