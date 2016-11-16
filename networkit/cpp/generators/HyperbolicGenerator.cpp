@@ -7,11 +7,11 @@
  *
  * For T=0, the relevant publication is
  * "Generating massive complex networks with hyperbolic geometry faster in practice" by
- * Moritz von Looz, Mustafa Özdayi, Sören Laue and Henning Meyerhenke, to be presented at HPEC 2016.
+ * Moritz von Looz, Mustafa Özdayi, Sören Laue and Henning Meyerhenke, presented at HPEC 2016.
  *
  * For T>0, it is
  * "Querying Probabilistic Neighborhoods in Spatial Data Sets Efficiently" by Moritz von Looz
- * and Henning Meyerhenke, to be presented at IWOCA 2016.
+ * and Henning Meyerhenke, presented at IWOCA 2016.
  *
  * The model of hyperbolic random graphs is presented in
  * "Hyperbolic geometry of complex networks. Physical Review E, 82:036106, Sep 2010." by
