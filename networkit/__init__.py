@@ -67,6 +67,7 @@ from . import coarsening
 from . import simulation
 from . import stats
 from . import sampling
+from . import viz
 from .profiling import profiling
 
 try:
