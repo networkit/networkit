@@ -9,17 +9,39 @@
 #include "../auxiliary/Log.h"
 #include "../auxiliary/PrioQueue.h"
 
+#include "../components/ConnectedComponents.h"
+
 #include "../numerics/LAMG/Lamg.h"
+#include "../numerics/ConjugateGradient.h"
+#include "../numerics/Preconditioner/DiagonalPreconditioner.h"
+#include "../numerics/Preconditioner/IdentityPreconditioner.h"
 
 #include <queue>
 
 namespace NetworKit {
+Lamg<CSRMatrix>noneGiven(0.001);
+MaxentStress::MaxentStress(const Graph &G, const count dim, const count k, double tolerance, LinearSolverType linearSolverType, bool fastComputation, GraphDistance graphDistance) : GraphLayoutAlgorithm<double>(G, dim), solver(noneGiven), q(0.0), alpha(1.0), alphaReduction(0.3), finalAlpha(0.008), convThreshold(0.001*0.001), coordinatesProvided(false), fastComputation(fastComputation), maxSolvesPerAlpha(50), knownDistances(std::vector<std::vector<ForwardEdge>>(G.numberOfNodes())), knownDistancesCardinality(0), dim(dim), hasRun(false) {
 
-MaxentStress::MaxentStress(const Graph &G, const count dim, const count k, LinearSolver<CSRMatrix> &solver, bool fastComputation, GraphDistance graphDistance) : GraphLayoutAlgorithm<double>(G, dim), solver(solver), q(0.0), alpha(1.0), alphaReduction(0.3), finalAlpha(0.008), convThreshold(0.001*0.001), coordinatesProvided(false), fastComputation(fastComputation), maxSolvesPerAlpha(50), knownDistances(std::vector<std::vector<ForwardEdge>>(G.numberOfNodes())), knownDistancesCardinality(0), dim(dim), hasRun(false) {
+    switch (linearSolverType) {
+        case LAMG:
+            this->solver = Lamg<CSRMatrix>(tolerance);
+        case CONJUGATE_GRADIENT_IDENTITY_PRECONDITIONER:
+            this->solver = ConjugateGradient<CSRMatrix, IdentityPreconditioner>(tolerance);
+        case CONJUGATE_GRADIENT_DIAGONAL_PRECONDITIONER:
+            this->solver = ConjugateGradient<CSRMatrix, DiagonalPreconditioner>(tolerance);
+    }
 	computeKnownDistances(k, graphDistance);
 }
 
-MaxentStress::MaxentStress(const Graph &G, const count dim, const std::vector<Point<double>> &coordinates, const count k, LinearSolver<CSRMatrix> &solver, bool fastComputation, GraphDistance graphDistance) : GraphLayoutAlgorithm<double>(G, dim), solver(solver), q(0.0), alpha(1.0), alphaReduction(0.3), finalAlpha(0.008), convThreshold(0.001*0.001), coordinatesProvided(true), fastComputation(fastComputation), maxSolvesPerAlpha(50), knownDistances(std::vector<std::vector<ForwardEdge>>(G.numberOfNodes())), knownDistancesCardinality(0), dim(dim), hasRun(false) {
+MaxentStress::MaxentStress(const Graph &G, const count dim, const std::vector<Point<double>> &coordinates, const count k, double tolerance, LinearSolverType linearSolverType, bool fastComputation, GraphDistance graphDistance) : GraphLayoutAlgorithm<double>(G, dim), solver(noneGiven), q(0.0), alpha(1.0), alphaReduction(0.3), finalAlpha(0.008), convThreshold(0.001*0.001), coordinatesProvided(true), fastComputation(fastComputation), maxSolvesPerAlpha(50), knownDistances(std::vector<std::vector<ForwardEdge>>(G.numberOfNodes())), knownDistancesCardinality(0), dim(dim), hasRun(false) {
+    switch (linearSolverType) {
+        case LAMG:
+            this->solver = Lamg<CSRMatrix>(tolerance);
+        case CONJUGATE_GRADIENT_IDENTITY_PRECONDITIONER:
+            this->solver = ConjugateGradient<CSRMatrix, IdentityPreconditioner>(tolerance);
+        case CONJUGATE_GRADIENT_DIAGONAL_PRECONDITIONER:
+            this->solver = ConjugateGradient<CSRMatrix, DiagonalPreconditioner>(tolerance);
+    }
 	vertexCoordinates = coordinates;
 	computeKnownDistances(k, graphDistance);
 }
@@ -29,6 +51,13 @@ void MaxentStress::run() {
 }
 
 MaxentStress::ResultStats MaxentStress::runAlgo() {
+    // Check if the graph is connected. We currently can't handle unconnected graphs.
+    ConnectedComponents cc(this->G);
+    cc.run();
+    if (cc.numberOfComponents() != 1) {
+        throw std::invalid_argument( "ERROR: The supplied graph is not connected. Currently MaxentStress only handles connected graphs.");
+    }
+
 	Aux::Timer t;
 	double solveTime = 0;
 	double rhsTime = 0;

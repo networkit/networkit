@@ -8901,3 +8901,139 @@ cdef class SpanningEdgeCentrality:
 			The SEC scores.
 		"""
 		return self._this.scores()
+
+
+
+## Module: viz
+
+
+cdef extern from "cpp/viz/MaxentStress.h":
+	struct _ResultStats "NetworKit::MaxentStress::ResultStats":
+		double rhsTime
+		double approxEntropyTerm
+		double solveTime
+
+cdef extern from "cpp/viz/MaxentStress.h" namespace "NetworKit":
+	enum _GraphDistance "NetworKit::MaxentStress::GraphDistance":
+		EDGE_WEIGHT,
+		ALGEBRAIC_DISTANCE
+
+cdef extern from "cpp/viz/MaxentStress.h" namespace "NetworKit":
+	enum _LinearSolverType "NetworKit::MaxentStress::LinearSolverType":
+		LAMG,
+		CONJUGATE_GRADIENT_IDENTITY_PRECONDITIONER,
+		CONJUGATE_GRADIENT_DIAGONAL_PRECONDITIONER
+
+cdef extern from "cpp/viz/MaxentStress.h":
+	cdef cppclass _MaxentStress "NetworKit::MaxentStress":
+		_MaxentStress(_Graph G, count dim, count k, double tolerance, _LinearSolverType linearSolverType, bool fastComputation, _GraphDistance graphDistance) except +
+		_MaxentStress(_Graph G, count dim, const vector[Point[double]] coordinates, count k, double tolerance, _LinearSolverType linearSolverType, bool fastComputation, _GraphDistance graphDistance) except +
+		void run() except +
+		_ResultStats runAlgo() except +
+		void scaleLayout() except +
+		double computeScalingFactor() except +
+		double fullStressMeasure() except +
+		double maxentMeasure() except +
+		double meanDistanceError() except +
+		double ldme() except +
+		void setQ(double q) except +
+		void setAlpha(double alpha) except +
+		void setAlphaReduction(double alphaReduction) except +
+		void setFinalAlpha(double finalAlpha) except +
+		void setConvergenceThreshold(double convThreshold) except +
+
+
+cdef class MaxentStress:
+
+	"""
+	Implementation of MaxentStress by Gansner et al. using a Laplacian system solver.
+  	@see Gansner, Emden R., Yifan Hu, and Steve North. "A maxent-stress model for graph layout."
+	Visualization and Computer Graphics, IEEE Transactions on 19, no. 6 (2013): 927-940.
+
+	Parameters
+	----------
+	G : Graph
+		The graph to be handled. Should be connected, otherwise the run() and runAlgo() methods will fail.
+	dim: count
+		Number of dimensions.
+	count: k
+	coordinates: vector[pair[double, double]]
+		The coordinates we want to draw in.
+	tolerance: double
+		The tolerance we want our solver to have.
+	linearSolverType: _LinearSolverType
+		The type of linear solver we wish to use.
+	fastComputation: bool
+		Decides whether or not fast computation should be employed.
+	graphDistance: _GraphDistance
+		Decides what type of graph distance should be utilised.
+	"""
+
+	cdef _MaxentStress* _this
+	EDGE_WEIGHT = 0
+	ALGEBRAIC_DISTANCE = 1
+	LAMG = 0
+	CONJUGATE_GRADIENT_IDENTITY_PRECONDITIONER = 1
+	CONJUGATE_GRADIENT_DIAGONAL_PRECONDITIONER = 2
+
+	def __cinit__(self, Graph G, count dim, count k, vector[pair[double, double]] coordinates = [], double tolerance = 1e-5, _LinearSolverType linearSolverType = _LinearSolverType.LAMG, bool fastComputation = False, _GraphDistance graphDistance = _GraphDistance.EDGE_WEIGHT):
+		cdef Point[double] p = Point[double](0, 0)
+		cdef vector[Point[double]] pointCoordinates = vector[Point[double]]()
+
+		for pr in coordinates:
+			p = Point[double](pr.first, pr.second)
+			pointCoordinates.push_back(p)
+
+		if (coordinates.size() != 0):
+			self._this = new _MaxentStress(G._this, dim, pointCoordinates, k, tolerance, linearSolverType, fastComputation, graphDistance)
+		else:
+			self._this = new _MaxentStress(G._this, dim, k, tolerance, linearSolverType, fastComputation, graphDistance)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		self._this.run()
+		return self
+
+	def runAlgo(self):
+		return self._this.runAlgo()
+
+	def scaleLayout(self):
+		self._this.scaleLayout()
+		return self
+
+	def computeScalingFactor(self):
+		return self._this.computeScalingFactor()
+
+	def fullStressMeasure(self):
+		return self._this.fullStressMeasure()
+
+	def maxentMeasure(self):
+		return self._this.maxentMeasure()
+
+	def meanDistanceError(self):
+		return self._this.meanDistanceError()
+
+	def ldme(self):
+		return self._this.ldme()
+
+	def setQ(self, double q):
+		self._this.setQ(q)
+		return self
+
+	def setAlpha(self, double alpha):
+		self._this.setAlpha(alpha)
+		return self
+
+	def setAlphaReduction(self, double alphaReduction):
+		self._this.setAlphaReduction(alphaReduction)
+		return self
+
+	def setFinalAlpha(self, double finalAlpha):
+		self._this.setFinalAlpha(finalAlpha)
+		return self
+
+	def setConvergenceThreshold(self, double convThreshold):
+		self._this.setConvergenceThreshold(convThreshold)
+		return self
