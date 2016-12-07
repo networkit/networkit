@@ -38,9 +38,9 @@
 
 namespace NetworKit {
 
-
 TEST_F(MaxentStressGTest, benchMaxentStressCoordinatesLAMG) {
-	std::vector<std::string> graphFiles = {"input/airfoil1.graph"};
+
+    std::vector<std::string> graphFiles = {"input/airfoil1.graph"};
 	METISGraphReader reader;
 
 	for (const std::string& graphFile : graphFiles) {
@@ -56,7 +56,7 @@ TEST_F(MaxentStressGTest, benchMaxentStressCoordinatesLAMG) {
 		PivotMDS pivotMds(graph, 2, 30);
 		pivotMds.run();
         MaxentStress maxentStressAlgo(graph, 2, pivotMds.getCoordinates(), 1, 0.001, MaxentStress::LinearSolverType::LAMG);
-		maxentStressAlgo.runAlgo();
+		maxentStressAlgo.run();
 		t.stop();
 
 		runtime = t.elapsedMicroseconds();
@@ -88,7 +88,7 @@ TEST_F(MaxentStressGTest, benchMaxentStressConjGradIdPrecAlgebraicDistance) {
         Aux::Timer t;
         t.start();
         MaxentStress maxentStressAlgo(graph, 2, 1, 0.001, MaxentStress::LinearSolverType::CONJUGATE_GRADIENT_IDENTITY_PRECONDITIONER, true, MaxentStress::GraphDistance::ALGEBRAIC_DISTANCE);
-        maxentStressAlgo.runAlgo();
+        maxentStressAlgo.run();
         t.stop();
 
         runtime = t.elapsedMicroseconds();
@@ -120,7 +120,7 @@ TEST_F(MaxentStressGTest, benchMaxentStressConjGradDiagPrecond) {
         Aux::Timer t;
         t.start();
         MaxentStress maxentStressAlgo(graph, 2, 1, 0.001, MaxentStress::LinearSolverType::CONJUGATE_GRADIENT_DIAGONAL_PRECONDITIONER);
-        maxentStressAlgo.runAlgo();
+        maxentStressAlgo.run();
         t.stop();
 
         runtime = t.elapsedMicroseconds();
@@ -154,7 +154,7 @@ TEST_F(MaxentStressGTest, benchMaxentStressCoordConjGradIdPrecond) {
         PivotMDS pivotMds(graph, 2, 30);
         pivotMds.run();
         MaxentStress maxentStressAlgo(graph, 2, pivotMds.getCoordinates(), 1, 0.001, MaxentStress::LinearSolverType::CONJUGATE_GRADIENT_IDENTITY_PRECONDITIONER, false, MaxentStress::GraphDistance::ALGEBRAIC_DISTANCE);
-        maxentStressAlgo.runAlgo();
+        maxentStressAlgo.run();
         t.stop();
 
         runtime = t.elapsedMicroseconds();

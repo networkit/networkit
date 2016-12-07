@@ -1,5 +1,5 @@
 """"
-This module provides graph visualisation algorithms.
+This module provides graph drawing algorithms.
 """
 
 _author_ = "Yani Kolev"

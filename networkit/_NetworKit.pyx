@@ -8907,11 +8907,50 @@ cdef class SpanningEdgeCentrality:
 ## Module: viz
 
 
-cdef extern from "cpp/viz/MaxentStress.h":
-	struct _ResultStats "NetworKit::MaxentStress::ResultStats":
-		double rhsTime
-		double approxEntropyTerm
-		double solveTime
+cdef extern from "cpp/viz/GraphLayoutAlgorithm.h":
+	cdef cppclass _GraphLayoutAlgorithm "NetworKit::GraphLayoutAlgorithm"[T]:
+		_GraphLayoutAlgorithm(_Graph, count) except +
+		count numEdgeCrossings() except +
+		bool writeGraphToGML(string path) except +
+		bool writeKinemage(string path) except +
+
+cdef class GraphLayoutAlgorithm:
+
+	"""Abstract base class for graph drawing algorithms"""
+
+	cdef _GraphLayoutAlgorithm[double] *_this
+	cdef Graph _G
+
+	def __init__(self, *args, **kwargs):
+		if type(self) == GraphLayoutAlgorithm:
+			raise RuntimeError("Error, you may not use GraphLayoutAlgorithm directly, use a sub-class instead")
+
+	def __dealloc__(self):
+		self._G = None # just to be sure the graph is deleted
+
+	def numEdgeCrossings(self):
+	"""Computes number of edge crossings"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return self._this.numEdgeCrossings()
+
+	def writeGraphToGML(self, path):
+	"""Writes the graph and its layout to a .gml file at the specified path
+	path: string
+		Path where the graph file should be created"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return self._this.writeGraphToGML(stdstring(path))
+
+	def writeKinemage(self, string path):
+	"""Writes the graph and its layout to a file at the specified path
+	path: string
+		Path where the graph file should be created"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return self._this.writeKinemage(stdstring(path))
+
+
 
 cdef extern from "cpp/viz/MaxentStress.h" namespace "NetworKit":
 	enum _GraphDistance "NetworKit::MaxentStress::GraphDistance":
@@ -8924,12 +8963,12 @@ cdef extern from "cpp/viz/MaxentStress.h" namespace "NetworKit":
 		CONJUGATE_GRADIENT_IDENTITY_PRECONDITIONER,
 		CONJUGATE_GRADIENT_DIAGONAL_PRECONDITIONER
 
+
 cdef extern from "cpp/viz/MaxentStress.h":
-	cdef cppclass _MaxentStress "NetworKit::MaxentStress":
+	cdef cppclass _MaxentStress "NetworKit::MaxentStress" (_GraphLayoutAlgorithm[double]):
 		_MaxentStress(_Graph G, count dim, count k, double tolerance, _LinearSolverType linearSolverType, bool fastComputation, _GraphDistance graphDistance) except +
 		_MaxentStress(_Graph G, count dim, const vector[Point[double]] coordinates, count k, double tolerance, _LinearSolverType linearSolverType, bool fastComputation, _GraphDistance graphDistance) except +
 		void run() except +
-		_ResultStats runAlgo() except +
 		void scaleLayout() except +
 		double computeScalingFactor() except +
 		double fullStressMeasure() except +
@@ -8941,9 +8980,12 @@ cdef extern from "cpp/viz/MaxentStress.h":
 		void setAlphaReduction(double alphaReduction) except +
 		void setFinalAlpha(double finalAlpha) except +
 		void setConvergenceThreshold(double convThreshold) except +
+		double getRhs() except +
+		double getApproxEntropyTerm() except +
+		double getSolveTime() except +
 
 
-cdef class MaxentStress:
+cdef class MaxentStress (GraphLayoutAlgorithm):
 
 	"""
 	Implementation of MaxentStress by Gansner et al. using a Laplacian system solver.
@@ -8964,17 +9006,16 @@ cdef class MaxentStress:
 	linearSolverType: _LinearSolverType
 		The type of linear solver we wish to use.
 	fastComputation: bool
-		Decides whether or not fast computation should be employed.
+		Decides whether or not slightly faster computation should be employed, leading to slightly worse results.
 	graphDistance: _GraphDistance
 		Decides what type of graph distance should be utilised.
 	"""
 
-	cdef _MaxentStress* _this
-	EDGE_WEIGHT = 0
-	ALGEBRAIC_DISTANCE = 1
 	LAMG = 0
 	CONJUGATE_GRADIENT_IDENTITY_PRECONDITIONER = 1
 	CONJUGATE_GRADIENT_DIAGONAL_PRECONDITIONER = 2
+	EDGE_WEIGHT = 0
+	ALGEBRAIC_DISTANCE = 1
 
 	def __cinit__(self, Graph G, count dim, count k, vector[pair[double, double]] coordinates = [], double tolerance = 1e-5, _LinearSolverType linearSolverType = _LinearSolverType.LAMG, bool fastComputation = False, _GraphDistance graphDistance = _GraphDistance.EDGE_WEIGHT):
 		cdef Point[double] p = Point[double](0, 0)
@@ -8993,47 +9034,60 @@ cdef class MaxentStress:
 		del self._this
 
 	def run(self):
-		self._this.run()
+	"""Approximates a graph layout with the maxent-stress algorithm"""
+		(<_MaxentStress*>(self._this)).run()
 		return self
 
-	def runAlgo(self):
-		return self._this.runAlgo()
-
 	def scaleLayout(self):
-		self._this.scaleLayout()
+	"""Scale the layout computed by run() by a scalar s to minimize \sum_{u,v \in V} w_{uv} (s ||x_u - x_v|| - d_{uv}||)^2"""
+		(<_MaxentStress*>(self._this)).scaleLayout()
 		return self
 
 	def computeScalingFactor(self):
-		return self._this.computeScalingFactor()
+	"""Computes a scalar s s.t. \sum_{u,v \in V} w_{uv} (s ||x_u - x_v|| - d_{uv}||)^2 is minimized"""
+		return (<_MaxentStress*>(self._this)).computeScalingFactor()
 
 	def fullStressMeasure(self):
-		return self._this.fullStressMeasure()
+	"""Computes the full stress measure of the computed layout with run()"""
+		return (<_MaxentStress*>(self._this)).fullStressMeasure()
 
 	def maxentMeasure(self):
-		return self._this.maxentMeasure()
+	"""Computes the maxent stress measure for the computed layout with run()"""
+		return (<_MaxentStress*>(self._this)).maxentMeasure()
 
 	def meanDistanceError(self):
-		return self._this.meanDistanceError()
+	"""Computes mean distance error"""
+		return (<_MaxentStress*>(self._this)).meanDistanceError()
 
 	def ldme(self):
-		return self._this.ldme()
+	"""Computes the ldme"""
+		return (<_MaxentStress*>(self._this)).ldme()
 
 	def setQ(self, double q):
-		self._this.setQ(q)
+		(<_MaxentStress*>(self._this)).setQ(q)
 		return self
 
 	def setAlpha(self, double alpha):
-		self._this.setAlpha(alpha)
+		(<_MaxentStress*>(self._this)).setAlpha(alpha)
 		return self
 
 	def setAlphaReduction(self, double alphaReduction):
-		self._this.setAlphaReduction(alphaReduction)
+		(<_MaxentStress*>(self._this)).setAlphaReduction(alphaReduction)
 		return self
 
 	def setFinalAlpha(self, double finalAlpha):
-		self._this.setFinalAlpha(finalAlpha)
+		(<_MaxentStress*>(self._this)).setFinalAlpha(finalAlpha)
 		return self
 
 	def setConvergenceThreshold(self, double convThreshold):
-		self._this.setConvergenceThreshold(convThreshold)
+		(<_MaxentStress*>(self._this)).setConvergenceThreshold(convThreshold)
 		return self
+
+	def getRhs(self):
+		return (<_MaxentStress*>(self._this)).getRhs()
+
+	def getApproxEntropyTerm(self):
+		return (<_MaxentStress*>(self._this)).getApproxEntropyTerm()
+
+	def getSolveTime(self):
+		return (<_MaxentStress*>(self._this)).getSolveTime()
