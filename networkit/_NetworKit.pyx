@@ -8929,13 +8929,13 @@ cdef class GraphLayoutAlgorithm:
 		self._G = None # just to be sure the graph is deleted
 
 	def numEdgeCrossings(self):
-	"""Computes number of edge crossings"""
+		""" Computes approximation (in parallel) of the Spanning Edge Centrality. """
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return self._this.numEdgeCrossings()
 
 	def writeGraphToGML(self, path):
-	"""Writes the graph and its layout to a .gml file at the specified path
+		"""Writes the graph and its layout to a .gml file at the specified path
 	path: string
 		Path where the graph file should be created"""
 		if self._this == NULL:
@@ -8943,8 +8943,8 @@ cdef class GraphLayoutAlgorithm:
 		return self._this.writeGraphToGML(stdstring(path))
 
 	def writeKinemage(self, string path):
-	"""Writes the graph and its layout to a file at the specified path
-	path: string
+		"""Writes the graph and its layout to a file at the specified path
+			path: string
 		Path where the graph file should be created"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
@@ -9034,33 +9034,33 @@ cdef class MaxentStress (GraphLayoutAlgorithm):
 		del self._this
 
 	def run(self):
-	"""Approximates a graph layout with the maxent-stress algorithm"""
+		"""Approximates a graph layout with the maxent-stress algorithm"""
 		(<_MaxentStress*>(self._this)).run()
 		return self
 
 	def scaleLayout(self):
-	"""Scale the layout computed by run() by a scalar s to minimize \sum_{u,v \in V} w_{uv} (s ||x_u - x_v|| - d_{uv}||)^2"""
+		"""Scale the layout computed by run() by a scalar s to minimize \sum_{u,v \in V} w_{uv} (s ||x_u - x_v|| - d_{uv}||)^2"""
 		(<_MaxentStress*>(self._this)).scaleLayout()
 		return self
 
 	def computeScalingFactor(self):
-	"""Computes a scalar s s.t. \sum_{u,v \in V} w_{uv} (s ||x_u - x_v|| - d_{uv}||)^2 is minimized"""
+		"""Computes a scalar s s.t. \sum_{u,v \in V} w_{uv} (s ||x_u - x_v|| - d_{uv}||)^2 is minimized"""
 		return (<_MaxentStress*>(self._this)).computeScalingFactor()
 
 	def fullStressMeasure(self):
-	"""Computes the full stress measure of the computed layout with run()"""
+		"""Computes the full stress measure of the computed layout with run()"""
 		return (<_MaxentStress*>(self._this)).fullStressMeasure()
 
 	def maxentMeasure(self):
-	"""Computes the maxent stress measure for the computed layout with run()"""
+		"""Computes the maxent stress measure for the computed layout with run()"""
 		return (<_MaxentStress*>(self._this)).maxentMeasure()
 
 	def meanDistanceError(self):
-	"""Computes mean distance error"""
+		"""Computes mean distance error"""
 		return (<_MaxentStress*>(self._this)).meanDistanceError()
 
 	def ldme(self):
-	"""Computes the ldme"""
+		"""Computes the ldme"""
 		return (<_MaxentStress*>(self._this)).ldme()
 
 	def setQ(self, double q):
