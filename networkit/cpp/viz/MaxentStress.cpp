@@ -19,8 +19,10 @@
 #include <queue>
 
 namespace NetworKit {
-Lamg<CSRMatrix>noneGiven(0.001);
-MaxentStress::MaxentStress(const Graph &G, const count dim, const count k, double tolerance, LinearSolverType linearSolverType, bool fastComputation, GraphDistance graphDistance) : GraphLayoutAlgorithm<double>(G, dim), solver(noneGiven), q(0.0), alpha(1.0), alphaReduction(0.3), finalAlpha(0.008), convThreshold(0.001*0.001), coordinatesProvided(false), fastComputation(fastComputation), maxSolvesPerAlpha(50), knownDistances(std::vector<std::vector<ForwardEdge>>(G.numberOfNodes())), knownDistancesCardinality(0), dim(dim), hasRun(false) {
+
+    Lamg<CSRMatrix>noneGiven(0.001);
+
+MaxentStress::MaxentStress(const Graph &G, const count dim, const count k, double tolerance, LinearSolverType linearSolverType, bool fastComputation, GraphDistance graphDistance) : GraphLayoutAlgorithm<double>(G, dim), solver(noneGiven), resultStats(), q(0.0), alpha(1.0), alphaReduction(0.3), finalAlpha(0.008), convThreshold(0.001*0.001), coordinatesProvided(false), fastComputation(fastComputation), maxSolvesPerAlpha(50), knownDistances(std::vector<std::vector<ForwardEdge>>(G.numberOfNodes())), knownDistancesCardinality(0), dim(dim), hasRun(false) {
 
     switch (linearSolverType) {
         case LAMG:
@@ -33,7 +35,7 @@ MaxentStress::MaxentStress(const Graph &G, const count dim, const count k, doubl
 	computeKnownDistances(k, graphDistance);
 }
 
-MaxentStress::MaxentStress(const Graph &G, const count dim, const std::vector<Point<double>> &coordinates, const count k, double tolerance, LinearSolverType linearSolverType, bool fastComputation, GraphDistance graphDistance) : GraphLayoutAlgorithm<double>(G, dim), solver(noneGiven), q(0.0), alpha(1.0), alphaReduction(0.3), finalAlpha(0.008), convThreshold(0.001*0.001), coordinatesProvided(true), fastComputation(fastComputation), maxSolvesPerAlpha(50), knownDistances(std::vector<std::vector<ForwardEdge>>(G.numberOfNodes())), knownDistancesCardinality(0), dim(dim), hasRun(false) {
+MaxentStress::MaxentStress(const Graph &G, const count dim, const std::vector<Point<double>> &coordinates, const count k, double tolerance, LinearSolverType linearSolverType, bool fastComputation, GraphDistance graphDistance) : GraphLayoutAlgorithm<double>(G, dim), solver(noneGiven), resultStats(), q(0.0), alpha(1.0), alphaReduction(0.3), finalAlpha(0.008), convThreshold(0.001*0.001), coordinatesProvided(true), fastComputation(fastComputation), maxSolvesPerAlpha(50), knownDistances(std::vector<std::vector<ForwardEdge>>(G.numberOfNodes())), knownDistancesCardinality(0), dim(dim), hasRun(false) {
     switch (linearSolverType) {
         case LAMG:
             this->solver = Lamg<CSRMatrix>(tolerance);
@@ -46,11 +48,12 @@ MaxentStress::MaxentStress(const Graph &G, const count dim, const std::vector<Po
 	computeKnownDistances(k, graphDistance);
 }
 
-void MaxentStress::run() {
-	runAlgo();
+MaxentStress::ResultStats MaxentStress::runAlgo() {
+	run();
+    return this->resultStats;
 }
 
-MaxentStress::ResultStats MaxentStress::runAlgo() {
+void MaxentStress::run() {
     // Check if the graph is connected. We currently can't handle unconnected graphs.
     ConnectedComponents cc(this->G);
     cc.run();
@@ -170,16 +173,13 @@ MaxentStress::ResultStats MaxentStress::runAlgo() {
 
 	hasRun = true;
 
-	ResultStats stats;
-	stats.rhsTime = rhsTime / 1000;
-	stats.solveTime = solveTime / 1000;
-	stats.approxEntropyTerm = approxTime / 1000;
+    this->resultStats.rhsTime = rhsTime / 1000;
+    this->resultStats.solveTime = solveTime / 1000;
+    this->resultStats.approxEntropyTerm = approxTime / 1000;
 
 	INFO("Time spent on rhs ", rhsTime/1000, " and solve time was ", solveTime/1000);
 	INFO("approxTime: ", approxTime/1000);
 	INFO("Graph drawn in ", timer.elapsedMilliseconds());
-
-	return stats;
 }
 
 double MaxentStress::computeScalingFactor() {

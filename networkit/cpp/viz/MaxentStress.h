@@ -72,8 +72,6 @@ namespace NetworKit {
 		/** Computes a graph drawing according to the Maxent-Stress model. */
 		virtual void run();
 
-		ResultStats runAlgo();
-
 		/**
          * Scale the layout computed by @ref run() by a scalar s to minimize \sum_{u,v \in V} w_{uv} (s ||x_u - x_v|| - d_{uv}||)^2
          */
@@ -136,11 +134,37 @@ namespace NetworKit {
 			this->convThreshold = convThreshold * convThreshold;
 		}
 
+        double getRhs() {
+             return this->resultStats.rhsTime;
+        };
+
+        double getApproxEntropyTerm() {
+             return this->resultStats.approxEntropyTerm;
+        };
+
+        double getSolveTime() {
+            return this->resultStats.solveTime;
+        };
+
+    protected:
+
+     /**
+      * Calls run() and returns the corresponding stats.
+      */
+
+     ResultStats runAlgo();
+
 	private:
 		/**
          * Reference to the linear solver to use during the maxent-stress algorithm.
          */
 		LinearSolver<CSRMatrix>& solver;
+
+        /**
+         * Stats of the last time run() was called.
+         */
+
+        ResultStats resultStats;
 
 		/** Parameters of the MaxentStress model **/
 		double q, alpha, alphaReduction, finalAlpha, convThreshold;
@@ -328,14 +352,6 @@ namespace NetworKit {
          */
 		void computeAlgebraicDistances(const Graph& graph, const count k);
 	};
-
-
-
-
-
-
-
-
 
 } /* namespace NetworKit */
 #endif /* MAXENTSTRESS_H_ */
