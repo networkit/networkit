@@ -13,7 +13,7 @@
 #include "../ApproxEffectiveDiameter.h"
 #include "../ApproxHopPlot.h"
 #include "../NeighborhoodFunction.h"
-#include "../ApproxNeighborhoodFunction.h"
+#include "../NeighborhoodFunctionApproximation.h"
 
 #include "../../generators/DorogovtsevMendesGenerator.h"
 #include "../../generators/ErdosRenyiGenerator.h"
@@ -254,13 +254,13 @@ TEST_F(DistanceGTest, testHopPlot) {
 	}
 }
 
-TEST_F(DistanceGTest, testApproxNeighborhoodFunction) {
+TEST_F(DistanceGTest, testNeighborhoodFunctionApproximation) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/lesmis.graph").toUnweighted();
 	NeighborhoodFunction nf(G);
 	nf.run();
 	auto exact = nf.getNeighborhoodFunction();
-	ApproxNeighborhoodFunction anf(G);
+	NeighborhoodFunctionApproximation anf(G);
 	anf.run();
 	auto approximated = anf.getNeighborhoodFunction();
 	EXPECT_EQ(exact.size(), approximated.size());
