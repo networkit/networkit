@@ -5200,13 +5200,13 @@ cdef class EffectiveDiameter(Algorithm):
 		return (<_EffectiveDiameter*>(self._this)).getEffectiveDiameter()
 
 
-cdef extern from "cpp/distance/ApproxEffectiveDiameter.h" namespace "NetworKit::ApproxEffectiveDiameter":
-	cdef cppclass _ApproxEffectiveDiameter "NetworKit::ApproxEffectiveDiameter"(_Algorithm):
-		_ApproxEffectiveDiameter(_Graph& G, double ratio, count k, count r) except +
+cdef extern from "cpp/distance/EffectiveDiameterApproximation.h" namespace "NetworKit::EffectiveDiameterApproximation":
+	cdef cppclass _EffectiveDiameterApproximation "NetworKit::EffectiveDiameterApproximation"(_Algorithm):
+		_EffectiveDiameterApproximation(_Graph& G, double ratio, count k, count r) except +
 		void run() nogil except +
 		double getEffectiveDiameter() except +
 
-cdef class ApproxEffectiveDiameter(Algorithm):
+cdef class EffectiveDiameterApproximation(Algorithm):
 	"""
 	Calculates the effective diameter of a graph.
 	The effective diameter is defined as the number of edges on average to reach a given ratio of all other nodes.
@@ -5230,7 +5230,7 @@ cdef class ApproxEffectiveDiameter(Algorithm):
 
 	def __cinit__(self, Graph G not None, double ratio=0.9, count k=64, count r=7):
 		self._G = G
-		self._this = new _ApproxEffectiveDiameter(G._this, ratio, k, r)
+		self._this = new _EffectiveDiameterApproximation(G._this, ratio, k, r)
 
 	def getEffectiveDiameter(self):
 		"""
@@ -5239,16 +5239,16 @@ cdef class ApproxEffectiveDiameter(Algorithm):
 		double
 			the approximated effective diameter
 		"""
-		return (<_ApproxEffectiveDiameter*>(self._this)).getEffectiveDiameter()
+		return (<_EffectiveDiameterApproximation*>(self._this)).getEffectiveDiameter()
 
 
-cdef extern from "cpp/distance/ApproxHopPlot.h" namespace "NetworKit::ApproxHopPlot":
-	cdef cppclass _ApproxHopPlot "NetworKit::ApproxHopPlot"(_Algorithm):
-		_ApproxHopPlot(_Graph& G, count maxDistance, count k, count r) except +
+cdef extern from "cpp/distance/HopPlotApproximation.h" namespace "NetworKit::HopPlotApproximation":
+	cdef cppclass _HopPlotApproximation "NetworKit::HopPlotApproximation"(_Algorithm):
+		_HopPlotApproximation(_Graph& G, count maxDistance, count k, count r) except +
 		void run() nogil except +
 		map[count, double] getHopPlot() except +
 
-cdef class ApproxHopPlot(Algorithm):
+cdef class HopPlotApproximation(Algorithm):
 	"""
 	Computes an approxmation of the hop-plot of a given graph.
 	The hop-plot is the set of pairs (d, g(g)) for each natural number d
@@ -5274,7 +5274,7 @@ cdef class ApproxHopPlot(Algorithm):
 
 	def __cinit__(self, Graph G not None, count maxDistance=0, count k=64, count r=7):
 		self._G = G
-		self._this = new _ApproxHopPlot(G._this, maxDistance, k, r)
+		self._this = new _HopPlotApproximation(G._this, maxDistance, k, r)
 
 	def getHopPlot(self):
 		"""
@@ -5283,7 +5283,7 @@ cdef class ApproxHopPlot(Algorithm):
 		map
 			number of connected nodes for each distance
 		"""
-		cdef map[count, double] hp = (<_ApproxHopPlot*>(self._this)).getHopPlot()
+		cdef map[count, double] hp = (<_HopPlotApproximation*>(self._this)).getHopPlot()
 		result = dict()
 		for elem in hp:
 			result[elem.first] = elem.second

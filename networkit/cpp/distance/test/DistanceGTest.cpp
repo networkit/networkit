@@ -10,10 +10,11 @@
 
 #include "../Diameter.h"
 #include "../EffectiveDiameter.h"
-#include "../ApproxEffectiveDiameter.h"
-#include "../ApproxHopPlot.h"
+#include "../EffectiveDiameterApproximation.h"
+#include "../HopPlotApproximation.h"
 #include "../NeighborhoodFunction.h"
 #include "../NeighborhoodFunctionApproximation.h"
+#include "../NeighborhoodFunctionHeuristic.h"
 
 #include "../../generators/DorogovtsevMendesGenerator.h"
 #include "../../generators/ErdosRenyiGenerator.h"
@@ -89,7 +90,7 @@ TEST_F(DistanceGTest, testEffectiveDiameterMinimal) {
 	G.addEdge(2,3);
 	G.addEdge(3,4);
 	G.addEdge(4,0);
-	ApproxEffectiveDiameter aef(G);
+	EffectiveDiameterApproximation aef(G);
 	aef.run();
 	double effective = aef.getEffectiveDiameter();
 	Diameter diam(G, DiameterAlgo::exact);
@@ -107,7 +108,7 @@ vector<string> testInstances= {"celegans_metabolic", "jazz", "lesmis"};
 for (auto testInstance : testInstances) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/" + testInstance + ".graph");
-	ApproxEffectiveDiameter aef(G);
+	EffectiveDiameterApproximation aef(G);
 	aef.run();
 	double effective = aef.getEffectiveDiameter();
 	Diameter diam(G, DiameterAlgo::exact);
@@ -235,7 +236,7 @@ TEST_F(DistanceGTest, testEffectiveDiameterExact) {
 		EXPECT_NEAR(5.619047, effective2, tol);
 }
 
-TEST_F(DistanceGTest, testHopPlot) {
+TEST_F(DistanceGTest, testHopPlotApproximation) {
 	using namespace std;
 
 	vector<string> testInstances= {"celegans_metabolic", "power", "lesmis"};
@@ -245,7 +246,7 @@ TEST_F(DistanceGTest, testHopPlot) {
 	for (auto& testInstance : testInstances) {
 		METISGraphReader reader;
 		Graph G = reader.read("input/" + testInstance + ".graph");
-		ApproxHopPlot hp(G);
+		HopPlotApproximation hp(G);
 		hp.run();
 		map<count, double> hopPlot = hp.getHopPlot();
 		for (count i=1; i < hopPlot.size(); i++) {
@@ -264,6 +265,18 @@ TEST_F(DistanceGTest, testNeighborhoodFunctionApproximation) {
 	anf.run();
 	auto approximated = anf.getNeighborhoodFunction();
 	EXPECT_EQ(exact.size(), approximated.size());
+}
+
+TEST_F(DistanceGTest, testNeighborhoodFunctionHeuristic) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/lesmis.graph").toUnweighted();
+	NeighborhoodFunction nf(G);
+	nf.run();
+	auto exact = nf.getNeighborhoodFunction();
+	NeighborhoodFunctionHeuristic anf(G);
+	anf.run();
+	auto heuristic = anf.getNeighborhoodFunction();
+	EXPECT_EQ(exact.size(), heuristic.size());
 }
 
 } /* namespace NetworKit */

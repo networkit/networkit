@@ -1,12 +1,12 @@
 /*
-* ApproxHopPlot.h
+* HopPlotApproximation.h
 *
 *  Created on: 30.03.2016
 *      Author: Maximilian Vogel
 */
 
-#ifndef APPROXHOPPLOT_H_
-#define APPROXHOPPLOT_H_
+#ifndef HOPPLOTAPPROXIMATION_H_
+#define HOPPLOTAPPROXIMATION_H_
 
 #include <map>
 #include "../graph/Graph.h"
@@ -17,7 +17,7 @@ namespace NetworKit {
 /**
  * @ingroup distance
  */
-class ApproxHopPlot : public Algorithm {
+class HopPlotApproximation : public Algorithm {
 
 public:
 	/**
@@ -34,7 +34,7 @@ public:
 	* @param r the amount of bits that are added to the length of the bitmask to improve the accuracy; default = 7
 	* @return the approximated hop-plot of the graph
 	*/
-	ApproxHopPlot(const Graph& G, const count maxDistance=0, const count k=64, const count r=7);
+	HopPlotApproximation(const Graph& G, const count maxDistance=0, const count k=64, const count r=7);
 
 	void run() override;
 
@@ -55,4 +55,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* APPROXHOPPLOT_H_ */
+#endif /* HOPPLOTAPPROXIMATION_H_ */
