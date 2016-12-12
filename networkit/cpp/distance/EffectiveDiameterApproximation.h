@@ -1,12 +1,12 @@
 /*
-* ApproxEffectiveDiameter.h
+* EffectiveDiameterApproximation.h
 *
 *  Created on: 29.03.16
 *      Author: Maximilian Vogel
 */
 
-#ifndef APPROXEFFECTIVEDIAMETER_H_
-#define APPROXEFFECTIVEDIAMETER_H_
+#ifndef EFFECTIVEDIAMETERAPPROXIMATION_H_
+#define EFFECTIVEDIAMETERAPPROXIMATION_H_
 
 #include "../graph/Graph.h"
 #include "../base/Algorithm.h"
@@ -16,7 +16,7 @@ namespace NetworKit {
 /**
  * @ingroup distance
  */
-class ApproxEffectiveDiameter : public Algorithm {
+class EffectiveDiameterApproximation : public Algorithm {
 
 public:
 	/**
@@ -31,7 +31,7 @@ public:
 	* @param k the number of parallel approximations to get a more robust result; default = 64
 	* @param r the amount of bits that are added to the length of the bitmask to improve the accuracy; default = 7
 	*/
-	ApproxEffectiveDiameter(const Graph& G, const double ratio=0.9, const count k=64, const count r=7);
+	EffectiveDiameterApproximation(const Graph& G, const double ratio=0.9, const count k=64, const count r=7);
 
 	void run() override;
 
@@ -51,4 +51,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* APPROXEFFECTIVEDIAMETER_H_ */
+#endif /* EFFECTIVEDIAMETERAPPROXIMATION_H_ */
