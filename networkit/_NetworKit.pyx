@@ -5331,7 +5331,7 @@ cdef extern from "cpp/distance/ApproxNeighborhoodFunction.h" namespace "NetworKi
 
 cdef class ApproxNeighborhoodFunction(Algorithm):
 	"""
-	Computes the neighborhood function exactly.
+	Computes an approximation of the neighborhood function.
 	The neighborhood function N of a graph G for a given distance t is defined
 	as the number of node pairs (u,v) that can be reached within distance t.
 
@@ -5344,7 +5344,7 @@ cdef class ApproxNeighborhoodFunction(Algorithm):
 	G : Graph
 		The graph.
 	k : count
-		number of parallel approximations, bigger k -> longer runtime, more precise result; default = 64
+		number of approximations, bigger k -> longer runtime, more precise result; default = 64
 	r : count
 		number of additional bits, important in tiny graphs; default = 7
 	"""
@@ -5363,37 +5363,40 @@ cdef class ApproxNeighborhoodFunction(Algorithm):
 		"""
 		return (<_ApproxNeighborhoodFunction*>(self._this)).getNeighborhoodFunction()
 
+cdef extern from "cpp/distance/NeighborhoodFunctionHeuristic.h" namespace "NetworKit::NeighborhoodFunctionHeuristic::SelectionStrategy":
+	enum _SelectionStrategy "NetworKit::NeighborhoodFunctionHeuristic::SelectionStrategy":
+		RANDOM
+		SPLIT
 
 cdef extern from "cpp/distance/NeighborhoodFunctionHeuristic.h" namespace "NetworKit::NeighborhoodFunctionHeuristic":
 	cdef cppclass _NeighborhoodFunctionHeuristic "NetworKit::NeighborhoodFunctionHeuristic"(_Algorithm):
-		_NeighborhoodFunctionHeuristic(_Graph& G, const count nSamples, string strategy) except +
+		_NeighborhoodFunctionHeuristic(_Graph& G, const count nSamples, const _SelectionStrategy strategy) except +
 		void run() nogil except +
 		vector[count] getNeighborhoodFunction() except +
 
 cdef class NeighborhoodFunctionHeuristic(Algorithm):
 	"""
-	Computes the neighborhood function exactly.
-	The neighborhood function N of a graph G for a given distance t is defined
-	as the number of node pairs (u,v) that can be reached within distance t.
-
-	Implementation after the ANF algorithm presented in the paper "A Fast and Scalable Tool for Data Mining in Massive Graphs"[1]
-
-	[1] by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
+	Computes a heuristic of the neighborhood function.
+	The algorithm runs nSamples breadth-first searches and scales the results up to the actual amount of nodes.
+	Accepted strategies are "split" and "random".
 
 	Parameters
 	----------
 	G : Graph
 		The graph.
-	k : count
-		number of parallel approximations, bigger k -> longer runtime, more precise result; default = 64
-	r : count
-		number of additional bits, important in tiny graphs; default = 7
+	nSamples : count
+		the amount of samples, set to zero for heuristic of max(sqrt(m), 0.15*n)
+	strategy : enum
+		the strategy to select the samples, accepts "random" or "split"
 	"""
 	cdef Graph _G
 
-	def __cinit__(self, Graph G not None, count nSamples=0, strategy="split"):
+	RANDOM = 0
+	SPLIT = 1
+
+	def __cinit__(self, Graph G not None, count nSamples=0, strategy=SPLIT):
 		self._G = G
-		self._this = new _NeighborhoodFunctionHeuristic(G._this, nSamples, stdstring(strategy))
+		self._this = new _NeighborhoodFunctionHeuristic(G._this, nSamples, strategy)
 
 	def getNeighborhoodFunction(self):
 		"""
