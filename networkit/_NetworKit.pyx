@@ -5364,6 +5364,47 @@ cdef class ApproxNeighborhoodFunction(Algorithm):
 		return (<_ApproxNeighborhoodFunction*>(self._this)).getNeighborhoodFunction()
 
 
+cdef extern from "cpp/distance/NeighborhoodFunctionHeuristic.h" namespace "NetworKit::NeighborhoodFunctionHeuristic":
+	cdef cppclass _NeighborhoodFunctionHeuristic "NetworKit::NeighborhoodFunctionHeuristic"(_Algorithm):
+		_NeighborhoodFunctionHeuristic(_Graph& G, const count nSamples, string strategy) except +
+		void run() nogil except +
+		vector[count] getNeighborhoodFunction() except +
+
+cdef class NeighborhoodFunctionHeuristic(Algorithm):
+	"""
+	Computes the neighborhood function exactly.
+	The neighborhood function N of a graph G for a given distance t is defined
+	as the number of node pairs (u,v) that can be reached within distance t.
+
+	Implementation after the ANF algorithm presented in the paper "A Fast and Scalable Tool for Data Mining in Massive Graphs"[1]
+
+	[1] by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	k : count
+		number of parallel approximations, bigger k -> longer runtime, more precise result; default = 64
+	r : count
+		number of additional bits, important in tiny graphs; default = 7
+	"""
+	cdef Graph _G
+
+	def __cinit__(self, Graph G not None, count nSamples=0, strategy="split"):
+		self._G = G
+		self._this = new _NeighborhoodFunctionHeuristic(G._this, nSamples, stdstring(strategy))
+
+	def getNeighborhoodFunction(self):
+		"""
+		Returns
+		-------
+		list
+			the i-th element denotes the number of node pairs that have a distance at most (i+1)
+		"""
+		return (<_NeighborhoodFunctionHeuristic*>(self._this)).getNeighborhoodFunction()
+
+
 cdef extern from "cpp/correlation/Assortativity.h":
 	cdef cppclass _Assortativity "NetworKit::Assortativity"(_Algorithm):
 		_Assortativity(_Graph, vector[double]) except +
@@ -9017,7 +9058,7 @@ cdef class MaxentStress (GraphLayoutAlgorithm):
 	EDGE_WEIGHT = 0
 	ALGEBRAIC_DISTANCE = 1
 
-	def __cinit__(self, Graph G, count dim, count k, vector[pair[double, double]] coordinates = [], double tolerance = 1e-5, _LinearSolverType linearSolverType = _LinearSolverType.LAMG, bool fastComputation = False, _GraphDistance graphDistance = _GraphDistance.EDGE_WEIGHT):
+	def __cinit__(self, Graph G, count dim, count k, vector[pair[double, double]] coordinates = [], double tolerance = 1e-5, _LinearSolverType linearSolverType = LAMG, bool fastComputation = False, _GraphDistance graphDistance = EDGE_WEIGHT):
 		cdef Point[double] p = Point[double](0, 0)
 		cdef vector[Point[double]] pointCoordinates = vector[Point[double]]()
 
