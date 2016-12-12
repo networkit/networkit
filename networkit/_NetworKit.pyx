@@ -5323,13 +5323,13 @@ cdef class NeighborhoodFunction(Algorithm):
 		return (<_NeighborhoodFunction*>(self._this)).getNeighborhoodFunction()
 
 
-cdef extern from "cpp/distance/ApproxNeighborhoodFunction.h" namespace "NetworKit::ApproxNeighborhoodFunction":
-	cdef cppclass _ApproxNeighborhoodFunction "NetworKit::ApproxNeighborhoodFunction"(_Algorithm):
-		_ApproxNeighborhoodFunction(_Graph& G, count k, count r) except +
+cdef extern from "cpp/distance/NeighborhoodFunctionApproximation.h" namespace "NetworKit::NeighborhoodFunctionApproximation":
+	cdef cppclass _NeighborhoodFunctionApproximation "NetworKit::NeighborhoodFunctionApproximation"(_Algorithm):
+		_NeighborhoodFunctionApproximation(_Graph& G, count k, count r) except +
 		void run() nogil except +
 		vector[count] getNeighborhoodFunction() except +
 
-cdef class ApproxNeighborhoodFunction(Algorithm):
+cdef class NeighborhoodFunctionApproximation(Algorithm):
 	"""
 	Computes an approximation of the neighborhood function.
 	The neighborhood function N of a graph G for a given distance t is defined
@@ -5352,7 +5352,7 @@ cdef class ApproxNeighborhoodFunction(Algorithm):
 
 	def __cinit__(self, Graph G not None, count k=64, count r=7):
 		self._G = G
-		self._this = new _ApproxNeighborhoodFunction(G._this, k, r)
+		self._this = new _NeighborhoodFunctionApproximation(G._this, k, r)
 
 	def getNeighborhoodFunction(self):
 		"""
@@ -5361,7 +5361,7 @@ cdef class ApproxNeighborhoodFunction(Algorithm):
 		list
 			the i-th element denotes the number of node pairs that have a distance at most (i+1)
 		"""
-		return (<_ApproxNeighborhoodFunction*>(self._this)).getNeighborhoodFunction()
+		return (<_NeighborhoodFunctionApproximation*>(self._this)).getNeighborhoodFunction()
 
 cdef extern from "cpp/distance/NeighborhoodFunctionHeuristic.h" namespace "NetworKit::NeighborhoodFunctionHeuristic::SelectionStrategy":
 	enum _SelectionStrategy "NetworKit::NeighborhoodFunctionHeuristic::SelectionStrategy":

@@ -1,5 +1,5 @@
 /*
-* ApproxNeighborhoodFunction.h
+* NeighborhoodFunctionApproximation.h
 *
 *  Created on: 30.03.2016
 *      Author: Maximilian Vogel
@@ -16,7 +16,7 @@ namespace NetworKit {
 /**
  * @ingroup distance
  */
-class ApproxNeighborhoodFunction : public Algorithm {
+class NeighborhoodFunctionApproximation : public Algorithm {
 
 public:
 	/**
@@ -31,7 +31,7 @@ public:
 	* @param k the number of parallel approximations to get a more robust result; default = 64
 	* @param r the amount of bits that are added to the length of the bitmask to improve the accuracy; default = 7
 	*/
-	ApproxNeighborhoodFunction(const Graph& G, const count k=64, const count r=7);
+	NeighborhoodFunctionApproximation(const Graph& G, const count k=64, const count r=7);
 
 	void run() override;
 
