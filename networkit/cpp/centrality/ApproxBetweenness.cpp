@@ -38,6 +38,11 @@ void ApproxBetweenness::run() {
 	diam.run();
 	vd = diam.getDiameter().first;
 
+	if (vd <= 2) {
+		hasRun = true;
+		return;
+	}
+
 	INFO("estimated diameter: ", vd);
 	r = ceil((universalConstant / (epsilon * epsilon)) * (floor(log2(vd - 2)) + 1 - log(delta)));
 
