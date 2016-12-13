@@ -53,6 +53,8 @@ Install NetworKit
     pip3 install [--user] networkit
 
 
+Depending on your system, you might need to install python3-tk.
+
 You can remove NetworKit completely by using the command :code:`pip3 uninstall networkit`.
 
 To check that everything works as expected, open a python terminal and run the following lines:
