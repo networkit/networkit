@@ -19,17 +19,22 @@ def installExternalPythonPackages():
 	except:
 		installPackage('scipy')
 	try:
+		import cython
+		del cython
+	except:
+		installPackage('cython')
+	try:
 		import matplotlib
 		del matplotlib
 	except:
 		installPackage('matplotlib')
 	try:
-		import pandas # Pandas seems to be necessary. Hence the direct installation.
+		import pandas
 		del pandas
 	except:
 		installPackage('pandas')
 	try:
-		import numpy # Numpy seems to be necessary. Hence the direct installation.
+		import numpy
 		del numpy
 	except:
 		installPackage('numpy')
