@@ -8,29 +8,9 @@ import pip
 def installPackage(package):
     pip.main(['install', package])
 
-def userInput(packages):
-	"""
-	Determines whether or not the user wants to install the optional Python dependencies.
-	Appropirate status messages are created.
-	"""
-	print('In order for all of Networkit to be usable, the following Python packages should be installed:')
-	for pkg in packages:
-		print(pkg)
-	var = input('Do you wish to install these packages now? ([y] = yes, [n] = no): ')
-	if var == 'y':
-		for pkg in packages:
-			installPackage(pkg)
-			print(pkg, ' has been installed.')
-	elif var == 'n':
-		print(
-			'No additionial packges will be installed. This may cause some functionality of NetworKit to not work properly.')
-	else:
-		print('Error: Please enter a valid answer ([y] / [n]).')
-		userInput(packages)
 
-def checkExternalPythonPackages():
+def installExternalPythonPackages():
 	""" This function checks if all necessary packages are available and asks installs the ones that are not.
-		The user is asked if optional dependecies are to be installed.
 	"""
 	notInstalledPackages = []
 	try:
@@ -42,26 +22,22 @@ def checkExternalPythonPackages():
 		import cython
 		del cython
 	except:
-		installPackage('cython') # Cython is necessary. Hence the direct installation.
-		print('cython has been installed')
+		notInstalledPackages.append('cython')
 	try:
 		import matplotlib
 		del matplotlib
 	except:
-		installPackage('matplotlib') # Matplotlib seems to be necessary. Hence the direct installation.
-		print('matplotlib has been installed')
+		notInstalledPackages.append('matplotlib')
 	try:
-		import pandas # Pandas seems to be necessary. Hence the direct installation.
+		import pandas
 		del pandas
 	except:
-		installPackage('pandas')
-		print("pandas has been installed")
+		notInstalledPackages.append('pandas')
 	try:
-		import numpy # Numpy seems to be necessary. Hence the direct installation.
+		import numpy
 		del numpy
 	except:
-		installPackage('numpy')
-		print("numpy has been installed")
+		notInstalledPackages.append('numpy')
 	try:
 		import networkx
 		del networkx
@@ -82,14 +58,10 @@ def checkExternalPythonPackages():
 		del sklearn
 	except:
 		notInstalledPackages.append('sklearn')
-	try:
-		import sklearn
-		del sklearn
-	except:
-		notInstalledPackages.append('sklearn')
 
 	if len(notInstalledPackages) > 0:
-		userInput(notInstalledPackages)
+		for pkg in notInstalledPackages:
+			installPackage(pkg)
 
 def installDependencies():
 	"""
