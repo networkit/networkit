@@ -6,7 +6,7 @@ The following text assumes some basic familiarity with the Mercurial version con
 
 If you want to contribute, you should to consider the [technical report](https://arxiv.org/pdf/1403.3005.pdf) on NetworKit to get familiar with the architecture.
 
-If you use NetworKit in your research publications, please cite the mentioned techincal report or the specific algorithm. A list of publications is available on the [website](TODO: add link).
+If you use NetworKit in your research publications, please cite the mentioned techincal report or the specific algorithm. A list of publications is available on the [website](https://networkit.iti.kit.edu/publications.html).
 
 ## How to contribute
 

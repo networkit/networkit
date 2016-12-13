@@ -48,6 +48,23 @@ Publications on Algorithms Available in NetworKit
 .. raw:: html
 
   <ul>
+  <li>
+    E. Bergamini, M. Wegner, D. Lukarski, H. Meyerhenke:  Estimating Current-Flow Closeness Centrality with a Multigrid Laplacian Solver. To appear at <i><a href="http://www.eecs.wsu.edu/~assefaw/CSC16/csc16.html">CSC</a> '16</i>.
+    <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
+    <div id="collapseDiv" class="collapse">
+      <b>Abstract.</b> Matrices associated with graphs, such as the Laplacian, lead to numerous interesting graph problems expressed as linear systems. One field where Laplacian linear systems
+      play a role is network analysis, e. g. for certain centrality measures that indicate if a node (or an edge) is important in the network. One such centrality measure is current-flow closeness.
+      To allow network analysis workflows to profit from a fast Laplacian solver, we provide an implementation of the LAMG multigrid solver in the NetworKit package, facilitating the computation
+      of current-flow closeness values or related quantities. Our main contribution consists of two algorithms that accelerate the current-flow computation for one node or a reasonably small node
+      subset significantly. One algorithm is an unbiased estimator using sampling, the other one is based on the Johnson- Lindenstrauss transform. Our inexact algorithms lead to very accurate
+      results in practice. Thanks to them one is now able to compute an estimation of current-flow closeness of one node on networks with tens of millions of nodes and edges within seconds or a
+      few minutes. From a network analytical point of view, our experiments indicate that current-flow closeness can discriminate among different nodes significantly better than traditional
+      shortest-path closeness and is also considerably more resistant to noise – we thus show that two known drawbacks of shortest-path closeness are alleviated by the current-flow variant.
+    </div>
+  </li>
+
+  <br>
+
     <li>
       M. von Looz, M. Özdayi, S. Laue, H. Meyerhenke:  Generating massive complex networks with hyperbolic geometry faster in practice. To appear at <i><a href="http://ieee-hpec.org/">HPEC</a> '16</i>. [<a href="http://arxiv.org/abs/1606.09481">arXiv</a>]
       <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
@@ -277,6 +294,21 @@ Publications Using NetworKit
 .. raw:: html
 
   <ul>
+    <li>
+      M. Lozano, C. García-Martínez, F. J. Rodríguez, H. M. Trujillo: Optimizing network attacks by artificial bee colony.
+      To appear in <i>Information Sciences, Volume 377</i>, pp. 30-50, January 2017.
+       <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
+       <div id="collapseDiv" class="collapse">
+         <b>Abstract</b> Over the past few years, the task of conceiving effective attacks to complex networks has arisen as an optimization problem. Attacks are modelled as the process of removing a number k of vertices, from the graph that represents the network, and the goal is to maximise or minimise the value of a predefined metric over the graph. In this work, we present an optimization problem that concerns the selection of nodes to be removed to minimise the maximum betweenness
+         centrality value of the residual graph. This metric evaluates the participation of the nodes in the communications through the shortest paths of the network.
+        <br>
+         To address the problem we propose an artificial bee colony algorithm, which is a swarm intelligence approach inspired in the foraging behaviour of honeybees. In this framework, bees produce new candidate solutions for the problem by exploring the vicinity of previous ones, called food sources. The proposed method exploits useful problem knowledge in this neighbourhood exploration by considering the partial destruction and heuristic reconstruction of selected solutions. The
+         performance of the method, with respect to other models from the literature that can be adapted to face this problem, such as sequential centrality-based attacks, module-based attacks, a genetic algorithm, a simulated annealing approach, and a variable neighbourhood search, is empirically shown.
+       </div>
+    </li>
+
+    <br>
+
     <li>
       M. Riondato, E. Upfal: ABRA: Approximating Betweenness Centrality in Static and Dynamic Graphs with Rademacher Averages.
       To appear in <i>Proc. 22nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining</i> (KDD 2016), August 2016. [<a href="http://arxiv.org/abs/1602.05866">arXiv</a>]
