@@ -33,7 +33,8 @@ TEST_F(CommunityDetectionBenchmark, timeClusteringAlgos) {
 
 	// std::string graph = "../graphs/in-2004.graph";
 	// std::string graph = "../graphs/uk-2002.graph";
-	std::string graph = "../graphs/uk-2007-05.graph";
+	// std::string graph = "../graphs/uk-2007-05.graph";
+	std::string graph = "input/polblogs.graph";
 
 	printf("Reading graph file %s ...\n", graph.c_str());
 	timer.start();
@@ -83,8 +84,10 @@ TEST_F(CommunityDetectionBenchmark, timeClusteringAlgos) {
 TEST_F(CommunityDetectionBenchmark, timePageRankCentrality) {
 	Aux::Timer timer;
 
-	std::string graph = "../graphs/uk-2002.graph";
-	const Graph G = this->metisReader.read(graph);
+	// std::string graph = "../graphs/uk-2002.graph";
+	std::string graph = "input/polblogs.graph";
+
+const Graph G = this->metisReader.read(graph);
 
 	for (int r = 0; r < runs; r++) {
 		PageRank cen(G, 1e-6);
@@ -106,8 +109,10 @@ TEST_F(CommunityDetectionBenchmark, timePageRankCentrality) {
 TEST_F(CommunityDetectionBenchmark, timeBetweennessCentrality) {
 	Aux::Timer timer;
 
-	std::string graph = "../graphs/cond-mat-2005.graph";
-	const Graph G = this->metisReader.read(graph);
+	// std::string graph = "../graphs/cond-mat-2005.graph";
+	std::string graph = "input/polblogs.graph";
+
+const Graph G = this->metisReader.read(graph);
 
 	for (int r = 0; r < runs; r++) {
 		Betweenness cen(G);
