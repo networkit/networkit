@@ -22,7 +22,7 @@
 
 namespace NetworKit {
 
-ApproxBetweenness::ApproxBetweenness(const Graph& G, const double epsilon, const double delta, const count diameterSamples, const double universalConstant) : Centrality(G, true), epsilon(epsilon), delta(delta), diameterSamples(diameterSamples), universalConstant(universalConstant) {
+ApproxBetweenness::ApproxBetweenness(const Graph& G, const double epsilon, const double delta, const double universalConstant) : Centrality(G, true), epsilon(epsilon), delta(delta), universalConstant(universalConstant) {
 
 }
 
@@ -33,22 +33,10 @@ void ApproxBetweenness::run() {
 	scoreData.resize(G.upperNodeIdBound());
 
 	edgeweight vd = 0;
-	if (diameterSamples == 0) {
-		INFO("estimating vertex diameter pedantically");
-		Diameter diam(G, DiameterAlgo::estimatedPedantic);
-		diam.run();
-		vd = diam.getDiameter().first;
-	} else {
-		/**
-		* This is an optimization which deviates from the original algorithm.
-		* Instead of getting an estimate for each of possibly thousands of connected component and taking the maximum,
-		* we sample the graph and take the maximum diameter found. This has a high chance of  hitting the component with the maximum vertex diameter.
-		*/
-		INFO("estimating vertex diameter roughly");
-		Diameter diam(G, DiameterAlgo::estimatedSamples, -1.f, diameterSamples);
-		diam.run();
-		vd = diam.getDiameter().first;
-	}
+
+	Diameter diam(G, DiameterAlgo::estimatedPedantic);
+	diam.run();
+	vd = diam.getDiameter().first;
 
 	INFO("estimated diameter: ", vd);
 	r = ceil((universalConstant / (epsilon * epsilon)) * (floor(log2(vd - 2)) + 1 - log(delta)));

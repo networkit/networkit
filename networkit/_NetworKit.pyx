@@ -5016,7 +5016,7 @@ cdef class StronglyConnectedComponents:
 	""" Determines the connected components and associated values for
 		a directed graph.
 
-		By default, the iterative implementation is used. If edges on the graph have been removed, 
+		By default, the iterative implementation is used. If edges on the graph have been removed,
 		you should switch to the recursive implementation.
 
 		Parameters
@@ -5720,14 +5720,14 @@ cdef class KatzCentrality(Centrality):
 
 cdef extern from "cpp/centrality/ApproxBetweenness.h":
 	cdef cppclass _ApproxBetweenness "NetworKit::ApproxBetweenness" (_Centrality):
-		_ApproxBetweenness(_Graph, double, double, count, double) except +
+		_ApproxBetweenness(_Graph, double, double, double) except +
 		count numberOfSamples() except +
 
 cdef class ApproxBetweenness(Centrality):
 	""" Approximation of betweenness centrality according to algorithm described in
  	Matteo Riondato and Evgenios M. Kornaropoulos: Fast Approximation of Betweenness Centrality through Sampling
 
- 	ApproxBetweenness(G, epsilon=0.01, delta=0.1, diameterSamples=0, universalConstant=1.0)
+ 	ApproxBetweenness(G, epsilon=0.01, delta=0.1, universalConstant=1.0)
 
  	The algorithm approximates the betweenness of all vertices so that the scores are
 	within an additive error epsilon with probability at least (1- delta).
@@ -5754,9 +5754,9 @@ cdef class ApproxBetweenness(Centrality):
 		is no guarantee in this case.
 	"""
 
-	def __cinit__(self, Graph G, epsilon=0.1, delta=0.1, diameterSamples=0, universalConstant=1.0):
+	def __cinit__(self, Graph G, epsilon=0.1, delta=0.1, universalConstant=1.0):
 		self._G = G
-		self._this = new _ApproxBetweenness(G._this, epsilon, delta, diameterSamples, universalConstant)
+		self._this = new _ApproxBetweenness(G._this, epsilon, delta, universalConstant)
 
 	def numberOfSamples(self):
 		return (<_ApproxBetweenness*>(self._this)).numberOfSamples()
