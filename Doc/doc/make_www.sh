@@ -39,7 +39,7 @@ mkdir ../Website/uploads/
 
 # zip documentation and repository and move it to uploads/
 zip -r ../Website/uploads/Documentation.zip ../Documentation/
-hg archive -t zip ../Website/uploads/NetworKit.zip
+sudo su -c "hg archive -t zip ../Website/uploads/NetworKit.zip" wwwrun
 
 # remove doctrees (not needed for html)
 rm -rf ../Website/doctrees/
