@@ -27,7 +27,7 @@ errorMessages = []
 
 # ask the user if the want to instsall the missing packages used by NetworKit and install the necessary ones.
 installExternalPythonPackages()
-necessaryDependecies = installDependencies()
+necessaryDependencies = installDependencies()
 
 try:
 	import Cython
@@ -325,7 +325,7 @@ setup(
 	ext_modules		= modules,
 	zip_safe		= False)
 
-for warn in necessaryDependecies:
+for warn in necessaryDependencies:
 	print(warn)
 
 
