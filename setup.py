@@ -27,7 +27,7 @@ errorMessages = []
 
 # ask the user if the want to instsall the missing packages used by NetworKit and install the necessary ones.
 installExternalPythonPackages()
-installDependencies()
+necessaryDependecies = installDependencies()
 
 try:
 	import Cython
@@ -262,7 +262,7 @@ class CustomInstallCmd(InstallCmd):
 		# run setuptools install command
 		InstallCmd.run(self)
 		# ask user if they want to install external packages used by NetworKit and install the necessary ones
-		checkExternalPythonPackages()
+		installExternalPythonPackages()
 		installDependencies()
 
 
@@ -324,5 +324,8 @@ setup(
 	test_suite		= 'nose.collector',
 	ext_modules		= modules,
 	zip_safe		= False)
+
+for warn in necessaryDependecies:
+	print(warn)
 
 
