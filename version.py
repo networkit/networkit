@@ -53,5 +53,6 @@ classifiers = [
 
 install_requires = []
 # not used because it can mess up pip's installation process
-# therefore, setup.py prints warnings for each package missing (tabulate, readline, scipy, numpy, matplotlib, networkx)
-# or terminates the installation process (gcc, scons and cython)
+# therefore, setup.py prints installs the missing packages (tabulate, readline, scipy, numpy, matplotlib, networkx, cython)
+# If gcc is missing, the installation is stopped.
+# In case scons is missing, the installation continues the build within the mbe.MinimalBuildEnvironment.
