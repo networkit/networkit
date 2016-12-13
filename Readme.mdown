@@ -59,22 +59,10 @@ package:
 ## Installation instructions
 
 ### Installing NetworKit via pip
-NetworKit uses some additional external Python packages. While you do not need them to run NetworKit, it is recommended to install them in order to use all the features of NetworKit:
 
--   scipy
--   numpy
--   readline
--   matplotlib
--   networkx
--   tabulate
+    pip3 install [--user] networkit
 
-You can use the command `pip3 install scipy numpy readline matplotlib networkx tabulate` on your terminal to install all packages at once. From the list of requirements, you need at least a C++ compiler (including OpenMP) and pip (and optionally SCons). NetworKit can be installed via pip with the following command:
-
-    [sudo] pip[3] install [--user] networkit
-
-During the installation process, the setup will check if the aforementioned external packages are available and print warnings at the end of the installation process.
-
-__Note:__ All of the above installation command may require root privileges depending on your system, so try this accordingly. If you do not have root privileges, add `--user` to your command.
+Depending on your system, you might need to install python3-tk.
 
 
 ### Building NetworKit as a Python Module from source
