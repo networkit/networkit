@@ -121,19 +121,6 @@ TEST_F(CentralityGTest, testApproxBetweennessSmallGraph) {
 
 	double epsilon = 0.1; // error
 	double delta = 0.1; // confidence
-	ApproxBetweenness centrality(G, epsilon, delta, 0);
-	centrality.run();
-	std::vector<double> bc = centrality.scores();
-
-	DEBUG("scores: ", bc);
-}
-
-TEST_F(CentralityGTest, tryApproxBetweennessOnRealGraph) {
-	METISGraphReader reader;
-	Graph G = reader.read("input/ns894786.mps.gz.variable.graph");
-
-	double epsilon = 0.01; // error
-	double delta = 0.1; // confidence
 	ApproxBetweenness centrality(G, epsilon, delta);
 	centrality.run();
 	std::vector<double> bc = centrality.scores();

@@ -16,9 +16,9 @@ namespace NetworKit {
 
 
 TEST_F(ApproxBetweennessGTest, benchApproxDiameterErdos) {
-	ErdosRenyiGenerator gen(10000,0.001);
+	ErdosRenyiGenerator gen(1000,0.002);
 	Graph G1 = gen.generate();
-	ApproxBetweenness approx(G1, 0.05, 0.1, 20);
+	ApproxBetweenness approx(G1, 0.05, 0.1);
 	approx.run();
 }
 
