@@ -25,9 +25,9 @@ import unittest
 abort_installation = False
 errorMessages = []
 
-# ask the user if the want to instsall the missing packages used by NetworKit and install the necessary ones.
+# install necessary python packages
 installExternalPythonPackages()
-necessaryDependencies = checkDependencies()
+missingDepend = checkDependencies()
 
 try:
 	import Cython
@@ -263,7 +263,7 @@ class CustomInstallCmd(InstallCmd):
 		InstallCmd.run(self)
 		# ask user if they want to install external packages used by NetworKit and install the necessary ones
 		installExternalPythonPackages()
-		necessaryDependencies = checkDependencies()
+		missingDepend = checkDependencies()
 
 
 src = []
@@ -325,5 +325,5 @@ setup(
 	ext_modules		= modules,
 	zip_safe		= False)
 
-for dpd in necessaryDependencies:
-	print dpd
+for dpd in missingDepend:
+	print(dpd)
