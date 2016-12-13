@@ -12,7 +12,7 @@ On this page we present projects that use our NetworKit tool suite.
 Image Segmentation
 ~~~~~~~~~~~~~~~~~~
 
-There are serveral approaches to handle segmenting images into its main parts. One approach is to represent the image as a graph and apply graph clustering algorithms to compute a segmentation. This project is based on NetworKit and demonstrates how the framework can be used to segment images. A detailed project description with a the basic idea behind the implemented algorithms can be found in this `pdf-file <https://networkit.iti.kit.edu/data/uploads/projects/networkit-imagesegmentation.pdf>`_. Furthermore, an interactive `iPython Notebook <http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/projects/graph-based-segmentation.ipynb>`_ is also available.
+There are serveral approaches to handle segmenting images into its main parts. One approach is to represent the image as a graph and apply graph clustering algorithms to compute a segmentation. This project is based on NetworKit and demonstrates how the framework can be used to segment images. A detailed project description with a the basic idea behind the implemented algorithms can be found in this `pdf-file <https://networkit.iti.kit.edu/uploads/projects/networkit-imagesegmentation.pdf>`_. Furthermore, an interactive `iPython Notebook <http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/uploads/projects/graph-based-segmentation.ipynb>`_ is also available.
 
 The project can be found on `AlgoHub <https://algohub.iti.kit.edu/parco/NetworKit/NetworKit-ImageSegmentation>`_.
 
