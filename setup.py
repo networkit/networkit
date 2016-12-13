@@ -24,7 +24,11 @@ import unittest
 
 abort_installation = False
 errorMessages = []
-warnMessages = []
+
+# ask the user if the want to instsall the missing packages used by NetworKit and install the necessary ones.
+checkExternalPythonPackages()
+installDependencies()
+
 try:
 	import Cython
 	from Cython.Build import cythonize
@@ -68,7 +72,7 @@ except:
 #
 if sys.platform == 'Windows' and not scons_available:
 	abort_installation = True
-	errorMessages.append("ERROR: Build system SCons is not installed. Please install and rerun")
+	errorMessages.append("ERROR: Build system SCons is not installed. Please install and rerun.")
 
 
 # compiler candidates
@@ -257,12 +261,9 @@ class CustomInstallCmd(InstallCmd):
 	def run(self):
 		# run setuptools install command
 		InstallCmd.run(self)
-		# collect and print warnings about external packages used by NetworKit
-		warnMessages = collectExternalPackageStatus()
-		if len(warnMessages) > 0:
-			for msg in warnMessages:
-				print(msg)
-			print("Save this list and check for each package how to install it on your system.")
+		# ask user if they want to install external packages used by NetworKit and install the necessary ones
+		checkExternalPythonPackages()
+		installDependencies()
 
 
 src = []
@@ -323,3 +324,5 @@ setup(
 	test_suite		= 'nose.collector',
 	ext_modules		= modules,
 	zip_safe		= False)
+
+
