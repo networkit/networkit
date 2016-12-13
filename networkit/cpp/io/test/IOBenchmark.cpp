@@ -81,11 +81,7 @@ void IOBenchmark::convertToHeatMap(vector<bool> &infected, vector<double> &xcoor
 
 
 TEST_F(IOBenchmark, timeMETISGraphReader) {
-	std::string path = "";
-
-	std::cout << "[INPUT] .graph file path >" << std::endl;
-	std::getline(std::cin, path);
-
+	std::string path = "input/caidaRouterLevel.graph";
 	Aux::Timer runtime;
 
 	INFO("[BEGIN] reading graph: " , path);
