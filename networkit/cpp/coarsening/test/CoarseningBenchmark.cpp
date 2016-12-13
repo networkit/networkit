@@ -20,9 +20,7 @@
 namespace NetworKit {
 
 TEST_F(CoarseningBenchmark, benchmarkCoarsening) {
-	std::cout << "enter number of nodes: ";
-	count n;
-	std::cin >> n;
+	count n = 10000;
 	count redF = 100; // reduction factor
 	count k = n/redF;
 	DEBUG("generating graph with ", n, " nodes");
