@@ -46,17 +46,12 @@ nav .hidden {
 }
 
 .navbar {
-  background: url(bg2.jpg);
-  background-size: cover;
-  background-position: center center;
+  background-color: #104870;
   border-radius: 0px;
   font-size: 16px;
 }
 
 .home_navbar {
-  background: url(bg1.jpg);
-  background-size: cover;
-  background-position: center center;
   height: 400px;
   font-size: 16px;
 }
@@ -148,10 +143,12 @@ text-decoration: none;
   -o-appearance: none;
 }
 
+.navbar-default.home_navbar {
+  background: none;
+}
 
 .navbar-default {
   color:#ffffff;
-  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .navbar-text {
@@ -245,4 +242,19 @@ input[type=checkbox]:checked ~ [for="read_more"] span:first-of-type {
 input[type=checkbox]:checked ~ [for="read_more"] span:last-of-type {
     display: block;
     visibility: visible;
+}
+
+#fancy-particles {
+  position: absolute;
+  top: 0;
+  z-index: -1;
+  height: 400px;
+  width: 100%;
+  background-color: #104870;
+  background-size: cover;
+  background-position: center center;
+}
+
+#fancy-particles canvas {
+  background-color: #104870;
 }
