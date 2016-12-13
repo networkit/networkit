@@ -5003,8 +5003,10 @@ cdef class ParallelConnectedComponents:
 
 cdef extern from "cpp/components/StronglyConnectedComponents.h":
 	cdef cppclass _StronglyConnectedComponents "NetworKit::StronglyConnectedComponents":
-		_StronglyConnectedComponents(_Graph G) except +
+		_StronglyConnectedComponents(_Graph G, bool iterativeAlgo) except +
 		void run() nogil except +
+		void runIteratively() nogil except +
+		void runRecursively() nogil except +
 		count numberOfComponents() except +
 		count componentOfNode(node query) except +
 		_Partition getPartition() except +
@@ -5013,13 +5015,23 @@ cdef extern from "cpp/components/StronglyConnectedComponents.h":
 cdef class StronglyConnectedComponents:
 	""" Determines the connected components and associated values for
 		a directed graph.
+
+		By default, the iterative implementation is used. If edges on the graph have been removed, 
+		you should switch to the recursive implementation.
+
+		Parameters
+		----------
+		G : Graph
+			The graph.
+		iterativeAlgo : boolean
+			Specifies which implementation to use, by default True for the iterative implementation.
 	"""
 	cdef _StronglyConnectedComponents* _this
 	cdef Graph _G
 
-	def __cinit__(self,  Graph G):
+	def __cinit__(self, Graph G, iterativeAlgo = True):
 		self._G = G
-		self._this = new _StronglyConnectedComponents(G._this)
+		self._this = new _StronglyConnectedComponents(G._this, iterativeAlgo)
 
 	def __dealloc__(self):
 		del self._this
@@ -5027,6 +5039,16 @@ cdef class StronglyConnectedComponents:
 	def run(self):
 		with nogil:
 			self._this.run()
+		return self
+
+	def runIteratively(self):
+		with nogil:
+			self._this.runIteratively()
+		return self
+
+	def runRecursively(self):
+		with nogil:
+			self._this.runRecursively()
 		return self
 
 	def getPartition(self):

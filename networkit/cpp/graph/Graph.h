@@ -901,6 +901,24 @@ public:
 	 */
 	std::vector<node> neighbors(node u) const;
 
+	/**
+	 * Get i-th (outgoing) neighbor of @a u.
+	 * WARNING: This function is deprecated or only temporary.
+	 *
+	 * @param u Node.
+	 * @param i index; should be in [0, degreeOut(u))
+	 * @return @a i -th (outgoing) neighbor of @a u, or @c none if no such
+	 * neighbor exists.
+	 */
+	template<bool graphIsDirected>
+	node getIthNeighbor(node u, index i) const {
+		node v = outEdges[u][i];
+		if (useEdgeInIteration<graphIsDirected>(u, v))
+			return v;
+		else
+			return none;
+	}
+
 
 	/* Derivative Graphs */
 

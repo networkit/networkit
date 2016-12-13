@@ -19,12 +19,25 @@ namespace NetworKit {
  */
 class StronglyConnectedComponents {
 public:
-	StronglyConnectedComponents(const Graph& G);
+	StronglyConnectedComponents(const Graph& G, bool iterativeAlgo=true);
 
 	/**
-	 * This method determines the connected components for the graph g.
+	 * This method determines the connected components for the graph g
+	 * (by default: iteratively).
 	 */
 	void run();
+
+	/**
+	 * This method determines the connected components for the graph g
+	 * (iterative implementation).
+	 */
+	void runIteratively();
+
+	/**
+	 * This method determines the connected components for the graph g
+	 * (recursive implementation).
+	 */
+	void runRecursively();
 
 	/**
 	 * This method returns the number of connected components.
@@ -47,6 +60,7 @@ public:
 
 private:
 	const Graph& G;
+	bool iterativeAlgo;
 	Partition component;
 };
 
