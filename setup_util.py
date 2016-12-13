@@ -10,7 +10,7 @@ def installPackage(package):
 
 
 def installExternalPythonPackages():
-	""" This function installs the necessary Python packages.
+	""" This function checks if all necessary packages are available and installs the ones that are not.
 	"""
 	notInstalledPackages = []
 	try:
@@ -19,22 +19,17 @@ def installExternalPythonPackages():
 	except:
 		installPackage('scipy')
 	try:
-		import cython
-		del cython
-	except:
-		installPackage('cython')
-	try:
 		import matplotlib
 		del matplotlib
 	except:
 		installPackage('matplotlib')
 	try:
-		import pandas
+		import pandas # Pandas seems to be necessary. Hence the direct installation.
 		del pandas
 	except:
 		installPackage('pandas')
 	try:
-		import numpy
+		import numpy # Numpy seems to be necessary. Hence the direct installation.
 		del numpy
 	except:
 		installPackage('numpy')
@@ -58,25 +53,25 @@ def installExternalPythonPackages():
 		del sklearn
 	except:
 		installPackage('sklearn')
-	installPackage('ipython')
-
-def checkDependencies():
-	"""
-	Tries to install the outside dependencies the status of which can't be checked through imports.
-	"""
-	requiredDependencies = []
 	ipythonStatus = os.system('pip3 show ipython')
 	if ipythonStatus != 0:
 		installPackage('ipython')
-		print("Ipython has been installed")
+
+
+def checkDependencies():
+	"""
+	Sees which outside dependencies are missing.
+	"""
+	missing = []
 	try:
 		import _tkinter
 		del _tkinter
 	except:
-		requiredDependencies.append("WARNING: _tkinter is necessary for NetworKit.\n"
+		missing.append("WARNING: _tkinter is necessary for NetworKit.\n"
 			  "Please install _tkinter \n"
 			  "Root privileges are necessary for this. \n"
 			  "If you have these, the installation command should be: sudo apt-get install python3-tk")
+	return missing
 
 def determineCompiler(candidates, stdFlags):
 	""" This function tests a list of candidates, whether they are sufficient to the requirements of 
