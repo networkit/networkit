@@ -1,0 +1,18 @@
+include version.py
+include ez_setup.py
+include setup_util.py
+include mbe.py
+include SConstruct
+#include networkit/_NetworKit.pyx
+include networkit/_NetworKit.cpp
+include networkit/profiling/html/measure.html
+include networkit/profiling/html/overlay.html
+include networkit/profiling/html/profile.html
+include networkit/profiling/html/profiling.css
+include networkit/profiling/html/profiling.js
+include networkit/profiling/latex/measure.tex
+include networkit/profiling/latex/profile.tex
+include networkit/profiling/description/descriptions.txt
+recursive-include networkit *.h *.cpp
+recursive-include networkit *.pxd
+recursive-exclude networkit *GTest.cpp *GTest.h *Benchmark.h *Benchmark.cpp /test/ *-X.cpp

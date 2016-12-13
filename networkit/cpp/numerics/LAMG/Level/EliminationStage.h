@@ -1,0 +1,57 @@
+/*
+ * EliminationStage.h
+ *
+ *  Created on: 09.01.2015
+ *      Author: Michael
+ */
+
+#ifndef ELIMINATIONSTAGE_H_
+#define ELIMINATIONSTAGE_H_
+
+#include "../../../algebraic/Vector.h"
+
+namespace NetworKit {
+
+/**
+ * @ingroup numerics
+ */
+template<class Matrix>
+class EliminationStage {
+private:
+	Matrix P; // interpolation matrix
+	Matrix R;
+	Vector q; // coarse result correction vector
+	std::vector<index> fSet;
+	std::vector<index> cSet;
+
+public:
+	EliminationStage(const Matrix& P, const Vector& q, const std::vector<index>& fSet, const std::vector<index>& cSet) : P(P), R(P.transpose()), q(q), fSet(fSet), cSet(cSet) {}
+
+	inline const Matrix& getP() const {
+		return P;
+	}
+
+	inline const Matrix& getR() const {
+		return R;
+	}
+
+ 	inline const Vector& getQ() const {
+ 		return q;
+ 	}
+
+	inline const std::vector<index>& getFSet() const {
+		return fSet;
+	}
+
+	inline const std::vector<index>& getCSet() const {
+		return cSet;
+	}
+
+	inline count getN() const {
+		return fSet.size() + cSet.size();
+	}
+};
+
+} /* namespace NetworKit */
+
+#endif /* ELIMINATIONSTAGE_H_ */
