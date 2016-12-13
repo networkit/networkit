@@ -67,6 +67,7 @@ def installDependencies():
 	"""
 	Tries to install the outside dependencies the status of which can't be checked through imports.
 	"""
+	necessaryDependenceis = [];
 	ipythonStatus = os.system('pip3 show ipython')
 	if ipythonStatus != 0:
 		installPackage('ipython')
@@ -75,10 +76,11 @@ def installDependencies():
 		import _tkinter
 		del _tkinter
 	except:
-		print("WARNING: _tkinter is necessary for NetworKit.\n"
+		necessaryDependenceis.append("ERROR: _tkinter is necessary for NetworKit.\n"
 			  "Please install _tkinter \n"
 			  "Root privileges are necessary for this. \n"
 			  "If you have these, the installation command is: sudo apt-get install python3-tk")
+	return necessaryDependenceis
 
 def determineCompiler(candidates, stdFlags):
 	""" This function tests a list of candidates, whether they are sufficient to the requirements of 
