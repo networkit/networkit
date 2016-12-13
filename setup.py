@@ -26,7 +26,7 @@ abort_installation = False
 errorMessages = []
 
 # ask the user if the want to instsall the missing packages used by NetworKit and install the necessary ones.
-checkExternalPythonPackages()
+installExternalPythonPackages()
 installDependencies()
 
 try:
