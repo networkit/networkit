@@ -14,6 +14,26 @@ News
 :hidden:`HiddenBiggerHeadingFont`
 ---------------------------------
 
+December 13, 2016: **NetworKit 4.2 released**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Today we announce the next version of NetworKit, the open-source toolkit for large-scale network analysis. NetworKit is a Python package, with performance-critical algorithms implemented in C++/OpenMP.
+
+**Release notes**
+
+Major:
+
+- New graph drawing algorithm for the Maxent-stress model; the algorithm can layout even large graphs quickly. It follows the paper by Gansner et al. with some modifications; the biggest deviation is the use of the LAMG solver for the Laplacian linear systems
+- Parallel implementation for the approximation of the neighborhood function; class has been refactored from ApproxNeighborhoodFunction to NeighborhoodFunctionApproximation.
+- New heuristic algorithm for the neighborhood function. It is based on sampling and the breadth-first search and offers more flexibility with regards to the tradeoff between running time and accuracy as the number of samples can be specified by the user. It is also much faster than the approximation algorithm for networks with a high diameter (e.g. road networks).
+    
+Minor:
+
+- Iterative implementation of components.StronglyConnectedComponents, which is now the new default. For graphs where edges have been deleted, it is recommended to use the recursive implementation, which is still available.
+- Removed heuristic for vertex diameter estimation from centrality.ApproxBetweenness (now the vertex diameter is estimated as suggested in Riondato, Kornaropoulos: Fast approximation of betweenness centrality through sampling)
+- Refactoring of the approximation algorithms in the distance group. ApproxNAME -> NAMEApproximation.
+- Simplified installation procedure: Install required dependencies automatically
+
 July 05, 2016: **NetworKit 4.1.1 released**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
