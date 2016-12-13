@@ -20,7 +20,7 @@ namespace NetworKit {
 /**
  * @ingroup viz
  * Abstract base class for algorithms that compute a layout of the Graph vertices in d-dimensional space.
- * The coordinates are stored in a d-dimensional @ref Point with type @code T.
+ * The coordinates are stored in a d-dimensional @ref Point with type @code T \endcode.
  */
 template<typename T>
 class GraphLayoutAlgorithm {

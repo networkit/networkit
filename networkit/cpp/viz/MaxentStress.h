@@ -35,13 +35,14 @@ namespace NetworKit {
 	};
 
 
-/**
- * @ingroup viz
- *
- * Implementation of MaxentStress by Gansner et al. using a Laplacian system solver.
- *
- * @see Gansner, Emden R., Yifan Hu, and Steve North. "A maxent-stress model for graph layout." Visualization and Computer Graphics, IEEE Transactions on 19, no. 6 (2013): 927-940.
- */
+	/**
+	 * @ingroup viz
+	 *
+	 * Implementation of MaxentStress by Ganser et al. using a laplacian system solver.
+	 *
+	 * @see Ganser, Emden R., Yifan Hu and Steve North. "A maxentstress model for graph layout." Visualisation and Computer Graphics, IEEE Transsactions on 19, no. 6 (2013): 927-940.
+	 */
+
  class MaxentStress : public GraphLayoutAlgorithm<double> {
 	public:
 		enum GraphDistance {
@@ -198,7 +199,7 @@ namespace NetworKit {
          * Checks whether the MaxentStress algorithm converged, i.e. ||newCoords - oldCoords|| / ||oldCoords|| < convThreshold.
          * @param newCoords The new coordinates computed in the current round of the algorithm.
          * @param oldCoords The coordinates from the previous round of the algorithm.
-         * @return @code True when converged, otherwise @code false.
+         * @return @code True when converged, otherwise \endcode false.
          */
 		bool isConverged(const CoordinateVector& newCoords, const CoordinateVector& oldCoords);
 
