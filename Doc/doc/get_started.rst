@@ -41,7 +41,6 @@ NetworKit virtual machine that can be downloaded `here <https://networkit.iti.ki
 Take a look at our `installation guide <https://networkit.iti.kit.edu/networkit-vm_guide.html>`_ for further instructions on installing the virtual machine on your system.
 
 
-
 |separator|
 
 
@@ -49,6 +48,27 @@ Take a look at our `installation guide <https://networkit.iti.kit.edu/networkit-
 
 Install NetworKit via Pip
 =========================
+
+Install NetworKit
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+    pip3 install [--user] networkit
+
+
+You can remove NetworKit completely by using the command :code:`pip3 uninstall networkit`.
+
+To check that everything works as expected, open a python terminal and run the following lines:
+
+.. code-block:: python
+
+    import networkit
+    G = networkit.Graph(5)
+    G.addEdge(0,1)
+    G.toString()
+
+|separator|
 
 .. _Python Requirements:
 
@@ -62,39 +82,6 @@ You will need the following software to install NetworKit as a python package:
 - `Pip <https://pypi.python.org/pypi/pip>`_
 - `SCons <http://scons.org>`_: Please note that SCons is only available for Python 2. For installation via pip, we have a script that builds the C++ part of NetworKit,	so you can try it without SCons.
 - `Cython <http://cython.org/>`_ (>= 0.21): Only needed by developers.
-
-NetworKit uses some additional external Python packages. While you do not need them to run NetworKit, it is strongly recommended to install them in order to use all
-the features of NetworKit:
-
-- scipy
-- numpy
-- readline
-- matplotlib
-- networkx
-- tabulate
-
-You can use the command :code:`pip3 install scipy numpy readline matplotlib networkx tabulate` on your terminal to install all packages at once. During the installation of
-NetworKit, the setup will check if the external packages NetworKit uses are available and print warnings at the end of the installation process. If you do not see any
-warnings, your system should be ready to use NetworKit.
-
-
-Install NetworKit
-~~~~~~~~~~~~~~~~~
-
-Run :code:`[sudo] pip[3] install [--user] networkit` from your command line to install the Python package *networkit*.
-
-You can remove NetworKit completely by using the command :code:`[sudo] pip[3] uninstall networkit`.
-
-To check that everything works as expected, open a python terminal and run the following lines:
-
-.. code-block:: python
-
-    import networkit
-    G = networkit.Graph(5)
-    G.addEdge(0,1)
-    G.toString()
-
-|separator|
 
 .. _Build NetworKit from Source:
 
