@@ -18,7 +18,8 @@ familiar with the architecture.
 
 If you use NetworKit in your research publications, please cite the
 mentioned techincal report or the specific algorithm. A list of
-publications is available on the `website <TODO:%20add%20link>`__.
+publications is available on the
+`website <https://networkit.iti.kit.edu/publications.html>`__.
 
 How to contribute
 -----------------
