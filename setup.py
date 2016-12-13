@@ -25,9 +25,8 @@ import unittest
 abort_installation = False
 errorMessages = []
 
-# install the necessary python packages
+# ask the user if the want to instsall the missing packages used by NetworKit and install the necessary ones.
 installExternalPythonPackages()
-# check what other dependencies are necessary
 necessaryDependencies = checkDependencies()
 
 try:
@@ -264,7 +263,7 @@ class CustomInstallCmd(InstallCmd):
 		InstallCmd.run(self)
 		# ask user if they want to install external packages used by NetworKit and install the necessary ones
 		installExternalPythonPackages()
-		checkDependencies()
+		necessaryDependencies = checkDependencies()
 
 
 src = []
@@ -326,7 +325,5 @@ setup(
 	ext_modules		= modules,
 	zip_safe		= False)
 
-for warn in necessaryDependencies:
-	print(warn)
-
-
+for dpd in necessaryDependencies:
+	print dpd

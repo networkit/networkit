@@ -4,25 +4,79 @@ import subprocess
 from subprocess import DEVNULL
 import pip
 
+# Used to install the missing Python packages.
+def installPackage(package):
+    pip.main(['install', package])
+
 
 def installExternalPythonPackages():
-	os.system('pip3 install -r requirements.txt')
+	""" This function installs the necessary Python packages.
+	"""
+	notInstalledPackages = []
+	try:
+		import scipy
+		del scipy
+	except:
+		installPackage('scipy')
+	try:
+		import cython
+		del cython
+	except:
+		installPackage('cython')
+	try:
+		import matplotlib
+		del matplotlib
+	except:
+		installPackage('matplotlib')
+	try:
+		import pandas
+		del pandas
+	except:
+		installPackage('pandas')
+	try:
+		import numpy
+		del numpy
+	except:
+		installPackage('numpy')
+	try:
+		import networkx
+		del networkx
+	except:
+		installPackage('networkx')
+	try:
+		import tabulate
+		del tabulate
+	except:
+		installPackage('tabulate')
+	try:
+		import seaborn
+		del seaborn
+	except:
+		installPackage('seaborn')
+	try:
+		import sklearn
+		del sklearn
+	except:
+		installPackage('sklearn')
+	installPackage('ipython')
 
 def checkDependencies():
 	"""
-	Checks if external dependecies are installed and warns the user if they are not. This is only meant for dependencies,
-	the installation of which requires user input (e.g. must be sudo).
+	Tries to install the outside dependencies the status of which can't be checked through imports.
 	"""
-	necessaryDependencies = []
+	requiredDependencies = []
+	ipythonStatus = os.system('pip3 show ipython')
+	if ipythonStatus != 0:
+		installPackage('ipython')
+		print("Ipython has been installed")
 	try:
 		import _tkinter
 		del _tkinter
 	except:
-		necessaryDependencies.append("ERROR: _tkinter is necessary for NetworKit.\n"
+		requiredDependencies.append("WARNING: _tkinter is necessary for NetworKit.\n"
 			  "Please install _tkinter \n"
 			  "Root privileges are necessary for this. \n"
-			  "If you have these, the installation command is: sudo apt-get install python3-tk")
-	return necessaryDependencies
+			  "If you have these, the installation command should be: sudo apt-get install python3-tk")
 
 def determineCompiler(candidates, stdFlags):
 	""" This function tests a list of candidates, whether they are sufficient to the requirements of 
