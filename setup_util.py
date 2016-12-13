@@ -4,83 +4,25 @@ import subprocess
 from subprocess import DEVNULL
 import pip
 
-# Used to install the missing Python packages.
-def installPackage(package):
-    pip.main(['install', package])
-
 
 def installExternalPythonPackages():
-	""" This function checks if all necessary packages are available and asks installs the ones that are not.
-	"""
-	notInstalledPackages = []
-	try:
-		import scipy
-		del scipy
-	except:
-		notInstalledPackages.append('scipy')
-	try:
-		import cython
-		del cython
-	except:
-		notInstalledPackages.append('cython')
-	try:
-		import matplotlib
-		del matplotlib
-	except:
-		notInstalledPackages.append('matplotlib')
-	try:
-		import pandas
-		del pandas
-	except:
-		notInstalledPackages.append('pandas')
-	try:
-		import numpy
-		del numpy
-	except:
-		notInstalledPackages.append('numpy')
-	try:
-		import networkx
-		del networkx
-	except:
-		notInstalledPackages.append('networkx')
-	try:
-		import tabulate
-		del tabulate
-	except:
-		notInstalledPackages.append('tabulate')
-	try:
-		import seaborn
-		del seaborn
-	except:
-		notInstalledPackages.append('seaborn')
-	try:
-		import sklearn
-		del sklearn
-	except:
-		notInstalledPackages.append('sklearn')
+	os.system('pip3 install -r requirements.txt')
 
-	if len(notInstalledPackages) > 0:
-		for pkg in notInstalledPackages:
-			installPackage(pkg)
-
-def installDependencies():
+def checkDependencies():
 	"""
-	Tries to install the outside dependencies the status of which can't be checked through imports.
+	Checks if external dependecies are installed and warns the user if they are not. This is only meant for dependencies,
+	the installation of which requires user input (e.g. must be sudo).
 	"""
-	necessaryDependenceis = [];
-	ipythonStatus = os.system('pip3 show ipython')
-	if ipythonStatus != 0:
-		installPackage('ipython')
-		print("Ipython has been installed")
+	necessaryDependencies = []
 	try:
 		import _tkinter
 		del _tkinter
 	except:
-		necessaryDependenceis.append("ERROR: _tkinter is necessary for NetworKit.\n"
+		necessaryDependencies.append("ERROR: _tkinter is necessary for NetworKit.\n"
 			  "Please install _tkinter \n"
 			  "Root privileges are necessary for this. \n"
 			  "If you have these, the installation command is: sudo apt-get install python3-tk")
-	return necessaryDependenceis
+	return necessaryDependencies
 
 def determineCompiler(candidates, stdFlags):
 	""" This function tests a list of candidates, whether they are sufficient to the requirements of 
