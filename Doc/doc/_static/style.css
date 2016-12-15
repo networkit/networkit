@@ -1,0 +1,260 @@
+
+blockquote p {
+    font-size: 14px !important;
+}
+
+blockquote {
+    margin: 0 0 4px !important;
+}
+
+code {
+    color: #49759c !important;
+    background-color: #f3f5f9 !important;
+}
+
+pre {
+  white-space: pre-line;
+  padding: 8px;
+  font-size: 12px;
+  margin: 2px 0 0 0;
+  color: #404848;
+}
+
+.codeSpan {
+  font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-size: 12px;
+  background-color: white;
+  border: none;
+  color: black;
+}
+
+body {
+  color: #000000;
+  font-size: 16px;
+}
+
+footer {
+  font-size: 15px;
+}
+
+.rst-content .hidden {
+    display: none;
+}
+
+nav .hidden {
+    display: unset;
+}
+
+.navbar {
+  background-color: #104870;
+  border-radius: 0px;
+  font-size: 16px;
+}
+
+.home_navbar {
+  height: 400px;
+  font-size: 16px;
+}
+
+.container h1 {
+  font-size: 18pt;
+}
+
+.container h2 {
+  font-size: 16pt;
+}
+
+.container h3 {
+  font-size: 13pt;
+  font-weight: bold;
+}
+
+button.btn-link:before
+{
+    content:'Less';
+    display:block;
+}
+
+button.btn-link.collapsed:before
+{
+    content:'More';
+    display:block;
+}
+
+
+.btn-link, .btn-link:hover {
+  color: #0C54A6;
+  text-shadow: none;
+  text-decoration: none;
+  vertical-align: baseline;
+  padding: 0px;
+}
+
+/* Adjust Menu colors - Hover */
+.navbar .nav > li > a:hover, .navbar .nav > li > a:hover:first-letter, .navbar-default .navbar-nav>li>a:hover, .navbar-default .navbar-brand:hover {
+color:          white;
+text-shadow:    none;
+text-decoration: none;
+}
+
+/* Adjust Menu colors - Hover */
+a, a:hover {
+color:          #0C54A6;
+text-shadow:    none;
+text-decoration: none;
+}
+
+.customButton {
+  box-sizing: border-box;
+  margin: 0;
+  text-decoration: none;
+  transition: all 0.5s ease;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  border-radius: 2px;
+  outline: none;
+  padding: 6.25px 10px 5.5px 10px;
+  display: inline-block;
+  background: transparent;
+  border: 1px solid #fff;
+  color: #fff;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+}
+
+.customButton:hover {
+  box-sizing: border-box;
+  margin: 0;
+  text-decoration: none;
+  transition: all 0.5s ease;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  border-radius: 2px;
+  outline: none;
+  padding: 6.25px 10px 5.5px 10px;
+  display: inline-block;
+  background: #fff;
+  border: 1px solid #fff;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+}
+
+.navbar-default.home_navbar {
+  background: none;
+}
+
+.navbar-default {
+  color:#ffffff;
+}
+
+.navbar-text {
+  color:#ffffff;
+}
+
+.alert-info {
+    background-color: #adb8cb !important;
+    border-color: #adb8cb !important;
+    color: #2c3e50 !important;
+}
+
+.headerlink:before {
+
+  display: block;
+  context: " ";
+  height: 200px; /*same height as header*/
+  margin-top: -200px; /*same height as header*/
+  visibility: hidden;
+
+}
+
+
+
+
+
+
+article {
+    margin-bottom: 3rem;
+    position: relative;
+    *zoom: 1;
+}
+
+article:before, article:after {
+    content: "";
+    display: table;
+}
+
+article:after { clear: both }
+
+article section:last-of-type {
+    display: none;
+    visibility: hidden;
+}
+
+
+input[type=checkbox] {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    width: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+}
+
+[for="read_more"] {
+    position: absolute;
+    bottom: -3rem;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    padding: .65rem;
+    box-shadow: inset 1px 1px rgba(0, 0, 0, 0.1), inset -1px -1px rgba(0, 0, 0, 0.1);
+}
+
+[for="read_more"]:hover {
+    background: rgba(0,0,0,.5);
+    color: rgb(255,255,255);
+}
+
+[for="read_more"] span:last-of-type {
+    display: none;
+    visibility: hidden;
+}
+
+input[type=checkbox]:checked ~ section {
+    display: block;
+    visibility: visible;
+    width: 100%;
+}
+
+input[type=checkbox]:checked ~ figure { width: 100% }
+
+input[type=checkbox]:checked ~ [for="read_more"] span:first-of-type {
+    display: none;
+    visibility: hidden;
+}
+
+input[type=checkbox]:checked ~ [for="read_more"] span:last-of-type {
+    display: block;
+    visibility: visible;
+}
+
+#fancy-particles {
+  position: absolute;
+  top: 0;
+  z-index: -1;
+  height: 400px;
+  width: 100%;
+  background-color: #104870;
+  background-size: cover;
+  background-position: center center;
+}
+
+#fancy-particles canvas {
+  background-color: #104870;
+}
