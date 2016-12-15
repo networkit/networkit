@@ -1385,13 +1385,11 @@ cdef extern from "cpp/graph/APSP.h":
 		edgeweight getDistance(node u, node v) except +
 
 cdef class APSP(Algorithm):
-	""" An implementation of Dijkstra's SSSP algorithm for the All-Pairs Shortest-Paths problem.
-	Returns a list of lists of weighted distances from node source, i.e. the length of the shortest path from source to
-	any other node.
+	""" All-Pairs Shortest-Paths algorithm (implemented running Dijkstra's algorithm from each node, or BFS if G is unweighted).
 
     APSP(G)
 
-    Creates Dijkstra for `G` and source node `source`.
+    Computes all pairwise shortest-path distances in G.
 
     Parameters
 	----------
@@ -1408,13 +1406,12 @@ cdef class APSP(Algorithm):
 		self._G = None
 
 	def getDistances(self):
-		""" Returns a vector of vectors of weighted distances from the source node, i.e. the
- 	 	length of the shortest path from the source node to any other node.
+		""" Returns a vector of vectors of distances between each node pair.
 
  	 	Returns
  	 	-------
  	 	vector of vectors
- 	 		The weighted distances from the nodes to any other node in the graph.
+ 	 		The shortest-path distances from each node to any other node in the graph.
 		"""
 		return (<_APSP*>(self._this)).getDistances()
 
