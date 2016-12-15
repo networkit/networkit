@@ -10,6 +10,7 @@
 #include "APSPGTest.h"
 #include "../APSP.h"
 #include <string>
+#include "../../auxiliary/Random.h"
 
 
 namespace NetworKit {
@@ -45,6 +46,21 @@ TEST_F(APSPGTest, testAPSP) {
 	EXPECT_TRUE(apsp.isParallel());
 }
 
+TEST_F(APSPGTest, tryAPSP) {
+	count n = 1000;
+	count m = int(n * n);
+	Graph G(n, true, false);
+	for (count i = 0; i < m; i++) {
+		node u = G.randomNode();
+		node v = G.randomNode();
+		if (u != v && !G.hasEdge(u, v)) {
+			G.addEdge(u, v, Aux::Random::integer(10));
+		}
+	}
+	INFO("Nodes: ", G.numberOfNodes(), ", edges: ", G.numberOfEdges());
+	APSP apsp(G);
+	apsp.run();
+}
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
