@@ -27,4 +27,5 @@ Python Documentation
    stopwatch
    structures
    termgraph
+   viz
    viztasks
