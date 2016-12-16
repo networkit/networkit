@@ -41,8 +41,8 @@
           <div>Clone from Mercurial</div>
           <span style="display: block;overflow: hidden;"><input onClick="this.setSelectionRange(0, this.value.length)" style="width: 100%" type="text" value="hg clone https://algohub.iti.kit.edu/parco/NetworKit/NetworKit" readonly=""/></span>
 
-          <div style="padding-top: 15px">Install via pip</div>
-          <span style="display: block;overflow: hidden;"><input onClick="this.setSelectionRange(0, this.value.length)" style="width: 100%" type="text" value="pip install networkit" readonly=""/></span>
+          <div style="padding-top: 15px">Install via pip3</div>
+          <span style="display: block;overflow: hidden;"><input onClick="this.setSelectionRange(0, this.value.length)" style="width: 100%" type="text" value="pip3 install networkit" readonly=""/></span>
 
           <div style="padding-top: 15px">Download from <a href="https://algohub.iti.kit.edu/parco/NetworKit/NetworKit">Algohub</a> or as <a href="https://networkit.iti.kit.edu/uploads/NetworKit.zip">Zip file</a></div>
 
