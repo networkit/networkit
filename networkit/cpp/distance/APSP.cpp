@@ -7,8 +7,8 @@
 
 #include "APSP.h"
 #include "../auxiliary/Log.h"
-#include "Dijkstra.h"
-#include "BFS.h"
+#include "../graph/Dijkstra.h"
+#include "../graph/BFS.h"
 
 namespace NetworKit {
 
