@@ -1378,7 +1378,7 @@ cdef class DynDijkstra(DynSSSP):
 		self._this = new _DynDijkstra(G._this, source)
 
 
-cdef extern from "cpp/graph/APSP.h":
+cdef extern from "cpp/distance/APSP.h":
 	cdef cppclass _APSP "NetworKit::APSP"(_Algorithm):
 		_APSP(_Graph G) except +
 		vector[vector[edgeweight]] getDistances() except +
