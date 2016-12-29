@@ -1,2 +1,2 @@
 # extension imports
-from _NetworKit import Graph, BFS, Dijkstra, DynBFS, DynDijkstra, SpanningForest, GraphTools, RandomMaximumSpanningForest, UnionMaximumSpanningForest, APSP
+from _NetworKit import Graph, BFS, Dijkstra, DynBFS, DynDijkstra, SpanningForest, GraphTools, RandomMaximumSpanningForest, UnionMaximumSpanningForest
