@@ -112,6 +112,33 @@ def getReader(fileformat, **kwargs):
 		raise Exception("unrecognized format/format not supported as input: {0}".format(fileformat))
 	return reader
 
+def readGraph(path, **kwargs):
+        readers = {
+                Format.METIS:			METISGraphReader(),
+                Format.GraphML:			GraphMLReader(),
+                Format.GEXF:			GEXFReader(),
+                Format.SNAP:			EdgeListReader('\t',0,'#',False),
+                Format.EdgeListCommaOne:	EdgeListReader(',',1,),
+                Format.EdgeListSpaceOne:	EdgeListReader(' ',1),
+                Format.EdgeListSpaceZero:	EdgeListReader(' ',0),
+                Format.EdgeListTabOne:		EdgeListReader('\t',1),
+                Format.EdgeListTabZero:		EdgeListReader('\t',0),
+                Format.LFR:			EdgeListReader('\t',1),
+                Format.KONECT:			KONECTGraphReader(' '),
+                Format.GML:			GMLGraphReader(),
+                Format.GraphToolBinary:		GraphToolBinaryReader(),
+                Format.MAT:			MatReader()
+        }
+        # We will read 20 lines for now to hopefully uniquely identify the file format
+        headerLines = extractHeaderLines(path, 20)
+        readerCandidates = list(filter(lambda f, r: r.accepts(headerLines), readers.items()))
+        if len(readerCandidates) == 0:
+                raise IOError("Could not detect file format. Make sure the graph file format is currently supported by networkit and try again.")
+        elif len(readerCandidates) > 1:
+                raise IOError("Multiple possible formats identified. Please specify the file format manually by calling readGraph(path, fileformat).")
+	reader = getReader(readerCandidates[0],**kwargs)
+
+	return None
 
 def readGraph(path, fileformat, **kwargs):
 	""" Read graph file in various formats and return a NetworKit::Graph
@@ -127,10 +154,7 @@ def readGraph(path, fileformat, **kwargs):
 	"""
 	reader = getReader(fileformat,**kwargs)
 
-
-	if ("~" in path):
-		path = os.path.expanduser(path)
-		print("path expanded to: {0}".format(path))
+        path = preprocessPath(path)
 	if not os.path.isfile(path):
 		raise IOError("{0} is not a file".format(path))
 	else:
@@ -166,6 +190,30 @@ def readGraphs(dirPath, pattern, fileformat, some=None, exclude=None, **kwargs):
 							return graphs
 	return graphs
 
+
+def preprocessPath(path):
+        """
+        Preprocesses the given file path so that the path points to an actual file and can be read by python.
+        This step could for example replace the tilde sign with the actual home path of the user.
+        """
+        if ("~" in path):
+                return os.path.expanduser(path)
+            print("path expanded to: {0}".format(path))
+        return path
+
+
+def extractHeaderLines(path, n):
+        """ Reads up to n lines starting at the top of the file at the given path. """
+        path = preprocessPath(path)
+        if not os.path.isfile(path):
+		raise IOError("{0} is not a file".format(path))
+	else:
+                with open(path, "r") as file:    # catch a wrong path before it crashes the interpreter
+			try:
+                                headerLines = file.readlines(n)
+			except Exception as e:
+                                raise IOError("Could not read lines from file {0}: {1}".format(path, e))
+        return headerLines
 
 class MatReader:
 	def __init__(self, key = "G"):
