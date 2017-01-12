@@ -2788,6 +2788,7 @@ cdef extern from "cpp/io/GraphReader.h":
 	cdef cppclass _GraphReader "NetworKit::GraphReader":
 		_GraphReader() nogil except +
 		_Graph read(string path) nogil except +
+		bool accepts(vector[string] headerLines) nogil except +
 
 cdef class GraphReader:
 	""" Abstract base class for graph readers"""
@@ -2813,6 +2814,9 @@ cdef class GraphReader:
 		with nogil:
 			result = move(self._this.read(cpath)) # extra move in order to avoid copying the internal variable that is used by Cython
 		return Graph(0).setThis(result)
+
+	def accepts(self, headerLines):
+		return self._this.accepts([stdstring(s) for s in headerLines])
 
 cdef extern from "cpp/io/METISGraphReader.h":
 	cdef cppclass _METISGraphReader "NetworKit::METISGraphReader" (_GraphReader):
