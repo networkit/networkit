@@ -192,4 +192,22 @@ Graph GMLGraphReader::read(const std::string& path) {
 	return G;
 }
 
+bool GMLGraphReader::accepts(std::vector<std::string> headerLines) {
+        // We will look for the graph keyword in combination with an opening square bracket that follows immediately.
+        const std::string BEGIN_KEYWORD = "graph";
+        const std::string OPENING_BRACKET = "[";
+        bool foundBeginKeyword = false;
+        index i = 0;
+        for (; i < headerLines.size() && !foundBeginKeyword; ++i) {
+                foundBeginKeyword = headerLines[i].compare(0, BEGIN_KEYWORD.length(), BEGIN_KEYWORD) == 0;
+        }
+        if (!foundBeginKeyword) {
+          return false;
+        }
+        // In case we found the keyword we will look for the opening square bracket on the same line where we found
+        // the keyword as well as one line later in case we didn't find it on the same line.
+        return headerLines[i - 1].find(OPENING_BRACKET) != std::string::npos
+               || (i < headerLines.size() && headerLines[i].find(OPENING_BRACKET) == std::string::npos);
+}
+
 } /* namespace NetworKit */

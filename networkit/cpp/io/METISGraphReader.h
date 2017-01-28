@@ -31,6 +31,8 @@ public:
 	 * @param[out]	the graph read from file
 	 */
 	virtual Graph read(const std::string& path) override;
+
+        virtual bool accepts(std::vector<std::string> headerLines) override;
 };
 
 } /* namespace NetworKit */

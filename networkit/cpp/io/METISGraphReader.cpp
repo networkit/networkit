@@ -112,4 +112,8 @@ Graph METISGraphReader::read(const std::string& path) {
 	return G;
 }
 
+bool METISGraphReader::accepts(std::vector<std::string> headerLines) {
+        return false;
+}
+
 } /* namespace NetworKit */
