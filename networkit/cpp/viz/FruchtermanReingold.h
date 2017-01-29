@@ -1,16 +1,15 @@
 /*
- * ForceDirected.h
+ * FruchtermanReingold.h
  *
  *  Created on: Apr 11, 2013
  *      Author: Henning
  */
 
-#ifndef FORCEDIRECTED_H_
-#define FORCEDIRECTED_H_
+#ifndef FRUCHTERMANREINGOLD_H_
+#define FRUCHTERMANREINGOLD_H_
 
 #include "Layouter.h"
 #include "Point.h"
-#include "PostscriptWriter.h"
 
 #include <vector>
 #include <cmath>
@@ -55,9 +54,10 @@ public:
 
 	/**
 	 * Assigns coordinates to vertices in graph @a g
+	 * @param[in,out] g Graph used to provide the vertices
 	 */
 	virtual void draw(Graph& g);
 };
 
 } /* namespace NetworKit */
-#endif /* FORCEDIRECTED_H_ */
+#endif /* FRUCHTERMANREINGOLD_H_ */
