@@ -1,0 +1,125 @@
+language: cpp
+
+matrix:
+  include:
+    - env: CC=gcc-4.8 CXX=g++-4.8
+      compiler: gcc
+      os: linux
+      sudo: false
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.8
+            - scons
+            - libgtest-dev
+      install:
+       - export CXX="g++-4.8" CC="gcc-4.8"
+       # Install gtest without sudo
+       - mkdir ~/gtest && cd ~/gtest
+       - export GTEST_LIB=$(pwd)
+       - cp -r /usr/src/gtest/* ./
+       - cmake -D CMAKE_INSTALL_PREFIX:PATH=./ ./
+       - make
+       - cd -
+
+    - env: CC=gcc-4.8 CXX=g++-4.8
+      compiler: gcc
+      os: osx
+      sudo: false
+      install:
+        - export CXX="g++-4.8" CC="gcc-4.8"
+        - brew install scons
+        - brew tap homebrew/versions
+        - git clone https://github.com/google/googletest.git ~/gtest/
+        - cd ~/gtest/googletest/
+        - export GTEST_LIB=$(pwd)/
+        - export GTEST_INCLUDE=$(pwd)/include/
+        - cmake -D CMAKE_INSTALL_PREFIX:PATH=./ ./
+        - make
+        - cd -
+
+    - env: CC="clang-3.7" CXX="clang++-3.7"
+      compiler: clang
+      os: linux
+      sudo: false
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.7
+          packages:
+            - g++-5
+            - clang-3.7
+            - scons
+            - libgtest-dev
+            - subversion
+      install:
+       - export CXX="clang++-3.7" CC="clang-3.7"
+       # Install gtest without sudo
+       - mkdir ~/gtest && cd ~/gtest
+       - export GTEST_LIB=$(pwd)
+       - cp -r /usr/src/gtest/* ./
+       - cmake -D CMAKE_INSTALL_PREFIX:PATH=./ ./
+       - make
+       - cd -
+       # install openmp
+       - svn co http://llvm.org/svn/llvm-project/openmp/trunk ~/openmp
+       - cd ~/openmp/runtime/
+       - cmake -D CMAKE_INSTALL_PREFIX:PATH=./ ./ -DCMAKE_C_COMPILER=clang-3.7 -DCMAKE_CXX_COMPILER=clang++-3.7
+       - make
+       - export OPENMP_LIB=$(pwd)/src/
+       - export OPENMP_INCLUDE=$(pwd)/src/
+       - export LD_LIBRARY_PATH=$OPENMP_LIB:$LD_LIBRARY_PATH
+       - cd -
+
+    - env: CC=clang-3.7 CXX=clang++-3.7
+      compiler: clang
+      os: osx
+      sudo: false
+      install:
+        - export CXX="clang++-3.7" CC="clang-3.7"
+        - brew install scons
+        - brew tap homebrew/versions
+        - brew install llvm37
+        # install gtest
+        - git clone https://github.com/google/googletest.git ~/gtest/
+        - cd ~/gtest/googletest/
+        - export GTEST_LIB=$(pwd)/
+        - export GTEST_INCLUDE=$(pwd)/include/
+        - cmake -D CMAKE_INSTALL_PREFIX:PATH=./ ./
+        - make
+        - cd -
+        # install openmp
+        - svn co http://llvm.org/svn/llvm-project/openmp/trunk ~/openmp
+        - cd ~/openmp/runtime/
+        - cmake -D CMAKE_INSTALL_PREFIX:PATH=./ ./ -DCMAKE_C_COMPILER=clang-3.7 -DCMAKE_CXX_COMPILER=clang++-3.7
+        - make
+        - export OPENMP_LIB=$(pwd)/src/
+        - export OPENMP_INCLUDE=$(pwd)/src/
+        - export LD_LIBRARY_PATH=$OPENMP_LIB:$LD_LIBRARY_PATH
+        - cd -
+
+
+script:
+ - echo $GTEST_LIB
+ - echo $GTEST_INCLUDE
+ - echo $OPENMP_LIB
+ - echo $OPENMP_INCLUDE
+ - $CXX --version
+ - scons --optimize=Opt --target=Tests --std=c++11 -j2
+ - export OMP_NUM_THREADS=2
+ - ./NetworKit-Tests-Opt -t
+
+branches:
+  only:
+  - master
+  - Dev
+
+notifications:
+  recipients:
+   - uaggy@student.kit.edu
+  email:
+    on_success: always
+    on_failure: always
