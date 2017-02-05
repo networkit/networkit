@@ -512,16 +512,9 @@ TEST_F(AuxGTest, testNumberParsingAdvancedReal) {
 	using Aux::Parsing::strTo;
 	auto helper = [](const std::string& str, double expected) {
 		auto result = std::get<0>(strTo<double>(str.begin(), str.end()));
-		if (result == expected) {
-			return true;
-		}
-		if (std::nexttoward(result, expected) == expected) {
-			// of by one is ok here
-			return true;
-		}
-		return false;
+		EXPECT_DOUBLE_EQ(result, expected);
 	};
-#define TEST_CASE_REAL(number) EXPECT_EQ(true, helper(#number, number))
+#define TEST_CASE_REAL(number) helper(#number, number)
 	TEST_CASE_REAL(0);
 	TEST_CASE_REAL(1);
 	TEST_CASE_REAL(8.76464e+23);
