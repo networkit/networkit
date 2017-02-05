@@ -36,7 +36,7 @@ matrix:
         - cd ~/gtest/googletest/
         - export GTEST_LIB=$(pwd)/
         - export GTEST_INCLUDE=$(pwd)/include/
-        - cmake -D CMAKE_INSTALL_PREFIX:PATH=./ ./
+        - cmake -D CMAKE_INSTALL_PREFIX:PATH=./ ./ -DCMAKE_CXX_COMPILER=g++-4.8 -DCMAKE_C_COMPILER=gcc-4.8
         - make
         - cd -
 
