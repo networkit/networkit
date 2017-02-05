@@ -30,7 +30,6 @@ plots
 tracelog*
 *.json
 *.csv
-*.dat
 scripts/SparsificationEvaluation/input/
 scripts/SparsificationEvaluation/output/
 scripts/SparsificationEvaluation/figures
