@@ -1,4 +1,4 @@
-NetworKit
+NetworKit [![Build Status](https://travis-ci.org/kit-parco/networkit.svg?branch=master)](https://travis-ci.org/kit-parco/networkit)
 =========
 
 [NetworKit][networkit] is an open-source tool suite for high-performance
