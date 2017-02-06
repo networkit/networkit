@@ -106,10 +106,21 @@ env = Environment()
 compiler = GetOption("compiler")
 stdflag = GetOption("std")
 
-if not os.path.isfile("build.conf") and not compiler == None:
-	#print("{0} has been passed via command line".format(compiler))
-	env["CC"] = compiler
-	env["CXX"] = compiler
+if not os.path.isfile("build.conf"):
+	if not compiler == None:
+		#print("{0} has been passed via command line".format(compiler))
+		env["CC"] = compiler
+		env["CXX"] = compiler
+	elif 'CC' in os.environ and 'CXX' in os.environ:
+		env["CC"] = os.environ['CC']
+		env["CXX"] = os.environ['CXX']
+		env.Append(LIBS = ["gtest"])
+		env.Append(LIBPATH = [os.getenv('GTEST_LIB', ""), os.getenv('OPENMP_LIB', "")])
+		env.Append(CPPPATH = [os.getenv('GTEST_INCLUDE', ""), os.getenv('OPENMP_INCLUDE', "")])
+	else:
+		print("The configuration file `build.conf` does not exist. You need to create it.")
+		print("Use the file build.conf.example to create your build.conf")
+		Exit(1)
 else:
 	confPath = "build.conf"
 	if not os.path.isfile(confPath):
