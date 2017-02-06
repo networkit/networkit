@@ -9,9 +9,8 @@
 checkpoint.ipynb
 build.conf
 .sconsign.dblite
-*_NetworKit.cpp
-src/python/NetworKit.egg-info/
-NetworKit-Tests-D
+_NetworKit.cpp
+networkit.egg-info/
 lamg-2.2-2
 CMG_101014
 instances
