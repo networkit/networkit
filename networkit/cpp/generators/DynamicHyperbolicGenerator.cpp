@@ -40,7 +40,7 @@ DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(std::vector<double> &angl
 
 	assert(radii.size() == nodeCount);
 	this->R = R;
-	assert(std::max(radii.begin(), radii.end()) < R);
+	assert(*std::max_element(radii.begin(), radii.end()) < R);
 
 	this->moveEachStep = moveEachStep;
 	this->moveDistance = moveDistance;
