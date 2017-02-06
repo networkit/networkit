@@ -878,6 +878,7 @@ TEST_F(CentralityGTest, testTopClosenessDirected) {
 }
 
 TEST_F(CentralityGTest, testTopClosenessUndirected) {
+    Aux::Random::setSeed(42, true);
     count size = 400;
     count k = 10;
     Graph G1 = DorogovtsevMendesGenerator(size).generate();
