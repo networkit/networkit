@@ -38,7 +38,7 @@ matrix:
         - make
         - cd -
 
-    - env: CC="clang-3.7" CXX="clang++-3.7"
+    - env: CC="clang-3.9" CXX="clang++-3.9"
       os: linux
       sudo: false
       addons:
@@ -48,7 +48,7 @@ matrix:
             - llvm-toolchain-precise-3.7
           packages:
             - g++-5
-            - clang-3.7
+            - clang-3.9
             - scons
             - libgtest-dev
             - subversion
@@ -63,14 +63,14 @@ matrix:
        # install openmp
        - svn co http://llvm.org/svn/llvm-project/openmp/trunk ~/openmp
        - cd ~/openmp/runtime/
-       - cmake -D CMAKE_INSTALL_PREFIX:PATH=./ ./ -DCMAKE_C_COMPILER=clang-3.7 -DCMAKE_CXX_COMPILER=clang++-3.7
+       - cmake -D CMAKE_INSTALL_PREFIX:PATH=./ ./ -DCMAKE_C_COMPILER=clang-3.9 -DCMAKE_CXX_COMPILER=clang++-3.9
        - make
        - export OPENMP_LIB=$(pwd)/src/
        - export OPENMP_INCLUDE=$(pwd)/src/
        - export LD_LIBRARY_PATH=$OPENMP_LIB:$LD_LIBRARY_PATH
        - cd -
 
-    - env: CC=clang-3.7 CXX=clang++-3.7
+    - env: CC=clang-3.9 CXX=clang++-3.9
       os: osx
       sudo: false
       before_install:
