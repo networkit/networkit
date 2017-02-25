@@ -14,6 +14,16 @@ News
 :hidden:`HiddenBiggerHeadingFont`
 ---------------------------------
 
+February 25, 2017: **Migration to GitHub**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The NetworKit team is happy to announce that the NetworKit project has been successfully migrated to GitHub. Please join
+us on
+
+https://github.com/kit-parco/networkit
+
+We believe the migration will make it easier for developers to contribute to the project and we hope to bring the advantages of efficient large-scale network analysis to even more people.
+
 December 13, 2016: **NetworKit 4.2 released**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
