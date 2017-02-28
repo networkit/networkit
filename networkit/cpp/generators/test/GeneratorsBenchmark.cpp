@@ -239,7 +239,7 @@ TEST_F(GeneratorsBenchmark, benchmarkChungLuGenerator) {
     int maxDegree = 100;
 	std::vector<count> vec;
 	/* Creates a random weight list */
-	for (int i = 0; i < n; i++){
+	for (index i = 0; i < n; i++){
 	int grad = Aux::Random::integer(1, maxDegree);
 		vec.push_back(grad);
 	}
