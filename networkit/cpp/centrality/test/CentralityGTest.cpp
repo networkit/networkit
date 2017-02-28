@@ -840,8 +840,8 @@ TEST_F(CentralityGTest, testSimplePermanence) {
 	P[13] = 3;
 	P[14] = 3;
 
-	ASSERT_EQ(9, G.degree(v));
-	ASSERT_EQ(7, G.degree(u));
+	ASSERT_EQ(9u, G.degree(v));
+	ASSERT_EQ(7u, G.degree(u));
 
 	PermanenceCentrality perm(G, P);
 	perm.run();
