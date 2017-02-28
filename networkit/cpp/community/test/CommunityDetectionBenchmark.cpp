@@ -36,11 +36,11 @@ TEST_F(CommunityDetectionBenchmark, timeClusteringAlgos) {
 	// std::string graph = "../graphs/uk-2007-05.graph";
 	std::string graph = "input/polblogs.graph";
 
-	printf("Reading graph file %s ...\n", graph.c_str());
+	DEBUG("Reading graph file ", graph.c_str(), " ...");
 	timer.start();
 	const Graph G = this->metisReader.read(graph);
 	timer.stop();
-	printf("Reading graph took %.1f s\n", timer.elapsedMilliseconds() / 1000.0);
+	DEBUG("Reading graph took ", timer.elapsedMilliseconds() / 1000.0, "s");
 
 	for (int r = 0; r < runs; r++) {
 		Graph Gcopy = G;
@@ -54,11 +54,10 @@ TEST_F(CommunityDetectionBenchmark, timeClusteringAlgos) {
 		auto communitySizes = zeta.subsetSizes();
 
 
-		printf("%s on %s: %.1f s\n\t# communities: %lu\n\tmodularity: %f\n",
-			"Parallel Label Propagation", graph.c_str(),
-			timer.elapsedMilliseconds() / 1000.0,
-			zeta.numberOfSubsets(),
-			mod.getQuality(zeta, G));
+		INFO("Parallel Label Propagation on ", graph.c_str(), ": ",
+				(timer.elapsedMilliseconds() / 1000.0),
+				"s, \t #communities: ", zeta.numberOfSubsets(),
+				"\t modularity: ", mod.getQuality(zeta, G));
 	}
 
 	for (int r = 0; r < runs; r++) {
