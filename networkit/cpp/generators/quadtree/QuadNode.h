@@ -749,7 +749,7 @@ public:
 	index indexSubtree(index nextID) {
 		index result = nextID;
 		assert(children.size() == 4 || children.size() == 0);
-		for (int i = 0; i < children.size(); i++) {
+		for (index i = 0; i < children.size(); i++) {
 			result = children[i].indexSubtree(result);
 		}
 		this->ID = result;
@@ -760,7 +760,7 @@ public:
 		if (!responsible(phi, r)) return -1;
 		if (isLeaf) return getID();
 		else {
-			for (int i = 0; i < 4; i++) {
+			for (index i = 0; i < 4; i++) {
 				index childresult = children[i].getCellID(phi, r);
 				if (childresult >= 0) return childresult;
 			}

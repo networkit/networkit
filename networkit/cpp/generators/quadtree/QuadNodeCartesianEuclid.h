@@ -347,7 +347,7 @@ public:
 			const double rsq = radius*radius;
 			const count cSize = content.size();
 
-			for (int i=0; i < cSize; i++) {
+			for (index i=0; i < cSize; i++) {
 				if (positions[i].squaredDistance(center) < rsq) {
 					result.push_back(content[i]);
 					if (content[i] >= sanityNodeLimit) DEBUG("Quadnode content ", content[i], " found, suspiciously high!");
@@ -383,7 +383,7 @@ public:
 		if (isLeaf) {
 			const count lsize = content.size();
 			TRACE("Leaf of size ", lsize);
-			for (int i = 0; i < lsize; i++) {
+			for (index i = 0; i < lsize; i++) {
 				//jump!
 				if (probUB < 1) {
 					double random = Aux::Random::real();
