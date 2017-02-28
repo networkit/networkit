@@ -221,7 +221,7 @@ TEST_F(QuadTreeGTest, testQuadTreeDeletion) {
 
 	QuadNode<index> root = getRoot(quad);
 	//if root is leaf node, the coarsening worked
-	EXPECT_EQ(getChildren(root).size(), 0);
+	EXPECT_EQ(getChildren(root).size(), 0u);
 }
 
 /**
@@ -362,7 +362,7 @@ TEST_F(QuadTreeGTest, testQuadTreeBalance) {
 		toAnalyze.pop();
 		if (current.height() > 1) {
 			vector<QuadNode<index> > children = getChildren(current);
-			EXPECT_EQ(children.size(), 4);
+			EXPECT_EQ(children.size(), 4u);
 
 			EXPECT_LE(children[0].size(), 2*children[1].size());
 			EXPECT_LE(children[0].size(), 2*children[3].size());
@@ -467,7 +467,7 @@ TEST_F(QuadTreeGTest, testProbabilisticQuery) {
 	auto edgeProb2 = [](double distance) -> double {return 0;};
 	near.clear();
 	quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[0], radii[0]), edgeProb2, near);
-	EXPECT_EQ(0, near.size());
+	EXPECT_EQ(0u, near.size());
 }
 
 TEST_F(QuadTreeGTest, testCartesianEuclidQuery) {
@@ -524,7 +524,7 @@ TEST_F(QuadTreeGTest, testCartesianEuclidQuery) {
 	auto edgeProb2 = [](double distance) -> double {return 0;};
 	near.clear();
 	quad.getElementsProbabilistically(positions[0], edgeProb2, near);
-	EXPECT_EQ(0, near.size());
+	EXPECT_EQ(0u, near.size());
 }
 
 
@@ -720,7 +720,7 @@ TEST_F(QuadTreeGTest, testPolarEuclidQuery) {
 	auto edgeProb2 = [](double distance) -> double {return 0;};
 	near.clear();
 	tree.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[0], radii[0]), edgeProb2, near);
-	EXPECT_EQ(0, near.size());
+	EXPECT_EQ(0u, near.size());
 }
 
 TEST_F(QuadTreeGTest, testQuadTreePolarEuclidInsertion) {
@@ -827,8 +827,8 @@ TEST_F(QuadTreeGTest, testQuadNodeCartesianDistances) {
 
 	ASSERT_LE(lower[0], upper[0]);
 	ASSERT_LE(lower[1], upper[1]);
-	ASSERT_EQ(2, lower.getDimensions());
-	ASSERT_EQ(2, upper.getDimensions());
+	ASSERT_EQ(2u, lower.getDimensions());
+	ASSERT_EQ(2u, upper.getDimensions());
 
 	Point<double> query({0.81847946542324035, 0.91885035291473593});
 
