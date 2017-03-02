@@ -107,10 +107,5 @@ script:
  - export OMP_NUM_THREADS=2
  - ./NetworKit-Tests-Opt -t
 
-branches:
-  only:
-  - master
-  - Dev
-
 notifications:
   email: false

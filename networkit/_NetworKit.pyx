@@ -1378,20 +1378,18 @@ cdef class DynDijkstra(DynSSSP):
 		self._this = new _DynDijkstra(G._this, source)
 
 
-cdef extern from "cpp/graph/APSP.h":
+cdef extern from "cpp/distance/APSP.h":
 	cdef cppclass _APSP "NetworKit::APSP"(_Algorithm):
 		_APSP(_Graph G) except +
 		vector[vector[edgeweight]] getDistances() except +
 		edgeweight getDistance(node u, node v) except +
 
 cdef class APSP(Algorithm):
-	""" An implementation of Dijkstra's SSSP algorithm for the All-Pairs Shortest-Paths problem.
-	Returns a list of lists of weighted distances from node source, i.e. the length of the shortest path from source to
-	any other node.
+	""" All-Pairs Shortest-Paths algorithm (implemented running Dijkstra's algorithm from each node, or BFS if G is unweighted).
 
     APSP(G)
 
-    Creates Dijkstra for `G` and source node `source`.
+    Computes all pairwise shortest-path distances in G.
 
     Parameters
 	----------
@@ -1408,13 +1406,12 @@ cdef class APSP(Algorithm):
 		self._G = None
 
 	def getDistances(self):
-		""" Returns a vector of vectors of weighted distances from the source node, i.e. the
- 	 	length of the shortest path from the source node to any other node.
+		""" Returns a vector of vectors of distances between each node pair.
 
  	 	Returns
  	 	-------
  	 	vector of vectors
- 	 		The weighted distances from the nodes to any other node in the graph.
+ 	 		The shortest-path distances from each node to any other node in the graph.
 		"""
 		return (<_APSP*>(self._this)).getDistances()
 
@@ -8977,6 +8974,7 @@ cdef extern from "cpp/viz/GraphLayoutAlgorithm.h":
 	cdef cppclass _GraphLayoutAlgorithm "NetworKit::GraphLayoutAlgorithm"[T]:
 		_GraphLayoutAlgorithm(_Graph, count) except +
 		count numEdgeCrossings() except +
+		vector[Point[double]] getCoordinates() except +
 		bool writeGraphToGML(string path) except +
 		bool writeKinemage(string path) except +
 
@@ -8999,6 +8997,18 @@ cdef class GraphLayoutAlgorithm:
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return self._this.numEdgeCrossings()
+
+	def getCoordinates(self):
+		""" Computes approximation (in parallel) of the Spanning Edge Centrality. """
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		cdef pair[double, double] pr = pair[double, double](0, 0)
+		pointCoord = self._this.getCoordinates()
+		cdef vector[pair[double, double]] pairCoord = vector[pair[double, double]]()
+		for pt in pointCoord:
+			pr = pair[double, double](pt[0], pt[1])
+			pairCoord.push_back(pr)
+		return pairCoord
 
 	def writeGraphToGML(self, path):
 		"""Writes the graph and its layout to a .gml file at the specified path
@@ -9157,3 +9167,43 @@ cdef class MaxentStress (GraphLayoutAlgorithm):
 
 	def getSolveTime(self):
 		return (<_MaxentStress*>(self._this)).getSolveTime()
+
+
+
+
+
+cdef extern from "cpp/viz/PivotMDS.h":
+	cdef cppclass _PivotMDS "NetworKit::PivotMDS" (_GraphLayoutAlgorithm[double]):
+				_PivotMDS(_Graph G, count dim, count numberOfPivots) except +
+				void run() except +
+
+
+cdef class PivotMDS (GraphLayoutAlgorithm):
+
+	"""
+	Implementation of PivotMDS proposed by Brandes and Pich.
+
+	Parameters
+	----------
+
+	G: Graph
+		The graph to be handled by the algorithm.
+
+	dim: count
+		Number of dimensions.
+
+	numberOfPivots: count
+		Number of pivots for the algorithm.
+
+	"""
+
+	def __cinit__(self, Graph G, count dim, count numberOfPivots):
+		self._this = new _PivotMDS(G._this, dim, numberOfPivots)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		"""Constructs a PivotMDS object for the given @a graph. The algorithm should embed the graph in @a dim dimensions using @a numberOfPivots pivots."""
+		(<_PivotMDS*>(self._this)).run()
+		return self

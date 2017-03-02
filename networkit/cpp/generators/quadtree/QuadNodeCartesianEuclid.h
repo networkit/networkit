@@ -524,15 +524,14 @@ public:
 	}
 
 	index getCellID(Point<double> pos) const {
-		if (!responsible(pos)) return -1;
+		if (!responsible(pos)) return NetworKit::none;
 		if (isLeaf) return getID();
 		else {
 			for (int i = 0; i < children.size(); i++) {
 				index childresult = children[i].getCellID(pos);
-				if (childresult >= 0) return childresult;
+				if (childresult != NetworKit::none) return childresult;
 			}
-			assert(false); //if responsible
-			return -1;
+			throw std::runtime_error("No responsible child node found even though this node is responsible.");
 		}
 	}
 

@@ -496,15 +496,6 @@ TEST_F(QuadTreeGTest, testCartesianEuclidQuery) {
 
 	for (index i = 0; i < 200; i++) {
 		index query = Aux::Random::integer(n-1);
-		double acc = Aux::Random::probability() ;
-		auto edgeProb = [acc](double distance) -> double {return acc;};
-		vector<index> near;
-		quad.getElementsProbabilistically(positions[query], edgeProb, near);
-		EXPECT_NEAR(near.size(), acc*n, std::max(acc*n*0.25, 10.0));
-	}
-
-	for (index i = 0; i < 200; i++) {
-		index query = Aux::Random::integer(n-1);
 		double threshold = Aux::Random::real(0, 1);
 		auto edgeProb = [threshold](double distance) -> double {return distance <= threshold ? 1 : 0;};
 		vector<index> near;

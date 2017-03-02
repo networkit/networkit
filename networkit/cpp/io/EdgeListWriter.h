@@ -17,11 +17,11 @@
 namespace NetworKit {
 
 /**
- * A writer for the edge list format used by the LFR benchmark generators, defined as:
- * 		list of edges (nodes are labelled from 1 to the number of nodes;
- * 		the edges are ordered and repeated twice, i.e. source-target and target-source).
+ * @ingroup io
+ * A writer for the edge list format. The output will contain one edge per line,
+ * in the format fromNodeSEPARATORtoNode, where separator can be specified by
+ * the user.
  *
- * 	The starting index is a parameter to enable other edge list formats.
  */
 class EdgeListWriter {
 
