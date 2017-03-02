@@ -21,13 +21,13 @@
 
 namespace NetworKit {
 
-constexpr int runs = 20;
+constexpr int runs = 12;
 
 void CommunityDetectionBenchmark::SetUp() {
 
 }
 
-TEST_F(CommunityDetectionBenchmark, timeClusteringAlgos) {
+TEST_F(CommunityDetectionBenchmark, benchClusteringAlgos) {
 	Aux::Timer timer;
 	Modularity mod;
 
@@ -56,8 +56,8 @@ TEST_F(CommunityDetectionBenchmark, timeClusteringAlgos) {
 
 		INFO("Parallel Label Propagation on ", graph.c_str(), ": ",
 				(timer.elapsedMilliseconds() / 1000.0),
-				"s, \t #communities: ", zeta.numberOfSubsets(),
-				"\t modularity: ", mod.getQuality(zeta, G));
+				"s,\t#communities: ", zeta.numberOfSubsets(),
+				",\tmodularity: ", mod.getQuality(zeta, G));
 	}
 
 	for (int r = 0; r < runs; r++) {
@@ -71,16 +71,14 @@ TEST_F(CommunityDetectionBenchmark, timeClusteringAlgos) {
 
 		auto communitySizes = zeta.subsetSizes();
 
-
-		printf("%s on %s: %.1f s\n\t# communities: %lu\n\tmodularity: %f\n",
-			"Parallel Louvain", graph.c_str(),
-			timer.elapsedMilliseconds() / 1000.0,
-			zeta.numberOfSubsets(),
-			mod.getQuality(zeta, G));
+		INFO("Parallel Louvain on ", graph.c_str(), ": ",
+				(timer.elapsedMilliseconds() / 1000.0),
+				"s,\t#communities: ", zeta.numberOfSubsets(),
+				",\tmodularity: ", mod.getQuality(zeta, G));
 	}
 }
 
-TEST_F(CommunityDetectionBenchmark, timePageRankCentrality) {
+TEST_F(CommunityDetectionBenchmark, benchPageRankCentrality) {
 	Aux::Timer timer;
 
 	// std::string graph = "../graphs/uk-2002.graph";
@@ -96,16 +94,15 @@ const Graph G = this->metisReader.read(graph);
 		timer.stop();
 		auto ranking = cen.ranking();
 
-
-		printf("%s on %s: %.1f s\n\tranking: [(%lu: %f), (%lu: %f), ...]\n",
-			"Page Rank Centrality", graph.c_str(),
-			timer.elapsedMilliseconds() / 1000.0,
-			ranking[0].first, ranking[0].second,
-			ranking[1].first, ranking[1].second);
+		INFO("Page Rank Centrality on ", graph.c_str(), ": ",
+				(timer.elapsedMilliseconds() / 1000.0),
+				"s,\t ranking: [(",
+				ranking[0].first, ": ", ranking[0].second, "), (",
+				ranking[1].first, ": ", ranking[1].second, ") ...]");
 	}
 }
 
-TEST_F(CommunityDetectionBenchmark, timeBetweennessCentrality) {
+TEST_F(CommunityDetectionBenchmark, benchBetweennessCentrality) {
 	Aux::Timer timer;
 
 	// std::string graph = "../graphs/cond-mat-2005.graph";
@@ -121,12 +118,12 @@ const Graph G = this->metisReader.read(graph);
 		timer.stop();
 		auto ranking = cen.ranking();
 
+		INFO("Betweenness Centrality on ", graph.c_str(), ": ",
+				(timer.elapsedMilliseconds() / 1000.0),
+				"s,\t ranking: [(",
+				ranking[0].first, ": ", ranking[0].second, "), (",
+				ranking[1].first, ": ", ranking[1].second, ") ...]");
 
-		printf("%s on %s: %.1f s\n\tranking: [(%lu: %f), (%lu: %f), ...]\n",
-			"Betweenness Centrality", graph.c_str(),
-			timer.elapsedMilliseconds() / 1000.0,
-			ranking[0].first, ranking[0].second,
-			ranking[1].first, ranking[1].second);
 	}
 }
 
