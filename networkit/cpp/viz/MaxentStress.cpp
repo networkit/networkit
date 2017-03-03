@@ -526,7 +526,7 @@ void MaxentStress::addKNeighborhoodOfVertex(const node u, const count k) {
 			this->G.forNeighborsOf(v, [&](node w, edgeweight weight) {
 				if (dist[v] + weight < dist[w]) {
 					dist[w] = dist[v] + weight;
-					PQ.decreaseKey(dist[w], w);
+					PQ.changeKey(dist[w], w);
 				}
 			});
 		}

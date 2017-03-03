@@ -49,7 +49,7 @@ void Dijkstra::run() {
 			}
 			TRACE("Decreasing key of ", v);
 			TRACE("pq size: ", pq.size());
-			pq.decreaseKey(distances[v], v);
+			pq.changeKey(distances[v], v);
 			TRACE("pq size: ", pq.size());
 		} else if (storePaths && (distances[v] == distances[u] + w)) {
 			previous[v].push_back(u); 	// additional predecessor

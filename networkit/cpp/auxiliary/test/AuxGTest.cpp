@@ -23,12 +23,14 @@
 #include "../MissingMath.h"
 #include "../PrioQueue.h"
 #include "../PrioQueueForInts.h"
+#include "../BucketPQ.h"
 #include "../StringTools.h"
 #include "../SetIntersector.h"
 #include "../Enforce.h"
 #include "../NumberParsing.h"
 #include "../Enforce.h"
 #include "../BloomFilter.h"
+
 
 TEST_F(AuxGTest, produceRandomIntegers) {
 	Aux::Random::setSeed(1, false);
@@ -172,20 +174,8 @@ TEST_F(AuxGTest, testVectorDebug) {
 TEST_F(AuxGTest, testPriorityQueue) {
 	typedef std::pair<double, uint64_t> ElemType;
 
-	// fill vector
-	std::vector<ElemType> vec;
-	vec.push_back(std::make_pair(0.5, 0));
-	vec.push_back(std::make_pair(3.5, 1));
-	vec.push_back(std::make_pair(4.5, 2));
-	vec.push_back(std::make_pair(2.5, 3));
-	vec.push_back(std::make_pair(0.75, 4));
-	vec.push_back(std::make_pair(1.5, 5));
-	vec.push_back(std::make_pair(8.5, 6));
-	vec.push_back(std::make_pair(3.25, 7));
-	vec.push_back(std::make_pair(4.75, 8));
-	vec.push_back(std::make_pair(5.0, 9));
-	vec.push_back(std::make_pair(11.5, 10));
-	vec.push_back(std::make_pair(0.25, 11));
+	// fill vector with keys
+	std::vector<double> vec = {0.5, 3.5, 4.5, 2.5, 0.75, 1.5, 8.5, 3.25, 4.75, 5.0, 11.5, 0.25};
 
 	// construct pq from vector
 	Aux::PrioQueue<double, uint64_t> pq(vec);
@@ -217,9 +207,33 @@ TEST_F(AuxGTest, testPriorityQueue) {
 	EXPECT_EQ(pq.size(), vec.size() - 5);
 }
 
+TEST_F(AuxGTest, testPrioQueueForIntsWithEmptiness) {
+	// fill vector with priorities
+	std::vector<int64_t> vec = {17, 4, 1, 5, 3, 11, 9, 19, -9, 1, 4, 20, 8, 8};
+
+	Aux::BucketPQ pq(vec, -20, 20);
+	EXPECT_EQ(pq.size(), vec.size());
+
+	// delete everything
+	while (pq.size() > 0) {
+		pq.extractMin();
+	}
+
+	// reinsert entries
+	for (uint64_t i = 0; i < vec.size(); ++i) {
+		pq.insert(vec[i], i);
+	}
+	EXPECT_EQ(pq.size(), vec.size());
+
+	// check top
+	std::pair<int64_t, uint64_t> mini = pq.extractMin();
+	EXPECT_EQ(mini.first, -9);
+	EXPECT_EQ(mini.second, 8u);
+}
+
 TEST_F(AuxGTest, testPrioQueueForInts) {
 	// fill vector with priorities
-	std::vector<uint64_t> vec;
+	std::vector<int64_t> vec;
 
 	// 0-4
 	vec.push_back(17);
@@ -232,7 +246,7 @@ TEST_F(AuxGTest, testPrioQueueForInts) {
 	vec.push_back(11);
 	vec.push_back(9);
 	vec.push_back(19);
-	vec.push_back(9);
+	vec.push_back(-9);
 	vec.push_back(1);
 
 	// 10-14
@@ -251,35 +265,38 @@ TEST_F(AuxGTest, testPrioQueueForInts) {
 
 	// 20-23
 	vec.push_back(7);
-	vec.push_back(4);
+	vec.push_back(-4);
 	vec.push_back(8);
 	vec.push_back(0);
 
 	// construct pq from vector
-	Aux::PrioQueueForInts pq(vec, 20);
+	Aux::BucketPQ pq(vec, -100, 100);
 
 	// check op: extractMin
-	NetworKit::index min = pq.extractMin();
-	EXPECT_EQ(min, 23u);
-	min = pq.extractMin();
-	EXPECT_EQ(min, 9u);
+	std::pair<int64_t, uint64_t> mini = pq.extractMin();
+	EXPECT_EQ(mini.first, -9);
+	EXPECT_EQ(mini.second, 8u);
 
-	// check op: extractMax
-	NetworKit::index max = pq.extractMax();
-	EXPECT_EQ(max, 7u);
-	max = pq.extractMax();
-	max = pq.extractMax();
-	max = pq.extractMax();
-	EXPECT_EQ(max, 15u);
+	// check op: changeKey
+	pq.changeKey(-20, 0);
+	mini = pq.extractMin();
+	EXPECT_EQ(mini.first, -20);
+	EXPECT_EQ(mini.second, 0u);
 
-	// check op: priority, changePrio
-	EXPECT_EQ(pq.priority(3), 5u);
-	pq.changePrio(3, 6u);
-	EXPECT_EQ(pq.priority(3), 6u);
+	// multiply vec by -1 and try again
+	for (int64_t& currkey : vec) {
+		currkey *= -1;
+	}
+	Aux::BucketPQ pq2(vec, -100, 100);
+	mini = pq2.extractMin();
+	EXPECT_EQ(mini.first, -19);
+	EXPECT_EQ(mini.second, 7u);
 
-	// check op: extractAt
-	EXPECT_EQ(pq.extractAt(6u), 3u);
-	EXPECT_EQ(pq.extractAt(6u), NetworKit::none);
+	// check op: changeKey
+	pq.changeKey(-20, 0);
+	mini = pq.extractMin();
+	EXPECT_EQ(mini.first, -20);
+	EXPECT_EQ(mini.second, 0u);
 }
 
 //FIXME make this working again
