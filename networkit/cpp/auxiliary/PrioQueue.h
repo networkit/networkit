@@ -24,7 +24,7 @@ class PrioQueue {
 private:
 	typedef std::pair<Key, Value> ElemType;
 
-	std::set<ElemType> pqset; // TODO: map should simplify things! what about unordered_map?
+	std::set<ElemType> pqset; // TODO: would std::map work and simplify things?
 	std::vector<Key> mapValToKey;
 
 	const Key undefined = std::numeric_limits<Key>::max(); // TODO: make static
