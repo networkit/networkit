@@ -16,7 +16,8 @@ namespace NetworKit {
  * DEPRECATED: use base class LayoutAlgorithm instead
  * @ingroup viz
  */
-class Layouter {
+class [[deprecated]]
+Layouter {
 protected:
 	Point<float> bottomLeft;
 	Point<float> topRight;

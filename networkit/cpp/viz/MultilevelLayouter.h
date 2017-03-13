@@ -14,9 +14,11 @@ namespace NetworKit {
 
 /**
  * @ingroup viz
+ * DEPRECATED
  */
 // TODO: refactor to inherit from LayoutAlgorithm base class
-class MultilevelLayouter: public NetworKit::Layouter {
+class [[deprecated]]
+MultilevelLayouter: public NetworKit::Layouter {
 protected:
 	static const count N_THRSH;
 

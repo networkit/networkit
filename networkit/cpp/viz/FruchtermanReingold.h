@@ -23,13 +23,16 @@ const double EPS = 0.1;
 
 /**
  * @ingroup viz
- * Fruchterman-Reingold graph drawing algorithm. We mostly follow
+ * DEPRECATED Fruchterman-Reingold graph drawing algorithm. We mostly follow
  * the description in Stephen G. Kobourov: Spring Embedders and Force
  * Directed Graph Drawing Algorithms.
+ *
+ * Marked as deprecated since better implementations are available in other tools.
  */
 
-// TODO: refactor to inherit from LayoutAlgorithm base class
-class FruchtermanReingold: public NetworKit::Layouter {
+
+class [[deprecated]]
+FruchtermanReingold: public NetworKit::Layouter {
 private:
 	static const float INITIAL_STEP_LENGTH;
 	static const float OPT_PAIR_SQR_DIST_SCALE;
