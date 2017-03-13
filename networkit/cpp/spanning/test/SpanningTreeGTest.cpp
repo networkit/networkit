@@ -29,7 +29,7 @@ TEST_F(SpanningTreeGTest, testRandomSpanningTree) {
 		Graph T = rst.getTree();
 
 		T.forNodes([&](node u) {
-			EXPECT_GE(G.degree(u), 0);
+			EXPECT_GE(G.degree(u), 0u);
 		});
 
 		node r1 = Sampling::randomNode(G);
@@ -56,7 +56,7 @@ TEST_F(SpanningTreeGTest, testRandomSpanningTree2) {
 		Graph T = rst.getTree();
 		count nNodes = 0, nEdges = 0;
 		T.forNodes([&](node u) {
-			EXPECT_GE(T.degree(u), 1);
+			EXPECT_GE(T.degree(u), 1u);
 			nNodes ++;
 		});
 		T.forEdges([&](node u, node v){

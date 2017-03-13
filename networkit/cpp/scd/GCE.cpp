@@ -12,7 +12,9 @@ namespace NetworKit {
 
 
 GCE::GCE(const Graph& G, std::string objective) : SelectiveCommunityDetector(G), objective(objective), intersector(G.upperNodeIdBound()) {
-
+	if (G.isWeighted()) {
+		throw std::invalid_argument("Current implementation supports only unweighted graphs!");
+	}
 }
 
 std::map<node, std::set<node> >  GCE::run(std::set<unsigned int>& seeds) {

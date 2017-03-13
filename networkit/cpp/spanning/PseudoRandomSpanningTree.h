@@ -21,7 +21,8 @@ struct MyEdge {
 	}
 };
 
-class PseudoRandomSpanningTree {
+class [[deprecated]]
+PseudoRandomSpanningTree {
 public:
 	PseudoRandomSpanningTree(const Graph& G);
 	virtual ~PseudoRandomSpanningTree() = default;

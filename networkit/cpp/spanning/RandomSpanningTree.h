@@ -12,7 +12,12 @@
 
 namespace NetworKit {
 
-class RandomSpanningTree {
+/**
+ * DEPRECATED: uniform random spanning tree algorithm, see graph module for implementation
+ * that can handle disconnected graphs
+ */
+class [[deprecated]]
+RandomSpanningTree {
 public:
 	RandomSpanningTree(const Graph& G);
 	virtual ~RandomSpanningTree();

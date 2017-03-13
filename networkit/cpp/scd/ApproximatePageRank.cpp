@@ -15,7 +15,9 @@ namespace NetworKit {
 ApproximatePageRank::ApproximatePageRank(const Graph& g, double alpha_, double epsilon):
 		G(g), alpha(alpha_), oneMinusAlphaOver2((1.0 - alpha) * 0.5), eps(epsilon)
 {
-
+	if (g.isWeighted()) {
+		throw std::invalid_argument("Current implementation supports only unweighted graphs!");
+	}
 }
 
 void ApproximatePageRank::push(node u, std::set<node>& activeNodes)

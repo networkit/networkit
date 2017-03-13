@@ -33,7 +33,9 @@ public:
 	 */
 	PivotMDS(const Graph& graph, count dim, count numPivots);
 
-	/** Default destructor */
+	/*
+	 * Default destructor
+	 */
 	virtual ~PivotMDS() = default;
 
 	/**
@@ -45,12 +47,15 @@ private:
 	count dim;
 	count numPivots;
 
-	/** Randomly picks the pivots for the algorithm */
+	/**
+	 *  Randomly picks the pivots for the algorithm
+	 */
 	std::vector<node> computePivots();
 
-	/** Power method to compute the largest eigenvector and eigenvalue that are stored in @a eigenvector and
+	/**
+	 * Power method to compute the largest eigenvector and eigenvalue that are stored in @a eigenvector and
 	 * @a eigenvalue.
-	*/
+	 */
 	void powerMethod(const CSRMatrix& mat, const count n, Vector& eigenvector, double& eigenvalue);
 };
 

@@ -15,9 +15,11 @@ namespace NetworKit {
 
 /**
  * @ingroup independentset
+ * DEPRECATED: put into code archive as nobody seems to be using it
  * Luby's parallel independent set algorithm.
  */
-class Luby: public NetworKit::IndependentSetFinder {
+class [[deprecated]]
+Luby: public NetworKit::IndependentSetFinder {
 
 public:
 

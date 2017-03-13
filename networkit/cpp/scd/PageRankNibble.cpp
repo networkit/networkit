@@ -15,7 +15,9 @@
 namespace NetworKit {
 
 PageRankNibble::PageRankNibble(Graph& g, double alpha, double epsilon): SelectiveCommunityDetector(g), alpha(alpha), epsilon(epsilon) {
-	assert(!g.isWeighted());
+	if (g.isWeighted()) {
+		throw std::invalid_argument("Current implementation supports only unweighted graphs!");
+	}
 }
 
 PageRankNibble::~PageRankNibble() {
