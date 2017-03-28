@@ -5760,18 +5760,18 @@ cdef class ApproxBetweenness(Centrality):
 
 
 
-cdef extern from "cpp/centrality/ApproxBetweenness2.h":
-	cdef cppclass _ApproxBetweenness2 "NetworKit::ApproxBetweenness2" (_Centrality):
-		_ApproxBetweenness2(_Graph, count, bool, bool) except +
+cdef extern from "cpp/centrality/EstimateBetweenness.h":
+	cdef cppclass _EstimateBetweenness"NetworKit::EstimateBetweenness" (_Centrality):
+		_EstimateBetweenness(_Graph, count, bool, bool) except +
 
 
-cdef class ApproxBetweenness2(Centrality):
-	""" Approximation of betweenness centrality according to algorithm described in
+cdef class EstimateBetweenness(Centrality):
+	""" Estimation of betweenness centrality according to algorithm described in
 	Sanders, Geisberger, Schultes: Better Approximation of Betweenness Centrality
 
-	ApproxBetweenness2(G, nSamples, normalized=False)
+	EstimateBetweenness(G, nSamples, normalized=False)
 
-	The algorithm approximates the betweenness of all nodes, using weighting
+	The algorithm estimates the betweenness of all nodes, using weighting
 	of the contributions to avoid biased estimation.
 
 	Parameters
@@ -5788,7 +5788,7 @@ cdef class ApproxBetweenness2(Centrality):
 
 	def __cinit__(self, Graph G, nSamples, normalized=False, parallel=False):
 		self._G = G
-		self._this = new _ApproxBetweenness2(G._this, nSamples, normalized, parallel)
+		self._this = new _EstimateBetweenness(G._this, nSamples, normalized, parallel)
 
 
 

@@ -10,7 +10,7 @@
 #include "../Closeness.h"
 #include "../DynApproxBetweenness.h"
 #include "../ApproxBetweenness.h"
-#include "../ApproxBetweenness2.h"
+#include "../EstimateBetweenness.h"
 #include "../SpanningEdgeCentrality.h"
 #include "../ApproxCloseness.h"
 #include "../EigenvectorCentrality.h"
@@ -321,11 +321,11 @@ TEST_F(CentralityGTest, benchPageRankCentralityOnRealGraph) {
 
 
 
-TEST_F(CentralityGTest, testApproxBetweenness2) {
+TEST_F(CentralityGTest, testEstimateBetweenness) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/celegans_metabolic.graph");
 
-	ApproxBetweenness2 abc2(G, 100);
+	EstimateBetweenness abc2(G, 100);
 	abc2.run();
 
 	DEBUG("approximated betweenness scores: ", abc2.scores());
