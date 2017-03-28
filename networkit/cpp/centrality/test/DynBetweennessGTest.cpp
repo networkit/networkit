@@ -9,7 +9,6 @@
 #include "../Betweenness.h"
 #include "../DynApproxBetweenness.h"
 #include "../ApproxBetweenness.h"
-#include "../ApproxBetweenness2.h"
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/Log.h"
 #include "../../auxiliary/NumericTools.h"
