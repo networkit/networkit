@@ -3069,6 +3069,51 @@ cdef class GraphToolBinaryReader(GraphReader):
 	def __cinit__(self):
 		self._this = new _GraphToolBinaryReader()
 
+cdef extern from "cpp/io/ThrillGraphBinaryReader.h":
+	cdef cppclass _ThrillGraphBinaryReader "NetworKit::ThrillGraphBinaryReader" (_GraphReader):
+		_ThrillGraphBinaryReader(count n) except +
+		_Graph read(vector[string] paths) nogil except +
+
+cdef class ThrillGraphBinaryReader(GraphReader):
+	""" 
+	Reads a graph format consisting of a serialized DIA of vector<uint32_t> from thrill.
+	When the number of nodes is given, reading the graph is more efficient.
+	Otherwise nodes are added to the graph as they are encountered.
+	Edges must be present only in one direction.
+	 
+	Parameters
+	----------
+	n : count
+		The number of nodes
+	"""
+	def __cinit__(self, count n = 0):
+		self._this = new _ThrillGraphBinaryReader(n)
+
+	"""
+	Read the graph from one or multiple files
+
+	Parameters
+	----------
+	paths : str or list[str]
+		The input path(s)
+	"""
+	def read(self, paths):
+		cdef vector[string] c_paths
+
+		if isinstance(paths, str):
+			c_paths.push_back(stdstring(paths))
+		else:
+			c_paths.reserve(len(paths))
+
+			for p in paths:
+				c_paths.push_back(stdstring(p))
+
+		cdef _Graph result
+
+		with nogil:
+			result = move((<_ThrillGraphBinaryReader*>(self._this)).read(c_paths)) # extra move in order to avoid copying the internal variable that is used by Cython
+
+		return Graph(0).setThis(result)
 
 cdef extern from "cpp/io/EdgeListReader.h":
 	cdef cppclass _EdgeListReader "NetworKit::EdgeListReader"(_GraphReader):
