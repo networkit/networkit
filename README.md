@@ -1,5 +1,7 @@
-NetworKit [![Build Status](https://travis-ci.org/kit-parco/networkit.svg?branch=master)](https://travis-ci.org/kit-parco/networkit)
+NetworKit
 =========
+[![Build Status](https://travis-ci.org/kit-parco/networkit.svg?branch=Dev)](https://travis-ci.org/kit-parco/networkit)
+[![PyPI version](https://badge.fury.io/py/networkit.svg)](https://badge.fury.io/py/networkit)
 
 [NetworKit][networkit] is an open-source tool suite for high-performance
 network analysis. Its aim is to provide tools for the analysis of large
