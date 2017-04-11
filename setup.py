@@ -272,7 +272,7 @@ do_cythonize = False
 # depending on the role in which the setup script is called, it will be determined if _NetworKit.pyx will be cythonized.
 build_ext_cmd = None
 # the `build_ext` command depends on the role of the setup script
-if not os.path.exists(".hg") and os.path.isfile("networkit/_NetworKit.cpp"):
+if not os.path.exists(".git") and not os.path.exists(".hg") and os.path.isfile("networkit/_NetworKit.cpp"):
 	#print("using pre-cythonized _NetworKit.cpp")
 	# we assume, were not in the repository, but installing networkit from a zip or via pip
 	if os.path.isfile("MANIFEST.in"):
