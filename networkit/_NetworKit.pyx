@@ -21,6 +21,7 @@ from cython.operator import dereference, preincrement
 # type imports
 from libc.stdint cimport uint64_t
 from libc.stdint cimport int64_t
+from libc.stdint cimport uint8_t
 
 # the C++ standard library
 from libcpp cimport bool
@@ -3348,6 +3349,32 @@ cdef class PartitionWriter:
 		with nogil:
 			self._this.write(zeta._this, cpath)
 
+cdef extern from "cpp/io/BinaryPartitionReader.h":
+	cdef cppclass _BinaryPartitionReader "NetworKit::BinaryPartitionReader":
+		_BinaryPartitionReader() except +
+		_BinaryPartitionReader(uint8_t width) except +
+		_Partition read(string path) except +
+
+
+cdef class BinaryPartitionReader:
+	""" 
+	Reads a partition from a binary file that contains an unsigned integer
+	of the given width for each node.
+
+	Parameters
+	----------
+	width : int
+		the width of the unsigned integer in bytes (4 or 8)
+	 
+	"""
+	cdef _BinaryPartitionReader _this
+
+	def __cinit__(self, uint8_t width=4):
+		self._this = _BinaryPartitionReader(width)
+
+	def read(self, path):
+		return Partition().setThis(self._this.read(stdstring(path)))
+
 
 cdef extern from "cpp/io/EdgeListPartitionReader.h":
 	cdef cppclass _EdgeListPartitionReader "NetworKit::EdgeListPartitionReader":
@@ -3363,6 +3390,33 @@ cdef class EdgeListPartitionReader:
 
 	def __cinit__(self, node firstNode=1, sepChar = '\t'):
 		self._this = _EdgeListPartitionReader(firstNode, stdstring(sepChar)[0])
+
+	def read(self, path):
+		return Partition().setThis(self._this.read(stdstring(path)))
+
+cdef extern from "cpp/io/BinaryEdgeListPartitionReader.h":
+	cdef cppclass _BinaryEdgeListPartitionReader "NetworKit::BinaryEdgeListPartitionReader":
+		_BinaryEdgeListPartitionReader() except +
+		_BinaryEdgeListPartitionReader(node firstNode, uint8_t width) except +
+		_Partition read(string path) except +
+
+
+cdef class BinaryEdgeListPartitionReader:
+	"""
+	Reads a partition file that contains a binary list of pairs (node, partition(node)).
+	It is assumed that all integers are unsigned.
+
+	Parameters
+	----------
+	firstNode : node
+		The id of the first node, this is subtracted from all read node ids
+	width : int
+		The width of the unsigned integer in bytes (4 or 8)
+	"""
+	cdef _BinaryEdgeListPartitionReader _this
+
+	def __cinit__(self, node firstNode=0, uint8_t width=4):
+		self._this = _BinaryEdgeListPartitionReader(firstNode, width)
 
 	def read(self, path):
 		return Partition().setThis(self._this.read(stdstring(path)))
