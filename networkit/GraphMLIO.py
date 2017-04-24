@@ -149,7 +149,9 @@ class GraphMLWriter:
 			attrKeys[(attType, attName)] = 'd{0}'.format(maxAttrKey)
 			maxAttrKey += 1
 			attrElement.set('attr.name', attName)
-			if isinstance(attData[0], bool):
+			if len(attData) == 0:
+				attrElement.set('attr.type', 'int')
+			elif isinstance(attData[0], bool):
 				attrElement.set('attr.type', 'boolean')
 				# special handling for boolean attributes: convert boolean into lowercase string
 				if attType == 'edge':
