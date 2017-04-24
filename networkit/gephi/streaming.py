@@ -161,9 +161,9 @@ class GephiStreamingClient:
             if len(values) != graph.numberOfNodes():
                 print("Warning: #Nodes (", graph.numberOfNodes(), ") does not match #Values (", len(values), ").")
 
-            for i in range(0, min(len(values), graph.numberOfNodes())):
+            for i in graph.nodes():
                 nAttrs = {attribute_name:values[i]}
-                self._pygephi.change_node(str(graph.nodes()[i]), **nAttrs)
+                self._pygephi.change_node(str(i), **nAttrs)
 
             self._pygephi.flush()
         except _urllib.error.URLError as e:
