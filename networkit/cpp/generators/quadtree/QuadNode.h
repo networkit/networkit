@@ -34,7 +34,6 @@ private:
 	Point2D<double> a,b,c,d;
 	unsigned capacity;
 	static const unsigned coarsenLimit = 4;
-	static const long unsigned sanityNodeLimit = 10E15; //just assuming, for debug purposes, that this algorithm never runs on machines with more than 4 Petabyte RAM
 	count subTreeSize;
 	std::vector<T> content;
 	std::vector<Point2D<double> > positions;
@@ -149,7 +148,6 @@ public:
 	 * @param R radial coordinate of point, between 0 and 1.
 	 */
 	void addContent(T input, double angle, double R) {
-		assert(input < sanityNodeLimit);
 		assert(this->responsible(angle, R));
 		if (lowerBoundR > R) lowerBoundR = R;
 		if (isLeaf) {
@@ -549,8 +547,6 @@ public:
 				const double deltaY = positions[i].getY() - queryY;
 				if (deltaX*deltaX + deltaY*deltaY < rsq) {
 					result.push_back(content[i]);
-					if (content[i] >= sanityNodeLimit) DEBUG("Quadnode content ", content[i], " found, suspiciously high!");
-					assert(content[i] < sanityNodeLimit);
 				}
 			}
 		}	else {
