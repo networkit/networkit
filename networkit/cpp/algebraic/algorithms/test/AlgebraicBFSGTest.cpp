@@ -8,7 +8,7 @@
 #include "AlgebraicBFSGTest.h"
 
 #include "../../CSRMatrix.h"
-#include "../../../graph/BFS.h"
+#include "../../../distance/BFS.h"
 #include "../AlgebraicBFS.h"
 #include "../../../io/METISGraphReader.h"
 

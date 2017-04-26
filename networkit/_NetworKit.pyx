@@ -1170,7 +1170,7 @@ cdef class Graph:
 
 # TODO: expose all methods
 
-cdef extern from "cpp/graph/SSSP.h":
+cdef extern from "cpp/distance/SSSP.h":
 	cdef cppclass _SSSP "NetworKit::SSSP"(_Algorithm):
 		_SSSP(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
 		void run() nogil except +
@@ -1240,7 +1240,7 @@ cdef class SSSP(Algorithm):
 	def numberOfPaths(self, t):
 		return (<_SSSP*>(self._this))._numberOfPaths(t)
 
-cdef extern from "cpp/graph/DynSSSP.h":
+cdef extern from "cpp/distance/DynSSSP.h":
 	cdef cppclass _DynSSSP "NetworKit::DynSSSP"(_SSSP):
 		_DynSSSP(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
 		void update(vector[_GraphEvent] batch) except +
@@ -1272,7 +1272,7 @@ cdef class DynSSSP(SSSP):
 		(<_DynSSSP*>(self._this)).setTargetNode(t)
 
 
-cdef extern from "cpp/graph/BFS.h":
+cdef extern from "cpp/distance/BFS.h":
 	cdef cppclass _BFS "NetworKit::BFS"(_SSSP):
 		_BFS(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
 
@@ -1299,7 +1299,7 @@ cdef class BFS(SSSP):
 		self._G = G
 		self._this = new _BFS(G._this, source, storePaths, storeStack, target)
 
-cdef extern from "cpp/graph/DynBFS.h":
+cdef extern from "cpp/distance/DynBFS.h":
 	cdef cppclass _DynBFS "NetworKit::DynBFS"(_DynSSSP):
 		_DynBFS(_Graph G, node source) except +
 
@@ -1324,7 +1324,7 @@ cdef class DynBFS(DynSSSP):
 		self._this = new _DynBFS(G._this, source)
 
 
-cdef extern from "cpp/graph/Dijkstra.h":
+cdef extern from "cpp/distance/Dijkstra.h":
 	cdef cppclass _Dijkstra "NetworKit::Dijkstra"(_SSSP):
 		_Dijkstra(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
 
@@ -1354,7 +1354,7 @@ cdef class Dijkstra(SSSP):
 		self._G = G
 		self._this = new _Dijkstra(G._this, source, storePaths, storeStack, target)
 
-cdef extern from "cpp/graph/DynDijkstra.h":
+cdef extern from "cpp/distance/DynDijkstra.h":
 	cdef cppclass _DynDijkstra "NetworKit::DynDijkstra"(_DynSSSP):
 		_DynDijkstra(_Graph G, node source) except +
 

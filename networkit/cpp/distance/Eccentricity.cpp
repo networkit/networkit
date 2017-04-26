@@ -6,7 +6,7 @@
  */
 
 #include "Eccentricity.h"
-#include "../graph/BFS.h"
+#include "BFS.h"
 
 namespace NetworKit {
 
@@ -22,4 +22,3 @@ std::pair<node, count> Eccentricity::getValue(const Graph& G, node u) {
 
 
 } /* namespace NetworKit */
-

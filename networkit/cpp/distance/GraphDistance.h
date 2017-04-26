@@ -8,7 +8,7 @@
 #ifndef GRAPHDISTANCE_H_
 #define GRAPHDISTANCE_H_
 
-#include "Graph.h"
+#include "../graph/Graph.h"
 #include "Dijkstra.h"
 #include "BFS.h"
 

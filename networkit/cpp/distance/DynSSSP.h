@@ -10,7 +10,7 @@
 
 #include <set>
 
-#include "Graph.h"
+#include "../graph/Graph.h"
 #include "../dynamics/GraphEvent.h"
 #include "SSSP.h"
 

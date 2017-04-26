@@ -9,8 +9,8 @@
 #include "../auxiliary/Random.h"
 #include "../distance/Diameter.h"
 #include "../graph/Sampling.h"
-#include "../graph/DynDijkstra.h"
-#include "../graph/DynBFS.h"
+#include "../distance/DynDijkstra.h"
+#include "../distance/DynBFS.h"
 #include "../auxiliary/Log.h"
 #include "../auxiliary/NumericTools.h"
 
