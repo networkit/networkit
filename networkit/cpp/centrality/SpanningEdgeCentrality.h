@@ -43,7 +43,7 @@ public:
 
 	/**
 	* Compute spanning edge centrality scores exactly for all edges. This solves a linear system for each edge, so the empirical running time is O(m^2),
-	* where m is the number of edges in the graph
+	* where m is the number of edges in the graph.
 	*/
 	void run() override;
 
