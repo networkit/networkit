@@ -26,9 +26,14 @@ public:
 	 *
 	 * @param G The graph.
 	 * @param normalized Set this parameter to <code>true</code> if scores should be normalized in the interval [0,1].
+	 * @param outDeg If set to <code>true</code>, computes the centrality based on the out-degrees, otherwise based on the in-degrees.
+	 * @param ignoreSelfLoops If set to <code>true</code>, self loops will not be taken into account.
 	 */
 	DegreeCentrality(const Graph& G, bool normalized=false, bool outDeg=true, bool ignoreSelfLoops=true);
 
+	/**
+	 * Computes degree centraity on the graph passed in constructor.
+	 */
 	void run() override;
 
 	/**

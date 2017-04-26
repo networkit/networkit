@@ -2,7 +2,7 @@
  * Sfigality.h
  *
  *  Created on: 20.01.2016
- *      Author: Elisabetta Bergamini, Christian Staudt
+ *      Author:Christian Staudt
  */
 
 #ifndef SFIGALITY_H_
@@ -19,7 +19,7 @@ namespace NetworKit {
 class Sfigality: public NetworKit::Centrality {
 public:
 	/**
-	 * Constructs the Sfigality class for the given Graph @a G.
+	 * Constructs the Sfigality class for the given Graph @a G. Sfigality indicates the number of neighbors with a higher degree than the node itself.
 	 *
 	 * @param G The graph.
 
@@ -29,7 +29,7 @@ public:
 	void run() override;
 
 	/**
-	 * @return the theoretical maximum degree centrality, which is $n$ (including the possibility of a self-loop)
+	 * @return the theoretical maximum degree centrality, which is $n - 1$ (including the possibility of a self-loop)
 	 */
 	double maximum() override;
 };
