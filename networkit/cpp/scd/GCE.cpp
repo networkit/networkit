@@ -57,12 +57,13 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
 
     double currentQ = 0.0; // current community quality
 
+    // The boundary is defined as all nodes of C that have a neighbor not in C
     auto boundary = [&](const std::set<node>& C) {
 		std::set<node> sh;
-		for (const auto &s : currentShell) {
-			G.forNeighborsOf(s.first, [&](node u){
-				if (!in(C, u)) {
-					sh.insert(s.first);
+		for (node u : C) {
+			G.forNeighborsOf(u, [&](node v){
+				if (!in(C, v)) {
+					sh.insert(u);
 				}
 			});
 		}
