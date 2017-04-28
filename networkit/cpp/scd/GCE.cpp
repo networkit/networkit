@@ -49,14 +49,12 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
 
 	std::unordered_map<node, node_property_t> currentShell;
 
-	G.forNeighborsOf(s, [&](node, node u, edgeweight ew) {
-		currentShell.insert(std::make_pair(u, node_property_t {.degInt =  ew, .degExt = G.weightedDegree(u) - ew}));
-		extWeight += ew;
-	});
-
-
     double currentQ = 0.0; // current community quality
 
+    // Current boundary. Stores for every node in the boundary how many neighbors it has outside the community.
+    std::unordered_map<node, count> currentBoundary;
+
+#ifndef NDEBUG
     // The boundary is defined as all nodes of C that have a neighbor not in C
     auto boundary = [&](const std::set<node>& C) {
 		std::set<node> sh;
@@ -70,7 +68,6 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
 		return sh;
 	};
 
-#ifndef NDEBUG
 	/**
 	 * internal and external weighted degree of a node with respect to the community
 	 */
@@ -104,6 +101,45 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
     };
 #endif
 
+	auto addNodeToCommunity = [&](node u) {
+		community.insert(u); 	// add node to community
+
+		currentShell.erase(u);	// remove node from shell
+
+		G.forNeighborsOf(u, [&](node, node v, edgeweight ew) { // insert external neighbors of u into shell
+			if (!in(community, v)) {
+				auto it = currentShell.find(v);
+				if (it == currentShell.end()) {
+					currentShell.insert(std::make_pair(v, node_property_t {.degInt = ew, .degExt = G.weightedDegree(v) - ew}));
+				} else {
+					it->second.degInt += ew;
+					it->second.degExt -= ew;
+				}
+
+				extWeight += ew;
+				if (!objectiveIsM) {
+					currentBoundary[u] += 1;
+				}
+
+				assert(intExtDeg(v, community) == std::make_pair(currentShell[v].degInt, currentShell[v].degExt));
+			} else {
+				if (!objectiveIsM) {
+					auto it = currentBoundary.find(v);
+					assert(it != currentBoundary.end());
+					it->second -= 1;
+					if (it->second == 0) {
+						currentBoundary.erase(it);
+					}
+				}
+
+				intWeight += ew;
+				extWeight -= ew;
+			}
+		});
+		assert(objectiveIsM || boundary(community).size() == currentBoundary.size());
+	};
+
+	addNodeToCommunity(s);
 
     /*
      * objective function M
@@ -120,10 +156,23 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
      * @return quality difference for the move of v to C
      */
     auto deltaL = [&](node v, double degInt, double degExt, std::set<node>& C){
-    	C.insert(v);
-    	double numerator = 2.0 * (intWeight + degInt) * boundary(C).size();
-    	double denominator = C.size() * (extWeight - degInt + degExt);
-    	C.erase(v);
+	// Compute difference in boundary size: for each neighbor where we are the last
+	// external neighbor decrease by 1, if v has an external neighbor increase by 1
+	int64_t boundary_diff = 0;
+	bool v_in_boundary = false;
+	G.forNeighborsOf(v, [&](node x) {
+	    auto it = currentBoundary.find(x);
+	    if (it != currentBoundary.end()) {
+		if (it->second == 1) {
+		    boundary_diff -= 1;
+		}
+	    } else if (!v_in_boundary) {
+		boundary_diff += 1;
+		v_in_boundary = true;
+	    }
+	});
+	double numerator = 2.0 * (intWeight + degInt) * (currentBoundary.size() + boundary_diff);
+	double denominator = (C.size() + 1) * (extWeight - degInt + degExt);
         return (numerator / denominator) - currentQ;
     };
 
@@ -135,9 +184,6 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
 	    return deltaL(v, degInt, degExt, C);
 	}
     };
-
-    // insert seed
-    community.insert(s);
 
     // for M, quality of {s} is 0.0
 
@@ -164,28 +210,7 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
 		TRACE("vMax: ", vMax);
 		TRACE("dQMax: ", dQMax);
 		if (vMax != none) {
-			community.insert(vMax); 	// add best node to community
-
-			currentShell.erase(vMax);	// remove best node from shell
-
-			G.forNeighborsOf(vMax, [&](node, node v, edgeweight ew) { // insert external neighbors of vMax into shell
-				if (!in(community, v)) {
-					auto it = currentShell.find(v);
-					if (it == currentShell.end()) {
-						currentShell.insert(std::make_pair(v, node_property_t {.degInt = ew, .degExt = G.weightedDegree(v) - ew}));
-					} else {
-						it->second.degInt += ew;
-						it->second.degExt -= ew;
-					}
-
-					extWeight += ew;
-
-					assert(intExtDeg(v, community) == std::make_pair(currentShell[v].degInt, currentShell[v].degExt));
-				} else {
-					intWeight += ew;
-					extWeight -= ew;
-				}
-			});
+			addNodeToCommunity(vMax);	// add best node to community
             currentQ += dQMax;     // update current community quality
 			TRACE("community: ", community);
 		}
