@@ -12,8 +12,8 @@
 
 #include "../auxiliary/Random.h"
 
-#include "../graph/BFS.h"
-#include "../graph/Dijkstra.h"
+#include "../distance/BFS.h"
+#include "../distance/Dijkstra.h"
 
 namespace NetworKit {
 

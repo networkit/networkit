@@ -8,7 +8,7 @@
 #ifndef INCOMPLETESSSP_H_
 #define INCOMPLETESSSP_H_
 
-#include "Graph.h"
+#include "../graph/Graph.h"
 
 namespace NetworKit {
 

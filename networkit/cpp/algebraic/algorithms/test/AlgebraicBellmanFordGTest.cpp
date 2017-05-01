@@ -10,7 +10,7 @@
 
 #include "../../CSRMatrix.h"
 
-#include "../../../graph/Dijkstra.h"
+#include "../../../distance/Dijkstra.h"
 #include "../../DynamicMatrix.h"
 #include "../AlgebraicBellmanFord.h"
 #include "AlgebraicBellmanFordGTest.h"

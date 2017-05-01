@@ -20,7 +20,7 @@ namespace NetworKit {
 class Centrality : public Algorithm {
 public:
 	/**
-	 * Constructs the Centrality class for the given Graph @a G. If the betweenness scores should be normalized,
+	 * Constructs the Centrality class for the given Graph @a G. If the centrality scores should be normalized,
 	 * then set @a normalized to @c true.
 	 *
 	 * @param G The graph.
@@ -33,19 +33,19 @@ public:
 	virtual ~Centrality() = default;
 
 	/**
-	 * Compute betweenness scores.
+	 * Computes centrality scores on the graph passed in constructor.
 	 */
 	virtual void run() = 0;
 
 	/**
-	 * Get a vector containing the betweenness score for each node in the graph.
+	 * Get a vector containing the centrality score for each node in the graph.
 	 * @param moveOut Return the actual internal data instead of a copy. Resets the hasRun-state. Default: false.
-	 * @return The betweenness scores calculated by @link run().
+	 * @return The centrality scores calculated by @link run().
 	 */
 	virtual std::vector<double> scores(bool moveOut = false);
 
 	/**
-	 * Get a vector containing the edge betweenness score for each edge in the graph.
+	 * Get a vector containing the edge centrality score for each edge in the graph (where applicable).
 	 * @return The edge betweenness scores calculated by @link run().
 	 */
 	virtual std::vector<double> edgeScores();
@@ -58,7 +58,7 @@ public:
 	virtual std::vector<std::pair<node, double> > ranking();
 
 	/**
-	 * Get the betweenness score of node @a v calculated by @link run().
+	 * Get the centrality score of node @a v calculated by @link run().
 	 *
 	 * @param v A node.
 	 * @return The betweenness score of node @a v.

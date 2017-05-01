@@ -6,6 +6,7 @@
 
 namespace NetworKit {
 
+// TODO documentation completely missing!
 class PermanenceCentrality : public Algorithm {
 public:
 	PermanenceCentrality(const Graph &G, const Partition &P);

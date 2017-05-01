@@ -8,7 +8,7 @@
 #ifndef BFS_H_
 #define BFS_H_
 
-#include "Graph.h"
+#include "../graph/Graph.h"
 #include "SSSP.h"
 
 namespace NetworKit {

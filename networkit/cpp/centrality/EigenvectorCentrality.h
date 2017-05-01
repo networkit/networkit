@@ -27,9 +27,13 @@ public:
 	 *
 	 * @param[in] G The graph.
 	 * @param[in] tol The tolerance for convergence.
+	 * TODO running time
 	 */
 	EigenvectorCentrality(const Graph& G, double tol = 1e-8);
 
+	/**
+	 * Computes eigenvector centrality on the graph passed in constructor.
+	 */
 	virtual void run();
 };
 

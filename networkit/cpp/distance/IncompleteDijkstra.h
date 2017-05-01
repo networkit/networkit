@@ -13,7 +13,7 @@
 #include <vector>
 #include <utility>
 
-#include "Graph.h"
+#include "../graph/Graph.h"
 #include "IncompleteSSSP.h"
 #include "../auxiliary/PrioQueue.h"
 

@@ -42,18 +42,20 @@ public:
 
 
 	/**
-	* Compute spanning edge centrality scores exactly for all edges.
+	* Compute spanning edge centrality scores exactly for all edges. This solves a linear system for each edge, so the empirical running time is O(m^2),
+	* where m is the number of edges in the graph.
 	*/
 	void run() override;
 
 
 	/**
-	 * Compute approximation by JL projection.
+	 * Compute approximation by JL projection. This solves k linear systems, where k is log(n)/(tol^2). The empirical running time is O(km), where n is the number of nodes
+	 * and m is the number of edges.
 	 */
 	void runApproximation();
 
 	/**
-	 * Compute approximation by JL projection in parallel.
+	 * Compute approximation by JL projection in parallel. This solves k linear systems in parallel, where k is log(n)/(tol^2).
 	 */
 	void runParallelApproximation();
 
@@ -71,7 +73,7 @@ public:
 	 */
 	uint64_t getSetupTime() const;
 	/**
-	 * Compute value for one edge only.
+	 * Compute value for one edge only. This requires a single linear system, so the empricial running time is O(m).
 	 * @param[in] u Endpoint of edge.
 	 * @param[in] v Endpoint of edge.
 	 */

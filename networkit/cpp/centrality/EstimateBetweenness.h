@@ -16,7 +16,9 @@ namespace NetworKit {
 /**
  * @ingroup centrality
  * Estimation of betweenness centrality according to algorithm described in
- * Sanders, Geisberger, Schultes: Better Approximation of Betweenness Centrality
+ * Sanders, Geisberger, Schultes: Better Approximation of Betweenness Centrality.
+ * There is no proven theoretical guarantee on the quality of the approximation. However, the algorithm was shown to perform well in practice.
+ * If a guarantee is required, use ApproxBetweenness.
  */
 class EstimateBetweenness: public NetworKit::Centrality {
 
@@ -34,6 +36,9 @@ public:
 	 */
 	 EstimateBetweenness(const Graph& G, count nSamples, bool normalized=false, bool parallel_flag=false);
 
+	 /**
+ 	 * Computes betweenness estimation on the graph passed in constructor.
+ 	 */
 	void run() override;
 
 
