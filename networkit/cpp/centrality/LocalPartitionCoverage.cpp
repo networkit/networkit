@@ -19,7 +19,10 @@ void NetworKit::LocalPartitionCoverage::run() {
 			if (P[u] == P[v]) scoreData[u] += ew;
 		});
 
-		scoreData[u] /= G.weightedDegree(u);
+		// Avoid division by 0 if u has no neighbors (then also scoreData[u] == 0).
+		if (scoreData[u] > 0) {
+			scoreData[u] /= G.weightedDegree(u);
+		}
 	});
 
 	hasRun = true;
