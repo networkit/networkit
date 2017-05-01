@@ -6635,7 +6635,7 @@ cdef class MatchingCoarsening(GraphCoarsening):
 cdef extern from "cpp/scd/PageRankNibble.h":
 	cdef cppclass _PageRankNibble "NetworKit::PageRankNibble":
 		_PageRankNibble(_Graph G, double alpha, double epsilon) except +
-		map[node, set[node]] run(set[unsigned int] seeds) except +
+		map[node, set[node]] run(set[node] seeds) except +
 
 cdef class PageRankNibble:
 	"""
@@ -6655,7 +6655,7 @@ cdef class PageRankNibble:
 		self._G = G
 		self._this = new _PageRankNibble(G._this, alpha, epsilon)
 
-	def run(self, set[unsigned int] seeds):
+	def run(self, set[node] seeds):
 		"""
 		Produces a cut around a given seed node.
 
@@ -6668,7 +6668,7 @@ cdef class PageRankNibble:
 cdef extern from "cpp/scd/GCE.h":
 	cdef cppclass _GCE "NetworKit::GCE":
 		_GCE(_Graph G, string quality) except +
-		map[node, set[node]] run(set[unsigned int] seeds) except +
+		map[node, set[node]] run(set[node] seeds) except +
 
 cdef class GCE:
 	"""
@@ -6685,7 +6685,7 @@ cdef class GCE:
 		self._G = G
 		self._this = new _GCE(G._this, stdstring(quality))
 
-	def run(self, set[unsigned int] seeds):
+	def run(self, set[node] seeds):
 		"""
 		Produces a cut around a given seed node.
 
