@@ -30,7 +30,7 @@ Dy * GeneratorsTest.cpp
 #include "../RegularRingLatticeGenerator.h"
 #include "../StochasticBlockmodel.h"
 #include "../EdgeSwitchingMarkovChainGenerator.h"
-#include "../LFRGenerator.h"
+#include "../ReCoNGenerator.h"
 
 
 #include "../../viz/PostscriptWriter.h"
@@ -906,9 +906,9 @@ TEST_F(GeneratorsGTest, tryGiganticCollectionOfHyperbolicUnitDiskGraphs) {
 	}
 }
 
-TEST_F(GeneratorsGTest, testLFRGenerator) {
+TEST_F(GeneratorsGTest, testReCoNGenerator) {
 	Aux::Random::setSeed(42, true);
-	LFRGenerator gen(1000);
+	ReCoNGenerator gen(1000);
 	gen.generatePowerlawDegreeSequence(20, 50, -2);
 	gen.generatePowerlawCommunitySizeSequence(10, 50, -1);
 	gen.setMu(0.5);
@@ -921,9 +921,9 @@ TEST_F(GeneratorsGTest, testLFRGenerator) {
 	EXPECT_EQ(G1.numberOfEdges(), G2.numberOfEdges());
 }
 
-TEST_F(GeneratorsGTest, tryLFRGeneratorImpossibleSequence) {
+TEST_F(GeneratorsGTest, tryReCoNGeneratorImpossibleSequence) {
 	Aux::Random::setSeed(42, true);
-	LFRGenerator gen(1000);
+	ReCoNGenerator gen(1000);
 	gen.generatePowerlawDegreeSequence(35, 98, -2);
 	gen.generatePowerlawCommunitySizeSequence(10, 50, -3);
 	gen.setMu(0.5);
@@ -931,7 +931,7 @@ TEST_F(GeneratorsGTest, tryLFRGeneratorImpossibleSequence) {
 	EXPECT_THROW(gen.getMoveGraph(), std::runtime_error);
 }
 
-TEST_F(GeneratorsGTest, testLFRGeneratorWithRealData) {
+TEST_F(GeneratorsGTest, testReCoNGeneratorWithRealData) {
 	std::vector<count> degreeSequence = {124, 54, 7, 15, 81, 35, 4, 37, 3, 33, 2, 79, 2, 47, 40, 102, 17, 75, 2, 43, 49, 11, 12, 3, 87, 44, 67, 18, 22, 51, 96, 9, 17, 1, 1, 81, 3,
 	44, 59, 2, 30, 85, 69, 28, 45, 12, 30, 38, 32, 20, 11, 28, 42, 30, 8, 86, 57, 56, 50, 51, 39, 80, 47, 124, 41, 15, 5, 3, 100, 57, 34, 37, 7, 2, 1, 11, 75, 137, 47, 11, 67, 92,
 	67, 34, 156, 33, 8, 29, 35, 203, 20, 2, 51, 2, 54, 69, 14, 4, 1, 1, 72, 22, 45, 11, 34, 2, 21, 7, 4, 25, 1, 16, 63, 86, 25, 143, 45, 49, 23, 80, 3, 21, 1, 11, 14, 38, 73,
@@ -1041,7 +1041,7 @@ TEST_F(GeneratorsGTest, testLFRGeneratorWithRealData) {
 	for (node u = 0; u < partition.size(); ++u) {
 		C[u] = partition[u];
 	}
-	LFRGenerator gen(degreeSequence.size());
+	ReCoNGenerator gen(degreeSequence.size());
 	gen.setDegreeSequence(degreeSequence);
 	gen.setPartition(C);
 	gen.setMu(mu);

@@ -1,8 +1,4 @@
-/*
- *
- */
-
-#include "LFRGenerator.h"
+#include "ReCoNGenerator.h"
 #include "PowerlawDegreeSequence.h"
 #include "EdgeSwitchingMarkovChainGenerator.h"
 #include "PubWebGenerator.h"
@@ -12,10 +8,10 @@
 #include "../auxiliary/SignalHandling.h"
 #include "../auxiliary/Parallel.h"
 
-NetworKit::LFRGenerator::LFRGenerator(NetworKit::count n) :
+NetworKit::ReCoNGenerator::ReCoNGenerator(NetworKit::count n) :
 n(n), hasDegreeSequence(false), hasCommunitySizeSequence(false), hasInternalDegreeSequence(false), hasGraph(false), hasPartition(false) { }
 
-void NetworKit::LFRGenerator::setDegreeSequence(std::vector< NetworKit::count > degreeSequence) {
+void NetworKit::ReCoNGenerator::setDegreeSequence(std::vector< NetworKit::count > degreeSequence) {
 	if (degreeSequence.size() != n) throw std::runtime_error("The degree sequence must have as many entries as there are nodes");
 	if (*std::max_element(degreeSequence.begin(), degreeSequence.end()) >= n) throw std::runtime_error("The maximum degree must be smaller than the number of nodes");
 
@@ -23,7 +19,7 @@ void NetworKit::LFRGenerator::setDegreeSequence(std::vector< NetworKit::count > 
 	this->hasDegreeSequence = true;
 }
 
-void NetworKit::LFRGenerator::generatePowerlawDegreeSequence(NetworKit::count avgDegree, NetworKit::count maxDegree, double nodeDegreeExp) {
+void NetworKit::ReCoNGenerator::generatePowerlawDegreeSequence(NetworKit::count avgDegree, NetworKit::count maxDegree, double nodeDegreeExp) {
 	if (maxDegree >= n) throw std::runtime_error("The maximum degree must be smaller than the number of nodes");
 
 	PowerlawDegreeSequence nodeDegreeSequence(1, maxDegree, nodeDegreeExp);
@@ -35,13 +31,13 @@ void NetworKit::LFRGenerator::generatePowerlawDegreeSequence(NetworKit::count av
 	this->hasDegreeSequence = true;
 }
 
-void NetworKit::LFRGenerator::setCommunitySizeSequence(std::vector< NetworKit::count > communitySizeSequence) {
+void NetworKit::ReCoNGenerator::setCommunitySizeSequence(std::vector< NetworKit::count > communitySizeSequence) {
 	this->communitySizeSequence = std::move(communitySizeSequence);
 	this->hasCommunitySizeSequence = true;
 	this->hasPartition = false;
 }
 
-void NetworKit::LFRGenerator::generatePowerlawCommunitySizeSequence(NetworKit::count minCommunitySize, NetworKit::count maxCommunitySize, double communitySizeExp) {
+void NetworKit::ReCoNGenerator::generatePowerlawCommunitySizeSequence(NetworKit::count minCommunitySize, NetworKit::count maxCommunitySize, double communitySizeExp) {
 	PowerlawDegreeSequence communityDegreeSequenceGen(minCommunitySize, maxCommunitySize, communitySizeExp);
 	communityDegreeSequenceGen.run();
 
@@ -64,7 +60,7 @@ void NetworKit::LFRGenerator::generatePowerlawCommunitySizeSequence(NetworKit::c
 	this->hasPartition = false;
 }
 
-void NetworKit::LFRGenerator::setMu(double mu) {
+void NetworKit::ReCoNGenerator::setMu(double mu) {
 	if (!hasDegreeSequence) throw std::runtime_error("Error, the degree sequence needs to be set first");
 
 	internalDegreeSequence.resize(n);
@@ -86,7 +82,7 @@ void NetworKit::LFRGenerator::setMu(double mu) {
 	hasInternalDegreeSequence = true;
 }
 
-void NetworKit::LFRGenerator::setMu(const std::vector< double > &mu) {
+void NetworKit::ReCoNGenerator::setMu(const std::vector< double > &mu) {
 	if (!hasDegreeSequence) throw std::runtime_error("Error, the degree sequence needs to be set first");
 	if (mu.size() != n) throw std::runtime_error("Error, mu must have as many entries as there are nodes");
 
@@ -103,7 +99,7 @@ void NetworKit::LFRGenerator::setMu(const std::vector< double > &mu) {
 	hasInternalDegreeSequence = true;
 }
 
-void NetworKit::LFRGenerator::setMuWithBinomialDistribution(double mu) {
+void NetworKit::ReCoNGenerator::setMuWithBinomialDistribution(double mu) {
 	if (!hasDegreeSequence) throw std::runtime_error("Error, the degree sequence needs to be set first");
 
 	internalDegreeSequence.resize(n);
@@ -121,13 +117,13 @@ void NetworKit::LFRGenerator::setMuWithBinomialDistribution(double mu) {
 }
 
 
-void NetworKit::LFRGenerator::setPartition(NetworKit::Partition zeta) {
+void NetworKit::ReCoNGenerator::setPartition(NetworKit::Partition zeta) {
 	this->zeta = zeta;
 	this->hasPartition = true;
 	this->hasCommunitySizeSequence = false;
 }
 
-NetworKit::Graph NetworKit::LFRGenerator::generateIntraClusterGraph(std::vector< NetworKit::count > intraDegreeSequence, const std::vector<NetworKit::node> &localToGlobalNode) {
+NetworKit::Graph NetworKit::ReCoNGenerator::generateIntraClusterGraph(std::vector< NetworKit::count > intraDegreeSequence, const std::vector<NetworKit::node> &localToGlobalNode) {
 	// check if sum of degrees is even and fix if necessary
 	count intraDegSum = std::accumulate(intraDegreeSequence.begin(), intraDegreeSequence.end(), 0);
 
@@ -158,7 +154,7 @@ NetworKit::Graph NetworKit::LFRGenerator::generateIntraClusterGraph(std::vector<
 }
 
 
-NetworKit::Graph NetworKit::LFRGenerator::generateInterClusterGraph(const std::vector< NetworKit::count > &externalDegreeSequence) {
+NetworKit::Graph NetworKit::ReCoNGenerator::generateInterClusterGraph(const std::vector< NetworKit::count > &externalDegreeSequence) {
 	EdgeSwitchingMarkovChainGenerator graphGen(externalDegreeSequence, true);
 
 	Graph interG = graphGen.generate();
@@ -253,7 +249,7 @@ NetworKit::Graph NetworKit::LFRGenerator::generateInterClusterGraph(const std::v
 	return interG;
 }
 
-std::vector<std::vector<NetworKit::node>> NetworKit::LFRGenerator::assignNodesToCommunities() {
+std::vector<std::vector<NetworKit::node>> NetworKit::ReCoNGenerator::assignNodesToCommunities() {
 	std::vector<std::vector<NetworKit::node>> communityNodeList;
 
 	bool assignmentSucceeded = true;
@@ -354,7 +350,7 @@ std::vector<std::vector<NetworKit::node>> NetworKit::LFRGenerator::assignNodesTo
 
 
 
-void NetworKit::LFRGenerator::run() {
+void NetworKit::ReCoNGenerator::run() {
 	if (!hasDegreeSequence) throw std::runtime_error("Error, the degree sequence needs to be set first");
 	if (!(hasCommunitySizeSequence || hasPartition)) throw std::runtime_error("Error, either the community size sequence or the partition needs to be set first");
 	if (!hasInternalDegreeSequence) throw std::runtime_error("Error, mu needs to be set first");
@@ -508,18 +504,18 @@ void NetworKit::LFRGenerator::run() {
 	hasRun = true;
 }
 
-NetworKit::Graph NetworKit::LFRGenerator::generate() {
+NetworKit::Graph NetworKit::ReCoNGenerator::generate() {
 	run();
 	return getMoveGraph();
 }
 
-NetworKit::Graph NetworKit::LFRGenerator::getGraph() const {
+NetworKit::Graph NetworKit::ReCoNGenerator::getGraph() const {
 	if (!hasGraph) throw std::runtime_error("Run must be called first");
 
 	return G;
 }
 
-NetworKit::Graph && NetworKit::LFRGenerator::getMoveGraph() {
+NetworKit::Graph && NetworKit::ReCoNGenerator::getMoveGraph() {
 	if (!hasGraph) throw std::runtime_error("Run must be called first");
 
 	hasGraph = false;
@@ -527,27 +523,24 @@ NetworKit::Graph && NetworKit::LFRGenerator::getMoveGraph() {
 	return std::move(G);
 }
 
-NetworKit::Partition NetworKit::LFRGenerator::getPartition() const {
+NetworKit::Partition NetworKit::ReCoNGenerator::getPartition() const {
 	if (!hasPartition) throw std::runtime_error("Run must be called first");
 
 	return zeta;
 }
 
-NetworKit::Partition && NetworKit::LFRGenerator::getMovePartition() {
+NetworKit::Partition && NetworKit::ReCoNGenerator::getMovePartition() {
 	if (!hasPartition) throw std::runtime_error("Run must be called first");
 
 	return std::move(zeta);
 }
 
-std::string NetworKit::LFRGenerator::toString() const {
+std::string NetworKit::ReCoNGenerator::toString() const {
 	std::stringstream stream;
-	stream << "LFRGenerator(" << n << ")";
+	stream << "ReCoNGenerator(" << n << ")";
 	return stream.str();
 }
 
-bool NetworKit::LFRGenerator::isParallel() const {
+bool NetworKit::ReCoNGenerator::isParallel() const {
 	return false;
 }
-
-
-
