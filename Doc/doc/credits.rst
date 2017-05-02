@@ -27,7 +27,8 @@ Maintainers
 ~~~~~~~~~~~
 
 - Elisabetta Bergamini (since March 2016)
-- Maximilian Vogel
+- Kolja Esders (since July 2016)
+- Maximilian Vogel (until July 2016)
 - Christian L. Staudt (until March 2016)
 
 
@@ -41,18 +42,21 @@ Contributors
 - Pratistha Bhattarai
 - Andreas Bilke
 - Simon Bischof
+- Michele Borassi
 - Guido Brückner
 - Kolja Esders
 - Patrick Flick
 - Michael Hamann
 - Lukas Hartmann
 - Daniel Hoske
+- Yani Kolev
 - Gerd Lindner
 - Moritz v. Looz
 - Yassine Marrakchi
 - Mustafa Özdayi
 - Marcel Radermacher
 - Klara Reichard
+- Matteo Riondato
 - Marvin Ritter
 - Aleksejs Sazonovs
 - Arie Slobbe
