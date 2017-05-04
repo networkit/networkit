@@ -8,6 +8,8 @@
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/Log.h"
 
+#include <memory>
+
 #ifndef NOGTEST
 
 namespace NetworKit {
