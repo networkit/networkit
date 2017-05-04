@@ -504,7 +504,9 @@ public:
 	node addNode(float x, float y);
 
 	/**
-	 * Remove a node @a v and all incident edges (incoming and outgoing in case of an directed graph) from the graph.
+	 * Remove a node @a v and all incident edges from the graph.
+	 *
+	 * Incoming as well as outgoing edges will be removed.
 	 *
 	 * @param u Node.
 	 */

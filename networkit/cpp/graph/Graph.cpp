@@ -511,10 +511,10 @@ void Graph::removeNode(node v) {
 	assert (exists[v]);
 
   // Remove all out- and incoming edges
-	this->forEdgesOf(v, [&](node u){
+	this->forEdgesOf(v, [&](node u) {
 		removeEdge(v, u);
 	});
-	this->forInEdgesOf(v, [&](node u){
+	this->forInEdgesOf(v, [&](node u) {
 		removeEdge(u, v);
 	});
 
