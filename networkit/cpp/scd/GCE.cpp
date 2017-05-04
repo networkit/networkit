@@ -41,19 +41,19 @@ GCE::GCE(const Graph& G, std::string objective) : SelectiveCommunityDetector(G),
 }
 
 std::map<node, std::set<node> >  GCE::run(std::set<unsigned int>& seeds) {
-    std::map<node, std::set<node> > result;
-    for (auto seed : seeds) {
-        result[seed] = expandSeed(seed);
-    }
-    return result;
+	std::map<node, std::set<node> > result;
+	for (auto seed : seeds) {
+		result[seed] = expandSeed(seed);
+	}
+	return result;
 }
 
 
 template <bool objectiveIsM>
 std::set<node> expandseed_internal(const Graph&G, node s) {
-    /**
-    * Check if set contains node.
-    */
+	/**
+	* Check if set contains node.
+	*/
 	auto in = [](const std::set<node>& A, node x) {
 		return (A.find(x) != A.end());
 	};
@@ -62,7 +62,7 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
 
 	// values per community
 	double intWeight = 0;
-    double extWeight = 0;
+	double extWeight = 0;
 
 	struct node_property_t : ConditionalCount<!objectiveIsM> {
 		double degInt;
@@ -71,14 +71,14 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
 
 	std::unordered_map<node, node_property_t> currentShell;
 
-    double currentQ = 0.0; // current community quality
+	double currentQ = 0.0; // current community quality
 
-    // Current boundary. Stores for every node in the boundary how many neighbors it has outside the community.
-    std::unordered_map<node, count> currentBoundary;
+	// Current boundary. Stores for every node in the boundary how many neighbors it has outside the community.
+	std::unordered_map<node, count> currentBoundary;
 
 #ifndef NDEBUG
-    // The boundary is defined as all nodes of C that have a neighbor not in C
-    auto boundary = [&](const std::set<node>& C) {
+	// The boundary is defined as all nodes of C that have a neighbor not in C
+	auto boundary = [&](const std::set<node>& C) {
 		std::set<node> sh;
 		for (node u : C) {
 			G.forNeighborsOf(u, [&](node v){
@@ -106,21 +106,21 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
 		return std::make_pair(degInt, degExt);
 	};
 
-    auto intExtWeight = [&](const std::set<node>& community) {
-        double internal = 0;
-        double external = 0;
-        for (node u : community) {
-            G.forEdgesOf(u, [&](node, node v, edgeweight ew) {
-                if (in(community, v)) {
-                    internal += ew;
-                } else {
-                    external += ew;
-                }
-            });
-        }
-        internal = internal / 2;    // internal edges were counted twice
-        return std::make_pair(internal, external);
-    };
+	auto intExtWeight = [&](const std::set<node>& community) {
+		double internal = 0;
+		double external = 0;
+		for (node u : community) {
+			G.forEdgesOf(u, [&](node, node v, edgeweight ew) {
+				if (in(community, v)) {
+					internal += ew;
+				} else {
+					external += ew;
+				}
+			});
+		}
+		internal = internal / 2;	// internal edges were counted twice
+		return std::make_pair(internal, external);
+	};
 #endif
 
 	auto addNodeToCommunity = [&](node u) {
@@ -185,21 +185,21 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
 
 	addNodeToCommunity(s);
 
-    /*
-     * objective function M
-     * @return quality difference for the move of v to C
-     */
+	/*
+	 * objective function M
+	 * @return quality difference for the move of v to C
+	 */
 	auto deltaM = [&](node, double degInt, double degExt, const std::set<node>& C){
 		double delta = (intWeight + degInt) / (double) (extWeight - degInt + degExt);
 		return delta - currentQ;
 	};
 
 
-    /*
-     * objective function L
-     * @return quality difference for the move of v to C
-     */
-    auto deltaL = [&](node v, double degInt, double degExt, std::set<node>& C){
+	/*
+	 * objective function L
+	 * @return quality difference for the move of v to C
+	 */
+	auto deltaL = [&](node v, double degInt, double degExt, std::set<node>& C){
 	// Compute difference in boundary size: for each neighbor where we are the last
 	// external neighbor decrease by 1, if v has an external neighbor increase by 1
 	int64_t boundary_diff = 0;
@@ -228,31 +228,31 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
 #endif
 	double numerator = 2.0 * (intWeight + degInt) * (currentBoundary.size() + boundary_diff);
 	double denominator = (C.size() + 1) * (extWeight - degInt + degExt);
-        return (numerator / denominator) - currentQ;
-    };
+		return (numerator / denominator) - currentQ;
+	};
 
-    // select quality objective
-    auto deltaQ = [&](node v, double degInt, double degExt, std::set<node>& C) -> double {
-	if (objectiveIsM) {
-	    return deltaM(v, degInt, degExt, C);
-	} else {
-	    return deltaL(v, degInt, degExt, C);
-	}
-    };
+	// select quality objective
+	auto deltaQ = [&](node v, double degInt, double degExt, std::set<node>& C) -> double {
+		if (objectiveIsM) {
+			return deltaM(v, degInt, degExt, C);
+		} else {
+			return deltaL(v, degInt, degExt, C);
+		}
+	};
 
-    // for M, quality of {s} is 0.0
+	// for M, quality of {s} is 0.0
 
 	double dQMax;
 	node vMax;
 	do {
-        // get values for current community
-        assert(std::make_pair(intWeight, extWeight) == intExtWeight(community));
-        // scan shell for node with maximum quality improvement
+		// get values for current community
+		assert(std::make_pair(intWeight, extWeight) == intExtWeight(community));
+		// scan shell for node with maximum quality improvement
 		dQMax = 0.0; 	// maximum quality improvement
 		vMax = none;
 //		for (node v : shell(community)) {
 		for (const auto& vs : currentShell) {
-            // get values for current node
+			// get values for current node
 			assert(intExtDeg(vs.first, community) == std::make_pair(vs.second.degInt, vs.second.degExt));
 
 			double dQ = deltaQ(vs.first, vs.second.degInt, vs.second.degExt, community);
@@ -266,7 +266,7 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
 		TRACE("dQMax: ", dQMax);
 		if (vMax != none) {
 			addNodeToCommunity(vMax);	// add best node to community
-            currentQ += dQMax;     // update current community quality
+			currentQ += dQMax;	 // update current community quality
 			TRACE("community: ", community);
 		}
 	} while (vMax != none);
@@ -275,13 +275,13 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
 }
 
 std::set<node> GCE::expandSeed(node s) {
-    if (objective == "M") {
-        return expandseed_internal<true>(G, s);
-    } else if (objective == "L") {
-        return expandseed_internal<false>(G, s);
-    } else {
-        throw std::runtime_error("unknown objective function");
-    }
+	if (objective == "M") {
+		return expandseed_internal<true>(G, s);
+	} else if (objective == "L") {
+		return expandseed_internal<false>(G, s);
+	} else {
+		throw std::runtime_error("unknown objective function");
+	}
 };
 
 } /* namespace NetworKit */
