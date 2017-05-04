@@ -13,7 +13,7 @@
 #include "../GraphBuilder.h"
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/NumericTools.h"
-#include "../../graph/DynBFS.h"
+#include "../../distance/DynBFS.h"
 #include "../../auxiliary/Parallel.h"
 
 namespace NetworKit {

@@ -1170,7 +1170,7 @@ cdef class Graph:
 
 # TODO: expose all methods
 
-cdef extern from "cpp/graph/SSSP.h":
+cdef extern from "cpp/distance/SSSP.h":
 	cdef cppclass _SSSP "NetworKit::SSSP"(_Algorithm):
 		_SSSP(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
 		void run() nogil except +
@@ -1240,7 +1240,7 @@ cdef class SSSP(Algorithm):
 	def numberOfPaths(self, t):
 		return (<_SSSP*>(self._this))._numberOfPaths(t)
 
-cdef extern from "cpp/graph/DynSSSP.h":
+cdef extern from "cpp/distance/DynSSSP.h":
 	cdef cppclass _DynSSSP "NetworKit::DynSSSP"(_SSSP):
 		_DynSSSP(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
 		void update(vector[_GraphEvent] batch) except +
@@ -1272,7 +1272,7 @@ cdef class DynSSSP(SSSP):
 		(<_DynSSSP*>(self._this)).setTargetNode(t)
 
 
-cdef extern from "cpp/graph/BFS.h":
+cdef extern from "cpp/distance/BFS.h":
 	cdef cppclass _BFS "NetworKit::BFS"(_SSSP):
 		_BFS(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
 
@@ -1299,7 +1299,7 @@ cdef class BFS(SSSP):
 		self._G = G
 		self._this = new _BFS(G._this, source, storePaths, storeStack, target)
 
-cdef extern from "cpp/graph/DynBFS.h":
+cdef extern from "cpp/distance/DynBFS.h":
 	cdef cppclass _DynBFS "NetworKit::DynBFS"(_DynSSSP):
 		_DynBFS(_Graph G, node source) except +
 
@@ -1324,7 +1324,7 @@ cdef class DynBFS(DynSSSP):
 		self._this = new _DynBFS(G._this, source)
 
 
-cdef extern from "cpp/graph/Dijkstra.h":
+cdef extern from "cpp/distance/Dijkstra.h":
 	cdef cppclass _Dijkstra "NetworKit::Dijkstra"(_SSSP):
 		_Dijkstra(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
 
@@ -1354,7 +1354,7 @@ cdef class Dijkstra(SSSP):
 		self._G = G
 		self._this = new _Dijkstra(G._this, source, storePaths, storeStack, target)
 
-cdef extern from "cpp/graph/DynDijkstra.h":
+cdef extern from "cpp/distance/DynDijkstra.h":
 	cdef cppclass _DynDijkstra "NetworKit::DynDijkstra"(_DynSSSP):
 		_DynDijkstra(_Graph G, node source) except +
 
@@ -5528,12 +5528,16 @@ cdef class TopCloseness:
 	Finds the top k nodes with highest closeness centrality faster than computing it for all nodes, based on "Computing Top-k Closeness Centrality Faster in Unweighted Graphs", Bergamini et al., ALENEX16.
 	The algorithms is based on two independent heuristics, described in the referenced paper. We recommend to use first_heu = true and second_heu = false for complex networks and first_heu = true and second_heu = true for street networks or networks with large diameters.
 
+	TopCloseness(G, k=1, first_heu=True, sec_heu=True)
+
 	Parameters
 	----------
 	G: An unweighted graph.
 	k: Number of nodes with highest closeness that have to be found. For example, if k = 10, the top 10 nodes with highest closeness will be computed.
 	first_heu: If true, the neighborhood-based lower bound is computed and nodes are sorted according to it. If false, nodes are simply sorted by degree.
 	sec_heu: If true, the BFSbound is re-computed at each iteration. If false, BFScut is used.
+	The worst case running time of the algorithm is O(nm), where n is the number of nodes and m is the number of edges.
+	However, for most networks the empirical running time is O(m).
 	"""
 	cdef _TopCloseness* _this
 	cdef Graph _G
@@ -5576,7 +5580,8 @@ cdef extern from "cpp/centrality/DegreeCentrality.h":
 
 cdef class DegreeCentrality(Centrality):
 	""" Node centrality index which ranks nodes by their degree.
- 	Optional normalization by maximum degree.
+ 	Optional normalization by maximum degree. The run() method runs in O(m) time, where m is the number of
+	edges in the graph.
 
  	DegreeCentrality(G, normalized=False)
 
@@ -5607,7 +5612,8 @@ cdef class Betweenness(Centrality):
 		Betweenness(G, normalized=False, computeEdgeCentrality=False)
 
 		Constructs the Betweenness class for the given Graph `G`. If the betweenness scores should be normalized,
-  		then set `normalized` to True.
+  	then set `normalized` to True. The run() method takes O(nm) time, where n is the number
+	 	of nodes and m is the number of edges of the graph.
 
 	 	Parameters
 	 	----------
@@ -5644,7 +5650,8 @@ cdef class Closeness(Centrality):
 		Closeness(G, normalized=False, checkConnectedness=True)
 
 		Constructs the Closeness class for the given Graph `G`. If the Closeness scores should be normalized,
-  		then set `normalized` to True.
+  		then set `normalized` to True. The run() method takes O(nm) time, where n is the number
+	 	 of nodes and m is the number of edges of the graph. NOTICE: the graph has to be connected.
 
 	 	Parameters
 	 	----------
@@ -5679,6 +5686,7 @@ cdef class KPathCentrality(Centrality):
 			tradeoff between runtime and precision
 			-0.5: maximum precision, maximum runtime
 	 		 0.5: lowest precision, lowest runtime
+		k: maximum length of paths
 	"""
 
 	def __cinit__(self, Graph G, alpha=0.2, k=0):
@@ -5694,7 +5702,10 @@ cdef class KatzCentrality(Centrality):
 	"""
 		KatzCentrality(G, alpha=5e-4, beta=0.1, tol=1e-8)
 
-		Constructs a KatzCentrality object for the given Graph `G`
+		Constructs a KatzCentrality object for the given Graph `G`.
+		Each iteration of the algorithm requires O(m) time.
+		The number of iterations depends on how long it takes to reach the convergence
+		(and therefore on the desired tolerance `tol`).
 
 	 	Parameters
 	 	----------
@@ -5728,7 +5739,10 @@ cdef class ApproxBetweenness(Centrality):
 
  	The algorithm approximates the betweenness of all vertices so that the scores are
 	within an additive error epsilon with probability at least (1- delta).
-	The values are normalized by default.
+	The values are normalized by default. The run() method takes O(m) time per sample, where  m is
+	the number of edges of the graph. The number of samples is proportional to universalConstant/epsilon^2.
+	Although this algorithm has a theoretical guarantee, the algorithm implemented in Estimate Betweenness usually performs better in practice
+	Therefore, we recommend to use EstimateBetweenness if no theoretical guarantee is needed.
 
 	Parameters
 	----------
@@ -5738,13 +5752,6 @@ cdef class ApproxBetweenness(Centrality):
 		maximum additive error
 	delta : double, optional
 		probability that the values are within the error guarantee
-	diameterSamples: count, optional
-		if 0 (the default), use the possibly slow estimation of the
-		vertex diameter which definitely  guarantees approximation
-		quality. Otherwise, use a fast heuristic that has a higher
-		chance of getting the estimate right the higher the number of
-		samples (note: there is no approximation guarantee when using
-		the heuristic).
 	universalConstant: double, optional
 		the universal constant to be used in computing the sample size.
 		It is 1 by default. Some references suggest using 0.5, but there
@@ -5769,10 +5776,14 @@ cdef class EstimateBetweenness(Centrality):
 	""" Estimation of betweenness centrality according to algorithm described in
 	Sanders, Geisberger, Schultes: Better Approximation of Betweenness Centrality
 
-	EstimateBetweenness(G, nSamples, normalized=False)
+	EstimateBetweenness(G, nSamples, normalized=False, parallel=False)
 
 	The algorithm estimates the betweenness of all nodes, using weighting
-	of the contributions to avoid biased estimation.
+	of the contributions to avoid biased estimation. The run() method takes O(m)
+	time per sample, where  m is the number of edges of the graph. There is no proven
+	theoretical guarantee on the quality of the approximation. However, the algorithm
+  was shown to perform well in practice.
+  If a guarantee is required, use ApproxBetweenness.
 
 	Parameters
 	----------
@@ -5966,7 +5977,7 @@ cdef extern from "cpp/centrality/LocalClusteringCoefficient.h":
 
 cdef class LocalClusteringCoefficient(Centrality):
 	"""
-		LocalClusteringCoefficient(G, normalized=False, computeEdgeCentrality=False)
+		LocalClusteringCoefficient(G, turbo=False)
 
 		Constructs the LocalClusteringCoefficient class for the given Graph `G`. If the local clustering coefficient values should be normalized,
 		then set `normalized` to True. The graph may not contain self-loops.
@@ -5978,7 +5989,7 @@ cdef class LocalClusteringCoefficient(Centrality):
 		with nodes of very high degree and a very skewed degree distribution.
 
 		[0] Triangle Listing Algorithms: Back from the Diversion
-		Mark Ortmann and Ulrik Brandes                                                                          *
+		Mark Ortmann and Ulrik Brandes
 		2014 Proceedings of the Sixteenth Workshop on Algorithm Engineering and Experiments (ALENEX). 2014, 1-8
 
 	 	Parameters
@@ -6027,8 +6038,9 @@ cdef extern from "cpp/centrality/DynApproxBetweenness.h":
 		count getNumberOfSamples() except +
 
 cdef class DynApproxBetweenness:
-	""" New dynamic algorithm for the approximation of betweenness centrality with
-	a guaranteed error
+	""" The algorithm approximates the betweenness of all vertices so that the scores are
+	  within an additive error @a epsilon with probability at least (1- @a delta).
+	  The values are normalized by default.
 
 	DynApproxBetweenness(G, epsilon=0.01, delta=0.1, storePredecessors=True, universalConstant=1.0)
 
@@ -6172,6 +6184,9 @@ cdef extern from "cpp/centrality/LocalPartitionCoverage.h":
 cdef class LocalPartitionCoverage(Centrality):
 	"""
 	The local partition coverage is the amount of neighbors of a node u that are in the same partition as u.
+	The running time of the run() method is O(m), where m is the number of edges in the graph.
+
+	LocalPartitionCoverage(G, P)
 
 	Parameters
 	----------
@@ -6620,7 +6635,7 @@ cdef class MatchingCoarsening(GraphCoarsening):
 cdef extern from "cpp/scd/PageRankNibble.h":
 	cdef cppclass _PageRankNibble "NetworKit::PageRankNibble":
 		_PageRankNibble(_Graph G, double alpha, double epsilon) except +
-		map[node, set[node]] run(set[unsigned int] seeds) except +
+		map[node, set[node]] run(set[node] seeds) except +
 
 cdef class PageRankNibble:
 	"""
@@ -6640,7 +6655,7 @@ cdef class PageRankNibble:
 		self._G = G
 		self._this = new _PageRankNibble(G._this, alpha, epsilon)
 
-	def run(self, set[unsigned int] seeds):
+	def run(self, set[node] seeds):
 		"""
 		Produces a cut around a given seed node.
 
@@ -6653,7 +6668,7 @@ cdef class PageRankNibble:
 cdef extern from "cpp/scd/GCE.h":
 	cdef cppclass _GCE "NetworKit::GCE":
 		_GCE(_Graph G, string quality) except +
-		map[node, set[node]] run(set[unsigned int] seeds) except +
+		map[node, set[node]] run(set[node] seeds) except +
 
 cdef class GCE:
 	"""
@@ -6670,7 +6685,7 @@ cdef class GCE:
 		self._G = G
 		self._this = new _GCE(G._this, stdstring(quality))
 
-	def run(self, set[unsigned int] seeds):
+	def run(self, set[node] seeds):
 		"""
 		Produces a cut around a given seed node.
 
@@ -8928,12 +8943,15 @@ cdef extern from "cpp/centrality/SpanningEdgeCentrality.h":
 
 cdef class SpanningEdgeCentrality:
 	""" Computes the Spanning Edge centrality for the edges of the graph.
+
+	SpanningEdgeCentrality(G, tol = 0.1)
+
 	Parameters
 	----------
 	G : Graph
 		The graph.
 	tol: double
-		Tolerance used for the approximation
+		Tolerance used for the approximation: with probability at least 1-1/n, the approximated scores are within a factor 1+tol from the exact scores.
 	"""
 	cdef _SpanningEdgeCentrality* _this
 	cdef Graph _G
@@ -8943,16 +8961,19 @@ cdef class SpanningEdgeCentrality:
 	def __dealloc__(self):
 		del self._this
 	def run(self):
-		""" This method computes Spanning Edge Centrality exactly. """
+		""" This method computes Spanning Edge Centrality exactly. This solves a linear system for each edge, so the empirical running time is O(m^2),
+				where m is the number of edges in the graph."""
 		with nogil:
 			self._this.run()
 		return self
 	def runApproximation(self):
-		""" Computes approximation of the Spanning Edge Centrality. """
+		""" Computes approximation of the Spanning Edge Centrality. This solves k linear systems, where k is log(n)/(tol^2). The empirical running time is O(km), where n is the number of nodes
+ 	 			and m is the number of edges. """
 		return self._this.runApproximation()
 
 	def runParallelApproximation(self):
-		""" Computes approximation (in parallel) of the Spanning Edge Centrality. """
+		""" Computes approximation (in parallel) of the Spanning Edge Centrality. This solves k linear systems, where k is log(n)/(tol^2). The empirical running time is O(km), where n is the number of nodes
+ 	 			and m is the number of edges."""
 		return self._this.runParallelApproximation()
 
 	def scores(self):

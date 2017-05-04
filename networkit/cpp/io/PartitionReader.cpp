@@ -29,7 +29,9 @@ Partition PartitionReader::read(std::string path) {
 		index c = std::atoi(line.c_str());
 		// extend the partition by one entry and store the cluster id
 		zeta[zeta.extend()] = c;
-		omega = std::max(c, omega);
+		if (c != none) {
+			omega = std::max(c, omega);
+		}
 	}
 
 	zeta.setUpperBound(omega+1);

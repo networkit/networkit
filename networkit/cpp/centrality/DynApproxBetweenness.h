@@ -11,7 +11,7 @@
 #include "Centrality.h"
 #include "DynCentrality.h"
 #include "../dynamics/GraphEvent.h"
-#include "../graph/DynSSSP.h"
+#include "../distance/DynSSSP.h"
 
 #include <math.h>
 #include <algorithm>

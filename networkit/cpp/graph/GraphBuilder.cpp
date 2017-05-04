@@ -385,7 +385,7 @@ void GraphBuilder::toGraphSequential(Graph &G) {
 }
 
 void GraphBuilder::setDegrees(Graph& G) {
-	#pragma omp parallel for
+	#pragma omp parallel for if(n > (1<<20))
 	for (node v = 0; v < n; v++) {
 		G.outDeg[v] = G.outEdges[v].size();
 		if (G.isDirected()) {
@@ -396,7 +396,7 @@ void GraphBuilder::setDegrees(Graph& G) {
 
 count GraphBuilder::numberOfEdges(const Graph& G) {
 	count m = 0;
-	#pragma omp parallel for reduction(+:m)
+	#pragma omp parallel for reduction(+:m) if(n > (1<<20))
 	for (node v = 0; v < G.z; v++) {
 		m += G.degree(v);
 	}

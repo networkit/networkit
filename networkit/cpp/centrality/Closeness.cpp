@@ -12,9 +12,9 @@
 #include "Closeness.h"
 #include "../auxiliary/PrioQueue.h"
 #include "../auxiliary/Log.h"
-#include "../graph/SSSP.h"
-#include "../graph/Dijkstra.h"
-#include "../graph/BFS.h"
+#include "../distance/SSSP.h"
+#include "../distance/Dijkstra.h"
+#include "../distance/BFS.h"
 #include "../components/ConnectedComponents.h"
 
 

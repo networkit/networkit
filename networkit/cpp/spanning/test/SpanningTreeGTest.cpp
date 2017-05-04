@@ -10,7 +10,7 @@
 #include "../RandomSpanningTree.h"
 #include "../../graph/Graph.h"
 #include "../../graph/Sampling.h"
-#include "../../graph/BFS.h"
+#include "../../distance/BFS.h"
 #include "../../io/METISGraphReader.h"
 #include <cmath>
 #include "omp.h"

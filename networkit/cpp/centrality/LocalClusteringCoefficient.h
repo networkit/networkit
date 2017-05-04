@@ -19,7 +19,7 @@ class LocalClusteringCoefficient: public NetworKit::Centrality {
 public:
 	/**
 	 * Constructs the LocalClusteringCoefficient class for the given Graph @a G. If the local clustering coefficient scores should be normalized,
-	 * then set @a normalized to <code>true</code>. The graph may not contain self-loops. 
+	 * then set @a normalized to <code>true</code>. The graph may not contain self-loops.
 	 *
 	 * There are two algorithms available. The trivial (parallel) algorithm needs only a small amount of additional memory.
 	 * The turbo mode adds a (sequential, but fast) pre-processing step using ideas from [0]. This reduces the running time
@@ -33,15 +33,15 @@ public:
 	 *
 	 * @param G The graph.
 	 * @param turbo If the turbo mode shall be activated.
+	 * TODO running time
 	 */
 	LocalClusteringCoefficient(const NetworKit::Graph &G, bool turbo = false);
 
 
 
 	/**
-	* Compute the local clustering coefficient.
-	*
-	*/
+	 * Computes the local clustering coefficient on the graph passed in constructor.
+	 */
 	void run() override;
 
 

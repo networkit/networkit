@@ -9,7 +9,7 @@
 #define CONNECTEDCOMPONENTS_H_
 
 #include "../graph/Graph.h"
-#include "../graph/BFS.h"
+#include "../distance/BFS.h"
 #include "../structures/Partition.h"
 #include "../base/Algorithm.h"
 #include <unordered_set>

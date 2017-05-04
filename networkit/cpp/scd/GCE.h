@@ -29,7 +29,7 @@ public:
 	GCE(const Graph& G, std::string objective);
 
 
-	std::map<node, std::set<node> >  run(std::set<unsigned int>& seeds) override;
+	std::map<node, std::set<node> >  run(const std::set<node>& seeds) override;
 
 	/**
 	 * @param[in]	s	seed node

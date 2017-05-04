@@ -134,6 +134,8 @@ TEST_F(GeneratorsGTest, viewDynamicBarabasiAlbertGenerator) {
 }
 
 TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
+	Aux::Random::setSeed(42, false);
+
 	count n = 1800;
 	count numCluster = 24;
 	count maxNumNeighbors = 36;
@@ -158,7 +160,7 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 	psWriter.write(G, oneClustering, "output/pubweb.eps");
 
 	// clustering
-	PLM clusterAlgo(G);
+	PLM clusterAlgo(G, false, 1.0, "none randomized");
 	clusterAlgo.run();
 	Partition clustering = clusterAlgo.getPartition();
 	EXPECT_EQ(G.numberOfNodes(),clustering.numberOfElements());

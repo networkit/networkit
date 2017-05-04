@@ -7,9 +7,9 @@
 
 
 #include "EstimateBetweenness.h"
-#include "../graph/BFS.h"
-#include "../graph/Dijkstra.h"
-#include "../graph/SSSP.h"
+#include "../distance/BFS.h"
+#include "../distance/Dijkstra.h"
+#include "../distance/SSSP.h"
 #include "../auxiliary/SignalHandling.h"
 #include "../auxiliary/Parallelism.h"
 

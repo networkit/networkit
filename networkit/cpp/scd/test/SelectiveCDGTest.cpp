@@ -16,7 +16,7 @@ TEST_F(SCDGTest2, testPageRankNibble) {
 	Graph G = reader.read("input/hep-th.graph");
 	// parameters
 	node seed = 50;
-	std::set<unsigned int> seeds = {(unsigned int) seed};
+	std::set<node> seeds = {seed};
 	double alpha = 0.1; // loop (or teleport) probability, changed due to DGleich from: // phi * phi / (225.0 * log(100.0 * sqrt(m)));
 	double epsilon = 1e-5; // changed due to DGleich from: pow(2, exponent) / (48.0 * B);
 

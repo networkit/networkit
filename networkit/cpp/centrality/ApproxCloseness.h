@@ -28,7 +28,8 @@ public:
 	 * The @a epsilon parameter (standard = 0.1) is used to control the switch between sampling and pivoting.
 	 * Using @a epsilon = 0, the algorithm only uses sampling. (see Cohen, Edith, et al.
 	 * "Computing classic closeness centrality, at scale." Proceedings of the second ACM conference on Online social
-	 * networks. ACM, 2014.). Notice: the input graph has to be connected.
+	 * networks. ACM, 2014.). The running time is proportional to nSamples * m, where m is  the number of edges.
+	 * Notice: the input graph has to be connected.
 	 * @param	graph		input graph
 	 * @param	nSamples	user defined number of samples
 	 * @param 	epsilon		Value in [0, infty) controlling the switch between sampling and pivoting. When using 0, only sampling is used. Standard is 0.1.
@@ -39,9 +40,8 @@ public:
 
 
 	/**
-	* Compute closeness scores parallel
-	*
-	*/
+	 * Computes closeness approximation on the graph passed in constructor.
+	 */
 	void run() override;
 
 	/**

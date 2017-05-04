@@ -39,11 +39,11 @@ public:
 	 *        communities.
 	 * @param eps Tolerance threshold for approximation of PageRank vectors.
 	 */
-	PageRankNibble(Graph& g, double alpha, double epsilon);
+	PageRankNibble(const Graph& g, double alpha, double epsilon);
 
 	virtual ~PageRankNibble();
 
-	virtual std::map<node, std::set<node> >  run(std::set<unsigned int>& seeds);
+	virtual std::map<node, std::set<node> >  run(const std::set<node>& seeds) override;
 
 
 		/**

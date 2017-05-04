@@ -34,8 +34,14 @@ public:
 	 */
 	PageRank(const Graph& G, double damp=0.85, double tol = 1e-8);
 
+	/**
+	 * Computes page rank on the graph passed in constructor.
+	 */
 	virtual void run();
 
+	/**
+	 * Returns upper bound on the page rank: 1.0. This could be tighter by assuming e.g. a star graph with n nodes.
+	 */
 	virtual double maximum();
 };
 

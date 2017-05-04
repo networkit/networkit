@@ -38,13 +38,13 @@ public:
 	 * @param G The graph.
 	 * @param alpha tradeoff between precision and runtime.
 	 * @param k maximum length of paths.
+	 * TODO running times
 	 */
 	KPathCentrality(const Graph& G, double alpha=0.2, count k=0);
 
 	/**
-	* Compute K-Path scores sequential.
-	*
-	*/
+	 * Computes k-path centrality on the graph passed in constructor.
+	 */
 	void run() override;
 
 };
