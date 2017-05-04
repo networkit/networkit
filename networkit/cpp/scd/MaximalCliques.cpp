@@ -3,6 +3,26 @@
 #include <cassert>
 #include <algorithm>
 
+namespace {
+	using NetworKit::node;
+	using NetworKit::index;
+
+	struct SwapFunctor {
+		std::vector<node> &pxvector;
+		std::vector<node> &pxlookup;
+
+		SwapFunctor(std::vector<node> &pxvector, std::vector<index>& pxlookup) : pxvector(pxvector), pxlookup(pxlookup) {
+		}
+
+		void operator()(node u, index pos) {
+			node pxvec2 = pxvector[pos];
+			std::swap(pxvector[pxlookup[u]], pxvector[pos]);
+			pxlookup[pxvec2] = pxlookup[u];
+			pxlookup[u] = pos;
+		}
+	};
+}
+
 namespace NetworKit {
 
 MaximalCliques::MaximalCliques(const Graph& G) : G(G) {
@@ -17,6 +37,9 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 
 	std::vector<node> pxvector(G.numberOfNodes());
 	std::vector<index> pxlookup(G.upperNodeIdBound());
+	
+	SwapFunctor swapNodeToPos(pxvector, pxlookup);
+
 	uint32_t ii = 0;
 	for (const node u : orderedNodes) {
 		pxvector[ii] = u;
@@ -32,10 +55,7 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 
 	uint32_t xpbound = 1;
 	for (const node& u : orderedNodes) {
-		auto pxvec2 = pxvector[xpbound - 1];
-		std::swap(pxvector[pxlookup[u]], pxvector[xpbound - 1]);
-		pxlookup[pxvec2] = pxlookup[u];
-		pxlookup[u] = xpbound - 1;
+		swapNodeToPos(u, xpbound-1);
 
 		#ifndef NDEBUG
 		for (auto v : orderedNodes) {
@@ -59,16 +79,10 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 			#endif
 
 			if (pxlookup[v] < xpbound) { // v is in X
-				auto pxvec2 = pxvector[xpbound - xcount - 1];
-				std::swap(pxvector[pxlookup[v]], pxvector[xpbound - xcount - 1]);
-				pxlookup[pxvec2] = pxlookup[v];
-				pxlookup[v] = xpbound - xcount - 1;
+				swapNodeToPos(v, xpbound - xcount - 1);
 				xcount += 1;
 			} else { // v is in P
-				auto pxvec2 = pxvector[xpbound + pcount];
-				std::swap(pxvector[pxlookup[v]], pxvector[xpbound + pcount]);
-				pxlookup[pxvec2] = pxlookup[v];
-				pxlookup[v] = xpbound + pcount;
+				swapNodeToPos(v, xpbound + pcount);
 				pcount += 1;
 			}
 		});
@@ -104,6 +118,8 @@ void MaximalCliques::tomita(std::vector<node>& pxvector, std::vector<index>& pxl
 		return;
 	}
 
+	SwapFunctor swapNodeToPos(pxvector, pxlookup);
+
 	#ifndef NDEBUG
 	assert(xbound >= 0);
 	assert(xbound <= xpbound);
@@ -127,16 +143,10 @@ void MaximalCliques::tomita(std::vector<node>& pxvector, std::vector<index>& pxl
 		uint32_t xcount = 0, pcount = 0;
 		G.forNeighborsOf(pxveci, [&] (node v) {
 			if (pxlookup[v] < xpbound && pxlookup[v] >= xbound) { // v is in X
-				auto pxvec2 = pxvector[xpbound - xcount - 1];
-				std::swap(pxvector[pxlookup[v]], pxvector[xpbound - xcount - 1]);
-				pxlookup[pxvec2] = pxlookup[v];
-				pxlookup[v] = xpbound - xcount - 1;
+				swapNodeToPos(v, xpbound - xcount - 1);
 				xcount += 1;
 			} else if (pxlookup[v] >= xpbound && pxlookup[v] < pbound){ // v is in P
-				auto pxvec2 = pxvector[xpbound + pcount];
-				std::swap(pxvector[pxlookup[v]], pxvector[xpbound + pcount]);
-				pxlookup[pxvec2] = pxlookup[v];
-				pxlookup[v] = xpbound + pcount;
+				swapNodeToPos(v, xpbound + pcount);
 				pcount += 1;
 			}
 		});
@@ -152,12 +162,10 @@ void MaximalCliques::tomita(std::vector<node>& pxvector, std::vector<index>& pxl
 
 		r.pop_back();
 
-		auto pxvec2 = pxvector[xpbound];
-		std::swap(pxvector[pxlookup[pxveci]], pxvector[xpbound]);
-		pxlookup[pxvec2] = pxlookup[pxveci];
-		pxlookup[pxveci] = xpbound;
+		swapNodeToPos(pxveci, xpbound);
 		xpbound += 1;
-		movedNodes.push_back(pxvector[xpbound - 1]);
+		assert(pxvector[xpbound - 1] == pxveci);
+		movedNodes.push_back(pxveci);
 	}
 	
 	for (node v : movedNodes) {
