@@ -141,15 +141,16 @@ void MaximalCliques::tomita(std::vector<node>& pxvector, std::vector<index>& pxl
 			}
 		});
 
-		std::vector<node> rplusv(r);
-		rplusv.push_back(pxveci);
+		r.push_back(pxveci);
 
 		#ifndef NDEBUG
 		assert(xpbound + pcount <= pbound);
 		assert(xpbound - xcount >= xbound);
 		#endif
 
-		tomita(pxvector, pxlookup, xpbound - xcount, xpbound, xpbound + pcount, rplusv, result);
+		tomita(pxvector, pxlookup, xpbound - xcount, xpbound, xpbound + pcount, r, result);
+
+		r.pop_back();
 
 		auto pxvec2 = pxvector[xpbound];
 		std::swap(pxvector[pxlookup[pxveci]], pxvector[xpbound]);
