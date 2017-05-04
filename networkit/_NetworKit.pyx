@@ -5802,7 +5802,7 @@ cdef class EstimateBetweenness(Centrality):
 
 
 cdef class ApproxBetweenness2(Centrality):
-	""" DEPRECATED: Use EstimateBetweeness instead.
+	""" DEPRECATED: Use EstimateBetweenness instead.
         
 	Estimation of betweenness centrality according to algorithm described in
 	Sanders, Geisberger, Schultes: Better Approximation of Betweenness Centrality
@@ -5830,7 +5830,7 @@ cdef class ApproxBetweenness2(Centrality):
 
 	def __cinit__(self, Graph G, nSamples, normalized=False, parallel=False):
 		from warnings import warn
-		warn("ApproxBetweeness2 is deprecated; use EstimateBetweeness instead.", DeprecationWarning)
+		warn("ApproxBetweenness2 is deprecated; use EstimateBetweenness instead.", DeprecationWarning)
 		self._G = G
 		self._this = new _EstimateBetweenness(G._this, nSamples, normalized, parallel)
 

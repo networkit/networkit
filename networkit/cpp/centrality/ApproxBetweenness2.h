@@ -11,7 +11,7 @@
 
 namespace NetworKit {
 
-typedef EstimateBetweeness ApproxBetweeness2 __attribute__((deprecated("ApproxBetweeness2 is deprecated; use EstimateBetweeness instead.")));
+typedef EstimateBetweenness ApproxBetweenness2 __attribute__((deprecated("ApproxBetweenness2 is deprecated; use EstimateBetweenness instead.")));
 
 } /* namespace NetworKit */
 
