@@ -5477,21 +5477,43 @@ cdef class Centrality(Algorithm):
 		self._G = None # just to be sure the graph is deleted
 
 	def scores(self):
+		"""
+		Returns
+		-------
+		list
+			the list of all scores
+		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_Centrality*>(self._this)).scores()
 
 	def score(self, v):
+		"""
+		Returns
+		-------
+		the score of node v
+		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_Centrality*>(self._this)).score(v)
 
 	def ranking(self):
+		"""
+		Returns
+		-------
+		dictionary
+			a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
+		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_Centrality*>(self._this)).ranking()
 
 	def maximum(self):
+		"""
+		Returns
+		-------
+		the maximum theoretical centrality score for the given graph
+		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_Centrality*>(self._this)).maximum()
