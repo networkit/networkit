@@ -8,6 +8,28 @@
 #include "GCE.h"
 #include <unordered_map>
 
+namespace {
+	template <bool> struct ConditionalCount {
+		void increaseNumBoundaryNeighbors() {}
+		void decreaseNumBoundaryNeighbors() {}
+		NetworKit::count getNumBoundaryNeighbors() {
+			throw std::logic_error("Error, num boundary neighbors not available in false branch");
+		}
+	};
+	template <> struct ConditionalCount<true> {
+		NetworKit::count numBoundaryNeighbors;
+		void increaseNumBoundaryNeighbors() {
+			numBoundaryNeighbors += 1;
+		}
+		void decreaseNumBoundaryNeighbors() {
+			assert(numBoundaryNeighbors > 0);
+			numBoundaryNeighbors -= 1;
+		}
+		NetworKit::count getNumBoundaryNeighbors() {
+			return numBoundaryNeighbors;
+		}
+	};
+}
 
 namespace NetworKit {
 
@@ -42,7 +64,7 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
 	double intWeight = 0;
     double extWeight = 0;
 
-	struct node_property_t {
+	struct node_property_t : ConditionalCount<!objectiveIsM> {
 		double degInt;
 		double degExt;
 	};
@@ -106,19 +128,28 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
 
 		currentShell.erase(u);	// remove node from shell
 
+		node boundaryNeighbor = none; // for L: if u is in the boundary and has only one neighbor outside of the community, store it here.
+		auto boundaryIt = currentBoundary.end();
+
 		G.forNeighborsOf(u, [&](node, node v, edgeweight ew) { // insert external neighbors of u into shell
 			if (!in(community, v)) {
 				auto it = currentShell.find(v);
 				if (it == currentShell.end()) {
-					currentShell.insert(std::make_pair(v, node_property_t {.degInt = ew, .degExt = G.weightedDegree(v) - ew}));
-				} else {
-					it->second.degInt += ew;
-					it->second.degExt -= ew;
+					std::tie(it, std::ignore) = currentShell.insert({v, node_property_t {}});
+					it->second.degExt = G.weightedDegree(v);
 				}
+
+				it->second.degInt += ew;
+				it->second.degExt -= ew;
 
 				extWeight += ew;
 				if (!objectiveIsM) {
-					currentBoundary[u] += 1;
+					if (boundaryIt == currentBoundary.end()) {
+						std::tie(boundaryIt, std::ignore) = currentBoundary.insert({u, 0});
+						boundaryNeighbor = v;
+					}
+
+					++boundaryIt->second;
 				}
 
 				assert(intExtDeg(v, community) == std::make_pair(currentShell[v].degInt, currentShell[v].degExt));
@@ -129,6 +160,13 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
 					it->second -= 1;
 					if (it->second == 0) {
 						currentBoundary.erase(it);
+					} else if (it->second == 1) {
+						G.forNeighborsOf(v, [&](node x) {
+							auto it = currentShell.find(x);
+							if (it != currentShell.end()) {
+								it->second.increaseNumBoundaryNeighbors();
+							}
+						});
 					}
 				}
 
@@ -136,6 +174,12 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
 				extWeight -= ew;
 			}
 		});
+
+		if (!objectiveIsM && boundaryIt != currentBoundary.end() && boundaryIt->second == 1) {
+			assert(boundaryNeighbor != none);
+			currentShell[boundaryNeighbor].increaseNumBoundaryNeighbors();
+		}
+
 		assert(objectiveIsM || boundary(community).size() == currentBoundary.size());
 	};
 
@@ -159,18 +203,29 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
 	// Compute difference in boundary size: for each neighbor where we are the last
 	// external neighbor decrease by 1, if v has an external neighbor increase by 1
 	int64_t boundary_diff = 0;
+	if (degExt > 0) {
+		boundary_diff += 1;
+	}
+
+	boundary_diff -= currentShell[v].getNumBoundaryNeighbors();
+
+#ifndef NDEBUG
+	int64_t boundary_diff_debug = 0;
 	bool v_in_boundary = false;
 	G.forNeighborsOf(v, [&](node x) {
-	    auto it = currentBoundary.find(x);
-	    if (it != currentBoundary.end()) {
-		if (it->second == 1) {
-		    boundary_diff -= 1;
+		auto it = currentBoundary.find(x);
+		if (it != currentBoundary.end()) {
+			if (it->second == 1) {
+				boundary_diff_debug -= 1;
+			}
+		} else if (!v_in_boundary) {
+			boundary_diff_debug += 1;
+			v_in_boundary = true;
 		}
-	    } else if (!v_in_boundary) {
-		boundary_diff += 1;
-		v_in_boundary = true;
-	    }
 	});
+
+	assert(boundary_diff == boundary_diff_debug);
+#endif
 	double numerator = 2.0 * (intWeight + degInt) * (currentBoundary.size() + boundary_diff);
 	double denominator = (C.size() + 1) * (extWeight - degInt + degExt);
         return (numerator / denominator) - currentQ;
