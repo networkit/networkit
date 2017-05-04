@@ -5767,6 +5767,47 @@ cdef class ApproxBetweenness(Centrality):
 
 
 
+cdef class ApproxBetweenness2(Centrality):
+        """ DEPRECATED: Please use ApproxBetweeness instead.
+ 	
+	Approximation of betweenness centrality according to algorithm described in
+        Matteo Riondato and Evgenios M. Kornaropoulos: Fast Approximation of Betweenness Centrality through Sampling
+
+ 	ApproxBetweenness2(G, epsilon=0.01, delta=0.1, universalConstant=1.0)
+
+ 	The algorithm approximates the betweenness of all vertices so that the scores are
+	within an additive error epsilon with probability at least (1- delta).
+	The values are normalized by default. The run() method takes O(m) time per sample, where  m is
+	the number of edges of the graph. The number of samples is proportional to universalConstant/epsilon^2.
+	Although this algorithm has a theoretical guarantee, the algorithm implemented in Estimate Betweenness usually performs better in practice
+	Therefore, we recommend to use EstimateBetweenness if no theoretical guarantee is needed.
+
+	Parameters
+	----------
+	G : Graph
+		the graph
+	epsilon : double, optional
+		maximum additive error
+	delta : double, optional
+		probability that the values are within the error guarantee
+	universalConstant: double, optional
+		the universal constant to be used in computing the sample size.
+		It is 1 by default. Some references suggest using 0.5, but there
+		is no guarantee in this case.
+	"""
+
+	def __cinit__(self, Graph G, epsilon=0.1, delta=0.1, universalConstant=1.0):
+		from warnings import warn
+		warn("ApproxBetweeness2 is deprecated; use ApproxBetweeness instead.", DeprecationWarning)
+		self._G = G
+		self._this = new _ApproxBetweenness(G._this, epsilon, delta, universalConstant)
+
+	def numberOfSamples(self):
+		return (<_ApproxBetweenness*>(self._this)).numberOfSamples()
+
+
+
+
 cdef extern from "cpp/centrality/EstimateBetweenness.h":
 	cdef cppclass _EstimateBetweenness"NetworKit::EstimateBetweenness" (_Centrality):
 		_EstimateBetweenness(_Graph, count, bool, bool) except +
