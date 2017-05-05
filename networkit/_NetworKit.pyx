@@ -6175,6 +6175,100 @@ cdef class DynApproxBetweenness:
 		"""
 		return self._this.getNumberOfSamples()
 
+cdef extern from "cpp/centrality/DynBetweenness.h":
+	cdef cppclass _DynBetweenness "NetworKit::DynBetweenness":
+		_DynBetweenness(_Graph) except +
+		void run() nogil except +
+		void update(_GraphEvent) except +
+		void updateBatch(vector[_GraphEvent]) except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class DynBetweenness:
+	""" The algorithm computes the betweenness centrality of all nodes
+			and updates them after an edge insertion.
+
+	DynBetweenness(G)
+
+	Parameters
+	----------
+	G : Graph
+		the graph
+	"""
+	cdef _DynBetweenness* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _DynBetweenness(G._this)
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		with nogil:
+			self._this.run()
+		return self
+
+	def update(self, ev):
+		""" Updates the betweenness centralities after the edge insertions.
+
+		Parameters
+		----------
+		ev : GraphEvent.
+		"""
+		self._this.update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+
+	def updateBatch(self, batch):
+		""" Updates the betweenness centralities after the batch `batch` of edge insertions.
+
+		Parameters
+		----------
+		batch : list of GraphEvent.
+		"""
+		cdef vector[_GraphEvent] _batch
+		for ev in batch:
+			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+		self._this.updateBatch(_batch)
+
+	def scores(self):
+		""" Get a vector containing the betweenness score for each node in the graph.
+
+		Returns
+		-------
+		vector
+			The betweenness scores calculated by run().
+		"""
+		return self._this.scores()
+
+	def score(self, v):
+		""" Get the betweenness score of node `v` calculated by run().
+
+		Parameters
+		----------
+		v : node
+			A node.
+
+		Returns
+		-------
+		double
+			The betweenness score of node `v.
+		"""
+		return self._this.score(v)
+
+	def ranking(self):
+		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
+		calculated by run().
+
+		Returns
+		-------
+		vector
+			A vector of pairs.
+		"""
+		return self._this.ranking()
+
 cdef extern from "cpp/centrality/PermanenceCentrality.h":
 	cdef cppclass _PermanenceCentrality "NetworKit::PermanenceCentrality":
 		_PermanenceCentrality(const _Graph& G, const _Partition& P) except +
