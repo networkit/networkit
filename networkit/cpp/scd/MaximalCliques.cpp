@@ -28,8 +28,6 @@ namespace NetworKit {
 MaximalCliques::MaximalCliques(const Graph& G) : G(G) {
 }
 
-//TODO: neighbors currently a dummy vector
-
 std::vector<std::vector<node> > MaximalCliques::run() {
 	std::vector<std::vector<node> > result;
 
@@ -37,7 +35,7 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 
 	std::vector<node> pxvector(G.numberOfNodes());
 	std::vector<index> pxlookup(G.upperNodeIdBound());
-	
+
 	SwapFunctor swapNodeToPos(pxvector, pxlookup);
 
 	uint32_t ii = 0;
