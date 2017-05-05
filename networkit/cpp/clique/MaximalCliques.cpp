@@ -14,6 +14,7 @@ namespace {
 	private:
 		const NetworKit::Graph& G;
 		std::vector<std::vector<node>>& result;
+		std::function<void(const std::vector<node>&)>& callback;
 
 		std::vector<node> pxvector;
 		std::vector<node> pxlookup;
@@ -22,8 +23,9 @@ namespace {
 		std::vector<node> head;
 
 	public:
-		MaximalCliquesImpl(const NetworKit::Graph& G, std::vector<std::vector<node>>& result) :
-			G(G), result(result),
+		MaximalCliquesImpl(const NetworKit::Graph& G, std::vector<std::vector<node>>& result,
+				std::function<void(const std::vector<node>&)>& callback) :
+			G(G), result(result), callback(callback),
 			pxvector(G.numberOfNodes()), pxlookup(G.upperNodeIdBound()),
 			firstOut(G.upperNodeIdBound() + 1), head(G.numberOfEdges()) {}
 	
@@ -151,7 +153,11 @@ namespace {
 
 		void tomita(index xbound, index xpbound, index pbound, std::vector<node>& r) {
 			if (xbound == pbound) { //if (X, P are empty)
-				result.push_back(r);
+				if (callback) {
+					callback(r);
+				} else {
+					result.push_back(r);
+				}
 				return;
 			}
 
@@ -329,8 +335,11 @@ namespace NetworKit {
 MaximalCliques::MaximalCliques(const Graph& G) : G(G) {
 }
 
+MaximalCliques::MaximalCliques(const Graph& G, std::function<void(const std::vector<node>&)> callback) : G(G), callback(callback) {
+}
 
 const std::vector<std::vector<node>>& MaximalCliques::getCliques() const {
+	if (callback) throw std::runtime_error("MaximalCliques used with callback does not store cliques");
 	assureFinished();
 	return result;
 }
@@ -340,7 +349,7 @@ void MaximalCliques::run() {
 
 	result.clear();
 
-	MaximalCliquesImpl(G, result).run();
+	MaximalCliquesImpl(G, result, callback).run();
 
 	hasRun = true;
 }

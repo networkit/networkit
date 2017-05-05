@@ -12,6 +12,7 @@ class MaximalCliques : public Algorithm {
 
 public:
 	MaximalCliques(const Graph& G);
+	MaximalCliques(const Graph& G, std::function<void(const std::vector<node>&)> callback);
 
 	void run() override;
 
@@ -21,6 +22,8 @@ protected:
 	const Graph& G;
 
 	std::vector<std::vector<node>> result;
+
+	std::function<void(const std::vector<node>&)> callback;
 };
 
 }

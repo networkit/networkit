@@ -77,6 +77,43 @@ TEST_F(MaximalCliquesGTest, testMaximalCliquesOnWholeGraph) {
 	}
 }
 
+TEST_F(MaximalCliquesGTest, testMaximalCliquesWithCallback) {
+
+	METISGraphReader reader;
+	Graph G = reader.read("input/hep-th.graph");
+
+	std::vector<bool> inClique(G.upperNodeIdBound());
+
+	count numCliques = 0;
+	MaximalCliques clique(G, [&](const std::vector<node>& cliq) {
+		++numCliques;
+
+		for (node u : cliq) {
+			inClique[u] = true;
+		}
+
+		const count expected_degree = cliq.size() - 1;
+
+		for (node u : cliq) {
+			count neighborsInClique = 0;
+			G.forNeighborsOf(u, [&](node v) {
+				neighborsInClique += inClique[v];
+			});
+
+			EXPECT_EQ(expected_degree, neighborsInClique);
+		}
+
+		for (node u : cliq) {
+			inClique[u] = false;
+		}
+	});
+
+	DEBUG("Call MaximalCliques()");
+
+	clique.run();
+
+	EXPECT_GT(numCliques, 1u);
+}
 }
 
 #endif /* NOGTEST */
