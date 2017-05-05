@@ -1243,7 +1243,8 @@ cdef class SSSP(Algorithm):
 cdef extern from "cpp/distance/DynSSSP.h":
 	cdef cppclass _DynSSSP "NetworKit::DynSSSP"(_SSSP):
 		_DynSSSP(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
-		void update(vector[_GraphEvent] batch) except +
+		void update(_GraphEvent ev) except +
+		void updateBatch(vector[_GraphEvent] batch) except +
 		bool modified() except +
 		void setTargetNode(node t) except +
 
@@ -1253,17 +1254,26 @@ cdef class DynSSSP(SSSP):
 		if type(self) == SSSP:
 			raise RuntimeError("Error, you may not use DynSSSP directly, use a sub-class instead")
 
-	""" Updates shortest paths with the batch `batch` of edge insertions.
+	def update(self, ev):
+		""" Updates shortest paths with the edge insertion.
+
+		Parameters
+		----------
+		ev : GraphEvent.
+		"""
+		(<_DynSSSP*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+
+	def updateBatch(self, batch):
+		""" Updates shortest paths with the batch `batch` of edge insertions.
 
 		Parameters
 		----------
 		batch : list of GraphEvent.
 		"""
-	def update(self, batch):
 		cdef vector[_GraphEvent] _batch
 		for ev in batch:
 			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-		(<_DynSSSP*>(self._this)).update(_batch)
+		(<_DynSSSP*>(self._this)).updateBatch(_batch)
 
 	def modified(self):
 		return (<_DynSSSP*>(self._this)).modified()
@@ -6053,7 +6063,8 @@ cdef extern from "cpp/centrality/DynApproxBetweenness.h":
 	cdef cppclass _DynApproxBetweenness "NetworKit::DynApproxBetweenness":
 		_DynApproxBetweenness(_Graph, double, double, bool, double) except +
 		void run() nogil except +
-		void update(vector[_GraphEvent]) except +
+		void update(_GraphEvent) except +
+		void updateBatch(vector[_GraphEvent]) except +
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
@@ -6101,7 +6112,16 @@ cdef class DynApproxBetweenness:
 			self._this.run()
 		return self
 
-	def update(self, batch):
+	def update(self, ev):
+		""" Updates the betweenness centralities after the edge insertions.
+
+		Parameters
+		----------
+		ev : GraphEvent.
+		"""
+		self._this.update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+
+	def updateBatch(self, batch):
 		""" Updates the betweenness centralities after the batch `batch` of edge insertions.
 
 		Parameters
@@ -6111,7 +6131,7 @@ cdef class DynApproxBetweenness:
 		cdef vector[_GraphEvent] _batch
 		for ev in batch:
 			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-		self._this.update(_batch)
+		self._this.updateBatch(_batch)
 
 	def scores(self):
 		""" Get a vector containing the betweenness score for each node in the graph.

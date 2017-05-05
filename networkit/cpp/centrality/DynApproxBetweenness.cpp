@@ -115,10 +115,17 @@ void DynApproxBetweenness::run() {
 
 }
 
-void DynApproxBetweenness::update(const std::vector<GraphEvent>& batch) {
+void DynApproxBetweenness::update(GraphEvent e) {
+  std::vector<GraphEvent> batch(1);
+  batch[0] = e;
+  updateBatch(batch);
+}
+
+
+void DynApproxBetweenness::updateBatch(const std::vector<GraphEvent>& batch) {
     DEBUG ("Updating");
     for (node i = 0; i < r; i++) {
-        sssp[i]->update(batch);
+        sssp[i]->updateBatch(batch);
         if (sssp[i]->modified()) {
             // subtract contributions to nodes in the old sampled path
             for (node z: sampledPaths[i]) {
