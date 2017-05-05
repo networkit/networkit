@@ -5915,10 +5915,11 @@ cdef class EigenvectorCentrality(Centrality):
 
 cdef extern from "cpp/centrality/CoreDecomposition.h":
 	cdef cppclass _CoreDecomposition "NetworKit::CoreDecomposition" (_Centrality):
-		_CoreDecomposition(_Graph, bool, bool) except +
+		_CoreDecomposition(_Graph, bool, bool, bool) except +
 		_Cover getCover() except +
 		_Partition getPartition() except +
 		index maxCoreNumber() except +
+		vector[node] getNodeOrder() except +
 
 cdef class CoreDecomposition(Centrality):
 	""" Computes k-core decomposition of a graph.
@@ -5935,11 +5936,14 @@ cdef class CoreDecomposition(Centrality):
 		Divide each core number by the maximum degree.
 	enforceBucketQueueAlgorithm : boolean
 		enforce switch to sequential algorithm
+	storeNodeOrder : boolean
+		If set to True, the order of the nodes in ascending order of the cores is stored and can later be returned using getNodeOrder(). Enforces the sequential bucket priority queue algorithm.
+
 	"""
 
-	def __cinit__(self, Graph G, bool normalized=False, bool enforceBucketQueueAlgorithm=False):
+	def __cinit__(self, Graph G, bool normalized=False, bool enforceBucketQueueAlgorithm=False, bool storeNodeOrder = False):
 		self._G = G
-		self._this = new _CoreDecomposition(G._this, normalized, enforceBucketQueueAlgorithm)
+		self._this = new _CoreDecomposition(G._this, normalized, enforceBucketQueueAlgorithm, storeNodeOrder)
 
 	def maxCoreNumber(self):
 		""" Get maximum core number.
@@ -5970,6 +5974,19 @@ cdef class CoreDecomposition(Centrality):
 			The k-shells
 		"""
 		return Partition().setThis((<_CoreDecomposition*>(self._this)).getPartition())
+
+	def getNodeOrder(self):
+		"""
+		Get the node order.
+
+		This is only possible when storeNodeOrder was set.
+
+		Returns
+		-------
+		list
+			The nodes sorted by increasing core number.
+		"""
+		return (<_CoreDecomposition*>(self._this)).getNodeOrder()
 
 cdef extern from "cpp/centrality/LocalClusteringCoefficient.h":
 	cdef cppclass _LocalClusteringCoefficient "NetworKit::LocalClusteringCoefficient" (_Centrality):
