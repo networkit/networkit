@@ -54,11 +54,26 @@ TEST_F(MaximalCliquesGTest, testMaximalCliquesOnWholeGraph) {
 	EXPECT_GT(result.size(), 0u);
 
 	// check results (are they cliques?)
+	std::vector<bool> inClique(G.upperNodeIdBound());
 	for (const auto& cliq : result) {
-		auto cli = std::unordered_set<node>(cliq.begin(), cliq.end());
-		auto cliqueGraph = G.subgraphFromNodes(cli);
+		for (node u : cliq) {
+			inClique[u] = true;
+		}
 
-		EXPECT_EQ(cliqueGraph.numberOfEdges(), (cliqueGraph.numberOfNodes() * (cliqueGraph.numberOfNodes() - 1) / 2));
+		const count expected_degree = cliq.size() - 1;
+
+		for (node u : cliq) {
+			count neighborsInClique = 0;
+			G.forNeighborsOf(u, [&](node v) {
+				neighborsInClique += inClique[v];
+			});
+
+			EXPECT_EQ(expected_degree, neighborsInClique);
+		}
+
+		for (node u : cliq) {
+			inClique[u] = false;
+		}
 	}
 }
 
