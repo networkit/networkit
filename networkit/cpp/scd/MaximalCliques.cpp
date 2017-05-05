@@ -122,6 +122,8 @@ void MaximalCliques::tomita(const StaticOutGraph& outGraph, std::vector<node>& p
 		return;
 	}
 
+	if (xpbound == pbound) return;
+
 	SwapFunctor swapNodeToPos(pxvector, pxlookup);
 
 	#ifndef NDEBUG
