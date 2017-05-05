@@ -49,7 +49,7 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 
 	#ifndef NDEBUG
 	for (auto u : orderedNodes) {
-		assert(std::find(pxvector.begin(), pxvector.end(), u) != pxvector.end());
+		assert(pxvector[pxlookup[u]] == u);
 	}
 	#endif
 
