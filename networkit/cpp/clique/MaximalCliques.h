@@ -3,8 +3,7 @@
 
 #include "../graph/Graph.h"
 #include "../base/Algorithm.h"
-
-#include <unordered_map>
+#include <functional>
 
 namespace NetworKit {
 
