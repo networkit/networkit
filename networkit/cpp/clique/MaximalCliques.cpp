@@ -28,8 +28,16 @@ namespace NetworKit {
 MaximalCliques::MaximalCliques(const Graph& G) : G(G) {
 }
 
-std::vector<std::vector<node> > MaximalCliques::run() {
-	std::vector<std::vector<node> > result;
+
+const std::vector<std::vector<node>>& MaximalCliques::getCliques() const {
+	assureFinished();
+	return result;
+}
+
+void MaximalCliques::run() {
+	hasRun = false;
+
+	result.clear();
 
 	auto orderedNodes = getDegeneracyOrdering();
 
@@ -106,15 +114,15 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 		#endif
 
 		std::vector<node> r = {u};
-		tomita(outGraph, pxvector, pxlookup, xpbound - xcount, xpbound, xpbound + pcount, r, result);
+		tomita(outGraph, pxvector, pxlookup, xpbound - xcount, xpbound, xpbound + pcount, r);
 
 		xpbound += 1;
 	}
 
-	return result;
+	hasRun = true;
 }
 
-void MaximalCliques::tomita(const StaticOutGraph& outGraph, std::vector<node>& pxvector, std::vector<index>& pxlookup, index xbound, index xpbound, index pbound, std::vector<node>& r, std::vector<std::vector<node>>& result) {
+void MaximalCliques::tomita(const StaticOutGraph& outGraph, std::vector<node>& pxvector, std::vector<index>& pxlookup, index xbound, index xpbound, index pbound, std::vector<node>& r) {
 	if (xbound == pbound) { //if (X, P are empty)
 		result.push_back(r);
 		return;
@@ -210,7 +218,7 @@ void MaximalCliques::tomita(const StaticOutGraph& outGraph, std::vector<node>& p
 		assert(xpbound - xcount >= xbound);
 		#endif
 
-		tomita(outGraph, pxvector, pxlookup, xpbound - xcount, xpbound, xpbound + pcount, r, result);
+		tomita(outGraph, pxvector, pxlookup, xpbound - xcount, xpbound, xpbound + pcount, r);
 
 		r.pop_back();
 

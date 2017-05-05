@@ -24,7 +24,8 @@ TEST_F(MaximalCliquesGTest, testMaximalCliques) {
 
 	DEBUG("Call MaximalCliques()");
 
-	auto result = clique.run();
+	clique.run();
+	const auto &result = clique.getCliques();
 
 	EXPECT_GT(result.size(), 0u);
 
@@ -47,12 +48,13 @@ TEST_F(MaximalCliquesGTest, testMaximalCliquesOnWholeGraph) {
 
 	DEBUG("Call MaximalCliques()");
 
-	auto result = clique.run();
+	clique.run();
+	const auto &result = clique.getCliques();
 
 	EXPECT_GT(result.size(), 0u);
 
 	// check results (are they cliques?)
-	for (auto cliq : result) {
+	for (const auto& cliq : result) {
 		auto cli = std::unordered_set<node>(cliq.begin(), cliq.end());
 		auto cliqueGraph = G.subgraphFromNodes(cli);
 

@@ -2,24 +2,29 @@
 #define CLIQUE_H_
 
 #include "../graph/Graph.h"
+#include "../base/Algorithm.h"
 
 #include <unordered_map>
 
 namespace NetworKit {
 
-class MaximalCliques {
+class MaximalCliques : public Algorithm {
 
 public:
 	MaximalCliques(const Graph& G);
 
-	std::vector<std::vector<node> > run();
+	void run() override;
+
+	const std::vector<std::vector<node>>& getCliques() const;
 
 protected:
 	const Graph& G;
 
+	std::vector<std::vector<node>> result;
+
 	struct StaticOutGraph;
 
-	void tomita(const StaticOutGraph& outGraph, std::vector<node>& pxvector, std::vector<index>& pxlookup, index xbound, index xpbound, index pbound, std::vector<node>& r, std::vector<std::vector<node>>& result);
+	void tomita(const StaticOutGraph& outGraph, std::vector<node>& pxvector, std::vector<index>& pxlookup, index xbound, index xpbound, index pbound, std::vector<node>& r);
 
 	node findPivot(const StaticOutGraph& outGraph, std::vector<node>& pxvector, std::vector<index>& pxlookup, index xbound, index xpbound, index pbound);
 
