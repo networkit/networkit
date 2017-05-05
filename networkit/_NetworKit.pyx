@@ -6757,6 +6757,59 @@ cdef class MaxClique:
 		"""
 		return self._this.getMaxCliqueSize()
 
+cdef cppclass NodeVectorCallbackWrapper:
+	void* callback
+	__init__(object callback):
+		this.callback = <void*>callback
+	# This is called within the run() method which is nogil!
+	void cython_call_operator(const vector[node]& nodes) nogil:
+		cdef bool error = False
+		cdef string message
+		# Acquire gil to allow Python code!
+		with gil:
+			try:
+				(<object>callback)(nodes)
+			except Exception as e:
+				error = True
+				message = stdstring("An Exception occurred, aborting execution of iterator: {0}".format(e))
+			if (error):
+				throw_runtime_error(message)
+
+cdef extern from "cpp/clique/MaximalCliques.h":
+	cdef cppclass _MaximalCliques "NetworKit::MaximalCliques"(_Algorithm):
+		_MaximalCliques(_Graph G, bool maximumOnly) except +
+		_MaximalCliques(_Graph G, NodeVectorCallbackWrapper callback) except +
+		vector[vector[node]] getCliques() except +
+
+cdef class MaximalCliques(Algorithm):
+	cdef NodeVectorCallbackWrapper* _callback;
+	cdef Graph _G
+	cdef object _py_callback
+
+	def __cinit__(self, Graph G not None, maxOnlyOrCallback):
+		self._G = G
+
+		if callable(maxOnlyOrCallback):
+			# Make sure the callback is not de-allocated!
+			self._py_callback = maxOnlyOrCallback
+			self._callback = new NodeVectorCallbackWrapper(maxOnlyOrCallback)
+			try:
+				self._this = new _MaximalCliques(self._G._this, dereference(self._callback))
+			finally:
+				del self._callback
+				self._callback = NULL
+		else:
+			self._callback = NULL
+			self._this = new _MaximalCliques(self._G._this, <bool?>(maxOnlyOrCallback));
+
+	def __dealloc__(self):
+		if not self._callback == NULL:
+			del self._callback
+			self._callback = NULL
+
+	def getCliques(self):
+		return (<_MaximalCliques*>(self._this)).getCliques()
+
 # Module: linkprediction
 
 cdef extern from "cpp/linkprediction/LinkPredictor.h":
