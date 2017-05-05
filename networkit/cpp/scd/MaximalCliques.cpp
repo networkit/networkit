@@ -53,6 +53,10 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 	}
 	#endif
 
+	// Store out-going neighbors in the direction of higher core numbers.
+	// This means that the out-degree is bounded by the maximum core number.
+	const StaticOutGraph outGraph(G, pxlookup);
+
 	uint32_t xpbound = 1;
 	for (const node& u : orderedNodes) {
 		swapNodeToPos(u, xpbound-1);
@@ -104,7 +108,7 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 		#endif
 
 		std::vector<node> r = {u};
-		tomita(pxvector, pxlookup, xpbound - xcount, xpbound, xpbound + pcount, r, result);
+		tomita(outGraph, pxvector, pxlookup, xpbound - xcount, xpbound, xpbound + pcount, r, result);
 
 		xpbound += 1;
 	}
@@ -112,7 +116,7 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 	return result;
 }
 
-void MaximalCliques::tomita(std::vector<node>& pxvector, std::vector<index>& pxlookup, uint32_t xbound, uint32_t xpbound, uint32_t pbound, std::vector<node>& r, std::vector<std::vector<node>>& result) {
+void MaximalCliques::tomita(const StaticOutGraph& outGraph, std::vector<node>& pxvector, std::vector<index>& pxlookup, uint32_t xbound, uint32_t xpbound, uint32_t pbound, std::vector<node>& r, std::vector<std::vector<node>>& result) {
 	if (xbound == pbound) { //if (X, P are empty)
 		result.push_back(r);
 		return;
@@ -127,21 +131,41 @@ void MaximalCliques::tomita(std::vector<node>& pxvector, std::vector<index>& pxl
 	assert(pbound <= pxvector.size());
 	#endif
 
-	node u = findPivot(pxvector, pxlookup, xbound, xpbound, pbound);
+	node u = findPivot(outGraph, pxvector, pxlookup, xbound, xpbound, pbound);
 	std::vector<node> movedNodes;
 
+	// Find all nodes in P that are not neighbors of the pivot
 	// this step is necessary as the next loop changes pxvector,
 	// which prohibits iterating over it in the same loop.
 	std::vector<node> toCheck;
-	for (uint32_t i = xpbound; i < pbound; i++) {
-		if (!G.hasEdge(pxvector[i], u)) {
-			toCheck.push_back(pxvector[i]);
+
+	// Step 1: mark all outgoing neighbors of the pivot in P
+	std::vector<bool> pivotNeighbors(pbound - xpbound);
+	outGraph.forOutEdgesOf(u, [&](node v) {
+		index vpos = pxlookup[v];
+		if (vpos >= xpbound && vpos < pbound) {
+			pivotNeighbors[vpos - xpbound] = true;
+		}
+	});
+
+	// Step 2: for all not-yet marked notes check if they have the pivot as neighbor.
+	// If not: they are definitely a non-neighbor.
+	for (index i = xpbound; i < pbound; i++) {
+		if (!pivotNeighbors[i - xpbound]) {
+			node p = pxvector[i];
+
+			if (!outGraph.hasNeighbor(p, u)) {
+				toCheck.push_back(p);
+			}
 		}
 	}
 
 	for (auto pxveci : toCheck) {
 		uint32_t xcount = 0, pcount = 0;
-		G.forNeighborsOf(pxveci, [&] (node v) {
+
+		// Group all neighbors of pxveci in P \cup X around xpbound.
+		// Step 1: collect all outgoing neighbors of pxveci
+		outGraph.forOutEdgesOf(pxveci, [&](node v) {
 			if (pxlookup[v] < xpbound && pxlookup[v] >= xbound) { // v is in X
 				swapNodeToPos(v, xpbound - xcount - 1);
 				xcount += 1;
@@ -151,6 +175,34 @@ void MaximalCliques::tomita(std::vector<node>& pxvector, std::vector<index>& pxl
 			}
 		});
 
+		// Step 2: collect all nodes in X that have not yet been collected
+		// and that have pxveci as outgoing neighbor.
+		for (index i = xbound; i < xpbound;) {
+			// stop if we have reached the collected neighbors
+			if (i == xpbound - xcount) break;
+			node x = pxvector[i];
+
+			if (outGraph.hasNeighbor(x, pxveci)) {
+				swapNodeToPos(x, xpbound - xcount - 1);
+				xcount += 1;
+			} else {
+				// Advance only if we did not swap otherwise we have already
+				// a next candidate at position i.
+				++i;
+			}
+		}
+
+		// Step 3: collect all nodes in P that have not yet been collected
+		// and that have pxveci as outgoing neighbor.
+		for (index i = xpbound + pcount; i < pbound; ++i) {
+			node p = pxvector[i];
+
+			if (outGraph.hasNeighbor(p, pxveci)) {
+				swapNodeToPos(p, xpbound + pcount);
+				pcount += 1;
+			}
+		}
+
 		r.push_back(pxveci);
 
 		#ifndef NDEBUG
@@ -158,7 +210,7 @@ void MaximalCliques::tomita(std::vector<node>& pxvector, std::vector<index>& pxl
 		assert(xpbound - xcount >= xbound);
 		#endif
 
-		tomita(pxvector, pxlookup, xpbound - xcount, xpbound, xpbound + pcount, r, result);
+		tomita(outGraph, pxvector, pxlookup, xpbound - xcount, xpbound, xpbound + pcount, r, result);
 
 		r.pop_back();
 
@@ -167,13 +219,10 @@ void MaximalCliques::tomita(std::vector<node>& pxvector, std::vector<index>& pxl
 		assert(pxvector[xpbound - 1] == pxveci);
 		movedNodes.push_back(pxveci);
 	}
-	
+
 	for (node v : movedNodes) {
 		//move from X -> P
-		auto pxvec2 = pxvector[xpbound - 1];
-		std::swap(pxvector[pxlookup[v]], pxvector[xpbound - 1]);
-		pxlookup[pxvec2] = pxlookup[v];
-		pxlookup[v] = xpbound - 1;
+		swapNodeToPos(v, xpbound - 1);
 		xpbound -= 1;
 	}
 
@@ -185,21 +234,39 @@ void MaximalCliques::tomita(std::vector<node>& pxvector, std::vector<index>& pxl
 	#endif
 }
 
-node MaximalCliques::findPivot(std::vector<node>& pxvector, std::vector<index>& pxlookup, uint32_t xbound, uint32_t xpbound, uint32_t pbound) {
+node MaximalCliques::findPivot(const StaticOutGraph& outGraph, std::vector<node>& pxvector, std::vector<index>& pxlookup, uint32_t xbound, uint32_t xpbound, uint32_t pbound) {
 	node maxnode = none;
 	int32_t maxval = -1;
 
-	for (uint32_t i = xbound; i < pbound; i++) {
-		int32_t val = 0;
-		G.forNeighborsOf(pxvector[i], [&] (node v) {
+	std::vector<count> pivotNeighbors(pbound - xbound);
+
+	for (index i = 0; i < xpbound - xbound; i++) {
+		node u = pxvector[i + xbound];
+		outGraph.forOutEdgesOf(u, [&](node v) {
 			if (pxlookup[v] >= xpbound && pxlookup[v] < pbound) {
-				val++;
+				++pivotNeighbors[i];
 			}
 		});
+	}
 
-		if (val > maxval) {
-			maxval = val;
-			maxnode = pxvector[i];
+	for (index i = xpbound - xbound; i < pivotNeighbors.size(); ++i) {
+		node u = pxvector[i + xbound];
+		outGraph.forOutEdgesOf(u, [&](node v) {
+			index neighborPos = pxlookup[v];
+			if (neighborPos >= xbound && neighborPos < pbound) {
+				++pivotNeighbors[neighborPos-xbound];
+
+				if (neighborPos >= xpbound) {
+					++pivotNeighbors[i];
+				}
+			}
+		});
+	}
+
+	for (index i = 0; i < pivotNeighbors.size(); ++i) {
+		if (static_cast<int64_t>(pivotNeighbors[i]) > maxval) {
+			maxval = pivotNeighbors[i];
+			maxnode = pxvector[i + xbound];
 		}
 	}
 
