@@ -125,17 +125,19 @@ namespace {
 				});
 
 #ifndef NDEBUG
-				bool inRange = false;
-				bool wasInRange = false;
-				for (node v : pxvector) {
-					if (G.hasEdge(u, v)) {
-						assert(!wasInRange);
-						inRange = true;
-					} else {
-						if (inRange) {
-							wasInRange = true;
-							inRange = false;
-						}
+				{ // assert all neighbors of u were stored in one range around xpbound
+
+					assert(xcount + pcount == G.degree(u));
+
+					std::vector<index> neighborPositions;
+					G.forNeighborsOf(u, [&](node v) {
+						neighborPositions.push_back(pxlookup[v]);
+						assert(pxvector[pxlookup[v]] == v);
+					});
+
+					std::sort(neighborPositions.begin(), neighborPositions.end());
+					for (index i = 0; i < neighborPositions.size(); ++i) {
+						assert(neighborPositions[i] == xpbound - xcount + i);
 					}
 				}
 #endif
