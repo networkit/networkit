@@ -240,6 +240,7 @@ node MaximalCliques::findPivot(const StaticOutGraph& outGraph, std::vector<node>
 
 	// Counts for every node in X \cup P how many outgoing neighbors it has in P
 	std::vector<count> pivotNeighbors(pbound - xbound);
+	const count psize = pbound-xpbound;
 
 	// Step 1: for all nodes in X count how many outgoing neighbors they have in P
 	for (index i = 0; i < xpbound - xbound; i++) {
@@ -249,6 +250,9 @@ node MaximalCliques::findPivot(const StaticOutGraph& outGraph, std::vector<node>
 				++pivotNeighbors[i];
 			}
 		});
+
+		// If a node has |P| neighbors, we cannot find a better candidate
+		if (pivotNeighbors[i] == psize) return u;
 	}
 
 	// Step 2: for all nodes in P
