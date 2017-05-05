@@ -28,8 +28,6 @@ protected:
 
 	node findPivot(const StaticOutGraph& outGraph, std::vector<node>& pxvector, std::vector<index>& pxlookup, index xbound, index xpbound, index pbound);
 
-	std::vector<node> getDegeneracyOrdering();
-
 	struct StaticOutGraph {
 		StaticOutGraph(const Graph& G, const std::vector<index>& pxlookup) : firstOut(G.upperNodeIdBound() + 1), head(G.numberOfEdges()) {
 			index currentOut = 0;
