@@ -38,7 +38,7 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 
 	SwapFunctor swapNodeToPos(pxvector, pxlookup);
 
-	uint32_t ii = 0;
+	index ii = 0;
 	for (const node u : orderedNodes) {
 		pxvector[ii] = u;
 		pxlookup[u] = ii;
@@ -55,7 +55,7 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 	// This means that the out-degree is bounded by the maximum core number.
 	const StaticOutGraph outGraph(G, pxlookup);
 
-	uint32_t xpbound = 1;
+	index xpbound = 1;
 	for (const node& u : orderedNodes) {
 		swapNodeToPos(u, xpbound-1);
 
@@ -68,8 +68,8 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 		}
 		#endif
 
-		uint32_t xcount = 0;
-		uint32_t pcount = 0;
+		count xcount = 0;
+		count pcount = 0;
 		G.forNeighborsOf(u, [&] (node v) {
 
 			#ifndef NDEBUG
@@ -114,7 +114,7 @@ std::vector<std::vector<node> > MaximalCliques::run() {
 	return result;
 }
 
-void MaximalCliques::tomita(const StaticOutGraph& outGraph, std::vector<node>& pxvector, std::vector<index>& pxlookup, uint32_t xbound, uint32_t xpbound, uint32_t pbound, std::vector<node>& r, std::vector<std::vector<node>>& result) {
+void MaximalCliques::tomita(const StaticOutGraph& outGraph, std::vector<node>& pxvector, std::vector<index>& pxlookup, index xbound, index xpbound, index pbound, std::vector<node>& r, std::vector<std::vector<node>>& result) {
 	if (xbound == pbound) { //if (X, P are empty)
 		result.push_back(r);
 		return;
@@ -161,7 +161,7 @@ void MaximalCliques::tomita(const StaticOutGraph& outGraph, std::vector<node>& p
 	}
 
 	for (auto pxveci : toCheck) {
-		uint32_t xcount = 0, pcount = 0;
+		count xcount = 0, pcount = 0;
 
 		// Group all neighbors of pxveci in P \cup X around xpbound.
 		// Step 1: collect all outgoing neighbors of pxveci
@@ -234,10 +234,7 @@ void MaximalCliques::tomita(const StaticOutGraph& outGraph, std::vector<node>& p
 	#endif
 }
 
-node MaximalCliques::findPivot(const StaticOutGraph& outGraph, std::vector<node>& pxvector, std::vector<index>& pxlookup, uint32_t xbound, uint32_t xpbound, uint32_t pbound) {
-	node maxnode = none;
-	int32_t maxval = -1;
-
+node MaximalCliques::findPivot(const StaticOutGraph& outGraph, std::vector<node>& pxvector, std::vector<index>& pxlookup, index xbound, index xpbound, index pbound) {
 	// Counts for every node in X \cup P how many outgoing neighbors it has in P
 	std::vector<count> pivotNeighbors(pbound - xbound);
 	const count psize = pbound-xpbound;
@@ -272,9 +269,12 @@ node MaximalCliques::findPivot(const StaticOutGraph& outGraph, std::vector<node>
 		});
 	}
 
+	node maxnode = pxvector[xbound];
+	count maxval = pivotNeighbors[0];
+
 	// Step 3: find maximum
-	for (index i = 0; i < pivotNeighbors.size(); ++i) {
-		if (static_cast<int64_t>(pivotNeighbors[i]) > maxval) {
+	for (index i = 1; i < pivotNeighbors.size(); ++i) {
+		if (pivotNeighbors[i] > maxval) {
 			maxval = pivotNeighbors[i];
 			maxnode = pxvector[i + xbound];
 		}

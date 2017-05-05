@@ -19,9 +19,9 @@ protected:
 
 	struct StaticOutGraph;
 
-	void tomita(const StaticOutGraph& outGraph, std::vector<node>& pxvector, std::vector<index>& pxlookup, uint32_t xbound, uint32_t xpbound, uint32_t pbound, std::vector<node>& r, std::vector<std::vector<node>>& result);
+	void tomita(const StaticOutGraph& outGraph, std::vector<node>& pxvector, std::vector<index>& pxlookup, index xbound, index xpbound, index pbound, std::vector<node>& r, std::vector<std::vector<node>>& result);
 
-	node findPivot(const StaticOutGraph& outGraph, std::vector<node>& pxvector, std::vector<index>& pxlookup, uint32_t xbound, uint32_t xpbound, uint32_t pbound);
+	node findPivot(const StaticOutGraph& outGraph, std::vector<node>& pxvector, std::vector<index>& pxlookup, index xbound, index xpbound, index pbound);
 
 	std::vector<node> getDegeneracyOrdering();
 
