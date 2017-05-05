@@ -296,9 +296,6 @@ node MaximalCliques::findPivot(const StaticOutGraph& outGraph, std::vector<node>
 }
 
 std::vector<node> MaximalCliques::getDegeneracyOrdering() {
-	std::vector<node> result;
-	result.reserve(G.numberOfNodes());
-
 	/* Main data structure: buckets of nodes indexed by their remaining degree. */
 	index z = G.upperNodeIdBound();
 	std::vector<node> queue(G.numberOfNodes());
@@ -344,8 +341,6 @@ std::vector<node> MaximalCliques::getDegeneracyOrdering() {
 		node u = queue[i];
 		core = std::max(core, degree[u]); // core is maximum of all previously seen degrees
 
-		result.emplace_back(u);
-
 		/* Remove a neighbor by decreasing its degree and changing its position in the queue */
 		auto removeNeighbor = [&](node v) {
 			if (nodePtr[v] > i) { // only nodes that are after the current node need to be considered
@@ -380,8 +375,8 @@ std::vector<node> MaximalCliques::getDegeneracyOrdering() {
 		/* Remove u and its incident edges. */
 		G.forNeighborsOf(u, removeNeighbor);
 	}
-	
-	return result;
+
+	return queue;
 }
 
 }
