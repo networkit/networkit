@@ -3,7 +3,9 @@
 #include "../MaximalCliques.h"
 #include "../../graph/Graph.h"
 #include "../../io/METISGraphReader.h"
+#include "../../io/EdgeListReader.h"
 #include "../../auxiliary/Log.h"
+#include "../../auxiliary/Timer.h"
 
 #ifndef NOGTEST
 
@@ -113,6 +115,34 @@ TEST_F(MaximalCliquesGTest, testMaximalCliquesWithCallback) {
 	clique.run();
 
 	EXPECT_GT(numCliques, 1u);
+}
+
+TEST_F(MaximalCliquesGTest, benchMaximalCliques) {
+	std::string graphPath;
+
+	std::cout << "[INPUT] graph file path (edge list tab 0, like SNAP) > " << std::endl;
+	std::getline(std::cin, graphPath);
+
+	EdgeListReader r('\t',0,"#", false);
+	Graph G = r.read(graphPath);
+	G.removeSelfLoops();
+	INFO(G.size());
+	INFO("Starting MaximalCliques");
+	Aux::Timer timer;
+	count numCliques = 0;
+	count maxSize = 0;
+	MaximalCliques clique(G, [&](const std::vector<node>& clique) {
+		++numCliques;
+		if (clique.size() > maxSize) {
+			maxSize = clique.size();
+		}
+	});
+	timer.start();
+	clique.run();
+	timer.stop();
+	INFO("Found ", numCliques, " cliques");
+	INFO("Maximum clique size found: ", maxSize);
+	INFO("Needed ", timer.elapsedMilliseconds(), "ms for clique detection");
 }
 }
 
