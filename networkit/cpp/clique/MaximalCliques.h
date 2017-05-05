@@ -11,7 +11,7 @@ namespace NetworKit {
 class MaximalCliques : public Algorithm {
 
 public:
-	MaximalCliques(const Graph& G);
+	MaximalCliques(const Graph& G, bool maximumOnly = false);
 	MaximalCliques(const Graph& G, std::function<void(const std::vector<node>&)> callback);
 
 	void run() override;
@@ -24,6 +24,7 @@ protected:
 	std::vector<std::vector<node>> result;
 
 	std::function<void(const std::vector<node>&)> callback;
+	bool maximumOnly;
 };
 
 }

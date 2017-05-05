@@ -143,6 +143,19 @@ TEST_F(MaximalCliquesGTest, benchMaximalCliques) {
 	INFO("Found ", numCliques, " cliques");
 	INFO("Maximum clique size found: ", maxSize);
 	INFO("Needed ", timer.elapsedMilliseconds(), "ms for clique detection");
+
+	{
+		INFO("Starting again to just find the maximum");
+		Aux::Timer timer;
+		MaximalCliques clique(G, true);
+		timer.start();
+		clique.run();
+		timer.stop();
+		const auto& cliques = clique.getCliques();
+		EXPECT_EQ(1u, cliques.size());
+		EXPECT_EQ(cliques.front().size(), maxSize);
+		INFO("Just finding the maximum clique needed ", timer.elapsedMilliseconds(), "ms");
+	}
 }
 }
 

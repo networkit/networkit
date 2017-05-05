@@ -15,6 +15,8 @@ namespace {
 		const NetworKit::Graph& G;
 		std::vector<std::vector<node>>& result;
 		std::function<void(const std::vector<node>&)>& callback;
+		bool maximumOnly;
+		count maxFound;
 
 		std::vector<node> pxvector;
 		std::vector<node> pxlookup;
@@ -24,8 +26,8 @@ namespace {
 
 	public:
 		MaximalCliquesImpl(const NetworKit::Graph& G, std::vector<std::vector<node>>& result,
-				std::function<void(const std::vector<node>&)>& callback) :
-			G(G), result(result), callback(callback),
+				std::function<void(const std::vector<node>&)>& callback, bool maximumOnly) :
+			G(G), result(result), callback(callback), maximumOnly(maximumOnly), maxFound(0),
 			pxvector(G.numberOfNodes()), pxlookup(G.upperNodeIdBound()),
 			firstOut(G.upperNodeIdBound() + 1), head(G.numberOfEdges()) {}
 	
@@ -59,6 +61,10 @@ namespace {
 			}
 
 			return false;
+		}
+
+		count outDegree(node u) const {
+			return firstOut[u + 1] - firstOut[u];
 		}
 
 		void swapNodeToPos(node u, index pos) {
@@ -104,6 +110,11 @@ namespace {
 					assert(pxlookup[v] < xpbound);
 				}
 #endif
+
+				if (maximumOnly && maxFound > outDegree(u)) {
+					xpbound += 1;
+					continue;
+				}
 
 				count xcount = 0;
 				count pcount = 0;
@@ -155,8 +166,12 @@ namespace {
 			if (xbound == pbound) { //if (X, P are empty)
 				if (callback) {
 					callback(r);
-				} else {
+				} else if (!maximumOnly) {
 					result.push_back(r);
+				} else if (r.size() > maxFound) {
+					result.clear();
+					result.push_back(r);
+					maxFound = r.size();
 				}
 				return;
 			}
@@ -249,7 +264,9 @@ namespace {
 				assert(xpbound - xcount >= xbound);
 #endif
 
-				tomita(xpbound - xcount, xpbound, xpbound + pcount, r);
+				if (!maximumOnly || maxFound < (r.size() + pcount)) {
+					tomita(xpbound - xcount, xpbound, xpbound + pcount, r);
+				}
 
 				r.pop_back();
 
@@ -332,10 +349,10 @@ namespace {
 
 namespace NetworKit {
 
-MaximalCliques::MaximalCliques(const Graph& G) : G(G) {
+MaximalCliques::MaximalCliques(const Graph& G, bool maximumOnly) : G(G), maximumOnly(maximumOnly) {
 }
 
-MaximalCliques::MaximalCliques(const Graph& G, std::function<void(const std::vector<node>&)> callback) : G(G), callback(callback) {
+MaximalCliques::MaximalCliques(const Graph& G, std::function<void(const std::vector<node>&)> callback) : G(G), callback(callback), maximumOnly(false) {
 }
 
 const std::vector<std::vector<node>>& MaximalCliques::getCliques() const {
@@ -349,7 +366,7 @@ void MaximalCliques::run() {
 
 	result.clear();
 
-	MaximalCliquesImpl(G, result, callback).run();
+	MaximalCliquesImpl(G, result, callback, maximumOnly).run();
 
 	hasRun = true;
 }
