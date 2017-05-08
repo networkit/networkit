@@ -68,6 +68,7 @@ namespace {
 		}
 
 		void swapNodeToPos(node u, index pos) {
+			assert(pos < pxvector.size());
 			node pxvec2 = pxvector[pos];
 			std::swap(pxvector[pxlookup[u]], pxvector[pos]);
 			pxlookup[pxvec2] = pxlookup[u];
@@ -98,9 +99,9 @@ namespace {
 			// This means that the out-degree is bounded by the maximum core number.
 			buildOutGraph();
 
-			index xpbound = 1;
-			for (const node& u : orderedNodes) {
-				swapNodeToPos(u, xpbound-1);
+			for (index iu = orderedNodes.size(); iu-- > 0; ) {
+				node u = orderedNodes[iu];
+				index xpbound = iu + 1;
 
 #ifndef NDEBUG
 				for (auto v : orderedNodes) {
@@ -112,7 +113,7 @@ namespace {
 #endif
 
 				if (maximumOnly && maxFound > outDegree(u)) {
-					xpbound += 1;
+					swapNodeToPos(u, iu);
 					continue;
 				}
 
@@ -158,7 +159,7 @@ namespace {
 				std::vector<node> r = {u};
 				tomita(xpbound - xcount, xpbound, xpbound + pcount, r);
 
-				xpbound += 1;
+				swapNodeToPos(u, iu);
 			}
 		}
 
