@@ -20,6 +20,8 @@ EdgeListReader::EdgeListReader(const char separator, const node firstNode, const
 }
 
 Graph EdgeListReader::read(const std::string& path) {
+	this->mapNodeIds.clear();
+
 	if (this->continuous) {
 		DEBUG("read graph with continuous ids");
 		return readContinuous(path);
