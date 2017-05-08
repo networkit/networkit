@@ -78,3 +78,117 @@ cdef class GCE:
 		"""
 		return self._this.run(seeds)
 
+cdef extern from "<networkit/scd/SCDGroundTruthComparison.hpp>":
+	cdef cppclass _SCDGroundTruthComparison "NetworKit::SCDGroundTruthComparison"(_Algorithm):
+		_SCDGroundTruthComparison(_Graph G, _Cover groundTruth, map[node, set[node]] found, bool_t ignoreSeeds) except +
+		map[index, double] getIndividualJaccard() except +
+		map[index, double] getIndividualPrecision() except +
+		map[index, double] getIndividualRecall() except +
+		map[index, double] getIndividualF1() except +
+
+		double getAverageJaccard() except +
+		double getAverageF1() except +
+		double getAveragePrecision() except +
+		double getAverageRecall() except +
+
+cdef class SCDGroundTruthComparison(Algorithm):
+	"""
+	This class evaluates a set found communities against a ground truth cover. Each found community
+	is compared against the communities of the seed node in the ground truth cover.
+
+	For each score, the ground truth community is chosen as comparison that maximizes the score.
+	If seeds are not ignored (a parameter of the constructor), then only ground truth communities
+	that contain the given seed are used to compare against.
+
+	The calculated scores are:
+
+	Precision: the size of the intersection of found and ground truth community divided by the
+	size of the found community, i.e., how much of the found community was an actual match.
+
+	Recall: the size of the intersection of found and ground truth community divided by the
+	size of the ground truth community, i.e., how much of the ground truth community was found.
+
+	F1 score: the harmonic mean of precision and recall.
+
+	Jaccard index: the size of the intersection of found and ground truth community divided by the
+	size of the union of found and ground truth community.
+
+	For each score, the range of values is between 0 and 1, where 0 is the worst and 1 the best score.
+
+	Parameters:
+	-----------
+	G : Graph
+		The graph to compare on
+	groundTruth : Cover
+		The ground truth cover
+	found : dict
+		The found communities, where the keys are the seed nodes and the values are the found nodes.
+	ignoreSeeds : bool
+		If the seed values shall be ignored, i.e. if any ground truth community is a match
+	"""
+	cdef Graph _G
+	cdef Cover _groundTruth
+	cdef map[node, set[node]] _found
+
+	def __cinit__(self, Graph G not None, Cover groundTruth not None, map[node, set[node]] found, bool_t ignoreSeeds):
+		self._found = found
+		self._G = G
+		self._groundTruth = groundTruth
+		self._this = new _SCDGroundTruthComparison(G._this, groundTruth._this, self._found, ignoreSeeds)
+
+	def getIndividualJaccard(self):
+		"""
+		Get the Jaccard index of every found community.
+
+		Returns
+		-------
+		A dict between seed node and the jaccard index of the seed's community.
+		"""
+		return (<_SCDGroundTruthComparison*>(self._this)).getIndividualJaccard()
+	def getIndividualPrecision(self):
+		"""
+		Get the precision of every found community.
+
+		Returns
+		-------
+		A dict between seed node and the precision of the seed's community.
+		"""
+		return (<_SCDGroundTruthComparison*>(self._this)).getIndividualPrecision()
+	def getIndividualRecall(self):
+		"""
+		Get the recall of every found community.
+
+		Returns
+		-------
+		A dict between seed node and the recall of the seed's community.
+		"""
+		return (<_SCDGroundTruthComparison*>(self._this)).getIndividualRecall()
+	def getIndividualF1(self):
+		"""
+		Get the F1 score of every found community.
+
+		Returns
+		-------
+		A dict between seed node and the F1 score of the seed's community.
+		"""
+		return (<_SCDGroundTruthComparison*>(self._this)).getIndividualF1()
+	def getAverageJaccard(self):
+		"""
+		Get the (unweighted) average of the jaccard indices of every found community.
+		"""
+		return (<_SCDGroundTruthComparison*>(self._this)).getAverageJaccard()
+	def getAverageF1(self):
+		"""
+		Get the (unweighted) average of the F1 score of every found community.
+		"""
+		return (<_SCDGroundTruthComparison*>(self._this)).getAverageF1()
+	def getAveragePrecision(self):
+		"""
+		Get the (unweighted) average of the precision of every found community.
+		"""
+		return (<_SCDGroundTruthComparison*>(self._this)).getAveragePrecision()
+	def getAverageRecall(self):
+		"""
+		Get the (unweighted) average of the recall of every found community.
+		"""
+		return (<_SCDGroundTruthComparison*>(self._this)).getAverageRecall()
