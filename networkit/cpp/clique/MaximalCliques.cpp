@@ -112,6 +112,11 @@ namespace {
 				}
 #endif
 
+				// Check if u can be the starting point of a new clique
+				// of size greater than maxFound.
+				// Note that the clique starting at u could be of
+				// size outDegree(u) + 1, but then it is still only the
+				// same size as maxFound.
 				if (maximumOnly && maxFound > outDegree(u)) {
 					swapNodeToPos(u, iu);
 					continue;
@@ -265,6 +270,10 @@ namespace {
 				assert(xpbound - xcount >= xbound);
 #endif
 
+				// only the pcount nodes in P are candidates for the clique,
+				// therefore r.size() + pcount is an upper bound for the maximum
+				// size of the clique that can still be found in this branch
+				// of the recursion.
 				if (!maximumOnly || maxFound < (r.size() + pcount)) {
 					tomita(xpbound - xcount, xpbound, xpbound + pcount, r);
 				}
