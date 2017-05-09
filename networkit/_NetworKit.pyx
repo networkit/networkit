@@ -1240,6 +1240,7 @@ cdef class SSSP(Algorithm):
 	def numberOfPaths(self, t):
 		return (<_SSSP*>(self._this))._numberOfPaths(t)
 
+
 cdef extern from "cpp/distance/DynSSSP.h":
 	cdef cppclass _DynSSSP "NetworKit::DynSSSP"(_SSSP):
 		_DynSSSP(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
@@ -1442,7 +1443,48 @@ cdef class APSP(Algorithm):
 		"""
 		return (<_APSP*>(self._this)).getDistance(u, v)
 
+cdef extern from "cpp/distance/DynAPSP.h":
+	cdef cppclass _DynAPSP "NetworKit::DynAPSP"(_APSP):
+		_DynAPSP(_Graph G) except +
+		void update(_GraphEvent ev) except +
+		void updateBatch(vector[_GraphEvent] batch) except +
 
+cdef class DynAPSP(APSP):
+	""" All-Pairs Shortest-Paths algorithm for dynamic graphs.
+
+		DynAPSP(G)
+
+		Computes all pairwise shortest-path distances in G.
+
+		Parameters
+	----------
+	G : Graph
+		The graph.
+		"""
+	def __init__(self, Graph G):
+		self._G = G
+		self._this = new _DynAPSP(G._this)
+
+	def update(self, ev):
+		""" Updates shortest paths with the edge insertion.
+
+		Parameters
+		----------
+		ev : GraphEvent.
+		"""
+		(<_DynAPSP*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+
+	def updateBatch(self, batch):
+		""" Updates shortest paths with the batch `batch` of edge insertions.
+
+		Parameters
+		----------
+		batch : list of GraphEvent.
+		"""
+		cdef vector[_GraphEvent] _batch
+		for ev in batch:
+			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+		(<_DynAPSP*>(self._this)).updateBatch(_batch)
 
 cdef extern from "cpp/graph/SpanningForest.h":
 	cdef cppclass _SpanningForest "NetworKit::SpanningForest":
