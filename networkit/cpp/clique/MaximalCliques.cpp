@@ -1,5 +1,6 @@
 #include "MaximalCliques.h"
 #include "../centrality/CoreDecomposition.h"
+#include "../auxiliary/SignalHandling.h"
 
 #include <cassert>
 #include <algorithm>
@@ -80,6 +81,9 @@ namespace {
 			NetworKit::CoreDecomposition cores(G, false, false, true);
 			cores.run();
 
+			Aux::SignalHandler handler;
+			handler.assureRunning();
+
 			const auto& orderedNodes = cores.getNodeOrder();
 
 			index ii = 0;
@@ -88,6 +92,8 @@ namespace {
 				pxlookup[u] = ii;
 				ii += 1;
 			}
+
+			handler.assureRunning();
 
 #ifndef NDEBUG
 			for (auto u : orderedNodes) {
@@ -98,6 +104,8 @@ namespace {
 			// Store out-going neighbors in the direction of higher core numbers.
 			// This means that the out-degree is bounded by the maximum core number.
 			buildOutGraph();
+
+			handler.assureRunning();
 
 			for (index iu = orderedNodes.size(); iu-- > 0; ) {
 				node u = orderedNodes[iu];
@@ -165,6 +173,8 @@ namespace {
 				tomita(xpbound - xcount, xpbound, xpbound + pcount, r);
 
 				swapNodeToPos(u, iu);
+
+				handler.assureRunning();
 			}
 		}
 
@@ -190,6 +200,9 @@ namespace {
 			assert(xpbound <= pbound);
 			assert(pbound <= pxvector.size());
 #endif
+
+			Aux::SignalHandler handler;
+			handler.assureRunning();
 
 			node u = findPivot(xbound, xpbound, pbound);
 			std::vector<node> movedNodes;
