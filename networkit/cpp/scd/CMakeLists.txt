@@ -3,6 +3,7 @@ networkit_add_module(scd
     GCE.cpp
     PageRankNibble.cpp
     SCDGroundTruthComparison.cpp
+    SetConductance.cpp
     )
 
 networkit_module_link_modules(scd

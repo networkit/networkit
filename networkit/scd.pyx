@@ -1,4 +1,5 @@
 from libc.stdint cimport uint64_t
+from libcpp cimport bool as bool_t
 from libcpp.map cimport map
 from libcpp.set cimport set
 from libcpp.string cimport string
@@ -7,6 +8,8 @@ ctypedef uint64_t index
 ctypedef index node
 
 from .graph cimport _Graph, Graph
+from .base cimport _Algorithm, Algorithm
+from .structures cimport _Cover, Cover
 
 def stdstring(pystring):
 	""" convert a Python string to a bytes object which is automatically coerced to std::string"""
@@ -192,3 +195,42 @@ cdef class SCDGroundTruthComparison(Algorithm):
 		Get the (unweighted) average of the recall of every found community.
 		"""
 		return (<_SCDGroundTruthComparison*>(self._this)).getAverageRecall()
+
+cdef extern from "<networkit/scd/SetConductance.hpp>":
+
+	cdef cppclass _SetConductance "NetworKit::SetConductance"(_Algorithm):
+		_SetConductance(_Graph G, set[node]) except +
+		double getConductance() except +
+
+cdef class SetConductance(Algorithm):
+	"""
+	This class calculates the conductance of a set of nodes, i.e., the weight of all edges
+	between the set and the rest of the graph divided by the minimum
+	of the volume (the sum of the weighted degrees) of the community and the rest
+	of the graph.
+
+	Parameters:
+	-----------
+	G : Graph
+		The graph to calculate the conductance on
+	community : set
+		The set of nodes to calculate the conductance of
+	"""
+
+	cdef Graph _G
+	cdef set[node] _community
+
+	def __cinit__(self, Graph G not None, set[node] community):
+		self._community = community
+		self._G = G
+		self._this = new _SetConductance(G._this, self._community)
+
+	def getConductance(self):
+		"""
+		Get the calculated conductance score.
+
+		Returns
+		-------
+		The conductance.
+		"""
+		return (<_SetConductance*>(self._this)).getConductance()
