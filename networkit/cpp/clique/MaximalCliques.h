@@ -1,5 +1,5 @@
-#ifndef CLIQUE_H_
-#define CLIQUE_H_
+#ifndef MAXIMAL_CLIQUES_H_
+#define MAXIMAL_CLIQUES_H_
 
 #include "../graph/Graph.h"
 #include "../base/Algorithm.h"
@@ -79,4 +79,4 @@ protected:
 
 }
 
-#endif /* CLIQUE_H_ */
+#endif /* MAXIMAL_CLIQUES_H_ */
