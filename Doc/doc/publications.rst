@@ -49,7 +49,7 @@ Publications on Algorithms Available in NetworKit
 
   <ul>
   <li>
-    E. Bergamini, M. Wegner, D. Lukarski, H. Meyerhenke:  Estimating Current-Flow Closeness Centrality with a Multigrid Laplacian Solver. To appear at <i><a href="http://www.eecs.wsu.edu/~assefaw/CSC16/csc16.html">CSC</a> '16</i>.
+    E. Bergamini, M. Wegner, D. Lukarski, H. Meyerhenke:  Estimating Current-Flow Closeness Centrality with a Multigrid Laplacian Solver. In Proc. <i><a href="http://www.eecs.wsu.edu/~assefaw/CSC16/csc16.html">CSC</a> '16</i>. SIAM, 2016.
     <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
     <div id="collapseDiv" class="collapse">
       <b>Abstract.</b> Matrices associated with graphs, such as the Laplacian, lead to numerous interesting graph problems expressed as linear systems. One field where Laplacian linear systems
@@ -66,7 +66,7 @@ Publications on Algorithms Available in NetworKit
   <br>
 
     <li>
-      M. von Looz, M. Özdayi, S. Laue, H. Meyerhenke:  Generating massive complex networks with hyperbolic geometry faster in practice. To appear at <i><a href="http://ieee-hpec.org/">HPEC</a> '16</i>. [<a href="http://arxiv.org/abs/1606.09481">arXiv</a>]
+      M. von Looz, M. Özdayi, S. Laue, H. Meyerhenke:  Generating massive complex networks with hyperbolic geometry faster in practice. In Proc. <i><a href="http://ieee-hpec.org/">HPEC</a> '16</i>. IEEE, 2016. [<a href="http://arxiv.org/abs/1606.09481">arXiv</a>]
       <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
       <div id="collapseDiv" class="collapse">
         <b>Abstract.</b> Generative network models play an important role in algorithm development, scaling studies, network analysis, and realistic system benchmarks for graph data sets.   The commonly used graph-based benchmark model R-MAT has some drawbacks concerning realism and the scaling behavior of network properties.
@@ -81,7 +81,7 @@ Publications on Algorithms Available in NetworKit
     <br>
 
     <li>
-      M. von Looz, H. Meyerhenke: Querying Probabilistic Neighborhoods in Spatial Data Sets Efficiently. To appear at <i><a href="http://iwoca2016.cs.helsinki.fi/">IWOCA 2016</a></i>. [<a href="http://arxiv.org/abs/1509.01990">arXiv</a>]
+      M. von Looz, H. Meyerhenke: Querying Probabilistic Neighborhoods in Spatial Data Sets Efficiently. In Proc. <i><a href="http://iwoca2016.cs.helsinki.fi/">IWOCA 2016</a></i>, Springer, 2016. [<a href="http://arxiv.org/abs/1509.01990">arXiv</a>]
       <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
       <div id="collapseDiv" class="collapse">
         <b>Abstract.</b> The probability that two spatial objects establish some kind of mutual connection often depends on their proximity.
