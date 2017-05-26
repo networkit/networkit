@@ -24,7 +24,7 @@ Journal Paper on NetworKit as a Software Toolkit
 
   <ul>
     <li>
-        C. Staudt, A. Sazonovs and H. Meyerhenke: NetworKit: A Tool Suite for Large-scale Complex Network Analysis. To appear in Network Science, Cambridge University Press.
+        C. Staudt, A. Sazonovs and H. Meyerhenke: NetworKit: A Tool Suite for Large-scale Complex Network Analysis. Network Science 4(4), pp. 508-530, December 2016. Cambridge University Press.
         [<a href="http://arxiv.org/abs/1403.3005">arXiv</a>]
         <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
         <div id="collapseDiv" class="collapse">
