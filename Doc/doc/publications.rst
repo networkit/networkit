@@ -49,6 +49,15 @@ Publications on Algorithms Available in NetworKit
 
   <ul>
   <li>
+  C.L. Staudt, M. Hamann, I. Safro, A. Gutfraind, H. Meyerhenke: Generating Scaled Replicas of Real-World Complex Networks. In Proc. <i>5th International Workshop on Complex Networks and their Applications</i>. Springer-Verlag, 2016.
+  [DOI: <a href="http://doi.org/10.1007/978-3-319-50901-3_2">10.1007/978-3-319-50901-3_2</a>]
+  [<a href="http://arxiv.org/abs/1609.02121">arXiv preprint</a>]
+  <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
+    <div id="collapseDiv" class="collapse">
+    
+  </li>
+  
+  <li>
     E. Bergamini, M. Wegner, D. Lukarski, H. Meyerhenke:  Estimating Current-Flow Closeness Centrality with a Multigrid Laplacian Solver. To appear at <i><a href="http://www.eecs.wsu.edu/~assefaw/CSC16/csc16.html">CSC</a> '16</i>.
     <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
     <div id="collapseDiv" class="collapse">
