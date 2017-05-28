@@ -101,6 +101,7 @@ def overview(G):
 	"""
 	n = G.numberOfNodes()
 	degrees = centrality.DegreeCentrality(G,ignoreSelfLoops=G.numberOfSelfLoops() == 0).run().scores()
+	numSelfLoops = G.numberOfSelfLoops()
 	def getIsolatedNodes(degrees):
 		sequence = sorted(degrees)
 		i = 0
@@ -124,9 +125,10 @@ def overview(G):
 	print("directed?\t\t\t{}".format("True" if G.isDirected() else "False"))
 	print("weighted?\t\t\t{}".format("True" if G.isWeighted() else "False"))
 	print("isolated nodes\t\t\t{}".format(getIsolatedNodes(degrees)))
-	print("self-loops\t\t\t{}".format(G.numberOfSelfLoops()))
+	print("self-loops\t\t\t{}".format(numSelfLoops))
 	print("density\t\t\t\t{:.6f}".format(G.density()))
-	print("clustering coefficient\t\t{:.6f}".format(getClusteringCoefficient(G)))
+	if numSelfLoops == 0 and not G.isDirected():
+		print("clustering coefficient\t\t{:.6f}".format(getClusteringCoefficient(G)))
 	print("min/max/avg degree\t\t{:d}, {:d}, {:.6f}".format(int(min(degrees)), int(max(degrees)), sum(degrees)/n))
 	print("degree assortativity\t\t{:.6f}".format(correlation.Assortativity(G, degrees).run().getCoefficient()))
 	cp = getComponentPartition(G)

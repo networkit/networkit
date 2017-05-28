@@ -32,8 +32,12 @@ public:
 	// TODO the run method could take a vector of distances as an input and in that case just use those distances instead of computing dijkstra from scratch
 	void run() override;
 
-	/** Updates the distances after an event.*/
-	void update(const std::vector<GraphEvent>& batch) override;
+	/** Updates the distances after an edge insertion.*/
+	void update(GraphEvent e) override;
+
+	/** Updates the distances after a batch of edge insertions.*/
+	void updateBatch(const std::vector<GraphEvent>& batch) override;
+
 
 protected:
 	enum Color {WHITE, BLACK};

@@ -9,6 +9,7 @@
 #include <queue>
 #include <memory>
 #include <omp.h>
+#include <cstdlib>
 
 #include "TopCloseness.h"
 #include "../components/ConnectedComponents.h"
@@ -288,10 +289,10 @@ void TopCloseness::BFSbound(node x, std::vector<double> &S2, count *visEdges) {
     // we compute the bound for the first level
     count closeNodes = 0, farNodes = 0;
     for (count j = 0; j <= nLevs; j++) {
-        if (abs((long long)j-1LL)<=1)  {
+        if (std::abs((long long)j-1LL)<=1)  {
             closeNodes += nodesPerLev[j];
         } else {
-            farNodes += nodesPerLev[j]*abs(1LL-(long long)j);
+            farNodes += nodesPerLev[j]*std::abs(1LL-(long long)j);
         }
     }
 

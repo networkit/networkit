@@ -583,18 +583,14 @@ cdef class Graph:
 		return self._this.addNode()
 
 	def removeNode(self, u):
-		""" Remove the isolated node `u` from the graph.
+		""" Remove a node `v` and all incident edges from the graph.
+
+	 	Incoming as well as outgoing edges will be removed.
 
 	 	Parameters
 	 	----------
 	 	u : node
 	 		Node.
-
-	 	Notes
-	 	-----
-	 	Although it would be convenient to remove all incident edges at the same time, this causes complications for
-	 	dynamic applications. Therefore, removeNode is an atomic event. All incident edges need to be removed first
-	 	and an exception is thrown otherwise.
 		"""
 		self._this.removeNode(u)
 
@@ -1240,10 +1236,12 @@ cdef class SSSP(Algorithm):
 	def numberOfPaths(self, t):
 		return (<_SSSP*>(self._this))._numberOfPaths(t)
 
+
 cdef extern from "cpp/distance/DynSSSP.h":
 	cdef cppclass _DynSSSP "NetworKit::DynSSSP"(_SSSP):
 		_DynSSSP(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
-		void update(vector[_GraphEvent] batch) except +
+		void update(_GraphEvent ev) except +
+		void updateBatch(vector[_GraphEvent] batch) except +
 		bool modified() except +
 		void setTargetNode(node t) except +
 
@@ -1253,17 +1251,26 @@ cdef class DynSSSP(SSSP):
 		if type(self) == SSSP:
 			raise RuntimeError("Error, you may not use DynSSSP directly, use a sub-class instead")
 
-	""" Updates shortest paths with the batch `batch` of edge insertions.
+	def update(self, ev):
+		""" Updates shortest paths with the edge insertion.
+
+		Parameters
+		----------
+		ev : GraphEvent.
+		"""
+		(<_DynSSSP*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+
+	def updateBatch(self, batch):
+		""" Updates shortest paths with the batch `batch` of edge insertions.
 
 		Parameters
 		----------
 		batch : list of GraphEvent.
 		"""
-	def update(self, batch):
 		cdef vector[_GraphEvent] _batch
 		for ev in batch:
 			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-		(<_DynSSSP*>(self._this)).update(_batch)
+		(<_DynSSSP*>(self._this)).updateBatch(_batch)
 
 	def modified(self):
 		return (<_DynSSSP*>(self._this)).modified()
@@ -1432,7 +1439,48 @@ cdef class APSP(Algorithm):
 		"""
 		return (<_APSP*>(self._this)).getDistance(u, v)
 
+cdef extern from "cpp/distance/DynAPSP.h":
+	cdef cppclass _DynAPSP "NetworKit::DynAPSP"(_APSP):
+		_DynAPSP(_Graph G) except +
+		void update(_GraphEvent ev) except +
+		void updateBatch(vector[_GraphEvent] batch) except +
 
+cdef class DynAPSP(APSP):
+	""" All-Pairs Shortest-Paths algorithm for dynamic graphs.
+
+		DynAPSP(G)
+
+		Computes all pairwise shortest-path distances in G.
+
+		Parameters
+	----------
+	G : Graph
+		The graph.
+		"""
+	def __init__(self, Graph G):
+		self._G = G
+		self._this = new _DynAPSP(G._this)
+
+	def update(self, ev):
+		""" Updates shortest paths with the edge insertion.
+
+		Parameters
+		----------
+		ev : GraphEvent.
+		"""
+		(<_DynAPSP*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+
+	def updateBatch(self, batch):
+		""" Updates shortest paths with the batch `batch` of edge insertions.
+
+		Parameters
+		----------
+		batch : list of GraphEvent.
+		"""
+		cdef vector[_GraphEvent] _batch
+		for ev in batch:
+			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+		(<_DynAPSP*>(self._this)).updateBatch(_batch)
 
 cdef extern from "cpp/graph/SpanningForest.h":
 	cdef cppclass _SpanningForest "NetworKit::SpanningForest":
@@ -5477,21 +5525,43 @@ cdef class Centrality(Algorithm):
 		self._G = None # just to be sure the graph is deleted
 
 	def scores(self):
+		"""
+		Returns
+		-------
+		list
+			the list of all scores
+		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_Centrality*>(self._this)).scores()
 
 	def score(self, v):
+		"""
+		Returns
+		-------
+		the score of node v
+		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_Centrality*>(self._this)).score(v)
 
 	def ranking(self):
+		"""
+		Returns
+		-------
+		dictionary
+			a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
+		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_Centrality*>(self._this)).ranking()
 
 	def maximum(self):
+		"""
+		Returns
+		-------
+		the maximum theoretical centrality score for the given graph
+		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_Centrality*>(self._this)).maximum()
@@ -6063,7 +6133,8 @@ cdef extern from "cpp/centrality/DynApproxBetweenness.h":
 	cdef cppclass _DynApproxBetweenness "NetworKit::DynApproxBetweenness":
 		_DynApproxBetweenness(_Graph, double, double, bool, double) except +
 		void run() nogil except +
-		void update(vector[_GraphEvent]) except +
+		void update(_GraphEvent) except +
+		void updateBatch(vector[_GraphEvent]) except +
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
@@ -6111,7 +6182,16 @@ cdef class DynApproxBetweenness:
 			self._this.run()
 		return self
 
-	def update(self, batch):
+	def update(self, ev):
+		""" Updates the betweenness centralities after the edge insertions.
+
+		Parameters
+		----------
+		ev : GraphEvent.
+		"""
+		self._this.update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+
+	def updateBatch(self, batch):
 		""" Updates the betweenness centralities after the batch `batch` of edge insertions.
 
 		Parameters
@@ -6121,7 +6201,7 @@ cdef class DynApproxBetweenness:
 		cdef vector[_GraphEvent] _batch
 		for ev in batch:
 			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-		self._this.update(_batch)
+		self._this.updateBatch(_batch)
 
 	def scores(self):
 		""" Get a vector containing the betweenness score for each node in the graph.
@@ -6164,6 +6244,100 @@ cdef class DynApproxBetweenness:
 		Get number of path samples used in last calculation.
 		"""
 		return self._this.getNumberOfSamples()
+
+cdef extern from "cpp/centrality/DynBetweenness.h":
+	cdef cppclass _DynBetweenness "NetworKit::DynBetweenness":
+		_DynBetweenness(_Graph) except +
+		void run() nogil except +
+		void update(_GraphEvent) except +
+		void updateBatch(vector[_GraphEvent]) except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class DynBetweenness:
+	""" The algorithm computes the betweenness centrality of all nodes
+			and updates them after an edge insertion.
+
+	DynBetweenness(G)
+
+	Parameters
+	----------
+	G : Graph
+		the graph
+	"""
+	cdef _DynBetweenness* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _DynBetweenness(G._this)
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		with nogil:
+			self._this.run()
+		return self
+
+	def update(self, ev):
+		""" Updates the betweenness centralities after the edge insertions.
+
+		Parameters
+		----------
+		ev : GraphEvent.
+		"""
+		self._this.update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+
+	def updateBatch(self, batch):
+		""" Updates the betweenness centralities after the batch `batch` of edge insertions.
+
+		Parameters
+		----------
+		batch : list of GraphEvent.
+		"""
+		cdef vector[_GraphEvent] _batch
+		for ev in batch:
+			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+		self._this.updateBatch(_batch)
+
+	def scores(self):
+		""" Get a vector containing the betweenness score for each node in the graph.
+
+		Returns
+		-------
+		vector
+			The betweenness scores calculated by run().
+		"""
+		return self._this.scores()
+
+	def score(self, v):
+		""" Get the betweenness score of node `v` calculated by run().
+
+		Parameters
+		----------
+		v : node
+			A node.
+
+		Returns
+		-------
+		double
+			The betweenness score of node `v.
+		"""
+		return self._this.score(v)
+
+	def ranking(self):
+		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
+		calculated by run().
+
+		Returns
+		-------
+		vector
+			A vector of pairs.
+		"""
+		return self._this.ranking()
 
 cdef extern from "cpp/centrality/PermanenceCentrality.h":
 	cdef cppclass _PermanenceCentrality "NetworKit::PermanenceCentrality":

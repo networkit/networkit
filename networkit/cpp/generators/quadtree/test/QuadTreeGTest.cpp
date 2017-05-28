@@ -657,6 +657,7 @@ TEST_F(QuadTreeGTest, tryTreeExport) {
 }
 
 TEST_F(QuadTreeGTest, testPolarEuclidQuery) {
+	Aux::Random::setSeed(42, true);
 	/**
 	 * setup of data structures and constants
 	 */
