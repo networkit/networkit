@@ -510,9 +510,13 @@ void Graph::removeNode(node v) {
 	assert (v < z);
 	assert (exists[v]);
 
-	if (!isIsolated(v)) {
-		throw std::runtime_error("nodes must be isolated (degree 0) before they can be removed");
-	}
+  // Remove all out- and incoming edges
+	this->forEdgesOf(v, [&](node u) {
+		removeEdge(v, u);
+	});
+	this->forInEdgesOf(v, [&](node u) {
+		removeEdge(u, v);
+	});
 
 	exists[v] = false;
 	n--;

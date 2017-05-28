@@ -583,18 +583,14 @@ cdef class Graph:
 		return self._this.addNode()
 
 	def removeNode(self, u):
-		""" Remove the isolated node `u` from the graph.
+		""" Remove a node `v` and all incident edges from the graph.
+
+	 	Incoming as well as outgoing edges will be removed.
 
 	 	Parameters
 	 	----------
 	 	u : node
 	 		Node.
-
-	 	Notes
-	 	-----
-	 	Although it would be convenient to remove all incident edges at the same time, this causes complications for
-	 	dynamic applications. Therefore, removeNode is an atomic event. All incident edges need to be removed first
-	 	and an exception is thrown otherwise.
 		"""
 		self._this.removeNode(u)
 
