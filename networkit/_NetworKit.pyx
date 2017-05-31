@@ -285,7 +285,8 @@ cdef extern from "cpp/graph/Graph.h":
 		edgeweight totalEdgeWeight() except +
 		node randomNode() except +
 		node randomNeighbor(node) except +
-		pair[node, node] randomEdge() except +
+		pair[node, node] randomEdge(bool) except +
+		vector[pair[node, node]] randomEdges(count) except +
 		Point[float] getCoordinate(node v) except +
 		void setCoordinate(node v, Point[float] value) except +
 		void initCoordinates() except +
@@ -998,8 +999,13 @@ cdef class Graph:
 		"""
 		return self._this.randomNeighbor(u)
 
-	def randomEdge(self):
+	def randomEdge(self, bool uniformDistribution = False):
 		""" Get a random edge of the graph.
+
+		Parameters
+		----------
+		uniformDistribution : bool
+			If the distribution of the edge shall be uniform
 
 		Returns
 		-------
@@ -1008,9 +1014,25 @@ cdef class Graph:
 
 		Notes
 		-----
-		Fast, but not uniformly random.
+		Fast, but not uniformly random if uniformDistribution is not set,
+		slow and uniformly random otherwise.
 		"""
-		return self._this.randomEdge()
+		return self._this.randomEdge(uniformDistribution)
+
+	def randomEdges(self, count numEdges):
+		""" Returns a list with numEdges random edges. The edges are chosen uniformly at random.
+
+		Parameters
+		----------
+		numEdges : count
+			The number of edges to choose.
+
+		Returns
+		-------
+		list of pairs
+			The selected edges.
+		"""
+		return self._this.randomEdges(numEdges)
 
 	def getCoordinate(self, v):
 		"""
