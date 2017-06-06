@@ -50,6 +50,8 @@ Publications on Algorithms Available in NetworKit
   <ul>
   <li>
     E. Bergamini, M. Wegner, D. Lukarski, H. Meyerhenke:  Estimating Current-Flow Closeness Centrality with a Multigrid Laplacian Solver. In Proc. <i><a href="http://www.eecs.wsu.edu/~assefaw/CSC16/csc16.html">CSC</a> '16</i>. SIAM, 2016.
+    [<a href="https://arxiv.org/abs/1607.02955">arXiv</a>]
+     [<a href="http://epubs.siam.org/doi/abs/10.1137/1.9781611974690.ch1">DOI:  10.1137/1.9781611974690.ch1</a>]
     <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
     <div id="collapseDiv" class="collapse">
       <b>Abstract.</b> Matrices associated with graphs, such as the Laplacian, lead to numerous interesting graph problems expressed as linear systems. One field where Laplacian linear systems
@@ -100,7 +102,9 @@ Publications on Algorithms Available in NetworKit
     <br>
 
     <li>
-      E. Bergamini, H. Meyerhenke: Approximating Betweenness Centrality in Fully-dynamic Networks. To appear in <i>Internet Mathematics</i>. Code to appear in NetworKit.
+      E. Bergamini, H. Meyerhenke: Approximating Betweenness Centrality in Fully-dynamic Networks. In <i>Internet Mathematics</i>, Volume 12, Issue 5, 2016.
+      [<a href="https://arxiv.org/abs/1510.07971">arXiv</a>]
+       [<a href="https://doi.org/10.1080/15427951.2016.1177802">DOI:  10.1080/15427951.2016.1177802</a>]
       <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
       <div id="collapseDiv" class="collapse">
         <b>Abstract.</b> Betweenness is a well-known centrality measure that ranks the nodes of a network according to their participation in shortest paths. Since an exact
@@ -140,8 +144,10 @@ Publications on Algorithms Available in NetworKit
     <br>
 
     <li>
-      E. Bergamini, M. Borassi, P. Crescenzi, A. Marino, H. Meyerhenke: Computing Top-k Closeness Centrality Faster in Unweighted Graphs. In <i>Proc. SIAM Algorithm
-      Engineering & Experiments</i> (ALENEX 2016). Code to appear in NetworKit.
+      E. Bergamini, M. Borassi, P. Crescenzi, A. Marino, H. Meyerhenke: Computing Top-k Closeness Centrality Faster in Unweighted Graphs. In <i>Proc. 18th SIAM Workshop on Algorithm
+      Engineering & Experiments</i> (ALENEX 2016).
+      [<a href="https://arxiv.org/abs/1704.01077">arXiv</a>]
+       [<a href="http://epubs.siam.org/doi/abs/10.1137/1.9781611974317.6">DOI:  10.1137/1.9781611974317.6</a>]
       <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
       <div id="collapseDiv" class="collapse">
         <b>Abstract.</b> Centrality indices are widely used analytic measures for the importance of nodes in a network. Closeness centrality is very popular among these measures.
@@ -182,15 +188,15 @@ Publications on Algorithms Available in NetworKit
     <br>
 
     <li>
-      E. Bergamini and H. Meyerhenke: Fully-dynamic Approximation of Betweenness Centrality. In <i>Proc. 23rd European Symp. on Algorithms</i> (ESA 2015). Code to appear
-      in NetworKit. [<a href="http://arxiv.org/abs/1504.07091">arXiv</a>]
+      E. Bergamini and H. Meyerhenke: Fully-dynamic Approximation of Betweenness Centrality. In <i>Proc. 23rd European Symposium on Algorithms</i> (ESA 2015). [<a href="http://arxiv.org/abs/1504.07091">arXiv</a>]
+       [<a href="https://link.springer.com/chapter/10.1007/978-3-662-48350-3_14">DOI:  10.1007/978-3-662-48350-3_14</a>]
       <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
       <div id="collapseDiv" class="collapse">
         <b>Abstract.</b> Betweenness is a well-known centrality measure that ranks the nodes of a network according to their participation in shortest paths. Since an
         exact computation is prohibitive in large networks, several approximation algorithms have been proposed. Besides that, recent years have seen the publication of
         dynamic algorithms for efficient recomputation of betweenness in evolving networks. In previous work we proposed the first semi-dynamic algorithms that recompute
         an approximation of betweenness in connected graphs after batches of edge insertions.In this paper we propose the first fully-dynamic approximation algorithms
-        (for weighted and unweighted undirected graphs that need not to be connected) with a provable guarantee on the maximum approxima- tion error. The transfer to
+        (for weighted and unweighted undirected graphs that need not to be connected) with a provable guarantee on the maximum approximation error. The transfer to
         fully-dynamic and disconnected graphs implies additional algorithmic problems that could be of independent interest. In particular, we propose a new upper bound
         on the vertex diameter for weighted undirected graphs. For both weighted and unweighted graphs, we also propose the first fully-dynamic algorithms that keep
         track of this upper bound. In addition, we extend our former algorithm for semi- dynamic BFS to batches of both edge insertions and deletions. <br>
@@ -202,7 +208,7 @@ Publications on Algorithms Available in NetworKit
     <br>
 
     <li>
-      E. Bergamini, H. Meyerhenke and  C. Staudt: Approximating Betweenness Centrality in Large Evolving Networks. In <i>Proc. SIAM Algorithm Engineering & Experiments</i>
+      E. Bergamini, H. Meyerhenke and  C. Staudt: Approximating Betweenness Centrality in Large Evolving Networks. In <i>Proc. 17th SIAM Workshop on Algorithm Engineering & Experiments</i>
       (ALENEX 2015). [<a href="http://arxiv.org/abs/1409.6241">arXiv</a>] [<a href="http://dx.doi.org/10.1137/1.9781611973754.12">DOI: 10.1137/1.9781611973754.12</a>]
       <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
       <div id="collapseDiv" class="collapse">
@@ -321,7 +327,7 @@ Publications Using NetworKit
 
     <li>
       M. Riondato, E. Upfal: ABRA: Approximating Betweenness Centrality in Static and Dynamic Graphs with Rademacher Averages.
-      To appear in <i>Proc. 22nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining</i> (KDD 2016), August 2016. [<a href="http://arxiv.org/abs/1602.05866">arXiv</a>]
+      In <i>Proc. 22nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining</i> (KDD 2016), August 2016. [<a href="http://arxiv.org/abs/1602.05866">arXiv</a>]
        <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
        <div id="collapseDiv" class="collapse">
          <b>Abstract</b> We present ABRA, a suite of algorithms that compute and maintain probabilistically-guaranteed, high-quality, approximations of the betweenness centrality of all nodes
