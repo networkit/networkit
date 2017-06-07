@@ -41,6 +41,7 @@ public:
 protected:
 
     std::string objective;    // name of objective function
+    Aux::SetIntersector<node> intersector;    // efficient set intersections
 
 
 };
