@@ -74,7 +74,7 @@ protected:
 	void init();
     double BFScut(node v, double x, bool *visited, count *distances, node *pred, count *visEdges);
     void computelBound1(std::vector<double> &S);
-    void BFSbound(node x, std::vector<double> &S, count *visEdges);
+    void BFSbound(node x, std::vector<double> &S, count *visEdges, const std::vector<bool> & toAnalyze);
     void computeReachable();
     void computeReachableNodesUndir();
     void computeReachableNodesDir();
