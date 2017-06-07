@@ -27,9 +27,9 @@ __author__ = "Christian Staudt"
 __copyright__ = "Copyright (c) 2014 Christan Staudt"
 __credits__ = ["Lukas Barth", "Miriam Beddig", "Elisabetta Bergamini", "Stefan Bertsch", "Pratistha Bhattarai", "Andreas Bilke", "Simon Bischof", \
 	"Guido Brückner", "Mark Erb", "Patrick Flick", "Michael Hamann", "Lukas Hartmann", "Daniel Hoske", "Gerd Lindner", "Moritz v. Looz", "Yassine Marrakchi", "Henning Meyerhenke", \
-	"Marcel Radermacher", "Klara Reichard", "Marvin Ritter", "Aleksejs Sazonovs", "Florian Weber", "Michael Wegner", "Jörg Weisbarth"]
+	"Marcel Radermacher", "Klara Reichard", "Marvin Ritter", "Aleksejs Sazonovs", "Florian Weber", "Michael Wegner", "Jörg Weisbarth", "Kolja Esders"]
 __license__ = "MIT"
-__version__ = "4.2"
+__version__ = "4.3"
 
 
 # standard library modules
