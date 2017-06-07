@@ -5985,10 +5985,11 @@ cdef class EigenvectorCentrality(Centrality):
 
 cdef extern from "cpp/centrality/CoreDecomposition.h":
 	cdef cppclass _CoreDecomposition "NetworKit::CoreDecomposition" (_Centrality):
-		_CoreDecomposition(_Graph, bool, bool) except +
+		_CoreDecomposition(_Graph, bool, bool, bool) except +
 		_Cover getCover() except +
 		_Partition getPartition() except +
 		index maxCoreNumber() except +
+		vector[node] getNodeOrder() except +
 
 cdef class CoreDecomposition(Centrality):
 	""" Computes k-core decomposition of a graph.
@@ -6005,11 +6006,14 @@ cdef class CoreDecomposition(Centrality):
 		Divide each core number by the maximum degree.
 	enforceBucketQueueAlgorithm : boolean
 		enforce switch to sequential algorithm
+	storeNodeOrder : boolean
+		If set to True, the order of the nodes in ascending order of the cores is stored and can later be returned using getNodeOrder(). Enforces the sequential bucket priority queue algorithm.
+
 	"""
 
-	def __cinit__(self, Graph G, bool normalized=False, bool enforceBucketQueueAlgorithm=False):
+	def __cinit__(self, Graph G, bool normalized=False, bool enforceBucketQueueAlgorithm=False, bool storeNodeOrder = False):
 		self._G = G
-		self._this = new _CoreDecomposition(G._this, normalized, enforceBucketQueueAlgorithm)
+		self._this = new _CoreDecomposition(G._this, normalized, enforceBucketQueueAlgorithm, storeNodeOrder)
 
 	def maxCoreNumber(self):
 		""" Get maximum core number.
@@ -6040,6 +6044,19 @@ cdef class CoreDecomposition(Centrality):
 			The k-shells
 		"""
 		return Partition().setThis((<_CoreDecomposition*>(self._this)).getPartition())
+
+	def getNodeOrder(self):
+		"""
+		Get the node order.
+
+		This is only possible when storeNodeOrder was set.
+
+		Returns
+		-------
+		list
+			The nodes sorted by increasing core number.
+		"""
+		return (<_CoreDecomposition*>(self._this)).getNodeOrder()
 
 cdef extern from "cpp/centrality/LocalClusteringCoefficient.h":
 	cdef cppclass _LocalClusteringCoefficient "NetworKit::LocalClusteringCoefficient" (_Centrality):
@@ -6913,6 +6930,100 @@ cdef class MaxClique:
 		Returns the size of the biggest clique
 		"""
 		return self._this.getMaxCliqueSize()
+
+cdef cppclass NodeVectorCallbackWrapper:
+	void* callback
+	__init__(object callback):
+		this.callback = <void*>callback
+	# This is called within the run() method which is nogil!
+	void cython_call_operator(const vector[node]& nodes) nogil:
+		cdef bool error = False
+		cdef string message
+		# Acquire gil to allow Python code!
+		with gil:
+			try:
+				(<object>callback)(nodes)
+			except Exception as e:
+				error = True
+				message = stdstring("An Exception occurred, aborting execution of iterator: {0}".format(e))
+			if (error):
+				throw_runtime_error(message)
+
+cdef extern from "cpp/clique/MaximalCliques.h":
+	cdef cppclass _MaximalCliques "NetworKit::MaximalCliques"(_Algorithm):
+		_MaximalCliques(_Graph G, bool maximumOnly) except +
+		_MaximalCliques(_Graph G, NodeVectorCallbackWrapper callback) except +
+		vector[vector[node]] getCliques() except +
+
+cdef class MaximalCliques(Algorithm):
+	"""
+	Algorithm for listing all maximal cliques.
+
+	The implementation is based on the "hybrid" algorithm described in
+
+	Eppstein, D., & Strash, D. (2011).
+	Listing All Maximal Cliques in Large Sparse Real-World Graphs.
+	In P. M. Pardalos & S. Rebennack (Eds.),
+	Experimental Algorithms (pp. 364–375). Springer Berlin Heidelberg.
+	Retrieved from http://link.springer.com/chapter/10.1007/978-3-642-20662-7_31
+
+	The running time of this algorithm should be in O(d^2 * n * 3^{d/3})
+	where f is the degeneracy of the graph, i.e., the maximum core number.
+	The running time in practive depends on the structure of the graph. In
+	particular for complex networks it is usually quite fast, even graphs with
+	millions of edges can usually be processed in less than a minute.
+
+	Parameters
+	----------
+	G : Graph
+		The graph to list the cliques for
+	maximumOnly : bool
+		A value of True denotes that only one maximum clique is desired. This enables
+		further optimizations of the algorithm to skip smaller cliques more
+		efficiently. This parameter is only considered when no callback is given.
+	callback : callable
+		If a callable Python object is given, it will be called once for each
+		maximal clique. Then no cliques will be stored. The callback must accept
+		one parameter which is a list of nodes.
+	"""
+	cdef NodeVectorCallbackWrapper* _callback;
+	cdef Graph _G
+	cdef object _py_callback
+
+	def __cinit__(self, Graph G not None, bool maximumOnly = False, object callback = None):
+		self._G = G
+
+		if callable(callback):
+			# Make sure the callback is not de-allocated!
+			self._py_callback = callback
+			self._callback = new NodeVectorCallbackWrapper(callback)
+			try:
+				self._this = new _MaximalCliques(self._G._this, dereference(self._callback))
+			finally:
+				del self._callback
+				self._callback = NULL
+		else:
+			self._callback = NULL
+			self._this = new _MaximalCliques(self._G._this, maximumOnly);
+
+	def __dealloc__(self):
+		if not self._callback == NULL:
+			del self._callback
+			self._callback = NULL
+
+	def getCliques(self):
+		"""
+		Return all found cliques unless a callback was given.
+
+		This method will throw if a callback was given and thus the cliques were not stored.
+		If only the maximum clique was stored, it will return exactly one clique unless the graph
+		is empty.
+
+		Returns
+		-------
+		A list of cliques, each being represented as a list of nodes.
+		"""
+		return (<_MaximalCliques*>(self._this)).getCliques()
 
 # Module: linkprediction
 
