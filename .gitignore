@@ -50,3 +50,4 @@ EnsembleClustering-O
 doxygen
 NetworKit-Tests-*
 include/NetworKit
+dist/
