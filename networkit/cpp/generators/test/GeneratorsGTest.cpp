@@ -225,6 +225,8 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
  * Testing the dynamic hyperbolic generator with fixed parameters and changing node positions
  */
 TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
+	Aux::Random::setSeed(0, false);
+
 	//set up dynamic parameters
 	int nSteps = 20;
 	const count n = 1000;
