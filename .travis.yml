@@ -38,17 +38,17 @@ matrix:
         - make
         - cd -
 
-    - env: CC="clang-3.7" CXX="clang++-3.7"
+    - env: CC="clang-3.8" CXX="clang++-3.8"
       os: linux
       sudo: false
       addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.7
+            - llvm-toolchain-precise-3.8
           packages:
             - g++-5
-            - clang-3.7
+            - clang-3.8
             - scons
             - libgtest-dev
             - subversion
@@ -63,7 +63,7 @@ matrix:
        # install openmp
        - svn co http://llvm.org/svn/llvm-project/openmp/trunk ~/openmp
        - cd ~/openmp/runtime/
-       - cmake -D CMAKE_INSTALL_PREFIX:PATH=./ ./ -DCMAKE_C_COMPILER=clang-3.7 -DCMAKE_CXX_COMPILER=clang++-3.7
+       - cmake -D CMAKE_INSTALL_PREFIX:PATH=./ ./ -DCMAKE_C_COMPILER=clang-3.8 -DCMAKE_CXX_COMPILER=clang++-3.8
        - make
        - export OPENMP_LIB=$(pwd)/src/
        - export OPENMP_INCLUDE=$(pwd)/src/
@@ -106,11 +106,6 @@ script:
  - scons --optimize=Opt --target=Tests --std=c++11 -j2
  - export OMP_NUM_THREADS=2
  - ./NetworKit-Tests-Opt -t
-
-branches:
-  only:
-  - master
-  - Dev
 
 notifications:
   email: false

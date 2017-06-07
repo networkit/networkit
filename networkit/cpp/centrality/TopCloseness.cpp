@@ -9,6 +9,7 @@
 #include <queue>
 #include <memory>
 #include <omp.h>
+#include <cstdlib>
 
 #include "TopCloseness.h"
 #include "../components/ConnectedComponents.h"
@@ -16,9 +17,9 @@
 #include "../auxiliary/PrioQueueForInts.h"
 #include "../auxiliary/PrioQueue.h"
 #include "../auxiliary/Log.h"
-#include "../graph/SSSP.h"
-#include "../graph/Dijkstra.h"
-#include "../graph/BFS.h"
+#include "../distance/SSSP.h"
+#include "../distance/Dijkstra.h"
+#include "../distance/BFS.h"
 
 namespace NetworKit {
 
@@ -256,7 +257,7 @@ void TopCloseness::computelBound1(std::vector<double> &S) {
     DEBUG("Visited edges (first lbound): ", n_op);
 }
 
-void TopCloseness::BFSbound(node x, std::vector<double> &S2, count *visEdges) {
+void TopCloseness::BFSbound(node x, std::vector<double> &S2, count *visEdges, const std::vector<bool> & toAnalyze) {
     count r = 0;
     std::vector<std::vector<node>> levels(n);
     // nodesPerLev[i] contains the number of nodes in level i
@@ -288,10 +289,10 @@ void TopCloseness::BFSbound(node x, std::vector<double> &S2, count *visEdges) {
     // we compute the bound for the first level
     count closeNodes = 0, farNodes = 0;
     for (count j = 0; j <= nLevs; j++) {
-        if (abs((long long)j-1LL)<=1)  {
+        if (std::abs((long long)j-1LL)<=1)  {
             closeNodes += nodesPerLev[j];
         } else {
-            farNodes += nodesPerLev[j]*abs(1LL-(long long)j);
+            farNodes += nodesPerLev[j]*std::abs(1LL-(long long)j);
         }
     }
 
@@ -300,7 +301,7 @@ void TopCloseness::BFSbound(node x, std::vector<double> &S2, count *visEdges) {
         node w = levels[1][j];
         // we subtract 2 not to count the node itself
         double bound = (level_bound - 2 - G.degree(w)) * (n-1.0) / (reachU[w]-1.0) / (reachU[w]-1.0);
-        if (bound > S2[w] && (!G.isDirected() || component[w] == component[x])) {
+        if (toAnalyze[w] && bound > S2[w] && (!G.isDirected() || component[w] == component[x])) {
             S2[w] = bound;
         }
     }
@@ -316,7 +317,7 @@ void TopCloseness::BFSbound(node x, std::vector<double> &S2, count *visEdges) {
         for (count j = 0; j < levels[i].size(); j ++) {
             node w = levels[i][j];
             double bound = (level_bound - 2 - G.degree(w)) * (n-1.0) / (reachU[w]-1.0) / (reachU[w]-1.0);
-            if (bound > S2[w] && (!G.isDirected() || component[w] == component[x])) {
+            if (toAnalyze[w] && bound > S2[w] && (!G.isDirected() || component[w] == component[x])) {
                 // TODO MICHELE: as before.
                 S2[w] = bound;
             }
@@ -484,7 +485,7 @@ void TopCloseness::run() {
             } else if (sec_heu) {
                 // MICHELE: we use BFSbound to bound the centrality of all nodes.
                 DEBUG("    Running BFSbound.");
-                BFSbound(s, S, &visEdges);
+                BFSbound(s, S, &visEdges, toAnalyze);
                 omp_set_lock(&lock);
                 farness[s] = S[s];
                 omp_unset_lock(&lock);

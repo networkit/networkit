@@ -55,7 +55,7 @@ namespace SignalHandling {
 		 * @param caller address of the calling object
 		 */
 		void reset(SignalHandler* caller);
-	};
+	}
 
 }
 

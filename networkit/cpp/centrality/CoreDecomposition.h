@@ -32,11 +32,15 @@ public:
 	 * Create CoreDecomposition class for graph @a G. The graph may not contain self-loops.
 	 *
 	 * Contains the parallel algorithm by
-	 * Dasari, N.S.; Desh, R.; Zubair, M., "ParK: An efficient algorithm for k-core decomposition on multicore processors," in Big Data (Big Data), * 2014 IEEE International Conference on , vol., no., pp.9-16, 27-30 Oct. 2014 doi: 10.1109/BigData.2014.7004366
+	 * Dasari, N.S.; Desh, R.; Zubair, M., "ParK: An efficient algorithm for k-core decomposition on multicore processors," in Big Data (Big Data), * 2014 IEEE International Conference.
 	 *
+	 * TODO complexity?
 	 * @param G The graph.
+	 * @param normalized If set to @c true the scores are normalized in the interval [0,1].
+	 * @param enforceBucketQueueAlgorithm If set to @c true, uses a bucket priority queue data structure. This it is generally slower than ParK but may be more flexible. TODO check
+	 * @param storeNodeOrder If set to @c true, the order of the nodes in ascending order of the cores is stored and can later be returned using getNodeOrder(). Enforces the sequential bucket priority queue algorithm.
 	 */
-	CoreDecomposition(const Graph& G, bool normalized=false, bool enforceBucketQueueAlgorithm = false);
+	CoreDecomposition(const Graph& G, bool normalized=false, bool enforceBucketQueueAlgorithm = false, bool storeNodeOrder = false);
 
 	/**
 	 * Perform k-core decomposition of graph passed in constructor.
@@ -72,6 +76,15 @@ public:
 	double maximum();
 
 	/**
+	 * Get the node order.
+	 *
+	 * This is only possible when storeNodeOrder was set.
+	 *
+	 * @return The nodes sorted by increasing core number.
+	 */
+	const std::vector<node>& getNodeOrder() const;
+
+	/**
 	 * The algorithm ParK can run in parallel under certain conditions,
 	 * the bucket PQ based one cannot.
 	 */
@@ -86,6 +99,10 @@ private:
 	bool enforceBucketQueueAlgorithm; // in case one wants to switch to the alternative algorithm
 
 	bool canRunInParallel; // signifies if a parallel algorithm can be used
+
+	bool storeNodeOrder; // signifies if the node order shall be stored
+
+	std::vector<node> nodeOrder; // Stores the node order, i.e., all nodes sorted by core number
 
 	/**
 	 * Perform k-core decomposition of graph passed in constructor.

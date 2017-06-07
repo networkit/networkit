@@ -285,7 +285,8 @@ cdef extern from "cpp/graph/Graph.h":
 		edgeweight totalEdgeWeight() except +
 		node randomNode() except +
 		node randomNeighbor(node) except +
-		pair[node, node] randomEdge() except +
+		pair[node, node] randomEdge(bool) except +
+		vector[pair[node, node]] randomEdges(count) except +
 		Point[float] getCoordinate(node v) except +
 		void setCoordinate(node v, Point[float] value) except +
 		void initCoordinates() except +
@@ -583,18 +584,14 @@ cdef class Graph:
 		return self._this.addNode()
 
 	def removeNode(self, u):
-		""" Remove the isolated node `u` from the graph.
+		""" Remove a node `v` and all incident edges from the graph.
+
+	 	Incoming as well as outgoing edges will be removed.
 
 	 	Parameters
 	 	----------
 	 	u : node
 	 		Node.
-
-	 	Notes
-	 	-----
-	 	Although it would be convenient to remove all incident edges at the same time, this causes complications for
-	 	dynamic applications. Therefore, removeNode is an atomic event. All incident edges need to be removed first
-	 	and an exception is thrown otherwise.
 		"""
 		self._this.removeNode(u)
 
@@ -1002,8 +999,13 @@ cdef class Graph:
 		"""
 		return self._this.randomNeighbor(u)
 
-	def randomEdge(self):
+	def randomEdge(self, bool uniformDistribution = False):
 		""" Get a random edge of the graph.
+
+		Parameters
+		----------
+		uniformDistribution : bool
+			If the distribution of the edge shall be uniform
 
 		Returns
 		-------
@@ -1012,9 +1014,25 @@ cdef class Graph:
 
 		Notes
 		-----
-		Fast, but not uniformly random.
+		Fast, but not uniformly random if uniformDistribution is not set,
+		slow and uniformly random otherwise.
 		"""
-		return self._this.randomEdge()
+		return self._this.randomEdge(uniformDistribution)
+
+	def randomEdges(self, count numEdges):
+		""" Returns a list with numEdges random edges. The edges are chosen uniformly at random.
+
+		Parameters
+		----------
+		numEdges : count
+			The number of edges to choose.
+
+		Returns
+		-------
+		list of pairs
+			The selected edges.
+		"""
+		return self._this.randomEdges(numEdges)
 
 	def getCoordinate(self, v):
 		"""
@@ -1170,7 +1188,7 @@ cdef class Graph:
 
 # TODO: expose all methods
 
-cdef extern from "cpp/graph/SSSP.h":
+cdef extern from "cpp/distance/SSSP.h":
 	cdef cppclass _SSSP "NetworKit::SSSP"(_Algorithm):
 		_SSSP(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
 		void run() nogil except +
@@ -1240,10 +1258,12 @@ cdef class SSSP(Algorithm):
 	def numberOfPaths(self, t):
 		return (<_SSSP*>(self._this))._numberOfPaths(t)
 
-cdef extern from "cpp/graph/DynSSSP.h":
+
+cdef extern from "cpp/distance/DynSSSP.h":
 	cdef cppclass _DynSSSP "NetworKit::DynSSSP"(_SSSP):
 		_DynSSSP(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
-		void update(vector[_GraphEvent] batch) except +
+		void update(_GraphEvent ev) except +
+		void updateBatch(vector[_GraphEvent] batch) except +
 		bool modified() except +
 		void setTargetNode(node t) except +
 
@@ -1253,17 +1273,26 @@ cdef class DynSSSP(SSSP):
 		if type(self) == SSSP:
 			raise RuntimeError("Error, you may not use DynSSSP directly, use a sub-class instead")
 
-	""" Updates shortest paths with the batch `batch` of edge insertions.
+	def update(self, ev):
+		""" Updates shortest paths with the edge insertion.
+
+		Parameters
+		----------
+		ev : GraphEvent.
+		"""
+		(<_DynSSSP*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+
+	def updateBatch(self, batch):
+		""" Updates shortest paths with the batch `batch` of edge insertions.
 
 		Parameters
 		----------
 		batch : list of GraphEvent.
 		"""
-	def update(self, batch):
 		cdef vector[_GraphEvent] _batch
 		for ev in batch:
 			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-		(<_DynSSSP*>(self._this)).update(_batch)
+		(<_DynSSSP*>(self._this)).updateBatch(_batch)
 
 	def modified(self):
 		return (<_DynSSSP*>(self._this)).modified()
@@ -1272,7 +1301,7 @@ cdef class DynSSSP(SSSP):
 		(<_DynSSSP*>(self._this)).setTargetNode(t)
 
 
-cdef extern from "cpp/graph/BFS.h":
+cdef extern from "cpp/distance/BFS.h":
 	cdef cppclass _BFS "NetworKit::BFS"(_SSSP):
 		_BFS(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
 
@@ -1299,7 +1328,7 @@ cdef class BFS(SSSP):
 		self._G = G
 		self._this = new _BFS(G._this, source, storePaths, storeStack, target)
 
-cdef extern from "cpp/graph/DynBFS.h":
+cdef extern from "cpp/distance/DynBFS.h":
 	cdef cppclass _DynBFS "NetworKit::DynBFS"(_DynSSSP):
 		_DynBFS(_Graph G, node source) except +
 
@@ -1324,7 +1353,7 @@ cdef class DynBFS(DynSSSP):
 		self._this = new _DynBFS(G._this, source)
 
 
-cdef extern from "cpp/graph/Dijkstra.h":
+cdef extern from "cpp/distance/Dijkstra.h":
 	cdef cppclass _Dijkstra "NetworKit::Dijkstra"(_SSSP):
 		_Dijkstra(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
 
@@ -1354,7 +1383,7 @@ cdef class Dijkstra(SSSP):
 		self._G = G
 		self._this = new _Dijkstra(G._this, source, storePaths, storeStack, target)
 
-cdef extern from "cpp/graph/DynDijkstra.h":
+cdef extern from "cpp/distance/DynDijkstra.h":
 	cdef cppclass _DynDijkstra "NetworKit::DynDijkstra"(_DynSSSP):
 		_DynDijkstra(_Graph G, node source) except +
 
@@ -1378,20 +1407,18 @@ cdef class DynDijkstra(DynSSSP):
 		self._this = new _DynDijkstra(G._this, source)
 
 
-cdef extern from "cpp/graph/APSP.h":
+cdef extern from "cpp/distance/APSP.h":
 	cdef cppclass _APSP "NetworKit::APSP"(_Algorithm):
 		_APSP(_Graph G) except +
 		vector[vector[edgeweight]] getDistances() except +
 		edgeweight getDistance(node u, node v) except +
 
 cdef class APSP(Algorithm):
-	""" An implementation of Dijkstra's SSSP algorithm for the All-Pairs Shortest-Paths problem.
-	Returns a list of lists of weighted distances from node source, i.e. the length of the shortest path from source to
-	any other node.
+	""" All-Pairs Shortest-Paths algorithm (implemented running Dijkstra's algorithm from each node, or BFS if G is unweighted).
 
     APSP(G)
 
-    Creates Dijkstra for `G` and source node `source`.
+    Computes all pairwise shortest-path distances in G.
 
     Parameters
 	----------
@@ -1408,13 +1435,12 @@ cdef class APSP(Algorithm):
 		self._G = None
 
 	def getDistances(self):
-		""" Returns a vector of vectors of weighted distances from the source node, i.e. the
- 	 	length of the shortest path from the source node to any other node.
+		""" Returns a vector of vectors of distances between each node pair.
 
  	 	Returns
  	 	-------
  	 	vector of vectors
- 	 		The weighted distances from the nodes to any other node in the graph.
+ 	 		The shortest-path distances from each node to any other node in the graph.
 		"""
 		return (<_APSP*>(self._this)).getDistances()
 
@@ -1435,7 +1461,48 @@ cdef class APSP(Algorithm):
 		"""
 		return (<_APSP*>(self._this)).getDistance(u, v)
 
+cdef extern from "cpp/distance/DynAPSP.h":
+	cdef cppclass _DynAPSP "NetworKit::DynAPSP"(_APSP):
+		_DynAPSP(_Graph G) except +
+		void update(_GraphEvent ev) except +
+		void updateBatch(vector[_GraphEvent] batch) except +
 
+cdef class DynAPSP(APSP):
+	""" All-Pairs Shortest-Paths algorithm for dynamic graphs.
+
+		DynAPSP(G)
+
+		Computes all pairwise shortest-path distances in G.
+
+		Parameters
+	----------
+	G : Graph
+		The graph.
+		"""
+	def __init__(self, Graph G):
+		self._G = G
+		self._this = new _DynAPSP(G._this)
+
+	def update(self, ev):
+		""" Updates shortest paths with the edge insertion.
+
+		Parameters
+		----------
+		ev : GraphEvent.
+		"""
+		(<_DynAPSP*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+
+	def updateBatch(self, batch):
+		""" Updates shortest paths with the batch `batch` of edge insertions.
+
+		Parameters
+		----------
+		batch : list of GraphEvent.
+		"""
+		cdef vector[_GraphEvent] _batch
+		for ev in batch:
+			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+		(<_DynAPSP*>(self._this)).updateBatch(_batch)
 
 cdef extern from "cpp/graph/SpanningForest.h":
 	cdef cppclass _SpanningForest "NetworKit::SpanningForest":
@@ -5480,21 +5547,43 @@ cdef class Centrality(Algorithm):
 		self._G = None # just to be sure the graph is deleted
 
 	def scores(self):
+		"""
+		Returns
+		-------
+		list
+			the list of all scores
+		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_Centrality*>(self._this)).scores()
 
 	def score(self, v):
+		"""
+		Returns
+		-------
+		the score of node v
+		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_Centrality*>(self._this)).score(v)
 
 	def ranking(self):
+		"""
+		Returns
+		-------
+		dictionary
+			a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
+		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_Centrality*>(self._this)).ranking()
 
 	def maximum(self):
+		"""
+		Returns
+		-------
+		the maximum theoretical centrality score for the given graph
+		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_Centrality*>(self._this)).maximum()
@@ -5531,12 +5620,16 @@ cdef class TopCloseness:
 	Finds the top k nodes with highest closeness centrality faster than computing it for all nodes, based on "Computing Top-k Closeness Centrality Faster in Unweighted Graphs", Bergamini et al., ALENEX16.
 	The algorithms is based on two independent heuristics, described in the referenced paper. We recommend to use first_heu = true and second_heu = false for complex networks and first_heu = true and second_heu = true for street networks or networks with large diameters.
 
+	TopCloseness(G, k=1, first_heu=True, sec_heu=True)
+
 	Parameters
 	----------
 	G: An unweighted graph.
 	k: Number of nodes with highest closeness that have to be found. For example, if k = 10, the top 10 nodes with highest closeness will be computed.
 	first_heu: If true, the neighborhood-based lower bound is computed and nodes are sorted according to it. If false, nodes are simply sorted by degree.
 	sec_heu: If true, the BFSbound is re-computed at each iteration. If false, BFScut is used.
+	The worst case running time of the algorithm is O(nm), where n is the number of nodes and m is the number of edges.
+	However, for most networks the empirical running time is O(m).
 	"""
 	cdef _TopCloseness* _this
 	cdef Graph _G
@@ -5579,7 +5672,8 @@ cdef extern from "cpp/centrality/DegreeCentrality.h":
 
 cdef class DegreeCentrality(Centrality):
 	""" Node centrality index which ranks nodes by their degree.
- 	Optional normalization by maximum degree.
+ 	Optional normalization by maximum degree. The run() method runs in O(m) time, where m is the number of
+	edges in the graph.
 
  	DegreeCentrality(G, normalized=False)
 
@@ -5610,7 +5704,8 @@ cdef class Betweenness(Centrality):
 		Betweenness(G, normalized=False, computeEdgeCentrality=False)
 
 		Constructs the Betweenness class for the given Graph `G`. If the betweenness scores should be normalized,
-  		then set `normalized` to True.
+  	then set `normalized` to True. The run() method takes O(nm) time, where n is the number
+	 	of nodes and m is the number of edges of the graph.
 
 	 	Parameters
 	 	----------
@@ -5647,7 +5742,8 @@ cdef class Closeness(Centrality):
 		Closeness(G, normalized=False, checkConnectedness=True)
 
 		Constructs the Closeness class for the given Graph `G`. If the Closeness scores should be normalized,
-  		then set `normalized` to True.
+  		then set `normalized` to True. The run() method takes O(nm) time, where n is the number
+	 	 of nodes and m is the number of edges of the graph. NOTICE: the graph has to be connected.
 
 	 	Parameters
 	 	----------
@@ -5682,6 +5778,7 @@ cdef class KPathCentrality(Centrality):
 			tradeoff between runtime and precision
 			-0.5: maximum precision, maximum runtime
 	 		 0.5: lowest precision, lowest runtime
+		k: maximum length of paths
 	"""
 
 	def __cinit__(self, Graph G, alpha=0.2, k=0):
@@ -5697,7 +5794,10 @@ cdef class KatzCentrality(Centrality):
 	"""
 		KatzCentrality(G, alpha=5e-4, beta=0.1, tol=1e-8)
 
-		Constructs a KatzCentrality object for the given Graph `G`
+		Constructs a KatzCentrality object for the given Graph `G`.
+		Each iteration of the algorithm requires O(m) time.
+		The number of iterations depends on how long it takes to reach the convergence
+		(and therefore on the desired tolerance `tol`).
 
 	 	Parameters
 	 	----------
@@ -5731,7 +5831,10 @@ cdef class ApproxBetweenness(Centrality):
 
  	The algorithm approximates the betweenness of all vertices so that the scores are
 	within an additive error epsilon with probability at least (1- delta).
-	The values are normalized by default.
+	The values are normalized by default. The run() method takes O(m) time per sample, where  m is
+	the number of edges of the graph. The number of samples is proportional to universalConstant/epsilon^2.
+	Although this algorithm has a theoretical guarantee, the algorithm implemented in Estimate Betweenness usually performs better in practice
+	Therefore, we recommend to use EstimateBetweenness if no theoretical guarantee is needed.
 
 	Parameters
 	----------
@@ -5741,13 +5844,6 @@ cdef class ApproxBetweenness(Centrality):
 		maximum additive error
 	delta : double, optional
 		probability that the values are within the error guarantee
-	diameterSamples: count, optional
-		if 0 (the default), use the possibly slow estimation of the
-		vertex diameter which definitely  guarantees approximation
-		quality. Otherwise, use a fast heuristic that has a higher
-		chance of getting the estimate right the higher the number of
-		samples (note: there is no approximation guarantee when using
-		the heuristic).
 	universalConstant: double, optional
 		the universal constant to be used in computing the sample size.
 		It is 1 by default. Some references suggest using 0.5, but there
@@ -5762,20 +5858,23 @@ cdef class ApproxBetweenness(Centrality):
 		return (<_ApproxBetweenness*>(self._this)).numberOfSamples()
 
 
+cdef extern from "cpp/centrality/EstimateBetweenness.h":
+	cdef cppclass _EstimateBetweenness"NetworKit::EstimateBetweenness" (_Centrality):
+		_EstimateBetweenness(_Graph, count, bool, bool) except +
 
-cdef extern from "cpp/centrality/ApproxBetweenness2.h":
-	cdef cppclass _ApproxBetweenness2 "NetworKit::ApproxBetweenness2" (_Centrality):
-		_ApproxBetweenness2(_Graph, count, bool, bool) except +
 
-
-cdef class ApproxBetweenness2(Centrality):
-	""" Approximation of betweenness centrality according to algorithm described in
+cdef class EstimateBetweenness(Centrality):
+	""" Estimation of betweenness centrality according to algorithm described in
 	Sanders, Geisberger, Schultes: Better Approximation of Betweenness Centrality
 
-	ApproxBetweenness2(G, nSamples, normalized=False)
+	EstimateBetweenness(G, nSamples, normalized=False, parallel=False)
 
-	The algorithm approximates the betweenness of all nodes, using weighting
-	of the contributions to avoid biased estimation.
+	The algorithm estimates the betweenness of all nodes, using weighting
+	of the contributions to avoid biased estimation. The run() method takes O(m)
+	time per sample, where  m is the number of edges of the graph. There is no proven
+	theoretical guarantee on the quality of the approximation. However, the algorithm
+        was shown to perform well in practice.
+        If a guarantee is required, use ApproxBetweenness.
 
 	Parameters
 	----------
@@ -5791,8 +5890,41 @@ cdef class ApproxBetweenness2(Centrality):
 
 	def __cinit__(self, Graph G, nSamples, normalized=False, parallel=False):
 		self._G = G
-		self._this = new _ApproxBetweenness2(G._this, nSamples, normalized, parallel)
+		self._this = new _EstimateBetweenness(G._this, nSamples, normalized, parallel)
 
+
+cdef class ApproxBetweenness2(Centrality):
+	""" DEPRECATED: Use EstimateBetweenness instead.
+
+	Estimation of betweenness centrality according to algorithm described in
+	Sanders, Geisberger, Schultes: Better Approximation of Betweenness Centrality
+
+	ApproxBetweenness2(G, nSamples, normalized=False, parallel=False)
+
+	The algorithm estimates the betweenness of all nodes, using weighting
+	of the contributions to avoid biased estimation. The run() method takes O(m)
+	time per sample, where  m is the number of edges of the graph. There is no proven
+	theoretical guarantee on the quality of the approximation. However, the algorithm
+        was shown to perform well in practice.
+        If a guarantee is required, use ApproxBetweenness.
+
+	Parameters
+	----------
+	G : Graph
+		input graph
+	nSamples : count
+		user defined number of samples
+	normalized : bool, optional
+		normalize centrality values in interval [0,1]
+	parallel : bool, optional
+		run in parallel with additional memory cost z + 3z * t
+	"""
+
+	def __cinit__(self, Graph G, nSamples, normalized=False, parallel=False):
+		from warnings import warn
+		warn("ApproxBetweenness2 is deprecated; use EstimateBetweenness instead.", DeprecationWarning)
+		self._G = G
+		self._this = new _EstimateBetweenness(G._this, nSamples, normalized, parallel)
 
 
 cdef extern from "cpp/centrality/ApproxCloseness.h":
@@ -5907,10 +6039,11 @@ cdef class EigenvectorCentrality(Centrality):
 
 cdef extern from "cpp/centrality/CoreDecomposition.h":
 	cdef cppclass _CoreDecomposition "NetworKit::CoreDecomposition" (_Centrality):
-		_CoreDecomposition(_Graph, bool, bool) except +
+		_CoreDecomposition(_Graph, bool, bool, bool) except +
 		_Cover getCover() except +
 		_Partition getPartition() except +
 		index maxCoreNumber() except +
+		vector[node] getNodeOrder() except +
 
 cdef class CoreDecomposition(Centrality):
 	""" Computes k-core decomposition of a graph.
@@ -5927,11 +6060,14 @@ cdef class CoreDecomposition(Centrality):
 		Divide each core number by the maximum degree.
 	enforceBucketQueueAlgorithm : boolean
 		enforce switch to sequential algorithm
+	storeNodeOrder : boolean
+		If set to True, the order of the nodes in ascending order of the cores is stored and can later be returned using getNodeOrder(). Enforces the sequential bucket priority queue algorithm.
+
 	"""
 
-	def __cinit__(self, Graph G, bool normalized=False, bool enforceBucketQueueAlgorithm=False):
+	def __cinit__(self, Graph G, bool normalized=False, bool enforceBucketQueueAlgorithm=False, bool storeNodeOrder = False):
 		self._G = G
-		self._this = new _CoreDecomposition(G._this, normalized, enforceBucketQueueAlgorithm)
+		self._this = new _CoreDecomposition(G._this, normalized, enforceBucketQueueAlgorithm, storeNodeOrder)
 
 	def maxCoreNumber(self):
 		""" Get maximum core number.
@@ -5963,13 +6099,26 @@ cdef class CoreDecomposition(Centrality):
 		"""
 		return Partition().setThis((<_CoreDecomposition*>(self._this)).getPartition())
 
+	def getNodeOrder(self):
+		"""
+		Get the node order.
+
+		This is only possible when storeNodeOrder was set.
+
+		Returns
+		-------
+		list
+			The nodes sorted by increasing core number.
+		"""
+		return (<_CoreDecomposition*>(self._this)).getNodeOrder()
+
 cdef extern from "cpp/centrality/LocalClusteringCoefficient.h":
 	cdef cppclass _LocalClusteringCoefficient "NetworKit::LocalClusteringCoefficient" (_Centrality):
 		_LocalClusteringCoefficient(_Graph, bool) except +
 
 cdef class LocalClusteringCoefficient(Centrality):
 	"""
-		LocalClusteringCoefficient(G, normalized=False, computeEdgeCentrality=False)
+		LocalClusteringCoefficient(G, turbo=False)
 
 		Constructs the LocalClusteringCoefficient class for the given Graph `G`. If the local clustering coefficient values should be normalized,
 		then set `normalized` to True. The graph may not contain self-loops.
@@ -5981,7 +6130,7 @@ cdef class LocalClusteringCoefficient(Centrality):
 		with nodes of very high degree and a very skewed degree distribution.
 
 		[0] Triangle Listing Algorithms: Back from the Diversion
-		Mark Ortmann and Ulrik Brandes                                                                          *
+		Mark Ortmann and Ulrik Brandes
 		2014 Proceedings of the Sixteenth Workshop on Algorithm Engineering and Experiments (ALENEX). 2014, 1-8
 
 	 	Parameters
@@ -6023,15 +6172,17 @@ cdef extern from "cpp/centrality/DynApproxBetweenness.h":
 	cdef cppclass _DynApproxBetweenness "NetworKit::DynApproxBetweenness":
 		_DynApproxBetweenness(_Graph, double, double, bool, double) except +
 		void run() nogil except +
-		void update(vector[_GraphEvent]) except +
+		void update(_GraphEvent) except +
+		void updateBatch(vector[_GraphEvent]) except +
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
 		count getNumberOfSamples() except +
 
 cdef class DynApproxBetweenness:
-	""" New dynamic algorithm for the approximation of betweenness centrality with
-	a guaranteed error
+	""" The algorithm approximates the betweenness of all vertices so that the scores are
+	  within an additive error @a epsilon with probability at least (1- @a delta).
+	  The values are normalized by default.
 
 	DynApproxBetweenness(G, epsilon=0.01, delta=0.1, storePredecessors=True, universalConstant=1.0)
 
@@ -6070,7 +6221,16 @@ cdef class DynApproxBetweenness:
 			self._this.run()
 		return self
 
-	def update(self, batch):
+	def update(self, ev):
+		""" Updates the betweenness centralities after the edge insertions.
+
+		Parameters
+		----------
+		ev : GraphEvent.
+		"""
+		self._this.update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+
+	def updateBatch(self, batch):
 		""" Updates the betweenness centralities after the batch `batch` of edge insertions.
 
 		Parameters
@@ -6080,7 +6240,7 @@ cdef class DynApproxBetweenness:
 		cdef vector[_GraphEvent] _batch
 		for ev in batch:
 			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-		self._this.update(_batch)
+		self._this.updateBatch(_batch)
 
 	def scores(self):
 		""" Get a vector containing the betweenness score for each node in the graph.
@@ -6123,6 +6283,100 @@ cdef class DynApproxBetweenness:
 		Get number of path samples used in last calculation.
 		"""
 		return self._this.getNumberOfSamples()
+
+cdef extern from "cpp/centrality/DynBetweenness.h":
+	cdef cppclass _DynBetweenness "NetworKit::DynBetweenness":
+		_DynBetweenness(_Graph) except +
+		void run() nogil except +
+		void update(_GraphEvent) except +
+		void updateBatch(vector[_GraphEvent]) except +
+		vector[double] scores() except +
+		vector[pair[node, double]] ranking() except +
+		double score(node) except +
+
+cdef class DynBetweenness:
+	""" The algorithm computes the betweenness centrality of all nodes
+			and updates them after an edge insertion.
+
+	DynBetweenness(G)
+
+	Parameters
+	----------
+	G : Graph
+		the graph
+	"""
+	cdef _DynBetweenness* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _DynBetweenness(G._this)
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		with nogil:
+			self._this.run()
+		return self
+
+	def update(self, ev):
+		""" Updates the betweenness centralities after the edge insertions.
+
+		Parameters
+		----------
+		ev : GraphEvent.
+		"""
+		self._this.update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+
+	def updateBatch(self, batch):
+		""" Updates the betweenness centralities after the batch `batch` of edge insertions.
+
+		Parameters
+		----------
+		batch : list of GraphEvent.
+		"""
+		cdef vector[_GraphEvent] _batch
+		for ev in batch:
+			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+		self._this.updateBatch(_batch)
+
+	def scores(self):
+		""" Get a vector containing the betweenness score for each node in the graph.
+
+		Returns
+		-------
+		vector
+			The betweenness scores calculated by run().
+		"""
+		return self._this.scores()
+
+	def score(self, v):
+		""" Get the betweenness score of node `v` calculated by run().
+
+		Parameters
+		----------
+		v : node
+			A node.
+
+		Returns
+		-------
+		double
+			The betweenness score of node `v.
+		"""
+		return self._this.score(v)
+
+	def ranking(self):
+		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
+		calculated by run().
+
+		Returns
+		-------
+		vector
+			A vector of pairs.
+		"""
+		return self._this.ranking()
 
 cdef extern from "cpp/centrality/PermanenceCentrality.h":
 	cdef cppclass _PermanenceCentrality "NetworKit::PermanenceCentrality":
@@ -6175,6 +6429,9 @@ cdef extern from "cpp/centrality/LocalPartitionCoverage.h":
 cdef class LocalPartitionCoverage(Centrality):
 	"""
 	The local partition coverage is the amount of neighbors of a node u that are in the same partition as u.
+	The running time of the run() method is O(m), where m is the number of edges in the graph.
+
+	LocalPartitionCoverage(G, P)
 
 	Parameters
 	----------
@@ -6623,7 +6880,7 @@ cdef class MatchingCoarsening(GraphCoarsening):
 cdef extern from "cpp/scd/PageRankNibble.h":
 	cdef cppclass _PageRankNibble "NetworKit::PageRankNibble":
 		_PageRankNibble(_Graph G, double alpha, double epsilon) except +
-		map[node, set[node]] run(set[unsigned int] seeds) except +
+		map[node, set[node]] run(set[node] seeds) except +
 
 cdef class PageRankNibble:
 	"""
@@ -6643,7 +6900,7 @@ cdef class PageRankNibble:
 		self._G = G
 		self._this = new _PageRankNibble(G._this, alpha, epsilon)
 
-	def run(self, set[unsigned int] seeds):
+	def run(self, set[node] seeds):
 		"""
 		Produces a cut around a given seed node.
 
@@ -6656,7 +6913,7 @@ cdef class PageRankNibble:
 cdef extern from "cpp/scd/GCE.h":
 	cdef cppclass _GCE "NetworKit::GCE":
 		_GCE(_Graph G, string quality) except +
-		map[node, set[node]] run(set[unsigned int] seeds) except +
+		map[node, set[node]] run(set[node] seeds) except +
 
 cdef class GCE:
 	"""
@@ -6673,7 +6930,7 @@ cdef class GCE:
 		self._G = G
 		self._this = new _GCE(G._this, stdstring(quality))
 
-	def run(self, set[unsigned int] seeds):
+	def run(self, set[node] seeds):
 		"""
 		Produces a cut around a given seed node.
 
@@ -6692,6 +6949,8 @@ cdef extern from "cpp/clique/MaxClique.h":
 
 cdef class MaxClique:
 	"""
+	DEPRECATED: Use clique.MaximumCliques instead.
+	
 	Exact algorithm for computing the size of the largest clique in a graph.
 	Worst-case running time is exponential, but in practice the algorithm is fairly fast.
 	Reference: Pattabiraman et al., http://arxiv.org/pdf/1411.7460.pdf
@@ -6727,6 +6986,100 @@ cdef class MaxClique:
 		Returns the size of the biggest clique
 		"""
 		return self._this.getMaxCliqueSize()
+
+cdef cppclass NodeVectorCallbackWrapper:
+	void* callback
+	__init__(object callback):
+		this.callback = <void*>callback
+	# This is called within the run() method which is nogil!
+	void cython_call_operator(const vector[node]& nodes) nogil:
+		cdef bool error = False
+		cdef string message
+		# Acquire gil to allow Python code!
+		with gil:
+			try:
+				(<object>callback)(nodes)
+			except Exception as e:
+				error = True
+				message = stdstring("An Exception occurred, aborting execution of iterator: {0}".format(e))
+			if (error):
+				throw_runtime_error(message)
+
+cdef extern from "cpp/clique/MaximalCliques.h":
+	cdef cppclass _MaximalCliques "NetworKit::MaximalCliques"(_Algorithm):
+		_MaximalCliques(_Graph G, bool maximumOnly) except +
+		_MaximalCliques(_Graph G, NodeVectorCallbackWrapper callback) except +
+		vector[vector[node]] getCliques() except +
+
+cdef class MaximalCliques(Algorithm):
+	"""
+	Algorithm for listing all maximal cliques.
+
+	The implementation is based on the "hybrid" algorithm described in
+
+	Eppstein, D., & Strash, D. (2011).
+	Listing All Maximal Cliques in Large Sparse Real-World Graphs.
+	In P. M. Pardalos & S. Rebennack (Eds.),
+	Experimental Algorithms (pp. 364–375). Springer Berlin Heidelberg.
+	Retrieved from http://link.springer.com/chapter/10.1007/978-3-642-20662-7_31
+
+	The running time of this algorithm should be in O(d^2 * n * 3^{d/3})
+	where f is the degeneracy of the graph, i.e., the maximum core number.
+	The running time in practive depends on the structure of the graph. In
+	particular for complex networks it is usually quite fast, even graphs with
+	millions of edges can usually be processed in less than a minute.
+
+	Parameters
+	----------
+	G : Graph
+		The graph to list the cliques for
+	maximumOnly : bool
+		A value of True denotes that only one maximum clique is desired. This enables
+		further optimizations of the algorithm to skip smaller cliques more
+		efficiently. This parameter is only considered when no callback is given.
+	callback : callable
+		If a callable Python object is given, it will be called once for each
+		maximal clique. Then no cliques will be stored. The callback must accept
+		one parameter which is a list of nodes.
+	"""
+	cdef NodeVectorCallbackWrapper* _callback;
+	cdef Graph _G
+	cdef object _py_callback
+
+	def __cinit__(self, Graph G not None, bool maximumOnly = False, object callback = None):
+		self._G = G
+
+		if callable(callback):
+			# Make sure the callback is not de-allocated!
+			self._py_callback = callback
+			self._callback = new NodeVectorCallbackWrapper(callback)
+			try:
+				self._this = new _MaximalCliques(self._G._this, dereference(self._callback))
+			finally:
+				del self._callback
+				self._callback = NULL
+		else:
+			self._callback = NULL
+			self._this = new _MaximalCliques(self._G._this, maximumOnly);
+
+	def __dealloc__(self):
+		if not self._callback == NULL:
+			del self._callback
+			self._callback = NULL
+
+	def getCliques(self):
+		"""
+		Return all found cliques unless a callback was given.
+
+		This method will throw if a callback was given and thus the cliques were not stored.
+		If only the maximum clique was stored, it will return exactly one clique unless the graph
+		is empty.
+
+		Returns
+		-------
+		A list of cliques, each being represented as a list of nodes.
+		"""
+		return (<_MaximalCliques*>(self._this)).getCliques()
 
 # Module: linkprediction
 
@@ -8931,12 +9284,15 @@ cdef extern from "cpp/centrality/SpanningEdgeCentrality.h":
 
 cdef class SpanningEdgeCentrality:
 	""" Computes the Spanning Edge centrality for the edges of the graph.
+
+	SpanningEdgeCentrality(G, tol = 0.1)
+
 	Parameters
 	----------
 	G : Graph
 		The graph.
 	tol: double
-		Tolerance used for the approximation
+		Tolerance used for the approximation: with probability at least 1-1/n, the approximated scores are within a factor 1+tol from the exact scores.
 	"""
 	cdef _SpanningEdgeCentrality* _this
 	cdef Graph _G
@@ -8946,16 +9302,19 @@ cdef class SpanningEdgeCentrality:
 	def __dealloc__(self):
 		del self._this
 	def run(self):
-		""" This method computes Spanning Edge Centrality exactly. """
+		""" This method computes Spanning Edge Centrality exactly. This solves a linear system for each edge, so the empirical running time is O(m^2),
+				where m is the number of edges in the graph."""
 		with nogil:
 			self._this.run()
 		return self
 	def runApproximation(self):
-		""" Computes approximation of the Spanning Edge Centrality. """
+		""" Computes approximation of the Spanning Edge Centrality. This solves k linear systems, where k is log(n)/(tol^2). The empirical running time is O(km), where n is the number of nodes
+ 	 			and m is the number of edges. """
 		return self._this.runApproximation()
 
 	def runParallelApproximation(self):
-		""" Computes approximation (in parallel) of the Spanning Edge Centrality. """
+		""" Computes approximation (in parallel) of the Spanning Edge Centrality. This solves k linear systems, where k is log(n)/(tol^2). The empirical running time is O(km), where n is the number of nodes
+ 	 			and m is the number of edges."""
 		return self._this.runParallelApproximation()
 
 	def scores(self):
@@ -8977,6 +9336,7 @@ cdef extern from "cpp/viz/GraphLayoutAlgorithm.h":
 	cdef cppclass _GraphLayoutAlgorithm "NetworKit::GraphLayoutAlgorithm"[T]:
 		_GraphLayoutAlgorithm(_Graph, count) except +
 		count numEdgeCrossings() except +
+		vector[Point[double]] getCoordinates() except +
 		bool writeGraphToGML(string path) except +
 		bool writeKinemage(string path) except +
 
@@ -8999,6 +9359,18 @@ cdef class GraphLayoutAlgorithm:
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return self._this.numEdgeCrossings()
+
+	def getCoordinates(self):
+		""" Computes approximation (in parallel) of the Spanning Edge Centrality. """
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		cdef pair[double, double] pr = pair[double, double](0, 0)
+		pointCoord = self._this.getCoordinates()
+		cdef vector[pair[double, double]] pairCoord = vector[pair[double, double]]()
+		for pt in pointCoord:
+			pr = pair[double, double](pt[0], pt[1])
+			pairCoord.push_back(pr)
+		return pairCoord
 
 	def writeGraphToGML(self, path):
 		"""Writes the graph and its layout to a .gml file at the specified path
@@ -9157,3 +9529,43 @@ cdef class MaxentStress (GraphLayoutAlgorithm):
 
 	def getSolveTime(self):
 		return (<_MaxentStress*>(self._this)).getSolveTime()
+
+
+
+
+
+cdef extern from "cpp/viz/PivotMDS.h":
+	cdef cppclass _PivotMDS "NetworKit::PivotMDS" (_GraphLayoutAlgorithm[double]):
+				_PivotMDS(_Graph G, count dim, count numberOfPivots) except +
+				void run() except +
+
+
+cdef class PivotMDS (GraphLayoutAlgorithm):
+
+	"""
+	Implementation of PivotMDS proposed by Brandes and Pich.
+
+	Parameters
+	----------
+
+	G: Graph
+		The graph to be handled by the algorithm.
+
+	dim: count
+		Number of dimensions.
+
+	numberOfPivots: count
+		Number of pivots for the algorithm.
+
+	"""
+
+	def __cinit__(self, Graph G, count dim, count numberOfPivots):
+		self._this = new _PivotMDS(G._this, dim, numberOfPivots)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		"""Constructs a PivotMDS object for the given @a graph. The algorithm should embed the graph in @a dim dimensions using @a numberOfPivots pivots."""
+		(<_PivotMDS*>(self._this)).run()
+		return self

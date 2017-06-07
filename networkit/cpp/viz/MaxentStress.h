@@ -13,8 +13,8 @@
 #include "../algebraic/CSRMatrix.h"
 #include "Octree.h"
 
-#include "../graph/BFS.h"
-#include "../graph/Dijkstra.h"
+#include "../distance/BFS.h"
+#include "../distance/Dijkstra.h"
 #include "../distance/AlgebraicDistance.h"
 
 #include "FruchtermanReingold.h"

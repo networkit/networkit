@@ -32,8 +32,11 @@ public:
 
 	void run() override;
 
-	/** Updates the distances after an event.*/
-	void update(const std::vector<GraphEvent>& batch) override;
+	/** Updates the distances after an edge insertion.*/
+	void update(GraphEvent e) override;
+
+	/** Updates the distances after a batch of edge insertions.*/
+	void updateBatch(const std::vector<GraphEvent>& batch) override;
 
 	/* Returns the number of shortest paths to node t.*/
 	bigfloat getNumberOfPaths(node t) const;

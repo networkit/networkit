@@ -69,7 +69,7 @@ void PLP::run() {
 	while ((nUpdated > this->updateThreshold)  && (nIterations < maxIterations)) { // as long as a label has changed... or maximum iterations reached
 		runtime.start();
 		nIterations += 1;
-		INFO("[BEGIN] LabelPropagation: iteration #" , nIterations);
+		DEBUG("[BEGIN] LabelPropagation: iteration #" , nIterations);
 
 		// reset updated
 		nUpdated = 0;

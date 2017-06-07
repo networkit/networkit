@@ -16,8 +16,9 @@ namespace NetworKit {
 /**
  * @ingroup matching
  * Path growing matching algorithm as described by
- *   Hougardy and Drake. TODO: insert DOI
+ *   Hougardy and Drake, http://dx.doi.org/10.1016/S0020-0190(02)00393-9
  * Computes an approximate maximum weight matching with guarantee 1/2.
+ * (Note that better algorithms in terms of approximation quality exist.)
  */
 class PathGrowingMatcher: public NetworKit::Matcher {
 public:

@@ -15,6 +15,7 @@ namespace NetworKit {
 
 /**
  * Creates a random spanning tree for each connected component.
+ * Time complexity: cover time of G.
  * @ingroup graph
  */
 class RandomSpanningForest: public SpanningForest {

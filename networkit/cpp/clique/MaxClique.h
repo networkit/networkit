@@ -19,8 +19,10 @@ namespace NetworKit {
  * Exact algorithm for computing the size of the largest clique in a graph.
  * Worst-case running time is exponential, but in practice the algorithm is fairly fast.
  * Reference: Pattabiraman et al., http://arxiv.org/pdf/1411.7460.pdf
+ * DEPRECATED: Use MaximalCliques instead.
  */
-class MaxClique {
+class [[deprecated("Use MaximalCliques instead.")]]
+MaxClique {
 protected:
 	const Graph& G;
 	count maxi;

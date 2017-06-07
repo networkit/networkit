@@ -594,7 +594,7 @@ TEST_F(IOGTest, testGMLGraphReaderUndirected) {
 	std::string path = "input/jazz2_undirected.gml";
 	GMLGraphReader reader;
 	Graph G = reader.read(path);
-	EXPECT_EQ(G.numberOfNodes(),5) << "number of nodes is not correct";
+	EXPECT_EQ(G.numberOfNodes(), 5u) << "number of nodes is not correct";
 	EXPECT_TRUE(G.hasEdge(0,2));
 	EXPECT_TRUE(G.hasEdge(0,1));
 	EXPECT_TRUE(G.hasEdge(0,0));
@@ -608,7 +608,7 @@ TEST_F(IOGTest, testGMLGraphReaderDirected) {
 	std::string path = "input/jazz2_directed.gml";
 	GMLGraphReader reader;
 	Graph G = reader.read(path);
-	EXPECT_EQ(G.numberOfNodes(),5) << "number of nodes is not correct";
+	EXPECT_EQ(G.numberOfNodes(), 5u) << "number of nodes is not correct";
 	EXPECT_TRUE(G.hasEdge(0,2));
 	EXPECT_TRUE(G.hasEdge(0,1));
 	EXPECT_TRUE(G.hasEdge(0,0));
@@ -623,8 +623,8 @@ TEST_F(IOGTest, testGraphToolBinaryReader) {
 	std::string path = "input/power.gt";
 	GraphToolBinaryReader reader;
 	Graph G = reader.read(path);
-	EXPECT_EQ(4941,G.numberOfNodes());
-	EXPECT_EQ(6594,G.numberOfEdges());
+	EXPECT_EQ(4941u,G.numberOfNodes());
+	EXPECT_EQ(6594u,G.numberOfEdges());
 	EXPECT_FALSE(G.isDirected());
 }
 

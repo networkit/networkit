@@ -21,7 +21,10 @@ public:
 
   /**
 	 * Finds the top k nodes with highest closeness centrality faster than computing it for all nodes, based on "Computing Top-k Closeness Centrality Faster in Unweighted Graphs", Bergamini et al., ALENEX16.
-	 * The algorithms is based on two independent heuristics, described in the referenced paper. We recommend to use first_heu = true and second_heu = false for complex networks and first_heu = true and second_heu = true for street networks or networks with large diameters.
+	 * The algorithms is based on two independent heuristics, described in the referenced paper.
+   * We recommend to use first_heu = true and second_heu = false for complex networks and first_heu = true and second_heu = true for street networks or networks with large diameters.
+   * Notice that the worst case running time of the algorithm is O(nm), where n is the number of nodes and m is the number of edges.
+   * However, for most networks the empirical running time is O(m).
 	 *
 	 * @param G An unweighted graph.
 	 * @param k Number of nodes with highest closeness that have to be found. For example, if k = 10, the top 10 nodes with highest closeness will be computed.
@@ -32,8 +35,7 @@ public:
   TopCloseness(const Graph& G, count k = 1, bool first_heu = true, bool sec_heu = true);
 
   /**
-	* Computes top-k closeness
-	*
+	* Computes top-k closeness on the graph passed in the constructor.
 	*/
 	void run();
 
@@ -72,7 +74,7 @@ protected:
 	void init();
     double BFScut(node v, double x, bool *visited, count *distances, node *pred, count *visEdges);
     void computelBound1(std::vector<double> &S);
-    void BFSbound(node x, std::vector<double> &S, count *visEdges);
+    void BFSbound(node x, std::vector<double> &S, count *visEdges, const std::vector<bool> & toAnalyze);
     void computeReachable();
     void computeReachableNodesUndir();
     void computeReachableNodesDir();

@@ -1,3 +1,4 @@
+
 .. include:: <isonum.txt>
 
 .. |br| raw:: html
@@ -50,8 +51,8 @@ Publications on Algorithms Available in NetworKit
   <ul>
   <li>
     E. Bergamini, M. Wegner, D. Lukarski, H. Meyerhenke:  Estimating Current-Flow Closeness Centrality with a Multigrid Laplacian Solver. In Proc. <i><a href="http://www.eecs.wsu.edu/~assefaw/CSC16/csc16.html">CSC</a> '16</i>. SIAM, 2016.
-    [<a href="https://arxiv.org/abs/1607.02955">arXiv</a>]
-     [<a href="http://epubs.siam.org/doi/abs/10.1137/1.9781611974690.ch1">DOI:  10.1137/1.9781611974690.ch1</a>]
+      [<a href="https://arxiv.org/abs/1607.02955">arXiv</a>]
+       [<a href="http://epubs.siam.org/doi/abs/10.1137/1.9781611974690.ch1">DOI:  10.1137/1.9781611974690.ch1</a>]
     <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
     <div id="collapseDiv" class="collapse">
       <b>Abstract.</b> Matrices associated with graphs, such as the Laplacian, lead to numerous interesting graph problems expressed as linear systems. One field where Laplacian linear systems
@@ -68,7 +69,7 @@ Publications on Algorithms Available in NetworKit
   <br>
 
     <li>
-      M. von Looz, M. Özdayi, S. Laue, H. Meyerhenke:  Generating massive complex networks with hyperbolic geometry faster in practice. In Proc. <i><a href="http://ieee-hpec.org/">HPEC</a> '16</i>. IEEE, 2016. [<a href="http://arxiv.org/abs/1606.09481">arXiv</a>]
+      M. von Looz, M. Özdayi, S. Laue, H. Meyerhenke:  Generating massive complex networks with hyperbolic geometry faster in practice. In Proc. <i><a href="http://ieee-hpec.org/">HPEC</a> '16</i>. IEEE, 2016. [<a href="http://arxiv.org/abs/1606.09481">arXiv</a>]  
       <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
       <div id="collapseDiv" class="collapse">
         <b>Abstract.</b> Generative network models play an important role in algorithm development, scaling studies, network analysis, and realistic system benchmarks for graph data sets.   The commonly used graph-based benchmark model R-MAT has some drawbacks concerning realism and the scaling behavior of network properties.
@@ -224,6 +225,7 @@ Publications on Algorithms Available in NetworKit
       </div>
     </li>
 
+
     <br>
 
     <li>
@@ -327,7 +329,7 @@ Publications Using NetworKit
 
     <li>
       M. Riondato, E. Upfal: ABRA: Approximating Betweenness Centrality in Static and Dynamic Graphs with Rademacher Averages.
-      In <i>Proc. 22nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining</i> (KDD 2016), August 2016. [<a href="http://arxiv.org/abs/1602.05866">arXiv</a>]
+      To appear in <i>Proc. 22nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining</i> (KDD 2016), August 2016. [<a href="http://arxiv.org/abs/1602.05866">arXiv</a>]
        <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
        <div id="collapseDiv" class="collapse">
          <b>Abstract</b> We present ABRA, a suite of algorithms that compute and maintain probabilistically-guaranteed, high-quality, approximations of the betweenness centrality of all nodes

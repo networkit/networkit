@@ -23,37 +23,73 @@ namespace NetworKit {
 template<typename T>
 struct BoundingBox {
 public:
+	/**
+	 * Constructor for creating an empty bounding box of size 0.
+	 */
 	BoundingBox() : center(Point<T>()), sideLength(0), halfSideLength(0), sqSideLength(0), dimension(0) {}
+
+	/**
+	 * Constructor for creating a bounding box.
+	 * @param[in] center The center of the bounding box.
+	 * @param[in] sideLength The side length of the bounding box.
+	 */
 	BoundingBox(const Point<T>& center, const T sideLength) : center(center), sideLength(sideLength), halfSideLength(sideLength/2.0), sqSideLength(sideLength*sideLength), dimension(center.getDimensions()) {}
+
+	/**
+	 *
+	 */
 	BoundingBox(const BoundingBox<T>& other) : center(other.center), sideLength(other.sideLength), halfSideLength(other.halfSideLength), sqSideLength(other.sqSideLength), dimension(other.dimension) {}
 
+	/**
+	 * Sets the center of the bounding box.
+	 * @param[in] center New center.
+	 */
 	void setCenter(const Point<T>& center) {
 		this->center = center;
 		dimension = center.getDimensions();
 	}
 
+	/**
+	 * @return Center of bounding box.
+	 */
 	inline Point<T>& getCenter() {
 		return center;
 	}
 
+	/**
+	 * Sets the side length of the bounding box.
+	 * @param[in] sideLength New side length.
+	 */
 	void setSideLength(T sideLength) {
 		this->sideLength = sideLength;
 		this->halfSideLength = sideLength/2.0;
 		this->sqSideLength = sideLength * sideLength;
 	}
 
+	/**
+	 * @return Side length of bounding box.
+	 */
 	inline T getSideLength() const {
 		return sideLength;
 	}
 
+	/**
+	 * @return Half of the side length of bounding box.
+	 */
 	inline T getHalfSideLength() const {
 		return halfSideLength;
 	}
 
+	/**
+	 * @return Square of the side length of bounding box.
+	 */
 	inline T getSqSideLength() const {
 		return sqSideLength;
 	}
 
+	/**
+	 * @return True if point @a point is inside the bounding box.
+	 */
 	bool contains(const Point<T>& point) const {
 		for (index d = 0; d < dimension; ++d) {
 			if (center[d] - halfSideLength > point[d] || point[d] > center[d] + halfSideLength) {
@@ -85,18 +121,30 @@ struct OctreeNode {
 	OctreeNode() : weight(0), centerOfMass({0,0}), children({}), bBox(BoundingBox<T>()) {}
 	OctreeNode(BoundingBox<T>& bBox) : weight(0), centerOfMass(Point<T>(bBox.getCenter().getDimensions())), children({}), bBox(bBox) {}
 
+	/**
+	 * @return True if node is leaf, false otherwise.
+	 */
 	inline bool isLeaf() const {
 		return children.size() == 0;
 	}
 
+	/**
+	 * @return True if tree node has weight zero (== is empty), false otherwise.
+	 */
 	inline bool isEmpty() const {
 		return weight == 0;
 	}
 
+	/**
+	 * @return True if point @a point is stored in the octree node, false otherwise.
+	 */
 	inline bool contains(const Point<T>& point) const {
 		return bBox.contains(point);
 	}
 
+	/**
+	 * Computes octree node's (possibly weighted) center of mass.
+	 */
 	void computeCenterOfMass() {
 		if (!isLeaf()) {
 			centerOfMass.scale(1.0/(double) weight);
@@ -135,6 +183,9 @@ struct OctreeNode {
 		}
 	}
 
+	/**
+	 * @return String label of octree node. Composed of sidelength, weight, and children's labels.
+	 */
 	std::string toString() {
 		std::string str;
 		str += bBox.getCenter().toString() + " sL=" + std::to_string(bBox.getSideLength()) + "w=" + std::to_string(weight);
@@ -148,6 +199,9 @@ struct OctreeNode {
 		return str;
 	}
 
+	/**
+	 * Split area corresponding octree node so as to obtain @a numChildren octree node children.
+	 */
 	void split(count dimensions, count numChildren) {
 		children = std::vector<OctreeNode<T>>(numChildren, OctreeNode<T>(bBox));
 		for (index i = 0; i < numChildren; ++i) { // 0-bit => center - halfSideLength, 1-bit => center + halfSideLength, least-significant bit is lowest dimension
@@ -162,10 +216,16 @@ struct OctreeNode {
 		}
 	}
 
+	/**
+	 * Adds point to octree node.
+	 * @param[in] point Point to be added.
+	 * @param[in] dimensions Point's number of dimensions.
+	 * @param[in] numChildrenPerNode Number of children an octree node has if split.
+	 */
 	void addPoint(const Point<T>& point, count dimensions, count numChildrenPerNode) {
 		if (weight == 0) { // empty leaf
 			weight++; // we add a point
-			centerOfMass = point;
+			centerOfMass = point; // center of mass of a single point is the point
 		} else {
 			if (isLeaf()) { // split the leaf!
 				if (point.distance(centerOfMass) < 1e-3) {
@@ -199,14 +259,26 @@ struct OctreeNode {
 /**
  * @ingroup viz
  *
- * Implementation of a k-dimensional octree for the purpose of Barnes-Hut-Approximation.
+ * Implementation of a k-dimensional octree for the purpose of Barnes-Hut approximation.
  */
 template<typename T>
 class Octree {
 public:
+	/**
+	 * Default constructor. No additional effect.
+	 */
 	Octree() = default;
+
+	/**
+	 * Constructor that puts the points in @a points into the octree.
+	 * @param[in] points Points to be inserted into the octree as initialization.
+	 */
 	Octree(const std::vector<Vector>& points);
 
+	/**
+	 * Clears current content and inserts points in @a points into the octree.
+	 * @param[in] points Points to be inserted into the octree.
+	 */
 	void recomputeTree(const std::vector<Vector> &points);
 
 	inline std::vector<std::pair<count, Point<T>>> approximateDistance(const Point<T>& p, const double theta) const {
@@ -222,6 +294,9 @@ public:
 		approximateDistance(root, p, theta*theta, handle);
 	}
 
+	/**
+	 * @return String label of the octree's root node.
+	 */
 	std::string toString() {
 		return root.toString();
 	}
@@ -230,6 +305,12 @@ private:
 	OctreeNode<T> root;
 	count dimensions;
 	count numChildrenPerNode;
+
+	/**
+	 * Batch insertion of points in @a points into the octree.
+	 * @param[in] points Points to be inserted into the octree as initialization.
+	 */
+	void batchInsert(const std::vector<Vector>& points);
 
 
 	std::vector<std::pair<count, Point<T>>> approximateDistance(const OctreeNode<T>& node, const Point<T>& p, const double theta) const;
@@ -242,40 +323,19 @@ private:
 template<typename T>
 Octree<T>::Octree(const std::vector<Vector>& points) {
 	dimensions = points.size();
-	Point<T> center(dimensions);
 	numChildrenPerNode = pow(2, dimensions);
-	T sideLength = 0;
-	for (count d = 0; d < dimensions; ++d) {
-		T minVal = points[d][0];
-		T maxVal = points[d][0];
-
-		for (index i = 1; i < points[d].getDimension(); ++i) {
-			minVal = std::min(minVal, points[d][i]);
-			maxVal = std::max(maxVal, points[d][i]);
-		}
-
-		sideLength = std::max(sideLength, fabs(maxVal - minVal) * 1.005); // add 0.5% to bounding box
-		center[d] = (minVal + maxVal)/2.0;
-	}
-
-	root.bBox = {center, sideLength};
-
-	for (index i = 0; i < points[0].getDimension(); ++i) {
-		Point<T> p(points.size());
-		for (count d = 0; d < dimensions; ++d) {
-			p[d] = points[d][i];
-		}
-
-		root.addPoint(p, dimensions, numChildrenPerNode);
-	}
-
-	root.computeCenterOfMass();
+	batchInsert(points);
 //	root.compress();
 }
 
 template<typename T>
 void Octree<T>::recomputeTree(const std::vector<Vector>& points) {
 	root.children.clear();
+	batchInsert(points);
+}
+
+template<typename T>
+void Octree<T>::batchInsert(const std::vector<Vector>& points) {
 	Point<T> center(dimensions);
 	T sideLength = 0;
 	for (count d = 0; d < dimensions; ++d) {

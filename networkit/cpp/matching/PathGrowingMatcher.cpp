@@ -6,7 +6,7 @@
  */
 
 #include "PathGrowingMatcher.h"
-#include "../auxiliary/PrioQueueForInts.h"
+#include "../auxiliary/BucketPQ.h"
 
 namespace NetworKit {
 
@@ -31,27 +31,34 @@ void PathGrowingMatcher::run() {
 	Matching m2(z);
 	bool takeM1 = true;
 
+	// PQ to retrieve vertices with degree > 0 quickly
+	int64_t minKey = -((int64_t) G.numberOfNodes());
+	int64_t maxKey = 0;
+	Aux::BucketPQ bpq(z, minKey, maxKey);
+
 	// degrees tracks degree of vertices,
 	// avoids to make a copy of the graph and
 	// delete vertices and edges explicitly.
-	// Init to none important because deleted nodes
-	// must have value none for priority queue.
-	std::vector<count> degrees(z, none);
-	G.parallelForNodes([&](node u) {
-		degrees.at(u) = G.degree(u);
-	});
+	std::vector<int64_t> degrees(z, 0);
 
 	// alive tracks if vertices are alive or not in the algorithm
-	std::vector<bool> alive(z, true);
-	count numEdges = G.numberOfEdges();
+	std::vector<bool> alive(z, false);
 
-	// PQ to retrieve vertices with degree > 0 quickly
-	Aux::PrioQueueForInts bpq(degrees, z-1);
+	G.forNodes([&](node u) {
+		degrees[u] = G.degree(u);
+		alive[u] = (degrees[u] > 0);
+		if (alive[u]) {
+			bpq.insert(-degrees[u], u); // minus to get extractMin functionality
+		}
+	});
+
+	count numEdges = G.numberOfEdges();
 
 	// main loop
 	while (numEdges > 0) {
 		// use vertex with positive degree
-		node v = bpq.extractMax();
+		std::pair<int64_t, node> mini = bpq.extractMin();
+		node v = mini.second;
 		assert(v != none);
 
 		// path growing
@@ -97,7 +104,15 @@ void PathGrowingMatcher::run() {
 				if (alive.at(u)) {
 					degrees.at(u)--;
 					numEdges--;
-					bpq.changePrio(u, degrees.at(u));
+
+					if (degrees.at(u) == 0) {
+						// singleton node can be removed
+						bpq.remove(u);
+						alive[u] = false;
+					}
+					else {
+						bpq.changeKey(-degrees.at(u), u);
+					}
 				}
 			});
 			alive[v] = false;

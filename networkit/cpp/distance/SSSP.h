@@ -11,7 +11,7 @@
 #include <set>
 #include <stack>
 
-#include "Graph.h"
+#include "../graph/Graph.h"
 #include "../base/Algorithm.h"
 
 

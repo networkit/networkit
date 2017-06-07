@@ -8,7 +8,7 @@
 #ifndef DIJKSTRA_H_
 #define DIJKSTRA_H_
 
-#include "Graph.h"
+#include "../graph/Graph.h"
 #include "SSSP.h"
 #include "../auxiliary/PrioQueue.h"
 

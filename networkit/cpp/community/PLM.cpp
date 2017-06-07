@@ -243,7 +243,7 @@ void PLM::run() {
 	timing["move"].push_back(timer.elapsedMilliseconds());
 	handler.assureRunning();
 	if (recurse && change) {
-		INFO("nodes moved, so begin coarsening and recursive call");
+		DEBUG("nodes moved, so begin coarsening and recursive call");
 
 		timer.start();
 		//
@@ -269,7 +269,7 @@ void PLM::run() {
 		}
 
 
-		INFO("coarse graph has ", coarsened.first.numberOfNodes(), " nodes and ", coarsened.first.numberOfEdges(), " edges");
+		DEBUG("coarse graph has ", coarsened.first.numberOfNodes(), " nodes and ", coarsened.first.numberOfEdges(), " edges");
 		zeta = prolong(coarsened.first, zetaCoarse, G, coarsened.second); // unpack communities in coarse graph onto fine graph
 		// refinement phase
 		if (refine) {

@@ -1,20 +1,16 @@
 /*
  * PrioQueue.h
  *
- *  Created on: 21.02.2014
+ *  Created on: 02.03.2017
  *      Author: Henning
  */
 
-#ifndef PRIOQUEUE_H_
-#define PRIOQUEUE_H_
-
-#include <cassert>
-#include <set>
-#include <vector>
-#include <limits>
-#include <iostream>
+#ifndef PRIORITYQUEUE_H_
+#define PRIORITYQUEUE_H_
 
 #include "../auxiliary/Log.h"
+#include <vector>
+#include <set>
 
 namespace Aux {
 
@@ -23,40 +19,57 @@ namespace Aux {
  * The type Val takes on integer values between 0 and n-1.
  * O(n log n) for construction, O(log n) for typical operations.
  */
-template<class Key, class Val>
+template<class Key, class Value>
 class PrioQueue {
-	typedef std::pair<Key, Val> ElemType;
-
 private:
-	std::set<ElemType> pqset;
+	typedef std::pair<Key, Value> ElemType;
+
+	std::set<ElemType> pqset; // TODO: would std::map work and simplify things?
 	std::vector<Key> mapValToKey;
 
 	const Key undefined = std::numeric_limits<Key>::max(); // TODO: make static
 
-public:
+
+protected:
+
 	/**
-	 * Builds priority queue from the vector @a elems.
+	 * Default constructor without functionality. Only here for derived classes!
 	 */
-	PrioQueue(const std::vector<ElemType>& elems);
+	PrioQueue() = default;
+
+	/**
+	 * Removes key-value pair given by @a elem.
+	 */
+	virtual void remove(const ElemType& elem);
+
+	/**
+	 * @return current content of queue
+	 */
+	virtual std::set<std::pair<Key, Value>> content() const;
+
+
+public:
 
 	/**
 	 * Builds priority queue from the vector @a keys, values are indices
-	 * in @a keys.
+	 * of @a keys.
 	 */
-	PrioQueue(std::vector<Key>& keys);
+	PrioQueue(const std::vector<Key>& keys);
 
 	/**
-	* Builds priority queue of the specified size @a len.
+	* Builds priority queue of the specified capacity @a capacity.
 	*/
-	PrioQueue(uint64_t len);
+	PrioQueue(uint64_t capacity);
 
-
+	/**
+	 * Default destructor
+	 */
 	virtual ~PrioQueue() = default;
 
 	/**
 	 * Inserts key-value pair stored in @a elem.
 	 */
-	virtual void insert(Key key, Val value);
+	virtual void insert(Key key, Value value);
 
 	/**
 	 * Removes the element with minimum key and returns it.
@@ -68,33 +81,22 @@ public:
 	 * The entry is then set to @a newKey with the same value.
 	 * If the corresponding key is not present, the element will be inserted.
 	 */
-	virtual void decreaseKey(Key newKey, Val value);
+	virtual void changeKey(Key newKey, Value value);
 
-	/**
-	 * Removes key-value pair given by @a elem.
-	 */
-	virtual void remove(const ElemType& elem);
-
-	/**
-	 * Removes key-value pair given by value @a val.
-	 */
-	virtual void remove(const Val& val);
+	[[deprecated]]
+	virtual void decreaseKey(Key newKey, Value value) {
+		changeKey(newKey, value);
+	}
 
 	/**
 	 * @return Number of elements in PQ.
 	 */
 	virtual uint64_t size() const;
 
-
 	/**
-	 * @return current content of queue
+	 * Removes key-value pair given by value @a val.
 	 */
-	virtual std::set<std::pair<Key, Val>> content() const;
-
-	/**
-	 * Removes all elements from the PQ.
-	 */
-	virtual void clear();
+	virtual void remove(const Value& val);
 
 	/**
 	 * DEBUGGING
@@ -107,18 +109,9 @@ public:
 	}
 };
 
-} /* namespace Aux */
 
-template<class Key, class Val>
-Aux::PrioQueue<Key, Val>::PrioQueue(const std::vector<ElemType>& elems) {
-	mapValToKey.resize(elems.size());
-	for (auto elem: elems) {
-		insert(elem.first, elem.second);
-	}
-}
-
-template<class Key, class Val>
-Aux::PrioQueue<Key, Val>::PrioQueue(std::vector<Key>& keys) {
+template<class Key, class Value>
+Aux::PrioQueue<Key, Value>::PrioQueue(const std::vector<Key>& keys) {
 	mapValToKey.resize(keys.size());
 	uint64_t index = 0;
 	for (auto key: keys) {
@@ -127,13 +120,13 @@ Aux::PrioQueue<Key, Val>::PrioQueue(std::vector<Key>& keys) {
 	}
 }
 
-template<class Key, class Val>
-Aux::PrioQueue<Key, Val>::PrioQueue(uint64_t len) {
-	mapValToKey.resize(len);
+template<class Key, class Value>
+Aux::PrioQueue<Key, Value>::PrioQueue(uint64_t capacity) {
+	mapValToKey.resize(capacity);
 }
 
-template<class Key, class Val>
-inline void Aux::PrioQueue<Key, Val>::insert(Key key, Val value) {
+template<class Key, class Value>
+inline void Aux::PrioQueue<Key, Value>::insert(Key key, Value value) {
 	if (value >= mapValToKey.size()) {
 		uint64_t doubledSize = 2 * mapValToKey.size();
 		assert(value < doubledSize);
@@ -143,29 +136,29 @@ inline void Aux::PrioQueue<Key, Val>::insert(Key key, Val value) {
 	mapValToKey.at(value) = key;
 }
 
-template<class Key, class Val>
-inline void Aux::PrioQueue<Key, Val>::remove(const ElemType& elem) {
+template<class Key, class Value>
+inline void Aux::PrioQueue<Key, Value>::remove(const ElemType& elem) {
 	remove(elem.second);
 }
 
-template<class Key, class Val>
-inline void Aux::PrioQueue<Key, Val>::remove(const Val& val) {
+template<class Key, class Value>
+inline void Aux::PrioQueue<Key, Value>::remove(const Value& val) {
 	Key key = mapValToKey.at(val);
 //	DEBUG("key: ", key);
 	pqset.erase(std::make_pair(key, val));
 	mapValToKey.at(val) = undefined;
 }
 
-template<class Key, class Val>
-std::pair<Key, Val> Aux::PrioQueue<Key, Val>::extractMin() {
+template<class Key, class Value>
+std::pair<Key, Value> Aux::PrioQueue<Key, Value>::extractMin() {
 	assert(pqset.size() > 0);
 	ElemType elem = (* pqset.begin());
 	remove(elem);
 	return elem;
 }
 
-template<class Key, class Val>
-inline void Aux::PrioQueue<Key, Val>::decreaseKey(Key newKey, Val value) {
+template<class Key, class Value>
+inline void Aux::PrioQueue<Key, Value>::changeKey(Key newKey, Value value) {
 	// find and remove element with given key
 	remove(value);
 
@@ -173,21 +166,16 @@ inline void Aux::PrioQueue<Key, Val>::decreaseKey(Key newKey, Val value) {
 	insert(newKey, value);
 }
 
-template<class Key, class Val>
-inline uint64_t Aux::PrioQueue<Key, Val>::size() const {
+template<class Key, class Value>
+inline uint64_t Aux::PrioQueue<Key, Value>::size() const {
 	return pqset.size();
 }
 
-template<class Key, class Val>
-inline std::set<std::pair<Key, Val>> Aux::PrioQueue<Key, Val>::content() const {
+template<class Key, class Value>
+inline std::set<std::pair<Key, Value>> Aux::PrioQueue<Key, Value>::content() const {
 	return pqset;
 }
 
-template<class Key, class Val>
-inline void Aux::PrioQueue<Key, Val>::clear() {
-	pqset.clear();
-	mapValToKey.clear();
-}
 
-
-#endif /* PRIOQUEUE_H_ */
+} /* namespace Aux */
+#endif /* PRIORITYQUEUE_H_ */

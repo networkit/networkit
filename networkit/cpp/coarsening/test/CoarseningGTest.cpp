@@ -265,7 +265,7 @@ TEST_F(CoarseningGTest, testMatchingContractorWithSelfLoop) {
     MatchingCoarsening coarsener(G, matching);
     coarsener.run();
     Graph coarseG = coarsener.getCoarseGraph();
-    EXPECT_EQ(1, coarseG.numberOfNodes());
+    EXPECT_EQ(1u, coarseG.numberOfNodes());
 
     EXPECT_EQ(G.totalEdgeWeight(), coarseG.totalEdgeWeight());
 }

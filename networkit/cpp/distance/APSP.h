@@ -8,7 +8,7 @@
 #ifndef APSP_H_
 #define APSP_H_
 
-#include "Graph.h"
+#include "../graph/Graph.h"
 #include "../base/Algorithm.h"
 
 namespace NetworKit {
@@ -39,19 +39,18 @@ public:
 	virtual std::string toString() const override;
 
 	/**
-	 * Returns a vector of weighted distances from the source node, i.e. the
- 	 * length of the shortest path from the source node to any other node.
+	 * Returns a vector of weighted distances between node pairs.
  	 *
- 	 * @return The weighted distances from the source node to any other node in the graph.
+ 	 * @return The shortest-path distances from each node to any other node in the graph.
 	 */
-	std::vector<std::vector<edgeweight> > getDistances() const { return distances;}
+	std::vector<std::vector<edgeweight> > getDistances() const {if (!hasRun) throw std::runtime_error("Call run method first"); return distances;}
 
 
 	/**
-	 * Returns all shortest paths from source to @a t and an empty set if source and @a t are not connected.
+	 * Returns the distance from u to v or infinity if u and v are not connected.
 	 *
 	 */
-	edgeweight getDistance(node u, node v) const { return distances[u][v];}
+	edgeweight getDistance(node u, node v) const {if (!hasRun) throw std::runtime_error("Call run method first"); return distances[u][v];}
 
 	/**
 	* @return True if algorithm can run multi-threaded.

@@ -1,15 +1,15 @@
 /*
-* ApproxBetweenness2.cpp
-*
-*  Created on: 13.06.2014
-*      Author: Christian Staudt, Elisabetta Bergamini
-*/
+ *  EstimateBetweenness.cpp
+ *
+ *  Created on: 13.06.2014
+ *      Author: Christian Staudt, Elisabetta Bergamini
+ */
 
 
-#include "ApproxBetweenness2.h"
-#include "../graph/BFS.h"
-#include "../graph/Dijkstra.h"
-#include "../graph/SSSP.h"
+#include "EstimateBetweenness.h"
+#include "../distance/BFS.h"
+#include "../distance/Dijkstra.h"
+#include "../distance/SSSP.h"
 #include "../auxiliary/SignalHandling.h"
 #include "../auxiliary/Parallelism.h"
 
@@ -19,10 +19,10 @@
 
 namespace NetworKit {
 
-ApproxBetweenness2::ApproxBetweenness2(const Graph& G, count nSamples, bool normalized, bool parallel_flag) : Centrality(G, normalized), nSamples(nSamples), parallel_flag(parallel_flag) {
+EstimateBetweenness::EstimateBetweenness(const Graph& G, count nSamples, bool normalized, bool parallel_flag) : Centrality(G, normalized), nSamples(nSamples), parallel_flag(parallel_flag) {
 }
 
-void ApproxBetweenness2::run() {
+void EstimateBetweenness::run() {
 	hasRun = false;
 
 	Aux::SignalHandler handler;

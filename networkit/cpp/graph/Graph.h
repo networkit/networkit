@@ -504,13 +504,11 @@ public:
 	node addNode(float x, float y);
 
 	/**
-	 * Remove an isolated node @a v from the graph.
+	 * Remove a node @a v and all incident edges from the graph.
+	 *
+	 * Incoming as well as outgoing edges will be removed.
 	 *
 	 * @param u Node.
-	 * @note Although it would be convenient to remove all incident edges at the same time,
-	 * this causes complications for dynamic applications. Therefore, removeNode is an
-	 * atomic event. All incident edges need to be removed first and an exception is thrown
-	 * otherwise.
 	 */
 	void removeNode(node v);
 
@@ -717,7 +715,7 @@ public:
 	/**
 	* @return a pair (n, m) where n is the number of nodes and m is the number of edges
 	*/
-	std::pair<count, count> const size() { return {n, m}; };
+	std::pair<count, count> const size() const { return {n, m}; };
 
 
 	/**

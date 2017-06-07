@@ -10,7 +10,7 @@
 #include "../Closeness.h"
 #include "../DynApproxBetweenness.h"
 #include "../ApproxBetweenness.h"
-#include "../ApproxBetweenness2.h"
+#include "../EstimateBetweenness.h"
 #include "../SpanningEdgeCentrality.h"
 #include "../ApproxCloseness.h"
 #include "../EigenvectorCentrality.h"
@@ -321,11 +321,11 @@ TEST_F(CentralityGTest, benchPageRankCentralityOnRealGraph) {
 
 
 
-TEST_F(CentralityGTest, testApproxBetweenness2) {
+TEST_F(CentralityGTest, testEstimateBetweenness) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/celegans_metabolic.graph");
 
-	ApproxBetweenness2 abc2(G, 100);
+	EstimateBetweenness abc2(G, 100);
 	abc2.run();
 
 	DEBUG("approximated betweenness scores: ", abc2.scores());
@@ -840,8 +840,8 @@ TEST_F(CentralityGTest, testSimplePermanence) {
 	P[13] = 3;
 	P[14] = 3;
 
-	ASSERT_EQ(9, G.degree(v));
-	ASSERT_EQ(7, G.degree(u));
+	ASSERT_EQ(9u, G.degree(v));
+	ASSERT_EQ(7u, G.degree(u));
 
 	PermanenceCentrality perm(G, P);
 	perm.run();
@@ -853,6 +853,7 @@ TEST_F(CentralityGTest, testSimplePermanence) {
 }
 
 TEST_F(CentralityGTest, testTopClosenessDirected) {
+    Aux::Random::setSeed(42, true);
     count size = 400;
     count k = 10;
     Graph G1 = DorogovtsevMendesGenerator(size).generate();
@@ -878,6 +879,7 @@ TEST_F(CentralityGTest, testTopClosenessDirected) {
 }
 
 TEST_F(CentralityGTest, testTopClosenessUndirected) {
+    Aux::Random::setSeed(42, true);
     count size = 400;
     count k = 10;
     Graph G1 = DorogovtsevMendesGenerator(size).generate();

@@ -2,7 +2,7 @@
  * Sfigality.cpp
  *
  *  Created on: 20.01.2016
- *      Author: Elisabetta Bergamini, Christian Staudt
+ *      Author: Christian Staudt
  */
 
 #include "Sfigality.h"

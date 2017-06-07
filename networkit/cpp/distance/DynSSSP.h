@@ -10,8 +10,9 @@
 
 #include <set>
 
-#include "Graph.h"
+#include "../graph/Graph.h"
 #include "../dynamics/GraphEvent.h"
+#include "../base/DynAlgorithm.h"
 #include "SSSP.h"
 
 namespace NetworKit {
@@ -20,7 +21,7 @@ namespace NetworKit {
  * @ingroup graph
  * Interface for dynamic single-source shortest path algorithms.
  */
-class DynSSSP: public SSSP {
+class DynSSSP: public SSSP, public DynAlgorithm {
 
 friend class DynApproxBetweenness;
 
@@ -37,12 +38,6 @@ public:
 
     virtual ~DynSSSP() = default;
 
-    /**
-    * Updates the betweenness centralities after a batch of edge insertions on the graph.
-    *
-    * @param batch The batch of edge insertions.
-    */
-    virtual void update(const std::vector<GraphEvent>& batch) = 0;
     /**
     * Returns true or false depending on whether the node previoulsy specified
     * with setTargetNode has been modified by the udate or not.

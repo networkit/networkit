@@ -30,7 +30,13 @@ void DynDijkstra::run() {
 	}
 }
 
-void DynDijkstra::update(const std::vector<GraphEvent>& batch) {
+void DynDijkstra::update(GraphEvent e) {
+	std::vector<GraphEvent> batch(1);
+	batch[0] = e;
+	updateBatch(batch);
+}
+
+void DynDijkstra::updateBatch(const std::vector<GraphEvent>& batch) {
 	mod = false;
 	// priority queue with distance-node pairs
 	Aux::PrioQueue<edgeweight, node> Q(G.upperNodeIdBound());
@@ -45,7 +51,7 @@ void DynDijkstra::update(const std::vector<GraphEvent>& batch) {
 				Q.insert(distances[u], u);
 				color[u] = BLACK;
 			}	else {
-				Q.decreaseKey(distances[u], u);
+				Q.changeKey(distances[u], u);
 			}
 		}
 	};

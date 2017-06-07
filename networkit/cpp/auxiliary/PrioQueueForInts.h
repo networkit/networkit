@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef BUCKETPQ_H_
-#define BUCKETPQ_H_
+#ifndef PRIOQUEUEFORINTS_H_
+#define PRIOQUEUEFORINTS_H_
 
 #include "../auxiliary/Log.h"
 #include <list>
@@ -18,14 +18,13 @@ namespace Aux {
 typedef NetworKit::index index;
 typedef NetworKit::count count;
 typedef std::list<index> Bucket;
-constexpr index none = NetworKit::none;
 
 /**
  * Addressable priority queue for elements in the range [0,n) and
  * integer priorities in the range [0, maxPrio].
  * Amortized constant running time for each operation.
  */
-class PrioQueueForInts {
+class [[deprecated]] PrioQueueForInts {
 private:
 	std::vector<Bucket> buckets;			// the actual buckets
 	std::vector<Bucket::iterator> nodePtr;	// keeps track of node positions

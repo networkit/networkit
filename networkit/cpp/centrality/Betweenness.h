@@ -31,9 +31,8 @@ public:
 
 
 	/**
-	* Compute betweenness scores
-	*
-	*/
+	 * Computes betweenness scores on the graph passed in constructor.
+	 */
 	void run() override;
 
 	/*

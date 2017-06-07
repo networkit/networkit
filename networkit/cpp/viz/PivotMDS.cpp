@@ -12,8 +12,8 @@
 
 #include "../auxiliary/Random.h"
 
-#include "../graph/BFS.h"
-#include "../graph/Dijkstra.h"
+#include "../distance/BFS.h"
+#include "../distance/Dijkstra.h"
 
 namespace NetworKit {
 
@@ -37,7 +37,7 @@ void PivotMDS::run() {
 			G.forNeighborsOf(v, [&](node w, edgeweight weight) {
 				if (dist[v] + weight < dist[w]) {
 					dist[w] = dist[v] + weight;
-					PQ.decreaseKey(dist[w], w);
+					PQ.changeKey(dist[w], w);
 				}
 			});
 		}

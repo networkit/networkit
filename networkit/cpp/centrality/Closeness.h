@@ -20,22 +20,20 @@ public:
 	/**
 	 * Constructs the Closeness class for the given Graph @a G. If the closeness scores should be normalized,
 	 * then set @a normalized to <code>true</code>. The run() method takes O(nm) time, where n is the number
-	 * of nodes and m is the number of edges of the graph. 
+	 * of nodes and m is the number of edges of the graph. NOTICE: the graph has to be connected.
 	 *
 	 * @param G The graph.
 	 * @param normalized Set this parameter to <code>true</code> if scores should be normalized in the interval [0,1].
 	 * @param	checkConnectedness	turn this off if you know the graph is connected
 	 *
-	 * TODO: extend definition of closeness to disconnected graphs
 	 */
 	Closeness(const Graph& G, bool normalized=false, bool checkConnectedness=true);
 
 
 
 	/**
-	* Compute closeness scores parallel
-	*
-	*/
+	 * Computes closeness cetrality on the graph passed in constructor.
+	 */
 	void run() override;
 
 	/*

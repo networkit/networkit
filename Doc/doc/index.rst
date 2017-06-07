@@ -41,8 +41,8 @@
           <div>Clone from GitHub</div>
           <span style="display: block;overflow: hidden;"><input onClick="this.setSelectionRange(0, this.value.length)" style="width: 100%" type="text" value="git clone https://github.com/kit-parco/networkit.git" readonly=""/></span>
 
-          <div style="padding-top: 15px">Install via pip</div>
-          <span style="display: block;overflow: hidden;"><input onClick="this.setSelectionRange(0, this.value.length)" style="width: 100%" type="text" value="pip install networkit" readonly=""/></span>
+          <div style="padding-top: 15px">Install via pip3</div>
+          <span style="display: block;overflow: hidden;"><input onClick="this.setSelectionRange(0, this.value.length)" style="width: 100%" type="text" value="pip3 install networkit" readonly=""/></span>
 
           <div style="padding-top: 15px">Download as <a href="https://networkit.iti.kit.edu/uploads/NetworKit.zip">zip file</a></div>
 

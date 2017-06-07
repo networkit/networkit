@@ -161,7 +161,7 @@ void ApproxCloseness::computeClosenessForDirectedWeightedGraph(bool outbound) {
 					G.forInNeighborsOf(v, [&](node v2, edgeweight w) {
 						if (round[v2] < t || dist[v] + w < dist[v2]) {
 							dist[v2] = dist[v] + w;
-							pq.decreaseKey(dist[v2], v2);
+							pq.changeKey(dist[v2], v2);
 							round[v2] = t;
 						}
 					});
@@ -169,7 +169,7 @@ void ApproxCloseness::computeClosenessForDirectedWeightedGraph(bool outbound) {
 					G.forNeighborsOf(v, [&](node v2, edgeweight w) {
 						if (round[v2] < t || dist[v] + w < dist[v2]) {
 							dist[v2] = dist[v] + w;
-							pq.decreaseKey(dist[v2], v2);
+							pq.changeKey(dist[v2], v2);
 							round[v2] = t;
 						}
 					});
@@ -277,7 +277,7 @@ void ApproxCloseness::computeClosestPivot(const std::vector<node> &samples, std:
 			if (delta[u] + w < delta[v]) {
 				delta[v] = delta[u] + w;
 				pivot[v] = pivot[u];
-				pq.decreaseKey(delta[v], v);
+				pq.changeKey(delta[v], v);
 			}
 		});
 	}
@@ -379,7 +379,7 @@ void ApproxCloseness::orderNodesByIncreasingDistance(node c, std::vector<node> &
 			G.forNeighborsOf(u, [&](node v, edgeweight w) {
 				if (pivotDist[u] + w < pivotDist[v]) {
 					pivotDist[v] = pivotDist[u] + w;
-					pq.decreaseKey(pivotDist[v], v);
+					pq.changeKey(pivotDist[v], v);
 				}
 			});
 		}

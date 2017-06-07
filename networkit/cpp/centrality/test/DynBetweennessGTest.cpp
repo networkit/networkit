@@ -9,7 +9,6 @@
 #include "../Betweenness.h"
 #include "../DynApproxBetweenness.h"
 #include "../ApproxBetweenness.h"
-#include "../ApproxBetweenness2.h"
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/Log.h"
 #include "../../auxiliary/NumericTools.h"
@@ -56,7 +55,7 @@ TEST_F(DynBetweennessGTest, testDynApproxBetweennessSmallGraph) {
 	batch.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, 0, 6, 1.0));
 	G.addEdge(batch[0].u, batch[0].v);
 	bc.run();
-	dynbc.update(batch);
+	dynbc.updateBatch(batch);
 	dynbc_scores = dynbc.scores();
 	bc_scores = bc.scores();
 	for(int i=0; i<n; i++) {
@@ -104,7 +103,7 @@ TEST_F(DynBetweennessGTest, testDynVsStatic) {
 	INFO("Running ApproxBetweenness (again)");
 	bc.run();
 	INFO("Updating DynApproxBetweenness");
-	dynbc.update(batch);
+	dynbc.updateBatch(batch);
 	INFO("Calling DynApproxBetweenness Scores");
 	dynbc_scores = dynbc.scores();
 	INFO("Calling ApproxBetweenness Scores");

@@ -21,18 +21,17 @@ namespace NetworKit {
 typedef uint64_t index; // more expressive name for an index into an array
 typedef uint64_t count; // more expressive name for an integer quantity
 
-//template<class T> class Point;
-//
-//template<class T>
-//std::ostream& operator <<(std::ostream& out, Point<T>& point);
-
 
 
 /**
  * @ingroup viz
  *
- * DEPRECATED: To take advantage of automatic mapping between C++ and Python data structures, use
+ * Formerly marked as deprecated:
+ * To take advantage of automatic mapping between C++ and Python data structures, use
  * standard library containers (std::pair, std::tuple..) instead.
+ *
+ * DEPRECATION removed since suggested solution does not work when dimension is not known
+ * at compile time.
  *
  * Points in any dimension of templated type.
  */

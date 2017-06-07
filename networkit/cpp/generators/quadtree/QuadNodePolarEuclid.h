@@ -35,7 +35,6 @@ private:
 	Point2D<double> a,b,c,d;
 	unsigned capacity;
 	static const unsigned coarsenLimit = 4;
-	static const long unsigned sanityNodeLimit = 10E15; //just assuming, for debug purposes, that this algorithm never runs on machines with more than 4 Petabyte RAM
 	count subTreeSize;
 	std::vector<T> content;
 	std::vector<Point2D<double> > positions;
@@ -135,7 +134,6 @@ public:
 	 * @param R radial coordinate of point, between 0 and 1.
 	 */
 	void addContent(T input, double angle, double R) {
-		assert(input < sanityNodeLimit);
 		assert(this->responsible(angle, R));
 		if (lowerBoundR > R) lowerBoundR = R;
 		if (isLeaf) {
@@ -463,8 +461,6 @@ public:
 				const double deltaY = positions[i].getY() - queryY;
 				if (deltaX*deltaX + deltaY*deltaY < rsq) {
 					result.push_back(content[i]);
-					if (content[i] >= sanityNodeLimit) DEBUG("Quadnode content ", content[i], " found, suspiciously high!");
-					assert(content[i] < sanityNodeLimit);
 				}
 			}
 		}	else {
@@ -499,7 +495,7 @@ public:
 		if (isLeaf) {
 			const count lsize = content.size();
 			TRACE("Leaf of size ", lsize);
-			for (int i = 0; i < lsize; i++) {
+			for (index i = 0; i < lsize; i++) {
 				//jump!
 				if (probUB < 1) {
 					double random = Aux::Random::real();
@@ -657,15 +653,14 @@ public:
 	}
 
 	index getCellID(double phi, double r) const {
-		if (!responsible(phi, r)) return -1;
+		if (!responsible(phi, r)) return NetworKit::none;
 		if (isLeaf) return getID();
 		else {
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < children.size(); i++) {
 				index childresult = children[i].getCellID(phi, r);
-				if (childresult >= 0) return childresult;
+				if (childresult != NetworKit::none) return childresult;
 			}
-			assert(false); //if responsible
-			return -1;
+			throw std::runtime_error("No responsible child node found even though this node is responsible.");
 		}
 	}
 
