@@ -5895,7 +5895,7 @@ cdef class EstimateBetweenness(Centrality):
 
 cdef class ApproxBetweenness2(Centrality):
 	""" DEPRECATED: Use EstimateBetweenness instead.
-        
+
 	Estimation of betweenness centrality according to algorithm described in
 	Sanders, Geisberger, Schultes: Better Approximation of Betweenness Centrality
 
@@ -6949,6 +6949,8 @@ cdef extern from "cpp/clique/MaxClique.h":
 
 cdef class MaxClique:
 	"""
+	DEPRECATED: Use clique.MaximumCliques instead.
+	
 	Exact algorithm for computing the size of the largest clique in a graph.
 	Worst-case running time is exponential, but in practice the algorithm is fairly fast.
 	Reference: Pattabiraman et al., http://arxiv.org/pdf/1411.7460.pdf
