@@ -523,7 +523,7 @@ TEST_F(GeneratorsGTest, testChungLuGeneratorDegreeConsistency) {
     std::vector<count> vec;
     count maxDegree = n / 8;
     /* Creates a random sequence of weights */
-    for (int i = 0; i < n; i++){
+    for (index i = 0; i < n; i++){
         int grad = Aux::Random::integer(1, maxDegree);
         vec.push_back(grad);
     }
@@ -546,7 +546,7 @@ TEST_F(GeneratorsGTest, testChungLuGeneratorVolumeConsistency) {
     count maxDegree = n / 8;
     count expectedVolume = 0;
     /* Creates a random sequence of weights */
-    for (int i = 0; i < n; i++){
+    for (index i = 0; i < n; i++){
         int grad = Aux::Random::integer(1, maxDegree);
         vec.push_back(grad);
         expectedVolume += grad;
