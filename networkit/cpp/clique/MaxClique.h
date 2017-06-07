@@ -21,7 +21,7 @@ namespace NetworKit {
  * Reference: Pattabiraman et al., http://arxiv.org/pdf/1411.7460.pdf
  * DEPRECATED: Use MaximalCliques instead.
  */
-class [[deprecated]]
+class [[deprecated("DEPRECATED: Use MaximalCliques instead")]]
 MaxClique {
 protected:
 	const Graph& G;
