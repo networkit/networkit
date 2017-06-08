@@ -40,7 +40,7 @@ public:
 	 */
 	PageRankNibble(const Graph& g, double alpha, double epsilon);
 
-	virtual std::map<node, std::set<node> >  run(std::set<unsigned int>& seeds) override;
+	virtual std::map<node, std::set<node> >  run(const std::set<node>& seeds) override;
 
 	/**
 	 * @param seed Seed node for which a community is to be found.

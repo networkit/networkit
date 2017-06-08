@@ -14,7 +14,7 @@
 
 namespace NetworKit {
 
-PageRankNibble::PageRankNibble(Graph& g, double alpha, double epsilon): SelectiveCommunityDetector(g), alpha(alpha), epsilon(epsilon) {
+PageRankNibble::PageRankNibble(const Graph& g, double alpha, double epsilon): SelectiveCommunityDetector(g), alpha(alpha), epsilon(epsilon) {
 }
 
 std::set<node> PageRankNibble::bestSweepSet(std::vector<std::pair<node, double>>& pr) {
