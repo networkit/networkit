@@ -291,7 +291,7 @@ private:
 			 (Aux::FunctionTraits<F>::arity >= 2) &&
 			 std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<2>::type>::value
 			 >::type* = (void*)0>
-	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, v, ew)) {
+	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid /*id*/) const -> decltype(f(u, v, ew)) {
 		return f(u, v, ew);
 	}
 
@@ -306,7 +306,7 @@ private:
 			 (Aux::FunctionTraits<F>::arity >= 1) &&
 			 std::is_same<node, typename Aux::FunctionTraits<F>::template arg<1>::type>::value
 			 >::type* = (void*)0>
-	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, v)) {
+	auto edgeLambda(F&f, node u, node v, edgeweight /*ew*/, edgeid /*id*/) const -> decltype(f(u, v)) {
 			return f(u, v);
 	}
 
@@ -320,7 +320,7 @@ private:
 			 (Aux::FunctionTraits<F>::arity >= 1) &&
 			 std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<1>::type>::value
 			 >::type* = (void*)0>
-	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid id) const -> decltype(f(u, ew)) {
+	auto edgeLambda(F&f, node u, node v, edgeweight ew, edgeid /*id*/) const -> decltype(f(u, ew)) {
 		return f(v, ew);
 	}
 
@@ -1218,7 +1218,7 @@ inline edgeid Graph::getInEdgeId<false>(node, index) const {
 
 
 template<bool graphIsDirected> // implementation for graphIsDirected == true
-inline bool Graph::useEdgeInIteration(node u, node v) const {
+inline bool Graph::useEdgeInIteration(node /* u */, node v) const {
 	return v != none;
 }
 
