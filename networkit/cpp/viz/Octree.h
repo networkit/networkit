@@ -207,7 +207,7 @@ struct OctreeNode {
 		for (index i = 0; i < numChildren; ++i) { // 0-bit => center - halfSideLength, 1-bit => center + halfSideLength, least-significant bit is lowest dimension
 			children[i].bBox.setSideLength(bBox.getHalfSideLength());
 			for (index d = 0; d < dimensions; ++d) {
-				if (((i & ~(~0 << (d+1))) >> d) == 0) { // 0-bit
+				if (((i & ~(~static_cast<index>(0) << (d+1))) >> d) == 0) { // 0-bit
 					children[i].bBox.getCenter()[d] -= children[i].bBox.getHalfSideLength();
 				} else {
 					children[i].bBox.getCenter()[d] += children[i].bBox.getHalfSideLength();
