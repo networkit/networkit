@@ -5,6 +5,7 @@ networkit_add_module(scd
     GCE.cpp
     LFMLocal.cpp
     PageRankNibble.cpp
+    RandomBFS.cpp
     SCDGroundTruthComparison.cpp
     SelectiveCommunityDetector.cpp
     SetConductance.cpp

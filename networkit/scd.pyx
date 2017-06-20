@@ -357,3 +357,28 @@ cdef class SetConductance(Algorithm):
 		The conductance.
 		"""
 		return (<_SetConductance*>(self._this)).getConductance()
+
+cdef extern from "<networkit/scd/RandomBFS.hpp>":
+
+	cdef cppclass _RandomBFS "NetworKit::RandomBFS"(_SelectiveCommunityDetector):
+		_RandomBFS(_Graph G, _Cover C) except +
+
+cdef class RandomBFS(SelectiveCommunityDetector):
+	"""
+	The random BFS community detection baseline:
+	finds a community around a seed node with a given size using a prefix of a
+	BFS order that is selected at random among all possible prefixes.
+
+	Parameters:
+	-----------
+	G : Graph
+		Graph in which the community shall be found
+	C : Cover
+		Ground truth communities to get size information from
+	"""
+	cdef Cover _C
+
+	def __cinit__(self, Graph G, Cover C):
+		self._G = G
+		self._C = C
+		self._this = new _RandomBFS(G._this, C._this)
