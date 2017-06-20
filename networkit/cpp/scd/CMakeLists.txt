@@ -9,6 +9,7 @@ networkit_add_module(scd
     SCDGroundTruthComparison.cpp
     SelectiveCommunityDetector.cpp
     SetConductance.cpp
+    TwoPhaseL.cpp
     )
 
 networkit_module_link_modules(scd

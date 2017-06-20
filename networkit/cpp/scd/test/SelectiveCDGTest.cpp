@@ -13,6 +13,7 @@
 #include <networkit/scd/PageRankNibble.hpp>
 #include <networkit/scd/ApproximatePageRank.hpp>
 #include <networkit/scd/SelectiveCommunityDetector.hpp>
+#include <networkit/scd/TwoPhaseL.hpp>
 
 namespace NetworKit {
 
@@ -40,6 +41,7 @@ TEST_F(SCDGTest2, testSCD) {
     algorithms.emplace_back(std::make_pair(std::string("GCE L"), std::unique_ptr<SelectiveCommunityDetector>(new GCE(G, "L"))));
     algorithms.emplace_back(std::make_pair(std::string("GCE M"), std::unique_ptr<SelectiveCommunityDetector>(new GCE(G, "M"))));
     algorithms.emplace_back(std::make_pair(std::string("LFM"), std::unique_ptr<SelectiveCommunityDetector>(new LFMLocal(G, 0.8))));
+    algorithms.emplace_back(std::make_pair(std::string("TwoPhaseL"), std::unique_ptr<SelectiveCommunityDetector>(new TwoPhaseL(G))));
 
     count idBound = G.upperNodeIdBound();
 

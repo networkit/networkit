@@ -382,3 +382,23 @@ cdef class RandomBFS(SelectiveCommunityDetector):
 		self._G = G
 		self._C = C
 		self._this = new _RandomBFS(G._this, C._this)
+
+cdef extern from "<networkit/scd/TwoPhaseL.hpp>":
+
+	cdef cppclass _TwoPhaseL "NetworKit::TwoPhaseL"(_SelectiveCommunityDetector):
+		_TwoPhaseL(_Graph G) except +
+
+cdef class TwoPhaseL(SelectiveCommunityDetector):
+	"""
+	The two-phase local community detection algorithm optimizing the L-measure.
+
+	This is an implementation of the algorithm proposed in:
+
+	Chen, J., Zaïane, O., & Goebel, R. (2009).
+	Local Community Identification in Social Networks.
+	In 2009 International Conference on Advances in Social Network Analysis and Mining (pp. 237–242).
+	https://doi.org/10.1109/ASONAM.2009.14
+	"""
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _TwoPhaseL(G._this)
