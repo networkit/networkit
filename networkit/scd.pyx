@@ -402,3 +402,78 @@ cdef class TwoPhaseL(SelectiveCommunityDetector):
 	def __cinit__(self, Graph G):
 		self._G = G
 		self._this = new _TwoPhaseL(G._this)
+
+cdef extern from "<networkit/scd/LocalTightnessExpansion.hpp>":
+
+	cdef cppclass _LocalTightnessExpansion "NetworKit::LocalTightnessExpansion"(_SelectiveCommunityDetector):
+		_LocalTightnessExpansion(_Graph G, double alpha) except +
+
+cdef class LocalTightnessExpansion(SelectiveCommunityDetector):
+	"""
+	The Local Tightness Expansion (LTE) algorithm.
+
+	The algorithm can handle weighted graphs.
+
+	This is the local community expansion algorithm described in
+
+	Huang, J., Sun, H., Liu, Y., Song, Q., & Weninger, T. (2011).
+	Towards Online Multiresolution Community Detection in Large-Scale Networks.
+	PLOS ONE, 6(8), e23829.
+	https://doi.org/10.1371/journal.pone.0023829
+
+	Parameters:
+	-----------
+	G : Graph
+		graph in which the community shell be found
+	alpha : float
+		Tightness coefficient - smaller values lead to larger communities
+	"""
+	def __cinit__(self, Graph G, double alpha = 1.0):
+		self._G = G
+		self._this = new _LocalTightnessExpansion(G._this, alpha)
+
+cdef extern from "<networkit/scd/TCE.hpp>":
+
+	cdef cppclass _TCE "NetworKit::TCE"(_SelectiveCommunityDetector):
+		_TCE(_Graph G, bool_t refine, bool_t useJaccard) except +
+
+cdef class TCE(SelectiveCommunityDetector):
+	"""
+	The Triangle-based community expansion algorithm.
+
+	Parameters:
+	-----------
+	G : Graph
+		graph in which the community shell be found
+	refine : bool
+		If nodes shall be removed again if this improves the quality
+	useJaccard : bool
+		If the jaccard index shall be used for weights
+	"""
+	def __cinit__(self, Graph G, bool_t refine = True, bool_t useJaccard = False):
+		self._G = G
+		self._this = new _TCE(G._this, refine, useJaccard)
+
+cdef extern from "<networkit/scd/LocalT.hpp>":
+	cdef cppclass _LocalT "NetworKit::LocalT"(_SelectiveCommunityDetector):
+		_LocalT(_Graph G) except +
+
+cdef class LocalT(SelectiveCommunityDetector):
+	"""
+	The local community expansion algorithm optimizing the T measure.
+
+	This implements the algorithm published in:
+
+	Fagnan, J., Zaiane, O., & Barbosa, D. (2014).
+	Using triads to identify local community structure in social networks.
+	In 2014 IEEE/ACM International Conference on Advances in Social Networks Analysis and Mining (ASONAM) (pp. 108–112).
+	https://doi.org/10.1109/ASONAM.2014.6921568
+
+	Parameters:
+	-----------
+	G : Graph
+		graph in which the community shell be found
+	"""
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _LocalT(G._this)
