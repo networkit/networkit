@@ -9,6 +9,7 @@
 #include <networkit/io/SNAPGraphReader.hpp>
 #include <networkit/scd/CliqueDetect.hpp>
 #include <networkit/scd/GCE.hpp>
+#include <networkit/scd/LFMLocal.hpp>
 #include <networkit/scd/PageRankNibble.hpp>
 #include <networkit/scd/ApproximatePageRank.hpp>
 #include <networkit/scd/SelectiveCommunityDetector.hpp>
@@ -38,6 +39,7 @@ TEST_F(SCDGTest2, testSCD) {
     algorithms.emplace_back(std::make_pair(std::string("PageRankNibble"), std::unique_ptr<SelectiveCommunityDetector>(new PageRankNibble(G, alpha, epsilon))));
     algorithms.emplace_back(std::make_pair(std::string("GCE L"), std::unique_ptr<SelectiveCommunityDetector>(new GCE(G, "L"))));
     algorithms.emplace_back(std::make_pair(std::string("GCE M"), std::unique_ptr<SelectiveCommunityDetector>(new GCE(G, "M"))));
+    algorithms.emplace_back(std::make_pair(std::string("LFM"), std::unique_ptr<SelectiveCommunityDetector>(new LFMLocal(G, 0.8))));
 
     count idBound = G.upperNodeIdBound();
 

@@ -2,6 +2,7 @@ networkit_add_module(scd
     ApproximatePageRank.cpp
     CliqueDetect.cpp
     GCE.cpp
+    LFMLocal.cpp
     PageRankNibble.cpp
     SCDGroundTruthComparison.cpp
     SelectiveCommunityDetector.cpp
