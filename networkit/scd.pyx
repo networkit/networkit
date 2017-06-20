@@ -7,6 +7,8 @@ from libcpp.string cimport string
 ctypedef uint64_t index
 ctypedef index node
 
+from cython.operator import dereference
+
 from .graph cimport _Graph, Graph
 from .base cimport _Algorithm, Algorithm
 from .structures cimport _Cover, Cover
@@ -187,6 +189,20 @@ cdef class LFMLocal(SelectiveCommunityDetector):
 	def __cinit__(self, Graph G, double alpha = 1.0):
 		self._G = G
 		self._this = new _LFMLocal(G._this, alpha)
+
+cdef extern from "<networkit/scd/CombinedSCD.hpp>":
+	cdef cppclass _CombinedSCD "NetworKit::CombinedSCD"(_SelectiveCommunityDetector):
+		_CombinedSCD(_Graph G, _SelectiveCommunityDetector first, _SelectiveCommunityDetector second) except +
+
+cdef class CombinedSCD(SelectiveCommunityDetector):
+	cdef SelectiveCommunityDetector _first
+	cdef SelectiveCommunityDetector _second
+
+	def __cinit__(self, Graph G, SelectiveCommunityDetector first not None, SelectiveCommunityDetector second not None):
+		self._G = G
+		self._first = first
+		self._second = second
+		self._this = new _CombinedSCD(G._this, dereference(first._this), dereference(second._this))
 
 cdef extern from "<networkit/scd/SCDGroundTruthComparison.hpp>":
 	cdef cppclass _SCDGroundTruthComparison "NetworKit::SCDGroundTruthComparison"(_Algorithm):

@@ -1,6 +1,7 @@
 networkit_add_module(scd
     ApproximatePageRank.cpp
     CliqueDetect.cpp
+    CombinedSCD.cpp
     GCE.cpp
     LFMLocal.cpp
     PageRankNibble.cpp
