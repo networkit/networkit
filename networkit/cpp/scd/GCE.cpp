@@ -41,17 +41,8 @@ GCE::GCE(const Graph &G, std::string objective)
     }
 }
 
-std::map<node, std::set<node> >  GCE::run(const std::set<node>& seeds) {
-    std::map<node, std::set<node> > result;
-    for (auto seed : seeds) {
-        result[seed] = expandSeed(seed);
-    }
-    return result;
-}
-
-
 template <bool objectiveIsM>
-std::set<node> expandseed_internal(const Graph&G, node s) {
+std::set<node> expandseed_internal(const Graph&G, const std::set<node>& seeds) {
     /**
     * Check if set contains node.
     */
@@ -184,7 +175,10 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
         assert(objectiveIsM || boundary(community).size() == currentBoundary.size());
     };
 
-    addNodeToCommunity(s);
+    for (node s : seeds) {
+        addNodeToCommunity(s);
+    }
+
 
     /*
      * objective function M
@@ -241,15 +235,21 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
         }
     };
 
-    // for M, quality of {s} is 0.0
 
-    double dQMax;
+    if (objectiveIsM) {
+        currentQ = deltaM(0, 0, 0, community);
+    } else {
+        double numerator = 2.0 * (intWeight) * currentBoundary.size();
+        double denominator = community.size() * (extWeight);
+        currentQ = numerator / denominator;
+    }
+
     node vMax;
     do {
         // get values for current community
         assert(std::make_pair(intWeight, extWeight) == intExtWeight(community));
         // scan shell for node with maximum quality improvement
-        dQMax = 0.0; 	// maximum quality improvement
+        double dQMax = 0.0; 	// maximum quality improvement
         vMax = none;
         for (const auto& vs : currentShell) {
             // get values for current node
@@ -274,7 +274,7 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
     return community;
 }
 
-std::set<node> GCE::expandSeed(node s) {
+std::set<node> GCE::expandOneCommunity(const std::set<node>& s) {
     if (objective == "M") {
         return expandseed_internal<true>(*G, s);
     } else if (objective == "L") {

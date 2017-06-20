@@ -14,10 +14,13 @@ namespace NetworKit {
 ApproximatePageRank::ApproximatePageRank(const Graph& g, double alpha_, double epsilon):
         G(&g), alpha(alpha_), eps(epsilon) {}
 
-std::vector<std::pair<node, double>> ApproximatePageRank::run(node seed) {
-    pr_res[seed] = std::make_pair(0.0, 1.0);
+std::vector<std::pair<node, double>> ApproximatePageRank::run(const std::set<node>& seeds) {
+    double init_res = 1.0 / seeds.size();
     std::queue<node> activeNodes;
-    activeNodes.push(seed);
+    for (node s : seeds) {
+        pr_res[s] = std::make_pair(0.0, init_res);
+        activeNodes.push(s);
+    }
 
     auto push = [&](const node u, std::queue<node> &activeNodes) {
         double res = pr_res[u].second;
@@ -41,7 +44,7 @@ std::vector<std::pair<node, double>> ApproximatePageRank::run(node seed) {
     };
 
     while (!activeNodes.empty()) {
-        node v =  activeNodes.front();
+        node v = activeNodes.front();
         activeNodes.pop();
         push(v, activeNodes);
     }
@@ -54,6 +57,10 @@ std::vector<std::pair<node, double>> ApproximatePageRank::run(node seed) {
     }
 
     return pr;
+}
+
+std::vector<std::pair<node, double>> ApproximatePageRank::run(node seed) {
+    return run(std::set<node>{seed});
 }
 
 } /* namespace NetworKit */

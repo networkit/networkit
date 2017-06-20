@@ -79,20 +79,12 @@ std::set<node> PageRankNibble::bestSweepSet(std::vector<std::pair<node, double>>
     return bestSweepSet;
 }
 
-std::set<node> PageRankNibble::expandSeed(node seed) {
+
+std::set<node> PageRankNibble::expandOneCommunity(const std::set<node>& seeds) {
     DEBUG("APR(G, ", alpha, ", ", epsilon, ")");
     ApproximatePageRank apr(*G, alpha, epsilon);
-    std::vector<std::pair<node, double>> pr = apr.run(seed);
+    std::vector<std::pair<node, double>> pr = apr.run(seeds);
     return bestSweepSet(pr);
-}
-
-std::map<node, std::set<node> >  PageRankNibble::run(const std::set<node>& seeds) {
-    std::map<node, std::set<node> > result;
-    for (auto seed : seeds) {
-        auto community = expandSeed(seed);
-        result[seed] = community;
-    }
-    return result;
 }
 
 } /* namespace NetworKit */

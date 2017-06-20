@@ -16,13 +16,77 @@ def stdstring(pystring):
 	pybytes = pystring.encode("utf-8")
 	return pybytes
 
+cdef extern from "<networkit/scd/SelectiveCommunityDetector.hpp>":
+
+	cdef cppclass _SelectiveCommunityDetector "NetworKit::SelectiveCommunityDetector":
+		_SelectiveCommunityDetector(_Graph G) except +
+		map[node, set[node]] run(set[node] seeds) except +
+		set[node] expandOneCommunity(node seed) except +
+		set[node] expandOneCommunity(set[node] seeds) except +
+
+cdef class SelectiveCommunityDetector:
+	cdef _SelectiveCommunityDetector *_this
+	cdef Graph _G
+
+	def __init__(self, *args, **namedargs):
+		if type(self) == SelectiveCommunityDetector:
+			raise RuntimeError("Error, you may not use SelectiveCommunityDetector directly, use a sub-class instead")
+
+	def __cinit__(self, *args, **namedargs):
+		self._this = NULL
+
+	def __dealloc__(self):
+		if self._this != NULL:
+			del self._this
+		self._this = NULL
+
+	def run(self, set[node] seeds):
+		"""
+		Detect one community for each of the given seed nodes.
+
+		The default implementation calls expandOneCommunity() for each of the seeds.
+
+		Parameters:
+		-----------
+		seeds : list of nodes
+			The list of seeds for which communities shall be detected.
+
+		Returns
+		-------
+		A dict mapping from seed node to community (as a set of nodes).
+		"""
+		return self._this.run(seeds)
+
+	def expandOneCommunity(self, seeds):
+		"""
+		Detect a community for the given seed node(s).
+
+		It expands either a single seed or a whole set of seed nodes into a single community.
+		This is useful if you know multiple nodes that should be part of the
+		community. This method may throw an exception if the particular algorithm
+		does not support multiple seeds but you specified more than one seed.
+
+		Parameters
+		----------
+		seed : node or set
+			The seed(s) to find the community for.
+
+		Returns
+		-------
+		The found community as a set of nodes.
+		"""
+		try:
+			return self._this.expandOneCommunity(<set[node]?>seeds)
+		except TypeError:
+			return self._this.expandOneCommunity(<node?>seeds)
+
+
 cdef extern from "<networkit/scd/PageRankNibble.hpp>":
 
-	cdef cppclass _PageRankNibble "NetworKit::PageRankNibble":
+	cdef cppclass _PageRankNibble "NetworKit::PageRankNibble"(_SelectiveCommunityDetector):
 		_PageRankNibble(_Graph G, double alpha, double epsilon) except +
-		map[node, set[node]] run(set[node] seeds) except +
 
-cdef class PageRankNibble:
+cdef class PageRankNibble(SelectiveCommunityDetector):
 	"""
 	Produces a cut around a given seed node using the PageRank-Nibble algorithm.
 	see Andersen, Chung, Lang: Local Graph Partitioning using PageRank Vectors
@@ -33,53 +97,30 @@ cdef class PageRankNibble:
 	alpha : Loop probability of random walk; smaller values tend to produce larger communities.
 	epsilon: Tolerance threshold for approximation of PageRank vectors
 	"""
-	cdef _PageRankNibble *_this
-	cdef Graph _G
-
 	def __cinit__(self, Graph G, double alpha, double epsilon):
 		self._G = G
 		self._this = new _PageRankNibble(G._this, alpha, epsilon)
 
-	def run(self, set[node] seeds):
-		"""
-		Produces a cut around a given seed node.
-
-		Parameters:
-		-----------
-		seeds : the seed node ids.
-		"""
-		return self._this.run(seeds)
-
 cdef extern from "<networkit/scd/GCE.hpp>":
 
-	cdef cppclass _GCE "NetworKit::GCE":
+	cdef cppclass _GCE "NetworKit::GCE"(_SelectiveCommunityDetector):
 		_GCE(_Graph G, string quality) except +
-		map[node, set[node]] run(set[node] seeds) except +
 
-cdef class GCE:
+cdef class GCE(SelectiveCommunityDetector):
 	"""
 	Produces a cut around a given seed node using the GCE algorithm.
+	It greedily adds nodes from the shell to improve community quality.
 
 	Parameters:
 	-----------
-	G : networkit.Graph in which the cut is to be produced, must be unweighted.
+	G : graph in which the cut is to be produced, must be unweighted.
+	Q : string
+		The quality function. Supported values: "M" or "L".
 	"""
-	cdef _GCE *_this
-	cdef Graph _G
-
 	def __cinit__(self, Graph G, quality):
 		self._G = G
 		self._this = new _GCE(G._this, stdstring(quality))
 
-	def run(self, set[node] seeds):
-		"""
-		Produces a cut around a given seed node.
-
-		Parameters:
-		-----------
-		seeds : the seed node ids.
-		"""
-		return self._this.run(seeds)
 
 cdef extern from "<networkit/scd/SCDGroundTruthComparison.hpp>":
 	cdef cppclass _SCDGroundTruthComparison "NetworKit::SCDGroundTruthComparison"(_Algorithm):

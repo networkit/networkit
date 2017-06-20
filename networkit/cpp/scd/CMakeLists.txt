@@ -3,6 +3,7 @@ networkit_add_module(scd
     GCE.cpp
     PageRankNibble.cpp
     SCDGroundTruthComparison.cpp
+    SelectiveCommunityDetector.cpp
     SetConductance.cpp
     )
 

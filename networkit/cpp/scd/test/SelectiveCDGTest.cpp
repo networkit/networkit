@@ -21,7 +21,7 @@ TEST_F(SCDGTest2, testRunApproximatePageRank) {
     auto G = reader.read("./input/wiki-Vote.txt");
 
     ApproximatePageRank apr(G, 0.4);
-    const auto prVector= apr.run(0);
+    const auto prVector = apr.run(0);
 }
 
 TEST_F(SCDGTest2, testSCD) {
@@ -63,6 +63,54 @@ TEST_F(SCDGTest2, testSCD) {
         EXPECT_LT(cond, targetCond);
         INFO("Conductance of ", algIt.first, ": ", cond, "; cluster size: ", cluster.size());
     }
+}
+
+TEST_F(SCDGTest2, testGCE) {
+    METISGraphReader reader;
+    Graph G = reader.read("input/hep-th.graph");
+
+    node seed = 50;
+    GCE gce(G, "L");
+    auto cluster = gce.expandOneCommunity(seed);
+
+    EXPECT_GT(cluster.size(), 0u);
+
+    {
+        Partition partition(G.upperNodeIdBound());
+        partition.allToOnePartition();
+        partition.toSingleton(50);
+        index id = partition[seed];
+        for (auto entry: cluster) {
+            partition.moveToSubset(id, entry);
+        }
+
+        // evaluate result
+        Conductance conductance;
+        double targetCond = 0.4;
+        double cond = conductance.getQuality(partition, G);
+        EXPECT_LT(cond, targetCond);
+        INFO("Conductance of GCE: ", cond, "; cluster size: ", cluster.size());
+    }
+
+    auto cluster2 = gce.expandOneCommunity(cluster);
+
+    {
+        Partition partition(G.upperNodeIdBound());
+        partition.allToOnePartition();
+        partition.toSingleton(50);
+        index id = partition[seed];
+        for (auto entry: cluster2) {
+            partition.moveToSubset(id, entry);
+        }
+
+        // evaluate result
+        Conductance conductance;
+        double targetCond = 0.4;
+        double cond = conductance.getQuality(partition, G);
+        EXPECT_LT(cond, targetCond);
+        INFO("Conductance of GCE2: ", cond, "; cluster size: ", cluster2.size());
+    }
+    EXPECT_EQ(cluster, cluster2);
 }
 
 

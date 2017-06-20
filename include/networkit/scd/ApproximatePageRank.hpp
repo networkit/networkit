@@ -8,6 +8,7 @@
 #ifndef NETWORKIT_SCD_APPROXIMATE_PAGE_RANK_HPP_
 #define NETWORKIT_SCD_APPROXIMATE_PAGE_RANK_HPP_
 
+#include <set>
 #include <unordered_map>
 #include <vector>
 
@@ -32,6 +33,12 @@ public:
      * @param epsilon Error tolerance.
      */
     ApproximatePageRank(const Graph& g, double alpha, double epsilon = 1e-12);
+
+    /**
+     * @return Approximate PageRank vector from @a seeds with parameters
+     *         specified in the constructor.
+     */
+    std::vector<std::pair<node, double>> run(const std::set<node> &seeds);
 
     /**
      * @return Approximate PageRank vector from @a seed with parameters
