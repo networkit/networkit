@@ -1,5 +1,6 @@
 networkit_add_module(scd
     ApproximatePageRank.cpp
+    CliqueDetect.cpp
     GCE.cpp
     PageRankNibble.cpp
     SCDGroundTruthComparison.cpp
@@ -8,6 +9,6 @@ networkit_add_module(scd
     )
 
 networkit_module_link_modules(scd
-    auxiliary graph)
+    auxiliary clique graph)
 
 add_subdirectory(test)

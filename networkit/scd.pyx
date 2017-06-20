@@ -121,6 +121,37 @@ cdef class GCE(SelectiveCommunityDetector):
 		self._G = G
 		self._this = new _GCE(G._this, stdstring(quality))
 
+cdef extern from "<networkit/scd/CliqueDetect.hpp>":
+	cdef cppclass _CliqueDetect "NetworKit::CliqueDetect"(_SelectiveCommunityDetector):
+		_CliqueDetect(_Graph G) except +
+
+cdef class CliqueDetect(SelectiveCommunityDetector):
+	"""
+	The CliqueDetect algorithm. It finds the largest clique in the
+	seed node's neighborhood.
+
+	The algorithm can handle weighted graphs. There, the clique
+	with the highest sum of internal edge weights is
+	returned. This sum includes edge weights to the seed node(s)
+	to ensure that cliques that are well-connected to the seed
+	node(s) are preferred.
+
+	For multiple seed nodes, the resulting community is a clique
+	iff the seeds form a clique. Otherwise, only the added nodes
+	form a clique that is fully connected to the seed nodes.
+
+	See also: Hamann, M.; Röhrs, E.; Wagner, D.
+	Local Community Detection Based on Small Cliques.
+	Algorithms 2017, 10, 90. https://doi.org/10.3390/a10030090
+
+	Parameters:
+	-----------
+	G : graph in which communities shall be detected.
+	"""
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _CliqueDetect(G._this)
+
 
 cdef extern from "<networkit/scd/SCDGroundTruthComparison.hpp>":
 	cdef cppclass _SCDGroundTruthComparison "NetworKit::SCDGroundTruthComparison"(_Algorithm):

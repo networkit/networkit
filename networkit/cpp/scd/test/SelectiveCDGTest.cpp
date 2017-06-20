@@ -7,6 +7,7 @@
 #include <networkit/graph/Graph.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/SNAPGraphReader.hpp>
+#include <networkit/scd/CliqueDetect.hpp>
 #include <networkit/scd/GCE.hpp>
 #include <networkit/scd/PageRankNibble.hpp>
 #include <networkit/scd/ApproximatePageRank.hpp>
