@@ -564,7 +564,11 @@ public:
 		auto distancePair = hyperbolicDistances(phi_q, r_q);
 		double probUB = prob(distancePair.first);
 		double probLB = prob(distancePair.second);
+#ifndef NDEBUG
 		assert(probLB <= probUB);
+#else
+        ((void)(probLB));
+#endif
 		if (probUB > 0.5) probUB = 1;//if we are going to take every second element anyway, no use in calculating expensive jumps
 		if (probUB == 0) return 0;
 		//TODO: return whole if probLB == 1
