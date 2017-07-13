@@ -29,7 +29,7 @@ public:
 	DynAPSP(Graph& G);
 
 	/** initialize distances and Pred by repeatedly running the Dijkstra2 algorithm */
-	void run();
+	void run() override;
 
   /**
   * Updates the pairwise distances after an edge insertions on the graph.
