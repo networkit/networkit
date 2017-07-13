@@ -6,7 +6,7 @@
 
 #include <atomic>
 
-#if defined __GNUC__ && defined _OPENMP
+#if ((defined(__GNUC__) || defined(__GNUG__)) && !(defined(__clang__) || defined(__INTEL_COMPILER))) && defined _OPENMP
 #include <parallel/algorithm>
 #else
 #define NETWORKIT_NO_PARALLEL_STL
