@@ -98,6 +98,12 @@ AddOption("--std",
 	action="store",
 	help="used to pass std flag from setup.py to SConstruct")
 
+AddOption("--defines",
+	dest="defines",
+	type="string",
+	nargs=1,
+	help="used to pass defines (separated by commas)")
+
 # ENVIRONMENT
 
 ## read environment settings from configuration file
@@ -105,6 +111,7 @@ AddOption("--std",
 env = Environment()
 compiler = GetOption("compiler")
 stdflag = GetOption("std")
+defines = GetOption("defines")
 
 if not os.path.isfile("build.conf"):
 	if not compiler == None:
@@ -136,7 +143,8 @@ else:
 		cppComp = conf.get("compiler", "cpp", "gcc")
 	else:
 		cppComp = compiler
-	defines = conf.get("compiler", "defines", [])		# defines are optional
+	if defines is None:
+		defines = conf.get("compiler", "defines", [])		# defines are optional
 	if defines is not []:
 		defines = defines.split(",")
 
