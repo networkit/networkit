@@ -2785,8 +2785,18 @@ cdef class LFRGenerator(Algorithm):
 			communityAvgSize = int(sum(communitySize) / len(communitySize))
 			communityMaxSize = max(communitySize)
 			communityMinSize = min(communitySize)
+
+			localCoverage = LocalPartitionCoverage(G, communities).run().scores()
+			mu = 1.0 - sum(localCoverage) / len(localCoverage)
+			# check if largest possible internal degree can fit in the largest possible community
+			if math.ceil((1.0 - mu) * maxDegree) >= communityMaxSize:
+				# Make the maximum community size 5% larger to make it more likely
+				# the largest generated degree will actually fit.
+				communityMaxSize = math.ceil(((1.0 - mu) * maxDegree + 1) * 1.05)
+				print("Increasing maximum community size to fit the largest degree")
+
 			if plfit:
-				communityExp = -1 * PowerlawDegreeSequence(communitySize).getGamma()
+				communityExp = -1 * PowerlawDegreeSequence(communityMinSize, communityMaxSize, -1).setGammaFromAverageDegree(communityAvgSize).getGamma()
 			else:
 				communityExp = 1
 			pl = PowerlawDegreeSequence(communityMinSize, communityMaxSize, -1 * communityExp)
@@ -2798,11 +2808,10 @@ cdef class LFRGenerator(Algorithm):
 				pl.run()
 				print("Could not set desired average community size {}, average will be {} instead".format(communityAvgSize, pl.getExpectedAverageDegree()))
 
+
 			gen.generatePowerlawCommunitySizeSequence(minCommunitySize=communityMinSize, maxCommunitySize=communityMaxSize, communitySizeExp=-1 * communityExp)
 			# mixing parameter
 			#print("mixing parameter")
-			localCoverage = LocalPartitionCoverage(G, communities).run().scores()
-			mu = sum(localCoverage) / len(localCoverage)
 			gen.setMu(mu)
 			refImplParams = "-N {0} -k {1} -maxk {2} -mu {3} -minc {4} -maxc {5} -t1 {6} -t2 {7}".format(n * scale, avgDegree, maxDegree, mu, communityMinSize, communityMaxSize, nodeDegreeExp, communityExp)
 			cls.params["refImplParams"] = refImplParams
