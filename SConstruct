@@ -225,7 +225,7 @@ try:
     optimize = GetOption("optimize")
 except:
     print("ERROR: Missing option --optimize=<LEVEL>")
-    exit()
+    exit(1)
 
 sanitize = None
 try:
@@ -279,7 +279,7 @@ elif (openmp == "no"):
     env.Append(LIBS = ["pthread"])
 else:
     print("ERROR: unrecognized option --openmp=%s" % openmp)
-    exit()
+    exit(1)
 
 # optimize flags
 if optimize == "Dbg":
@@ -293,7 +293,7 @@ elif optimize == "Pro":
 	 env.Append(CPPFLAGS = profileCppFlags)
 else:
     print("ERROR: invalid optimize: %s" % optimize)
-    exit()
+    exit(1)
 
 # sanitize
 if sanitize:
@@ -302,7 +302,7 @@ if sanitize:
 		env.Append(LINKFLAGS = ["-fsanitize=address"])
 	else:
 		print("ERROR: invalid sanitize option")
-		exit()
+		exit(1)
 
 
 # TARGET
