@@ -2263,6 +2263,9 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 				raise ValueError("Exponent of power-law degree distribution must be > 2")
 		self._this = new _HyperbolicGenerator(n, k, gamma, T)
 
+	def __dealloc__(self):
+		del self._this
+
 	def setLeafCapacity(self, capacity):
 		self._this.setLeafCapacity(capacity)
 
@@ -6702,6 +6705,9 @@ cdef class DynamicHyperbolicGenerator:
 		if gamma <= 2:
 				raise ValueError("Exponent of power-law degree distribution must be > 2")
 		self._this = new _DynamicHyperbolicGenerator(numNodes, avgDegree = 6, gamma = 3, T = 0, moveEachStep = 1, moveDistance = 0.1)
+
+	def __dealloc__(self):
+		del self._this
 
 	def generate(self, nSteps):
 		""" Generate event stream.
