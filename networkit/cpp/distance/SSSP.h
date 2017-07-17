@@ -18,7 +18,7 @@
 namespace NetworKit {
 
 /**
- * @ingroup graph
+ * @ingroup distance
  * Abstract base class for single-source shortest path algorithms.
  */
 class SSSP: public Algorithm {

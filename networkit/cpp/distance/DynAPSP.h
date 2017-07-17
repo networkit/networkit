@@ -15,7 +15,7 @@
 namespace NetworKit {
 
 /**
- * @ingroup graph
+ * @ingroup distance
  * Dynamic APSP.
  */
 class DynAPSP : public APSP, public DynAlgorithm {

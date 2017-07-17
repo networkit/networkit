@@ -14,7 +14,7 @@
 namespace NetworKit {
 
 /**
- * @ingroup graph
+ * @ingroup distance
  * The BFS class is used to do a breadth-first search on a Graph from a given source node.
  */
 class BFS : public SSSP {

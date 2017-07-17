@@ -15,7 +15,7 @@
 namespace NetworKit {
 
 /**
- * @ingroup graph
+ * @ingroup distance
  * Dijkstra's SSSP algorithm.
  */
 class Dijkstra : public SSSP {
