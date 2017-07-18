@@ -9,9 +9,9 @@
 #include "../auxiliary/Random.h"
 #include "../distance/Diameter.h"
 #include "../graph/Sampling.h"
-#include "../graph/Dijkstra.h"
-#include "../graph/BFS.h"
-#include "../graph/SSSP.h"
+#include "../distance/Dijkstra.h"
+#include "../distance/BFS.h"
+#include "../distance/SSSP.h"
 #include "../auxiliary/Log.h"
 #include "../auxiliary/SignalHandling.h"
 

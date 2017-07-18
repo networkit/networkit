@@ -424,6 +424,7 @@ TEST_F(QuadTreeGTest, testSequentialQuadTreeConstruction) {
 }
 
 TEST_F(QuadTreeGTest, testProbabilisticQuery) {
+	Aux::Random::setSeed(0, false);
 	count n = 10000;
 	count m = n*3;
 	count capacity = 20;
@@ -657,6 +658,7 @@ TEST_F(QuadTreeGTest, tryTreeExport) {
 }
 
 TEST_F(QuadTreeGTest, testPolarEuclidQuery) {
+	Aux::Random::setSeed(42, true);
 	/**
 	 * setup of data structures and constants
 	 */

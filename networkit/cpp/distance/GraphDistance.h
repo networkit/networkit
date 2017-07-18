@@ -8,7 +8,7 @@
 #ifndef GRAPHDISTANCE_H_
 #define GRAPHDISTANCE_H_
 
-#include "Graph.h"
+#include "../graph/Graph.h"
 #include "Dijkstra.h"
 #include "BFS.h"
 
@@ -16,7 +16,7 @@ namespace NetworKit {
 
 // TODO: inherit from NodeDistance
 /**
- * @ingroup graph
+ * @ingroup distance
  */
 class GraphDistance {
 public:

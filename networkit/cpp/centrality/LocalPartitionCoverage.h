@@ -13,7 +13,7 @@ namespace NetworKit {
 class LocalPartitionCoverage : public Centrality {
 public:
 	/**
-	 * Construct the local partition coverage instance.
+	 * Construct the local partition coverage instance. The running time of the run() method is O(m), where m is the number of edges in the graph.
 	 *
 	 * @param G The graph to use
 	 * @param P The partition for which the coverage shall be calculated.
@@ -21,7 +21,7 @@ public:
 	LocalPartitionCoverage(const Graph& G, const Partition &P);
 
 	/**
-	 * Execute the local partition coverage algorithm
+	 * Computes local partition coverage on the graph passed in constructor.
 	 */
 	virtual void run() override;
 

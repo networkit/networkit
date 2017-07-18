@@ -14,7 +14,7 @@
 
 namespace NetworKit {
 
-PageRankNibble::PageRankNibble(Graph& g, double alpha, double epsilon): SelectiveCommunityDetector(g), alpha(alpha), epsilon(epsilon) {
+PageRankNibble::PageRankNibble(const Graph& g, double alpha, double epsilon): SelectiveCommunityDetector(g), alpha(alpha), epsilon(epsilon) {
 	if (g.isWeighted()) {
 		throw std::invalid_argument("Current implementation supports only unweighted graphs!");
 	}
@@ -99,7 +99,7 @@ std::set<node> PageRankNibble::expandSeed(node seed) {
 	return s;
 }
 
-std::map<node, std::set<node> >  PageRankNibble::run(std::set<unsigned int>& seeds) {
+std::map<node, std::set<node> >  PageRankNibble::run(const std::set<node>& seeds) {
     std::map<node, std::set<node> > result;
 	for (auto seed : seeds) {
 		auto community = expandSeed(seed);

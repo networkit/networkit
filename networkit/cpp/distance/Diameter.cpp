@@ -9,11 +9,10 @@
 
 #include "Diameter.h"
 #include "Eccentricity.h"
-#include "../graph/BFS.h"
-#include "../graph/Dijkstra.h"
+#include "../distance/BFS.h"
+#include "../distance/Dijkstra.h"
 #include "../components/ConnectedComponents.h"
 #include "../structures/Partition.h"
-#include "../graph/BFS.h"
 
 namespace NetworKit {
 

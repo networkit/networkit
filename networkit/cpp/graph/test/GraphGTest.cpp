@@ -13,7 +13,7 @@
 #include "../GraphBuilder.h"
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/NumericTools.h"
-#include "../../graph/DynBFS.h"
+#include "../../distance/DynBFS.h"
 #include "../../auxiliary/Parallel.h"
 
 namespace NetworKit {
@@ -292,31 +292,32 @@ TEST_P(GraphGTest, testAddNode) {
 TEST_P(GraphGTest, testRemoveNode) {
 	Graph G = createGraph(4);
 	G.addEdge(0, 1);
+	G.addEdge(0, 2);
 
 	ASSERT_EQ(4u, G.numberOfNodes());
+	ASSERT_EQ(2u, G.numberOfEdges());
 	ASSERT_TRUE(G.hasNode(0));
 	ASSERT_TRUE(G.hasNode(1));
 	ASSERT_TRUE(G.hasNode(2));
 	ASSERT_TRUE(G.hasNode(3));
 
-	EXPECT_ANY_THROW(G.removeNode(0));
-	EXPECT_ANY_THROW(G.removeNode(1));
-
 	G.removeNode(2);
 
 	ASSERT_EQ(3u, G.numberOfNodes());
+	ASSERT_EQ(1u, G.numberOfEdges());
 	ASSERT_TRUE(G.hasNode(0));
 	ASSERT_TRUE(G.hasNode(1));
 	ASSERT_FALSE(G.hasNode(2));
 	ASSERT_TRUE(G.hasNode(3));
 
-	G.removeNode(3);
+	G.removeNode(1);
 
 	ASSERT_EQ(2u, G.numberOfNodes());
+	ASSERT_EQ(0u, G.numberOfEdges());
 	ASSERT_TRUE(G.hasNode(0));
-	ASSERT_TRUE(G.hasNode(1));
+	ASSERT_FALSE(G.hasNode(1));
 	ASSERT_FALSE(G.hasNode(2));
-	ASSERT_FALSE(G.hasNode(3));
+	ASSERT_TRUE(G.hasNode(3));
 }
 
 TEST_P(GraphGTest, testHasNode) {

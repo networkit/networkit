@@ -8,12 +8,12 @@
 #ifndef INCOMPLETESSSP_H_
 #define INCOMPLETESSSP_H_
 
-#include "Graph.h"
+#include "../graph/Graph.h"
 
 namespace NetworKit {
 
 /**
- * @ingroup graph
+ * @ingroup distance
  * Abstract base class for single-source shortest path algorithms that return
  * the nodes in order of increasing distance from the source and do not
  * necessarily need to compute all distances.

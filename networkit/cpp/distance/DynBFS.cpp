@@ -32,7 +32,13 @@ void DynBFS::run() {
 	maxDistance++;
 }
 
-void DynBFS::update(const std::vector<GraphEvent>& batch) {
+void DynBFS::update(GraphEvent e) {
+	std::vector<GraphEvent> batch(1);
+	batch[0] = e;
+	updateBatch(batch);
+}
+
+void DynBFS::updateBatch(const std::vector<GraphEvent>& batch) {
 	mod = false;
 	std::vector<std::queue<node> > queues(maxDistance);
 

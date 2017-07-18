@@ -33,7 +33,6 @@ private:
 	count dimension;
 	unsigned capacity;
 	static const unsigned coarsenLimit = 4;
-	static const long unsigned sanityNodeLimit = 10E15; //just assuming, for debug purposes, that this algorithm never runs on machines with more than 4 Petabyte RAM
 	count subTreeSize;
 	std::vector<T> content;
 	std::vector<Point<double> > positions;
@@ -122,7 +121,6 @@ public:
 	 * @param R radial coordinate of point, between 0 and 1.
 	 */
 	void addContent(T input, Point<double> pos) {
-		assert(input < sanityNodeLimit);
 		assert(content.size() == positions.size());
 		assert(this->responsible(pos));
 		if (isLeaf) {
@@ -350,8 +348,6 @@ public:
 			for (index i=0; i < cSize; i++) {
 				if (positions[i].squaredDistance(center) < rsq) {
 					result.push_back(content[i]);
-					if (content[i] >= sanityNodeLimit) DEBUG("Quadnode content ", content[i], " found, suspiciously high!");
-					assert(content[i] < sanityNodeLimit);
 				}
 			}
 		}	else {

@@ -9,9 +9,9 @@
 #define DYNAPPROXBETW_H_
 
 #include "Centrality.h"
-#include "DynCentrality.h"
+#include "../base/DynAlgorithm.h"
 #include "../dynamics/GraphEvent.h"
-#include "../graph/DynSSSP.h"
+#include "../distance/DynSSSP.h"
 
 #include <math.h>
 #include <algorithm>
@@ -24,7 +24,7 @@ namespace NetworKit {
  * @ingroup centrality
  * Interface for dynamic approximated betweenness centrality algorithm.
  */
-class DynApproxBetweenness: public Centrality, public DynCentrality {
+class DynApproxBetweenness: public Centrality, public DynAlgorithm {
 
 public:
     /**
@@ -48,12 +48,20 @@ public:
     void run() override;
 
     /**
+    * Updates the betweenness centralities after an edge insertions on the graph.
+    * Notice: it works only with edge insertions and the graph has to be connected.
+    *
+    * @param e The edge insertions.
+    */
+    void update(GraphEvent e) override;
+
+    /**
     * Updates the betweenness centralities after a batch of edge insertions on the graph.
     * Notice: it works only with edge insertions and the graph has to be connected.
     *
     * @param batch The batch of edge insertions.
     */
-    void update(const std::vector<GraphEvent>& batch) override;
+    void updateBatch(const std::vector<GraphEvent>& batch) override;
 
     /**
     * Get number of path samples used for last calculation

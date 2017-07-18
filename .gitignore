@@ -14,11 +14,10 @@ networkit.egg-info/
 lamg-2.2-2
 CMG_101014
 instances
-bench*
+benchmark/
 .cproject
 .project
 .settings*
-Benchmark*
 plots
 *.out$
 *.egg$
@@ -51,3 +50,4 @@ EnsembleClustering-O
 doxygen
 NetworKit-Tests-*
 include/NetworKit
+dist/

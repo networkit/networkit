@@ -15,10 +15,12 @@
 
 namespace NetworKit {
 
-CoreDecomposition::CoreDecomposition(const Graph& G, bool normalized, bool enforceBucketQueueAlgorithm) :
-		Centrality(G, normalized), maxCore(0), enforceBucketQueueAlgorithm(enforceBucketQueueAlgorithm)
+CoreDecomposition::CoreDecomposition(const Graph& G, bool normalized, bool enforceBucketQueueAlgorithm, bool storeNodeOrder) :
+		Centrality(G, normalized), maxCore(0), enforceBucketQueueAlgorithm(enforceBucketQueueAlgorithm),
+		storeNodeOrder(storeNodeOrder)
 {
 	if (G.numberOfSelfLoops()) throw std::runtime_error("Core Decomposition implementation does not support graphs with self-loops. Call Graph.removeSelfLoops() first.");
+	if (storeNodeOrder) this->enforceBucketQueueAlgorithm = true;
 	canRunInParallel = (! enforceBucketQueueAlgorithm && (G.numberOfNodes() == G.upperNodeIdBound()));
 }
 
@@ -271,6 +273,10 @@ void CoreDecomposition::runWithBucketQueues() {
 
 	maxCore = core;
 
+	if (storeNodeOrder) {
+		nodeOrder = std::move(queue);
+	}
+
 	hasRun = true;
 }
 
@@ -309,6 +315,13 @@ Partition CoreDecomposition::getPartition() const {
 		shellData.moveToSubset((index) scoreData[u], (index) u);
 	});
 	return shellData;
+}
+
+const std::vector<node>& CoreDecomposition::getNodeOrder() const {
+	if (!storeNodeOrder) throw std::runtime_error("The node order was not stored. Make sure you set storeNodeOrder to true");
+	assureFinished();
+
+	return nodeOrder;
 }
 
 index CoreDecomposition::maxCoreNumber() const {

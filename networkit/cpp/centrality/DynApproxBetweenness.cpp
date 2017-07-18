@@ -9,8 +9,8 @@
 #include "../auxiliary/Random.h"
 #include "../distance/Diameter.h"
 #include "../graph/Sampling.h"
-#include "../graph/DynDijkstra.h"
-#include "../graph/DynBFS.h"
+#include "../distance/DynDijkstra.h"
+#include "../distance/DynBFS.h"
 #include "../auxiliary/Log.h"
 #include "../auxiliary/NumericTools.h"
 
@@ -19,7 +19,6 @@ namespace NetworKit {
 
 DynApproxBetweenness::DynApproxBetweenness(const Graph& G, const double epsilon, const double delta, const bool storePredecessors, const double universalConstant) : Centrality(G, true),
 storePreds(storePredecessors), epsilon(epsilon), delta(delta), universalConstant(universalConstant) {
-  INFO("Constructing DynApproxBetweenness. storePredecessors = ", storePredecessors);
 }
 
 
@@ -29,7 +28,6 @@ count DynApproxBetweenness::getNumberOfSamples() {
 
 
 void DynApproxBetweenness::run() {
-  INFO("Inside DynApproxBetweenness. storePreds = ", storePreds);
     if (G.isDirected()) {
         throw std::runtime_error("Invalid argument: G must be undirected.");
     }
@@ -60,27 +58,20 @@ void DynApproxBetweenness::run() {
             v[i] = Sampling::randomNode(G);
         } while (v[i] == u[i]);
         if (G.isWeighted()) {
-            INFO("Calling DynDijkstra inside run DynApproxBet");
             sssp[i].reset(new DynDijkstra(G, u[i], storePreds));
         } else {
-            INFO("Calling DynBFS inside run DynApproxBet");
             sssp[i].reset(new DynBFS(G, u[i], storePreds));
         }
         DEBUG("running shortest path algorithm for node ", u[i]);
 
-        INFO("Calling setTargetNodeon sssp instance inside run DynApproxBet");
         sssp[i]->setTargetNode(v[i]);
-        INFO("Calling run on sssp instance inside run DynApproxBet");
         sssp[i]->run();
-        INFO("Ran sssp");
         if (sssp[i]->distances[v[i]] > 0) { // at least one path between {u, v} exists
             DEBUG("updating estimate for path ", u[i], " <-> ", v[i]);
-            INFO("Entered if statement.");
             // random path sampling and estimation update
             sampledPaths[i].clear();
             node t = v[i];
             while (t != u[i])  {
-              INFO("Entered while statement");
                 // sample z in P_u(t) with probability sigma_uz / sigma_us
                 std::vector<std::pair<node, double> > choices;
                 if (storePreds) {
@@ -94,13 +85,10 @@ void DynApproxBetweenness::run() {
                     }
                 }
                 else {
-                  INFO("Storepreds is false");
                   G.forInEdgesOf(t, [&](node t, node z, edgeweight w){
                         if (Aux::NumericTools::logically_equal(sssp[i]->distances[t], sssp[i]->distances[z] + w)) {
                             // workaround for integer overflow in large graphs
-                            INFO("Calling number of paths");
                             bigfloat tmp = sssp[i]->numberOfPaths(z) / sssp[i]->numberOfPaths(t);
-                            INFO("Called number of paths");
                             double weight;
                             tmp.ToDouble(weight);
 
@@ -109,8 +97,8 @@ void DynApproxBetweenness::run() {
 
                     });
                 }
-                INFO("Node considered: ", t);
-                INFO("Source considered: ", u[i]);
+                DEBUG("Node: ", t);
+                DEBUG("Source: ", u[i]);
                 assert (choices.size() > 0);
                 node z = Aux::Random::weightedChoice(choices);
                 assert (z <= G.upperNodeIdBound());
@@ -127,10 +115,17 @@ void DynApproxBetweenness::run() {
 
 }
 
-void DynApproxBetweenness::update(const std::vector<GraphEvent>& batch) {
-    INFO ("Updating");
+void DynApproxBetweenness::update(GraphEvent e) {
+  std::vector<GraphEvent> batch(1);
+  batch[0] = e;
+  updateBatch(batch);
+}
+
+
+void DynApproxBetweenness::updateBatch(const std::vector<GraphEvent>& batch) {
+    DEBUG ("Updating");
     for (node i = 0; i < r; i++) {
-        sssp[i]->update(batch);
+        sssp[i]->updateBatch(batch);
         if (sssp[i]->modified()) {
             // subtract contributions to nodes in the old sampled path
             for (node z: sampledPaths[i]) {
@@ -165,11 +160,6 @@ void DynApproxBetweenness::update(const std::vector<GraphEvent>& batch) {
                     });
                 }
                 assert (choices.size() > 0); // this should fail only if the graph is not connected
-                if (choices.size() == 0) {
-                    INFO ("node: ", t);
-                    INFO ("source: ", u[i]);
-                    INFO ("distance: ", sssp[i]->distances[t]);
-                }
                 node z = Aux::Random::weightedChoice(choices);
                 assert (z <= G.upperNodeIdBound());
                 if (z != u[i]) {

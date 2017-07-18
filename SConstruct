@@ -98,6 +98,12 @@ AddOption("--std",
 	action="store",
 	help="used to pass std flag from setup.py to SConstruct")
 
+AddOption("--defines",
+	dest="defines",
+	type="string",
+	nargs=1,
+	help="used to pass defines (separated by commas)")
+
 # ENVIRONMENT
 
 ## read environment settings from configuration file
@@ -105,6 +111,7 @@ AddOption("--std",
 env = Environment()
 compiler = GetOption("compiler")
 stdflag = GetOption("std")
+defines = GetOption("defines")
 
 if not os.path.isfile("build.conf"):
 	if not compiler == None:
@@ -136,7 +143,8 @@ else:
 		cppComp = conf.get("compiler", "cpp", "gcc")
 	else:
 		cppComp = compiler
-	defines = conf.get("compiler", "defines", [])		# defines are optional
+	if defines is None:
+		defines = conf.get("compiler", "defines", [])		# defines are optional
 	if defines is not []:
 		defines = defines.split(",")
 
@@ -217,7 +225,7 @@ try:
     optimize = GetOption("optimize")
 except:
     print("ERROR: Missing option --optimize=<LEVEL>")
-    exit()
+    exit(1)
 
 sanitize = None
 try:
@@ -271,7 +279,7 @@ elif (openmp == "no"):
     env.Append(LIBS = ["pthread"])
 else:
     print("ERROR: unrecognized option --openmp=%s" % openmp)
-    exit()
+    exit(1)
 
 # optimize flags
 if optimize == "Dbg":
@@ -285,7 +293,7 @@ elif optimize == "Pro":
 	 env.Append(CPPFLAGS = profileCppFlags)
 else:
     print("ERROR: invalid optimize: %s" % optimize)
-    exit()
+    exit(1)
 
 # sanitize
 if sanitize:
@@ -294,7 +302,7 @@ if sanitize:
 		env.Append(LINKFLAGS = ["-fsanitize=address"])
 	else:
 		print("ERROR: invalid sanitize option")
-		exit()
+		exit(1)
 
 
 # TARGET

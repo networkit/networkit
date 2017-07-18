@@ -51,7 +51,7 @@ TEST_F(DynSSSPGTest, testDynamicBFS_1edge) {
 	for (GraphEvent edge : batch) {
 		G.addEdge(edge.u, edge.v, edge.w);
 	}
-	dbfs.update(batch);
+	dbfs.updateBatch(batch);
 	bfs.run();
 	G.forNodes([&] (node i) {
 		EXPECT_EQ(bfs.distance(i), dbfs.distance(i));
@@ -99,7 +99,7 @@ TEST_F(DynSSSPGTest, testDynamicBFS_batch) {
 	for (GraphEvent edge : batch) {
 		G.addEdge(edge.u, edge.v, edge.w);
 	}
-	dbfs.update(batch);
+	dbfs.updateBatch(batch);
 	bfs.run();
 	G.forNodes([&] (node i) {
 		EXPECT_EQ(bfs.distance(i), dbfs.distance(i));
@@ -154,7 +154,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstra) {
 	for (GraphEvent edge : batch) {
 		G.addEdge(edge.u, edge.v, edge.w);
 	}
-	ddij.update(batch);
+	ddij.updateBatch(batch);
 	dij.run();
 	G.forNodes([&] (node i) {
 		EXPECT_EQ(dij.distance(i), ddij.distance(i));
@@ -185,7 +185,7 @@ TEST_F(DynSSSPGTest, testDynamicBFSGeneratedGraph) {
 			std::vector<GraphEvent> batch;
 			batch.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2, 1.0));
 			DEBUG("Running update with dynamic bfs");
-			dyn_bfs.update(batch);
+			dyn_bfs.updateBatch(batch);
 			DEBUG("Running from scratch with bfs");
 			bfs.run();
 			G.forNodes([&] (node i) {
@@ -222,7 +222,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraGeneratedGraph) {
 			std::vector<GraphEvent> batch;
 			batch.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2, 1.0));
 			DEBUG("Running update with dynamic dijkstra");
-			dyn_dij.update(batch);
+			dyn_dij.updateBatch(batch);
 			DEBUG("Running from scratch with dijkstra");
 			dij.run();
 			G.forNodes([&] (node i) {
@@ -270,7 +270,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraBatches) {
 			}
 			DEBUG("batch size: ", batch.size());
 			DEBUG("Updating with dynamic dijkstra");
-			dyn_dij.update(batch);
+			dyn_dij.updateBatch(batch);
 			DEBUG("Running from scratch with dijkstra");
 			dij.run();
 			G.forNodes([&] (node i) {

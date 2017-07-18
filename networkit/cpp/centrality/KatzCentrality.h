@@ -28,6 +28,7 @@ protected:
 public:
 	/**
 	 * Constructs a KatzCentrality object for the given Graph @a G. @a tol defines the tolerance for convergence.
+	 * Each iteration of the algorithm requires O(m) time. The number of iterations depends on how long it takes to reach the convergence.
 	 *
 	 * @param[in] G The graph.
 	 * @param[in] alpha Damping of the matrix vector product result
@@ -36,6 +37,9 @@ public:
 	 */
 	KatzCentrality(const Graph& G, double alpha = 5e-4, double beta = 0.1, double tol = 1e-8);
 
+	/**
+	 * Computes katz centrality on the graph passed in constructor.
+	 */
 	virtual void run();
 };
 
