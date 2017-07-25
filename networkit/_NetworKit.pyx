@@ -1198,6 +1198,7 @@ cdef extern from "cpp/distance/SSSP.h":
 		vector[node] getPath(node t, bool forward) except +
 		set[vector[node]] getPaths(node t, bool forward) except +
 		vector[node] getStack(bool moveOut) except +
+		vector[node] getDistanceVector(bool moveOut) except +
 		double _numberOfPaths(node t) except +
 
 cdef class SSSP(Algorithm):
@@ -1253,7 +1254,38 @@ cdef class SSSP(Algorithm):
 		return result
 
 	def getStack(self, moveOut=True):
+		""" DEPRECATED: Use getDistanceVector instead.
+		
+		Returns a vector of nodes ordered in increasing distance from the source
+
+		Parameters
+		----------
+		moveOut : bool
+			If set to true, the container will be moved out of the class instead of copying it; default=true.
+
+		Returns
+		-------
+		vector
+			Nodes ordered in increasing distance from the source
+		"""
+		from warnings import warn
+		warn("getStack is deprecated; use getDistanceVector instead.", DeprecationWarning)
 		return (<_SSSP*>(self._this)).getStack(moveOut)
+
+	def getDistanceVector(self, moveOut=True):
+		""" Returns a vector of nodes ordered in increasing distance from the source
+
+		Parameters
+		----------
+		moveOut : bool
+			If set to true, the container will be moved out of the class instead of copying it; default=true.
+
+		Returns
+		-------
+		vector
+			Nodes ordered in increasing distance from the source
+		"""
+		return (<_SSSP*>(self._this)).getDistanceVector(moveOut)
 
 	def numberOfPaths(self, t):
 		return (<_SSSP*>(self._this))._numberOfPaths(t)
