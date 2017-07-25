@@ -98,12 +98,21 @@ public:
 	bigfloat getNumberOfPaths(node t) const;
 
 	/**
-	* Returns a stack of nodes ordered in decreasing distance from the source
+	* Returns a vector of nodes ordered in increasing distance from the source
 	*
 	* @param moveOut If set to true, the container will be moved out of the class instead of copying it; default=true.
-	* @return stack of nodes
+	* @return vector of nodes ordered in increasing distance from the source
 	*/
+	[[deprecated("use getDistanceVector instead")]]
 	virtual std::vector<node> getStack(bool moveOut=true);
+
+	/**
+	* Returns a vector of nodes ordered in increasing distance from the source
+	*
+	* @param moveOut If set to true, the container will be moved out of the class instead of copying it; default=true.
+	* @return vector of nodes ordered in increasing distance from the source
+	*/
+	virtual std::vector<node> getDistanceVector(bool moveOut=true);
 
 protected:
 

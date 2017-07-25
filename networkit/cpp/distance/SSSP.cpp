@@ -76,12 +76,15 @@ std::set<std::vector<node>> SSSP::getPaths(node t, bool forward) const {
 	return paths;
 }
 
-
-std::vector<node> SSSP::getStack(bool moveOut) {
+std::vector<node> SSSP::getDistanceVector(bool moveOut) {
 	if (!storeStack) {
 		throw std::runtime_error("stack has not been stored");
 	}
-	return (moveOut)?std::move(stack):stack;
+	return moveOut ? std::move(stack) : stack;
+}
+
+std::vector<node> SSSP::getStack(bool moveOut) {
+	return getDistanceVector(moveOut);
 }
 
 } /* namespace NetworKit */
