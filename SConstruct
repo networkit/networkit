@@ -328,7 +328,7 @@ if target == "Tests":
 elif target == "Core":
 	# do not append executable
 	# env.Append(CPPDEFINES=["NOLOGGING"])
-	env.Library("NetworKit-Core-{0}".format(optimize), source)
+	env.StaticLibrary("NetworKit-Core-{0}".format(optimize), source)
 elif target == "SharedLib":
 	# TODO: Create a symlink that points to the shared lib with correct file ending (.so on linux and .dylib on macOS)
 	env.SharedLibrary("NetworKit-Core-{0}".format(optimize), source)
