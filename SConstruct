@@ -329,13 +329,18 @@ elif target == "Core":
 	# do not append executable
 	# env.Append(CPPDEFINES=["NOLOGGING"])
 	env.StaticLibrary("NetworKit-Core-{0}".format(optimize), source)
-elif target == "SharedLib":
-	# TODO: Create a symlink that points to the shared lib with correct file ending (.so on linux and .dylib on macOS)
-	env.SharedLibrary("NetworKit-Core-{0}".format(optimize), source)
-elif target == "Lib":
-	env.StaticLibrary("NetworKit-Core-{0}".format(optimize), source)
-	libFileToLink = "libNetworKit-Core-{0}.a".format(optimize)
-	libFileTarget = "libNetworKit.a"
+if target in ["Lib", "SharedLib"]:
+	if target == "Lib":
+		env.StaticLibrary("NetworKit-Core-{0}".format(optimize), source)
+		staticLibSuffix = env['LIBSUFFIX']
+		fileEnding = staticLibSuffix if staticLibSuffix else ".a"
+	else:
+		env.SharedLibrary("NetworKit-Core-{0}".format(optimize), source)
+		sharedLibSuffix = env['SHLIBSUFFIX']
+		fileEnding = sharedLibSuffix if sharedLibSuffix else ".so"
+
+	libFileToLink = "libNetworKit-Core-{0}{1}".format(optimize, fileEnding)
+	libFileTarget = "libNetworKit{0}".format(fileEnding)
 	if os.path.lexists(libFileTarget):
 		os.remove(libFileTarget)
 	os.symlink(libFileToLink,libFileTarget)
