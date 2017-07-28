@@ -3031,18 +3031,27 @@ cdef class GMLGraphWriter:
 cdef extern from "cpp/io/EdgeListWriter.h":
 	cdef cppclass _EdgeListWriter "NetworKit::EdgeListWriter":
 		_EdgeListWriter() except +
-		_EdgeListWriter(char separator, node firstNode) except +
+		_EdgeListWriter(char separator, node firstNode, bool bothDirections) except +
 		void write(_Graph G, string path) nogil except +
 
 cdef class EdgeListWriter:
-	""" Reads and writes graphs in various edge list formats. The constructor takes a
-		seperator char and the ID of the first node as paraneters."""
+	""" Writes graphs in various edge list formats.
+
+	Parameters
+	----------
+	separator : string
+		The separator character.
+	firstNode : node
+		The id of the first node, this value will be added to all node ids
+	bothDirections : bool, optional
+		If undirected edges shall be written in both directions, i.e., as symmetric directed graph (default: false)
+	"""
 
 	cdef _EdgeListWriter _this
 
-	def __cinit__(self, separator, firstNode):
+	def __cinit__(self, separator, firstNode, bool bothDirections = False):
 		cdef char sep = stdstring(separator)[0]
-		self._this = _EdgeListWriter(sep, firstNode)
+		self._this = _EdgeListWriter(sep, firstNode, bothDirections)
 
 	def write(self, Graph G not None, path):
 		cdef string cpath = stdstring(path)
