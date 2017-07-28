@@ -2813,7 +2813,9 @@ cdef class LFRGenerator(Algorithm):
 			# mixing parameter
 			#print("mixing parameter")
 			gen.setMu(mu)
-			refImplParams = "-N {0} -k {1} -maxk {2} -mu {3} -minc {4} -maxc {5} -t1 {6} -t2 {7}".format(n * scale, avgDegree, maxDegree, mu, communityMinSize, communityMaxSize, nodeDegreeExp, communityExp)
+			# Add some small constants to the parameters for the reference implementation to
+			# ensure it won't say the average degree is too low.
+			refImplParams = "-N {0} -k {1} -maxk {2} -mu {3} -minc {4} -maxc {5} -t1 {6} -t2 {7}".format(n * scale, avgDegree + 1e-4, maxDegree, mu, max(communityMinSize, 3), communityMaxSize, nodeDegreeExp + 0.001, communityExp)
 			cls.params["refImplParams"] = refImplParams
 			print(refImplParams)
 		else:
