@@ -6,6 +6,7 @@
 import collections
 import math
 import os
+import tempfile
 
 
 try:
@@ -2336,7 +2337,7 @@ cdef class RmatGenerator:
 	"""
 
 	cdef _RmatGenerator* _this
-	paths = {"workingDir" : None, "kronfitPath" : None}
+	paths = {"kronfitPath" : None}
 
 	def __cinit__(self, count scale, count edgeFactor, double a, double b, double c, double d, bool weighted=False, count reduceNodes=0):
 		self._this = new _RmatGenerator(scale, edgeFactor, a, b, c, d, weighted, reduceNodes)
@@ -2355,9 +2356,8 @@ cdef class RmatGenerator:
 		return Graph(0).setThis(self._this.generate())
 
 	@classmethod
-	def setPaths(cls, kronfitPath, workingDir="/tmp"):
+	def setPaths(cls, kronfitPath):
 		cls.paths["kronfitPath"] = kronfitPath
-		cls.paths["workingDir"] = workingDir
 
 	@classmethod
 	def fit(cls, G, scale=1, initiator=None, kronfit=True, iterations=50):
@@ -2371,20 +2371,22 @@ cdef class RmatGenerator:
 			(a,b,c,d) = initiator
 		else:
 			if kronfit:
-				if cls.paths["workingDir"] is None:
-					raise RuntimeError("call setPaths class method first to configure")
-				# write graph
-				tmpGraphPath = os.path.join(cls.paths["workingDir"], "{0}.edgelist".format(G.getName()))
-				graphio.writeGraph(G, tmpGraphPath, graphio.Format.EdgeListTabOne)
-				# call kronfit
-				args = [cls.paths["kronfitPath"], "-i:{0}".format(tmpGraphPath), "-gi:{0}".format(str(iterations))]
-				subprocess.call(args)
-				# read estimated parameters
-				with open("KronFit-{0}.tab".format(G.getName())) as resultFile:
-					for i, line in enumerate(resultFile):
-						if i == 7:
-							matches = re.findall("\d+\.\d+", line)
-							weights = [float(s) for s in matches]
+				with tempfile.TemporaryDirectory() as tmpdir:
+					if cls.paths["kronfitPath"] is None:
+						raise RuntimeError("call setPaths class method first to configure")
+					# write graph
+					tmpGraphPath = os.path.join(tmpdir, "{0}.edgelist".format(G.getName()))
+					tmpOutputPath = os.path.join(tmpdir, "{0}.kronfit".format(G.getName()))
+					graphio.writeGraph(G, tmpGraphPath, graphio.Format.EdgeList, separator="\t", firstNode=1, bothDirections=True)
+					# call kronfit
+					args = [cls.paths["kronfitPath"], "-i:{0}".format(tmpGraphPath), "-gi:{0}".format(str(iterations)), "-o:{}".format(tmpOutputPath)]
+					subprocess.call(args)
+					# read estimated parameters
+					with open(tmpOutputPath) as resultFile:
+						for line in resultFile:
+							if "initiator" in line:
+								matches = re.findall("\d+\.\d+", line)
+								weights = [float(s) for s in matches]
 			else:
 				# random weights because kronfit is slow
 				weights = (random.random(), random.random(), random.random(), random.random())
