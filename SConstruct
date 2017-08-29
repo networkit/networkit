@@ -132,14 +132,8 @@ else:
 	conf.read([confPath])     # read the configuration file
 
 	## compiler
-	if compiler is None:
-		cppComp = conf.get("compiler", "cpp", "gcc")
-	else:
-		cppComp = compiler
-	defines = conf.get("compiler", "defines", [])		# defines are optional
-	if defines is not []:
-		defines = defines.split(",")
-
+	cppComp = compiler or conf.get("compiler", "cpp", "gcc")
+	defines = conf.get("compiler", "defines", "").split(",")		# defines are optional
 
 	## C++14 support
 	if stdflag is None:
@@ -154,27 +148,22 @@ else:
 		conf.set("compiler","std14", stdflag)
 
 	## includes
-	stdInclude = conf.get("includes", "std", "")      # includes for the standard library - may not be needed
-	gtestInclude = conf.get("includes", "gtest")
-	if conf.has_option("includes", "tbb"):
-		tbbInclude = conf.get("includes", "tbb", "")
-	else:
-		tbbInclude = ""
+	# Evaluates the [includes] section of the build.conf file.
+	# Includes may include std, gtest, tbb
+	includes = dict(conf.items("includes"))
 
 	## libraries
-	gtestLib = conf.get("libraries", "gtest")
-	if conf.has_option("libraries", "tbb"):
-		tbbLib = conf.get("libraries", "tbb", "")
-	else:
-		tbbLib = ""
+	# Evaluates the [libraries] section of the build.conf file.
+	# Libraries may include gtest, tbb
+	libraries = dict(conf.items("libraries"))
 
 	env["CC"] = cppComp
 	env["CXX"] = cppComp
 
 	env.Append(CPPDEFINES=defines)
-	env.Append(CPPPATH = [stdInclude, gtestInclude, tbbInclude])
-	env.Append(LIBS = ["gtest"])
-	env.Append(LIBPATH = [gtestLib, tbbLib])
+	env.Append(CPPPATH = includes.values())
+	env.Append(LIBS = libraries.keys())
+	env.Append(LIBPATH = libraries.values())
 
 	with open(confPath, "w") as f:
 		conf.write(f)
