@@ -255,7 +255,7 @@ cdef extern from "cpp/graph/Graph.h":
 		node addNode() except +
 		void removeNode(node u) except +
 		bool hasNode(node u) except +
-		void restoreNode(v) except +
+		void restoreNode(node u) except +
 		void append(_Graph) except +
 		void merge(_Graph) except +
 		void addEdge(node u, node v, edgeweight w) except +
