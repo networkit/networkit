@@ -595,6 +595,16 @@ cdef class Graph:
 		"""
 		self._this.removeNode(u)
 
+	def restoreNode(self, u):
+		""" Restores a previously deleted node `u` with its previous id in the graph.
+
+	 	Parameters
+	 	----------
+	 	u : node
+	 		Node.
+		"""
+		self._this.restoreNode(u)
+
 	def hasNode(self, u):
 		""" Checks if the Graph has the node `u`, i.e. if `u` hasn't been deleted and is in the range of valid ids.
 
