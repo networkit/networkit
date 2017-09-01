@@ -100,7 +100,10 @@ public:
 	bigfloat getNumberOfPaths(node t) const;
 
 	/**
-	* Returns a vector of nodes ordered in increasing distance from the source
+	* Returns a vector of nodes ordered in increasing distance from the source.
+	*
+	*	For this functionality to be available, storeNodesSortedByDistance has to be set to true in the constructor.
+	*	There are no guarantees regarding the order of two nodes that have the same distance to the source.
 	*
 	* @param moveOut If set to true, the container will be moved out of the class instead of copying it; default=true.
 	* @return vector of nodes ordered in increasing distance from the source
@@ -109,7 +112,10 @@ public:
 	virtual std::vector<node> getStack(bool moveOut=true);
 
 	/**
-	* Returns a vector of nodes ordered in increasing distance from the source
+	* Returns a vector of nodes ordered in increasing distance from the source.
+	*
+	*	For this functionality to be available, storeNodesSortedByDistance has to be set to true in the constructor.
+	*	There are no guarantees regarding the order of two nodes that have the same distance to the source.
 	*
 	* @param moveOut If set to true, the container will be moved out of the class instead of copying it; default=true.
 	* @return vector of nodes ordered in increasing distance from the source

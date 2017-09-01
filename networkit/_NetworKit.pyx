@@ -1258,6 +1258,9 @@ cdef class SSSP(Algorithm):
 		
 		Returns a vector of nodes ordered in increasing distance from the source.
 
+		For this functionality to be available, storeNodesSortedByDistance has to be set to true in the constructor.
+		There are no guarantees regarding the order of two nodes that have the same distance to the source.
+
 		Parameters
 		----------
 		moveOut : bool
@@ -1274,6 +1277,9 @@ cdef class SSSP(Algorithm):
 
 	def getNodesSortedByDistance(self, moveOut=True):
 		""" Returns a vector of nodes ordered in increasing distance from the source.
+
+		For this functionality to be available, storeNodesSortedByDistance has to be set to true in the constructor.
+		There are no guarantees regarding the order of two nodes that have the same distance to the source.
 
 		Parameters
 		----------
