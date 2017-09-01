@@ -1190,7 +1190,7 @@ cdef class Graph:
 
 cdef extern from "cpp/distance/SSSP.h":
 	cdef cppclass _SSSP "NetworKit::SSSP"(_Algorithm):
-		_SSSP(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
+		_SSSP(_Graph G, node source, bool storePaths, bool storeNodesSortedByDistance, node target) except +
 		void run() nogil except +
 		vector[edgeweight] getDistances(bool moveOut) except +
 		edgeweight distance(node t) except +
@@ -1198,7 +1198,7 @@ cdef extern from "cpp/distance/SSSP.h":
 		vector[node] getPath(node t, bool forward) except +
 		set[vector[node]] getPaths(node t, bool forward) except +
 		vector[node] getStack(bool moveOut) except +
-		vector[node] getDistanceVector(bool moveOut) except +
+		vector[node] getNodesSortedByDistance(bool moveOut) except +
 		double _numberOfPaths(node t) except +
 
 cdef class SSSP(Algorithm):
@@ -1254,9 +1254,9 @@ cdef class SSSP(Algorithm):
 		return result
 
 	def getStack(self, moveOut=True):
-		""" DEPRECATED: Use getDistanceVector instead.
+		""" DEPRECATED: Use getNodesSortedByDistance instead.
 		
-		Returns a vector of nodes ordered in increasing distance from the source
+		Returns a vector of nodes ordered in increasing distance from the source.
 
 		Parameters
 		----------
@@ -1266,14 +1266,14 @@ cdef class SSSP(Algorithm):
 		Returns
 		-------
 		vector
-			Nodes ordered in increasing distance from the source
+			Nodes ordered in increasing distance from the source.
 		"""
 		from warnings import warn
-		warn("getStack is deprecated; use getDistanceVector instead.", DeprecationWarning)
+		warn("getStack is deprecated; use getNodesSortedByDistance instead.", DeprecationWarning)
 		return (<_SSSP*>(self._this)).getStack(moveOut)
 
-	def getDistanceVector(self, moveOut=True):
-		""" Returns a vector of nodes ordered in increasing distance from the source
+	def getNodesSortedByDistance(self, moveOut=True):
+		""" Returns a vector of nodes ordered in increasing distance from the source.
 
 		Parameters
 		----------
@@ -1283,9 +1283,9 @@ cdef class SSSP(Algorithm):
 		Returns
 		-------
 		vector
-			Nodes ordered in increasing distance from the source
+			Nodes ordered in increasing distance from the source.
 		"""
-		return (<_SSSP*>(self._this)).getDistanceVector(moveOut)
+		return (<_SSSP*>(self._this)).getNodesSortedByDistance(moveOut)
 
 	def numberOfPaths(self, t):
 		return (<_SSSP*>(self._this))._numberOfPaths(t)
@@ -1335,12 +1335,12 @@ cdef class DynSSSP(SSSP):
 
 cdef extern from "cpp/distance/BFS.h":
 	cdef cppclass _BFS "NetworKit::BFS"(_SSSP):
-		_BFS(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
+		_BFS(_Graph G, node source, bool storePaths, bool storeNodesSortedByDistance, node target) except +
 
 cdef class BFS(SSSP):
 	""" Simple breadth-first search on a Graph from a given source
 
-	BFS(G, source, [storePaths], [storeStack], target)
+	BFS(G, source, [storePaths], [storeNodesSortedByDistance], target)
 
 	Create BFS for `G` and source node `source`.
 
@@ -1356,9 +1356,9 @@ cdef class BFS(SSSP):
 		terminate search when the target has been reached
 	"""
 
-	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False, target=none):
+	def __cinit__(self, Graph G, source, storePaths=True, storeNodesSortedByDistance=False, target=none):
 		self._G = G
-		self._this = new _BFS(G._this, source, storePaths, storeStack, target)
+		self._this = new _BFS(G._this, source, storePaths, storeNodesSortedByDistance, target)
 
 cdef extern from "cpp/distance/DynBFS.h":
 	cdef cppclass _DynBFS "NetworKit::DynBFS"(_DynSSSP):
@@ -1387,14 +1387,14 @@ cdef class DynBFS(DynSSSP):
 
 cdef extern from "cpp/distance/Dijkstra.h":
 	cdef cppclass _Dijkstra "NetworKit::Dijkstra"(_SSSP):
-		_Dijkstra(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
+		_Dijkstra(_Graph G, node source, bool storePaths, bool storeNodesSortedByDistance, node target) except +
 
 cdef class Dijkstra(SSSP):
 	""" Dijkstra's SSSP algorithm.
 	Returns list of weighted distances from node source, i.e. the length of the shortest path from source to
 	any other node.
 
-    Dijkstra(G, source, [storePaths], [storeStack], target)
+    Dijkstra(G, source, [storePaths], [storeNodesSortedByDistance], target)
 
     Creates Dijkstra for `G` and source node `source`.
 
@@ -1405,15 +1405,15 @@ cdef class Dijkstra(SSSP):
 	source : node
 		The source node.
 	storePaths : bool
-		store paths and number of paths?
-	storeStack : bool
-		maintain a stack of nodes in order of decreasing distance?
+		Paths are reconstructable and the number of paths is stored.
+	storeNodesSortedByDistance: bool
+		Store a vector of nodes ordered in increasing distance from the source.
 	target : node
 		target node. Search ends when target node is reached. t is set to None by default.
     """
-	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False, node target=none):
+	def __cinit__(self, Graph G, source, storePaths=True, storeNodesSortedByDistance=False, node target=none):
 		self._G = G
-		self._this = new _Dijkstra(G._this, source, storePaths, storeStack, target)
+		self._this = new _Dijkstra(G._this, source, storePaths, storeNodesSortedByDistance, target)
 
 cdef extern from "cpp/distance/DynDijkstra.h":
 	cdef cppclass _DynDijkstra "NetworKit::DynDijkstra"(_DynSSSP):

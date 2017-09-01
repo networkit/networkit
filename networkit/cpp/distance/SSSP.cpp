@@ -10,13 +10,12 @@
 
 namespace NetworKit {
 
-SSSP::SSSP(const Graph& G, node s, bool storePaths, bool storeStack, node target) : Algorithm(), G(G), source(s), target(target), storePaths(storePaths), storeStack(storeStack) {
+SSSP::SSSP(const Graph& G, node source, bool storePaths, bool storeNodesSortedByDistance, node target) : Algorithm(), G(G), source(source), target(target), storePaths(storePaths), storeNodesSortedByDistance(storeNodesSortedByDistance) {
 }
 
 std::vector<edgeweight> SSSP::getDistances(bool moveOut) {
 	return (moveOut)?std::move(distances):distances;
 }
-
 
 std::vector<node> SSSP::getPath(node t, bool forward) const {
 	if (! storePaths) {
@@ -39,7 +38,6 @@ std::vector<node> SSSP::getPath(node t, bool forward) const {
 	}
 	return path;
 }
-
 
 std::set<std::vector<node>> SSSP::getPaths(node t, bool forward) const {
 
@@ -76,15 +74,23 @@ std::set<std::vector<node>> SSSP::getPaths(node t, bool forward) const {
 	return paths;
 }
 
-std::vector<node> SSSP::getDistanceVector(bool moveOut) {
-	if (!storeStack) {
-		throw std::runtime_error("stack has not been stored");
+std::vector<node> SSSP::getNodesSortedByDistance(bool moveOut) {
+	if (!storeNodesSortedByDistance) {
+		throw std::runtime_error("Nodes sorted by distance have not been stored. Set storeNodesSortedByDistance in the constructor to true to enable this behaviour.");
+	} else if (nodesSortedByDistance.empty()) {
+		throw std::runtime_error("The container has already been moved or run() has not been called yet. Please call run() first.");
 	}
-	return moveOut ? std::move(stack) : stack;
+	if (moveOut) {
+		auto movedNodes = std::move(nodesSortedByDistance);
+		nodesSortedByDistance.clear();
+		return movedNodes;
+	}
+
+	return nodesSortedByDistance;
 }
 
 std::vector<node> SSSP::getStack(bool moveOut) {
-	return getDistanceVector(moveOut);
+	return getNodesSortedByDistance(moveOut);
 }
 
 } /* namespace NetworKit */

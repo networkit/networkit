@@ -28,9 +28,12 @@ public:
 	 * Creates the SSSP class for @a G and source @a s.
 	 *
 	 * @param G The graph.
-	 * @param s The source node.
+	 * @param source The source node.
+	 * @param storePaths Paths are reconstructable and the number of paths is stored.
+	 * @param storeNodesSortedByDistance Store a vector of nodes ordered in increasing distance from the source.
+	 * @param target The target node.
 	 */
-	SSSP(const Graph& G, node s, bool storePaths=true, bool storeStack=false, node target = none);
+	SSSP(const Graph& G, node source, bool storePaths=true, bool storeNodesSortedByDistance=false, node target = none);
 
 	virtual ~SSSP() = default;
 
@@ -102,7 +105,7 @@ public:
 	* @param moveOut If set to true, the container will be moved out of the class instead of copying it; default=true.
 	* @return vector of nodes ordered in increasing distance from the source
 	*/
-	[[deprecated("use getDistanceVector instead")]]
+	[[deprecated("use getNodesSortedByDistance instead")]]
 	virtual std::vector<node> getStack(bool moveOut=true);
 
 	/**
@@ -111,7 +114,7 @@ public:
 	* @param moveOut If set to true, the container will be moved out of the class instead of copying it; default=true.
 	* @return vector of nodes ordered in increasing distance from the source
 	*/
-	virtual std::vector<node> getDistanceVector(bool moveOut=true);
+	virtual std::vector<node> getNodesSortedByDistance(bool moveOut=true);
 
 protected:
 
@@ -122,10 +125,10 @@ protected:
 	std::vector<std::vector<node> > previous; // predecessors on shortest path
 	std::vector<bigfloat> npaths;
 
-	std::vector<node> stack;
+	std::vector<node> nodesSortedByDistance;
 
-	bool storePaths;		//!< if true, paths are reconstructable and the number of paths is stored
-	bool storeStack;		//!< if true, store a stack of nodes ordered in decreasing distance from the source
+	bool storePaths;									//!< if true, paths are reconstructable and the number of paths is stored
+	bool storeNodesSortedByDistance;	//!< if true, store a vector of nodes ordered in increasing distance from the source
 };
 
 inline edgeweight SSSP::distance(node t) const {

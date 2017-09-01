@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-BFS::BFS(const Graph& G, node source, bool storePaths, bool storeStack, node target) : SSSP(G, source, storePaths, storeStack, target) {
+BFS::BFS(const Graph& G, node source, bool storePaths, bool storeNodesSortedByDistance, node target) : SSSP(G, source, storePaths, storeNodesSortedByDistance, target) {
 }
 
 
@@ -31,9 +31,9 @@ void BFS::run() {
 		npaths[source] = 1;
 	}
 
-	if (storeStack) {
+	if (storeNodesSortedByDistance) {
 		std::vector<node> empty;
-		std::swap(stack, empty);
+		std::swap(nodesSortedByDistance, empty);
 	}
 
 	std::queue<node> q;
@@ -45,8 +45,8 @@ void BFS::run() {
 		node u = q.front();
 		q.pop();
 
-		if (storeStack) {
-			stack.push_back(u);
+		if (storeNodesSortedByDistance) {
+			nodesSortedByDistance.push_back(u);
 		}
 		if (breakWhenFound && target == u) {
 			break;
