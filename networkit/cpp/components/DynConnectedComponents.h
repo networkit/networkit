@@ -83,9 +83,11 @@ namespace NetworKit {
 		void indexEdges();
 		void insertEdgeIntoMap(node u, node v, edgeid eid);
 		index getEdgeId(node u, node v);
-		void updateMapAfterAddition(node u, node v);
+		// Returns true and the corresponding edge id if the new edge was not
+		// into the original graph.
+		std::pair<bool, edgeid> updateMapAfterAddition(node u, node v);
+		void init();
 		std::pair<node, node> makePair(node u, node v);
-		count removedEdges = 0;
 		const Graph& G;
 		std::vector<bool> isTree;
 		std::vector<index> components;

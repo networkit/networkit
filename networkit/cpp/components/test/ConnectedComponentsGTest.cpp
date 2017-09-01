@@ -262,12 +262,15 @@ namespace NetworKit {
         // Testing static run.
         EXPECT_EQ(cc.numberOfComponents(), dccs.numberOfComponents());
 
-        int numberOfTests = 10;
+        int numberOfTests = 500;
+
         // Probability to perform an edge insertion or removal.
         float p = 0.5;
+        srand (time(NULL));
         for (int i = 0; i < numberOfTests; ++i) {
             node u = 0;
             node v = 1;
+
             // Perform edge insertion
             if (((double) rand() / (RAND_MAX)) > p) {
                 while (G.hasEdge(u, v)) {
@@ -296,7 +299,7 @@ namespace NetworKit {
         for (int i = 0; i < numberOfTests; ++i) {
             node u = G.randomNode();
             node v = G.randomNode();
-            if (((double) rand() / (RAND_MAX)) > p) {
+            if (((double) rand() / (RAND_MAX)) > -1) {
                 while (G.hasEdge(u, v)) {
                     u = G.randomNode();
                     v = G.randomNode();

@@ -15,22 +15,26 @@ namespace NetworKit {
 		}
 	}
 
-	void DynConnectedComponents::run() {
-		indexEdges();
 
-		isTree.assign(edgesMap.size(), false);
+	void DynConnectedComponents::init() {
+		edgesMap.clear();
+		compSize.clear();
 		components.assign(G.upperNodeIdBound(), none);
-		distancesInit = false;
+		tmpDistances.assign(G.upperNodeIdBound(), none);
+		indexEdges();
+		isTree.assign(edgesMap.size(), false);
+	}
 
+	void DynConnectedComponents::run() {
+		// Initializing / resetting data structures
+		init();
 		std::queue<node> q;
 
 		// Perform breadth-first searches
 		G.forNodes([&](node u) {
 			if (components[u] == none) {
 				index c = compSize.size();
-
 				q.push(u);
-
 				components[u] = c;
 				compSize.insert(std::pair<index, count>(c, 1));
 
@@ -40,9 +44,8 @@ namespace NetworKit {
 					G.forNeighborsOf(u, [&](node v) {
 						if (components[v] == none) {
 							q.push(v);
-
 							components[v] = c;
-							isTree[(int)edgesMap.find(std::pair<node, node>(u, v))->second] = true;
+							isTree[(int)edgesMap.find(makePair(u, v))->second] = true;
 							compSize.find(c)->second += 1;
 						}
 					});
@@ -69,21 +72,6 @@ namespace NetworKit {
 	}
 
 
-	void DynConnectedComponents::updateMapAfterAddition(node u, node v) {
-		std::map<std::pair<node, node>, edgeid>::iterator it = edgesMap.find(makePair(u, v));
-		edgeid newId = edgesMap.size() + removedEdges;
-
-		if (it == edgesMap.end()) {
-			// Adding edge never deleted before
-			insertEdgeIntoMap(u, v, newId);
-		}
-		else {
-			// Adding edge that was deleted before, updating its value
-			it->second = newId;
-		}
-	}
-
-
 	void DynConnectedComponents::update(GraphEvent event) {
 		if (!hasRun) {
 			throw std::runtime_error("run method has not been called");
@@ -105,20 +93,36 @@ namespace NetworKit {
 	}
 
 
+	std::pair<bool, edgeid> DynConnectedComponents::updateMapAfterAddition(node u, node v) {
+		std::map<std::pair<node, node>, edgeid>::iterator it = edgesMap.find(makePair(u, v));
+
+		if (it == edgesMap.end()) {
+			edgeid newId = edgesMap.size();
+			// Adding edge never deleted before
+			insertEdgeIntoMap(u, v, newId);
+			return std::make_pair(false, none);
+		}
+		return std::make_pair(true, it->second);
+	}
+
+
 	void DynConnectedComponents::addEdge(node u, node v) {
 
-		updateMapAfterAddition(u, v);
+		std::pair<bool, edgeid> updateResult = updateMapAfterAddition(u, v);
 
 		// If u and v are already in the same component, we
 		// don't have to do anything
-
 		index maxComp = std::max(components[u], components[v]);
 		index minComp = std::min(components[u], components[v]);
 
 		if (maxComp == minComp) {
+			if (!updateResult.first) {
+				isTree.push_back(false);
+			}
 			return;
 		}
-		// in the other case, we can merge the two components in an undirected graph
+
+		// In the other case, we can merge the two components in an undirected graph
 		// merge components
 		G.parallelForNodes([&](node w) {
 			if (components[w] == maxComp) {
@@ -128,25 +132,14 @@ namespace NetworKit {
 
 		compSize.find(minComp)->second += compSize.find(maxComp)->second;
 		compSize.erase(maxComp);
-
 		componentIds.push(maxComp);
 
-		isTree.push_back(true);
-	}
-
-
-	std::pair<node, node> DynConnectedComponents::makePair(node u, node v) {
-		node from, to;
-		if (u > v) {
-			from = v;
-			to = u;
+		if (updateResult.first) {
+			isTree[updateResult.second] = true;
 		}
 		else {
-			from = u;
-			to = v;
+			isTree.push_back(true);
 		}
-
-		return std::pair<node, node>(from, to);
 	}
 
 
@@ -154,18 +147,16 @@ namespace NetworKit {
 
 		edgeid eid = edgesMap.find(makePair(u, v))->second;
 
+		// This edge removal does not split two components. Nothing to do.
 		if (!isTree[eid]) {
 			return;
 		}
 
-		if (!distancesInit) {
-			tmpDistances.assign(G.upperNodeIdBound(), none);
-			distancesInit = true;
-		}
-
+		isTree[eid] = false; // for coherence, we should mark this edge as not valid
+		std::fill(tmpDistances.begin(), tmpDistances.end(), none);
 		index nextId = nextAvailableComponentId(false);
 
-		std::vector<node> newCmp = components;
+		std::vector<node> newCmp(components);
 		newCmp[u] = nextId;
 		count newCmpSize = 0;
 
@@ -192,7 +183,7 @@ namespace NetworKit {
 							// as part of the spanning tree
 							reverseBFS(u, v);
 							connected = true;
-							return;
+							return; // Exit from the loop
 						}
 
 						newCmp[w] = nextId;
@@ -207,10 +198,6 @@ namespace NetworKit {
 			}
 
 		} while (!q.empty());
-
-		distancesInit = false;
-		isTree[eid] = false; // for coherence, should mark this edge as not valid
-		++removedEdges;
 
 		if (!connected) {
 			index nextId = nextAvailableComponentId();
@@ -238,7 +225,7 @@ namespace NetworKit {
 				if (!nextEdgeFound) {
 
 					if (w == u) {
-						isTree[edgesMap.find(std::pair<node, node>(makePair(w, s)))->second] = true;
+						isTree[edgesMap.find(makePair(w, s))->second] = true;
 						nextEdgeFound = true;
 						return;
 					}
@@ -291,6 +278,22 @@ namespace NetworKit {
 		});
 
 		return result;
+	}
+
+
+
+	std::pair<node, node> DynConnectedComponents::makePair(node u, node v) {
+		node from, to;
+		if (u > v) {
+			from = v;
+			to = u;
+		}
+		else {
+			from = u;
+			to = v;
+		}
+
+		return std::make_pair(from, to);
 	}
 
 }
