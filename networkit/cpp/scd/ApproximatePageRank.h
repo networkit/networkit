@@ -21,12 +21,11 @@ class ApproximatePageRank {
 protected:
 	const Graph& G;
 	double alpha;
-	double oneMinusAlphaOver2;
 	double eps;
 
 	std::unordered_map<node, std::pair<double, double>> pr_res;
 
-	void push(node u, std::set<node>& activeNodes);
+	void push(node u, std::queue<node>& activeNodes);
 
 public:
 	/**
