@@ -5298,6 +5298,76 @@ cdef class StronglyConnectedComponents:
 		return self._this.componentOfNode(v)
 
 
+cdef extern from "cpp/components/WeaklyConnectedComponents.h":
+	cdef cppclass _WeaklyConnectedComponents "NetworKit::WeaklyConnectedComponents":
+		_WeaklyConnectedComponents(_Graph G) except +
+		void run() nogil except +
+		count numberOfComponents() except +
+		count componentOfNode(node query) except +
+		map[index, count] getComponentSizes() except +
+		vector[vector[node]] getComponents() except +
+
+cdef class WeaklyConnectedComponents:
+	""" Determines the weakly connected components of a directed graph.
+
+		Parameters
+		----------
+		G : Graph
+			The graph.
+	"""
+	cdef _WeaklyConnectedComponents* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _WeaklyConnectedComponents(G._this)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		with nogil:
+			self._this.run()
+		return self
+
+	def numberOfComponents(self):
+		""" Returns the number of components.
+
+			Returns
+			count
+				The number of components.
+		"""
+		return self._this.numberOfComponents()
+
+	def componentOfNode(self, v):
+		""" Returns the the component in which node @a u is.
+
+			Parameters
+			----------
+			v : node
+				The node.
+		"""
+		return self._this.componentOfNode(v)
+
+	def getComponentSizes(self):
+		""" Returns the map from component to size.
+
+			Returns
+			map[index, count]
+			 	A map that maps each component to its size.
+		"""
+		return self._this.getComponentSizes()
+
+	def getComponents(self):
+		""" Returns all the components, each stored as (unordered) set of nodes.
+
+			Returns
+			vector[vector[node]]
+				A vector of vectors. Each inner vector contains all the nodes inside the component.
+		"""
+		return self._this.getComponents()
+
+
 
 cdef extern from "cpp/components/DynConnectedComponents.h":
 	cdef cppclass _DynConnectedComponents "NetworKit::DynConnectedComponents":
