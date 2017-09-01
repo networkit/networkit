@@ -5132,6 +5132,101 @@ cdef class StronglyConnectedComponents:
 
 
 
+cdef extern from "cpp/components/DynConnectedComponents.h":
+	cdef cppclass _DynConnectedComponents "NetworKit::DynConnectedComponents":
+		_DynConnectedComponents(_Graph G) except +
+		void run() nogil except +
+		void update(_GraphEvent) except +
+		void updateBatch(vector[_GraphEvent]) except +
+		count numberOfComponents() except +
+		count componentOfNode(node query) except +
+		map[index, count] getComponentSizes() except +
+		vector[vector[node]] getComponents() except +
+
+cdef class DynConnectedComponents:
+	""" Determines and updates the connected components of an undirected graph.
+
+		Parameters
+		----------
+		G : Graph
+			The graph.
+	"""
+	cdef _DynConnectedComponents* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _DynConnectedComponents(G._this)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		with nogil:
+			self._this.run()
+		return self
+
+	def numberOfComponents(self):
+		""" Returns the number of components.
+
+			Returns
+			count
+				The number of components.
+		"""
+		return self._this.numberOfComponents()
+
+	def componentOfNode(self, v):
+		""" Returns the the component in which node @a u is.
+
+			Parameters
+			----------
+			v : node
+				The node.
+		"""
+		return self._this.componentOfNode(v)
+
+	def getComponentSizes(self):
+		""" Returns the map from component to size.
+
+			Returns
+			map[index, count]
+			 	A map that maps each component to its size.
+		"""
+		return self._this.getComponentSizes()
+
+	def getComponents(self):
+		""" Returns all the components, each stored as (unordered) set of nodes.
+
+			Returns
+			vector[vector[node]]
+				A vector of vectors. Each inner vector contains all the nodes inside the component.
+		"""
+		return self._this.getComponents()
+
+	def update(self, event):
+		""" Updates the connected components after an edge insertion or deletion.
+
+			Parameters
+			----------
+			event : GraphEvent
+				The event that happened (edge deletion or insertion).
+		"""
+		self._this.update(_GraphEvent(event.type, event.u, event.v, event.w))
+
+	def updateBatch(self, batch):
+		""" Updates the connected components after a batch of edge insertions or deletions.
+
+			Parameters
+			----------
+			batch : vector[GraphEvent]
+				A vector that contains a batch of edge insertions or deletions.
+		"""
+		cdef vector[_GraphEvent] _batch
+		for event in batch:
+			_batch.push_back(_GraphEvent(event.type, event.u, event.v, event.w))
+		self._this.updateBatch(_batch)
+
+
 cdef extern from "cpp/global/ClusteringCoefficient.h" namespace "NetworKit::ClusteringCoefficient":
 		double avgLocal(_Graph G, bool turbo) nogil except +
 		double sequentialAvgLocal(_Graph G) nogil except +
@@ -6956,7 +7051,7 @@ cdef extern from "cpp/clique/MaxClique.h":
 cdef class MaxClique:
 	"""
 	DEPRECATED: Use clique.MaximumCliques instead.
-	
+
 	Exact algorithm for computing the size of the largest clique in a graph.
 	Worst-case running time is exponential, but in practice the algorithm is fairly fast.
 	Reference: Pattabiraman et al., http://arxiv.org/pdf/1411.7460.pdf
