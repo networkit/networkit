@@ -11,9 +11,11 @@
 #include "../ConnectedComponents.h"
 #include "../ParallelConnectedComponents.h"
 #include "../StronglyConnectedComponents.h"
+#include "../WeaklyConnectedComponents.h"
 
 #include "../../distance/Diameter.h"
 #include "../../io/METISGraphReader.h"
+#include "../../io/EdgeListReader.h"
 #include "../../generators/HavelHakimiGenerator.h"
 #include "../../auxiliary/Log.h"
 #include "../../generators/DorogovtsevMendesGenerator.h"
@@ -184,6 +186,57 @@ TEST_F(ConnectedComponentsGTest, testStronglyConnectedComponents) {
 
     comparePartitions(p_expected, p_actual);
 }
+
+
+TEST_F(ConnectedComponentsGTest, testWeaklyConnectedComponentsTiny) {
+        // construct graph
+        Graph g(0, false, true);
+        for (count i = 0; i < 20; ++i) {
+            g.addNode();
+        }
+        g.addEdge(0,1,0);
+        g.addEdge(1,2,0);
+        g.addEdge(2,4,0);
+        g.addEdge(4,8,0);
+        g.addEdge(8,16,0);
+        g.addEdge(16,19,0);
+
+        g.addEdge(3,5,0);
+        g.addEdge(5,6,0);
+        g.addEdge(6,7,0);
+        g.addEdge(7,9,0);
+
+        g.addEdge(10,11,0);
+        g.addEdge(10,18,0);
+        g.addEdge(10,12,0);
+        g.addEdge(18,17,0);
+        g.addEdge(17,10,0);
+
+        g.addEdge(13,14,0);
+
+        // initialize WeaklyConnectedComponents
+        WeaklyConnectedComponents wcc(g);
+        wcc.run();
+
+        // check result
+        EXPECT_EQ(5, wcc.numberOfComponents());
+        EXPECT_TRUE(wcc.componentOfNode(0) == wcc.componentOfNode(19));
+        EXPECT_TRUE(wcc.componentOfNode(3) == wcc.componentOfNode(7));
+    }
+
+    TEST_F(ConnectedComponentsGTest, testWeaklyConnectedComponents) {
+        // construct graph
+        EdgeListReader directReader('\t', 0, "#", false, true);
+        Graph G = directReader.read("input/MIT8.edgelist");
+        EdgeListReader undirectReader('\t', 0, "#", false, false);
+        Graph Gu = undirectReader.read("input/MIT8.edgelist");
+        WeaklyConnectedComponents wc(G);
+        ConnectedComponents cc(Gu);
+        wc.run();
+        cc.run();
+        DEBUG("Number of components: ", cc.numberOfComponents());
+        EXPECT_EQ(wc.numberOfComponents(), cc.numberOfComponents());
+    }
 
 
 } /* namespace NetworKit */
