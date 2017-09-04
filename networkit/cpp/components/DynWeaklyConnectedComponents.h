@@ -79,12 +79,21 @@ namespace NetworKit {
         void updateComponent(index c, node w, std::queue<node>& q, node v);
         void indexEdges();
         void insertEdgeIntoMap(node u, node v, edgeid eid);
-        void updateMapAfterAddition(node u, node v);
+        std::pair<bool, edgeid> updateMapAfterAddition(node u, node v);
         void reverseBFS(node u, node v);
         index getEdgeId(node u, node v);
         index nextAvailableComponentId(bool eraseId = true);
-        bool visitNodeReversed(node u, node s, node w, node v, count d, std::queue<node>& q, bool& nextEdgeFound, count level);
+        bool visitNodeReversed(
+            node u,
+            node s,
+            node w,
+            node v,
+            count d, std::queue<node>& q,
+            bool& nextEdgeFound,
+            count level);
         std::pair<node, node> makePair(node u, node v);
+        std::map<std::pair<node, node>, count> addedEdges;
+        void init();
 
         // Pointer to the graph
         const Graph& G;
@@ -106,9 +115,6 @@ namespace NetworKit {
 
         // Stores available component IDs.
         std::queue<index> componentIds;
-
-        // Whether tmpDistances vector has been initialized
-        bool distancesInit = false;
 
         // Whether the run() method has been called
         bool hasRun = false;
