@@ -5,6 +5,21 @@ import ConfigParser
 
 home_path = os.environ['HOME']
 
+
+class DefaultConfigParser(ConfigParser.ConfigParser):
+	def get_default(self, section, option, default=None, raw=False, vars=None):
+		"""Get an option value for a given section.
+
+		If the option exists in the section, get_default behaves exactly like
+		get(). If not, default is returned (if not explicitly set: None).
+		"""
+
+		try:
+			return self.get(section, option, raw=raw, vars=vars)
+		except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
+			return default
+
+
 def checkStd(compiler):
 	sample = open("sample.cpp", "w")
 	sample.write("""
@@ -128,19 +143,16 @@ else:
 		print("Use the file build.conf.example to create your build.conf")
 		Exit(1)
 
-	conf = ConfigParser.ConfigParser()
+	conf = DefaultConfigParser()
 	conf.read([confPath])     # read the configuration file
 
+
 	## compiler
-	cppComp = compiler or conf.get("compiler", "cpp", "gcc")
-	defines = conf.get("compiler", "defines", "").split(",")		# defines are optional
+	cppComp = compiler or conf.get_default("compiler", "cpp", "gcc")
+	defines = conf.get_default("compiler", "defines", "").split(",")		# defines are optional
 
 	## C++14 support
-	if stdflag is None:
-		try:
-			stdflag = conf.get("compiler", "std14")
-		except:
-			pass
+	stdflag = stdflag or conf.get_default("compiler", "std14")
 	if stdflag is None or len(stdflag) == 0:
 		# do test compile
 		stdflag = checkStd(cppComp)
