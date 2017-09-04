@@ -255,7 +255,7 @@ cdef extern from "cpp/graph/Graph.h":
 		node addNode() except +
 		void removeNode(node u) except +
 		bool hasNode(node u) except +
-		void restoreNode(v) except +
+		void restoreNode(node u) except +
 		void append(_Graph) except +
 		void merge(_Graph) except +
 		void addEdge(node u, node v, edgeweight w) except +
@@ -594,6 +594,16 @@ cdef class Graph:
 	 		Node.
 		"""
 		self._this.removeNode(u)
+
+	def restoreNode(self, u):
+		""" Restores a previously deleted node `u` with its previous id in the graph.
+
+	 	Parameters
+	 	----------
+	 	u : node
+	 		Node.
+		"""
+		self._this.restoreNode(u)
 
 	def hasNode(self, u):
 		""" Checks if the Graph has the node `u`, i.e. if `u` hasn't been deleted and is in the range of valid ids.
