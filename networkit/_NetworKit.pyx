@@ -2675,9 +2675,9 @@ cdef class PowerlawDegreeSequence:
 		"""
 		return self._this.getDegree()
 
-cdef extern from "cpp/generators/LFRGenerator.h":
-	cdef cppclass _LFRGenerator "NetworKit::LFRGenerator"(_Algorithm):
-		_LFRGenerator(count n) except +
+cdef extern from "cpp/generators/ReCoNGenerator.h":
+	cdef cppclass _ReCoNGenerator "NetworKit::ReCoNGenerator"(_Algorithm):
+		_ReCoNGenerator(count n) except +
 		void setDegreeSequence(vector[count] degreeSequence) nogil except +
 		void generatePowerlawDegreeSequence(count avgDegree, count maxDegree, double nodeDegreeExp) nogil except +
 		void setCommunitySizeSequence(vector[count] communitySizeSequence) nogil except +
@@ -2690,18 +2690,19 @@ cdef extern from "cpp/generators/LFRGenerator.h":
 		_Partition getPartition() except +
 		_Graph generate() except +
 
-cdef class LFRGenerator(Algorithm):
+cdef class ReCoNGenerator(Algorithm):
 	"""
-	The LFR clustered graph generator as introduced by Andrea Lancichinetti, Santo Fortunato, and Filippo Radicchi.
+        The ReCoN (Replication of Complex Networks) graph generator as introduced by Staudt et al.
+        It uses and extends ideas of LFR, a generator used for benchmarking community detection algorithms.
 
-	The community assignment follows the algorithm described in
-	"Benchmark graphs for testing community detection algorithms". The edge generation is however taken from their follow-up publication
-	"Benchmarks for testing community detection algorithms on directed and weighted graphs with overlapping communities". Parts of the
-	implementation follow the choices made in their implementation which is available at https://sites.google.com/site/andrealancichinetti/software
-	but other parts differ, for example some more checks for the realizability of the community and degree size distributions are done
-	instead of heavily modifying the distributions.
+        The community assignment follows the algorithm described in
+        "Benchmark graphs for testing community detection algorithms". The edge generation is however taken from their follow-up publication
+        "Benchmarks for testing community detection algorithms on directed and weighted graphs with overlapping communities". Parts of the
+        implementation follow the choices made in their implementation which is available at https://sites.google.com/site/andrealancichinetti/software
+        but other parts differ, for example some more checks for the realizability of the community and degree size distributions are done
+        instead of heavily modifying the distributions.
 
-	The edge-switching markov-chain algorithm implementation in NetworKit is used which is different from the implementation in the original LFR benchmark.
+        The edge-switching markov-chain algorithm implementation in NetworKit is used which is different from the implementation in the original LFR benchmark.
 
 	You need to set a degree sequence, a community size sequence and a mu using the additionally provided set- or generate-methods.
 
@@ -2714,7 +2715,7 @@ cdef class LFRGenerator(Algorithm):
 	paths = {}
 
 	def __cinit__(self, count n):
-		self._this = new _LFRGenerator(n)
+		self._this = new _ReCoNGenerator(n)
 
 	def setDegreeSequence(self, vector[count] degreeSequence):
 		"""
@@ -2726,7 +2727,7 @@ cdef class LFRGenerator(Algorithm):
 			The degree sequence that shall be used by the generator
 		"""
 		with nogil:
-			(<_LFRGenerator*>(self._this)).setDegreeSequence(degreeSequence)
+			(<_ReCoNGenerator*>(self._this)).setDegreeSequence(degreeSequence)
 		return self
 
 	def generatePowerlawDegreeSequence(self, count avgDegree, count maxDegree, double nodeDegreeExp):
@@ -2744,7 +2745,7 @@ cdef class LFRGenerator(Algorithm):
 			The (negative) exponent of the power law degree distribution of the node degrees
 		"""
 		with nogil:
-			(<_LFRGenerator*>(self._this)).generatePowerlawDegreeSequence(avgDegree, maxDegree, nodeDegreeExp)
+			(<_ReCoNGenerator*>(self._this)).generatePowerlawDegreeSequence(avgDegree, maxDegree, nodeDegreeExp)
 		return self
 
 	def setCommunitySizeSequence(self, vector[count] communitySizeSequence):
@@ -2757,7 +2758,7 @@ cdef class LFRGenerator(Algorithm):
 			The community sizes that shall be used.
 		"""
 		with nogil:
-			(<_LFRGenerator*>(self._this)).setCommunitySizeSequence(communitySizeSequence)
+			(<_ReCoNGenerator*>(self._this)).setCommunitySizeSequence(communitySizeSequence)
 		return self
 
 	def setPartition(self, Partition zeta not None):
@@ -2770,7 +2771,7 @@ cdef class LFRGenerator(Algorithm):
 			The partition to use
 		"""
 		with nogil:
-			(<_LFRGenerator*>(self._this)).setPartition(zeta._this)
+			(<_ReCoNGenerator*>(self._this)).setPartition(zeta._this)
 		return self
 
 	def generatePowerlawCommunitySizeSequence(self, count minCommunitySize, count maxCommunitySize, double communitySizeExp):
@@ -2787,7 +2788,7 @@ cdef class LFRGenerator(Algorithm):
 			The (negative) community size exponent of the power law degree distribution of the community sizes
 		"""
 		with nogil:
-			(<_LFRGenerator*>(self._this)).generatePowerlawCommunitySizeSequence(minCommunitySize, maxCommunitySize, communitySizeExp)
+			(<_ReCoNGenerator*>(self._this)).generatePowerlawCommunitySizeSequence(minCommunitySize, maxCommunitySize, communitySizeExp)
 		return self
 
 	def setMu(self, mu):
@@ -2802,9 +2803,9 @@ cdef class LFRGenerator(Algorithm):
 			The mixing coefficient(s), i.e. the factor of the degree that shall be inter-cluster degree
 		"""
 		if isinstance(mu, collections.Iterable):
-			(<_LFRGenerator*>(self._this)).setMu(<vector[double]>mu)
+			(<_ReCoNGenerator*>(self._this)).setMu(<vector[double]>mu)
 		else:
-			(<_LFRGenerator*>(self._this)).setMu(<double>mu)
+			(<_ReCoNGenerator*>(self._this)).setMu(<double>mu)
 		return self
 
 	def setMuWithBinomialDistribution(self, double mu):
@@ -2819,7 +2820,7 @@ cdef class LFRGenerator(Algorithm):
 			The expected mu that shall be used.
 		"""
 		with nogil:
-			(<_LFRGenerator*>(self._this)).setMuWithBinomialDistribution(mu)
+			(<_ReCoNGenerator*>(self._this)).setMuWithBinomialDistribution(mu)
 		return self
 
 	def getGraph(self):
@@ -2831,7 +2832,7 @@ cdef class LFRGenerator(Algorithm):
 		Graph
 			The generated graph.
 		"""
-		return Graph().setThis((<_LFRGenerator*>(self._this)).getGraph())
+		return Graph().setThis((<_ReCoNGenerator*>(self._this)).getGraph())
 
 	def generate(self, useReferenceImplementation=False):
 		"""
@@ -2846,7 +2847,7 @@ cdef class LFRGenerator(Algorithm):
 			from networkit import graphio
 			os.system("{0}/benchmark {1}".format(self.paths["refImplDir"], self.params["refImplParams"]))
 			return graphio.readGraph("network.dat", graphio.Format.EdgeListTabOne)
-		return Graph().setThis((<_LFRGenerator*>(self._this)).generate())
+		return Graph().setThis((<_ReCoNGenerator*>(self._this)).generate())
 
 	def getPartition(self):
 		"""
@@ -2857,7 +2858,7 @@ cdef class LFRGenerator(Algorithm):
 		Partition
 			The generated partition.
 		"""
-		return Partition().setThis((<_LFRGenerator*>(self._this)).getPartition())
+		return Partition().setThis((<_ReCoNGenerator*>(self._this)).getPartition())
 
 	@classmethod
 	def setPathToReferenceImplementationDir(cls, path):

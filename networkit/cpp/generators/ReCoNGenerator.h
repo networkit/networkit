@@ -1,5 +1,5 @@
-#ifndef LFRGENERATOR_H
-#define LFRGENERATOR_H
+#ifndef RECONGENERATOR_H
+#define RECONGENERATOR_H
 
 #include "../graph/Graph.h"
 #include "../structures/Partition.h"
@@ -9,7 +9,8 @@
 namespace NetworKit {
 
 /**
- * The LFR clustered graph generator as introduced by Andrea Lancichinetti, Santo Fortunato, and Filippo Radicchi.
+ * The ReCoN (Replication of Complex Networks) graph generator as introduced by Staudt et al.
+ * It uses and extends ideas of LFR, a generator used for benchmarking community detection algorithms.
  *
  * The community assignment follows the algorithm described in
  * "Benchmark graphs for testing community detection algorithms". The edge generation is however taken from their follow-up publication
@@ -20,16 +21,16 @@ namespace NetworKit {
  *
  * The edge-switching markov-chain algorithm implementation in NetworKit is used which is different from the implementation in the original LFR benchmark.
  */
-class LFRGenerator : public Algorithm, public StaticGraphGenerator {
+class ReCoNGenerator : public Algorithm, public StaticGraphGenerator {
 public:
 	/**
-	 * Initialize the LFR generator for @a n nodes.
+	 * Initialize the ReCoN generator for @a n nodes.
 	 *
 	 * @note You need to set a degree sequence, a community size sequence and a mu using the additionally provided set- or generate-methods.
 	 *
 	 * @param n The number of nodes.
 	 */
-	LFRGenerator(count n);
+	ReCoNGenerator(count n);
 
 	/**
 	 * Set the given degree sequence.
@@ -173,4 +174,4 @@ protected:
 
 } // namespace NetworKit
 
-#endif // LFRGENERATOR_H
+#endif // RECONGENERATOR_H
