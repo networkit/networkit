@@ -1,0 +1,128 @@
+/*
+* AllSimplePaths.h
+*
+*  Created on: 23.06.2017
+*      Author: Eugenio Angriman
+*/
+
+#ifndef AllSimplePaths_H_
+#define AllSimplePaths_H_
+
+#include "../graph/Graph.h"
+#include "../base/Algorithm.h"
+
+
+namespace NetworKit {
+
+	/**
+	 * @ingroup distance
+	 * Determines all the possible simple paths from a given source node to a target node of a directed unweighted graph. It also accepts a cutoff value i.e. the maximum length of paths.
+	 */
+	class AllSimplePaths {
+
+	public:
+
+		/**
+		* Creates the AllSimplePaths class for @a G, source @a s and target @a t.
+		*
+		* @param G The graph.
+		* @param source The source node.
+		* @param target The target node.
+		* @param cutoff The maximum length of the paths.
+		*/
+		AllSimplePaths(const Graph& G, node source, node target, count cutoff = none);
+
+		~AllSimplePaths() = default;
+
+		/**
+		* This method computes all possible paths from a given source node to a target node.
+		*/
+		void run();
+
+		/**
+		* This method returns the number of simple paths from the source node to the target node.
+		*/
+		count numberOfSimplePaths();
+
+		/*
+		* This method returns a vector that contains all the simple paths from a source node to a target node repepresented by vectors. Each path contains the source node as the first element and the target node as the last element.
+		*/
+		std::vector<std::vector<node>> getAllSimplePaths();
+
+		/*
+		* This method iterates over all the simple paths and it is far more efficient than calling getAllSimplePaths().
+		*/
+		template<typename L> void forAllSimplePaths(L handle);
+
+		/*
+		* This method iterates in parallel over all the simple paths and it is far more efficient than calling getAllSimplePaths().
+		*/
+		template<typename L> void parallelForAllSimplePaths(L handle);
+
+
+	protected:
+
+		// This method computes all the paths after a reverse BFS from the target node and a normal BFS from the source node.
+		void computePaths();
+
+		// This method returns a queue that contains all the nodes that could be part of a path from the source to the target that crosses @s.
+		std::vector<node>* getAvailableSources(node s, count pathLength = 0);
+
+		// The graph
+		const Graph& G;
+		// The source node
+		node source;
+		// The target node
+		node target;
+		// The cutoff i.e. maximum length of paths from source to target. It is optional.
+		count cutoff;
+
+		// This vector contains the distance from each node to the target node.
+		std::vector<count> distanceToTarget;
+		// This vector contains the distance from the source node to each node.
+		std::vector<count> distanceFromSource;
+		// This vector contains all the possible paths from source to target.
+		std::vector<std::vector<node>> paths;
+
+		// Whether the run method as been called or not.
+		bool hasRun = false;
+	};
+
+	inline count AllSimplePaths::numberOfSimplePaths() {
+		if (!hasRun) {
+			throw std::runtime_error("run method has not been called");
+		}
+		return paths.size();
+	}
+
+	inline std::vector<std::vector<node>> AllSimplePaths::getAllSimplePaths() {
+		if (!hasRun) {
+			throw std::runtime_error("run method has not been called");
+		}
+		return paths;
+	}
+
+	template<typename L>
+	void AllSimplePaths::forAllSimplePaths(L handle) {
+		if (!hasRun) {
+			throw std::runtime_error("run method has not been called");
+		}
+		for (std::vector<std::vector<node>>::iterator it = paths.begin() ; it != paths.end(); ++it) {
+			handle(*it);
+		}
+	}
+
+	template<typename L>
+	void AllSimplePaths::parallelForAllSimplePaths(L handle) {
+		if (!hasRun) {
+			throw std::runtime_error("run method has not been called");
+		}
+		#pragma omp parallel for schedule(guided)
+		for (count i = 0; i < paths.size(); ++i) {
+			handle(paths[i]);
+		}
+	}
+
+} /* namespace NetworKit */
+
+#endif /* AllSimplePaths_H_ */

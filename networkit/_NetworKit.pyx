@@ -1407,6 +1407,103 @@ cdef class DynDijkstra(DynSSSP):
 		self._this = new _DynDijkstra(G._this, source)
 
 
+cdef cppclass PathCallbackWrapper:
+	void* callback
+	__init__(object callback):
+		this.callback = <void*>callback
+	void cython_call_operator(vector[node] path):
+		cdef bool error = False
+		cdef string message
+		try:
+			(<object>callback)(path)
+		except Exception as e:
+			error = True
+			message = stdstring("An Exception occurred, aborting execution of iterator: {0}".format(e))
+		if (error):
+			throw_runtime_error(message)
+
+cdef extern from "cpp/distance/AllSimplePaths.h":
+	cdef cppclass _AllSimplePaths "NetworKit::AllSimplePaths":
+		_AllSimplePaths(_Graph G, node source, node target, count cutoff) except +
+		void run() nogil except +
+		count numberOfSimplePaths() except +
+		vector[vector[node]] getAllSimplePaths() except +
+		void forAllSimplePaths[Callback](Callback c) except +
+
+cdef class AllSimplePaths:
+	""" Algorithm to compute all existing simple paths from a source node to a target node. The maximum length of the paths can be fixed through 'cutoff'.
+		CAUTION: This algorithm could take a lot of time on large networks (many edges), especially if the cutoff value is high or not specified.
+
+	AllSimplePaths(G, source, target, cutoff=none)
+
+	Create AllSimplePaths for `G`, source node `source`, target node 'target' and cutoff 'cutoff'.
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	source : node
+		The source node.
+	target : node
+		The target node.
+	cutoff : count
+		(optional) The maximum length of the simple paths.
+
+	"""
+
+	cdef _AllSimplePaths* _this
+	cdef Graph _G
+
+	def __cinit__(self,  Graph G, source, target, cutoff=none):
+		self._G = G
+		self._this = new _AllSimplePaths(G._this, source, target, cutoff)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		self._this.run()
+		return self
+
+	def numberOfSimplePaths(self):
+		"""
+		Returns the number of simple paths.
+
+		Returns
+		-------
+		count
+			The number of simple paths.
+		"""
+		return self._this.numberOfSimplePaths()
+
+	def getAllSimplePaths(self):
+		"""
+		Returns all the simple paths from source to target.
+
+		Returns
+		-------
+		A vector of vectors.
+			A vector containing vectors which represent all simple paths.
+		"""
+		return self._this.getAllSimplePaths()
+
+	def forAllSimplePaths(self, object callback):
+		""" More efficient path iterator. Iterates over all the simple paths.
+
+		Parameters
+		----------
+		callback : object
+			Any callable object that takes the parameter path
+		"""
+		cdef PathCallbackWrapper* wrapper
+		try:
+			wrapper = new PathCallbackWrapper(callback)
+			self._this.forAllSimplePaths[PathCallbackWrapper](dereference(wrapper))
+		finally:
+			del wrapper
+
+
+
 cdef extern from "cpp/distance/APSP.h":
 	cdef cppclass _APSP "NetworKit::APSP"(_Algorithm):
 		_APSP(_Graph G) except +
@@ -6956,7 +7053,7 @@ cdef extern from "cpp/clique/MaxClique.h":
 cdef class MaxClique:
 	"""
 	DEPRECATED: Use clique.MaximumCliques instead.
-	
+
 	Exact algorithm for computing the size of the largest clique in a graph.
 	Worst-case running time is exponential, but in practice the algorithm is fairly fast.
 	Reference: Pattabiraman et al., http://arxiv.org/pdf/1411.7460.pdf
