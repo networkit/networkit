@@ -131,7 +131,9 @@ NetworKit::Graph NetworKit::LFRGenerator::generateIntraClusterGraph(std::vector<
 	// check if sum of degrees is even and fix if necessary
 	count intraDegSum = std::accumulate(intraDegreeSequence.begin(), intraDegreeSequence.end(), 0);
 
-	while (intraDegSum % 2 != 0) {
+	DEBUG("Possibly correcting the degree sequence");
+
+	for (index j = 0; intraDegSum % 2 != 0 && j < intraDegreeSequence.size(); ++j) {
 		index i = Aux::Random::index(intraDegreeSequence.size());
 		node u = localToGlobalNode[i];
 		if (Aux::Random::real() >= 0.5) {
@@ -151,6 +153,7 @@ NetworKit::Graph NetworKit::LFRGenerator::generateIntraClusterGraph(std::vector<
 		}
 	}
 
+	DEBUG("Generating intra-cluster graph");
 		EdgeSwitchingMarkovChainGenerator intraGen(intraDegreeSequence, true);
 	/* even though the sum is even the degree distribution isn't necessarily realizable.
 	Disabling the check means that some edges might not be created because of this but at least we will get a graph. */

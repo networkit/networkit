@@ -41,15 +41,15 @@ public:
 		return A.numberOfRows();
 	}
 
-	virtual void coarseType(const Vector& xf, Vector& xc) const {}
+	virtual void coarseType(const Vector& /*xf*/, Vector& /*xc*/) const {}
 
-	virtual void restrict(const Vector& bf, Vector& bc) const {}
+	virtual void restrict(const Vector& /*bf*/, Vector& /*bc*/) const {}
 
-	virtual void restrict(const Vector& bf, Vector& bc, std::vector<Vector>& bStages) const {}
+	virtual void restrict(const Vector& /*bf*/, Vector& /*bc*/, std::vector<Vector>& /*bStages*/) const {}
 
-	virtual void interpolate(const Vector& xc, Vector& xf) const {}
+	virtual void interpolate(const Vector& /*xc*/, Vector& /*xf*/) const {}
 
-	virtual void interpolate(const Vector& xc, Vector& xf, const std::vector<Vector>& bStages) const {}
+	virtual void interpolate(const Vector& /*xc*/, Vector& /*xf*/, const std::vector<Vector>& /*bStages*/) const {}
 };
 
 

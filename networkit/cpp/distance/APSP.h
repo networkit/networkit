@@ -14,7 +14,7 @@
 namespace NetworKit {
 
 /**
- * @ingroup graph
+ * @ingroup distance
  * Class for all-pair shortest path algorithm.
  */
 class APSP: public Algorithm {

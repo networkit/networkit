@@ -318,7 +318,7 @@ count MultiLevelSetup<Matrix>::lowDegreeSweep(const Matrix& matrix, std::vector<
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
 		if ((int) matrix.nnzInRow(i) - degreeOffset <= (int)SETUP_ELIMINATION_MAX_DEGREE && fNode[i]) { // node i has degree <= 4 and can be eliminated
 			numFNodes++;
-			matrix.forNonZeroElementsInRow(i, [&](index j, edgeweight w){ // to maintain independence, mark all neighbors as not eliminated
+			matrix.forNonZeroElementsInRow(i, [&](index j, edgeweight /*w*/){ // to maintain independence, mark all neighbors as not eliminated
 				if (j != i)	{ // all neighbors of this f node are c nodes
 					fNode[j] = false;
 				}
@@ -503,7 +503,7 @@ void MultiLevelSetup<Matrix>::aggregateLooseNodes(const Matrix& strongAdjMatrix,
 	std::vector<index> looseNodes;
 	for (index i = 0; i < strongAdjMatrix.numberOfRows(); ++i) {
 		double max = std::numeric_limits<double>::min();
-		strongAdjMatrix.forNonZeroElementsInRow(i, [&](index j, double value) {
+		strongAdjMatrix.forNonZeroElementsInRow(i, [&](index /*j*/, double value) {
 			if (value > max) max = value;
 		});
 
@@ -594,7 +594,7 @@ void MultiLevelSetup<Matrix>::computeAffinityMatrix(const Matrix& matrix, const 
 	for (index i = 0; i < matrix.numberOfRows(); ++i) {
 		double nir = 1.0 / normSquared[i];
 		index cIdx = rowIdx[i];
-		matrix.forNonZeroElementsInRow(i, [&](index j, double val) {
+		matrix.forNonZeroElementsInRow(i, [&](index j, double /*val*/) {
 			double ij = 0.0;
 			for (index k = 0; k < tVs.size(); ++k) {
 				ij += tVs[k][i] * tVs[k][j];

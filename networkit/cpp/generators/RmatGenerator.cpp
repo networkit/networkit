@@ -24,8 +24,13 @@ RmatGenerator::RmatGenerator(count scale, count edgeFactor, double a, double b, 
 
 Graph RmatGenerator::generate() {
 	count n = (1 << scale);
-	count numEdges = n * edgeFactor;
-	Graph G(n, true);
+	if (n <= reduceNodes) {
+		throw std::runtime_error("Error, shall delete more nodes than the graph originally has");
+	}
+	// when nodes are deleted, all nodes have less neighbors
+	count numEdges = n * edgeFactor * n * 1.0 / (n - reduceNodes);
+	count wantedEdges = (n - reduceNodes) * edgeFactor;
+	Graph G(n - reduceNodes, weighted);
 	double ab = a+b;
 	double abc = ab+c;
 
@@ -60,34 +65,60 @@ Graph RmatGenerator::generate() {
 		return std::make_pair(u, v);
 	});
 
-	for (index e = 0; e < numEdges; ++e) {
-		std::pair<node, node> drawnEdge = drawEdge();
-//		TRACE("edge drawn: ", drawnEdge.first, " - ", drawnEdge.second);
-		G.increaseWeight(drawnEdge.first, drawnEdge.second, defaultEdgeWeight);
-	}
+	if (reduceNodes > 0) {
+		std::vector<node> nodemap(n, 0);
 
-	// delete random nodes to achieve node count
-	INFO("deleting random nodes: ", reduceNodes);
-	for (count i = 0; i < reduceNodes; ++i) {
-		node u = G.randomNode();
-		std::vector<std::pair<node, node>> incidentEdges;
-		G.forEdgesOf(u, [&](node u, node v) {
-			incidentEdges.push_back({u,v});
-		});
-		for (auto edge : incidentEdges) {
-			node x, y;
-			std::tie(x, y) = edge;
-			G.removeEdge(x, y);
+		for (count deletedNodes = 0; deletedNodes < reduceNodes;) {
+			node u = Aux::Random::index(n);
+			if (nodemap[u] == 0) {
+				nodemap[u] = none;
+				++deletedNodes;
+			}
 		}
-		assert (G.degree(u) == 0);
-		G.removeNode(u);
-	}
 
-	if (!weighted) {
-		// set unit weights
-		G.forEdges([&](node u, node v) {
-			G.setWeight(u, v, 1.0);
-		});
+		for (node i = 0, u = 0; i < n; ++i) {
+			if (nodemap[i] == 0) {
+				nodemap[i] = u;
+				++u;
+			}
+		}
+
+		node u, v;
+		if (weighted) {
+			for (index e = 0; e < numEdges; ++e) {
+				std::tie(u, v) = drawEdge();
+				u = nodemap[u];
+				v = nodemap[v];
+				if (u != none && v != none) {
+					G.increaseWeight(u, v, defaultEdgeWeight);
+				}
+			}
+		} else {
+			while (G.numberOfEdges() < wantedEdges) {
+				std::tie(u, v) = drawEdge();
+				u = nodemap[u];
+				v = nodemap[v];
+				if (u != none && v != none && u != v && !G.hasEdge(u, v)) {
+					G.addEdge(u, v);
+				}
+			}
+		}
+	} else {
+		if (weighted) {
+			for (index e = 0; e < numEdges; ++e) {
+				std::pair<node, node> drawnEdge = drawEdge();
+				//			TRACE("edge drawn: ", drawnEdge.first, " - ", drawnEdge.second);
+				G.increaseWeight(drawnEdge.first, drawnEdge.second, defaultEdgeWeight);
+			}
+		} else {
+			while (G.numberOfEdges() < wantedEdges) {
+				std::pair<node, node> drawnEdge = drawEdge();
+				//			TRACE("edge drawn: ", drawnEdge.first, " - ", drawnEdge.second);
+				if (!G.hasEdge(drawnEdge.first, drawnEdge.second)) {
+					G.addEdge(drawnEdge.first, drawnEdge.second);
+				}
+			}
+		}
 	}
 
 	G.shrinkToFit();

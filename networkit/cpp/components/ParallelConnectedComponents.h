@@ -22,6 +22,14 @@ namespace NetworKit {
 class ParallelConnectedComponents : public Algorithm {
 public:
 
+	/**
+	 * @param[in] G Graph for which connected components shall be computed.
+	 * @param[in] coarsening Specifies whether the main algorithm based on
+	 *   label propagation (LP) shall work recursively (true) or not (false) by
+	 *   coarsening/contracting an LP-computed clustering. Defaults to true
+	 *   since we saw positive effects in terms of running time for many networks.
+	 *   Beware of possible memory implications.
+	 */
 	ParallelConnectedComponents(const Graph& G, bool coarsening = true);
 
 	/**

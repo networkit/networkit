@@ -32,7 +32,7 @@ public:
 };
 
 template<class Matrix>
-void LevelAggregation<Matrix>::coarseType(const Vector& xf, Vector& xc) const {
+void LevelAggregation<Matrix>::coarseType(const Vector& /*xf*/, Vector& xc) const {
 	xc = Vector(P.numberOfColumns(), 0.0);
 }
 

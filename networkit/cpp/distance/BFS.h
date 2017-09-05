@@ -14,7 +14,7 @@
 namespace NetworKit {
 
 /**
- * @ingroup graph
+ * @ingroup distance
  * The BFS class is used to do a breadth-first search on a Graph from a given source node.
  */
 class BFS : public SSSP {
@@ -25,12 +25,13 @@ public:
 	/**
 	 * Constructs the BFS class for @a G and source node @a source.
 	 *
-	 * @param G The graph.
-	 * @param source The source node of the breadth-first search.
-	 * @param storePaths	store paths and number of paths?
-	 * @param storeStack	maintain a stack of nodes in decreasing order of distance
+	 * @param G The graph
+	 * @param source The source node of the breadth-first search
+	 * @param storePaths Paths are reconstructable and the number of paths is stored.
+	 * @param storeNodesSortedByDistance Store a vector of nodes ordered in increasing distance from the source.
+	 * @param target The target node.
 	 */
-	BFS(const Graph& G, node source, bool storePaths=true, bool storeStack=false, node target = none);
+	BFS(const Graph& G, node source, bool storePaths=true, bool storeNodesSortedByDistance=false, node target = none);
 
 	/**
 	 * Breadth-first search from @a source.

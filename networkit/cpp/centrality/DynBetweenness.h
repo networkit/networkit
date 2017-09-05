@@ -28,7 +28,7 @@ public:
 
 
 /**
- * @ingroup graph
+ * @ingroup centrality
  * Dynamic APSP.
  */
 class DynBetweenness: public Centrality, public DynAlgorithm {
