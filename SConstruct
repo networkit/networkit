@@ -5,21 +5,6 @@ import ConfigParser
 
 home_path = os.environ['HOME']
 
-
-class DefaultConfigParser(ConfigParser.ConfigParser):
-	def get_default(self, section, option, default=None, raw=False, vars=None):
-		"""Get an option value for a given section.
-
-		If the option exists in the section, get_default behaves exactly like
-		get(). If not, default is returned (if not explicitly set: None).
-		"""
-
-		try:
-			return self.get(section, option, raw=raw, vars=vars)
-		except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
-			return default
-
-
 def checkStd(compiler):
 	sample = open("sample.cpp", "w")
 	sample.write("""
@@ -143,16 +128,25 @@ else:
 		print("Use the file build.conf.example to create your build.conf")
 		Exit(1)
 
-	conf = DefaultConfigParser()
+	conf = ConfigParser.ConfigParser()
 	conf.read([confPath])     # read the configuration file
 
-
 	## compiler
-	cppComp = compiler or conf.get_default("compiler", "cpp", "gcc")
-	defines = conf.get_default("compiler", "defines", "").split(",")		# defines are optional
+	if compiler is None:
+		cppComp = conf.get("compiler", "cpp", "gcc")
+	else:
+		cppComp = compiler
+	defines = conf.get("compiler", "defines", [])		# defines are optional
+	if defines is not []:
+		defines = defines.split(",")
+
 
 	## C++14 support
-	stdflag = stdflag or conf.get_default("compiler", "std14")
+	if stdflag is None:
+		try:
+			stdflag = conf.get("compiler", "std14")
+		except:
+			pass
 	if stdflag is None or len(stdflag) == 0:
 		# do test compile
 		stdflag = checkStd(cppComp)
@@ -160,22 +154,27 @@ else:
 		conf.set("compiler","std14", stdflag)
 
 	## includes
-	# Evaluates the [includes] section of the build.conf file.
-	# Includes may include std, gtest, tbb
-	includes = dict(conf.items("includes"))
+	stdInclude = conf.get("includes", "std", "")      # includes for the standard library - may not be needed
+	gtestInclude = conf.get("includes", "gtest")
+	if conf.has_option("includes", "tbb"):
+		tbbInclude = conf.get("includes", "tbb", "")
+	else:
+		tbbInclude = ""
 
 	## libraries
-	# Evaluates the [libraries] section of the build.conf file.
-	# Libraries may include gtest, tbb
-	libraries = dict(conf.items("libraries"))
+	gtestLib = conf.get("libraries", "gtest")
+	if conf.has_option("libraries", "tbb"):
+		tbbLib = conf.get("libraries", "tbb", "")
+	else:
+		tbbLib = ""
 
 	env["CC"] = cppComp
 	env["CXX"] = cppComp
 
 	env.Append(CPPDEFINES=defines)
-	env.Append(CPPPATH = includes.values())
-	env.Append(LIBS = libraries.keys())
-	env.Append(LIBPATH = libraries.values())
+	env.Append(CPPPATH = [stdInclude, gtestInclude, tbbInclude])
+	env.Append(LIBS = ["gtest"])
+	env.Append(LIBPATH = [gtestLib, tbbLib])
 
 	with open(confPath, "w") as f:
 		conf.write(f)
