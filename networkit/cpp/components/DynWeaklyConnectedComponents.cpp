@@ -71,8 +71,8 @@ namespace NetworKit {
 
 
     void DynWeaklyConnectedComponents::updateComponent(index c, node w, std::queue<node>& q, node v) {
-        if (components[w] == none) {
 
+        if (components[w] == none) {
             q.push(w);
             components[w] = c;
             isTree[(int)edgesMap.find(makePair(v, w))->second] = true;
@@ -131,7 +131,7 @@ namespace NetworKit {
     std::pair<bool, edgeid> DynWeaklyConnectedComponents::updateMapAfterAddition(node u, node v) {
 
         std::map<std::pair<node, node>, edgeid>::iterator it =
-            edgesMap.find(makePair(u, v));
+        edgesMap.find(makePair(u, v));
 
         // Edge (u, v) was never added before and was not part of the original graph
         if (it == edgesMap.end()) {
@@ -159,7 +159,6 @@ namespace NetworKit {
         index maxComp = std::max(components[u], components[v]);
         index minComp = std::min(components[u], components[v]);
 
-
         // New edge in the same component. Components are not affected.
         if (maxComp == minComp) {
             if (!updateResult.first) {
@@ -171,16 +170,29 @@ namespace NetworKit {
 
         // in the other case, we can merge the two components in an undirected graph
         G.parallelForNodes([&](node w) {
-            if (components[w] == maxComp) {
-                components[w] = minComp;
+            if (components[w] == minComp) {
+                components[w] = maxComp;
             }
         });
 
-        // Seg fault.
+
+        // INFO("UPDATING COMPSIZE");
+        // INFO("DONE");
         // Updating components sizes
-        compSize.find(minComp)->second += compSize.find(maxComp)->second;
-        compSize.erase(maxComp);
-        componentIds.push(maxComp);
+        // INFO("MAP SIZE = ", compSize.size());
+        // INFO(minComp);
+        // compSize.find(minComp);
+        // INFO("DONE WITH COMPSIZE END");
+        // if (compSize.find(minComp) == compSize.end()) {
+        //     // INFO("COMPONENT NOT FOUND: ", minComp);
+        // }
+        // else {
+        //     // INFO("COMPONENT FOUND");
+        // }
+        compSize.find(maxComp)->second += compSize.find(minComp)->second;
+        // compSize.find(minComp)->second = 0;
+        compSize.erase(minComp);
+        // componentIds.push(minComp);
 
         if (updateResult.first) {
             isTree[updateResult.second] = true;
@@ -188,6 +200,7 @@ namespace NetworKit {
         else {
             isTree.push_back(true);
         }
+
     }
 
 
@@ -378,6 +391,7 @@ namespace NetworKit {
 
     std::pair<node, node> DynWeaklyConnectedComponents::makePair(node u, node v) {
         node from, to;
+
         if (u > v) {
             from = v;
             to = u;
