@@ -92,7 +92,6 @@ namespace NetworKit {
             bool& nextEdgeFound,
             count level);
         std::pair<node, node> makePair(node u, node v);
-        std::map<std::pair<node, node>, count> addedEdges;
         void init();
 
         // Pointer to the graph

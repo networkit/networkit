@@ -104,7 +104,6 @@ namespace NetworKit {
         }
 
         if (event.type == GraphEvent::EDGE_ADDITION) {
-            addedEdges.insert(std::make_pair(makePair(event.u, event.v), 0));
             addEdge(event.u, event.v);
         }
         else if (event.type == GraphEvent::EDGE_REMOVAL) {
@@ -114,23 +113,32 @@ namespace NetworKit {
 
 
     void DynWeaklyConnectedComponents::updateBatch(const std::vector<GraphEvent>& batch) {
-        // TODO: better implementation. A for loop of all the updates leads to a
-        // seg. fault.
-        run();
+        // TODO: better implementation.
+        for (GraphEvent e : batch) {
+            if (e.type == GraphEvent::EDGE_ADDITION) {
+                if (!G.hasEdge(e.v, e.u) && edgesMap.find(makePair(e.u, e.v)) == edgesMap.end()) {
+                    insertEdgeIntoMap(e.u, e.v, edgesMap.size());
+                }
+            }
+        }
+        for (auto e : batch) {
+            update(e);
+        }
+        //run();
     }
 
 
     std::pair<bool, edgeid> DynWeaklyConnectedComponents::updateMapAfterAddition(node u, node v) {
 
         std::map<std::pair<node, node>, edgeid>::iterator it =
-        edgesMap.find(makePair(u, v));
+            edgesMap.find(makePair(u, v));
 
         // Edge (u, v) was never added before and was not part of the original graph
         if (it == edgesMap.end()) {
             edgeid newId = edgesMap.size();
             // Adding edge never deleted before
             insertEdgeIntoMap(u, v, newId);
-            return std::make_pair(false, none);
+            return std::make_pair(false, newId);
         }
 
         // Edge (u, v) was already added or was part of the original graph.
@@ -139,6 +147,7 @@ namespace NetworKit {
 
 
     void DynWeaklyConnectedComponents::addEdge(node u, node v) {
+
         if (G.hasEdge(v, u)) {
             return;
         }
@@ -150,12 +159,15 @@ namespace NetworKit {
         index maxComp = std::max(components[u], components[v]);
         index minComp = std::min(components[u], components[v]);
 
+
+        // New edge in the same component. Components are not affected.
         if (maxComp == minComp) {
             if (!updateResult.first) {
                 isTree.push_back(false);
             }
             return;
         }
+
 
         // in the other case, we can merge the two components in an undirected graph
         G.parallelForNodes([&](node w) {
@@ -164,6 +176,8 @@ namespace NetworKit {
             }
         });
 
+        // Seg fault.
+        // Updating components sizes
         compSize.find(minComp)->second += compSize.find(maxComp)->second;
         compSize.erase(maxComp);
         componentIds.push(maxComp);

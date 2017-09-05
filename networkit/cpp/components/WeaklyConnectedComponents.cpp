@@ -15,24 +15,36 @@ namespace NetworKit {
         }
     }
 
+
+    void WeaklyConnectedComponents::init() {
+
+        if (hasRun) {
+            compSize.clear();
+            std::fill(components.begin(), components.end(), none);
+        }
+        else {
+            components.assign(G.upperNodeIdBound(), none);
+        }
+
+        hasRun = false;
+    }
+
     void WeaklyConnectedComponents::run() {
 
-        // Initialization of components vector.
-        components.assign(G.upperNodeIdBound(), none);
+        // Initialization of data structures
+        init();
 
         // Queue for BFS.
         std::queue<node> q;
 
         // Perform BFSs to assign a component ID to each node.
         G.forNodes([&](node u) {
-
             // Node u has not been visited.
             if (components[u] == none) {
-
                 // New component ID.
                 index c = compSize.size();
                 components[u] = c;
-                compSize.insert(std::pair<index, count>(c, 1));
+                compSize.insert(std::make_pair(c, 1));
 
                 // Start a new BFS from u.
                 q.push(u);
@@ -43,11 +55,11 @@ namespace NetworKit {
 
                     // Enqueue neighbors (both from in and out edges) and set new component.
                     G.forNeighborsOf(v, [&](node w) {
-                        updateComponent(c, w, q);
+                        updateComponent(c, w, q, false);
                     });
 
                     G.forInNeighborsOf(v, [&](node w) {
-                        updateComponent(c, w, q);
+                        updateComponent(c, w, q, true);
                     });
                 } while (!q.empty());
             }
@@ -57,7 +69,11 @@ namespace NetworKit {
     }
 
 
-    void WeaklyConnectedComponents::updateComponent(index c, node w, std::queue<node>& q) {
+    void WeaklyConnectedComponents::updateComponent(index c, node w, std::queue<node>& q, bool inNeighbor) {
+        if (w > G.upperNodeIdBound()) {
+            INFO(w, " : from ", (inNeighbor ? " in neighbors" : " out neighbors") );
+        }
+        // INFO("UPDATING NEIGHBOR ", w);
         if (components[w] == none) {
             q.push(w);
             components[w] = c;
