@@ -81,9 +81,9 @@ std::vector<node> SSSP::getNodesSortedByDistance(bool moveOut) {
 		throw std::runtime_error("The container has already been moved or run() has not been called yet. Please call run() first.");
 	}
 	if (moveOut) {
-		auto movedNodes = std::move(nodesSortedByDistance);
-		nodesSortedByDistance.clear();
-		return movedNodes;
+		std::vector<node> tmp;
+		std::swap(nodesSortedByDistance, tmp);
+		return tmp;
 	}
 
 	return nodesSortedByDistance;
