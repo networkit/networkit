@@ -68,7 +68,7 @@ def getSourceFiles(target, optimize):
 	# add executable
 	if target == "Tests":
 		source.append(os.path.join(srcDir, "Unittests-X.cpp"))
-	elif target in ["Core","Lib"]:
+	elif target in ["Core", "Lib", "SharedLib"]:
 		pass # no executable
 	else:
 		print("Unknown target: {0}".format(target))
@@ -315,37 +315,46 @@ AddOption("--target",
 
 
 target = GetOption("target")
-availableTargets = ["Lib","Core","Tests"]
-if target in availableTargets:
-	source = getSourceFiles(target,optimize)
-	targetName = "NetworKit-{0}-{1}".format(target, optimize)
-	if target in ["Core","Lib"]:
-		# do not append executable
-		# env.Append(CPPDEFINES=["NOLOGGING"])
-		env.Library("NetworKit-Core-{0}".format(optimize), source)
-		if target == "Lib":
-			libFileToLink = "libNetworKit-Core-{0}.a".format(optimize)
-			libFileTarget = "libNetworKit.a"
-			if os.path.lexists(libFileTarget):
-				os.remove(libFileTarget)
-			os.symlink(libFileToLink,libFileTarget)
-			# SCons does not support python 3 yet...
-			#os.symlink("src/cpp","NetworKit",True)
-			# to support case insensitive file systems
-			# place the symlink for the include path in the folder include
-			if os.path.isdir("include"):
-				try:
-					os.remove("include/NetworKit")
-				except:
-					pass
-				os.rmdir("include")
-			os.mkdir("include")
-			os.chdir("include")
-			subprocess.call(["ln","-s","../networkit/cpp","NetworKit"])
-			os.chdir("../")
-
-	else:
-		env.Program(targetName, source)
-else:
+availableTargets = ["SharedLib", "Lib", "Core", "Tests"]
+if target not in availableTargets:
 	print("ERROR: unknown target: {0}".format(target))
 	exit(1)
+
+source = getSourceFiles(target,optimize)
+targetName = "NetworKit-{0}-{1}".format(target, optimize)
+
+if target == "Tests":
+	env.Program(targetName, source)
+elif target == "Core":
+	# do not append executable
+	# env.Append(CPPDEFINES=["NOLOGGING"])
+	env.StaticLibrary("NetworKit-Core-{0}".format(optimize), source)
+if target in ["Lib", "SharedLib"]:
+	if target == "Lib":
+		env.StaticLibrary("NetworKit-Core-{0}".format(optimize), source)
+		staticLibSuffix = env['LIBSUFFIX']
+		fileEnding = staticLibSuffix if staticLibSuffix else ".a"
+	else:
+		env.SharedLibrary("NetworKit-Core-{0}".format(optimize), source)
+		sharedLibSuffix = env['SHLIBSUFFIX']
+		fileEnding = sharedLibSuffix if sharedLibSuffix else ".so"
+
+	libFileToLink = "libNetworKit-Core-{0}{1}".format(optimize, fileEnding)
+	libFileTarget = "libNetworKit{0}".format(fileEnding)
+	if os.path.lexists(libFileTarget):
+		os.remove(libFileTarget)
+	os.symlink(libFileToLink,libFileTarget)
+	# SCons does not support python 3 yet...
+	#os.symlink("src/cpp","NetworKit",True)
+	# to support case insensitive file systems
+	# place the symlink for the include path in the folder include
+	if os.path.isdir("include"):
+		try:
+			os.remove("include/NetworKit")
+		except:
+			pass
+		os.rmdir("include")
+	os.mkdir("include")
+	os.chdir("include")
+	subprocess.call(["ln","-s","../networkit/cpp","NetworKit"])
+	os.chdir("../")
