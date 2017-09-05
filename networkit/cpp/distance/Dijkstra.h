@@ -30,9 +30,11 @@ public:
 	 *
 	 * @param G The graph.
 	 * @param source The source node.
-	 * @param storePaths	store paths and number of paths?
+	 * @param storePaths Paths are reconstructable and the number of paths is stored.
+	 * @param storeNodesSortedByDistance Store a vector of nodes ordered in increasing distance from the source.
+	 * @param target The target node.
 	 */
-	Dijkstra(const Graph& G, node source, bool storePaths=true, bool storeStack=false, node target = none);
+	Dijkstra(const Graph& G, node source, bool storePaths=true, bool storeNodesSortedByDistance=false, node target = none);
 
 	/**
 	 * Performs the Dijkstra SSSP algorithm on the graph given in the constructor.
