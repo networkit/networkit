@@ -6,57 +6,54 @@
  */
 
 
-#include <set>
 #include <utility>
+#include <queue>
 #include "ApproximatePageRank.h"
 
 namespace NetworKit {
 
 ApproximatePageRank::ApproximatePageRank(const Graph& g, double alpha_, double epsilon):
-		G(g), alpha(alpha_), oneMinusAlphaOver2((1.0 - alpha) * 0.5), eps(epsilon)
-{
-	if (g.isWeighted()) {
-		throw std::invalid_argument("Current implementation supports only unweighted graphs!");
-	}
+		G(g), alpha(alpha_), eps(epsilon) {
+
 }
 
-void ApproximatePageRank::push(node u, std::set<node>& activeNodes)
-{
+void ApproximatePageRank::push(node u, std::queue<node>& activeNodes) {
 	double res = pr_res[u].second;
-	double mass = oneMinusAlphaOver2 * res / G.degree(u);
+	double volume = G.volume(u);
 
-	G.forNeighborsOf(u, [&](node v) {
-		if (pr_res.find(v) == pr_res.end()) {
-			pr_res[v] = std::pair<double, double>(0.0, 0.0);
+	G.forNeighborsOf(u, [&](node, node v, edgeweight w) {
+		double mass = (1.0 - alpha) * res * w / (2.0 * volume);
+		double vol_v = G.volume(v);
+		// the first check is for making sure the node is not added twice.
+		// the second check ensures that enough residual is left.
+		if ( pr_res[v].second < vol_v * eps && (pr_res[v].second + mass) >= eps * vol_v ) {
+			activeNodes.push(v);
 		}
-		pr_res[v] = std::pair<double, double>(pr_res[v].first, pr_res[v].second + mass);
-		if ((pr_res[v].second / G.degree(v)) >= eps) {
-			activeNodes.insert(v);
-		}
+		pr_res[v].second += mass;
 	});
 
-	pr_res[u] = std::pair<double, double>(pr_res[u].first + alpha * res, oneMinusAlphaOver2 * res);
-	if ((pr_res[u].second / G.degree(u)) >= eps) {
-		activeNodes.insert(u);
+	pr_res[u] = std::pair<double, double>(pr_res[u].first + alpha * res, (1.0 - alpha) * res / 2);
+	if ((pr_res[u].second / volume) >= eps) {
+		activeNodes.push(u);
 	}
 }
-
 
 std::vector<std::pair<node, double>> ApproximatePageRank::run(node seed) {
 	pr_res[seed] = std::pair<double, double>(0.0, 1.0);
-	std::set<node> activeNodes;
-	activeNodes.insert(seed);
+	std::queue<node> activeNodes;
+	activeNodes.push(seed);
 
-	while (activeNodes.size() > 0) {
-		node v = (* activeNodes.begin());
-		activeNodes.erase(v);
+	while (!activeNodes.empty()) {
+		node v =  activeNodes.front();
+		activeNodes.pop();
 		TRACE("queue size: ", activeNodes.size());
 		push(v, activeNodes);
 	}
 
 	std::vector<std::pair<node, double>> pr;
+	pr.reserve(pr_res.size());
 
-	for (std::unordered_map<node, std::pair<double, double>>::iterator it = pr_res.begin(); it != pr_res.end(); it++) {
+	for (auto it = pr_res.begin(); it != pr_res.end(); it++) {
 		pr.push_back(std::pair<node, double>(it->first, it->second.first));
 	}
 

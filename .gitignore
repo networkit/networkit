@@ -5,6 +5,8 @@
 .DS_Store
 *.pyc
 *.a
+*.dylib
+*.lib
 *.so
 checkpoint.ipynb
 build.conf
@@ -50,3 +52,5 @@ EnsembleClustering-O
 doxygen
 NetworKit-Tests-*
 include/NetworKit
+dist/
+.buildDbg/

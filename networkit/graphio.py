@@ -235,7 +235,7 @@ def getWriter(fileformat, **kwargs):
 	try:
 		# special case for custom Edge Lists
 		if fileformat == Format.EdgeList:
-			writer = EdgeListWriter(kwargs['separator'],kwargs['firstNode'])
+			writer = EdgeListWriter(**kwargs)
 		else:
 			writer = writers[fileformat]#(**kwargs)
 	except KeyError:

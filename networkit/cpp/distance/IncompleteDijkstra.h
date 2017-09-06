@@ -20,7 +20,7 @@
 namespace NetworKit {
 
 /**
- * @ingroup graph
+ * @ingroup distance
  * Implementation of @a IncompleteSSSP using a normal
  * Dijkstra with binary heaps.
  */

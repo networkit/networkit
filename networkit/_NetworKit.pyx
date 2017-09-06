@@ -6,6 +6,7 @@
 import collections
 import math
 import os
+import tempfile
 
 
 try:
@@ -255,7 +256,7 @@ cdef extern from "cpp/graph/Graph.h":
 		node addNode() except +
 		void removeNode(node u) except +
 		bool hasNode(node u) except +
-		void restoreNode(v) except +
+		void restoreNode(node u) except +
 		void append(_Graph) except +
 		void merge(_Graph) except +
 		void addEdge(node u, node v, edgeweight w) except +
@@ -594,6 +595,16 @@ cdef class Graph:
 	 		Node.
 		"""
 		self._this.removeNode(u)
+
+	def restoreNode(self, u):
+		""" Restores a previously deleted node `u` with its previous id in the graph.
+
+	 	Parameters
+	 	----------
+	 	u : node
+	 		Node.
+		"""
+		self._this.restoreNode(u)
 
 	def hasNode(self, u):
 		""" Checks if the Graph has the node `u`, i.e. if `u` hasn't been deleted and is in the range of valid ids.
@@ -1190,7 +1201,7 @@ cdef class Graph:
 
 cdef extern from "cpp/distance/SSSP.h":
 	cdef cppclass _SSSP "NetworKit::SSSP"(_Algorithm):
-		_SSSP(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
+		_SSSP(_Graph G, node source, bool storePaths, bool storeNodesSortedByDistance, node target) except +
 		void run() nogil except +
 		vector[edgeweight] getDistances(bool moveOut) except +
 		edgeweight distance(node t) except +
@@ -1198,6 +1209,7 @@ cdef extern from "cpp/distance/SSSP.h":
 		vector[node] getPath(node t, bool forward) except +
 		set[vector[node]] getPaths(node t, bool forward) except +
 		vector[node] getStack(bool moveOut) except +
+		vector[node] getNodesSortedByDistance(bool moveOut) except +
 		double _numberOfPaths(node t) except +
 
 cdef class SSSP(Algorithm):
@@ -1253,7 +1265,44 @@ cdef class SSSP(Algorithm):
 		return result
 
 	def getStack(self, moveOut=True):
+		""" DEPRECATED: Use getNodesSortedByDistance instead.
+		
+		Returns a vector of nodes ordered in increasing distance from the source.
+
+		For this functionality to be available, storeNodesSortedByDistance has to be set to true in the constructor.
+		There are no guarantees regarding the ordering of two nodes with the same distance to the source.
+
+		Parameters
+		----------
+		moveOut : bool
+			If set to true, the container will be moved out of the class instead of copying it; default=true.
+
+		Returns
+		-------
+		vector
+			Nodes ordered in increasing distance from the source.
+		"""
+		from warnings import warn
+		warn("getStack is deprecated; use getNodesSortedByDistance instead.", DeprecationWarning)
 		return (<_SSSP*>(self._this)).getStack(moveOut)
+
+	def getNodesSortedByDistance(self, moveOut=True):
+		""" Returns a vector of nodes ordered in increasing distance from the source.
+
+		For this functionality to be available, storeNodesSortedByDistance has to be set to true in the constructor.
+		There are no guarantees regarding the ordering of two nodes with the same distance to the source.
+
+		Parameters
+		----------
+		moveOut : bool
+			If set to true, the container will be moved out of the class instead of copying it; default=true.
+
+		Returns
+		-------
+		vector
+			Nodes ordered in increasing distance from the source.
+		"""
+		return (<_SSSP*>(self._this)).getNodesSortedByDistance(moveOut)
 
 	def numberOfPaths(self, t):
 		return (<_SSSP*>(self._this))._numberOfPaths(t)
@@ -1303,12 +1352,12 @@ cdef class DynSSSP(SSSP):
 
 cdef extern from "cpp/distance/BFS.h":
 	cdef cppclass _BFS "NetworKit::BFS"(_SSSP):
-		_BFS(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
+		_BFS(_Graph G, node source, bool storePaths, bool storeNodesSortedByDistance, node target) except +
 
 cdef class BFS(SSSP):
 	""" Simple breadth-first search on a Graph from a given source
 
-	BFS(G, source, [storePaths], [storeStack], target)
+	BFS(G, source, [storePaths], [storeNodesSortedByDistance], target)
 
 	Create BFS for `G` and source node `source`.
 
@@ -1324,9 +1373,9 @@ cdef class BFS(SSSP):
 		terminate search when the target has been reached
 	"""
 
-	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False, target=none):
+	def __cinit__(self, Graph G, source, storePaths=True, storeNodesSortedByDistance=False, target=none):
 		self._G = G
-		self._this = new _BFS(G._this, source, storePaths, storeStack, target)
+		self._this = new _BFS(G._this, source, storePaths, storeNodesSortedByDistance, target)
 
 cdef extern from "cpp/distance/DynBFS.h":
 	cdef cppclass _DynBFS "NetworKit::DynBFS"(_DynSSSP):
@@ -1355,14 +1404,14 @@ cdef class DynBFS(DynSSSP):
 
 cdef extern from "cpp/distance/Dijkstra.h":
 	cdef cppclass _Dijkstra "NetworKit::Dijkstra"(_SSSP):
-		_Dijkstra(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
+		_Dijkstra(_Graph G, node source, bool storePaths, bool storeNodesSortedByDistance, node target) except +
 
 cdef class Dijkstra(SSSP):
 	""" Dijkstra's SSSP algorithm.
 	Returns list of weighted distances from node source, i.e. the length of the shortest path from source to
 	any other node.
 
-    Dijkstra(G, source, [storePaths], [storeStack], target)
+    Dijkstra(G, source, [storePaths], [storeNodesSortedByDistance], target)
 
     Creates Dijkstra for `G` and source node `source`.
 
@@ -1373,15 +1422,15 @@ cdef class Dijkstra(SSSP):
 	source : node
 		The source node.
 	storePaths : bool
-		store paths and number of paths?
-	storeStack : bool
-		maintain a stack of nodes in order of decreasing distance?
+		Paths are reconstructable and the number of paths is stored.
+	storeNodesSortedByDistance: bool
+		Store a vector of nodes ordered in increasing distance from the source.
 	target : node
 		target node. Search ends when target node is reached. t is set to None by default.
     """
-	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False, node target=none):
+	def __cinit__(self, Graph G, source, storePaths=True, storeNodesSortedByDistance=False, node target=none):
 		self._G = G
-		self._this = new _Dijkstra(G._this, source, storePaths, storeStack, target)
+		self._this = new _Dijkstra(G._this, source, storePaths, storeNodesSortedByDistance, target)
 
 cdef extern from "cpp/distance/DynDijkstra.h":
 	cdef cppclass _DynDijkstra "NetworKit::DynDijkstra"(_DynSSSP):
@@ -1405,6 +1454,103 @@ cdef class DynDijkstra(DynSSSP):
 	def __cinit__(self, Graph G, source):
 		self._G = G
 		self._this = new _DynDijkstra(G._this, source)
+
+
+cdef cppclass PathCallbackWrapper:
+	void* callback
+	__init__(object callback):
+		this.callback = <void*>callback
+	void cython_call_operator(vector[node] path):
+		cdef bool error = False
+		cdef string message
+		try:
+			(<object>callback)(path)
+		except Exception as e:
+			error = True
+			message = stdstring("An Exception occurred, aborting execution of iterator: {0}".format(e))
+		if (error):
+			throw_runtime_error(message)
+
+cdef extern from "cpp/distance/AllSimplePaths.h":
+	cdef cppclass _AllSimplePaths "NetworKit::AllSimplePaths":
+		_AllSimplePaths(_Graph G, node source, node target, count cutoff) except +
+		void run() nogil except +
+		count numberOfSimplePaths() except +
+		vector[vector[node]] getAllSimplePaths() except +
+		void forAllSimplePaths[Callback](Callback c) except +
+
+cdef class AllSimplePaths:
+	""" Algorithm to compute all existing simple paths from a source node to a target node. The maximum length of the paths can be fixed through 'cutoff'.
+		CAUTION: This algorithm could take a lot of time on large networks (many edges), especially if the cutoff value is high or not specified.
+
+	AllSimplePaths(G, source, target, cutoff=none)
+
+	Create AllSimplePaths for `G`, source node `source`, target node 'target' and cutoff 'cutoff'.
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	source : node
+		The source node.
+	target : node
+		The target node.
+	cutoff : count
+		(optional) The maximum length of the simple paths.
+
+	"""
+
+	cdef _AllSimplePaths* _this
+	cdef Graph _G
+
+	def __cinit__(self,  Graph G, source, target, cutoff=none):
+		self._G = G
+		self._this = new _AllSimplePaths(G._this, source, target, cutoff)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		self._this.run()
+		return self
+
+	def numberOfSimplePaths(self):
+		"""
+		Returns the number of simple paths.
+
+		Returns
+		-------
+		count
+			The number of simple paths.
+		"""
+		return self._this.numberOfSimplePaths()
+
+	def getAllSimplePaths(self):
+		"""
+		Returns all the simple paths from source to target.
+
+		Returns
+		-------
+		A vector of vectors.
+			A vector containing vectors which represent all simple paths.
+		"""
+		return self._this.getAllSimplePaths()
+
+	def forAllSimplePaths(self, object callback):
+		""" More efficient path iterator. Iterates over all the simple paths.
+
+		Parameters
+		----------
+		callback : object
+			Any callable object that takes the parameter path
+		"""
+		cdef PathCallbackWrapper* wrapper
+		try:
+			wrapper = new PathCallbackWrapper(callback)
+			self._this.forAllSimplePaths[PathCallbackWrapper](dereference(wrapper))
+		finally:
+			del wrapper
+
 
 
 cdef extern from "cpp/distance/APSP.h":
@@ -2263,6 +2409,9 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 				raise ValueError("Exponent of power-law degree distribution must be > 2")
 		self._this = new _HyperbolicGenerator(n, k, gamma, T)
 
+	def __dealloc__(self):
+		del self._this
+
 	def setLeafCapacity(self, capacity):
 		self._this.setLeafCapacity(capacity)
 
@@ -2333,7 +2482,7 @@ cdef class RmatGenerator:
 	"""
 
 	cdef _RmatGenerator* _this
-	paths = {"workingDir" : None, "kronfitPath" : None}
+	paths = {"kronfitPath" : None}
 
 	def __cinit__(self, count scale, count edgeFactor, double a, double b, double c, double d, bool weighted=False, count reduceNodes=0):
 		self._this = new _RmatGenerator(scale, edgeFactor, a, b, c, d, weighted, reduceNodes)
@@ -2352,9 +2501,8 @@ cdef class RmatGenerator:
 		return Graph(0).setThis(self._this.generate())
 
 	@classmethod
-	def setPaths(cls, kronfitPath, workingDir="/tmp"):
+	def setPaths(cls, kronfitPath):
 		cls.paths["kronfitPath"] = kronfitPath
-		cls.paths["workingDir"] = workingDir
 
 	@classmethod
 	def fit(cls, G, scale=1, initiator=None, kronfit=True, iterations=50):
@@ -2368,20 +2516,22 @@ cdef class RmatGenerator:
 			(a,b,c,d) = initiator
 		else:
 			if kronfit:
-				if cls.paths["workingDir"] is None:
-					raise RuntimeError("call setPaths class method first to configure")
-				# write graph
-				tmpGraphPath = os.path.join(cls.paths["workingDir"], "{0}.edgelist".format(G.getName()))
-				graphio.writeGraph(G, tmpGraphPath, graphio.Format.EdgeListTabOne)
-				# call kronfit
-				args = [cls.paths["kronfitPath"], "-i:{0}".format(tmpGraphPath), "-gi:{0}".format(str(iterations))]
-				subprocess.call(args)
-				# read estimated parameters
-				with open("KronFit-{0}.tab".format(G.getName())) as resultFile:
-					for i, line in enumerate(resultFile):
-						if i == 7:
-							matches = re.findall("\d+\.\d+", line)
-							weights = [float(s) for s in matches]
+				with tempfile.TemporaryDirectory() as tmpdir:
+					if cls.paths["kronfitPath"] is None:
+						raise RuntimeError("call setPaths class method first to configure")
+					# write graph
+					tmpGraphPath = os.path.join(tmpdir, "{0}.edgelist".format(G.getName()))
+					tmpOutputPath = os.path.join(tmpdir, "{0}.kronfit".format(G.getName()))
+					graphio.writeGraph(G, tmpGraphPath, graphio.Format.EdgeList, separator="\t", firstNode=1, bothDirections=True)
+					# call kronfit
+					args = [cls.paths["kronfitPath"], "-i:{0}".format(tmpGraphPath), "-gi:{0}".format(str(iterations)), "-o:{}".format(tmpOutputPath)]
+					subprocess.call(args)
+					# read estimated parameters
+					with open(tmpOutputPath) as resultFile:
+						for line in resultFile:
+							if "initiator" in line:
+								matches = re.findall("\d+\.\d+", line)
+								weights = [float(s) for s in matches]
 			else:
 				# random weights because kronfit is slow
 				weights = (random.random(), random.random(), random.random(), random.random())
@@ -2782,8 +2932,18 @@ cdef class LFRGenerator(Algorithm):
 			communityAvgSize = int(sum(communitySize) / len(communitySize))
 			communityMaxSize = max(communitySize)
 			communityMinSize = min(communitySize)
+
+			localCoverage = LocalPartitionCoverage(G, communities).run().scores()
+			mu = 1.0 - sum(localCoverage) / len(localCoverage)
+			# check if largest possible internal degree can fit in the largest possible community
+			if math.ceil((1.0 - mu) * maxDegree) >= communityMaxSize:
+				# Make the maximum community size 5% larger to make it more likely
+				# the largest generated degree will actually fit.
+				communityMaxSize = math.ceil(((1.0 - mu) * maxDegree + 1) * 1.05)
+				print("Increasing maximum community size to fit the largest degree")
+
 			if plfit:
-				communityExp = -1 * PowerlawDegreeSequence(communitySize).getGamma()
+				communityExp = -1 * PowerlawDegreeSequence(communityMinSize, communityMaxSize, -1).setGammaFromAverageDegree(communityAvgSize).getGamma()
 			else:
 				communityExp = 1
 			pl = PowerlawDegreeSequence(communityMinSize, communityMaxSize, -1 * communityExp)
@@ -2795,13 +2955,14 @@ cdef class LFRGenerator(Algorithm):
 				pl.run()
 				print("Could not set desired average community size {}, average will be {} instead".format(communityAvgSize, pl.getExpectedAverageDegree()))
 
+
 			gen.generatePowerlawCommunitySizeSequence(minCommunitySize=communityMinSize, maxCommunitySize=communityMaxSize, communitySizeExp=-1 * communityExp)
 			# mixing parameter
 			#print("mixing parameter")
-			localCoverage = LocalPartitionCoverage(G, communities).run().scores()
-			mu = sum(localCoverage) / len(localCoverage)
 			gen.setMu(mu)
-			refImplParams = "-N {0} -k {1} -maxk {2} -mu {3} -minc {4} -maxc {5} -t1 {6} -t2 {7}".format(n * scale, avgDegree, maxDegree, mu, communityMinSize, communityMaxSize, nodeDegreeExp, communityExp)
+			# Add some small constants to the parameters for the reference implementation to
+			# ensure it won't say the average degree is too low.
+			refImplParams = "-N {0} -k {1} -maxk {2} -mu {3} -minc {4} -maxc {5} -t1 {6} -t2 {7}".format(n * scale, avgDegree + 1e-4, maxDegree, mu, max(communityMinSize, 3), communityMaxSize, nodeDegreeExp + 0.001, communityExp)
 			cls.params["refImplParams"] = refImplParams
 			print(refImplParams)
 		else:
@@ -3028,18 +3189,27 @@ cdef class GMLGraphWriter:
 cdef extern from "cpp/io/EdgeListWriter.h":
 	cdef cppclass _EdgeListWriter "NetworKit::EdgeListWriter":
 		_EdgeListWriter() except +
-		_EdgeListWriter(char separator, node firstNode) except +
+		_EdgeListWriter(char separator, node firstNode, bool bothDirections) except +
 		void write(_Graph G, string path) nogil except +
 
 cdef class EdgeListWriter:
-	""" Reads and writes graphs in various edge list formats. The constructor takes a
-		seperator char and the ID of the first node as paraneters."""
+	""" Writes graphs in various edge list formats.
+
+	Parameters
+	----------
+	separator : string
+		The separator character.
+	firstNode : node
+		The id of the first node, this value will be added to all node ids
+	bothDirections : bool, optional
+		If undirected edges shall be written in both directions, i.e., as symmetric directed graph (default: false)
+	"""
 
 	cdef _EdgeListWriter _this
 
-	def __cinit__(self, separator, firstNode):
+	def __cinit__(self, separator, firstNode, bool bothDirections = False):
 		cdef char sep = stdstring(separator)[0]
-		self._this = _EdgeListWriter(sep, firstNode)
+		self._this = _EdgeListWriter(sep, firstNode, bothDirections)
 
 	def write(self, Graph G not None, path):
 		cdef string cpath = stdstring(path)
@@ -5128,6 +5298,171 @@ cdef class StronglyConnectedComponents:
 		return self._this.componentOfNode(v)
 
 
+cdef extern from "cpp/components/WeaklyConnectedComponents.h":
+	cdef cppclass _WeaklyConnectedComponents "NetworKit::WeaklyConnectedComponents":
+		_WeaklyConnectedComponents(_Graph G) except +
+		void run() nogil except +
+		count numberOfComponents() except +
+		count componentOfNode(node query) except +
+		map[index, count] getComponentSizes() except +
+		vector[vector[node]] getComponents() except +
+
+cdef class WeaklyConnectedComponents:
+	""" Determines the weakly connected components of a directed graph.
+
+		Parameters
+		----------
+		G : Graph
+			The graph.
+	"""
+	cdef _WeaklyConnectedComponents* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _WeaklyConnectedComponents(G._this)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		with nogil:
+			self._this.run()
+		return self
+
+	def numberOfComponents(self):
+		""" Returns the number of components.
+
+			Returns
+			count
+				The number of components.
+		"""
+		return self._this.numberOfComponents()
+
+	def componentOfNode(self, v):
+		""" Returns the the component in which node @a u is.
+
+			Parameters
+			----------
+			v : node
+				The node.
+		"""
+		return self._this.componentOfNode(v)
+
+	def getComponentSizes(self):
+		""" Returns the map from component to size.
+
+			Returns
+			map[index, count]
+			 	A map that maps each component to its size.
+		"""
+		return self._this.getComponentSizes()
+
+	def getComponents(self):
+		""" Returns all the components, each stored as (unordered) set of nodes.
+
+			Returns
+			vector[vector[node]]
+				A vector of vectors. Each inner vector contains all the nodes inside the component.
+		"""
+		return self._this.getComponents()
+
+
+
+cdef extern from "cpp/components/DynConnectedComponents.h":
+	cdef cppclass _DynConnectedComponents "NetworKit::DynConnectedComponents":
+		_DynConnectedComponents(_Graph G) except +
+		void run() nogil except +
+		void update(_GraphEvent) except +
+		void updateBatch(vector[_GraphEvent]) except +
+		count numberOfComponents() except +
+		count componentOfNode(node query) except +
+		map[index, count] getComponentSizes() except +
+		vector[vector[node]] getComponents() except +
+
+cdef class DynConnectedComponents:
+	""" Determines and updates the connected components of an undirected graph.
+
+		Parameters
+		----------
+		G : Graph
+			The graph.
+	"""
+	cdef _DynConnectedComponents* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _DynConnectedComponents(G._this)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		with nogil:
+			self._this.run()
+		return self
+
+	def numberOfComponents(self):
+		""" Returns the number of components.
+
+			Returns
+			count
+				The number of components.
+		"""
+		return self._this.numberOfComponents()
+
+	def componentOfNode(self, v):
+		""" Returns the the component in which node @a u is.
+
+			Parameters
+			----------
+			v : node
+				The node.
+		"""
+		return self._this.componentOfNode(v)
+
+	def getComponentSizes(self):
+		""" Returns the map from component to size.
+
+			Returns
+			map[index, count]
+			 	A map that maps each component to its size.
+		"""
+		return self._this.getComponentSizes()
+
+	def getComponents(self):
+		""" Returns all the components, each stored as (unordered) set of nodes.
+
+			Returns
+			vector[vector[node]]
+				A vector of vectors. Each inner vector contains all the nodes inside the component.
+		"""
+		return self._this.getComponents()
+
+	def update(self, event):
+		""" Updates the connected components after an edge insertion or deletion.
+
+			Parameters
+			----------
+			event : GraphEvent
+				The event that happened (edge deletion or insertion).
+		"""
+		self._this.update(_GraphEvent(event.type, event.u, event.v, event.w))
+
+	def updateBatch(self, batch):
+		""" Updates the connected components after a batch of edge insertions or deletions.
+
+			Parameters
+			----------
+			batch : vector[GraphEvent]
+				A vector that contains a batch of edge insertions or deletions.
+		"""
+		cdef vector[_GraphEvent] _batch
+		for event in batch:
+			_batch.push_back(_GraphEvent(event.type, event.u, event.v, event.w))
+		self._this.updateBatch(_batch)
+
 
 cdef extern from "cpp/global/ClusteringCoefficient.h" namespace "NetworKit::ClusteringCoefficient":
 		double avgLocal(_Graph G, bool turbo) nogil except +
@@ -6703,6 +7038,9 @@ cdef class DynamicHyperbolicGenerator:
 				raise ValueError("Exponent of power-law degree distribution must be > 2")
 		self._this = new _DynamicHyperbolicGenerator(numNodes, avgDegree = 6, gamma = 3, T = 0, moveEachStep = 1, moveDistance = 0.1)
 
+	def __dealloc__(self):
+		del self._this
+
 	def generate(self, nSteps):
 		""" Generate event stream.
 
@@ -6950,7 +7288,7 @@ cdef extern from "cpp/clique/MaxClique.h":
 cdef class MaxClique:
 	"""
 	DEPRECATED: Use clique.MaximumCliques instead.
-	
+
 	Exact algorithm for computing the size of the largest clique in a graph.
 	Worst-case running time is exponential, but in practice the algorithm is fairly fast.
 	Reference: Pattabiraman et al., http://arxiv.org/pdf/1411.7460.pdf
