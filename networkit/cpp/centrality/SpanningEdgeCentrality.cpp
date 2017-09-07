@@ -9,8 +9,6 @@
 #include "SpanningEdgeCentrality.h"
 #include "../auxiliary/Log.h"
 #include "../auxiliary/Timer.h"
-#include "../spanning/RandomSpanningTree.h"
-#include "../spanning/PseudoRandomSpanningTree.h"
 
 #include <fstream>
 #include <sstream>
