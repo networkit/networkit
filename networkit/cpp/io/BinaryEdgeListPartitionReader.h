@@ -28,10 +28,11 @@ public:
 	 * 		binary list of pairs (node, partition(node))
 	 * Partition ids must be in the range [0, max(uint64_t)).
 	 *
-	 * @param[in]	path	Path to file.
+	 * @param[in]	path	Path to file or to several files (which are read in order).
 	 * @return The partition contained in the file at @a path.
 	 */
 	virtual Partition read(const std::string& path);
+	virtual Partition read(const std::vector<std::string>& paths);
 
 
 	node firstNode;

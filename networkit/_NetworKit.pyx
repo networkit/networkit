@@ -3398,7 +3398,8 @@ cdef extern from "cpp/io/BinaryEdgeListPartitionReader.h":
 	cdef cppclass _BinaryEdgeListPartitionReader "NetworKit::BinaryEdgeListPartitionReader":
 		_BinaryEdgeListPartitionReader() except +
 		_BinaryEdgeListPartitionReader(node firstNode, uint8_t width) except +
-		_Partition read(string path) except +
+		_Partition read(string path) nogil except +
+		_Partition read(vector[string] paths) nogil except +
 
 
 cdef class BinaryEdgeListPartitionReader:
@@ -3418,8 +3419,31 @@ cdef class BinaryEdgeListPartitionReader:
 	def __cinit__(self, node firstNode=0, uint8_t width=4):
 		self._this = _BinaryEdgeListPartitionReader(firstNode, width)
 
-	def read(self, path):
-		return Partition().setThis(self._this.read(stdstring(path)))
+	def read(self, paths):
+		"""
+		Read the partition from one or multiple files
+
+		Parameters
+		----------
+		paths : str or list[str]
+			The input path(s)
+		"""
+		cdef vector[string] c_paths
+
+		if isinstance(paths, str):
+			c_paths.push_back(stdstring(paths))
+		else:
+			c_paths.reserve(len(paths))
+
+			for p in paths:
+				c_paths.push_back(stdstring(p))
+
+		cdef _Partition result
+
+		with nogil:
+			result = move(self._this.read(c_paths)) # extra move in order to avoid copying the internal variable that is used by Cython
+
+		return Partition().setThis(result)
 
 cdef extern from "cpp/io/SNAPEdgeListPartitionReader.h":
 	cdef cppclass _SNAPEdgeListPartitionReader "NetworKit::SNAPEdgeListPartitionReader":
