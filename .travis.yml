@@ -12,6 +12,7 @@ matrix:
           packages:
             - g++-4.8
             - scons
+            - python-configparser
             - libgtest-dev
       install:
        - mkdir ~/gtest && cd ~/gtest
@@ -50,6 +51,7 @@ matrix:
             - g++-5
             - clang-3.8
             - scons
+            - python-configparser
             - libgtest-dev
             - subversion
       install:
