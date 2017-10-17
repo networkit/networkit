@@ -114,7 +114,7 @@ stdflag = GetOption("std")
 defines = GetOption("defines")
 
 if not os.path.isfile("build.conf"):
-	if defines is not []:
+	if defines is not None and defines is not []:
 		defines = defines.split(",")
 		env.Append(CPPDEFINES=defines)
 	if not compiler == None:
