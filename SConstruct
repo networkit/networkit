@@ -114,6 +114,9 @@ stdflag = GetOption("std")
 defines = GetOption("defines")
 
 if not os.path.isfile("build.conf"):
+	if defines is not []:
+		defines = defines.split(",")
+		env.Append(CPPDEFINES=defines)
 	if not compiler == None:
 		#print("{0} has been passed via command line".format(compiler))
 		env["CC"] = compiler
