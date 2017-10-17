@@ -1,5 +1,5 @@
 /*
-* DynWeaklyConnectedComponents.cpp
+* DynDynWeaklyConnectedComponents.cpp
 *
 *  Created on: June 20, 2017
 *      Author: Eugenio Angriman
@@ -16,23 +16,15 @@ namespace NetworKit {
     }
 
 
-    void DynWeaklyConnectedComponents::init() {
-        if (hasRun) {
-            edgesMap.clear();
-            compSize.clear();
-        }
-        components.assign(G.upperNodeIdBound(), none);
-        tmpDistances.assign(G.upperNodeIdBound(), none);
-        indexEdges();
-        isTree.assign(edgesMap.size(), false);
-    }
-
-
     void DynWeaklyConnectedComponents::run() {
+        indexEdges();
+        removedEdges = 0;
 
-        // Initializing / resetting data structures
-        init();
+        // Initialization vectors.
+        components.assign(G.upperNodeIdBound(), none);
+        isTree.assign(edgesMap.size(), false);
 
+        // Queue for BFS.
         std::queue<node> q;
 
         // Perform BFSs to assign a component ID to each node.
@@ -53,8 +45,7 @@ namespace NetworKit {
                     node v = q.front();
                     q.pop();
 
-                    // Enqueue neighbors (both from in and out edges)
-                    // and set new component.
+                    // Enqueue neighbors (both from in and out edges) and set new component.
                     G.forNeighborsOf(v, [&](node w) {
                         updateComponent(c, w, q, v);
                     });
@@ -71,11 +62,10 @@ namespace NetworKit {
 
 
     void DynWeaklyConnectedComponents::updateComponent(index c, node w, std::queue<node>& q, node v) {
-
         if (components[w] == none) {
             q.push(w);
             components[w] = c;
-            isTree[(int)edgesMap.find(makePair(v, w))->second] = true;
+            isTree[edgesMap.find(makePair(v, w))->second] = true;
             compSize.find(c)->second += 1;
         }
     }
@@ -97,6 +87,22 @@ namespace NetworKit {
     }
 
 
+    void DynWeaklyConnectedComponents::updateMapAfterAddition(node u, node v) {
+
+        std::map<std::pair<node, node>, edgeid>::iterator it = edgesMap.find(makePair(u, v));
+        edgeid newId = edgesMap.size() + removedEdges;
+
+        if (it == edgesMap.end()) {
+            // Adding edge never deleted before
+            insertEdgeIntoMap(u, v, newId);
+        }
+        else {
+            // Adding edge that was deleted before, updating its value
+            it->second = newId;
+        }
+    }
+
+
     void DynWeaklyConnectedComponents::update(GraphEvent event) {
 
         if (!hasRun) {
@@ -113,104 +119,41 @@ namespace NetworKit {
 
 
     void DynWeaklyConnectedComponents::updateBatch(const std::vector<GraphEvent>& batch) {
-        // TODO: better implementation.
-        for (GraphEvent e : batch) {
-            if (e.type == GraphEvent::EDGE_ADDITION) {
-                if (!G.hasEdge(e.v, e.u) && edgesMap.find(makePair(e.u, e.v)) == edgesMap.end()) {
-                    insertEdgeIntoMap(e.u, e.v, edgesMap.size());
-                }
-            }
+        for (auto event : batch) {
+            update(event);
         }
-        for (auto e : batch) {
-            update(e);
-        }
-        //run();
-    }
-
-
-    std::pair<bool, edgeid> DynWeaklyConnectedComponents::updateMapAfterAddition(node u, node v) {
-
-        std::map<std::pair<node, node>, edgeid>::iterator it =
-        edgesMap.find(makePair(u, v));
-
-        // Edge (u, v) was never added before and was not part of the original graph
-        if (it == edgesMap.end()) {
-            edgeid newId = edgesMap.size();
-            // Adding edge never deleted before
-            insertEdgeIntoMap(u, v, newId);
-            return std::make_pair(false, newId);
-        }
-
-        // Edge (u, v) was already added or was part of the original graph.
-        return std::make_pair(true, it->second);
     }
 
 
     void DynWeaklyConnectedComponents::addEdge(node u, node v) {
 
-        if (G.hasEdge(v, u)) {
-            return;
-        }
-
-        std::pair<bool, edgeid> updateResult = updateMapAfterAddition(u, v);
+        updateMapAfterAddition(u, v);
 
         // If u and v are already in the same component, we
         // don't have to do anything
         index maxComp = std::max(components[u], components[v]);
         index minComp = std::min(components[u], components[v]);
 
-        // New edge in the same component. Components are not affected.
         if (maxComp == minComp) {
-            if (!updateResult.first) {
-                isTree.push_back(false);
-            }
             return;
         }
 
-
         // in the other case, we can merge the two components in an undirected graph
         G.parallelForNodes([&](node w) {
-            if (components[w] == minComp) {
-                components[w] = maxComp;
+            if (components[w] == maxComp) {
+                components[w] = minComp;
             }
         });
 
+        compSize.find(minComp)->second += compSize.find(maxComp)->second;
+        compSize.erase(maxComp);
 
-        // INFO("UPDATING COMPSIZE");
-        // INFO("DONE");
-        // Updating components sizes
-        // INFO("MAP SIZE = ", compSize.size());
-        // INFO(minComp);
-        // compSize.find(minComp);
-        // INFO("DONE WITH COMPSIZE END");
-        // if (compSize.find(minComp) == compSize.end()) {
-        //     // INFO("COMPONENT NOT FOUND: ", minComp);
-        // }
-        // else {
-        //     // INFO("COMPONENT FOUND");
-        // }
-        compSize.find(maxComp)->second += compSize.find(minComp)->second;
-        // compSize.find(minComp)->second = 0;
-        compSize.erase(minComp);
-        // componentIds.push(minComp);
-
-        if (updateResult.first) {
-            isTree[updateResult.second] = true;
-        }
-        else {
-            isTree.push_back(true);
-        }
-
+        componentIds.push(maxComp);
+        isTree.push_back(true);
     }
 
 
     void DynWeaklyConnectedComponents::removeEdge(node u, node v) {
-
-        // If the graph still has the reverse edge, it is like we did not remove
-        // any edge from the graph.
-        if (G.hasEdge(v, u)) {
-            return;
-        }
 
         edgeid eid = edgesMap.find(makePair(u, v))->second;
 
@@ -218,8 +161,8 @@ namespace NetworKit {
             return;
         }
 
-        isTree[eid] = false;
-        std::fill(tmpDistances.begin(), tmpDistances.end(), none);
+        tmpDistances.assign(G.upperNodeIdBound(), none);
+
         index nextId = nextAvailableComponentId(false);
 
         std::vector<node> newCmp(components);
@@ -286,9 +229,8 @@ namespace NetworKit {
 
         } while (!q.empty());
 
-        // distancesInit = false;
         isTree[eid] = false;
-        // ++removedEdges;
+        ++removedEdges;
 
         if (!connected) {
             // TODO: a more elegant way to assign new ids. call the function again to pop new value
@@ -303,7 +245,6 @@ namespace NetworKit {
 
         std::queue<node> q;
         q.push(v);
-
         count d = tmpDistances[v];
         count level = 1;
 
@@ -335,14 +276,15 @@ namespace NetworKit {
 
 
     bool DynWeaklyConnectedComponents::visitNodeReversed(node u, node s, node w, node v, count d, std::queue<node>& q, bool& nextEdgeFound, count level) {
+
         if (w == u) {
-            isTree[edgesMap.find(makePair(s, w))->second] = true;
+            isTree[edgesMap.find(makePair(w, s))->second] = true;
             nextEdgeFound = true;
             return true;
         }
 
         if ((tmpDistances[w] != none) && (d == tmpDistances[w] + level)) {
-            isTree[edgesMap.find(makePair(s, w))->second] = true;
+            isTree[edgesMap.find(makePair(w, s))->second] = true;
             nextEdgeFound = true;
             q.push(w);
             return true;
@@ -361,6 +303,21 @@ namespace NetworKit {
             componentIds.pop();
         }
         return result;
+    }
+
+
+    std::pair<node, node> DynWeaklyConnectedComponents::makePair(node u, node v) {
+        node from, to;
+        if (u > v) {
+            from = v;
+            to = u;
+        }
+        else {
+            from = u;
+            to = v;
+        }
+
+        return std::make_pair(from, to);
     }
 
 
@@ -386,21 +343,5 @@ namespace NetworKit {
         });
 
         return result;
-    }
-
-
-    std::pair<node, node> DynWeaklyConnectedComponents::makePair(node u, node v) {
-        node from, to;
-
-        if (u > v) {
-            from = v;
-            to = u;
-        }
-        else {
-            from = u;
-            to = v;
-        }
-
-        return std::make_pair(from, to);
     }
 }

@@ -79,20 +79,15 @@ namespace NetworKit {
         void updateComponent(index c, node w, std::queue<node>& q, node v);
         void indexEdges();
         void insertEdgeIntoMap(node u, node v, edgeid eid);
-        std::pair<bool, edgeid> updateMapAfterAddition(node u, node v);
+        void updateMapAfterAddition(node u, node v);
         void reverseBFS(node u, node v);
         index getEdgeId(node u, node v);
         index nextAvailableComponentId(bool eraseId = true);
-        bool visitNodeReversed(
-            node u,
-            node s,
-            node w,
-            node v,
-            count d, std::queue<node>& q,
-            bool& nextEdgeFound,
-            count level);
+        bool visitNodeReversed(node u, node s, node w, node v, count d, std::queue<node>& q, bool& nextEdgeFound, count level);
         std::pair<node, node> makePair(node u, node v);
-        void init();
+
+        // Number of removed edges
+        count removedEdges = 0;
 
         // Pointer to the graph
         const Graph& G;
@@ -141,4 +136,4 @@ namespace NetworKit {
 }
 
 
-#endif /* DYNWEAKLYCONNECTEDCOMPONENTS_H_ */
+#endif /* DynWeaklyConnectedComponents_H_ */

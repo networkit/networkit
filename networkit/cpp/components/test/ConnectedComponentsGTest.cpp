@@ -242,7 +242,6 @@ TEST_F(ConnectedComponentsGTest, testWeaklyConnectedComponentsTiny) {
 
 
     TEST_F(ConnectedComponentsGTest, testDynWeaklyConnectedComponentsTiny) {
-
         // construct graph
         Graph g(0, false, true);
         for (count i = 0; i < 20; i++) {
@@ -268,19 +267,19 @@ TEST_F(ConnectedComponentsGTest, testWeaklyConnectedComponentsTiny) {
         g.addEdge(13,14,0);
 
         // initialize DynWeaklyConnectedComponents
-        DynWeaklyConnectedComponents dccs(g);
-        dccs.run();
+        DynWeaklyConnectedComponents dw(g);
+        dw.run();
 
         // check result
-        EXPECT_EQ(5, dccs.numberOfComponents());
-        EXPECT_TRUE(dccs.componentOfNode(0) == dccs.componentOfNode(19));
-        EXPECT_TRUE(dccs.componentOfNode(3) == dccs.componentOfNode(7));
+        EXPECT_EQ(5, dw.numberOfComponents());
+        EXPECT_TRUE(dw.componentOfNode(0) == dw.componentOfNode(19));
+        EXPECT_TRUE(dw.componentOfNode(3) == dw.componentOfNode(7));
 
         g.addEdge(13, 15, 0);
-        dccs.update(GraphEvent(GraphEvent::EDGE_ADDITION, 13, 15, 0));
-        EXPECT_EQ(4, dccs.numberOfComponents());
-        EXPECT_TRUE(dccs.componentOfNode(14) == dccs.componentOfNode(15));
-        EXPECT_TRUE(dccs.componentOfNode(15) != dccs.componentOfNode(0));
+        dw.update(GraphEvent(GraphEvent::EDGE_ADDITION, 13, 15, 0));
+        EXPECT_EQ(4, dw.numberOfComponents());
+        EXPECT_TRUE(dw.componentOfNode(14) == dw.componentOfNode(15));
+        EXPECT_TRUE(dw.componentOfNode(15) != dw.componentOfNode(0));
 
         // Create batch and update
         std::vector<GraphEvent> batch {
@@ -299,104 +298,90 @@ TEST_F(ConnectedComponentsGTest, testWeaklyConnectedComponentsTiny) {
             }
         }
 
-        dccs.updateBatch(batch);
-        EXPECT_EQ(4, dccs.numberOfComponents());
-        EXPECT_TRUE(dccs.componentOfNode(0) != dccs.componentOfNode(14));
-        EXPECT_TRUE(dccs.componentOfNode(9) == dccs.componentOfNode(11));
-        EXPECT_TRUE(dccs.componentOfNode(3) != dccs.componentOfNode(9));
+        dw.updateBatch(batch);
+        EXPECT_EQ(4, dw.numberOfComponents());
+        EXPECT_TRUE(dw.componentOfNode(0) != dw.componentOfNode(14));
+        EXPECT_TRUE(dw.componentOfNode(9) == dw.componentOfNode(11));
+        EXPECT_TRUE(dw.componentOfNode(3) != dw.componentOfNode(9));
     }
 
 
     TEST_F(ConnectedComponentsGTest, testDynWeaklyConnectedComponents) {
-        // construct graph
-        //EdgeListReader directReader('\t', 0, "#", false, true);
-        //Graph G = directReader.read("input/MIT8.edgelist");
-        ErdosRenyiGenerator generator(200, 0.001, true);
-        Graph G = generator.generate();
-        DynWeaklyConnectedComponents dccs(G);
-        dccs.run();
-        WeaklyConnectedComponents w(G);
-        w.run();
-        DEBUG("Number of components: ", dccs.numberOfComponents());
-        // Testing static run.
-        EXPECT_EQ(w.numberOfComponents(), dccs.numberOfComponents());
-        INFO(w.numberOfComponents(), " ", dccs.numberOfComponents());
+        // Read graph
+        EdgeListReader directReader('\t', 0, "#", false, true);
+        Graph G = directReader.read("input/MIT8.edgelist");
+        EdgeListReader undirectedReader('\t', 0, "#", false, false);
+        Graph Gu = undirectedReader.read("input/MIT8.edgelist");
+        DynWeaklyConnectedComponents dw(G);
+        dw.run();
 
-        int numberOfTests = 0;
+        ConnectedComponents cc(Gu);
+        cc.run();
+        DEBUG("Number of components: ", dw.numberOfComponents());
+        // Testing static run.
+        EXPECT_EQ(cc.numberOfComponents(), dw.numberOfComponents());
+
+        int numberOfTests = 10;
         // Probability to perform an edge insertion or removal.
         float p = 0.5;
-        // for (int i = 0; i < numberOfTests; ++i) {
-        //     node u = G.randomNode();
-        //     node v = G.randomNode();
-        //     // Perform edge insertion
-        //     if (((double) rand() / (RAND_MAX)) > p) {
-        //         while (G.hasEdge(u, v)) {
-        //             u = G.randomNode();
-        //             v = G.randomNode();
-        //         }
-        //         G.addEdge(u, v);
-        //         dccs.update(GraphEvent(GraphEvent::EDGE_ADDITION, u, v, 0));
-        //     }
-        //     else {
-        //         while (!G.hasEdge(u, v)) {
-        //             std::pair<node, node> edge = G.randomEdge();
-        //             u = edge.first;
-        //             v = edge.second;
-        //         }
-        //         G.removeEdge(u, v);
-        //         dccs.update(GraphEvent(GraphEvent::EDGE_REMOVAL, u, v, 0));
-        //     }
-        // }
+        for (int i = 0; i < numberOfTests; ++i) {
+            node u = 0;
+            node v = 1;
+            // Perform edge insertion
+            if (((double) rand() / (RAND_MAX)) > p) {
+                while (G.hasEdge(u, v)) {
+                    u = G.randomNode();
+                    v = G.randomNode();
+                }
+                G.addEdge(u, v);
+                Gu.addEdge(u, v);
+                dw.update(GraphEvent(GraphEvent::EDGE_ADDITION, u, v, 0));
+            }
+            else {
+                while (!G.hasEdge(u, v)) {
+                    std::pair<node, node> edge = G.randomEdge();
+                    u = edge.first;
+                    v = edge.second;
+                }
+                G.removeEdge(u, v);
+                Gu.removeEdge(u, v);
+                dw.update(GraphEvent(GraphEvent::EDGE_REMOVAL, u, v, 0));
+            }
+        }
 
-        // w.run();
-        // EXPECT_EQ(w.numberOfComponents(), dccs.numberOfComponents());
+        cc.run();
+        EXPECT_EQ(cc.numberOfComponents(), dw.numberOfComponents());
 
-    //    Testing batch update.
-        std::vector<GraphEvent> batch;
-        // std::vector<GraphEvent> batch = {GraphEvent(GraphEvent::EDGE_ADDITION, 1, 20, 0),
-        // GraphEvent(GraphEvent::EDGE_ADDITION, 1, 21, 0)};
-        // if (G.hasEdge(1,20)) {
-        //     INFO("GRAPH HAS THE EDGE");
-        // }
-        // else {
-        //     INFO("DOES NOT HAVE THE EDGE");
-        // }
-        for (int i = 0; i < 1000; ++i) {
-
+        // Testing batch update.
+        std::vector<GraphEvent> batch(numberOfTests);
+        for (int i = 0; i < numberOfTests; ++i) {
             node u = G.randomNode();
             node v = G.randomNode();
-            if (!G.hasEdge(u, v)) {
-
-                batch.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, u, v, 0));
+            if (((double) rand() / (RAND_MAX)) > p) {
+                while (G.hasEdge(u, v)) {
+                    u = G.randomNode();
+                    v = G.randomNode();
+                }
+                batch[i] = GraphEvent(GraphEvent::EDGE_ADDITION, u, v, 0);
                 G.addEdge(u, v);
+                Gu.addEdge(u, v);
             }
-            // if (((double) rand() / (RAND_MAX)) > -1) {
-            //     while (G.hasEdge(u, v)) {
-            //         u = G.randomNode();
-            //         v = G.randomNode();
-            //     }
-            //     batch[i] = GraphEvent(GraphEvent::EDGE_ADDITION, u, v, 0);
-            //     G.addEdge(u, v);
-            // }
-            // else {
-            //     while (!G.hasEdge(u, v)) {
-            //         std::pair<node, node> edge = G.randomEdge();
-            //         u = edge.first;
-            //         v = edge.second;
-            //     }
-            //     batch[i] = GraphEvent(GraphEvent::EDGE_REMOVAL, u, v, 0);
-            //     G.removeEdge(u, v);
-            // }
+            else {
+                while (!G.hasEdge(u, v)) {
+                    std::pair<node, node> edge = G.randomEdge();
+                    u = edge.first;
+                    v = edge.second;
+                }
+                batch[i] = GraphEvent(GraphEvent::EDGE_REMOVAL, u, v, 0);
+                G.removeEdge(u, v);
+                Gu.removeEdge(u, v);
+            }
         }
-        //
-        dccs.updateBatch(batch);
-        INFO("FINISH");
-        // w.run();
-        // INFO("GT FINISH");
-        // EXPECT_EQ(w.numberOfComponents(), dccs.numberOfComponents());
-        // INFO(w.numberOfComponents(), " ", dccs.numberOfComponents());
-    }
 
+        dw.updateBatch(batch);
+        cc.run();
+        EXPECT_EQ(cc.numberOfComponents(), dw.numberOfComponents());
+    }
 
 } /* namespace NetworKit */
 
