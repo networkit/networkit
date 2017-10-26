@@ -62,7 +62,7 @@ void Betweenness::run() {
 		sssp->run();
 		if (!handler.isRunning()) return;
 		// compute dependencies for nodes in order of decreasing distance from s
-		std::vector<node> stack = sssp->getStack();
+		std::vector<node> stack = sssp->getNodesSortedByDistance();
 		while (!stack.empty()) {
 			node t = stack.back();
 			stack.pop_back();

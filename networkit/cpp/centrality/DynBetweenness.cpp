@@ -61,7 +61,7 @@ void DynBetweenness::run() {
 			});
 
 			// compute dependencies for nodes in order of decreasing distance from s
-			std::vector<node> stack = sssp->getStack();
+			std::vector<node> stack = sssp->getNodesSortedByDistance();
 			// set maxDistance to the distance of the furthest vertex
 			if(distances[s][stack.back()] > diameter){
 				diameter = distances[s][stack.back()];
