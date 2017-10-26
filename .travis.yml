@@ -103,9 +103,9 @@ script:
  - echo $OPENMP_LIB
  - echo $OPENMP_INCLUDE
  - $CXX --version
- - scons --optimize=Opt --target=Tests --std=c++11 -j2
+ - scons --optimize=Dbg --target=Tests --std=c++11 -j2
  - export OMP_NUM_THREADS=2
- - ./NetworKit-Tests-Opt -t
+ - ./NetworKit-Tests-Dbg -t
 
 notifications:
   email: false
