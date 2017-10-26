@@ -765,6 +765,9 @@ std::pair<node, node> Graph::randomEdge(bool uniformDistribution) const {
 }
 
 std::vector< std::pair<node, node> > Graph::randomEdges(count nr) const {
+	if (numberOfEdges() == 0) {
+		throw std::runtime_error("Graph has no edges to sample from. Add edges to the graph first.");
+	}
 	std::vector< std::pair<node, node> > edges;
 
 	std::default_random_engine gen{std::random_device{}()};
