@@ -6074,10 +6074,10 @@ cdef extern from "cpp/centrality/Closeness.h":
 
 cdef class Closeness(Centrality):
 	"""
-		Closeness(G, normalized=False, checkConnectedness=True)
+		Closeness(G, normalized=True, checkConnectedness=True)
 
-		Constructs the Closeness class for the given Graph `G`. If the Closeness scores should be normalized,
-  		then set `normalized` to True. The run() method takes O(nm) time, where n is the number
+		Constructs the Closeness class for the given Graph `G`. If the Closeness scores should not be normalized,
+  		set `normalized` to False. The run() method takes O(nm) time, where n is the number
 	 	 of nodes and m is the number of edges of the graph. NOTICE: the graph has to be connected.
 
 	 	Parameters
@@ -6085,12 +6085,12 @@ cdef class Closeness(Centrality):
 	 	G : Graph
 	 		The graph.
 	 	normalized : bool, optional
-	 		Set this parameter to True if scores should be normalized in the interval [0,1]. Normalization only for unweighted networks.
+	 		Set this parameter to False if scores should not be normalized into an interval of [0,1]. Normalization only for unweighted graphs.
 	 	checkConnectedness : bool, optional
 			turn this off if you know the graph is connected
 	"""
 
-	def __cinit__(self, Graph G, normalized=False, checkConnectedness=True):
+	def __cinit__(self, Graph G, normalized=True, checkConnectedness=True):
 		self._G = G
 		self._this = new _Closeness(G._this, normalized, checkConnectedness)
 
