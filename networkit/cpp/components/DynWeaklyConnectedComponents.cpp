@@ -17,9 +17,14 @@ namespace NetworKit {
 
 
     void DynWeaklyConnectedComponents::init() {
+        edgesMap.clear();
         indexEdges();
         components.assign(G.upperNodeIdBound(), none);
         isTree.assign(edgesMap.size(), false);
+        compSize.clear();
+        std::queue<index> emptyQueue;
+        swap(emptyQueue, componentIds);
+        hasRun = false;
     }
 
 
@@ -103,10 +108,6 @@ namespace NetworKit {
         }
 
         return it->second;
-        // else {
-        //     // Adding edge that was deleted before, updating its value
-        //     it->second = newId;
-        // }
     }
 
 
@@ -126,9 +127,7 @@ namespace NetworKit {
 
 
     void DynWeaklyConnectedComponents::updateBatch(const std::vector<GraphEvent>& batch) {
-        for (auto event : batch) {
-            update(event);
-        }
+        run();
     }
 
 
@@ -179,14 +178,20 @@ namespace NetworKit {
 
         // If (u, v) is not part of the spanning tree or if edge (v, u) already
         // exists we don't have to do nothing.
-        if (!isTree[eid] || G.hasEdge(v, u)) {
+        if (!isTree[eid]) {
             return;
         }
 
+        // Edge "eid" is removed from the graph. For performance reasons we
+        // keep it in memory, for coherence we claim that it is no more part of
+        // the spanning tree.
+        isTree[eid] = false;
+
         index nextId = nextAvailableComponentId(false);
+
         std::vector<node> newCmp(components);
         newCmp[u] = nextId;
-        count newCmpSize = 0;
+        count newCmpSize = 1;
 
         tmpDistances.assign(G.upperNodeIdBound(), none);
         std::queue<node> q;
@@ -195,8 +200,10 @@ namespace NetworKit {
 
         bool connected = false;
 
+
         // Berform BFS from v to check if v reaches u
         do {
+
             node s = q.front();
             q.pop();
 
@@ -243,20 +250,16 @@ namespace NetworKit {
                     }
                 });
             }
+
             if (connected) {
                 break;
             }
 
         } while (!q.empty());
 
-        // Edge "eid" is removed from the graph. For performance reasons we
-        // keep it in memory, for coherence we claim that it is no more part of
-        // the spanning tree.
-        isTree[eid] = false;
-
         if (!connected) {
             // TODO: a more elegant way to assign new ids.
-            nextId = nextAvailableComponentId();
+            nextId = nextAvailableComponentId(true);
             compSize.find(components[v])->second -= newCmpSize;
             compSize.insert(std::make_pair(nextId, newCmpSize));
             components = newCmp;
@@ -299,12 +302,14 @@ namespace NetworKit {
 
     bool DynWeaklyConnectedComponents::visitNodeReversed(node u, node s, node w, node v, count d, std::queue<node>& q, bool& nextEdgeFound, count level) {
 
+        // Reverse BFS finished
         if (w == u) {
             isTree[edgesMap.find(makePair(w, s))->second] = true;
             nextEdgeFound = true;
             return true;
         }
 
+        // Found next node for reverse BFS
         if ((tmpDistances[w] != none) && (d == tmpDistances[w] + level)) {
             isTree[edgesMap.find(makePair(w, s))->second] = true;
             nextEdgeFound = true;
@@ -312,6 +317,7 @@ namespace NetworKit {
             return true;
         }
 
+        // Discarding node from reverse path
         return false;
     }
 
@@ -352,8 +358,8 @@ namespace NetworKit {
         std::map<index, count> compIndex;
 
         int i = 0;
-        for (std::map<index, count>::iterator it=compSize.begin(); it!=compSize.end(); ++it) {
-            std::map<index, count>::iterator indexIterator = compIndex.find(it->first);
+        for (auto it=compSize.begin(); it!=compSize.end(); ++it) {
+            auto indexIterator = compIndex.find(it->first);
             if (indexIterator == compIndex.end()) {
                 compIndex.insert(std::make_pair(it->first, i));
                 ++i;

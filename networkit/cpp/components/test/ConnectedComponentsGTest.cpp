@@ -310,16 +310,14 @@ TEST_F(ConnectedComponentsGTest, testWeaklyConnectedComponentsTiny) {
         // Read graph
         EdgeListReader directReader('\t', 0, "#", false, true);
         Graph G = directReader.read("input/MIT8.edgelist");
-        EdgeListReader undirectedReader('\t', 0, "#", false, false);
-        Graph Gu = undirectedReader.read("input/MIT8.edgelist");
         DynWeaklyConnectedComponents dw(G);
         dw.run();
+        WeaklyConnectedComponents wc(G);
+        wc.run();
 
-        ConnectedComponents cc(Gu);
-        cc.run();
         DEBUG("Number of components: ", dw.numberOfComponents());
         // Testing static run.
-        EXPECT_EQ(cc.numberOfComponents(), dw.numberOfComponents());
+        EXPECT_EQ(wc.numberOfComponents(), dw.numberOfComponents());
 
         int numberOfTests = 10000;
         // Probability to perform an edge insertion or removal.
@@ -328,29 +326,26 @@ TEST_F(ConnectedComponentsGTest, testWeaklyConnectedComponentsTiny) {
             node u = 0;
             node v = 1;
             // Perform edge insertion
-            if (((double) rand() / (RAND_MAX)) > p) {
+            if (((double) rand() / (RAND_MAX)) > 4) {
                 while (G.hasEdge(u, v)) {
                     u = G.randomNode();
                     v = G.randomNode();
                 }
                 G.addEdge(u, v);
-                Gu.addEdge(u, v);
                 dw.update(GraphEvent(GraphEvent::EDGE_ADDITION, u, v, 0));
             }
             else {
-                while (!G.hasEdge(u, v)) {
+                while (!G.hasEdge(u, v) || u == v) {
                     std::pair<node, node> edge = G.randomEdge();
                     u = edge.first;
                     v = edge.second;
                 }
                 G.removeEdge(u, v);
-                Gu.removeEdge(u, v);
                 dw.update(GraphEvent(GraphEvent::EDGE_REMOVAL, u, v, 0));
             }
         }
-
-        cc.run();
-        EXPECT_EQ(cc.numberOfComponents(), dw.numberOfComponents());
+        wc.run();
+        EXPECT_EQ(wc.numberOfComponents(), dw.numberOfComponents());
 
         // Testing batch update.
         std::vector<GraphEvent> batch(numberOfTests);
@@ -358,29 +353,27 @@ TEST_F(ConnectedComponentsGTest, testWeaklyConnectedComponentsTiny) {
             node u = G.randomNode();
             node v = G.randomNode();
             if (((double) rand() / (RAND_MAX)) > p) {
-                while (G.hasEdge(u, v)) {
+                while (G.hasEdge(u, v) || u == v) {
                     u = G.randomNode();
                     v = G.randomNode();
                 }
                 batch[i] = GraphEvent(GraphEvent::EDGE_ADDITION, u, v, 0);
                 G.addEdge(u, v);
-                Gu.addEdge(u, v);
             }
             else {
-                while (!G.hasEdge(u, v)) {
+                while (!G.hasEdge(u, v) || u == v) {
                     std::pair<node, node> edge = G.randomEdge();
                     u = edge.first;
                     v = edge.second;
                 }
-                batch[i] = GraphEvent(GraphEvent::EDGE_REMOVAL, u, v, 0);
                 G.removeEdge(u, v);
-                Gu.removeEdge(u, v);
+                batch[i] = GraphEvent(GraphEvent::EDGE_REMOVAL, u, v, 0);
             }
         }
 
-        // dw.updateBatch(batch);
-        // cc.run();
-        // EXPECT_EQ(cc.numberOfComponents(), dw.numberOfComponents());
+        dw.updateBatch(batch);
+        wc.run();
+        EXPECT_EQ(wc.numberOfComponents(), dw.numberOfComponents());
     }
 
 } /* namespace NetworKit */
