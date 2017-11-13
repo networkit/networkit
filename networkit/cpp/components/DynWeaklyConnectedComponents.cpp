@@ -16,13 +16,17 @@ namespace NetworKit {
     }
 
 
-    void DynWeaklyConnectedComponents::run() {
+    void DynWeaklyConnectedComponents::init() {
         indexEdges();
         removedEdges = 0;
-
-        // Initialization vectors.
         components.assign(G.upperNodeIdBound(), none);
         isTree.assign(edgesMap.size(), false);
+    }
+
+
+    void DynWeaklyConnectedComponents::run() {
+
+        init();
 
         // Queue for BFS.
         std::queue<node> q;

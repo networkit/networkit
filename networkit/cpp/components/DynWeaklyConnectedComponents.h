@@ -74,6 +74,7 @@ namespace NetworKit {
 
 
     private:
+        void init();
         void addEdge(node u, node v);
         void removeEdge(node u, node v);
         void updateComponent(index c, node w, std::queue<node>& q, node v);
