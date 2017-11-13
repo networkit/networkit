@@ -18,7 +18,6 @@ namespace NetworKit {
 
     void DynWeaklyConnectedComponents::init() {
         indexEdges();
-        removedEdges = 0;
         components.assign(G.upperNodeIdBound(), none);
         isTree.assign(edgesMap.size(), false);
     }
@@ -91,19 +90,23 @@ namespace NetworKit {
     }
 
 
-    void DynWeaklyConnectedComponents::updateMapAfterAddition(node u, node v) {
+    edgeid DynWeaklyConnectedComponents::updateMapAfterAddition(node u, node v) {
 
         std::map<std::pair<node, node>, edgeid>::iterator it = edgesMap.find(makePair(u, v));
-        edgeid newId = edgesMap.size() + removedEdges;
+
 
         if (it == edgesMap.end()) {
             // Adding edge never deleted before
+            edgeid newId = edgesMap.size();
             insertEdgeIntoMap(u, v, newId);
+            return newId;
         }
-        else {
-            // Adding edge that was deleted before, updating its value
-            it->second = newId;
-        }
+
+        return it->second;
+        // else {
+        //     // Adding edge that was deleted before, updating its value
+        //     it->second = newId;
+        // }
     }
 
 
@@ -131,19 +134,21 @@ namespace NetworKit {
 
     void DynWeaklyConnectedComponents::addEdge(node u, node v) {
 
-        updateMapAfterAddition(u, v);
+        edgeid eid = updateMapAfterAddition(u, v);
 
         // If u and v are already in the same component, we
-        // don't have to do anything
+        // don't have to do anything. Same thing if edge (v, u) already exists.
         index maxComp = std::max(components[u], components[v]);
         index minComp = std::min(components[u], components[v]);
 
-        if (maxComp == minComp) {
+        if (maxComp == minComp || G.hasEdge(v, u)) {
+            updateTreeAfterAddition(eid, false);
             return;
         }
 
         // in the other case, we can merge the two components in an undirected graph
         G.parallelForNodes([&](node w) {
+            // We update the component with higher index with the lower index
             if (components[w] == maxComp) {
                 components[w] = minComp;
             }
@@ -151,9 +156,20 @@ namespace NetworKit {
 
         compSize.find(minComp)->second += compSize.find(maxComp)->second;
         compSize.erase(maxComp);
-
         componentIds.push(maxComp);
-        isTree.push_back(true);
+
+        updateTreeAfterAddition(eid, true);
+    }
+
+
+    void DynWeaklyConnectedComponents::updateTreeAfterAddition(edgeid eid, bool partOfTree) {
+        if (isTree.size() > eid) {
+            isTree[eid] = partOfTree;
+        }
+        else if (isTree.size() == eid) {
+            isTree.push_back(partOfTree);
+        }
+        else throw std::runtime_error("Edge indexing error");
     }
 
 
@@ -161,18 +177,18 @@ namespace NetworKit {
 
         edgeid eid = edgesMap.find(makePair(u, v))->second;
 
-        if (!isTree[eid]) {
+        // If (u, v) is not part of the spanning tree or if edge (v, u) already
+        // exists we don't have to do nothing.
+        if (!isTree[eid] || G.hasEdge(v, u)) {
             return;
         }
 
-        tmpDistances.assign(G.upperNodeIdBound(), none);
-
         index nextId = nextAvailableComponentId(false);
-
         std::vector<node> newCmp(components);
         newCmp[u] = nextId;
         count newCmpSize = 0;
 
+        tmpDistances.assign(G.upperNodeIdBound(), none);
         std::queue<node> q;
         q.push(u);
         tmpDistances[u] = 0;
@@ -233,11 +249,13 @@ namespace NetworKit {
 
         } while (!q.empty());
 
+        // Edge "eid" is removed from the graph. For performance reasons we
+        // keep it in memory, for coherence we claim that it is no more part of
+        // the spanning tree.
         isTree[eid] = false;
-        ++removedEdges;
 
         if (!connected) {
-            // TODO: a more elegant way to assign new ids. call the function again to pop new value
+            // TODO: a more elegant way to assign new ids.
             nextId = nextAvailableComponentId();
             compSize.find(components[v])->second -= newCmpSize;
             compSize.insert(std::make_pair(nextId, newCmpSize));
