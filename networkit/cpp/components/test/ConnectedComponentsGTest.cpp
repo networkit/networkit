@@ -321,7 +321,7 @@ TEST_F(ConnectedComponentsGTest, testWeaklyConnectedComponentsTiny) {
         // Testing static run.
         EXPECT_EQ(cc.numberOfComponents(), dw.numberOfComponents());
 
-        int numberOfTests = 100;
+        int numberOfTests = 10000;
         // Probability to perform an edge insertion or removal.
         float p = 0.5;
         for (int i = 0; i < numberOfTests; ++i) {
@@ -378,9 +378,9 @@ TEST_F(ConnectedComponentsGTest, testWeaklyConnectedComponentsTiny) {
             }
         }
 
-        dw.updateBatch(batch);
-        cc.run();
-        EXPECT_EQ(cc.numberOfComponents(), dw.numberOfComponents());
+        // dw.updateBatch(batch);
+        // cc.run();
+        // EXPECT_EQ(cc.numberOfComponents(), dw.numberOfComponents());
     }
 
 } /* namespace NetworKit */
