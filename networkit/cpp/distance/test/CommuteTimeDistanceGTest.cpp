@@ -48,12 +48,13 @@ TEST_F(CommuteTimeDistanceGTest, testOnToyGraph) {
 
 	CommuteTimeDistance ctd(G);
 	ctd.run();
-	EXPECT_NEAR(sqrt(1.0 * G.numberOfEdges()), ctd.distance(0, 2), 1e-4);
-	EXPECT_NEAR(sqrt(1.0 * G.numberOfEdges()), ctd.distance(1, 2), 1e-4);
-	EXPECT_NEAR(sqrt(0.75 * G.numberOfEdges()), ctd.distance(2, 3), 1e-4);
-	EXPECT_NEAR(sqrt(0.75 * G.numberOfEdges()), ctd.distance(2, 4), 1e-4);
-	EXPECT_NEAR(sqrt(0.75 * G.numberOfEdges()), ctd.distance(3, 5), 1e-4);
-	EXPECT_NEAR(sqrt(0.75 * G.numberOfEdges()), ctd.distance(4, 5), 1e-4);
+	double volG = 2.0 * G.numberOfEdges();
+	EXPECT_NEAR(sqrt(1.0 * volG), ctd.distance(0, 2), 1e-4);
+	EXPECT_NEAR(sqrt(1.0 * volG), ctd.distance(1, 2), 1e-4);
+	EXPECT_NEAR(sqrt(0.75 * volG), ctd.distance(2, 3), 1e-4);
+	EXPECT_NEAR(sqrt(0.75 * volG), ctd.distance(2, 4), 1e-4);
+	EXPECT_NEAR(sqrt(0.75 * volG), ctd.distance(3, 5), 1e-4);
+	EXPECT_NEAR(sqrt(0.75 * volG), ctd.distance(4, 5), 1e-4);
 }
 
 TEST_F(CommuteTimeDistanceGTest, testECTDOnSmallGraphs) {
