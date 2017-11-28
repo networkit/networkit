@@ -80,7 +80,7 @@ void CommuteTimeDistance::runApproximation() {
 	k = ceil(log2(n)) / epsilon2;
 
 	// entries of random projection matrix
-	double randTab[3] = {1/sqrt(k), -1/sqrt(k)}; // TODO: why length 3, but 2 entries?
+	double randTab[2] = {1/sqrt(k), -1/sqrt(k)};
 
 	solutions.clear();
 	solutions.resize(k, Vector(n));
@@ -120,7 +120,7 @@ void CommuteTimeDistance::runParallelApproximation() {
 	k = ceil(log2(n)) / epsilon2;
 
 	// entries of random projection matrix
-	double randTab[3] = {1/sqrt(k), -1/sqrt(k)}; // TODO: why length 3, but 2 entries?
+	double randTab[3] = {1/sqrt(k), -1/sqrt(k)};
 
 	solutions.clear();
 	solutions.resize(k, Vector(n));
@@ -161,7 +161,7 @@ double CommuteTimeDistance::distance(node u, node v) {
 		volG = 2.0 * G.numberOfEdges();
 	}
 	else {
-		volG = G.totalEdgeWeight();
+		volG = 2.0 * G.totalEdgeWeight();
 	}
 
 	if (exactly) {
