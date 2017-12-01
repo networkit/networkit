@@ -644,7 +644,8 @@ cdef class Graph:
 
 	def addEdge(self, u, v, w=1.0):
 		""" Insert an undirected edge between the nodes `u` and `v`. If the graph is weighted you can optionally
-	 	set a weight for this edge. The default weight is 1.0.
+		set a weight for this edge. The default weight is 1.0.
+		Caution: It is not checked whether this edge already exists, thus it is possible to create multi-edges.
 
 	 	Parameters
 	 	----------
