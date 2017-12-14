@@ -1267,7 +1267,7 @@ cdef class SSSP(Algorithm):
 
 	def getStack(self, moveOut=True):
 		""" DEPRECATED: Use getNodesSortedByDistance instead.
-		
+
 		Returns a vector of nodes ordered in increasing distance from the source.
 
 		For this functionality to be available, storeNodesSortedByDistance has to be set to true in the constructor.
@@ -6713,6 +6713,91 @@ cdef class DynBetweenness:
 			A vector of pairs.
 		"""
 		return self._this.ranking()
+
+
+cdef extern from "cpp/centrality/DynBetweennessOneNode.h":
+	cdef cppclass _DynBetweennessOneNode "NetworKit::DynBetweennessOneNode":
+		_DynBetweennessOneNode(_Graph, node) except +
+		void run() nogil except +
+		void update(_GraphEvent) except +
+		void updateBatch(vector[_GraphEvent]) except +
+		double getDistance(node, node) except +
+		double getSigma(node, node) except +
+		double getSigmax(node, node) except +
+		double getbcx() except +
+
+cdef class DynBetweennessOneNode:
+	""" Dynamic exact algorithm for updating the betweenness of a specific node
+
+	DynBetweennessOneNode(G, x)
+
+	The algorithm aupdates the betweenness of a node after an edge insertions
+	(faster than updating it for all nodes), based on the algorithm
+	proposed by Bergamini et al. "Improving the betweenness centrality of a node by adding links"
+
+	Parameters
+	----------
+	G : Graph
+		the graph
+	x : node
+		the node for which you want to update betweenness
+	"""
+	cdef _DynBetweennessOneNode* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, node):
+		self._G = G
+		self._this = new _DynBetweennessOneNode(G._this, node)
+
+	# this is necessary so that the C++ object gets properly garbage collected
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		with nogil:
+			self._this.run()
+		return self
+
+	def update(self, ev):
+		""" Updates the betweenness centralities after the batch `batch` of edge insertions.
+
+		Parameters
+		----------
+		ev : edge insertion.
+		"""
+		self._this.update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+
+	def updateBatch(self, batch):
+		""" Updates the betweenness centrality of node x after the batch `batch` of edge insertions.
+
+		Parameters
+		----------
+		batch : list of GraphEvent.
+		"""
+		cdef vector[_GraphEvent] _batch
+		for ev in batch:
+			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+		self._this.updateBatch(_batch)
+
+	def getDistance(self, u, v):
+		""" Returns the distance between node u and node v.
+		"""
+		return self._this.getDistance(u, v)
+
+	def getSigma(self, u, v):
+		""" Returns the number of shortest paths between node u and node v.
+		"""
+		return self._this.getSigma(u, v)
+
+	def getSigmax(self, u, v):
+		""" Returns the number of shortest paths between node u and node v that go through x.
+		"""
+		return self._this.getSigmax(u, v)
+
+	def getbcx(self):
+		""" Returns the betweenness centrality score of node x
+		"""
+		return self._this.getbcx()
 
 cdef extern from "cpp/centrality/PermanenceCentrality.h":
 	cdef cppclass _PermanenceCentrality "NetworKit::PermanenceCentrality":
