@@ -56,7 +56,7 @@ void EstimateBetweenness::run() {
 
 
 		// create stack of nodes in non-decreasing order of distance
-		std::vector<node> stack = sssp->getStack(true);
+		std::vector<node> stack = sssp->getNodesSortedByDistance(true);
 
 		// compute dependencies and add the contributions to the centrality score
 		std::vector<double> dependency(G.upperNodeIdBound(), 0.0);

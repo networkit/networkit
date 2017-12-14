@@ -44,7 +44,7 @@ TEST_F(SSSPGTest, testDijkstra) {
 
 	Dijkstra sssp(G, 5, true, true);
 	sssp.run();
-	std::vector<node> stack = sssp.getStack();
+	std::vector<node> stack = sssp.getNodesSortedByDistance();
 #if LOG_LEVEL >= LOG_LEVEL_DEBUG
 	while (!stack.empty()) {
 		DEBUG(stack.back());
