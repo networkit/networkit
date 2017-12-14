@@ -7,4 +7,3 @@ tabulate
 seaborn
 sklearn
 ipython
-configparser
