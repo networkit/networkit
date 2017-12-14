@@ -67,7 +67,7 @@ void Closeness::run() {
 }
 
 double Closeness::maximum() {
-	return (double) 1 / (G.numberOfNodes() - 1);
+	return normalized ? 1.0f : (1.0f / (G.numberOfNodes() - 1));
 }
 
 } /* namespace NetworKit */
