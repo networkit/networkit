@@ -9,7 +9,8 @@
 
 namespace NetworKit {
 
-    WeaklyConnectedComponents::WeaklyConnectedComponents(const Graph& G) : G(G), hasRun(false) {
+    WeaklyConnectedComponents::WeaklyConnectedComponents(const Graph& G) :
+    G(G), hasRun(false) {
         if (!G.isDirected()) {
             throw std::runtime_error("Weakly Connected Components can be computeed for directed graphs. Use ConnectedComponents for undirected graphs.");
         }
