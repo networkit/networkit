@@ -92,7 +92,6 @@ bool pairCompare(const std::pair<node, count>& firstElem, const std::pair<node, 
 void GroupCloseness::run() {
 	count n = G.upperNodeIdBound();
 	node top = 0;
-	edgeweight topScore = 0;
 	iters = 0;
 	std::vector<bool> visited(n, false);
 	std::vector<node> pred(n);
@@ -111,7 +110,6 @@ void GroupCloseness::run() {
 	// sort by degree (in descending order) and retrieve max and argmax
 	std::sort(degPerNode.begin(), degPerNode.end(), pairCompare);
 	node nodeMaxDeg = degPerNode[0].first;
-	count maxDeg = degPerNode[0].second;
 
 
 	if (H == 0) {
