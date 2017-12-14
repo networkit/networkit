@@ -30,7 +30,7 @@ matrix:
         - brew tap homebrew/versions
         - brew install gcc48
         - brew install scons
-        - pip install configparser
+        - pip2 install configparser
       install:
         - git clone https://github.com/google/googletest.git ~/gtest/
         - cd ~/gtest/googletest/
@@ -81,7 +81,7 @@ matrix:
         - brew tap homebrew/versions
         - brew install scons
         - brew install llvm37
-        - pip install configparser
+        - pip2 install configparser
       install:
         # install gtest
         - git clone https://github.com/google/googletest.git ~/gtest/
