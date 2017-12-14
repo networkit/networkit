@@ -29,6 +29,7 @@ matrix:
         - brew update
         - brew tap homebrew/versions
         - brew install gcc49
+        - brew link --overwrite gcc@4.9
         - brew install scons
         - pip install configparser
       install:
