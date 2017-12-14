@@ -1,7 +1,14 @@
 import os
 import subprocess
 import fnmatch
-import configparser
+import sys
+
+if sys.version_info >= (3,0):
+    import configparser as cp
+    getConf = lambda conf, sec, name, fb: conf.get(sec, name, fallback=fb)
+else:
+    import ConfigParser as cp
+    getConf = lambda conf, sec, name, fb: conf.get(sec, name, fb)
 
 home_path = os.environ['HOME']
 
@@ -138,16 +145,16 @@ else:
 		print("Use the file build.conf.example to create your build.conf")
 		Exit(1)
 
-	conf = configparser.ConfigParser()
+	conf = cp.ConfigParser()
 	conf.read([confPath])     # read the configuration file
 
 	## compiler
 	if compiler is None:
-		cppComp = conf.get("compiler", "cpp", fallback="gcc")
+		cppComp = getConf(conf, "compiler", "cpp", "gcc")
 	else:
 		cppComp = compiler
 	if defines is None:
-		defines = conf.get("compiler", "defines", fallback=[])		# defines are optional
+		defines = getConf(conf, "compiler", "defines", [])		# defines are optional
 	if defines is not []:
 		defines = defines.split(",")
 
@@ -155,7 +162,7 @@ else:
 	## C++14 support
 	if stdflag is None:
 		try:
-			stdflag = conf.get("compiler", fallback="std14")
+			stdflag = getConf(conf, "compiler", "std14")
 		except:
 			pass
 	if stdflag is None or len(stdflag) == 0:
@@ -165,17 +172,17 @@ else:
 		conf.set("compiler","std14", stdflag)
 
 	## includes
-	stdInclude = conf.get("includes", "std", fallback="")      # includes for the standard library - may not be needed
-	gtestInclude = conf.get("includes", "gtest")
+	stdInclude = getConf(conf, "includes", "std", "")      # includes for the standard library - may not be needed
+	gtestInclude = getConf(conf, "includes", "gtest", None)
 	if conf.has_option("includes", "tbb"):
-		tbbInclude = conf.get("includes", "tbb", fallback="")
+		tbbInclude = getConf(conf, "includes", "tbb", "")
 	else:
 		tbbInclude = ""
 
 	## libraries
-	gtestLib = conf.get("libraries", "gtest")
+	gtestLib = getConf(conf, "libraries", "gtest", None)
 	if conf.has_option("libraries", "tbb"):
-		tbbLib = conf.get("libraries", "tbb", fallback="")
+		tbbLib = getConf(conf, "libraries", "tbb", "")
 	else:
 		tbbLib = ""
 
