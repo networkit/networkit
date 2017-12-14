@@ -1,7 +1,7 @@
 import os
 import subprocess
 import fnmatch
-import ConfigParser
+import configparser
 
 home_path = os.environ['HOME']
 
@@ -46,7 +46,7 @@ def getSourceFiles(target, optimize):
 
 	# walk source directory and find ONLY .cpp files
 	for (dirpath, dirnames, filenames) in os.walk(srcDir):
-	    for name in fnmatch.filter(filenames, "*.cpp"):
+		for name in fnmatch.filter(filenames, "*.cpp"):
 			source.append(os.path.join(dirpath, name))
 
 	# exclude files depending on target, executables will be addes later
@@ -68,7 +68,7 @@ def getSourceFiles(target, optimize):
 	# add executable
 	if target == "Tests":
 		source.append(os.path.join(srcDir, "Unittests-X.cpp"))
-	elif target in ["Core","Lib"]:
+	elif target in ["Core", "Lib", "SharedLib"]:
 		pass # no executable
 	else:
 		print("Unknown target: {0}".format(target))
@@ -98,6 +98,12 @@ AddOption("--std",
 	action="store",
 	help="used to pass std flag from setup.py to SConstruct")
 
+AddOption("--defines",
+	dest="defines",
+	type="string",
+	nargs=1,
+	help="used to pass defines (separated by commas)")
+
 # ENVIRONMENT
 
 ## read environment settings from configuration file
@@ -105,8 +111,12 @@ AddOption("--std",
 env = Environment()
 compiler = GetOption("compiler")
 stdflag = GetOption("std")
+defines = GetOption("defines")
 
 if not os.path.isfile("build.conf"):
+	if defines is not None and defines is not []:
+		defines = defines.split(",")
+		env.Append(CPPDEFINES=defines)
 	if not compiler == None:
 		#print("{0} has been passed via command line".format(compiler))
 		env["CC"] = compiler
@@ -128,15 +138,16 @@ else:
 		print("Use the file build.conf.example to create your build.conf")
 		Exit(1)
 
-	conf = ConfigParser.ConfigParser()
+	conf = configparser.ConfigParser()
 	conf.read([confPath])     # read the configuration file
 
 	## compiler
 	if compiler is None:
-		cppComp = conf.get("compiler", "cpp", "gcc")
+		cppComp = conf.get("compiler", "cpp", fallback="gcc")
 	else:
 		cppComp = compiler
-	defines = conf.get("compiler", "defines", [])		# defines are optional
+	if defines is None:
+		defines = conf.get("compiler", "defines", fallback=[])		# defines are optional
 	if defines is not []:
 		defines = defines.split(",")
 
@@ -144,7 +155,7 @@ else:
 	## C++14 support
 	if stdflag is None:
 		try:
-			stdflag = conf.get("compiler", "std14")
+			stdflag = conf.get("compiler", fallback="std14")
 		except:
 			pass
 	if stdflag is None or len(stdflag) == 0:
@@ -154,17 +165,17 @@ else:
 		conf.set("compiler","std14", stdflag)
 
 	## includes
-	stdInclude = conf.get("includes", "std", "")      # includes for the standard library - may not be needed
+	stdInclude = conf.get("includes", "std", fallback="")      # includes for the standard library - may not be needed
 	gtestInclude = conf.get("includes", "gtest")
 	if conf.has_option("includes", "tbb"):
-		tbbInclude = conf.get("includes", "tbb", "")
+		tbbInclude = conf.get("includes", "tbb", fallback="")
 	else:
 		tbbInclude = ""
 
 	## libraries
 	gtestLib = conf.get("libraries", "gtest")
 	if conf.has_option("libraries", "tbb"):
-		tbbLib = conf.get("libraries", "tbb", "")
+		tbbLib = conf.get("libraries", "tbb", fallback="")
 	else:
 		tbbLib = ""
 
@@ -217,7 +228,7 @@ try:
     optimize = GetOption("optimize")
 except:
     print("ERROR: Missing option --optimize=<LEVEL>")
-    exit()
+    exit(1)
 
 sanitize = None
 try:
@@ -271,7 +282,7 @@ elif (openmp == "no"):
     env.Append(LIBS = ["pthread"])
 else:
     print("ERROR: unrecognized option --openmp=%s" % openmp)
-    exit()
+    exit(1)
 
 # optimize flags
 if optimize == "Dbg":
@@ -285,7 +296,7 @@ elif optimize == "Pro":
 	 env.Append(CPPFLAGS = profileCppFlags)
 else:
     print("ERROR: invalid optimize: %s" % optimize)
-    exit()
+    exit(1)
 
 # sanitize
 if sanitize:
@@ -294,7 +305,7 @@ if sanitize:
 		env.Append(LINKFLAGS = ["-fsanitize=address"])
 	else:
 		print("ERROR: invalid sanitize option")
-		exit()
+		exit(1)
 
 
 # TARGET
@@ -307,37 +318,46 @@ AddOption("--target",
 
 
 target = GetOption("target")
-availableTargets = ["Lib","Core","Tests"]
-if target in availableTargets:
-	source = getSourceFiles(target,optimize)
-	targetName = "NetworKit-{0}-{1}".format(target, optimize)
-	if target in ["Core","Lib"]:
-		# do not append executable
-		# env.Append(CPPDEFINES=["NOLOGGING"])
-		env.Library("NetworKit-Core-{0}".format(optimize), source)
-		if target == "Lib":
-			libFileToLink = "libNetworKit-Core-{0}.a".format(optimize)
-			libFileTarget = "libNetworKit.a"
-			if os.path.lexists(libFileTarget):
-				os.remove(libFileTarget)
-			os.symlink(libFileToLink,libFileTarget)
-			# SCons does not support python 3 yet...
-			#os.symlink("src/cpp","NetworKit",True)
-			# to support case insensitive file systems
-			# place the symlink for the include path in the folder include
-			if os.path.isdir("include"):
-				try:
-					os.remove("include/NetworKit")
-				except:
-					pass
-				os.rmdir("include")
-			os.mkdir("include")
-			os.chdir("include")
-			subprocess.call(["ln","-s","../networkit/cpp","NetworKit"])
-			os.chdir("../")
-
-	else:
-		env.Program(targetName, source)
-else:
+availableTargets = ["SharedLib", "Lib", "Core", "Tests"]
+if target not in availableTargets:
 	print("ERROR: unknown target: {0}".format(target))
 	exit(1)
+
+source = getSourceFiles(target,optimize)
+targetName = "NetworKit-{0}-{1}".format(target, optimize)
+
+if target == "Tests":
+	env.Program(targetName, source)
+elif target == "Core":
+	# do not append executable
+	# env.Append(CPPDEFINES=["NOLOGGING"])
+	env.StaticLibrary("NetworKit-Core-{0}".format(optimize), source)
+if target in ["Lib", "SharedLib"]:
+	if target == "Lib":
+		env.StaticLibrary("NetworKit-Core-{0}".format(optimize), source)
+		staticLibSuffix = env['LIBSUFFIX']
+		fileEnding = staticLibSuffix if staticLibSuffix else ".a"
+	else:
+		env.SharedLibrary("NetworKit-Core-{0}".format(optimize), source)
+		sharedLibSuffix = env['SHLIBSUFFIX']
+		fileEnding = sharedLibSuffix if sharedLibSuffix else ".so"
+
+	libFileToLink = "libNetworKit-Core-{0}{1}".format(optimize, fileEnding)
+	libFileTarget = "libNetworKit{0}".format(fileEnding)
+	if os.path.lexists(libFileTarget):
+		os.remove(libFileTarget)
+	os.symlink(libFileToLink,libFileTarget)
+	# SCons does not support python 3 yet...
+	#os.symlink("src/cpp","NetworKit",True)
+	# to support case insensitive file systems
+	# place the symlink for the include path in the folder include
+	if os.path.isdir("include"):
+		try:
+			os.remove("include/NetworKit")
+		except:
+			pass
+		os.rmdir("include")
+	os.mkdir("include")
+	os.chdir("include")
+	subprocess.call(["ln","-s","../networkit/cpp","NetworKit"])
+	os.chdir("../")

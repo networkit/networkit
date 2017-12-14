@@ -9,7 +9,6 @@
 #define PAGERANKNIBBLE_H_
 
 #include <set>
-#include <unordered_map>
 #include "../graph/Graph.h"
 #include "SelectiveCommunityDetector.h"
 
@@ -41,18 +40,15 @@ public:
 	 */
 	PageRankNibble(const Graph& g, double alpha, double epsilon);
 
-	virtual ~PageRankNibble();
-
 	virtual std::map<node, std::set<node> >  run(const std::set<node>& seeds) override;
 
-
-		/**
+	/**
 	 * @param seed Seed node for which a community is to be found.
 
 	 * @return Set of nodes that makes up the best community found around node @a seed.
 	 *   If target conductance or target size are not fulfilled, an empty set is returned.
 	 */
-	std::set<node> expandSeed(node seed);
+	virtual std::set<node> expandSeed(node seed);
 };
 
 } /* namespace NetworKit */

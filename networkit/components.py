@@ -1,1 +1,1 @@
-from _NetworKit import ConnectedComponents, ParallelConnectedComponents, StronglyConnectedComponents, WeaklyConnectedComponents, DynWeaklyConnectedComponents
+from _NetworKit import ConnectedComponents, ParallelConnectedComponents, StronglyConnectedComponents, DynConnectedComponents, WeaklyConnectedComponents, DynWeaklyConnectedComponents

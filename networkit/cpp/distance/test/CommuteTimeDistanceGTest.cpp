@@ -48,12 +48,47 @@ TEST_F(CommuteTimeDistanceGTest, testOnToyGraph) {
 
 	CommuteTimeDistance ctd(G);
 	ctd.run();
-	EXPECT_NEAR(sqrt(1.0 * G.numberOfEdges()), ctd.distance(0, 2), 1e-4);
-	EXPECT_NEAR(sqrt(1.0 * G.numberOfEdges()), ctd.distance(1, 2), 1e-4);
-	EXPECT_NEAR(sqrt(0.75 * G.numberOfEdges()), ctd.distance(2, 3), 1e-4);
-	EXPECT_NEAR(sqrt(0.75 * G.numberOfEdges()), ctd.distance(2, 4), 1e-4);
-	EXPECT_NEAR(sqrt(0.75 * G.numberOfEdges()), ctd.distance(3, 5), 1e-4);
-	EXPECT_NEAR(sqrt(0.75 * G.numberOfEdges()), ctd.distance(4, 5), 1e-4);
+	double volG = 2.0 * G.numberOfEdges();
+	EXPECT_NEAR(sqrt(1.0 * volG), ctd.distance(0, 2), 1e-4);
+	EXPECT_NEAR(sqrt(1.0 * volG), ctd.distance(1, 2), 1e-4);
+	EXPECT_NEAR(sqrt(0.75 * volG), ctd.distance(2, 3), 1e-4);
+	EXPECT_NEAR(sqrt(0.75 * volG), ctd.distance(2, 4), 1e-4);
+	EXPECT_NEAR(sqrt(0.75 * volG), ctd.distance(3, 5), 1e-4);
+	EXPECT_NEAR(sqrt(0.75 * volG), ctd.distance(4, 5), 1e-4);
+}
+
+TEST_F(CommuteTimeDistanceGTest, testOnWeightedToyGraph) {
+	/* Graph:
+		    0    3
+		     \  / \
+		      2    5
+		     /  \ /
+		    1    4
+
+				Edge weight of (u,v): u+v
+	 */
+	count n = 6;
+	Graph G(n, true, false);
+	G.indexEdges();
+
+
+	G.addEdge(0, 2, 2);
+	G.addEdge(1, 2, 3);
+	G.addEdge(2, 3, 5);
+	G.addEdge(2, 4, 6);
+	G.addEdge(3, 5, 8);
+	G.addEdge(4, 5, 9);
+
+	CommuteTimeDistance ctd(G);
+	ctd.run();
+	double volG = 2.0 * G.totalEdgeWeight();
+	INFO("volume : ", volG);
+	EXPECT_NEAR(sqrt(0.5 * volG), ctd.distance(0, 2), 1e-3);
+	EXPECT_NEAR(sqrt(0.3333 * volG), ctd.distance(1, 2), 1e-3);
+	EXPECT_NEAR(sqrt(0.1336 * volG), ctd.distance(2, 3), 1e-3);
+	EXPECT_NEAR(sqrt(0.1206 * volG), ctd.distance(2, 4), 1e-3);
+	EXPECT_NEAR(sqrt(0.0991 * volG), ctd.distance(3, 5), 1e-3);
+	EXPECT_NEAR(sqrt(0.0906 * volG), ctd.distance(4, 5), 1e-3);
 }
 
 TEST_F(CommuteTimeDistanceGTest, testECTDOnSmallGraphs) {

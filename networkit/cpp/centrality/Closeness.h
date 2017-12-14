@@ -23,13 +23,11 @@ public:
 	 * of nodes and m is the number of edges of the graph. NOTICE: the graph has to be connected.
 	 *
 	 * @param G The graph.
-	 * @param normalized Set this parameter to <code>true</code> if scores should be normalized in the interval [0,1].
+	 * @param normalized Set this parameter to <code>false</code> if scores should not be normalized into an interval of [0, 1]. Normalization only for unweighted graphs.
 	 * @param	checkConnectedness	turn this off if you know the graph is connected
 	 *
 	 */
-	Closeness(const Graph& G, bool normalized=false, bool checkConnectedness=true);
-
-
+	Closeness(const Graph& G, bool normalized=true, bool checkConnectedness=true);
 
 	/**
 	 * Computes closeness cetrality on the graph passed in constructor.

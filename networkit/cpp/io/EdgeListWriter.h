@@ -32,8 +32,9 @@ public:
 	/**
 	 * @param[in]	separator	character used to separate nodes in an edge line
 	 * @param[in]	firstNode	index of the first node in the file
+	 * @param[in]	bothDirections	for undirected graphs: if every edge shall be written in both directions (default: false)
 	 */
-	EdgeListWriter(char separator, node firstNode);
+	EdgeListWriter(char separator, node firstNode, bool bothDirections = false);
 
 	/**
 	 * Write the graph to a file.
@@ -46,6 +47,7 @@ protected:
 
 	char separator; 	//!< character separating nodes in an edge line
 	node firstNode;
+	bool bothDirections;
 };
 
 } /* namespace NetworKit */

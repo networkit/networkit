@@ -18,7 +18,7 @@
 namespace NetworKit {
 
 /**
- * @ingroup graph
+ * @ingroup distance
  * Interface for dynamic single-source shortest path algorithms.
  */
 class DynSSSP: public SSSP, public DynAlgorithm {

@@ -28,7 +28,7 @@ def nx2nk(nxG, weightAttr=None):
 		nkG = graph.Graph(z, weighted=True, directed=nxG.is_directed())
 		for (u_, v_) in nxG.edges():
 			u, v = idmap[u_], idmap[v_]
-			w = nxG.edge[u_][v_][weightAttr]
+			w = nxG[u_][v_][weightAttr]
 			nkG.addEdge(u, v, w)
 	else:
 		nkG = graph.Graph(z, directed=nxG.is_directed())

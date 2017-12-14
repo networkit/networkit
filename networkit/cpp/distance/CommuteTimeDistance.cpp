@@ -19,31 +19,34 @@
 namespace NetworKit {
 
 CommuteTimeDistance::CommuteTimeDistance(const Graph& G, double tol): Algorithm(), G(G), tol(tol), lamg(1e-5) {
-	// prepare LAMG
+	// main purpose of methd: preparing LAMG
+
+	// construct matrix from graph
 	CSRMatrix matrix = CSRMatrix::laplacianMatrix(G);
+
+	// run LAMG setup and measure the time
 	Aux::Timer t;
 	t.start();
 	lamg.setupConnected(matrix);
 	t.stop();
-
 	setupTime = t.elapsedMilliseconds();
 
-	DEBUG("done setting up Spanning");
+	DEBUG("done setting up commute time distance");
 }
 
 void CommuteTimeDistance::run() {
 	count n = G.numberOfNodes();
-	distances.clear();
 	distances.resize(n);
 	G.forNodes([&](node v){
 		distances[v].resize(n, 0.0);
 	});
 
-	// set up solution vector and status
-	Vector solution(n);
-
-	Vector rhs(n, 0.0);
+	// temp vector for resetting the solution state
 	Vector zeroVector(n, 0.0);
+
+	// set up solution vector and right-hand side
+	Vector solution = zeroVector;
+	Vector rhs = zeroVector;
 
 	// solve for each pair of nodes
 	G.forNodePairs([&](node u, node v){
@@ -55,9 +58,9 @@ void CommuteTimeDistance::run() {
 		solution = zeroVector;
 
 		lamg.solve(rhs, solution);
-		double diff = solution[u] - solution[v];
-		distances[u][v] = fabs(diff); // TODO: check unweighted, fix weighted case!
-		distances[v][u] = fabs(diff); // TODO: check unweighted, fix weighted case!
+		double diff = fabs(solution[u] - solution[v]);
+		distances[u][v] = diff;
+		distances[v][u] = diff;
 		rhs[u] = 0.0;
 		rhs[v] = 0.0;
 	});
@@ -71,14 +74,14 @@ uint64_t CommuteTimeDistance::getSetupTime() const {
 
 void CommuteTimeDistance::runApproximation() {
 	count n = G.numberOfNodes();
-	// distances.clear();
-	// distances.resize(n);
-	// G.forNodes([&](node v){
-	// 	distances[v].resize(n, 0.0);
-	// });
+
+	// init approximation parameters
 	double epsilon2 = tol * tol;
 	k = ceil(log2(n)) / epsilon2;
-	double randTab[3] = {1/sqrt(k), -1/sqrt(k)};
+
+	// entries of random projection matrix
+	double randTab[2] = {1/sqrt(k), -1/sqrt(k)};
+
 	solutions.clear();
 	solutions.resize(k, Vector(n));
 
@@ -101,13 +104,9 @@ void CommuteTimeDistance::runApproximation() {
 			}
 		});
 
+
 		lamg.solve(rhs, solutions[i]);
 
-		// G.forNodePairs([&](node u, node v){
-		// 		double diff = solutions[i][u] - solutions[i][v];
-		// 		distances[u][v] += diff * diff; // TODO: fix weighted case!
-		// 		distances[v][u] += diff * diff; // TODO: fix weighted case!
-		// });
 	}
 	exactly = false;
 	hasRun = true;
@@ -115,14 +114,14 @@ void CommuteTimeDistance::runApproximation() {
 
 void CommuteTimeDistance::runParallelApproximation() {
 	count n = G.numberOfNodes();
-	// distances.clear();
-	// distances.resize(n);
-	// G.forNodes([&](node v){
-	// 	distances[v].resize(n, 0.0);
-	// });
+
+	// init approximation parameters
 	double epsilon2 = tol * tol;
 	k = ceil(log2(n)) / epsilon2;
+
+	// entries of random projection matrix
 	double randTab[3] = {1/sqrt(k), -1/sqrt(k)};
+
 	solutions.clear();
 	solutions.resize(k, Vector(n));
 	std::vector<Vector> rhs(k, Vector(n));
@@ -149,28 +148,32 @@ void CommuteTimeDistance::runParallelApproximation() {
 	lamg.parallelSolve(rhs, solutions);
 	INFO("Done with the solve phase");
 
-	// for (index i = 0; i < k; ++i) {
-	// 	G.parallelForNodePairs([&](node u, node v){
-	// 		double diff = solutions[i][u] - solutions[i][v];
-	// 		distances[u][v] += diff * diff; // TODO: fix weighted case!
-	// 		distances[v][u] += diff * diff; // TODO: fix weighted case!
-	// 	});
-	// }
 	exactly = false;
 	hasRun = true;
 }
 
 double CommuteTimeDistance::distance(node u, node v) {
 	if (!hasRun) throw std::runtime_error("Call run method first");
+
+	// compute volume
+	double volG = 0.0;
+	if (! G.isWeighted()) {
+		volG = 2.0 * G.numberOfEdges();
+	}
+	else {
+		volG = 2.0 * G.totalEdgeWeight();
+	}
+
 	if (exactly) {
-		return sqrt(distances[u][v]* G.numberOfEdges()); // TODO fix weighted case: volume is the sum of the weights of the edges
-	} else {
-		double dist = 0;
+		return sqrt(distances[u][v] * volG);
+	}
+	else {
+		double dist = 0.0;
 		for (index i = 0; i < k; ++i) {
 			double diff = solutions[i][u] - solutions[i][v];
 			dist += diff * diff;
 		}
-		return sqrt(dist* G.numberOfEdges());
+		return sqrt(dist * volG);
 	}
 }
 
@@ -189,7 +192,7 @@ double CommuteTimeDistance::runSinglePair(node u, node v) {
 	solution = zeroVector;
 	lamg.solve(rhs, solution);
 	double diff = solution[u] - solution[v];
-	dist = fabs(diff); // TODO: check unweighted, fix weighted case!
+	dist = fabs(diff);
 	return sqrt(dist* G.numberOfEdges());
 }
 
@@ -211,13 +214,14 @@ double CommuteTimeDistance::runSingleSource(node u) {
 			rhs[i][0] = -1.0;
 		}
 	});
+
 	INFO("rhs.size() = ", rhs.size());
 	INFO("solutions.size() = ", solution.size());
 	lamg.parallelSolve(rhs, solution);
 	G.forNodes([&](node i){
 		if (i != u) {
 			double diff = solution[i][u] - solution[i][i];
-			dist = fabs(diff); // TODO: check unweighted, fix weighted case!
+			dist = fabs(diff);
 			sum += sqrt(dist);
 		}
 	});

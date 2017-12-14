@@ -105,7 +105,7 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworK
 	count numberOfComponents = comp.numberOfComponents();
 
 
-	std::vector<count> distFirst(numberOfComponents, 0);
+	std::vector<count> distFirst;
 	std::vector<count> ecc(numberOfComponents, 0);
 	std::vector<count> distances(G.upperNodeIdBound(), 0);
 
@@ -113,6 +113,8 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworK
 
 	auto runBFS = [&](const std::vector<node> &startNodes) {
 		++numBFS;
+		distFirst.clear();
+		distFirst.resize(numberOfComponents, 0);
 		std::vector<bool> foundFirstDeg2Node(numberOfComponents, false);
 
 		G.BFSfrom(startNodes, [&](node v, count dist) {
@@ -146,8 +148,6 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworK
 
 		ecc.clear();
 		ecc.resize(numberOfComponents, 0);
-		distFirst.clear();
-		distFirst.resize(numberOfComponents, 0);
 	};
 
 	auto diameterBounds = [&]() {
@@ -208,7 +208,7 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworK
 					startNodes[c] = u;
 				} else {
 					auto compU = eccLowerBound[u] + distances[u], compStart = eccLowerBound[startNodes[c]] + distances[startNodes[c]];
-					if (compU < compStart || (compU == compStart && distances[u] > distances[startNodes[c]])) {
+					if (distances[u] > distFirst[c] && (compU < compStart || (compU == compStart && distances[u] > distances[startNodes[c]]))) {
 						startNodes[c] = u;
 					}
 				}

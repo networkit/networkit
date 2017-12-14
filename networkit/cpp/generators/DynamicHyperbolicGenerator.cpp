@@ -290,7 +290,11 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
 			#pragma omp critical
 			{
 				bool removed = quad.removeContent(toWiggle[j], oldphi, oldr);
+#ifndef NDEBUG
 				assert(removed);
+#else
+				((void)(removed));
+#endif
 				quad.addContent(toWiggle[j], angles[toWiggle[j]], radii[toWiggle[j]]);
 			}
 		}
