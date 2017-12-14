@@ -1,7 +1,7 @@
 import os
 import subprocess
 import fnmatch
-import configparser
+import ConfigParser
 
 home_path = os.environ['HOME']
 
@@ -46,7 +46,7 @@ def getSourceFiles(target, optimize):
 
 	# walk source directory and find ONLY .cpp files
 	for (dirpath, dirnames, filenames) in os.walk(srcDir):
-		for name in fnmatch.filter(filenames, "*.cpp"):
+	    for name in fnmatch.filter(filenames, "*.cpp"):
 			source.append(os.path.join(dirpath, name))
 
 	# exclude files depending on target, executables will be addes later
@@ -138,16 +138,16 @@ else:
 		print("Use the file build.conf.example to create your build.conf")
 		Exit(1)
 
-	conf = configparser.ConfigParser()
+	conf = ConfigParser.ConfigParser()
 	conf.read([confPath])     # read the configuration file
 
 	## compiler
 	if compiler is None:
-		cppComp = conf.get("compiler", "cpp", fallback="gcc")
+		cppComp = conf.get("compiler", "cpp", "gcc")
 	else:
 		cppComp = compiler
 	if defines is None:
-		defines = conf.get("compiler", "defines", fallback=[])		# defines are optional
+		defines = conf.get("compiler", "defines", [])		# defines are optional
 	if defines is not []:
 		defines = defines.split(",")
 
@@ -155,7 +155,7 @@ else:
 	## C++14 support
 	if stdflag is None:
 		try:
-			stdflag = conf.get("compiler", fallback="std14")
+			stdflag = conf.get("compiler", "std14")
 		except:
 			pass
 	if stdflag is None or len(stdflag) == 0:
@@ -165,17 +165,17 @@ else:
 		conf.set("compiler","std14", stdflag)
 
 	## includes
-	stdInclude = conf.get("includes", "std", fallback="")      # includes for the standard library - may not be needed
+	stdInclude = conf.get("includes", "std", "")      # includes for the standard library - may not be needed
 	gtestInclude = conf.get("includes", "gtest")
 	if conf.has_option("includes", "tbb"):
-		tbbInclude = conf.get("includes", "tbb", fallback="")
+		tbbInclude = conf.get("includes", "tbb", "")
 	else:
 		tbbInclude = ""
 
 	## libraries
 	gtestLib = conf.get("libraries", "gtest")
 	if conf.has_option("libraries", "tbb"):
-		tbbLib = conf.get("libraries", "tbb", fallback="")
+		tbbLib = conf.get("libraries", "tbb", "")
 	else:
 		tbbLib = ""
 
