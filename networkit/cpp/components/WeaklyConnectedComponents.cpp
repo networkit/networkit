@@ -15,8 +15,6 @@ namespace NetworKit {
         }
     }
 
-<<<<<<< HEAD
-
     void WeaklyConnectedComponents::init() {
 
         if (hasRun) {
@@ -34,35 +32,21 @@ namespace NetworKit {
 
         // Initialization of data structures
         init();
-=======
-    void WeaklyConnectedComponents::run() {
-
-        // Initialization of components vector.
-        components.assign(G.upperNodeIdBound(), none);
->>>>>>> Dev
 
         // Queue for BFS.
         std::queue<node> q;
 
         // Perform BFSs to assign a component ID to each node.
         G.forNodes([&](node u) {
-<<<<<<< HEAD
+
             // Node u has not been visited.
             if (components[u] == none) {
+
                 // New component ID.
                 index c = compSize.size();
                 components[u] = c;
                 compSize.insert(std::make_pair(c, 1));
-=======
 
-            // Node u has not been visited.
-            if (components[u] == none) {
-
-                // New component ID.
-                index c = compSize.size();
-                components[u] = c;
-                compSize.insert(std::pair<index, count>(c, 1));
->>>>>>> Dev
 
                 // Start a new BFS from u.
                 q.push(u);
@@ -71,21 +55,15 @@ namespace NetworKit {
                     node v = q.front();
                     q.pop();
 
-                    // Enqueue neighbors (both from in and out edges) and set new component.
+                    // Enqueue neighbors (both from in and out edges) and set
+                    // new component.
                     G.forNeighborsOf(v, [&](node w) {
-<<<<<<< HEAD
                         updateComponent(c, w, q, false);
                     });
 
                     G.forInNeighborsOf(v, [&](node w) {
                         updateComponent(c, w, q, true);
-=======
-                        updateComponent(c, w, q);
-                    });
 
-                    G.forInNeighborsOf(v, [&](node w) {
-                        updateComponent(c, w, q);
->>>>>>> Dev
                     });
                 } while (!q.empty());
             }
@@ -94,16 +72,10 @@ namespace NetworKit {
         hasRun = true;
     }
 
+    void WeaklyConnectedComponents::updateComponent(
+        index c, node w, std::queue<node>& q, bool inNeighbor
+    ) {
 
-<<<<<<< HEAD
-    void WeaklyConnectedComponents::updateComponent(index c, node w, std::queue<node>& q, bool inNeighbor) {
-        if (w > G.upperNodeIdBound()) {
-            INFO(w, " : from ", (inNeighbor ? " in neighbors" : " out neighbors") );
-        }
-        // INFO("UPDATING NEIGHBOR ", w);
-=======
-    void WeaklyConnectedComponents::updateComponent(index c, node w, std::queue<node>& q) {
->>>>>>> Dev
         if (components[w] == none) {
             q.push(w);
             components[w] = c;
@@ -122,8 +94,8 @@ namespace NetworKit {
         std::map<index, count> compIndex;
 
         int i = 0;
-        for (std::map<index, count>::iterator it=compSize.begin(); it!=compSize.end(); ++it) {
-            std::map<index, count>::iterator indexIterator = compIndex.find(it->first);
+        for (auto it=compSize.begin(); it!=compSize.end(); ++it) {
+            auto indexIterator = compIndex.find(it->first);
             if (indexIterator == compIndex.end()) {
                 compIndex.insert(std::pair<index, count>(it->first, i));
                 ++i;
