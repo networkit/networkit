@@ -319,14 +319,14 @@ TEST_F(ConnectedComponentsGTest, testWeaklyConnectedComponentsTiny) {
         // Testing static run.
         EXPECT_EQ(wc.numberOfComponents(), dw.numberOfComponents());
 
-        int numberOfTests = 10000;
+        int numberOfTests = 1000;
         // Probability to perform an edge insertion or removal.
         float p = 0.5;
         for (int i = 0; i < numberOfTests; ++i) {
             node u = 0;
             node v = 1;
             // Perform edge insertion
-            if (((double) rand() / (RAND_MAX)) > 4) {
+            if (((double) rand() / (RAND_MAX)) > p) {
                 while (G.hasEdge(u, v)) {
                     u = G.randomNode();
                     v = G.randomNode();

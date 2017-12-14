@@ -17,7 +17,8 @@ namespace NetworKit {
 
     /**
     * @ingroup components
-    * Determines and updates the weakly connected components of a directed graph.
+    * Determines and updates the weakly connected components of a directed
+    * graph.
     */
     class DynWeaklyConnectedComponents : public Algorithm, public DynAlgorithm {
 
@@ -30,21 +31,26 @@ namespace NetworKit {
         DynWeaklyConnectedComponents(const Graph& G);
 
         /**
-        * This method determines the weakly connected components for the graph given in the constructor.
+        * This method determines the weakly connected components for the graph
+        * given in the constructor.
         */
         void run() override;
 
         /**
-        * Updates the weakly connected components after an edge insertion or deletion.
+        * Updates the weakly connected components after an edge insertion or
+        * deletion.
         *
-        * @param[in]	event	The event that happened (edge insertion or deletion).
+        * @param[in]	event	The event that happened (edge insertion
+        *                       or deletion).
         */
         void update(GraphEvent event) override;
 
         /**
-        * Updates the weakly connected components after a batch of edge events (insertions or deletions).
+        * Updates the weakly connected components after a batch of edge events
+        * (insertions or deletions).
         *
-        * @param[in] batch  A vector that contains a batch of edge events (insertions or deletions).
+        * @param[in] batch  A vector that contains a batch of edge events
+        *                   (insertions or deletions).
         */
         void updateBatch(const std::vector<GraphEvent>& batch) override;
 
@@ -85,7 +91,16 @@ namespace NetworKit {
         void reverseBFS(node u, node v);
         index getEdgeId(node u, node v);
         index nextAvailableComponentId(bool eraseId = true);
-        bool visitNodeReversed(node u, node s, node w, node v, count d, std::queue<node>& q, bool& nextEdgeFound, count level);
+        bool visitNodeReversed(
+            node u,
+            node s,
+            node w,
+            node v,
+            count d,
+            std::queue<node>& q,
+            bool& nextEdgeFound,
+            count level
+        );
         std::pair<node, node> makePair(node u, node v);
 
         // Pointer to the graph
@@ -94,7 +109,8 @@ namespace NetworKit {
         // This vector associates each node to a component
         std::vector<index> components;
 
-        // Whether each edge is part of a spanning tree. If an edge is removed  then a components could split.
+        // Whether each edge is part of a spanning tree. If an edge is removed
+        // then a components could split.
         std::vector<bool> isTree;
 
         // Maps the edges to their IDs

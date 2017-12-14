@@ -53,7 +53,8 @@ namespace NetworKit {
                     node v = q.front();
                     q.pop();
 
-                    // Enqueue neighbors (both from in and out edges) and set new component.
+                    // Enqueue neighbors (both from in and out edges) and set
+                    // new component.
                     G.forNeighborsOf(v, [&](node w) {
                         updateComponent(c, w, q, v);
                     });
@@ -69,7 +70,12 @@ namespace NetworKit {
     }
 
 
-    void DynWeaklyConnectedComponents::updateComponent(index c, node w, std::queue<node>& q, node v) {
+    void DynWeaklyConnectedComponents::updateComponent(
+        index c,
+        node w,
+        std::queue<node>& q,
+        node v
+    ) {
         if (components[w] == none) {
             q.push(w);
             components[w] = c;
@@ -90,14 +96,22 @@ namespace NetworKit {
     }
 
 
-    void DynWeaklyConnectedComponents::insertEdgeIntoMap(node u, node v, edgeid eid) {
+    void DynWeaklyConnectedComponents::insertEdgeIntoMap(
+        node u,
+        node v,
+        edgeid eid
+    ) {
         edgesMap.insert(std::make_pair(makePair(u, v), eid));
     }
 
 
-    edgeid DynWeaklyConnectedComponents::updateMapAfterAddition(node u, node v) {
+    edgeid DynWeaklyConnectedComponents::updateMapAfterAddition(
+        node u, node v
+    ) {
 
-        std::map<std::pair<node, node>, edgeid>::iterator it = edgesMap.find(makePair(u, v));
+        std::map<std::pair<node, node>, edgeid>::iterator it = edgesMap.find(
+            makePair(u, v)
+        );
 
 
         if (it == edgesMap.end()) {
@@ -126,7 +140,9 @@ namespace NetworKit {
     }
 
 
-    void DynWeaklyConnectedComponents::updateBatch(const std::vector<GraphEvent>& batch) {
+    void DynWeaklyConnectedComponents::updateBatch(
+        const std::vector<GraphEvent>& batch
+    ) {
         run();
     }
 
@@ -145,7 +161,8 @@ namespace NetworKit {
             return;
         }
 
-        // in the other case, we can merge the two components in an undirected graph
+        // in the other case, we can merge the two components in an undirected
+        // graph
         G.parallelForNodes([&](node w) {
             // We update the component with higher index with the lower index
             if (components[w] == maxComp) {
@@ -161,7 +178,9 @@ namespace NetworKit {
     }
 
 
-    void DynWeaklyConnectedComponents::updateTreeAfterAddition(edgeid eid, bool partOfTree) {
+    void DynWeaklyConnectedComponents::updateTreeAfterAddition(
+        edgeid eid, bool partOfTree
+    ) {
         if (isTree.size() > eid) {
             isTree[eid] = partOfTree;
         }
@@ -215,8 +234,8 @@ namespace NetworKit {
                     if (tmpDistances[w] == none) {
                         tmpDistances[w] = d;
                         if (w == v) { // Found another path from u to v
-                            // Backtracks the path from v to u and marks all its nodes
-                            // as part of the spanning tree
+                            // Backtracks the path from v to u and marks all its
+                            // nodes as part of the spanning tree
                             reverseBFS(u, v);
                             connected = true;
                             return;
@@ -229,15 +248,16 @@ namespace NetworKit {
                 }
             });
 
-            // Checking in neighbors (forNeighborsOf gets only the out-degree neighbors).
+            // Checking in neighbors (forNeighborsOf gets only the out-degree
+            // neighbors).
             if (!connected) {
                 G.forInNeighborsOf(s, [&](node w) {
                     if (!connected) {
                         if (tmpDistances[w] == none) {
                             tmpDistances[w] = d;
                             if (w == v) { // Found another path from u to v
-                                // Backtracks the path from v to u and marks all its nodes
-                                // as part of the spanning tree
+                                // Backtracks the path from v to u and marks all
+                                // its nodes as part of the spanning tree
                                 reverseBFS(u, v);
                                 connected = true;
                                 return;
@@ -280,7 +300,9 @@ namespace NetworKit {
             bool nextEdgeFound = false;
             G.forNeighborsOf(s, [&](node w) {
                 if (!nextEdgeFound) {
-                    if (visitNodeReversed(u, s, w, v, d, q, nextEdgeFound, level)) {
+                    if (visitNodeReversed(
+                        u, s, w, v, d, q, nextEdgeFound, level)
+                    ) {
                         return;
                     }
                 }
@@ -289,7 +311,9 @@ namespace NetworKit {
             if (!nextEdgeFound) {
                 G.forInNeighborsOf(s, [&](node w) {
                     if (!nextEdgeFound) {
-                        if (visitNodeReversed(u, s, w, v, d, q, nextEdgeFound, level)) {
+                        if (visitNodeReversed(
+                            u, s, w, v, d, q, nextEdgeFound, level)
+                        ) {
                             return;
                         }
                     }
@@ -300,7 +324,16 @@ namespace NetworKit {
     }
 
 
-    bool DynWeaklyConnectedComponents::visitNodeReversed(node u, node s, node w, node v, count d, std::queue<node>& q, bool& nextEdgeFound, count level) {
+    bool DynWeaklyConnectedComponents::visitNodeReversed(
+        node u,
+        node s,
+        node w,
+        node v,
+        count d,
+        std::queue<node>& q,
+        bool& nextEdgeFound,
+        count level
+    ) {
 
         // Reverse BFS finished
         if (w == u) {
@@ -334,7 +367,9 @@ namespace NetworKit {
     }
 
 
-    std::pair<node, node> DynWeaklyConnectedComponents::makePair(node u, node v) {
+    std::pair<node, node> DynWeaklyConnectedComponents::makePair(
+        node u, node v
+    ) {
         node from, to;
         if (u > v) {
             from = v;
