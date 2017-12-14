@@ -65,11 +65,11 @@ matrix:
        - cd -
        # install openmp
        - svn co http://llvm.org/svn/llvm-project/openmp/trunk ~/openmp
-       - cd ~/openmp/runtime/
+       - cd ~/openmp/
        - cmake -D CMAKE_INSTALL_PREFIX:PATH=./ ./ -DCMAKE_C_COMPILER=clang-3.8 -DCMAKE_CXX_COMPILER=clang++-3.8
        - make
-       - export OPENMP_LIB=$(pwd)/src/
-       - export OPENMP_INCLUDE=$(pwd)/src/
+       - export OPENMP_LIB=$(pwd)/runtime/src/
+       - export OPENMP_INCLUDE=$(pwd)/runtime/src/
        - export LD_LIBRARY_PATH=$OPENMP_LIB:$LD_LIBRARY_PATH
        - cd -
 
@@ -93,11 +93,11 @@ matrix:
         - cd -
         # install openmp
         - svn co http://llvm.org/svn/llvm-project/openmp/trunk ~/openmp
-        - cd ~/openmp/runtime/
+        - cd ~/openmp/
         - cmake -D CMAKE_INSTALL_PREFIX:PATH=./ ./
         - make
-        - export OPENMP_LIB=$(pwd)/src/
-        - export OPENMP_INCLUDE=$(pwd)/src/
+        - export OPENMP_LIB=$(pwd)/runtime/src/
+        - export OPENMP_INCLUDE=$(pwd)/runtime/src/
         - export LD_LIBRARY_PATH=$OPENMP_LIB:$LD_LIBRARY_PATH
         - cd -
 
@@ -107,9 +107,9 @@ script:
  - echo $OPENMP_LIB
  - echo $OPENMP_INCLUDE
  - $CXX --version
- - scons --optimize=Opt --target=Tests --std=c++11 -j2
+ - scons --optimize=Dbg --target=Tests --std=c++11 -j2
  - export OMP_NUM_THREADS=2
- - ./NetworKit-Tests-Opt -t
+ - ./NetworKit-Tests-Dbg -t
 
 notifications:
   email: false
