@@ -6104,6 +6104,60 @@ cdef class TopCloseness:
 		return self._this.topkScoresList()
 
 
+
+cdef extern from "cpp/centrality/GroupCloseness.h":
+	cdef cppclass _GroupCloseness "NetworKit::GroupCloseness":
+		_GroupCloseness(_Graph G, count, count) except +
+		void run() except +
+		vector[node] groupMaxCloseness() except +
+		double computeFarness(vector[node], count) except +
+
+
+cdef class GroupCloseness:
+	"""
+	Finds the group of nodes with highest (group) closeness centrality. The algorithm is the one proposed in Bergamini et al., ALENEX 2018 and finds a solution that is a (1-1/e)-approximation of the optimum.
+	The worst-case running time of this approach is quadratic, but usually much faster in practice.
+
+	GroupCloseness(G, k=1, H=0)
+
+	Parameters
+	----------
+	G: An unweighted graph.
+	k: Size of the group.
+	H: If equal 0, simply runs the algorithm proposed in Bergamini et al.. If > 0, interrupts all BFSs after H iterations (suggested for very large networks).
+	"""
+	cdef _GroupCloseness* _this
+	cdef Graph _G
+
+	def __cinit__(self,  Graph G, k=1, H=0):
+		self._G = G
+		self._this = new _GroupCloseness(G._this, k, H)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		""" Computes group with maximum closeness. """
+		self._this.run()
+		return self
+
+	""" Returns group with highest closeness.
+	Returns
+	-------
+	vector
+		The group of k nodes with highest closeness.
+	"""
+	def groupMaxCloseness(self):
+		return self._this.groupMaxCloseness()
+
+
+	""" Computes farness (i.e., inverse of the closeness) for a given group (stopping after H iterations if H > 0).
+	"""
+	def computeFarness(self, S, H=0):
+		return self._this.computeFarness(S, H)
+
+
+
 cdef extern from "cpp/centrality/DegreeCentrality.h":
 	cdef cppclass _DegreeCentrality "NetworKit::DegreeCentrality" (_Centrality):
 		_DegreeCentrality(_Graph, bool normalized, bool outdeg, bool ignoreSelfLoops) except +

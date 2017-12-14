@@ -7,7 +7,9 @@ __credits__ = ["Christian Staudt", "Elisabetta Bergamini", "Henning Meyerhenke",
 
 # extension imports
 # TODO: (+) ApproxCloseness
-from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2, EstimateBetweenness, DynApproxBetweenness, Closeness, KPathCentrality, CoreDecomposition, KatzCentrality, LocalClusteringCoefficient, ApproxCloseness, LocalPartitionCoverage, Sfigality, SpanningEdgeCentrality, PermanenceCentrality, TopCloseness, DynBetweenness, DynBetweennessOneNode
+
+from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness, ApproxBetweenness2, EstimateBetweenness, DynApproxBetweenness, Closeness, KPathCentrality, CoreDecomposition, KatzCentrality, LocalClusteringCoefficient, ApproxCloseness, LocalPartitionCoverage, Sfigality, SpanningEdgeCentrality, PermanenceCentrality, TopCloseness, DynBetweenness, GroupCloseness, DynBetweennessOneNode
+
 
 
 # local imports
