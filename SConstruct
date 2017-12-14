@@ -1,12 +1,18 @@
 import os
 import subprocess
 import fnmatch
-import ConfigParser
+import sys
+
+if sys.version_info >= (3,0):
+    import configparser as cp
+    getConf = lambda conf, sec, name, fb: conf.get(sec, name, fallback=fb)
+else:
+    import ConfigParser as cp
+    getConf = lambda conf, sec, name, fb: conf.get(sec, name, fb)
 
 home_path = os.environ['HOME']
 
-
-class DefaultConfigParser(ConfigParser.ConfigParser):
+class DefaultConfigParser(cp.ConfigParser):
 	def get_default(self, section, option, default=None, raw=False, vars=None):
 		"""Get an option value for a given section.
 
@@ -16,7 +22,7 @@ class DefaultConfigParser(ConfigParser.ConfigParser):
 
 		try:
 			return self.get(section, option, raw=raw, vars=vars)
-		except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
+		except (cp.ConfigParser.NoSectionError, cp.ConfigParser.NoOptionError):
 			return default
 
 
