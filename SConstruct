@@ -12,6 +12,20 @@ else:
 
 home_path = os.environ['HOME']
 
+class DefaultConfigParser(cp.ConfigParser):
+	def get_default(self, section, option, default=None, raw=False, vars=None):
+		"""Get an option value for a given section.
+
+		If the option exists in the section, get_default behaves exactly like
+		get(). If not, default is returned (if not explicitly set: None).
+		"""
+
+		try:
+			return self.get(section, option, raw=raw, vars=vars)
+		except (cp.ConfigParser.NoSectionError, cp.ConfigParser.NoOptionError):
+			return default
+
+
 def checkStd(compiler):
 	sample = open("sample.cpp", "w")
 	sample.write("""
@@ -53,7 +67,7 @@ def getSourceFiles(target, optimize):
 
 	# walk source directory and find ONLY .cpp files
 	for (dirpath, dirnames, filenames) in os.walk(srcDir):
-		for name in fnmatch.filter(filenames, "*.cpp"):
+	    for name in fnmatch.filter(filenames, "*.cpp"):
 			source.append(os.path.join(dirpath, name))
 
 	# exclude files depending on target, executables will be addes later
@@ -145,26 +159,17 @@ else:
 		print("Use the file build.conf.example to create your build.conf")
 		Exit(1)
 
-	conf = cp.ConfigParser()
+	conf = DefaultConfigParser()
 	conf.read([confPath])     # read the configuration file
 
 	## compiler
-	if compiler is None:
-		cppComp = getConf(conf, "compiler", "cpp", "gcc")
-	else:
-		cppComp = compiler
-	if defines is None:
-		defines = getConf(conf, "compiler", "defines", [])		# defines are optional
-	if defines is not []:
-		defines = defines.split(",")
-
+	cppComp = compiler or conf.get_default("compiler", "cpp", "gcc")
+	# defines are optional
+	defines = defines or conf.get_default("compiler", "defines", "")
+	defines = defines.split(",")
 
 	## C++14 support
-	if stdflag is None:
-		try:
-			stdflag = getConf(conf, "compiler", "std14")
-		except:
-			pass
+	stdflag = stdflag or conf.get_default("compiler", "std14")
 	if stdflag is None or len(stdflag) == 0:
 		# do test compile
 		stdflag = checkStd(cppComp)
@@ -172,27 +177,22 @@ else:
 		conf.set("compiler","std14", stdflag)
 
 	## includes
-	stdInclude = getConf(conf, "includes", "std", "")      # includes for the standard library - may not be needed
-	gtestInclude = getConf(conf, "includes", "gtest", None)
-	if conf.has_option("includes", "tbb"):
-		tbbInclude = getConf(conf, "includes", "tbb", "")
-	else:
-		tbbInclude = ""
+	# Evaluates the [includes] section of the build.conf file.
+	# Includes may include std, gtest, tbb
+	includes = dict(conf.items("includes"))
 
 	## libraries
-	gtestLib = getConf(conf, "libraries", "gtest", None)
-	if conf.has_option("libraries", "tbb"):
-		tbbLib = getConf(conf, "libraries", "tbb", "")
-	else:
-		tbbLib = ""
+	# Evaluates the [libraries] section of the build.conf file.
+	# Libraries may include gtest, tbb
+	libraries = dict(conf.items("libraries"))
 
 	env["CC"] = cppComp
 	env["CXX"] = cppComp
 
 	env.Append(CPPDEFINES=defines)
-	env.Append(CPPPATH = [stdInclude, gtestInclude, tbbInclude])
-	env.Append(LIBS = ["gtest"])
-	env.Append(LIBPATH = [gtestLib, tbbLib])
+	env.Append(CPPPATH = includes.values())
+	env.Append(LIBS = libraries.keys())
+	env.Append(LIBPATH = libraries.values())
 
 	with open(confPath, "w") as f:
 		conf.write(f)
