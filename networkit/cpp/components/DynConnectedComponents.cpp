@@ -9,7 +9,8 @@
 
 namespace NetworKit {
 
-	DynConnectedComponents::DynConnectedComponents(const Graph& G) : G(G), hasRun(false) {
+	DynConnectedComponents::DynConnectedComponents(const Graph& G) :
+	G(G), hasRun(false) {
 		if (G.isDirected()) {
 			throw std::runtime_error("Error, connected components of directed graphs cannot be computed, use StronglyConnectedComponents instead.");
 		}
@@ -45,7 +46,9 @@ namespace NetworKit {
 						if (components[v] == none) {
 							q.push(v);
 							components[v] = c;
-							isTree[(int)edgesMap.find(makePair(u, v))->second] = true;
+							isTree[(int)edgesMap.find(
+								makePair(u, v)
+							)->second] = true;
 							compSize.find(c)->second += 1;
 						}
 					});
@@ -68,7 +71,9 @@ namespace NetworKit {
 	}
 
 	void DynConnectedComponents::insertEdgeIntoMap(node u, node v, index eid) {
-		edgesMap.insert(std::pair<std::pair<node, node>, index>(makePair(u, v), eid));
+		edgesMap.insert(std::pair<std::pair<node, node>, index>(
+			makePair(u, v), eid)
+		);
 	}
 
 
@@ -86,15 +91,19 @@ namespace NetworKit {
 	}
 
 
-	void DynConnectedComponents::updateBatch(const std::vector<GraphEvent>& batch){
+	void DynConnectedComponents::updateBatch(
+		const std::vector<GraphEvent>& batch
+	){
 		for (auto e : batch) {
 			update(e);
 		}
 	}
 
 
-	std::pair<bool, edgeid> DynConnectedComponents::updateMapAfterAddition(node u, node v) {
-		std::map<std::pair<node, node>, edgeid>::iterator it = edgesMap.find(makePair(u, v));
+	std::pair<bool, edgeid> DynConnectedComponents::updateMapAfterAddition(
+		node u, node v
+	) {
+		auto it = edgesMap.find(makePair(u, v));
 
 		if (it == edgesMap.end()) {
 			edgeid newId = edgesMap.size();
@@ -122,8 +131,8 @@ namespace NetworKit {
 			return;
 		}
 
-		// In the other case, we can merge the two components in an undirected graph
-		// merge components
+		// In the other case, we can merge the two components in an undirected
+		// graph merge components
 		G.parallelForNodes([&](node w) {
 			if (components[w] == maxComp) {
 				components[w] = minComp;
@@ -152,7 +161,7 @@ namespace NetworKit {
 			return;
 		}
 
-		isTree[eid] = false; // for coherence, we should mark this edge as not valid
+		isTree[eid] = false; // for coherence, we mark this edge as not valid
 		std::fill(tmpDistances.begin(), tmpDistances.end(), none);
 		index nextId = nextAvailableComponentId(false);
 
@@ -179,8 +188,8 @@ namespace NetworKit {
 					if (tmpDistances[w] == none) {
 						tmpDistances[w] = d;
 						if (w == v) { // Found another path from u to v
-							// Backtracks the path from v to u and marks all its nodes
-							// as part of the spanning tree
+							// Backtracks the path from v to u and marks all its
+							// nodes as part of the spanning tree
 							reverseBFS(u, v);
 							connected = true;
 							return; // Exit from the loop
@@ -231,8 +240,11 @@ namespace NetworKit {
 					}
 
 					if (!nextEdgeFound) {
-						if ((tmpDistances[w] != none) && (d == tmpDistances[w] + level)) {
-							isTree[edgesMap.find(makePair(w, s))->second] = true;
+						if ((tmpDistances[w] != none)
+						&& (d == tmpDistances[w] + level)) {
+							isTree[edgesMap.find(
+								makePair(w, s)
+							)->second] = true;
 							nextEdgeFound = true;
 							q.push(w);
 						}
@@ -265,8 +277,8 @@ namespace NetworKit {
 		std::map<index, count> compIndex;
 
 		int i = 0;
-		for (std::map<index, count>::iterator it=compSize.begin(); it!=compSize.end(); ++it) {
-			std::map<index, count>::iterator indexIterator = compIndex.find(it->first);
+		for (auto it=compSize.begin(); it!=compSize.end(); ++it) {
+			auto indexIterator = compIndex.find(it->first);
 			if (indexIterator == compIndex.end()) {
 				compIndex.insert(std::pair<index, count>(it->first, i));
 				++i;

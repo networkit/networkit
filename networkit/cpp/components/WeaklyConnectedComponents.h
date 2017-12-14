@@ -28,7 +28,8 @@ namespace NetworKit {
         WeaklyConnectedComponents(const Graph& G);
 
         /**
-        * This method determines the weakly connected components for the graph given in the constructor.
+        * This method determines the weakly connected components for the graph
+        * given in the constructor.
         */
         void run();
 
@@ -60,7 +61,11 @@ namespace NetworKit {
 
 
     private:
-        void updateComponent(index c, node w, std::queue<node>& q);
+        void updateComponent(
+            index c, node w, std::queue<node>& q, bool inNeighbor
+        );
+
+        void init();
 
         // Pointer to the graph
         const Graph& G;
@@ -68,7 +73,8 @@ namespace NetworKit {
         // This vector associates each node to a component
         std::vector<index> components;
 
-        // This map stores all components <Key: component ID, Value: component size>
+        // This map stores all components
+        // <Key: component ID, Value: component size>
         std::map<index, count> compSize;
 
         // Whether the run() method has been called
@@ -83,7 +89,7 @@ namespace NetworKit {
 
     inline count WeaklyConnectedComponents::numberOfComponents() {
         if (!hasRun) throw std::runtime_error("run method has not been called");
-        return this->compSize.size();
+        return compSize.size();
     }
 
     inline std::map<index, count> WeaklyConnectedComponents::getComponentSizes() {

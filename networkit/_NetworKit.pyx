@@ -5442,7 +5442,8 @@ cdef class DynConnectedComponents:
 		return self._this.getComponents()
 
 	def update(self, event):
-		""" Updates the connected components after an edge insertion or deletion.
+		""" Updates the connected components after an edge insertion or
+			deletion.
 
 			Parameters
 			----------
@@ -5452,7 +5453,108 @@ cdef class DynConnectedComponents:
 		self._this.update(_GraphEvent(event.type, event.u, event.v, event.w))
 
 	def updateBatch(self, batch):
-		""" Updates the connected components after a batch of edge insertions or deletions.
+		""" Updates the connected components after a batch of edge insertions or
+			deletions.
+
+			Parameters
+			----------
+			batch : vector[GraphEvent]
+				A vector that contains a batch of edge insertions or deletions.
+		"""
+		cdef vector[_GraphEvent] _batch
+		for event in batch:
+			_batch.push_back(_GraphEvent(event.type, event.u, event.v, event.w))
+		self._this.updateBatch(_batch)
+
+
+
+cdef extern from "cpp/components/DynWeaklyConnectedComponents.h":
+	cdef cppclass _DynWeaklyConnectedComponents "NetworKit::DynWeaklyConnectedComponents":
+		_DynWeaklyConnectedComponents(_Graph G) except +
+		void run() nogil except +
+		void update(_GraphEvent) except +
+		void updateBatch(vector[_GraphEvent]) except +
+		count numberOfComponents() except +
+		count componentOfNode(node query) except +
+		map[index, count] getComponentSizes() except +
+		vector[vector[node]] getComponents() except +
+
+cdef class DynWeaklyConnectedComponents:
+	""" Determines and updates the weakly connected components of a directed graph.
+
+		Parameters
+		----------
+		G : Graph
+			The graph.
+	"""
+	cdef _DynWeaklyConnectedComponents* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _DynWeaklyConnectedComponents(G._this)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		with nogil:
+			self._this.run()
+		return self
+
+	def numberOfComponents(self):
+		""" Returns the number of components.
+
+			Returns
+			count
+				The number of components.
+		"""
+		return self._this.numberOfComponents()
+
+	def componentOfNode(self, v):
+		""" Returns the the component in which node @a u is.
+
+			Parameters
+			----------
+			v : node
+				The node.
+		"""
+		return self._this.componentOfNode(v)
+
+	def getComponentSizes(self):
+		""" Returns the map from component to size.
+
+			Returns
+			map[index, count]
+			 	A map that maps each component to its size.
+		"""
+		return self._this.getComponentSizes()
+
+	def getComponents(self):
+		""" Returns all the components, each stored as (unordered) set of nodes.
+
+			Returns
+			vector[vector[node]]
+				A vector of vectors. Each inner vector contains all the nodes
+				inside the component.
+
+		"""
+		return self._this.getComponents()
+
+	def update(self, event):
+		""" Updates the connected components after an edge insertion or
+			deletion.
+
+			Parameters
+			----------
+			event : GraphEvent
+				The event that happened (edge deletion or insertion).
+		"""
+		self._this.update(_GraphEvent(event.type, event.u, event.v, event.w))
+
+	def updateBatch(self, batch):
+		""" Updates the connected components after a batch of edge insertions or
+			deletions.
 
 			Parameters
 			----------
