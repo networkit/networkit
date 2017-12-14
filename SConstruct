@@ -1,7 +1,14 @@
 import os
 import subprocess
 import fnmatch
-import configparser
+import pip
+
+# Make sure configparser is available in case scons is run as a Python2 package.
+try:
+    import configparser
+except:
+    pip.main(['install', 'configparser'])
+    import configparser
 
 home_path = os.environ['HOME']
 

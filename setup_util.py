@@ -58,6 +58,11 @@ def installExternalPythonPackages():
 		del sklearn
 	except:
 		installPackage('sklearn')
+	try:
+		import configparser
+		del configparser
+	except:
+		installPackage('configparser')
 	ipythonStatus = os.system('pip3 show ipython')
 	if ipythonStatus != 0:
 		installPackage('ipython')
