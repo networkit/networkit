@@ -31,21 +31,25 @@ namespace NetworKit {
 		DynConnectedComponents(const Graph& G);
 
 		/**
-		* This method determines the connected components for the graph given in the constructor.
+		* This method determines the connected components for the graph given in
+		*  the constructor.
 		*/
 		void run() override;
 
 		/**
 		* Updates the connected components after an edge insertion or deletion.
 		*
-		* @param[in]	event	The event that happened (edge deletion or insertion).
+		* @param[in]	event	The event that happened (edge deletion or
+		* insertion).
 		*/
 		void update(GraphEvent e) override;
 
 		/**
-		* Updates the connected components after a batch of edge insertions or deletions.
+		* Updates the connected components after a batch of edge insertions or
+		* deletions.
 		*
-		* @param[in] batch	A vector that contains a batch of edge insertions or deletions.
+		* @param[in] batch	A vector that contains a batch of edge insertions or
+		*					deletions.
 		*/
 		void updateBatch(const std::vector<GraphEvent>& batch) override;
 
