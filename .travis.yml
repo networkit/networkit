@@ -2,7 +2,7 @@ language: generic
 
 matrix:
   include:
-    - env: CC=gcc-4.8 CXX=g++-4.8
+    - env: CC=gcc-4.9 CXX=g++-4.9
       os: linux
       sudo: false
       addons:
@@ -10,7 +10,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-4.8
+            - g++-4.9
             - scons
             - python-configparser
             - libgtest-dev
@@ -22,13 +22,14 @@ matrix:
        - make
        - cd -
 
-    - env: CC=gcc-4.8 CXX=g++-4.8
+    - env: CC=gcc-4.9 CXX=g++-4.9
       os: osx
       sudo: false
       before_install:
         - brew update
         - brew tap homebrew/versions
-        - brew install gcc48
+        - brew install gcc49
+        - brew link --overwrite gcc@4.9
         - brew install scons
         - pip2 install configparser
       install:
