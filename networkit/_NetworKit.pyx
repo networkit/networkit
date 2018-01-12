@@ -3116,6 +3116,34 @@ cdef class ThrillGraphBinaryReader(GraphReader):
 
 		return Graph(0).setThis(result)
 
+cdef extern from "cpp/io/ThrillGraphBinaryWriter.h":
+	cdef cppclass _ThrillGraphBinaryWriter "NetworKit::ThrillGraphBinaryWriter":
+		void write(_Graph G, string path) nogil except +
+
+cdef class ThrillGraphBinaryWriter:
+	"""
+	Writes a graph format consisting of a serialized DIA of vector<uint32_t> from thrill.
+	Edges are written only in one direction.
+	"""
+
+	cdef _ThrillGraphBinaryWriter _this
+
+	"""
+	Write the graph to a binary file.
+
+	Parameters
+	----------
+	G     : Graph
+		The graph to write
+	paths : str
+		The output path
+	"""
+	def write(self, Graph G not None, path):
+		cdef string c_path = stdstring(path)
+		with nogil:
+			self._this.write(G._this, c_path)
+		return self
+
 cdef extern from "cpp/io/EdgeListReader.h":
 	cdef cppclass _EdgeListReader "NetworKit::EdgeListReader"(_GraphReader):
 		_EdgeListReader() except +
