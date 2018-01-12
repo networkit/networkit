@@ -7,7 +7,7 @@ from _NetworKit import Partition, Coverage, Modularity, CommunityDetector, PLP, 
 	NodeStructuralRandMeasure, GraphStructuralRandMeasure, JaccardMeasure, NMIDistance, AdjustedRandMeasure,\
 	StablePartitionNodes, IntrapartitionDensity, PartitionHubDominance, CoverHubDominance, PartitionFragmentation, IsolatedInterpartitionExpansion, IsolatedInterpartitionConductance,\
 	EdgeListPartitionReader, GraphClusteringTools, ClusteringGenerator, PartitionIntersection, HubDominance, CoreDecomposition, CutClustering, ParallelPartitionCoarsening, \
-	BinaryPartitionReader, BinaryEdgeListPartitionReader
+	BinaryPartitionReader, BinaryEdgeListPartitionReader, BinaryEdgeListPartitionWriter
 
 # R.I.P.: The CNM (Clauset, Newman, Moore) community detection algorithm - it was always a bit slow, but it broke down in the end. Resurrect it from history (<= 3.4.1) if needed for experimental purposes.
 

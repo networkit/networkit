@@ -3473,6 +3473,44 @@ cdef class BinaryEdgeListPartitionReader:
 
 		return Partition().setThis(result)
 
+cdef extern from "cpp/io/BinaryEdgeListPartitionWriter.h":
+	cdef cppclass _BinaryEdgeListPartitionWriter "NetworKit::BinaryEdgeListPartitionWriter":
+		_BinaryEdgeListPartitionWriter() except +
+		_BinaryEdgeListPartitionWriter(node firstNode, uint8_t width) except +
+		_Partition write(_Partition P, string path) nogil except +
+
+cdef class BinaryEdgeListPartitionWriter:
+	"""
+	Writes a partition file that contains a binary list of pairs (node, partition(node)).
+
+	Parameters
+	----------
+	firstNode : node
+		The id of the first node, this is added to all writen node ids
+	width : int
+		The width of the unsigned integer in bytes (4 or 8)
+	"""
+	cdef _BinaryEdgeListPartitionWriter _this
+
+	def __cinit__(self, node firstNode=0, uint8_t width=4):
+		self._this = _BinaryEdgeListPartitionWriter(firstNode, width)
+
+	def write(self, Partition P not None, path):
+		"""
+		Write the partition to the given file.
+
+		Parameters
+		----------
+		paths : str
+			The input path
+		"""
+		cdef string c_path = stdstring(path)
+
+		with nogil:
+			self._this.write(P._this, c_path)
+
+		return self
+
 cdef extern from "cpp/io/SNAPEdgeListPartitionReader.h":
 	cdef cppclass _SNAPEdgeListPartitionReader "NetworKit::SNAPEdgeListPartitionReader":
 		_SNAPEdgeListPartitionReader() except +
