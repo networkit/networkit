@@ -28,8 +28,8 @@ matrix:
       before_install:
         - brew update
         - brew tap homebrew/versions
+        - brew cask uninstall --force oclint # See https://github.com/travis-ci/travis-ci/issues/8826 for details.
         - brew install gcc49
-        - brew link --overwrite gcc@4.9
         - brew install scons
         - pip2 install configparser
       install:
