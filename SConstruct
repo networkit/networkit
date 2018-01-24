@@ -67,7 +67,7 @@ def getSourceFiles(target, optimize):
 
 	# walk source directory and find ONLY .cpp files
 	for (dirpath, dirnames, filenames) in os.walk(srcDir):
-	    for name in fnmatch.filter(filenames, "*.cpp"):
+		for name in fnmatch.filter(filenames, "*.cpp"):
 			source.append(os.path.join(dirpath, name))
 
 	# exclude files depending on target, executables will be addes later
