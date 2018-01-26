@@ -9,6 +9,7 @@
 #define SSSP_H_
 
 #include <set>
+#include <stack>
 
 #include "../graph/Graph.h"
 #include "../base/Algorithm.h"
