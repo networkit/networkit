@@ -34,7 +34,7 @@ void Dijkstra::run() {
     std::vector<node> empty;
     std::swap(nodesSortedByDistance, empty);
   }
-  // distances[source] = 0;
+
   // priority queue with distance-node pairs
   distances[source] = 0;
   Aux::PrioQueue<edgeweight, node> pq(distances);
