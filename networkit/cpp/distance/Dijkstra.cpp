@@ -50,8 +50,7 @@ void Dijkstra::run() {
       TRACE("pq size: ", pq.size());
       pq.changeKey(distances[v], v);
       TRACE("pq size: ", pq.size());
-    } else if (storePaths && (distances[u] < infDist) &&
-               (distances[v] == distances[u] + w)) {
+    } else if (storePaths && (distances[v] == distances[u] + w)) {
       previous[v].push_back(u); // additional predecessor
       npaths[v] += npaths[u];   // all the shortest paths to u are
                                 // also shortest paths to v now
@@ -65,7 +64,8 @@ void Dijkstra::run() {
     node current = pq.extractMin().second;
     TRACE("current node in Dijkstra: ", current);
     TRACE("pq size: ", pq.size());
-    if (breakWhenFound && target == current) {
+    if ((breakWhenFound && target == current)
+            || distances[current] == infDist) {
       break;
     }
 
