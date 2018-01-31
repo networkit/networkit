@@ -299,8 +299,8 @@ elif optimize == "Opt":
 	env.Append(CFLAGS = optimizedCFlags)
 	env.Append(CPPFLAGS = optimizedCppFlags)
 elif optimize == "Pro":
-	 env.Append(CFLAGS = profileCFlags)
-	 env.Append(CPPFLAGS = profileCppFlags)
+	env.Append(CFLAGS = profileCFlags)
+	env.Append(CPPFLAGS = profileCppFlags)
 else:
 	print("ERROR: invalid optimize: %s" % optimize)
 	exit(1)
