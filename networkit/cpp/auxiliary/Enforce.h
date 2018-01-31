@@ -8,10 +8,13 @@
 namespace Aux {
 
 /**
- * Enforces that b is true and throws an Exception otherwise.
+ * Enforces that @a b is true and throws an Exception otherwise.
  *
  * If provided, msg must not be null, otherwise the behavior of this
  * function is undefined.
+ *
+ * @param b Boolean value whose truthiness should be enforced
+ * @param msg Message of the exception
  */
 template<typename Exception = std::runtime_error>
 inline void enforce(bool b, const char* msg = "") {
@@ -22,8 +25,13 @@ inline void enforce(bool b, const char* msg = "") {
 }
 
 /**
- * Overload that accepts a std::string. This is mainly for convenience
- * while keeping the default-version free of unneeded allocations.
+ * Enforces that @a b is true and throws an Exception otherwise.
+ *
+ * If provided, msg must not be null, otherwise the behavior of this
+ * function is undefined.
+ *
+ * @param b Boolean value whose truthiness should be enforced
+ * @param msg Message of the exception
  */
 template<typename Exception = std::runtime_error>
 inline void enforce(bool b, const std::string& msg) {
@@ -32,6 +40,8 @@ inline void enforce(bool b, const std::string& msg) {
 
 /**
  * Checks that the provided fstream is opened and throws an exception otherwise.
+ *
+ * @param stream File stream whose openness should be enforced
  */
 template<typename Stream>
 inline void enforceOpened(const Stream& stream) {
@@ -45,9 +55,14 @@ inline void enforceOpened(const Stream& stream) {
 namespace Checkers {
 	
 	/**
-	 * Checks the bool via assert
+	 * Checks the truthiness of the given boolean values through asserts.
 	 */
 	struct Asserter {
+		/**
+		 * Enforces truthiness of the given boolean value @b through asserts.
+		 *
+		 * @param b Boolean value whose truthiness should be enforced
+		 */
 		static void enforce(bool b) {
 			assert(b);
 			(void) b; // prevent warnings in release-builds
@@ -55,18 +70,28 @@ namespace Checkers {
 	};
 	
 	/**
-	 * Checks to bool via enforce
+	 * Enforces truthiness of a given boolean value by throwing an exception in case of violation.
 	 */
 	struct Enforcer {
+		/**
+		 * Enforces that @a b is true and throws an Exception otherwise.
+		 *
+		 * @param b Boolean value whose truthiness should be enforced
+		 */
 		static void enforce(bool b) {
 			::Aux::enforce(b);
 		}
 	};
 	
 	/**
-	 * Calls std::terminate if the bool is false
+	 * Calls std::terminate if the bool is false.
 	 */
 	struct Terminator {
+		/**
+		 * Enforces truthiness of the given boolean value @b by terminating in case of violation.
+		 *
+		 * @param b Boolean value whose truthiness should be enforced
+		 */
 		static void enforce(bool b) {
 			if (!b) {
 				std::terminate();
@@ -75,15 +100,20 @@ namespace Checkers {
 	};
 
 	/**
-	 * Won't look at the bool (not even in debug-mode, which is how this differs from Asserter)
+	 * Won't look at the bool (not even in debug-mode, which is how this differs from Asserter).
 	 */
-	struct Ignorer{
-		static void enforce(bool) {}
+	struct Ignorer {
+		/**
+		 * Ignores the given boolean value and does not enforce anything.
+		 *
+		 * Useful for debugging purposes.
+		 *
+		 * @param Boolean whose value is ignored
+		 */
+		static void enforce(bool) { }
 	};
 }
 
 } // namespace Aux
-
-
 
 #endif // ENFORCE_H_
