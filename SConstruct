@@ -4,11 +4,11 @@ import fnmatch
 import sys
 
 if sys.version_info >= (3,0):
-    import configparser as cp
-    getConf = lambda conf, sec, name, fb: conf.get(sec, name, fallback=fb)
+	import configparser as cp
+	getConf = lambda conf, sec, name, fb: conf.get(sec, name, fallback=fb)
 else:
-    import ConfigParser as cp
-    getConf = lambda conf, sec, name, fb: conf.get(sec, name, fb)
+	import ConfigParser as cp
+	getConf = lambda conf, sec, name, fb: conf.get(sec, name, fb)
 
 home_path = os.environ['HOME']
 
@@ -67,7 +67,7 @@ def getSourceFiles(target, optimize):
 
 	# walk source directory and find ONLY .cpp files
 	for (dirpath, dirnames, filenames) in os.walk(srcDir):
-	    for name in fnmatch.filter(filenames, "*.cpp"):
+		for name in fnmatch.filter(filenames, "*.cpp"):
 			source.append(os.path.join(dirpath, name))
 
 	# exclude files depending on target, executables will be addes later
@@ -160,7 +160,7 @@ else:
 		Exit(1)
 
 	conf = DefaultConfigParser()
-	conf.read([confPath])     # read the configuration file
+	conf.read([confPath]) # read the configuration file
 
 	## compiler
 	cppComp = compiler or conf.get_default("compiler", "cpp", "gcc")
@@ -232,10 +232,10 @@ AddOption("--sanitize",
 
 
 try:
-    optimize = GetOption("optimize")
+	optimize = GetOption("optimize")
 except:
-    print("ERROR: Missing option --optimize=<LEVEL>")
-    exit(1)
+	print("ERROR: Missing option --optimize=<LEVEL>")
+	exit(1)
 
 sanitize = None
 try:
@@ -283,27 +283,27 @@ AddOption("--openmp",
 openmp = GetOption("openmp")
 
 if (openmp == "yes") or (openmp == None): # with OpenMP by default
-    env.Append(CPPFLAGS = ["-fopenmp"])
-    env.Append(LINKFLAGS = ["-fopenmp"])
+	env.Append(CPPFLAGS = ["-fopenmp"])
+	env.Append(LINKFLAGS = ["-fopenmp"])
 elif (openmp == "no"):
-    env.Append(LIBS = ["pthread"])
+	env.Append(LIBS = ["pthread"])
 else:
-    print("ERROR: unrecognized option --openmp=%s" % openmp)
-    exit(1)
+	print("ERROR: unrecognized option --openmp=%s" % openmp)
+	exit(1)
 
 # optimize flags
 if optimize == "Dbg":
-    env.Append(CFLAGS = debugCFlags)
-    env.Append(CPPFLAGS = debugCppFlags)
+	env.Append(CFLAGS = debugCFlags)
+	env.Append(CPPFLAGS = debugCppFlags)
 elif optimize == "Opt":
-    env.Append(CFLAGS = optimizedCFlags)
-    env.Append(CPPFLAGS = optimizedCppFlags)
+	env.Append(CFLAGS = optimizedCFlags)
+	env.Append(CPPFLAGS = optimizedCppFlags)
 elif optimize == "Pro":
-	 env.Append(CFLAGS = profileCFlags)
-	 env.Append(CPPFLAGS = profileCppFlags)
+	env.Append(CFLAGS = profileCFlags)
+	env.Append(CPPFLAGS = profileCppFlags)
 else:
-    print("ERROR: invalid optimize: %s" % optimize)
-    exit(1)
+	print("ERROR: invalid optimize: %s" % optimize)
+	exit(1)
 
 # sanitize
 if sanitize:
