@@ -117,23 +117,6 @@ TEST_F(AuxGTest, testRandomProbability) {
 }
 
 
-TEST_F(AuxGTest, testTimer) {
-	int64_t sleepTime = 1000; // sleep time in ms
-	int64_t tolerance = 20;
-
-	Aux::Timer timer;
-	DEBUG("sleeping for ", sleepTime, " ms");
-	timer.start();
-	std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
-	timer.stop();
-	std::chrono::duration<int64_t, std::milli> elapsed = timer.elapsed();
-	int64_t ec = elapsed.count();
-
-	EXPECT_LE(sleepTime - tolerance, ec) << "elapsed time should be roughly equal to sleep time";
-	EXPECT_GE(sleepTime + tolerance, ec) << "elapsed time should be roughly to sleep time";
-}
-
-
 TEST_F(AuxGTest, testBinomial) {
 	EXPECT_EQ(1, Aux::MissingMath::binomial(7,0));
 	EXPECT_EQ(7, Aux::MissingMath::binomial(7,1));
