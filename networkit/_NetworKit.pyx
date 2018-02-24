@@ -6252,6 +6252,35 @@ cdef class Closeness(Centrality):
 		self._this = new _Closeness(G._this, normalized, checkConnectedness)
 
 
+cdef extern from "cpp/centrality/HarmonicCloseness.h":
+	cdef cppclass _HarmonicCloseness "NetworKit::HarmonicCloseness" (_Centrality):
+		_HarmonicCloseness(_Graph, bool) except +
+
+cdef class HarmonicCloseness(Centrality):
+	"""
+	        HarmonicCloseness(G, normalized=True)
+
+		Constructs the HarmonicCloseness class for the given Graph `G`.
+                If the harmonic closeness scores should not be normalized, set
+                `normalized` to False.
+                The run() method takes O(nm) time, where n is the number
+	 	of nodes and m is the number of edges of the graph.
+
+	 	Parameters
+	 	----------
+	 	G : Graph
+	 		The graph.
+	 	normalized : bool, optional
+	 		Set this parameter to False if scores should not be
+                        normalized into an interval of [0,1].
+                        Normalization only for unweighted graphs.
+	"""
+
+	def __cinit__(self, Graph G, normalized=True):
+		self._G = G
+		self._this = new _HarmonicCloseness(G._this, normalized)
+
+
 cdef extern from "cpp/centrality/KPathCentrality.h":
 	cdef cppclass _KPathCentrality "NetworKit::KPathCentrality" (_Centrality):
 		_KPathCentrality(_Graph, double, count) except +
