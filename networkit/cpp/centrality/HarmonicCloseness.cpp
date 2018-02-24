@@ -41,7 +41,7 @@ void HarmonicCloseness::run() {
     scoreData[v] = sum;
   });
   if (normalized) {
-    G.forNodes([&](node w) { scoreData[w] /= (G.numberOfNodes() + 1); });
+    G.forNodes([&](node w) { scoreData[w] /= (G.numberOfNodes() - 1); });
   }
 
   hasRun = true;
