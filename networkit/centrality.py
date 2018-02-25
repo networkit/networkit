@@ -11,9 +11,7 @@ __credits__ = ["Christian Staudt", "Elisabetta Bergamini", "Henning Meyerhenke",
 from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness,\
 ApproxBetweenness2, EstimateBetweenness, DynApproxBetweenness, Closeness, HarmonicCloseness, KPathCentrality, CoreDecomposition,\
 KatzCentrality, LocalClusteringCoefficient, ApproxCloseness, LocalPartitionCoverage, Sfigality, SpanningEdgeCentrality,\
-PermanenceCentrality, TopCloseness, DynBetweenness, GroupCloseness, DynBetweennessOneNode
-
-
+PermanenceCentrality, TopCloseness, TopHarmonicCloseness, DynBetweenness, GroupCloseness, DynBetweennessOneNode
 
 # local imports
 from networkit.algebraic import adjacencyEigenvector, PageRankMatrix, symmetricEigenvectors
