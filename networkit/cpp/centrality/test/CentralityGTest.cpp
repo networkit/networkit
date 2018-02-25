@@ -30,6 +30,7 @@
 #include "../PermanenceCentrality.h"
 #include "../SpanningEdgeCentrality.h"
 #include "../TopCloseness.h"
+#include "../TopHarmonicCloseness.h"
 #include <iomanip>
 #include <iostream>
 
@@ -890,8 +891,6 @@ TEST_F(CentralityGTest, testTopClosenessDirected) {
     G.addEdge(u, v);
     G.addEdge(v, u);
   });
-  INFO("Number of nodes: ", G.upperNodeIdBound(),
-       ", number of edges: ", G.numberOfEdges());
   Closeness cc(G1, true);
   cc.run();
   TopCloseness topcc(G, k, true, true);
@@ -917,8 +916,6 @@ TEST_F(CentralityGTest, testTopClosenessUndirected) {
     G.addEdge(u, v);
     G.addEdge(v, u);
   });
-  INFO("Number of nodes: ", G.upperNodeIdBound(),
-       ", number of edges: ", G.numberOfEdges());
   Closeness cc(G1, true);
   cc.run();
   TopCloseness topcc(G, k, true, true);
@@ -934,4 +931,53 @@ TEST_F(CentralityGTest, testTopClosenessUndirected) {
   }
 }
 
+TEST_F(CentralityGTest, testTopHarmonicClosenessDirected) {
+  Aux::Random::setSeed(42, true);
+  count size = 400;
+  count k = 10;
+  Graph G1 = DorogovtsevMendesGenerator(size).generate();
+  Graph G(G1.upperNodeIdBound(), false, true);
+  G1.forEdges([&](node u, node v) {
+    G.addEdge(u, v);
+    G.addEdge(v, u);
+  });
+  HarmonicCloseness cc(G1, false);
+  cc.run();
+  TopHarmonicCloseness topcc(G, k);
+  topcc.run();
+  const edgeweight tol = 1e-7;
+  for (count i = 0; i < k; i++) {
+    EXPECT_NEAR(cc.ranking()[i].second, topcc.topkScoresList()[i], tol);
+  }
+  TopHarmonicCloseness topcc2(G, k);
+  topcc2.run();
+  for (count i = 0; i < k; i++) {
+    EXPECT_NEAR(cc.ranking()[i].second, topcc2.topkScoresList()[i], tol);
+  }
+}
+
+TEST_F(CentralityGTest, testTopHarmonicClosenessUndirected) {
+  Aux::Random::setSeed(42, true);
+  count size = 400;
+  count k = 10;
+  Graph G1 = DorogovtsevMendesGenerator(size).generate();
+  Graph G(G1.upperNodeIdBound(), false, false);
+  G1.forEdges([&](node u, node v) {
+    G.addEdge(u, v);
+    G.addEdge(v, u);
+  });
+  HarmonicCloseness cc(G1, false);
+  cc.run();
+  TopHarmonicCloseness topcc(G, k);
+  topcc.run();
+  const edgeweight tol = 1e-7;
+  for (count i = 0; i < k; i++) {
+    EXPECT_NEAR(cc.ranking()[i].second, topcc.topkScoresList()[i], tol);
+  }
+  TopHarmonicCloseness topcc2(G, k);
+  topcc2.run();
+  for (count i = 0; i < k; i++) {
+    EXPECT_NEAR(cc.ranking()[i].second, topcc2.topkScoresList()[i], tol);
+  }
+}
 } /* namespace NetworKit */
