@@ -294,7 +294,7 @@ void TopHarmonicCloseness::run() {
         // by the complete BFS
         G.forNodes([&](node u) {
           if (allScores[u] > S[u] &&
-              toAnalyze[u]) { // This part must be syncrhonized.
+              toAnalyze[u]) { // This part must be synchronized.
             omp_set_lock(&lock);
             if (allScores[u] > S[u] &&
                 toAnalyze[u]) { // Have to check again, because the variables
