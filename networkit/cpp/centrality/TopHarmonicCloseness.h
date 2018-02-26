@@ -24,7 +24,7 @@ public:
    * Finds the top k nodes with highest harmonic closeness centrality faster
    * than computing it for all nodes. The implementation is based on "Computing
    * Top-k Centrality Faster in Unweighted Graphs", Bergamini et al., ALENEX16.
-   * The algorithms are based on two heuristics. We reccommend to use
+   * The algorithms are based on two heuristics. We recommend to use
    * useBFSbound = false for complex networks (or networks with small diameter)
    * and useBFSbound = true for street networks (or networks with large
    * diameters). Notice that the worst case running time of the algorithm is
