@@ -6104,6 +6104,70 @@ cdef class TopCloseness:
 		return self._this.topkScoresList()
 
 
+cdef extern from "cpp/centrality/TopHarmonicCloseness.h":
+	cdef cppclass _TopHarmonicCloseness "NetworKit::TopHarmonicCloseness":
+		_TopHarmonicCloseness(_Graph G, count, bool) except +
+		void run() except +
+		vector[node] topkNodesList() except +
+		vector[edgeweight] topkScoresList() except +
+
+
+cdef class TopHarmonicCloseness:
+	""" Finds the top k nodes with highest harmonic closeness centrality faster
+            than computing it for all nodes. The implementation is based on "Computing
+            Top-k Centrality Faster in Unweighted Graphs", Bergamini et al., ALENEX16.
+            The algorithms are based on two heuristics. We reccommend to use
+            useBFSbound = false for complex networks (or networks with small diameter)
+            and useBFSbound = true for street networks (or networks with large
+            diameters). Notice that the worst case running time of the algorithm is
+            O(nm), where n is the number of nodes and m is the number of edges.
+            However, for most real-world networks the empirical running time is O(m).
+
+
+	TopCloseness(G, k=1, useBFSbound=True)
+
+	Parameters
+	----------
+	G: An unweighted graph.
+	k: Number of nodes with highest closeness that have to be found. For example, if k = 10, the top 10 nodes with highest closeness will be computed.
+	useBFSbound: If true, the BFSbound is re-computed at each iteration. If false, BFScut is used.
+	The worst case running time of the algorithm is O(nm), where n is the number of nodes and m is the number of edges.
+	However, for most networks the empirical running time is O(m).
+	"""
+	cdef _TopHarmonicCloseness* _this
+	cdef Graph _G
+
+	def __cinit__(self,  Graph G, k=1, useBFSbound=False):
+		self._G = G
+		self._this = new _TopHarmonicCloseness(G._this, k, useBFSbound)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		""" Computes top-k harmonic closeness. """
+		self._this.run()
+		return self
+
+	""" Returns a list with the k nodes with highest harmonic closeness.
+	Returns
+	-------
+	vector
+		The k nodes with highest harmonic closeness.
+	"""
+	def topkNodesList(self):
+		return self._this.topkNodesList()
+
+
+	""" Returns a list with the scores of the k nodes with highest harmonic closeness.
+	Returns
+	-------
+	vector
+		The k highest closeness harmonic scores.
+	"""
+	def topkScoresList(self):
+		return self._this.topkScoresList()
+
 
 cdef extern from "cpp/centrality/GroupCloseness.h":
 	cdef cppclass _GroupCloseness "NetworKit::GroupCloseness":
@@ -6250,6 +6314,35 @@ cdef class Closeness(Centrality):
 	def __cinit__(self, Graph G, normalized=True, checkConnectedness=True):
 		self._G = G
 		self._this = new _Closeness(G._this, normalized, checkConnectedness)
+
+
+cdef extern from "cpp/centrality/HarmonicCloseness.h":
+	cdef cppclass _HarmonicCloseness "NetworKit::HarmonicCloseness" (_Centrality):
+		_HarmonicCloseness(_Graph, bool) except +
+
+cdef class HarmonicCloseness(Centrality):
+	"""
+	        HarmonicCloseness(G, normalized=True)
+
+		Constructs the HarmonicCloseness class for the given Graph `G`.
+                If the harmonic closeness scores should not be normalized, set
+                `normalized` to False.
+                The run() method takes O(nm) time, where n is the number
+	 	of nodes and m is the number of edges of the graph.
+
+	 	Parameters
+	 	----------
+	 	G : Graph
+	 		The graph.
+	 	normalized : bool, optional
+	 		Set this parameter to False if scores should not be
+                        normalized into an interval of [0,1].
+                        Normalization only for unweighted graphs.
+	"""
+
+	def __cinit__(self, Graph G, normalized=True):
+		self._G = G
+		self._this = new _HarmonicCloseness(G._this, normalized)
 
 
 cdef extern from "cpp/centrality/KPathCentrality.h":
