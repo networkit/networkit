@@ -2,7 +2,7 @@
  * TopHarmonicCloseness.h
  *
  * Created on: 25.02.2018
- *		 Author: Eugenio Angriman
+ *		Authors: nemes, Eugenio Angriman
  */
 
 #ifndef TOPHARMONICCLOSENESS_H_
