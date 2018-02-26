@@ -5,10 +5,12 @@
  * 		 Author: Eugenio Angriman
  */
 
-#include "HarmonicCloseness.h"
+#include <memory>
+
 #include "../distance/BFS.h"
 #include "../distance/Dijkstra.h"
 #include "../distance/SSSP.h"
+#include "HarmonicCloseness.h"
 
 namespace NetworKit {
 
