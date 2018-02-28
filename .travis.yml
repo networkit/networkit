@@ -27,7 +27,6 @@ matrix:
       sudo: false
       before_install:
         - brew update
-        - brew tap homebrew/versions
         - brew cask uninstall --force oclint # See https://github.com/travis-ci/travis-ci/issues/8826 for details.
         - brew install gcc@6
         - brew install scons
@@ -79,7 +78,6 @@ matrix:
       sudo: false
       before_install:
         - brew update
-        - brew tap homebrew/versions
         - brew install scons
         - brew install llvm37
         - pip2 install configparser

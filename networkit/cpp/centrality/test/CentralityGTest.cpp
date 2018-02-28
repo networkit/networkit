@@ -177,7 +177,7 @@ TEST_F(CentralityGTest, testKatzCentralityDirected) {
   std::vector<std::pair<node, double>> kc_ranking = kc.ranking();
   std::vector<double> kc_scores = kc.scores();
 
-  EXPECT_EQ(kc_ranking[0].first, 699u);
+  EXPECT_EQ(kc_ranking[0].first, 699);
 }
 
 TEST_F(CentralityGTest, testPageRankDirected) {
@@ -192,7 +192,7 @@ TEST_F(CentralityGTest, testPageRankDirected) {
   std::vector<std::pair<node, double>> pr_ranking = pr.ranking();
 
   const double tol = 1e-3;
-  EXPECT_EQ(pr_ranking[0].first, 699u);
+  EXPECT_EQ(pr_ranking[0].first, 699);
   EXPECT_NEAR(pr_ranking[0].second, 0.00432, tol);
 }
 
