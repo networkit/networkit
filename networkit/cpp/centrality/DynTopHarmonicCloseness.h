@@ -37,6 +37,7 @@ public:
    */
   DynTopHarmonicCloseness(const Graph &G, count k = 1,
                           bool useBFSbound = false);
+
   ~DynTopHarmonicCloseness();
 
   /**
@@ -109,6 +110,7 @@ protected:
    * @param event The graph event.
    */
   void addEdge(const GraphEvent &event);
+
   /**
    * Handles an edge removal.
    *
