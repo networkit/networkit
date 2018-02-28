@@ -139,6 +139,12 @@ protected:
    */
   void updateReachableNodesAfterInsertion(node u, node v);
 
+  /**
+   * Recomputes the number of reachable nodes in an undirected graph after
+   * removing an edge between @a u and @a v.
+   * @param u The first node.
+   * @param v The second node.
+   */
   void updateReachableNodesAfterDeletion(const GraphEvent &event);
 
   const Graph &G;
