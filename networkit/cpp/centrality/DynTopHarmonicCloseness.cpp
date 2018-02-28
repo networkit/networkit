@@ -5,6 +5,7 @@
  *      Author: nemes, Eugenio Angriman
  */
 
+#include <cmath>
 #include <omp.h>
 
 #include "../auxiliary/PrioQueue.h"
