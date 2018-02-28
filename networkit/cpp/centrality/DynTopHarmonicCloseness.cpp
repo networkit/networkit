@@ -388,7 +388,7 @@ void DynTopHarmonicCloseness::run() {
   hasRun = true;
 }
 
-void DynTopHarmonicCloseness::update(const GraphEvent &event) {
+void DynTopHarmonicCloseness::update(GraphEvent event) {
 
   if (event.type == GraphEvent::EDGE_ADDITION) {
     addEdge(event);
@@ -741,6 +741,13 @@ void DynTopHarmonicCloseness::removeEdge(const GraphEvent &event) {
 
   for (count j = 0; j < k; j++) {
     top.insert(topkScores[j], topk[j]);
+  }
+}
+
+void DynTopHarmonicCloseness::updateBatch(
+    const std::vector<GraphEvent> &batch) {
+  for (auto event : batch) {
+    update(event);
   }
 }
 

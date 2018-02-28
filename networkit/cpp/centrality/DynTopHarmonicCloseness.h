@@ -9,6 +9,7 @@
 #define DYNTOPHARMONICCLOSENESS_H_
 
 #include "../base/Algorithm.h"
+#include "../base/DynAlgorithm.h"
 #include "../components/DynConnectedComponents.h"
 #include "../components/DynWeaklyConnectedComponents.h"
 #include "../graph/Graph.h"
@@ -22,7 +23,7 @@ namespace NetworKit {
  *
  * @ingroup centrality
  */
-class DynTopHarmonicCloseness : public Algorithm {
+class DynTopHarmonicCloseness : public Algorithm, public DynAlgorithm {
 public:
   /**
    * Constructs the DynTopHarmonicCloseness class. This class implements dynamic
@@ -70,7 +71,15 @@ public:
    *
    * @param event The edge modification event.
    */
-  void update(const GraphEvent &event);
+  void update(GraphEvent event) override;
+
+  /**
+   * Updates the list of k nodes with the highest closeness in G
+   * after a batch of updates.
+   *
+   * @param batch A vector of edge modification events.
+   */
+  void updateBatch(const std::vector<GraphEvent> &batch) override;
 
 protected:
   /**
