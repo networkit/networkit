@@ -204,8 +204,6 @@ void AffectedNodes::addedEdge() {
 
     edgeweight infDist = std::numeric_limits<edgeweight>::max();
 
-    count prevNumLevelsU = 0;
-    count prevNumLevelsV = 0;
     count numLevelsU = 0;
     count numLevelsV = 0;
 
