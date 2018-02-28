@@ -6177,6 +6177,7 @@ cdef extern from "cpp/centrality/DynTopHarmonicCloseness.h":
 		vector[node] topkNodesList() except +
 		vector[edgeweight] topkScoresList() except +
 		void update(_GraphEvent) except +
+		void updateBatch(vector[_GraphEvent]) except +
 
 cdef class DynTopHarmonicCloseness:
 	""" Finds the top k nodes with highest harmonic closeness centrality faster
@@ -6249,6 +6250,19 @@ cdef class DynTopHarmonicCloseness:
 	"""
 	def update(self, ev):
 		self._this.update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+
+	""" Updates the list of the k nodes with the highest harmonic closeness in G
+		after a batch of edge updates.
+
+	Parameters
+	----------
+	batch: A GraphEvent vector
+	"""
+	def updateBatch(self, batch):
+		cdef vector[_GraphEvent] _batch
+		for ev in batch:
+			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+		self._this.updateBatch(_batch)
 
 
 cdef extern from "cpp/centrality/GroupCloseness.h":
