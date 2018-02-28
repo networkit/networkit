@@ -100,6 +100,21 @@ TEST_F(DynTopHarmonicClosenessGTest, testDynTopHarmonicClosenessUndirected) {
       EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
     }
   }
+
+  for (GraphEvent edgeInsertion : insertions) {
+    G.addEdge(edgeInsertion.u, edgeInsertion.v);
+  }
+
+  reference.run();
+  centrality.updateBatch(insertions);
+
+  scores = centrality.ranking();
+  refScores = reference.ranking();
+
+  for (count j = 0; j < k; ++j) {
+    EXPECT_TRUE(scores[j].first == refScores[j].first);
+    EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
+  }
 }
 
 TEST_F(DynTopHarmonicClosenessGTest, testDynTopHarmonicClosenessDirected) {
@@ -188,6 +203,21 @@ TEST_F(DynTopHarmonicClosenessGTest, testDynTopHarmonicClosenessDirected) {
       EXPECT_TRUE(scores[j].first == refScores[j].first);
       EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
     }
+  }
+
+  for (GraphEvent edgeInsertion : insertions) {
+    G.addEdge(edgeInsertion.u, edgeInsertion.v);
+  }
+
+  reference.run();
+  centrality.updateBatch(insertions);
+
+  scores = centrality.ranking();
+  refScores = reference.ranking();
+
+  for (count j = 0; j < k; ++j) {
+    EXPECT_TRUE(scores[j].first == refScores[j].first);
+    EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
   }
 }
 } // namespace NetworKit
