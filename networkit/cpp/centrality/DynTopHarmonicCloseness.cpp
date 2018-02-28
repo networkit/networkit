@@ -414,8 +414,6 @@ void DynTopHarmonicCloseness::addEdge(const GraphEvent &event) {
   std::vector<edgeweight> improvementUpperBounds =
       affectedNodes.getImprovements();
 
-  numAffectedNodes = uniqueAffectedNodes.size();
-
   Aux::PrioQueue<edgeweightReversed, node> Q1(n);
 
   for (node w : uniqueAffectedNodes) {
@@ -473,10 +471,6 @@ void DynTopHarmonicCloseness::addEdge(const GraphEvent &event) {
   omp_lock_t statsLock;
   omp_init_lock(&statsLock);
 
-  numSkippedBoundary = 0;
-  numSkippedByDistance = 0;
-  numSkippedImprovementBound = 0;
-
 #pragma omp parallel
   {
     std::vector<uint8_t> visited(n, false);
@@ -519,7 +513,6 @@ void DynTopHarmonicCloseness::addEdge(const GraphEvent &event) {
         // larger than the previous cut-off
         isValid[v] = true;
         omp_set_lock(&statsLock);
-        numSkippedByDistance++;
         omp_unset_lock(&statsLock);
       } else if (distanceFromInsertedEdge == cutOff[v] && !isExact[v] &&
                  boundaryUpdateScore < kth &&
@@ -529,7 +522,6 @@ void DynTopHarmonicCloseness::addEdge(const GraphEvent &event) {
         allScores[v] = boundaryUpdateScore;
         isValid[v] = true;
         omp_set_lock(&statsLock);
-        numSkippedBoundary++;
         omp_unset_lock(&statsLock);
       } else if (((!useBFSbound &&
                    allScores[v] + improvementUpperBounds[v] < kth) ||
@@ -543,7 +535,6 @@ void DynTopHarmonicCloseness::addEdge(const GraphEvent &event) {
         }
 
         omp_set_lock(&statsLock);
-        numSkippedImprovementBound++;
         omp_unset_lock(&statsLock);
       } else if (!(isValid[v] && isExact[v])) {
         if (useBFSbound) {
@@ -640,8 +631,6 @@ void DynTopHarmonicCloseness::removeEdge(const GraphEvent &event) {
   affectedNodes.run();
 
   std::vector<node> uniqueAffectedNodes = affectedNodes.getNodes();
-
-  numAffectedNodes = uniqueAffectedNodes.size();
 
   for (node w : uniqueAffectedNodes) {
     isExact[w] = false;
@@ -799,109 +788,17 @@ void DynTopHarmonicCloseness::computeReachableNodesUndirected() {
 }
 
 void DynTopHarmonicCloseness::computeReachableNodesDirected() {
-  count n = G.upperNodeIdBound();
+
   r = std::vector<count>(G.upperNodeIdBound());
-  if (useWCC) {
-    INFO("USING WCC");
-    wComps = new DynWeaklyConnectedComponents(G);
-    wComps->run();
-    hasWComps = true;
-    std::map<index, count> sizes = wComps->getComponentSizes();
-    G.forNodes([&](node w) {
-      index cw = wComps->componentOfNode(w);
-      component[w] = cw;
-      r[w] = sizes[cw];
-    });
-  } else {
-    INFO("USING SCC");
-    StronglyConnectedComponents sccs(G);
-    sccs.run();
-
-    count N = sccs.numberOfComponents();
-    std::vector<count> reachU_scc(N, 0);
-    std::vector<count> reachU_without_max_scc(N, 0);
-    std::vector<bool> reach_from_max_scc(N, false);
-    std::vector<bool> reaches_max_scc(N, false);
-    std::vector<std::vector<count>> sccs_vec(N, std::vector<count>());
-    Graph sccGraph(N, false, true);
-    std::vector<bool> found(N, false);
-    count maxSizeCC = 0;
-    // We compute the vector sccs_vec, where each component contains the list of
-    // its nodes
-    for (count v = 0; v < n; v++) {
-      component[v] = sccs.componentOfNode(v);
-      sccs_vec[sccs.componentOfNode(v) - 1].push_back(v);
-    }
-
-    // We compute the SCC graph and store it in sccGraph
-    for (count V = 0; V < N; V++) {
-      for (node v : sccs_vec[V]) {
-        G.forNeighborsOf(v, [&](node w) {
-          count W = sccs.componentOfNode(w) - 1;
-
-          if (W != V && !found[W]) {
-            found[W] = true;
-            sccGraph.addEdge(V, W);
-          }
-        });
-      }
-      sccGraph.forNeighborsOf(V, [&](node W) { found[W] = false; });
-      if (sccGraph.degreeOut(V) > sccGraph.degreeOut(maxSizeCC)) {
-        maxSizeCC = V;
-      }
-      // ELISABETTA: maybe the code can be made simpler by running G.forEdges to
-      // scan all the edges. Would it be better to have a Graph object to store
-      // the SCC graph?
-    } // MICHELE: I have used a graph instead of scc_adjlist. About G.forEdges,
-    // I think it is
-    // a bit more complicated: I have to scan nodes, otherwise I do not know how
-    // to avoid multiple edges. This scan is made using variable "found". Do you
-    // have better ideas? Note that this is linear in the graph size.
-
-    // BFS from the biggest SCC.
-    std::queue<count> Q;
-    Q.push(maxSizeCC);
-    reach_from_max_scc[maxSizeCC] = true;
-    while (!Q.empty()) {
-      count V = Q.front();
-      Q.pop();
-      reachU_scc[maxSizeCC] += sccs_vec[V].size();
-      sccGraph.forNeighborsOf(V, [&](node W) {
-        if (!reach_from_max_scc[W]) {
-          reach_from_max_scc[W] = true;
-          Q.push(W);
-        }
-      });
-    }
-    reaches_max_scc[maxSizeCC] = true;
-
-    // so far only the largest SCC has reach_U and reach_L > 0
-
-    // Dynamic programming to compute number of reachable vertices
-    for (count V = 0; V < N; V++) {
-      if (V == maxSizeCC) {
-        continue;
-      }
-      sccGraph.forNeighborsOf(V, [&](node W) {
-        if (!reach_from_max_scc[W]) {
-          reachU_without_max_scc[V] += reachU_without_max_scc[W];
-        }
-        reachU_scc[V] += reachU_scc[W];
-        reachU_scc[V] = std::min(reachU_scc[V], n);
-        reaches_max_scc[V] = reaches_max_scc[V] || reaches_max_scc[W];
-      });
-
-      if (reaches_max_scc[V]) {
-        reachU_scc[V] = reachU_without_max_scc[V] + reachU_scc[V];
-      }
-      reachU_scc[V] += sccs_vec[V].size();
-      reachU_scc[V] = std::min(reachU_scc[V], n);
-    }
-
-    for (count v = 0; v < n; v++) {
-      r[v] = reachU_scc[sccs.componentOfNode(v) - 1];
-    }
-  }
+  wComps = new DynWeaklyConnectedComponents(G);
+  wComps->run();
+  hasWComps = true;
+  std::map<index, count> sizes = wComps->getComponentSizes();
+  G.forNodes([&](node w) {
+    index cw = wComps->componentOfNode(w);
+    component[w] = cw;
+    r[w] = sizes[cw];
+  });
 }
 
 // TODO: merge in a single method

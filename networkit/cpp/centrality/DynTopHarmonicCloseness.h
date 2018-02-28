@@ -139,10 +139,11 @@ protected:
    */
   void updateReachableNodesAfterInsertion(node u, node v);
 
+  void updateReachableNodesAfterDeletion(const GraphEvent &event);
+
   const Graph &G;
   count k = 1;
   bool useBFSbound;
-  bool useWCC = false;
   std::vector<node> topk;
   std::vector<edgeweight> topkScores;
   std::vector<edgeweight> allScores;
@@ -153,17 +154,11 @@ protected:
   DynConnectedComponents *comps;
   bool hasComps = false;
   Partition component;
+  DynWeaklyConnectedComponents *wComps;
+  bool hasWComps = false;
   std::vector<count> r;
   std::vector<count> rOld;
   std::vector<count> reachL;
-  count numAffectedNodes = 0;
-  count numSkippedByDistance = 0;
-  count numSkippedBoundary = 0;
-  count numSkippedImprovementBound = 0;
-
-  void updateReachableNodesAfterDeletion(const GraphEvent &event);
-  DynWeaklyConnectedComponents *wComps;
-  bool hasWComps = false;
 };
 
 inline std::vector<node> DynTopHarmonicCloseness::topkNodesList() {
