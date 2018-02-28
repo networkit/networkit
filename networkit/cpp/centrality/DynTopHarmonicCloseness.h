@@ -1,8 +1,8 @@
 /*
- * Closeness.h
+ * DynTopHarmonicCloseness.h
  *
- *  Created on: 03.10.2014
- *      Author: nemes
+ *  Created on: 28.02.2018
+ *      Author: nemes, Eugenio Angriman
  */
 
 #ifndef DYNTOPHARMONICCLOSENESS_H_
@@ -141,7 +141,7 @@ protected:
 
   const Graph &G;
   count k = 1;
-  bool useBFSbound = false;
+  bool useBFSbound;
   bool useWCC = false;
   std::vector<node> topk;
   std::vector<edgeweight> topkScores;
@@ -151,7 +151,7 @@ protected:
   std::vector<edgeweight> cutOff;
   std::vector<uint8_t> exactCutOff;
   DynConnectedComponents *comps;
-  bool hasComps;
+  bool hasComps = false;
   Partition component;
   std::vector<count> r;
   std::vector<count> rOld;

@@ -1,8 +1,8 @@
 /*
  * TopCloseness.cpp
  *
- *  Created on: 03.10.2014
- *      Author: nemes
+ *  Created on: 28.02.2018
+ *      Author: nemes, Eugenio Angriman
  */
 
 #include <omp.h>
@@ -22,11 +22,8 @@ struct edgeweightReversed {
   bool operator==(const edgeweightReversed &rhs) const {
     return rhs.value == value;
   }
-  //  bool operator!=(const edgeweightReversed &lhs) { return lhs.value !=
-  //  value; } bool operator>(const edgeweightReversed &lhs) { return lhs.value
-  //  < value; }
   bool operator<(const edgeweightReversed &rhs) const {
-    return rhs.value > value;
+    return rhs.value < value;
   }
   count operator+(count c) const { return value + c; }
   friend std::ostream &operator<<(std::ostream &reference,
@@ -271,7 +268,7 @@ void DynTopHarmonicCloseness::run() {
   G.forNodes(
       [&](node v) { Q1.insert(edgeweightReversed(n) + G.degree(v), v); });
 
-  Aux::PrioQueue<edgeweightReversed, node> top(n);
+  Aux::PrioQueue<edgeweight, node> top(n);
 
   // protects accesses to all shared variables
   omp_lock_t lock;
@@ -359,7 +356,7 @@ void DynTopHarmonicCloseness::run() {
       // its score is larger than the k-th largest value
       if (isExact[v] && allScores[v] > kth) {
         omp_set_lock(&lock);
-        top.insert(edgeweightReversed(allScores[v]), v);
+        top.insert(allScores[v], v);
         if (top.size() > k) {
           top.extractMin();
         }
@@ -369,8 +366,8 @@ void DynTopHarmonicCloseness::run() {
       // Update the k-th largest value for this thread
       if (top.size() == k) {
         omp_set_lock(&lock);
-        std::pair<edgeweightReversed, node> elem = top.extractMin();
-        kth = elem.first.value;
+        std::pair<edgeweight, node> elem = top.extractMin();
+        kth = elem.first;
         top.insert(elem.first, elem.second);
         omp_unset_lock(&lock);
       }
@@ -379,14 +376,15 @@ void DynTopHarmonicCloseness::run() {
 
   // Store the nodes and their closeness centralities
   for (int64_t j = k - 1; j >= 0; --j) {
-    std::pair<edgeweightReversed, node> elem = top.extractMin();
+    std::pair<edgeweight, node> elem = top.extractMin();
     topk[j] = elem.second;
-    topkScores[j] = elem.first.value;
+    topkScores[j] = elem.first;
   }
 
   for (count j = 0; j < k; ++j) {
-    top.insert(edgeweightReversed(topkScores[j]), topk[j]);
+    top.insert(topkScores[j], topk[j]);
   }
+
   hasRun = true;
 }
 
@@ -672,10 +670,10 @@ void DynTopHarmonicCloseness::removeEdge(const GraphEvent &event) {
     // case And now? EA
     updateReachableNodesAfterDeletion(event);
   }
-  Aux::PrioQueue<edgeweight, node> Q(n);
+  Aux::PrioQueue<edgeweightReversed, node> Q(n);
 
   // add all nodes to the queue
-  G.forNodes([&](node v) { Q.insert(allScores[v], v); });
+  G.forNodes([&](node v) { Q.insert(edgeweightReversed(allScores[v]), v); });
 
   omp_lock_t lock;
   omp_init_lock(&lock);
@@ -696,7 +694,7 @@ void DynTopHarmonicCloseness::removeEdge(const GraphEvent &event) {
         break;
       }
 
-      std::pair<edgeweight, node> elem = Q.extractMin();
+      std::pair<edgeweightReversed, node> elem = Q.extractMin();
 
       node v = elem.second;
 
