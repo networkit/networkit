@@ -1,19 +1,18 @@
 /*
- * CentralityGTest.cpp
+ * DynTopHarmonicClosenessGTest.cpp
  *
- *  Created on: 19.02.2014
- *      Author: cls
+ * Created on: 28.02.2017
+ *     Author: Eugenio Angriman
  */
 
-#include "DynTopClosenessGTest.h"
+#include "DynTopHarmonicClosenessGTest.h"
 #include "../../generators/DorogovtsevMendesGenerator.h"
 #include "../DynTopHarmonicCloseness.h"
 #include "../HarmonicCloseness.h"
-#include "../TopHarmonicCloseness.h"
 
 namespace NetworKit {
 
-TEST_F(DynTopClosenessGTest, testDynTopHarmonicCloseness) {
+TEST_F(DynTopHarmonicClosenessGTest, testDynTopHarmonicCloseness) {
 
   Aux::Random::setSeed(42, false);
   Graph G = DorogovtsevMendesGenerator(500).generate();
