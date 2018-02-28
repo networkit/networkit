@@ -194,7 +194,8 @@ void DynTopHarmonicCloseness::BFSbound(node source, std::vector<double> &S2,
     if (j <= 2) {
       closeNodes += nodesPerLev[j];
     } else {
-      farNodes += nodesPerLev[j] * inverseDistance(double(abs((double)j - 1.)));
+      farNodes +=
+          nodesPerLev[j] * inverseDistance(double(std::abs((double)j - 1.)));
     }
   }
 
@@ -219,9 +220,9 @@ void DynTopHarmonicCloseness::BFSbound(node source, std::vector<double> &S2,
     // TODO: OPTIMIZE?
     if (!G.isDirected()) {
       for (count j = 0; j <= nLevs; j++) {
-        level_bound +=
-            inverseDistance(std::max(2., double(abs((double)j - (double)i)))) *
-            nodesPerLev[j];
+        level_bound += inverseDistance(std::max(
+                           2., double(std::abs((double)j - (double)i)))) *
+                       nodesPerLev[j];
       }
     } else {
       for (count j = 0; j <= nLevs; j++) {
