@@ -227,9 +227,6 @@ void AffectedNodes::addedEdge() {
       }
     });
 
-    DEBUG("Num levels: ", prevNumLevelsU, " / ", prevNumLevelsV, " / ",
-          numLevelsU, " / ", numLevelsV);
-
     closenessU = 0;
     for (count i = 1; i <= numLevelsU; i++) {
       closenessU += numNodesOnLevelFromU[i] * (1.0 / i);
