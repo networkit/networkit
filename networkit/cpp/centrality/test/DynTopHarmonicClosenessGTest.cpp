@@ -30,7 +30,7 @@ TEST_F(DynTopHarmonicClosenessGTest, testDynTopHarmonicClosenessUndirected) {
   auto refScores = reference.ranking();
 
   for (count j = 0; j < k; ++j) {
-    EXPECT_TRUE(scores[j].first == refScores[j].first);
+    EXPECT_EQ(scores[j].first, refScores[j].first);
     EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
   }
 
@@ -77,7 +77,7 @@ TEST_F(DynTopHarmonicClosenessGTest, testDynTopHarmonicClosenessUndirected) {
     refScores = reference.ranking();
 
     for (count j = 0; j < k; ++j) {
-      EXPECT_TRUE(scores[j].first == refScores[j].first);
+      EXPECT_EQ(scores[j].first, refScores[j].first);
       EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
     }
   }
@@ -96,7 +96,7 @@ TEST_F(DynTopHarmonicClosenessGTest, testDynTopHarmonicClosenessUndirected) {
     refScores = reference.ranking();
 
     for (count j = 0; j < k; ++j) {
-      EXPECT_TRUE(scores[j].first == refScores[j].first);
+      EXPECT_EQ(scores[j].first, refScores[j].first);
       EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
     }
   }
@@ -112,7 +112,7 @@ TEST_F(DynTopHarmonicClosenessGTest, testDynTopHarmonicClosenessUndirected) {
   refScores = reference.ranking();
 
   for (count j = 0; j < k; ++j) {
-    EXPECT_TRUE(scores[j].first == refScores[j].first);
+    EXPECT_EQ(scores[j].first, refScores[j].first);
     EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
   }
 }
@@ -134,7 +134,7 @@ TEST_F(DynTopHarmonicClosenessGTest, testDynTopHarmonicClosenessDirected) {
   auto refScores = reference.ranking();
 
   for (count j = 0; j < k; ++j) {
-    EXPECT_TRUE(scores[j].first == refScores[j].first);
+    EXPECT_EQ(scores[j].first, refScores[j].first);
     EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
   }
 
@@ -181,7 +181,7 @@ TEST_F(DynTopHarmonicClosenessGTest, testDynTopHarmonicClosenessDirected) {
     refScores = reference.ranking();
 
     for (count j = 0; j < k; ++j) {
-      EXPECT_TRUE(scores[j].first == refScores[j].first);
+      EXPECT_EQ(scores[j].first, refScores[j].first);
       EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
     }
   }
@@ -200,7 +200,7 @@ TEST_F(DynTopHarmonicClosenessGTest, testDynTopHarmonicClosenessDirected) {
     refScores = reference.ranking();
 
     for (count j = 0; j < k; ++j) {
-      EXPECT_TRUE(scores[j].first == refScores[j].first);
+      EXPECT_EQ(scores[j].first, refScores[j].first);
       EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
     }
   }
@@ -216,7 +216,7 @@ TEST_F(DynTopHarmonicClosenessGTest, testDynTopHarmonicClosenessDirected) {
   refScores = reference.ranking();
 
   for (count j = 0; j < k; ++j) {
-    EXPECT_TRUE(scores[j].first == refScores[j].first);
+    EXPECT_EQ(scores[j].first, refScores[j].first);
     EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
   }
 }
