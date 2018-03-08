@@ -116,7 +116,7 @@ TEST_F(DynTopHarmonicClosenessGTest, testDynTopHarmonicClosenessUndirected) {
 TEST_F(DynTopHarmonicClosenessGTest, testDynTopHarmonicClosenessDirected) {
 
   Aux::Random::setSeed(42, false);
-  Graph G = ErdosRenyiGenerator(20, 0.1, true).generate();
+  Graph G = ErdosRenyiGenerator(500, 0.1, true).generate();
 
   count k = 10;
 
