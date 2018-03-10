@@ -17,14 +17,9 @@ namespace NetworKit {
  * Computes the Laplacian centrality of the graph.
  */
 class LaplacianCentrality: public Centrality {
-protected:
-	double alpha;
-	double beta;
-	double tol;
-
 public:
 	/**
-	 * Constructs a LaplacianCentrality object for the given Graph @a G. @a tol defines the tolerance for convergence.
+	 * Constructs a LaplacianCentrality object for the given Graph @a G.
 	 *
 	 * @param[in] G The graph.
 	 */
@@ -33,7 +28,7 @@ public:
 	/**
 	 * Computes laplacian centrality on the graph passed in constructor.
 	 */
-	virtual void run();
+	void run() override;
 };
 
 } /* namespace NetworKit */
