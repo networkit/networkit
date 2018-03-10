@@ -1000,12 +1000,12 @@ TEST_F(CentralityGTest, testLaplacianCentrality) {
   lc.run();
   std::vector<double> scores = lc.scores();
 
-  EXPECT_EQ(scores[0], 140);
-  EXPECT_EQ(scores[1], 180);
-  EXPECT_EQ(scores[2], 56);
-  EXPECT_EQ(scores[3], 44);
-  EXPECT_EQ(scores[4], 52);
-  EXPECT_EQ(scores[5], 8);
+  EXPECT_EQ(140, scores[0]);
+  EXPECT_EQ(180, scores[1]);
+  EXPECT_EQ(56, scores[2]);
+  EXPECT_EQ(44, scores[3]);
+  EXPECT_EQ(52, scores[4]);
+  EXPECT_EQ(8, scores[5]);
 }
 
 TEST_F(CentralityGTest, testLaplacianCentralityNormalized) {
@@ -1022,12 +1022,12 @@ TEST_F(CentralityGTest, testLaplacianCentralityNormalized) {
   lc.run();
   std::vector<double> scores = lc.scores();
 
-  EXPECT_EQ(scores[0], 0.70);
-  EXPECT_EQ(scores[1], 0.90);
-  EXPECT_EQ(scores[2], 0.28);
-  EXPECT_EQ(scores[3], 0.22);
-  EXPECT_EQ(scores[4], 0.26);
-  EXPECT_EQ(scores[5], 0.04);
+  EXPECT_EQ(0.70, scores[0]);
+  EXPECT_EQ(0.90, scores[1]);
+  EXPECT_EQ(0.28, scores[2]);
+  EXPECT_EQ(0.22, scores[3]);
+  EXPECT_EQ(0.26, scores[4]);
+  EXPECT_EQ(0.04, scores[5]);
 }
 
 TEST_F(CentralityGTest, testLaplacianCentralityUnweighted) {
@@ -1044,12 +1044,12 @@ TEST_F(CentralityGTest, testLaplacianCentralityUnweighted) {
   lc.run();
   std::vector<double> scores = lc.scores();
 
-  EXPECT_EQ(scores[0], 18);
-  EXPECT_EQ(scores[1], 34);
-  EXPECT_EQ(scores[2], 18);
-  EXPECT_EQ(scores[3], 10);
-  EXPECT_EQ(scores[4], 16);
-  EXPECT_EQ(scores[5], 6);
+  EXPECT_EQ(18, scores[0]);
+  EXPECT_EQ(34, scores[1]);
+  EXPECT_EQ(18, scores[2]);
+  EXPECT_EQ(10, scores[3]);
+  EXPECT_EQ(16, scores[4]);
+  EXPECT_EQ(6, scores[5]);
 }
 
 } /* namespace NetworKit */
