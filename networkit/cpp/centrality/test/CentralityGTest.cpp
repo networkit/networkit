@@ -985,27 +985,29 @@ TEST_F(CentralityGTest, testTopHarmonicClosenessUndirected) {
 }
 
 TEST_F(CentralityGTest, testLaplacianCentrality) {
-    Graph G(6, true);
+  // The graph structure and reference values for the scores are taken from
+  // Qi et al., Laplacian centrality: A new centrality measure for weighted networks.
+  //
+  // See https://math.wvu.edu/~cqzhang/Publication-files/my-paper/INS-2012-Laplacian-W.pdf.
+  Graph G(6, true);
 
-    G.addEdge(0, 1, 4);
-    G.addEdge(0, 2, 2);
-    G.addEdge(1, 2, 1);
-    G.addEdge(1, 3, 2);
-    G.addEdge(1, 4, 2);
-    G.addEdge(4, 5, 1);
+  G.addEdge(0, 1, 4);
+  G.addEdge(0, 2, 2);
+  G.addEdge(1, 2, 1);
+  G.addEdge(1, 3, 2);
+  G.addEdge(1, 4, 2);
+  G.addEdge(4, 5, 1);
 
-    LaplacianCentrality lc(G);
-    lc.run();
+  LaplacianCentrality lc(G);
+  lc.run();
+  std::vector<double> scores = lc.scores();
 
-    std::vector<double> scores = lc.scores();
-
-    const double tol = 1e-3;
-    EXPECT_NEAR(scores[0], 0.70, tol);
-    EXPECT_NEAR(scores[1], 0.90, tol);
-    EXPECT_NEAR(scores[2], 0.28, tol);
-    EXPECT_NEAR(scores[3], 0.22, tol);
-    EXPECT_NEAR(scores[4], 0.26, tol);
-    EXPECT_NEAR(scores[5], 0.04, tol);
+  EXPECT_EQ(scores[0], 0.70);
+  EXPECT_EQ(scores[1], 0.90);
+  EXPECT_EQ(scores[2], 0.28);
+  EXPECT_EQ(scores[3], 0.22);
+  EXPECT_EQ(scores[4], 0.26);
+  EXPECT_EQ(scores[5], 0.04);
 }
 
 } /* namespace NetworKit */
