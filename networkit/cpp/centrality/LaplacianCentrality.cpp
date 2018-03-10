@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-LaplacianCentrality::LaplacianCentrality(const Graph& G): Centrality(G) {
+LaplacianCentrality::LaplacianCentrality(const Graph& G, bool normalized): Centrality(G, normalized) {
 }
 
 void LaplacianCentrality::run() {
@@ -28,6 +28,11 @@ void LaplacianCentrality::run() {
 
 		scoreData[u] = energyLossOnNodeDrop;
 	});
+
+	if (!normalized) {
+		hasRun = true;
+		return;
+	}
 
 	G.parallelForNodes([&](node u) {
 		scoreData[u] /= totalLaplacianEnergy;
