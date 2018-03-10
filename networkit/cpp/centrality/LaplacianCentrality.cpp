@@ -17,12 +17,12 @@ void LaplacianCentrality::run() {
 	double totalLaplacianEnergy = 0.0;
 
 	G.parallelForNodes([&](node u) {
-		count degreeU = G.degree(u);
+		count degreeU = G.weightedDegree(u);
 		totalLaplacianEnergy += degreeU * degreeU;
 		double energyLossOnNodeDrop = degreeU * degreeU;
 
 		G.forNeighborsOf(u, [&](node v, edgeweight ew) {
-			energyLossOnNodeDrop += ew * (ew + 2 * G.degree(v));
+			energyLossOnNodeDrop += ew * (ew + 2 * G.weightedDegree(v));
 			totalLaplacianEnergy += ew * ew;
 		});
 
