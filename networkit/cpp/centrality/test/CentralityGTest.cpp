@@ -15,6 +15,7 @@
 #include "../ApproxCloseness.h"
 #include "../EigenvectorCentrality.h"
 #include "../KatzCentrality.h"
+#include "../LaplacianCentrality.h"
 #include "../PageRank.h"
 #include "../KPathCentrality.h"
 #include "../CoreDecomposition.h"
@@ -902,6 +903,30 @@ TEST_F(CentralityGTest, testTopClosenessUndirected) {
     for (count i = 0; i < k; i++) {
         EXPECT_NEAR(cc.ranking()[i].second, topcc2.topkScoresList()[i], tol);
     }
+}
+
+TEST_F(CentralityGTest, testLaplacianCentrality) {
+    Graph G(6, true);
+
+    G.addEdge(0, 1, 4);
+    G.addEdge(0, 2, 2);
+    G.addEdge(1, 2, 1);
+    G.addEdge(1, 3, 2);
+    G.addEdge(1, 4, 2);
+    G.addEdge(4, 5, 1);
+
+    LaplacianCentrality lc(G);
+    lc.run();
+
+    std::vector<double> scores = lc.scores();
+
+    const double tol = 1e-3;
+    EXPECT_NEAR(scores[0], 0.70, tol);
+    EXPECT_NEAR(scores[1], 0.90, tol);
+    EXPECT_NEAR(scores[2], 0.28, tol);
+    EXPECT_NEAR(scores[3], 0.22, tol);
+    EXPECT_NEAR(scores[4], 0.26, tol);
+    EXPECT_NEAR(scores[5], 0.04, tol);
 }
 
 } /* namespace NetworKit */
