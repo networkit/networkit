@@ -909,7 +909,7 @@ class Profile:
 					self.verbosePrint("Correlation: " + name + " <-> " + nameB, level=1)
 					self.__correlations[category][name][nameB]["stat"] = correlation
 			except Exception as e:
-				self.verbosePrint("Error (Post Processing): " + jobType + " - " + nam-e, level=-1)
+				self.verbosePrint("Error (Post Processing): " + jobType + " - " + name, level=-1)
 				self.verbosePrint(str(e), level=-1)
 
 		pool.join()
