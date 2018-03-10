@@ -7119,21 +7119,29 @@ cdef class LocalPartitionCoverage(Centrality):
 
 cdef extern from "cpp/centrality/LaplacianCentrality.h":
 	cdef cppclass _LaplacianCentrality "NetworKit::LaplacianCentrality" (_Centrality):
-		_LaplacianCentrality(_Graph) except +
+		_LaplacianCentrality(_Graph, bool) except +
 
 cdef class LaplacianCentrality(Centrality):
-	"""
-	LaplacianCentrality(G)
+	""" Computes the Laplacian centrality of the graph.
+
+	LaplacianCentrality(G, normalized=False)
+
+	The implementation is a simplification of the original algorithm proposed by Qi et al. in
+	"Laplacian centrality: A new centrality measure for weighted networks".
+
+	See https://dl.acm.org/citation.cfm?id=2181343.2181780 for details.
 
 	Parameters
 	----------
 	G : Graph
 		The graph.
+	normalized : bool, optional
+		Whether scores should be normalized by the energy of the full graph.
 	"""
 
-	def __cinit__(self, Graph G):
+	def __cinit__(self, Graph G, normalized = False):
 		self._G = G
-		self._this = new _LaplacianCentrality(G._this)
+		self._this = new _LaplacianCentrality(G._this, normalized)
 
 # Module: dynamic
 
