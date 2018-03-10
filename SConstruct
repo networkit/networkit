@@ -190,9 +190,9 @@ else:
 	env["CXX"] = cppComp
 
 	env.Append(CPPDEFINES=defines)
-	env.Append(CPPPATH = includes.values())
-	env.Append(LIBS = libraries.keys())
-	env.Append(LIBPATH = libraries.values())
+	env.Append(CPPPATH = list(includes.values()))
+	env.Append(LIBS = list(libraries.keys()))
+	env.Append(LIBPATH = list(libraries.values()))
 
 	with open(confPath, "w") as f:
 		conf.write(f)
