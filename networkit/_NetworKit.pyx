@@ -7024,6 +7024,23 @@ cdef class LocalPartitionCoverage(Centrality):
 		self._P = P
 		self._this = new _LocalPartitionCoverage(G._this, P._this)
 
+cdef extern from "cpp/centrality/LaplacianCentrality.h":
+	cdef cppclass _LaplacianCentrality "NetworKit::LaplacianCentrality" (_Centrality):
+		_LaplacianCentrality(_Graph) except +
+
+cdef class LaplacianCentrality(Centrality):
+	"""
+	LaplacianCentrality(G)
+
+	Parameters
+	----------
+	G : Graph
+		The graph.
+	"""
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _LaplacianCentrality(G._this)
 
 # Module: dynamic
 
