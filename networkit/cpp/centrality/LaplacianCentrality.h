@@ -32,10 +32,10 @@ public:
 	LaplacianCentrality(const Graph& G, bool normalized = false);
 
 	/**
-	 * Computes the laplacian centrality on the graph passed in the constructor.
+	 * Computes the Laplacian centrality on the graph passed in the constructor.
 	 *
 	 * See https://dl.acm.org/citation.cfm?id=2181343.2181780 for more details about
-	 * laplacian centrality.
+	 * Laplacian centrality.
 	 */
 	void run() override;
 };
