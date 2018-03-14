@@ -5370,6 +5370,72 @@ cdef class WeaklyConnectedComponents:
 
 
 
+cdef extern from "cpp/components/BiconnectedComponents.h":
+	cdef cppclass _BiconnectedComponents "NetworKit::BiconnectedComponents":
+		_BiconnectedComponents(_Graph G) except +
+		void run() nogil except +
+		count numberOfComponents() except +
+		map[count, count] getComponentSizes() except +
+		vector[vector[node]] getComponents() except +
+
+cdef class BiconnectedComponents:
+	""" Determines the biconnected components of an undirected graph as defined in
+		Tarjan, Robert. Depth-First Search and Linear Graph Algorithms. SIAM J.
+		Comput. Vol 1, No. 2, June 1972.
+
+
+		Parameters
+		----------
+		G : Graph
+			The graph.
+	"""
+	cdef _BiconnectedComponents* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _BiconnectedComponents(G._this)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		""" Computes the biconnected components of the graph given in the
+			constructor.
+		"""
+		with nogil:
+			self._this.run()
+		return self
+
+	def numberOfComponents(self):
+		""" Returns the number of components.
+
+			Returns
+			count
+				The number of components.
+		"""
+		return self._this.numberOfComponents()
+
+	def getComponentSizes(self):
+		""" Returns the map from component to size.
+
+			Returns
+			map[count, count]
+			A map that maps each component to its size.
+		"""
+		return self._this.getComponentSizes()
+
+	def getComponents(self):
+		""" Returns all the components, each stored as (unordered) set of nodes.
+
+			Returns
+			vector[vector[node]]
+				A vector of vectors. Each inner vector contains all the nodes inside the component.
+		"""
+		return self._this.getComponents()
+
+
+
 cdef extern from "cpp/components/DynConnectedComponents.h":
 	cdef cppclass _DynConnectedComponents "NetworKit::DynConnectedComponents":
 		_DynConnectedComponents(_Graph G) except +
