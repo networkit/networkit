@@ -33,6 +33,9 @@ std::vector<std::pair<node, double>> Centrality::ranking() {
   G.forNodes([&](node v) { ranking.push_back({v, scoreData[v]}); });
   Aux::Parallel::sort(ranking.begin(), ranking.end(),
                       [](std::pair<node, double> x, std::pair<node, double> y) {
+                        if (x.second == y.second) {
+                          return x.first < y.first;
+                        }
                         return x.second > y.second;
                       });
   return ranking;
