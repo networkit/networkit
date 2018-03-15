@@ -166,7 +166,8 @@ void TopHarmonicCloseness::BFSbound(node source, std::vector<double> &S2,
     if (j <= 2) {
       closeNodes += nodesPerLev[j];
     } else {
-      farNodes += nodesPerLev[j] * inverseDistance(double(abs((double)j - 1.)));
+      farNodes +=
+          nodesPerLev[j] * inverseDistance(double(std::abs((double)j - 1.)));
     }
   }
 
@@ -191,9 +192,9 @@ void TopHarmonicCloseness::BFSbound(node source, std::vector<double> &S2,
     // TODO: OPTIMIZE?
     if (!G.isDirected()) {
       for (count j = 0; j <= nLevs; j++) {
-        level_bound +=
-            inverseDistance(std::max(2., double(abs((double)j - (double)i)))) *
-            nodesPerLev[j];
+        level_bound += inverseDistance(std::max(
+                           2., double(std::abs((double)j - (double)i)))) *
+                       nodesPerLev[j];
       }
     } else {
       for (count j = 0; j <= nLevs; j++) {
@@ -252,7 +253,7 @@ void TopHarmonicCloseness::run() {
   omp_init_lock(&lock);
 
   edgeweight kth = 0;
-#pragma omp parallel
+#pragma omp parallel num_threads(1)
   {
     std::vector<uint8_t> visited(n, false);
     std::vector<count> distances(n);
@@ -326,21 +327,51 @@ void TopHarmonicCloseness::run() {
         isValid[v] = true;
         omp_unset_lock(&lock);
       }
-
       // Insert v into the list with the k most central nodes if
       // its score is larger than the k-th largest value
       omp_set_lock(&lock);
       if (isExact[v] && allScores[v] >= kth) {
         top.insert(allScores[v], v);
         if (top.size() > k) {
-          if (allScores[v] > kth && nMinCloseness == 1 + trail) {
-            while (top.size() > k) {
-              top.extractMin();
+          ++trail;
+          if (allScores[v] > kth) {
+            if (nMinCloseness == trail) {
+              while (top.size() > k) {
+                top.extractMin();
+              }
+              trail = 0;
+              nMinCloseness = 1;
+              if (k > 1) {
+                Aux::PrioQueue<edgeweight, node> tmp(n);
+                auto last = top.extractMin();
+                auto next = top.extractMin();
+                minCloseness = last.first;
+
+                if (last.first == next.first) {
+                  tmp.insert(last.first, last.second);
+                  while (next.first == last.first) {
+                    tmp.insert(next.first, next.second);
+                    ++nMinCloseness;
+                    if (top.size() == 0) {
+                      break;
+                    }
+                    next = top.extractMin();
+                  }
+                  if (next.first != last.first) {
+                    top.insert(next.first, next.second);
+                  }
+
+                  while (tmp.size() > 0) {
+                    auto elem = tmp.extractMin();
+                    top.insert(elem.first, elem.second);
+                  }
+                } else {
+                  top.insert(next.first, next.second);
+                  top.insert(last.first, last.second);
+                }
+              }
             }
-            trail = 0;
-            nMinCloseness = 1;
           } else {
-            ++trail;
             ++nMinCloseness;
           }
         } else if (allScores[v] < minCloseness) {
@@ -364,6 +395,7 @@ void TopHarmonicCloseness::run() {
     }
   }
 
+  // TODO This could go to another method
   if (trail > 0) {
     topk.resize(k + trail);
     topkScores.resize(k + trail);
@@ -375,10 +407,6 @@ void TopHarmonicCloseness::run() {
     topk[j] = elem.second;
     topkScores[j] = elem.first;
   }
-
-  //  for (count j = 0; j < k; ++j) {
-  //    top.insert(topkScores[j], topk[j]);
-  //  }
 
   for (count i = 0; i < topk.size() - 1; ++i) {
     count toSort = 1;

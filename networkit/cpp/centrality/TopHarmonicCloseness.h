@@ -123,7 +123,7 @@ protected:
   count k;
   count n;
   count trail = 0;
-  double minCloseness;
+  double minCloseness = std::numeric_limits<double>::max();
   count nMinCloseness = 0;
   bool useBFSbound;
   std::vector<node> topk;
