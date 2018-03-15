@@ -9057,7 +9057,7 @@ cdef class EdgeScoreLinearizer(EdgeScore):
 
 cdef extern from "cpp/edgescores/EdgeScoreNormalizer.h":
 	cdef cppclass _EdgeScoreNormalizer "NetworKit::EdgeScoreNormalizer"[T](_EdgeScore[double]):
-		_EdgeScoreNormalizer(const _Graph&, const vector[T]&, bool inverse, double lower, double upper) except +
+		_EdgeScoreNormalizer(const _Graph&, vector[T]&, bool inverse, double lower, double upper) except +
 
 cdef class EdgeScoreNormalizer(EdgeScore):
 	"""
@@ -9186,9 +9186,9 @@ cdef class EdgeScoreAsWeight:
 		self._this = new _EdgeScoreAsWeight(G._this, self._score, squared, offset, factor)
 
 	def __dealloc__(self):
-		self._G = None
-		self._score = None
-		del self._this
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
 
 	def getWeightedGraph(self):
 		"""
