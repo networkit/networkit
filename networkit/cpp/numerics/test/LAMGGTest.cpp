@@ -47,7 +47,6 @@ TEST_F(LAMGGTest, testSmallGraphs) {
 
 
 		LAMGSolverStatus status;
-		status.maxConvergenceTime = 10 * 60 * 1000;
 		status.desiredResidualReduction = 1e-6 * b.length() / (hierarchy.at(0).getLaplacian() * x - b).length(); // needed for getting a relative residual <= 1e-6
 
 		Vector result = x;
