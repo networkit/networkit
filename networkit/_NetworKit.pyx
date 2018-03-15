@@ -6049,8 +6049,8 @@ cdef extern from "cpp/centrality/TopCloseness.h":
 		edgeweight maxSum() except +
 		count iterations() except +
 		count operations() except +
-		vector[node] topkNodesList() except +
-		vector[edgeweight] topkScoresList() except +
+		vector[node] topkNodesList(bool) except +
+		vector[edgeweight] topkScoresList(bool) except +
 
 
 cdef class TopCloseness:
@@ -6084,24 +6084,41 @@ cdef class TopCloseness:
 		self._this.run()
 		return self
 
-	""" Returns a list with the k nodes with highest closeness.
-	Returns
-	-------
-	vector
-		The k nodes with highest closeness.
-	"""
-	def topkNodesList(self):
-		return self._this.topkNodesList()
+	def topkNodesList(self, includeTrail=False):
+		""" Returns a list with the k nodes with highest closeness.
+			WARNING: closeness centrality of some nodes below the top-k could be equal
+	  		to the k-th closeness, we call them trail. Set the parameter includeTrail
+	  		to true to also include those nodes but consider that the resulting vector
+	  		could be longer than k.
 
+		Parameters
+		----------
+		includeTrail: Whether or not to include trail nodes.
 
-	""" Returns a list with the scores of the k nodes with highest closeness.
-	Returns
-	-------
-	vector
-		The k highest closeness scores.
-	"""
-	def topkScoresList(self):
-		return self._this.topkScoresList()
+		Returns
+		-------
+		vector
+			The k nodes with highest closeness.
+		"""
+		return self._this.topkNodesList(includeTrail)
+
+	def topkScoresList(self, includeTrail=False):
+		""" Returns a list with the scores of the k nodes with highest closeness.
+			WARNING: closeness centrality of some nodes below the top-k could be equal
+  			to the k-th closeness, we call them trail. Set the parameter includeTrail
+	  		to true to also include those centrality values but consider that the
+	  		resulting vector could be longer than k.
+
+		Parameters
+		----------
+		includeTrail: Whether or not to include trail centrality value.
+
+		Returns
+		-------
+		vector
+			The k highest closeness scores.
+		"""
+		return self._this.topkScoresList(includeTrail)
 
 
 cdef extern from "cpp/centrality/TopHarmonicCloseness.h":
