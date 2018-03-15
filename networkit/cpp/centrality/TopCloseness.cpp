@@ -446,7 +446,7 @@ void TopCloseness::run() {
   DEBUG("Done filling the queue");
 
   double kth = std::numeric_limits<double>::max(); // like in Crescenzi
-#pragma omp parallel // num_threads(1) // Shared variables:
+#pragma omp parallel                               // Shared variables:
   // cc: synchronized write, read leads to a positive race condition;
   // Q: fully synchronized;
   // top: fully synchronized;
@@ -539,15 +539,46 @@ void TopCloseness::run() {
         DEBUG("    The closeness of s is ", 1.0 / farness[s], ".");
         top.insert(-farness[s], s);
         if (top.size() > k) {
-          if (farness[s] < kth && nMaxFarness == 1 + trail) {
-            // Erasing last element plus eventual trail
-            while (top.size() > k) {
-              top.extractMin();
+          ++trail;
+          if (farness[s] < kth) {
+            if (nMaxFarness == trail) {
+              // Purging trial
+              while (top.size() > k) {
+                top.extractMin();
+              }
+              trail = 0;
+              nMaxFarness = 1;
+              if (k > 1) {
+                Aux::PrioQueue<double, node> tmp(n);
+                auto last = top.extractMin();
+                auto next = top.extractMin();
+                maxFarness = last.first;
+
+                if (last.first == next.first) {
+                  tmp.insert(last.first, last.second);
+                  while (next.first == last.first) {
+                    tmp.insert(next.first, next.second);
+                    ++nMaxFarness;
+                    if (top.size() == 0) {
+                      break;
+                    }
+                    next = top.extractMin();
+                  }
+                  if (next.first != last.first) {
+                    top.insert(next.first, next.second);
+                  }
+
+                  while (tmp.size() > 0) {
+                    auto elem = tmp.extractMin();
+                    top.insert(elem.first, elem.second);
+                  }
+                } else {
+                  top.insert(next.first, next.second);
+                  top.insert(last.first, last.second);
+                }
+              }
             }
-            trail = 0;
-            nMaxFarness = 1;
           } else { // Same farness as kth
-            ++trail;
             ++nMaxFarness;
           }
         } else if (farness[s] > maxFarness) {
