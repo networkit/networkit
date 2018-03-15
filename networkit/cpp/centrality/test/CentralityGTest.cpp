@@ -949,11 +949,6 @@ TEST_F(CentralityGTest, testTopHarmonicClosenessDirected) {
   for (count i = 0; i < k; i++) {
     EXPECT_NEAR(cc.ranking()[i].second, topcc.topkScoresList()[i], tol);
   }
-  TopHarmonicCloseness topcc2(G, k);
-  topcc2.run();
-  for (count i = 0; i < k; i++) {
-    EXPECT_NEAR(cc.ranking()[i].second, topcc2.topkScoresList()[i], tol);
-  }
 }
 
 TEST_F(CentralityGTest, testTopHarmonicClosenessUndirected) {
