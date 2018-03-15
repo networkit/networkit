@@ -6169,6 +6169,102 @@ cdef class TopHarmonicCloseness:
 		return self._this.topkScoresList()
 
 
+cdef extern from "cpp/centrality/DynTopHarmonicCloseness.h":
+	cdef cppclass _DynTopHarmonicCloseness "NetworKit::DynTopHarmonicCloseness":
+		_DynTopHarmonicCloseness(_Graph G, count, bool) except +
+		void run() except +
+		vector[pair[node, edgeweight]] ranking() except +
+		vector[node] topkNodesList() except +
+		vector[edgeweight] topkScoresList() except +
+		void update(_GraphEvent) except +
+		void updateBatch(vector[_GraphEvent]) except +
+
+cdef class DynTopHarmonicCloseness:
+	""" Finds the top k nodes with highest harmonic closeness centrality faster
+            than computing it for all nodes and updates them after a single or multiple
+            edge update. The implementation is based on "Computing Top-k Closeness
+	    Centrality in Fully-dynamic Graphs", Bisenius et al., ALENEX18.
+            The implementation is based on the static algorithms by Borassi et al.
+	    (complex networks) and Bergamini et al. (large-diameter networks).
+
+	TopCloseness(G, k=1, useBFSbound=True)
+
+	Parameters
+	----------
+	G: An unweighted graph.
+	k: Number of nodes with highest closeness that have to be found. For example, if k = 10, the top 10 nodes with highest closeness will be computed.
+	useBFSbound: If true, the BFSbound is re-computed at each iteration. If false, BFScut is used.
+	The worst case running time of the algorithm is O(nm), where n is the number of nodes and m is the number of edges.
+	However, for most networks the empirical running time is O(m).
+	"""
+	cdef _DynTopHarmonicCloseness* _this
+	cdef Graph _G
+
+	def __cinit__(self,  Graph G, k=1, useBFSbound=False):
+		self._G = G
+		self._this = new _DynTopHarmonicCloseness(G._this, k, useBFSbound)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		""" Computes top-k harmonic closeness. """
+		self._this.run()
+		return self
+
+	""" Returns the ranking of the k most central nodes in the graph.
+	Returns
+	-------
+	vector
+			The ranking.
+	"""
+	def ranking(self):
+		return self._this.ranking()
+
+
+	""" Returns a list with the k nodes with highest harmonic closeness.
+	Returns
+	-------
+	vector
+		The k nodes with highest harmonic closeness.
+	"""
+	def topkNodesList(self):
+		return self._this.topkNodesList()
+
+
+	""" Returns a list with the scores of the k nodes with highest harmonic closeness.
+	Returns
+	-------
+	vector
+		The k highest closeness harmonic scores.
+	"""
+	def topkScoresList(self):
+		return self._this.topkScoresList()
+
+
+	""" Updates the list of the k nodes with the highest harmonic closeness in G.
+
+	Parameters
+	----------
+	event: A GrapEvent
+	"""
+	def update(self, ev):
+		self._this.update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+
+	""" Updates the list of the k nodes with the highest harmonic closeness in G
+		after a batch of edge updates.
+
+	Parameters
+	----------
+	batch: A GraphEvent vector
+	"""
+	def updateBatch(self, batch):
+		cdef vector[_GraphEvent] _batch
+		for ev in batch:
+			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+		self._this.updateBatch(_batch)
+
+
 cdef extern from "cpp/centrality/GroupCloseness.h":
 	cdef cppclass _GroupCloseness "NetworKit::GroupCloseness":
 		_GroupCloseness(_Graph G, count, count) except +
