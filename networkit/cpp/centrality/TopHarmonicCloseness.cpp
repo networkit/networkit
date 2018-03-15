@@ -253,7 +253,7 @@ void TopHarmonicCloseness::run() {
   omp_init_lock(&lock);
 
   edgeweight kth = 0;
-#pragma omp parallel num_threads(1)
+#pragma omp parallel
   {
     std::vector<uint8_t> visited(n, false);
     std::vector<count> distances(n);
