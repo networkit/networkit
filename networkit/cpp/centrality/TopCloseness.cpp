@@ -29,6 +29,9 @@ TopCloseness::TopCloseness(const Graph &G, count k, bool first_heu,
 
 void TopCloseness::init() {
   n = G.upperNodeIdBound();
+  trail = 0;
+  maxFarness = 0.f;
+  nMaxFarness = 0;
   topk.clear();
   topk.resize(k);
   topkScores.clear();
@@ -390,14 +393,14 @@ double TopCloseness::BFScut(node v, double x, bool *visited, count *distances,
           if (G.isDirected() || pred[u] != w) {
             ftildeL += (n - 1) / (rL - 1.0) / (rL - 1.0);
             ftildeU += (n - 1) / (rU - 1.0) / (rU - 1.0);
-            if (std::min(ftildeL, ftildeU) >= x) {
+            if (std::min(ftildeL, ftildeU) > x) {
               cont = false;
             }
           }
         }
       }
     });
-    if (std::min(ftildeL, ftildeU) >= x) {
+    if (std::min(ftildeL, ftildeU) > x) {
       farnessV = std::min(ftildeL, ftildeU);
       break;
     }
@@ -442,14 +445,14 @@ void TopCloseness::run() {
   Aux::PrioQueue<double, node> Q(farness);
   DEBUG("Done filling the queue");
 
-#pragma omp parallel // Shared variables:
+  double kth = std::numeric_limits<double>::max(); // like in Crescenzi
+#pragma omp parallel // num_threads(1) // Shared variables:
   // cc: synchronized write, read leads to a positive race condition;
   // Q: fully synchronized;
   // top: fully synchronized;
   // toAnalyze: fully synchronized;
   // visEdges: one variable for each thread, summed at the end;
   {
-    double kth = std::numeric_limits<double>::max(); // like in Crescenzi
     bool *visited = NULL;
     count *distances = NULL;
     node *pred = NULL;
@@ -482,7 +485,7 @@ void TopCloseness::run() {
       toAnalyze[s] = false;
       omp_unset_lock(&lock);
 
-      if (G.degreeOut(s) == 0 || farness[s] >= kth) {
+      if (G.degreeOut(s) == 0 || farness[s] > kth) {
         break;
       }
       DEBUG("Iteration ", ++iters, " of thread ", omp_get_thread_num());
@@ -531,27 +534,42 @@ void TopCloseness::run() {
       }
 
       // If necessary, we update kth.
-      if (farness[s] < kth) {
-        omp_set_lock(&lock);
+      omp_set_lock(&lock);
+      if (farness[s] <= kth) {
         DEBUG("    The closeness of s is ", 1.0 / farness[s], ".");
         top.insert(-farness[s], s);
         if (top.size() > k) {
-          top.extractMin();
+          if (farness[s] < kth && nMaxFarness == 1 + trail) {
+            // Erasing last element plus eventual trail
+            while (top.size() > k) {
+              top.extractMin();
+            }
+            trail = 0;
+            nMaxFarness = 1;
+          } else { // Same farness as kth
+            ++trail;
+            ++nMaxFarness;
+          }
+        } else if (farness[s] > maxFarness) {
+          maxFarness = farness[s];
+          nMaxFarness = 1;
+        } else if (farness[s] == maxFarness) {
+          ++nMaxFarness;
         }
-        omp_unset_lock(&lock);
       } else {
         DEBUG("    Not in the top-k.");
       }
 
       // We load the new value of kth.
-
-      if (top.size() == k) {
-        omp_set_lock(&lock);
+      if (top.size() >= k) {
         std::pair<double, node> elem = top.extractMin();
         kth = -elem.first;
         top.insert(elem.first, elem.second);
-        omp_unset_lock(&lock);
+        if (nMaxFarness == 1) {
+          maxFarness = kth;
+        }
       }
+      omp_unset_lock(&lock);
     }
     DEBUG("Number of iterations of thread ", omp_get_thread_num(), ": ", iters,
           " out of ", n);
@@ -566,14 +584,34 @@ void TopCloseness::run() {
   }
 
   hasRun = true;
+
+  if (trail > 0) {
+    topk.resize(k + trail);
+    topkScores.resize(k + trail);
+  }
+
   for (int i = top.size() - 1; i >= 0; i--) {
     std::pair<double, node> elem = top.extractMin();
     topk[i] = elem.second;
     topkScores[i] = 1.0 / -elem.first;
   }
-  for (count j = 0; j < k; j++) {
+  for (count j = 0; j < k + trail; j++) {
     DEBUG(j + 1, "-th node with max closeness: ", topk[j],
           ", its closeness: ", topkScores[j]);
+  }
+
+  // Ascending order of nodes ids with same closeness
+  for (count i = 0; i < topk.size() - 1; ++i) {
+    count toSort = 1;
+    while ((i + toSort) < topk.size() &&
+           topkScores[i] == topkScores[i + toSort]) {
+      ++toSort;
+    }
+    if (toSort > 1) {
+      auto begin = topk.begin() + i;
+      std::sort(begin, begin + toSort);
+      i += toSort - 1;
+    }
   }
 }
 

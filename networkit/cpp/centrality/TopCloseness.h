@@ -49,16 +49,26 @@ public:
   void run();
 
   /**
-   * Returns a list with the k nodes with highest closeness
+   * Returns a list with the k nodes with highest closeness.
+   * WARNING: closeness centrality of some nodes below the top-k could be equal
+   * to the k-th closeness, we call them trail. Set the parameter includeTrail
+   * to true to also include those nodes but consider that the resulting vector
+   * could be longer than k.
    *
+   * @param includeTrail Whether or not to include trail nodes.
    */
-  std::vector<node> topkNodesList();
+  std::vector<node> topkNodesList(bool includeTrail = false);
 
   /**
    * Returns a list with the scores of the k nodes with highest closeness
+   * WARNING: closeness centrality of some nodes below the top-k could be equal
+   * to the k-th closeness, we call them trail. Set the parameter includeTrail
+   * to true to also include those centrality values but consider that the
+   * resulting vector could be longer than k.
    *
+   * @param includeTrail Whether or not to include trail centrality value.
    */
-  std::vector<edgeweight> topkScoresList();
+  std::vector<edgeweight> topkScoresList(bool includeTrail = false);
 
 protected:
   Graph G;
@@ -68,6 +78,9 @@ protected:
   std::vector<node> topk;
   count visEdges = 0;
   count n_op = 0;
+  count trail = 0;
+  double maxFarness = -1.f;
+  count nMaxFarness = 0;
   std::vector<std::vector<node>> levels;
   std::vector<count> nodesPerLev;
   count nLevs = 0;
@@ -91,15 +104,28 @@ protected:
   void computeReachableNodesDir();
 };
 
-inline std::vector<node> TopCloseness::topkNodesList() {
-  if (!hasRun)
+inline std::vector<node> TopCloseness::topkNodesList(bool includeTrail) {
+  if (!hasRun) {
     throw std::runtime_error("Call run method first");
+  }
+  if (!includeTrail) {
+    auto begin = topk.begin();
+    std::vector<node> topkNoTrail(begin, begin + k);
+    return topkNoTrail;
+  }
+
   return topk;
 }
 
-inline std::vector<edgeweight> TopCloseness::topkScoresList() {
-  if (!hasRun)
+inline std::vector<edgeweight> TopCloseness::topkScoresList(bool includeTrail) {
+  if (!hasRun) {
     throw std::runtime_error("Call run method first");
+  }
+  if (!includeTrail) {
+    auto begin = topkScores.begin();
+    std::vector<double> topkScoresNoTrail(begin, begin + k);
+    return topkScoresNoTrail;
+  }
   return topkScores;
 }
 
