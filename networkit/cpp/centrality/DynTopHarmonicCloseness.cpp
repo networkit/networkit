@@ -939,26 +939,13 @@ void DynTopHarmonicCloseness::reset() {
             std::numeric_limits<edgeweight>::max());
 }
 
-std::vector<std::pair<node, edgeweight>> DynTopHarmonicCloseness::ranking() {
-  std::vector<std::pair<node, edgeweight>> ranking(k);
+std::vector<std::pair<node, edgeweight>>
+DynTopHarmonicCloseness::ranking(bool includeTrail) {
+  count nTop = includeTrail ? k + trail : k;
+  std::vector<std::pair<node, edgeweight>> ranking(nTop);
 
-  for (count i = 0; i < k; ++i) {
-    if ((i < k - 1) && topkScores[i + 1] == topkScores[i]) {
-      count j = i;
-      while ((j < k - 1) && (topkScores[j + 1] == topkScores[i])) {
-        ++j;
-      }
-      count iIndex = i;
-      for (; j >= i; --j) {
-        auto pair = std::make_pair(topk[j], topkScores[j]);
-        ranking[iIndex] = pair;
-        ++iIndex;
-      }
-      i = iIndex - 1;
-      continue;
-    }
-    auto pair = std::make_pair(topk[i], topkScores[i]);
-    ranking[i] = pair;
+  for (count i = 0; i < nTop; ++i) {
+    ranking[i] = std::make_pair(topk[i], topkScores[i]);
   }
 
   return ranking;
