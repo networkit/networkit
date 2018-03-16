@@ -53,6 +53,7 @@ public:
    * could be longer than k.
    *
    * @param includeTrail Whether or not to include trail nodes.
+   * @return The list of the top-k nodes.
    */
   std::vector<node> topkNodesList(bool includeTrail = false);
 
@@ -65,6 +66,7 @@ public:
    * that the resulting vector could be longer than k.
    *
    * @param includeTrail Whether or not to include trail centrality value.
+   * @return The closeness centralities of the k most central nodes.
    */
   std::vector<edgeweight> topkScoresList(bool includeTrail = false);
 
