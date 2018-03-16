@@ -6273,18 +6273,18 @@ cdef extern from "cpp/centrality/DynTopHarmonicCloseness.h":
 	cdef cppclass _DynTopHarmonicCloseness "NetworKit::DynTopHarmonicCloseness":
 		_DynTopHarmonicCloseness(_Graph G, count, bool) except +
 		void run() except +
-		vector[pair[node, edgeweight]] ranking() except +
-		vector[node] topkNodesList() except +
-		vector[edgeweight] topkScoresList() except +
+		vector[pair[node, edgeweight]] ranking(bool) except +
+		vector[node] topkNodesList(bool) except +
+		vector[edgeweight] topkScoresList(bool) except +
 		void update(_GraphEvent) except +
 		void updateBatch(vector[_GraphEvent]) except +
 
 cdef class DynTopHarmonicCloseness:
 	""" Finds the top k nodes with highest harmonic closeness centrality faster
-            than computing it for all nodes and updates them after a single or multiple
-            edge update. The implementation is based on "Computing Top-k Closeness
+        than computing it for all nodes and updates them after a single or multiple
+        edge update. The implementation is based on "Computing Top-k Closeness
 	    Centrality in Fully-dynamic Graphs", Bisenius et al., ALENEX18.
-            The implementation is based on the static algorithms by Borassi et al.
+        The implementation is based on the static algorithms by Borassi et al.
 	    (complex networks) and Bergamini et al. (large-diameter networks).
 
 	TopCloseness(G, k=1, useBFSbound=True)
@@ -6312,34 +6312,59 @@ cdef class DynTopHarmonicCloseness:
 		self._this.run()
 		return self
 
-	""" Returns the ranking of the k most central nodes in the graph.
-	Returns
-	-------
-	vector
-			The ranking.
-	"""
-	def ranking(self):
-		return self._this.ranking()
+	def ranking(self, includeTrail = False):
+		""" Returns the ranking of the k most central nodes in the graph.
+			WARNING: closeness centrality of some nodes below the top-k could be equal
+		  	to the k-th closeness, we call them trail. Set the parameter includeTrail
+		  	to true to also include those nodes but consider that the resulting vector
+		  	could be longer than k.
 
+		Parameters
+		----------
+		includeTrail: Whether or not to include trail nodes.
 
-	""" Returns a list with the k nodes with highest harmonic closeness.
-	Returns
-	-------
-	vector
-		The k nodes with highest harmonic closeness.
-	"""
-	def topkNodesList(self):
-		return self._this.topkNodesList()
+		Returns
+		-------
+		vector
+				The ranking.
+		"""
+		return self._this.ranking(includeTrail)
 
+	def topkNodesList(self, includeTrail = False):
+		""" Returns a list with the k nodes with highest harmonic closeness.
+			WARNING: closeness centrality of some nodes below the top-k could be equal
+			to the k-th closeness, we call them trail. Set the parameter includeTrail
+			to true to also include those nodes but consider that the resulting vector
+			could be longer than k.
 
-	""" Returns a list with the scores of the k nodes with highest harmonic closeness.
-	Returns
-	-------
-	vector
-		The k highest closeness harmonic scores.
-	"""
-	def topkScoresList(self):
-		return self._this.topkScoresList()
+		Parameters
+		----------
+		includeTrail: Whether or not to include trail nodes.
+
+		Returns
+		-------
+		vector
+			The k nodes with highest harmonic closeness.
+		"""
+		return self._this.topkNodesList(includeTrail)
+
+	def topkScoresList(self, includeTrail = False):
+		""" Returns a list with the scores of the k nodes with highest harmonic closeness.
+			WARNING: closeness centrality of some nodes below the top-k could
+		  	be equal to the k-th closeness, we call them trail. Set the parameter
+		  	includeTrail to true to also include those centrality values but consider
+		  	that the resulting vector could be longer than k.
+
+		Parameters
+		----------
+		includeTrail: Whether or not to include trail centrality value.
+
+		Returns
+		-------
+		vector
+			The k highest closeness harmonic scores.
+		"""
+		return self._this.topkScoresList(includeTrail)
 
 
 	""" Updates the list of the k nodes with the highest harmonic closeness in G.
