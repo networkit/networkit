@@ -48,21 +48,39 @@ public:
 
   /**
    * Returns a list with the k most central nodes.
+   * WARNING: closeness centrality of some nodes below the top-k could be equal
+   * to the k-th closeness, we call them trail. Set the parameter includeTrail
+   * to true to also include those nodes but consider that the resulting vector
+   * could be longer than k.
+   *
+   * @param includeTrail Whether or not to include trail nodes.
    * @return The list of the top-k nodes.
    */
-  std::vector<node> topkNodesList();
+  std::vector<node> topkNodesList(bool includeTrail = false);
 
   /**
    * Returns a list with the k highest closeness centralities.
+   * WARNING: closeness centrality of some nodes below the top-k could
+   * be equal to the k-th closeness, we call them trail. Set the parameter
+   * includeTrail to true to also include those centrality values but consider
+   * that the resulting vector could be longer than k.
+   *
+   * @param includeTrail Whether or not to include trail centrality value.
    * @return The closeness centralities of the k most central nodes.
    */
-  std::vector<edgeweight> topkScoresList();
+  std::vector<edgeweight> topkScoresList(bool includeTrail = false);
 
   /**
    * Returns the ranking of the k most central nodes in the graph.
+   * WARNING: closeness centrality of some nodes below the top-k could be equal
+   * to the k-th closeness, we call them trail. Set the parameter includeTrail
+   * to true to also include those nodes but consider that the resulting vector
+   * could be longer than k.
+   *
+   * @param includeTrail Whether or not to include trail nodes.
    * @return The ranking.
    */
-  std::vector<std::pair<node, edgeweight>> ranking();
+  std::vector<std::pair<node, edgeweight>> ranking(bool includeTrail = false);
 
   void reset();
 
@@ -158,9 +176,15 @@ protected:
    */
   void updateReachableNodesAfterDeletion(const GraphEvent &event);
 
+  void init();
+
   const Graph &G;
-  count k = 1;
+  count n;
+  count k;
   bool useBFSbound;
+  count trail;
+  double minCloseness;
+  count nMinCloseness;
   std::vector<node> topk;
   std::vector<edgeweight> topkScores;
   std::vector<edgeweight> allScores;
@@ -178,16 +202,28 @@ protected:
   std::vector<count> reachL;
 };
 
-inline std::vector<node> DynTopHarmonicCloseness::topkNodesList() {
+inline std::vector<node>
+DynTopHarmonicCloseness::topkNodesList(bool includeTrail) {
   if (!hasRun) {
     throw std::runtime_error("Call run method first");
+  }
+  if (!includeTrail) {
+    auto begin = topk.begin();
+    std::vector<node> topkNoTrail(begin, begin + k);
+    return topkNoTrail;
   }
   return topk;
 }
 
-inline std::vector<edgeweight> DynTopHarmonicCloseness::topkScoresList() {
+inline std::vector<edgeweight>
+DynTopHarmonicCloseness::topkScoresList(bool includeTrail) {
   if (!hasRun) {
     throw std::runtime_error("Call run method first");
+  }
+  if (!includeTrail) {
+    auto begin = topkScores.begin();
+    std::vector<edgeweight> topkScoresNoTrail(begin, begin + k);
+    return topkScoresNoTrail;
   }
   return topkScores;
 }
