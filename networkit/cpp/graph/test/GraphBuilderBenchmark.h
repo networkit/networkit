@@ -31,7 +31,7 @@ public:
 
 			runningTimes[i] = timer.elapsedMilliseconds();
 
-			printf("done (took %lu ms, result: %d).\n", runningTimes[i], x);
+			printf("done (took %llu ms, result: %d).\n", runningTimes[i], x);
 		}
 
 		uint64_t sum = 0, min = runningTimes[0], max = runningTimes[0];
@@ -41,7 +41,7 @@ public:
 			if (t > max) max = t;
 		}
 
-		printf("Iterations: %d, average runtime: %1.1f ms, fastest run: %lu ms, slowest run: %lu ms\n", iterations, (double) sum / iterations, min, max);
+		printf("Iterations: %d, average runtime: %1.1f ms, fastest run: %llu ms, slowest run: %llu ms\n", iterations, (double) sum / iterations, min, max);
 	}
 };
 
