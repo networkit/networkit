@@ -46,22 +46,29 @@ public:
   void run();
 
   /**
-   * Returns a list with the scores of the k nodes with the highest harmonic
-   * closeness.
+   * Returns a list with the k nodes with highest harmonic closeness.
+   * WARNING: closeness centrality of some nodes below the top-k could be equal
+   * to the k-th closeness, we call them trail. Set the parameter includeTrail
+   * to true to also include those nodes but consider that the resulting vector
+   * could be longer than k.
+   *
+   * @param includeTrail Whether or not to include trail nodes.
+   * @return The list of the top-k nodes.
    */
-  std::vector<node> topkNodesList();
+  std::vector<node> topkNodesList(bool includeTrail = false);
 
   /**
    * Returns a list with the scores of the k nodes with highest harmonic
    * closeness.
+   * WARNING: closeness centrality of some nodes below the top-k could
+   * be equal to the k-th closeness, we call them trail. Set the parameter
+   * includeTrail to true to also include those centrality values but consider
+   * that the resulting vector could be longer than k.
+   *
+   * @param includeTrail Whether or not to include trail centrality value.
+   * @return The closeness centralities of the k most central nodes.
    */
-  std::vector<edgeweight> topkScoresList();
-
-  /**
-   * Returns the ranking of the top k nodes with highest harmonic closeness and
-   * their score.
-   */
-  std::vector<std::pair<node, edgeweight>> ranking();
+  std::vector<edgeweight> topkScoresList(bool includeTrail = false);
 
 protected:
   /**
@@ -112,9 +119,14 @@ protected:
    */
   void computeReachableNodesUndirected();
 
+  void init();
+
   Graph G;
   count k;
   count n;
+  count trail = 0;
+  double minCloseness = std::numeric_limits<double>::max();
+  count nMinCloseness = 0;
   bool useBFSbound;
   std::vector<node> topk;
   std::vector<edgeweight> topkScores;
@@ -128,18 +140,32 @@ protected:
   std::vector<count> rOld;
 };
 
-inline std::vector<node> TopHarmonicCloseness::topkNodesList() {
+inline std::vector<node>
+TopHarmonicCloseness::topkNodesList(bool includeTrail) {
   if (!hasRun) {
     throw std::runtime_error("Call run method first");
   }
+  if (!includeTrail) {
+    auto begin = topk.begin();
+    std::vector<node> topkNoTrail(begin, begin + k);
+    return topkNoTrail;
+  }
+
   return topk;
 }
 
-inline std::vector<edgeweight> TopHarmonicCloseness::topkScoresList() {
+inline std::vector<edgeweight>
+TopHarmonicCloseness::topkScoresList(bool includeTrail) {
   if (!hasRun) {
     throw std::runtime_error("Call run method first");
   }
+  if (!includeTrail) {
+    auto begin = topkScores.begin();
+    std::vector<double> topkScoresNoTrail(begin, begin + k);
+    return topkScoresNoTrail;
+  }
   return topkScores;
 }
+
 } // namespace NetworKit
 #endif /* TOPHARMONICCLOSENESS_H_ */

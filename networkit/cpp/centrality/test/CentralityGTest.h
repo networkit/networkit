@@ -12,8 +12,7 @@
 
 namespace NetworKit {
 
-class CentralityGTest: public testing::Test {
-};
+class CentralityGTest : public testing::Test {};
 
 } /* namespace NetworKit */
 

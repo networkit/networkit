@@ -5370,6 +5370,72 @@ cdef class WeaklyConnectedComponents:
 
 
 
+cdef extern from "cpp/components/BiconnectedComponents.h":
+	cdef cppclass _BiconnectedComponents "NetworKit::BiconnectedComponents":
+		_BiconnectedComponents(_Graph G) except +
+		void run() nogil except +
+		count numberOfComponents() except +
+		map[count, count] getComponentSizes() except +
+		vector[vector[node]] getComponents() except +
+
+cdef class BiconnectedComponents:
+	""" Determines the biconnected components of an undirected graph as defined in
+		Tarjan, Robert. Depth-First Search and Linear Graph Algorithms. SIAM J.
+		Comput. Vol 1, No. 2, June 1972.
+
+
+		Parameters
+		----------
+		G : Graph
+			The graph.
+	"""
+	cdef _BiconnectedComponents* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _BiconnectedComponents(G._this)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		""" Computes the biconnected components of the graph given in the
+			constructor.
+		"""
+		with nogil:
+			self._this.run()
+		return self
+
+	def numberOfComponents(self):
+		""" Returns the number of components.
+
+			Returns
+			count
+				The number of components.
+		"""
+		return self._this.numberOfComponents()
+
+	def getComponentSizes(self):
+		""" Returns the map from component to size.
+
+			Returns
+			map[count, count]
+			A map that maps each component to its size.
+		"""
+		return self._this.getComponentSizes()
+
+	def getComponents(self):
+		""" Returns all the components, each stored as (unordered) set of nodes.
+
+			Returns
+			vector[vector[node]]
+				A vector of vectors. Each inner vector contains all the nodes inside the component.
+		"""
+		return self._this.getComponents()
+
+
+
 cdef extern from "cpp/components/DynConnectedComponents.h":
 	cdef cppclass _DynConnectedComponents "NetworKit::DynConnectedComponents":
 		_DynConnectedComponents(_Graph G) except +
@@ -6049,8 +6115,8 @@ cdef extern from "cpp/centrality/TopCloseness.h":
 		edgeweight maxSum() except +
 		count iterations() except +
 		count operations() except +
-		vector[node] topkNodesList() except +
-		vector[edgeweight] topkScoresList() except +
+		vector[node] topkNodesList(bool) except +
+		vector[edgeweight] topkScoresList(bool) except +
 
 
 cdef class TopCloseness:
@@ -6084,32 +6150,49 @@ cdef class TopCloseness:
 		self._this.run()
 		return self
 
-	""" Returns a list with the k nodes with highest closeness.
-	Returns
-	-------
-	vector
-		The k nodes with highest closeness.
-	"""
-	def topkNodesList(self):
-		return self._this.topkNodesList()
+	def topkNodesList(self, includeTrail=False):
+		""" Returns a list with the k nodes with highest closeness.
+			WARNING: closeness centrality of some nodes below the top-k could be equal
+	  		to the k-th closeness, we call them trail. Set the parameter includeTrail
+	  		to true to also include those nodes but consider that the resulting vector
+	  		could be longer than k.
 
+		Parameters
+		----------
+		includeTrail: Whether or not to include trail nodes.
 
-	""" Returns a list with the scores of the k nodes with highest closeness.
-	Returns
-	-------
-	vector
-		The k highest closeness scores.
-	"""
-	def topkScoresList(self):
-		return self._this.topkScoresList()
+		Returns
+		-------
+		vector
+			The k nodes with highest closeness.
+		"""
+		return self._this.topkNodesList(includeTrail)
+
+	def topkScoresList(self, includeTrail=False):
+		""" Returns a list with the scores of the k nodes with highest closeness.
+			WARNING: closeness centrality of some nodes below the top-k could be equal
+  			to the k-th closeness, we call them trail. Set the parameter includeTrail
+	  		to true to also include those centrality values but consider that the
+	  		resulting vector could be longer than k.
+
+		Parameters
+		----------
+		includeTrail: Whether or not to include trail centrality value.
+
+		Returns
+		-------
+		vector
+			The k highest closeness scores.
+		"""
+		return self._this.topkScoresList(includeTrail)
 
 
 cdef extern from "cpp/centrality/TopHarmonicCloseness.h":
 	cdef cppclass _TopHarmonicCloseness "NetworKit::TopHarmonicCloseness":
 		_TopHarmonicCloseness(_Graph G, count, bool) except +
 		void run() except +
-		vector[node] topkNodesList() except +
-		vector[edgeweight] topkScoresList() except +
+		vector[node] topkNodesList(bool) except +
+		vector[edgeweight] topkScoresList(bool) except +
 
 
 cdef class TopHarmonicCloseness:
@@ -6149,24 +6232,162 @@ cdef class TopHarmonicCloseness:
 		self._this.run()
 		return self
 
-	""" Returns a list with the k nodes with highest harmonic closeness.
-	Returns
-	-------
-	vector
-		The k nodes with highest harmonic closeness.
-	"""
-	def topkNodesList(self):
-		return self._this.topkNodesList()
+	def topkNodesList(self, includeTrail=False):
+		""" Returns a list with the k nodes with highest harmonic closeness.
+			WARNING: closeness centrality of some nodes below the top-k could be equal
+			to the k-th closeness, we call them trail. Set the parameter includeTrail
+			to true to also include those nodes but consider that the resulting vector
+			could be longer than k.
+
+		Parameters
+		----------
+		includeTrail: Whether or not to include trail nodes.
+
+		Returns
+		-------
+		vector
+			The k nodes with highest harmonic closeness.
+		"""
+		return self._this.topkNodesList(includeTrail)
+
+	def topkScoresList(self, includeTrail=False):
+		""" Returns a list with the scores of the k nodes with highest harmonic closeness.
+			WARNING: closeness centrality of some nodes below the top-k could
+		  	be equal to the k-th closeness, we call them trail. Set the parameter
+		  	includeTrail to true to also include those centrality values but consider
+		  	that the resulting vector could be longer than k.
+
+		Parameters
+		----------
+		includeTrail: Whether or not to include trail centrality value.
+
+		Returns
+		-------
+		vector
+			The k highest closeness harmonic scores.
+		"""
+		return self._this.topkScoresList(includeTrail)
 
 
-	""" Returns a list with the scores of the k nodes with highest harmonic closeness.
-	Returns
-	-------
-	vector
-		The k highest closeness harmonic scores.
+cdef extern from "cpp/centrality/DynTopHarmonicCloseness.h":
+	cdef cppclass _DynTopHarmonicCloseness "NetworKit::DynTopHarmonicCloseness":
+		_DynTopHarmonicCloseness(_Graph G, count, bool) except +
+		void run() except +
+		vector[pair[node, edgeweight]] ranking(bool) except +
+		vector[node] topkNodesList(bool) except +
+		vector[edgeweight] topkScoresList(bool) except +
+		void update(_GraphEvent) except +
+		void updateBatch(vector[_GraphEvent]) except +
+
+cdef class DynTopHarmonicCloseness:
+	""" Finds the top k nodes with highest harmonic closeness centrality faster
+        than computing it for all nodes and updates them after a single or multiple
+        edge update. The implementation is based on "Computing Top-k Closeness
+	    Centrality in Fully-dynamic Graphs", Bisenius et al., ALENEX18.
+        The implementation is based on the static algorithms by Borassi et al.
+	    (complex networks) and Bergamini et al. (large-diameter networks).
+
+	TopCloseness(G, k=1, useBFSbound=True)
+
+	Parameters
+	----------
+	G: An unweighted graph.
+	k: Number of nodes with highest closeness that have to be found. For example, if k = 10, the top 10 nodes with highest closeness will be computed.
+	useBFSbound: If true, the BFSbound is re-computed at each iteration. If false, BFScut is used.
+	The worst case running time of the algorithm is O(nm), where n is the number of nodes and m is the number of edges.
+	However, for most networks the empirical running time is O(m).
 	"""
-	def topkScoresList(self):
-		return self._this.topkScoresList()
+	cdef _DynTopHarmonicCloseness* _this
+	cdef Graph _G
+
+	def __cinit__(self,  Graph G, k=1, useBFSbound=False):
+		self._G = G
+		self._this = new _DynTopHarmonicCloseness(G._this, k, useBFSbound)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		""" Computes top-k harmonic closeness. """
+		self._this.run()
+		return self
+
+	def ranking(self, includeTrail = False):
+		""" Returns the ranking of the k most central nodes in the graph.
+			WARNING: closeness centrality of some nodes below the top-k could be equal
+		  	to the k-th closeness, we call them trail. Set the parameter includeTrail
+		  	to true to also include those nodes but consider that the resulting vector
+		  	could be longer than k.
+
+		Parameters
+		----------
+		includeTrail: Whether or not to include trail nodes.
+
+		Returns
+		-------
+		vector
+				The ranking.
+		"""
+		return self._this.ranking(includeTrail)
+
+	def topkNodesList(self, includeTrail = False):
+		""" Returns a list with the k nodes with highest harmonic closeness.
+			WARNING: closeness centrality of some nodes below the top-k could be equal
+			to the k-th closeness, we call them trail. Set the parameter includeTrail
+			to true to also include those nodes but consider that the resulting vector
+			could be longer than k.
+
+		Parameters
+		----------
+		includeTrail: Whether or not to include trail nodes.
+
+		Returns
+		-------
+		vector
+			The k nodes with highest harmonic closeness.
+		"""
+		return self._this.topkNodesList(includeTrail)
+
+	def topkScoresList(self, includeTrail = False):
+		""" Returns a list with the scores of the k nodes with highest harmonic closeness.
+			WARNING: closeness centrality of some nodes below the top-k could
+		  	be equal to the k-th closeness, we call them trail. Set the parameter
+		  	includeTrail to true to also include those centrality values but consider
+		  	that the resulting vector could be longer than k.
+
+		Parameters
+		----------
+		includeTrail: Whether or not to include trail centrality value.
+
+		Returns
+		-------
+		vector
+			The k highest closeness harmonic scores.
+		"""
+		return self._this.topkScoresList(includeTrail)
+
+
+	""" Updates the list of the k nodes with the highest harmonic closeness in G.
+
+	Parameters
+	----------
+	event: A GrapEvent
+	"""
+	def update(self, ev):
+		self._this.update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+
+	""" Updates the list of the k nodes with the highest harmonic closeness in G
+		after a batch of edge updates.
+
+	Parameters
+	----------
+	batch: A GraphEvent vector
+	"""
+	def updateBatch(self, batch):
+		cdef vector[_GraphEvent] _batch
+		for ev in batch:
+			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+		self._this.updateBatch(_batch)
 
 
 cdef extern from "cpp/centrality/GroupCloseness.h":
@@ -9082,7 +9303,7 @@ cdef class EdgeScoreLinearizer(EdgeScore):
 
 cdef extern from "cpp/edgescores/EdgeScoreNormalizer.h":
 	cdef cppclass _EdgeScoreNormalizer "NetworKit::EdgeScoreNormalizer"[T](_EdgeScore[double]):
-		_EdgeScoreNormalizer(const _Graph&, const vector[T]&, bool inverse, double lower, double upper) except +
+		_EdgeScoreNormalizer(const _Graph&, vector[T]&, bool inverse, double lower, double upper) except +
 
 cdef class EdgeScoreNormalizer(EdgeScore):
 	"""
@@ -9211,9 +9432,9 @@ cdef class EdgeScoreAsWeight:
 		self._this = new _EdgeScoreAsWeight(G._this, self._score, squared, offset, factor)
 
 	def __dealloc__(self):
-		self._G = None
-		self._score = None
-		del self._this
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
 
 	def getWeightedGraph(self):
 		"""
