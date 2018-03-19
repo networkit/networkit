@@ -44,7 +44,7 @@ public:
   /**
    * Computes the k most central nodes on the initial graph.
    */
-  void run();
+  void run() override;
 
   /**
    * Returns a list with the k most central nodes.
