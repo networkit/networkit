@@ -23,6 +23,7 @@
 #include "../Closeness.h"
 #include "../CoreDecomposition.h"
 #include "../DynApproxBetweenness.h"
+#include "../DynamicKatz.h"
 #include "../EigenvectorCentrality.h"
 #include "../EstimateBetweenness.h"
 #include "../GroupDegree.h"
@@ -200,6 +201,79 @@ TEST_F(CentralityGTest, testPageRankDirected) {
 	const double tol = 1e-3;
 	EXPECT_EQ(pr_ranking[0].first, 699);
 	EXPECT_NEAR(pr_ranking[0].second, 0.00432, tol);
+}
+
+TEST_F(CentralityGTest, testKatzTopk) {
+  // SNAPGraphReader reader;
+  // Graph G = reader.read("input/wiki-Vote.txt"); // TODO: replace by smaller graph
+
+  METISGraphReader reader;
+  Graph G = reader.read("input/caidaRouterLevel.graph");
+  DynamicKatz kc(G, 100);
+  DEBUG("start kc run");
+  kc.run();
+  DEBUG("finish kc");
+  node u, v;
+  do {
+    u = G.randomNode();
+    v = G.randomNode();
+  } while (G.hasEdge(u, v));
+  GraphEvent e(GraphEvent::EDGE_ADDITION, u, v, 1.0);
+  G.addEdge(u, v);
+  kc.update(e);
+  DynamicKatz kc2(G, 100);
+  kc2.run();
+  const edgeweight tol = 1e-9;
+  for (count i = 0; i <= kc.levelReached; i ++) {
+    INFO("i = ", i);
+    G.forNodes([&](node u){
+      // if (kc.nPaths[i][u] != kc2.nPaths[i][u]) {
+      //   INFO("i = ", i, ", node ", u, ", dyn kc paths: ", kc.nPaths[i][u], ", stat paths: ", kc2.nPaths[i][u]);
+      // }
+      EXPECT_EQ(kc.nPaths[i][u], kc2.nPaths[i][u]);
+    });
+  }
+  G.forNodes([&](node u){
+    EXPECT_NEAR(kc.score(u), kc2.score(u), tol);
+  });
+
+  INFO("Level reached: ", kc.levelReached, ", ", kc2.levelReached);
+}
+
+TEST_F(CentralityGTest, testKatzTopkDeletion) {
+  // SNAPGraphReader reader;
+  // Graph G = reader.read("input/wiki-Vote.txt"); // TODO: replace by smaller graph
+
+  METISGraphReader reader;
+  Graph G = reader.read("input/caidaRouterLevel.graph");
+  DynamicKatz kc(G, 100);
+  DEBUG("start kc run");
+  kc.run();
+  DEBUG("finish kc");
+  std::pair<node, node> p = G.randomEdge();
+  node u = p.first;
+  node v = p.second;
+  INFO("Deleting edge ", u, ", ", v);
+  GraphEvent e(GraphEvent::EDGE_REMOVAL, u, v, 1.0);
+  G.removeEdge(u, v);
+  kc.update(e);
+  DynamicKatz kc2(G, 100);
+  kc2.run();
+  const edgeweight tol = 1e-9;
+  for (count i = 0; i <= kc.levelReached; i ++) {
+    INFO("i = ", i);
+    G.forNodes([&](node u){
+      if (kc.nPaths[i][u] != kc2.nPaths[i][u]) {
+        INFO("i = ", i, ", node ", u, ", dyn kc paths: ", kc.nPaths[i][u], ", stat paths: ", kc2.nPaths[i][u]);
+      }
+      EXPECT_EQ(kc.nPaths[i][u], kc2.nPaths[i][u]);
+    });
+  }
+  G.forNodes([&](node u){
+    EXPECT_NEAR(kc.score(u), kc2.score(u), tol);
+  });
+
+  INFO("Level reached: ", kc.levelReached, ", ", kc2.levelReached);
 }
 
 TEST_F(CentralityGTest, testEigenvectorCentrality) {
