@@ -1,3 +1,9 @@
+/*
+ * MahmoodyGroupBetweenness.h
+ *
+ *  Created on: 13.03.2018
+ *      Author: Marvin Pogoda
+ */
 	#ifndef MAHMOODYGROUPBETWEENNESS_H_
 	#define MAHMOODYGROUPBETWEENNESS_H_
 
