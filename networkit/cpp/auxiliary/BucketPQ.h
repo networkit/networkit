@@ -104,7 +104,14 @@ public:
 	 */
 	virtual void remove(const index& val) override;
 
+	/**
+	 * @return key to given value @val.
+	 */
+	virtual int getKey(const index& val);
+       	
 };
 
 } /* namespace Aux */
 #endif /* BUCKETPQ_H_ */
+
+
