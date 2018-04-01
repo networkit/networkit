@@ -2,7 +2,7 @@
  * MahmoodyGroupBetweennessGTest.cpp
  *
  *  Created on:23.03.2018 
- *      Author:Marvin Pogoda 
+ *  Author:Marvin Pogoda 
  */
 
 #include "MahmoodyGroupBetweennessGTest.h"
