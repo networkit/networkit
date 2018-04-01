@@ -2,7 +2,7 @@
  * MahmoodyGroupBetweennessGTest.h
  *
  *  Created on:23.03.2018 
- *      Author:Marvin Pogoda 
+ *  Author:Marvin Pogoda 
  */
 
 #ifndef MAHMOODYGROUPBETWEENNESSGTEST_H_
