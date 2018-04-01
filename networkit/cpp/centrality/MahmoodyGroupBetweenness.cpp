@@ -1,3 +1,10 @@
+/*
+ * MahmoodyGroupBetweenness.h
+ *
+ *  Created on: 13.03.2018
+ *      Author: Marvin Pogoda
+ */
+
 #include "MahmoodyGroupBetweenness.h"
 #include <omp.h>
 #include "../distance/BFS.h"
