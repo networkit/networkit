@@ -113,5 +113,3 @@ public:
 
 } /* namespace Aux */
 #endif /* BUCKETPQ_H_ */
-
-
