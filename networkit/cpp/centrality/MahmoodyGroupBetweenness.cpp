@@ -34,7 +34,7 @@ void MahmoodyGroupBetweenness::run()
 	Aux::BucketPQ nodeDegrees(v,-samples,1);
 	omp_lock_t lock;
 	omp_init_lock(&lock);
-	//#pragma omp parallel for
+	#pragma omp parallel for
 	for(int l = 0;l < samples;l++)   
 	{
 		node s= G.randomNode();
