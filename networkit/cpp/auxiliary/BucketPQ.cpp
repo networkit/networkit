@@ -121,5 +121,3 @@ int BucketPQ::getKey(const index& val) {
 	return key;
 }
 } // namespace
-
-
