@@ -9,10 +9,7 @@
 #include "../MahmoodyGroupBetweenness.h"
 #include "../../auxiliary/Random.h"
 
-
 namespace NetworKit {
-
-
 
 TEST_F(MahmoodyGroupBetweennessGTest, testMahmoodyGroupBetweennessSmallGraph1) {
 /* Graph:
@@ -51,7 +48,6 @@ TEST_F(MahmoodyGroupBetweennessGTest, testMahmoodyGroupBetweennessSmallGraph1) {
 
 }
 
-
 TEST_F(MahmoodyGroupBetweennessGTest, testMahmoodyGroupBetweennessSmallGraph2) {
 
 	Aux::Random::setSeed(2,false);
@@ -83,10 +79,7 @@ TEST_F(MahmoodyGroupBetweennessGTest, testMahmoodyGroupBetweennessSmallGraph2) {
 
 
 }
-
-
-
-
+	
 TEST_F(MahmoodyGroupBetweennessGTest, testMahmoodyGroupBetweennessSmallGraph3) {
 
 	Aux::Random::setSeed(13,false);
@@ -109,20 +102,5 @@ TEST_F(MahmoodyGroupBetweennessGTest, testMahmoodyGroupBetweennessSmallGraph3) {
 	EXPECT_EQ(gb.groupMaxBetweenness()[0],2);
 	EXPECT_EQ(gb.groupMaxBetweenness()[1],3);
 	EXPECT_EQ(gb.groupMaxBetweenness()[2],7);
-
-	
-
-
-
-
-
 }
-
-
-
-
-
-
-
-
 } /* namespace NetworKit */
