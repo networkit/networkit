@@ -194,8 +194,8 @@ TEST_F(CentralityGTest, testKatzTopk) {
 	// Compute max. degree to ensure that we use the same alpha for both algos.
 	count maxDegree = 0;
 	G.forNodes([&](node u) {
-	if (G.degree(u) > maxDegree)
-		maxDegree = G.degree(u);
+		if (G.degree(u) > maxDegree)
+			maxDegree = G.degree(u);
 	});
 
 	KatzCentrality exactAlgo(G, 1.0 / (maxDegree + 1), 1.0);
@@ -209,7 +209,7 @@ TEST_F(CentralityGTest, testKatzTopk) {
 	auto exactRanking = exactAlgo.ranking();
 	auto topRanking = topAlgo.ranking();
 	for(count i = 0; i < std::min(G.numberOfNodes(), count{100}); i++)
-		EXPECT_LT(fabs(exactAlgo.score(topRanking[i].first) - exactRanking[i].second), 0.000001);
+		EXPECT_NEAR(exactAlgo.score(topRanking[i].first), exactRanking[i].second, 1e-6);
 }
 
 TEST_F(CentralityGTest, testKatzDynamicAddition) {
@@ -225,31 +225,29 @@ TEST_F(CentralityGTest, testKatzDynamicAddition) {
 		v = G.randomNode();
 	} while (G.hasEdge(u, v));
 	GraphEvent e(GraphEvent::EDGE_ADDITION, u, v, 1.0);
-	G.addEdge(u, v);
 	kc.update(e);
+	G.addEdge(u, v);
 	DynamicKatz kc2(G, 100);
 	kc2.run();
 	const edgeweight tol = 1e-9;
-	for (count i = 0; i <= kc.levelReached; i ++) {
+	for (count i = 0; i <= std::min(kc.levelReached, kc2.levelReached); i ++) {
 		INFO("i = ", i);
 		G.forNodes([&](node u){
-		//	if (kc.nPaths[i][u] != kc2.nPaths[i][u]) {
-		//		INFO("i = ", i, ", node ", u, ", dyn kc paths: ", kc.nPaths[i][u], ", stat paths: ", kc2.nPaths[i][u]);
-		//	}
+			// if (kc.nPaths[i][u] != kc2.nPaths[i][u]) {
+			//	 INFO("i = ", i, ", node ", u, ", dyn kc paths: ", kc.nPaths[i][u], ", stat paths: ", kc2.nPaths[i][u]);
+			// }
 			EXPECT_EQ(kc.nPaths[i][u], kc2.nPaths[i][u]);
 		});
 	}
 	G.forNodes([&](node u){
 		EXPECT_NEAR(kc.score(u), kc2.score(u), tol);
+	 EXPECT_NEAR(kc.bound(u), kc2.bound(u), tol);
 	});
 
 	INFO("Level reached: ", kc.levelReached, ", ", kc2.levelReached);
 }
 
 TEST_F(CentralityGTest, testKatzDynamicDeletion) {
-	// SNAPGraphReader reader;
-	// Graph G = reader.read("input/wiki-Vote.txt"); // TODO: replace by smaller graph
-
 	METISGraphReader reader;
 	Graph G = reader.read("input/caidaRouterLevel.graph");
 	DynamicKatz kc(G, 100);
@@ -266,17 +264,18 @@ TEST_F(CentralityGTest, testKatzDynamicDeletion) {
 	DynamicKatz kc2(G, 100);
 	kc2.run();
 	const edgeweight tol = 1e-9;
-	for (count i = 0; i <= kc.levelReached; i ++) {
+	for (count i = 0; i <= std::min(kc.levelReached, kc2.levelReached); i ++) {
 		INFO("i = ", i);
 		G.forNodes([&](node u){
-			if (kc.nPaths[i][u] != kc2.nPaths[i][u]) {
+		  if (kc.nPaths[i][u] != kc2.nPaths[i][u]) {
 				INFO("i = ", i, ", node ", u, ", dyn kc paths: ", kc.nPaths[i][u], ", stat paths: ", kc2.nPaths[i][u]);
-			}
-			EXPECT_EQ(kc.nPaths[i][u], kc2.nPaths[i][u]);
+		  }
+		  EXPECT_EQ(kc.nPaths[i][u], kc2.nPaths[i][u]);
 		});
 	}
 	G.forNodes([&](node u){
 		EXPECT_NEAR(kc.score(u), kc2.score(u), tol);
+		EXPECT_NEAR(kc.bound(u), kc2.bound(u), tol);
 	});
 
 	INFO("Level reached: ", kc.levelReached, ", ", kc2.levelReached);
@@ -290,8 +289,8 @@ TEST_F(CentralityGTest, testKatzDynamicBuilding) {
 	// (This guarantees that alpha is correct.)
 	node maxNode = 0;
 	GIn.forNodes([&](node u) {
-	if (GIn.degree(u) > GIn.degree(maxNode))
-		maxNode = u;
+		if (GIn.degree(u) > GIn.degree(maxNode))
+		  maxNode = u;
 	});
 
 	Graph G(GIn.upperNodeIdBound());
@@ -307,12 +306,12 @@ TEST_F(CentralityGTest, testKatzDynamicBuilding) {
 	count edgesProcessed = 0;
 	GIn.forEdges([&] (node u, node v) {
 		if(u == maxNode || v == maxNode)
-			return;
+		  return;
 		if(edgesProcessed > 1000)
-			return;
+		  return;
 		GraphEvent e(GraphEvent::EDGE_ADDITION, u, v, 1.0);
-		G.addEdge(u, v);
 		dynAlgo.update(e);
+		G.addEdge(u, v);
 		edgesProcessed++;
 	});
 

@@ -8,11 +8,12 @@
 #include "DynamicKatz.h"
 #include "../auxiliary/NumericTools.h"
 #include <math.h>
+#include <float.h>
 
 namespace NetworKit {
 
-DynamicKatz::DynamicKatz(const Graph& G, count k, bool groupOnly):
-		Centrality(G, true), k(k), groupOnly(groupOnly)
+DynamicKatz::DynamicKatz(const Graph& G, count k, bool groupOnly, double tolerance)
+: Centrality(G, false), k(k), groupOnly(groupOnly), rankTolerance(tolerance)
 {
 	maxdeg = 0;
 	G.forNodes([&](node u){
@@ -20,6 +21,8 @@ DynamicKatz::DynamicKatz(const Graph& G, count k, bool groupOnly):
 			maxdeg = G.degree(u);
 		}
 	});
+	assert(maxdeg && "Alpha is chosen based on the max. degree; therefore, that degree must not be zero");
+
 	alpha = double(1)/(maxdeg + 1);
 	INFO("alpha: ", alpha);
 	INFO("1/(1-alpha): ", 1/(1-alpha));
@@ -30,123 +33,32 @@ bool pairCompare(const std::pair<node, double>& firstElem, const std::pair<node,
 }
 
 void DynamicKatz::run() {
-	INFO("Nodes: ", G.numberOfNodes(), ", edges: ", G.numberOfEdges());
-	count z = G.upperNodeIdBound();
-	count maxLevels = 15;
+	INFO("DynKatz: Nodes: ", G.numberOfNodes(), ", edges: ", G.numberOfEdges(),
+			", graph is ", G.isDirected() ? "directed" : "undirected");
+
 	nPaths.clear();
-	nPaths.resize(maxLevels);
-	for(count i = 0; i < maxLevels; i ++) {
-		nPaths[i].resize(z, 1);
-	}
-//	std::vector<count> oldnPaths(z, 1);
-	std::vector<bool> active(z, true);
-	std::vector<double> ubound(z, 0.0);
-	std::vector<double> lbound(z, 0.0);
-	count nActive = z;
+	nPaths.resize(1);
+	nPaths[0].resize(G.upperNodeIdBound(), 1);
+
+	isActive.clear();
+	isActive.resize(G.upperNodeIdBound(), true);
+	for(count u = 0; u < G.upperNodeIdBound(); u++)
+		activeRanking.push_back(u);
 
 	scoreData.clear();
-	scoreData.resize(z, 0.0);
+	baseData.clear();
+	boundData.clear();
+	scoreData.resize(G.upperNodeIdBound(), 0.0);
+	baseData.resize(G.upperNodeIdBound(), 0.0);
+	boundData.resize(G.upperNodeIdBound(), DBL_MAX);
 
-	count totalActive = 0;
-	count i = 1;
 	count maxIter = 20;
-	std::vector<std::pair<node, double>> orderedNodes;
-	bool allOrdered = false; // required in the second phase. it is true when the first k nodes are ordered as well
-	// while(nActive > k || !allOrdered) {
-	while(nActive > k || (!groupOnly && !allOrdered)) {
-		orderedNodes.clear();
-		G.forNodes([&](node u){
-				nPaths[i][u] = 0;
-				G.forInEdgesOf(u, [&](node v, edgeweight ew) {
-					nPaths[i][u] += nPaths[i-1][v];
-				});
-				scoreData[u] += pow(alpha, i) * nPaths[i][u];
-				ubound[u] = scoreData[u] + nPaths[i][u] * pow(alpha, i + 1) * (1/(1 - alpha * maxdeg));
-				lbound[u] = scoreData[u] + nPaths[i][u] * pow(alpha, i + 1) * (1/(1 - alpha));
-				if(active[u]) {
-					orderedNodes.push_back(std::make_pair(u, lbound[u]));
-				}
-		});
-		// sort the nodes according to their lower bound
-		std::sort(orderedNodes.begin(), orderedNodes.end(), pairCompare);
-
-
-		INFO("Node with highest centrality: ", orderedNodes[0], ", score: ", scoreData[orderedNodes[0].first], ", ubound = ", ubound[orderedNodes[0].first]);
-		INFO("K-th Node with highest centrality: ", orderedNodes[k-1], ", k = ", k);
-
-		count removed = 0;
-		for (count j = k; j < nActive; j ++) {
-			node u = orderedNodes[j].first;
-			assert(active[u]);
-			//INFO("Node ", u, ", upper bound: ", ubound[u]);
-			// if the upper bound on a node is smaller than the k-th lower bound, we can discard it
-			if (ubound[u] <= orderedNodes[k - 1].second) {
-				removed ++;
-				active[u] = false;
-				//INFO("Discarding ", u);
-			}
-		}
-		nActive -= removed; //important to keep it, or you will not finish the loop!
-
-		totalActive += nActive;
-		// TODO careful: if two nodes have the same set of neighbors, they'll also have the same katz centrality!
-		if (nActive == k) {
-			allOrdered = true;
-			// now we continue to iterate until the first k nodes are ordered
-			count notOrdered = 0;
-			for (count j = 1; j < k; j ++) {
-				node first = orderedNodes[j-1].first, next = orderedNodes[j].first;
-				if (ubound[next] > lbound[first]) {
-					allOrdered = false;
-					notOrdered ++;
-				}
-			}
-			INFO("Not ordered: ", notOrdered);
-		}
-		i ++;
-	}
-	levelReached = i-1;
-	INFO("Level reached: ", levelReached);
-
-	// for a comparison, we run it until machine precision
-	// nPaths.clear();
-	// oldnPaths.clear();
-	// active.clear();
-	// ubound.clear();
-	// lbound.clear();
-	// nPaths.resize(z, 1);
-	// oldnPaths.resize(z, 1);
-	// active.resize(z, true);
-	// ubound.resize(z, 0.0);
-	// lbound.resize(z, 0.0);
-	//
-	// scoreData.clear();
-	// scoreData.resize(z, 0.0);
-	//
-	// count changed = z;
-	// i = 0;
-	// while(changed > 0) {
-	// 	changed = 0;
-	// 	G.forNodes([&](node u){
-	// 		// if (active[u]) { // TODO improve: iterate only over the active ones!
-	// 			nPaths[u] = 0;
-	// 			// note: inconsistency in definition in Newman's book (Ch. 7) regarding directed graphs
-	// 			G.forInEdgesOf(u, [&](node v, edgeweight ew) {
-	// 				nPaths[u] += oldnPaths[v];
-	// 			});
-	// 			edgeweight new_score = scoreData[u] + pow(alpha, i) * nPaths[u];
-	// 			if (new_score > edgeweight(scoreData[u])) {
-	// 				scoreData[u] = new_score;
-	// 				changed ++;
-	// 			}
-	// 	});
-	// 	G.forNodes([&](node u){
-	// 			oldnPaths[u] = nPaths[u];
-	// 	});
-	// 	INFO("i = ", i, ", changed: ", changed);
-	// 	i ++;
-	// }
-	// INFO("Iterations before reaching machine precision: ", i);
+	
+	levelReached = 0;
+	do {
+		doIteration();
+	} while(!checkConvergence());
+	INFO("DynKatz: Reached level: ", levelReached);
 
 	hasRun = true;
 }
@@ -158,113 +70,228 @@ void DynamicKatz::update(GraphEvent e){
 	if (e.type == GraphEvent::EDGE_REMOVAL && (nPaths[1][e.u] == 0 || nPaths[1][e.v] == 0)) {
 		throw std::runtime_error("error: deleting an edge that did not exist before");
 	}
-	node u = e.u, v = e.v;
+	std::vector<count> preUpdatePaths(G.upperNodeIdBound(), 0);
+	std::vector<count> preUpdateContrib(G.upperNodeIdBound(), 0);
+
+	std::vector<bool> wasSeen(G.upperNodeIdBound(), false);
+	std::vector<node> newlySeen;
+	std::vector<node> seenNodes;
+
 	count visitedEdges = 0;
-	// first, we increase the Katz score of the two endpoints
-	count z = G.upperNodeIdBound();
-	std::vector<count> newPaths(z, 0);
-	std::vector<count> newPathsPrevIt(z, 0);
+
+	// First, we manually handle level 1. At level 1 only the two endpoints change.
+	seenNodes.push_back(e.u);
+	seenNodes.push_back(e.v);
+	wasSeen[e.u] = true;
+	wasSeen[e.v] = true;
+
+	preUpdatePaths[e.u] = nPaths[1][e.u];
+	preUpdatePaths[e.v] = nPaths[1][e.v];
+
 	if (e.type == GraphEvent::EDGE_ADDITION) {
-		scoreData[u] += alpha;
-		scoreData[v] += alpha;
-		newPathsPrevIt[u] = nPaths[1][u] + 1;
-		newPathsPrevIt[v] = nPaths[1][v] + 1;
+		baseData[e.u] += alpha;
+		baseData[e.v] += alpha;
+		nPaths[1][e.u] += 1;
+		nPaths[1][e.v] += 1;
 	} else {
-		assert(nPaths[1][u] > 0);
-		assert(nPaths[1][v] > 0);
-		scoreData[u] -= alpha;
-		scoreData[v] -= alpha;
-		newPathsPrevIt[u] = nPaths[1][u] - 1;
-		newPathsPrevIt[v] = nPaths[1][v] - 1;
+		assert(nPaths[1][e.u] > 0);
+		assert(nPaths[1][e.v] > 0);
+		baseData[e.u] -= alpha;
+		baseData[e.v] -= alpha;
+		nPaths[1][e.u] -= 1;
+		nPaths[1][e.v] -= 1;
 	}
-	std::vector<bool> isActive(z, false);
-	std::vector<node> active;
-	active.push_back(u);
-	active.push_back(v);
-	isActive[u] = true;
-	isActive[v] = true;
+
 	count i = 2;
-	INFO("Starting update iteration");
 	while(i <= levelReached) {
-		// INFO("Level ", i, ", computing new paths");
-		for (node u: active){
-			newPaths[u] = nPaths[i][u];
-			// INFO("u = ", u, ", npaths[", i, "] = ", nPaths[i][u]);
+		for (node v: seenNodes) {
+			preUpdateContrib[v] = preUpdatePaths[v];
+			preUpdatePaths[v] = nPaths[i][v];
 		}
-		// INFO("Done initializing");
-		std::queue<node> activated;
-		for (node u: active){
-			// notice: for directed graphs here the direction has to be the opposite of the static case
+		
+		// Subtract the old contribution and add the new one.
+		for (node u : seenNodes) {
+			// Note: For directed graphs here the direction has to be the opposite
+			// of the static case.
 			G.forEdgesOf(u, [&](node v, edgeweight ew) {
-				// INFO("Node ", u, ", neighbor ", v);
-				visitedEdges ++;
-				if(!isActive[v]) {
-					isActive[v] = true;
-					activated.push(v);
-					newPaths[v] = nPaths[i][v];
+				visitedEdges++;
+				if(!wasSeen[v]) {
+					wasSeen[v] = true;
+					newlySeen.push_back(v);
+					preUpdatePaths[v] = nPaths[i][v];
 				}
-				// the old contrib should be subtracted only for the edges that existed before the insertion
-				if ((v != e.v || u != e.u) && (v != e.u || u != e.v)) {
-					newPaths[v] -= nPaths[i-1][u]; // subtract the old contribution and add the new one
-				}
-				newPaths[v] += newPathsPrevIt[u];
+				
+				nPaths[i][v] -= preUpdateContrib[u];
+				nPaths[i][v] += nPaths[i-1][u];
 			});
-			if (e.type == GraphEvent::EDGE_REMOVAL) {
-				if (u == e.u) {
-					newPaths[e.v] -= nPaths[i-1][u];
-				} else if (u == e.v) {
-					newPaths[e.u] -= nPaths[i-1][u];
-				}
-			}
 		}
-		INFO("Level ", i, ", updating scores");
-		// now we update the scores (TODO and the bounds?)
-		// also, we push the newly activated nodes into active
-		while(activated.size() > 0) {
-			node u = activated.front();
-			activated.pop();
-			active.push_back(u);
+
+		// Handle the added/deleted edges.
+		if(e.type == GraphEvent::EDGE_ADDITION) {
+			nPaths[i][e.v] += nPaths[i-1][e.u];
+			nPaths[i][e.u] += nPaths[i-1][e.v]; // TODO: Only for undirected.
+		}else{
+			assert(e.type == GraphEvent::EDGE_REMOVAL);
+			nPaths[i][e.v] -= preUpdateContrib[e.u];
+			nPaths[i][e.u] -= preUpdateContrib[e.v];
 		}
-		for (node u: active) {
-			scoreData[u] -= pow(alpha, i) * nPaths[i][u];
-			scoreData[u] += pow(alpha, i) * newPaths[u];
-			if (newPathsPrevIt[u] > 0 || u == e.u || u == e.v) {
-				nPaths[i-1][u] = newPathsPrevIt[u];
-			} // otherwise I should not update this (this is a newly-discovered node)
-			// Only for deletions, it might happen that u or v become isolated
-			newPathsPrevIt[u] = newPaths[u];
+		
+		seenNodes.insert(seenNodes.end(), newlySeen.begin(), newlySeen.end());
+		newlySeen.clear();
+
+		// Updates the Katz centrality from nPaths.
+		auto alpha_pow = pow(alpha, i);
+		for (node u : seenNodes) {
+			baseData[u] -= alpha_pow * preUpdatePaths[u];
+			baseData[u] += alpha_pow * nPaths[i][u];
 		}
-		INFO("i = ", i, ", nActive = ", active.size());
 		i++;
 	}
-	INFO("Done update iteration. visitedEdges = ", visitedEdges, ", speedup: ", double(levelReached*G.numberOfEdges()*2)/visitedEdges);
-	// last level: we need to update nPaths (TODO what about the bounds?)
-	for (node u: active) {
-		if (newPathsPrevIt[u] > 0 || u == e.u || u == e.v) {
-			nPaths[i-1][u] = newPathsPrevIt[u];
-		}
-	}
+	
 	i --;
-	// we compute the new bounds and check whether we still have the top-k nodes or we need more iterations
-	std::vector<double> ubound(z);
-	std::vector<double> lbound(z);
-	std::vector<std::pair<node, double>> orderedNodes;
+
+	INFO("DynKatz: Done update iteration. visitedEdges = ", visitedEdges,
+		", speedup: ", double(levelReached*G.numberOfEdges()*2)/visitedEdges);
+
+	// We compute the new bounds and reactive nodes here.
+
+	// The following value is a lower bound that we know even without recomputing scoreData.
+	double reactivation_threshold = 0.0;
+	if(activeRanking.size() >= k)
+		reactivation_threshold = baseData[*std::min_element(activeRanking.begin(),
+				activeRanking.end(), [&] (node u, node v) {
+			return baseData[u] < baseData[v];
+		})];
+	reactivation_threshold -= rankTolerance;
+	INFO("DynKatz: Reactivation threshold: ", reactivation_threshold);
+
+	auto alpha_pow = pow(alpha, i); // See doIteration().
+	auto next_alpha_pow = alpha * alpha_pow;
+	auto bound_factor = next_alpha_pow * (1/(1 - alpha * maxdeg));
 	G.forNodes([&](node u){
-		ubound[u] = scoreData[u] + nPaths[i][u] * pow(alpha, i + 1) * (1/(1 - alpha * maxdeg));
-		lbound[u] = scoreData[u] + nPaths[i][u] * pow(alpha, i + 1) * (1/(1 - alpha));
-		orderedNodes.push_back(std::make_pair(u, lbound[u]));
+		if(!G.isDirected()) {
+			scoreData[u] = baseData[u] + next_alpha_pow * nPaths[i][u];
+		}else{
+			scoreData[u] = baseData[u];
+		}
+		boundData[u] = baseData[u] + nPaths[i][u] * bound_factor;
+
+		// Reactivate nodes if they can potentially be in the top-k.
+		if(!isActive[u] && boundData[u] >= reactivation_threshold) {
+			isActive[u] = true;
+			activeRanking.push_back(u);
+		}
 	});
-	std::sort(orderedNodes.begin(), orderedNodes.end(), pairCompare);
-	bool allOrdered = true;
-	for (count j = k; j < z; j ++) {
-		node u = orderedNodes[j].first;
-		if (ubound[u] > orderedNodes[k - 1].second) {
-			allOrdered = false;
+	INFO("DynKatz: ", activeRanking.size(), " nodes in ranking after reactivation");
+
+	// TODO what if the maxdeg increases???
+
+	// Check if we need more iterations.
+	if(!checkConvergence()) {
+		do {
+			doIteration();
+		} while(!checkConvergence());
+		INFO("DynKatz: Reached level: ", levelReached);
+	}
+}
+
+double DynamicKatz::bound(node v) {
+	if (!hasRun)
+		throw std::runtime_error("Call run method first");
+	return boundData.at(v);
+}
+
+bool DynamicKatz::areDistinguished(node u, node v) {
+	if(scoreData[u] < scoreData[v])
+		std::swap(u, v);
+	return areCorrectlyRanked(u, v);
+}
+
+bool DynamicKatz::areCorrectlyRanked(node high, node low) {
+	return scoreData[high] > boundData[low] - rankTolerance;
+}
+
+void DynamicKatz::doIteration() {
+	// The following variable is the level that his iteration will fill in.
+	count r = levelReached + 1;
+
+	nPaths.resize(r + 1);
+	nPaths[r].resize(G.upperNodeIdBound(), 0);
+
+	// Next, compute the ranking of active nodes for the current iteration.
+	// GCC 6 is not smart enough to move the 'pow' out of the loop automatically.
+	auto alpha_pow = pow(alpha, r);
+	auto next_alpha_pow = alpha * alpha_pow;
+	auto bound_factor = next_alpha_pow * (1/(1 - alpha * maxdeg));
+	G.parallelForNodes([&](node u){
+		G.forInEdgesOf(u, [&](node v, edgeweight ew) {
+			nPaths[r][u] += nPaths[r-1][v];
+		});
+
+		baseData[u] += alpha_pow * nPaths[r][u];
+		// TODO: Enable this assertion.
+//		assert(baseData[u] <= boundData[u]);
+		if(!G.isDirected()) {
+			scoreData[u] = baseData[u] + next_alpha_pow * nPaths[r][u];
+		}else{
+			scoreData[u] = baseData[u];
+		}
+		boundData[u] = baseData[u] + bound_factor * nPaths[r][u];
+	});
+
+	levelReached++;
+}
+
+bool DynamicKatz::checkConvergence() {
+	// Deactivate nodes that cannot be in the top-k.
+	if(activeRanking.size() > k) {
+		// Doing only a partial sort here improves performance a lot.
+		std::partial_sort(activeRanking.begin(), activeRanking.begin() + k,
+				activeRanking.end(), [&] (node u, node v) {
+			return scoreData[u] > scoreData[v];
+		});
+
+		for(auto u : activeRanking)
+			if(areCorrectlyRanked(activeRanking[k - 1], u))
+				isActive[u] = false;
+
+		activeRanking.erase(std::remove_if(activeRanking.begin() + k,
+				activeRanking.end(), [&] (node u) {
+			return !isActive[u];
+		}), activeRanking.end());
+	}
+
+	assert(!activeRanking.empty());
+	double length = sqrt(G.parallelSumForNodes([&](node u) {
+		return (scoreData[u] * scoreData[u]);
+	}));
+	INFO("DynKatz: In iteration ", levelReached, ": ", activeRanking.size(), " nodes remain."
+			", vector length: ", length);
+
+	if(activeRanking.size() > k)
+		return false;
+
+	// Once only k active nodes remain, we need to continue iterating
+	// until the bounds seperate their position in the ranking.
+	if(!groupOnly) {
+		std::sort(activeRanking.begin(), activeRanking.end(), [&] (node u, node v) {
+			return scoreData[u] > scoreData[v];
+		});
+	
+		INFO("DynKatz: Node with highest centrality: ", activeRanking[0],
+				", score: ", baseData[activeRanking[0]],
+				", (upper) bound: ", boundData[activeRanking[0]],
+				", lower bound: ", scoreData[activeRanking[0]]);
+
+		for (count j = 1; j < std::min(k, activeRanking.size()); j ++) {
+			node previous = activeRanking[j - 1];
+			node current = activeRanking[j];
+			if(!areCorrectlyRanked(previous, current))
+				return false;
 		}
 	}
-	INFO("All ordered? ", allOrdered);
-	// if they are not all ordered, we might need new iterations... TODO
-	// TODO what if the maxdeg increases???
+
+	return true;
 }
 
 } /* namespace NetworKit */
