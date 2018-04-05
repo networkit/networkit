@@ -282,6 +282,49 @@ TEST_F(CentralityGTest, testKatzDynamicDeletion) {
 	INFO("Level reached: ", kc.levelReached, ", ", kc2.levelReached);
 }
 
+TEST_F(CentralityGTest, testKatzDynamicBuilding) {
+	METISGraphReader reader;
+	Graph GIn = reader.read("input/hep-th.graph");
+
+	// Find a single max-degree node and add its edges to G.
+	// (This guarantees that alpha is correct.)
+	node maxNode = 0;
+	GIn.forNodes([&](node u) {
+	if (GIn.degree(u) > GIn.degree(maxNode))
+		maxNode = u;
+	});
+
+	Graph G(GIn.upperNodeIdBound());
+
+	GIn.forEdgesOf(maxNode, [&] (node u, edgeweight) {
+		G.addEdge(maxNode, u);
+	});
+
+	// Now run the algo. and add other some edges to check the correctness of the dynamic part.
+	DynamicKatz dynAlgo(G, 100);
+	dynAlgo.run();
+
+	count edgesProcessed = 0;
+	GIn.forEdges([&] (node u, node v) {
+		if(u == maxNode || v == maxNode)
+			return;
+		if(edgesProcessed > 1000)
+			return;
+		GraphEvent e(GraphEvent::EDGE_ADDITION, u, v, 1.0);
+		G.addEdge(u, v);
+		dynAlgo.update(e);
+		edgesProcessed++;
+	});
+
+	DynamicKatz topAlgo(G, 100);
+	topAlgo.run();
+
+	auto topRanking = topAlgo.ranking();
+	auto dynRanking = dynAlgo.ranking();
+	for(count i = 0; i < std::min(G.numberOfNodes(), count{100}); i++)
+		EXPECT_EQ(topRanking[i].first, dynRanking[i].first);
+}
+
 // TODO: replace by smaller graph
 TEST_F(CentralityGTest, testPageRankDirected) {
 	SNAPGraphReader reader;
