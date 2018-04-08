@@ -63,13 +63,7 @@ void DynamicKatz::run() {
 	hasRun = true;
 }
 
-void DynamicKatz::update(GraphEvent e){
-	if (e.type != GraphEvent::EDGE_ADDITION && e.type != GraphEvent::EDGE_REMOVAL) {
-		throw std::runtime_error("event type not allowed. Edge insertions or deletions only.");
-	}
-	if (e.type == GraphEvent::EDGE_REMOVAL && (nPaths[1][e.u] == 0 || nPaths[1][e.v] == 0)) {
-		throw std::runtime_error("error: deleting an edge that did not exist before");
-	}
+void DynamicKatz::update(const std::vector<GraphEvent> &events){
 	std::vector<count> preUpdatePaths(G.upperNodeIdBound(), 0);
 	std::vector<count> preUpdateContrib(G.upperNodeIdBound(), 0);
 
@@ -80,29 +74,28 @@ void DynamicKatz::update(GraphEvent e){
 	count visitedEdges = 0;
 
 	// First, we manually handle level 1. At level 1 only the two endpoints change.
-	seenNodes.push_back(e.u);
-	seenNodes.push_back(e.v);
-	wasSeen[e.u] = true;
-	wasSeen[e.v] = true;
+	for(GraphEvent e : events) {
+		if (e.type != GraphEvent::EDGE_ADDITION && e.type != GraphEvent::EDGE_REMOVAL) {
+			throw std::runtime_error("event type not allowed. Edge insertions or deletions only.");
+		}
+		if (e.type == GraphEvent::EDGE_REMOVAL && (nPaths[1][e.u] == 0 || nPaths[1][e.v] == 0)) {
+			throw std::runtime_error("error: deleting an edge that did not exist before");
+		}
 
-	preUpdatePaths[e.u] = nPaths[1][e.u];
-	preUpdatePaths[e.v] = nPaths[1][e.v];
+		if(!wasSeen[e.u]) {
+			wasSeen[e.u] = true;
+			seenNodes.push_back(e.u);
+			preUpdatePaths[e.u] = 1;
+		}
 
-	if (e.type == GraphEvent::EDGE_ADDITION) {
-		baseData[e.u] += alpha;
-		baseData[e.v] += alpha;
-		nPaths[1][e.u] += 1;
-		nPaths[1][e.v] += 1;
-	} else {
-		assert(nPaths[1][e.u] > 0);
-		assert(nPaths[1][e.v] > 0);
-		baseData[e.u] -= alpha;
-		baseData[e.v] -= alpha;
-		nPaths[1][e.u] -= 1;
-		nPaths[1][e.v] -= 1;
+		if(!wasSeen[e.v]) {
+			wasSeen[e.v] = true;
+			seenNodes.push_back(e.v);
+			preUpdatePaths[e.v] = 1;
+		}
 	}
 
-	count i = 2;
+	count i = 1;
 	while(i <= levelReached) {
 		for (node v: seenNodes) {
 			preUpdateContrib[v] = preUpdatePaths[v];
@@ -127,15 +120,17 @@ void DynamicKatz::update(GraphEvent e){
 		}
 
 		// Handle the added/deleted edges.
-		if(e.type == GraphEvent::EDGE_ADDITION) {
-			nPaths[i][e.v] += nPaths[i-1][e.u];
-			nPaths[i][e.u] += nPaths[i-1][e.v]; // TODO: Only for undirected.
-		}else{
-			assert(e.type == GraphEvent::EDGE_REMOVAL);
-			nPaths[i][e.v] -= preUpdateContrib[e.u];
-			nPaths[i][e.u] -= preUpdateContrib[e.v];
+		for(GraphEvent e : events) {
+			if(e.type == GraphEvent::EDGE_ADDITION) {
+				nPaths[i][e.v] += nPaths[i-1][e.u];
+				nPaths[i][e.u] += nPaths[i-1][e.v]; // TODO: Only for undirected.
+			}else{
+				assert(e.type == GraphEvent::EDGE_REMOVAL);
+				nPaths[i][e.v] -= preUpdateContrib[e.u];
+				nPaths[i][e.u] -= preUpdateContrib[e.v];
+			}
 		}
-		
+
 		seenNodes.insert(seenNodes.end(), newlySeen.begin(), newlySeen.end());
 		newlySeen.clear();
 

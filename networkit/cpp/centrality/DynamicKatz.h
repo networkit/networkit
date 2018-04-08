@@ -44,7 +44,12 @@ public:
   *
   * @param event The edge insertions or deletion.
   */
-	void update(GraphEvent event);
+	void update(const std::vector<GraphEvent> &events);
+	
+	void update(GraphEvent singleEvent) {
+		std::vector<GraphEvent> events{singleEvent};
+		update(events);
+	}
 
 	node top(count n = 0) {
 		assert(activeRanking.size() > n);
