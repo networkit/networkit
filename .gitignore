@@ -54,3 +54,4 @@ NetworKit-Tests-*
 include/NetworKit
 dist/
 .buildDbg/
+.idea/
