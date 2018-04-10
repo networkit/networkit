@@ -205,10 +205,10 @@ double DynamicKatz::bound(node v) {
 bool DynamicKatz::areDistinguished(node u, node v) {
 	if(scoreData[u] < scoreData[v])
 		std::swap(u, v);
-	return areCorrectlyRanked(u, v);
+	return scoreData[u] > boundData[v];
 }
 
-bool DynamicKatz::areCorrectlyRanked(node high, node low) {
+bool DynamicKatz::areSufficientlyRanked(node high, node low) {
 	return scoreData[high] > boundData[low] - rankTolerance;
 }
 
@@ -253,7 +253,7 @@ bool DynamicKatz::checkConvergence() {
 		});
 
 		for(auto u : activeRanking)
-			if(areCorrectlyRanked(activeRanking[k - 1], u))
+			if(areSufficientlyRanked(activeRanking[k - 1], u))
 				isActive[u] = false;
 
 		activeRanking.erase(std::remove_if(activeRanking.begin() + k,
@@ -287,7 +287,7 @@ bool DynamicKatz::checkConvergence() {
 		for (count j = 1; j < std::min(k, activeRanking.size()); j ++) {
 			node previous = activeRanking[j - 1];
 			node current = activeRanking[j];
-			if(!areCorrectlyRanked(previous, current))
+			if(!areSufficientlyRanked(previous, current))
 				return false;
 		}
 	}

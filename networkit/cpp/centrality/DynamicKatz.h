@@ -68,10 +68,11 @@ public:
 
 private:
 	/**
-	 * Returns true if the bounds are sharp enough to rank two nodes against each other.
+	 * Returns true if the bounds are sharp enough to rank two nodes against
+	 * each other **within the tolerance**.
 	 * Precondition: The first node appears higher in the current ranking the the second one.
 	 */
-	bool areCorrectlyRanked(node high, node low);
+	bool areSufficientlyRanked(node high, node low);
 
 	/**
 	 * Performs a single iteration of the algorithm.
