@@ -76,16 +76,7 @@ void DynamicKatz::update(const std::vector<GraphEvent> &events){
 	// First, we manually handle level 1. At level 1 only the two endpoints change.
 	for(GraphEvent e : events) {
 		if (e.type != GraphEvent::EDGE_ADDITION && e.type != GraphEvent::EDGE_REMOVAL) {
-			throw std::runtime_error("event type not allowed. Edge insertions or deletions only.");
-		}
-		if (e.type == GraphEvent::EDGE_REMOVAL && (nPaths[1][e.u] == 0 || nPaths[1][e.v] == 0)) {
-			throw std::runtime_error("error: deleting an edge that did not exist before");
-		}
-
-		if(!wasSeen[e.u]) {
-			wasSeen[e.u] = true;
-			seenNodes.push_back(e.u);
-			preUpdatePaths[e.u] = 1;
+			throw std::runtime_error("Event type not allowed. Edge insertions or deletions only.");
 		}
 
 		if(!wasSeen[e.v]) {
@@ -93,6 +84,13 @@ void DynamicKatz::update(const std::vector<GraphEvent> &events){
 			seenNodes.push_back(e.v);
 			preUpdatePaths[e.v] = 1;
 		}
+
+		if(!G.isDirected())
+			if(!wasSeen[e.u]) {
+				wasSeen[e.u] = true;
+				seenNodes.push_back(e.u);
+				preUpdatePaths[e.u] = 1;
+			}
 	}
 
 	count i = 1;
@@ -102,6 +100,12 @@ void DynamicKatz::update(const std::vector<GraphEvent> &events){
 			preUpdatePaths[v] = nPaths[i][v];
 		}
 		
+		// Caveat: We need preUpdateContrib[e.u] for deletions.
+		// If e.u was not seen yet, we initialize that value here.
+		for(GraphEvent e : events)
+			if(e.type == GraphEvent::EDGE_REMOVAL && !wasSeen[e.u])
+				preUpdateContrib[e.u] = nPaths[i-1][e.u];
+
 		// Subtract the old contribution and add the new one.
 		for (node u : seenNodes) {
 			// Note: For directed graphs here the direction has to be the opposite
@@ -118,19 +122,21 @@ void DynamicKatz::update(const std::vector<GraphEvent> &events){
 				nPaths[i][v] += nPaths[i-1][u];
 			});
 		}
-
+		
 		// Handle the added/deleted edges.
 		for(GraphEvent e : events) {
 			if(e.type == GraphEvent::EDGE_ADDITION) {
 				nPaths[i][e.v] += nPaths[i-1][e.u];
-				nPaths[i][e.u] += nPaths[i-1][e.v]; // TODO: Only for undirected.
+				if(!G.isDirected())
+					nPaths[i][e.u] += nPaths[i-1][e.v];
 			}else{
 				assert(e.type == GraphEvent::EDGE_REMOVAL);
 				nPaths[i][e.v] -= preUpdateContrib[e.u];
-				nPaths[i][e.u] -= preUpdateContrib[e.v];
+				if(!G.isDirected())
+					nPaths[i][e.u] -= preUpdateContrib[e.v];
 			}
 		}
-
+		
 		seenNodes.insert(seenNodes.end(), newlySeen.begin(), newlySeen.end());
 		newlySeen.clear();
 

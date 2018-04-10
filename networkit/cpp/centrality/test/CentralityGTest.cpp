@@ -323,7 +323,137 @@ TEST_F(CentralityGTest, testKatzDynamicBuilding) {
 		EXPECT_EQ(topRanking[i].first, dynRanking[i].first);
 }
 
+<<<<<<< HEAD
 // TODO: replace by smaller graph
+=======
+TEST_F(CentralityGTest, testKatzDirectedAddition) {
+  // Same graph as in testCoreDecompositionDirected.
+  count n = 16;
+  Graph G(n, false, true);
+
+  G.addEdge(2, 4);
+  G.addEdge(3, 4);
+  G.addEdge(4, 5);
+  G.addEdge(5, 7);
+  G.addEdge(6, 7);
+
+  G.addEdge(6, 8);
+  G.addEdge(6, 9);
+  G.addEdge(6, 11);
+  G.addEdge(7, 12);
+  G.addEdge(8, 9);
+
+  G.addEdge(8, 10);
+  G.addEdge(8, 11);
+  G.addEdge(8, 13);
+  G.addEdge(9, 10);
+  G.addEdge(9, 11);
+
+  G.addEdge(9, 13);
+  G.addEdge(10, 11);
+  G.addEdge(10, 13);
+  G.addEdge(10, 14);
+  G.addEdge(11, 13);
+
+  G.addEdge(11, 14);
+  G.addEdge(12, 15);
+  G.addEdge(13, 14);
+  G.addEdge(14, 15);
+  
+  DynamicKatz kc(G, 5);
+  kc.run();
+
+  node u, v;
+  Aux::Random::setSeed(42, false);
+  do {
+    u = G.randomNode();
+    v = G.randomNode();
+  } while (G.hasEdge(u, v));
+  GraphEvent e(GraphEvent::EDGE_ADDITION, u, v, 1.0);
+  kc.update(e);
+  G.addEdge(u, v);
+
+  DynamicKatz kc2(G, 5);
+  kc2.run();
+
+  for (count i = 0; i <= std::min(kc.levelReached, kc2.levelReached); i ++) {
+    G.forNodes([&](node u){
+      EXPECT_EQ(kc.nPaths[i][u], kc2.nPaths[i][u]);
+    });
+  }
+  const edgeweight tol = 1e-9;
+  G.forNodes([&](node u){
+    EXPECT_NEAR(kc.score(u), kc2.score(u), tol);
+    EXPECT_NEAR(kc.bound(u), kc2.bound(u), tol);
+  });
+
+  INFO("Level reached: ", kc.levelReached, ", ", kc2.levelReached);
+}
+
+TEST_F(CentralityGTest, testKatzDirectedDeletion) {
+  // Same graph as in testCoreDecompositionDirected.
+  count n = 16;
+  Graph G(n, false, true);
+
+  G.addEdge(2, 4);
+  G.addEdge(3, 4);
+  G.addEdge(4, 5);
+  G.addEdge(5, 7);
+  G.addEdge(6, 7);
+
+  G.addEdge(6, 8);
+  G.addEdge(6, 9);
+  G.addEdge(6, 11);
+  G.addEdge(7, 12);
+  G.addEdge(8, 9);
+
+  G.addEdge(8, 10);
+  G.addEdge(8, 11);
+  G.addEdge(8, 13);
+  G.addEdge(9, 10);
+  G.addEdge(9, 11);
+
+  G.addEdge(9, 13);
+  G.addEdge(10, 11);
+  G.addEdge(10, 13);
+  G.addEdge(10, 14);
+  G.addEdge(11, 13);
+
+  G.addEdge(11, 14);
+  G.addEdge(12, 15);
+  G.addEdge(13, 14);
+  G.addEdge(14, 15);
+  
+  DynamicKatz kc(G, 5);
+  kc.run();
+
+  Aux::Random::setSeed(42, false);
+  std::pair<node, node> p = G.randomEdge();
+  node u = p.first;
+  node v = p.second;
+  INFO("Removing ", u, " -> ", v);
+  GraphEvent e(GraphEvent::EDGE_REMOVAL, u, v, 1.0);
+  G.removeEdge(u, v);
+  kc.update(e);
+
+  DynamicKatz kc2(G, 5);
+  kc2.run();
+
+  for (count i = 0; i <= std::min(kc.levelReached, kc2.levelReached); i ++) {
+    G.forNodes([&](node u){
+      EXPECT_EQ(kc.nPaths[i][u], kc2.nPaths[i][u]) << i << "-length paths ending in " << u << " do not match!";
+    });
+  }
+  const edgeweight tol = 1e-9;
+  G.forNodes([&](node u){
+    EXPECT_NEAR(kc.score(u), kc2.score(u), tol);
+    EXPECT_NEAR(kc.bound(u), kc2.bound(u), tol);
+  });
+
+  INFO("Level reached: ", kc.levelReached, ", ", kc2.levelReached);
+}
+
+>>>>>>> Katz centrality: Fix dyn. updates in directed case
 TEST_F(CentralityGTest, testPageRankDirected) {
 	SNAPGraphReader reader;
 	Graph G = reader.read("input/wiki-Vote.txt");
