@@ -24,8 +24,8 @@ DynamicKatz::DynamicKatz(const Graph& G, count k, bool groupOnly, double toleran
 	assert(maxdeg && "Alpha is chosen based on the max. degree; therefore, that degree must not be zero");
 
 	alpha = double(1)/(maxdeg + 1);
-	INFO("alpha: ", alpha);
-	INFO("1/(1-alpha): ", 1/(1-alpha));
+	DEBUG("alpha: ", alpha);
+	DEBUG("1/(1-alpha): ", 1/(1-alpha));
 }
 
 bool pairCompare(const std::pair<node, double>& firstElem, const std::pair<node, double>& secondElem) {
@@ -33,7 +33,7 @@ bool pairCompare(const std::pair<node, double>& firstElem, const std::pair<node,
 }
 
 void DynamicKatz::run() {
-	INFO("DynKatz: Nodes: ", G.numberOfNodes(), ", edges: ", G.numberOfEdges(),
+	DEBUG("DynKatz: Nodes: ", G.numberOfNodes(), ", edges: ", G.numberOfEdges(),
 			", graph is ", G.isDirected() ? "directed" : "undirected");
 
 	nPaths.clear();
@@ -58,7 +58,7 @@ void DynamicKatz::run() {
 	do {
 		doIteration();
 	} while(!checkConvergence());
-	INFO("DynKatz: Reached level: ", levelReached);
+	DEBUG("DynKatz: Reached level: ", levelReached);
 
 	hasRun = true;
 }
@@ -151,7 +151,7 @@ void DynamicKatz::update(const std::vector<GraphEvent> &events){
 	
 	i --;
 
-	INFO("DynKatz: Done update iteration. visitedEdges = ", visitedEdges,
+	DEBUG("DynKatz: Done update iteration. visitedEdges = ", visitedEdges,
 		", speedup: ", double(levelReached*G.numberOfEdges()*2)/visitedEdges);
 
 	// We compute the new bounds and reactive nodes here.
@@ -164,7 +164,7 @@ void DynamicKatz::update(const std::vector<GraphEvent> &events){
 			return baseData[u] < baseData[v];
 		})];
 	reactivation_threshold -= rankTolerance;
-	INFO("DynKatz: Reactivation threshold: ", reactivation_threshold);
+	DEBUG("DynKatz: Reactivation threshold: ", reactivation_threshold);
 
 	auto alpha_pow = pow(alpha, i); // See doIteration().
 	auto next_alpha_pow = alpha * alpha_pow;
@@ -183,7 +183,7 @@ void DynamicKatz::update(const std::vector<GraphEvent> &events){
 			activeRanking.push_back(u);
 		}
 	});
-	INFO("DynKatz: ", activeRanking.size(), " nodes in ranking after reactivation");
+	DEBUG("DynKatz: ", activeRanking.size(), " nodes in ranking after reactivation");
 
 	// TODO what if the maxdeg increases???
 
@@ -192,7 +192,7 @@ void DynamicKatz::update(const std::vector<GraphEvent> &events){
 		do {
 			doIteration();
 		} while(!checkConvergence());
-		INFO("DynKatz: Reached level: ", levelReached);
+		DEBUG("DynKatz: Reached level: ", levelReached);
 	}
 }
 
@@ -266,7 +266,7 @@ bool DynamicKatz::checkConvergence() {
 	double length = sqrt(G.parallelSumForNodes([&](node u) {
 		return (scoreData[u] * scoreData[u]);
 	}));
-	INFO("DynKatz: In iteration ", levelReached, ": ", activeRanking.size(), " nodes remain."
+	DEBUG("DynKatz: In iteration ", levelReached, ": ", activeRanking.size(), " nodes remain."
 			", vector length: ", length);
 
 	if(activeRanking.size() > k)
@@ -279,7 +279,7 @@ bool DynamicKatz::checkConvergence() {
 			return scoreData[u] > scoreData[v];
 		});
 	
-		INFO("DynKatz: Node with highest centrality: ", activeRanking[0],
+		DEBUG("DynKatz: Node with highest centrality: ", activeRanking[0],
 				", score: ", baseData[activeRanking[0]],
 				", (upper) bound: ", boundData[activeRanking[0]],
 				", lower bound: ", scoreData[activeRanking[0]]);
