@@ -106,7 +106,7 @@ def overview(G):
 		sequence = sorted(degrees)
 		i = 0
 		nIsolated = 0
-		while sequence[i] == 0 and i < len(sequence):
+		while i < len(sequence) and sequence[i] == 0:
 			nIsolated += 1
 			i += 1
 		return nIsolated
