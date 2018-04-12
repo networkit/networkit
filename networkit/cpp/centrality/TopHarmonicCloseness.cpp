@@ -33,7 +33,6 @@ TopHarmonicCloseness::BFScut(node v, edgeweight x, count n, count r,
 
   count d = 0;
   int64_t gamma = 0, nd = 0;
-
   distances[v] = 0;
   std::queue<node> Q;
   std::queue<node> toReset;
@@ -69,7 +68,7 @@ TopHarmonicCloseness::BFScut(node v, edgeweight x, count n, count r,
       ctilde = c + (edgeweight(gamma) / ((d + 2) * (d + 1))) +
                (edgeweight(d2) / (d + 2));
 
-      if (ctilde <= x) {
+      if (ctilde < x) {
         exactCutOff[v] = true;
         cutOff[v] = d;
         cleanup();
@@ -102,13 +101,13 @@ TopHarmonicCloseness::BFScut(node v, edgeweight x, count n, count r,
         } else if (distances[w] > 1 && (pred[u] != w)) {
           ctilde = ctilde - 1.0 / (d + 1) + 1.0 / (d + 2);
 
-          if (ctilde <= x) {
+          if (ctilde < x) {
             cont = false;
           }
         }
       }
     });
-    if (ctilde <= x) {
+    if (ctilde < x) {
       exactCutOff[v] = false;
       cutOff[v] = d;
       cleanup();
@@ -167,7 +166,8 @@ void TopHarmonicCloseness::BFSbound(node source, std::vector<double> &S2,
     if (j <= 2) {
       closeNodes += nodesPerLev[j];
     } else {
-      farNodes += nodesPerLev[j] * inverseDistance(double(abs((double)j - 1.)));
+      farNodes +=
+          nodesPerLev[j] * inverseDistance(double(std::abs((double)j - 1.)));
     }
   }
 
@@ -192,9 +192,9 @@ void TopHarmonicCloseness::BFSbound(node source, std::vector<double> &S2,
     // TODO: OPTIMIZE?
     if (!G.isDirected()) {
       for (count j = 0; j <= nLevs; j++) {
-        level_bound +=
-            inverseDistance(std::max(2., double(abs((double)j - (double)i)))) *
-            nodesPerLev[j];
+        level_bound += inverseDistance(std::max(
+                           2., double(std::abs((double)j - (double)i)))) *
+                       nodesPerLev[j];
       }
     } else {
       for (count j = 0; j <= nLevs; j++) {
@@ -217,16 +217,23 @@ void TopHarmonicCloseness::BFSbound(node source, std::vector<double> &S2,
   }
 }
 
-void TopHarmonicCloseness::run() {
+void TopHarmonicCloseness::init() {
   n = G.upperNodeIdBound();
   assert(n >= k);
-
-  std::vector<bool> toAnalyze(n, true);
 
   topk.clear();
   topk.resize(k);
   topkScores.clear();
   topkScores.resize(k);
+  nMinCloseness = 0;
+  minCloseness = std::numeric_limits<double>::max();
+  trail = 0;
+}
+
+void TopHarmonicCloseness::run() {
+  init();
+
+  std::vector<bool> toAnalyze(n, true);
 
   // We compute the number of reachable nodes (or an upper bound)
   // only if we use the algorithm for complex networks.
@@ -245,14 +252,14 @@ void TopHarmonicCloseness::run() {
   omp_lock_t lock;
   omp_init_lock(&lock);
 
-#pragma omp parallel num_threads(1)
+  edgeweight kth = 0;
+#pragma omp parallel
   {
     std::vector<uint8_t> visited(n, false);
     std::vector<count> distances(n);
     std::vector<node> pred(n, 0);
 
     std::vector<edgeweight> S(n, std::numeric_limits<edgeweight>::max());
-    edgeweight kth = 0;
     while (Q1.size() != 0) {
 
       omp_set_lock(&lock);
@@ -269,7 +276,7 @@ void TopHarmonicCloseness::run() {
 
       // for networks with large diameters: break if the score of the
       // current node is smaller than the k-th highest score
-      if (useBFSbound && allScores[v] <= kth && isValid[v]) {
+      if (useBFSbound && allScores[v] < kth && isValid[v]) {
         break;
       }
 
@@ -322,35 +329,96 @@ void TopHarmonicCloseness::run() {
       }
       // Insert v into the list with the k most central nodes if
       // its score is larger than the k-th largest value
-      if (isExact[v] && allScores[v] > kth) {
-        omp_set_lock(&lock);
+      omp_set_lock(&lock);
+      if (isExact[v] && allScores[v] >= kth) {
         top.insert(allScores[v], v);
         if (top.size() > k) {
-          top.extractMin();
+          ++trail;
+          if (allScores[v] > kth) {
+            if (nMinCloseness == trail) {
+              while (top.size() > k) {
+                top.extractMin();
+              }
+              trail = 0;
+              nMinCloseness = 1;
+              if (k > 1) {
+                Aux::PrioQueue<edgeweight, node> tmp(n);
+                auto last = top.extractMin();
+                auto next = top.extractMin();
+                minCloseness = last.first;
+
+                if (last.first == next.first) {
+                  tmp.insert(last.first, last.second);
+                  while (next.first == last.first) {
+                    tmp.insert(next.first, next.second);
+                    ++nMinCloseness;
+                    if (top.size() == 0) {
+                      break;
+                    }
+                    next = top.extractMin();
+                  }
+                  if (next.first != last.first) {
+                    top.insert(next.first, next.second);
+                  }
+
+                  while (tmp.size() > 0) {
+                    auto elem = tmp.extractMin();
+                    top.insert(elem.first, elem.second);
+                  }
+                } else {
+                  top.insert(next.first, next.second);
+                  top.insert(last.first, last.second);
+                }
+              }
+            }
+          } else {
+            ++nMinCloseness;
+          }
+        } else if (allScores[v] < minCloseness) {
+          minCloseness = allScores[v];
+          nMinCloseness = 1;
+        } else if (allScores[v] == minCloseness) {
+          ++nMinCloseness;
         }
-        omp_unset_lock(&lock);
       }
 
       // Update the k-th largest value for this thread
-      if (top.size() == k) {
-        omp_set_lock(&lock);
+      if (top.size() >= k) {
         std::pair<edgeweight, node> elem = top.extractMin();
         kth = elem.first;
         top.insert(elem.first, elem.second);
-        omp_unset_lock(&lock);
+        if (nMinCloseness == 1) {
+          minCloseness = kth;
+        }
       }
+      omp_unset_lock(&lock);
     }
   }
 
+  // TODO This could go to another method
+  if (trail > 0) {
+    topk.resize(k + trail);
+    topkScores.resize(k + trail);
+  }
+
   // Store the nodes and their closeness centralities
-  for (int64_t j = k - 1; j >= 0; --j) {
+  for (int64_t j = top.size() - 1; j >= 0; --j) {
     std::pair<edgeweight, node> elem = top.extractMin();
     topk[j] = elem.second;
     topkScores[j] = elem.first;
   }
 
-  for (count j = 0; j < k; ++j) {
-    top.insert(topkScores[j], topk[j]);
+  for (count i = 0; i < topk.size() - 1; ++i) {
+    count toSort = 1;
+    while ((i + toSort) < topk.size() &&
+           topkScores[i] == topkScores[i + toSort]) {
+      ++toSort;
+    }
+    if (toSort > 1) {
+      auto begin = topk.begin() + i;
+      std::sort(begin, begin + toSort);
+      i += toSort - 1;
+    }
   }
 
   hasRun = true;

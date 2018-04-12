@@ -33,8 +33,16 @@ private:
 public:
   SameCommunityIndex();
 
+  /**
+   *
+   * @param G The graph to work on
+   */
   explicit SameCommunityIndex(const Graph& G);
   
+  /**
+   * Sets the graph to work on.
+   * @param newGraph The graph to work on
+   */
   virtual void setGraph(const Graph& newGraph) override;
 
 };
