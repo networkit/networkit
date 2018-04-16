@@ -7974,9 +7974,10 @@ cdef class MaximalCliques(Algorithm):
 			self._callback = new NodeVectorCallbackWrapper(callback)
 			try:
 				self._this = new _MaximalCliques(self._G._this, dereference(self._callback))
-			finally:
+			except BaseException as e:
 				del self._callback
 				self._callback = NULL
+				raise e
 		else:
 			self._callback = NULL
 			self._this = new _MaximalCliques(self._G._this, maximumOnly);
