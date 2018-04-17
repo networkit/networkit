@@ -1,6 +1,7 @@
 #include "TwoPhaseInfluenceMaximization.h"
 
 #include "../auxiliary/BucketPQ.h"
+#include "../auxiliary/Log.h"
 #include "../auxiliary/MissingMath.h"
 #include "../auxiliary/Random.h"
 #include "../auxiliary/SignalHandling.h"
@@ -55,6 +56,7 @@ double estimateKpt(const Graph& G, count k, double l, Model model) {
         double c = (6 * l * std::log(n) + 6 * std::log(std::log2(n))) * std::exp2(i);
         double sum = 0;
         auto rrSet = std::vector<node>{};
+        DEBUG(std::to_string((count) std::ceil(c)) + " RR sets will be generated to guess mean expected spread");
         for (count j = 0; j < c; ++j) {
             rrSet.clear();
             randomReverseReachableSet(G, model, [&rrSet](node n) { rrSet.push_back(n); });
@@ -82,6 +84,7 @@ std::unordered_set<node> selectInfluencers(const Graph& G, count k, count theta,
     auto hypergraphAdjacencyLists = std::vector<adjacencyList>(G.numberOfNodes());
     auto hypergraphPriorities = std::vector<count>(G.numberOfNodes(), theta);
 
+    DEBUG(std::to_string(theta) + " random RR sets will be generated to select the influencers");
     for (index edge = 0; edge < theta; ++edge) {
         randomReverseReachableSet(G, model,
                 [&hyperedges, &hypergraphAdjacencyLists, &hypergraphPriorities, edge](node n) {
@@ -164,6 +167,7 @@ using Aux::MissingMath::binomial;
 void TwoPhaseInfluenceMaximization::run() {
     Aux::SignalHandler handler;
 
+    INFO("Phase 1: Parameter estimation");
     double kpt = estimateKpt(G, k, l, model);
     if (!handler.isRunning()) return;
 
@@ -171,8 +175,10 @@ void TwoPhaseInfluenceMaximization::run() {
     double lambda = (8 + 2 * epsilon) * n
         * (l * std::log(n) + std::log(binomial(n, k)) + std::log(2))
         * std::pow(epsilon, -2);
+    count theta = std::ceil(lambda / kpt); // TODO: verify that rounding is correct
 
-    influencers = selectInfluencers(G, k, std::ceil(lambda / kpt), model); // TODO: verify that rounding is correct
+    INFO("Phase 2: Node selection");
+    influencers = selectInfluencers(G, k, theta, model);
 }
 
 }
