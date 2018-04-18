@@ -22,7 +22,7 @@ class DefaultConfigParser(cp.ConfigParser):
 
 		try:
 			return self.get(section, option, raw=raw, vars=vars)
-		except (cp.ConfigParser.NoSectionError, cp.ConfigParser.NoOptionError):
+		except (cp.NoSectionError, cp.NoOptionError):
 			return default
 
 
