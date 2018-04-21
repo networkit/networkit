@@ -5,7 +5,9 @@
  *      Author: cls
  */
 
-#include "CentralityGTest.h"
+#include <iomanip>
+#include <iostream>
+
 #include "../../auxiliary/Log.h"
 #include "../../auxiliary/Timer.h"
 #include "../../generators/DorogovtsevMendesGenerator.h"
@@ -21,19 +23,19 @@
 #include "../CoreDecomposition.h"
 #include "../DynApproxBetweenness.h"
 #include "../EigenvectorCentrality.h"
-#include "../LaplacianCentrality.h"
 #include "../EstimateBetweenness.h"
+#include "../GroupDegree.h"
 #include "../HarmonicCloseness.h"
 #include "../KPathCentrality.h"
 #include "../KatzCentrality.h"
+#include "../LaplacianCentrality.h"
 #include "../LocalClusteringCoefficient.h"
 #include "../PageRank.h"
 #include "../PermanenceCentrality.h"
 #include "../SpanningEdgeCentrality.h"
 #include "../TopCloseness.h"
 #include "../TopHarmonicCloseness.h"
-#include <iomanip>
-#include <iostream>
+#include "CentralityGTest.h"
 
 namespace NetworKit {
 
@@ -979,9 +981,11 @@ TEST_F(CentralityGTest, testTopHarmonicClosenessUndirected) {
 
 TEST_F(CentralityGTest, testLaplacianCentrality) {
   // The graph structure and reference values for the scores are taken from
-  // Qi et al., Laplacian centrality: A new centrality measure for weighted networks.
+  // Qi et al., Laplacian centrality: A new centrality measure for weighted
+  // networks.
   //
-  // See https://math.wvu.edu/~cqzhang/Publication-files/my-paper/INS-2012-Laplacian-W.pdf.
+  // See
+  // https://math.wvu.edu/~cqzhang/Publication-files/my-paper/INS-2012-Laplacian-W.pdf.
   Graph G(6, true);
 
   G.addEdge(0, 1, 4);
@@ -1045,6 +1049,15 @@ TEST_F(CentralityGTest, testLaplacianCentralityUnweighted) {
   EXPECT_EQ(10, scores[3]);
   EXPECT_EQ(16, scores[4]);
   EXPECT_EQ(6, scores[5]);
+}
+
+TEST_F(CentralityGTest, testGroupDegreeUndirected) {
+  Aux::Random::setSeed(0, false);
+  ErdosRenyiGenerator gen(10, 0.2);
+  Graph g = gen.generate();
+
+  GroupDegree gd(g, 5);
+  gd.run();
 }
 
 } /* namespace NetworKit */
