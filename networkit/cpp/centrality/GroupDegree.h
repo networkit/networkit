@@ -27,17 +27,17 @@ protected:
   const count k;
   count n;
   std::vector<node> group;
-  std::vector<int64_t> score;
-  std::vector<bool> inGroup;
+  std::vector<int64_t> gain;
   std::vector<bool> reachable;
+  std::vector<bool> affected;
   std::vector<node> tmp;
   Aux::BucketPQ queue;
   count groupScore;
+  bool hasComputedScore;
 
   void init();
-  void pushInQueue();
-  void updateQueue(node lastAdded);
-
+  void updateQueue();
+  void computeScore();
   void checkHasRun();
 };
 
@@ -48,7 +48,21 @@ inline std::vector<node> GroupDegree::groupMaxDegree() {
 
 inline count GroupDegree::getScore() {
   checkHasRun();
+  if (!hasComputedScore) {
+    computeScore();
+  }
   return groupScore;
+}
+
+inline void GroupDegree::computeScore() {
+  groupScore = 0;
+  G.forNodes([&](node u) {
+    if (reachable[u]) {
+      ++groupScore;
+    }
+  });
+  groupScore -= k;
+  hasComputedScore = true;
 }
 
 inline void GroupDegree::checkHasRun() {

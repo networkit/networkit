@@ -22,7 +22,7 @@ GroupDegree::GroupDegree(const Graph &G, count k)
 
 void GroupDegree::init() {
 
-  groupScore = 0;
+  hasComputedScore = false;
   if (hasRun) {
     n = G.upperNodeIdBound();
     while (queue.size() > 0) {
@@ -34,9 +34,8 @@ void GroupDegree::init() {
   group.clear();
   group.reserve(k);
 
-  inGroup.assign(n, false);
   reachable.assign(n, false);
-  score.assign(n, 0);
+  gain.assign(n, 0);
 }
 
 void GroupDegree::run() {
@@ -44,57 +43,51 @@ void GroupDegree::run() {
 
   G.forNodes([&](node u) {
     int64_t curNodeScore = G.degree(u);
+    if (curNodeScore > 0) {
+      --curNodeScore;
+    }
     queue.insert(-curNodeScore, u);
-    score[u] = curNodeScore;
+    gain[u] = curNodeScore;
   });
 
-  pushInQueue();
+  group.push_back(queue.extractMin().second);
   while (group.size() < k) {
-    updateQueue(group.back());
-    pushInQueue();
+    updateQueue();
+    group.push_back(queue.extractMin().second);
   }
 
   hasRun = true;
 }
 
-void GroupDegree::updateQueue(node lastAdded) {
+void GroupDegree::updateQueue() {
+  node lastAdded = group.back();
   reachable[lastAdded] = true;
-  G.forNeighborsOf(lastAdded, [&](node u) { reachable[u] = true; });
-  if (G.isDirected()) {
-
-  } else {
-    G.forNeighborsOf(lastAdded, [&](node u) {
-      count newScore = 0;
-      tmp.clear();
-      tmp.reserve(n);
-      G.forNeighborsOf(u, [&](node v) {
-        if (!reachable[v]) {
-          tmp.push_back(v);
-          ++newScore;
-        }
-      });
+  std::vector<node> neighbors = G.neighbors(lastAdded);
+  affected.assign(n, false);
 #pragma omp parallel for
-      for (count i = 0; i < tmp.size(); ++i) {
-        count neighborNewScore = 0;
-        node curNeighbor = tmp[i];
-        G.forNeighborsOf(curNeighbor, [&](node v) {
-          if (!reachable[v]) {
-            ++neighborNewScore;
-          }
-        });
-        score[curNeighbor] = neighborNewScore;
-        queue.changeKey(-score[curNeighbor], curNeighbor);
-      }
-      score[u] = (newScore == 1) ? 0 : newScore;
-      queue.changeKey(-score[u], u);
+  for (count i = 0; i < neighbors.size(); ++i) {
+    node u = neighbors[i];
+    reachable[u] = true;
+    affected[u] = true;
+    G.forNeighborsOf(u, [&](node v) {
+#pragma omp critical
+      affected[v] = true;
     });
   }
-}
 
-void GroupDegree::pushInQueue() {
-  auto highestDegree = queue.extractMin();
-  group.push_back(highestDegree.second);
-  inGroup[highestDegree.second] = true;
-  groupScore += -highestDegree.first;
+#pragma omp parallel for
+  for (count i = 0; i < n; ++i) {
+    if (affected[i]) {
+      int64_t newGain = -1;
+      G.forNeighborsOf(i, [&](node v) {
+        if (!reachable[v]) {
+          ++newGain;
+        }
+      });
+      gain[i] = newGain;
+#pragma omp critical
+      queue.changeKey(-newGain, i);
+    }
+  }
 }
 } // namespace NetworKit
