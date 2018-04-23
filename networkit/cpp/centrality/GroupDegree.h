@@ -29,11 +29,14 @@ protected:
   std::vector<node> group;
   std::vector<int64_t> score;
   std::vector<bool> inGroup;
+  std::vector<bool> reachable;
+  std::vector<node> tmp;
+  Aux::BucketPQ queue;
   count groupScore;
 
   void init();
-  void pushInQueue(Aux::BucketPQ &queue);
-  void updateQueue(node lastAdded, Aux::BucketPQ &queue);
+  void pushInQueue();
+  void updateQueue(node lastAdded);
 
   void checkHasRun();
 };
@@ -43,15 +46,15 @@ inline std::vector<node> GroupDegree::groupMaxDegree() {
   return group;
 }
 
+inline count GroupDegree::getScore() {
+  checkHasRun();
+  return groupScore;
+}
+
 inline void GroupDegree::checkHasRun() {
   if (!hasRun) {
     throw std::runtime_error("Run method has not been called.");
   }
-}
-
-inline count GroupDegree::getScore() {
-  checkHasRun();
-  return groupScore;
 }
 } // namespace NetworKit
 
