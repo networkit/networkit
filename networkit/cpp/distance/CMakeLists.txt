@@ -1,0 +1,19 @@
+# This file was automatically generated with UpdateCMakeFiles.py
+# Changes will be overridden; do not edit.
+
+add_subdirectory("test")
+
+networkit_add_source(APSP)
+networkit_add_source(AdamicAdarDistance)
+networkit_add_source(AlgebraicDistance)
+networkit_add_source(CommuteTimeDistance)
+networkit_add_source(Diameter)
+networkit_add_source(Eccentricity)
+networkit_add_source(EffectiveDiameter)
+networkit_add_source(EffectiveDiameterApproximation)
+networkit_add_source(HopPlotApproximation)
+networkit_add_source(JaccardDistance)
+networkit_add_source(NeighborhoodFunction)
+networkit_add_source(NeighborhoodFunctionApproximation)
+networkit_add_source(NeighborhoodFunctionHeuristic)
+networkit_add_source(NodeDistance)

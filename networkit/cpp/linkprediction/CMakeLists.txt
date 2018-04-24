@@ -1,0 +1,28 @@
+# This file was automatically generated with UpdateCMakeFiles.py
+# Changes will be overridden; do not edit.
+
+add_subdirectory("test")
+
+networkit_add_source(AdamicAdarIndex)
+networkit_add_source(AdjustedRandIndex)
+networkit_add_source(AlgebraicDistanceIndex)
+networkit_add_source(CommonNeighborsIndex)
+networkit_add_source(EvaluationMetric)
+networkit_add_source(JaccardIndex)
+networkit_add_source(KatzIndex)
+networkit_add_source(LinkPredictor)
+networkit_add_source(LinkThresholder)
+networkit_add_source(MissingLinksFinder)
+networkit_add_source(NeighborhoodDistanceIndex)
+networkit_add_source(NeighborhoodUtility)
+networkit_add_source(NeighborsMeasureIndex)
+networkit_add_source(PrecisionRecallMetric)
+networkit_add_source(PredictionsSorter)
+networkit_add_source(PreferentialAttachmentIndex)
+networkit_add_source(ROCMetric)
+networkit_add_source(RandomLinkSampler)
+networkit_add_source(ResourceAllocationIndex)
+networkit_add_source(SameCommunityIndex)
+networkit_add_source(TotalNeighborsIndex)
+networkit_add_source(UDegreeIndex)
+networkit_add_source(VDegreeIndex)

@@ -1,0 +1,24 @@
+# This file was automatically generated with UpdateCMakeFiles.py
+# Changes will be overridden; do not edit.
+
+add_subdirectory("test")
+
+networkit_add_source(ApproxBetweenness)
+networkit_add_source(ApproxBetweenness2)
+networkit_add_source(ApproxCloseness)
+networkit_add_source(Betweenness)
+networkit_add_source(Centrality)
+networkit_add_source(Closeness)
+networkit_add_source(CoreDecomposition)
+networkit_add_source(DegreeCentrality)
+networkit_add_source(DynApproxBetweenness)
+networkit_add_source(EigenvectorCentrality)
+networkit_add_source(KPathCentrality)
+networkit_add_source(KatzCentrality)
+networkit_add_source(LocalClusteringCoefficient)
+networkit_add_source(LocalPartitionCoverage)
+networkit_add_source(PageRank)
+networkit_add_source(PermanenceCentrality)
+networkit_add_source(Sfigality)
+networkit_add_source(SpanningEdgeCentrality)
+networkit_add_source(TopCloseness)
