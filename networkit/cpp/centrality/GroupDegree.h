@@ -30,7 +30,7 @@ protected:
   std::vector<int64_t> gain;
   std::vector<bool> reachable;
   std::vector<bool> affected;
-  std::vector<node> tmp;
+  std::vector<bool> inGroup;
   Aux::BucketPQ queue;
   count groupScore;
   bool hasComputedScore;

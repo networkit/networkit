@@ -1053,7 +1053,7 @@ TEST_F(CentralityGTest, testLaplacianCentralityUnweighted) {
 
 TEST_F(CentralityGTest, testGroupDegreeUndirected) {
   Aux::Random::setSeed(0, false);
-  count nodes = 20;
+  count nodes = 10;
   ErdosRenyiGenerator gen(nodes, 0.3, false);
   Graph g = gen.generate();
 
@@ -1099,9 +1099,10 @@ TEST_F(CentralityGTest, testGroupDegreeUndirected) {
 
 TEST_F(CentralityGTest, testGroupDegreeDirected) {
   Aux::Random::setSeed(0, false);
-  count nodes = 20;
+  count nodes = 10;
   ErdosRenyiGenerator gen(nodes, 0.3, true);
   Graph g = gen.generate();
+  INFO(g.edges());
 
   count k = 5;
 
