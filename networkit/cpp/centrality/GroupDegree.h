@@ -34,6 +34,7 @@ protected:
   Aux::BucketPQ queue;
   count groupScore;
   bool hasComputedScore;
+  bool hasSortedGroup;
 
   void init();
   void updateQueue();
@@ -43,6 +44,10 @@ protected:
 
 inline std::vector<node> GroupDegree::groupMaxDegree() {
   checkHasRun();
+  if (!hasSortedGroup) {
+    std::sort(group.begin(), group.end());
+    hasSortedGroup = true;
+  }
   return group;
 }
 
@@ -57,11 +62,10 @@ inline count GroupDegree::getScore() {
 inline void GroupDegree::computeScore() {
   groupScore = 0;
   G.forNodes([&](node u) {
-    if (reachable[u]) {
+    if (reachable[u] && !inGroup[u]) {
       ++groupScore;
     }
   });
-  groupScore -= k;
   hasComputedScore = true;
 }
 

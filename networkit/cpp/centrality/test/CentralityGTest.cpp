@@ -1052,11 +1052,10 @@ TEST_F(CentralityGTest, testLaplacianCentralityUnweighted) {
 }
 
 TEST_F(CentralityGTest, testGroupDegreeUndirected) {
-  Aux::Random::setSeed(0, false);
-  count nodes = 10;
+  Aux::Random::setSeed(42, false);
+  count nodes = 12;
   ErdosRenyiGenerator gen(nodes, 0.3, false);
   Graph g = gen.generate();
-
   count k = 5;
 
   GroupDegree gd(g, k);
@@ -1085,25 +1084,22 @@ TEST_F(CentralityGTest, testGroupDegreeUndirected) {
   };
 
   count maxScore = 0;
-  count perms = 0;
+
   do {
-    ++perms;
     count curScore = computeGroupDegree(reference, g);
     if (curScore > maxScore) {
       maxScore = curScore;
     }
   } while (std::next_permutation(reference.begin(), reference.end()));
-  INFO(score, ", ", maxScore);
+
   EXPECT_TRUE(score > 0.5 * maxScore);
 }
 
 TEST_F(CentralityGTest, testGroupDegreeDirected) {
-  Aux::Random::setSeed(0, false);
-  count nodes = 10;
+  Aux::Random::setSeed(42, false);
+  count nodes = 12;
   ErdosRenyiGenerator gen(nodes, 0.3, true);
   Graph g = gen.generate();
-  INFO(g.edges());
-
   count k = 5;
 
   GroupDegree gd(g, k);
@@ -1132,15 +1128,14 @@ TEST_F(CentralityGTest, testGroupDegreeDirected) {
   };
 
   count maxScore = 0;
-  count perms = 0;
+
   do {
-    ++perms;
     count curScore = computeGroupDegree(reference, g);
     if (curScore > maxScore) {
       maxScore = curScore;
     }
   } while (std::next_permutation(reference.begin(), reference.end()));
-  INFO(score, ", ", maxScore);
+
   EXPECT_TRUE(score > 0.5 * maxScore);
 }
 } /* namespace NetworKit */

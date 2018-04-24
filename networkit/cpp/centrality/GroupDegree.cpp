@@ -30,6 +30,8 @@ void GroupDegree::init() {
     hasRun = false;
   }
 
+  hasSortedGroup = false;
+
   group.clear();
   group.reserve(k);
   inGroup.assign(n, false);
@@ -43,7 +45,7 @@ void GroupDegree::run() {
   init();
 
   G.forNodes([&](node u) {
-    int64_t curNodeScore = G.degree(u);
+    int64_t curNodeScore = G.degreeOut(u);
     queue.insert(-curNodeScore, u);
     gain[u] = curNodeScore;
   });
@@ -61,38 +63,28 @@ void GroupDegree::run() {
 
 void GroupDegree::updateQueue() {
   node lastAdded = group.back();
-  INFO("Adding node ", lastAdded);
   reachable[lastAdded] = true;
   affected.assign(n, false);
   std::vector<node> neighbors = G.neighbors(lastAdded);
-  if (G.isDirected()) {
-    G.forInNeighborsOf(lastAdded, [&](node v) {
-      affected[v] = true;
-      INFO("Marked ", v, " as affected");
-    });
-  }
-  //#pragma omp parallel for
+
+#pragma omp parallel for
   for (count i = 0; i < neighbors.size(); ++i) {
     node u = neighbors[i];
     if (!inGroup[u]) {
-      INFO("Gain of neighbor ", u, " diminished from ", gain[u] + 1, " to ",
-           gain[u]);
       reachable[u] = true;
       affected[u] = true;
       if (G.isDirected()) {
         G.forInNeighborsOf(u, [&](node v) {
           if (!affected[v] && !inGroup[v]) {
-            //#pragma omp critical
+#pragma omp critical
             affected[v] = true;
-            INFO("Marking ", v, " as affected");
           }
         });
       } else {
         G.forNeighborsOf(u, [&](node v) {
           if (!affected[v] && !inGroup[v]) {
-            //#pragma omp critical
+#pragma omp critical
             affected[v] = true;
-            INFO("Marking ", v, " as affected");
           }
         });
       }
@@ -124,7 +116,6 @@ void GroupDegree::updateQueue() {
         }
       });
       gain[i] = newGain;
-      INFO("New gain of affected node ", i, " = ", newGain);
 #pragma omp critical
       queue.changeKey(-newGain, i);
     }
