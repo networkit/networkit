@@ -6390,6 +6390,75 @@ cdef class DynTopHarmonicCloseness:
 		self._this.updateBatch(_batch)
 
 
+
+cdef extern from "cpp/centrality/GroupDegree.h":
+	cdef cppclass _GroupDegree "NetworKit::GroupDegree":
+		_GroupDegree(_Graph G, count) except +
+		void run() except +
+		vector[node] groupMaxDegree() except +
+		count getScore() except +
+
+
+cdef class GroupDegree:
+	"""
+	Finds the group with the highest group degree centrality according to the
+    definition proposed in 'The centrality of groups and classes' by Everett et
+    al. (The Journal of mathematical sociology, 1999). This is a submodular but
+    non monotone function so the algorithm can find a solution that is at least
+    1/2 of the optimum. Worst-case running time is quadratic, but usually
+    faster in real-world networks.
+
+	GroupDegree(G, k = 1)
+
+	Parameters
+	----------
+    G: A graph.
+    k: Size of the group of nodes
+	"""
+	cdef _GroupDegree* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, k = 1):
+		self._G = G
+		self._this = new _GroupDegree(G._this, k)
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		"""
+		Computes the group with maximum degree centrality of the graph passed in
+	    the constructor.
+		"""
+		self._this.run()
+		return self
+
+	def groupMaxDegree(self):
+		"""
+		Returns the group with maximum degree centrality.
+		Returns
+		-------
+		vector
+			The group of k nodes with highest degree centrality.
+		"""
+		return self._this.groupMaxDegree()
+
+	def getScore(self):
+		"""
+		Returns the score of the group with maximum degree centrality (i.e. the
+	    number of nodes outside the group that can be reached in one hop from at
+	    least one node in the group).
+
+		Returns
+		-------
+		count
+			The number of nodes outside the group that can be reached in one hop
+			from at least one node in the group.
+		"""
+		return self._this.getScore()
+
+
+
 cdef extern from "cpp/centrality/GroupCloseness.h":
 	cdef cppclass _GroupCloseness "NetworKit::GroupCloseness":
 		_GroupCloseness(_Graph G, count, count) except +
