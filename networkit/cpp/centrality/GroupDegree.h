@@ -14,12 +14,41 @@
 
 namespace NetworKit {
 
+/**
+ * @ingroup centrality
+ */
 class GroupDegree : public Algorithm {
 
 public:
+  /**
+   * Finds the group with the highest group degree centrality according to the
+   * definition proposed in 'The centrality of groups and classes' by Everett et
+   * al. (The Journal of mathematical sociology, 1999). This is a submodular but
+   * not monotone function so the algorithm can find a solution that is at least
+   * 1/2 of the optimum. Worst-case running time is quadratic, but usually
+   * faster in real-world networks.
+   *
+   * @param G A graph.
+   * @param k Size of the group of nodes
+   */
   GroupDegree(const Graph &G, count k = 1);
+
+  /**
+   * Computes the group with maximum degree centrality of the graph passed in
+   * the constructor.
+   */
   void run() override;
+
+  /**
+   * Returns the group with maximum degree centrality.
+   */
   std::vector<node> groupMaxDegree();
+
+  /**
+   * Returns the score of the group with maximum degree centrality (i.e. the
+   * number of nodes outside the group that can be reached in one hop from at
+   * least one node in the group.
+   */
   count getScore();
 
 protected:
