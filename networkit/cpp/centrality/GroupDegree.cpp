@@ -76,9 +76,9 @@ void GroupDegree::updateQueue() {
 #pragma omp parallel for
   for (count i = 0; i < neighbors.size(); ++i) {
     node u = neighbors[i];
-    if (!inGroup[u]) {
-      reachable[u] = true;
+    if (!inGroup[u] && !reachable[u]) {
       affected[u] = true;
+      reachable[u] = true;
       if (G.isDirected()) {
         G.forInNeighborsOf(u, [&](node v) {
           if (!affected[v] && !inGroup[v]) {
