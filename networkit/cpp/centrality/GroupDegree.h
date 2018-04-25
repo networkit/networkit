@@ -27,11 +27,14 @@ public:
    * non monotone function so the algorithm can find a solution that is at least
    * 1/2 of the optimum. Worst-case running time is quadratic, but usually
    * faster in real-world networks.
+   * The 'countGroupNodes' option also count the nodes inside the group in the
+   * score, this make the group degree monotone and submodular and the algorithm
+   * is guaranteed to return a (1 - 1/e)-approximation of the optimal solution.
    *
    * @param G A graph.
    * @param k Size of the group of nodes
    */
-  GroupDegree(const Graph &G, count k = 1);
+  GroupDegree(const Graph &G, count k = 1, bool countGroupNodes = false);
 
   /**
    * Computes the group with maximum degree centrality of the graph passed in
@@ -54,6 +57,7 @@ public:
 protected:
   Graph G;
   const count k;
+  const bool countGroupNodes;
   count n;
   std::vector<node> group;
   std::vector<int64_t> gain;
@@ -67,6 +71,7 @@ protected:
 
   void init();
   void updateQueue();
+  void updateGroup();
   void computeScore();
   void checkHasRun();
 };
@@ -89,7 +94,7 @@ inline count GroupDegree::getScore() {
 }
 
 inline void GroupDegree::computeScore() {
-  groupScore = 0;
+  groupScore = countGroupNodes ? k : 0;
   G.forNodes([&](node u) {
     if (reachable[u] && !inGroup[u]) {
       ++groupScore;

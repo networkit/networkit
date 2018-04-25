@@ -8,8 +8,9 @@
 #include "GroupDegree.h"
 
 namespace NetworKit {
-GroupDegree::GroupDegree(const Graph &G, count k)
-    : G(G), k(k), n(G.upperNodeIdBound()), queue(Aux::BucketPQ(n, -n + 1, 1)) {
+GroupDegree::GroupDegree(const Graph &G, count k, bool countGroupNodes)
+    : G(G), k(k), countGroupNodes(countGroupNodes), n(G.upperNodeIdBound()),
+      queue(Aux::BucketPQ(n, -n + 1, countGroupNodes ? 0 : 1)) {
   if (k > G.upperNodeIdBound() || k <= 0) {
     throw std::runtime_error("k must be between 1 and n");
   }
@@ -27,18 +28,17 @@ void GroupDegree::init() {
     while (queue.size() > 0) {
       queue.extractMin();
     }
+
     hasRun = false;
   }
 
   hasSortedGroup = false;
-
+  hasComputedScore = false;
   group.clear();
   group.reserve(k);
   inGroup.assign(n, false);
-
   reachable.assign(n, false);
   gain.assign(n, 0);
-  hasComputedScore = false;
 }
 
 void GroupDegree::run() {
@@ -46,24 +46,30 @@ void GroupDegree::run() {
 
   G.forNodes([&](node u) {
     int64_t curNodeScore = G.degreeOut(u);
+    if (countGroupNodes) {
+      ++curNodeScore;
+    }
     queue.insert(-curNodeScore, u);
     gain[u] = curNodeScore;
   });
 
-  group.push_back(queue.extractMin().second);
-  inGroup[group.back()] = true;
+  updateGroup();
   while (group.size() < k) {
     updateQueue();
-    group.push_back(queue.extractMin().second);
-    inGroup[group.back()] = true;
+    updateGroup();
   }
 
   hasRun = true;
 }
 
+void GroupDegree::updateGroup() {
+  group.push_back(queue.extractMin().second);
+  inGroup[group.back()] = true;
+  reachable[group.back()] = true;
+}
+
 void GroupDegree::updateQueue() {
   node lastAdded = group.back();
-  reachable[lastAdded] = true;
   affected.assign(n, false);
   std::vector<node> neighbors = G.neighbors(lastAdded);
 
@@ -96,7 +102,7 @@ void GroupDegree::updateQueue() {
     if (affected[i]) {
       int64_t newGain = 0;
       bool groupNeighbor = false;
-      if (G.isDirected()) {
+      if (!countGroupNodes && G.isDirected()) {
         G.forInNeighborsOf(i, [&](node v) {
           if (!groupNeighbor && inGroup[v]) {
             newGain = -1;
@@ -108,7 +114,7 @@ void GroupDegree::updateQueue() {
         if (!reachable[v]) {
           ++newGain;
         }
-        if (!G.isDirected()) {
+        if (!countGroupNodes && !G.isDirected()) {
           if (!groupNeighbor && inGroup[v]) {
             groupNeighbor = true;
             --newGain;

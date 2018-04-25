@@ -1061,6 +1061,9 @@ TEST_F(CentralityGTest, testGroupDegreeUndirected) {
   GroupDegree gd(g, k);
   gd.run();
   count score = gd.getScore();
+  GroupDegree gdIncludeGroup(g, k, true);
+  gdIncludeGroup.run();
+  count scorePlusGroup = gdIncludeGroup.getScore();
 
   std::vector<bool> reference(nodes, false);
   for (count i = nodes - k; i < nodes; ++i) {
@@ -1093,6 +1096,8 @@ TEST_F(CentralityGTest, testGroupDegreeUndirected) {
   } while (std::next_permutation(reference.begin(), reference.end()));
 
   EXPECT_TRUE(score > 0.5 * maxScore);
+  EXPECT_TRUE(scorePlusGroup >
+              (1.0 - 1.0 / std::exp(1.0) * (double)(maxScore + k)));
 }
 
 TEST_F(CentralityGTest, testGroupDegreeDirected) {
@@ -1102,9 +1107,12 @@ TEST_F(CentralityGTest, testGroupDegreeDirected) {
   Graph g = gen.generate();
   count k = 5;
 
-  GroupDegree gd(g, k);
+  GroupDegree gd(g, k, false);
   gd.run();
-  count score = gd.getScore();
+  count scoreNoGroup = gd.getScore();
+  GroupDegree gdIncludeGroup(g, k, true);
+  gdIncludeGroup.run();
+  count scorePlusGroup = gdIncludeGroup.getScore();
 
   std::vector<bool> reference(nodes, false);
   for (count i = nodes - k; i < nodes; ++i) {
@@ -1136,6 +1144,8 @@ TEST_F(CentralityGTest, testGroupDegreeDirected) {
     }
   } while (std::next_permutation(reference.begin(), reference.end()));
 
-  EXPECT_TRUE(score > 0.5 * maxScore);
+  EXPECT_TRUE(scoreNoGroup > 0.5 * maxScore);
+  EXPECT_TRUE(scorePlusGroup >
+              (1.0 - 1.0 / std::exp(1.0)) * (double)(maxScore + k));
 }
 } /* namespace NetworKit */
