@@ -33,6 +33,8 @@ public:
    *
    * @param G A graph.
    * @param k Size of the group of nodes
+   * @param countGroupNodes if nodes inside the group should be counted in the
+   * centrality score.
    */
   GroupDegree(const Graph &G, count k = 1, bool countGroupNodes = false);
 

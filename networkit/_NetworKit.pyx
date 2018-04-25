@@ -6393,7 +6393,7 @@ cdef class DynTopHarmonicCloseness:
 
 cdef extern from "cpp/centrality/GroupDegree.h":
 	cdef cppclass _GroupDegree "NetworKit::GroupDegree":
-		_GroupDegree(_Graph G, count) except +
+		_GroupDegree(_Graph G, count, bool) except +
 		void run() except +
 		vector[node] groupMaxDegree() except +
 		count getScore() except +
@@ -6402,25 +6402,30 @@ cdef extern from "cpp/centrality/GroupDegree.h":
 cdef class GroupDegree:
 	"""
 	Finds the group with the highest group degree centrality according to the
-    definition proposed in 'The centrality of groups and classes' by Everett et
-    al. (The Journal of mathematical sociology, 1999). This is a submodular but
-    non monotone function so the algorithm can find a solution that is at least
-    1/2 of the optimum. Worst-case running time is quadratic, but usually
-    faster in real-world networks.
+  definition proposed in 'The centrality of groups and classes' by Everett et
+  al. (The Journal of mathematical sociology, 1999). This is a submodular but
+  non monotone function so the algorithm can find a solution that is at least
+  1/2 of the optimum. Worst-case running time is quadratic, but usually
+  faster in real-world networks.
+	The 'countGroupNodes' option also count the nodes inside the group in the
+	score, this make the group degree monotone and submodular and the algorithm
+	is guaranteed to return a (1 - 1/e)-approximation of the optimal solution.
 
-	GroupDegree(G, k = 1)
+	GroupDegree(G, k = 1, countGroupNodes = False)
 
 	Parameters
 	----------
     G: A graph.
     k: Size of the group of nodes
+		countGroupNodes: if nodes inside the group should be counted in the
+    centrality score.
 	"""
 	cdef _GroupDegree* _this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, k = 1):
+	def __cinit__(self, Graph G, k = 1, countGroupNodes = False):
 		self._G = G
-		self._this = new _GroupDegree(G._this, k)
+		self._this = new _GroupDegree(G._this, k, countGroupNodes)
 
 	def __dealloc__(self):
 		del self._this
