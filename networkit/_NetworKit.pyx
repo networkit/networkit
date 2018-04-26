@@ -7366,8 +7366,8 @@ cdef class LaplacianCentrality(Centrality):
 
 # Module: dynamic
 
-cdef extern from "cpp/dynamics/GraphEvent.h":
-	enum _GraphEventType "NetworKit::GraphEvent::Type":
+cdef extern from "cpp/dynamics/GraphEvent.h" namespace "NetworKit::GraphEvent::Type":
+	cdef enum _GraphEventType "NetworKit::GraphEvent::Type":
 		NODE_ADDITION,
 		NODE_REMOVAL,
 		NODE_RESTORATION,
@@ -7385,6 +7385,10 @@ cdef extern from "cpp/dynamics/GraphEvent.h":
 		_GraphEvent() except +
 		_GraphEvent(_GraphEventType type, node u, node v, edgeweight w) except +
 		string toString() except +
+
+cdef extern from "cpp/dynamics/GraphEvent.h" namespace "NetworKit::GraphEvent":
+	bool _GraphEvent_equal "NetworKit::GraphEvent::equal"(_GraphEvent a, _GraphEvent b) except +
+	bool _GraphEvent_compare "NetworKit::GraphEvent::compare"(_GraphEvent a, _GraphEvent b) except +
 
 cdef class GraphEvent:
 	cdef _GraphEvent _this
@@ -7429,6 +7433,15 @@ cdef class GraphEvent:
 
 	def __repr__(self):
 		return self.toString()
+
+	def __eq__(self, GraphEvent other not None):
+		return _GraphEvent_equal(self._this, other._this)
+
+	def __hash__(self):
+		if self._this.type == _GraphEventType.TIME_STEP:
+			return hash(self.type)
+		else:
+			hash((self.type, self.u, self.v, self.w))
 
 
 cdef extern from "cpp/dynamics/DGSStreamParser.h":
