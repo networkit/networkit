@@ -3974,6 +3974,37 @@ cdef class Partition:
 		"""
 		return self._this.getSubsetIds()
 
+	def __eq__(self, Partition other not None):
+		""" Compare self to other partition.
+
+		Equality is independent of the used partition
+		ids. This tries to construct a mapping between the
+		partition ids and returns True if such a mapping can
+		be constructed.
+
+		Parameters
+		----------
+		other : Partition
+			The partition to compare to.
+
+		Returns
+		-------
+		bool
+			If the partitions are equal.
+		"""
+		if self._this.numberOfElements() != other._this.numberOfElements():
+			return False
+
+		cdef index i = 0
+		cdef dict selfToOther = dict()
+		for index in range(self._this.numberOfElements()):
+			selfSubset = self[i]
+			if selfSubset in selfToOther:
+				if selfToOther[selfSubset] != other[i]:
+					return False
+			else:
+				selfToOther[selfSubset] = other[i]
+		return True
 
 cdef extern from "cpp/structures/Cover.h":
 	cdef cppclass _Cover "NetworKit::Cover":
