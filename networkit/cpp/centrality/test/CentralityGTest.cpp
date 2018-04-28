@@ -5,7 +5,9 @@
  *      Author: cls
  */
 
-#include "CentralityGTest.h"
+#include <iomanip>
+#include <iostream>
+
 #include "../../auxiliary/Log.h"
 #include "../../auxiliary/Timer.h"
 #include "../../generators/DorogovtsevMendesGenerator.h"
@@ -21,19 +23,19 @@
 #include "../CoreDecomposition.h"
 #include "../DynApproxBetweenness.h"
 #include "../EigenvectorCentrality.h"
-#include "../LaplacianCentrality.h"
 #include "../EstimateBetweenness.h"
+#include "../GroupDegree.h"
 #include "../HarmonicCloseness.h"
 #include "../KPathCentrality.h"
 #include "../KatzCentrality.h"
+#include "../LaplacianCentrality.h"
 #include "../LocalClusteringCoefficient.h"
 #include "../PageRank.h"
 #include "../PermanenceCentrality.h"
 #include "../SpanningEdgeCentrality.h"
 #include "../TopCloseness.h"
 #include "../TopHarmonicCloseness.h"
-#include <iomanip>
-#include <iostream>
+#include "CentralityGTest.h"
 
 namespace NetworKit {
 
@@ -979,9 +981,11 @@ TEST_F(CentralityGTest, testTopHarmonicClosenessUndirected) {
 
 TEST_F(CentralityGTest, testLaplacianCentrality) {
   // The graph structure and reference values for the scores are taken from
-  // Qi et al., Laplacian centrality: A new centrality measure for weighted networks.
+  // Qi et al., Laplacian centrality: A new centrality measure for weighted
+  // networks.
   //
-  // See https://math.wvu.edu/~cqzhang/Publication-files/my-paper/INS-2012-Laplacian-W.pdf.
+  // See
+  // https://math.wvu.edu/~cqzhang/Publication-files/my-paper/INS-2012-Laplacian-W.pdf.
   Graph G(6, true);
 
   G.addEdge(0, 1, 4);
@@ -1047,4 +1051,101 @@ TEST_F(CentralityGTest, testLaplacianCentralityUnweighted) {
   EXPECT_EQ(6, scores[5]);
 }
 
+TEST_F(CentralityGTest, testGroupDegreeUndirected) {
+  Aux::Random::setSeed(42, false);
+  count nodes = 12;
+  ErdosRenyiGenerator gen(nodes, 0.3, false);
+  Graph g = gen.generate();
+  count k = 5;
+
+  GroupDegree gd(g, k);
+  gd.run();
+  count score = gd.getScore();
+  GroupDegree gdIncludeGroup(g, k, true);
+  gdIncludeGroup.run();
+  count scorePlusGroup = gdIncludeGroup.getScore();
+
+  std::vector<bool> reference(nodes, false);
+  for (count i = nodes - k; i < nodes; ++i) {
+    reference[i] = true;
+  }
+
+  auto computeGroupDegree = [&](std::vector<bool> curGroup, Graph g) {
+    count result = 0;
+    g.forNodes([&](node u) {
+      if (!curGroup[u]) {
+        bool neighborInGroup = false;
+        g.forNeighborsOf(u, [&](node v) {
+          if (!neighborInGroup && curGroup[v]) {
+            neighborInGroup = true;
+            ++result;
+          }
+        });
+      }
+    });
+    return result;
+  };
+
+  count maxScore = 0;
+
+  do {
+    count curScore = computeGroupDegree(reference, g);
+    if (curScore > maxScore) {
+      maxScore = curScore;
+    }
+  } while (std::next_permutation(reference.begin(), reference.end()));
+
+  EXPECT_TRUE(score > 0.5 * maxScore);
+  EXPECT_TRUE(scorePlusGroup >
+              (1.0 - 1.0 / std::exp(1.0) * (double)(maxScore + k)));
+}
+
+TEST_F(CentralityGTest, testGroupDegreeDirected) {
+  Aux::Random::setSeed(42, false);
+  count nodes = 12;
+  ErdosRenyiGenerator gen(nodes, 0.3, true);
+  Graph g = gen.generate();
+  count k = 5;
+
+  GroupDegree gd(g, k, false);
+  gd.run();
+  count scoreNoGroup = gd.getScore();
+  GroupDegree gdIncludeGroup(g, k, true);
+  gdIncludeGroup.run();
+  count scorePlusGroup = gdIncludeGroup.getScore();
+
+  std::vector<bool> reference(nodes, false);
+  for (count i = nodes - k; i < nodes; ++i) {
+    reference[i] = true;
+  }
+
+  auto computeGroupDegree = [&](std::vector<bool> curGroup, Graph g) {
+    count result = 0;
+    g.forNodes([&](node u) {
+      if (!curGroup[u]) {
+        bool neighborInGroup = false;
+        g.forInNeighborsOf(u, [&](node v) {
+          if (!neighborInGroup && curGroup[v]) {
+            neighborInGroup = true;
+            ++result;
+          }
+        });
+      }
+    });
+    return result;
+  };
+
+  count maxScore = 0;
+
+  do {
+    count curScore = computeGroupDegree(reference, g);
+    if (curScore > maxScore) {
+      maxScore = curScore;
+    }
+  } while (std::next_permutation(reference.begin(), reference.end()));
+
+  EXPECT_TRUE(scoreNoGroup > 0.5 * maxScore);
+  EXPECT_TRUE(scorePlusGroup >
+              (1.0 - 1.0 / std::exp(1.0)) * (double)(maxScore + k));
+}
 } /* namespace NetworKit */
