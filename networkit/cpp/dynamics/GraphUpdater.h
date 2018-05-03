@@ -22,7 +22,7 @@ public:
 
 	GraphUpdater(Graph& G);
 
-	void update(std::vector<GraphEvent>& stream);
+	void update(const std::vector<GraphEvent>& stream);
 
 	std::vector<std::pair<count, count> > getSizeTimeline();
 

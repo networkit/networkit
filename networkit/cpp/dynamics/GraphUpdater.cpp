@@ -13,7 +13,7 @@ namespace NetworKit {
 GraphUpdater::GraphUpdater(Graph& G) : G(G) {
 }
 
-void GraphUpdater::update(std::vector<GraphEvent>& stream) {
+void GraphUpdater::update(const std::vector<GraphEvent>& stream) {
 	for (GraphEvent ev : stream) {
 		TRACE("event: " , ev.toString());
 		switch (ev.type) {
