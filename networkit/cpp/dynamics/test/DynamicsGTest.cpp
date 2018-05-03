@@ -11,6 +11,7 @@
 #include "../../auxiliary/Log.h"
 #include "../GraphEvent.h"
 #include "../GraphUpdater.h"
+#include "../GraphDifference.h"
 
 namespace NetworKit {
 
@@ -49,6 +50,118 @@ TEST_F(DynamicsGTest, testGraphEventIncrement) {
 
 
 
+}
+
+namespace {
+	// helper methods
+	std::string edits_to_string(const std::vector<GraphEvent>& events) {
+		std::stringstream ss;
+		ss << "[";
+		for (size_t i = 0; i < events.size(); ++i) {
+			ss << events[i].toString();
+			if (i < events.size() - 1) {
+				ss << ", ";
+			}
+		}
+		ss << "]";
+		return ss.str();
+	};
+
+	void expect_graph_equals(const Graph& G1, const Graph &G2) {
+		EXPECT_EQ(G1.numberOfNodes(), G2.numberOfNodes());
+		EXPECT_EQ(G1.numberOfEdges(), G2.numberOfEdges());
+
+		GraphDifference diff1(G1, G2);
+		diff1.run();
+		EXPECT_EQ(diff1.getNumberOfEdits(), 0);
+		EXPECT_TRUE(diff1.getEdits().empty()) << edits_to_string(diff1.getEdits());
+
+		GraphDifference diff2(G2, G2);
+		diff2.run();
+		EXPECT_EQ(diff2.getNumberOfEdits(), 0);
+		EXPECT_TRUE(diff2.getEdits().empty()) << edits_to_string(diff2.getEdits());
+	};
+};
+
+TEST_F(DynamicsGTest, testGraphDifference) {
+	Graph G1(11, false, false);
+	Graph G2(8, false, false);
+
+	G1.addEdge(2, 4);
+	G1.addEdge(2, 6);
+	G1.addEdge(9, 10);
+	G1.addEdge(4, 10);
+	G1.removeNode(3);
+	G1.removeNode(8);
+
+	G2.addEdge(3, 2);
+	G2.removeNode(4);
+
+	{
+		GraphDifference diff(G1, G2);
+		diff.run();
+
+		EXPECT_EQ(diff.getNumberOfEdgeRemovals(), 4) << edits_to_string(diff.getEdits());
+		EXPECT_EQ(diff.getNumberOfNodeRemovals(), 3) << edits_to_string(diff.getEdits());
+		EXPECT_EQ(diff.getNumberOfNodeRestorations(), 1) << edits_to_string(diff.getEdits());
+		EXPECT_EQ(diff.getNumberOfEdgeAdditions(), 1) << edits_to_string(diff.getEdits());
+
+		Graph H = G1;
+		GraphUpdater Hupdater(H);
+		Hupdater.update(diff.getEdits());
+		EXPECT_TRUE(H.hasEdge(2, 3));
+
+		expect_graph_equals(H, G2);
+	}
+
+	{
+		GraphDifference diff(G2, G1);
+		diff.run();
+
+		EXPECT_EQ(diff.getNumberOfEdgeAdditions(), 4) << edits_to_string(diff.getEdits());
+		EXPECT_EQ(diff.getNumberOfNodeRemovals(), 1) << edits_to_string(diff.getEdits());
+		EXPECT_EQ(diff.getNumberOfNodeAdditions(), 2) << edits_to_string(diff.getEdits());
+		EXPECT_EQ(diff.getNumberOfNodeRestorations(), 1) << edits_to_string(diff.getEdits());
+		EXPECT_EQ(diff.getNumberOfEdgeRemovals(), 1) << edits_to_string(diff.getEdits());
+
+		Graph H = G2;
+		GraphUpdater Hupdater(H);
+		Hupdater.update(diff.getEdits());
+
+		expect_graph_equals(H, G1);
+	}
+}
+
+TEST_F(DynamicsGTest, testGraphDifferenceDirectedWeighted) {
+	Graph G1(8, true, true);
+	Graph G2(8, true, true);
+
+	G1.addEdge(0, 1, 0.5);
+	G1.addEdge(1, 0, 2);
+	G1.addEdge(2, 3, 2.0);
+
+	G2.addEdge(1, 0, 0.5);
+	G2.addEdge(3, 2, 1.0);
+	G2.addEdge(3, 4, 2.5);
+
+	for (const auto& gs : std::vector<std::pair<Graph, Graph>>({{G1, G2}, {G2, G1}})) {
+		const Graph& g1 = gs.first;
+		const Graph& g2 = gs.second;
+
+		GraphDifference diff(g1, g2);
+		diff.run();
+
+		EXPECT_EQ(diff.getNumberOfEdgeRemovals(), 2) << edits_to_string(diff.getEdits());
+		EXPECT_EQ(diff.getNumberOfEdgeAdditions(), 2) << edits_to_string(diff.getEdits());
+		EXPECT_EQ(diff.getNumberOfEdgeWeightUpdates(), 1) << edits_to_string(diff.getEdits());
+		EXPECT_EQ(diff.getNumberOfEdits(), 5) << edits_to_string(diff.getEdits());
+
+		Graph H = g1;
+		GraphUpdater Hupdater(H);
+		Hupdater.update(diff.getEdits());
+
+		expect_graph_equals(H, g2);
+	}
 }
 
 } /* namespace NetworKit */
