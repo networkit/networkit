@@ -14,7 +14,7 @@ namespace NetworKit {
 GraphEvent::GraphEvent(GraphEvent::Type type, node u, node v, edgeweight w) : type(type), u(u), v(v), w(w) {
 }
 
-std::string GraphEvent::toString() {
+std::string GraphEvent::toString() const {
 	std::stringstream ss;
 	if (this->type == GraphEvent::NODE_ADDITION) {
 		ss << "an(" << u << ")";

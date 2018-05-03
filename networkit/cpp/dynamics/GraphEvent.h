@@ -49,7 +49,7 @@ public:
 	/**
 	 * Return string representation.
 	 */
-	std::string toString();
+	std::string toString() const;
 
 };
 
