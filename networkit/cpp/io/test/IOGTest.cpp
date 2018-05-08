@@ -22,6 +22,7 @@
 #include "../DGSReader.h"
 #include "../EdgeListWriter.h"
 #include "../EdgeListPartitionReader.h"
+#include "../FastSNAPGraphReader.h"
 #include "../SNAPEdgeListPartitionReader.h"
 #include "../SNAPGraphWriter.h"
 #include "../EdgeListReader.h"
@@ -513,6 +514,14 @@ TEST_F(IOGTest, tryReadingSNAP) {
 
 }
 
+TEST_F(IOGTest, testFastSNAPGraphReader) {
+	FastSNAPGraphReader reader;
+
+	Graph G = reader.read("input/comments.edgelist");
+
+	INFO("n = " , G.numberOfNodes());
+	INFO("m = " , G.numberOfEdges());
+}
 
 TEST_F(IOGTest, testSNAPGraphWriter) {
 	METISGraphReader reader;
