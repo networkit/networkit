@@ -25,7 +25,8 @@ Graph FastSNAPGraphReader::read(const std::string &path) {
 		if(it != nodeIdMap.end())
 			return it->second;
 		auto result = nodeIdMap.insert({in, G.addNode()});
-		assert(result.second);
+		if(!result.second)
+			throw std::runtime_error("Error in mapping nodes");
 		return result.first->second;
 	};
 
@@ -34,7 +35,7 @@ Graph FastSNAPGraphReader::read(const std::string &path) {
 		if(!G.hasEdge(source, target))
 			G.addEdge(source, target);
 	};
-	
+
 	auto fd = open(path.c_str(), O_RDONLY);
 	if(fd < 0)
 		throw std::runtime_error("Unable to open file");
@@ -47,7 +48,7 @@ Graph FastSNAPGraphReader::read(const std::string &path) {
 	auto window = mmap(nullptr, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
 	if(window == reinterpret_cast<void *>(-1))
 		throw std::runtime_error("Could not map file");
-	
+
 	if(close(fd))
 		throw std::runtime_error("Error during close()");
 
@@ -63,18 +64,22 @@ Graph FastSNAPGraphReader::read(const std::string &path) {
 	auto scanId = [&] () -> node {
 		char *past;
 		auto value = strtol(it, &past, 10);
-		assert(past > it);
+		if(past <= it)
+			throw std::runtime_error("Error in parsing file - looking for nodeId failed");
 		it = past;
 		return value;
 	};
 
 	// This loop does the actual parsing.
 	while(it != end) {
-		assert(it < end);
+		if(it >= end)
+			throw std::runtime_error("Unexpected end of file");
 
 		skipWhitespace();
 
-		assert(it != end);
+		if(it == end)
+			throw std::runtime_error("Unexpected end of file");
+
 		if(*it == '\n') {
 			// We ignore empty lines.
 		}else if(*it == '#') {
@@ -83,8 +88,11 @@ Graph FastSNAPGraphReader::read(const std::string &path) {
 				++it;
 		}else{
 			auto sourceId = scanId();
-			assert(it != end);
-			assert(*it == ' ' || *it == '\t');
+			if(it == end)
+				throw std::runtime_error("Unexpected end of file");
+			if(!(*it == ' ' || *it == '\t'))
+				throw std::runtime_error("Error in parsing file - pointer is whitespace");
+
 			skipWhitespace();
 
 			auto targetId = scanId();
@@ -93,8 +101,13 @@ Graph FastSNAPGraphReader::read(const std::string &path) {
 			handleEdge(mapNode(sourceId), mapNode(targetId));
 		}
 
-		assert(it != end);
-		assert(*it == '\n');
+		if(it == end)
+			throw std::runtime_error("Unexpected end of file");
+
+		//if(!(*it == '\n')){
+		//		std::string str(it);
+		//		throw std::runtime_error("Error in parsing file");
+		//}
 		++it;
 	}
 
@@ -106,4 +119,3 @@ Graph FastSNAPGraphReader::read(const std::string &path) {
 }
 
 } // namespace NetworKit
-

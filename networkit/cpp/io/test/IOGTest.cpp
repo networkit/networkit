@@ -494,11 +494,11 @@ TEST_F(IOGTest, debugReadingSNAP) {
 
 TEST_F(IOGTest, testFastSNAPGraphReader) {
 	FastSNAPGraphReader reader;
+	Graph G = reader.read("input/wiki-Vote.txt");
 
-	Graph G = reader.read("input/comments.edgelist");
-
-	INFO("n = " , G.numberOfNodes());
-	INFO("m = " , G.numberOfEdges());
+	EXPECT_TRUE(G.isDirected());
+	EXPECT_EQ(G.numberOfNodes(), 7115);
+	EXPECT_EQ(G.numberOfEdges(), 103689);
 }
 
 TEST_F(IOGTest, testSNAPGraphWriter) {
