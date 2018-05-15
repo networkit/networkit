@@ -1,28 +1,38 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(linkprediction
+    AdamicAdarIndex.cpp
+    AdjustedRandIndex.cpp
+    AlgebraicDistanceIndex.cpp
+    CommonNeighborsIndex.cpp
+    EvaluationMetric.cpp
+    JaccardIndex.cpp
+    KatzIndex.cpp
+    LinkPredictor.cpp
+    LinkThresholder.cpp
+    MissingLinksFinder.cpp
+    NeighborhoodDistanceIndex.cpp
+    NeighborhoodUtility.cpp
+    NeighborsMeasureIndex.cpp
+    PrecisionRecallMetric.cpp
+    PredictionsSorter.cpp
+    PreferentialAttachmentIndex.cpp
+    ROCMetric.cpp
+    RandomLinkSampler.cpp
+    ResourceAllocationIndex.cpp
+    SameCommunityIndex.cpp
+    TotalNeighborsIndex.cpp
+    UDegreeIndex.cpp
+    VDegreeIndex.cpp
+    )
 
-add_subdirectory("test")
+target_link_libraries(networkit_linkprediction
+    PRIVATE
+        OpenMP::OpenMP_CXX
+    PUBLIC
+        networkit_auxiliary
+        networkit_community
+        networkit_graph
+        networkit_structures
+    )
 
-networkit_add_source(AdamicAdarIndex)
-networkit_add_source(AdjustedRandIndex)
-networkit_add_source(AlgebraicDistanceIndex)
-networkit_add_source(CommonNeighborsIndex)
-networkit_add_source(EvaluationMetric)
-networkit_add_source(JaccardIndex)
-networkit_add_source(KatzIndex)
-networkit_add_source(LinkPredictor)
-networkit_add_source(LinkThresholder)
-networkit_add_source(MissingLinksFinder)
-networkit_add_source(NeighborhoodDistanceIndex)
-networkit_add_source(NeighborhoodUtility)
-networkit_add_source(NeighborsMeasureIndex)
-networkit_add_source(PrecisionRecallMetric)
-networkit_add_source(PredictionsSorter)
-networkit_add_source(PreferentialAttachmentIndex)
-networkit_add_source(ROCMetric)
-networkit_add_source(RandomLinkSampler)
-networkit_add_source(ResourceAllocationIndex)
-networkit_add_source(SameCommunityIndex)
-networkit_add_source(TotalNeighborsIndex)
-networkit_add_source(UDegreeIndex)
-networkit_add_source(VDegreeIndex)
+add_subdirectory(test)
+

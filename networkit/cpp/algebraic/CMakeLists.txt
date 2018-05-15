@@ -1,10 +1,18 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(algebraic
+    CSRMatrix.cpp
+    DenseMatrix.cpp
+    DynamicMatrix.cpp
+    Vector.cpp
+    )
 
-add_subdirectory("algorithms")
-add_subdirectory("test")
+target_link_libraries(networkit_algebraic
+    PRIVATE
+        OpenMP::OpenMP_CXX
+    PUBLIC
+        networkit_auxiliary
+        networkit_graph
+    )
 
-networkit_add_source(CSRMatrix)
-networkit_add_source(DenseMatrix)
-networkit_add_source(DynamicMatrix)
-networkit_add_source(Vector)
+add_subdirectory(algorithms)
+add_subdirectory(test)
+

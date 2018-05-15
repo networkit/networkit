@@ -1,32 +1,44 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(generators
+    BarabasiAlbertGenerator.cpp
+    ChungLuGenerator.cpp
+    ClusteredRandomGraphGenerator.cpp
+    DorogovtsevMendesGenerator.cpp
+    DynamicBarabasiAlbertGenerator.cpp
+    DynamicDGSParser.cpp
+    DynamicDorogovtsevMendesGenerator.cpp
+    DynamicForestFireGenerator.cpp
+    DynamicGraphGenerator.cpp
+    DynamicGraphSource.cpp
+    DynamicHyperbolicGenerator.cpp
+    DynamicPathGenerator.cpp
+    DynamicPubWebGenerator.cpp
+    EdgeSwitchingMarkovChainGenerator.cpp
+    ErdosRenyiGenerator.cpp
+    HavelHakimiGenerator.cpp
+    HyperbolicGenerator.cpp
+    LFRGenerator.cpp
+    PowerlawDegreeSequence.cpp
+    PubWebGenerator.cpp
+    RegularRingLatticeGenerator.cpp
+    RmatGenerator.cpp
+    StaticDegreeSequenceGenerator.cpp
+    StaticGraphGenerator.cpp
+    StochasticBlockmodel.cpp
+    WattsStrogatzGenerator.cpp
+    )
 
-add_subdirectory("quadtree")
-add_subdirectory("test")
+target_link_libraries(networkit_generators
+    PRIVATE
+        OpenMP::OpenMP_CXX
+    PUBLIC
+        networkit_auxiliary
+        networkit_base
+        networkit_dynamics
+        networkit_geometric
+        networkit_graph
+        networkit_structures
+    )
 
-networkit_add_source(BarabasiAlbertGenerator)
-networkit_add_source(ChungLuGenerator)
-networkit_add_source(ClusteredRandomGraphGenerator)
-networkit_add_source(DorogovtsevMendesGenerator)
-networkit_add_source(DynamicBarabasiAlbertGenerator)
-networkit_add_source(DynamicDGSParser)
-networkit_add_source(DynamicDorogovtsevMendesGenerator)
-networkit_add_source(DynamicForestFireGenerator)
-networkit_add_source(DynamicGraphGenerator)
-networkit_add_source(DynamicGraphSource)
-networkit_add_source(DynamicHyperbolicGenerator)
-networkit_add_source(DynamicPathGenerator)
-networkit_add_source(DynamicPubWebGenerator)
-networkit_add_source(EdgeSwitchingMarkovChainGenerator)
-networkit_add_source(ErdosRenyiGenerator)
-networkit_add_source(HavelHakimiGenerator)
-networkit_add_source(HyperbolicGenerator)
-networkit_add_source(LFRGenerator)
-networkit_add_source(PowerlawDegreeSequence)
-networkit_add_source(PubWebGenerator)
-networkit_add_source(RegularRingLatticeGenerator)
-networkit_add_source(RmatGenerator)
-networkit_add_source(StaticDegreeSequenceGenerator)
-networkit_add_source(StaticGraphGenerator)
-networkit_add_source(StochasticBlockmodel)
-networkit_add_source(WattsStrogatzGenerator)
+add_subdirectory(quadtree)
+add_subdirectory(test)
+

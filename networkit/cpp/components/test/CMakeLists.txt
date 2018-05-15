@@ -1,4 +1,5 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_test(components BiconnectedComponentsGTest
+    auxiliary generators)
+networkit_add_test(components ConnectedComponentsGTest
+    auxiliary distance generators io)
 
-networkit_add_test(ConnectedComponentsGTest)

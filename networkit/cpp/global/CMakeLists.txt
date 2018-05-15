@@ -1,7 +1,14 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(global
+    ClusteringCoefficient.cpp
+    GlobalClusteringCoefficient.cpp
+    )
 
-add_subdirectory("test")
+target_link_libraries(networkit_global
+    PUBLIC
+        networkit_auxiliary
+        networkit_centrality
+        networkit_graph
+    )
 
-networkit_add_source(ClusteringCoefficient)
-networkit_add_source(GlobalClusteringCoefficient)
+add_subdirectory(test)
+

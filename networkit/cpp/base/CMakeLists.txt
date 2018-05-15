@@ -1,4 +1,10 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(base
+    Algorithm.cpp
+    )
 
-networkit_add_source(Algorithm)
+target_link_libraries(networkit_base
+    PUBLIC
+        networkit_auxiliary
+        networkit_dynamics
+    )
+

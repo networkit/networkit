@@ -1,5 +1,12 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(test
+        BasicsBenchmarkGTest.cpp
+        ParametrizedGTest.cpp
+        )
 
-networkit_add_test(BasicsBenchmark)
-networkit_add_test(ParametrizedGTest)
+target_link_libraries(networkit_test
+    PRIVATE
+        GTest::GTest
+        GTest::Main
+    PUBLIC
+        networkit_auxiliary
+    )

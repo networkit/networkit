@@ -1,4 +1,3 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_test(matching MatcherGTest
+    auxiliary graph io)
 
-networkit_add_test(MatcherGTest)

@@ -1,9 +1,20 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(coarsening
+    ClusteringProjector.cpp
+    GraphCoarsening.cpp
+    MatchingCoarsening.cpp
+    ParallelPartitionCoarsening.cpp
+    )
 
-add_subdirectory("test")
+target_link_libraries(networkit_coarsening
+    PRIVATE
+        OpenMP::OpenMP_CXX
+    PUBLIC
+        networkit_auxiliary
+        networkit_base
+        networkit_graph
+        networkit_matching
+        networkit_structures
+    )
 
-networkit_add_source(ClusteringProjector)
-networkit_add_source(GraphCoarsening)
-networkit_add_source(MatchingCoarsening)
-networkit_add_source(ParallelPartitionCoarsening)
+add_subdirectory(test)
+

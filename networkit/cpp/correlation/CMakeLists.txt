@@ -1,4 +1,11 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(correlation
+    Assortativity.cpp
+    )
 
-networkit_add_source(Assortativity)
+target_link_libraries(networkit_correlation
+    PUBLIC
+        networkit_base
+        networkit_graph
+        networkit_structures
+    )
+

@@ -1,15 +1,24 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(edgescores
+    ChibaNishizekiQuadrangleEdgeScore.cpp
+    ChibaNishizekiTriangleEdgeScore.cpp
+    EdgeScore.cpp
+    EdgeScoreAsWeight.cpp
+    EdgeScoreBlender.cpp
+    EdgeScoreLinearizer.cpp
+    EdgeScoreNormalizer.cpp
+    GeometricMeanScore.cpp
+    PrefixJaccardScore.cpp
+    TriangleEdgeScore.cpp
+    )
 
-add_subdirectory("test")
+target_link_libraries(networkit_edgescores
+    PRIVATE
+        OpenMP::OpenMP_CXX
+    PUBLIC
+        networkit_auxiliary
+        networkit_base
+        networkit_graph
+    )
 
-networkit_add_source(ChibaNishizekiQuadrangleEdgeScore)
-networkit_add_source(ChibaNishizekiTriangleEdgeScore)
-networkit_add_source(EdgeScore)
-networkit_add_source(EdgeScoreAsWeight)
-networkit_add_source(EdgeScoreBlender)
-networkit_add_source(EdgeScoreLinearizer)
-networkit_add_source(EdgeScoreNormalizer)
-networkit_add_source(GeometricMeanScore)
-networkit_add_source(PrefixJaccardScore)
-networkit_add_source(TriangleEdgeScore)
+add_subdirectory(test)
+

@@ -1,5 +1,4 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_test(numerics GaussSeidelRelaxationGTest)
+networkit_add_test(numerics LAMGGTest
+    algebraic auxiliary io)
 
-networkit_add_test(GaussSeidelRelaxationGTest)
-networkit_add_test(LAMGGTest)
