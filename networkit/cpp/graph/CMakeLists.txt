@@ -1,22 +1,24 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(graph
+    Graph.cpp
+    GraphBuilder.cpp
+    GraphTools.cpp
+    KruskalMSF.cpp
+    RandomMaximumSpanningForest.cpp
+    RandomSpanningForest.cpp
+    Sampling.cpp
+    SpanningForest.cpp
+    UnionMaximumSpanningForest.cpp
+    )
 
-add_subdirectory("test")
+target_link_libraries(networkit_graph
+    PRIVATE
+        OpenMP::OpenMP_CXX
+    PUBLIC
+        networkit_auxiliary
+        networkit_base
+        networkit_components
+        networkit_structures
+    )
 
-networkit_add_source(BFS)
-networkit_add_source(Dijkstra)
-networkit_add_source(DynBFS)
-networkit_add_source(DynDijkstra)
-networkit_add_source(DynSSSP)
-networkit_add_source(Graph)
-networkit_add_source(GraphBuilder)
-networkit_add_source(GraphDistance)
-networkit_add_source(GraphTools)
-networkit_add_source(IncompleteDijkstra)
-networkit_add_source(KruskalMSF)
-networkit_add_source(RandomMaximumSpanningForest)
-networkit_add_source(RandomSpanningForest)
-networkit_add_source(SSSP)
-networkit_add_source(Sampling)
-networkit_add_source(SpanningForest)
-networkit_add_source(UnionMaximumSpanningForest)
+add_subdirectory(test)
+

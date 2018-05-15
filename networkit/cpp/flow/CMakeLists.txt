@@ -1,6 +1,11 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(flow
+    EdmondsKarp.cpp
+    )
 
-add_subdirectory("test")
+target_link_libraries(networkit_flow
+    PUBLIC
+        networkit_graph
+    )
 
-networkit_add_source(EdmondsKarp)
+add_subdirectory(test)
+

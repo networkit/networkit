@@ -1,5 +1,5 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_test(generators GeneratorsBenchmarkGTest
+    auxiliary graph)
+networkit_add_test(generators GeneratorsGTest
+    auxiliary community dynamics global io viz)
 
-networkit_add_test(GeneratorsBenchmark)
-networkit_add_test(GeneratorsGTest)

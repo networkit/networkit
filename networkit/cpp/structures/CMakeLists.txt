@@ -1,8 +1,15 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(structures
+    Cover.cpp
+    Partition.cpp
+    UnionFind.cpp
+    )
 
-add_subdirectory("test")
+target_link_libraries(networkit_structures
+    PRIVATE
+        OpenMP::OpenMP_CXX
+    PUBLIC
+        networkit_graph
+    )
 
-networkit_add_source(Cover)
-networkit_add_source(Partition)
-networkit_add_source(UnionFind)
+add_subdirectory(test)
+

@@ -1,9 +1,15 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(scd
+    ApproximatePageRank.cpp
+    GCE.cpp
+    PageRankNibble.cpp
+    SelectiveCommunityDetector.cpp
+    )
 
-add_subdirectory("test")
+target_link_libraries(networkit_scd
+    PUBLIC
+        networkit_auxiliary
+        networkit_graph
+    )
 
-networkit_add_source(ApproximatePageRank)
-networkit_add_source(GCE)
-networkit_add_source(PageRankNibble)
-networkit_add_source(SelectiveCommunityDetector)
+add_subdirectory(test)
+

@@ -1,17 +1,26 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(sparsification
+    ChanceCorrectedTriangleScore.cpp
+    ForestFireScore.cpp
+    GlobalThresholdFilter.cpp
+    LocalDegreeScore.cpp
+    LocalSimilarityScore.cpp
+    MultiscaleScore.cpp
+    RandomEdgeScore.cpp
+    RandomNodeEdgeScore.cpp
+    SCANStructuralSimilarityScore.cpp
+    SimmelianOverlapScore.cpp
+    SimmelianScore.cpp
+    Sparsifiers.cpp
+    )
 
-add_subdirectory("test")
+target_link_libraries(networkit_sparsification
+    PRIVATE
+        OpenMP::OpenMP_CXX
+    PUBLIC
+        networkit_auxiliary
+        networkit_edgescores
+        networkit_graph
+    )
 
-networkit_add_source(ChanceCorrectedTriangleScore)
-networkit_add_source(ForestFireScore)
-networkit_add_source(GlobalThresholdFilter)
-networkit_add_source(LocalDegreeScore)
-networkit_add_source(LocalSimilarityScore)
-networkit_add_source(MultiscaleScore)
-networkit_add_source(RandomEdgeScore)
-networkit_add_source(RandomNodeEdgeScore)
-networkit_add_source(SCANStructuralSimilarityScore)
-networkit_add_source(SimmelianOverlapScore)
-networkit_add_source(SimmelianScore)
-networkit_add_source(Sparsifiers)
+add_subdirectory(test)
+

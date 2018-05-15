@@ -1,33 +1,42 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(io
+    CoverReader.cpp
+    CoverWriter.cpp
+    DGSReader.cpp
+    DibapGraphReader.cpp
+    DotGraphWriter.cpp
+    DotPartitionWriter.cpp
+    DynamicGraphReader.cpp
+    EdgeListCoverReader.cpp
+    EdgeListPartitionReader.cpp
+    EdgeListReader.cpp
+    EdgeListWriter.cpp
+    GMLGraphReader.cpp
+    GMLGraphWriter.cpp
+    GraphIO.cpp
+    GraphToolBinaryReader.cpp
+    GraphToolBinaryWriter.cpp
+    KONECTGraphReader.cpp
+    LineFileReader.cpp
+    METISGraphReader.cpp
+    METISGraphWriter.cpp
+    METISParser.cpp
+    MatrixMarketReader.cpp
+    PartitionReader.cpp
+    PartitionWriter.cpp
+    RasterReader.cpp
+    SNAPEdgeListPartitionReader.cpp
+    SNAPGraphReader.cpp
+    SNAPGraphWriter.cpp
+    )
 
-add_subdirectory("test")
+target_link_libraries(networkit_io
+    PUBLIC
+        networkit_algebraic
+        networkit_auxiliary
+        networkit_dynamics
+        networkit_graph
+        networkit_structures
+    )
 
-networkit_add_source(CoverReader)
-networkit_add_source(CoverWriter)
-networkit_add_source(DGSReader)
-networkit_add_source(DibapGraphReader)
-networkit_add_source(DotGraphWriter)
-networkit_add_source(DotPartitionWriter)
-networkit_add_source(DynamicGraphReader)
-networkit_add_source(EdgeListCoverReader)
-networkit_add_source(EdgeListPartitionReader)
-networkit_add_source(EdgeListReader)
-networkit_add_source(EdgeListWriter)
-networkit_add_source(GMLGraphReader)
-networkit_add_source(GMLGraphWriter)
-networkit_add_source(GraphIO)
-networkit_add_source(GraphToolBinaryReader)
-networkit_add_source(GraphToolBinaryWriter)
-networkit_add_source(KONECTGraphReader)
-networkit_add_source(LineFileReader)
-networkit_add_source(METISGraphReader)
-networkit_add_source(METISGraphWriter)
-networkit_add_source(METISParser)
-networkit_add_source(MatrixMarketReader)
-networkit_add_source(PartitionReader)
-networkit_add_source(PartitionWriter)
-networkit_add_source(RasterReader)
-networkit_add_source(SNAPEdgeListPartitionReader)
-networkit_add_source(SNAPGraphReader)
-networkit_add_source(SNAPGraphWriter)
+add_subdirectory(test)
+

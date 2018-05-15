@@ -1,5 +1,5 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_test(coarsening CoarseningBenchmarkGTest
+    auxiliary community generators)
+networkit_add_test(coarsening CoarseningGTest
+    auxiliary community generators io matching)
 
-networkit_add_test(CoarseningBenchmark)
-networkit_add_test(CoarseningGTest)

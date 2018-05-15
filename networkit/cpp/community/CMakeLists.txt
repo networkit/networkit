@@ -1,38 +1,52 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(community
+    AdjustedRandMeasure.cpp
+    ClusteringGenerator.cpp
+    CommunityDetectionAlgorithm.cpp
+    Conductance.cpp
+    CoverHubDominance.cpp
+    Coverage.cpp
+    CutClustering.cpp
+    DissimilarityMeasure.cpp
+    DynamicNMIDistance.cpp
+    EdgeCut.cpp
+    GraphClusteringTools.cpp
+    GraphStructuralRandMeasure.cpp
+    HubDominance.cpp
+    IntrapartitionDensity.cpp
+    IsolatedInterpartitionConductance.cpp
+    IsolatedInterpartitionExpansion.cpp
+    JaccardMeasure.cpp
+    LPDegreeOrdered.cpp
+    LocalCoverEvaluation.cpp
+    LocalPartitionEvaluation.cpp
+    Modularity.cpp
+    NMIDistance.cpp
+    NodeStructuralRandMeasure.cpp
+    PLM.cpp
+    PLP.cpp
+    ParallelAgglomerativeClusterer.cpp
+    PartitionFragmentation.cpp
+    PartitionHubDominance.cpp
+    PartitionIntersection.cpp
+    QualityMeasure.cpp
+    SampledGraphStructuralRandMeasure.cpp
+    SampledNodeStructuralRandMeasure.cpp
+    StablePartitionNodes.cpp
+    )
 
-add_subdirectory("test")
+target_link_libraries(networkit_community
+    PRIVATE
+        OpenMP::OpenMP_CXX
+    PUBLIC
+        networkit_auxiliary
+        networkit_base
+        networkit_coarsening
+        networkit_components
+        networkit_flow
+        networkit_graph
+        networkit_matching
+        networkit_structures
+    )
 
-networkit_add_source(AdjustedRandMeasure)
-networkit_add_source(ClusteringGenerator)
-networkit_add_source(CommunityDetectionAlgorithm)
-networkit_add_source(Conductance)
-networkit_add_source(CoverHubDominance)
-networkit_add_source(Coverage)
-networkit_add_source(CutClustering)
-networkit_add_source(DissimilarityMeasure)
-networkit_add_source(DynamicNMIDistance)
-networkit_add_source(EdgeCut)
-networkit_add_source(GraphClusteringTools)
-networkit_add_source(GraphStructuralRandMeasure)
-networkit_add_source(HubDominance)
-networkit_add_source(IntrapartitionDensity)
-networkit_add_source(IsolatedInterpartitionConductance)
-networkit_add_source(IsolatedInterpartitionExpansion)
-networkit_add_source(JaccardMeasure)
-networkit_add_source(LPDegreeOrdered)
-networkit_add_source(LocalCoverEvaluation)
-networkit_add_source(LocalPartitionEvaluation)
-networkit_add_source(Modularity)
-networkit_add_source(NMIDistance)
-networkit_add_source(NodeStructuralRandMeasure)
-networkit_add_source(PLM)
-networkit_add_source(PLP)
-networkit_add_source(ParallelAgglomerativeClusterer)
-networkit_add_source(PartitionFragmentation)
-networkit_add_source(PartitionHubDominance)
-networkit_add_source(PartitionIntersection)
-networkit_add_source(QualityMeasure)
-networkit_add_source(SampledGraphStructuralRandMeasure)
-networkit_add_source(SampledNodeStructuralRandMeasure)
-networkit_add_source(StablePartitionNodes)
+add_subdirectory(test)
+

@@ -1,6 +1,7 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_test(viz MaxentStressGTest
+    auxiliary clique community components graph io sparsification)
+networkit_add_test(viz OctreeGTest
+    algebraic auxiliary)
+networkit_add_test(viz VizGTest
+    auxiliary community generators graph io)
 
-networkit_add_test(MaxentStressGTest)
-networkit_add_test(OctreeGTest)
-networkit_add_test(VizGTest)

@@ -1,11 +1,23 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(dynamics
+    AffectedNodes.cpp
+    DGSStreamParser.cpp
+    DGSWriter.cpp
+    GraphDifference.cpp
+    GraphEvent.cpp
+    GraphEventHandler.cpp
+    GraphEventProxy.cpp
+    GraphUpdater.cpp
+    )
 
-add_subdirectory("test")
+target_link_libraries(networkit_dynamics
+    PRIVATE
+        OpenMP::OpenMP_CXX
+    PUBLIC
+        networkit_auxiliary
+        networkit_base
+        networkit_distance
+        networkit_graph
+    )
 
-networkit_add_source(DGSStreamParser)
-networkit_add_source(DGSWriter)
-networkit_add_source(GraphEvent)
-networkit_add_source(GraphEventHandler)
-networkit_add_source(GraphEventProxy)
-networkit_add_source(GraphUpdater)
+add_subdirectory(test)
+

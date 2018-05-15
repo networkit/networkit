@@ -1,9 +1,17 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(matching
+    LocalMaxMatcher.cpp
+    Matcher.cpp
+    Matching.cpp
+    PathGrowingMatcher.cpp
+    )
 
-add_subdirectory("test")
+target_link_libraries(networkit_matching
+    PUBLIC
+        networkit_auxiliary
+        networkit_base
+        networkit_graph
+        networkit_structures
+    )
 
-networkit_add_source(LocalMaxMatcher)
-networkit_add_source(Matcher)
-networkit_add_source(Matching)
-networkit_add_source(PathGrowingMatcher)
+add_subdirectory(test)
+

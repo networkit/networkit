@@ -1,24 +1,46 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(centrality
+    ApproxBetweenness.cpp
+    ApproxCloseness.cpp
+    Betweenness.cpp
+    Centrality.cpp
+    Closeness.cpp
+    CoreDecomposition.cpp
+    DegreeCentrality.cpp
+    DynApproxBetweenness.cpp
+    DynBetweenness.cpp
+    DynBetweennessOneNode.cpp
+    DynTopHarmonicCloseness.cpp
+    EigenvectorCentrality.cpp
+    EstimateBetweenness.cpp
+    GroupCloseness.cpp
+    GroupDegree.cpp
+    HarmonicCloseness.cpp
+    KPathCentrality.cpp
+    KatzCentrality.cpp
+    LaplacianCentrality.cpp
+    LocalClusteringCoefficient.cpp
+    LocalPartitionCoverage.cpp
+    PageRank.cpp
+    PermanenceCentrality.cpp
+    Sfigality.cpp
+    SpanningEdgeCentrality.cpp
+    TopCloseness.cpp
+    TopHarmonicCloseness.cpp
+    )
 
-add_subdirectory("test")
+target_link_libraries(networkit_centrality
+    PRIVATE
+        OpenMP::OpenMP_CXX
+    PUBLIC
+        networkit_algebraic
+        networkit_auxiliary
+        networkit_base
+        networkit_components
+        networkit_distance
+        networkit_dynamics
+        networkit_graph
+        networkit_structures
+    )
 
-networkit_add_source(ApproxBetweenness)
-networkit_add_source(ApproxBetweenness2)
-networkit_add_source(ApproxCloseness)
-networkit_add_source(Betweenness)
-networkit_add_source(Centrality)
-networkit_add_source(Closeness)
-networkit_add_source(CoreDecomposition)
-networkit_add_source(DegreeCentrality)
-networkit_add_source(DynApproxBetweenness)
-networkit_add_source(EigenvectorCentrality)
-networkit_add_source(KPathCentrality)
-networkit_add_source(KatzCentrality)
-networkit_add_source(LocalClusteringCoefficient)
-networkit_add_source(LocalPartitionCoverage)
-networkit_add_source(PageRank)
-networkit_add_source(PermanenceCentrality)
-networkit_add_source(Sfigality)
-networkit_add_source(SpanningEdgeCentrality)
-networkit_add_source(TopCloseness)
+add_subdirectory(test)
+

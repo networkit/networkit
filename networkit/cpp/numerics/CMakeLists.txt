@@ -1,7 +1,7 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(numerics
+        LAMG/MultiLevelSetup.cpp
+        LAMG/SolverLamg.cpp
+        )
 
-add_subdirectory("LAMG")
-add_subdirectory("Preconditioner")
-add_subdirectory("test")
+add_subdirectory(test)
 

@@ -1,11 +1,26 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(viz
+    FruchtermanReingold.cpp
+    Layouter.cpp
+    MaxentStress.cpp
+    MultilevelLayouter.cpp
+    PivotMDS.cpp
+    PostscriptWriter.cpp
+    )
 
-add_subdirectory("test")
+target_link_libraries(networkit_viz
+    PRIVATE
+        OpenMP::OpenMP_CXX
+    PUBLIC
+        networkit_algebraic
+        networkit_auxiliary
+        networkit_coarsening
+        networkit_community
+        networkit_components
+        networkit_distance
+        networkit_graph
+        networkit_io
+        networkit_structures
+    )
 
-networkit_add_source(FruchtermanReingold)
-networkit_add_source(Layouter)
-networkit_add_source(MaxentStress)
-networkit_add_source(MultilevelLayouter)
-networkit_add_source(PivotMDS)
-networkit_add_source(PostscriptWriter)
+add_subdirectory(test)
+

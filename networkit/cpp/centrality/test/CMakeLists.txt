@@ -1,7 +1,11 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_test(centrality ApproxBetweennessGTest
+    distance generators)
+networkit_add_test(centrality CentralityGTest
+    auxiliary generators io structures)
+networkit_add_test(centrality DynBetweennessGTest
+    auxiliary generators graph io)
+networkit_add_test(centrality DynTopHarmonicClosenessGTest
+    generators)
+networkit_add_test(centrality SpanningEdgeCentralityGTest
+    graph io)
 
-networkit_add_test(ApproxBetweennessGTest)
-networkit_add_test(CentralityGTest)
-networkit_add_test(DynBetweennessGTest)
-networkit_add_test(SpanningEdgeCentralityGTest)

@@ -1,6 +1,11 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(geometric
+    HyperbolicSpace.cpp
+    )
 
-add_subdirectory("test")
+target_link_libraries(networkit_geometric
+    PUBLIC
+        networkit_auxiliary
+    )
 
-networkit_add_source(HyperbolicSpace)
+add_subdirectory(test)
+

@@ -1,19 +1,43 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(distance
+    APSP.cpp
+    AdamicAdarDistance.cpp
+    AlgebraicDistance.cpp
+    AllSimplePaths.cpp
+    BFS.cpp
+    CommuteTimeDistance.cpp
+    Diameter.cpp
+    Dijkstra.cpp
+    DynAPSP.cpp
+    DynBFS.cpp
+    DynDijkstra.cpp
+    DynSSSP.cpp
+    Eccentricity.cpp
+    EffectiveDiameter.cpp
+    EffectiveDiameterApproximation.cpp
+    GraphDistance.cpp
+    HopPlotApproximation.cpp
+    IncompleteDijkstra.cpp
+    JaccardDistance.cpp
+    NeighborhoodFunction.cpp
+    NeighborhoodFunctionApproximation.cpp
+    NeighborhoodFunctionHeuristic.cpp
+    NodeDistance.cpp
+    ReverseBFS.cpp
+    SSSP.cpp
+    )
 
-add_subdirectory("test")
+target_link_libraries(networkit_distance
+    PRIVATE
+        OpenMP::OpenMP_CXX
+    PUBLIC
+        networkit_algebraic
+        networkit_auxiliary
+        networkit_base
+        networkit_components
+        networkit_dynamics
+        networkit_graph
+        networkit_structures
+    )
 
-networkit_add_source(APSP)
-networkit_add_source(AdamicAdarDistance)
-networkit_add_source(AlgebraicDistance)
-networkit_add_source(CommuteTimeDistance)
-networkit_add_source(Diameter)
-networkit_add_source(Eccentricity)
-networkit_add_source(EffectiveDiameter)
-networkit_add_source(EffectiveDiameterApproximation)
-networkit_add_source(HopPlotApproximation)
-networkit_add_source(JaccardDistance)
-networkit_add_source(NeighborhoodFunction)
-networkit_add_source(NeighborhoodFunctionApproximation)
-networkit_add_source(NeighborhoodFunctionHeuristic)
-networkit_add_source(NodeDistance)
+add_subdirectory(test)
+
