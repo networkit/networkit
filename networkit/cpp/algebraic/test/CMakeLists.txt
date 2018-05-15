@@ -1,6 +1,7 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_test(algebraic GraphBLASGTest)
 
-networkit_add_test(GraphBLASGTest)
-networkit_add_test(MatricesGTest)
-networkit_add_test(VectorGTest)
+networkit_add_test(algebraic MatricesGTest io)
+
+networkit_add_test(algebraic VectorGTest)
+
+

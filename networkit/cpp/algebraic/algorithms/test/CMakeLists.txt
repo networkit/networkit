@@ -1,9 +1,18 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_test(algebraic AlgebraicBFSGTest
+    algebraic auxiliary distance io)
 
-networkit_add_test(AlgebraicBFSGTest)
-networkit_add_test(AlgebraicBellmanFordGTest)
-networkit_add_test(AlgebraicMatchingCoarseningGTest)
-networkit_add_test(AlgebraicPageRankGTest)
-networkit_add_test(AlgebraicSpanningEdgeCentralityGTest)
-networkit_add_test(AlgebraicTriangleCountingGTest)
+networkit_add_test(algebraic AlgebraicBellmanFordGTest
+    algebraic auxiliary distance io)
+
+networkit_add_test(algebraic AlgebraicMatchingCoarseningGTest
+    algebraic auxiliary coarsening io matching)
+
+networkit_add_test(algebraic AlgebraicPageRankGTest
+    algebraic auxiliary centrality io)
+
+networkit_add_test(algebraic AlgebraicSpanningEdgeCentralityGTest
+    algebraic centrality io)
+
+networkit_add_test(algebraic AlgebraicTriangleCountingGTest
+    algebraic auxiliary centrality io)
+

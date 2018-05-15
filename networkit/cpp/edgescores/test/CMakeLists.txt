@@ -1,5 +1,3 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_test(edgescores ChibaNishizekiQuadrangleEdgeScoreGTest)
+networkit_add_test(edgescores ChibaNishizekiTriangleEdgeScoreGTest)
 
-networkit_add_test(ChibaNishizekiQuadrangleEdgeScoreGTest)
-networkit_add_test(ChibaNishizekiTriangleEdgeScoreGTest)

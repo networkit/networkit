@@ -1,5 +1,5 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_test(community CommunityDetectionBenchmarkGTest
+    auxiliary centrality io structures)
+networkit_add_test(community CommunityGTest
+    auxiliary generators io overlap structures)
 
-networkit_add_test(CommunityDetectionBenchmark)
-networkit_add_test(CommunityGTest)

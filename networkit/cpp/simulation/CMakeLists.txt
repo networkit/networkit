@@ -1,4 +1,11 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(simulation
+    EpidemicSimulationSEIR.cpp
+    )
 
-networkit_add_source(EpidemicSimulationSEIR)
+target_link_libraries(networkit_simulation
+    PUBLIC
+        networkit_auxiliary
+        networkit_base
+        networkit_graph
+    )
+

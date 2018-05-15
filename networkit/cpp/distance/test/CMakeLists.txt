@@ -1,6 +1,15 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_test(distance APSPGTest
+    auxiliary io)
+networkit_add_test(distance AllSimplePathsGTest
+    auxiliary)
+networkit_add_test(distance CommuteTimeDistanceGTest
+    centrality graph io)
+networkit_add_test(distance DistanceGTest
+    generators io)
+networkit_add_test(distance DynSSSPGTest
+    auxiliary generators graph io)
+networkit_add_test(distance GraphDistanceGTest
+    io)
+networkit_add_test(distance SSSPGTest
+    auxiliary io)
 
-networkit_add_test(APSPGTest)
-networkit_add_test(CommuteTimeDistanceGTest)
-networkit_add_test(DistanceGTest)

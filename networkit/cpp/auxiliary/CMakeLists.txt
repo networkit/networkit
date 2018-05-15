@@ -1,13 +1,19 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(auxiliary
+    BloomFilter.cpp
+    BucketPQ.cpp
+    Log.cpp
+    NumericTools.cpp
+    Parallelism.cpp
+    PrioQueueForInts.cpp
+    Random.cpp
+    SignalHandling.cpp
+    Timer.cpp
+    )
 
-add_subdirectory("test")
+target_link_libraries(networkit_auxiliary
+    PRIVATE
+        OpenMP::OpenMP_CXX
+    )
 
-networkit_add_source(BloomFilter)
-networkit_add_source(Log)
-networkit_add_source(NumericTools)
-networkit_add_source(Parallelism)
-networkit_add_source(PrioQueueForInts)
-networkit_add_source(Random)
-networkit_add_source(SignalHandling)
-networkit_add_source(Timer)
+add_subdirectory(test)
+

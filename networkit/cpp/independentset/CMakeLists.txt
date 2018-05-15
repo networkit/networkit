@@ -1,7 +1,13 @@
-# This file was automatically generated with UpdateCMakeFiles.py
-# Changes will be overridden; do not edit.
+networkit_add_module(independentset
+    IndependentSetFinder.cpp
+    Luby.cpp
+    )
 
-add_subdirectory("test")
+target_link_libraries(networkit_independentset
+    PUBLIC
+        networkit_auxiliary
+        networkit_graph
+    )
 
-networkit_add_source(IndependentSetFinder)
-networkit_add_source(Luby)
+add_subdirectory(test)
+
