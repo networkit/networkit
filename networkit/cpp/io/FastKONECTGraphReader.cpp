@@ -36,9 +36,6 @@ namespace NetworKit{
 		std::unordered_map<node, node> nodeIdMap;
 		Graph graph;
 
-		Aux::Log::setLogLevel("DEBUG");
-
-
 		//open file
 		auto fd = open(path.c_str(), O_RDONLY);
 		if(fd < 0)
@@ -198,60 +195,27 @@ namespace NetworKit{
 
 		//Helper function for handling edges
 		auto handleEdge = [&] (node source, node target, edgeweight weight = defaultEdgeWeight) {
-			if (!directed){
-				if(!graph.hasEdge(source, target) && !graph.hasEdge(target, source)){
-					graph.addEdge(source, target, weight);
-				}else if (multiple){
-					switch(multipleEdgesHandlingMethod){
-						case DISCARD: break; //Do nothing
-						case SUMWEIGHTSUP:
-							if (graph.hasEdge(source,target)){
-								graph.increaseWeight(source, target, weight);
-							}else{
-								graph.increaseWeight(target, source, weight);
-							}
+			if(!graph.hasEdge(source,target)){
+				graph.addEdge(source, target, weight);
+			}else if (multiple){
+				switch(multipleEdgesHandlingMethod){
+					case discardEdges: break; //Do nothing
+					case sumWeightsUp:
+						graph.increaseWeight(source, target, weight);
 						break;
-						case KEEPSHORTESTPATH:
-							if (graph.hasEdge(source,target)){
-								if(graph.weight(source,target) > weight){
-									graph.setWeight(source,target, weight);
-								}
-							}else{
-								if(graph.weight(target,source) > weight){
-									graph.setWeight(target,source, weight);
-								}
-							}
-							break;
-						default:
-							throw std::runtime_error("Invalid multipleEdgesHandlingMethod: "+std::to_string(multipleEdgesHandlingMethod));
-					}
-				}else{
-					DEBUG("["+std::to_string(source)+"->"+std::to_string(target)+
-					"] Multiple edges detected but declared as: "+graphFormat+
-					" and "+graphType);
+					case keepShortestPath:
+						if(graph.weight(source,target) > weight){
+							graph.setWeight(source,target, weight);
+						}
+						break;
+					default:
+						throw std::runtime_error("Invalid multipleEdgesHandlingMethod: "
+						+std::to_string(multipleEdgesHandlingMethod));
 				}
 			}else{
-				if(!graph.hasEdge(source,target)){
-					graph.addEdge(source, target, weight);
-				}else if (multiple){
-					switch(multipleEdgesHandlingMethod){
-						case DISCARD: break; //Do nothing
-						case SUMWEIGHTSUP:
-							graph.increaseWeight(source, target, weight);
-							break;
-						case KEEPSHORTESTPATH:
-							if(graph.weight(source,target) > weight){
-								graph.setWeight(source,target, weight);
-							}
-							break;
-						default:
-							throw std::runtime_error("Invalid multipleEdgesHandlingMethod: "+std::to_string(multipleEdgesHandlingMethod));
-					}
-				}else{
-					DEBUG("["+std::to_string(source)+"->"+std::to_string(target)+
-					"] Multiple edges detected but declared as: "+graphFormat+
-					" and "+graphType);
-				}
+				DEBUG("["+std::to_string(source)+"->"+std::to_string(target)+
+				"] Multiple edges detected but declared as: "+graphFormat+
+				" and "+graphType);
 			}
 		};
 

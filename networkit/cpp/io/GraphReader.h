@@ -19,9 +19,9 @@ namespace NetworKit {
 */
 enum MultipleEdgesHandling
 {
-	 DISCARD, //Reads and selects the first edge which occurs and discards all following
-	 SUMWEIGHTSUP, //If an edge occurs again, the weight of it is added to the existing edge
-	 KEEPSHORTESTPATH //The edge with the lowest weight is kept
+	 discardEdges = 0, //Reads and selects the first edge which occurs and discards all following
+	 sumWeightsUp = 1, //If an edge occurs again, the weight of it is added to the existing edge
+	 keepShortestPath = 2 //The edge with the lowest weight is kept
 };
 
 
