@@ -16,10 +16,19 @@
 namespace NetworKit {
   class FastKONECTGraphReader : public NetworKit::GraphReader{
 
-    public:
-    	FastKONECTGraphReader() = default;
+	public:
+		//FastKONECTGraphReader() = default; //nullary constructor for Python shell
 
-    	virtual Graph read(const std::string& path) override;
-  };
+		/*
+		* If the input graph has multiple edges, you can specify on how this edges are handled.
+		* See GraphReader.h for a closer description of the paramters.
+		*/
+		FastKONECTGraphReader(MultipleEdgesHandling handlingmethod = DISCARD);
+
+		virtual Graph read(const std::string& path) override;
+
+	protected:
+		MultipleEdgesHandling multipleEdgesHandlingMethod;
+ 	};
 } /* namespace NetworKit */
 #endif /* FASTKONECTGRAPHREADER_H_ */

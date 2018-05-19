@@ -19,6 +19,9 @@
 #include "FastKONECTGraphReader.h"
 
 namespace NetworKit{
+	FastKONECTGraphReader::FastKONECTGraphReader(MultipleEdgesHandling handlingmethod):
+	multipleEdgesHandlingMethod(handlingmethod){}
+
 	Graph FastKONECTGraphReader::read(const std::string &path){
 		std::string graphFormat="";
 		std::string graphType="";
@@ -32,6 +35,9 @@ namespace NetworKit{
 		bool secondPropertyLine = false;
 		std::unordered_map<node, node> nodeIdMap;
 		Graph graph;
+
+		Aux::Log::setLogLevel("DEBUG");
+
 
 		//open file
 		auto fd = open(path.c_str(), O_RDONLY);
@@ -121,9 +127,6 @@ namespace NetworKit{
 				valuesPerLine = 3;
 			} else if (graphType == "dynamic"){
 				throw std::runtime_error("Dynamic graphs are not supported at the moment");
-				weighted = true;
-				multiple = true;
-				valuesPerLine = 4;
 			} else if (graphType != "unweighted"){
 				throw std::runtime_error("Graph weight not tagged properly. Weight is: " + graphType);
 			}
@@ -132,6 +135,9 @@ namespace NetworKit{
 				INFO("Your graph is flagged as a bipartite one. Keep in mind that"
 				 "NetworKit cannot handle this kind of graph in its special cases."
 				 "It is imported as a usual undirected graph and edges might be discarded.");
+			}
+			if(multiple){
+				INFO("Selected handling for multiple edges is: "+std::to_string(multipleEdgesHandlingMethod));
 			}
 		} else {
 			throw std::runtime_error("No graph properties line found. This line is mandatory.");
@@ -175,7 +181,11 @@ namespace NetworKit{
 		//Map nodes and increase graph size if no second property is defined
 		auto mapNode = [&] (node in) -> node {
 			if(secondPropertyLine){
-				return in - 1; //minus firstNode
+				if (in > numberOfNodes){
+					return graph.hasNode(in) ? in : graph.addNode();
+				}else{
+					return in - 1; //minus firstNode
+				}
 			}else{
 				auto it = nodeIdMap.find(in);
 				if(it != nodeIdMap.end())
@@ -192,17 +202,55 @@ namespace NetworKit{
 				if(!graph.hasEdge(source, target) && !graph.hasEdge(target, source)){
 					graph.addEdge(source, target, weight);
 				}else if (multiple){
-					graph.increaseWeight(source, target, weight);
+					switch(multipleEdgesHandlingMethod){
+						case DISCARD: break; //Do nothing
+						case SUMWEIGHTSUP:
+							if (graph.hasEdge(source,target)){
+								graph.increaseWeight(source, target, weight);
+							}else{
+								graph.increaseWeight(target, source, weight);
+							}
+						break;
+						case KEEPSHORTESTPATH:
+							if (graph.hasEdge(source,target)){
+								if(graph.weight(source,target) > weight){
+									graph.setWeight(source,target, weight);
+								}
+							}else{
+								if(graph.weight(target,source) > weight){
+									graph.setWeight(target,source, weight);
+								}
+							}
+							break;
+						default:
+							throw std::runtime_error("Invalid multipleEdgesHandlingMethod: "+std::to_string(multipleEdgesHandlingMethod));
+					}
 				}else{
-					DEBUG("["+std::to_string(source)+"->"+std::to_string(target)+"] Multiple edges detected but declared as: "+graphFormat+" and "+graphType);
+					DEBUG("["+std::to_string(source)+"->"+std::to_string(target)+
+					"] Multiple edges detected but declared as: "+graphFormat+
+					" and "+graphType);
 				}
 			}else{
 				if(!graph.hasEdge(source,target)){
 					graph.addEdge(source, target, weight);
 				}else if (multiple){
-					graph.increaseWeight(source, target, weight);
+					switch(multipleEdgesHandlingMethod){
+						case DISCARD: break; //Do nothing
+						case SUMWEIGHTSUP:
+							graph.increaseWeight(source, target, weight);
+							break;
+						case KEEPSHORTESTPATH:
+							if(graph.weight(source,target) > weight){
+								graph.setWeight(source,target, weight);
+							}
+							break;
+						default:
+							throw std::runtime_error("Invalid multipleEdgesHandlingMethod: "+std::to_string(multipleEdgesHandlingMethod));
+					}
 				}else{
-					DEBUG("["+std::to_string(source)+"->"+std::to_string(target)+"] Multiple edges detected but declared as: "+graphFormat+" and "+graphType);
+					DEBUG("["+std::to_string(source)+"->"+std::to_string(target)+
+					"] Multiple edges detected but declared as: "+graphFormat+
+					" and "+graphType);
 				}
 			}
 		};
