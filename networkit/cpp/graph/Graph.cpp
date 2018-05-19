@@ -743,6 +743,9 @@ void Graph::swapEdge(node s1, node t1, node s2, node t2) {
 }
 
 bool Graph::hasEdge(node u, node v) const {
+	if (!directed && outDeg[u] > outDeg[v]){
+		return indexInOutEdgeArray(v, u) != none;
+	}
 	return indexInOutEdgeArray(u, v) != none;
 }
 
