@@ -493,7 +493,7 @@ TEST_F(IOGTest, debugReadingSNAP) {
 }
 
 TEST_F(IOGTest, testFastSNAPGraphReader) {
-	FastSNAPGraphReader reader;
+	FastSNAPGraphReader reader(true);
 	Graph G = reader.read("input/wiki-Vote.txt");
 
 	EXPECT_TRUE(G.isDirected());

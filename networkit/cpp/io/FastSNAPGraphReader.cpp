@@ -16,24 +16,47 @@
 
 namespace NetworKit {
 
+FastSNAPGraphReader::FastSNAPGraphReader(const bool& directed, const count& maxNode) :
+directed(directed), maxNode(maxNode) {}
+
 Graph FastSNAPGraphReader::read(const std::string &path) {
-	Graph G;
+	bool numberOfNodesIncreasedInfo = false;
+	Graph graph;
+	if (maxNode != 0 || directed == true){
+		graph = Graph(maxNode, false, directed);
+	}
 
 	// Maps SNAP node IDs to consecutive NetworKit node IDs.
 	auto mapNode = [&] (node in) -> node {
-		auto it = nodeIdMap.find(in);
-		if(it != nodeIdMap.end())
-			return it->second;
-		auto result = nodeIdMap.insert({in, G.addNode()});
-		if(!result.second)
-			throw std::runtime_error("Error in mapping nodes");
-		return result.first->second;
+		if(maxNode != 0){
+			if (in >= maxNode){
+				if(!numberOfNodesIncreasedInfo){
+					INFO("Stated maxNode does not fit real graph. Number of nodes will be increased.");
+					numberOfNodesIncreasedInfo=true;
+				}
+				return graph.hasNode(in) ? in : graph.addNode();
+			}else{
+				return in;
+			}
+		}else{
+			auto it = nodeIdMap.find(in);
+			if(it != nodeIdMap.end())
+				return it->second;
+			auto result = nodeIdMap.insert({in, graph.addNode()});
+			if(!result.second)
+				throw std::runtime_error("Error in mapping nodes");
+			return result.first->second;
+		}
 	};
 
 	// This function modifies the graph on input.
 	auto handleEdge = [&] (node source, node target) {
-		if(!G.hasEdge(source, target))
-			G.addEdge(source, target);
+		if(!graph.hasEdge(source, target)){
+			graph.addEdge(source, target);
+		}else{
+			DEBUG("["+std::to_string(source)+"->"+std::to_string(target)+
+				"] Multiple edges detected");
+		}
 	};
 
 	auto fd = open(path.c_str(), O_RDONLY);
@@ -44,7 +67,7 @@ Graph FastSNAPGraphReader::read(const std::string &path) {
 	if(fstat(fd, &st))
 		throw std::runtime_error("Could not obtain file stats");
 
-	// It does not really matter if we use a private or shared mapping.
+	// It does not really matter if we use a private or shared mappingraph.
 	auto window = mmap(nullptr, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
 	if(window == reinterpret_cast<void *>(-1))
 		throw std::runtime_error("Could not map file");
@@ -103,19 +126,16 @@ Graph FastSNAPGraphReader::read(const std::string &path) {
 
 		if(it == end)
 			throw std::runtime_error("Unexpected end of file");
-
-		//if(!(*it == '\n')){
-		//		std::string str(it);
-		//		throw std::runtime_error("Error in parsing file");
-		//}
+		if(!(*it == '\n' || *it == '\r'))
+			throw std::runtime_error("Line does not end with line break");
 		++it;
 	}
 
 	if(munmap(window, st.st_size))
 		throw std::runtime_error("Could not unmap file");
 
-	G.shrinkToFit();
-	return G;
+	graph.shrinkToFit();
+	return graph;
 }
 
 } // namespace NetworKit
