@@ -347,7 +347,7 @@ TEST_F(IOGTest, tryDGSReader) {
 TEST_F(IOGTest, testEdgeListReader) {
 	EdgeListReader reader('\t', 1);
 
-	std::string path = "input/LFR-generator-example/network.dat";
+	std::string path = "input/network.dat";
 	DEBUG("reading file: " , path);
 	Graph G = reader.read(path);
 	EXPECT_EQ(10u, G.numberOfNodes());
@@ -390,7 +390,7 @@ TEST_F(IOGTest, testEdgeListReader) {
 TEST_F(IOGTest, testEdgeListPartitionReader) {
 	EdgeListPartitionReader reader(1);
 
-	Partition zeta = reader.read("input/LFR-generator-example/community.dat");
+	Partition zeta = reader.read("input/community.dat");
 	//EXPECT_EQ(10, zeta.size());
 	EXPECT_EQ(1u, zeta[0]);
 	EXPECT_EQ(3u, zeta[1]);
@@ -403,8 +403,8 @@ TEST_F(IOGTest, testEdgeListCoverReader) {
 	EdgeListCoverReader reader(1);
 	EdgeListReader gReader('\t', 1);
 
-	Graph G = gReader.read("input/LFR-generator-example/network_overlapping.dat");
-	Cover zeta = reader.read("input/LFR-generator-example/community_overlapping.dat", G);
+	Graph G = gReader.read("input/network_overlapping.dat");
+	Cover zeta = reader.read("input/community_overlapping.dat", G);
 	EXPECT_EQ(9u, zeta.upperBound());
 	EXPECT_EQ(10u, zeta.numberOfElements());
 	EXPECT_EQ(1u, zeta[0].count(1));
@@ -416,8 +416,8 @@ TEST_F(IOGTest, testCoverReader) {
 	CoverReader reader;
 	EdgeListReader gReader('\t', 1);
 
-	Graph G = gReader.read("input/LFR-generator-example/network_overlapping.dat");
-	Cover zeta = reader.read("input/LFR-generator-example/community_overlapping.cover", G);
+	Graph G = gReader.read("input/network_overlapping.dat");
+	Cover zeta = reader.read("input/community_overlapping.cover", G);
 	EXPECT_EQ(9u, zeta.upperBound());
 	EXPECT_EQ(10u, zeta.numberOfElements());
 	EXPECT_EQ(1u, zeta[0].count(1));
@@ -431,8 +431,8 @@ TEST_F(IOGTest, testCoverWriter) {
 	CoverReader reader;
 	EdgeListReader gReader('\t', 1);
 
-	Graph G = gReader.read("input/LFR-generator-example/network_overlapping.dat");
-	Cover zeta = reader.read("input/LFR-generator-example/community_overlapping.cover", G);
+	Graph G = gReader.read("input/network_overlapping.dat");
+	Cover zeta = reader.read("input/community_overlapping.cover", G);
 
 	writer.write(zeta, outpath);
 
