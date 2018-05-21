@@ -8,6 +8,7 @@
 #ifndef COMMUNITYDETECTIONALGORITHM_H_
 #define COMMUNITYDETECTIONALGORITHM_H_
 
+#include "../graph/Graph.h"
 #include "../structures/Partition.h"
 #include "../base/Algorithm.h"
 

@@ -6,6 +6,7 @@
  */
 
 #include "Partition.h"
+#include <algorithm>
 #include <atomic>
 
 namespace NetworKit {
