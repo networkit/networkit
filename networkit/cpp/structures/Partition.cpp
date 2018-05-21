@@ -7,6 +7,7 @@
 
 #include "Partition.h"
 #include "../auxiliary/Parallel.h"
+#include <algorithm>
 #include <atomic>
 
 namespace NetworKit {
