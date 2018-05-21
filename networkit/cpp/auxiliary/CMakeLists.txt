@@ -10,7 +10,7 @@ networkit_add_module(auxiliary
     Timer.cpp
     )
 
-target_link_libraries(networkit_auxiliary
+networkit_module_link_libraries(auxiliary
     PRIVATE
         OpenMP::OpenMP_CXX
     )

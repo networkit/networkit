@@ -8,16 +8,8 @@ networkit_add_module(components
     WeaklyConnectedComponents.cpp
     )
 
-target_link_libraries(networkit_components
-    PUBLIC
-        networkit_auxiliary
-        networkit_base
-        networkit_coarsening
-        networkit_distance
-        networkit_dynamics
-        networkit_graph
-        networkit_structures
-    )
+networkit_module_link_modules(components
+    auxiliary base coarsening dynamics graph structures)
 
 add_subdirectory(test)
 

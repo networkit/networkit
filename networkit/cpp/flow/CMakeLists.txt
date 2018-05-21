@@ -2,10 +2,8 @@ networkit_add_module(flow
     EdmondsKarp.cpp
     )
 
-target_link_libraries(networkit_flow
-    PUBLIC
-        networkit_graph
-    )
+networkit_module_link_modules(flow
+        graph)
 
 add_subdirectory(test)
 

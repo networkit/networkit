@@ -27,17 +27,11 @@ networkit_add_module(generators
     WattsStrogatzGenerator.cpp
     )
 
-target_link_libraries(networkit_generators
-    PRIVATE
-        OpenMP::OpenMP_CXX
-    PUBLIC
-        networkit_auxiliary
-        networkit_base
-        networkit_dynamics
-        networkit_geometric
-        networkit_graph
-        networkit_structures
-    )
+networkit_module_link_libraries(generators
+    PRIVATE OpenMP::OpenMP_CXX)
+
+networkit_module_link_modules(generators
+        auxiliary base dynamics geometric graph structures)
 
 add_subdirectory(quadtree)
 add_subdirectory(test)

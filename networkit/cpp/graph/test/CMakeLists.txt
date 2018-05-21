@@ -1,15 +1,11 @@
-networkit_add_test(graph Graph2BenchmarkGTest)
-networkit_add_test(graph GraphBenchmarkGTest
-    auxiliary)
-networkit_add_test(graph GraphBuilderAutoCompleteGTest
-    auxiliary)
-networkit_add_test(graph GraphBuilderBenchmarkGTest
-    io)
-networkit_add_test(graph GraphBuilderDirectSwapGTest
-    auxiliary)
+networkit_add_test(graph GraphBuilderAutoCompleteGTest auxiliary)
+networkit_add_test(graph GraphBuilderDirectSwapGTest auxiliary)
 networkit_add_test(graph GraphGTest
-    auxiliary distance io)
+    auxiliary dyn_distance io)
 networkit_add_test(graph GraphToolsGTest)
-networkit_add_test(graph SpanningGTest
-    io)
+networkit_add_test(graph SpanningGTest io)
+
+networkit_add_benchmark(graph Graph2Benchmark)
+networkit_add_benchmark(graph GraphBenchmark auxiliary)
+networkit_add_benchmark(graph GraphBuilderBenchmark io)
 

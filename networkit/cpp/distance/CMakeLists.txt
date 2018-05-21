@@ -7,10 +7,6 @@ networkit_add_module(distance
     CommuteTimeDistance.cpp
     Diameter.cpp
     Dijkstra.cpp
-    DynAPSP.cpp
-    DynBFS.cpp
-    DynDijkstra.cpp
-    DynSSSP.cpp
     Eccentricity.cpp
     EffectiveDiameter.cpp
     EffectiveDiameterApproximation.cpp
@@ -26,18 +22,23 @@ networkit_add_module(distance
     SSSP.cpp
     )
 
-target_link_libraries(networkit_distance
+networkit_module_link_libraries(distance
     PRIVATE
         OpenMP::OpenMP_CXX
-    PUBLIC
-        networkit_algebraic
-        networkit_auxiliary
-        networkit_base
-        networkit_components
-        networkit_dynamics
-        networkit_graph
-        networkit_structures
     )
+
+networkit_module_link_modules(distance
+        algebraic auxiliary base components graph structures)
+
+networkit_add_module(dyn_distance
+    DynAPSP.cpp
+    DynBFS.cpp
+    DynDijkstra.cpp
+    DynSSSP.cpp
+    )
+
+networkit_module_link_modules(dyn_distance
+        distance dynamics)
 
 add_subdirectory(test)
 

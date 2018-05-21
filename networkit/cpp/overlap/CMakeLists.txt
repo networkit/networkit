@@ -3,12 +3,8 @@ networkit_add_module(overlap
     Overlapper.cpp
     )
 
-target_link_libraries(networkit_overlap
-    PUBLIC
-        networkit_auxiliary
-        networkit_graph
-        networkit_structures
-    )
+networkit_module_link_libraries(overlap
+    auxiliary graph structures)
 
 add_subdirectory(test)
 

@@ -5,13 +5,11 @@ networkit_add_module(algebraic
     Vector.cpp
     )
 
-target_link_libraries(networkit_algebraic
-    PRIVATE
-        OpenMP::OpenMP_CXX
-    PUBLIC
-        networkit_auxiliary
-        networkit_graph
-    )
+networkit_module_link_libraries(algebraic
+    PRIVATE OpenMP::OpenMP_CXX)
+
+networkit_module_link_modules(algebraic
+    auxiliary graph)
 
 add_subdirectory(algorithms)
 add_subdirectory(test)
