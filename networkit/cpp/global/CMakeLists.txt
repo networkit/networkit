@@ -3,12 +3,8 @@ networkit_add_module(global
     GlobalClusteringCoefficient.cpp
     )
 
-target_link_libraries(networkit_global
-    PUBLIC
-        networkit_auxiliary
-        networkit_centrality
-        networkit_graph
-    )
+networkit_module_link_modules(global
+    auxiliary centrality graph)
 
 add_subdirectory(test)
 

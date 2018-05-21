@@ -7,20 +7,10 @@ networkit_add_module(viz
     PostscriptWriter.cpp
     )
 
-target_link_libraries(networkit_viz
-    PRIVATE
-        OpenMP::OpenMP_CXX
-    PUBLIC
-        networkit_algebraic
-        networkit_auxiliary
-        networkit_coarsening
-        networkit_community
-        networkit_components
-        networkit_distance
-        networkit_graph
-        networkit_io
-        networkit_structures
-    )
+networkit_module_link_libraries(viz
+    PRIVATE OpenMP::OpenMP_CXX)
+
+networkit_module_link_modules(viz
+    algebraic auxiliary coarsening community components distance graph io structures)
 
 add_subdirectory(test)
-

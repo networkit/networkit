@@ -9,15 +9,11 @@ networkit_add_module(dynamics
     GraphUpdater.cpp
     )
 
-target_link_libraries(networkit_dynamics
-    PRIVATE
-        OpenMP::OpenMP_CXX
-    PUBLIC
-        networkit_auxiliary
-        networkit_base
-        networkit_distance
-        networkit_graph
-    )
+networkit_module_link_libraries(dynamics
+    PRIVATE OpenMP::OpenMP_CXX)
+
+networkit_module_link_modules(dynamics
+        auxiliary base distance graph)
 
 add_subdirectory(test)
 

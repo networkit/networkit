@@ -10,15 +10,11 @@ networkit_add_module(graph
     UnionMaximumSpanningForest.cpp
     )
 
-target_link_libraries(networkit_graph
-    PRIVATE
-        OpenMP::OpenMP_CXX
-    PUBLIC
-        networkit_auxiliary
-        networkit_base
-        networkit_components
-        networkit_structures
-    )
+networkit_module_link_libraries(graph
+    PRIVATE OpenMP::OpenMP_CXX)
+
+networkit_module_link_modules(graph
+    auxiliary base components structures)
 
 add_subdirectory(test)
 

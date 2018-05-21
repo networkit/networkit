@@ -2,10 +2,8 @@ networkit_add_module(geometric
     HyperbolicSpace.cpp
     )
 
-target_link_libraries(networkit_geometric
-    PUBLIC
-        networkit_auxiliary
-    )
+networkit_module_link_modules(geometric
+    auxiliary)
 
 add_subdirectory(test)
 

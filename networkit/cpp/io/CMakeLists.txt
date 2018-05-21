@@ -29,14 +29,8 @@ networkit_add_module(io
     SNAPGraphWriter.cpp
     )
 
-target_link_libraries(networkit_io
-    PUBLIC
-        networkit_algebraic
-        networkit_auxiliary
-        networkit_dynamics
-        networkit_graph
-        networkit_structures
-    )
+networkit_module_link_modules(io
+    algebraic auxiliary dynamics graph structures)
 
 add_subdirectory(test)
 

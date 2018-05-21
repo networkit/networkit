@@ -24,15 +24,12 @@ networkit_add_module(linkprediction
     VDegreeIndex.cpp
     )
 
-target_link_libraries(networkit_linkprediction
-    PRIVATE
-        OpenMP::OpenMP_CXX
-    PUBLIC
-        networkit_auxiliary
-        networkit_community
-        networkit_graph
-        networkit_structures
-    )
+networkit_module_link_libraries(linkprediction
+    PRIVATE OpenMP::OpenMP_CXX)
+
+
+networkit_module_link_modules(linkprediction
+    auxiliary community graph structures)
 
 add_subdirectory(test)
 
