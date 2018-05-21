@@ -3,11 +3,8 @@ networkit_add_module(independentset
     Luby.cpp
     )
 
-target_link_libraries(networkit_independentset
-    PUBLIC
-        networkit_auxiliary
-        networkit_graph
-    )
+networkit_module_link_modules(independentset
+    auxiliary graph)
 
 add_subdirectory(test)
 

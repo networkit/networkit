@@ -5,13 +5,8 @@ networkit_add_module(matching
     PathGrowingMatcher.cpp
     )
 
-target_link_libraries(networkit_matching
-    PUBLIC
-        networkit_auxiliary
-        networkit_base
-        networkit_graph
-        networkit_structures
-    )
+networkit_module_link_modules(matching
+    auxiliary base graph structures)
 
 add_subdirectory(test)
 

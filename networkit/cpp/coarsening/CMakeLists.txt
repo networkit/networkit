@@ -5,16 +5,13 @@ networkit_add_module(coarsening
     ParallelPartitionCoarsening.cpp
     )
 
-target_link_libraries(networkit_coarsening
+networkit_module_link_libraries(coarsening
     PRIVATE
         OpenMP::OpenMP_CXX
-    PUBLIC
-        networkit_auxiliary
-        networkit_base
-        networkit_graph
-        networkit_matching
-        networkit_structures
     )
+
+networkit_module_link_modules(coarsening
+    auxiliary base graph matching structures)
 
 add_subdirectory(test)
 

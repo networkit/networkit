@@ -4,12 +4,9 @@ networkit_add_module(structures
     UnionFind.cpp
     )
 
-target_link_libraries(networkit_structures
-    PRIVATE
-        OpenMP::OpenMP_CXX
-    PUBLIC
-        networkit_graph
-    )
+networkit_module_link_libraries(structures
+    PRIVATE OpenMP::OpenMP_CXX)
+
 
 add_subdirectory(test)
 

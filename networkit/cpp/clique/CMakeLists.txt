@@ -3,13 +3,8 @@ networkit_add_module(clique
     MaximalCliques.cpp
     )
 
-target_link_libraries(networkit_clique
-    PUBLIC
-        networkit_auxiliary
-        networkit_base
-        networkit_centrality
-        networkit_graph
-    )
+networkit_module_link_modules(clique
+    auxiliary base centrality graph)
 
 add_subdirectory(test)
 

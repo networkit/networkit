@@ -4,6 +4,7 @@ networkit_add_test(sparsification LocalSimilarityGTest
 networkit_add_test(sparsification MultiscaleBackboneGTest)
 networkit_add_test(sparsification SimmelianBackboneGTest
     edgescores)
-networkit_add_test(sparsification SparsificationBenchmarkGTest
+
+networkit_add_benchmark(sparsification SparsificationBenchmark
     auxiliary edgescores io)
 

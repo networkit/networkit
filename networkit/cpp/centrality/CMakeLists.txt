@@ -28,18 +28,21 @@ networkit_add_module(centrality
     TopHarmonicCloseness.cpp
     )
 
-target_link_libraries(networkit_centrality
+networkit_module_link_libraries(centrality
     PRIVATE
         OpenMP::OpenMP_CXX
-    PUBLIC
-        networkit_algebraic
-        networkit_auxiliary
-        networkit_base
-        networkit_components
-        networkit_distance
-        networkit_dynamics
-        networkit_graph
-        networkit_structures
+    )
+
+networkit_module_link_modules(centrality
+        algebraic
+        auxiliary
+        base
+        components
+        distance
+        dyn_distance
+        dynamics
+        graph
+        structures
     )
 
 add_subdirectory(test)

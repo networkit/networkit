@@ -5,11 +5,8 @@ networkit_add_module(scd
     SelectiveCommunityDetector.cpp
     )
 
-target_link_libraries(networkit_scd
-    PUBLIC
-        networkit_auxiliary
-        networkit_graph
-    )
+networkit_module_link_modules(scd
+    auxiliary graph)
 
 add_subdirectory(test)
 
