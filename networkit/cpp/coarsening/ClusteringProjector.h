@@ -8,6 +8,7 @@
 #ifndef CLUSTERINGPROJECTOR_H_
 #define CLUSTERINGPROJECTOR_H_
 
+#include "../graph/Graph.h"
 #include "../structures/Partition.h"
 
 namespace NetworKit {

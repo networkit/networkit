@@ -15,13 +15,9 @@
 #include <cassert>
 #include <limits>
 
-#include "../graph/Graph.h"
-
-
+#include "../Globals.h"
 
 namespace NetworKit {
-
-
 
 /**
  * @ingroup structures
@@ -160,20 +156,6 @@ public:
 	 * @return Id of newly created set.
 	 */
 	index mergeSubsets(index s, index t);
-
-
-	/**
-	 * Check if partition is a 1-partition,
-	 * i.e. every element is assigned to the same set.
-	 */
-	//bool isOnePartition(Graph& G);
-
-
-	/**
-	 * Check if partition is a singleton partition,
-	 * i.e. every element is assigned to a different set.
-	 */
-	//bool isSingletonPartition(Graph& G) const;
 
 	/**
 	 * Sets an upper bound for the subset ids that CAN be assigned.
