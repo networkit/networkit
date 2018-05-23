@@ -16,37 +16,28 @@
 
 namespace NetworKit {
 
-FastSNAPGraphReader::FastSNAPGraphReader(const bool& directed, const count& maxNode) :
-directed(directed), maxNode(maxNode) {}
+FastSNAPGraphReader::FastSNAPGraphReader(const bool& directed, const count& nodeCount) :
+directed(directed), nodeCount() {}
 
 Graph FastSNAPGraphReader::read(const std::string &path) {
-	bool numberOfNodesIncreasedInfo = false;
 	Graph graph;
-	if (maxNode != 0 || directed == true){
-		graph = Graph(maxNode, false, directed);
-	}
+	if (directed == true)
+		graph = Graph(0, false, directed);
+	
+	//In the actual state this parameter has very little influence on the reader performance.
+	//There can be a significant boost if it is possible to reserve space in the graph initialization
+	if(nodeCount != 0)
+		nodeIdMap.reserve(nodeCount);
 
 	// Maps SNAP node IDs to consecutive NetworKit node IDs.
 	auto mapNode = [&] (node in) -> node {
-		if(maxNode != 0){
-			if (in >= maxNode){
-				if(!numberOfNodesIncreasedInfo){
-					INFO("Stated maxNode does not fit real graph. Number of nodes will be increased.");
-					numberOfNodesIncreasedInfo=true;
-				}
-				return graph.hasNode(in) ? in : graph.addNode();
-			}else{
-				return in;
-			}
-		}else{
-			auto it = nodeIdMap.find(in);
-			if(it != nodeIdMap.end())
-				return it->second;
-			auto result = nodeIdMap.insert({in, graph.addNode()});
-			if(!result.second)
-				throw std::runtime_error("Error in mapping nodes");
-			return result.first->second;
-		}
+		auto it = nodeIdMap.find(in);
+		if(it != nodeIdMap.end())
+			return it->second;
+		auto result = nodeIdMap.insert({in, graph.addNode()});
+		if(!result.second)
+			throw std::runtime_error("Error in mapping nodes");
+		return result.first->second;
 	};
 
 	// This function modifies the graph on input.
@@ -133,7 +124,6 @@ Graph FastSNAPGraphReader::read(const std::string &path) {
 
 	if(munmap(window, st.st_size))
 		throw std::runtime_error("Could not unmap file");
-
 	graph.shrinkToFit();
 	return graph;
 }

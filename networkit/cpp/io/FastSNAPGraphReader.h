@@ -21,7 +21,7 @@ class FastSNAPGraphReader : public NetworKit::GraphReader {
 private:
 	std::unordered_map<node, node> nodeIdMap;
 	bool directed;
-	count maxNode;
+	count nodeCount;
 
 public:
 	/**
@@ -35,7 +35,7 @@ public:
 	 * @param[in]	directed	reads in the graph as directed, if set to true
 	 * @param[in]	maxNode	maxNode is used to preallocated memory for the number of nodes
 	 */
-	FastSNAPGraphReader(const bool& directed = false, const count& maxNode = 0);
+	FastSNAPGraphReader(const bool& directed = false, const count& nodeCount = 0);
 
 	/**
 	 * Given the path of an input file, read the graph contained.
