@@ -499,7 +499,7 @@ TEST_F(CentralityGTest, testHarmonicClosenessCentrality) {
 
 TEST_F(CentralityGTest, testKPathCentrality) {
   METISGraphReader reader;
-  Graph G = reader.read("input/power.graph");
+  Graph G = reader.read("input/lesmis.graph");
 
   KPathCentrality centrality(G);
   centrality.run();
