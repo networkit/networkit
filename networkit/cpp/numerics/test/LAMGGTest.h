@@ -23,7 +23,7 @@ namespace NetworKit {
 
 class LAMGGTest : public testing::Test {
 protected:
-	const vector<string> GRAPH_INSTANCES = {"input/jazz.graph", "input/power.graph", "input/wing.graph"};
+	const vector<string> GRAPH_INSTANCES = {"input/jazz.graph", "input/power.graph"};
 
 	Vector randZeroSum(const Graph& graph, size_t seed) const;
 	Vector randVector(count dimension, double lower, double upper) const;

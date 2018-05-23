@@ -10,7 +10,7 @@
 #include "../../CSRMatrix.h"
 #include "../AlgebraicTriangleCounting.h"
 #include "../../../auxiliary/Timer.h"
-#include "../../../io/SNAPGraphReader.h"
+#include "../../../io/METISGraphReader.h"
 #include "../../../centrality/LocalClusteringCoefficient.h"
 
 namespace NetworKit {
@@ -129,8 +129,8 @@ TEST(AlgebraicTriangleCountingGTest, testDirectedToyGraphThree) {
 }
 
 TEST(AlgebraicTriangleCountingGTest, testLocalClusteringCoefficient) {
-	SNAPGraphReader reader;
-	Graph graph = reader.read("input/wiki-Vote.txt");
+	METISGraphReader reader;
+	Graph graph = reader.read("input/celegans_metabolic.graph");
 	INFO("graph has ", graph.numberOfNodes(), " nodes and ", graph.numberOfEdges(), " edges and directed? ", graph.isDirected());
 
 	Aux::Timer timer;

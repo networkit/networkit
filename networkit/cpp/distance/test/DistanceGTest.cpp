@@ -239,7 +239,7 @@ TEST_F(DistanceGTest, testEffectiveDiameterExact) {
 TEST_F(DistanceGTest, testHopPlotApproximation) {
 	using namespace std;
 
-	vector<string> testInstances= {"celegans_metabolic", "power", "lesmis"};
+	vector<string> testInstances= {"celegans_metabolic", "lesmis"};
 
 	const double tol = 1e-2;
 
