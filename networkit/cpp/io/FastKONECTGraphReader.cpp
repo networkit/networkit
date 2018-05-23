@@ -116,7 +116,9 @@ namespace NetworKit{
 				weighted = true;
 				valuesPerLine = 3;
 			} else if (graphType == "positive"){ //multiple edges
-				weighted = true;
+				if(multipleEdgesHandlingMethod == sumWeightsUp){
+					weighted = true;
+				}
 				multiple = true; //weights will be added
 			} else if (graphType == "multisigned" || graphType == "multiweighted" || graphType == "multiposweighted"){
 				weighted = true;
