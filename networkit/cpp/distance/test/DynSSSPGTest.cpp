@@ -165,7 +165,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstra) {
 
 TEST_F(DynSSSPGTest, testDynamicBFSGeneratedGraph) {
 	METISGraphReader reader;
-	DorogovtsevMendesGenerator generator(1000);
+	DorogovtsevMendesGenerator generator(500);
 	Graph G = generator.generate();
 	DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
 	DynBFS dyn_bfs(G, 0);
@@ -173,7 +173,7 @@ TEST_F(DynSSSPGTest, testDynamicBFSGeneratedGraph) {
 	dyn_bfs.run();
 	bfs.run();
 	DEBUG("Before the edge insertion: ");
-	count nInsertions = 1000, i = 0;
+	count nInsertions = 750, i = 0;
 	while (i < nInsertions) {
 		DEBUG("Sampling a new edge");
 		node v1 = Sampling::randomNode(G);

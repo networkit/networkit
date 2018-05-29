@@ -39,7 +39,7 @@ TEST_F(GeometricGTest, testConversion) {
  * Test numeric stability of Euclidean Circle conversion
  */
 TEST_F(GeometricGTest, testEuclideanCircleConsistency) {
-	const count n = 1000000;
+	const count n = 100000;
 	vector<double> angles(n);
 	vector<double> radii(n);
 	double stretch = 2;

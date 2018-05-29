@@ -19,6 +19,7 @@
 #include "../../distance/Diameter.h"
 #include "../../io/METISGraphReader.h"
 #include "../../io/EdgeListReader.h"
+#include "../../io/KONECTGraphReader.h"
 #include "../../generators/HavelHakimiGenerator.h"
 #include "../../auxiliary/Log.h"
 #include "../../generators/DorogovtsevMendesGenerator.h"
@@ -74,8 +75,7 @@ namespace NetworKit {
 
     TEST_F(ConnectedComponentsGTest, testParallelConnectedComponents) {
         METISGraphReader reader;
-        std::vector<std::string> graphs = {"astro-ph", "PGPgiantcompo",
-        "caidaRouterLevel", "celegans_metabolic", "hep-th", "jazz"};
+        std::vector<std::string> graphs = {"PGPgiantcompo", "celegans_metabolic", "hep-th", "jazz"};
 
         for (auto graphName: graphs) {
             Graph G = reader.read("input/" + graphName + ".graph");
@@ -258,7 +258,7 @@ namespace NetworKit {
     TEST_F(ConnectedComponentsGTest, testDynConnectedComponents) {
         // construct graph
         METISGraphReader reader;
-        Graph G = reader.read("input/astro-ph.graph");
+        Graph G = reader.read("input/PGPgiantcompo.graph");
         DynConnectedComponents dccs(G);
         dccs.run();
         ConnectedComponents cc(G);
@@ -367,10 +367,10 @@ namespace NetworKit {
 
     TEST_F(ConnectedComponentsGTest, testWeaklyConnectedComponents) {
         // construct graph
-        EdgeListReader directReader('\t', 0, "#", false, true);
-        Graph G = directReader.read("input/MIT8.edgelist");
-        EdgeListReader undirectReader('\t', 0, "#", false, false);
-        Graph Gu = undirectReader.read("input/MIT8.edgelist");
+        EdgeListReader directReader(' ', 0, "%", false, true);
+        Graph G = directReader.read("input/johnson8-4-4.edgelist");
+        EdgeListReader undirectReader(' ', 0, "%", false, false);
+        Graph Gu = undirectReader.read("input/johnson8-4-4.edgelist");
         WeaklyConnectedComponents wc(G);
         ConnectedComponents cc(Gu);
         wc.run();
@@ -447,8 +447,8 @@ namespace NetworKit {
 
     TEST_F(ConnectedComponentsGTest, testDynWeaklyConnectedComponents) {
         // Read graph
-        EdgeListReader directReader('\t', 0, "#", false, true);
-        Graph G = directReader.read("input/MIT8.edgelist");
+		KONECTGraphReader reader(' ');
+		Graph G = reader.read("input/foodweb-baydry.konect");
         DynWeaklyConnectedComponents dw(G);
         dw.run();
         WeaklyConnectedComponents wc(G);

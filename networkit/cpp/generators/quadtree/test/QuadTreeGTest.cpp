@@ -395,7 +395,7 @@ TEST_F(QuadTreeGTest, testQuadTreeBalance) {
 }
 
 TEST_F(QuadTreeGTest, testSequentialQuadTreeConstruction) {
-	count n = 1000000;
+	count n = 100000;
 	count capacity = 1000;
 	double alpha = 1;
 	double R = HyperbolicSpace::hyperbolicAreaToRadius(n);
@@ -425,7 +425,7 @@ TEST_F(QuadTreeGTest, testSequentialQuadTreeConstruction) {
 
 TEST_F(QuadTreeGTest, testProbabilisticQuery) {
 	Aux::Random::setSeed(0, false);
-	count n = 10000;
+	count n = 5000;
 	count m = n*3;
 	count capacity = 20;
 	double R = 2*log(8*n / (M_PI*(m/n)*2));
@@ -525,7 +525,7 @@ TEST_F(QuadTreeGTest, testLeftSuppression) {
 	/**
 	 * define parameters
 	 */
-	count n = 100000;
+	count n = 10000;
 	double k = 10;
 	count m = n*k/2;
 	double targetR = HyperbolicSpace::getTargetRadius(n, m);

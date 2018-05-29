@@ -136,8 +136,8 @@ TEST_F(GeneratorsGTest, viewDynamicBarabasiAlbertGenerator) {
 TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 	Aux::Random::setSeed(42, false);
 
-	count n = 1800;
-	count numCluster = 24;
+	count n = 900;
+	count numCluster = 12;
 	count maxNumNeighbors = 36;
 	float rad = 0.075;
 
@@ -804,7 +804,7 @@ TEST_F(GeneratorsGTest, testHyperbolicPointGeneration) {
  */
 TEST_F(GeneratorsGTest, testHyperbolicGenerator) {
 	Aux::Random::setSeed(0, false);
-	count n = 100000;
+	count n = 10000;
 	double k = 32;
 	count m = k*n/2;
 	HyperbolicGenerator gen(n,k,7);
@@ -830,7 +830,7 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorConsistency) {
 
 TEST_F(GeneratorsGTest, testHyperbolicGeneratorMechanicGraphs) {
 	Aux::Random::setSeed(0, false);
-	count n = 10000;
+	count n = 5000;
 	double k = 6;
 	count m = n*k/2;
 	HyperbolicGenerator gen(n, k, 3, 0.14);

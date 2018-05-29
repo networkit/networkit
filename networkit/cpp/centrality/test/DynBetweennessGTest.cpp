@@ -40,7 +40,8 @@ TEST_F(DynBetweennessGTest, testDynApproxBetweennessSmallGraph) {
 	G.addEdge(5, 6);
 	G.addEdge(5, 7);
 
-	double epsilon = 0.01; // error
+	//double epsilon = 0.01; // error
+	double epsilon = 0.1; // error
 	double delta = 0.1; // confidence
 	DynApproxBetweenness dynbc(G, epsilon, delta);
 	Betweenness bc(G);
@@ -67,7 +68,8 @@ TEST_F(DynBetweennessGTest, testDynApproxBetweennessSmallGraph) {
 
 TEST_F(DynBetweennessGTest, testDynVsStatic) {
 	METISGraphReader reader;
-	Graph G = reader.read("input/PGPgiantcompo.graph");
+	//Graph G = reader.read("input/PGPgiantcompo.graph");
+	Graph G = reader.read("input/celegans_metabolic.graph");
 	count n = G.upperNodeIdBound();
 
 	double epsilon = 0.1; // error
@@ -120,8 +122,8 @@ TEST_F(DynBetweennessGTest, testDynVsStatic) {
 
 
 TEST_F(DynBetweennessGTest, testApproxBetweenness) {
-	METISGraphReader reader;
-	DorogovtsevMendesGenerator generator(1000);
+	//METISGraphReader reader;
+	DorogovtsevMendesGenerator generator(100);
 	Graph G1 = generator.generate();
 	Graph G(G1, true, false);
 	ApproxBetweenness bc(G, 0.1, 0.1);
