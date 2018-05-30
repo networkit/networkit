@@ -7,6 +7,7 @@
 
 #include "CoverGTest.h"
 
+#include "../../auxiliary/Log.h"
 #include "../Cover.h"
 
 #include <iostream>

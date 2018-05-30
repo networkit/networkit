@@ -8,6 +8,7 @@
 #ifndef DISSIMILARITYMEASURE_H_
 #define DISSIMILARITYMEASURE_H_
 
+#include "../graph/Graph.h"
 #include "../structures/Partition.h"
 #include "../structures/Cover.h"
 
