@@ -789,14 +789,15 @@ class Profile:
 		""" calculate the network measures and stats """
 		pool = multiprocessing_helper.ThreadPool(self.__parallel, False)
 
-		for name in self.__measures:
-			measure = self.__measures[name]
+		failed_measures = list()
+
+		for name, measure in self.__measures.items():
 			self.verbosePrint(name + ": ", end="")
 			try:
 				instance = measure["class"](*measure["parameters"])
 			except Exception as e:
-				del self.__measures[name]
 				self.verbosePrint("(removed)\n>> " + str(e))
+				failed_measures.append(name)
 				continue
 
 			# run algorithm and get result
@@ -852,6 +853,9 @@ class Profile:
 			)
 
 		self.verbosePrint("")
+
+		for name in failed_measures:
+			del self.__measures[name]
 
 		for name in self.__measures:
 			# the fix below avoids a cake-diagram for connected graphs,
