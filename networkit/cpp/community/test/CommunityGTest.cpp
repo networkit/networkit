@@ -408,74 +408,6 @@ TEST_F(CommunityGTest, testGraphStructuralRandMeasure) {
 
 }
 
-
-
-//TEST_F(CommunityGTest, testModularityParallelVsSequentialOnLargeGraph) {
-//
-//	Modularity modularityPar;
-//	ModularitySequential modularitySeq;
-//
-//	ClusteringGenerator clusteringGen;
-//
-//	METISGraphReader reader;
-//	Graph G = reader.read("graphs/Benchmark/uk-2002.graph"); // FIXME: hardcoded file name
-//	Partition zeta = clusteringGen.makeRandomClustering(G, 42);
-//
-//	double modPar = modularityPar.getQuality(zeta, G);
-//	double modSeq = modularitySeq.getQuality(zeta, G);
-//
-//	EXPECT_EQ(modPar, modSeq) << "Modularity values should be equal no matter if calculated in parallel or sequentially";
-//
-//}
-
-
-//TEST_F(CommunityGTest, testModularityWithStoredClustering) {
-//
-//	std::string graphPath;
-//	std::cout << "[INPUT] .graph file path >" << std::endl;
-//	std::getline(std::cin, graphPath);
-//
-//	std::string clusteringPath;
-//	std::cout << "[INPUT] .clust/.ptn file path >" << std::endl;
-//	std::getline(std::cin, clusteringPath);
-//
-//	std::string evalPath;
-//	std::cout << "[INPUT] .eval file path >" << std::endl;
-//	std::getline(std::cin, evalPath);
-//
-//	INFO("reading graph from: " , graphPath);
-//	METISGraphReader graphReader;
-//	Graph G = graphReader.read(graphPath);
-//
-//	ClusteringReader clusteringReader;
-//	INFO("reading clustering from: " , clusteringPath);
-//	Partition zeta = clusteringReader.read(clusteringPath);
-//
-//	INFO("reading modularity value from .eval file: " , evalPath);
-//	std::ifstream evalFile(evalPath);
-//	std::string evalLine;
-//	std::getline(evalFile, evalLine);
-//	double evalMod = std::atof(evalLine.c_str());
-//	INFO("modularity from .eval file: " , evalMod);
-//
-//	Modularity modularity;
-//	INFO("calculating modularity in parallel");
-//	double modPar = modularity.getQuality(zeta, G);
-//	INFO("modPar: " , modPar);
-//
-//	ModularitySequential modularitySeq;
-//	INFO("calculating modularity sequentially");
-//	double modSeq = modularitySeq.getQuality(zeta, G);
-//	INFO("modSeq: " , modSeq);
-//
-//	EXPECT_EQ(modSeq, modPar) << "Modularity values should be equal no matter if calculated in parallel or sequentially";
-//	EXPECT_EQ(modSeq, evalMod) << "modSeq should be agree with DIMACS challenge evaluation";
-//	EXPECT_EQ(modPar, evalMod) << "modPar should be agree with DIMACS challenge evaluation";
-//
-//}
-
-
-
 TEST_F(CommunityGTest, testNMIDistance) {
 	// two 1-clusterings should have NMID = 0 because H is 0
 	Graph G(1000);
@@ -522,11 +454,9 @@ TEST_F(CommunityGTest, testSampledRandMeasures) {
 	ClusteringGenerator clusteringGenerator;
 	Partition one = clusteringGenerator.makeOneClustering(G);
 	Partition singleton = clusteringGenerator.makeSingletonClustering(G);
-
 	SampledNodeStructuralRandMeasure nRand(20);
 	SampledGraphStructuralRandMeasure gRand(20);
-	DEBUG("node structural dissimilarity: ", nRand.getDissimilarity(G, one, singleton));
-	DEBUG("graph structural dissimilarity: ", gRand.getDissimilarity(G, one, singleton));
+	ASSERT_EQ(nRand.getDissimilarity(G, one, singleton),gRand.getDissimilarity(G, one, singleton));
 }
 
 
