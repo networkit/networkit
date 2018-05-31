@@ -18,10 +18,30 @@ namespace NetworKit {
 TEST_F(DynamicsGTest, testDGSStreamParser) {
 	DGSStreamParser parser("input/example2.dgs");
 	auto stream = parser.getStream();
-	for (auto event : stream) {
-		INFO(event.toString(), " ");
-	}
-	INFO("\n");
+	ASSERT_EQ(stream.size(),16);
+	ASSERT_EQ(stream[0].type,GraphEvent::NODE_ADDITION);
+	ASSERT_EQ(stream[1].type,GraphEvent::NODE_ADDITION);
+	ASSERT_EQ(stream[2].type,GraphEvent::EDGE_ADDITION);
+	ASSERT_EQ(stream[3].type,GraphEvent::TIME_STEP);
+	ASSERT_EQ(stream[4].type,GraphEvent::EDGE_WEIGHT_UPDATE);
+	ASSERT_EQ(stream[5].type,GraphEvent::EDGE_REMOVAL);
+	ASSERT_EQ(stream[6].type,GraphEvent::NODE_REMOVAL);
+	ASSERT_EQ(stream[7].type,GraphEvent::NODE_REMOVAL);
+	ASSERT_EQ(stream[8].type,GraphEvent::NODE_ADDITION);
+	ASSERT_EQ(stream[9].type,GraphEvent::NODE_ADDITION);
+	ASSERT_EQ(stream[10].type,GraphEvent::EDGE_ADDITION);
+	ASSERT_EQ(stream[11].type,GraphEvent::NODE_ADDITION);
+	ASSERT_EQ(stream[12].type,GraphEvent::EDGE_ADDITION);
+	ASSERT_EQ(stream[13].type,GraphEvent::NODE_ADDITION);
+	ASSERT_EQ(stream[14].type,GraphEvent::NODE_REMOVAL);
+	ASSERT_EQ(stream[15].type,GraphEvent::NODE_RESTORATION);
+
+	//apply updates
+	Graph G(0,true);
+	GraphUpdater updater(G);
+	updater.update(stream);
+	ASSERT_EQ(G.numberOfNodes(),4);
+	ASSERT_EQ(G.numberOfEdges(),2);
 }
 
 
