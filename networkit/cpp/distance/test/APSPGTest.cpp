@@ -43,9 +43,21 @@ TEST_F(APSPGTest, testAPSP) {
 	APSP apsp(G);
 	apsp.run();
 	std::vector<std::vector<edgeweight> > distances = apsp.getDistances();
-	INFO("distances[0]: ", distances[0][0], distances[0][1], distances[0][2], distances[0][3], distances[0][4], distances[0][5], distances[0][6]);
-	INFO("distances[1]: ", distances[1][0], distances[1][1], distances[1][2], distances[1][3], distances[1][4], distances[1][5], distances[1][6]);
-	EXPECT_TRUE(apsp.isParallel());
+	ASSERT_EQ(distances[0][0],0);
+	ASSERT_EQ(distances[0][1],2);
+	ASSERT_EQ(distances[0][2],1);
+	ASSERT_EQ(distances[0][3],2);
+	ASSERT_EQ(distances[0][4],2);
+	ASSERT_EQ(distances[0][5],2);
+	ASSERT_EQ(distances[0][6],1);
+	ASSERT_EQ(distances[1][0],2);
+	ASSERT_EQ(distances[1][1],0);
+	ASSERT_EQ(distances[1][2],1);
+	ASSERT_EQ(distances[1][3],2);
+	ASSERT_EQ(distances[1][4],2);
+	ASSERT_EQ(distances[1][5],3);
+	ASSERT_EQ(distances[1][6],3);
+	ASSERT_TRUE(apsp.isParallel());
 }
 
 TEST_F(APSPGTest, tryAPSP) {
