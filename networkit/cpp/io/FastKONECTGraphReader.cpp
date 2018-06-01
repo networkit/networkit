@@ -116,7 +116,7 @@ namespace NetworKit{
 				weighted = true;
 				valuesPerLine = 3;
 			} else if (graphType == "positive"){ //multiple edges
-				if(multipleEdgesHandlingMethod == sumWeightsUp){
+				if(multipleEdgesHandlingMethod == SUM_WEIGHTS_UP){
 					weighted = true;
 				}
 				multiple = true; //weights will be added
@@ -201,11 +201,11 @@ namespace NetworKit{
 				graph.addEdge(source, target, weight);
 			}else if (multiple){
 				switch(multipleEdgesHandlingMethod){
-					case discardEdges: break; //Do nothing
-					case sumWeightsUp:
+					case DISCARD_EDGES: break; //Do nothing
+					case SUM_WEIGHTS_UP:
 						graph.increaseWeight(source, target, weight);
 						break;
-					case keepShortestPath:
+					case KEEP_SHORTEST_PATH:
 						if(graph.weight(source,target) > weight){
 							graph.setWeight(source,target, weight);
 						}

@@ -17,12 +17,7 @@ namespace NetworKit {
 /*
 * Enum for defining handling of graph formats with multiple same edges.
 */
-enum MultipleEdgesHandling
-{
-	 discardEdges = 0, //Reads and selects the first edge which occurs and discards all following
-	 sumWeightsUp = 1, //If an edge occurs again, the weight of it is added to the existing edge
-	 keepShortestPath = 2 //The edge with the lowest weight is kept
-};
+
 
 
 /**
@@ -31,6 +26,13 @@ enum MultipleEdgesHandling
  */
 class GraphReader {
 public:
+
+	enum MultipleEdgesHandling
+	{
+		 DISCARD_EDGES, //Reads and selects the first edge which occurs and discards all following
+		 SUM_WEIGHTS_UP, //If an edge occurs again, the weight of it is added to the existing edge
+		 KEEP_SHORTEST_PATH //The edge with the lowest weight is kept
+	};
 
 	virtual ~GraphReader() = default;
 

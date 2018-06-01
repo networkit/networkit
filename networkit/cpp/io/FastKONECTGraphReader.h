@@ -21,7 +21,7 @@ namespace NetworKit {
 		* If the input graph has multiple edges, you can specify on how this edges are handled.
 		* See GraphReader.h for a closer description of the paramters.
 		*/
-		FastKONECTGraphReader(MultipleEdgesHandling handlingmethod = discardEdges);
+		FastKONECTGraphReader(MultipleEdgesHandling handlingmethod = DISCARD_EDGES);
 
 		/**
 		 * Given the path of an input file, read the graph contained.
