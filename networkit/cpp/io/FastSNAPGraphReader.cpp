@@ -16,14 +16,14 @@
 
 namespace NetworKit {
 
-FastSNAPGraphReader::FastSNAPGraphReader(const bool& directed, const count& nodeCount) :
-directed(directed), nodeCount() {}
+FastSNAPGraphReader::FastSNAPGraphReader(const bool& directed, const count& nodeCount, const bool& remapNodes) :
+directed(directed), nodeCount(nodeCount), remapNodes(remapNodes){}
 
 Graph FastSNAPGraphReader::read(const std::string &path) {
 	Graph graph;
 	if (directed == true)
 		graph = Graph(0, false, directed);
-	
+
 	//In the actual state this parameter has very little influence on the reader performance.
 	//There can be a significant boost if it is possible to reserve space in the graph initialization
 	if(nodeCount != 0)
@@ -31,13 +31,18 @@ Graph FastSNAPGraphReader::read(const std::string &path) {
 
 	// Maps SNAP node IDs to consecutive NetworKit node IDs.
 	auto mapNode = [&] (node in) -> node {
-		auto it = nodeIdMap.find(in);
-		if(it != nodeIdMap.end())
-			return it->second;
-		auto result = nodeIdMap.insert({in, graph.addNode()});
-		if(!result.second)
-			throw std::runtime_error("Error in mapping nodes");
-		return result.first->second;
+		if (remapNodes){
+			auto it = nodeIdMap.find(in);
+			if(it != nodeIdMap.end())
+				return it->second;
+			auto result = nodeIdMap.insert({in, graph.addNode()});
+			if(!result.second)
+				throw std::runtime_error("Error in mapping nodes");
+			return result.first->second;
+		}
+		for(count i = graph.upperNodeIdBound(); i < in + 1; i++)
+			graph.addNode();
+		return in;
 	};
 
 	// This function modifies the graph on input.

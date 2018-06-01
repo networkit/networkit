@@ -22,20 +22,22 @@ private:
 	std::unordered_map<node, node> nodeIdMap;
 	bool directed;
 	count nodeCount;
+	bool remapNodes;
 
 public:
 	/**
 	 * Default constructor for the FastSNAPGraphReader.
 	 * NOTE: Keep in mind that many SNAP graphs do not have consecutive node ids.
-	 * Passing a maxNode might result in a higher memory use for the output graph
+	 * Passing a nodeCount might result in a higher memory use for the output graph
 	 * but reduces runtime. Leaving this parameter on its default value, the reader
 	 * is forced to remap the nodes and thereby decreases the memory use on cost of
 	 * slighty higher runtime.
 	 *
 	 * @param[in]	directed	reads in the graph as directed, if set to true
-	 * @param[in]	maxNode	maxNode is used to preallocated memory for the number of nodes
+	 * @param[in]	nodeCount	nodeCount is used to preallocated memory for the number of nodes
+	 * @param[in]	remapNodes	indicates whether nodes should be remapped to other node ids in order to create consecutive node ids
 	 */
-	FastSNAPGraphReader(const bool& directed = false, const count& nodeCount = 0);
+	FastSNAPGraphReader(const bool& directed = false, const count& nodeCount = 0, const bool& remapNodes = true);
 
 	/**
 	 * Given the path of an input file, read the graph contained.
