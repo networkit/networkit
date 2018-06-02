@@ -19,12 +19,12 @@
 #include "FastKONECTGraphReader.h"
 
 namespace NetworKit{
-	FastKONECTGraphReader::FastKONECTGraphReader(MultipleEdgesHandling handlingmethod):
-	multipleEdgesHandlingMethod(handlingmethod){}
+	FastKONECTGraphReader::FastKONECTGraphReader(const bool& remapNodes, MultipleEdgesHandling handlingmethod):
+	remapNodes(remapNodes), multipleEdgesHandlingMethod(handlingmethod){}
 
 	Graph FastKONECTGraphReader::read(const std::string &path){
-		std::string graphFormat="";
-		std::string graphType="";
+		std::string graphFormat = "";
+		std::string graphType = "";
 		count numberOfNodes = -1;
 		count numberOfEdges = -1;
 
@@ -34,7 +34,6 @@ namespace NetworKit{
 		int valuesPerLine = 2;
 		bool secondPropertyLine = false;
 		std::unordered_map<node, node> nodeIdMap;
-		Graph graph;
 
 		//open file
 		auto fd = open(path.c_str(), O_RDONLY);
@@ -125,18 +124,18 @@ namespace NetworKit{
 				multiple = true;
 				valuesPerLine = 3;
 			} else if (graphType == "dynamic"){
-				throw std::runtime_error("Dynamic graphs are not supported at the moment");
+				throw std::runtime_error("Dynamic graphs are not supported yet");
 			} else if (graphType != "unweighted"){
 				throw std::runtime_error("Graph weight not tagged properly. Weight is: " + graphType);
 			}
-			INFO("First property line read in. Format: "+graphFormat+" / Type: "+graphType);
+			DEBUG("First property line read in. Format: "+graphFormat+" / Type: "+graphType);
 			if (graphFormat == "bip"){
 				INFO("Your graph is flagged as a bipartite one. Keep in mind that"
 				 "NetworKit cannot handle this kind of graph in its special cases."
 				 "It is imported as a usual undirected graph and edges might be discarded.");
 			}
 			if(multiple){
-				INFO("Selected handling for multiple edges is: "+std::to_string(multipleEdgesHandlingMethod));
+				DEBUG("Selected handling method for multiple edges is: "+std::to_string(multipleEdgesHandlingMethod));
 			}
 		} else {
 			throw std::runtime_error("No graph properties line found. This line is mandatory.");
@@ -167,15 +166,11 @@ namespace NetworKit{
 			}else{
 				++it;
 			}
-			INFO("Second property line read in. Edges: "+std::to_string(numberOfEdges)+ " / Nodes: "+std::to_string(numberOfNodes));
+			DEBUG("Second property line read in. Edges: "+std::to_string(numberOfEdges)+ " / Nodes: "+std::to_string(numberOfNodes));
 		}
 
 
-		if(!secondPropertyLine){
-			graph = Graph(0, weighted, directed);
-		}else{
-			graph = Graph(numberOfNodes, weighted, directed);
-		}
+		Graph graph((secondPropertyLine ? numberOfNodes : 0), weighted, directed);
 
 		//Map nodes and increase graph size if no second property is defined
 		auto mapNode = [&] (node in) -> node {
@@ -186,12 +181,18 @@ namespace NetworKit{
 					return in - 1; //minus firstNode
 				}
 			}else{
-				auto it = nodeIdMap.find(in);
-				if(it != nodeIdMap.end())
-					return it->second;
-				auto result = nodeIdMap.insert({in, graph.addNode()});
-				assert(result.second);
-				return result.first->second;
+				if(remapNodes){
+					auto it = nodeIdMap.find(in);
+					if(it != nodeIdMap.end())
+						return it->second;
+					auto result = nodeIdMap.insert({in, graph.addNode()});
+					assert(result.second);
+					return result.first->second;
+				}else{
+					for(count i = graph.upperNodeIdBound(); i < in; i++)
+						graph.addNode();
+					return in - 1;
+				}
 			}
 		};
 
