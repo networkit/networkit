@@ -745,8 +745,11 @@ void Graph::swapEdge(node s1, node t1, node s2, node t2) {
 bool Graph::hasEdge(node u, node v) const {
 	if (!directed && outDeg[u] > outDeg[v]){
 		return indexInOutEdgeArray(v, u) != none;
+	}else if (directed && outDeg[u] > inDeg[v]){
+		return indexInInEdgeArray(v, u) != none;
+	}else{
+		return indexInOutEdgeArray(u, v) != none;
 	}
-	return indexInOutEdgeArray(u, v) != none;
 }
 
 std::pair<node, node> Graph::randomEdge(bool uniformDistribution) const {
