@@ -82,7 +82,7 @@ TEST_F(CommuteTimeDistanceGTest, testOnWeightedToyGraph) {
 	CommuteTimeDistance ctd(G);
 	ctd.run();
 	double volG = 2.0 * G.totalEdgeWeight();
-	INFO("volume : ", volG);
+	DEBUG("volume : ", volG);
 	EXPECT_NEAR(sqrt(0.5 * volG), ctd.distance(0, 2), 1e-3);
 	EXPECT_NEAR(sqrt(0.3333 * volG), ctd.distance(1, 2), 1e-3);
 	EXPECT_NEAR(sqrt(0.1336 * volG), ctd.distance(2, 3), 1e-3);
@@ -106,12 +106,12 @@ TEST_F(CommuteTimeDistanceGTest, testECTDOnSmallGraphs) {
 		timer.start();
 		exact.run();
 		timer.stop();
-		INFO("ECTD time: ", timer.elapsedTag());
+		DEBUG("ECTD time: ", timer.elapsedTag());
 
 		timer.start();
 		cen.runApproximation();
 		timer.stop();
-		INFO("approx ECTD time: ", timer.elapsedTag());
+		DEBUG("approx ECTD time: ", timer.elapsedTag());
 
 		double error = 0.0;
 		G.forNodes([&](node u){
@@ -125,7 +125,7 @@ TEST_F(CommuteTimeDistanceGTest, testECTDOnSmallGraphs) {
 			});
 		});
 		error /= G.numberOfNodes()*G.numberOfNodes();
-		INFO("Avg. relative error: ", error);
+		DEBUG("Avg. relative error: ", error);
 	}
 }
 
@@ -144,12 +144,12 @@ TEST_F(CommuteTimeDistanceGTest, testECTDParallelOnSmallGraphs) {
 		timer.start();
 		exact.run();
 		timer.stop();
-		INFO("ECTD time: ", timer.elapsedTag());
+		DEBUG("ECTD time: ", timer.elapsedTag());
 
 		timer.start();
 		cen.runParallelApproximation();
 		timer.stop();
-		INFO("approx ECTD time: ", timer.elapsedTag());
+		DEBUG("approx ECTD time: ", timer.elapsedTag());
 
 		double error = 0.0;
 		G.forNodes([&](node u){
@@ -163,7 +163,7 @@ TEST_F(CommuteTimeDistanceGTest, testECTDParallelOnSmallGraphs) {
 			});
 		});
 		error /= G.numberOfNodes()*G.numberOfNodes();
-		INFO("Avg. relative error: ", error);
+		DEBUG("Avg. relative error: ", error);
 	}
 }
 
@@ -184,8 +184,8 @@ TEST_F(CommuteTimeDistanceGTest, testECTDSingleSource) {
 				sum2 += ectd.runSinglePair(u,v);
 			}
 		});
-		INFO("sum1 = ", sum1);
-		INFO("sum2 = ", sum2);
+		DEBUG("sum1 = ", sum1);
+		DEBUG("sum2 = ", sum2);
 	//	INFO("Avg. relative error: ", error);
 	}
 }

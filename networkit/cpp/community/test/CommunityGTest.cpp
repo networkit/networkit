@@ -182,16 +182,16 @@ TEST_F(CommunityGTest, testPLM) {
 	plm.run();
 	Partition zeta = plm.getPartition();
 
-	INFO("number of clusters: " , zeta.numberOfSubsets());
-	INFO("modularity: " , modularity.getQuality(zeta, G));
+	DEBUG("number of clusters: " , zeta.numberOfSubsets());
+	DEBUG("modularity: " , modularity.getQuality(zeta, G));
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta));
 
 	PLM plmr(G, true, 1.0);
 	plmr.run();
 	Partition zeta2 = plmr.getPartition();
 
-	INFO("number of clusters: " , zeta2.numberOfSubsets());
-	INFO("modularity: " , modularity.getQuality(zeta2, G));
+	DEBUG("number of clusters: " , zeta2.numberOfSubsets());
+	DEBUG("modularity: " , modularity.getQuality(zeta2, G));
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta2));
 
 }
@@ -211,16 +211,16 @@ TEST_F(CommunityGTest, testDeletedNodesPLM) {
 	plm.run();
 	Partition zeta = plm.getPartition();
 
-	INFO("number of clusters: " , zeta.numberOfSubsets());
-	INFO("modularity: " , modularity.getQuality(zeta, G));
+	DEBUG("number of clusters: " , zeta.numberOfSubsets());
+	DEBUG("modularity: " , modularity.getQuality(zeta, G));
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta));
 
 	PLM plmr(G, true, 1.0);
 	plmr.run();
 	Partition zeta2 = plmr.getPartition();
 
-	INFO("number of clusters: " , zeta2.numberOfSubsets());
-	INFO("modularity: " , modularity.getQuality(zeta2, G));
+	DEBUG("number of clusters: " , zeta2.numberOfSubsets());
+	DEBUG("modularity: " , modularity.getQuality(zeta2, G));
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta2));
 
 }
@@ -419,7 +419,7 @@ TEST_F(CommunityGTest, testNMIDistance) {
 	NMIDistance NMID;
 	double distOne = NMID.getDissimilarity(G, one1, one2);
 
-	INFO("NMID for two 1-clusterings: " , distOne);
+	DEBUG("NMID for two 1-clusterings: " , distOne);
 	EXPECT_TRUE(Aux::NumericTools::equal(0.0, distOne)) << "NMID of two 1-clusterings should be 0.0";
 
 
@@ -427,7 +427,7 @@ TEST_F(CommunityGTest, testNMIDistance) {
 	Partition singleton2 = clustGen.makeSingletonClustering(G);
 
 	double distSingleton = NMID.getDissimilarity(G, singleton1, singleton2);
-	INFO("NMID for two singleton clusterings: " , distSingleton);
+	DEBUG("NMID for two singleton clusterings: " , distSingleton);
 
 
 	EXPECT_TRUE(Aux::NumericTools::equal(0.0, distSingleton)) << "NMID of two identical singleton clusterings should be 0.0";
@@ -436,7 +436,7 @@ TEST_F(CommunityGTest, testNMIDistance) {
 	Partition continuous2 = clustGen.makeContinuousBalancedClustering(G, 70);
 
 	double distContinuous = NMID.getDissimilarity(G, continuous1, continuous2);
-	INFO("NMID for two continuous clusterings: " , distContinuous);
+	DEBUG("NMID for two continuous clusterings: " , distContinuous);
 
 	Partition smallClusters = clustGen.makeContinuousBalancedClustering(G, 300);
 	double distSingleIntersection = NMID.getDissimilarity(G, singleton1, smallClusters);

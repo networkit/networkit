@@ -88,7 +88,7 @@ TEST_F(APSPGTest, testDynAPSPRealGraph) {
 			u = G.randomNode();
 			v = G.randomNode();
 		}
-		INFO("u = ", u, ", v = ", v);
+		DEBUG("u = ", u, ", v = ", v);
 		GraphEvent event(GraphEvent::EDGE_ADDITION, u, v, 1);
 		G.addEdge(u, v, 1);
 		apsp.update(event);
@@ -99,7 +99,7 @@ TEST_F(APSPGTest, testDynAPSPRealGraph) {
 		G.forNodes([&](node i) {
 			G.forNodes([&](node j) {
 				if (distances[i][j] != distances2[i][j])
-					INFO("i, j = ", i, " ", j, ", dist[i][j] = ", distances[i][j], ", dist2[i][j] = ", distances2[i][j], ", u = ", u, ", v = ", v);
+					DEBUG("i, j = ", i, " ", j, ", dist[i][j] = ", distances[i][j], ", dist2[i][j] = ", distances2[i][j], ", u = ", u, ", v = ", v);
 				EXPECT_NEAR(distances[i][j], distances2[i][j], 0.0001);
 			});
 		});
@@ -172,7 +172,7 @@ TEST_F(APSPGTest, testAPSPInsertionUndirectedUnweighted) {
 	G.forNodes([&](node i) {
 		G.forNodes([&](node j) {
 			if (distances[i][j] != distances2[i][j]){
-				INFO("i = ", i, ", j = ", j, ", distance: ", distances[i][j], ", expected: ", distances2[i][j]);
+				DEBUG("i = ", i, ", j = ", j, ", distance: ", distances[i][j], ", expected: ", distances2[i][j]);
 			}
 			EXPECT_EQ(distances[i][j], distances2[i][j]);
 		});
@@ -203,13 +203,12 @@ TEST_F(APSPGTest, testAPSPInsertionDirectedUnweighted) {
 
 	G.forNodes([&](node i) {
 		G.forNodes([&](node j) {
-			INFO("i, j: ", i, j);
-			EXPECT_EQ(distances[i][j], distances2[i][j]);
+			EXPECT_EQ(distances[i][j], distances2[i][j]) << "i, j = " << i << ", " << j;
 		});
 	});
 
 	std::vector<node> path10 = apsp.getPath(1, 0);
-	INFO("path10 = ", path10);
+	DEBUG("path10 = ", path10);
 }
 
 TEST_F(APSPGTest, testAPSPUndirectedWeighted) {
@@ -240,8 +239,7 @@ TEST_F(APSPGTest, testAPSPUndirectedWeighted) {
 
 	G.forNodes([&](node i) {
 		G.forNodes([&](node j) {
-			INFO("i, j = ", i, j);
-			EXPECT_NEAR(distances[i][j], distances2[i][j], 0.0001);
+			EXPECT_NEAR(distances[i][j], distances2[i][j], 0.0001) << "i, j = " << i << ", " << j;
 		});
 	});
 
@@ -257,8 +255,7 @@ TEST_F(APSPGTest, testAPSPUndirectedWeighted) {
 
 	G.forNodes([&](node i) {
 		G.forNodes([&](node j) {
-			INFO("i, j = ", i, j);
-			EXPECT_NEAR(distances[i][j], distances4[i][j], 0.0001);
+			EXPECT_NEAR(distances[i][j], distances4[i][j], 0.0001) << "i, j = " << i << ", " << j;
 		});
 	});
 }
@@ -292,8 +289,7 @@ TEST_F(APSPGTest, testAPSPDirectedWeighted1) {
 	std::vector<std::vector<edgeweight> > distances2 = APSP.getDistances();
 	G.forNodes([&](node i) {
 		G.forNodes([&](node j) {
-			INFO("i, j = ", i, " ", j);
-			EXPECT_NEAR(distances[i][j], distances2[i][j], 0.0001);
+			EXPECT_NEAR(distances[i][j], distances2[i][j], 0.0001) << "i, j = " << i << ", " << j;
 		});
 	});
 }
@@ -325,8 +321,7 @@ TEST_F(APSPGTest, testAPSPDirectedWeighted2) {
 	std::vector<std::vector<edgeweight> > distances2 = APSP.getDistances();
 	G.forNodes([&](node i) {
 		G.forNodes([&](node j) {
-			INFO("i, j = ", i, " ", j);
-			EXPECT_NEAR(distances[i][j], distances2[i][j], 0.0001);
+			EXPECT_NEAR(distances[i][j], distances2[i][j], 0.0001) << "i, j = " << i << ", " << j;
 		});
 	});
 }
