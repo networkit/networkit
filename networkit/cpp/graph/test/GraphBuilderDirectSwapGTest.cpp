@@ -352,6 +352,7 @@ TEST_P(GraphBuilderDirectSwapGTest, testSameAsGraph) {
 	const double epsilon = 1e-6;
 	const count runs = 10;
 	const count n_max = 10;
+	const u_int64_t seed = Aux::Random::getSeed();
 
 	Aux::Random::setSeed(42, false);
 
@@ -436,6 +437,7 @@ TEST_P(GraphBuilderDirectSwapGTest, testSameAsGraph) {
 			ASSERT_TRUE(G_expected.hasEdge(u, v));
 		});
 	}
+	Aux::Random::setSeed(seed,false);
 }
 
 TEST_P(GraphBuilderDirectSwapGTest, testForValidStateAfterToGraph) {

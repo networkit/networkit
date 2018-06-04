@@ -325,6 +325,7 @@ TEST_P(GraphBuilderAutoCompleteGTest, testSetWeight) {
 /** toGraph **/
 
 TEST_P(GraphBuilderAutoCompleteGTest, testSameAsGraph) {
+	u_int64_t seed = Aux::Random::getSeed();
 	Aux::Random::setSeed(1, false);
 	const double epsilon = 1e-6;
 	const count runs = 100;
@@ -396,6 +397,7 @@ TEST_P(GraphBuilderAutoCompleteGTest, testSameAsGraph) {
 			ASSERT_TRUE(G_expected.hasEdge(u, v));
 		});
 	}
+	Aux::Random::setSeed(seed, false);
 }
 
 TEST_P(GraphBuilderAutoCompleteGTest, testForValidStateAfterToGraph) {
