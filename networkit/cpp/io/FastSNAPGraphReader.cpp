@@ -20,9 +20,7 @@ FastSNAPGraphReader::FastSNAPGraphReader(const bool& directed, const count& node
 directed(directed), nodeCount(nodeCount), remapNodes(remapNodes){}
 
 Graph FastSNAPGraphReader::read(const std::string &path) {
-	Graph graph;
-	if (directed == true)
-		graph = Graph(0, false, directed);
+	Graph graph(0,false,directed);
 
 	//In the actual state this parameter has very little influence on the reader performance.
 	//There can be a significant boost if it is possible to reserve space in the graph initialization
