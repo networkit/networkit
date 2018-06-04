@@ -37,7 +37,7 @@ TEST_F(LAMGGTest, testSmallGraphs) {
 		setup.setup(G, hierarchy);
 		SolverLamg<CSRMatrix> solver(hierarchy, *smoother);
 		timer.stop();
-		INFO("setup time\t ", timer.elapsedMilliseconds());
+		DEBUG("setup time\t ", timer.elapsedMilliseconds());
 
 		Vector b(G.numberOfNodes());
 		Vector x(G.numberOfNodes());
@@ -50,17 +50,17 @@ TEST_F(LAMGGTest, testSmallGraphs) {
 		status.desiredResidualReduction = 1e-6 * b.length() / (hierarchy.at(0).getLaplacian() * x - b).length(); // needed for getting a relative residual <= 1e-6
 
 		Vector result = x;
-		INFO("Solving equation system - Gauss-Seidel");
+		DEBUG("Solving equation system - Gauss-Seidel");
 		timer.start();
 		solver.solve(result, b, status);
 		timer.stop();
 
 		EXPECT_TRUE(status.converged);
 
-		INFO("solve time\t ", timer.elapsedMilliseconds());
-		INFO("final residual = ", status.residual);
-		INFO("numIters = ", status.numIters);
-		INFO("DONE");
+		DEBUG("solve time\t ", timer.elapsedMilliseconds());
+		DEBUG("final residual = ", status.residual);
+		DEBUG("numIters = ", status.numIters);
+		DEBUG("DONE");
 
 	}
 
