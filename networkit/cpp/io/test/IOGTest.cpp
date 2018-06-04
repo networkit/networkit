@@ -41,8 +41,30 @@
 #include "../../community/Modularity.h"
 #include "../../community/PLP.h"
 
-
 namespace NetworKit {
+
+TEST_F(IOGTest, testEdgeListWriter){
+	ErdosRenyiGenerator graphGen(100, 0.1, true);
+	Graph G = graphGen.generate();
+
+	std::string path = "output/edgelist2.txt";
+	EdgeListWriter writer(' ', 1, true);
+	EXPECT_NO_THROW(writer.write(G, path));
+
+	bool exists = false;
+	std::ifstream file(path);
+	if (file) {
+		exists = true;
+	}
+	EXPECT_TRUE(exists) << "A file should have been created : " << path;
+
+	EdgeListReader reader(' ', 1, "#", true, true);
+	Graph G2 = reader.read(path);
+	EXPECT_EQ(G.numberOfNodes(),G2.numberOfNodes());
+	EXPECT_EQ(G.numberOfEdges(),G2.numberOfEdges());
+	EXPECT_EQ(G.isDirected(),G2.isDirected());
+	EXPECT_EQ(G.isWeighted(),G2.isWeighted());
+}
 
 TEST_F(IOGTest, testGraphIOEdgeList) {
 	ErdosRenyiGenerator graphGen(100, 0.1);
@@ -75,7 +97,6 @@ TEST_F(IOGTest, testGraphIOAdjacencyList) {
 	EXPECT_TRUE(exists) << "A file should have been created : " << path;
 }
 
-
 TEST_F(IOGTest, testGraphIOForIsolatedNodes) {
 	Graph G(20);
 	GraphIO graphio;
@@ -89,8 +110,6 @@ TEST_F(IOGTest, testGraphIOForIsolatedNodes) {
 	}
 	EXPECT_TRUE(exists) << "A file should have been created : " << path;
 }
-
-
 
 TEST_F(IOGTest, testMETISGraphReader) {
 	std::string path = "input/jazz.graph";
@@ -182,46 +201,7 @@ TEST_F(IOGTest, testMETISGraphReaderWithTinyGraphs) {
 	for (index v = 0; v < n; ++v) {
 		EXPECT_TRUE(G.hasNode(v)) << "Node " << v << " should be there";
 	}
-
 }
-/*
-TEST_F(IOGTest, testMETISGraphReaderWithDoubleWeights) {
-	std::string path = "input/jazz2double.graph";
-
-	FastMETISGraphReader reader;
-	Graph G = reader.read(path);
-
-	EXPECT_FALSE(G.isEmpty());
-	count n = 5;
-	count m = 6;
-	EXPECT_EQ(n, G.numberOfNodes()) << "There are " << n << " nodes in the graph";
-	EXPECT_EQ(m, G.numberOfEdges()) << "There are " << m << " edges in the graph";
-
-	for (index v = 0; v < n; ++v) {
-		EXPECT_TRUE(G.hasNode(v)) << "Node " << v << " should be there";
-	}
-	double edgeweight = 7.71099;
-	double abs = 1e-9;
-	EXPECT_LE(G.totalEdgeWeight()-edgeweight,abs) << "Total edgeweight should be " << edgeweight;
-}
-*/
-/* Old and therefore not actually needed */
-/*TEST_F(IOGTest, testMETISGraphReaderWithWeights) {
-	std::string path = "input/lesmis.graph";
-
-	METISGraphReader reader;
-	Graph G = reader.read(path);
-
-	EXPECT_FALSE(G.isEmpty());
-	count n = 77;
-	count m = 254;
-	EXPECT_EQ(n, G.numberOfNodes()) << "There are " << n << " nodes in the graph";
-	EXPECT_EQ(m, G.numberOfEdges()) << "There are " << m << " edges in the graph";
-
-	for (index v = 0; v < n; ++v) {
-		EXPECT_TRUE(G.hasNode(v)) << "Node " << v << " should be there";
-	}
-}*/
 
 TEST_F(IOGTest, testMETISGraphWriter) {
 	std::string path = "output/jazz1.graph";
@@ -242,7 +222,6 @@ TEST_F(IOGTest, testMETISGraphWriter) {
 
 }
 
-
 TEST_F(IOGTest, testMETISGraphWriterWithWeights) {
 	std::string path = "output/jazz2.graph";
 	Graph G = Graph(5);
@@ -253,7 +232,7 @@ TEST_F(IOGTest, testMETISGraphWriterWithWeights) {
 
 	METISGraphWriter writer;
 	writer.write(G, true, path);
-    bool exists = false;
+	bool exists = false;
 	std::ifstream file(path);
 	if (file) {
 		exists = true;
@@ -294,7 +273,6 @@ TEST_F(IOGTest, testPartitionWriterAndReader) {
 	EXPECT_TRUE(GraphClusteringTools::equalClusterings(read, zeta, G)) << "read clustering should be identical to created clustering";
 }
 
-
 TEST_F(IOGTest, testDotGraphWriter) {
 	ErdosRenyiGenerator graphGen(100, 0.1);
 	Graph G = graphGen.generate();
@@ -320,8 +298,6 @@ TEST_F(IOGTest, tryDGSReaderOnBigFile) {
 	GraphEventProxy Gproxy(G);
 	reader.read("/Users/forigem/KIT/NetworKit-CommunityDetection/input/AuthorsGraph.dgs", Gproxy);
 }
-
-
 
 TEST_F(IOGTest, tryDGSReader) {
 	// read example graph
@@ -444,8 +420,6 @@ TEST_F(IOGTest, testCoverWriter) {
 	EXPECT_EQ(1u, read[3].size());
 }
 
-
-
 TEST_F(IOGTest, testMETISGraphReaderForNodeExistence2) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/jazz.graph");
@@ -453,7 +427,6 @@ TEST_F(IOGTest, testMETISGraphReaderForNodeExistence2) {
 	EXPECT_EQ(198u, G.numberOfNodes());
 	EXPECT_EQ(2742u, G.numberOfEdges());
 }
-
 
 TEST_F(IOGTest, testMETISGraphReaderWithIsolatedNode) {
 	METISGraphReader reader;
@@ -467,7 +440,6 @@ TEST_F(IOGTest, testMETISGraphReaderWithIsolatedNode) {
 	EXPECT_TRUE(G.hasEdge(0,1));
 	EXPECT_TRUE(G.hasEdge(0,3));
 }
-
 
 TEST_F(IOGTest, tryReadingLFR) {
 	std::string graphPath;
@@ -497,7 +469,6 @@ TEST_F(IOGTest, tryReadingLFR) {
 
 }
 
-
 TEST_F(IOGTest, tryReadingSNAP) {
 	std::string graphPath;
 
@@ -513,31 +484,21 @@ TEST_F(IOGTest, tryReadingSNAP) {
 
 }
 
-
 TEST_F(IOGTest, testSNAPGraphWriter) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/jazz.graph");
 
+	std::string path = """output/SNAPGraphWriter.gr";
 	SNAPGraphWriter writer;
-	writer.write(G, "output/SNAPGraphWriter.gr");
+	writer.write(G, path);
+
+	bool exists = false;
+	std::ifstream file(path);
+	if (file) {
+		exists = true;
+	}
+	EXPECT_TRUE(exists) << "graph file should have been written to: " << path;
 }
-
-
-/* obsolete as FastMETISGraphReader has been removed */
-/*
-TEST_F(IOGTest, testFastMETISGraphReader) {
-	FastMETISGraphReader reader;
-	Graph G = reader.read("input/PGPgiantcompo.graph");
-
-	EXPECT_EQ(10680u, G.numberOfNodes());
-	EXPECT_EQ(24316u, G.numberOfEdges());
-
-	Graph W = reader.read("input/lesmis.graph");
-
-	EXPECT_EQ(77u, W.numberOfNodes());
-	EXPECT_EQ(254u, W.numberOfEdges());
-}*/
-
 
 TEST_F(IOGTest, tryReadingMETISFile) {
 	std::string graphPath;
@@ -586,8 +547,6 @@ TEST_F(IOGTest, testGMLGraphWriterDirected) {
 		exists = true;
 	}
 	EXPECT_TRUE(exists) << "A file should have been created : " << path;
-
-
 }
 
 TEST_F(IOGTest, testGMLGraphReaderUndirected) {
