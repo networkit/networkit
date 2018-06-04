@@ -75,6 +75,7 @@ TEST_F(GeometricGTest, testHyperbolicTargetRadius) {
 	const double k = 5;
 	const double alpha = 1;
 	double R = HyperbolicSpace::getTargetRadius(n, (n*k)/2, alpha, T);
+	EXPECT_NEAR(R,167.08503,1e-4);
 }
 
 } /* namespace NetworKit */
