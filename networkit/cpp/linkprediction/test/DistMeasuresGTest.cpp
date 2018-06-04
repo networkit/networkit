@@ -12,14 +12,6 @@
 
 namespace NetworKit {
 
-DistMeasuresGTest::DistMeasuresGTest() {
-
-}
-
-DistMeasuresGTest::~DistMeasuresGTest() {
-
-}
-
 TEST_F(DistMeasuresGTest, testAlgebraicDistanceIndex) {
 	Graph G(42);
 	G.forNodePairs([&](node u, node v){
@@ -37,12 +29,9 @@ TEST_F(DistMeasuresGTest, testAlgebraicDistanceIndex) {
 		adSum += ad.run(u, v);
 	});
 
-	INFO("sum of algebraic distances: " , adSum);
+	DEBUG("sum of algebraic distances: " , adSum);
 	EXPECT_GE(1e-12, adSum) << "algebraic distances should converge towards zero";
-
 }
-
-
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */
