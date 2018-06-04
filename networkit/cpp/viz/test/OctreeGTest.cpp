@@ -52,7 +52,7 @@ TEST(OctreeGTest, testOctreeWithExample) {
 
 
 	Octree<double> ocTree(coordinates);
-	INFO(ocTree.toString());
+	DEBUG(ocTree.toString());
 	std::vector<std::pair<count, Point<double>>> fiveApprox = ocTree.approximateDistance(Point<double>(2.0, 22.0), 0.5);
 //	for (auto &point : fiveApprox) {
 //		INFO(point.first, ": ", point.second.toString());
@@ -76,9 +76,5 @@ TEST(OctreeGTest, testOctreeWithExample) {
 
 	std::vector<std::pair<count, Point<double>>> exactApprox = ocTree.approximateDistance(Point<double>(2.0, 22.0), 0.0);
 	EXPECT_EQ(exactApprox.size(), 10u);
-
-
-
 }
-
 } /* namespace NetworKit */
