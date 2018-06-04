@@ -102,12 +102,14 @@ int main(int argc, char **argv) {
 
 
 	// CONFIGURE LOGGING
-
-
 #ifndef NOLOGGING
 	if (options[LOGLEVEL]) {
 		Aux::Log::setLogLevel(options[LOGLEVEL].arg);
-		Aux::Log::Settings::setPrintLocation(true);
+		if(Aux::Log::getLogLevel() == "INFO"){
+			Aux::Log::Settings::setPrintLocation(false);
+		}else{
+			Aux::Log::Settings::setPrintLocation(true);
+		}
 	} else {
 		Aux::Log::setLogLevel("ERROR");	// with default level
 		Aux::Log::Settings::setPrintLocation(true);
@@ -116,7 +118,6 @@ int main(int argc, char **argv) {
 
 
 	// CONFIGURE PARALLELISM
-
 #ifdef _OPENMP
 	omp_set_nested(1); // enable nested parallelism
 #endif
@@ -126,7 +127,7 @@ int main(int argc, char **argv) {
 		int nThreads = std::atoi(options[THREADS].arg);
 		Aux::setNumberOfThreads(nThreads);
 	}
-	
+
 	// get program name (currently only for unix)
 	auto pos = program_name.find_last_of("/");
 	program_name = program_name.substr(pos+1,program_name.length()-1);
