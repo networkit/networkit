@@ -16,7 +16,7 @@
 
 namespace NetworKit {
 
-FastSNAPGraphReader::FastSNAPGraphReader(const bool& directed, const count& nodeCount, const bool& remapNodes) :
+FastSNAPGraphReader::FastSNAPGraphReader(bool directed, const count& nodeCount, const bool& remapNodes) :
 directed(directed), nodeCount(nodeCount), remapNodes(remapNodes){}
 
 Graph FastSNAPGraphReader::read(const std::string &path) {
@@ -24,7 +24,7 @@ Graph FastSNAPGraphReader::read(const std::string &path) {
 
 	//In the actual state this parameter has very little influence on the reader performance.
 	//There can be a significant boost if it is possible to reserve space in the graph initialization
-	if(nodeCount != 0)
+	if(nodeCount != 0 && remapNodes)
 		nodeIdMap.reserve(nodeCount);
 
 	// Maps SNAP node IDs to consecutive NetworKit node IDs.
