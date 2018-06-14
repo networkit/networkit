@@ -461,7 +461,7 @@ TEST_P(GraphBuilderDirectSwapGTest, testForValidStateAfterToGraph) {
 	node u = this->bHouse.addNode();
 	this->bHouse.addHalfOutEdge(v, u, 0.25);
 	if (isDirected()) {
-		this->bHouse.addHalfInEdge(v, u, 0.25);
+		this->bHouse.addHalfInEdge(u, v, 0.25);
 	} else {
 		this->bHouse.addHalfOutEdge(u, v, 0.25);
 	}
