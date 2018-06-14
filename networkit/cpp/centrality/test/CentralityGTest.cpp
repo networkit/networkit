@@ -101,7 +101,7 @@ TEST_F(CentralityGTest, testBetweenness2Centrality) {
 	EXPECT_NEAR(1.0, bc[5], tol);
 }
 
-TEST_F(CentralityGTest, testApproxBetweennessSmallGraph) {
+TEST_F(CentralityGTest, runApproxBetweennessSmallGraph) {
 	/* Graph:
 	 0    3
 	  \  / \
@@ -321,7 +321,7 @@ TEST_F(CentralityGTest, benchPageRankCentralityOnRealGraph) {
 	INFO("Highest rank: ", ranking[0].first, " with score ", ranking[0].second);
 }
 
-TEST_F(CentralityGTest, testEstimateBetweenness) {
+TEST_F(CentralityGTest, runEstimateBetweenness) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/celegans_metabolic.graph");
 
@@ -515,7 +515,7 @@ TEST_F(CentralityGTest, testHarmonicClosenessCentrality) {
 	EXPECT_NEAR(1, maximum, tol);
 }
 
-TEST_F(CentralityGTest, testKPathCentrality) {
+TEST_F(CentralityGTest, runKPathCentrality) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/lesmis.graph");
 

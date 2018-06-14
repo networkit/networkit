@@ -20,7 +20,7 @@ namespace NetworKit {
 
 
 
-TEST_F(DynBetweennessGTest, testDynApproxBetweennessSmallGraph) {
+TEST_F(DynBetweennessGTest, runDynApproxBetweennessSmallGraph) {
 /* Graph:
 0    3   6
 	\  / \ /
@@ -66,7 +66,7 @@ TEST_F(DynBetweennessGTest, testDynApproxBetweennessSmallGraph) {
 }
 
 
-TEST_F(DynBetweennessGTest, testDynVsStatic) {
+TEST_F(DynBetweennessGTest, runDynVsStatic) {
 	METISGraphReader reader;
 	//Graph G = reader.read("input/PGPgiantcompo.graph");
 	Graph G = reader.read("input/celegans_metabolic.graph");
@@ -117,11 +117,10 @@ TEST_F(DynBetweennessGTest, testDynVsStatic) {
 			err1 = x;
 	}
 	DEBUG("After the edge insertion: ");
-
 }
 
 
-TEST_F(DynBetweennessGTest, testApproxBetweenness) {
+TEST_F(DynBetweennessGTest, runApproxBetweenness) {
 	//METISGraphReader reader;
 	DorogovtsevMendesGenerator generator(100);
 	Graph G1 = generator.generate();

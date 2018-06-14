@@ -91,7 +91,7 @@ TEST_F(CommuteTimeDistanceGTest, testOnWeightedToyGraph) {
 	EXPECT_NEAR(sqrt(0.0906 * volG), ctd.distance(4, 5), 1e-3);
 }
 
-TEST_F(CommuteTimeDistanceGTest, testECTDOnSmallGraphs) {
+TEST_F(CommuteTimeDistanceGTest, runECTDOnSmallGraphs) {
 	METISGraphReader reader;
 
 	std::string graphFiles[1] = { "input/tiny_01.graph"};
@@ -129,7 +129,7 @@ TEST_F(CommuteTimeDistanceGTest, testECTDOnSmallGraphs) {
 	}
 }
 
-TEST_F(CommuteTimeDistanceGTest, testECTDParallelOnSmallGraphs) {
+TEST_F(CommuteTimeDistanceGTest, runECTDParallelOnSmallGraphs) {
 	METISGraphReader reader;
 
 	std::string graphFiles[1] = { "input/tiny_01.graph"};
@@ -167,7 +167,7 @@ TEST_F(CommuteTimeDistanceGTest, testECTDParallelOnSmallGraphs) {
 	}
 }
 
-TEST_F(CommuteTimeDistanceGTest, testECTDSingleSource) {
+TEST_F(CommuteTimeDistanceGTest, runECTDSingleSource) {
 	METISGraphReader reader;
 
 	std::string graphFiles[2] = {"input/karate.graph", "input/tiny_01.graph"};
