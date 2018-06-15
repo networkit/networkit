@@ -15,13 +15,7 @@ namespace NetworKit {
 
 
 TEST_F(MahmoodyGroupBetweennessGTest, testMahmoodyGroupBetweennessSmallGraph1) {
-/* Graph:
-0    3   6
-\  / \ /
- 2    5
-/  \ / \
-1    4   7
-*/
+
 	Aux::Random::setSeed(2,false);
 
 	Graph g(8,false,false);
@@ -34,13 +28,14 @@ TEST_F(MahmoodyGroupBetweennessGTest, testMahmoodyGroupBetweennessSmallGraph1) {
 	g.addEdge(4, 5);
 	g.addEdge(5, 6);
 	g.addEdge(5, 7);
+	g.addEdge(0,5);
 
 	MahmoodyGroupBetweenness gb(g,2,0.1);
 	gb.run();
 	
 
-	EXPECT_EQ(gb.groupMaxBetweenness()[0],2);
-	EXPECT_EQ(gb.groupMaxBetweenness()[1],5);
+	EXPECT_EQ(gb.groupMaxBetweenness()[0],5);
+	EXPECT_EQ(gb.groupMaxBetweenness()[1],2);
 
 	
 
@@ -79,8 +74,8 @@ TEST_F(MahmoodyGroupBetweennessGTest, testMahmoodyGroupBetweennessSmallGraph2) {
 	MahmoodyGroupBetweenness gb(g,2,0.1);
 	gb.run();
 
-	EXPECT_EQ(gb.groupMaxBetweenness()[0],3);
-	EXPECT_EQ(gb.groupMaxBetweenness()[1],1);
+	EXPECT_EQ(gb.groupMaxBetweenness()[0],4);
+	EXPECT_EQ(gb.groupMaxBetweenness()[1],6);
 
 
 	
