@@ -19,7 +19,7 @@
 #include "FastKONECTGraphReader.h"
 
 namespace NetworKit{
-	FastKONECTGraphReader::FastKONECTGraphReader(const bool& remapNodes, MultipleEdgesHandling handlingmethod):
+	FastKONECTGraphReader::FastKONECTGraphReader(bool remapNodes, MultipleEdgesHandling handlingmethod):
 	remapNodes(remapNodes), multipleEdgesHandlingMethod(handlingmethod){}
 
 	Graph FastKONECTGraphReader::read(const std::string &path){
@@ -173,10 +173,19 @@ namespace NetworKit{
 		Graph graph((secondPropertyLine ? numberOfNodes : 0), weighted, directed);
 
 		//Map nodes and increase graph size if no second property is defined
-		auto mapNode = [&] (node in) -> node {
+		std::function<node(node)> mapNode = [&] (node in) -> node {
 			if(secondPropertyLine){
-				if (in > numberOfNodes){
-					return graph.hasNode(in) ? in : graph.addNode();
+				if (in > numberOfNodes){ //if file is corrupted
+					//secondPropertyLine is made useless
+					ERROR("Given number of nodes by file does not match actual graph");
+					secondPropertyLine = false;
+					if(remapNodes){ // if remapNodes is selected true, the map has to be initalized with the existing nodes
+						nodeIdMap.reserve(numberOfNodes);
+						graph.forNodes([&](node u) {
+							nodeIdMap.insert({u,u});
+						});
+					}
+					return mapNode(in);
 				}else{
 					return in - 1; //minus firstNode
 				}
@@ -206,7 +215,7 @@ namespace NetworKit{
 					case SUM_WEIGHTS_UP:
 						graph.increaseWeight(source, target, weight);
 						break;
-					case KEEP_SHORTEST_PATH:
+					case KEEP_MINIUM_WEIGHT:
 						if(graph.weight(source,target) > weight){
 							graph.setWeight(source,target, weight);
 						}

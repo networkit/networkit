@@ -31,7 +31,7 @@ public:
 	{
 		 DISCARD_EDGES, //Reads and selects the first edge which occurs and discards all following
 		 SUM_WEIGHTS_UP, //If an edge occurs again, the weight of it is added to the existing edge
-		 KEEP_SHORTEST_PATH //The edge with the lowest weight is kept
+		 KEEP_MINIUM_WEIGHT //The edge with the lowest weight is kept
 	};
 
 	virtual ~GraphReader() = default;

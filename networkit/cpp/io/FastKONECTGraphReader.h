@@ -25,7 +25,7 @@ namespace NetworKit {
 		* @param[in]	remapNodes	specifies whether node ids should be remapped if non consecutive
 		* @param[in]	handlingmethod	specifies how multiple edges should be handled (only relevant if graph with multiple edges is given)
 		*/
-		FastKONECTGraphReader(const bool& remapNodes = false, MultipleEdgesHandling handlingmethod = DISCARD_EDGES);
+		FastKONECTGraphReader(bool remapNodes = false, MultipleEdgesHandling handlingmethod = DISCARD_EDGES);
 
 		/**
 		 * Given the path of an input file, read the graph contained.
