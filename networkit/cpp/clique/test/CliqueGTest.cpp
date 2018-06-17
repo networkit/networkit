@@ -8,7 +8,6 @@
 #include "CliqueGTest.h"
 #include "../MaximalCliques.h"
 #include "../../io/METISGraphReader.h"
-#include "../../io/SNAPGraphReader.h"
 #include "../../auxiliary/Log.h"
 #include "../../io/EdgeListReader.h"
 
