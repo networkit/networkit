@@ -447,7 +447,7 @@ namespace NetworKit {
 
     TEST_F(ConnectedComponentsGTest, testDynWeaklyConnectedComponents) {
         // Read graph
-		KONECTGraphReader reader(' ');
+		KONECTGraphReader reader;
 		Graph G = reader.read("input/foodweb-baydry.konect");
         DynWeaklyConnectedComponents dw(G);
         dw.run();

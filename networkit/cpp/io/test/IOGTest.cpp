@@ -25,7 +25,7 @@
 #include "../SNAPEdgeListPartitionReader.h"
 #include "../SNAPGraphWriter.h"
 #include "../EdgeListReader.h"
-#include "../FastKONECTGraphReader.h"
+#include "../KONECTGraphReader.h"
 #include "../GMLGraphWriter.h"
 #include "../EdgeListCoverReader.h"
 #include "../CoverReader.h"
@@ -766,10 +766,11 @@ TEST_F(IOGTest, testBinaryEdgeListPartitionWriterAndReader) {
 	EXPECT_EQ(Q.upperBound(), P[4]+1);
 }
 
-TEST_F(IOGTest, testFastKONECTGraphReader){
-	FastKONECTGraphReader reader;
+TEST_F(IOGTest, testKONECTGraphReader){
+	KONECTGraphReader reader;
 	Graph G = reader.read("input/foodweb-baydry.konect");
 
+	ASSERT_TRUE(G.isDirected());
 	ASSERT_EQ(G.numberOfEdges() , 2137);
 	ASSERT_EQ(G.numberOfNodes() , 128);
 	ASSERT_EQ(G.weight(0,1), 1.261404);
