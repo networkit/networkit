@@ -146,6 +146,7 @@ int main(int argc, char **argv) {
 	}	else if (options[RUNNABLE]) {
 		::testing::GTEST_FLAG(filter) = "*Test.run*";
 	}
+	::testing::GTEST_FLAG(shuffle) = 1;
 	::testing::InitGoogleTest(&argc, argv);
 	INFO("=== starting unit tests ===");
 	return RUN_ALL_TESTS();
