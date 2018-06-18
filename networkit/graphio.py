@@ -1,9 +1,11 @@
 # extension imports
 from _NetworKit import (METISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListWriter, \
-						 GMLGraphWriter, LineFileReader, SNAPGraphWriter, DGSWriter, GraphToolBinaryWriter, GraphToolBinaryReader, \
-						  DGSStreamParser, GraphUpdater, SNAPEdgeListPartitionReader, SNAPGraphReader, EdgeListReader, CoverReader, CoverWriter, EdgeListCoverReader, KONECTGraphReader, GMLGraphReader, ThrillGraphBinaryReader, ThrillGraphBinaryWriter)
+						GMLGraphWriter, LineFileReader, SNAPGraphWriter, DGSWriter, GraphToolBinaryWriter, \
+						GraphToolBinaryReader, DGSStreamParser, GraphUpdater, SNAPEdgeListPartitionReader, \
+						SNAPGraphReader, EdgeListReader, CoverReader, CoverWriter, EdgeListCoverReader, \
+						KONECTGraphReader, GMLGraphReader, MultipleEdgesHandling, ThrillGraphBinaryReader, \
+						ThrillGraphBinaryWriter)
 from _NetworKit import Graph as __Graph
-from _NetworKit import _MultipleEdgesHandling as MultipleEdgesHandling
 # local imports
 from .GraphMLIO import GraphMLReader, GraphMLWriter
 from .GEXFIO import GEXFReader, GEXFWriter
