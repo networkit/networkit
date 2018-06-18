@@ -524,7 +524,6 @@ TEST_P(GraphGTest, testRandomNode) {
 	count n = 4;
 	count samples = 100000;
 	double maxAbsoluteError = 0.005;
-	const u_int64_t seed = Aux::Random::getSeed();
 	Aux::Random::setSeed(42, false);
 
 	Graph G = createGraph(n);
@@ -537,8 +536,6 @@ TEST_P(GraphGTest, testRandomNode) {
 		double p = drawCounts[v] / (double) samples;
 		ASSERT_NEAR(1.0 / n, p, maxAbsoluteError);
 	}
-
-	Aux::Random::setSeed(seed, false);
 }
 
 TEST_P(GraphGTest, testRandomNeighbor) {
@@ -548,7 +545,6 @@ TEST_P(GraphGTest, testRandomNeighbor) {
 	G.addEdge(2, 2);
 	G.addEdge(5, 6);
 
-	const u_int64_t seed = Aux::Random::getSeed();
 	Aux::Random::setSeed(42, false);
 
 	ASSERT_EQ(none, G.randomNeighbor(3));
@@ -572,7 +568,6 @@ TEST_P(GraphGTest, testRandomNeighbor) {
 		double p = drawCounts[v] / (double) samples;
 		ASSERT_NEAR(1.0 / nn, p, maxAbsoluteError);
 	}
-	Aux::Random::setSeed(seed, false);
 }
 
 
@@ -905,7 +900,6 @@ TEST_P(GraphGTest, testNumberOfSelfLoops) {
 }
 
 TEST_P(GraphGTest, testSelfLoopConversion) {
-	const u_int64_t seed = Aux::Random::getSeed();
 	Aux::Random::setSeed(1, false);
 	const count runs = 100;
 	const count n_max = 200;
@@ -930,7 +924,6 @@ TEST_P(GraphGTest, testSelfLoopConversion) {
 		Graph G_converted(G, false, !directed);
 		EXPECT_EQ(G_converted.numberOfSelfLoops(), measuredSelfLoops);
 	}
-	Aux::Random::setSeed(seed, false);
 }
 
 TEST_P(GraphGTest, testUpperNodeIdBound) {
