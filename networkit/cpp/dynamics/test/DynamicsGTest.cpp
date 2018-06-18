@@ -45,7 +45,7 @@ TEST_F(DynamicsGTest, testDGSStreamParser) {
 }
 
 
-TEST_F(DynamicsGTest, tryDGSStreamParserOnRealGraph) {
+TEST_F(DynamicsGTest, debugDGSStreamParserOnRealGraph) {
 	std::string path;
 	std::cout << "enter .dgs file path: ";
 	std::cin >> path;

@@ -15,7 +15,7 @@ namespace NetworKit {
 
 
 
-TEST_F(IndependentSetGTest, tryLuby) {
+TEST_F(IndependentSetGTest, debugLuby) {
 	count n = 500;
 	ErdosRenyiGenerator generator(n, 0.001);
 	Graph G = generator.generate();
@@ -36,7 +36,7 @@ TEST_F(IndependentSetGTest, tryLuby) {
 	INFO("independent set size: " , size , "/" , n);
 }
 
-TEST_F(IndependentSetGTest, tryLubyWithSelfLoops) {
+TEST_F(IndependentSetGTest, debugLubyWithSelfLoops) {
 	count n = 500;
 	ErdosRenyiGenerator generator(n, 0.001);
 	Graph G = generator.generate();

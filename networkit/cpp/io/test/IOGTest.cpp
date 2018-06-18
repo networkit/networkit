@@ -291,7 +291,7 @@ TEST_F(IOGTest, testDotGraphWriter) {
 	EXPECT_TRUE(exists) << "graph file should have been written to: " << path;
 }
 
-TEST_F(IOGTest, tryDGSReaderOnBigFile) {
+TEST_F(IOGTest, debugDGSReaderOnBigFile) {
 	// read example graph
 	DGSReader reader;
 	Graph G;
@@ -299,7 +299,7 @@ TEST_F(IOGTest, tryDGSReaderOnBigFile) {
 	reader.read("/Users/forigem/KIT/NetworKit-CommunityDetection/input/AuthorsGraph.dgs", Gproxy);
 }
 
-TEST_F(IOGTest, tryDGSReader) {
+TEST_F(IOGTest, debugDGSReader) {
 	// read example graph
 	DGSReader reader;
 	Graph G;
@@ -441,7 +441,7 @@ TEST_F(IOGTest, testMETISGraphReaderWithIsolatedNode) {
 	EXPECT_TRUE(G.hasEdge(0,3));
 }
 
-TEST_F(IOGTest, tryReadingLFR) {
+TEST_F(IOGTest, debugReadingLFR) {
 	std::string graphPath;
 	std::string clustPath;
 
@@ -469,7 +469,7 @@ TEST_F(IOGTest, tryReadingLFR) {
 
 }
 
-TEST_F(IOGTest, tryReadingSNAP) {
+TEST_F(IOGTest, debugReadingSNAP) {
 	std::string graphPath;
 
 	std::cout << "[INPUT] SNAP graph file path >" << std::endl;
@@ -500,7 +500,7 @@ TEST_F(IOGTest, testSNAPGraphWriter) {
 	EXPECT_TRUE(exists) << "graph file should have been written to: " << path;
 }
 
-TEST_F(IOGTest, tryReadingMETISFile) {
+TEST_F(IOGTest, debugReadingMETISFile) {
 	std::string graphPath;
 	std::cout << "[INPUT] graph file path >" << std::endl;
 	std::getline(std::cin, graphPath);

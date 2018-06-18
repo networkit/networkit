@@ -60,7 +60,7 @@ TEST_F(APSPGTest, testAPSP) {
 	ASSERT_TRUE(apsp.isParallel());
 }
 
-TEST_F(APSPGTest, tryAPSP) {
+TEST_F(APSPGTest, debugAPSP) {
 	count n = 1000;
 	count m = int(n * n);
 	Graph G(n, true, false);

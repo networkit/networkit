@@ -112,7 +112,7 @@ TEST_F(MatcherGTest, testPgaMatching) {
 #endif
 }
 
-TEST_F(MatcherGTest, tryValidMatching) {
+TEST_F(MatcherGTest, debugValidMatching) {
 	METISGraphReader reader;
 	Graph G = reader.read("coAuthorsDBLP.graph");
 

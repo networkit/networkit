@@ -127,7 +127,7 @@ TEST_F(VizGTest, testFRLayouter) {
 	EXPECT_LE(avg, 0.25);
 }
 
-TEST_F(VizGTest, tryMultilevelLayouter) {
+TEST_F(VizGTest, debugMultilevelLayouter) {
 	// create graph
 	count n = 300;
 	count numClusters = 4;
@@ -158,7 +158,7 @@ TEST_F(VizGTest, tryMultilevelLayouter) {
 	EXPECT_LE(avg, 0.25);
 }
 
-TEST_F(VizGTest, tryGraphDrawing) {
+TEST_F(VizGTest, debugGraphDrawing) {
 	// create graph
 	METISGraphReader reader;
 	Graph G = reader.read("input/lesmis.graph");

@@ -436,7 +436,7 @@ TEST_F(CentralityGTest, testEdgeBetweennessCentrality) {
 	EXPECT_NEAR(6.0, bc[5], tol);
 }
 
-TEST_F(CentralityGTest, tryEdgeBetweennessCentrality) {
+TEST_F(CentralityGTest, debugEdgeBetweennessCentrality) {
 	auto path = "input/PGPgiantcompo.graph";
 	METISGraphReader reader;
 	Graph G = reader.read(path);

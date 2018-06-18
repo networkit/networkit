@@ -50,7 +50,7 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 // TODO: clean up obsolete parameters
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, RUNNABLE, TRIALS, BENCHMARKS, FILTER };
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, RUNNABLE, DEBUG, BENCHMARKS, FILTER };
 const OptionParser::Descriptor usage[] =
 {
 {UNKNOWN,	0,	"" ,	"",				OptionParser::Arg::None,	"Options:" },
@@ -59,7 +59,7 @@ const OptionParser::Descriptor usage[] =
 {THREADS,	0,	"",		"threads",		OptionParser::Arg::Required,"  --threads=<NUM>  \t set the maximum number of threads" },
 {TESTS,		0,	"t",	"tests",		OptionParser::Arg::None,	"  --tests \t Run unit tests"},
 {RUNNABLE,	0,	"r",	"run",			OptionParser::Arg::None,	"  --run \t Run unit tests which don't use assertions"},
-{TRIALS,	0,	"e",	"trials",		OptionParser::Arg::None,	"  --trials \t Run experimental tests"},
+{DEBUG,		0,	"d",	"debug",		OptionParser::Arg::None,	"  --debug \t Run tests to debug some algorithms"},
 {BENCHMARKS,0,	"b",	"benchmarks",	OptionParser::Arg::None,	"  --benchmarks \t Run benchmarks"},
 {FILTER,	0,	"f",	"gtest_filter",	OptionParser::Arg::Required,"  --gtest_filter=<FILTER_PATTERN> \t Run tests that match the filter pattern" },
 {UNKNOWN,	0,	"",		"",				OptionParser::Arg::None,	"\nExamples:\n TODO" },
@@ -134,8 +134,8 @@ int main(int argc, char **argv) {
 #ifndef NOGTEST
 	if (options[TESTS]) {
 		::testing::GTEST_FLAG(filter) = "*Test.test*";
-	} else if (options[TRIALS]) {
-		::testing::GTEST_FLAG(filter) = "*Test.try*";
+	} else if (options[DEBUG]) {
+		::testing::GTEST_FLAG(filter) = "*Test.debug*";
 	} else if (options[BENCHMARKS]) {
 		if (program_name != "NetworKit-Tests-O") {
 			std::cout << "Hint: Performance tests should be run in optimized mode" << std::endl;

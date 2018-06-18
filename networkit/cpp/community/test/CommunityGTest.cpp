@@ -460,7 +460,7 @@ TEST_F(CommunityGTest, testSampledRandMeasures) {
 }
 
 
-TEST_F(CommunityGTest, tryParallelAgglomerativeAndPLM) {
+TEST_F(CommunityGTest, debugParallelAgglomerativeAndPLM) {
 	METISGraphReader reader;
 	Graph jazz = reader.read("input/jazz.graph");
 	Graph blog = reader.read("input/polblogs.graph");

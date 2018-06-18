@@ -98,7 +98,7 @@ TEST_F(OverlapGTest, testHashingOverlapperForCorrectness) {
 	EXPECT_EQ(overlapping, overlap.getVector());
 }
 
-TEST_F(OverlapGTest, tryHashingOverlapperCorrectness) {
+TEST_F(OverlapGTest, debugHashingOverlapperCorrectness) {
 	count n = 2;
 	Graph G(n);
 
@@ -122,7 +122,7 @@ TEST_F(OverlapGTest, tryHashingOverlapperCorrectness) {
 	EXPECT_TRUE(GraphClusteringTools::isSingletonClustering(G, overlap)) << "When one singleton clustering is in the overlap, the result should be a singleton clustering";
 }
 
-TEST_F(OverlapGTest, tryHashingOverlapperCorrectness2) {
+TEST_F(OverlapGTest, debugHashingOverlapperCorrectness2) {
 	count n = 10000;
 	count k = 1000;
 	Graph G(n);

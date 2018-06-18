@@ -882,7 +882,7 @@ TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {
 	}
 }
 
-TEST_F(GeneratorsGTest, tryHyperbolicHighTemperatureGraphs) {
+TEST_F(GeneratorsGTest, debugHyperbolicHighTemperatureGraphs) {
 	count n = 10000;
 	double k = 10;
 	double gamma = 3;
@@ -895,7 +895,7 @@ TEST_F(GeneratorsGTest, tryHyperbolicHighTemperatureGraphs) {
 	}
 }
 
-TEST_F(GeneratorsGTest, tryGiganticCollectionOfHyperbolicTemperatureGraphs) {
+TEST_F(GeneratorsGTest, debugGiganticCollectionOfHyperbolicTemperatureGraphs) {
 	for (index i = 0; i < 30; i++) {
 		count n = 10000;
 		double k = 10;
@@ -908,7 +908,7 @@ TEST_F(GeneratorsGTest, tryGiganticCollectionOfHyperbolicTemperatureGraphs) {
 	}
 }
 
-TEST_F(GeneratorsGTest, tryGiganticCollectionOfHyperbolicUnitDiskGraphs) {
+TEST_F(GeneratorsGTest, debugGiganticCollectionOfHyperbolicUnitDiskGraphs) {
 	count n = 1000000;
 	double k = 1;
 	for (index i = 0; i < 7; i++) {
