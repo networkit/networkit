@@ -6,6 +6,7 @@
  */
 
 #include "Partition.h"
+#include "../auxiliary/Parallel.h"
 #include <atomic>
 
 namespace NetworKit {
@@ -88,16 +89,15 @@ count Partition::numberOfSubsets() const {
 void Partition::compact(bool useTurbo) {
 	index i = 0;
 	if (!useTurbo) {
-		std::map<index, index> compactingMap; // first index is the old partition index, "value" is the index of the compacted index
-		this->forEntries([&](index e, index s){ // get assigned SubsetIDs and create a map with new IDs
-			if (s!= none) {
-				auto result = compactingMap.insert(std::make_pair(s,i));
-				if (result.second) ++i;
-			}
-		});
+		std::vector<index> usedIds(data);
+		Aux::Parallel::sort(usedIds.begin(), usedIds.end());
+		auto last = std::unique(usedIds.begin(), usedIds.end());
+		usedIds.erase(last, usedIds.end());
+		i = usedIds.size();
+
 		this->parallelForEntries([&](index e, index s){ // replace old SubsetIDs with the new IDs
 			if (s != none) {
-				data[e] = compactingMap[s];
+				data[e] = std::distance(usedIds.begin(), std::lower_bound(usedIds.begin(), usedIds.end(), s));
 			}
 		});
 	} else {
