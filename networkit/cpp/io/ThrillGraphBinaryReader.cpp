@@ -48,12 +48,12 @@ NetworKit::Graph NetworKit::ThrillGraphBinaryReader::read(const std::vector<std:
 
 	if (!paths.empty()) {
 		std::ifstream is;
-		count _file_index = 0;
+		count file_index = 0;
 
 		auto next_input = [&]() {
 			is.close();
-			if (_file_index < paths.size()) {
-				is.open(paths[_file_index++]);
+			if (file_index < paths.size()) {
+				is.open(paths[file_index++]);
 			}
 		};
 
