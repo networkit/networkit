@@ -32,6 +32,8 @@
 #include "../GMLGraphReader.h"
 #include "../GraphToolBinaryReader.h"
 #include "../GraphToolBinaryWriter.h"
+#include "../ThrillGraphBinaryWriter.h"
+#include "../ThrillGraphBinaryReader.h"
 #include "../../generators/ErdosRenyiGenerator.h"
 
 #include "../../community/GraphClusteringTools.h"
@@ -40,6 +42,7 @@
 #include "../../structures/Partition.h"
 #include "../../community/Modularity.h"
 #include "../../community/PLP.h"
+#include "../../dynamics/GraphDifference.h"
 
 
 namespace NetworKit {
@@ -718,6 +721,34 @@ TEST_F(IOGTest, testGraphToolBinaryWriterWithDeletedNodesDirected) {
 	EXPECT_EQ(G.numberOfEdges(),Gread.numberOfEdges());
 	EXPECT_EQ(G.isDirected(),Gread.isDirected());
 	EXPECT_EQ(G.isWeighted(),Gread.isWeighted());
+}
+
+TEST_F(IOGTest, testThrillGraphBinaryWriterAndReader) {
+	// This test graph has a large maximum degree as degrees smaller than 128
+	// do not test the binary writer and reader properly.
+	// So we simply use a star.
+	count n = 257;
+	Graph G(n, false, false);
+	node center = 129;
+
+	for (node u = 0; u < n; ++u) {
+		if (u != center) {
+			G.addEdge(u, center);
+		}
+	}
+
+	std::string path = "output/test.thrillbin";
+
+	ThrillGraphBinaryReader reader;
+	ThrillGraphBinaryWriter writer;
+
+	writer.write(G, path);
+	Graph H = reader.read(path);
+
+	GraphDifference diff(G, H);
+	diff.run();
+
+	EXPECT_EQ(diff.getEdits().size(), 0);
 }
 
 } /* namespace NetworKit */
