@@ -10681,3 +10681,61 @@ cdef class PivotMDS (GraphLayoutAlgorithm):
 		"""Constructs a PivotMDS object for the given @a graph. The algorithm should embed the graph in @a dim dimensions using @a numberOfPivots pivots."""
 		(<_PivotMDS*>(self._this)).run()
 		return self
+
+
+# Module: randomization
+
+cdef extern from "cpp/randomization/GlobalCurveball.h":
+	cdef cppclass _GlobalCurveball "NetworKit::GlobalCurveball"(_Algorithm):
+		_GlobalCurveball(_Graph, count) except +
+		void run() nogil except +
+		_Graph getGraph() except +
+
+cdef class GlobalCurveball(Algorithm):
+	"""
+	Implementation of EM-GCB proposed in "Parallel and I/O-efficient
+	Randomisation of Massive Networks using Global Curveball Trades",
+	Carstens et al., ESA 2018.
+
+	The algorithm perturbs an undirected and unweighted input graph,
+	by iteratively randomizing the neighbourhoods of node pairs. For
+	a large number of global trades this process is shown to produce
+	an uniform sample from the set of all graphs with the same degree
+	sequence as the input graph.
+
+	If you do not want to explicitly control the trade sequence,
+	we recommend using GlobalCurveball rather than Curveball since
+	GlobalCurveball is typically faster and exhibits a smaller memory
+	footprint.
+
+	Parameters
+	----------
+
+	G: Graph
+		The graph to be randomized. For a given degree sequence, e.g.
+		generators.HavelHakimi can be used to obtain this graph.
+
+	number_of_global_rounds:
+		Number of global rounds to carry out. The runtime scales
+		asymptotically linearly in this parameter. Default: 20,
+		which yields good results experimentally (see Paper).
+
+	"""
+	def __cinit__(self, G, number_of_global_rounds = 20):
+		if isinstance(G, Graph):
+			self._this = new _GlobalCurveball((<Graph>G)._this, number_of_global_rounds)
+		else:
+			raise RuntimeError("Parameter G has to be a graph")
+
+	def __dealloc__(self):
+		del self._this
+		self._this = NULL
+
+	"""
+
+	Get randomized graph after invocation of run().
+
+	"""
+
+	def getGraph(self):
+		return Graph().setThis((<_GlobalCurveball*>self._this).getGraph())
