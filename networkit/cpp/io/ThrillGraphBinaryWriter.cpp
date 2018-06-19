@@ -28,7 +28,7 @@ void NetworKit::ThrillGraphBinaryWriter::write( const NetworKit::Graph &G, const
 		}
 
 		while(deg) {
-			auto u = deg & 0x7F;
+			size_t u = deg & 0x7F;
 			deg >>= 7;
 			out_stream << uint8_t(u | (deg ? 0x80 : 0));
 		}
@@ -37,7 +37,7 @@ void NetworKit::ThrillGraphBinaryWriter::write( const NetworKit::Graph &G, const
 			// write neighbor as little endian
 			for (size_t i = 0; i < sizeof(uint32_t); ++i) {
 				out_stream << uint8_t(v);
-				v >>= 7;
+				v >>= 8;
 			}
 		}
 	}
