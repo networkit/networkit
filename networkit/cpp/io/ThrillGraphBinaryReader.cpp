@@ -5,36 +5,35 @@
 NetworKit::ThrillGraphBinaryReader::ThrillGraphBinaryReader(count n) : n(n) {};
 
 namespace {
-	template <typename stream_t>
-	uint64_t GetVarint(stream_t &is) {
-		auto get_byte = [&is]() -> uint8_t {
-			uint8_t result;
-			is.read(reinterpret_cast<char*>(&result), 1);
-			return result;
-		};
-		uint64_t u, v = get_byte();
-		if (!(v & 0x80)) return v;
-		v &= 0x7F;
-		u = get_byte(), v |= (u & 0x7F) << 7;
-		if (!(u & 0x80)) return v;
-		u = get_byte(), v |= (u & 0x7F) << 14;
-		if (!(u & 0x80)) return v;
-		u = get_byte(), v |= (u & 0x7F) << 21;
-		if (!(u & 0x80)) return v;
-		u = get_byte(), v |= (u & 0x7F) << 28;
-		if (!(u & 0x80)) return v;
-		u = get_byte(), v |= (u & 0x7F) << 35;
-		if (!(u & 0x80)) return v;
-		u = get_byte(), v |= (u & 0x7F) << 42;
-		if (!(u & 0x80)) return v;
-		u = get_byte(), v |= (u & 0x7F) << 49;
-		if (!(u & 0x80)) return v;
-		u = get_byte(), v |= (u & 0x7F) << 56;
-		if (!(u & 0x80)) return v;
-		u = get_byte();
-		if (u & 0xFE)
-			throw std::overflow_error("Overflow during varint64 decoding.");
-		v |= (u & 0x7F) << 63;
+	uint32_t get_uint32(std::ifstream& is) {
+		uint32_t result = 0;
+
+		for (size_t i = 0; i < sizeof(uint32_t); ++i) {
+			uint32_t u = is.get();
+			result |= (u << (i * 8));
+		}
+
+		return result;
+	}
+
+	uint64_t get_variant(std::ifstream& is) {
+		size_t v = 0;
+		for (size_t shift_width = 0; shift_width < 64; shift_width += 7) {
+			uint64_t u = is.get();
+
+			// The last value is just a single bit (the 64th bit) - throw if there is
+			// more than this single bit in the input.
+			if (shift_width == 63 && (u & 0xFE)) {
+				throw std::overflow_error("Overflow during variant64 decoding.");
+			}
+
+			// Read exactly 7 bits from the input
+			v |= (u & 0x7F) << shift_width;
+
+			// If the 8th bit is not set, we reached the end of the variant
+			if (!(u & 0x80)) break;
+		}
+
 		return v;
 	}
 };
@@ -55,6 +54,8 @@ NetworKit::Graph NetworKit::ThrillGraphBinaryReader::read(const std::vector<std:
 			is.close();
 			if (file_index < paths.size()) {
 				is.open(paths[file_index++]);
+				// Throw an exception when no byte could be read at any point
+				is.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 			}
 		};
 
@@ -68,11 +69,8 @@ NetworKit::Graph NetworKit::ThrillGraphBinaryReader::read(const std::vector<std:
 				gb.addNode();
 			}
 
-			for (count deg = GetVarint(is); deg > 0 && is.good(); --deg) {
-				uint32_t v;
-				if (!is.read(reinterpret_cast<char*>(&v), 4)) {
-					throw std::runtime_error("I/O error while reading next neighbor");
-				}
+			for (count deg = get_variant(is); deg > 0 && is.good(); --deg) {
+				uint32_t v = get_uint32(is);
 
 				max_id = std::max<node>(max_id, v);
 
