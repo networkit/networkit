@@ -1,5 +1,6 @@
 #include "ThrillGraphBinaryReader.h"
 #include "../graph/GraphBuilder.h"
+#include <algorithm>
 
 NetworKit::ThrillGraphBinaryReader::ThrillGraphBinaryReader(count n) : n(n) {};
 
@@ -59,6 +60,8 @@ NetworKit::Graph NetworKit::ThrillGraphBinaryReader::read(const std::vector<std:
 
 		next_input();
 
+		node max_id = 0;
+
 		for (node u = 0; is.good() && is.is_open(); ++u) {
 			// Add node if it does not exist yet, only one may be missing
 			if (u >= gb.upperNodeIdBound()) {
@@ -71,6 +74,8 @@ NetworKit::Graph NetworKit::ThrillGraphBinaryReader::read(const std::vector<std:
 					throw std::runtime_error("I/O error while reading next neighbor");
 				}
 
+				max_id = std::max<node>(max_id, v);
+
 				gb.addHalfEdge(u, v);
 			}
 
@@ -78,7 +83,11 @@ NetworKit::Graph NetworKit::ThrillGraphBinaryReader::read(const std::vector<std:
 				next_input();
 			}
 		}
+
+		if (max_id >= gb.upperNodeIdBound()) {
+			throw std::runtime_error("Maximum read node id larger than number of nodes read.");
+		}
 	}
-	
+
 	return gb.toGraph(true, true);
 };
