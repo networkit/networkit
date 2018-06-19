@@ -8,27 +8,32 @@ NetworKit::BinaryPartitionReader::BinaryPartitionReader(uint8_t width) : width(w
 	}
 }
 
-namespace {
-	template <uint8_t width>
-	NetworKit::Partition readPartition(const std::string& path) {
-		using read_t = typename std::conditional<width == 4, uint32_t, uint64_t>::type;
-		static_assert(sizeof(read_t) == width, "Error, width is not the width of read_node_t");
-
+NetworKit::Partition NetworKit::BinaryPartitionReader::read(const std::string& path) {
 		std::ifstream is(path, std::ios_base::in | std::ios_base::binary);
 
 		if (!is) {
 			throw std::runtime_error("Error: partition file couldn't be opened");
 		}
 
+		is.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
 		is.seekg(0, std::ios_base::end);
-		NetworKit::count length = is.tellg() / width;
+		if ((is.tellg() % width) != 0) {
+			throw std::runtime_error("Error: length of partition file must be a multiple of the width.");
+		}
+
+		count length = is.tellg() / width;
 		is.seekg(0);
 
-		NetworKit::Partition zeta(length);
-		
-		read_t p = 0;
-		for (read_t u = 0; u < length; ++u) {
-			is.read(reinterpret_cast<char*>(&p), width);
+		Partition zeta(length);
+
+		for (index u = 0; u < length; ++u) {
+			index p = 0;
+
+			for (size_t i = 0; i < width; ++i) {
+				uint64_t t = is.get();
+				p |= (t << (i * 8));
+			}
 
 			if (p >= zeta.upperBound()) {
 				zeta.setUpperBound(p + 1);
@@ -38,14 +43,4 @@ namespace {
 		}
 
 		return zeta;
-	};
-};
-
-NetworKit::Partition NetworKit::BinaryPartitionReader::read(const std::string& path) {
-	switch (width) {
-		case 4:
-			return readPartition<4>(path);
-		default:
-			return readPartition<8>(path);
-	};
 }
