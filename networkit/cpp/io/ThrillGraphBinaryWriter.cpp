@@ -8,35 +8,39 @@ void NetworKit::ThrillGraphBinaryWriter::write( const NetworKit::Graph &G, const
 	std::ofstream out_stream(path, std::ios::trunc | std::ios::binary);
 
 	std::vector<uint32_t> neighbors;
-	G.forNodes([&](node u) {
-			neighbors.clear();
+
+	for (node u = 0; u < G.upperNodeIdBound(); ++u) {
+		neighbors.clear();
+
+		if (G.hasNode(u)) {
 			G.forEdgesOf(u, [&](node v) {
-					if (u <= v) {
-						neighbors.push_back(v);
-					}
-			});
+						if (u <= v) {
+							neighbors.push_back(v);
+						}
+					});
+		}
 
-			size_t deg = neighbors.size();
+		size_t deg = neighbors.size();
 
-			// Write variable length int for the degree
-			if(!deg) {
-				out_stream << uint8_t(0);
+		// Write variable length int for the degree
+		if(!deg) {
+			out_stream << uint8_t(0);
+		}
+
+		while(deg) {
+			auto u = deg & 0x7F;
+			deg >>= 7;
+			out_stream << uint8_t(u | (deg ? 0x80 : 0));
+		}
+
+		for (uint32_t v : neighbors) {
+			// write neighbor as little endian
+			for (size_t i = 0; i < sizeof(uint32_t); ++i) {
+				out_stream << uint8_t(v);
+				v >>= 7;
 			}
-
-			while(deg) {
-				auto u = deg & 0x7F;
-				deg >>= 7;
-				out_stream << uint8_t(u | (deg ? 0x80 : 0));
-			}
-
-			for (uint32_t v : neighbors) {
-				// write neighbor as little endian
-				for (size_t i = 0; i < sizeof(uint32_t); ++i) {
-					out_stream << uint8_t(v);
-					v >>= 7;
-				}
-			}
-	});
+		}
+	}
 
 	out_stream.close();
 }
