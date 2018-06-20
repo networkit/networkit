@@ -3403,6 +3403,43 @@ cdef class BinaryPartitionReader:
 	def read(self, path):
 		return Partition().setThis(self._this.read(stdstring(path)))
 
+cdef extern from "cpp/io/BinaryPartitionWriter.h":
+	cdef cppclass _BinaryPartitionWriter "NetworKit::BinaryPartitionWriter":
+		_BinaryPartitionWriter() except +
+		_BinaryPartitionWriter(uint8_t width) except +
+		_Partition write(_Partition zeta, string path) nogil except +
+
+cdef class BinaryPartitionWriter:
+	"""
+	Writes a partition to a file to contains a binary list of partition ids.
+	Partition ids are unsigned integers.
+
+	Parameters
+	----------
+	width : int
+		the width of the unsigned integer in bytes (4 or 8)
+
+	"""
+	cdef _BinaryPartitionWriter _this
+
+	def __cinit__(self, uint8_t width=4):
+		self._this = _BinaryPartitionWriter(width)
+
+	def write(self, Partition P not None, path):
+		"""
+		Write the partition to the given file.
+
+		Parameters
+		----------
+		path : str
+			The output path
+		"""
+		cdef string c_path = stdstring(path)
+
+		with nogil:
+			self._this.write(P._this, c_path)
+
+		return self
 
 cdef extern from "cpp/io/EdgeListPartitionReader.h":
 	cdef cppclass _EdgeListPartitionReader "NetworKit::EdgeListPartitionReader":
