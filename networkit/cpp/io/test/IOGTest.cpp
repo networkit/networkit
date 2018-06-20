@@ -36,6 +36,8 @@
 #include "../ThrillGraphBinaryReader.h"
 #include "../BinaryPartitionWriter.h"
 #include "../BinaryPartitionReader.h"
+#include "../BinaryEdgeListPartitionWriter.h"
+#include "../BinaryEdgeListPartitionReader.h"
 #include "../../generators/ErdosRenyiGenerator.h"
 
 #include "../../community/GraphClusteringTools.h"
@@ -775,6 +777,32 @@ TEST_F(IOGTest, testBinaryPartitionWriterAndReader) {
 	EXPECT_EQ(P[2], Q[2]);
 	EXPECT_EQ(P[3], Q[3]);
 	EXPECT_EQ(P[4], Q[4]);
+	EXPECT_EQ(Q.upperBound(), P[4]+1);
+}
+
+TEST_F(IOGTest, testBinaryEdgeListPartitionWriterAndReader) {
+	Partition P(5);
+	P.setUpperBound((1ull<<32));
+	P[0] = 0;
+	P[1] = 2007;
+	P[2] = none;
+	P[3] = (1ull << 31 | 1ull << 28);
+	P[4] = 3925932491;
+
+	std::string path = "output/partition.bin";
+
+	BinaryEdgeListPartitionWriter writer(1, 8);
+	BinaryEdgeListPartitionReader reader(1, 8);
+
+	writer.write(P, path);
+	Partition Q(reader.read(path));
+
+	EXPECT_EQ(P[0], Q[0]);
+	EXPECT_EQ(P[1], Q[1]);
+	EXPECT_EQ(P[2], Q[2]);
+	EXPECT_EQ(P[3], Q[3]);
+	EXPECT_EQ(P[4], Q[4]);
+	EXPECT_EQ(Q.upperBound(), P[4]+1);
 }
 
 } /* namespace NetworKit */

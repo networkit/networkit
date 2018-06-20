@@ -3538,8 +3538,8 @@ cdef class BinaryEdgeListPartitionWriter:
 
 		Parameters
 		----------
-		paths : str
-			The input path
+		path : str
+			The output path
 		"""
 		cdef string c_path = stdstring(path)
 
