@@ -55,7 +55,7 @@ NetworKit::Partition NetworKit::BinaryEdgeListPartitionReader::read(const std::v
 
 			u -= firstNode;
 
-			if (p >= zeta.upperBound()) {
+			if (p != none && p >= zeta.upperBound()) {
 				zeta.setUpperBound(p + 1);
 			}
 

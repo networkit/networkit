@@ -35,7 +35,7 @@ NetworKit::Partition NetworKit::BinaryPartitionReader::read(const std::string& p
 				p |= (t << (i * 8));
 			}
 
-			if (p >= zeta.upperBound()) {
+			if (p != none && p >= zeta.upperBound()) {
 				zeta.setUpperBound(p + 1);
 			}
 
