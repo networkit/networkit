@@ -7,30 +7,24 @@ NetworKit::BinaryEdgeListPartitionWriter::BinaryEdgeListPartitionWriter(NetworKi
 	}
 }
 
-namespace {
-	template <uint8_t width>
-	void writePartition(NetworKit::node firstNode, NetworKit::Partition &zeta, const std::string &path) {
-		using write_t = typename std::conditional<width == 4, uint32_t, uint64_t>::type;
-		static_assert(sizeof(write_t) == width, "write_t does not have the expected width");
-		
-		std::ofstream os(path, std::ios::trunc | std::ios::binary);
-		
-		zeta.forEntries([&](NetworKit::index u, NetworKit::index p) {
-				write_t uw = u + firstNode;
-				write_t pw = p;
-				os.write(reinterpret_cast<const char*>(&uw), width);
-				os.write(reinterpret_cast<const char*>(&pw), width);
-		    });
-	}
-}
-
 void NetworKit::BinaryEdgeListPartitionWriter::write( NetworKit::Partition &zeta, const std::string &path ) const {
-	switch (width) {
-	case 4:
-		writePartition<4>(firstNode, zeta, path);
-		break;
-	default:
-		writePartition<8>(firstNode, zeta, path);
-		break;
+	auto write_little_endian = [](std::ofstream &os, index x, uint8_t width) {
+		for (uint8_t w = 0; w < width; ++w) {
+			os.put(uint8_t(x));
+			x >>= 8;
+		}
+	};
+
+	if (width == 4 && zeta.upperBound() > std::numeric_limits<uint32_t>::max()) {
+		throw std::runtime_error("Error, the upper bound of the given partition cannot be represented by an unsigned int of width 4. Please use a width of 8.");
 	}
+
+	std::ofstream os(path, std::ios::trunc | std::ios::binary);
+
+	os.exceptions(std::ofstream::badbit | std::ofstream::failbit);
+
+	zeta.forEntries([&](NetworKit::index u, NetworKit::index p) {
+		write_little_endian(os, u + firstNode, width);
+		write_little_endian(os, p, width);
+	});
 }
