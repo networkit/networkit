@@ -93,9 +93,10 @@ TEST_F(OverlapGTest, testHashingOverlapperForCorrectness) {
 	std::vector<Partition> clusterings = {zeta, eta};
 	HashingOverlapper overlapper;
 	Partition overlap = overlapper.run(G, clusterings);
-	std::vector<node> overlapping = {0, 1, 2, 3};
+	std::vector<node> overlapping_comparison = {0, 1, 2, 3};
+	std::vector<node> overlapping_origin = overlap.getVector();
 	EXPECT_EQ(overlap.numberOfSubsets(), 4);
-	EXPECT_EQ(overlapping, overlap.getVector());
+	EXPECT_TRUE(std::is_permutation(overlapping_origin.begin(),overlapping_origin.end(),overlapping_comparison.begin()));
 }
 
 TEST_F(OverlapGTest, debugHashingOverlapperCorrectness) {
