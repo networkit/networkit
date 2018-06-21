@@ -15,9 +15,6 @@
 namespace NetworKit {
 
 class GlobalGTest: public testing::Test {
-public:
-	GlobalGTest();
-	virtual ~GlobalGTest();
 };
 
 } /* namespace NetworKit */

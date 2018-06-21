@@ -524,7 +524,6 @@ TEST_P(GraphGTest, testRandomNode) {
 	count n = 4;
 	count samples = 100000;
 	double maxAbsoluteError = 0.005;
-
 	Aux::Random::setSeed(42, false);
 
 	Graph G = createGraph(n);
@@ -925,7 +924,6 @@ TEST_P(GraphGTest, testSelfLoopConversion) {
 		Graph G_converted(G, false, !directed);
 		EXPECT_EQ(G_converted.numberOfSelfLoops(), measuredSelfLoops);
 	}
-
 }
 
 TEST_P(GraphGTest, testUpperNodeIdBound) {
@@ -1154,13 +1152,13 @@ TEST_P(GraphGTest, testTranspose) {
 		G.removeEdge(0,4);
 		G.addEdge(0,6, 3.14);
 	}
-	INFO("Ghouse: ", G.nodes(), " ", G.edges());
+	DEBUG("Ghouse: ", G.nodes(), " ", G.edges());
 	// expect throw error when G is undirected
 	if (!G.isDirected()) {
 		EXPECT_ANY_THROW(G.transpose());
 	} else {
 		Graph Gtrans = G.transpose();
-		INFO("GhouseTrans: ", Gtrans.nodes(), " ", Gtrans.edges());
+		DEBUG("GhouseTrans: ", Gtrans.nodes(), " ", Gtrans.edges());
 		// check summation statistics
 		EXPECT_EQ(G.numberOfNodes(), Gtrans.numberOfNodes());
 		EXPECT_EQ(G.numberOfEdges(), Gtrans.numberOfEdges());
@@ -2025,16 +2023,16 @@ TEST_P(GraphGTest, testForWeightedEdgesWithIds) {
 	}
 }
 
-TEST_P(GraphGTest, testInForEdgesUndirected) {
+/*TEST_P(GraphGTest, testInForEdgesUndirected) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/PGPgiantcompo.graph");
-	INFO(G.upperNodeIdBound());
+	DEBUG(G.upperNodeIdBound());
 	node u = 5474;
 	G.forInEdgesOf(u, [&](node u, node z, edgeweight w){
-		INFO("(1) node: ", u, " neigh:", z, " weight: ", w);
+		DEBUG("(1) node: ", u, " neigh:", z, " weight: ", w);
 	});
 	G.forEdgesOf(u, [&](node u, node z, edgeweight w){
-		INFO("(2) node: ", u, " neigh:", z, " weight: ", w);
+		DEBUG("(2) node: ", u, " neigh:", z, " weight: ", w);
 	});
 
 
@@ -2042,7 +2040,7 @@ TEST_P(GraphGTest, testInForEdgesUndirected) {
 	DynBFS bfs(G, source, false);
 	bfs.run();
 
-/*	std::vector<std::pair<node, double> > choices1;
+	std::vector<std::pair<node, double> > choices1;
 	G.forInEdgesOf(5474, [&](node t, node z, edgeweight w){
 		INFO("considered edge (1): ", t, z, w);
 		if (Aux::NumericTools::logically_equal(bfs.distance(t), bfs.distance(z) + w)) {
@@ -2066,8 +2064,9 @@ TEST_P(GraphGTest, testInForEdgesUndirected) {
 	});
 
 	INFO(choices1);
-	INFO(choices2);*/
+	INFO(choices2);
 }
+*/
 
 TEST_P(GraphGTest, testCompactEdges) {
 	Graph G = this->Ghouse;

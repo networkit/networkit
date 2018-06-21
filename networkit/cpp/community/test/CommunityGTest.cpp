@@ -182,16 +182,16 @@ TEST_F(CommunityGTest, testPLM) {
 	plm.run();
 	Partition zeta = plm.getPartition();
 
-	INFO("number of clusters: " , zeta.numberOfSubsets());
-	INFO("modularity: " , modularity.getQuality(zeta, G));
+	DEBUG("number of clusters: " , zeta.numberOfSubsets());
+	DEBUG("modularity: " , modularity.getQuality(zeta, G));
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta));
 
 	PLM plmr(G, true, 1.0);
 	plmr.run();
 	Partition zeta2 = plmr.getPartition();
 
-	INFO("number of clusters: " , zeta2.numberOfSubsets());
-	INFO("modularity: " , modularity.getQuality(zeta2, G));
+	DEBUG("number of clusters: " , zeta2.numberOfSubsets());
+	DEBUG("modularity: " , modularity.getQuality(zeta2, G));
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta2));
 
 }
@@ -211,16 +211,16 @@ TEST_F(CommunityGTest, testDeletedNodesPLM) {
 	plm.run();
 	Partition zeta = plm.getPartition();
 
-	INFO("number of clusters: " , zeta.numberOfSubsets());
-	INFO("modularity: " , modularity.getQuality(zeta, G));
+	DEBUG("number of clusters: " , zeta.numberOfSubsets());
+	DEBUG("modularity: " , modularity.getQuality(zeta, G));
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta));
 
 	PLM plmr(G, true, 1.0);
 	plmr.run();
 	Partition zeta2 = plmr.getPartition();
 
-	INFO("number of clusters: " , zeta2.numberOfSubsets());
-	INFO("modularity: " , modularity.getQuality(zeta2, G));
+	DEBUG("number of clusters: " , zeta2.numberOfSubsets());
+	DEBUG("modularity: " , modularity.getQuality(zeta2, G));
 	EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta2));
 
 }
@@ -408,74 +408,6 @@ TEST_F(CommunityGTest, testGraphStructuralRandMeasure) {
 
 }
 
-
-
-//TEST_F(CommunityGTest, testModularityParallelVsSequentialOnLargeGraph) {
-//
-//	Modularity modularityPar;
-//	ModularitySequential modularitySeq;
-//
-//	ClusteringGenerator clusteringGen;
-//
-//	METISGraphReader reader;
-//	Graph G = reader.read("graphs/Benchmark/uk-2002.graph"); // FIXME: hardcoded file name
-//	Partition zeta = clusteringGen.makeRandomClustering(G, 42);
-//
-//	double modPar = modularityPar.getQuality(zeta, G);
-//	double modSeq = modularitySeq.getQuality(zeta, G);
-//
-//	EXPECT_EQ(modPar, modSeq) << "Modularity values should be equal no matter if calculated in parallel or sequentially";
-//
-//}
-
-
-//TEST_F(CommunityGTest, testModularityWithStoredClustering) {
-//
-//	std::string graphPath;
-//	std::cout << "[INPUT] .graph file path >" << std::endl;
-//	std::getline(std::cin, graphPath);
-//
-//	std::string clusteringPath;
-//	std::cout << "[INPUT] .clust/.ptn file path >" << std::endl;
-//	std::getline(std::cin, clusteringPath);
-//
-//	std::string evalPath;
-//	std::cout << "[INPUT] .eval file path >" << std::endl;
-//	std::getline(std::cin, evalPath);
-//
-//	INFO("reading graph from: " , graphPath);
-//	METISGraphReader graphReader;
-//	Graph G = graphReader.read(graphPath);
-//
-//	ClusteringReader clusteringReader;
-//	INFO("reading clustering from: " , clusteringPath);
-//	Partition zeta = clusteringReader.read(clusteringPath);
-//
-//	INFO("reading modularity value from .eval file: " , evalPath);
-//	std::ifstream evalFile(evalPath);
-//	std::string evalLine;
-//	std::getline(evalFile, evalLine);
-//	double evalMod = std::atof(evalLine.c_str());
-//	INFO("modularity from .eval file: " , evalMod);
-//
-//	Modularity modularity;
-//	INFO("calculating modularity in parallel");
-//	double modPar = modularity.getQuality(zeta, G);
-//	INFO("modPar: " , modPar);
-//
-//	ModularitySequential modularitySeq;
-//	INFO("calculating modularity sequentially");
-//	double modSeq = modularitySeq.getQuality(zeta, G);
-//	INFO("modSeq: " , modSeq);
-//
-//	EXPECT_EQ(modSeq, modPar) << "Modularity values should be equal no matter if calculated in parallel or sequentially";
-//	EXPECT_EQ(modSeq, evalMod) << "modSeq should be agree with DIMACS challenge evaluation";
-//	EXPECT_EQ(modPar, evalMod) << "modPar should be agree with DIMACS challenge evaluation";
-//
-//}
-
-
-
 TEST_F(CommunityGTest, testNMIDistance) {
 	// two 1-clusterings should have NMID = 0 because H is 0
 	Graph G(1000);
@@ -487,7 +419,7 @@ TEST_F(CommunityGTest, testNMIDistance) {
 	NMIDistance NMID;
 	double distOne = NMID.getDissimilarity(G, one1, one2);
 
-	INFO("NMID for two 1-clusterings: " , distOne);
+	DEBUG("NMID for two 1-clusterings: " , distOne);
 	EXPECT_TRUE(Aux::NumericTools::equal(0.0, distOne)) << "NMID of two 1-clusterings should be 0.0";
 
 
@@ -495,7 +427,7 @@ TEST_F(CommunityGTest, testNMIDistance) {
 	Partition singleton2 = clustGen.makeSingletonClustering(G);
 
 	double distSingleton = NMID.getDissimilarity(G, singleton1, singleton2);
-	INFO("NMID for two singleton clusterings: " , distSingleton);
+	DEBUG("NMID for two singleton clusterings: " , distSingleton);
 
 
 	EXPECT_TRUE(Aux::NumericTools::equal(0.0, distSingleton)) << "NMID of two identical singleton clusterings should be 0.0";
@@ -504,7 +436,7 @@ TEST_F(CommunityGTest, testNMIDistance) {
 	Partition continuous2 = clustGen.makeContinuousBalancedClustering(G, 70);
 
 	double distContinuous = NMID.getDissimilarity(G, continuous1, continuous2);
-	INFO("NMID for two continuous clusterings: " , distContinuous);
+	DEBUG("NMID for two continuous clusterings: " , distContinuous);
 
 	Partition smallClusters = clustGen.makeContinuousBalancedClustering(G, 300);
 	double distSingleIntersection = NMID.getDissimilarity(G, singleton1, smallClusters);
@@ -522,15 +454,13 @@ TEST_F(CommunityGTest, testSampledRandMeasures) {
 	ClusteringGenerator clusteringGenerator;
 	Partition one = clusteringGenerator.makeOneClustering(G);
 	Partition singleton = clusteringGenerator.makeSingletonClustering(G);
-
 	SampledNodeStructuralRandMeasure nRand(20);
 	SampledGraphStructuralRandMeasure gRand(20);
-	DEBUG("node structural dissimilarity: ", nRand.getDissimilarity(G, one, singleton));
-	DEBUG("graph structural dissimilarity: ", gRand.getDissimilarity(G, one, singleton));
+	ASSERT_EQ(nRand.getDissimilarity(G, one, singleton),gRand.getDissimilarity(G, one, singleton));
 }
 
 
-TEST_F(CommunityGTest, tryParallelAgglomerativeAndPLM) {
+TEST_F(CommunityGTest, debugParallelAgglomerativeAndPLM) {
 	METISGraphReader reader;
 	Graph jazz = reader.read("input/jazz.graph");
 	Graph blog = reader.read("input/polblogs.graph");

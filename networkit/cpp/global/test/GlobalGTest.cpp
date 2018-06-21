@@ -15,15 +15,6 @@
 
 namespace NetworKit {
 
-GlobalGTest::GlobalGTest() {
-
-}
-
-GlobalGTest::~GlobalGTest() {
-
-}
-
-
 TEST_F(GlobalGTest, testClusteringCoefficient) {
 
 	ErdosRenyiGenerator graphGen(10, 1.0);
@@ -50,12 +41,6 @@ TEST_F(GlobalGTest, testGlobalClusteringCoefficient) {
 	double ccg = ClusteringCoefficient::exactGlobal(G);
 	EXPECT_NEAR(ccg, 18.0 / 34.0, 1e-9);
 }
-
-
-
-
-
-
 } /* namespace NetworKit */
 
 #endif /*NOGTEST*/

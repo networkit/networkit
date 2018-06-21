@@ -43,12 +43,24 @@ TEST_F(APSPGTest, testAPSP) {
 	APSP apsp(G);
 	apsp.run();
 	std::vector<std::vector<edgeweight> > distances = apsp.getDistances();
-	INFO("distances[0]: ", distances[0][0], distances[0][1], distances[0][2], distances[0][3], distances[0][4], distances[0][5], distances[0][6]);
-	INFO("distances[1]: ", distances[1][0], distances[1][1], distances[1][2], distances[1][3], distances[1][4], distances[1][5], distances[1][6]);
-	EXPECT_TRUE(apsp.isParallel());
+	ASSERT_EQ(distances[0][0],0);
+	ASSERT_EQ(distances[0][1],2);
+	ASSERT_EQ(distances[0][2],1);
+	ASSERT_EQ(distances[0][3],2);
+	ASSERT_EQ(distances[0][4],2);
+	ASSERT_EQ(distances[0][5],2);
+	ASSERT_EQ(distances[0][6],1);
+	ASSERT_EQ(distances[1][0],2);
+	ASSERT_EQ(distances[1][1],0);
+	ASSERT_EQ(distances[1][2],1);
+	ASSERT_EQ(distances[1][3],2);
+	ASSERT_EQ(distances[1][4],2);
+	ASSERT_EQ(distances[1][5],3);
+	ASSERT_EQ(distances[1][6],3);
+	ASSERT_TRUE(apsp.isParallel());
 }
 
-TEST_F(APSPGTest, tryAPSP) {
+TEST_F(APSPGTest, debugAPSP) {
 	count n = 1000;
 	count m = int(n * n);
 	Graph G(n, true, false);
@@ -76,7 +88,7 @@ TEST_F(APSPGTest, testDynAPSPRealGraph) {
 			u = G.randomNode();
 			v = G.randomNode();
 		}
-		INFO("u = ", u, ", v = ", v);
+		DEBUG("u = ", u, ", v = ", v);
 		GraphEvent event(GraphEvent::EDGE_ADDITION, u, v, 1);
 		G.addEdge(u, v, 1);
 		apsp.update(event);
@@ -87,7 +99,7 @@ TEST_F(APSPGTest, testDynAPSPRealGraph) {
 		G.forNodes([&](node i) {
 			G.forNodes([&](node j) {
 				if (distances[i][j] != distances2[i][j])
-					INFO("i, j = ", i, " ", j, ", dist[i][j] = ", distances[i][j], ", dist2[i][j] = ", distances2[i][j], ", u = ", u, ", v = ", v);
+					DEBUG("i, j = ", i, " ", j, ", dist[i][j] = ", distances[i][j], ", dist2[i][j] = ", distances2[i][j], ", u = ", u, ", v = ", v);
 				EXPECT_NEAR(distances[i][j], distances2[i][j], 0.0001);
 			});
 		});
@@ -160,7 +172,7 @@ TEST_F(APSPGTest, testAPSPInsertionUndirectedUnweighted) {
 	G.forNodes([&](node i) {
 		G.forNodes([&](node j) {
 			if (distances[i][j] != distances2[i][j]){
-				INFO("i = ", i, ", j = ", j, ", distance: ", distances[i][j], ", expected: ", distances2[i][j]);
+				DEBUG("i = ", i, ", j = ", j, ", distance: ", distances[i][j], ", expected: ", distances2[i][j]);
 			}
 			EXPECT_EQ(distances[i][j], distances2[i][j]);
 		});
@@ -191,13 +203,12 @@ TEST_F(APSPGTest, testAPSPInsertionDirectedUnweighted) {
 
 	G.forNodes([&](node i) {
 		G.forNodes([&](node j) {
-			INFO("i, j: ", i, j);
-			EXPECT_EQ(distances[i][j], distances2[i][j]);
+			EXPECT_EQ(distances[i][j], distances2[i][j]) << "i, j = " << i << ", " << j;
 		});
 	});
 
 	std::vector<node> path10 = apsp.getPath(1, 0);
-	INFO("path10 = ", path10);
+	DEBUG("path10 = ", path10);
 }
 
 TEST_F(APSPGTest, testAPSPUndirectedWeighted) {
@@ -228,8 +239,7 @@ TEST_F(APSPGTest, testAPSPUndirectedWeighted) {
 
 	G.forNodes([&](node i) {
 		G.forNodes([&](node j) {
-			INFO("i, j = ", i, j);
-			EXPECT_NEAR(distances[i][j], distances2[i][j], 0.0001);
+			EXPECT_NEAR(distances[i][j], distances2[i][j], 0.0001) << "i, j = " << i << ", " << j;
 		});
 	});
 
@@ -245,8 +255,7 @@ TEST_F(APSPGTest, testAPSPUndirectedWeighted) {
 
 	G.forNodes([&](node i) {
 		G.forNodes([&](node j) {
-			INFO("i, j = ", i, j);
-			EXPECT_NEAR(distances[i][j], distances4[i][j], 0.0001);
+			EXPECT_NEAR(distances[i][j], distances4[i][j], 0.0001) << "i, j = " << i << ", " << j;
 		});
 	});
 }
@@ -280,8 +289,7 @@ TEST_F(APSPGTest, testAPSPDirectedWeighted1) {
 	std::vector<std::vector<edgeweight> > distances2 = APSP.getDistances();
 	G.forNodes([&](node i) {
 		G.forNodes([&](node j) {
-			INFO("i, j = ", i, " ", j);
-			EXPECT_NEAR(distances[i][j], distances2[i][j], 0.0001);
+			EXPECT_NEAR(distances[i][j], distances2[i][j], 0.0001) << "i, j = " << i << ", " << j;
 		});
 	});
 }
@@ -313,8 +321,7 @@ TEST_F(APSPGTest, testAPSPDirectedWeighted2) {
 	std::vector<std::vector<edgeweight> > distances2 = APSP.getDistances();
 	G.forNodes([&](node i) {
 		G.forNodes([&](node j) {
-			INFO("i, j = ", i, " ", j);
-			EXPECT_NEAR(distances[i][j], distances2[i][j], 0.0001);
+			EXPECT_NEAR(distances[i][j], distances2[i][j], 0.0001) << "i, j = " << i << ", " << j;
 		});
 	});
 }

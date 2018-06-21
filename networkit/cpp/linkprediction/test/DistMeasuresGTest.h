@@ -24,9 +24,6 @@
 namespace NetworKit {
 
 class DistMeasuresGTest: public testing::Test {
-public:
-	DistMeasuresGTest();
-	virtual ~DistMeasuresGTest();
 };
 
 } /* namespace NetworKit */

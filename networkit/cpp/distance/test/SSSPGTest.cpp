@@ -43,20 +43,16 @@ TEST_F(SSSPGTest, testDijkstra) {
 
 
 	Dijkstra sssp(G, 5, true, true);
-	sssp.run();
+	EXPECT_NO_THROW(sssp.run());
 	std::vector<node> stack = sssp.getNodesSortedByDistance();
-#if LOG_LEVEL >= LOG_LEVEL_DEBUG
-	while (!stack.empty()) {
-		DEBUG(stack.back());
-		stack.pop_back();
-	}
-#endif
+	std::vector<node> result {5,3,4,6,7,0,2,1};
+	ASSERT_EQ(stack,result);
 }
 
 TEST_F(SSSPGTest, testShortestPaths) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/PGPgiantcompo.graph");
-	INFO("The graph has been read.");
+	DEBUG("The graph has been read.");
 	int source = 2;
 	BFS bfs(G, source);
 	bfs.run();
@@ -72,14 +68,14 @@ TEST_F(SSSPGTest, testShortestPaths) {
 	std::set<std::vector<node>> paths = bfs.getPaths(x, true);
 	count i = 0;
 	for (auto path : paths) {
-		INFO("Path number ", i);
+		DEBUG("Path number ", i);
 		i ++;
-		INFO(path);
+		DEBUG(path);
 		EXPECT_EQ(path[0], source);
 		EXPECT_EQ(path[dist], x);
 	}
-	INFO("Maximum number of shortest paths: ", bfs.numberOfPaths(x));
-	INFO("Distance: ", dist);
+	DEBUG("Maximum number of shortest paths: ", bfs.numberOfPaths(x));
+	DEBUG("Distance: ", dist);
 }
 
 TEST_F(SSSPGTest, testGetAllShortestPaths) {
@@ -105,16 +101,21 @@ TEST_F(SSSPGTest, testGetAllShortestPaths) {
 	G.addEdge(7, 8);
 	G.addEdge(8, 9);
 	G.addEdge(8, 10);
-	Dijkstra sssp(G, 0, true, false);
-	sssp.run();
-	std::set<std::vector<node>> paths = sssp.getPaths(9, true);
+	Dijkstra sssp(G, 0);
+	EXPECT_NO_THROW(sssp.run());
+
+
+	std::set<std::vector<node>> paths = sssp.getPaths(9);
+	ASSERT_EQ(paths.size(),4);
+	std::vector<node> path1 {0,2,3,5,6,8,9};
+	std::vector<node> path2 {0,2,3,5,7,8,9};
+	std::vector<node> path3 {0,2,4,5,6,8,9};
+	std::vector<node> path4 {0,2,4,5,7,8,9};
+	std::vector<std::vector<node>> results {path1, path2, path3, path4};
 	count i = 0;
 	for (auto path : paths) {
-		INFO("Path number ", i);
-		i ++;
-		for (node n : path) {
-			INFO(n);
-		}
+		ASSERT_EQ(path,results[i]);
+		i++;
 	}
 }
 

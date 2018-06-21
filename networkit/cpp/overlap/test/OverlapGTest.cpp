@@ -13,8 +13,6 @@
 
 namespace NetworKit {
 
-
-
 TEST_F(OverlapGTest, testHashingOverlapperOnSingletonClusterings) {
 	int64_t n = 10;
 	Graph G(n);
@@ -40,7 +38,6 @@ TEST_F(OverlapGTest, testHashingOverlapperOnSingletonClusterings) {
 
 	EXPECT_TRUE(isSingleton) << "overlap of multiple  singleton clusterings should be a singleton clustering";
 }
-
 
 TEST_F(OverlapGTest, testHashingOverlapperOnOneClusterings) {
 	int64_t n = 10;
@@ -74,7 +71,6 @@ TEST_F(OverlapGTest, testHashingOverlapperOnOneClusterings) {
 
 }
 
-
 TEST_F(OverlapGTest, testHashingOverlapperForCorrectness) {
 	count n = 4;
 	Graph G(n);
@@ -97,12 +93,12 @@ TEST_F(OverlapGTest, testHashingOverlapperForCorrectness) {
 	std::vector<Partition> clusterings = {zeta, eta};
 	HashingOverlapper overlapper;
 	Partition overlap = overlapper.run(G, clusterings);
-
-	INFO("overlap clustering number of clusters: ", overlap.numberOfSubsets());
-	INFO("overlap clustering: ", overlap.getVector());
+	std::vector<node> overlapping = {0, 1, 2, 3};
+	EXPECT_EQ(overlap.numberOfSubsets(), 4);
+	EXPECT_EQ(overlapping, overlap.getVector());
 }
 
-TEST_F(OverlapGTest, tryHashingOverlapperCorrectness) {
+TEST_F(OverlapGTest, debugHashingOverlapperCorrectness) {
 	count n = 2;
 	Graph G(n);
 
@@ -126,7 +122,7 @@ TEST_F(OverlapGTest, tryHashingOverlapperCorrectness) {
 	EXPECT_TRUE(GraphClusteringTools::isSingletonClustering(G, overlap)) << "When one singleton clustering is in the overlap, the result should be a singleton clustering";
 }
 
-TEST_F(OverlapGTest, tryHashingOverlapperCorrectness2) {
+TEST_F(OverlapGTest, debugHashingOverlapperCorrectness2) {
 	count n = 10000;
 	count k = 1000;
 	Graph G(n);
@@ -143,8 +139,5 @@ TEST_F(OverlapGTest, tryHashingOverlapperCorrectness2) {
 
 	EXPECT_TRUE(GraphClusteringTools::isSingletonClustering(G, overlap)) << "When a singleton clustering is in the overlap, the result should be a singleton clustering";
 }
-
-
 } /* namespace NetworKit */
-
 #endif
