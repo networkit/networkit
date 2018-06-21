@@ -1,7 +1,10 @@
 # extension imports
 from _NetworKit import (METISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListWriter, \
-						 GMLGraphWriter, LineFileReader, SNAPGraphWriter, DGSWriter, GraphToolBinaryWriter, GraphToolBinaryReader, \
-						  DGSStreamParser, GraphUpdater, SNAPEdgeListPartitionReader, SNAPGraphReader, EdgeListReader, CoverReader, CoverWriter, EdgeListCoverReader, KONECTGraphReader, GMLGraphReader, ThrillGraphBinaryReader, ThrillGraphBinaryWriter)
+						GMLGraphWriter, LineFileReader, SNAPGraphWriter, DGSWriter, GraphToolBinaryWriter, \
+						GraphToolBinaryReader, DGSStreamParser, GraphUpdater, SNAPEdgeListPartitionReader, \
+						SNAPGraphReader, EdgeListReader, CoverReader, CoverWriter, EdgeListCoverReader, \
+						KONECTGraphReader, GMLGraphReader, MultipleEdgesHandling, ThrillGraphBinaryReader, \
+						ThrillGraphBinaryWriter)
 from _NetworKit import Graph as __Graph
 # local imports
 from .GraphMLIO import GraphMLReader, GraphMLWriter
@@ -96,7 +99,7 @@ def getReader(fileformat, **kwargs):
 			Format.EdgeListTabOne:		EdgeListReader('\t',1),
 			Format.EdgeListTabZero:		EdgeListReader('\t',0),
 			Format.LFR:			EdgeListReader('\t',1),
-			Format.KONECT:			KONECTGraphReader(' '),
+			Format.KONECT:			KONECTGraphReader(),
 			Format.GML:			GMLGraphReader(),
 			Format.GraphToolBinary:		GraphToolBinaryReader(),
 			Format.MAT:			MatReader(),

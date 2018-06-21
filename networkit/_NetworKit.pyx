@@ -3022,6 +3022,17 @@ cdef extern from "cpp/io/GraphReader.h":
 		_GraphReader() nogil except +
 		_Graph read(string path) nogil except +
 
+cdef extern from "cpp/io/GraphReader.h" namespace "NetworKit::GraphReader":
+	cdef enum _MultipleEdgesHandling "NetworKit::GraphReader::MultipleEdgesHandling":
+		DISCARD_EDGES,
+		SUM_WEIGHTS_UP,
+		KEEP_MINIUM_WEIGHT
+
+class MultipleEdgesHandling:
+	DiscardEdges = DISCARD_EDGES
+	SumWeightsUp = SUM_WEIGHTS_UP
+	KeepMinimumWeight = KEEP_MINIUM_WEIGHT
+
 cdef class GraphReader:
 	""" Abstract base class for graph readers"""
 
@@ -3169,15 +3180,15 @@ cdef class EdgeListReader(GraphReader):
 cdef extern from "cpp/io/KONECTGraphReader.h":
 	cdef cppclass _KONECTGraphReader "NetworKit::KONECTGraphReader"(_GraphReader):
 		_KONECTGraphReader() except +
-		_KONECTGraphReader(char separator, bool ignoreLoops)
+		_KONECTGraphReader(bool remapNodes, _MultipleEdgesHandling handlingmethod)
 
 cdef class KONECTGraphReader(GraphReader):
 	""" Reader for the KONECT graph format, which is described in detail on the KONECT website[1].
 
 		[1]: http://konect.uni-koblenz.de/downloads/konect-handbook.pdf
 	"""
-	def __cinit__(self, separator, ignoreLoops = False):
-		self._this = new _KONECTGraphReader(stdstring(separator)[0], ignoreLoops)
+	def __cinit__(self, remapNodes = False, handlingmethod = MultipleEdgesHandling.DiscardEdges):
+		self._this = new _KONECTGraphReader(remapNodes, handlingmethod)
 
 cdef extern from "cpp/io/GMLGraphReader.h":
 	cdef cppclass _GMLGraphReader "NetworKit::GMLGraphReader"(_GraphReader):

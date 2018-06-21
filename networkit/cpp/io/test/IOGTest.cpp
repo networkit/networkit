@@ -25,6 +25,7 @@
 #include "../SNAPEdgeListPartitionReader.h"
 #include "../SNAPGraphWriter.h"
 #include "../EdgeListReader.h"
+#include "../KONECTGraphReader.h"
 #include "../GMLGraphWriter.h"
 #include "../EdgeListCoverReader.h"
 #include "../CoverReader.h"
@@ -686,6 +687,7 @@ TEST_F(IOGTest, testGraphToolBinaryWriterWithDeletedNodesDirected) {
 	EXPECT_EQ(G.isWeighted(),Gread.isWeighted());
 }
 
+
 TEST_F(IOGTest, testThrillGraphBinaryWriterAndReader) {
 	// This test graph has a large maximum degree as degrees smaller than 128
 	// do not test the binary writer and reader properly.
@@ -762,6 +764,17 @@ TEST_F(IOGTest, testBinaryEdgeListPartitionWriterAndReader) {
 	EXPECT_EQ(P[3], Q[3]);
 	EXPECT_EQ(P[4], Q[4]);
 	EXPECT_EQ(Q.upperBound(), P[4]+1);
+}
+
+TEST_F(IOGTest, testKONECTGraphReader){
+	KONECTGraphReader reader;
+	Graph G = reader.read("input/foodweb-baydry.konect");
+
+	ASSERT_TRUE(G.isDirected());
+	ASSERT_EQ(G.numberOfEdges() , 2137);
+	ASSERT_EQ(G.numberOfNodes() , 128);
+	ASSERT_EQ(G.weight(0,1), 1.261404);
+	ASSERT_EQ(G.weight(127, 48), 0.03050447);
 }
 
 } /* namespace NetworKit */
