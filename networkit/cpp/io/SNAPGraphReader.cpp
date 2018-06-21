@@ -1,130 +1,134 @@
 /*
  * SNAPGraphReader.cpp
  *
- *  Created on: 19.05.2014
- *      Author: Maximilian Vogel
+ *  Created on: 04.05.2018
+ *      Author: Alexander van der Grinten
  */
+
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "SNAPGraphReader.h"
 #include "../auxiliary/StringTools.h"
 #include "../auxiliary/Log.h"
 
-#include <sstream>
-#include <fstream>
-
 namespace NetworKit {
 
-Graph SNAPGraphReader::read(const std::string& path) {
-	std::ifstream file;
-	std::string line; // the current line
+SNAPGraphReader::SNAPGraphReader(bool directed, const bool& remapNodes, const count& nodeCount) :
+directed(directed), nodeCount(nodeCount), remapNodes(remapNodes){}
 
-	// read file once to get to the last line and figure out the number of nodes
-	// unfortunately there is an empty line at the ending of the file, so we need to get the line before that
-	
-	file.open(path);
-	if (! file.good()) {
-		throw std::runtime_error("unable to read from file");
-	}
-	
-	std::string previousLine;
-	node maxNode = 0;
-	node consecutiveID = 0;
-	//std::unordered_map<node,node> mapNodeIds;
-	
-	std::string commentPrefix = "#";
-	
-	// count firstNode = 0;
-	char separator = '\t';
+Graph SNAPGraphReader::read(const std::string &path) {
+	Graph graph(0,false,directed);
 
-	//DEBUG("separator: " , separator);
-	//DEBUG("first node: " , firstNode);
+	//In the actual state this parameter has very little influence on the reader performance.
+	//There can be a significant boost if it is possible to reserve space in the graph initialization
+	if(nodeCount != 0 && remapNodes)
+		nodeIdMap.reserve(nodeCount);
 
-	// first find out the maximum node id
-	DEBUG("first pass: create node ID mapping");
-	count i = 0;
-	while (file.good()) {
-		++i;
-		std::getline(file, line);
-		// TRACE("read line: " , line);
-		if (line.compare(0, commentPrefix.length(), commentPrefix) == 0) {
-			// TRACE("ignoring comment: " , line);
-	        } else if (line.length() == 0) {
-        		// TRACE("ignoring empty line");
-		} else {
-			std::vector<std::string> split = Aux::StringTools::split(line, separator);
-	
-			if (split.size() == 2) {
-        			TRACE("split into : " , split[0] , " and " , split[1]);
-				node u = std::stoul(split[0]);
-				if(mapNodeIds.insert(std::make_pair(u,consecutiveID)).second) consecutiveID++;
-				if (u > maxNode) {
-					maxNode = u;
-				}
-				node v = std::stoul(split[1]);
-				if(mapNodeIds.insert(std::make_pair(v,consecutiveID)).second) consecutiveID++;
-
-				if (v > maxNode) {
-					maxNode = v;
-				}
-			} else {
-				std::stringstream message;
-				message << "malformed line ";
-				message << i << ": ";
-				message << line;
-				throw std::runtime_error(message.str());
-			}
+	// Maps SNAP node IDs to consecutive NetworKit node IDs.
+	auto mapNode = [&] (node in) -> node {
+		if (remapNodes){
+			auto it = nodeIdMap.find(in);
+			if(it != nodeIdMap.end())
+				return it->second;
+			auto result = nodeIdMap.insert({in, graph.addNode()});
+			if(!result.second)
+				throw std::runtime_error("Error in mapping nodes");
+			return result.first->second;
 		}
-	}
+		for(count i = graph.upperNodeIdBound(); i < in + 1; i++)
+			graph.addNode();
+		return in;
+	};
 
-	file.close();
-
-	//maxNode = maxNode - firstNode + 1;
-	//DEBUG("max. node id found: " , maxNode);
-
-	//Graph G(maxNode);
-	DEBUG("found ",mapNodeIds.size()," unique node ids");
-	Graph G(mapNodeIds.size());
-
-	DEBUG("second pass: add edges");
-	file.open(path);
-
-    // split the line into start and end node. since the edges are sorted, the start node has the highest id of all nodes
-	i = 0; // count lines
-	while(std::getline(file,line)){
-        	++i;
-		if (line.compare(0, commentPrefix.length(), commentPrefix) == 0) {
-			// TRACE("ignoring comment: " , line);
-		} else {
-			// TRACE("edge line: " , line);
-			std::vector<std::string> split = Aux::StringTools::split(line, separator);
-			std::string splitZero = split[0];
-			if (split.size() == 2) {
-				node u = mapNodeIds[std::stoi(split[0])];
-				node v = mapNodeIds[std::stoi(split[1])];
-				if (!G.hasEdge(u,v) && !G.hasEdge(v,u)) {
-					G.addEdge(u, v);
-				}
-			} else {
-				std::stringstream message;
-				message << "malformed line ";
-				message << i << ": ";
-				message << line;
-				throw std::runtime_error(message.str());
-			}
+	// This function modifies the graph on input.
+	auto handleEdge = [&] (node source, node target) {
+		if(!graph.hasEdge(source, target)){
+			graph.addEdge(source, target);
+		}else{
+			DEBUG("["+std::to_string(source)+"->"+std::to_string(target)+
+				"] Multiple edges detected");
 		}
+	};
+
+	auto fd = open(path.c_str(), O_RDONLY);
+	if(fd < 0)
+		throw std::runtime_error("Unable to open file");
+
+	struct stat st;
+	if(fstat(fd, &st))
+		throw std::runtime_error("Could not obtain file stats");
+
+	// It does not really matter if we use a private or shared mappingraph.
+	auto window = mmap(nullptr, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+	if(window == reinterpret_cast<void *>(-1))
+		throw std::runtime_error("Could not map file");
+
+	if(close(fd))
+		throw std::runtime_error("Error during close()");
+
+	auto it = reinterpret_cast<char *>(window);
+	auto end = reinterpret_cast<char *>(window) + st.st_size;
+
+	// The following functions are helpers for parsing.
+	auto skipWhitespace = [&] {
+		while(it != end && (*it == ' ' || *it == '\t'))
+			++it;
+	};
+
+	auto scanId = [&] () -> node {
+		char *past;
+		auto value = strtol(it, &past, 10);
+		if(past <= it)
+			throw std::runtime_error("Error in parsing file - looking for nodeId failed");
+		it = past;
+		return value;
+	};
+
+	// This loop does the actual parsing.
+	while(it != end) {
+		if(it >= end)
+			throw std::runtime_error("Unexpected end of file");
+
+		skipWhitespace();
+
+		if(it == end)
+			throw std::runtime_error("Unexpected end of file");
+
+		if(*it == '\n') {
+			// We ignore empty lines.
+		}else if(*it == '#') {
+			// Skip non-linebreak characters.
+			while(it != end && *it != '\n')
+				++it;
+		}else{
+			auto sourceId = scanId();
+			if(it == end)
+				throw std::runtime_error("Unexpected end of file");
+			if(!(*it == ' ' || *it == '\t'))
+				throw std::runtime_error("Error in parsing file - pointer is whitespace");
+
+			skipWhitespace();
+
+			auto targetId = scanId();
+			skipWhitespace();
+
+			handleEdge(mapNode(sourceId), mapNode(targetId));
+		}
+
+		if(it == end)
+			throw std::runtime_error("Unexpected end of file");
+		if(!(*it == '\n' || *it == '\r'))
+			throw std::runtime_error("Line does not end with line break");
+		++it;
 	}
-	DEBUG("read ",i," lines and added ",G.numberOfEdges()," edges");
-	file.close();
 
-	G.shrinkToFit();
-	return G;
+	if(munmap(window, st.st_size))
+		throw std::runtime_error("Could not unmap file");
+	graph.shrinkToFit();
+	return graph;
 }
 
-std::unordered_map<node,node> SNAPGraphReader::getNodeIdMap() {
-	return mapNodeIds;
-}
-
-
-
-}
-
+} // namespace NetworKit

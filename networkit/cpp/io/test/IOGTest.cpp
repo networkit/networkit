@@ -22,6 +22,7 @@
 #include "../DGSReader.h"
 #include "../EdgeListWriter.h"
 #include "../EdgeListPartitionReader.h"
+#include "../SNAPGraphReader.h"
 #include "../SNAPEdgeListPartitionReader.h"
 #include "../SNAPGraphWriter.h"
 #include "../EdgeListReader.h"
@@ -490,6 +491,15 @@ TEST_F(IOGTest, debugReadingSNAP) {
 	INFO("n = " , G.numberOfNodes());
 	INFO("m = " , G.numberOfEdges());
 
+}
+
+TEST_F(IOGTest, testSNAPGraphReader) {
+	SNAPGraphReader reader(true);
+	Graph G = reader.read("input/wiki-Vote.txt");
+
+	EXPECT_TRUE(G.isDirected());
+	EXPECT_EQ(G.numberOfNodes(), 7115);
+	EXPECT_EQ(G.numberOfEdges(), 103689);
 }
 
 TEST_F(IOGTest, testSNAPGraphWriter) {

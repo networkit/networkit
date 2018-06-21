@@ -3338,21 +3338,15 @@ cdef class SNAPGraphWriter:
 cdef extern from "cpp/io/SNAPGraphReader.h":
 	cdef cppclass _SNAPGraphReader "NetworKit::SNAPGraphReader"(_GraphReader):
 		_SNAPGraphReader() except +
-		unordered_map[node,node] getNodeIdMap() except +
+		_SNAPGraphReader(bool directed, bool remapNodes, count nodeCount);
 
 cdef class SNAPGraphReader(GraphReader):
-	""" Reads a graph from the SNAP graph data collection [1] (currently experimental)
+	""" Reads a graph from the SNAP graph data collection [1]
 		[1]: http://snap.stanford.edu/data/index.html
 	"""
-	def __cinit__(self):
-		self._this = new _SNAPGraphReader()
+	def __cinit__(self, directed = False, remapNodes = True, nodeCount = 0):
+		self._this = new _SNAPGraphReader(directed, remapNodes, nodeCount)
 
-	def getNodeIdMap(self):
-		cdef unordered_map[node,node] cResult = (<_SNAPGraphReader*>(self._this)).getNodeIdMap()
-		result = []
-		for elem in cResult:
-			result.append((elem.first,elem.second))
-		return result
 
 
 cdef extern from "cpp/io/PartitionReader.h":
