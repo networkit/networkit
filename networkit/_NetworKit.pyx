@@ -21,6 +21,7 @@ from cython.operator import dereference, preincrement
 # type imports
 from libc.stdint cimport uint64_t
 from libc.stdint cimport int64_t
+from libc.stdint cimport uint8_t
 
 # the C++ standard library
 from libcpp cimport bool
@@ -3069,6 +3070,79 @@ cdef class GraphToolBinaryReader(GraphReader):
 	def __cinit__(self):
 		self._this = new _GraphToolBinaryReader()
 
+cdef extern from "cpp/io/ThrillGraphBinaryReader.h":
+	cdef cppclass _ThrillGraphBinaryReader "NetworKit::ThrillGraphBinaryReader" (_GraphReader):
+		_ThrillGraphBinaryReader(count n) except +
+		_Graph read(vector[string] paths) nogil except +
+
+cdef class ThrillGraphBinaryReader(GraphReader):
+	""" 
+	Reads a graph format consisting of a serialized DIA of vector<uint32_t> from thrill.
+	When the number of nodes is given, reading the graph is more efficient.
+	Otherwise nodes are added to the graph as they are encountered.
+	Edges must be present only in one direction.
+	 
+	Parameters
+	----------
+	n : count
+		The number of nodes
+	"""
+	def __cinit__(self, count n = 0):
+		self._this = new _ThrillGraphBinaryReader(n)
+
+	"""
+	Read the graph from one or multiple files
+
+	Parameters
+	----------
+	paths : str or list[str]
+		The input path(s)
+	"""
+	def read(self, paths):
+		cdef vector[string] c_paths
+
+		if isinstance(paths, str):
+			c_paths.push_back(stdstring(paths))
+		else:
+			c_paths.reserve(len(paths))
+
+			for p in paths:
+				c_paths.push_back(stdstring(p))
+
+		cdef _Graph result
+
+		with nogil:
+			result = move((<_ThrillGraphBinaryReader*>(self._this)).read(c_paths)) # extra move in order to avoid copying the internal variable that is used by Cython
+
+		return Graph(0).setThis(result)
+
+cdef extern from "cpp/io/ThrillGraphBinaryWriter.h":
+	cdef cppclass _ThrillGraphBinaryWriter "NetworKit::ThrillGraphBinaryWriter":
+		void write(_Graph G, string path) nogil except +
+
+cdef class ThrillGraphBinaryWriter:
+	"""
+	Writes a graph format consisting of a serialized DIA of vector<uint32_t> from thrill.
+	Edges are written only in one direction.
+	"""
+
+	cdef _ThrillGraphBinaryWriter _this
+
+	"""
+	Write the graph to a binary file.
+
+	Parameters
+	----------
+	G     : Graph
+		The graph to write
+	paths : str
+		The output path
+	"""
+	def write(self, Graph G not None, path):
+		cdef string c_path = stdstring(path)
+		with nogil:
+			self._this.write(G._this, c_path)
+		return self
 
 cdef extern from "cpp/io/EdgeListReader.h":
 	cdef cppclass _EdgeListReader "NetworKit::EdgeListReader"(_GraphReader):
@@ -3303,6 +3377,69 @@ cdef class PartitionWriter:
 		with nogil:
 			self._this.write(zeta._this, cpath)
 
+cdef extern from "cpp/io/BinaryPartitionReader.h":
+	cdef cppclass _BinaryPartitionReader "NetworKit::BinaryPartitionReader":
+		_BinaryPartitionReader() except +
+		_BinaryPartitionReader(uint8_t width) except +
+		_Partition read(string path) except +
+
+
+cdef class BinaryPartitionReader:
+	""" 
+	Reads a partition from a binary file that contains an unsigned integer
+	of the given width for each node.
+
+	Parameters
+	----------
+	width : int
+		the width of the unsigned integer in bytes (4 or 8)
+	 
+	"""
+	cdef _BinaryPartitionReader _this
+
+	def __cinit__(self, uint8_t width=4):
+		self._this = _BinaryPartitionReader(width)
+
+	def read(self, path):
+		return Partition().setThis(self._this.read(stdstring(path)))
+
+cdef extern from "cpp/io/BinaryPartitionWriter.h":
+	cdef cppclass _BinaryPartitionWriter "NetworKit::BinaryPartitionWriter":
+		_BinaryPartitionWriter() except +
+		_BinaryPartitionWriter(uint8_t width) except +
+		_Partition write(_Partition zeta, string path) nogil except +
+
+cdef class BinaryPartitionWriter:
+	"""
+	Writes a partition to a file to contains a binary list of partition ids.
+	Partition ids are unsigned integers.
+
+	Parameters
+	----------
+	width : int
+		the width of the unsigned integer in bytes (4 or 8)
+
+	"""
+	cdef _BinaryPartitionWriter _this
+
+	def __cinit__(self, uint8_t width=4):
+		self._this = _BinaryPartitionWriter(width)
+
+	def write(self, Partition P not None, path):
+		"""
+		Write the partition to the given file.
+
+		Parameters
+		----------
+		path : str
+			The output path
+		"""
+		cdef string c_path = stdstring(path)
+
+		with nogil:
+			self._this.write(P._this, c_path)
+
+		return self
 
 cdef extern from "cpp/io/EdgeListPartitionReader.h":
 	cdef cppclass _EdgeListPartitionReader "NetworKit::EdgeListPartitionReader":
@@ -3321,6 +3458,95 @@ cdef class EdgeListPartitionReader:
 
 	def read(self, path):
 		return Partition().setThis(self._this.read(stdstring(path)))
+
+cdef extern from "cpp/io/BinaryEdgeListPartitionReader.h":
+	cdef cppclass _BinaryEdgeListPartitionReader "NetworKit::BinaryEdgeListPartitionReader":
+		_BinaryEdgeListPartitionReader() except +
+		_BinaryEdgeListPartitionReader(node firstNode, uint8_t width) except +
+		_Partition read(string path) nogil except +
+		_Partition read(vector[string] paths) nogil except +
+
+
+cdef class BinaryEdgeListPartitionReader:
+	"""
+	Reads a partition file that contains a binary list of pairs (node, partition(node)).
+	It is assumed that all integers are unsigned.
+
+	Parameters
+	----------
+	firstNode : node
+		The id of the first node, this is subtracted from all read node ids
+	width : int
+		The width of the unsigned integer in bytes (4 or 8)
+	"""
+	cdef _BinaryEdgeListPartitionReader _this
+
+	def __cinit__(self, node firstNode=0, uint8_t width=4):
+		self._this = _BinaryEdgeListPartitionReader(firstNode, width)
+
+	def read(self, paths):
+		"""
+		Read the partition from one or multiple files
+
+		Parameters
+		----------
+		paths : str or list[str]
+			The input path(s)
+		"""
+		cdef vector[string] c_paths
+
+		if isinstance(paths, str):
+			c_paths.push_back(stdstring(paths))
+		else:
+			c_paths.reserve(len(paths))
+
+			for p in paths:
+				c_paths.push_back(stdstring(p))
+
+		cdef _Partition result
+
+		with nogil:
+			result = move(self._this.read(c_paths)) # extra move in order to avoid copying the internal variable that is used by Cython
+
+		return Partition().setThis(result)
+
+cdef extern from "cpp/io/BinaryEdgeListPartitionWriter.h":
+	cdef cppclass _BinaryEdgeListPartitionWriter "NetworKit::BinaryEdgeListPartitionWriter":
+		_BinaryEdgeListPartitionWriter() except +
+		_BinaryEdgeListPartitionWriter(node firstNode, uint8_t width) except +
+		_Partition write(_Partition P, string path) nogil except +
+
+cdef class BinaryEdgeListPartitionWriter:
+	"""
+	Writes a partition file that contains a binary list of pairs (node, partition(node)).
+
+	Parameters
+	----------
+	firstNode : node
+		The id of the first node, this is added to all writen node ids
+	width : int
+		The width of the unsigned integer in bytes (4 or 8)
+	"""
+	cdef _BinaryEdgeListPartitionWriter _this
+
+	def __cinit__(self, node firstNode=0, uint8_t width=4):
+		self._this = _BinaryEdgeListPartitionWriter(firstNode, width)
+
+	def write(self, Partition P not None, path):
+		"""
+		Write the partition to the given file.
+
+		Parameters
+		----------
+		path : str
+			The output path
+		"""
+		cdef string c_path = stdstring(path)
+
+		with nogil:
+			self._this.write(P._this, c_path)
+
+		return self
 
 cdef extern from "cpp/io/SNAPEdgeListPartitionReader.h":
 	cdef cppclass _SNAPEdgeListPartitionReader "NetworKit::SNAPEdgeListPartitionReader":

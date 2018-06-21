@@ -1,7 +1,7 @@
 # extension imports
 from _NetworKit import (METISGraphReader, METISGraphWriter, DotGraphWriter, EdgeListWriter, \
 						 GMLGraphWriter, LineFileReader, SNAPGraphWriter, DGSWriter, GraphToolBinaryWriter, GraphToolBinaryReader, \
-						  DGSStreamParser, GraphUpdater, SNAPEdgeListPartitionReader, SNAPGraphReader, EdgeListReader, CoverReader, CoverWriter, EdgeListCoverReader, KONECTGraphReader, GMLGraphReader)
+						  DGSStreamParser, GraphUpdater, SNAPEdgeListPartitionReader, SNAPGraphReader, EdgeListReader, CoverReader, CoverWriter, EdgeListCoverReader, KONECTGraphReader, GMLGraphReader, ThrillGraphBinaryReader, ThrillGraphBinaryWriter)
 from _NetworKit import Graph as __Graph
 # local imports
 from .GraphMLIO import GraphMLReader, GraphMLWriter
@@ -53,6 +53,7 @@ try:
 		KONECT = ()
 		GraphToolBinary = ()
 		MAT = ()
+		ThrillBinary = ()
 
 except ImportError:
 	print("Update to Python >=3.4 recommended - support for < 3.4 may be discontinued in the future")
@@ -74,6 +75,7 @@ except ImportError:
 		KONECT = "konect"
 		GraphToolBinary = "gtbin"
 		MAT = "mat"
+		ThrillBinary = "thrillbinary"
 
 
 
@@ -97,7 +99,8 @@ def getReader(fileformat, **kwargs):
 			Format.KONECT:			KONECTGraphReader(' '),
 			Format.GML:			GMLGraphReader(),
 			Format.GraphToolBinary:		GraphToolBinaryReader(),
-			Format.MAT:			MatReader()
+			Format.MAT:			MatReader(),
+			Format.ThrillBinary:		ThrillGraphBinaryReader(),
 			}
 
 	try:
@@ -118,7 +121,7 @@ def readGraph(path, fileformat, **kwargs):
 	    Parameters:
 		- fileformat: An element of the Format enumeration. Currently supported file types:
 		SNAP, EdgeListSpaceZero, EdgeListSpaceOne, EdgeListTabZero, EdgeListTabOne, METIS,
-		GraphML, GEXF, GML, EdgeListCommaOne, GraphViz, DOT, EdgeList, LFR, KONECT, GraphToolBinary
+		GraphML, GEXF, GML, EdgeListCommaOne, GraphViz, DOT, EdgeList, LFR, KONECT, GraphToolBinary, ThrillBinary
 		- **kwargs: in case of a custom edge list, pass the genereic Fromat.EdgeList accompanied by
 			the defining paramaters as follows:
 			"separator=CHAR, firstNode=NODE, commentPrefix=STRING, continuous=BOOL, directed=BOOL"
