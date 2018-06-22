@@ -64,7 +64,7 @@ void DynKatzCentrality::run() {
 	hasRun = true;
 }
 
-void DynKatzCentrality::update(const std::vector<GraphEvent> &events){
+void DynKatzCentrality::updateBatch(const std::vector<GraphEvent> &events){
 	std::vector<count> preUpdatePaths(G.upperNodeIdBound(), 0);
 	std::vector<count> preUpdateContrib(G.upperNodeIdBound(), 0);
 

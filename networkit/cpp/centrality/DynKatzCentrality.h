@@ -11,6 +11,7 @@
 
 #include "Centrality.h"
 #include "../auxiliary/PrioQueue.h"
+#include "../base/DynAlgorithm.h"
 #include "../dynamics/GraphEvent.h"
 
 namespace NetworKit {
@@ -19,7 +20,7 @@ namespace NetworKit {
  * @ingroup centrality
  * Finds the top-k nodes with highest Katz centrality
  */
-class DynKatzCentrality: public Centrality {
+class DynKatzCentrality : public Centrality, public DynAlgorithm {
 protected:
 	double alpha; // damping
 	count k;
@@ -41,18 +42,18 @@ public:
 	DynKatzCentrality(const Graph& G, count k, bool groupOnly = false,
 			double tolerance = 1e-9);
 
-	virtual void run();
+	void run() override;
 
 	/**
   * Updates the katz centralities after an edge insertion or deletion on the graph.
   *
   * @param event The edge insertions or deletion.
   */
-	void update(const std::vector<GraphEvent> &events);
+	void updateBatch(const std::vector<GraphEvent> &events) override;
 	
-	void update(GraphEvent singleEvent) {
+	void update(GraphEvent singleEvent) override {
 		std::vector<GraphEvent> events{singleEvent};
-		update(events);
+		updateBatch(events);
 	}
 
 	node top(count n = 0) {
