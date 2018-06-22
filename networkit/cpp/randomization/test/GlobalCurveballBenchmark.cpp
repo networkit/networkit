@@ -84,10 +84,10 @@ static void benchmarkHash(const count n, const count r) {
     timer.start();
     node tmp = 0;
     for (count ir=0; ir < r; ir++) {
-        hash.switch_to_round(r);
+        hash.switchToRound(r);
         for (count i = 0; i < n; i++) {
             tmp += hash.hash(i);
-            tmp += hash.hash_next(i);
+            tmp += hash.hashNext(i);
         }
     }
     timer.stop();

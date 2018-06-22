@@ -14,8 +14,8 @@ namespace NetworKit {
 
 GlobalCurveball::GlobalCurveball(const NetworKit::Graph &G,
                                  unsigned number_of_global_trades) :
-    impl_(new CurveballDetails::GlobalCurveballImpl{G}),
-    number_of_global_trades_{number_of_global_trades}
+    impl(new CurveballDetails::GlobalCurveballImpl{G}),
+    numGlobalTrades{number_of_global_trades}
 {
     if (G.isDirected()) {
         throw std::runtime_error("GlobalCurveball supports only undirected graphs");
@@ -36,15 +36,15 @@ void GlobalCurveball::run() {
     auto& prng = Aux::Random::getURNG();
 
     CurveballDetails::GlobalTradeSequence<CurveballDetails::FixedLinearCongruentialMap<node> > hash{
-        impl_->getInputGraph().numberOfNodes(), number_of_global_trades_, prng};
-    impl_->run(hash);
+        impl->getInputGraph().numberOfNodes(), numGlobalTrades, prng};
+    impl->run(hash);
 
     hasRun = true;
 }
 
 Graph GlobalCurveball::getGraph() {
     if (!hasRun) throw std::runtime_error("Call run method first");
-    return impl_->getGraph();
+    return impl->getGraph();
 }
 
 std::string GlobalCurveball::toString() const  {

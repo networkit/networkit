@@ -18,15 +18,13 @@ public:
 	using value_type = std::vector< std::pair<node, node> >;
 
 protected:
-	const node _num_nodes;
-	const count _run_length;
-	const count _trades_per_run;
+	const node numNodes;
+	const count numGlobalTrades;
 
 public:
 	CurveballGlobalTradeGenerator(const count run_length, const node num_nodes)
-		: _num_nodes(num_nodes)
-		, _run_length(run_length)
-		, _trades_per_run(static_cast<count>(num_nodes / 2))
+		: numNodes(num_nodes)
+		, numGlobalTrades(run_length)
 	{
 		if (num_nodes <= 1)
 			throw std::runtime_error("At least two nodes are required.");

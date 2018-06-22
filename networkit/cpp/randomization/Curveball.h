@@ -44,7 +44,7 @@ public:
 
 
 private:
-	std::unique_ptr<CurveballDetails::CurveballIM> impl_;
+	std::unique_ptr<CurveballDetails::CurveballIM> impl;
 };
 
 }; // ! namespace NetworKit

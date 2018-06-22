@@ -13,7 +13,7 @@
 namespace NetworKit {
 
 Curveball::Curveball(const NetworKit::Graph &G) :
-    impl_(new CurveballDetails::CurveballIM{G})
+    impl(new CurveballDetails::CurveballIM{G})
 {}
 
 // We have to define a "default" destructor here, since the definition of
@@ -21,11 +21,11 @@ Curveball::Curveball(const NetworKit::Graph &G) :
 Curveball::~Curveball() = default;
 
 void Curveball::run(const CurveballDetails::trade_vector& trades) {
-    impl_->run(trades);
+    impl->run(trades);
 }
 
 Graph Curveball::getGraph(bool parallel) {
-    return impl_->getGraph(parallel);
+    return impl->getGraph(parallel);
 }
 
 std::string Curveball::toString() const  {
@@ -33,7 +33,7 @@ std::string Curveball::toString() const  {
 }
 
 count Curveball::getNumberOfAffectedEdges() const {
-    return impl_->getNumberOfAffectedEdges();
+    return impl->getNumberOfAffectedEdges();
 }
 
 }

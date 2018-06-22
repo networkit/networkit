@@ -8,6 +8,7 @@
 #define RANDOMIZATION_GLOBAL_CURVEBALL_IMPL_H_
 
 #include <algorithm>
+#include <cassert>
 #include <utility>
 #include <type_traits>
 
@@ -40,19 +41,19 @@ struct PairFirst {
  */
 class GlobalCurveballImpl {
     using edgelist_type = std::vector<std::pair<node, node> >;
-    using extract_t = PairFirst<node, node>;
-    using tfp_queue_type = Aux::radixheap< std::pair<node, node>, extract_t , node, 256>;
+    using extract_type = PairFirst<node, node>;
+    using tfp_queue_type = Aux::radixheap< std::pair<node, node>, extract_type , node, 256>;
 
 public:
     GlobalCurveballImpl(const NetworKit::Graph &G) :
-        input_graph_(G)
+        inputGraph(G)
     {}
 
     template <typename TradeSequence>
     void run(TradeSequence& trade_sequence) {
         Aux::SignalHandler handler;
 
-        if (hasRun_) {
+        if (hasRun) {
             throw std::runtime_error {"Cannot invoke run several times"};
         }
 
@@ -73,15 +74,15 @@ public:
         {
             // Currently we support only undirect graphs, which should however
             // be easily fixable
-            assert(!input_graph_.isDirected());
+            assert(!inputGraph.isDirected());
 
             Aux::Timer loadTimer;
             loadTimer.start();
 
-            input_graph_.forNodes([&](node u) {
+            inputGraph.forNodes([&](node u) {
                 const auto hashed_u = trade_sequence.hash(u);
                 const auto hint_u = current_pq.get_bucket_key(hashed_u);
-                input_graph_.forNeighborsOf(u, [&](node v) {
+                inputGraph.forNeighborsOf(u, [&](node v) {
                     if (u > v) return; // only one message per undirected edge
 
                     const auto hashed_v = trade_sequence.hash(v);
@@ -96,7 +97,7 @@ public:
             });
 
             loadTimer.stop();
-            INFO("Loading graph took ", loadTimer.elapsedMilliseconds(), "ms.");
+            DEBUG("Loading graph took ", loadTimer.elapsedMilliseconds(), "ms.");
         }
 
         tfp_queue_type next_pq;
@@ -112,15 +113,15 @@ public:
                 current_pq.swap_top_bucket(pq_bucket);
                 neighbourhood.resize(pq_bucket.size());
                 std::transform(pq_bucket.cbegin(), pq_bucket.cend(), neighbourhood.begin(), [](const std::pair<node, node> &p) { return p.second; });
-                assert(input_graph_.degree(x) - neighbourhood.size() <= 1);
+                assert(inputGraph.degree(x) - neighbourhood.size() <= 1);
                 pq_bucket.clear();
             }
         };
 
-        for(size_t round = 0; round < trade_sequence.number_of_rounds(); round++) {
+        for(size_t round = 0; round < trade_sequence.numberOfRounds(); round++) {
             assert(next_pq.empty());
-            assert(current_pq.size() == input_graph_.numberOfEdges());
-            trade_sequence.switch_to_round(round);
+            assert(current_pq.size() == inputGraph.numberOfEdges());
+            trade_sequence.switchToRound(round);
 
             count trade = 0;
             while(!current_pq.empty()) {
@@ -157,8 +158,8 @@ public:
                 }
 
                 // compute hashed values of next round
-                const auto next_hashed_u = trade_sequence.hash_next(u);
-                const auto next_hashed_v = trade_sequence.hash_next(v);
+                const auto next_hashed_u = trade_sequence.hashNext(u);
+                const auto next_hashed_v = trade_sequence.hashNext(v);
 
                 const auto next_bucket_u = next_pq.get_bucket_key(next_hashed_u);
                 const auto next_bucket_v = next_pq.get_bucket_key(next_hashed_v);
@@ -172,9 +173,9 @@ public:
                 const auto num_neighbourhood_of_v = neighbourhood_of_v.size();
 
                 if (num_neighbourhood_of_u < num_neighbourhood_of_v) {
-                    common_disjoint_neighbour_sortsearch(neighbourhood_of_u, neighbourhood_of_v, common_neighbours, disjoint_neighbours);
+                    computeCommonDisjointNeighbour(neighbourhood_of_u, neighbourhood_of_v, common_neighbours, disjoint_neighbours);
                 } else {
-                    common_disjoint_neighbour_sortsearch(neighbourhood_of_v, neighbourhood_of_u, common_neighbours, disjoint_neighbours);
+                    computeCommonDisjointNeighbour(neighbourhood_of_v, neighbourhood_of_u, common_neighbours, disjoint_neighbours);
                 }
 
                 // Directly forward neighbours shared by both nodes
@@ -188,7 +189,7 @@ public:
                     } else {
                         // neighbour will be processed in next round,
                         // so send edge into new PQ
-                        neighbour_hash = trade_sequence.hash_next(neighbour);
+                        neighbour_hash = trade_sequence.hashNext(neighbour);
 
                         const bool u_larger = neighbour_hash < next_hashed_u;
                         const bool v_larger = neighbour_hash < next_hashed_v;
@@ -222,7 +223,7 @@ public:
                         if (neighbour_hash > hashed_v) {
                             current_pq.emplace(neighbour_hash, neighbour_hash, trade_node);
                         } else {
-                            neighbour_hash = trade_sequence.hash_next(neighbour);
+                            neighbour_hash = trade_sequence.hashNext(neighbour);
 
                             if (neighbour_hash < trade_node_hash) {
                                 next_pq.emplace(neighbour_hash, neighbour_hash, trade_node);
@@ -261,7 +262,7 @@ public:
                     }
                 }
 
-                assert(current_pq.size() + next_pq.size() == input_graph_.numberOfEdges());
+                assert(current_pq.size() + next_pq.size() == inputGraph.numberOfEdges());
             }
 
 
@@ -277,41 +278,41 @@ public:
             std::swap(current_pq, next_pq);
         }
 
-        hasRun_ = true;
-        pq_ = std::move(current_pq);
+        hasRun = true;
+        prioQueue = std::move(current_pq);
 
         timer.stop();
-        INFO("Trading took ", timer.elapsedMilliseconds(), " milliseconds.");
+        DEBUG("Trading took ", timer.elapsedMilliseconds(), " milliseconds.");
     }
 
     NetworKit::Graph getGraph() {
-        GraphBuilder builder(input_graph_.numberOfNodes(), false, false);
+        GraphBuilder builder(inputGraph.numberOfNodes(), false, false);
 
-        for (; !pq_.empty(); pq_.pop()) {
-            const auto top = pq_.top();
+        for (; !prioQueue.empty(); prioQueue.pop()) {
+            const auto top = prioQueue.top();
             builder.addHalfEdge(top.first, top.second);
 
             if (top.first < top.second)
-                pq_.emplace(top.second, top.second, top.first);
+                prioQueue.emplace(top.second, top.second, top.first);
         }
 
         return builder.toGraph(false, true);
     }
 
     const NetworKit::Graph& getInputGraph() const {
-        return input_graph_;
+        return inputGraph;
     }
 
 protected:
-    bool hasRun_ {false};
-    tfp_queue_type pq_;
+    bool hasRun {false};
+    tfp_queue_type prioQueue;
 
-    const NetworKit::Graph& input_graph_;
+    const NetworKit::Graph& inputGraph;
 
-    void common_disjoint_neighbour_sortsearch(std::vector<node>& neighbourhood_of_u,
-                                            std::vector<node>& neighbourhood_of_v,
-                                            std::vector<node>& common_neighbours,
-                                            std::vector<node>& disjoint_neighbours) const {
+    void computeCommonDisjointNeighbour(std::vector<node> &neighbourhood_of_u,
+                                        const std::vector<node> &neighbourhood_of_v,
+                                        std::vector<node> &common_neighbours,
+                                        std::vector<node> &disjoint_neighbours) const {
 
         constexpr node BIT = node(1) << (sizeof(node) * 8 - 1);
         constexpr node MASK = ~BIT;

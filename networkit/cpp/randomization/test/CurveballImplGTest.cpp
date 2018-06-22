@@ -159,7 +159,7 @@ TEST_F(CurveballImplGTest, testContainerByInitialize) {
 
 
 TEST_F(CurveballImplGTest, testTradeListConstructor) {
-    std::vector<TradeDescriptor> trades = {{1, 2},
+    std::vector<trade_descriptor> trades = {{1, 2},
                                            {1, 3},
                                            {1, 4},
                                            {1, 5},
@@ -239,7 +239,7 @@ TEST_F(CurveballImplGTest, testTradeListConstructor) {
 }
 
 TEST_F(CurveballImplGTest, testTradeListInitialize) {
-    std::vector<TradeDescriptor> trades = {{1, 2},
+    std::vector<trade_descriptor> trades = {{1, 2},
                                            {1, 3},
                                            {1, 4},
                                            {1, 5},

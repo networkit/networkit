@@ -53,8 +53,8 @@ public:
     }
 
 private:
-    std::unique_ptr<CurveballDetails::GlobalCurveballImpl> impl_;
-    unsigned number_of_global_trades_;
+    std::unique_ptr<CurveballDetails::GlobalCurveballImpl> impl;
+    unsigned numGlobalTrades;
 
 };
 

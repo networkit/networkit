@@ -16,39 +16,16 @@ namespace NetworKit {
 namespace CurveballDetails {
 
 // Global Definitions
-using TradeDescriptor = std::pair<node, node>;
-using tradeid_t = node;
+using trade_descriptor = std::pair<node, node>;
+using tradeid = node;
 using count = node;
 
-using trade_vector = std::vector<TradeDescriptor>;
+using trade_vector = std::vector<trade_descriptor>;
 using nodepair_vector = std::vector <std::pair<node, node> >;
 
 constexpr node INVALID_NODE = std::numeric_limits<node>::max();
 constexpr count LISTROW_END = std::numeric_limits<count>::max();
-constexpr tradeid_t TRADELIST_END = std::numeric_limits<tradeid_t>::max();
-
-struct edge_t : public std::pair<node, node> {
-    edge_t() : std::pair<node, node>() {}
-
-    edge_t(const std::pair <node, node> &edge) : std::pair<node, node>(
-        edge) {}
-
-    edge_t(const node &v1, const node &v2) : std::pair<node, node>(v1, v2) {}
-
-    static edge_t invalid() {
-        return edge_t(INVALID_NODE, INVALID_NODE);
-    }
-
-    void normalize() {
-        if (first > second)
-            std::swap(first, second);
-    }
-
-    bool is_invalid() const {
-        return (*this == invalid());
-    }
-};
-
+constexpr tradeid TRADELIST_END = std::numeric_limits<tradeid>::max();
 
 class CurveballAdjacencyList {
 public:
@@ -62,10 +39,10 @@ public:
 
 protected:
 
-    neighbour_vector _neighbours;
-    degree_vector _offsets;
-    pos_vector _begin;
-    edgeid _degree_count;
+    neighbour_vector neighbours;
+    degree_vector offsets;
+    pos_vector begins;
+    edgeid degreeCount;
 
 public:
     CurveballAdjacencyList() = default;
@@ -81,48 +58,56 @@ public:
     // No Copy Constructor
     CurveballAdjacencyList(const CurveballAdjacencyList &) = delete;
 
-    neighbour_it begin(const node node_id);
+    neighbour_it begin(const node node_id) {
+        return neighbours.begin() + begins[node_id];
+    }
 
-    neighbour_it end(const node node_id);
+    neighbour_it end(const node node_id) {
+        return neighbours.begin() + begins[node_id] + offsets[node_id];
+    }
 
-    cneighbour_it cbegin(const node node_id) const;
+    cneighbour_it cbegin(const node node_id) const{
+        return neighbours.cbegin() + begins[node_id];
+    }
 
-    cneighbour_it cend(const node node_id) const;
+    cneighbour_it cend(const node node_id) const{
+        return neighbours.cbegin() + begins[node_id] + offsets[node_id];
+    }
 
     nodepair_vector getEdges() const;
 
     void insertNeighbour(const node node_id, const node neighbour) {
-        auto pos = begin(node_id) + _offsets[node_id];
+        auto pos = begin(node_id) + offsets[node_id];
 
         assert(*pos != LISTROW_END);
 
         *pos = neighbour;
 
-        _offsets[node_id]++;
+        offsets[node_id]++;
     }
 
     node numberOfNodes() const {
-        return static_cast<node>(_offsets.size());
+        return static_cast<node>(offsets.size());
     }
 
     node numberOfEdges() const {
-        return static_cast<edgeid>(_degree_count);
+        return static_cast<edgeid>(degreeCount);
     }
 
     void resetRow(const node node_id) {
         assert(node_id >= 0);
-        assert(node_id < static_cast<node>(_offsets.size()));
+        assert(node_id < static_cast<node>(offsets.size()));
 
-        _offsets[node_id] = 0;
+        offsets[node_id] = 0;
 
         return;
     }
 
     count degreeAt(node node_id) const {
-        assert(node_id < static_cast<node>(_offsets.size()));
+        assert(node_id < static_cast<node>(offsets.size()));
         assert(node_id >= 0);
 
-        return _begin[node_id + 1] - _begin[node_id] - 1;
+        return begins[node_id + 1] - begins[node_id] - 1;
     }
 };
 
@@ -130,7 +115,7 @@ public:
 class CurveballMaterialization {
 
 protected:
-    const CurveballAdjacencyList& _adj_list;
+    const CurveballAdjacencyList& adjacencyList;
 
 public:
     CurveballMaterialization(const CurveballAdjacencyList& adj_list);
@@ -144,17 +129,17 @@ protected:
 
 class TradeList {
 public:
-    using edge_vector = std::vector<edge_t>;
-    using offset_vector = std::vector<tradeid_t>;
-    using tradeid_vector = std::vector<tradeid_t>;
-    using trade = TradeDescriptor;
+    using edge_vector = std::vector< std::pair<node, node> >;
+    using offset_vector = std::vector<tradeid>;
+    using tradeid_vector = std::vector<tradeid>;
+    using trade = trade_descriptor;
     using trade_vector = std::vector<trade>;
     using tradeid_it = tradeid_vector::const_iterator;
 
 protected:
-    tradeid_vector _trade_list;
-    offset_vector _offsets;
-    const node _num_nodes;
+    tradeid_vector tradeList;
+    offset_vector offsets;
+    const node numNodes;
 
 public:
     TradeList(const node num_nodes);
@@ -170,21 +155,21 @@ public:
 
     tradeid_it getTrades(const node nodeid) const {
         assert(nodeid >= 0);
-        assert(nodeid < _num_nodes);
+        assert(nodeid < numNodes);
 
-        return _trade_list.begin() + _offsets[nodeid];
+        return tradeList.begin() + offsets[nodeid];
     }
 
     void incrementOffset(const node nodeid) {
         assert(nodeid >= 0);
-        assert(nodeid < _num_nodes);
-        assert(1 <= _offsets[nodeid + 1] - _offsets[nodeid]);
+        assert(nodeid < numNodes);
+        assert(1 <= offsets[nodeid + 1] - offsets[nodeid]);
 
-        _offsets[nodeid]++;
+        offsets[nodeid]++;
     }
 
     node numberOfNodes() const {
-        return _num_nodes;
+        return numNodes;
     }
 };
 
@@ -195,8 +180,8 @@ public:
     void run(const trade_vector& trades);
 
     count getNumberOfAffectedEdges() const {
-        assert(_hasRun);
-        return _aff_edges;
+        assert(hasRun);
+        return numAffectedEdges;
     }
 
     Graph getGraph(bool parallel) const;
@@ -205,34 +190,34 @@ public:
 
 
 protected:
-    const Graph& _G;
-    const node _num_nodes;
+    const Graph& G;
+    const node numNodes;
 
-    bool _hasRun;
-    CurveballAdjacencyList _adj_list;
-    TradeList _trade_list;
-    count _max_degree;
-    edgeid _aff_edges; // affected half-edges
+    bool hasRun;
+    CurveballAdjacencyList adjList;
+    TradeList tradeList;
+    count maxDegree;
+    edgeid numAffectedEdges; // affected half-edges
 
-    void load_from_graph(const trade_vector& trades);
+    void loadFromGraph(const trade_vector &trades);
 
-    void restructure_graph(const trade_vector& trades);
+    void restructureGraph(const trade_vector &trades);
 
     inline void update(const node a, const node b) {
-        const tradeid_t ta = *(_trade_list.getTrades(a));
-        const tradeid_t tb = *(_trade_list.getTrades(b));
+        const tradeid ta = *(tradeList.getTrades(a));
+        const tradeid tb = *(tradeList.getTrades(b));
         if (ta < tb) {
-            _adj_list.insertNeighbour(a, b);
+            adjList.insertNeighbour(a, b);
             return;
         }
 
         if (ta > tb) {
-            _adj_list.insertNeighbour(b, a);
+            adjList.insertNeighbour(b, a);
             return;
         }
         // ta == tb
         {
-            _adj_list.insertNeighbour(a, b);
+            adjList.insertNeighbour(a, b);
         }
     }
 

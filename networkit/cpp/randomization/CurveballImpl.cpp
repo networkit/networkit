@@ -19,7 +19,7 @@ namespace NetworKit {
 namespace CurveballDetails {
 
 using degree_vector = std::vector<count>;
-using trade_vector = std::vector<TradeDescriptor>;
+using trade_vector = std::vector<trade_descriptor>;
 using neighbour_vector = std::vector<node>;
 using node_vector = std::vector<node>;
 using nodepair_vector = std::vector< std::pair<node, node> >;
@@ -42,36 +42,36 @@ using nodepair_vector = std::vector< std::pair<node, node> >;
  */
 void CurveballAdjacencyList::initialize(const degree_vector& degrees,
                                         const edgeid degree_count) {
-    _neighbours.resize(degree_count + degrees.size() + 1);
-    _offsets.resize(degrees.size());
-    _begin.resize(degrees.size() + 1);
-    _degree_count = degree_count;
+    neighbours.resize(degree_count + degrees.size() + 1);
+    offsets.resize(degrees.size());
+    begins.resize(degrees.size() + 1);
+    degreeCount = degree_count;
 
     count sum = 0;
     node node_id = 0;
     for (const count node_degree : degrees) {
-        _begin[node_id] = sum;
+        begins[node_id] = sum;
 
         assert(node_degree > 0);
 
         sum += node_degree;
-        _neighbours[sum] = LISTROW_END;
+        neighbours[sum] = LISTROW_END;
 
         // shift after Sentinel
         sum += 1;
         node_id++;
     }
-    _neighbours[sum] = LISTROW_END;
-    _begin[degrees.size()] = sum;
+    neighbours[sum] = LISTROW_END;
+    begins[degrees.size()] = sum;
 
-    assert(sum == degree_count + degrees.size());
+    assert(sum == degreeCount + degrees.size());
     assert(node_id == degrees.size());
 
     return;
 }
 
 void CurveballAdjacencyList::restructure() {
-    std::fill(_offsets.begin(), _offsets.end(), 0);
+    std::fill(offsets.begin(), offsets.end(), 0);
     return;
 }
 
@@ -84,52 +84,36 @@ void CurveballAdjacencyList::restructure() {
  */
 CurveballAdjacencyList::CurveballAdjacencyList(const degree_vector& degrees,
                                                const edgeid degree_count)
-    : _neighbours(degree_count + degrees.size() + 1)
-    , _offsets(degrees.size())
-    , _begin(degrees.size() + 1)
-    , _degree_count(degree_count)
+    : neighbours(degree_count + degrees.size() + 1)
+    , offsets(degrees.size())
+    , begins(degrees.size() + 1)
+    , degreeCount(degree_count)
 {
     count sum = 0;
     node node_id = 0;
     for (const count node_degree : degrees) {
-        _begin[node_id] = sum;
+        begins[node_id] = sum;
 
         // no isolated nodes allowed
         assert(node_degree > 0);
 
         sum += node_degree;
-        _neighbours[sum] = LISTROW_END;
+        neighbours[sum] = LISTROW_END;
 
         sum += 1;
         node_id++;
     }
-    _neighbours[sum] = LISTROW_END;
-    _begin[degrees.size()] = sum;
+    neighbours[sum] = LISTROW_END;
+    begins[degrees.size()] = sum;
 
     assert(sum == degree_count + degrees.size());
     assert(node_id == degrees.size());
 }
 
-neighbour_it CurveballAdjacencyList::begin(const node node_id) {
-    return _neighbours.begin() + _begin[node_id];
-}
-
-neighbour_it CurveballAdjacencyList::end(const node node_id) {
-    return _neighbours.begin() + _begin[node_id] + _offsets[node_id];
-}
-
-cneighbour_it CurveballAdjacencyList::cbegin(const node node_id) const {
-    return _neighbours.cbegin() + _begin[node_id];
-}
-
-cneighbour_it CurveballAdjacencyList::cend(const node node_id) const {
-    return _neighbours.cbegin() + _begin[node_id] + _offsets[node_id];
-}
-
 nodepair_vector CurveballAdjacencyList::getEdges() const {
     nodepair_vector edges;
-    edges.reserve(_degree_count);
-    for (node nodeid = 0; nodeid < static_cast<node>(_offsets.size()); nodeid++) {
+    edges.reserve(degreeCount);
+    for (node nodeid = 0; nodeid < static_cast<node>(offsets.size()); nodeid++) {
         for (auto it = cbegin(nodeid); it != cend(nodeid); it++) {
             edges.push_back(std::make_pair(nodeid, *it));
         }
@@ -141,11 +125,11 @@ nodepair_vector CurveballAdjacencyList::getEdges() const {
 ///////////////////////////////////////////////////////////////////////////////
 
 CurveballMaterialization::CurveballMaterialization(const CurveballAdjacencyList& adj_list)
-    : _adj_list(adj_list)
+    : adjacencyList(adj_list)
 { }
 
 NetworKit::Graph CurveballMaterialization::toGraph(bool parallel) {
-    Graph G(_adj_list.numberOfNodes(), false, false);
+    Graph G(adjacencyList.numberOfNodes(), false, false);
 
     if (parallel)
         toGraphParallel(G);
@@ -159,7 +143,7 @@ void CurveballMaterialization::toGraphParallel(Graph &G) {
     // 1) insertion of first half is threadsafe
     // 2) insertion of second half is not threadsafe, for now done sequentially
 
-    const node numNodes = _adj_list.numberOfNodes();
+    const node numNodes = adjacencyList.numberOfNodes();
 
     std::vector<NetworKit::count> missingEdgesCounts(numNodes, 0);
 
@@ -169,12 +153,12 @@ void CurveballMaterialization::toGraphParallel(Graph &G) {
     // Add first half of edges and count missing edges for each node
     G.parallelForNodes([&](node nodeid) {
         const count degree =
-            static_cast<count>(_adj_list.cend(nodeid) - _adj_list.cbegin(nodeid));
+            static_cast<count>(adjacencyList.cend(nodeid) - adjacencyList.cbegin(nodeid));
         G.outDeg[nodeid] = degree;
-        missingEdgesCounts[nodeid] = _adj_list.degreeAt(nodeid) - degree;
+        missingEdgesCounts[nodeid] = adjacencyList.degreeAt(nodeid) - degree;
         new_outEdges[nodeid].reserve(degree);
         new_edgeWeights[nodeid].resize(degree, 1);
-        for (auto it = _adj_list.cbegin(nodeid); it != _adj_list.cend(nodeid); it++) {
+        for (auto it = adjacencyList.cbegin(nodeid); it != adjacencyList.cend(nodeid); it++) {
             new_outEdges[nodeid].push_back(*it);
         }
     });
@@ -202,21 +186,21 @@ void CurveballMaterialization::toGraphParallel(Graph &G) {
 
     // Set node degrees
     G.parallelForNodes([&](node v) {
-        G.outDeg[v] = _adj_list.degreeAt(v);
+        G.outDeg[v] = adjacencyList.degreeAt(v);
     });
 
     // Set number of self-loops
     G.storedNumberOfSelfLoops = 0;
 
     // Set numberOfEdges
-    G.m = _adj_list.numberOfEdges() / 2;
+    G.m = adjacencyList.numberOfEdges() / 2;
 
     // Shrink to fit
     G.shrinkToFit();
 }
 
 void CurveballMaterialization::toGraphSequential(Graph &G) {
-    const node numNodes = _adj_list.numberOfNodes();
+    const node numNodes = adjacencyList.numberOfNodes();
 
     // Analogue to "toGraphSequential" of GraphBuilder
     std::vector<NetworKit::count> missingEdgesCounts;
@@ -228,12 +212,12 @@ void CurveballMaterialization::toGraphSequential(Graph &G) {
     // Add first half of edges and count missing edges for each node
     G.forNodes([&](node nodeid) {
         const count degree =
-            static_cast<count>(_adj_list.cend(nodeid) - _adj_list.cbegin(nodeid));
+            static_cast<count>(adjacencyList.cend(nodeid) - adjacencyList.cbegin(nodeid));
         G.outDeg[nodeid] = degree;
-        missingEdgesCounts.push_back(_adj_list.degreeAt(nodeid) - degree);
+        missingEdgesCounts.push_back(adjacencyList.degreeAt(nodeid) - degree);
         new_outEdges[nodeid].reserve(degree);
         new_edgeWeights[nodeid].resize(degree, 1);
-        for (auto it = _adj_list.cbegin(nodeid); it != _adj_list.cend(nodeid); it++) {
+        for (auto it = adjacencyList.cbegin(nodeid); it != adjacencyList.cend(nodeid); it++) {
             new_outEdges[nodeid].push_back(*it);
         }
     });
@@ -261,14 +245,14 @@ void CurveballMaterialization::toGraphSequential(Graph &G) {
 
     // Set node degrees
     G.forNodes([&](node v) {
-        G.outDeg[v] = _adj_list.degreeAt(v);
+        G.outDeg[v] = adjacencyList.degreeAt(v);
     });
 
     // Set number of self-loops
     G.storedNumberOfSelfLoops = 0;
 
     // Set numberOfEdges
-    G.m = _adj_list.numberOfEdges() / 2;
+    G.m = adjacencyList.numberOfEdges() / 2;
 
     // Shrink to fit
     G.shrinkToFit();
@@ -276,26 +260,26 @@ void CurveballMaterialization::toGraphSequential(Graph &G) {
 
 ///////////////////////////////////////////////////////////////////////////////
 TradeList::TradeList(const node num_nodes)
-    : _num_nodes(num_nodes)
+    : numNodes(num_nodes)
 { }
 
 void TradeList::initialize(const trade_vector& trades) {
-    _trade_list.clear();
-    _trade_list.resize(2 * trades.size() + _num_nodes);
-    _offsets.clear();
-    _offsets.resize(_num_nodes + 1);
+    tradeList.clear();
+    tradeList.resize(2 * trades.size() + numNodes);
+    offsets.clear();
+    offsets.resize(numNodes + 1);
 
-    assert(_num_nodes > 0);
+    assert(numNodes > 0);
     assert(trades.size() > 0);
 
-    std::vector<tradeid_t> trade_count(_num_nodes);
+    std::vector<tradeid> trade_count(numNodes);
 
     // Push occurrences
     for (const auto trade : trades) {
         assert(trade.first >= 0);
-        assert(trade.first < _num_nodes);
+        assert(trade.first < numNodes);
         assert(trade.second >= 0);
-        assert(trade.second < _num_nodes);
+        assert(trade.second < numNodes);
 
         trade_count[trade.first]++;
         trade_count[trade.second]++;
@@ -303,26 +287,26 @@ void TradeList::initialize(const trade_vector& trades) {
 
     // add missing +1 for sentinel
     trade_count[0]++;
-    std::partial_sum(trade_count.cbegin(), trade_count.cend(), _offsets.begin() + 1, [&](const tradeid_t a, const tradeid_t b){
+    std::partial_sum(trade_count.cbegin(), trade_count.cend(), offsets.begin() + 1, [&](const tradeid a, const tradeid b){
         return a + b + 1;
     });
     // add dummy
-    _offsets[_num_nodes] = 2 * trades.size() + _num_nodes - 1;
+    offsets[numNodes] = 2 * trades.size() + numNodes - 1;
 
     // set sentinels
-    for (node node = 1; node < _num_nodes; node++) {
-        _trade_list[_offsets[node] - 1] = TRADELIST_END;
+    for (node node = 1; node < numNodes; node++) {
+        tradeList[offsets[node] - 1] = TRADELIST_END;
     }
     // set last entry as sentinel
-    _trade_list.back() = TRADELIST_END;
+    tradeList.back() = TRADELIST_END;
 
     std::fill(trade_count.begin(), trade_count.end(), 0);
     {
-        tradeid_t trade_id = 0;
+        tradeid trade_id = 0;
         for (const auto trade : trades) {
             auto updateNode = [&] (const node u) {
-                const node pos = _offsets[u] + trade_count[u];
-                _trade_list[pos] = trade_id;
+                const node pos = offsets[u] + trade_count[u];
+                tradeList[pos] = trade_id;
                 trade_count[u]++;
             };
 
@@ -334,16 +318,16 @@ void TradeList::initialize(const trade_vector& trades) {
 }
 
 TradeList::TradeList(const trade_vector& trades, const node num_nodes)
-    : _trade_list(2 * trades.size() + num_nodes)
-    , _offsets(num_nodes + 1)
-    , _num_nodes(num_nodes)
+    : tradeList(2 * trades.size() + num_nodes)
+    , offsets(num_nodes + 1)
+    , numNodes(num_nodes)
 {
     // Manuel: see above
 
     assert(num_nodes > 0);
     assert(trades.size() > 0);
 
-    std::vector<tradeid_t> trade_count(num_nodes);
+    std::vector<tradeid> trade_count(num_nodes);
 
     // Push occurences
     for (const auto trade : trades) {
@@ -358,26 +342,26 @@ TradeList::TradeList(const trade_vector& trades, const node num_nodes)
 
     // add missing +1 for sentinel
     trade_count[0]++;
-    std::partial_sum(trade_count.cbegin(), trade_count.cend(), _offsets.begin() + 1, [&](const tradeid_t a, const tradeid_t b){
+    std::partial_sum(trade_count.cbegin(), trade_count.cend(), offsets.begin() + 1, [&](const tradeid a, const tradeid b){
         return a + b + 1;
     });
     // add dummy
-    _offsets[num_nodes] = 2 * trades.size() + num_nodes - 1;
+    offsets[num_nodes] = 2 * trades.size() + num_nodes - 1;
 
     // set sentinels
-    for (node node = 1; node < _num_nodes; node++) {
-        _trade_list[_offsets[node] - 1] = TRADELIST_END;
+    for (node node = 1; node < numNodes; node++) {
+        tradeList[offsets[node] - 1] = TRADELIST_END;
     }
     // set last entry as sentinel
-    _trade_list.back() = TRADELIST_END;
+    tradeList.back() = TRADELIST_END;
 
     std::fill(trade_count.begin(), trade_count.end(), 0);
     {
-        tradeid_t trade_id = 0;
+        tradeid trade_id = 0;
         for (const auto trade : trades) {
             auto updateNode = [&] (const node u) {
-                const node pos = _offsets[u] + trade_count[u];
-                _trade_list[pos] = trade_id;
+                const node pos = offsets[u] + trade_count[u];
+                tradeList[pos] = trade_id;
                 trade_count[u]++;
             };
 
@@ -394,44 +378,44 @@ TradeList::TradeList(const trade_vector& trades, const node num_nodes)
 
 
 CurveballIM::CurveballIM(const NetworKit::Graph& G)
-    : _G(G)
-    , _num_nodes(G.numberOfNodes())  
-    , _trade_list(G.numberOfNodes())
-    , _aff_edges(0)
+    : G(G)
+    , numNodes(G.numberOfNodes())
+    , tradeList(G.numberOfNodes())
+    , numAffectedEdges(0)
 {
-    _hasRun = false;
+    hasRun = false;
     assert(G.checkConsistency());
     assert(G.numberOfSelfLoops() == 0);
-    assert(_num_nodes > 0);
+    assert(numNodes > 0);
 }
 
-void CurveballIM::load_from_graph(const trade_vector& trades) {
+void CurveballIM::loadFromGraph(const std::vector<std::pair<node, node>> &trades) {
     // Compute degree sequence
     degree_vector degrees;
-    degrees.reserve(_num_nodes);
+    degrees.reserve(numNodes);
     edgeid degree_sum = 0;
-    _G.forNodes([&](node v) {
-        degrees.push_back(_G.degree(v));
-        degree_sum += _G.degree(v);
+    G.forNodes([&](node v) {
+        degrees.push_back(G.degree(v));
+        degree_sum += G.degree(v);
     });
 
-    _max_degree = *(std::max_element(degrees.cbegin(), degrees.cend()));
+    maxDegree = *(std::max_element(degrees.cbegin(), degrees.cend()));
 
-    _adj_list.initialize(degrees, degree_sum);
-    _trade_list.initialize(trades);
+    adjList.initialize(degrees, degree_sum);
+    tradeList.initialize(trades);
 
     // Insert to adjacency list, directed according trades
-    _G.forEdges([&](node u, node v) {
+    G.forEdges([&](node u, node v) {
         update(u, v);
     });
     return;
 }
 
-void CurveballIM::restructure_graph(const trade_vector& trades) {
-    nodepair_vector edges =_adj_list.getEdges();
+void CurveballIM::restructureGraph(const std::vector<std::pair<node, node>> &trades) {
+    nodepair_vector edges =adjList.getEdges();
 
-    _adj_list.restructure();
-    _trade_list.initialize(trades);
+    adjList.restructure();
+    tradeList.initialize(trades);
 
     for (const auto edge : edges) {
         update(edge.first, edge.second);
@@ -441,17 +425,17 @@ void CurveballIM::restructure_graph(const trade_vector& trades) {
 }
 
 void CurveballIM::run(const trade_vector& trades) {
-    if (!_hasRun)
-        load_from_graph(trades);
+    if (!hasRun)
+        loadFromGraph(trades);
     else
-        restructure_graph(trades);
+        restructureGraph(trades);
 
     NetworKit::count trade_count = 0;
     neighbour_vector common_neighbours;
     neighbour_vector disjoint_neighbours;
 
-    common_neighbours.reserve(_max_degree);
-    disjoint_neighbours.reserve(_max_degree);
+    common_neighbours.reserve(maxDegree);
+    disjoint_neighbours.reserve(maxDegree);
 
     Aux::SignalHandler handler;
 
@@ -464,20 +448,20 @@ void CurveballIM::run(const trade_vector& trades) {
         const node u = trade.first;
         const node v = trade.second;
 
-        _aff_edges += _adj_list.degreeAt(u);
-        _aff_edges += _adj_list.degreeAt(v);
+        numAffectedEdges += adjList.degreeAt(u);
+        numAffectedEdges += adjList.degreeAt(v);
 
-        // Shift the _trade_list offset for these two, currently was set to trade_count
-        _trade_list.incrementOffset(u);
-        _trade_list.incrementOffset(v);
+        // Shift the tradeList offset for these two, currently was set to trade_count
+        tradeList.incrementOffset(u);
+        tradeList.incrementOffset(v);
 
         // Retrieve respective neighbours
         // we return whether u has v in his neighbors or vice-versa
         auto organize_neighbors = [&](node node_x, node node_y) {
-            auto pos = std::find(_adj_list.begin(node_x), _adj_list.end(node_x), node_y);
-            if (pos == _adj_list.cend(node_x)) {
+            auto pos = std::find(adjList.begin(node_x), adjList.end(node_x), node_y);
+            if (pos == adjList.cend(node_x)) {
                 // element not found, sort anyway
-                std::sort(_adj_list.begin(node_x), _adj_list.end(node_x));
+                std::sort(adjList.begin(node_x), adjList.end(node_x));
 
                 return false;
             } else {
@@ -485,10 +469,10 @@ void CurveballIM::run(const trade_vector& trades) {
                 *pos = LISTROW_END;
 
                 // sort, such that node_y's position is at end - 1
-                std::sort(_adj_list.begin(node_x), _adj_list.end(node_x));
+                std::sort(adjList.begin(node_x), adjList.end(node_x));
 
                 // overwrite with node_y again
-                *(_adj_list.end(node_x) - 1) = node_y;
+                *(adjList.end(node_x) - 1) = node_y;
 
                 return true;
             }
@@ -496,8 +480,8 @@ void CurveballIM::run(const trade_vector& trades) {
 
         const bool u_share = organize_neighbors(u, v);
         const bool v_share = organize_neighbors(v, u);
-        auto u_end = (u_share ? _adj_list.cend(u) - 1 : _adj_list.cend(u));
-        auto v_end = (v_share ? _adj_list.cend(v) - 1 : _adj_list.cend(v));
+        auto u_end = (u_share ? adjList.cend(u) - 1 : adjList.cend(u));
+        auto v_end = (v_share ? adjList.cend(v) - 1 : adjList.cend(v));
 
         const bool shared = u_share || v_share;
 
@@ -509,8 +493,8 @@ void CurveballIM::run(const trade_vector& trades) {
         // Here sort and parallel scan
         common_neighbours.clear();
         disjoint_neighbours.clear();
-        auto u_nit = _adj_list.cbegin(u);
-        auto v_nit = _adj_list.cbegin(v);
+        auto u_nit = adjList.cbegin(u);
+        auto v_nit = adjList.cbegin(v);
         while ((u_nit != u_end) && (v_nit != v_end)) {
             assert(*u_nit != v);
             assert(*v_nit != u);
@@ -536,13 +520,13 @@ void CurveballIM::run(const trade_vector& trades) {
         else
             disjoint_neighbours.insert(disjoint_neighbours.end(), u_nit, u_end);
 
-        const count u_setsize = static_cast<count>(u_end - _adj_list.cbegin(u) - common_neighbours.size());
-        const count v_setsize = static_cast<count>(v_end - _adj_list.cbegin(v) - common_neighbours.size());
+        const count u_setsize = static_cast<count>(u_end - adjList.cbegin(u) - common_neighbours.size());
+        const count v_setsize = static_cast<count>(v_end - adjList.cbegin(v) - common_neighbours.size());
         // v_setsize not necessarily needed
 
         // Reset fst/snd row
-        _adj_list.resetRow(u);
-        _adj_list.resetRow(v);
+        adjList.resetRow(u);
+        adjList.resetRow(v);
 
         Aux::random_bipartition_shuffle(disjoint_neighbours.begin(), disjoint_neighbours.end(),
                          u_setsize, urng);
@@ -571,13 +555,13 @@ void CurveballIM::run(const trade_vector& trades) {
         trade_count++;
     }
 
-    _hasRun = true;
+    hasRun = true;
 
     return;
 }
 
 NetworKit::Graph CurveballIM::getGraph(bool parallel) const {
-    CurveballMaterialization gb(_adj_list);
+    CurveballMaterialization gb(adjList);
 
     return gb.toGraph(parallel);
 }

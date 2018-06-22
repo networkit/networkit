@@ -18,22 +18,22 @@ namespace NetworKit {
 CurveballGlobalTradeGenerator::value_type CurveballGlobalTradeGenerator::generate() const {
     using node_vector = std::vector<node>;
 
-    value_type _trades_out;
-    _trades_out.reserve(_run_length * _trades_per_run);
+    value_type trades_out;
+    trades_out.reserve(numGlobalTrades * numNodes / 2);
 
-    node_vector node_permutation(_num_nodes);
-    for (node node_id = 0; node_id < _num_nodes; node_id++) {
+    node_vector node_permutation(numNodes);
+    for (node node_id = 0; node_id < numNodes; node_id++) {
         node_permutation[node_id] = node_id;
     }
 
-    for (count run = 0; run < _run_length; run++) {
+    for (count run = 0; run < numGlobalTrades; run++) {
         // shuffling a shuffled node_permutation is okay, no need
         // to reinitialize it
         std::shuffle(node_permutation.begin(), node_permutation.end(),
                      Aux::Random::getURNG());
 
         auto rand_node_iter = node_permutation.cbegin();
-        for (count t_id = 0; t_id < _trades_per_run; t_id++) {
+        for (count t_id = 0; t_id < numNodes / 2; t_id++) {
             assert(rand_node_iter != node_permutation.cend());
 
             const node fst = *rand_node_iter;
@@ -41,11 +41,11 @@ CurveballGlobalTradeGenerator::value_type CurveballGlobalTradeGenerator::generat
             const node snd = *rand_node_iter;
             rand_node_iter++;
 
-            _trades_out.emplace_back(fst, snd);
+            trades_out.emplace_back(fst, snd);
         }
     }
 
-    return _trades_out;
+    return trades_out;
 }
 
 }

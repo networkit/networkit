@@ -16,12 +16,12 @@ public:
 	using value_type = std::vector<std::pair<node, node> >;
 
 protected:
-	const count _trade_num;
-	const node _num_nodes;
+	const count numTrades;
+	const node numNodes;
 
 public:
 	CurveballUniformTradeGenerator(const count trade_num, const node num_nodes)
-		: _trade_num(trade_num), _num_nodes(num_nodes)
+		: numTrades(trade_num), numNodes(num_nodes)
 	{
 		if (num_nodes <= 1)
 			throw std::runtime_error("At least two nodes are required.");
