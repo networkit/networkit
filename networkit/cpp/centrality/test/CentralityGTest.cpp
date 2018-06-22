@@ -23,6 +23,7 @@
 #include "../Closeness.h"
 #include "../CoreDecomposition.h"
 #include "../DynApproxBetweenness.h"
+#include "../DynKatzCentrality.h"
 #include "../EigenvectorCentrality.h"
 #include "../EstimateBetweenness.h"
 #include "../GroupDegree.h"
@@ -184,6 +185,272 @@ TEST_F(CentralityGTest, testKatzCentralityDirected) {
 	// std::vector<double> kc_scores = kc.scores();
 
 	EXPECT_EQ(kc_ranking[0].first, 699);
+}
+
+TEST_F(CentralityGTest, testKatzTopk) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/caidaRouterLevel.graph");
+
+	// Compute max. degree to ensure that we use the same alpha for both algos.
+	count maxDegree = 0;
+	G.forNodes([&](node u) {
+		if (G.degree(u) > maxDegree)
+			maxDegree = G.degree(u);
+	});
+
+	KatzCentrality exactAlgo(G, 1.0 / (maxDegree + 1), 1.0);
+	DynKatzCentrality topAlgo(G, 100);
+	exactAlgo.run();
+	topAlgo.run();
+
+	// We cannot compare the ranking as the algorithms might return different rankings
+	// for nodes that have equal/nearly equal scores.
+	// Instead, epsilon-compare the exact scores of the i-th node and the expected i-th node.
+	auto exactRanking = exactAlgo.ranking();
+	auto topRanking = topAlgo.ranking();
+	for(count i = 0; i < std::min(G.numberOfNodes(), count{100}); i++)
+		EXPECT_NEAR(exactAlgo.score(topRanking[i].first), exactRanking[i].second, 1e-6);
+}
+
+TEST_F(CentralityGTest, testKatzDynamicAddition) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/caidaRouterLevel.graph");
+	DynKatzCentrality kc(G, 100);
+	DEBUG("start kc run");
+	kc.run();
+	DEBUG("finish kc");
+	node u, v;
+	do {
+		u = G.randomNode();
+		v = G.randomNode();
+	} while (G.hasEdge(u, v));
+	GraphEvent e(GraphEvent::EDGE_ADDITION, u, v, 1.0);
+	kc.update(e);
+	G.addEdge(u, v);
+	DynKatzCentrality kc2(G, 100);
+	kc2.run();
+	const edgeweight tol = 1e-9;
+	for (count i = 0; i <= std::min(kc.levelReached, kc2.levelReached); i ++) {
+		INFO("i = ", i);
+		G.forNodes([&](node u){
+			// if (kc.nPaths[i][u] != kc2.nPaths[i][u]) {
+			//	 INFO("i = ", i, ", node ", u, ", dyn kc paths: ", kc.nPaths[i][u], ", stat paths: ", kc2.nPaths[i][u]);
+			// }
+			EXPECT_EQ(kc.nPaths[i][u], kc2.nPaths[i][u]);
+		});
+	}
+	G.forNodes([&](node u){
+		EXPECT_NEAR(kc.score(u), kc2.score(u), tol);
+	 EXPECT_NEAR(kc.bound(u), kc2.bound(u), tol);
+	});
+
+	INFO("Level reached: ", kc.levelReached, ", ", kc2.levelReached);
+}
+
+TEST_F(CentralityGTest, testKatzDynamicDeletion) {
+	METISGraphReader reader;
+	Graph G = reader.read("input/caidaRouterLevel.graph");
+	DynKatzCentrality kc(G, 100);
+	DEBUG("start kc run");
+	kc.run();
+	DEBUG("finish kc");
+	std::pair<node, node> p = G.randomEdge();
+	node u = p.first;
+	node v = p.second;
+	INFO("Deleting edge ", u, ", ", v);
+	GraphEvent e(GraphEvent::EDGE_REMOVAL, u, v, 1.0);
+	G.removeEdge(u, v);
+	kc.update(e);
+	DynKatzCentrality kc2(G, 100);
+	kc2.run();
+	const edgeweight tol = 1e-9;
+	for (count i = 0; i <= std::min(kc.levelReached, kc2.levelReached); i ++) {
+		INFO("i = ", i);
+		G.forNodes([&](node u){
+			if (kc.nPaths[i][u] != kc2.nPaths[i][u]) {
+				INFO("i = ", i, ", node ", u, ", dyn kc paths: ", kc.nPaths[i][u], ", stat paths: ", kc2.nPaths[i][u]);
+			}
+			EXPECT_EQ(kc.nPaths[i][u], kc2.nPaths[i][u]);
+		});
+	}
+	G.forNodes([&](node u){
+		EXPECT_NEAR(kc.score(u), kc2.score(u), tol);
+		EXPECT_NEAR(kc.bound(u), kc2.bound(u), tol);
+	});
+
+	INFO("Level reached: ", kc.levelReached, ", ", kc2.levelReached);
+}
+
+TEST_F(CentralityGTest, testKatzDynamicBuilding) {
+	METISGraphReader reader;
+	Graph GIn = reader.read("input/hep-th.graph");
+
+	// Find a single max-degree node and add its edges to G.
+	// (This guarantees that alpha is correct.)
+	node maxNode = 0;
+	GIn.forNodes([&](node u) {
+	if (GIn.degree(u) > GIn.degree(maxNode))
+		maxNode = u;
+	});
+
+	Graph G(GIn.upperNodeIdBound());
+
+	GIn.forEdgesOf(maxNode, [&] (node u, edgeweight) {
+	G.addEdge(maxNode, u);
+	});
+
+	// Now run the algo. and add other some edges to check the correctness of the dynamic part.
+	DynKatzCentrality dynAlgo(G, 100);
+	dynAlgo.run();
+
+	count edgesProcessed = 0;
+	GIn.forEdges([&] (node u, node v) {
+	if(u == maxNode || v == maxNode)
+		return;
+	if(edgesProcessed > 1000)
+		return;
+	GraphEvent e(GraphEvent::EDGE_ADDITION, u, v, 1.0);
+	dynAlgo.update(e);
+	G.addEdge(u, v);
+	edgesProcessed++;
+	});
+
+	DynKatzCentrality topAlgo(G, 100);
+	topAlgo.run();
+
+	auto topRanking = topAlgo.ranking();
+	auto dynRanking = dynAlgo.ranking();
+	for(count i = 0; i < std::min(G.numberOfNodes(), count{100}); i++)
+		EXPECT_FALSE(dynAlgo.areDistinguished(topRanking[i].first, dynRanking[i].first))
+				<< "Nodes " << topRanking[i].first << " and " << dynRanking[i].first
+				<< " should not be distinguished!";
+}
+
+TEST_F(CentralityGTest, testKatzDirectedAddition) {
+	// Same graph as in testCoreDecompositionDirected.
+	count n = 16;
+	Graph G(n, false, true);
+
+	G.addEdge(2, 4);
+	G.addEdge(3, 4);
+	G.addEdge(4, 5);
+	G.addEdge(5, 7);
+	G.addEdge(6, 7);
+
+	G.addEdge(6, 8);
+	G.addEdge(6, 9);
+	G.addEdge(6, 11);
+	G.addEdge(7, 12);
+	G.addEdge(8, 9);
+
+	G.addEdge(8, 10);
+	G.addEdge(8, 11);
+	G.addEdge(8, 13);
+	G.addEdge(9, 10);
+	G.addEdge(9, 11);
+
+	G.addEdge(9, 13);
+	G.addEdge(10, 11);
+	G.addEdge(10, 13);
+	G.addEdge(10, 14);
+	G.addEdge(11, 13);
+
+	G.addEdge(11, 14);
+	G.addEdge(12, 15);
+	G.addEdge(13, 14);
+	G.addEdge(14, 15);
+
+	DynKatzCentrality kc(G, 5);
+	kc.run();
+
+	node u, v;
+	Aux::Random::setSeed(42, false);
+	do {
+		u = G.randomNode();
+		v = G.randomNode();
+	} while (G.hasEdge(u, v));
+	GraphEvent e(GraphEvent::EDGE_ADDITION, u, v, 1.0);
+	kc.update(e);
+	G.addEdge(u, v);
+
+	DynKatzCentrality kc2(G, 5);
+	kc2.run();
+
+	for (count i = 0; i <= std::min(kc.levelReached, kc2.levelReached); i ++) {
+		G.forNodes([&](node u){
+			EXPECT_EQ(kc.nPaths[i][u], kc2.nPaths[i][u]);
+		});
+	}
+	const edgeweight tol = 1e-9;
+	G.forNodes([&](node u){
+		EXPECT_NEAR(kc.score(u), kc2.score(u), tol);
+		EXPECT_NEAR(kc.bound(u), kc2.bound(u), tol);
+	});
+
+	INFO("Level reached: ", kc.levelReached, ", ", kc2.levelReached);
+}
+
+TEST_F(CentralityGTest, testKatzDirectedDeletion) {
+	// Same graph as in testCoreDecompositionDirected.
+	count n = 16;
+	Graph G(n, false, true);
+
+	G.addEdge(2, 4);
+	G.addEdge(3, 4);
+	G.addEdge(4, 5);
+	G.addEdge(5, 7);
+	G.addEdge(6, 7);
+
+	G.addEdge(6, 8);
+	G.addEdge(6, 9);
+	G.addEdge(6, 11);
+	G.addEdge(7, 12);
+	G.addEdge(8, 9);
+
+	G.addEdge(8, 10);
+	G.addEdge(8, 11);
+	G.addEdge(8, 13);
+	G.addEdge(9, 10);
+	G.addEdge(9, 11);
+
+	G.addEdge(9, 13);
+	G.addEdge(10, 11);
+	G.addEdge(10, 13);
+	G.addEdge(10, 14);
+	G.addEdge(11, 13);
+
+	G.addEdge(11, 14);
+	G.addEdge(12, 15);
+	G.addEdge(13, 14);
+	G.addEdge(14, 15);
+
+	DynKatzCentrality kc(G, 5);
+	kc.run();
+
+	Aux::Random::setSeed(42, false);
+	std::pair<node, node> p = G.randomEdge();
+	node u = p.first;
+	node v = p.second;
+	INFO("Removing ", u, " -> ", v);
+	GraphEvent e(GraphEvent::EDGE_REMOVAL, u, v, 1.0);
+	G.removeEdge(u, v);
+	kc.update(e);
+
+	DynKatzCentrality kc2(G, 5);
+	kc2.run();
+
+	for (count i = 0; i <= std::min(kc.levelReached, kc2.levelReached); i ++) {
+		G.forNodes([&](node u){
+			EXPECT_EQ(kc.nPaths[i][u], kc2.nPaths[i][u]) << i << "-length paths ending in " << u << " do not match!";
+		});
+	}
+	const edgeweight tol = 1e-9;
+	G.forNodes([&](node u){
+		EXPECT_NEAR(kc.score(u), kc2.score(u), tol);
+		EXPECT_NEAR(kc.bound(u), kc2.bound(u), tol);
+	});
+
+	INFO("Level reached: ", kc.levelReached, ", ", kc2.levelReached);
 }
 
 // TODO: replace by smaller graph

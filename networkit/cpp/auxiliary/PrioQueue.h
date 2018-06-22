@@ -70,6 +70,8 @@ public:
 	 * Inserts key-value pair stored in @a elem.
 	 */
 	virtual void insert(Key key, Value value);
+	
+	virtual ElemType peekMin(size_t n = 0);
 
 	/**
 	 * Removes the element with minimum key and returns it.
@@ -147,6 +149,13 @@ inline void Aux::PrioQueue<Key, Value>::remove(const Value& val) {
 //	DEBUG("key: ", key);
 	pqset.erase(std::make_pair(key, val));
 	mapValToKey.at(val) = undefined;
+}
+
+template<class Key, class Value>
+std::pair<Key, Value> Aux::PrioQueue<Key, Value>::peekMin(size_t n) {
+	assert(pqset.size() > n);
+	ElemType elem = *std::next(pqset.begin(), n);
+	return elem;
 }
 
 template<class Key, class Value>

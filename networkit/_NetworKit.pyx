@@ -6269,6 +6269,12 @@ cdef extern from "cpp/centrality/Centrality.h":
 		double centralization() except +
 
 
+cdef extern from "cpp/base/DynAlgorithm.h":
+	cdef cppclass _DynAlgorithm "NetworKit::DynAlgorithm":
+		void update(_GraphEvent) except +
+		void updateBatch(vector[_GraphEvent]) except +
+
+
 cdef class Centrality(Algorithm):
 	""" Abstract base class for centrality measures"""
 
@@ -6337,6 +6343,7 @@ cdef class Centrality(Algorithm):
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_Centrality*>(self._this)).centralization()
+
 
 cdef extern from "cpp/centrality/TopCloseness.h":
 	cdef cppclass _TopCloseness "NetworKit::TopCloseness":
@@ -6500,6 +6507,46 @@ cdef class TopHarmonicCloseness:
 		return self._this.topkScoresList(includeTrail)
 
 
+cdef extern from "cpp/centrality/DynKatzCentrality.h":
+	cdef cppclass _DynKatzCentrality "NetworKit::DynKatzCentrality" (_Centrality):
+		_DynKatzCentrality(_Graph G, count, bool, double) except +
+		void update(_GraphEvent) except +
+		void updateBatch(vector[_GraphEvent]) except +
+		node top(count) except +
+		double bound(node) except +
+		bool areDistinguished(node, node) except +
+
+cdef class DynKatzCentrality(Centrality):
+	""" Finds the top-k nodes with highest Katz centralityself.
+
+	DynKatzCentrality(G, k, groupOnly=False, tolerance=1e-9)
+	"""
+
+	def __cinit__(self, Graph G, k, groupOnly=False, tolerance=1e-9):
+		self._G = G
+		self._this = new _DynKatzCentrality(G._this, k, groupOnly, tolerance)
+
+	def __dealloc__(self):
+		del self._this
+
+	def update(self, ev):
+		(<_DynKatzCentrality*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+
+	def updateBatch(self, batch):
+		cdef vector[_GraphEvent] _batch
+		for ev in batch:
+			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
+		(<_DynKatzCentrality*>(self._this)).updateBatch(_batch)
+
+	def top(self, n=0):
+		return (<_DynKatzCentrality*>(self._this)).top(n)
+
+	def bound(self, v):
+		return (<_DynKatzCentrality*>(self._this)).bound(v)
+
+	def areDistinguished(self, u, v):
+		return (<_DynKatzCentrality*>(self._this)).areDistinguished(u, v)
+
 cdef extern from "cpp/centrality/DynTopHarmonicCloseness.h":
 	cdef cppclass _DynTopHarmonicCloseness "NetworKit::DynTopHarmonicCloseness":
 		_DynTopHarmonicCloseness(_Graph G, count, bool) except +
@@ -6518,7 +6565,7 @@ cdef class DynTopHarmonicCloseness:
         The implementation is based on the static algorithms by Borassi et al.
 	    (complex networks) and Bergamini et al. (large-diameter networks).
 
-	TopCloseness(G, k=1, useBFSbound=True)
+	DynTopHarmonicCloseness(G, k=1, useBFSbound=True)
 
 	Parameters
 	----------
