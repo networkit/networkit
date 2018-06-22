@@ -6,8 +6,8 @@
  *      based on code by Elisabetta Bergamini
  */
 
-#ifndef DYNAMICKATZ_H_
-#define DYNAMICKATZ_H_
+#ifndef DYNKATZCENTRALITY_H_
+#define DYNKATZCENTRALITY_H_
 
 #include "Centrality.h"
 #include "../auxiliary/PrioQueue.h"
@@ -102,4 +102,4 @@ public: // TODO: This is public because tests access it.
 };
 
 } /* namespace NetworKit */
-#endif /* DYNAMICKATZ_H_ */
+#endif /* DYNKATZCENTRALITY_H_ */
