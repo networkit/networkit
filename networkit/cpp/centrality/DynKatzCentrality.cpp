@@ -1,11 +1,12 @@
 /*
- * DynamicKatz.cpp
+ * DynKatzCentrality.h
  *
- *  Created on: 09.01.2015
- *      Author: Henning
+ *  Created on: April 2018
+ *      Author: Alexander van der Grinten
+ *      based on code by Elisabetta Bergamini
  */
 
-#include "DynamicKatz.h"
+#include "DynKatzCentrality.h"
 #include "../auxiliary/Timer.h"
 #include "../auxiliary/NumericTools.h"
 #include <float.h>
@@ -14,7 +15,7 @@
 
 namespace NetworKit {
 
-DynamicKatz::DynamicKatz(const Graph& G, count k, bool groupOnly, double tolerance)
+DynKatzCentrality::DynKatzCentrality(const Graph& G, count k, bool groupOnly, double tolerance)
 : Centrality(G, false), k(k), groupOnly(groupOnly), rankTolerance(tolerance),
 		activeQueue(G.upperNodeIdBound()) {
 	maxdeg = 0;
@@ -34,7 +35,7 @@ bool pairCompare(const std::pair<node, double>& firstElem, const std::pair<node,
   return firstElem.second > secondElem.second;
 }
 
-void DynamicKatz::run() {
+void DynKatzCentrality::run() {
 	DEBUG("DynKatz: Nodes: ", G.numberOfNodes(), ", edges: ", G.numberOfEdges(),
 			", graph is ", G.isDirected() ? "directed" : "undirected");
 
@@ -63,7 +64,7 @@ void DynamicKatz::run() {
 	hasRun = true;
 }
 
-void DynamicKatz::update(const std::vector<GraphEvent> &events){
+void DynKatzCentrality::update(const std::vector<GraphEvent> &events){
 	std::vector<count> preUpdatePaths(G.upperNodeIdBound(), 0);
 	std::vector<count> preUpdateContrib(G.upperNodeIdBound(), 0);
 
@@ -228,23 +229,23 @@ void DynamicKatz::update(const std::vector<GraphEvent> &events){
 	}
 }
 
-double DynamicKatz::bound(node v) {
+double DynKatzCentrality::bound(node v) {
 	if (!hasRun)
 		throw std::runtime_error("Call run method first");
 	return boundData.at(v);
 }
 
-bool DynamicKatz::areDistinguished(node u, node v) {
+bool DynKatzCentrality::areDistinguished(node u, node v) {
 	if(scoreData[u] < scoreData[v])
 		std::swap(u, v);
 	return scoreData[u] > boundData[v];
 }
 
-bool DynamicKatz::areSufficientlyRanked(node high, node low) {
+bool DynKatzCentrality::areSufficientlyRanked(node high, node low) {
 	return scoreData[high] > boundData[low] - rankTolerance;
 }
 
-void DynamicKatz::doIteration() {
+void DynKatzCentrality::doIteration() {
 	// The following variable is the level that his iteration will fill in.
 	count r = levelReached + 1;
 
@@ -275,7 +276,7 @@ void DynamicKatz::doIteration() {
 	levelReached++;
 }
 
-bool DynamicKatz::checkConvergence() {
+bool DynKatzCentrality::checkConvergence() {
 	if(useQueue) {
 		if(!filledQueue) {
 			G.forNodes([&] (node u) {

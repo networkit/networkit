@@ -23,7 +23,7 @@
 #include "../Closeness.h"
 #include "../CoreDecomposition.h"
 #include "../DynApproxBetweenness.h"
-#include "../DynamicKatz.h"
+#include "../DynKatzCentrality.h"
 #include "../EigenvectorCentrality.h"
 #include "../EstimateBetweenness.h"
 #include "../GroupDegree.h"
@@ -199,7 +199,7 @@ TEST_F(CentralityGTest, testKatzTopk) {
 	});
 
 	KatzCentrality exactAlgo(G, 1.0 / (maxDegree + 1), 1.0);
-	DynamicKatz topAlgo(G, 100);
+	DynKatzCentrality topAlgo(G, 100);
 	exactAlgo.run();
 	topAlgo.run();
 
@@ -215,7 +215,7 @@ TEST_F(CentralityGTest, testKatzTopk) {
 TEST_F(CentralityGTest, testKatzDynamicAddition) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/caidaRouterLevel.graph");
-	DynamicKatz kc(G, 100);
+	DynKatzCentrality kc(G, 100);
 	DEBUG("start kc run");
 	kc.run();
 	DEBUG("finish kc");
@@ -227,7 +227,7 @@ TEST_F(CentralityGTest, testKatzDynamicAddition) {
 	GraphEvent e(GraphEvent::EDGE_ADDITION, u, v, 1.0);
 	kc.update(e);
 	G.addEdge(u, v);
-	DynamicKatz kc2(G, 100);
+	DynKatzCentrality kc2(G, 100);
 	kc2.run();
 	const edgeweight tol = 1e-9;
 	for (count i = 0; i <= std::min(kc.levelReached, kc2.levelReached); i ++) {
@@ -250,7 +250,7 @@ TEST_F(CentralityGTest, testKatzDynamicAddition) {
 TEST_F(CentralityGTest, testKatzDynamicDeletion) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/caidaRouterLevel.graph");
-	DynamicKatz kc(G, 100);
+	DynKatzCentrality kc(G, 100);
 	DEBUG("start kc run");
 	kc.run();
 	DEBUG("finish kc");
@@ -261,7 +261,7 @@ TEST_F(CentralityGTest, testKatzDynamicDeletion) {
 	GraphEvent e(GraphEvent::EDGE_REMOVAL, u, v, 1.0);
 	G.removeEdge(u, v);
 	kc.update(e);
-	DynamicKatz kc2(G, 100);
+	DynKatzCentrality kc2(G, 100);
 	kc2.run();
 	const edgeweight tol = 1e-9;
 	for (count i = 0; i <= std::min(kc.levelReached, kc2.levelReached); i ++) {
@@ -300,7 +300,7 @@ TEST_F(CentralityGTest, testKatzDynamicBuilding) {
 	});
 
 	// Now run the algo. and add other some edges to check the correctness of the dynamic part.
-	DynamicKatz dynAlgo(G, 100);
+	DynKatzCentrality dynAlgo(G, 100);
 	dynAlgo.run();
 
 	count edgesProcessed = 0;
@@ -315,7 +315,7 @@ TEST_F(CentralityGTest, testKatzDynamicBuilding) {
 	edgesProcessed++;
 	});
 
-	DynamicKatz topAlgo(G, 100);
+	DynKatzCentrality topAlgo(G, 100);
 	topAlgo.run();
 
 	auto topRanking = topAlgo.ranking();
@@ -360,7 +360,7 @@ TEST_F(CentralityGTest, testKatzDirectedAddition) {
 	G.addEdge(13, 14);
 	G.addEdge(14, 15);
 
-	DynamicKatz kc(G, 5);
+	DynKatzCentrality kc(G, 5);
 	kc.run();
 
 	node u, v;
@@ -373,7 +373,7 @@ TEST_F(CentralityGTest, testKatzDirectedAddition) {
 	kc.update(e);
 	G.addEdge(u, v);
 
-	DynamicKatz kc2(G, 5);
+	DynKatzCentrality kc2(G, 5);
 	kc2.run();
 
 	for (count i = 0; i <= std::min(kc.levelReached, kc2.levelReached); i ++) {
@@ -424,7 +424,7 @@ TEST_F(CentralityGTest, testKatzDirectedDeletion) {
 	G.addEdge(13, 14);
 	G.addEdge(14, 15);
 
-	DynamicKatz kc(G, 5);
+	DynKatzCentrality kc(G, 5);
 	kc.run();
 
 	Aux::Random::setSeed(42, false);
@@ -436,7 +436,7 @@ TEST_F(CentralityGTest, testKatzDirectedDeletion) {
 	G.removeEdge(u, v);
 	kc.update(e);
 
-	DynamicKatz kc2(G, 5);
+	DynKatzCentrality kc2(G, 5);
 	kc2.run();
 
 	for (count i = 0; i <= std::min(kc.levelReached, kc2.levelReached); i ++) {
