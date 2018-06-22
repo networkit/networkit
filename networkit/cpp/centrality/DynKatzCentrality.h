@@ -9,10 +9,10 @@
 #ifndef DYNKATZCENTRALITY_H_
 #define DYNKATZCENTRALITY_H_
 
-#include "Centrality.h"
 #include "../auxiliary/PrioQueue.h"
 #include "../base/DynAlgorithm.h"
 #include "../dynamics/GraphEvent.h"
+#include "Centrality.h"
 
 namespace NetworKit {
 
@@ -26,31 +26,37 @@ protected:
 	count k;
 	count maxdeg;
 	bool groupOnly;
-	
-	// Nodes that have Katz score that only differ by this constant might appear swapped in the ranking.
+
+	// Nodes that have Katz score that only differ by this constant might appear
+	// swapped in the ranking.
 	double rankTolerance;
+
 public:
 	bool useQueue = false;
 
 public:
 	/**
-	 * Constructs a DynKatzCentrality object for the given Graph @a G. The damping factor is set to 1/(maxdeg + 1), where maxdeg is the maxmum degree in the graph.
+	 * Constructs a DynKatzCentrality object for the given Graph @a G. The damping
+	 * factor is set to 1/(maxdeg + 1), where maxdeg is the maxmum degree in the
+	 * graph.
 	 *
 	 * @param[in] G The graph.
-	 * @param[in] k The number k for which we want to find the top-k nodes with highest Katz centrality
+	 * @param[in] k The number k for which we want to find the top-k nodes with
+	 * highest Katz centrality
 	 */
-	DynKatzCentrality(const Graph& G, count k, bool groupOnly = false,
-			double tolerance = 1e-9);
+	DynKatzCentrality(const Graph &G, count k, bool groupOnly = false,
+	                  double tolerance = 1e-9);
 
 	void run() override;
 
 	/**
-  * Updates the katz centralities after an edge insertion or deletion on the graph.
-  *
-  * @param event The edge insertions or deletion.
-  */
+	 * Updates the katz centralities after an edge insertion or deletion on the
+	 * graph.
+	 *
+	 * @param event The edge insertions or deletion.
+	 */
 	void updateBatch(const std::vector<GraphEvent> &events) override;
-	
+
 	void update(GraphEvent singleEvent) override {
 		std::vector<GraphEvent> events{singleEvent};
 		updateBatch(events);
@@ -65,9 +71,10 @@ public:
 	 * Returns the (upper) bound of the centrality of each node
 	 */
 	double bound(node v);
-	
+
 	/**
-	 * Returns true if the bounds are sharp enough to rank two nodes against each other.
+	 * Returns true if the bounds are sharp enough to rank two nodes against each
+	 * other.
 	 */
 	bool areDistinguished(node u, node v);
 
@@ -75,7 +82,8 @@ private:
 	/**
 	 * Returns true if the bounds are sharp enough to rank two nodes against
 	 * each other **within the tolerance**.
-	 * Precondition: The first node appears higher in the current ranking the the second one.
+	 * Precondition: The first node appears higher in the current ranking the the
+	 * second one.
 	 */
 	bool areSufficientlyRanked(node high, node low);
 
@@ -83,7 +91,7 @@ private:
 	 * Performs a single iteration of the algorithm.
 	 */
 	void doIteration();
-	
+
 	/**
 	 * Returns true iff the ranking converged for the top-k.
 	 */
