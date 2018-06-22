@@ -15,10 +15,10 @@ namespace NetworKit {
 class ApproxGroupBetweenness : public Algorithm {
 
 public:
-	/** Constructs the ApproxGroupBetweenness-class for a given undirected graph
+	/** Constructs the ApproxGroupBetweenness class for a given undirected graph
 	 * @a G.
-	 * @param setSize Size of the set of nodes.
-	 * @þaram epsilon Determines the accuracy of the approx.
+	 * @param groupSize Size of the set of nodes.
+	 * @þaram epsilon Determines the accuracy of the approximation.
 	 */
 	ApproxGroupBetweenness(const Graph &G, const count groupSize,
 	                       const double epsilon);
@@ -30,8 +30,8 @@ public:
 	void run() override;
 
 	/**
-	 *Returns a vector of nodes containing the set of nodes with approximated
-	 *maximum groupbetweenness.
+	 * Returns a vector of nodes containing the set of nodes with approximated
+	 * maximum group betweenness.
 	 */
 	std::vector<node> groupMaxBetweenness() const;
 

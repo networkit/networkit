@@ -5,11 +5,11 @@
  *      Author: Marvin Pogoda
  */
 
+#include "ApproxGroupBetweenness.h"
 #include "../auxiliary/BucketPQ.h"
 #include "../auxiliary/Random.h"
 #include "../distance/BFS.h"
 #include "../distance/SSSP.h"
-#include "ApproxGroupBetweenness.h"
 
 #include <math.h>
 #include <omp.h>
@@ -20,6 +20,16 @@ ApproxGroupBetweenness::ApproxGroupBetweenness(const Graph &G,
                                                const count groupSize,
                                                const double epsilon)
     : G(G), groupSize(groupSize), epsilon(epsilon) {
+	if (G.isDirected()) {
+		throw std::runtime_error("Error: the graph must be undirected.");
+	}
+	if (groupSize == 0 || groupSize >= G.upperNodeIdBound()) {
+		throw std::runtime_error(
+		    "Error: the group size must be between 1 and n-1.");
+	}
+	if (epsilon <= 0.f) {
+		throw std::runtime_error("Error: epsilon must be greater than 0.");
+	}
 	hasRun = false;
 }
 

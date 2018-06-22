@@ -3087,12 +3087,12 @@ cdef extern from "cpp/io/ThrillGraphBinaryReader.h":
 		_Graph read(vector[string] paths) nogil except +
 
 cdef class ThrillGraphBinaryReader(GraphReader):
-	""" 
+	"""
 	Reads a graph format consisting of a serialized DIA of vector<uint32_t> from thrill.
 	When the number of nodes is given, reading the graph is more efficient.
 	Otherwise nodes are added to the graph as they are encountered.
 	Edges must be present only in one direction.
-	 
+
 	Parameters
 	----------
 	n : count
@@ -3390,7 +3390,7 @@ cdef extern from "cpp/io/BinaryPartitionReader.h":
 
 
 cdef class BinaryPartitionReader:
-	""" 
+	"""
 	Reads a partition from a binary file that contains an unsigned integer
 	of the given width for each node.
 
@@ -3398,7 +3398,7 @@ cdef class BinaryPartitionReader:
 	----------
 	width : int
 		the width of the unsigned integer in bytes (4 or 8)
-	 
+
 	"""
 	cdef _BinaryPartitionReader _this
 
@@ -6813,6 +6813,46 @@ cdef class Betweenness(Centrality):
 			The betweenness scores calculated by run().
 		"""
 		return (<_Betweenness*>(self._this)).edgeScores()
+
+
+cdef extern from "cpp/centrality/ApproxGroupBetweenness.h":
+	cdef cppclass _ApproxGroupBetweenness "NetworKit::ApproxGroupBetweenness" (_Algorithm):
+		_ApproxGroupBetweenness(_Graph, count, double) except +
+		vector[node] groupMaxBetweenness() except +
+
+cdef class ApproxGroupBetweenness(Algorithm):
+	"""
+		ApproxGroupBetweenness(G, groupSize, epsilon)
+
+		Constructs the ApproxGroupBetweenness class for a given undirected Graph
+		`G`.
+
+		Parameters
+		----------
+		G : Graph
+			The graph.
+		groupSize : count
+			The desired size of the group.
+		epsilon : double
+			Determines the accuracy of the approximation.
+	"""
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, groupSize, epsilon):
+		self._G = G
+		self._this = new _ApproxGroupBetweenness(G._this, groupSize, epsilon)
+
+	def groupMaxBetweenness(self):
+		"""
+			Get a vector of nodes containing the set of nodes with apporoximated
+			maximum group betweenness.
+
+			Returns
+			_______
+			vector
+				The group of nodes with highest approximated group betweenness.
+		"""
+		return (<_ApproxGroupBetweenness*>(self._this)).groupMaxBetweenness()
 
 
 cdef extern from "cpp/centrality/Closeness.h":
