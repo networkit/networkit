@@ -33,18 +33,24 @@ public:
 	 * Returns a vector of nodes containing the set of nodes with approximated
 	 * maximum group betweenness.
 	 */
-	std::vector<node> groupMaxBetweenness() const;
+	std::vector<node> groupMaxBetweenness();
 
 protected:
 	const Graph &G;
+	count n;
 	std::vector<node> maxGroup;
 	const count groupSize;
 	const double epsilon;
+	bool hasSortedGroup;
 };
 
-inline std::vector<node> ApproxGroupBetweenness::groupMaxBetweenness() const {
+inline std::vector<node> ApproxGroupBetweenness::groupMaxBetweenness() {
 	if (!hasRun) {
 		throw std::runtime_error("run method has not been called");
+	}
+	if (!hasSortedGroup) {
+		std::sort(maxGroup.begin(), maxGroup.end());
+		hasSortedGroup = true;
 	}
 	return maxGroup;
 }

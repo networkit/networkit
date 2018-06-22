@@ -19,7 +19,7 @@ namespace NetworKit {
 ApproxGroupBetweenness::ApproxGroupBetweenness(const Graph &G,
                                                const count groupSize,
                                                const double epsilon)
-    : G(G), groupSize(groupSize), epsilon(epsilon) {
+    : G(G), n(G.upperNodeIdBound()), groupSize(groupSize), epsilon(epsilon) {
 	if (G.isDirected()) {
 		throw std::runtime_error("Error: the graph must be undirected.");
 	}
@@ -35,12 +35,14 @@ ApproxGroupBetweenness::ApproxGroupBetweenness(const Graph &G,
 
 void ApproxGroupBetweenness::run() {
 	// Create data structures for the hypergraph.
-	std::vector<int64_t> bucketInitializer(G.numberOfNodes());
-	std::vector<std::vector<node>> incidencyList(G.numberOfNodes());
+	std::vector<int64_t> bucketInitializer(n);
+	std::vector<std::vector<node>> incidencyList(n);
 	std::vector<count> hyperEdges;
-	count samples = groupSize * log(G.numberOfNodes()) / (epsilon * epsilon);
+	count samples = groupSize * log(n) / (epsilon * epsilon);
 	std::vector<std::vector<count>> hyperEdgesPerSample(samples);
 	Aux::BucketPQ nodeDegrees(bucketInitializer, -samples, 1);
+
+	hasSortedGroup = false;
 
 #pragma omp parallel for
 	for (count l = 0; l < samples; ++l) {
@@ -49,7 +51,6 @@ void ApproxGroupBetweenness::run() {
 		do {
 			t = G.randomNode();
 		} while (s == t);
-
 		BFS bfs(G, s, true, true, t);
 		bfs.run();
 		std::set<std::vector<node>> shortestPaths = bfs.getPaths(t);
@@ -75,7 +76,7 @@ void ApproxGroupBetweenness::run() {
 
 	// Transfer edges from hyperEdgesPerSample to hyperEdges and prepare building
 	// nodeDegrees.
-	std::vector<count> tempDegrees(G.numberOfNodes());
+	std::vector<count> tempDegrees(n);
 	for (auto edge : hyperEdgesPerSample) {
 		node hyperEdgeStart = hyperEdges.size();
 		hyperEdges.push_back(edge.size());
@@ -89,11 +90,11 @@ void ApproxGroupBetweenness::run() {
 		}
 	}
 	// Build nodeDegrees
-	for (node i = 0; i < G.numberOfNodes(); i++)
+	for (node i = 0; i < n; i++)
 		nodeDegrees.changeKey(tempDegrees[i], i);
 
 	// Extract nodes with highest degrees.
-	std::vector<count> degreeDecrease(G.numberOfNodes());
+	std::vector<count> degreeDecrease(n);
 	node v;
 	count degree;
 	for (count j = 0; j < groupSize; j++) {
