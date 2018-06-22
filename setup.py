@@ -77,7 +77,7 @@ if sys.platform == 'Windows' and not scons_available:
 
 # compiler candidates
 # this list serves as a fallback when neither $CXX is set nor build.conf exists
-candidates = ["g++", "g++-7", "g++-6.1", "g++-6", "g++-5.3", "g++-5.2", "g++-5.1", "g++-5", "g++-4.9", "g++-4.8", "clang++", "clang++-3.8", "clang++-3.7"]
+candidates = ["g++", "g++-8", "g++-7", "g++-6.1", "g++-6", "g++-5.3", "g++-5.2", "g++-5.1", "g++-5", "g++-4.9", "g++-4.8", "clang++", "clang++-3.8", "clang++-3.7"]
 stdflag = None
 
 #######################################
@@ -309,14 +309,14 @@ setup(
 	name			= version.name,
 	version			= version.version,
 	author			= version.author,
-	author_email	= version.author_email,
-	url				= version.url,
-	download_url	= version.download_url,
+	author_email	        = version.author_email,
+	url			= version.url,
+	download_url	        = version.download_url,
 	description		= version.description,
-	long_description= version.long_description,
+	long_description        = version.long_description,
 	license			= version.license,
 	packages		= find_packages(),
-	package_data	= {'networkit.profiling': ['html/*','latex/*','description/*']},
+	package_data	        = {'networkit.profiling': ['html/*','latex/*','description/*']},
 	keywords		= version.keywords,
 	platforms		= version.platforms,
 	classifiers		= version.classifiers,

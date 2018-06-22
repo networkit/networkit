@@ -18,6 +18,7 @@
 #include "../../structures/Partition.h"
 #include "../ApproxBetweenness.h"
 #include "../ApproxCloseness.h"
+#include "../ApproxGroupBetweenness.h"
 #include "../Betweenness.h"
 #include "../Closeness.h"
 #include "../CoreDecomposition.h"
@@ -125,7 +126,7 @@ TEST_F(CentralityGTest, runApproxBetweennessSmallGraph) {
 	centrality.run();
 	std::vector<double> bc = centrality.scores();
 
-	ASSERT_LE(centrality.scores().size(),1.0/(epsilon*epsilon));
+	ASSERT_LE(centrality.scores().size(), 1.0 / (epsilon * epsilon));
 
 	DEBUG("scores: ", bc);
 }
@@ -180,7 +181,7 @@ TEST_F(CentralityGTest, testKatzCentralityDirected) {
 	kc.run();
 	DEBUG("finish kc");
 	std::vector<std::pair<node, double>> kc_ranking = kc.ranking();
-	//std::vector<double> kc_scores = kc.scores();
+	// std::vector<double> kc_scores = kc.scores();
 
 	EXPECT_EQ(kc_ranking[0].first, 699);
 }
@@ -331,7 +332,7 @@ TEST_F(CentralityGTest, runEstimateBetweenness) {
 	DEBUG("approximated betweenness scores: ", abc2.scores());
 }
 
-//FIXME look out for tolerance limit in paper sample nodes
+// FIXME look out for tolerance limit in paper sample nodes
 TEST_F(CentralityGTest, testApproxClosenessCentralityOnRealGraph) {
 	METISGraphReader reader;
 	Graph G = reader.read("input/celegans_metabolic.graph");
@@ -341,20 +342,20 @@ TEST_F(CentralityGTest, testApproxClosenessCentralityOnRealGraph) {
 
 	std::vector<double> acc_scores = acc.scores();
 
-	ASSERT_EQ(acc_scores.size(),453);
+	ASSERT_EQ(acc_scores.size(), 453);
 
-	//compare sampled approx closeness values vs real closeness values
-	//its a good compromise to not let the exact closness algorithm run
-	ASSERT_NEAR(acc_scores[0],0.416206,0.000001);
-	ASSERT_NEAR(acc_scores[10],0.355906,0.000001);
-	ASSERT_NEAR(acc_scores[87],0.420465,0.000001);
-	ASSERT_NEAR(acc_scores[121],0.38865,0.000001);
-	ASSERT_NEAR(acc_scores[178],0.4,0.000001);
-	ASSERT_NEAR(acc_scores[254],0.397188,0.000001);
-	ASSERT_NEAR(acc_scores[307],0.398238,0.000001);
-	ASSERT_NEAR(acc_scores[398],0.37604,0.000001);
-	ASSERT_NEAR(acc_scores[406],0.360734,0.000001);
-	ASSERT_NEAR(acc_scores[446],0.396491,0.000001);
+	// compare sampled approx closeness values vs real closeness values
+	// its a good compromise to not let the exact closness algorithm run
+	ASSERT_NEAR(acc_scores[0], 0.416206, 0.000001);
+	ASSERT_NEAR(acc_scores[10], 0.355906, 0.000001);
+	ASSERT_NEAR(acc_scores[87], 0.420465, 0.000001);
+	ASSERT_NEAR(acc_scores[121], 0.38865, 0.000001);
+	ASSERT_NEAR(acc_scores[178], 0.4, 0.000001);
+	ASSERT_NEAR(acc_scores[254], 0.397188, 0.000001);
+	ASSERT_NEAR(acc_scores[307], 0.398238, 0.000001);
+	ASSERT_NEAR(acc_scores[398], 0.37604, 0.000001);
+	ASSERT_NEAR(acc_scores[406], 0.360734, 0.000001);
+	ASSERT_NEAR(acc_scores[446], 0.396491, 0.000001);
 }
 
 TEST_F(CentralityGTest, testApproxClosenessCentralityOnToyGraph) {
@@ -615,7 +616,8 @@ TEST_F(CentralityGTest, testCoreDecomposition) {
 
 TEST_F(CentralityGTest, benchCoreDecompositionLocal) {
 	METISGraphReader reader;
-	std::vector<std::string> filenames = {"caidaRouterLevel","wing","astro-ph","PGPgiantcompo"};
+	std::vector<std::string> filenames = {"caidaRouterLevel", "wing", "astro-ph",
+	                                      "PGPgiantcompo"};
 
 	for (auto f : filenames) {
 		std::string filename("input/" + f + ".graph");
@@ -636,7 +638,7 @@ TEST_F(CentralityGTest, benchCoreDecompositionLocal) {
 		INFO("Time for bucket queue based k-core decomposition of ", filename, ": ",
 		     timer.elapsedTag());
 
-	G.forNodes([&](node u) { EXPECT_EQ(coreDec.score(u), coreDec2.score(u)); });
+		G.forNodes([&](node u) { EXPECT_EQ(coreDec.score(u), coreDec2.score(u)); });
 	}
 }
 
@@ -742,8 +744,8 @@ TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected) {
 	lcc.run();
 	std::vector<double> lccScores = lcc.scores();
 	std::vector<double> reference = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-	                               0.5, 0.0, 0.8, 0.8, 0.8, 0.6666666666666666,
-	                               0.0, 0.8, 0.5, 0.0};
+	                                 0.5, 0.0, 0.8, 0.8, 0.8, 0.6666666666666666,
+	                                 0.0, 0.8, 0.5, 0.0};
 
 	EXPECT_EQ(reference, lccScores);
 
@@ -775,8 +777,8 @@ TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected2) {
 	lcc.run();
 	std::vector<double> lccScores = lcc.scores();
 	std::vector<double> reference = {0.6666666666666666, 0.6666666666666666,
-	                               0.6666666666666666, 0.6666666666666666,
-	                               0.3333333333333333, 0.3333333333333333};
+	                                 0.6666666666666666, 0.6666666666666666,
+	                                 0.3333333333333333, 0.3333333333333333};
 
 	EXPECT_EQ(reference, lccScores);
 }
@@ -1025,19 +1027,19 @@ TEST_F(CentralityGTest, testGroupDegreeUndirected) {
 	}
 
 	auto computeGroupDegree = [&](std::vector<bool> curGroup, Graph g) {
-	count result = 0;
-	g.forNodes([&](node u) {
-		if (!curGroup[u]) {
-			bool neighborInGroup = false;
-			g.forNeighborsOf(u, [&](node v) {
-				if (!neighborInGroup && curGroup[v]) {
-					neighborInGroup = true;
-					++result;
-				}
-			});
-		}
-	});
-	return result;
+		count result = 0;
+		g.forNodes([&](node u) {
+			if (!curGroup[u]) {
+				bool neighborInGroup = false;
+				g.forNeighborsOf(u, [&](node v) {
+					if (!neighborInGroup && curGroup[v]) {
+						neighborInGroup = true;
+						++result;
+					}
+				});
+			}
+		});
+		return result;
 	};
 
 	count maxScore = 0;
@@ -1045,12 +1047,13 @@ TEST_F(CentralityGTest, testGroupDegreeUndirected) {
 	do {
 		count curScore = computeGroupDegree(reference, g);
 		if (curScore > maxScore) {
-		  maxScore = curScore;
+			maxScore = curScore;
 		}
 	} while (std::next_permutation(reference.begin(), reference.end()));
 
 	EXPECT_TRUE(score > 0.5 * maxScore);
-	EXPECT_TRUE(scorePlusGroup > (1.0 - 1.0 / std::exp(1.0) * (double)(maxScore + k)));
+	EXPECT_TRUE(scorePlusGroup >
+	            (1.0 - 1.0 / std::exp(1.0) * (double)(maxScore + k)));
 }
 
 TEST_F(CentralityGTest, testGroupDegreeDirected) {
@@ -1097,6 +1100,27 @@ TEST_F(CentralityGTest, testGroupDegreeDirected) {
 	} while (std::next_permutation(reference.begin(), reference.end()));
 
 	EXPECT_TRUE(scoreNoGroup > 0.5 * maxScore);
-	EXPECT_TRUE(scorePlusGroup > (1.0 - 1.0 / std::exp(1.0)) * (double)(maxScore + k));
+	EXPECT_TRUE(scorePlusGroup >
+	            (1.0 - 1.0 / std::exp(1.0)) * (double)(maxScore + k));
+}
+
+TEST_F(CentralityGTest, runTestApproxGroupBetweennessSmallGraph) {
+
+	Aux::Random::setSeed(42, false);
+
+	Graph g(8, false, false);
+
+	g.addEdge(0, 2);
+	g.addEdge(1, 2);
+	g.addEdge(2, 3);
+	g.addEdge(2, 4);
+	g.addEdge(3, 5);
+	g.addEdge(4, 5);
+	g.addEdge(5, 6);
+	g.addEdge(5, 7);
+	g.addEdge(0, 5);
+
+	ApproxGroupBetweenness gb(g, 2, 0.1);
+	gb.run();
 }
 } /* namespace NetworKit */
