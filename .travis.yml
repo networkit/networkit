@@ -109,6 +109,7 @@ script:
  - scons --optimize=Dbg --target=Tests --std=c++11 -j2
  - export OMP_NUM_THREADS=2
  - ./NetworKit-Tests-Dbg -t
+ - ./NetworKit-Tests-Dbg -r
 
 notifications:
   email: false

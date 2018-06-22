@@ -50,21 +50,20 @@ static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool
 };
 
 // TODO: clean up obsolete parameters
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, TRIALS, BENCHMARKS, FILTER };
+enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, RUNNABLE, DEBUG, BENCHMARKS, FILTER };
 const OptionParser::Descriptor usage[] =
 {
- {UNKNOWN, 0,"" , ""    ,OptionParser::Arg::None, ""
-                                            "Options:" },
- {HELP,    0,"h" , "help",OptionParser::Arg::None, "  --help  \t Print usage and exit." },
- {LOGLEVEL,    0, "" , "loglevel", OptionParser::Arg::Required, "  --loglevel=<LEVEL>  \t set the log level" },
- {THREADS,    0, "" , "threads", OptionParser::Arg::Required, "  --threads=<NUM>  \t set the maximum number of threads" },
- {TESTS, 0, "t", "tests", OptionParser::Arg::None, "  --tests \t Run unit tests"},
- {TRIALS, 0, "e", "trials", OptionParser::Arg::None, "  --trials \t Run experimental tests"},
- {BENCHMARKS, 0, "b", "benchmarks", OptionParser::Arg::None, "  --benchmarks \t Run benchmarks"},
- {FILTER, 0, "f", "gtest_filter", OptionParser::Arg::Required, "  --gtest_filter=<FILTER_PATTERN> \t Run tests that match the filter pattern" },
- {UNKNOWN, 0,"" ,  ""   ,OptionParser::Arg::None, "\nExamples:\n"
-                                            " TODO" },
- {0,0,0,0,0,0}
+{UNKNOWN,	0,	"" ,	"",				OptionParser::Arg::None,	"Options:" },
+{HELP,		0,	"h",	"help",			OptionParser::Arg::None,	"  --help  \t Print usage and exit." },
+{LOGLEVEL,	0,	"",		"loglevel",		OptionParser::Arg::Required,"  --loglevel=<LEVEL>  \t set the log level" },
+{THREADS,	0,	"",		"threads",		OptionParser::Arg::Required,"  --threads=<NUM>  \t set the maximum number of threads" },
+{TESTS,		0,	"t",	"tests",		OptionParser::Arg::None,	"  --tests \t Run unit tests"},
+{RUNNABLE,	0,	"r",	"run",			OptionParser::Arg::None,	"  --run \t Run unit tests which don't use assertions"},
+{DEBUG,		0,	"d",	"debug",		OptionParser::Arg::None,	"  --debug \t Run tests to debug some algorithms"},
+{BENCHMARKS,0,	"b",	"benchmarks",	OptionParser::Arg::None,	"  --benchmarks \t Run benchmarks"},
+{FILTER,	0,	"f",	"gtest_filter",	OptionParser::Arg::Required,"  --gtest_filter=<FILTER_PATTERN> \t Run tests that match the filter pattern" },
+{UNKNOWN,	0,	"",		"",				OptionParser::Arg::None,	"\nExamples:\n TODO" },
+{0,			0,	0,		0,				0,							0}
 };
 
 
@@ -102,12 +101,14 @@ int main(int argc, char **argv) {
 
 
 	// CONFIGURE LOGGING
-
-
 #ifndef NOLOGGING
 	if (options[LOGLEVEL]) {
 		Aux::Log::setLogLevel(options[LOGLEVEL].arg);
-		Aux::Log::Settings::setPrintLocation(true);
+		if(Aux::Log::getLogLevel() == "INFO"){
+			Aux::Log::Settings::setPrintLocation(false);
+		}else{
+			Aux::Log::Settings::setPrintLocation(true);
+		}
 	} else {
 		Aux::Log::setLogLevel("ERROR");	// with default level
 		Aux::Log::Settings::setPrintLocation(true);
@@ -116,7 +117,6 @@ int main(int argc, char **argv) {
 
 
 	// CONFIGURE PARALLELISM
-
 #ifdef _OPENMP
 	omp_set_nested(1); // enable nested parallelism
 #endif
@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
 		int nThreads = std::atoi(options[THREADS].arg);
 		Aux::setNumberOfThreads(nThreads);
 	}
-	
+
 	// get program name (currently only for unix)
 	auto pos = program_name.find_last_of("/");
 	program_name = program_name.substr(pos+1,program_name.length()-1);
@@ -134,8 +134,8 @@ int main(int argc, char **argv) {
 #ifndef NOGTEST
 	if (options[TESTS]) {
 		::testing::GTEST_FLAG(filter) = "*Test.test*";
-	} else if (options[TRIALS]) {
-		::testing::GTEST_FLAG(filter) = "*Test.try*";
+	} else if (options[DEBUG]) {
+		::testing::GTEST_FLAG(filter) = "*Test.debug*";
 	} else if (options[BENCHMARKS]) {
 		if (program_name != "NetworKit-Tests-O") {
 			std::cout << "Hint: Performance tests should be run in optimized mode" << std::endl;
@@ -143,7 +143,10 @@ int main(int argc, char **argv) {
 		::testing::GTEST_FLAG(filter) = "*Benchmark*";
 	} else if (options[FILTER]) {
 		::testing::GTEST_FLAG(filter) = options[FILTER].arg;
+	}	else if (options[RUNNABLE]) {
+		::testing::GTEST_FLAG(filter) = "*Test.run*";
 	}
+	::testing::GTEST_FLAG(shuffle) = 1;
 	::testing::InitGoogleTest(&argc, argv);
 	INFO("=== starting unit tests ===");
 	return RUN_ALL_TESTS();

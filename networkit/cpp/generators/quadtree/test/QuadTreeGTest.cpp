@@ -568,7 +568,7 @@ TEST_F(QuadTreeGTest, testLeftSuppression) {
 	}
 }
 
-TEST_F(QuadTreeGTest, tryTreeExport) {
+TEST_F(QuadTreeGTest, debugTreeExport) {
 	count n = 200;
 	count capacity = 40;
 	double k = 10;

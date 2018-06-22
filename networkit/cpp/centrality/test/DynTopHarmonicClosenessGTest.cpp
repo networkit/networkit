@@ -14,201 +14,194 @@
 namespace NetworKit {
 
 TEST_F(DynTopHarmonicClosenessGTest, testDynTopHarmonicClosenessUndirected) {
+	Graph G = DorogovtsevMendesGenerator(500).generate();
 
-  Aux::Random::setSeed(42, false);
-  Graph G = DorogovtsevMendesGenerator(500).generate();
+	count k = 10;
 
-  count k = 10;
+	DynTopHarmonicCloseness centrality(G, k, false);
+	centrality.run();
 
-  DynTopHarmonicCloseness centrality(G, k, false);
-  centrality.run();
+	HarmonicCloseness reference(G, false);
+	reference.run();
 
-  HarmonicCloseness reference(G, false);
-  reference.run();
+	auto scores = centrality.ranking();
+	auto refScores = reference.ranking();
 
-  auto scores = centrality.ranking();
-  auto refScores = reference.ranking();
+	for (count j = 0; j < k; ++j) {
+		EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
+	}
 
-  for (count j = 0; j < k; ++j) {
-    EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
-  }
+	count numInsertions = 1;
 
-  count numInsertions = 1;
+	std::vector<GraphEvent> deletions;
+	std::vector<GraphEvent> insertions;
 
-  std::vector<GraphEvent> deletions;
-  std::vector<GraphEvent> insertions;
+	for (count i = 0; i < numInsertions; i++) {
 
-  for (count i = 0; i < numInsertions; i++) {
+		node u = G.upperNodeIdBound();
+		node v = G.upperNodeIdBound();
 
-    node u = G.upperNodeIdBound();
-    node v = G.upperNodeIdBound();
+		do {
+			u = G.randomNode();
+			v = G.randomNode();
+		} while (G.hasEdge(u, v));
 
-    do {
-      u = G.randomNode();
-      v = G.randomNode();
+		GraphEvent edgeAddition(GraphEvent::EDGE_ADDITION, u, v);
+		insertions.insert(insertions.begin(), edgeAddition);
 
-    } while (G.hasEdge(u, v));
+		GraphEvent edgeDeletion(GraphEvent::EDGE_REMOVAL, u, v);
+		deletions.push_back(edgeDeletion);
 
-    GraphEvent edgeAddition(GraphEvent::EDGE_ADDITION, u, v);
-    insertions.insert(insertions.begin(), edgeAddition);
+		G.addEdge(u, v);
+	}
 
-    GraphEvent edgeDeletion(GraphEvent::EDGE_REMOVAL, u, v);
-    deletions.push_back(edgeDeletion);
+	for (auto e : insertions) {
+		G.removeEdge(e.u, e.v);
+	}
 
-    G.addEdge(u, v);
-  }
+	for (GraphEvent edgeAddition : insertions) {
 
-  for (auto e : insertions) {
-    G.removeEdge(e.u, e.v);
-  }
+		node u = edgeAddition.u;
+		node v = edgeAddition.v;
 
-  for (GraphEvent edgeAddition : insertions) {
+		G.addEdge(u, v);
 
-    node u = edgeAddition.u;
-    node v = edgeAddition.v;
+		centrality.update(edgeAddition);
+		reference.run();
 
-    G.addEdge(u, v);
+		scores = centrality.ranking();
+		refScores = reference.ranking();
 
-    centrality.update(edgeAddition);
-    reference.run();
+		for (count j = 0; j < k; ++j) {
+			EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
+		}
+	}
 
-    scores = centrality.ranking();
-    refScores = reference.ranking();
+	for (GraphEvent edgeDeletion : deletions) {
+		node u = edgeDeletion.u;
+		node v = edgeDeletion.v;
 
-    for (count j = 0; j < k; ++j) {
-      EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
-    }
-  }
+		G.removeEdge(u, v);
 
-  for (GraphEvent edgeDeletion : deletions) {
+		centrality.update(edgeDeletion);
+		reference.run();
 
-    node u = edgeDeletion.u;
-    node v = edgeDeletion.v;
+		scores = centrality.ranking();
+		refScores = reference.ranking();
 
-    G.removeEdge(u, v);
+		for (count j = 0; j < k; ++j) {
+			EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
+		}
+	}
 
-    centrality.update(edgeDeletion);
-    reference.run();
+	for (GraphEvent edgeInsertion : insertions) {
+	G	.addEdge(edgeInsertion.u, edgeInsertion.v);
+	}
 
-    scores = centrality.ranking();
-    refScores = reference.ranking();
+	reference.run();
+	centrality.updateBatch(insertions);
 
-    for (count j = 0; j < k; ++j) {
-      EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
-    }
-  }
+	scores = centrality.ranking();
+	refScores = reference.ranking();
 
-  for (GraphEvent edgeInsertion : insertions) {
-    G.addEdge(edgeInsertion.u, edgeInsertion.v);
-  }
-
-  reference.run();
-  centrality.updateBatch(insertions);
-
-  scores = centrality.ranking();
-  refScores = reference.ranking();
-
-  for (count j = 0; j < k; ++j) {
-    EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
-  }
+	for (count j = 0; j < k; ++j) {
+		EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
+	}
 }
 
 TEST_F(DynTopHarmonicClosenessGTest, testDynTopHarmonicClosenessDirected) {
+	Graph G = ErdosRenyiGenerator(300, 0.1, true).generate();
 
-  Aux::Random::setSeed(42, false);
-  Graph G = ErdosRenyiGenerator(300, 0.1, true).generate();
+	count k = 10;
 
-  count k = 10;
+	DynTopHarmonicCloseness centrality(G, k, false);
+	centrality.run();
 
-  DynTopHarmonicCloseness centrality(G, k, false);
-  centrality.run();
+	HarmonicCloseness reference(G, false);
+	reference.run();
 
-  HarmonicCloseness reference(G, false);
-  reference.run();
+	auto scores = centrality.ranking();
+	auto refScores = reference.ranking();
+	for (count j = 0; j < k; ++j) {
+		EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
+	}
 
-  auto scores = centrality.ranking();
-  auto refScores = reference.ranking();
-  for (count j = 0; j < k; ++j) {
-    EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
-  }
+	count numInsertions = 1;
 
-  count numInsertions = 1;
+	std::vector<GraphEvent> deletions;
+	std::vector<GraphEvent> insertions;
 
-  std::vector<GraphEvent> deletions;
-  std::vector<GraphEvent> insertions;
+	for (count i = 0; i < numInsertions; i++) {
 
-  for (count i = 0; i < numInsertions; i++) {
+		node u = G.upperNodeIdBound();
+		node v = G.upperNodeIdBound();
 
-    node u = G.upperNodeIdBound();
-    node v = G.upperNodeIdBound();
+		do {
+			u = G.randomNode();
+			v = G.randomNode();
+		} while (G.hasEdge(u, v));
 
-    do {
-      u = G.randomNode();
-      v = G.randomNode();
+		GraphEvent edgeAddition(GraphEvent::EDGE_ADDITION, u, v);
+		insertions.insert(insertions.begin(), edgeAddition);
 
-    } while (G.hasEdge(u, v));
+		GraphEvent edgeDeletion(GraphEvent::EDGE_REMOVAL, u, v);
+		deletions.push_back(edgeDeletion);
 
-    GraphEvent edgeAddition(GraphEvent::EDGE_ADDITION, u, v);
-    insertions.insert(insertions.begin(), edgeAddition);
+		G.addEdge(u, v);
+	}
 
-    GraphEvent edgeDeletion(GraphEvent::EDGE_REMOVAL, u, v);
-    deletions.push_back(edgeDeletion);
+	for (auto e : insertions) {
+		G.removeEdge(e.u, e.v);
+	}
 
-    G.addEdge(u, v);
-  }
+	for (GraphEvent edgeAddition : insertions) {
 
-  for (auto e : insertions) {
-    G.removeEdge(e.u, e.v);
-  }
+		node u = edgeAddition.u;
+		node v = edgeAddition.v;
 
-  for (GraphEvent edgeAddition : insertions) {
+		G.addEdge(u, v);
 
-    node u = edgeAddition.u;
-    node v = edgeAddition.v;
+		centrality.update(edgeAddition);
+		reference.run();
 
-    G.addEdge(u, v);
+		scores = centrality.ranking();
+		refScores = reference.ranking();
 
-    centrality.update(edgeAddition);
-    reference.run();
+		for (count j = 0; j < k; ++j) {
+			EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
+		}
+	}
 
-    scores = centrality.ranking();
-    refScores = reference.ranking();
+	for (GraphEvent edgeDeletion : deletions) {
 
-    for (count j = 0; j < k; ++j) {
-      EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
-    }
-  }
+		node u = edgeDeletion.u;
+		node v = edgeDeletion.v;
 
-  for (GraphEvent edgeDeletion : deletions) {
+		G.removeEdge(u, v);
 
-    node u = edgeDeletion.u;
-    node v = edgeDeletion.v;
+		centrality.update(edgeDeletion);
+		reference.run();
 
-    G.removeEdge(u, v);
+		scores = centrality.ranking();
+		refScores = reference.ranking();
 
-    centrality.update(edgeDeletion);
-    reference.run();
+		for (count j = 0; j < k; ++j) {
+			EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
+		}
+	}
 
-    scores = centrality.ranking();
-    refScores = reference.ranking();
+	for (GraphEvent edgeInsertion : insertions) {
+		G.addEdge(edgeInsertion.u, edgeInsertion.v);
+	}
 
-    for (count j = 0; j < k; ++j) {
-      EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
-    }
-  }
+	reference.run();
+	centrality.updateBatch(insertions);
 
-  for (GraphEvent edgeInsertion : insertions) {
-    G.addEdge(edgeInsertion.u, edgeInsertion.v);
-  }
+	scores = centrality.ranking();
+	refScores = reference.ranking();
 
-  reference.run();
-  centrality.updateBatch(insertions);
-
-  scores = centrality.ranking();
-  refScores = reference.ranking();
-
-  for (count j = 0; j < k; ++j) {
-    EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
-  }
+	for (count j = 0; j < k; ++j) {
+		EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
+	}
 }
 } // namespace NetworKit

@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-TEST(GaussSeidelRelaxationGTest, trySolve) {
+TEST(GaussSeidelRelaxationGTest, debugSolve) {
 	std::vector<Triplet> triplets = {{0,0,10}, {0,1,-1}, {0,2,2}, {1,0,-1}, {1,1,11}, {1,2,-1}, {1,3,3}, {2,0,2}, {2,1,-1}, {2,2,10}, {2,3,-1}, {3,1,3}, {3,2,-1}, {3,3,8}};
 //	10  -1   2   0
 //	-1  11  -1   3
@@ -29,7 +29,7 @@ TEST(GaussSeidelRelaxationGTest, trySolve) {
 	EXPECT_EQ(1, std::round(result[3]));
 }
 
-TEST(GaussSeidelRelaxationGTest, tryIteration) {
+TEST(GaussSeidelRelaxationGTest, debugIteration) {
 	std::vector<Triplet> triplets = {{0,0,10}, {0,1,-1}, {0,2,2}, {1,0,-1}, {1,1,11}, {1,2,-1}, {1,3,3}, {2,0,2}, {2,1,-1}, {2,2,10}, {2,3,-1}, {3,1,3}, {3,2,-1}, {3,3,8}};
 	//	10  -1   2   0
 	//	-1  11  -1   3

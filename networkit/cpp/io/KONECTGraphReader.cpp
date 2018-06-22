@@ -1,226 +1,279 @@
 /*
  * KONECTGraphReader.cpp
- * 
- * Reader for the KONECT graph format, 
- * based on the EdgeListReader.
- * 
- * The KONECT format is described in detail in 
+ *
+ *  Created on: 11.05.2018
+ *      Author: Roman Bange
+ *
+ * The KONECT format is described in detail in
  * http://konect.uni-koblenz.de/downloads/konect-handbook.pdf
+ *
  */
 
-#include "KONECTGraphReader.h"
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <unistd.h>
+
 #include "../auxiliary/Log.h"
 
-#include <sstream>
+#include "KONECTGraphReader.h"
 
-#include "../auxiliary/Enforce.h"
+namespace NetworKit{
+	KONECTGraphReader::KONECTGraphReader(bool remapNodes, MultipleEdgesHandling handlingmethod):
+	remapNodes(remapNodes), multipleEdgesHandlingMethod(handlingmethod){}
 
-#include <algorithm>
+	Graph KONECTGraphReader::read(const std::string &path){
+		std::string graphFormat = "";
+		std::string graphType = "";
+		count numberOfNodes = -1;
+		count numberOfEdges = -1;
 
-namespace NetworKit {
+		bool directed = true;
+		bool weighted = false;
+		bool multiple = false;
+		int valuesPerLine = 2;
+		bool secondPropertyLine = false;
+		std::unordered_map<node, node> nodeIdMap;
 
-    KONECTGraphReader::KONECTGraphReader(char separator, bool ignoreLoops) :
-    separator(separator), commentPrefix("%"), firstNode(1), ignoreLoops(ignoreLoops) {
-    }
+		//open file
+		auto fd = open(path.c_str(), O_RDONLY);
+		if(fd < 0)
+			throw std::runtime_error("Unable to open file");
 
-    Graph KONECTGraphReader::read(const std::string& path) {
-        return readContinuous(path);
-    }
-    Graph KONECTGraphReader::readContinuous(const std::string& path) {
+		struct stat st;
+		if(fstat(fd, &st))
+			throw std::runtime_error("Could not obtain file stats");
 
-        std::ifstream file(path);
-        Aux::enforceOpened(file);
-        std::string line; // the current line
+		// It does not really matter if we use a private or shared mapping.
+		auto window = mmap(nullptr, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+		if(window == reinterpret_cast<void *>(-1))
+			throw std::runtime_error("Could not map file");
 
+		if(close(fd))
+			throw std::runtime_error("Error during close()");
 
-        DEBUG("separator: ", this->separator);
-        DEBUG("first node: ", this->firstNode);
+		auto it = reinterpret_cast<char *>(window);
+		auto end = reinterpret_cast<char *>(window) + st.st_size;
 
-        // first find out the maximum node id
-        DEBUG("first pass");
- 	// first run through the file determines if the graph is directed and/or weighted and checks the consistency of the file
-	// IF NEEDED: try to improve performance by storing edges in a vector or map during first pass.
-	node maxNode = 0;
-        count i = 0;
+		// The following functions are helpers for parsing.
+		auto skipWhitespace = [&] {
+			while(it != end && (*it == ' ' || *it == '\t'))
+				++it;
+			if(it == end){ // proper error message if file ends unexpected
+				throw std::runtime_error("Unexpected end of file. Whitespace at end of file found");
+			}
+		};
 
-        // the number of vertices / edges as specified in the input file
-        int n = -1, m = -1;
-	// directed or weighted graph?
-        bool directed = true, weighted = false;
-        // the minimum number of values per line
-        unsigned int minValuesPerLine = 2;
-	// attempt to detect a tab separator character 
-	bool detectSeparatorAttempt = true;
+		// This function parses in whole words
+		auto scanWord = [&] () {
+			std::string word = "";
+			while(it != end && *it != ' ' && *it != '\t' && *it != '\n'){
+				word += *it;
+				++it;
+			}
+			return word;
+		};
 
+		auto scanId = [&] () -> node {
+			char *past;
+			auto value = strtol(it, &past, 10);
+			if(past <= it){
+				throw std::runtime_error("Scanning node failed. The file may be corrupt.");
+			}
+			it = past;
+			return value;
+		};
 
-        while (file.good()) {
-            ++i;
-            std::getline(file, line);
-            // TRACE("read line: " , line);
-            if (line.compare(0, this->commentPrefix.length(), this->commentPrefix) == 0) {
-                if (i == 1) {
-		    // first comment line determines if graph is directed/undirected and weighted/unweighted
-                    std::vector<std::string> split = Aux::StringTools::split(line, ' ');
-                    if (split.size() < 3) {
-                        std::stringstream message;
-                        message << "malformed line - first line must contain graph format and weight information, in line ";
-                        message << i << ": " << line;
-                        throw std::runtime_error(message.str());
-                    }
-                    if (split[1] == "sym" || split[1] == "bip") {
-                        directed = false;
-                    } else if (split[1] == "asym") {
-                        directed = true;
-                    } else {
-                        std::stringstream message;
-                        message << "malformed line - first line must give the graph format (sym/asym/bip), in line ";
-                        message << i << ": " << line;
-                        throw std::runtime_error(message.str());
-                    }
+		auto scanWeight = [&] () -> edgeweight{
+			char *past;
+			auto value = strtod(it, &past);
+			if(past <= it){
+				throw std::runtime_error("Scanning node failed. The file may be corrupt.");
+			}
+			it = past;
+			return value;
+		};
 
-                    if (split[2] == "unweighted" || split[2] == "positive") {
-                        weighted = false;
-			// NOTE: positive means, that there can be multiple edges. currently, these will be ignored. 
-                        // graph must only contain source and target ids
-                        minValuesPerLine = 2;
-                    } else if (split[2] == "posweighted" || split[2] == "signed" || split[2] == "weighted") {
-                        weighted = true;
-                        // graph must contain source and target ids and weight!
-                        minValuesPerLine = 3;
-                    } else {
-			std::stringstream message;
-			message << "graph types \"multiweighted\" and \"dynamic\" are not supported yet, found in line ";
-			message << i << ": " << line;
-			throw std::runtime_error(message.str());
-		    }
-                } else if (i == 2) {
-		    // the second, optional comment line contains number of vertices / edges
-                    std::vector<std::string> split = Aux::StringTools::split(line, ' ');
-                    m = std::stoul(split[1]);
-                    n = std::stoul(split[2]);
-//		    TRACE("m is: ",m);
-//		    TRACE("n is: ",n);
-                }
-            } else if (line.length() == 0) {
-                // TRACE("ignoring empty line");
-            } else {
-                std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
-                split.erase(std::remove_if(split.begin(),split.end(),[](const std::string& s){return s.empty();}),split.end());
+		//parse graph properties
+		if(*it == '%'){
+			++it;
+			skipWhitespace();
 
-		if(detectSeparatorAttempt) {
-                    // one attempt is made to detect if, instead of a space, 
-                    // a tab separator is used in the input file
-		    detectSeparatorAttempt = false;
-		    if(separator == ' ') {
-                	std::vector<std::string> tabSplit = Aux::StringTools::split(line, '\t');
-                        if(tabSplit.size() >= 2 && tabSplit.size() > split.size()) {
-                            DEBUG("detected tab separator.");
-                            split = tabSplit;
-                            this->separator = '\t';
-                        }
-		    }
-                }
+			// Parse graph format directed / undirected
+			graphFormat = scanWord();
 
+			if (graphFormat == "sym" || graphFormat == "bip"){
+				directed = false;
+			}else if(graphFormat != "asym"){
+				throw std::runtime_error("Graph format not tagged properly. Format is: " + graphFormat);
+			}
+			skipWhitespace();
+			// Parse graph weighting
+			graphType = scanWord();
+			//NOTE: This parser disregards the edge weight classification of "interval scale" and "ratio scale"
+			if (graphType == "weighted" || graphType == "posweighted" || graphType == "signed"){
+				weighted = true;
+				valuesPerLine = 3;
+			} else if (graphType == "positive"){ //multiple edges
+				if(multipleEdgesHandlingMethod == SUM_WEIGHTS_UP){
+					weighted = true;
+				}
+				multiple = true; //weights will be added
+			} else if (graphType == "multisigned" || graphType == "multiweighted" || graphType == "multiposweighted"){
+				weighted = true;
+				multiple = true;
+				valuesPerLine = 3;
+			} else if (graphType == "dynamic"){
+				throw std::runtime_error("Dynamic graphs are not supported yet");
+			} else if (graphType != "unweighted"){
+				throw std::runtime_error("Graph weight not tagged properly. Weight is: " + graphType);
+			}
+			DEBUG("First property line read in. Format: "+graphFormat+" / Type: "+graphType);
+			if (graphFormat == "bip"){
+				INFO("Your graph is flagged as a bipartite one. Keep in mind that"
+				 "NetworKit cannot handle this kind of graph in its special cases."
+				 "It is imported as a usual undirected graph and edges might be discarded.");
+			}
+			if(multiple){
+				DEBUG("Selected handling method for multiple edges is: "+std::to_string(multipleEdgesHandlingMethod));
+			}
+		} else {
+			throw std::runtime_error("No graph properties line found. This line is mandatory.");
+		}
 
-                // correct number of values?
-                if (split.size() >= minValuesPerLine && split.size() <= 4) {
-                    TRACE("split into : ", split[0], " and ", split[1]);
-                    node u = std::stoul(split[0]);
-                    node v = std::stoul(split[1]);
-                    if (!this->ignoreLoops || u != v) {
-                        if (u > maxNode) {
-                            maxNode = u;
-                        }
-                        if (v > maxNode) {
-                            maxNode = v;
-                        }
-                    }
-                } else {
-                    std::stringstream message;
-                    message << "malformed line (expecting ";
-                    message << minValuesPerLine << "-4 values, ";
-                    message << split.size() << " given) ";
-                    message << i << ": ";
-                    for (const auto& s : split) {
-                        message << s <<", ";
-                    }
-                    throw std::runtime_error(message.str());
-                }
-            }
-        }
-        file.close();
-        maxNode = maxNode - this->firstNode + 1;
-        DEBUG("max. node id found: ", maxNode);
-
-        Graph G(maxNode, weighted, directed);
-
-        DEBUG("second pass");
-	// second pass adds the edges to the graph.
-        file.open(path);
-        i = 0; // count lines
-        while (std::getline(file, line)) {
-            ++i;
-            if (line.compare(0, this->commentPrefix.length(), this->commentPrefix) == 0) {
-                // TRACE("ignoring comment: " , line);
-                // comment lines already processed in first pass
-            } else {
-                // TRACE("edge line: " , line);
-                std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
-                split.erase(std::remove_if(split.begin(),split.end(),[](const std::string& s){return s.empty();}),split.end());
-                // correct number of values?
-                if (split.size() >= minValuesPerLine && split.size() <= 4) {
-                    node u = std::stoul(split[0]) - this->firstNode;
-                    node v = std::stoul(split[1]) - this->firstNode;
-                    if (weighted) {
-                        count weightIdx = (split[2].size() > 0) ? 2 : 3;
-                        edgeweight weight = std::stod(split[weightIdx]);
-
-                        if (!this->ignoreLoops || u != v) {
-                            if (directed) {
-                                if (!G.hasEdge(u, v)) {
-                                    G.addEdge(u, v, weight);
-                                }
-                            } else {
-                                if (!G.hasEdge(u, v) && !G.hasEdge(v, u)) {
-                                    G.addEdge(u, v, weight);
-                                }
-                            }
-                        }
-                    } else {
-
-                        if (!this->ignoreLoops || u != v) {
-                            if (directed) {
-                                if (!G.hasEdge(u, v)) {
-                                    G.addEdge(u, v);
-                                }
-                            } else {
-                                if (!G.hasEdge(u, v) && !G.hasEdge(v, u)) {
-                                    G.addEdge(u, v);
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    std::stringstream message;
-                    message << "malformed line (expecting ";
-                    message << minValuesPerLine << "-4 values, ";
-                    message << split.size() << " given) ";
-                    message << i << ": " << line;
-                    throw std::runtime_error(message.str());
-                }
-            }
-        }
-        file.close();
-        if (m != -1 && G.numberOfEdges() != (unsigned int) m) {
-            ERROR("KONECT file is corrupted: actual number of added edges doesn't match the specifed number of edges");
-        }
-        if (n != -1 && G.numberOfNodes() != (unsigned int) n) {
-            ERROR("KONECT file is corrupted: actual number of added vertices doesn't match the specifed number of vertices");
-        }
-
-        G.shrinkToFit();
-        return G;
-    }
+		skipWhitespace();
+		if (*it != '\n'){
+			throw std::runtime_error("No break symbol after first property line");
+		}else{
+			++it;
+		}
+		skipWhitespace();
+		//second optional property line
+		if(*it == '%'){
+			++it;
+			skipWhitespace();
+			numberOfEdges = scanId();
+			skipWhitespace();
+			numberOfNodes = scanId();
+			secondPropertyLine = true;
+			while(it != end && *it != '\n')
+				++it;
+			if(it >= end){ // proper error message if file ends unexpected
+				throw std::runtime_error("Unexpected end of file");
+			}
+			if (*it != '\n'){
+				throw std::runtime_error("File not properly formatted. Last character in second property line is: "+std::string(1, *it));
+			}else{
+				++it;
+			}
+			DEBUG("Second property line read in. Edges: "+std::to_string(numberOfEdges)+ " / Nodes: "+std::to_string(numberOfNodes));
+		}
 
 
-} /* namespace NetworKit */
+		Graph graph((secondPropertyLine ? numberOfNodes : 0), weighted, directed);
+
+		//Map nodes and increase graph size if no second property is defined
+		std::function<node(node)> mapNode = [&] (node in) -> node {
+			if(secondPropertyLine){
+				if (in > numberOfNodes){ //if file is corrupted
+					//secondPropertyLine is made useless
+					ERROR("Given number of nodes by file does not match actual graph");
+					secondPropertyLine = false;
+					if(remapNodes){ // if remapNodes is selected true, the map has to be initalized with the existing nodes
+						nodeIdMap.reserve(numberOfNodes);
+						graph.forNodes([&](node u) {
+							nodeIdMap.insert({u,u});
+						});
+					}
+					return mapNode(in);
+				}else{
+					return in - 1; //minus firstNode
+				}
+			}else{
+				if(remapNodes){
+					auto it = nodeIdMap.find(in);
+					if(it != nodeIdMap.end())
+						return it->second;
+					auto result = nodeIdMap.insert({in, graph.addNode()});
+					assert(result.second);
+					return result.first->second;
+				}else{
+					for(count i = graph.upperNodeIdBound(); i < in; i++)
+						graph.addNode();
+					return in - 1;
+				}
+			}
+		};
+
+		//Helper function for handling edges
+		auto handleEdge = [&] (node source, node target, edgeweight weight = defaultEdgeWeight) {
+			if(!graph.hasEdge(source,target)){
+				graph.addEdge(source, target, weight);
+			}else if (multiple){
+				switch(multipleEdgesHandlingMethod){
+					case DISCARD_EDGES: break; //Do nothing
+					case SUM_WEIGHTS_UP:
+						graph.increaseWeight(source, target, weight);
+						break;
+					case KEEP_MINIUM_WEIGHT:
+						if(graph.weight(source,target) > weight){
+							graph.setWeight(source,target, weight);
+						}
+						break;
+					default:
+						throw std::runtime_error("Invalid multipleEdgesHandlingMethod: "
+						+std::to_string(multipleEdgesHandlingMethod));
+				}
+			}else{
+				DEBUG("["+std::to_string(source)+"->"+std::to_string(target)+
+				"] Multiple edges detected but declared as: "+graphFormat+
+				" and "+graphType);
+			}
+		};
+
+		while(it != end){
+			skipWhitespace();
+			if(*it == '\n') {
+				// We ignore empty lines.
+			} else if(*it == '#' || *it == '%') {
+				// Skip non-linebreak characters.
+				while(it != end && *it != '\n')
+					++it;
+			} else {
+				// Normal case parsing
+				auto sourceId = scanId();
+				if(it >= end){ // proper error message if file ends unexpected
+					throw std::runtime_error("Unexpected end of file");
+				}
+				if(!(*it == ' ' || *it == '\t')){
+					throw std::runtime_error("Target ID cannot be parsed, maybe the file is corrupt");
+				}
+				skipWhitespace();
+
+				auto targetId = scanId();
+				if(it >= end){ // proper error message if file ends unexpected
+					throw std::runtime_error("Unexpected end of file");
+				}
+				skipWhitespace();
+				if (valuesPerLine > 2){
+					auto edgeWeight = scanWeight();
+					handleEdge(mapNode(sourceId), mapNode(targetId), edgeWeight);
+				}else{
+					handleEdge(mapNode(sourceId), mapNode(targetId));
+				}
+			}
+			//break lines
+			skipWhitespace();
+			if (*it != '\n'){
+				throw std::runtime_error("File not properly formatted. Last character in line is: "+std::string(1, *it));
+			}
+			++it;
+		}
+		//unmap file
+		if(munmap(window, st.st_size))
+			throw std::runtime_error("Could not unmap file");
+
+		graph.shrinkToFit();
+		return graph;
+	}
+} //namespace NetworKit

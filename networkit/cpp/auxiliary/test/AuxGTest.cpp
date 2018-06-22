@@ -147,13 +147,6 @@ TEST_F(AuxGTest, benchmarkBinomial) {
 
 }
 
-
-TEST_F(AuxGTest, testVectorDebug) {
-	std::vector<int> vec(10, 42);
-	INFO(vec);
-}
-
-
 TEST_F(AuxGTest, testPriorityQueue) {
 	typedef std::pair<double, uint64_t> ElemType;
 
@@ -282,36 +275,42 @@ TEST_F(AuxGTest, testPrioQueueForInts) {
 	EXPECT_EQ(mini.second, 0u);
 }
 
-//FIXME make this working again
-/*TEST_F(AuxGTest, testLogging) {
-	std::string cl = Aux::currentLogLevel();
+TEST_F(AuxGTest, testLogging) {
+	std::string cl = Aux::Log::getLogLevel();
 	//FATAL("FATAL ERROR");
 	//ERROR("This may be here");
-	Aux::setLoglevel("ERROR");
-	//FATAL("fatal error"<<3<<2.f);
-	//ERROR("normal error"<<3<<2.f);
-	//WARN("just a warning"<<3<<2.f);
+	Aux::Log::setLogLevel("ERROR");
+	EXPECT_STREQ("ERROR",Aux::Log::getLogLevel().c_str());
+	//FATAL("fatal error",3,2.f);
+	//ERROR("normal error",3,2.f);
+	//WARN("just a warning",3,2.f);
 	//INFO("for the sake of information", 3, 2.f);
 	//DEBUG("important debug outputs", 3, 2.f);
 	//TRACE("trace", 3, 2.f);
-	Aux::setLoglevel("INFO");
-	EXPECT_EQ("INFO",Aux::currentLogLevel());
+	Aux::Log::setLogLevel("INFO");
+	EXPECT_STREQ("INFO",Aux::Log::getLogLevel().c_str());
 	//FATAL("fatal error", 3, 2.f);
 	//ERROR("normal error", 3, 2.f);
 	//WARN("just a warning", 3, 2.f);
 	//INFO("for the sake of information", 3, 2.f);
 	//DEBUG("important debug outputs", 3, 2.f);
 	//TRACE("trace", 3, 2.f);
-	Aux::setLoglevel("TRACE");
-	EXPECT_EQ("TRACE",Aux::currentLogLevel());
+	Aux::Log::setLogLevel("TRACE");
+	EXPECT_STREQ("TRACE",Aux::Log::getLogLevel().c_str());
 	//FATAL("fatal error", 3, 2.f);
 	//ERROR("normal error", 3, 2.f);
 	//WARN("just a warning", 3, 2.f);
 	//INFO("for the sake of information", 3, 2.f);
 	//DEBUG("important debug outputs", 3, 2.f);
 	//TRACE("trace", 3, 2.f);
-	Aux::setLoglevel(cl);	
-}*/
+	Aux::Log::setLogLevel("WARN");
+	EXPECT_STREQ("WARN",Aux::Log::getLogLevel().c_str());
+	Aux::Log::setLogLevel("FATAL");
+	EXPECT_STREQ("FATAL",Aux::Log::getLogLevel().c_str());
+	Aux::Log::setLogLevel("DEBUG");
+	EXPECT_STREQ("DEBUG",Aux::Log::getLogLevel().c_str());
+	Aux::Log::setLogLevel(cl);
+}
 
 TEST_F(AuxGTest, testFormatting) {
 	using Aux::toStringF;
@@ -327,7 +326,7 @@ TEST_F(AuxGTest, testFormatting) {
 TEST_F(AuxGTest, testRandomChoice) {
 	std::vector<uint64_t> data = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 	for (uint64_t i = 0; i < 1000; ++i) {
-		std::ignore = Aux::Random::choice(data);
+		EXPECT_TRUE(std::find(data.begin(), data.end(), Aux::Random::choice(data)) != data.end());
 	}
 }
 
@@ -343,11 +342,11 @@ TEST_F(AuxGTest, testRandomWeightedChoice) {
 TEST_F(AuxGTest, testRandomIndex) {
 	using namespace Aux::Random;
 	setSeed(1, false);
-	
+
 	for (unsigned i = 0; i < 10; i++) {
 		EXPECT_EQ(0u, index(1));
 	}
-	
+
 	for (unsigned i = 0; i < 100; i++) {
 		auto tmp = index(10);
 		EXPECT_LE(tmp, 9u);
@@ -358,10 +357,10 @@ TEST_F(AuxGTest, testRandomIndex) {
 TEST_F(AuxGTest, testSplit) {
 	using Vec = std::vector<std::string>;
 	using namespace Aux::StringTools;
-	
+
 	EXPECT_EQ(Vec{}, split(""));
 	EXPECT_EQ(Vec{""}, split(" "));
-	
+
 	{
 		auto expected = Vec{"", ""};
 		EXPECT_EQ(expected, split("  "));
@@ -413,18 +412,18 @@ TEST_F(AuxGTest, testEnforce) {
 	using Aux::enforce;
 	EXPECT_THROW(enforce(false), std::runtime_error);
 	EXPECT_NO_THROW(enforce(true));
-	
+
 	EXPECT_THROW(enforce(false, "foo"), std::runtime_error);
 	EXPECT_NO_THROW(enforce(true, "bar"));
-	
+
 	EXPECT_THROW(enforce<std::logic_error>(false, "foo"), std::logic_error);
 	EXPECT_NO_THROW(enforce<std::logic_error>(true, "foo"));
-	
+
 	std::string msg = "some message in a std::string";
-	
+
 	EXPECT_THROW(enforce(false, msg), std::runtime_error);
 	EXPECT_NO_THROW(enforce(true, msg));
-	
+
 	EXPECT_THROW(enforce<std::logic_error>(false, msg), std::logic_error);
 	EXPECT_NO_THROW(enforce<std::logic_error>(true, msg));
 }
@@ -448,7 +447,7 @@ TEST_F(AuxGTest, testNumberParsingInteger) {
 		EXPECT_EQ(expectedValues[i], result);
 		++i;
 	}
-	
+
 	EXPECT_EQ(it, end);
 }
 
@@ -465,7 +464,7 @@ TEST_F(AuxGTest, testNumberParsingSignedInteger) {
 		EXPECT_EQ(expectedValues[i], result);
 		++i;
 	}
-	
+
 	EXPECT_EQ(it, end);
 }
 
@@ -486,7 +485,7 @@ TEST_F(AuxGTest, testOverflowCatching) {
 
 TEST_F(AuxGTest, testNumberParsingBasicReal) {
 	using namespace Aux::Parsing;
-	const std::string str = 
+	const std::string str =
 		"0 00 1 123 001 1200 12345678    "
 		"0.00000 -0000.000 -0000.000e-100"
 		;
@@ -503,7 +502,7 @@ TEST_F(AuxGTest, testNumberParsingBasicReal) {
 		EXPECT_EQ(expectedValues[i], result);
 		++i;
 	}
-	
+
 	EXPECT_EQ(it, end);
 }
 
