@@ -1,8 +1,9 @@
 /*
- * DynamicKatz.h
+ * DynKatzCentrality.h
  *
- *  Created on: 09.01.2015
- *      Author: Henning
+ *  Created on: April 2018
+ *      Author: Alexander van der Grinten
+ *      based on code by Elisabetta Bergamini
  */
 
 #ifndef DYNAMICKATZ_H_
@@ -18,7 +19,7 @@ namespace NetworKit {
  * @ingroup centrality
  * Finds the top-k nodes with highest Katz centrality
  */
-class DynamicKatz: public Centrality {
+class DynKatzCentrality: public Centrality {
 protected:
 	double alpha; // damping
 	count k;
@@ -32,12 +33,12 @@ public:
 
 public:
 	/**
-	 * Constructs a DynamicKatz object for the given Graph @a G. The damping factor is set to 1/(maxdeg + 1), where maxdeg is the maxmum degree in the graph.
+	 * Constructs a DynKatzCentrality object for the given Graph @a G. The damping factor is set to 1/(maxdeg + 1), where maxdeg is the maxmum degree in the graph.
 	 *
 	 * @param[in] G The graph.
 	 * @param[in] k The number k for which we want to find the top-k nodes with highest Katz centrality
 	 */
-	DynamicKatz(const Graph& G, count k, bool groupOnly = false,
+	DynKatzCentrality(const Graph& G, count k, bool groupOnly = false,
 			double tolerance = 1e-9);
 
 	virtual void run();
