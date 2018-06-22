@@ -54,8 +54,6 @@ void DynamicKatz::run() {
 	baseData.resize(G.upperNodeIdBound(), 0.0);
 	boundData.resize(G.upperNodeIdBound(), DBL_MAX);
 
-	count maxIter = 20;
-	
 	levelReached = 0;
 	do {
 		doIteration();
