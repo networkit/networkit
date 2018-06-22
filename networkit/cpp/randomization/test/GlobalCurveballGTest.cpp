@@ -57,7 +57,7 @@ TEST_F(GlobalCurveballGTest, testCurveballErdosRenyi) {
     Aux::Random::setSeed(1, false);
 
     node numNodes = 1000;
-    NetworKit::ErdosRenyiGenerator generator(numNodes, 0.3);
+    NetworKit::ErdosRenyiGenerator generator(numNodes, 0.01);
     NetworKit::Graph G = generator.generate();
 
     this->checkWithGraph(G);
