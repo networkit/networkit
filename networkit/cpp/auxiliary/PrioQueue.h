@@ -71,7 +71,7 @@ public:
 	 */
 	virtual void insert(Key key, Value value);
 	
-	virtual ElemType peekMin(int n = 0);
+	virtual ElemType peekMin(size_t n = 0);
 
 	/**
 	 * Removes the element with minimum key and returns it.
@@ -152,7 +152,7 @@ inline void Aux::PrioQueue<Key, Value>::remove(const Value& val) {
 }
 
 template<class Key, class Value>
-std::pair<Key, Value> Aux::PrioQueue<Key, Value>::peekMin(int n) {
+std::pair<Key, Value> Aux::PrioQueue<Key, Value>::peekMin(size_t n) {
 	assert(pqset.size() > n);
 	ElemType elem = *std::next(pqset.begin(), n);
 	return elem;
