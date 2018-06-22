@@ -6269,6 +6269,12 @@ cdef extern from "cpp/centrality/Centrality.h":
 		double centralization() except +
 
 
+cdef extern from "cpp/base/DynAlgorithm.h":
+	cdef cppclass _DynAlgorithm "NetworKit::DynAlgorithm":
+		void update(_GraphEvent) except +
+		void updateBatch(vector[_GraphEvent]) except +
+
+
 cdef class Centrality(Algorithm):
 	""" Abstract base class for centrality measures"""
 
