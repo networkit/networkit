@@ -25,7 +25,7 @@ protected:
 	count k;
 	count maxdeg;
 	bool groupOnly;
-	
+
 	// Nodes that have Katz score that only differ by this constant might appear swapped in the ranking.
 	double rankTolerance;
 public:
@@ -48,11 +48,11 @@ public:
   *
   * @param event The edge insertions or deletion.
   */
-	void update(const std::vector<GraphEvent> &events);
-	
+	void updateBatch(const std::vector<GraphEvent> &events);
+
 	void update(GraphEvent singleEvent) {
 		std::vector<GraphEvent> events{singleEvent};
-		update(events);
+		updateBatch(events);
 	}
 
 	node top(count n = 0) {
@@ -64,7 +64,7 @@ public:
 	 * Returns the (upper) bound of the centrality of each node
 	 */
 	double bound(node v);
-	
+
 	/**
 	 * Returns true if the bounds are sharp enough to rank two nodes against each other.
 	 */
@@ -82,7 +82,7 @@ private:
 	 * Performs a single iteration of the algorithm.
 	 */
 	void doIteration();
-	
+
 	/**
 	 * Returns true iff the ranking converged for the top-k.
 	 */
