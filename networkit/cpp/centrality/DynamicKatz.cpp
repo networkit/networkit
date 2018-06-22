@@ -360,7 +360,7 @@ bool DynamicKatz::checkConvergence() {
 					", (upper) bound: ", boundData[activeRanking[0]],
 					", lower bound: ", scoreData[activeRanking[0]]);
 
-			for (count j = 1; j < std::min(k, activeRanking.size()); j ++) {
+			for (count j = 1; j < std::min(size_t(k), activeRanking.size()); j ++) {
 				node previous = activeRanking[j - 1];
 				node current = activeRanking[j];
 				if(!areSufficientlyRanked(previous, current))
