@@ -9,6 +9,7 @@
 #define DYNAMICKATZ_H_
 
 #include "Centrality.h"
+#include "../auxiliary/PrioQueue.h"
 #include "../dynamics/GraphEvent.h"
 
 namespace NetworKit {
@@ -26,6 +27,8 @@ protected:
 	
 	// Nodes that have Katz score that only differ by this constant might appear swapped in the ranking.
 	double rankTolerance;
+public:
+	bool useQueue = false;
 
 public:
 	/**
@@ -86,6 +89,8 @@ private:
 
 	std::vector<bool> isActive;
 	std::vector<node> activeRanking;
+	Aux::PrioQueue<double, node> activeQueue;
+	bool filledQueue = false;
 
 	std::vector<double> baseData;
 	std::vector<double> boundData;

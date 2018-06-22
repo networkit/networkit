@@ -6,15 +6,17 @@
  */
 
 #include "DynamicKatz.h"
+#include "../auxiliary/Timer.h"
 #include "../auxiliary/NumericTools.h"
-#include <math.h>
 #include <float.h>
+#include <math.h>
+#include <omp.h>
 
 namespace NetworKit {
 
 DynamicKatz::DynamicKatz(const Graph& G, count k, bool groupOnly, double tolerance)
-: Centrality(G, false), k(k), groupOnly(groupOnly), rankTolerance(tolerance)
-{
+: Centrality(G, false), k(k), groupOnly(groupOnly), rankTolerance(tolerance),
+		activeQueue(G.upperNodeIdBound()) {
 	maxdeg = 0;
 	G.forNodes([&](node u){
 		if (G.degree(u) > maxdeg) {
@@ -93,59 +95,91 @@ void DynamicKatz::update(const std::vector<GraphEvent> &events){
 			}
 	}
 
+	int maxThreads = omp_get_max_threads();
+
 	count i = 1;
 	while(i <= levelReached) {
-		for (node v: seenNodes) {
+		#pragma omp parallel for
+		for(size_t m = 0; m < seenNodes.size(); ++m) {
+			node v = seenNodes[m];
 			preUpdateContrib[v] = preUpdatePaths[v];
 			preUpdatePaths[v] = nPaths[i][v];
 		}
-		
-		// Caveat: We need preUpdateContrib[e.u] for deletions.
-		// If e.u was not seen yet, we initialize that value here.
-		for(GraphEvent e : events)
-			if(e.type == GraphEvent::EDGE_REMOVAL && !wasSeen[e.u])
-				preUpdateContrib[e.u] = nPaths[i-1][e.u];
 
-		// Subtract the old contribution and add the new one.
-		for (node u : seenNodes) {
-			// Note: For directed graphs here the direction has to be the opposite
-			// of the static case.
-			G.forEdgesOf(u, [&](node v, edgeweight ew) {
-				visitedEdges++;
-				if(!wasSeen[v]) {
-					wasSeen[v] = true;
-					newlySeen.push_back(v);
-					preUpdatePaths[v] = nPaths[i][v];
+		if(seenNodes.size() < G.numberOfNodes()) {
+			// Caveat: We need preUpdateContrib[e.u] for deletions.
+			// If e.u was not seen yet, we initialize that value here.
+			for(GraphEvent e : events)
+				if(e.type == GraphEvent::EDGE_REMOVAL && !wasSeen[e.u])
+					preUpdateContrib[e.u] = nPaths[i-1][e.u];
+
+			// Subtract the old contribution and add the new one.
+			for (node u : seenNodes) {
+				// Note: For directed graphs here the direction has to be the opposite
+				// of the static case.
+				G.forEdgesOf(u, [&](node v, edgeweight ew) {
+					visitedEdges++;
+					if(!wasSeen[v]) {
+						wasSeen[v] = true;
+						newlySeen.push_back(v);
+						preUpdatePaths[v] = nPaths[i][v];
+					}
+					
+					nPaths[i][v] -= preUpdateContrib[u];
+					nPaths[i][v] += nPaths[i-1][u];
+				});
+			}
+
+			// If parallelism is available, it is faster to just recompute all nodes.
+			// TODO: Check for parallelism.
+			if(maxThreads > 1 && 2 * seenNodes.size() > G.numberOfNodes())
+				G.forNodes([&] (node v) {
+					if(!wasSeen[v]) {
+						wasSeen[v] = true;
+						newlySeen.push_back(v);
+						preUpdatePaths[v] = nPaths[i][v];
+					}
+				});
+
+			// Handle the added/deleted edges.
+			for(GraphEvent e : events) {
+				if(e.type == GraphEvent::EDGE_ADDITION) {
+					nPaths[i][e.v] += nPaths[i-1][e.u];
+					if(!G.isDirected())
+						nPaths[i][e.u] += nPaths[i-1][e.v];
+				}else{
+					assert(e.type == GraphEvent::EDGE_REMOVAL);
+					nPaths[i][e.v] -= preUpdateContrib[e.u];
+					if(!G.isDirected())
+						nPaths[i][e.u] -= preUpdateContrib[e.v];
 				}
+			}
+			
+			seenNodes.insert(seenNodes.end(), newlySeen.begin(), newlySeen.end());
+			newlySeen.clear();
+		
+			// Update the Katz centrality from nPaths.
+			auto alpha_pow = pow(alpha, i);
+			#pragma omp parallel for
+			for(size_t m = 0; m < seenNodes.size(); ++m) {
+				node v = seenNodes[m];
+				baseData[v] -= alpha_pow * preUpdatePaths[v];
+				baseData[v] += alpha_pow * nPaths[i][v];
+			}
+		}else{
+			// In this case, we're basically applying the static algorithm.
+			auto alpha_pow = pow(alpha, i);
+			G.balancedParallelForNodes([&](node u) {
+				nPaths[i][u] = 0;
+				G.forInEdgesOf(u, [&](node v, edgeweight ew) {
+					nPaths[i][u] += preUpdateContrib[v];
+				});
 				
-				nPaths[i][v] -= preUpdateContrib[u];
-				nPaths[i][v] += nPaths[i-1][u];
+				baseData[u] -= alpha_pow * preUpdatePaths[u];
+				baseData[u] += alpha_pow * nPaths[i][u];
 			});
 		}
-		
-		// Handle the added/deleted edges.
-		for(GraphEvent e : events) {
-			if(e.type == GraphEvent::EDGE_ADDITION) {
-				nPaths[i][e.v] += nPaths[i-1][e.u];
-				if(!G.isDirected())
-					nPaths[i][e.u] += nPaths[i-1][e.v];
-			}else{
-				assert(e.type == GraphEvent::EDGE_REMOVAL);
-				nPaths[i][e.v] -= preUpdateContrib[e.u];
-				if(!G.isDirected())
-					nPaths[i][e.u] -= preUpdateContrib[e.v];
-			}
-		}
-		
-		seenNodes.insert(seenNodes.end(), newlySeen.begin(), newlySeen.end());
-		newlySeen.clear();
 
-		// Updates the Katz centrality from nPaths.
-		auto alpha_pow = pow(alpha, i);
-		for (node u : seenNodes) {
-			baseData[u] -= alpha_pow * preUpdatePaths[u];
-			baseData[u] += alpha_pow * nPaths[i][u];
-		}
 		i++;
 	}
 	
@@ -224,7 +258,7 @@ void DynamicKatz::doIteration() {
 	auto alpha_pow = pow(alpha, r);
 	auto next_alpha_pow = alpha * alpha_pow;
 	auto bound_factor = next_alpha_pow * (1/(1 - alpha * maxdeg));
-	G.parallelForNodes([&](node u){
+	G.balancedParallelForNodes([&](node u){
 		G.forInEdgesOf(u, [&](node v, edgeweight ew) {
 			nPaths[r][u] += nPaths[r-1][v];
 		});
@@ -244,55 +278,98 @@ void DynamicKatz::doIteration() {
 }
 
 bool DynamicKatz::checkConvergence() {
-	// Deactivate nodes that cannot be in the top-k.
-	if(activeRanking.size() > k) {
-		// Doing only a partial sort here improves performance a lot.
-		std::partial_sort(activeRanking.begin(), activeRanking.begin() + k,
-				activeRanking.end(), [&] (node u, node v) {
-			return scoreData[u] > scoreData[v];
-		});
+	if(useQueue) {
+		if(!filledQueue) {
+			G.forNodes([&] (node u) {
+				activeQueue.insert(scoreData[u], u);
+			});
 
-		for(auto u : activeRanking)
-			if(areSufficientlyRanked(activeRanking[k - 1], u))
-				isActive[u] = false;
-
-		activeRanking.erase(std::remove_if(activeRanking.begin() + k,
-				activeRanking.end(), [&] (node u) {
-			return !isActive[u];
-		}), activeRanking.end());
-	}
-
-	assert(!activeRanking.empty());
-	double length = sqrt(G.parallelSumForNodes([&](node u) {
-		return (scoreData[u] * scoreData[u]);
-	}));
-	DEBUG("DynKatz: In iteration ", levelReached, ": ", activeRanking.size(), " nodes remain."
-			", vector length: ", length);
-
-	if(activeRanking.size() > k)
-		return false;
-
-	// Once only k active nodes remain, we need to continue iterating
-	// until the bounds seperate their position in the ranking.
-	if(!groupOnly) {
-		std::sort(activeRanking.begin(), activeRanking.end(), [&] (node u, node v) {
-			return scoreData[u] > scoreData[v];
-		});
-	
-		DEBUG("DynKatz: Node with highest centrality: ", activeRanking[0],
-				", score: ", baseData[activeRanking[0]],
-				", (upper) bound: ", boundData[activeRanking[0]],
-				", lower bound: ", scoreData[activeRanking[0]]);
-
-		for (count j = 1; j < std::min(k, activeRanking.size()); j ++) {
-			node previous = activeRanking[j - 1];
-			node current = activeRanking[j];
-			if(!areSufficientlyRanked(previous, current))
-				return false;
+			filledQueue = true;
 		}
-	}
 
-	return true;
+		// Rank the first node correctly.
+		node v;
+		do {
+			v = activeQueue.peekMin(0).second;
+			activeQueue.changeKey(scoreData[v], v);
+		} while(v != activeQueue.peekMin(0).second);
+
+		while(activeQueue.size() > 1) {
+			// Rank the second node correctly.
+			node u;
+			do {
+				u = activeQueue.peekMin(1).second;
+				activeQueue.changeKey(scoreData[u], u);
+			} while(u != activeQueue.peekMin(1).second);
+			
+			if(!areSufficientlyRanked(u, v))
+				return false;
+			activeQueue.extractMin();
+			v = u;
+		}
+
+		return true;
+	}else{
+		// Deactivate nodes that cannot be in the top-k.
+		if(activeRanking.size() > k) {
+			// Doing only a partial sort here improves performance a lot.
+			Aux::Timer sort_timer;
+			sort_timer.start();
+			std::partial_sort(activeRanking.begin(), activeRanking.begin() + k,
+					activeRanking.end(), [&] (node u, node v) {
+				return scoreData[u] > scoreData[v];
+			});
+			sort_timer.stop();
+			INFO("DynKatz: Partial sort time: ", sort_timer.elapsedMilliseconds());
+
+			for(auto u : activeRanking)
+				if(areSufficientlyRanked(activeRanking[k - 1], u))
+					isActive[u] = false;
+
+			activeRanking.erase(std::remove_if(activeRanking.begin() + k,
+					activeRanking.end(), [&] (node u) {
+				return !isActive[u];
+			}), activeRanking.end());
+		}
+
+		assert(!activeRanking.empty());
+/*
+		double length = sqrt(G.parallelSumForNodes([&](node u) {
+			return (scoreData[u] * scoreData[u]);
+		}));
+		DEBUG("DynKatz: Vector length: ", length);
+*/
+		DEBUG("DynKatz: In iteration ", levelReached, ": ", activeRanking.size(), " nodes remain.");
+
+		if(activeRanking.size() > k)
+			return false;
+
+		// Once only k active nodes remain, we need to continue iterating
+		// until the bounds seperate their position in the ranking.
+		if(!groupOnly) {
+			Aux::Timer sort_timer;
+			sort_timer.start();
+			std::sort(activeRanking.begin(), activeRanking.end(), [&] (node u, node v) {
+				return scoreData[u] > scoreData[v];
+			});
+			sort_timer.stop();
+			INFO("DynKatz: Sort time: ", sort_timer.elapsedMilliseconds());
+		
+			DEBUG("DynKatz: Node with highest centrality: ", activeRanking[0],
+					", score: ", baseData[activeRanking[0]],
+					", (upper) bound: ", boundData[activeRanking[0]],
+					", lower bound: ", scoreData[activeRanking[0]]);
+
+			for (count j = 1; j < std::min(k, activeRanking.size()); j ++) {
+				node previous = activeRanking[j - 1];
+				node current = activeRanking[j];
+				if(!areSufficientlyRanked(previous, current))
+					return false;
+			}
+		}
+
+		return true;
+	}
 }
 
 } /* namespace NetworKit */
