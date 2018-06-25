@@ -6346,9 +6346,8 @@ cdef class Centrality(Algorithm):
 
 
 cdef extern from "cpp/centrality/TopCloseness.h":
-	cdef cppclass _TopCloseness "NetworKit::TopCloseness":
+	cdef cppclass _TopCloseness "NetworKit::TopCloseness"(_Algorithm):
 		_TopCloseness(_Graph G, count, bool, bool) except +
-		void run() except +
 		node maximum() except +
 		edgeweight maxSum() except +
 		count iterations() except +
@@ -6357,7 +6356,7 @@ cdef extern from "cpp/centrality/TopCloseness.h":
 		vector[edgeweight] topkScoresList(bool) except +
 
 
-cdef class TopCloseness:
+cdef class TopCloseness(Algorithm):
 	"""
 	Finds the top k nodes with highest closeness centrality faster than computing it for all nodes, based on "Computing Top-k Closeness Centrality Faster in Unweighted Graphs", Bergamini et al., ALENEX16.
 	The algorithms is based on two independent heuristics, described in the referenced paper. We recommend to use first_heu = true and second_heu = false for complex networks and first_heu = true and second_heu = true for street networks or networks with large diameters.
@@ -6373,7 +6372,6 @@ cdef class TopCloseness:
 	The worst case running time of the algorithm is O(nm), where n is the number of nodes and m is the number of edges.
 	However, for most networks the empirical running time is O(m).
 	"""
-	cdef _TopCloseness* _this
 	cdef Graph _G
 
 	def __cinit__(self,  Graph G, k=1, first_heu=True, sec_heu=True):
@@ -6382,11 +6380,6 @@ cdef class TopCloseness:
 
 	def __dealloc__(self):
 		del self._this
-
-	def run(self):
-		""" Computes top-k closeness. """
-		self._this.run()
-		return self
 
 	def topkNodesList(self, includeTrail=False):
 		""" Returns a list with the k nodes with highest closeness.
@@ -6404,7 +6397,7 @@ cdef class TopCloseness:
 		vector
 			The k nodes with highest closeness.
 		"""
-		return self._this.topkNodesList(includeTrail)
+		return (<_TopCloseness*>(self._this)).topkNodesList(includeTrail)
 
 	def topkScoresList(self, includeTrail=False):
 		""" Returns a list with the scores of the k nodes with highest closeness.
@@ -6422,18 +6415,17 @@ cdef class TopCloseness:
 		vector
 			The k highest closeness scores.
 		"""
-		return self._this.topkScoresList(includeTrail)
+		return (<_TopCloseness*>(self._this)).topkScoresList(includeTrail)
 
 
 cdef extern from "cpp/centrality/TopHarmonicCloseness.h":
-	cdef cppclass _TopHarmonicCloseness "NetworKit::TopHarmonicCloseness":
+	cdef cppclass _TopHarmonicCloseness "NetworKit::TopHarmonicCloseness"(_Algorithm):
 		_TopHarmonicCloseness(_Graph G, count, bool) except +
-		void run() except +
 		vector[node] topkNodesList(bool) except +
 		vector[edgeweight] topkScoresList(bool) except +
 
 
-cdef class TopHarmonicCloseness:
+cdef class TopHarmonicCloseness(Algorithm):
 	""" Finds the top k nodes with highest harmonic closeness centrality faster
             than computing it for all nodes. The implementation is based on "Computing
             Top-k Centrality Faster in Unweighted Graphs", Bergamini et al., ALENEX16.
@@ -6455,7 +6447,6 @@ cdef class TopHarmonicCloseness:
 	The worst case running time of the algorithm is O(nm), where n is the number of nodes and m is the number of edges.
 	However, for most networks the empirical running time is O(m).
 	"""
-	cdef _TopHarmonicCloseness* _this
 	cdef Graph _G
 
 	def __cinit__(self,  Graph G, k=1, useBFSbound=False):
@@ -6464,11 +6455,6 @@ cdef class TopHarmonicCloseness:
 
 	def __dealloc__(self):
 		del self._this
-
-	def run(self):
-		""" Computes top-k harmonic closeness. """
-		self._this.run()
-		return self
 
 	def topkNodesList(self, includeTrail=False):
 		""" Returns a list with the k nodes with highest harmonic closeness.
@@ -6486,7 +6472,7 @@ cdef class TopHarmonicCloseness:
 		vector
 			The k nodes with highest harmonic closeness.
 		"""
-		return self._this.topkNodesList(includeTrail)
+		return (<_TopHarmonicCloseness*>(self._this)).topkNodesList(includeTrail)
 
 	def topkScoresList(self, includeTrail=False):
 		""" Returns a list with the scores of the k nodes with highest harmonic closeness.
@@ -6504,7 +6490,7 @@ cdef class TopHarmonicCloseness:
 		vector
 			The k highest closeness harmonic scores.
 		"""
-		return self._this.topkScoresList(includeTrail)
+		return (<_TopHarmonicCloseness*>(self._this)).topkScoresList(includeTrail)
 
 
 cdef extern from "cpp/centrality/DynKatzCentrality.h":
@@ -6743,14 +6729,13 @@ cdef class GroupDegree:
 
 
 cdef extern from "cpp/centrality/GroupCloseness.h":
-	cdef cppclass _GroupCloseness "NetworKit::GroupCloseness":
+	cdef cppclass _GroupCloseness "NetworKit::GroupCloseness"(_Algorithm):
 		_GroupCloseness(_Graph G, count, count) except +
-		void run() except +
 		vector[node] groupMaxCloseness() except +
 		double computeFarness(vector[node], count) except +
 
 
-cdef class GroupCloseness:
+cdef class GroupCloseness(Algorithm):
 	"""
 	Finds the group of nodes with highest (group) closeness centrality. The algorithm is the one proposed in Bergamini et al., ALENEX 2018 and finds a solution that is a (1-1/e)-approximation of the optimum.
 	The worst-case running time of this approach is quadratic, but usually much faster in practice.
@@ -6763,7 +6748,6 @@ cdef class GroupCloseness:
 	k: Size of the group.
 	H: If equal 0, simply runs the algorithm proposed in Bergamini et al.. If > 0, interrupts all BFSs after H iterations (suggested for very large networks).
 	"""
-	cdef _GroupCloseness* _this
 	cdef Graph _G
 
 	def __cinit__(self,  Graph G, k=1, H=0):
@@ -6773,11 +6757,6 @@ cdef class GroupCloseness:
 	def __dealloc__(self):
 		del self._this
 
-	def run(self):
-		""" Computes group with maximum closeness. """
-		self._this.run()
-		return self
-
 	""" Returns group with highest closeness.
 	Returns
 	-------
@@ -6785,13 +6764,13 @@ cdef class GroupCloseness:
 		The group of k nodes with highest closeness.
 	"""
 	def groupMaxCloseness(self):
-		return self._this.groupMaxCloseness()
+		return (<_GroupCloseness*>(self._this)).groupMaxCloseness()
 
 
 	""" Computes farness (i.e., inverse of the closeness) for a given group (stopping after H iterations if H > 0).
 	"""
 	def computeFarness(self, S, H=0):
-		return self._this.computeFarness(S, H)
+		return (<_GroupCloseness*>(self._this)).computeFarness(S, H)
 
 
 
@@ -10586,9 +10565,8 @@ def sort2(sample):
 
 
 cdef extern from "cpp/distance/CommuteTimeDistance.h":
-	cdef cppclass _CommuteTimeDistance "NetworKit::CommuteTimeDistance":
+	cdef cppclass _CommuteTimeDistance "NetworKit::CommuteTimeDistance"(_Algorithm):
 		_CommuteTimeDistance(_Graph G, double tol) except +
-		void run() nogil except +
 		void runApproximation() except +
 		void runParallelApproximation() except +
 		double distance(node, node) except +
@@ -10596,7 +10574,7 @@ cdef extern from "cpp/distance/CommuteTimeDistance.h":
 		double runSingleSource(node) except +
 
 
-cdef class CommuteTimeDistance:
+cdef class CommuteTimeDistance(Algorithm):
 	""" Computes the Euclidean Commute Time Distance between each pair of nodes for an undirected unweighted graph.
 
 	CommuteTimeDistance(G)
@@ -10609,7 +10587,6 @@ cdef class CommuteTimeDistance:
 		The graph.
 	tol: double
 	"""
-	cdef _CommuteTimeDistance* _this
 	cdef Graph _G
 
 	def __cinit__(self,  Graph G, double tol = 0.1):
@@ -10619,19 +10596,13 @@ cdef class CommuteTimeDistance:
 	def __dealloc__(self):
 		del self._this
 
-	def run(self):
-		""" This method computes ECTD exactly. """
-		with nogil:
-			self._this.run()
-		return self
-
 	def runApproximation(self):
 		""" Computes approximation of the ECTD. """
-		return self._this.runApproximation()
+		return (<_CommuteTimeDistance*>(self._this)).runApproximation()
 
 	def runParallelApproximation(self):
 		""" Computes approximation (in parallel) of the ECTD. """
-		return self._this.runParallelApproximation()
+		return (<_CommuteTimeDistance*>(self._this)).runParallelApproximation()
 
 	def distance(self, u, v):
 		"""  Returns the ECTD between node u and node v.
@@ -10639,7 +10610,7 @@ cdef class CommuteTimeDistance:
 		u : node
 		v : node
 		"""
-		return self._this.distance(u, v)
+		return (<_CommuteTimeDistance*>(self._this)).distance(u, v)
 
 	def runSinglePair(self, u, v):
 		"""  Returns the ECTD between node u and node v, without preprocessing.
@@ -10647,14 +10618,14 @@ cdef class CommuteTimeDistance:
 		u : node
 		v : node
 		"""
-		return self._this.runSinglePair(u, v)
+		return (<_CommuteTimeDistance*>(self._this)).runSinglePair(u, v)
 
 	def runSingleSource(self, u):
 		"""  Returns the sum of the ECTDs from u, without preprocessing.
 
 		u : node
 		"""
-		return self._this.runSingleSource(u)
+		return (<_CommuteTimeDistance*>(self._this)).runSingleSource(u)
 
 
 # stats
@@ -11178,7 +11149,7 @@ cdef class Curveball(Algorithm):
 		self._this = NULL
 
 	def run(self, vector[pair[node, node]] trades):
-		with nogil:	
+		with nogil:
 			(<_Curveball*>(self._this)).run(trades)
 		return self
 
