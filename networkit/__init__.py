@@ -26,8 +26,8 @@ Usage examples can be found on http://nbviewer.ipython.org/urls/networkit.iti.ki
 __author__ = "Christian Staudt"
 __copyright__ = "Copyright (c) 2014 Christan Staudt"
 __credits__ = ["Eugenio Angriman", "Lukas Barth", "Miriam Beddig", "Elisabetta Bergamini", "Stefan Bertsch", "Pratistha Bhattarai", "Andreas Bilke", "Simon Bischof", \
- "Guido Brückner", "Mark Erb", "Kolja Esders", "Patrick Flick", "Michael Hamann", "Lukas Hartmann", "Daniel Hoske", "Gerd Lindner", "Moritz v. Looz", "Yassine Marrakchi", "Henning Meyerhenke", \
- "Marcel Radermacher", "Klara Reichard", "Marvin Ritter", "Aleksejs Sazonovs", "Florian Weber", "Michael Wegner", "Jörg Weisbarth"]
+	"Guido Brückner", "Mark Erb",  "Kolja Esders", "Patrick Flick", "Michael Hamann", "Lukas Hartmann", "Daniel Hoske", "Gerd Lindner", "Moritz v. Looz", "Yassine Marrakchi", "Henning Meyerhenke", \
+	"Manuel Penschuck", "Marcel Radermacher", "Klara Reichard", "Marvin Ritter", "Aleksejs Sazonovs", "Hung Tran", "Florian Weber", "Michael Wegner", "Jörg Weisbarth", "Kolja Esders"]
 __license__ = "MIT"
 __version__ = "4.5"
 
@@ -67,6 +67,7 @@ from . import simulation
 from . import stats
 from . import sampling
 from . import viz
+from . import randomization
 from .profiling import profiling
 
 try:
