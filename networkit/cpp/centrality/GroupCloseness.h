@@ -9,7 +9,6 @@
 #define GROUPCLOSENESS_H_
 #include "../graph/Graph.h"
 #include "../base/Algorithm.h"
-#include "../auxiliary/PrioQueueForInts.h"
 
 namespace NetworKit {
 
