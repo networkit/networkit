@@ -27,6 +27,7 @@
 #include "../EigenvectorCentrality.h"
 #include "../EstimateBetweenness.h"
 #include "../GroupDegree.h"
+#include "../GroupCloseness.h"
 #include "../HarmonicCloseness.h"
 #include "../KPathCentrality.h"
 #include "../KatzCentrality.h"
@@ -1389,5 +1390,33 @@ TEST_F(CentralityGTest, runTestApproxGroupBetweennessSmallGraph) {
 
 	ApproxGroupBetweenness gb(g, 2, 0.1);
 	gb.run();
+}
+
+TEST_F(CentralityGTest, testGroupCloseness) {
+	Aux::Random::setSeed(42, false);
+
+	Graph g(8, false, false);
+
+	g.addEdge(0, 2);
+	g.addEdge(1, 2);
+	g.addEdge(2, 3);
+	g.addEdge(2, 4);
+	g.addEdge(3, 5);
+	g.addEdge(4, 5);
+	g.addEdge(5, 6);
+	g.addEdge(5, 7);
+	g.addEdge(0, 5);
+
+	count k = 3;
+
+	GroupCloseness gc(g, k);
+	gc.run();
+	auto apx = gc.groupMaxCloseness();
+	std::sort(apx.begin(), apx.end());
+	std::vector<node> solution = {0, 2, 5};
+	for (count i = 0; i < k; ++i) {
+		EXPECT_EQ(apx[i], solution[i]);
+	}
+
 }
 } /* namespace NetworKit */

@@ -5,19 +5,13 @@
  *      Author: elisabetta bergamini
  */
 
-#include <stack>
-#include <queue>
-#include <memory>
-
 #include "GroupCloseness.h"
 #include "TopCloseness.h"
-#include "../auxiliary/PrioQueueForInts.h"
-#include "../auxiliary/PrioQueue.h"
+#include "../auxiliary/BucketPQ.h"
 #include "../auxiliary/Log.h"
-#include "../distance/SSSP.h"
-#include "../distance/Dijkstra.h"
 #include "../distance/BFS.h"
-#include "../auxiliary/Parallelism.h"
+
+#include <memory>
 #include <queue>
 #include <omp.h>
 
@@ -148,22 +142,26 @@ void GroupCloseness::run() {
 	S.resize(k, 0);
 	S[0] = top;
 
-	std::vector<count> prevBound(n, 0);
+	std::vector<int64_t> prevBound(n, 0);
 	d1.clear();
 	count currentImpr = sumD + 1; //TODO change
 	count maxNode = 0;
 
   std::vector<count> S2(n, sumD);
   S2[top] = 0;
+  std::vector<int64_t> prios(n);
 
 	// loop to find k group members
 	for (index i = 1; i< k; i++) {
     DEBUG("k = ", i);
-    std::vector<count> prios(n);
     G.parallelForNodes([&](node v){
-      prios[v] = prevBound[v];
+      prios[v] = -prevBound[v];
     });
-    Aux::PrioQueueForInts Q(prios, currentImpr + 1);
+   // Aux::BucketPQ Q(prios, currentImpr + 1);
+		Aux::BucketPQ Q(n, -currentImpr - 1, 0);
+		G.forNodes([&](node v) {
+					Q.insert(prios[v], v);
+		});
     currentImpr = 0;
     maxNode = 0;
     d1.resize(G.upperNodeIdBound());
@@ -173,16 +171,19 @@ void GroupCloseness::run() {
         // cc: synchronized write, read leads to a positive race condition;
         // Q: fully synchronized;
         {
-              while(!Q.empty()) {
+              while(Q.size() > 0) {
                 if (toInterrupt) {
                   break;
                 }
                 omp_set_lock(&lock);
-                if (Q.empty()) { // The size of Q might have changed.
+                if (Q.size() == 0) { // The size of Q might have changed.
                     omp_unset_lock(&lock);
                     break;
                 }
-                node v = Q.extractMax();
+
+							 	auto topPair = Q.extractMin();
+							  node v = topPair.second;
+
                 omp_unset_lock(&lock);
                 INFO("Extracted node ", v, " with prio ", prevBound[v]);
                 if (i > 1 && prevBound[v] <= currentImpr) {
