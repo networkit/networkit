@@ -123,7 +123,7 @@ void DynKatzCentrality::updateBatch(const std::vector<GraphEvent> &events){
 						newlySeen.push_back(v);
 						preUpdatePaths[v] = nPaths[i][v];
 					}
-					
+
 					nPaths[i][v] -= preUpdateContrib[u];
 					nPaths[i][v] += nPaths[i-1][u];
 				});
@@ -153,10 +153,10 @@ void DynKatzCentrality::updateBatch(const std::vector<GraphEvent> &events){
 						nPaths[i][e.u] -= preUpdateContrib[e.v];
 				}
 			}
-			
+
 			seenNodes.insert(seenNodes.end(), newlySeen.begin(), newlySeen.end());
 			newlySeen.clear();
-		
+
 			// Update the Katz centrality from nPaths.
 			auto alpha_pow = pow(alpha, i);
 			#pragma omp parallel for
@@ -173,7 +173,7 @@ void DynKatzCentrality::updateBatch(const std::vector<GraphEvent> &events){
 				G.forInEdgesOf(u, [&](node v, edgeweight ew) {
 					nPaths[i][u] += preUpdateContrib[v];
 				});
-				
+
 				baseData[u] -= alpha_pow * preUpdatePaths[u];
 				baseData[u] += alpha_pow * nPaths[i][u];
 			});
@@ -181,7 +181,7 @@ void DynKatzCentrality::updateBatch(const std::vector<GraphEvent> &events){
 
 		i++;
 	}
-	
+
 	i --;
 
 	DEBUG("DynKatz: Done update iteration. visitedEdges = ", visitedEdges,
@@ -300,7 +300,7 @@ bool DynKatzCentrality::checkConvergence() {
 				u = activeQueue.peekMin(1).second;
 				activeQueue.changeKey(scoreData[u], u);
 			} while(u != activeQueue.peekMin(1).second);
-			
+
 			if(!areSufficientlyRanked(u, v))
 				return false;
 			activeQueue.extractMin();
@@ -353,7 +353,7 @@ bool DynKatzCentrality::checkConvergence() {
 			});
 			sort_timer.stop();
 			INFO("DynKatz: Sort time: ", sort_timer.elapsedMilliseconds());
-		
+
 			DEBUG("DynKatz: Node with highest centrality: ", activeRanking[0],
 					", score: ", baseData[activeRanking[0]],
 					", (upper) bound: ", boundData[activeRanking[0]],
