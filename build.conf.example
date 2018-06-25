@@ -2,6 +2,9 @@
 cpp=g++
 defines=
 
+[cmake]
+generator=
+
 [includes]
 std=
 gtest=

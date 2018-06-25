@@ -28,7 +28,7 @@ if (NETWORKIT_MONOLITH)
 else()
     if (BUILD_SHARED_LIBS)
         message(WARNING
-            "Currenlty only a monolithic shared library of NetworKit is supported.
+            "Currently only a monolithic shared library of NetworKit is supported.
              This is due to circular dependencies of modules.")
     endif()
 endif()
