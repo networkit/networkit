@@ -200,11 +200,16 @@ We would like to encourage contributions to the NetworKit source code. See the d
 
 ### Core Development Team
 
-NetworKit is maintained by the [Research Group Parallel Computing](http://parco.iti.kit.edu) of the Institute of Theoretical Informatics at [Karlsruhe Institute of Technology (KIT)](http://www.kit.edu/english/index.php>).
+NetworKit is maintained by the [Research Group Parallel and Distributed Computing](http://informatik.uni-koeln.de/ls-meyerhenke/) of the Institute of Computer Science at the [University of Cologne](https://www.portal.uni-koeln.de/index.php?id=9441&L=1).
+NetworKit was created and developed by the [Research Group Parallel Computing](http://parco.iti.kit.edu) of the Institute of Theoretical Informatics at [Karlsruhe Institute of Technology (KIT)](http://www.kit.edu/english/index.php>).
 
 ### Maintainers
-- Christian L. Staudt
+- Eugenio Angriman
+- Alexander van der Grinten
 - Henning Meyerhenke
+
+### Past Maintainers
+- Christian L. Staudt
 - Maximilian Vogel
 
 ### Contributors
