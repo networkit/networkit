@@ -37,9 +37,9 @@ void KatzCentrality::run() {
 			// note: inconsistency in definition in Newman's book (Ch. 7) regarding directed graphs
 			// we follow the verbal description, which requires to sum over the incoming edges
 			G.forInEdgesOf(u, [&](node v, edgeweight ew) {
-				values[u] += ew * scoreData[v];
+				values[u] += ew * alpha * (1 + scoreData[v]);
 			});
-			values[u] *= alpha;
+//			values[u] *= alpha;
 			values[u] += beta;
 		});
 
@@ -49,15 +49,17 @@ void KatzCentrality::run() {
 			return (values[u] * values[u]);
 		});
 		length = sqrt(length);
-		G.parallelForNodes([&](node u) {
-			values[u] /= length;
-		});
 
 //		TRACE("length: ", length);
 //		TRACE(values);
 
 		scoreData = values;
+		INFO("oldLength: ", oldLength, ", length: ", length);
 	} while (! converged(length, oldLength));
+	
+	G.parallelForNodes([&](node u) {
+		scoreData[u] /= length;
+	});
 
 	hasRun = true;
 
