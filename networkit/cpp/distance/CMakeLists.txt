@@ -1,4 +1,5 @@
 networkit_add_module(distance
+    AffectedNodes.cpp
     APSP.cpp
     AdamicAdarDistance.cpp
     AlgebraicDistance.cpp
