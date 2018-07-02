@@ -1,4 +1,8 @@
 networkit_add_module(io
+    BinaryEdgeListPartitionReader.cpp
+    BinaryEdgeListPartitionWriter.cpp
+    BinaryPartitionReader.cpp
+    BinaryPartitionWriter.cpp
     CoverReader.cpp
     CoverWriter.cpp
     DGSReader.cpp
@@ -27,6 +31,8 @@ networkit_add_module(io
     SNAPEdgeListPartitionReader.cpp
     SNAPGraphReader.cpp
     SNAPGraphWriter.cpp
+    ThrillGraphBinaryReader.cpp
+    ThrillGraphBinaryWriter.cpp
     )
 
 networkit_module_link_modules(io

@@ -22,11 +22,10 @@ add_subdirectory("linkprediction")
 add_subdirectory("matching")
 #add_subdirectory("numerics")
 add_subdirectory("overlap")
+add_subdirectory("randomization")
 add_subdirectory("scd")
 add_subdirectory("scoring")
 add_subdirectory("simulation")
 add_subdirectory("sparsification")
 add_subdirectory("structures")
 add_subdirectory("viz")
-
-

@@ -1,7 +1,7 @@
 networkit_add_test(distance APSPGTest
     auxiliary dyn_distance io)
 networkit_add_test(distance AllSimplePathsGTest
-    auxiliary)
+    auxiliary io)
 networkit_add_test(distance CommuteTimeDistanceGTest
     centrality graph io)
 networkit_add_test(distance DistanceGTest

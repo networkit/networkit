@@ -1,6 +1,7 @@
 networkit_add_module(centrality
     ApproxBetweenness.cpp
     ApproxCloseness.cpp
+    ApproxGroupBetweenness.cpp
     Betweenness.cpp
     Centrality.cpp
     Closeness.cpp
@@ -9,6 +10,7 @@ networkit_add_module(centrality
     DynApproxBetweenness.cpp
     DynBetweenness.cpp
     DynBetweennessOneNode.cpp
+    DynKatzCentrality.cpp
     DynTopHarmonicCloseness.cpp
     EigenvectorCentrality.cpp
     EstimateBetweenness.cpp
