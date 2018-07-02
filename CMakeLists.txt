@@ -99,14 +99,16 @@ endfunction()
 # TESTING and BENCHMARKING
 if (NETWORKIT_BUILD_TESTS)
     enable_testing()
-    find_package(GTest REQUIRED)
+
+    option(BUILD_GTEST "Builds the googletest subproject" ON)
+    option(BUILD_GMOCK "Builds the googlemock subproject" OFF)
+    add_subdirectory(extlibs/googletest)
 
     if (NETWORKIT_MONOLITH)
         add_executable(networkit_tests networkit/cpp/networkit.cpp)
         target_link_libraries(networkit_tests
             PRIVATE
-                GTest::GTest
-                GTest::Main
+                gtest_main gtest
                 OpenMP::OpenMP_CXX
                 networkit
         )
@@ -140,8 +142,7 @@ function(networkit_add_extra IS_TEST MOD NAME)
 
             target_link_libraries(${TARGET_NAME}
                 PRIVATE
-                    GTest::GTest
-                    GTest::Main
+                    gtest_main gtest
                     OpenMP::OpenMP_CXX
                 PRIVATE
                     networkit_${MOD}
