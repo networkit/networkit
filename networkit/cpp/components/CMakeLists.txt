@@ -4,6 +4,7 @@ networkit_add_module(components
     DynConnectedComponents.cpp
     DynWeaklyConnectedComponents.cpp
     ParallelConnectedComponents.cpp
+    RandomSpanningForest.cpp
     StronglyConnectedComponents.cpp
     WeaklyConnectedComponents.cpp
     )
