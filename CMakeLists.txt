@@ -71,6 +71,11 @@ if (NETWORKIT_MONOLITH)
             CXX_STANDARD 11
             COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
             LINK_FLAGS "${OpenMP_CXX_FLAGS}")
+
+    if(APPLE)
+           set_target_properties(networkit PROPERTIES 
+                   LINK_FLAGS "-undefined dynamic_lookup")
+    endif()    
 endif()
 
 # Register a new NetworKit module named ${modname}
