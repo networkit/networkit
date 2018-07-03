@@ -68,6 +68,7 @@ if (NETWORKIT_MONOLITH)
     endif()
 
     set_target_properties(networkit PROPERTIES
+            CXX_STANDARD 11
             COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
             LINK_FLAGS "${OpenMP_CXX_FLAGS}")
 endif()
@@ -86,7 +87,9 @@ function(networkit_add_module modname)
         add_library(${MODULE_TARGET}
                     ${PROJECT_SOURCE_DIR}/networkit/cpp/networkit.cpp)
 
-        set_target_properties(${MODULE_TARGET} PROPERTIES COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}")
+        set_target_properties(${MODULE_TARGET} PROPERTIES 
+            CXX_STANDARD 11
+            COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}")
 
         # All tests added to this module will will also become a dependency
         # of networkit_tests_MODNAME. This target hence allows to build all
@@ -158,7 +161,9 @@ if (NETWORKIT_BUILD_TESTS)
                 gtest_main gtest
                 networkit
         )
-        set_target_properties(networkit_tests PROPERTIES COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}")
+        set_target_properties(networkit_tests PROPERTIES 
+            CXX_STANDARD 11 
+            COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}")
 
         add_test(networkit_tests networkit_tests)
     endif()
