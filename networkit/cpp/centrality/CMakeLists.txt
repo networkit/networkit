@@ -30,11 +30,6 @@ networkit_add_module(centrality
     TopHarmonicCloseness.cpp
     )
 
-networkit_module_link_libraries(centrality
-    PRIVATE
-        OpenMP::OpenMP_CXX
-    )
-
 networkit_module_link_modules(centrality
         algebraic
         auxiliary

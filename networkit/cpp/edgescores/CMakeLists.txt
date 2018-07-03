@@ -11,9 +11,6 @@ networkit_add_module(edgescores
     TriangleEdgeScore.cpp
     )
 
-networkit_module_link_libraries(edgescores
-    PRIVATE OpenMP::OpenMP_CXX)
-
 networkit_module_link_modules(edgescores
     auxiliary base graph)
 

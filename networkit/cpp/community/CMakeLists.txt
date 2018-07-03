@@ -34,11 +34,6 @@ networkit_add_module(community
     StablePartitionNodes.cpp
     )
 
-networkit_module_link_libraries(community
-    PRIVATE
-        OpenMP::OpenMP_CXX
-    )
-
 networkit_module_link_modules(community
     auxiliary base coarsening components flow graph matching structures)
 

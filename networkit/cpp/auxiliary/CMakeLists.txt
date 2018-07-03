@@ -10,10 +10,4 @@ networkit_add_module(auxiliary
     Timer.cpp
     )
 
-networkit_module_link_libraries(auxiliary
-    PRIVATE
-        OpenMP::OpenMP_CXX
-    )
-
 add_subdirectory(test)
-

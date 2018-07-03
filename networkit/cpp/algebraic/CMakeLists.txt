@@ -5,9 +5,6 @@ networkit_add_module(algebraic
     Vector.cpp
     )
 
-networkit_module_link_libraries(algebraic
-    PRIVATE OpenMP::OpenMP_CXX)
-
 networkit_module_link_modules(algebraic
     auxiliary graph)
 

@@ -23,11 +23,6 @@ networkit_add_module(distance
     SSSP.cpp
     )
 
-networkit_module_link_libraries(distance
-    PRIVATE
-        OpenMP::OpenMP_CXX
-    )
-
 networkit_module_link_modules(distance
         algebraic auxiliary base components graph structures)
 

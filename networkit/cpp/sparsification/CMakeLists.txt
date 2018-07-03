@@ -13,9 +13,6 @@ networkit_add_module(sparsification
     Sparsifiers.cpp
     )
 
-networkit_module_link_libraries(sparsification
-    PRIVATE OpenMP::OpenMP_CXX)
-
 networkit_module_link_modules(sparsification
     auxiliary edgescores graph)
 

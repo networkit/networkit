@@ -24,10 +24,6 @@ networkit_add_module(linkprediction
     VDegreeIndex.cpp
     )
 
-networkit_module_link_libraries(linkprediction
-    PRIVATE OpenMP::OpenMP_CXX)
-
-
 networkit_module_link_modules(linkprediction
     auxiliary community graph structures)
 

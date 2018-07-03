@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.5)
 project(networkit CXX)
 
 if("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
@@ -6,31 +6,70 @@ if("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
 endif("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
 
 # BUILD OPTIONS
-option(NETWORKIT_MONOLITH "Build single library (and tests is requested; required for shared lib)" ON)
+option(NETWORKIT_BUILD_TESTS "Build with tests" OFF)
 option(NETWORKIT_LOGGING "Build with logging support" ON)
-option(NETWORKIT_SANITIZE "Build with logging support" ON)
+option(NETWORKIT_MONOLITH "Build single library (and tests is requested; required for shared lib)" ON)
+option(NETWORKIT_NATIVE "Optimize for native architecture (often better performance)" OFF)
+option(NETWORKIT_WARNINGS "Issue more warnings" OFF)
+set(NETWORKIT_PYTHON "" CACHE STRING "Directory containing Python.h. Implies MONOLITH=TRUE")
 
-option(NETWORKIT_BUILD_TESTS "Build with tests (requires GTest)" OFF)
+if (NETWORKIT_PYTHON)
+    if (NOT NETWORKIT_MONOLITH)
+        message(FATAL_ERROR "When building NetworKit as a Python module, NETWORKIT_MONOLITH=ON is required")
+    endif()
+endif()
 
 if (NOT CMAKE_BUILD_TYPE)
     message("Use Release Build Type as default")
     set(CMAKE_BUILD_TYPE "Release")
 endif()
 
+################################################################################
+# Compilation Flags
+set(NETWORKIT_CXX_FLAGS "")
+
+if (NOT NETWORKIT_LOGGING)
+    set(NETWORKIT_CXX_FLAGS "-DNOLOGGING")
+endif()
+
+if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"))
+    if (NETWORKIT_NATIVE)
+        set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} -march=native")
+    endif()
+
+    if (NETWORKIT_WARNINGS)
+        set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} -Wall -Wextra -Wpedantic")
+    endif()
+
+else()
+    message(WARNING "Support only GCC and Clang; your compiler might work though anyways")
+endif()
+
 find_package(OpenMP REQUIRED)
+set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+
 
 ################################################################################
-# MODULES
-
+# NETWORKIT MODULES
 if (NETWORKIT_MONOLITH)
-    add_library(networkit networkit/cpp/networkit.cpp)
-    target_link_libraries(networkit PRIVATE OpenMP::OpenMP_CXX)
-else()
-    if (BUILD_SHARED_LIBS)
-        message(WARNING
-            "Currently only a monolithic shared library of NetworKit is supported.
-             This is due to circular dependencies of modules.")
+    if (NETWORKIT_PYTHON)
+        if(EXISTS "${PROJECT_SOURCE_DIR}/networkit/_NetworKit.cpp")
+            add_library(networkit SHARED networkit/_NetworKit.cpp)
+            target_include_directories(networkit PRIVATE "${NETWORKIT_PYTHON}")
+
+        else()
+            message(FATAL_ERROR
+                    "networkit/_NetworKit.cpp is missing. Invoke Cython manually.")
+        endif()
+
+    else()
+        add_library(networkit networkit/cpp/networkit.cpp)
+
     endif()
+
+    set_target_properties(networkit PROPERTIES
+            COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
+            LINK_FLAGS "${OpenMP_CXX_FLAGS}")
 endif()
 
 # Register a new NetworKit module named ${modname}
@@ -47,6 +86,7 @@ function(networkit_add_module modname)
         add_library(${MODULE_TARGET}
                     ${PROJECT_SOURCE_DIR}/networkit/cpp/networkit.cpp)
 
+        set_target_properties(${MODULE_TARGET} PROPERTIES COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}")
 
         # All tests added to this module will will also become a dependency
         # of networkit_tests_MODNAME. This target hence allows to build all
@@ -55,6 +95,7 @@ function(networkit_add_module modname)
             add_custom_target(networkit_tests_${modname})
         endif()
     endif()
+
 
     # Add source files (it's important to mark them private; otherwise
     # all targets linking to the lib, will recompile the objects from scratch)
@@ -68,7 +109,7 @@ endfunction()
 # Use the module's name (without networkit_ prefix) for target.
 # In case of monolithic builds, the call is ignored.
 # To link against another module use networkit_module_link_modules
-# Example: networkit_module_link_libraries(graph PRIVATE OpenMP::OpenMP_CXX)
+# Example: networkit_module_link_libraries(graph PRIVATE foobar_lib)
 function(networkit_module_link_libraries modname)
     set(options )
     set(oneValueArgs )
@@ -100,18 +141,24 @@ endfunction()
 if (NETWORKIT_BUILD_TESTS)
     enable_testing()
 
-    option(BUILD_GTEST "Builds the googletest subproject" ON)
-    option(BUILD_GMOCK "Builds the googlemock subproject" OFF)
-    add_subdirectory(extlibs/googletest)
+    if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/googletest/CMakeLists.txt")
+        option(BUILD_GTEST "Builds the googletest subproject" ON)
+        option(BUILD_GMOCK "Builds the googlemock subproject" OFF)
+        add_subdirectory(extlibs/googletest)
+    else()
+        message(FATAL_ERROR
+            "Missing GoogleTest and GoogleMock in extlibs/googletest. "
+            "Please run `git submodule update --init` to fetch the submodule.")
+    endif()
 
     if (NETWORKIT_MONOLITH)
         add_executable(networkit_tests networkit/cpp/networkit.cpp)
         target_link_libraries(networkit_tests
             PRIVATE
                 gtest_main gtest
-                OpenMP::OpenMP_CXX
                 networkit
         )
+        set_target_properties(networkit_tests PROPERTIES COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}")
 
         add_test(networkit_tests networkit_tests)
     endif()
@@ -143,17 +190,16 @@ function(networkit_add_extra IS_TEST MOD NAME)
             target_link_libraries(${TARGET_NAME}
                 PRIVATE
                     gtest_main gtest
-                    OpenMP::OpenMP_CXX
                 PRIVATE
                     networkit_${MOD}
                 )
+            set_target_properties(${TARGET_NAME} PROPERTIES COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}")
 
             foreach(dep IN LISTS ARGN)
                 target_link_libraries(${TARGET_NAME} PRIVATE networkit_${dep})
             endforeach()
 
             if (${IS_TEST})
-                message(${TARGET_NAME})
                 add_dependencies(networkit_tests_${MOD} ${TARGET_NAME} )
                 add_test(
                     NAME "${MOD}/${NAME}"
@@ -179,8 +225,6 @@ function(networkit_add_benchmark MOD NAME)
 endfunction(networkit_add_benchmark)
 
 
-
 ################################################################################
 # Subdirectories
 add_subdirectory(networkit/cpp)
-#add_subdirectory(example)

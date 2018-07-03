@@ -8,9 +8,6 @@ networkit_add_module(dynamics
     GraphUpdater.cpp
     )
 
-networkit_module_link_libraries(dynamics
-    PRIVATE OpenMP::OpenMP_CXX)
-
 networkit_module_link_modules(dynamics
         auxiliary base graph)
 
