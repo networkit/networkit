@@ -6,9 +6,9 @@
  */
 
 #include "AffectedNodes.h"
-#include "../distance/BFS.h"
-#include "../distance/ReverseBFS.h"
-#include "../distance/SSSP.h"
+#include "BFS.h"
+#include "ReverseBFS.h"
+#include "SSSP.h"
 
 namespace NetworKit {
 

@@ -10,7 +10,7 @@
 
 #include "../base/Algorithm.h"
 #include "../graph/Graph.h"
-#include "GraphEvent.h"
+#include "../dynamics/GraphEvent.h"
 
 namespace NetworKit {
 	

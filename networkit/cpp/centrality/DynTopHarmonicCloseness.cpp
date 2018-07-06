@@ -11,7 +11,7 @@
 #include "../auxiliary/PrioQueue.h"
 #include "../components/ConnectedComponents.h"
 #include "../components/StronglyConnectedComponents.h"
-#include "../dynamics/AffectedNodes.h"
+#include "../distance/AffectedNodes.h"
 #include "DynTopHarmonicCloseness.h"
 
 namespace NetworKit {
