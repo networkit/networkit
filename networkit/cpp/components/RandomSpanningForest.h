@@ -8,8 +8,8 @@
 #ifndef RANDOMSPANNINGFOREST_H_
 #define RANDOMSPANNINGFOREST_H_
 
-#include "Graph.h"
-#include "SpanningForest.h"
+#include "../graph/Graph.h"
+#include "../graph/SpanningForest.h"
 
 namespace NetworKit {
 
