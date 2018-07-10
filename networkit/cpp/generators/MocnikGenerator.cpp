@@ -211,8 +211,10 @@ void MocnikGenerator::addEdgesToGraph(Graph &G, const count &n, const double &k,
   }
 
   // create the edges
-  double dmNew, dm;
-  for (count j = 0; j < std::pow(s.aMax, dim); j++) {
+  count jMax = std::pow(s.aMax, dim);
+#pragma omp parallel for
+  for (count j = 0; j < jMax; j++) {
+    double dmNew, dm;
     NodePositionMap ns = getNodes(s, j);
     if (ns.empty()) {
       continue;
