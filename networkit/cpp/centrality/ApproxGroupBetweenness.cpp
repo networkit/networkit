@@ -70,7 +70,8 @@ void ApproxGroupBetweenness::run() {
 
 		// Insert the HyperEdge into hyperEdgePerSample
 		for (auto n : newHyperEdge) {
-			hyperEdgesPerSample[l].push_back(n);
+			if(n != s && n != t)
+				hyperEdgesPerSample[l].push_back(n);
 		}
 	}
 
