@@ -8740,6 +8740,51 @@ cdef class PreferentialAttachmentIndex(LinkPredictor):
 		"""
 		return self._this.run(u, v)
 
+
+cdef extern from "cpp/distance/Volume.h" namespace "NetworKit::Volume":
+	double volume(const _Graph G, const double r, const count samples) nogil except +
+	vector[double] volume(const _Graph G, const vector[double] r, const count samples) nogil except +
+
+cdef class Volume:
+
+	@staticmethod
+	def volume(Graph G, r, count samples=500):
+		"""
+		Number of nodes within a given radius (or radii); average for many nodes
+
+		Parameters
+		----------
+		G : Graph
+			the graph
+		r : double
+			the radius (or radii)
+		samples : count
+			the number of samples
+		"""
+		cdef double _r
+		cdef vector[double] _rs
+		cdef double _v
+		cdef vector[double] _vs
+		def is_number(s):
+			try:
+				float(s)
+				return True
+			except ValueError:
+				return False
+		if type(r) is float or type(r) is int:
+			_r = r
+			with nogil:
+				_v = volume(<_Graph> G._this, <double> _r, <count> samples)
+			return _v
+		elif type(r) is list and all(is_number(item) for item in r):
+			_rs = r
+			with nogil:
+				_vs = volume(<_Graph> G._this, <vector[double]> _rs, <count> samples)
+			return _vs
+		else:
+			pass
+
+
 cdef extern from "cpp/linkprediction/JaccardIndex.h":
 	cdef cppclass _JaccardIndex "NetworKit::JaccardIndex"(_LinkPredictor):
 		_JaccardIndex() except +
