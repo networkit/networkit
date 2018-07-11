@@ -24,8 +24,8 @@ public:
 	/**
 	* Number of nodes within a given radius; average for many nodes
 	*
-	* @param G	the graph
-	* @param r	the radius
+	* @param G  the graph
+	* @param r  the radius
 	* @param samples	the number of samples
 	*
 	**/
@@ -34,8 +34,8 @@ public:
 	/**
 	* Number of nodes within different given radii; average for many nodes
 	*
-	* @param G	the graph
-	* @param rs	the radii
+	* @param G  the graph
+	* @param rs  the radii
 	* @param samples	the number of samples
 	*
 	**/
