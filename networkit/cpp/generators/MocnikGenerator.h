@@ -19,7 +19,12 @@ namespace NetworKit {
  */
 class MocnikGenerator: public StaticGraphGenerator {
 private:
+	// The node position map contains, for each node, a pair consisting of the node
+	// itself in the first component and its position in space in the second
+	// component.
 	typedef std::vector<std::pair<node, std::vector<double>>> NodePositionMap;
+	// The node array reflects how nodes are assigned to a grid. Each element of
+	// the vector corresponds to one grid cell.
 	typedef std::vector<NodePositionMap> NodeArray;
 
 	struct State {
