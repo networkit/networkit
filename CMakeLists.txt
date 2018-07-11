@@ -11,7 +11,7 @@ option(NETWORKIT_LOGGING "Build with logging support" ON)
 option(NETWORKIT_MONOLITH "Build single library (and tests is requested; required for shared lib)" ON)
 option(NETWORKIT_NATIVE "Optimize for native architecture (often better performance)" OFF)
 option(NETWORKIT_WARNINGS "Issue more warnings" OFF)
-set(NETWORKIT_PYTHON "" CACHE STRING "Directory containing Python.h. Implies MONOLITH=TRUE")
+option(NETWORKIT_PYTHON "Build with python module. Implies MONOLITH=TRUE" OFF)
 
 if (NETWORKIT_PYTHON)
     if (NOT NETWORKIT_MONOLITH)
@@ -48,19 +48,26 @@ endif()
 find_package(OpenMP REQUIRED)
 set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
-
 ################################################################################
 # NETWORKIT MODULES
+
+# Deprecated since version 3.12. Replace with FindPython3 if required minimum increases
+set(Python_ADDITIONAL_VERSIONS 3.*) # Deprecated since version 3.12
+find_package(PythonLibs) # Deprecated since version 3.12
+
 if (NETWORKIT_MONOLITH)
     if (NETWORKIT_PYTHON)
-        if(EXISTS "${PROJECT_SOURCE_DIR}/networkit/_NetworKit.cpp")
-            add_library(networkit SHARED networkit/_NetworKit.cpp)
-            target_include_directories(networkit PRIVATE "${NETWORKIT_PYTHON}")
-
-        else()
-            message(FATAL_ERROR
-                    "networkit/_NetworKit.cpp is missing. Invoke Cython manually.")
-        endif()
+		if(PYTHONLIBS_FOUND)
+	        if(EXISTS "${PROJECT_SOURCE_DIR}/networkit/_NetworKit.cpp")
+	            add_library(networkit MODULE networkit/_NetworKit.cpp)
+	            target_include_directories(networkit PRIVATE "${PYTHON_INCLUDE_DIRS}")
+	        else()
+	            message(FATAL_ERROR
+	                    "networkit/_NetworKit.cpp is missing. Invoke Cython manually.")
+	        endif()
+		else()
+			message(FATAL_ERROR "CMake module: PythonLibs not found. Unable to build python module")
+		endif()
 
     else()
         add_library(networkit networkit/cpp/networkit.cpp)
@@ -73,9 +80,9 @@ if (NETWORKIT_MONOLITH)
             LINK_FLAGS "${OpenMP_CXX_FLAGS}")
 
     if(APPLE)
-           set_target_properties(networkit PROPERTIES 
+           set_target_properties(networkit PROPERTIES
                    LINK_FLAGS "-undefined dynamic_lookup")
-    endif()    
+    endif()
 endif()
 
 # Register a new NetworKit module named ${modname}
@@ -92,7 +99,7 @@ function(networkit_add_module modname)
         add_library(${MODULE_TARGET}
                     ${PROJECT_SOURCE_DIR}/networkit/cpp/networkit.cpp)
 
-        set_target_properties(${MODULE_TARGET} PROPERTIES 
+        set_target_properties(${MODULE_TARGET} PROPERTIES
             CXX_STANDARD 11
             COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}")
 
@@ -166,8 +173,8 @@ if (NETWORKIT_BUILD_TESTS)
                 gtest_main gtest
                 networkit
         )
-        set_target_properties(networkit_tests PROPERTIES 
-            CXX_STANDARD 11 
+        set_target_properties(networkit_tests PROPERTIES
+            CXX_STANDARD 11
             COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}")
 
         add_test(networkit_tests networkit_tests)
