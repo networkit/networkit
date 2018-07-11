@@ -23,18 +23,18 @@ private:
 	// itself in the first component and its position in space in the second
 	// component.
 	typedef std::vector<std::pair<node, std::vector<double>>> NodePositionMap;
-	// The node array reflects how nodes are assigned to a grid. Each element of
+	// The cell array reflects how nodes are assigned to a grid. Each element of
 	// the vector corresponds to one grid cell.
-	typedef std::vector<NodePositionMap> NodeArray;
+	typedef std::vector<NodePositionMap> CellArray;
 
 	struct State {
-		NodeArray a;
+		CellArray a;
 		int aMax;
 	};
 
 	NodePositionMap npm;
 
-	void initNodeArray(State &s, const count &m);
+	void initCellArray(State &s, const count &m);
 	NodePositionMap getNodes(State &s, const int &i);
 	const void addNode(State &s, const std::pair<node, std::vector<double>> &p);
 	const int toIndex(State &s, const std::vector<double> &v);

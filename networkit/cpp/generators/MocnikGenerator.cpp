@@ -72,7 +72,7 @@ static inline double dist(std::vector<double> &v, std::vector<double> &w) {
 
 // NODE ARRAY
 
-void MocnikGenerator::initNodeArray(MocnikGenerator::State &s, const count &m) {
+void MocnikGenerator::initCellArray(MocnikGenerator::State &s, const count &m) {
 	s.aMax = m;
 	for (count j = 0; j < std::pow(s.aMax, dim); j++) {
 		NodePositionMap tmp;
@@ -203,7 +203,7 @@ const std::vector<int> MocnikGenerator::boxVolume(MocnikGenerator::State &s, con
 void MocnikGenerator::addEdgesToGraph(Graph &G, const count &n, const double &k, const double &relativeWeight, const bool &firstRun) {
 	// map vector containing the nodes resp. their positions
 	MocnikGenerator::State s;
-	initNodeArray(s, ceil(std::pow(n, 1./dim) / k));
+	initCellArray(s, ceil(std::pow(n, 1./dim) / k));
 
 	// add the nodes to the state
 	for (int j = 0; j < n; j++) {
