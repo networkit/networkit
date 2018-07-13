@@ -2449,6 +2449,117 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		return cls(n * scale, k, gamma)
 
 
+cdef extern from "cpp/generators/MocnikGenerator.h":
+	cdef cppclass _MocnikGenerator "NetworKit::MocnikGenerator":
+		_MocnikGenerator(count dim, count n, double k, bool weighted) except +
+		_MocnikGenerator(count dim, vector[count] ns, double k, bool weighted) except +
+		_MocnikGenerator(count dim, vector[count] ns, vector[double] ks, bool weighted) except +
+		_MocnikGenerator(count dim, count n, double k, vector[double] weighted) except +
+		_MocnikGenerator(count dim, vector[count] ns, double k, vector[double] weighted) except +
+		_MocnikGenerator(count dim, vector[count] ns, vector[double] ks, vector[double] weighted) except +
+		_Graph generate() except +
+
+cdef class MocnikGenerator:
+	"""
+	Creates random spatial graphs according to the Mocnik model.
+	
+	Please cite the following publications, in which you will find a
+	description of the model:
+	
+	Franz-Benjamin Mocnik, Andrew Frank: "Modelling Spatial Structures",
+	Proceedings of the 12th Conference on Spatial Information Theory (COSIT),
+	2015, pages 44-64. doi: 10.1007/978-3-319-23374-1_3
+
+	Improved algorithm.
+
+	MocnikGenerator(dim, n, k, weighted)
+
+	Parameters
+	----------
+	dim : count
+		Dimension of the space.
+	n : count
+		Number of nodes in the graph; or a list containing the numbers
+				of nodes in each layer in case of a hierarchical model.
+	k : double
+		Density parameter, determining the ratio of edges to nodes; in
+				case of a hierarchical model, also a list of density parameters can be
+				provided.
+ 	weighted : bool
+		Determines whether weights should be added to the edges;
+				in case of a hierarchical model, also a list of relative weights can be
+				provided.
+	"""
+
+	cdef _MocnikGenerator* _this
+
+	def __dealloc__(self):
+		del self._this
+
+	def __cinit__(self, dim, n, k, weighted=False):
+		if dim < 1:
+			raise ValueError("Dimension must be > 0")
+		elif (type(n) is int) and (type(k) is float or type(k) is int) and (weighted is False or weighted is True):
+			self._this = new _MocnikGenerator(<count> dim, <count> n, <double> k, <bool> weighted)
+		elif (type(n) is list) and all(type(item) is int for item in n) and (type(k) is float or type(k) is int) and (weighted is False or weighted is True):
+			self._this = new _MocnikGenerator(<count> dim, <vector[count]> n, <double> k, <bool> weighted)
+		elif (type(n) is list) and all(type(item) is int for item in n) and (type(k) is list) and all(type(item) is float or type(item) is int for item in k) and (weighted is False or weighted is True):
+			self._this = new _MocnikGenerator(<count> dim, <vector[count]> n, <vector[double]> k, <bool> weighted)
+		elif (type(n) is int) and (type(k) is float or type(k) is int) and (type(weighted) is list) and all(type(item) is float or type(item) is int for item in weighted):
+			self._this = new _MocnikGenerator(<count> dim, <count> n, <double> k, <vector[double]> weighted)
+		elif (type(n) is list) and all(type(item) is int for item in n) and (type(k) is float or type(k) is int) and (type(weighted) is list) and all(type(item) is float or type(item) is int for item in weighted):
+			self._this = new _MocnikGenerator(<count> dim, <vector[count]> n, <double> k, <vector[double]> weighted)
+		elif (type(n) is list) and all(type(item) is int for item in n) and (type(k) is list) and all(type(item) is float or type(item) is int for item in k) and (type(weighted) is list) and all(type(item) is float or type(item) is int for item in weighted):
+			self._this = new _MocnikGenerator(<count> dim, <vector[count]> n, <vector[double]> k, <vector[double]> weighted)
+		else:
+			pass
+
+	def generate(self):
+		return Graph(0).setThis(self._this.generate())
+
+cdef extern from "cpp/generators/MocnikGeneratorBasic.h":
+	cdef cppclass _MocnikGeneratorBasic "NetworKit::MocnikGeneratorBasic":
+		_MocnikGeneratorBasic(count dim, count n, double k) except +
+		_Graph generate() except +
+
+cdef class MocnikGeneratorBasic:
+	"""
+	Creates random spatial graphs according to the Mocnik model.
+
+	Please cite the following publications, in which you will find a
+	description of the model:
+	
+	Franz-Benjamin Mocnik, Andrew Frank: "Modelling Spatial Structures",
+	Proceedings of the 12th Conference on Spatial Information Theory (COSIT),
+	2015, pages 44-64. doi: 10.1007/978-3-319-23374-1_3
+	
+	Non-improved algorithm.
+	
+	MocnikGeneratorBasic(dim, n, k)
+
+	Parameters
+	----------
+	dim : count
+	Dimension of the space.
+	n : count
+		Number of nodes in the graph.
+	k : double
+		Density parameter, determining the ratio of edges to nodes.
+
+	"""
+
+	cdef _MocnikGeneratorBasic* _this
+
+	def __dealloc__(self):
+		del self._this
+
+	def __cinit__(self, dim, n, k):
+		self._this = new _MocnikGeneratorBasic(dim, n, k)
+
+	def generate(self):
+		return Graph(0).setThis(self._this.generate())
+
+
 cdef extern from "cpp/generators/RmatGenerator.h":
 	cdef cppclass _RmatGenerator "NetworKit::RmatGenerator":
 		_RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d, bool weighted, count reduceNodes) except +
@@ -8628,6 +8739,51 @@ cdef class PreferentialAttachmentIndex(LinkPredictor):
 		The product of the cardinalities of the neighborhoods regarding u and v
 		"""
 		return self._this.run(u, v)
+
+
+cdef extern from "cpp/distance/Volume.h" namespace "NetworKit::Volume":
+	double volume(const _Graph G, const double r, const count samples) nogil except +
+	vector[double] volume(const _Graph G, const vector[double] r, const count samples) nogil except +
+
+cdef class Volume:
+
+	@staticmethod
+	def volume(Graph G, r, count samples=500):
+		"""
+		Number of nodes within a given radius (or radii); average for many nodes
+
+		Parameters
+		----------
+		G : Graph
+			the graph
+		r : double
+			the radius (or radii)
+		samples : count
+			the number of samples
+		"""
+		cdef double _r
+		cdef vector[double] _rs
+		cdef double _v
+		cdef vector[double] _vs
+		def is_number(s):
+			try:
+				float(s)
+				return True
+			except ValueError:
+				return False
+		if type(r) is float or type(r) is int:
+			_r = r
+			with nogil:
+				_v = volume(<_Graph> G._this, <double> _r, <count> samples)
+			return _v
+		elif type(r) is list and all(is_number(item) for item in r):
+			_rs = r
+			with nogil:
+				_vs = volume(<_Graph> G._this, <vector[double]> _rs, <count> samples)
+			return _vs
+		else:
+			pass
+
 
 cdef extern from "cpp/linkprediction/JaccardIndex.h":
 	cdef cppclass _JaccardIndex "NetworKit::JaccardIndex"(_LinkPredictor):
