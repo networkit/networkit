@@ -93,11 +93,11 @@ class bEffectiveDiameter(Algo):
 		return networkit.distance.EffectiveDiameter(G).run().getEffectiveDiameter()
 
 
-class bApproxEffectiveDiameter(Algo):
-	name = "ApproxEffectiveDiameter"
+class bEffectiveDiameterApproximation(Algo):
+	name = "EffectiveDiameterApproximation"
 
 	def run(self, G):
-		return networkit.distance.ApproxEffectiveDiameter(G).run().getEffectiveDiameter()
+		return networkit.distance.EffectiveDiameterApproximation(G).run().getEffectiveDiameter()
 
 
 class bApproxHopPlot(Algo):
