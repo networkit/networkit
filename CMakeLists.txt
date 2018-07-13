@@ -167,7 +167,7 @@ if (NETWORKIT_BUILD_TESTS)
     endif()
 
     if (NETWORKIT_MONOLITH)
-        add_executable(networkit_tests networkit/cpp/networkit.cpp)
+        add_executable(networkit_tests networkit/cpp/Unittests-X.cpp)
         target_link_libraries(networkit_tests
             PRIVATE
                 gtest_main gtest
@@ -175,7 +175,8 @@ if (NETWORKIT_BUILD_TESTS)
         )
         set_target_properties(networkit_tests PROPERTIES
             CXX_STANDARD 11
-            COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}")
+            COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
+            LINK_FLAGS "${OpenMP_CXX_FLAGS}")
 
         add_test(networkit_tests networkit_tests)
     endif()
@@ -210,7 +211,10 @@ function(networkit_add_extra IS_TEST MOD NAME)
                 PRIVATE
                     networkit_${MOD}
                 )
-            set_target_properties(${TARGET_NAME} PROPERTIES COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}")
+            set_target_properties(${TARGET_NAME} PROPERTIES
+                CXX_STANDARD 11
+			    COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
+                LINK_FLAGS "${OpenMP_CXX_FLAGS}")
 
             foreach(dep IN LISTS ARGN)
                 target_link_libraries(${TARGET_NAME} PRIVATE networkit_${dep})
