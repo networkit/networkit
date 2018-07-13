@@ -113,18 +113,15 @@ def buildNetworKit(withTests = False):
 	comp_cmd.append("..") #call CMakeLists.txt from networkit root
 	# Run cmake
 	print("initializing NetworKit compilation with: '{0}'".format(" ".join(comp_cmd)), flush=True)
-	os.chdir(buildDirectory) #switch to build dir
-	if not subprocess.call(comp_cmd) == 0:
+	if not subprocess.call(comp_cmd, cwd=buildDirectory) == 0:
 		print("cmake returned an error, exiting setup.py")
 		exit(1)
 	# Run make
 	make_cmd = ["make", "-j"+str(jobs)]
 	print("run make with: '{0}'".format(" ".join(make_cmd)), flush=True)
-	if not subprocess.call(make_cmd) == 0:
+	if not subprocess.call(make_cmd, cwd=buildDirectory) == 0:
 		print("Make returned an error, exiting setup.py")
 		exit(1)
-	os.chdir("../")
-	#os.chdir(initialPwd)
 
 ################################################
 # custom build commands to integrate with setuptools
