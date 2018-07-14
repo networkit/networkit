@@ -248,6 +248,24 @@ TEST_F(GeneratorsBenchmark, benchmarkChungLuGenerator) {
 	EXPECT_EQ(G.numberOfNodes(), n);
 }
 
+TEST_F(GeneratorsBenchmark, benchmarkMocnikGenerator) {
+	count dim = 3;
+	count n = 1000000;
+	double k = 2.6;
+	Graph G = MocnikGenerator::MocnikGenerator(dim, n, k).generate();
+	EXPECT_EQ(G.numberOfNodes(), n);
+	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), k**d, 2000000);
+}
+
+TEST_F(GeneratorsBenchmark, benchmarkMocnikGeneratorBasic) {
+	count dim = 3;
+	count n = 10000;
+	double k = 2.6;
+	Graph G = MocnikGeneratorBasic::MocnikGeneratorBasic(dim, n, k).generate();
+	EXPECT_EQ(G.numberOfNodes(), n);
+	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), k**d, 20000);
+}
+
 } /* namespace NetworKit */
 
 #endif /*NOGTEST */

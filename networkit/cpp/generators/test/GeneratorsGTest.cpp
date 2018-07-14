@@ -1068,6 +1068,23 @@ TEST_F(GeneratorsGTest, testLFRGeneratorWithRealData) {
 	EXPECT_EQ(C.numberOfSubsets(),gen.getPartition().numberOfSubsets());
 }
 
+TEST_F(GeneratorsBenchmark, benchmarkMocnikGenerator) {
+	count dim = 3;
+	count n = 10000;
+	double k = 2.6;
+	Graph G = MocnikGenerator::MocnikGenerator(dim, n, k).generate();
+	EXPECT_EQ(G.numberOfNodes(), n);
+	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), k**d, 20000);
+}
+
+TEST_F(GeneratorsBenchmark, benchmarkMocnikGeneratorBasic) {
+	count dim = 3;
+	count n = 5000;
+	double k = 2.6;
+	Graph G = MocnikGeneratorBasic::MocnikGeneratorBasic(dim, n, k).generate();
+	EXPECT_EQ(G.numberOfNodes(), n);
+	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), k**d, 10000);
+}
 
 } /* namespace NetworKit */
 
