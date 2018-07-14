@@ -1070,7 +1070,7 @@ TEST_F(GeneratorsGTest, testLFRGeneratorWithRealData) {
 	EXPECT_EQ(C.numberOfSubsets(),gen.getPartition().numberOfSubsets());
 }
 
-TEST_F(GeneratorsBenchmark, benchmarkMocnikGenerator) {
+TEST_F(GeneratorsGTest, testMocnikGenerator) {
 	count dim = 3;
 	count n = 10000;
 	double k = 2.6;
@@ -1084,7 +1084,7 @@ TEST_F(GeneratorsBenchmark, benchmarkMocnikGenerator) {
 	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), std::pow(k, dim), 20000);
 }
 
-TEST_F(GeneratorsBenchmark, benchmarkMocnikGeneratorBasic) {
+TEST_F(GeneratorsGTest, testMocnikGeneratorBasic) {
 	count dim = 3;
 	count n = 5000;
 	double k = 2.6;
