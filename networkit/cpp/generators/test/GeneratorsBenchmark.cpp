@@ -254,7 +254,7 @@ TEST_F(GeneratorsBenchmark, benchmarkMocnikGenerator) {
 	double k = 2.6;
 	Graph G = MocnikGenerator::MocnikGenerator(dim, n, k).generate();
 	EXPECT_EQ(G.numberOfNodes(), n);
-	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), k**d, 2000000);
+	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), k**dim, 2000000);
 }
 
 TEST_F(GeneratorsBenchmark, benchmarkMocnikGeneratorBasic) {
@@ -263,7 +263,7 @@ TEST_F(GeneratorsBenchmark, benchmarkMocnikGeneratorBasic) {
 	double k = 2.6;
 	Graph G = MocnikGeneratorBasic::MocnikGeneratorBasic(dim, n, k).generate();
 	EXPECT_EQ(G.numberOfNodes(), n);
-	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), k**d, 20000);
+	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), k**dim, 20000);
 }
 
 } /* namespace NetworKit */

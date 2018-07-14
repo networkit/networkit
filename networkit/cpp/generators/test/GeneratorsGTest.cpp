@@ -31,6 +31,8 @@ Dy * GeneratorsTest.cpp
 #include "../StochasticBlockmodel.h"
 #include "../EdgeSwitchingMarkovChainGenerator.h"
 #include "../LFRGenerator.h"
+#include "../MocnikGenerator.h"
+#include "../MocnikGeneratorBasic.h"
 
 
 #include "../../viz/PostscriptWriter.h"
@@ -1074,7 +1076,7 @@ TEST_F(GeneratorsBenchmark, benchmarkMocnikGenerator) {
 	double k = 2.6;
 	Graph G = MocnikGenerator::MocnikGenerator(dim, n, k).generate();
 	EXPECT_EQ(G.numberOfNodes(), n);
-	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), k**d, 20000);
+	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), k**dim, 20000);
 }
 
 TEST_F(GeneratorsBenchmark, benchmarkMocnikGeneratorBasic) {
@@ -1083,7 +1085,7 @@ TEST_F(GeneratorsBenchmark, benchmarkMocnikGeneratorBasic) {
 	double k = 2.6;
 	Graph G = MocnikGeneratorBasic::MocnikGeneratorBasic(dim, n, k).generate();
 	EXPECT_EQ(G.numberOfNodes(), n);
-	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), k**d, 10000);
+	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), k**dim, 10000);
 }
 
 } /* namespace NetworKit */
