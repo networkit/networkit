@@ -15,11 +15,16 @@ namespace NetworKit {
 
 /**
  * @ingroup generators
- * Creates G(d, n, p) graphs.
  */
 class MocnikGeneratorBasic: public StaticGraphGenerator {
 private:
-	typedef std::unordered_map<node, std::vector<double>> NodePositionMap;
+	// GENERAL DATA
+	
+	/**
+	 * Position of each node in space.  The index of the vector is also the number of
+	 * the node.
+	 */
+	std::vector<std::vector<double>> nodePositions;
 
 protected:
 	count dim;

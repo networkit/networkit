@@ -18,6 +18,10 @@ namespace NetworKit {
  */
 class Volume {
 private:
+	/**
+	 * For a given node n, the nodes within distance r are returned together with
+	 * their distance to node n.
+	 */
 	static std::unordered_map<node, double> nodesWithinDistance(const Graph &G, double r, node n);
 
 public:

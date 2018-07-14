@@ -16,7 +16,9 @@ MocnikGeneratorBasic::MocnikGeneratorBasic(count dim, count n, double k): dim(di
 
 // GEOMETRY
 
-// norm of a vector
+/**
+ * Norm of a vector.  The shift applies to every coordinate.
+ */
 static inline double norm(std::vector<double> &v, const double &shift) {
 	double x = 0;
 	for (count j = 0; j < v.size(); j++) {
@@ -25,7 +27,9 @@ static inline double norm(std::vector<double> &v, const double &shift) {
 	return sqrt(x);
 }
 
-// Euclidean distance between two vectors
+/**
+ * Euclidean distance between two vectors
+ */
 static inline double dist(std::vector<double> &v, std::vector<double> &w) {
 	double x = 0;
 	for (count j = 0; j < v.size(); j++) {
@@ -38,17 +42,16 @@ static inline double dist(std::vector<double> &v, std::vector<double> &w) {
 // GRAPH GENERATION
 
 Graph MocnikGeneratorBasic::generate() {
+	// assertions
 	assert (dim > 0);
 	assert (n > 0);
 	assert (k > 1);
-
-	// vector containing the nodes resp. their positions
-	NodePositionMap nodesPosition;
 
 	// create graph
 	Graph G(0, false, true);
 
 	// create the nodes
+	nodePositions.resize(n);
 	node curr = 0;
 	while (curr < n) {
 		std::vector<double> v = {};
@@ -57,31 +60,36 @@ Graph MocnikGeneratorBasic::generate() {
 		}
 		// test wheather the new node would be contained in the ball B_{.5}(.5, ..., .5)
 		if (norm(v, -.5) < .5) {
-			nodesPosition[G.addNode()] = v;
+			G.addNode();
+			nodePositions[curr] = v;
 			curr++;
 		}
 	}
 
 	// create the edges
 	double x;
-	for (auto kv : nodesPosition) {
+	for (count i = 0; i < n; i++) {
 		// compute the minimal distance from a node to all other nodes
-		double dist_min = -1;
-		for (auto kv2 : nodesPosition) {
-			x = dist(kv.second, kv2.second);
-			if (kv.first != kv2.first && (x < dist_min || dist_min == -1)) {
-				dist_min = x;
+		double distMin = -1;
+		for (count j = 0; j < n; j++) {
+			if (i != j) {
+				x = dist(nodePositions[i], nodePositions[j]);
+				if (x < distMin || distMin < -.5) {
+					distMin = x;
+				}
 			}
 		}
 		// add the edges
-		for (auto kv2 : nodesPosition) {
-			if (dist(kv.second, kv2.second) <= k * dist_min && kv.first != kv2.first) {
-				G.addEdge(kv.first, kv2.first);
+		for (count j = 0; j < n; j++) {
+			if (i != j && dist(nodePositions[i], nodePositions[j]) <= k * distMin) {
+				G.addEdge(i, j);
 			}
 		}
 	}
 
+	// shrink the graph
 	G.shrinkToFit();
+
 	return G;
 }
 
