@@ -146,6 +146,9 @@ Generative models aim to explain how networks form and evolve specific structura
 
 * PubWeb Generator: |br| This network model is motivated by the P2P computing library *PubWeb*. Fot the generative process nodes are embedded into the 2D Euclidean unit torus (square with wrap-around boundaries). To create edges, a variation of the disc graph model is employed with a uniform communication radius r for all nodes. A node is connected to up to k nearest neighbors within its communication radius. |br| |br|
 
+* Mocnik Model: |br| The Mocnik model prototypically mimics spatial networks. If a network exists in space, it can inherit properties of space, such as the concept of locality. In many networks, edges thus exist between nodes that are near in space.  These networks often have a large diameter and expose properties similar to road and transport networks. There exists even a hierarchical variant of the model. |br| |br|
+
+
 
 |separator|
 
