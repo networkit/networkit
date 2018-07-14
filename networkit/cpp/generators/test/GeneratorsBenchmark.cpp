@@ -20,6 +20,8 @@
 #include "../DynamicHyperbolicGenerator.h"
 #include "../BarabasiAlbertGenerator.h"
 #include "../ChungLuGenerator.h"
+#include "../MocnikGenerator.h"
+#include "../MocnikGeneratorBasic.h"
 #include "../../graph/GraphBuilder.h"
 
 namespace NetworKit {
@@ -259,7 +261,7 @@ TEST_F(GeneratorsBenchmark, benchmarkMocnikGenerator) {
 	G = Mocnik.generate();
 	EXPECT_FALSE(G.isEmpty());
 	EXPECT_EQ(G.numberOfNodes(), n);
-	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), k**dim, 2000000);
+	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), std::pow(k, dim), 2000000);
 }
 
 TEST_F(GeneratorsBenchmark, benchmarkMocnikGeneratorBasic) {
@@ -273,7 +275,7 @@ TEST_F(GeneratorsBenchmark, benchmarkMocnikGeneratorBasic) {
 	G = Mocnik.generate();
 	EXPECT_FALSE(G.isEmpty());
 	EXPECT_EQ(G.numberOfNodes(), n);
-	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), k**dim, 20000);
+	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), std::pow(k, dim), 20000);
 }
 
 } /* namespace NetworKit */

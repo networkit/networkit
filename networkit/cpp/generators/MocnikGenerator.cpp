@@ -8,7 +8,6 @@
 #include "MocnikGenerator.h"
 #include "../auxiliary/Random.h"
 #include <cmath>
-#include <unordered_map>
 
 namespace NetworKit {
 

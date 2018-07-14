@@ -1081,7 +1081,7 @@ TEST_F(GeneratorsBenchmark, benchmarkMocnikGenerator) {
 	G = Mocnik.generate();
 	EXPECT_FALSE(G.isEmpty());
 	EXPECT_EQ(G.numberOfNodes(), n);
-	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), k**dim, 20000);
+	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), std::pow(k, dim), 20000);
 }
 
 TEST_F(GeneratorsBenchmark, benchmarkMocnikGeneratorBasic) {
@@ -1095,7 +1095,7 @@ TEST_F(GeneratorsBenchmark, benchmarkMocnikGeneratorBasic) {
 	G = Mocnik.generate();
 	EXPECT_FALSE(G.isEmpty());
 	EXPECT_EQ(G.numberOfNodes(), n);
-	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), k**dim, 10000);
+	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), std::pow(k, dim), 10000);
 }
 
 } /* namespace NetworKit */

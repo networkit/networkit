@@ -9,7 +9,6 @@
 #define MOCNIKGENERATOR_H_
 
 #include "StaticGraphGenerator.h"
-#include <unordered_map>
 
 namespace NetworKit {
 
