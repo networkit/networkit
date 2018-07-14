@@ -1074,7 +1074,12 @@ TEST_F(GeneratorsBenchmark, benchmarkMocnikGenerator) {
 	count dim = 3;
 	count n = 10000;
 	double k = 2.6;
-	Graph G = MocnikGenerator::MocnikGenerator(dim, n, k).generate();
+	
+	MocnikGenerator Mocnik(dim, n, k);
+	Graph G(0);
+	EXPECT_TRUE(G.isEmpty());
+	G = Mocnik.generate();
+	EXPECT_FALSE(G.isEmpty());
 	EXPECT_EQ(G.numberOfNodes(), n);
 	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), k**dim, 20000);
 }
@@ -1083,7 +1088,12 @@ TEST_F(GeneratorsBenchmark, benchmarkMocnikGeneratorBasic) {
 	count dim = 3;
 	count n = 5000;
 	double k = 2.6;
-	Graph G = MocnikGeneratorBasic::MocnikGeneratorBasic(dim, n, k).generate();
+	
+	MocnikGenerator Mocnik(dim, n, k);
+	Graph G(0);
+	EXPECT_TRUE(G.isEmpty());
+	G = Mocnik.generate();
+	EXPECT_FALSE(G.isEmpty());
 	EXPECT_EQ(G.numberOfNodes(), n);
 	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), k**dim, 10000);
 }
