@@ -57,7 +57,7 @@ Graph MocnikGeneratorBasic::generate() {
 		for (count j = 0; j < dim; j++) {
 			v.push_back(Aux::Random::real());
 		}
-		// test wheather the new node would be contained in the ball B_{.5}(.5, ..., .5)
+		// test whether the new node would be contained in the ball B_{.5}(.5, ..., .5)
 		if (norm(v, -.5) < .5) {
 			G.addNode();
 			nodePositions[curr] = v;
