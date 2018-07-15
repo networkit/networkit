@@ -60,7 +60,7 @@ void ForestFireScore::run() {
 					edgeid eid;
 					std::tie(x, eid) = validNeighbors[index];
 					activeNodes.push(x);
-					#pragma omp atomic update
+					#pragma omp atomic
 					burnt[eid]++;
 					localEdgesBurnt++;
 					visited[x] = true;
@@ -71,7 +71,7 @@ void ForestFireScore::run() {
 			}
 		}
 
-		#pragma omp atomic update
+		#pragma omp atomic
 		edgesBurnt += localEdgesBurnt;
 	}
 

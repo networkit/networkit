@@ -31,7 +31,7 @@ void NetworKit::PartitionHubDominance::run() {
 
 			Aux::Parallel::atomic_max(maxInternalDeg[c], internalDeg);
 
-			#pragma omp atomic update
+			#pragma omp atomic
 			++clusterSizes[c];
 		}
 	});
