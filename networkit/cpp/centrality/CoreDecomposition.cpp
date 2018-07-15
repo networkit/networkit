@@ -159,7 +159,14 @@ void NetworKit::CoreDecomposition::processSublevelParallel(index level,
 		G.forNeighborsOf(u, [&](node v) {
 			if (degrees[v] > level) {
 				index tmp;
+
+#ifdef _MSC_VER
+// FIX: This is not supported in MSVC; disable for the moment
+				std::cerr << "Not supported in MSVC\n";
+				abort();
+#else
 #pragma omp atomic capture
+#endif
 				tmp = --degrees[v];
 
 				// ensure that neighbor is inserted exactly once if necessary
