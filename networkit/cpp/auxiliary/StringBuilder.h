@@ -190,8 +190,8 @@ struct IsStreamableHelper {
 	static std::false_type isStreamable(...);
 	
 	template<typename T,
-		AUX_REQUIRE(Streamable, isBaseOrSame<std::ostream,
-				decay_t<decltype(std::declval<std::ostream&>() << std::declval<const T&>())>>())
+		typename _streamT = typename std::decay< decltype(std::declval<std::ostream&>() << std::declval<const T&>())>::type,
+		typename std::enable_if< std::is_same<std::ostream, _streamT>::value || std::is_base_of<std::ostream, _streamT>::value >* = nullptr
 	>
 	static std::true_type isStreamable(const T&);
 	

@@ -13,23 +13,23 @@ struct FunctionTraits;
 
 // function pointer
 template<class R, class... Args>
-struct FunctionTraits<R( *)(Args...)> : public FunctionTraits<R(Args...)>
+struct FunctionTraits<R(*)(Args...)> : public FunctionTraits<R(Args...)>
 {};
 
 template<class R, class... Args>
 struct FunctionTraits<R(Args...)> {
-    using result_type = R;
+	using result_type = R;
 
-    static constexpr std::size_t arity = sizeof...(Args);
+	static constexpr size_t arity = sizeof...(Args);
 
-    template <std::size_t N>
-    struct arg;
+	template<size_t N, bool> struct arg_impl;
+	template<size_t N> struct arg_impl<N, false> {};
+	template<size_t N> struct arg_impl<N, true> {
+		using type = typename std::tuple_element<N, std::tuple<Args...> >::type;
+	};
 
-    template <std::size_t N>
-    struct arg {
-        static_assert(N < arity, "error: invalid parameter index.");
-        using type = typename std::tuple_element<N, std::tuple<Args...>>::type;
-    };
+	template <size_t N>
+	using arg = arg_impl<N, N < arity>;
 };
 
 
@@ -56,16 +56,10 @@ private:
 public:
 	using result_type = typename call_type::result_type;
 
-	static constexpr std::size_t arity = call_type::arity - 1;
+	static constexpr size_t arity = call_type::arity - 1;
 
-	template <std::size_t N>
-	struct arg;
-
-	template <std::size_t N>
-	struct arg {
-		static_assert(N < arity, "error: invalid parameter index.");
-		using type = typename call_type::template arg < N + 1 >::type;
-	};
+	template <size_t N>
+	using arg = typename call_type::template arg < N + 1 >;
 };
 
 template<class F>
