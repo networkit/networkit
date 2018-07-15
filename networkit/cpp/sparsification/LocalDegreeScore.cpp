@@ -82,7 +82,7 @@ void LocalDegreeScore::run() {
 	scoreData.resize(G.upperEdgeIdBound());
 
 	#pragma omp parallel for
-	for (index i = 0; i < scoreData.size(); ++i) {
+	for (omp_index i = 0; i < scoreData.size(); ++i) {
 		scoreData[i] = exponents[i];
 	}
 

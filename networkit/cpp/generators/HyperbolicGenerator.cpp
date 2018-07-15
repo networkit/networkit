@@ -87,7 +87,7 @@ Graph HyperbolicGenerator::generate(count n, double R, double alpha, double T) {
 	vector<double> radiicopy(n);
 
 	#pragma omp parallel for
-	for (index j = 0; j < n; j++) {
+	for (omp_index j = 0; j < n; j++) {
 		anglecopy[j] = angles[permutation[j]];
 		radiicopy[j] = radii[permutation[j]];
 	}
@@ -106,7 +106,7 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 
 	vector<index> permutation(n);
 	#pragma omp parallel for
-	for (index i = 0; i< n; i++) {
+	for (omp_index i = 0; i< n; i++) {
 		permutation[i] = i;
 	}
 
@@ -118,7 +118,7 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 	vector<vector<Point2D<double>>> bands(bandRadii.size() - 1);
 	//Put points to bands
 	#pragma omp parallel for
-	for (index j = 0; j < bands.size(); j++){
+	for (omp_index j = 0; j < bands.size(); j++){
 		for (index i = 0; i < n; i++){
 			double alias = permutation[i];
 			if (radii[alias] >= bandRadii[j] && radii[alias] <= bandRadii[j+1]){
@@ -137,7 +137,7 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 	//1.Extract band angles to use them later, can create a band class to handle this more elegantly
 	vector<vector<double>> bandAngles(bandCount);
 	#pragma omp parallel for
-	for (index i=0; i < bandCount; i++){
+	for (omp_index i=0; i < bandCount; i++){
 		const count currentBandSize = bands[i].size();
 		bandAngles[i].resize(currentBandSize);
 		for(index j=0; j < currentBandSize; j++) {
@@ -161,7 +161,7 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 		index id = omp_get_thread_num();
 		threadtimers[id].start();
 		#pragma omp for schedule(guided) nowait
-		for (index i = 0; i < n; i++) {
+		for (omp_index i = 0; i < n; i++) {
 			const double coshr = cosh(radii[i]);
 			const double sinhr = sinh(radii[i]);
 			count expectedDegree = (4/M_PI)*n*exp(-(radii[i])/2);
@@ -248,7 +248,7 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 	GraphBuilder result(n, false, false);//no direct swap with probabilistic graphs
 	count totalCandidates = 0;
 	#pragma omp parallel for
-	for (index i = 0; i < n; i++) {
+	for (omp_index i = 0; i < n; i++) {
 		vector<index> near;
 		totalCandidates += quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), edgeProb, anglesSorted, near);
 		for (index j : near) {

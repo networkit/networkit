@@ -80,7 +80,7 @@ void ForestFireScore::run() {
 
 	if (maxv > 0) {
 		#pragma omp parallel for
-		for (index i = 0; i < burnt.size(); ++i) {
+		for (omp_index i = 0; i < burnt.size(); ++i) {
 			burntNormalized[i] = burnt[i] / maxv;
 		}
 	}

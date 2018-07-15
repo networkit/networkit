@@ -108,7 +108,7 @@ void DynamicHyperbolicGenerator::recomputeBands() {
 	//3. Put points to bands
 	INFO("Starting Point distribution");
 	#pragma omp parallel for
-	for (index j = 0; j < bands.size(); j++){
+	for (omp_index j = 0; j < bands.size(); j++){
 		for (index i = 0; i < nodeCount; i++){
 			double alias = permutation[i];
 			if (radii[alias] >= bandRadii[j] && radii[alias] <= bandRadii[j+1]){
@@ -279,7 +279,7 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
 	}
 
 	#pragma omp parallel for
-	for (index j = 0; j < toWiggle.size(); j++) {
+	for (omp_index j = 0; j < toWiggle.size(); j++) {
 		//wiggle this node!
 
 		double oldphi = angles[toWiggle[j]];
@@ -306,7 +306,7 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
 
 	//now get the new edges and see what changed
 	#pragma omp parallel for
-	for (index j = 0; j < toWiggle.size(); j++) {
+	for (omp_index j = 0; j < toWiggle.size(); j++) {
 		vector<index> newNeighbours;
 		if (T == 0) {
 			newNeighbours = getNeighborsInBands(toWiggle[j], true);

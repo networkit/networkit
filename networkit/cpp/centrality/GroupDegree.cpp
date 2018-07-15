@@ -85,7 +85,7 @@ void GroupDegree::updateQueue() {
 	std::vector<node> neighbors = G.neighbors(lastAdded);
 
 #pragma omp parallel for
-	for (count i = 0; i < neighbors.size(); ++i) {
+	for (omp_index i = 0; i < neighbors.size(); ++i) {
 		node u = neighbors[i];
 		if (!inGroup[u] && !reachable[u]) {
 			affected[u] = true;
@@ -109,7 +109,7 @@ void GroupDegree::updateQueue() {
 	}
 
 #pragma omp parallel for
-	for (count i = 0; i < n; ++i) {
+	for (omp_index i = 0; i < n; ++i) {
 		if (affected[i]) {
 			int64_t newGain = 0;
 			bool groupNeighbor = false;

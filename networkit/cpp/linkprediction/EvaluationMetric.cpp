@@ -148,7 +148,7 @@ void EvaluationMetric::setTrueAndFalseNegatives() {
 void EvaluationMetric::setPositivesAndNegatives() {
   numPositives = 0;
   #pragma omp parallel for
-  for (index i = 0; i < predictions.size(); ++i) {
+  for (omp_index i = 0; i < predictions.size(); ++i) {
     if (testGraph->hasEdge(predictions[i].first.first, predictions[i].first.second)) {
       #pragma omp atomic
       numPositives++;

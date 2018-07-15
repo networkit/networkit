@@ -256,7 +256,7 @@ TEST_F(GraphBenchmark, weightedDegree_standard_par) {
 //	NodeMap<double> weightedDegree(n, 0.0);
 //
 //	#pragma omp parallel for
-//	for (node v = 1; v <= n; ++v) {
+//	for (omp_index v = 1; v <= n; ++v) {
 //		double iw = 0.0;
 //		STINGER_READ_ONLY_FORALL_EDGES_OF_VTX_BEGIN(S, v) {
 //			iw += stinger_edgeweight(S, STINGER_EDGE_SOURCE, STINGER_EDGE_DEST, G.defaultEdgeType);
