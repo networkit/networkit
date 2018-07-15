@@ -5,6 +5,8 @@
  *      Author: cls
  */
 
+#include <numeric>
+
 #include "ParallelPartitionCoarsening.h"
 #include <omp.h>
 #include "../graph/GraphBuilder.h"

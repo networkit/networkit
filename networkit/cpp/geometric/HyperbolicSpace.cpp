@@ -5,9 +5,9 @@
  *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
  */
 
-#include <assert.h>
 #include <cmath>
 
+#include <cassert>
 
 #include "HyperbolicSpace.h"
 #include "../auxiliary/Log.h"

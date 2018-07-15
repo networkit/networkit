@@ -47,6 +47,10 @@ if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR ("${CMAKE_CXX_COMPILER_ID}"
 	if (NETWORKIT_WARNINGS)
 		set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 	endif()
+
+elseif (MSVC)
+	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /DNETWORKIT_OMP2 /MP /DNETWORKIT_WINDOWS")
+	
 else()
 	message(WARNING "Support only GCC and Clang; your compiler might work though anyways")
 endif()

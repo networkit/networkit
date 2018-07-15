@@ -8,12 +8,14 @@
 #include "NeighborhoodFunctionApproximation.h"
 #include "../components/ConnectedComponents.h"
 #include "../auxiliary/Random.h"
+#include "../Globals.h"
 
 #include <math.h>
 #include <iterator>
 #include <stdlib.h>
 #include <omp.h>
 #include <map>
+#include <vector>
 
 namespace NetworKit {
 

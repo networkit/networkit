@@ -10,7 +10,6 @@
 
 #include "StaticGraphGenerator.h"
 
-#define _USE_MATH_DEFINES // to be able to use M_PI
 #include <cmath>
 
 

@@ -8,6 +8,8 @@
 #ifndef HYPERBOLICGENERATOR_H_
 #define HYPERBOLICGENERATOR_H_
 
+#include <cmath>
+
 #include <vector>
 #include "../geometric/HyperbolicSpace.h"
 #include "StaticGraphGenerator.h"

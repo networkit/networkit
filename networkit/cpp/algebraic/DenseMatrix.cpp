@@ -6,6 +6,7 @@
  */
 
 #include "DenseMatrix.h"
+#include <algorithm>
 
 namespace NetworKit {
 

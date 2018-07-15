@@ -19,9 +19,10 @@
  *
  */
 
+#include <cmath>
+
 #include <cstdlib>
 #include <random>
-#include <math.h>
 #include <assert.h>
 #include <omp.h>
 #include <algorithm>

@@ -5,6 +5,9 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
+#include <algorithm>
+#include <numeric>
+
 #include "EvaluationMetric.h"
 #include "PredictionsSorter.h"
 #include "../auxiliary/Parallel.h"

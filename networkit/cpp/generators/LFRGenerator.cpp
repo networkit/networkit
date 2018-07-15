@@ -2,13 +2,15 @@
  *
  */
 
+#include <algorithm>
+#include <random>
+#include <numeric>
+
 #include "LFRGenerator.h"
 #include "PowerlawDegreeSequence.h"
 #include "EdgeSwitchingMarkovChainGenerator.h"
 #include "PubWebGenerator.h"
 #include "../auxiliary/Random.h"
-#include <algorithm>
-#include <random>
 #include "../auxiliary/SignalHandling.h"
 #include "../auxiliary/Parallel.h"
 

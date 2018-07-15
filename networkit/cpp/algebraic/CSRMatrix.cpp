@@ -9,6 +9,7 @@
 
 #include <cassert>
 #include <atomic>
+#include <numeric>
 #include "omp.h"
 
 namespace NetworKit {

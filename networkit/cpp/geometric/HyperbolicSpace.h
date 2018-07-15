@@ -8,9 +8,10 @@
 #ifndef HYPERBOLICSPACE_H_
 #define HYPERBOLICSPACE_H_
 
+#include <cmath>
+
 #include <vector>
 #include <map>
-#include <cmath>
 #include "Point2D.h"
 #include "../viz/Point.h"
 #include "../auxiliary/Random.h"
