@@ -45,7 +45,7 @@ void ApproxGroupBetweenness::run() {
 	hasSortedGroup = false;
 
 #pragma omp parallel for
-	for (omp_index l = 0; l < samples; ++l) {
+	for (omp_index l = 0; l < static_cast<omp_index>(samples); ++l) {
 		node s = G.randomNode();
 		node t;
 		do {

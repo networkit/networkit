@@ -86,7 +86,7 @@ private:
 	static vector<vector<double> > getBandAngles(const vector<vector<Point2D<double>>> &bands) {
 		vector<vector<double>> bandAngles(bands.size());
 		#pragma omp parallel for
-		for(omp_index i=0; i < bands.size(); i++){
+		for (omp_index i=0; i < static_cast<omp_index>(bands.size()); i++){
 			const count currentBandSize = bands[i].size();
 			bandAngles[i].resize(currentBandSize);
 			for(index j=0; j < currentBandSize; j++) {

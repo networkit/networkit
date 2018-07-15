@@ -61,7 +61,7 @@ void NeighborhoodFunctionApproximation::run() {
 		}
 	});
 	#pragma omp parallel for
-	for (omp_index i = 0; i < k; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(k); ++i) {
 		count tmp = 0;
 		for (ssize_t t = 0; t < omp_get_max_threads(); ++t) {
 			tmp |= localHighest[t][i];
@@ -80,7 +80,7 @@ void NeighborhoodFunctionApproximation::run() {
 			tmp += localSumRemoved[i];
 		}
 		#pragma omp parallel for schedule(guided) 
-		for (omp_index v = 0; v < activeNodes.size(); ++v) {
+		for (omp_index v = 0; v < static_cast<omp_index>(activeNodes.size()); ++v) {
 			if (!activeNodes[v]) continue;
 			index tid = (index)omp_get_thread_num();
 			

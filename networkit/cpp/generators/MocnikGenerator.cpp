@@ -226,7 +226,7 @@ void MocnikGenerator::addEdgesToGraph(Graph &G, const count &n, const double &k,
 	count cellMax = std::pow(s.aMax, dim);
 	std::vector<std::vector<std::tuple<node, node, double>>> edges(cellMax);
 	#pragma omp parallel for
-	for (count cell = 0; cell < cellMax; cell++) {
+	for (omp_index cell = 0; cell < static_cast<omp_index>(cellMax); cell++) {
 		double dmNew, dm;
 		edges[cell] = {};
 		NodeCollection ns = getNodes(s, cell);

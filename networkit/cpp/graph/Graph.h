@@ -1109,7 +1109,7 @@ void Graph::forNodes(L handle) const {
 template<typename L>
 void Graph::parallelForNodes(L handle) const {
 	#pragma omp parallel for
-	for (omp_index v = 0; v < z; ++v) {
+	for (omp_index v = 0; v < static_cast<omp_index>(z); ++v) {
 		if (exists[v]) {
 			handle(v);
 		}
@@ -1140,7 +1140,7 @@ void Graph::forNodesInRandomOrder(L handle) const {
 template<typename L>
 void Graph::balancedParallelForNodes(L handle) const {
 	#pragma omp parallel for schedule(guided) // TODO: define min block size (and test it!)
-	for (omp_index v = 0; v < z; ++v) {
+	for (omp_index v = 0; v < static_cast<omp_index>(z); ++v) {
 		if (exists[v]) {
 			handle(v);
 		}
@@ -1163,7 +1163,7 @@ void Graph::forNodePairs(L handle) const {
 template<typename L>
 void Graph::parallelForNodePairs(L handle) const {
 	#pragma omp parallel for schedule(guided)
-	for (omp_index u = 0; u < z; ++u) {
+	for (omp_index u = 0; u < static_cast<omp_index>(z); ++u) {
 		if (exists[u]) {
 			for (node v = u + 1; v < z; ++v) {
 				if (exists[v]) {
@@ -1273,7 +1273,7 @@ inline void Graph::forEdgeImpl(L handle) const {
 template<bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline void Graph::parallelForEdgesImpl(L handle) const {
 	#pragma omp parallel for schedule(guided)
-	for (omp_index u = 0; u < z; ++u) {
+	for (omp_index u = 0; u < static_cast<omp_index>(z); ++u) {
 		forOutEdgesOfImpl<graphIsDirected, hasWeights, graphHasEdgeIds, L>(u, handle);
 	}
 }
@@ -1283,7 +1283,7 @@ inline double Graph::parallelSumForEdgesImpl(L handle) const {
 	double sum = 0.0;
 
 	#pragma omp parallel for reduction(+:sum)
-	for (omp_index u = 0; u < z; ++u) {
+	for (omp_index u = 0; u < static_cast<omp_index>(z); ++u) {
 		for (index i = 0; i < outEdges[u].size(); ++i) {
 			node v = outEdges[u][i];
 
@@ -1452,7 +1452,7 @@ double Graph::parallelSumForNodes(L handle) const {
 	double sum = 0.0;
 
 	#pragma omp parallel for reduction(+:sum)
-	for (omp_index v = 0; v < z; ++v) {
+	for (omp_index v = 0; v < static_cast<omp_index>(z); ++v) {
 		if (exists[v]) {
 			sum += handle(v);
 		}

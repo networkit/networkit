@@ -175,7 +175,7 @@ TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorWithSortedNodes) {
 	vector<double> radiicopy(n);
 
 	#pragma omp parallel for
-	for (omp_index j = 0; j < n; j++) {
+	for (omp_index j = 0; j < static_cast<omp_index>(n); j++) {
 		anglecopy[j] = angles[permutation[j]];
 		radiicopy[j] = radii[permutation[j]];
 	}

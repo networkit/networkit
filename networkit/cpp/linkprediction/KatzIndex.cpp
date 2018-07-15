@@ -70,7 +70,7 @@ std::vector<LinkPredictor::prediction> KatzIndex::runOn(std::vector<std::pair<no
   {
     KatzIndex katz(*G, maxPathLength, dampingValue);
     #pragma omp for schedule(guided)
-    for (omp_index i = 0; i < nodePairs.size(); ++i) {
+    for (omp_index i = 0; i < static_cast<omp_index>(nodePairs.size()); ++i) {
       predictions[i] = std::make_pair(nodePairs[i], katz.run(nodePairs[i].first, nodePairs[i].second));
     }
   }

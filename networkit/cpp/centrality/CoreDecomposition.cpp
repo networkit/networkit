@@ -111,7 +111,7 @@ void NetworKit::CoreDecomposition::scanParallel(index level, const std::vector<c
 	curr.clear();
 
 #pragma omp parallel for schedule(guided)
-	for (omp_index u = 0; u < z; ++u) {
+	for (omp_index u = 0; u < static_cast<omp_index>(z); ++u) {
 		if (active[u] && degrees[u] == level) {
 			auto tid = omp_get_thread_num();
 			next[tid].push_back(u);
@@ -152,7 +152,7 @@ void NetworKit::CoreDecomposition::processSublevelParallel(index level,
 	std::vector<std::vector<node>> localNext(omp_get_max_threads());
 
 #pragma omp parallel for schedule(guided)
-	for (omp_index i = 0; i < size; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(size); ++i) {
 		node u = curr[i];
 		active[u] = 0;
 		scoreData[u] = level;
