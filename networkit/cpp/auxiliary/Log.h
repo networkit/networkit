@@ -26,6 +26,12 @@
 
 #else // NOLOGGING
 
+#ifdef _MSC_VER
+	#define NETWORKT_PRETTY_FUNCTION __FUNCSIG__
+#else
+	#define NETWORKT_PRETTY_FUNCTION __PRETTY_FUNCTION__
+#endif
+
 #define LOG_LEVEL_FATAL 0
 #define LOG_LEVEL_ERROR 1
 #define LOG_LEVEL_WARN  2
@@ -39,9 +45,9 @@
 #endif
 
 #if LOG_LEVEL >= LOG_LEVEL_FATAL
-#define FATAL(...) ::Aux::Log::log({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+#define FATAL(...) ::Aux::Log::log({__FILE__, NETWORKT_PRETTY_FUNCTION, __LINE__},\
 		::Aux::Log::LogLevel::fatal, __VA_ARGS__)
-#define FATALF(...) ::Aux::Log::logF({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+#define FATALF(...) ::Aux::Log::logF({__FILE__, NETWORKT_PRETTY_FUNCTION, __LINE__},\
 		::Aux::Log::LogLevel::fatal, __VA_ARGS__)
 #else
 #define FATAL(...) do{}while(false)
@@ -49,9 +55,9 @@
 #endif
 
 #if LOG_LEVEL >= LOG_LEVEL_ERROR
-#define ERROR(...) ::Aux::Log::log({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+#define ERROR(...) ::Aux::Log::log({__FILE__, NETWORKT_PRETTY_FUNCTION, __LINE__},\
 		::Aux::Log::LogLevel::error, __VA_ARGS__)
-#define ERRORF(...) ::Aux::Log::logF({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+#define ERRORF(...) ::Aux::Log::logF({__FILE__, NETWORKT_PRETTY_FUNCTION, __LINE__},\
 		::Aux::Log::LogLevel::error, __VA_ARGS__)
 #else
 #define ERROR(...) do{}while(false)
@@ -59,9 +65,9 @@
 #endif
 
 #if LOG_LEVEL >= LOG_LEVEL_WARN
-#define WARN(...)  ::Aux::Log::log({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+#define WARN(...)  ::Aux::Log::log({__FILE__, NETWORKT_PRETTY_FUNCTION, __LINE__},\
 		::Aux::Log::LogLevel::warn,  __VA_ARGS__)
-#define WARNF(...)  ::Aux::Log::logF({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+#define WARNF(...)  ::Aux::Log::logF({__FILE__, NETWORKT_PRETTY_FUNCTION, __LINE__},\
 		::Aux::Log::LogLevel::warn,  __VA_ARGS__)
 #else
 #define WARN(...) do{}while(false)
@@ -69,9 +75,9 @@
 #endif
 
 #if LOG_LEVEL >= LOG_LEVEL_INFO
-#define INFO(...)  ::Aux::Log::log({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+#define INFO(...)  ::Aux::Log::log({__FILE__, NETWORKT_PRETTY_FUNCTION, __LINE__},\
 		::Aux::Log::LogLevel::info,  __VA_ARGS__)
-#define INFOF(...)  ::Aux::Log::logF({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+#define INFOF(...)  ::Aux::Log::logF({__FILE__, NETWORKT_PRETTY_FUNCTION, __LINE__},\
 		::Aux::Log::LogLevel::info,  __VA_ARGS__)
 #else
 #define INFO(...) do{}while(false)
@@ -79,9 +85,9 @@
 #endif
 
 #if LOG_LEVEL >= LOG_LEVEL_DEBUG
-#define DEBUG(...) ::Aux::Log::log({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+#define DEBUG(...) ::Aux::Log::log({__FILE__, NETWORKT_PRETTY_FUNCTION, __LINE__},\
 		::Aux::Log::LogLevel::debug, __VA_ARGS__)
-#define DEBUGF(...) ::Aux::Log::logF({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+#define DEBUGF(...) ::Aux::Log::logF({__FILE__, NETWORKT_PRETTY_FUNCTION, __LINE__},\
 		::Aux::Log::LogLevel::debug, __VA_ARGS__)
 #else
 #define DEBUG(...) do{}while(false)
@@ -89,11 +95,11 @@
 #endif
 
 #if LOG_LEVEL >= LOG_LEVEL_TRACE
-#define TRACE(...) ::Aux::Log::log({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+#define TRACE(...) ::Aux::Log::log({__FILE__, NETWORKT_PRETTY_FUNCTION, __LINE__},\
 		::Aux::Log::LogLevel::trace, __VA_ARGS__)
-#define TRACEF(...) ::Aux::Log::logF({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+#define TRACEF(...) ::Aux::Log::logF({__FILE__, NETWORKT_PRETTY_FUNCTION, __LINE__},\
 		::Aux::Log::LogLevel::trace, __VA_ARGS__)
-#define TRACEPOINT ::Aux::Log::log({__FILE__, __PRETTY_FUNCTION__, __LINE__},\
+#define TRACEPOINT ::Aux::Log::log({__FILE__, NETWORKT_PRETTY_FUNCTION, __LINE__},\
 		::Aux::Log::LogLevel::trace, "tracepoint")
 #else
 #define TRACE(...) do{}while(false)
