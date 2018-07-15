@@ -130,7 +130,7 @@ private:
 	  //Most innerband is defined by cLow = 0
 	  double minTheta, maxTheta;
 	  if (cLow == 0)
-	  return std::make_tuple(0, 2* M_PI);
+	  return std::make_tuple(0.0, 2* M_PI);
 
 	  double a = (cosh(radius)*cosh(cLow) - cosh(thresholdDistance))/(sinh(radius)*sinh(cLow));
 	  //handle floating point error
