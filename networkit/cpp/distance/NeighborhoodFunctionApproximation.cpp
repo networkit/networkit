@@ -63,7 +63,7 @@ void NeighborhoodFunctionApproximation::run() {
 	#pragma omp parallel for
 	for (omp_index i = 0; i < static_cast<omp_index>(k); ++i) {
 		count tmp = 0;
-		for (ssize_t t = 0; t < omp_get_max_threads(); ++t) {
+		for (int t = 0; t < omp_get_max_threads(); ++t) {
 			tmp |= localHighest[t][i];
 		}
 		highestCount[i] = tmp;
