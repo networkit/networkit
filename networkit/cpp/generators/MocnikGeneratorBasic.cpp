@@ -73,7 +73,7 @@ Graph MocnikGeneratorBasic::generate() {
 		for (count j = 0; j < n; j++) {
 			if (i != j) {
 				x = dist(nodePositions[i], nodePositions[j]);
-				if (x < distMin || distMin < -.5) {
+				if (x < distMin || distMin <= -.5) {
 					distMin = x;
 				}
 			}
