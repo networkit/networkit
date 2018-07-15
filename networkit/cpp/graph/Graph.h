@@ -73,7 +73,7 @@ namespace std {
 namespace NetworKit {
 
 // forward declaration to randomization/CurveballImpl.h
-namespace CurveballDetails {struct CurveballMaterialization;}
+namespace CurveballDetails {class CurveballMaterialization;}
 
 /**
  * @ingroup graph
