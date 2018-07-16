@@ -122,54 +122,56 @@ const std::vector<int> MocnikGenerator::fromIndex(MocnikGenerator::LayerState &s
 }
 
 const std::vector<int> MocnikGenerator::boxSurface(MocnikGenerator::LayerState &s, const int &i, const int &r) {
-	std::vector<std::vector<int>> se;
-	// find all boxes
+	// test for vanishing r
 	if (r == 0) {
-		se.push_back(fromIndex(s, i));
-	} else {
-		std::vector<int> iV = fromIndex(s, i);
-		for (count d = 0; d < dim; d++) {
-			std::vector<std::vector<int>> v;
-			std::vector<int> tmp;
-			v.push_back(tmp);
-			for (count j = 0; j < d; j++) {
-				std::vector<std::vector<int>> w;
-				for (int mu = fmax(iV[j] - r + 1, 0); mu <= fmin(iV[j] + r - 1, s.aMax - 1); mu++) {
-					for (std::vector<int> &vElem : v) {
-						std::vector<int> x(vElem);
-						x.push_back(mu);
-						w.push_back(x);
-					}
-				}
-				v = w;
-			}
+		std::vector<int> seResult;
+		seResult.push_back(i);
+		return seResult;
+	}
+	// find all boxes
+	std::vector<std::vector<int>> se;
+	std::vector<int> iV = fromIndex(s, i);
+	for (count d = 0; d < dim; d++) {
+		std::vector<std::vector<int>> v;
+		std::vector<int> tmp;
+		v.push_back(tmp);
+		for (count j = 0; j < d; j++) {
 			std::vector<std::vector<int>> w;
-			for (std::vector<int> &vElem : v) {
-				if (iV[d] - r >= 0) {
+			for (int mu = fmax(iV[j] - r + 1, 0); mu <= fmin(iV[j] + r - 1, s.aMax - 1); mu++) {
+				for (std::vector<int> &vElem : v) {
 					std::vector<int> x(vElem);
-					x.push_back(iV[d] - r);
-					w.push_back(x);
-				}
-				if (iV[d] + r < s.aMax) {
-					std::vector<int> x(vElem);
-					x.push_back(iV[d] + r);
+					x.push_back(mu);
 					w.push_back(x);
 				}
 			}
 			v = w;
-			for (count j = d + 1; j < dim; j++) {
-				std::vector<std::vector<int>> w;
-				for (int mu = fmax(iV[j] - r, 0); mu <= fmin(iV[j] + r, s.aMax - 1); mu++) {
-					for (std::vector<int> &vElem : v) {
-						std::vector<int> x(vElem);
-						x.push_back(mu);
-						w.push_back(x);
-					}
-				}
-				v = w;
-			}
-			se.insert(se.end(), v.begin(), v.end());
 		}
+		std::vector<std::vector<int>> w;
+		for (std::vector<int> &vElem : v) {
+			if (iV[d] - r >= 0) {
+				std::vector<int> x(vElem);
+				x.push_back(iV[d] - r);
+				w.push_back(x);
+			}
+			if (iV[d] + r < s.aMax) {
+				std::vector<int> x(vElem);
+				x.push_back(iV[d] + r);
+				w.push_back(x);
+			}
+		}
+		v = w;
+		for (count j = d + 1; j < dim; j++) {
+			std::vector<std::vector<int>> w;
+			for (int mu = fmax(iV[j] - r, 0); mu <= fmin(iV[j] + r, s.aMax - 1); mu++) {
+				for (std::vector<int> &vElem : v) {
+					std::vector<int> x(vElem);
+					x.push_back(mu);
+					w.push_back(x);
+				}
+			}
+			v = w;
+		}
+		se.insert(se.end(), v.begin(), v.end());
 	}
 	// convert the list of grid cells from a multi to a one-dimensional index
 	std::vector<int> seResult;
@@ -182,12 +184,12 @@ const std::vector<int> MocnikGenerator::boxSurface(MocnikGenerator::LayerState &
 	return seResult;
 }
 
-const std::vector<int> MocnikGenerator::boxVolume(MocnikGenerator::LayerState &s, const int &j, const double &r) {
+const std::vector<int> MocnikGenerator::boxVolume(MocnikGenerator::LayerState &s, const int &i, const double &r) {
 	int r2 = ceil(r * s.aMax);
 	std::vector<std::vector<int>> se;
 	std::vector<int> tmp;
 	se.push_back(tmp);
-	std::vector<int> iV = fromIndex(s, j);
+	std::vector<int> iV = fromIndex(s, i);
 	// find all boxes
 	for (count d = 0; d < dim; d++) {
 		std::vector<std::vector<int>> w;
