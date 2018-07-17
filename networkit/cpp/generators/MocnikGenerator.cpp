@@ -215,7 +215,7 @@ const std::vector<int> MocnikGenerator::boxVolume(MocnikGenerator::LayerState &s
 void MocnikGenerator::addEdgesToGraph(Graph &G, const count &n, const double &k, const double &relativeWeight, const bool &baseLayer) {
 	// map vector containing the nodes resp. their positions
 	MocnikGenerator::LayerState s;
-	initCellArray(s, ceil(std::pow(n, 1./dim) / k));
+	initCellArray(s, ceil(std::pow(n / 2, 1./dim) / k));
 
 	// add the nodes to the layer state
 	for (count i = 0; i < n; i++) {
