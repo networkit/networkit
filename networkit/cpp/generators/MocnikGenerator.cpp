@@ -224,9 +224,11 @@ void MocnikGenerator::addEdgesToGraph(Graph &G, const count &n, const double &k,
 
 	// create the edges
 	count cellMax = std::pow(s.aMax, dim);
-//#pragma omp parallel for
+	std::vector<std::vector<std::tuple<node, node, double>>> edges(cellMax);
+	#pragma omp parallel for
 	for (count cell = 0; cell < cellMax; cell++) {
 		double dmNew, dm;
+		edges[cell] = {};
 		NodeCollection ns = getNodes(s, cell);
 		if (ns.empty()) {
 			continue;
@@ -265,15 +267,19 @@ void MocnikGenerator::addEdgesToGraph(Graph &G, const count &n, const double &k,
 				for (node &j : getNodes(s, x)) {
 					d = dist(nodePositions[i], nodePositions[j]);
 					if (d <= kdMin && i != j) {
-#pragma omp critical
-						{
-					 		if (baseLayer || !G.hasEdge(i, j)) {
-								G.addEdge(i, j, d * relativeWeight);
-							}
-						}
+						edges[cell].push_back(std::make_tuple(i, j, d));
 					}
 				}
 			}
+		}
+	}
+	
+	// add the edges to the graph
+	for (count t = 0; t < cellMax; t++) {
+		for (auto &e : edges[t]) {
+		 	if (baseLayer || !G.hasEdge(std::get<0>(e), std::get<1>(e))) {
+		 		G.addEdge(std::get<0>(e), std::get<1>(e), std::get<2>(e) * relativeWeight);
+	 		}
 		}
 	}
 }
