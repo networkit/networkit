@@ -2,10 +2,8 @@ import sys
 import shutil
 import os
 
-initialPwd = os.getcwd()
 cmakeCompiler = "" #possibilty to specify a compiler
-#buildDirectory = os.path.join(initialPwd, "buildPython") #directory to build networkit to
-buildDirectory = "buildPython"
+buildDirectory = "build_python"
 
 if sys.version_info.major < 3:
 	print("ERROR: NetworKit requires Python 3.")
@@ -16,8 +14,11 @@ if shutil.which("cmake") is None:
 if shutil.which("make") is None:
 	print("ERROR: NetworKit compilation requires make.")
 	sys.exit(1)
-
-from setuptools import setup # to ensure setuptools is installed
+try:
+	from setuptools import setup # to ensure setuptools is installed
+except ImportError:
+	print("ERROR: Setuptools is required to install networkit python module.\nInstall via pip3 install setuptools.")
+	sys.exit(1)
 
 import os
 import subprocess #calling cmake, make and cython
@@ -91,15 +92,22 @@ if cmakeCompiler == "":
 ################################################
 
 def cythonizeFile(filepath):
-	print("Cythonizing _NetworKit.pyx...", flush=True)
-	if not os.path.isfile(filepath):
-		print("_NetworKit.pyx is not available. Build cancelled.")
+	cython_available = shutil.which("cython") is not None
+	if not cython_available and not os.path.isfile(filepath.replace("pyx","cpp")):
+		print("ERROR: Neither cython nor _NetworKit.cpp is provided. Build cancelled")
 		exit(1)
-	comp_cmd = ["cython","-3","--cplus","-t",filepath]
-	if not subprocess.call(comp_cmd) == 0:
-		print("cython returned an error, exiting setup.py")
-		exit(1)
-	print("_NetworKit.pyx cythonized", flush=True)
+	if not cython_available and os.path.isfile(filepath.replace("pyx","cpp")):
+		print("Cython not available, but _NetworKit.cpp provided. Continue build without cythonizing")
+	else:
+		print("Cythonizing _NetworKit.pyx...", flush=True)
+		if not os.path.isfile(filepath):
+			print("_NetworKit.pyx is not available. Build cancelled.")
+			exit(1)
+		comp_cmd = ["cython","-3","--cplus","-t",filepath]
+		if not subprocess.call(comp_cmd) == 0:
+			print("cython returned an error, exiting setup.py")
+			exit(1)
+		print("_NetworKit.pyx cythonized", flush=True)
 
 def buildNetworKit(withTests = False):
 	# Cythonize file
@@ -109,7 +117,9 @@ def buildNetworKit(withTests = False):
 	# Build cmake call
 	comp_cmd = ["cmake","-DCMAKE_BUILD_TYPE=Release"]
 	comp_cmd.append("-DCMAKE_CXX_COMPILER="+cmakeCompiler)
-	comp_cmd.append("-DNETWORKIT_PYTHON=ON") # link python
+	from sysconfig import get_paths, get_config_var
+	comp_cmd.append("-DNETWORKIT_PYTHON="+get_paths()['include']) #give python.h files
+	comp_cmd.append("-DNETWORKIT_PYTHON_SOABI="+get_config_var('SOABI')) #give soabi
 	comp_cmd.append("..") #call CMakeLists.txt from networkit root
 	# Run cmake
 	print("initializing NetworKit compilation with: '{0}'".format(" ".join(comp_cmd)), flush=True)
@@ -127,6 +137,22 @@ def buildNetworKit(withTests = False):
 # custom build commands to integrate with setuptools
 ################################################
 from setuptools.command.test import test as TestCommand
+from setuptools.command.build_ext import build_ext as _build_ext
+from setuptools import Command
+
+class buildNetworKitCommand(_build_ext):
+	def initialize_options(self):
+		_build_ext.initialize_options(self)
+
+	def finalize_options(self):
+		_build_ext.finalize_options(self)
+
+	def run(self):
+		buildNetworKit()
+		from sysconfig import get_config_var
+		libname = "_NetworKit."+get_config_var('SOABI')+".so"
+		shutil.copyfile(buildDirectory+"/"+libname,libname)
+		# os.symlink(buildDirectory+"/"+libname, libname)
 
 class CustomTestCommand(TestCommand):
 	def initialize_options(self):
@@ -144,14 +170,6 @@ class CustomTestCommand(TestCommand):
 # initialize python setup
 ################################################
 from setuptools import find_packages # in addition to setup
-
-buildNetworKit()
-from sysconfig import get_config_var
-
-shutil.copyfile(buildDirectory+"/libnetworkit.so","_NetworKit."+get_config_var('SOABI')+".so")
-
-
-# initialize the setup with the appropriate commands.
 import version
 setup(
 	name				= version.name,
@@ -168,7 +186,7 @@ setup(
 	keywords			= version.keywords,
 	platforms			= version.platforms,
 	classifiers			= version.classifiers,
-	cmdclass			= {'test' : CustomTestCommand},
+	cmdclass			= {'build_ext' : buildNetworKitCommand, 'test' : CustomTestCommand},
 	test_suite			= 'nose.collector',
 	install_requires	= version.install_requires,
 	zip_safe			= False) # see https://cython.readthedocs.io/en/latest/src/reference/compilation.html
@@ -179,9 +197,7 @@ setup(
 # tkinter is not part of pip
 ################################################
 try:
-	import _tkinter
-	del _tkinter
 	import tkinter #python3 only
-	del tkinter#python3 only
+	del tkinter #python3 only
 except:
-	print("WARNING: _tkinter is necessary for NetworKit.\nPlease install _tkinter")
+	print("WARNING: _tkinter is necessary for networkit.profiling module if not used via jupyter.\nInstall tkinter if needed")
