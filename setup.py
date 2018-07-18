@@ -4,6 +4,7 @@ import os
 
 cmakeCompiler = "" #possibilty to specify a compiler
 buildDirectory = "build_python"
+ninja_available = False
 
 if sys.version_info.major < 3:
 	print("ERROR: NetworKit requires Python 3.")
@@ -11,8 +12,10 @@ if sys.version_info.major < 3:
 if shutil.which("cmake") is None:
 	print("ERROR: NetworKit compilation requires cmake.")
 	sys.exit(1)
-if shutil.which("make") is None:
-	print("ERROR: NetworKit compilation requires make.")
+
+ninja_available = shutil.which("ninja") is not None
+if not ninja_available or shutil.which("make") is None:
+	print("ERROR: NetworKit compilation requires Make or Ninja.")
 	sys.exit(1)
 try:
 	from setuptools import setup # to ensure setuptools is installed
@@ -118,19 +121,24 @@ def buildNetworKit(withTests = False):
 	comp_cmd = ["cmake","-DCMAKE_BUILD_TYPE=Release"]
 	comp_cmd.append("-DCMAKE_CXX_COMPILER="+cmakeCompiler)
 	from sysconfig import get_paths, get_config_var
-	comp_cmd.append("-DNETWORKIT_PYTHON="+get_paths()['include']) #give python.h files
-	comp_cmd.append("-DNETWORKIT_PYTHON_SOABI="+get_config_var('SOABI')) #give soabi
+	comp_cmd.append("-DNETWORKIT_PYTHON="+get_paths()['include']) #provide python.h files
+	comp_cmd.append("-DNETWORKIT_PYTHON_SOABI="+get_config_var('SOABI')) #provide lib env specification
+	if ninja_available:
+		comp_cmd.append("-GNinja")
 	comp_cmd.append("..") #call CMakeLists.txt from networkit root
 	# Run cmake
 	print("initializing NetworKit compilation with: '{0}'".format(" ".join(comp_cmd)), flush=True)
 	if not subprocess.call(comp_cmd, cwd=buildDirectory) == 0:
 		print("cmake returned an error, exiting setup.py")
 		exit(1)
-	# Run make
-	make_cmd = ["make", "-j"+str(jobs)]
-	print("run make with: '{0}'".format(" ".join(make_cmd)), flush=True)
-	if not subprocess.call(make_cmd, cwd=buildDirectory) == 0:
-		print("Make returned an error, exiting setup.py")
+	build_cmd = []
+	if ninja_available:
+		build_cmd = ["ninja", "-j"+str(jobs)]
+	else:
+		build_cmd = ["make", "-j"+str(jobs)]
+	print("Build with: '{0}'".format(" ".join(build_cmd)), flush=True)
+	if not subprocess.call(build_cmd, cwd=buildDirectory) == 0:
+		print("Build tool returned an error, exiting setup.py")
 		exit(1)
 
 ################################################
