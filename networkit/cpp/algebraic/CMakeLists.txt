@@ -5,6 +5,8 @@ networkit_add_module(algebraic
     Vector.cpp
     )
 
+
+
 networkit_module_link_modules(algebraic
     auxiliary graph)
 
