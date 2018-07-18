@@ -68,11 +68,12 @@ if (NETWORKIT_MONOLITH)
 	if(APPLE)
 		set_target_properties(networkit PROPERTIES
 				LINK_FLAGS "-undefined dynamic_lookup")
+		target_link_libraries(networkit PRIVATE OpenMP::OpenMP_CXX)
 	endif()
 	if (NETWORKIT_PYTHON)
 		if(EXISTS "${PROJECT_SOURCE_DIR}/networkit/_NetworKit.cpp")
 			add_library(_NetworKit MODULE networkit/_NetworKit.cpp)
-			target_link_libraries(_NetworKit PUBLIC networkit)
+			target_link_libraries(_NetworKit PRIVATE networkit)
 			target_include_directories(_NetworKit PRIVATE "${NETWORKIT_PYTHON}")
 			set_target_properties(_NetworKit PROPERTIES
 						CXX_STANDARD 11
@@ -83,6 +84,7 @@ if (NETWORKIT_MONOLITH)
 			if(APPLE)
 				set_target_properties(_NetworKit PROPERTIES
 						LINK_FLAGS "-undefined dynamic_lookup")
+				target_link_libraries(_NetworKit PRIVATE OpenMP::OpenMP_CXX)
 			endif()
 		else()
 			message(FATAL_ERROR "networkit/_NetworKit.cpp is missing. Invoke Cython manually.")

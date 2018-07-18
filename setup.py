@@ -160,7 +160,7 @@ class buildNetworKitCommand(_build_ext):
 		from sysconfig import get_config_var
 		libname = "_NetworKit."+get_config_var('SOABI')+".so"
 		shutil.copyfile(buildDirectory+"/"+libname,libname)
-		# os.symlink(buildDirectory+"/"+libname, libname)
+		#os.symlink(buildDirectory+"/"+libname, libname) # would be nicer but setup.py install has to be adapted then
 
 class CustomTestCommand(TestCommand):
 	def initialize_options(self):
