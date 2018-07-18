@@ -144,7 +144,6 @@ def buildNetworKit(withTests = False):
 ################################################
 # custom build commands to integrate with setuptools
 ################################################
-from setuptools.command.test import test as TestCommand
 from setuptools.command.build_ext import build_ext as _build_ext
 from setuptools import Command
 
@@ -161,18 +160,6 @@ class buildNetworKitCommand(_build_ext):
 		libname = "_NetworKit."+get_config_var('SOABI')+".so"
 		shutil.copyfile(buildDirectory+"/"+libname,libname)
 		#os.symlink(buildDirectory+"/"+libname, libname) # would be nicer but setup.py install has to be adapted then
-
-class CustomTestCommand(TestCommand):
-	def initialize_options(self):
-		TestCommand.initialize_options(self)
-
-	def finalize_options(self):
-		TestCommand.finalize_options(self)
-
-	def run(self):
-		print("Testing the python module is currently not supported")
-		exit(1)
-		TestCommand.run(self)
 
 ################################################
 # initialize python setup
@@ -194,7 +181,7 @@ setup(
 	keywords			= version.keywords,
 	platforms			= version.platforms,
 	classifiers			= version.classifiers,
-	cmdclass			= {'build_ext' : buildNetworKitCommand, 'test' : CustomTestCommand},
+	cmdclass			= {'build_ext' : buildNetworKitCommand},
 	test_suite			= 'nose.collector',
 	install_requires	= version.install_requires,
 	zip_safe			= False) # see https://cython.readthedocs.io/en/latest/src/reference/compilation.html
