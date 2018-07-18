@@ -9,40 +9,95 @@
 #define MOCNIKGENERATOR_H_
 
 #include "StaticGraphGenerator.h"
-#include <unordered_map>
 
 namespace NetworKit {
 
 /**
  * @ingroup generators
- * Creates G(d, n, p) graphs.
  */
 class MocnikGenerator: public StaticGraphGenerator {
 private:
-	// The node position map contains, for each node, a pair consisting of the node
-	// itself in the first component and its position in space in the second
-	// component.
-	typedef std::vector<std::pair<node, std::vector<double>>> NodePositionMap;
-	// The cell array reflects how nodes are assigned to a grid. Each element of
-	// the vector corresponds to one grid cell.
-	typedef std::vector<NodePositionMap> CellArray;
+	// GENERAL DATA
 
-	struct State {
+	/**
+	 * Position of each node in space.  The index of the vector is also the number of
+	 * the node.
+	 */
+	std::vector<std::vector<double>> nodePositions;
+
+	// DATA FOR EACH LAYER
+
+	/**
+	 * Collection of nodes.
+	 */
+	typedef std::vector<node> NodeCollection;
+
+	/**
+	 * The cell array reflects how nodes are assigned to a grid. Each element of
+	 * the vector corresponds to one grid cell.
+	 */
+	typedef std::vector<NodeCollection> CellArray;
+
+	/**
+	 * State of a layer
+	 */
+	struct LayerState {
 		CellArray a;
 		int aMax;
 	};
 
-	NodePositionMap npm;
+	// FUNCTIONS RELATED TO THE LAYER STATE
 
-	void initCellArray(State &s, const count &m);
-	NodePositionMap getNodes(State &s, const int &i);
-	const void addNode(State &s, const std::pair<node, std::vector<double>> &p);
-	const int toIndex(State &s, const std::vector<double> &v);
-	const int toIndex(State &s, const std::vector<int> &v);
-	const std::vector<int> fromIndex(State &s, const int &i);
-	const std::vector<int> boxSurface(State &s, const int &i, const int &r);
-	const std::vector<int> boxVolume(State &s, const int &j, const double &r);
-	void addEdgesToGraph(Graph &G, const count &n, const double &k, const double &relativeWeight, const bool &firstRun);
+	/**
+	 * Initialize the cell array.  The second parameter determines how many grid
+	 * cells shall be contained in each dimension of the cell array.
+	 */
+	void initCellArray(LayerState &s, const count &numberOfCellsPerDimension);
+
+	/**
+	 * Get all nodes that are contained in the i-th grid cell
+	 */
+	NodeCollection getNodes(LayerState &s, const int &i);
+
+	/**
+	 * Add the node with number j to the corresponing grid cell
+	 */
+	const void addNode(LayerState &s, const int &j);
+
+	/**
+	 * Determine, for a given position, the index of the corresponding grid cell
+	 */
+	const int toIndex(LayerState &s, const std::vector<double> &v);
+
+	/**
+	 * Determine, for the given multi-dimensional index, the index of the
+	 * corresponding grid cell
+	 */
+	const int toIndex(LayerState &s, const std::vector<int> &v);
+
+	/**
+	 * Determine, for a given index, the multi-dimensional index of a grid cell
+	 */
+	const std::vector<int> fromIndex(LayerState &s, const int &i);
+
+	/**
+	 * Determine for a grid cell given by index i the grid cells of distance r
+	 */
+	const std::vector<int> boxSurface(LayerState &s, const int &i, const int &r);
+
+	/**
+	 * Determine for a grid cell given by index i the grid cells within distance r
+	 */
+	const std::vector<int> boxVolume(LayerState &s, const int &j, const double &r);
+
+	// EDGE GENERATION
+
+	/**
+	 * Add the edges for n nodes and with parameter k to the graph.  Thereby, use the
+	 * provided relative weight.  If it is indicated that the edge is part of the
+	 * base layer, it is not tested whether the edge already exists inside the graph.
+	 */
+	void addEdgesToGraph(Graph &G, const count &n, const double &k, const double &relativeWeight, const bool &baseLayer);
 
 protected:
 	count dim;

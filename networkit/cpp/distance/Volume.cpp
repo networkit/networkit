@@ -19,8 +19,8 @@ std::unordered_map<node, double> Volume::nodesWithinDistance(const Graph &G, dou
 	double r2;
 	while (!msToCheck.empty()) {
 		std::vector<node> msToCheckNew;
-		for (auto m : msToCheck) {
-			for (auto m2 : G.neighbors(m)) {
+		for (auto &m : msToCheck) {
+			for (auto &m2 : G.neighbors(m)) {
 				r2 = ms[m] + G.weight(m, m2);
 				if (ms.count(m2) == 0) {
 					if (r2 <= r) {
@@ -64,7 +64,7 @@ std::vector<double> Volume::volume(const Graph &G, const std::vector<double> rs,
 		}
 	}
 	std::vector<double> ys;
-	for (auto x : xs) {
+	for (auto &x : xs) {
 		ys.push_back(x / samples);
 	}
 	return ys;

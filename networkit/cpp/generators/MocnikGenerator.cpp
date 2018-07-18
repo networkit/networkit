@@ -8,7 +8,6 @@
 #include "MocnikGenerator.h"
 #include "../auxiliary/Random.h"
 #include <cmath>
-#include <unordered_map>
 
 namespace NetworKit {
 
@@ -42,7 +41,10 @@ MocnikGenerator::MocnikGenerator(count dim, std::vector<count> ns, std::vector<d
 
 // TOOLS
 
-template<typename KeyType, typename ValueType> std::pair<KeyType,ValueType> get_max(const std::map<KeyType,ValueType> &x) {
+/**
+ * For a vector of pairs, get the pair with the maximal second component
+ */
+template<typename KeyType, typename ValueType> std::pair<KeyType,ValueType> getMax(const std::map<KeyType,ValueType> &x) {
 	using pairtype=std::pair<KeyType,ValueType>;
 	return *std::max_element(x.begin(), x.end(), [](const pairtype &p1, const pairtype &p2) {
 		return p1.second < p2.second;
@@ -51,7 +53,9 @@ template<typename KeyType, typename ValueType> std::pair<KeyType,ValueType> get_
 
 // GEOMETRY
 
-// norm of a vector
+/**
+ * Norm of a vector.  The shift applies to every coordinate.
+ */
 static inline double norm(std::vector<double> &v, const double &shift) {
 	double x = 0;
 	for (count j = 0; j < v.size(); j++) {
@@ -60,7 +64,9 @@ static inline double norm(std::vector<double> &v, const double &shift) {
 	return sqrt(x);
 }
 
-// Euclidean distance between two vectors
+/**
+ * Euclidean distance between two vectors
+ */
 static inline double dist(std::vector<double> &v, std::vector<double> &w) {
 	double x = 0;
 	for (count j = 0; j < v.size(); j++) {
@@ -70,25 +76,25 @@ static inline double dist(std::vector<double> &v, std::vector<double> &w) {
 	return x;
 }
 
-// NODE ARRAY
+// LAYER STATE
 
-void MocnikGenerator::initCellArray(MocnikGenerator::State &s, const count &m) {
-	s.aMax = m;
+void MocnikGenerator::initCellArray(MocnikGenerator::LayerState &s, const count &numberOfCellsPerDimension) {
+	s.aMax = numberOfCellsPerDimension;
 	for (count j = 0; j < std::pow(s.aMax, dim); j++) {
-		NodePositionMap tmp;
+		NodeCollection tmp;
 		s.a.push_back(tmp);
 	}
 }
 
-MocnikGenerator::NodePositionMap MocnikGenerator::getNodes(MocnikGenerator::State &s, const int &i) {
-		return s.a[i];
+MocnikGenerator::NodeCollection MocnikGenerator::getNodes(MocnikGenerator::LayerState &s, const int &i) {
+	return s.a[i];
 }
 
-const void MocnikGenerator::addNode(MocnikGenerator::State &s, const std::pair<node, std::vector<double>> &p) {
-	s.a[toIndex(s, p.second)].push_back(p);
+const void MocnikGenerator::addNode(MocnikGenerator::LayerState &s, const int &j) {
+	s.a[toIndex(s, nodePositions[j])].push_back(j);
 }
 
-const int MocnikGenerator::toIndex(MocnikGenerator::State &s, const std::vector<double> &v) {
+const int MocnikGenerator::toIndex(MocnikGenerator::LayerState &s, const std::vector<double> &v) {
 	std::vector<int> w;
 	for (count j = 0; j < v.size(); j++) {
 		w.push_back(fmin(floor(v[j] * s.aMax), s.aMax - 1));
@@ -96,7 +102,7 @@ const int MocnikGenerator::toIndex(MocnikGenerator::State &s, const std::vector<
 	return toIndex(s, w);
 }
 
-const int MocnikGenerator::toIndex(MocnikGenerator::State &s, const std::vector<int> &v) {
+const int MocnikGenerator::toIndex(MocnikGenerator::LayerState &s, const std::vector<int> &v) {
 	int x = 0;
 	for (count j = v.size() - 1; j >= 0 && j < v.size(); j--) {
 		x = x * s.aMax + v[j];
@@ -104,7 +110,7 @@ const int MocnikGenerator::toIndex(MocnikGenerator::State &s, const std::vector<
 	return x;
 }
 
-const std::vector<int> MocnikGenerator::fromIndex(MocnikGenerator::State &s, const int &i) {
+const std::vector<int> MocnikGenerator::fromIndex(MocnikGenerator::LayerState &s, const int &i) {
 	std::vector<int> v;
 	int i2 = i;
 	for (count j = 0; j < dim; j++) {
@@ -115,75 +121,80 @@ const std::vector<int> MocnikGenerator::fromIndex(MocnikGenerator::State &s, con
 	return v;
 }
 
-const std::vector<int> MocnikGenerator::boxSurface(MocnikGenerator::State &s, const int &i, const int &r) {
-	std::vector<std::vector<int>> se;
+const std::vector<int> MocnikGenerator::boxSurface(MocnikGenerator::LayerState &s, const int &i, const int &r) {
+	// test for vanishing r
 	if (r == 0) {
-		se.push_back(fromIndex(s, i));
-	} else {
-		std::vector<int> iV = fromIndex(s, i);
-		for (count d = 0; d < dim; d++) {
-			std::vector<std::vector<int>> v;
-			std::vector<int> tmp;
-			v.push_back(tmp);
-			for (count j = 0; j < d; j++) {
-				std::vector<std::vector<int>> w;
-				for (int mu = fmax(iV[j] - r + 1, 0); mu <= fmin(iV[j] + r - 1, s.aMax - 1); mu++) {
-					for (std::vector<int> vElem : v) {
-						std::vector<int> x(vElem);
-						x.push_back(mu);
-						w.push_back(x);
-					}
-				}
-				v = w;
-			}
+		std::vector<int> seResult;
+		seResult.push_back(i);
+		return seResult;
+	}
+	// find all boxes
+	std::vector<std::vector<int>> se;
+	std::vector<int> iV = fromIndex(s, i);
+	for (count d = 0; d < dim; d++) {
+		std::vector<std::vector<int>> v;
+		std::vector<int> tmp;
+		v.push_back(tmp);
+		for (count j = 0; j < d; j++) {
 			std::vector<std::vector<int>> w;
-			for (std::vector<int> vElem : v) {
-				if (iV[d] - r >= 0) {
+			for (int mu = fmax(iV[j] - r + 1, 0); mu <= fmin(iV[j] + r - 1, s.aMax - 1); mu++) {
+				for (std::vector<int> &vElem : v) {
 					std::vector<int> x(vElem);
-					x.push_back(iV[d] - r);
-					w.push_back(x);
-				}
-				if (iV[d] + r < s.aMax) {
-					std::vector<int> x(vElem);
-					x.push_back(iV[d] + r);
+					x.push_back(mu);
 					w.push_back(x);
 				}
 			}
 			v = w;
-			for (count j = d + 1; j < dim; j++) {
-				std::vector<std::vector<int>> w;
-				for (int mu = fmax(iV[j] - r, 0); mu <= fmin(iV[j] + r, s.aMax - 1); mu++) {
-					for (std::vector<int> vElem : v) {
-						std::vector<int> x(vElem);
-						x.push_back(mu);
-						w.push_back(x);
-					}
-				}
-				v = w;
-			}
-			se.insert(se.end(), v.begin(), v.end());
 		}
+		std::vector<std::vector<int>> w;
+		for (std::vector<int> &vElem : v) {
+			if (iV[d] - r >= 0) {
+				std::vector<int> x(vElem);
+				x.push_back(iV[d] - r);
+				w.push_back(x);
+			}
+			if (iV[d] + r < s.aMax) {
+				std::vector<int> x(vElem);
+				x.push_back(iV[d] + r);
+				w.push_back(x);
+			}
+		}
+		v = w;
+		for (count j = d + 1; j < dim; j++) {
+			std::vector<std::vector<int>> w;
+			for (int mu = fmax(iV[j] - r, 0); mu <= fmin(iV[j] + r, s.aMax - 1); mu++) {
+				for (std::vector<int> &vElem : v) {
+					std::vector<int> x(vElem);
+					x.push_back(mu);
+					w.push_back(x);
+				}
+			}
+			v = w;
+		}
+		se.insert(se.end(), v.begin(), v.end());
 	}
+	// convert the list of grid cells from a multi to a one-dimensional index
 	std::vector<int> seResult;
-	for (std::vector<int> v : se) {
+	for (std::vector<int> &v : se) {
 		seResult.push_back(toIndex(s, v));
 	}
+	// remove double numbers from the list of grid cells
 	sort(seResult.begin(), seResult.end());
 	seResult.erase(unique(seResult.begin(), seResult.end()), seResult.end());
 	return seResult;
 }
 
-const std::vector<int> MocnikGenerator::boxVolume(MocnikGenerator::State &s, const int &j, const double &r) {
+const std::vector<int> MocnikGenerator::boxVolume(MocnikGenerator::LayerState &s, const int &i, const double &r) {
 	int r2 = ceil(r * s.aMax);
 	std::vector<std::vector<int>> se;
 	std::vector<int> tmp;
 	se.push_back(tmp);
-	std::vector<int> iV = fromIndex(s, j);
+	std::vector<int> iV = fromIndex(s, i);
 	// find all boxes
 	for (count d = 0; d < dim; d++) {
 		std::vector<std::vector<int>> w;
 		for (int mu = fmax(iV[d] - r2, 0); mu <= fmin(iV[d] + r2, s.aMax - 1); mu++) {
-			for (std::vector<int> sElem : se) {
+			for (std::vector<int> &sElem : se) {
 				std::vector<int> x(sElem);
 				x.push_back(mu);
 				w.push_back(x);
@@ -191,72 +202,84 @@ const std::vector<int> MocnikGenerator::boxVolume(MocnikGenerator::State &s, con
 		}
 		se = w;
 	}
+	// convert the list of grid cells from a multi to a one-dimensional index
 	std::vector<int> seResult;
-	for (std::vector<int> v : se) {
+	for (std::vector<int> &v : se) {
 		seResult.push_back(toIndex(s, v));
 	}
 	return seResult;
 }
 
-// EDGES TO GRAPH
+// EDGE GENERATION
 
-void MocnikGenerator::addEdgesToGraph(Graph &G, const count &n, const double &k, const double &relativeWeight, const bool &firstRun) {
+void MocnikGenerator::addEdgesToGraph(Graph &G, const count &n, const double &k, const double &relativeWeight, const bool &baseLayer) {
 	// map vector containing the nodes resp. their positions
-	MocnikGenerator::State s;
-	initCellArray(s, ceil(std::pow(n, 1./dim) / k));
+	MocnikGenerator::LayerState s;
+	initCellArray(s, ceil(std::pow(n / 2, 1./dim) / k));
 
-	// add the nodes to the state
-	for (int j = 0; j < n; j++) {
-		addNode(s, npm[j]);
+	// add the nodes to the layer state
+	for (count i = 0; i < n; i++) {
+		addNode(s, i);
 	}
 
 	// create the edges
-	count jMax = std::pow(s.aMax, dim);
-#pragma omp parallel for
-	for (count j = 0; j < jMax; j++) {
+	count cellMax = std::pow(s.aMax, dim);
+	std::vector<std::vector<std::tuple<node, node, double>>> edges(cellMax);
+	#pragma omp parallel for
+	for (count cell = 0; cell < cellMax; cell++) {
 		double dmNew, dm;
-		NodePositionMap ns = getNodes(s, j);
+		edges[cell] = {};
+		NodeCollection ns = getNodes(s, cell);
 		if (ns.empty()) {
 			continue;
 		}
 		// compute the minimal distance from a node to all other nodes
 		std::map<node, double> distMins;
-		for (auto &it : ns) {
-			distMins[it.first] = -1;
+		for (node &i : ns) {
+			distMins[i] = -1;
 		}
 		bool nodesFound = false;
 		int r = -1;
-		while (!nodesFound || r < get_max(distMins).second * s.aMax) {
+		while (!nodesFound || r < getMax(distMins).second * s.aMax) {
 			r++;
-			for (auto &x : boxSurface(s, j, r)) {
-				NodePositionMap ns2 = getNodes(s, x);
-				for (auto &it : ns) {
-					dm = distMins[it.first];
-					for (auto &it2 : ns2) {
-						if (it.first != it2.first) {
-							dmNew = dist(it.second, it2.second);
+			for (auto &x : boxSurface(s, cell, r)) {
+				NodeCollection ns2 = getNodes(s, x);
+				for (node &i : ns) {
+					dm = distMins[i];
+					for (node &j : ns2) {
+						if (i != j) {
+							dmNew = dist(nodePositions[i], nodePositions[j]);
 							if (dmNew < dm || dm == -1) {
 								nodesFound = true;
 								dm = dmNew;
 							}
 						}
 					}
-					distMins[it.first] = dm;
+					distMins[i] = dm;
 				}
 			}
 		}
 		// add the edges
 		double kdMin, d;
-		for (auto &it : ns) {
-			kdMin = k * distMins[it.first];
-			for (auto &x : boxVolume(s, j, kdMin)) {
-				for (auto &it2 : getNodes(s, x)) {
-					d = dist(it.second, it2.second);
-					if (d <= kdMin && it.first != it2.first && (firstRun || !G.hasEdge(it.first, it2.first))) {
-						G.addEdge(it.first, it2.first, d * relativeWeight);
+		for (node &i : ns) {
+			kdMin = k * distMins[i];
+			for (auto &x : boxVolume(s, cell, kdMin)) {
+				for (node &j : getNodes(s, x)) {
+					d = dist(nodePositions[i], nodePositions[j]);
+					if (d <= kdMin && i != j) {
+						edges[cell].push_back(std::make_tuple(i, j, d));
 					}
 				}
 			}
+		}
+	}
+	
+	// add the edges to the graph
+	for (count t = 0; t < cellMax; t++) {
+		for (auto &e : edges[t]) {
+		 	if (baseLayer || !G.hasEdge(std::get<0>(e), std::get<1>(e))) {
+		 		G.addEdge(std::get<0>(e), std::get<1>(e), std::get<2>(e) * relativeWeight);
+	 		}
 		}
 	}
 }
@@ -270,7 +293,8 @@ Graph MocnikGenerator::generate() {
 			relativeWeights.push_back(1);
 		}
 	}
-	
+
+	// assertions
 	assert(dim > 0);
 	for (auto &n : ns) {
 		assert(n > 1);
@@ -281,10 +305,10 @@ Graph MocnikGenerator::generate() {
 	assert(ns.size() > 0);
 	assert(ks.size() == ns.size());
 	assert(relativeWeights.size() == ns.size());
-	
+
 	// create graph
 	Graph G(0, weighted, true);
-	
+
 	// create the nodes
 	node curr = 0;
 	while (curr < *std::max_element(ns.begin(), ns.end())) {
@@ -292,19 +316,22 @@ Graph MocnikGenerator::generate() {
 		for (count j = 0; j < dim; j++) {
 			v.push_back(Aux::Random::real());
 		}
-		// test wheather the new node would be contained in the ball B_{.5}(.5, ..., .5)
-		if (norm(v, -.5) < .5) {
-			npm.push_back(std::make_pair(G.addNode(), v));
+		// test whether the new node would be contained in the ball B_{.5}(.5, ..., .5)
+		if (norm(v, -.5) <= .5) {
+			G.addNode();
+			nodePositions.push_back(v);
 			curr++;
 		}
 	}
-	
+
 	// create the edges
 	for (count j = 0; j < ns.size(); j++) {
 		addEdgesToGraph(G, ns[j], ks[j], relativeWeights[j], j == 0);
 	}
 
+	// shrink the graph
 	G.shrinkToFit();
+
 	return G;
 }
 
