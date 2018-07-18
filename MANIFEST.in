@@ -1,5 +1,4 @@
 include version.py
-include ez_setup.py
 include CMakeLists.txt
 #include networkit/_NetworKit.pyx
 include networkit/_NetworKit.cpp
@@ -13,5 +12,4 @@ include networkit/profiling/latex/profile.tex
 include networkit/profiling/description/descriptions.txt
 recursive-include networkit *.h *.cpp
 recursive-include networkit CMakeLists.txt
-recursive-include networkit *.pxd
 recursive-exclude networkit *GTest.cpp *GTest.h *Benchmark.h *Benchmark.cpp /test/ *-X.cpp
