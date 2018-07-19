@@ -11,6 +11,7 @@ option(NETWORKIT_LOGGING "Build with logging support" ON)
 option(NETWORKIT_MONOLITH "Build single library (and tests is requested; required for shared lib)" ON)
 option(NETWORKIT_NATIVE "Optimize for native architecture (often better performance)" OFF)
 option(NETWORKIT_WARNINGS "Issue more warnings" OFF)
+option(NETWORKIT_INCLUDESYMLINK "Create symlink to cpp directory" ON)
 set(NETWORKIT_PYTHON "" CACHE STRING "Directory containing Python.h. Implies MONOLITH=TRUE")
 set(NETWORKIT_PYTHON_SOABI "" CACHE STRING "Platform specific file extension. Implies MONOLITH=TRUE")
 
@@ -58,6 +59,16 @@ else()
 endif()
 
 ################################################################################
+#include symlink
+if(NETWORKIT_INCLUDESYMLINK)
+	if(UNIX)
+		add_custom_target(symlink_create_include_dir ALL COMMAND ${CMAKE_COMMAND} -E make_directory "include")
+		add_custom_target(symlink_include ALL COMMAND ${CMAKE_COMMAND} -E create_symlink "${PROJECT_SOURCE_DIR}/networkit/cpp" "include/NetworKit")
+	else()
+		message(WARNING "Cannot create symlink on windows machine")
+	endif()
+endif()
+
 # NETWORKIT MODULES
 if (NETWORKIT_MONOLITH)
 	add_library(networkit SHARED networkit/cpp/networkit.cpp)
