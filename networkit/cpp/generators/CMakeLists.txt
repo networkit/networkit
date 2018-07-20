@@ -17,6 +17,8 @@ networkit_add_module(generators
     HavelHakimiGenerator.cpp
     HyperbolicGenerator.cpp
     LFRGenerator.cpp
+    MocnikGenerator.cpp
+    MocnikGeneratorBasic.cpp
     PowerlawDegreeSequence.cpp
     PubWebGenerator.cpp
     RegularRingLatticeGenerator.cpp
@@ -32,4 +34,3 @@ networkit_module_link_modules(generators
 
 add_subdirectory(quadtree)
 add_subdirectory(test)
-

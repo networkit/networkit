@@ -21,6 +21,7 @@ networkit_add_module(distance
     NodeDistance.cpp
     ReverseBFS.cpp
     SSSP.cpp
+    Volume.cpp
     )
 
 networkit_module_link_modules(distance
@@ -37,4 +38,3 @@ networkit_module_link_modules(dyn_distance
         distance dynamics)
 
 add_subdirectory(test)
-
