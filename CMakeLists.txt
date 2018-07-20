@@ -62,8 +62,9 @@ endif()
 #include symlink
 if(NETWORKIT_INCLUDESYMLINK)
 	if(UNIX)
-		add_custom_target(symlink_create_include_dir ALL COMMAND ${CMAKE_COMMAND} -E make_directory "include")
-		add_custom_target(symlink_include ALL COMMAND ${CMAKE_COMMAND} -E create_symlink "${PROJECT_SOURCE_DIR}/networkit/cpp" "include/NetworKit")
+		add_custom_target(symlink_include ALL
+				COMMAND ${CMAKE_COMMAND} -E make_directory "include"
+ 				COMMAND ${CMAKE_COMMAND} -E create_symlink "${PROJECT_SOURCE_DIR}/networkit/cpp" "include/NetworKit")
 	else()
 		message(WARNING "Cannot create symlink on windows machine")
 	endif()
@@ -197,6 +198,8 @@ if (NETWORKIT_BUILD_TESTS)
             LINK_FLAGS "${OpenMP_CXX_FLAGS}")
 
         add_test(networkit_tests networkit_tests)
+		add_custom_target(symlink_input_folder ALL COMMAND ${CMAKE_COMMAND} -E create_symlink "${PROJECT_SOURCE_DIR}/input" "input")
+		add_custom_target(symlink_output_folder ALL COMMAND ${CMAKE_COMMAND} -E create_symlink "${PROJECT_SOURCE_DIR}/output" "output")
     endif()
 endif()
 
