@@ -53,6 +53,7 @@ elseif (MSVC)
 	
 else()
 	message(WARNING "Support only GCC and Clang; your compiler might work though anyways")
+
 endif()
 
 # adding OpenMP flags
