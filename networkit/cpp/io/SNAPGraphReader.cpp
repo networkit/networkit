@@ -5,14 +5,11 @@
  *      Author: Alexander van der Grinten
  */
 
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <unistd.h>
 
 #include "SNAPGraphReader.h"
 #include "../auxiliary/StringTools.h"
 #include "../auxiliary/Log.h"
+#include "MemoryMappedFile.h"
 
 namespace NetworKit {
 
@@ -53,24 +50,9 @@ Graph SNAPGraphReader::read(const std::string &path) {
 		}
 	};
 
-	auto fd = open(path.c_str(), O_RDONLY);
-	if(fd < 0)
-		throw std::runtime_error("Unable to open file");
-
-	struct stat st;
-	if(fstat(fd, &st))
-		throw std::runtime_error("Could not obtain file stats");
-
-	// It does not really matter if we use a private or shared mappingraph.
-	auto window = mmap(nullptr, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
-	if(window == reinterpret_cast<void *>(-1))
-		throw std::runtime_error("Could not map file");
-
-	if(close(fd))
-		throw std::runtime_error("Error during close()");
-
-	auto it = reinterpret_cast<char *>(window);
-	auto end = reinterpret_cast<char *>(window) + st.st_size;
+	MemoryMappedFile mmfile(path);
+    auto it = mmfile.cbegin();
+    auto end = mmfile.cend();
 
 	// The following functions are helpers for parsing.
 	auto skipWhitespace = [&] {
@@ -125,8 +107,6 @@ Graph SNAPGraphReader::read(const std::string &path) {
 		++it;
 	}
 
-	if(munmap(window, st.st_size))
-		throw std::runtime_error("Could not unmap file");
 	graph.shrinkToFit();
 	return graph;
 }

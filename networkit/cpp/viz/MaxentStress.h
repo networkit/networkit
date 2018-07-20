@@ -21,8 +21,6 @@
 #include "../io/LineFileReader.h"
 #include "../auxiliary/StringTools.h"
 
-#include <sys/time.h>
-
 #include <memory>
 
 namespace NetworKit {
