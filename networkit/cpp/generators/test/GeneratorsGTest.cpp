@@ -31,6 +31,8 @@ Dy * GeneratorsTest.cpp
 #include "../StochasticBlockmodel.h"
 #include "../EdgeSwitchingMarkovChainGenerator.h"
 #include "../LFRGenerator.h"
+#include "../MocnikGenerator.h"
+#include "../MocnikGeneratorBasic.h"
 
 
 #include "../../viz/PostscriptWriter.h"
@@ -1068,6 +1070,33 @@ TEST_F(GeneratorsGTest, testLFRGeneratorWithRealData) {
 	EXPECT_EQ(C.numberOfSubsets(),gen.getPartition().numberOfSubsets());
 }
 
+TEST_F(GeneratorsGTest, testMocnikGenerator) {
+	count dim = 3;
+	count n = 10000;
+	double k = 2.6;
+	
+	MocnikGenerator Mocnik(dim, n, k);
+	Graph G(0);
+	EXPECT_TRUE(G.isEmpty());
+	G = Mocnik.generate();
+	EXPECT_FALSE(G.isEmpty());
+	EXPECT_EQ(G.numberOfNodes(), n);
+	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), std::pow(k, dim), 20000);
+}
+
+TEST_F(GeneratorsGTest, testMocnikGeneratorBasic) {
+	count dim = 3;
+	count n = 5000;
+	double k = 2.6;
+	
+	MocnikGenerator Mocnik(dim, n, k);
+	Graph G(0);
+	EXPECT_TRUE(G.isEmpty());
+	G = Mocnik.generate();
+	EXPECT_FALSE(G.isEmpty());
+	EXPECT_EQ(G.numberOfNodes(), n);
+	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), std::pow(k, dim), 10000);
+}
 
 } /* namespace NetworKit */
 

@@ -20,6 +20,8 @@
 #include "../DynamicHyperbolicGenerator.h"
 #include "../BarabasiAlbertGenerator.h"
 #include "../ChungLuGenerator.h"
+#include "../MocnikGenerator.h"
+#include "../MocnikGeneratorBasic.h"
 #include "../../graph/GraphBuilder.h"
 
 namespace NetworKit {
@@ -246,6 +248,34 @@ TEST_F(GeneratorsBenchmark, benchmarkChungLuGenerator) {
 	ChungLuGenerator generator(vec);
 	Graph G = generator.generate();
 	EXPECT_EQ(G.numberOfNodes(), n);
+}
+
+TEST_F(GeneratorsBenchmark, benchmarkMocnikGenerator) {
+	count dim = 3;
+	count n = 1000000;
+	double k = 2.6;
+	
+	MocnikGenerator Mocnik(dim, n, k);
+	Graph G(0);
+	EXPECT_TRUE(G.isEmpty());
+	G = Mocnik.generate();
+	EXPECT_FALSE(G.isEmpty());
+	EXPECT_EQ(G.numberOfNodes(), n);
+	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), std::pow(k, dim), 2000000);
+}
+
+TEST_F(GeneratorsBenchmark, benchmarkMocnikGeneratorBasic) {
+	count dim = 3;
+	count n = 10000;
+	double k = 2.6;
+	
+	MocnikGenerator Mocnik(dim, n, k);
+	Graph G(0);
+	EXPECT_TRUE(G.isEmpty());
+	G = Mocnik.generate();
+	EXPECT_FALSE(G.isEmpty());
+	EXPECT_EQ(G.numberOfNodes(), n);
+	EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), std::pow(k, dim), 20000);
 }
 
 } /* namespace NetworKit */

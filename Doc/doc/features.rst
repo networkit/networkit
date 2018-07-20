@@ -140,11 +140,14 @@ Generative models aim to explain how networks form and evolve specific structura
 
 * Chung-Lu Model: |br| The Chung-Lu model is a random graph model which aims to replicate a given degree distribution. The model can be conceived as a weighted version of the Erdös-Renyi model. |br| |br|
 
-* Havel-Hakimi Generator: |br| For a given realizable degree sequence, the algorithm of Havel and Hakimi generates a graph with exactly this degress sequence. While this is similar to the Chung-Lu model, the generative process promotes the formation of closed traingles, leading to a higher (and possibly more realistic) clustering coefficient. |br| |br|
+* Havel-Hakimi Generator: |br| For a given realizable degree sequence, the algorithm of Havel and Hakimi generates a graph with exactly this degress sequence. While this is similar to the Chung-Lu model, the generative process promotes the formation of closed triangles, leading to a higher (and possibly more realistic) clustering coefficient. |br| |br|
 
-* Hyperbolic Random Graphs: |br| Using the exponential expansion of space in hyperbolic geometry, Hyperbolic Random Graphs exhibit high clustering, a power-law degree distribution with adjustable exponentn and natural hierarchy. Points are distributed within a disk in the hyperbolic plane, a pair of points is connected if their hyperbolic distance is below a threshold. |br| |br|
+* Hyperbolic Random Graphs: |br| Using the exponential expansion of space in hyperbolic geometry, Hyperbolic Random Graphs exhibit high clustering, a power-law degree distribution with adjustable exponent and natural hierarchy. Points are distributed within a disk in the hyperbolic plane, a pair of points is connected if their hyperbolic distance is below a threshold. |br| |br|
 
 * PubWeb Generator: |br| This network model is motivated by the P2P computing library *PubWeb*. Fot the generative process nodes are embedded into the 2D Euclidean unit torus (square with wrap-around boundaries). To create edges, a variation of the disc graph model is employed with a uniform communication radius r for all nodes. A node is connected to up to k nearest neighbors within its communication radius. |br| |br|
+
+* Mocnik Model: |br| The Mocnik model prototypically mimics spatial networks. If a network exists in space, it can inherit properties of space, such as the concept of locality. In many networks, edges thus exist between nodes that are near in space.  These networks often have a large diameter and expose properties similar to road and transport networks. There exists even a hierarchical variant of the model. |br| |br|
+
 
 
 |separator|
