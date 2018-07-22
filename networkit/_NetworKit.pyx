@@ -157,6 +157,41 @@ cdef class Algorithm:
 		return self._this.isParallel()
 
 
+cdef extern from "cpp/generators/StaticGraphGenerator.h":
+	cdef cppclass _StaticGraphGenerator "NetworKit::StaticGraphGenerator":
+		_StaticGraphGenerator()
+		_Graph generate() except +
+
+cdef class StaticGraphGenerator:
+	""" Abstract base class for static graph generators """
+	cdef _StaticGraphGenerator *_this
+
+	def __init__(self, *args, **namedargs):
+		if type(self) == StaticGraphGenerator:
+			raise RuntimeError("Error, you may not use StaticGraphGenerator directly, use a sub-class instead")
+
+	def __cinit__(self, *args, **namedargs):
+		self._this = NULL
+
+	def __dealloc__(self):
+		if self._this != NULL:
+			del self._this
+		self._this = NULL
+
+	def generate(self):
+		"""
+		Generates the graph.
+
+		Returns
+		-------
+		Graph:
+			g
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return Graph().setThis(self._this.generate())
+
+
 # Function definitions
 
 cdef extern from "cpp/auxiliary/Log.h" namespace "Aux":
@@ -167,7 +202,7 @@ cdef extern from "cpp/auxiliary/Log.h" namespace "Aux":
 
 def getLogLevel():
 	""" Get the current log level"""
-	return pystring(_getLogLevel());
+	return pystring(_getLogLevel())
 
 def setLogLevel(loglevel):
 	""" Set the current loglevel"""
@@ -1196,7 +1231,7 @@ cdef class Graph:
 		"""
 		cdef unordered_set[node] nnodes
 		for node in nodes:
-			nnodes.insert(node);
+			nnodes.insert(node)
 		return Graph().setThis(self._this.subgraphFromNodes(nnodes))
 
 # TODO: expose all methods
@@ -1204,7 +1239,6 @@ cdef class Graph:
 cdef extern from "cpp/distance/SSSP.h":
 	cdef cppclass _SSSP "NetworKit::SSSP"(_Algorithm):
 		_SSSP(_Graph G, node source, bool storePaths, bool storeNodesSortedByDistance, node target) except +
-		void run() nogil except +
 		vector[edgeweight] getDistances(bool moveOut) except +
 		edgeweight distance(node t) except +
 		vector[node] getPredecessors(node t) except +
@@ -1679,7 +1713,7 @@ cdef class SpanningForest:
 		del self._this
 
 	def generate(self):
-		return Graph().setThis(self._this.generate());
+		return Graph().setThis(self._this.generate())
 
 cdef extern from "cpp/graph/UnionMaximumSpanningForest.h":
 	cdef cppclass _UnionMaximumSpanningForest "NetworKit::UnionMaximumSpanningForest"(_Algorithm):
@@ -1897,13 +1931,12 @@ cdef class Luby:
 
 
 cdef extern from "cpp/generators/BarabasiAlbertGenerator.h":
-	cdef cppclass _BarabasiAlbertGenerator "NetworKit::BarabasiAlbertGenerator":
+	cdef cppclass _BarabasiAlbertGenerator "NetworKit::BarabasiAlbertGenerator"(_StaticGraphGenerator):
 		_BarabasiAlbertGenerator() except +
 		_BarabasiAlbertGenerator(count k, count nMax, count n0, bool batagelj) except +
 		_BarabasiAlbertGenerator(count k, count nMax, const _Graph & initGraph, bool batagelj) except +
-		_Graph generate() except +
 
-cdef class BarabasiAlbertGenerator:
+cdef class BarabasiAlbertGenerator(StaticGraphGenerator):
 	"""
 	This generator implements the preferential attachment model as introduced by Barabasi and Albert[1].
 	The original algorithm is very slow and thus, the much faster method from Batagelj and Brandes[2] is
@@ -1923,16 +1956,12 @@ cdef class BarabasiAlbertGenerator:
 	batagelj : bool
 		Specifies whether to use batagelj's method or the original one.
 	"""
-	cdef _BarabasiAlbertGenerator _this
 
 	def __cinit__(self, count k, count nMax, n0=0, bool batagelj=True):
 		if isinstance(n0, Graph):
-			self._this = _BarabasiAlbertGenerator(k, nMax, (<Graph>n0)._this, batagelj)
+			self._this = new _BarabasiAlbertGenerator(k, nMax, (<Graph>n0)._this, batagelj)
 		else:
-			self._this = _BarabasiAlbertGenerator(k, nMax, <count>n0, batagelj)
-
-	def generate(self):
-		return Graph().setThis(self._this.generate())
+			self._this = new _BarabasiAlbertGenerator(k, nMax, <count>n0, batagelj)
 
 	@classmethod
 	def fit(cls, Graph G, scale=1):
@@ -1942,11 +1971,10 @@ cdef class BarabasiAlbertGenerator:
 
 
 cdef extern from "cpp/generators/PubWebGenerator.h":
-	cdef cppclass _PubWebGenerator "NetworKit::PubWebGenerator":
+	cdef cppclass _PubWebGenerator "NetworKit::PubWebGenerator"(_StaticGraphGenerator):
 		_PubWebGenerator(count numNodes, count numberOfDenseAreas, float neighborhoodRadius, count maxNumberOfNeighbors) except +
-		_Graph generate() except +
 
-cdef class PubWebGenerator:
+cdef class PubWebGenerator(StaticGraphGenerator):
 	""" Generates a static graph that resembles an assumed geometric distribution of nodes in
 	a P2P network.
 
@@ -1976,7 +2004,6 @@ cdef class PubWebGenerator:
 	maxNumberOfNeighbors : count
 		Maximum degree, a higher value corresponds to better connectivity [4, 40]
 	"""
-	cdef _PubWebGenerator* _this
 
 	def __cinit__(self, numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors):
 		self._this = new _PubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
@@ -1984,16 +2011,11 @@ cdef class PubWebGenerator:
 	def __dealloc__(self):
 		del self._this
 
-	def generate(self):
-		return Graph(0).setThis(self._this.generate())
-
-
 cdef extern from "cpp/generators/ErdosRenyiGenerator.h":
-	cdef cppclass _ErdosRenyiGenerator "NetworKit::ErdosRenyiGenerator":
+	cdef cppclass _ErdosRenyiGenerator "NetworKit::ErdosRenyiGenerator"(_StaticGraphGenerator):
 		_ErdosRenyiGenerator(count nNodes, double prob, bool directed) except +
-		_Graph generate() except +
 
-cdef class ErdosRenyiGenerator:
+cdef class ErdosRenyiGenerator(StaticGraphGenerator):
 	""" Creates random graphs in the G(n,p) model.
 	The generation follows Vladimir Batagelj and Ulrik Brandes: "Efficient
 	generation of large random networks", Phys Rev E 71, 036113 (2005).
@@ -2012,16 +2034,11 @@ cdef class ErdosRenyiGenerator:
 		Generates a directed
 	"""
 
-	cdef _ErdosRenyiGenerator* _this
-
 	def __cinit__(self, nNodes, prob, directed=False):
 		self._this = new _ErdosRenyiGenerator(nNodes, prob, directed)
 
 	def __dealloc__(self):
 		del self._this
-
-	def generate(self):
-		return Graph(0).setThis(self._this.generate())
 
 	@classmethod
 	def fit(cls, Graph G, scale=1):
@@ -2034,11 +2051,10 @@ cdef class ErdosRenyiGenerator:
 		return cls(scale * n, p)
 
 cdef extern from "cpp/generators/DorogovtsevMendesGenerator.h":
-	cdef cppclass _DorogovtsevMendesGenerator "NetworKit::DorogovtsevMendesGenerator":
+	cdef cppclass _DorogovtsevMendesGenerator "NetworKit::DorogovtsevMendesGenerator"(_StaticGraphGenerator):
 		_DorogovtsevMendesGenerator(count nNodes) except +
-		_Graph generate() except +
 
-cdef class DorogovtsevMendesGenerator:
+cdef class DorogovtsevMendesGenerator(StaticGraphGenerator):
 	""" Generates a graph according to the Dorogovtsev-Mendes model.
 
  	DorogovtsevMendesGenerator(nNodes)
@@ -2051,23 +2067,11 @@ cdef class DorogovtsevMendesGenerator:
 		Number of nodes in the target graph.
 	"""
 
-	cdef _DorogovtsevMendesGenerator* _this
-
 	def __cinit__(self, nNodes):
 		self._this = new _DorogovtsevMendesGenerator(nNodes)
 
 	def __dealloc__(self):
 		del self._this
-
-	def generate(self):
-		""" Generates a random graph according to the Dorogovtsev-Mendes model.
-
-		Returns
-		-------
-		Graph
-			The generated graph.
-		"""
-		return Graph(0).setThis(self._this.generate())
 
 	@classmethod
 	def fit(cls, Graph G, scale=1):
@@ -2075,11 +2079,10 @@ cdef class DorogovtsevMendesGenerator:
 
 
 cdef extern from "cpp/generators/RegularRingLatticeGenerator.h":
-	cdef cppclass _RegularRingLatticeGenerator "NetworKit::RegularRingLatticeGenerator":
+	cdef cppclass _RegularRingLatticeGenerator "NetworKit::RegularRingLatticeGenerator"(_StaticGraphGenerator):
 		_RegularRingLatticeGenerator(count nNodes, count nNeighbors) except +
-		_Graph generate() except +
 
-cdef class RegularRingLatticeGenerator:
+cdef class RegularRingLatticeGenerator(StaticGraphGenerator):
 	"""
 	Constructs a regular ring lattice.
 
@@ -2093,31 +2096,18 @@ cdef class RegularRingLatticeGenerator:
 	nNeighbors : number of neighbors on each side of a node
 	"""
 
-	cdef _RegularRingLatticeGenerator* _this
-
 	def __cinit__(self, nNodes, nNeighbors):
 		self._this = new _RegularRingLatticeGenerator(nNodes, nNeighbors)
 
 	def __dealloc__(self):
 		del self._this
 
-	def generate(self):
-		""" Generates a rgular ring lattice.
-
-		Returns
-		-------
-		Graph
-			The generated graph.
-		"""
-		return Graph(0).setThis(self._this.generate())
-
 
 cdef extern from "cpp/generators/WattsStrogatzGenerator.h":
-	cdef cppclass _WattsStrogatzGenerator "NetworKit::WattsStrogatzGenerator":
+	cdef cppclass _WattsStrogatzGenerator "NetworKit::WattsStrogatzGenerator"(_StaticGraphGenerator):
 		_WattsStrogatzGenerator(count nNodes, count nNeighbors, double p) except +
-		_Graph generate() except +
 
-cdef class WattsStrogatzGenerator:
+cdef class WattsStrogatzGenerator(StaticGraphGenerator):
 	""" Generates a graph according to the Watts-Strogatz model.
 
 	First, a regular ring lattice is generated. Then edges are rewired
@@ -2134,32 +2124,19 @@ cdef class WattsStrogatzGenerator:
 	p : rewiring probability
 	"""
 
-	cdef _WattsStrogatzGenerator* _this
-
 	def __dealloc__(self):
 		del self._this
 
 	def __cinit__(self, nNodes, nNeighbors, p):
 		self._this = new _WattsStrogatzGenerator(nNodes, nNeighbors, p)
 
-	def generate(self):
-		""" Generates a random graph according to the Watts-Strogatz model.
-
-		Returns
-		-------
-		Graph
-			The generated graph.
-		"""
-		return Graph(0).setThis(self._this.generate())
-
 
 cdef extern from "cpp/generators/ClusteredRandomGraphGenerator.h":
-	cdef cppclass _ClusteredRandomGraphGenerator "NetworKit::ClusteredRandomGraphGenerator":
+	cdef cppclass _ClusteredRandomGraphGenerator "NetworKit::ClusteredRandomGraphGenerator"(_StaticGraphGenerator):
 		_ClusteredRandomGraphGenerator(count, count, double, double) except +
-		_Graph generate() except +
 		_Partition getCommunities() except +
 
-cdef class ClusteredRandomGraphGenerator:
+cdef class ClusteredRandomGraphGenerator(StaticGraphGenerator):
 	""" The ClusteredRandomGraphGenerator class is used to create a clustered random graph.
 
 	The number of nodes and the number of edges are adjustable as well as the probabilities
@@ -2181,23 +2158,11 @@ cdef class ClusteredRandomGraphGenerator:
 		inter-cluster edge probability
 	"""
 
-	cdef _ClusteredRandomGraphGenerator* _this
-
 	def __cinit__(self, n, k, pin, pout):
 		self._this = new _ClusteredRandomGraphGenerator(n, k, pin, pout)
 
 	def __dealloc__(self):
 		del self._this
-
-	def generate(self):
-		""" Generates a clustered random graph with the properties given in the constructor.
-
-		Returns
-		-------
-		Graph
-			The generated graph.
-		"""
-		return Graph(0).setThis(self._this.generate())
 
 	def getCommunities(self):
 		""" Returns the generated ground truth clustering.
@@ -2207,15 +2172,14 @@ cdef class ClusteredRandomGraphGenerator:
 		Partition
 			The generated ground truth clustering.
 		"""
-		return Partition().setThis(self._this.getCommunities())
+		return Partition().setThis((<_ClusteredRandomGraphGenerator*>(self._this)).getCommunities())
 
 
 cdef extern from "cpp/generators/ChungLuGenerator.h":
-	cdef cppclass _ChungLuGenerator "NetworKit::ChungLuGenerator":
+	cdef cppclass _ChungLuGenerator "NetworKit::ChungLuGenerator"(_StaticGraphGenerator):
 		_ChungLuGenerator(vector[count] degreeSequence) except +
-		_Graph generate() except +
 
-cdef class ChungLuGenerator:
+cdef class ChungLuGenerator(StaticGraphGenerator):
 	"""
 		Given an arbitrary degree sequence, the Chung-Lu generative model
 		will produce a random graph with the same expected degree sequence.
@@ -2226,23 +2190,11 @@ cdef class ChungLuGenerator:
 		which is basically asymptotically equivalent but produces multi-graphs.
 	"""
 
-	cdef _ChungLuGenerator* _this
-
 	def __cinit__(self, vector[count] degreeSequence):
 		self._this = new _ChungLuGenerator(degreeSequence)
 
 	def __dealloc__(self):
 		del self._this
-
-	def generate(self):
-		""" Generates graph with expected degree sequence seq.
-
-		Returns
-		-------
-		Graph
-			The generated graph.
-		"""
-		return Graph(0).setThis(self._this.generate())
 
 	@classmethod
 	def fit(cls, Graph G, scale=1):
@@ -2253,13 +2205,12 @@ cdef class ChungLuGenerator:
 
 
 cdef extern from "cpp/generators/HavelHakimiGenerator.h":
-	cdef cppclass _HavelHakimiGenerator "NetworKit::HavelHakimiGenerator":
+	cdef cppclass _HavelHakimiGenerator "NetworKit::HavelHakimiGenerator"(_StaticGraphGenerator):
 		_HavelHakimiGenerator(vector[count] degreeSequence, bool ignoreIfRealizable) except +
-		_Graph generate() except +
 		bool isRealizable() except +
 		bool getRealizable() except +
 
-cdef class HavelHakimiGenerator:
+cdef class HavelHakimiGenerator(StaticGraphGenerator):
 	""" Havel-Hakimi algorithm for generating a graph according to a given degree sequence.
 
 		The sequence, if it is realizable, is reconstructed exactly. The resulting graph usually
@@ -2279,9 +2230,6 @@ cdef class HavelHakimiGenerator:
 			If true, generate the graph even if the degree sequence is not realizable. Some nodes may get lower degrees than requested in the sequence.
 	"""
 
-	cdef _HavelHakimiGenerator* _this
-
-
 	def __cinit__(self, vector[count] degreeSequence, ignoreIfRealizable=True):
 		self._this = new _HavelHakimiGenerator(degreeSequence, ignoreIfRealizable)
 
@@ -2289,20 +2237,10 @@ cdef class HavelHakimiGenerator:
 		del self._this
 
 	def isRealizable(self):
-		return self._this.isRealizable()
+		return (<_HavelHakimiGenerator*>(self._this)).isRealizable()
 
 	def getRealizable(self):
-		return self._this.getRealizable();
-
-	def generate(self):
-		""" Generates degree sequence seq (if it is realizable).
-
-		Returns
-		-------
-		Graph
-			Graph with degree sequence seq or modified sequence if ignoreIfRealizable is true and the sequence is not realizable.
-		"""
-		return Graph(0).setThis(self._this.generate())
+		return (<_HavelHakimiGenerator*>(self._this)).getRealizable()
 
 	@classmethod
 	def fit(cls, Graph G, scale=1):
@@ -2310,13 +2248,12 @@ cdef class HavelHakimiGenerator:
 		return cls(degSeq * scale, ignoreIfRealizable=True)
 
 cdef extern from "cpp/generators/EdgeSwitchingMarkovChainGenerator.h":
-	cdef cppclass _EdgeSwitchingMarkovChainGenerator "NetworKit::EdgeSwitchingMarkovChainGenerator":
+	cdef cppclass _EdgeSwitchingMarkovChainGenerator "NetworKit::EdgeSwitchingMarkovChainGenerator"(_StaticGraphGenerator):
 		_EdgeSwitchingMarkovChainGenerator(vector[count] degreeSequence, bool ignoreIfRealizable) except +
-		_Graph generate() except +
 		bool isRealizable() except +
 		bool getRealizable() except +
 
-cdef class EdgeSwitchingMarkovChainGenerator:
+cdef class EdgeSwitchingMarkovChainGenerator(StaticGraphGenerator):
 	"""
 	Graph generator for generating a random simple graph with exactly the given degree sequence based on the Edge-Switching Markov-Chain method.
 
@@ -2340,7 +2277,6 @@ cdef class EdgeSwitchingMarkovChainGenerator:
 	ignoreIfRealizable : bool, optional
 		If true, generate the graph even if the degree sequence is not realizable. Some nodes may get lower degrees than requested in the sequence.
 	"""
-	cdef _EdgeSwitchingMarkovChainGenerator *_this
 
 	def __cinit__(self, vector[count] degreeSequence, bool ignoreIfRealizable = False):
 		self._this = new _EdgeSwitchingMarkovChainGenerator(degreeSequence, ignoreIfRealizable)
@@ -2349,23 +2285,10 @@ cdef class EdgeSwitchingMarkovChainGenerator:
 		del self._this
 
 	def isRealizable(self):
-		return self._this.isRealizable()
+		return (<_EdgeSwitchingMarkovChainGenerator*>(self._this)).isRealizable()
 
 	def getRealizable(self):
-		return self._this.getRealizable()
-
-	def generate(self):
-		"""
-		Generate a graph according to the configuration model.
-
-		Issues a INFO log message if the wanted number of edge swaps cannot be performed because of the limit of attempts (see in the description of the class for details).
-
-		Returns
-		-------
-		Graph
-			The generated graph.
-		"""
-		return Graph().setThis(self._this.generate())
+		return (<_EdgeSwitchingMarkovChainGenerator*>(self._this)).getRealizable()
 
 	@classmethod
 	def fit(cls, Graph G, scale=1):
@@ -2374,17 +2297,16 @@ cdef class EdgeSwitchingMarkovChainGenerator:
 
 
 cdef extern from "cpp/generators/HyperbolicGenerator.h":
-	cdef cppclass _HyperbolicGenerator "NetworKit::HyperbolicGenerator":
+	cdef cppclass _HyperbolicGenerator "NetworKit::HyperbolicGenerator"(_StaticGraphGenerator):
 		# TODO: revert to count when cython issue fixed
 		_HyperbolicGenerator(unsigned int nodes,  double k, double gamma, double T) except +
 		void setLeafCapacity(unsigned int capacity) except +
 		void setTheoreticalSplit(bool split) except +
 		void setBalance(double balance) except +
 		vector[double] getElapsedMilliseconds() except +
-		_Graph generate() except +
 		_Graph generate(vector[double] angles, vector[double] radii, double R, double T) except +
 
-cdef class HyperbolicGenerator:
+cdef class HyperbolicGenerator(StaticGraphGenerator):
 	""" The Hyperbolic Generator distributes points in hyperbolic space and adds edges between points with a probability depending on their distance. The resulting graphs have a power-law degree distribution, small diameter and high clustering coefficient.
 For a temperature of 0, the model resembles a unit-disk model in hyperbolic space.
 
@@ -2403,8 +2325,6 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 
 	"""
 
-	cdef _HyperbolicGenerator* _this
-
 	def __cinit__(self,  n, k=6, gamma=3, T=0):
 		if gamma <= 2:
 				raise ValueError("Exponent of power-law degree distribution must be > 2")
@@ -2414,30 +2334,20 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		del self._this
 
 	def setLeafCapacity(self, capacity):
-		self._this.setLeafCapacity(capacity)
+		(<_HyperbolicGenerator*>(self._this)).setLeafCapacity(capacity)
 
 	def setBalance(self, balance):
-		self._this.setBalance(balance)
+		(<_HyperbolicGenerator*>(self._this)).setBalance(balance)
 
 	def setTheoreticalSplit(self, theoreticalSplit):
-		self._this.setTheoreticalSplit(theoreticalSplit)
+		(<_HyperbolicGenerator*>(self._this)).setTheoreticalSplit(theoreticalSplit)
 
 	def getElapsedMilliseconds(self):
-		return self._this.getElapsedMilliseconds()
-
-	def generate(self):
-		""" Generates hyperbolic random graph
-
-		Returns
-		-------
-		Graph
-
-		"""
-		return Graph(0).setThis(self._this.generate())
+		return (<_HyperbolicGenerator*>(self._this)).getElapsedMilliseconds()
 
 	def generate(self, angles, radii, R, T=0):
 		# TODO: documentation
-		return Graph(0).setThis(self._this.generate(angles, radii, R, T))
+		return Graph(0).setThis((<_HyperbolicGenerator*>(self._this)).generate(angles, radii, R, T))
 
 	@classmethod
 	def fit(cls, Graph G, scale=1):
@@ -2450,22 +2360,21 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 
 
 cdef extern from "cpp/generators/MocnikGenerator.h":
-	cdef cppclass _MocnikGenerator "NetworKit::MocnikGenerator":
+	cdef cppclass _MocnikGenerator "NetworKit::MocnikGenerator"(_StaticGraphGenerator):
 		_MocnikGenerator(count dim, count n, double k, bool weighted) except +
 		_MocnikGenerator(count dim, vector[count] ns, double k, bool weighted) except +
 		_MocnikGenerator(count dim, vector[count] ns, vector[double] ks, bool weighted) except +
 		_MocnikGenerator(count dim, count n, double k, vector[double] weighted) except +
 		_MocnikGenerator(count dim, vector[count] ns, double k, vector[double] weighted) except +
 		_MocnikGenerator(count dim, vector[count] ns, vector[double] ks, vector[double] weighted) except +
-		_Graph generate() except +
 
-cdef class MocnikGenerator:
+cdef class MocnikGenerator(StaticGraphGenerator):
 	"""
 	Creates random spatial graphs according to the Mocnik model.
-	
+
 	Please cite the following publications, in which you will find a
 	description of the model:
-	
+
 	Franz-Benjamin Mocnik, Andrew Frank: "Modelling Spatial Structures",
 	Proceedings of the 12th Conference on Spatial Information Theory (COSIT),
 	2015, pages 44-64. doi: 10.1007/978-3-319-23374-1_3
@@ -2491,8 +2400,6 @@ cdef class MocnikGenerator:
 				provided.
 	"""
 
-	cdef _MocnikGenerator* _this
-
 	def __dealloc__(self):
 		del self._this
 
@@ -2514,27 +2421,23 @@ cdef class MocnikGenerator:
 		else:
 			pass
 
-	def generate(self):
-		return Graph(0).setThis(self._this.generate())
-
 cdef extern from "cpp/generators/MocnikGeneratorBasic.h":
-	cdef cppclass _MocnikGeneratorBasic "NetworKit::MocnikGeneratorBasic":
+	cdef cppclass _MocnikGeneratorBasic "NetworKit::MocnikGeneratorBasic"(_StaticGraphGenerator):
 		_MocnikGeneratorBasic(count dim, count n, double k) except +
-		_Graph generate() except +
 
-cdef class MocnikGeneratorBasic:
+cdef class MocnikGeneratorBasic(StaticGraphGenerator):
 	"""
 	Creates random spatial graphs according to the Mocnik model.
 
 	Please cite the following publications, in which you will find a
 	description of the model:
-	
+
 	Franz-Benjamin Mocnik, Andrew Frank: "Modelling Spatial Structures",
 	Proceedings of the 12th Conference on Spatial Information Theory (COSIT),
 	2015, pages 44-64. doi: 10.1007/978-3-319-23374-1_3
-	
+
 	Non-improved algorithm.
-	
+
 	MocnikGeneratorBasic(dim, n, k)
 
 	Parameters
@@ -2548,24 +2451,18 @@ cdef class MocnikGeneratorBasic:
 
 	"""
 
-	cdef _MocnikGeneratorBasic* _this
-
 	def __dealloc__(self):
 		del self._this
 
 	def __cinit__(self, dim, n, k):
 		self._this = new _MocnikGeneratorBasic(dim, n, k)
 
-	def generate(self):
-		return Graph(0).setThis(self._this.generate())
-
 
 cdef extern from "cpp/generators/RmatGenerator.h":
-	cdef cppclass _RmatGenerator "NetworKit::RmatGenerator":
+	cdef cppclass _RmatGenerator "NetworKit::RmatGenerator"(_StaticGraphGenerator):
 		_RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d, bool weighted, count reduceNodes) except +
-		_Graph generate() except +
 
-cdef class RmatGenerator:
+cdef class RmatGenerator(StaticGraphGenerator):
 	"""
 	Generates static R-MAT graphs. R-MAT (recursive matrix) graphs are
 	random graphs with n=2^scale nodes and m=nedgeFactor edges.
@@ -2592,8 +2489,6 @@ cdef class RmatGenerator:
 	weighted : bool
 		result graph weighted?
 	"""
-
-	cdef _RmatGenerator* _this
 	paths = {"kronfitPath" : None}
 
 	def __cinit__(self, count scale, count edgeFactor, double a, double b, double c, double d, bool weighted=False, count reduceNodes=0):
@@ -2601,16 +2496,6 @@ cdef class RmatGenerator:
 
 	def __dealloc__(self):
 		del self._this
-
-	def generate(self):
-		""" Graph to be generated according to parameters specified in constructor.
-
-		Returns
-		-------
-		Graph
-			The generated graph.
-		"""
-		return Graph(0).setThis(self._this.generate())
 
 	@classmethod
 	def setPaths(cls, kronfitPath):
@@ -3448,7 +3333,7 @@ cdef class SNAPGraphWriter:
 cdef extern from "cpp/io/SNAPGraphReader.h":
 	cdef cppclass _SNAPGraphReader "NetworKit::SNAPGraphReader"(_GraphReader):
 		_SNAPGraphReader() except +
-		_SNAPGraphReader(bool directed, bool remapNodes, count nodeCount);
+		_SNAPGraphReader(bool directed, bool remapNodes, count nodeCount)
 
 cdef class SNAPGraphReader(GraphReader):
 	""" Reads a graph from the SNAP graph data collection [1]
@@ -5554,11 +5439,6 @@ cdef class ParallelConnectedComponents(Algorithm):
 
 	def __dealloc__(self):
 		del self._this
-
-	def run(self):
-		with nogil:
-			(<_ParallelConnectedComponents*>(self._this)).run()
-		return self
 
 	def getPartition(self):
 		return Partition().setThis((<_ParallelConnectedComponents*>(self._this)).getPartition())
@@ -8251,21 +8131,6 @@ cdef class GraphCoarsening(Algorithm):
 	def __dealloc__(self):
 		self._G = None # just to be sure the graph is deleted
 
-	def run(self):
-		"""
-		Executes the Graph coarsening algorithm.
-
-		Returns
-		-------
-		GraphCoarsening:
-			self
-		"""
-		if self._this == NULL:
-			raise RuntimeError("Error, object not properly initialized")
-		with nogil:
-			self._this.run()
-		return self
-
 	def getCoarseGraph(self):
 		return Graph(0).setThis((<_GraphCoarsening*>(self._this)).getCoarseGraph())
 
@@ -8471,7 +8336,7 @@ cdef class MaximalCliques(Algorithm):
 		maximal clique. Then no cliques will be stored. The callback must accept
 		one parameter which is a list of nodes.
 	"""
-	cdef NodeVectorCallbackWrapper* _callback;
+	cdef NodeVectorCallbackWrapper* _callback
 	cdef Graph _G
 	cdef object _py_callback
 
@@ -8490,7 +8355,7 @@ cdef class MaximalCliques(Algorithm):
 				raise e
 		else:
 			self._callback = NULL
-			self._this = new _MaximalCliques(self._G._this, maximumOnly);
+			self._this = new _MaximalCliques(self._G._this, maximumOnly)
 
 	def __dealloc__(self):
 		if not self._callback == NULL:
