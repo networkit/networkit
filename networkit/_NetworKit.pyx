@@ -173,11 +173,6 @@ cdef class StaticGraphGenerator:
 	def __cinit__(self, *args, **namedargs):
 		self._this = NULL
 
-	def __dealloc__(self):
-		if self._this != NULL:
-			del self._this
-		self._this = NULL
-
 	def generate(self):
 		"""
 		Generates the graph.
@@ -1257,9 +1252,6 @@ cdef class SSSP(Algorithm):
 		if type(self) == SSSP:
 			raise RuntimeError("Error, you may not use SSSP directly, use a sub-class instead")
 
-	def __dealloc__(self):
-		self._G = None # just to be sure the graph is deleted
-
 	def getDistances(self, moveOut=True):
 		"""
 		Returns a vector of weighted distances from the source node, i.e. the
@@ -2008,9 +2000,6 @@ cdef class PubWebGenerator(StaticGraphGenerator):
 	def __cinit__(self, numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors):
 		self._this = new _PubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
 
-	def __dealloc__(self):
-		del self._this
-
 cdef extern from "cpp/generators/ErdosRenyiGenerator.h":
 	cdef cppclass _ErdosRenyiGenerator "NetworKit::ErdosRenyiGenerator"(_StaticGraphGenerator):
 		_ErdosRenyiGenerator(count nNodes, double prob, bool directed) except +
@@ -2036,9 +2025,6 @@ cdef class ErdosRenyiGenerator(StaticGraphGenerator):
 
 	def __cinit__(self, nNodes, prob, directed=False):
 		self._this = new _ErdosRenyiGenerator(nNodes, prob, directed)
-
-	def __dealloc__(self):
-		del self._this
 
 	@classmethod
 	def fit(cls, Graph G, scale=1):
@@ -2070,9 +2056,6 @@ cdef class DorogovtsevMendesGenerator(StaticGraphGenerator):
 	def __cinit__(self, nNodes):
 		self._this = new _DorogovtsevMendesGenerator(nNodes)
 
-	def __dealloc__(self):
-		del self._this
-
 	@classmethod
 	def fit(cls, Graph G, scale=1):
 		return cls(scale * G.numberOfNodes())
@@ -2099,9 +2082,6 @@ cdef class RegularRingLatticeGenerator(StaticGraphGenerator):
 	def __cinit__(self, nNodes, nNeighbors):
 		self._this = new _RegularRingLatticeGenerator(nNodes, nNeighbors)
 
-	def __dealloc__(self):
-		del self._this
-
 
 cdef extern from "cpp/generators/WattsStrogatzGenerator.h":
 	cdef cppclass _WattsStrogatzGenerator "NetworKit::WattsStrogatzGenerator"(_StaticGraphGenerator):
@@ -2123,9 +2103,6 @@ cdef class WattsStrogatzGenerator(StaticGraphGenerator):
 	nNeighbors : number of neighbors on each side of a node
 	p : rewiring probability
 	"""
-
-	def __dealloc__(self):
-		del self._this
 
 	def __cinit__(self, nNodes, nNeighbors, p):
 		self._this = new _WattsStrogatzGenerator(nNodes, nNeighbors, p)
@@ -2161,9 +2138,6 @@ cdef class ClusteredRandomGraphGenerator(StaticGraphGenerator):
 	def __cinit__(self, n, k, pin, pout):
 		self._this = new _ClusteredRandomGraphGenerator(n, k, pin, pout)
 
-	def __dealloc__(self):
-		del self._this
-
 	def getCommunities(self):
 		""" Returns the generated ground truth clustering.
 
@@ -2192,9 +2166,6 @@ cdef class ChungLuGenerator(StaticGraphGenerator):
 
 	def __cinit__(self, vector[count] degreeSequence):
 		self._this = new _ChungLuGenerator(degreeSequence)
-
-	def __dealloc__(self):
-		del self._this
 
 	@classmethod
 	def fit(cls, Graph G, scale=1):
@@ -2232,9 +2203,6 @@ cdef class HavelHakimiGenerator(StaticGraphGenerator):
 
 	def __cinit__(self, vector[count] degreeSequence, ignoreIfRealizable=True):
 		self._this = new _HavelHakimiGenerator(degreeSequence, ignoreIfRealizable)
-
-	def __dealloc__(self):
-		del self._this
 
 	def isRealizable(self):
 		return (<_HavelHakimiGenerator*>(self._this)).isRealizable()
@@ -2281,9 +2249,6 @@ cdef class EdgeSwitchingMarkovChainGenerator(StaticGraphGenerator):
 	def __cinit__(self, vector[count] degreeSequence, bool ignoreIfRealizable = False):
 		self._this = new _EdgeSwitchingMarkovChainGenerator(degreeSequence, ignoreIfRealizable)
 
-	def __dealloc__(self):
-		del self._this
-
 	def isRealizable(self):
 		return (<_EdgeSwitchingMarkovChainGenerator*>(self._this)).isRealizable()
 
@@ -2329,9 +2294,6 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		if gamma <= 2:
 				raise ValueError("Exponent of power-law degree distribution must be > 2")
 		self._this = new _HyperbolicGenerator(n, k, gamma, T)
-
-	def __dealloc__(self):
-		del self._this
 
 	def setLeafCapacity(self, capacity):
 		(<_HyperbolicGenerator*>(self._this)).setLeafCapacity(capacity)
@@ -2400,9 +2362,6 @@ cdef class MocnikGenerator(StaticGraphGenerator):
 				provided.
 	"""
 
-	def __dealloc__(self):
-		del self._this
-
 	def __cinit__(self, dim, n, k, weighted=False):
 		if dim < 1:
 			raise ValueError("Dimension must be > 0")
@@ -2451,9 +2410,6 @@ cdef class MocnikGeneratorBasic(StaticGraphGenerator):
 
 	"""
 
-	def __dealloc__(self):
-		del self._this
-
 	def __cinit__(self, dim, n, k):
 		self._this = new _MocnikGeneratorBasic(dim, n, k)
 
@@ -2493,9 +2449,6 @@ cdef class RmatGenerator(StaticGraphGenerator):
 
 	def __cinit__(self, count scale, count edgeFactor, double a, double b, double c, double d, bool weighted=False, count reduceNodes=0):
 		self._this = new _RmatGenerator(scale, edgeFactor, a, b, c, d, weighted, reduceNodes)
-
-	def __dealloc__(self):
-		del self._this
 
 	@classmethod
 	def setPaths(cls, kronfitPath):
@@ -4567,9 +4520,6 @@ cdef class CommunityDetector(Algorithm):
 		if type(self) == CommunityDetector:
 			raise RuntimeError("Error, you may not use CommunityDetector directly, use a sub-class instead")
 
-	def __dealloc__(self):
-		self._G = None # just to be sure the graph is deleted
-
 	def getPartition(self):
 		"""  Returns a partition of the clustering.
 
@@ -5384,9 +5334,6 @@ cdef class ConnectedComponents(Algorithm):
 		self._G = G
 		self._this = new _ConnectedComponents(G._this)
 
-	def __dealloc__(self):
-		del self._this
-
 	def getPartition(self):
 		""" Get a Partition that represents the components.
 
@@ -5436,9 +5383,6 @@ cdef class ParallelConnectedComponents(Algorithm):
 	def __cinit__(self,  Graph G, coarsening=True	):
 		self._G = G
 		self._this = new _ParallelConnectedComponents(G._this, coarsening)
-
-	def __dealloc__(self):
-		del self._this
 
 	def getPartition(self):
 		return Partition().setThis((<_ParallelConnectedComponents*>(self._this)).getPartition())
@@ -5532,9 +5476,6 @@ cdef class WeaklyConnectedComponents(Algorithm):
 		self._G = G
 		self._this = new _WeaklyConnectedComponents(G._this)
 
-	def __dealloc__(self):
-		del self._this
-
 	def numberOfComponents(self):
 		""" Returns the number of components.
 
@@ -5597,9 +5538,6 @@ cdef class BiconnectedComponents(Algorithm):
 		self._G = G
 		self._this = new _BiconnectedComponents(G._this)
 
-	def __dealloc__(self):
-		del self._this
-
 	def numberOfComponents(self):
 		""" Returns the number of components.
 
@@ -5651,9 +5589,6 @@ cdef class DynConnectedComponents(Algorithm):
 	def __cinit__(self, Graph G):
 		self._G = G
 		self._this = new _DynConnectedComponents(G._this)
-
-	def __dealloc__(self):
-		del self._this
 
 	def numberOfComponents(self):
 		""" Returns the number of components.
@@ -5742,9 +5677,6 @@ cdef class DynWeaklyConnectedComponents(Algorithm):
 	def __cinit__(self, Graph G):
 		self._G = G
 		self._this = new _DynWeaklyConnectedComponents(G._this)
-
-	def __dealloc__(self):
-		del self._this
 
 	def numberOfComponents(self):
 		""" Returns the number of components.
@@ -6318,9 +6250,6 @@ cdef class TopCloseness(Algorithm):
 		self._G = G
 		self._this = new _TopCloseness(G._this, k, first_heu, sec_heu)
 
-	def __dealloc__(self):
-		del self._this
-
 	def topkNodesList(self, includeTrail=False):
 		""" Returns a list with the k nodes with highest closeness.
 			WARNING: closeness centrality of some nodes below the top-k could be equal
@@ -6392,9 +6321,6 @@ cdef class TopHarmonicCloseness(Algorithm):
 	def __cinit__(self,  Graph G, k=1, useBFSbound=False):
 		self._G = G
 		self._this = new _TopHarmonicCloseness(G._this, k, useBFSbound)
-
-	def __dealloc__(self):
-		del self._this
 
 	def topkNodesList(self, includeTrail=False):
 		""" Returns a list with the k nodes with highest harmonic closeness.
@@ -6505,9 +6431,6 @@ cdef class DynTopHarmonicCloseness(Algorithm):
 	def __cinit__(self,  Graph G, k=1, useBFSbound=False):
 		self._G = G
 		self._this = new _DynTopHarmonicCloseness(G._this, k, useBFSbound)
-
-	def __dealloc__(self):
-		del self._this
 
 	def ranking(self, includeTrail = False):
 		""" Returns the ranking of the k most central nodes in the graph.
@@ -6622,9 +6545,6 @@ cdef class GroupDegree(Algorithm):
 		self._G = G
 		self._this = new _GroupDegree(G._this, k, countGroupNodes)
 
-	def __dealloc__(self):
-		del self._this
-
 	def groupMaxDegree(self):
 		"""
 		Returns the group with maximum degree centrality.
@@ -6676,9 +6596,6 @@ cdef class GroupCloseness(Algorithm):
 	def __cinit__(self,  Graph G, k=1, H=0):
 		self._G = G
 		self._this = new _GroupCloseness(G._this, k, H)
-
-	def __dealloc__(self):
-		del self._this
 
 	""" Returns group with highest closeness.
 	Returns
@@ -7427,10 +7344,6 @@ cdef class DynApproxBetweenness(Algorithm):
 		self._G = G
 		self._this = new _DynApproxBetweenness(G._this, epsilon, delta, storePredecessors, universalConstant)
 
-	# this is necessary so that the C++ object gets properly garbage collected
-	def __dealloc__(self):
-		del self._this
-
 	def update(self, ev):
 		""" Updates the betweenness centralities after the edge insertions.
 
@@ -7519,10 +7432,6 @@ cdef class DynBetweenness(Algorithm):
 	def __cinit__(self, Graph G):
 		self._G = G
 		self._this = new _DynBetweenness(G._this)
-
-	# this is necessary so that the C++ object gets properly garbage collected
-	def __dealloc__(self):
-		del self._this
 
 	def update(self, ev):
 		""" Updates the betweenness centralities after the edge insertions.
@@ -7693,9 +7602,6 @@ cdef class PermanenceCentrality(Algorithm):
 		self._this = new _PermanenceCentrality(G._this, P._this)
 		self._G = G
 		self._P = P
-
-	def __dealloc__(self):
-		del self._this
 
 	def getIntraClustering(self, node u):
 		return (<_PermanenceCentrality*>(self._this)).getIntraClustering(u)
@@ -8127,9 +8033,6 @@ cdef class GraphCoarsening(Algorithm):
 	def __init__(self, *args, **namedargs):
 		if type(self) == GraphCoarsening:
 			raise RuntimeError("Error, you may not use GraphCoarsening directly, use a sub-class instead")
-
-	def __dealloc__(self):
-		self._G = None # just to be sure the graph is deleted
 
 	def getCoarseGraph(self):
 		return Graph(0).setThis((<_GraphCoarsening*>(self._this)).getCoarseGraph())
@@ -10420,9 +10323,6 @@ cdef class Matcher(Algorithm):
 		if type(self) == Matcher:
 			raise RuntimeError("Instantiation of abstract base class")
 
-	def __dealloc__(self):
-		self.G = None # just to be sure the graph is deleted
-
 	def getMatching(self):
 		"""  Returns the matching.
 
@@ -10523,9 +10423,6 @@ cdef class CommuteTimeDistance(Algorithm):
 	def __cinit__(self,  Graph G, double tol = 0.1):
 		self._G = G
 		self._this = new _CommuteTimeDistance(G._this, tol)
-
-	def __dealloc__(self):
-		del self._this
 
 	def runApproximation(self):
 		""" Computes approximation of the ECTD. """
@@ -10630,8 +10527,6 @@ cdef class SpanningEdgeCentrality(Algorithm):
 	def __cinit__(self,  Graph G, double tol = 0.1):
 		self._G = G
 		self._this = new _SpanningEdgeCentrality(G._this, tol)
-	def __dealloc__(self):
-		del self._this
 
 	def runApproximation(self):
 		""" Computes approximation of the Spanning Edge Centrality. This solves k linear systems, where k is log(n)/(tol^2). The empirical running time is O(km), where n is the number of nodes
@@ -10939,10 +10834,6 @@ cdef class GlobalCurveball(Algorithm):
 		else:
 			raise RuntimeError("Parameter G has to be a graph")
 
-	def __dealloc__(self):
-		del self._this
-		self._this = NULL
-
 	"""
 
 	Get randomized graph after invocation of run().
@@ -11066,10 +10957,6 @@ cdef class Curveball(Algorithm):
 			self._this = new _Curveball((<Graph>G)._this)
 		else:
 			raise RuntimeError("Parameter G has to be a graph")
-
-	def __dealloc__(self):
-		del self._this
-		self._this = NULL
 
 	def run(self, vector[pair[node, node]] trades):
 		with nogil:
