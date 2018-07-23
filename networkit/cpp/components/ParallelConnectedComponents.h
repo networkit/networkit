@@ -9,7 +9,6 @@
 #define PARALLELCONNECTEDCOMPONENTS_H_
 
 #include "../graph/Graph.h"
-#include "../distance/BFS.h"
 #include "../structures/Partition.h"
 #include "../base/Algorithm.h"
 

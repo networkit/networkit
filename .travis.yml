@@ -10,17 +10,9 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
+            - cmake
             - g++-4.9
-            - scons
             - python-configparser
-            - libgtest-dev
-      install:
-       - mkdir ~/gtest && cd ~/gtest
-       - export GTEST_LIB=$(pwd)
-       - cp -r /usr/src/gtest/* ./
-       - cmake -D CMAKE_INSTALL_PREFIX:PATH=./ ./
-       - make
-       - cd -
 
     - env: CC=gcc-6 CXX=g++-6
       os: osx
@@ -29,16 +21,6 @@ matrix:
         - brew update
         - brew cask uninstall --force oclint # See https://github.com/travis-ci/travis-ci/issues/8826 for details.
         - brew install gcc@6
-        - brew install scons
-        - pip2 install configparser
-      install:
-        - git clone https://github.com/google/googletest.git ~/gtest/
-        - cd ~/gtest/googletest/
-        - export GTEST_LIB=$(pwd)/
-        - export GTEST_INCLUDE=$(pwd)/include/
-        - cmake -D CMAKE_INSTALL_PREFIX:PATH=./ ./
-        - make
-        - cd -
 
     - env: CC="clang-3.8" CXX="clang++-3.8"
       os: linux
@@ -47,58 +29,23 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.8
           packages:
-            - g++-5
             - clang-3.8
-            - scons
+            - libiomp-dev
             - python-configparser
-            - libgtest-dev
-            - subversion
-      install:
-       # Install gtest without sudo
-       - mkdir ~/gtest && cd ~/gtest
-       - export GTEST_LIB=$(pwd)
-       - cp -r /usr/src/gtest/* ./
-       - cmake -D CMAKE_INSTALL_PREFIX:PATH=./ ./
-       - make
-       - cd -
-       # install openmp
-       - svn co http://llvm.org/svn/llvm-project/openmp/trunk ~/openmp
-       - cd ~/openmp/
-       - cmake -D CMAKE_INSTALL_PREFIX:PATH=./ ./ -DCMAKE_C_COMPILER=clang-3.8 -DCMAKE_CXX_COMPILER=clang++-3.8
-       - make
-       - export OPENMP_LIB=$(pwd)/runtime/src/
-       - export OPENMP_INCLUDE=$(pwd)/runtime/src/
-       - export LD_LIBRARY_PATH=$OPENMP_LIB:$LD_LIBRARY_PATH
-       - cd -
 
     - env: CC=clang-3.7 CXX=clang++-3.7
       os: osx
       sudo: false
       before_install:
         - brew update
-        - brew install scons
         - brew install llvm37
+        - brew install libomp
         - pip2 install configparser
       install:
-        # install gtest
-        - git clone https://github.com/google/googletest.git ~/gtest/
-        - cd ~/gtest/googletest/
-        - export GTEST_LIB=$(pwd)/
-        - export GTEST_INCLUDE=$(pwd)/include/
-        - cmake -D CMAKE_INSTALL_PREFIX:PATH=./ ./
-        - make
-        - cd -
-        # install openmp
-        - svn co http://llvm.org/svn/llvm-project/openmp/trunk ~/openmp
-        - cd ~/openmp/
-        - cmake -D CMAKE_INSTALL_PREFIX:PATH=./ ./
-        - make
-        - export OPENMP_LIB=$(pwd)/runtime/src/
-        - export OPENMP_INCLUDE=$(pwd)/runtime/src/
-        - export LD_LIBRARY_PATH=$OPENMP_LIB:$LD_LIBRARY_PATH
-        - cd -
+        - export C_INCLUDE_PATH=$(llvm-config-3.7 --includedir)
+        - export CPLUS_INCLUDE_PATH=$(llvm-config-3.7 --includedir)
+        - export LIBRARY_PATH=$(llvm-config-3.7 --libdir)
 
 script:
  - echo $GTEST_LIB
@@ -106,10 +53,12 @@ script:
  - echo $OPENMP_LIB
  - echo $OPENMP_INCLUDE
  - $CXX --version
- - scons --optimize=Dbg --target=Tests --std=c++11 -j2
+ - mkdir build_test && cd "$_"
+ - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug ..
+ - make -j2
  - export OMP_NUM_THREADS=2
- - ./NetworKit-Tests-Dbg -t
- - ./NetworKit-Tests-Dbg -r
+ - ./networkit_tests -t
+ - ./networkit_tests -r
 
 notifications:
   email: false

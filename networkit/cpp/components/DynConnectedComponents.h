@@ -9,7 +9,6 @@
 #define DYNCONNECTEDCOMPONENTS_H_
 
 #include "../graph/Graph.h"
-#include "../distance/BFS.h"
 #include "../base/Algorithm.h"
 #include "../base/DynAlgorithm.h"
 #include "../dynamics/GraphEvent.h"
