@@ -103,7 +103,7 @@ namespace NetworKit {
             }
         }
 
-        G.parallelForNodes([&](node u) {
+        G.forNodes([&](node u) {
             result[compIndex.find(components[u])->second].push_back(u);
         });
 
