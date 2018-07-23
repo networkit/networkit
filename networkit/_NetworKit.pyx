@@ -173,6 +173,11 @@ cdef class StaticGraphGenerator:
 	def __cinit__(self, *args, **namedargs):
 		self._this = NULL
 
+	def __dealloc__(self):
+		if self._this != NULL:
+			del self._this
+		self._this = NULL
+
 	def generate(self):
 		"""
 		Generates the graph.
