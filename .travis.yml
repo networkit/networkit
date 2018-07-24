@@ -80,7 +80,7 @@ script:
 
  - python3 -m venv pyenv && . pyenv/bin/activate
  - pip3 install --upgrade pip
- - pip3 install -e .
+ - pip3 install --install-option="-j 2" -e . 
  - pip3 install ipython # required in networkit/profiling/profiling
  - python3 -m unittest discover -v networkit/test/
 
