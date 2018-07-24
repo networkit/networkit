@@ -57,8 +57,7 @@ script:
  - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug ..
  - make -j2
  - export OMP_NUM_THREADS=2
- - ./networkit_tests -t
- - ./networkit_tests -r
+ - ctest -V
 
 notifications:
   email: false

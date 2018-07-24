@@ -200,14 +200,19 @@ if (NETWORKIT_BUILD_TESTS)
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
 			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
 
-		add_test(networkit_tests networkit_tests)
-		if(UNIX)
-			add_custom_target(symlink_input_folder ALL COMMAND ${CMAKE_COMMAND} -E create_symlink "${PROJECT_SOURCE_DIR}/input" "input")
-			add_custom_target(symlink_output_folder ALL COMMAND ${CMAKE_COMMAND} -E create_symlink "${PROJECT_SOURCE_DIR}/output" "output")
-		else()
-			message(WARNING "Cannot create input and output symlinks on a windows machine")
-		endif()
-		endif()
+		add_test(
+			NAME networkit_tests
+			COMMAND networkit_tests -t
+			WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+		)
+
+		add_test(
+			NAME networkit_tests_no_assertions
+			COMMAND networkit_tests -r
+			WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+		)
+
+	endif()
 endif()
 
 # internal use only
