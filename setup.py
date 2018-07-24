@@ -36,6 +36,8 @@ parser.add_argument("-j", "--jobs", dest="jobs", help="specify number of jobs")
 (options,args) = parser.parse_known_args()
 if options.jobs is not None:
 	jobs = options.jobs
+if "NETWORKIT_PARALLEL_JOBS" in os.environ:
+    jobs = int(os.environ["NETWORKIT_PARALLEL_JOBS"])
 else:
 	import multiprocessing
 	jobs = multiprocessing.cpu_count()
