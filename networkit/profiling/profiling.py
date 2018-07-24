@@ -754,7 +754,7 @@ class Profile:
 			try:
 				timerInstance = stopwatch.Timer()
 				self.verbosePrint("EffectiveDiameter: ", end="")
-				diam = distance.ApproxEffectiveDiameter(self.__G)
+				diam = distance.EffectiveDiameterApproximation(self.__G)
 				diameter = diam.run().getEffectiveDiameter()
 				elapsedMain = timerInstance.elapsed
 				self.verbosePrint("{:.2F} s".format(elapsedMain))
