@@ -22,7 +22,7 @@ if (NETWORKIT_PYTHON)
 		message(FATAL_ERROR "When building NetworKit as a Python module, NETWORKIT_MONOLITH=ON is required")
 	endif()
 	if(NOT NETWORKIT_PYTHON_SOABI)
-		message(WARNING "No Platform specific file extension provided. Do not distribute library.")
+		message(WARNING "No platform-specific file extension provided. Do not distribute library.")
 	endif()
 endif()
 
