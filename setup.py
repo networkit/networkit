@@ -9,12 +9,13 @@ ninja_available = False
 if sys.version_info.major < 3:
 	print("ERROR: NetworKit requires Python 3.")
 	sys.exit(1)
+
 if shutil.which("cmake") is None:
 	print("ERROR: NetworKit compilation requires cmake.")
 	sys.exit(1)
 
 ninja_available = shutil.which("ninja") is not None
-if not ninja_available or shutil.which("make") is None:
+if not (ninja_available or shutil.which("make")):
 	print("ERROR: NetworKit compilation requires Make or Ninja.")
 	sys.exit(1)
 try:
