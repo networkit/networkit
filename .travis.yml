@@ -18,6 +18,7 @@ matrix:
             - cmake
             - g++-4.9
             - python3-pip
+            - python3.4-venv
 
     - env: CC=gcc-6 CXX=g++-6
       os: osx
@@ -39,6 +40,7 @@ matrix:
             - clang-3.8
             - libiomp-dev
             - python3-pip
+            - python3.4-venv
 
     - env: CC=clang-3.7 CXX=clang++-3.7
       os: osx
@@ -62,7 +64,7 @@ matrix:
           packages:
             - g++-8
             - python3-pip
-            - python3-venv
+            - python3.4-venv
 
     - env: CC=gcc-8 CXX=g++-8 CXX_STANDARD=14
       os: linux
@@ -80,7 +82,6 @@ script:
  - $CXX --version
  - python3 --version
 
- - pip3 install --user virtualenv
  - python3 -m venv pyenv && . pyenv/bin/activate
  - pip3 install --upgrade pip
  - pip3 install -e .

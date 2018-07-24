@@ -95,12 +95,20 @@ if cmakeCompiler == "":
 ################################################
 
 def cythonizeFile(filepath):
+	cpp_file = filepath.replace("pyx","cpp")
+
 	cython_available = shutil.which("cython") is not None
-	if not cython_available and not os.path.isfile(filepath.replace("pyx","cpp")):
-		print("ERROR: Neither cython nor _NetworKit.cpp is provided. Build cancelled")
-		exit(1)
-	if not cython_available and os.path.isfile(filepath.replace("pyx","cpp")):
-		print("Cython not available, but _NetworKit.cpp provided. Continue build without cythonizing")
+	if not cython_available:
+		if not os.path.isfile(cpp_file):
+			print("ERROR: Neither cython nor _NetworKit.cpp is provided. Build cancelled", flush=True)
+			exit(1)
+
+		else:
+			print("Cython not available, but _NetworKit.cpp provided. Continue build without cythonizing", flush=True)
+
+	elif os.path.isfile(cpp_file) and os.path.getmtime(filepath) < os.path.getmtime(cpp_file):
+		print("Cython available; skip as _NetworKit.cpp was create after last modification of _NetworKit.pyx", flush=True)
+
 	else:
 		print("Cythonizing _NetworKit.pyx...", flush=True)
 		if not os.path.isfile(filepath):
