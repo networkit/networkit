@@ -75,10 +75,6 @@ matrix:
       addons: *gcc8
 
 script:
- - echo $GTEST_LIB
- - echo $GTEST_INCLUDE
- - echo $OPENMP_LIB
- - echo $OPENMP_INCLUDE
  - $CXX --version
  - python3 --version
 
