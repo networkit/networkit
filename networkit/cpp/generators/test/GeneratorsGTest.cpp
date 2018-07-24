@@ -13,6 +13,7 @@ Dy * GeneratorsTest.cpp
 #include <numeric>
 #include <cmath>
 
+#include "../ClusteredRandomGraphGenerator.h"
 #include "../DynamicGraphSource.h"
 #include "../DynamicBarabasiAlbertGenerator.h"
 #include "../PubWebGenerator.h"
@@ -57,6 +58,18 @@ namespace NetworKit {
 
 GeneratorsGTest::GeneratorsGTest() {
 
+}
+
+TEST_F(GeneratorsGTest, testClusteredRandomGraphGenerator) {
+	Aux::Random::setSeed(42, false);
+	const count n = 100, c = 10;
+	const double pin = 0.5, pout = 0.01;
+	ClusteredRandomGraphGenerator gen(n, c, pin, pout);
+	Graph G = gen.generate();
+	Partition part = gen.getCommunities();
+	count nCommunities = part.getSubsetIds().size();
+	EXPECT_EQ(n, G.upperNodeIdBound());
+	EXPECT_TRUE(nCommunities >= 1 && nCommunities <= c);
 }
 
 TEST_F(GeneratorsGTest, testDynamicBarabasiAlbertGeneratorSingleStep) {
@@ -1074,7 +1087,7 @@ TEST_F(GeneratorsGTest, testMocnikGenerator) {
 	count dim = 3;
 	count n = 10000;
 	double k = 2.6;
-	
+
 	MocnikGenerator Mocnik(dim, n, k);
 	Graph G(0);
 	EXPECT_TRUE(G.isEmpty());
@@ -1088,7 +1101,7 @@ TEST_F(GeneratorsGTest, testMocnikGeneratorBasic) {
 	count dim = 3;
 	count n = 5000;
 	double k = 2.6;
-	
+
 	MocnikGenerator Mocnik(dim, n, k);
 	Graph G(0);
 	EXPECT_TRUE(G.isEmpty());
