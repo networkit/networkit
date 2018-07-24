@@ -279,7 +279,7 @@ class Profile:
 			("Centrality.Betweenness", 				"Node Centrality",	"Betweenness",
 				True,	funcScores,	"Score",				centrality.ApproxBetweenness2,			(G, 10, True)),
 			("Centrality.Closeness",				"Node Centrality",	"Closeness",
-				True,	funcScores,	"Score",				centrality.ApproxCloseness,				(G, 10, True)),
+				True,	funcScores,	"Score",				centrality.ApproxCloseness,				(G, min(10, G.numberOfNodes()), True)),
 			("Partition.Communities", 				"Partition",		"Communities",
 				False,	funcSizes,	"Nodes per Community",	community.PLM,			 				(G, )),
 			("Partition.ConnectedComponents", 		"Partition",		"Connected Components",
