@@ -52,7 +52,7 @@ void CurveballAdjacencyList::initialize(const degree_vector& degrees,
     for (const count node_degree : degrees) {
         begins[node_id] = sum;
 
-        assert(node_degree > 0);
+        //assert(node_degree > 0);
 
         sum += node_degree;
         neighbours[sum] = LISTROW_END;
