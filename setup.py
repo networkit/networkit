@@ -9,12 +9,13 @@ ninja_available = False
 if sys.version_info.major < 3:
 	print("ERROR: NetworKit requires Python 3.")
 	sys.exit(1)
+
 if shutil.which("cmake") is None:
 	print("ERROR: NetworKit compilation requires cmake.")
 	sys.exit(1)
 
 ninja_available = shutil.which("ninja") is not None
-if not ninja_available or shutil.which("make") is None:
+if not (ninja_available or shutil.which("make")):
 	print("ERROR: NetworKit compilation requires Make or Ninja.")
 	sys.exit(1)
 try:
@@ -35,6 +36,8 @@ parser.add_argument("-j", "--jobs", dest="jobs", help="specify number of jobs")
 (options,args) = parser.parse_known_args()
 if options.jobs is not None:
 	jobs = options.jobs
+if "NETWORKIT_PARALLEL_JOBS" in os.environ:
+    jobs = int(os.environ["NETWORKIT_PARALLEL_JOBS"])
 else:
 	import multiprocessing
 	jobs = multiprocessing.cpu_count()
@@ -95,12 +98,20 @@ if cmakeCompiler == "":
 ################################################
 
 def cythonizeFile(filepath):
+	cpp_file = filepath.replace("pyx","cpp")
+
 	cython_available = shutil.which("cython") is not None
-	if not cython_available and not os.path.isfile(filepath.replace("pyx","cpp")):
-		print("ERROR: Neither cython nor _NetworKit.cpp is provided. Build cancelled")
-		exit(1)
-	if not cython_available and os.path.isfile(filepath.replace("pyx","cpp")):
-		print("Cython not available, but _NetworKit.cpp provided. Continue build without cythonizing")
+	if not cython_available:
+		if not os.path.isfile(cpp_file):
+			print("ERROR: Neither cython nor _NetworKit.cpp is provided. Build cancelled", flush=True)
+			exit(1)
+
+		else:
+			print("Cython not available, but _NetworKit.cpp provided. Continue build without cythonizing", flush=True)
+
+	elif os.path.isfile(cpp_file) and os.path.getmtime(filepath) < os.path.getmtime(cpp_file):
+		print("Cython available; skip as _NetworKit.cpp was create after last modification of _NetworKit.pyx", flush=True)
+
 	else:
 		print("Cythonizing _NetworKit.pyx...", flush=True)
 		if not os.path.isfile(filepath):

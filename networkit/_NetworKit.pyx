@@ -5499,9 +5499,6 @@ cdef class ConnectedComponents(Algorithm):
 		self._G = G
 		self._this = new _ConnectedComponents(G._this)
 
-	def __dealloc__(self):
-		del self._this
-
 	def getPartition(self):
 		""" Get a Partition that represents the components.
 
@@ -5551,9 +5548,6 @@ cdef class ParallelConnectedComponents(Algorithm):
 	def __cinit__(self,  Graph G, coarsening=True	):
 		self._G = G
 		self._this = new _ParallelConnectedComponents(G._this, coarsening)
-
-	def __dealloc__(self):
-		del self._this
 
 	def run(self):
 		with nogil:
@@ -5652,9 +5646,6 @@ cdef class WeaklyConnectedComponents(Algorithm):
 		self._G = G
 		self._this = new _WeaklyConnectedComponents(G._this)
 
-	def __dealloc__(self):
-		del self._this
-
 	def numberOfComponents(self):
 		""" Returns the number of components.
 
@@ -5717,9 +5708,6 @@ cdef class BiconnectedComponents(Algorithm):
 		self._G = G
 		self._this = new _BiconnectedComponents(G._this)
 
-	def __dealloc__(self):
-		del self._this
-
 	def numberOfComponents(self):
 		""" Returns the number of components.
 
@@ -5771,9 +5759,6 @@ cdef class DynConnectedComponents(Algorithm):
 	def __cinit__(self, Graph G):
 		self._G = G
 		self._this = new _DynConnectedComponents(G._this)
-
-	def __dealloc__(self):
-		del self._this
 
 	def numberOfComponents(self):
 		""" Returns the number of components.
@@ -5862,9 +5847,6 @@ cdef class DynWeaklyConnectedComponents(Algorithm):
 	def __cinit__(self, Graph G):
 		self._G = G
 		self._this = new _DynWeaklyConnectedComponents(G._this)
-
-	def __dealloc__(self):
-		del self._this
 
 	def numberOfComponents(self):
 		""" Returns the number of components.
@@ -6438,9 +6420,6 @@ cdef class TopCloseness(Algorithm):
 		self._G = G
 		self._this = new _TopCloseness(G._this, k, first_heu, sec_heu)
 
-	def __dealloc__(self):
-		del self._this
-
 	def topkNodesList(self, includeTrail=False):
 		""" Returns a list with the k nodes with highest closeness.
 			WARNING: closeness centrality of some nodes below the top-k could be equal
@@ -6513,9 +6492,6 @@ cdef class TopHarmonicCloseness(Algorithm):
 		self._G = G
 		self._this = new _TopHarmonicCloseness(G._this, k, useBFSbound)
 
-	def __dealloc__(self):
-		del self._this
-
 	def topkNodesList(self, includeTrail=False):
 		""" Returns a list with the k nodes with highest harmonic closeness.
 			WARNING: closeness centrality of some nodes below the top-k could be equal
@@ -6572,9 +6548,6 @@ cdef class DynKatzCentrality(Centrality):
 		self._G = G
 		self._this = new _DynKatzCentrality(G._this, k, groupOnly, tolerance)
 
-	def __dealloc__(self):
-		del self._this
-
 	def update(self, ev):
 		(<_DynKatzCentrality*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
 
@@ -6625,9 +6598,6 @@ cdef class DynTopHarmonicCloseness(Algorithm):
 	def __cinit__(self,  Graph G, k=1, useBFSbound=False):
 		self._G = G
 		self._this = new _DynTopHarmonicCloseness(G._this, k, useBFSbound)
-
-	def __dealloc__(self):
-		del self._this
 
 	def ranking(self, includeTrail = False):
 		""" Returns the ranking of the k most central nodes in the graph.
@@ -6742,9 +6712,6 @@ cdef class GroupDegree(Algorithm):
 		self._G = G
 		self._this = new _GroupDegree(G._this, k, countGroupNodes)
 
-	def __dealloc__(self):
-		del self._this
-
 	def groupMaxDegree(self):
 		"""
 		Returns the group with maximum degree centrality.
@@ -6796,9 +6763,6 @@ cdef class GroupCloseness(Algorithm):
 	def __cinit__(self,  Graph G, k=1, H=0):
 		self._G = G
 		self._this = new _GroupCloseness(G._this, k, H)
-
-	def __dealloc__(self):
-		del self._this
 
 	""" Returns group with highest closeness.
 	Returns
@@ -7547,10 +7511,6 @@ cdef class DynApproxBetweenness(Algorithm):
 		self._G = G
 		self._this = new _DynApproxBetweenness(G._this, epsilon, delta, storePredecessors, universalConstant)
 
-	# this is necessary so that the C++ object gets properly garbage collected
-	def __dealloc__(self):
-		del self._this
-
 	def update(self, ev):
 		""" Updates the betweenness centralities after the edge insertions.
 
@@ -7639,10 +7599,6 @@ cdef class DynBetweenness(Algorithm):
 	def __cinit__(self, Graph G):
 		self._G = G
 		self._this = new _DynBetweenness(G._this)
-
-	# this is necessary so that the C++ object gets properly garbage collected
-	def __dealloc__(self):
-		del self._this
 
 	def update(self, ev):
 		""" Updates the betweenness centralities after the edge insertions.
@@ -7813,9 +7769,6 @@ cdef class PermanenceCentrality(Algorithm):
 		self._this = new _PermanenceCentrality(G._this, P._this)
 		self._G = G
 		self._P = P
-
-	def __dealloc__(self):
-		del self._this
 
 	def getIntraClustering(self, node u):
 		return (<_PermanenceCentrality*>(self._this)).getIntraClustering(u)
@@ -8631,11 +8584,6 @@ cdef class KatzIndex(LinkPredictor):
 		else:
 			self._this = new _KatzIndex(G._this, maxPathLength, dampingValue)
 
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
-
 	def run(self, node u, node v):
 		""" Returns the similarity score for the given node-pair based on the Katz index specified during construction.
 
@@ -8675,11 +8623,6 @@ cdef class CommonNeighborsIndex(LinkPredictor):
 		else:
 			self._this = new _CommonNeighborsIndex(G._this)
 
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
-
 	def run(self, node u, node v):
 		""" Returns the number of common neighbors of the given nodes u and v.
 
@@ -8718,11 +8661,6 @@ cdef class PreferentialAttachmentIndex(LinkPredictor):
 			self._this = new _PreferentialAttachmentIndex()
 		else:
 			self._this = new _PreferentialAttachmentIndex(G._this)
-
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
 
 	def run(self, node u, node v):
 		""" Returns the product of the cardinalities of the neighborhoods regarding u and v.
@@ -8807,11 +8745,6 @@ cdef class JaccardIndex(LinkPredictor):
 		else:
 			self._this = new _JaccardIndex(G._this)
 
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
-
 	def run(self, node u, node v):
 		""" Returns the Jaccard index for the given node-pair (u, v).
 
@@ -8851,11 +8784,6 @@ cdef class AdamicAdarIndex(LinkPredictor):
 		else:
 			self._this = new _AdamicAdarIndex(G._this)
 
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
-
 	def run(self, node u, node v):
 		""" Returns the Adamic/Adar Index of the given node-pair (u, v).
 
@@ -8892,11 +8820,6 @@ cdef class UDegreeIndex(LinkPredictor):
 		else:
 			self._this = new _UDegreeIndex(G._this)
 
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
-
 	def run(self, node u, node v):
 		""" Returns the degree of the first node provided, namely u.
 
@@ -8932,11 +8855,6 @@ cdef class VDegreeIndex(LinkPredictor):
 			self._this = new _VDegreeIndex()
 		else:
 			self._this = new _VDegreeIndex(G._this)
-
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
 
 	def run(self, node u, node v):
 		""" Returns the degree of the second node provided, namely v.
@@ -8983,11 +8901,6 @@ cdef class AlgebraicDistanceIndex(LinkPredictor):
 			self._this = new _AlgebraicDistanceIndex(numberSystems, numberIterations, omega, norm)
 		else:
 			self._this = new _AlgebraicDistanceIndex(G._this, numberSystems, numberIterations, omega, norm)
-
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
 
 	def preprocess(self):
 		""" Executes necessary initializations.
@@ -9036,11 +8949,6 @@ cdef class NeighborhoodDistanceIndex(LinkPredictor):
 		else:
 			self._this = new _NeighborhoodDistanceIndex(G._this)
 
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
-
 	def run(self, node u, node v):
 		""" Returns the Neighborhood Distance index for the given node-pair (u, v).
 
@@ -9079,11 +8987,6 @@ cdef class TotalNeighborsIndex(LinkPredictor):
 			self._this = new _TotalNeighborsIndex()
 		else:
 			self._this = new _TotalNeighborsIndex(G._this)
-
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
 
 	def run(self, node u, node v):
 		""" Returns the number of total union-neighbors for the given node-pair (u, v).
@@ -9124,11 +9027,6 @@ cdef class NeighborsMeasureIndex(LinkPredictor):
 		else:
 			self._this = new _NeighborsMeasureIndex(G._this)
 
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
-
 	def run(self, node u, node v):
 		""" Returns the number of connections between neighbors of u and v.
 
@@ -9165,11 +9063,6 @@ cdef class SameCommunityIndex(LinkPredictor):
 		else:
 			self._this = new _SameCommunityIndex(G._this)
 
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
-
 	def run(self, node u, node v):
 		""" Returns 1 if the given nodes u and v are in the same community, 0 otherwise.
 
@@ -9205,11 +9098,6 @@ cdef class AdjustedRandIndex(LinkPredictor):
 			self._this = new _AdjustedRandIndex()
 		else:
 			self._this = new _AdjustedRandIndex(G._this)
-
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
 
 	def run(self, node u, node v):
 		""" Returns the Adjusted Rand Index of the given node-pair (u, v).
@@ -9249,11 +9137,6 @@ cdef class ResourceAllocationIndex(LinkPredictor):
 			self._this = new _ResourceAllocationIndex()
 		else:
 			self._this = new _ResourceAllocationIndex(G._this)
-
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
 
 	def run(self, node u, node v):
 		""" Returns the Resource Allocation Index of the given node-pair (u, v).
@@ -9425,11 +9308,6 @@ cdef class ROCMetric(EvaluationMetric):
 		else:
 			self._this = new _ROCMetric(testGraph._this)
 
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
-
 	def getCurve(self, vector[pair[pair[node, node], double]] predictions, count numThresholds = 1000):
 		""" Generate the points of the Receiver Operating Characteristic curve regarding the previously set predictions.
 
@@ -9471,11 +9349,6 @@ cdef class PrecisionRecallMetric(EvaluationMetric):
 			self._this = new _PrecisionRecallMetric()
 		else:
 			self._this = new _PrecisionRecallMetric(testGraph._this)
-
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
 
 	def getCurve(self, vector[pair[pair[node, node], double]] predictions, count numThresholds = 1000):
 		""" Generates the points for the Precision-Recall curve with respect to the given predictions.
@@ -10659,9 +10532,6 @@ cdef class CommuteTimeDistance(Algorithm):
 		self._G = G
 		self._this = new _CommuteTimeDistance(G._this, tol)
 
-	def __dealloc__(self):
-		del self._this
-
 	def runApproximation(self):
 		""" Computes approximation of the ECTD. """
 		return (<_CommuteTimeDistance*>(self._this)).runApproximation()
@@ -10765,8 +10635,6 @@ cdef class SpanningEdgeCentrality(Algorithm):
 	def __cinit__(self,  Graph G, double tol = 0.1):
 		self._G = G
 		self._this = new _SpanningEdgeCentrality(G._this, tol)
-	def __dealloc__(self):
-		del self._this
 
 	def runApproximation(self):
 		""" Computes approximation of the Spanning Edge Centrality. This solves k linear systems, where k is log(n)/(tol^2). The empirical running time is O(km), where n is the number of nodes
@@ -11074,10 +10942,6 @@ cdef class GlobalCurveball(Algorithm):
 		else:
 			raise RuntimeError("Parameter G has to be a graph")
 
-	def __dealloc__(self):
-		del self._this
-		self._this = NULL
-
 	"""
 
 	Get randomized graph after invocation of run().
@@ -11201,10 +11065,6 @@ cdef class Curveball(Algorithm):
 			self._this = new _Curveball((<Graph>G)._this)
 		else:
 			raise RuntimeError("Parameter G has to be a graph")
-
-	def __dealloc__(self):
-		del self._this
-		self._this = NULL
 
 	def run(self, vector[pair[node, node]] trades):
 		with nogil:

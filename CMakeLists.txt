@@ -15,12 +15,14 @@ option(NETWORKIT_INCLUDESYMLINK "Create symlink to cpp directory" ON)
 set(NETWORKIT_PYTHON "" CACHE STRING "Directory containing Python.h. Implies MONOLITH=TRUE")
 set(NETWORKIT_PYTHON_SOABI "" CACHE STRING "Platform specific file extension. Implies MONOLITH=TRUE")
 
+set( NETWORKIT_CXX_STANDARD "11" CACHE STRING "CXX Version to compile with. Currently fixed to 11")
+
 if (NETWORKIT_PYTHON)
 	if (NOT NETWORKIT_MONOLITH)
 		message(FATAL_ERROR "When building NetworKit as a Python module, NETWORKIT_MONOLITH=ON is required")
 	endif()
 	if(NOT NETWORKIT_PYTHON_SOABI)
-		message(WARNING "No Platform specific file extension provided. Do not distribute library.")
+		message(WARNING "No platform-specific file extension provided. Do not distribute library.")
 	endif()
 endif()
 
@@ -32,6 +34,7 @@ endif()
 ################################################################################
 # Compilation Flags
 set(NETWORKIT_CXX_FLAGS "")
+set(NETWORKIT_LINK_FLAGS "")
 
 if (NOT NETWORKIT_LOGGING)
 	set(NETWORKIT_CXX_FLAGS "-DNOLOGGING")
@@ -51,7 +54,9 @@ endif()
 find_package(OpenMP REQUIRED)
 if(OPENMP_FOUND)
 	link_directories("${OPENMP_LIBRARIES}")
+
 	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+	set(NETWORKIT_LINK_FLAGS "${OpenMP_CXX_FLAGS}")
 else()
 	message(FATAL_ERROR "OpenMP not found")
 endif()
@@ -72,9 +77,9 @@ endif()
 if (NETWORKIT_MONOLITH)
 	add_library(networkit SHARED networkit/cpp/networkit.cpp)
 	set_target_properties(networkit PROPERTIES
-			CXX_STANDARD 11
+			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
-			LINK_FLAGS "${OpenMP_CXX_FLAGS}")
+			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
 	if(APPLE)
 		set_target_properties(networkit PROPERTIES
 				LINK_FLAGS "-undefined dynamic_lookup")
@@ -86,9 +91,9 @@ if (NETWORKIT_MONOLITH)
 			target_link_libraries(_NetworKit PRIVATE networkit)
 			target_include_directories(_NetworKit PRIVATE "${NETWORKIT_PYTHON}")
 			set_target_properties(_NetworKit PROPERTIES
-						CXX_STANDARD 11
+						CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 						COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
-						LINK_FLAGS "${OpenMP_CXX_FLAGS}"
+						LINK_FLAGS "${NETWORKIT_LINK_FLAGS}"
 						PREFIX ""
 						OUTPUT_NAME "_NetworKit.${NETWORKIT_PYTHON_SOABI}")
 			if(APPLE)
@@ -116,8 +121,9 @@ function(networkit_add_module modname)
 					${PROJECT_SOURCE_DIR}/networkit/cpp/networkit.cpp)
 
 		set_target_properties(${MODULE_TARGET} PROPERTIES
-			CXX_STANDARD 11
-			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}")
+			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
+			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
+			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
 
 		# All tests added to this module will will also become a dependency
 		# of networkit_tests_MODNAME. This target hence allows to build all
@@ -190,18 +196,23 @@ if (NETWORKIT_BUILD_TESTS)
 				networkit
 		)
 		set_target_properties(networkit_tests PROPERTIES
-			CXX_STANDARD 11
+			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
-			LINK_FLAGS "${OpenMP_CXX_FLAGS}")
+			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
 
-		add_test(networkit_tests networkit_tests)
-		if(UNIX)
-			add_custom_target(symlink_input_folder ALL COMMAND ${CMAKE_COMMAND} -E create_symlink "${PROJECT_SOURCE_DIR}/input" "input")
-			add_custom_target(symlink_output_folder ALL COMMAND ${CMAKE_COMMAND} -E create_symlink "${PROJECT_SOURCE_DIR}/output" "output")
-		else()
-			message(WARNING "Cannot create input and output symlinks on a windows machine")
-		endif()
-		endif()
+		add_test(
+			NAME networkit_tests
+			COMMAND networkit_tests -t
+			WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+		)
+
+		add_test(
+			NAME networkit_tests_no_assertions
+			COMMAND networkit_tests -r
+			WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+		)
+
+	endif()
 endif()
 
 # internal use only
@@ -234,9 +245,9 @@ function(networkit_add_extra IS_TEST MOD NAME)
 					networkit_${MOD}
 				)
 			set_target_properties(${TARGET_NAME} PROPERTIES
-				CXX_STANDARD 11
+				CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 				COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
-				LINK_FLAGS "${OpenMP_CXX_FLAGS}")
+				LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
 
 			foreach(dep IN LISTS ARGN)
 				target_link_libraries(${TARGET_NAME} PRIVATE networkit_${dep})

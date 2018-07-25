@@ -1,5 +1,10 @@
 language: generic
 
+env:
+  global:
+    - export OMP_NUM_THREADS=2
+    - export CXX_STANDARD=11
+
 matrix:
   include:
     - env: CC=gcc-4.9 CXX=g++-4.9
@@ -12,7 +17,8 @@ matrix:
           packages:
             - cmake
             - g++-4.9
-            - python-configparser
+            - python3-pip
+            - python3.4-venv
 
     - env: CC=gcc-6 CXX=g++-6
       os: osx
@@ -21,6 +27,7 @@ matrix:
         - brew update
         - brew cask uninstall --force oclint # See https://github.com/travis-ci/travis-ci/issues/8826 for details.
         - brew install gcc@6
+        - brew upgrade python
 
     - env: CC="clang-3.8" CXX="clang++-3.8"
       os: linux
@@ -32,7 +39,8 @@ matrix:
           packages:
             - clang-3.8
             - libiomp-dev
-            - python-configparser
+            - python3-pip
+            - python3.4-venv
 
     - env: CC=clang-3.7 CXX=clang++-3.7
       os: osx
@@ -41,24 +49,57 @@ matrix:
         - brew update
         - brew install llvm37
         - brew install libomp
-        - pip2 install configparser
+        - brew upgrade python
       install:
         - export C_INCLUDE_PATH=$(llvm-config-3.7 --includedir)
         - export CPLUS_INCLUDE_PATH=$(llvm-config-3.7 --includedir)
         - export LIBRARY_PATH=$(llvm-config-3.7 --libdir)
 
+    - env: CC=gcc-8 CXX=g++-8
+      os: linux
+      addons: &gcc8
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-8
+            - python3-pip
+            - python3.4-venv
+
+    - env: CC=gcc-8 CXX=g++-8 CXX_STANDARD=14
+      os: linux
+      addons: *gcc8
+
+    - env: CC=gcc-8 CXX=g++-8 CXX_STANDARD=17
+      os: linux
+      addons: *gcc8
+
 script:
- - echo $GTEST_LIB
- - echo $GTEST_INCLUDE
- - echo $OPENMP_LIB
- - echo $OPENMP_INCLUDE
  - $CXX --version
- - mkdir build_test && cd "$_"
- - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug ..
+ - python3 --version
+
+ - python3 -m venv pyenv && . pyenv/bin/activate
+ - pip3 install --upgrade pip
+ - NETWORKIT_PARALLEL_JOBS=2 pip3 install -e . 
+ - pip3 install ipython # required for tests
+ - python3 -m unittest discover -v networkit/test/
+
+ - mkdir debug_test && cd "$_"
+ - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD ..
  - make -j2
- - export OMP_NUM_THREADS=2
- - ./networkit_tests -t
- - ./networkit_tests -r
+ - ctest -V
+ - cd .. && rm -rf debug_test
+
+ - mkdir release_test && cd "$_"
+ - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD ..
+ - make -j2
+ - ctest -V
+ - cd .. && rm -rf release_test
+
+ - mkdir build_non_monolith && cd "$_"
+ - cmake -DNETWORKIT_MONOLITH=OFF -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD ..
+ - make -j2
+ - cd .. && rm -rf build_non_monolith
 
 notifications:
   email: false
