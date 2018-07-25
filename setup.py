@@ -4,13 +4,16 @@ import sys
 import shutil
 import os
 
-cmakeCompiler = "" #possibilty to specify a compiler
+cmakeCompiler = None
 buildDirectory = "build_python"
 ninja_available = False
 
 if sys.version_info.major < 3:
 	print("ERROR: NetworKit requires Python 3.")
 	sys.exit(1)
+
+if "NETWORKIT_OVERRIDE_CXX" in os.environ:
+	cmakeCompiler = os.environ["NETWORKIT_OVERRIDE_CXX"]
 
 if shutil.which("cmake") is None:
 	print("ERROR: NetworKit compilation requires cmake.")
@@ -39,7 +42,7 @@ parser.add_argument("-j", "--jobs", dest="jobs", help="specify number of jobs")
 if options.jobs is not None:
 	jobs = options.jobs
 if "NETWORKIT_PARALLEL_JOBS" in os.environ:
-    jobs = int(os.environ["NETWORKIT_PARALLEL_JOBS"])
+	jobs = int(os.environ["NETWORKIT_PARALLEL_JOBS"])
 else:
 	import multiprocessing
 	jobs = multiprocessing.cpu_count()
@@ -83,15 +86,15 @@ def determineCompiler(candidates, std, flags):
 			if subprocess.call(cmd,stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) == 0:
 				os.remove("sample.cpp")
 				os.remove("test_build")
-				return compiler, std
+				return compiler
 		except:
 			pass
-	return "",""
+	return ""
 
 # only check for a compiler if none is specified
-if cmakeCompiler == "":
-	cmakeCompiler,_ = determineCompiler(candidates, "c++11", ["-fopenmp"])
-	if cmakeCompiler == "":
+if cmakeCompiler is None:
+	cmakeCompiler = determineCompiler(candidates, "c++11", ["-fopenmp"])
+	if cmakeCompiler is None:
 		print("ERROR: No suitable compiler found. Install any of these: ",candidates)
 		exit(1)
 
