@@ -7,6 +7,13 @@
 
 #include "GeometricGTest.h"
 
+#include <cmath>
+
+#include "../../auxiliary/Log.h"
+#include "../../auxiliary/Random.h"
+#include "../HyperbolicSpace.h"
+#include "../Point2D.h"
+
 namespace NetworKit {
 
 /**
