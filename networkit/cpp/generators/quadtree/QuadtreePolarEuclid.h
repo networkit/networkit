@@ -34,7 +34,7 @@ public:
 	 *
 	 */
 	QuadtreePolarEuclid(double maxR,bool theoreticalSplit=false, double alpha=1, count capacity=1000, double balance = 0.5) {
-		root = QuadNodePolarEuclid<T>(0, 0, 2*M_PI, maxR, capacity, 0,theoreticalSplit,alpha,balance);
+		root = QuadNodePolarEuclid<T>(0, 0, 2*PI, maxR, capacity, 0,theoreticalSplit,alpha,balance);
 		this->maxRadius = maxR;
 	}
 
@@ -47,7 +47,7 @@ public:
 			if (radius > maxRadius) maxRadius = radius;
 		}
 		maxRadius = std::nextafter(maxRadius, std::numeric_limits<double>::max());
-		root = QuadNodePolarEuclid<T>(0, 0, 2*M_PI, maxRadius, capacity, theoreticalSplit,balance);
+		root = QuadNodePolarEuclid<T>(0, 0, 2*PI, maxRadius, capacity, theoreticalSplit,balance);
 		for (index i = 0; i < n; i++) {
 			assert(content[i] < n);
 			root.addContent(content[i], angles[i], radii[i]);

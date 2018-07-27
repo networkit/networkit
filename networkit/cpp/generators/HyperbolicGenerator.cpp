@@ -165,7 +165,7 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 		for (omp_index i = 0; i < static_cast<omp_index>(n); i++) {
 			const double coshr = cosh(radii[i]);
 			const double sinhr = sinh(radii[i]);
-			count expectedDegree = (4/M_PI)*n*exp(-(radii[i])/2);
+			count expectedDegree = (4/PI)*n*exp(-(radii[i])/2);
 			vector<index> near;
 			near.reserve(expectedDegree*1.1);
 			Point2D<double> pointV(angles[i], radii[i], i);
@@ -174,12 +174,12 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 					double minTheta, maxTheta;
 					std::tie (minTheta, maxTheta) = getMinMaxTheta(angles[i], radii[i], bandRadii[j], R);
 					//minTheta = 0;
-					//maxTheta = 2*M_PI;
+					//maxTheta = 2*PI;
 					vector<Point2D<double>> neighborCandidates = getPointsWithinAngles(minTheta, maxTheta, bands[j], bandAngles[j]);
 
 					const count sSize = neighborCandidates.size();
 					for(index w = 0; w < sSize; w++){
-						double deltaPhi = M_PI - abs(M_PI-abs(angles[i] - neighborCandidates[w].getX()));
+						double deltaPhi = PI - abs(PI-abs(angles[i] - neighborCandidates[w].getX()));
 						if (coshr*cosh(neighborCandidates[w].getY())-sinhr*sinh(neighborCandidates[w].getY())*cos(deltaPhi) <= coshR) {
 							if (neighborCandidates[w].getIndex() != i){
 								near.push_back(neighborCandidates[w].getIndex());

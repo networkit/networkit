@@ -816,7 +816,7 @@ TEST_F(GeneratorsGTest, testHyperbolicPointGeneration) {
 	HyperbolicSpace::fillPoints(angles, radii, R, alpha);
 	for (index i = 0; i < n; i++) {
 		EXPECT_GE(angles[i], 0);
-		EXPECT_LT(angles[i], 2*M_PI);
+		EXPECT_LT(angles[i], 2*PI);
 		EXPECT_GE(radii[i], 0);
 		EXPECT_LE(radii[i], R);
 	}

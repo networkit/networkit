@@ -63,7 +63,7 @@ TEST_F(GeometricGTest, testEuclideanCircleConsistency) {
 		Point2D<double> cartesianPoint = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
 		double r_e, euRadius;
 		HyperbolicSpace::getEuclideanCircle(radii[i], R, r_e, euRadius);
-		double mirrorangle = fmod(angles[i] + M_PI, 2*M_PI);
+		double mirrorangle = fmod(angles[i] + PI, 2*PI);
 		double mirrorradiusInside = abs(r_e - euRadius)-epsilon;
 		Point2D<double> counterPointInside = HyperbolicSpace::polarToCartesian(mirrorangle, mirrorradiusInside);
 		EXPECT_LE(HyperbolicSpace::poincareMetric(cartesianPoint, counterPointInside), R) << "(" << cartesianPoint.getX() << ", " << cartesianPoint.getY() << ")"

@@ -412,8 +412,8 @@ public:
 
 		//again with mirrored phi
 		double mirrorphi;
-		if (phi >= M_PI) mirrorphi = phi - M_PI;
-		else mirrorphi = phi + M_PI;
+		if (phi >= PI) mirrorphi = phi - PI;
+		else mirrorphi = phi + PI;
 		if (mirrorphi >= leftAngle && mirrorphi < rightAngle) {
 			double lower = coshMinR*coshr+sinhMinR*sinhr;
 			double upper = coshMaxR*coshr+sinhMaxR*sinhr;
@@ -529,7 +529,7 @@ public:
 	 * @param lowR Optional value for the minimum radial coordinate of the query region
 	 * @param highR Optional value for the maximum radial coordinate of the query region
 	 */
-	void getElementsInEuclideanCircle(Point2D<double> center, double radius, vector<T> &result, double minAngle=0, double maxAngle=2*M_PI, double lowR=0, double highR = 1) const {
+	void getElementsInEuclideanCircle(Point2D<double> center, double radius, vector<T> &result, double minAngle=0, double maxAngle=2*PI, double lowR=0, double highR = 1) const {
 		if (!poincare) throw std::runtime_error("Euclidean query circles not yet implemented for native hyperbolic coordinates.");
 		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR < lowerBoundR) return;
 		if (outOfReach(center, radius)) {
