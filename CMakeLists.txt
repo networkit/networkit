@@ -51,6 +51,9 @@ if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR ("${CMAKE_CXX_COMPILER_ID}"
 elseif (MSVC)
 	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /DNETWORKIT_OMP2 /MP /DNETWORKIT_WINDOWS")
 	
+	# TTMath requires running an ASM for MSVC which we disable here at the cost of worse performance
+	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /DTTMATH_NOASM=1")
+	 
 else()
 	message(WARNING "Support only GCC and Clang; your compiler might work though anyways")
 
