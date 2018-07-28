@@ -71,6 +71,15 @@ else()
 	message(FATAL_ERROR "OpenMP not found")
 endif()
 
+if (CMAKE_SIZEOF_VOID_P LESS 8)
+	if (MSVC)
+		message(FATAL_ERROR "NetworKit supports only 64bit builds.
+		                     Make sure to select a x64 target rather than x86, e.g. when invoking cmake with -G")
+	else()
+		message(FATAL_ERROR "NetworKit supports only 64bit builds")
+	endif()
+endif()
+
 # specify linking flags for MacOS
 if (APPLE)
 	set(NETWORKIT_LINK_FLAGS "-undefined dynamic_lookup ${NETWORKIT_LINK_FLAGS}")
