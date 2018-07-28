@@ -99,7 +99,12 @@ endif()
 
 # NETWORKIT MODULES
 if (NETWORKIT_MONOLITH)
-	add_library(networkit SHARED networkit/cpp/networkit.cpp)
+	if (NETWORKIT_PYTHON)
+		add_library(networkit SHARED networkit/cpp/networkit.cpp)
+	else()
+		add_library(networkit networkit/cpp/networkit.cpp)
+	endif()
+
 	set_target_properties(networkit PROPERTIES
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
