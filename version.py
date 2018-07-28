@@ -54,7 +54,6 @@ classifiers = [
 
 install_requires = [
 	'scipy',
-	'cython >= 0.21',
 	'matplotlib',
 	'pandas',
 	'numpy',
