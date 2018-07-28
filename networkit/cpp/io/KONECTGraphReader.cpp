@@ -37,6 +37,35 @@ namespace NetworKit{
 		auto it = mmfile.cbegin();
 		auto end = mmfile.cend();
 
+		// Returns 
+		// 0 iff it does not point to a line ending
+		// 1 iff it is a single-char ending ('\r' or '\n')
+		// 2 iff it is two-char ending ("\r\n") 
+		auto detectLineEnding = [&] () -> size_t {
+			if (*it == '\r') {
+				if ((it + 1) != end && *(it + 1) == '\n') return 2;
+				return 1;
+			}
+			if (*it == '\n')
+				return 1;
+
+			return 0;
+		};
+
+		// Returns true if a line ending was found and skipped
+		auto skipLineEnding = [&](bool required = true) -> bool {
+			auto length = detectLineEnding();
+			if (length) {
+				it += length;
+				return true;
+			}
+
+			if (required)
+				throw std::runtime_error("No break symbol after first property line");
+
+			return false;
+		};
+
 		// The following functions are helpers for parsing.
 		auto skipWhitespace = [&] {
 			while(it != end && (*it == ' ' || *it == '\t'))
@@ -49,7 +78,7 @@ namespace NetworKit{
 		// This function parses in whole words
 		auto scanWord = [&] () {
 			std::string word = "";
-			while(it != end && *it != ' ' && *it != '\t' && *it != '\n'){
+			while(it != end && *it != ' ' && *it != '\t' && *it != '\n' && *it != '\r'){
 				word += *it;
 				++it;
 			}
@@ -124,11 +153,7 @@ namespace NetworKit{
 		}
 
 		skipWhitespace();
-		if (*it != '\n'){
-			throw std::runtime_error("No break symbol after first property line");
-		}else{
-			++it;
-		}
+		skipLineEnding();
 		skipWhitespace();
 		//second optional property line
 		if(*it == '%'){
@@ -138,16 +163,13 @@ namespace NetworKit{
 			skipWhitespace();
 			numberOfNodes = scanId();
 			secondPropertyLine = true;
-			while(it != end && *it != '\n')
+			while(it != end && !detectLineEnding())
 				++it;
 			if(it >= end){ // proper error message if file ends unexpected
 				throw std::runtime_error("Unexpected end of file");
 			}
-			if (*it != '\n'){
-				throw std::runtime_error("File not properly formatted. Last character in second property line is: "+std::string(1, *it));
-			}else{
-				++it;
-			}
+			
+			skipLineEnding();
 			DEBUG("Second property line read in. Edges: "+std::to_string(numberOfEdges)+ " / Nodes: "+std::to_string(numberOfNodes));
 		}
 
@@ -215,11 +237,12 @@ namespace NetworKit{
 
 		while(it != end){
 			skipWhitespace();
-			if(*it == '\n') {
+			if(skipLineEnding(false)) {
 				// We ignore empty lines.
+				continue;
 			} else if(*it == '#' || *it == '%') {
 				// Skip non-linebreak characters.
-				while(it != end && *it != '\n')
+				while(it != end && !detectLineEnding())
 					++it;
 			} else {
 				// Normal case parsing
@@ -246,10 +269,7 @@ namespace NetworKit{
 			}
 			//break lines
 			skipWhitespace();
-			if (*it != '\n'){
-				throw std::runtime_error("File not properly formatted. Last character in line is: "+std::string(1, *it));
-			}
-			++it;
+			skipLineEnding();
 		}
 
 
