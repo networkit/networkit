@@ -9,7 +9,6 @@
 #define COREDECOMPOSITION_H_
 
 #include <vector>
-#include <fstream>
 #include <string>
 #include <list>
 #include "../graph/Graph.h"

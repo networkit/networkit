@@ -75,13 +75,16 @@ void CoreDecomposition::runWithParK() {
 		size = curr.size();
 		while (size > 0) {
 			nUnprocessed -= size;
+#ifndef NETWORKIT_OMP2
 			if (! canRunInParallel || size <= 256) {
 				processSublevel(level, degrees, curr, next);
 			}
 			else {
 				processSublevelParallel(level, degrees, curr, next, active);
 			}
-
+#else
+			processSublevel(level, degrees, curr, next);
+#endif
 			std::swap(curr, next);
 			size = curr.size();
 			next.clear();
@@ -141,6 +144,7 @@ void NetworKit::CoreDecomposition::processSublevel(index level,
 	}
 }
 
+#ifndef NETWORKIT_OMP2
 void NetworKit::CoreDecomposition::processSublevelParallel(index level,
 		std::vector<count>& degrees, const std::vector<node>& curr,
 		std::vector<node>& next, std::vector<char>& active)
@@ -160,13 +164,7 @@ void NetworKit::CoreDecomposition::processSublevelParallel(index level,
 			if (degrees[v] > level) {
 				index tmp;
 
-#ifdef _MSC_VER
-// FIX: This is not supported in MSVC; disable for the moment
-				std::cerr << "Not supported in MSVC\n";
-				abort();
-#else
 #pragma omp atomic capture
-#endif
 				tmp = --degrees[v];
 
 				// ensure that neighbor is inserted exactly once if necessary
@@ -181,6 +179,7 @@ void NetworKit::CoreDecomposition::processSublevelParallel(index level,
 		next.insert(next.end(), n.begin(), n.end());
 	}
 }
+#endif // NETWORKIT_OMP2
 
 void CoreDecomposition::runWithBucketQueues() {
 	/* Main data structure: buckets of nodes indexed by their remaining degree. */
