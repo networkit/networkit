@@ -224,11 +224,13 @@ if (NETWORKIT_BUILD_TESTS)
 
 	if (NETWORKIT_MONOLITH)
 		add_executable(networkit_tests networkit/cpp/Unittests-X.cpp)
+		
 		target_link_libraries(networkit_tests
 			PRIVATE
-				gtest_main gtest
+				gtest
 				networkit
 		)
+
 		set_target_properties(networkit_tests PROPERTIES
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
