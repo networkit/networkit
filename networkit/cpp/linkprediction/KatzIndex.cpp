@@ -79,7 +79,7 @@ std::vector<LinkPredictor::prediction> KatzIndex::runOn(std::vector<std::pair<no
 }
 
 void KatzIndex::calcDampingFactors() {
-  dampingFactors.reserve(maxPathLength + 1);
+  dampingFactors.resize(maxPathLength + 1);
   dampingFactors[0] = 1;
   for (count i = 1; i <= maxPathLength; ++i) {
     dampingFactors[i] = std::pow(dampingValue, i);
