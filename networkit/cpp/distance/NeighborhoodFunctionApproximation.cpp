@@ -26,6 +26,12 @@ NeighborhoodFunctionApproximation::NeighborhoodFunctionApproximation(const Graph
 	if (cc.getPartition().numberOfSubsets() > 1) throw std::runtime_error("current implementation only runs on graphs with 1 connected component");
 }
 
+#ifdef _MSC_VER 
+// MSVC Optimizer crashes with an internal error message.
+// Until this is either fixed by Microsoft, or the issue here can was
+// found, let's just disable the optimizer.
+#pragma optimize( "", off)
+#endif // _MSC_VER
 void NeighborhoodFunctionApproximation::run() {
 	// the length of the bitmask where the number of connected nodes is saved
 	const count lengthOfBitmask = (count) ceil(log2(G.numberOfNodes())) + r;
@@ -132,6 +138,9 @@ void NeighborhoodFunctionApproximation::run() {
 	}
 	hasRun = true;
 }
+#ifdef _MSC_VER 
+#pragma optimize( "", on)
+#endif // _MSC_VER
 
 std::vector<count> NeighborhoodFunctionApproximation::getNeighborhoodFunction() const {
 	if(!hasRun) {
