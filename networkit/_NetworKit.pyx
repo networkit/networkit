@@ -2342,6 +2342,10 @@ cdef class MocnikGenerator(StaticGraphGenerator):
 	Please cite the following publications, in which you will find a
 	description of the model:
 
+	Franz-Benjamin Mocnik: "The Polynomial Volume Law of Complex Networks in
+	the Context of Local and Global Optimization", Scientific Reports 8(11274)
+	2018. doi: 10.1038/s41598-018-29131-0
+
 	Franz-Benjamin Mocnik, Andrew Frank: "Modelling Spatial Structures",
 	Proceedings of the 12th Conference on Spatial Information Theory (COSIT),
 	2015, pages 44-64. doi: 10.1007/978-3-319-23374-1_3
@@ -2395,6 +2399,10 @@ cdef class MocnikGeneratorBasic(StaticGraphGenerator):
 
 	Please cite the following publications, in which you will find a
 	description of the model:
+
+	Franz-Benjamin Mocnik: "The Polynomial Volume Law of Complex Networks in
+	the Context of Local and Global Optimization", Scientific Reports 8(11274)
+	2018. doi: 10.1038/s41598-018-29131-0
 
 	Franz-Benjamin Mocnik, Andrew Frank: "Modelling Spatial Structures",
 	Proceedings of the 12th Conference on Spatial Information Theory (COSIT),
@@ -8524,6 +8532,13 @@ cdef class Volume:
 	def volume(Graph G, r, count samples=500):
 		"""
 		Number of nodes within a given radius (or radii); average for many nodes
+
+		Please find further information about the volume and its meaning in the
+		following publication:
+
+		Franz-Benjamin Mocnik: "The Polynomial Volume Law of Complex Networks in
+		the Context of Local and Global Optimization", Scientific Reports 8(11274)
+		2018. doi: 10.1038/s41598-018-29131-0
 
 		Parameters
 		----------
