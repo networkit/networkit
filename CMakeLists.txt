@@ -51,6 +51,7 @@ else()
 	message(WARNING "Support only GCC and Clang; your compiler might work though anyways")
 endif()
 
+# adding OpenMP flags
 find_package(OpenMP REQUIRED)
 if(OPENMP_FOUND)
 	link_directories("${OPENMP_LIBRARIES}")
@@ -58,6 +59,11 @@ if(OPENMP_FOUND)
 	set(NETWORKIT_LINK_FLAGS "${OpenMP_CXX_FLAGS}")
 else()
 	message(FATAL_ERROR "OpenMP not found")
+endif()
+
+# specify linking flags for MacOS
+if (APPLE)
+	set(NETWORKIT_LINK_FLAGS "-undefined dynamic_lookup ${NETWORKIT_LINK_FLAGS}")
 endif()
 
 ################################################################################
@@ -79,10 +85,6 @@ if (NETWORKIT_MONOLITH)
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
 			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
-	if(APPLE)
-		set_target_properties(networkit PROPERTIES
-				LINK_FLAGS "-undefined dynamic_lookup -lgomp")
-	endif()
 	if (NETWORKIT_PYTHON)
 		if(EXISTS "${PROJECT_SOURCE_DIR}/networkit/_NetworKit.cpp")
 			add_library(_NetworKit MODULE networkit/_NetworKit.cpp)
@@ -94,10 +96,6 @@ if (NETWORKIT_MONOLITH)
 						LINK_FLAGS "${NETWORKIT_LINK_FLAGS}"
 						PREFIX ""
 						OUTPUT_NAME "_NetworKit.${NETWORKIT_PYTHON_SOABI}")
-			if(APPLE)
-				set_target_properties(_NetworKit PROPERTIES
-							LINK_FLAGS "-undefined dynamic_lookup -lgomp")
-			endif()
 		else()
 			message(FATAL_ERROR "networkit/_NetworKit.cpp is missing. Invoke Cython manually.")
 		endif()
