@@ -42,18 +42,16 @@ matrix:
             - python3-pip
             - python3.4-venv
 
-    - env: CC=clang-3.7 CXX=clang++-3.7
+    - name: CC=clang-4 CXX=clang++-4
+      env: CC=/usr/local/opt/llvm@4/bin/clang
+      env: CXX=/usr/local/opt/llvm@4/bin/clang++
       os: osx
       sudo: false
       before_install:
         - brew update
-        - brew install llvm37
+        - brew install llvm@4
         - brew install libomp
         - brew upgrade python
-      install:
-        - export C_INCLUDE_PATH=$(llvm-config-3.7 --includedir)
-        - export CPLUS_INCLUDE_PATH=$(llvm-config-3.7 --includedir)
-        - export LIBRARY_PATH=$(llvm-config-3.7 --libdir)
 
     - env: CC=gcc-8 CXX=g++-8
       os: linux
