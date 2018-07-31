@@ -54,7 +54,6 @@ endif()
 # adding OpenMP flags
 find_package(OpenMP REQUIRED)
 if(OPENMP_FOUND)
-	link_directories("${OPENMP_LIBRARIES}")
 	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 	set(NETWORKIT_LINK_FLAGS "${OpenMP_CXX_FLAGS}")
 else()
