@@ -5,6 +5,11 @@
 *      Author: Manuel Penschuck (networkit@manuel.jetzt)
 */
 
+#ifdef NETWORKIT_WINDOWS
+#include <windows.h>
+#else
+#include <stdlib.h>
+#endif
 
 #include <algorithm>
 #include <fstream>
@@ -33,32 +38,52 @@ namespace NetworKit {
 			dataBegin(new value_type[bytes]),
 			dataEnd(dataBegin.get() + bytes)
 		{
+            // fill array with random data
+            {
+                // we use int (rather than char), as char is not an integer type for MSVC
+                std::uniform_int_distribution<int> distr{std::numeric_limits<value_type>::min(),
+                                                         std::numeric_limits<value_type>::max()};
+
+                std::generate(dataBegin.get(), dataEnd, [&distr, &prng] {
+                    return static_cast<value_type>(distr(prng));
+                });
+            }
+
 			// obtain temporary file name (C++17 offers std::filesystem, which we currently cannot rely on)
-			while (true) {
-				std::uniform_int_distribution<unsigned> distr;
-				path = "tempfile_" + std::to_string(distr(prng));
+#ifdef NETWORKIT_WINDOWS
+            {
+                char cpath[MAX_PATH];
 
-				std::ifstream f(path);
-				if (!f.good()) break;
-			}
+                auto uRetVal = GetTempFileName(".",
+                              "TestMemoryMappedFile_",
+                              0,
+                              cpath);
 
-			// fill array with random data
+                if (uRetVal == 0) {
+                    throw std::runtime_error("Could not create temporary file");
+                }
+
+                path = cpath;
+            }
+#else
+
 			{
-				// we use int (rather than char), as char is not an integer type for MSVC
-				std::uniform_int_distribution<int> distr{
-					std::numeric_limits<value_type>::min(),
-					std::numeric_limits<value_type>::max() };
+				char cpath[32];
+				strcpy(cpath, "TestMemoryMappedFile_XXXXXX");
+				int fd = mkstemp(cpath);
+				if (fd == -1)
+					throw std::runtime_error("Could not create temporary file");
 
-				std::generate(dataBegin.get(), dataEnd, [&distr, &prng] {
-					return static_cast<value_type>(distr(prng)); });
+				path = cpath;
+				::close(fd);
 			}
+#endif
 
-			// write array to file
 			{
-				std::ofstream file(path, std::ios::binary);
-				if (bytes)
-					file.write(reinterpret_cast<char*>(dataBegin.get()), bytes);
-			}
+				std::ofstream file(path, std::ios::out | std::ios::binary | std::ios::trunc);
+				file.write(reinterpret_cast<const char*>(dataBegin.get()), bytes);
+            }
+
 		}
 
 		~TemporaryFile() {

@@ -27,7 +27,7 @@ namespace NetworKit {
 }
 
 #ifdef NETWORKIT_WINDOWS
-#include <Windows.h>
+#include <windows.h>
 #include <fileapi.h>
 #include <cassert>
 
