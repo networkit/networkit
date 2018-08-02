@@ -165,18 +165,60 @@ def buildNetworKit(install_prefix, withTests = False):
 ################################################
 # custom build commands to integrate with setuptools
 ################################################
-from setuptools.command.build_ext import build_ext as _build_ext
-from setuptools import Command
 
-class buildNetworKitCommand(_build_ext):
+# Unfortunately, there is not simple way to invoke external commands from setuptools.
+# Thus, we replace the 'build_ext' stage of setuptools completely.
+# This looks a bit messy as we need to make sure we satisfy the (undocumented) internal APIs
+# of setuptools (and distutils, which setuptools is based on).
+
+# Our build_ext command compiles NetworKit using cmake and installs it into a directory
+# supplied by distutils/setuptools. distutils/setuptools picks up all .so files from that
+# directory when creating a Python package so that we do not have to do any
+# additional installation.
+
+from setuptools import Command
+from setuptools import Extension
+
+class build_ext(Command):
+	user_options = [ ]
+
 	def initialize_options(self):
-		_build_ext.initialize_options(self)
+		self.build_lib = None # Output directory for libraries
+		self.build_temp = None # Temporary directory
+
+		self.extensions = None
+		self.package = None
 
 	def finalize_options(self):
-		_build_ext.finalize_options(self)
+		self.set_undefined_options('build',
+				('build_lib', 'build_lib'),
+				('build_temp', 'build_temp'))
+
+		self.extensions = self.distribution.ext_modules
+		self.package = self.distribution.ext_package
+
+	def get_source_files(self):
+		sources = [ ]
+		for subdir, dirs, files in os.walk('networkit'):
+			for filename in files:
+				sources.append(os.path.join(subdir, filename))
+		return sources
+
+	# Returns the full Python module name of an extension.
+	# Prepends the ext_package setup() option to an extension (see distutils).
+	def get_ext_fullname(self, extname):
+		if self.package is not None:
+			return self.package + '.' + extname
+		return extname
+
+	# Returns the file name of the DSO implementing a module (see distutils).
+	def get_ext_filename(self, fullname):
+		return fullname + '.' + sysconfig.get_config_var('SOABI') + '.so'
 
 	def run(self):
-		buildNetworKit('.')
+		# A generic build_ext command for cmake would iterate over all self.extensions.
+		# However, we know that we only want to build a single extension, i.e. NetworKit.
+		buildNetworKit(self.build_lib)
 
 ################################################
 # initialize python setup
@@ -198,7 +240,8 @@ setup(
 	keywords			= version.keywords,
 	platforms			= version.platforms,
 	classifiers			= version.classifiers,
-	cmdclass			= {'build_ext' : buildNetworKitCommand},
+	cmdclass			= {'build_ext': build_ext},
+	ext_modules			= [Extension('_NetworKit', sources=[])],
 	test_suite			= 'nose.collector',
 	install_requires	= version.install_requires,
 	zip_safe			= False) # see https://cython.readthedocs.io/en/latest/src/reference/compilation.html
