@@ -55,7 +55,7 @@ elseif (MSVC)
 	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /DTTMATH_NOASM=1")
 	 
 else()
-	message(WARNING "Support only GCC and Clang; your compiler might work though anyways")
+	message(WARNING "NetworKit is only tests with GCC, Clang and MSVC. Your compiler may or may not work.")
 
 endif()
 
@@ -65,6 +65,7 @@ if(OPENMP_FOUND)
 	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
 	if (NOT MSVC)
+		# In MSVC /openmp is only passed to the compiler, and must not be passed to the linker to avoid warnigns
 		set(NETWORKIT_LINK_FLAGS "${NETWORKIT_LINK_FLAGS} ${OpenMP_CXX_FLAGS}")
 	endif()
 else()
@@ -211,6 +212,9 @@ if (NETWORKIT_BUILD_TESTS)
 
 	if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/googletest/CMakeLists.txt")
 		if (MSVC)
+			# While by default MSVC projects link against the shared runtime library
+			# (and hence also NetworKit), GTest defaults to the static runtime lib.
+			# Both must not be mix, so we request GTest here to also use the shared CRT.
 			set( gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll" FORCE)
 		endif()
 		option(BUILD_GTEST "Builds the googletest subproject" ON)
