@@ -6,6 +6,7 @@
 */
 
 #ifdef NETWORKIT_WINDOWS
+#define NOMINMAX // windows.h by default defines the maros min/max, which prevent the usage of numeric_limits
 #include <windows.h>
 #else
 #include <stdlib.h>
@@ -54,19 +55,13 @@ namespace NetworKit {
             {
                 char cpath[MAX_PATH];
 
-                auto uRetVal = GetTempFileName(".",
-                              "TestMemoryMappedFile_",
-                              0,
-                              cpath);
-
-                if (uRetVal == 0) {
+                if (!GetTempFileName(".",  "Tst", 0, cpath)) {
                     throw std::runtime_error("Could not create temporary file");
                 }
 
                 path = cpath;
             }
 #else
-
 			{
 				char cpath[32];
 				strcpy(cpath, "TestMemoryMappedFile_XXXXXX");
