@@ -6,7 +6,7 @@ import sysconfig
 import os
 
 cmakeCompiler = None
-buildDirectory = "build_python"
+buildDirectory = "build/build_python"
 ninja_available = False
 
 if sys.version_info.major < 3:
