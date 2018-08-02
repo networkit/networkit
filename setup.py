@@ -131,8 +131,10 @@ def cythonizeFile(filepath):
 def buildNetworKit(withTests = False):
 	# Cythonize file
 	cythonizeFile("networkit/_NetworKit.pyx")
-	if not os.path.isdir(buildDirectory):
+	try:
 		os.makedirs(buildDirectory)
+	except FileExistsError:
+		pass
 	# Build cmake call
 	comp_cmd = ["cmake","-DCMAKE_BUILD_TYPE=Release"]
 	comp_cmd.append("-DCMAKE_CXX_COMPILER="+cmakeCompiler)
