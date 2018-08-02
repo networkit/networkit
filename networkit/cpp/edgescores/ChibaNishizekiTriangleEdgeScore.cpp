@@ -76,7 +76,7 @@ void ChibaNishizekiTriangleEdgeScore::run() {
 				// outgoing edges of u as u cannot be reached anymore after the uv loop.
 				if (vw->first == u) {
 					// move last element to current position in order to avoid changing too much
-					if (vw + 1 == uedges.end()) {
+					if (std::next(vw) == uedges.end()) {
 						uedges.pop_back();
 						break;
 					}
