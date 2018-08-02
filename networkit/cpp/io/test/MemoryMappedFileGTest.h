@@ -13,9 +13,8 @@
 
 namespace NetworKit {
 
-class MemoryMappedFileGTest : public ::testing::TestWithParam<size_t> {
-
-};
+class MemoryMappedFileGTest : public ::testing::Test {};
+class MemoryMappedFileIOGTest : public ::testing::TestWithParam<size_t> {};
 
 } // namespace NetworKit
 

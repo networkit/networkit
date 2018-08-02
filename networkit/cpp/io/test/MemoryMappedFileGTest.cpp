@@ -15,7 +15,9 @@
 #include <stdexcept>
 
 #include "MemoryMappedFileGTest.h"
+
 #include "../MemoryMappedFile.h"
+
 
 namespace NetworKit {
 	// This object generates a temporary file and fills it with a request number
@@ -66,35 +68,88 @@ namespace NetworKit {
 		}
 
 		const std::string& filename() const { return path; }
-		const_iterator cbegin() const { return dataBegin.get(); }
-		const_iterator cend() const { return dataEnd; }
+
+		const_iterator cbegin() const {
+			return dataBegin.get();
+		}
+
+		const_iterator cend() const {
+			return dataEnd;
+		}
+
 		size_t size() const { return dataEnd - dataBegin.get(); }
 
+        void verify_mapping(const MemoryMappedFile& mmf) const {
+            ASSERT_EQ(size(), mmf.size());
+
+            for (size_t i = 0; i < size(); i++) {
+                ASSERT_EQ(*(mmf.cbegin() + i), *(cbegin() + i)) << "i=" << i;
+            }
+        }
+
 	private:
-		std::unique_ptr<value_type> dataBegin;
+		std::unique_ptr<value_type[]> dataBegin;
 		value_type* dataEnd;
 		std::string path;
 	};
 
-	TEST_P(MemoryMappedFileGTest, ReadFile) {
+
+	TEST_P(MemoryMappedFileIOGTest, ReadFile) {
 		const size_t bytes = GetParam();
 		std::default_random_engine prng(static_cast<unsigned>(bytes));
 		TemporaryFile tmpFile(bytes, prng);
 		ASSERT_EQ(bytes, tmpFile.size());
 
 		MemoryMappedFile mmf(tmpFile.filename());
-		ASSERT_EQ(bytes, mmf.size());
 
-		for (size_t i = 0; i < bytes; i++) {
-			ASSERT_EQ(*(mmf.cbegin() + i), *(tmpFile.cbegin() + i)) << "i=" << i;
-		}
+		tmpFile.verify_mapping(mmf);
 	}
 
-	INSTANTIATE_TEST_CASE_P(MemoryMappedFileGTest, MemoryMappedFileGTest,
+	INSTANTIATE_TEST_CASE_P(MemoryMappedFileIOGTest, MemoryMappedFileIOGTest,
 		::testing::Values(0, 1,
 			(1 <<  2) - 1, (1 <<  2), (1 <<  2) + 1,
 			(1 << 10) - 1, (1 << 10), (1 << 10) + 1,
 			(1 << 16) - 1, (1 << 16), (1 << 16) + 1,
 			(1 << 22) - 1, (1 << 22), (1 << 22) + 1
 		));
+
+	TEST_F(MemoryMappedFileGTest, TestMove) {
+		const size_t bytes = 1000;
+		std::default_random_engine prng(static_cast<unsigned>(bytes));
+		TemporaryFile tmpFile1(bytes, prng);
+		TemporaryFile tmpFile2(bytes+1, prng);
+
+		MemoryMappedFile mmf1(tmpFile1.filename());
+		MemoryMappedFile mmf2(tmpFile2.filename());
+
+		tmpFile1.verify_mapping(mmf1);
+		tmpFile2.verify_mapping(mmf2);
+
+		mmf1 = std::move(mmf2);  // <- TESTED
+
+		ASSERT_FALSE(mmf2.size());
+		ASSERT_EQ(mmf2.cbegin(), nullptr);
+		ASSERT_EQ(mmf2.cend(), nullptr);
+
+		tmpFile2.verify_mapping(mmf1);
+	}
+
+	TEST_F(MemoryMappedFileGTest, TestSwap) {
+		const size_t bytes = 1100;
+		std::default_random_engine prng(static_cast<unsigned>(bytes));
+		TemporaryFile tmpFile1(bytes, prng);
+		TemporaryFile tmpFile2(bytes+1, prng);
+
+		MemoryMappedFile mmf1(tmpFile1.filename());
+		MemoryMappedFile mmf2(tmpFile2.filename());
+
+		tmpFile1.verify_mapping(mmf1);
+		tmpFile2.verify_mapping(mmf2);
+
+		std::swap(mmf1, mmf2); // <- TESTED
+
+		tmpFile1.verify_mapping(mmf2);
+		tmpFile2.verify_mapping(mmf1);
+	}
+
 }
