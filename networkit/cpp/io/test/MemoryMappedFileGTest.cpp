@@ -119,7 +119,7 @@ namespace NetworKit {
 	};
 
 
-	TEST_P(MemoryMappedFileIOGTest, ReadFile) {
+	TEST_P(MemoryMappedFileIOGTest, testReadFile) {
 		const size_t bytes = GetParam();
 		std::default_random_engine prng(static_cast<unsigned>(bytes));
 		TemporaryFile tmpFile(bytes, prng);
@@ -138,7 +138,7 @@ namespace NetworKit {
 			(1 << 22) - 1, (1 << 22), (1 << 22) + 1
 		));
 
-	TEST_F(MemoryMappedFileGTest, TestMove) {
+	TEST_F(MemoryMappedFileGTest, testMove) {
 		const size_t bytes = 1000;
 		std::default_random_engine prng(static_cast<unsigned>(bytes));
 		TemporaryFile tmpFile1(bytes, prng);
@@ -159,7 +159,7 @@ namespace NetworKit {
 		tmpFile2.verify_mapping(mmf1);
 	}
 
-	TEST_F(MemoryMappedFileGTest, TestSwap) {
+	TEST_F(MemoryMappedFileGTest, testSwap) {
 		const size_t bytes = 1100;
 		std::default_random_engine prng(static_cast<unsigned>(bytes));
 		TemporaryFile tmpFile1(bytes, prng);
