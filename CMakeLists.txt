@@ -80,6 +80,8 @@ if (NETWORKIT_MONOLITH)
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
 			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
+	install(TARGETS networkit
+			LIBRARY DESTINATION .)
 	if(APPLE)
 		set_target_properties(networkit PROPERTIES
 				LINK_FLAGS "-undefined dynamic_lookup")
@@ -96,6 +98,8 @@ if (NETWORKIT_MONOLITH)
 						LINK_FLAGS "${NETWORKIT_LINK_FLAGS}"
 						PREFIX ""
 						OUTPUT_NAME "_NetworKit.${NETWORKIT_PYTHON_SOABI}")
+			install(TARGETS _NetworKit
+					LIBRARY DESTINATION .)
 			if(APPLE)
 				set_target_properties(_NetworKit PROPERTIES
 						LINK_FLAGS "-undefined dynamic_lookup")
