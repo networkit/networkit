@@ -110,17 +110,21 @@ inline void GroupDegree::checkGroup(const std::vector<node> &group) const {
 	std::vector<node> sortedV(group);
 	std::sort(sortedV.begin(), sortedV.end());
 	node u;
-	for (count i = 0; i < sortedV.size() - 1; ++i) {
-		u = sortedV[i];
+	auto checkNode = [&](node u) {
 		if (!G.hasNode(u)) {
 			std::stringstream err;
 			err << "Error: node" << u << " is not in the graph.";
 			throw std::runtime_error(err.str());
 		}
+	};
+	for (count i = 0; i < sortedV.size() - 1; ++i) {
+		u = sortedV[i];
+		checkNode(u);
 		if (u == sortedV[i + 1]) {
 			throw std::runtime_error("Error: the set contains duplicate elements.");
 		}
 	}
+	checkNode(sortedV.back());
 }
 
 inline count GroupDegree::scoreOfGroup(const std::vector<node> &group) const {
