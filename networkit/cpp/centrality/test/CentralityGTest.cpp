@@ -26,8 +26,8 @@
 #include "../DynKatzCentrality.h"
 #include "../EigenvectorCentrality.h"
 #include "../EstimateBetweenness.h"
-#include "../GroupDegree.h"
 #include "../GroupCloseness.h"
+#include "../GroupDegree.h"
 #include "../HarmonicCloseness.h"
 #include "../KPathCentrality.h"
 #include "../KatzCentrality.h"
@@ -204,13 +204,15 @@ TEST_F(CentralityGTest, testKatzTopk) {
 	exactAlgo.run();
 	topAlgo.run();
 
-	// We cannot compare the ranking as the algorithms might return different rankings
-	// for nodes that have equal/nearly equal scores.
-	// Instead, epsilon-compare the exact scores of the i-th node and the expected i-th node.
+	// We cannot compare the ranking as the algorithms might return different
+	// rankings for nodes that have equal/nearly equal scores. Instead,
+	// epsilon-compare the exact scores of the i-th node and the expected i-th
+	// node.
 	auto exactRanking = exactAlgo.ranking();
 	auto topRanking = topAlgo.ranking();
-	for(count i = 0; i < std::min(G.numberOfNodes(), count{100}); i++)
-		EXPECT_NEAR(exactAlgo.score(topRanking[i].first), exactRanking[i].second, 1e-6);
+	for (count i = 0; i < std::min(G.numberOfNodes(), count{100}); i++)
+		EXPECT_NEAR(exactAlgo.score(topRanking[i].first), exactRanking[i].second,
+		            1e-6);
 }
 
 TEST_F(CentralityGTest, testKatzDynamicAddition) {
@@ -231,18 +233,19 @@ TEST_F(CentralityGTest, testKatzDynamicAddition) {
 	DynKatzCentrality kc2(G, 100);
 	kc2.run();
 	const edgeweight tol = 1e-9;
-	for (count i = 0; i <= std::min(kc.levelReached, kc2.levelReached); i ++) {
+	for (count i = 0; i <= std::min(kc.levelReached, kc2.levelReached); i++) {
 		INFO("i = ", i);
-		G.forNodes([&](node u){
+		G.forNodes([&](node u) {
 			// if (kc.nPaths[i][u] != kc2.nPaths[i][u]) {
-			//	 INFO("i = ", i, ", node ", u, ", dyn kc paths: ", kc.nPaths[i][u], ", stat paths: ", kc2.nPaths[i][u]);
+			//	 INFO("i = ", i, ", node ", u, ", dyn kc paths: ", kc.nPaths[i][u], ",
+			// stat paths: ", kc2.nPaths[i][u]);
 			// }
 			EXPECT_EQ(kc.nPaths[i][u], kc2.nPaths[i][u]);
 		});
 	}
-	G.forNodes([&](node u){
+	G.forNodes([&](node u) {
 		EXPECT_NEAR(kc.score(u), kc2.score(u), tol);
-	 EXPECT_NEAR(kc.bound(u), kc2.bound(u), tol);
+		EXPECT_NEAR(kc.bound(u), kc2.bound(u), tol);
 	});
 
 	INFO("Level reached: ", kc.levelReached, ", ", kc2.levelReached);
@@ -265,16 +268,17 @@ TEST_F(CentralityGTest, testKatzDynamicDeletion) {
 	DynKatzCentrality kc2(G, 100);
 	kc2.run();
 	const edgeweight tol = 1e-9;
-	for (count i = 0; i <= std::min(kc.levelReached, kc2.levelReached); i ++) {
+	for (count i = 0; i <= std::min(kc.levelReached, kc2.levelReached); i++) {
 		INFO("i = ", i);
-		G.forNodes([&](node u){
+		G.forNodes([&](node u) {
 			if (kc.nPaths[i][u] != kc2.nPaths[i][u]) {
-				INFO("i = ", i, ", node ", u, ", dyn kc paths: ", kc.nPaths[i][u], ", stat paths: ", kc2.nPaths[i][u]);
+				INFO("i = ", i, ", node ", u, ", dyn kc paths: ", kc.nPaths[i][u],
+				     ", stat paths: ", kc2.nPaths[i][u]);
 			}
 			EXPECT_EQ(kc.nPaths[i][u], kc2.nPaths[i][u]);
 		});
 	}
-	G.forNodes([&](node u){
+	G.forNodes([&](node u) {
 		EXPECT_NEAR(kc.score(u), kc2.score(u), tol);
 		EXPECT_NEAR(kc.bound(u), kc2.bound(u), tol);
 	});
@@ -290,30 +294,29 @@ TEST_F(CentralityGTest, testKatzDynamicBuilding) {
 	// (This guarantees that alpha is correct.)
 	node maxNode = 0;
 	GIn.forNodes([&](node u) {
-	if (GIn.degree(u) > GIn.degree(maxNode))
-		maxNode = u;
+		if (GIn.degree(u) > GIn.degree(maxNode))
+			maxNode = u;
 	});
 
 	Graph G(GIn.upperNodeIdBound());
 
-	GIn.forEdgesOf(maxNode, [&] (node u, edgeweight) {
-	G.addEdge(maxNode, u);
-	});
+	GIn.forEdgesOf(maxNode, [&](node u, edgeweight) { G.addEdge(maxNode, u); });
 
-	// Now run the algo. and add other some edges to check the correctness of the dynamic part.
+	// Now run the algo. and add other some edges to check the correctness of the
+	// dynamic part.
 	DynKatzCentrality dynAlgo(G, 100);
 	dynAlgo.run();
 
 	count edgesProcessed = 0;
-	GIn.forEdges([&] (node u, node v) {
-	if(u == maxNode || v == maxNode)
-		return;
-	if(edgesProcessed > 1000)
-		return;
-	GraphEvent e(GraphEvent::EDGE_ADDITION, u, v, 1.0);
-	dynAlgo.update(e);
-	G.addEdge(u, v);
-	edgesProcessed++;
+	GIn.forEdges([&](node u, node v) {
+		if (u == maxNode || v == maxNode)
+			return;
+		if (edgesProcessed > 1000)
+			return;
+		GraphEvent e(GraphEvent::EDGE_ADDITION, u, v, 1.0);
+		dynAlgo.update(e);
+		G.addEdge(u, v);
+		edgesProcessed++;
 	});
 
 	DynKatzCentrality topAlgo(G, 100);
@@ -321,10 +324,11 @@ TEST_F(CentralityGTest, testKatzDynamicBuilding) {
 
 	auto topRanking = topAlgo.ranking();
 	auto dynRanking = dynAlgo.ranking();
-	for(count i = 0; i < std::min(G.numberOfNodes(), count{100}); i++)
-		EXPECT_FALSE(dynAlgo.areDistinguished(topRanking[i].first, dynRanking[i].first))
-				<< "Nodes " << topRanking[i].first << " and " << dynRanking[i].first
-				<< " should not be distinguished!";
+	for (count i = 0; i < std::min(G.numberOfNodes(), count{100}); i++)
+		EXPECT_FALSE(
+		    dynAlgo.areDistinguished(topRanking[i].first, dynRanking[i].first))
+		    << "Nodes " << topRanking[i].first << " and " << dynRanking[i].first
+		    << " should not be distinguished!";
 }
 
 TEST_F(CentralityGTest, testKatzDirectedAddition) {
@@ -377,13 +381,11 @@ TEST_F(CentralityGTest, testKatzDirectedAddition) {
 	DynKatzCentrality kc2(G, 5);
 	kc2.run();
 
-	for (count i = 0; i <= std::min(kc.levelReached, kc2.levelReached); i ++) {
-		G.forNodes([&](node u){
-			EXPECT_EQ(kc.nPaths[i][u], kc2.nPaths[i][u]);
-		});
+	for (count i = 0; i <= std::min(kc.levelReached, kc2.levelReached); i++) {
+		G.forNodes([&](node u) { EXPECT_EQ(kc.nPaths[i][u], kc2.nPaths[i][u]); });
 	}
 	const edgeweight tol = 1e-9;
-	G.forNodes([&](node u){
+	G.forNodes([&](node u) {
 		EXPECT_NEAR(kc.score(u), kc2.score(u), tol);
 		EXPECT_NEAR(kc.bound(u), kc2.bound(u), tol);
 	});
@@ -440,13 +442,14 @@ TEST_F(CentralityGTest, testKatzDirectedDeletion) {
 	DynKatzCentrality kc2(G, 5);
 	kc2.run();
 
-	for (count i = 0; i <= std::min(kc.levelReached, kc2.levelReached); i ++) {
-		G.forNodes([&](node u){
-			EXPECT_EQ(kc.nPaths[i][u], kc2.nPaths[i][u]) << i << "-length paths ending in " << u << " do not match!";
+	for (count i = 0; i <= std::min(kc.levelReached, kc2.levelReached); i++) {
+		G.forNodes([&](node u) {
+			EXPECT_EQ(kc.nPaths[i][u], kc2.nPaths[i][u])
+			    << i << "-length paths ending in " << u << " do not match!";
 		});
 	}
 	const edgeweight tol = 1e-9;
-	G.forNodes([&](node u){
+	G.forNodes([&](node u) {
 		EXPECT_NEAR(kc.score(u), kc2.score(u), tol);
 		EXPECT_NEAR(kc.bound(u), kc2.bound(u), tol);
 	});
@@ -1282,7 +1285,7 @@ TEST_F(CentralityGTest, testGroupDegreeUndirected) {
 	Graph g = gen.generate();
 	count k = 5;
 
-	GroupDegree gd(g, k);
+	GroupDegree gd(g, k, false);
 	gd.run();
 	count score = gd.getScore();
 	GroupDegree gdIncludeGroup(g, k, true);
@@ -1322,6 +1325,9 @@ TEST_F(CentralityGTest, testGroupDegreeUndirected) {
 	EXPECT_TRUE(score > 0.5 * maxScore);
 	EXPECT_TRUE(scorePlusGroup >
 	            (1.0 - 1.0 / std::exp(1.0) * (double)(maxScore + k)));
+	EXPECT_EQ(gd.getScore(), gd.scoreOfGroup(gd.groupMaxDegree()));
+	EXPECT_EQ(gdIncludeGroup.getScore(),
+	          gdIncludeGroup.scoreOfGroup(gdIncludeGroup.groupMaxDegree()));
 }
 
 TEST_F(CentralityGTest, testGroupDegreeDirected) {
@@ -1370,6 +1376,9 @@ TEST_F(CentralityGTest, testGroupDegreeDirected) {
 	EXPECT_TRUE(scoreNoGroup > 0.5 * maxScore);
 	EXPECT_TRUE(scorePlusGroup >
 	            (1.0 - 1.0 / std::exp(1.0)) * (double)(maxScore + k));
+	EXPECT_EQ(gd.getScore(), gd.scoreOfGroup(gd.groupMaxDegree()));
+	EXPECT_EQ(gdIncludeGroup.getScore(),
+	          gdIncludeGroup.scoreOfGroup(gdIncludeGroup.groupMaxDegree()));
 }
 
 TEST_F(CentralityGTest, runTestApproxGroupBetweennessSmallGraph) {
@@ -1417,6 +1426,5 @@ TEST_F(CentralityGTest, testGroupCloseness) {
 	for (count i = 0; i < k; ++i) {
 		EXPECT_EQ(apx[i], solution[i]);
 	}
-
 }
 } /* namespace NetworKit */

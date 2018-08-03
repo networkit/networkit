@@ -6521,16 +6521,17 @@ cdef extern from "cpp/centrality/GroupDegree.h":
 		_GroupDegree(_Graph G, count, bool) except +
 		vector[node] groupMaxDegree() except +
 		count getScore() except +
+		count scoreOfGroup(vector[node]) except +
 
 
 cdef class GroupDegree(Algorithm):
 	"""
 	Finds the group with the highest group degree centrality according to the
-  	definition proposed in 'The centrality of groups and classes' by Everett et
-  	al. (The Journal of mathematical sociology, 1999). This is a submodular but
-  	non monotone function so the algorithm can find a solution that is at least
-  	1/2 of the optimum. Worst-case running time is quadratic, but usually
-  	faster in real-world networks.
+	definition proposed in 'The centrality of groups and classes' by Everett et
+	al. (The Journal of mathematical sociology, 1999). This is a submodular but
+	non monotone function so the algorithm can find a solution that is at least
+	1/2 of the optimum. Worst-case running time is quadratic, but usually
+	faster in real-world networks.
 	The 'countGroupNodes' option also count the nodes inside the group in the
 	score, this make the group degree monotone and submodular and the algorithm
 	is guaranteed to return a (1 - 1/e)-approximation of the optimal solution.
@@ -6539,10 +6540,10 @@ cdef class GroupDegree(Algorithm):
 
 	Parameters
 	----------
-    G: A graph.
-    k: Size of the group of nodes
+		G: A graph.
+		k: Size of the group of nodes
 		countGroupNodes: if nodes inside the group should be counted in the
-    centrality score.
+		centrality score.
 	"""
 	cdef Graph _G
 
@@ -6563,8 +6564,8 @@ cdef class GroupDegree(Algorithm):
 	def getScore(self):
 		"""
 		Returns the score of the group with maximum degree centrality (i.e. the
-	    number of nodes outside the group that can be reached in one hop from at
-	    least one node in the group).
+		number of nodes outside the group that can be reached in one hop from at
+		least one node in the group).
 
 		Returns
 		-------
@@ -6573,6 +6574,21 @@ cdef class GroupDegree(Algorithm):
 			from at least one node in the group.
 		"""
 		return (<_GroupDegree*>(self._this)).getScore()
+
+	def scoreOfGroup(self, vector[node] group):
+			"""
+			Returns the score of the given group.
+
+			Parameters
+			----------
+			group : set of nodes
+
+			Returns
+			-------
+			count
+					The score of the given group.
+			"""
+			return (<_GroupDegree*>(self._this)).scoreOfGroup(group)
 
 
 
