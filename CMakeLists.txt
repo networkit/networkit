@@ -87,6 +87,16 @@ if (APPLE)
 endif()
 
 ################################################################################
+# Use TLX as a CMake submodule
+if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/tlx/CMakeLists.txt")
+	add_subdirectory(extlibs/tlx)
+else()
+	message(FATAL_ERROR
+			"Missing TLX library in extlibs/tlx "
+			"Please run `git submodule update --init` to fetch the submodule.")
+endif()
+
+################################################################################
 #include symlink
 if(NETWORKIT_INCLUDESYMLINK)
 	if(UNIX)
@@ -110,9 +120,12 @@ if (NETWORKIT_MONOLITH)
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
 			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
+
 	install(TARGETS networkit
 			LIBRARY DESTINATION .
 			ARCHIVE DESTINATION .)
+
+	target_link_libraries(networkit PRIVATE tlx)
 
 	if (NETWORKIT_PYTHON)
 		if(EXISTS "${PROJECT_SOURCE_DIR}/networkit/_NetworKit.cpp")
@@ -158,6 +171,8 @@ function(networkit_add_module modname)
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
 			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
+
+		target_link_libraries(${MODULE_TARGET} PRIVATE tlx)
 
 		# All tests added to this module will will also become a dependency
 		# of networkit_tests_MODNAME. This target hence allows to build all
@@ -235,6 +250,7 @@ if (NETWORKIT_BUILD_TESTS)
 			PRIVATE
 				gtest
 				networkit
+				tlx
 		)
 
 		set_target_properties(networkit_tests PROPERTIES
@@ -285,7 +301,8 @@ function(networkit_add_extra IS_TEST MOD NAME)
 					gtest_main gtest
 				PRIVATE
 					networkit_${MOD}
-				)
+					tlx
+					)
 			set_target_properties(${TARGET_NAME} PROPERTIES
 				CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 				COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
@@ -320,6 +337,61 @@ function(networkit_add_benchmark MOD NAME)
 	networkit_add_extra(OFF ${MOD} ${NAME} ${ARGN})
 endfunction(networkit_add_benchmark)
 
+
+################################################################################
+# Benchmarks
+
+# In case of monolithic builds we add the target networkit_benchmarks, and later add
+# source files via networkit_add_gbenchmark. In case of non-monolithic builds, each
+# networkit_add_test creates it own target.
+if (NETWORKIT_BUILD_BENCHMARKS AND NETWORKIT_MONOLITH)
+	add_executable(networkit_benchmarks networkit/cpp/networkit.cpp)
+
+	target_link_libraries(networkit_benchmarks
+			PRIVATE
+			benchmark_main benchmark
+			networkit
+			)
+
+	set_target_properties(networkit_tests PROPERTIES
+			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
+			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
+			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
+endif()
+
+function(networkit_add_gbenchmark MOD NAME)
+	if (NETWORKIT_BUILD_BENCHMARKS)
+		set(BENCH_SOURCE ${CMAKE_CURRENT_LIST_DIR}/${NAME}.cpp)
+
+		if (NETWORKIT_MONOLITH)
+			target_sources(networkit_benchmarks PRIVATE ${BENCH_SOURCE})
+
+		else()
+			if (NOT TARGET networkit_${MOD})
+				MESSAGE(FATAL_ERROR "Unknown NetworKit module '${MOD}'")
+			endif()
+
+			set(TARGET_NAME "networkit_${MOD}_${NAME}")
+
+			add_executable(${TARGET_NAME} ${BENCH_SOURCE})
+			message("${TARGET_NAME}: ${BENCH_SOURCE}")
+
+			target_link_libraries(${TARGET_NAME}
+				PRIVATE
+					benchmark_main benchmark
+					networkit_${MOD})
+
+			set_target_properties(${TARGET_NAME} PROPERTIES
+					CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
+					COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
+					LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
+
+			foreach(dep IN LISTS ARGN)
+				target_link_libraries(${TARGET_NAME} PRIVATE networkit_${dep})
+			endforeach()
+		endif()
+	endif()
+endfunction(networkit_add_gbenchmark)
 
 ################################################################################
 # Subdirectories
