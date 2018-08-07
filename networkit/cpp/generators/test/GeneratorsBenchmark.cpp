@@ -26,6 +26,16 @@
 
 namespace NetworKit {
 
+class UniformReal {
+public:
+    explicit UniformReal(int seed) : gen(seed) {}
+    double operator()() {return dist(gen);}
+
+private:
+    std::mt19937_64 gen;
+    std::uniform_real_distribution<double> dist{0.0, std::nexttoward(1.0, 2.0)};
+};
+
 
 TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 	// parameters for Erdös-Renyi
@@ -38,15 +48,12 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
 
 	// prepare a random generator for each possible thread
 	int maxThreads = omp_get_max_threads();
-	std::vector< std::function<double()> > randomPerThread;
+	std::vector< UniformReal > randomPerThread;
 	std::random_device device;
 	std::uniform_int_distribution<uint64_t> intDist;
 	for (int tid = 0; tid < maxThreads; tid++) {
 		auto seed = intDist(device);
-		std::mt19937_64 gen(seed);
-		std::uniform_real_distribution<double> dist{0.0, std::nexttoward(1.0, 2.0)};
-		auto rdn = std::bind(dist, gen);
-		randomPerThread.push_back(rdn);
+		randomPerThread.emplace_back(seed);
 	}
 
 	count m_actual;
