@@ -180,9 +180,14 @@ from setuptools import Command
 from setuptools import Extension
 
 class build_ext(Command):
-	user_options = [ ]
+	user_options = [
+		('inplace', 'i',
+			"ignore build-lib and put compiled extensions into the source " +
+			"directory alongside your pure Python modules"),
+	]
 
 	def initialize_options(self):
+		self.inplace = False
 		self.build_lib = None # Output directory for libraries
 		self.build_temp = None # Temporary directory
 
@@ -218,7 +223,12 @@ class build_ext(Command):
 	def run(self):
 		# A generic build_ext command for cmake would iterate over all self.extensions.
 		# However, we know that we only want to build a single extension, i.e. NetworKit.
-		buildNetworKit(self.build_lib)
+		prefix = self.build_lib
+		if self.inplace:
+			# The --inplace implementation is less sophisticated than in distutils,
+			# but it should be sufficient for NetworKit.
+			prefix = self.distribution.src_root or os.getcwd()
+		buildNetworKit(prefix)
 
 ################################################
 # initialize python setup
