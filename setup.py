@@ -180,16 +180,24 @@ from setuptools import Command
 from setuptools import Extension
 
 class build_ext(Command):
+	sep_by = " (separated by '%s')" % os.pathsep
 	user_options = [
 		('inplace', 'i',
 			"ignore build-lib and put compiled extensions into the source " +
 			"directory alongside your pure Python modules"),
+		('include-dirs=', 'I',
+			"list of directories to search for header files" + sep_by),
+		('library-dirs=', 'L',
+			"directories to search for external C libraries" + sep_by),
 	]
 
 	def initialize_options(self):
-		self.inplace = False
+		# TODO: While we accept --include-dirs and --library-dirs, those options are not implemented yet.
 		self.build_lib = None # Output directory for libraries
 		self.build_temp = None # Temporary directory
+		self.inplace = False
+		self.include_dirs = None
+		self.library_dirs = None
 
 		self.extensions = None
 		self.package = None
