@@ -27,59 +27,56 @@
 
 namespace NetworKit {
 
-TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
-	// parameters for Erdös-Renyi
-	count n = 100000;
-	double p = 0.001;
-	count m_expected = p * n * (n + 1) / 2;
+constexpr node graphBuilderNodes = 100000;
+constexpr double graphBuilderProb = 0.001;
+constexpr double graphBuilderExpEdges = 0.5 * graphBuilderNodes * (graphBuilderNodes + 1) * graphBuilderProb;
 
-	GraphBuilder builder;
-
-	count m_actual;
-	uint64_t t1, t2;
-
-	// half parallel way
-	m_actual = 0;
-	t1 = timeOnce([&]() {
-		builder = GraphBuilder(n);
-		ErdosRenyiEnumerator ere(n, p, false);
+TEST_F(GeneratorsBenchmark, benchmarkGraphBuilderParFillSeqBuild) {
+	GraphBuilder builder(graphBuilderNodes);
+	count m_actual = 0;
+	auto t1 = timeOnce([&]() {
+		ErdosRenyiEnumerator ere(graphBuilderNodes, graphBuilderProb, false);
 		ere.forEdgesParallel([&](int tid, node u, node v) {
 			builder.addHalfEdge(u, v);
 		});
 	});
-	t2 = timeOnce([&]() {
-		auto G = builder.toGraph(true);
-		m_actual = G.numberOfEdges();
-	});
-	EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
-	std::cout << "parallelForNodePairs + toGraphSequentiel:\t\t" << t1 << " + " << t2 << " = " << (t1 + t2) << " ms\n";
-
-	// fully parallel way
-	m_actual = 0;
-	t1 = timeOnce([&]() {
-		builder = GraphBuilder(n);
-		ErdosRenyiEnumerator ere(n, p, false);
-		ere.forEdgesParallel([&](int tid, node u, node v) {
-			builder.addHalfEdge(u, v);
-		});
-	});
-	t2 = timeOnce([&]() {
+	auto t2 = timeOnce([&]() {
 		auto G = builder.toGraph(true, false);
 		m_actual = G.numberOfEdges();
 	});
-	EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
-	std::cout << "parallelForNodePairs + toGraphParallel:\t\t" << t1 << " + " << t2 << " = " << (t1 + t2) << " ms\n";
+	EXPECT_NEAR(m_actual / graphBuilderExpEdges, 1.0, 0.1);
+	std::cout << "parallelForNodePairs + toGraphSequentiel:\t\t" << t1 << " + " << t2 << " = " << (t1 + t2) << " ms\n";
+}
 
-	// old way
-	t1 = timeOnce([&]() {
-		auto G = Graph(n);
-		ErdosRenyiEnumerator ere(n, p, false);
+TEST_F(GeneratorsBenchmark, benchmarkGraphBuilderParFillParBuild) {
+	GraphBuilder builder(graphBuilderNodes);
+	count m_actual = 0;
+	auto t1 = timeOnce([&]() {
+		ErdosRenyiEnumerator ere(graphBuilderNodes, graphBuilderProb, false);
+		ere.forEdgesParallel([&](int tid, node u, node v) {
+			builder.addHalfEdge(u, v);
+		});
+	});
+	auto t2 = timeOnce([&]() {
+		auto G = builder.toGraph(true, true);
+		m_actual = G.numberOfEdges();
+	});
+	EXPECT_NEAR(m_actual / graphBuilderExpEdges, 1.0, 0.1);
+	std::cout << "parallelForNodePairs + toGraphParallel:\t\t" << t1 << " + " << t2 << " = " << (t1 + t2) << " ms\n";
+}
+
+
+TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
+	count m_actual;
+	auto t1 = timeOnce([&]() {
+		auto G = Graph(graphBuilderNodes);
+		ErdosRenyiEnumerator ere(graphBuilderNodes, graphBuilderProb, false);
 		ere.forEdges([&](int tid, node u, node v) {
 			G.addEdge(u, v);
 		});
 		m_actual = G.numberOfEdges();
 	});
-	EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
+	EXPECT_NEAR(m_actual / (double) graphBuilderExpEdges, 1.0, 0.1);
 	std::cout << "forNodePairs + Graph.addEdge:\t\t\t\t" << t1 << " ms\n";
 }
 
