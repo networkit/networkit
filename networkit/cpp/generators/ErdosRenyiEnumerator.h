@@ -20,12 +20,33 @@
 
 namespace NetworKit {
 
-
+/**
+ * Generates a stream of edges of a G(n,p) graph. The edges are not
+ * written to memory, but emitted only via usual @a forEdges semantics
+ * to a callback.
+ *
+ * Use @ref ErdosRenyiGenerator as a wrapper to output a graph.
+ */
 class ErdosRenyiEnumerator {
 	//! this type is used only internally for fixed-point arithmetic
 	using integral_t = unsigned long long;
 
 public:
+	/**
+	 * Generates a G(n, p) graph for n > 1 and 0 < p < 1.
+	 *
+	 * For an @b directed graph, the resulting edge stream is equivalent
+	 * to throwing a coin for each node pair (u, v) and accepting it
+	 * with probability @a prob; i.e. the stream may include self-loops.
+	 * Hence the expected number of edges is n*n*prob.
+	 *
+	 * For an @b undirected graph, all node pairs (u, v) with 1 < v < u < n
+	 * are considered. Hence the expected number of edges is n*(n-1)/2*prob
+	 *
+	 * @param n			Number of nodes to generate
+	 * @param prob      Probability that an edge exists
+	 * @param directed  Selects an directed graph
+	 */
 	ErdosRenyiEnumerator(node n, double prob, bool directed) :
 		n{n},
 		inv_log2_cp{1.0 / std::log2(1.0 - prob)},
@@ -36,15 +57,22 @@ public:
 		assert(prob < 1);
 	}
 
-	template<typename Handle>
-	void forEdges(Handle handle) {
-		if (directed) {
-			enumerateDirected(handle, 0, 0, n);
-		} else {
-			enumerateUndirected(handle, 0, 0, n);
-		}
-	}
-
+	/**
+	 * Generates an Erdos-Renyi-Graph as specified in the constructor on the fly.
+	 * The stream is generated in parallel on as many core as an OpenMP parallel
+	 * section is allotted to. For each edge the callback @a handle is invoked.
+	 * Two signatures are supported for callback:
+	 *
+	 *   (unsigned tid, node u, node v)
+	 *   (node u, node v)
+	 *
+	 * where tid is the current thread id as returned by omp_get_thread_num() and
+	 * u and v are the edge's nodes. In case of an undirected graph u > v.
+	 *
+	 * It is guaranteed that no two threads emit edges for the same u.
+	 *
+	 * It can be expected that all threads emit a similar number of edges.
+	 */
 	template<typename Handle>
 	void forEdgesParallel(Handle handle) {
 		if (directed) {
