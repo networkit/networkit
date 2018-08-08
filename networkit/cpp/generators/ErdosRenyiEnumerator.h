@@ -22,11 +22,13 @@ namespace NetworKit {
 
 
 class ErdosRenyiEnumerator {
+	//! this type is used only internally for fixed-point arithmetic
+	using integral_t = unsigned long long;
+
 public:
 	ErdosRenyiEnumerator(node n, double prob, bool directed) :
 		n{n},
-		prob{prob},
-		inv_log_cp{1.0 / std::log(1.0 - prob)},
+		inv_log2_cp{1.0 / std::log2(1.0 - prob)},
 		directed{directed}
 	{
 		assert(n > 0);
@@ -82,11 +84,23 @@ public:
 		}
 	}
 
+	/**
+	 * Similarly to @a forEdgesParallel but computed only on one thread.
+	 * If the callback accepts three arguments tid is always 0.
+	 */
+	template<typename Handle>
+	void forEdges(Handle handle) {
+		if (directed) {
+			enumerateDirected(handle, 0, 0, n);
+		} else {
+			enumerateUndirected(handle, 0, 0, n);
+		}
+	}
+
 
 private:
 	const node n;
-	const double prob;
-	const double inv_log_cp;
+	const double inv_log2_cp;
 	const bool directed;
 
 // Directed is easier as we simply iterated over the complete
@@ -97,8 +111,7 @@ private:
 
 	// random source
 		auto& prng = Aux::Random::getURNG(); // this is thread local
-		std::uniform_real_distribution<double> distr{
-			std::nextafter(0.0, 1.0), std::nextafter(1.0, 0.0)};
+		std::uniform_int_distribution<integral_t> distr{1, std::numeric_limits<integral_t>::max()};
 
 		count curr = node_begin;
 		node next = -1;
@@ -113,7 +126,7 @@ private:
 				callHandle(handle, tid, curr, next);
 			}
 
-		}
+ 		}
 	}
 
 // In the undirected case we only traverse the lower triangle (excluding the
@@ -124,8 +137,7 @@ private:
 
 		// random source
 		auto& prng = Aux::Random::getURNG(); // this is thread local
- 		std::uniform_real_distribution<double> distr{
-			std::nextafter(0.0, 1.0), std::nextafter(1.0, 0.0)};
+ 		std::uniform_int_distribution<integral_t> distr{1, std::numeric_limits<integral_t>::max()};
 
 		count curr = std::max<node>(node_begin, 1u);
 		node next = -1;
@@ -150,10 +162,41 @@ private:
 	}
 
 	// Skip Magic due to Batagelj and Brandes
-	count skip_distance(double random_prob) const {
-		assert(0 < random_prob && random_prob < 1);
-		return 1 + static_cast<count>(floor(log(random_prob) * inv_log_cp));
+	count skip_distance(integral_t random_prob) const {
+		/*
+		 * The original idea is to compute
+		 * 1 + floor(log(1 - x) / log(1 - prob)) where x is
+		 * a uniform real from (0, 1).
+		 *
+		 * We now precompute inv_log_cp := 1.0 / log(1 - prob) once
+		 * to avoid recomputing the second log and to replace a
+		 * division by a multiplication. Hence we compute
+		 * 1 + floor(log(1 - x) * inv_log_cp).
+		 *
+		 * Observe that P[x = k] = P[x = 1-k] and hence we avoid the subtraction:
+		 * 1 + floor(log(x) * inv_log_cp).
+		 *
+		 * Then, typically log() is slower than log2(). On my
+		 * machines its a factor of roughly 1.5. Thus we replace
+		 * log by log2 in both equations:
+		 *  inv_log2_cp := 1.0 / log2(1 - prob)
+		 *  1 + floor(log2(x) * inv_log2_cp)
+		 *
+		 * Now we optimise the generation of the random number.
+		 * uniform_real_distribution is roughly 3 times slower than
+		 * uniform_int_distribution. Hence let's switch to fix-point arithmetic.
+		 * Let X a real drawn uniformly from (0, 2**64), i.e. we model
+		 * X = (2**64) * x:
+		 *
+		 *    1 + floor(log2(x) * inv_log2_cp)
+		 *  = 1 + floor(log2(X/2**64) * inv_log2_cp)
+		 *  = 1 + floor((log2(X) - 64) * inv_log2_cp).
+		 */
+		return 1 + static_cast<count>(
+			floor((log2(random_prob) - 8*sizeof(integral_t)) * inv_log2_cp)
+	    );
 	}
+
 
 // SFINAE to allow using functors with and without thread id as parameter
 	template <typename Handle>
