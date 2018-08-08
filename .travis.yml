@@ -72,9 +72,18 @@ matrix:
       os: linux
       addons: *gcc8
 
+    - name: MacOS default image + libomp + cmake >=3.12
+      env: CC=cc CXX=c++
+      os: osx
+      sudo: false
+      before_install:
+        - brew install libomp
+        - brew upgrade cmake # cmake on osx images (xode9.4) is on 3.11.4
+
 script:
  - $CXX --version
  - python3 --version
+ - cmake --version
 
  - python3 -m venv pyenv && . pyenv/bin/activate
  - pip3 install --upgrade pip
