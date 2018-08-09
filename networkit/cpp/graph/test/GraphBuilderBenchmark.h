@@ -20,7 +20,7 @@ class GTestBenchmark : public testing::Test {
 public:
 	static void measureInMs(std::function<int()> func, int iterations = 1) {
 		Aux::Timer timer;
-		std::vector<uint64_t> runningTimes(iterations);
+		std::vector<long long unsigned> runningTimes(iterations);
 		for (int i = 0; i < iterations; i++) {
 			printf("Iteration %d of %d ...", i + 1, iterations);
 			
@@ -33,7 +33,9 @@ public:
 			printf("done (took %llu ms, result: %d).\n", runningTimes[i], x);
 		}
 
-		uint64_t sum = 0, min = runningTimes[0], max = runningTimes[0];
+		long long unsigned sum = 0;
+		long long unsigned min = runningTimes[0];
+		long long unsigned max = runningTimes[0];
 		for (auto t : runningTimes) {
 			sum += t;
 			if (t < min) min = t;
@@ -42,11 +44,21 @@ public:
 
 		printf("Iterations: %d, average runtime: %1.1f ms, fastest run: %llu ms, slowest run: %llu ms\n", iterations, (double) sum / iterations, min, max);
 	}
+
+	template <typename L>
+	uint64_t timeOnce(L f) {
+		// TODO should be moved somewhere else (Benchmark parent class or the Timer class itself)
+		Aux::Timer timer;
+		timer.start();
+		f();
+		timer.stop();
+		return timer.elapsedMilliseconds();
+	}
 };
 
 class GraphBuilderBenchmark : public GTestBenchmark {
 public:
-	GraphBuilderBenchmark();
+	GraphBuilderBenchmark() = default;
 };
 
 } /* namespace NetworKit */
