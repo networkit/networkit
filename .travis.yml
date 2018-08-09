@@ -78,9 +78,12 @@ script:
 
  - python3 -m venv pyenv && . pyenv/bin/activate
  - pip3 install --upgrade pip
- - pip3 install cython # required because git does not contain _NetworKit
- - NETWORKIT_PARALLEL_JOBS=2 pip3 install -e .
- - pip3 install ipython # required for tests
+ # Required because git does not contain _NetworKit.
+ - pip3 install cython
+ # -v ensures that pip reports the cmake output; prevents a Travis timeout.
+ - NETWORKIT_PARALLEL_JOBS=2 pip3 -v install -e .
+ # ipython is required for tests.
+ - pip3 install ipython
  - python3 -m unittest discover -v networkit/test/
 
  - mkdir debug_test && cd "$_"
