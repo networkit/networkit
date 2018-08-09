@@ -20,7 +20,7 @@ namespace Aux {
 /**
  * Provides several functions for random-numbers.
  *
- * All functions are guaranteed to be thread-safe if and only if at least GCC 4.8 is used
+ * All functions are guaranteed to be thread-safe.
  */
 namespace Random {
 
@@ -37,7 +37,7 @@ void setSeed(uint64_t seed, bool useThreadId);
 uint64_t getSeed();
 
 /**
- * @returns a reference to a seeded URNG that is thread_local iff GCC 4.8 or later is used.
+ * @returns a reference to a seeded URNG that is thread_local.
  */
 std::mt19937_64& getURNG();
 
