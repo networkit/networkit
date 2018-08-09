@@ -1,12 +1,12 @@
-#ifndef RANDOM_H_
-#define RANDOM_H_
-
 /*
  * Random.h
  *
  *  Created on: 02.01.2014
  *      Author: FJW
  */
+
+#ifndef RANDOM_H_
+#define RANDOM_H_
 
 #include <cassert>
 #include <cstddef>
@@ -71,14 +71,6 @@ double probability();
  * access a random element of a container.
  */
 std::size_t index(std::size_t max);
-
-/**
- * @returns an integer distributed binomially
- * @param n 	number of trials
- * @param p 	success probability
- */
-//uint64_t binomial(double n, double p);
-
 
 /**
  * @returns a uniform random choice from an indexable container of elements.
