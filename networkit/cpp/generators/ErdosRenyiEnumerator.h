@@ -186,8 +186,6 @@ private:
 				callHandle(handle, tid, curr, next);
 			}
 		}
-
-		std::cout << max_skip << "\n";
 	}
 
 // Optimized version of the computation of the skip distance as
@@ -254,6 +252,8 @@ private:
 		return h(u, v);
 	}
 };
+
+using ErdosRenyiEnumeratorDefault = ErdosRenyiEnumerator<true>;
 
 }
 

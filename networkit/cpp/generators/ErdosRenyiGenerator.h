@@ -9,20 +9,15 @@
 #define ERDOSRENYIGENERATOR_H_
 
 #include "StaticGraphGenerator.h"
-#include <cmath>
 
 namespace NetworKit {
-
 /**
  * @ingroup generators
  * Creates G(n, p) graphs.
+ *
+ * This class is a wrapper to @ref ErdosRenyiEnumerator.
  */
 class ErdosRenyiGenerator: public StaticGraphGenerator {
-protected:
-	count n;
-	double p;
-	bool directed;
-
 public:
 	/**
 	 * Creates random graphs in the G(n,p) model.
@@ -36,6 +31,11 @@ public:
 	ErdosRenyiGenerator(count nNodes, double prob, bool directed=false);
 
 	virtual Graph generate();
+
+private:
+	node nNodes;
+	double prob;
+	bool directed;
 };
 
 } /* namespace NetworKit */
