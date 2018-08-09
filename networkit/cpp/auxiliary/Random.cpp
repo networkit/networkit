@@ -11,17 +11,6 @@
 
 #include "Random.h"
 
-// If GCC does not support thread local, we are sad and don't use it:
-#ifdef __GNUC__
-#	if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)
-#		define AUX_THREAD_LOCAL thread_local
-#	else
-#		define AUX_THREAD_LOCAL
-#	endif
-#else // we don't know our plattform, so don't support it:
-#	define AUX_THREAD_LOCAL 
-#endif
-
 namespace Aux {
 namespace Random {
 
@@ -40,7 +29,7 @@ void setSeed(uint64_t seed, bool useThreadId) {
 
 uint64_t getSeed() {
 	if (!staticSeed) {
-		AUX_THREAD_LOCAL static std::random_device urng{};
+		thread_local static std::random_device urng{};
 		std::uniform_int_distribution<uint64_t> dist{};
 		return dist(urng);
 	} else if (seedUseThredId) {
@@ -50,10 +39,9 @@ uint64_t getSeed() {
 	}
 }
 
-
 std::mt19937_64& getURNG() {
-	AUX_THREAD_LOCAL static std::mt19937_64 generator{getSeed()};
-	AUX_THREAD_LOCAL static uint64_t localSeedGeneration = std::numeric_limits<uint64_t>::max();
+	thread_local static std::mt19937_64 generator{getSeed()};
+	thread_local static uint64_t localSeedGeneration = std::numeric_limits<uint64_t>::max();
 	if (staticSeed && localSeedGeneration != globalSeedGeneration) {
 		generator.seed(getSeed());
 		localSeedGeneration = globalSeedGeneration;
@@ -62,7 +50,7 @@ std::mt19937_64& getURNG() {
 }
 
 uint64_t integer() {
-	AUX_THREAD_LOCAL static std::uniform_int_distribution<uint64_t> dist{};
+	thread_local static std::uniform_int_distribution<uint64_t> dist{};
 	return dist(getURNG());
 }
 uint64_t integer(uint64_t upperBound) {
@@ -75,7 +63,7 @@ uint64_t integer(uint64_t lowerBound, uint64_t upperBound) {
 }
 
 double real() {
-	AUX_THREAD_LOCAL static std::uniform_real_distribution<double> dist{};
+	thread_local static std::uniform_real_distribution<double> dist{};
 	return dist(getURNG());
 }
 double real(double upperBound) {
@@ -88,7 +76,7 @@ double real(double lowerBound, double upperBound) {
 }
 
 double probability() {
-	AUX_THREAD_LOCAL static std::uniform_real_distribution<double> dist{0.0, std::nexttoward(1.0, 2.0)};
+	thread_local static std::uniform_real_distribution<double> dist{0.0, std::nexttoward(1.0, 2.0)};
 	return dist(getURNG());
 }
 
