@@ -6,12 +6,13 @@
 #include "../auxiliary/SignalHandling.h"
 #include "../auxiliary/Parallel.h"
 #include <atomic>
+#include <memory>
 
 void NetworKit::CoverHubDominance::run() {
 	hasRun = false;
 	Aux::SignalHandler handler;
 
-	std::vector<std::atomic<count> > maxInternalDeg(C.upperBound());
+	std::unique_ptr<std::atomic<count>[]> maxInternalDeg(new std::atomic<count>[C.upperBound()]{});
 
 	handler.assureRunning();
 

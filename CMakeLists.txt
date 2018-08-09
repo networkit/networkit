@@ -84,6 +84,8 @@ if (NETWORKIT_MONOLITH)
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
 			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
+	install(TARGETS networkit
+			LIBRARY DESTINATION .)
 	if (NETWORKIT_PYTHON)
 		if(EXISTS "${PROJECT_SOURCE_DIR}/networkit/_NetworKit.cpp")
 			add_library(_NetworKit MODULE networkit/_NetworKit.cpp)
@@ -95,6 +97,16 @@ if (NETWORKIT_MONOLITH)
 						LINK_FLAGS "${NETWORKIT_LINK_FLAGS}"
 						PREFIX ""
 						OUTPUT_NAME "_NetworKit.${NETWORKIT_PYTHON_SOABI}")
+			# DSOs on Apple OSes use different conventions for RPATH.
+			if(APPLE)
+				set_target_properties(_NetworKit PROPERTIES
+						INSTALL_RPATH "@loader_path")
+			else()
+				set_target_properties(_NetworKit PROPERTIES
+						INSTALL_RPATH "$ORIGIN")
+			endif()
+			install(TARGETS _NetworKit
+					LIBRARY DESTINATION .)
 		else()
 			message(FATAL_ERROR "networkit/_NetworKit.cpp is missing. Invoke Cython manually.")
 		endif()

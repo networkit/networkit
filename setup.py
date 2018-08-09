@@ -1,14 +1,20 @@
-import sys
+#!/usr/bin/python3
+
 import shutil
+import sys
+import sysconfig
 import os
 
-cmakeCompiler = "" #possibilty to specify a compiler
-buildDirectory = "build_python"
+cmakeCompiler = None
+buildDirectory = "build/build_python"
 ninja_available = False
 
 if sys.version_info.major < 3:
 	print("ERROR: NetworKit requires Python 3.")
 	sys.exit(1)
+
+if "NETWORKIT_OVERRIDE_CXX" in os.environ:
+	cmakeCompiler = os.environ["NETWORKIT_OVERRIDE_CXX"]
 
 if shutil.which("cmake") is None:
 	print("ERROR: NetworKit compilation requires cmake.")
@@ -37,7 +43,7 @@ parser.add_argument("-j", "--jobs", dest="jobs", help="specify number of jobs")
 if options.jobs is not None:
 	jobs = options.jobs
 if "NETWORKIT_PARALLEL_JOBS" in os.environ:
-    jobs = int(os.environ["NETWORKIT_PARALLEL_JOBS"])
+	jobs = int(os.environ["NETWORKIT_PARALLEL_JOBS"])
 else:
 	import multiprocessing
 	jobs = multiprocessing.cpu_count()
@@ -81,15 +87,15 @@ def determineCompiler(candidates, std, flags):
 			if subprocess.call(cmd,stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) == 0:
 				os.remove("sample.cpp")
 				os.remove("test_build")
-				return compiler, std
+				return compiler
 		except:
 			pass
-	return "",""
+	return ""
 
 # only check for a compiler if none is specified
-if cmakeCompiler == "":
-	cmakeCompiler,_ = determineCompiler(candidates, "c++11", ["-fopenmp"])
-	if cmakeCompiler == "":
+if cmakeCompiler is None:
+	cmakeCompiler = determineCompiler(candidates, "c++11", ["-fopenmp"])
+	if cmakeCompiler is None:
 		print("ERROR: No suitable compiler found. Install any of these: ",candidates)
 		exit(1)
 
@@ -123,20 +129,24 @@ def cythonizeFile(filepath):
 			exit(1)
 		print("_NetworKit.pyx cythonized", flush=True)
 
-def buildNetworKit(withTests = False):
+def buildNetworKit(install_prefix, withTests = False):
 	# Cythonize file
 	cythonizeFile("networkit/_NetworKit.pyx")
-	if not os.path.isdir(buildDirectory):
+	try:
 		os.makedirs(buildDirectory)
+	except FileExistsError:
+		pass
 	# Build cmake call
+	abs_prefix = os.path.join(os.getcwd(), install_prefix)
 	comp_cmd = ["cmake","-DCMAKE_BUILD_TYPE=Release"]
+	comp_cmd.append("-DCMAKE_INSTALL_PREFIX="+abs_prefix)
 	comp_cmd.append("-DCMAKE_CXX_COMPILER="+cmakeCompiler)
 	from sysconfig import get_paths, get_config_var
 	comp_cmd.append("-DNETWORKIT_PYTHON="+get_paths()['include']) #provide python.h files
 	comp_cmd.append("-DNETWORKIT_PYTHON_SOABI="+get_config_var('SOABI')) #provide lib env specification
 	if ninja_available:
 		comp_cmd.append("-GNinja")
-	comp_cmd.append("..") #call CMakeLists.txt from networkit root
+	comp_cmd.append(os.getcwd()) #call CMakeLists.txt from networkit root
 	# Run cmake
 	print("initializing NetworKit compilation with: '{0}'".format(" ".join(comp_cmd)), flush=True)
 	if not subprocess.call(comp_cmd, cwd=buildDirectory) == 0:
@@ -144,9 +154,9 @@ def buildNetworKit(withTests = False):
 		exit(1)
 	build_cmd = []
 	if ninja_available:
-		build_cmd = ["ninja", "-j"+str(jobs)]
+		build_cmd = ["ninja", "install", "-j"+str(jobs)]
 	else:
-		build_cmd = ["make", "-j"+str(jobs)]
+		build_cmd = ["make", "install", "-j"+str(jobs)]
 	print("Build with: '{0}'".format(" ".join(build_cmd)), flush=True)
 	if not subprocess.call(build_cmd, cwd=buildDirectory) == 0:
 		print("Build tool returned an error, exiting setup.py")
@@ -155,22 +165,78 @@ def buildNetworKit(withTests = False):
 ################################################
 # custom build commands to integrate with setuptools
 ################################################
-from setuptools.command.build_ext import build_ext as _build_ext
-from setuptools import Command
 
-class buildNetworKitCommand(_build_ext):
+# Unfortunately, there is not simple way to invoke external commands from setuptools.
+# Thus, we replace the 'build_ext' stage of setuptools completely.
+# This looks a bit messy as we need to make sure we satisfy the (undocumented) internal APIs
+# of setuptools (and distutils, which setuptools is based on).
+
+# Our build_ext command compiles NetworKit using cmake and installs it into a directory
+# supplied by distutils/setuptools. distutils/setuptools picks up all .so files from that
+# directory when creating a Python package so that we do not have to do any
+# additional installation.
+
+from setuptools import Command
+from setuptools import Extension
+
+class build_ext(Command):
+	sep_by = " (separated by '%s')" % os.pathsep
+	user_options = [
+		('inplace', 'i',
+			"ignore build-lib and put compiled extensions into the source " +
+			"directory alongside your pure Python modules"),
+		('include-dirs=', 'I',
+			"list of directories to search for header files" + sep_by),
+		('library-dirs=', 'L',
+			"directories to search for external C libraries" + sep_by),
+	]
+
 	def initialize_options(self):
-		_build_ext.initialize_options(self)
+		# TODO: While we accept --include-dirs and --library-dirs, those options are not implemented yet.
+		self.build_lib = None # Output directory for libraries
+		self.build_temp = None # Temporary directory
+		self.inplace = False
+		self.include_dirs = None
+		self.library_dirs = None
+
+		self.extensions = None
+		self.package = None
 
 	def finalize_options(self):
-		_build_ext.finalize_options(self)
+		self.set_undefined_options('build',
+				('build_lib', 'build_lib'),
+				('build_temp', 'build_temp'))
+
+		self.extensions = self.distribution.ext_modules
+		self.package = self.distribution.ext_package
+
+	def get_source_files(self):
+		sources = [ ]
+		for subdir, dirs, files in os.walk('networkit'):
+			for filename in files:
+				sources.append(os.path.join(subdir, filename))
+		return sources
+
+	# Returns the full Python module name of an extension.
+	# Prepends the ext_package setup() option to an extension (see distutils).
+	def get_ext_fullname(self, extname):
+		if self.package is not None:
+			return self.package + '.' + extname
+		return extname
+
+	# Returns the file name of the DSO implementing a module (see distutils).
+	def get_ext_filename(self, fullname):
+		return fullname + '.' + sysconfig.get_config_var('SOABI') + '.so'
 
 	def run(self):
-		buildNetworKit()
-		from sysconfig import get_config_var
-		libname = "_NetworKit."+get_config_var('SOABI')+".so"
-		shutil.copyfile(buildDirectory+"/"+libname,libname)
-		#os.symlink(buildDirectory+"/"+libname, libname) # would be nicer but setup.py install has to be adapted then
+		# A generic build_ext command for cmake would iterate over all self.extensions.
+		# However, we know that we only want to build a single extension, i.e. NetworKit.
+		prefix = self.build_lib
+		if self.inplace:
+			# The --inplace implementation is less sophisticated than in distutils,
+			# but it should be sufficient for NetworKit.
+			prefix = self.distribution.src_root or os.getcwd()
+		buildNetworKit(prefix)
 
 ################################################
 # initialize python setup
@@ -192,7 +258,8 @@ setup(
 	keywords			= version.keywords,
 	platforms			= version.platforms,
 	classifiers			= version.classifiers,
-	cmdclass			= {'build_ext' : buildNetworKitCommand},
+	cmdclass			= {'build_ext': build_ext},
+	ext_modules			= [Extension('_NetworKit', sources=[])],
 	test_suite			= 'nose.collector',
 	install_requires	= version.install_requires,
 	zip_safe			= False) # see https://cython.readthedocs.io/en/latest/src/reference/compilation.html
