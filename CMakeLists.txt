@@ -14,6 +14,7 @@ option(NETWORKIT_MONOLITH "Build single library (and tests is requested; require
 option(NETWORKIT_NATIVE "Optimize for native architecture (often better performance)" OFF)
 option(NETWORKIT_WARNINGS "Issue more warnings" OFF)
 option(NETWORKIT_INCLUDESYMLINK "Create symlink to cpp directory" ON)
+option(NETWORKIT_FLATINSTALL "Install into a flat directory structure (useful when building a Python package)" OFF)
 set(NETWORKIT_PYTHON "" CACHE STRING "Directory containing Python.h. Implies MONOLITH=TRUE")
 set(NETWORKIT_PYTHON_SOABI "" CACHE STRING "Platform specific file extension. Implies MONOLITH=TRUE")
 
@@ -110,6 +111,12 @@ if(NOT NETWORKIT_BUILD_CORE)
 	find_library(EXTERNAL_NETWORKIT_CORE NAMES networkit DOC "External NetworKit core library")
 endif()
 
+if(NETWORKIT_FLATINSTALL)
+	set(NETWORKIT_LIB_DEST ".")
+else()
+	set(NETWORKIT_LIB_DEST "lib/")
+endif()
+
 ################################################################################
 # Use TLX as a CMake submodule
 if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/tlx/CMakeLists.txt")
@@ -146,8 +153,8 @@ if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
 			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
 
 	install(TARGETS networkit
-			LIBRARY DESTINATION .
-			ARCHIVE DESTINATION .)
+			LIBRARY DESTINATION ${NETWORKIT_LIB_DEST}
+			ARCHIVE DESTINATION ${NETWORKIT_LIB_DEST})
 
 	target_link_libraries(networkit PRIVATE tlx)
 endif()
@@ -184,7 +191,7 @@ if(NETWORKIT_PYTHON)
 				INSTALL_RPATH "$ORIGIN")
 	endif()
 	install(TARGETS _NetworKit
-			LIBRARY DESTINATION .)
+			LIBRARY DESTINATION ${NETWORKIT_LIB_DEST})
 endif()
 
 # Register a new NetworKit module named ${modname}
