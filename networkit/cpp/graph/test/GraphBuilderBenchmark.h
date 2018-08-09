@@ -11,8 +11,7 @@
 #define GRAPH_BUILDER_BENCHMARK_H_
 
 #include <gtest/gtest.h>
-
-#include "../GraphBuilder.h"
+#include <functional>
 #include "../../auxiliary/Timer.h"
 
 namespace NetworKit {
