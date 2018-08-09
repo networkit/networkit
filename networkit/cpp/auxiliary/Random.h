@@ -46,6 +46,11 @@ std::mt19937_64& getURNG();
  * @returns an integer distributed uniformly in an inclusive range;
  * @param upperBound the upper bound, default = UNINT64_T_MAX
  * @param lowerBound the lower bound, default = 0
+ *
+ * @warning Compared to obtaining a reference to a generator using
+ * @ref getURNG() and then using a local std::uniform_int_distribution,
+ * this method incurs a slow-down of up to 30%. Consider avoiding it
+ * in hot sections.
  */
 uint64_t integer();
 uint64_t integer(uint64_t upperBound);
@@ -55,6 +60,11 @@ uint64_t integer(uint64_t lowerBound, uint64_t upperBound);
  * @returns a double distributed uniformly in a half-open range: [lowerBound, upperBound)
  * @param upperBound default = 1.0
  * @param lowerBound default = 0.0
+ *
+ * @warning Compared to obtaining a reference to a generator using
+ * @ref getURNG() and then using a local std::uniform_int_distribution,
+ * this method incurs a slow-down of up to 30%. Consider avoiding it
+ * in hot sections.
  */
 double real();
 double real(double upperBound);
@@ -63,6 +73,11 @@ double real(double lowerBound, double upperBound);
 /**
  * @returns a double distributed uniformly in the range [0, 1]
  * @note this differs from real() in returning a value in a closed instead of a half-open range.
+ *
+ * @warning Compared to obtaining a reference to a generator using
+ * @ref getURNG() and then using a local std::uniform_int_distribution,
+ * this method incurs a slow-down of up to 30%. Consider avoiding it
+ * in hot sections.
  */
 double probability();
 
