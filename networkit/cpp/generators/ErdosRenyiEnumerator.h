@@ -26,7 +26,16 @@ namespace NetworKit {
  * to a callback.
  *
  * Use @ref ErdosRenyiGenerator as a wrapper to output a graph.
+ *
+ * The enumerator implements both floating point and fixed point arithmetic,
+ * to compute the edges which can be selected via the template parameter
+ * @a UseFixedPoint. It defaults to true, as this algorithm is typically
+ * 2 to 3 times faster. In theory, floating point arithmetic allows for
+ * longer runs of consecutive edges not selected. As those events virtually
+ * never occur, there are no measureable implications of using the faster
+ * variant.
  */
+template <bool UseFixedPoint = true>
 class ErdosRenyiEnumerator {
 	//! this type is used only internally for fixed-point arithmetic
 	using integral_t = unsigned long long;
@@ -49,6 +58,7 @@ public:
 	 */
 	ErdosRenyiEnumerator(node n, double prob, bool directed) :
 		n{n},
+		prob{prob},
 		inv_log2_cp{1.0 / std::log2(1.0 - prob)},
 		directed{directed}
 	{
@@ -85,7 +95,7 @@ public:
 				const node first_node = std::min<node>(n, tid * chunk_size);
 				const node last_node  = std::min<node>(n, (tid+1) * chunk_size);
 
-				enumerateDirected(handle, tid, first_node, last_node);
+				enumerate<true>(handle, tid, first_node, last_node);
 			}
 		} else {
 			#pragma omp parallel
@@ -107,78 +117,67 @@ public:
 				}
 
 				if (first_node < last_node)
-					enumerateUndirected(handle, tid, first_node, last_node);
+					enumerate<false>(handle, tid, first_node, last_node);
 			}
 		}
 	}
 
 	/**
-	 * Similarly to @a forEdgesParallel but computed only on one thread.
+	 * Similarly to @ref forEdgesParallel but computed on one thread only.
 	 * If the callback accepts three arguments tid is always 0.
 	 */
 	template<typename Handle>
 	void forEdges(Handle handle) {
 		if (directed) {
-			enumerateDirected(handle, 0, 0, n);
+			enumerate<true>(handle, 0, 0, n);
 		} else {
-			enumerateUndirected(handle, 0, 0, n);
+			enumerate<false>(handle, 0, 0, n);
 		}
+	}
+
+	/**
+	 * Returns the expected number of edges to be generated.
+	 */
+	count expectedNumberOfEdges() const {
+		return prob * n * (directed ? n : (n-1) * 0.5);
 	}
 
 
 private:
-	const node n;
-	const double inv_log2_cp;
-	const bool directed;
-
-// Directed is easier as we simply iterated over the complete
-// adjacency matrix
-	template <typename Handle>
-	void enumerateDirected(Handle handle, unsigned tid, const node node_begin, const node node_end) const {
-		Aux::SignalHandler handler;
-
-	// random source
-		auto& prng = Aux::Random::getURNG(); // this is thread local
-		std::uniform_int_distribution<integral_t> distr{1, std::numeric_limits<integral_t>::max()};
-
-		count curr = node_begin;
-		node next = -1;
-		while (curr < node_end) {
-			handler.assureRunning();
-			next += skip_distance(distr(prng));
-
-			curr += next / n;
-			next = next % n;
-
-			if (curr < node_end) {
-				callHandle(handle, tid, curr, next);
-			}
-
- 		}
-	}
+	const node n; //< number of nodes
+	const double prob; //< probability p
+	const double inv_log2_cp; //<  1.0 / log2(1 - prob)
+	const bool directed; //< true if a directed graph should be generated
 
 // In the undirected case we only traverse the lower triangle (excluding the
 // diagonal) of the adjacency matrix
-	template <typename Handle>
-	void enumerateUndirected(Handle handle, unsigned tid, const node node_begin, const node node_end) const {
+	template <bool Directed, typename Handle>
+	void enumerate(Handle handle, unsigned tid, const node node_begin, const node node_end) const {
 		Aux::SignalHandler handler;
 
 		// random source
 		auto& prng = Aux::Random::getURNG(); // this is thread local
- 		std::uniform_int_distribution<integral_t> distr{1, std::numeric_limits<integral_t>::max()};
+		auto distr = get_distribution<UseFixedPoint>();
 
-		count curr = std::max<node>(node_begin, 1u);
+		count curr = node_begin;
+		if (!Directed && !curr) curr = 1;
 		node next = -1;
+
+		node max_skip = 0;
 
 		while (curr < node_end) {
 			handler.assureRunning();
 			// compute new step length
-			next += skip_distance(distr(prng));
+			auto skip = skip_distance(distr(prng));
+			next += skip;
+			if (skip > max_skip) max_skip = skip;
 
-			// check if at end of row
-			while (next >= curr) {
+			// check if at end of row (assuming an average degree of 1,
+			// its typically faster to repeatedly subtract than to
+			// divide; it is in any case easier easier ...)
+			while (next >= (Directed ? n : curr)) {
 				// adapt to next row
-				next = next - curr;
+				next = next - (Directed ? n : curr);
 				curr++;
 			}
 
@@ -187,9 +186,13 @@ private:
 				callHandle(handle, tid, curr, next);
 			}
 		}
+
+		std::cout << max_skip << "\n";
 	}
 
-	// Skip Magic due to Batagelj and Brandes
+// Optimized version of the computation of the skip distance as
+// proposed Batagelj and Brandes. It basically converts a uniform
+// variate to a binomial
 	count skip_distance(integral_t random_prob) const {
 		/*
 		 * The original idea is to compute
@@ -225,6 +228,20 @@ private:
 	    );
 	}
 
+	count skip_distance(double random_prob) const {
+		return 1 + static_cast<count>(floor((log2(random_prob)) * inv_log2_cp));
+	}
+
+// SFINAE to determine and construct the right uniform distribution
+	template <bool FixedPoint>
+	auto get_distribution() const -> typename std::enable_if<FixedPoint, std::uniform_int_distribution<integral_t>>::type {
+		return std::uniform_int_distribution<integral_t>{1, std::numeric_limits<integral_t>::max()};
+	}
+
+	template <bool FixedPoint>
+	auto get_distribution() const -> typename std::enable_if<!FixedPoint, std::uniform_real_distribution<double>>::type {
+		return std::uniform_real_distribution<double>{std::nextafter(0.0, 1.0), std::nextafter(1.0, 0.0)};
+	}
 
 // SFINAE to allow using functors with and without thread id as parameter
 	template <typename Handle>
@@ -237,7 +254,6 @@ private:
 		return h(u, v);
 	}
 };
-
 
 }
 

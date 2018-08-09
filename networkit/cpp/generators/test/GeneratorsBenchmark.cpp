@@ -23,19 +23,31 @@
 #include "../ChungLuGenerator.h"
 #include "../MocnikGenerator.h"
 #include "../MocnikGeneratorBasic.h"
+
 #include "../../graph/GraphBuilder.h"
+#include "../../graph/FastGraphBuilder.h"
 
 namespace NetworKit {
 
-constexpr node graphBuilderNodes = 100000;
-constexpr double graphBuilderProb = 0.001;
-constexpr double graphBuilderExpEdges = 0.5 * graphBuilderNodes * (graphBuilderNodes + 1) * graphBuilderProb;
+constexpr node graphBuilderNodes = 200000;
+constexpr double graphBuilderProb = 0.0001;
+
+TEST_F(GeneratorsBenchmark, benchmarkGraphBuilderBaseline) {
+	FastGraphBuilder<false> builder(graphBuilderNodes, false, false);
+
+	ErdosRenyiEnumerator<> ere(graphBuilderNodes, graphBuilderProb, false);
+	auto t1 = timeOnce([&]() {
+		ere.forEdgesParallel([&](int tid, node u, node v) {volatile auto tmp = u;});
+	});
+
+	std::cout << "ErdosRenyi only:\t\t" << t1 << " ms\n";
+}
 
 TEST_F(GeneratorsBenchmark, benchmarkGraphBuilderParFillSeqBuild) {
 	GraphBuilder builder(graphBuilderNodes);
 	count m_actual = 0;
+	ErdosRenyiEnumerator<> ere(graphBuilderNodes, graphBuilderProb, false);
 	auto t1 = timeOnce([&]() {
-		ErdosRenyiEnumerator ere(graphBuilderNodes, graphBuilderProb, false);
 		ere.forEdgesParallel([&](int tid, node u, node v) {
 			builder.addHalfEdge(u, v);
 		});
@@ -44,15 +56,15 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilderParFillSeqBuild) {
 		auto G = builder.toGraph(true, false);
 		m_actual = G.numberOfEdges();
 	});
-	EXPECT_NEAR(m_actual / graphBuilderExpEdges, 1.0, 0.1);
+	EXPECT_NEAR(m_actual, ere.expectedNumberOfEdges(), 0.1 * ere.expectedNumberOfEdges());
 	std::cout << "parallelForNodePairs + toGraphSequentiel:\t\t" << t1 << " + " << t2 << " = " << (t1 + t2) << " ms\n";
 }
 
 TEST_F(GeneratorsBenchmark, benchmarkGraphBuilderParFillParBuild) {
 	GraphBuilder builder(graphBuilderNodes);
 	count m_actual = 0;
+	ErdosRenyiEnumerator<> ere(graphBuilderNodes, graphBuilderProb, false);
 	auto t1 = timeOnce([&]() {
-		ErdosRenyiEnumerator ere(graphBuilderNodes, graphBuilderProb, false);
 		ere.forEdgesParallel([&](int tid, node u, node v) {
 			builder.addHalfEdge(u, v);
 		});
@@ -61,23 +73,25 @@ TEST_F(GeneratorsBenchmark, benchmarkGraphBuilderParFillParBuild) {
 		auto G = builder.toGraph(true, true);
 		m_actual = G.numberOfEdges();
 	});
-	EXPECT_NEAR(m_actual / graphBuilderExpEdges, 1.0, 0.1);
+	EXPECT_NEAR(m_actual, ere.expectedNumberOfEdges(), 0.1 * ere.expectedNumberOfEdges());
 	std::cout << "parallelForNodePairs + toGraphParallel:\t\t" << t1 << " + " << t2 << " = " << (t1 + t2) << " ms\n";
 }
 
-
-TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
-	count m_actual;
+TEST_F(GeneratorsBenchmark, benchmarkFastGraphBuilderParFillParBuild) {
+	FastGraphBuilder<false> builder(graphBuilderNodes, false, false);
+	count m_actual = 0;
+	ErdosRenyiEnumerator<> ere(graphBuilderNodes, graphBuilderProb, false);
 	auto t1 = timeOnce([&]() {
-		auto G = Graph(graphBuilderNodes);
-		ErdosRenyiEnumerator ere(graphBuilderNodes, graphBuilderProb, false);
-		ere.forEdges([&](int tid, node u, node v) {
-			G.addEdge(u, v);
+		ere.forEdgesParallel([&](int tid, node u, node v) {
+			builder.addEdge(tid, u, v);
 		});
+	});
+	auto t2 = timeOnce([&]() {
+		auto G = builder.toGraph();
 		m_actual = G.numberOfEdges();
 	});
-	EXPECT_NEAR(m_actual / (double) graphBuilderExpEdges, 1.0, 0.1);
-	std::cout << "forNodePairs + Graph.addEdge:\t\t\t\t" << t1 << " ms\n";
+	EXPECT_NEAR(m_actual, ere.expectedNumberOfEdges(), 0.1 * ere.expectedNumberOfEdges());
+	std::cout << "parallelForNodePairs + toGraphParallel:\t\t" << t1 << " + " << t2 << " = " << (t1 + t2) << " ms\n";
 }
 
 TEST_F(GeneratorsBenchmark, benchmarkBarabasiAlbertGenerator) {
