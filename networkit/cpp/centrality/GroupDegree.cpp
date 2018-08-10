@@ -61,7 +61,7 @@ void GroupDegree::run() {
 
 	std::vector<node> neighbors = G.neighbors(group.back());
 #pragma omp parallel for
-	for (count i = 0; i < neighbors.size(); ++i) {
+	for (omp_index i = 0; i < neighbors.size(); ++i) {
 		node u = neighbors[i];
 		if (!reachable[u]) {
 			reachable[u] = true;
