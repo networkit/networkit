@@ -1,0 +1,7 @@
+networkit_add_test(randomization CurveballGlobalTradeGeneratorGTest)
+networkit_add_test(randomization CurveballGTest generators)
+networkit_add_test(randomization CurveballImplGTest)
+networkit_add_test(randomization CurveballUniformTradeGeneratorGTest)
+networkit_add_test(randomization GlobalCurveballGTest generators)
+networkit_add_test(randomization GlobalTradeSequenceGTest)
+

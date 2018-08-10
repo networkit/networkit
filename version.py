@@ -52,8 +52,13 @@ classifiers = [
 'Topic :: Scientific/Engineering :: Mathematics',
 ]
 
-install_requires = []
-# not used because it can mess up pip's installation process
-# therefore, setup.py prints installs the missing packages (tabulate, readline, scipy, numpy, matplotlib, networkx, cython)
-# If gcc is missing, the installation is stopped.
-# In case scons is missing, the installation continues the build within the mbe.MinimalBuildEnvironment.
+install_requires = [
+	'scipy',
+	'matplotlib',
+	'pandas',
+	'numpy',
+	'networkx',
+	'tabulate',
+	'seaborn',
+	'sklearn'
+]

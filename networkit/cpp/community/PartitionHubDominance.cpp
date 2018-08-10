@@ -6,13 +6,14 @@
 #include "../auxiliary/SignalHandling.h"
 #include "../auxiliary/Parallel.h"
 #include <atomic>
+#include <memory>
 
 void NetworKit::PartitionHubDominance::run() {
 	hasRun = false;
 
 	Aux::SignalHandler handler;
 
-	std::vector<std::atomic<count> > maxInternalDeg(P.upperBound());
+	std::unique_ptr<std::atomic<count>[]> maxInternalDeg(new std::atomic<count>[P.upperBound()]{});
 	std::vector<count> clusterSizes(P.upperBound(), 0);
 
 	handler.assureRunning();

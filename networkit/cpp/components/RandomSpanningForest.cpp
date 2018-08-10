@@ -5,11 +5,9 @@
  *      Author: Henning
  */
 
-#include "../graph/Sampling.h"
-
 #include "RandomSpanningForest.h"
+#include "../graph/Sampling.h"
 #include "ConnectedComponents.h"
-
 #include <unordered_set>
 
 namespace NetworKit {

@@ -48,14 +48,12 @@ For questions regarding NetworKit, subscribe to our [e-mail list][list] (`networ
 You will need the following software to install NetworKit as a python
 package:
 
--   A modern C++ compiler, e.g.: [g++] (&gt;= 4.8) or [clang++]
-    (&gt;= 3.7)
--   OpenMP for parallelism (usually ships with the compiler)
--   Python 3 (&gt;= 3.4 is recommended, 3.3 supported)
--   [Pip]
--   [SCons]: Please note that SCons is only available for Python 2. For
-    installation via pip, we have a script that builds the C++ part of
-    NetworKit, so you can try it without SCons. If you are interested in building different configurations and targets (e.g. unittests) from source, SCons is necessary.
+-   A modern C++ compiler, e.g.: [g++] (&gt;= 4.8) or [clang++] (&gt;= 3.7)
+- OpenMP for parallelism (usually ships with the compiler)
+- Python3 (&gt;= 3.4 is recommended, 3.3 supported)
+- [Pip]
+- [CMake] (>= 3.5)
+- Build system: [Make] or [Ninja]
 - [for developers: Cython (>= 0.21)]
 
 ## Installation instructions
@@ -71,19 +69,14 @@ Depending on your system, you might need to install python3-tk.
 
 Run the script `setup.py` with the following options:
 
-	python3 setup.py build_ext --inplace [--optimize=V] [-jX]
+	python3 setup.py build_ext [-jX]
 
-The script will call scons to compile NetworKit as a library and then build the extensions in the top folder. By default, NetworKit will be built with the amount of available cores in optimized mode. It is possible the add the options `--optimize=V` and `-jN` the same way it can be done to a manual scons call, to specify the optimization level and the number of threads used for compilation.
+The script will call `cmake` and `ninja` (`make` as fallback) to compile NetworKit as a library, build the extensions and copy it to the top folder. By default, NetworKit will be built with the amount of available cores in optimized mode. It is possible the add the option `-jN` the number of threads used for compilation.
 The setup script provides more functionality and can be used with pip aswell:
 
 	pip3 install -e .
 
 will compile NetworKit, build the extensions and on top of that temporarily install NetworKit so that it is available on the whole system. `pip3 uninstall networkit` will remove networkit.
-
-	python3 setup.py clean [--optimize=V]
-
-will remove the extensions and its build folder as well as call scons to remove the NetworKit library and its build folder specified by `--optimize=V`.
-
 
 ### `jupyterhub`: An interactive environment for working with NetworKit
 
@@ -142,43 +135,38 @@ Now that you are done installing NetworKit, you might want to try the following 
 
 ### Building the C++ Core only
 
-In case you do not need NetworKit's Python functionality, this section describes how to build the C++ parts only. We recommend [SCons] for building the C++ part of NetworKit. Individual settings for your environment will be read from a configuration file. As an example, the file `build.conf.example` is provided. Copy this to `build.conf` and edit your environment settings. Then call `scons`.
+In case you do not need NetworKit's Python functionality, this section describes how to build the C++ parts only. We recommend [CMake] and your preferred build system for building the C++ part of NetworKit. [CMake] offers a variety of different build systems and has a lot of built-in options for specifying how the project can be built. In addition, [CMake] enables a clean separation of your binary files and the source tree.
 
-The call to SCons has the following options:
+The following description shows how to use [CMake] in order to build the C++ Core only:
 
-	scons --optimize=<level> --target=<target>
+First you have to create and change to a build directory: (in this case named `build_lib`)
 
-where `<level>` can be
+	mkdir build_lib
+	cd build_lib
 
-- `Dbg` 	debug
-- `Opt`		optimized
-- `Pro`		profiling
+Then call [CMake] to generate files for the `make` build system, specifying the directory of the root `CMakeLists.txt` file (e.g. `..` here). After this `make` is called to start the build process:
 
-and `<target>` can be
+	cmake ..
+	make -jX
 
-- `Core`				build NetworKit as a library, required by the Python shell
-- `Tests`				build executable for the unit tests
-- `Lib`					build NetworKit as a library and create symbolic links
+To speed up the compilation with make a multicore machine, you can append `-jX` where X denotes the number of threads to compile with.
 
-For example, to build NetworKit as an optimized library, run
+[CMake] offers a variety of options to customise the build to your needs (read [CMake] documentation for more options).
 
-	scons --optimize=Opt --target=Lib
+**NOTE FOR OSX**: [CMake] aims at automatically finding a suitable C++ Compiler for building networkit.
+However, the default compiler on MacOS is a Apple LLVM clang like compiler which has no built-in OpenMP support and is linked against all common compiler calls. In order to compile networkit properly, you have to to specify your desired compiler and the version (we recommend a GNU-based compiler) such as:
 
-To speed up the compilation on a multicore machine, you can append `-jX` where X denotes the number of threads to compile with.
-
-Logging is enabled by default. If you want to disable logging functionality, add the following to your scons call:
-
-	--logging=no
+	cmake -DCMAKE_CXX_COMPILER=g++-8 ..
 
 ### Use NetworKit as a library
 
-It is also possible to use NetworKit as a library. Therefore, choose the target `Lib` when compiling NetworKit. The include directives in your C++\-application look like the following
+To use the previous compiled networkit library, you have to link it while compiling your project. The include directives in your C++\-application should look like the following
 
 	#include <NetworKit/graph/Graph.h>
 
-NetworKit in the directory `include `is a symlink to the directory `networkit/cpp`, so the directory structure from the repository is valid. To compile your application, you need to add the paths for the header files and the location of the library. Note, that it is possible to link the different builds (debug, profiling, optimized) of the library. There is a simple source file to demonstrate this. Feel free to compile `LibDemo.cpp` as follows:
+By default, [CMake] creates a symlink to the source tree inside your build directory. `NetworKit` in the directory `include `is a symlink to the directory `networkit/cpp`, so the directory structure from the repository is valid. To compile your application, you need to add the paths for the header files and the location of the library. There is a simple source file to demonstrate this. Feel free to compile `LibDemo.cpp` as follows:
 
-	g++ -o LibDemo -std=c++11 -I/path/to/repository/include -L/path/to/repository LibDemo.cpp -lNetworKit -fopenmp
+	g++ -o LibDemo -std=c++11 -I/path/to/build/directory/include -L/path/to/build/directory LibDemo.cpp -lnetworkit -fopenmp
 
 ### Unit tests
 
@@ -260,13 +248,15 @@ The source code of this program is released under the [MIT License][mitlicense].
 The [NetworKit publications page][nwkpubs] lists the publications on NetworKit as a toolkit, on algorithms available
 in NetworKit, and simply using NetworKit. We ask you to cite the appropriate ones if you found NetworKit useful for your own research.
 
-[nwkpubs]: https://networkit.iti.kit.edu/publications/
+[nwkpubs]: https://networkit.iti.kit.edu/publications.html
 [list]: https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit
 [networkit]: https://networkit.iti.kit.edu/
-[IPython]: http://ipython.readthedocs.org/en/stable/
-[NetworKit UserGuide]: http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb
+[IPython]: https://ipython.readthedocs.io/en/stable/
+[NetworKit UserGuide]: https://hub.mybinder.org/user/kit-parco-networkit-01nzg849/notebooks/Doc/uploads/docs/NetworKit_UserGuide.ipynb
 [here]: TODO:website_link
 [g++]: https://gcc.gnu.org
-[clang++]: http://clang.llvm.org
+[clang++]: https://clang.llvm.org/
 [Pip]: https://pypi.python.org/pypi/pip
-[SCons]: http://scons.org
+[CMake]: https://cmake.org/
+[Make]: https://www.gnu.org/software/make/
+[Ninja]: https://ninja-build.org/

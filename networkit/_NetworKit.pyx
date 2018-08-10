@@ -6383,9 +6383,6 @@ cdef class DynKatzCentrality(Centrality):
 		self._G = G
 		self._this = new _DynKatzCentrality(G._this, k, groupOnly, tolerance)
 
-	def __dealloc__(self):
-		del self._this
-
 	def update(self, ev):
 		(<_DynKatzCentrality*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
 
@@ -8404,11 +8401,6 @@ cdef class KatzIndex(LinkPredictor):
 		else:
 			self._this = new _KatzIndex(G._this, maxPathLength, dampingValue)
 
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
-
 	def run(self, node u, node v):
 		""" Returns the similarity score for the given node-pair based on the Katz index specified during construction.
 
@@ -8448,11 +8440,6 @@ cdef class CommonNeighborsIndex(LinkPredictor):
 		else:
 			self._this = new _CommonNeighborsIndex(G._this)
 
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
-
 	def run(self, node u, node v):
 		""" Returns the number of common neighbors of the given nodes u and v.
 
@@ -8491,11 +8478,6 @@ cdef class PreferentialAttachmentIndex(LinkPredictor):
 			self._this = new _PreferentialAttachmentIndex()
 		else:
 			self._this = new _PreferentialAttachmentIndex(G._this)
-
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
 
 	def run(self, node u, node v):
 		""" Returns the product of the cardinalities of the neighborhoods regarding u and v.
@@ -8580,11 +8562,6 @@ cdef class JaccardIndex(LinkPredictor):
 		else:
 			self._this = new _JaccardIndex(G._this)
 
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
-
 	def run(self, node u, node v):
 		""" Returns the Jaccard index for the given node-pair (u, v).
 
@@ -8624,11 +8601,6 @@ cdef class AdamicAdarIndex(LinkPredictor):
 		else:
 			self._this = new _AdamicAdarIndex(G._this)
 
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
-
 	def run(self, node u, node v):
 		""" Returns the Adamic/Adar Index of the given node-pair (u, v).
 
@@ -8665,11 +8637,6 @@ cdef class UDegreeIndex(LinkPredictor):
 		else:
 			self._this = new _UDegreeIndex(G._this)
 
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
-
 	def run(self, node u, node v):
 		""" Returns the degree of the first node provided, namely u.
 
@@ -8705,11 +8672,6 @@ cdef class VDegreeIndex(LinkPredictor):
 			self._this = new _VDegreeIndex()
 		else:
 			self._this = new _VDegreeIndex(G._this)
-
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
 
 	def run(self, node u, node v):
 		""" Returns the degree of the second node provided, namely v.
@@ -8756,11 +8718,6 @@ cdef class AlgebraicDistanceIndex(LinkPredictor):
 			self._this = new _AlgebraicDistanceIndex(numberSystems, numberIterations, omega, norm)
 		else:
 			self._this = new _AlgebraicDistanceIndex(G._this, numberSystems, numberIterations, omega, norm)
-
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
 
 	def preprocess(self):
 		""" Executes necessary initializations.
@@ -8809,11 +8766,6 @@ cdef class NeighborhoodDistanceIndex(LinkPredictor):
 		else:
 			self._this = new _NeighborhoodDistanceIndex(G._this)
 
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
-
 	def run(self, node u, node v):
 		""" Returns the Neighborhood Distance index for the given node-pair (u, v).
 
@@ -8852,11 +8804,6 @@ cdef class TotalNeighborsIndex(LinkPredictor):
 			self._this = new _TotalNeighborsIndex()
 		else:
 			self._this = new _TotalNeighborsIndex(G._this)
-
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
 
 	def run(self, node u, node v):
 		""" Returns the number of total union-neighbors for the given node-pair (u, v).
@@ -8897,11 +8844,6 @@ cdef class NeighborsMeasureIndex(LinkPredictor):
 		else:
 			self._this = new _NeighborsMeasureIndex(G._this)
 
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
-
 	def run(self, node u, node v):
 		""" Returns the number of connections between neighbors of u and v.
 
@@ -8938,11 +8880,6 @@ cdef class SameCommunityIndex(LinkPredictor):
 		else:
 			self._this = new _SameCommunityIndex(G._this)
 
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
-
 	def run(self, node u, node v):
 		""" Returns 1 if the given nodes u and v are in the same community, 0 otherwise.
 
@@ -8978,11 +8915,6 @@ cdef class AdjustedRandIndex(LinkPredictor):
 			self._this = new _AdjustedRandIndex()
 		else:
 			self._this = new _AdjustedRandIndex(G._this)
-
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
 
 	def run(self, node u, node v):
 		""" Returns the Adjusted Rand Index of the given node-pair (u, v).
@@ -9022,11 +8954,6 @@ cdef class ResourceAllocationIndex(LinkPredictor):
 			self._this = new _ResourceAllocationIndex()
 		else:
 			self._this = new _ResourceAllocationIndex(G._this)
-
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
 
 	def run(self, node u, node v):
 		""" Returns the Resource Allocation Index of the given node-pair (u, v).
@@ -9198,11 +9125,6 @@ cdef class ROCMetric(EvaluationMetric):
 		else:
 			self._this = new _ROCMetric(testGraph._this)
 
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
-
 	def getCurve(self, vector[pair[pair[node, node], double]] predictions, count numThresholds = 1000):
 		""" Generate the points of the Receiver Operating Characteristic curve regarding the previously set predictions.
 
@@ -9244,11 +9166,6 @@ cdef class PrecisionRecallMetric(EvaluationMetric):
 			self._this = new _PrecisionRecallMetric()
 		else:
 			self._this = new _PrecisionRecallMetric(testGraph._this)
-
-	def __dealloc__(self):
-		if self._this is not NULL:
-			del self._this
-			self._this = NULL
 
 	def getCurve(self, vector[pair[pair[node, node], double]] predictions, count numThresholds = 1000):
 		""" Generates the points for the Precision-Recall curve with respect to the given predictions.

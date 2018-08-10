@@ -1,8 +1,5 @@
 include version.py
-include ez_setup.py
-include setup_util.py
-include mbe.py
-include SConstruct
+include CMakeLists.txt
 #include networkit/_NetworKit.pyx
 include networkit/_NetworKit.cpp
 include networkit/profiling/html/measure.html
@@ -14,5 +11,5 @@ include networkit/profiling/latex/measure.tex
 include networkit/profiling/latex/profile.tex
 include networkit/profiling/description/descriptions.txt
 recursive-include networkit *.h *.cpp
-recursive-include networkit *.pxd
+recursive-include networkit CMakeLists.txt
 recursive-exclude networkit *GTest.cpp *GTest.h *Benchmark.h *Benchmark.cpp /test/ *-X.cpp

@@ -7,6 +7,8 @@
 
 #include "LocalDegreeScore.h"
 #include "../auxiliary/Parallel.h"
+#include <atomic>
+#include <memory>
 
 namespace NetworKit {
 
@@ -32,7 +34,7 @@ void LocalDegreeScore::run() {
 		throw std::runtime_error("edges have not been indexed - call indexEdges first");
 	}
 
-	std::vector<std::atomic<double>> exponents (G.upperEdgeIdBound());
+	std::unique_ptr<std::atomic<double>[]> exponents(new std::atomic<double>[G.upperEdgeIdBound()]{});
 
 	G.balancedParallelForNodes([&](node i) {
 		count d = G.degree(i);

@@ -8,6 +8,7 @@
 #ifndef CLUSTERINGGENERATOR_H_
 #define CLUSTERINGGENERATOR_H_
 
+#include "../graph/Graph.h"
 #include "../structures/Partition.h"
 
 namespace NetworKit {
