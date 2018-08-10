@@ -12,6 +12,8 @@ namespace NetworKit {
 	}
 
     MemoryMappedFile& MemoryMappedFile::operator=(MemoryMappedFile&& o) noexcept {
+	    if (this == &o) return *this;
+
 	    close();
 
 	    // Transfer state from other instance
