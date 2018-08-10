@@ -111,7 +111,9 @@ if (NETWORKIT_MONOLITH)
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
 			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
 	install(TARGETS networkit
-			LIBRARY DESTINATION .)
+			LIBRARY DESTINATION .
+			ARCHIVE DESTINATION .)
+
 	if (NETWORKIT_PYTHON)
 		if(EXISTS "${PROJECT_SOURCE_DIR}/networkit/_NetworKit.cpp")
 			add_library(_NetworKit MODULE networkit/_NetworKit.cpp)
