@@ -2312,7 +2312,7 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 	def getElapsedMilliseconds(self):
 		return (<_HyperbolicGenerator*>(self._this)).getElapsedMilliseconds()
 
-	def generate(self, angles, radii, R, T=0):
+	def generate_advanced(self, angles, radii, R, T=0):
 		# TODO: documentation
 		return Graph(0).setThis((<_HyperbolicGenerator*>(self._this)).generate(angles, radii, R, T))
 
