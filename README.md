@@ -218,6 +218,7 @@ NetworKit was created and developed by the [Research Group Parallel Computing](h
 - Gerd Lindner
 - Moritz v. Looz
 - Yassine Marrakchi
+- Franz-Benjamin Mocnik
 - Mustafa Özdayi
 - Marcel Radermacher
 - Klara Reichard

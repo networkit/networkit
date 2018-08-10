@@ -49,6 +49,14 @@ Publications on Algorithms Available in NetworKit
 .. raw:: html
 
   <ul>
+    <li>
+      F.-B. Mocnik: The Polynomial Volume Law of Complex Networks in the Context of Local and Global Optimization. In <i>Scientific Reports</i> 8(11274), 2018. <a href="http://doi.org/10.1038/s41598-018-29131-0">[DOI: 10.1038/s41598-018-29131-0]</a>
+       <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
+        <div id="collapseDiv" class="collapse">
+          <b>Abstract</b> Many complex networks expose global hub structures: for some nodes, the number of incident edges far exceeds the average, leading to a small average shortest path length. Such ‘small-world properties’ are often guided by a scale-free power-law distribution of the node degrees, and self-organization inside the network has been identified as a reason driving the emergence of this structure. Small-world networks have recently raised lots of interest, because they capture the global topology of the World-Wide Web, metabolic, and social networks. While small-world networks reflect global structures, little attention is paid to the local structure of complex networks. In this article neighbourhoods are demonstrated to share a common local structure in many real complex networks, manifested by a polynomial volume law. This law can, in case of networks that are embedded in space, be explained in terms of the embedding and the properties of Euclidean space. A model of hierarchical spatial networks is introduced to examine the effect of global structures, in particular of hierarchies, on the polynomial volume law. It turns out that the law is robust against the coexistence of such global structures. The local structure of space and global optimization can both be found in transport, brain, and communication networks, which suggests the polynomial volume law, often in combination with hierarchies or other global optimization principles, to be a generic property inherent to many networks.
+        </div>
+    </li>
+  
   <li>
     E. Bergamini, M. Wegner, D. Lukarski, H. Meyerhenke:  Estimating Current-Flow Closeness Centrality with a Multigrid Laplacian Solver. In Proc. <i><a href="http://www.eecs.wsu.edu/~assefaw/CSC16/csc16.html">CSC</a> '16</i>. SIAM, 2016.
       [<a href="https://arxiv.org/abs/1607.02955">arXiv</a>]
@@ -312,6 +320,16 @@ Publications Using NetworKit
 .. raw:: html
 
   <ul>
+    <li>
+      F.-B. Mocnik: The Polynomial Volume Law of Complex Networks in the Context of Local and Global Optimization. In <i>Scientific Reports</i> 8(11274), 2018. <a href="http://doi.org/10.1038/s41598-018-29131-0">[DOI: 10.1038/s41598-018-29131-0]</a>
+       <button type="button" class="btn-link collapsed" data-toggle="collapse" data-target="#collapseDiv"></button>
+        <div id="collapseDiv" class="collapse">
+          <b>Abstract</b> Many complex networks expose global hub structures: for some nodes, the number of incident edges far exceeds the average, leading to a small average shortest path length. Such ‘small-world properties’ are often guided by a scale-free power-law distribution of the node degrees, and self-organization inside the network has been identified as a reason driving the emergence of this structure. Small-world networks have recently raised lots of interest, because they capture the global topology of the World-Wide Web, metabolic, and social networks. While small-world networks reflect global structures, little attention is paid to the local structure of complex networks. In this article neighbourhoods are demonstrated to share a common local structure in many real complex networks, manifested by a polynomial volume law. This law can, in case of networks that are embedded in space, be explained in terms of the embedding and the properties of Euclidean space. A model of hierarchical spatial networks is introduced to examine the effect of global structures, in particular of hierarchies, on the polynomial volume law. It turns out that the law is robust against the coexistence of such global structures. The local structure of space and global optimization can both be found in transport, brain, and communication networks, which suggests the polynomial volume law, often in combination with hierarchies or other global optimization principles, to be a generic property inherent to many networks.
+        </div>
+    </li>
+    
+    <br>
+  
     <li>
       M. Lozano, C. García-Martínez, F. J. Rodríguez, H. M. Trujillo: Optimizing network attacks by artificial bee colony.
       To appear in <i>Information Sciences, Volume 377</i>, pp. 30-50, January 2017.
