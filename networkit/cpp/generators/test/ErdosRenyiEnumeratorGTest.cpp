@@ -43,12 +43,14 @@ static void testEre(const bool directed, const node n, const double prob) {
 			num_edges_thread[cacheline_scale*tid]++;
 		};
 
+		count num_edges_gen;
 		if (Parallel)
-			ere.forEdgesParallel(handle);
+			num_edges_gen = ere.forEdgesParallel(handle);
 		else
-			ere.forEdges(handle);
+			num_edges_gen = ere.forEdges(handle);
 
 		size_t num_edges = std::accumulate(num_edges_thread.cbegin(), num_edges_thread.cend(), 0u);
+		ASSERT_EQ(num_edges, num_edges_gen);
 
 		// Check that result is somewhat balanced along threads
 		if (Parallel) {

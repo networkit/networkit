@@ -10,6 +10,7 @@
 
 #include <omp.h>
 
+#include <atomic>
 #include <cassert>
 #include <cmath>
 #include <random>
@@ -82,9 +83,12 @@ public:
 	 * It is guaranteed that no two threads emit edges for the same u.
 	 *
 	 * It can be expected that all threads emit a similar number of edges.
+	 *
+	 * Returns number of edges produced.
 	 */
 	template<typename Handle>
-	void forEdgesParallel(Handle handle) {
+	count forEdgesParallel(Handle handle) {
+		std::atomic<count> numEdges {0};
 		if (directed) {
 			#pragma omp parallel
 			{
@@ -95,7 +99,7 @@ public:
 				const node first_node = std::min<node>(n, tid * chunk_size);
 				const node last_node  = std::min<node>(n, (tid+1) * chunk_size);
 
-				enumerate<true>(handle, tid, first_node, last_node);
+				numEdges += enumerate<true>(handle, tid, first_node, last_node);
 			}
 		} else {
 			#pragma omp parallel
@@ -117,9 +121,11 @@ public:
 				}
 
 				if (first_node < last_node)
-					enumerate<false>(handle, tid, first_node, last_node);
+					numEdges += enumerate<false>(handle, tid, first_node, last_node);
 			}
 		}
+
+		return numEdges.load();
 	}
 
 	/**
@@ -127,11 +133,11 @@ public:
 	 * If the callback accepts three arguments tid is always 0.
 	 */
 	template<typename Handle>
-	void forEdges(Handle handle) {
+	count forEdges(Handle handle) {
 		if (directed) {
-			enumerate<true>(handle, 0, 0, n);
+			return enumerate<true>(handle, 0, 0, n);
 		} else {
-			enumerate<false>(handle, 0, 0, n);
+			return enumerate<false>(handle, 0, 0, n);
 		}
 	}
 
@@ -152,7 +158,7 @@ private:
 // In the undirected case we only traverse the lower triangle (excluding the
 // diagonal) of the adjacency matrix
 	template <bool Directed, typename Handle>
-	void enumerate(Handle handle, unsigned tid, const node node_begin, const node node_end) const {
+	count enumerate(Handle handle, unsigned tid, const node node_begin, const node node_end) const {
 		Aux::SignalHandler handler;
 
 		// random source
@@ -164,6 +170,7 @@ private:
 		node next = -1;
 
 		node max_skip = 0;
+		count numEdges = 0;
 
 		while (curr < node_end) {
 			handler.assureRunning();
@@ -183,9 +190,12 @@ private:
 
 			// insert edge
 			if (curr < node_end) {
+				numEdges++;
 				callHandle(handle, tid, curr, next);
 			}
 		}
+
+		return numEdges;
 	}
 
 // Optimized version of the computation of the skip distance as
