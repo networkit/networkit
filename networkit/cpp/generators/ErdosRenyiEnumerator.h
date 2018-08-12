@@ -108,17 +108,19 @@ public:
 				const unsigned tid = omp_get_thread_num();
 
 				// cells in adj matrix per thread
-				const node chunk_size = (n * (n+1) / 2 + threads - 1) / threads;
+				const node chunk_size = (n * (n-1) / 2 + threads - 1) / threads;
 
 				node first_node;
 				node last_node = 0;
 
-				for(unsigned i = 0; i < tid; i++) {
+				for(unsigned i = 0; i <= tid; i++) {
 					first_node = last_node;
-					node nodes_in_chunk = std::ceil(std::sqrt(
-						0.5 + first_node * first_node + first_node + 2*chunk_size));
-					last_node = std::min<node>(n, first_node + nodes_in_chunk);
+					node upper_node = std::ceil(std::sqrt(
+						0.25 + first_node * first_node + first_node + 2*chunk_size));
+					last_node = std::min<node>(n, upper_node);
 				}
+
+				if (tid + 1 == threads) last_node = n;
 
 				if (first_node < last_node)
 					numEdges += enumerate<false>(handle, tid, first_node, last_node);

@@ -50,12 +50,15 @@ static void testEre(const bool directed, const node n, const double prob) {
 			num_edges_gen = ere.forEdges(handle);
 
 		size_t num_edges = std::accumulate(num_edges_thread.cbegin(), num_edges_thread.cend(), 0u);
+		size_t active_threads = std::count_if(num_edges_thread.cbegin(), num_edges_thread.cend(), [] (count c) {return !!c;});
+
 		ASSERT_EQ(num_edges, num_edges_gen);
 
 		// Check that result is somewhat balanced along threads
 		if (Parallel) {
+			EXPECT_EQ(omp_get_max_threads(), active_threads);
 			for (auto count : num_edges_thread)
-				ASSERT_LT(count, num_edges);
+				ASSERT_LE(count, 2 * num_edges / active_threads);
 		}
 
 		// count that we produced a number of edges, near the expected number
