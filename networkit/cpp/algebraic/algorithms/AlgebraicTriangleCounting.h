@@ -66,7 +66,7 @@ void AlgebraicTriangleCounting<Matrix>::run() {
 	nodeScores.resize(A.numberOfRows(), 0);
 
 #pragma omp parallel for
-	for (index i = 0; i < powA.numberOfRows(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(powA.numberOfRows()); ++i) {
 		nodeScores[i] = directed? powA(i,i) : powA(i,i) / 2.0;
 	}
 

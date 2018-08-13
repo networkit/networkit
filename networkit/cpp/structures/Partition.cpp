@@ -80,7 +80,7 @@ count Partition::numberOfSubsets() const {
 	});
 	count k = 0; // number of actually existing clusters
 	#pragma omp parallel for reduction(+:k)
-	for (index i = 0; i < n; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
 		if (exists[i]) {
 			k++;
 		}

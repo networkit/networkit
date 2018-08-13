@@ -69,16 +69,20 @@ void ChibaNishizekiTriangleEdgeScore::run() {
 
 		//For all neighbors: check for already marked neighbors.
 		for (auto uv : edges[u]) {
-			for (auto vw = edges[uv.first].begin(); vw != edges[uv.first].end(); ++vw) {
+			auto& uedges = edges[uv.first];
+			for (auto vw = uedges.begin(); vw != uedges.end(); ++vw) {
 				// delete the edge to u as we do not need to consider it again.
 				// the opposite edge doesn't need to be deleted as we will never again consider
 				// outgoing edges of u as u cannot be reached anymore after the uv loop.
 				if (vw->first == u) {
 					// move last element to current position in order to avoid changing too much
-					*vw = edges[uv.first].back();
-					edges[uv.first].pop_back();
-					if (vw == edges[uv.first].end()) // break if we were at the last element already
+					if (std::next(vw) == uedges.end()) {
+						uedges.pop_back();
 						break;
+					}
+
+					*vw = uedges.back();
+					uedges.pop_back();
 				}
 
 				if (nodeMarker[vw->first] != none) { // triangle found - count it!

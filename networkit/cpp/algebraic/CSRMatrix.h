@@ -432,7 +432,7 @@ template<typename L> inline CSRMatrix NetworKit::CSRMatrix::binaryOperator(const
 
 		rowIdx[0] = 0;
 #pragma omp parallel for
-		for (index i = 0; i < A.nRows; ++i) {
+		for (omp_index i = 0; i < static_cast<omp_index>(A.nRows); ++i) {
 			index k = A.rowIdx[i];
 			index l = B.rowIdx[i];
 			while (k < A.rowIdx[i+1] && l < B.rowIdx[i+1]) {
@@ -473,7 +473,7 @@ template<typename L> inline CSRMatrix NetworKit::CSRMatrix::binaryOperator(const
 		std::vector<double> nonZeros(nnz, A.zero);
 
 #pragma omp parallel for
-		for (index i = 0; i < A.nRows; ++i) {
+		for (omp_index i = 0; i < static_cast<omp_index>(A.nRows); ++i) {
 			for (index cIdx = rowIdx[i], j = 0; cIdx < rowIdx[i+1]; ++cIdx, ++j) {
 				columnIdx[cIdx] = columns[i][j];
 			}
@@ -483,7 +483,7 @@ template<typename L> inline CSRMatrix NetworKit::CSRMatrix::binaryOperator(const
 		}
 
 #pragma omp parallel for
-		for (index i = 0; i < A.nRows; ++i) {
+		for (omp_index i = 0; i < static_cast<omp_index>(A.nRows); ++i) {
 			index k = A.rowIdx[i];
 			index l = B.rowIdx[i];
 			for (index cIdx = rowIdx[i]; cIdx < rowIdx[i+1]; ++cIdx) {
@@ -559,7 +559,7 @@ template<typename L> inline CSRMatrix NetworKit::CSRMatrix::binaryOperator(const
 template<typename F>
 void CSRMatrix::apply(const F unaryElementFunction) {
 #pragma omp parallel for
-	for (index k = 0; k < nonZeros.size(); ++k) {
+	for (omp_index k = 0; k < static_cast<omp_index>(nonZeros.size()); ++k) {
 		nonZeros[k] = unaryElementFunction(nonZeros[k]);
 	}
 }
@@ -576,7 +576,7 @@ inline void NetworKit::CSRMatrix::forNonZeroElementsInRow(index i, L handle) con
 template<typename L>
 inline void NetworKit::CSRMatrix::parallelForNonZeroElementsInRow(index i, L handle) const {
 #pragma omp parallel for
-	for (index k = rowIdx[i]; k < rowIdx[i+1]; ++k) {
+	for (omp_index k = rowIdx[i]; k < static_cast<omp_index>(rowIdx[i+1]); ++k) {
 		handle(columnIdx[k], nonZeros[k]);
 	}
 }
@@ -602,7 +602,7 @@ inline void NetworKit::CSRMatrix::forNonZeroElementsInRowOrder(L handle) const {
 template<typename L>
 inline void NetworKit::CSRMatrix::parallelForNonZeroElementsInRowOrder(L handle) const {
 #pragma omp parallel for
-	for (index i = 0; i < nRows; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
 		for (index k = rowIdx[i]; k < rowIdx[i+1]; ++k) {
 			handle(i, columnIdx[k], nonZeros[k]);
 		}

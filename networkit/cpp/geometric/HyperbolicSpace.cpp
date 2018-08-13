@@ -5,9 +5,9 @@
  *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
  */
 
-#include <assert.h>
 #include <cmath>
 
+#include <cassert>
 
 #include "HyperbolicSpace.h"
 #include "../auxiliary/Log.h"
@@ -21,15 +21,15 @@ double HyperbolicSpace::nativeDistance(double firstangle, double firstR, double 
 	assert(firstR >= 0);
 	assert(secondR >= 0);
 	assert(firstangle >= 0);
-	assert(firstangle < 2*M_PI);
+	assert(firstangle < 2*PI);
 	assert(secondangle >= 0);
-	assert(secondangle < 2*M_PI);
+	assert(secondangle < 2*PI);
 	double result;
 	if (firstangle == secondangle) {
 		result = abs(firstR - secondR);
 	}
 	else {
-		double deltaPhi = M_PI - abs(M_PI-abs(firstangle - secondangle));
+		double deltaPhi = PI - abs(PI-abs(firstangle - secondangle));
 		double coshDist = cosh(firstR)*cosh(secondR)-sinh(firstR)*sinh(secondR)*cos(deltaPhi);
 		if (coshDist >= 1) result = acosh(coshDist);
 		else result = 0;
@@ -59,13 +59,13 @@ double HyperbolicSpace::poincareMetric(Point2D<double> a, Point2D<double> b) {
 //	/* Returns the hyperbolic distance between points u and v
 //	* 2010 paper, eqn: 5
 //	*/
-//	double deltaPhi = M_PI - abs(M_PI-abs(phi_a - phi_b));
+//	double deltaPhi = PI - abs(PI-abs(phi_a - phi_b));
 //	double distance = acosh(cosh(r_a)*cosh(r_b) - sinh(r_a)*sinh(r_b)*cos(deltaPhi));
 //	return distance;
 //}
 
 void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, double R, double alpha) {
-	fillPoints(angles, radii, 0, 2*M_PI, 0, R, alpha);
+	fillPoints(angles, radii, 0, 2*PI, 0, R, alpha);
 }
 
 void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, double minPhi, double maxPhi, double minR, double maxR, double alpha) {
@@ -118,7 +118,7 @@ void HyperbolicSpace::cartesianToPolar(Point2D<double> a, double &phi, double &r
 	} else {
 		phi = -acos(a[0] / r);
 	}
-	if (phi < 0) phi += 2*M_PI;
+	if (phi < 0) phi += 2*PI;
 }
 
 void HyperbolicSpace::getEuclideanCircle(Point2D<double> hyperbolicCenter, double hyperbolicRadius, Point2D<double> &euclideanCenter, double &euclideanRadius) {
@@ -150,8 +150,8 @@ double HyperbolicSpace::EuclideanRadiusToHyperbolic(double euclideanRadius) {
 double HyperbolicSpace::maxRinSlice(double minPhi, double maxPhi, double phi_c, double r_c, double euRadius) {
 	double maxCos = max(cos(abs(minPhi - phi_c)), cos(abs(maxPhi - phi_c)));
 	//double mirrorAngle;
-	//if (phi_c >= M_PI) mirrorAngle = phi_c - M_PI;
-	//else mirrorAngle = phi_c + M_PI;
+	//if (phi_c >= PI) mirrorAngle = phi_c - PI;
+	//else mirrorAngle = phi_c + PI;
 
 	if (minPhi < phi_c && phi_c < maxPhi) maxCos = 1;
 	//applying law of cosines here
@@ -174,11 +174,11 @@ double HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(double r_c, double d_c,
 
 		if (d_c - r_c < r_max) {
 			//remaining query circle is smaller than the disk representation
-			result += 2*M_PI*(cosh(EuclideanRadiusToHyperbolic(d_c-r_c))-1);//adding small circle around origin
+			result += 2*PI*(cosh(EuclideanRadiusToHyperbolic(d_c-r_c))-1);//adding small circle around origin
 		} else {
-			result += 2*M_PI*(cosh(EuclideanRadiusToHyperbolic(r_max))-1);//adding small circle around origin
+			result += 2*PI*(cosh(EuclideanRadiusToHyperbolic(r_max))-1);//adding small circle around origin
 		}
-		assert(result <= 2*M_PI*(cosh(EuclideanRadiusToHyperbolic(r_max))-1));
+		assert(result <= 2*PI*(cosh(EuclideanRadiusToHyperbolic(r_max))-1));
 		min = std::nextafter(d_c-r_c, std::numeric_limits<double>::max());//correcting integral start to exclude circle
 	}
 

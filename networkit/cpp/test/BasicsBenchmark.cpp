@@ -32,7 +32,7 @@ TEST_F(BasicsBenchmark, parallelSumIncorrect) {
 	double sum = 0.0;
 	runtime.start();
 	#pragma omp parallel for
-	for (int64_t i = 0; i < n; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
 		sum += i;
 	}
 	runtime.stop();
@@ -47,7 +47,7 @@ TEST_F(BasicsBenchmark, parallelSumAtomicUpdate) {
 	double sum = 0.0;
 	runtime.start();
 	#pragma omp parallel for
-	for (int64_t i = 0; i < n; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
 		#pragma omp atomic update
 		sum += i;
 	}
@@ -65,7 +65,7 @@ TEST_F(BasicsBenchmark, parallelSumReduction) {
 	double sum = 0.0;
 	runtime.start();
 	#pragma omp parallel for reduction(+:sum)
-	for (int64_t i = 0; i < n; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
 		sum += i;
 	}
 	runtime.stop();
@@ -82,7 +82,7 @@ TEST_F(BasicsBenchmark, parallelSumReduction) {
 //	double sum = 0.0;
 //	runtime.start();
 //	#pragma omp parallel for
-//	for (int64_t i = 0; i < n; ++i) {
+//	for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
 //		#pragma omp critical
 //		sum += i;
 //	}
@@ -120,7 +120,7 @@ TEST_F(BasicsBenchmark, parVectorWrite) {
 
 	runtime.start();
 	#pragma omp parallel for
-	for (int64_t i = 0; i < n; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
 		vec[i] = i;
 	}
 	runtime.stop();
@@ -160,7 +160,7 @@ TEST_F(BasicsBenchmark, lambdaSummation_parWrong) {
 
 	runtime.start();
 	#pragma omp parallel for
-	for (int64_t i = 0; i < n; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
 		func(i);
 	}
 	runtime.stop();
@@ -181,7 +181,7 @@ TEST_F(BasicsBenchmark, lambdaSummation_par_atomic) {
 
 	runtime.start();
 	#pragma omp parallel for
-	for (int64_t i = 0; i < n; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
 		func(i);
 	}
 	runtime.stop();
@@ -200,7 +200,7 @@ TEST_F(BasicsBenchmark, lambdaSummation_par_reduction) {
 
 	runtime.start();
 	#pragma omp parallel for reduction(+:sum)
-	for (int64_t i = 0; i < n; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
 		func(i);
 	}
 	runtime.stop();
@@ -243,7 +243,7 @@ TEST_F(BasicsBenchmark, lambdaVectorWrite_par) {
 
 	runtime.start();
 	#pragma omp parallel for
-	for (int64_t i = 0; i < n; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
 		insert(i, i);
 	}
 	runtime.stop();

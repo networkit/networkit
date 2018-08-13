@@ -36,7 +36,7 @@ template<class Matrix>
 LevelElimination<Matrix>::LevelElimination(const Matrix& A, const std::vector<EliminationStage<Matrix>>& coarseningStages) : Level<Matrix>(LevelType::ELIMINATION, A), coarseningStages(coarseningStages) {
 	cIndexFine = std::vector<index>(this->A.numberOfRows());
 #pragma omp parallel for
-	for (index i = 0; i < cIndexFine.size(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(cIndexFine.size()); ++i) {
 		cIndexFine[i] = i;
 	}
 
@@ -52,7 +52,7 @@ template<class Matrix>
 void LevelElimination<Matrix>::coarseType(const Vector& xf, Vector& xc) const {
 	xc = Vector(this->A.numberOfRows());
 #pragma omp parallel for
-	for (index i = 0; i < xc.getDimension(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(xc.getDimension()); ++i) {
 		xc[i] = xf[cIndexFine[i]];
 	}
 }
@@ -89,20 +89,20 @@ void LevelElimination<Matrix>::interpolate(const Vector& xc, Vector& xf, const s
 		Vector bq(bFSet.getDimension());
 		const Vector &q = s.getQ();
 #pragma omp parallel for
-		for (index i = 0; i < bq.getDimension(); ++i) { // bq = s.q .* b.f
+		for (omp_index i = 0; i < static_cast<omp_index>(bq.getDimension()); ++i) { // bq = s.q .* b.f
 			bq[i] = q[i] * bFSet[i];
 		}
 		Vector xFSet = s.getP() * currX + bq;
 
 		const std::vector<index> &fSet = s.getFSet();
 #pragma omp parallel for
-		for (index i = 0; i < xFSet.getDimension(); ++i) {
+		for (omp_index i = 0; i < static_cast<omp_index>(xFSet.getDimension()); ++i) {
 			xf[fSet[i]] = xFSet[i];
 		}
 
 		const std::vector<index> &cSet = s.getCSet();
 #pragma omp parallel for
-		for (index i = 0; i < currX.getDimension(); ++i) {
+		for (omp_index i = 0; i < static_cast<omp_index>(currX.getDimension()); ++i) {
 			xf[cSet[i]] = currX[i];
 		}
 
@@ -114,7 +114,7 @@ template<class Matrix>
 void LevelElimination<Matrix>::subVectorExtract(Vector& subVector, const Vector& vector, const std::vector<index>& elements) const {
 	subVector = Vector(elements.size());
 #pragma omp parallel for
-	for (index i = 0; i < elements.size(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(elements.size()); ++i) {
 		subVector[i] = vector[elements[i]];
 	}
 }

@@ -99,7 +99,7 @@ void DynKatzCentrality::updateBatch(const std::vector<GraphEvent> &events){
 	count i = 1;
 	while(i <= levelReached) {
 		#pragma omp parallel for
-		for(size_t m = 0; m < seenNodes.size(); ++m) {
+		for (omp_index m = 0; m < static_cast<omp_index>(seenNodes.size()); ++m) {
 			node v = seenNodes[m];
 			preUpdateContrib[v] = preUpdatePaths[v];
 			preUpdatePaths[v] = nPaths[i][v];
@@ -160,7 +160,7 @@ void DynKatzCentrality::updateBatch(const std::vector<GraphEvent> &events){
 			// Update the Katz centrality from nPaths.
 			auto alpha_pow = pow(alpha, i);
 			#pragma omp parallel for
-			for(size_t m = 0; m < seenNodes.size(); ++m) {
+			for (omp_index m = 0; m < static_cast<omp_index>(seenNodes.size()); ++m) {
 				node v = seenNodes[m];
 				baseData[v] -= alpha_pow * preUpdatePaths[v];
 				baseData[v] += alpha_pow * nPaths[i][v];

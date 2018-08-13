@@ -371,7 +371,7 @@ inline void NetworKit::DynamicMatrix::forNonZeroElementsInRowOrder(L handle) con
 template<typename L>
 inline void NetworKit::DynamicMatrix::parallelForNonZeroElementsInRowOrder(L handle) const {
 #pragma omp parallel for
-	for (index i = 0; i < nRows; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
 		graph.forEdgesOf(i, [&](index j, edgeweight weight){
 			handle(i, j, weight);
 		});

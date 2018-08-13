@@ -61,7 +61,7 @@ namespace NetworKit {
 		std::vector<node> targetPredecessors = previous[t];
 
 		#pragma omp parallel for schedule(dynamic)
-		for (count i = 0; i < targetPredecessors.size(); ++i) {
+		for (omp_index i = 0; i < static_cast<omp_index>(targetPredecessors.size()); ++i) {
 
 			std::stack<std::vector<node>> stack;
 			std::vector<std::vector<node>> currPaths;

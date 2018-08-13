@@ -125,7 +125,7 @@ namespace NetworKit {
 		paths.reserve(availableSources[source].size());
 
 		#pragma omp parallel for schedule(dynamic)
-		for (count i = 0; i < availableSources[source].size(); ++i) {
+		for (omp_index i = 0; i < static_cast<omp_index>(availableSources[source].size()); ++i) {
 			std::vector<std::pair<std::vector<node>, std::vector<bool>>> stack;//(availableSources[source].size());
 			std::vector<node>* v = new std::vector<node>;
 			*v = {source, availableSources[source][i]};

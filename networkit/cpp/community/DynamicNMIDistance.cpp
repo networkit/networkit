@@ -96,11 +96,13 @@ double DynamicNMIDistance::getDissimilarity(const Graph& newGraph,
 	std::vector<double> P_old(oldClustering.upperBound(), 0.0);
 	std::vector<double> P_new(newClustering.upperBound(), 0.0);
 	#pragma omp parallel for
-	for (index C = oldClustering.lowerBound(); C < oldClustering.upperBound(); ++C) {
+	for (omp_index C = static_cast<omp_index>(oldClustering.lowerBound());
+		 C < static_cast<omp_index>(oldClustering.upperBound()); ++C) {
 		P_old[C] = ((double) size_old[C]) / numDouble;
 	}
 	#pragma omp parallel for
-	for (index C = newClustering.lowerBound(); C < newClustering.upperBound(); ++C) {
+	for (omp_index C = static_cast<omp_index>(newClustering.lowerBound());
+		 C < static_cast<omp_index>(newClustering.upperBound()); ++C) {
 		P_new[C] = ((double) size_new[C]) / numDouble;
 	}
 
@@ -144,7 +146,8 @@ double DynamicNMIDistance::entropy(const Partition& clustering, count n, std::ve
 	// $H(\zeta):=-\sum_{C\in\zeta}P(C)\cdot\log_{2}(P(C))$
 	double H = 0.0;
 	#pragma omp parallel for reduction(+:H)
-	for (index C = clustering.lowerBound(); C < clustering.upperBound(); ++C) {
+	for (omp_index C = static_cast<omp_index>(clustering.lowerBound());
+		 C < static_cast<omp_index>(clustering.upperBound()); ++C) {
 		if (probs[C] != 0) {
 			H += probs[C] * log_b(probs[C], 2);
 		} // log(0) is not defined

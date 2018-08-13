@@ -108,7 +108,7 @@ double NMIDistance::getDissimilarity(const Graph& G, const Partition& zeta, cons
 	assert (! std::isnan(H_zeta));
 	assert (! std::isnan(H_eta));
 
-	if (H_zeta == 0 or H_eta == 0) {
+	if (H_zeta == 0 || H_eta == 0) {
 		WARN("You are comparing two partitions where one has zero entropy (i.e. consists of one cluster), ",
 		"thus the mutual information will always be zero which might not be what you intended. ",
 		"Note that two partitions will still be reported to be equal when both have zero mutual information.");

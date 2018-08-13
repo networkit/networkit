@@ -108,7 +108,7 @@ SolverStatus ConjugateGradient<Matrix, Preconditioner>::solve(const Vector& rhs,
 template<class Matrix, class Preconditioner>
 void ConjugateGradient<Matrix, Preconditioner>::parallelSolve(const std::vector<Vector>& rhs, std::vector<Vector>& results, count maxConvergenceTime, count maxIterations) {
 #pragma omp parallel for
-	for (index i = 0; i < rhs.size(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(rhs.size()); ++i) {
 		this->solve(rhs[i], results[i], maxConvergenceTime, maxIterations);
 	}
 }

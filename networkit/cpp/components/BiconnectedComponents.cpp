@@ -94,8 +94,8 @@ void BiconnectedComponents::run() {
 
           for (auto rit = edgeStack.rbegin(); rit != edgeStack.rend(); ++rit) {
             if ((*rit).first == v && (*rit).second == u) {
-              edgeStack.erase(std::next(rit).base());
               newComponent(*rit);
+              edgeStack.erase(std::next(rit).base());
               break;
             }
           }

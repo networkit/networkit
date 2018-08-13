@@ -37,7 +37,7 @@ public:
 		// normalize At by out-degree
 		Vector invOutDeg = GraphBLAS::rowReduce(A);
 #pragma omp parallel for
-		for (index i = 0; i < invOutDeg.getDimension(); ++i) {
+		for (omp_index i = 0; i < static_cast<omp_index>(invOutDeg.getDimension()); ++i) {
 			invOutDeg[i] = 1.0/invOutDeg[i];
 		}
 		
@@ -108,13 +108,13 @@ void AlgebraicPageRank<Matrix>::run() {
 
 	double sum = 0.0;
 #pragma omp parallel for reduction(+:sum)
-	for (index i = 0; i < rank.getDimension(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(rank.getDimension()); ++i) {
 		sum += rank[i];
 	}
 
 	scoreData.resize(n, 0);
 #pragma omp parallel for
-	for (index i = 0; i < rank.getDimension(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(rank.getDimension()); ++i) {
 		scoreData[i] = rank[i] / sum;
 	}
 

@@ -75,13 +75,16 @@ void CoreDecomposition::runWithParK() {
 		size = curr.size();
 		while (size > 0) {
 			nUnprocessed -= size;
+#ifndef NETWORKIT_OMP2
 			if (! canRunInParallel || size <= 256) {
 				processSublevel(level, degrees, curr, next);
 			}
 			else {
 				processSublevelParallel(level, degrees, curr, next, active);
 			}
-
+#else
+			processSublevel(level, degrees, curr, next);
+#endif
 			std::swap(curr, next);
 			size = curr.size();
 			next.clear();
@@ -111,7 +114,7 @@ void NetworKit::CoreDecomposition::scanParallel(index level, const std::vector<c
 	curr.clear();
 
 #pragma omp parallel for schedule(guided)
-	for (index u = 0; u < z; ++u) {
+	for (omp_index u = 0; u < static_cast<omp_index>(z); ++u) {
 		if (active[u] && degrees[u] == level) {
 			auto tid = omp_get_thread_num();
 			next[tid].push_back(u);
@@ -141,6 +144,7 @@ void NetworKit::CoreDecomposition::processSublevel(index level,
 	}
 }
 
+#ifndef NETWORKIT_OMP2
 void NetworKit::CoreDecomposition::processSublevelParallel(index level,
 		std::vector<count>& degrees, const std::vector<node>& curr,
 		std::vector<node>& next, std::vector<char>& active)
@@ -152,13 +156,14 @@ void NetworKit::CoreDecomposition::processSublevelParallel(index level,
 	std::vector<std::vector<node>> localNext(omp_get_max_threads());
 
 #pragma omp parallel for schedule(guided)
-	for (index i = 0; i < size; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(size); ++i) {
 		node u = curr[i];
 		active[u] = 0;
 		scoreData[u] = level;
 		G.forNeighborsOf(u, [&](node v) {
 			if (degrees[v] > level) {
 				index tmp;
+
 #pragma omp atomic capture
 				tmp = --degrees[v];
 
@@ -174,6 +179,7 @@ void NetworKit::CoreDecomposition::processSublevelParallel(index level,
 		next.insert(next.end(), n.begin(), n.end());
 	}
 }
+#endif // NETWORKIT_OMP2
 
 void CoreDecomposition::runWithBucketQueues() {
 	/* Main data structure: buckets of nodes indexed by their remaining degree. */

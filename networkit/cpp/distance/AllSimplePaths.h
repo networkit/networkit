@@ -118,7 +118,7 @@ namespace NetworKit {
 			throw std::runtime_error("run method has not been called");
 		}
 		#pragma omp parallel for schedule(guided)
-		for (count i = 0; i < paths.size(); ++i) {
+		for (omp_index i = 0; i < static_cast<omp_index>(paths.size()); ++i) {
 			handle(paths[i]);
 		}
 	}

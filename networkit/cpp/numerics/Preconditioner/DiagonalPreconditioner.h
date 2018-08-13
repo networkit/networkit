@@ -32,7 +32,7 @@ public:
 		// Diagonal preconditioner just needs to store the inverse diagonal of A
 		inv_diag = A.diagonal();
 #pragma omp parallel for
-		for (index i = 0; i < inv_diag.getDimension(); ++i) {
+		for (omp_index i = 0; i < static_cast<omp_index>(inv_diag.getDimension()); ++i) {
 			if (inv_diag[i]) inv_diag[i] = 1.0 / inv_diag[i];
 		}
 	}

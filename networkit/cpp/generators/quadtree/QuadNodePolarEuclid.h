@@ -354,13 +354,13 @@ public:
 			updateMinMax(phi, maxR);
 			updateMinMax(phi, minR);
 		}
-		if (phi + M_PI > leftAngle && phi + M_PI < rightAngle) {
-			updateMinMax(phi + M_PI, maxR);
-			updateMinMax(phi + M_PI, minR);
+		if (phi + PI > leftAngle && phi + PI < rightAngle) {
+			updateMinMax(phi + PI, maxR);
+			updateMinMax(phi + PI, minR);
 		}
-		if (phi - M_PI > leftAngle && phi -M_PI < rightAngle) {
-			updateMinMax(phi - M_PI, maxR);
-			updateMinMax(phi - M_PI, minR);
+		if (phi - PI > leftAngle && phi -PI < rightAngle) {
+			updateMinMax(phi - PI, maxR);
+			updateMinMax(phi - PI, minR);
 		}
 
 		/**
@@ -444,7 +444,7 @@ public:
 	 * @param lowR Optional value for the minimum radial coordinate of the query region
 	 * @param highR Optional value for the maximum radial coordinate of the query region
 	 */
-	void getElementsInEuclideanCircle(Point2D<double> center, double radius, vector<T> &result, double minAngle=0, double maxAngle=2*M_PI, double lowR=0, double highR = 1) const {
+	void getElementsInEuclideanCircle(Point2D<double> center, double radius, vector<T> &result, double minAngle=0, double maxAngle=2*PI, double lowR=0, double highR = 1) const {
 		if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR < lowerBoundR) return;
 		if (outOfReach(center, radius)) {
 			return;
@@ -678,7 +678,9 @@ public:
 	count reindex(count offset) {
 		if (isLeaf)
 		{
+#ifndef NETWORKIT_OMP2
 			#pragma omp task
+#endif
 			{
 				index p = offset;
 				std::generate(content.begin(), content.end(), [&p](){return p++;});

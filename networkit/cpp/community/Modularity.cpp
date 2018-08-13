@@ -65,7 +65,8 @@ double Modularity::getQuality(const Partition& zeta, const Graph& G) {
 //	assert (divisor != 0);	// do not divide by 0
 
 	#pragma omp parallel for reduction(+:expCov)
-	for (index c = zeta.lowerBound(); c < zeta.upperBound(); ++c) {
+	for (omp_index c = static_cast<omp_index>(zeta.lowerBound());
+		 c < static_cast<omp_index>(zeta.upperBound()); ++c) {
 		expCov += ((incidentWeightSum[c] / gTotalEdgeWeight) * (incidentWeightSum[c] / gTotalEdgeWeight )) / 4;	// squared
 	}
 

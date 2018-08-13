@@ -66,11 +66,14 @@ void ChibaNishizekiQuadrangleEdgeScore::run() {
 				// the opposite edge doesn't need to be deleted as we will never again consider
 				// outgoing edges of u as u cannot be reached anymore after the uv loop.
 				if (vw->first == u) {
+					if (std::next(vw) == edges[uv.first].end()) {
+						edges[uv.first].pop_back();
+						break;
+					}
+
 					// move last element to current position in order to avoid changing too much
 					*vw = edges[uv.first].back();
 					edges[uv.first].pop_back();
-					if (vw == edges[uv.first].end()) // break if we were at the last element already
-						break;
 				}
 
 				++nodeMarker[vw->first];

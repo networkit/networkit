@@ -232,7 +232,7 @@ void Lamg<Matrix>::parallelSolve(const std::vector<Vector>& rhs, std::vector<Vec
 		if (nested) omp_set_nested(false);
 
 #pragma omp parallel for
-		for (index i = 0; i < rhs.size(); ++i) {
+		for (omp_index i = 0; i < static_cast<omp_index>(rhs.size()); ++i) {
 			index threadId = omp_get_thread_num();
 			LAMGSolverStatus stat;
 			stat.desiredResidualReduction = this->tolerance * rhs[i].length() / (laplacianMatrix * results[i] - rhs[i]).length();

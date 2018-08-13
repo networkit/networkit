@@ -6,8 +6,9 @@
 
 #include "CurveballImpl.h"
 
-#include <cassert>
 #include <algorithm>
+#include <cassert>
+#include <numeric>
 #include <vector>
 
 #include "../auxiliary/Timer.h"

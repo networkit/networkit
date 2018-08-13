@@ -9,14 +9,12 @@
  *
  */
 
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
-#include <unistd.h>
+
 
 #include "../auxiliary/Log.h"
 
 #include "KONECTGraphReader.h"
+#include "MemoryMappedFile.h"
 
 namespace NetworKit{
 	KONECTGraphReader::KONECTGraphReader(bool remapNodes, MultipleEdgesHandling handlingmethod):
@@ -35,25 +33,38 @@ namespace NetworKit{
 		bool secondPropertyLine = false;
 		std::unordered_map<node, node> nodeIdMap;
 
-		//open file
-		auto fd = open(path.c_str(), O_RDONLY);
-		if(fd < 0)
-			throw std::runtime_error("Unable to open file");
+		MemoryMappedFile mmfile(path);
+		auto it = mmfile.cbegin();
+		auto end = mmfile.cend();
 
-		struct stat st;
-		if(fstat(fd, &st))
-			throw std::runtime_error("Could not obtain file stats");
+		// Returns 
+		// 0 iff it does not point to a line ending
+		// 1 iff it is a single-char ending ('\r' or '\n')
+		// 2 iff it is two-char ending ("\r\n") 
+		auto detectLineEnding = [&] () -> size_t {
+			if (*it == '\r') {
+				if ((it + 1) != end && *(it + 1) == '\n') return 2;
+				return 1;
+			}
+			if (*it == '\n')
+				return 1;
 
-		// It does not really matter if we use a private or shared mapping.
-		auto window = mmap(nullptr, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
-		if(window == reinterpret_cast<void *>(-1))
-			throw std::runtime_error("Could not map file");
+			return 0;
+		};
 
-		if(close(fd))
-			throw std::runtime_error("Error during close()");
+		// Returns true if a line ending was found and skipped
+		auto skipLineEnding = [&](bool required = true) -> bool {
+			auto length = detectLineEnding();
+			if (length) {
+				it += length;
+				return true;
+			}
 
-		auto it = reinterpret_cast<char *>(window);
-		auto end = reinterpret_cast<char *>(window) + st.st_size;
+			if (required)
+				throw std::runtime_error("No break symbol after first property line");
+
+			return false;
+		};
 
 		// The following functions are helpers for parsing.
 		auto skipWhitespace = [&] {
@@ -67,7 +78,7 @@ namespace NetworKit{
 		// This function parses in whole words
 		auto scanWord = [&] () {
 			std::string word = "";
-			while(it != end && *it != ' ' && *it != '\t' && *it != '\n'){
+			while(it != end && *it != ' ' && *it != '\t' && *it != '\n' && *it != '\r'){
 				word += *it;
 				++it;
 			}
@@ -142,11 +153,7 @@ namespace NetworKit{
 		}
 
 		skipWhitespace();
-		if (*it != '\n'){
-			throw std::runtime_error("No break symbol after first property line");
-		}else{
-			++it;
-		}
+		skipLineEnding();
 		skipWhitespace();
 		//second optional property line
 		if(*it == '%'){
@@ -156,16 +163,13 @@ namespace NetworKit{
 			skipWhitespace();
 			numberOfNodes = scanId();
 			secondPropertyLine = true;
-			while(it != end && *it != '\n')
+			while(it != end && !detectLineEnding())
 				++it;
 			if(it >= end){ // proper error message if file ends unexpected
 				throw std::runtime_error("Unexpected end of file");
 			}
-			if (*it != '\n'){
-				throw std::runtime_error("File not properly formatted. Last character in second property line is: "+std::string(1, *it));
-			}else{
-				++it;
-			}
+			
+			skipLineEnding();
 			DEBUG("Second property line read in. Edges: "+std::to_string(numberOfEdges)+ " / Nodes: "+std::to_string(numberOfNodes));
 		}
 
@@ -233,11 +237,12 @@ namespace NetworKit{
 
 		while(it != end){
 			skipWhitespace();
-			if(*it == '\n') {
+			if(skipLineEnding(false)) {
 				// We ignore empty lines.
+				continue;
 			} else if(*it == '#' || *it == '%') {
 				// Skip non-linebreak characters.
-				while(it != end && *it != '\n')
+				while(it != end && !detectLineEnding())
 					++it;
 			} else {
 				// Normal case parsing
@@ -264,14 +269,9 @@ namespace NetworKit{
 			}
 			//break lines
 			skipWhitespace();
-			if (*it != '\n'){
-				throw std::runtime_error("File not properly formatted. Last character in line is: "+std::string(1, *it));
-			}
-			++it;
+			skipLineEnding();
 		}
-		//unmap file
-		if(munmap(window, st.st_size))
-			throw std::runtime_error("Could not unmap file");
+
 
 		graph.shrinkToFit();
 		return graph;

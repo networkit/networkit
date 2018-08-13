@@ -18,4 +18,7 @@ void PredictionsSorter::sortByNodePair(std::vector<LinkPredictor::prediction>& p
   Aux::Parallel::sort(predictions.begin(), predictions.end(), ConcreteNodePairComp);
 }
 
+PredictionsSorter::ScoreComp PredictionsSorter::ConcreteScoreComp{};
+PredictionsSorter::NodePairComp PredictionsSorter::ConcreteNodePairComp{};
+
 } // namespace NetworKit

@@ -5,6 +5,8 @@
  *      Author: cls
  */
 
+#include <numeric>
+
 #include "ParallelPartitionCoarsening.h"
 #include <omp.h>
 #include "../graph/GraphBuilder.h"
@@ -108,7 +110,7 @@ void ParallelPartitionCoarsening::run() {
 		DEBUG("create edges in coarse graphs");
 		GraphBuilder b(nextNodeId, true, false);
 		#pragma omp parallel for schedule(guided)
-		for (node su = 0; su < nextNodeId; su++) {
+		for (omp_index su = 0; su < static_cast<omp_index>(nextNodeId); su++) {
 			std::map<index, edgeweight> outEdges;
 			for (node u : nodesPerSuperNode[su]) {
 				G.forNeighborsOf(u, [&](node v, edgeweight ew) {

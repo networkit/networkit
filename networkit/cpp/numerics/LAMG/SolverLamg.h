@@ -297,7 +297,7 @@ void SolverLamg<Matrix>::minRes(index level, Vector& x, const Vector& r) {
 		std::vector<index> ERowIdx(r.getDimension()+1);
 
 #pragma omp parallel for
-		for (index i = 0; i < r.getDimension(); ++i) {
+		for (omp_index i = 0; i < static_cast<omp_index>(r.getDimension()); ++i) {
 			for (index k = 0; k < n; ++k) {
 				double AEvalue = r[i] - rHistory[level][k][i];
 				if (std::fabs(AEvalue) > 1e-25) {
@@ -323,7 +323,7 @@ void SolverLamg<Matrix>::minRes(index level, Vector& x, const Vector& r) {
 		std::vector<double> ENonZeros(ERowIdx[r.getDimension()]);
 
 #pragma omp parallel for
-		for (index i = 0; i < r.getDimension(); ++i) {
+		for (omp_index i = 0; i < static_cast<omp_index>(r.getDimension()); ++i) {
 			for (index k = 0, aIdx = ARowIdx[i], eIdx = ERowIdx[i]; k < n; ++k) {
 				double AEvalue = r[i] - rHistory[level][k][i];
 				if (std::fabs(AEvalue) > 1e-25) {

@@ -82,7 +82,7 @@ void PivotMDS::run() {
 		Vector pos = C * eigenvector;
 
 #pragma omp parallel for
-		for (index i = 0; i < n; ++i) {
+		for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
 			vertexCoordinates[i][d] = pos[i];
 		}
 

@@ -9,6 +9,7 @@
 
 #include <cassert>
 #include <atomic>
+#include <numeric>
 #include "omp.h"
 
 namespace NetworKit {
@@ -72,7 +73,7 @@ CSRMatrix::CSRMatrix(const count nRows, const count nCols, const std::vector<std
 	 this->nonZeros = std::vector<double>(nnz);
 
 #pragma omp parallel for
-	 for (index i = 0; i < nRows; ++i) {
+	 for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
 		 for (index k = 0; k < columnIdx[i].size(); ++k) {
 			 this->columnIdx[rowIdx[i] + k] = columnIdx[i][k];
 			 nonZeros[rowIdx[i] + k] = values[i][k];
@@ -209,7 +210,7 @@ index CSRMatrix::binarySearchColumns(index left, index right, index j) const {
 
 void CSRMatrix::sort() {
 #pragma omp parallel for schedule(guided)
-	for (index i = 0; i < nRows; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
 		if (rowIdx[i+1] - rowIdx[i] > 1) {
 			quicksort(rowIdx[i], rowIdx[i+1]-1);
 		}
@@ -219,7 +220,7 @@ void CSRMatrix::sort() {
 #ifndef NDEBUG
 	bool sorted = true;
 #pragma omp parallel for
-	for (index i = 0; i < nRows; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
 		for (index j = rowIdx[i]+1; j < rowIdx[i+1]; ++j) {
 			if (columnIdx[j-1] > columnIdx[j]) {
 				sorted = false;
@@ -253,7 +254,7 @@ Vector CSRMatrix::column(const index j) const {
 
 	Vector column(numberOfRows(), getZero());
 #pragma omp parallel for
-	for (node i = 0; i < numberOfRows(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(numberOfRows()); ++i) {
 		column[i] = (*this)(i,j);
 	}
 
@@ -265,7 +266,7 @@ Vector CSRMatrix::diagonal() const {
 
 	if (sorted()) {
 #pragma omp parallel for
-		for (index i = 0; i < diag.getDimension(); ++i) {
+		for (omp_index i = 0; i < static_cast<omp_index>(diag.getDimension()); ++i) {
 			if (rowIdx[i] == rowIdx[i+1]) continue; // no entry in row i
 			index left = rowIdx[i];
 			index right = rowIdx[i+1]-1;
@@ -287,7 +288,7 @@ Vector CSRMatrix::diagonal() const {
 		}
 	} else {
 #pragma omp parallel for
-		for (index i = 0; i < diag.getDimension(); ++i) {
+		for (omp_index i = 0; i < static_cast<omp_index>(diag.getDimension()); ++i) {
 			diag[i] = (*this)(i,i);
 		}
 	}
@@ -323,7 +324,7 @@ CSRMatrix CSRMatrix::operator*(const double &scalar) const {
 
 CSRMatrix& CSRMatrix::operator*=(const double &scalar) {
 #pragma omp parallel for
-	for (index k = 0; k < nonZeros.size(); ++k) {
+	for (omp_index k = 0; k < static_cast<omp_index>(nonZeros.size()); ++k) {
 		nonZeros[k] *= scalar;
 	}
 
@@ -336,7 +337,7 @@ Vector CSRMatrix::operator*(const Vector &vector) const {
 
 	Vector result(nRows, zero);
 #pragma omp parallel for
-	for (index i = 0; i < numberOfRows(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(numberOfRows()); ++i) {
 		double sum = zero;
 		for (index cIdx = rowIdx[i]; cIdx < rowIdx[i+1]; ++cIdx) {
 			sum += nonZeros[cIdx] * vector[columnIdx[cIdx]];
@@ -592,7 +593,7 @@ CSRMatrix CSRMatrix::diagonalMatrix(const Vector& diagonalElements, double zero)
 	std::vector<double> nonZeros(nCols);
 
 #pragma omp parallel for
-	for (index j = 0; j < nCols; ++j) {
+	for (omp_index j = 0; j < static_cast<omp_index>(nCols); ++j) {
 		columnIdx[j] = j;
 		nonZeros[j] = diagonalElements[j];
 	}

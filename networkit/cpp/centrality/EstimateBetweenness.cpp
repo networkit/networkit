@@ -81,7 +81,7 @@ void EstimateBetweenness::run() {
 
 
 	#pragma omp parallel for if(parallel_flag)
-	for (index i = 0; i < sampledNodes.size(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(sampledNodes.size()); ++i) {
 		computeDependencies(sampledNodes[i]);
 	}
 

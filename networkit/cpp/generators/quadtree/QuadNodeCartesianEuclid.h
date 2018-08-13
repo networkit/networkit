@@ -545,7 +545,9 @@ public:
 	count reindex(count offset) {
 		if (isLeaf)
 		{
+#ifndef NETWORKIT_OMP2
 			#pragma omp task
+#endif
 			{
 				index p = offset;
 				std::generate(content.begin(), content.end(), [&p](){return p++;});

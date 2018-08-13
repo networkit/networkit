@@ -320,7 +320,7 @@ public:
 template<typename F>
 void DenseMatrix::apply(const F unaryElementFunction) {
 #pragma omp parallel for
-	for (index k = 0; k < entries.size(); ++k) {
+	for (omp_index k = 0; k < static_cast<omp_index>(entries.size()); ++k) {
 		entries[k] = unaryElementFunction(entries[k]);
 	}
 }
@@ -331,7 +331,7 @@ template<typename L> inline DenseMatrix NetworKit::DenseMatrix::binaryOperator(c
 	std::vector<double> resultEntries(A.numberOfRows() * A.numberOfColumns(), 0.0);
 
 #pragma omp parallel for
-	for (index i = 0; i < A.numberOfRows(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(A.numberOfRows()); ++i) {
 		index offset = i * A.numberOfColumns();
 		for (index j = offset; j < offset + A.numberOfColumns(); ++j) {
 			resultEntries[j] = binaryOp(A.entries[j], B.entries[j]);
@@ -353,7 +353,7 @@ template<typename L>
 inline void NetworKit::DenseMatrix::parallelForElementsInRow(index i, L handle) const {
 	index offset = i * numberOfColumns();
 #pragma omp parallel for
-	for (index j = 0; j < numberOfColumns(); ++j) {
+	for (omp_index j = 0; j < static_cast<omp_index>(numberOfColumns()); ++j) {
 		handle(j, entries[offset + j]);
 	}
 }
@@ -371,7 +371,7 @@ inline void NetworKit::DenseMatrix::forElementsInRowOrder(L handle) const {
 template<typename L>
 inline void NetworKit::DenseMatrix::parallelForElementsInRowOrder(L handle) const {
 #pragma omp parallel for
-	for (index i = 0; i < nRows; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
 		index offset = i * numberOfColumns();
 		for (index k = offset, j = 0; k < offset + numberOfColumns(); ++k, ++j) {
 			handle(i, j, entries[k]);
@@ -391,7 +391,7 @@ inline void DenseMatrix::forNonZeroElementsInRow(index row, L handle) const {
 template<typename L>
 inline void DenseMatrix::parallelForNonZeroElementsInRow(index row, L handle) const {
 #pragma omp parallel for
-	for (index j = 0; j < numberOfColumns(); ++j) {
+	for (omp_index j = 0; j < static_cast<omp_index>(numberOfColumns()); ++j) {
 		index k = row * numberOfColumns() + j;
 		if (entries[k] != getZero()) {
 			handle(j, entries[k]);
@@ -413,7 +413,7 @@ inline void DenseMatrix::forNonZeroElementsInRowOrder(L handle) const {
 template<typename L>
 inline void DenseMatrix::parallelForNonZeroElementsInRowOrder(L handle) const {
 #pragma omp parallel for
-	for (index i = 0; i < numberOfRows(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(numberOfRows()); ++i) {
 		for (index j = 0, k = i * numberOfColumns(); j < numberOfColumns(); ++j, ++k) {
 			if (entries[k] != getZero()) {
 				handle(i,j,entries[k]);

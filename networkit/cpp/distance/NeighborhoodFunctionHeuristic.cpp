@@ -56,7 +56,7 @@ void NeighborhoodFunctionHeuristic::run() {
 	// run nSamples BFS and count the distances.
 	std::vector<std::vector<count>> nf(maxThreads, std::vector<count>(dia+1,0));
 	#pragma omp parallel for schedule(guided)
-	for (index i = 0; i < nSamples; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(nSamples); ++i) {
 		count tid = omp_get_thread_num();
 		node u = start_nodes[i];
 		G.BFSfrom(u, [&](node v, count dist) {
@@ -82,7 +82,7 @@ void NeighborhoodFunctionHeuristic::run() {
 		// accumulate thread local results for each distance
 		count tmp = 0;
 		#pragma omp parallel for reduction(+:tmp)
-		for (index tid = 0; tid < nf.size(); ++tid) {
+		for (omp_index tid = 0; tid < static_cast<omp_index>(nf.size()); ++tid) {
 			tmp += nf[tid][dist];
 		}
 		// accumulate nf

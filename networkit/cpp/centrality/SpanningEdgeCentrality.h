@@ -8,8 +8,8 @@
 #ifndef SPANNING_H_
 #define SPANNING_H_
 
-#include "Centrality.h"
 #include "../numerics/LAMG/Lamg.h"
+#include "Centrality.h"
 #include "../algebraic/CSRMatrix.h"
 
 

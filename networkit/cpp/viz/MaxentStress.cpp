@@ -76,7 +76,7 @@ void MaxentStress::run() {
 //		randomInitCoordinates(oldCoordinates);
 	} else {
 #pragma omp parallel for
-		for (index i = 0; i < vertexCoordinates.size(); ++i) {
+		for (omp_index i = 0; i < static_cast<omp_index>(vertexCoordinates.size()); ++i) {
 			for (index d = 0; d < dim; ++d) {
 				oldCoordinates[d][i] = vertexCoordinates[i][d];
 			}
@@ -135,7 +135,7 @@ void MaxentStress::run() {
 			}
 
 #pragma omp parallel for
-			for (index i = 0; i < G.numberOfNodes(); ++i) {
+			for (omp_index i = 0; i < static_cast<omp_index>(G.numberOfNodes()); ++i) {
 				for (index d = 0; d < dim; ++d) {
 					rhs[d][i] -= sum[d];
 				}
@@ -164,7 +164,7 @@ void MaxentStress::run() {
 
 	// write coordinates to vertexCoordinates vector
 #pragma omp parallel for
-	for (index i = 0; i < this->G.upperNodeIdBound(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(this->G.upperNodeIdBound()); ++i) {
 		for (index d = 0; d < dim; ++d) {
 			this->vertexCoordinates[i][d] = newCoordinates[d][i];
 		}
@@ -196,7 +196,7 @@ double MaxentStress::computeScalingFactor() {
 	double topFraction = 0.0;
 	double bottomFraction = 0.0;
 #pragma omp parallel for reduction(+:topFraction)
-	for (node u = 0; u < n; ++u) {
+	for (omp_index u = 0; u < static_cast<omp_index>(n); ++u) {
 		std::unique_ptr<SSSP> sssp = weighted? std::move(std::unique_ptr<SSSP>(new Dijkstra(augmentedGraph, u, false, false))) : std::move(std::unique_ptr<SSSP>(new BFS(augmentedGraph, u, false, false)));
 		sssp->run();
 		augmentedGraph.forNodes([&](node v) {
@@ -207,7 +207,7 @@ double MaxentStress::computeScalingFactor() {
 	}
 
 #pragma omp parallel for reduction(+:bottomFraction)
-	for (node u = 0; u < n; ++u) {
+	for (omp_index u = 0; u < static_cast<omp_index>(n); ++u) {
 		std::unique_ptr<SSSP> sssp = weighted? std::move(std::unique_ptr<SSSP>(new Dijkstra(augmentedGraph, u, false, false))) : std::move(std::unique_ptr<SSSP>(new BFS(augmentedGraph, u, false, false)));
 		sssp->run();
 		augmentedGraph.forNodes([&](node v) {
@@ -225,7 +225,7 @@ void MaxentStress::scaleLayout() {
 
 	// scale vertex coordinates with s
 #pragma omp parallel for
-	for (index i = 0; i < this->vertexCoordinates.size(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(this->vertexCoordinates.size()); ++i) {
 		this->vertexCoordinates[i].scale(s);
 	}
 }
@@ -244,7 +244,7 @@ double MaxentStress::fullStressMeasure() {
 	}
 
 #pragma omp parallel for reduction(+:energy)
-	for (node u = 0; u < n; ++u) {
+	for (omp_index u = 0; u < static_cast<omp_index>(n); ++u) {
 		std::unique_ptr<SSSP> sssp = weighted? std::move(std::unique_ptr<SSSP>(new Dijkstra(augmentedGraph, u, false, false))) : std::move(std::unique_ptr<SSSP>(new BFS(augmentedGraph, u, false, false)));
 		sssp->run();
 		this->G.forNodes([&](node v) {
@@ -270,7 +270,7 @@ double MaxentStress::maxentMeasure() {
 	}
 
 #pragma omp parallel for reduction(+:entropy)
-	for (node u = 0; u < n; ++u) {
+	for (omp_index u = 0; u < static_cast<omp_index>(n); ++u) {
 		augmentedGraph.forNodes([&](node v) {
 			if (u == v) return;
 			double dist = std::max(this->vertexCoordinates[u].distance(this->vertexCoordinates[v]), 1e-5);
@@ -326,7 +326,7 @@ bool MaxentStress::isConverged(const CoordinateVector& newCoords, const Coordina
 	double relChange = 0.0;
 	double oldCoordsSqLength = 0.0;
 #pragma omp parallel for reduction(+:relChange,oldCoordsSqLength)
-	for (index i = 0; i < newCoords[0].getDimension(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(newCoords[0].getDimension()); ++i) {
 		relChange += squaredDistance(newCoords, oldCoords, i, i);
 		oldCoordsSqLength += squaredLength(oldCoords, i);
 	}
@@ -373,7 +373,7 @@ void MaxentStress::setupWeightedLaplacianMatrix() {
 void MaxentStress::computeCoordinateLaplacianTerm(const CoordinateVector& coordinates, CoordinateVector& rhs) {
 	count n = G.numberOfNodes();
 #pragma omp parallel for
-	for (index i = 0; i < n; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
 		double weightedDegree = 0.0;
 		for (const ForwardEdge& edge : knownDistances[i]) {
 			double dist = std::max(distance(coordinates, i, edge.head), 1e-5);
@@ -396,7 +396,7 @@ CoordinateVector MaxentStress::computeRepulsiveForces(const CoordinateVector& co
 	double q2 = (q+2)/2;
 
 #pragma omp parallel for
-	for (index i = 0; i < n; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
 		std::vector<bool> knownDist(n, false);
 		for (const ForwardEdge &edge : knownDistances[i]) {
 			knownDist[edge.head] = true;
@@ -427,7 +427,7 @@ void MaxentStress::approxRepulsiveForces(const CoordinateVector& coordinates, co
 	double q2 = (q+2)/2;
 
 #pragma omp parallel for
-	for (index i = 0; i < n; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
 		Point<double> pI = getPoint(coordinates, i);
 		auto approximateNeighbor = [&](const count numNodes, const Point<double>& centerOfMass, const double sqDist) {
 			if (sqDist < 1e-5) return;
@@ -470,7 +470,7 @@ void MaxentStress::computeKnownDistances(const count k, const GraphDistance grap
 	// finally determine cardinality of knownDistances
 	count cardinality = 0;
 #pragma omp parallel for reduction(+:cardinality)
-	for (index i = 0; i < knownDistances.size(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(knownDistances.size()); ++i) {
 		cardinality += knownDistances[i].size();
 	}
 
@@ -630,7 +630,7 @@ void MaxentStress::computeAlgebraicDistances(const Graph& graph, const count k) 
 void MaxentStress::randomInitCoordinates(CoordinateVector &coordinates) const {
 
 #pragma omp parallel for
-	for (index i = 0; i < coordinates[0].getDimension(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(coordinates[0].getDimension()); ++i) {
 		for (index d = 0; d < dim; ++d) {
 			coordinates[d][i] = Aux::Random::real() * 50; // 50 x 50 pixel
 		}

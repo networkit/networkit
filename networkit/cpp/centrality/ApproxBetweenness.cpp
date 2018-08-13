@@ -54,7 +54,7 @@ void ApproxBetweenness::run() {
 	DEBUG("score per thread size: ", scorePerThread.size());
 	handler.assureRunning();
 	#pragma omp parallel for
-	for (count i = 1; i <= r; i++) {
+	for (omp_index i = 1; i <= static_cast<omp_index>(r); i++) {
 		count thread = omp_get_thread_num();
 		DEBUG("sample ", i);
 		// if (i >= 1000) throw std::runtime_error("too many iterations");

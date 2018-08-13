@@ -8,12 +8,14 @@
 #include "NeighborhoodFunctionApproximation.h"
 #include "../components/ConnectedComponents.h"
 #include "../auxiliary/Random.h"
+#include "../Globals.h"
 
 #include <math.h>
 #include <iterator>
 #include <stdlib.h>
 #include <omp.h>
 #include <map>
+#include <vector>
 
 namespace NetworKit {
 
@@ -24,6 +26,12 @@ NeighborhoodFunctionApproximation::NeighborhoodFunctionApproximation(const Graph
 	if (cc.getPartition().numberOfSubsets() > 1) throw std::runtime_error("current implementation only runs on graphs with 1 connected component");
 }
 
+#ifdef _MSC_VER 
+// MSVC Optimizer crashes with an internal error message.
+// Until this is either fixed by Microsoft, or the issue here can was
+// found, let's just disable the optimizer.
+#pragma optimize( "", off)
+#endif // _MSC_VER
 void NeighborhoodFunctionApproximation::run() {
 	// the length of the bitmask where the number of connected nodes is saved
 	const count lengthOfBitmask = (count) ceil(log2(G.numberOfNodes())) + r;
@@ -59,9 +67,9 @@ void NeighborhoodFunctionApproximation::run() {
 		}
 	});
 	#pragma omp parallel for
-	for (size_t i = 0; i < k; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(k); ++i) {
 		count tmp = 0;
-		for (ssize_t t = 0; t < omp_get_max_threads(); ++t) {
+		for (int t = 0; t < omp_get_max_threads(); ++t) {
 			tmp |= localHighest[t][i];
 		}
 		highestCount[i] = tmp;
@@ -78,7 +86,7 @@ void NeighborhoodFunctionApproximation::run() {
 			tmp += localSumRemoved[i];
 		}
 		#pragma omp parallel for schedule(guided) 
-		for (count v = 0; v < activeNodes.size(); ++v) {
+		for (omp_index v = 0; v < static_cast<omp_index>(activeNodes.size()); ++v) {
 			if (!activeNodes[v]) continue;
 			index tid = (index)omp_get_thread_num();
 			
@@ -130,6 +138,9 @@ void NeighborhoodFunctionApproximation::run() {
 	}
 	hasRun = true;
 }
+#ifdef _MSC_VER 
+#pragma optimize( "", on)
+#endif // _MSC_VER
 
 std::vector<count> NeighborhoodFunctionApproximation::getNeighborhoodFunction() const {
 	if(!hasRun) {

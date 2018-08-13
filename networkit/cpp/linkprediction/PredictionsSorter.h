@@ -27,7 +27,8 @@ private:
     bool operator()(const LinkPredictor::prediction& a, const LinkPredictor::prediction& b) const {
       return (a.second > b.second) || (a.second == b.second && a.first < b.first);
     }
-  } static ConcreteScoreComp; //!< Comparator instance for score-based comparison
+  };
+  static ScoreComp ConcreteScoreComp; //!< Comparator instance for score-based comparison
 
   /**
    * Comparator used to sort predictions ascendingly by node-pairs.
@@ -36,7 +37,8 @@ private:
     bool operator()(const LinkPredictor::prediction& a, const LinkPredictor::prediction& b) const {
       return a.first < b.first;
     }
-  } static ConcreteNodePairComp; //!< Comparator instance for node-pair-based comparison
+  };
+  static NodePairComp ConcreteNodePairComp; //!< Comparator instance for node-pair-based comparison
 
 public:
   /**

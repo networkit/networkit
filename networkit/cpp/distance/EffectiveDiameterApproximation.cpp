@@ -62,7 +62,7 @@ void EffectiveDiameterApproximation::run() {
 			node v = activeNodes[x];
 			#pragma omp parallel for
 			// for each parallel approximation
-			for (count j = 0; j < k; j++) {
+			for (omp_index j = 0; j < k; j++) {
 				// the node is still connected to all previous neighbors
 				mCurr[v][j] = mPrev[v][j];
 				// and to all previous neighbors of all its neighbors

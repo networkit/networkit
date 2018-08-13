@@ -8,9 +8,10 @@
 #ifndef HYPERBOLICSPACE_H_
 #define HYPERBOLICSPACE_H_
 
+#include <cmath>
+
 #include <vector>
 #include <map>
-#include <cmath>
 #include "Point2D.h"
 #include "../viz/Point.h"
 #include "../auxiliary/Random.h"
@@ -126,26 +127,26 @@ public:
 	 * @param return Radius of a hyperbolic circle with the given area
 	 */
 	static inline double hyperbolicAreaToRadius(double area) {
-		return acosh(area/(2*M_PI)+1);
+		return acosh(area/(2*PI)+1);
 	}
 
 	static inline double radiusToHyperbolicArea(double radius) {
-			return  2*M_PI*(cosh(radius)-1);
+			return  2*PI*(cosh(radius)-1);
 	}
 
 	static double getExpectedDegree(double n, double alpha, double R) {
 		double gamma = 2*alpha+1;
 		double xi = (gamma-1)/(gamma-2);
 		double firstSumTerm = exp(-R/2);
-		double secondSumTerm = exp(-alpha*R)*(alpha*(R/2)*((M_PI/4)*pow((1/alpha),2)-(M_PI-1)*(1/alpha)+(M_PI-2))-1);
-		double expectedDegree = (2/M_PI)*xi*xi*n*(firstSumTerm + secondSumTerm);
+		double secondSumTerm = exp(-alpha*R)*(alpha*(R/2)*((PI/4)*pow((1/alpha),2)-(PI-1)*(1/alpha)+(PI-2))-1);
+		double expectedDegree = (2/PI)*xi*xi*n*(firstSumTerm + secondSumTerm);
 		return expectedDegree;
 	}
 
 	static double searchTargetRadiusForColdGraphs(double n, double k, double alpha, double epsilon) {
 		double gamma = 2*alpha+1;
 		double xiInv = ((gamma-2)/(gamma-1));
-		double v = k * (M_PI/2)*xiInv*xiInv;
+		double v = k * (PI/2)*xiInv*xiInv;
 		double currentR = 2*log(n / v);
 		double lowerBound = currentR/2;
 		double upperBound = currentR*2;
@@ -169,18 +170,18 @@ public:
 		double targetAvgDegree = (m/n)*2;
 		double xiInv = ((plexp-2)/(plexp-1));
 		if (T == 0) {
-			double v = targetAvgDegree * (M_PI/2)*xiInv*xiInv;
+			double v = targetAvgDegree * (PI/2)*xiInv*xiInv;
 			result = 2*log(n / v);
 			TRACE("expected:", getExpectedDegree(n, alpha, result));
 			result = searchTargetRadiusForColdGraphs(n, targetAvgDegree, alpha, epsilon);
 		} else {
 			double beta = 1/T;
 			if (T < 1){//cold regime
-				double Iinv = ((beta/M_PI)*sin(M_PI/beta));
-				double v = (targetAvgDegree*Iinv)*(M_PI/2)*xiInv*xiInv;
+				double Iinv = ((beta/PI)*sin(PI/beta));
+				double v = (targetAvgDegree*Iinv)*(PI/2)*xiInv*xiInv;
 				result = 2*log(n / v);
 			} else {//hot regime
-				double v = targetAvgDegree*(1-beta)*pow((M_PI/2), beta)*xiInv*xiInv;
+				double v = targetAvgDegree*(1-beta)*pow((PI/2), beta)*xiInv*xiInv;
 				result = 2*log(n/v)/beta;
 			}
 		}
@@ -190,9 +191,9 @@ public:
 	static inline double effectiveAreaInCell(double minPhi, double maxPhi, double minR, double maxR, double alpha) {
 		double deltaPhi = maxPhi - minPhi;
 		assert(deltaPhi >= 0);
-		assert(deltaPhi <= 2*M_PI);
+		assert(deltaPhi <= 2*PI);
 		double ringArea = radiusToHyperbolicArea(alpha*EuclideanRadiusToHyperbolic(maxR)) - radiusToHyperbolicArea(alpha*EuclideanRadiusToHyperbolic(minR));
-		return ringArea*(deltaPhi/(2*M_PI));
+		return ringArea*(deltaPhi/(2*PI));
 	}
 
 	/**

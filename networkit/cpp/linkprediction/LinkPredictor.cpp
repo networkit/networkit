@@ -30,7 +30,7 @@ std::vector<LinkPredictor::prediction> LinkPredictor::runOn(std::vector<std::pai
   std::vector<prediction> predictions(nodePairs.size());
   Aux::Parallel::sort(nodePairs.begin(), nodePairs.end());
   #pragma omp parallel for schedule(dynamic) shared(predictions)
-  for (index i = 0; i < nodePairs.size(); ++i) {
+  for (omp_index i = 0; i < static_cast<omp_index>(nodePairs.size()); ++i) {
     predictions[i] = std::make_pair(nodePairs[i], run(nodePairs[i].first, nodePairs[i].second));
   }
   return predictions;

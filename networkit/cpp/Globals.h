@@ -18,6 +18,11 @@
 namespace NetworKit {
 	/** Typedefs **/
 	typedef uint64_t index; // more expressive name for an index into an array
+#ifdef _MSC_VER	
+	typedef int64_t omp_index;
+#else
+	typedef index omp_index;
+#endif
 	typedef uint64_t count; // more expressive name for an integer quantity
 	typedef ttmath::Big<TTMATH_BITS(64),TTMATH_BITS(64)> bigfloat;	// big floating point number
 	typedef index node; // node indices are 0-based

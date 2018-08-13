@@ -337,7 +337,7 @@ inline void Partition::forEntries(Callback handle) const {
 template<typename Callback>
 inline void Partition::parallelForEntries(Callback handle) const {
 	#pragma omp parallel for
-	for (index e = 0; e < this->z; e++) {
+	for (omp_index e = 0; e < static_cast<omp_index>(this->z); e++) {
 		handle(e, this->data[e]);
 	}
 }

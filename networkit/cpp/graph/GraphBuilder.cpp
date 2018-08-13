@@ -290,7 +290,7 @@ void GraphBuilder::toGraphParallel(Graph& G) {
 	});
 	count numSelfLoops = 0;
 	#pragma omp parallel for reduction(+:numSelfLoops)
-	for (int i = 0; i < maxThreads; ++i)
+	for (omp_index i = 0; i < static_cast<omp_index>(maxThreads); ++i)
 		numSelfLoops += numberOfSelfLoopsPerThread[i];
 	G.storedNumberOfSelfLoops = numSelfLoops;
 }
@@ -386,7 +386,7 @@ void GraphBuilder::toGraphSequential(Graph &G) {
 
 void GraphBuilder::setDegrees(Graph& G) {
 	#pragma omp parallel for if(n > (1<<20))
-	for (node v = 0; v < n; v++) {
+	for (omp_index v = 0; v < static_cast<omp_index>(n); v++) {
 		G.outDeg[v] = G.outEdges[v].size();
 		if (G.isDirected()) {
 			G.inDeg[v] = G.inEdges[v].size();
@@ -397,7 +397,7 @@ void GraphBuilder::setDegrees(Graph& G) {
 count GraphBuilder::numberOfEdges(const Graph& G) {
 	count m = 0;
 	#pragma omp parallel for reduction(+:m) if(n > (1<<20))
-	for (node v = 0; v < G.z; v++) {
+	for (omp_index v = 0; v < static_cast<omp_index>(G.z); v++) {
 		m += G.degree(v);
 	}
 	if (G.isDirected()) {

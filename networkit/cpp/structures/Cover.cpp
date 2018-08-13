@@ -160,7 +160,7 @@ count Cover::numberOfSubsets() const {
 
 	count k = 0; // number of actually existing clusters
 	#pragma omp parallel for reduction(+:k)
-	for (index i = 0; i < upperBound(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(upperBound()); ++i) {
 		if (exists[i]) {
 			k++;
 		}

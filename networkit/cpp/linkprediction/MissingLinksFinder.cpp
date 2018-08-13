@@ -23,7 +23,7 @@ std::vector<std::pair<node, node>> MissingLinksFinder::findAtDistance(count k) {
   {
     std::vector<std::pair<node, node>> missingLinksPrivate;
     #pragma omp for nowait
-    for (index i = 0; i < nodes.size(); ++i) {
+    for (omp_index i = 0; i < static_cast<omp_index>(nodes.size()); ++i) {
       std::vector<std::pair<node, node>> missingAtU = findFromNode(nodes[i], k);
       // Discard all node-pairs of the form u > v. This removes all duplicates that result from undirected edges.
       missingAtU.erase(std::remove_if(std::begin(missingAtU), std::end(missingAtU),

@@ -8,6 +8,8 @@
 #ifndef HYPERBOLICGENERATOR_H_
 #define HYPERBOLICGENERATOR_H_
 
+#include <cmath>
+
 #include <vector>
 #include "../geometric/HyperbolicSpace.h"
 #include "StaticGraphGenerator.h"
@@ -84,7 +86,7 @@ private:
 	static vector<vector<double> > getBandAngles(const vector<vector<Point2D<double>>> &bands) {
 		vector<vector<double>> bandAngles(bands.size());
 		#pragma omp parallel for
-		for(index i=0; i < bands.size(); i++){
+		for (omp_index i=0; i < static_cast<omp_index>(bands.size()); i++){
 			const count currentBandSize = bands[i].size();
 			bandAngles[i].resize(currentBandSize);
 			for(index j=0; j < currentBandSize; j++) {
@@ -128,7 +130,7 @@ private:
 	  //Most innerband is defined by cLow = 0
 	  double minTheta, maxTheta;
 	  if (cLow == 0)
-	  return std::make_tuple(0, 2* M_PI);
+	  return std::make_tuple(0.0, 2* PI);
 
 	  double a = (cosh(radius)*cosh(cLow) - cosh(thresholdDistance))/(sinh(radius)*sinh(cLow));
 	  //handle floating point error
@@ -156,10 +158,10 @@ private:
 		std::vector<double>::iterator low;
 		std::vector<double>::iterator high;
 
-		if(minTheta == -2*M_PI)
+		if(minTheta == -2*PI)
 			minTheta = 0;
 		//Case 1: We do not have overlap 2pi, simply put all the points between min and max to the list
-		if(maxTheta <= 2*M_PI && minTheta >= 0){
+		if(maxTheta <= 2*PI && minTheta >= 0){
 			low = std::lower_bound(bandAngles.begin(), bandAngles.end(), minTheta);
 			high = std::upper_bound(bandAngles.begin(), bandAngles.end(), maxTheta);
 			std::vector<Point2D<double>>::const_iterator first = band.begin() + (low - bandAngles.begin());
@@ -169,17 +171,17 @@ private:
 			slab.insert(slab.end(), first, last);
 		}
 		//Case 2: We have 'forward' overlap at 2pi, that is maxTheta > 2pi
-		else if (maxTheta > 2*M_PI){
+		else if (maxTheta > 2*PI){
 			//1. Get points from minTheta to 2pi
 			low = std::lower_bound(bandAngles.begin(), bandAngles.end(), minTheta);
-			high = std::upper_bound(bandAngles.begin(), bandAngles.end(), 2*M_PI);
+			high = std::upper_bound(bandAngles.begin(), bandAngles.end(), 2*PI);
 			std::vector<Point2D<double>>::const_iterator first = band.begin() + (low - bandAngles.begin());
 			std::vector<Point2D<double>>::const_iterator last = band.begin() + (high - bandAngles.begin());
 			slab.insert(slab.end(), first, last);
 
 			//2. Get points from 0 to maxTheta%2pi
 			low = std::lower_bound(bandAngles.begin(), bandAngles.end(), 0);
-			maxTheta = fmod(maxTheta, (2*M_PI));
+			maxTheta = fmod(maxTheta, (2*PI));
 			high = std::upper_bound(bandAngles.begin(), bandAngles.end(), maxTheta);
 			std::vector<Point2D<double>>::const_iterator first2 = band.begin() + (low - bandAngles.begin());
 			std::vector<Point2D<double>>::const_iterator last2 = band.begin() + (high - bandAngles.begin());
@@ -188,9 +190,9 @@ private:
 		//Case 3: We have 'backward' overlap at 2pi, that is minTheta < 0
 		else if (minTheta < 0){
 			//1. Get points from 2pi + minTheta to 2pi
-			minTheta = (2*M_PI) + minTheta;
+			minTheta = (2*PI) + minTheta;
 			low = std::lower_bound(bandAngles.begin(), bandAngles.end(), minTheta);
-			high = std::upper_bound(bandAngles.begin(), bandAngles.end(), 2*M_PI);
+			high = std::upper_bound(bandAngles.begin(), bandAngles.end(), 2*PI);
 			std::vector<Point2D<double>>::const_iterator first = band.begin() + (low - bandAngles.begin());
 			std::vector<Point2D<double>>::const_iterator last = band.begin() + (high - bandAngles.begin());
 			slab.insert(slab.end(), first, last);

@@ -20,7 +20,7 @@ template<>
 void MultiLevelSetup<CSRMatrix>::computeStrongAdjacencyMatrix(const CSRMatrix& matrix, CSRMatrix& strongAdjMatrix) const {
 	std::vector<double> maxNeighbor(matrix.numberOfRows(), std::numeric_limits<double>::min());
 #pragma omp parallel for
-	for (index i = 0; i < matrix.numberOfRows(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(matrix.numberOfRows()); ++i) {
 		matrix.forNonZeroElementsInRow(i, [&](index j, double value) {
 			if (i != j && -value > maxNeighbor[i]) {
 				maxNeighbor[i] = -value;
@@ -44,7 +44,7 @@ void MultiLevelSetup<CSRMatrix>::computeStrongAdjacencyMatrix(const CSRMatrix& m
 	std::vector<double> nonZeros(nnz);
 
 #pragma omp parallel for
-	for (index i = 0; i < matrix.numberOfRows(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(matrix.numberOfRows()); ++i) {
 		index cIdx = rowIdx[i];
 		matrix.forNonZeroElementsInRow(i, [&](index j, double value) {
 			if (i != j && std::abs(value) >= 0.1 * std::min(maxNeighbor[i], maxNeighbor[j])) {
@@ -67,7 +67,7 @@ void MultiLevelSetup<CSRMatrix>::computeAffinityMatrix(const CSRMatrix& matrix, 
 	std::vector<double> nonZeros(matrix.nnz());
 
 #pragma omp parallel for
-	for (index i = 0; i < matrix.numberOfRows(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(matrix.numberOfRows()); ++i) {
 		rowIdx[i+1] = matrix.nnzInRow(i);
 	}
 
@@ -77,14 +77,14 @@ void MultiLevelSetup<CSRMatrix>::computeAffinityMatrix(const CSRMatrix& matrix, 
 
 	std::vector<double> normSquared(matrix.numberOfRows(), 0.0);
 #pragma omp parallel for
-	for (index i = 0; i < matrix.numberOfRows(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(matrix.numberOfRows()); ++i) {
 		for (index k = 0; k < tVs.size(); ++k) {
 			normSquared[i] += tVs[k][i] * tVs[k][i];
 		}
 	}
 
 #pragma omp parallel for
-	for (index i = 0; i < matrix.numberOfRows(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(matrix.numberOfRows()); ++i) {
 		double nir = 1.0 / normSquared[i];
 		index cIdx = rowIdx[i];
 		matrix.forNonZeroElementsInRow(i, [&](index j, double val) {

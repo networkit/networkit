@@ -87,7 +87,7 @@ void AlgebraicSpanningEdgeCentrality<Matrix>::runApproximation() {
 
 	G.forEdges([&](node u, node v, edgeweight w, index) {
 #pragma omp parallel for
-		for (index i = 0; i < k; ++i) {
+		for (omp_index i = 0; i < static_cast<omp_index>(k); ++i) {
 			double rand = randTab[Aux::Random::integer(1)];
 			yRows[i][u] += w * rand;
 			yRows[i][v] -= w * rand;

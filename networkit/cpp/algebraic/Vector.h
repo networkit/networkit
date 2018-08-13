@@ -310,7 +310,7 @@ Vector Vector::operator*(const Matrix& matrix) const {
 
 	Vector result(matrix.numberOfColumns(), 0.0, true);
 #pragma omp parallel for
-	for (count k = 0; k < matrix.numberOfColumns(); ++k) {
+	for (omp_index k = 0; k < static_cast<omp_index>(matrix.numberOfColumns()); ++k) {
 		Vector column = matrix.column(k);
 		result[k] = (*this) * column;
 	}
@@ -321,7 +321,7 @@ Vector Vector::operator*(const Matrix& matrix) const {
 template<typename F>
 void Vector::apply(const F unaryElementFunction) {
 #pragma omp parallel for
-	for (index i = 0; i < getDimension(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(getDimension()); ++i) {
 		values[i] = unaryElementFunction(values[i]);
 	}
 }
@@ -343,7 +343,7 @@ inline void Vector::forElements(L handle) const {
 template<typename L>
 inline void Vector::parallelForElements(L handle) {
 #pragma omp parallel for
-	for (uint64_t i = 0; i < getDimension(); i++) {
+	for (omp_index i = 0; i < static_cast<omp_index>(getDimension()); i++) {
 		handle(i, values[i]);
 	}
 }
@@ -351,7 +351,7 @@ inline void Vector::parallelForElements(L handle) {
 template<typename L>
 inline void Vector::parallelForElements(L handle) const {
 #pragma omp parallel for
-	for (uint64_t i = 0; i < getDimension(); i++) {
+	for (omp_index i = 0; i < static_cast<omp_index>(getDimension()); i++) {
 		handle(i, values[i]);
 	}
 }

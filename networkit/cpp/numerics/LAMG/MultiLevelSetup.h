@@ -459,7 +459,7 @@ std::vector<Vector> MultiLevelSetup<Matrix>::generateTVs(const Matrix& matrix, V
 	if (numVectors > 1) {
 		Vector b(matrix.numberOfColumns(), 0.0);
 #pragma omp parallel for
-		for (count i = 1; i < numVectors; ++i) {
+		for (omp_index i = 1; i < static_cast<omp_index>(numVectors); ++i) {
 			for (count j = 0; j < matrix.numberOfColumns(); ++j) {
 				testVectors[i][j] = 2 * Aux::Random::probability() - 1;
 			}
@@ -475,12 +475,12 @@ template<class Matrix>
 void MultiLevelSetup<Matrix>::addHighDegreeSeedNodes(const Matrix& matrix, std::vector<index>& status) const {
 	std::vector<count> deg(matrix.numberOfRows());
 #pragma omp parallel for
-	for (index i = 0; i < matrix.numberOfRows(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(matrix.numberOfRows()); ++i) {
 		deg[i] = matrix.nnzInRow(i) - 1;
 	}
 
 #pragma omp parallel for
-	for (index i = 0; i < matrix.numberOfRows(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(matrix.numberOfRows()); ++i) {
 		double num = 0.0;
 		double denom = 0.0;
 		matrix.forNonZeroElementsInRow(i, [&](index j, double value){
@@ -528,7 +528,7 @@ template<class Matrix>
 void MultiLevelSetup<Matrix>::computeStrongAdjacencyMatrix(const Matrix& matrix, Matrix& strongAdjMatrix) const {
 	std::vector<double> maxNeighbor(matrix.numberOfRows(), std::numeric_limits<double>::min());
 #pragma omp parallel for
-	for (index i = 0; i < matrix.numberOfRows(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(matrix.numberOfRows()); ++i) {
 		matrix.forNonZeroElementsInRow(i, [&](index j, double value) {
 			if (i != j && -value > maxNeighbor[i]) {
 				maxNeighbor[i] = -value;
@@ -552,11 +552,11 @@ void MultiLevelSetup<Matrix>::computeStrongAdjacencyMatrix(const Matrix& matrix,
 	std::vector<Triplet> triplets(nnz);
 
 #pragma omp parallel for
-	for (index i = 0; i < matrix.numberOfRows(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(matrix.numberOfRows()); ++i) {
 		index cIdx = rowIdx[i];
 		matrix.forNonZeroElementsInRow(i, [&](index j, double value) {
 			if (i != j && std::abs(value) >= 0.1 * std::min(maxNeighbor[i], maxNeighbor[j])) {
-				triplets[cIdx] = {i,j,-value};
+				triplets[cIdx] = {static_cast<index>(i),j,-value};
 				++cIdx;
 			}
 		});
@@ -574,7 +574,7 @@ void MultiLevelSetup<Matrix>::computeAffinityMatrix(const Matrix& matrix, const 
 	std::vector<Triplet> triplets(matrix.nnz());
 
 #pragma omp parallel for
-	for (index i = 0; i < matrix.numberOfRows(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(matrix.numberOfRows()); ++i) {
 		rowIdx[i+1] = matrix.nnzInRow(i);
 	}
 
@@ -584,14 +584,14 @@ void MultiLevelSetup<Matrix>::computeAffinityMatrix(const Matrix& matrix, const 
 
 	std::vector<double> normSquared(matrix.numberOfRows(), 0.0);
 #pragma omp parallel for
-	for (index i = 0; i < matrix.numberOfRows(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(matrix.numberOfRows()); ++i) {
 		for (index k = 0; k < tVs.size(); ++k) {
 			normSquared[i] += tVs[k][i] * tVs[k][i];
 		}
 	}
 
 #pragma omp parallel for
-	for (index i = 0; i < matrix.numberOfRows(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(matrix.numberOfRows()); ++i) {
 		double nir = 1.0 / normSquared[i];
 		index cIdx = rowIdx[i];
 		matrix.forNonZeroElementsInRow(i, [&](index j, double /*val*/) {
@@ -601,7 +601,7 @@ void MultiLevelSetup<Matrix>::computeAffinityMatrix(const Matrix& matrix, const 
 			}
 
 			double value = (ij * ij) * nir / normSquared[j];
-			triplets[cIdx] = {i,j,value};
+			triplets[cIdx] = {static_cast<index>(i),j,value};
 			++cIdx;
 		});
 	}
@@ -616,7 +616,7 @@ void MultiLevelSetup<Matrix>::aggregationStage(const Matrix& matrix, count& nc, 
 
 	std::vector<double> diag(matrix.numberOfRows(), 0.0);
 #pragma omp parallel for
-	for (index i = 0 ; i < matrix.numberOfRows(); ++i) {
+	for (omp_index i = 0 ; i < static_cast<omp_index>(matrix.numberOfRows()); ++i) {
 		diag[i] = matrix(i,i);
 	}
 

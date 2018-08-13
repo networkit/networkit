@@ -47,17 +47,38 @@ if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR ("${CMAKE_CXX_COMPILER_ID}"
 	if (NETWORKIT_WARNINGS)
 		set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 	endif()
+
+elseif (MSVC)
+	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /DNETWORKIT_OMP2 /MP /DNETWORKIT_WINDOWS")
+	
+	# TTMath requires running an ASM for MSVC which we disable here at the cost of worse performance
+	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /DTTMATH_NOASM=1")
+	 
 else()
-	message(WARNING "Support only GCC and Clang; your compiler might work though anyways")
+	message(WARNING "NetworKit is only tests with GCC, Clang and MSVC. Your compiler may or may not work.")
+
 endif()
 
 # adding OpenMP flags
 find_package(OpenMP REQUIRED)
 if(OPENMP_FOUND)
 	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-	set(NETWORKIT_LINK_FLAGS "${OpenMP_CXX_FLAGS}")
+
+	if (NOT MSVC)
+		# In MSVC /openmp is only passed to the compiler, and must not be passed to the linker to avoid warnigns
+		set(NETWORKIT_LINK_FLAGS "${NETWORKIT_LINK_FLAGS} ${OpenMP_CXX_FLAGS}")
+	endif()
 else()
 	message(FATAL_ERROR "OpenMP not found")
+endif()
+
+if (CMAKE_SIZEOF_VOID_P LESS 8)
+	if (MSVC)
+		message(FATAL_ERROR "NetworKit supports only 64bit builds.
+		                     Make sure to select a x64 target rather than x86, e.g. when invoking cmake with -G")
+	else()
+		message(FATAL_ERROR "NetworKit supports only 64bit builds")
+	endif()
 endif()
 
 # specify linking flags for MacOS
@@ -79,13 +100,20 @@ endif()
 
 # NETWORKIT MODULES
 if (NETWORKIT_MONOLITH)
-	add_library(networkit SHARED networkit/cpp/networkit.cpp)
+	if (NETWORKIT_PYTHON)
+		add_library(networkit SHARED networkit/cpp/networkit.cpp)
+	else()
+		add_library(networkit networkit/cpp/networkit.cpp)
+	endif()
+
 	set_target_properties(networkit PROPERTIES
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
 			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
 	install(TARGETS networkit
-			LIBRARY DESTINATION .)
+			LIBRARY DESTINATION .
+			ARCHIVE DESTINATION .)
+
 	if (NETWORKIT_PYTHON)
 		if(EXISTS "${PROJECT_SOURCE_DIR}/networkit/_NetworKit.cpp")
 			add_library(_NetworKit MODULE networkit/_NetworKit.cpp)
@@ -185,6 +213,12 @@ if (NETWORKIT_BUILD_TESTS)
 	enable_testing()
 
 	if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/googletest/CMakeLists.txt")
+		if (MSVC)
+			# While by default MSVC projects link against the shared runtime library
+			# (and hence also NetworKit), GTest defaults to the static runtime lib.
+			# Both must not be mix, so we request GTest here to also use the shared CRT.
+			set( gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll" FORCE)
+		endif()
 		option(BUILD_GTEST "Builds the googletest subproject" ON)
 		option(BUILD_GMOCK "Builds the googlemock subproject" OFF)
 		add_subdirectory(extlibs/googletest)
@@ -196,11 +230,13 @@ if (NETWORKIT_BUILD_TESTS)
 
 	if (NETWORKIT_MONOLITH)
 		add_executable(networkit_tests networkit/cpp/Unittests-X.cpp)
+		
 		target_link_libraries(networkit_tests
 			PRIVATE
-				gtest_main gtest
+				gtest
 				networkit
 		)
+
 		set_target_properties(networkit_tests PROPERTIES
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"

@@ -81,7 +81,7 @@ Vector Vector::operator*(const double &scalar) const {
 
 Vector& Vector::operator*=(const double &scalar) {
 #pragma omp parallel for
-	for (count i = 0; i < getDimension(); i++) {
+	for (omp_index i = 0; i < static_cast<omp_index>(getDimension()); i++) {
 		values[i] *= scalar;
 	}
 
@@ -109,7 +109,7 @@ Vector& Vector::operator+=(const Vector &other) {
 	assert(getDimension() == other.getDimension()); // dimensions of vectors must match
 
 #pragma omp parallel for
-	for (count i = 0; i < getDimension(); i++) {
+	for (omp_index i = 0; i < static_cast<omp_index>(getDimension()); i++) {
 		values[i] += other[i];
 	}
 
@@ -118,7 +118,7 @@ Vector& Vector::operator+=(const Vector &other) {
 
 Vector& Vector::operator+=(const double value) {
 #pragma omp parallel for
-	for (count i = 0; i < getDimension(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(getDimension()); ++i) {
 		values[i] += value;
 	}
 
@@ -138,7 +138,7 @@ Vector& Vector::operator-=(const Vector &other) {
 	assert(getDimension() == other.getDimension()); // dimensions of vectors must match
 
 #pragma omp parallel for
-	for (count i = 0; i < getDimension(); i++) {
+	for (omp_index i = 0; i < static_cast<omp_index>(getDimension()); i++) {
 		values[i] -= other[i];
 	}
 
@@ -147,7 +147,7 @@ Vector& Vector::operator-=(const Vector &other) {
 
 Vector& Vector::operator-=(const double value) {
 #pragma omp parallel for
-	for (count i = 0; i < getDimension(); ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(getDimension()); ++i) {
 		values[i] -= value;
 	}
 

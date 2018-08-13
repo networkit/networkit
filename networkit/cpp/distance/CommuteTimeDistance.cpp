@@ -128,7 +128,7 @@ void CommuteTimeDistance::runParallelApproximation() {
 
 	INFO("Number k of iterations: ", k);
 #pragma omp parallel for
-	for (index i = 0; i < k; ++i) {
+	for (omp_index i = 0; i < static_cast<omp_index>(k); ++i) {
 		// rhs(v) = \sum_e=1 ^m q(e) * B(e, v)
 		//        = +/- q(e)
 		G.forEdges([&](node u, node v) {

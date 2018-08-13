@@ -193,9 +193,9 @@ void PLM::run() {
 			double volN = 0.0;
 			volN = volNode[u];
 			// update the volume of the two clusters
-			#pragma omp atomic update
+			#pragma omp atomic
 			volCommunity[C] -= volN;
-			#pragma omp atomic update
+			#pragma omp atomic
 			volCommunity[best] += volN;
 
 			moved = true; // change to clustering has been made
@@ -281,7 +281,7 @@ void PLM::run() {
 			zeta.parallelForEntries([&](node u, index C) { 	// set volume for all communities
 				if (C != none) {
 					edgeweight volN = volNode[u];
-					#pragma omp atomic update
+					#pragma omp atomic
 					volCommunity[C] += volN;
 				}
 			});
