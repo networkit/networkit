@@ -1,4 +1,4 @@
-#include "MaximalCliquesGTest.h"
+#include <gtest/gtest.h>
 
 #include "../MaximalCliques.h"
 #include "../../graph/Graph.h"
@@ -7,9 +7,9 @@
 #include "../../auxiliary/Log.h"
 #include "../../auxiliary/Timer.h"
 
-#ifndef NOGTEST
-
 namespace NetworKit {
+
+class MaximalCliquesGTest: public testing::Test {};
 
 TEST_F(MaximalCliquesGTest, testMaximalCliques) {
 
@@ -157,6 +157,5 @@ TEST_F(MaximalCliquesGTest, benchMaximalCliques) {
 		INFO("Just finding the maximum clique needed ", timer.elapsedMilliseconds(), "ms");
 	}
 }
-}
 
-#endif /* NOGTEST */
+}
