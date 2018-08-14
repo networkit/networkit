@@ -5,9 +5,8 @@
  *      Author: Arie Slobbe, Elisabetta Bergamini
  */
 
-#ifndef NOGTEST
+#include <gtest/gtest.h>
 
-#include "APSPGTest.h"
 #include "../APSP.h"
 #include "../DynAPSP.h"
 #include "../../io/METISGraphReader.h"
@@ -16,6 +15,7 @@
 
 
 namespace NetworKit {
+class APSPGTest: public testing::Test{};
 
 TEST_F(APSPGTest, testAPSP) {
 /* Graph:
@@ -384,5 +384,3 @@ TEST_F(APSPGTest, testAPSPEventTypeError) {
 
 
 } /* namespace NetworKit */
-
-#endif /*NOGTEST */

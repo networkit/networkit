@@ -5,7 +5,8 @@
  *      Author: ebergamini
  */
 
-#include "SSSPGTest.h"
+#include <gtest/gtest.h>
+
 #include "../DynBFS.h"
 #include "../BFS.h"
 #include "../DynDijkstra.h"
@@ -15,8 +16,9 @@
 
 #include <stack>
 
-
 namespace NetworKit {
+
+class SSSPGTest: public testing::Test{};
 
 TEST_F(SSSPGTest, testDijkstra) {
 /* Graph:

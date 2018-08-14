@@ -4,9 +4,8 @@
  *  Created on: Sep 04, 2015
  *      Author: Maximilian Vogel
  */
-#ifndef NOGTEST
 
-#include "DistanceGTest.h"
+#include <gtest/gtest.h>
 
 #include "../Diameter.h"
 #include "../EffectiveDiameter.h"
@@ -21,6 +20,7 @@
 #include "../../io/METISGraphReader.h"
 
 namespace NetworKit {
+class DistanceGTest: public testing::Test {};
 
 TEST_F(DistanceGTest, testVertexDiameterPedantically) {
 	DorogovtsevMendesGenerator generator(1000);
@@ -33,7 +33,6 @@ TEST_F(DistanceGTest, testVertexDiameterPedantically) {
 }
 
 TEST_F(DistanceGTest, testExactDiameter) {
-
 	using namespace std;
 
 	vector<pair<string, count>> testInstances= {pair<string, count>("lesmis", 14),
@@ -53,7 +52,6 @@ TEST_F(DistanceGTest, testExactDiameter) {
 
 
 TEST_F(DistanceGTest, testEstimatedDiameterRange) {
-
 	using namespace std;
 
    vector<pair<string, count>> testInstances= {
@@ -280,5 +278,3 @@ TEST_F(DistanceGTest, testNeighborhoodFunctionHeuristic) {
 }
 
 } /* namespace NetworKit */
-
-#endif /*NOGTEST */
