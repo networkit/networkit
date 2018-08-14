@@ -5,9 +5,7 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef NOGTEST
-
-#include "IOGTest.h"
+#include <gtest/gtest.h>
 
 #include <fstream>
 #include <unordered_set>
@@ -51,6 +49,8 @@
 #include "../../dynamics/GraphDifference.h"
 
 namespace NetworKit {
+
+class IOGTest: public testing::Test {};
 
 TEST_F(IOGTest, testEdgeListWriter){
 	ErdosRenyiGenerator graphGen(100, 0.1, true);
@@ -788,5 +788,3 @@ TEST_F(IOGTest, testKONECTGraphReader){
 }
 
 } /* namespace NetworKit */
-
-#endif /* NOGTEST */
