@@ -232,10 +232,7 @@ if (NETWORKIT_BUILD_TESTS)
 		add_executable(networkit_tests networkit/cpp/Unittests-X.cpp)
 		
 		target_link_libraries(networkit_tests
-			PRIVATE
-				gtest
-				networkit
-		)
+			PRIVATE	gtest networkit)
 
 		set_target_properties(networkit_tests PROPERTIES
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
@@ -254,6 +251,10 @@ if (NETWORKIT_BUILD_TESTS)
 			WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 		)
 
+	else()
+		add_library(networkit_gtest_main STATIC networkit/cpp/Unittests-X.cpp)
+		target_link_libraries(networkit_gtest_main
+				PRIVATE networkit_auxiliary)
 	endif()
 endif()
 
@@ -282,7 +283,7 @@ function(networkit_add_extra IS_TEST MOD NAME)
 
 			target_link_libraries(${TARGET_NAME}
 				PRIVATE
-					gtest_main gtest
+					gtest networkit_gtest_main
 				PRIVATE
 					networkit_${MOD}
 				)
@@ -296,12 +297,19 @@ function(networkit_add_extra IS_TEST MOD NAME)
 			endforeach()
 
 			if (${IS_TEST})
-				add_dependencies(networkit_tests_${MOD} ${TARGET_NAME} )
+				add_dependencies(networkit_tests_${MOD} ${TARGET_NAME})
+
 				add_test(
 					NAME "${MOD}/${NAME}"
-					COMMAND ${TARGET_NAME}
+					COMMAND ${TARGET_NAME} -t
 					WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 					)
+
+				add_test(
+					NAME "${MOD}/${NAME}_no_assertions"
+					COMMAND ${TARGET_NAME} -r
+					WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+				)
 			endif()
 		endif()
 	endif()

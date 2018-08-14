@@ -99,6 +99,7 @@ script:
  - mkdir build_non_monolith && cd "$_"
  - cmake -DNETWORKIT_MONOLITH=OFF -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD ..
  - make -j2
+ - ctest -V
  - cd .. && rm -rf build_non_monolith
 
 notifications:
