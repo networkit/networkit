@@ -8,6 +8,8 @@
 #include <iomanip>
 #include <iostream>
 
+#include <gtest/gtest.h>
+
 #include "../../auxiliary/Log.h"
 #include "../../auxiliary/Timer.h"
 #include "../../generators/DorogovtsevMendesGenerator.h"
@@ -38,9 +40,11 @@
 #include "../SpanningEdgeCentrality.h"
 #include "../TopCloseness.h"
 #include "../TopHarmonicCloseness.h"
-#include "CentralityGTest.h"
 
 namespace NetworKit {
+
+class CentralityGTest : public testing::Test {};
+
 
 TEST_F(CentralityGTest, testBetweennessCentrality) {
 	/* Graph:
