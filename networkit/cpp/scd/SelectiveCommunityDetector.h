@@ -20,6 +20,7 @@ class SelectiveCommunityDetector {
 public:
 
 	SelectiveCommunityDetector(const Graph& G);
+	virtual ~SelectiveCommunityDetector() = default;
 
     /**
      * Detect communities for given seed nodes.

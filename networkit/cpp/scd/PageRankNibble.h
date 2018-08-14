@@ -40,6 +40,8 @@ public:
 	 */
 	PageRankNibble(const Graph& g, double alpha, double epsilon);
 
+	virtual ~PageRankNibble() = default;
+
 	virtual std::map<node, std::set<node> >  run(const std::set<node>& seeds) override;
 
 	/**
