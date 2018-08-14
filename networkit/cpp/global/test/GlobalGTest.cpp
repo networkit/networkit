@@ -5,15 +5,15 @@
  *      Author: cls
  */
 
-#ifndef NOGTEST
-
-#include "GlobalGTest.h"
+#include <gtest/gtest.h>
 
 #include "../ClusteringCoefficient.h"
 
 #include "../../generators/ErdosRenyiGenerator.h"
 
 namespace NetworKit {
+
+class GlobalGTest: public testing::Test {};
 
 TEST_F(GlobalGTest, testClusteringCoefficient) {
 
@@ -41,6 +41,5 @@ TEST_F(GlobalGTest, testGlobalClusteringCoefficient) {
 	double ccg = ClusteringCoefficient::exactGlobal(G);
 	EXPECT_NEAR(ccg, 18.0 / 34.0, 1e-9);
 }
-} /* namespace NetworKit */
 
-#endif /*NOGTEST*/
+} /* namespace NetworKit */

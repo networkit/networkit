@@ -5,12 +5,15 @@
  *      Author: Henning
  */
 
-#include "SpanningGTest.h"
+#include <gtest/gtest.h>
+
 #include "../KruskalMSF.h"
 #include "../SpanningForest.h"
 #include "../../io/METISGraphReader.h"
 
 namespace NetworKit {
+
+class SpanningGTest: public testing::Test {};
 
 TEST_F(SpanningGTest, testKruskalMinSpanningForest) {
 	METISGraphReader reader;

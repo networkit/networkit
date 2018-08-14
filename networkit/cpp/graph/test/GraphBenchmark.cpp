@@ -5,21 +5,18 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef NOGTEST
+#include <gtest/gtest.h>
 
-#include "GraphBenchmark.h"
+#include "../../auxiliary/Timer.h"
+#include "../../graph/Graph.h"
 #include "../../auxiliary/Log.h"
 
 namespace NetworKit {
 
-GraphBenchmark::GraphBenchmark() {
-	this->n = 1000;
-	INFO("n = " , this->n);
-}
-
-GraphBenchmark::~GraphBenchmark() {
-	// TODO Auto-generated destructor stub
-}
+class GraphBenchmark: public testing::Test {
+protected:
+	const int64_t n {1000};
+};
 
 
 // TASK: benchmark edge insertions standard vs raw
@@ -280,4 +277,3 @@ TEST_F(GraphBenchmark, weightedDegree_standard_par) {
 
 } /* namespace NetworKit */
 
-#endif /*NOGTEST */
