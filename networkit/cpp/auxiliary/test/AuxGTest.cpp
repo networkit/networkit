@@ -1,5 +1,3 @@
-#ifndef NOGTEST
-
 /*
  * AuxGTest.cpp
  *
@@ -7,7 +5,10 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "AuxGTest.h"
+// this define is an obscure fix for std::this_thread::sleep_for to work - the issue is described here: http://stackoverflow.com/questions/4438084/stdthis-threadsleep-for-and-gcc
+#define _GLIBCXX_USE_NANOSLEEP 1
+
+#include <gtest/gtest.h>
 
 #include <iostream>
 #include <algorithm>
@@ -31,6 +32,9 @@
 #include "../Enforce.h"
 #include "../BloomFilter.h"
 
+namespace NetworKit {
+
+class AuxGTest: public testing::Test{};
 
 TEST_F(AuxGTest, produceRandomIntegers) {
 	Aux::Random::setSeed(1, false);
@@ -557,4 +561,4 @@ TEST_F(AuxGTest, testBloomFilter) {
 	}
 }
 
-#endif /*NOGTEST */
+} // ! namespace NetworKit
