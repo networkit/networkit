@@ -5,9 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef NOGTEST
+#include <gtest/gtest.h>
 
-#include "VizGTest.h"
 #include <vector>
 
 #include "../PostscriptWriter.h"
@@ -27,13 +26,7 @@
 
 namespace NetworKit {
 
-VizGTest::VizGTest() {
-
-}
-
-VizGTest::~VizGTest() {
-
-}
+class VizGTest : public testing::Test {};
 
 
 TEST_F(VizGTest, testPostscriptWriterOnRandomGraph) {
@@ -192,6 +185,3 @@ TEST_F(VizGTest, debugGraphDrawing) {
 
 
 } /* namespace NetworKit */
-
-
-#endif /*NOGTEST */
