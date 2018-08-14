@@ -5,7 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#include "AlgebraicSpanningEdgeCentralityGTest.h"
+
+#include <gtest/gtest.h>
 
 #include "../AlgebraicSpanningEdgeCentrality.h"
 #include "../../CSRMatrix.h"
@@ -14,6 +15,9 @@
 #include "../../../centrality/SpanningEdgeCentrality.h"
 
 namespace NetworKit {
+
+class AlgebraicSpanningEdgeCentralityGTest : testing::Test {};
+
 
 TEST(AlgebraicSpanningEdgeCentralityGTest, testOnToyGraph) {
 	/* Graph:

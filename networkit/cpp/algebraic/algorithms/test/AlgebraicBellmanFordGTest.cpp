@@ -2,20 +2,31 @@
  * BellmanFordGTest.cpp
  *
  *  Created on: Jun 6, 2016
- *      Author: Michael
+ *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
+
+#include <gtest/gtest.h>
 
 #include "../../../io/METISGraphReader.h"
 #include "../../../auxiliary/Timer.h"
+#include "../../../graph/Graph.h"
 
 #include "../../CSRMatrix.h"
 
 #include "../../../distance/Dijkstra.h"
 #include "../../DynamicMatrix.h"
 #include "../AlgebraicBellmanFord.h"
-#include "AlgebraicBellmanFordGTest.h"
 
 namespace NetworKit {
+
+class AlgebraicBellmanFordGTest : public testing::Test {
+public:
+	AlgebraicBellmanFordGTest() = default;
+	virtual ~AlgebraicBellmanFordGTest() = default;
+
+protected:
+	std::vector<double> classicBF(const Graph& graph, node s) const;
+};
 
 TEST_F(AlgebraicBellmanFordGTest, testOnToyGraph) {
 	Graph G(5, true, true);

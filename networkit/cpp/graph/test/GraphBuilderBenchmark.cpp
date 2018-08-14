@@ -5,16 +5,13 @@
  *      Author: Marvin Ritter (marvin.ritter@gmail.com)
  */
 
-#ifndef NOGTEST
-
-#include "GraphBuilderBenchmark.h"
+#include <gtest/gtest.h>
+#include "../GraphBuilder.h"
 #include "../../io/METISGraphReader.h"
 
 namespace NetworKit {
 
-
-GraphBuilderBenchmark::GraphBuilderBenchmark() {
-}
+class GraphBuilderBenchmark :  public testing::Test  {};
 
 TEST_F(GraphBuilderBenchmark, benchmarkMETISReader) {
 	METISGraphReader reader;
@@ -25,5 +22,3 @@ TEST_F(GraphBuilderBenchmark, benchmarkMETISReader) {
 }
 
 } /* namespace NetworKit */
-
-#endif /*NOGTEST */

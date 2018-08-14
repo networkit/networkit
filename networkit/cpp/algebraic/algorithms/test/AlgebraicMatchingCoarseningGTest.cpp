@@ -5,7 +5,7 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#include "AlgebraicMatchingCoarseningGTest.h"
+#include <gtest/gtest.h>
 
 #include "../../../auxiliary/Timer.h"
 #include "../AlgebraicMatchingCoarsening.h"
@@ -15,6 +15,9 @@
 #include "../../../coarsening/MatchingCoarsening.h"
 
 namespace NetworKit {
+
+class AlgebraicMatchingCoarseningGTest : public testing::Test {};
+
 
 TEST(AlgebraicMatchingCoarseningGTest, testContraction) {
 	METISGraphReader reader;
