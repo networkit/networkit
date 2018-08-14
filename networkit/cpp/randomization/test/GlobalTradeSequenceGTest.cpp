@@ -5,15 +5,15 @@
  *      Author: Manuel Penschuck (networkit@manuel.jetzt)
  */
 
-#include <map>
 #include <gtest/gtest.h>
-
-#include "GlobalTradeSequenceGTest.h"
+#include <map>
 
 #include "../GlobalTradeSequence.h"
 #include "../../auxiliary/Random.h"
 
 namespace NetworKit {
+
+template <typename T> class GlobalTradeSequenceGTest : public ::testing::Test  {};
 
 using HashMapTypes = ::testing::Types<
     CurveballDetails::FixedLinearCongruentialMap<uint64_t>,

@@ -7,13 +7,17 @@
 
 #include <gtest/gtest.h>
 
-#include "GlobalCurveballGTest.h"
-
 #include "../GlobalCurveball.h"
+#include "../../graph/Graph.h"
 #include "../../generators/ErdosRenyiGenerator.h"
 #include "../../generators/HyperbolicGenerator.h"
 
 namespace NetworKit {
+
+class GlobalCurveballGTest : public ::testing::Test  {
+protected:
+    void checkWithGraph(NetworKit::Graph&);
+};
 
 void GlobalCurveballGTest::checkWithGraph(NetworKit::Graph& G) {
     node numNodes = G.numberOfNodes();

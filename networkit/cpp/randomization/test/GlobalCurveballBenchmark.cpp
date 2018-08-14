@@ -7,16 +7,19 @@
 
 #include <gtest/gtest.h>
 
-#include "GlobalCurveballBenchmark.h"
-
 #include "../GlobalCurveball.h"
 #include "../GlobalTradeSequence.h"
 
+#include "../../graph/Graph.h"
 #include "../../generators/HyperbolicGenerator.h"
 #include "../../generators/ErdosRenyiGenerator.h"
 
-
 namespace NetworKit {
+
+class GlobalCurveballBenchmark : public ::testing::Test  {
+protected:
+    void checkWithGraph(NetworKit::Graph&);
+};
 
 void GlobalCurveballBenchmark::checkWithGraph(NetworKit::Graph& G) {
     node numNodes = G.numberOfNodes();
