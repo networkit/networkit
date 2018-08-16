@@ -7,8 +7,8 @@
 
 #ifndef GROUPCLOSENESS_H_
 #define GROUPCLOSENESS_H_
-#include "../graph/Graph.h"
 #include "../base/Algorithm.h"
+#include "../graph/Graph.h"
 
 namespace NetworKit {
 
@@ -26,30 +26,34 @@ public:
 	 *
 	 * @param G An unweighted graph.
 	 * @param k Size of the group of nodes
-	 * @param H If equal 0, simply runs the algorithm proposed in Bergamini et al.. If > 0, interrupts all BFSs after H iterations (suggested for very large networks).
+	 * @param H If equal 0, simply runs the algorithm proposed in Bergamini et
+	 * al.. If > 0, interrupts all BFSs after H iterations (suggested for very
+	 * large networks).
 	 * @
 	 */
-	GroupCloseness(const Graph& G, count k = 1, count H=0);
+	GroupCloseness(const Graph &G, count k = 1, count H = 0);
 
 	/**
-	* Computes the group with maximum closeness on the graph passed in the constructor.
-	*/
+	 * Computes the group with maximum closeness on the graph passed in the
+	 * constructor.
+	 */
 	void run();
 
 	/**
-	* Returns group with maximum closeness.
-	*/
+	 * Returns group with maximum closeness.
+	 */
 	std::vector<node> groupMaxCloseness();
 
 	/**
-	* Computes farness (i.e., inverse of the closeness) for a given group (stopping after H iterations if H > 0).
-	*/
-	double computeFarness(std::vector<node> S, count H = std::numeric_limits<count>::max());
-
+	 * Computes farness (i.e., inverse of the closeness) for a given group
+	 * (stopping after H iterations if H > 0).
+	 */
+	double computeFarness(std::vector<node> S,
+	                      count H = std::numeric_limits<count>::max());
 
 protected:
-	edgeweight computeImprovement(node u, count n, Graph& G, count h);
-	std::vector<count> newDistances(node u, count n, Graph& G, count h);
+	edgeweight computeImprovement(node u, count n, Graph &G, count h);
+	std::vector<count> newDistances(node u, count n, Graph &G, count h);
 	Graph G;
 	count k = 1;
 	std::vector<count> D;
@@ -61,10 +65,9 @@ protected:
 	count H = 0;
 };
 
-
-
 inline std::vector<node> GroupCloseness::groupMaxCloseness() {
-	if (!hasRun) throw std::runtime_error("Call run method first");
+	if (!hasRun)
+		throw std::runtime_error("Call run method first");
 	return S;
 }
 
