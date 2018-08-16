@@ -48,7 +48,7 @@ public:
 
     virtual std::string toString() const override final;
 
-    virtual bool isParallel() const {
+    virtual bool isParallel() const override final {
         return false;
     }
 
