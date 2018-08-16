@@ -1280,9 +1280,9 @@ TEST_F(CentralityGTest, testLaplacianCentralityUnweighted) {
 }
 
 TEST_F(CentralityGTest, testGroupDegreeUndirected) {
+	Aux::Random::setSeed(42, false);
 	count nodes = 12;
-	ErdosRenyiGenerator gen(nodes, 0.3, false);
-	Graph g = gen.generate();
+	Graph g = ErdosRenyiGenerator(nodes, 0.3, false).generate();
 	count k = 5;
 
 	GroupDegree gd(g, k, false);
@@ -1325,19 +1325,20 @@ TEST_F(CentralityGTest, testGroupDegreeUndirected) {
 	EXPECT_TRUE(score > 0.5 * maxScore);
 	EXPECT_TRUE(scorePlusGroup >
 	            (1.0 - 1.0 / std::exp(1.0) * (double)(maxScore + k)));
-	EXPECT_EQ(gd.getScore(), gd.scoreOfGroup(gd.groupMaxDegree()));
-	EXPECT_EQ(gdIncludeGroup.getScore(),
+	EXPECT_EQ(score, gd.scoreOfGroup(gd.groupMaxDegree()));
+	EXPECT_EQ(scorePlusGroup,
 	          gdIncludeGroup.scoreOfGroup(gdIncludeGroup.groupMaxDegree()));
 }
 
 TEST_F(CentralityGTest, testGroupDegreeDirected) {
+	Aux::Random::setSeed(42, false);
 	count nodes = 12;
-	ErdosRenyiGenerator gen(nodes, 0.3, true);
-	Graph g = gen.generate();
+	Graph g = ErdosRenyiGenerator(nodes, 0.3, true).generate();
 	count k = 5;
 
 	GroupDegree gd(g, k, false);
 	gd.run();
+
 	count scoreNoGroup = gd.getScore();
 	GroupDegree gdIncludeGroup(g, k, true);
 	gdIncludeGroup.run();
@@ -1376,8 +1377,8 @@ TEST_F(CentralityGTest, testGroupDegreeDirected) {
 	EXPECT_TRUE(scoreNoGroup > 0.5 * maxScore);
 	EXPECT_TRUE(scorePlusGroup >
 	            (1.0 - 1.0 / std::exp(1.0)) * (double)(maxScore + k));
-	EXPECT_EQ(gd.getScore(), gd.scoreOfGroup(gd.groupMaxDegree()));
-	EXPECT_EQ(gdIncludeGroup.getScore(),
+	EXPECT_EQ(scoreNoGroup, gd.scoreOfGroup(gd.groupMaxDegree()));
+	EXPECT_EQ(scorePlusGroup,
 	          gdIncludeGroup.scoreOfGroup(gdIncludeGroup.groupMaxDegree()));
 }
 

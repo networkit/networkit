@@ -9,15 +9,15 @@
 
 namespace NetworKit {
 GroupDegree::GroupDegree(const Graph &G, count k, bool countGroupNodes)
-    : G(G), k(k), countGroupNodes(countGroupNodes), n(G.upperNodeIdBound()),
-      queue(Aux::BucketPQ(n, -n + 1, countGroupNodes ? 0 : 1)) {
+		: G(G), k(k), countGroupNodes(countGroupNodes), n(G.upperNodeIdBound()),
+			queue(Aux::BucketPQ(n, -n + 1, countGroupNodes ? 0 : 1)) {
 	if (k > G.upperNodeIdBound() || k <= 0) {
 		throw std::runtime_error("k must be between 1 and n");
 	}
 	if (G.numberOfSelfLoops() > 0) {
 		throw std::runtime_error(
-		    "Group degree does not support graphs with self loops. Call "
-		    "removeSelfLoops() to remove self loops from the graph.");
+				"Group degree does not support graphs with self loops. Call "
+				"removeSelfLoops() to remove self loops from the graph.");
 	}
 }
 
@@ -60,8 +60,7 @@ void GroupDegree::run() {
 	}
 
 	std::vector<node> neighbors = G.neighbors(group.back());
-#pragma omp parallel for
-	for (omp_index i = 0; i < neighbors.size(); ++i) {
+	for (count i = 0; i < neighbors.size(); ++i) {
 		node u = neighbors[i];
 		if (!reachable[u]) {
 			reachable[u] = true;
