@@ -7,6 +7,7 @@
 
 #ifndef GROUPCLOSENESS_H_
 #define GROUPCLOSENESS_H_
+
 #include "../base/Algorithm.h"
 #include "../graph/Graph.h"
 
@@ -51,6 +52,11 @@ public:
 	double computeFarness(std::vector<node> S,
 	                      count H = std::numeric_limits<count>::max());
 
+	/**
+	 * Computes the score of a specific group.
+	 */
+	double scoreOfGroup(const std::vector<node> &group) const;
+
 protected:
 	edgeweight computeImprovement(node u, count n, Graph &G, count h);
 	std::vector<count> newDistances(node u, count n, Graph &G, count h);
@@ -63,6 +69,8 @@ protected:
 	std::vector<count> d1;
 	std::vector<node> S;
 	count H = 0;
+
+	void checkGroup(const std::vector<node> &group) const;
 };
 
 inline std::vector<node> GroupCloseness::groupMaxCloseness() {
@@ -71,5 +79,68 @@ inline std::vector<node> GroupCloseness::groupMaxCloseness() {
 	return S;
 }
 
+inline void GroupCloseness::checkGroup(const std::vector<node> &group) const {
+	std::vector<node> sortedV(group);
+	std::sort(sortedV.begin(), sortedV.end());
+	node u;
+	auto checkNode = [&](node u) {
+		if (!G.hasNode(u)) {
+			std::stringstream err;
+			err << "Error: node" << u << " is not in the graph.";
+			throw std::runtime_error(err.str());
+		}
+	};
+	for (count i = 0; i < sortedV.size() - 1; ++i) {
+		u = sortedV[i];
+		checkNode(u);
+		if (u == sortedV[i + 1]) {
+			throw std::runtime_error("Error: the set contains duplicate elements.");
+		}
+	}
+	checkNode(sortedV.back());
+}
+
+inline double
+GroupCloseness::scoreOfGroup(const std::vector<node> &group) const {
+
+	std::vector<bool> explored(G.upperNodeIdBound(), false);
+	std::vector<count> distance(G.upperNodeIdBound(), 0);
+
+	for (count i = 0; i < group.size(); ++i) {
+		explored[group[i]] = true;
+	}
+
+	std::vector<node> queue;
+	auto exploreNode = [&](node w, count d) {
+		explored[w] = true;
+		queue.push_back(w);
+		distance[w] = d;
+	};
+
+	count d = 1;
+	for (auto u : group) {
+		G.forNeighborsOf(u, [&](node v) {
+			if (!explored[v]) {
+				exploreNode(v, d);
+			}
+		});
+	}
+
+	while (queue.size() > 0) {
+		++d;
+		node u = queue.front();
+		queue.erase(queue.begin());
+		G.forNeighborsOf(u, [&](node v) {
+			if (!explored[v]) {
+				exploreNode(v, d);
+			}
+		});
+	}
+
+	double dSum = std::accumulate(distance.begin(), distance.end(), 0);
+	return dSum == 0
+	           ? 0.
+	           : ((double)G.upperNodeIdBound() - (double)group.size()) / dSum;
+}
 } /* namespace NetworKit */
 #endif /* GROUPCLOSENESS_H_ */
