@@ -1332,7 +1332,7 @@ TEST_F(CentralityGTest, testGroupDegreeUndirected) {
 
 TEST_F(CentralityGTest, testGroupDegreeDirected) {
 	count nodes = 12;
-	ErdosRenyiGenerator gen(nodes, 0.3, true);
+	ErdosRenyiGenerator gen(nodes, 0.3, true, false);
 	Graph g = gen.generate();
 	count k = 5;
 

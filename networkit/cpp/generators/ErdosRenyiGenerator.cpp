@@ -11,8 +11,8 @@
 
 namespace NetworKit {
 
-ErdosRenyiGenerator::ErdosRenyiGenerator(count nNodes, double prob, bool directed) :
-	nNodes{nNodes},	prob{prob}, directed{directed}
+ErdosRenyiGenerator::ErdosRenyiGenerator(count nNodes, double prob, bool directed, bool self_loops) :
+	nNodes{nNodes},	prob{prob}, directed{directed}, self_loops{self_loops}
 {}
 
 Graph ErdosRenyiGenerator::generate() {
@@ -21,6 +21,7 @@ Graph ErdosRenyiGenerator::generate() {
 	{
 		ErdosRenyiEnumeratorDefault impl(nNodes, prob, directed);
 		impl.forEdgesParallel([&](int tid, node u, node v) {
+			if (!self_loops && u == v) return;
 			builder.addHalfEdge(u, v);
 		});
 	}

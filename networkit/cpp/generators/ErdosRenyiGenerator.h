@@ -27,8 +27,10 @@ public:
 	 * @param nNodes Number of nodes n in the graph.
 	 * @param prob Probability of existence for each edge p.
 	 * @param directed	generates a directed graph
+	 * @param self_loops Controls whether a directed graph may contain self_loops
+	 *                   (undirected graphs never have them)
 	 */
-	ErdosRenyiGenerator(count nNodes, double prob, bool directed=false);
+	ErdosRenyiGenerator(count nNodes, double prob, bool directed=false, bool self_loops=true);
 
 	virtual Graph generate();
 
@@ -36,6 +38,7 @@ private:
 	node nNodes;
 	double prob;
 	bool directed;
+	bool self_loops;
 };
 
 } /* namespace NetworKit */
