@@ -60,12 +60,9 @@ public:
 	ErdosRenyiEnumerator(node n, double prob, bool directed) :
 		n{n},
 		prob{prob},
-		inv_log2_cp{1.0 / std::log2(1.0 - prob)},
 		directed{directed}
 	{
 		assert(n > 0);
-		assert(0 < prob);
-		assert(prob < 1);
 	}
 
 	/**
@@ -99,7 +96,7 @@ public:
 				const node first_node = std::min<node>(n, tid * chunk_size);
 				const node last_node  = std::min<node>(n, (tid+1) * chunk_size);
 
-				numEdges += enumerate<true>(handle, tid, first_node, last_node);
+				numEdges += enumerate<true>(handle, tid, prob, first_node, last_node);
 			}
 		} else {
 			#pragma omp parallel
@@ -123,7 +120,7 @@ public:
 				if (tid + 1 == threads) last_node = n;
 
 				if (first_node < last_node)
-					numEdges += enumerate<false>(handle, tid, first_node, last_node);
+					numEdges += enumerate<false>(handle, tid, prob, first_node, last_node);
 			}
 		}
 
@@ -137,9 +134,9 @@ public:
 	template<typename Handle>
 	count forEdges(Handle handle) {
 		if (directed) {
-			return enumerate<true>(handle, 0, 0, n);
+			return enumerate<true>(handle, 0, prob, 0, n);
 		} else {
-			return enumerate<false>(handle, 0, 0, n);
+			return enumerate<false>(handle, 0, prob, 0, n);
 		}
 	}
 
@@ -154,14 +151,59 @@ public:
 private:
 	const node n; //< number of nodes
 	const double prob; //< probability p
-	const double inv_log2_cp; //<  1.0 / log2(1 - prob)
 	const bool directed; //< true if a directed graph should be generated
 
 // In the undirected case we only traverse the lower triangle (excluding the
 // diagonal) of the adjacency matrix
 	template <bool Directed, typename Handle>
-	count enumerate(Handle handle, unsigned tid, const node node_begin, const node node_end) const {
+	count enumerate(Handle handle, unsigned tid, double prob, const node node_begin, const node node_end) const {
+		if (prob > 0.9) {
+			// for p > 0.5 we invert the generator and draw the edges NOT in the graph.
+			// While this does not change the asymptotical work, it decrease the
+			// random bits drawn from prng.
+
+			node cur_u = node_begin;
+			node cur_v = 0;
+			count num_edges = 0;
+
+			if (!Directed && cur_u == 0)
+				cur_u = 1; // all edges need to be of form u > v!
+
+			auto complement_graph = [&] (unsigned tid, node u, node v) {
+				while(!(cur_u == u && cur_v == v)) {
+					callHandle(handle, tid, cur_u, cur_v);
+					num_edges++;
+
+					if (++cur_v == (Directed ? n : cur_u)) {
+						cur_v = 0;
+						cur_u++;
+					}
+				}
+			};
+
+			enumerate_<Directed>(
+				complement_graph, tid, 1.0 - prob, node_begin, node_end);
+			complement_graph(tid, node_end, 0);
+
+			return num_edges;
+		}
+
+		return enumerate_<Directed>(handle, tid, prob, node_begin, node_end);
+	}
+
+
+
+	template <bool Directed, typename Handle>
+	count enumerate_(Handle handle, unsigned tid, double prob, const node node_begin, const node node_end) const {
 		Aux::SignalHandler handler;
+
+		if (prob < std::pow(n, -3.0)) {
+			// Even with a union bound over all candidates, WHP no edge will be emited
+			return 0;
+		}
+
+
+		const double inv_log2_cp = 1.0 / std::log2(1.0 - prob);
 
 		// random source
 		auto& prng = Aux::Random::getURNG(); // this is thread local
@@ -177,7 +219,7 @@ private:
 		while (curr < node_end) {
 			handler.assureRunning();
 			// compute new step length
-			auto skip = skip_distance(distr(prng));
+			auto skip = skip_distance(distr(prng), inv_log2_cp);
 			next += skip;
 			if (skip > max_skip) max_skip = skip;
 
@@ -203,7 +245,7 @@ private:
 // Optimized version of the computation of the skip distance as
 // proposed Batagelj and Brandes. It basically converts a uniform
 // variate to a binomial
-	count skip_distance(integral_t random_prob) const {
+	count skip_distance(integral_t random_prob, double inv_log2_cp) const {
 		/*
 		 * The original idea is to compute
 		 * 1 + floor(log(1 - x) / log(1 - prob)) where x is
@@ -238,7 +280,7 @@ private:
 	    );
 	}
 
-	count skip_distance(double random_prob) const {
+	count skip_distance(double random_prob, double inv_log2_cp) const {
 		return 1 + static_cast<count>(floor((log2(random_prob)) * inv_log2_cp));
 	}
 

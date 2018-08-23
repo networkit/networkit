@@ -20,7 +20,7 @@ Graph ErdosRenyiGenerator::generate() {
 
 	{
 		ErdosRenyiEnumeratorDefault impl(nNodes, prob, directed);
-		impl.forEdgesParallel([&](int tid, node u, node v) {
+		impl.forEdgesParallel([&](int /*tid*/, node u, node v) {
 			if (!self_loops && u == v) return;
 			builder.addHalfEdge(u, v);
 		});

@@ -21,8 +21,14 @@ class ErdosRenyiGenerator: public StaticGraphGenerator {
 public:
 	/**
 	 * Creates random graphs in the G(n,p) model.
-	 * The generation follows Vladimir Batagelj and Ulrik Brandes: "Efficient
-	 * generation of large random networks", Phys Rev E 71, 036113 (2005).
+	 * The generation follows a parallised version of Vladimir Batagelj
+	 * and Ulrik Brandes: "Efficient generation of large random networks",
+	 * Phys Rev E 71, 036113 (2005).
+	 *
+	 * The generator can also be used to generate empty or complete graphs
+	 * efficiently by setting (p = 0.0 or p = 1.0). Observe that this is
+	 * implemented as a special case and requires p to be exactly zero or
+	 * one.
 	 *
 	 * @param nNodes Number of nodes n in the graph.
 	 * @param prob Probability of existence for each edge p.
