@@ -1,10 +1,20 @@
-#include "ErdosRenyiEnumeratorGTest.h"
+/*
+ * ErdosReyniEnumeratorGTest.cpp
+ *
+ *  Created on: 09. Aug. 2018
+ *      Author: Manuel Penschuck
+ */
+#include <gtest/gtest.h>
+#include <tuple>
 #include <numeric>
+
+#include "../../Globals.h"
+#include "../../auxiliary/Random.h"
 #include "../ErdosRenyiEnumerator.h"
 
-#include "../../auxiliary/Random.h"
-
 namespace NetworKit {
+
+class ErdosRenyiEnumeratorGTest : public testing::TestWithParam<std::tuple<bool, node, double> > {};
 
 template <bool Parallel, bool FixedPoint>
 static void testEre(const bool directed, const node n, const double prob) {
