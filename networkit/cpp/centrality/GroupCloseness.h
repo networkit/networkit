@@ -8,6 +8,8 @@
 #ifndef GROUPCLOSENESS_H_
 #define GROUPCLOSENESS_H_
 
+#include <numeric>
+
 #include "../base/Algorithm.h"
 #include "../graph/Graph.h"
 
