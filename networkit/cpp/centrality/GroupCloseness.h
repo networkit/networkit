@@ -80,29 +80,27 @@ inline std::vector<node> GroupCloseness::groupMaxCloseness() {
 }
 
 inline void GroupCloseness::checkGroup(const std::vector<node> &group) const {
-	std::vector<node> sortedV(group);
-	std::sort(sortedV.begin(), sortedV.end());
-	node u;
-	auto checkNode = [&](node u) {
-		if (!G.hasNode(u)) {
-			std::stringstream err;
-			err << "Error: node" << u << " is not in the graph.";
-			throw std::runtime_error(err.str());
+	const count z = G.upperNodeIdBound();
+	std::vector<bool> check(z, false);
+#pragma omp parallel for
+	for (omp_index i = 0; i < static_cast<omp_index>(group.size()); ++i) {
+		node u = group[i];
+		if (u >= z) {
+			std::stringstream ss;
+			ss << "Error: node " << u << " is not in the graph.\n";
+			throw std::runtime_error(ss.str());
 		}
-	};
-	for (count i = 0; i < sortedV.size() - 1; ++i) {
-		u = sortedV[i];
-		checkNode(u);
-		if (u == sortedV[i + 1]) {
-			throw std::runtime_error("Error: the set contains duplicate elements.");
+		if (check[u]) {
+			std::stringstream ss;
+			ss << "Error: the group contains duplicates of node " << u << ".\n";
+			throw std::runtime_error(ss.str());
 		}
+		check[u] = true;
 	}
-	checkNode(sortedV.back());
 }
 
 inline double
 GroupCloseness::scoreOfGroup(const std::vector<node> &group) const {
-
 	std::vector<bool> explored(G.upperNodeIdBound(), false);
 	std::vector<count> distance(G.upperNodeIdBound(), 0);
 
