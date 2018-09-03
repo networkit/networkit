@@ -6602,6 +6602,7 @@ cdef extern from "cpp/centrality/GroupCloseness.h":
 		_GroupCloseness(_Graph G, count, count) except +
 		vector[node] groupMaxCloseness() except +
 		double computeFarness(vector[node], count) except +
+		double scoreOfGroup(vector[node]) except +
 
 
 cdef class GroupCloseness(Algorithm):
@@ -6637,6 +6638,21 @@ cdef class GroupCloseness(Algorithm):
 	"""
 	def computeFarness(self, S, H=0):
 		return (<_GroupCloseness*>(self._this)).computeFarness(S, H)
+
+	def scoreOfGroup(self, group):
+		"""
+			Computes the group closeness score of the given group.
+
+		Parameters
+		----------
+		group: vector of nodes.
+
+		Returns
+		-------
+		double
+		    The group closeness score of the given group.
+		"""
+		return (<_GroupCloseness*>(self._this)).scoreOfGroup(group)
 
 
 
