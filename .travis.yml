@@ -22,12 +22,13 @@ matrix:
 
     - env: CC=gcc-6 CXX=g++-6
       os: osx
+      osx_image: xcode8
       sudo: false
       before_install:
         - brew update
         - brew cask uninstall --force oclint # See https://github.com/travis-ci/travis-ci/issues/8826 for details.
         - brew install gcc@6
-        - brew upgrade python
+        - if brew outdated | grep -q python; then brew upgrade python; fi
 
     - env: CC="clang-3.8" CXX="clang++-3.8"
       os: linux
@@ -46,12 +47,13 @@ matrix:
       env: CC=/usr/local/opt/llvm@4/bin/clang
       env: CXX=/usr/local/opt/llvm@4/bin/clang++
       os: osx
+      osx_image: xcode8
       sudo: false
       before_install:
         - brew update
         - brew install llvm@4
         - brew install libomp
-        - brew upgrade python
+        - if brew outdated | grep -q python; then brew upgrade python; fi
 
     - env: CC=gcc-8 CXX=g++-8
       os: linux
