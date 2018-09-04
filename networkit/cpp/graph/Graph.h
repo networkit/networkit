@@ -645,6 +645,8 @@ public:
 	 */
 	void removeEdge(node u, node v);
 
+	void removeEdgesFromIsolatedSet(const std::vector<node> &nodesInSet);
+
 	/**
 	 * Removes all the edges in the graph.
 	 */

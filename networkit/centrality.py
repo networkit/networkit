@@ -12,7 +12,8 @@ from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentr
 ApproxBetweenness2, EstimateBetweenness, DynApproxBetweenness, Closeness, HarmonicCloseness, KPathCentrality, CoreDecomposition,\
 KatzCentrality, LocalClusteringCoefficient, ApproxCloseness, LocalPartitionCoverage, Sfigality, SpanningEdgeCentrality,\
 PermanenceCentrality, TopCloseness, TopHarmonicCloseness, DynTopHarmonicCloseness, DynBetweenness,\
-GroupDegree, GroupCloseness, DynBetweennessOneNode, LaplacianCentrality, ApproxGroupBetweenness, DynKatzCentrality
+GroupDegree, GroupCloseness, DynBetweennessOneNode, LaplacianCentrality, ApproxGroupBetweenness, DynKatzCentrality,\
+KadabraBetweenness
 
 # local imports
 from networkit.algebraic import adjacencyEigenvector, PageRankMatrix, symmetricEigenvectors

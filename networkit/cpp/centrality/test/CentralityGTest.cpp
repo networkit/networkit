@@ -31,8 +31,9 @@
 #include "../GroupCloseness.h"
 #include "../GroupDegree.h"
 #include "../HarmonicCloseness.h"
-#include "../KPathCentrality.h"
+#include "../KadabraBetweenness.h"
 #include "../KatzCentrality.h"
+#include "../KPathCentrality.h"
 #include "../LaplacianCentrality.h"
 #include "../LocalClusteringCoefficient.h"
 #include "../PageRank.h"
@@ -1434,4 +1435,67 @@ TEST_F(CentralityGTest, testGroupCloseness) {
 
 	EXPECT_NEAR(gc.scoreOfGroup(apx), 1.0, 1e-5);
 }
+
+TEST_F(CentralityGTest, testKadabraAbsolute) {
+	Aux::Random::setSeed(42, true);
+	const count n = 10;
+	Graph g = ErdosRenyiGenerator(n, 0.1).generate();
+
+	const double delta = 0.1;
+	const double epsilon = 0.01;
+	KadabraBetweenness kadabra(g, epsilon, delta);
+	kadabra.run();
+	auto scores = kadabra.topkScoresList();
+	auto nodes = kadabra.topkNodesList();
+
+	Betweenness betweenness(g, true);
+	betweenness.run();
+	count maxErrors = (count)std::ceil(delta * (double)n);
+
+	count errors = 0;
+	for (count i = 0; i < n; ++i) {
+		if (std::abs(scores[i] - betweenness.score(nodes[i])) > delta) {
+			++errors;
+		}
+	}
+
+	EXPECT_TRUE(errors <= maxErrors);
+}
+
+TEST_F(CentralityGTest, testKadabraTopK) {
+	Aux::Random::setSeed(42, true);
+	const count n = 10;
+	Graph g = ErdosRenyiGenerator(n, 0.1).generate();
+
+	const double delta = 0.1;
+	const double epsilon = 0.01;
+	const count k = 3;
+	KadabraBetweenness kadabra(g, epsilon, delta, k);
+	kadabra.run();
+	auto kadabraRanking = kadabra.ranking();
+
+	Betweenness betweenness(g, true);
+	betweenness.run();
+	auto betwRanking = betweenness.ranking();
+	bool correctRanking = true;
+	for (count i = 0; i < k; ++i) {
+		if (betwRanking[i].first != kadabraRanking[i].first) {
+			correctRanking = false;
+			int j = static_cast<int>(i) - 1;
+			while (j >= 0 && betwRanking[j].second == betwRanking[i].second) {
+				--j;
+			}
+			++j;
+			while (j < n && betwRanking[j].second == betwRanking[i].second) {
+				if (betwRanking[j].first == kadabraRanking[i].first) {
+					correctRanking = true;
+					break;
+				}
+				++j;
+			}
+		}
+	}
+	EXPECT_TRUE(correctRanking);
+}
+
 } /* namespace NetworKit */
