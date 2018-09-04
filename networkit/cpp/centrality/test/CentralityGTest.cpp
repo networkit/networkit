@@ -1427,5 +1427,7 @@ TEST_F(CentralityGTest, testGroupCloseness) {
 	for (count i = 0; i < k; ++i) {
 		EXPECT_EQ(apx[i], solution[i]);
 	}
+
+	EXPECT_NEAR(gc.scoreOfGroup(apx), 1.0, 1e-5);
 }
 } /* namespace NetworKit */
