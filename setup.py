@@ -13,6 +13,9 @@ if sys.version_info.major < 3:
 	print("ERROR: NetworKit requires Python 3.")
 	sys.exit(1)
 
+if "CXX" in os.environ:
+	cmakeCompiler = os.environ["CXX"]
+
 if "NETWORKIT_OVERRIDE_CXX" in os.environ:
 	cmakeCompiler = os.environ["NETWORKIT_OVERRIDE_CXX"]
 
