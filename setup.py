@@ -90,13 +90,21 @@ def determineCompiler(candidates, std, flags):
 				return compiler
 		except:
 			pass
-	return ""
+	try:
+		os.remove("sample.cpp")
+	except:
+		pass
+	return None
 
 # only check for a compiler if none is specified
 if cmakeCompiler is None:
 	cmakeCompiler = determineCompiler(candidates, "c++11", ["-fopenmp"])
+	if cmakeCompiler is None and sys.platform == "darwin":
+		cmakeCompiler = determineCompiler(["c++"], "c++11", ["-Xpreprocessor", "-fopenmp", "-lomp"])
 	if cmakeCompiler is None:
-		print("ERROR: No suitable compiler found. Install any of these: ",candidates)
+		print("ERROR: No suitable compiler found. Install any of these: ", candidates)
+		if sys.platform == "darwin":
+			print("If using AppleClang, OpenMP might be needed. Install with: 'brew install libomp'")
 		exit(1)
 
 ################################################
