@@ -646,6 +646,11 @@ public:
 	void removeEdge(node u, node v);
 
 	/**
+	 * Removes all the edges in the graph.
+	 */
+	void removeAllEdges();
+
+	/**
 	 * Removes all self-loops in the graph.
 	 */
 	void removeSelfLoops();
