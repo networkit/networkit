@@ -7,7 +7,19 @@ env:
 
 matrix:
   include:
-    - env: CC=gcc-4.9 CXX=g++-4.9
+    - name: macOS (xcode8), GCC 6
+      env: CC=gcc-6 CXX=g++-6
+      os: osx
+      osx_image: xcode8
+      sudo: false
+      before_install:
+        - brew update
+        - brew cask uninstall --force oclint # See https://github.com/travis-ci/travis-ci/issues/8826 for details.
+        - brew install gcc@6
+        - if brew outdated | grep -q python; then brew upgrade python; fi
+
+    - name: Linux, legacy GCC 4.9
+      env: CC=gcc-4.9 CXX=g++-4.9
       os: linux
       sudo: false
       addons:
@@ -20,17 +32,8 @@ matrix:
             - python3-pip
             - python3.4-venv
 
-    - env: CC=gcc-6 CXX=g++-6
-      os: osx
-      osx_image: xcode8
-      sudo: false
-      before_install:
-        - brew update
-        - brew cask uninstall --force oclint # See https://github.com/travis-ci/travis-ci/issues/8826 for details.
-        - brew install gcc@6
-        - if brew outdated | grep -q python; then brew upgrade python; fi
-
-    - env: CC="clang-3.8" CXX="clang++-3.8"
+    - name: Linux, legacy Clang 3.8
+      env: CC="clang-3.8" CXX="clang++-3.8"
       os: linux
       sudo: false
       addons:
@@ -43,19 +46,8 @@ matrix:
             - python3-pip
             - python3.4-venv
 
-    - name: CC=clang-4 CXX=clang++-4
-      env: CC=/usr/local/opt/llvm@4/bin/clang
-      env: CXX=/usr/local/opt/llvm@4/bin/clang++
-      os: osx
-      osx_image: xcode8
-      sudo: false
-      before_install:
-        - brew update
-        - brew install llvm@4
-        - brew install libomp
-        - if brew outdated | grep -q python; then brew upgrade python; fi
-
-    - env: CC=gcc-8 CXX=g++-8
+    - name: Linux, modern GCC
+      env: CC=gcc-8 CXX=g++-8
       os: linux
       addons: &gcc8
         apt:
@@ -66,13 +58,38 @@ matrix:
             - python3-pip
             - python3.4-venv
 
-    - env: CC=gcc-8 CXX=g++-8 CXX_STANDARD=14
+    - name: C++14 conformance
+      env: CC=gcc-8 CXX=g++-8 CXX_STANDARD=14
       os: linux
       addons: *gcc8
 
-    - env: CC=gcc-8 CXX=g++-8 CXX_STANDARD=17
+    - name: C++17 conformance
+      env: CC=gcc-8 CXX=g++-8 CXX_STANDARD=17
       os: linux
       addons: *gcc8
+
+  allow_failures:
+    - name: macOS, modern Clang
+      env: CC=/usr/local/opt/llvm/bin/clang
+      env: CXX=/usr/local/opt/llvm/bin/clang++
+      os: osx
+      sudo: false
+      before_install:
+        - brew update
+        - brew install llvm
+        - brew install libomp
+        - if brew outdated | grep -q python; then brew upgrade python; fi
+
+    - name: macOS, legacy Clang 4
+      env: CC=/usr/local/opt/llvm@4/bin/clang
+      env: CXX=/usr/local/opt/llvm@4/bin/clang++
+      os: osx
+      sudo: false
+      before_install:
+        - brew update
+        - brew install llvm@4
+        - brew install libomp
+        - if brew outdated | grep -q python; then brew upgrade python; fi
 
 script:
  - $CXX --version
