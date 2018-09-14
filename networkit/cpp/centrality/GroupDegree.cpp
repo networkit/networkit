@@ -9,15 +9,15 @@
 
 namespace NetworKit {
 GroupDegree::GroupDegree(const Graph &G, count k, bool countGroupNodes)
-		: G(G), k(k), countGroupNodes(countGroupNodes), n(G.upperNodeIdBound()),
-			queue(Aux::BucketPQ(n, -n + 1, countGroupNodes ? 0 : 1)) {
+    : G(G), k(k), countGroupNodes(countGroupNodes), n(G.upperNodeIdBound()),
+      queue(Aux::BucketPQ(n, -n + 1, countGroupNodes ? 0 : 1)) {
 	if (k > G.upperNodeIdBound() || k <= 0) {
 		throw std::runtime_error("k must be between 1 and n");
 	}
 	if (G.numberOfSelfLoops() > 0) {
 		throw std::runtime_error(
-				"Group degree does not support graphs with self loops. Call "
-				"removeSelfLoops() to remove self loops from the graph.");
+		    "Group degree does not support graphs with self loops. Call "
+		    "removeSelfLoops() to remove self loops from the graph.");
 	}
 }
 
@@ -60,11 +60,10 @@ void GroupDegree::run() {
 	}
 
 	std::vector<node> neighbors = G.neighbors(group.back());
-	for (count i = 0; i < neighbors.size(); ++i) {
+#pragma omp parallel for
+	for (omp_index i = 0; i < neighbors.size(); ++i) {
 		node u = neighbors[i];
-		if (!reachable[u]) {
-			reachable[u] = true;
-		}
+		reachable[u] = true;
 	}
 
 	computeScore();
@@ -83,26 +82,22 @@ void GroupDegree::updateQueue() {
 	std::fill(affected.begin(), affected.end(), false);
 	std::vector<node> neighbors = G.neighbors(lastAdded);
 
-#pragma omp parallel for
+	auto processNode = [&](node v) {
+		if (!inGroup[v]) {
+			affected[v] = true;
+		}
+	};
+
+	// If executed in parallel, this loop leads to errors.
 	for (omp_index i = 0; i < static_cast<omp_index>(neighbors.size()); ++i) {
 		node u = neighbors[i];
 		if (!inGroup[u] && !reachable[u]) {
 			affected[u] = true;
 			reachable[u] = true;
 			if (G.isDirected()) {
-				G.forInNeighborsOf(u, [&](node v) {
-					if (!affected[v] && !inGroup[v]) {
-#pragma omp critical
-						affected[v] = true;
-					}
-				});
+				G.forInNeighborsOf(u, [&](node v) { processNode(v); });
 			} else {
-				G.forNeighborsOf(u, [&](node v) {
-					if (!affected[v] && !inGroup[v]) {
-#pragma omp critical
-						affected[v] = true;
-					}
-				});
+				G.forNeighborsOf(u, [&](node v) { processNode(v); });
 			}
 		}
 	}
