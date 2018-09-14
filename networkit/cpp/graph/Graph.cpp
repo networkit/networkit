@@ -698,6 +698,26 @@ void Graph::removeEdge(node u, node v) {
 	// cause the edge is marked as deleted and we have no null values for the attributes
 }
 
+void Graph::removeAllEdges() {
+	#pragma omp parallel for
+	for (omp_index u = 0; u < z; ++u) {
+		outDeg[u] = 0;
+		outEdges[u].clear();
+		if (isWeighted()) {
+			outEdgeWeights[u].clear();	
+		}
+		if (isDirected()) {
+			inDeg[u] = 0;
+			inEdges[u].clear();
+			if (isWeighted()) {
+				inEdgeWeights[u].clear();
+			}
+		}
+	}
+
+	m = 0;
+}
+
 void Graph::removeSelfLoops() {
 	this->forEdges([&](node u, node v, edgeweight ew) {
 		if (u == v) {

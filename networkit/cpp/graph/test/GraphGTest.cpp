@@ -15,6 +15,7 @@
 #include "../../auxiliary/NumericTools.h"
 #include "../../distance/DynBFS.h"
 #include "../../auxiliary/Parallel.h"
+#include "../../generators/ErdosRenyiGenerator.h"
 
 namespace NetworKit {
 
@@ -731,6 +732,27 @@ TEST_P(GraphGTest, testRemoveEdge) {
 	EXPECT_FALSE(G.hasEdge(1, 1));
 	EXPECT_TRUE(G.hasEdge(0, 1));
 	EXPECT_EQ(0u, G.numberOfSelfLoops())   << "Weighted, directed: " << G.isWeighted() << ", " << G.isDirected();
+}
+
+TEST_P(GraphGTest, testRemoveAllEdges) {
+	Graph g = ErdosRenyiGenerator(20, 0.1, false).generate();
+	g.removeAllEdges();
+	EXPECT_EQ(g.numberOfEdges(), 0);
+	EXPECT_EQ(g.edges().size(), 0);
+	for (node u : g.nodes()) {
+		EXPECT_EQ(g.neighbors(u).size(), 0);
+		EXPECT_EQ(g.degree(u), 0);
+	}
+
+	g = ErdosRenyiGenerator(20, 0.1, true).generate();
+	g.removeAllEdges();
+	EXPECT_EQ(g.numberOfEdges(), 0);
+	EXPECT_EQ(g.edges().size(), 0);
+	for (node u : g.nodes()) {
+		EXPECT_EQ(g.neighbors(u).size(), 0);
+		EXPECT_EQ(g.degree(u), 0);
+		EXPECT_EQ(g.degreeIn(u), 0);
+	}
 }
 
 TEST_P(GraphGTest, testRemoveSelfLoops) {
