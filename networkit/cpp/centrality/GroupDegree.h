@@ -138,7 +138,7 @@ inline count GroupDegree::scoreOfGroup(const std::vector<node> &group) const {
 	}
 
 	auto processNeighbor = [&](const node u, const node v) {
-		if (!touched[v] && inGroup[u]) {
+		if (inGroup[u]) {
 			touched[v] = true;
 		}
 	};
@@ -148,7 +148,6 @@ inline count GroupDegree::scoreOfGroup(const std::vector<node> &group) const {
 			G.forInNeighborsOf(v, [&](node u) { processNeighbor(u, v); });
 		}
 	});
-
 	count result = std::count(touched.begin(), touched.end(), true);
 	if (countGroupNodes) {
 		result += group.size();
