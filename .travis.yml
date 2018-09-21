@@ -37,6 +37,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
+            - g++-5
             - clang-3.8
             - libiomp-dev
             - python3-pip
