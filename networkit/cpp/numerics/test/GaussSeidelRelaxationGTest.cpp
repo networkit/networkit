@@ -4,10 +4,15 @@
  *  Created on: 03.11.2014
  *      Author: Michael
  */
+#include <gtest/gtest.h>
 
-#include "GaussSeidelRelaxationGTest.h"
+#include "../../algebraic/CSRMatrix.h"
+#include "../../algebraic/Vector.h"
+#include "../GaussSeidelRelaxation.h"
 
 namespace NetworKit {
+
+class GaussSeidelRelaxationGTest : public testing::Test {};
 
 TEST(GaussSeidelRelaxationGTest, debugSolve) {
 	std::vector<Triplet> triplets = {{0,0,10}, {0,1,-1}, {0,2,2}, {1,0,-1}, {1,1,11}, {1,2,-1}, {1,3,3}, {2,0,2}, {2,1,-1}, {2,2,10}, {2,3,-1}, {3,1,3}, {3,2,-1}, {3,3,8}};

@@ -7,5 +7,4 @@ networkit_add_test(graph SpanningGTest io)
 
 networkit_add_benchmark(graph Graph2Benchmark)
 networkit_add_benchmark(graph GraphBenchmark auxiliary)
-networkit_add_benchmark(graph GraphBuilderBenchmark io)
 

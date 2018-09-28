@@ -5,15 +5,15 @@
  *      Author: Gerd Lindner
  */
 
-#ifndef NOGTEST
-
-#include "SimmelianBackboneGTest.h"
+#include <gtest/gtest.h>
 
 #include "../Sparsifiers.h"
 #include "../SimmelianOverlapScore.h"
 #include "../../edgescores/ChibaNishizekiTriangleEdgeScore.h"
 
 namespace NetworKit {
+
+class SimmelianBackboneGTest: public testing::Test {};
 
 TEST_F(SimmelianBackboneGTest, testOverlapCounting) {
 	//Build up a ranked neighborhood graph. Notation: Ego/Alter/Simmeliannes/Rank
@@ -225,5 +225,3 @@ TEST_F(SimmelianBackboneGTest, testBackboneConnectedGraph) {
 
 }
 /* namespace NetworKit */
-
-#endif /*NOGTEST */

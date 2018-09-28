@@ -5,7 +5,8 @@
  *	Author: Author: Hung Tran <htran@ae.cs.uni-frankfurt.de>
  */
 
-#include "CurveballGTest.h"
+#include <gtest/gtest.h>
+#include "../../graph/Graph.h"
 
 #include "../Curveball.h"
 
@@ -17,6 +18,12 @@
 #include "../CurveballUniformTradeGenerator.h"
 
 namespace NetworKit {
+
+class CurveballGTest : public testing::Test  {
+protected:
+    void checkWithGraph(NetworKit::Graph&, bool checkBuilder = false);
+};
+
 
 void CurveballGTest::checkWithGraph(NetworKit::Graph& G, bool checkBuilder) {
     node numNodes = G.numberOfNodes();

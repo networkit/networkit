@@ -9,7 +9,11 @@
 #include <cmath>
 #include <algorithm>
 
-#include "QuadTreeGTest.h"
+#include <gtest/gtest.h>
+#include <cmath>
+#include <vector>
+#include "../Quadtree.h"
+
 #include "../../../auxiliary/Random.h"
 #include "../../../auxiliary/Log.h"
 #include "../../../geometric/HyperbolicSpace.h"
@@ -18,6 +22,20 @@
 #include "../QuadtreePolarEuclid.h"
 
 namespace NetworKit {
+
+class QuadTreeGTest: public testing::Test {
+protected:
+	template <class T>
+	QuadNode<T> getRoot(Quadtree<T> &tree) {
+		return tree.root;
+	}
+
+	template <class T>
+	vector<QuadNode<T> > getChildren(QuadNode<T> &node) {
+		return node.children;
+	}
+};
+
 
 /**
  * Test whether the elements returned by a quadtree range query are indeed those whose hyperbolic distance to the query point is below a threshold

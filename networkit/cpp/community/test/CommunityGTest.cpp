@@ -5,7 +5,7 @@
  *      Author: cls
  */
 
-#include "CommunityGTest.h"
+#include <gtest/gtest.h>
 
 #include "../PLP.h"
 #include "../PLM.h"
@@ -41,11 +41,7 @@
 
 namespace NetworKit {
 
-
-
-
-
-
+class CommunityGTest: public testing::Test{};
 
 TEST_F(CommunityGTest, testLabelPropagationOnUniformGraph) {
 	ErdosRenyiGenerator graphGen(100, 0.2);

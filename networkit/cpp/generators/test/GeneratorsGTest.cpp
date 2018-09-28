@@ -5,10 +5,7 @@ Dy * GeneratorsTest.cpp
  *      Author: cls
  */
 
-#ifndef NOGTEST
-
-
-#include "GeneratorsGTest.h"
+#include <gtest/gtest.h>
 
 #include <numeric>
 #include <cmath>
@@ -34,7 +31,8 @@ Dy * GeneratorsTest.cpp
 #include "../LFRGenerator.h"
 #include "../MocnikGenerator.h"
 #include "../MocnikGeneratorBasic.h"
-
+#include "../HyperbolicGenerator.h"
+#include "../DynamicHyperbolicGenerator.h"
 
 #include "../../viz/PostscriptWriter.h"
 #include "../../community/ClusteringGenerator.h"
@@ -56,9 +54,17 @@ Dy * GeneratorsTest.cpp
 
 namespace NetworKit {
 
-GeneratorsGTest::GeneratorsGTest() {
+class GeneratorsGTest: public testing::Test {
+public:
+	vector<double> getAngles(DynamicHyperbolicGenerator dynGen) {
+		return dynGen.angles;
+	}
 
-}
+	vector<double> getRadii(DynamicHyperbolicGenerator dynGen) {
+		return dynGen.radii;
+	}
+
+};
 
 TEST_F(GeneratorsGTest, testClusteredRandomGraphGenerator) {
 	Aux::Random::setSeed(42, false);
@@ -1112,5 +1118,3 @@ TEST_F(GeneratorsGTest, testMocnikGeneratorBasic) {
 }
 
 } /* namespace NetworKit */
-
-#endif /*NOGTEST */

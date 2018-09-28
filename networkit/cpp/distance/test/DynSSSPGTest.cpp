@@ -5,7 +5,8 @@
  *      Author: ebergamini
  */
 
-#include "DynSSSPGTest.h"
+#include <gtest/gtest.h>
+
 #include "../DynBFS.h"
 #include "../BFS.h"
 #include "../DynDijkstra.h"
@@ -18,6 +19,8 @@
 
 
 namespace NetworKit {
+
+class DynSSSPGTest: public testing::Test{};
 
 TEST_F(DynSSSPGTest, testDynamicBFS_1edge) {
 /* Graph:

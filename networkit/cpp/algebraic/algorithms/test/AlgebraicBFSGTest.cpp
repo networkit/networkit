@@ -2,10 +2,10 @@
  * AlgebraicBFSGTest.cpp
  *
  *  Created on: Jun 7, 2016
- *      Author: Michael
+ *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#include "AlgebraicBFSGTest.h"
+#include <gtest/gtest.h>
 
 #include "../../CSRMatrix.h"
 #include "../../../distance/BFS.h"
@@ -15,6 +15,8 @@
 #include "../../../auxiliary/Timer.h"
 
 namespace NetworKit {
+
+class AlgebraicBFSGTest : public testing::Test {};
 
 TEST(AlgebraicBFSGTest, testOnToyGraph) {
 	Graph G(5, false, true);

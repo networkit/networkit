@@ -5,11 +5,12 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#ifndef NOGTEST
+#include <gtest/gtest.h>
 
 #include <chrono>
 
-#include "LinkPredictionGTest.h"
+#include "../../graph/Graph.h"
+
 #include "../../io/METISGraphReader.h"
 #include "../KatzIndex.h"
 #include "../CommonNeighborsIndex.h"
@@ -25,11 +26,21 @@
 #include "../NeighborsMeasureIndex.h"
 #include "../SameCommunityIndex.h"
 #include "../PredictionsSorter.h"
+#include "../LinkPredictor.h"
 
 namespace NetworKit {
 
-LinkPredictionGTest::LinkPredictionGTest() : G(7) {
-}
+class LinkPredictionGTest : public testing::Test {
+public:
+    void SetUp();
+
+protected:
+    Graph G{7};
+    Graph trainingGraph;
+
+    std::vector<std::pair<node, node>> missingLinks;
+    std::vector<LinkPredictor::prediction> predictions;
+};
 
 void LinkPredictionGTest::SetUp() {
   G.addEdge(0, 1);
@@ -189,5 +200,3 @@ TEST_F(LinkPredictionGTest, testKatzRunOnOrdering) {
 }
 
 } // namespace NetworKit
-
-#endif /* NOGTEST */

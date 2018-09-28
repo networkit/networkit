@@ -5,7 +5,8 @@
  *      Author: Michael
  */
 
-#include "OctreeGTest.h"
+#include <gtest/gtest.h>
+
 #include "../../algebraic/Vector.h"
 #include "../Octree.h"
 #include "../../auxiliary/Log.h"
@@ -14,6 +15,8 @@
 #include <vector>
 
 namespace NetworKit {
+
+class OctreeGTest : public testing::Test {};
 
 TEST(OctreeGTest, testOctreeWithExample) {
 	std::vector<Vector> coordinates(2, Vector(11, 0.0));

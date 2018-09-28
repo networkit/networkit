@@ -5,10 +5,13 @@
  *      Author:  Hung Tran <htran@ae.cs.uni-frankfurt.de>
  */
 
-#include "CurveballUniformTradeGeneratorGTest.h"
+#include <gtest/gtest.h>
+
 #include "../CurveballUniformTradeGenerator.h"
 
 namespace NetworKit {
+
+class CurveballUniformTradeGeneratorGTest : public ::testing::Test {};
 
 TEST_F(CurveballUniformTradeGeneratorGTest, testGeneration) {
 	CurveballUniformTradeGenerator gen(15, 10);

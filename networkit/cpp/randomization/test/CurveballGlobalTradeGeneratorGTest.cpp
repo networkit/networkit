@@ -5,10 +5,13 @@
  *      Author: Hung Tran <htran@ae.cs.uni-frankfurt.de>
  */
 
-#include "CurveballGlobalTradeGeneratorGTest.h"
+#include <gtest/gtest.h>
+
 #include "../CurveballGlobalTradeGenerator.h"
 
 namespace NetworKit {
+
+class CurveballGlobalTradeGeneratorGTest : public testing::Test {};
 
 TEST_F(CurveballGlobalTradeGeneratorGTest, testTradeNumber) {
     CurveballGlobalTradeGenerator genEven(1, 10);

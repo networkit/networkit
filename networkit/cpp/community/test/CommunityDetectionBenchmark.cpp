@@ -5,12 +5,11 @@
  *      Author: Klara Reichard (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
  */
 
-#ifndef NOGTEST
+#include <gtest/gtest.h>
 
 #include <map>
 #include <functional>
 
-#include "CommunityDetectionBenchmark.h"
 #include "../PLP.h"
 #include "../PLM.h"
 #include "../Modularity.h"
@@ -19,13 +18,21 @@
 #include "../../auxiliary/Timer.h"
 #include "../../structures/Partition.h"
 
+#include "../../graph/Graph.h"
+#include "../../io/METISGraphReader.h"
+
 namespace NetworKit {
 
+class CommunityDetectionBenchmark: public testing::Test {
+public:
+	virtual ~CommunityDetectionBenchmark() = default;
+
+protected:
+	METISGraphReader metisReader;
+
+};
+
 constexpr int runs = 12;
-
-void CommunityDetectionBenchmark::SetUp() {
-
-}
 
 TEST_F(CommunityDetectionBenchmark, benchClusteringAlgos) {
 	Aux::Timer timer;
@@ -130,4 +137,3 @@ const Graph G = this->metisReader.read(graph);
 
 } /* namespace NetworKit */
 
-#endif /*NOGTEST */

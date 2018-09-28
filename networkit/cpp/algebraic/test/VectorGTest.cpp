@@ -4,18 +4,18 @@
  *  Created on: 13.03.2014
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
-#ifndef NOGTEST
+#include <gtest/gtest.h>
 
-#include "VectorGTest.h"
+#include "../Vector.h"
+#include "../DynamicMatrix.h"
 #include "../AlgebraicGlobals.h"
+#include "../../auxiliary/Log.h"
+#include <cmath>
 
 namespace NetworKit {
 
-VectorGTest::VectorGTest() {
-}
 
-VectorGTest::~VectorGTest() {
-}
+class VectorGTest : public testing::Test {};
 
 TEST(VectorGTest, testVectorConstruction) {
 	Vector v1;
@@ -251,6 +251,3 @@ TEST(VectorGTest, testMean) {
 
 
 } /* namespace NetworKit */
-
-
-#endif

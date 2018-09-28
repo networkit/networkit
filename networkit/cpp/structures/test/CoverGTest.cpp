@@ -5,32 +5,16 @@
  *      Author: Maximilian Vogel (uocvf@student.kit.edu)
  */
 
-#include "CoverGTest.h"
+#include <gtest/gtest.h>
 
 #include "../../auxiliary/Log.h"
 #include "../Cover.h"
 
 #include <iostream>
 
-#ifndef NOGTEST
-
 namespace NetworKit {
 
-// stub
-/*TEST_F(CoverGTest, *) {
-}*/
-
-// stub to print every subset id of every entry
-/*	c.forEntries([](index e, std::set<index> s) {
-		auto current = s;
-		if (!current.empty()) {
-			std::cout<<"element "<<e<<" is in subsets ";
-			for (auto it = current.begin(); it != current.end(); it++) {
-				std::cout<<*it<<" ";
-			}
-			std::cout << std::endl;
-		}
-	});*/
+class CoverGTest: public testing::Test {};
 
 TEST_F(CoverGTest, testConstructor) {
 	Cover c(10);
@@ -296,5 +280,3 @@ TEST_F(CoverGTest, testInSameSubset) {
 
 
 } /* namespace NetworKit */
-
-#endif /*NOGTEST */

@@ -5,13 +5,14 @@
  *      Author: Gerd Lindner
  */
 
-#ifndef NOGTEST
+#include <gtest/gtest.h>
 
-#include "ChibaNishizekiTriangleEdgeScoreGTest.h"
 #include "../ChibaNishizekiTriangleEdgeScore.h"
 #include "../TriangleEdgeScore.h"
 
 namespace NetworKit {
+
+class ChibaNishizekiTriangleEdgeScoreGTest: public testing::Test {};
 
 TEST_F(ChibaNishizekiTriangleEdgeScoreGTest, testTriangleCountsTrivial) {
 	Graph g(5);
@@ -152,8 +153,6 @@ TEST_F(ChibaNishizekiTriangleEdgeScoreGTest, testNewTriangleCountsSimple) {
 	EXPECT_EQ(1, (counts[g.edgeId(5,4)])) << "wrong triangle count";
 }
 
-
 }
-/* namespace NetworKit */
 
-#endif /*NOGTEST */
+/* namespace NetworKit */
