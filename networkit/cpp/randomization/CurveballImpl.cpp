@@ -13,8 +13,7 @@
 
 #include "../auxiliary/Timer.h"
 #include "../auxiliary/SignalHandling.h"
-#include "../auxiliary/RandomBipartitionShuffle.h"
-
+#include <tlx/algorithm/random_bipartition_shuffle.hpp>
 
 namespace NetworKit {
 namespace CurveballDetails {
@@ -529,7 +528,7 @@ void CurveballIM::run(const trade_vector& trades) {
         adjList.resetRow(u);
         adjList.resetRow(v);
 
-        Aux::random_bipartition_shuffle(disjoint_neighbours.begin(), disjoint_neighbours.end(),
+        tlx::random_bipartition_shuffle(disjoint_neighbours.begin(), disjoint_neighbours.end(),
                          u_setsize, urng);
 
         // Assign first u_setsize to u and last v_setsize to v
