@@ -89,7 +89,30 @@ matrix:
         - brew install libomp
         - brew upgrade cmake # cmake on osx images (xode9.4) is on 3.11.4 - 3.12+ required 
 
+    # Test more exotic builds only on Linux.
+    - name: "Linux, modern GCC: Core build, debugging"
+      env: CC=gcc-8 CXX=g++-8
+      os: linux
+      addons: *gcc8
+      script:
+        - $CXX --version
+        - mkdir debug_test && cd "$_"
+        - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug ..
+        - make -j2
+        - ctest -V
 
+    - name: "Linux, modern GCC: Core build, non-monolithic"
+      env: CC=gcc-8 CXX=g++-8
+      os: linux
+      addons: *gcc8
+      script:
+        - $CXX --version
+        - mkdir build_non_monolith && cd "$_"
+        - cmake -DNETWORKIT_MONOLITH=OFF -DCMAKE_BUILD_TYPE=Debug ..
+        - make -j2
+        - ctest -V
+
+    # Finally, test conformance to newer versions of the C++ standard.
     - name: C++14 conformance
       env: CC=gcc-8 CXX=g++-8 CXX_STANDARD=14
       os: linux
@@ -125,23 +148,11 @@ script:
  - NETWORKIT_PARALLEL_JOBS=2 travis_wait pip3 install -e .
  - python3 -m unittest discover -v networkit/test/
 
- - mkdir debug_test && cd "$_"
- - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD ..
- - make -j2
- - ctest -V
- - cd .. && rm -rf debug_test
-
  - mkdir release_test && cd "$_"
  - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD ..
  - make -j2
  - ctest -V
  - cd .. && rm -rf release_test
-
- - mkdir build_non_monolith && cd "$_"
- - cmake -DNETWORKIT_MONOLITH=OFF -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD ..
- - make -j2
- - ctest -V
- - cd .. && rm -rf build_non_monolith
 
 notifications:
   email: false
