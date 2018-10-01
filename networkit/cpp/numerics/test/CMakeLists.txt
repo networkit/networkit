@@ -1,4 +1,3 @@
 networkit_add_test(numerics GaussSeidelRelaxationGTest)
-networkit_add_test(numerics LAMGGTest
-    algebraic auxiliary io)
+networkit_add_test(numerics LAMGGTest algebraic auxiliary io)
 

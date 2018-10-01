@@ -5,7 +5,7 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#include "AlgebraicTriangleCountingGTest.h"
+#include <gtest/gtest.h>
 
 #include "../../CSRMatrix.h"
 #include "../AlgebraicTriangleCounting.h"
@@ -14,6 +14,8 @@
 #include "../../../centrality/LocalClusteringCoefficient.h"
 
 namespace NetworKit {
+
+class AlgebraicTriangleCountingGTest : public testing::Test {};
 
 TEST(AlgebraicTriangleCountingGTest, testToyGraphOne) {
 	Graph graph(5);

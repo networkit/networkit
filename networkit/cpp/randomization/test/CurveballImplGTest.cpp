@@ -7,10 +7,13 @@
 
 #include <gtest/gtest.h>
 
-#include "CurveballImplGTest.h"
 #include "../CurveballImpl.h"
 
 namespace NetworKit {
+
+class CurveballImplGTest : public ::testing::Test {};
+
+
 namespace CurveballDetails {
 
 using degree_vector = std::vector<count>;

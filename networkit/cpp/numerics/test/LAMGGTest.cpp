@@ -5,7 +5,15 @@
  *      Author: Michael
  */
 
-#include "LAMGGTest.h"
+#include <gtest/gtest.h>
+
+#include "../../algebraic/Vector.h"
+#include "../../io/METISGraphReader.h"
+#include "../../io/METISGraphWriter.h"
+#include "../../generators/BarabasiAlbertGenerator.h"
+#include "../../components/ConnectedComponents.h"
+#include "../../structures/Partition.h"
+
 #include "../LAMG/MultiLevelSetup.h"
 #include "../LAMG/SolverLamg.h"
 #include "../../io/LineFileReader.h"
@@ -15,6 +23,14 @@
 #include "../GaussSeidelRelaxation.h"
 
 namespace NetworKit {
+
+class LAMGGTest : public testing::Test {
+protected:
+	const std::vector<std::string> GRAPH_INSTANCES = {"input/jazz.graph", "input/power.graph"};
+
+	Vector randZeroSum(const Graph& graph, size_t seed) const;
+	Vector randVector(count dimension, double lower, double upper) const;
+};
 
 TEST_F(LAMGGTest, testSmallGraphs) {
 	METISGraphReader reader;

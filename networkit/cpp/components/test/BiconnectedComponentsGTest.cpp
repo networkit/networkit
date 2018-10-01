@@ -5,9 +5,8 @@
  * 		 Author: Eugenio Angriman
  */
 
-#ifndef NOGTEST
+#include <gtest/gtest.h>
 
-#include "BiconnectedComponentsGTest.h"
 #include "../../auxiliary/Log.h"
 #include "../../generators/ErdosRenyiGenerator.h"
 #include "../BiconnectedComponents.h"
@@ -15,8 +14,9 @@
 
 namespace NetworKit {
 
-TEST_F(BiconnectedComponentsGTest, testBiconnectedComponentsTiny) {
+class BiconnectedComponentsGTest : public testing::Test {};
 
+TEST_F(BiconnectedComponentsGTest, testBiconnectedComponentsTiny) {
   Graph G(9, false, false);
   G.addEdge(0, 1);
   G.addEdge(1, 2);
@@ -65,5 +65,5 @@ TEST_F(BiconnectedComponentsGTest, testBiconnectedComponents) {
     }
   }
 }
+
 } // namespace NetworKit
-#endif // NOGTEST

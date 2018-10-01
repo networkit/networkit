@@ -5,11 +5,13 @@
  *      Author: Klara Reichard (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
  */
 
-#ifndef NOGTEST
+#include <gtest/gtest.h>
 
+#include <tuple>
 #include <algorithm>
 
-#include "GraphGTest.h"
+#include "../Graph.h"
+
 #include "../GraphBuilder.h"
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/NumericTools.h"
@@ -18,6 +20,29 @@
 #include "../../generators/ErdosRenyiGenerator.h"
 
 namespace NetworKit {
+
+class GraphGTest: public testing::TestWithParam< std::tuple<bool, bool> > {
+public:
+	virtual void SetUp();
+
+protected:
+	Graph Ghouse;
+	std::vector< std::pair<node, node> > houseEdgesOut;
+	std::vector< std::vector<edgeweight> > Ahouse;
+	count n_house;
+	count m_house;
+
+	bool isGraph() const { return !isWeighted() && !isDirected(); }
+	bool isWeightedGraph() const { return isWeighted() && !isDirected(); }
+	bool isDirectedGraph() const { return !isWeighted() && isDirected(); }
+	bool isWeightedDirectedGraph() const { return isWeighted() && isDirected(); }
+
+
+	bool isWeighted() const;
+	bool isDirected() const;
+	Graph createGraph(count n = 0) const;
+	count countSelfLoopsManually(const Graph &G);
+};
 
 INSTANTIATE_TEST_CASE_P(InstantiationName, GraphGTest, testing::Values(
 						std::make_tuple(false, false),
@@ -2180,5 +2205,3 @@ TEST_P(GraphGTest, testSortEdges) {
 }
 
 } /* namespace NetworKit */
-
-#endif /*NOGTEST */

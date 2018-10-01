@@ -5,9 +5,7 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef NOGTEST
-
-#include "CoarseningBenchmark.h"
+#include <gtest/gtest.h>
 
 #include "../../generators/ErdosRenyiGenerator.h"
 #include "../../community/ClusteringGenerator.h"
@@ -18,6 +16,8 @@
 #include "../../auxiliary/Log.h"
 
 namespace NetworKit {
+
+class CoarseningBenchmark: public testing::Test {};
 
 TEST_F(CoarseningBenchmark, benchmarkCoarsening) {
 	count n = 10000;
@@ -52,11 +52,7 @@ TEST_F(CoarseningBenchmark, benchmarkCoarsening) {
 	Graph Gc3 = gbCoarsening.getCoarseGraph();
 	INFO("parallel coarsening: ", timer.elapsedTag());
 	EXPECT_EQ(k, Gc3.numberOfNodes());
-
 }
-
-
 
 } /* namespace NetworKit */
 
-#endif /*NOGTEST */

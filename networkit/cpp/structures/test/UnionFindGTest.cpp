@@ -7,13 +7,14 @@
 
 #include <iostream>
 
-#include "UnionFindGTest.h"
+#include <gtest/gtest.h>
 
 #include "../UnionFind.h"
 
-#ifndef NOGTEST
 
 namespace NetworKit {
+
+class UnionFindGTest: public testing::Test {};
 
 TEST_F(UnionFindGTest, testAllToSingletons) {
 	UnionFind p(10);
@@ -73,5 +74,3 @@ TEST_F(UnionFindGTest, testMergeCircular) {
 }
 
 } /* namespace NetworKit */
-
-#endif /*NOGTEST */

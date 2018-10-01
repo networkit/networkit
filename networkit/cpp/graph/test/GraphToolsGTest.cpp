@@ -1,8 +1,18 @@
-#include "GraphToolsGTest.h"
+/*
+ * GraphToolsGTest.cpp
+ *
+ *  Created on: 22.11.14
+ *      Author: Maximilian Vogel
+ */
+
+#include <gtest/gtest.h>
+
 #include "../Graph.h"
 #include "../GraphTools.h"
 
 namespace NetworKit {
+
+class GraphToolsGTest: public testing::Test {};
 
 TEST_F(GraphToolsGTest, testGetContinuousOnContinuous) {
 	Graph G(10);

@@ -5,15 +5,16 @@
  *      Author: henningm
  */
 
-#include "CliqueGTest.h"
+#include <gtest/gtest.h>
+
 #include "../MaximalCliques.h"
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/Log.h"
 #include "../../io/EdgeListReader.h"
 
-
 namespace NetworKit {
 
+class CliqueGTest: public testing::Test {};
 
 TEST_F(CliqueGTest, testMaxCliqueOnSmallerGraphs) {
 	EdgeListReader r(' ',1,"%");
@@ -37,6 +38,5 @@ TEST_F(CliqueGTest, testMaxCliqueOnSmallerGraphs) {
 	EXPECT_EQ(14u, cliqueJohnson.size());
 	EXPECT_EQ(4u, cliqueHamming.size());
 }
-
 
 } /* namespace NetworKit */

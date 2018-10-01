@@ -5,7 +5,7 @@
  *      Author: Michael
  */
 
-#include "AlgebraicPageRankGTest.h"
+#include <gtest/gtest.h>
 
 #include "../AlgebraicPageRank.h"
 #include "../../../io/SNAPGraphReader.h"
@@ -15,6 +15,8 @@
 #include "../../../centrality/PageRank.h"
 
 namespace NetworKit {
+
+class AlgebraicPageRankGTest : public testing::Test {};
 
 TEST(AlgebraicPageRankGTest, testPageRankDirected) {
 	SNAPGraphReader reader;

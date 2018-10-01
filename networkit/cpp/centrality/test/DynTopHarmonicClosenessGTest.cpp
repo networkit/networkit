@@ -5,13 +5,16 @@
  *     Author: Eugenio Angriman
  */
 
-#include "DynTopHarmonicClosenessGTest.h"
+#include <gtest/gtest.h>
+
 #include "../../generators/DorogovtsevMendesGenerator.h"
 #include "../../generators/ErdosRenyiGenerator.h"
 #include "../DynTopHarmonicCloseness.h"
 #include "../HarmonicCloseness.h"
 
 namespace NetworKit {
+
+class DynTopHarmonicClosenessGTest : public testing::Test {};
 
 TEST_F(DynTopHarmonicClosenessGTest, testDynTopHarmonicClosenessUndirected) {
 	Graph G = DorogovtsevMendesGenerator(500).generate();

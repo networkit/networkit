@@ -5,9 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef NOGTEST
+#include <gtest/gtest.h>
 
-#include "MatcherGTest.h"
 #include "../Matcher.h"
 #include "../Matching.h"
 #include "../PathGrowingMatcher.h"
@@ -17,8 +16,9 @@
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/Random.h"
 
-
 namespace NetworKit {
+
+class MatcherGTest: public testing::Test {};
 
 TEST_F(MatcherGTest, testLocalMaxMatching) {
 	count n = 50;
@@ -123,5 +123,5 @@ TEST_F(MatcherGTest, debugValidMatching) {
 	bool isProper = M.isProper(G);
 	EXPECT_TRUE(isProper);
 }
-} // namespace EnsembleClustering
-#endif
+
+} // namespace NetworKit

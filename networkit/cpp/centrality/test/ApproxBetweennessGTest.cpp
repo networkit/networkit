@@ -5,7 +5,8 @@
  *      Author: moritzl
  */
 
-#include "ApproxBetweennessGTest.h"
+#include <gtest/gtest.h>
+
 #include "../ApproxBetweenness.h"
 #include "../Betweenness.h"
 #include "../../generators/ErdosRenyiGenerator.h"
@@ -14,6 +15,7 @@
 
 namespace NetworKit {
 
+class ApproxBetweennessGTest : public testing::Test {};
 
 TEST_F(ApproxBetweennessGTest, benchApproxDiameterErdos) {
 	ErdosRenyiGenerator gen(1000,0.002);

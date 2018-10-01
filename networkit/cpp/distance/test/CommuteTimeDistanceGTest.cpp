@@ -5,16 +5,22 @@
  *      Author: Michael
  */
 
-#include "CommuteTimeDistanceGTest.h"
+#include <gtest/gtest.h>
+
+#include "../CommuteTimeDistance.h"
 #include "../../graph/Graph.h"
 #include "../../io/METISGraphReader.h"
 #include "../../centrality/SpanningEdgeCentrality.h"
+
+#include <vector>
+#include <string>
 #include <math.h>
 #include <fstream>
 #include <iomanip>
 
 
 namespace NetworKit {
+class CommuteTimeDistanceGTest : public testing::Test{};
 
 TEST_F(CommuteTimeDistanceGTest, testOnToyGraph) {
 	/* Graph:
