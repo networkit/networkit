@@ -40,7 +40,9 @@ if (NOT NETWORKIT_LOGGING)
 	set(NETWORKIT_CXX_FLAGS "-DNOLOGGING")
 endif()
 
-if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"))
+if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR
+	("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR
+	("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang"))
 	if (NETWORKIT_NATIVE)
 		set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} -march=native")
 	endif()
@@ -55,9 +57,25 @@ elseif (MSVC)
 	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /DTTMATH_NOASM=1")
 	 
 else()
-	message(WARNING "NetworKit is only tests with GCC, Clang and MSVC. Your compiler may or may not work.")
-
+	message(WARNING "Support only GCC, Clang, MSVC and AppleClang. Your compiler may or may not work.")
 endif()
+
+
+# AppleClang support is added in CMake > 3.12
+# the following passage checks if CMake > 3.12 is installed and manually
+# links the omp lib if found
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+	if(${CMAKE_VERSION} VERSION_LESS 3.12)
+ 		message(WARNING "OpenMP linking with AppleClang was introduced in CMake 3.12. Current CMake Version ${CMAKE_VERSION}")
+	else()
+		find_library(OMP_FOUND NAMES omp)
+		if(OMP_FOUND)
+			set(NETWORKIT_LINK_FLAGS "-lomp ${NETWORKIT_LINK_FLAGS}")
+		else()
+			message(FATAL_ERROR "libomp was not found, but necessary to run NetworKit with AppleClang")
+		endif()
+	endif()
+ endif()
 
 # adding OpenMP flags
 find_package(OpenMP REQUIRED)

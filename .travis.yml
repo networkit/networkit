@@ -81,6 +81,14 @@ matrix:
         - brew install libomp
         - if brew outdated | grep -q python; then brew upgrade python; fi
 
+    - name: macOS, AppleClang
+      env: CC=cc CXX=c++
+      os: osx
+      sudo: false
+      before_install:
+        - brew install libomp
+        - brew upgrade cmake # cmake on osx images (xode9.4) is on 3.11.4 - 3.12+ required 
+
 
     - name: C++14 conformance
       env: CC=gcc-8 CXX=g++-8 CXX_STANDARD=14
@@ -91,14 +99,16 @@ matrix:
       env: CC=gcc-8 CXX=g++-8 CXX_STANDARD=17
       os: linux
       addons: *gcc8
-  
+
   allow_failures:
     - name: macOS, modern Clang
     - name: macOS, legacy Clang 4
+    - name: macOS, AppleClang
 
 script:
  - $CXX --version
  - python3 --version
+ - cmake --version
 
  - python3 -m venv pyenv && . pyenv/bin/activate
  - pip3 install --upgrade pip
