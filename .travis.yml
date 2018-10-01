@@ -94,11 +94,18 @@ matrix:
       env: CC=gcc-8 CXX=g++-8 CXX_STANDARD=14
       os: linux
       addons: *gcc8
+      script: &script_cpp_only
+        - $CXX --version
+        - mkdir debug_test && cd "$_"
+        - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD ..
+        - make -j2
+        - ctest -V
 
     - name: C++17 conformance
       env: CC=gcc-8 CXX=g++-8 CXX_STANDARD=17
       os: linux
       addons: *gcc8
+      script: *script_cpp_only
 
   allow_failures:
     - name: macOS, modern Clang
