@@ -8,6 +8,7 @@ endif("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
 # BUILD OPTIONS
 option(NETWORKIT_BUILD_TESTS "Build with tests" OFF)
 option(NETWORKIT_LOGGING "Build with logging support" ON)
+option(NETWORKIT_STATIC "Build static libraries" OFF)
 option(NETWORKIT_MONOLITH "Build single library (and tests is requested; required for shared lib)" ON)
 option(NETWORKIT_NATIVE "Optimize for native architecture (often better performance)" OFF)
 option(NETWORKIT_WARNINGS "Issue more warnings" OFF)
@@ -128,10 +129,10 @@ endif()
 
 # NETWORKIT MODULES
 if (NETWORKIT_MONOLITH)
-	if (NETWORKIT_PYTHON)
-		add_library(networkit SHARED networkit/cpp/networkit.cpp)
-	else()
+	if(NETWORKIT_STATIC)
 		add_library(networkit networkit/cpp/networkit.cpp)
+	else()
+		add_library(networkit SHARED networkit/cpp/networkit.cpp)
 	endif()
 
 	set_target_properties(networkit PROPERTIES
