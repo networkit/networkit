@@ -140,7 +140,7 @@ def cythonizeFile(filepath):
 			exit(1)
 		print("_NetworKit.pyx cythonized", flush=True)
 
-def buildNetworKit(install_prefix, withTests = False):
+def buildNetworKit(install_prefix, externalCore=False, withTests=False):
 	# Cythonize file
 	cythonizeFile("networkit/_NetworKit.pyx")
 	try:
@@ -155,6 +155,8 @@ def buildNetworKit(install_prefix, withTests = False):
 	from sysconfig import get_paths, get_config_var
 	comp_cmd.append("-DNETWORKIT_PYTHON="+get_paths()['include']) #provide python.h files
 	comp_cmd.append("-DNETWORKIT_PYTHON_SOABI="+get_config_var('SOABI')) #provide lib env specification
+	if externalCore:
+		comp_cmd.append("-DNETWORKIT_BUILD_CORE=OFF")
 	if ninja_available:
 		comp_cmd.append("-GNinja")
 	comp_cmd.append(os.getcwd()) #call CMakeLists.txt from networkit root
@@ -200,6 +202,8 @@ class build_ext(Command):
 			"list of directories to search for header files" + sep_by),
 		('library-dirs=', 'L',
 			"directories to search for external C libraries" + sep_by),
+		('networkit-external-core', None,
+			"use external NetworKit core library")
 	]
 
 	def initialize_options(self):
@@ -209,6 +213,7 @@ class build_ext(Command):
 		self.inplace = False
 		self.include_dirs = None
 		self.library_dirs = None
+		self.networkit_external_core = False
 
 		self.extensions = None
 		self.package = None
@@ -247,7 +252,7 @@ class build_ext(Command):
 			# The --inplace implementation is less sophisticated than in distutils,
 			# but it should be sufficient for NetworKit.
 			prefix = self.distribution.src_root or os.getcwd()
-		buildNetworKit(prefix)
+		buildNetworKit(prefix, externalCore=self.networkit_external_core)
 
 ################################################
 # initialize python setup
