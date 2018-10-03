@@ -6,7 +6,8 @@ if("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
 endif("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
 
 # BUILD OPTIONS
-option(NETWORKIT_BUILD_TESTS "Build with tests" OFF)
+option(NETWORKIT_BUILD_CORE "Build NetworKit core library" ON)
+option(NETWORKIT_BUILD_TESTS "Build NetworKit C++ tests" OFF)
 option(NETWORKIT_LOGGING "Build with logging support" ON)
 option(NETWORKIT_STATIC "Build static libraries" OFF)
 option(NETWORKIT_MONOLITH "Build single library (and tests is requested; required for shared lib)" ON)
@@ -128,7 +129,7 @@ if(NETWORKIT_INCLUDESYMLINK)
 endif()
 
 # NETWORKIT MODULES
-if (NETWORKIT_MONOLITH)
+if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
 	if(NETWORKIT_STATIC)
 		add_library(networkit networkit/cpp/networkit.cpp)
 	else()
@@ -176,6 +177,10 @@ endif()
 # Register a new NetworKit module named ${modname}
 # Files additionally passed are interpreted as PUBLIC source files to this module
 function(networkit_add_module modname)
+	if(NOT NETWORKIT_BUILD_CORE)
+		return()
+	endif()
+
 	if(NETWORKIT_MONOLITH)
 		# in case we are building a monolith, no submodule are registered
 		# and we simple add the source file to the networkkit target
@@ -222,7 +227,11 @@ function(networkit_module_link_libraries modname)
 	cmake_parse_arguments(NMLL
 		"${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-	if (NOT NETWORKIT_MONOLITH)
+	if(NOT NETWORKIT_BUILD_CORE)
+		return()
+	endif()
+
+	if(NOT NETWORKIT_MONOLITH)
 		target_link_libraries(networkit_${modname}
 			PRIVATE ${NMLL_PRIVATE}
 			PUBLIC ${NMLL_PUBLIC})
@@ -234,7 +243,11 @@ endfunction()
 # ones as dependencies. In case of monolith build, the function does nothing.
 # Example: networkit_module_link_modules(io graph) # io depends on graph
 function(networkit_module_link_modules modname)
-	if (NOT NETWORKIT_MONOLITH)
+	if(NOT NETWORKIT_BUILD_CORE)
+		return()
+	endif()
+
+	if(NOT NETWORKIT_MONOLITH)
 		foreach(dep IN LISTS ARGN)
 			target_link_libraries(networkit_${modname} PUBLIC networkit_${dep})
 		endforeach()
