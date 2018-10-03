@@ -106,6 +106,10 @@ if (APPLE)
 	set(NETWORKIT_LINK_FLAGS "-undefined dynamic_lookup ${NETWORKIT_LINK_FLAGS}")
 endif()
 
+if(NOT NETWORKIT_BUILD_CORE)
+	find_library(EXTERNAL_NETWORKIT_CORE NAMES networkit DOC "External NetworKit core library")
+endif()
+
 ################################################################################
 # Use TLX as a CMake submodule
 if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/tlx/CMakeLists.txt")
@@ -148,14 +152,23 @@ if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
 	target_link_libraries(networkit PRIVATE tlx)
 endif()
 
-if (NETWORKIT_PYTHON)
+if(NETWORKIT_PYTHON)
 	if(NOT EXISTS "${PROJECT_SOURCE_DIR}/networkit/_NetworKit.cpp")
 		message(FATAL_ERROR "networkit/_NetworKit.cpp is missing. Invoke Cython manually.")
 	endif()
 
 	add_library(_NetworKit MODULE networkit/_NetworKit.cpp)
-	target_link_libraries(_NetworKit PRIVATE networkit)
 	target_include_directories(_NetworKit PRIVATE "${NETWORKIT_PYTHON}")
+
+	if(NOT NETWORKIT_BUILD_CORE)
+		if(NOT EXTERNAL_NETWORKIT_CORE)
+			message(FATAL_ERROR "Core build is disabled but no external core library was found.")
+		endif()
+		target_link_libraries(_NetworKit PRIVATE ${EXTERNAL_NETWORKIT_CORE})
+	else()
+		target_link_libraries(_NetworKit PRIVATE networkit)
+	endif()
+
 	set_target_properties(_NetworKit PROPERTIES
 				CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 				COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
