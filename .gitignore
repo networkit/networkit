@@ -45,6 +45,7 @@ build/
 ### IDE
 *.project
 *.cproject
+*.vim
 
 ### Python
 networkit.egg-info/
