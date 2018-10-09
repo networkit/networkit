@@ -8,9 +8,10 @@
 #ifndef PRIORITYQUEUE_H_
 #define PRIORITYQUEUE_H_
 
-#include "../auxiliary/Log.h"
-#include <vector>
 #include <set>
+#include <vector>
+
+#include "../auxiliary/Log.h"
 
 namespace Aux {
 
@@ -70,7 +71,7 @@ public:
 	 * Inserts key-value pair stored in @a elem.
 	 */
 	virtual void insert(Key key, Value value);
-	
+
 	virtual ElemType peekMin(size_t n = 0);
 
 	/**
@@ -85,11 +86,6 @@ public:
 	 */
 	virtual void changeKey(Key newKey, Value value);
 
-	[[deprecated]]
-	virtual void decreaseKey(Key newKey, Value value) {
-		changeKey(newKey, value);
-	}
-
 	/**
 	 * @return Number of elements in PQ.
 	 */
@@ -99,6 +95,25 @@ public:
 	 * Removes key-value pair given by value @a val.
 	 */
 	virtual void remove(const Value& val);
+
+	/**
+	 * Removes all the elements from the priority queue.
+	 */
+	virtual void clear();
+
+	/**
+	 * Iterates over all the elements of the priority queue and call @a handle
+	 * (lambda closure).
+	 */
+	template<typename L>
+	void forElements(L handle) const;
+
+	/**
+	 * Iterates over all the elements of the priority queue while the condition
+	 * is satisfied and call @a handle (lambda closure).
+	 */
+	template<typename C, typename L>
+	void forElementsWhile(C condition, L handle) const;
 
 	/**
 	 * DEBUGGING
@@ -185,6 +200,35 @@ inline std::set<std::pair<Key, Value>> Aux::PrioQueue<Key, Value>::content() con
 	return pqset;
 }
 
+template<class Key, class Value>
+inline void Aux::PrioQueue<Key, Value>::clear() {
+	pqset.clear();
+	auto capacity = mapValToKey.size();
+	mapValToKey.clear();
+	mapValToKey.resize(capacity);
+}
+
+template<class Key, class Value>
+template<typename L>
+inline void Aux::PrioQueue<Key, Value>::forElements(L handle) const {
+	for (auto it = pqset.begin(); it != pqset.end(); ++it) {
+		ElemType elem = *it;
+		handle(elem.first, elem.second);
+	}
+}
+
+template<class Key, class Value>
+template<typename C, typename L>
+inline void Aux::PrioQueue<Key, Value>::forElementsWhile(C condition,
+                                                         L handle) const {
+	for (auto it = pqset.begin(); it != pqset.end(); ++it) {
+		if (!condition()) {
+			break;
+		}
+		ElemType elem = *it;
+		handle(elem.first, elem.second);
+	}
+}
 
 } /* namespace Aux */
 #endif /* PRIORITYQUEUE_H_ */
