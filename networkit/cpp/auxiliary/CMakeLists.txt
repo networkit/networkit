@@ -4,7 +4,6 @@ networkit_add_module(auxiliary
     Log.cpp
     NumericTools.cpp
     Parallelism.cpp
-    PrioQueueForInts.cpp
     Random.cpp
     SignalHandling.cpp
     Timer.cpp
