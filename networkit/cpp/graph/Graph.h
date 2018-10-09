@@ -646,6 +646,15 @@ public:
 	void removeEdge(node u, node v);
 
 	/**
+	 * Efficiently removes all the edges adjacent to a set of nodes that is not
+	 * connected to the rest of the graph. This is meant to optimize the Kadabra
+	 * algorithm.
+	 * @param nodesInSet vector of nodes that form a connected component that is
+	 * isolated from the rest of the graph.
+	 */
+	void removeEdgesFromIsolatedSet(const std::vector<node> &nodesInSet);
+
+	/**
 	 * Removes all the edges in the graph.
 	 */
 	void removeAllEdges();

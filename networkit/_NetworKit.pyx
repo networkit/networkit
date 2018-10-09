@@ -300,6 +300,7 @@ cdef extern from "cpp/graph/Graph.h":
 		void increaseWeight(node u, node v, edgeweight w) except +
 		void removeEdge(node u, node v) except +
 		void removeAllEdges() except +
+		void removeEdgesFromIsolatedSet(vector[node] nodes) except +
 		void removeSelfLoops() except +
 		void swapEdge(node s1, node t1, node s2, node t2) except +
 		void compactEdges() except +
@@ -743,6 +744,13 @@ cdef class Graph:
 		""" Removes all the edges in the graph.
 		"""
 		self._this.removeAllEdges()
+
+	def removeEdgesFromIsolatedSet(self, nodes):
+		"""
+			Efficiently removes all the edges adjacent to a set of nodes that is not connected
+			to the rest of the graph. This is meant to optimize the Kadabra algorithm.
+		"""
+		self._this.removeEdgesFromIsolatedSet(nodes)
 		return self
 
 	def removeSelfLoops(self):
@@ -6389,7 +6397,7 @@ cdef extern from "cpp/centrality/DynKatzCentrality.h":
 		bool areDistinguished(node, node) except +
 
 cdef class DynKatzCentrality(Centrality):
-	""" Finds the top-k nodes with highest Katz centralityself.
+	""" Finds the top-k nodes with highest Katz centrality.
 
 	DynKatzCentrality(G, k, groupOnly=False, tolerance=1e-9)
 	"""
@@ -7039,6 +7047,135 @@ cdef class ApproxBetweenness(Centrality):
 
 	def numberOfSamples(self):
 		return (<_ApproxBetweenness*>(self._this)).numberOfSamples()
+
+
+cdef extern from "cpp/centrality/KadabraBetweenness.h":
+	cdef cppclass _KadabraBetweenness "NetworKit::KadabraBetweenness" (_Algorithm):
+		_KadabraBetweenness(_Graph, double, double, count, count, count) except +
+		vector[pair[node, double]] ranking() except +
+		vector[node] topkNodesList() except +
+		vector[double] topkScoresList() except +
+		vector[double] scores() except +
+		count getNumberOfIterations() except +
+		double getOmega() except +
+
+cdef class KadabraBetweenness(Algorithm):
+	"""
+	Approximation of the betweenness centrality and computation of the top-k
+	nodes with highest betweenness centrality according to the algorithm
+	described in Borassi M. and Natale M. (2016): KADABRA is an ADaptive
+	Algorithm for Betweenness via Random Approximation.
+
+	If k = 0 the algorithm approximates the betweenness centrality of all
+	vertices of the graph so that the scores are within an additive error @a
+	err with probability at least (1 - @a delta). Otherwise, the algorithm
+	computes the exact ranking of the top-k nodes with highest betweenness
+	centrality.
+	The algorithm relies on an adaptive random sampling technique of shortest
+	paths and the number of samples in the worst case is w = ((log(D - 2) +
+	log(2/delta))/err^2 samples, where D is the diameter of the graph.
+	Thus, the worst-case performance is O(w * (|E| + |V|)), but performs better
+	in practice.
+
+	NB: in order to work properly, the Kadabra algorithm requires a random seed
+	to be previously set with 'useThreadId' set to True. To do this, call the
+	setSeed(<your_seed>, True) fuction within the Random module.
+
+	Parameters
+	----------
+	G : Graph
+		The input graph.
+  err : double
+		Maximum additive error guaranteed when approximating the
+		betweenness centrality of all nodes.
+	delta : double
+		Probability that the values of the betweenness centrality are
+		within the error guarantee.
+	k : count
+		The number of top-k nodes to be computed. Set it to zero to
+		approximate the betweenness centrality of all the nodes.	
+	unionSample : count
+		Algorithm parameter # TODO: more details 
+	startFactor : count
+		Algorithm parameter # TODO: more details 
+	"""
+
+	def __cinit__(self, Graph G, err = 0.01, delta = 0.1, k = 0,
+				  unionSample = 0, startFactor = 100):
+		self._this = new _KadabraBetweenness(G._this, err, delta, k, unionSample,
+										   startFactor)
+
+	def ranking(self):
+		"""
+		Returns the ranking of the nodes according to their approximated
+		betweenness centrality.
+
+		Returns
+		-------
+		list(int, double)
+			A list of pairs (node, betweenness) representing the top-k ranking.
+		"""
+		return (<_KadabraBetweenness*>(self._this)).ranking()
+
+	def topkNodesList(self):
+		"""
+		Returns Nodes of the graph sorted by their approximated betweenness
+		centrality.
+
+		Returns
+		-------
+		list(int)
+			A list with the top-k nodes with highest approximated betweenness
+			centrality.
+		"""
+		return (<_KadabraBetweenness*>(self._this)).topkNodesList()
+
+	def topkScoresList(self):
+		"""
+		Returns the sorted list of approximated betweenness centrality scores.
+
+		Returns
+		-------
+		list(double)
+			A list with the top-k scores of the nodes with highest approximated
+			betweenness centrality.
+		"""
+		return (<_KadabraBetweenness*>(self._this)).topkScoresList()
+
+	def scores(self):
+		"""
+		Returns the approximated betweenness centrality score of all the nodes of
+		the graph.
+
+		Returns
+		-------
+		list(double)
+			A list with the approximated betweenness centrality score of each node of
+			the graph.
+		"""
+		return (<_KadabraBetweenness*>(self._this)).scores()
+
+	def getNumberOfIterations(self):
+		"""
+		Returns the total number of samples.
+
+		Returns
+		-------
+		count
+			The total number of shortest paths sampled by the algorithm.
+		"""
+		return (<_KadabraBetweenness*>(self._this)).getNumberOfIterations()
+	
+	def getOmega(self):
+		"""
+		Returns the upper bound of the required number of samples.
+
+		Returns
+		-------
+		count
+			Upper bound of the number of shortest paths to be sampled.
+		"""
+		return(<_KadabraBetweenness*>(self._this)).getOmega()
 
 
 cdef extern from "cpp/centrality/EstimateBetweenness.h":

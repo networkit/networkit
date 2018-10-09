@@ -704,7 +704,7 @@ void Graph::removeAllEdges() {
 		outDeg[u] = 0;
 		outEdges[u].clear();
 		if (isWeighted()) {
-			outEdgeWeights[u].clear();	
+			outEdgeWeights[u].clear();
 		}
 		if (isDirected()) {
 			inDeg[u] = 0;
@@ -716,6 +716,23 @@ void Graph::removeAllEdges() {
 	}
 
 	m = 0;
+}
+
+void Graph::removeEdgesFromIsolatedSet(const std::vector<node> &nodesInSet) {
+	count removedEdges = 0;
+	for (node u : nodesInSet) {
+		removedEdges += outDeg[u];
+		outDeg[u] = 0;
+		outEdges[u].clear();
+		if (this->weighted) {
+			outEdgeWeights[u].clear();
+		}
+		if (this->isDirected()) {
+			inDeg[u] = 0;
+			inEdges[u].clear();
+		}
+	}
+	this->m -= removedEdges;
 }
 
 void Graph::removeSelfLoops() {

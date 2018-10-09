@@ -36,6 +36,11 @@ void setSeed(uint64_t seed, bool useThreadId);
  */
 uint64_t getSeed();
 
+/*
+ * @returns whether or not the thread id is added to the random seed. 
+ */
+bool getUseThreadId();
+
 /**
  * @returns a reference to a seeded URNG that is thread_local.
  */

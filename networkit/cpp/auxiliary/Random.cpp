@@ -53,6 +53,10 @@ uint64_t getSeed() {
 	return getSeed_(globalSeedGeneration.load(std::memory_order_acquire));
 }
 
+bool getUseThreadId() {
+	return seedUseThreadId;
+}
+
 std::mt19937_64& getURNG() {
 	thread_local static std::mt19937_64 generator{getSeed()};
 	thread_local static uint64_t localSeedGeneration{0};
