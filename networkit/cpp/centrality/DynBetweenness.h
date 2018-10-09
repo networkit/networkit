@@ -8,13 +8,13 @@
 #ifndef DYNBETWEENNESS_H_
 #define DYNBETWEENNESS_H_
 
-#include "Centrality.h"
-#include <queue>
 #include <memory>
+#include <queue>
+
 #include "../dynamics/GraphEvent.h"
 #include "../base/DynAlgorithm.h"
 #include "../auxiliary/PrioQueue.h"
-#include "../auxiliary/PrioQueueForInts.h"
+#include "Centrality.h"
 
 namespace NetworKit {
 

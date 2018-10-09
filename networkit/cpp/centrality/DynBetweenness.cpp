@@ -5,19 +5,19 @@
  *      Author: Arie Slobbe, Elisabetta Bergamini
  */
 
-#include "../distance/SSSP.h"
-#include "DynBetweenness.h"
-#include "../distance/Dijkstra.h"
-#include "../distance/BFS.h"
-#include "../auxiliary/Log.h"
-#include "../auxiliary/PrioQueue.h"
-#include "../auxiliary/PrioQueueForInts.h"
-#include "../auxiliary/NumericTools.h"
 #include <queue>
 #include <memory>
 #include<unordered_set>
 #include<algorithm>
 #include <time.h>
+
+#include "../auxiliary/Log.h"
+#include "../auxiliary/NumericTools.h"
+#include "../auxiliary/PrioQueue.h"
+#include "../distance/BFS.h"
+#include "../distance/Dijkstra.h"
+#include "../distance/SSSP.h"
+#include "DynBetweenness.h"
 
 namespace NetworKit {
 

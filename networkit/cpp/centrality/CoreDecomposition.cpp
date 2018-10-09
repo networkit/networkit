@@ -6,12 +6,11 @@
  *  Inplace change on Jun 26, 2015 by Henning Meyerhenke
  */
 
+#include <omp.h>
 #include <set>
 
-#include "CoreDecomposition.h"
-#include "../auxiliary/PrioQueueForInts.h"
-#include <omp.h>
 #include "../centrality/DegreeCentrality.h"
+#include "CoreDecomposition.h"
 
 namespace NetworKit {
 

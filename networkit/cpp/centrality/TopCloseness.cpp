@@ -13,7 +13,6 @@
 
 #include "../auxiliary/Log.h"
 #include "../auxiliary/PrioQueue.h"
-#include "../auxiliary/PrioQueueForInts.h"
 #include "../components/ConnectedComponents.h"
 #include "../components/StronglyConnectedComponents.h"
 #include "../distance/BFS.h"
