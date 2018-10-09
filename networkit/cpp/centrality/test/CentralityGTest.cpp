@@ -31,9 +31,9 @@
 #include "../GroupCloseness.h"
 #include "../GroupDegree.h"
 #include "../HarmonicCloseness.h"
+#include "../KPathCentrality.h"
 #include "../KadabraBetweenness.h"
 #include "../KatzCentrality.h"
-#include "../KPathCentrality.h"
 #include "../LaplacianCentrality.h"
 #include "../LocalClusteringCoefficient.h"
 #include "../PageRank.h"
@@ -45,7 +45,6 @@
 namespace NetworKit {
 
 class CentralityGTest : public testing::Test {};
-
 
 TEST_F(CentralityGTest, testBetweennessCentrality) {
 	/* Graph:
@@ -1436,6 +1435,13 @@ TEST_F(CentralityGTest, testGroupCloseness) {
 	EXPECT_NEAR(gc.scoreOfGroup(apx), 1.0, 1e-5);
 }
 
+/**
+ * This test succeeds with the fixed random seed (42).
+ * However, the Kadabra algorithm computes a correct epsilon-approximation of
+ * the betweenness centrality score of all the nodes of the graph with high
+ * probability. Thus, it is possible that, for a different random seed, this
+ * test fails.
+ */
 TEST_F(CentralityGTest, testKadabraAbsolute) {
 	Aux::Random::setSeed(42, true);
 	const count n = 10;
@@ -1461,6 +1467,13 @@ TEST_F(CentralityGTest, testKadabraAbsolute) {
 
 	EXPECT_TRUE(errors <= maxErrors);
 }
+
+/**
+ * This test succeeds with the fixed random seed (42).
+ * However, the Kadabra algorithm finds the top-k nodes with
+ * highest betweenness centrality with high probability. Thus, it is possible
+ * that, for a different random seed, this test fails.
+ */
 
 TEST_F(CentralityGTest, testKadabraTopK) {
 	Aux::Random::setSeed(42, true);
