@@ -10,7 +10,7 @@
 
 #include <atomic>
 
-#include "../auxiliary/PQVector.h"
+#include "../auxiliary/SortedList.h"
 #include "../base/Algorithm.h"
 #include "../graph/Graph.h"
 
@@ -153,7 +153,7 @@ protected:
 	std::vector<node> topkNodes;
 	std::vector<double> topkScores;
 	std::vector<std::pair<node, double>> rankingVector;
-	Aux::PQVector *top;
+	Aux::SortedList *top;
 
 	std::vector<std::vector<double>> approx;
 	std::vector<double> approxSum;
@@ -190,37 +190,6 @@ protected:
 		}
 	}
 };
-
-inline void KadabraBetweenness::fillResult() {
-	if (absolute) {
-		topkScores.resize(n);
-		topkNodes.resize(n);
-		rankingVector.resize(n);
-#pragma omp parallel for
-		for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
-			rankingVector[i] = std::make_pair(i, approxSum[i]);
-		}
-		std::sort(rankingVector.begin(), rankingVector.end(),
-		          [&](std::pair<node, double> p1, std::pair<node, double> p2) {
-			          return p1.second > p2.second;
-		          });
-#pragma omp parallel for
-		for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
-			topkNodes[i] = rankingVector[i].first;
-			topkScores[i] = rankingVector[i].second;
-		}
-	} else {
-		topkScores.resize(k);
-		topkNodes.resize(k);
-		rankingVector.resize(k);
-		for (count i = 0; i < k; ++i) {
-			topkNodes[i] = top->getElement(i);
-			topkScores[i] = approxSum[topkNodes[i]];
-			assert(top->getValue(i) == topkScores[i]);
-			rankingVector[i] = std::make_pair(topkNodes[i], topkScores[i]);
-		}
-	}
-}
 
 inline std::vector<std::pair<node, double>>
 KadabraBetweenness::ranking() const {

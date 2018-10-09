@@ -273,6 +273,37 @@ void KadabraBetweenness::init() {
 	nPairs = 0;
 }
 
+void KadabraBetweenness::fillResult() {
+	if (absolute) {
+		topkScores.resize(n);
+		topkNodes.resize(n);
+		rankingVector.resize(n);
+#pragma omp parallel for
+		for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
+			rankingVector[i] = std::make_pair(i, approxSum[i]);
+		}
+		std::sort(rankingVector.begin(), rankingVector.end(),
+		          [&](std::pair<node, double> p1, std::pair<node, double> p2) {
+			          return p1.second > p2.second;
+		          });
+#pragma omp parallel for
+		for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
+			topkNodes[i] = rankingVector[i].first;
+			topkScores[i] = rankingVector[i].second;
+		}
+	} else {
+		topkScores.resize(k);
+		topkNodes.resize(k);
+		rankingVector.resize(k);
+		for (count i = 0; i < k; ++i) {
+			topkNodes[i] = top->getElement(i);
+			topkScores[i] = approxSum[topkNodes[i]];
+			assert(top->getValue(i) == topkScores[i]);
+			rankingVector[i] = std::make_pair(topkNodes[i], topkScores[i]);
+		}
+	}
+}
+
 void KadabraBetweenness::run() {
 	init();
 
@@ -289,6 +320,9 @@ void KadabraBetweenness::run() {
 	const count tau = omega / startFactor;
 
 	if (unionSample == 0) {
+		// In the absolute case we need to check that all the estimated betweenness
+		// scores are within the error bounds. Thus, we set unionSample to the
+		// number of nodes.
 		if (absolute) {
 			unionSample = n;
 		} else {
@@ -300,7 +334,7 @@ void KadabraBetweenness::run() {
 	}
 
 	if (!absolute) {
-		this->top = new Aux::PQVector(unionSample, n);
+		this->top = new Aux::SortedList(unionSample, n);
 	}
 
 #pragma omp parallel
