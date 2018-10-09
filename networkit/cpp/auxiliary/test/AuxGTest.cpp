@@ -23,7 +23,6 @@
 #include "../Timer.h"
 #include "../MissingMath.h"
 #include "../PrioQueue.h"
-#include "../PrioQueueForInts.h"
 #include "../BucketPQ.h"
 #include "../StringTools.h"
 #include "../SetIntersector.h"
@@ -185,98 +184,6 @@ TEST_F(AuxGTest, testPriorityQueue) {
 	EXPECT_EQ(2.5, elem.first);
 	EXPECT_EQ(3u, elem.second);
 	EXPECT_EQ(pq.size(), vec.size() - 5);
-}
-
-TEST_F(AuxGTest, testPrioQueueForIntsWithEmptiness) {
-	// fill vector with priorities
-	std::vector<int64_t> vec = {17, 4, 1, 5, 3, 11, 9, 19, -9, 1, 4, 20, 8, 8};
-
-	Aux::BucketPQ pq(vec, -20, 20);
-	EXPECT_EQ(pq.size(), vec.size());
-
-	// delete everything
-	while (pq.size() > 0) {
-		pq.extractMin();
-	}
-
-	// reinsert entries
-	for (uint64_t i = 0; i < vec.size(); ++i) {
-		pq.insert(vec[i], i);
-	}
-	EXPECT_EQ(pq.size(), vec.size());
-
-	// check top
-	std::pair<int64_t, uint64_t> mini = pq.extractMin();
-	EXPECT_EQ(mini.first, -9);
-	EXPECT_EQ(mini.second, 8u);
-}
-
-TEST_F(AuxGTest, testPrioQueueForInts) {
-	// fill vector with priorities
-	std::vector<int64_t> vec;
-
-	// 0-4
-	vec.push_back(17);
-	vec.push_back(4);
-	vec.push_back(1);
-	vec.push_back(5);
-	vec.push_back(3);
-
-	// 5-9
-	vec.push_back(11);
-	vec.push_back(9);
-	vec.push_back(19);
-	vec.push_back(-9);
-	vec.push_back(1);
-
-	// 10-14
-	vec.push_back(4);
-	vec.push_back(17);
-	vec.push_back(8);
-	vec.push_back(8);
-	vec.push_back(12);
-
-	// 15-19
-	vec.push_back(16);
-	vec.push_back(14);
-	vec.push_back(11);
-	vec.push_back(7);
-	vec.push_back(7);
-
-	// 20-23
-	vec.push_back(7);
-	vec.push_back(-4);
-	vec.push_back(8);
-	vec.push_back(0);
-
-	// construct pq from vector
-	Aux::BucketPQ pq(vec, -100, 100);
-
-	// check op: extractMin
-	std::pair<int64_t, uint64_t> mini = pq.extractMin();
-	EXPECT_EQ(mini.first, -9);
-	EXPECT_EQ(mini.second, 8u);
-
-	// check op: changeKey
-	pq.changeKey(-20, 0);
-	mini = pq.extractMin();
-	EXPECT_EQ(mini.first, -20);
-	EXPECT_EQ(mini.second, 0u);
-
-	// multiply vec by -1 and try again
-	for (int64_t& currkey : vec) {
-		currkey *= -1;
-	}
-	Aux::BucketPQ pq2(vec, -100, 100);
-	mini = pq2.extractMin();
-	EXPECT_EQ(mini.first, -19);
-	EXPECT_EQ(mini.second, 7u);
-
-	// check op: changeKey
-	pq.changeKey(-20, 0);
-	mini = pq.extractMin();
-	EXPECT_EQ(mini.first, -20);
-	EXPECT_EQ(mini.second, 0u);
 }
 
 TEST_F(AuxGTest, testLogging) {
