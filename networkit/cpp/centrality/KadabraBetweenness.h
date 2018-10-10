@@ -12,6 +12,7 @@
 
 #include "../auxiliary/SortedList.h"
 #include "../base/Algorithm.h"
+#include "../components/ConnectedComponents.h"
 #include "../graph/Graph.h"
 
 namespace NetworKit {
@@ -31,7 +32,7 @@ public:
 
 class SpSampler {
 public:
-	SpSampler(const Graph &G);
+	SpSampler(const Graph &G, ConnectedComponents *cc);
 	std::vector<node> randomPath();
 
 private:
@@ -42,6 +43,7 @@ private:
 	std::vector<count> dist;
 	std::vector<count> nPaths;
 	std::vector<node> q;
+	ConnectedComponents *cc;
 
 	inline node randomNode() const;
 	void backtrackPath(const node u, const node v, const node start,
@@ -154,6 +156,7 @@ protected:
 	std::vector<double> topkScores;
 	std::vector<std::pair<node, double>> rankingVector;
 	Aux::SortedList *top;
+	ConnectedComponents *cc;
 
 	std::vector<std::vector<double>> approx;
 	std::vector<double> approxSum;

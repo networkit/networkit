@@ -271,6 +271,10 @@ void KadabraBetweenness::init() {
 	deltaLGuess.resize(n);
 	deltaUGuess.resize(n);
 	nPairs = 0;
+	if (!G.isDirected()) {
+		cc = new ConnectedComponents(G);
+		cc->run();
+	}
 }
 
 void KadabraBetweenness::fillResult() {
@@ -339,7 +343,7 @@ void KadabraBetweenness::run() {
 
 #pragma omp parallel
 	{
-		SpSampler sampler(G);
+		SpSampler sampler(G, cc);
 		while (nPairs <= tau) {
 			oneRound(sampler);
 			++nPairs;
@@ -363,7 +367,7 @@ void KadabraBetweenness::run() {
 
 #pragma omp parallel
 	{
-		SpSampler sampler(G);
+		SpSampler sampler(G, cc);
 		Status status(unionSample);
 		status.nPairs = 0;
 
@@ -402,10 +406,13 @@ void KadabraBetweenness::run() {
 	if (!absolute) {
 		delete (top);
 	}
+	if (!G.isDirected()) {
+		delete (cc);
+	}
 }
 
-SpSampler::SpSampler(const Graph &G)
-    : G(G), n(G.upperNodeIdBound()), pred(n, false, true) {
+SpSampler::SpSampler(const Graph &G, ConnectedComponents *cc)
+    : G(G), n(G.upperNodeIdBound()), pred(n, false, true), cc(cc) {
 	q.resize(n);
 	ballInd.assign(n, 0);
 	dist.resize(n);
@@ -417,6 +424,10 @@ std::vector<node> SpSampler::randomPath() {
 	node v = G.randomNode();
 	while (u == v) {
 		v = G.randomNode();
+	}
+
+	if (!G.isDirected() && cc->componentOfNode(u) != cc->componentOfNode(v)) {
+		return std::vector<node>();
 	}
 
 	count endQ = 2;
