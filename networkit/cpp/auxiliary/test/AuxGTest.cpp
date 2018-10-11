@@ -160,6 +160,12 @@ TEST_F(AuxGTest, testPriorityQueue) {
 	Aux::PrioQueue<double, uint64_t> pq(vec);
 	EXPECT_EQ(pq.size(), vec.size());
 
+	double topKey = pq.peekMin(0).first;
+	pq.forElements([&](double curKey, uint64_t curElem){
+		EXPECT_TRUE(curKey >= topKey);
+		topKey = curKey;
+	});
+
 	ElemType elem = pq.extractMin();
 	EXPECT_EQ(0.25, elem.first);
 	EXPECT_EQ(11u, elem.second);
