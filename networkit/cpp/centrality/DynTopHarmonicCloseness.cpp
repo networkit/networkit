@@ -264,97 +264,97 @@ void DynTopHarmonicCloseness::run() {
 
 	edgeweight kth = 0;
 #pragma omp parallel
-  {
-    std::vector<uint8_t> visited(n, false);
-    std::vector<count> distances(n);
-    std::vector<node> pred(n, 0);
+	{
+		std::vector<uint8_t> visited(n, false);
+		std::vector<count> distances(n);
+		std::vector<node> pred(n, 0);
 
-    std::vector<edgeweight> S(n, std::numeric_limits<edgeweight>::max());
+		std::vector<edgeweight> S(n, std::numeric_limits<edgeweight>::max());
 
-    while (Q1.size() != 0) {
+		while (Q1.size() != 0) {
 
-      omp_set_lock(&lock);
-      if (Q1.size() == 0) { // The size of Q1 might have changed.
-        omp_unset_lock(&lock);
-        break;
-      }
-      std::pair<edgeweight, node> extracted = Q1.extractMin();
+			omp_set_lock(&lock);
+			if (Q1.size() == 0) { // The size of Q1 might have changed.
+				omp_unset_lock(&lock);
+				break;
+			}
+			std::pair<edgeweight, node> extracted = Q1.extractMin();
 
-      node v = extracted.second;
-      toAnalyze[v] = false;
+			node v = extracted.second;
+			toAnalyze[v] = false;
 
-      omp_unset_lock(&lock);
+			omp_unset_lock(&lock);
 
-      // for networks with large diameters: break if the score of the
-      // current node is smaller than the k-th highest score
-      if (useBFSbound && allScores[v] < kth && isValid[v]) {
-        break;
-      }
+			// for networks with large diameters: break if the score of the
+			// current node is smaller than the k-th highest score
+			if (useBFSbound && allScores[v] < kth && isValid[v]) {
+				break;
+			}
 
-      if (G.degreeOut(v) == 0) {
-        omp_set_lock(&lock);
-        allScores[v] = 0;
-        isExact[v] = 0;
-        omp_unset_lock(&lock);
-      } else if (useBFSbound) {
-        count visEdges;
+			if (G.degreeOut(v) == 0) {
+				omp_set_lock(&lock);
+				allScores[v] = 0;
+				isExact[v] = 0;
+				omp_unset_lock(&lock);
+			} else if (useBFSbound) {
+				count visEdges;
 
-        // Perform a complete BFS from v and obtain upper bounds
-        // for all nodes in the graph
-        BFSbound(v, S, &visEdges);
+				// Perform a complete BFS from v and obtain upper bounds
+				// for all nodes in the graph
+				BFSbound(v, S, &visEdges);
 
-        omp_set_lock(&lock);
-        allScores[v] = S[v];
-        isExact[v] = true;
-        isValid[v] = true;
-        omp_unset_lock(&lock);
+				omp_set_lock(&lock);
+				allScores[v] = S[v];
+				isExact[v] = true;
+				isValid[v] = true;
+				omp_unset_lock(&lock);
 
-        // Update the scores of all nodes with the bounds obtained
-        // by the complete BFS
-        G.forNodes([&](node u) {
-          if (allScores[u] > S[u] &&
-              toAnalyze[u]) { // This part must be syncrhonized.
-            omp_set_lock(&lock);
-            if (allScores[u] > S[u] &&
-                toAnalyze[u]) { // Have to check again, because the variables
-              // might have changed
-              allScores[u] = S[u];
-              isValid[u] = true;
-              Q1.remove(-u);
-              Q1.insert(-allScores[u], u);
-            }
-            omp_unset_lock(&lock);
-          }
-        });
-      } else {
-        count edgeCount = 0;
+				// Update the scores of all nodes with the bounds obtained
+				// by the complete BFS
+				G.forNodes([&](node u) {
+					if (allScores[u] > S[u] &&
+					    toAnalyze[u]) { // This part must be syncrhonized.
+						omp_set_lock(&lock);
+						if (allScores[u] > S[u] &&
+						    toAnalyze[u]) { // Have to check again, because the variables
+							// might have changed
+							allScores[u] = S[u];
+							isValid[u] = true;
+							Q1.remove(-u);
+							Q1.insert(-allScores[u], u);
+						}
+						omp_unset_lock(&lock);
+					}
+				});
+			} else {
+				count edgeCount = 0;
 
-        // perform a pruned BFS from v in complex networks
-        std::pair<edgeweight, bool> c =
-            BFScut(v, kth, n, r[v], visited, distances, pred, edgeCount);
+				// perform a pruned BFS from v in complex networks
+				std::pair<edgeweight, bool> c =
+				    BFScut(v, kth, n, r[v], visited, distances, pred, edgeCount);
 
-        omp_set_lock(&lock);
-        allScores[v] = c.first;
-        isExact[v] = c.second;
-        isValid[v] = true;
-        omp_unset_lock(&lock);
-      }
+				omp_set_lock(&lock);
+				allScores[v] = c.first;
+				isExact[v] = c.second;
+				isValid[v] = true;
+				omp_unset_lock(&lock);
+			}
 
-      omp_set_lock(&lock);
-      // Insert v into the list with the k most central nodes if
-      // its score is larger than the k-th largest value
-      if (isExact[v] && allScores[v] >= kth) {
-        top.insert(allScores[v], v);
-        if (top.size() > k) {
-          ++trail;
-          if (allScores[v] > kth) {
-            if (nMinCloseness == trail) {
-              while (top.size() > k) {
-                top.extractMin();
-              }
-              trail = 0;
-              nMinCloseness = 1;
-              if (k > 1) {
+			omp_set_lock(&lock);
+			// Insert v into the list with the k most central nodes if
+			// its score is larger than the k-th largest value
+			if (isExact[v] && allScores[v] >= kth) {
+				top.insert(allScores[v], v);
+				if (top.size() > k) {
+					++trail;
+					if (allScores[v] > kth) {
+						if (nMinCloseness == trail) {
+							while (top.size() > k) {
+								top.extractMin();
+							}
+							trail = 0;
+							nMinCloseness = 1;
+							if (k > 1) {
 								double pqTop = top.peekMin(0).first;
 								double pqNext = pqTop;
 								top.forElementsWhile([&]() { return pqTop == pqNext; },
@@ -362,63 +362,63 @@ void DynTopHarmonicCloseness::run() {
 									                     pqNext = curKey;
 									                     ++nMinCloseness;
 								                     });
-              }
-            }
-          } else {
-            ++nMinCloseness;
-          }
-        } else if (allScores[v] < minCloseness) {
-          minCloseness = allScores[v];
-          nMinCloseness = 1;
-        } else if (allScores[v] == minCloseness) {
-          ++nMinCloseness;
-        }
-      }
+							}
+						}
+					} else {
+						++nMinCloseness;
+					}
+				} else if (allScores[v] < minCloseness) {
+					minCloseness = allScores[v];
+					nMinCloseness = 1;
+				} else if (allScores[v] == minCloseness) {
+					++nMinCloseness;
+				}
+			}
 
-      // Update the k-th largest value for this thread
-      if (top.size() >= k) {
-        std::pair<edgeweight, node> elem = top.extractMin();
-        kth = elem.first;
-        top.insert(elem.first, elem.second);
-        if (nMinCloseness == 1) {
-          minCloseness = kth;
-        }
-      }
-      omp_unset_lock(&lock);
-    }
-  }
+			// Update the k-th largest value for this thread
+			if (top.size() >= k) {
+				std::pair<edgeweight, node> elem = top.extractMin();
+				kth = elem.first;
+				top.insert(elem.first, elem.second);
+				if (nMinCloseness == 1) {
+					minCloseness = kth;
+				}
+			}
+			omp_unset_lock(&lock);
+		}
+	}
 
-  if (trail > 0) {
-    topk.resize(k + trail);
-    topkScores.resize(k + trail);
-  }
+	if (trail > 0) {
+		topk.resize(k + trail);
+		topkScores.resize(k + trail);
+	}
 
-  // Store the nodes and their closeness centralities
-  for (int64_t j = top.size() - 1; j >= 0; --j) {
-    std::pair<edgeweight, node> elem = top.extractMin();
-    topk[j] = elem.second;
-    topkScores[j] = elem.first;
-  }
+	// Store the nodes and their closeness centralities
+	for (int64_t j = top.size() - 1; j >= 0; --j) {
+		std::pair<edgeweight, node> elem = top.extractMin();
+		topk[j] = elem.second;
+		topkScores[j] = elem.first;
+	}
 
-  for (count j = 0; j < k; ++j) {
-    top.insert(topkScores[j], topk[j]);
-  }
+	for (count j = 0; j < k; ++j) {
+		top.insert(topkScores[j], topk[j]);
+	}
 
-  for (count i = 0; i < topk.size() - 1; ++i) {
-    count toSort = 1;
-    while ((i + toSort) < topk.size() &&
-           topkScores[i] == topkScores[i + toSort]) {
-      ++toSort;
-    }
+	for (count i = 0; i < topk.size() - 1; ++i) {
+		count toSort = 1;
+		while ((i + toSort) < topk.size() &&
+		       topkScores[i] == topkScores[i + toSort]) {
+			++toSort;
+		}
 
-    if (toSort > 1) {
-      auto begin = topk.begin() + i;
-      std::sort(begin, begin + toSort);
-      i += toSort - 1;
-    }
-  }
+		if (toSort > 1) {
+			auto begin = topk.begin() + i;
+			std::sort(begin, begin + toSort);
+			i += toSort - 1;
+		}
+	}
 
-  hasRun = true;
+	hasRun = true;
 }
 
 void DynTopHarmonicCloseness::update(GraphEvent event) {
@@ -642,33 +642,13 @@ void DynTopHarmonicCloseness::addEdge(const GraphEvent &event) {
 							trail = 0;
 							nMinCloseness = 1;
 							if (k > 1) {
-								Aux::PrioQueue<edgeweight, node> tmp(n);
-								auto last = top.extractMin();
-								auto next = top.extractMin();
-								minCloseness = last.first;
-
-								if (last.first == next.first) {
-									tmp.insert(last.first, last.second);
-									while (next.first == last.first) {
-										tmp.insert(next.first, next.second);
-										++nMinCloseness;
-										if (top.size() == 0) {
-											break;
-										}
-										next = top.extractMin();
-									}
-									if (next.first != last.first) {
-										top.insert(next.first, next.second);
-									}
-
-									while (tmp.size() > 0) {
-										auto elem = tmp.extractMin();
-										top.insert(elem.first, elem.second);
-									}
-								} else {
-									top.insert(next.first, next.second);
-									top.insert(last.first, last.second);
-								}
+								double pqTop = top.peekMin(0).first;
+								double pqNext = pqTop;
+								top.forElementsWhile([&]() { return pqTop == pqNext; },
+								                     [&](double curKey, node curNode) {
+									                     pqNext = curKey;
+									                     ++nMinCloseness;
+								                     });
 							}
 						}
 					} else {
@@ -822,33 +802,13 @@ void DynTopHarmonicCloseness::removeEdge(const GraphEvent &event) {
 							trail = 0;
 							nMinCloseness = 1;
 							if (k > 1) {
-								Aux::PrioQueue<edgeweight, node> tmp(n);
-								auto last = top.extractMin();
-								auto next = top.extractMin();
-								minCloseness = last.first;
-
-								if (last.first == next.first) {
-									tmp.insert(last.first, last.second);
-									while (next.first == last.first) {
-										tmp.insert(next.first, next.second);
-										++nMinCloseness;
-										if (top.size() == 0) {
-											break;
-										}
-										next = top.extractMin();
-									}
-									if (next.first != last.first) {
-										top.insert(next.first, next.second);
-									}
-
-									while (tmp.size() > 0) {
-										auto elem = tmp.extractMin();
-										top.insert(elem.first, elem.second);
-									}
-								} else {
-									top.insert(next.first, next.second);
-									top.insert(last.first, last.second);
-								}
+								double pqTop = top.peekMin(0).first;
+								double pqNext = pqTop;
+								top.forElementsWhile([&]() { return pqTop == pqNext; },
+								                     [&](double curKey, node curNode) {
+									                     pqNext = curKey;
+									                     ++nMinCloseness;
+								                     });
 							}
 						}
 					} else {
