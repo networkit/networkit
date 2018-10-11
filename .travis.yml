@@ -130,11 +130,6 @@ matrix:
       addons: *gcc8
       script: *script_cpp_only
 
-  allow_failures:
-    - name: macOS, modern Clang
-    - name: macOS, legacy Clang 4
-    - name: macOS, AppleClang
-
 script:
  - $CXX --version
  - python3 --version
