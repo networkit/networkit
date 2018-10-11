@@ -343,7 +343,7 @@ void KadabraBetweenness::run() {
 
 #pragma omp parallel
 	{
-		SpSampler sampler(G, cc);
+		SpSampler sampler(G, *cc);
 		while (nPairs <= tau) {
 			oneRound(sampler);
 			++nPairs;
@@ -367,7 +367,7 @@ void KadabraBetweenness::run() {
 
 #pragma omp parallel
 	{
-		SpSampler sampler(G, cc);
+		SpSampler sampler(G, *cc);
 		Status status(unionSample);
 		status.nPairs = 0;
 
@@ -406,12 +406,9 @@ void KadabraBetweenness::run() {
 	if (!absolute) {
 		delete (top);
 	}
-	if (!G.isDirected()) {
-		delete (cc);
-	}
 }
 
-SpSampler::SpSampler(const Graph &G, ConnectedComponents *cc)
+SpSampler::SpSampler(const Graph &G, const ConnectedComponents &cc)
     : G(G), n(G.upperNodeIdBound()), pred(n, false, true), cc(cc) {
 	q.resize(n);
 	ballInd.assign(n, 0);
@@ -426,7 +423,7 @@ std::vector<node> SpSampler::randomPath() {
 		v = G.randomNode();
 	}
 
-	if (!G.isDirected() && cc->componentOfNode(u) != cc->componentOfNode(v)) {
+	if (!G.isDirected() && cc.componentOfNode(u) != cc.componentOfNode(v)) {
 		return std::vector<node>();
 	}
 

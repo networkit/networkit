@@ -32,7 +32,7 @@ public:
 
 class SpSampler {
 public:
-	SpSampler(const Graph &G, ConnectedComponents *cc);
+	SpSampler(const Graph &G, const ConnectedComponents &cc);
 	std::vector<node> randomPath();
 
 private:
@@ -43,7 +43,7 @@ private:
 	std::vector<count> dist;
 	std::vector<count> nPaths;
 	std::vector<node> q;
-	ConnectedComponents *cc;
+	const ConnectedComponents &cc;
 
 	inline node randomNode() const;
 	void backtrackPath(const node u, const node v, const node start,
