@@ -72,6 +72,9 @@ public:
 	 */
 	virtual void insert(Key key, Value value);
 
+	/**
+	 * Returns the @a n-th element in the priority queue.
+	 */
 	virtual ElemType peekMin(size_t n = 0);
 
 	/**
