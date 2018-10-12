@@ -6,8 +6,10 @@ if("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
 endif("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
 
 # BUILD OPTIONS
-option(NETWORKIT_BUILD_TESTS "Build with tests" OFF)
+option(NETWORKIT_BUILD_CORE "Build NetworKit core library" ON)
+option(NETWORKIT_BUILD_TESTS "Build NetworKit C++ tests" OFF)
 option(NETWORKIT_LOGGING "Build with logging support" ON)
+option(NETWORKIT_STATIC "Build static libraries" OFF)
 option(NETWORKIT_MONOLITH "Build single library (and tests is requested; required for shared lib)" ON)
 option(NETWORKIT_NATIVE "Optimize for native architecture (often better performance)" OFF)
 option(NETWORKIT_WARNINGS "Issue more warnings" OFF)
@@ -104,6 +106,10 @@ if (APPLE)
 	set(NETWORKIT_LINK_FLAGS "-undefined dynamic_lookup ${NETWORKIT_LINK_FLAGS}")
 endif()
 
+if(NOT NETWORKIT_BUILD_CORE)
+	find_library(EXTERNAL_NETWORKIT_CORE NAMES networkit DOC "External NetworKit core library")
+endif()
+
 ################################################################################
 # Use TLX as a CMake submodule
 if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/tlx/CMakeLists.txt")
@@ -127,11 +133,11 @@ if(NETWORKIT_INCLUDESYMLINK)
 endif()
 
 # NETWORKIT MODULES
-if (NETWORKIT_MONOLITH)
-	if (NETWORKIT_PYTHON)
-		add_library(networkit SHARED networkit/cpp/networkit.cpp)
-	else()
+if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
+	if(NETWORKIT_STATIC)
 		add_library(networkit networkit/cpp/networkit.cpp)
+	else()
+		add_library(networkit SHARED networkit/cpp/networkit.cpp)
 	endif()
 
 	set_target_properties(networkit PROPERTIES
@@ -144,37 +150,50 @@ if (NETWORKIT_MONOLITH)
 			ARCHIVE DESTINATION .)
 
 	target_link_libraries(networkit PRIVATE tlx)
+endif()
 
-	if (NETWORKIT_PYTHON)
-		if(EXISTS "${PROJECT_SOURCE_DIR}/networkit/_NetworKit.cpp")
-			add_library(_NetworKit MODULE networkit/_NetworKit.cpp)
-			target_link_libraries(_NetworKit PRIVATE networkit)
-			target_include_directories(_NetworKit PRIVATE "${NETWORKIT_PYTHON}")
-			set_target_properties(_NetworKit PROPERTIES
-						CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
-						COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
-						LINK_FLAGS "${NETWORKIT_LINK_FLAGS}"
-						PREFIX ""
-						OUTPUT_NAME "_NetworKit.${NETWORKIT_PYTHON_SOABI}")
-			# DSOs on Apple OSes use different conventions for RPATH.
-			if(APPLE)
-				set_target_properties(_NetworKit PROPERTIES
-						INSTALL_RPATH "@loader_path")
-			else()
-				set_target_properties(_NetworKit PROPERTIES
-						INSTALL_RPATH "$ORIGIN")
-			endif()
-			install(TARGETS _NetworKit
-					LIBRARY DESTINATION .)
-		else()
-			message(FATAL_ERROR "networkit/_NetworKit.cpp is missing. Invoke Cython manually.")
-		endif()
+if(NETWORKIT_PYTHON)
+	if(NOT EXISTS "${PROJECT_SOURCE_DIR}/networkit/_NetworKit.cpp")
+		message(FATAL_ERROR "networkit/_NetworKit.cpp is missing. Invoke Cython manually.")
 	endif()
+
+	add_library(_NetworKit MODULE networkit/_NetworKit.cpp)
+	target_include_directories(_NetworKit PRIVATE "${NETWORKIT_PYTHON}")
+
+	if(NOT NETWORKIT_BUILD_CORE)
+		if(NOT EXTERNAL_NETWORKIT_CORE)
+			message(FATAL_ERROR "Core build is disabled but no external core library was found.")
+		endif()
+		target_link_libraries(_NetworKit PRIVATE ${EXTERNAL_NETWORKIT_CORE})
+	else()
+		target_link_libraries(_NetworKit PRIVATE networkit)
+	endif()
+
+	set_target_properties(_NetworKit PROPERTIES
+				CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
+				COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
+				LINK_FLAGS "${NETWORKIT_LINK_FLAGS}"
+				PREFIX ""
+				OUTPUT_NAME "_NetworKit.${NETWORKIT_PYTHON_SOABI}")
+	# DSOs on Apple OSes use different conventions for RPATH.
+	if(APPLE)
+		set_target_properties(_NetworKit PROPERTIES
+				INSTALL_RPATH "@loader_path")
+	else()
+		set_target_properties(_NetworKit PROPERTIES
+				INSTALL_RPATH "$ORIGIN")
+	endif()
+	install(TARGETS _NetworKit
+			LIBRARY DESTINATION .)
 endif()
 
 # Register a new NetworKit module named ${modname}
 # Files additionally passed are interpreted as PUBLIC source files to this module
 function(networkit_add_module modname)
+	if(NOT NETWORKIT_BUILD_CORE)
+		return()
+	endif()
+
 	if(NETWORKIT_MONOLITH)
 		# in case we are building a monolith, no submodule are registered
 		# and we simple add the source file to the networkkit target
@@ -221,7 +240,11 @@ function(networkit_module_link_libraries modname)
 	cmake_parse_arguments(NMLL
 		"${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-	if (NOT NETWORKIT_MONOLITH)
+	if(NOT NETWORKIT_BUILD_CORE)
+		return()
+	endif()
+
+	if(NOT NETWORKIT_MONOLITH)
 		target_link_libraries(networkit_${modname}
 			PRIVATE ${NMLL_PRIVATE}
 			PUBLIC ${NMLL_PUBLIC})
@@ -233,7 +256,11 @@ endfunction()
 # ones as dependencies. In case of monolith build, the function does nothing.
 # Example: networkit_module_link_modules(io graph) # io depends on graph
 function(networkit_module_link_modules modname)
-	if (NOT NETWORKIT_MONOLITH)
+	if(NOT NETWORKIT_BUILD_CORE)
+		return()
+	endif()
+
+	if(NOT NETWORKIT_MONOLITH)
 		foreach(dep IN LISTS ARGN)
 			target_link_libraries(networkit_${modname} PUBLIC networkit_${dep})
 		endforeach()

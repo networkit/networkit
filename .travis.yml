@@ -140,14 +140,20 @@ script:
  # cython is required because git does not contain _NetworKit.
  # ipython is required for tests.
  - pip3 install cython ipython
- - NETWORKIT_PARALLEL_JOBS=2 travis_wait pip3 install -e .
- - python3 -m unittest discover -v networkit/test/
 
- - mkdir release_test && cd "$_"
+ # First, build the C++ core library and run C++ tests.
+ - mkdir core_build && cd "$_"
  - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD ..
  - make -j2
  - ctest -V
- - cd .. && rm -rf release_test
+ - cd ..
+
+ # Finally, build the Python extension and run Python tests.
+ - export CMAKE_LIBRARY_PATH=${CMAKE_LIBRARY_PATH:+$CMAKE_LIBRARY_PATH:}$(pwd)/core_build
+ - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$(pwd)/core_build
+ - NETWORKIT_PARALLEL_JOBS=2 python3 ./setup.py build_ext --inplace --networkit-external-core
+ - NETWORKIT_PARALLEL_JOBS=2 pip3 install -e .
+ - python3 -m unittest discover -v networkit/test/
 
 notifications:
   email: false
