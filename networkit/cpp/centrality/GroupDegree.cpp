@@ -25,9 +25,7 @@ void GroupDegree::init() {
 
 	if (hasRun) {
 		n = G.upperNodeIdBound();
-		while (queue.size() > 0) {
-			queue.extractMin();
-		}
+		queue.clear();
 
 		hasRun = false;
 	}
