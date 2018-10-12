@@ -38,6 +38,8 @@ build.conf/
 build/
 /build*
 /.build*
+include/
+lib/
 
 ### Scons
 .sconsign.dblite
