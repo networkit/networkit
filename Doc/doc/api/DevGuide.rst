@@ -3,199 +3,188 @@
 NetworKit Development Guide
 ===========================
 
-This text is meant to provide some guidelines for the ongoing
-development of the project. It is meant for core developers as well as
-occasional contributors.
+This guide is designed to give potential contributors a quick understanding of the structure of NetworKit as well as what they need to look out for when adding new functionality to NetworKit.
 
-The following text assumes some basic familiarity with the Mercurial
-version control software. It is not a Mercurial tutorial, because you
-will find a good one at `hginit.com <http://hginit.com>`__. Rather, it
+The following text assumes some basic familiarity with the Git
+version control software. It is not a Git tutorial, because you
+will find a good one `here <https://try.github.io/>`__. Rather, it
 explains concepts and workflows for the development of this project.
 
-If you want to contribute, you should to consider the `technical
+If you want to contribute, you should consider reading the `technical
 report <https://arxiv.org/pdf/1403.3005.pdf>`__ on NetworKit to get
 familiar with the architecture.
 
 If you use NetworKit in your research publications, please cite the
-mentioned techincal report or the specific algorithm. A list of
+mentioned technical report or the specific algorithm. A list of
 publications is available on the
 `website <https://networkit.iti.kit.edu/publications.html>`__.
 
-How to contribute
------------------
+Contribution Workflow
+---------------------
 
-Report bugs
-~~~~~~~~~~~
+The development of the NetworKit project takes place at our `official repository on GitHub <https://github.com/kit-parco/networkit>`__.
 
-For the time being, bugs should be reported by sending a report to the
-`mailing
-list <https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit>`__.
-Please provide a minimal example so that others can reproduce that bug.
+There are two important branches you need to be aware of:
 
-Fork NetworKit
-~~~~~~~~~~~~~~
+* **master**: Release branch
+* **Dev**: Development (stage) branch used for active development
 
-Feel free to fork NetworKit on algohub and start contributing by fixing
-bugs or taking care of the issues at
-`kanboard.iti.kit.edu <https://kanboard.iti.kit.edu>`__. New and missing
-features are welcomed aswell.
+The ``master`` branch contains all the stable code that is ready for use. There is no active development on this branch, it is just being updated when there is a new release.
+``Dev`` is the actual development branch and thus also contains more recent code that might not be completely stable yet. New features that are under development will be merged into this branch.
 
-Repositories
-------------
+In order to successfully contribute to the project and add your feature to the development branch, there are a couple of steps you need to follow:
 
-The NetworKit main development repository is at
-http://algohub.iti.kit.edu/parco/NetworKit/NetworKit. Access to this
-repository is provided on request.
+1. Fork the NetworKit repository
+2. Create a feature branch
+3. Add your code
+4. Send a pull request
+5. Participate in the pull request discussion
 
-`algohub.iti.kit.edu <http://algohub.iti.kit.edu>`__ (an installation of
-`RhodeCode <https://rhodecode.com/>`__) makes it easy to create and
-manage forks. Forking is distinct from branching and creates a new
-repository with a new address, its own access control etc. A fork
-contains all branches of its parent.
+In the following part we will take a closer look at each step of the workflow outlined above.
+To make it more tangible, let's assume you want to contribute to NetworKit by adding a new algorithm to the existing suite.
 
-Project Tracker (Kanboard)
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+1. Fork the NetworKit repository
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-At `kanboard.iti.kit.edu <https://kanboard.iti.kit.edu>`__ we maintain a
-project task tracker to coordinate development and releases. An account
-is given on request, please ask on the mailing list. Tasks are moved
-from left to right to through the columns:
+Visit our official repository on GitHub and click the 'Fork' button in the top right to create a personal fork in your account.
 
--  ``Backlog``: improvement ideas, some day maybe, "nice to have"
--  ``ToDo``: scheduled improvements
--  ``Work in progress``
--  ``To Review``: requesting peer review
--  ``Ready for Release``
-
-There is the possibility to create "swim lanes" for different releases.
-
-Branches
---------
-
-Currently, the two most important branches of NetworKit are ``Dev`` and
-``default``.
+Next up, you want to clone your fork to your local machine:
 
 ::
 
-         ________   Dev
-    ____/________   default
+   git clone git@github.com:[YOUR-USERNAME]/[FORKED-NETWORKIT].git
 
-As the name says, ``default`` is the branch which you are on if you do
-not switch. It is therefore the release branch, containing code which is
-ready for use. Unless you are a core developer preparing a release or
-fixing an urgent bug, you do not make changes to ``default``.
+Since the algorithm you're working on will take some time to implement, you want to make sure to stay up to date with the original NetworKit repository. This can be accomplished by tracking the original ``upstream`` branch:
 
-``Dev`` is the development branch and most of the development of new
-features happens in this branch. This is also where new releases are
-being prepared. When pushing into this branch, think about whether your
-code is ready for the core development team to work with and will be
-suitable for a release in the foreseeable future.
+::
 
-It can be appropriate to create additional branches for projects,
-features, developer teams etc. Creation of branches should be
-coordinated with the core development team. For this purpose, post to
-the `mailing
-list <https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit>`__.
+   git remote add upstream https://github.com/kit-parco/networkit.git
+
+Now you can update your fork on a regular basis with changes from the original repository:
+
+::
+
+   # Fetch changes from original repository
+   git fetch upstream
+
+   # Merge changes into your local branch
+   git checkout --track origin/Dev
+   git merge upstream/Dev
+
+This will for example allow you to keep the development branch ``Dev`` up to date. Doing this will prevent an unpleasent surprise once you're ready to submit your pull request since there will be less or no merge conflicts.
+
+2. Create a Feature Branch
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To make sure that the work on your algorithm does not disrupt the development process, be sure to create your own branch where you can add new code.
+In order to have a coherent naming scheme that allows for easier communication, please name your branch in the following way: ``feature/descriptive-name-of-feature``.
+If we're assuming you're creating an implementation of the shortest path algorithm from Dijkstra, this could be ``feature/dijkstra-shortest-path`` for example. Make sure to pick a meaningful and short description that is easy to understand.
+
+New feature branches should be based off the development branch ``Dev`` where they will be merged back into at a later stage.
+
+::
+
+   # Make sure your branch is based off the development branch Dev
+   git checkout Dev
+
+   # Create your new branch
+   git checkout -b feature/[my-awesome-feature-name]
+
+   # You're now on your new feature branch
+
+3. Add Your Code
+~~~~~~~~~~~~~~~~
+
+In this step you're going to make and commit the changes needed for your new feature. Please make sure to write clean code that adheres to the style guide outlined further below. It is also important that each feature has appropriate unit tests that cover all of the expected behaviour of the code. Please see the Test-driven development section below for details.
+
+::
+
+   git checkout feature/[my-awesome-feature-name]
+   git add [files]
+   git commit -m "[descriptive message about the changes you made]"
+   git push
+
+Also, from time to time, you should make sure to keep your feature branch up to date with the changes on the development branch ``Dev`` in the main repository. If you followed step 1 from above, this can be easily accomplished:
+
+::
+
+   git checkout feature/[my-awesome-feature-name]
+   git fetch upstream
+   git merge upstream/Dev
+
+
+4. Send a Pull Request
+~~~~~~~~~~~~~~~~~~~~~~
+
+Once you finished the development and testing of your new feature, it is time to create a pull request to get your changes merged into the development branch of the NetworKit repository.
+
+This can be done by visiting the **Pull requests page** (https://github.com/[YOUR-USERNAME]/[FORKED-NETWORKIT]/pulls) of your NetworKit fork on GitHub and clicking on the green **New pull request** button at the top right side of the page.
+
+Here the ``base fork`` at the top should point to ``kit-parco/networkit`` and the base should be ``Dev``. The ``head fork`` should point to your fork of networkit and the ``compare`` branch to the right should point to the feature branch (``feature/[my-awesome-feature-name]``) you would like to create the pull request for.
+
+Once you've reviewed all changes, click the green **Create pull request** button and your pull request will be created.
+
+
+5. Participate in the Pull Request Discussion
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Once your pull request has been submitted, other developers of NetworKit, including the core development team, will take a look at your code and explanation.
+In this process there are oftentimes questions that arise or small adjustments that need to be incorporated into the pull request. For this reason, it is important that you actively participate in the discussions around your pull request. This ensures your new feature will eventually make it to the next release.
+
+In case a developer points out a potential issue that needs to be resolved, please make the appropriate changes to your code and push these changes to your feature branch:
+
+::
+
+   git checkout feature/[my-awesome-feature-name]
+   # Make appropriate changes to files
+   git add [files]
+   git commit -m "[message-about-the-resolved-issue]"
+   git push
+
+
+The pull request will automatically show your newest changes and developers will know that you resolved the issue. Once all issues have been resolved and your code is accepted, the pull request will be closed and your feature will be merged into the development branch. In the next release, all users of NetworKit will have access to your awesome feature. Hooray!
+
+Style guide
+-----------
+
+We want to ensure that code across NetworKit is easy to understand for existing as well as new developers. This is why new code added to the project should adhere to the existing code style. At this point in time, there is no comprehensive documentation about the code style being used in NetworKit but there are a few things to look out for:
+
+-  Compiler warnings are likely to turn into future errors. Try to fix
+   them as soon as they appear. Use the ``-Wall`` flag when compiling C++ code.
+-  Read some code to get used to the code style and try to adopt it.
+-  Document classes, methods and attributes in Doxygen style.
+-  Use the ``count`` and ``index`` integer types for non-negative
+   integer quantities and indices.
+-  In most cases, objects are passed by reference. New objects are
+   stack-allocated and returned by value. Avoid pointers and ``new``
+   where possible.
+-  Use the ``override`` keyword to indicate that a method overrides a
+   virtual method in the superclass.
+-  In Python, indent using tabs, not spaces.
+
+In a nutshell, new developers should familiarise themselves with the existing code base and adapt the existing style in the C++ as well as Python code base when contributing to NetworKit. Always ensure your code is easy to understand and properly documented.
+
+Report bugs
+-----------
+
+Please report any bugs on the `issues page <https://github.com/kit-parco/networkit/issues>`__ of the official NetworKit repository on GitHub.
+In very urgent cases it might also make sense to write on the `mailing list <https://lists.uni-koeln.de/mailman/listinfo/networkit>`__.
+Please provide a minimal example so that others can reproduce that bug.
 
 Tags
 ----
 
 A tag is nothing more than a “symbolic name” for a revision. In
-NetworKit tags are used to mark release versions in the ``default``
+NetworKit tags are used to mark release versions in the ``master``
 branch, with a ``MAJOR.MINOR`` version name scheme.
 
-Workflows
----------
-
-This section describes how to work with branches and forks in different
-scenarios.
-
 Using NetworKit
-~~~~~~~~~~~~~~~
+---------------
 
 If you want to build and use NetworKit and do not plan to contribute
 changes, simply clone the repository. By default, you will be on the
-``default`` branch, which represents the current release. Follow the
-setup instructions in the ``Readme``.
-
-Core Development
-~~~~~~~~~~~~~~~~
-
-This section describes workflows for the core development team.
-
-Bugfixes
-^^^^^^^^
-
-Bugfixes are changes that should be immediately visible to users of
-NetworKit, such as solutions for urgent errors or improvements of the
-``Readme`` document. In this case, make the changes in the ``default``
-branch and commit. Then switch to the ``Dev`` branch and merge the
-``default`` branch back into ``Dev``.
-
-::
-
-          _______________   Dev
-         /            / <   merge default into Dev
-    ____/____________/____  default
-                   ^ bugfix
-
-Example:
-
-::
-
-    hg up default
-    ...
-    hg com -m "fixed bug xyz"
-    hg up Dev
-    hg merge default
-    hg com -m "backmerge bugfix xyz"
-
-Releasing New Features
-^^^^^^^^^^^^^^^^^^^^^^
-
-When new features should be released, the ``Dev`` branch is merged into
-the ``default`` branch. Additional testing and cleanup is performed
-before that happens. The new major or minor release is then tagged with
-a version number.
-
-::
-
-          ______________________________________________________    Dev
-         /   ^ new feature    prepare release ^ \ < merge Dev into default
-    ____/________________________________________\______________    default
-                                                       ^ tag version
-
-Example:
-
-::
-
-    hg up Dev
-    hg com -m "ready for release X.Y"
-    hg up default
-    hg merge Dev
-    hg com -m "release X.Y"
-
-Multiple heads in multiple branches
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-If remote changes have happened in multiple branches and you pull them,
-these branch will have multiple heads. Merging now needs to happen for
-each of the affected branches before you can push. Switch to each branch
-and perform a merge as usual. As an alternative to merging, you may try
-the ``rebase``
-`extension <https://www.mercurial-scm.org/wiki/RebaseExtension>`__.
-
-Contributions
-~~~~~~~~~~~~~
-
-Users of NetworKit are welcome to contribute their modifications. New
-features must be added to the ``Dev`` branch, not the ``default``
-branch. We recommend the following workflow:
-
-1. create a fork of the main repository
-2. switch to the ``Dev`` branch
-3. make and commit your changes while being on the ``Dev`` branch
-4. send a pull request to the main repository
+``master`` branch, which represents the current release. Follow the
+setup instructions in the ``README`` file.
 
 Student Projects
 ~~~~~~~~~~~~~~~~
@@ -207,15 +196,12 @@ forking/branching model with their advisor.
 Branching Cheat Sheet
 ---------------------
 
--  list all available branches: ``hg branches``
--  check on which branch you are: ``hg branch``
--  see heads (most recent commits) of all branches: ``hg head``
--  see tip (most recent commits) of the branch you are currently working
-   on: ``hg tip``
--  switch to a specific branch: ``hg update <branchname>``
--  start a new branch: ``hg branch <branchname>``
--  merge ``branchY`` into ``branchX``: ``hg update branchX``, then
-   ``hg merge branchY``
+-  list all available branches with highlight for the current branch: ``git branch``
+-  switch to a specific branch: ``git checkout <branchname>``
+-  start a new branch: ``git checkout -b <branchname>``
+-  merge ``branch-y`` into ``branch-x``: ``git checkout branch-x``, then
+   ``git merge branch-y``
+-  see heads (most recent commits) of all branches: ``git show-ref --heads``
 
 Conventions
 -----------
@@ -245,11 +231,12 @@ Unit Tests and Testing
 Every new feature must be covered by a unit test. Omitting unit tests
 makes it very likely that your feature will break silently as the
 project develops, leading to unneccessary work in tracing back the
-source of the error.
+source of the error. Also your pull request for this feature will most
+likely not be accepted.
 
 Unit tests for the C++ part of NetworKit are based on the ``googletest``
 library. For more information read the `googletest
-primer <http://code.google.com/p/googletest/wiki/Primer>`__. The Python
+primer <https://github.com/google/googletest/blob/master/googletest/docs/Primer.md>`__. The Python
 test framework currently relies on ``nose`` to collect the tests.
 
 -  Each source folder contains a ``test`` folder with ``googletest``
@@ -268,38 +255,38 @@ test framework currently relies on ``nose`` to collect the tests.
    ``output/`` folder.
 
 To build and run the tests you need the `gtest
-library <https://code.google.com/p/googletest/>`__. Assuming, gtest is
+library <https://github.com/google/googletest>`__. Assuming, gtest is
 successfully installed and you add the paths to your build.conf, the
 unit tests should be compiled with:
 
 ::
 
-    scons --optimize=Dbg --target=Tests
+   scons --optimize=Dbg --target=Tests
 
 To verify that the code was built correctly: Run all unit tests with
 
 ::
 
-        ./NetworKit-Tests-Dbg --tests/-t
+   ./NetworKit-Tests-Dbg --tests/-t
 
 Performance tests will be selected with
 
 ::
 
-        ./NetworKit-Tests-Dbg --benchmarks/-b
+   ./NetworKit-Tests-Dbg --benchmarks/-b
 
 while experimental tests are called with
 
 ::
 
-        ./NetworKit-Tests-Dbg --trials/-e
+   ./NetworKit-Tests-Dbg --trials/-e
 
 To run only specific unit tests, you can also add a filter expression,
 e. g.:
 
 ::
 
-        ./NetworKit-Tests-Dbg --gtest_filter=*PartitionGTest*/-f*PartitionGTest*
+   ./NetworKit-Tests-Dbg --gtest_filter=*PartitionGTest*/-f*PartitionGTest*
 
 initiates unit tests only for the Partition data structure.
 
@@ -307,7 +294,7 @@ For the **Python** unit tests, run:
 
 ::
 
-        python3 setup.py test [--cpp-tests/-c]
+   python3 setup.py test [--cpp-tests/-c]
 
 This command will compile the \_NetworKit extension and then run all
 test cases on the Python layer. If you append ``--cpp-tests/-c``, the
@@ -326,21 +313,6 @@ expose your feature to Python, you should also write a test case for the
 extension module on the Python layer. The same applies for features in
 Pyton.
 
-Code Style
-~~~~~~~~~~
-
--  Compiler warnings are likely to turn into future errors. Try to fix
-   them as soon as they appear.
--  Read some code to get used to the code style and try to adopt it.
--  Document classes, methods and attributes in Doxygen style.
--  Use the ``count`` and ``index`` integer types for non-negative
-   integer quantities and indices.
--  In most cases, objects are passed by reference. New objects are
-   stack-allocated and returned by value. Avoid pointers and ``new``
-   where possible.
--  Use the ``override`` keyword to indicate that a method overrides a
-   virtual method in the superclass.
--  In Python, indent using tabs, not spaces.
 
 Algorithm interface and class hierarchy
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -364,7 +336,7 @@ features or algorithms, make sure to adapt to the existing class
 hierarchies. The least thing to do is to inherit from the ``Algorithm``
 base class. Changes to existing interfaces or suggestions for new
 interfaces should be discussed through the `mailing
-list <networkit@ira.uka.de>`__.
+list <https://lists.uni-koeln.de/mailman/listinfo/networkit>`__.
 
 Exposing C++ Code to Python
 ---------------------------
@@ -494,7 +466,7 @@ Make algorithms interruptable with CTRL+C/SIGINT
 When an algorithms takes too long to produce a result, it can be
 interrupted with a SIGINT signal triggered by CTRL+C. When triggering
 from the Python shell while the runtime is in the C++ domain, execution
-is aborted and even terminates the Python shell. Therefor, we
+is aborted and even terminates the Python shell. Therefore, we
 implemented a signal handler infrastructure in C++ that raises a special
 exception instead of aborting. When implementing an algorithm, it is
 strongly encouraged to integrate the signal handler into the
@@ -506,32 +478,29 @@ Contact
 -------
 
 To discuss important changes to NetworKit, use the `e-mail
-list <https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit>`__
+list <https://lists.uni-koeln.de/mailman/listinfo/networkit>`__
 (``networkit@ira.uka.de``).
+
+We also appreciate new issues or pull requests on the GitHub repository.
 
 Building the documentation
 --------------------------
 
-The class documentation and the website can be automatically generated
-with sphinx. You will need the following software to generate the
-documentation and website:
+The documentation can be automatically generated with sphinx. You will need the following software to generate the documentation:
 
--  `Sphinx <http://www.sphinx-doc.org>`__ (e.g. via
-   ``pip3 install sphinx``)
+-  `Sphinx <http://www.sphinx-doc.org>`__ (e.g. via ``pip3 install sphinx``)
 -  `Pandoc <http://pandoc.org>`__
 -  `Doxygen <http://www.stack.nl/~dimitri/doxygen/>`__
 
 After you installed the above mentioned software, you can build the
 class documentation by calling ``./make_doc.sh`` in the folder
 ``Doc/doc``. This will generate the class documentation for C++ and
-Python in ``Doc/Documentation``. Similarly, you can call
-``./make_www.sh`` to build the website. After the build finished, you
-find the generated website in ``Doc/Website/``.
+Python in ``Doc/Documentation``.
 
 Further Reading
 ---------------
 
--  `hginit.com <http://hginit.com>`__
+-  `Interactive Git tutorial <https://try.github.io/>`__
 -  `Working with named
    branches <http://humblecoder.co.uk/blog/2010/02/24/working-with-named-branches-in-mercurial/>`__
 -  `Managing releases and branchy

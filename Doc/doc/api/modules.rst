@@ -6,6 +6,7 @@ Python Documentation
 .. toctree::
    :maxdepth: 4
 
+   networkit
    algebraic
    centrality
    coloring
@@ -26,6 +27,5 @@ Python Documentation
    sparsification
    stopwatch
    structures
-   termgraph
    viz
    viztasks
