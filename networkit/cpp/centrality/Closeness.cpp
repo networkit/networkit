@@ -5,23 +5,24 @@
  *      Author: nemes
  */
 
-#include <stack>
-#include <queue>
 #include <memory>
+#include <queue>
+#include <stack>
 
-#include "Closeness.h"
-#include "../auxiliary/PrioQueue.h"
 #include "../auxiliary/Log.h"
-#include "../distance/SSSP.h"
-#include "../distance/Dijkstra.h"
-#include "../distance/BFS.h"
+#include "../auxiliary/PrioQueue.h"
 #include "../components/ConnectedComponents.h"
-
+#include "../distance/BFS.h"
+#include "../distance/Dijkstra.h"
+#include "../distance/SSSP.h"
+#include "Closeness.h"
 
 namespace NetworKit {
 
-Closeness::Closeness(const Graph& G, bool normalized, bool checkConnectedness) : Centrality(G, normalized) {
-	// TODO: extend closeness definition to make check for connectedness unnecessary
+Closeness::Closeness(const Graph &G, bool normalized, bool checkConnectedness)
+    : Centrality(G, normalized) {
+	// TODO: extend closeness definition to make check for connectedness
+	// unnecessary
 	if (checkConnectedness) {
 		ConnectedComponents compo(G);
 		compo.run();
@@ -50,17 +51,15 @@ void Closeness::run() {
 
 		double sum = 0;
 		for (auto dist : distances) {
-			if (dist != infDist ) {
+			if (dist != infDist) {
 				sum += dist;
 			}
 		}
 		scoreData[s] = 1 / sum;
-
 	});
 	if (normalized) {
-		G.forNodes([&](node u){
-			scoreData[u] = scoreData[u] * (G.numberOfNodes() - 1);
-		});
+		G.forNodes(
+		    [&](node u) { scoreData[u] = scoreData[u] * (G.numberOfNodes() - 1); });
 	}
 
 	hasRun = true;
