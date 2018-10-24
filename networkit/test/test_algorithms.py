@@ -5,7 +5,6 @@ import os
 
 from networkit import *
 
-
 class Test_SelfLoops(unittest.TestCase):
 
 	def checkCovers(self, c1, c2):
@@ -41,9 +40,9 @@ class Test_SelfLoops(unittest.TestCase):
 
 
 	def test_centrality_Closeness(self):
-		CL = centrality.Closeness(self.L)
+		CL = centrality.Closeness(self.L, True, centrality.ClosenessVariant.Generalized)
 		CL.run()
-		CLL = centrality.Closeness(self.LL)
+		CLL = centrality.Closeness(self.LL, True, centrality.ClosenessVariant.Generalized)
 		CLL.run()
 		self.assertEqual(CL.ranking(), CLL.ranking())
 

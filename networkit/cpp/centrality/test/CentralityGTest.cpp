@@ -742,7 +742,7 @@ TEST_F(CentralityGTest, testClosenessCentrality) {
 	G.addEdge(3, 5);
 	G.addEdge(4, 5);
 
-	Closeness centrality(G, false);
+	Closeness centrality(G, false, ClosenessVariant::generalized);
 	centrality.run();
 	std::vector<double> bc = centrality.scores();
 
@@ -756,6 +756,39 @@ TEST_F(CentralityGTest, testClosenessCentrality) {
 	EXPECT_NEAR(0.125, bc[4], tol);
 	EXPECT_NEAR(0.1, bc[5], tol);
 	EXPECT_NEAR(0.2, maximum, tol);
+}
+
+TEST_F(CentralityGTest, testClosenessCentralityDirected) {
+	/* Graph:
+	 0    3
+	  \  / \
+	   2    5
+	  /  \ /
+	 1    4
+	*/
+	count n = 6;
+	Graph G(n, false, true);
+
+	G.addEdge(0, 2);
+	G.addEdge(1, 2);
+	G.addEdge(2, 3);
+	G.addEdge(2, 4);
+	G.addEdge(3, 5);
+	G.addEdge(4, 5);
+
+	Closeness centrality(G, true, ClosenessVariant::generalized);
+	centrality.run();
+	std::vector<double> bc = centrality.scores();
+
+	double maximum = centrality.maximum();
+
+	const double tol = 1e-6;
+	EXPECT_NEAR(0.4, bc[0], tol);
+	EXPECT_NEAR(0.4, bc[1], tol);
+	EXPECT_NEAR(0.45, bc[2], tol);
+	EXPECT_NEAR(0.2, bc[3], tol);
+	EXPECT_NEAR(0.2, bc[4], tol);
+	EXPECT_NEAR(0, bc[5], tol);
 }
 
 TEST_F(CentralityGTest, testHarmonicClosenessCentrality) {
@@ -1130,7 +1163,7 @@ TEST_F(CentralityGTest, testTopClosenessDirected) {
 		G.addEdge(u, v);
 		G.addEdge(v, u);
 	});
-	Closeness cc(G1, true);
+	Closeness cc(G1, true, ClosenessVariant::generalized);
 	cc.run();
 	TopCloseness topcc(G, k, true, true);
 	topcc.run();
@@ -1154,7 +1187,7 @@ TEST_F(CentralityGTest, testTopClosenessUndirected) {
 		G.addEdge(u, v);
 		G.addEdge(v, u);
 	});
-	Closeness cc(G1, true);
+	Closeness cc(G1, true, ClosenessVariant::generalized);
 	cc.run();
 	TopCloseness topcc(G, k, true, true);
 	topcc.run();
