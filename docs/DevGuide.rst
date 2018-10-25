@@ -17,7 +17,7 @@ familiar with the architecture.
 If you use NetworKit in your research publications, please cite the
 mentioned technical report or the specific algorithm. A list of
 publications is available on the
-`website <https://networkit.iti.kit.edu/publications.html>`__.
+`website <https://networkit.github.io/publications.html>`__.
 
 Contribution Workflow
 ---------------------

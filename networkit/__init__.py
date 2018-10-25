@@ -20,7 +20,7 @@ and integration into the Python ecosystem of tools for data analysis and
 scientific computation.
 
 
-Usage examples can be found on http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/data/uploads/docs/NetworKit_UserGuide.ipynb
+Usage examples can be found on http://nbviewer.ipython.org/urls/networkit.github.io/data/uploads/docs/NetworKit_UserGuide.ipynb
 """
 
 __author__ = "Christian Staudt"

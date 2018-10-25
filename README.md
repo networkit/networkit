@@ -250,9 +250,9 @@ The source code of this program is released under the [MIT License][mitlicense].
 The [NetworKit publications page][nwkpubs] lists the publications on NetworKit as a toolkit, on algorithms available
 in NetworKit, and simply using NetworKit. We ask you to cite the appropriate ones if you found NetworKit useful for your own research.
 
-[nwkpubs]: https://networkit.iti.kit.edu/publications.html
+[nwkpubs]: https://networkit.github.io/publications.html
 [list]: https://lists.ira.uni-karlsruhe.de/mailman/listinfo/networkit
-[networkit]: https://networkit.iti.kit.edu/
+[networkit]: https://networkit.github.io/
 [IPython]: https://ipython.readthedocs.io/en/stable/
 [NetworKit UserGuide]: https://hub.mybinder.org/user/kit-parco-networkit-01nzg849/notebooks/Doc/uploads/docs/NetworKit_UserGuide.ipynb
 [here]: TODO:website_link
