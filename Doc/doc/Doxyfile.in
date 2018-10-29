@@ -1,0 +1,31 @@
+
+# To properly respect different source/build directories, we generate
+# preprocess this configuration file during build.
+# In particular, we set the OUTPUT_DIRECTORY correctly.
+
+PROJECT_NAME = "NetworKit"
+
+INPUT = networkit/cpp \
+		Doc/doc/mainpage.dox \
+		Doc/doc/modules.dox
+FILE_PATTERNS = *.cpp *.h
+RECURSIVE = YES
+EXCLUDE_PATTERNS = */test/*
+
+OUTPUT_DIRECTORY = @BUILDDIR@
+GENERATE_HTML = YES
+GENERATE_LATEX = NO
+CLASS_GRAPH = NO
+CLASS_DIAGRAMS = NO
+CASE_SENSE_NAMES = NO
+
+HTML_OUTPUT = htmldocs/api/doxyhtml
+HTML_HEADER = doxystyle/doxygen_header.html
+HTML_FOOTER = doxystyle/doxygen_footer.html
+HTML_STYLESHEET = doxystyle/doxygen.css
+HTML_EXTRA_STYLESHEET = doxystyle/doxygen-extra.css
+HTML_DYNAMIC_SECTIONS = YES
+
+JAVADOC_AUTOBRIEF = YES
+EXTRACT_ALL = YES
+
