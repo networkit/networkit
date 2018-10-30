@@ -6,8 +6,8 @@
 PROJECT_NAME = "NetworKit"
 
 INPUT = networkit/cpp \
-		Doc/doc/mainpage.dox \
-		Doc/doc/modules.dox
+		docs/mainpage.dox \
+		docs/modules.dox
 FILE_PATTERNS = *.cpp *.h
 RECURSIVE = YES
 EXCLUDE_PATTERNS = */test/*
