@@ -41,7 +41,7 @@ extensions = ['sphinx.ext.autodoc',
 numpydoc_show_class_members = False
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ['../../extrafiles/sphinx-style/_templates']
 
 # The suffix of source filenames.
 source_suffix = '.rst'
@@ -155,7 +155,10 @@ html_add_permalinks = None
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static', 'resources', 'downloads']
+html_static_path = [
+		'../../extrafiles/sphinx-style/_static',
+		'../../extrafiles/sphinx-style/resources'
+]
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
