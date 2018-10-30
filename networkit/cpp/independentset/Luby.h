@@ -19,7 +19,7 @@ namespace NetworKit {
  * Luby's parallel independent set algorithm.
  */
 class [[deprecated]]
-Luby: public NetworKit::IndependentSetFinder {
+Luby: public IndependentSetFinder {
 
 public:
 

@@ -19,7 +19,7 @@ namespace NetworKit {
  * The number of nodes and the number of edges are adjustable as well as the probabilities
  * for intra-cluster and inter-cluster edges.
  */
-class ClusteredRandomGraphGenerator: public NetworKit::StaticGraphGenerator {
+class ClusteredRandomGraphGenerator: public StaticGraphGenerator {
 public:
 	/**
 	 * Creates a clustered random graph:

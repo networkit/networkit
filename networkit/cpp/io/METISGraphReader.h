@@ -18,7 +18,7 @@ namespace NetworKit {
  *
  * [1] http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/manual.pdf
  */
-class METISGraphReader: public NetworKit::GraphReader {
+class METISGraphReader: public GraphReader {
 public:
 
 	METISGraphReader() = default;

@@ -54,7 +54,7 @@ struct circle {
  * - neighborhoodRadius: the higher, the better the connectivity [0.1, 0.35]
  * - maxNumberOfNeighbors: maximum degree, a higher value corresponds to better connectivity [4, 40]
  */
-class PubWebGenerator: public NetworKit::StaticGraphGenerator {
+class PubWebGenerator: public StaticGraphGenerator {
 
 	friend class DynamicPubWebGenerator;
 

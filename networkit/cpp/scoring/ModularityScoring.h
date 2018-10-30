@@ -21,7 +21,7 @@ namespace NetworKit {
  * @ingroup scoring
  */
 template<typename T>
-class ModularityScoring: public NetworKit::EdgeScoring<T> {
+class ModularityScoring: public EdgeScoring<T> {
 
 protected:
 

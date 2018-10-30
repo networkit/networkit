@@ -17,7 +17,7 @@ namespace NetworKit {
 /**
  * @ingroup coarsening
  */
-class ParallelPartitionCoarsening: public NetworKit::GraphCoarsening {
+class ParallelPartitionCoarsening: public GraphCoarsening {
 public:
 	ParallelPartitionCoarsening(const Graph& G, const Partition& zeta, bool useGraphBuilder = true);
 

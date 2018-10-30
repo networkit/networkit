@@ -19,7 +19,7 @@ typedef index label; // a label is the same as a cluster id
  * Label propagation-based community detection algorithm which
  * processes nodes in increasing order of node degree.
  */
-class LPDegreeOrdered: public NetworKit::CommunityDetectionAlgorithm {
+class LPDegreeOrdered: public CommunityDetectionAlgorithm {
 private:
 	count nIterations = 0;	//!< number of iterations in last run
 

@@ -24,7 +24,7 @@ namespace NetworKit {
 /**
  * @ingroup generators
  */
-class DynamicDGSParser: public NetworKit::DynamicGraphSource {
+class DynamicDGSParser: public DynamicGraphSource {
 public:
 	DynamicDGSParser(std::string path);
 

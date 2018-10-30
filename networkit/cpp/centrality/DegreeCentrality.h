@@ -17,7 +17,7 @@ namespace NetworKit {
  * Node centrality index which ranks nodes by their degree.
  * Optional normalization by maximum degree.
  */
-class DegreeCentrality: public NetworKit::Centrality {
+class DegreeCentrality: public Centrality {
 public:
 	/**
 	 * Constructs the DegreeCentrality class for the given Graph @a G. If the centrality scores should be normalized,

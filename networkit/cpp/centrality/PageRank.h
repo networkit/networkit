@@ -19,7 +19,7 @@ namespace NetworKit {
  * directed graphs; we follow the verbal description, which requires to sum over the incoming
  * edges (as opposed to outgoing ones).
  */
-class PageRank: public NetworKit::Centrality {
+class PageRank: public Centrality {
 protected:
 	double damp;
 	double tol;

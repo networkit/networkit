@@ -30,7 +30,7 @@ namespace NetworKit {
  * Format documentation: http://graphstream-project.org/doc/Advanced-Concepts/The-DGS-File-Format/
  *
  */
-class DGSReader: public NetworKit::DynamicGraphReader {
+class DGSReader: public DynamicGraphReader {
 
 public:
 	

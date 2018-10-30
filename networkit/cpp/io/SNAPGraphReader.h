@@ -17,7 +17,7 @@ namespace NetworKit {
 /**
  * @ingroup io
  */
-class SNAPGraphReader : public NetworKit::GraphReader {
+class SNAPGraphReader : public GraphReader {
 private:
 	std::unordered_map<node, node> nodeIdMap;
 	bool directed;

@@ -19,7 +19,7 @@ namespace NetworKit {
  * Normalized Mutual Information.
  *
  */
-class NMIDistance: public NetworKit::DissimilarityMeasure {
+class NMIDistance: public DissimilarityMeasure {
 
 public:
 

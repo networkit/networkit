@@ -15,7 +15,7 @@ namespace NetworKit {
 /**
  * @ingroup centrality
  */
-class Closeness: public NetworKit::Centrality {
+class Closeness: public Centrality {
 public:
 	/**
 	 * Constructs the Closeness class for the given Graph @a G. If the closeness scores should be normalized,

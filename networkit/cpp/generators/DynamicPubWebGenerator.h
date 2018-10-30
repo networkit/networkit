@@ -22,7 +22,7 @@ namespace NetworKit {
 /**
  * @ingroup generators
  */
-class DynamicPubWebGenerator: public NetworKit::DynamicGraphGenerator {
+class DynamicPubWebGenerator: public DynamicGraphGenerator {
 
 protected:
 	PubWebGenerator initGen; // multiple inheritance did not work with different generate functions

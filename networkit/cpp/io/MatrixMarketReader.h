@@ -19,7 +19,7 @@ namespace NetworKit {
  *
  * Only allows real, symmetric matrices.
  */
-class MatrixMarketReader: public NetworKit::MatrixReader {
+class MatrixMarketReader: public MatrixReader {
 public:
 
   MatrixMarketReader() = default;

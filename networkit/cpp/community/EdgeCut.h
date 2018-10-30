@@ -15,7 +15,7 @@ namespace NetworKit {
 /**
  * @ingroup community
  */
-class EdgeCut: public NetworKit::QualityMeasure {
+class EdgeCut: public QualityMeasure {
 public:
 	virtual double getQuality(const Partition& zeta, const Graph& G);
 };

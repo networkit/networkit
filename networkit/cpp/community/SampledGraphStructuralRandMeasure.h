@@ -18,7 +18,7 @@ namespace NetworKit {
  * to two partitions of a graph, by considering connected pairs of nodes.
  * This implementation approximates the index by sampling.
  */
-class SampledGraphStructuralRandMeasure: public NetworKit::DissimilarityMeasure {
+class SampledGraphStructuralRandMeasure: public DissimilarityMeasure {
 
 public:
 

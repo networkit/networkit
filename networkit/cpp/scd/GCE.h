@@ -22,7 +22,7 @@ namespace NetworKit {
  *
  * Greedily adds nodes from the shell to improve community quality.
  */
-class GCE: public NetworKit::SelectiveCommunityDetector {
+class GCE: public SelectiveCommunityDetector {
 
 public:
 

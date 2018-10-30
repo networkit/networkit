@@ -14,7 +14,7 @@
 #include "GraphReader.h"
 
 namespace NetworKit {
-  class KONECTGraphReader : public NetworKit::GraphReader{
+  class KONECTGraphReader : public GraphReader{
 
 	public:
 		[[deprecated("New Constructor - Use standardized seperator and Graph.removeSelfLoops instead")]]
