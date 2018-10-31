@@ -16,11 +16,7 @@
 
 
 {% macro customNavBar() %}
-  {% if pagename == 'index' %}
-    {% include "home_navbar.html" %}   
-  {% else %}
-    {% include "navbar" + navbar_version + ".html" %}
-  {% endif %}  
+  {% include "navbar.html" %}
 {% endmacro %}
 
 {%- block content %}
@@ -46,7 +42,7 @@
         {% include "sourcelink.html" %}
       {% endif %}
     </p>
-    <p style="float:left">
+    <p style="float:left; max-width: 70%;">
     {%- if show_copyright %}
       {%- if hasdoc('copyright') %}
         {% trans path=pathto('copyright'), copyright=copyright|e %}&copy; <a href="{{ path }}">Copyright</a> {{ copyright }}.{% endtrans %}<br/>
@@ -62,7 +58,7 @@
     {%- endif %}
     </p>
     <span style="padding-left: 10px">
-      <a href="contact.html">Contact</a> - <a href="http://parco.iti.kit.edu/imprint.shtml">Imprint</a> - <a href="http://www.kit.edu/dataprotection.php">Privacy</a>
+      <a href="https://networkit.github.io/contact.html">Contact, Imprint and Privacy</a>
     </span>
   </div>
 </footer>

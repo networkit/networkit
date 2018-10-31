@@ -54,7 +54,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'NetworKit'
-copyright = u'2016 Karlsruhe Institute of Technology (KIT) - Institute of Theoretical Informatics - Research Group Parallel Computing'
+copyright = u'2018 Humboldt-Universität zu Berlin - Department of Computer Science - Modeling and Analysis of Complex Systems and contributors'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -121,15 +121,12 @@ html_theme_options = {
     'bootstrap_version': "3",
     'navbar_fixed_top': "false",
     'navbar_pagenav': False,
-    'navbar_links': [ ("Get Started", "get_started"),
-                      ("Documentation", "DevGuide"),
-                      ("Features", "features"),
-                      ("News", "news"),
-                      ("Publications", "publications"),
-                      ("Data sets", "datasets"),
-                      ("Credits", "credits")],
-
-    }
+    'navbar_links': [ 
+		("Documentation", "index"),
+		("Python API", "python_api/modules"),
+		("C++ API", "cppdoc")
+	]
+}
 
 # Add any paths that contain custom themes here, relative to this directory.
 html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
