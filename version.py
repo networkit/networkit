@@ -2,7 +2,7 @@ name='networkit'
 
 version='4.6'
 
-url='https://networkit.iti.kit.edu/'
+url='https://networkit.github.io/'
 
 download_url='https://pypi.python.org/pypi/networkit'
 

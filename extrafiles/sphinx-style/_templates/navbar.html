@@ -1,5 +1,4 @@
-  <div id="fancy-particles"></div>
-  <div id="home_navbar" class="home_navbar navbar-default {% if theme_navbar_fixed_top|tobool -%} navbar-fixed-top{%- endif -%}">
+  <div id="navbar" class="{{ theme_navbar_class }} navbar-default {% if theme_navbar_fixed_top|tobool -%} navbar-fixed-top{%- endif -%}">
     <div class="container">
       <div class="navbar-header">
         <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
@@ -12,11 +11,11 @@
         <div style="float:left;height:auto; line-height:30px;">
           <div style="overflow:hidden; line-height:15px">
               <span style="display:block">
-                <a style="text-decoration: none; padding-top: 19.5px; padding-left:0px; height:30px;" class="navbar-brand" href="{{ pathto(master_doc) }}">
+                <a style="text-decoration: none; padding-top: 19.5px; padding-left:15px; height:30px;" class="navbar-brand" href="https://networkit.github.io">
                   {% if theme_navbar_title -%}{{ theme_navbar_title|e }}{%- else -%}{{ project|e }}{%- endif -%}
                 </a>
               </span>
-              <div style="font-size:9pt; clear:left;">Large-Scale Network Analysis</div>
+              <div style="font-size:9pt; clear:left;">Large-Scale Network Analysis</div>              
           </div>
         </div>
       </div>
@@ -52,12 +51,4 @@
           {% endblock %}
         </div>
     </div>
-
-    <div style="text-align: center; padding-top: 75px; padding-bottom: 10px;">
-      <h1>NetworKit</h1>
-      <h3>Large-Scale Network Analysis &#8212; Interactive and Fast!</h3>
-      <a class="customButton" href="{{ pathto('get_started') }}">Get Started</a>
-      <a class="customButton" href="http://nbviewer.ipython.org/urls/networkit.iti.kit.edu/uploads/docs/NetworKit_UserGuide.ipynb">User Guide</a>
-    </div>
-
   </div>

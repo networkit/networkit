@@ -231,7 +231,8 @@ class Profile:
 		""" creates a profile object
 
 		Args:
-			G: graph to profile
+			G: networkit.Graph
+				Graph to profile
 			preset: name of preset configuration: "complete", "minimal", "default"
 			config: object to control some aspects of the generation behaviour (Config)
 		Returns:

@@ -2,7 +2,7 @@
    :class: hidden
 
 :hidden:`C++ Documentation`
-==========================
+===========================
 
 .. raw:: html
 
@@ -16,7 +16,7 @@
       </script>
 
       <!-- inline, after the iframe -->
-      <iframe src="doxyhtml/index.html" class="auto-height" width="100%"  height="6000px" scrolling="no" marginheight="0" frameborder="0"></iframe>
+      <iframe src="cpp_api/index.html" class="auto-height" width="100%"  height="6000px" scrolling="no" marginheight="0" frameborder="0"></iframe>
       <script>
         $('iframe.auto-height').iframeAutoHeight({minHeight: 768});
       </script>

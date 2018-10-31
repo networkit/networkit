@@ -4,22 +4,19 @@
 {% set script_files = script_files + ["_static/particles.min.js", "_static/custom.js"] %}
 
 {# Custom CSS overrides #}
-{% set bootswatch_css_custom = ['_static/style.css'] %}
+{% set css_files = css_files + ['_static/style.css'] %}
 
 {# Add github banner (from: https://github.com/blog/273-github-ribbons). #}
 {% block header %}
   {{ super() }}
-  <a href="https://algohub.iti.kit.edu/parco/NetworKit/NetworKit/"
-     class="visible-desktop hidden-xs"><img style="position: absolute; width:auto; height: auto; max-width: 200px; top: 0px; right: 0; border: 0; z-index: 3;" src="{{ pathto('_static/forkme_right_white_big_ffffff.png', 1) }}" alt="Fork me on AlgoHub"></a>  
+  <a href="https://github.com/kit-parco/networkit"
+     class="visible-desktop hidden-xs"><img style="position: absolute; width:auto; height: auto; max-width: 200px; top:
+     0px; right: 0; border: 0; z-index: 3;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png" alt="Fork me on GitHub"></a>  
 {% endblock %}
 
 
 {% macro customNavBar() %}
-  {% if pagename == 'index' %}
-    {% include "home_navbar.html" %}   
-  {% else %}
-    {% include "navbar" + navbar_version + ".html" %}
-  {% endif %}  
+  {% include "navbar.html" %}
 {% endmacro %}
 
 {%- block content %}
@@ -45,7 +42,7 @@
         {% include "sourcelink.html" %}
       {% endif %}
     </p>
-    <p style="float:left">
+    <p style="float:left; max-width: 70%;">
     {%- if show_copyright %}
       {%- if hasdoc('copyright') %}
         {% trans path=pathto('copyright'), copyright=copyright|e %}&copy; <a href="{{ path }}">Copyright</a> {{ copyright }}.{% endtrans %}<br/>
@@ -61,7 +58,7 @@
     {%- endif %}
     </p>
     <span style="padding-left: 10px">
-      <a href="contact.html">Contact</a> - <a href="http://parco.iti.kit.edu/imprint.shtml">Imprint</a>
+      <a href="https://networkit.github.io/contact.html">Contact, Imprint and Privacy</a>
     </span>
   </div>
 </footer>
