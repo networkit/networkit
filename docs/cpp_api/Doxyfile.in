@@ -6,8 +6,8 @@
 PROJECT_NAME = "NetworKit"
 
 INPUT = networkit/cpp \
-		docs/mainpage.dox \
-		docs/modules.dox
+		docs/cpp_api/mainpage.dox \
+		docs/cpp_api/modules.dox
 FILE_PATTERNS = *.cpp *.h
 RECURSIVE = YES
 EXCLUDE_PATTERNS = */test/*
@@ -19,7 +19,7 @@ CLASS_GRAPH = NO
 CLASS_DIAGRAMS = NO
 CASE_SENSE_NAMES = NO
 
-HTML_OUTPUT = htmldocs/api/doxyhtml
+HTML_OUTPUT = htmldocs/cpp_api
 HTML_HEADER = extrafiles/doxygen-style/doxygen_header.html
 HTML_FOOTER = extrafiles/doxygen-style/doxygen_footer.html
 HTML_STYLESHEET = extrafiles/doxygen-style/doxygen.css

@@ -122,7 +122,7 @@ html_theme_options = {
     'navbar_fixed_top': "false",
     'navbar_pagenav': False,
     'navbar_links': [ ("Get Started", "get_started"),
-                      ("Documentation", "api/DevGuide"),
+                      ("Documentation", "DevGuide"),
                       ("Features", "features"),
                       ("News", "news"),
                       ("Publications", "publications"),
@@ -169,7 +169,7 @@ html_static_path = [
 #html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
-html_sidebars = {'api/**': ['customsidebar.html', 'searchbox.html']}
+html_sidebars = {'**': ['customsidebar.html', 'searchbox.html']}
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
@@ -221,7 +221,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('api/modules', 'NetworKit-Python.tex', u'NetworKit Python Documentation','', 'manual'),
+  ('python_api/modules', 'NetworKit-Python.tex', u'NetworKit Python Documentation','', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

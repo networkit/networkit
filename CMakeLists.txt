@@ -458,7 +458,7 @@ add_custom_target(general_docs
 
 add_custom_target(cpp_api_docs DEPENDS general_docs
 		COMMAND sed s:@BUILDDIR@:${CMAKE_CURRENT_BINARY_DIR}:
-				${CMAKE_SOURCE_DIR}/docs/Doxyfile.in | doxygen -
+				${CMAKE_SOURCE_DIR}/docs/cpp_api/Doxyfile.in | doxygen -
 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 add_custom_target(docs DEPENDS general_docs cpp_api_docs)
