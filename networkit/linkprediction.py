@@ -1,7 +1,4 @@
-
-from _NetworKit import KatzIndex, CommonNeighborsIndex, JaccardIndex, PreferentialAttachmentIndex, AdamicAdarIndex, UDegreeIndex, VDegreeIndex, AlgebraicDistanceIndex, NeighborhoodDistanceIndex, TotalNeighborsIndex, NeighborsMeasureIndex, SameCommunityIndex, AdjustedRandIndex, ResourceAllocationIndex, RandomLinkSampler, ROCMetric, PrecisionRecallMetric, MissingLinksFinder, LinkThresholder, PredictionsSorter
-
-from .graph import Graph
+from _NetworKit import KatzIndex, CommonNeighborsIndex, JaccardIndex, PreferentialAttachmentIndex, AdamicAdarIndex, UDegreeIndex, VDegreeIndex, AlgebraicDistanceIndex, NeighborhoodDistanceIndex, TotalNeighborsIndex, NeighborsMeasureIndex, SameCommunityIndex, AdjustedRandIndex, ResourceAllocationIndex, RandomLinkSampler, ROCMetric, PrecisionRecallMetric, MissingLinksFinder, LinkThresholder, PredictionsSorter, Graph
 
 import numpy as np
 
@@ -17,7 +14,7 @@ def trainClassifier(trainingSet, trainingGraph, classifier, *linkPredictors):
 	----------
 	trainingSet : vector[pair[node, node]]
 		Vector of node-pairs to generate features for,
-	trainingGraph : Graph
+	trainingGraph : networkit.Graph
 		Training graph containing all edges from the training set.
 	classifier:
 		Scikit-learn classifier to train.
@@ -31,7 +28,7 @@ def trainClassifier(trainingSet, trainingGraph, classifier, *linkPredictors):
 	trainingLabels = getLabels(trainingSet, trainingGraph)
 	trainingFeatures = getFeatures(trainingSet, *linkPredictors)
 	classifier.fit(trainingFeatures, trainingLabels)
-	
+
 def getFeatures(nodePairs, *linkPredictors):
 	""" Returns a numpy-array containing the generated scores from the predictors for the given node-pairs.
 
@@ -58,7 +55,7 @@ def getLabels(nodePairs, G):
 	----------
 	nodePairs : vector[pair[node, node]]
 		Node-pairs to get the labels for.
-	G : Graph
+	G : networkit.Graph
 		Graph which provides ground truth for the labels.
 
 	Returns

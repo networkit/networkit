@@ -16,8 +16,6 @@ except ImportError:
 	print("module 'numpy' not available -- some functionality will be restricted")
 
 
-
-
 def column(matrix, i):
 	return [row[i] for row in matrix]
 
@@ -27,7 +25,7 @@ def adjacencyMatrix(G, matrixType="sparse"):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
 	matrixType : string
 		represent"sparse" or "dense"
@@ -71,7 +69,7 @@ def laplacianMatrix(G):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
 
 	Returns
@@ -93,7 +91,7 @@ def PageRankMatrix(G, damp=0.85):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
 	damp:
 		Damping factor of the PageRank algorithm (0.85 by default)

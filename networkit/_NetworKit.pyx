@@ -184,8 +184,7 @@ cdef class StaticGraphGenerator:
 
 		Returns
 		-------
-		Graph:
-			g
+		networkit.Graph
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
@@ -453,7 +452,7 @@ cdef class Graph:
 
 		Returns
 		-------
-		Graph
+		networkit.Graph
 			Graph with the same nodes (without edges)
 		"""
 		return Graph().setThis(self._this.copyNodes())
@@ -477,7 +476,7 @@ cdef class Graph:
 		Returns
 		-------
 		bool
-			if edges have been indexed
+			If edges have been indexed
 		"""
 		return self._this.hasEdgeIds()
 
@@ -664,7 +663,7 @@ cdef class Graph:
 
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 		"""
 		self._this.append(G._this)
 		return self
@@ -675,7 +674,7 @@ cdef class Graph:
 
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 		"""
 		self._this.merge(G._this)
 		return self
@@ -971,7 +970,7 @@ cdef class Graph:
 
 	 	Returns
 	 	-------
-			graph.
+		networkit.Graph
 		"""
 		return Graph().setThis(self._this.toUnweighted())
 
@@ -981,7 +980,8 @@ cdef class Graph:
 
 		Returns
 		-------
-			directed graph.
+		networkit.Graph
+			Directed graph.
 		"""
 		return Graph().setThis(self._this.transpose())
 
@@ -1236,7 +1236,7 @@ cdef class Graph:
 
 		Returns
 		-------
-		Graph
+		networkit.Graph
 			The subgraph induced by `nodes`.
 
 		Notes
@@ -1411,7 +1411,7 @@ cdef class BFS(SSSP):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
 	source : node
 		The source node of the breadth-first search.
@@ -1438,7 +1438,7 @@ cdef class DynBFS(DynSSSP):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
 	source : node
 		The source node of the breadth-first search.
@@ -1465,7 +1465,7 @@ cdef class Dijkstra(SSSP):
 
     Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
 	source : node
 		The source node.
@@ -1493,7 +1493,7 @@ cdef class DynDijkstra(DynSSSP):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
 	source : node
 		The source node of the breadth-first search.
@@ -1537,7 +1537,7 @@ cdef class AllSimplePaths:
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
 	source : node
 		The source node.
@@ -1616,7 +1616,7 @@ cdef class APSP(Algorithm):
 
     Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
     """
 	cdef Graph _G
@@ -1670,7 +1670,7 @@ cdef class DynAPSP(APSP):
 
 		Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
 		"""
 	def __init__(self, Graph G):
@@ -1708,7 +1708,7 @@ cdef class SpanningForest:
 
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 			The graph.
 		nodes : list
 			A subset of nodes of `G` which induce the subgraph.
@@ -1742,7 +1742,7 @@ cdef class UnionMaximumSpanningForest(Algorithm):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The input graph.
 	attribute : list
 		If given, this edge attribute is used instead of the edge weights.
@@ -1768,7 +1768,7 @@ cdef class UnionMaximumSpanningForest(Algorithm):
 
 		Returns
 		-------
-		Graph
+		networkit.Graph
 			The calculated union of all maximum-weight spanning forests.
 		"""
 		return Graph().setThis((<_UnionMaximumSpanningForest*>(self._this)).getUMSF(move))
@@ -1827,7 +1827,7 @@ cdef class RandomMaximumSpanningForest(Algorithm):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The input graph.
 	attribute : list
 		If given, this edge attribute is used instead of the edge weights.
@@ -1854,7 +1854,7 @@ cdef class RandomMaximumSpanningForest(Algorithm):
 
 		Returns
 		-------
-		Graph
+		networkit.Graph
 			The calculated maximum-weight spanning forest.
 		"""
 		return Graph().setThis((<_RandomMaximumSpanningForest*>(self._this)).getMSF(move))
@@ -1916,7 +1916,7 @@ cdef class Luby:
 
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 			The graph.
 
 		Returns
@@ -2163,7 +2163,7 @@ cdef class ClusteredRandomGraphGenerator(StaticGraphGenerator):
 
 		Returns
 		-------
-		Partition
+		networkit.Partition
 			The generated ground truth clustering.
 		"""
 		return Partition().setThis((<_ClusteredRandomGraphGenerator*>(self._this)).getCommunities())
@@ -2550,7 +2550,7 @@ cdef class PowerlawDegreeSequence:
 
 	Parameters
 	----------
-	minDeg : count, list or Graph
+	minDeg : count, list or networkit.Graph
 		The minium degree, or a list of degrees to fit or graphs
 	maxDeg : count
 		The maximum degree
@@ -2782,7 +2782,7 @@ cdef class LFRGenerator(Algorithm):
 
 		Parameters
 		----------
-		zeta : Partition
+		zeta : networkit.Partition
 			The partition to use
 		"""
 		with nogil:
@@ -2844,7 +2844,7 @@ cdef class LFRGenerator(Algorithm):
 
 		Returns
 		-------
-		Graph
+		networkit.Graph
 			The generated graph.
 		"""
 		return Graph().setThis((<_LFRGenerator*>(self._this)).getGraph())
@@ -2855,7 +2855,7 @@ cdef class LFRGenerator(Algorithm):
 
 		Returns
 		-------
-		Graph
+		networkit.Graph
 			The generated graph.
 		"""
 		if useReferenceImplementation:
@@ -2870,7 +2870,7 @@ cdef class LFRGenerator(Algorithm):
 
 		Returns
 		-------
-		Partition
+		networkit.Partition
 			The generated partition.
 		"""
 		return Partition().setThis((<_LFRGenerator*>(self._this)).getPartition())
@@ -3120,7 +3120,7 @@ cdef class ThrillGraphBinaryWriter:
 
 	Parameters
 	----------
-	G     : Graph
+	G     : networkit.Graph
 		The graph to write
 	paths : str
 		The output path
@@ -4263,12 +4263,12 @@ cdef class ClusteringGenerator:
 
 		Parameters
 		----------
-		G: Graph
+		G : networkit.Graph
 			The graph for which the clustering shall be generated
 
 		Returns
 		-------
-		Partition
+		networkit.Partition
 			The generated partition
 		"""
 		return Partition().setThis(self._this.makeSingletonClustering(G._this))
@@ -4277,12 +4277,12 @@ cdef class ClusteringGenerator:
 
 		Parameters
 		----------
-		G: Graph
+		G : networkit.Graph
 			The graph for which the clustering shall be generated
 
 		Returns
 		-------
-		Partition
+		networkit.Partition
 			The generated partition
 		"""
 		return Partition().setThis(self._this.makeOneClustering(G._this))
@@ -4291,14 +4291,14 @@ cdef class ClusteringGenerator:
 
 		Parameters
 		----------
-		G: Graph
+		G : networkit.Graph
 			The graph for which the clustering shall be generated
 		k: count
 			The number of clusters that shall be generated
 
 		Returns
 		-------
-		Partition
+		networkit.Partition
 			The generated partition
 		"""
 		return Partition().setThis(self._this.makeRandomClustering(G._this, k))
@@ -4307,14 +4307,14 @@ cdef class ClusteringGenerator:
 
 		Parameters
 		----------
-		G: Graph
+		G : networkit.Graph
 			The graph for which the clustering shall be generated
 		k: count
 			The number of clusters that shall be generated
 
 		Returns
 		-------
-		Partition
+		networkit.Partition
 			The generated partition
 		"""
 		return Partition().setThis(self._this.makeContinuousBalancedClustering(G._this, k))
@@ -4325,14 +4325,14 @@ cdef class ClusteringGenerator:
 
 		Parameters
 		----------
-		G: Graph
+		G : networkit.Graph
 			The graph for which the clustering shall be generated
 		k: count
 			The number of clusters that shall be generated
 
 		Returns
 		-------
-		Partition
+		networkit.Partition
 			The generated partition
 		"""
 		return Partition().setThis(self._this.makeNoncontinuousBalancedClustering(G._this, k))
@@ -4427,14 +4427,14 @@ cdef class PartitionIntersection:
 
 		Parameters
 		----------
-		zeta: Partition
+		zeta: networkit.Partition
 			The first partition
-		eta: Partition
+		eta: networkit.Partition
 			The second partition
 
 		Returns
 		-------
-		Partition
+		networkit.Partition
 			The intersection of zeta and eta
 		"""
 		return Partition().setThis(self._this.calculate(zeta._this, eta._this))
@@ -4521,9 +4521,9 @@ cdef class HubDominance:
 
 		Parameters
 		----------
-		zeta : Partition or Cover
+		zeta : networkit.Partition or networkit.Cover
 			The Partition or Cover for which the hub dominance shall be calculated
-		G : Graph
+		G : networkit.Graph
 			The Graph to which zeta belongs
 
 		Returns
@@ -4553,7 +4553,7 @@ cdef class CommunityDetector(Algorithm):
 
 		Returns
 		-------
-		Partition:
+		networkit.Partition:
 			A Partition of the clustering.
 		"""
 		if self._this == NULL:
@@ -4588,11 +4588,11 @@ cdef class PLP(CommunityDetector):
 
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 			The graph on which the algorithm has to run.
 		updateThreshold : integer
 			number of nodes that have to be changed in each iteration so that a new iteration starts.
-		baseClustering : Partition
+		baseClustering : networkit.Partition
 			PLP needs a base clustering to start from; if none is given the algorithm will run on a singleton clustering.
 		"""
 		self._G = G
@@ -4665,7 +4665,7 @@ cdef class PLM(CommunityDetector):
 
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 			A graph.
 		refine : bool, optional
 			Add a second move phase to refine the communities.
@@ -4719,7 +4719,7 @@ cdef class CutClustering(CommunityDetector):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 	alpha : double
 		The parameter for the cut clustering algorithm
 	"""
@@ -4739,7 +4739,7 @@ cdef class CutClustering(CommunityDetector):
 
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 			The graph.
 
 		Returns
@@ -4850,11 +4850,11 @@ cdef class AdjustedRandMeasure(DissimilarityMeasure):
 
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 			The graph on which the partitions shall be compared
-		zeta : Partition
+		zeta : networkit.Partition
 			The first partiton
-		eta : Partition
+		eta : networkit.Partition
 			The second partition
 
 		Returns
@@ -5039,9 +5039,9 @@ cdef class IntrapartitionDensity(LocalPartitionEvaluation):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph on which the measure shall be evaluated
-	P : Partition
+	P : networkit.Partition
 		The partition that shall be evaluated
 	"""
 	def __cinit__(self):
@@ -5082,9 +5082,9 @@ cdef class IsolatedInterpartitionConductance(LocalPartitionEvaluation):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph on which the measure shall be evaluated
-	P : Partition
+	P : networkit.Partition
 		The partition that shall be evaluated
 	"""
 	def __cinit__(self):
@@ -5112,9 +5112,9 @@ cdef class IsolatedInterpartitionExpansion(LocalPartitionEvaluation):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph on which the measure shall be evaluated
-	P : Partition
+	P : networkit.Partition
 		The partition that shall be evaluated
 	"""
 	def __cinit__(self):
@@ -5140,9 +5140,9 @@ cdef class CoverHubDominance(LocalCoverEvaluation):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph on which the measure shall be evaluated
-	C : Cover
+	C : networkit.Cover
 		The cover that shall be evaluated
 	"""
 	def __cinit__(self):
@@ -5167,9 +5167,9 @@ cdef class PartitionHubDominance(LocalPartitionEvaluation):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph on which the measure shall be evaluated
-	P : Partition
+	P : networkit.Partition
 		The partition that shall be evaluated
 	"""
 	def __cinit__(self):
@@ -5186,9 +5186,9 @@ cdef class PartitionFragmentation(LocalPartitionEvaluation):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph on which the measure shall be evaluated
-	P : Partition
+	P : networkit.Partition
 		The partition that shall be evaluated
 	"""
 	def __cinit__(self):
@@ -5208,9 +5208,9 @@ cdef class StablePartitionNodes(LocalPartitionEvaluation):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph on which the measure shall be evaluated
-	P : Partition
+	P : networkit.Partition
 		The partition that shall be evaluated
 	"""
 	def __cinit__(self):
@@ -5253,7 +5253,7 @@ cdef class EdmondsKarp:
 
 	Parameters
 	----------
-	graph : Graph
+	graph : networkit.Graph
 		The graph
 	source : node
 		The source node for the flow calculation
@@ -5353,7 +5353,7 @@ cdef class ConnectedComponents(Algorithm):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
 	"""
 	cdef Graph _G
@@ -5367,7 +5367,7 @@ cdef class ConnectedComponents(Algorithm):
 
 		Returns
 		-------
-		Partition
+		networkit.Partition
 			A partition representing the found components.
 		"""
 		return Partition().setThis((<_ConnectedComponents*>(self._this)).getPartition())
@@ -5442,7 +5442,7 @@ cdef class StronglyConnectedComponents:
 
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 			The graph.
 		iterativeAlgo : boolean
 			Specifies which implementation to use, by default True for the iterative implementation.
@@ -5495,7 +5495,7 @@ cdef class WeaklyConnectedComponents(Algorithm):
 
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 			The graph.
 	"""
 	cdef Graph _G
@@ -5557,7 +5557,7 @@ cdef class BiconnectedComponents(Algorithm):
 
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 			The graph.
 	"""
 	cdef Graph _G
@@ -5609,7 +5609,7 @@ cdef class DynConnectedComponents(Algorithm):
 
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 			The graph.
 	"""
 	cdef Graph _G
@@ -5697,7 +5697,7 @@ cdef class DynWeaklyConnectedComponents(Algorithm):
 
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 			The graph.
 	"""
 	cdef Graph _G
@@ -5788,7 +5788,7 @@ cdef class ClusteringCoefficient:
 
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 			The graph.
 
 		Notes
@@ -5811,7 +5811,7 @@ cdef class ClusteringCoefficient:
 		""" This calculates the average local clustering coefficient of graph `G` using inherently sequential triangle counting.
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 			The graph.
 
 		Notes
@@ -5909,7 +5909,7 @@ cdef class EffectiveDiameter(Algorithm):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
 	ratio : double
 		The percentage of nodes that shall be within stepwidth; default = 0.9
@@ -5946,7 +5946,7 @@ cdef class EffectiveDiameterApproximation(Algorithm):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
 	ratio : double
 		The percentage of nodes that shall be within stepwidth, default = 0.9
@@ -5988,7 +5988,7 @@ cdef class HopPlotApproximation(Algorithm):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
 	maxDistance : double
 		maximum distance between considered nodes
@@ -6031,7 +6031,7 @@ cdef class NeighborhoodFunction(Algorithm):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
 	"""
 	cdef Graph _G
@@ -6067,7 +6067,7 @@ cdef class NeighborhoodFunctionApproximation(Algorithm):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
 	k : count
 		number of approximations, bigger k -> longer runtime, more precise result; default = 64
@@ -6107,7 +6107,7 @@ cdef class NeighborhoodFunctionHeuristic(Algorithm):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
 	nSamples : count
 		the amount of samples, set to zero for heuristic of max(sqrt(m), 0.15*n)
@@ -6687,7 +6687,7 @@ cdef class DegreeCentrality(Centrality):
 
  	Parameters
  	----------
- 	G : Graph
+ 	G : networkit.Graph
  		The graph.
  	normalized : bool, optional
  		Normalize centrality values in the interval [0,1].
@@ -6714,7 +6714,7 @@ cdef class Betweenness(Centrality):
 
 	 	Parameters
 	 	----------
-	 	G : Graph
+	 	G : networkit.Graph
 	 		The graph.
 	 	normalized : bool, optional
 	 		Set this parameter to True if scores should be normalized in the interval [0,1].
@@ -6752,7 +6752,7 @@ cdef class ApproxGroupBetweenness(Algorithm):
 
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 			The graph.
 		groupSize : count
 			The desired size of the group.
@@ -6792,7 +6792,7 @@ cdef class Closeness(Centrality):
 
 	 	Parameters
 	 	----------
-	 	G : Graph
+	 	G : networkit.Graph
 	 		The graph.
 	 	normalized : bool, optional
 	 		Set this parameter to False if scores should not be normalized into an interval of [0,1]. Normalization only for unweighted graphs.
@@ -6821,7 +6821,7 @@ cdef class HarmonicCloseness(Centrality):
 
 	 	Parameters
 	 	----------
-	 	G : Graph
+	 	G : networkit.Graph
 	 		The graph.
 	 	normalized : bool, optional
 	 		Set this parameter to False if scores should not be
@@ -6846,7 +6846,7 @@ cdef class KPathCentrality(Centrality):
 
 	 	Parameters
 	 	----------
-	 	G : Graph
+	 	G : networkit.Graph
 	 		The graph.
 	 	alpha : double, in interval [-0.5, 0.5]
 			tradeoff between runtime and precision
@@ -6875,7 +6875,7 @@ cdef class KatzCentrality(Centrality):
 
 	 	Parameters
 	 	----------
-	 	G : Graph
+	 	G : networkit.Graph
 	 		The graph.
 	 	alpha : double
 			Damping of the matrix vector product result
@@ -6916,9 +6916,9 @@ cdef class GraphDifference(Algorithm):
 
 	Parameters
 	----------
-	G1 : Graph
+	G1 : networkit.Graph
 		The first graph to compare
-	G2 : Graph
+	G2 : networkit.Graph
 		The second graph to compare
 	"""
 	cdef Graph _G1, _G2
@@ -7029,7 +7029,7 @@ cdef class ApproxBetweenness(Centrality):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		the graph
 	epsilon : double, optional
 		maximum additive error
@@ -7083,7 +7083,7 @@ cdef class KadabraBetweenness(Algorithm):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The input graph.
   err : double
 		Maximum additive error guaranteed when approximating the
@@ -7093,11 +7093,11 @@ cdef class KadabraBetweenness(Algorithm):
 		within the error guarantee.
 	k : count
 		The number of top-k nodes to be computed. Set it to zero to
-		approximate the betweenness centrality of all the nodes.	
+		approximate the betweenness centrality of all the nodes.
 	unionSample : count
-		Algorithm parameter # TODO: more details 
+		Algorithm parameter # TODO: more details
 	startFactor : count
-		Algorithm parameter # TODO: more details 
+		Algorithm parameter # TODO: more details
 	"""
 
 	def __cinit__(self, Graph G, err = 0.01, delta = 0.1, k = 0,
@@ -7165,7 +7165,7 @@ cdef class KadabraBetweenness(Algorithm):
 			The total number of shortest paths sampled by the algorithm.
 		"""
 		return (<_KadabraBetweenness*>(self._this)).getNumberOfIterations()
-	
+
 	def getOmega(self):
 		"""
 		Returns the upper bound of the required number of samples.
@@ -7198,7 +7198,7 @@ cdef class EstimateBetweenness(Centrality):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		input graph
 	nSamples : count
 		user defined number of samples
@@ -7230,7 +7230,7 @@ cdef class ApproxBetweenness2(Centrality):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		input graph
 	nSamples : count
 		user defined number of samples
@@ -7274,7 +7274,7 @@ cdef class ApproxCloseness(Centrality):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		input graph (undirected)
 	nSamples : count
 		user defined number of samples
@@ -7318,7 +7318,7 @@ cdef class PageRank(Centrality):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		Graph to be processed.
 	damp : double
 		Damping factor of the PageRank algorithm.
@@ -7346,7 +7346,7 @@ cdef class EigenvectorCentrality(Centrality):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
 	tol : double, optional
 		The tolerance for convergence.
@@ -7374,7 +7374,7 @@ cdef class CoreDecomposition(Centrality):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
 	normalized : boolean
 		Divide each core number by the maximum degree.
@@ -7414,7 +7414,7 @@ cdef class CoreDecomposition(Centrality):
 
 		Returns
 		-------
-		Partition
+		networkit.Partition
 			The k-shells
 		"""
 		return Partition().setThis((<_CoreDecomposition*>(self._this)).getPartition())
@@ -7455,7 +7455,7 @@ cdef class LocalClusteringCoefficient(Centrality):
 
 	 	Parameters
 	 	----------
-	 	G : Graph
+	 	G : networkit.Graph
 	 		The graph.
 		turbo : bool
 			If the turbo mode shall be activated.
@@ -7478,7 +7478,7 @@ cdef class Sfigality(Centrality):
 
  	Parameters
  	----------
- 	G : Graph
+ 	G : networkit.Graph
  		The graph.
 	"""
 
@@ -7511,7 +7511,7 @@ cdef class DynApproxBetweenness(Algorithm):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		the graph
 	epsilon : double, optional
 		maximum additive error
@@ -7610,7 +7610,7 @@ cdef class DynBetweenness(Algorithm):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		the graph
 	"""
 	cdef Graph _G
@@ -7699,7 +7699,7 @@ cdef class DynBetweennessOneNode:
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		the graph
 	x : node
 		the node for which you want to update betweenness
@@ -7808,9 +7808,9 @@ cdef class LocalPartitionCoverage(Centrality):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
-	P : Partition
+	P : networkit.Partition
 		The partition to use
 	"""
 	cdef Partition _P
@@ -7836,7 +7836,7 @@ cdef class LaplacianCentrality(Centrality):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
 	normalized : bool, optional
 		Whether scores should be normalized by the energy of the full graph.
@@ -8183,7 +8183,7 @@ cdef class GraphUpdater:
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 	 	initial graph
 	"""
 	cdef _GraphUpdater* _this
@@ -8248,7 +8248,7 @@ cdef class MatchingCoarsening(GraphCoarsening):
 	"""Coarsens graph according to a matching.
  	Parameters
  	----------
- 	G : Graph
+ 	G : networkit.Graph
 	M : Matching
  	noSelfLoops : bool, optional
 		if true, self-loops are not produced
@@ -8272,7 +8272,7 @@ cdef class PageRankNibble:
 
 	Parameters:
 	-----------
-	G : graph in which the cut is to be produced, must be unweighted.
+	G : networkit.Graph in which the cut is to be produced, must be unweighted.
 	alpha : Loop probability of random walk; smaller values tend to produce larger communities.
 	epsilon: Tolerance threshold for approximation of PageRank vectors
 	"""
@@ -8304,7 +8304,7 @@ cdef class GCE:
 
 	Parameters:
 	-----------
-	G : graph in which the cut is to be produced, must be unweighted.
+	G : networkit.Graph in which the cut is to be produced, must be unweighted.
 	"""
 	cdef _GCE *_this
 	cdef Graph _G
@@ -8340,7 +8340,7 @@ cdef class MaxClique:
 
 	Parameters:
 	-----------
-	G : graph in which the cut is to be produced, must be unweighted.
+	G : networkit.Graph in which the cut is to be produced, must be unweighted.
 	lb : the lower bound of the size of the maximum clique.
 	"""
 	cdef _MaxClique* _this
@@ -8414,7 +8414,7 @@ cdef class MaximalCliques(Algorithm):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph to list the cliques for
 	maximumOnly : bool
 		A value of True denotes that only one maximum clique is desired. This enables
@@ -8480,7 +8480,7 @@ cdef class LinkPredictor:
 
 	Parameters
 	----------
-	G : Graph, optional
+	G : networkit.Graph, optional
 		The graph to work on. Defaults to None.
 	"""
 	cdef _LinkPredictor* _this
@@ -8499,7 +8499,7 @@ cdef class LinkPredictor:
 
 		Parameters
 		----------
-		newGraph : Graph
+		newGraph : networkit.Graph
 			The graph to work on.
    	"""
 		self._this.setGraph(newGraph._this)
@@ -8571,7 +8571,7 @@ cdef class KatzIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph, optional
+	G : networkit.Graph, optional
 		The graph to operate on. Defaults to None.
 	maxPathLength : count, optional
 		Maximal length of the paths to consider. Defaults to 5.
@@ -8614,7 +8614,7 @@ cdef class CommonNeighborsIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph, optional
+	G : networkit.Graph, optional
 		The graph to work on. Defaults to None.
 	"""
 
@@ -8653,7 +8653,7 @@ cdef class PreferentialAttachmentIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph, optional
+	G : networkit.Graph, optional
 		The graph to work on. Defaults to None.
 	"""
 
@@ -8700,7 +8700,7 @@ cdef class Volume:
 
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 			the graph
 		r : double
 			the radius (or radii)
@@ -8744,7 +8744,7 @@ cdef class JaccardIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph, optional
+	G : networkit.Graph, optional
 		The graph to work on. Defaults to None.
 	"""
 	def __cinit__(self, Graph G = None):
@@ -8782,7 +8782,7 @@ cdef class AdamicAdarIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph, optional
+	G : networkit.Graph, optional
 		The graph to work on. Defaults to None.
 	"""
 
@@ -8818,7 +8818,7 @@ cdef class UDegreeIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph, optional
+	G : networkit.Graph, optional
 		The graph to work on. Defaults to None.
 	"""
 
@@ -8854,7 +8854,7 @@ cdef class VDegreeIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph, optional
+	G : networkit.Graph, optional
 		The graph to work on. Defaults to None.
 	"""
 
@@ -8892,7 +8892,7 @@ cdef class AlgebraicDistanceIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph to work on. Can be set to None and default is None.
 	numberSystems : count
 		Number of vectors/systems used for algebraic iteration.
@@ -8948,7 +8948,7 @@ cdef class NeighborhoodDistanceIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph, optional
+	G : networkit.Graph, optional
 		The graph to work on. Defaults to None.
 	"""
 	def __cinit__(self, Graph G = None):
@@ -8986,7 +8986,7 @@ cdef class TotalNeighborsIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph, optional
+	G : networkit.Graph, optional
 		The graph to work on. Defaults to None.
 	"""
 
@@ -9025,7 +9025,7 @@ cdef class NeighborsMeasureIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph, optional
+	G : networkit.Graph, optional
 		The graph to work on. Defaults to None.
 	"""
 
@@ -9061,7 +9061,7 @@ cdef class SameCommunityIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph, optional
+	G : networkit.Graph, optional
 		The graph to work on. Defaults to None.
 	"""
 
@@ -9097,7 +9097,7 @@ cdef class AdjustedRandIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph, optional
+	G : networkit.Graph, optional
 		The graph to work on. Defaults to None.
 	"""
 
@@ -9136,7 +9136,7 @@ cdef class ResourceAllocationIndex(LinkPredictor):
 
 	Parameters
 	----------
-	G : Graph, optional
+	G : networkit.Graph, optional
 		The graph to work on. Defaults to None.
 	"""
 
@@ -9177,7 +9177,7 @@ cdef class RandomLinkSampler:
 
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 			The graph to construct the training graph from.
 		percentage : double
 			Percentage of links regarding the number of links in the given graph that should
@@ -9197,7 +9197,7 @@ cdef class RandomLinkSampler:
 
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 			The graph to construct the training graph from.
 		numLinks : count
 			Number of links the returned graph should consist of.
@@ -9225,7 +9225,7 @@ cdef class EvaluationMetric:
 
 	Parameters
 	----------
-	testGraph : Graph
+	testGraph : networkit.Graph
 		Graph containing the links to use for evaluation. Can be set to None and default is None.
 	"""
 	cdef _EvaluationMetric *_this
@@ -9247,7 +9247,7 @@ cdef class EvaluationMetric:
 
 		Parameters
 		----------
-		newTestGraph : Graph
+		newTestGraph : networkit.Graph
 			New graph to use as ground truth.
 		"""
 		self._this.setTestGraph(newTestGraph._this)
@@ -9306,7 +9306,7 @@ cdef class ROCMetric(EvaluationMetric):
 
 	Parameters
 	----------
-	testGraph : Graph, optional
+	testGraph : networkit.Graph, optional
 		Graph containing the links to use for evaluation. Defaults to None.
 	"""
 
@@ -9348,7 +9348,7 @@ cdef class PrecisionRecallMetric(EvaluationMetric):
 
 	Parameters
 	----------
-	testGraph : Graph, optional
+	testGraph : networkit.Graph, optional
 		Graph containing the links to use for evaluation. Defaults to None.
 	"""
 
@@ -9394,7 +9394,7 @@ cdef class MissingLinksFinder:
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph to find missing links in.
 	"""
 	cdef _MissingLinksFinder* _this
@@ -9456,7 +9456,7 @@ cdef class NeighborhoodUtility:
 
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 			Graph to obtain neighbors-union from.
 		u : node
 			First node.
@@ -9475,7 +9475,7 @@ cdef class NeighborhoodUtility:
 
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 			Graph to obtain common neighbors from.
 		u : node
 			First node.
@@ -9643,13 +9643,13 @@ cdef class ChibaNishizekiTriangleEdgeScore(EdgeScore):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph to count triangles on.
 	"""
 
 	def __cinit__(self, Graph G):
 		"""
-		G : Graph
+		G : networkit.Graph
 			The graph to count triangles on.
 		"""
 		self._G = G
@@ -9668,7 +9668,7 @@ cdef class ChibaNishizekiQuadrangleEdgeScore(EdgeScore):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph to count quadrangles on.
 	"""
 
@@ -9676,7 +9676,7 @@ cdef class ChibaNishizekiQuadrangleEdgeScore(EdgeScore):
 		"""
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 			The graph to count quadrangles on.
 		"""
 		self._G = G
@@ -9695,7 +9695,7 @@ cdef class TriangleEdgeScore(EdgeScore):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph to count triangles on.
 	"""
 
@@ -9703,7 +9703,7 @@ cdef class TriangleEdgeScore(EdgeScore):
 		"""
 		Parameters
 		----------
-		G : Graph
+		G : networkit.Graph
 			The graph to count triangles on.
 		"""
 		self._G = G
@@ -9722,7 +9722,7 @@ cdef class EdgeScoreLinearizer(EdgeScore):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The input graph.
 	a : vector[double]
 		Edge score that shall be linearized.
@@ -9748,7 +9748,7 @@ cdef class EdgeScoreNormalizer(EdgeScore):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph the edge score is defined on.
 	score : vector[double]
 		The edge score to normalize.
@@ -9787,7 +9787,7 @@ cdef class EdgeScoreBlender(EdgeScore):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph for which the attribute shall be blended
 	attribute0 : vector[double]
 		The first attribute (chosen for selection[eid] == false)
@@ -9821,7 +9821,7 @@ cdef class GeometricMeanScore(EdgeScore):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The input graph.
 	a : vector[double]
 		Edge attribute that shall be normalized.
@@ -9847,7 +9847,7 @@ cdef class EdgeScoreAsWeight:
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph to assign edge weights to.
 	score : vector[double]
 		The input edge score.
@@ -9877,7 +9877,7 @@ cdef class EdgeScoreAsWeight:
 		"""
 		Returns
 		-------
-		Graph
+		networkit.Graph
 			The weighted result graph.
 		"""
 		return Graph(0).setThis(self._this.calculate())
@@ -9896,7 +9896,7 @@ cdef class AdamicAdarDistance:
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The input graph.
 	"""
 	cdef _AdamicAdarDistance* _this
@@ -9939,7 +9939,7 @@ cdef class SimmelianOverlapScore(EdgeScore):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph to apply the Simmelian Backbone algorithm to.
 	triangles : vector[count]
 		Previously calculated edge triangle counts on G.
@@ -9978,7 +9978,7 @@ cdef class MultiscaleScore(EdgeScore):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph to apply the Multiscale algorithm to.
 	attribute : vector[double]
 		The edge attribute the Multiscale algorithm is to be applied to.
@@ -10004,7 +10004,7 @@ cdef class RandomEdgeScore(EdgeScore):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph to calculate the Random Edge attribute for.
 	"""
 
@@ -10027,7 +10027,7 @@ cdef class LocalSimilarityScore(EdgeScore):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph to apply the Local Similarity algorithm to.
 	triangles : vector[count]
 		Previously calculated edge triangle counts.
@@ -10054,7 +10054,7 @@ cdef class ForestFireScore(EdgeScore):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph to apply the Forest Fire algorithm to.
 	pf : double
 		The probability for neighbor nodes to get burned aswell.
@@ -10081,7 +10081,7 @@ cdef class LocalDegreeScore(EdgeScore):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph to apply the Local Degree  algorithm to.
 	"""
 
@@ -10105,7 +10105,7 @@ cdef class JaccardDistance:
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph to calculate Jaccard distances for.
 	triangles : vector[count]
 		Previously calculated edge triangle counts.
@@ -10143,7 +10143,7 @@ cdef class AlgebraicDistance:
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph to calculate Jaccard distances for.
 	numberSystems : count
 	 	Number of vectors/systems used for algebraic iteration.
@@ -10185,7 +10185,7 @@ cdef class JaccardSimilarityAttributizer:
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph to calculate Jaccard similarities for.
 	triangles : vector[count]
 		Previously calculated edge triangle counts.
@@ -10219,7 +10219,7 @@ cdef class RandomNodeEdgeScore(EdgeScore):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph to calculate the Random Edge attribute for.
 	"""
 	def __cinit__(self, Graph G):
@@ -10250,7 +10250,7 @@ cdef class LocalFilterScore(EdgeScore):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The input graph
 	a : list
 		The input attribute according to which the edges shall be fitlered locally.
@@ -10277,7 +10277,7 @@ cdef class ChanceCorrectedTriangleScore(EdgeScore):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The input graph.
 	triangles : vector[count]
 		Triangle count.
@@ -10319,7 +10319,7 @@ cdef class GlobalThresholdFilter:
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph to sparsify.
 	attribute : vector[double]
 		The edge attribute to consider for filtering.
@@ -10527,7 +10527,7 @@ cdef class CommuteTimeDistance(Algorithm):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
 	tol: double
 	"""
@@ -10594,7 +10594,7 @@ cdef class EpidemicSimulationSEIR(Algorithm):
 	"""
  	Parameters
  	----------
- 	G : Graph
+ 	G : networkit.Graph
  		The graph.
  	tMax : count
  		max. number of timesteps
@@ -10630,7 +10630,7 @@ cdef class SpanningEdgeCentrality(Algorithm):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph.
 	tol: double
 		Tolerance used for the approximation: with probability at least 1-1/n, the approximated scores are within a factor 1+tol from the exact scores.
@@ -10765,7 +10765,7 @@ cdef class MaxentStress (GraphLayoutAlgorithm):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph to be handled. Should be connected, otherwise the run() and runAlgo() methods will fail.
 	dim: count
 		Number of dimensions.
@@ -10881,7 +10881,7 @@ cdef class PivotMDS (GraphLayoutAlgorithm):
 	Parameters
 	----------
 
-	G: Graph
+	G: networkit.Graph
 		The graph to be handled by the algorithm.
 
 	dim: count
@@ -10931,7 +10931,7 @@ cdef class GlobalCurveball(Algorithm):
 	Parameters
 	----------
 
-	G: Graph
+	G : networkit.Graph
 		The graph to be randomized. For a given degree sequence, e.g.
 		generators.HavelHakimi can be used to obtain this graph.
 
@@ -11060,7 +11060,7 @@ cdef class Curveball(Algorithm):
 	Parameters
 	----------
 
-	G: Graph
+	G : networkit.Graph
 		The graph to be randomized. For a given degree sequence, e.g.
 		generators.HavelHakimi can be used to obtain this graph.
 
