@@ -2,7 +2,7 @@
    :class: hidden
 
 :hidden:`C++ Documentation`
-==========================
+===========================
 
 .. raw:: html
 

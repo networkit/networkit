@@ -424,7 +424,7 @@ shared by Dijkstra and BFS only need to be wrapped through SSSP.
 
             Parameters
             ----------
-            G : Graph
+            G : networkit.Graph
                 The graph.
             source : node
                 The source node.
