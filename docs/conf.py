@@ -41,7 +41,7 @@ extensions = ['sphinx.ext.autodoc',
 numpydoc_show_class_members = False
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ['../extrafiles/sphinx-style/_templates']
 
 # The suffix of source filenames.
 source_suffix = '.rst'
@@ -122,7 +122,7 @@ html_theme_options = {
     'navbar_fixed_top': "false",
     'navbar_pagenav': False,
     'navbar_links': [ ("Get Started", "get_started"),
-                      ("Documentation", "api/DevGuide"),
+                      ("Documentation", "DevGuide"),
                       ("Features", "features"),
                       ("News", "news"),
                       ("Publications", "publications"),
@@ -155,7 +155,10 @@ html_add_permalinks = None
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static', 'resources', 'downloads']
+html_static_path = [
+		'../extrafiles/sphinx-style/_static',
+		'../extrafiles/sphinx-style/resources'
+]
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -166,7 +169,7 @@ html_static_path = ['_static', 'resources', 'downloads']
 #html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
-html_sidebars = {'api/**': ['customsidebar.html', 'searchbox.html']}
+html_sidebars = {'**': ['customsidebar.html', 'searchbox.html']}
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
@@ -218,7 +221,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('api/modules', 'NetworKit-Python.tex', u'NetworKit Python Documentation','', 'manual'),
+  ('python_api/modules', 'NetworKit-Python.tex', u'NetworKit Python Documentation','', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
