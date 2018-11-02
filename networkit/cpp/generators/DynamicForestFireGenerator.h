@@ -23,7 +23,7 @@ namespace NetworKit {
  * see Leskovec, Kleinberg, Faloutsos: Graphs over Tim: Densification Laws,
  * 	Shringking Diameters and Possible Explanations
  */
-class DynamicForestFireGenerator: public NetworKit::DynamicGraphGenerator {
+class DynamicForestFireGenerator: public DynamicGraphGenerator {
 
 public:
 

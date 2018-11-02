@@ -20,7 +20,7 @@ namespace NetworKit {
  * Algebraic distances will become small within dense subgraphs.
  *
  */
-class AlgebraicDistance: public NetworKit::NodeDistance {
+class AlgebraicDistance: public NodeDistance {
 
 public:
 

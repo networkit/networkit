@@ -22,7 +22,7 @@ namespace NetworKit {
  * Reads graphs from files in the binary format defined by graph-tool[1].
  * [1]: http://graph-tool.skewed.de/static/doc/gt_format.html
  */
-class GraphToolBinaryReader: public NetworKit::GraphReader {
+class GraphToolBinaryReader: public GraphReader {
 
 public:
 

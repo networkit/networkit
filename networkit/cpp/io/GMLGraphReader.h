@@ -18,7 +18,7 @@ namespace NetworKit {
  *
  * [1] http://www.fim.uni-passau.de/fileadmin/files/lehrstuhl/brandenburg/projekte/gml/gml-technical-report.pdf
  */
-class GMLGraphReader: public NetworKit::GraphReader {
+class GMLGraphReader: public GraphReader {
 public:
 
 	GMLGraphReader() = default;

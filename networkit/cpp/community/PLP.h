@@ -23,7 +23,7 @@ namespace NetworKit {
  * has the label that at least half of its neighbors have.
  *
  */
-class PLP: public NetworKit::CommunityDetectionAlgorithm {
+class PLP: public CommunityDetectionAlgorithm {
 
 protected:
 

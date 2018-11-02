@@ -18,7 +18,7 @@
 
 namespace NetworKit {
 
-class HyperbolicGenerator: public NetworKit::StaticGraphGenerator {
+class HyperbolicGenerator: public StaticGraphGenerator {
 	friend class DynamicHyperbolicGenerator;
 public:
 

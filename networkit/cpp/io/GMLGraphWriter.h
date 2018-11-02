@@ -20,7 +20,7 @@ namespace NetworKit {
  *
  * [1] http://svn.bigcat.unimaas.nl/pvplugins/GML/trunk/docs/gml-technical-report.pdf
  */
-class GMLGraphWriter: public NetworKit::GraphWriter {
+class GMLGraphWriter: public GraphWriter {
 public:
 	/** Default constructor */
 	GMLGraphWriter() = default;

@@ -19,7 +19,7 @@ namespace NetworKit {
  * Compute conductance of a 2-partition, i.e. cut size over volume of smaller set (smaller in
  * terms of volume).
  */
-class Conductance: public NetworKit::QualityMeasure {
+class Conductance: public QualityMeasure {
 public:
 	/**
 	 * @return Conductance of 2-partition @a zeta in graph @a G.

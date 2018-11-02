@@ -19,7 +19,7 @@ namespace NetworKit {
 /**
  * @ingroup generators
  */
-class DynamicBarabasiAlbertGenerator: public NetworKit::DynamicGraphSource {
+class DynamicBarabasiAlbertGenerator: public DynamicGraphSource {
 
 protected:
 

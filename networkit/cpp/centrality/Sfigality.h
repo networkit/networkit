@@ -16,7 +16,7 @@ namespace NetworKit {
  * @ingroup centrality
  * A
  */
-class Sfigality: public NetworKit::Centrality {
+class Sfigality: public Centrality {
 public:
 	/**
 	 * Constructs the Sfigality class for the given Graph @a G. Sfigality is a new type of

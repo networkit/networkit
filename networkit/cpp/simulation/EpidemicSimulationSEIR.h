@@ -18,7 +18,7 @@ namespace NetworKit {
  * Node centrality index which ranks nodes by their degree.
  * Optional normalization by maximum degree.
  */
-class EpidemicSimulationSEIR: public NetworKit::Algorithm {
+class EpidemicSimulationSEIR: public Algorithm {
 public:
 	/**
 	 *

@@ -22,7 +22,7 @@ namespace NetworKit {
  * Writes graphs to files in the binary format defined by graph-tool[1].
  * [1]: http://graph-tool.skewed.de/static/doc/gt_format.html
  */
-class GraphToolBinaryWriter: public NetworKit::GraphWriter {
+class GraphToolBinaryWriter: public GraphWriter {
 
 public:
 

@@ -15,7 +15,7 @@ namespace NetworKit {
 /**
  * @ingroup centrality
  */
-class Betweenness: public NetworKit::Centrality {
+class Betweenness: public Centrality {
 public:
 	/**
 	 * Constructs the Betweenness class for the given Graph @a G. If the betweenness scores should be normalized,

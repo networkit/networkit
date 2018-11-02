@@ -23,7 +23,7 @@ namespace NetworKit {
  * Construction runs in linear time O(m). However, the test if a sequence is realizable
  * is quadratic in the sequence length.
  */
-class HavelHakimiGenerator: public NetworKit::StaticDegreeSequenceGenerator  {
+class HavelHakimiGenerator: public StaticDegreeSequenceGenerator  {
 protected:
 
 public:

@@ -18,7 +18,7 @@ namespace NetworKit {
  */
 // TODO: refactor to inherit from LayoutAlgorithm base class
 class [[deprecated]]
-MultilevelLayouter: public NetworKit::Layouter {
+MultilevelLayouter: public Layouter {
 protected:
 	static const count N_THRSH;
 

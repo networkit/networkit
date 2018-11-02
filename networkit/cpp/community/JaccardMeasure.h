@@ -15,7 +15,7 @@ namespace NetworKit {
 /**
  * @ingroup community
  */
-class JaccardMeasure: public NetworKit::DissimilarityMeasure {
+class JaccardMeasure: public DissimilarityMeasure {
 
 public:
 

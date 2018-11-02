@@ -20,7 +20,7 @@ namespace NetworKit {
  * There is no proven theoretical guarantee on the quality of the approximation. However, the algorithm was shown to perform well in practice.
  * If a guarantee is required, use ApproxBetweenness.
  */
-class EstimateBetweenness: public NetworKit::Centrality {
+class EstimateBetweenness: public Centrality {
 
 public:
 
