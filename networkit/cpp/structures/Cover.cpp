@@ -173,6 +173,13 @@ count Cover::numberOfElements() const {
 	return z+1;
 }
 
+index Cover::extend() {
+	data.emplace_back();
+	++z;
+	assert(z + 1 == data.size());
+	return z;
+}
+
 void Cover::setUpperBound(index upper) {
 	this->omega = upper -1;
 }
