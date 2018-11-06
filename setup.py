@@ -74,10 +74,10 @@ def determineCompiler(candidates, std, flags):
 		#pragma omp parallel private(nthreads, tid)
 		{
 			tid = omp_get_thread_num();
-			std::cout << \"Hello World from thread = \" << tid << std::endl;
+			std::cout << "Hello World from thread = " << tid << std::endl;
 			if (tid == 0) {
 				nthreads = omp_get_num_threads();
-				std::cout << \"Number of threads = \" << nthreads << std::endl;
+				std::cout << "Number of threads = " << nthreads << std::endl;
 			}
 		}
 	}""")
