@@ -3631,7 +3631,7 @@ cdef extern from "cpp/structures/Partition.h":
 		void moveToSubset(index s, index e) except +
 		void toSingleton(index e) except +
 		void allToSingletons() except +
-		void mergeSubsets(index s, index t) except +
+		index mergeSubsets(index s, index t) except +
 		void setUpperBound(index upper) except +
 		index upperBound() except +
 		index lowerBound() except +
@@ -3803,7 +3803,7 @@ cdef class Partition:
 		index
 			Id of newly created set.
 		"""
-		self._this.mergeSubsets(s, t)
+		return self._this.mergeSubsets(s, t)
 
 	def setUpperBound(self, index upper):
 		""" Sets an upper bound for the subset ids that **can** be assigned.
