@@ -45,9 +45,7 @@ protected:
 };
 
 inline std::vector<node> ApproxGroupBetweenness::groupMaxBetweenness() {
-	if (!hasRun) {
-		throw std::runtime_error("run method has not been called");
-	}
+	assureFinished();
 	if (!hasSortedGroup) {
 		std::sort(maxGroup.begin(), maxGroup.end());
 		hasSortedGroup = true;

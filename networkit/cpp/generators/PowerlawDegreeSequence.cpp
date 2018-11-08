@@ -10,7 +10,7 @@
 #include "../auxiliary/NumericTools.h"
 
 NetworKit::PowerlawDegreeSequence::PowerlawDegreeSequence(NetworKit::count minDeg, NetworKit::count maxDeg, double gamma) :
-	minDeg(minDeg), maxDeg(maxDeg), gamma(gamma), hasRun(false) {
+	minDeg(minDeg), maxDeg(maxDeg), gamma(gamma) {
 	if (minDeg > maxDeg) throw std::runtime_error("Error: minDeg must not be larger than maxDeg");
 	if (gamma > -1) throw std::runtime_error("Error: gamma must be lower than -1");
 }
@@ -159,8 +159,7 @@ void NetworKit::PowerlawDegreeSequence::run() {
 }
 
 double NetworKit::PowerlawDegreeSequence::getExpectedAverageDegree() const {
-	if (!hasRun) throw std::runtime_error("Error: run needs to be called first");
-
+	assureFinished();
 	double average = cumulativeProbability[0] * maxDeg;
 	for (count i = 1; i < cumulativeProbability.size(); ++i) {
 		average += (cumulativeProbability[i] - cumulativeProbability[i-1]) * (maxDeg - i);
@@ -172,8 +171,7 @@ double NetworKit::PowerlawDegreeSequence::getExpectedAverageDegree() const {
 std::vector< NetworKit::count > NetworKit::PowerlawDegreeSequence::getDegreeSequence(NetworKit::count numNodes) const {
 	std::vector<count> degreeSequence;
 
-	if (!hasRun) throw std::runtime_error("Error: run needs to be called first");
-
+	assureFinished();
 	degreeSequence.reserve(numNodes);
 	count degreeSum = 0;
 
@@ -190,7 +188,6 @@ std::vector< NetworKit::count > NetworKit::PowerlawDegreeSequence::getDegreeSequ
 }
 
 NetworKit::count NetworKit::PowerlawDegreeSequence::getDegree() const {
-	if (!hasRun) throw std::runtime_error("Error: run needs to be called first");
-
+	assureFinished();
 	return maxDeg - std::distance(cumulativeProbability.begin(), std::lower_bound(cumulativeProbability.begin(), cumulativeProbability.end(), Aux::Random::probability()));
 }

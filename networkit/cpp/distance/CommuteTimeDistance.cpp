@@ -32,6 +32,7 @@ CommuteTimeDistance::CommuteTimeDistance(const Graph& G, double tol): Algorithm(
 	setupTime = t.elapsedMilliseconds();
 
 	DEBUG("done setting up commute time distance");
+	hasRun = false;
 }
 
 void CommuteTimeDistance::run() {
@@ -153,7 +154,7 @@ void CommuteTimeDistance::runParallelApproximation() {
 }
 
 double CommuteTimeDistance::distance(node u, node v) {
-	if (!hasRun) throw std::runtime_error("Call run method first");
+	assureFinished();
 
 	// compute volume
 	double volG = 0.0;

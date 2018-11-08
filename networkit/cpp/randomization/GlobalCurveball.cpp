@@ -43,7 +43,7 @@ void GlobalCurveball::run() {
 }
 
 Graph GlobalCurveball::getGraph() {
-    if (!hasRun) throw std::runtime_error("Call run method first");
+    assureFinished();
     return impl->getGraph();
 }
 

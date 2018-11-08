@@ -106,7 +106,7 @@ public:
 	 * centrality.
 	 */
 	std::vector<node> topkNodesList() const {
-		checkHasRun();
+		assureFinished();
 		return topkNodes;
 	}
 
@@ -114,7 +114,7 @@ public:
 	 * @return Sorted list of approximated betweenness centrality scores.
 	 */
 	std::vector<double> topkScoresList() const {
-		checkHasRun();
+		assureFinished();
 		return topkScores;
 	}
 
@@ -123,7 +123,7 @@ public:
 	 * graph.
 	 */
 	std::vector<double> scores() const {
-		checkHasRun();
+		assureFinished();
 		return approxSum;
 	}
 
@@ -131,7 +131,7 @@ public:
 	 * @return Total number of samples.
 	 */
 	count getNumberOfIterations() const {
-		checkHasRun();
+		assureFinished();
 		return nPairs;
 	}
 
@@ -139,7 +139,7 @@ public:
 	 * @return Upper bound to the number of samples.
 	 */
 	double getOmega() const {
-		checkHasRun();
+		assureFinished();
 		return omega;
 	}
 
@@ -181,12 +181,6 @@ protected:
 	                const double deltaU) const;
 	void fillResult();
 
-	void checkHasRun() const {
-		if (!hasRun) {
-			throw std::runtime_error("Call the run() method first.");
-		}
-	}
-
 	void fillPQ() {
 		for (count i = 0; i < n; ++i) {
 			top->insert(i, approxSum[i]);
@@ -196,7 +190,7 @@ protected:
 
 inline std::vector<std::pair<node, double>>
 KadabraBetweenness::ranking() const {
-	checkHasRun();
+	assureFinished();
 	std::vector<std::pair<node, double>> result(topkNodes.size());
 #pragma omp parallel for
 	for (omp_index i = 0; i < static_cast<omp_index>(result.size()); ++i) {

@@ -70,17 +70,16 @@ private:
 	const Graph& G;
 	Partition component;
 	count numComponents;
-	bool hasRun;
 };
 
 inline count ConnectedComponents::componentOfNode(node u) const {
 	assert (component[u] != none);
-	if (!hasRun) throw std::runtime_error("run method has not been called");
+	assureFinished();
 	return component[u];
 }
 
 inline count ConnectedComponents::numberOfComponents() {
-	if (!hasRun) throw std::runtime_error("run method has not been called");
+	assureFinished();
 	return this->numComponents;
 }
 

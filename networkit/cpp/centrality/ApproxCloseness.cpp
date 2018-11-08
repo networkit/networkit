@@ -412,7 +412,7 @@ double ApproxCloseness::maximum() {
 }
 
 std::vector<double> ApproxCloseness::getSquareErrorEstimates() {
-	if (!hasRun) throw std::runtime_error("Call run method first");
+	assureFinished();
 	return SQErrEst;
 }
 

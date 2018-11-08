@@ -10,7 +10,7 @@
 namespace NetworKit {
 
     WeaklyConnectedComponents::WeaklyConnectedComponents(const Graph& G) :
-    G(G), hasRun(false) {
+    G(G) {
         if (!G.isDirected()) {
             throw std::runtime_error("Weakly Connected Components can be computeed for directed graphs. Use ConnectedComponents for undirected graphs.");
         }
@@ -86,9 +86,7 @@ namespace NetworKit {
 
 
     std::vector<std::vector<node> > WeaklyConnectedComponents::getComponents() {
-        if (!hasRun) {
-			throw std::runtime_error("run method has not been called");
-		}
+        assureFinished();
 
         // transform partition into vector of unordered_set
         std::vector<std::vector<node> > result(compSize.size());

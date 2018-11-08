@@ -13,7 +13,7 @@
 
 namespace NetworKit {
 
-ConnectedComponents::ConnectedComponents(const Graph& G) : G(G), hasRun(false) {
+ConnectedComponents::ConnectedComponents(const Graph& G) : G(G) {
 	if (G.isDirected()) {
 		throw std::runtime_error("Error, connected components of directed graphs cannot be computed, use StronglyConnectedComponents for them.");
 	}
@@ -56,13 +56,13 @@ void ConnectedComponents::run() {
 
 
 Partition ConnectedComponents::getPartition() {
-	if (!hasRun) throw std::runtime_error("run method has not been called");
+	assureFinished();
 	return this->component;
 }
 
 
 std::vector<std::vector<node> > ConnectedComponents::getComponents() {
-	if (!hasRun) throw std::runtime_error("run method has not been called");
+	assureFinished();
 
 	// transform partition into vector of unordered_set
 	std::vector<std::vector<node> > result(numComponents);
@@ -77,7 +77,7 @@ std::vector<std::vector<node> > ConnectedComponents::getComponents() {
 
 
 std::map<index, count> ConnectedComponents::getComponentSizes() {
-	if (!hasRun) throw std::runtime_error("run method has not been called");
+	assureFinished();
 	return this->component.subsetSizeMap();
 }
 

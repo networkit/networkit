@@ -50,7 +50,7 @@ public:
 	virtual std::string toString() const;
 
 	/**
-	 * @return True if algorithm can run multi-threaded. 
+	 * @return True if algorithm can run multi-threaded.
 	 */
 	virtual bool isParallel() const;
 };
