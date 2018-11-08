@@ -5342,6 +5342,7 @@ cdef extern from "cpp/components/ConnectedComponents.h":
 		count componentOfNode(node query) except +
 		_Partition getPartition() except +
 		map[index, count] getComponentSizes() except +
+		vector[vector[node]] getComponents() except +
 
 
 cdef class ConnectedComponents(Algorithm):
@@ -5393,6 +5394,15 @@ cdef class ConnectedComponents(Algorithm):
 	def getComponentSizes(self):
 		return (<_ConnectedComponents*>(self._this)).getComponentSizes()
 
+	def getComponents(self):
+		""" Get the connected components, each as a list of nodes.
+
+		Returns
+		-------
+		list:
+			The connected components.
+		"""
+		return (<_ConnectedComponents*>(self._this)).getComponents()
 
 cdef extern from "cpp/components/ParallelConnectedComponents.h":
 	cdef cppclass _ParallelConnectedComponents "NetworKit::ParallelConnectedComponents"(_Algorithm):
