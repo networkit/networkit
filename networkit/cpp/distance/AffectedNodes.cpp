@@ -479,26 +479,17 @@ AffectedNodes::getAffectedNodesBackwards(node source,
 }
 
 std::vector<edgeweight> AffectedNodes::getDistances() {
-  if (!hasRun) {
-    throw new std::runtime_error("run() has to be called first.");
-  }
-
+  assureFinished();
   return distances;
 }
 
 std::vector<node> AffectedNodes::getNodes() {
-  if (!hasRun) {
-    throw new std::runtime_error("run() has to be called first.");
-  }
-
+  assureFinished();
   return nodes;
 }
 
 std::vector<edgeweight> AffectedNodes::getImprovements() {
-  if (!hasRun) {
-    throw new std::runtime_error("run() has to be called first.");
-  }
-
+  assureFinished();
   return improvements;
 }
 

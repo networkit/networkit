@@ -114,12 +114,11 @@ namespace NetworKit {
 		 * @return The distances of each node to @a source.
 		 */
 		std::pair<std::vector<node>, std::vector<edgeweight>> getAffectedNodesBackwards(node source, std::vector<edgeweight>& distances, node additionalStartNeighbor = none);
-		const Graph& G;
-		const GraphEvent& event;
+		const Graph &G;
+		const GraphEvent &event;
 		std::vector<node> nodes;
 		std::vector<edgeweight> distances;
 		std::vector<edgeweight> improvements;
-		bool hasRun = false;
 	};
 }
 

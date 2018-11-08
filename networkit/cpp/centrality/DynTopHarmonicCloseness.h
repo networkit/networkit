@@ -204,9 +204,7 @@ protected:
 
 inline std::vector<node>
 DynTopHarmonicCloseness::topkNodesList(bool includeTrail) {
-  if (!hasRun) {
-    throw std::runtime_error("Call run method first");
-  }
+  assureFinished();
   if (!includeTrail) {
     auto begin = topk.begin();
     std::vector<node> topkNoTrail(begin, begin + k);
@@ -217,9 +215,7 @@ DynTopHarmonicCloseness::topkNodesList(bool includeTrail) {
 
 inline std::vector<edgeweight>
 DynTopHarmonicCloseness::topkScoresList(bool includeTrail) {
-  if (!hasRun) {
-    throw std::runtime_error("Call run method first");
-  }
+  assureFinished();
   if (!includeTrail) {
     auto begin = topkScores.begin();
     std::vector<edgeweight> topkScoresNoTrail(begin, begin + k);

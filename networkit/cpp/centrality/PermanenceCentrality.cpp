@@ -108,7 +108,7 @@ void NetworKit::PermanenceCentrality::run() {
 }
 
 double NetworKit::PermanenceCentrality::getIntraClustering(NetworKit::node u) {
-	if (!hasRun) throw std::runtime_error("Error, run must be called first");
+	assureFinished();
 	count numNeighbors = 0;
 	index C = P[u];
 
@@ -156,4 +156,3 @@ double NetworKit::PermanenceCentrality::getPermanence(NetworKit::node u) {
 
 	return strength[C] * 1.0 / maxNeighborStrength * 1.0 /G.degree(u) - (1.0 - getIntraClustering(u));
 }
-

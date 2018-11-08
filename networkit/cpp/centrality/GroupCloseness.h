@@ -76,8 +76,7 @@ protected:
 };
 
 inline std::vector<node> GroupCloseness::groupMaxCloseness() {
-	if (!hasRun)
-		throw std::runtime_error("Call run method first");
+	assureFinished();
 	return S;
 }
 

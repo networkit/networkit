@@ -39,7 +39,7 @@ public:
 	 * @param v
 	 */
 	double distance(node v) const {
-		if (!hasRun) throw std::runtime_error("BFS: Call run() method first");
+		assureFinished();
 		assert(v <= At.numberOfRows());
 		return distances[v];
 	}

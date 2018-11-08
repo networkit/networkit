@@ -230,8 +230,7 @@ void DynKatzCentrality::updateBatch(const std::vector<GraphEvent> &events){
 }
 
 double DynKatzCentrality::bound(node v) {
-	if (!hasRun)
-		throw std::runtime_error("Call run method first");
+	assureFinished();
 	return boundData.at(v);
 }
 

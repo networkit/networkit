@@ -10,7 +10,7 @@
 namespace NetworKit {
 
 	DynConnectedComponents::DynConnectedComponents(const Graph& G) :
-	G(G), hasRun(false) {
+	G(G) {
 		if (G.isDirected()) {
 			throw std::runtime_error("Error, connected components of directed graphs cannot be computed, use StronglyConnectedComponents instead.");
 		}
@@ -24,6 +24,7 @@ namespace NetworKit {
 		tmpDistances.assign(G.upperNodeIdBound(), none);
 		indexEdges();
 		isTree.assign(edgesMap.size(), false);
+		hasRun = false;
 	}
 
 	void DynConnectedComponents::run() {
@@ -78,9 +79,7 @@ namespace NetworKit {
 
 
 	void DynConnectedComponents::update(GraphEvent event) {
-		if (!hasRun) {
-			throw std::runtime_error("run method has not been called");
-		}
+		assureFinished();
 
 		if (event.type == GraphEvent::EDGE_ADDITION) {
 			addEdge(event.u, event.v);
@@ -269,9 +268,7 @@ namespace NetworKit {
 
 
 	std::vector<std::vector<node> > DynConnectedComponents::getComponents() {
-		if (!hasRun) {
-			throw std::runtime_error("run method has not been called");
-		}
+		assureFinished();
 
 		std::vector<std::vector<node> > result(compSize.size());
 		std::map<index, count> compIndex;

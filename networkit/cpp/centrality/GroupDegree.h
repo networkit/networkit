@@ -80,17 +80,16 @@ protected:
 	void updateQueue();
 	void updateGroup();
 	void computeScore();
-	void checkHasRun();
 	void checkGroup(const std::vector<node> &group) const;
 };
 
 inline std::vector<node> GroupDegree::groupMaxDegree() {
-	checkHasRun();
+	assureFinished();
 	return group;
 }
 
 inline count GroupDegree::getScore() {
-	checkHasRun();
+	assureFinished();
 	return groupScore;
 }
 
@@ -99,12 +98,6 @@ inline void GroupDegree::computeScore() {
 
 	if (!countGroupNodes) {
 		groupScore -= k;
-	}
-}
-
-inline void GroupDegree::checkHasRun() {
-	if (!hasRun) {
-		throw std::runtime_error("Run method has not been called.");
 	}
 }
 

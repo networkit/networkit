@@ -31,7 +31,7 @@ namespace NetworKit {
         * This method determines the weakly connected components for the graph
         * given in the constructor.
         */
-        void run();
+        void run() override;
 
         /**
         * Get the number of weakly connected components.
@@ -76,26 +76,21 @@ namespace NetworKit {
         // This map stores all components
         // <Key: component ID, Value: component size>
         std::map<index, count> compSize;
-
-        // Whether the run() method has been called
-        bool hasRun;
     };
 
     inline count WeaklyConnectedComponents::componentOfNode(node u) {
         assert (components[u] != none);
-        if (!hasRun) throw std::runtime_error("run method has not been called");
+        assureFinished();
         return components[u];
     }
 
     inline count WeaklyConnectedComponents::numberOfComponents() {
-        if (!hasRun) throw std::runtime_error("run method has not been called");
+        assureFinished();
         return compSize.size();
     }
 
     inline std::map<index, count> WeaklyConnectedComponents::getComponentSizes() {
-        if (!hasRun){
-            throw std::runtime_error("run method has not been called");
-        }
+       	assureFinished(); 
         return compSize;
     }
 

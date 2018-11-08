@@ -76,23 +76,17 @@ protected:
 };
 
 inline count BiconnectedComponents::numberOfComponents() {
-  if (!hasRun) {
-    throw std::runtime_error("Call run method before");
-  }
+  assureFinished();
   return nComp;
 }
 
 inline std::map<count, count> BiconnectedComponents::getComponentSizes() {
-  if (!hasRun) {
-    throw std::runtime_error("Call run method before");
-  }
+  assureFinished();
   return componentSizes;
 }
 
 inline std::vector<std::vector<node>> BiconnectedComponents::getComponents() {
-  if (!hasRun) {
-    throw std::runtime_error("Call run method before");
-  }
+  assureFinished();
   std::vector<std::vector<node>> result(nComp);
 
   node v = 0;
