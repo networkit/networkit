@@ -163,6 +163,17 @@ matrix:
         # Build the documentation.
         - cd core_build
         - make docs
+        - touch htmldocs/.nojekyll
+        - rm -rf htmldocs/{.buildinfo,.doctrees}
+      deploy:
+        provider: pages
+        skip-cleanup: true
+        github-token: $SECRET_DEPLOY_GITHUB_PAGES
+        local-dir: core_build/htmldocs
+        repo: networkit/dev-docs
+        target-branch: master
+        on:
+          branch: Dev
 
   allow_failures:
     - name: macOS, modern Clang
