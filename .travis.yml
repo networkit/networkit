@@ -130,6 +130,51 @@ matrix:
       addons: *gcc8
       script: *script_cpp_only
 
+    - name: Documentation only
+      env: CC=gcc-8 CXX=g++-8
+      os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-8
+            - python3-pip
+            - python3.4-venv
+            - doxygen
+      script:
+        - set -e
+        - python3 -m venv pyenv && . pyenv/bin/activate
+        - pip3 install --upgrade pip
+        # cython is required because git does not contain _NetworKit.
+        - pip3 install cython
+        # sphinx_bootstrap_theme is required to build the documentation.
+        - pip3 install sphinx sphinx_bootstrap_theme
+        # Build the C++ core library (no need for optimizations).
+        - mkdir core_build && cd "$_"
+        - cmake -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD ..
+        - make -j2
+        - cd ..
+        # Build the Python extension.
+        - export CMAKE_LIBRARY_PATH=${CMAKE_LIBRARY_PATH:+$CMAKE_LIBRARY_PATH:}$(pwd)/core_build
+        - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$(pwd)/core_build
+        - NETWORKIT_PARALLEL_JOBS=2 python3 ./setup.py build_ext --inplace --networkit-external-core
+        - NETWORKIT_PARALLEL_JOBS=2 pip3 install -e .
+        # Build the documentation.
+        - cd core_build
+        - make docs
+        - touch htmldocs/.nojekyll
+        - rm -rf htmldocs/{.buildinfo,.doctrees}
+      deploy:
+        provider: pages
+        skip-cleanup: true
+        github-token: $SECRET_DEPLOY_GITHUB_PAGES
+        local-dir: core_build/htmldocs
+        repo: networkit/dev-docs
+        target-branch: master
+        on:
+          branch: Dev
+
   allow_failures:
     - name: macOS, modern Clang
     - name: macOS, legacy Clang 4 
