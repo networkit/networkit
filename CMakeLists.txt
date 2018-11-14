@@ -452,16 +452,31 @@ endfunction(networkit_add_gbenchmark)
 ################################################################################
 # Documentation
 
-add_custom_target(general_docs
-		COMMAND rm -rf htmldocs
-		COMMAND sphinx-build ${CMAKE_SOURCE_DIR}/docs htmldocs)
+find_program(SPHINX_EXECUTABLE
+	NAMES
+		sphinx-build sphinx-build.exe
+	PATHS
+		/usr/bin
+		/usr/local/bin
+		/opt/local/bin
+	DOC "Sphinx documentation generator")
 
-add_custom_target(cpp_api_docs DEPENDS general_docs
-		COMMAND sed s:@BUILDDIR@:${CMAKE_CURRENT_BINARY_DIR}:
-				${CMAKE_SOURCE_DIR}/docs/cpp_api/Doxyfile.in | doxygen -
-		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+if (NOT SPHINX_EXECUTABLE)
+	message(STATUS "sphinx-build not found. Disable documentation targets")
 
-add_custom_target(docs DEPENDS general_docs cpp_api_docs)
+else()
+	message(STATUS "Found sphinx-build: ${SPHINX_EXECUTABLE}")
+	add_custom_target(general_docs
+			COMMAND rm -rf htmldocs
+			COMMAND ${SPHINX_EXECUTABLE} ${CMAKE_SOURCE_DIR}/docs htmldocs)
+
+	add_custom_target(cpp_api_docs DEPENDS general_docs
+			COMMAND sed s:@BUILDDIR@:${CMAKE_CURRENT_BINARY_DIR}:
+					${CMAKE_SOURCE_DIR}/docs/cpp_api/Doxyfile.in | doxygen -
+			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+
+	add_custom_target(docs DEPENDS general_docs cpp_api_docs)
+endif()
 
 ################################################################################
 # Subdirectories
