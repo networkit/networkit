@@ -279,6 +279,34 @@ TEST_P(GraphGTest, testSetName) {
 	ASSERT_EQ(s2, G2.getName());
 }
 
+TEST_P(GraphGTest, testMaxDegreeUndirected) {
+	Aux::Random::setSeed(1, false);
+	Graph G = ErdosRenyiGenerator(20, 0.2, false).generate();
+
+	count maxDegOut = 0, maxDegIn = 0;
+	G.forNodes([&](const node u) {
+			maxDegOut = std::max(maxDegOut, G.degreeOut(u));
+			maxDegIn = std::max(maxDegIn, G.degreeIn(u));
+	});
+
+	ASSERT_EQ(G.maxDegree(), maxDegOut);
+	ASSERT_EQ(G.maxDegreeIn(), maxDegIn);
+}
+
+TEST_P(GraphGTest, testMaxDegreeDirected) {
+	Aux::Random::setSeed(1, false);
+	Graph G = ErdosRenyiGenerator(20, 0.2, true).generate();
+
+	count maxDegOut = 0, maxDegIn = 0;
+	G.forNodes([&](const node u) {
+			maxDegOut = std::max(maxDegOut, G.degreeOut(u));
+			maxDegIn = std::max(maxDegIn, G.degreeIn(u));
+	});
+
+	ASSERT_EQ(G.maxDegree(), maxDegOut);
+	ASSERT_EQ(G.maxDegreeIn(), maxDegIn);
+}
+
 TEST_P(GraphGTest, testToString) {
 	Graph G1 = createGraph(0);
 	Graph G2 = createGraph(0);
