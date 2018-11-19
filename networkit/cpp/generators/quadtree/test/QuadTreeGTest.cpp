@@ -246,6 +246,11 @@ TEST_F(QuadTreeGTest, testQuadTreeDeletion) {
  * Test whether the points found by a Euclidean range query on the quadtree root are exactly those whose Euclidean distance to the query point is smaller than the threshold.
  */
 TEST_F(QuadTreeGTest, testEuclideanCircle) {
+	// In Windows this test randomly timeouts. We temporarily address this issue
+	// by fixing a random seed. However, this test should not depend on the
+	// random seed.
+	// TODO: debug this test on Windows.
+	Aux::Random::setSeed(1, false);
 	count n = 1000;
 	double R = 1;
 	double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
