@@ -87,7 +87,7 @@ matrix:
       sudo: false
       before_install:
         - brew install libomp
-        - brew upgrade cmake # cmake on osx images (xode9.4) is on 3.11.4 - 3.12+ required 
+        - brew upgrade cmake # cmake on osx images (xode9.4) is on 3.11.4 - 3.12+ required
 
     # Test more exotic builds only on Linux.
     - name: "Linux, modern GCC: Core build, debugging"
@@ -177,7 +177,7 @@ matrix:
 
   allow_failures:
     - name: macOS, modern Clang
-    - name: macOS, legacy Clang 4 
+    - name: macOS, legacy Clang 4
     - name: macOS (xcode8), GCC 6
 
 
