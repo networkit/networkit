@@ -134,6 +134,13 @@ private:
 	index indexInOutEdgeArray(node u, node v) const;
 
 	/**
+	 * Computes the maximum in/out degree of the graph.
+	 *
+	 * @param inDegree wheter to compute the in degree or the out degree.
+	 */
+	count computeMaxDegree(const bool inDegree = false) const;
+
+	/**
 	 * Returns the edge weight of the outgoing edge of index i in the outgoing edges of node u
 	 * @param u The node
 	 * @param i The index
@@ -584,6 +591,20 @@ public:
 	 * @return The number of outgoing neighbors.
 	 */
 	count degreeOut(node v) const { return outDeg[v]; }
+
+	/**
+	 * Returns the maximum out-degree of the graph.
+	 *
+	 * @return The maximum out-degree of the graph.
+	 */
+	count maxDegree() const;
+
+	/**
+	 * Returns the maximum in-degree of the graph.
+	 *
+	 * @return The maximum in-degree of the graph.
+	 */
+	count maxDegreeIn() const;
 
 	/**
 	 * Check whether @a v is isolated, i.e. degree is 0.
@@ -1612,9 +1633,6 @@ void Graph::DFSEdgesFrom(node r, L handle) const {
 		});
 	} while (!s.empty());
 }
-
-
-
 
 } /* namespace NetworKit */
 

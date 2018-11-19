@@ -286,6 +286,8 @@ cdef extern from "cpp/graph/Graph.h":
 		count degreeIn(node u) except +
 		count degreeOut(node u) except +
 		double weightedDegree(node u) except +
+		count maxDegree() except +
+		count maxDegreeIn() except +
 		bool isIsolated(node u) except +
 		_Graph copyNodes() except +
 		node addNode() except +
@@ -594,6 +596,28 @@ cdef class Graph:
 			The weighted degree of v.
 		"""
 		return self._this.weightedDegree(v)
+
+	def maxDegree(self):
+		"""
+		Returns the maximum out-degree of the graph.
+
+		Returns
+		-------
+		count
+			Maximum out-degree of the graph.
+		"""
+		return self._this.maxDegree()
+
+	def maxDegreeIn(self):
+		"""
+		Returns the maximum in-degree of the graph.
+
+		Returns
+		-------
+		count
+			Maximum in-degree of the graph.
+		"""
+		return self._this.maxDegreeIn()
 
 	def isIsolated(self, u):
 		"""

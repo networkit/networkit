@@ -5,6 +5,7 @@
  *      Author: Klara Reichard (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
  */
 
+#include <cmath>
 #include <sstream>
 #include <random>
 
@@ -447,6 +448,29 @@ void Graph::sortEdges() {
 		inEdgeWeights.swap(targetWeight);
 		inEdgeIds.swap(targetEdgeIds);
 	}
+}
+
+count Graph::maxDegree() const {
+	return computeMaxDegree();
+}
+
+count Graph::maxDegreeIn() const {
+	return computeMaxDegree(true);
+}
+
+count Graph::computeMaxDegree(const bool inDegree) const  {
+	count result = 0;
+#ifndef NETWORKIT_OMP2
+#pragma omp parallel for reduction(max : result)
+	for (omp_index u = 0; u < upperNodeIdBound(); ++u) {
+		result = std::max(result, inDegree ? degreeIn(u) : degreeOut(u));
+	}
+#else
+	this->forNodes([&](const node u) {
+		result = std::max(result, inDegree ? degreeIn(u) : degreeOut(u));
+	});
+#endif
+	return result;
 }
 
 
@@ -1057,7 +1081,5 @@ Graph Graph::subgraphFromNodes(const std::unordered_set<node>& nodes) const {
 
 	return S;
 }
-
-
 
 } /* namespace NetworKit */
