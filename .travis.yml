@@ -7,6 +7,90 @@ env:
 
 matrix:
   include:
+    - name: macOS 10.13, llvm 7
+      env: CC=/usr/local/opt/llvm@7/bin/clang
+      env: CXX=/usr/local/opt/llvm@7/bin/clang++
+      os: osx
+      osx_image: xcode10.1
+      sudo: false
+      addons:
+        homebrew:
+          packages:
+            - llvm@7
+            - libomp
+            - python
+          update: true
+
+    - name: macOS 10.13, GCC 8
+      env: CC=/usr/local/opt/gcc@8/bin/gcc-8
+      env: CXX=/usr/local/opt/gcc@8/bin/g++-8
+      os: osx
+      osx_image: xcode10.1
+      sudo: false
+      addons:
+        homebrew:
+          packages:
+            - gcc@8
+            - python
+          update: true
+      before_install:
+        - brew link gcc@8
+
+    - name: macOS 10.13, Apple Clang
+      env: CC=cc
+      env: CXX=c++
+      os: osx
+      osx_image: xcode10.1
+      sudo: false
+      addons:
+        homebrew:
+          packages:
+            - libomp
+            - python
+          update: true
+
+    - name: macOS 10.12, llvm 7
+      env: CC=/usr/local/opt/llvm@7/bin/clang
+      env: CXX=/usr/local/opt/llvm@7/bin/clang++
+      os: osx
+      osx_image: xcode9.2
+      sudo: false
+      addons:
+        homebrew:
+          packages:
+            - llvm@7
+            - libomp
+            - python
+          update: true
+
+    - name: macOS 10.12, GCC 8
+      env: CC=/usr/local/opt/gcc@8/bin/gcc-8
+      env: CXX=/usr/local/opt/gcc@8/bin/g++-8
+      os: osx
+      osx_image: xcode9.2
+      sudo: false
+      addons:
+        homebrew:
+          packages:
+            - gcc@8
+            - python
+          update: true
+      before_install:
+        - brew link gcc@8
+
+    - name: macOS 10.12, Apple Clang
+      env: CC=cc CXX=c++
+      os: osx
+      osx_image: xcode9.2
+      sudo: false
+      addons:
+        homebrew:
+          packages:
+            - libomp
+            - python
+            - cmake
+          update: true
+
     - name: Linux, modern GCC
       env: CC=gcc-8 CXX=g++-8
       os: linux
@@ -18,17 +102,6 @@ matrix:
             - g++-8
             - python3-pip
             - python3.4-venv
-
-    - name: macOS, modern Clang
-      env: CC=/usr/local/opt/llvm/bin/clang
-      env: CXX=/usr/local/opt/llvm/bin/clang++
-      os: osx
-      sudo: false
-      before_install:
-        - brew update
-        - brew install llvm
-        - brew install libomp
-        - if brew outdated | grep -q python; then brew upgrade python; fi
 
     - name: Linux, legacy GCC 4.9
       env: CC=gcc-4.9 CXX=g++-4.9
@@ -58,36 +131,6 @@ matrix:
             - libiomp-dev
             - python3-pip
             - python3.4-venv
-
-    - name: macOS (xcode8), GCC 6
-      env: CC=gcc-6 CXX=g++-6
-      os: osx
-      osx_image: xcode8
-      sudo: false
-      before_install:
-        - brew update
-        - brew cask uninstall --force oclint # See https://github.com/travis-ci/travis-ci/issues/8826 for details.
-        - brew install gcc@6
-        - if brew outdated | grep -q python; then brew upgrade python; fi
-
-    - name: macOS, legacy Clang 4
-      env: CC=/usr/local/opt/llvm@4/bin/clang
-      env: CXX=/usr/local/opt/llvm@4/bin/clang++
-      os: osx
-      sudo: false
-      before_install:
-        - brew update
-        - brew install llvm@4
-        - brew install libomp
-        - if brew outdated | grep -q python; then brew upgrade python; fi
-
-    - name: macOS, AppleClang
-      env: CC=cc CXX=c++
-      os: osx
-      sudo: false
-      before_install:
-        - brew install libomp
-        - brew upgrade cmake # cmake on osx images (xode9.4) is on 3.11.4 - 3.12+ required
 
     # Test more exotic builds only on Linux.
     - name: "Linux, modern GCC: Core build, debugging"
@@ -174,12 +217,6 @@ matrix:
         target-branch: master
         on:
           branch: Dev
-
-  allow_failures:
-    - name: macOS, modern Clang
-    - name: macOS, legacy Clang 4
-    - name: macOS (xcode8), GCC 6
-
 
 script:
  - $CXX --version
