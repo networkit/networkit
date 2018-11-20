@@ -59,6 +59,5 @@ install_requires = [
 	'numpy',
 	'networkx',
 	'tabulate',
-	'seaborn',
-	'sklearn'
+	'ipython'
 ]
