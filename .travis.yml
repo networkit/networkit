@@ -1,5 +1,8 @@
 language: generic
 
+git:
+  depth: 1
+
 env:
   global:
     - export OMP_NUM_THREADS=2
