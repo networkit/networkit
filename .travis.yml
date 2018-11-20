@@ -18,8 +18,6 @@ matrix:
           packages:
             - llvm@7
             - libomp
-            - python
-          update: true
 
     - name: macOS 10.13, GCC 8
       env: CC=/usr/local/opt/gcc@8/bin/gcc-8
@@ -31,8 +29,6 @@ matrix:
         homebrew:
           packages:
             - gcc@8
-            - python
-          update: true
       before_install:
         - brew link gcc@8
 
@@ -46,8 +42,6 @@ matrix:
         homebrew:
           packages:
             - libomp
-            - python
-          update: true
 
     - name: macOS 10.12, llvm 7
       env: CC=/usr/local/opt/llvm@7/bin/clang
@@ -77,19 +71,6 @@ matrix:
           update: true
       before_install:
         - brew link gcc@8
-
-    - name: macOS 10.12, Apple Clang
-      env: CC=cc CXX=c++
-      os: osx
-      osx_image: xcode9.2
-      sudo: false
-      addons:
-        homebrew:
-          packages:
-            - libomp
-            - python
-            - cmake
-          update: true
 
     - name: Linux, modern GCC
       env: CC=gcc-8 CXX=g++-8
