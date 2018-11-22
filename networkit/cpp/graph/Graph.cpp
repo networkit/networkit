@@ -460,6 +460,46 @@ count Graph::computeMaxDegree(const bool inDegree) const {
 	return result;
 }
 
+edgeweight Graph::maxWeightedDegree() const {
+	return computeMaxWeightedDegree();
+}
+
+edgeweight Graph::maxWeightedDegreeIn() const {
+	return computeMaxWeightedDegree(true);
+}
+
+edgeweight Graph::computeMaxWeightedDegree(const bool inDegree) const {
+	edgeweight result = 0;
+#ifndef NETWORKIT_OMP2
+#pragma omp parallel for reduction(max : result)
+	for (omp_index u = 0; u < upperNodeIdBound(); ++u) {
+		result =
+		    std::max(result, inDegree ? weightedDegreeIn(u) : weightedDegree(u));
+	}
+#else
+	this->forNodes([&](const node u) {
+		result =
+		    std::max(result, inDegree ? weightedDegreeIn(u) : weightedDegree(u));
+	});
+#endif
+	return result;
+}
+
+edgeweight Graph::computeWeightedDegree(const node &v,
+                                        const bool inDegree) const {
+	if (weighted) {
+		edgeweight sum = 0.0;
+		auto sumWeights = [&](const node u, const edgeweight w) { sum += w; };
+		if (inDegree) {
+			forInNeighborsOf(v, sumWeights);
+		} else {
+			forNeighborsOf(v, sumWeights);
+		}
+		return sum;
+	}
+	return defaultEdgeWeight * inDegree ? degreeIn(v) : degreeOut(v);
+}
+
 std::string Graph::toString() const {
 	std::stringstream strm;
 	strm << typ() << "(name=" << getName() << ", n=" << numberOfNodes()
@@ -536,13 +576,12 @@ void Graph::restoreNode(node v) {
 
 /** NODE PROPERTIES **/
 
-edgeweight Graph::weightedDegree(node v) const {
-	if (weighted) {
-		edgeweight sum = 0.0;
-		forNeighborsOf(v, [&](node u, edgeweight ew) { sum += ew; });
-		return sum;
-	}
-	return defaultEdgeWeight * degree(v);
+edgeweight Graph::weightedDegree(const node &v) const {
+	return computeWeightedDegree(v);
+}
+
+edgeweight Graph::weightedDegreeIn(const node &v) const {
+	return computeWeightedDegree(v, true);
 }
 
 edgeweight Graph::volume(node v) const {

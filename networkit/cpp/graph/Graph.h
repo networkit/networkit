@@ -151,11 +151,26 @@ private:
 	index indexInOutEdgeArray(node u, node v) const;
 
 	/**
+	 * Computes the weighted in/out degree of a graph.
+	 *
+	 * @param inDegree whether to compute the in degree or the out degree.
+	 */
+	edgeweight computeWeightedDegree(const node &v,
+	                                 const bool inDegree = false) const;
+
+	/**
 	 * Computes the maximum in/out degree of the graph.
 	 *
 	 * @param inDegree wheter to compute the in degree or the out degree.
 	 */
 	count computeMaxDegree(const bool inDegree = false) const;
+
+	/**
+	 * Computes the maximum in/out weighted degree of the graph
+	 *
+	 * @param inDegree whether to compute the in degree or the out degree
+	 */
+	edgeweight computeMaxWeightedDegree(const bool inDegree = false) const;
 
 	/**
 	 * Returns the edge weight of the outgoing edge of index i in the outgoing
@@ -667,10 +682,36 @@ public:
 	 *
 	 * @param v Node.
 	 * @return Weighted degree of @a v.
-	 * @note For directed graphs this is the sum of weights of all outgoing edges
+	 * @note For directed graphs this is the sum of weights of all outgoing edges.
 	 * of @a v.
 	 */
-	edgeweight weightedDegree(node v) const;
+	edgeweight weightedDegree(const node &v) const;
+
+	/**
+	 * Returns the maximum weighted degree of the graph.
+	 *
+	 * @return Maximum weighted degree of the graph.
+	 * @note For directed graphs this is the sum of weights of all outgoing edges.
+	 */
+	edgeweight maxWeightedDegree() const;
+
+	/**
+	 * Returns the maximum weighted in degree of the graph.
+	 *
+	 * @return Maximum weighted in degree of the graph.
+	 * @note For directed graphs this is the sum of weights of all in-going edges.
+	 */
+	edgeweight maxWeightedDegreeIn() const;
+
+	/**
+	 * Returns the weighted in-degree of @a v.
+	 *
+	 * @param v Node.
+	 * @return Weighted in-degree of @a v.
+	 * @note For directed graphs this is the sum of weights of all ingoing edges.
+	 * of @a v.
+	 */
+	edgeweight weightedDegreeIn(const node &v) const;
 
 	/**
 	 * Returns the volume of the @a v, which is the weighted degree with
