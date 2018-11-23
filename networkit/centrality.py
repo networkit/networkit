@@ -14,6 +14,7 @@ KatzCentrality, LocalClusteringCoefficient, ApproxCloseness, LocalPartitionCover
 PermanenceCentrality, TopCloseness, TopHarmonicCloseness, DynTopHarmonicCloseness, DynBetweenness,\
 GroupDegree, GroupCloseness, DynBetweennessOneNode, LaplacianCentrality, ApproxGroupBetweenness, DynKatzCentrality,\
 KadabraBetweenness
+from _NetworKit import _ClosenessVariant as ClosenessVariant
 
 # local imports
 from networkit.algebraic import adjacencyEigenvector, PageRankMatrix, symmetricEigenvectors

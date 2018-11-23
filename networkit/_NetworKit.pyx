@@ -24,7 +24,7 @@ from libc.stdint cimport int64_t
 from libc.stdint cimport uint8_t
 
 # the C++ standard library
-from libcpp cimport bool
+from libcpp cimport bool as bool_t
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 from libcpp.map cimport map
@@ -55,7 +55,7 @@ cdef extern from "<algorithm>" namespace "std":
 	_Cover move(_Cover t) nogil
 	_Matching move(_Matching) nogil
 	vector[double] move(vector[double])
-	vector[bool] move(vector[bool])
+	vector[bool_t] move(vector[bool_t])
 	vector[count] move(vector[count])
 	pair[_Graph, vector[node]] move(pair[_Graph, vector[node]]) nogil
 	vector[pair[pair[node, node], double]] move(vector[pair[pair[node, node], double]]) nogil
@@ -84,9 +84,9 @@ cdef extern from "cpp/base/Algorithm.h":
 	cdef cppclass _Algorithm "NetworKit::Algorithm":
 		_Algorithm()
 		void run() nogil except +
-		bool hasFinished() except +
+		bool_t hasFinished() except +
 		string toString() except +
-		bool isParallel() except +
+		bool_t isParallel() except +
 
 cdef class Algorithm:
 	""" Abstract base class for algorithms """
@@ -197,7 +197,7 @@ cdef extern from "cpp/auxiliary/Log.h" namespace "Aux":
 	#void _configureLogging "Aux::configureLogging" (string loglevel)
 	string _getLogLevel "Aux::Log::getLogLevel" () except +
 	void _setLogLevel "Aux::Log::setLogLevel" (string loglevel) except +
-	void _setPrintLocation "Aux::Log::Settings::setPrintLocation" (bool) except +
+	void _setPrintLocation "Aux::Log::Settings::setPrintLocation" (bool_t) except +
 
 def getLogLevel():
 	""" Get the current log level"""
@@ -234,9 +234,9 @@ def enableNestedParallelism():
 	_enableNestedParallelism()
 
 cdef extern from "cpp/auxiliary/Random.h" namespace "Aux::Random":
-	void _setSeed "Aux::Random::setSeed" (uint64_t, bool)
+	void _setSeed "Aux::Random::setSeed" (uint64_t, bool_t)
 
-def setSeed(uint64_t seed, bool useThreadId):
+def setSeed(uint64_t seed, bool_t useThreadId):
 	""" Set the random seed that is used in NetworKit.
 
 	Note that there is a separate random number generator per thread.
@@ -270,11 +270,11 @@ cdef extern from "cpp/viz/Point.h" namespace "NetworKit":
 cdef extern from "cpp/graph/Graph.h":
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
-		_Graph(count, bool, bool) except +
+		_Graph(count, bool_t, bool_t) except +
 		_Graph(const _Graph& other) except +
-		_Graph(const _Graph& other, bool weighted, bool directed) except +
-		void indexEdges(bool) except +
-		bool hasEdgeIds() except +
+		_Graph(const _Graph& other, bool_t weighted, bool_t directed) except +
+		void indexEdges(bool_t) except +
+		bool_t hasEdgeIds() except +
 		edgeid edgeId(node, node) except +
 		count numberOfNodes() except +
 		count numberOfEdges() except +
@@ -290,11 +290,11 @@ cdef extern from "cpp/graph/Graph.h":
 		count maxDegreeIn() except +
 		double maxWeightedDegree() except +
 		double maxWeightedDegreeIn() except +
-		bool isIsolated(node u) except +
+		bool_t isIsolated(node u) except +
 		_Graph copyNodes() except +
 		node addNode() except +
 		void removeNode(node u) except +
-		bool hasNode(node u) except +
+		bool_t hasNode(node u) except +
 		void restoreNode(node u) except +
 		void append(_Graph) except +
 		void merge(_Graph) except +
@@ -308,7 +308,7 @@ cdef extern from "cpp/graph/Graph.h":
 		void swapEdge(node s1, node t1, node s2, node t2) except +
 		void compactEdges() except +
 		void sortEdges() except +
-		bool hasEdge(node u, node v) except +
+		bool_t hasEdge(node u, node v) except +
 		edgeweight weight(node u, node v) except +
 		vector[node] nodes() except +
 		vector[pair[node, node]] edges() except +
@@ -319,15 +319,15 @@ cdef extern from "cpp/graph/Graph.h":
 		void forNodesInRandomOrder[Callback](Callback c) except +
 		void forEdgesOf[Callback](node u, Callback c) except +
 		void forInEdgesOf[Callback](node u, Callback c) except +
-		bool isWeighted() except +
-		bool isDirected() except +
+		bool_t isWeighted() except +
+		bool_t isDirected() except +
 		string toString() except +
 		string getName() except +
 		void setName(string name) except +
 		edgeweight totalEdgeWeight() except +
 		node randomNode() except +
 		node randomNeighbor(node) except +
-		pair[node, node] randomEdge(bool) except +
+		pair[node, node] randomEdge(bool_t) except +
 		vector[pair[node, node]] randomEdges(count) except +
 		Point[float] getCoordinate(node v) except +
 		void setCoordinate(node v, Point[float] value) except +
@@ -341,7 +341,7 @@ cdef extern from "cpp/graph/Graph.h":
 		void BFSEdgesFrom[Callback](node r, Callback c) except +
 		void DFSfrom[Callback](node r, Callback c) except +
 		void DFSEdgesFrom[Callback](node r, Callback c) except +
-		bool checkConsistency() except +
+		bool_t checkConsistency() except +
 		_Graph subgraphFromNodes(unordered_set[node] nodes)  except +
 
 cdef cppclass EdgeCallBackWrapper:
@@ -349,7 +349,7 @@ cdef cppclass EdgeCallBackWrapper:
 	__init__(object callback):
 		this.callback = <void*>callback
 	void cython_call_operator(node u, node v, edgeweight w, edgeid eid):
-		cdef bool error = False
+		cdef bool_t error = False
 		cdef string message
 		try:
 			(<object>callback)(u, v, w, eid)
@@ -364,7 +364,7 @@ cdef cppclass NodeCallbackWrapper:
 	__init__(object callback):
 		this.callback = <void*>callback
 	void cython_call_operator(node u):
-		cdef bool error = False
+		cdef bool_t error = False
 		cdef string message
 		try:
 			(<object>callback)(u)
@@ -379,7 +379,7 @@ cdef cppclass NodeDistCallbackWrapper:
 	__init__(object callback):
 		this.callback = <void*>callback
 	void cython_call_operator(node u, count dist):
-		cdef bool error = False
+		cdef bool_t error = False
 		cdef string message
 		try:
 			(<object>callback)(u, dist)
@@ -394,7 +394,7 @@ cdef cppclass NodePairCallbackWrapper:
 	__init__(object callback):
 		this.callback = <void*>callback
 	void cython_call_operator(node u, node v):
-		cdef bool error = False
+		cdef bool_t error = False
 		cdef string message
 		try:
 			(<object>callback)(u, v)
@@ -424,7 +424,7 @@ cdef class Graph:
 	"""
 	cdef _Graph _this
 
-	def __cinit__(self, n=0, bool weighted=False, bool directed=False):
+	def __cinit__(self, n=0, bool_t weighted=False, bool_t directed=False):
 		if isinstance(n, Graph):
 			self._this = move(_Graph((<Graph>n)._this, weighted, directed))
 		else:
@@ -461,7 +461,7 @@ cdef class Graph:
 		"""
 		return Graph().setThis(self._this.copyNodes())
 
-	def indexEdges(self, bool force = False):
+	def indexEdges(self, bool_t force = False):
 		"""
 		Assign integer ids to edges.
 
@@ -1110,7 +1110,7 @@ cdef class Graph:
 		"""
 		return self._this.randomNeighbor(u)
 
-	def randomEdge(self, bool uniformDistribution = False):
+	def randomEdge(self, bool_t uniformDistribution = False):
 		""" Get a random edge of the graph.
 
 		Parameters
@@ -1301,14 +1301,14 @@ cdef class Graph:
 
 cdef extern from "cpp/distance/SSSP.h":
 	cdef cppclass _SSSP "NetworKit::SSSP"(_Algorithm):
-		_SSSP(_Graph G, node source, bool storePaths, bool storeNodesSortedByDistance, node target) except +
-		vector[edgeweight] getDistances(bool moveOut) except +
+		_SSSP(_Graph G, node source, bool_t storePaths, bool_t storeNodesSortedByDistance, node target) except +
+		vector[edgeweight] getDistances(bool_t moveOut) except +
 		edgeweight distance(node t) except +
 		vector[node] getPredecessors(node t) except +
-		vector[node] getPath(node t, bool forward) except +
-		set[vector[node]] getPaths(node t, bool forward) except +
-		vector[node] getStack(bool moveOut) except +
-		vector[node] getNodesSortedByDistance(bool moveOut) except +
+		vector[node] getPath(node t, bool_t forward) except +
+		set[vector[node]] getPaths(node t, bool_t forward) except +
+		vector[node] getStack(bool_t moveOut) except +
+		vector[node] getNodesSortedByDistance(bool_t moveOut) except +
 		double _numberOfPaths(node t) except +
 
 cdef class SSSP(Algorithm):
@@ -1406,10 +1406,10 @@ cdef class SSSP(Algorithm):
 
 cdef extern from "cpp/distance/DynSSSP.h":
 	cdef cppclass _DynSSSP "NetworKit::DynSSSP"(_SSSP):
-		_DynSSSP(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
+		_DynSSSP(_Graph G, node source, bool_t storePaths, bool_t storeStack, node target) except +
 		void update(_GraphEvent ev) except +
 		void updateBatch(vector[_GraphEvent] batch) except +
-		bool modified() except +
+		bool_t modified() except +
 		void setTargetNode(node t) except +
 
 cdef class DynSSSP(SSSP):
@@ -1448,7 +1448,7 @@ cdef class DynSSSP(SSSP):
 
 cdef extern from "cpp/distance/BFS.h":
 	cdef cppclass _BFS "NetworKit::BFS"(_SSSP):
-		_BFS(_Graph G, node source, bool storePaths, bool storeNodesSortedByDistance, node target) except +
+		_BFS(_Graph G, node source, bool_t storePaths, bool_t storeNodesSortedByDistance, node target) except +
 
 cdef class BFS(SSSP):
 	""" Simple breadth-first search on a Graph from a given source
@@ -1500,7 +1500,7 @@ cdef class DynBFS(DynSSSP):
 
 cdef extern from "cpp/distance/Dijkstra.h":
 	cdef cppclass _Dijkstra "NetworKit::Dijkstra"(_SSSP):
-		_Dijkstra(_Graph G, node source, bool storePaths, bool storeNodesSortedByDistance, node target) except +
+		_Dijkstra(_Graph G, node source, bool_t storePaths, bool_t storeNodesSortedByDistance, node target) except +
 
 cdef class Dijkstra(SSSP):
 	""" Dijkstra's SSSP algorithm.
@@ -1557,7 +1557,7 @@ cdef cppclass PathCallbackWrapper:
 	__init__(object callback):
 		this.callback = <void*>callback
 	void cython_call_operator(vector[node] path):
-		cdef bool error = False
+		cdef bool_t error = False
 		cdef string message
 		try:
 			(<object>callback)(path)
@@ -1779,10 +1779,10 @@ cdef extern from "cpp/graph/UnionMaximumSpanningForest.h":
 	cdef cppclass _UnionMaximumSpanningForest "NetworKit::UnionMaximumSpanningForest"(_Algorithm):
 		_UnionMaximumSpanningForest(_Graph) except +
 		_UnionMaximumSpanningForest(_Graph, vector[double]) except +
-		_Graph getUMSF(bool move) except +
-		vector[bool] getAttribute(bool move) except +
-		bool inUMSF(edgeid eid) except +
-		bool inUMSF(node u, node v) except +
+		_Graph getUMSF(bool_t move) except +
+		vector[bool_t] getAttribute(bool_t move) except +
+		bool_t inUMSF(edgeid eid) except +
+		bool_t inUMSF(node u, node v) except +
 
 cdef class UnionMaximumSpanningForest(Algorithm):
 	"""
@@ -1805,13 +1805,13 @@ cdef class UnionMaximumSpanningForest(Algorithm):
 		else:
 			self._this = new _UnionMaximumSpanningForest(G._this, attribute)
 
-	def getUMSF(self, bool move = False):
+	def getUMSF(self, bool_t move = False):
 		"""
 		Gets the union of all maximum-weight spanning forests as graph.
 
 		Parameters
 		----------
-		move : boolean
+		move : bool
 			If the graph shall be moved out of the algorithm instance.
 
 		Returns
@@ -1821,21 +1821,21 @@ cdef class UnionMaximumSpanningForest(Algorithm):
 		"""
 		return Graph().setThis((<_UnionMaximumSpanningForest*>(self._this)).getUMSF(move))
 
-	def getAttribute(self, bool move = False):
+	def getAttribute(self, bool_t move = False):
 		"""
-		Get a boolean attribute that indicates for each edge if it is part of any maximum-weight spanning forest.
+		Get a bool attribute that indicates for each edge if it is part of any maximum-weight spanning forest.
 
 		This attribute is only calculated and can thus only be request if the supplied graph has edge ids.
 
 		Parameters
 		----------
-		move : boolean
+		move : bool
 			If the attribute shall be moved out of the algorithm instance.
 
 		Returns
 		-------
 		list
-			The list with the boolean attribute for each edge.
+			The list with the bool attribute for each edge.
 		"""
 		return (<_UnionMaximumSpanningForest*>(self._this)).getAttribute(move)
 
@@ -1852,7 +1852,7 @@ cdef class UnionMaximumSpanningForest(Algorithm):
 
 		Returns
 		-------
-		boolean
+		bool
 			If the edge is part of any maximum-weight spanning forest.
 		"""
 		if v == _none:
@@ -1864,10 +1864,10 @@ cdef extern from "cpp/graph/RandomMaximumSpanningForest.h":
 	cdef cppclass _RandomMaximumSpanningForest "NetworKit::RandomMaximumSpanningForest"(_Algorithm):
 		_RandomMaximumSpanningForest(_Graph) except +
 		_RandomMaximumSpanningForest(_Graph, vector[double]) except +
-		_Graph getMSF(bool move) except +
-		vector[bool] getAttribute(bool move) except +
-		bool inMSF(edgeid eid) except +
-		bool inMSF(node u, node v) except +
+		_Graph getMSF(bool_t move) except +
+		vector[bool_t] getAttribute(bool_t move) except +
+		bool_t inMSF(edgeid eid) except +
+		bool_t inMSF(node u, node v) except +
 
 cdef class RandomMaximumSpanningForest(Algorithm):
 	"""
@@ -1891,13 +1891,13 @@ cdef class RandomMaximumSpanningForest(Algorithm):
 			self._attribute = move(attribute)
 			self._this = new _RandomMaximumSpanningForest(G._this, self._attribute)
 
-	def getMSF(self, bool move = False):
+	def getMSF(self, bool_t move = False):
 		"""
 		Gets the calculated maximum-weight spanning forest as graph.
 
 		Parameters
 		----------
-		move : boolean
+		move : bool
 			If the graph shall be moved out of the algorithm instance.
 
 		Returns
@@ -1907,21 +1907,21 @@ cdef class RandomMaximumSpanningForest(Algorithm):
 		"""
 		return Graph().setThis((<_RandomMaximumSpanningForest*>(self._this)).getMSF(move))
 
-	def getAttribute(self, bool move = False):
+	def getAttribute(self, bool_t move = False):
 		"""
-		Get a boolean attribute that indicates for each edge if it is part of the calculated maximum-weight spanning forest.
+		Get a bool attribute that indicates for each edge if it is part of the calculated maximum-weight spanning forest.
 
 		This attribute is only calculated and can thus only be request if the supplied graph has edge ids.
 
 		Parameters
 		----------
-		move : boolean
+		move : bool
 			If the attribute shall be moved out of the algorithm instance.
 
 		Returns
 		-------
 		list
-			The list with the boolean attribute for each edge.
+			The list with the bool attribute for each edge.
 		"""
 		return (<_RandomMaximumSpanningForest*>(self._this)).getAttribute(move)
 
@@ -1938,7 +1938,7 @@ cdef class RandomMaximumSpanningForest(Algorithm):
 
 		Returns
 		-------
-		boolean
+		bool
 			If the edge is part of the calculated maximum-weight spanning forest.
 		"""
 		if v == _none:
@@ -1950,7 +1950,7 @@ cdef class RandomMaximumSpanningForest(Algorithm):
 cdef extern from "cpp/independentset/Luby.h":
 	cdef cppclass _Luby "NetworKit::Luby":
 		_Luby() except +
-		vector[bool] run(_Graph G) except +
+		vector[bool_t] run(_Graph G) except +
 		string toString()
 
 
@@ -1960,7 +1960,7 @@ cdef class Luby:
 	cdef _Luby _this
 
 	def run(self, Graph G not None):
-		""" Returns a boolean vector of length n where vec[v] is True iff v is in the independent sets.
+		""" Returns a bool vector of length n where vec[v] is True iff v is in the independent sets.
 
 		Parameters
 		----------
@@ -1970,7 +1970,7 @@ cdef class Luby:
 		Returns
 		-------
 		vector
-			A boolean vector of length n.
+			A bool vector of length n.
 		"""
 		return self._this.run(G._this)
 		# TODO: return self
@@ -1993,8 +1993,8 @@ cdef class Luby:
 cdef extern from "cpp/generators/BarabasiAlbertGenerator.h":
 	cdef cppclass _BarabasiAlbertGenerator "NetworKit::BarabasiAlbertGenerator"(_StaticGraphGenerator):
 		_BarabasiAlbertGenerator() except +
-		_BarabasiAlbertGenerator(count k, count nMax, count n0, bool batagelj) except +
-		_BarabasiAlbertGenerator(count k, count nMax, const _Graph & initGraph, bool batagelj) except +
+		_BarabasiAlbertGenerator(count k, count nMax, count n0, bool_t batagelj) except +
+		_BarabasiAlbertGenerator(count k, count nMax, const _Graph & initGraph, bool_t batagelj) except +
 
 cdef class BarabasiAlbertGenerator(StaticGraphGenerator):
 	"""
@@ -2017,7 +2017,7 @@ cdef class BarabasiAlbertGenerator(StaticGraphGenerator):
 		Specifies whether to use batagelj's method or the original one.
 	"""
 
-	def __cinit__(self, count k, count nMax, n0=0, bool batagelj=True):
+	def __cinit__(self, count k, count nMax, n0=0, bool_t batagelj=True):
 		if isinstance(n0, Graph):
 			self._this = new _BarabasiAlbertGenerator(k, nMax, (<Graph>n0)._this, batagelj)
 		else:
@@ -2070,7 +2070,7 @@ cdef class PubWebGenerator(StaticGraphGenerator):
 
 cdef extern from "cpp/generators/ErdosRenyiGenerator.h":
 	cdef cppclass _ErdosRenyiGenerator "NetworKit::ErdosRenyiGenerator"(_StaticGraphGenerator):
-		_ErdosRenyiGenerator(count nNodes, double prob, bool directed) except +
+		_ErdosRenyiGenerator(count nNodes, double prob, bool_t directed) except +
 
 cdef class ErdosRenyiGenerator(StaticGraphGenerator):
 	""" Creates random graphs in the G(n,p) model.
@@ -2245,9 +2245,9 @@ cdef class ChungLuGenerator(StaticGraphGenerator):
 
 cdef extern from "cpp/generators/HavelHakimiGenerator.h":
 	cdef cppclass _HavelHakimiGenerator "NetworKit::HavelHakimiGenerator"(_StaticGraphGenerator):
-		_HavelHakimiGenerator(vector[count] degreeSequence, bool ignoreIfRealizable) except +
-		bool isRealizable() except +
-		bool getRealizable() except +
+		_HavelHakimiGenerator(vector[count] degreeSequence, bool_t ignoreIfRealizable) except +
+		bool_t isRealizable() except +
+		bool_t getRealizable() except +
 
 cdef class HavelHakimiGenerator(StaticGraphGenerator):
 	""" Havel-Hakimi algorithm for generating a graph according to a given degree sequence.
@@ -2285,9 +2285,9 @@ cdef class HavelHakimiGenerator(StaticGraphGenerator):
 
 cdef extern from "cpp/generators/EdgeSwitchingMarkovChainGenerator.h":
 	cdef cppclass _EdgeSwitchingMarkovChainGenerator "NetworKit::EdgeSwitchingMarkovChainGenerator"(_StaticGraphGenerator):
-		_EdgeSwitchingMarkovChainGenerator(vector[count] degreeSequence, bool ignoreIfRealizable) except +
-		bool isRealizable() except +
-		bool getRealizable() except +
+		_EdgeSwitchingMarkovChainGenerator(vector[count] degreeSequence, bool_t ignoreIfRealizable) except +
+		bool_t isRealizable() except +
+		bool_t getRealizable() except +
 
 cdef class EdgeSwitchingMarkovChainGenerator(StaticGraphGenerator):
 	"""
@@ -2314,7 +2314,7 @@ cdef class EdgeSwitchingMarkovChainGenerator(StaticGraphGenerator):
 		If true, generate the graph even if the degree sequence is not realizable. Some nodes may get lower degrees than requested in the sequence.
 	"""
 
-	def __cinit__(self, vector[count] degreeSequence, bool ignoreIfRealizable = False):
+	def __cinit__(self, vector[count] degreeSequence, bool_t ignoreIfRealizable = False):
 		self._this = new _EdgeSwitchingMarkovChainGenerator(degreeSequence, ignoreIfRealizable)
 
 	def isRealizable(self):
@@ -2334,7 +2334,7 @@ cdef extern from "cpp/generators/HyperbolicGenerator.h":
 		# TODO: revert to count when cython issue fixed
 		_HyperbolicGenerator(unsigned int nodes,  double k, double gamma, double T) except +
 		void setLeafCapacity(unsigned int capacity) except +
-		void setTheoreticalSplit(bool split) except +
+		void setTheoreticalSplit(bool_t split) except +
 		void setBalance(double balance) except +
 		vector[double] getElapsedMilliseconds() except +
 		_Graph generate(vector[double] angles, vector[double] radii, double R, double T) except +
@@ -2391,9 +2391,9 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 
 cdef extern from "cpp/generators/MocnikGenerator.h":
 	cdef cppclass _MocnikGenerator "NetworKit::MocnikGenerator"(_StaticGraphGenerator):
-		_MocnikGenerator(count dim, count n, double k, bool weighted) except +
-		_MocnikGenerator(count dim, vector[count] ns, double k, bool weighted) except +
-		_MocnikGenerator(count dim, vector[count] ns, vector[double] ks, bool weighted) except +
+		_MocnikGenerator(count dim, count n, double k, bool_t weighted) except +
+		_MocnikGenerator(count dim, vector[count] ns, double k, bool_t weighted) except +
+		_MocnikGenerator(count dim, vector[count] ns, vector[double] ks, bool_t weighted) except +
 		_MocnikGenerator(count dim, count n, double k, vector[double] weighted) except +
 		_MocnikGenerator(count dim, vector[count] ns, double k, vector[double] weighted) except +
 		_MocnikGenerator(count dim, vector[count] ns, vector[double] ks, vector[double] weighted) except +
@@ -2438,11 +2438,11 @@ cdef class MocnikGenerator(StaticGraphGenerator):
 		if dim < 1:
 			raise ValueError("Dimension must be > 0")
 		elif (type(n) is int) and (type(k) is float or type(k) is int) and (weighted is False or weighted is True):
-			self._this = new _MocnikGenerator(<count> dim, <count> n, <double> k, <bool> weighted)
+			self._this = new _MocnikGenerator(<count> dim, <count> n, <double> k, <bool_t> weighted)
 		elif (type(n) is list) and all(type(item) is int for item in n) and (type(k) is float or type(k) is int) and (weighted is False or weighted is True):
-			self._this = new _MocnikGenerator(<count> dim, <vector[count]> n, <double> k, <bool> weighted)
+			self._this = new _MocnikGenerator(<count> dim, <vector[count]> n, <double> k, <bool_t> weighted)
 		elif (type(n) is list) and all(type(item) is int for item in n) and (type(k) is list) and all(type(item) is float or type(item) is int for item in k) and (weighted is False or weighted is True):
-			self._this = new _MocnikGenerator(<count> dim, <vector[count]> n, <vector[double]> k, <bool> weighted)
+			self._this = new _MocnikGenerator(<count> dim, <vector[count]> n, <vector[double]> k, <bool_t> weighted)
 		elif (type(n) is int) and (type(k) is float or type(k) is int) and (type(weighted) is list) and all(type(item) is float or type(item) is int for item in weighted):
 			self._this = new _MocnikGenerator(<count> dim, <count> n, <double> k, <vector[double]> weighted)
 		elif (type(n) is list) and all(type(item) is int for item in n) and (type(k) is float or type(k) is int) and (type(weighted) is list) and all(type(item) is float or type(item) is int for item in weighted):
@@ -2492,7 +2492,7 @@ cdef class MocnikGeneratorBasic(StaticGraphGenerator):
 
 cdef extern from "cpp/generators/RmatGenerator.h":
 	cdef cppclass _RmatGenerator "NetworKit::RmatGenerator"(_StaticGraphGenerator):
-		_RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d, bool weighted, count reduceNodes) except +
+		_RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d, bool_t weighted, count reduceNodes) except +
 
 cdef class RmatGenerator(StaticGraphGenerator):
 	"""
@@ -2523,7 +2523,7 @@ cdef class RmatGenerator(StaticGraphGenerator):
 	"""
 	paths = {"kronfitPath" : None}
 
-	def __cinit__(self, count scale, count edgeFactor, double a, double b, double c, double d, bool weighted=False, count reduceNodes=0):
+	def __cinit__(self, count scale, count edgeFactor, double a, double b, double c, double d, bool_t weighted=False, count reduceNodes=0):
 		self._this = new _RmatGenerator(scale, edgeFactor, a, b, c, d, weighted, reduceNodes)
 
 	@classmethod
@@ -3182,7 +3182,7 @@ cdef class ThrillGraphBinaryWriter:
 cdef extern from "cpp/io/EdgeListReader.h":
 	cdef cppclass _EdgeListReader "NetworKit::EdgeListReader"(_GraphReader):
 		_EdgeListReader() except +
-		_EdgeListReader(char separator, node firstNode, string commentPrefix, bool continuous, bool directed)
+		_EdgeListReader(char separator, node firstNode, string commentPrefix, bool_t continuous, bool_t directed)
 		map[string,node] getNodeMap() except +
 
 
@@ -3204,7 +3204,7 @@ cdef class EdgeListReader(GraphReader):
 cdef extern from "cpp/io/KONECTGraphReader.h":
 	cdef cppclass _KONECTGraphReader "NetworKit::KONECTGraphReader"(_GraphReader):
 		_KONECTGraphReader() except +
-		_KONECTGraphReader(bool remapNodes, _MultipleEdgesHandling handlingmethod)
+		_KONECTGraphReader(bool_t remapNodes, _MultipleEdgesHandling handlingmethod)
 
 cdef class KONECTGraphReader(GraphReader):
 	""" Reader for the KONECT graph format, which is described in detail on the KONECT website[1].
@@ -3299,7 +3299,7 @@ cdef class GMLGraphWriter:
 cdef extern from "cpp/io/EdgeListWriter.h":
 	cdef cppclass _EdgeListWriter "NetworKit::EdgeListWriter":
 		_EdgeListWriter() except +
-		_EdgeListWriter(char separator, node firstNode, bool bothDirections) except +
+		_EdgeListWriter(char separator, node firstNode, bool_t bothDirections) except +
 		void write(_Graph G, string path) nogil except +
 
 cdef class EdgeListWriter:
@@ -3317,7 +3317,7 @@ cdef class EdgeListWriter:
 
 	cdef _EdgeListWriter _this
 
-	def __cinit__(self, separator, firstNode, bool bothDirections = False):
+	def __cinit__(self, separator, firstNode, bool_t bothDirections = False):
 		cdef char sep = stdstring(separator)[0]
 		self._this = _EdgeListWriter(sep, firstNode, bothDirections)
 
@@ -3362,7 +3362,7 @@ cdef class SNAPGraphWriter:
 cdef extern from "cpp/io/SNAPGraphReader.h":
 	cdef cppclass _SNAPGraphReader "NetworKit::SNAPGraphReader"(_GraphReader):
 		_SNAPGraphReader() except +
-		_SNAPGraphReader(bool directed, bool remapNodes, count nodeCount)
+		_SNAPGraphReader(bool_t directed, bool_t remapNodes, count nodeCount)
 
 cdef class SNAPGraphReader(GraphReader):
 	""" Reads a graph from the SNAP graph data collection [1]
@@ -3683,9 +3683,9 @@ cdef extern from "cpp/structures/Partition.h":
 		void setUpperBound(index upper) except +
 		index upperBound() except +
 		index lowerBound() except +
-		void compact(bool useTurbo) except +
-		bool contains(index e) except +
-		bool inSameSubset(index e1, index e2) except +
+		void compact(bool_t useTurbo) except +
+		bool_t contains(index e) except +
+		bool_t inSameSubset(index e1, index e2) except +
 		vector[count] subsetSizes() except +
 		map[index, count] subsetSizeMap() except +
 		set[index] getMembers(const index s) except +
@@ -4072,8 +4072,8 @@ cdef extern from "cpp/structures/Cover.h":
 		index upperBound() except +
 		index lowerBound() except +
 #		void compact() except +
-		bool contains(index e) except +
-		bool inSameSubset(index e1, index e2) except +
+		bool_t contains(index e) except +
+		bool_t inSameSubset(index e1, index e2) except +
 		vector[count] subsetSizes() except +
 		map[index, count] subsetSizeMap() except +
 		set[index] getMembers(const index s) except +
@@ -4420,10 +4420,10 @@ cdef extern from "cpp/community/GraphClusteringTools.h" namespace "NetworKit::Gr
 	float getImbalance(_Partition zeta) except +
 	_Graph communicationGraph(_Graph graph, _Partition zeta) except +
 	count weightedDegreeWithCluster(_Graph graph, _Partition zeta, node u, index cid)
-	bool isProperClustering(_Graph G, _Partition zeta)
-	bool isSingletonClustering(_Graph G, _Partition zeta)
-	bool isOneClustering(_Graph G, _Partition zeta)
-	bool equalClusterings(_Partition zeta, _Partition eta, _Graph G)
+	bool_t isProperClustering(_Graph G, _Partition zeta)
+	bool_t isSingletonClustering(_Graph G, _Partition zeta)
+	bool_t isOneClustering(_Graph G, _Partition zeta)
+	bool_t equalClusterings(_Partition zeta, _Partition eta, _Graph G)
 
 cdef class GraphClusteringTools:
 	@staticmethod
@@ -4730,7 +4730,7 @@ cdef class LPDegreeOrdered(CommunityDetector):
 cdef extern from "cpp/community/PLM.h":
 	cdef cppclass _PLM "NetworKit::PLM"(_CommunityDetectionAlgorithm):
 		_PLM(_Graph _G) except +
-		_PLM(_Graph _G, bool refine, double gamma, string par, count maxIter, bool turbo, bool recurse) except +
+		_PLM(_Graph _G, bool_t refine, double gamma, string par, count maxIter, bool_t turbo, bool_t recurse) except +
 		map[string, vector[count]] getTiming() except +
 
 cdef extern from "cpp/community/PLM.h" namespace "NetworKit::PLM":
@@ -4773,7 +4773,7 @@ cdef class PLM(CommunityDetector):
 		return (<_PLM*>(self._this)).getTiming()
 
 	@staticmethod
-	def coarsen(Graph G, Partition zeta, bool parallel = False):
+	def coarsen(Graph G, Partition zeta, bool_t parallel = False):
 		cdef pair[_Graph, vector[node]] result = move(PLM_coarsen(G._this, zeta._this))
 		return (Graph().setThis(result.first), result.second)
 
@@ -4954,7 +4954,7 @@ cdef extern from "cpp/community/LocalCommunityEvaluation.h":
 		double getMinimumValue() except +
 		double getValue(index i) except +
 		vector[double] getValues() except +
-		bool isSmallBetter() except +
+		bool_t isSmallBetter() except +
 
 cdef class LocalCommunityEvaluation(Algorithm):
 	"""
@@ -5276,7 +5276,7 @@ cdef class PartitionFragmentation(LocalPartitionEvaluation):
 cdef extern from "cpp/community/StablePartitionNodes.h":
 	cdef cppclass _StablePartitionNodes "NetworKit::StablePartitionNodes"(_LocalPartitionEvaluation):
 		_StablePartitionNodes(_Graph G, _Partition C) except +
-		bool isStable(node u) except +
+		bool_t isStable(node u) except +
 
 cdef class StablePartitionNodes(LocalPartitionEvaluation):
 	"""
@@ -5485,7 +5485,7 @@ cdef class ConnectedComponents(Algorithm):
 
 cdef extern from "cpp/components/ParallelConnectedComponents.h":
 	cdef cppclass _ParallelConnectedComponents "NetworKit::ParallelConnectedComponents"(_Algorithm):
-		_ParallelConnectedComponents(_Graph G, bool coarsening) except +
+		_ParallelConnectedComponents(_Graph G, bool_t coarsening) except +
 		count numberOfComponents() except +
 		count componentOfNode(node query) except +
 		_Partition getPartition() except +
@@ -5513,7 +5513,7 @@ cdef class ParallelConnectedComponents(Algorithm):
 
 cdef extern from "cpp/components/StronglyConnectedComponents.h":
 	cdef cppclass _StronglyConnectedComponents "NetworKit::StronglyConnectedComponents":
-		_StronglyConnectedComponents(_Graph G, bool iterativeAlgo) except +
+		_StronglyConnectedComponents(_Graph G, bool_t iterativeAlgo) except +
 		void run() nogil except +
 		void runIteratively() nogil except +
 		void runRecursively() nogil except +
@@ -5533,7 +5533,7 @@ cdef class StronglyConnectedComponents:
 		----------
 		G : networkit.Graph
 			The graph.
-		iterativeAlgo : boolean
+		iterativeAlgo : bool
 			Specifies which implementation to use, by default True for the iterative implementation.
 	"""
 	cdef _StronglyConnectedComponents* _this
@@ -5861,7 +5861,7 @@ cdef class DynWeaklyConnectedComponents(Algorithm):
 
 
 cdef extern from "cpp/global/ClusteringCoefficient.h" namespace "NetworKit::ClusteringCoefficient":
-		double avgLocal(_Graph G, bool turbo) nogil except +
+		double avgLocal(_Graph G, bool_t turbo) nogil except +
 		double sequentialAvgLocal(_Graph G) nogil except +
 		double approxAvgLocal(_Graph G, count trials) nogil except +
 		double exactGlobal(_Graph G) nogil except +
@@ -5869,7 +5869,7 @@ cdef extern from "cpp/global/ClusteringCoefficient.h" namespace "NetworKit::Clus
 
 cdef class ClusteringCoefficient:
 	@staticmethod
-	def avgLocal(Graph G, bool turbo = False):
+	def avgLocal(Graph G, bool_t turbo = False):
 		"""
 		DEPRECATED: Use centrality.LocalClusteringCoefficient and take average.
 
@@ -6250,7 +6250,7 @@ cdef class Assortativity(Algorithm):
 
 cdef extern from "cpp/centrality/Centrality.h":
 	cdef cppclass _Centrality "NetworKit::Centrality"(_Algorithm):
-		_Centrality(_Graph, bool, bool) except +
+		_Centrality(_Graph, bool_t, bool_t) except +
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
@@ -6336,13 +6336,13 @@ cdef class Centrality(Algorithm):
 
 cdef extern from "cpp/centrality/TopCloseness.h":
 	cdef cppclass _TopCloseness "NetworKit::TopCloseness"(_Algorithm):
-		_TopCloseness(_Graph G, count, bool, bool) except +
+		_TopCloseness(_Graph G, count, bool_t, bool_t) except +
 		node maximum() except +
 		edgeweight maxSum() except +
 		count iterations() except +
 		count operations() except +
-		vector[node] topkNodesList(bool) except +
-		vector[edgeweight] topkScoresList(bool) except +
+		vector[node] topkNodesList(bool_t) except +
+		vector[edgeweight] topkScoresList(bool_t) except +
 
 
 cdef class TopCloseness(Algorithm):
@@ -6406,9 +6406,9 @@ cdef class TopCloseness(Algorithm):
 
 cdef extern from "cpp/centrality/TopHarmonicCloseness.h":
 	cdef cppclass _TopHarmonicCloseness "NetworKit::TopHarmonicCloseness"(_Algorithm):
-		_TopHarmonicCloseness(_Graph G, count, bool) except +
-		vector[node] topkNodesList(bool) except +
-		vector[edgeweight] topkScoresList(bool) except +
+		_TopHarmonicCloseness(_Graph G, count, bool_t) except +
+		vector[node] topkNodesList(bool_t) except +
+		vector[edgeweight] topkScoresList(bool_t) except +
 
 
 cdef class TopHarmonicCloseness(Algorithm):
@@ -6478,12 +6478,12 @@ cdef class TopHarmonicCloseness(Algorithm):
 
 cdef extern from "cpp/centrality/DynKatzCentrality.h":
 	cdef cppclass _DynKatzCentrality "NetworKit::DynKatzCentrality" (_Centrality):
-		_DynKatzCentrality(_Graph G, count, bool, double) except +
+		_DynKatzCentrality(_Graph G, count, bool_t, double) except +
 		void update(_GraphEvent) except +
 		void updateBatch(vector[_GraphEvent]) except +
 		node top(count) except +
 		double bound(node) except +
-		bool areDistinguished(node, node) except +
+		bool_t areDistinguished(node, node) except +
 
 cdef class DynKatzCentrality(Centrality):
 	""" Finds the top-k nodes with highest Katz centrality.
@@ -6515,10 +6515,10 @@ cdef class DynKatzCentrality(Centrality):
 
 cdef extern from "cpp/centrality/DynTopHarmonicCloseness.h":
 	cdef cppclass _DynTopHarmonicCloseness "NetworKit::DynTopHarmonicCloseness"(_Algorithm):
-		_DynTopHarmonicCloseness(_Graph G, count, bool) except +
-		vector[pair[node, edgeweight]] ranking(bool) except +
-		vector[node] topkNodesList(bool) except +
-		vector[edgeweight] topkScoresList(bool) except +
+		_DynTopHarmonicCloseness(_Graph G, count, bool_t) except +
+		vector[pair[node, edgeweight]] ranking(bool_t) except +
+		vector[node] topkNodesList(bool_t) except +
+		vector[edgeweight] topkScoresList(bool_t) except +
 		void update(_GraphEvent) except +
 		void updateBatch(vector[_GraphEvent]) except +
 
@@ -6627,7 +6627,7 @@ cdef class DynTopHarmonicCloseness(Algorithm):
 
 cdef extern from "cpp/centrality/GroupDegree.h":
 	cdef cppclass _GroupDegree "NetworKit::GroupDegree"(_Algorithm):
-		_GroupDegree(_Graph G, count, bool) except +
+		_GroupDegree(_Graph G, count, bool_t) except +
 		vector[node] groupMaxDegree() except +
 		count getScore() except +
 		count scoreOfGroup(vector[node]) except +
@@ -6762,7 +6762,7 @@ cdef class GroupCloseness(Algorithm):
 
 cdef extern from "cpp/centrality/DegreeCentrality.h":
 	cdef cppclass _DegreeCentrality "NetworKit::DegreeCentrality" (_Centrality):
-		_DegreeCentrality(_Graph, bool normalized, bool outdeg, bool ignoreSelfLoops) except +
+		_DegreeCentrality(_Graph, bool_t normalized, bool_t outdeg, bool_t ignoreSelfLoops) except +
 
 cdef class DegreeCentrality(Centrality):
 	""" Node centrality index which ranks nodes by their degree.
@@ -6782,7 +6782,7 @@ cdef class DegreeCentrality(Centrality):
  		Normalize centrality values in the interval [0,1].
 	"""
 
-	def __cinit__(self, Graph G, bool normalized=False, bool outDeg = True, bool ignoreSelfLoops=True):
+	def __cinit__(self, Graph G, bool_t normalized=False, bool_t outDeg = True, bool_t ignoreSelfLoops=True):
 		self._G = G
 		self._this = new _DegreeCentrality(G._this, normalized, outDeg, ignoreSelfLoops)
 
@@ -6790,7 +6790,7 @@ cdef class DegreeCentrality(Centrality):
 
 cdef extern from "cpp/centrality/Betweenness.h":
 	cdef cppclass _Betweenness "NetworKit::Betweenness" (_Centrality):
-		_Betweenness(_Graph, bool, bool) except +
+		_Betweenness(_Graph, bool_t, bool_t) except +
 		vector[double] edgeScores() except +
 
 cdef class Betweenness(Centrality):
@@ -6866,14 +6866,23 @@ cdef class ApproxGroupBetweenness(Algorithm):
 		"""
 		return (<_ApproxGroupBetweenness*>(self._this)).groupMaxBetweenness()
 
+cdef extern from "cpp/centrality/Closeness.h" namespace "NetworKit":
+	cdef enum ClosenessVariant:
+		standard = 0
+		generalized = 1
+
+class _ClosenessVariant(object):
+	Standard = standard
+	Generalized = generalized
 
 cdef extern from "cpp/centrality/Closeness.h":
 	cdef cppclass _Closeness "NetworKit::Closeness" (_Centrality):
+		_Closeness(_Graph, bool, ClosenessVariant) except +
 		_Closeness(_Graph, bool, bool) except +
 
 cdef class Closeness(Centrality):
 	"""
-		Closeness(G, normalized=True, checkConnectedness=True)
+		Closeness(G, normalized=True, variant=ClosenessVariant::standard/checkConnectdedness=True)
 
 		Constructs the Closeness class for the given Graph `G`. If the Closeness scores should not be normalized,
   		set `normalized` to False. The run() method takes O(nm) time, where n is the number
@@ -6885,18 +6894,21 @@ cdef class Closeness(Centrality):
 	 		The graph.
 	 	normalized : bool, optional
 	 		Set this parameter to False if scores should not be normalized into an interval of [0,1]. Normalization only for unweighted graphs.
-	 	checkConnectedness : bool, optional
-			turn this off if you know the graph is connected
 	"""
 
-	def __cinit__(self, Graph G, normalized=True, checkConnectedness=True):
+	def __cinit__(self, Graph G, normalized, third):
 		self._G = G
-		self._this = new _Closeness(G._this, normalized, checkConnectedness)
+		if isinstance(third, int):
+			self._this = new _Closeness(G._this, normalized, <ClosenessVariant> third)
+		elif isinstance(third, bool):
+			self._this = new _Closeness(G._this, normalized, <bool_t> third)
+		else:
+			raise Exception("Error: the third parameter must be either a bool or a ClosenessVariant")
 
 
 cdef extern from "cpp/centrality/HarmonicCloseness.h":
 	cdef cppclass _HarmonicCloseness "NetworKit::HarmonicCloseness" (_Centrality):
-		_HarmonicCloseness(_Graph, bool) except +
+		_HarmonicCloseness(_Graph, bool_t) except +
 
 cdef class HarmonicCloseness(Centrality):
 	"""
@@ -7269,7 +7281,7 @@ cdef class KadabraBetweenness(Algorithm):
 
 cdef extern from "cpp/centrality/EstimateBetweenness.h":
 	cdef cppclass _EstimateBetweenness"NetworKit::EstimateBetweenness" (_Centrality):
-		_EstimateBetweenness(_Graph, count, bool, bool) except +
+		_EstimateBetweenness(_Graph, count, bool_t, bool_t) except +
 
 
 cdef class EstimateBetweenness(Centrality):
@@ -7345,7 +7357,7 @@ cdef extern from "cpp/centrality/ApproxCloseness.h":
 cdef extern from "cpp/centrality/ApproxCloseness.h":
 	cdef cppclass _ApproxCloseness "NetworKit::ApproxCloseness" (_Centrality):
 		_ClosenessType type
-		_ApproxCloseness(_Graph, count, float, bool, _ClosenessType type) except +
+		_ApproxCloseness(_Graph, count, float, bool_t, _ClosenessType type) except +
 		vector[double] getSquareErrorEstimates() except +
 
 
@@ -7448,7 +7460,7 @@ cdef class EigenvectorCentrality(Centrality):
 
 cdef extern from "cpp/centrality/CoreDecomposition.h":
 	cdef cppclass _CoreDecomposition "NetworKit::CoreDecomposition" (_Centrality):
-		_CoreDecomposition(_Graph, bool, bool, bool) except +
+		_CoreDecomposition(_Graph, bool_t, bool_t, bool_t) except +
 		_Cover getCover() except +
 		_Partition getPartition() except +
 		index maxCoreNumber() except +
@@ -7465,16 +7477,16 @@ cdef class CoreDecomposition(Centrality):
 	----------
 	G : networkit.Graph
 		The graph.
-	normalized : boolean
+	normalized : bool
 		Divide each core number by the maximum degree.
-	enforceBucketQueueAlgorithm : boolean
+	enforceBucketQueueAlgorithm : bool
 		enforce switch to sequential algorithm
-	storeNodeOrder : boolean
+	storeNodeOrder : bool
 		If set to True, the order of the nodes in ascending order of the cores is stored and can later be returned using getNodeOrder(). Enforces the sequential bucket priority queue algorithm.
 
 	"""
 
-	def __cinit__(self, Graph G, bool normalized=False, bool enforceBucketQueueAlgorithm=False, bool storeNodeOrder = False):
+	def __cinit__(self, Graph G, bool_t normalized=False, bool_t enforceBucketQueueAlgorithm=False, bool_t storeNodeOrder = False):
 		self._G = G
 		self._this = new _CoreDecomposition(G._this, normalized, enforceBucketQueueAlgorithm, storeNodeOrder)
 
@@ -7523,7 +7535,7 @@ cdef class CoreDecomposition(Centrality):
 
 cdef extern from "cpp/centrality/LocalClusteringCoefficient.h":
 	cdef cppclass _LocalClusteringCoefficient "NetworKit::LocalClusteringCoefficient" (_Centrality):
-		_LocalClusteringCoefficient(_Graph, bool) except +
+		_LocalClusteringCoefficient(_Graph, bool_t) except +
 
 cdef class LocalClusteringCoefficient(Centrality):
 	"""
@@ -7550,7 +7562,7 @@ cdef class LocalClusteringCoefficient(Centrality):
 			If the turbo mode shall be activated.
 	"""
 
-	def __cinit__(self, Graph G, bool turbo = False):
+	def __cinit__(self, Graph G, bool_t turbo = False):
 		self._G = G
 		self._this = new _LocalClusteringCoefficient(G._this, turbo)
 
@@ -7579,7 +7591,7 @@ cdef class Sfigality(Centrality):
 
 cdef extern from "cpp/centrality/DynApproxBetweenness.h":
 	cdef cppclass _DynApproxBetweenness "NetworKit::DynApproxBetweenness"(_Algorithm):
-		_DynApproxBetweenness(_Graph, double, double, bool, double) except +
+		_DynApproxBetweenness(_Graph, double, double, bool_t, double) except +
 		void update(_GraphEvent) except +
 		void updateBatch(vector[_GraphEvent]) except +
 		vector[double] scores() except +
@@ -7911,7 +7923,7 @@ cdef class LocalPartitionCoverage(Centrality):
 
 cdef extern from "cpp/centrality/LaplacianCentrality.h":
 	cdef cppclass _LaplacianCentrality "NetworKit::LaplacianCentrality" (_Centrality):
-		_LaplacianCentrality(_Graph, bool) except +
+		_LaplacianCentrality(_Graph, bool_t) except +
 
 cdef class LaplacianCentrality(Centrality):
 	""" Computes the Laplacian centrality of the graph.
@@ -7958,8 +7970,8 @@ cdef extern from "cpp/dynamics/GraphEvent.h":
 		string toString() except +
 
 cdef extern from "cpp/dynamics/GraphEvent.h" namespace "NetworKit::GraphEvent":
-	bool _GraphEvent_equal "NetworKit::GraphEvent::equal"(_GraphEvent a, _GraphEvent b) except +
-	bool _GraphEvent_compare "NetworKit::GraphEvent::compare"(_GraphEvent a, _GraphEvent b) except +
+	bool_t _GraphEvent_equal "NetworKit::GraphEvent::equal"(_GraphEvent a, _GraphEvent b) except +
+	bool_t _GraphEvent_compare "NetworKit::GraphEvent::compare"(_GraphEvent a, _GraphEvent b) except +
 
 cdef class GraphEvent:
 	cdef _GraphEvent _this
@@ -8011,7 +8023,7 @@ cdef class GraphEvent:
 
 cdef extern from "cpp/dynamics/DGSStreamParser.h":
 	cdef cppclass _DGSStreamParser "NetworKit::DGSStreamParser":
-		_DGSStreamParser(string path, bool mapped, node baseIndex) except +
+		_DGSStreamParser(string path, bool_t mapped, node baseIndex) except +
 		vector[_GraphEvent] getStream() except +
 
 cdef class DGSStreamParser:
@@ -8221,7 +8233,7 @@ cdef class DynamicHyperbolicGenerator:
 
 cdef extern from "cpp/generators/DynamicForestFireGenerator.h":
 	cdef cppclass _DynamicForestFireGenerator "NetworKit::DynamicForestFireGenerator":
-		_DynamicForestFireGenerator(double p, bool directed, double r) except +
+		_DynamicForestFireGenerator(double p, bool_t directed, double r) except +
 		vector[_GraphEvent] generate(count nSteps) except +
 		_Graph getGraph() except +
 
@@ -8328,7 +8340,7 @@ cdef class GraphCoarsening(Algorithm):
 
 cdef extern from "cpp/coarsening/ParallelPartitionCoarsening.h":
 	cdef cppclass _ParallelPartitionCoarsening "NetworKit::ParallelPartitionCoarsening"(_GraphCoarsening):
-		_ParallelPartitionCoarsening(_Graph, _Partition, bool) except +
+		_ParallelPartitionCoarsening(_Graph, _Partition, bool_t) except +
 
 
 cdef class ParallelPartitionCoarsening(GraphCoarsening):
@@ -8337,7 +8349,7 @@ cdef class ParallelPartitionCoarsening(GraphCoarsening):
 
 cdef extern from "cpp/coarsening/MatchingCoarsening.h":
 	cdef cppclass _MatchingCoarsening "NetworKit::MatchingCoarsening"(_GraphCoarsening):
-		_MatchingCoarsening(_Graph, _Matching, bool) except +
+		_MatchingCoarsening(_Graph, _Matching, bool_t) except +
 
 
 cdef class MatchingCoarsening(GraphCoarsening):
@@ -8350,7 +8362,7 @@ cdef class MatchingCoarsening(GraphCoarsening):
 		if true, self-loops are not produced
 	"""
 
-	def __cinit__(self, Graph G not None, Matching M not None, bool noSelfLoops=False):
+	def __cinit__(self, Graph G not None, Matching M not None, bool_t noSelfLoops=False):
 		self._this = new _MatchingCoarsening(G._this, M._this, noSelfLoops)
 
 
@@ -8472,7 +8484,7 @@ cdef cppclass NodeVectorCallbackWrapper:
 		this.callback = <void*>callback
 	# This is called within the run() method which is nogil!
 	void cython_call_operator(const vector[node]& nodes) nogil:
-		cdef bool error = False
+		cdef bool_t error = False
 		cdef string message
 		# Acquire gil to allow Python code!
 		with gil:
@@ -8486,7 +8498,7 @@ cdef cppclass NodeVectorCallbackWrapper:
 
 cdef extern from "cpp/clique/MaximalCliques.h":
 	cdef cppclass _MaximalCliques "NetworKit::MaximalCliques"(_Algorithm):
-		_MaximalCliques(_Graph G, bool maximumOnly) except +
+		_MaximalCliques(_Graph G, bool_t maximumOnly) except +
 		_MaximalCliques(_Graph G, NodeVectorCallbackWrapper callback) except +
 		vector[vector[node]] getCliques() except +
 
@@ -8525,7 +8537,7 @@ cdef class MaximalCliques(Algorithm):
 	cdef Graph _G
 	cdef object _py_callback
 
-	def __cinit__(self, Graph G not None, bool maximumOnly = False, object callback = None):
+	def __cinit__(self, Graph G not None, bool_t maximumOnly = False, object callback = None):
 		self._G = G
 
 		if callable(callback):
@@ -9700,7 +9712,7 @@ cdef class EdgeScore(Algorithm):
 	"""
 	cdef Graph _G
 
-	cdef bool isDoubleValue(self):
+	cdef bool_t isDoubleValue(self):
 		raise RuntimeError("Implement in subclass")
 
 	def __init__(self, *args, **namedargs):
@@ -9751,7 +9763,7 @@ cdef class ChibaNishizekiTriangleEdgeScore(EdgeScore):
 		self._G = G
 		self._this = new _ChibaNishizekiTriangleEdgeScore(G._this)
 
-	cdef bool isDoubleValue(self):
+	cdef bool_t isDoubleValue(self):
 		return False
 
 cdef extern from "cpp/edgescores/ChibaNishizekiQuadrangleEdgeScore.h":
@@ -9778,7 +9790,7 @@ cdef class ChibaNishizekiQuadrangleEdgeScore(EdgeScore):
 		self._G = G
 		self._this = new _ChibaNishizekiQuadrangleEdgeScore(G._this)
 
-	cdef bool isDoubleValue(self):
+	cdef bool_t isDoubleValue(self):
 		return False
 
 cdef extern from "cpp/edgescores/TriangleEdgeScore.h":
@@ -9805,12 +9817,12 @@ cdef class TriangleEdgeScore(EdgeScore):
 		self._G = G
 		self._this = new _TriangleEdgeScore(G._this)
 
-	cdef bool isDoubleValue(self):
+	cdef bool_t isDoubleValue(self):
 		return False
 
 cdef extern from "cpp/edgescores/EdgeScoreLinearizer.h":
 	cdef cppclass _EdgeScoreLinearizer "NetworKit::EdgeScoreLinearizer"(_EdgeScore[double]):
-		_EdgeScoreLinearizer(const _Graph& G, const vector[double]& attribute, bool inverse) except +
+		_EdgeScoreLinearizer(const _Graph& G, const vector[double]& attribute, bool_t inverse) except +
 
 cdef class EdgeScoreLinearizer(EdgeScore):
 	"""
@@ -9830,13 +9842,13 @@ cdef class EdgeScoreLinearizer(EdgeScore):
 		self._score = score
 		self._this = new _EdgeScoreLinearizer(G._this, self._score, inverse)
 
-	cdef bool isDoubleValue(self):
+	cdef bool_t isDoubleValue(self):
 		return True
 
 
 cdef extern from "cpp/edgescores/EdgeScoreNormalizer.h":
 	cdef cppclass _EdgeScoreNormalizer "NetworKit::EdgeScoreNormalizer"[T](_EdgeScore[double]):
-		_EdgeScoreNormalizer(const _Graph&, vector[T]&, bool inverse, double lower, double upper) except +
+		_EdgeScoreNormalizer(const _Graph&, vector[T]&, bool_t inverse, double lower, double upper) except +
 
 cdef class EdgeScoreNormalizer(EdgeScore):
 	"""
@@ -9858,7 +9870,7 @@ cdef class EdgeScoreNormalizer(EdgeScore):
 	cdef vector[double] _inScoreDouble
 	cdef vector[count] _inScoreCount
 
-	def __cinit__(self, Graph G not None, score, bool inverse = False, double lower = 0.0, double upper = 1.0):
+	def __cinit__(self, Graph G not None, score, bool_t inverse = False, double lower = 0.0, double upper = 1.0):
 		self._G = G
 		try:
 			self._inScoreDouble = <vector[double]?>score
@@ -9870,16 +9882,16 @@ cdef class EdgeScoreNormalizer(EdgeScore):
 			except TypeError:
 				raise TypeError("score must be either a vector of integer or float")
 
-	cdef bool isDoubleValue(self):
+	cdef bool_t isDoubleValue(self):
 		return True
 
 cdef extern from "cpp/edgescores/EdgeScoreBlender.h":
 	cdef cppclass _EdgeScoreBlender "NetworKit::EdgeScoreBlender"(_EdgeScore[double]):
-		_EdgeScoreBlender(const _Graph&, const vector[double]&, const vector[double]&, const vector[bool]&) except +
+		_EdgeScoreBlender(const _Graph&, const vector[double]&, const vector[double]&, const vector[bool_t]&) except +
 
 cdef class EdgeScoreBlender(EdgeScore):
 	"""
-	Blends two attribute vectors, the value is chosen depending on the supplied boolean vector
+	Blends two attribute vectors, the value is chosen depending on the supplied bool vector
 
 	Parameters
 	----------
@@ -9894,9 +9906,9 @@ cdef class EdgeScoreBlender(EdgeScore):
 	"""
 	cdef vector[double] _attribute0
 	cdef vector[double] _attribute1
-	cdef vector[bool] _selection
+	cdef vector[bool_t] _selection
 
-	def __cinit__(self, Graph G not None, vector[double] attribute0, vector[double] attribute1, vector[bool] selection):
+	def __cinit__(self, Graph G not None, vector[double] attribute0, vector[double] attribute1, vector[bool_t] selection):
 		self._G = G
 		self._attribute0 = move(attribute0)
 		self._attribute1 = move(attribute1)
@@ -9904,7 +9916,7 @@ cdef class EdgeScoreBlender(EdgeScore):
 
 		self._this = new _EdgeScoreBlender(G._this, self._attribute0, self._attribute1, self._selection)
 
-	cdef bool isDoubleValue(self):
+	cdef bool_t isDoubleValue(self):
 		return True
 
 cdef extern from "cpp/edgescores/GeometricMeanScore.h":
@@ -9929,12 +9941,12 @@ cdef class GeometricMeanScore(EdgeScore):
 		self._attribute = attribute
 		self._this = new _GeometricMeanScore(G._this, self._attribute)
 
-	cdef bool isDoubleValue(self):
+	cdef bool_t isDoubleValue(self):
 		return True
 
 cdef extern from "cpp/edgescores/EdgeScoreAsWeight.h":
 	cdef cppclass _EdgeScoreAsWeight "NetworKit::EdgeScoreAsWeight":
-		_EdgeScoreAsWeight(const _Graph& G, const vector[double]& score, bool squared, edgeweight offset, edgeweight factor) except +
+		_EdgeScoreAsWeight(const _Graph& G, const vector[double]& score, bool_t squared, edgeweight offset, edgeweight factor) except +
 		_Graph calculate() except +
 
 cdef class EdgeScoreAsWeight:
@@ -9959,7 +9971,7 @@ cdef class EdgeScoreAsWeight:
 	cdef Graph _G
 	cdef vector[double] _score
 
-	def __cinit__(self, Graph G, vector[double] score, bool squared, edgeweight offset, edgeweight factor):
+	def __cinit__(self, Graph G, vector[double] score, bool_t squared, edgeweight offset, edgeweight factor):
 		self._G = G
 		self._score = score
 		self._this = new _EdgeScoreAsWeight(G._this, self._score, squared, offset, factor)
@@ -10045,7 +10057,7 @@ cdef class SimmelianOverlapScore(EdgeScore):
 		self._triangles = triangles
 		self._this = new _SimmelianOverlapScore(G._this, self._triangles, maxRank)
 
-	cdef bool isDoubleValue(self):
+	cdef bool_t isDoubleValue(self):
 		return True
 
 cdef extern from "cpp/edgescores/PrefixJaccardScore.h":
@@ -10060,7 +10072,7 @@ cdef class PrefixJaccardScore(EdgeScore):
 		self._attribute = attribute
 		self._this = new _PrefixJaccardScore(G._this, self._attribute)
 
-	cdef bool isDoubleValue(self):
+	cdef bool_t isDoubleValue(self):
 		return True
 
 cdef extern from "cpp/sparsification/MultiscaleScore.h":
@@ -10087,7 +10099,7 @@ cdef class MultiscaleScore(EdgeScore):
 		self._attribute = attribute
 		self._this = new _MultiscaleScore(G._this, self._attribute)
 
-	cdef bool isDoubleValue(self):
+	cdef bool_t isDoubleValue(self):
 		return True
 
 cdef extern from "cpp/sparsification/RandomEdgeScore.h":
@@ -10108,7 +10120,7 @@ cdef class RandomEdgeScore(EdgeScore):
 		self._G = G
 		self._this = new _RandomEdgeScore(G._this)
 
-	cdef bool isDoubleValue(self):
+	cdef bool_t isDoubleValue(self):
 		return True
 
 cdef extern from "cpp/sparsification/LocalSimilarityScore.h":
@@ -10135,7 +10147,7 @@ cdef class LocalSimilarityScore(EdgeScore):
 		self._triangles = triangles
 		self._this = new _LocalSimilarityScore(G._this, self._triangles)
 
-	cdef bool isDoubleValue(self):
+	cdef bool_t isDoubleValue(self):
 		return True
 
 cdef extern from "cpp/sparsification/ForestFireScore.h":
@@ -10162,7 +10174,7 @@ cdef class ForestFireScore(EdgeScore):
 		self._G = G
 		self._this = new _ForestFireScore(G._this, pf, tebr)
 
-	cdef bool isDoubleValue(self):
+	cdef bool_t isDoubleValue(self):
 		return True
 
 cdef extern from "cpp/sparsification/LocalDegreeScore.h":
@@ -10185,7 +10197,7 @@ cdef class LocalDegreeScore(EdgeScore):
 		self._G = G
 		self._this = new _LocalDegreeScore(G._this)
 
-	cdef bool isDoubleValue(self):
+	cdef bool_t isDoubleValue(self):
 		return True
 
 cdef extern from "cpp/distance/JaccardDistance.h":
@@ -10225,7 +10237,7 @@ cdef class JaccardDistance:
 
 cdef extern from "cpp/distance/AlgebraicDistance.h":
 	cdef cppclass _AlgebraicDistance "NetworKit::AlgebraicDistance":
-		_AlgebraicDistance(_Graph G, count numberSystems, count numberIterations, double omega, index norm, bool withEdgeScores) except +
+		_AlgebraicDistance(_Graph G, count numberSystems, count numberIterations, double omega, index norm, bool_t withEdgeScores) except +
 		void preprocess() except +
 		double distance(node, node) except +
 		vector[double] getEdgeScores() except +
@@ -10256,7 +10268,7 @@ cdef class AlgebraicDistance:
 	cdef _AlgebraicDistance* _this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, count numberSystems=10, count numberIterations=30, double omega=0.5, index norm=0, bool withEdgeScores=False):
+	def __cinit__(self, Graph G, count numberSystems=10, count numberIterations=30, double omega=0.5, index norm=0, bool_t withEdgeScores=False):
 		self._G = G
 		self._this = new _AlgebraicDistance(G._this, numberSystems, numberIterations, omega, norm, withEdgeScores)
 
@@ -10322,7 +10334,7 @@ cdef class RandomNodeEdgeScore(EdgeScore):
 		self._G = G
 		self._this = new _RandomNodeEdgeScore(G._this)
 
-	cdef bool isDoubleValue(self):
+	cdef bool_t isDoubleValue(self):
 		return True
 
 ctypedef fused DoubleInt:
@@ -10331,10 +10343,10 @@ ctypedef fused DoubleInt:
 
 cdef extern from "cpp/sparsification/LocalFilterScore.h":
 	cdef cppclass _LocalFilterScoreDouble "NetworKit::LocalFilterScore<double>"(_EdgeScore[double]):
-		_LocalFilterScoreDouble(const _Graph& G, const vector[double]& a, bool logarithmic) except +
+		_LocalFilterScoreDouble(const _Graph& G, const vector[double]& a, bool_t logarithmic) except +
 
 	cdef cppclass _LocalFilterScoreInt "NetworKit::LocalFilterScore<int>"(_EdgeScore[count]):
-		_LocalFilterScoreInt(const _Graph& G, const vector[double]& a, bool logarithmic) except +
+		_LocalFilterScoreInt(const _Graph& G, const vector[double]& a, bool_t logarithmic) except +
 
 cdef class LocalFilterScore(EdgeScore):
 	"""
@@ -10355,12 +10367,12 @@ cdef class LocalFilterScore(EdgeScore):
 	"""
 	cdef vector[double] _a
 
-	def __cinit__(self, Graph G, vector[double] a, bool logarithmic = True):
+	def __cinit__(self, Graph G, vector[double] a, bool_t logarithmic = True):
 		self._G = G
 		self._a = a
 		self._this = new _LocalFilterScoreDouble(G._this, self._a, logarithmic)
 
-	cdef bool isDoubleValue(self):
+	cdef bool_t isDoubleValue(self):
 		return True
 
 cdef extern from "cpp/sparsification/ChanceCorrectedTriangleScore.h":
@@ -10385,7 +10397,7 @@ cdef class ChanceCorrectedTriangleScore(EdgeScore):
 		self._triangles = triangles
 		self._this = new _ChanceCorrectedTriangleScore(G._this, self._triangles)
 
-	cdef bool isDoubleValue(self):
+	cdef bool_t isDoubleValue(self):
 		return True
 
 cdef extern from "cpp/sparsification/SCANStructuralSimilarityScore.h":
@@ -10400,12 +10412,12 @@ cdef class SCANStructuralSimilarityScore(EdgeScore):
 		self._triangles = triangles
 		self._this = new _SCANStructuralSimilarityScore(G._this, self._triangles)
 
-	cdef bool isDoubleValue(self):
+	cdef bool_t isDoubleValue(self):
 		return True
 
 cdef extern from "cpp/sparsification/GlobalThresholdFilter.h":
 	cdef cppclass _GlobalThresholdFilter "NetworKit::GlobalThresholdFilter":
-		_GlobalThresholdFilter(const _Graph& G, const vector[double]& a, double alpha, bool above) except +
+		_GlobalThresholdFilter(const _Graph& G, const vector[double]& a, double alpha, bool_t above) except +
 		_Graph calculate() except +
 
 cdef class GlobalThresholdFilter:
@@ -10429,7 +10441,7 @@ cdef class GlobalThresholdFilter:
 	cdef Graph _G
 	cdef vector[double] _attribute
 
-	def __cinit__(self, Graph G not None, vector[double] attribute, double e, bool above):
+	def __cinit__(self, Graph G not None, vector[double] attribute, double e, bool_t above):
 		self._G = G
 		self._attribute = attribute
 		self._this = new _GlobalThresholdFilter(G._this, self._attribute, e, above)
@@ -10448,9 +10460,9 @@ cdef extern from "cpp/matching/Matching.h":
 		_Matching(count) except +
 		void match(node, node) except +
 		void unmatch(node, node) except +
-		bool isMatched(node) except +
-		bool areMatched(node, node) except +
-		bool isProper(_Graph) except +
+		bool_t isMatched(node) except +
+		bool_t areMatched(node, node) except +
+		bool_t isProper(_Graph) except +
 		count size(_Graph) except +
 		index mate(node) except +
 		edgeweight weight(_Graph) except +
@@ -10766,8 +10778,8 @@ cdef extern from "cpp/viz/GraphLayoutAlgorithm.h":
 		_GraphLayoutAlgorithm(_Graph, count) except +
 		count numEdgeCrossings() except +
 		vector[Point[double]] getCoordinates() except +
-		bool writeGraphToGML(string path) except +
-		bool writeKinemage(string path) except +
+		bool_t writeGraphToGML(string path) except +
+		bool_t writeKinemage(string path) except +
 
 cdef class GraphLayoutAlgorithm:
 
@@ -10833,8 +10845,8 @@ cdef extern from "cpp/viz/MaxentStress.h" namespace "NetworKit":
 
 cdef extern from "cpp/viz/MaxentStress.h":
 	cdef cppclass _MaxentStress "NetworKit::MaxentStress" (_GraphLayoutAlgorithm[double]):
-		_MaxentStress(_Graph G, count dim, count k, double tolerance, _LinearSolverType linearSolverType, bool fastComputation, _GraphDistance graphDistance) except +
-		_MaxentStress(_Graph G, count dim, const vector[Point[double]] coordinates, count k, double tolerance, _LinearSolverType linearSolverType, bool fastComputation, _GraphDistance graphDistance) except +
+		_MaxentStress(_Graph G, count dim, count k, double tolerance, _LinearSolverType linearSolverType, bool_t fastComputation, _GraphDistance graphDistance) except +
+		_MaxentStress(_Graph G, count dim, const vector[Point[double]] coordinates, count k, double tolerance, _LinearSolverType linearSolverType, bool_t fastComputation, _GraphDistance graphDistance) except +
 		void run() except +
 		void scaleLayout() except +
 		double computeScalingFactor() except +
@@ -10884,7 +10896,7 @@ cdef class MaxentStress (GraphLayoutAlgorithm):
 	EDGE_WEIGHT = 0
 	ALGEBRAIC_DISTANCE = 1
 
-	def __cinit__(self, Graph G, count dim, count k, vector[pair[double, double]] coordinates = [], double tolerance = 1e-5, _LinearSolverType linearSolverType = LAMG, bool fastComputation = False, _GraphDistance graphDistance = EDGE_WEIGHT):
+	def __cinit__(self, Graph G, count dim, count k, vector[pair[double, double]] coordinates = [], double tolerance = 1e-5, _LinearSolverType linearSolverType = LAMG, bool_t fastComputation = False, _GraphDistance graphDistance = EDGE_WEIGHT):
 		cdef Point[double] p = Point[double](0, 0)
 		cdef vector[Point[double]] pointCoordinates = vector[Point[double]]()
 
