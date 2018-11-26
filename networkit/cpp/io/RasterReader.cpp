@@ -18,7 +18,7 @@ RasterReader::RasterReader(double normalizationFactor): normalizationFactor(norm
 }
 
 std::pair<std::vector<double>, std::vector<double> >
-NetworKit::RasterReader::read(const std::string& path)
+RasterReader::read(const std::string& path)
 {
 	DEBUG("start reading raster file...");
 
@@ -105,4 +105,3 @@ NetworKit::RasterReader::read(const std::string& path)
 }
 
 } /* namespace NetworKit */
-

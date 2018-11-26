@@ -14,7 +14,7 @@
 
 namespace NetworKit {
 
-ChungLuGenerator::ChungLuGenerator(const std::vector< NetworKit::count > &degreeSequence) :
+ChungLuGenerator::ChungLuGenerator(const std::vector<count> &degreeSequence) :
 		StaticDegreeSequenceGenerator(degreeSequence) {
 	sum_deg = std::accumulate(seq.begin(), seq.end(), 0);
 	n = (count) seq.size();

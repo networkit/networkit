@@ -11,13 +11,13 @@
 
 namespace NetworKit {
 
-NetworKit::PageRank::PageRank(const Graph& G, double damp, double tol):
+PageRank::PageRank(const Graph& G, double damp, double tol):
 		Centrality(G, true), damp(damp), tol(tol)
 {
 
 }
 
-void NetworKit::PageRank::run() {
+void PageRank::run() {
 	Aux::SignalHandler handler;
 	count n = G.numberOfNodes();
 	count z = G.upperNodeIdBound();

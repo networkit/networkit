@@ -788,8 +788,8 @@ public:
 	 * @param s2 The second source
 	 * @param t2 The second target
 	 */
-	void swapEdge(NetworKit::node s1, NetworKit::node t1, NetworKit::node s2,
-	              NetworKit::node t2);
+	void swapEdge(node s1, node t1, node s2,
+	              node t2);
 
 	/**
 	 * Checks if undirected edge {@a u,@a v} exists in the graph.

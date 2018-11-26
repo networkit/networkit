@@ -976,7 +976,7 @@ void MatricesGTest::testDiagonalMatrix() {
 
 template<class Matrix>
 void MatricesGTest::testIncidenceMatrix() {
-	Graph G = NetworKit::Graph(5, true);
+	Graph G = Graph(5, true);
 	G.addEdge(0,1, 4.0);
 	G.addEdge(0,2, 9.0);
 	G.addEdge(0,3, 16.0);

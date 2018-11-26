@@ -28,7 +28,7 @@ public:
      * @param number_of_global_trades  Number of global trades to be executed (each edge
      *                                 is considered exactly twice per global traded)
      */
-    explicit GlobalCurveball(const NetworKit::Graph &G,
+    explicit GlobalCurveball(const Graph &G,
                              unsigned number_of_global_trades = 20);
 
 
@@ -61,4 +61,3 @@ private:
 }; // ! namespace NetworKit
 
 #endif // ! RANDOMIZATION_GLOBAL_CURVEBALL_H_
-

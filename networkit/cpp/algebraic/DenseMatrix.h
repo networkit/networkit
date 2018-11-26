@@ -325,7 +325,7 @@ void DenseMatrix::apply(const F unaryElementFunction) {
 	}
 }
 
-template<typename L> inline DenseMatrix NetworKit::DenseMatrix::binaryOperator(const DenseMatrix &A, const DenseMatrix &B, L binaryOp) {
+template<typename L> inline DenseMatrix DenseMatrix::binaryOperator(const DenseMatrix &A, const DenseMatrix &B, L binaryOp) {
 	assert(A.nRows == B.nRows && A.nCols == B.nCols);
 
 	std::vector<double> resultEntries(A.numberOfRows() * A.numberOfColumns(), 0.0);
@@ -342,7 +342,7 @@ template<typename L> inline DenseMatrix NetworKit::DenseMatrix::binaryOperator(c
 }
 
 template<typename L>
-inline void NetworKit::DenseMatrix::forElementsInRow(index i, L handle) const {
+inline void DenseMatrix::forElementsInRow(index i, L handle) const {
 	index offset = i * numberOfColumns();
 	for (index k = offset, j = 0; k < offset + numberOfColumns(); ++k, ++j) {
 		handle(j, entries[k]);
@@ -350,7 +350,7 @@ inline void NetworKit::DenseMatrix::forElementsInRow(index i, L handle) const {
 }
 
 template<typename L>
-inline void NetworKit::DenseMatrix::parallelForElementsInRow(index i, L handle) const {
+inline void DenseMatrix::parallelForElementsInRow(index i, L handle) const {
 	index offset = i * numberOfColumns();
 #pragma omp parallel for
 	for (omp_index j = 0; j < static_cast<omp_index>(numberOfColumns()); ++j) {
@@ -359,7 +359,7 @@ inline void NetworKit::DenseMatrix::parallelForElementsInRow(index i, L handle) 
 }
 
 template<typename L>
-inline void NetworKit::DenseMatrix::forElementsInRowOrder(L handle) const {
+inline void DenseMatrix::forElementsInRowOrder(L handle) const {
 	for (index i = 0; i < nRows; ++i) {
 		index offset = i * numberOfColumns();
 		for (index k = offset, j = 0; k < offset + numberOfColumns(); ++k, ++j) {
@@ -369,7 +369,7 @@ inline void NetworKit::DenseMatrix::forElementsInRowOrder(L handle) const {
 }
 
 template<typename L>
-inline void NetworKit::DenseMatrix::parallelForElementsInRowOrder(L handle) const {
+inline void DenseMatrix::parallelForElementsInRowOrder(L handle) const {
 #pragma omp parallel for
 	for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
 		index offset = i * numberOfColumns();

@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-GlobalCurveball::GlobalCurveball(const NetworKit::Graph &G,
+GlobalCurveball::GlobalCurveball(const Graph &G,
                                  unsigned number_of_global_trades) :
     impl(new CurveballDetails::GlobalCurveballImpl{G}),
     numGlobalTrades{number_of_global_trades}

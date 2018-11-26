@@ -35,11 +35,11 @@ struct MyEdge {
 };
 
 
-NetworKit::KruskalMSF::KruskalMSF(const Graph& G): SpanningForest(G) {
+KruskalMSF::KruskalMSF(const Graph& G): SpanningForest(G) {
 
 }
 
-void NetworKit::KruskalMSF::run() {
+void KruskalMSF::run() {
 	if (true || G.isWeighted()) { // FIXME: remove true when SpanningForest is fixed!
 		count z = G.upperNodeIdBound();
 		forest = G.copyNodes();

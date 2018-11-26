@@ -95,7 +95,7 @@ void CoreDecomposition::runWithParK() {
 	hasRun = true;
 }
 
-void NetworKit::CoreDecomposition::scan(index level, const std::vector<count>& degrees,
+void CoreDecomposition::scan(index level, const std::vector<count>& degrees,
 		std::vector<node>& curr)
 {
 	G.forNodes([&](node u) {
@@ -105,7 +105,7 @@ void NetworKit::CoreDecomposition::scan(index level, const std::vector<count>& d
 	});
 }
 
-void NetworKit::CoreDecomposition::scanParallel(index level, const std::vector<count>& degrees,
+void CoreDecomposition::scanParallel(index level, const std::vector<count>& degrees,
 		std::vector<node>& curr, std::vector<char>& active)
 {
 	const count z = G.upperNodeIdBound();
@@ -124,7 +124,7 @@ void NetworKit::CoreDecomposition::scanParallel(index level, const std::vector<c
 	}
 }
 
-void NetworKit::CoreDecomposition::processSublevel(index level,
+void CoreDecomposition::processSublevel(index level,
 		std::vector<count>& degrees, const std::vector<node>& curr,
 		std::vector<node>& next)
 {
@@ -144,7 +144,7 @@ void NetworKit::CoreDecomposition::processSublevel(index level,
 }
 
 #ifndef NETWORKIT_OMP2
-void NetworKit::CoreDecomposition::processSublevelParallel(index level,
+void CoreDecomposition::processSublevelParallel(index level,
 		std::vector<count>& degrees, const std::vector<node>& curr,
 		std::vector<node>& next, std::vector<char>& active)
 {
