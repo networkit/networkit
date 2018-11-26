@@ -16,10 +16,10 @@ namespace NetworKit {
 
 class GlobalCurveballGTest : public ::testing::Test  {
 protected:
-    void checkWithGraph(NetworKit::Graph&);
+    void checkWithGraph(Graph&);
 };
 
-void GlobalCurveballGTest::checkWithGraph(NetworKit::Graph& G) {
+void GlobalCurveballGTest::checkWithGraph(Graph& G) {
     node numNodes = G.numberOfNodes();
     const count numTrades = 5;
 
@@ -45,11 +45,11 @@ void GlobalCurveballGTest::checkWithGraph(NetworKit::Graph& G) {
     });
 
 
-    NetworKit::GlobalCurveball algo(G, numTrades);
+    GlobalCurveball algo(G, numTrades);
     algo.run();
 
     // check degrees
-    NetworKit::Graph outG = algo.getGraph();
+    Graph outG = algo.getGraph();
     outG.forNodes([&](node u){
         ASSERT_EQ(degrees[u], outG.degree(u));
     });
@@ -61,8 +61,8 @@ TEST_F(GlobalCurveballGTest, testCurveballErdosRenyi) {
     Aux::Random::setSeed(1, false);
 
     node numNodes = 1000;
-    NetworKit::ErdosRenyiGenerator generator(numNodes, 0.01);
-    NetworKit::Graph G = generator.generate();
+    ErdosRenyiGenerator generator(numNodes, 0.01);
+    Graph G = generator.generate();
 
     this->checkWithGraph(G);
 }
@@ -71,8 +71,8 @@ TEST_F(GlobalCurveballGTest, testCurveballHyperbolic) {
     Aux::Random::setSeed(1, false);
 
     node numNodes = 1000;
-    NetworKit::HyperbolicGenerator generator(numNodes);
-    NetworKit::Graph G = generator.generate();
+    HyperbolicGenerator generator(numNodes);
+    Graph G = generator.generate();
 
     this->checkWithGraph(G);
 }

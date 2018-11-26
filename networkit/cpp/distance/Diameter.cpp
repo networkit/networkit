@@ -78,7 +78,7 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 	return diameter;
 }
 
-std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const NetworKit::Graph &G, double error) {
+std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph &G, double error) {
 	if (G.isDirected() || G.isWeighted()) {
 		throw std::runtime_error("Error, the diameter of directed or weighted graphs cannot be computed yet.");
 	}

@@ -249,17 +249,17 @@ std::string Point<T>::toString() {
 }
 
 template<class T>
-inline std::string NetworKit::Point<T>::toCsvString() {
+inline std::string Point<T>::toCsvString() {
 	return genericToString("(", ", ", ")");
 }
 
 template<class T>
-inline std::string NetworKit::Point<T>::toSsvString() {
+inline std::string Point<T>::toSsvString() {
 	return genericToString("", " ", "");
 }
 
 template<class T>
-inline std::string NetworKit::Point<T>::genericToString(
+inline std::string Point<T>::genericToString(
 		const std::string& start, const std::string& sep,
 		const std::string& end)
 {

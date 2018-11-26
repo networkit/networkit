@@ -45,7 +45,7 @@ class GlobalCurveballImpl {
     using tfp_queue_type = tlx::RadixHeap< std::pair<node, node>, extract_type , node, 256>;
 
 public:
-    GlobalCurveballImpl(const NetworKit::Graph &G) :
+    GlobalCurveballImpl(const Graph &G) :
         inputGraph(G)
     {}
 
@@ -285,7 +285,7 @@ public:
         DEBUG("Trading took ", timer.elapsedMilliseconds(), " milliseconds.");
     }
 
-    NetworKit::Graph getGraph() {
+    Graph getGraph() {
         GraphBuilder builder(inputGraph.numberOfNodes(), false, false);
 
         for (; !prioQueue.empty(); prioQueue.pop()) {
@@ -299,7 +299,7 @@ public:
         return builder.toGraph(false, true);
     }
 
-    const NetworKit::Graph& getInputGraph() const {
+    const Graph& getInputGraph() const {
         return inputGraph;
     }
 
@@ -307,7 +307,7 @@ protected:
     bool hasRun {false};
     tfp_queue_type prioQueue;
 
-    const NetworKit::Graph& inputGraph;
+    const Graph& inputGraph;
 
     void computeCommonDisjointNeighbour(std::vector<node> &neighbourhood_of_u,
                                         const std::vector<node> &neighbourhood_of_v,

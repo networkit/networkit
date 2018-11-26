@@ -423,7 +423,7 @@ public:
 	template<typename L> void parallelForNonZeroElementsInRowOrder(L handle) const;
 };
 
-template<typename L> inline CSRMatrix NetworKit::CSRMatrix::binaryOperator(const CSRMatrix &A, const CSRMatrix &B, L binaryOp) {
+template<typename L> inline CSRMatrix CSRMatrix::binaryOperator(const CSRMatrix &A, const CSRMatrix &B, L binaryOp) {
 	assert(A.nRows == B.nRows && A.nCols == B.nCols);
 
 	if (A.sorted() && B.sorted()) {

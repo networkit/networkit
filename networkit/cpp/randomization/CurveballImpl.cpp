@@ -128,7 +128,7 @@ CurveballMaterialization::CurveballMaterialization(const CurveballAdjacencyList&
     : adjacencyList(adj_list)
 { }
 
-NetworKit::Graph CurveballMaterialization::toGraph(bool parallel) {
+Graph CurveballMaterialization::toGraph(bool parallel) {
     Graph G(adjacencyList.numberOfNodes(), false, false);
 
     if (parallel)
@@ -145,7 +145,7 @@ void CurveballMaterialization::toGraphParallel(Graph &G) {
 
     const node numNodes = adjacencyList.numberOfNodes();
 
-    std::vector<NetworKit::count> missingEdgesCounts(numNodes, 0);
+    std::vector<count> missingEdgesCounts(numNodes, 0);
 
     std::vector < std::vector<edgeweight> > new_edgeWeights(numNodes);
     std::vector < std::vector<node> > new_outEdges(numNodes);
@@ -203,7 +203,7 @@ void CurveballMaterialization::toGraphSequential(Graph &G) {
     const node numNodes = adjacencyList.numberOfNodes();
 
     // Analogue to "toGraphSequential" of GraphBuilder
-    std::vector<NetworKit::count> missingEdgesCounts;
+    std::vector<count> missingEdgesCounts;
     missingEdgesCounts.reserve(numNodes);
 
     std::vector < std::vector<edgeweight> > new_edgeWeights(numNodes);
@@ -377,7 +377,7 @@ TradeList::TradeList(const trade_vector& trades, const node num_nodes)
 
 
 
-CurveballIM::CurveballIM(const NetworKit::Graph& G)
+CurveballIM::CurveballIM(const Graph& G)
     : G(G)
     , numNodes(G.numberOfNodes())
     , tradeList(G.numberOfNodes())
@@ -430,7 +430,7 @@ void CurveballIM::run(const trade_vector& trades) {
     else
         restructureGraph(trades);
 
-    NetworKit::count trade_count = 0;
+    count trade_count = 0;
     neighbour_vector common_neighbours;
     neighbour_vector disjoint_neighbours;
 
@@ -560,7 +560,7 @@ void CurveballIM::run(const trade_vector& trades) {
     return;
 }
 
-NetworKit::Graph CurveballIM::getGraph(bool parallel) const {
+Graph CurveballIM::getGraph(bool parallel) const {
     CurveballMaterialization gb(adjList);
 
     return gb.toGraph(parallel);

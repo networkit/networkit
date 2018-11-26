@@ -14,7 +14,7 @@
 
 namespace NetworKit {
 
-HavelHakimiGenerator::HavelHakimiGenerator(const std::vector< NetworKit::count > &sequence, bool ignoreIfRealizable) :
+HavelHakimiGenerator::HavelHakimiGenerator(const std::vector<count> &sequence, bool ignoreIfRealizable) :
 		StaticDegreeSequenceGenerator(sequence), ignoreIfRealizable(ignoreIfRealizable) {
 }
 

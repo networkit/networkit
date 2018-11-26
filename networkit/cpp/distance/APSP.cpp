@@ -33,7 +33,7 @@ void APSP::run() {
 	hasRun = true;
 }
 
-std::string NetworKit::APSP::toString() const {
+std::string APSP::toString() const {
 	return "All-Pairs Shortest Path Algorithm";
 }
 

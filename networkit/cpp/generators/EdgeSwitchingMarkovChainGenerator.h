@@ -32,7 +32,7 @@ public:
 	 * @param sequence The wanted degree sequence.
 	 * @param ignoreIfRealizable Ignore if the sequence is realizable and generate a graph anyway.
 	 */
-	EdgeSwitchingMarkovChainGenerator(const std::vector< NetworKit::count > &sequence, bool ignoreIfRealizable = false);
+	EdgeSwitchingMarkovChainGenerator(const std::vector<count> &sequence, bool ignoreIfRealizable = false);
 
 	/**
 	 * Generate a graph according to the configuration model.
