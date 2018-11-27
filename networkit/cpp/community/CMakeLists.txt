@@ -4,6 +4,7 @@ networkit_add_module(community
     CommunityDetectionAlgorithm.cpp
     Conductance.cpp
     CoverHubDominance.cpp
+    CoverF1Similarity.cpp
     Coverage.cpp
     CutClustering.cpp
     DissimilarityMeasure.cpp

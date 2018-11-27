@@ -5314,6 +5314,45 @@ cdef class StablePartitionNodes(LocalPartitionEvaluation):
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_StablePartitionNodes*>(self._this)).isStable(u)
 
+
+cdef extern from "cpp/community/CoverF1Similarity.h":
+	cdef cppclass _CoverF1Similarity "NetworKit::CoverF1Similarity"(_LocalCoverEvaluation):
+		_CoverF1Similarity(_Graph G, _Cover C, _Cover reference) except +
+
+cdef class CoverF1Similarity(LocalCoverEvaluation):
+	"""
+	Compare a given cover to a reference cover using the F1 measure.
+	This is a typical similarity measure used to compare the found
+	overlapping community structure to a ground truth community
+	structure. Each cluster is compared to the best-matching reference
+	cluster (in terms of highest F1 score). A value of 1 indicates
+	perfect agreement while a while of 0 indicates complete
+	disagreement. An example where this measure is used is the
+	following paper:
+
+	Alessandro Epasto, Silvio Lattanzi, and Renato Paes
+	Leme. 2017. Ego-Splitting Framework: from Non-Overlapping to
+	Overlapping Clusters. In Proceedings of the 23rd ACM SIGKDD
+	International Conference on Knowledge Discovery and Data Mining
+	(KDD '17). ACM, New York, NY, USA, 145-154. DOI:
+	https://doi.org/10.1145/3097983.3098054
+
+	Parameters
+	----------
+	G : Graph
+		The graph on which the evaluation is performed.
+	C : Cover
+		The cover that shall be evaluated
+        reference : Cover
+		The cover to which the similarity shall be computed
+	"""
+	cdef Cover _reference
+	def __cinit__(self, Graph G not None, Cover C not None, Cover reference not None):
+		self._this = new _CoverF1Similarity(G._this, C._this, reference._this)
+		self._reference = reference
+		assert(self._G == G)
+		assert(self._C == C)
+
 # Module: flows
 
 cdef extern from "cpp/flow/EdmondsKarp.h":

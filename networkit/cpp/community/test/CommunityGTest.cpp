@@ -38,6 +38,7 @@
 #include "../PartitionFragmentation.h"
 #include "../../generators/ClusteredRandomGraphGenerator.h"
 #include "../../generators/ErdosRenyiGenerator.h"
+#include "../CoverF1Similarity.h"
 
 namespace NetworKit {
 
@@ -674,5 +675,48 @@ TEST_F(CommunityGTest, testPartitionFragmentation) {
 	EXPECT_DOUBLE_EQ(0.9, frag3.getWeightedAverage());
 }
 
+TEST_F(CommunityGTest, testCoverF1Similarity) {
+	count n = 20;
+	Graph G(n);
+
+	Cover C(n);
+	C.setUpperBound(3);
+	Cover ref(n);
+	ref.setUpperBound(3);
+
+	// 0: perfect overlap
+	for (node u = 0; u < 10; ++u) {
+		C.addToSubset(0, u);
+		ref.addToSubset(1, u);
+	}
+
+	for (node u = 0; u < 11; ++u) {
+		ref.addToSubset(0, u);
+	}
+
+	// 1: two node overlap with 0, one node overlap with 1
+	for (node u = 9; u < 19; ++u) {
+		C.addToSubset(1, u);
+	}
+
+	// 2: no overlap
+	for (node u = 11; u < 20; ++u) {
+		C.addToSubset(2, u);
+	}
+
+	CoverF1Similarity sim(G, C, ref);
+	sim.run();
+
+	EXPECT_DOUBLE_EQ(1.0, sim.getMaximumValue());
+	EXPECT_DOUBLE_EQ(0.0, sim.getMinimumValue());
+	EXPECT_DOUBLE_EQ(1.0, sim.getValue(0));
+	const double pre = 2.0 / 11.0;
+	const double re = 2.0 / 10.0;
+	const double f1 = 2.0 * (pre * re) / (pre + re);
+	EXPECT_DOUBLE_EQ(f1, sim.getValue(1));
+	EXPECT_DOUBLE_EQ(0.0, sim.getValue(2));
+	EXPECT_DOUBLE_EQ((1.0 + f1) / 3.0, sim.getUnweightedAverage());
+	EXPECT_DOUBLE_EQ((1.0 * 10.0 + f1 * 10.0) / 29.0, sim.getWeightedAverage());
+}
 
 } /* namespace NetworKit */
