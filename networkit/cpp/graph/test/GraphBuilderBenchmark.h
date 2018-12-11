@@ -20,7 +20,7 @@ class GTestBenchmark : public testing::Test {
 public:
 	static void measureInMs(std::function<int()> func, int iterations = 1) {
 		Aux::Timer timer;
-		std::vector<long long unsigned> runningTimes(iterations);
+		std::vector<unsigned long long> runningTimes(iterations);
 		for (int i = 0; i < iterations; i++) {
 			printf("Iteration %d of %d ...", i + 1, iterations);
 			

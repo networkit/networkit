@@ -96,7 +96,8 @@ public:
 				const node first_node = std::min<node>(n, tid * chunk_size);
 				const node last_node  = std::min<node>(n, (tid+1) * chunk_size);
 
-				numEdges += enumerate<true>(handle, tid, prob, first_node, last_node);
+				const auto localNumEdges = enumerate<true>(handle, tid, prob, first_node, last_node);
+				numEdges.fetch_add(localNumEdges, std::memory_order_relaxed);
 			}
 		} else {
 			#pragma omp parallel
@@ -119,8 +120,10 @@ public:
 
 				if (tid + 1 == threads) last_node = n;
 
-				if (first_node < last_node)
-					numEdges += enumerate<false>(handle, tid, prob, first_node, last_node);
+				if (first_node < last_node) {
+					const auto localNumEdges = enumerate<false>(handle, tid, prob, first_node, last_node);
+					numEdges.fetch_add(localNumEdges, std::memory_order_relaxed);
+				}
 			}
 		}
 
