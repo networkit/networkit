@@ -17,12 +17,12 @@ namespace NetworKit {
  * The node-structural Rand measure assigns a similarity value in [0,1]
  * to two partitions of a graph, by considering all pairs of nodes.
  */
-class NodeStructuralRandMeasure: public NetworKit::DissimilarityMeasure {
+class NodeStructuralRandMeasure: public DissimilarityMeasure {
 
 public:
 
 
-	virtual double getDissimilarity(const NetworKit::Graph &G, const NetworKit::Partition &zeta, const NetworKit::Partition &eta);
+	virtual double getDissimilarity(const Graph &G, const Partition &zeta, const Partition &eta);
 
 };
 

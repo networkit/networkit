@@ -9,7 +9,6 @@
 #include <omp.h>
 
 #include "../auxiliary/PrioQueue.h"
-#include "../auxiliary/PrioQueueForInts.h"
 #include "../components/StronglyConnectedComponents.h"
 #include "TopHarmonicCloseness.h"
 

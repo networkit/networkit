@@ -1,12 +1,12 @@
-#ifndef RANDOM_H_
-#define RANDOM_H_
-
 /*
  * Random.h
  *
  *  Created on: 02.01.2014
  *      Author: FJW
  */
+
+#ifndef RANDOM_H_
+#define RANDOM_H_
 
 #include <cassert>
 #include <cstddef>
@@ -20,7 +20,7 @@ namespace Aux {
 /**
  * Provides several functions for random-numbers.
  *
- * All functions are guaranteed to be thread-safe if and only if at least GCC 4.8 is used
+ * All functions are guaranteed to be thread-safe.
  */
 namespace Random {
 
@@ -36,8 +36,13 @@ void setSeed(uint64_t seed, bool useThreadId);
  */
 uint64_t getSeed();
 
+/*
+ * @returns whether or not the thread id is added to the random seed. 
+ */
+bool getUseThreadId();
+
 /**
- * @returns a reference to a seeded URNG that is thread_local iff GCC 4.8 or later is used.
+ * @returns a reference to a seeded URNG that is thread_local.
  */
 std::mt19937_64& getURNG();
 
@@ -46,6 +51,11 @@ std::mt19937_64& getURNG();
  * @returns an integer distributed uniformly in an inclusive range;
  * @param upperBound the upper bound, default = UNINT64_T_MAX
  * @param lowerBound the lower bound, default = 0
+ *
+ * @warning Compared to obtaining a reference to a generator using
+ * @ref getURNG() and then using a local std::uniform_int_distribution,
+ * this method incurs a slow-down of up to 30%. Consider avoiding it
+ * in hot sections.
  */
 uint64_t integer();
 uint64_t integer(uint64_t upperBound);
@@ -55,6 +65,11 @@ uint64_t integer(uint64_t lowerBound, uint64_t upperBound);
  * @returns a double distributed uniformly in a half-open range: [lowerBound, upperBound)
  * @param upperBound default = 1.0
  * @param lowerBound default = 0.0
+ *
+ * @warning Compared to obtaining a reference to a generator using
+ * @ref getURNG() and then using a local std::uniform_int_distribution,
+ * this method incurs a slow-down of up to 30%. Consider avoiding it
+ * in hot sections.
  */
 double real();
 double real(double upperBound);
@@ -63,6 +78,11 @@ double real(double lowerBound, double upperBound);
 /**
  * @returns a double distributed uniformly in the range [0, 1]
  * @note this differs from real() in returning a value in a closed instead of a half-open range.
+ *
+ * @warning Compared to obtaining a reference to a generator using
+ * @ref getURNG() and then using a local std::uniform_int_distribution,
+ * this method incurs a slow-down of up to 30%. Consider avoiding it
+ * in hot sections.
  */
 double probability();
 
@@ -71,14 +91,6 @@ double probability();
  * access a random element of a container.
  */
 std::size_t index(std::size_t max);
-
-/**
- * @returns an integer distributed binomially
- * @param n 	number of trials
- * @param p 	success probability
- */
-//uint64_t binomial(double n, double p);
-
 
 /**
  * @returns a uniform random choice from an indexable container of elements.

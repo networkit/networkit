@@ -5,15 +5,16 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef NOGTEST
+#include <gtest/gtest.h>
 
-#include "IndependentSetGTest.h"
 #include "../../auxiliary/Log.h"
 #include "../../generators/ErdosRenyiGenerator.h"
+#include "../../graph/Graph.h"
+#include "../../independentset/Luby.h"
 
 namespace NetworKit {
 
-
+class IndependentSetGTest: public testing::Test {};
 
 TEST_F(IndependentSetGTest, debugLuby) {
 	count n = 500;
@@ -62,5 +63,3 @@ TEST_F(IndependentSetGTest, debugLubyWithSelfLoops) {
 }
 
 } /* namespace NetworKit */
-
-#endif /*NOGTEST */

@@ -18,7 +18,7 @@ typedef std::vector<std::vector<count> > Matrix;
 /**
  * @ingroup community
  */
-class DynamicNMIDistance: public NetworKit::DissimilarityMeasure {
+class DynamicNMIDistance: public DissimilarityMeasure {
 public:
 
 	/**

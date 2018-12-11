@@ -38,6 +38,8 @@ build.conf/
 build/
 /build*
 /.build*
+include/
+lib/
 
 ### Scons
 .sconsign.dblite
@@ -45,6 +47,7 @@ build/
 ### IDE
 *.project
 *.cproject
+*.vim
 
 ### Python
 networkit.egg-info/

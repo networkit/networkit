@@ -20,7 +20,7 @@ namespace NetworKit {
  * Computes an approximate maximum weight matching with guarantee 1/2.
  * (Note that better algorithms in terms of approximation quality exist.)
  */
-class PathGrowingMatcher: public NetworKit::Matcher {
+class PathGrowingMatcher: public Matcher {
 public:
 	/**
 	 * @param[in] G Graph for which matching is computed.

@@ -5,20 +5,15 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef NOGTEST
+#include <gtest/gtest.h>
 
-#include "Graph2Benchmark.h"
+#include "../Graph.h"
+#include "../../auxiliary/Timer.h"
+#include "../../auxiliary/Log.h"
 
 namespace NetworKit {
 
-Graph2Benchmark::Graph2Benchmark() {
-	// TODO Auto-generated constructor stub
-
-}
-
-Graph2Benchmark::~Graph2Benchmark() {
-	// TODO Auto-generated destructor stub
-}
+class Graph2Benchmark: public testing::Test {};
 
 TEST_F(Graph2Benchmark, graphConstruction) {
 	count n = 1e+7;;
@@ -225,5 +220,3 @@ TEST_F(Graph2Benchmark, nodeRemoval) {
 }
 
 } /* namespace NetworKit */
-
-#endif /*NOGTEST */

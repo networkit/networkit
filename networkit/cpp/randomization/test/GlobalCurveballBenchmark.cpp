@@ -7,18 +7,21 @@
 
 #include <gtest/gtest.h>
 
-#include "GlobalCurveballBenchmark.h"
-
 #include "../GlobalCurveball.h"
 #include "../GlobalTradeSequence.h"
 
+#include "../../graph/Graph.h"
 #include "../../generators/HyperbolicGenerator.h"
 #include "../../generators/ErdosRenyiGenerator.h"
 
-
 namespace NetworKit {
 
-void GlobalCurveballBenchmark::checkWithGraph(NetworKit::Graph& G) {
+class GlobalCurveballBenchmark : public ::testing::Test  {
+protected:
+    void checkWithGraph(Graph&);
+};
+
+void GlobalCurveballBenchmark::checkWithGraph(Graph& G) {
     node numNodes = G.numberOfNodes();
     const count numTrades = 2;
     std::vector<node> degrees(numNodes + 1);
@@ -44,11 +47,11 @@ void GlobalCurveballBenchmark::checkWithGraph(NetworKit::Graph& G) {
     });
 
 
-    NetworKit::GlobalCurveball algo(G, numTrades);
+    GlobalCurveball algo(G, numTrades);
     algo.run();
 
     // check degrees
-    NetworKit::Graph outG = algo.getGraph();
+    Graph outG = algo.getGraph();
     outG.forNodes([&](node u){
         ASSERT_EQ(degrees[u], outG.degree(u));
     });
@@ -58,8 +61,8 @@ TEST_F(GlobalCurveballBenchmark, benchmarkCurveballHyperbolic) {
     Aux::Random::setSeed(1, false);
 
     node numNodes = 1000000;
-    NetworKit::HyperbolicGenerator generator(numNodes, 32);
-    NetworKit::Graph G = generator.generate();
+    HyperbolicGenerator generator(numNodes, 32);
+    Graph G = generator.generate();
 
     this->checkWithGraph(G);
 }
@@ -68,8 +71,8 @@ TEST_F(GlobalCurveballBenchmark, benchmarkErdosRenyiHyperbolic) {
     Aux::Random::setSeed(1, false);
 
     node numNodes = 1000000;
-    NetworKit::ErdosRenyiGenerator generator(numNodes, 32. / numNodes);
-    NetworKit::Graph G = generator.generate();
+    ErdosRenyiGenerator generator(numNodes, 32. / numNodes);
+    Graph G = generator.generate();
 
     this->checkWithGraph(G);
 }

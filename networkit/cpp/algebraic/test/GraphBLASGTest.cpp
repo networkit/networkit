@@ -5,10 +5,15 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#include "GraphBLASGTest.h"
-#include "../CSRMatrix.h"
+#include <gtest/gtest.h>
 #include <iostream>
+
+#include "../GraphBLAS.h"
+#include "../CSRMatrix.h"
+
 namespace NetworKit {
+
+class GraphBLASGTest : public testing::Test {};
 
 TEST_F(GraphBLASGTest, testMxM) {
 	std::vector<Triplet> triplets = {{0,0,1}, {0,1,2}, {0,2,3}, {1,0,2}, {1,1,2}, {2,0,3}, {2,2,3}, {2,3,-1}, {3,2,-1}, {3,3,4}};

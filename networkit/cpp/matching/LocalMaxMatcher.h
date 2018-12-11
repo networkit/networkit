@@ -21,7 +21,7 @@ namespace NetworKit {
  * LocalMax matching similar to the one described in the EuroPar13 paper
  * by the Sanders group (Birn, Osipov, Sanders, Schulz, Sitchinava)
  */
-class LocalMaxMatcher: public NetworKit::Matcher {
+class LocalMaxMatcher: public Matcher {
 public:
 
 	LocalMaxMatcher(const Graph& G);

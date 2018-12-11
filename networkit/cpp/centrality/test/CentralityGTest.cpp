@@ -8,6 +8,8 @@
 #include <iomanip>
 #include <iostream>
 
+#include <gtest/gtest.h>
+
 #include "../../auxiliary/Log.h"
 #include "../../auxiliary/Timer.h"
 #include "../../generators/DorogovtsevMendesGenerator.h"
@@ -24,12 +26,14 @@
 #include "../CoreDecomposition.h"
 #include "../DynApproxBetweenness.h"
 #include "../DynKatzCentrality.h"
+#include "../DynTopHarmonicCloseness.h"
 #include "../EigenvectorCentrality.h"
 #include "../EstimateBetweenness.h"
 #include "../GroupCloseness.h"
 #include "../GroupDegree.h"
 #include "../HarmonicCloseness.h"
 #include "../KPathCentrality.h"
+#include "../KadabraBetweenness.h"
 #include "../KatzCentrality.h"
 #include "../LaplacianCentrality.h"
 #include "../LocalClusteringCoefficient.h"
@@ -38,9 +42,10 @@
 #include "../SpanningEdgeCentrality.h"
 #include "../TopCloseness.h"
 #include "../TopHarmonicCloseness.h"
-#include "CentralityGTest.h"
 
 namespace NetworKit {
+
+class CentralityGTest : public testing::Test {};
 
 TEST_F(CentralityGTest, testBetweennessCentrality) {
 	/* Graph:
@@ -737,7 +742,7 @@ TEST_F(CentralityGTest, testClosenessCentrality) {
 	G.addEdge(3, 5);
 	G.addEdge(4, 5);
 
-	Closeness centrality(G, false);
+	Closeness centrality(G, false, ClosenessVariant::generalized);
 	centrality.run();
 	std::vector<double> bc = centrality.scores();
 
@@ -751,6 +756,39 @@ TEST_F(CentralityGTest, testClosenessCentrality) {
 	EXPECT_NEAR(0.125, bc[4], tol);
 	EXPECT_NEAR(0.1, bc[5], tol);
 	EXPECT_NEAR(0.2, maximum, tol);
+}
+
+TEST_F(CentralityGTest, testClosenessCentralityDirected) {
+	/* Graph:
+	 0    3
+	  \  / \
+	   2    5
+	  /  \ /
+	 1    4
+	*/
+	count n = 6;
+	Graph G(n, false, true);
+
+	G.addEdge(0, 2);
+	G.addEdge(1, 2);
+	G.addEdge(2, 3);
+	G.addEdge(2, 4);
+	G.addEdge(3, 5);
+	G.addEdge(4, 5);
+
+	Closeness centrality(G, true, ClosenessVariant::generalized);
+	centrality.run();
+	std::vector<double> bc = centrality.scores();
+
+	double maximum = centrality.maximum();
+
+	const double tol = 1e-6;
+	EXPECT_NEAR(0.4, bc[0], tol);
+	EXPECT_NEAR(0.4, bc[1], tol);
+	EXPECT_NEAR(0.45, bc[2], tol);
+	EXPECT_NEAR(0.2, bc[3], tol);
+	EXPECT_NEAR(0.2, bc[4], tol);
+	EXPECT_NEAR(0, bc[5], tol);
 }
 
 TEST_F(CentralityGTest, testHarmonicClosenessCentrality) {
@@ -1125,7 +1163,7 @@ TEST_F(CentralityGTest, testTopClosenessDirected) {
 		G.addEdge(u, v);
 		G.addEdge(v, u);
 	});
-	Closeness cc(G1, true);
+	Closeness cc(G1, true, ClosenessVariant::generalized);
 	cc.run();
 	TopCloseness topcc(G, k, true, true);
 	topcc.run();
@@ -1149,7 +1187,7 @@ TEST_F(CentralityGTest, testTopClosenessUndirected) {
 		G.addEdge(u, v);
 		G.addEdge(v, u);
 	});
-	Closeness cc(G1, true);
+	Closeness cc(G1, true, ClosenessVariant::generalized);
 	cc.run();
 	TopCloseness topcc(G, k, true, true);
 	topcc.run();
@@ -1280,9 +1318,9 @@ TEST_F(CentralityGTest, testLaplacianCentralityUnweighted) {
 }
 
 TEST_F(CentralityGTest, testGroupDegreeUndirected) {
+	Aux::Random::setSeed(42, false);
 	count nodes = 12;
-	ErdosRenyiGenerator gen(nodes, 0.3, false);
-	Graph g = gen.generate();
+	Graph g = ErdosRenyiGenerator(nodes, 0.3, false).generate();
 	count k = 5;
 
 	GroupDegree gd(g, k, false);
@@ -1325,19 +1363,20 @@ TEST_F(CentralityGTest, testGroupDegreeUndirected) {
 	EXPECT_TRUE(score > 0.5 * maxScore);
 	EXPECT_TRUE(scorePlusGroup >
 	            (1.0 - 1.0 / std::exp(1.0) * (double)(maxScore + k)));
-	EXPECT_EQ(gd.getScore(), gd.scoreOfGroup(gd.groupMaxDegree()));
-	EXPECT_EQ(gdIncludeGroup.getScore(),
+	EXPECT_EQ(score, gd.scoreOfGroup(gd.groupMaxDegree()));
+	EXPECT_EQ(scorePlusGroup,
 	          gdIncludeGroup.scoreOfGroup(gdIncludeGroup.groupMaxDegree()));
 }
 
 TEST_F(CentralityGTest, testGroupDegreeDirected) {
+	Aux::Random::setSeed(42, false);
 	count nodes = 12;
-	ErdosRenyiGenerator gen(nodes, 0.3, true, false);
-	Graph g = gen.generate();
+	Graph g = ErdosRenyiGenerator(nodes, 0.3, true, false).generate();
 	count k = 5;
 
 	GroupDegree gd(g, k, false);
 	gd.run();
+
 	count scoreNoGroup = gd.getScore();
 	GroupDegree gdIncludeGroup(g, k, true);
 	gdIncludeGroup.run();
@@ -1376,8 +1415,8 @@ TEST_F(CentralityGTest, testGroupDegreeDirected) {
 	EXPECT_TRUE(scoreNoGroup > 0.5 * maxScore);
 	EXPECT_TRUE(scorePlusGroup >
 	            (1.0 - 1.0 / std::exp(1.0)) * (double)(maxScore + k));
-	EXPECT_EQ(gd.getScore(), gd.scoreOfGroup(gd.groupMaxDegree()));
-	EXPECT_EQ(gdIncludeGroup.getScore(),
+	EXPECT_EQ(scoreNoGroup, gd.scoreOfGroup(gd.groupMaxDegree()));
+	EXPECT_EQ(scorePlusGroup,
 	          gdIncludeGroup.scoreOfGroup(gdIncludeGroup.groupMaxDegree()));
 }
 
@@ -1425,6 +1464,276 @@ TEST_F(CentralityGTest, testGroupCloseness) {
 	std::vector<node> solution = {0, 2, 5};
 	for (count i = 0; i < k; ++i) {
 		EXPECT_EQ(apx[i], solution[i]);
+	}
+
+	EXPECT_NEAR(gc.scoreOfGroup(apx), 1.0, 1e-5);
+}
+
+/**
+ * This test succeeds with the fixed random seed (42).
+ * However, the Kadabra algorithm computes a correct epsilon-approximation of
+ * the betweenness centrality score of all the nodes of the graph with high
+ * probability. Thus, it is possible that, for a different random seed, this
+ * test fails.
+ */
+TEST_F(CentralityGTest, testKadabraAbsolute) {
+	Aux::Random::setSeed(42, true);
+	const count n = 10;
+	Graph g = ErdosRenyiGenerator(n, 0.1).generate();
+
+	const double delta = 0.1;
+	const double epsilon = 0.01;
+	KadabraBetweenness kadabra(g, epsilon, delta);
+	kadabra.run();
+	auto scores = kadabra.topkScoresList();
+	auto nodes = kadabra.topkNodesList();
+
+	Betweenness betweenness(g, true);
+	betweenness.run();
+	count maxErrors = (count)std::ceil(delta * (double)n);
+
+	count errors = 0;
+	for (count i = 0; i < n; ++i) {
+		if (std::abs(scores[i] - betweenness.score(nodes[i])) > delta) {
+			++errors;
+		}
+	}
+
+	EXPECT_TRUE(errors <= maxErrors);
+}
+
+/**
+ * This test succeeds with the fixed random seed (42).
+ * However, the Kadabra algorithm finds the top-k nodes with
+ * highest betweenness centrality with high probability. Thus, it is possible
+ * that, for a different random seed, this test fails.
+ */
+
+TEST_F(CentralityGTest, testKadabraTopK) {
+	Aux::Random::setSeed(42, true);
+	const count n = 10;
+	Graph g = ErdosRenyiGenerator(n, 0.1).generate();
+
+	const double delta = 0.1;
+	const double epsilon = 0.01;
+	const count k = 3;
+	KadabraBetweenness kadabra(g, epsilon, delta, k);
+	kadabra.run();
+	auto kadabraRanking = kadabra.ranking();
+
+	Betweenness betweenness(g, true);
+	betweenness.run();
+	auto betwRanking = betweenness.ranking();
+	bool correctRanking = true;
+	for (count i = 0; i < k; ++i) {
+		if (betwRanking[i].first != kadabraRanking[i].first) {
+			correctRanking = false;
+			int j = static_cast<int>(i) - 1;
+			while (j >= 0 && betwRanking[j].second == betwRanking[i].second) {
+				--j;
+			}
+			++j;
+			while (j < n && betwRanking[j].second == betwRanking[i].second) {
+				if (betwRanking[j].first == kadabraRanking[i].first) {
+					correctRanking = true;
+					break;
+				}
+				++j;
+			}
+		}
+	}
+	EXPECT_TRUE(correctRanking);
+}
+
+TEST_F(CentralityGTest, testDynTopHarmonicClosenessUndirected) {
+	Graph G = DorogovtsevMendesGenerator(500).generate();
+
+	count k = 10;
+
+	DynTopHarmonicCloseness centrality(G, k, false);
+	centrality.run();
+
+	HarmonicCloseness reference(G, false);
+	reference.run();
+
+	auto scores = centrality.ranking();
+	auto refScores = reference.ranking();
+
+	for (count j = 0; j < k; ++j) {
+		EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
+	}
+
+	count numInsertions = 1;
+
+	std::vector<GraphEvent> deletions;
+	std::vector<GraphEvent> insertions;
+
+	for (count i = 0; i < numInsertions; i++) {
+
+		node u = G.upperNodeIdBound();
+		node v = G.upperNodeIdBound();
+
+		do {
+			u = G.randomNode();
+			v = G.randomNode();
+		} while (G.hasEdge(u, v));
+
+		GraphEvent edgeAddition(GraphEvent::EDGE_ADDITION, u, v);
+		insertions.insert(insertions.begin(), edgeAddition);
+
+		GraphEvent edgeDeletion(GraphEvent::EDGE_REMOVAL, u, v);
+		deletions.push_back(edgeDeletion);
+
+		G.addEdge(u, v);
+	}
+
+	for (auto e : insertions) {
+		G.removeEdge(e.u, e.v);
+	}
+
+	for (GraphEvent edgeAddition : insertions) {
+
+		node u = edgeAddition.u;
+		node v = edgeAddition.v;
+
+		G.addEdge(u, v);
+
+		centrality.update(edgeAddition);
+		reference.run();
+
+		scores = centrality.ranking();
+		refScores = reference.ranking();
+
+		for (count j = 0; j < k; ++j) {
+			EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
+		}
+	}
+
+	for (GraphEvent edgeDeletion : deletions) {
+		node u = edgeDeletion.u;
+		node v = edgeDeletion.v;
+
+		G.removeEdge(u, v);
+
+		centrality.update(edgeDeletion);
+		reference.run();
+
+		scores = centrality.ranking();
+		refScores = reference.ranking();
+
+		for (count j = 0; j < k; ++j) {
+			EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
+		}
+	}
+
+	for (GraphEvent edgeInsertion : insertions) {
+		G.addEdge(edgeInsertion.u, edgeInsertion.v);
+	}
+
+	reference.run();
+	centrality.updateBatch(insertions);
+
+	scores = centrality.ranking();
+	refScores = reference.ranking();
+
+	for (count j = 0; j < k; ++j) {
+		EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
+	}
+}
+
+TEST_F(CentralityGTest, testDynTopHarmonicClosenessDirected) {
+	Graph G = ErdosRenyiGenerator(300, 0.1, true).generate();
+
+	count k = 10;
+
+	DynTopHarmonicCloseness centrality(G, k, false);
+	centrality.run();
+
+	HarmonicCloseness reference(G, false);
+	reference.run();
+
+	auto scores = centrality.ranking();
+	auto refScores = reference.ranking();
+	for (count j = 0; j < k; ++j) {
+		EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
+	}
+
+	count numInsertions = 1;
+
+	std::vector<GraphEvent> deletions;
+	std::vector<GraphEvent> insertions;
+
+	for (count i = 0; i < numInsertions; i++) {
+
+		node u = G.upperNodeIdBound();
+		node v = G.upperNodeIdBound();
+
+		do {
+			u = G.randomNode();
+			v = G.randomNode();
+		} while (G.hasEdge(u, v));
+
+		GraphEvent edgeAddition(GraphEvent::EDGE_ADDITION, u, v);
+		insertions.insert(insertions.begin(), edgeAddition);
+
+		GraphEvent edgeDeletion(GraphEvent::EDGE_REMOVAL, u, v);
+		deletions.push_back(edgeDeletion);
+
+		G.addEdge(u, v);
+	}
+
+	for (auto e : insertions) {
+		G.removeEdge(e.u, e.v);
+	}
+
+	for (GraphEvent edgeAddition : insertions) {
+
+		node u = edgeAddition.u;
+		node v = edgeAddition.v;
+
+		G.addEdge(u, v);
+
+		centrality.update(edgeAddition);
+		reference.run();
+
+		scores = centrality.ranking();
+		refScores = reference.ranking();
+
+		for (count j = 0; j < k; ++j) {
+			EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
+		}
+	}
+
+	for (GraphEvent edgeDeletion : deletions) {
+
+		node u = edgeDeletion.u;
+		node v = edgeDeletion.v;
+
+		G.removeEdge(u, v);
+
+		centrality.update(edgeDeletion);
+		reference.run();
+
+		scores = centrality.ranking();
+		refScores = reference.ranking();
+
+		for (count j = 0; j < k; ++j) {
+			EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
+		}
+	}
+
+	for (GraphEvent edgeInsertion : insertions) {
+		G.addEdge(edgeInsertion.u, edgeInsertion.v);
+	}
+
+	reference.run();
+	centrality.updateBatch(insertions);
+
+	scores = centrality.ranking();
+	refScores = reference.ranking();
+
+	for (count j = 0; j < k; ++j) {
+		EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
 	}
 }
 } /* namespace NetworKit */

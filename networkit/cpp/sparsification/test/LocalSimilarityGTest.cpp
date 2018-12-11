@@ -5,15 +5,14 @@
  *      Author: Gerd Lindner
  */
 
-#ifndef NOGTEST
-
-#include "LocalSimilarityGTest.h"
+#include <gtest/gtest.h>
 
 #include "../LocalSimilarityScore.h"
 #include "../../edgescores/ChibaNishizekiTriangleEdgeScore.h"
 
-
 namespace NetworKit {
+
+class LocalSimilarityGTest: public testing::Test {};
 
 TEST_F(LocalSimilarityGTest, testAttributeSimple) {
 	Graph g(4);
@@ -40,5 +39,3 @@ TEST_F(LocalSimilarityGTest, testAttributeSimple) {
 
 }
 /* namespace NetworKit */
-
-#endif /*NOGTEST */

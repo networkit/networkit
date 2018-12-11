@@ -18,7 +18,7 @@ namespace NetworKit {
  * Approximation of betweenness centrality according to algorithm described in
  * Matteo Riondato and Evgenios M. Kornaropoulos: Fast Approximation of Betweenness Centrality through Sampling
  */
-class ApproxBetweenness: public NetworKit::Centrality {
+class ApproxBetweenness: public Centrality {
 
 public:
 

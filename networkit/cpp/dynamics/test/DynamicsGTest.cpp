@@ -5,7 +5,7 @@
  *      Author: cls
  */
 
-#include "DynamicsGTest.h"
+#include <gtest/gtest.h>
 
 #include "../DGSStreamParser.h"
 #include "../../auxiliary/Log.h"
@@ -14,6 +14,8 @@
 #include "../GraphDifference.h"
 
 namespace NetworKit {
+
+class DynamicsGTest: public testing::Test {};
 
 TEST_F(DynamicsGTest, testDGSStreamParser) {
 	DGSStreamParser parser("input/example2.dgs");

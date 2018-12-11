@@ -20,7 +20,7 @@ namespace NetworKit {
  * Jaccard distance assigns a distance value to pairs of nodes
  * according to the similarity of their neighborhoods. Note that we define the JaccardDistance as 1-JaccardSimilarity.
  */
-class JaccardDistance: public NetworKit::NodeDistance {
+class JaccardDistance: public NodeDistance {
 
 public:
 

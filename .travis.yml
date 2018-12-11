@@ -1,5 +1,8 @@
 language: generic
 
+git:
+  depth: 1
+
 env:
   global:
     - export OMP_NUM_THREADS=2
@@ -7,7 +10,85 @@ env:
 
 matrix:
   include:
-    - env: CC=gcc-4.9 CXX=g++-4.9
+    - name: macOS 10.13, llvm 7
+      env: CC=/usr/local/opt/llvm@7/bin/clang
+      env: CXX=/usr/local/opt/llvm@7/bin/clang++
+      os: osx
+      osx_image: xcode10.1
+      sudo: false
+      addons:
+        homebrew:
+          packages:
+            - llvm@7
+            - libomp
+
+    - name: macOS 10.13, GCC 8
+      env: CC=/usr/local/opt/gcc@8/bin/gcc-8
+      env: CXX=/usr/local/opt/gcc@8/bin/g++-8
+      os: osx
+      osx_image: xcode10.1
+      sudo: false
+      addons:
+        homebrew:
+          packages:
+            - gcc@8
+      before_install:
+        - brew link gcc@8
+
+    - name: macOS 10.13, Apple Clang
+      env: CC=cc
+      env: CXX=c++
+      os: osx
+      osx_image: xcode10.1
+      sudo: false
+      addons:
+        homebrew:
+          packages:
+            - libomp
+
+    - name: macOS 10.12, llvm 7
+      env: CC=/usr/local/opt/llvm@7/bin/clang
+      env: CXX=/usr/local/opt/llvm@7/bin/clang++
+      os: osx
+      osx_image: xcode9.2
+      sudo: false
+      addons:
+        homebrew:
+          packages:
+            - llvm@7
+            - libomp
+            - python
+          update: true
+
+    - name: macOS 10.12, GCC 8
+      env: CC=/usr/local/opt/gcc@8/bin/gcc-8
+      env: CXX=/usr/local/opt/gcc@8/bin/g++-8
+      os: osx
+      osx_image: xcode9.2
+      sudo: false
+      addons:
+        homebrew:
+          packages:
+            - gcc@8
+            - python
+          update: true
+      before_install:
+        - brew link gcc@8
+
+    - name: Linux, modern GCC
+      env: CC=gcc-8 CXX=g++-8
+      os: linux
+      addons: &gcc8
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-8
+            - python3-pip
+            - python3.4-venv
+
+    - name: Linux, legacy GCC 4.9
+      env: CC=gcc-4.9 CXX=g++-4.9
       os: linux
       sudo: false
       addons:
@@ -20,16 +101,8 @@ matrix:
             - python3-pip
             - python3.4-venv
 
-    - env: CC=gcc-6 CXX=g++-6
-      os: osx
-      sudo: false
-      before_install:
-        - brew update
-        - brew cask uninstall --force oclint # See https://github.com/travis-ci/travis-ci/issues/8826 for details.
-        - brew install gcc@6
-        - brew upgrade python
-
-    - env: CC="clang-3.8" CXX="clang++-3.8"
+    - name: Linux, legacy Clang 3.8
+      env: CC="clang-3.8" CXX="clang++-3.8"
       os: linux
       sudo: false
       addons:
@@ -37,25 +110,57 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
+            - g++-5
             - clang-3.8
             - libiomp-dev
             - python3-pip
             - python3.4-venv
 
-    - name: CC=clang-4 CXX=clang++-4
-      env: CC=/usr/local/opt/llvm@4/bin/clang
-      env: CXX=/usr/local/opt/llvm@4/bin/clang++
-      os: osx
-      sudo: false
-      before_install:
-        - brew update
-        - brew install llvm@4
-        - brew install libomp
-        - brew upgrade python
-
-    - env: CC=gcc-8 CXX=g++-8
+    # Test more exotic builds only on Linux.
+    - name: "Linux, modern GCC: Core build, debugging"
+      env: CC=gcc-8 CXX=g++-8
       os: linux
-      addons: &gcc8
+      addons: *gcc8
+      script:
+        - $CXX --version
+        - mkdir debug_test && cd "$_"
+        - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug ..
+        - make -j2
+        - ctest -V
+
+    - name: "Linux, modern GCC: Core build, non-monolithic"
+      env: CC=gcc-8 CXX=g++-8
+      os: linux
+      addons: *gcc8
+      script:
+        - $CXX --version
+        - mkdir build_non_monolith && cd "$_"
+        - cmake -DNETWORKIT_MONOLITH=OFF -DCMAKE_BUILD_TYPE=Debug ..
+        - make -j2
+        - ctest -V
+
+    # Finally, test conformance to newer versions of the C++ standard.
+    - name: C++14 conformance
+      env: CC=gcc-8 CXX=g++-8 CXX_STANDARD=14
+      os: linux
+      addons: *gcc8
+      script: &script_cpp_only
+        - $CXX --version
+        - mkdir debug_test && cd "$_"
+        - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD ..
+        - make -j2
+        - ctest -V
+
+    - name: C++17 conformance
+      env: CC=gcc-8 CXX=g++-8 CXX_STANDARD=17
+      os: linux
+      addons: *gcc8
+      script: *script_cpp_only
+
+    - name: Documentation only
+      env: CC=gcc-8 CXX=g++-8
+      os: linux
+      addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
@@ -63,43 +168,64 @@ matrix:
             - g++-8
             - python3-pip
             - python3.4-venv
-
-    - env: CC=gcc-8 CXX=g++-8 CXX_STANDARD=14
-      os: linux
-      addons: *gcc8
-
-    - env: CC=gcc-8 CXX=g++-8 CXX_STANDARD=17
-      os: linux
-      addons: *gcc8
+            - doxygen
+      script:
+        - set -e
+        - python3 -m venv pyenv && . pyenv/bin/activate
+        - pip3 install --upgrade pip
+        # cython is required because git does not contain _NetworKit.
+        - pip3 install cython
+        # sphinx_bootstrap_theme is required to build the documentation.
+        - pip3 install sphinx sphinx_bootstrap_theme
+        # Build the C++ core library (no need for optimizations).
+        - mkdir core_build && cd "$_"
+        - cmake -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD ..
+        - make -j2
+        - cd ..
+        # Build the Python extension.
+        - export CMAKE_LIBRARY_PATH=${CMAKE_LIBRARY_PATH:+$CMAKE_LIBRARY_PATH:}$(pwd)/core_build
+        - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$(pwd)/core_build
+        - NETWORKIT_PARALLEL_JOBS=2 python3 ./setup.py build_ext --inplace --networkit-external-core
+        - NETWORKIT_PARALLEL_JOBS=2 pip3 install -e .
+        # Build the documentation.
+        - cd core_build
+        - make docs
+        - touch htmldocs/.nojekyll
+        - rm -rf htmldocs/{.buildinfo,.doctrees}
+      deploy:
+        provider: pages
+        skip-cleanup: true
+        github-token: $SECRET_DEPLOY_GITHUB_PAGES
+        local-dir: core_build/htmldocs
+        repo: networkit/dev-docs
+        target-branch: master
+        on:
+          branch: Dev
 
 script:
  - $CXX --version
  - python3 --version
+ - cmake --version
 
  - python3 -m venv pyenv && . pyenv/bin/activate
  - pip3 install --upgrade pip
  # cython is required because git does not contain _NetworKit.
  # ipython is required for tests.
  - pip3 install cython ipython
- - NETWORKIT_PARALLEL_JOBS=2 travis_wait pip3 install -e .
- - python3 -m unittest discover -v networkit/test/
 
- - mkdir debug_test && cd "$_"
- - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD ..
- - make -j2
- - ctest -V
- - cd .. && rm -rf debug_test
-
- - mkdir release_test && cd "$_"
+ # First, build the C++ core library and run C++ tests.
+ - mkdir core_build && cd "$_"
  - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD ..
  - make -j2
  - ctest -V
- - cd .. && rm -rf release_test
+ - cd ..
 
- - mkdir build_non_monolith && cd "$_"
- - cmake -DNETWORKIT_MONOLITH=OFF -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD ..
- - make -j2
- - cd .. && rm -rf build_non_monolith
+ # Finally, build the Python extension and run Python tests.
+ - export CMAKE_LIBRARY_PATH=${CMAKE_LIBRARY_PATH:+$CMAKE_LIBRARY_PATH:}$(pwd)/core_build
+ - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$(pwd)/core_build
+ - NETWORKIT_PARALLEL_JOBS=2 python3 ./setup.py build_ext --inplace --networkit-external-core
+ - NETWORKIT_PARALLEL_JOBS=2 pip3 install -e .
+ - python3 -m unittest discover -v networkit/test/
 
 notifications:
   email: false

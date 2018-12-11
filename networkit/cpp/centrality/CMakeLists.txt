@@ -17,8 +17,9 @@ networkit_add_module(centrality
     GroupCloseness.cpp
     GroupDegree.cpp
     HarmonicCloseness.cpp
-    KPathCentrality.cpp
+    KadabraBetweenness.cpp
     KatzCentrality.cpp
+    KPathCentrality.cpp
     LaplacianCentrality.cpp
     LocalClusteringCoefficient.cpp
     LocalPartitionCoverage.cpp

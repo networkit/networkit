@@ -21,7 +21,7 @@ namespace NetworKit {
  * Deepayan Chakrabarti, Yiping Zhan, Christos Faloutsos:
  * R-MAT: A Recursive Model for Graph Mining. SDM 2004: 442-446.
  */
-class RmatGenerator: public NetworKit::StaticGraphGenerator {
+class RmatGenerator: public StaticGraphGenerator {
 protected:
 	count scale; ///< n = 2^scale
 	count edgeFactor;

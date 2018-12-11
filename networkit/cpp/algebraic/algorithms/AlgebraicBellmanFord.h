@@ -45,7 +45,7 @@ public:
 	 */
 	inline edgeweight distance(node t) const {
 		assert(t < At.numberOfRows());
-		if (!hasRun) throw std::runtime_error("BellmanFord: Call run() method first.");
+		assureFinished();
 		return distances[t];
 	}
 
@@ -53,7 +53,7 @@ public:
 	 * @return True if there is a negative cycle present in the graph, otherwise false.
 	 */
 	inline bool hasNegativeCycle() const {
-		if (!hasRun) throw std::runtime_error("BellmanFord: Call run() method first.");
+		assureFinished();
 		return negCycle;
 	}
 

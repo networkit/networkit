@@ -19,8 +19,8 @@
 #include "../graph/Graph.h"
 #include "../graph/GraphBuilder.h"
 
-#include "../auxiliary/RadixHeap.h"
-#include "../auxiliary/RandomBipartitionShuffle.h"
+#include <tlx/container/radix_heap.hpp>
+#include <tlx/algorithm/random_bipartition_shuffle.hpp>
 
 #include "GlobalTradeSequence.h"
 #include "GlobalCurveball.h"
@@ -42,10 +42,10 @@ struct PairFirst {
 class GlobalCurveballImpl {
     using edgelist_type = std::vector<std::pair<node, node> >;
     using extract_type = PairFirst<node, node>;
-    using tfp_queue_type = Aux::radixheap< std::pair<node, node>, extract_type , node, 256>;
+    using tfp_queue_type = tlx::RadixHeap< std::pair<node, node>, extract_type , node, 256>;
 
 public:
-    GlobalCurveballImpl(const NetworKit::Graph &G) :
+    GlobalCurveballImpl(const Graph &G) :
         inputGraph(G)
     {}
 
@@ -72,7 +72,7 @@ public:
         tfp_queue_type current_pq;
 
         {
-            // Currently we support only undirect graphs, which should however
+            // Currently we support only undirected graphs, which should however
             // be easily fixable
             assert(!inputGraph.isDirected());
 
@@ -238,7 +238,7 @@ public:
                     const size_t setsize = u_setsize + v_setsize;
                     assert(u_setsize + v_setsize == disjoint_neighbours.size());
 
-                    Aux::random_bipartition_shuffle(disjoint_neighbours.begin(),
+                    tlx::random_bipartition_shuffle(disjoint_neighbours.begin(),
                                                     disjoint_neighbours.end(),
                                                     u_setsize, urng);
 
@@ -285,7 +285,7 @@ public:
         DEBUG("Trading took ", timer.elapsedMilliseconds(), " milliseconds.");
     }
 
-    NetworKit::Graph getGraph() {
+    Graph getGraph() {
         GraphBuilder builder(inputGraph.numberOfNodes(), false, false);
 
         for (; !prioQueue.empty(); prioQueue.pop()) {
@@ -299,7 +299,7 @@ public:
         return builder.toGraph(false, true);
     }
 
-    const NetworKit::Graph& getInputGraph() const {
+    const Graph& getInputGraph() const {
         return inputGraph;
     }
 
@@ -307,7 +307,7 @@ protected:
     bool hasRun {false};
     tfp_queue_type prioQueue;
 
-    const NetworKit::Graph& inputGraph;
+    const Graph& inputGraph;
 
     void computeCommonDisjointNeighbour(std::vector<node> &neighbourhood_of_u,
                                         const std::vector<node> &neighbourhood_of_v,

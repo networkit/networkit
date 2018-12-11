@@ -17,7 +17,7 @@ namespace NetworKit {
  * @ingroup generators
  * Example dynamic graph generator: Generates a dynamically growing path.
  */
-class DynamicPathGenerator: public NetworKit::DynamicGraphGenerator {
+class DynamicPathGenerator: public DynamicGraphGenerator {
 public:
 
 	std::vector<GraphEvent> generate(count nSteps) override;

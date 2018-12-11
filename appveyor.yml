@@ -18,7 +18,7 @@ before_build:
 
     cd build
 
-    cmake -G "Visual Studio 15 Win64" -DNETWORKIT_BUILD_TESTS=ON ..
+    cmake -G "Visual Studio 15 Win64" -DNETWORKIT_STATIC=ON -DNETWORKIT_BUILD_TESTS=ON ..
 build:
   project: c:\dev\networkit\build\networkit.sln
   parallel: true

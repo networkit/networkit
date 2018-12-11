@@ -15,7 +15,7 @@ namespace NetworKit {
 /**
  * @ingroup centrality
  */
-class KPathCentrality: public NetworKit::Centrality {
+class KPathCentrality: public Centrality {
 public:
 
 	/*

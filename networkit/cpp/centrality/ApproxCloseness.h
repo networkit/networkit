@@ -18,7 +18,7 @@ namespace NetworKit {
  * Approximation of closeness centrality according to algorithm described in
  * Cohen et al., Computing Classic Closeness Centrality, at Scale
  */
-class ApproxCloseness: public NetworKit::Centrality {
+class ApproxCloseness: public Centrality {
 
 public:
 	enum CLOSENESS_TYPE {INBOUND, OUTBOUND, SUM};

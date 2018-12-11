@@ -32,7 +32,7 @@ const double EPS = 0.1;
 
 
 class [[deprecated]]
-FruchtermanReingold: public NetworKit::Layouter {
+FruchtermanReingold: public Layouter {
 private:
 	static const float INITIAL_STEP_LENGTH;
 	static const float OPT_PAIR_SQR_DIST_SCALE;

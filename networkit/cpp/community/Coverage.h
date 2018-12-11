@@ -16,7 +16,7 @@ namespace NetworKit {
  * @ingroup community
  * Coverage is the fraction of intra-cluster edges.
  */
-class Coverage: public NetworKit::QualityMeasure {
+class Coverage: public QualityMeasure {
 public:
 
 	virtual double getQuality(const Partition& zeta, const Graph& G);

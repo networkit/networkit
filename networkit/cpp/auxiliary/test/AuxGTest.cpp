@@ -1,5 +1,3 @@
-#ifndef NOGTEST
-
 /*
  * AuxGTest.cpp
  *
@@ -7,7 +5,10 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "AuxGTest.h"
+// this define is an obscure fix for std::this_thread::sleep_for to work - the issue is described here: http://stackoverflow.com/questions/4438084/stdthis-threadsleep-for-and-gcc
+#define _GLIBCXX_USE_NANOSLEEP 1
+
+#include <gtest/gtest.h>
 
 #include <iostream>
 #include <algorithm>
@@ -22,7 +23,6 @@
 #include "../Timer.h"
 #include "../MissingMath.h"
 #include "../PrioQueue.h"
-#include "../PrioQueueForInts.h"
 #include "../BucketPQ.h"
 #include "../StringTools.h"
 #include "../SetIntersector.h"
@@ -31,6 +31,9 @@
 #include "../Enforce.h"
 #include "../BloomFilter.h"
 
+namespace NetworKit {
+
+class AuxGTest: public testing::Test{};
 
 TEST_F(AuxGTest, produceRandomIntegers) {
 	Aux::Random::setSeed(1, false);
@@ -157,6 +160,12 @@ TEST_F(AuxGTest, testPriorityQueue) {
 	Aux::PrioQueue<double, uint64_t> pq(vec);
 	EXPECT_EQ(pq.size(), vec.size());
 
+	double topKey = pq.peekMin(0).first;
+	pq.forElements([&](double curKey, uint64_t curElem){
+		EXPECT_TRUE(curKey >= topKey);
+		topKey = curKey;
+	});
+
 	ElemType elem = pq.extractMin();
 	EXPECT_EQ(0.25, elem.first);
 	EXPECT_EQ(11u, elem.second);
@@ -181,98 +190,6 @@ TEST_F(AuxGTest, testPriorityQueue) {
 	EXPECT_EQ(2.5, elem.first);
 	EXPECT_EQ(3u, elem.second);
 	EXPECT_EQ(pq.size(), vec.size() - 5);
-}
-
-TEST_F(AuxGTest, testPrioQueueForIntsWithEmptiness) {
-	// fill vector with priorities
-	std::vector<int64_t> vec = {17, 4, 1, 5, 3, 11, 9, 19, -9, 1, 4, 20, 8, 8};
-
-	Aux::BucketPQ pq(vec, -20, 20);
-	EXPECT_EQ(pq.size(), vec.size());
-
-	// delete everything
-	while (pq.size() > 0) {
-		pq.extractMin();
-	}
-
-	// reinsert entries
-	for (uint64_t i = 0; i < vec.size(); ++i) {
-		pq.insert(vec[i], i);
-	}
-	EXPECT_EQ(pq.size(), vec.size());
-
-	// check top
-	std::pair<int64_t, uint64_t> mini = pq.extractMin();
-	EXPECT_EQ(mini.first, -9);
-	EXPECT_EQ(mini.second, 8u);
-}
-
-TEST_F(AuxGTest, testPrioQueueForInts) {
-	// fill vector with priorities
-	std::vector<int64_t> vec;
-
-	// 0-4
-	vec.push_back(17);
-	vec.push_back(4);
-	vec.push_back(1);
-	vec.push_back(5);
-	vec.push_back(3);
-
-	// 5-9
-	vec.push_back(11);
-	vec.push_back(9);
-	vec.push_back(19);
-	vec.push_back(-9);
-	vec.push_back(1);
-
-	// 10-14
-	vec.push_back(4);
-	vec.push_back(17);
-	vec.push_back(8);
-	vec.push_back(8);
-	vec.push_back(12);
-
-	// 15-19
-	vec.push_back(16);
-	vec.push_back(14);
-	vec.push_back(11);
-	vec.push_back(7);
-	vec.push_back(7);
-
-	// 20-23
-	vec.push_back(7);
-	vec.push_back(-4);
-	vec.push_back(8);
-	vec.push_back(0);
-
-	// construct pq from vector
-	Aux::BucketPQ pq(vec, -100, 100);
-
-	// check op: extractMin
-	std::pair<int64_t, uint64_t> mini = pq.extractMin();
-	EXPECT_EQ(mini.first, -9);
-	EXPECT_EQ(mini.second, 8u);
-
-	// check op: changeKey
-	pq.changeKey(-20, 0);
-	mini = pq.extractMin();
-	EXPECT_EQ(mini.first, -20);
-	EXPECT_EQ(mini.second, 0u);
-
-	// multiply vec by -1 and try again
-	for (int64_t& currkey : vec) {
-		currkey *= -1;
-	}
-	Aux::BucketPQ pq2(vec, -100, 100);
-	mini = pq2.extractMin();
-	EXPECT_EQ(mini.first, -19);
-	EXPECT_EQ(mini.second, 7u);
-
-	// check op: changeKey
-	pq.changeKey(-20, 0);
-	mini = pq.extractMin();
-	EXPECT_EQ(mini.first, -20);
-	EXPECT_EQ(mini.second, 0u);
 }
 
 TEST_F(AuxGTest, testLogging) {
@@ -340,15 +257,14 @@ TEST_F(AuxGTest, testRandomWeightedChoice) {
 }
 
 TEST_F(AuxGTest, testRandomIndex) {
-	using namespace Aux::Random;
-	setSeed(1, false);
+	Aux::Random::setSeed(1, false);
 
 	for (unsigned i = 0; i < 10; i++) {
-		EXPECT_EQ(0u, index(1));
+		EXPECT_EQ(0u, Aux::Random::index(1));
 	}
 
 	for (unsigned i = 0; i < 100; i++) {
-		auto tmp = index(10);
+		auto tmp = Aux::Random::index(10);
 		EXPECT_LE(tmp, 9u);
 		EXPECT_GE(tmp, 0u);
 	}
@@ -356,42 +272,41 @@ TEST_F(AuxGTest, testRandomIndex) {
 
 TEST_F(AuxGTest, testSplit) {
 	using Vec = std::vector<std::string>;
-	using namespace Aux::StringTools;
 
-	EXPECT_EQ(Vec{}, split(""));
-	EXPECT_EQ(Vec{""}, split(" "));
+	EXPECT_EQ(Vec{}, Aux::StringTools::split(""));
+	EXPECT_EQ(Vec{""}, Aux::StringTools::split(" "));
 
 	{
 		auto expected = Vec{"", ""};
-		EXPECT_EQ(expected, split("  "));
+		EXPECT_EQ(expected, Aux::StringTools::split("  "));
 	}
 	{
 		auto expected = Vec{"", "a"};
-		EXPECT_EQ(expected, split(" a"));
+		EXPECT_EQ(expected, Aux::StringTools::split(" a"));
 	}
 	{
 		auto expected = Vec{"a"};
-		EXPECT_EQ(expected, split("a "));
+		EXPECT_EQ(expected, Aux::StringTools::split("a "));
 	}
 	{
 		auto expected = Vec{"a"};
-		EXPECT_EQ(expected, split("a"));
+		EXPECT_EQ(expected, Aux::StringTools::split("a"));
 	}
 	{
 		auto expected = Vec{"a", "b"};
-		EXPECT_EQ(expected, split("a b"));
+		EXPECT_EQ(expected, Aux::StringTools::split("a b"));
 	}
 	{
 		auto expected = Vec{"", "a", "b"};
-		EXPECT_EQ(expected, split(" a b "));
+		EXPECT_EQ(expected, Aux::StringTools::split(" a b "));
 	}
 	{
 		auto expected = Vec{"abc", "def", "ghi"};
-		EXPECT_EQ(expected, split("abc def ghi"));
+		EXPECT_EQ(expected, Aux::StringTools::split("abc def ghi"));
 	}
 	{
 		auto expected = Vec{"abc", "def", "ghi"};
-		EXPECT_EQ(expected, split("abc def ghi "));
+		EXPECT_EQ(expected, Aux::StringTools::split("abc def ghi "));
 	}
 }
 
@@ -409,23 +324,22 @@ TEST_F(AuxGTest, testSetIntersector) {
 }
 
 TEST_F(AuxGTest, testEnforce) {
-	using Aux::enforce;
-	EXPECT_THROW(enforce(false), std::runtime_error);
-	EXPECT_NO_THROW(enforce(true));
+	EXPECT_THROW(Aux::enforce(false), std::runtime_error);
+	EXPECT_NO_THROW(Aux::enforce(true));
 
-	EXPECT_THROW(enforce(false, "foo"), std::runtime_error);
-	EXPECT_NO_THROW(enforce(true, "bar"));
+	EXPECT_THROW(Aux::enforce(false, "foo"), std::runtime_error);
+	EXPECT_NO_THROW(Aux::enforce(true, "bar"));
 
-	EXPECT_THROW(enforce<std::logic_error>(false, "foo"), std::logic_error);
-	EXPECT_NO_THROW(enforce<std::logic_error>(true, "foo"));
+	EXPECT_THROW(Aux::enforce<std::logic_error>(false, "foo"), std::logic_error);
+	EXPECT_NO_THROW(Aux::enforce<std::logic_error>(true, "foo"));
 
 	std::string msg = "some message in a std::string";
 
-	EXPECT_THROW(enforce(false, msg), std::runtime_error);
-	EXPECT_NO_THROW(enforce(true, msg));
+	EXPECT_THROW(Aux::enforce(false, msg), std::runtime_error);
+	EXPECT_NO_THROW(Aux::enforce(true, msg));
 
-	EXPECT_THROW(enforce<std::logic_error>(false, msg), std::logic_error);
-	EXPECT_NO_THROW(enforce<std::logic_error>(true, msg));
+	EXPECT_THROW(Aux::enforce<std::logic_error>(false, msg), std::logic_error);
+	EXPECT_NO_THROW(Aux::enforce<std::logic_error>(true, msg));
 }
 
 TEST_F(AuxGTest, testEnforceOpened) {
@@ -435,7 +349,6 @@ TEST_F(AuxGTest, testEnforceOpened) {
 }
 
 TEST_F(AuxGTest, testNumberParsingInteger) {
-	using namespace Aux::Parsing;
 	const std::string str = "0 00 1 123 001 1200 12345678    ";
 	std::vector<unsigned> expectedValues = {0, 0, 1, 123, 1, 1200, 12345678};
 	auto it = str.begin();
@@ -443,7 +356,7 @@ TEST_F(AuxGTest, testNumberParsingInteger) {
 	std::size_t i = 0;
 	while(it != end) {
 		unsigned result;
-		std::tie(result, it) = strTo<unsigned>(it, end);
+		std::tie(result, it) = Aux::Parsing::strTo<unsigned>(it, end);
 		EXPECT_EQ(expectedValues[i], result);
 		++i;
 	}
@@ -452,7 +365,6 @@ TEST_F(AuxGTest, testNumberParsingInteger) {
 }
 
 TEST_F(AuxGTest, testNumberParsingSignedInteger) {
-	using namespace Aux::Parsing;
 	const std::string str = "-0 -00 -1 -123 -001 -1200 -12345678    ";
 	std::vector<int> expectedValues = {0, 0, -1, -123, -1, -1200, -12345678};
 	auto it = str.begin();
@@ -460,7 +372,7 @@ TEST_F(AuxGTest, testNumberParsingSignedInteger) {
 	std::size_t i = 0;
 	while(it != end) {
 		int result;
-		std::tie(result, it) = strTo<int>(it, end);
+		std::tie(result, it) = Aux::Parsing::strTo<int>(it, end);
 		EXPECT_EQ(expectedValues[i], result);
 		++i;
 	}
@@ -469,22 +381,20 @@ TEST_F(AuxGTest, testNumberParsingSignedInteger) {
 }
 
 TEST_F(AuxGTest, testOverflowCatching) {
-	using namespace Aux::Parsing;
 	const std::string str = "1000";
 	EXPECT_THROW(
-			(strTo<uint8_t, std::string::const_iterator, Aux::Checkers::Enforcer>(
+			(Aux::Parsing::strTo<uint8_t, std::string::const_iterator, Aux::Checkers::Enforcer>(
 				str.begin(), str.end())),
 			std::runtime_error
 			);
 	EXPECT_THROW(
-			(strTo<int8_t, std::string::const_iterator, Aux::Checkers::Enforcer>(
+			(Aux::Parsing::strTo<int8_t, std::string::const_iterator, Aux::Checkers::Enforcer>(
 				str.begin(), str.end())),
 			std::runtime_error
 			);
 }
 
 TEST_F(AuxGTest, testNumberParsingBasicReal) {
-	using namespace Aux::Parsing;
 	const std::string str =
 		"0 00 1 123 001 1200 12345678    "
 		"0.00000 -0000.000 -0000.000e-100"
@@ -498,7 +408,7 @@ TEST_F(AuxGTest, testNumberParsingBasicReal) {
 	std::size_t i = 0;
 	while(it != end) {
 		double result;
-		std::tie(result, it) = strTo<double>(it, end);
+		std::tie(result, it) = Aux::Parsing::strTo<double>(it, end);
 		EXPECT_EQ(expectedValues[i], result);
 		++i;
 	}
@@ -508,9 +418,8 @@ TEST_F(AuxGTest, testNumberParsingBasicReal) {
 
 
 TEST_F(AuxGTest, testNumberParsingAdvancedReal) {
-	using Aux::Parsing::strTo;
 	auto helper = [](const std::string& str, double expected) {
-		auto result = std::get<0>(strTo<double>(str.begin(), str.end()));
+		auto result = std::get<0>(Aux::Parsing::strTo<double>(str.begin(), str.end()));
 		EXPECT_DOUBLE_EQ(result, expected);
 	};
 #define TEST_CASE_REAL(number) helper(#number, number)
@@ -557,4 +466,4 @@ TEST_F(AuxGTest, testBloomFilter) {
 	}
 }
 
-#endif /*NOGTEST */
+} // ! namespace NetworKit

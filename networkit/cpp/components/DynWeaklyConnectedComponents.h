@@ -124,27 +124,22 @@ namespace NetworKit {
 
         // Stores available component IDs.
         std::queue<index> componentIds;
-
-        // Whether the run() method has been called
-        bool hasRun = false;
     };
 
 
     inline count DynWeaklyConnectedComponents::componentOfNode(node u) {
         assert (components[u] != none);
-        if (!hasRun) throw std::runtime_error("run method has not been called");
+        assureFinished();
         return components[u];
     }
 
     inline count DynWeaklyConnectedComponents::numberOfComponents() {
-        if (!hasRun) throw std::runtime_error("run method has not been called");
+        assureFinished();
         return this->compSize.size();
     }
 
     inline std::map<index, count> DynWeaklyConnectedComponents::getComponentSizes() {
-        if (!hasRun) {
-            throw std::runtime_error("run method has not been called");
-        }
+        assureFinished();
         return compSize;
     }
 

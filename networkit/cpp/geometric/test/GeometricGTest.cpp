@@ -5,7 +5,13 @@
  *      Author: moritzl
  */
 
-#include "GeometricGTest.h"
+#include <gtest/gtest.h>
+#include <cmath>
+
+#include "../../auxiliary/Log.h"
+#include "../../auxiliary/Random.h"
+#include "../HyperbolicSpace.h"
+#include "../Point2D.h"
 
 #include <cmath>
 
@@ -15,6 +21,8 @@
 #include "../Point2D.h"
 
 namespace NetworKit {
+
+class GeometricGTest: public testing::Test {};
 
 /**
  * test conversion of polar coordinates to cartesian coordinates and back

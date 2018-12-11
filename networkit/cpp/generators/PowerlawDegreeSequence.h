@@ -1,13 +1,15 @@
 #ifndef POWERLAWDEGREESEQUENCE_H
 #define POWERLAWDEGREESEQUENCE_H
 
-#include "../Globals.h"
 #include <vector>
+
+#include "../base/Algorithm.h"
 #include "../graph/Graph.h"
+#include "../Globals.h"
 
 namespace NetworKit {
 
-class PowerlawDegreeSequence {
+class PowerlawDegreeSequence : public Algorithm {
 public:
 	/**
 	 * Generates a powerlaw degree sequence with the given minimum and maximum degree, the powerlaw exponent gamma.
@@ -87,7 +89,7 @@ public:
 	/**
 	 * Execute the generation process
 	 */
-	void run();
+	void run() override;
 
 	/**
 	 * Returns the expected average degree.
@@ -113,7 +115,6 @@ public:
 private:
 	count minDeg, maxDeg;
 	double gamma;
-	bool hasRun;
 	std::vector<double> cumulativeProbability;
 };
 

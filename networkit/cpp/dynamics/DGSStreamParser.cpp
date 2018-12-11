@@ -15,7 +15,7 @@ DGSStreamParser::DGSStreamParser(std::string path, bool mapped, node baseIndex) 
 
 }
 
-std::vector<GraphEvent> NetworKit::DGSStreamParser::getStream() {
+std::vector<GraphEvent> DGSStreamParser::getStream() {
 	if (! dgsFile.is_open()) {
 		throw std::runtime_error("DGS input file could not be opened.");
 	}

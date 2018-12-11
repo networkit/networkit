@@ -21,7 +21,7 @@ namespace NetworKit {
 /**
  * Reads a graph format consisting of a serialized DIA of vector<uint32_t> from thrill.
  */
-class ThrillGraphBinaryReader: public NetworKit::GraphReader {
+class ThrillGraphBinaryReader: public GraphReader {
 
 public:
 

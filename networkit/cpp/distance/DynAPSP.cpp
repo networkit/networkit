@@ -5,20 +5,20 @@
  *      Author: Arie Slobbe, Elisabetta Bergamini
  */
 
-#include "APSP.h"
-#include "SSSP.h"
-#include "DynAPSP.h"
-#include "Dijkstra.h"
-#include "BFS.h"
-#include "../auxiliary/Log.h"
-#include "../auxiliary/PrioQueue.h"
-#include "../auxiliary/PrioQueueForInts.h"
-#include "../auxiliary/NumericTools.h"
-#include <queue>
-#include <memory>
-#include <unordered_set>
 #include <algorithm>
 #include <ctime>
+#include <memory>
+#include <queue>
+#include <unordered_set>
+
+#include "../auxiliary/Log.h"
+#include "../auxiliary/NumericTools.h"
+#include "../auxiliary/PrioQueue.h"
+#include "APSP.h"
+#include "BFS.h"
+#include "Dijkstra.h"
+#include "DynAPSP.h"
+#include "SSSP.h"
 
 namespace NetworKit {
 

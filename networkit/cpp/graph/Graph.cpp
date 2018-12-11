@@ -2,11 +2,13 @@
  * Graph.cpp
  *
  *  Created on: 01.06.2014
- *      Author: Klara Reichard (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
+ *      Author: Klara Reichard (klara.reichard@gmail.com), Marvin Ritter
+ * (marvin.ritter@gmail.com)
  */
 
-#include <sstream>
+#include <cmath>
 #include <random>
+#include <sstream>
 
 #include "Graph.h"
 #include "GraphBuilder.h"
@@ -15,36 +17,32 @@ namespace NetworKit {
 
 /** CONSTRUCTORS **/
 
-Graph::Graph(count n, bool weighted, bool directed) :
-	n(n),
-	m(0),
-	storedNumberOfSelfLoops(0),
-	z(n),
-	omega(0),
-	t(0),
+Graph::Graph(count n, bool weighted, bool directed)
+    : n(n), m(0), storedNumberOfSelfLoops(0), z(n), omega(0), t(0),
 
-	weighted(weighted), // indicates whether the graph is weighted or not
-	directed(directed), // indicates whether the graph is directed or not
-	edgesIndexed(false), // edges are not indexed by default
+      weighted(weighted),  // indicates whether the graph is weighted or not
+      directed(directed),  // indicates whether the graph is directed or not
+      edgesIndexed(false), // edges are not indexed by default
 
-	exists(n, true),
+      exists(n, true),
 
-	/* for directed graphs inDeg stores the incoming degree of a node, for undirected graphs inDeg is not used*/
-	inDeg(directed ? n : 0, 0),
+      /* for directed graphs inDeg stores the incoming degree of a node, for
+         undirected graphs inDeg is not used*/
+      inDeg(directed ? n : 0, 0),
 
-	/* for directed graphs outDeg stores the outgoing degree of a node, for undirected graphs outEdges stores the incoming degree of a node*/
-	outDeg(n, 0),
+      /* for directed graphs outDeg stores the outgoing degree of a node, for
+         undirected graphs outEdges stores the incoming degree of a node*/
+      outDeg(n, 0),
 
-	/* for directed graphs inEdges stores an adjacencylist only considering incoming edges, for undirected graphs inEdges is not used*/
-	inEdges(directed ? n : 0),
+      /* for directed graphs inEdges stores an adjacencylist only considering
+         incoming edges, for undirected graphs inEdges is not used*/
+      inEdges(directed ? n : 0),
 
-	/* for directed graphs outEdges stores an adjacencylist only considering outgoing edges, for undirected graphs outEdges stores the adjacencylist of
-	undirected edges*/
-	outEdges(n),
-	inEdgeWeights(weighted && directed ? n : 0),
-	outEdgeWeights(weighted ? n : 0),
-	inEdgeIds(),
-	outEdgeIds() {
+      /* for directed graphs outEdges stores an adjacencylist only considering
+      outgoing edges, for undirected graphs outEdges stores the adjacencylist of
+      undirected edges*/
+      outEdges(n), inEdgeWeights(weighted && directed ? n : 0),
+      outEdgeWeights(weighted ? n : 0), inEdgeIds(), outEdgeIds() {
 
 	// set name from global id
 	id = getNextGraphId();
@@ -54,41 +52,31 @@ Graph::Graph(count n, bool weighted, bool directed) :
 }
 
 Graph::Graph(std::initializer_list<WeightedEdge> edges) : Graph(0, true) {
-  using namespace std;
+	using namespace std;
 
-  /* Number of nodes = highest node index + 1 */
-  for (const auto& edge: edges) {
-    node x = max(edge.u, edge.v);
-    while (numberOfNodes() <= x) {
-      addNode();
-    }
-  }
+	/* Number of nodes = highest node index + 1 */
+	for (const auto &edge : edges) {
+		node x = max(edge.u, edge.v);
+		while (numberOfNodes() <= x) {
+			addNode();
+		}
+	}
 
-  /* Now add all of the edges */
-  for (const auto& edge: edges) {
-    addEdge(edge.u, edge.v, edge.weight);
-  }
+	/* Now add all of the edges */
+	for (const auto &edge : edges) {
+		addEdge(edge.u, edge.v, edge.weight);
+	}
 }
 
-Graph::Graph(const Graph& G, bool weighted, bool directed) :
-	n(G.n),
-	m(G.m),
-	storedNumberOfSelfLoops(G.storedNumberOfSelfLoops),
-	z(G.z),
-	omega(0),
-	t(G.t),
-	weighted(weighted),
-	directed(directed),
-	edgesIndexed(false), //edges are not indexed by default
-	exists(G.exists),
+Graph::Graph(const Graph &G, bool weighted, bool directed)
+    : n(G.n), m(G.m), storedNumberOfSelfLoops(G.storedNumberOfSelfLoops),
+      z(G.z), omega(0), t(G.t), weighted(weighted), directed(directed),
+      edgesIndexed(false), // edges are not indexed by default
+      exists(G.exists),
 
-	// let the following be empty for the start, we fill them later
-	inDeg(0),
-	outDeg(0),
-	inEdges(0),
-	outEdges(0),
-	inEdgeWeights(0),
-	outEdgeWeights(0) {
+      // let the following be empty for the start, we fill them later
+      inDeg(0), outDeg(0), inEdges(0), outEdges(0), inEdgeWeights(0),
+      outEdgeWeights(0) {
 
 	// set name from global id
 	id = getNextGraphId();
@@ -97,15 +85,18 @@ Graph::Graph(const Graph& G, bool weighted, bool directed) :
 	name = sstm.str();
 
 	if (G.isDirected() == directed) {
-		inDeg = G.inDeg; // G.inDeg might be empty (if G is undirected), but that's fine
+		inDeg =
+		    G.inDeg; // G.inDeg might be empty (if G is undirected), but that's fine
 		outDeg = G.outDeg;
-		inEdges = G.inEdges; // G.inEdges might be empty (if G is undirected), but that's fine
+		inEdges = G.inEdges; // G.inEdges might be empty (if G is undirected), but
+		                     // that's fine
 		outEdges = G.outEdges;
 
 		// copy weights if needed
 		if (weighted) {
 			if (G.isWeighted()) {
-				// just copy from G, again either both graphs are directed or both are undirected
+				// just copy from G, again either both graphs are directed or both are
+				// undirected
 				inEdgeWeights = G.inEdgeWeights;
 				outEdgeWeights = G.outEdgeWeights;
 			} else {
@@ -113,13 +104,15 @@ Graph::Graph(const Graph& G, bool weighted, bool directed) :
 				if (directed) {
 					inEdgeWeights.resize(z);
 					for (node u = 0; u < z; u++) {
-						inEdgeWeights[u] = std::vector<edgeweight>(G.inEdges[u].size(), defaultEdgeWeight);
+						inEdgeWeights[u] =
+						    std::vector<edgeweight>(G.inEdges[u].size(), defaultEdgeWeight);
 					}
 				}
 
 				outEdgeWeights.resize(z);
 				for (node u = 0; u < z; u++) {
-					outEdgeWeights[u] = std::vector<edgeweight>(outEdges[u].size(), defaultEdgeWeight);
+					outEdgeWeights[u] =
+					    std::vector<edgeweight>(outEdges[u].size(), defaultEdgeWeight);
 				}
 			}
 		}
@@ -133,23 +126,31 @@ Graph::Graph(const Graph& G, bool weighted, bool directed) :
 
 			// copy both out and in edges into our new outEdges
 			outEdges[u].reserve(G.outEdges[u].size() + G.inEdges[u].size());
-			outEdges[u].insert(outEdges[u].end(), G.outEdges[u].begin(), G.outEdges[u].end());
-			outEdges[u].insert(outEdges[u].end(), G.inEdges[u].begin(), G.inEdges[u].end());
+			outEdges[u].insert(outEdges[u].end(), G.outEdges[u].begin(),
+			                   G.outEdges[u].end());
+			outEdges[u].insert(outEdges[u].end(), G.inEdges[u].begin(),
+			                   G.inEdges[u].end());
 		}
 		if (weighted) {
 			if (G.isWeighted()) {
 				// same for weights
 				outEdgeWeights.resize(z);
 				for (node u = 0; u < z; u++) {
-					outEdgeWeights[u].reserve(G.outEdgeWeights[u].size() + G.inEdgeWeights[u].size());
-					outEdgeWeights[u].insert(outEdgeWeights[u].end(), G.outEdgeWeights[u].begin(), G.outEdgeWeights[u].end());
-					outEdgeWeights[u].insert(outEdgeWeights[u].end(), G.inEdgeWeights[u].begin(), G.inEdgeWeights[u].end());
+					outEdgeWeights[u].reserve(G.outEdgeWeights[u].size() +
+					                          G.inEdgeWeights[u].size());
+					outEdgeWeights[u].insert(outEdgeWeights[u].end(),
+					                         G.outEdgeWeights[u].begin(),
+					                         G.outEdgeWeights[u].end());
+					outEdgeWeights[u].insert(outEdgeWeights[u].end(),
+					                         G.inEdgeWeights[u].begin(),
+					                         G.inEdgeWeights[u].end());
 				}
 			} else {
 				// we are undirected, so no need to write anything into inEdgeWeights
 				outEdgeWeights.resize(z);
 				for (node u = 0; u < z; u++) {
-					outEdgeWeights[u] = std::vector<edgeweight>(outEdges[u].size(), defaultEdgeWeight);
+					outEdgeWeights[u] =
+					    std::vector<edgeweight>(outEdges[u].size(), defaultEdgeWeight);
 				}
 			}
 		}
@@ -165,19 +166,21 @@ Graph::Graph(const Graph& G, bool weighted, bool directed) :
 				inEdgeWeights = G.outEdgeWeights;
 				outEdgeWeights = G.outEdgeWeights;
 			} else {
-				// initialize both inEdgeWeights and outEdgeWeights with the defaultEdgeWeight
+				// initialize both inEdgeWeights and outEdgeWeights with the
+				// defaultEdgeWeight
 				inEdgeWeights.resize(z);
 				for (node u = 0; u < z; u++) {
-					inEdgeWeights[u] = std::vector<edgeweight>(inEdges[u].size(), defaultEdgeWeight);
+					inEdgeWeights[u] =
+					    std::vector<edgeweight>(inEdges[u].size(), defaultEdgeWeight);
 				}
 				outEdgeWeights.resize(z);
 				for (node u = 0; u < z; u++) {
-					outEdgeWeights[u] = std::vector<edgeweight>(outEdges[u].size(), defaultEdgeWeight);
+					outEdgeWeights[u] =
+					    std::vector<edgeweight>(outEdges[u].size(), defaultEdgeWeight);
 				}
 			}
 		}
 	}
-
 }
 
 /** PRIVATE HELPERS **/
@@ -210,24 +213,20 @@ index Graph::indexInOutEdgeArray(node u, node v) const {
 	return none;
 }
 
-
 /** EDGE IDS **/
 
 void Graph::indexEdges(bool force) {
-	if (edgesIndexed && !force) return;
+	if (edgesIndexed && !force)
+		return;
 
 	omega = 0; // reset edge ids (for re-indexing)
 
 	outEdgeIds.resize(outEdges.size());
-	forNodes([&](node u) {
-		outEdgeIds[u].resize(outEdges[u].size(), none);
-	});
+	forNodes([&](node u) { outEdgeIds[u].resize(outEdges[u].size(), none); });
 
 	if (directed) {
 		inEdgeIds.resize(inEdges.size());
-		forNodes([&](node u) {
-			inEdgeIds[u].resize(inEdges[u].size(), none);
-		});
+		forNodes([&](node u) { inEdgeIds[u].resize(inEdges[u].size(), none); });
 	}
 
 	// assign edge ids for edges in one direction
@@ -242,8 +241,9 @@ void Graph::indexEdges(bool force) {
 		}
 	});
 
-	// copy edge ids for the edges in the other direction. Note that "indexInOutEdgeArray" is slow
-	// which is why this second loop in parallel makes sense.
+	// copy edge ids for the edges in the other direction. Note that
+	// "indexInOutEdgeArray" is slow which is why this second loop in parallel
+	// makes sense.
 	if (!directed) {
 		balancedParallelForNodes([&](node u) {
 			for (index i = 0; i < outEdges[u].size(); ++i) {
@@ -266,13 +266,14 @@ void Graph::indexEdges(bool force) {
 		});
 	}
 
-	edgesIndexed = true; // remember that edges have been indexed so that addEdge needs to create edge ids
+	edgesIndexed = true; // remember that edges have been indexed so that addEdge
+	                     // needs to create edge ids
 }
 
-
 edgeid Graph::edgeId(node u, node v) const {
-	if (! edgesIndexed) {
-		throw std::runtime_error("edges have not been indexed - call indexEdges first");
+	if (!edgesIndexed) {
+		throw std::runtime_error(
+		    "edges have not been indexed - call indexEdges first");
 	}
 	index i = indexInOutEdgeArray(u, v);
 
@@ -283,7 +284,6 @@ edgeid Graph::edgeId(node u, node v) const {
 	edgeid id = outEdgeIds[u][i];
 	return id;
 }
-
 
 /** GRAPH INFORMATION **/
 
@@ -299,12 +299,12 @@ void Graph::shrinkToFit() {
 	exists.shrink_to_fit();
 
 	inEdgeWeights.shrink_to_fit();
-	for (auto& w : inEdgeWeights) {
+	for (auto &w : inEdgeWeights) {
 		w.shrink_to_fit();
 	}
 
 	outEdgeWeights.shrink_to_fit();
-	for (auto& w : outEdgeWeights) {
+	for (auto &w : outEdgeWeights) {
 		w.shrink_to_fit();
 	}
 
@@ -312,15 +312,14 @@ void Graph::shrinkToFit() {
 	outDeg.shrink_to_fit();
 
 	inEdges.shrink_to_fit();
-	for (auto& a : inEdges) {
+	for (auto &a : inEdges) {
 		a.shrink_to_fit();
 	}
 
 	outEdges.shrink_to_fit();
-	for (auto& a : outEdges) {
+	for (auto &a : outEdges) {
 		a.shrink_to_fit();
 	}
-
 }
 
 void Graph::compactEdges() {
@@ -328,8 +327,10 @@ void Graph::compactEdges() {
 		if (degreeOut(u) != outEdges[u].size()) {
 			if (degreeOut(u) == 0) {
 				outEdges[u].clear();
-				if (weighted) outEdgeWeights[u].clear();
-				if (edgesIndexed) outEdgeIds[u].clear();
+				if (weighted)
+					outEdgeWeights[u].clear();
+				if (edgesIndexed)
+					outEdgeIds[u].clear();
 			} else {
 				for (index i = 0; i < outEdges[u].size(); ++i) {
 					while (i < outEdges[u].size() && outEdges[u][i] == none) {
@@ -353,8 +354,10 @@ void Graph::compactEdges() {
 		if (directed && degreeIn(u) != inEdges[u].size()) {
 			if (degreeIn(u) == 0) {
 				inEdges[u].clear();
-				if (weighted) inEdgeWeights[u].clear();
-			       if (edgesIndexed) inEdgeIds[u].clear();
+				if (weighted)
+					inEdgeWeights[u].clear();
+				if (edgesIndexed)
+					inEdgeIds[u].clear();
 			} else {
 				for (index i = 0; i < inEdges[u].size(); ++i) {
 					while (i < inEdges[u].size() && inEdges[u][i] == none) {
@@ -373,46 +376,37 @@ void Graph::compactEdges() {
 					}
 				}
 			}
-
 		}
 	});
 }
 
 void Graph::sortEdges() {
-	std::vector<std::vector<node> > targetAdjacencies(upperNodeIdBound());
-	std::vector<std::vector<edgeweight> > targetWeight;
-	std::vector<std::vector<edgeid> > targetEdgeIds;
+	std::vector<std::vector<node>> targetAdjacencies(upperNodeIdBound());
+	std::vector<std::vector<edgeweight>> targetWeight;
+	std::vector<std::vector<edgeid>> targetEdgeIds;
 
 	if (isWeighted()) {
 		targetWeight.resize(upperNodeIdBound());
-		forNodes([&](node u) {
-			targetWeight[u].reserve(degree(u));
-		});
+		forNodes([&](node u) { targetWeight[u].reserve(degree(u)); });
 	}
 	if (hasEdgeIds()) {
 		targetEdgeIds.resize(upperNodeIdBound());
-		forNodes([&](node u) {
-			targetEdgeIds[u].reserve(degree(u));
-		});
+		forNodes([&](node u) { targetEdgeIds[u].reserve(degree(u)); });
 	}
 
-	forNodes([&](node u) {
-		targetAdjacencies[u].reserve(degree(u));
-	});
+	forNodes([&](node u) { targetAdjacencies[u].reserve(degree(u)); });
 
 	auto assignToTarget = [&](node u, node v, edgeweight w, edgeid eid) {
-			targetAdjacencies[v].push_back(u);
-			if (isWeighted()) {
-				targetWeight[v].push_back(w);
-			}
-			if (hasEdgeIds()) {
-				targetEdgeIds[v].push_back(eid);
-			}
-		};
+		targetAdjacencies[v].push_back(u);
+		if (isWeighted()) {
+			targetWeight[v].push_back(w);
+		}
+		if (hasEdgeIds()) {
+			targetEdgeIds[v].push_back(eid);
+		}
+	};
 
-	forNodes([&](node u) {
-		forInEdgesOf(u, assignToTarget);
-	});
+	forNodes([&](node u) { forInEdgesOf(u, assignToTarget); });
 
 	outEdges.swap(targetAdjacencies);
 	outEdgeWeights.swap(targetWeight);
@@ -439,9 +433,7 @@ void Graph::sortEdges() {
 			}
 		});
 
-		forNodes([&](node u) {
-			forEdgesOf(u, assignToTarget);
-		});
+		forNodes([&](node u) { forEdgesOf(u, assignToTarget); });
 
 		inEdges.swap(targetAdjacencies);
 		inEdgeWeights.swap(targetWeight);
@@ -449,21 +441,78 @@ void Graph::sortEdges() {
 	}
 }
 
+count Graph::maxDegree() const { return computeMaxDegree(); }
+
+count Graph::maxDegreeIn() const { return computeMaxDegree(true); }
+
+count Graph::computeMaxDegree(const bool inDegree) const {
+	count result = 0;
+#ifndef NETWORKIT_OMP2
+#pragma omp parallel for reduction(max : result)
+	for (omp_index u = 0; u < upperNodeIdBound(); ++u) {
+		result = std::max(result, inDegree ? degreeIn(u) : degreeOut(u));
+	}
+#else
+	this->forNodes([&](const node u) {
+		result = std::max(result, inDegree ? degreeIn(u) : degreeOut(u));
+	});
+#endif
+	return result;
+}
+
+edgeweight Graph::maxWeightedDegree() const {
+	return computeMaxWeightedDegree();
+}
+
+edgeweight Graph::maxWeightedDegreeIn() const {
+	return computeMaxWeightedDegree(true);
+}
+
+edgeweight Graph::computeMaxWeightedDegree(const bool inDegree) const {
+	edgeweight result = 0;
+#ifndef NETWORKIT_OMP2
+#pragma omp parallel for reduction(max : result)
+	for (omp_index u = 0; u < upperNodeIdBound(); ++u) {
+		result =
+		    std::max(result, inDegree ? weightedDegreeIn(u) : weightedDegree(u));
+	}
+#else
+	this->forNodes([&](const node u) {
+		result =
+		    std::max(result, inDegree ? weightedDegreeIn(u) : weightedDegree(u));
+	});
+#endif
+	return result;
+}
+
+edgeweight Graph::computeWeightedDegree(const node &v,
+                                        const bool inDegree) const {
+	if (weighted) {
+		edgeweight sum = 0.0;
+		auto sumWeights = [&](const node u, const edgeweight w) { sum += w; };
+		if (inDegree) {
+			forInNeighborsOf(v, sumWeights);
+		} else {
+			forNeighborsOf(v, sumWeights);
+		}
+		return sum;
+	}
+	return defaultEdgeWeight * inDegree ? degreeIn(v) : degreeOut(v);
+}
 
 std::string Graph::toString() const {
 	std::stringstream strm;
 	strm << typ() << "(name=" << getName() << ", n=" << numberOfNodes()
-			<< ", m=" << numberOfEdges() << ")";
+	     << ", m=" << numberOfEdges() << ")";
 	return strm.str();
 }
-
 
 /** COPYING **/
 
 Graph Graph::copyNodes() const {
 	Graph C(z, weighted, directed);
 	for (node u = 0; u < z; ++u) {
-		if (! exists[u]) {
+		if (!exists[u]) {
 			C.removeNode(u);
 		}
 	}
@@ -473,9 +522,9 @@ Graph Graph::copyNodes() const {
 /** NODE MODIFIERS **/
 
 node Graph::addNode() {
-	node v = z;	// node gets maximum id
-	z++;	// increment node range
-	n++;	// increment node count
+	node v = z; // node gets maximum id
+	z++;        // increment node range
+	n++;        // increment node count
 
 	// update per node data structures
 	exists.push_back(true);
@@ -495,7 +544,6 @@ node Graph::addNode() {
 		inEdges.push_back(std::vector<node>{});
 	}
 
-
 	return v;
 }
 
@@ -507,22 +555,18 @@ node Graph::addNode(float x, float y) {
 }
 
 void Graph::removeNode(node v) {
-	assert (v < z);
-	assert (exists[v]);
+	assert(v < z);
+	assert(exists[v]);
 
-  // Remove all out- and incoming edges
-	this->forEdgesOf(v, [&](node u) {
-		removeEdge(v, u);
-	});
-	this->forInEdgesOf(v, [&](node u) {
-		removeEdge(u, v);
-	});
+	// Remove all out- and incoming edges
+	this->forEdgesOf(v, [&](node u) { removeEdge(v, u); });
+	this->forInEdgesOf(v, [&](node u) { removeEdge(u, v); });
 
 	exists[v] = false;
 	n--;
 }
 
-void Graph::restoreNode(node v){
+void Graph::restoreNode(node v) {
 	assert(v < z);
 	assert(!exists[v]);
 
@@ -530,18 +574,14 @@ void Graph::restoreNode(node v){
 	n++;
 }
 
-
 /** NODE PROPERTIES **/
 
-edgeweight Graph::weightedDegree(node v) const {
-	if (weighted) {
-		edgeweight sum = 0.0;
-		forNeighborsOf(v, [&](node u, edgeweight ew) {
-			sum += ew;
-		});
-		return sum;
-	}
-	return defaultEdgeWeight * degree(v);
+edgeweight Graph::weightedDegree(const node &v) const {
+	return computeWeightedDegree(v);
+}
+
+edgeweight Graph::weightedDegreeIn(const node &v) const {
+	return computeWeightedDegree(v, true);
 }
 
 edgeweight Graph::volume(node v) const {
@@ -594,14 +634,13 @@ node Graph::randomNeighbor(node u) const {
 	return v;
 }
 
-
 /** EDGE MODIFIERS **/
 
 void Graph::addEdge(node u, node v, edgeweight ew) {
-	assert (u < z);
-	assert (exists[u]);
-	assert (v < z);
-	assert (exists[v]);
+	assert(u < z);
+	assert(exists[u]);
+	assert(v < z);
+	assert(exists[v]);
 
 	m++; // increase number of edges
 	outDeg[u]++;
@@ -645,16 +684,16 @@ void Graph::addEdge(node u, node v, edgeweight ew) {
 		}
 	}
 
-	if (u == v) { //count self loop
+	if (u == v) { // count self loop
 		storedNumberOfSelfLoops++;
 	}
 }
 
 void Graph::removeEdge(node u, node v) {
-	assert (u < z);
-	assert (exists[u]);
-	assert (v < z);
-	assert (exists[v]);
+	assert(u < z);
+	assert(exists[u]);
+	assert(v < z);
+	assert(exists[v]);
 
 	index vi = indexInOutEdgeArray(u, v);
 	index ui = indexInInEdgeArray(v, u);
@@ -673,7 +712,7 @@ void Graph::removeEdge(node u, node v) {
 	}
 
 	if (directed) {
-		assert (ui != none);
+		assert(ui != none);
 
 		inDeg[v]--;
 		inEdges[v][ui] = none;
@@ -695,7 +734,45 @@ void Graph::removeEdge(node u, node v) {
 	}
 
 	// dose not make a lot of sense do remove attributes,
-	// cause the edge is marked as deleted and we have no null values for the attributes
+	// cause the edge is marked as deleted and we have no null values for the
+	// attributes
+}
+
+void Graph::removeAllEdges() {
+#pragma omp parallel for
+	for (omp_index u = 0; u < z; ++u) {
+		outDeg[u] = 0;
+		outEdges[u].clear();
+		if (isWeighted()) {
+			outEdgeWeights[u].clear();
+		}
+		if (isDirected()) {
+			inDeg[u] = 0;
+			inEdges[u].clear();
+			if (isWeighted()) {
+				inEdgeWeights[u].clear();
+			}
+		}
+	}
+
+	m = 0;
+}
+
+void Graph::removeEdgesFromIsolatedSet(const std::vector<node> &nodesInSet) {
+	count removedEdges = 0;
+	for (node u : nodesInSet) {
+		removedEdges += outDeg[u];
+		outDeg[u] = 0;
+		outEdges[u].clear();
+		if (this->weighted) {
+			outEdgeWeights[u].clear();
+		}
+		if (this->isDirected()) {
+			inDeg[u] = 0;
+			inEdges[u].clear();
+		}
+	}
+	this->m -= removedEdges;
 }
 
 void Graph::removeSelfLoops() {
@@ -704,17 +781,17 @@ void Graph::removeSelfLoops() {
 			removeEdge(u, v);
 		}
 	});
-
 }
-
 
 void Graph::swapEdge(node s1, node t1, node s2, node t2) {
 	index s1t1 = indexInOutEdgeArray(s1, t1);
-	if (s1t1 == none) throw std::runtime_error("The first edge does not exist");
+	if (s1t1 == none)
+		throw std::runtime_error("The first edge does not exist");
 	index t1s1 = indexInInEdgeArray(t1, s1);
 
 	index s2t2 = indexInOutEdgeArray(s2, t2);
-	if (s2t2 == none) throw std::runtime_error("The second edge does not exist");
+	if (s2t2 == none)
+		throw std::runtime_error("The second edge does not exist");
 	index t2s2 = indexInInEdgeArray(t2, s2);
 
 	std::swap(outEdges[s1][s1t1], outEdges[s2][s2t2]);
@@ -743,11 +820,11 @@ void Graph::swapEdge(node s1, node t1, node s2, node t2) {
 }
 
 bool Graph::hasEdge(node u, node v) const {
-	if (!directed && outDeg[u] > outDeg[v]){
+	if (!directed && outDeg[u] > outDeg[v]) {
 		return indexInOutEdgeArray(v, u) != none;
-	}else if (directed && outDeg[u] > inDeg[v]){
+	} else if (directed && outDeg[u] > inDeg[v]) {
 		return indexInInEdgeArray(v, u) != none;
-	}else{
+	} else {
 		return indexInOutEdgeArray(u, v) != none;
 	}
 }
@@ -770,11 +847,12 @@ std::pair<node, node> Graph::randomEdge(bool uniformDistribution) const {
 	return std::make_pair(u, v);
 }
 
-std::vector< std::pair<node, node> > Graph::randomEdges(count nr) const {
+std::vector<std::pair<node, node>> Graph::randomEdges(count nr) const {
 	if (numberOfEdges() == 0) {
-		throw std::runtime_error("Graph has no edges to sample from. Add edges to the graph first.");
+		throw std::runtime_error(
+		    "Graph has no edges to sample from. Add edges to the graph first.");
 	}
-	std::vector< std::pair<node, node> > edges;
+	std::vector<std::pair<node, node>> edges;
 
 	std::default_random_engine gen{std::random_device{}()};
 	std::discrete_distribution<count> distribution(outDeg.begin(), outDeg.end());
@@ -783,14 +861,16 @@ std::vector< std::pair<node, node> > Graph::randomEdges(count nr) const {
 		node u, v; // we will pick edge (u, v)
 		if (directed) {
 			u = distribution(gen);
-			assert(outEdges[u].size() > 0); // should always be the case as  without edges should have probability 0
+			assert(outEdges[u].size() > 0); // should always be the case as  without
+			                                // edges should have probability 0
 			v = randomNeighbor(u);
 		} else {
 			// self-loops which appear only once in the outEdge arrays
 			// easiest way it to ignore edges (u, v) with u > v
 			do {
 				u = distribution(gen);
-				assert(outEdges[u].size() > 0); // should always be the case as  without edges should have probability 0
+				assert(outEdges[u].size() > 0); // should always be the case as  without
+				                                // edges should have probability 0
 				v = randomNeighbor(u);
 			} while (u > v);
 		}
@@ -800,13 +880,9 @@ std::vector< std::pair<node, node> > Graph::randomEdges(count nr) const {
 	return edges;
 }
 
-
 /** GLOBAL PROPERTIES **/
 
-count Graph::numberOfSelfLoops() const {
-	return storedNumberOfSelfLoops;
-}
-
+count Graph::numberOfSelfLoops() const { return storedNumberOfSelfLoops; }
 
 /** EDGE ATTRIBUTES **/
 
@@ -844,7 +920,8 @@ void Graph::setWeight(node u, node v, edgeweight ew) {
 
 void Graph::increaseWeight(node u, node v, edgeweight ew) {
 	if (!weighted) {
-		throw std::runtime_error("Cannot increase edge weight in unweighted graph.");
+		throw std::runtime_error(
+		    "Cannot increase edge weight in unweighted graph.");
 	}
 
 	index vi = indexInOutEdgeArray(u, v);
@@ -865,68 +942,55 @@ void Graph::increaseWeight(node u, node v, edgeweight ew) {
 	}
 }
 
-
-
 /** SUMS **/
 
 edgeweight Graph::totalEdgeWeight() const {
 	if (weighted) {
 		edgeweight sum = 0.0;
-		forEdges([&](node u, node v, edgeweight ew) {
-			sum += ew;
-		});
+		forEdges([&](node u, node v, edgeweight ew) { sum += ew; });
 		return sum;
 	} else {
 		return numberOfEdges() * defaultEdgeWeight;
 	}
 }
 
-
 /** Collections **/
 
 std::vector<node> Graph::nodes() const {
 	std::vector<node> nodes;
 	nodes.reserve(numberOfNodes());
-	this->forNodes([&](node u) {
-		nodes.push_back(u);
-	});
+	this->forNodes([&](node u) { nodes.push_back(u); });
 	return nodes;
 }
 
-
-std::vector<std::pair<node, node> > Graph::edges() const {
-	std::vector<std::pair<node, node> > edges;
+std::vector<std::pair<node, node>> Graph::edges() const {
+	std::vector<std::pair<node, node>> edges;
 	edges.reserve(numberOfEdges());
-	this->forEdges([&](node u, node v){
-		edges.push_back(std::pair<node, node>(u, v));
-	});
+	this->forEdges(
+	    [&](node u, node v) { edges.push_back(std::pair<node, node>(u, v)); });
 	return edges;
-
 }
 
 std::vector<node> Graph::neighbors(node u) const {
 	std::vector<node> neighbors;
 	neighbors.reserve(degree(u));
-	this->forNeighborsOf(u, [&](node v) {
-		neighbors.push_back(v);
-	});
+	this->forNeighborsOf(u, [&](node v) { neighbors.push_back(v); });
 	return neighbors;
 }
 
 Graph Graph::transpose() const {
 	if (directed == false) {
-		throw std::runtime_error("The transpose of an undirected graph is identical to the original graph.");
+		throw std::runtime_error("The transpose of an undirected graph is "
+		                         "identical to the original graph.");
 	}
 
 	GraphBuilder gB(z, weighted, true);
 
-	this->forEdges([&](node u, node v) {
-		gB.addHalfEdge(v, u, weight(u,v));
-	});
+	this->forEdges([&](node u, node v) { gB.addHalfEdge(v, u, weight(u, v)); });
 
 	Graph GTranspose = gB.toGraph(true);
 	for (node u = 0; u < z; ++u) {
-		if (! exists[u]) {
+		if (!exists[u]) {
 			GTranspose.removeNode(u);
 		}
 	}
@@ -942,7 +1006,6 @@ Graph Graph::toUndirected() const {
 	Graph U(*this, weighted, false);
 	return U;
 }
-
 
 Graph Graph::toUnweighted() const {
 	if (weighted == false) {
@@ -970,38 +1033,35 @@ bool Graph::checkConsistency() const {
 	return noMultiEdges;
 }
 
-void Graph::append(const Graph& G) {
-	std::map<node,node> nodeMap;
+void Graph::append(const Graph &G) {
+	std::map<node, node> nodeMap;
 	G.forNodes([&](node u) {
 		node u_ = this->addNode();
 		nodeMap[u] = u_;
 	});
 	if (this->isWeighted()) {
-		G.forEdges([&](node u, node v, edgeweight ew){
+		G.forEdges([&](node u, node v, edgeweight ew) {
 			this->addEdge(nodeMap[u], nodeMap[v], ew);
 		});
 	} else {
-		G.forEdges([&](node u, node v){
-			this->addEdge(nodeMap[u], nodeMap[v]);
-		});
+		G.forEdges([&](node u, node v) { this->addEdge(nodeMap[u], nodeMap[v]); });
 	}
 }
 
-void Graph::merge(const Graph& G) {
+void Graph::merge(const Graph &G) {
 	// TODO: handle edge weights
 	G.forEdges([&](node u, node v) {
-		// naive implementation takes $O(m \cdot d)$ for $m$ edges and max. degree $d$ in this graph
+		// naive implementation takes $O(m \cdot d)$ for $m$ edges and max. degree
+		// $d$ in this graph
 		if (!this->hasEdge(u, v)) {
 			this->addEdge(u, v);
 		}
 	});
 }
 
-
 // SUBGRAPHS
 
-
-Graph Graph::subgraphFromNodes(const std::unordered_set<node>& nodes) const {
+Graph Graph::subgraphFromNodes(const std::unordered_set<node> &nodes) const {
 
 	Graph S(upperNodeIdBound(), isWeighted(), isDirected());
 	// delete all nodes that are not in the node set
@@ -1020,7 +1080,5 @@ Graph Graph::subgraphFromNodes(const std::unordered_set<node>& nodes) const {
 
 	return S;
 }
-
-
 
 } /* namespace NetworKit */

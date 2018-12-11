@@ -6,8 +6,10 @@ if("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
 endif("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
 
 # BUILD OPTIONS
-option(NETWORKIT_BUILD_TESTS "Build with tests" OFF)
+option(NETWORKIT_BUILD_CORE "Build NetworKit core library" ON)
+option(NETWORKIT_BUILD_TESTS "Build NetworKit C++ tests" OFF)
 option(NETWORKIT_LOGGING "Build with logging support" ON)
+option(NETWORKIT_STATIC "Build static libraries" OFF)
 option(NETWORKIT_MONOLITH "Build single library (and tests is requested; required for shared lib)" ON)
 option(NETWORKIT_NATIVE "Optimize for native architecture (often better performance)" OFF)
 option(NETWORKIT_WARNINGS "Issue more warnings" OFF)
@@ -40,7 +42,9 @@ if (NOT NETWORKIT_LOGGING)
 	set(NETWORKIT_CXX_FLAGS "-DNOLOGGING")
 endif()
 
-if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"))
+if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR
+	("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR
+	("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang"))
 	if (NETWORKIT_NATIVE)
 		set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} -march=native")
 	endif()
@@ -55,9 +59,25 @@ elseif (MSVC)
 	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /DTTMATH_NOASM=1")
 	 
 else()
-	message(WARNING "NetworKit is only tests with GCC, Clang and MSVC. Your compiler may or may not work.")
-
+	message(WARNING "Support only GCC, Clang, MSVC and AppleClang. Your compiler may or may not work.")
 endif()
+
+
+# AppleClang support is added in CMake > 3.12
+# the following passage checks if CMake > 3.12 is installed and manually
+# links the omp lib if found
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+	if(${CMAKE_VERSION} VERSION_LESS 3.12)
+ 		message(WARNING "OpenMP linking with AppleClang was introduced in CMake 3.12. Current CMake Version ${CMAKE_VERSION}")
+	else()
+		find_library(OMP_FOUND NAMES omp)
+		if(OMP_FOUND)
+			set(NETWORKIT_LINK_FLAGS "-lomp ${NETWORKIT_LINK_FLAGS}")
+		else()
+			message(FATAL_ERROR "libomp was not found, but necessary to run NetworKit with AppleClang")
+		endif()
+	endif()
+ endif()
 
 # adding OpenMP flags
 find_package(OpenMP REQUIRED)
@@ -86,6 +106,20 @@ if (APPLE)
 	set(NETWORKIT_LINK_FLAGS "-undefined dynamic_lookup ${NETWORKIT_LINK_FLAGS}")
 endif()
 
+if(NOT NETWORKIT_BUILD_CORE)
+	find_library(EXTERNAL_NETWORKIT_CORE NAMES networkit DOC "External NetworKit core library")
+endif()
+
+################################################################################
+# Use TLX as a CMake submodule
+if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/tlx/CMakeLists.txt")
+	add_subdirectory(extlibs/tlx)
+else()
+	message(FATAL_ERROR
+			"Missing TLX library in extlibs/tlx "
+			"Please run `git submodule update --init` to fetch the submodule.")
+endif()
+
 ################################################################################
 #include symlink
 if(NETWORKIT_INCLUDESYMLINK)
@@ -99,51 +133,67 @@ if(NETWORKIT_INCLUDESYMLINK)
 endif()
 
 # NETWORKIT MODULES
-if (NETWORKIT_MONOLITH)
-	if (NETWORKIT_PYTHON)
-		add_library(networkit SHARED networkit/cpp/networkit.cpp)
-	else()
+if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
+	if(NETWORKIT_STATIC)
 		add_library(networkit networkit/cpp/networkit.cpp)
+	else()
+		add_library(networkit SHARED networkit/cpp/networkit.cpp)
 	endif()
 
 	set_target_properties(networkit PROPERTIES
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
 			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
+
 	install(TARGETS networkit
 			LIBRARY DESTINATION .
 			ARCHIVE DESTINATION .)
 
-	if (NETWORKIT_PYTHON)
-		if(EXISTS "${PROJECT_SOURCE_DIR}/networkit/_NetworKit.cpp")
-			add_library(_NetworKit MODULE networkit/_NetworKit.cpp)
-			target_link_libraries(_NetworKit PRIVATE networkit)
-			target_include_directories(_NetworKit PRIVATE "${NETWORKIT_PYTHON}")
-			set_target_properties(_NetworKit PROPERTIES
-						CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
-						COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
-						LINK_FLAGS "${NETWORKIT_LINK_FLAGS}"
-						PREFIX ""
-						OUTPUT_NAME "_NetworKit.${NETWORKIT_PYTHON_SOABI}")
-			# DSOs on Apple OSes use different conventions for RPATH.
-			if(APPLE)
-				set_target_properties(_NetworKit PROPERTIES
-						INSTALL_RPATH "@loader_path")
-			else()
-				set_target_properties(_NetworKit PROPERTIES
-						INSTALL_RPATH "$ORIGIN")
-			endif()
-			install(TARGETS _NetworKit
-					LIBRARY DESTINATION .)
-		else()
-			message(FATAL_ERROR "networkit/_NetworKit.cpp is missing. Invoke Cython manually.")
-		endif()
+	target_link_libraries(networkit PRIVATE tlx)
+endif()
+
+if(NETWORKIT_PYTHON)
+	if(NOT EXISTS "${PROJECT_SOURCE_DIR}/networkit/_NetworKit.cpp")
+		message(FATAL_ERROR "networkit/_NetworKit.cpp is missing. Invoke Cython manually.")
 	endif()
+
+	add_library(_NetworKit MODULE networkit/_NetworKit.cpp)
+	target_include_directories(_NetworKit PRIVATE "${NETWORKIT_PYTHON}")
+
+	if(NOT NETWORKIT_BUILD_CORE)
+		if(NOT EXTERNAL_NETWORKIT_CORE)
+			message(FATAL_ERROR "Core build is disabled but no external core library was found.")
+		endif()
+		target_link_libraries(_NetworKit PRIVATE ${EXTERNAL_NETWORKIT_CORE})
+	else()
+		target_link_libraries(_NetworKit PRIVATE networkit)
+	endif()
+
+	set_target_properties(_NetworKit PROPERTIES
+				CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
+				COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
+				LINK_FLAGS "${NETWORKIT_LINK_FLAGS}"
+				PREFIX ""
+				OUTPUT_NAME "_NetworKit.${NETWORKIT_PYTHON_SOABI}")
+	# DSOs on Apple OSes use different conventions for RPATH.
+	if(APPLE)
+		set_target_properties(_NetworKit PROPERTIES
+				INSTALL_RPATH "@loader_path")
+	else()
+		set_target_properties(_NetworKit PROPERTIES
+				INSTALL_RPATH "$ORIGIN")
+	endif()
+	install(TARGETS _NetworKit
+			LIBRARY DESTINATION .)
 endif()
 
 # Register a new NetworKit module named ${modname}
 # Files additionally passed are interpreted as PUBLIC source files to this module
 function(networkit_add_module modname)
+	if(NOT NETWORKIT_BUILD_CORE)
+		return()
+	endif()
+
 	if(NETWORKIT_MONOLITH)
 		# in case we are building a monolith, no submodule are registered
 		# and we simple add the source file to the networkkit target
@@ -158,6 +208,8 @@ function(networkit_add_module modname)
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
 			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
+
+		target_link_libraries(${MODULE_TARGET} PRIVATE tlx)
 
 		# All tests added to this module will will also become a dependency
 		# of networkit_tests_MODNAME. This target hence allows to build all
@@ -188,7 +240,11 @@ function(networkit_module_link_libraries modname)
 	cmake_parse_arguments(NMLL
 		"${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-	if (NOT NETWORKIT_MONOLITH)
+	if(NOT NETWORKIT_BUILD_CORE)
+		return()
+	endif()
+
+	if(NOT NETWORKIT_MONOLITH)
 		target_link_libraries(networkit_${modname}
 			PRIVATE ${NMLL_PRIVATE}
 			PUBLIC ${NMLL_PUBLIC})
@@ -200,7 +256,11 @@ endfunction()
 # ones as dependencies. In case of monolith build, the function does nothing.
 # Example: networkit_module_link_modules(io graph) # io depends on graph
 function(networkit_module_link_modules modname)
-	if (NOT NETWORKIT_MONOLITH)
+	if(NOT NETWORKIT_BUILD_CORE)
+		return()
+	endif()
+
+	if(NOT NETWORKIT_MONOLITH)
 		foreach(dep IN LISTS ARGN)
 			target_link_libraries(networkit_${modname} PUBLIC networkit_${dep})
 		endforeach()
@@ -235,6 +295,7 @@ if (NETWORKIT_BUILD_TESTS)
 			PRIVATE
 				gtest
 				networkit
+				tlx
 		)
 
 		set_target_properties(networkit_tests PROPERTIES
@@ -254,6 +315,10 @@ if (NETWORKIT_BUILD_TESTS)
 			WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 		)
 
+	else()
+		add_library(networkit_gtest_main STATIC networkit/cpp/Unittests-X.cpp)
+		target_link_libraries(networkit_gtest_main
+				PRIVATE networkit_auxiliary)
 	endif()
 endif()
 
@@ -282,10 +347,11 @@ function(networkit_add_extra IS_TEST MOD NAME)
 
 			target_link_libraries(${TARGET_NAME}
 				PRIVATE
-					gtest_main gtest
+					gtest networkit_gtest_main
 				PRIVATE
 					networkit_${MOD}
-				)
+					tlx
+					)
 			set_target_properties(${TARGET_NAME} PROPERTIES
 				CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 				COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
@@ -296,12 +362,19 @@ function(networkit_add_extra IS_TEST MOD NAME)
 			endforeach()
 
 			if (${IS_TEST})
-				add_dependencies(networkit_tests_${MOD} ${TARGET_NAME} )
+				add_dependencies(networkit_tests_${MOD} ${TARGET_NAME})
+
 				add_test(
 					NAME "${MOD}/${NAME}"
-					COMMAND ${TARGET_NAME}
+					COMMAND ${TARGET_NAME} -t
 					WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 					)
+
+				add_test(
+					NAME "${MOD}/${NAME}_no_assertions"
+					COMMAND ${TARGET_NAME} -r
+					WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+				)
 			endif()
 		endif()
 	endif()
@@ -320,6 +393,90 @@ function(networkit_add_benchmark MOD NAME)
 	networkit_add_extra(OFF ${MOD} ${NAME} ${ARGN})
 endfunction(networkit_add_benchmark)
 
+
+################################################################################
+# Benchmarks
+
+# In case of monolithic builds we add the target networkit_benchmarks, and later add
+# source files via networkit_add_gbenchmark. In case of non-monolithic builds, each
+# networkit_add_test creates it own target.
+if (NETWORKIT_BUILD_BENCHMARKS AND NETWORKIT_MONOLITH)
+	add_executable(networkit_benchmarks networkit/cpp/networkit.cpp)
+
+	target_link_libraries(networkit_benchmarks
+			PRIVATE
+			benchmark_main benchmark
+			networkit
+			)
+
+	set_target_properties(networkit_tests PROPERTIES
+			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
+			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
+			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
+endif()
+
+function(networkit_add_gbenchmark MOD NAME)
+	if (NETWORKIT_BUILD_BENCHMARKS)
+		set(BENCH_SOURCE ${CMAKE_CURRENT_LIST_DIR}/${NAME}.cpp)
+
+		if (NETWORKIT_MONOLITH)
+			target_sources(networkit_benchmarks PRIVATE ${BENCH_SOURCE})
+
+		else()
+			if (NOT TARGET networkit_${MOD})
+				MESSAGE(FATAL_ERROR "Unknown NetworKit module '${MOD}'")
+			endif()
+
+			set(TARGET_NAME "networkit_${MOD}_${NAME}")
+
+			add_executable(${TARGET_NAME} ${BENCH_SOURCE})
+			message("${TARGET_NAME}: ${BENCH_SOURCE}")
+
+			target_link_libraries(${TARGET_NAME}
+				PRIVATE
+					benchmark_main benchmark
+					networkit_${MOD})
+
+			set_target_properties(${TARGET_NAME} PROPERTIES
+					CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
+					COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
+					LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
+
+			foreach(dep IN LISTS ARGN)
+				target_link_libraries(${TARGET_NAME} PRIVATE networkit_${dep})
+			endforeach()
+		endif()
+	endif()
+endfunction(networkit_add_gbenchmark)
+
+################################################################################
+# Documentation
+
+find_program(SPHINX_EXECUTABLE
+	NAMES
+		sphinx-build sphinx-build.exe
+	PATHS
+		/usr/bin
+		/usr/local/bin
+		/opt/local/bin
+	DOC "Sphinx documentation generator")
+
+if (NOT SPHINX_EXECUTABLE)
+	message(STATUS "sphinx-build not found. Disable documentation targets")
+
+else()
+	message(STATUS "Found sphinx-build: ${SPHINX_EXECUTABLE}")
+	add_custom_target(general_docs
+			COMMAND rm -rf htmldocs
+			COMMAND ${SPHINX_EXECUTABLE} ${CMAKE_SOURCE_DIR}/docs htmldocs)
+
+	add_custom_target(cpp_api_docs DEPENDS general_docs
+			COMMAND sed s:@BUILDDIR@:${CMAKE_CURRENT_BINARY_DIR}:
+					${CMAKE_SOURCE_DIR}/docs/cpp_api/Doxyfile.in | doxygen -
+			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+
+	add_custom_target(docs DEPENDS general_docs cpp_api_docs)
+endif()
 
 ################################################################################
 # Subdirectories

@@ -15,7 +15,7 @@ namespace NetworKit {
 /**
  * @ingroup centrality
  */
-class LocalClusteringCoefficient: public NetworKit::Centrality {
+class LocalClusteringCoefficient: public Centrality {
 public:
 	/**
 	 * Constructs the LocalClusteringCoefficient class for the given Graph @a G. If the local clustering coefficient scores should be normalized,
@@ -35,7 +35,7 @@ public:
 	 * @param turbo If the turbo mode shall be activated.
 	 * TODO running time
 	 */
-	LocalClusteringCoefficient(const NetworKit::Graph &G, bool turbo = false);
+	LocalClusteringCoefficient(const Graph &G, bool turbo = false);
 
 
 

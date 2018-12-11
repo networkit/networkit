@@ -5,9 +5,7 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef NOGTEST
-
-#include "CoarseningGTest.h"
+#include <gtest/gtest.h>
 
 #include "../../auxiliary/Log.h"
 #include "../../community/ClusteringGenerator.h"
@@ -20,6 +18,8 @@
 #include "../MatchingCoarsening.h"
 
 namespace NetworKit {
+
+class CoarseningGTest: public testing::Test{};
 
 TEST_F(CoarseningGTest, testClusteringProjectorWithOneClustering) {
 	ErdosRenyiGenerator gen(100, 0.5);
@@ -271,5 +271,3 @@ TEST_F(CoarseningGTest, testMatchingContractorWithSelfLoop) {
 }
 
 } /* namespace NetworKit */
-
-#endif /*NOGTEST */

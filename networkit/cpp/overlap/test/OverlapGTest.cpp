@@ -5,13 +5,18 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef NOGTEST
+#include <gtest/gtest.h>
+#include <functional>
 
-#include "OverlapGTest.h"
-#include "../../community/GraphClusteringTools.h"
+#include "../HashingOverlapper.h"
+
 #include "../../auxiliary/Log.h"
+#include "../../community/ClusteringGenerator.h"
+#include "../../community/GraphClusteringTools.h"
 
 namespace NetworKit {
+
+class OverlapGTest: public testing::Test {};
 
 TEST_F(OverlapGTest, testHashingOverlapperOnSingletonClusterings) {
 	int64_t n = 10;
@@ -140,5 +145,5 @@ TEST_F(OverlapGTest, debugHashingOverlapperCorrectness2) {
 
 	EXPECT_TRUE(GraphClusteringTools::isSingletonClustering(G, overlap)) << "When a singleton clustering is in the overlap, the result should be a singleton clustering";
 }
+
 } /* namespace NetworKit */
-#endif

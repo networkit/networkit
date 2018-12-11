@@ -16,7 +16,7 @@ namespace NetworKit {
  * @ingroup generators
  * Generates a scale-free graph using the Barabasi-Albert preferential attachment model.
  */
-class BarabasiAlbertGenerator: public NetworKit::StaticGraphGenerator {
+class BarabasiAlbertGenerator: public StaticGraphGenerator {
 private:
 	Graph initGraph;
 	count k; //!< Attachments made per node

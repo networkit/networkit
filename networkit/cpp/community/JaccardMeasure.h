@@ -15,11 +15,11 @@ namespace NetworKit {
 /**
  * @ingroup community
  */
-class JaccardMeasure: public NetworKit::DissimilarityMeasure {
+class JaccardMeasure: public DissimilarityMeasure {
 
 public:
 
-	double getDissimilarity(const NetworKit::Graph &G, const NetworKit::Partition &zeta, const NetworKit::Partition &eta) override;
+	double getDissimilarity(const Graph &G, const Partition &zeta, const Partition &eta) override;
 };
 
 } /* namespace NetworKit */

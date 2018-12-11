@@ -299,7 +299,7 @@ void PLM::run() {
 	hasRun = true;
 }
 
-std::string NetworKit::PLM::toString() const {
+std::string PLM::toString() const {
 	std::stringstream stream;
 	stream << "PLM(";
 	stream << parallelism;

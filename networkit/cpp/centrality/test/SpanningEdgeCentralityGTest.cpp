@@ -5,15 +5,16 @@
  *      Author: Michael
  */
 
-#include "SpanningEdgeCentralityGTest.h"
+#include <gtest/gtest.h>
+
+#include "../SpanningEdgeCentrality.h"
+
 #include "../../graph/Graph.h"
 #include "../../io/METISGraphReader.h"
 
-#include <fstream>
-#include <iomanip>
-
-
 namespace NetworKit {
+
+class SpanningEdgeCentralityGTest : public testing::Test {};
 
 TEST_F(SpanningEdgeCentralityGTest, testOnToyGraph) {
 	/* Graph:
@@ -45,7 +46,5 @@ TEST_F(SpanningEdgeCentralityGTest, testOnToyGraph) {
 	EXPECT_NEAR(0.75, sp.score(4), 1e-5);
 	EXPECT_NEAR(0.75, sp.score(5), 1e-5);
 }
-
-
 
 } /* namespace NetworKit */

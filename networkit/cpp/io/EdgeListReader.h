@@ -24,7 +24,7 @@ namespace NetworKit {
  * two node ids.
  *
  */
-class EdgeListReader: public NetworKit::GraphReader {
+class EdgeListReader: public GraphReader {
 
 public:
 

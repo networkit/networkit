@@ -5,7 +5,8 @@
  *      Author: ebergamini, cls
  */
 
-#include "DynBetweennessGTest.h"
+#include <gtest/gtest.h>
+
 #include "../Betweenness.h"
 #include "../DynApproxBetweenness.h"
 #include "../ApproxBetweenness.h"
@@ -18,7 +19,7 @@
 
 namespace NetworKit {
 
-
+class DynBetweennessGTest: public testing::Test {};
 
 TEST_F(DynBetweennessGTest, runDynApproxBetweennessSmallGraph) {
 /* Graph:

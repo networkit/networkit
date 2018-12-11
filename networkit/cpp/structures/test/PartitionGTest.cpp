@@ -7,16 +7,13 @@
 
 #include <iostream>
 
-#include "PartitionGTest.h"
+#include <gtest/gtest.h>
 
 #include "../Partition.h"
 
-#ifndef NOGTEST
-
 namespace NetworKit {
 
-/*TEST_F(PartitionGTest, test*) {
-}*/
+class PartitionGTest: public testing::Test {};
 
 TEST_F(PartitionGTest, testConstructor) {
 	Partition p(10);
@@ -308,5 +305,3 @@ TEST_F(PartitionGTest, testNumberOfElements) {
 
 
 } /* namespace NetworKit */
-
-#endif /*NOGTEST */

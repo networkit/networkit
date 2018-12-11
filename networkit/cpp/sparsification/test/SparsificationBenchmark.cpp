@@ -5,9 +5,10 @@
  *      Author: Gerd Lindner
  */
 
-#ifndef NOGTEST
+#include <gtest/gtest.h>
 
-#include "SparsificationBenchmark.h"
+#include "../../graph/Graph.h"
+#include "../../auxiliary/Timer.h"
 #include "../../edgescores/ChibaNishizekiTriangleEdgeScore.h"
 #include "../../edgescores/TriangleEdgeScore.h"
 #include "../../edgescores/PrefixJaccardScore.h"
@@ -21,22 +22,20 @@
 
 namespace NetworKit {
 
-SparsificationBenchmark::SparsificationBenchmark() {
-	this->n = 250;
-	INFO("n = " , this->n);
-}
+class SparsificationBenchmark: public testing::Test {
+protected:
+	const int64_t n {250};
 
-SparsificationBenchmark::~SparsificationBenchmark() {
-}
-
-Graph SparsificationBenchmark::makeCompleteGraph(count n) {
-	Graph G(n);
-	G.forNodePairs([&](node u, node v){
-		G.addEdge(u,v);
-	});
-	G.shrinkToFit();
-	return G;
-}
+public:
+	Graph makeCompleteGraph(count n) {
+		Graph G(n);
+		G.forNodePairs([&](node u, node v){
+			G.addEdge(u,v);
+		});
+		G.shrinkToFit();
+		return G;
+	}
+};
 
 TEST_F(SparsificationBenchmark, completeGraphSimmelianSparsificationParametric) {
 	int64_t n = this->n;
@@ -228,5 +227,3 @@ TEST_F(SparsificationBenchmark, SparsificationBenchmarkGraphFile) {
 }
 
 } /* namespace NetworKit */
-
-#endif /*NOGTEST */

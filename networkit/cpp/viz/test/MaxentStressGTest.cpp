@@ -5,7 +5,12 @@
  *      Author: Michael
  */
 
-#include "MaxentStressGTest.h"
+#include <gtest/gtest.h>
+#include <vector>
+#include <string>
+
+#include "../../graph/Graph.h"
+#include "../Point.h"
 
 #include "../../io/METISGraphReader.h"
 #include "../../io/METISGraphWriter.h"
@@ -37,6 +42,8 @@
 #include <stdio.h>
 
 namespace NetworKit {
+
+class MaxentStressGTest : public testing::Test {};
 
 TEST_F(MaxentStressGTest, benchMaxentStressCoordinatesLAMG) {
 

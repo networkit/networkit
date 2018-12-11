@@ -21,7 +21,7 @@ namespace NetworKit {
  * SpanningEdgeCentrality edge centrality.
  *
  */
-class SpanningEdgeCentrality: public NetworKit::Centrality {
+class SpanningEdgeCentrality: public Centrality {
 protected:
 	double tol;
 	Lamg<CSRMatrix> lamg;

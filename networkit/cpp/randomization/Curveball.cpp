@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-Curveball::Curveball(const NetworKit::Graph &G) :
+Curveball::Curveball(const Graph &G) :
     impl(new CurveballDetails::CurveballIM{G})
 {}
 

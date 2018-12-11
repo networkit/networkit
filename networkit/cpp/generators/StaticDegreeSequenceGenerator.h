@@ -19,7 +19,7 @@ const short UNKNOWN = 2;
 /**
  * @ingroup generators
  */
-class StaticDegreeSequenceGenerator: public NetworKit::StaticGraphGenerator {
+class StaticDegreeSequenceGenerator: public StaticGraphGenerator {
 protected:
 	std::vector<count> seq;
 	short realizable;

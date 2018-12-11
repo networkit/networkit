@@ -36,7 +36,7 @@ public:
 	 * @param u
 	 */
 	count score(node u) const {
-		if (!hasRun) throw std::runtime_error("AlgebraicTriangleCounting::score(node u): Call run() method first.");
+		assureFinished();
 		assert(u < A.numberOfRows());
 		return nodeScores[u];
 	}
@@ -47,7 +47,7 @@ public:
 	 * @param moveOut
 	 */
 	std::vector<count> getScores(bool moveOut = false) {
-		if (!hasRun) throw std::runtime_error("AlgebraicTriangleCounting::getScores(): Call run() method first.");
+		assureFinished();
 		hasRun = !moveOut;
 		return moveOut? std::move(nodeScores) : nodeScores;
 	}

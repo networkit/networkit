@@ -99,25 +99,22 @@ namespace NetworKit {
 		std::vector<count> tmpDistances;
 		std::queue<index> componentIds;
 		bool distancesInit;
-		bool hasRun;
 	};
 
 	inline count DynConnectedComponents::componentOfNode(node u) {
 		assert(u <= G.upperNodeIdBound());
 		assert (components[u] != none);
-		if (!hasRun) throw std::runtime_error("run method has not been called");
+		assureFinished();
 		return components[u];
 	}
 
 	inline count DynConnectedComponents::numberOfComponents() {
-		if (!hasRun) throw std::runtime_error("run method has not been called");
+		assureFinished();
 		return this->compSize.size();
 	}
 
 	inline std::map<index, count> DynConnectedComponents::getComponentSizes() {
-		if (!hasRun){
-			throw std::runtime_error("run method has not been called");
-		}
+		assureFinished();
 		return compSize;
 	}
 

@@ -11,7 +11,7 @@
 
 namespace NetworKit {
 
-StaticDegreeSequenceGenerator::StaticDegreeSequenceGenerator(const std::vector< NetworKit::count > &sequence):
+StaticDegreeSequenceGenerator::StaticDegreeSequenceGenerator(const std::vector<count> &sequence):
 		seq(sequence), realizable(UNKNOWN)
 {
 

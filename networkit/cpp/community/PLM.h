@@ -16,7 +16,7 @@ namespace NetworKit {
  * @ingroup community
  * Parallel Louvain Method - a multi-level modularity maximizer.
  */
-class PLM: public NetworKit::CommunityDetectionAlgorithm {
+class PLM: public CommunityDetectionAlgorithm {
 
 public:
 	/**

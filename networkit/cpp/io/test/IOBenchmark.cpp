@@ -5,13 +5,17 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef NOGTEST
-
+#include <gtest/gtest.h>
+#include <vector>
+#include <string>
 #include <utility>
 #include <algorithm>
 #include <fstream>
 
-#include "IOBenchmark.h"
+#include "../../auxiliary/Log.h"
+#include "../../auxiliary/Timer.h"
+#include "../METISGraphReader.h"
+
 #include "../RasterReader.h"
 #include "../../generators/quadtree/QuadtreePolarEuclid.h"
 #include "../../generators/quadtree/QuadtreeCartesianEuclid.h"
@@ -19,10 +23,15 @@
 
 namespace NetworKit {
 
+class IOBenchmark: public testing::Test {
+public:
+	static void convertToHeatMap(std::vector<bool> &infected, std::vector<double> &xcoords, std::vector<double> &ycoords, std::string filename, double resolution=1);
+};
+
 /**
  * This should actually not be in the benchmark but somewhere else. Can't figure out where yet.
  */
-void IOBenchmark::convertToHeatMap(vector<bool> &infected, vector<double> &xcoords, vector<double> &ycoords, string filename, double resolution) {
+void IOBenchmark::convertToHeatMap(std::vector<bool> &infected, std::vector<double> &xcoords, std::vector<double> &ycoords, std::string filename, double resolution) {
 
 	auto minmaxx = std::minmax_element (xcoords.begin(),xcoords.end());
 	auto  minmaxy = std::minmax_element (ycoords.begin(),ycoords.end());
@@ -32,8 +41,8 @@ void IOBenchmark::convertToHeatMap(vector<bool> &infected, vector<double> &xcoor
 	double yspread = *minmaxy.second - *minmaxy.first;
 	int xsteps = xspread / resolution + 1;
 	int ysteps = yspread / resolution + 1;
-	vector<vector<int> > infectedByRegion(xsteps);
-	vector<vector<bool> > populated(xsteps);
+	std::vector<std::vector<int> > infectedByRegion(xsteps);
+	std::vector<std::vector<bool> > populated(xsteps);
 	for (int i = 0; i < xsteps; i++) {
 		infectedByRegion[i].resize(ysteps, 0);
 		populated[i].resize(ysteps, false);
@@ -121,10 +130,10 @@ TEST_F(IOBenchmark, benchRasterReader) {
 		for (index run = 0; run < numRuns; run++) {
 			//transform into polar coordinates
 			runtime.start();
-			vector<double> angles(n);
-			vector<double> radii(n);
-			vector<Point2D<double> > positions(n);
-			vector<index> content(n);
+			std::vector<double> angles(n);
+			std::vector<double> radii(n);
+			std::vector<Point2D<double> > positions(n);
+			std::vector<index> content(n);
 			double maxR = 0;
 			for (index i = 0; i < n; i++) {
 				HyperbolicSpace::cartesianToPolar(Point2D<double>(xcoords[i], ycoords[i]), angles[i], radii[i]);
@@ -151,7 +160,7 @@ TEST_F(IOBenchmark, benchRasterReader) {
 			// perform range queries
 			runtime.start();
 			for (uint64_t q = 0; q < numQueries; ++q) {
-				vector<index> result;
+				std::vector<index> result;
 				index comparison = Aux::Random::integer(xcoords.size());
 				Point2D<double> query(xcoords[comparison], ycoords[comparison]);
 				tree.getElementsProbabilistically(query, edgeProb, result);
@@ -163,7 +172,7 @@ TEST_F(IOBenchmark, benchRasterReader) {
 			long naiveTotalNeighbours = 0;
 			runtime.start();
 			for (uint64_t q = 0; q < numQueries; ++q) {
-				vector<index> result;
+				std::vector<index> result;
 				index comparison = Aux::Random::integer(xcoords.size());
 				double x = xcoords[comparison];
 				double y = ycoords[comparison];
@@ -226,9 +235,9 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 
 		//convert coordinates
 		runtime.start();
-		vector<double> angles(n);
-		vector<double> radii(n);
-		vector<index> content(n);
+		std::vector<double> angles(n);
+		std::vector<double> radii(n);
+		std::vector<index> content(n);
 		double maxR = 0;
 
 		for (index i = 0; i < n; i++) {
@@ -245,9 +254,9 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 		INFO("Filled quadtree", runtime.elapsedTag());
 
 		//data structures
-		vector<bool> wasEverInfected(n, false);
-		vector<bool> infectedState(n, false);
-		vector<index> infectedList;
+		std::vector<bool> wasEverInfected(n, false);
+		std::vector<bool> infectedState(n, false);
+		std::vector<index> infectedList;
 
 		//patient zero
 		runtime.start();
@@ -263,7 +272,7 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 			INFO("At step ", step, ", ", infectedList.size(), " people are infected.");
 
 			//get new infections
-			vector<index> newInfections;
+			std::vector<index> newInfections;
 			for (index patient : infectedList) {
 				Point2D<double> query(xcoords[patient], ycoords[patient]);
 				tree.getElementsProbabilistically(query, edgeProb, newInfections);
@@ -324,9 +333,4 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 	}
 }
 
-
-
 } /* namespace NetworKit */
-
-
-#endif /* NOGTEST */

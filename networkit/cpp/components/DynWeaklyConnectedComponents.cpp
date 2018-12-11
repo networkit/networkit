@@ -127,9 +127,7 @@ namespace NetworKit {
 
     void DynWeaklyConnectedComponents::update(GraphEvent event) {
 
-        if (!hasRun) {
-            throw std::runtime_error("run method has not been called");
-        }
+        assureFinished();
 
         if (event.type == GraphEvent::EDGE_ADDITION) {
             addEdge(event.u, event.v);
@@ -385,9 +383,7 @@ namespace NetworKit {
 
 
     std::vector<std::vector<node>> DynWeaklyConnectedComponents::getComponents() {
-        if (!hasRun) {
-            throw std::runtime_error("run method has not been called");
-        }
+        assureFinished();
 
         std::vector<std::vector<node>> result(compSize.size());
         std::map<index, count> compIndex;

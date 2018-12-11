@@ -43,14 +43,20 @@ public:
  	 *
  	 * @return The shortest-path distances from each node to any other node in the graph.
 	 */
-	std::vector<std::vector<edgeweight> > getDistances() const {if (!hasRun) throw std::runtime_error("Call run method first"); return distances;}
+	std::vector<std::vector<edgeweight>> getDistances() const {
+		assureFinished();
+		return distances;
+	}
 
 
 	/**
 	 * Returns the distance from u to v or infinity if u and v are not connected.
 	 *
 	 */
-	edgeweight getDistance(node u, node v) const {if (!hasRun) throw std::runtime_error("Call run method first"); return distances[u][v];}
+	edgeweight getDistance(node u, node v) const {
+		assureFinished();
+		return distances[u][v];
+	}
 
 	/**
 	* @return True if algorithm can run multi-threaded.

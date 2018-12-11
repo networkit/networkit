@@ -1,5 +1,7 @@
-#include "SelectiveCDGTest.h"
+#include <gtest/gtest.h>
+#include <memory>
 
+#include "../SelectiveCommunityDetector.h"
 #include "../PageRankNibble.h"
 #include "../GCE.h"
 #include "../../community/Modularity.h"
@@ -8,11 +10,10 @@
 #include "../../io/METISGraphReader.h"
 #include "../../auxiliary/Log.h"
 
-#include <memory>
-
-#ifndef NOGTEST
 
 namespace NetworKit {
+
+class SCDGTest2: public testing::Test {};
 
 TEST_F(SCDGTest2, testSCD) {
 	METISGraphReader reader;
@@ -57,5 +58,3 @@ TEST_F(SCDGTest2, testSCD) {
 
 
 } /* namespace NetworKit */
-
-#endif /*NOGTEST */

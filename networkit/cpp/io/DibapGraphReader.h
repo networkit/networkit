@@ -35,7 +35,7 @@ namespace NetworKit {
  * @ingroup io
  * TODO: class documentation
  */
-class DibapGraphReader: public NetworKit::GraphReader {
+class DibapGraphReader: public GraphReader {
 public:
 	DibapGraphReader() = default;
 

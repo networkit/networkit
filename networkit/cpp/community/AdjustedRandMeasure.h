@@ -20,7 +20,7 @@ public:
 	 * @param eta  The second partition
 	 * @return The adjusted rand dissimilarity.
 	 */
-	virtual double getDissimilarity(const NetworKit::Graph &G, const NetworKit::Partition &zeta, const NetworKit::Partition &eta);
+	virtual double getDissimilarity(const Graph &G, const NetworKit::Partition &zeta, const NetworKit::Partition &eta);
 };
 
 } // namespace NetworKit

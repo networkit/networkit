@@ -15,7 +15,7 @@ namespace NetworKit {
 /**
  * @ingroup centrality
  */
-class HarmonicCloseness : public NetworKit::Centrality {
+class HarmonicCloseness : public Centrality {
 public:
   /**
    * Constructs the HarmonicCloseness class for the given Graph @a G. If

@@ -5,12 +5,22 @@
  *      Author: Henning
  */
 
-#ifndef NOGTEST
+#include <gtest/gtest.h>
+#include <cstdio>
 
-#include "DistMeasuresGTest.h"
+#include "../../graph/Graph.h"
+#include "../../viz/PostscriptWriter.h"
+#include "../../io/METISGraphReader.h"
+#include "../../io/DibapGraphReader.h"
+#include "../../structures/Partition.h"
+#include "../../community/Modularity.h"
+#include "../AlgebraicDistanceIndex.h"
+
 #include "../../auxiliary/Log.h"
 
 namespace NetworKit {
+
+class DistMeasuresGTest: public testing::Test {};
 
 TEST_F(DistMeasuresGTest, testAlgebraicDistanceIndex) {
 	Graph G(42);
@@ -32,6 +42,6 @@ TEST_F(DistMeasuresGTest, testAlgebraicDistanceIndex) {
 	DEBUG("sum of algebraic distances: " , adSum);
 	EXPECT_GE(1e-12, adSum) << "algebraic distances should converge towards zero";
 }
+
 } /* namespace NetworKit */
 
-#endif /*NOGTEST */

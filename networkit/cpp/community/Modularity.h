@@ -24,7 +24,7 @@ namespace NetworKit {
  * 	$$mod(\zeta) := \frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)}
  * 	- \frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$$
  */
-class Modularity: public NetworKit::QualityMeasure {
+class Modularity: public QualityMeasure {
 protected:
 	double gTotalEdgeWeight;
 

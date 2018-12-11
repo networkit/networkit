@@ -17,7 +17,7 @@ namespace NetworKit {
  * The graph-structural Rand measure assigns a similarity value in [0,1]
  * to two partitions of a graph, by considering connected pairs of nodes.
  */
-class GraphStructuralRandMeasure: public NetworKit::DissimilarityMeasure {
+class GraphStructuralRandMeasure: public DissimilarityMeasure {
 
 public:
 

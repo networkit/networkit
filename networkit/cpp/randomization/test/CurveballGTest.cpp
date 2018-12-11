@@ -5,7 +5,8 @@
  *	Author: Author: Hung Tran <htran@ae.cs.uni-frankfurt.de>
  */
 
-#include "CurveballGTest.h"
+#include <gtest/gtest.h>
+#include "../../graph/Graph.h"
 
 #include "../Curveball.h"
 
@@ -18,10 +19,16 @@
 
 namespace NetworKit {
 
-void CurveballGTest::checkWithGraph(NetworKit::Graph& G, bool checkBuilder) {
+class CurveballGTest : public testing::Test  {
+protected:
+    void checkWithGraph(Graph&, bool checkBuilder = false);
+};
+
+
+void CurveballGTest::checkWithGraph(Graph& G, bool checkBuilder) {
     node numNodes = G.numberOfNodes();
     const count numTrades = 5;
-    const NetworKit::count numTradeRuns = 5;
+    const count numTradeRuns = 5;
 
 
     std::vector<count> degrees(numNodes + 1);
@@ -46,21 +53,21 @@ void CurveballGTest::checkWithGraph(NetworKit::Graph& G, bool checkBuilder) {
     });
 
 
-    NetworKit::Curveball algo(G);
-    for (NetworKit::count tradeRun = 0; tradeRun < numTradeRuns; tradeRun++) {
+    Curveball algo(G);
+    for (count tradeRun = 0; tradeRun < numTradeRuns; tradeRun++) {
         CurveballUniformTradeGenerator gen(numTrades, numNodes);
         algo.run(gen.generate());
     }
 
     // check degrees
-    NetworKit::Graph outG = algo.getGraph(false); // sequential
+    Graph outG = algo.getGraph(false); // sequential
     outG.forNodes([&](node u){
         ASSERT_EQ(degrees[u], outG.degree(u));
     });
 
 	// check builder: parallel is equal to sequential
 	if (checkBuilder) {
-		NetworKit::Graph outGpar = algo.getGraph(true);
+		Graph outGpar = algo.getGraph(true);
 
 		// check degrees
 		outGpar.forNodes([&](node u){
@@ -96,8 +103,8 @@ TEST_F(CurveballGTest, testCurveballErdosRenyi) {
     Aux::Random::setSeed(1, false);
 
     node numNodes = 1000;
-    NetworKit::ErdosRenyiGenerator generator(numNodes, 0.3);
-    NetworKit::Graph G = generator.generate();
+    ErdosRenyiGenerator generator(numNodes, 0.3);
+    Graph G = generator.generate();
 
     this->checkWithGraph(G, false);
 }
@@ -106,8 +113,8 @@ TEST_F(CurveballGTest, testCurveballHyperbolic) {
     Aux::Random::setSeed(1, false);
 
     node numNodes = 1000;
-    NetworKit::HyperbolicGenerator generator(numNodes);
-    NetworKit::Graph G = generator.generate();
+    HyperbolicGenerator generator(numNodes);
+    Graph G = generator.generate();
 
     this->checkWithGraph(G, false);
 }
@@ -116,11 +123,10 @@ TEST_F(CurveballGTest, testCurveballMaterialization) {
 	Aux::Random::setSeed(1, false);
 
 	node numNodes = 500;
-	NetworKit::ErdosRenyiGenerator generator(numNodes, 0.3);
-	NetworKit::Graph G = generator.generate();
+	ErdosRenyiGenerator generator(numNodes, 0.3);
+	Graph G = generator.generate();
 
 	this->checkWithGraph(G, true);
 }
 
 }
-

@@ -22,7 +22,7 @@ namespace CurveballDetails { struct CurveballIM; }
 class Curveball : public Algorithm {
 public:
 
-	explicit Curveball(const NetworKit::Graph &G);
+	explicit Curveball(const Graph &G);
 
 	virtual ~Curveball();
 

@@ -150,7 +150,7 @@ protected:
 	 * These methods might be overridden by a sub-class which could use a different model or generator in order to generate the parts of the graph.
 	 */
 	virtual std::vector<std::vector<node>> assignNodesToCommunities();
-	virtual Graph generateIntraClusterGraph(std::vector< NetworKit::count > intraDegreeSequence, const std::vector< NetworKit::node > &localToGlobalNode);
+	virtual Graph generateIntraClusterGraph(std::vector<count> intraDegreeSequence, const std::vector<node> &localToGlobalNode);
 	virtual Graph generateInterClusterGraph(const std::vector<count> &externalDegreeSequence);
 
 	count n;

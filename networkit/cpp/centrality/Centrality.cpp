@@ -21,14 +21,12 @@ Centrality::Centrality(const Graph &G, bool normalized,
 }
 
 double Centrality::score(node v) {
-  if (!hasRun)
-    throw std::runtime_error("Call run method first");
+  assureFinished();
   return scoreData.at(v);
 }
 
 std::vector<std::pair<node, double>> Centrality::ranking() {
-  if (!hasRun)
-    throw std::runtime_error("Call run method first");
+  assureFinished();
   std::vector<std::pair<node, double>> ranking;
   G.forNodes([&](node v) { ranking.push_back({v, scoreData[v]}); });
   Aux::Parallel::sort(ranking.begin(), ranking.end(),
@@ -42,15 +40,13 @@ std::vector<std::pair<node, double>> Centrality::ranking() {
 }
 
 std::vector<double> Centrality::scores(bool moveOut) {
-  if (!hasRun)
-    throw std::runtime_error("Call run method first");
+  assureFinished();
   hasRun = !moveOut;
   return moveOut ? std::move(scoreData) : scoreData;
 }
 
 std::vector<double> Centrality::edgeScores() {
-  if (!hasRun)
-    throw std::runtime_error("Call run method first");
+  assureFinished();
   return edgeScoreData;
 }
 
@@ -60,8 +56,7 @@ double Centrality::maximum() {
 }
 
 double Centrality::centralization() {
-  if (!hasRun)
-    throw std::runtime_error("Call run method first");
+  assureFinished();
   double centerScore = 0.0;
   G.forNodes([&](node v) {
     if (scoreData[v] > centerScore) {

@@ -18,7 +18,7 @@ namespace NetworKit {
 	 * @ingroup distance
 	 * Determines all the possible simple paths from a given source node to a target node of a directed unweighted graph. It also accepts a cutoff value i.e. the maximum length of paths.
 	 */
-	class AllSimplePaths {
+	class AllSimplePaths : public Algorithm {
 
 	public:
 
@@ -37,7 +37,7 @@ namespace NetworKit {
 		/**
 		* This method computes all possible paths from a given source node to a target node.
 		*/
-		void run();
+		void run() override;
 
 		/**
 		* This method returns the number of simple paths from the source node to the target node.
@@ -69,7 +69,7 @@ namespace NetworKit {
 		std::vector<node>* getAvailableSources(node s, count pathLength = 0);
 
 		// The graph
-		const Graph& G;
+		const Graph &G;
 		// The source node
 		node source;
 		// The target node
@@ -83,30 +83,21 @@ namespace NetworKit {
 		std::vector<count> distanceFromSource;
 		// This vector contains all the possible paths from source to target.
 		std::vector<std::vector<node>> paths;
-
-		// Whether the run method as been called or not.
-		bool hasRun = false;
 	};
 
 	inline count AllSimplePaths::numberOfSimplePaths() {
-		if (!hasRun) {
-			throw std::runtime_error("run method has not been called");
-		}
+		assureFinished();
 		return paths.size();
 	}
 
 	inline std::vector<std::vector<node>> AllSimplePaths::getAllSimplePaths() {
-		if (!hasRun) {
-			throw std::runtime_error("run method has not been called");
-		}
+		assureFinished();
 		return paths;
 	}
 
 	template<typename L>
 	void AllSimplePaths::forAllSimplePaths(L handle) {
-		if (!hasRun) {
-			throw std::runtime_error("run method has not been called");
-		}
+		assureFinished();
 		for (std::vector<std::vector<node>>::iterator it = paths.begin() ; it != paths.end(); ++it) {
 			handle(*it);
 		}
@@ -114,9 +105,7 @@ namespace NetworKit {
 
 	template<typename L>
 	void AllSimplePaths::parallelForAllSimplePaths(L handle) {
-		if (!hasRun) {
-			throw std::runtime_error("run method has not been called");
-		}
+		assureFinished();
 		#pragma omp parallel for schedule(guided)
 		for (omp_index i = 0; i < static_cast<omp_index>(paths.size()); ++i) {
 			handle(paths[i]);
