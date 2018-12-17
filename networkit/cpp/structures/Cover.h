@@ -199,6 +199,11 @@ public:
 	count numberOfElements() const;
 
 	/**
+	 * Add an additional element (node).
+	 */
+	index extend();
+
+	/**
 	 * Get the ids of nonempty subsets.
 	 *
 	 * @return A set of ids of nonempty subsets.

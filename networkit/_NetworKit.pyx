@@ -4060,7 +4060,7 @@ cdef extern from "cpp/structures/Cover.h":
 		_Cover(_Partition p) except +
 		_Cover(count n) except +
 		set[index] subsetsOf(index e) except +
-#		index extend() except +
+		index extend() except +
 		void remove(index e) except +
 		void addToSubset(index s, index e) except +
 		void removeFromSubset(index s, index e) except +
@@ -4114,8 +4114,8 @@ cdef class Cover:
 		"""
 		return self._this.subsetsOf(e)
 
-#	def extend(self):
-#		self._this.extend()
+	def extend(self):
+		return self._this.extend()
 
 	def addToSubset(self, s, e):
 		""" Add the (previously unassigned) element `e` to the set `s`.
