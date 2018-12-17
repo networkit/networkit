@@ -318,6 +318,7 @@ if (NETWORKIT_BUILD_TESTS)
 	else()
 		add_library(networkit_gtest_main STATIC networkit/cpp/Unittests-X.cpp)
 		target_link_libraries(networkit_gtest_main
+				PUBLIC gtest
 				PRIVATE networkit_auxiliary)
 	endif()
 endif()
