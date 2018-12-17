@@ -2,55 +2,31 @@
  * ErdosRenyiGenerator.cpp
  *
  *  Created on: 21.01.2014
- *      Author: Henning
+ *      Author: Henning, Manuel Penschuck <networkit@manuel.jetzt>
  */
 
 #include "ErdosRenyiGenerator.h"
-#include "../auxiliary/Random.h"
-#include "../auxiliary/SignalHandling.h"
+#include "ErdosRenyiEnumerator.h"
+#include "../graph/GraphBuilder.h"
 
 namespace NetworKit {
 
-ErdosRenyiGenerator::ErdosRenyiGenerator(count nNodes, double prob, bool directed): n(nNodes), p(prob), directed(directed) {
-
-}
-
-
-/**
- * Returns number of steps you need to wait until the next success (edge) occurs.
- */
-static inline count get_next_edge_distance(const double log_cp) {
-	return (count) 1 + floor(log(1.0 - Aux::Random::probability()) / log_cp);
-}
+ErdosRenyiGenerator::ErdosRenyiGenerator(count nNodes, double prob, bool directed, bool self_loops) :
+	nNodes{nNodes},	prob{prob}, directed{directed}, self_loops{self_loops}
+{}
 
 Graph ErdosRenyiGenerator::generate() {
-	Aux::SignalHandler handler;
-	Graph G(n, false, directed);
-	const double log_cp = log(1.0 - p); // log of counter probability
+	GraphBuilder builder(nNodes, false, directed);
 
-	// create edges
-	node curr = 1;
-	node next = -1; // according to Batagelj/Brandes
-	while (curr < n) {
-		handler.assureRunning();
-		// compute new step length
-		next += get_next_edge_distance(log_cp);
-
-		// check if at end of row
-		while ((next >= curr) && (curr < n)) {
-			// adapt to next row
-			next = next - curr;
-			curr++;
-		}
-
-		// insert edge
-		if (curr < n) {
-			G.addEdge(curr, next);
-		}
+	{
+		ErdosRenyiEnumeratorDefault impl(nNodes, prob, directed);
+		impl.forEdgesParallel([&](int /*tid*/, node u, node v) {
+			if (!self_loops && u == v) return;
+			builder.addHalfEdge(u, v);
+		});
 	}
 
-	G.shrinkToFit();
-	return G;
+	return builder.toGraph(true, false);
 }
 
 } /* namespace NetworKit */

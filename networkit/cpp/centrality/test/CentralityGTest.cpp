@@ -1371,7 +1371,7 @@ TEST_F(CentralityGTest, testGroupDegreeUndirected) {
 TEST_F(CentralityGTest, testGroupDegreeDirected) {
 	Aux::Random::setSeed(42, false);
 	count nodes = 12;
-	Graph g = ErdosRenyiGenerator(nodes, 0.3, true).generate();
+	Graph g = ErdosRenyiGenerator(nodes, 0.3, true, false).generate();
 	count k = 5;
 
 	GroupDegree gd(g, k, false);

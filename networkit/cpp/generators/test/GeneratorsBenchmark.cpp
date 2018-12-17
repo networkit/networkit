@@ -15,6 +15,7 @@
 #include "../../auxiliary/Parallel.h"
 #include "../../auxiliary/Parallelism.h"
 
+#include "../ErdosRenyiEnumerator.h"
 #include "../HyperbolicGenerator.h"
 #include "../DynamicHyperbolicGenerator.h"
 #include "../BarabasiAlbertGenerator.h"
@@ -29,92 +30,15 @@ namespace NetworKit {
 // TODO: This is a temporary fix; there's already a GBenchmark solution on its way
 class GeneratorsBenchmark: public testing::Test {
 protected:
-	template <typename L>
-	uint64_t timeOnce(L f) {
-		Aux::Timer timer;
-		timer.start();
-		f();
-		timer.stop();
-		return timer.elapsedMilliseconds();
-	}
-};
-
-TEST_F(GeneratorsBenchmark, benchmarkGraphBuilder) {
-    // parameters for Erdös-Renyi
-    count n = 25000;
-    double p = 0.001;
-    count m_expected = p * n * (n + 1) / 2;
-
-    Graph G;
-    GraphBuilder builder;
-
-    // prepare a random generator for each possible thread
-    int maxThreads = omp_get_max_threads();
-    std::vector< std::function<double()> > randomPerThread;
-    std::random_device device;
-    std::uniform_int_distribution<uint64_t> intDist;
-    for (int tid = 0; tid < maxThreads; tid++) {
-        auto seed = intDist(device);
-        std::mt19937_64 gen(seed);
-        std::uniform_real_distribution<double> dist{0.0, std::nexttoward(1.0, 2.0)};
-        auto rdn = std::bind(dist, gen);
-        randomPerThread.push_back(rdn);
+    template <typename L>
+    uint64_t timeOnce(L f) {
+        Aux::Timer timer;
+        timer.start();
+        f();
+        timer.stop();
+        return timer.elapsedMilliseconds();
     }
-
-    count m_actual;
-    uint64_t t1, t2;
-
-    // half parallel way
-    m_actual = 0;
-    t1 = timeOnce([&]() {
-        builder = GraphBuilder(n);
-        builder.parallelForNodePairs([&](node u, node v) {
-            int tid = omp_get_thread_num();
-            double rdn = randomPerThread[tid]();
-            if (rdn <= p) {
-                builder.addHalfEdge(u, v);
-            }
-        });
-    });
-    t2 = timeOnce([&]() {
-        G = builder.toGraph(true);
-    });
-    m_actual = G.numberOfEdges();
-    EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
-    std::cout << "parallelForNodePairs + toGraphSequentiel:\t\t" << t1 << " + " << t2 << " = " << (t1 + t2) << " ms\n";
-
-    // fully parallel way
-    m_actual = 0;
-    t1 = timeOnce([&]() {
-        builder = GraphBuilder(n);
-        builder.parallelForNodePairs([&](node u, node v) {
-            int tid = omp_get_thread_num();
-            double rdn = randomPerThread[tid]();
-            if (rdn <= p) {
-                builder.addHalfEdge(u, v);
-            }
-        });
-    });
-    t2 = timeOnce([&]() {
-        G = builder.toGraph(true, false);
-    });
-    m_actual = G.numberOfEdges();
-    EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
-    std::cout << "parallelForNodePairs + toGraphParallel:\t\t" << t1 << " + " << t2 << " = " << (t1 + t2) << " ms\n";
-
-    // old way
-    t1 = timeOnce([&]() {
-        G = Graph(n);
-        G.forNodePairs([&](node u, node v) {
-            if (randomPerThread[0]() <= p) {
-                G.addEdge(u, v);
-            }
-        });
-    });
-    m_actual = G.numberOfEdges();
-    EXPECT_NEAR(m_actual / (double) m_expected, 1.0, 0.1);
-    std::cout << "forNodePairs + Graph.addEdge:\t\t\t\t" << t1 << " ms\n";
-}
+};
 
 TEST_F(GeneratorsBenchmark, benchmarkBarabasiAlbertGenerator) {
     count k = 2;
