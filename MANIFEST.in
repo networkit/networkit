@@ -1,2 +1,4 @@
 include version.py
 include CMakeLists.txt
+graft extlibs/tlx
+exclude extlibs/tlx/.git
