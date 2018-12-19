@@ -187,50 +187,7 @@ We would like to encourage contributions to the NetworKit source code. See the d
 
 ## Credits
 
-### Core Development Team
-
-NetworKit is maintained by the [Research Group Modeling and Analysis of Complex Systems](https://www.informatik.hu-berlin.de/de/forschung/gebiete/macsy) of the Institute of Computer Science at the [Humboldt-University of Berlin](https://www.hu-berlin.de/de).
-NetworKit was created and developed by the [Research Group Parallel Computing](http://parco.iti.kit.edu) of the Institute of Theoretical Informatics at [Karlsruhe Institute of Technology (KIT)](http://www.kit.edu/english/index.php>).
-
-### Maintainers
-- Eugenio Angriman
-- Alexander van der Grinten
-- Henning Meyerhenke
-
-### Past Maintainers
-- Christian L. Staudt
-- Maximilian Vogel
-
-### Contributors
-- Lukas Barth
-- Miriam Beddig
-- Elisabetta Bergamini
-- Stefan Bertsch
-- Pratistha Bhattarai
-- Andreas Bilke
-- Simon Bischof
-- Guido Brückner
-- Mark Erb
-- Kolja Esders
-- Patrick Flick
-- Michael Hamann
-- Lukas Hartmann
-- Daniel Hoske
-- Gerd Lindner
-- Moritz v. Looz
-- Yassine Marrakchi
-- Franz-Benjamin Mocnik
-- Mustafa Özdayi
-- Marcel Radermacher
-- Klara Reichard
-- Matteo Riondato
-- Marvin Ritter
-- Aleksejs Sazonovs
-- Arie Slobbe
-- Florian Weber
-- Michael Wegner
-- Jörg Weisbarth
-
+List of contributors can be found on the [NetworKit website credits page](https://networkit.github.io/credits.html).
 
 ### External Code
 
