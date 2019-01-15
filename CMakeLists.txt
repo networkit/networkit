@@ -18,7 +18,18 @@ option(NETWORKIT_FLATINSTALL "Install into a flat directory structure (useful wh
 set(NETWORKIT_PYTHON "" CACHE STRING "Directory containing Python.h. Implies MONOLITH=TRUE")
 set(NETWORKIT_PYTHON_SOABI "" CACHE STRING "Platform specific file extension. Implies MONOLITH=TRUE")
 
-set( NETWORKIT_CXX_STANDARD "11" CACHE STRING "CXX Version to compile with. Currently fixed to 11")
+set (NETWORKIT_CXX_STANDARD "11" CACHE STRING "CXX Version to compile with. Currently fixed to 11")
+
+# Allow user to set installation paths relative to CMAKE_INSTALL_PREFIX
+
+set(NETWORKIT_INSTALL_BIN_DIR "bin"
+	CACHE PATH "Installation directory for executables")
+set(NETWORKIT_INSTALL_LIB_DIR "lib"
+	CACHE PATH "Installation directory for libraries")
+set(NETWORKIT_INSTALL_INCLUDE_DIR "include"
+	CACHE PATH "Installation directory for header files")
+set(NETWORKIT_INSTALL_PKGCONFIG_DIR "lib/pkgconfig"
+	CACHE PATH "Installation directory for pkg-config file")
 
 if (NETWORKIT_PYTHON)
 	if (NOT NETWORKIT_MONOLITH)
@@ -489,3 +500,9 @@ endif()
 ################################################################################
 # Subdirectories
 add_subdirectory(networkit/cpp)
+
+# Install header files
+set(NETWORKIT_LIBRARIES networkit)
+install(DIRECTORY networkit/cpp/
+	DESTINATION ${NETWORKIT_INSTALL_INCLUDE_DIR}/networkit
+	FILES_MATCHING PATTERN "*.h")
