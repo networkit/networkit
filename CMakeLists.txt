@@ -55,10 +55,10 @@ if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR
 
 elseif (MSVC)
 	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /DNETWORKIT_OMP2 /MP /DNETWORKIT_WINDOWS")
-	
+
 	# TTMath requires running an ASM for MSVC which we disable here at the cost of worse performance
 	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /DTTMATH_NOASM=1")
-	 
+
 else()
 	message(WARNING "Support only GCC, Clang, MSVC and AppleClang. Your compiler may or may not work.")
 endif()
@@ -297,7 +297,7 @@ if (NETWORKIT_BUILD_TESTS)
 
 	if (NETWORKIT_MONOLITH)
 		add_executable(networkit_tests networkit/cpp/Unittests-X.cpp)
-		
+
 		target_link_libraries(networkit_tests
 			PRIVATE
 				gtest
