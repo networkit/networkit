@@ -18,7 +18,18 @@ option(NETWORKIT_FLATINSTALL "Install into a flat directory structure (useful wh
 set(NETWORKIT_PYTHON "" CACHE STRING "Directory containing Python.h. Implies MONOLITH=TRUE")
 set(NETWORKIT_PYTHON_SOABI "" CACHE STRING "Platform specific file extension. Implies MONOLITH=TRUE")
 
-set( NETWORKIT_CXX_STANDARD "11" CACHE STRING "CXX Version to compile with. Currently fixed to 11")
+set (NETWORKIT_CXX_STANDARD "11" CACHE STRING "CXX Version to compile with. Currently fixed to 11")
+
+# Allow user to set installation paths relative to CMAKE_INSTALL_PREFIX
+
+set(NETWORKIT_INSTALL_BIN_DIR "bin"
+	CACHE PATH "Installation directory for executables")
+set(NETWORKIT_INSTALL_LIB_DIR "lib"
+	CACHE PATH "Installation directory for libraries")
+set(NETWORKIT_INSTALL_INCLUDE_DIR "include"
+	CACHE PATH "Installation directory for header files")
+set(NETWORKIT_INSTALL_PKGCONFIG_DIR "lib/pkgconfig"
+	CACHE PATH "Installation directory for pkg-config file")
 
 if (NETWORKIT_PYTHON)
 	if (NOT NETWORKIT_MONOLITH)
@@ -55,10 +66,10 @@ if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR
 
 elseif (MSVC)
 	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /DNETWORKIT_OMP2 /MP /DNETWORKIT_WINDOWS")
-	
+
 	# TTMath requires running an ASM for MSVC which we disable here at the cost of worse performance
 	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /DTTMATH_NOASM=1")
-	 
+
 else()
 	message(WARNING "Support only GCC, Clang, MSVC and AppleClang. Your compiler may or may not work.")
 endif()
@@ -297,7 +308,7 @@ if (NETWORKIT_BUILD_TESTS)
 
 	if (NETWORKIT_MONOLITH)
 		add_executable(networkit_tests networkit/cpp/Unittests-X.cpp)
-		
+
 		target_link_libraries(networkit_tests
 			PRIVATE
 				gtest
@@ -489,3 +500,9 @@ endif()
 ################################################################################
 # Subdirectories
 add_subdirectory(networkit/cpp)
+
+# Install header files
+set(NETWORKIT_LIBRARIES networkit)
+install(DIRECTORY networkit/cpp/
+	DESTINATION ${NETWORKIT_INSTALL_INCLUDE_DIR}/networkit
+	FILES_MATCHING PATTERN "*.h")
