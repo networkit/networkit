@@ -6,5 +6,6 @@ libdir=${exec_prefix}/@NETWORKIT_INSTALL_LIB_DIR@
 Name: networkit
 Description: networkit
 URL: http://networkit.github.io
-Cflags: -I${includedir}$ @NETWORKIT_CXX_FLAGS@
+Version: @NETWORKIT_VERSION@
+Cflags: -I${includedir} @NETWORKIT_CXX_FLAGS@
 Libs: -L${libdir} -l@NETWORKIT_LIBNAME@

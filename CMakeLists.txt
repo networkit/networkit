@@ -511,6 +511,9 @@ install(DIRECTORY networkit/cpp/
 # Prepare pkg-config file
 
 set(NETWORKIT_LIBNAME networkit)
+execute_process(COMMAND python3 -c "from version import version; print(version, end='')"
+	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+	OUTPUT_VARIABLE NETWORKIT_VERSION)
 configure_file(networkit.pc
 	"${PROJECT_BINARY_DIR}/${NETWORKIT_LIBNAME}.pc" @ONLY)
 
