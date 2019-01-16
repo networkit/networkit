@@ -506,3 +506,15 @@ set(NETWORKIT_LIBRARIES networkit)
 install(DIRECTORY networkit/cpp/
 	DESTINATION ${NETWORKIT_INSTALL_INCLUDE_DIR}/networkit
 	FILES_MATCHING PATTERN "*.h")
+
+################################################################################
+# Prepare pkg-config file
+
+set(NETWORKIT_LIBNAME networkit)
+configure_file(networkit.pc
+	"${PROJECT_BINARY_DIR}/${NETWORKIT_LIBNAME}.pc" @ONLY)
+
+if(NETWORKIT_INSTALL_PKGCONFIG_DIR)
+	INSTALL(FILES ${PROJECT_BINARY_DIR}/${NETWORKIT_LIBNAME}.pc
+		DESTINATION ${NETWORKIT_INSTALL_PKGCONFIG_DIR})
+endif()
