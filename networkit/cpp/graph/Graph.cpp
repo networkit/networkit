@@ -85,11 +85,12 @@ Graph::Graph(const Graph &G, bool weighted, bool directed)
 	name = sstm.str();
 
 	if (G.isDirected() == directed) {
-		inDeg =
-		    G.inDeg; // G.inDeg might be empty (if G is undirected), but that's fine
+		// G.inDeg might be empty (if G is undirected), but that's fine
+		inDeg = G.inDeg;
 		outDeg = G.outDeg;
-		inEdges = G.inEdges; // G.inEdges might be empty (if G is undirected), but
-		                     // that's fine
+		// G.inEdges might be empty (if G is undirected), but
+		// that's fine
+		inEdges = G.inEdges;
 		outEdges = G.outEdges;
 
 		// copy weights if needed
@@ -861,16 +862,18 @@ std::vector<std::pair<node, node>> Graph::randomEdges(count nr) const {
 		node u, v; // we will pick edge (u, v)
 		if (directed) {
 			u = distribution(gen);
-			assert(outEdges[u].size() > 0); // should always be the case as  without
-			                                // edges should have probability 0
+			// should always be the case as  without
+			// edges should have probability 0
+			assert(outEdges[u].size() > 0);
 			v = randomNeighbor(u);
 		} else {
 			// self-loops which appear only once in the outEdge arrays
 			// easiest way it to ignore edges (u, v) with u > v
 			do {
 				u = distribution(gen);
-				assert(outEdges[u].size() > 0); // should always be the case as  without
-				                                // edges should have probability 0
+				// should always be the case as  without
+				// edges should have probability 0
+				assert(outEdges[u].size() > 0);
 				v = randomNeighbor(u);
 			} while (u > v);
 		}

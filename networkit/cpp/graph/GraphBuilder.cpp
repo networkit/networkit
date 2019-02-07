@@ -5,25 +5,17 @@
  *      Author: Marvin Ritter (marvin.ritter@gmail.com)
  */
 
-#include <stdexcept>
 #include <omp.h>
+#include <stdexcept>
 
 #include "GraphBuilder.h"
 
 namespace NetworKit {
 
-GraphBuilder::GraphBuilder(count n, bool weighted, bool directed) :
-	n(n),
-	selfloops(0),
-	name(""),
-	weighted(weighted),
-	directed(directed),
-	outEdges(n),
-	outEdgeWeights(weighted ? n : 0),
-	inEdges(directed ? n : 0),
-	inEdgeWeights((directed && weighted) ? n : 0) {
-
-}
+GraphBuilder::GraphBuilder(count n, bool weighted, bool directed)
+    : n(n), selfloops(0), name(""), weighted(weighted), directed(directed),
+      outEdges(n), outEdgeWeights(weighted ? n : 0), inEdges(directed ? n : 0),
+      inEdgeWeights((directed && weighted) ? n : 0) {}
 
 void GraphBuilder::reset(count n) {
 	this->n = n;
@@ -31,8 +23,9 @@ void GraphBuilder::reset(count n) {
 	name = "";
 	outEdges.assign(n, std::vector<node>{});
 	outEdgeWeights.assign(isWeighted() ? n : 0, std::vector<edgeweight>{}),
-	inEdges.assign(isDirected() ? n : 0, std::vector<node>{}),
-	inEdgeWeights.assign((isDirected() && isWeighted()) ? n : 0, std::vector<edgeweight>{});
+	    inEdges.assign(isDirected() ? n : 0, std::vector<node>{}),
+	    inEdgeWeights.assign((isDirected() && isWeighted()) ? n : 0,
+	                         std::vector<edgeweight>{});
 }
 
 index GraphBuilder::indexInOutEdgeArray(node u, node v) const {
@@ -77,7 +70,7 @@ void GraphBuilder::addHalfOutEdge(node u, node v, edgeweight ew) {
 		outEdgeWeights[u].push_back(ew);
 	}
 	if (u == v) {
-		#pragma omp atomic
+#pragma omp atomic
 		selfloops++;
 	}
 }
@@ -89,20 +82,23 @@ void GraphBuilder::addHalfInEdge(node u, node v, edgeweight ew) {
 		inEdgeWeights[u].push_back(ew);
 	}
 	if (u == v) {
-		#pragma omp atomic
+#pragma omp atomic
 		selfloops++;
 	}
 }
 
-void GraphBuilder::swapNeighborhood(node u, std::vector<node> &neighbours, std::vector<edgeweight> &weights, bool selfloop) {
-	if (weighted) assert(neighbours.size() == weights.size());
+void GraphBuilder::swapNeighborhood(node u, std::vector<node> &neighbours,
+                                    std::vector<edgeweight> &weights,
+                                    bool selfloop) {
+	if (weighted)
+		assert(neighbours.size() == weights.size());
 	outEdges[u].swap(neighbours);
 	if (weighted) {
 		outEdgeWeights[u].swap(weights);
 	}
 
 	if (selfloop) {
-	#pragma omp atomic
+#pragma omp atomic
 		selfloops++;
 	}
 }
@@ -157,7 +153,7 @@ Graph GraphBuilder::toGraph(bool autoCompleteEdges, bool parallel) {
 	assert(G.outEdges.size() == n);
 	assert(G.outEdgeWeights.size() == (weighted ? n : 0));
 	assert(G.inEdges.size() == (directed ? n : 0));
-	assert(G.inEdgeWeights.size() == ( (weighted && directed) ? n : 0));
+	assert(G.inEdgeWeights.size() == ((weighted && directed) ? n : 0));
 
 	// copy edges and weights
 	if (autoCompleteEdges) {
@@ -173,11 +169,11 @@ Graph GraphBuilder::toGraph(bool autoCompleteEdges, bool parallel) {
 	assert(G.outEdges.size() == n);
 	assert(G.outEdgeWeights.size() == (weighted ? n : 0));
 	assert(G.inEdges.size() == (directed ? n : 0));
-	assert(G.inEdgeWeights.size() == ( (weighted && directed) ? n : 0));
+	assert(G.inEdgeWeights.size() == ((weighted && directed) ? n : 0));
 
 	setDegrees(G);
 	G.m = numberOfEdges(G);
-	//G.storedNumberOfSelfLoops = selfloops;
+	// G.storedNumberOfSelfLoops = selfloops;
 
 	G.shrinkToFit();
 
@@ -186,7 +182,7 @@ Graph GraphBuilder::toGraph(bool autoCompleteEdges, bool parallel) {
 	return G;
 }
 
-void GraphBuilder::toGraphDirectSwap(Graph& G) {
+void GraphBuilder::toGraphDirectSwap(Graph &G) {
 	G.outEdges = std::move(outEdges);
 	G.outEdgeWeights = std::move(outEdgeWeights);
 	G.inEdges = std::move(inEdges);
@@ -196,22 +192,24 @@ void GraphBuilder::toGraphDirectSwap(Graph& G) {
 	} else if (selfloops % 2 == 0) {
 		G.storedNumberOfSelfLoops = selfloops / 2;
 	} else {
-		throw std::runtime_error("Error, odd number of self loops added but each self loop must be added twice!");
+		throw std::runtime_error("Error, odd number of self loops added but each "
+		                         "self loop must be added twice!");
 	}
 }
 
-void GraphBuilder::toGraphParallel(Graph& G) {
+void GraphBuilder::toGraphParallel(Graph &G) {
 	// basic idea of the parallelization:
 	// 1) each threads collects its own data
 	// 2) each node collects all its data from all threads
 
 	int maxThreads = omp_get_max_threads();
 
-	using Adjacencylists = std::vector< std::vector<node> >;
-	using Weightlists = std::vector< std::vector<edgeweight> >;
+	using Adjacencylists = std::vector<std::vector<node>>;
+	using Weightlists = std::vector<std::vector<edgeweight>>;
 
 	std::vector<Adjacencylists> inEdgesPerThread(maxThreads, Adjacencylists(n));
-	std::vector<Weightlists> inWeightsPerThread(weighted ? maxThreads : 0, Weightlists(n));
+	std::vector<Weightlists> inWeightsPerThread(weighted ? maxThreads : 0,
+	                                            Weightlists(n));
 	std::vector<count> numberOfSelfLoopsPerThread(maxThreads, 0);
 
 	// step 1
@@ -219,7 +217,8 @@ void GraphBuilder::toGraphParallel(Graph& G) {
 		int tid = omp_get_thread_num();
 		for (index i = 0; i < outEdges[v].size(); i++) {
 			node u = outEdges[v][i];
-			if (directed || u != v) { // self loops don't need to be added twice in undirected graphs
+			if (directed || u != v) { // self loops don't need to be added twice in
+				                        // undirected graphs
 				inEdgesPerThread[tid][u].push_back(v);
 				if (weighted) {
 					edgeweight ew = outEdgeWeights[v][i];
@@ -289,7 +288,7 @@ void GraphBuilder::toGraphParallel(Graph& G) {
 		}
 	});
 	count numSelfLoops = 0;
-	#pragma omp parallel for reduction(+:numSelfLoops)
+#pragma omp parallel for reduction(+ : numSelfLoops)
 	for (omp_index i = 0; i < static_cast<omp_index>(maxThreads); ++i)
 		numSelfLoops += numberOfSelfLoopsPerThread[i];
 	G.storedNumberOfSelfLoops = numSelfLoops;
@@ -302,9 +301,7 @@ void GraphBuilder::toGraphSequential(Graph &G) {
 	// 'first' half of the edges
 	G.outEdges.swap(outEdges);
 	G.outEdgeWeights.swap(outEdgeWeights);
-	parallelForNodes([&](node v) {
-		G.outDeg[v] = G.outEdges[v].size();
-	});
+	parallelForNodes([&](node v) { G.outDeg[v] = G.outEdges[v].size(); });
 
 	// count missing edges for each node
 	G.forNodes([&](node v) {
@@ -377,15 +374,13 @@ void GraphBuilder::toGraphSequential(Graph &G) {
 		});
 
 		// correct degree
-		G.forNodes([&](node v) {
-			G.outDeg[v] += missingEdgesCounts[v];
-		});
+		G.forNodes([&](node v) { G.outDeg[v] += missingEdgesCounts[v]; });
 	}
 	G.storedNumberOfSelfLoops = numberOfSelfLoops;
 }
 
-void GraphBuilder::setDegrees(Graph& G) {
-	#pragma omp parallel for if(n > (1<<20))
+void GraphBuilder::setDegrees(Graph &G) {
+#pragma omp parallel for if (n > (1 << 20))
 	for (omp_index v = 0; v < static_cast<omp_index>(n); v++) {
 		G.outDeg[v] = G.outEdges[v].size();
 		if (G.isDirected()) {
@@ -394,9 +389,9 @@ void GraphBuilder::setDegrees(Graph& G) {
 	}
 }
 
-count GraphBuilder::numberOfEdges(const Graph& G) {
+count GraphBuilder::numberOfEdges(const Graph &G) {
 	count m = 0;
-	#pragma omp parallel for reduction(+:m) if(n > (1<<20))
+#pragma omp parallel for reduction(+ : m) if (n > (1 << 20))
 	for (omp_index v = 0; v < static_cast<omp_index>(G.z); v++) {
 		m += G.degree(v);
 	}
