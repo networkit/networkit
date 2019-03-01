@@ -73,7 +73,7 @@ Run the script `setup.py` with the following options:
 	python3 setup.py build_ext [-jX]
 
 The script will call `cmake` and `ninja` (`make` as fallback) to compile NetworKit as a library, build the extensions and copy it to the top folder. By default, NetworKit will be built with the amount of available cores in optimized mode. It is possible the add the option `-jN` the number of threads used for compilation.
-The setup script provides more functionality and can be used with pip aswell:
+The setup script provides more functionality and can be used with pip as well:
 
 	pip3 install -e .
 
@@ -88,7 +88,7 @@ To check that everything works as expected, open a python terminal and run the e
     >>> G.addEdge(0,1)
     >>> G.toString()
 
-Additionally, we recommend that you familiarize yourself with NetworKit through experimenting with the interactive IPython Notebook `NetworKit_UserGuide.ipynb` located in the folder `Doc/Notebooks`. The user guide also introduces a large portion of NetworKits functionality with usage examples. To display and work with these notebooks, you have to install jupyterhub and start a local notebook server from the terminal with:
+Additionally, we recommend that you familiarize yourself with NetworKit through experimenting with the interactive IPython Notebook `NetworKit_UserGuide.ipynb` located in the folder `Doc/Notebooks`. The user guide also introduces a large portion of NetworKit functionality with usage examples. To display and work with these notebooks, you have to install jupyterhub and start a local notebook server from the terminal with:
 
 	jupyterhub --no-ssl
 
@@ -152,7 +152,7 @@ Then call [CMake] to generate files for the `make` build system, specifying the 
 
 To speed up the compilation with make a multicore machine, you can append `-jX` where X denotes the number of threads to compile with.
 
-[CMake] offers a variety of options to customise the build to your needs (read [CMake] documentation for more options).
+[CMake] offers a variety of options to customize the build to your needs (read [CMake] documentation for more options).
 
 **NOTE FOR OSX**: [CMake] aims at automatically finding a suitable C++ Compiler for building networkit.
 However, the default compiler on MacOS is a Apple LLVM clang like compiler which has no built-in OpenMP support and is linked against all common compiler calls. In order to compile networkit properly, you have to to specify your desired compiler and the version (we recommend a GNU-based compiler) such as:
@@ -171,7 +171,21 @@ By default, [CMake] creates a symlink to the source tree inside your build direc
 
 ### Unit tests
 
-You actually don't need to build and run our unit tests. However if you experience any issues with NetworKit, you might want to check, if NetworKit runs properly. The unit tests can only be run from a clone or copy of the repository and not from a pip installation. Please refer to the `Unit Tests and Testing` section in our `DevGuide`.
+You actually don't need to build and run our unit tests.
+However if you experience any issues with NetworKit, you might want to check, if NetworKit runs properly.
+The unit tests can only be run from a clone or copy of the repository and not from a pip installation.
+In order to run the unit tests, you need to compile them first.
+This is done by setting the [CMake] `NETWORKI_BUILD_TESTS` flag to `ON`:
+
+	cmake -DNETWORKIT_BUILD_TESTS=ON ..
+
+Unit tests are implemented using GTest macros such as `TEST_F(CentralityGTest, testBetweennessCentrality`).
+Single tests can be executed with:
+
+	./networkit_tests --gtest_filter=CentralityGTest.testBetweennessCentrality
+
+Additionally, one can specify the level of the logs outputs by adding `--loglevel=<log_level>`;
+supported log levels are: `TRACE`, `DEBUG`, `INFO`, `WARN`, `ERROR`, and `FATAL`.
 
 ## Known Issues
 - Mac OS X 10.10 "Yosemite": Some users have reported compilation problems on Yosemite with g++ 4.9. The compiler errors mention register problems.
