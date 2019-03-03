@@ -179,7 +179,7 @@ This is done by setting the [CMake] `NETWORKI_BUILD_TESTS` flag to `ON`:
 
 	cmake -DNETWORKIT_BUILD_TESTS=ON ..
 
-Unit tests are implemented using GTest macros such as `TEST_F(CentralityGTest, testBetweennessCentrality`).
+Unit tests are implemented using GTest macros such as `TEST_F(CentralityGTest, testBetweennessCentrality)`.
 Single tests can be executed with:
 
 	./networkit_tests --gtest_filter=CentralityGTest.testBetweennessCentrality
