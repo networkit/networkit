@@ -17,13 +17,6 @@ namespace NetworKit {
   class KONECTGraphReader : public GraphReader{
 
 	public:
-		[[deprecated("New Constructor - Use standardized seperator and Graph.removeSelfLoops instead")]]
-		KONECTGraphReader(char separator, bool ignoreLoops=false) : KONECTGraphReader(false, DISCARD_EDGES){
-			if(separator != ' ' && separator != '\t')
-				throw std::runtime_error("Separator is not supported anymore. Use space or tab as standardized for KONECT formats");
-			if (ignoreLoops)
-				ERROR("IgnoreLoops not supported anymore - use Graph.removeSelfLoops after reading.");
-		};
 
 		/*
 		* If the input graph has multiple edges, you can specify on how these edges are handled.

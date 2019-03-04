@@ -1,1 +1,1 @@
-from _NetworKit import MaxClique, MaximalCliques
+from _NetworKit import MaximalCliques

@@ -17,7 +17,6 @@
 #include "../distance/Dijkstra.h"
 #include "../distance/AlgebraicDistance.h"
 
-#include "FruchtermanReingold.h"
 #include "../io/LineFileReader.h"
 #include "../auxiliary/StringTools.h"
 

@@ -1,5 +1,4 @@
 networkit_add_module(clique
-    MaxClique.cpp
     MaximalCliques.cpp
     )
 

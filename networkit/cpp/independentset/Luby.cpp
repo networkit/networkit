@@ -11,7 +11,7 @@
 #include "../auxiliary/Log.h"
 
 namespace NetworKit {
-	
+
 std::vector<bool> Luby::run(const Graph& G) {
 
 	std::vector<bool> I(G.numberOfNodes(), false); // independent set $I = \emptyset$
