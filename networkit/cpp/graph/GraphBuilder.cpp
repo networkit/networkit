@@ -171,10 +171,7 @@ Graph GraphBuilder::toGraph(bool autoCompleteEdges, bool parallel) {
 	assert(G.inEdges.size() == (directed ? n : 0));
 	assert(G.inEdgeWeights.size() == ((weighted && directed) ? n : 0));
 
-	setDegrees(G);
 	G.m = numberOfEdges(G);
-	// G.storedNumberOfSelfLoops = selfloops;
-
 	G.shrinkToFit();
 
 	reset();
@@ -260,26 +257,19 @@ void GraphBuilder::toGraphParallel(Graph &G) {
 
 		// collect 'second' half of the edges
 		if (directed) {
-			G.inDeg[v] = inDeg;
-			G.outDeg[v] = outDeg;
 			for (int tid = 0; tid < maxThreads; tid++) {
 				copyAndClear(inEdgesPerThread[tid][v], G.inEdges[v]);
 			}
-			assert(G.inDeg[v] == G.inEdges[v].size());
 			if (weighted) {
 				for (int tid = 0; tid < maxThreads; tid++) {
 					copyAndClear(inWeightsPerThread[tid][v], G.inEdgeWeights[v]);
 				}
-				assert(G.inDeg[v] == G.inEdgeWeights[v].size());
 			}
 
 		} else {
-			G.outDeg[v] = inDeg + outDeg;
-			assert(G.outDeg[v] <= n);
 			for (int tid = 0; tid < maxThreads; tid++) {
 				copyAndClear(inEdgesPerThread[tid][v], G.outEdges[v]);
 			}
-			assert(G.outDeg[v] == G.outEdges[v].size());
 			if (weighted) {
 				for (int tid = 0; tid < maxThreads; tid++) {
 					copyAndClear(inWeightsPerThread[tid][v], G.outEdgeWeights[v]);
@@ -301,19 +291,20 @@ void GraphBuilder::toGraphSequential(Graph &G) {
 	// 'first' half of the edges
 	G.outEdges.swap(outEdges);
 	G.outEdgeWeights.swap(outEdgeWeights);
-	parallelForNodes([&](node v) { G.outDeg[v] = G.outEdges[v].size(); });
+	std::vector<count> outDeg(G.z);
+	parallelForNodes([&](node v) { outDeg[v] = G.outEdges[v].size(); });
 
 	// count missing edges for each node
 	G.forNodes([&](node v) {
 		// increase count of incoming edges for all neighbors
 		for (node u : G.outEdges[v]) {
 			if (directed || u != v) {
-				missingEdgesCounts[u]++;
+				++missingEdgesCounts[u];
 			}
 			if (u == v) {
 				// self loops don't need to be added again
 				// but we need to count them
-				numberOfSelfLoops++;
+				++numberOfSelfLoops;
 			}
 		}
 	});
@@ -322,19 +313,19 @@ void GraphBuilder::toGraphSequential(Graph &G) {
 	if (directed) {
 		// directed: outEdges is complete, missing half edges are the inEdges
 		// missingEdgesCounts are our inDegrees
-		G.inDeg = missingEdgesCounts;
+		std::vector<count> inDeg = missingEdgesCounts;
 
 		// reserve the exact amount of space needed
 		G.forNodes([&](node v) {
-			G.inEdges[v].reserve(G.inDeg[v]);
+			G.inEdges[v].reserve(inDeg[v]);
 			if (weighted) {
-				G.inEdgeWeights[v].reserve(G.inDeg[v]);
+				G.inEdgeWeights[v].reserve(inDeg[v]);
 			}
 		});
 
 		// copy values
 		G.forNodes([&](node v) {
-			for (index i = 0; i < G.outDeg[v]; i++) {
+			for (index i = 0; i < outDeg[v]; i++) {
 				node u = G.outEdges[v][i];
 				G.inEdges[u].push_back(v);
 				if (weighted) {
@@ -349,17 +340,17 @@ void GraphBuilder::toGraphSequential(Graph &G) {
 
 		// reserve the exact amount of space needed
 		G.forNodes([&](node v) {
-			G.outEdges[v].reserve(G.outDeg[v] + missingEdgesCounts[v]);
+			G.outEdges[v].reserve(outDeg[v] + missingEdgesCounts[v]);
 			if (weighted) {
-				G.outEdgeWeights[v].reserve(G.outDeg[v] + missingEdgesCounts[v]);
+				G.outEdgeWeights[v].reserve(outDeg[v] + missingEdgesCounts[v]);
 			}
 		});
 
-		// cope value
+		// copy values
 		G.forNodes([&](node v) {
-			// the first G.outDeg[v] edges in G.outEdges[v] are the first half edges
-			// we are adding after G.outDeg[v]
-			for (index i = 0; i < G.outDeg[v]; i++) {
+			// the first outDeg[v] edges in G.outEdges[v] are the first half edges
+			// we are adding after outDeg[v]
+			for (index i = 0; i < outDeg[v]; i++) {
 				node u = G.outEdges[v][i];
 				if (u != v) {
 					G.outEdges[u].push_back(v);
@@ -372,21 +363,9 @@ void GraphBuilder::toGraphSequential(Graph &G) {
 				}
 			}
 		});
-
-		// correct degree
-		G.forNodes([&](node v) { G.outDeg[v] += missingEdgesCounts[v]; });
 	}
+
 	G.storedNumberOfSelfLoops = numberOfSelfLoops;
-}
-
-void GraphBuilder::setDegrees(Graph &G) {
-#pragma omp parallel for if (n > (1 << 20))
-	for (omp_index v = 0; v < static_cast<omp_index>(n); v++) {
-		G.outDeg[v] = G.outEdges[v].size();
-		if (G.isDirected()) {
-			G.inDeg[v] = G.inEdges[v].size();
-		}
-	}
 }
 
 count GraphBuilder::numberOfEdges(const Graph &G) {

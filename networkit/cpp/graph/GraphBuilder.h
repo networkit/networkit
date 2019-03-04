@@ -214,7 +214,6 @@ private:
 	template <typename T>
 	static void copyAndClear(std::vector<T> &source, std::vector<T> &target);
 
-	void setDegrees(Graph &G);
 	count numberOfEdges(const Graph &G);
 };
 

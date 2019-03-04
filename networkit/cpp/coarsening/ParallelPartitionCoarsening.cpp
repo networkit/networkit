@@ -68,7 +68,6 @@ void ParallelPartitionCoarsening::run() {
 				} else {
 					numEdges[t] += 1; // normal edges count half
 				}
-				Gcombined.outDeg[u]++;
 				Gcombined.outEdges[u].push_back(v);
 				Gcombined.outEdgeWeights[u].push_back(ew);
 			} else {

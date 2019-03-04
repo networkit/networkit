@@ -110,12 +110,6 @@ private:
 	                                //!< removed from the graph
 	Coordinates<float> coordinates; //!< coordinates of nodes (if present)
 
-	std::vector<count> inDeg; //!< only used for directed graphs, number of edges
-	                          //!< incoming per node
-	std::vector<count>
-	    outDeg; //!< degree of every node, zero if node was removed. For directed
-	            //!< graphs only outgoing edges count
-
 	std::vector<std::vector<node>>
 	    inEdges; //!< only used for directed graphs, inEdges[v] contains all nodes
 	             //!< u that have an edge (u, v)
@@ -635,7 +629,9 @@ public:
 	 * @param v Node.
 	 * @return The number of outgoing neighbors.
 	 */
-	count degree(node v) const { return outDeg[v]; }
+	count degree(node v) const {
+		return outEdges[v].size();
+	}
 
 	/**
 	 * Get the number of incoming neighbors of @a v.
@@ -644,7 +640,10 @@ public:
 	 * @return The number of incoming neighbors.
 	 * @note If the graph is not directed, the outgoing degree is returned.
 	 */
-	count degreeIn(node v) const { return directed ? inDeg[v] : outDeg[v]; }
+	count degreeIn(node v) const {
+		return directed ? inEdges[v].size()
+		                : outEdges[v].size();
+	}
 
 	/**
 	 * Get the number of outgoing neighbors of @a v.
@@ -652,7 +651,9 @@ public:
 	 * @param v Node.
 	 * @return The number of outgoing neighbors.
 	 */
-	count degreeOut(node v) const { return outDeg[v]; }
+	count degreeOut(node v) const {
+		return outEdges[v].size();
+	}
 
 	/**
 	 * Returns the maximum out-degree of the graph.
@@ -674,7 +675,9 @@ public:
 	 * @return @c true if the node is isolated (= degree is 0)
 	 */
 	bool isIsolated(node v) const {
-		return outDeg[v] == 0 && (!directed || inDeg[v] == 0);
+		if (!exists[v])
+			throw std::runtime_error("Error, the node does not exist!");
+		return outEdges[v].empty() && (!directed || inEdges[v].empty());
 	}
 
 	/**
@@ -1328,6 +1331,8 @@ template <typename L> void Graph::parallelForNodePairs(L handle) const {
 
 /* HELPERS */
 
+template <typename T>
+void erase(node u, index idx, std::vector<std::vector<T>> &vec);
 template <bool hasWeights> // implementation for weighted == true
 inline edgeweight Graph::getOutEdgeWeight(node u, index i) const {
 	return outEdgeWeights[u][i];
