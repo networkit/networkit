@@ -497,7 +497,7 @@ edgeweight Graph::computeWeightedDegree(const node &v,
 		}
 		return sum;
 	}
-	return defaultEdgeWeight * inDegree ? degreeIn(v) : degreeOut(v);
+	return defaultEdgeWeight * (inDegree ? degreeIn(v) : degreeOut(v));
 }
 
 std::string Graph::toString() const {

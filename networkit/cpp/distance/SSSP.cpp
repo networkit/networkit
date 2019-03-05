@@ -127,8 +127,4 @@ namespace NetworKit {
 		return nodesSortedByDistance;
 	}
 
-	std::vector<node> SSSP::getStack(bool moveOut) {
-		return getNodesSortedByDistance(moveOut);
-	}
-
 } /* namespace NetworKit */

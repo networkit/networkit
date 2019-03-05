@@ -14,10 +14,10 @@ namespace NetworKit {
 
 /**
  * @ingroup independentset
- * DEPRECATED: put into code archive, nobody seems to be using it
+ *
  * Abstract base class for independent set algorithms.
  */
-class [[deprecated]]
+class
 IndependentSetFinder {
 
 

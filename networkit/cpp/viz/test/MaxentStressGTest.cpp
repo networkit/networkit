@@ -24,7 +24,6 @@
 #include "../../numerics/Preconditioner/DiagonalPreconditioner.h"
 
 #include "../../community/PLM.h"
-#include "../../clique/MaxClique.h"
 
 #include "../../sparsification/LocalDegreeScore.h"
 #include "../../sparsification/RandomEdgeScore.h"

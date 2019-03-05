@@ -324,10 +324,6 @@ class Test_SelfLoops(unittest.TestCase):
 		EKLL.run()
 
 
-	def test_clique_MaxClique(self):
-		clique.MaxClique(self.LL).run()
-
-
 	def test_globals_ClusteringCoefficient(self):
 		CL = globals.ClusteringCoefficient()
 		CL.exactGlobal(self.L)

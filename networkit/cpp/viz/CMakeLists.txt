@@ -1,8 +1,5 @@
 networkit_add_module(viz
-    FruchtermanReingold.cpp
-    Layouter.cpp
     MaxentStress.cpp
-    MultilevelLayouter.cpp
     PivotMDS.cpp
     PostscriptWriter.cpp
     )

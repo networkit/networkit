@@ -10,9 +10,7 @@
 #include <vector>
 
 #include "../PostscriptWriter.h"
-#include "../FruchtermanReingold.h"
 #include "../MaxentStress.h"
-#include "../MultilevelLayouter.h"
 #include "../../graph/Graph.h"
 #include "../../community/ClusteringGenerator.h"
 #include "../../generators/ClusteredRandomGraphGenerator.h"
@@ -108,41 +106,8 @@ TEST_F(VizGTest, testFRLayouter) {
 	Point<float> bl(0.0, 0.0);
 	Point<float> tr(1.0, 1.0);
 
-	FruchtermanReingold fdLayouter(bl, tr);
-	fdLayouter.draw(G);
 	PostscriptWriter psWriter(true);
 	psWriter.write(G, "output/testForceGraph.eps");
-
-	// test edge distances
-	float dist = edgeDistanceSum(G);
-	float avg = dist / (float) G.numberOfEdges();
-	DEBUG("avg edge length: ", avg);
-	EXPECT_LE(avg, 0.25);
-}
-
-TEST_F(VizGTest, debugMultilevelLayouter) {
-	// create graph
-	count n = 300;
-	count numClusters = 4;
-	double pin = 0.1;
-	double pout = 0.005;
-
-	ClusteredRandomGraphGenerator graphGen(n, numClusters, pin, pout);
-	Graph G = graphGen.generate();
-	G.initCoordinates();
-	INFO("Number of edges: ", G.numberOfEdges());
-
-	METISGraphWriter gWriter;
-	gWriter.write(G, "output/testMultilevelGraph.graph");
-
-	// draw (independent of clustering) and write again
-	Point<float> bl(0.0, 0.0);
-	Point<float> tr(1.0, 1.0);
-
-	MultilevelLayouter mlLayouter(bl, tr);
-	mlLayouter.draw(G);
-	PostscriptWriter psWriter4(true);
-	psWriter4.write(G, "output/testMultilevelGraph.eps");
 
 	// test edge distances
 	float dist = edgeDistanceSum(G);
@@ -160,8 +125,6 @@ TEST_F(VizGTest, debugGraphDrawing) {
 	Point<float> bl(0.0, 0.0);
 	Point<float> tr(1.0, 1.0);
 
-	FruchtermanReingold fdLayouter(bl, tr);
-	fdLayouter.draw(G);
 	PostscriptWriter psWriter2(true);
 	psWriter2.write(G, "output/testLesmisFR.eps");
 
@@ -171,8 +134,6 @@ TEST_F(VizGTest, debugGraphDrawing) {
 	INFO("avg edge length: ", avg);
 	EXPECT_LE(avg, 0.25);
 
-	MultilevelLayouter mlLayouter(bl, tr);
-	mlLayouter.draw(G);
 	PostscriptWriter psWriter4(true);
 	psWriter4.write(G, "output/testLesmisMl.eps");
 

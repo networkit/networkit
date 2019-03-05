@@ -1307,7 +1307,6 @@ cdef extern from "cpp/distance/SSSP.h":
 		vector[node] getPredecessors(node t) except +
 		vector[node] getPath(node t, bool_t forward) except +
 		set[vector[node]] getPaths(node t, bool_t forward) except +
-		vector[node] getStack(bool_t moveOut) except +
 		vector[node] getNodesSortedByDistance(bool_t moveOut) except +
 		double _numberOfPaths(node t) except +
 
@@ -1359,28 +1358,6 @@ cdef class SSSP(Algorithm):
 		for elem in paths:
 			result.append(list(elem))
 		return result
-
-	def getStack(self, moveOut=True):
-		""" DEPRECATED: Use getNodesSortedByDistance instead.
-
-		Returns a vector of nodes ordered in increasing distance from the source.
-
-		For this functionality to be available, storeNodesSortedByDistance has to be set to true in the constructor.
-		There are no guarantees regarding the ordering of two nodes with the same distance to the source.
-
-		Parameters
-		----------
-		moveOut : bool
-			If set to true, the container will be moved out of the class instead of copying it; default=true.
-
-		Returns
-		-------
-		vector
-			Nodes ordered in increasing distance from the source.
-		"""
-		from warnings import warn
-		warn("getStack is deprecated; use getNodesSortedByDistance instead.", DeprecationWarning)
-		return (<_SSSP*>(self._this)).getStack(moveOut)
 
 	def getNodesSortedByDistance(self, moveOut=True):
 		""" Returns a vector of nodes ordered in increasing distance from the source.
@@ -1946,7 +1923,6 @@ cdef class RandomMaximumSpanningForest(Algorithm):
 		else:
 			return (<_RandomMaximumSpanningForest*>(self._this)).inMSF(u, v)
 
-
 cdef extern from "cpp/independentset/Luby.h":
 	cdef cppclass _Luby "NetworKit::Luby":
 		_Luby() except +
@@ -1961,12 +1937,10 @@ cdef class Luby:
 
 	def run(self, Graph G not None):
 		""" Returns a bool vector of length n where vec[v] is True iff v is in the independent sets.
-
 		Parameters
 		----------
 		G : networkit.Graph
 			The graph.
-
 		Returns
 		-------
 		vector
@@ -1977,7 +1951,6 @@ cdef class Luby:
 
 	def toString(self):
 		""" Get string representation of the algorithm.
-
 		Returns
 		-------
 		string
@@ -1985,10 +1958,7 @@ cdef class Luby:
 		"""
 		return self._this.toString().decode("utf-8")
 
-
 # Module: generators
-
-
 
 cdef extern from "cpp/generators/BarabasiAlbertGenerator.h":
 	cdef cppclass _BarabasiAlbertGenerator "NetworKit::BarabasiAlbertGenerator"(_StaticGraphGenerator):
@@ -8469,53 +8439,9 @@ cdef class GCE:
 		seeds : the seed node ids.
 		"""
 		return self._this.run(seeds)
+
+
 # Module: clique
-
-cdef extern from "cpp/clique/MaxClique.h":
-	cdef cppclass _MaxClique "NetworKit::MaxClique":
-		_MaxClique(_Graph G, count lb) except +
-		void run() nogil except +
-		count getMaxCliqueSize() except +
-
-cdef class MaxClique:
-	"""
-	DEPRECATED: Use clique.MaximumCliques instead.
-
-	Exact algorithm for computing the size of the largest clique in a graph.
-	Worst-case running time is exponential, but in practice the algorithm is fairly fast.
-	Reference: Pattabiraman et al., http://arxiv.org/pdf/1411.7460.pdf
-
-	Parameters:
-	-----------
-	G : networkit.Graph in which the cut is to be produced, must be unweighted.
-	lb : the lower bound of the size of the maximum clique.
-	"""
-	cdef _MaxClique* _this
-	cdef Graph _G
-
-	def __cinit__(self, Graph G not None, lb=0):
-		self._G = G
-		self._this = new _MaxClique(G._this, lb)
-
-
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		"""
-		Actual maximum clique algorithm. Determines largest clique each vertex
-	 	is contained in and returns size of largest. Pruning steps keep running time
-	 	acceptable in practice.
-	 	"""
-		cdef count size
-		with nogil:
-			self._this.run()
-
-	def getMaxCliqueSize(self):
-		"""
-		Returns the size of the biggest clique
-		"""
-		return self._this.getMaxCliqueSize()
 
 cdef cppclass NodeVectorCallbackWrapper:
 	void* callback
