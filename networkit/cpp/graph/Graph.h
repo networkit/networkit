@@ -110,12 +110,6 @@ private:
 	                                //!< removed from the graph
 	Coordinates<float> coordinates; //!< coordinates of nodes (if present)
 
-	std::vector<count> inDeg; //!< only used for directed graphs, number of edges
-	                          //!< incoming per node
-	std::vector<count>
-	    outDeg; //!< degree of every node, zero if node was removed. For directed
-	            //!< graphs only outgoing edges count
-
 	std::vector<std::vector<node>>
 	    inEdges; //!< only used for directed graphs, inEdges[v] contains all nodes
 	             //!< u that have an edge (u, v)
@@ -635,7 +629,9 @@ public:
 	 * @param v Node.
 	 * @return The number of outgoing neighbors.
 	 */
-	count degree(node v) const { return outDeg[v]; }
+	count degree(node v) const {
+		return outEdges[v].size();
+	}
 
 	/**
 	 * Get the number of incoming neighbors of @a v.
@@ -644,7 +640,10 @@ public:
 	 * @return The number of incoming neighbors.
 	 * @note If the graph is not directed, the outgoing degree is returned.
 	 */
-	count degreeIn(node v) const { return directed ? inDeg[v] : outDeg[v]; }
+	count degreeIn(node v) const {
+		return directed ? inEdges[v].size()
+		                : outEdges[v].size();
+	}
 
 	/**
 	 * Get the number of outgoing neighbors of @a v.
@@ -652,7 +651,9 @@ public:
 	 * @param v Node.
 	 * @return The number of outgoing neighbors.
 	 */
-	count degreeOut(node v) const { return outDeg[v]; }
+	count degreeOut(node v) const {
+		return outEdges[v].size();
+	}
 
 	/**
 	 * Returns the maximum out-degree of the graph.
@@ -674,7 +675,9 @@ public:
 	 * @return @c true if the node is isolated (= degree is 0)
 	 */
 	bool isIsolated(node v) const {
-		return outDeg[v] == 0 && (!directed || inDeg[v] == 0);
+		if (!exists[v])
+			throw std::runtime_error("Error, the node does not exist!");
+		return outEdges[v].empty() && (!directed || inEdges[v].empty());
 	}
 
 	/**
@@ -682,8 +685,8 @@ public:
 	 *
 	 * @param v Node.
 	 * @return Weighted degree of @a v.
-	 * @note For directed graphs this is the sum of weights of all outgoing edges.
-	 * of @a v.
+	 * @note For directed graphs this is the sum of weights of all outgoing
+	 * edges. of @a v.
 	 */
 	edgeweight weightedDegree(const node &v) const;
 
@@ -691,7 +694,8 @@ public:
 	 * Returns the maximum weighted degree of the graph.
 	 *
 	 * @return Maximum weighted degree of the graph.
-	 * @note For directed graphs this is the sum of weights of all outgoing edges.
+	 * @note For directed graphs this is the sum of weights of all outgoing
+	 * edges.
 	 */
 	edgeweight maxWeightedDegree() const;
 
@@ -699,7 +703,8 @@ public:
 	 * Returns the maximum weighted in degree of the graph.
 	 *
 	 * @return Maximum weighted in degree of the graph.
-	 * @note For directed graphs this is the sum of weights of all in-going edges.
+	 * @note For directed graphs this is the sum of weights of all in-going
+	 * edges.
 	 */
 	edgeweight maxWeightedDegreeIn() const;
 
@@ -708,8 +713,8 @@ public:
 	 *
 	 * @param v Node.
 	 * @return Weighted in-degree of @a v.
-	 * @note For directed graphs this is the sum of weights of all ingoing edges.
-	 * of @a v.
+	 * @note For directed graphs this is the sum of weights of all ingoing
+	 * edges. of @a v.
 	 */
 	edgeweight weightedDegreeIn(const node &v) const;
 
@@ -739,10 +744,10 @@ public:
 	/* EDGE MODIFIERS */
 
 	/**
-	 * Insert an edge between the nodes @a u and @a v. If the graph is weighted
-	 * you can optionally set a weight for this edge. The default weight is 1.0.
-	 * Note: Multi-edges are not supported and will NOT be handled consistently by
-	 * the graph data structure.
+	 * Insert an edge between the nodes @a u and @a v. If the graph is
+	 * weighted you can optionally set a weight for this edge. The default
+	 * weight is 1.0. Note: Multi-edges are not supported and will NOT be
+	 * handled consistently by the graph data structure.
 	 * @param u Endpoint of edge.
 	 * @param v Endpoint of edge.
 	 * @param weight Optional edge weight.
@@ -757,11 +762,11 @@ public:
 	void removeEdge(node u, node v);
 
 	/**
-	 * Efficiently removes all the edges adjacent to a set of nodes that is not
-	 * connected to the rest of the graph. This is meant to optimize the Kadabra
-	 * algorithm.
-	 * @param nodesInSet vector of nodes that form a connected component that is
-	 * isolated from the rest of the graph.
+	 * Efficiently removes all the edges adjacent to a set of nodes that is
+	 * not connected to the rest of the graph. This is meant to optimize the
+	 * Kadabra algorithm.
+	 * @param nodesInSet vector of nodes that form a connected component that
+	 * is isolated from the rest of the graph.
 	 */
 	void removeEdgesFromIsolatedSet(const std::vector<node> &nodesInSet);
 
@@ -776,40 +781,42 @@ public:
 	void removeSelfLoops();
 
 	/**
-	 * Changes the edges {@a s1, @a t1} into {@a s1, @a t2} and the edge {@a s2,
+	 * Changes the edges {@a s1, @a t1} into {@a s1, @a t2} and the edge {@a
+	 * s2,
 	 * @a t2} into {@a s2, @a t1}.
 	 *
 	 * If there are edge weights or edge ids, they are preserved. Note that no
-	 * check is performed if the swap is actually possible, i.e. does not generate
-	 * duplicate edges.
+	 * check is performed if the swap is actually possible, i.e. does not
+	 * generate duplicate edges.
 	 *
 	 * @param s1 The first source
 	 * @param t1 The first target
 	 * @param s2 The second source
 	 * @param t2 The second target
 	 */
-	void swapEdge(node s1, node t1, node s2,
-	              node t2);
+	void swapEdge(node s1, node t1, node s2, node t2);
 
 	/**
 	 * Checks if undirected edge {@a u,@a v} exists in the graph.
 	 * @param u Endpoint of edge.
 	 * @param v Endpoint of edge.
-	 * @return <code>true</code> if the edge exists, <code>false</code> otherwise.
+	 * @return <code>true</code> if the edge exists, <code>false</code>
+	 * otherwise.
 	 */
 	bool hasEdge(node u, node v) const;
 
 	/**
-	 * Returns a random edge. By default a random node u is chosen and then some
-	 * random neighbor v. So the probability of choosing (u, v) highly depends on
-	 * the degree of u. Setting uniformDistribution to true, will give you a real
-	 * uniform distributed edge, but will be very slow. So only use
-	 * uniformDistribution for single calls outside of any loops.
+	 * Returns a random edge. By default a random node u is chosen and then
+	 * some random neighbor v. So the probability of choosing (u, v) highly
+	 * depends on the degree of u. Setting uniformDistribution to true, will
+	 * give you a real uniform distributed edge, but will be very slow. So
+	 * only use uniformDistribution for single calls outside of any loops.
 	 */
 	std::pair<node, node> randomEdge(bool uniformDistribution = false) const;
 
 	/**
-	 * Returns a vector with nr random edges. The edges are chosen uniform random.
+	 * Returns a vector with nr random edges. The edges are chosen uniform
+	 * random.
 	 */
 	std::vector<std::pair<node, node>> randomEdges(count nr) const;
 
@@ -848,8 +855,8 @@ public:
 	count numberOfEdges() const { return m; }
 
 	/**
-	 * @return a pair (n, m) where n is the number of nodes and m is the number of
-	 * edges
+	 * @return a pair (n, m) where n is the number of nodes and m is the
+	 * number of edges
 	 */
 	std::pair<count, count> const size() const { return {n, m}; };
 
@@ -873,7 +880,8 @@ public:
 	/**
 	 * Return the number of loops {v,v} in the graph.
 	 * @return The number of loops.
-	 * @note This involves calculation, so store result if needed multiple times.
+	 * @note This involves calculation, so store result if needed multiple
+	 * times.
 	 */
 	count numberOfSelfLoops() const;
 
@@ -914,8 +922,8 @@ public:
 	 * @param value The coordinate of @a v.
 	 */
 	// TODO: remove method
-	// [[deprecated("Deprecated: Node coordinates should be stored externally like
-	// any other node attribute")]]
+	// [[deprecated("Deprecated: Node coordinates should be stored externally
+	// like any other node attribute")]]
 	void setCoordinate(node v, Point<float> value) {
 		coordinates.setCoordinate(v, value);
 	}
@@ -929,34 +937,36 @@ public:
 	 * @return The coordinate of @a v.
 	 */
 	// TODO: remove method
-	// [[deprecated("Deprecated: Node coordinates should be stored externally like
-	// any other node attribute")]]
+	// [[deprecated("Deprecated: Node coordinates should be stored externally
+	// like any other node attribute")]]
 	Point<float> &getCoordinate(node v) { return coordinates.getCoordinate(v); }
 
 	/**
 	 * DEPRECATED: Coordinates should be handled outside the Graph class
 	 * like general node attributes.
 	 *
-	 * Get minimum coordinate of all coordinates with respect to dimension @a dim.
+	 * Get minimum coordinate of all coordinates with respect to dimension @a
+	 * dim.
 	 * @param dim The dimension to search for minimum.
 	 * @return The minimum coordinate in dimension @a dim.
 	 */
 	// TODO: remove method
-	// [[deprecated("Deprecated: Node coordinates should be stored externally like
-	// any other node attribute")]]
+	// [[deprecated("Deprecated: Node coordinates should be stored externally
+	// like any other node attribute")]]
 	float minCoordinate(count dim) { return coordinates.minCoordinate(dim); }
 
 	/**
 	 * DEPRECATED: Coordinates should be handled outside the Graph class
 	 * like general node attributes.
 	 *
-	 * Get maximum coordinate of all coordinates with respect to dimension @a dim.
+	 * Get maximum coordinate of all coordinates with respect to dimension @a
+	 * dim.
 	 * @param dim The dimension to search for maximum.
 	 * @return The maximum coordinate in dimension @a dim.
 	 */
 	// TODO: remove method
-	// [[deprecated("Deprecated: Node coordinates should be stored externally like
-	// any other node attribute")]]
+	// [[deprecated("Deprecated: Node coordinates should be stored externally
+	// like any other node attribute")]]
 	float maxCoordinate(count dim) { return coordinates.maxCoordinate(dim); }
 
 	/**
@@ -964,19 +974,19 @@ public:
 	 * like general node attributes.
 	 *
 	 * Initializes the coordinates for the nodes in graph.
-	 * @note This has to be called once and before you set coordinates. Call this
-	 * method again if new nodes have been added.
+	 * @note This has to be called once and before you set coordinates. Call
+	 * this method again if new nodes have been added.
 	 */
 	// TODO: remove method
-	// [[deprecated("Deprecated: Node coordinates should be stored externally like
-	// any other node attribute")]]
+	// [[deprecated("Deprecated: Node coordinates should be stored externally
+	// like any other node attribute")]]
 	void initCoordinates() { coordinates.init(z); }
 
 	/* EDGE ATTRIBUTES */
 
 	/**
-	 * Return edge weight of edge {@a u,@a v}. Returns 0 if edge does not exist.
-	 * BEWARE: Running time is \Theta(deg(u))!
+	 * Return edge weight of edge {@a u,@a v}. Returns 0 if edge does not
+	 * exist. BEWARE: Running time is \Theta(deg(u))!
 	 *
 	 * @param u Endpoint of edge.
 	 * @param v Endpoint of edge.
@@ -1077,7 +1087,8 @@ public:
 	/* NODE ITERATORS */
 
 	/**
-	 * Iterate over all nodes of the graph and call @a handle (lambda closure).
+	 * Iterate over all nodes of the graph and call @a handle (lambda
+	 * closure).
 	 *
 	 * @param handle Takes parameter <code>(node)</code>.
 	 */
@@ -1091,9 +1102,9 @@ public:
 	 */
 	template <typename L> void parallelForNodes(L handle) const;
 
-	/** Iterate over all nodes of the graph and call @a handle (lambda closure) as
-	 * long as @a condition remains true. This allows for breaking from a node
-	 * loop.
+	/** Iterate over all nodes of the graph and call @a handle (lambda
+	 * closure) as long as @a condition remains true. This allows for breaking
+	 * from a node loop.
 	 *
 	 * @param condition Returning <code>false</code> breaks the loop.
 	 * @param handle Takes parameter <code>(node)</code>.
@@ -1110,9 +1121,9 @@ public:
 	template <typename L> void forNodesInRandomOrder(L handle) const;
 
 	/**
-	 * Iterate in parallel over all nodes of the graph and call handler (lambda
-	 * closure). Using schedule(guided) to remedy load-imbalances due to e.g.
-	 * unequal degree distribution.
+	 * Iterate in parallel over all nodes of the graph and call handler
+	 * (lambda closure). Using schedule(guided) to remedy load-imbalances due
+	 * to e.g. unequal degree distribution.
 	 *
 	 * @param handle Takes parameter <code>(node)</code>.
 	 */
@@ -1127,8 +1138,8 @@ public:
 	template <typename L> void forNodePairs(L handle) const;
 
 	/**
-	 * Iterate over all undirected pairs of nodes in parallel and call @a handle
-	 * (lambda closure).
+	 * Iterate over all undirected pairs of nodes in parallel and call @a
+	 * handle (lambda closure).
 	 *
 	 * @param handle Takes parameters <code>(node, node)</code>.
 	 */
@@ -1141,25 +1152,26 @@ public:
 	 * closure).
 	 *
 	 * @param handle Takes parameters <code>(node, node)</code>, <code>(node,
-	 * node, edgweight)</code>, <code>(node, node, edgeid)</code> or <code>(node,
-	 * node, edgeweight, edgeid)</code>.
+	 * node, edgweight)</code>, <code>(node, node, edgeid)</code> or
+	 * <code>(node, node, edgeweight, edgeid)</code>.
 	 */
 	template <typename L> void forEdges(L handle) const;
 
 	/**
-	 * Iterate in parallel over all edges of the const graph and call @a handle
-	 * (lambda closure).
+	 * Iterate in parallel over all edges of the const graph and call @a
+	 * handle (lambda closure).
 	 *
-	 * @param handle Takes parameters <code>(node, node)</code> or <code>(node,
-	 * node, edgweight)</code>, <code>(node, node, edgeid)</code> or <code>(node,
-	 * node, edgeweight, edgeid)</code>.
+	 * @param handle Takes parameters <code>(node, node)</code> or
+	 * <code>(node, node, edgweight)</code>, <code>(node, node, edgeid)</code>
+	 * or <code>(node, node, edgeweight, edgeid)</code>.
 	 */
 	template <typename L> void parallelForEdges(L handle) const;
 
 	/* NEIGHBORHOOD ITERATORS */
 
 	/**
-	 * Iterate over all neighbors of a node and call @a handle (lamdba closure).
+	 * Iterate over all neighbors of a node and call @a handle (lamdba
+	 * closure).
 	 *
 	 * @param u Node.
 	 * @param handle Takes parameter <code>(node)</code> or <code>(node,
@@ -1176,11 +1188,11 @@ public:
 	 *
 	 * @param u Node.
 	 * @param handle Takes parameters <code>(node, node)</code>, <code>(node,
-	 * node, edgeweight)</code>, <code>(node, node, edgeid)</code> or <code>(node,
-	 * node, edgeweight, edgeid)</code> where the first node is @a u and the
-	 * second is a neighbor of @a u.
-	 * @note For undirected graphs all edges incident to @a u are also outgoing
-	 * edges.
+	 * node, edgeweight)</code>, <code>(node, node, edgeid)</code> or
+	 * <code>(node, node, edgeweight, edgeid)</code> where the first node is
+	 * @a u and the second is a neighbor of @a u.
+	 * @note For undirected graphs all edges incident to @a u are also
+	 * outgoing edges.
 	 */
 	template <typename L> void forEdgesOf(node u, L handle) const;
 
@@ -1203,14 +1215,14 @@ public:
 	/* REDUCTION ITERATORS */
 
 	/**
-	 * Iterate in parallel over all nodes and sum (reduce +) the values returned
-	 * by the handler
+	 * Iterate in parallel over all nodes and sum (reduce +) the values
+	 * returned by the handler
 	 */
 	template <typename L> double parallelSumForNodes(L handle) const;
 
 	/**
-	 * Iterate in parallel over all edges and sum (reduce +) the values returned
-	 * by the handler
+	 * Iterate in parallel over all edges and sum (reduce +) the values
+	 * returned by the handler
 	 */
 	template <typename L> double parallelSumForEdges(L handle) const;
 
@@ -1319,6 +1331,8 @@ template <typename L> void Graph::parallelForNodePairs(L handle) const {
 
 /* HELPERS */
 
+template <typename T>
+void erase(node u, index idx, std::vector<std::vector<T>> &vec);
 template <bool hasWeights> // implementation for weighted == true
 inline edgeweight Graph::getOutEdgeWeight(node u, index i) const {
 	return outEdgeWeights[u][i];
@@ -1359,7 +1373,8 @@ inline edgeid Graph::getInEdgeId<false>(node, index) const {
 	return 0;
 }
 
-template <bool graphIsDirected> // implementation for graphIsDirected == true
+template <bool graphIsDirected> // implementation for graphIsDirected ==
+                                // true
 inline bool Graph::useEdgeInIteration(node /* u */, node v) const {
 	return v != none;
 }

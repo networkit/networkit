@@ -127,9 +127,9 @@ TEST_F(CommunityGTest, testLabelPropagationOnManySmallClusters) {
 	double pout = 0.0;
 
 	ClusteredRandomGraphGenerator graphGen(n, k, pin, pout);
+  Aux::Random::setSeed(42, false);
 	Graph G = graphGen.generate();
 	Partition reference = graphGen.getCommunities();
-
 
 	PLP lp(G);
 	lp.run();

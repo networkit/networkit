@@ -26,14 +26,6 @@ Graph::Graph(count n, bool weighted, bool directed)
 
       exists(n, true),
 
-      /* for directed graphs inDeg stores the incoming degree of a node, for
-         undirected graphs inDeg is not used*/
-      inDeg(directed ? n : 0, 0),
-
-      /* for directed graphs outDeg stores the outgoing degree of a node, for
-         undirected graphs outEdges stores the incoming degree of a node*/
-      outDeg(n, 0),
-
       /* for directed graphs inEdges stores an adjacencylist only considering
          incoming edges, for undirected graphs inEdges is not used*/
       inEdges(directed ? n : 0),
@@ -75,7 +67,7 @@ Graph::Graph(const Graph &G, bool weighted, bool directed)
       exists(G.exists),
 
       // let the following be empty for the start, we fill them later
-      inDeg(0), outDeg(0), inEdges(0), outEdges(0), inEdgeWeights(0),
+      inEdges(0), outEdges(0), inEdgeWeights(0),
       outEdgeWeights(0) {
 
 	// set name from global id
@@ -85,11 +77,9 @@ Graph::Graph(const Graph &G, bool weighted, bool directed)
 	name = sstm.str();
 
 	if (G.isDirected() == directed) {
-		inDeg =
-		    G.inDeg; // G.inDeg might be empty (if G is undirected), but that's fine
-		outDeg = G.outDeg;
-		inEdges = G.inEdges; // G.inEdges might be empty (if G is undirected), but
-		                     // that's fine
+		// G.inEdges might be empty (if G is undirected), but
+		// that's fine
+		inEdges = G.inEdges;
 		outEdges = G.outEdges;
 
 		// copy weights if needed
@@ -119,10 +109,8 @@ Graph::Graph(const Graph &G, bool weighted, bool directed)
 	} else if (G.isDirected()) {
 		// G is directed, but we want an undirected graph
 		// so we need to combine the out and in stuff for every node
-		outDeg.resize(z);
 		outEdges.resize(z);
 		for (node u = 0; u < z; u++) {
-			outDeg[u] = G.inDeg[u] + G.outDeg[u];
 
 			// copy both out and in edges into our new outEdges
 			outEdges[u].reserve(G.outEdges[u].size() + G.inEdges[u].size());
@@ -157,8 +145,6 @@ Graph::Graph(const Graph &G, bool weighted, bool directed)
 	} else {
 		// G is not directed, but this copy should be
 		// generally we can can copy G.out stuff into our in stuff
-		inDeg = G.outDeg;
-		outDeg = G.outDeg;
 		inEdges = G.outEdges;
 		outEdges = G.outEdges;
 		if (weighted) {
@@ -307,9 +293,6 @@ void Graph::shrinkToFit() {
 	for (auto &w : outEdgeWeights) {
 		w.shrink_to_fit();
 	}
-
-	inDeg.shrink_to_fit();
-	outDeg.shrink_to_fit();
 
 	inEdges.shrink_to_fit();
 	for (auto &a : inEdges) {
@@ -537,10 +520,8 @@ node Graph::addNode() {
 		outEdgeWeights.push_back(edgeWeight);
 	}
 
-	outDeg.push_back(0);
 	outEdges.push_back(std::vector<node>{});
 	if (directed) {
-		inDeg.push_back(0);
 		inEdges.push_back(std::vector<node>{});
 	}
 
@@ -597,7 +578,7 @@ edgeweight Graph::volume(node v) const {
 		}
 		return sum;
 	} else {
-		count c = outDeg[v];
+		count c = outEdges[v].size();
 		for (node u : outEdges[v]) {
 			if (u == v) {
 				c++;
@@ -621,7 +602,7 @@ node Graph::randomNode() const {
 }
 
 node Graph::randomNeighbor(node u) const {
-	if (outDeg[u] == 0) {
+	if (outEdges[u].empty()) {
 		return none;
 	}
 
@@ -642,8 +623,8 @@ void Graph::addEdge(node u, node v, edgeweight ew) {
 	assert(v < z);
 	assert(exists[v]);
 
-	m++; // increase number of edges
-	outDeg[u]++;
+	// increase number of edges
+	++m;
 	outEdges[u].push_back(v);
 
 	// if edges indexed, give new id
@@ -653,7 +634,6 @@ void Graph::addEdge(node u, node v, edgeweight ew) {
 	}
 
 	if (directed) {
-		inDeg[v]++;
 		inEdges[v].push_back(u);
 
 		if (edgesIndexed) {
@@ -669,9 +649,7 @@ void Graph::addEdge(node u, node v, edgeweight ew) {
 		if (weighted) {
 			outEdgeWeights[u].push_back(ew);
 		}
-
 	} else { // undirected, no self-loop
-		outDeg[v]++;
 		outEdges[v].push_back(u);
 
 		if (weighted) {
@@ -685,8 +663,14 @@ void Graph::addEdge(node u, node v, edgeweight ew) {
 	}
 
 	if (u == v) { // count self loop
-		storedNumberOfSelfLoops++;
+		++storedNumberOfSelfLoops;
 	}
+} // namespace NetworKit
+
+template <typename T>
+void erase(node u, index idx, std::vector<std::vector<T>> &vec) {
+	vec[u][idx] = vec[u].back();
+	vec[u].pop_back();
 }
 
 void Graph::removeEdge(node u, node v) {
@@ -705,26 +689,23 @@ void Graph::removeEdge(node u, node v) {
 	}
 
 	m--; // decrease number of edges
-	outDeg[u]--;
-	outEdges[u][vi] = none;
+	erase<node>(u, vi, outEdges);
 	if (weighted) {
-		outEdgeWeights[u][vi] = nullWeight;
+		erase<edgeweight>(u, vi, outEdgeWeights);
 	}
 
 	if (directed) {
 		assert(ui != none);
 
-		inDeg[v]--;
-		inEdges[v][ui] = none;
+		erase<node>(v, ui, inEdges);
 		if (weighted) {
-			inEdgeWeights[v][ui] = nullWeight;
+			erase<edgeweight>(v, ui, inEdgeWeights);
 		}
 	} else if (u != v) {
 		// undirected, not self-loop
-		outDeg[v]--;
-		outEdges[v][ui] = none;
+		erase<node>(v, ui, outEdges);
 		if (weighted) {
-			outEdgeWeights[v][ui] = nullWeight;
+			erase<edgeweight>(v, ui, outEdgeWeights);
 		}
 	}
 
@@ -741,13 +722,11 @@ void Graph::removeEdge(node u, node v) {
 void Graph::removeAllEdges() {
 #pragma omp parallel for
 	for (omp_index u = 0; u < z; ++u) {
-		outDeg[u] = 0;
 		outEdges[u].clear();
 		if (isWeighted()) {
 			outEdgeWeights[u].clear();
 		}
 		if (isDirected()) {
-			inDeg[u] = 0;
 			inEdges[u].clear();
 			if (isWeighted()) {
 				inEdgeWeights[u].clear();
@@ -761,14 +740,12 @@ void Graph::removeAllEdges() {
 void Graph::removeEdgesFromIsolatedSet(const std::vector<node> &nodesInSet) {
 	count removedEdges = 0;
 	for (node u : nodesInSet) {
-		removedEdges += outDeg[u];
-		outDeg[u] = 0;
+		removedEdges += outEdges[u].size();
 		outEdges[u].clear();
 		if (this->weighted) {
 			outEdgeWeights[u].clear();
 		}
 		if (this->isDirected()) {
-			inDeg[u] = 0;
 			inEdges[u].clear();
 		}
 	}
@@ -820,9 +797,11 @@ void Graph::swapEdge(node s1, node t1, node s2, node t2) {
 }
 
 bool Graph::hasEdge(node u, node v) const {
-	if (!directed && outDeg[u] > outDeg[v]) {
+	if (!directed &&
+	    outEdges[u].size() > outEdges[v].size()) {
 		return indexInOutEdgeArray(v, u) != none;
-	} else if (directed && outDeg[u] > inDeg[v]) {
+	} else if (directed &&
+	           outEdges[u].size() > inEdges[v].size()) {
 		return indexInInEdgeArray(v, u) != none;
 	} else {
 		return indexInOutEdgeArray(u, v) != none;
@@ -831,7 +810,7 @@ bool Graph::hasEdge(node u, node v) const {
 
 std::pair<node, node> Graph::randomEdge(bool uniformDistribution) const {
 	if (m == 0) {
-		return std::make_pair(none, none);
+		throw std::runtime_error("Error: the graph has ne edges!");
 	}
 
 	if (uniformDistribution) {
@@ -842,7 +821,7 @@ std::pair<node, node> Graph::randomEdge(bool uniformDistribution) const {
 	// fast way, but not a uniform random edge!
 	do {
 		u = randomNode();
-	} while (outDeg[u] == 0);
+	} while (outEdges[u].empty());
 	v = randomNeighbor(u);
 	return std::make_pair(u, v);
 }
@@ -855,22 +834,28 @@ std::vector<std::pair<node, node>> Graph::randomEdges(count nr) const {
 	std::vector<std::pair<node, node>> edges;
 
 	std::default_random_engine gen{std::random_device{}()};
+	std::vector<count> outDeg(upperNodeIdBound());
+	for (count i = 0; i < upperNodeIdBound(); ++i) {
+		outDeg[i] = outEdges[i].size();
+	}
 	std::discrete_distribution<count> distribution(outDeg.begin(), outDeg.end());
 
 	for (index i = 0; i < nr; i++) {
 		node u, v; // we will pick edge (u, v)
 		if (directed) {
 			u = distribution(gen);
-			assert(outEdges[u].size() > 0); // should always be the case as  without
-			                                // edges should have probability 0
+			// should always be the case as  without
+			// edges should have probability 0
+			assert(outEdges[u].size() > 0);
 			v = randomNeighbor(u);
 		} else {
 			// self-loops which appear only once in the outEdge arrays
 			// easiest way it to ignore edges (u, v) with u > v
 			do {
 				u = distribution(gen);
-				assert(outEdges[u].size() > 0); // should always be the case as  without
-				                                // edges should have probability 0
+				// should always be the case as  without
+				// edges should have probability 0
+				assert(outEdges[u].size() > 0);
 				v = randomNeighbor(u);
 			} while (u > v);
 		}
@@ -927,7 +912,6 @@ void Graph::increaseWeight(node u, node v, edgeweight ew) {
 	index vi = indexInOutEdgeArray(u, v);
 	if (vi == none) {
 		// edge does not exits, create it, but warn user
-		TRACE("Increasing edge weight of a nonexisting edge will create the edge.");
 		addEdge(u, v, ew);
 		return;
 	}
