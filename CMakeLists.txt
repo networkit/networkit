@@ -503,9 +503,9 @@ add_subdirectory(networkit/cpp)
 
 # Install header files
 set(NETWORKIT_LIBRARIES networkit)
-install(DIRECTORY networkit/cpp/
-	DESTINATION ${NETWORKIT_INSTALL_INCLUDE_DIR}/networkit
-	FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY include/networkit
+	DESTINATION ${NETWORKIT_INSTALL_INCLUDE_DIR}
+	FILES_MATCHING PATTERN "*.hpp")
 
 ################################################################################
 # Prepare pkg-config file
