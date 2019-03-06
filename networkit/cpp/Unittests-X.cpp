@@ -3,7 +3,7 @@
 // Author      : Christian Staudt (christian.staudt@kit.edu),
 //		 Henning Meyerhenke (henning.meyerhenke@kit.edu)
 // Version     :
-// Copyright   : � 2012, Christian Staudt, Henning Meyerhenke
+// Copyright   : 2012, Christian Staudt, Henning Meyerhenke
 // Description : Calling unit tests and benchmarks
 //============================================================================
 
@@ -22,11 +22,11 @@
 #include <omp.h>
 
 // necessary for some reasons?
-#include "Globals.h"
-#include "ext/optionparser.h"
-#include "auxiliary/Log.h"
-#include "graph/Graph.h"
-#include "auxiliary/Parallelism.h"
+#include "../../include/networkit/Globals.hpp"
+#include "../../include/networkit/ext/optionparser.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
+#include "../../include/networkit/graph/Graph.hpp"
+#include "../../include/networkit/auxiliary/Parallelism.hpp"
 
 
 using namespace NetworKit;

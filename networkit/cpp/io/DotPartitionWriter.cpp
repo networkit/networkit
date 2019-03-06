@@ -2,7 +2,7 @@
  * DotPartitionWriter.cpp
  */
 
-#include "DotPartitionWriter.h"
+#include "../../include/networkit/io/DotPartitionWriter.hpp"
 
 #include <fstream>
 #include <set>

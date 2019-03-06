@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "Coverage.h"
-#include "../auxiliary/Log.h"
+#include "../../include/networkit/community/Coverage.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
 
 namespace NetworKit {
 

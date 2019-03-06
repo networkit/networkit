@@ -5,8 +5,8 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include "CommonNeighborsIndex.h"
-#include "NeighborhoodUtility.h"
+#include "../../include/networkit/linkprediction/CommonNeighborsIndex.hpp"
+#include "../../include/networkit/linkprediction/NeighborhoodUtility.hpp"
 
 namespace NetworKit {
 

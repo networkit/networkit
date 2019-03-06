@@ -7,8 +7,8 @@
 
 #include <gtest/gtest.h>
 
-#include "../Sparsifiers.h"
-#include "../MultiscaleScore.h"
+#include "../../../include/networkit/sparsification/Sparsifiers.hpp"
+#include "../../../include/networkit/sparsification/MultiscaleScore.hpp"
 
 
 namespace NetworKit {

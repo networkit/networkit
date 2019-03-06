@@ -1,4 +1,4 @@
-#include "BinaryPartitionReader.h"
+#include "../../include/networkit/io/BinaryPartitionReader.hpp"
 #include <fstream>
 
 

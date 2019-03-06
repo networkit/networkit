@@ -5,7 +5,7 @@
  *      Author: Michael Hamann, Gerd Lindner
  */
 
-#include "ChibaNishizekiQuadrangleEdgeScore.h"
+#include "../../include/networkit/edgescores/ChibaNishizekiQuadrangleEdgeScore.hpp"
 
 namespace NetworKit {
 

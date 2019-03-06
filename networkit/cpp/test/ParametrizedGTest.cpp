@@ -7,7 +7,7 @@
 
 #ifndef NOGTEST
 
-#include "ParametrizedGTest.h"
+#include "ParametrizedGTest.hpp"
 
 
 TEST_P(ParametrizedGTest, testParameter) {

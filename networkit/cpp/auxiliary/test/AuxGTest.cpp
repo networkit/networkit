@@ -18,18 +18,18 @@
 #include <fstream>
 #include <set>
 
-#include "../Log.h"
-#include "../Random.h"
-#include "../Timer.h"
-#include "../MissingMath.h"
-#include "../PrioQueue.h"
-#include "../BucketPQ.h"
-#include "../StringTools.h"
-#include "../SetIntersector.h"
-#include "../Enforce.h"
-#include "../NumberParsing.h"
-#include "../Enforce.h"
-#include "../BloomFilter.h"
+#include "../../../include/networkit/auxiliary/Log.hpp"
+#include "../../../include/networkit/auxiliary/Random.hpp"
+#include "../../../include/networkit/auxiliary/Timer.hpp"
+#include "../../../include/networkit/auxiliary/MissingMath.hpp"
+#include "../../../include/networkit/auxiliary/PrioQueue.hpp"
+#include "../../../include/networkit/auxiliary/BucketPQ.hpp"
+#include "../../../include/networkit/auxiliary/StringTools.hpp"
+#include "../../../include/networkit/auxiliary/SetIntersector.hpp"
+#include "../../../include/networkit/auxiliary/Enforce.hpp"
+#include "../../../include/networkit/auxiliary/NumberParsing.hpp"
+#include "../../../include/networkit/auxiliary/Enforce.hpp"
+#include "../../../include/networkit/auxiliary/BloomFilter.hpp"
 
 namespace NetworKit {
 

@@ -10,16 +10,16 @@
 #include <map>
 #include <functional>
 
-#include "../PLP.h"
-#include "../PLM.h"
-#include "../Modularity.h"
-#include "../../centrality/Betweenness.h"
-#include "../../centrality/PageRank.h"
-#include "../../auxiliary/Timer.h"
-#include "../../structures/Partition.h"
+#include "../../../include/networkit/community/PLP.hpp"
+#include "../../../include/networkit/community/PLM.hpp"
+#include "../../../include/networkit/community/Modularity.hpp"
+#include "../../../include/networkit/centrality/Betweenness.hpp"
+#include "../../../include/networkit/centrality/PageRank.hpp"
+#include "../../../include/networkit/auxiliary/Timer.hpp"
+#include "../../../include/networkit/structures/Partition.hpp"
 
-#include "../../graph/Graph.h"
-#include "../../io/METISGraphReader.h"
+#include "../../../include/networkit/graph/Graph.hpp"
+#include "../../../include/networkit/io/METISGraphReader.hpp"
 
 namespace NetworKit {
 

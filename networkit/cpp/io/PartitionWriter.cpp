@@ -5,7 +5,7 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "PartitionWriter.h"
+#include "../../include/networkit/io/PartitionWriter.hpp"
 
 namespace NetworKit {
 

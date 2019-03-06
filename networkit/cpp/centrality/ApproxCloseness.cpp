@@ -5,8 +5,8 @@
  *      Author: Sarah Lutteropp (uwcwa@student.kit.edu) and Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#include "ApproxCloseness.h"
-#include "../auxiliary/PrioQueue.h"
+#include "../../include/networkit/centrality/ApproxCloseness.hpp"
+#include "../../include/networkit/auxiliary/PrioQueue.hpp"
 #include <cassert>
 #include <queue>
 

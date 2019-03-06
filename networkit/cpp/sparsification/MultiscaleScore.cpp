@@ -5,7 +5,7 @@
  *      Author: Gerd Lindner
  */
 
-#include "MultiscaleScore.h"
+#include "../../include/networkit/sparsification/MultiscaleScore.hpp"
 
 namespace NetworKit {
 

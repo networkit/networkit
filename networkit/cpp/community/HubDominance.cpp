@@ -5,9 +5,9 @@
  * Author: Michael Hamann
  */
 
-#include "HubDominance.h"
-#include "PartitionHubDominance.h"
-#include "CoverHubDominance.h"
+#include "../../include/networkit/community/HubDominance.hpp"
+#include "../../include/networkit/community/PartitionHubDominance.hpp"
+#include "../../include/networkit/community/CoverHubDominance.hpp"
 
 double NetworKit::HubDominance::getQuality(const NetworKit::Partition &zeta, const NetworKit::Graph &G) {
 	PartitionHubDominance phd(G, zeta);

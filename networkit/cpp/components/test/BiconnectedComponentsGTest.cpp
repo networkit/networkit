@@ -7,10 +7,10 @@
 
 #include <gtest/gtest.h>
 
-#include "../../auxiliary/Log.h"
-#include "../../generators/ErdosRenyiGenerator.h"
-#include "../BiconnectedComponents.h"
-#include "../ConnectedComponents.h"
+#include "../../../include/networkit/auxiliary/Log.hpp"
+#include "../../../include/networkit/generators/ErdosRenyiGenerator.hpp"
+#include "../../../include/networkit/components/BiconnectedComponents.hpp"
+#include "../../../include/networkit/components/ConnectedComponents.hpp"
 
 namespace NetworKit {
 

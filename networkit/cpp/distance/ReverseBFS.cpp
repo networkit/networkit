@@ -5,7 +5,7 @@
  *      Author: Henning
  */
 
-#include "ReverseBFS.h"
+#include "../../include/networkit/distance/ReverseBFS.hpp"
 #include <queue>
 
 namespace NetworKit {

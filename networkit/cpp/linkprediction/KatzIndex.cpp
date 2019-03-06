@@ -7,9 +7,9 @@
 
 #include <list>
 
-#include "KatzIndex.h"
-#include "PredictionsSorter.h"
-#include "../auxiliary/Parallel.h"
+#include "../../include/networkit/linkprediction/KatzIndex.hpp"
+#include "../../include/networkit/linkprediction/PredictionsSorter.hpp"
+#include "../../include/networkit/auxiliary/Parallel.hpp"
 
 namespace NetworKit {
 

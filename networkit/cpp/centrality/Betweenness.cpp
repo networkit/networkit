@@ -11,13 +11,13 @@
 #include <omp.h>
 
 
-#include "Betweenness.h"
-#include "../auxiliary/PrioQueue.h"
-#include "../auxiliary/Log.h"
-#include "../auxiliary/SignalHandling.h"
-#include "../distance/SSSP.h"
-#include "../distance/Dijkstra.h"
-#include "../distance/BFS.h"
+#include "../../include/networkit/centrality/Betweenness.hpp"
+#include "../../include/networkit/auxiliary/PrioQueue.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
+#include "../../include/networkit/auxiliary/SignalHandling.hpp"
+#include "../../include/networkit/distance/SSSP.hpp"
+#include "../../include/networkit/distance/Dijkstra.hpp"
+#include "../../include/networkit/distance/BFS.hpp"
 
 namespace NetworKit {
 

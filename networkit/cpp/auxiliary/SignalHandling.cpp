@@ -1,4 +1,4 @@
-#include "SignalHandling.h"
+#include "../../include/networkit/auxiliary/SignalHandling.hpp"
 #include <exception>
 #include <atomic>
 #include <signal.h>

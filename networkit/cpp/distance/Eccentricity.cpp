@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#include "Eccentricity.h"
-#include "BFS.h"
+#include "../../include/networkit/distance/Eccentricity.hpp"
+#include "../../include/networkit/distance/BFS.hpp"
 
 namespace NetworKit {
 

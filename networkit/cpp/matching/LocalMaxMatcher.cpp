@@ -4,7 +4,7 @@
  *  Created on: 05.12.2012
  */
 
-#include "LocalMaxMatcher.h"
+#include "../../include/networkit/matching/LocalMaxMatcher.hpp"
 
 namespace NetworKit {
 

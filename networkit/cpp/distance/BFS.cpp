@@ -6,7 +6,7 @@
  */
 
 #include <queue>
-#include "BFS.h"
+#include "../../include/networkit/distance/BFS.hpp"
 
 namespace NetworKit {
 

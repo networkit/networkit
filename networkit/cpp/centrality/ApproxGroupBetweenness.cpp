@@ -5,11 +5,11 @@
  *      Author: Marvin Pogoda
  */
 
-#include "ApproxGroupBetweenness.h"
-#include "../auxiliary/BucketPQ.h"
-#include "../auxiliary/Random.h"
-#include "../distance/BFS.h"
-#include "../distance/SSSP.h"
+#include "../../include/networkit/centrality/ApproxGroupBetweenness.hpp"
+#include "../../include/networkit/auxiliary/BucketPQ.hpp"
+#include "../../include/networkit/auxiliary/Random.hpp"
+#include "../../include/networkit/distance/BFS.hpp"
+#include "../../include/networkit/distance/SSSP.hpp"
 
 #include <math.h>
 #include <omp.h>

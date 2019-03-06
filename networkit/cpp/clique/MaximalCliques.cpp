@@ -1,6 +1,6 @@
-#include "MaximalCliques.h"
-#include "../centrality/CoreDecomposition.h"
-#include "../auxiliary/SignalHandling.h"
+#include "../../include/networkit/clique/MaximalCliques.hpp"
+#include "../../include/networkit/centrality/CoreDecomposition.hpp"
+#include "../../include/networkit/auxiliary/SignalHandling.hpp"
 
 #include <cassert>
 #include <algorithm>

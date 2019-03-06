@@ -7,10 +7,10 @@
 
 #include <cmath>
 
-#include "DynamicHyperbolicGenerator.h"
-#include "HyperbolicGenerator.h"
-#include "../geometric/HyperbolicSpace.h"
-#include "../auxiliary/Parallel.h"
+#include "../../include/networkit/generators/DynamicHyperbolicGenerator.hpp"
+#include "../../include/networkit/generators/HyperbolicGenerator.hpp"
+#include "../../include/networkit/geometric/HyperbolicSpace.hpp"
+#include "../../include/networkit/auxiliary/Parallel.hpp"
 
 using std::vector;
 namespace NetworKit {

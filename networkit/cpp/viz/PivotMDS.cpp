@@ -5,15 +5,15 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#include "PivotMDS.h"
+#include "../../include/networkit/viz/PivotMDS.hpp"
 
-#include "../algebraic/CSRMatrix.h"
-#include "../algebraic/Vector.h"
+#include "../../include/networkit/algebraic/CSRMatrix.hpp"
+#include "../../include/networkit/algebraic/Vector.hpp"
 
-#include "../auxiliary/Random.h"
+#include "../../include/networkit/auxiliary/Random.hpp"
 
-#include "../distance/BFS.h"
-#include "../distance/Dijkstra.h"
+#include "../../include/networkit/distance/BFS.hpp"
+#include "../../include/networkit/distance/Dijkstra.hpp"
 
 namespace NetworKit {
 

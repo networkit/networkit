@@ -6,9 +6,9 @@
  */
 
 #include <gtest/gtest.h>
-#include "../../Globals.h"
-#include "../../graph/Graph.h"
-#include "../LocalDegreeScore.h"
+#include "../../../include/networkit/Globals.hpp"
+#include "../../../include/networkit/graph/Graph.hpp"
+#include "../../../include/networkit/sparsification/LocalDegreeScore.hpp"
 #include <math.h>
 
 namespace NetworKit {

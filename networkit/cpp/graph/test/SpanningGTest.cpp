@@ -7,9 +7,9 @@
 
 #include <gtest/gtest.h>
 
-#include "../KruskalMSF.h"
-#include "../SpanningForest.h"
-#include "../../io/METISGraphReader.h"
+#include "../../../include/networkit/graph/KruskalMSF.hpp"
+#include "../../../include/networkit/graph/SpanningForest.hpp"
+#include "../../../include/networkit/io/METISGraphReader.hpp"
 
 namespace NetworKit {
 

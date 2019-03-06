@@ -8,9 +8,9 @@
 #include <cmath>
 #include <omp.h>
 
-#include "../auxiliary/PrioQueue.h"
-#include "../components/StronglyConnectedComponents.h"
-#include "TopHarmonicCloseness.h"
+#include "../../include/networkit/auxiliary/PrioQueue.hpp"
+#include "../../include/networkit/components/StronglyConnectedComponents.hpp"
+#include "../../include/networkit/centrality/TopHarmonicCloseness.hpp"
 
 namespace NetworKit {
 

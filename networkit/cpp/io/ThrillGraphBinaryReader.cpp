@@ -1,5 +1,5 @@
-#include "ThrillGraphBinaryReader.h"
-#include "../graph/GraphBuilder.h"
+#include "../../include/networkit/io/ThrillGraphBinaryReader.hpp"
+#include "../../include/networkit/graph/GraphBuilder.hpp"
 #include <algorithm>
 
 NetworKit::ThrillGraphBinaryReader::ThrillGraphBinaryReader(count n) : n(n) {};

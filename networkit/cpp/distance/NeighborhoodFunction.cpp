@@ -5,9 +5,9 @@
 *      Author: Maximilian Vogel
 */
 
-#include "NeighborhoodFunction.h"
-#include "../components/ConnectedComponents.h"
-#include "../auxiliary/Random.h"
+#include "../../include/networkit/distance/NeighborhoodFunction.hpp"
+#include "../../include/networkit/components/ConnectedComponents.hpp"
+#include "../../include/networkit/auxiliary/Random.hpp"
 
 #include <math.h>
 #include <iterator>

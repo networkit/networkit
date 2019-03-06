@@ -5,7 +5,7 @@
  *      Author: cls
  */
 
-#include "DGSWriter.h"
+#include "../../include/networkit/dynamics/DGSWriter.hpp"
 
 #include <fstream>
 

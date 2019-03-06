@@ -5,10 +5,10 @@
  *      Author: Michael Hamann, Gerd Lindner
  */
 
-#include "../auxiliary/Random.h"
-#include "../auxiliary/Log.h"
+#include "../../include/networkit/auxiliary/Random.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
 
-#include "JaccardDistance.h"
+#include "../../include/networkit/distance/JaccardDistance.hpp"
 
 namespace NetworKit {
 

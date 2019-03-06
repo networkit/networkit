@@ -2,15 +2,15 @@
  * CoreDecomposition.cpp
  *
  *  Created on: Oct 28, 2013
- *      Author: Lukas Barth, David Weiß, Christian Staudt
+ *      Author: Lukas Barth, David Wei, Christian Staudt
  *  Inplace change on Jun 26, 2015 by Henning Meyerhenke
  */
 
 #include <omp.h>
 #include <set>
 
-#include "../centrality/DegreeCentrality.h"
-#include "CoreDecomposition.h"
+#include "../../include/networkit/centrality/DegreeCentrality.hpp"
+#include "../../include/networkit/centrality/CoreDecomposition.hpp"
 
 namespace NetworKit {
 

@@ -7,10 +7,10 @@
 
 #include <gtest/gtest.h>
 
-#include "../../auxiliary/Log.h"
-#include "../../generators/ErdosRenyiGenerator.h"
-#include "../../graph/Graph.h"
-#include "../../independentset/Luby.h"
+#include "../../../include/networkit/auxiliary/Log.hpp"
+#include "../../../include/networkit/generators/ErdosRenyiGenerator.hpp"
+#include "../../../include/networkit/graph/Graph.hpp"
+#include "../../../include/networkit/independentset/Luby.hpp"
 
 namespace NetworKit {
 

@@ -9,14 +9,14 @@
 #include <queue>
 #include <stack>
 
-#include "../auxiliary/Log.h"
-#include "../auxiliary/PrioQueue.h"
-#include "../components/ConnectedComponents.h"
-#include "../components/StronglyConnectedComponents.h"
-#include "../distance/BFS.h"
-#include "../distance/Dijkstra.h"
-#include "../distance/SSSP.h"
-#include "Closeness.h"
+#include "../../include/networkit/auxiliary/Log.hpp"
+#include "../../include/networkit/auxiliary/PrioQueue.hpp"
+#include "../../include/networkit/components/ConnectedComponents.hpp"
+#include "../../include/networkit/components/StronglyConnectedComponents.hpp"
+#include "../../include/networkit/distance/BFS.hpp"
+#include "../../include/networkit/distance/Dijkstra.hpp"
+#include "../../include/networkit/distance/SSSP.hpp"
+#include "../../include/networkit/centrality/Closeness.hpp"
 
 namespace NetworKit {
 

@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#include "EigenvectorCentrality.h"
-#include "../auxiliary/NumericTools.h"
+#include "../../include/networkit/centrality/EigenvectorCentrality.hpp"
+#include "../../include/networkit/auxiliary/NumericTools.hpp"
 
 namespace NetworKit {
 

@@ -7,12 +7,12 @@
 
 #include <gtest/gtest.h>
 
-#include "../AlgebraicPageRank.h"
-#include "../../../io/SNAPGraphReader.h"
-#include "../../CSRMatrix.h"
-#include "../../../auxiliary/Timer.h"
+#include "../../../../include/networkit/algebraic/algorithms/AlgebraicPageRank.hpp"
+#include "../../../../include/networkit/io/SNAPGraphReader.hpp"
+#include "../../../../include/networkit/algebraic/CSRMatrix.hpp"
+#include "../../../../include/networkit/auxiliary/Timer.hpp"
 
-#include "../../../centrality/PageRank.h"
+#include "../../../../include/networkit/centrality/PageRank.hpp"
 
 namespace NetworKit {
 

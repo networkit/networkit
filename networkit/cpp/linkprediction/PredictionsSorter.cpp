@@ -5,8 +5,8 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include "PredictionsSorter.h"
-#include "../auxiliary/Parallel.h"
+#include "../../include/networkit/linkprediction/PredictionsSorter.hpp"
+#include "../../include/networkit/auxiliary/Parallel.hpp"
 
 namespace NetworKit {
 

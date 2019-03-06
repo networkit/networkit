@@ -5,12 +5,12 @@
  *      Author: Gerd Lindner
  */
 
-#include "ForestFireScore.h"
+#include "../../include/networkit/sparsification/ForestFireScore.hpp"
 #include <limits>
 #include <set>
 #include <queue>
-#include "../auxiliary/Log.h"
-#include "../auxiliary/Parallel.h"
+#include "../../include/networkit/auxiliary/Log.hpp"
+#include "../../include/networkit/auxiliary/Parallel.hpp"
 
 namespace NetworKit {
 

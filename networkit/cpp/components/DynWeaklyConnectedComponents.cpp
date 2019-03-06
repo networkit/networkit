@@ -5,7 +5,7 @@
 *      Author: Eugenio Angriman
 */
 
-#include "DynWeaklyConnectedComponents.h"
+#include "../../include/networkit/components/DynWeaklyConnectedComponents.hpp"
 
 namespace NetworKit {
 

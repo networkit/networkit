@@ -5,7 +5,7 @@
  *      Author: cls
  */
 
-#include "GraphEventHandler.h"
+#include "../../include/networkit/dynamics/GraphEventHandler.hpp"
 
 namespace NetworKit {
 

@@ -7,12 +7,12 @@
 
 #include <gtest/gtest.h>
 
-#include "../DynBFS.h"
-#include "../BFS.h"
-#include "../DynDijkstra.h"
-#include "../Dijkstra.h"
-#include "../../io/METISGraphReader.h"
-#include "../../auxiliary/Log.h"
+#include "../../../include/networkit/distance/DynBFS.hpp"
+#include "../../../include/networkit/distance/BFS.hpp"
+#include "../../../include/networkit/distance/DynDijkstra.hpp"
+#include "../../../include/networkit/distance/Dijkstra.hpp"
+#include "../../../include/networkit/io/METISGraphReader.hpp"
+#include "../../../include/networkit/auxiliary/Log.hpp"
 
 #include <stack>
 

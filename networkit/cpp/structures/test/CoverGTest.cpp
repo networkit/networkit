@@ -7,8 +7,8 @@
 
 #include <gtest/gtest.h>
 
-#include "../../auxiliary/Log.h"
-#include "../Cover.h"
+#include "../../../include/networkit/auxiliary/Log.hpp"
+#include "../../../include/networkit/structures/Cover.hpp"
 
 #include <iostream>
 

@@ -5,7 +5,7 @@
  *      Author: Christian Staudt
  */
 
-#include "Assortativity.h"
+#include "../../include/networkit/correlation/Assortativity.hpp"
 #include <math.h>
 
 namespace NetworKit {

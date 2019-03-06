@@ -5,9 +5,9 @@
  *      Author: Henning
  */
 
-#include "StaticDegreeSequenceGenerator.h"
-#include "../auxiliary/Log.h"
-#include "../auxiliary/Parallel.h"
+#include "../../include/networkit/generators/StaticDegreeSequenceGenerator.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
+#include "../../include/networkit/auxiliary/Parallel.hpp"
 
 namespace NetworKit {
 

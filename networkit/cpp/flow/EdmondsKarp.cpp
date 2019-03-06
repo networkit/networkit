@@ -5,7 +5,7 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu), Michael Hamann <michael.hamann@kit.edu>
  */
 
-#include "EdmondsKarp.h"
+#include "../../include/networkit/flow/EdmondsKarp.hpp"
 #include <limits>
 #include <algorithm>
 #include <stdexcept>

@@ -10,11 +10,11 @@
 #include <algorithm>
 #include <tuple>
 
-#include "../../auxiliary/Random.h"
-#include "../../auxiliary/Parallel.h"
+#include "../../../include/networkit/auxiliary/Random.hpp"
+#include "../../../include/networkit/auxiliary/Parallel.hpp"
 
-#include "../Graph.h"
-#include "../GraphBuilder.h"
+#include "../../../include/networkit/graph/Graph.hpp"
+#include "../../../include/networkit/graph/GraphBuilder.hpp"
 
 namespace NetworKit {
 

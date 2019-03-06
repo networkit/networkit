@@ -1,6 +1,6 @@
-#include "EffectiveDiameterApproximation.h"
+#include "../../include/networkit/distance/EffectiveDiameterApproximation.hpp"
 
-#include "../components/ConnectedComponents.h"
+#include "../../include/networkit/components/ConnectedComponents.hpp"
 
 namespace NetworKit {
 EffectiveDiameterApproximation::EffectiveDiameterApproximation(const Graph& G, const double ratio, const count k, const count r) : Algorithm(), G(G), ratio(ratio), k(k), r(r)  {

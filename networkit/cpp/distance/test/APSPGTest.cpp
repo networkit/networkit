@@ -7,11 +7,11 @@
 
 #include <gtest/gtest.h>
 
-#include "../APSP.h"
-#include "../DynAPSP.h"
-#include "../../io/METISGraphReader.h"
+#include "../../../include/networkit/distance/APSP.hpp"
+#include "../../../include/networkit/distance/DynAPSP.hpp"
+#include "../../../include/networkit/io/METISGraphReader.hpp"
 #include <string>
-#include "../../auxiliary/Random.h"
+#include "../../../include/networkit/auxiliary/Random.hpp"
 
 
 namespace NetworKit {

@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "IndependentSetFinder.h"
-#include "../auxiliary/Log.h"
+#include "../../include/networkit/independentset/IndependentSetFinder.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
 
 namespace NetworKit {
 

@@ -5,7 +5,7 @@
  *      Author: cls
  */
 
-#include "DynamicGraphReader.h"
+#include "../../include/networkit/io/DynamicGraphReader.hpp"
 
 namespace NetworKit {
 

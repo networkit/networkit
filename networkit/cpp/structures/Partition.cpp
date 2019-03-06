@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#include "Partition.h"
-#include "../auxiliary/Parallel.h"
+#include "../../include/networkit/structures/Partition.hpp"
+#include "../../include/networkit/auxiliary/Parallel.hpp"
 #include <algorithm>
 #include <atomic>
 #include <memory>

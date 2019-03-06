@@ -7,10 +7,10 @@
 
 #include <gtest/gtest.h>
 
-#include "../SpanningEdgeCentrality.h"
+#include "../../../include/networkit/centrality/SpanningEdgeCentrality.hpp"
 
-#include "../../graph/Graph.h"
-#include "../../io/METISGraphReader.h"
+#include "../../../include/networkit/graph/Graph.hpp"
+#include "../../../include/networkit/io/METISGraphReader.hpp"
 
 namespace NetworKit {
 

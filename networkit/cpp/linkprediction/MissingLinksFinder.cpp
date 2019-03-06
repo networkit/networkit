@@ -5,8 +5,8 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include "MissingLinksFinder.h"
-#include "../auxiliary/Parallel.h"
+#include "../../include/networkit/linkprediction/MissingLinksFinder.hpp"
+#include "../../include/networkit/auxiliary/Parallel.hpp"
 
 #include <algorithm>
 #include <random>

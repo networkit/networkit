@@ -4,10 +4,10 @@
  *  Created on: 18.09.2014
  *      Author: Maximilian Vogel (maximilian.vogel@student.kit.edu)
  */
-#include "GMLGraphReader.h"
-#include "../auxiliary/Enforce.h"
-#include "../auxiliary/StringTools.h"
-#include "../auxiliary/Log.h"
+#include "../../include/networkit/io/GMLGraphReader.hpp"
+#include "../../include/networkit/auxiliary/Enforce.hpp"
+#include "../../include/networkit/auxiliary/StringTools.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
 #include <unordered_map>
 #include <exception>
 #include <fstream>

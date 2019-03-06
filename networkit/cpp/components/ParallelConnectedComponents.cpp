@@ -5,10 +5,10 @@
  *      Author: cls
  */
 
-#include "ParallelConnectedComponents.h"
-#include "../structures/Partition.h"
-#include "../coarsening/ParallelPartitionCoarsening.h"
-#include "../auxiliary/Log.h"
+#include "../../include/networkit/components/ParallelConnectedComponents.hpp"
+#include "../../include/networkit/structures/Partition.hpp"
+#include "../../include/networkit/coarsening/ParallelPartitionCoarsening.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
 
 namespace NetworKit {
 

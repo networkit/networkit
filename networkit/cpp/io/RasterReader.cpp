@@ -5,9 +5,9 @@
  *      Author: Henning
  */
 
-#include "RasterReader.h"
-#include "../auxiliary/NumberParsing.h"
-#include "../auxiliary/Random.h"
+#include "../../include/networkit/io/RasterReader.hpp"
+#include "../../include/networkit/auxiliary/NumberParsing.hpp"
+#include "../../include/networkit/auxiliary/Random.hpp"
 #include <cassert>
 #include <iostream>
 #include <fstream>

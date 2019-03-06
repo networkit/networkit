@@ -6,13 +6,13 @@
 #include <random>
 #include <numeric>
 
-#include "LFRGenerator.h"
-#include "PowerlawDegreeSequence.h"
-#include "EdgeSwitchingMarkovChainGenerator.h"
-#include "PubWebGenerator.h"
-#include "../auxiliary/Random.h"
-#include "../auxiliary/SignalHandling.h"
-#include "../auxiliary/Parallel.h"
+#include "../../include/networkit/generators/LFRGenerator.hpp"
+#include "../../include/networkit/generators/PowerlawDegreeSequence.hpp"
+#include "../../include/networkit/generators/EdgeSwitchingMarkovChainGenerator.hpp"
+#include "../../include/networkit/generators/PubWebGenerator.hpp"
+#include "../../include/networkit/auxiliary/Random.hpp"
+#include "../../include/networkit/auxiliary/SignalHandling.hpp"
+#include "../../include/networkit/auxiliary/Parallel.hpp"
 
 NetworKit::LFRGenerator::LFRGenerator(NetworKit::count n) :
 n(n), hasDegreeSequence(false), hasCommunitySizeSequence(false), hasInternalDegreeSequence(false), hasGraph(false), hasPartition(false) { }

@@ -9,7 +9,7 @@
 
 #include <gtest/gtest.h>
 
-#include "../UnionFind.h"
+#include "../../../include/networkit/structures/UnionFind.hpp"
 
 
 namespace NetworKit {

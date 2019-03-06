@@ -2,8 +2,8 @@
  *
  */
 
-#include "IsolatedInterpartitionConductance.h"
-#include "../auxiliary/SignalHandling.h"
+#include "../../include/networkit/community/IsolatedInterpartitionConductance.hpp"
+#include "../../include/networkit/auxiliary/SignalHandling.hpp"
 
 void NetworKit::IsolatedInterpartitionConductance::run() {
 	hasRun = false;

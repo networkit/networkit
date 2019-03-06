@@ -1,4 +1,4 @@
-#include "EdgeScoreNormalizer.h"
+#include "../../include/networkit/edgescores/EdgeScoreNormalizer.hpp"
 
 namespace NetworKit {
 

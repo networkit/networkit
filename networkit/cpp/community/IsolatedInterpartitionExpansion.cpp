@@ -2,8 +2,8 @@
  *
  */
 
-#include "IsolatedInterpartitionExpansion.h"
-#include "../auxiliary/SignalHandling.h"
+#include "../../include/networkit/community/IsolatedInterpartitionExpansion.hpp"
+#include "../../include/networkit/auxiliary/SignalHandling.hpp"
 
 void NetworKit::IsolatedInterpartitionExpansion::run() {
 	hasRun = false;

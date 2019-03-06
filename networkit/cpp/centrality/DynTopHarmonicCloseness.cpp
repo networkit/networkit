@@ -8,11 +8,11 @@
 #include <cmath>
 #include <omp.h>
 
-#include "../auxiliary/PrioQueue.h"
-#include "../components/ConnectedComponents.h"
-#include "../components/StronglyConnectedComponents.h"
-#include "../distance/AffectedNodes.h"
-#include "DynTopHarmonicCloseness.h"
+#include "../../include/networkit/auxiliary/PrioQueue.hpp"
+#include "../../include/networkit/components/ConnectedComponents.hpp"
+#include "../../include/networkit/components/StronglyConnectedComponents.hpp"
+#include "../../include/networkit/distance/AffectedNodes.hpp"
+#include "../../include/networkit/centrality/DynTopHarmonicCloseness.hpp"
 
 namespace NetworKit {
 

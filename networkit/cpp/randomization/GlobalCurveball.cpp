@@ -5,10 +5,10 @@
  *      Author: Manuel Penschuck <networkit@manuel.jetzt>
  */
 
-#include "../auxiliary/Random.h"
+#include "../../include/networkit/auxiliary/Random.hpp"
 
-#include "GlobalCurveball.h"
-#include "GlobalCurveballImpl.h"
+#include "../../include/networkit/randomization/GlobalCurveball.hpp"
+#include "../../include/networkit/randomization/GlobalCurveballImpl.hpp"
 
 namespace NetworKit {
 

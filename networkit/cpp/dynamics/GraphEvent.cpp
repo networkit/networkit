@@ -5,7 +5,7 @@
  *      Author: cls
  */
 
-#include "GraphEvent.h"
+#include "../../include/networkit/dynamics/GraphEvent.hpp"
 
 #include <sstream>
 

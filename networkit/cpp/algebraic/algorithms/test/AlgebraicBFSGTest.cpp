@@ -7,12 +7,12 @@
 
 #include <gtest/gtest.h>
 
-#include "../../CSRMatrix.h"
-#include "../../../distance/BFS.h"
-#include "../AlgebraicBFS.h"
-#include "../../../io/METISGraphReader.h"
+#include "../../../../include/networkit/algebraic/CSRMatrix.hpp"
+#include "../../../../include/networkit/distance/BFS.hpp"
+#include "../../../../include/networkit/algebraic/algorithms/AlgebraicBFS.hpp"
+#include "../../../../include/networkit/io/METISGraphReader.hpp"
 
-#include "../../../auxiliary/Timer.h"
+#include "../../../../include/networkit/auxiliary/Timer.hpp"
 
 namespace NetworKit {
 

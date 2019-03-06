@@ -5,7 +5,7 @@
  *      Author: cls
  */
 
-#include "GraphStructuralRandMeasure.h"
+#include "../../include/networkit/community/GraphStructuralRandMeasure.hpp"
 
 namespace NetworKit {
 

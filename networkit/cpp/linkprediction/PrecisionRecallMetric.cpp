@@ -5,7 +5,7 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include "PrecisionRecallMetric.h"
+#include "../../include/networkit/linkprediction/PrecisionRecallMetric.hpp"
 
 namespace NetworKit {
 

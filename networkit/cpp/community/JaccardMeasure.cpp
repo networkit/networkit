@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "JaccardMeasure.h"
-#include "PartitionIntersection.h"
+#include "../../include/networkit/community/JaccardMeasure.hpp"
+#include "../../include/networkit/community/PartitionIntersection.hpp"
 
 namespace NetworKit {
 

@@ -5,7 +5,7 @@
  *      Author: cls
  */
 
-#include "DynamicDorogovtsevMendesGenerator.h"
+#include "../../include/networkit/generators/DynamicDorogovtsevMendesGenerator.hpp"
 
 namespace NetworKit {
 

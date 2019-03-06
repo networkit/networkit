@@ -7,7 +7,7 @@
 
 #include <gtest/gtest.h>
 
-#include "../ChibaNishizekiQuadrangleEdgeScore.h"
+#include "../../../include/networkit/edgescores/ChibaNishizekiQuadrangleEdgeScore.hpp"
 
 namespace NetworKit {
 

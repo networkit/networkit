@@ -8,8 +8,8 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
-#include "../GraphBLAS.h"
-#include "../CSRMatrix.h"
+#include "../../../include/networkit/algebraic/GraphBLAS.hpp"
+#include "../../../include/networkit/algebraic/CSRMatrix.hpp"
 
 namespace NetworKit {
 

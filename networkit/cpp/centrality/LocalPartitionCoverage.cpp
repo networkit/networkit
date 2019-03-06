@@ -2,7 +2,7 @@
  *
  */
 
-#include "LocalPartitionCoverage.h"
+#include "../../include/networkit/centrality/LocalPartitionCoverage.hpp"
 
 NetworKit::LocalPartitionCoverage::LocalPartitionCoverage(const NetworKit::Graph &G, const NetworKit::Partition &P): Centrality(G, true, false), P(P) {
 

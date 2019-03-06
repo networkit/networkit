@@ -1,4 +1,4 @@
-#include "CoverWriter.h"
+#include "../../include/networkit/io/CoverWriter.hpp"
 #include <fstream>
 
 namespace NetworKit {

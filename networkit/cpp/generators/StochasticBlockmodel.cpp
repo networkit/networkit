@@ -5,8 +5,8 @@
 *      Author: Christian Staudt
 */
 
-#include "StochasticBlockmodel.h"
-#include "../auxiliary/Random.h"
+#include "../../include/networkit/generators/StochasticBlockmodel.hpp"
+#include "../../include/networkit/auxiliary/Random.hpp"
 
 namespace NetworKit {
 

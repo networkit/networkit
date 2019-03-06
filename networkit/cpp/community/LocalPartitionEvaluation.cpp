@@ -2,7 +2,7 @@
  *
  */
 
-#include "LocalPartitionEvaluation.h"
+#include "../../include/networkit/community/LocalPartitionEvaluation.hpp"
 
 NetworKit::LocalPartitionEvaluation::LocalPartitionEvaluation(const Graph &G, const Partition &P) : G(G), P(P) {
 	if (P.upperBound() > 2 * G.upperNodeIdBound()) {

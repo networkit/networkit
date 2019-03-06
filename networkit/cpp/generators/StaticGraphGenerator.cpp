@@ -5,7 +5,7 @@
  *      Author: cls
  */
 
-#include "StaticGraphGenerator.h"
+#include "../../include/networkit/generators/StaticGraphGenerator.hpp"
 
 namespace NetworKit {
 

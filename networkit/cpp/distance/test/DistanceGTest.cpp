@@ -7,17 +7,17 @@
 
 #include <gtest/gtest.h>
 
-#include "../Diameter.h"
-#include "../EffectiveDiameter.h"
-#include "../EffectiveDiameterApproximation.h"
-#include "../HopPlotApproximation.h"
-#include "../NeighborhoodFunction.h"
-#include "../NeighborhoodFunctionApproximation.h"
-#include "../NeighborhoodFunctionHeuristic.h"
+#include "../../../include/networkit/distance/Diameter.hpp"
+#include "../../../include/networkit/distance/EffectiveDiameter.hpp"
+#include "../../../include/networkit/distance/EffectiveDiameterApproximation.hpp"
+#include "../../../include/networkit/distance/HopPlotApproximation.hpp"
+#include "../../../include/networkit/distance/NeighborhoodFunction.hpp"
+#include "../../../include/networkit/distance/NeighborhoodFunctionApproximation.hpp"
+#include "../../../include/networkit/distance/NeighborhoodFunctionHeuristic.hpp"
 
-#include "../../generators/DorogovtsevMendesGenerator.h"
-#include "../../generators/ErdosRenyiGenerator.h"
-#include "../../io/METISGraphReader.h"
+#include "../../../include/networkit/generators/DorogovtsevMendesGenerator.hpp"
+#include "../../../include/networkit/generators/ErdosRenyiGenerator.hpp"
+#include "../../../include/networkit/io/METISGraphReader.hpp"
 
 namespace NetworKit {
 class DistanceGTest: public testing::Test {};

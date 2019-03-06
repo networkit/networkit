@@ -12,14 +12,14 @@
 #include <algorithm>
 #include <fstream>
 
-#include "../../auxiliary/Log.h"
-#include "../../auxiliary/Timer.h"
-#include "../METISGraphReader.h"
+#include "../../../include/networkit/auxiliary/Log.hpp"
+#include "../../../include/networkit/auxiliary/Timer.hpp"
+#include "../../../include/networkit/io/METISGraphReader.hpp"
 
-#include "../RasterReader.h"
-#include "../../generators/quadtree/QuadtreePolarEuclid.h"
-#include "../../generators/quadtree/QuadtreeCartesianEuclid.h"
-#include "../../geometric/HyperbolicSpace.h"
+#include "../../../include/networkit/io/RasterReader.hpp"
+#include "../../../include/networkit/generators/quadtree/QuadtreePolarEuclid.hpp"
+#include "../../../include/networkit/generators/quadtree/QuadtreeCartesianEuclid.hpp"
+#include "../../../include/networkit/geometric/HyperbolicSpace.hpp"
 
 namespace NetworKit {
 

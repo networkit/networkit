@@ -8,10 +8,10 @@
 #include <numeric>
 #include <omp.h>
 
-#include "../auxiliary/Log.h"
-#include "../auxiliary/Timer.h"
-#include "../graph/GraphBuilder.h"
-#include "ParallelPartitionCoarsening.h"
+#include "../../include/networkit/auxiliary/Log.hpp"
+#include "../../include/networkit/auxiliary/Timer.hpp"
+#include "../../include/networkit/graph/GraphBuilder.hpp"
+#include "../../include/networkit/coarsening/ParallelPartitionCoarsening.hpp"
 
 namespace NetworKit {
 

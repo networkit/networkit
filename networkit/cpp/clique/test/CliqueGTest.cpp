@@ -7,10 +7,10 @@
 
 #include <gtest/gtest.h>
 
-#include "../MaximalCliques.h"
-#include "../../io/METISGraphReader.h"
-#include "../../auxiliary/Log.h"
-#include "../../io/EdgeListReader.h"
+#include "../../../include/networkit/clique/MaximalCliques.hpp"
+#include "../../../include/networkit/io/METISGraphReader.hpp"
+#include "../../../include/networkit/auxiliary/Log.hpp"
+#include "../../../include/networkit/io/EdgeListReader.hpp"
 
 namespace NetworKit {
 

@@ -1,14 +1,14 @@
 #include <gtest/gtest.h>
 #include <memory>
 
-#include "../SelectiveCommunityDetector.h"
-#include "../PageRankNibble.h"
-#include "../GCE.h"
-#include "../../community/Modularity.h"
-#include "../../community/Conductance.h"
-#include "../../graph/Graph.h"
-#include "../../io/METISGraphReader.h"
-#include "../../auxiliary/Log.h"
+#include "../../../include/networkit/scd/SelectiveCommunityDetector.hpp"
+#include "../../../include/networkit/scd/PageRankNibble.hpp"
+#include "../../../include/networkit/scd/GCE.hpp"
+#include "../../../include/networkit/community/Modularity.hpp"
+#include "../../../include/networkit/community/Conductance.hpp"
+#include "../../../include/networkit/graph/Graph.hpp"
+#include "../../../include/networkit/io/METISGraphReader.hpp"
+#include "../../../include/networkit/auxiliary/Log.hpp"
 
 
 namespace NetworKit {

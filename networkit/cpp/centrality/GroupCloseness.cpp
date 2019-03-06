@@ -5,11 +5,11 @@
  *      Author: elisabetta bergamini
  */
 
-#include "GroupCloseness.h"
-#include "../auxiliary/BucketPQ.h"
-#include "../auxiliary/Log.h"
-#include "../distance/BFS.h"
-#include "TopCloseness.h"
+#include "../../include/networkit/centrality/GroupCloseness.hpp"
+#include "../../include/networkit/auxiliary/BucketPQ.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
+#include "../../include/networkit/distance/BFS.hpp"
+#include "../../include/networkit/centrality/TopCloseness.hpp"
 
 #include <memory>
 #include <omp.h>
