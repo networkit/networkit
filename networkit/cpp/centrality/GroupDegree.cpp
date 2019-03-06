@@ -10,7 +10,9 @@
 namespace NetworKit {
 GroupDegree::GroupDegree(const Graph &G, count k, bool countGroupNodes)
     : G(G), k(k), countGroupNodes(countGroupNodes), n(G.upperNodeIdBound()),
-      queue(Aux::BucketPQ(n, -n + 1, countGroupNodes ? 0 : 1)) {
+      queue(Aux::BucketPQ(n,
+                          -static_cast<int64_t>(n) + (countGroupNodes ? 0 : 1),
+                          countGroupNodes ? 0 : 1)) {
 	if (k > G.upperNodeIdBound() || k <= 0) {
 		throw std::runtime_error("k must be between 1 and n");
 	}
@@ -40,9 +42,8 @@ void GroupDegree::init() {
 
 void GroupDegree::run() {
 	init();
-	int64_t curNodeScore;
 	G.forNodes([&](node u) {
-		curNodeScore = G.degreeOut(u);
+		int64_t curNodeScore = G.degreeOut(u);
 		// Counting also the node itself
 		if (countGroupNodes) {
 			++curNodeScore;
