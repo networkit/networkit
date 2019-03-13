@@ -5,8 +5,8 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include "SameCommunityIndex.h"
-#include "../community/PLM.h"
+#include "../../include/networkit/linkprediction/SameCommunityIndex.hpp"
+#include "../../include/networkit/community/PLM.hpp"
 
 namespace NetworKit {
 

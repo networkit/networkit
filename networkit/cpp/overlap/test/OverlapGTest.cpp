@@ -8,11 +8,11 @@
 #include <gtest/gtest.h>
 #include <functional>
 
-#include "../HashingOverlapper.h"
+#include "../../../include/networkit/overlap/HashingOverlapper.hpp"
 
-#include "../../auxiliary/Log.h"
-#include "../../community/ClusteringGenerator.h"
-#include "../../community/GraphClusteringTools.h"
+#include "../../../include/networkit/auxiliary/Log.hpp"
+#include "../../../include/networkit/community/ClusteringGenerator.hpp"
+#include "../../../include/networkit/community/GraphClusteringTools.hpp"
 
 namespace NetworKit {
 

@@ -5,8 +5,8 @@
  *      Author: Michael Hamann
  */
 
-#include "RandomNodeEdgeScore.h"
-#include "../auxiliary/Random.h"
+#include "../../include/networkit/sparsification/RandomNodeEdgeScore.hpp"
+#include "../../include/networkit/auxiliary/Random.hpp"
 
 namespace NetworKit {
 

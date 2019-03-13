@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "NodeStructuralRandMeasure.h"
-#include "PartitionIntersection.h"
+#include "../../include/networkit/community/NodeStructuralRandMeasure.hpp"
+#include "../../include/networkit/community/PartitionIntersection.hpp"
 
 namespace NetworKit {
 

@@ -7,9 +7,9 @@
 
 #include <gtest/gtest.h>
 
-#include "../GraphDistance.h"
-#include "../../graph/Graph.h"
-#include "../../io/METISGraphReader.h"
+#include "../../../include/networkit/distance/GraphDistance.hpp"
+#include "../../../include/networkit/graph/Graph.hpp"
+#include "../../../include/networkit/io/METISGraphReader.hpp"
 
 namespace NetworKit {
 

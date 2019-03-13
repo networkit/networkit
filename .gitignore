@@ -34,15 +34,11 @@ NetworKit-Tests-*
 output
 benchmark/
 _NetworKit.cpp
-build.conf/
 build/
 /build*
 /.build*
-include/
 lib/
-
-### Scons
-.sconsign.dblite
+include/tlx
 
 ### IDE
 *.project

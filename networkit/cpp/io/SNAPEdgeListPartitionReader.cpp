@@ -8,8 +8,8 @@
 #include <sstream>
 #include <unordered_map>
 
-#include "SNAPEdgeListPartitionReader.h"
-#include "../auxiliary/Log.h"
+#include "../../include/networkit/io/SNAPEdgeListPartitionReader.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
 
 namespace NetworKit {
 

@@ -9,34 +9,34 @@
 #include <vector>
 #include <string>
 
-#include "../../graph/Graph.h"
-#include "../Point.h"
+#include "../../../include/networkit/graph/Graph.hpp"
+#include "../../../include/networkit/viz/Point.hpp"
 
-#include "../../io/METISGraphReader.h"
-#include "../../io/METISGraphWriter.h"
-#include "../../graph/Graph.h"
-#include "../../components/ConnectedComponents.h"
-#include "../MaxentStress.h"
+#include "../../../include/networkit/io/METISGraphReader.hpp"
+#include "../../../include/networkit/io/METISGraphWriter.hpp"
+#include "../../../include/networkit/graph/Graph.hpp"
+#include "../../../include/networkit/components/ConnectedComponents.hpp"
+#include "../../../include/networkit/viz/MaxentStress.hpp"
 
-#include "../../numerics/LAMG/Lamg.h"
-#include "../../numerics/ConjugateGradient.h"
-#include "../../numerics/Preconditioner/IdentityPreconditioner.h"
-#include "../../numerics/Preconditioner/DiagonalPreconditioner.h"
+#include "../../../include/networkit/numerics/LAMG/Lamg.hpp"
+#include "../../../include/networkit/numerics/ConjugateGradient.hpp"
+#include "../../../include/networkit/numerics/Preconditioner/IdentityPreconditioner.hpp"
+#include "../../../include/networkit/numerics/Preconditioner/DiagonalPreconditioner.hpp"
 
-#include "../../community/PLM.h"
+#include "../../../include/networkit/community/PLM.hpp"
 
-#include "../../sparsification/LocalDegreeScore.h"
-#include "../../sparsification/RandomEdgeScore.h"
-#include "../../sparsification/GlobalThresholdFilter.h"
+#include "../../../include/networkit/sparsification/LocalDegreeScore.hpp"
+#include "../../../include/networkit/sparsification/RandomEdgeScore.hpp"
+#include "../../../include/networkit/sparsification/GlobalThresholdFilter.hpp"
 
-#include "../../auxiliary/Timer.h"
-#include "../../auxiliary/Random.h"
+#include "../../../include/networkit/auxiliary/Timer.hpp"
+#include "../../../include/networkit/auxiliary/Random.hpp"
 
 #include <iostream>
 #include <unordered_map>
 #include <random>
 
-#include "../PivotMDS.h"
+#include "../../../include/networkit/viz/PivotMDS.hpp"
 
 #include <stdio.h>
 

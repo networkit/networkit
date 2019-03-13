@@ -12,9 +12,9 @@
 #include <functional>
 #include <tuple>
 
-#include "StronglyConnectedComponents.h"
-#include "../structures/Partition.h"
-#include "../auxiliary/Log.h"
+#include "../../include/networkit/components/StronglyConnectedComponents.hpp"
+#include "../../include/networkit/structures/Partition.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
 
 namespace NetworKit {
 

@@ -1,4 +1,4 @@
-#include "MemoryMappedFile.h"
+#include "../../include/networkit/io/MemoryMappedFile.hpp"
 
 namespace NetworKit {
 	MemoryMappedFile::MemoryMappedFile() {}

@@ -5,7 +5,7 @@
  *      Author: Gerd Lindner
  */
 
-#include "LocalSimilarityScore.h"
+#include "../../include/networkit/sparsification/LocalSimilarityScore.hpp"
 #include <math.h> //log
 #include <set>
 

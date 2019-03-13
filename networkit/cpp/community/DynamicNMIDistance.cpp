@@ -5,10 +5,10 @@
  *      Author: Henning
  */
 
-#include "DynamicNMIDistance.h"
-#include "../auxiliary/MissingMath.h"
-#include "../auxiliary/NumericTools.h"
-#include "../auxiliary/Log.h"
+#include "../../include/networkit/community/DynamicNMIDistance.hpp"
+#include "../../include/networkit/auxiliary/MissingMath.hpp"
+#include "../../include/networkit/auxiliary/NumericTools.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
 
 namespace NetworKit {
 

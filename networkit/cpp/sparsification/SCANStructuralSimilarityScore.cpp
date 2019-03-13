@@ -1,4 +1,4 @@
-#include "SCANStructuralSimilarityScore.h"
+#include "../../include/networkit/sparsification/SCANStructuralSimilarityScore.hpp"
 
 NetworKit::SCANStructuralSimilarityScore::SCANStructuralSimilarityScore(const NetworKit::Graph &G, const std::vector< NetworKit::count > &triangles) : EdgeScore<double>(G), triangles(triangles) { }
 

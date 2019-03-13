@@ -6,10 +6,10 @@
  */
 
 
-#include "SNAPGraphReader.h"
-#include "../auxiliary/StringTools.h"
-#include "../auxiliary/Log.h"
-#include "MemoryMappedFile.h"
+#include "../../include/networkit/io/SNAPGraphReader.hpp"
+#include "../../include/networkit/auxiliary/StringTools.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
+#include "../../include/networkit/io/MemoryMappedFile.hpp"
 
 namespace NetworKit {
 

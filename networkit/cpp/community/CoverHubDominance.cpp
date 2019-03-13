@@ -2,9 +2,9 @@
  *
  */
 
-#include "CoverHubDominance.h"
-#include "../auxiliary/SignalHandling.h"
-#include "../auxiliary/Parallel.h"
+#include "../../include/networkit/community/CoverHubDominance.hpp"
+#include "../../include/networkit/auxiliary/SignalHandling.hpp"
+#include "../../include/networkit/auxiliary/Parallel.hpp"
 #include <atomic>
 #include <memory>
 

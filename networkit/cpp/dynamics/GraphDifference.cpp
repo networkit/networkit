@@ -2,7 +2,7 @@
  *
  */
 
-#include "GraphDifference.h"
+#include "../../include/networkit/dynamics/GraphDifference.hpp"
 #include <string>
 
 namespace NetworKit {

@@ -7,11 +7,11 @@
 
 #include <gtest/gtest.h>
 
-#include "../../CSRMatrix.h"
-#include "../AlgebraicTriangleCounting.h"
-#include "../../../auxiliary/Timer.h"
-#include "../../../io/METISGraphReader.h"
-#include "../../../centrality/LocalClusteringCoefficient.h"
+#include "../../../../include/networkit/algebraic/CSRMatrix.hpp"
+#include "../../../../include/networkit/algebraic/algorithms/AlgebraicTriangleCounting.hpp"
+#include "../../../../include/networkit/auxiliary/Timer.hpp"
+#include "../../../../include/networkit/io/METISGraphReader.hpp"
+#include "../../../../include/networkit/centrality/LocalClusteringCoefficient.hpp"
 
 namespace NetworKit {
 

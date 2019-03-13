@@ -5,9 +5,9 @@
 #include <cmath>
 #include <algorithm>
 
-#include "PowerlawDegreeSequence.h"
-#include "../auxiliary/Random.h"
-#include "../auxiliary/NumericTools.h"
+#include "../../include/networkit/generators/PowerlawDegreeSequence.hpp"
+#include "../../include/networkit/auxiliary/Random.hpp"
+#include "../../include/networkit/auxiliary/NumericTools.hpp"
 
 NetworKit::PowerlawDegreeSequence::PowerlawDegreeSequence(NetworKit::count minDeg, NetworKit::count maxDeg, double gamma) :
 	minDeg(minDeg), maxDeg(maxDeg), gamma(gamma) {

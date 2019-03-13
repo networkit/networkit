@@ -7,10 +7,10 @@
 
 #include <memory>
 
-#include "../distance/BFS.h"
-#include "../distance/Dijkstra.h"
-#include "../distance/SSSP.h"
-#include "HarmonicCloseness.h"
+#include "../../include/networkit/distance/BFS.hpp"
+#include "../../include/networkit/distance/Dijkstra.hpp"
+#include "../../include/networkit/distance/SSSP.hpp"
+#include "../../include/networkit/centrality/HarmonicCloseness.hpp"
 
 namespace NetworKit {
 

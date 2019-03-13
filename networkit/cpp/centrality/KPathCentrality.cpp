@@ -7,10 +7,10 @@
 
 #include <stack>
 
-#include "KPathCentrality.h"
-#include "../auxiliary/PrioQueue.h"
-#include "../auxiliary/Log.h"
-#include "../auxiliary/Random.h"
+#include "../../include/networkit/centrality/KPathCentrality.hpp"
+#include "../../include/networkit/auxiliary/PrioQueue.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
+#include "../../include/networkit/auxiliary/Random.hpp"
 
 namespace NetworKit {
 

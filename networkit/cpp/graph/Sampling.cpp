@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#include "Sampling.h"
-#include "../auxiliary/Random.h"
+#include "../../include/networkit/graph/Sampling.hpp"
+#include "../../include/networkit/auxiliary/Random.hpp"
 
 namespace NetworKit {
 

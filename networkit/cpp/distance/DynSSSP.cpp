@@ -6,7 +6,7 @@
  */
 
 
-#include "DynSSSP.h"
+#include "../../include/networkit/distance/DynSSSP.hpp"
 
 namespace NetworKit {
 

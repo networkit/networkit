@@ -5,7 +5,7 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "QualityMeasure.h"
+#include "../../include/networkit/community/QualityMeasure.hpp"
 
 namespace NetworKit {
 

@@ -5,10 +5,10 @@
 *      Author: Maximilian Vogel
 */
 
-#include "NeighborhoodFunctionApproximation.h"
-#include "../components/ConnectedComponents.h"
-#include "../auxiliary/Random.h"
-#include "../Globals.h"
+#include "../../include/networkit/distance/NeighborhoodFunctionApproximation.hpp"
+#include "../../include/networkit/components/ConnectedComponents.hpp"
+#include "../../include/networkit/auxiliary/Random.hpp"
+#include "../../include/networkit/Globals.hpp"
 
 #include <math.h>
 #include <iterator>

@@ -5,8 +5,8 @@
  * Author: Franz-Benjamin Mocnik <mail@mocnik-science.net>
  */
 
-#include "MocnikGenerator.h"
-#include "../auxiliary/Random.h"
+#include "../../include/networkit/generators/MocnikGenerator.hpp"
+#include "../../include/networkit/auxiliary/Random.hpp"
 #include <cmath>
 
 namespace NetworKit {

@@ -5,8 +5,8 @@
  * Author: Franz-Benjamin Mocnik <mail@mocnik-science.net>
  */
 
-#include "Volume.h"
-#include "../graph/Graph.h"
+#include "../../include/networkit/distance/Volume.hpp"
+#include "../../include/networkit/graph/Graph.hpp"
 #include <unordered_map>
 
 namespace NetworKit {

@@ -6,12 +6,12 @@
  */
 
 
-#include "EstimateBetweenness.h"
-#include "../distance/BFS.h"
-#include "../distance/Dijkstra.h"
-#include "../distance/SSSP.h"
-#include "../auxiliary/SignalHandling.h"
-#include "../auxiliary/Parallelism.h"
+#include "../../include/networkit/centrality/EstimateBetweenness.hpp"
+#include "../../include/networkit/distance/BFS.hpp"
+#include "../../include/networkit/distance/Dijkstra.hpp"
+#include "../../include/networkit/distance/SSSP.hpp"
+#include "../../include/networkit/auxiliary/SignalHandling.hpp"
+#include "../../include/networkit/auxiliary/Parallelism.hpp"
 
 
 #include <memory>

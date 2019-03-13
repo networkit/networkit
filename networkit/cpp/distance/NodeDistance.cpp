@@ -5,7 +5,7 @@
  *      Author: cls
  */
 
-#include "NodeDistance.h"
+#include "../../include/networkit/distance/NodeDistance.hpp"
 
 namespace NetworKit {
 

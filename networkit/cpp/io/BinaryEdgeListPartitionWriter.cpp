@@ -1,4 +1,4 @@
-#include "BinaryEdgeListPartitionWriter.h"
+#include "../../include/networkit/io/BinaryEdgeListPartitionWriter.hpp"
 #include <fstream>
 
 NetworKit::BinaryEdgeListPartitionWriter::BinaryEdgeListPartitionWriter(NetworKit::node firstNode, uint8_t width) : firstNode(firstNode), width(width) {

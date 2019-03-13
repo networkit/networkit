@@ -5,7 +5,7 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "NumericTools.h"
+#include "../../include/networkit/auxiliary/NumericTools.hpp"
 #include <cmath>
 #include <algorithm>
 

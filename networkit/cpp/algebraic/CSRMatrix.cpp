@@ -5,7 +5,7 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#include "CSRMatrix.h"
+#include "../../include/networkit/algebraic/CSRMatrix.hpp"
 
 #include <cassert>
 #include <atomic>

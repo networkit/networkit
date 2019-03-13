@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#include "SNAPGraphWriter.h"
-#include "../auxiliary/Enforce.h"
+#include "../../include/networkit/io/SNAPGraphWriter.hpp"
+#include "../../include/networkit/auxiliary/Enforce.hpp"
 
 namespace NetworKit {
 

@@ -6,9 +6,9 @@
  */
 
 
-#include "AlgebraicDistance.h"
+#include "../../include/networkit/distance/AlgebraicDistance.hpp"
 
-#include "../auxiliary/Timer.h"
+#include "../../include/networkit/auxiliary/Timer.hpp"
 #include <omp.h>
 
 

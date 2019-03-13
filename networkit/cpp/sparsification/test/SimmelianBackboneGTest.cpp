@@ -7,9 +7,9 @@
 
 #include <gtest/gtest.h>
 
-#include "../Sparsifiers.h"
-#include "../SimmelianOverlapScore.h"
-#include "../../edgescores/ChibaNishizekiTriangleEdgeScore.h"
+#include "../../../include/networkit/sparsification/Sparsifiers.hpp"
+#include "../../../include/networkit/sparsification/SimmelianOverlapScore.hpp"
+#include "../../../include/networkit/edgescores/ChibaNishizekiTriangleEdgeScore.hpp"
 
 namespace NetworKit {
 

@@ -7,12 +7,12 @@
 
 #include <numeric>
 
-#include "Diameter.h"
-#include "Eccentricity.h"
-#include "../distance/BFS.h"
-#include "../distance/Dijkstra.h"
-#include "../components/ConnectedComponents.h"
-#include "../structures/Partition.h"
+#include "../../include/networkit/distance/Diameter.hpp"
+#include "../../include/networkit/distance/Eccentricity.hpp"
+#include "../../include/networkit/distance/BFS.hpp"
+#include "../../include/networkit/distance/Dijkstra.hpp"
+#include "../../include/networkit/components/ConnectedComponents.hpp"
+#include "../../include/networkit/structures/Partition.hpp"
 
 namespace NetworKit {
 

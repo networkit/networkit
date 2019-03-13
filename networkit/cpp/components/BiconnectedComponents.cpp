@@ -8,7 +8,7 @@
 #include <cmath>
 #include <stack>
 
-#include "BiconnectedComponents.h"
+#include "../../include/networkit/components/BiconnectedComponents.hpp"
 
 namespace NetworKit {
 

@@ -7,15 +7,15 @@
 
 #include <gtest/gtest.h>
 
-#include "../../auxiliary/Log.h"
-#include "../../community/ClusteringGenerator.h"
-#include "../../coarsening/ClusteringProjector.h"
-#include "../../community/GraphClusteringTools.h"
-#include "../../generators/ErdosRenyiGenerator.h"
-#include "../../coarsening/ParallelPartitionCoarsening.h"
-#include "../../io/METISGraphReader.h"
-#include "../../matching/LocalMaxMatcher.h"
-#include "../MatchingCoarsening.h"
+#include "../../../include/networkit/auxiliary/Log.hpp"
+#include "../../../include/networkit/community/ClusteringGenerator.hpp"
+#include "../../../include/networkit/coarsening/ClusteringProjector.hpp"
+#include "../../../include/networkit/community/GraphClusteringTools.hpp"
+#include "../../../include/networkit/generators/ErdosRenyiGenerator.hpp"
+#include "../../../include/networkit/coarsening/ParallelPartitionCoarsening.hpp"
+#include "../../../include/networkit/io/METISGraphReader.hpp"
+#include "../../../include/networkit/matching/LocalMaxMatcher.hpp"
+#include "../../../include/networkit/coarsening/MatchingCoarsening.hpp"
 
 namespace NetworKit {
 

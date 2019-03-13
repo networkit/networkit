@@ -6,9 +6,9 @@
  */
 
 
-#include "SpanningEdgeCentrality.h"
-#include "../auxiliary/Log.h"
-#include "../auxiliary/Timer.h"
+#include "../../include/networkit/centrality/SpanningEdgeCentrality.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
+#include "../../include/networkit/auxiliary/Timer.hpp"
 
 #include <fstream>
 #include <sstream>

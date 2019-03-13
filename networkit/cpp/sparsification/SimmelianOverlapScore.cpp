@@ -5,7 +5,7 @@
  *      Author: Gerd Lindner
  */
 
-#include "SimmelianOverlapScore.h"
+#include "../../include/networkit/sparsification/SimmelianOverlapScore.hpp"
 #include <limits>
 
 namespace NetworKit {

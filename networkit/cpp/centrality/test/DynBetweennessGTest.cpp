@@ -7,15 +7,15 @@
 
 #include <gtest/gtest.h>
 
-#include "../Betweenness.h"
-#include "../DynApproxBetweenness.h"
-#include "../ApproxBetweenness.h"
-#include "../../io/METISGraphReader.h"
-#include "../../auxiliary/Log.h"
-#include "../../auxiliary/NumericTools.h"
-#include "../../graph/Sampling.h"
-#include "../../generators/DorogovtsevMendesGenerator.h"
-#include "../../generators/ErdosRenyiGenerator.h"
+#include "../../../include/networkit/centrality/Betweenness.hpp"
+#include "../../../include/networkit/centrality/DynApproxBetweenness.hpp"
+#include "../../../include/networkit/centrality/ApproxBetweenness.hpp"
+#include "../../../include/networkit/io/METISGraphReader.hpp"
+#include "../../../include/networkit/auxiliary/Log.hpp"
+#include "../../../include/networkit/auxiliary/NumericTools.hpp"
+#include "../../../include/networkit/graph/Sampling.hpp"
+#include "../../../include/networkit/generators/DorogovtsevMendesGenerator.hpp"
+#include "../../../include/networkit/generators/ErdosRenyiGenerator.hpp"
 
 namespace NetworKit {
 

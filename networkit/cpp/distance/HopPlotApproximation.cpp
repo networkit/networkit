@@ -5,9 +5,9 @@
 *      Author: Marc Nemes
 */
 
-#include "HopPlotApproximation.h"
-#include "../components/ConnectedComponents.h"
-#include "../auxiliary/Random.h"
+#include "../../include/networkit/distance/HopPlotApproximation.hpp"
+#include "../../include/networkit/components/ConnectedComponents.hpp"
+#include "../../include/networkit/auxiliary/Random.hpp"
 
 #include <math.h>
 #include <iterator>

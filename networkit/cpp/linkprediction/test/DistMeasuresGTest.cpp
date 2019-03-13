@@ -8,15 +8,15 @@
 #include <gtest/gtest.h>
 #include <cstdio>
 
-#include "../../graph/Graph.h"
-#include "../../viz/PostscriptWriter.h"
-#include "../../io/METISGraphReader.h"
-#include "../../io/DibapGraphReader.h"
-#include "../../structures/Partition.h"
-#include "../../community/Modularity.h"
-#include "../AlgebraicDistanceIndex.h"
+#include "../../../include/networkit/graph/Graph.hpp"
+#include "../../../include/networkit/viz/PostscriptWriter.hpp"
+#include "../../../include/networkit/io/METISGraphReader.hpp"
+#include "../../../include/networkit/io/DibapGraphReader.hpp"
+#include "../../../include/networkit/structures/Partition.hpp"
+#include "../../../include/networkit/community/Modularity.hpp"
+#include "../../../include/networkit/linkprediction/AlgebraicDistanceIndex.hpp"
 
-#include "../../auxiliary/Log.h"
+#include "../../../include/networkit/auxiliary/Log.hpp"
 
 namespace NetworKit {
 

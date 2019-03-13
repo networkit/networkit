@@ -5,7 +5,7 @@
  *      Author: Christian Staudt
  */
 
-#include "Sfigality.h"
+#include "../../include/networkit/centrality/Sfigality.hpp"
 #include <algorithm>
 
 namespace NetworKit {

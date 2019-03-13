@@ -5,9 +5,9 @@
  *      Author: Michael Hamann, Gerd Lindner
  */
 
-#include "AdamicAdarDistance.h"
-#include "../auxiliary/Log.h"
-#include "../auxiliary/Timer.h"
+#include "../../include/networkit/distance/AdamicAdarDistance.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
+#include "../../include/networkit/auxiliary/Timer.hpp"
 
 namespace NetworKit {
 

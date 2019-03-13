@@ -20,9 +20,9 @@
 #include <string>
 #include <stdexcept>
 
-#include "MemoryMappedFileGTest.h"
+#include "MemoryMappedFileGTest.hpp"
 
-#include "../MemoryMappedFile.h"
+#include "../../../include/networkit/io/MemoryMappedFile.hpp"
 
 
 namespace NetworKit {

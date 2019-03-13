@@ -9,24 +9,24 @@
 
 #include <chrono>
 
-#include "../../graph/Graph.h"
+#include "../../../include/networkit/graph/Graph.hpp"
 
-#include "../../io/METISGraphReader.h"
-#include "../KatzIndex.h"
-#include "../CommonNeighborsIndex.h"
-#include "../JaccardIndex.h"
-#include "../ROCMetric.h"
-#include "../PrecisionRecallMetric.h"
-#include "../RandomLinkSampler.h"
-#include "../MissingLinksFinder.h"
-#include "../UDegreeIndex.h"
-#include "../VDegreeIndex.h"
-#include "../LinkThresholder.h"
-#include "../TotalNeighborsIndex.h"
-#include "../NeighborsMeasureIndex.h"
-#include "../SameCommunityIndex.h"
-#include "../PredictionsSorter.h"
-#include "../LinkPredictor.h"
+#include "../../../include/networkit/io/METISGraphReader.hpp"
+#include "../../../include/networkit/linkprediction/KatzIndex.hpp"
+#include "../../../include/networkit/linkprediction/CommonNeighborsIndex.hpp"
+#include "../../../include/networkit/linkprediction/JaccardIndex.hpp"
+#include "../../../include/networkit/linkprediction/ROCMetric.hpp"
+#include "../../../include/networkit/linkprediction/PrecisionRecallMetric.hpp"
+#include "../../../include/networkit/linkprediction/RandomLinkSampler.hpp"
+#include "../../../include/networkit/linkprediction/MissingLinksFinder.hpp"
+#include "../../../include/networkit/linkprediction/UDegreeIndex.hpp"
+#include "../../../include/networkit/linkprediction/VDegreeIndex.hpp"
+#include "../../../include/networkit/linkprediction/LinkThresholder.hpp"
+#include "../../../include/networkit/linkprediction/TotalNeighborsIndex.hpp"
+#include "../../../include/networkit/linkprediction/NeighborsMeasureIndex.hpp"
+#include "../../../include/networkit/linkprediction/SameCommunityIndex.hpp"
+#include "../../../include/networkit/linkprediction/PredictionsSorter.hpp"
+#include "../../../include/networkit/linkprediction/LinkPredictor.hpp"
 
 namespace NetworKit {
 

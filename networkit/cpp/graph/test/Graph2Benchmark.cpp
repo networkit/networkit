@@ -7,9 +7,9 @@
 
 #include <gtest/gtest.h>
 
-#include "../Graph.h"
-#include "../../auxiliary/Timer.h"
-#include "../../auxiliary/Log.h"
+#include "../../../include/networkit/graph/Graph.hpp"
+#include "../../../include/networkit/auxiliary/Timer.hpp"
+#include "../../../include/networkit/auxiliary/Log.hpp"
 
 namespace NetworKit {
 

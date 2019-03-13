@@ -7,7 +7,7 @@
  *        as taught in "Algorithms 1"
  */
 
-#include "UnionFind.h"
+#include "../../include/networkit/structures/UnionFind.hpp"
 
 namespace NetworKit {
 

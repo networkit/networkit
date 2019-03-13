@@ -4,8 +4,8 @@
  *  Created on: 12.11.2013
  */
 
-#include "GlobalClusteringCoefficient.h"
-#include "../auxiliary/Random.h"
+#include "../../include/networkit/global/GlobalClusteringCoefficient.hpp"
+#include "../../include/networkit/auxiliary/Random.hpp"
 
 namespace NetworKit {
 

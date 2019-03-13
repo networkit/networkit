@@ -1,4 +1,4 @@
-#include "CoverReader.h"
+#include "../../include/networkit/io/CoverReader.hpp"
 
 #include <fstream>
 

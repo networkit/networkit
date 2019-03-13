@@ -5,7 +5,7 @@
  *      Author: Michael Hamann
  */
 
-#include "ChanceCorrectedTriangleScore.h"
+#include "../../include/networkit/sparsification/ChanceCorrectedTriangleScore.hpp"
 
 namespace NetworKit {
 

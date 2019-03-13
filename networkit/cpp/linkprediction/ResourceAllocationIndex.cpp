@@ -5,8 +5,8 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include "ResourceAllocationIndex.h"
-#include "NeighborhoodUtility.h"
+#include "../../include/networkit/linkprediction/ResourceAllocationIndex.hpp"
+#include "../../include/networkit/linkprediction/NeighborhoodUtility.hpp"
 
 namespace NetworKit {
 

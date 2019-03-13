@@ -1,4 +1,4 @@
-#include "ThrillGraphBinaryWriter.h"
+#include "../../include/networkit/io/ThrillGraphBinaryWriter.hpp"
 
 void NetworKit::ThrillGraphBinaryWriter::write( const NetworKit::Graph &G, const std::string &path ) {
 	if (G.upperNodeIdBound() > std::numeric_limits<uint32_t>::max()) {

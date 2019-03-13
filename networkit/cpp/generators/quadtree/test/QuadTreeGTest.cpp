@@ -12,14 +12,14 @@
 #include <gtest/gtest.h>
 #include <cmath>
 #include <vector>
-#include "../Quadtree.h"
+#include "../../../../include/networkit/generators/quadtree/Quadtree.hpp"
 
-#include "../../../auxiliary/Random.h"
-#include "../../../auxiliary/Log.h"
-#include "../../../geometric/HyperbolicSpace.h"
+#include "../../../../include/networkit/auxiliary/Random.hpp"
+#include "../../../../include/networkit/auxiliary/Log.hpp"
+#include "../../../../include/networkit/geometric/HyperbolicSpace.hpp"
 
-#include "../QuadtreeCartesianEuclid.h"
-#include "../QuadtreePolarEuclid.h"
+#include "../../../../include/networkit/generators/quadtree/QuadtreeCartesianEuclid.hpp"
+#include "../../../../include/networkit/generators/quadtree/QuadtreePolarEuclid.hpp"
 
 namespace NetworKit {
 
@@ -283,7 +283,7 @@ TEST_F(QuadTreeGTest, testEuclideanCircle) {
 		index comparison = Aux::Random::integer(n);
 		Point2D<double> origin;
 		Point2D<double> query = HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]);
-		double radius = Aux::Random::real(1);//this may overshoot the poincaré disc, this is intentional. I want to know what happens
+		double radius = Aux::Random::real(1);//this may overshoot the poincar disc, this is intentional. I want to know what happens
 		double minR = query.length() - radius;
 		double maxR = query.length() + radius;
 		double minPhi, maxPhi, phi_c, r_c, spread;

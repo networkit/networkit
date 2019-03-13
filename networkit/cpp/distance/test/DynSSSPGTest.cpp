@@ -7,14 +7,14 @@
 
 #include <gtest/gtest.h>
 
-#include "../DynBFS.h"
-#include "../BFS.h"
-#include "../DynDijkstra.h"
-#include "../Dijkstra.h"
-#include "../../io/METISGraphReader.h"
-#include "../../auxiliary/Log.h"
-#include "../../generators/DorogovtsevMendesGenerator.h"
-#include "../../graph/Sampling.h"
+#include "../../../include/networkit/distance/DynBFS.hpp"
+#include "../../../include/networkit/distance/BFS.hpp"
+#include "../../../include/networkit/distance/DynDijkstra.hpp"
+#include "../../../include/networkit/distance/Dijkstra.hpp"
+#include "../../../include/networkit/io/METISGraphReader.hpp"
+#include "../../../include/networkit/auxiliary/Log.hpp"
+#include "../../../include/networkit/generators/DorogovtsevMendesGenerator.hpp"
+#include "../../../include/networkit/graph/Sampling.hpp"
 #include <random>
 
 

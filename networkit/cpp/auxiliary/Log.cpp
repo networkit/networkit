@@ -5,7 +5,7 @@
 #include <iomanip>
 #include <ios>
 
-#include "Log.h"
+#include "../../include/networkit/auxiliary/Log.hpp"
 
 namespace Aux { namespace Log {
 
@@ -106,7 +106,7 @@ void printTime(std::ostream& stream,
 }
 
 void printLocation(std::ostream& stream, const Location& loc) {
-	stream << "[“" << loc.file << "”, " << loc.line << ": " << loc.function << "]";
+	stream << "[" << loc.file << ", " << loc.line << ": " << loc.function << "]";
 }
 
 std::tuple<std::string, std::string> getTerminalFormat(LogLevel p) {

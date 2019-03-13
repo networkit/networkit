@@ -7,10 +7,10 @@
 
 #include <unordered_set>
 
-#include "ClusteringCoefficient.h"
-#include "../centrality/LocalClusteringCoefficient.h"
-#include "../auxiliary/Random.h"
-#include "../auxiliary/Log.h"
+#include "../../include/networkit/global/ClusteringCoefficient.hpp"
+#include "../../include/networkit/centrality/LocalClusteringCoefficient.hpp"
+#include "../../include/networkit/auxiliary/Random.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
 #include <omp.h>
 
 namespace NetworKit {

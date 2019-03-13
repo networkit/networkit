@@ -9,8 +9,8 @@
 
 #include <cassert>
 
-#include "HyperbolicSpace.h"
-#include "../auxiliary/Log.h"
+#include "../../include/networkit/geometric/HyperbolicSpace.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
 
 using std::abs;
 using std::max;
@@ -39,7 +39,7 @@ double HyperbolicSpace::nativeDistance(double firstangle, double firstR, double 
 }
 
 /**
- * This distance measure is taken from the Poincaré disc model.
+ * This distance measure is taken from the Poincar disc model.
  */
 double HyperbolicSpace::poincareMetric(double phi_a, double  r_a, double phi_b, double r_b) {
 	assert(r_a < 1);
@@ -81,7 +81,7 @@ void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, 
 		angles[i] = phidist(Aux::Random::getURNG());
 		/**
 		 * for the radial coordinate distribution, I took the probability density from Greedy Forwarding in Dynamic Scale-Free Networks Embedded in Hyperbolic Metric Spaces
-		 * f (r) = sinh r/(cosh R − 1)
+		 * f (r) = sinh r/(cosh R  1)
 		 * \int sinh = cosh+const
 		 */
 		double random = rdist(Aux::Random::getURNG());

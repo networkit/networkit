@@ -1,13 +1,13 @@
 /*
  * HyperbolicGenerator.cpp
  *
- *      Authors: Mustafa Özdayi and Moritz v. Looz (moritz.looz-corswarem@kit.edu)
+ *      Authors: Mustafa zdayi and Moritz v. Looz (moritz.looz-corswarem@kit.edu)
  *
  * This generator contains algorithms described in two publications.
  *
  * For T=0, the relevant publication is
  * "Generating massive complex networks with hyperbolic geometry faster in practice" by
- * Moritz von Looz, Mustafa Özdayi, Sören Laue and Henning Meyerhenke, presented at HPEC 2016.
+ * Moritz von Looz, Mustafa zdayi, Sren Laue and Henning Meyerhenke, presented at HPEC 2016.
  *
  * For T>0, it is
  * "Querying Probabilistic Neighborhoods in Spatial Data Sets Efficiently" by Moritz von Looz
@@ -27,11 +27,11 @@
 #include <omp.h>
 #include <algorithm>
 
-#include "../graph/GraphBuilder.h"
-#include "HyperbolicGenerator.h"
-#include "quadtree/Quadtree.h"
-#include "../auxiliary/Random.h"
-#include "../auxiliary/Parallel.h"
+#include "../../include/networkit/graph/GraphBuilder.hpp"
+#include "../../include/networkit/generators/HyperbolicGenerator.hpp"
+#include "../../include/networkit/generators/quadtree/Quadtree.hpp"
+#include "../../include/networkit/auxiliary/Random.hpp"
+#include "../../include/networkit/auxiliary/Parallel.hpp"
 
 namespace NetworKit {
 

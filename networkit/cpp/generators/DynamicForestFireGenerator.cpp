@@ -5,9 +5,9 @@
  *      Author: cls
  */
 
-#include "DynamicForestFireGenerator.h"
-#include "../auxiliary/Random.h"
-#include "../auxiliary/Log.h"
+#include "../../include/networkit/generators/DynamicForestFireGenerator.hpp"
+#include "../../include/networkit/auxiliary/Random.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
 #include <set>
 #include <unordered_map>
 #include <queue>

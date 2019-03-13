@@ -5,7 +5,7 @@
  *      Author: cls
  */
 
-#include "DynamicPathGenerator.h"
+#include "../../include/networkit/generators/DynamicPathGenerator.hpp"
 
 namespace NetworKit {
 

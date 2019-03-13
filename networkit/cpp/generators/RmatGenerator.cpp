@@ -5,10 +5,10 @@
  *      Author: Henning, cls
  */
 
-#include "RmatGenerator.h"
-#include "../auxiliary/Random.h"
-#include "../auxiliary/NumericTools.h"
-#include "../auxiliary/Log.h"
+#include "../../include/networkit/generators/RmatGenerator.hpp"
+#include "../../include/networkit/auxiliary/Random.hpp"
+#include "../../include/networkit/auxiliary/NumericTools.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
 
 namespace NetworKit {
 

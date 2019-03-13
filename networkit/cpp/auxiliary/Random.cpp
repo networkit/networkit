@@ -10,7 +10,7 @@
 #include <limits>
 #include <atomic>
 
-#include "Random.h"
+#include "../../include/networkit/auxiliary/Random.hpp"
 
 namespace Aux {
 namespace Random {

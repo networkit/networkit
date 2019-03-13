@@ -5,7 +5,7 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "MatchingCoarsening.h"
+#include "../../include/networkit/coarsening/MatchingCoarsening.hpp"
 
 namespace NetworKit {
 

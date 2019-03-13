@@ -5,9 +5,9 @@
 *      Author: Simon Bischof
 */
 
-#include "WattsStrogatzGenerator.h"
-#include "RegularRingLatticeGenerator.h"
-#include "../auxiliary/Random.h"
+#include "../../include/networkit/generators/WattsStrogatzGenerator.hpp"
+#include "../../include/networkit/generators/RegularRingLatticeGenerator.hpp"
+#include "../../include/networkit/auxiliary/Random.hpp"
 
 namespace NetworKit {
 

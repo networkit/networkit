@@ -5,7 +5,7 @@
  *      Author: cls
  */
 
-#include "LineFileReader.h"
+#include "../../include/networkit/io/LineFileReader.hpp"
 
 namespace NetworKit {
 std::vector<std::string> LineFileReader::read(std::string path) {

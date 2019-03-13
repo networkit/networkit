@@ -9,7 +9,7 @@
 
 #include <gtest/gtest.h>
 
-#include "../Partition.h"
+#include "../../../include/networkit/structures/Partition.hpp"
 
 namespace NetworKit {
 

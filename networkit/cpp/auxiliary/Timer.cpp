@@ -5,7 +5,7 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "Timer.h"
+#include "../../include/networkit/auxiliary/Timer.hpp"
 
 namespace Aux {
 

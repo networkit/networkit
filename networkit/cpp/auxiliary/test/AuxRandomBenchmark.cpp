@@ -1,7 +1,7 @@
-#include "AuxRandomBenchmark.h"
+#include "../../../include/networkit/auxiliary/test/AuxRandomBenchmark.hpp"
 
-#include "../Random.h"
-#include "../Timer.h"
+#include "../../../include/networkit/auxiliary/Random.hpp"
+#include "../../../include/networkit/auxiliary/Timer.hpp"
 
 #include <atomic>
 #include <random>

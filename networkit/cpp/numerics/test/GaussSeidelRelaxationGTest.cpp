@@ -6,9 +6,9 @@
  */
 #include <gtest/gtest.h>
 
-#include "../../algebraic/CSRMatrix.h"
-#include "../../algebraic/Vector.h"
-#include "../GaussSeidelRelaxation.h"
+#include "../../../include/networkit/algebraic/CSRMatrix.hpp"
+#include "../../../include/networkit/algebraic/Vector.hpp"
+#include "../../../include/networkit/numerics/GaussSeidelRelaxation.hpp"
 
 namespace NetworKit {
 

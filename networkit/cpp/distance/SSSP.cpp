@@ -5,8 +5,8 @@
 *      Author: cls
 */
 
-#include "SSSP.h"
-#include "../auxiliary/Log.h"
+#include "../../include/networkit/distance/SSSP.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
 
 namespace NetworKit {
 

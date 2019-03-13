@@ -5,7 +5,7 @@
  *      Author: Henning
  */
 
-#include "GraphDistance.h"
+#include "../../include/networkit/distance/GraphDistance.hpp"
 
 namespace NetworKit {
 

@@ -9,10 +9,10 @@
 #include <ctime>
 #include <omp.h>
 
-#include "../auxiliary/Random.h"
-#include "../auxiliary/Timer.h"
-#include "../distance/Diameter.h"
-#include "KadabraBetweenness.h"
+#include "../../include/networkit/auxiliary/Random.hpp"
+#include "../../include/networkit/auxiliary/Timer.hpp"
+#include "../../include/networkit/distance/Diameter.hpp"
+#include "../../include/networkit/centrality/KadabraBetweenness.hpp"
 
 namespace NetworKit {
 

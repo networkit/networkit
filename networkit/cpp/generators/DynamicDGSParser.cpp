@@ -5,9 +5,9 @@
  *      Author: forigem
  */
 
-#include "DynamicDGSParser.h"
-#include "../auxiliary/Log.h"
-#include "../auxiliary/Parallel.h"
+#include "../../include/networkit/generators/DynamicDGSParser.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
+#include "../../include/networkit/auxiliary/Parallel.hpp"
 
 namespace NetworKit {
 

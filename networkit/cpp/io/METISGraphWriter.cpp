@@ -5,10 +5,10 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "METISGraphWriter.h"
-#include "../graph/GraphTools.h"
+#include "../../include/networkit/io/METISGraphWriter.hpp"
+#include "../../include/networkit/graph/GraphTools.hpp"
 
-#include "../auxiliary/Enforce.h"
+#include "../../include/networkit/auxiliary/Enforce.hpp"
 
 namespace NetworKit {
 

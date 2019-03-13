@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "HashingOverlapper.h"
-#include "../auxiliary/Log.h"
+#include "../../include/networkit/overlap/HashingOverlapper.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
 
 namespace NetworKit {
 

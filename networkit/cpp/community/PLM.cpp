@@ -5,13 +5,13 @@
  *      Author: cls
  */
 
-#include "PLM.h"
+#include "../../include/networkit/community/PLM.hpp"
 #include <omp.h>
-#include "../coarsening/ParallelPartitionCoarsening.h"
-#include "../coarsening/ClusteringProjector.h"
-#include "../auxiliary/Log.h"
-#include "../auxiliary/Timer.h"
-#include "../auxiliary/SignalHandling.h"
+#include "../../include/networkit/coarsening/ParallelPartitionCoarsening.hpp"
+#include "../../include/networkit/coarsening/ClusteringProjector.hpp"
+#include "../../include/networkit/auxiliary/Log.hpp"
+#include "../../include/networkit/auxiliary/Timer.hpp"
+#include "../../include/networkit/auxiliary/SignalHandling.hpp"
 
 
 #include <sstream>

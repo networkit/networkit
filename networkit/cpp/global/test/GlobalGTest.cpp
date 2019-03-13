@@ -7,9 +7,9 @@
 
 #include <gtest/gtest.h>
 
-#include "../ClusteringCoefficient.h"
+#include "../../../include/networkit/global/ClusteringCoefficient.hpp"
 
-#include "../../generators/ErdosRenyiGenerator.h"
+#include "../../../include/networkit/generators/ErdosRenyiGenerator.hpp"
 
 namespace NetworKit {
 

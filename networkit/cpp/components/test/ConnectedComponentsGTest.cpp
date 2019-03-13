@@ -6,21 +6,21 @@
 */
 #include <gtest/gtest.h>
 
-#include "../ConnectedComponents.h"
-#include "../ParallelConnectedComponents.h"
-#include "../StronglyConnectedComponents.h"
-#include "../DynConnectedComponents.h"
-#include "../WeaklyConnectedComponents.h"
-#include "../DynWeaklyConnectedComponents.h"
-#include "../../generators/ErdosRenyiGenerator.h"
+#include "../../../include/networkit/components/ConnectedComponents.hpp"
+#include "../../../include/networkit/components/ParallelConnectedComponents.hpp"
+#include "../../../include/networkit/components/StronglyConnectedComponents.hpp"
+#include "../../../include/networkit/components/DynConnectedComponents.hpp"
+#include "../../../include/networkit/components/WeaklyConnectedComponents.hpp"
+#include "../../../include/networkit/components/DynWeaklyConnectedComponents.hpp"
+#include "../../../include/networkit/generators/ErdosRenyiGenerator.hpp"
 
-#include "../../distance/Diameter.h"
-#include "../../io/METISGraphReader.h"
-#include "../../io/EdgeListReader.h"
-#include "../../io/KONECTGraphReader.h"
-#include "../../generators/HavelHakimiGenerator.h"
-#include "../../auxiliary/Log.h"
-#include "../../generators/DorogovtsevMendesGenerator.h"
+#include "../../../include/networkit/distance/Diameter.hpp"
+#include "../../../include/networkit/io/METISGraphReader.hpp"
+#include "../../../include/networkit/io/EdgeListReader.hpp"
+#include "../../../include/networkit/io/KONECTGraphReader.hpp"
+#include "../../../include/networkit/generators/HavelHakimiGenerator.hpp"
+#include "../../../include/networkit/auxiliary/Log.hpp"
+#include "../../../include/networkit/generators/DorogovtsevMendesGenerator.hpp"
 
 namespace NetworKit {
 

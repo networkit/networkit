@@ -11,19 +11,19 @@
 #include <random>
 #include <functional>
 
-#include "../../auxiliary/Log.h"
-#include "../../auxiliary/Parallel.h"
-#include "../../auxiliary/Parallelism.h"
+#include "../../../include/networkit/auxiliary/Log.hpp"
+#include "../../../include/networkit/auxiliary/Parallel.hpp"
+#include "../../../include/networkit/auxiliary/Parallelism.hpp"
 
-#include "../ErdosRenyiEnumerator.h"
-#include "../HyperbolicGenerator.h"
-#include "../DynamicHyperbolicGenerator.h"
-#include "../BarabasiAlbertGenerator.h"
-#include "../ChungLuGenerator.h"
-#include "../MocnikGenerator.h"
-#include "../MocnikGeneratorBasic.h"
+#include "../../../include/networkit/generators/ErdosRenyiEnumerator.hpp"
+#include "../../../include/networkit/generators/HyperbolicGenerator.hpp"
+#include "../../../include/networkit/generators/DynamicHyperbolicGenerator.hpp"
+#include "../../../include/networkit/generators/BarabasiAlbertGenerator.hpp"
+#include "../../../include/networkit/generators/ChungLuGenerator.hpp"
+#include "../../../include/networkit/generators/MocnikGenerator.hpp"
+#include "../../../include/networkit/generators/MocnikGeneratorBasic.hpp"
 
-#include "../../graph/GraphBuilder.h"
+#include "../../../include/networkit/graph/GraphBuilder.hpp"
 
 namespace NetworKit {
 

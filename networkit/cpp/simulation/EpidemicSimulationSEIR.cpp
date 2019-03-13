@@ -5,8 +5,8 @@
  *      Author: Christian Staudt
  */
 
-#include "EpidemicSimulationSEIR.h"
-#include "../auxiliary/Random.h"
+#include "../../include/networkit/simulation/EpidemicSimulationSEIR.hpp"
+#include "../../include/networkit/auxiliary/Random.hpp"
 
 namespace NetworKit {
 

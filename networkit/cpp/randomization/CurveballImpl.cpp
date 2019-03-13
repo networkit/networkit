@@ -4,15 +4,15 @@
  * Author: Hung Tran <htran@ae.cs.uni-frankfurt.de>
  */
 
-#include "CurveballImpl.h"
+#include "../../include/networkit/randomization/CurveballImpl.hpp"
 
 #include <algorithm>
 #include <cassert>
 #include <numeric>
 #include <vector>
 
-#include "../auxiliary/SignalHandling.h"
-#include "../auxiliary/Timer.h"
+#include "../../include/networkit/auxiliary/SignalHandling.hpp"
+#include "../../include/networkit/auxiliary/Timer.hpp"
 #include <tlx/algorithm/random_bipartition_shuffle.hpp>
 
 namespace NetworKit {

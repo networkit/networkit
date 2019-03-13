@@ -7,10 +7,10 @@
 
 #include <gtest/gtest.h>
 
-#include "../../algebraic/Vector.h"
-#include "../Octree.h"
-#include "../../auxiliary/Log.h"
-#include "../../auxiliary/Random.h"
+#include "../../../include/networkit/algebraic/Vector.hpp"
+#include "../../../include/networkit/viz/Octree.hpp"
+#include "../../../include/networkit/auxiliary/Log.hpp"
+#include "../../../include/networkit/auxiliary/Random.hpp"
 
 #include <vector>
 

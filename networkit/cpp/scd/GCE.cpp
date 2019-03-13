@@ -5,7 +5,7 @@
  */
 
 
-#include "GCE.h"
+#include "../../include/networkit/scd/GCE.hpp"
 #include <unordered_map>
 
 namespace {

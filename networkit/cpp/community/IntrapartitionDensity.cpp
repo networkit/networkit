@@ -2,8 +2,8 @@
  *
  */
 
-#include "IntrapartitionDensity.h"
-#include "../auxiliary/SignalHandling.h"
+#include "../../include/networkit/community/IntrapartitionDensity.hpp"
+#include "../../include/networkit/auxiliary/SignalHandling.hpp"
 
 void NetworKit::IntrapartitionDensity::run() {
 	hasRun = false;

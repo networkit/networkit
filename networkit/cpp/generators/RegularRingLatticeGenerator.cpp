@@ -5,7 +5,7 @@
 *      Author: Simon Bischof
 */
 
-#include "RegularRingLatticeGenerator.h"
+#include "../../include/networkit/generators/RegularRingLatticeGenerator.hpp"
 
 namespace NetworKit {
 

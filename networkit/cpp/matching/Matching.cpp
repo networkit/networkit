@@ -4,7 +4,7 @@
  *  Created on: 03.12.2012
  */
 
-#include "Matching.h"
+#include "../../include/networkit/matching/Matching.hpp"
 
 namespace NetworKit {
 

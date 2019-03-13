@@ -8,9 +8,9 @@
 #include <algorithm>
 #include <numeric>
 
-#include "EvaluationMetric.h"
-#include "PredictionsSorter.h"
-#include "../auxiliary/Parallel.h"
+#include "../../include/networkit/linkprediction/EvaluationMetric.hpp"
+#include "../../include/networkit/linkprediction/PredictionsSorter.hpp"
+#include "../../include/networkit/auxiliary/Parallel.hpp"
 
 namespace NetworKit {
 

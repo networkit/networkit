@@ -5,7 +5,7 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "GraphIO.h"
+#include "../../include/networkit/io/GraphIO.hpp"
 
 namespace NetworKit {
 

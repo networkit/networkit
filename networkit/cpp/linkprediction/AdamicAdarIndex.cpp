@@ -5,8 +5,8 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include "AdamicAdarIndex.h"
-#include "NeighborhoodUtility.h"
+#include "../../include/networkit/linkprediction/AdamicAdarIndex.hpp"
+#include "../../include/networkit/linkprediction/NeighborhoodUtility.hpp"
 
 #include <cmath>
 

@@ -8,7 +8,7 @@
 #include <limits>
 #include <type_traits>
 
-#include "IncompleteDijkstra.h"
+#include "../../include/networkit/distance/IncompleteDijkstra.hpp"
 
 using namespace std;
 
