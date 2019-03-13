@@ -7290,7 +7290,7 @@ cdef class ApproxBetweenness(Centrality):
 		is no guarantee in this case.
 	"""
 
-	def __cinit__(self, Graph G, epsilon=0.1, delta=0.1, universalConstant=1.0):
+	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, universalConstant=1.0):
 		self._G = G
 		self._this = new _ApproxBetweenness(G._this, epsilon, delta, universalConstant)
 
