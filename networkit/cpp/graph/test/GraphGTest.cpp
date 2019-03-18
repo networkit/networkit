@@ -1214,6 +1214,37 @@ TEST_P(GraphGTest, testNeighbors) {
 	}
 }
 
+TEST_P(GraphGTest, testNeighborsIterators) {
+    auto neighborsIter = this->Ghouse.neighborsIter(1);
+    this->Ghouse.forNeighborsOf(1, [&](node u) {
+        ASSERT_TRUE(u == *neighborsIter++);
+    });
+
+    if (this->Ghouse.isWeighted()) {
+        neighborsIter = this->Ghouse.neighborsIter(1);
+        auto weightIter = this->Ghouse.outEdgeWeightIter(1);
+        this->Ghouse.forNeighborsOf(1, [&](node u, edgeweight w) {
+            ASSERT_TRUE(u == *neighborsIter++);
+            ASSERT_TRUE(w == *weightIter++);
+        });
+    }
+
+    if (this->Ghouse.isDirected()) {
+        neighborsIter = this->Ghouse.inNeighborsIter(1);
+        this->Ghouse.forInNeighborsOf(1, [&](node u) {
+            ASSERT_TRUE(u == *neighborsIter++);
+        });
+        if (this->Ghouse.isWeighted()) {
+            neighborsIter = this->Ghouse.inNeighborsIter(1);
+            auto weightIter = this->Ghouse.inEdgeWeightIter(1);
+            this->Ghouse.forInNeighborsOf(1, [&](node u, edgeweight w) {
+                ASSERT_TRUE(u == *neighborsIter++);
+                ASSERT_TRUE(w == *weightIter++);
+            });
+        }
+    }
+}
+
 TEST_P(GraphGTest, testEdges) {
 	// add self-loop
 	this->Ghouse.addEdge(3, 3);

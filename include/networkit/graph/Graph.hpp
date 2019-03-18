@@ -1044,6 +1044,50 @@ public:
 	 */
 	std::vector<node> neighbors(node u) const;
 
+    /** Get a const iterator over the neighbors of @a u.
+     *
+     * @param u Node.
+     * @return Iterator over the neighbors of @a u.
+     */
+    std::vector<node>::const_iterator neighborsIter(node u) const {
+        assert(exists[u]);
+        std::vector<node>::const_iterator iter = outEdges[u].begin();
+        return iter;
+    }
+
+    /** Get a const iterator over the in neighbors of @a u.
+     *
+     * @param u Node.
+     * @return Iterator over the in neighbors of @a u.
+     */
+    std::vector<node>::const_iterator inNeighborsIter(node u) const {
+        assert(exists[u] && isDirected());
+        std::vector<node>::const_iterator iter = inEdges[u].begin();
+        return iter;
+    }
+
+    /** Get a const iterator over the outgoing edge weights from @a u.
+     *
+     * @param u Node.
+     * @return Iterator over the outgoing edge weights from @a u.
+     */
+    std::vector<edgeweight>::const_iterator outEdgeWeightIter(node u) const {
+        assert(exists[u] && isWeighted());
+        std::vector<edgeweight>::const_iterator iter = outEdgeWeights[u].begin();
+        return iter;
+    }
+
+    /** Get a const iterator over the in-going edge weights from @a u.
+     *
+     * @param u Node.
+     * @return Iterator over the in-going edge weights from @a u.
+     */
+    std::vector<edgeweight>::const_iterator inEdgeWeightIter(node u) const {
+        assert(exists[u] && isDirected() && isWeighted());
+        std::vector<edgeweight>::const_iterator iter = inEdgeWeights[u].begin();
+        return iter;
+    }
+
 	/**
 	 * Get i-th (outgoing) neighbor of @a u.
 	 * WARNING: This function is deprecated or only temporary.
