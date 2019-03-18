@@ -445,14 +445,14 @@ class Graph final {
     /**
      * Class to iterate over the in/out neighbors of a node.
      */
-    template <bool InEdges = false> class NeighborIterator {
+    class NeighborIterator {
 
       public:
         typedef std::forward_iterator_tag iteratorCategory;
 
-        NeighborIterator(const Graph &G, node u)
-            : G(G), u(u),
-              nIter(InEdges ? G.inEdges[u].begin() : G.outEdges[u].begin()) {}
+        NeighborIterator(const Graph &G, node u,
+                         std::vector<node>::const_iterator nodesIter)
+            : G(G), u(u), nIter(nodesIter) {}
 
         NeighborIterator operator++() {
             auto prev = *this;
@@ -460,7 +460,7 @@ class Graph final {
             return prev;
         }
 
-        NeighborIterator operator++(int junk) {
+        NeighborIterator operator++(int) {
             ++nIter;
             return *this;
         }
@@ -475,13 +475,6 @@ class Graph final {
 
         const node operator*() const { return *nIter; }
 
-        void toEnd() {
-            if (InEdges)
-                nIter = G.inEdges[u].end();
-            else
-                nIter = G.outEdges[u].end();
-        }
-
       private:
         const Graph &G;
         const node u;
@@ -492,20 +485,15 @@ class Graph final {
      * Class to iterate over the in/out neighbors of a node including the edge
      * weights. Values are std::pair<node, edgeweight>.
      */
-    template <bool InEdges = false> class NeighborWeightIterator {
+    class NeighborWeightIterator {
 
       public:
         typedef std::forward_iterator_tag iteratorCategory;
 
-        NeighborWeightIterator(const Graph &G, node u) : G(G), u(u) {
-            if (InEdges) {
-                nIter = G.inEdges[u].begin();
-                wIter = G.inEdgeWeights[u].begin();
-            } else {
-                nIter = G.outEdges[u].begin();
-                wIter = G.outEdgeWeights[u].begin();
-            }
-        }
+        NeighborWeightIterator(
+            const Graph &G, node u, std::vector<node>::const_iterator nodesIter,
+            std::vector<edgeweight>::const_iterator weightIter)
+            : G(G), u(u), nIter(nodesIter), wIter(weightIter) {}
 
         NeighborWeightIterator operator++() {
             auto prev = *this;
@@ -514,7 +502,7 @@ class Graph final {
             return prev;
         }
 
-        NeighborWeightIterator operator++(int junk) {
+        NeighborWeightIterator operator++(int) {
             ++nIter;
             ++wIter;
             return *this;
@@ -532,16 +520,6 @@ class Graph final {
             return std::make_pair(*nIter, *wIter);
         }
 
-        void toEnd() {
-            if (InEdges) {
-                nIter = G.inEdges[u].end();
-                wIter = G.inEdgeWeights[u].end();
-            } else {
-                nIter = G.outEdges[u].end();
-                wIter = G.outEdgeWeights[u].end();
-            }
-        }
-
       private:
         const Graph &G;
         const node u;
@@ -557,14 +535,16 @@ class Graph final {
       public:
         NeighborRange(const Graph &G, node u) : G(G), u(u){};
 
-        NeighborIterator<InEdges> begin() {
-            return NeighborIterator<InEdges>(G, u);
+        NeighborIterator begin() {
+            if (InEdges)
+                return NeighborIterator(G, u, G.inEdges[u].begin());
+            return NeighborIterator(G, u, G.outEdges[u].begin());
         }
 
-        NeighborIterator<InEdges> end() {
-            NeighborIterator<InEdges> end_(G, u);
-            end_.toEnd();
-            return end_;
+        NeighborIterator end() {
+            if (InEdges)
+                return NeighborIterator(G, u, G.inEdges[u].end());
+            return NeighborIterator(G, u, G.outEdges[u].end());
         }
 
       private:
@@ -582,14 +562,20 @@ class Graph final {
       public:
         NeighborWeightRange(const Graph &G, node u) : G(G), u(u){};
 
-        NeighborWeightIterator<InEdges> begin() {
-            return NeighborWeightIterator<InEdges>(G, u);
+        NeighborWeightIterator begin() {
+            if (InEdges)
+                return NeighborWeightIterator(G, u, G.inEdges[u].begin(),
+                                              G.inEdgeWeights[u].begin());
+            return NeighborWeightIterator(G, u, G.outEdges[u].begin(),
+                                          G.outEdgeWeights[u].begin());
         }
 
-        NeighborWeightIterator<InEdges> end() {
-            NeighborWeightIterator<InEdges> end_(G, u);
-            end_.toEnd();
-            return end_;
+        NeighborWeightIterator end() {
+            if (InEdges)
+                return NeighborWeightIterator(G, u, G.inEdges[u].end(),
+                                              G.inEdgeWeights[u].end());
+            return NeighborWeightIterator(G, u, G.outEdges[u].end(),
+                                          G.outEdgeWeights[u].end());
         }
 
       private:
