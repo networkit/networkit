@@ -68,6 +68,7 @@ template <> struct hash<NetworKit::Edge> {
 };
 } // namespace std
 
+
 namespace NetworKit {
 
 // forward declaration to randomization/CurveballImpl.h
@@ -424,6 +425,168 @@ private:
 	auto callBFSHandle(F &f, node u, count) const -> decltype(f(u)) {
 		return f(u);
 	}
+
+    /**
+     * Class to iterate over the in/out neighbors of a node.
+     */
+    template <bool InEdges = false>
+    class NeighborIterator {
+
+        public:
+            typedef std::forward_iterator_tag iteratorCategory;
+
+            NeighborIterator(const Graph &G, node u) : G(G), u(u),
+                nIter(InEdges ? G.inEdges[u].begin() : G.outEdges[u].begin()) {}
+
+            NeighborIterator operator++() {
+                auto prev = *this;
+                ++nIter;
+                return prev;
+            }
+
+            NeighborIterator operator++(int junk) {
+                ++nIter;
+                return *this;
+            }
+
+            bool operator==(const NeighborIterator &rhs) {
+                return nIter == rhs.nIter;
+            }
+
+            bool operator!=(const NeighborIterator &rhs) {
+                return nIter != rhs.nIter;
+            }
+
+            const node operator*() const {
+                return *nIter;
+            }
+
+            void toEnd() {
+                if (InEdges)
+                    nIter = G.inEdges[u].end();
+                else
+                    nIter = G.outEdges[u].end();
+            }
+
+        private:
+            const Graph &G;
+            const node u;
+            std::vector<node>::const_iterator nIter;
+    };
+
+    /**
+     * Class to iterate over the in/out neighbors of a node including the edge
+     * weights. Values are std::pair<node, edgeweight>.
+     */
+    template <bool InEdges = false>
+    class NeighborWeightIterator {
+
+        public:
+            typedef std::forward_iterator_tag iteratorCategory;
+
+            NeighborWeightIterator(const Graph &G, node u) : G(G), u(u) {
+                if (InEdges) {
+                    nIter = G.inEdges[u].begin();
+                    wIter = G.inEdgeWeights[u].begin();
+                } else {
+                    nIter = G.outEdges[u].begin();
+                    wIter = G.outEdgeWeights[u].begin();
+                }
+            }
+
+            NeighborWeightIterator operator++() {
+                auto prev = *this;
+                ++nIter;
+                ++wIter;
+                return prev;
+            }
+
+            NeighborWeightIterator operator++(int junk) {
+                ++nIter;
+                ++wIter;
+                return *this;
+            }
+
+            bool operator==(const NeighborWeightIterator &rhs) {
+                return nIter == rhs.nIter && wIter == rhs.wIter;
+            }
+
+            bool operator!=(const NeighborWeightIterator &rhs) {
+                return nIter != rhs.nIter || wIter != rhs.wIter;
+            }
+
+            const std::pair<node, edgeweight> operator*() const {
+                return std::make_pair(*nIter, *wIter);
+            }
+
+            void toEnd() {
+                if (InEdges) {
+                    nIter = G.inEdges[u].end();
+                    wIter = G.inEdgeWeights[u].end();
+                } else {
+                    nIter = G.outEdges[u].end();
+                    wIter = G.outEdgeWeights[u].end();
+                }
+            }
+
+        private:
+            const Graph &G;
+            const node u;
+            std::vector<node>::const_iterator nIter;
+            std::vector<edgeweight>::const_iterator wIter;
+
+    };
+
+    /**
+     * Wrapper class to iterate over a range of the neighbors of a node within
+     * a for loop.
+     */
+    template <bool InEdges = false>
+    class NeighborRange {
+    public:
+        NeighborRange(const Graph &G, node u) : G(G), u(u) {};
+
+        NeighborIterator<InEdges> begin() {
+            return NeighborIterator<InEdges>(G, u);
+        }
+
+        NeighborIterator<InEdges> end() {
+            NeighborIterator<InEdges> end_(G, u);
+            end_.toEnd();
+            return end_;
+        }
+
+    private:
+        const Graph &G;
+        const node u;
+    };
+
+    /**
+     * Wrapper class to iterate over a range of the neighbors of a node
+     * including the edge weights within a for loop.
+     * Values are std::pair<node, edgeweight>.
+     */
+    template <bool InEdges = false>
+    class NeighborWeightRange {
+
+    public:
+        NeighborWeightRange(const Graph &G, node u) : G(G), u(u) {};
+
+        NeighborWeightIterator<InEdges> begin() {
+            return NeighborWeightIterator<InEdges>(G, u);
+        }
+
+        NeighborWeightIterator<InEdges> end() {
+            NeighborWeightIterator<InEdges> end_(G, u);
+            end_.toEnd();
+            return end_;
+        }
+
+    private:
+        const Graph &G;
+        const node u;
+    };
+
 
 public:
 	/**
@@ -1044,48 +1207,63 @@ public:
 	 */
 	std::vector<node> neighbors(node u) const;
 
-    /** Get a const iterator over the neighbors of @a u.
+	/**
+	 * Get list of in-neighbors of @a u.
+	 *
+	 * @param u Node.
+	 * @return List of in-neighbors of @a u.
+	 */
+	std::vector<node> inNeighbors(node u) const;
+
+    /**
+     * Get an iterable range over the neighbors of @a.
      *
      * @param u Node.
-     * @return Iterator over the neighbors of @a u.
+     * @return Iterator range over the neighbors of @a.
      */
-    std::vector<node>::const_iterator neighborsIter(node u) const {
+    NeighborRange<false> neighborRange(node u) {
         assert(exists[u]);
-        std::vector<node>::const_iterator iter = outEdges[u].begin();
-        return iter;
+        return NeighborRange<false>(*this, u);
     }
 
-    /** Get a const iterator over the in neighbors of @a u.
+    /**
+     * Get an iterable range over the neighbors of @a u including the edge
+     * weights.
      *
      * @param u Node.
-     * @return Iterator over the in neighbors of @a u.
+     * @return Iterator range over pairs of neighbors of @a and corresponding
+     * edge weights.
      */
-    std::vector<node>::const_iterator inNeighborsIter(node u) const {
-        assert(exists[u] && isDirected());
-        std::vector<node>::const_iterator iter = inEdges[u].begin();
-        return iter;
+    NeighborWeightRange<false> weightNeighborRange(node u) {
+        assert(isWeighted());
+        assert(exists[u]);
+        return NeighborWeightRange<false>(*this, u);
     }
 
-    /** Get a const iterator over the outgoing edge weights from @a u.
+    /**
+     * Get an iterable range over the in-neighbors of @a.
      *
      * @param u Node.
-     * @return Iterator over the outgoing edge weights from @a u.
+     * @return Iterator range over pairs of in-neighbors of @a.
      */
-    std::vector<edgeweight>::const_iterator outEdgeWeightIter(node u) const {
-        assert(exists[u] && isWeighted());
-        std::vector<edgeweight>::const_iterator iter = outEdgeWeights[u].begin();
-        return iter;
+    NeighborRange<true> inNeighborRange(node u) {
+        assert(isDirected());
+        assert(exists[u]);
+        return NeighborRange<true>(*this, u);
     }
 
-    /** Get a const iterator over the in-going edge weights from @a u.
+    /**
+     * Get an iterable range over the in-neighbors of @a u including the
+     * edge weights.
      *
      * @param u Node.
-     * @return Iterator over the in-going edge weights from @a u.
+     * @return Iterator range over pairs of in-neighbors of @a and corresponding
+     * edge weights.
      */
-    std::vector<edgeweight>::const_iterator inEdgeWeightIter(node u) const {
-        assert(exists[u] && isDirected() && isWeighted());
-        std::vector<edgeweight>::const_iterator iter = inEdgeWeights[u].begin();
-        return iter;
+    NeighborWeightRange<true> weightInNeighborRange(node u) {
+        assert(isDirected() && isWeighted());
+        assert(exists[u]);
+        return NeighborWeightRange<true>(*this, u);
     }
 
 	/**

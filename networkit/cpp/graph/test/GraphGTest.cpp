@@ -1215,32 +1215,35 @@ TEST_P(GraphGTest, testNeighbors) {
 }
 
 TEST_P(GraphGTest, testNeighborsIterators) {
-    auto neighborsIter = this->Ghouse.neighborsIter(1);
-    this->Ghouse.forNeighborsOf(1, [&](node u) {
-        ASSERT_TRUE(u == *neighborsIter++);
-    });
+    auto outNeighbors = this->Ghouse.neighbors(1);
+    count i = 0;
+    for (auto u : this->Ghouse.neighborRange(1)) {
+        ASSERT_TRUE(u == outNeighbors[i++]);
+    }
 
     if (this->Ghouse.isWeighted()) {
-        neighborsIter = this->Ghouse.neighborsIter(1);
-        auto weightIter = this->Ghouse.outEdgeWeightIter(1);
-        this->Ghouse.forNeighborsOf(1, [&](node u, edgeweight w) {
-            ASSERT_TRUE(u == *neighborsIter++);
-            ASSERT_TRUE(w == *weightIter++);
-        });
+        i = 0;
+        for (auto u : this->Ghouse.weightNeighborRange(1)) {
+            ASSERT_TRUE(u.first == outNeighbors[i]);
+            ASSERT_TRUE(u.second == this->Ghouse.weight(1, outNeighbors[i]));
+            ++i;
+        }
     }
 
     if (this->Ghouse.isDirected()) {
-        neighborsIter = this->Ghouse.inNeighborsIter(1);
-        this->Ghouse.forInNeighborsOf(1, [&](node u) {
-            ASSERT_TRUE(u == *neighborsIter++);
-        });
+        auto inNeighbors = this->Ghouse.inNeighbors(1);
+        i = 0;
+        for (auto u : this->Ghouse.inNeighborRange(1)) {
+            ASSERT_TRUE(u == inNeighbors[i++]);
+        }
+
         if (this->Ghouse.isWeighted()) {
-            neighborsIter = this->Ghouse.inNeighborsIter(1);
-            auto weightIter = this->Ghouse.inEdgeWeightIter(1);
-            this->Ghouse.forInNeighborsOf(1, [&](node u, edgeweight w) {
-                ASSERT_TRUE(u == *neighborsIter++);
-                ASSERT_TRUE(w == *weightIter++);
-            });
+            i = 0;
+            for (auto u : this->Ghouse.weightInNeighborRange(1)) {
+                ASSERT_TRUE(u.first == inNeighbors[i]);
+                ASSERT_TRUE(u.second == this->Ghouse.weight(inNeighbors[i], 1));
+                ++i;
+            }
         }
     }
 }

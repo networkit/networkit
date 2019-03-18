@@ -962,6 +962,14 @@ std::vector<node> Graph::neighbors(node u) const {
 	return neighbors;
 }
 
+std::vector<node> Graph::inNeighbors(node u) const {
+    assert(isDirected());
+    std::vector<node> inNeighbors;
+    inNeighbors.reserve(degreeIn(u));
+    this->forInNeighborsOf(u, [&](node v) { inNeighbors.push_back(v); });
+    return inNeighbors;
+}
+
 Graph Graph::transpose() const {
 	if (directed == false) {
 		throw std::runtime_error("The transpose of an undirected graph is "
