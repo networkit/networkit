@@ -1220,6 +1220,7 @@ TEST_P(GraphGTest, testNeighborsIterators) {
         ASSERT_TRUE(*iter == v);
         ++iter;
     });
+    ASSERT_TRUE(iter == this->Ghouse.neighborRange(1).end());
 
     if (this->Ghouse.isWeighted()) {
         auto iterW = this->Ghouse.weightNeighborRange(1).begin();
@@ -1228,6 +1229,7 @@ TEST_P(GraphGTest, testNeighborsIterators) {
             ASSERT_TRUE((*iterW).second == w);
             ++iterW;
         });
+        ASSERT_TRUE(iterW == this->Ghouse.weightNeighborRange(1).end());
     }
 
     if (this->Ghouse.isDirected()) {
@@ -1236,6 +1238,7 @@ TEST_P(GraphGTest, testNeighborsIterators) {
             ASSERT_TRUE(*inIter == v);
             ++inIter;
         });
+        ASSERT_TRUE(inIter == this->Ghouse.inNeighborRange(1).end());
 
         if (this->Ghouse.isWeighted()) {
             auto iterW = this->Ghouse.weightInNeighborRange(1).begin();
@@ -1244,6 +1247,7 @@ TEST_P(GraphGTest, testNeighborsIterators) {
                 ASSERT_TRUE((*iterW).second == w);
                 ++iterW;
             });
+            ASSERT_TRUE(iterW == this->Ghouse.weightInNeighborRange(1).end());
         }
     }
 }
