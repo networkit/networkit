@@ -1215,35 +1215,35 @@ TEST_P(GraphGTest, testNeighbors) {
 }
 
 TEST_P(GraphGTest, testNeighborsIterators) {
-    auto outNeighbors = this->Ghouse.neighbors(1);
-    count i = 0;
-    for (auto u : this->Ghouse.neighborRange(1)) {
-        ASSERT_TRUE(u == outNeighbors[i++]);
-    }
+    auto iter = this->Ghouse.neighborRange(1).begin();
+    this->Ghouse.forNeighborsOf(1, [&](node v) {
+        ASSERT_TRUE(*iter == v);
+        ++iter;
+    });
 
     if (this->Ghouse.isWeighted()) {
-        i = 0;
-        for (auto u : this->Ghouse.weightNeighborRange(1)) {
-            ASSERT_TRUE(u.first == outNeighbors[i]);
-            ASSERT_TRUE(u.second == this->Ghouse.weight(1, outNeighbors[i]));
-            ++i;
-        }
+        auto iterW = this->Ghouse.weightNeighborRange(1).begin();
+        this->Ghouse.forNeighborsOf(1, [&](node v, edgeweight w) {
+            ASSERT_TRUE((*iterW).first == v);
+            ASSERT_TRUE((*iterW).second == w);
+            ++iterW;
+        });
     }
 
     if (this->Ghouse.isDirected()) {
-        auto inNeighbors = this->Ghouse.inNeighbors(1);
-        i = 0;
-        for (auto u : this->Ghouse.inNeighborRange(1)) {
-            ASSERT_TRUE(u == inNeighbors[i++]);
-        }
+        auto inIter = this->Ghouse.inNeighborRange(1).begin();
+        this->Ghouse.forInNeighborsOf(1, [&](node v) {
+            ASSERT_TRUE(*inIter == v);
+            ++inIter;
+        });
 
         if (this->Ghouse.isWeighted()) {
-            i = 0;
-            for (auto u : this->Ghouse.weightInNeighborRange(1)) {
-                ASSERT_TRUE(u.first == inNeighbors[i]);
-                ASSERT_TRUE(u.second == this->Ghouse.weight(inNeighbors[i], 1));
-                ++i;
-            }
+            auto iterW = this->Ghouse.weightInNeighborRange(1).begin();
+            this->Ghouse.forInNeighborsOf(1, [&](node v, edgeweight w) {
+                ASSERT_TRUE((*iterW).first == v);
+                ASSERT_TRUE((*iterW).second == w);
+                ++iterW;
+            });
         }
     }
 }

@@ -1199,14 +1199,6 @@ class Graph final {
     std::vector<node> neighbors(node u) const;
 
     /**
-     * Get list of in-neighbors of @a u.
-     *
-     * @param u Node.
-     * @return List of in-neighbors of @a u.
-     */
-    std::vector<node> inNeighbors(node u) const;
-
-    /**
      * Get an iterable range over the neighbors of @a.
      *
      * @param u Node.
