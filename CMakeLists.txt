@@ -201,6 +201,9 @@ if(NETWORKIT_PYTHON)
 		set_target_properties(_NetworKit PROPERTIES
 				INSTALL_RPATH "$ORIGIN")
 	endif()
+
+    target_link_libraries(_NetworKit PRIVATE tlx)
+
 	install(TARGETS _NetworKit
 			LIBRARY DESTINATION ${NETWORKIT_LIB_DEST})
 endif()
