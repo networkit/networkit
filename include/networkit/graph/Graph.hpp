@@ -448,7 +448,25 @@ class Graph final {
     class NeighborIterator {
 
       public:
-        typedef std::forward_iterator_tag iteratorCategory;
+        // The value type of the neighbors (i.e. nodes). Returned by
+        // operator*().
+        typedef node value_type;
+
+        // Reference to the value_type, required by STL.
+        typedef value_type &reference;
+
+        // Pointer to the value_type, required by STL.
+        typedef value_type *pointer;
+
+        // STL iterator category.
+        typedef std::forward_iterator_tag iterator_category;
+
+        // Signed integer type of the result of subtracting two pointers,
+        // required by STL.
+        typedef ptrdiff_t difference_type;
+
+        // Own type.
+        typedef NeighborIterator self;
 
         NeighborIterator(const Graph &G, node u,
                          std::vector<node>::const_iterator nodesIter)
@@ -465,11 +483,22 @@ class Graph final {
             return *this;
         }
 
-        bool operator==(const NeighborIterator &rhs) {
+        NeighborIterator operator--() {
+            auto prev = *this;
+            --nIter;
+            return prev;
+        }
+
+        NeighborIterator operator--(int) {
+            --nIter;
+            return *this;
+        }
+
+        bool operator==(const NeighborIterator &rhs) const {
             return nIter == rhs.nIter;
         }
 
-        bool operator!=(const NeighborIterator &rhs) {
+        bool operator!=(const NeighborIterator &rhs) const {
             return nIter != rhs.nIter;
         }
 
@@ -488,7 +517,25 @@ class Graph final {
     class NeighborWeightIterator {
 
       public:
-        typedef std::forward_iterator_tag iteratorCategory;
+        // The value type of the neighbors (i.e. nodes). Returned by
+        // operator*().
+        typedef std::pair<node, edgeweight> value_type;
+
+        // Reference to the value_type, required by STL.
+        typedef value_type &reference;
+
+        // Pointer to the value_type, required by STL.
+        typedef value_type *pointer;
+
+        // STL iterator category.
+        typedef std::forward_iterator_tag iterator_category;
+
+        // Signed integer type of the result of subtracting two pointers,
+        // required by STL.
+        typedef ptrdiff_t difference_type;
+
+        // Own type.
+        typedef NeighborWeightIterator self;
 
         NeighborWeightIterator(
             const Graph &G, node u, std::vector<node>::const_iterator nodesIter,
@@ -508,11 +555,24 @@ class Graph final {
             return *this;
         }
 
-        bool operator==(const NeighborWeightIterator &rhs) {
+        NeighborWeightIterator operator--() {
+            auto prev = *this;
+            --nIter;
+            --wIter;
+            return prev;
+        }
+
+        NeighborWeightIterator operator--(int) {
+            --nIter;
+            --wIter;
+            return *this;
+        }
+
+        bool operator==(const NeighborWeightIterator &rhs) const {
             return nIter == rhs.nIter && wIter == rhs.wIter;
         }
 
-        bool operator!=(const NeighborWeightIterator &rhs) {
+        bool operator!=(const NeighborWeightIterator &rhs) const {
             return nIter != rhs.nIter || wIter != rhs.wIter;
         }
 
@@ -535,13 +595,13 @@ class Graph final {
       public:
         NeighborRange(const Graph &G, node u) : G(G), u(u){};
 
-        NeighborIterator begin() {
+        NeighborIterator begin() const {
             if (InEdges)
                 return NeighborIterator(G, u, G.inEdges[u].begin());
             return NeighborIterator(G, u, G.outEdges[u].begin());
         }
 
-        NeighborIterator end() {
+        NeighborIterator end() const {
             if (InEdges)
                 return NeighborIterator(G, u, G.inEdges[u].end());
             return NeighborIterator(G, u, G.outEdges[u].end());
@@ -562,7 +622,7 @@ class Graph final {
       public:
         NeighborWeightRange(const Graph &G, node u) : G(G), u(u){};
 
-        NeighborWeightIterator begin() {
+        NeighborWeightIterator begin() const {
             if (InEdges)
                 return NeighborWeightIterator(G, u, G.inEdges[u].begin(),
                                               G.inEdgeWeights[u].begin());
@@ -570,7 +630,7 @@ class Graph final {
                                           G.outEdgeWeights[u].begin());
         }
 
-        NeighborWeightIterator end() {
+        NeighborWeightIterator end() const {
             if (InEdges)
                 return NeighborWeightIterator(G, u, G.inEdges[u].end(),
                                               G.inEdgeWeights[u].end());
@@ -1196,7 +1256,7 @@ class Graph final {
      * @param u Node.
      * @return List of neighbors of @a u.
      */
-    std::vector<node> neighbors(node u) const;
+    [[deprecated]] std::vector<node> neighbors(node u) const;
 
     /**
      * Get an iterable range over the neighbors of @a.
@@ -1204,7 +1264,7 @@ class Graph final {
      * @param u Node.
      * @return Iterator range over the neighbors of @a.
      */
-    NeighborRange<false> neighborRange(node u) {
+    NeighborRange<false> neighborRange(node u) const {
         assert(exists[u]);
         return NeighborRange<false>(*this, u);
     }
@@ -1217,7 +1277,7 @@ class Graph final {
      * @return Iterator range over pairs of neighbors of @a and corresponding
      * edge weights.
      */
-    NeighborWeightRange<false> weightNeighborRange(node u) {
+    NeighborWeightRange<false> weightNeighborRange(node u) const {
         assert(isWeighted());
         assert(exists[u]);
         return NeighborWeightRange<false>(*this, u);
@@ -1229,7 +1289,7 @@ class Graph final {
      * @param u Node.
      * @return Iterator range over pairs of in-neighbors of @a.
      */
-    NeighborRange<true> inNeighborRange(node u) {
+    NeighborRange<true> inNeighborRange(node u) const {
         assert(isDirected());
         assert(exists[u]);
         return NeighborRange<true>(*this, u);
@@ -1243,7 +1303,7 @@ class Graph final {
      * @return Iterator range over pairs of in-neighbors of @a and corresponding
      * edge weights.
      */
-    NeighborWeightRange<true> weightInNeighborRange(node u) {
+    NeighborWeightRange<true> weightInNeighborRange(node u) const {
         assert(isDirected() && isWeighted());
         assert(exists[u]);
         return NeighborWeightRange<true>(*this, u);

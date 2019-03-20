@@ -64,7 +64,7 @@ public:
 	count scoreOfGroup(const std::vector<node> &group) const;
 
 protected:
-	Graph G;
+	const Graph &G;
 	const count k;
 	const bool countGroupNodes;
 	count n;

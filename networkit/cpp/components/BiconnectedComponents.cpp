@@ -60,7 +60,7 @@ void BiconnectedComponents::run() {
 
       bool allVisited = true;
 
-      for (node neighbor : G.neighbors(u)) {
+      for (node neighbor : G.neighborRange(u)) {
         if (!visited[neighbor]) {
           allVisited = false;
           visit(neighbor);
