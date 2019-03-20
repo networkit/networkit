@@ -445,10 +445,29 @@ class Graph final {
     /**
      * Class to iterate over the in/out neighbors of a node.
      */
-    class NeighborIterator
-        : public std::iterator<std::forward_iterator_tag, const node> {
+    class NeighborIterator {
 
       public:
+        // The value type of the neighbors (i.e. nodes). Returned by
+        // operator*().
+        typedef node value_type;
+
+        // Reference to the value_type, required by STL.
+        typedef value_type &reference;
+
+        // Pointer to the value_type, required by STL.
+        typedef value_type *pointer;
+
+        // STL iterator category.
+        typedef std::forward_iterator_tag iterator_category;
+
+        // Signed integer type of the result of subtracting two pointers,
+        // required by STL.
+        typedef ptrdiff_t difference_type;
+
+        // Own type.
+        typedef NeighborIterator self;
+
         NeighborIterator(const Graph &G, node u,
                          std::vector<node>::const_iterator nodesIter)
             : G(G), u(u), nIter(nodesIter) {}
@@ -495,11 +514,29 @@ class Graph final {
      * Class to iterate over the in/out neighbors of a node including the edge
      * weights. Values are std::pair<node, edgeweight>.
      */
-    class NeighborWeightIterator
-        : public std::iterator<std::forward_iterator_tag,
-                               const std::pair<node, edgeweight>> {
+    class NeighborWeightIterator {
 
       public:
+        // The value type of the neighbors (i.e. nodes). Returned by
+        // operator*().
+        typedef std::pair<node, edgeweight> value_type;
+
+        // Reference to the value_type, required by STL.
+        typedef value_type &reference;
+
+        // Pointer to the value_type, required by STL.
+        typedef value_type *pointer;
+
+        // STL iterator category.
+        typedef std::forward_iterator_tag iterator_category;
+
+        // Signed integer type of the result of subtracting two pointers,
+        // required by STL.
+        typedef ptrdiff_t difference_type;
+
+        // Own type.
+        typedef NeighborWeightIterator self;
+
         NeighborWeightIterator(
             const Graph &G, node u, std::vector<node>::const_iterator nodesIter,
             std::vector<edgeweight>::const_iterator weightIter)
@@ -525,7 +562,7 @@ class Graph final {
             return prev;
         }
 
-        NeighborWeightIterator operator--(int){
+        NeighborWeightIterator operator--(int) {
             --nIter;
             --wIter;
             return *this;
