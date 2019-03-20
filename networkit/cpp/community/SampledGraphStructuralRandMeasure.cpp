@@ -31,10 +31,8 @@ double SampledGraphStructuralRandMeasure::getDissimilarity(const Graph& G, const
 	while (nSamples < maxSamples) {
 		node u = Aux::Random::integer(z - 1);
 		if (G.hasNode(u) && (G.degree(u) > 0)) {
-            std::vector<node> neighbors;
-            neighbors.reserve(G.degree(u));
-            for (node x : G.neighborRange(u))
-                neighbors.push_back(x);
+			std::vector<node> neighbors(G.neighborRange(u).begin(),
+										G.neighborRange(u).end());
 			index i = Aux::Random::integer(neighbors.size() - 1);
 			node v = neighbors.at(i);
 			assert (G.hasEdge(u, v));
