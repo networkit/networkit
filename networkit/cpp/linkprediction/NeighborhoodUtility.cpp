@@ -10,8 +10,14 @@
 namespace NetworKit {
 
 std::pair<std::vector<node>, std::vector<node>> NeighborhoodUtility::getSortedNeighborhoods(const Graph& G, node u, node v) {
-  std::vector<node> uNeighbors = G.neighbors(u);
-  std::vector<node> vNeighbors = G.neighbors(v);
+  std::vector<node> uNeighbors;
+  std::vector<node> vNeighbors;
+  uNeighbors.reserve(G.degree(u));
+  vNeighbors.reserve(G.degree(v));
+  for (node uu : G.neighborRange(u))
+      uNeighbors.push_back(uu);
+  for (node vv : G.neighborRange(v))
+      vNeighbors.push_back(vv);
   // We have no guarantee that the neighbor-vectors are sorted so we have to
   // sort them in order for set-functions to work properly.
   std::sort(uNeighbors.begin(), uNeighbors.end());

@@ -823,7 +823,7 @@ TEST_P(GraphGTest, testRemoveAllEdges) {
 	EXPECT_EQ(g.numberOfEdges(), 0);
 	EXPECT_EQ(g.edges().size(), 0);
 	for (node u : g.nodes()) {
-		EXPECT_EQ(g.neighbors(u).size(), 0);
+		EXPECT_EQ(g.degree(u), 0);
 		EXPECT_EQ(g.degree(u), 0);
 	}
 
@@ -832,7 +832,7 @@ TEST_P(GraphGTest, testRemoveAllEdges) {
 	EXPECT_EQ(g.numberOfEdges(), 0);
 	EXPECT_EQ(g.edges().size(), 0);
 	for (node u : g.nodes()) {
-		EXPECT_EQ(g.neighbors(u).size(), 0);
+		EXPECT_EQ(g.degree(u), 0);
 		EXPECT_EQ(g.degree(u), 0);
 		EXPECT_EQ(g.degreeIn(u), 0);
 	}
@@ -1195,22 +1195,6 @@ TEST_P(GraphGTest, testNodes) {
 	ASSERT_EQ(G.numberOfNodes(), nodes.size());
 	for (node v : nodes) {
 		ASSERT_TRUE(containsNode(v));
-	}
-}
-
-TEST_P(GraphGTest, testNeighbors) {
-	auto neighbors = this->Ghouse.neighbors(1);
-	auto containsNode = [&neighbors](node v) {
-		return std::find(neighbors.begin(), neighbors.end(), v) != neighbors.end();
-	};
-	if (this->Ghouse.isDirected()) {
-		ASSERT_TRUE(containsNode(0));
-		ASSERT_TRUE(containsNode(4));
-	} else {
-		ASSERT_TRUE(containsNode(0));
-		ASSERT_TRUE(containsNode(2));
-		ASSERT_TRUE(containsNode(3));
-		ASSERT_TRUE(containsNode(4));
 	}
 }
 

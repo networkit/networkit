@@ -49,7 +49,10 @@ TEST_F(BiconnectedComponentsGTest, testBiconnectedComponents) {
 		count nComps = cc.numberOfComponents();
 		for (node v : component) {
 
-			std::vector<node> neighbors = G.neighbors(v);
+			std::vector<node> neighbors;
+            neighbors.reserve(G.degree(v));
+            for (node w : G.neighborRange(v))
+                neighbors.push_back(w);
 			// Simulating node removal
 			for (node w : neighbors) {
 				G.removeEdge(v, w);

@@ -1191,20 +1191,12 @@ class Graph final {
     std::vector<std::pair<node, node>> edges() const;
 
     /**
-     * Get list of neighbors of @a u.
-     *
-     * @param u Node.
-     * @return List of neighbors of @a u.
-     */
-    std::vector<node> neighbors(node u) const;
-
-    /**
      * Get an iterable range over the neighbors of @a.
      *
      * @param u Node.
      * @return Iterator range over the neighbors of @a.
      */
-    NeighborRange<false> neighborRange(node u) {
+    NeighborRange<false> neighborRange(node u) const {
         assert(exists[u]);
         return NeighborRange<false>(*this, u);
     }
@@ -1217,7 +1209,7 @@ class Graph final {
      * @return Iterator range over pairs of neighbors of @a and corresponding
      * edge weights.
      */
-    NeighborWeightRange<false> weightNeighborRange(node u) {
+    NeighborWeightRange<false> weightNeighborRange(node u) const {
         assert(isWeighted());
         assert(exists[u]);
         return NeighborWeightRange<false>(*this, u);
@@ -1229,7 +1221,7 @@ class Graph final {
      * @param u Node.
      * @return Iterator range over pairs of in-neighbors of @a.
      */
-    NeighborRange<true> inNeighborRange(node u) {
+    NeighborRange<true> inNeighborRange(node u) const {
         assert(isDirected());
         assert(exists[u]);
         return NeighborRange<true>(*this, u);
@@ -1243,7 +1235,7 @@ class Graph final {
      * @return Iterator range over pairs of in-neighbors of @a and corresponding
      * edge weights.
      */
-    NeighborWeightRange<true> weightInNeighborRange(node u) {
+    NeighborWeightRange<true> weightInNeighborRange(node u) const {
         assert(isDirected() && isWeighted());
         assert(exists[u]);
         return NeighborWeightRange<true>(*this, u);

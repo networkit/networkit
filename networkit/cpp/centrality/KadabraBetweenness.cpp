@@ -541,9 +541,9 @@ void SpSampler::backtrackPath(const node u, const node v, const node start,
 
 	path.push_back(start);
 	randomPred = Aux::Random::integer(totWeight - 1);
-	assert((pred.neighbors(start)).size() > 0);
+	assert((pred.degree(start)) > 0);
 
-	for (node t : pred.neighbors(start)) {
+	for (node t : pred.neighborRange(start)) {
 		w = t;
 		curPred += nPaths[v];
 		if (curPred > randomPred) {
