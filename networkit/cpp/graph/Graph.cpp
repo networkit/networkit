@@ -955,6 +955,13 @@ std::vector<std::pair<node, node>> Graph::edges() const {
 	return edges;
 }
 
+std::vector<node> Graph::neighbors(node u) const {
+	std::vector<node> neighbors;
+	neighbors.reserve(degree(u));
+	this->forNeighborsOf(u, [&](node v) { neighbors.push_back(v); });
+	return neighbors;
+}
+
 Graph Graph::transpose() const {
 	if (directed == false) {
 		throw std::runtime_error("The transpose of an undirected graph is "

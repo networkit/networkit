@@ -445,11 +445,10 @@ class Graph final {
     /**
      * Class to iterate over the in/out neighbors of a node.
      */
-    class NeighborIterator {
+    class NeighborIterator
+        : public std::iterator<std::forward_iterator_tag, const node> {
 
       public:
-        typedef std::forward_iterator_tag iteratorCategory;
-
         NeighborIterator(const Graph &G, node u,
                          std::vector<node>::const_iterator nodesIter)
             : G(G), u(u), nIter(nodesIter) {}
@@ -465,11 +464,22 @@ class Graph final {
             return *this;
         }
 
-        bool operator==(const NeighborIterator &rhs) {
+        NeighborIterator operator--() {
+            auto prev = *this;
+            --nIter;
+            return prev;
+        }
+
+        NeighborIterator operator--(int) {
+            --nIter;
+            return *this;
+        }
+
+        bool operator==(const NeighborIterator &rhs) const {
             return nIter == rhs.nIter;
         }
 
-        bool operator!=(const NeighborIterator &rhs) {
+        bool operator!=(const NeighborIterator &rhs) const {
             return nIter != rhs.nIter;
         }
 
@@ -485,11 +495,11 @@ class Graph final {
      * Class to iterate over the in/out neighbors of a node including the edge
      * weights. Values are std::pair<node, edgeweight>.
      */
-    class NeighborWeightIterator {
+    class NeighborWeightIterator
+        : public std::iterator<std::forward_iterator_tag,
+                               const std::pair<node, edgeweight>> {
 
       public:
-        typedef std::forward_iterator_tag iteratorCategory;
-
         NeighborWeightIterator(
             const Graph &G, node u, std::vector<node>::const_iterator nodesIter,
             std::vector<edgeweight>::const_iterator weightIter)
@@ -508,11 +518,24 @@ class Graph final {
             return *this;
         }
 
-        bool operator==(const NeighborWeightIterator &rhs) {
+        NeighborWeightIterator operator--() {
+            auto prev = *this;
+            --nIter;
+            --wIter;
+            return prev;
+        }
+
+        NeighborWeightIterator operator--(int){
+            --nIter;
+            --wIter;
+            return *this;
+        }
+
+        bool operator==(const NeighborWeightIterator &rhs) const {
             return nIter == rhs.nIter && wIter == rhs.wIter;
         }
 
-        bool operator!=(const NeighborWeightIterator &rhs) {
+        bool operator!=(const NeighborWeightIterator &rhs) const {
             return nIter != rhs.nIter || wIter != rhs.wIter;
         }
 
@@ -535,13 +558,13 @@ class Graph final {
       public:
         NeighborRange(const Graph &G, node u) : G(G), u(u){};
 
-        NeighborIterator begin() {
+        NeighborIterator begin() const {
             if (InEdges)
                 return NeighborIterator(G, u, G.inEdges[u].begin());
             return NeighborIterator(G, u, G.outEdges[u].begin());
         }
 
-        NeighborIterator end() {
+        NeighborIterator end() const {
             if (InEdges)
                 return NeighborIterator(G, u, G.inEdges[u].end());
             return NeighborIterator(G, u, G.outEdges[u].end());
@@ -562,7 +585,7 @@ class Graph final {
       public:
         NeighborWeightRange(const Graph &G, node u) : G(G), u(u){};
 
-        NeighborWeightIterator begin() {
+        NeighborWeightIterator begin() const {
             if (InEdges)
                 return NeighborWeightIterator(G, u, G.inEdges[u].begin(),
                                               G.inEdgeWeights[u].begin());
@@ -570,7 +593,7 @@ class Graph final {
                                           G.outEdgeWeights[u].begin());
         }
 
-        NeighborWeightIterator end() {
+        NeighborWeightIterator end() const {
             if (InEdges)
                 return NeighborWeightIterator(G, u, G.inEdges[u].end(),
                                               G.inEdgeWeights[u].end());
@@ -1189,6 +1212,14 @@ class Graph final {
      * @return List of edges as node pairs.
      */
     std::vector<std::pair<node, node>> edges() const;
+
+    /**
+     * Get list of neighbors of @a u.
+     *
+     * @param u Node.
+     * @return List of neighbors of @a u.
+     */
+    [[deprecated]] std::vector<node> neighbors(node u) const;
 
     /**
      * Get an iterable range over the neighbors of @a.
