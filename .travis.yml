@@ -10,17 +10,18 @@ env:
 
 matrix:
   include:
-    - name: macOS 10.13, llvm 7
-      env: CC=/usr/local/opt/llvm@7/bin/clang
-      env: CXX=/usr/local/opt/llvm@7/bin/clang++
+    - name: macOS 10.13, llvm 8
+      env: CC=/usr/local/opt/llvm@8/bin/clang
+      env: CXX=/usr/local/opt/llvm@8/bin/clang++
       os: osx
       osx_image: xcode10.1
       sudo: false
       addons:
         homebrew:
           packages:
-            - llvm@7
+            - llvm@8
             - libomp
+          update: true
 
     - name: macOS 10.13, GCC 8
       env: CC=/usr/local/opt/gcc@8/bin/gcc-8
