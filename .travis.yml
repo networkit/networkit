@@ -76,7 +76,7 @@ matrix:
       before_install:
         - brew link gcc@8
 
-    - name: Linux, modern GCC
+    - name: Linux, GCC 8
       env: CC=gcc-8 CXX=g++-8
       os: linux
       dist: xenial
@@ -89,7 +89,7 @@ matrix:
             - python3-pip
             - python3.5-venv
 
-    - name: Linux, legacy GCC 4.9
+    - name: Linux, GCC 4.9
       env: CC=gcc-4.9 CXX=g++-4.9
       os: linux
       dist: xenial
@@ -104,8 +104,8 @@ matrix:
             - python3-pip
             - python3.5-venv
 
-    - name: Linux, legacy Clang 3.8
-      env: CC="clang-3.8" CXX="clang++-3.8"
+    - name: Linux, Clang 3.8
+      env: CC=clang-3.8 CXX=clang++-3.8
       os: linux
       dist: xenial
       sudo: false
@@ -121,7 +121,7 @@ matrix:
             - python3.5-venv
 
     # Test more exotic builds only on Linux.
-    - name: "Linux, modern GCC: Core build, debugging"
+    - name: "Linux, GCC 8: Core build, debugging"
       env: CC=gcc-8 CXX=g++-8
       os: linux
       dist: xenial
@@ -133,7 +133,7 @@ matrix:
         - make -j2
         - ctest -V
 
-    - name: "Linux, modern GCC: Core build, non-monolithic"
+    - name: "Linux, GCC 8: Core build, non-monolithic"
       env: CC=gcc-8 CXX=g++-8
       os: linux
       dist: xenial
@@ -146,7 +146,7 @@ matrix:
         - ctest -V
 
     # Finally, test conformance to newer versions of the C++ standard.
-    - name: C++14 conformance
+    - name: "Linux, GCC 8: C++14 conformance"
       env: CC=gcc-8 CXX=g++-8 CXX_STANDARD=14
       os: linux
       dist: xenial
@@ -158,7 +158,7 @@ matrix:
         - make -j2
         - ctest -V
 
-    - name: C++17 conformance
+    - name: "Linux, GCC 8: C++17 conformance"
       env: CC=gcc-8 CXX=g++-8 CXX_STANDARD=17
       os: linux
       dist: xenial
