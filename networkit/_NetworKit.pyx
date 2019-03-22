@@ -322,6 +322,7 @@ cdef extern from "../include/networkit/graph/Graph.hpp":
 		vector[node] nodes() except +
 		vector[pair[node, node]] edges() except +
 		vector[node] neighbors(node u) except +
+		vector[node] inNeighbors(node u) except +
 		void forEdges[Callback](Callback c) except +
 		void forNodes[Callback](Callback c) except +
 		void forNodePairs[Callback](Callback c) except +
@@ -912,9 +913,32 @@ cdef class Graph:
 	 	Returns
 	 	-------
 	 	list
-	 		List of neighbors of `u.
+	 		List of neighbors of `u`.
 		"""
-		return self._this.neighbors(u)
+		neighborList = []
+		self.forEdgesOf(u, lambda v : neighborList.append(v))
+		return neighborList
+
+	def inNeighbors(self, u):
+		""" Get list of in-neighbors of `u`.
+
+	 	Parameters
+	 	----------
+	 	u : node
+	 		Node.
+
+	 	Returns
+	 	-------
+	 	list
+	 		List of in-neighbors of `u`.
+		"""
+		if not self.isDirected():
+			from warnings import warn
+			warn("The graph is not directed, returning the neighbors!")
+			return self.neighbors(u)
+		neighborList = []
+		self.forInEdgesOf(u, lambda v : neighborList.append(v))
+		return neighborList
 
 	def forNodes(self, object callback):
 		""" Experimental node iterator interface
