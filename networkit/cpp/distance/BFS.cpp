@@ -2,11 +2,11 @@
  * BFS.cpp
  *
  *  Created on: Jul 23, 2013
- *      Author: Henning
- */
+ *      Author: Henning */
+
+#include <queue>
 
 #include "../../include/networkit/distance/BFS.hpp"
-#include <queue>
 
 namespace NetworKit {
 
@@ -15,13 +15,19 @@ BFS::BFS(const Graph &G, node source, bool storePaths,
     : SSSP(G, source, storePaths, storeNodesSortedByDistance, target) {}
 
 void BFS::run() {
-    edgeweight infDist = std::numeric_limits<edgeweight>::max();
     count z = G.upperNodeIdBound();
-    distances.clear();
-    distances.resize(z, infDist);
+    reachedNodes = 1;
+    sumDist = 0.;
 
-    std::vector<bool> visited;
-    visited.resize(z, false);
+    if (distances.size() < z) {
+        distances.resize(z, std::numeric_limits<edgeweight>::max());
+        visited.resize(z, ts);
+    }
+
+    if (ts++ == 255) {
+        ts = 1;
+        std::fill(visited.begin(), visited.end(), 0);
+    }
 
     if (storePaths) {
         previous.clear();
@@ -38,8 +44,9 @@ void BFS::run() {
 
     std::queue<node> q;
     q.push(source);
-    visited[source] = true;
-    distances[source] = 0;
+    distances[source] = 0.;
+    visited[source] = ts;
+
     bool breakWhenFound = (target != none);
     while (!q.empty()) {
         node u = q.front();
@@ -59,21 +66,24 @@ void BFS::run() {
         G.forNeighborsOf(u, [&](node v) {
             // TRACE("scanning neighbor ", v);
 
-            if (!visited[v]) {
+            if (ts != visited[v]) {
                 q.push(v);
-                visited[v] = true;
-                distances[v] = distances[u] + 1;
+                visited[v] = ts;
+                distances[v] = distances[u] + 1.;
+                sumDist += distances[v];
+                ++reachedNodes;
                 if (storePaths) {
                     previous[v] = {u};
                     npaths[v] = npaths[u];
                 }
-            } else if (storePaths && (distances[v] == distances[u] + 1)) {
+            } else if (storePaths && (distances[v] == distances[u] + 1.)) {
                 previous[v].push_back(u); // additional predecessor
                 npaths[v] += npaths[u]; // all the shortest paths to u are also
                                         // shortest paths to v now
             }
         });
     }
-}
 
-} /* namespace NetworKit */
+    hasRun = true;
+}
+} // namespace NetworKit

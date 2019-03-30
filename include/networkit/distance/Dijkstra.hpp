@@ -8,7 +8,8 @@
 #ifndef DIJKSTRA_H_
 #define DIJKSTRA_H_
 
-#include "../auxiliary/PrioQueue.hpp"
+#include <tlx/container/d_ary_addressable_int_heap.hpp>
+
 #include "../graph/Graph.hpp"
 #include "SSSP.hpp"
 
@@ -43,6 +44,19 @@ class Dijkstra : public SSSP {
      * constructor.
      */
     virtual void run();
+
+  private:
+    struct Compare {
+      public:
+        Compare(const std::vector<double> &dist_) : dist(dist_) {}
+
+        bool operator()(node x, node y) const { return dist[x] < dist[y]; }
+
+      private:
+        const std::vector<double> &dist;
+    };
+
+    tlx::d_ary_addressable_int_heap<node, 2, Compare> heap;
 };
 
 } /* namespace NetworKit */

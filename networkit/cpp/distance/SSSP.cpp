@@ -12,7 +12,8 @@ namespace NetworKit {
 
 SSSP::SSSP(const Graph &G, node source, bool storePaths,
            bool storeNodesSortedByDistance, node target)
-    : Algorithm(), G(G), source(source), target(target), storePaths(storePaths),
+    : Algorithm(), G(G), source(source), target(target), ts(0),
+      storePaths(storePaths),
       storeNodesSortedByDistance(storeNodesSortedByDistance) {}
 
 std::vector<edgeweight> SSSP::getDistances(bool moveOut) {

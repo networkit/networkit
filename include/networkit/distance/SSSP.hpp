@@ -123,13 +123,43 @@ class SSSP : public Algorithm {
      */
     virtual std::vector<node> getNodesSortedByDistance(bool moveOut = true);
 
+    /**
+     * Returns the number of nodes reached by the source.
+     */
+    count getReachableNodes() const {
+        assureFinished();
+        return reachedNodes;
+    }
+
+    /**
+     * Sets a new source.
+     */
+    void setSource(node newSource) {
+        if (!G.hasNode(newSource))
+            throw std::runtime_error("Error: node not in the graph.");
+        source = newSource;
+    }
+
+    /**
+     * Returns the sum of distances from the source node node to the reached
+     * nodes.
+     */
+    count getSumOfDistances() const {
+        assureFinished();
+        return sumDist;
+    }
+
   protected:
     const Graph &G;
-    const node source;
+    node source;
     node target;
+    double sumDist;
+    count reachedNodes;
     std::vector<edgeweight> distances;
     std::vector<std::vector<node>> previous; // predecessors on shortest path
     std::vector<bigfloat> npaths;
+    std::vector<uint8_t> visited;
+    uint8_t ts;
 
     std::vector<node> nodesSortedByDistance;
 

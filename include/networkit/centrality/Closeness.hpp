@@ -1,12 +1,15 @@
 /*
- * Closeness.h
+ * Closeness.hpp
  *
  *  Created on: 03.10.2014
- *      Author: nemes
+ *     Authors: nemes,
+ *              Eugenio Angriman <angrimae@hu-berlin.de>
  */
 
 #ifndef CLOSENESS_H_
 #define CLOSENESS_H_
+
+#include <tlx/container/d_ary_addressable_int_heap.hpp>
 
 #include "Centrality.hpp"
 
@@ -60,14 +63,45 @@ class Closeness : public Centrality {
      * Returns the maximum possible Closeness a node can have in a graph with
      * the same amount of nodes (=a star)
      */
-    double maximum() override;
+    double maximum() override {
+        return normalized ? 1. : (1. / (G.upperNodeIdBound() - 1));
+    }
 
   private:
-    const count n;
     ClosenessVariant variant;
-    std::vector<count> reachableNodes;
+    std::vector<std::vector<count>> uDist;
+    std::vector<std::vector<double>> dDist;
+    std::vector<std::vector<uint8_t>> visited;
+    std::vector<uint8_t> ts;
 
     void checkConnectedComponents() const;
+    void bfs();
+    void dijkstra();
+    void incTS();
+    void updateScoreData(node u, count reached, double sum) {
+        scoreData[u] =
+            sum ? variant == ClosenessVariant::standard
+                      ? 1.0 / sum
+                      : (reached - 1) / sum / (G.upperNodeIdBound() - 1)
+                : 0.;
+        if (normalized)
+            scoreData[u] *=
+                (variant == ClosenessVariant::standard ? G.upperNodeIdBound()
+                                                       : reached) -
+                1.;
+    }
+
+    struct Compare {
+      public:
+        Compare(const std::vector<double> &dist_) : dist(dist_) {}
+
+        bool operator()(node x, node y) const { return dist[x] < dist[y]; }
+
+      private:
+        const std::vector<double> &dist;
+    };
+
+    std::vector<tlx::d_ary_addressable_int_heap<node, 2, Compare>> heaps;
 };
 
 } /* namespace NetworKit */

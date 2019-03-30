@@ -45,6 +45,5 @@ class BFS : public SSSP {
      */
     virtual void run();
 };
-
 } /* namespace NetworKit */
 #endif /* BFS_H_ */
