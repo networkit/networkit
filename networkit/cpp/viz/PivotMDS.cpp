@@ -10,6 +10,7 @@
 #include "../../include/networkit/algebraic/CSRMatrix.hpp"
 #include "../../include/networkit/algebraic/Vector.hpp"
 
+#include "../../include/networkit/auxiliary/PrioQueue.hpp"
 #include "../../include/networkit/auxiliary/Random.hpp"
 
 #include "../../include/networkit/distance/BFS.hpp"
