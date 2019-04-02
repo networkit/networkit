@@ -10,9 +10,49 @@ env:
 
 matrix:
   include:
+    - name: macOS 10.14, Apple Clang
+      env:
+        - CC=cc
+        - CXX=c++
+      os: osx
+      osx_image: xcode10.2
+      sudo: false
+      addons:
+        homebrew:
+          packages:
+            - libomp
+
+    - name: macOS 10.14, llvm 8
+      env:
+        - CC=/usr/local/opt/llvm@8/bin/clang
+        - CXX=/usr/local/opt/llvm@8/bin/clang++
+      os: osx
+      osx_image: xcode10.2
+      sudo: false
+      addons:
+        homebrew:
+          packages:
+            - llvm@8
+            - libomp
+
+    - name: macOS 10.14, GCC 8
+      env:
+        - CC=/usr/local/opt/gcc@8/bin/gcc-8
+        - CXX=/usr/local/opt/gcc@8/bin/g++-8
+      os: osx
+      osx_image: xcode10.2
+      sudo: false
+      addons:
+        homebrew:
+          packages:
+            - gcc@8
+      before_install:
+        - brew link gcc@8
+
     - name: macOS 10.13, llvm 8
-      env: CC=/usr/local/opt/llvm@8/bin/clang
-      env: CXX=/usr/local/opt/llvm@8/bin/clang++
+      env:
+        - CC=/usr/local/opt/llvm@8/bin/clang
+        - CXX=/usr/local/opt/llvm@8/bin/clang++
       os: osx
       osx_image: xcode10.1
       sudo: false
@@ -24,8 +64,9 @@ matrix:
           update: true
 
     - name: macOS 10.13, GCC 8
-      env: CC=/usr/local/opt/gcc@8/bin/gcc-8
-      env: CXX=/usr/local/opt/gcc@8/bin/g++-8
+      env:
+        - CC=/usr/local/opt/gcc@8/bin/gcc-8
+        - CXX=/usr/local/opt/gcc@8/bin/g++-8
       os: osx
       osx_image: xcode10.1
       sudo: false
@@ -37,8 +78,9 @@ matrix:
         - brew link gcc@8
 
     - name: macOS 10.13, Apple Clang
-      env: CC=cc
-      env: CXX=c++
+      env:
+        - CC=cc
+        - CXX=c++
       os: osx
       osx_image: xcode10.1
       sudo: false
@@ -47,37 +89,10 @@ matrix:
           packages:
             - libomp
 
-    - name: macOS 10.12, llvm 7
-      env: CC=/usr/local/opt/llvm@7/bin/clang
-      env: CXX=/usr/local/opt/llvm@7/bin/clang++
-      os: osx
-      osx_image: xcode9.2
-      sudo: false
-      addons:
-        homebrew:
-          packages:
-            - llvm@7
-            - libomp
-            - python
-          update: true
-
-    - name: macOS 10.12, GCC 8
-      env: CC=/usr/local/opt/gcc@8/bin/gcc-8
-      env: CXX=/usr/local/opt/gcc@8/bin/g++-8
-      os: osx
-      osx_image: xcode9.2
-      sudo: false
-      addons:
-        homebrew:
-          packages:
-            - gcc@8
-            - python
-          update: true
-      before_install:
-        - brew link gcc@8
-
     - name: Linux, GCC 8
-      env: CC=gcc-8 CXX=g++-8
+      env:
+        - CC=gcc-8
+        - CXX=g++-8
       os: linux
       dist: xenial
       addons: &gcc8
@@ -90,7 +105,9 @@ matrix:
             - python3.5-venv
 
     - name: Linux, GCC 4.9
-      env: CC=gcc-4.9 CXX=g++-4.9
+      env:
+        - CC=gcc-4.9
+        - CXX=g++-4.9
       os: linux
       dist: xenial
       sudo: false
@@ -105,7 +122,9 @@ matrix:
             - python3.5-venv
 
     - name: Linux, Clang 3.8
-      env: CC=clang-3.8 CXX=clang++-3.8
+      env:
+        - CC=clang-3.8
+        - CXX=clang++-3.8
       os: linux
       dist: xenial
       sudo: false
@@ -122,7 +141,9 @@ matrix:
 
     # Test more exotic builds only on Linux.
     - name: "Linux, GCC 8: Core build, debugging"
-      env: CC=gcc-8 CXX=g++-8
+      env:
+        - CC=gcc-8
+        - CXX=g++-8
       os: linux
       dist: xenial
       addons: *gcc8
@@ -134,7 +155,9 @@ matrix:
         - ctest -V
 
     - name: "Linux, GCC 8: Core build, non-monolithic"
-      env: CC=gcc-8 CXX=g++-8
+      env:
+        - CC=gcc-8
+        - CXX=g++-8
       os: linux
       dist: xenial
       addons: *gcc8
@@ -147,7 +170,10 @@ matrix:
 
     # Finally, test conformance to newer versions of the C++ standard.
     - name: "Linux, GCC 8: C++14 conformance"
-      env: CC=gcc-8 CXX=g++-8 CXX_STANDARD=14
+      env:
+        - CC=gcc-8
+        - CXX=g++-8
+        - CXX_STANDARD=14
       os: linux
       dist: xenial
       addons: *gcc8
@@ -159,14 +185,19 @@ matrix:
         - ctest -V
 
     - name: "Linux, GCC 8: C++17 conformance"
-      env: CC=gcc-8 CXX=g++-8 CXX_STANDARD=17
+      env:
+        - CC=gcc-8
+        - CXX=g++-8
+        - CXX_STANDARD=17
       os: linux
       dist: xenial
       addons: *gcc8
       script: *script_cpp_only
 
     - name: Documentation only
-      env: CC=gcc-8 CXX=g++-8
+      env:
+        - CC=gcc-8
+        - CXX=g++-8
       os: linux
       dist: xenial
       addons:
