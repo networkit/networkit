@@ -225,7 +225,7 @@ in NetworKit, and simply using NetworKit. We ask you to cite the appropriate one
 [list]: https://sympa.cms.hu-berlin.de/sympa/subscribe/networkit
 [networkit]: https://networkit.github.io/
 [IPython]: https://ipython.readthedocs.io/en/stable/
-[NetworKit UserGuide]: https://hub.mybinder.org/user/kit-parco-networkit-01nzg849/notebooks/Doc/uploads/docs/NetworKit_UserGuide.ipynb
+[NetworKit UserGuide]: https://github.com/kit-parco/networkit/blob/Dev/notebooks/User-Guide.ipynb
 [here]: TODO:website_link
 [g++]: https://gcc.gnu.org
 [clang++]: https://clang.llvm.org/
