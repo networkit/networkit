@@ -12,69 +12,87 @@
 namespace NetworKit {
 
 Dijkstra::Dijkstra(const Graph &G, node source, bool storePaths,
-									 bool storeNodesSortedByDistance, node target)
-		: SSSP(G, source, storePaths, storeNodesSortedByDistance, target) {}
+                   bool storeNodesSortedByDistance, node target)
+    : SSSP(G, source, storePaths, storeNodesSortedByDistance, target),
+      heap(Compare(distances)) {}
 
 void Dijkstra::run() {
 
-	TRACE("initializing Dijkstra data structures");
-	// init distances
-	edgeweight infDist = std::numeric_limits<edgeweight>::max();
-	distances.clear();
-	distances.resize(G.upperNodeIdBound(), infDist);
-	if (storePaths) {
-		previous.clear();
-		previous.resize(G.upperNodeIdBound());
-		npaths.clear();
-		npaths.resize(G.upperNodeIdBound(), 0);
-		npaths[source] = 1;
-	}
+    TRACE("initializing Dijkstra data structures");
+    // init distances
+    if (distances.size() < G.upperNodeIdBound()) {
+        distances.resize(G.upperNodeIdBound(),
+                         std::numeric_limits<double>::max());
+        visited.resize(G.upperNodeIdBound(), ts);
+    }
 
-	if (storeNodesSortedByDistance) {
-		std::vector<node> empty;
-		std::swap(nodesSortedByDistance, empty);
-	}
+    sumDist = 0.;
+    reachedNodes = 1;
 
-	// priority queue with distance-node pairs
-	distances[source] = 0;
-	Aux::PrioQueue<edgeweight, node> pq(distances);
+    if (ts++ == 255) {
+        ts = 1;
+        std::fill(visited.begin(), visited.end(), 0);
+    }
 
-	auto relax([&](node u, node v, edgeweight w) {
-		if (distances[v] > distances[u] + w) {
-			distances[v] = distances[u] + w;
-			if (storePaths) {
-				previous[v] = {u}; // new predecessor on shortest path
-				npaths[v] = npaths[u];
-			}
-			TRACE("Decreasing key of ", v);
-			TRACE("pq size: ", pq.size());
-			pq.changeKey(distances[v], v);
-			TRACE("pq size: ", pq.size());
-		} else if (storePaths && (distances[v] == distances[u] + w)) {
-			previous[v].push_back(u); // additional predecessor
-			npaths[v] += npaths[u];   // all the shortest paths to u are
-																// also shortest paths to v now
-		}
-	});
+    if (storePaths) {
+        previous.clear();
+        previous.resize(G.upperNodeIdBound());
+        npaths.clear();
+        npaths.resize(G.upperNodeIdBound(), 0);
+        npaths[source] = 1;
+    }
 
-	bool breakWhenFound = (target != none);
-	TRACE("traversing graph");
-	while (pq.size() > 0) {
-		TRACE("pq size: ", pq.size());
-		node current = pq.extractMin().second;
-		TRACE("current node in Dijkstra: ", current);
-		TRACE("pq size: ", pq.size());
-		if ((breakWhenFound && target == current) ||
-				distances[current] == infDist) {
-			break;
-		}
+    if (storeNodesSortedByDistance) {
+        nodesSortedByDistance.clear();
+        nodesSortedByDistance.reserve(G.upperNodeIdBound());
+    }
 
-		if (storeNodesSortedByDistance) {
-			nodesSortedByDistance.push_back(current);
-		}
+    // priority queue with distance-node pairs
+    distances[source] = 0.;
+    visited[source] = ts;
+    heap.push(source);
 
-		G.forEdgesOf(current, relax);
-	}
+    auto initPath = [&](node u, node v) {
+        if (storePaths) {
+            previous[v] = {u};
+            npaths[v] = npaths[u];
+        }
+    };
+    bool breakWhenFound = (target != none);
+    TRACE("traversing graph");
+    do {
+        TRACE("pq size: ", heap.size());
+        node u = heap.extract_top();
+        sumDist += distances[u];
+        TRACE("current node in Dijkstra: ", u);
+        TRACE("pq size: ", heap.size());
+        if ((breakWhenFound && target == u) || visited[u] != ts)
+            break;
+
+        if (storeNodesSortedByDistance)
+            nodesSortedByDistance.push_back(u);
+
+        G.forNeighborsOf(u, [&](node v, edgeweight w) {
+            double newDist = distances[u] + w;
+            if (ts != visited[v]) {
+                visited[v] = ts;
+                distances[v] = newDist;
+                heap.push(v);
+                ++reachedNodes;
+                if (storePaths)
+                    initPath(u, v);
+            } else if (distances[v] > newDist) {
+                if (storePaths)
+                    initPath(u, v);
+                distances[v] = newDist;
+                heap.update(v);
+            } else if (storePaths && distances[v] == newDist) {
+                previous[v].push_back(u);
+                npaths[v] += npaths[u];
+            }
+        });
+    } while (!heap.empty());
+
+    hasRun = true;
 }
-
-} /* namespace NetworKit */
+} // namespace NetworKit
