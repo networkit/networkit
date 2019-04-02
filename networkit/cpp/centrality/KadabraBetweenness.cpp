@@ -406,6 +406,10 @@ void KadabraBetweenness::run() {
 	if (!absolute) {
 		delete (top);
 	}
+	if (!G.isDirected()) {
+		delete (cc);
+		cc = nullptr;
+	}
 }
 
 SpSampler::SpSampler(const Graph &G, const ConnectedComponents &cc)
