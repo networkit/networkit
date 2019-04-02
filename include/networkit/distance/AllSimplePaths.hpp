@@ -66,7 +66,7 @@ namespace NetworKit {
 		void computePaths();
 
 		// This method returns a queue thatcontains all the nodes that could be part of a path from the source to the target that crosses @s.
-		std::vector<node>* getAvailableSources(node s, count pathLength = 0);
+		std::vector<node> getAvailableSources(node s, count pathLength = 0);
 
 		// The graph
 		const Graph &G;

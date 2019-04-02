@@ -113,10 +113,11 @@ namespace NetworKit {
 	void AllSimplePaths::computePaths() {
 
 
+		std::vector<std::vector<node>> availableSourcesPtr(G.upperNodeIdBound());
 		std::vector<std::vector<node>> availableSources(G.upperNodeIdBound());
 		G.parallelForNodes([&](node v) {
 			if (v != target && (cutoff == none || distanceFromSource[v] != none)) {
-				availableSources[v] = *getAvailableSources(v);
+				availableSources[v] = getAvailableSources(v);
 			}
 		});
 
@@ -195,6 +196,8 @@ namespace NetworKit {
 				if (toEnqueue && prevSize == stack.size()) {
 					stack.pop_back();
 				}
+				delete (v);
+				v = nullptr;
 			}
 			omp_set_lock(&lock);
 			paths.insert(paths.end(), currPaths.begin(), currPaths.end());
@@ -204,19 +207,19 @@ namespace NetworKit {
 
 
 
-	std::vector<node>* AllSimplePaths::getAvailableSources(node s, count pathLength) {
-		std::vector<node>* availableSources = new std::vector<node>;
+	std::vector<node> AllSimplePaths::getAvailableSources(node s, count pathLength) {
+		std::vector<node> availableSources;
 		G.forNeighborsOf(s, [&](node v) {
 
 			// Make sure we are visiting a node that can reach target. Avoid to consider source as a possible source.
 			if (distanceFromSource[v] != none){
 				if (cutoff == none || pathLength + distanceToTarget[v] <= cutoff) {
-					availableSources->push_back(v);
+					availableSources.push_back(v);
 				}
 			}
 		});
 
-		return availableSources;
+		return std::move(availableSources);
 	}
 
 
