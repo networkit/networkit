@@ -1584,6 +1584,31 @@ TEST_F(CentralityGTest, testKadabraTopK) {
     EXPECT_TRUE(correctRanking);
 }
 
+TEST_F(CentralityGTest, testKadabraAbsoluteDeterministic) {
+	const index seed = 42;
+	Aux::Random::setSeed(seed, true);
+	const count n = 300;
+	Graph g = ErdosRenyiGenerator(n, 0.1).generate();
+
+	const double delta = 0.1;
+	const double epsilon = 0.01;
+	Aux::Random::setSeed(seed, true);
+	KadabraBetweenness kadabra(g, epsilon, delta, true);
+	kadabra.run();
+	auto scores = kadabra.topkScoresList();
+	auto nodes = kadabra.topkNodesList();
+
+	Aux::Random::setSeed(seed, true);
+	KadabraBetweenness kadabra2(g, epsilon, delta, true);
+	kadabra2.run();
+	auto scores2 = kadabra2.topkScoresList();
+	auto nodes2 = kadabra2.topkNodesList();
+
+	for (count i = 0; i < n; ++i) {
+		EXPECT_EQ(scores[i], scores2[i]);
+	}
+}
+
 TEST_F(CentralityGTest, testDynTopHarmonicClosenessUndirected) {
     Graph G = DorogovtsevMendesGenerator(500).generate();
 
