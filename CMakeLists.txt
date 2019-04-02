@@ -89,7 +89,7 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
 			message(FATAL_ERROR "libomp was not found, but necessary to run NetworKit with AppleClang")
 		endif()
 	endif()
- endif()
+endif()
 
 # adding OpenMP flags
 find_package(OpenMP REQUIRED)
