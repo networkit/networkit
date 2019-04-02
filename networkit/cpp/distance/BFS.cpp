@@ -2,77 +2,88 @@
  * BFS.cpp
  *
  *  Created on: Jul 23, 2013
- *      Author: Henning
- */
+ *      Author: Henning */
 
 #include <queue>
+
 #include "../../include/networkit/distance/BFS.hpp"
 
 namespace NetworKit {
 
-BFS::BFS(const Graph& G, node source, bool storePaths, bool storeNodesSortedByDistance, node target) : SSSP(G, source, storePaths, storeNodesSortedByDistance, target) {
-}
-
+BFS::BFS(const Graph &G, node source, bool storePaths,
+         bool storeNodesSortedByDistance, node target)
+    : SSSP(G, source, storePaths, storeNodesSortedByDistance, target) {}
 
 void BFS::run() {
-	edgeweight infDist = std::numeric_limits<edgeweight>::max();
-	count z = G.upperNodeIdBound();
-	distances.clear();
-	distances.resize(z, infDist);
+    count z = G.upperNodeIdBound();
+    reachedNodes = 1;
+    sumDist = 0.;
 
-	std::vector<bool> visited;
-	visited.resize(z, false);
+    if (distances.size() < z) {
+        distances.resize(z, std::numeric_limits<edgeweight>::max());
+        visited.resize(z, ts);
+    }
 
-	if (storePaths) {
-		previous.clear();
-		previous.resize(z);
-		npaths.clear();
-		npaths.resize(z, 0);
-		npaths[source] = 1;
-	}
+    if (ts++ == 255) {
+        ts = 1;
+        std::fill(visited.begin(), visited.end(), 0);
+    }
 
-	if (storeNodesSortedByDistance) {
-		std::vector<node> empty;
-		std::swap(nodesSortedByDistance, empty);
-	}
+    if (storePaths) {
+        previous.clear();
+        previous.resize(z);
+        npaths.clear();
+        npaths.resize(z, 0);
+        npaths[source] = 1;
+    }
 
-	std::queue<node> q;
-	q.push(source);
-	visited[source] = true;
-	distances[source] = 0;
-	bool breakWhenFound = (target != none);
-	while (! q.empty()) {
-		node u = q.front();
-		q.pop();
+    if (storeNodesSortedByDistance) {
+        std::vector<node> empty;
+        std::swap(nodesSortedByDistance, empty);
+    }
 
-		if (storeNodesSortedByDistance) {
-			nodesSortedByDistance.push_back(u);
-		}
-		if (breakWhenFound && target == u) {
-			break;
-		}
+    std::queue<node> q;
+    q.push(source);
+    distances[source] = 0.;
+    visited[source] = ts;
 
-		// TRACE("current node in BFS: " , u);
-//		TRACE(distances);
+    bool breakWhenFound = (target != none);
+    while (!q.empty()) {
+        node u = q.front();
+        q.pop();
 
-		// insert untouched neighbors into queue
-		G.forNeighborsOf(u, [&](node v) {
-			// TRACE("scanning neighbor ", v);
+        if (storeNodesSortedByDistance) {
+            nodesSortedByDistance.push_back(u);
+        }
+        if (breakWhenFound && target == u) {
+            break;
+        }
 
-			if (!visited[v]) {
-				q.push(v);
-				visited[v] = true;
-				distances[v] = distances[u] + 1;
-				if (storePaths) {
-					previous[v] = {u};
-					npaths[v] = npaths[u];
-				}
-			} else if (storePaths && (distances[v] == distances[u] + 1)) {
-				previous[v].push_back(u); 	// additional predecessor
-				npaths[v] += npaths[u]; 	// all the shortest paths to u are also shortest paths to v now
-			}
-		});
-	}
+        // TRACE("current node in BFS: " , u);
+        //		TRACE(distances);
+
+        // insert untouched neighbors into queue
+        G.forNeighborsOf(u, [&](node v) {
+            // TRACE("scanning neighbor ", v);
+
+            if (ts != visited[v]) {
+                q.push(v);
+                visited[v] = ts;
+                distances[v] = distances[u] + 1.;
+                sumDist += distances[v];
+                ++reachedNodes;
+                if (storePaths) {
+                    previous[v] = {u};
+                    npaths[v] = npaths[u];
+                }
+            } else if (storePaths && (distances[v] == distances[u] + 1.)) {
+                previous[v].push_back(u); // additional predecessor
+                npaths[v] += npaths[u]; // all the shortest paths to u are also
+                                        // shortest paths to v now
+            }
+        });
+    }
+
+    hasRun = true;
 }
-
-} /* namespace NetworKit */
+} // namespace NetworKit

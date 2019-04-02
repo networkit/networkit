@@ -21,34 +21,33 @@ namespace NetworKit {
 class SSSPGTest: public testing::Test{};
 
 TEST_F(SSSPGTest, testDijkstra) {
-/* Graph:
-         ______
-		/      \
-	   0    3   6
-		\  / \ /
-		 2    5
-		/  \ / \
-	   1    4   7
-*/
-	int n = 8;
-	Graph G(n, true);
+    /* Graph:
+             ______
+        /      \
+         0    3   6
+        \  / \ /
+         2    5
+        /  \ / \
+         1    4   7
+    */
+    int n = 8;
+    Graph G(n, true);
 
-	G.addEdge(0, 2);
-	G.addEdge(1, 2);
-	G.addEdge(2, 3);
-	G.addEdge(2, 4);
-	G.addEdge(3, 5);
-	G.addEdge(4, 5);
-	G.addEdge(5, 6);
-	G.addEdge(5, 7);
-	G.addEdge(0, 6);
+    G.addEdge(0, 2);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+    G.addEdge(2, 4);
+    G.addEdge(3, 5);
+    G.addEdge(4, 5);
+    G.addEdge(5, 6);
+    G.addEdge(5, 7);
+    G.addEdge(0, 6);
 
-
-	Dijkstra sssp(G, 5, true, true);
-	EXPECT_NO_THROW(sssp.run());
-	std::vector<node> stack = sssp.getNodesSortedByDistance();
-	std::vector<node> result {5,3,4,6,7,0,2,1};
-	ASSERT_EQ(stack,result);
+    Dijkstra sssp(G, 5, true, true);
+    EXPECT_NO_THROW(sssp.run());
+    std::vector<node> stack = sssp.getNodesSortedByDistance();
+    for (count i = 0; i < stack.size() - 1; ++i)
+        EXPECT_LE(sssp.distance(stack[i]), sssp.distance(stack[i + 1]));
 }
 
 TEST_F(SSSPGTest, testShortestPaths) {

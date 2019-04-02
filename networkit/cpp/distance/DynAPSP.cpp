@@ -43,21 +43,21 @@ void DynAPSP::run() {
 }
 
 std::vector<node> DynAPSP::getPath(node u, node v) {
-	std::vector<node> path = {};
-	if (distances[u][v] != infDist) {
-		node current = v;
-		while (current != u) {
-			path.push_back(current);
-			G.forInEdgesOf(current, [&](node z, edgeweight w){
-				if (distances[u][current] == distances[u][z] + w) {
-					current = z;
-				}
-			});
-		}
-		path.push_back(u);
-		std::reverse(path.begin(), path.end());
-	}
-	return path;
+    std::vector<node> path = {};
+    if (distances[u][v] < std::numeric_limits<edgeweight>::max()) {
+        node current = v;
+        while (current != u) {
+            path.push_back(current);
+            G.forInEdgesOf(current, [&](node z, edgeweight w) {
+                if (distances[u][current] == distances[u][z] + w) {
+                    current = z;
+                }
+            });
+        }
+        path.push_back(u);
+        std::reverse(path.begin(), path.end());
+    }
+    return path;
 }
 
 
