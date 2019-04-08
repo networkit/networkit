@@ -78,30 +78,33 @@ endif()
 # AppleClang support is added in CMake > 3.12
 # the following passage checks if CMake > 3.12 is installed and manually
 # links the omp lib if found
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-	if(${CMAKE_VERSION} VERSION_LESS 3.12)
- 		message(WARNING "OpenMP linking with AppleClang was introduced in CMake 3.12. Current CMake Version ${CMAKE_VERSION}")
-	else()
-		find_library(OMP_FOUND NAMES omp)
-		if(OMP_FOUND)
-			set(NETWORKIT_LINK_FLAGS "-lomp ${NETWORKIT_LINK_FLAGS}")
-		else()
-			message(FATAL_ERROR "libomp was not found, but necessary to run NetworKit with AppleClang")
+if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR
+	"${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+	find_library(LIBOMP_PATH NAMES omp HINTS "/usr/local/opt/libomp/include")
+	find_path(LIBOMP_INCLUDE NAMES omp.h HINTS "/usr/local/opt/libomp/include")
+	if(LIBOMP_PATH AND LIBOMP_INCLUDE)
+		if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+			set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp -I${LIBOMP_INCLUDE}" CACHE STRING "Manually set OpenMP CXX flags")
+		elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+			set(OpenMP_CXX_FLAGS "-fopenmp -I${LIBOMP_INCLUDE}" CACHE STRING "Manually set OpenMP CXX flags")
 		endif()
+		set(OpenMP_CXX_LIB_NAMES "omp" CACHE STRING "Manually set")
+		set(OpenMP_omp_LIBRARY "${LIBOMP_PATH}" CACHE STRING "Manually set")
+	else()
+		message(FATAL_ERROR "libomp was not found, but necessary to run NetworKit with AppleClang")
 	endif()
  endif()
 
 # adding OpenMP flags
 find_package(OpenMP REQUIRED)
-if(OPENMP_FOUND)
-	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-
-	if (NOT MSVC)
-		# In MSVC /openmp is only passed to the compiler, and must not be passed to the linker to avoid warnigns
-		set(NETWORKIT_LINK_FLAGS "${NETWORKIT_LINK_FLAGS} ${OpenMP_CXX_FLAGS}")
-	endif()
-else()
-	message(FATAL_ERROR "OpenMP not found")
+if(NOT TARGET OpenMP::OpenMP_CXX)
+	message("Creating custom OpenMP target for CMake Version < 3.12. Current CMake Version ${CMAKE_VERSION}")
+	find_package(Threads REQUIRED)
+	add_library(OpenMP::OpenMP_CXX IMPORTED INTERFACE)
+	set_property(TARGET OpenMP::OpenMP_CXX
+				 PROPERTY INTERFACE_COMPILE_OPTIONS ${OpenMP_CXX_FLAGS})
+	set_property(TARGET OpenMP::OpenMP_CXX
+				 PROPERTY INTERFACE_LINK_LIBRARIES ${OpenMP_CXX_LIBRARIES} Threads::Threads)
 endif()
 
 if (CMAKE_SIZEOF_VOID_P LESS 8)
@@ -167,7 +170,7 @@ if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
 			LIBRARY DESTINATION ${NETWORKIT_LIB_DEST}
 			ARCHIVE DESTINATION ${NETWORKIT_LIB_DEST})
 
-	target_link_libraries(networkit PRIVATE tlx)
+	target_link_libraries(networkit PRIVATE tlx OpenMP::OpenMP_CXX)
 endif()
 
 if(NETWORKIT_PYTHON)
@@ -202,7 +205,7 @@ if(NETWORKIT_PYTHON)
 				INSTALL_RPATH "$ORIGIN")
 	endif()
 
-    target_link_libraries(_NetworKit PRIVATE tlx)
+	target_link_libraries(_NetworKit PRIVATE tlx OpenMP::OpenMP_CXX)
 
 	install(TARGETS _NetworKit
 			LIBRARY DESTINATION ${NETWORKIT_LIB_DEST})
@@ -230,7 +233,7 @@ function(networkit_add_module modname)
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
 			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
 
-		target_link_libraries(${MODULE_TARGET} PRIVATE tlx)
+		target_link_libraries(${MODULE_TARGET} PRIVATE tlx OpenMP::OpenMP_CXX)
 
 		# All tests added to this module will will also become a dependency
 		# of networkit_tests_MODNAME. This target hence allows to build all
@@ -317,6 +320,7 @@ if (NETWORKIT_BUILD_TESTS)
 				gtest
 				networkit
 				tlx
+				OpenMP::OpenMP_CXX
 		)
 
 		set_target_properties(networkit_tests PROPERTIES
@@ -373,6 +377,7 @@ function(networkit_add_extra IS_TEST MOD NAME)
 				PRIVATE
 					networkit_${MOD}
 					tlx
+					OpenMP::OpenMP_CXX
 					)
 			set_target_properties(${TARGET_NAME} PROPERTIES
 				CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
