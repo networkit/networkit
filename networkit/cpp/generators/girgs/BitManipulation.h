@@ -1,4 +1,12 @@
-#pragma once
+/*
+ * BitManipulation.h
+ *
+ *  Created on: 03. May 2019
+ *      Author: Manuel Penschuck <networkit@manuel.jetzt>
+ */
+
+#ifndef GENERATORS_GIRGS_BITMANIPULATION_H_
+#define GENERATORS_GIRGS_BITMANIPULATION_H_
 
 #include <array>
 #include <cstdint>
@@ -6,11 +14,12 @@
 #include <cstdint>
 #include <string>
 
+namespace NetworKit {
 namespace girgs {
 template<unsigned D, typename T = uint32_t, unsigned I = 0>
 struct BitPattern {
     constexpr static T setEveryDthBit(int i) {
-        return (i < 8*sizeof(T)) ? (1llu << i) | setEveryDthBit(i + D) : 0;
+        return (i < 8 * sizeof(T)) ? (1llu << i) | setEveryDthBit(i + D) : 0;
     }
 
     constexpr static unsigned kBits = 8 * sizeof(T);
@@ -260,10 +269,13 @@ struct Implementation {
 } // namespace BitManipulationDetails
 
 #ifdef USE_BMI2
-    template <unsigned D>
-    using BitManipulation = BitManipulationDetails::BMI2::Implementation<D>;
+template <unsigned D>
+using BitManipulation = BitManipulationDetails::BMI2::Implementation<D>;
 #else
-    template <unsigned D>
-    using BitManipulation = BitManipulationDetails::Generic::Implementation<D>;
+template<unsigned D> using BitManipulation = BitManipulationDetails::Generic::Implementation<D>;
 #endif
+
 } // namespace girgs
+} // namespace NetworKit
+
+#endif // GENERATORS_GIRGS_BITMANIPULATION_H_

@@ -1,12 +1,19 @@
+/*
+ * Node.h
+ *
+ *  Created on: 03. May 2019
+ *      Author: Christopher Weyand <Christopher.Weyand@hpi.de>, Manuel Penschuck <networkit@manuel.jetzt>
+ */
 
-#pragma once
+#ifndef GENERATORS_GIRGS_NODE_H_
+#define GENERATORS_GIRGS_NODE_H_
 
 #include <array>
 #include <algorithm>
 #include <vector>
 #include <cassert>
 
-
+namespace NetworKit {
 namespace girgs {
 
 template<unsigned int D>
@@ -45,3 +52,6 @@ struct Node {
 
 
 } // namespace girgs
+} // namespace NetworKit
+
+#endif // GENERATORS_GIRGS_NODE_H_

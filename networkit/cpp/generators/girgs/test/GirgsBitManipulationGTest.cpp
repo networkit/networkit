@@ -4,16 +4,18 @@
 #include <sstream>
 
 #include <gtest/gtest.h>
-#include <girgs/BitManipulation.h>
+#include "../BitManipulation.h"
+
+namespace NetworKit {
 
 template <typename T>
-class BitManipulationTest : public ::testing::Test {
+class GirgsBitManipulationGTest : public ::testing::Test {
 public:
     using Implementation = T;
 };
 
 using Implementations = ::testing::Types<
-#ifdef USE_B
+#ifdef USE_BMI2
     girgs::BitManipulationDetails::BMI2::Implementation<1>,
     girgs::BitManipulationDetails::BMI2::Implementation<2>,
     girgs::BitManipulationDetails::BMI2::Implementation<3>,
@@ -27,7 +29,7 @@ using Implementations = ::testing::Types<
     girgs::BitManipulationDetails::Generic::Implementation<5>
 >;
 
-TYPED_TEST_SUITE(BitManipulationTest, Implementations);
+TYPED_TEST_CASE(GirgsBitManipulationGTest, Implementations);
 
 #define COMMON_DEFS \
     using Impl = typename TestFixture::Implementation; \
@@ -63,19 +65,8 @@ static std::array<uint32_t, D> ReferenceExtract(uint32_t x) {
     return res;
 }
 
-template<typename T, size_t D>
-std::ostream &operator<<(std::ostream &o, const std::array<T, D> &c) {
-    std::stringstream ss;
-    ss << "[" << c[0];
-    for (int d = 1; d < D; d++)
-        ss << ", " << c[d];
-    ss << "]";
-    o << ss.str();
-    return o;
-}
 
-
-TYPED_TEST(BitManipulationTest, DepositeSingle) {
+TYPED_TEST(GirgsBitManipulationGTest, DepositeSingle) {
     COMMON_DEFS
 
     for(int d = 0; d < D; d++) {
@@ -96,7 +87,7 @@ TYPED_TEST(BitManipulationTest, DepositeSingle) {
     }
 }
 
-TYPED_TEST(BitManipulationTest, DepositeAll) {
+TYPED_TEST(GirgsBitManipulationGTest, DepositeAll) {
     COMMON_DEFS
 
     std::uniform_int_distribution<unsigned> dim_distr(0, D - 1);
@@ -113,7 +104,7 @@ TYPED_TEST(BitManipulationTest, DepositeAll) {
     }
 }
 
-TYPED_TEST(BitManipulationTest, ExtractSingle) {
+TYPED_TEST(GirgsBitManipulationGTest, ExtractSingle) {
     COMMON_DEFS
 
     for(int d = 0; d < D; d++) {
@@ -136,7 +127,7 @@ TYPED_TEST(BitManipulationTest, ExtractSingle) {
     }
 }
 
-TYPED_TEST(BitManipulationTest, ExtractAll) {
+TYPED_TEST(GirgsBitManipulationGTest, ExtractAll) {
     COMMON_DEFS
 
     std::uniform_int_distribution<unsigned> distr;
@@ -152,7 +143,7 @@ TYPED_TEST(BitManipulationTest, ExtractAll) {
     }
 }
 
-TYPED_TEST(BitManipulationTest, XRef) {
+TYPED_TEST(GirgsBitManipulationGTest, XRef) {
     COMMON_DEFS
 
     std::uniform_int_distribution<unsigned> distr;
@@ -164,4 +155,18 @@ TYPED_TEST(BitManipulationTest, XRef) {
 
         ASSERT_EQ(cell, depo) << extr;
     }
+}
+
+} // namespace NetworKit
+
+// put ostream adapter into global namespace
+template<typename T, size_t D>
+std::ostream &operator<<(std::ostream &o, const std::array<T, D> &c) {
+    std::stringstream ss;
+    ss << "[" << c[0];
+    for (int d = 1; d < D; d++)
+        ss << ", " << c[d];
+    ss << "]";
+    o << ss.str();
+    return o;
 }

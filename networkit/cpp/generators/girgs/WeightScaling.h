@@ -1,15 +1,23 @@
-#pragma once
+/*
+ * BitManipulation.h
+ *
+ *  Created on: 03. May 2019
+ *      Author: Christopher Weyand <Christopher.Weyand@hpi.de>, Manuel Penschuck <networkit@manuel.jetzt>
+ */
+
+#ifndef GENERATORS_GIRGS_WEIGHT_SCALING_H_
+#define GENERATORS_GIRGS_WEIGHT_SCALING_H_
 
 #include <vector>
 
-#include <girgs/girgs_api.h>
-
-
+namespace NetworKit {
 namespace girgs {
 
-GIRGS_API double estimateWeightScaling(const std::vector<double> &weights, double desiredAvgDegree, int dimension, double alpha);
+double estimateWeightScaling(const std::vector<double> &weights, double desiredAvgDegree, int dimension, double alpha);
 
-GIRGS_API double estimateWeightScalingThreshold(const std::vector<double>& weights, double desiredAvgDegree, int dimension);
+double estimateWeightScalingThreshold(const std::vector<double> &weights, double desiredAvgDegree, int dimension);
 
 } // namespace girgs
+} // namespace NetworKit
 
+#endif // GENERATORS_GIRGS_WEIGHT_SCALING_H_

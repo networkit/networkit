@@ -1,0 +1,3 @@
+networkit_add_test(generators GirgsBitManipulationGTest)
+networkit_add_test(generators GirgsGeneratorGTest)
+

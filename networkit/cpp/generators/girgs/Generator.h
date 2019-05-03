@@ -1,13 +1,18 @@
-#pragma once
+/*
+ * Generator.h
+ *
+ *  Created on: 03. May 2019
+ *      Author: Christopher Weyand <Christopher.Weyand@hpi.de>, Manuel Penschuck <networkit@manuel.jetzt>
+ */
+
+#ifndef GENERATORS_GIRGS_GENERATOR_H_
+#define GENERATORS_GIRGS_GENERATOR_H_
 
 #include <vector>
-#include <string>
+#include "../../graph/Graph.h"
 
-#include <girgs/girgs_api.h>
-
-
+namespace NetworKit {
 namespace girgs {
-
 
 /**
  * @brief
@@ -17,13 +22,11 @@ namespace girgs {
  *  The size of the graph. Should match with size of positions.
  * @param ple
  *  The power law exponent to sample the new weights. Should be 2.0 to h3.0.
- * @param weightSeed
- *  A seed for weight sampling. Should not be equal to the position seed.
  *
  * @return
  *  The weights according to the desired distribution.
  */
-GIRGS_API std::vector<double> generateWeights(int n, double ple, int weightSeed, bool parallel = true);
+std::vector<double> generateWeights(int n, double ple, bool parallel = true);
 
 /**
  * @brief
@@ -33,13 +36,11 @@ GIRGS_API std::vector<double> generateWeights(int n, double ple, int weightSeed,
  *  Size of the graph.
  * @param dimension
  *  Dimension of the geometry.
- * @param positionSeed
- *  Seed to sample the positions.
  *
  * @return
  *  The positions on a torus. All inner vectors have the same length.
  */
-GIRGS_API std::vector<std::vector<double>> generatePositions(int n, int dimension, int positionSeed, bool parallel = true);
+std::vector<std::vector<double>> generatePositions(int n, int dimension, bool parallel = true);
 
 /**
  * @brief
@@ -65,7 +66,7 @@ GIRGS_API std::vector<std::vector<double>> generatePositions(int n, int dimensio
  *  The constant c hidden in the theta of the edge probabilities is \f$s^\alpha\f$ for \f$\alpha < \infty\f$
  *  and \f$s^{1/d}\f$ in the threshold case.
  */
-GIRGS_API double scaleWeights(std::vector<double>& weights, double desiredAvgDegree, int dimension, double alpha);
+double scaleWeights(std::vector<double>& weights, double desiredAvgDegree, int dimension, double alpha);
 
 /**
  * @brief
@@ -78,32 +79,13 @@ GIRGS_API double scaleWeights(std::vector<double>& weights, double desiredAvgDeg
  *  Positions on a torus. All inner vectors should have the same length indicating the dimension of the torus.
  * @param alpha
  *  Edge probability parameter.
- * @param samplingSeed
- *  Seed to sample the edges.
  *
  * @return
- *  An edge list with zero based indices.
+ *  NetworKit graph object
  */
-GIRGS_API std::vector<std::pair<int,int>> generateEdges(const std::vector<double>& weights, const std::vector<std::vector<double>>& positions,
-        double alpha, int samplingSeed);
-
-
-/**
- * @brief
- *  Saves the graph in .dot format (graphviz).
- *  The weight is saved as a label and the coordinates as a position attribute for each Node.
- *
- * @param weights
- *  Power law distributed weights.
- * @param positions
- *  The positions on a torus.
- * @param graph
- *  An edge list with zero based indices.
- * @param file
- *  The name of the output file.
- */
-GIRGS_API void saveDot(const std::vector<double>& weights, const std::vector<std::vector<double>>& positions, std::vector<std::pair<int,int>> graph, std::string file);
-
-
+Graph generateEdges(std::vector<double>& weights, std::vector<std::vector<double>>& positions, double alpha, bool keep_input = true);
 
 } // namespace girgs
+} // namespace NetworKit
+
+#endif // GENERATORS_GIRGS_GENERATOR_H_

@@ -14,6 +14,8 @@ networkit_add_module(generators
     DynamicPubWebGenerator.cpp
     EdgeSwitchingMarkovChainGenerator.cpp
     ErdosRenyiGenerator.cpp
+    girgs/Generator.cpp
+    girgs/WeightScaling.cpp
     HavelHakimiGenerator.cpp
     HyperbolicGenerator.cpp
     LFRGenerator.cpp
@@ -29,8 +31,10 @@ networkit_add_module(generators
     WattsStrogatzGenerator.cpp
     )
 
+
 networkit_module_link_modules(generators
         auxiliary base dynamics geometric graph structures)
 
+add_subdirectory(girgs)
 add_subdirectory(quadtree)
 add_subdirectory(test)

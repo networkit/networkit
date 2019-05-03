@@ -1,4 +1,3 @@
-
 #include <vector>
 #include <algorithm>
 #include <numeric>
@@ -7,21 +6,28 @@
 
 #include <gtest/gtest.h>
 
-#include <girgs/Generator.h>
+#include "../Generator.h"
 
-
-using namespace std;
-
-// FWD for distance function. Declared in main.
-double distance(const std::vector<double>& a, const std::vector<double>& b);
+class GirgsDegreeEstimationGTest: public testing::Test {
+public:
+    static double distance(const std::vector<double>& a, const std::vector<double>& b) {
+        assert(a.size() == b.size());
+        auto result = 0.0;
+        for(auto d=0u; d<a.size(); ++d){
+            auto dist = std::abs(a[d] - b[d]);
+            dist = std::min(dist, 1.0-dist);
+            result = std::max(result, dist);
+        }
+        return result;
+    }
+};
 
 // multiple functions follow to compute the expected number of edges
 double tryOften(const std::vector<double>& w, double c, int dim, double a) {
-
     auto n = w.size();
 
     auto W = std::accumulate(w.begin(), w.end(), 0.0);
-    auto gen = std::mt19937(random_device()());
+    auto gen = std::mt19937(1234);
     std::uniform_real_distribution<> dist; // [0..1)
 
     int runs = 20;
@@ -30,7 +36,7 @@ double tryOften(const std::vector<double>& w, double c, int dim, double a) {
 
         auto sum = 0.0;
         // sample different positions for each run
-        auto pos = vector<vector<double>>(n, vector<double>(dim, 0.0));
+        auto pos = std::vector<std::vector<double>>(n, std::vector<double>(dim, 0.0));
         for(int i=0; i<n; ++i)
             for (int d=0; d<dim; ++d)
                 pos[i][d] = dist(gen);
@@ -38,8 +44,8 @@ double tryOften(const std::vector<double>& w, double c, int dim, double a) {
         for(int i=0; i<n; ++i)
             for(int j=i+1; j<n; ++j) {
                 auto w_term = w[i] * w[j] / W;
-                auto d_term = pow(distance(pos[i], pos[j]), dim);
-                auto edgeProb = min(c * pow(w_term/d_term, a), 1.0);
+                auto d_term = pow(GirgsDegreeEstimationGTest::distance(pos[i], pos[j]), dim);
+                auto edgeProb = std::min(c * pow(w_term/d_term, a), 1.0);
                 sum += 2*edgeProb;
             }
         avg += sum;
@@ -57,7 +63,7 @@ double shortEdgesTrivial(const std::vector<double>& w, double c, int d, double a
     for(int i=0; i<n; ++i)
         for(int j=i+1; j<n; ++j) {
             auto short_edge_prob = (1<<d) * pow(c, 1/a) * w[i]*w[j]/W;
-            short_edges += 2* min(short_edge_prob, 1.0); // MINIMUM IS MISSING IN THE THESIS
+            short_edges += 2* std::min(short_edge_prob, 1.0); // MINIMUM IS MISSING IN THE THESIS
         }
     return short_edges;
 }
@@ -92,13 +98,13 @@ double longEdgesTrivial(const std::vector<double>& w, double c, int d, double a)
 
 
 // takes w by value so not to sort the original weights
-vector<double> getRichClub(std::vector<double> w, double c, int d, double a) {
+std::vector<double> getRichClub(std::vector<double> w, double c, int d, double a) {
 
     auto n = w.size();
     auto W = std::accumulate(w.begin(), w.end(), 0.0);
 
-    vector<double> rich_club;
-    sort(w.begin(), w.end(), std::greater<double>());
+    std::vector<double> rich_club;
+    std::sort(w.begin(), w.end(), std::greater<double>());
     auto w_n = w.front();
     for(int i=0; i<n; ++i){
         auto crazy_w = pow(c, 1/a/d) * pow(w[i] * w_n / W, 1.0/d);
@@ -127,7 +133,7 @@ double shortEdgesImproved(const std::vector<double>& w, double c, int d, double 
             if(i==j) continue;
             auto w1 = rich_club[i];
             auto w2 = rich_club[j];
-            auto e = max( (1<<d)*pow(c, 1/a)*(w1*w2/W) -1.0, 0.0);
+            auto e = std::max( (1<<d)*pow(c, 1/a)*(w1*w2/W) -1.0, 0.0);
             error += e;
             if(e <= 0) break;
         }
@@ -222,7 +228,7 @@ double finalForm(const std::vector<double>& w, double c, int d, double a){
 
 
 
-TEST(DegreeEstimation_test, testEstimationFormula)
+TEST_F(GirgsDegreeEstimationGTest, testEstimationFormula)
 {
     const auto seed = 42;
     auto n = 300;
@@ -234,7 +240,7 @@ TEST(DegreeEstimation_test, testEstimationFormula)
 
     auto epsilon = 0.00001;
 
-    auto weights = girgs::generateWeights(n, ple, seed);
+    auto weights = NetworKit::girgs::generateWeights(n, ple, seed);
 
     auto experimental_number_of_edges = tryOften(weights, c, d, a);
 

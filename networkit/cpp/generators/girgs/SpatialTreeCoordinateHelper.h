@@ -1,9 +1,18 @@
-#pragma once
+/*
+ * SpatialTreeCoordinateHelper.h
+ *
+ *  Created on: 03. May 2019
+ *      Author: Christopher Weyand <Christopher.Weyand@hpi.de>, Manuel Penschuck <networkit@manuel.jetzt>
+ */
+
+#ifndef GENERATORS_GIRGS_SPATIAL_TREE_COORDINATE_HELPER_H_
+#define GENERATORS_GIRGS_SPATIAL_TREE_COORDINATE_HELPER_H_
 
 #include <array>
 #include <cassert>
 #include "BitManipulation.h"
 
+namespace NetworKit {
 namespace girgs {
 
 template<unsigned int D>
@@ -137,3 +146,6 @@ double SpatialTreeCoordinateHelper<D>::dist(unsigned int cellA, unsigned int cel
 
 
 } // namespace girgs
+} // namespace NetworKit
+
+#endif // GENERATORS_GIRGS_SPATIAL_TREE_COORDINATE_HELPER_H_

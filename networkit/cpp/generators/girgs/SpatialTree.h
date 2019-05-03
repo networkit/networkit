@@ -1,5 +1,12 @@
+/*
+ * SpatialTree.h
+ *
+ *  Created on: 03. May 2019
+ *      Author: Christopher Weyand <Christopher.Weyand@hpi.de>, Manuel Penschuck <networkit@manuel.jetzt>
+ */
 
-#pragma once
+#ifndef GENERATORS_GIRGS_SPATIAL_TREE_H_
+#define GENERATORS_GIRGS_SPATIAL_TREE_H_
 
 #include <vector>
 #include <algorithm>
@@ -9,11 +16,15 @@
 #include <cassert>
 
 #include <omp.h>
+#include "../../auxiliary/Random.h"
+#include "../../auxiliary/Parallel.h"
 
-#include <girgs/SpatialTreeCoordinateHelper.h>
-#include <girgs/WeightLayer.h>
+#include "SpatialTreeCoordinateHelper.h"
+#include "WeightLayer.h"
 
+#include <tlx/math.hpp>
 
+namespace NetworKit {
 namespace girgs {
 
 using default_random_engine = std::mt19937_64;
@@ -45,12 +56,8 @@ public:
      *  A parameter of the GIRG model. It determines the entropy of links.
      *  Infinity results in a deterministic threshold case.
      *  Zero produces a clique.
-     * @param seed
-     *  The seed for the edge sampling.
-     *  If OpenMP is given more than one thread, thread i uses seed+i.
-     *  This means that results are only reproducible for a combination of seed and thread number.
      */
-    void generateEdges(int seed);
+    void generateEdges();
 
 protected:
 
@@ -201,9 +208,6 @@ private:
     std::vector<WeightLayer<D>> m_weight_layers;    ///< stores all nodes of one weight layer and provides the data structure described in paper
     std::vector<std::vector<std::pair<unsigned int, unsigned int>>> m_layer_pairs; ///< which pairs of weight layers to check in each level
 
-
-    std::vector<default_random_engine> m_gens; ///< random generators for each thread
-
 #ifndef NDEBUG
     long long m_type1_checks = 0; ///< number of node pairs that are checked via a type 1 check
     long long m_type2_checks = 0; ///< number of node pairs that are checked via a type 2 check
@@ -235,7 +239,6 @@ SpatialTree<D, EdgeCallback>::SpatialTree(const std::vector<double>& weights, co
     assert(weights.size() == positions.size());
     assert(positions.size() > 0 && positions.front().size() == D);
 
-    ScopedTimer timer("Preprocessing", profile);
 
     // determine which layer pairs to sample in which level
     m_layer_pairs.resize(m_levels);
@@ -244,22 +247,14 @@ SpatialTree<D, EdgeCallback>::SpatialTree(const std::vector<double>& weights, co
             m_layer_pairs[partitioningBaseLevel(i, j)].emplace_back(i,j);
 
     // sort weights into exponentially growing layers
-    {
-        ScopedTimer timer("Build DS", profile);
-        m_weight_layers = buildPartition(weights, positions);
-    }
+    m_weight_layers = buildPartition(weights, positions);
 }
 
 
 template<unsigned int D, typename EdgeCallback>
-void SpatialTree<D, EdgeCallback>::generateEdges(int seed) {
-
+void SpatialTree<D, EdgeCallback>::generateEdges() {
     // one random generator and distribution for each thread
     const auto num_threads = omp_get_max_threads();
-    m_gens.resize(num_threads);
-    for (int thread = 0; thread < num_threads; thread++) {
-        m_gens[thread].seed(seed >= 0 ? seed+thread : std::random_device()());
-    }
 
 #ifndef NDEBUG
     // ensure that all node pairs are compared either type 1 or type 2
@@ -393,6 +388,7 @@ void SpatialTree<D, EdgeCallback>::sampleTypeI(
 
     std::uniform_real_distribution<> dist;
     const auto threadId = omp_get_thread_num();
+    auto& gen = Aux::Random::getURNG();
 
     const auto inThresholdMode = m_alpha == std::numeric_limits<double>::infinity();
 
@@ -419,14 +415,14 @@ void SpatialTree<D, EdgeCallback>::sampleTypeI(
             assert(nodeInA.index != nodeInB.index);
             const auto distance = nodeInA.distance(nodeInB);
             const auto w_term = nodeInA.weight*nodeInB.weight/m_W;
-            const auto d_term = pow_to_the<D>(distance);
+            const auto d_term = tlx::power_to_the<D>(distance);
 
             if(inThresholdMode) {
                 if(d_term < w_term)
                     m_EdgeCallback(nodeInA.index, nodeInB.index, threadId);
             } else {
                 auto edge_prob = std::pow(w_term/d_term, m_alpha); // we don't need min with 1.0 here
-                if(dist(m_gens[threadId]) < edge_prob)
+                if(dist(gen) < edge_prob)
                     m_EdgeCallback(nodeInA.index, nodeInB.index, threadId);
             }
         }
@@ -453,7 +449,7 @@ void SpatialTree<D, EdgeCallback>::sampleTypeII(
     // get upper bound for probability
     const auto w_upper_bound = m_w0*(1<<(i+1)) * m_w0*(1<<(j+1)) / m_W;
     const auto cell_distance = CoordinateHelper::dist(cellA, cellB, level);
-    const auto dist_lower_bound = pow_to_the<D>(cell_distance);
+    const auto dist_lower_bound = tlx::power_to_the<D>(cell_distance);
     const auto max_connection_prob = std::min(std::pow(w_upper_bound/dist_lower_bound, m_alpha), 1.0);
     assert(dist_lower_bound > w_upper_bound); // in threshold model we would not sample anything
     const auto num_pairs = sizeV_i_A * sizeV_j_B;
@@ -476,7 +472,7 @@ void SpatialTree<D, EdgeCallback>::sampleTypeII(
 
     // init geometric distribution
     auto threadId = omp_get_thread_num();
-    auto& gen = m_gens[threadId];
+    auto& gen = Aux::Random::getURNG();
     auto geo = std::geometric_distribution<unsigned long long>(max_connection_prob);
     auto dist = std::uniform_real_distribution<>(0, max_connection_prob);
 
@@ -497,7 +493,7 @@ void SpatialTree<D, EdgeCallback>::sampleTypeII(
         // get actual connection probability
         const auto distance = nodeInA.distance(nodeInB);
         const auto w_term = nodeInA.weight*nodeInB.weight/m_W;
-        const auto d_term = pow_to_the<D>(distance);
+        const auto d_term = tlx::power_to_the<D>(distance);
         const auto connection_prob = std::pow(w_term/d_term, m_alpha); // we don't need min with 1.0 here
         assert(w_term < w_upper_bound);
         assert(d_term >= dist_lower_bound);
@@ -572,39 +568,24 @@ std::vector<WeightLayer<D>> SpatialTree<D, EdgeCallback>::buildPartition(const s
 
     std::shared_ptr<Node<D>[]> points(new Node<D>[n]);
     // compute the cell a point belongs to
-    {
-        ScopedTimer timer("Classify points & precompute coordinates", m_profile);
-
-        #pragma omp parallel for
-        for (int i = 0; i < n; ++i) {
-            const auto layer = weight_to_layer(weights[i]);
-            const auto level = weightLayerTargetLevel(layer);
-            points[i] = Node<D>(positions[i], weights[i], i);
-            points[i].cell_id = first_cell_of_layer[layer] + CoordinateHelper::cellForPoint(points[i].coord, level);
-            assert(points[i].cell_id < max_cell_id);
-        }
+    #pragma omp parallel for
+    for (int i = 0; i < n; ++i) {
+        const auto layer = weight_to_layer(weights[i]);
+        const auto level = weightLayerTargetLevel(layer);
+        points[i] = Node<D>(positions[i], weights[i], i);
+        points[i].cell_id = first_cell_of_layer[layer] + CoordinateHelper::cellForPoint(points[i].coord, level);
+        assert(points[i].cell_id < max_cell_id);
     }
 
     // Sort points by cell-ids
-    {
-        ScopedTimer timer("Sort points", m_profile);
-
-        auto compare = [](const Node<D> &a, const Node<D> &b) { return a.cell_id < b.cell_id; };
-
-        intsort::intsort(points, n, [](const Node<D> &p) { return p.cell_id; }, max_cell_id);
-        //alternatively: std::sort(points.begin(), points.end(), compare);
-
-        assert(std::is_sorted(points.get(), points.get() + n, compare));
-    }
-
+        Aux::Parallel::sort(points.get(), points.get() + n,
+            [](const Node<D> &a, const Node<D> &b) { return a.cell_id < b.cell_id; });
 
     // compute pointers into points
     constexpr auto gap_cell_indicator = std::numeric_limits<unsigned int>::max();
     std::shared_ptr<unsigned int[]> first_point_in_cell{new unsigned int[max_cell_id + 1]};
     std::fill_n(first_point_in_cell.get(), max_cell_id + 1, gap_cell_indicator);
     {
-        ScopedTimer timer("Find first point in cell", m_profile);
-
         first_point_in_cell.get()[max_cell_id] = n;
 
         // First, we mark the begin of cells that actually contain points
@@ -676,15 +657,14 @@ std::vector<WeightLayer<D>> SpatialTree<D, EdgeCallback>::buildPartition(const s
     // build spatial structure and find insertion level for each layer based on lower bound on radius for current and smallest layer
     std::vector<WeightLayer<D>> radius_layers;
     radius_layers.reserve(m_layers);
-    {
-        ScopedTimer timer("Build data structure", m_profile);
-        for (auto layer = 0u; layer < m_layers; ++layer) {
-            radius_layers.emplace_back(weightLayerTargetLevel(layer), points, first_point_in_cell, first_point_in_cell.get() + first_cell_of_layer[layer]);
-        }
+    for (auto layer = 0u; layer < m_layers; ++layer) {
+        radius_layers.emplace_back(weightLayerTargetLevel(layer), points, first_point_in_cell, first_point_in_cell.get() + first_cell_of_layer[layer]);
     }
 
     return radius_layers;
 }
 
 } // namespace girgs
+} // namespace NetworKit
 
+#endif // GENERATORS_GIRGS_SPATIAL_TREE_H_
