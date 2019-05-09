@@ -26,7 +26,7 @@ GeometricInhomogenousGenerator::GeometricInhomogenousGenerator(count n, double a
     girgs::scaleWeights(pointWeights, avgDegree, dim, alpha);
 }
 
-GeometricInhomogenousGenerator::GeometricInhomogenousGenerator(std::vector<coordinate_t> points, std::vector<double> weights, double avgDegree, double alpha) :
+GeometricInhomogenousGenerator::GeometricInhomogenousGenerator(std::vector<coordinate_t>& points, std::vector<double>& weights, double avgDegree, double alpha) :
     alpha(alpha),
     pointPositions(std::move(points)),
     pointWeights(std::move(weights))
@@ -37,7 +37,7 @@ GeometricInhomogenousGenerator::GeometricInhomogenousGenerator(std::vector<coord
 }
 
 // Construct without scaling
-GeometricInhomogenousGenerator::GeometricInhomogenousGenerator(std::vector<coordinate_t> points, std::vector<double> weights, double alpha) :
+GeometricInhomogenousGenerator::GeometricInhomogenousGenerator(std::vector<coordinate_t>& points, std::vector<double>& weights, double alpha) :
     alpha(alpha),
     pointPositions(std::move(points)),
     pointWeights(std::move(weights))

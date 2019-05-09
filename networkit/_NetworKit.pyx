@@ -2143,8 +2143,8 @@ cdef class ErdosRenyiGenerator(StaticGraphGenerator):
 cdef extern from "<networkit/generators/GeometricInhomogenousGenerator.hpp>":
 	cdef cppclass _GeometricInhomogenousGenerator "NetworKit::GeometricInhomogenousGenerator"(_StaticGraphGenerator):
 		_GeometricInhomogenousGenerator(count n, double avgDegree, double powerlawExp, double alpha, unsigned dim) except +
-		_GeometricInhomogenousGenerator(vector[vector[double]] points, vector[double] weights, double alpha) except +
-		_GeometricInhomogenousGenerator(vector[vector[double]] points, vector[double] weights, double avgDegree, double alpha) except +
+		_GeometricInhomogenousGenerator(vector[vector[double]]& points, vector[double]& weights, double alpha) except +
+		_GeometricInhomogenousGenerator(vector[vector[double]]& points, vector[double]& weights, double avgDegree, double alpha) except +
 		_Graph generateKeepingInput() except +
 		const vector[double]& weights()
 		const vector[vector[double]]& positions()
@@ -2153,35 +2153,17 @@ cdef class _GeometricInhomogenousGeneratorBase(StaticGraphGenerator):
 	"""
 	Returns a list of node weights.
 
-	This data is automatically deleted during the execution of generate. If you want to access it,
-	either do so BEFORE calling generate or use generateKeepingInput instead
-	"""
-	def getWeights(self):
-		return (<_GeometricInhomogenousGenerator*>(self._this)).weights()
-
-	"""
-	Returns a list of node positions.
-
-	This data is automatically deleted during the execution of generate. If you want to access it,
-	either do so BEFORE calling generate or use generateKeepingInput instead
-	"""
-	def getPositions(self):
-		return (<_GeometricInhomogenousGenerator*>(self._this)).positions()
-
-	"""
-	Same generate() but keep the input point set.
-	"""
-	def generateKeepingInput(self):
-		return Graph().setThis((<_GeometricInhomogenousGenerator*>(self._this)).generateKeepingInput())
-
-cdef class GeometricInhomogenousGenerator(_GeometricInhomogenousGeneratorBase):
+cdef class GeometricInhomogenousGenerator(StaticGraphGenerator):
 	"""
    Creates a Geometric Inhomogenous Random Graph by first samling n random points in a d-dimension space
-   and then connecting them according to their weights and distances.
+   and then connecting them according to their weights and distances. It implements the generator of
+   Blaesius et al. "Efficiently Generating Geometric Inhomogeneous and Hyperbolic Random Graphs" [https://arxiv.org/abs/1905.06706]
 
 	GeometricInhomogenousGenerator(count numNodes, double avgDegree, double powerlawExp, double alpha, unsigned dimensions)
 
 	Creates G(nNodes, prob) graphs.
+
+	see also: GeometricInhomogenousGenerator.fromPoints() to create a graph from an explicitly provided point set.
 
 	Parameters
 	----------
@@ -2196,35 +2178,104 @@ cdef class GeometricInhomogenousGenerator(_GeometricInhomogenousGeneratorBase):
 	dimensions : unsigned
 		Number of dimensions in the underlying geometric with 1 <= dimensions <= 5
 	"""
-	def __cinit__(self, numNodes = 0, avgDegree = 0, powerlawExp = 3, alpha = math.inf, dimensions = 1):
-		self._this = new _GeometricInhomogenousGenerator(numNodes, avgDegree, powerlawExp, alpha, dimensions)
 
-cdef class GeometricInhomogenousFromPointSetGenerator(_GeometricInhomogenousGeneratorBase):
-	"""
-	Creates a Geometric Inhomogenous Random Graph from a point set provided.
+	# these values are used to delay construction of self._this; do not rely on these values,
+	# as they are not properly set if constructed via fromPoints!
+	cdef int _numNodes
+	cdef double _avgDegree
+	cdef double _powerlawExp
+	cdef double _alpha
+	cdef int _dimensions
 
-	GeometricInhomogenousFromPointSetGenerator(self, vector[vector[double]] positions, vector[double] weights, double alpha = math.inf, avgDegree = None)
+	def __cinit__(self, numNodes, avgDegree, powerlawExp = 3, alpha = math.inf, dimensions = 1):
+		# params is only used in _constructOnDemand; it is not well-defined if constructed with fromPoints(..)
+		self._numNodes = numNodes
+		self._avgDegree = avgDegree
+		self._powerlawExp = powerlawExp
+		self._alpha = alpha
+		self._dimensions =  dimensions
 
-	Parameters
-	----------
-	positions : vector[ vector[double] ]
-		A vector of one position for each node. A position is a vector with d entries between 0.0 and 1.0.
-		All points have to have the same dimension d with 1 <= d <= 5.
-	weights : vector[double]
-	   Weights for each point
-	alpha : double
-		Alpha parameter (1 / Temperature) with alpha > 1
-	avgDegree : double
-		Desired average degree, if omitted (= None) the weights provided are used directly without scaling
-	"""
-	def __cinit__(self, vector[vector[double]] positions, vector[double] weights, double alpha = math.inf, avgDegree = None):
+	@staticmethod # cannot used @classmethod as we need to bind the cls's type in order for the cdefs to work
+	def fromPoints(positions, weights, alpha = math.inf, avgDegree = None):
+		"""
+		Creates a Geometric Inhomogenous Random Graph from a point set provided.
+
+		GeometricInhomogenousFromPointSetGenerator(self, vector[vector[double]] positions, vector[double] weights, double alpha = math.inf, avgDegree = None)
+
+		Parameters
+		----------
+		positions : vector[ vector[double] ]
+			A vector of one position for each node. A position is a vector with d entries between 0.0 and 1.0.
+			All points have to have the same dimension d with 1 <= d <= 5.
+		weights : vector[double]
+		   Weights for each point
+		alpha : double
+			Alpha parameter (1 / Temperature) with alpha > 1
+		avgDegree : double
+			Desired average degree, if omitted (= None) the weights provided are used directly without scaling
+		"""
+		assert(len(positions) == len(weights))
+
+		self = GeometricInhomogenousGenerator(len(positions), 0)
+
 		if avgDegree is None:
 			self._this = new _GeometricInhomogenousGenerator(positions, weights, alpha)
 		else:
 			self._this = new _GeometricInhomogenousGenerator(positions, weights, avgDegree, alpha)
 
-cdef extern from "<networkit/generators/DorogovtsevMendesGenerator.hpp>":
+		return self
 
+	def getWeights(self):
+		"""
+		Returns a list of node weights.
+
+		This data is automatically deleted during the execution of generate. If you want to access it,
+		either do so BEFORE calling generate or use generateKeepingInput instead
+		"""
+		self._constructOnDemand()
+		return (<_GeometricInhomogenousGenerator*>(self._this)).weights()
+
+	def getPositions(self):
+		"""
+		Returns a list of node positions.
+
+		This data is automatically deleted during the execution of generate. If you want to access it,
+		either do so BEFORE calling generate or use generateKeepingInput instead
+		"""
+		self._constructOnDemand()
+		return (<_GeometricInhomogenousGenerator*>(self._this)).positions()
+
+	def generate(self):
+		"""
+		Generates the graph.
+
+		Returns
+		-------
+		networkit.Graph
+		"""
+		self._constructOnDemand()
+		return Graph().setThis((<_GeometricInhomogenousGenerator*>(self._this)).generate())
+
+	def generateKeepingInput(self):
+		"""
+		Same generate() but keep the input point set.
+		"""
+		self._constructOnDemand()
+		return Graph().setThis((<_GeometricInhomogenousGenerator*>(self._this)).generateKeepingInput())
+
+	cdef _constructOnDemand(self):
+		"""
+		INTERNAL METHOD, DO NOT CALL DIRECTLY
+		Constructs the C++ instance wrapper (if not done so yet)
+		"""
+		if self._this != NULL:
+			return
+
+		self._this = new _GeometricInhomogenousGenerator(self._numNodes, self._avgDegree,
+														 self._powerlawExp, self._alpha, self._dimensions)
+
+
+cdef extern from "<networkit/generators/DorogovtsevMendesGenerator.hpp>":
 	cdef cppclass _DorogovtsevMendesGenerator "NetworKit::DorogovtsevMendesGenerator"(_StaticGraphGenerator):
 		_DorogovtsevMendesGenerator(count nNodes) except +
 

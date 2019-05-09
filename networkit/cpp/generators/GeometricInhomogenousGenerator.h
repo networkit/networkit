@@ -39,7 +39,7 @@ public:
      * @warning points and weights are moved into the container. The we're not using
      * rvalue refs because Cython does not handle them.
      */
-    GeometricInhomogenousGenerator(std::vector<coordinate_t> points, std::vector<double> weights, double avgDegree, double alpha);
+    GeometricInhomogenousGenerator(std::vector<coordinate_t>& points, std::vector<double>& weights, double avgDegree, double alpha);
 
     /**
      * Construct generator from *already scaled* weights.
@@ -51,7 +51,7 @@ public:
      * @warning points and weights are moved into the container. The we're not using
      * rvalue refs because Cython does not handle them.
      */
-    GeometricInhomogenousGenerator(std::vector<coordinate_t> points, std::vector<double> weights, double alpha);
+    GeometricInhomogenousGenerator(std::vector<coordinate_t>& points, std::vector<double>& weights, double alpha);
 
     // Add virtual destructor
     virtual ~GeometricInhomogenousGenerator() = default;
