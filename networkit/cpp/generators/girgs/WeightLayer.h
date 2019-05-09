@@ -11,7 +11,6 @@
 #define GENERATORS_GIRGS_WEIGHT_LAYER_H_
 
 #include <cassert>
-#include <memory>
 #include <utility>
 
 #include "Node.h"
@@ -43,11 +42,11 @@ public:
     WeightLayer& operator=(WeightLayer&&) = default;
 
     WeightLayer(unsigned int targetLevel,
-                std::shared_ptr<Node<D>[]>& base,
-                std::shared_ptr<unsigned int[]>& prefix_sum_ownership,
+                const Node<D>* base,
                 const unsigned int* prefix_sum)
         : m_target_level{targetLevel},
-          m_base{base}, m_prefix_sum_ownership(prefix_sum_ownership), m_prefix_sums{prefix_sum}
+          m_base{base},
+          m_prefix_sums{prefix_sum}
     {}
 
     /**
@@ -91,7 +90,7 @@ public:
      */
     const Node<D>& kthPoint(unsigned int cell, unsigned int level, int k) const {
         auto cellBoundaries = levelledCell(cell, level);
-        return m_base.get()[m_prefix_sums[cellBoundaries.first] + k];
+        return m_base[m_prefix_sums[cellBoundaries.first] + k];
     }
 
 
@@ -109,18 +108,13 @@ public:
      */
     std::pair<const Node<D>*, const Node<D>*> cellIterators(unsigned int cell, unsigned int level) const {
         auto cellBoundaries = levelledCell(cell, level);
-        const auto begin_end = std::make_pair(m_base.get() + m_prefix_sums[cellBoundaries.first],
-                                              m_base.get() + m_prefix_sums[cellBoundaries.second+1]);
+        const auto begin_end = std::make_pair(m_base + m_prefix_sums[cellBoundaries.first],
+                                              m_base + m_prefix_sums[cellBoundaries.second+1]);
         assert(begin_end.first <= begin_end.second);
         return begin_end;
     }
 
 protected:
-    const unsigned int m_target_level;      ///< the insertion level for the current weight layer (v(i) = wiw0/W)
-    std::shared_ptr<Node<D>[]> m_base;                        ///< Pointer to the first point stored in this layer
-    std::shared_ptr<unsigned int[]> m_prefix_sum_ownership; ///< not used directly, simply keep memory pointed into by m_prefix_sums alive
-    const unsigned int* m_prefix_sums;                      ///< for each cell c in target level: the sum of points of this layer in all cells <c
-
     std::pair<unsigned int, unsigned int> levelledCell(unsigned int cell, unsigned int level) const {
         assert(level <= m_target_level);
         assert(Helper::firstCellOfLevel(level) <= cell && cell < Helper::firstCellOfLevel(level + 1)); // cell is from fromLevel
@@ -137,6 +131,10 @@ protected:
 
         return {begin, end};
     }
+
+    const unsigned int  m_target_level;     ///< the insertion level for the current weight layer (v(i) = wiw0/W)
+    const Node<D>*      m_base;             ///< sorted array of all nodes
+    const unsigned int* m_prefix_sums;      ///< for each cell c in target level: sum of nodes in m_base before first node in c
 };
 
 } // namespace girgs

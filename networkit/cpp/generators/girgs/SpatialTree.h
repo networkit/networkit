@@ -207,7 +207,10 @@ private:
     unsigned int m_layers; ///< number of layers
     unsigned int m_levels; ///< number of levels
 
-    std::vector<WeightLayer<D>> m_weight_layers;    ///< stores all nodes of one weight layer and provides the data structure described in paper
+    std::vector<Node<D>>        m_nodes;            ///< nodes ordered by layer first and morton code second
+    std::vector<unsigned int>   m_first_in_cell;    ///< prefix sums into nodes array
+    std::vector<WeightLayer<D>> m_weight_layers;    ///< provides access to the nodes as described in paper
+
     std::vector<std::vector<std::pair<unsigned int, unsigned int>>> m_layer_pairs; ///< which pairs of weight layers to check in each level
 
 #ifndef NDEBUG
@@ -568,36 +571,38 @@ std::vector<WeightLayer<D>> SpatialTree<D, EdgeCallback>::buildPartition(const s
     }();
     const auto max_cell_id = first_cell_of_layer.back();
 
-    std::shared_ptr<Node<D>[]> points(new Node<D>[n]);
+    // Node<D> should incur no init overhead; checked on godbolt
+    m_nodes = std::vector<Node<D>>(n);
+
     // compute the cell a point belongs to
     #pragma omp parallel for
     for (int i = 0; i < n; ++i) {
         const auto layer = weight_to_layer(weights[i]);
         const auto level = weightLayerTargetLevel(layer);
-        points[i] = Node<D>(positions[i], weights[i], i);
-        points[i].cell_id = first_cell_of_layer[layer] + CoordinateHelper::cellForPoint(points[i].coord, level);
-        assert(points[i].cell_id < max_cell_id);
+        m_nodes[i] = Node<D>(positions[i], weights[i], i);
+        m_nodes[i].cell_id = first_cell_of_layer[layer] + CoordinateHelper::cellForPoint(m_nodes[i].coord, level);
+        assert(m_nodes[i].cell_id < max_cell_id);
     }
 
     // Sort points by cell-ids
-        Aux::Parallel::sort(points.get(), points.get() + n,
+        Aux::Parallel::sort(m_nodes.begin(), m_nodes.end(),
             [](const Node<D> &a, const Node<D> &b) { return a.cell_id < b.cell_id; });
 
     // compute pointers into points
     constexpr auto gap_cell_indicator = std::numeric_limits<unsigned int>::max();
-    std::shared_ptr<unsigned int[]> first_point_in_cell{new unsigned int[max_cell_id + 1]};
-    std::fill_n(first_point_in_cell.get(), max_cell_id + 1, gap_cell_indicator);
+    m_first_in_cell = std::vector<unsigned int>(max_cell_id + 1, gap_cell_indicator);
+
     {
-        first_point_in_cell.get()[max_cell_id] = n;
+        m_first_in_cell[max_cell_id] = n;
 
         // First, we mark the begin of cells that actually contain points
         // and repair the gaps (i.e., empty cells) later. In the mean time,
         // the values of those gaps will remain at gap_cell_indicator.
-        first_point_in_cell.get()[points.get()->cell_id] = 0;
+        m_first_in_cell[m_nodes[0].cell_id] = 0;
         #pragma omp parallel for
         for (int i = 1; i < n; ++i) {
-            if (points[i - 1].cell_id != points[i].cell_id) {
-                first_point_in_cell.get()[points[i].cell_id] = i;
+            if (m_nodes[i - 1].cell_id != m_nodes[i].cell_id) {
+                m_first_in_cell[m_nodes[i].cell_id] = i;
             }
         }
 
@@ -620,9 +625,9 @@ std::vector<WeightLayer<D>> SpatialTree<D, EdgeCallback>::buildPartition(const s
                 for (int r = 0; r < threads; r++) {
                     const auto end = std::min(max_cell_id, chunk_size * (r + 1));
                     int first_non_invalid = end - 1;
-                    while (first_point_in_cell.get()[first_non_invalid] == gap_cell_indicator)
+                    while (m_first_in_cell[first_non_invalid] == gap_cell_indicator)
                         first_non_invalid++;
-                    first_point_in_cell.get()[end - 1] = first_point_in_cell.get()[first_non_invalid];
+                    m_first_in_cell[end - 1] = m_first_in_cell[first_non_invalid];
                 }
             }
 
@@ -630,25 +635,25 @@ std::vector<WeightLayer<D>> SpatialTree<D, EdgeCallback>::buildPartition(const s
 
             auto i = std::min(max_cell_id, begin + chunk_size);
             while (i-- > begin) {
-                first_point_in_cell.get()[i] = std::min(
-                    first_point_in_cell.get()[i],
-                    first_point_in_cell.get()[i + 1]);
+                m_first_in_cell[i] = std::min(
+                    m_first_in_cell[i],
+                    m_first_in_cell[i + 1]);
             }
         }
 
         #ifndef NDEBUG
         {
-            assert(points.get()[n-1].cell_id < max_cell_id);
+            assert(m_nodes[n-1].cell_id < max_cell_id);
 
             // assert that we have a prefix sum starting at 0 and ending in n
-            assert(first_point_in_cell.get()[0] == 0);
-            assert(first_point_in_cell.get()[max_cell_id] == n);
-            assert(std::is_sorted(first_point_in_cell.get(), first_point_in_cell.get() + max_cell_id + 1));
+            assert(m_first_in_cell[0] == 0);
+            assert(m_first_in_cell[max_cell_id] == n);
+            assert(std::is_sorted(m_first_in_cell.cbegin(), m_first_in_cell.cend()));
 
             // check that each point is in its right cell (and that the cell boundaries are correct)
             for (auto cid = 0u; cid != max_cell_id; ++cid) {
-                const auto begin = points.get() + first_point_in_cell.get()[cid];
-                const auto end = points.get() + first_point_in_cell.get()[cid + 1];
+                const auto begin = m_nodes.begin() + m_first_in_cell[cid];
+                const auto end = m_nodes.begin() + m_first_in_cell[cid + 1];
                 for (auto it = begin; it != end; ++it)
                     assert(it->cell_id == cid);
             }
@@ -657,13 +662,13 @@ std::vector<WeightLayer<D>> SpatialTree<D, EdgeCallback>::buildPartition(const s
     }
 
     // build spatial structure and find insertion level for each layer based on lower bound on radius for current and smallest layer
-    std::vector<WeightLayer<D>> radius_layers;
-    radius_layers.reserve(m_layers);
+    std::vector<WeightLayer<D>> weight_layers;
+    weight_layers.reserve(m_layers);
     for (auto layer = 0u; layer < m_layers; ++layer) {
-        radius_layers.emplace_back(weightLayerTargetLevel(layer), points, first_point_in_cell, first_point_in_cell.get() + first_cell_of_layer[layer]);
+        weight_layers.emplace_back(weightLayerTargetLevel(layer), m_nodes.data(), m_first_in_cell.data() + first_cell_of_layer[layer]);
     }
 
-    return radius_layers;
+    return weight_layers;
 }
 
 } // namespace girgs

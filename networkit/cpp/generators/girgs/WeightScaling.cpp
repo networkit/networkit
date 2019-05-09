@@ -236,7 +236,7 @@ double estimateWeightScaling(const std::vector<double> &weights, double desiredA
 
         int i2 = 0;
         auto w2_sum = 0.0;
-        auto w2_alpha_sum = 0.0;
+        long double w2_alpha_sum = 0.0;
 
         auto w_terms = 0.0;
         auto w_alpha_terms = 0.0;

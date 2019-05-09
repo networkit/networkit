@@ -33,7 +33,7 @@ std::vector<double> generateWeights(int n, double ple, bool parallel) {
 
         #pragma omp for schedule(static)
         for (int i = 0; i < n; ++i) {
-            result[i] = std::pow((std::pow(n, -ple + 1) - 1) * dist(gen) + 1, 1 / (-ple + 1));
+            result[i] = std::pow((std::pow(0.5*n, -ple + 1) - 1) * dist(gen) + 1, 1 / (-ple + 1));
         }
     }
 
@@ -61,7 +61,7 @@ std::vector<std::vector<double>> generatePositions(int n, int dimension, bool pa
 double scaleWeights(std::vector<double>& weights, double desiredAvgDegree, int dimension, double alpha) {
     // estimate scaling with binary search
     double scaling;
-    if(alpha > 10.0)
+    if(alpha > 8.0)
         scaling = estimateWeightScalingThreshold(weights, desiredAvgDegree, dimension);
     else if(alpha > 0.0 && alpha != 1.0)
         scaling = estimateWeightScaling(weights, desiredAvgDegree, dimension, alpha);

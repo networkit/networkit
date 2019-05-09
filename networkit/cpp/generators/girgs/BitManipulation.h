@@ -24,7 +24,7 @@ struct BitPattern {
 
     constexpr static unsigned kBits = 8 * sizeof(T);
     constexpr static T kEveryDthBit = setEveryDthBit(0);
-    constexpr static T kDBits = (kBits == D) ? T{-1} : ((T{1} << D) - 1);
+    constexpr static T kDBits = (kBits == D) ? static_cast<T>(-1) : ((T{1} << D) - 1);
 };
 
 // Implementations
@@ -48,7 +48,7 @@ private:
     }
 
 public:
-    static constexpr uint32_t kPattern32 = compile_pattern();
+    static constexpr uint32_t kPattern32 = compile_pattern(0, Bits);
     static constexpr uint64_t kPattern64 = (static_cast<uint64_t>(kPattern32) << 32) | kPattern32;
 
     template<typename T>
