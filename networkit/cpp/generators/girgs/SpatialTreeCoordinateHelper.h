@@ -3,6 +3,8 @@
  *
  *  Created on: 03. May 2019
  *      Author: Christopher Weyand <Christopher.Weyand@hpi.de>, Manuel Penschuck <networkit@manuel.jetzt>
+ *
+ * Code is adopted from https://github.com/chistopher/girgs
  */
 
 #ifndef GENERATORS_GIRGS_SPATIAL_TREE_COORDINATE_HELPER_H_

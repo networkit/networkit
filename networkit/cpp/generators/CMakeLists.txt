@@ -14,6 +14,7 @@ networkit_add_module(generators
     DynamicPubWebGenerator.cpp
     EdgeSwitchingMarkovChainGenerator.cpp
     ErdosRenyiGenerator.cpp
+    GeometricInhomogenousGenerator.cpp
     girgs/Generator.cpp
     girgs/WeightScaling.cpp
     HavelHakimiGenerator.cpp

@@ -2140,6 +2140,89 @@ cdef class ErdosRenyiGenerator(StaticGraphGenerator):
 			p = (2 * m) / (scale * n * (n-1))
 		return cls(scale * n, p)
 
+cdef extern from "<networkit/generators/GeometricInhomogenousGenerator.hpp>":
+	cdef cppclass _GeometricInhomogenousGenerator "NetworKit::GeometricInhomogenousGenerator"(_StaticGraphGenerator):
+		_GeometricInhomogenousGenerator(count n, double avgDegree, double powerlawExp, double alpha, unsigned dim) except +
+		_GeometricInhomogenousGenerator(vector[vector[double]] points, vector[double] weights, double alpha) except +
+		_GeometricInhomogenousGenerator(vector[vector[double]] points, vector[double] weights, double avgDegree, double alpha) except +
+		_Graph generateKeepingInput() except +
+		const vector[double]& weights()
+		const vector[vector[double]]& positions()
+
+cdef class _GeometricInhomogenousGeneratorBase(StaticGraphGenerator):
+	"""
+	Returns a list of node weights.
+
+	This data is automatically deleted during the execution of generate. If you want to access it,
+	either do so BEFORE calling generate or use generateKeepingInput instead
+	"""
+	def getWeights(self):
+		return (<_GeometricInhomogenousGenerator*>(self._this)).weights()
+
+	"""
+	Returns a list of node positions.
+
+	This data is automatically deleted during the execution of generate. If you want to access it,
+	either do so BEFORE calling generate or use generateKeepingInput instead
+	"""
+	def getPositions(self):
+		return (<_GeometricInhomogenousGenerator*>(self._this)).positions()
+
+	"""
+	Same generate() but keep the input point set.
+	"""
+	def generateKeepingInput(self):
+		return Graph().setThis((<_GeometricInhomogenousGenerator*>(self._this)).generateKeepingInput())
+
+cdef class GeometricInhomogenousGenerator(_GeometricInhomogenousGeneratorBase):
+	"""
+   Creates a Geometric Inhomogenous Random Graph by first samling n random points in a d-dimension space
+   and then connecting them according to their weights and distances.
+
+	GeometricInhomogenousGenerator(count numNodes, double avgDegree, double powerlawExp, double alpha, unsigned dimensions)
+
+	Creates G(nNodes, prob) graphs.
+
+	Parameters
+	----------
+	numNodes : count
+		Number of nodes n in the graph.
+	avgDegree : double
+		Desired average degree -- will be met only in expection, though variance is quite small.
+	powerlawExp : double
+		Exponenent of the powerlaw degree distribution with powerlawExp > 2
+	alpha : double
+		Alpha parameter (1 / Temperature) with alpha > 1
+	dimensions : unsigned
+		Number of dimensions in the underlying geometric with 1 <= dimensions <= 5
+	"""
+	def __cinit__(self, numNodes = 0, avgDegree = 0, powerlawExp = 3, alpha = math.inf, dimensions = 1):
+		self._this = new _GeometricInhomogenousGenerator(numNodes, avgDegree, powerlawExp, alpha, dimensions)
+
+cdef class GeometricInhomogenousFromPointSetGenerator(_GeometricInhomogenousGeneratorBase):
+	"""
+	Creates a Geometric Inhomogenous Random Graph from a point set provided.
+
+	GeometricInhomogenousFromPointSetGenerator(self, vector[vector[double]] positions, vector[double] weights, double alpha = math.inf, avgDegree = None)
+
+	Parameters
+	----------
+	positions : vector[ vector[double] ]
+		A vector of one position for each node. A position is a vector with d entries between 0.0 and 1.0.
+		All points have to have the same dimension d with 1 <= d <= 5.
+	weights : vector[double]
+	   Weights for each point
+	alpha : double
+		Alpha parameter (1 / Temperature) with alpha > 1
+	avgDegree : double
+		Desired average degree, if omitted (= None) the weights provided are used directly without scaling
+	"""
+	def __cinit__(self, vector[vector[double]] positions, vector[double] weights, double alpha = math.inf, avgDegree = None):
+		if avgDegree is None:
+			self._this = new _GeometricInhomogenousGenerator(positions, weights, alpha)
+		else:
+			self._this = new _GeometricInhomogenousGenerator(positions, weights, avgDegree, alpha)
+
 cdef extern from "<networkit/generators/DorogovtsevMendesGenerator.hpp>":
 
 	cdef cppclass _DorogovtsevMendesGenerator "NetworKit::DorogovtsevMendesGenerator"(_StaticGraphGenerator):
