@@ -20,6 +20,7 @@
 #include <omp.h>
 #include "../../auxiliary/Random.h"
 #include "../../auxiliary/Parallel.h"
+#include "../../auxiliary/SignalHandling.h"
 
 #include "SpatialTreeCoordinateHelper.h"
 #include "WeightLayer.h"
@@ -75,8 +76,10 @@ protected:
      *  The reverse edges sampled by this function are not stored.
      * @param level
      *  The level from which A and B are, meaning cellA and cellB must be in the same level.
+     * @param
+     *  NetworKit's signal handler (thread local) to abort generation if requested
      */
-    void visitCellPair(unsigned int cellA, unsigned int cellB, unsigned int level);
+    void visitCellPair(unsigned int cellA, unsigned int cellB, unsigned int level, Aux::SignalHandler& handler);
 
     /**
      * @brief
@@ -98,7 +101,7 @@ protected:
      * @param parallel_calls
      */
     void visitCellPair_sequentialStart(unsigned int cellA, unsigned int cellB, unsigned int level,
-            unsigned int first_parallel_level, std::vector<std::vector<unsigned int>>& parallel_calls);
+            unsigned int first_parallel_level, std::vector<std::vector<unsigned int>>& parallel_calls, Aux::SignalHandler& handler);
 
     /**
      * @brief
@@ -270,7 +273,8 @@ void SpatialTree<D, EdgeCallback>::generateEdges() {
     // sample all edges
     if (num_threads == 1) {
         // sequential
-        visitCellPair(0, 0, 0);
+        Aux::SignalHandler handler;
+        visitCellPair(0, 0, 0, handler);
         assert(m_type1_checks + m_type2_checks == m_n*(m_n - 1ll));
         return;
     }
@@ -282,22 +286,38 @@ void SpatialTree<D, EdgeCallback>::generateEdges() {
 
     // saw off recursion before "first_parallel_level" and save all calls that would be made
     auto parallel_calls = std::vector<std::vector<unsigned int>>(parallel_cells);
-    visitCellPair_sequentialStart(0, 0, 0, first_parallel_level, parallel_calls);
+    {
+        Aux::SignalHandler handler;
+        visitCellPair_sequentialStart(0, 0, 0, first_parallel_level, parallel_calls, handler);
+    }
 
     // do the collected calls in parallel
-    #pragma omp parallel for schedule(static), num_threads(num_threads) // dynamic scheduling would be better but not reproducible
+    int abort_caught = 0;
+    #pragma omp parallel for schedule(static), num_threads(num_threads), reduction(+:abort_caught) // dynamic scheduling would be better but not reproducible
     for (int i = 0; i < parallel_cells; ++i) {
-        auto current_cell = first_parallel_cell + i;
-        for (auto each : parallel_calls[i])
-            visitCellPair(current_cell, each, first_parallel_level);
+        try {
+            Aux::SignalHandler handler;
+            auto current_cell = first_parallel_cell + i;
+
+            for (auto each : parallel_calls[i])
+                visitCellPair(current_cell, each, first_parallel_level, handler);
+        } catch (Aux::SignalHandling::InterruptException) {
+            abort_caught++;
+        }
     }
+
+    if (abort_caught)
+        throw Aux::SignalHandling::InterruptException();
 
     assert(m_type1_checks + m_type2_checks == m_n*(m_n - 1ll));
 }
 
 
 template<unsigned int D, typename EdgeCallback>
-void SpatialTree<D, EdgeCallback>::visitCellPair(unsigned int cellA, unsigned int cellB, unsigned int level) {
+void SpatialTree<D, EdgeCallback>::visitCellPair(unsigned int cellA, unsigned int cellB, unsigned int level, Aux::SignalHandler& handler) {
+
+    handler.assureRunning();
+
     if(!CoordinateHelper::touching(cellA, cellB, level)) { // not touching
         // sample all type 2 occurrences with this cell pair
         #ifdef NDEBUG
@@ -323,7 +343,7 @@ void SpatialTree<D, EdgeCallback>::visitCellPair(unsigned int cellA, unsigned in
     // these will be type 1 if a and b touch or type 2 if they don't
     for(auto a = CoordinateHelper::firstChild(cellA); a<=CoordinateHelper::lastChild(cellA); ++a)
         for(auto b = cellA == cellB ? a : CoordinateHelper::firstChild(cellB); b<=CoordinateHelper::lastChild(cellB); ++b)
-            visitCellPair(a, b, level+1);
+            visitCellPair(a, b, level+1, handler);
 }
 
 
@@ -331,7 +351,11 @@ void SpatialTree<D, EdgeCallback>::visitCellPair(unsigned int cellA, unsigned in
 template<unsigned int D, typename EdgeCallback>
 void SpatialTree<D, EdgeCallback>::visitCellPair_sequentialStart(unsigned int cellA, unsigned int cellB, unsigned int level,
                                                                  unsigned int first_parallel_level,
-                                                                 std::vector<std::vector<unsigned int>> &parallel_calls) {
+                                                                 std::vector<std::vector<unsigned int>> &parallel_calls,
+                                                                 Aux::SignalHandler& handler) {
+
+    handler.assureRunning();
+
     if(!CoordinateHelper::touching(cellA, cellB, level)) { // not touching
         // sample all type 2 occurrences with this cell pair
         #ifdef NDEBUG
@@ -360,7 +384,7 @@ void SpatialTree<D, EdgeCallback>::visitCellPair_sequentialStart(unsigned int ce
             if(level+1 == first_parallel_level)
                 parallel_calls[a-CoordinateHelper::firstCellOfLevel(first_parallel_level)].push_back(b);
             else
-                visitCellPair_sequentialStart(a, b, level+1, first_parallel_level, parallel_calls);
+                visitCellPair_sequentialStart(a, b, level+1, first_parallel_level, parallel_calls, handler);
         }
 }
 

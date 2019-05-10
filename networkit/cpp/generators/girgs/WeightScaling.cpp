@@ -14,6 +14,8 @@
 #include <cmath>
 #include <vector>
 
+#include "../../auxiliary/SignalHandling.h"
+
 #include "WeightScaling.h"
 
 namespace NetworKit {
@@ -23,8 +25,12 @@ namespace girgs {
 static double exponentialSearch(const std::function<double(double)> &f, double desiredValue, double accuracy = 0.02, double lower = 1.0,
                                 double upper = 2.0) {
 
+    Aux::SignalHandler handler;
+
     // scale interval up if necessary
     while (f(upper) < desiredValue) {
+        handler.assureRunning();
+
         lower = upper;
         upper *= 2;
     }
@@ -38,6 +44,8 @@ static double exponentialSearch(const std::function<double(double)> &f, double d
     // do binary search
     auto mid = f((upper + lower) / 2);
     while (std::abs(mid - desiredValue) > accuracy) {
+        handler.assureRunning();
+
         if (mid < desiredValue)
             lower = (upper + lower) / 2;
         else
