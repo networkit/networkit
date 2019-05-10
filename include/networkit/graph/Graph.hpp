@@ -840,12 +840,6 @@ class Graph final {
 
     Graph subgraphFromNodes(const std::unordered_set<node> &nodes) const;
 
-    /**
-     * Deletes all nodes and edges not in the largest connected component. Only
-     * available for undirected graphs.
-     */
-    void toLargestConnectedComponent();
-
     /** NODE PROPERTIES **/
 
     /**

@@ -9,10 +9,7 @@
 #include <cmath>
 #include <random>
 #include <sstream>
-#include<unordered_map>
-#include<unordered_set>
 
-#include "../../include/networkit/components/ConnectedComponents.hpp"
 #include "../../include/networkit/graph/Graph.hpp"
 #include "../../include/networkit/graph/GraphBuilder.hpp"
 
@@ -1068,52 +1065,4 @@ Graph Graph::subgraphFromNodes(const std::unordered_set<node> &nodes) const {
 	return S;
 }
 
-void Graph::toLargestConnectedComponent() {
-	if (this->isDirected())
-		throw std::runtime_error(
-			"Method available for undirected graphs only.");
-
-	ConnectedComponents cc(*this);
-	cc.run();
-	auto comps = cc.getComponents();
-	std::sort(comps.begin(), comps.end(),
-		[&](const std::vector<node> &x, const std::vector<node> &y) {
-			return x.size() > y.size();
-	});
-	std::unordered_map<node, node> map;
-	std::unordered_set<node> set(comps[0].begin(), comps[0].end());
-	node idx = 0;
-	for (node u : comps[0])
-		map[u] = idx++;
-	std::vector<std::pair<node, node>> edges;
-	std::vector<edgeweight> weights;
-	this->subgraphFromNodes(set).forEdges([&](node x, node y, edgeweight w) {
-		if (map[x] != map[y]) {
-			edges.push_back(std::make_pair(map[x], map[y]));
-			if (this->isWeighted())
-				weights.push_back(w);
-		}
-	});
-
-	n = idx;
-	z = n;
-	m = 0;
-	storedNumberOfSelfLoops = 0;
-	outEdges.clear();
-	outEdges.resize(n);
-	inEdges.clear();
-	inEdges.resize(n);
-	inEdgeWeights.clear();
-	inEdgeWeights.resize(n);
-	outEdgeWeights.clear();
-	outEdgeWeights.resize(n);
-	exists.clear();
-	exists.resize(n, true);
-
-	for (count e = 0; e < edges.size(); ++e) {
-		this->addEdge(edges[e].first, edges[e].second);
-		if (this->isWeighted())
-			this->setWeight(edges[e].first, edges[e].second, weights[e]);
-	}
-}
 } /* namespace NetworKit */

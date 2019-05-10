@@ -352,8 +352,7 @@ cdef extern from "../include/networkit/graph/Graph.hpp":
 		void DFSfrom[Callback](node r, Callback c) except +
 		void DFSEdgesFrom[Callback](node r, Callback c) except +
 		bool_t checkConsistency() except +
-		_Graph subgraphFromNodes(unordered_set[node] nodes) except +
-		void toLargestConnectedComponent() except +
+		_Graph subgraphFromNodes(unordered_set[node] nodes)  except +
 
 cdef cppclass EdgeCallBackWrapper:
 	void* callback
@@ -1330,15 +1329,6 @@ cdef class Graph:
 		for node in nodes:
 			nnodes.insert(node)
 		return Graph().setThis(self._this.subgraphFromNodes(nnodes))
-
-	def toLargestConnectedComponent(self):
-		""" Deletes all nodes and edges not in the largest connected component.
-
-		Notes
-		-----
-		Available for undirected graphs only.
-		"""
-		self._this.toLargestConnectedComponent()
 
 # TODO: expose all methods
 

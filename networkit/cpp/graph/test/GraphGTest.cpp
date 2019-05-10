@@ -2279,18 +2279,4 @@ TEST_P(GraphGTest, testSortEdges) {
 	}
 }
 
-TEST_P(GraphGTest, testToLargestConnectedComponent) {
-	Graph G(8);
-	G.addEdge(0, 1);
-	G.addEdge(2, 1);
-	G.addEdge(3, 1);
-	G.addEdge(4, 1);
-
-	G.addEdge(5, 6);
-
-	G.toLargestConnectedComponent();
-	EXPECT_EQ(G.numberOfNodes(), 5);
-	EXPECT_EQ(G.upperNodeIdBound(), 5);
-	EXPECT_EQ(G.numberOfEdges(), 4);
-}
 } /* namespace NetworKit */
