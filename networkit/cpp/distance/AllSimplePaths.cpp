@@ -112,8 +112,6 @@ namespace NetworKit {
 
 	void AllSimplePaths::computePaths() {
 
-
-		std::vector<std::vector<node>> availableSourcesPtr(G.upperNodeIdBound());
 		std::vector<std::vector<node>> availableSources(G.upperNodeIdBound());
 		G.parallelForNodes([&](node v) {
 			if (v != target && (cutoff == none || distanceFromSource[v] != none)) {
@@ -219,7 +217,7 @@ namespace NetworKit {
 			}
 		});
 
-		return std::move(availableSources);
+		return availableSources;
 	}
 
 
