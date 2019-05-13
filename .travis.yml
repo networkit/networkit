@@ -36,19 +36,20 @@ matrix:
             - llvm@8
             - libomp
 
-    - name: macOS 10.14, GCC 8
+    - name: macOS 10.14, GCC 9
       env:
-        - CC=/usr/local/opt/gcc@8/bin/gcc-8
-        - CXX=/usr/local/opt/gcc@8/bin/g++-8
+        - CC=/usr/local/opt/gcc/bin/gcc-9
+        - CXX=/usr/local/opt/gcc/bin/g++-9
       os: osx
       osx_image: xcode10.2
       sudo: false
       addons:
         homebrew:
           packages:
-            - gcc@8
+            - gcc@9
+          update: true
       before_install:
-        - brew link gcc@8
+        - brew link gcc@9
 
     - name: macOS 10.14, Apple Clang, non-monolith
       env:
