@@ -4,13 +4,15 @@ This module handles compatibility between NetworKit and NetworkX
 
 # local imports
 from . import graph
+from networkit.exceptions import ReducedFunctionality
+import warnings
 
 # non standard library modules / external
 try:
 	import networkx as nx
 except ImportError:
-	print("""WARNING: module 'networkx' not installed, which is required by some
-						functions.""")
+	warnings.warn("WARNING: module 'networkx' not installed, which is required by some functions.",
+			ReducedFunctionality)
 ########  CONVERSION ########
 
 def nx2nk(nxG, weightAttr=None):

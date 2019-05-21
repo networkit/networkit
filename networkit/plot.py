@@ -1,15 +1,17 @@
 from networkit import *
+from networkit.exceptions import ReducedFunctionality
 import matplotlib.pyplot as plt
 import numpy as np
 import operator
 import pandas
+import warnings
 
 try:
 	import seaborn
 	seaborn.set_style("whitegrid")
-except ImportError as importError:
-	print("WARNING: module 'seaborn' is not installed, plotting functionality will be limited")
-	print(importError)
+except ImportError:
+	warnings.warn("WARNING: module 'seaborn' is not installed, plotting functionality will be limited",
+			ReducedFunctionality)
 
 
 def nodeProperty(data, label, sorted=True, yscale="linear", xscale="linear"):
