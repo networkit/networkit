@@ -1,3 +1,3 @@
-class ReducedFunctionality(Warning):
+class ReducedFunctionalityWarning(Warning):
     "Reduced networkit functionality warning"
     pass

@@ -3,7 +3,7 @@ from _NetworKit import Partition, Modularity
 
 # local imports
 from .algebraic import laplacianEigenvectors
-from .exceptions import ReducedFunctionality
+from .exceptions import ReducedFunctionalityWarning
 
 # external imports
 import warnings
@@ -13,7 +13,7 @@ try:
 	import tabulate
 except ImportError:
 	warnings.warn("WARNING: module 'tabulate' not found, please install it to use the full functionality of NetworKit",
-			ReducedFunctionality)
+			ReducedFunctionalityWarning)
 
 def computeEdgeCut(partition, graph):
 	cut = 0

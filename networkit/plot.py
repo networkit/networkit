@@ -1,5 +1,5 @@
 from networkit import *
-from networkit.exceptions import ReducedFunctionality
+from networkit.exceptions import ReducedFunctionalityWarning
 import matplotlib.pyplot as plt
 import numpy as np
 import operator
@@ -11,7 +11,7 @@ try:
 	seaborn.set_style("whitegrid")
 except ImportError:
 	warnings.warn("WARNING: module 'seaborn' is not installed, plotting functionality will be limited",
-			ReducedFunctionality)
+			ReducedFunctionalityWarning)
 
 
 def nodeProperty(data, label, sorted=True, yscale="linear", xscale="linear"):
