@@ -3,7 +3,7 @@
 
 #includes
 # needed for collections.Iterable
-from networkit.exceptions import ReducedFunctionality
+from networkit.exceptions import ReducedFunctionalityWarning
 import collections
 import math
 import os
@@ -15,7 +15,7 @@ try:
 	import pandas
 except:
 	warnings.warn("WARNING: module 'pandas' not found, some functionality will be restricted",
-			ReducedFunctionality)
+			ReducedFunctionalityWarning)
 
 
 # C++ operators
