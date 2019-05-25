@@ -12,7 +12,7 @@
 
 #include <array>
 #include <cassert>
-#include "BitManipulation.h"
+#include "BitManipulation.hpp"
 
 namespace NetworKit {
 namespace girgs {

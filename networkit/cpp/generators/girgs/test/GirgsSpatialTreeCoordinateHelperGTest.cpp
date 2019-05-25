@@ -1,6 +1,6 @@
 #include <random>
 #include <gtest/gtest.h>
-#include "../SpatialTreeCoordinateHelper.h"
+#include "../../SpatialTreeCoordinateHelper.h"
 
 class GirgsSpatialTreeCoordinateHelperGTest: public testing::Test {};
 

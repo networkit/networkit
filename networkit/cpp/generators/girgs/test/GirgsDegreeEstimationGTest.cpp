@@ -6,7 +6,7 @@
 
 #include <gtest/gtest.h>
 
-#include "../Generator.h"
+#include "../../include/networkit/generators/girgs/Generator.hpp"
 
 class GirgsDegreeEstimationGTest: public testing::Test {
 public:

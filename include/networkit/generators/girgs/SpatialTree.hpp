@@ -18,12 +18,12 @@
 #include <cassert>
 
 #include <omp.h>
-#include "../../auxiliary/Random.h"
-#include "../../auxiliary/Parallel.h"
-#include "../../auxiliary/SignalHandling.h"
+#include "../../auxiliary/Random.hpp"
+#include "../../auxiliary/Parallel.hpp"
+#include "../../auxiliary/SignalHandling.hpp"
 
-#include "SpatialTreeCoordinateHelper.h"
-#include "WeightLayer.h"
+#include "SpatialTreeCoordinateHelper.hpp"
+#include "WeightLayer.hpp"
 
 #include <tlx/math.hpp>
 

@@ -12,12 +12,12 @@
 
 #include <omp.h>
 
-#include "../../auxiliary/Random.h"
-#include "../../graph/GraphBuilder.h"
+#include "../../include/networkit/auxiliary/Random.hpp"
+#include "../../include/networkit/graph/GraphBuilder.hpp"
 
-#include "Generator.h"
-#include "SpatialTree.h"
-#include "WeightScaling.h"
+#include "../../include/networkit/generators/girgs/Generator.hpp"
+#include "../../include/networkit/generators/girgs/SpatialTree.hpp"
+#include "../../include/networkit/generators/girgs/WeightScaling.hpp"
 
 namespace NetworKit {
 namespace girgs {

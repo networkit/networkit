@@ -13,8 +13,8 @@
 #include <cassert>
 #include <utility>
 
-#include "Node.h"
-#include "SpatialTreeCoordinateHelper.h"
+#include "Node.hpp"
+#include "SpatialTreeCoordinateHelper.hpp"
 
 namespace NetworKit {
 namespace girgs {

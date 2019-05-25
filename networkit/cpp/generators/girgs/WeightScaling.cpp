@@ -14,9 +14,9 @@
 #include <cmath>
 #include <vector>
 
-#include "../../auxiliary/SignalHandling.h"
+#include "../../include/networkit/auxiliary/SignalHandling.hpp"
 
-#include "WeightScaling.h"
+#include "../../../../include/networkit/generators/girgs/WeightScaling.hpp"
 
 namespace NetworKit {
 namespace girgs {

@@ -4,8 +4,8 @@
 
 #include <gtest/gtest.h>
 
-#include "../Generator.h"
-#include "../../../auxiliary/Random.h"
+#include "../../include/networkit/generators/girgs/Generator.hpp"
+#include "../../include/networkit/auxiliary/Random.hpp"
 
 using namespace std;
 

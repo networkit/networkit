@@ -2149,10 +2149,6 @@ cdef extern from "<networkit/generators/GeometricInhomogenousGenerator.hpp>":
 		const vector[double]& weights()
 		const vector[vector[double]]& positions()
 
-cdef class _GeometricInhomogenousGeneratorBase(StaticGraphGenerator):
-	"""
-	Returns a list of node weights.
-
 cdef class GeometricInhomogenousGenerator(StaticGraphGenerator):
 	"""
    Creates a Geometric Inhomogenous Random Graph by first samling n random points in a d-dimension space

@@ -4,7 +4,7 @@
 #include <sstream>
 
 #include <gtest/gtest.h>
-#include "../BitManipulation.h"
+#include "../../include/networkit/generators/girgs/BitManipulation.hpp"
 
 namespace NetworKit {
 

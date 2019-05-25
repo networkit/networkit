@@ -1,5 +1,5 @@
 /*
- * BitManipulation.h
+ * BitManipulation.hpp
  *
  *  Created on: 03. May 2019
  *      Author: Manuel Penschuck <networkit@manuel.jetzt>
