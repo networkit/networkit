@@ -1,6 +1,6 @@
-#include "../../include/networkit/community/CoverF1Similarity.hpp"
+#include <networkit/community/CoverF1Similarity.hpp>
 
-#include "../../include/networkit/auxiliary/SignalHandling.hpp"
+#include <networkit/auxiliary/SignalHandling.hpp>
 
 namespace NetworKit {
 

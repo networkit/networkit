@@ -5,9 +5,9 @@
  *      Author: Henning, Manuel Penschuck <networkit@manuel.jetzt>
  */
 
-#include "../../include/networkit/generators/ErdosRenyiGenerator.hpp"
-#include "../../include/networkit/generators/ErdosRenyiEnumerator.hpp"
-#include "../../include/networkit/graph/GraphBuilder.hpp"
+#include <networkit/generators/ErdosRenyiGenerator.hpp>
+#include <networkit/generators/ErdosRenyiEnumerator.hpp>
+#include <networkit/graph/GraphBuilder.hpp>
 
 namespace NetworKit {
 

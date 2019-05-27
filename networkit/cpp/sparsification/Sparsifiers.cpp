@@ -5,16 +5,16 @@
  *      Author: Gerd Lindner
  */
 
-#include "../../include/networkit/sparsification/Sparsifiers.hpp"
-#include "../../include/networkit/edgescores/TriangleEdgeScore.hpp"
-#include "../../include/networkit/edgescores/PrefixJaccardScore.hpp"
-#include "../../include/networkit/sparsification/SimmelianOverlapScore.hpp"
-#include "../../include/networkit/sparsification/MultiscaleScore.hpp"
-#include "../../include/networkit/sparsification/LocalSimilarityScore.hpp"
-#include "../../include/networkit/sparsification/RandomEdgeScore.hpp"
-#include "../../include/networkit/sparsification/GlobalThresholdFilter.hpp"
+#include <networkit/sparsification/Sparsifiers.hpp>
+#include <networkit/edgescores/TriangleEdgeScore.hpp>
+#include <networkit/edgescores/PrefixJaccardScore.hpp>
+#include <networkit/sparsification/SimmelianOverlapScore.hpp>
+#include <networkit/sparsification/MultiscaleScore.hpp>
+#include <networkit/sparsification/LocalSimilarityScore.hpp>
+#include <networkit/sparsification/RandomEdgeScore.hpp>
+#include <networkit/sparsification/GlobalThresholdFilter.hpp>
 
-#include "../../include/networkit/auxiliary/Random.hpp"
+#include <networkit/auxiliary/Random.hpp>
 
 namespace NetworKit {
 

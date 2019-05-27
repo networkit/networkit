@@ -9,8 +9,8 @@
 #include <omp.h>
 #include <set>
 
-#include "../../include/networkit/centrality/DegreeCentrality.hpp"
-#include "../../include/networkit/centrality/CoreDecomposition.hpp"
+#include <networkit/centrality/DegreeCentrality.hpp>
+#include <networkit/centrality/CoreDecomposition.hpp>
 
 namespace NetworKit {
 

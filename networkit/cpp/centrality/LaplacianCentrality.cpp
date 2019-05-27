@@ -5,7 +5,7 @@
  *      Author: Kolja Esders
  */
 
-#include "../../include/networkit/centrality/LaplacianCentrality.hpp"
+#include <networkit/centrality/LaplacianCentrality.hpp>
 
 namespace NetworKit {
 

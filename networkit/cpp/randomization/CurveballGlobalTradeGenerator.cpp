@@ -9,9 +9,9 @@
 #include <algorithm>
 #include <vector>
 
-#include "../../include/networkit/randomization/CurveballGlobalTradeGenerator.hpp"
+#include <networkit/randomization/CurveballGlobalTradeGenerator.hpp>
 
-#include "../../include/networkit/auxiliary/Random.hpp"
+#include <networkit/auxiliary/Random.hpp>
 
 namespace NetworKit {
 

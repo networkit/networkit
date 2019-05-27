@@ -9,9 +9,9 @@
 #include <omp.h>
 #include <queue>
 
-#include "../../include/networkit/centrality/Closeness.hpp"
-#include "../../include/networkit/components/ConnectedComponents.hpp"
-#include "../../include/networkit/components/StronglyConnectedComponents.hpp"
+#include <networkit/centrality/Closeness.hpp>
+#include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/components/StronglyConnectedComponents.hpp>
 
 namespace NetworKit {
 

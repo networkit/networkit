@@ -5,10 +5,10 @@
  * Created on 17. Dezember 2016, 16:35
  */
 
-#include "../../include/networkit/distance/AffectedNodes.hpp"
-#include "../../include/networkit/distance/BFS.hpp"
-#include "../../include/networkit/distance/ReverseBFS.hpp"
-#include "../../include/networkit/distance/SSSP.hpp"
+#include <networkit/distance/AffectedNodes.hpp>
+#include <networkit/distance/BFS.hpp>
+#include <networkit/distance/ReverseBFS.hpp>
+#include <networkit/distance/SSSP.hpp>
 
 namespace NetworKit {
 

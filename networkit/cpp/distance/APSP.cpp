@@ -5,10 +5,10 @@
  *      Author: Arie Slobbe
  */
 
-#include "../../include/networkit/distance/APSP.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
-#include "../../include/networkit/distance/Dijkstra.hpp"
-#include "../../include/networkit/distance/BFS.hpp"
+#include <networkit/distance/APSP.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/distance/Dijkstra.hpp>
+#include <networkit/distance/BFS.hpp>
 
 namespace NetworKit {
 

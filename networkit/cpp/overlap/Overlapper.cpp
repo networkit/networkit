@@ -5,7 +5,7 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "../../include/networkit/overlap/Overlapper.hpp"
+#include <networkit/overlap/Overlapper.hpp>
 
 namespace NetworKit {
 

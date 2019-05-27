@@ -8,8 +8,8 @@
 #include <gtest/gtest.h>
 #include <map>
 
-#include "../../../include/networkit/randomization/GlobalTradeSequence.hpp"
-#include "../../../include/networkit/auxiliary/Random.hpp"
+#include <networkit/randomization/GlobalTradeSequence.hpp>
+#include <networkit/auxiliary/Random.hpp>
 
 namespace NetworKit {
 

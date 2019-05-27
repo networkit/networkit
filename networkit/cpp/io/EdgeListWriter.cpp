@@ -5,12 +5,12 @@
  *      Author: cls
  */
 
-#include "../../include/networkit/io/EdgeListWriter.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/io/EdgeListWriter.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
 #include <sstream>
 
-#include "../../include/networkit/auxiliary/Enforce.hpp"
+#include <networkit/auxiliary/Enforce.hpp>
 
 namespace NetworKit {
 

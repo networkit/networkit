@@ -5,8 +5,8 @@
  *      Author: Stefan Bertsch
  */
 
-#include "../../include/networkit/io/GMLGraphWriter.hpp"
-#include "../../include/networkit/auxiliary/Enforce.hpp"
+#include <networkit/io/GMLGraphWriter.hpp>
+#include <networkit/auxiliary/Enforce.hpp>
 
 namespace NetworKit {
 

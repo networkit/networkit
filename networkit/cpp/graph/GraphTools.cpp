@@ -1,6 +1,6 @@
-#include "../../include/networkit/graph/GraphTools.hpp"
+#include <networkit/graph/GraphTools.hpp>
 #include <unordered_map>
-#include "../../include/networkit/graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 #include <random>
 
 namespace NetworKit {

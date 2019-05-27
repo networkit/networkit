@@ -5,10 +5,10 @@
  *      Author:  Hung Tran <htran@ae.cs.uni-frankfurt.de>, Manuel Penschuck <networkit@manuel.jetzt>
  */
 
-#include "../../include/networkit/auxiliary/Random.hpp"
+#include <networkit/auxiliary/Random.hpp>
 
-#include "../../include/networkit/randomization/Curveball.hpp"
-#include "../../include/networkit/randomization/CurveballImpl.hpp"
+#include <networkit/randomization/Curveball.hpp>
+#include <networkit/randomization/CurveballImpl.hpp>
 
 namespace NetworKit {
 

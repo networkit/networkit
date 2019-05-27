@@ -5,7 +5,7 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include "../../include/networkit/linkprediction/VDegreeIndex.hpp"
+#include <networkit/linkprediction/VDegreeIndex.hpp>
 
 namespace NetworKit {
 

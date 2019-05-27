@@ -5,12 +5,12 @@
  *      Author: Maximilian Vogel
  */
 
-#include "../../include/networkit/io/GraphToolBinaryWriter.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
-#include "../../include/networkit/graph/GraphTools.hpp"
+#include <networkit/io/GraphToolBinaryWriter.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <sstream>
 
-#include "../../include/networkit/auxiliary/Enforce.hpp"
+#include <networkit/auxiliary/Enforce.hpp>
 
 namespace NetworKit {
 GraphToolBinaryWriter::GraphToolBinaryWriter(bool littleEndianness) : littleEndianness(littleEndianness) {}

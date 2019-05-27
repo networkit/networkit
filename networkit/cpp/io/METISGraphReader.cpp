@@ -5,12 +5,12 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "../../include/networkit/io/METISGraphReader.hpp"
-#include "../../include/networkit/io/METISParser.hpp"
-#include "../../include/networkit/auxiliary/Enforce.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
-#include "../../include/networkit/auxiliary/StringTools.hpp"
-#include "../../include/networkit/graph/GraphBuilder.hpp"
+#include <networkit/io/METISGraphReader.hpp>
+#include <networkit/io/METISParser.hpp>
+#include <networkit/auxiliary/Enforce.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/StringTools.hpp>
+#include <networkit/graph/GraphBuilder.hpp>
 
 namespace NetworKit {
 

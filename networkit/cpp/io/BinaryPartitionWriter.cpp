@@ -1,4 +1,4 @@
-#include "../../include/networkit/io/BinaryPartitionWriter.hpp"
+#include <networkit/io/BinaryPartitionWriter.hpp>
 #include <fstream>
 
 NetworKit::BinaryPartitionWriter::BinaryPartitionWriter(uint8_t width) : width(width) {

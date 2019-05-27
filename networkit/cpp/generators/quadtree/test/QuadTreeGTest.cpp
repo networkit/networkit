@@ -12,14 +12,14 @@
 #include <gtest/gtest.h>
 #include <cmath>
 #include <vector>
-#include "../../../../include/networkit/generators/quadtree/Quadtree.hpp"
+#include <networkit/generators/quadtree/Quadtree.hpp>
 
-#include "../../../../include/networkit/auxiliary/Random.hpp"
-#include "../../../../include/networkit/auxiliary/Log.hpp"
-#include "../../../../include/networkit/geometric/HyperbolicSpace.hpp"
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/geometric/HyperbolicSpace.hpp>
 
-#include "../../../../include/networkit/generators/quadtree/QuadtreeCartesianEuclid.hpp"
-#include "../../../../include/networkit/generators/quadtree/QuadtreePolarEuclid.hpp"
+#include <networkit/generators/quadtree/QuadtreeCartesianEuclid.hpp>
+#include <networkit/generators/quadtree/QuadtreePolarEuclid.hpp>
 
 namespace NetworKit {
 

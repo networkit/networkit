@@ -7,11 +7,11 @@
 
 #include <gtest/gtest.h>
 
-#include "../../../include/networkit/dynamics/DGSStreamParser.hpp"
-#include "../../../include/networkit/auxiliary/Log.hpp"
-#include "../../../include/networkit/dynamics/GraphEvent.hpp"
-#include "../../../include/networkit/dynamics/GraphUpdater.hpp"
-#include "../../../include/networkit/dynamics/GraphDifference.hpp"
+#include <networkit/dynamics/DGSStreamParser.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/dynamics/GraphEvent.hpp>
+#include <networkit/dynamics/GraphUpdater.hpp>
+#include <networkit/dynamics/GraphDifference.hpp>
 
 namespace NetworKit {
 

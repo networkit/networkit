@@ -11,10 +11,10 @@
 
 
 
-#include "../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/auxiliary/Log.hpp>
 
-#include "../../include/networkit/io/KONECTGraphReader.hpp"
-#include "../../include/networkit/io/MemoryMappedFile.hpp"
+#include <networkit/io/KONECTGraphReader.hpp>
+#include <networkit/io/MemoryMappedFile.hpp>
 
 namespace NetworKit{
 	KONECTGraphReader::KONECTGraphReader(bool remapNodes, MultipleEdgesHandling handlingmethod):

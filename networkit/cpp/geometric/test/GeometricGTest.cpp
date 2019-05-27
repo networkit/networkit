@@ -8,17 +8,17 @@
 #include <gtest/gtest.h>
 #include <cmath>
 
-#include "../../../include/networkit/auxiliary/Log.hpp"
-#include "../../../include/networkit/auxiliary/Random.hpp"
-#include "../../../include/networkit/geometric/HyperbolicSpace.hpp"
-#include "../../../include/networkit/geometric/Point2D.hpp"
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/geometric/HyperbolicSpace.hpp>
+#include <networkit/geometric/Point2D.hpp>
 
 #include <cmath>
 
-#include "../../../include/networkit/auxiliary/Log.hpp"
-#include "../../../include/networkit/auxiliary/Random.hpp"
-#include "../../../include/networkit/geometric/HyperbolicSpace.hpp"
-#include "../../../include/networkit/geometric/Point2D.hpp"
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/geometric/HyperbolicSpace.hpp>
+#include <networkit/geometric/Point2D.hpp>
 
 namespace NetworKit {
 

@@ -7,8 +7,8 @@
 
 #include <gtest/gtest.h>
 
-#include "../../../include/networkit/edgescores/ChibaNishizekiTriangleEdgeScore.hpp"
-#include "../../../include/networkit/edgescores/TriangleEdgeScore.hpp"
+#include <networkit/edgescores/ChibaNishizekiTriangleEdgeScore.hpp>
+#include <networkit/edgescores/TriangleEdgeScore.hpp>
 
 namespace NetworKit {
 

@@ -5,8 +5,8 @@
  *      Author: Gerd Lindner
  */
 
-#include "../../include/networkit/sparsification/GlobalThresholdFilter.hpp"
-#include "../../include/networkit/graph/GraphBuilder.hpp"
+#include <networkit/sparsification/GlobalThresholdFilter.hpp>
+#include <networkit/graph/GraphBuilder.hpp>
 
 namespace NetworKit {
 

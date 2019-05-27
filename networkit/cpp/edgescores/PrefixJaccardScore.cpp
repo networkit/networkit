@@ -5,7 +5,7 @@
  *      Author: Michael Hamann
  */
 
-#include "../../include/networkit/edgescores/PrefixJaccardScore.hpp"
+#include <networkit/edgescores/PrefixJaccardScore.hpp>
 #include <omp.h>
 
 namespace NetworKit {

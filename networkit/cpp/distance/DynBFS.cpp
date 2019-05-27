@@ -5,9 +5,9 @@
  *      Author: cls, ebergamini
  */
 
-#include "../../include/networkit/distance/BFS.hpp"
-#include "../../include/networkit/distance/DynBFS.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/distance/BFS.hpp>
+#include <networkit/distance/DynBFS.hpp>
+#include <networkit/auxiliary/Log.hpp>
 #include <queue>
 
 

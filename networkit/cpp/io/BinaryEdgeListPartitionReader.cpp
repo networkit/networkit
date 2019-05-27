@@ -1,4 +1,4 @@
-#include "../../include/networkit/io/BinaryEdgeListPartitionReader.hpp"
+#include <networkit/io/BinaryEdgeListPartitionReader.hpp>
 #include <fstream>
 
 NetworKit::BinaryEdgeListPartitionReader::BinaryEdgeListPartitionReader(node firstNode, uint8_t width) : firstNode(firstNode), width(width) {

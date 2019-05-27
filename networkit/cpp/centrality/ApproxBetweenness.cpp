@@ -5,15 +5,15 @@
  *      Author: cls
  */
 
-#include "../../include/networkit/centrality/ApproxBetweenness.hpp"
-#include "../../include/networkit/auxiliary/Random.hpp"
-#include "../../include/networkit/distance/Diameter.hpp"
-#include "../../include/networkit/graph/Sampling.hpp"
-#include "../../include/networkit/distance/Dijkstra.hpp"
-#include "../../include/networkit/distance/BFS.hpp"
-#include "../../include/networkit/distance/SSSP.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
-#include "../../include/networkit/auxiliary/SignalHandling.hpp"
+#include <networkit/centrality/ApproxBetweenness.hpp>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/distance/Diameter.hpp>
+#include <networkit/graph/Sampling.hpp>
+#include <networkit/distance/Dijkstra.hpp>
+#include <networkit/distance/BFS.hpp>
+#include <networkit/distance/SSSP.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/SignalHandling.hpp>
 
 #include <math.h>
 #include <algorithm>

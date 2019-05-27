@@ -7,14 +7,14 @@
 
 #include <gtest/gtest.h>
 
-#include "../../../include/networkit/auxiliary/Random.hpp"
-#include "../../../include/networkit/algebraic/AlgebraicGlobals.hpp"
-#include "../../../include/networkit/algebraic/Vector.hpp"
-#include "../../../include/networkit/io/METISGraphReader.hpp"
-#include "../../../include/networkit/algebraic/MatrixTools.hpp"
-#include "../../../include/networkit/algebraic/CSRMatrix.hpp"
-#include "../../../include/networkit/algebraic/DenseMatrix.hpp"
-#include "../../../include/networkit/algebraic/DynamicMatrix.hpp"
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/algebraic/AlgebraicGlobals.hpp>
+#include <networkit/algebraic/Vector.hpp>
+#include <networkit/io/METISGraphReader.hpp>
+#include <networkit/algebraic/MatrixTools.hpp>
+#include <networkit/algebraic/CSRMatrix.hpp>
+#include <networkit/algebraic/DenseMatrix.hpp>
+#include <networkit/algebraic/DynamicMatrix.hpp>
 
 namespace NetworKit {
 

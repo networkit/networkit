@@ -5,14 +5,14 @@
  *      Author: ebergamini
  */
 
-#include "../../include/networkit/centrality/DynApproxBetweenness.hpp"
-#include "../../include/networkit/auxiliary/Random.hpp"
-#include "../../include/networkit/distance/Diameter.hpp"
-#include "../../include/networkit/graph/Sampling.hpp"
-#include "../../include/networkit/distance/DynDijkstra.hpp"
-#include "../../include/networkit/distance/DynBFS.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
-#include "../../include/networkit/auxiliary/NumericTools.hpp"
+#include <networkit/centrality/DynApproxBetweenness.hpp>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/distance/Diameter.hpp>
+#include <networkit/graph/Sampling.hpp>
+#include <networkit/distance/DynDijkstra.hpp>
+#include <networkit/distance/DynBFS.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/NumericTools.hpp>
 
 
 namespace NetworKit {

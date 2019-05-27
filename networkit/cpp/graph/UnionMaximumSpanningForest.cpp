@@ -1,7 +1,7 @@
 
-#include "../../include/networkit/graph/UnionMaximumSpanningForest.hpp"
-#include "../../include/networkit/auxiliary/SignalHandling.hpp"
-#include "../../include/networkit/auxiliary/Parallel.hpp"
+#include <networkit/graph/UnionMaximumSpanningForest.hpp>
+#include <networkit/auxiliary/SignalHandling.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
 
 namespace NetworKit {
 

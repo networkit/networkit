@@ -9,10 +9,10 @@
 #include <queue>
 #include <unordered_set>
 
-#include "../../include/networkit/auxiliary/Log.hpp"
-#include "../../include/networkit/auxiliary/NumericTools.hpp"
-#include "../../include/networkit/auxiliary/PrioQueue.hpp"
-#include "../../include/networkit/centrality/DynBetweennessOneNode.hpp"
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/NumericTools.hpp>
+#include <networkit/auxiliary/PrioQueue.hpp>
+#include <networkit/centrality/DynBetweennessOneNode.hpp>
 
 namespace NetworKit {
 

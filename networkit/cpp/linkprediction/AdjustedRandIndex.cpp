@@ -5,7 +5,7 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include "../../include/networkit/linkprediction/AdjustedRandIndex.hpp"
+#include <networkit/linkprediction/AdjustedRandIndex.hpp>
 
 namespace NetworKit {
 

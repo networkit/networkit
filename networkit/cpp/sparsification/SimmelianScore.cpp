@@ -5,7 +5,7 @@
  *      Author: Gerd Lindner
  */
 
-#include "../../include/networkit/sparsification/SimmelianScore.hpp"
+#include <networkit/sparsification/SimmelianScore.hpp>
 #include <limits>
 
 namespace NetworKit {

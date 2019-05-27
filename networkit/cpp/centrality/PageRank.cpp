@@ -5,9 +5,9 @@
  *      Author: Henning
  */
 
-#include "../../include/networkit/centrality/PageRank.hpp"
-#include "../../include/networkit/auxiliary/NumericTools.hpp"
-#include "../../include/networkit/auxiliary/SignalHandling.hpp"
+#include <networkit/centrality/PageRank.hpp>
+#include <networkit/auxiliary/NumericTools.hpp>
+#include <networkit/auxiliary/SignalHandling.hpp>
 
 namespace NetworKit {
 

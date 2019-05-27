@@ -7,8 +7,8 @@
 
 #include <omp.h>
 
-#include "../../include/networkit/distance/AllSimplePaths.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/distance/AllSimplePaths.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
 

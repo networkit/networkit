@@ -7,20 +7,20 @@
 
 #include <gtest/gtest.h>
 
-#include "../../../include/networkit/algebraic/Vector.hpp"
-#include "../../../include/networkit/io/METISGraphReader.hpp"
-#include "../../../include/networkit/io/METISGraphWriter.hpp"
-#include "../../../include/networkit/generators/BarabasiAlbertGenerator.hpp"
-#include "../../../include/networkit/components/ConnectedComponents.hpp"
-#include "../../../include/networkit/structures/Partition.hpp"
+#include <networkit/algebraic/Vector.hpp>
+#include <networkit/io/METISGraphReader.hpp>
+#include <networkit/io/METISGraphWriter.hpp>
+#include <networkit/generators/BarabasiAlbertGenerator.hpp>
+#include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/structures/Partition.hpp>
 
-#include "../../../include/networkit/numerics/LAMG/MultiLevelSetup.hpp"
-#include "../../../include/networkit/numerics/LAMG/SolverLamg.hpp"
-#include "../../../include/networkit/io/LineFileReader.hpp"
-#include "../../../include/networkit/auxiliary/Timer.hpp"
-#include "../../../include/networkit/algebraic/CSRMatrix.hpp"
+#include <networkit/numerics/LAMG/MultiLevelSetup.hpp>
+#include <networkit/numerics/LAMG/SolverLamg.hpp>
+#include <networkit/io/LineFileReader.hpp>
+#include <networkit/auxiliary/Timer.hpp>
+#include <networkit/algebraic/CSRMatrix.hpp>
 
-#include "../../../include/networkit/numerics/GaussSeidelRelaxation.hpp"
+#include <networkit/numerics/GaussSeidelRelaxation.hpp>
 
 namespace NetworKit {
 

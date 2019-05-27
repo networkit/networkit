@@ -5,9 +5,9 @@
  *      Author: Henning
  */
 
-#include "../../include/networkit/scd/PageRankNibble.hpp"
-#include "../../include/networkit/scd/ApproximatePageRank.hpp"
-#include "../../include/networkit/auxiliary/Parallel.hpp"
+#include <networkit/scd/PageRankNibble.hpp>
+#include <networkit/scd/ApproximatePageRank.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
 #include <vector>
 #include <algorithm>
 #include <unordered_set>

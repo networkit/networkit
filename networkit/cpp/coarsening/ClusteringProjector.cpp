@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "../../include/networkit/coarsening/ClusteringProjector.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/coarsening/ClusteringProjector.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
 

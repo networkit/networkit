@@ -2,9 +2,9 @@
  *
  */
 
-#include "../../include/networkit/community/PartitionHubDominance.hpp"
-#include "../../include/networkit/auxiliary/SignalHandling.hpp"
-#include "../../include/networkit/auxiliary/Parallel.hpp"
+#include <networkit/community/PartitionHubDominance.hpp>
+#include <networkit/auxiliary/SignalHandling.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
 #include <atomic>
 #include <memory>
 

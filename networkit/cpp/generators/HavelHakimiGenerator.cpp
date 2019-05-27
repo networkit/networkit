@@ -6,11 +6,11 @@
  *      Contributors: Hoske/Weisbarth
  */
 
-#include "../../include/networkit/generators/HavelHakimiGenerator.hpp"
+#include <networkit/generators/HavelHakimiGenerator.hpp>
 
 #include <list>
 #include <stack>
-#include "../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
 

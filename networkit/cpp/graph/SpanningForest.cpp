@@ -5,7 +5,7 @@
  *      Author: Henning
  */
 
-#include "../../include/networkit/graph/SpanningForest.hpp"
+#include <networkit/graph/SpanningForest.hpp>
 
 namespace NetworKit {
 

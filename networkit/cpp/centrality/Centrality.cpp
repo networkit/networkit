@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#include "../../include/networkit/centrality/Centrality.hpp"
-#include "../../include/networkit/auxiliary/Parallel.hpp"
+#include <networkit/centrality/Centrality.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
 
 namespace NetworKit {
 

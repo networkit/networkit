@@ -7,8 +7,8 @@
 
 #include <gtest/gtest.h>
 
-#include "../../../include/networkit/graph/Graph.hpp"
-#include "../../../include/networkit/graph/GraphTools.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
 

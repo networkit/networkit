@@ -2,8 +2,8 @@
  *
  */
 
-#include "../../include/networkit/community/StablePartitionNodes.hpp"
-#include "../../include/networkit/auxiliary/SignalHandling.hpp"
+#include <networkit/community/StablePartitionNodes.hpp>
+#include <networkit/auxiliary/SignalHandling.hpp>
 #include <limits>
 #include <map>
 

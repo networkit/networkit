@@ -1,4 +1,4 @@
-#include "../../include/networkit/community/PartitionIntersection.hpp"
+#include <networkit/community/PartitionIntersection.hpp>
 
 #include <algorithm>
 

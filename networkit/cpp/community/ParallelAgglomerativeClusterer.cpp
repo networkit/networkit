@@ -6,11 +6,11 @@
  *      		Henning Meyerhenke (henning.meyerhenke@kit.edu)
  */
 
-#include "../../include/networkit/community/ParallelAgglomerativeClusterer.hpp"
-#include "../../include/networkit/scoring/ModularityScoring.hpp"
-#include "../../include/networkit/matching/PathGrowingMatcher.hpp"
-#include "../../include/networkit/coarsening/MatchingCoarsening.hpp"
-#include "../../include/networkit/coarsening/ClusteringProjector.hpp"
+#include <networkit/community/ParallelAgglomerativeClusterer.hpp>
+#include <networkit/scoring/ModularityScoring.hpp>
+#include <networkit/matching/PathGrowingMatcher.hpp>
+#include <networkit/coarsening/MatchingCoarsening.hpp>
+#include <networkit/coarsening/ClusteringProjector.hpp>
 
 namespace NetworKit {
 ParallelAgglomerativeClusterer::ParallelAgglomerativeClusterer(const Graph& G) : CommunityDetectionAlgorithm(G) {};

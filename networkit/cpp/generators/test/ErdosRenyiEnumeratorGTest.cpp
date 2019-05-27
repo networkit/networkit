@@ -8,9 +8,9 @@
 #include <tuple>
 #include <numeric>
 
-#include "../../../include/networkit/Globals.hpp"
-#include "../../../include/networkit/auxiliary/Random.hpp"
-#include "../../../include/networkit/generators/ErdosRenyiEnumerator.hpp"
+#include <networkit/Globals.hpp>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/generators/ErdosRenyiEnumerator.hpp>
 
 namespace NetworKit {
 

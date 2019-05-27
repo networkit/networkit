@@ -22,7 +22,7 @@
 
 #include "MemoryMappedFileGTest.hpp"
 
-#include "../../../include/networkit/io/MemoryMappedFile.hpp"
+#include <networkit/io/MemoryMappedFile.hpp>
 
 
 namespace NetworKit {

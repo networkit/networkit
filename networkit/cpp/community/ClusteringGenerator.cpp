@@ -5,10 +5,10 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "../../include/networkit/community/ClusteringGenerator.hpp"
-#include "../../include/networkit/community/GraphClusteringTools.hpp"
-#include "../../include/networkit/auxiliary/Random.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/community/ClusteringGenerator.hpp>
+#include <networkit/community/GraphClusteringTools.hpp>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
 Partition ClusteringGenerator::makeSingletonClustering(Graph& G) {

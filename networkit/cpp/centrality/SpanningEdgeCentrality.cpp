@@ -6,14 +6,14 @@
  */
 
 
-#include "../../include/networkit/centrality/SpanningEdgeCentrality.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
-#include "../../include/networkit/auxiliary/Timer.hpp"
+#include <networkit/centrality/SpanningEdgeCentrality.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/Timer.hpp>
 
 #include <fstream>
 #include <sstream>
 
-#include "omp.h"
+#include <omp.h>
 
 namespace NetworKit {
 

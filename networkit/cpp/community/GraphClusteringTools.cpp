@@ -1,5 +1,5 @@
-#include "../../include/networkit/community/GraphClusteringTools.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/community/GraphClusteringTools.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
 

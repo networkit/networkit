@@ -5,7 +5,7 @@
  *      Author: Eugenio Angriman
 */
 
-#include "../../include/networkit/components/WeaklyConnectedComponents.hpp"
+#include <networkit/components/WeaklyConnectedComponents.hpp>
 
 namespace NetworKit {
 

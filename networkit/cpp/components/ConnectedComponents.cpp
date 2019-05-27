@@ -7,9 +7,9 @@
 
 #include <set>
 
-#include "../../include/networkit/components/ConnectedComponents.hpp"
-#include "../../include/networkit/structures/Partition.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/structures/Partition.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
 

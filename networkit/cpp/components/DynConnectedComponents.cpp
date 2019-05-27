@@ -5,7 +5,7 @@
 *      Author: Eugenio Angriman
 */
 
-#include "../../include/networkit/components/DynConnectedComponents.hpp"
+#include <networkit/components/DynConnectedComponents.hpp>
 
 namespace NetworKit {
 

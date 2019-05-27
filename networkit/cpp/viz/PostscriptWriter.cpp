@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#include "../../include/networkit/viz/PostscriptWriter.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/viz/PostscriptWriter.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
 

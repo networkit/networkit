@@ -5,10 +5,10 @@
  *      Author: Henning
  */
 
-#include "../../include/networkit/graph/KruskalMSF.hpp"
-#include "../../include/networkit/graph/SpanningForest.hpp"
-#include "../../include/networkit/structures/UnionFind.hpp"
-#include "../../include/networkit/auxiliary/Parallel.hpp"
+#include <networkit/graph/KruskalMSF.hpp>
+#include <networkit/graph/SpanningForest.hpp>
+#include <networkit/structures/UnionFind.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
 
 namespace NetworKit {
 

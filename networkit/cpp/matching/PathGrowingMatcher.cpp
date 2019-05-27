@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#include "../../include/networkit/matching/PathGrowingMatcher.hpp"
-#include "../../include/networkit/auxiliary/BucketPQ.hpp"
+#include <networkit/matching/PathGrowingMatcher.hpp>
+#include <networkit/auxiliary/BucketPQ.hpp>
 
 namespace NetworKit {
 

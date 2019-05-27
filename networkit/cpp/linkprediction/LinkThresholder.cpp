@@ -5,9 +5,9 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include "../../include/networkit/linkprediction/LinkThresholder.hpp"
-#include "../../include/networkit/linkprediction/PredictionsSorter.hpp"
-#include "../../include/networkit/auxiliary/Parallel.hpp"
+#include <networkit/linkprediction/LinkThresholder.hpp>
+#include <networkit/linkprediction/PredictionsSorter.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
 
 namespace NetworKit {
 

@@ -1,11 +1,11 @@
-#include "../../../include/networkit/auxiliary/test/AuxRandomBenchmark.hpp"
+#include <networkit/auxiliary/test/AuxRandomBenchmark.hpp>
 
-#include "../../../include/networkit/auxiliary/Random.hpp"
-#include "../../../include/networkit/auxiliary/Timer.hpp"
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/auxiliary/Timer.hpp>
 
 #include <atomic>
 #include <random>
-#include "omp.h"
+#include <omp.h>
 
 namespace NetworKit {
 template<typename F>

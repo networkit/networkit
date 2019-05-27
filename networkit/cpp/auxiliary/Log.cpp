@@ -5,7 +5,7 @@
 #include <iomanip>
 #include <ios>
 
-#include "../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/auxiliary/Log.hpp>
 
 namespace Aux { namespace Log {
 

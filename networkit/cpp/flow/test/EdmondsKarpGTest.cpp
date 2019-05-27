@@ -7,8 +7,8 @@
 
 #include <gtest/gtest.h>
 
-#include "../../../include/networkit/flow/EdmondsKarp.hpp"
-#include "../../../include/networkit/graph/Graph.hpp"
+#include <networkit/flow/EdmondsKarp.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

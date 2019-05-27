@@ -5,7 +5,7 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include "../../include/networkit/linkprediction/NeighborhoodUtility.hpp"
+#include <networkit/linkprediction/NeighborhoodUtility.hpp>
 
 namespace NetworKit {
 

@@ -5,7 +5,7 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#include "../../include/networkit/algebraic/DenseMatrix.hpp"
+#include <networkit/algebraic/DenseMatrix.hpp>
 #include <algorithm>
 
 namespace NetworKit {

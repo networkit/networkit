@@ -5,9 +5,9 @@
  *      Author: Michael Hamann, Gerd Lindner
  */
 
-#include "../../include/networkit/edgescores/TriangleEdgeScore.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
-#include "../../include/networkit/auxiliary/Timer.hpp"
+#include <networkit/edgescores/TriangleEdgeScore.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/Timer.hpp>
 #include <omp.h>
 
 namespace NetworKit {

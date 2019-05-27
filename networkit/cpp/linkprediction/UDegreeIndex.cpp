@@ -5,7 +5,7 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include "../../include/networkit/linkprediction/UDegreeIndex.hpp"
+#include <networkit/linkprediction/UDegreeIndex.hpp>
 
 namespace NetworKit {
 

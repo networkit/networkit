@@ -9,24 +9,24 @@
 
 #include <chrono>
 
-#include "../../../include/networkit/graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 
-#include "../../../include/networkit/io/METISGraphReader.hpp"
-#include "../../../include/networkit/linkprediction/KatzIndex.hpp"
-#include "../../../include/networkit/linkprediction/CommonNeighborsIndex.hpp"
-#include "../../../include/networkit/linkprediction/JaccardIndex.hpp"
-#include "../../../include/networkit/linkprediction/ROCMetric.hpp"
-#include "../../../include/networkit/linkprediction/PrecisionRecallMetric.hpp"
-#include "../../../include/networkit/linkprediction/RandomLinkSampler.hpp"
-#include "../../../include/networkit/linkprediction/MissingLinksFinder.hpp"
-#include "../../../include/networkit/linkprediction/UDegreeIndex.hpp"
-#include "../../../include/networkit/linkprediction/VDegreeIndex.hpp"
-#include "../../../include/networkit/linkprediction/LinkThresholder.hpp"
-#include "../../../include/networkit/linkprediction/TotalNeighborsIndex.hpp"
-#include "../../../include/networkit/linkprediction/NeighborsMeasureIndex.hpp"
-#include "../../../include/networkit/linkprediction/SameCommunityIndex.hpp"
-#include "../../../include/networkit/linkprediction/PredictionsSorter.hpp"
-#include "../../../include/networkit/linkprediction/LinkPredictor.hpp"
+#include <networkit/io/METISGraphReader.hpp>
+#include <networkit/linkprediction/KatzIndex.hpp>
+#include <networkit/linkprediction/CommonNeighborsIndex.hpp>
+#include <networkit/linkprediction/JaccardIndex.hpp>
+#include <networkit/linkprediction/ROCMetric.hpp>
+#include <networkit/linkprediction/PrecisionRecallMetric.hpp>
+#include <networkit/linkprediction/RandomLinkSampler.hpp>
+#include <networkit/linkprediction/MissingLinksFinder.hpp>
+#include <networkit/linkprediction/UDegreeIndex.hpp>
+#include <networkit/linkprediction/VDegreeIndex.hpp>
+#include <networkit/linkprediction/LinkThresholder.hpp>
+#include <networkit/linkprediction/TotalNeighborsIndex.hpp>
+#include <networkit/linkprediction/NeighborsMeasureIndex.hpp>
+#include <networkit/linkprediction/SameCommunityIndex.hpp>
+#include <networkit/linkprediction/PredictionsSorter.hpp>
+#include <networkit/linkprediction/LinkPredictor.hpp>
 
 namespace NetworKit {
 

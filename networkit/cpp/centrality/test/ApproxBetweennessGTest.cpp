@@ -7,11 +7,11 @@
 
 #include <gtest/gtest.h>
 
-#include "../../../include/networkit/centrality/ApproxBetweenness.hpp"
-#include "../../../include/networkit/centrality/Betweenness.hpp"
-#include "../../../include/networkit/generators/ErdosRenyiGenerator.hpp"
-#include "../../../include/networkit/generators/DorogovtsevMendesGenerator.hpp"
-#include "../../../include/networkit/distance/Diameter.hpp"
+#include <networkit/centrality/ApproxBetweenness.hpp>
+#include <networkit/centrality/Betweenness.hpp>
+#include <networkit/generators/ErdosRenyiGenerator.hpp>
+#include <networkit/generators/DorogovtsevMendesGenerator.hpp>
+#include <networkit/distance/Diameter.hpp>
 
 namespace NetworKit {
 

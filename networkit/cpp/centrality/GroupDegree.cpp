@@ -5,7 +5,7 @@
  *      Author: Eugenio Angriman
  */
 
-#include "../../include/networkit/centrality/GroupDegree.hpp"
+#include <networkit/centrality/GroupDegree.hpp>
 
 namespace NetworKit {
 GroupDegree::GroupDegree(const Graph &G, count k, bool countGroupNodes)

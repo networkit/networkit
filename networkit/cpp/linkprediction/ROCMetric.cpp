@@ -5,7 +5,7 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include "../../include/networkit/linkprediction/ROCMetric.hpp"
+#include <networkit/linkprediction/ROCMetric.hpp>
 
 namespace NetworKit {
 

@@ -11,14 +11,14 @@
 #include <algorithm>
 #include <tuple>
 
-#include "../../../include/networkit/graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 
-#include "../../../include/networkit/auxiliary/NumericTools.hpp"
-#include "../../../include/networkit/auxiliary/Parallel.hpp"
-#include "../../../include/networkit/distance/DynBFS.hpp"
-#include "../../../include/networkit/generators/ErdosRenyiGenerator.hpp"
-#include "../../../include/networkit/io/METISGraphReader.hpp"
-#include "../../../include/networkit/graph/GraphBuilder.hpp"
+#include <networkit/auxiliary/NumericTools.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/distance/DynBFS.hpp>
+#include <networkit/generators/ErdosRenyiGenerator.hpp>
+#include <networkit/io/METISGraphReader.hpp>
+#include <networkit/graph/GraphBuilder.hpp>
 
 namespace NetworKit {
 

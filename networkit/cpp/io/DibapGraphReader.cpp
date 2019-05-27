@@ -7,8 +7,8 @@
 
 #if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
 
-#include "../../include/networkit/io/DibapGraphReader.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/io/DibapGraphReader.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
 

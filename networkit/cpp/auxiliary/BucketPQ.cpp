@@ -5,7 +5,7 @@
  *      Author: Henning
  */
 
-#include "../../include/networkit/auxiliary/BucketPQ.hpp"
+#include <networkit/auxiliary/BucketPQ.hpp>
 
 namespace Aux {
 

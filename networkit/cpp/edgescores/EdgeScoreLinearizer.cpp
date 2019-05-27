@@ -5,11 +5,11 @@
  *      Author: Michael Hamann
  */
 
-#include "../../include/networkit/edgescores/EdgeScoreLinearizer.hpp"
+#include <networkit/edgescores/EdgeScoreLinearizer.hpp>
 #include <numeric>
 #include <tuple>
-#include "../../include/networkit/auxiliary/Random.hpp"
-#include "../../include/networkit/auxiliary/Parallel.hpp"
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
 
 namespace NetworKit {
 

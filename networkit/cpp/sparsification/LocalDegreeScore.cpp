@@ -5,8 +5,8 @@
  *      Author: Gerd Lindner
  */
 
-#include "../../include/networkit/sparsification/LocalDegreeScore.hpp"
-#include "../../include/networkit/auxiliary/Parallel.hpp"
+#include <networkit/sparsification/LocalDegreeScore.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
 #include <atomic>
 #include <memory>
 

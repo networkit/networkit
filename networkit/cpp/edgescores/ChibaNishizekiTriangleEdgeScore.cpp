@@ -5,9 +5,9 @@
  *      Author: Gerd Lindner
  */
 
-#include "../../include/networkit/edgescores/ChibaNishizekiTriangleEdgeScore.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
-#include "../../include/networkit/auxiliary/Timer.hpp"
+#include <networkit/edgescores/ChibaNishizekiTriangleEdgeScore.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/Timer.hpp>
 
 namespace NetworKit {
 

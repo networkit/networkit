@@ -5,7 +5,7 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "../../include/networkit/matching/Matcher.hpp"
+#include <networkit/matching/Matcher.hpp>
 
 namespace NetworKit {
 

@@ -5,7 +5,7 @@
  *      Author: cls
  */
 
-#include "../../include/networkit/centrality/DegreeCentrality.hpp"
+#include <networkit/centrality/DegreeCentrality.hpp>
 
 namespace NetworKit {
 

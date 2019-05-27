@@ -27,11 +27,11 @@
 #include <omp.h>
 #include <algorithm>
 
-#include "../../include/networkit/graph/GraphBuilder.hpp"
-#include "../../include/networkit/generators/HyperbolicGenerator.hpp"
-#include "../../include/networkit/generators/quadtree/Quadtree.hpp"
-#include "../../include/networkit/auxiliary/Random.hpp"
-#include "../../include/networkit/auxiliary/Parallel.hpp"
+#include <networkit/graph/GraphBuilder.hpp>
+#include <networkit/generators/HyperbolicGenerator.hpp>
+#include <networkit/generators/quadtree/Quadtree.hpp>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
 
 namespace NetworKit {
 

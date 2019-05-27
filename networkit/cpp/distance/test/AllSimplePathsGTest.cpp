@@ -7,11 +7,11 @@
 
 #include <gtest/gtest.h>
 
-#include "../../../include/networkit/distance/AllSimplePaths.hpp"
+#include <networkit/distance/AllSimplePaths.hpp>
 #include <string>
 #include <algorithm>
-#include "../../../include/networkit/io/EdgeListReader.hpp"
-#include "../../../include/networkit/auxiliary/Random.hpp"
+#include <networkit/io/EdgeListReader.hpp>
+#include <networkit/auxiliary/Random.hpp>
 
 
 namespace NetworKit {

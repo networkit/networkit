@@ -6,16 +6,16 @@
  */
 
 #include <gtest/gtest.h>
-#include "../../../include/networkit/graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 
-#include "../../../include/networkit/randomization/Curveball.hpp"
+#include <networkit/randomization/Curveball.hpp>
 
-#include "../../../include/networkit/graph/Graph.hpp"
-#include "../../../include/networkit/Globals.hpp"
-#include "../../../include/networkit/generators/ErdosRenyiGenerator.hpp"
-#include "../../../include/networkit/generators/HyperbolicGenerator.hpp"
-#include "../../../include/networkit/auxiliary/Random.hpp"
-#include "../../../include/networkit/randomization/CurveballUniformTradeGenerator.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/Globals.hpp>
+#include <networkit/generators/ErdosRenyiGenerator.hpp>
+#include <networkit/generators/HyperbolicGenerator.hpp>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/randomization/CurveballUniformTradeGenerator.hpp>
 
 namespace NetworKit {
 
