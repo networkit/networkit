@@ -179,6 +179,7 @@ if(NETWORKIT_PYTHON)
 	endif()
 
 	add_library(_NetworKit MODULE networkit/_NetworKit.cpp)
+	target_include_directories(_NetworKit BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 	target_include_directories(_NetworKit PRIVATE "${NETWORKIT_PYTHON}")
 
 	if(NOT NETWORKIT_BUILD_CORE)
