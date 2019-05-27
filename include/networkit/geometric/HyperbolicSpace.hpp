@@ -13,8 +13,8 @@
 #include <vector>
 #include <map>
 #include "Point2D.hpp"
-#include "../viz/Point.hpp"
-#include "../auxiliary/Random.hpp"
+#include <networkit/viz/Point.hpp>
+#include <networkit/auxiliary/Random.hpp>
 
 using std::vector;
 using std::abs;

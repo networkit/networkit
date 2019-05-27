@@ -8,12 +8,12 @@
 #ifndef DYNTOPHARMONICCLOSENESS_H_
 #define DYNTOPHARMONICCLOSENESS_H_
 
-#include "../base/Algorithm.hpp"
-#include "../base/DynAlgorithm.hpp"
-#include "../components/DynConnectedComponents.hpp"
-#include "../components/DynWeaklyConnectedComponents.hpp"
-#include "../graph/Graph.hpp"
-#include "../structures/Partition.hpp"
+#include <networkit/base/Algorithm.hpp>
+#include <networkit/base/DynAlgorithm.hpp>
+#include <networkit/components/DynConnectedComponents.hpp>
+#include <networkit/components/DynWeaklyConnectedComponents.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 

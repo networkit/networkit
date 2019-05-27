@@ -7,7 +7,7 @@
 #ifndef RANDOMIZATION_CURVEBALL_UNIFORM_TRADE_GENERATOR_H
 #define RANDOMIZATION_CURVEBALL_UNIFORM_TRADE_GENERATOR_H
 
-#include "../Globals.hpp"
+#include <networkit/Globals.hpp>
 
 namespace NetworKit {
 

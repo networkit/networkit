@@ -9,16 +9,16 @@
 #define MAXENTSTRESS_H_
 
 #include "GraphLayoutAlgorithm.hpp"
-#include "../numerics/LinearSolver.hpp"
-#include "../algebraic/CSRMatrix.hpp"
+#include <networkit/numerics/LinearSolver.hpp>
+#include <networkit/algebraic/CSRMatrix.hpp>
 #include "Octree.hpp"
 
-#include "../distance/BFS.hpp"
-#include "../distance/Dijkstra.hpp"
-#include "../distance/AlgebraicDistance.hpp"
+#include <networkit/distance/BFS.hpp>
+#include <networkit/distance/Dijkstra.hpp>
+#include <networkit/distance/AlgebraicDistance.hpp>
 
-#include "../io/LineFileReader.hpp"
-#include "../auxiliary/StringTools.hpp"
+#include <networkit/io/LineFileReader.hpp>
+#include <networkit/auxiliary/StringTools.hpp>
 
 #include <memory>
 

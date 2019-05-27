@@ -7,9 +7,9 @@
 
 #ifndef TOPCLOSENESS_H_
 #define TOPCLOSENESS_H_
-#include "../auxiliary/PrioQueue.hpp"
-#include "../base/Algorithm.hpp"
-#include "../graph/Graph.hpp"
+#include <networkit/auxiliary/PrioQueue.hpp>
+#include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

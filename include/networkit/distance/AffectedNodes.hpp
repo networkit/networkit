@@ -8,9 +8,9 @@
 #ifndef AFFECTEDNODES_H
 #define AFFECTEDNODES_H
 
-#include "../base/Algorithm.hpp"
-#include "../graph/Graph.hpp"
-#include "../dynamics/GraphEvent.hpp"
+#include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/dynamics/GraphEvent.hpp>
 
 namespace NetworKit {
 	

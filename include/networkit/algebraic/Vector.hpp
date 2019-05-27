@@ -9,7 +9,7 @@
 #define VECTOR_H_
 
 #include <vector>
-#include "../Globals.hpp"
+#include <networkit/Globals.hpp>
 #include "AlgebraicGlobals.hpp"
 #include <cassert>
 

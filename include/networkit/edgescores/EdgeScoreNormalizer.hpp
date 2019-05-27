@@ -8,7 +8,7 @@
 #ifndef EDGESCORENORMALIZER_H
 #define EDGESCORENORMALIZER_H
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 #include "EdgeScore.hpp"
 
 namespace NetworKit {

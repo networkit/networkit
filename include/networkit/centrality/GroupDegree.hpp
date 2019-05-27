@@ -10,9 +10,9 @@
 
 #include <omp.h>
 
-#include "../auxiliary/BucketPQ.hpp"
-#include "../base/Algorithm.hpp"
-#include "../graph/Graph.hpp"
+#include <networkit/auxiliary/BucketPQ.hpp>
+#include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

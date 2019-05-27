@@ -8,7 +8,7 @@
 #ifndef NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICTRIANGLECOUNTING_H_
 #define NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICTRIANGLECOUNTING_H_
 
-#include "../../base/Algorithm.hpp"
+#include <networkit/base/Algorithm.hpp>
 
 namespace NetworKit {
 

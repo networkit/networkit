@@ -7,8 +7,8 @@
 #ifndef NEIGHBORHOODFUNCTIONHEURISTIC_H_
 #define NEIGHBORHOODFUNCTIONHEURISTIC_H_
 
-#include "../base/Algorithm.hpp"
-#include "../graph/Graph.hpp"
+#include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

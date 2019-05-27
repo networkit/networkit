@@ -8,7 +8,7 @@
 #ifndef MISSINGLINKSFINDER_H_
 #define MISSINGLINKSFINDER_H_
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 
 #include <utility>
 

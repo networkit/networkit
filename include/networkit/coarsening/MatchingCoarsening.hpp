@@ -10,7 +10,7 @@
 
 #include "GraphCoarsening.hpp"
 
-#include "../matching/Matching.hpp"
+#include <networkit/matching/Matching.hpp>
 
 namespace NetworKit {
 

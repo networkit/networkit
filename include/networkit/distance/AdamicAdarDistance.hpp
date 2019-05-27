@@ -8,7 +8,7 @@
 #ifndef ADAMICADARDISTANCE_H_
 #define ADAMICADARDISTANCE_H_
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 #include "NodeDistance.hpp"
 
 namespace NetworKit {

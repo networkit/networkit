@@ -9,8 +9,8 @@
 #define NETWORKIT_CPP_VIZ_GRAPHLAYOUTALGORITHM_H_
 
 #include "Point.hpp"
-#include "../graph/Graph.hpp"
-#include "../auxiliary/Enforce.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/auxiliary/Enforce.hpp>
 
 #include <vector>
 #include <fstream>

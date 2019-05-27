@@ -15,9 +15,9 @@
 #include <cmath>
 #include <random>
 
-#include "../Globals.hpp"
-#include "../auxiliary/Random.hpp"
-#include "../auxiliary/SignalHandling.hpp"
+#include <networkit/Globals.hpp>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/auxiliary/SignalHandling.hpp>
 
 namespace NetworKit {
 

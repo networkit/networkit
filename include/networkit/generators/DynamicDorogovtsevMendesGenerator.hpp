@@ -9,7 +9,7 @@
 #define DYNAMICDOROGOVTSEVMENDESGENERATOR_H_
 
 #include "DynamicGraphGenerator.hpp"
-#include "../auxiliary/Random.hpp"
+#include <networkit/auxiliary/Random.hpp>
 
 namespace NetworKit {
 

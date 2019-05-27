@@ -8,7 +8,7 @@
 #ifndef PRECISIONRECALLMETRIC_H_
 #define PRECISIONRECALLMETRIC_H_
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 #include "EvaluationMetric.hpp"
 
 namespace NetworKit {

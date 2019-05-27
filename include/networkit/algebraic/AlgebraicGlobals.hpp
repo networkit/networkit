@@ -8,7 +8,7 @@
 #ifndef NETWORKIT_CPP_ALGEBRAIC_ALGEBRAICGLOBALS_H_
 #define NETWORKIT_CPP_ALGEBRAIC_ALGEBRAICGLOBALS_H_
 
-#include "../Globals.hpp"
+#include <networkit/Globals.hpp>
 
 namespace NetworKit {
 

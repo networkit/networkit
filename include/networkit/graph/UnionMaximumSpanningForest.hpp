@@ -3,9 +3,9 @@
 
 #include "Graph.hpp"
 #include <limits>
-#include "../structures/UnionFind.hpp"
-#include "../auxiliary/Log.hpp"
-#include "../base/Algorithm.hpp"
+#include <networkit/structures/UnionFind.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/base/Algorithm.hpp>
 
 namespace NetworKit {
 

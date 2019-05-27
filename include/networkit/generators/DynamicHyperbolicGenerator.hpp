@@ -11,7 +11,7 @@
 #include <map>
 
 #include "DynamicGraphGenerator.hpp"
-#include "quadtree/Quadtree.hpp"
+#include <networkit/generators/quadtree/Quadtree.hpp>
 
 
 namespace NetworKit {

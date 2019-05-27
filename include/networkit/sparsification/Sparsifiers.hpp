@@ -8,7 +8,7 @@
 #ifndef SPARSIFIERS_H_
 #define SPARSIFIERS_H_
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

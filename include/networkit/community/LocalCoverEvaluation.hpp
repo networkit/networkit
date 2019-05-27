@@ -2,8 +2,8 @@
 #define LOCALCOVEREVALUATION_H
 
 #include "LocalCommunityEvaluation.hpp"
-#include "../structures/Cover.hpp"
-#include "../graph/Graph.hpp"
+#include <networkit/structures/Cover.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

@@ -10,7 +10,7 @@
 
 #include <functional>
 
-#include "../dynamics/GraphEventProxy.hpp"
+#include <networkit/dynamics/GraphEventProxy.hpp>
 
 namespace NetworKit {
 

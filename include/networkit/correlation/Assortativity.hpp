@@ -8,9 +8,9 @@
 #ifndef ASSORTATIVITY_H_
 #define ASSORTATIVITY_H_
 
-#include "../base/Algorithm.hpp"
-#include "../graph/Graph.hpp"
-#include "../structures/Partition.hpp"
+#include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/structures/Partition.hpp>
 
 
 namespace NetworKit {

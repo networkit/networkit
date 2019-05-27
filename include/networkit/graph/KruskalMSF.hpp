@@ -8,7 +8,7 @@
 #ifndef KRUSKALMSF_H_
 #define KRUSKALMSF_H_
 
-#include "../Globals.hpp"
+#include <networkit/Globals.hpp>
 #include "Graph.hpp"
 #include "SpanningForest.hpp"
 

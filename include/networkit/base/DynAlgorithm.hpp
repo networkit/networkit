@@ -3,7 +3,7 @@
 
 #include <string>
 #include <stdexcept>
-#include "../dynamics/GraphEvent.hpp"
+#include <networkit/dynamics/GraphEvent.hpp>
 
 namespace NetworKit {
 

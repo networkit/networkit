@@ -8,9 +8,9 @@
 #ifndef NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICMATCHINGCOARSENING_H_
 #define NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICMATCHINGCOARSENING_H_
 
-#include "../AlgebraicGlobals.hpp"
-#include "../../coarsening/GraphCoarsening.hpp"
-#include "../../matching/Matching.hpp"
+#include <networkit/algebraic/AlgebraicGlobals.hpp>
+#include <networkit/coarsening/GraphCoarsening.hpp>
+#include <networkit/matching/Matching.hpp>
 
 namespace NetworKit {
 

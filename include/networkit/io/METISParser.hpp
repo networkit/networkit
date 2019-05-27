@@ -12,7 +12,7 @@
 #include <vector>
 #include <string>
 #include <tuple>
-#include "../Globals.hpp"
+#include <networkit/Globals.hpp>
 
 namespace NetworKit {
 

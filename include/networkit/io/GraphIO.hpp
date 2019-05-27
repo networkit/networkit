@@ -12,8 +12,8 @@
 #include <iostream>
 #include <fstream>
 
-#include "../graph/Graph.hpp"
-#include "../auxiliary/Log.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
 

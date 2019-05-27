@@ -11,10 +11,10 @@
 #include <cmath>
 
 #include <vector>
-#include "../geometric/HyperbolicSpace.hpp"
+#include <networkit/geometric/HyperbolicSpace.hpp>
 #include "StaticGraphGenerator.hpp"
-#include "../auxiliary/Timer.hpp"
-#include "quadtree/Quadtree.hpp"
+#include <networkit/auxiliary/Timer.hpp>
+#include <networkit/generators/quadtree/Quadtree.hpp>
 
 namespace NetworKit {
 

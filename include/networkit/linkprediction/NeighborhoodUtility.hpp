@@ -8,7 +8,7 @@
 #ifndef NEIGHBORHOODUTILITY_H_
 #define NEIGHBORHOODUTILITY_H_
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

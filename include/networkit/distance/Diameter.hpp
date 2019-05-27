@@ -8,9 +8,9 @@
 #ifndef DIAMETER_H_
 #define DIAMETER_H_
 
-#include "../base/Algorithm.hpp"
-#include "../graph/Graph.hpp"
-#include "../auxiliary/SignalHandling.hpp"
+#include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/auxiliary/SignalHandling.hpp>
 
 
 namespace NetworKit {

@@ -8,9 +8,9 @@
 #ifndef NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICBELLMANFORD_H_
 #define NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICBELLMANFORD_H_
 
-#include "../../base/Algorithm.hpp"
-#include "../../graph/Graph.hpp"
-#include "../GraphBLAS.hpp"
+#include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/algebraic/GraphBLAS.hpp>
 
 #include <iostream>
 

@@ -11,7 +11,7 @@
 #include <vector>
 #include <algorithm>
 #include <cassert>
-#include "../Globals.hpp"
+#include <networkit/Globals.hpp>
 
 namespace NetworKit {
 

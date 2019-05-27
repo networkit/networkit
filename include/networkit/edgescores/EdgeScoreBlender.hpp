@@ -8,7 +8,7 @@
 #ifndef EDGESCOREBLENDER_H
 #define EDGESCOREBLENDER_H
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 #include "EdgeScore.hpp"
 
 namespace NetworKit {

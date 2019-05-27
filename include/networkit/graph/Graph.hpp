@@ -18,11 +18,11 @@
 #include <utility>
 #include <vector>
 
-#include "../Globals.hpp"
-#include "../auxiliary/FunctionTraits.hpp"
-#include "../auxiliary/Log.hpp"
-#include "../auxiliary/Random.hpp"
-#include "../viz/Point.hpp"
+#include <networkit/Globals.hpp>
+#include <networkit/auxiliary/FunctionTraits.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/viz/Point.hpp>
 #include "Coordinates.hpp"
 
 namespace NetworKit {

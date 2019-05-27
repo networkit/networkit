@@ -8,9 +8,9 @@
 #ifndef DISSIMILARITYMEASURE_H_
 #define DISSIMILARITYMEASURE_H_
 
-#include "../graph/Graph.hpp"
-#include "../structures/Partition.hpp"
-#include "../structures/Cover.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/structures/Partition.hpp>
+#include <networkit/structures/Cover.hpp>
 
 namespace NetworKit {
 

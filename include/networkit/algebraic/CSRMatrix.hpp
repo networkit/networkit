@@ -9,12 +9,12 @@
 #define CSRMATRIX_H_
 
 #include <vector>
-#include "../Globals.hpp"
+#include <networkit/Globals.hpp>
 #include "AlgebraicGlobals.hpp"
 #include "Vector.hpp"
-#include "../graph/Graph.hpp"
-#include "../algebraic/SparseAccumulator.hpp"
-#include "../auxiliary/Timer.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/algebraic/SparseAccumulator.hpp>
+#include <networkit/auxiliary/Timer.hpp>
 
 namespace NetworKit {
 

@@ -2,7 +2,7 @@
 #define PERMANENCECENTRALITY_H
 
 #include "Centrality.hpp"
-#include "../structures/Partition.hpp"
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 

@@ -11,10 +11,10 @@
 #include <vector>
 #include <string>
 #include <list>
-#include "../graph/Graph.hpp"
-#include "../centrality/Centrality.hpp"
-#include "../structures/Partition.hpp"
-#include "../structures/Cover.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/centrality/Centrality.hpp>
+#include <networkit/structures/Partition.hpp>
+#include <networkit/structures/Cover.hpp>
 
 
 namespace NetworKit {

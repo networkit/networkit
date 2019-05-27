@@ -8,8 +8,8 @@
 #ifndef QUALITYMEASURE_H_
 #define QUALITYMEASURE_H_
 
-#include "../structures/Partition.hpp"
-#include "../graph/Graph.hpp"
+#include <networkit/structures/Partition.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

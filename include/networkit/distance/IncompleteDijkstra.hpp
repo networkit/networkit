@@ -13,9 +13,9 @@
 #include <vector>
 #include <utility>
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 #include "IncompleteSSSP.hpp"
-#include "../auxiliary/PrioQueue.hpp"
+#include <networkit/auxiliary/PrioQueue.hpp>
 
 namespace NetworKit {
 

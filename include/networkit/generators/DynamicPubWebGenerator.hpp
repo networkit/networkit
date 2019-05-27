@@ -12,10 +12,10 @@
 
 #include "DynamicGraphGenerator.hpp"
 #include "PubWebGenerator.hpp"
-#include "../dynamics/GraphEvent.hpp"
-#include "../dynamics/DGSWriter.hpp"
-#include "../auxiliary/Random.hpp"
-#include "../viz/Point.hpp"
+#include <networkit/dynamics/GraphEvent.hpp>
+#include <networkit/dynamics/DGSWriter.hpp>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/viz/Point.hpp>
 
 namespace NetworKit {
 

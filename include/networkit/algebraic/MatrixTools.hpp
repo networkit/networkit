@@ -8,7 +8,7 @@
 #ifndef NETWORKIT_CPP_ALGEBRAIC_MATRIXTOOLS_H_
 #define NETWORKIT_CPP_ALGEBRAIC_MATRIXTOOLS_H_
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 #include <atomic>
 
 namespace MatrixTools {

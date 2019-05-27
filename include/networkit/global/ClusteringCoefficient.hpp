@@ -8,7 +8,7 @@
 #ifndef CLUSTERINGCOEFFICIENT_H_
 #define CLUSTERINGCOEFFICIENT_H_
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

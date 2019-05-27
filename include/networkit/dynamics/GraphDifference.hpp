@@ -1,9 +1,9 @@
 #ifndef GRAPHDIFFERENCE_H
 #define GRAPHDIFFERENCE_H
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 #include "GraphEvent.hpp"
-#include "../base/Algorithm.hpp"
+#include <networkit/base/Algorithm.hpp>
 
 namespace NetworKit {
 

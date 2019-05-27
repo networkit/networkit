@@ -7,7 +7,7 @@
 #ifndef BINARYPARTITIONWRITER_H_
 #define BINARYPARTITIONWRITER_H_
 
-#include "../structures/Partition.hpp"
+#include <networkit/structures/Partition.hpp>
 #include <string>
 
 namespace NetworKit {

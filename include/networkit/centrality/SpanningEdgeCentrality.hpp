@@ -8,9 +8,9 @@
 #ifndef SPANNING_H_
 #define SPANNING_H_
 
-#include "../numerics/LAMG/Lamg.hpp"
+#include <networkit/numerics/LAMG/Lamg.hpp>
 #include "Centrality.hpp"
-#include "../algebraic/CSRMatrix.hpp"
+#include <networkit/algebraic/CSRMatrix.hpp>
 
 
 namespace NetworKit {

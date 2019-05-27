@@ -8,7 +8,7 @@
 #ifndef NODEDISTANCE_H_
 #define NODEDISTANCE_H_
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

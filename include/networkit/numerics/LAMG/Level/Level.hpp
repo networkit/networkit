@@ -8,7 +8,7 @@
 #ifndef LEVEL_H_
 #define LEVEL_H_
 
-#include "../../../algebraic/CSRMatrix.hpp"
+#include <networkit/algebraic/CSRMatrix.hpp>
 
 namespace NetworKit {
 

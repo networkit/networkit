@@ -10,7 +10,7 @@
 
 #include "QualityMeasure.hpp"
 #include "EdgeCut.hpp"
-#include "../auxiliary/NumericTools.hpp"
+#include <networkit/auxiliary/NumericTools.hpp>
 
 namespace NetworKit {
 

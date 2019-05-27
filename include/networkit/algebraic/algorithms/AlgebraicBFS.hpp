@@ -8,10 +8,10 @@
 #ifndef NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICBFS_H_
 #define NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICBFS_H_
 
-#include "../../base/Algorithm.hpp"
-#include "../../graph/Graph.hpp"
-#include "../Vector.hpp"
-#include "../GraphBLAS.hpp"
+#include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/algebraic/Vector.hpp>
+#include <networkit/algebraic/GraphBLAS.hpp>
 
 namespace NetworKit {
 

@@ -8,7 +8,7 @@
 #ifndef ECCENTRICITY_H_
 #define ECCENTRICITY_H_
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

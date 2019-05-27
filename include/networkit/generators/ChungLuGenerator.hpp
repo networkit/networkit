@@ -9,7 +9,7 @@
 #define CHUNGLU_H_
 
 #include "StaticDegreeSequenceGenerator.hpp"
-#include "../auxiliary/Random.hpp"
+#include <networkit/auxiliary/Random.hpp>
 
 namespace NetworKit {
 

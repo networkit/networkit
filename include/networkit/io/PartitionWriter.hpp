@@ -10,7 +10,7 @@
 
 #include <fstream>
 
-#include "../structures/Partition.hpp"
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 

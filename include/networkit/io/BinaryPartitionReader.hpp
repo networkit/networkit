@@ -8,7 +8,7 @@
 #ifndef BINARYPARTITIONREADER_H_
 #define BINARYPARTITIONREADER_H_
 
-#include "../structures/Partition.hpp"
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 

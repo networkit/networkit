@@ -12,8 +12,8 @@
 #include <utility>
 
 #include "LinearSolver.hpp"
-#include "../algebraic/Vector.hpp"
-#include "../algebraic/CSRMatrix.hpp"
+#include <networkit/algebraic/Vector.hpp>
+#include <networkit/algebraic/CSRMatrix.hpp>
 
 namespace NetworKit {
 

@@ -15,8 +15,8 @@
 #include <cassert>
 #include <iostream>
 
-#include "../Globals.hpp"
-#include "../auxiliary/Log.hpp"
+#include <networkit/Globals.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
 namespace CurveballDetails {

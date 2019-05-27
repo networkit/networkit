@@ -1,8 +1,8 @@
 #ifndef MAXIMAL_CLIQUES_H_
 #define MAXIMAL_CLIQUES_H_
 
-#include "../graph/Graph.hpp"
-#include "../base/Algorithm.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/base/Algorithm.hpp>
 #include <functional>
 
 namespace NetworKit {

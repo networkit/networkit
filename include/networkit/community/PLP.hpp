@@ -9,7 +9,7 @@
 #define PLP_H_
 
 #include "CommunityDetectionAlgorithm.hpp"
-#include "../structures/Partition.hpp"
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 

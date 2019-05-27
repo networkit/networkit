@@ -15,8 +15,8 @@
 #include <string>
 
 #include "DynamicGraphSource.hpp"
-#include "../auxiliary/StringTools.hpp"
-#include "../structures/Partition.hpp"
+#include <networkit/auxiliary/StringTools.hpp>
+#include <networkit/structures/Partition.hpp>
 
 
 namespace NetworKit {

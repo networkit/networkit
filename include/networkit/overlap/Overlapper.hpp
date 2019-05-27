@@ -11,8 +11,8 @@
 #include <set>
 #include <vector>
 
-#include "../graph/Graph.hpp"
-#include "../structures/Partition.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 

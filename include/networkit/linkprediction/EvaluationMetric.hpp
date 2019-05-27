@@ -8,7 +8,7 @@
 #ifndef EVALUATIONMETRIC_H_
 #define EVALUATIONMETRIC_H_
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 #include "LinkPredictor.hpp"
 
 namespace NetworKit {

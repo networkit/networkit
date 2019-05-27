@@ -8,8 +8,8 @@
 #ifndef APSP_H_
 #define APSP_H_
 
-#include "../graph/Graph.hpp"
-#include "../base/Algorithm.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/base/Algorithm.hpp>
 
 namespace NetworKit {
 

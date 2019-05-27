@@ -8,8 +8,8 @@
 #ifndef EPIDEMICSIMULATIONSEIR_H_
 #define EPIDEMICSIMULATIONSEIR_H_
 
-#include "../base/Algorithm.hpp"
-#include "../graph/Graph.hpp"
+#include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

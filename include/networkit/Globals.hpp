@@ -12,7 +12,7 @@
 #include <cmath>
 #include <limits>
 
-#include "ext/ttmath/ttmath.hpp"
+#include <networkit/ext/ttmath/ttmath.hpp>
 
 
 namespace NetworKit {

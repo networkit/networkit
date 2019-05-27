@@ -8,7 +8,7 @@
 #ifndef DYNAMIC_MATRIX_H_
 #define DYNAMIC_MATRIX_H_
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 #include "Vector.hpp"
 #include "SparseAccumulator.hpp"
 #include "AlgebraicGlobals.hpp"

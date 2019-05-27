@@ -9,7 +9,7 @@
 #define BUCKETPQ_H_
 
 #include "Log.hpp"
-#include "../Globals.hpp"
+#include <networkit/Globals.hpp>
 #include "PrioQueue.hpp"
 #include <list>
 #include <limits>

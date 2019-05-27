@@ -3,9 +3,9 @@
 
 #include <vector>
 
-#include "../base/Algorithm.hpp"
-#include "../graph/Graph.hpp"
-#include "../Globals.hpp"
+#include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/Globals.hpp>
 
 namespace NetworKit {
 

@@ -1,7 +1,7 @@
 #ifndef CLUSTERPRODUCT_H
 #define CLUSTERPRODUCT_H
 
-#include "../structures/Partition.hpp"
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 

@@ -11,7 +11,7 @@
 #include <set>
 #include <vector>
 
-#include "../auxiliary/Log.hpp"
+#include <networkit/auxiliary/Log.hpp>
 
 namespace Aux {
 

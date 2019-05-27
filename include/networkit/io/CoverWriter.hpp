@@ -1,8 +1,8 @@
 #ifndef COVERWRITER_H
 #define COVERWRITER_H
 
-#include "../structures/Cover.hpp"
-#include "../graph/Graph.hpp"
+#include <networkit/structures/Cover.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

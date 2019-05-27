@@ -15,8 +15,8 @@
 #include <string>
 #include <unordered_map>
 
-#include "../dynamics/GraphEventProxy.hpp"
-#include "../auxiliary/StringTools.hpp"
+#include <networkit/dynamics/GraphEventProxy.hpp>
+#include <networkit/auxiliary/StringTools.hpp>
 
 namespace NetworKit {
 
