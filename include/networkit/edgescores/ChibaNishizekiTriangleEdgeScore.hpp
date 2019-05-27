@@ -9,7 +9,7 @@
 #define CHIBANISHIZEKITRIANGLEEDGESCORE_H_
 
 #include <networkit/graph/Graph.hpp>
-#include "EdgeScore.hpp"
+#include <networkit/edgescores/EdgeScore.hpp>
 
 namespace NetworKit {
 

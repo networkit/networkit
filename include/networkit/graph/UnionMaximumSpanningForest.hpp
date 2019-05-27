@@ -1,7 +1,7 @@
 #ifndef UNIONMAXIMUMSPANNINGFOREST_H
 #define UNIONMAXIMUMSPANNINGFOREST_H
 
-#include "Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 #include <limits>
 #include <networkit/structures/UnionFind.hpp>
 #include <networkit/auxiliary/Log.hpp>

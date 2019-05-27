@@ -8,7 +8,7 @@
 #ifndef PLM_H_
 #define PLM_H_
 
-#include "CommunityDetectionAlgorithm.hpp"
+#include <networkit/community/CommunityDetectionAlgorithm.hpp>
 
 namespace NetworKit {
 

@@ -10,8 +10,8 @@
 
 #include <map>
 
-#include "DynamicGraphGenerator.hpp"
-#include "PubWebGenerator.hpp"
+#include <networkit/generators/DynamicGraphGenerator.hpp>
+#include <networkit/generators/PubWebGenerator.hpp>
 #include <networkit/dynamics/GraphEvent.hpp>
 #include <networkit/dynamics/DGSWriter.hpp>
 #include <networkit/auxiliary/Random.hpp>

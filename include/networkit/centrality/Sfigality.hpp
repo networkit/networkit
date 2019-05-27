@@ -8,7 +8,7 @@
 #ifndef SFIGALITY_H_
 #define SFIGALITY_H_
 
-#include "Centrality.hpp"
+#include <networkit/centrality/Centrality.hpp>
 
 namespace NetworKit {
 

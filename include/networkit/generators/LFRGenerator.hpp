@@ -4,7 +4,7 @@
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
 #include <networkit/base/Algorithm.hpp>
-#include "StaticGraphGenerator.hpp"
+#include <networkit/generators/StaticGraphGenerator.hpp>
 
 namespace NetworKit {
 

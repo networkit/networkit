@@ -1,7 +1,7 @@
 #ifndef COVERF1SIMILARITY_H_
 #define COVERF1SIMILARITY_H_
 
-#include "LocalCoverEvaluation.hpp"
+#include <networkit/community/LocalCoverEvaluation.hpp>
 
 namespace NetworKit {
 

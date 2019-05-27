@@ -22,8 +22,8 @@
 #include <tlx/container/radix_heap.hpp>
 #include <tlx/algorithm/random_bipartition_shuffle.hpp>
 
-#include "GlobalTradeSequence.hpp"
-#include "GlobalCurveball.hpp"
+#include <networkit/randomization/GlobalTradeSequence.hpp>
+#include <networkit/randomization/GlobalCurveball.hpp>
 
 namespace NetworKit {
 namespace CurveballDetails {

@@ -8,7 +8,7 @@
 #ifndef FORESTFIREGENERATOR_H_
 #define FORESTFIREGENERATOR_H_
 
-#include "DynamicGraphGenerator.hpp"
+#include <networkit/generators/DynamicGraphGenerator.hpp>
 
 namespace NetworKit {
 

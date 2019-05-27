@@ -14,7 +14,7 @@
 #include <networkit/dynamics/GraphEvent.hpp>
 #include <networkit/base/DynAlgorithm.hpp>
 #include <networkit/auxiliary/PrioQueue.hpp>
-#include "Centrality.hpp"
+#include <networkit/centrality/Centrality.hpp>
 
 namespace NetworKit {
 

@@ -8,8 +8,8 @@
 #ifndef CONDUCTANCE_H_
 #define CONDUCTANCE_H_
 
-#include "QualityMeasure.hpp"
-#include "EdgeCut.hpp"
+#include <networkit/community/QualityMeasure.hpp>
+#include <networkit/community/EdgeCut.hpp>
 #include <networkit/auxiliary/NumericTools.hpp>
 
 namespace NetworKit {

@@ -8,7 +8,7 @@
 #ifndef DYNAMICPATHGENERATOR_H_
 #define DYNAMICPATHGENERATOR_H_
 
-#include "DynamicGraphGenerator.hpp"
+#include <networkit/generators/DynamicGraphGenerator.hpp>
 #include <map>
 
 namespace NetworKit {

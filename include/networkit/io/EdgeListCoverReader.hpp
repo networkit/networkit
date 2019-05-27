@@ -1,7 +1,7 @@
 #ifndef EDGELISTCOVERREADER_H
 #define EDGELISTCOVERREADER_H
 
-#include "CoverReader.hpp"
+#include <networkit/io/CoverReader.hpp>
 
 namespace NetworKit {
 

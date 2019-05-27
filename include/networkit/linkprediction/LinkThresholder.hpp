@@ -8,7 +8,7 @@
 #ifndef LINKTHRESHOLDER_H_
 #define LINKTHRESHOLDER_H_
 
-#include "LinkPredictor.hpp"
+#include <networkit/linkprediction/LinkPredictor.hpp>
 
 namespace NetworKit {
 

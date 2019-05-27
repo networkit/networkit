@@ -12,7 +12,7 @@
 #include <networkit/numerics/LAMG/Level/LevelFinest.hpp>
 #include <networkit/numerics/LAMG/Level/LevelElimination.hpp>
 #include <networkit/numerics/LAMG/Level/LevelAggregation.hpp>
-#include "LAMGSettings.hpp"
+#include <networkit/numerics/LAMG/LAMGSettings.hpp>
 #include <networkit/algebraic/DenseMatrix.hpp>
 
 namespace NetworKit {

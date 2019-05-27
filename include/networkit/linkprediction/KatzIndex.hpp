@@ -10,7 +10,7 @@
 
 #include <unordered_map>
 
-#include "LinkPredictor.hpp"
+#include <networkit/linkprediction/LinkPredictor.hpp>
 
 namespace NetworKit {
 

@@ -8,7 +8,7 @@
 #ifndef PREFERENTIALATTACHMENTINDEX_H_
 #define PREFERENTIALATTACHMENTINDEX_H_
 
-#include "LinkPredictor.hpp"
+#include <networkit/linkprediction/LinkPredictor.hpp>
 
 namespace NetworKit {
 

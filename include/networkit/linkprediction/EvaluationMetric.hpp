@@ -9,7 +9,7 @@
 #define EVALUATIONMETRIC_H_
 
 #include <networkit/graph/Graph.hpp>
-#include "LinkPredictor.hpp"
+#include <networkit/linkprediction/LinkPredictor.hpp>
 
 namespace NetworKit {
 

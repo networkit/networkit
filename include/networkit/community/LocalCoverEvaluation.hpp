@@ -1,7 +1,7 @@
 #ifndef LOCALCOVEREVALUATION_H
 #define LOCALCOVEREVALUATION_H
 
-#include "LocalCommunityEvaluation.hpp"
+#include <networkit/community/LocalCommunityEvaluation.hpp>
 #include <networkit/structures/Cover.hpp>
 #include <networkit/graph/Graph.hpp>
 

@@ -9,9 +9,9 @@
 #define DYNAMIC_MATRIX_H_
 
 #include <networkit/graph/Graph.hpp>
-#include "Vector.hpp"
-#include "SparseAccumulator.hpp"
-#include "AlgebraicGlobals.hpp"
+#include <networkit/algebraic/Vector.hpp>
+#include <networkit/algebraic/SparseAccumulator.hpp>
+#include <networkit/algebraic/AlgebraicGlobals.hpp>
 
 namespace NetworKit {
 

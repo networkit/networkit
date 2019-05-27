@@ -8,7 +8,7 @@
 #ifndef RMATGENERATOR_H_
 #define RMATGENERATOR_H_
 
-#include "StaticGraphGenerator.hpp"
+#include <networkit/generators/StaticGraphGenerator.hpp>
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {

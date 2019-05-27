@@ -8,7 +8,7 @@
 #ifndef SAMECOMMUNITYINDEX_H_
 #define SAMECOMMUNITYINDEX_H_
 
-#include "LinkPredictor.hpp"
+#include <networkit/linkprediction/LinkPredictor.hpp>
 #include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {

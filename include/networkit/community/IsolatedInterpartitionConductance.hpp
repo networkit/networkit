@@ -1,7 +1,7 @@
 #ifndef ISOLATEDINTERPARTITIONCONDUCTANCE_H
 #define ISOLATEDINTERPARTITIONCONDUCTANCE_H
 
-#include "LocalPartitionEvaluation.hpp"
+#include <networkit/community/LocalPartitionEvaluation.hpp>
 
 namespace NetworKit {
 

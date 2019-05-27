@@ -8,7 +8,7 @@
 #ifndef LAPLACIANCENTRALITY_H_
 #define LAPLACIANCENTRALITY_H_
 
-#include "Centrality.hpp"
+#include <networkit/centrality/Centrality.hpp>
 
 namespace NetworKit {
 

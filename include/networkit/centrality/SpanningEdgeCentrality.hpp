@@ -9,7 +9,7 @@
 #define SPANNING_H_
 
 #include <networkit/numerics/LAMG/Lamg.hpp>
-#include "Centrality.hpp"
+#include <networkit/centrality/Centrality.hpp>
 #include <networkit/algebraic/CSRMatrix.hpp>
 
 

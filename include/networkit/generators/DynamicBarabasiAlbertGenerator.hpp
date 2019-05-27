@@ -10,7 +10,7 @@
 
 #include <set>
 
-#include "DynamicGraphSource.hpp"
+#include <networkit/generators/DynamicGraphSource.hpp>
 
 namespace NetworKit {
 

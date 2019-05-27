@@ -7,7 +7,7 @@
 #ifndef THRILLGRAPHBINARYWRITER_H_
 #define THRILLGRAPHBINARYWRITER_H_
 
-#include "GraphWriter.hpp"
+#include <networkit/io/GraphWriter.hpp>
 
 namespace NetworKit {
 

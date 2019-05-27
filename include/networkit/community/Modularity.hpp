@@ -8,7 +8,7 @@
 #ifndef MODULARITY_H_
 #define MODULARITY_H_
 
-#include "QualityMeasure.hpp"
+#include <networkit/community/QualityMeasure.hpp>
 
 namespace NetworKit {
 

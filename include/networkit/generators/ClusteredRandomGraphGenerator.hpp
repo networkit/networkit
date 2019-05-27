@@ -8,7 +8,7 @@
 #ifndef CLUSTEREDRANDOMGRAPHGENERATOR_H_
 #define CLUSTEREDRANDOMGRAPHGENERATOR_H_
 
-#include "StaticGraphGenerator.hpp"
+#include <networkit/generators/StaticGraphGenerator.hpp>
 #include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {

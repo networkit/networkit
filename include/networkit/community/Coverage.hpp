@@ -8,7 +8,7 @@
 #ifndef COVERAGE_H_
 #define COVERAGE_H_
 
-#include "QualityMeasure.hpp"
+#include <networkit/community/QualityMeasure.hpp>
 
 namespace NetworKit {
 

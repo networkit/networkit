@@ -8,7 +8,7 @@
 #ifndef ALGEBRAICDISTANCEINDEX_H_
 #define ALGEBRAICDISTANCEINDEX_H_
 
-#include "LinkPredictor.hpp"
+#include <networkit/linkprediction/LinkPredictor.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/auxiliary/Timer.hpp>
 

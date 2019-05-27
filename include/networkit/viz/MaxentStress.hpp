@@ -8,10 +8,10 @@
 #ifndef MAXENTSTRESS_H_
 #define MAXENTSTRESS_H_
 
-#include "GraphLayoutAlgorithm.hpp"
+#include <networkit/viz/GraphLayoutAlgorithm.hpp>
 #include <networkit/numerics/LinearSolver.hpp>
 #include <networkit/algebraic/CSRMatrix.hpp>
-#include "Octree.hpp"
+#include <networkit/viz/Octree.hpp>
 
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/Dijkstra.hpp>

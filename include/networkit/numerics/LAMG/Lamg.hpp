@@ -12,8 +12,8 @@
 #include <omp.h>
 
 #include <networkit/numerics/LinearSolver.hpp>
-#include "MultiLevelSetup.hpp"
-#include "SolverLamg.hpp"
+#include <networkit/numerics/LAMG/MultiLevelSetup.hpp>
+#include <networkit/numerics/LAMG/SolverLamg.hpp>
 #include <networkit/numerics/GaussSeidelRelaxation.hpp>
 #include <networkit/algebraic/MatrixTools.hpp>
 #include <networkit/components/ParallelConnectedComponents.hpp>

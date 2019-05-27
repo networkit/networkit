@@ -9,8 +9,8 @@
 #define GRAPHDISTANCE_H_
 
 #include <networkit/graph/Graph.hpp>
-#include "Dijkstra.hpp"
-#include "BFS.hpp"
+#include <networkit/distance/Dijkstra.hpp>
+#include <networkit/distance/BFS.hpp>
 
 namespace NetworKit {
 

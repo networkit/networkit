@@ -9,7 +9,7 @@
 #define GRAPHEVENTPROXY_H_
 
 #include <networkit/graph/Graph.hpp>
-#include "GraphEventHandler.hpp"
+#include <networkit/dynamics/GraphEventHandler.hpp>
 
 namespace NetworKit {
 

@@ -13,7 +13,7 @@
 #include <map>
 #include <fstream>
 
-#include "GraphEvent.hpp"
+#include <networkit/dynamics/GraphEvent.hpp>
 
 namespace NetworKit {
 

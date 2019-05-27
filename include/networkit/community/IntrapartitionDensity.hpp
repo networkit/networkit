@@ -1,7 +1,7 @@
 #ifndef INTRAPARTITIONDENSITY_H
 #define INTRAPARTITIONDENSITY_H
 
-#include "LocalPartitionEvaluation.hpp"
+#include <networkit/community/LocalPartitionEvaluation.hpp>
 
 namespace NetworKit {
 

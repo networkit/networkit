@@ -10,7 +10,7 @@
 
 #include <fstream>
 
-#include "DynamicGraphReader.hpp"
+#include <networkit/io/DynamicGraphReader.hpp>
 
 #include <string>
 #include <unordered_map>

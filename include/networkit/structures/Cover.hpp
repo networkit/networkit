@@ -14,7 +14,7 @@
 #include <map>
 #include <cassert>
 #include <limits>
-#include "Partition.hpp"
+#include <networkit/structures/Partition.hpp>
 #include <networkit/Globals.hpp>
 
 namespace NetworKit {

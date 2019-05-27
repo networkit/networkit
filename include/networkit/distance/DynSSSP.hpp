@@ -13,7 +13,7 @@
 #include <networkit/graph/Graph.hpp>
 #include <networkit/dynamics/GraphEvent.hpp>
 #include <networkit/base/DynAlgorithm.hpp>
-#include "SSSP.hpp"
+#include <networkit/distance/SSSP.hpp>
 
 namespace NetworKit {
 

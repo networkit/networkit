@@ -8,7 +8,7 @@
 #ifndef JACCARDINDEX_H_
 #define JACCARDINDEX_H_
 
-#include "LinkPredictor.hpp"
+#include <networkit/linkprediction/LinkPredictor.hpp>
 
 namespace NetworKit {
 

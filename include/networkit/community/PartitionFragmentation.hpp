@@ -1,7 +1,7 @@
 #ifndef PARTITIONFRAGMENTATION_H
 #define PARTITIONFRAGMENTATION_H
 
-#include "LocalPartitionEvaluation.hpp"
+#include <networkit/community/LocalPartitionEvaluation.hpp>
 
 namespace NetworKit {
 

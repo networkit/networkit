@@ -8,7 +8,7 @@
 #ifndef NETWORKIT_CPP_CENTRALITY_APPROXCLOSENESS_H_
 #define NETWORKIT_CPP_CENTRALITY_APPROXCLOSENESS_H_
 
-#include "Centrality.hpp"
+#include <networkit/centrality/Centrality.hpp>
 #include <limits>
 
 namespace NetworKit {

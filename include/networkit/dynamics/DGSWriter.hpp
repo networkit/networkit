@@ -8,7 +8,7 @@
 #ifndef DGSWRITER_H_
 #define DGSWRITER_H_
 
-#include "GraphEvent.hpp"
+#include <networkit/dynamics/GraphEvent.hpp>
 
 namespace NetworKit {
 

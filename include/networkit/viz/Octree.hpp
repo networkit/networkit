@@ -10,7 +10,7 @@
 
 #include <vector>
 
-#include "Point.hpp"
+#include <networkit/viz/Point.hpp>
 #include <networkit/algebraic/Vector.hpp>
 
 #include <networkit/auxiliary/Log.hpp>

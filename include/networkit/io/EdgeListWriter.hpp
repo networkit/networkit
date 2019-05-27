@@ -12,7 +12,7 @@
 #include <iostream>
 #include <string>
 
-#include "GraphReader.hpp"
+#include <networkit/io/GraphReader.hpp>
 
 namespace NetworKit {
 

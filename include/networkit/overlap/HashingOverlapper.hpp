@@ -10,7 +10,7 @@
 
 #include <functional>
 
-#include "Overlapper.hpp"
+#include <networkit/overlap/Overlapper.hpp>
 
 namespace NetworKit {
 

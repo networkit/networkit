@@ -14,7 +14,7 @@
 #include <unordered_map>
 
 
-#include "GraphWriter.hpp"
+#include <networkit/io/GraphWriter.hpp>
 
 namespace NetworKit {
 

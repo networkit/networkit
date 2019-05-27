@@ -10,8 +10,8 @@
 
 #include <vector>
 #include <networkit/Globals.hpp>
-#include "AlgebraicGlobals.hpp"
-#include "Vector.hpp"
+#include <networkit/algebraic/AlgebraicGlobals.hpp>
+#include <networkit/algebraic/Vector.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/algebraic/SparseAccumulator.hpp>
 #include <networkit/auxiliary/Timer.hpp>

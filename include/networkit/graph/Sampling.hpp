@@ -8,7 +8,7 @@
 #ifndef SAMPLING_H_
 #define SAMPLING_H_
 
-#include "Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

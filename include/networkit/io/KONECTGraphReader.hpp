@@ -11,7 +11,7 @@
 #include <unordered_map>
 
 #include <networkit/graph/Graph.hpp>
-#include "GraphReader.hpp"
+#include <networkit/io/GraphReader.hpp>
 
 namespace NetworKit {
   class KONECTGraphReader : public GraphReader{

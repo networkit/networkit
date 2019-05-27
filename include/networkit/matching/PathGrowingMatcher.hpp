@@ -8,8 +8,8 @@
 #ifndef PATHGROWINGMATCHER_H_
 #define PATHGROWINGMATCHER_H_
 
-#include "Matcher.hpp"
-#include "Matching.hpp"
+#include <networkit/matching/Matcher.hpp>
+#include <networkit/matching/Matching.hpp>
 
 namespace NetworKit {
 

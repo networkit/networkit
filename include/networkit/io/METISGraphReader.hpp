@@ -8,7 +8,7 @@
 #ifndef METISGRAPHREADER_H_
 #define METISGRAPHREADER_H_
 
-#include "GraphReader.hpp"
+#include <networkit/io/GraphReader.hpp>
 
 namespace NetworKit {
 

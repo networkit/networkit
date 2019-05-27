@@ -8,7 +8,7 @@
 #ifndef BETWEENNESS_H_
 #define BETWEENNESS_H_
 
-#include "Centrality.hpp"
+#include <networkit/centrality/Centrality.hpp>
 
 namespace NetworKit {
 

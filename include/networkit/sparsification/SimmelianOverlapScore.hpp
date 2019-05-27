@@ -8,7 +8,7 @@
 #ifndef SIMMELIANOVERLAPSCORE_H_
 #define SIMMELIANOVERLAPSCORE_H_
 
-#include "SimmelianScore.hpp"
+#include <networkit/sparsification/SimmelianScore.hpp>
 #include <set>
 
 namespace NetworKit {

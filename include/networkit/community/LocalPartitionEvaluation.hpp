@@ -1,7 +1,7 @@
 #ifndef LOCALPARTITIONEVALUATION_H
 #define LOCALPARTITIONEVALUATION_H
 
-#include "LocalCommunityEvaluation.hpp"
+#include <networkit/community/LocalCommunityEvaluation.hpp>
 #include <networkit/structures/Partition.hpp>
 #include <networkit/graph/Graph.hpp>
 

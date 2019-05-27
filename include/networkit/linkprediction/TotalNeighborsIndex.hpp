@@ -8,7 +8,7 @@
 #ifndef TOTALNEIGHBORSINDEX_H_
 #define TOTALNEIGHBORSINDEX_H_
 
-#include "LinkPredictor.hpp"
+#include <networkit/linkprediction/LinkPredictor.hpp>
 
 namespace NetworKit {
 

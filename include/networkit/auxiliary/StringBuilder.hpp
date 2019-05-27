@@ -11,7 +11,7 @@
 #include <tuple>
 #include <utility>
 
-#include "TemplateUtils.hpp"
+#include <networkit/auxiliary/TemplateUtils.hpp>
 
 namespace Aux {
 

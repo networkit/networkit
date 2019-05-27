@@ -12,7 +12,7 @@
 
 #include <vector>
 #include <networkit/geometric/HyperbolicSpace.hpp>
-#include "StaticGraphGenerator.hpp"
+#include <networkit/generators/StaticGraphGenerator.hpp>
 #include <networkit/auxiliary/Timer.hpp>
 #include <networkit/generators/quadtree/Quadtree.hpp>
 

@@ -1,7 +1,7 @@
 #ifndef ADJUSTEDRANDINDEX_H
 #define ADJUSTEDRANDINDEX_H
 
-#include "DissimilarityMeasure.hpp"
+#include <networkit/community/DissimilarityMeasure.hpp>
 
 namespace NetworKit {
 

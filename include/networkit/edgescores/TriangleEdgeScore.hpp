@@ -8,7 +8,7 @@
 #ifndef TRIANGLE_COUNTER_H_
 #define TRIANGLE_COUNTER_H_
 
-#include "EdgeScore.hpp"
+#include <networkit/edgescores/EdgeScore.hpp>
 
 namespace NetworKit {
 

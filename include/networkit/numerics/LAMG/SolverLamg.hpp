@@ -8,7 +8,7 @@
 #ifndef SOLVERLAMG_H_
 #define SOLVERLAMG_H_
 
-#include "LevelHierarchy.hpp"
+#include <networkit/numerics/LAMG/LevelHierarchy.hpp>
 #include <networkit/numerics/Smoother.hpp>
 #include <networkit/algebraic/DenseMatrix.hpp>
 

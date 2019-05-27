@@ -11,7 +11,7 @@
 #include <cstdint>
 #include <utility>
 
-#include "LinearSolver.hpp"
+#include <networkit/numerics/LinearSolver.hpp>
 #include <networkit/algebraic/Vector.hpp>
 #include <networkit/algebraic/CSRMatrix.hpp>
 

@@ -8,8 +8,8 @@
 #ifndef LEVELELIMINATION_H_
 #define LEVELELIMINATION_H_
 
-#include "Level.hpp"
-#include "EliminationStage.hpp"
+#include <networkit/numerics/LAMG/Level/Level.hpp>
+#include <networkit/numerics/LAMG/Level/EliminationStage.hpp>
 
 namespace NetworKit {
 

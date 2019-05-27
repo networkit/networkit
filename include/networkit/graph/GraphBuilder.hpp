@@ -11,7 +11,7 @@
 #include <vector>
 
 #include <networkit/Globals.hpp>
-#include "Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

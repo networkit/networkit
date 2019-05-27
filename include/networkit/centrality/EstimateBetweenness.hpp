@@ -8,7 +8,7 @@
 #ifndef ESTIMATEBETWEENNESS_H_
 #define ESTIMATEBETWEENNESS_H_
 
-#include "Centrality.hpp"
+#include <networkit/centrality/Centrality.hpp>
 
 
 namespace NetworKit {

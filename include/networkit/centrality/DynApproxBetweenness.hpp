@@ -8,7 +8,7 @@
 #ifndef DYNAPPROXBETW_H_
 #define DYNAPPROXBETW_H_
 
-#include "Centrality.hpp"
+#include <networkit/centrality/Centrality.hpp>
 #include <networkit/base/DynAlgorithm.hpp>
 #include <networkit/dynamics/GraphEvent.hpp>
 #include <networkit/distance/DynSSSP.hpp>

@@ -8,7 +8,7 @@
 #ifndef SAMPLEDGRAPHSTRUCTURALRANDMEASURE_H_
 #define SAMPLEDGRAPHSTRUCTURALRANDMEASURE_H_
 
-#include "DissimilarityMeasure.hpp"
+#include <networkit/community/DissimilarityMeasure.hpp>
 
 namespace NetworKit {
 

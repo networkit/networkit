@@ -14,7 +14,7 @@
 #include <iterator>
 #include <string>
 
-#include "DynamicGraphSource.hpp"
+#include <networkit/generators/DynamicGraphSource.hpp>
 #include <networkit/auxiliary/StringTools.hpp>
 #include <networkit/structures/Partition.hpp>
 

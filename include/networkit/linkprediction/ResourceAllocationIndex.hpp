@@ -8,7 +8,7 @@
 #ifndef RESOURCEALLOCATIONINDEX_H_
 #define RESOURCEALLOCATIONINDEX_H_
 
-#include "LinkPredictor.hpp"
+#include <networkit/linkprediction/LinkPredictor.hpp>
 
 namespace NetworKit {
 

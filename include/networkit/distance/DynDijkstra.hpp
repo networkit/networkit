@@ -8,7 +8,7 @@
 #ifndef DYNDIJKSTRA_H_
 #define DYNDIJKSTRA_H_
 
-#include "DynSSSP.hpp"
+#include <networkit/distance/DynSSSP.hpp>
 
 namespace NetworKit {
 

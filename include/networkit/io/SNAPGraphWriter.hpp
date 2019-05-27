@@ -8,7 +8,7 @@
 #ifndef SNAPGRAPHWRITER_H_
 #define SNAPGRAPHWRITER_H_
 
-#include "GraphWriter.hpp"
+#include <networkit/io/GraphWriter.hpp>
 
 namespace NetworKit {
 

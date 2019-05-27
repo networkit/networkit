@@ -14,7 +14,7 @@
 #include <utility>
 
 #include <networkit/graph/Graph.hpp>
-#include "IncompleteSSSP.hpp"
+#include <networkit/distance/IncompleteSSSP.hpp>
 #include <networkit/auxiliary/PrioQueue.hpp>
 
 namespace NetworKit {

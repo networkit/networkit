@@ -8,7 +8,7 @@
 #ifndef UDEGREEINDEX_H_
 #define UDEGREEINDEX_H_
 
-#include "LinkPredictor.hpp"
+#include <networkit/linkprediction/LinkPredictor.hpp>
 
 namespace NetworKit {
 

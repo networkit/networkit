@@ -8,7 +8,7 @@
 #ifndef ERDOSRENYIGENERATOR_H_
 #define ERDOSRENYIGENERATOR_H_
 
-#include "StaticGraphGenerator.hpp"
+#include <networkit/generators/StaticGraphGenerator.hpp>
 
 namespace NetworKit {
 /**

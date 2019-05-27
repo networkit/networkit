@@ -2,7 +2,7 @@
 #define GRAPHDIFFERENCE_H
 
 #include <networkit/graph/Graph.hpp>
-#include "GraphEvent.hpp"
+#include <networkit/dynamics/GraphEvent.hpp>
 #include <networkit/base/Algorithm.hpp>
 
 namespace NetworKit {

@@ -3,7 +3,7 @@
 
 #include <networkit/structures/Partition.hpp>
 #include <networkit/structures/Cover.hpp>
-#include "QualityMeasure.hpp"
+#include <networkit/community/QualityMeasure.hpp>
 
 namespace NetworKit {
 

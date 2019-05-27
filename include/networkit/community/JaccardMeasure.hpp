@@ -8,7 +8,7 @@
 #ifndef JACCARDMEASURE_H_
 #define JACCARDMEASURE_H_
 
-#include "DissimilarityMeasure.hpp"
+#include <networkit/community/DissimilarityMeasure.hpp>
 
 namespace NetworKit {
 

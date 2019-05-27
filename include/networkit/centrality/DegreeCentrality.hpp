@@ -8,7 +8,7 @@
 #ifndef DEGREECENTRALITY_H_
 #define DEGREECENTRALITY_H_
 
-#include "Centrality.hpp"
+#include <networkit/centrality/Centrality.hpp>
 
 namespace NetworKit {
 

@@ -9,7 +9,7 @@
 #define BFS_H_
 
 #include <networkit/graph/Graph.hpp>
-#include "SSSP.hpp"
+#include <networkit/distance/SSSP.hpp>
 
 namespace NetworKit {
 

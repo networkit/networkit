@@ -8,7 +8,7 @@
 #ifndef MODULARITY_SCORING_H_
 #define MODULARITY_SCORING_H_
 
-#include "EdgeScoring.hpp"
+#include <networkit/scoring/EdgeScoring.hpp>
 
 #include <networkit/structures/Partition.hpp>
 

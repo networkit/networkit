@@ -8,7 +8,7 @@
 #ifndef EDGESCORELINEARIZER_H
 #define EDGESCORELINEARIZER_H
 
-#include "EdgeScore.hpp"
+#include <networkit/edgescores/EdgeScore.hpp>
 
 namespace NetworKit {
 

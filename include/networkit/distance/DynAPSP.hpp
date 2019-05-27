@@ -8,7 +8,7 @@
 #ifndef DYNAPSP_H_
 #define DYNAPSP_H_
 
-#include "APSP.hpp"
+#include <networkit/distance/APSP.hpp>
 #include <networkit/dynamics/GraphEvent.hpp>
 #include <networkit/base/DynAlgorithm.hpp>
 

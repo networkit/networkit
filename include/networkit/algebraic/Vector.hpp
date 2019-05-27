@@ -10,7 +10,7 @@
 
 #include <vector>
 #include <networkit/Globals.hpp>
-#include "AlgebraicGlobals.hpp"
+#include <networkit/algebraic/AlgebraicGlobals.hpp>
 #include <cassert>
 
 namespace NetworKit {

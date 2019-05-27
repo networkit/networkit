@@ -10,7 +10,7 @@
 
 #include <set>
 #include <networkit/graph/Graph.hpp>
-#include "SelectiveCommunityDetector.hpp"
+#include <networkit/scd/SelectiveCommunityDetector.hpp>
 
 
 namespace NetworKit {

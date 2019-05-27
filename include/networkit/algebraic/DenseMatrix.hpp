@@ -9,8 +9,8 @@
 #define NETWORKIT_CPP_ALGEBRAIC_DENSEMATRIX_H_
 
 #include <networkit/Globals.hpp>
-#include "AlgebraicGlobals.hpp"
-#include "Vector.hpp"
+#include <networkit/algebraic/AlgebraicGlobals.hpp>
+#include <networkit/algebraic/Vector.hpp>
 #include <cassert>
 #include <vector>
 

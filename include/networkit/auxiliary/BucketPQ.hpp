@@ -8,9 +8,9 @@
 #ifndef BUCKETPQ_H_
 #define BUCKETPQ_H_
 
-#include "Log.hpp"
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/Globals.hpp>
-#include "PrioQueue.hpp"
+#include <networkit/auxiliary/PrioQueue.hpp>
 #include <list>
 #include <limits>
 

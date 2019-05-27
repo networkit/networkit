@@ -8,7 +8,7 @@
 #ifndef LEVELAGGREGATION_H_
 #define LEVELAGGREGATION_H_
 
-#include "Level.hpp"
+#include <networkit/numerics/LAMG/Level/Level.hpp>
 
 namespace NetworKit {
 

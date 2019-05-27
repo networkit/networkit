@@ -2,7 +2,7 @@
 #define LOCALPARTITIONCOVERAGE_H
 
 
-#include "Centrality.hpp"
+#include <networkit/centrality/Centrality.hpp>
 #include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {

@@ -9,7 +9,7 @@
 #define PRECISIONRECALLMETRIC_H_
 
 #include <networkit/graph/Graph.hpp>
-#include "EvaluationMetric.hpp"
+#include <networkit/linkprediction/EvaluationMetric.hpp>
 
 namespace NetworKit {
 

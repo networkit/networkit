@@ -8,7 +8,7 @@
 #ifndef VDEGREEINDEX_H_
 #define VDEGREEINDEX_H_
 
-#include "LinkPredictor.hpp"
+#include <networkit/linkprediction/LinkPredictor.hpp>
 
 namespace NetworKit {
 

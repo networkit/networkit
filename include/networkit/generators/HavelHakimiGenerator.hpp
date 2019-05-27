@@ -11,7 +11,7 @@
 #include <vector>
 
 #include <networkit/graph/Graph.hpp>
-#include "StaticDegreeSequenceGenerator.hpp"
+#include <networkit/generators/StaticDegreeSequenceGenerator.hpp>
 
 namespace NetworKit {
 

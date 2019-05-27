@@ -1,7 +1,7 @@
 #ifndef CUTCLUSTERING_H
 #define CUTCLUSTERING_H
 
-#include "CommunityDetectionAlgorithm.hpp"
+#include <networkit/community/CommunityDetectionAlgorithm.hpp>
 
 namespace NetworKit {
 
