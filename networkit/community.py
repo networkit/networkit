@@ -17,15 +17,18 @@ from _NetworKit import Partition, Coverage, Modularity, CommunityDetector, PLP, 
 from . import graph
 from . import stopwatch
 from . import graphio
+from .exceptions import ReducedFunctionalityWarning
 
 # external imports
 import os
 import math
 import random
+import warnings
 try:
 	import tabulate
 except ImportError:
-	print(""" WARNING: module 'tabulate' not found, please install it to use the full functionality of NetworKit """)
+	warnings.warn("WARNING: module 'tabulate' not found, please install it to use the full functionality of NetworKit",
+			ReducedFunctionalityWarning)
 import tempfile
 import subprocess
 
