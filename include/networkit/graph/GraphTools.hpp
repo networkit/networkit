@@ -49,6 +49,29 @@ std::vector<node> invertContinuousNodeIds(std::unordered_map<node,node>& nodeIdM
 Graph restoreGraph(std::vector<node>& invertedIdMap, const Graph& G);
 
 
+/**
+ * Rename nodes in a graph using a callback which translates each old id to a new one.
+ * For each node u in input graph, oldIdToNew(u) < numNodes.
+ *
+ * @param graph Input graph.
+ * @param numNodes Number of nodes in the output graph.
+ * @param oldIdToNew Translate old id to new ones.
+ */
+template <typename UnaryFunc>
+Graph remapNodes(const Graph& graph, count numNodes, UnaryFunc oldIdToNew) {
+    // TODO: Add reserveNeighbors as soon as Graph supports it
+#ifndef NDEBUG
+    graph.forNodes([&] (node u) {assert(oldIdToNew(u) < numNodes);});
+#endif
+
+    Graph Gnew(numNodes, graph.isWeighted(), graph.isDirected());
+
+    graph.forEdges([&](const node u, const node v, edgeweight ew) {
+        Gnew.addEdge(oldIdToNew(u), oldIdToNew(v), ew);
+    });
+
+    return Gnew;
+}
 
 
 }	// namespace GraphTools
