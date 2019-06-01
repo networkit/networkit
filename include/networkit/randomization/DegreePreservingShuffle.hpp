@@ -1,0 +1,84 @@
+/*
+ * DegreePreservingShuffle.h
+ *
+ *  Created on: 21.08.2018
+ *      Author: Manuel Penschuck <networkit@manuel.jetzt>
+ */
+#ifndef RANDOMIZATION_DEGREE_PRESERVING_SHUFFLE_H_
+#define RANDOMIZATION_DEGREE_PRESERVING_SHUFFLE_H_
+
+#include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
+
+namespace NetworKit {
+
+/**
+ * 	Implementation of the preprocessing step proposed in
+ *  "Smaller Universes for Uniform Sampling of 0,1-matrices with fixed row and column sums"
+ *  by Annabell Berger, Corrie Jacobien Carstens [https://arxiv.org/abs/1803.02624]
+ *
+ *  The algorithms randomizes a graph without changing its topology simply
+ *  by renaming nodes. For any degree d (in case of an directed graph it's a degree pair)
+ *  consider the set X_d of node ids which have this degree. Then shuffle the ids in X_d.
+ *
+ *  Hence the algorithm satisfies: For all x in Ginput:
+ *   i)  Ginput.degreeIn(x) = Goutput.degreeIn(x)
+ *   ii) Ginput.degreeOut(x) = Goutput.degreeOut(x)
+ *
+ *  The authors argue that applying this preprocessing step before executing (Global)Curveball
+ *  leads to a faster mixing time.
+ *
+ *  @node If you want to use it as a preprocessing step to GlobalCurveball, it's more
+ *  efficient to set degreePreservingShufflePreprocessing in GlobalCurveball's constructor.
+ */
+class DegreePreservingShuffle : public Algorithm {
+public:
+    DegreePreservingShuffle() = delete;
+
+    /**
+     * Instantiate a DegreePreservingShuffle object
+     *
+     * @param G Input graph that will be shuffled
+     */
+    explicit DegreePreservingShuffle(const Graph& G);
+
+    virtual ~DegreePreservingShuffle();
+
+    /**
+     * Execute trades as configured in the constructor.
+     * @warning This function has to be called exactly once before invoking getGraph()
+     */
+    virtual void run() override final;
+
+    /**
+     * Returns a shuffled copy of the input graph.
+     * @warning Invoke run() before calling this function.
+     */
+    Graph getGraph() const;
+
+    /**
+     * Returns a reference to the permutation used for shuffling,
+     * with permutation[old] = new.
+     *
+     * @warning Invoke run() before calling this function.
+     */
+    const std::vector<node>& getPermutation() const noexcept {
+        return permutation;
+    }
+
+    virtual std::string toString() const override final;
+
+    virtual bool isParallel() const override final {
+        return true;
+    }
+
+private:
+    const Graph& G;
+    std::vector<node> permutation;
+
+};
+
+}; // ! namespace NetworKit
+
+#endif // ! RANDOMIZATION_DEGREE_PRESERVING_SHUFFLE_H_
+
