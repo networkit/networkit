@@ -27,14 +27,21 @@ public:
      * @param G                        Undirected and unweighted graph to be randomized
      * @param number_of_global_trades  Number of global trades to be executed (each edge
      *                                 is considered exactly twice per global traded)
+     * @param allowSelfLoops           May only be set if graph is directed.
      * @param degreePreservingShufflePreprocessing Execute DegreePreservingShuffle
      *                                 (see Algorithm for description) as a preprocessing
      *                                 step. This is more efficient than calling the algorithm
      *                                 explicitly.
+     *
+     * @note Self loops can only be realized for directed graphs.
+     * @warning If self loops are forbidden, degreePreservingShuffle is necessary for
+     * directed graphs, since otherwise some topologies cannot be realized (i.e., only
+     * preprocessing allows for uniform samples).
      */
     explicit GlobalCurveball(const Graph &G,
-                             unsigned number_of_global_trades = 20,
-                             bool degreePreservingShufflePreprocessing = false);
+                             count number_of_global_trades = 20,
+                             bool allowSelfLoops = false,
+                             bool degreePreservingShufflePreprocessing = true);
 
 
     virtual ~GlobalCurveball();

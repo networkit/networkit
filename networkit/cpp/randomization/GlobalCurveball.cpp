@@ -14,14 +14,19 @@
 namespace NetworKit {
 
 GlobalCurveball::GlobalCurveball(const Graph &G,
-                                 unsigned number_of_global_trades,
+                                 count number_of_global_trades,
+                                 bool allowSelfLoops,
                                  bool degreePreservingShufflePreprocessing) :
-    impl(new CurveballDetails::GlobalCurveballImpl{G}),
+    impl(new CurveballDetails::GlobalCurveballImpl{G, allowSelfLoops}),
     numGlobalTrades(number_of_global_trades),
     degreePreservingShuffle(degreePreservingShufflePreprocessing)
 {
-    if (G.isDirected()) {
-        throw std::runtime_error("GlobalCurveball supports only undirected graphs");
+    if (allowSelfLoops && !G.isDirected()) {
+        throw std::runtime_error("Self loops are only supported for directed graphs");
+    }
+
+    if (!allowSelfLoops && G.numberOfSelfLoops()) {
+        throw  std::runtime_error("Self loops are forbidden but input graph contains some");
     }
 
     if (G.isWeighted()) {
@@ -48,7 +53,11 @@ void GlobalCurveball::run() {
 
     CurveballDetails::GlobalTradeSequence<CurveballDetails::FixedLinearCongruentialMap<node> > hash{
         impl->getInputGraph().numberOfNodes(), numGlobalTrades, prng};
-    impl->run(hash, permutation);
+
+    if (impl->getInputGraph().isDirected())
+        impl->run<true>(hash, permutation);
+    else
+        impl->run<false>(hash, permutation);
 
     hasRun = true;
 }

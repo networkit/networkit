@@ -11240,7 +11240,7 @@ cdef class PivotMDS (GraphLayoutAlgorithm):
 cdef extern from "<networkit/randomization/GlobalCurveball.hpp>":
 
 	cdef cppclass _GlobalCurveball "NetworKit::GlobalCurveball"(_Algorithm):
-		_GlobalCurveball(_Graph, count, bool) except +
+		_GlobalCurveball(_Graph, count, bool_t, bool_t) except +
 		_Graph getGraph() except +
 
 cdef class GlobalCurveball(Algorithm):
@@ -11249,11 +11249,11 @@ cdef class GlobalCurveball(Algorithm):
 	Randomisation of Massive Networks using Global Curveball Trades",
 	Carstens et al., ESA 2018.
 
-	The algorithm perturbs an undirected and unweighted input graph,
-	by iteratively randomizing the neighbourhoods of node pairs. For
-	a large number of global trades this process is shown to produce
-	an uniform sample from the set of all graphs with the same degree
-	sequence as the input graph.
+	The algorithm perturbs an unweighted input graph, by iteratively
+	randomizing the neighbourhoods of node pairs. For a large number
+	of global trades this process is shown to produce an uniform sample
+	from the set of all graphs with the same degree sequence as the input
+	graph.
 
 	If you do not want to explicitly control the trade sequence,
 	we recommend using GlobalCurveball rather than Curveball since
@@ -11272,10 +11272,28 @@ cdef class GlobalCurveball(Algorithm):
 		asymptotically linearly in this parameter. Default: 20,
 		which yields good results experimentally (see Paper).
 
+	allowSelfLoops:
+		Has to be False for undirected graphs. For directed graphs
+		the randomization Markov chain is only irreducible if self loops
+		are allows. If they are forbidden, the degreePreservingShuffle
+		proprocessing has to be enabled. Otherwhise, not all topologies
+		can be produced.
+
+	degreePreservingShufflePreprocessing:
+		Execute the DegreePreservingShuffle algorithm before executing
+		Global Curveball. It's more efficient than manually invoking
+		the algorithm.
+
+	Warning
+	-------
+	For directed graphs at least one of allowSelfLoops or
+	degreePreservingShufflePreprocessing should be set; for more details
+	refer to "Switching edges to randomize networks: what goes wrong
+	and how to fix it" by C. J. Carstens K. J. Horadam
 	"""
-	def __cinit__(self, G, number_of_global_rounds = 20, degreePreservingShufflePreprocessing = False):
+	def __cinit__(self, G, number_of_global_rounds = 20, allowSelfLoops = False, degreePreservingShufflePreprocessing = True):
 		if isinstance(G, Graph):
-			self._this = new _GlobalCurveball((<Graph>G)._this, number_of_global_rounds, degreePreservingShufflePreprocessing)
+			self._this = new _GlobalCurveball((<Graph>G)._this, number_of_global_rounds, allowSelfLoops, degreePreservingShufflePreprocessing)
 		else:
 			raise RuntimeError("Parameter G has to be a graph")
 

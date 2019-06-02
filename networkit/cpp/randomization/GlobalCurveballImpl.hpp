@@ -45,11 +45,13 @@ class GlobalCurveballImpl {
     using tfp_queue_type = tlx::RadixHeap< std::pair<node, node>, extract_type , node, 256>;
 
 public:
-    GlobalCurveballImpl(const Graph &G) :
-        inputGraph(G)
-    {}
+    GlobalCurveballImpl(const Graph &G, bool allowSelfLoops) :
+        inputGraph(G), allowSelfLoops(allowSelfLoops)
+    {
+        assert(!allowSelfLoops || inputGraph.isDirected());
+    }
 
-    template <typename TradeSequence>
+    template <bool Directed, typename TradeSequence>
     void run(TradeSequence& trade_sequence, const std::vector<node>* permutation = nullptr) {
         Aux::SignalHandler handler;
 
@@ -72,10 +74,6 @@ public:
         tfp_queue_type current_pq;
 
         {
-            // Currently we support only undirected graphs, which should however
-            // be easily fixable
-            assert(!inputGraph.isDirected());
-
             Aux::Timer loadTimer;
             loadTimer.start();
 
@@ -89,11 +87,11 @@ public:
                 const auto hint_u = current_pq.get_bucket_key(hashed_u);
                 inputGraph.forNeighborsOf(orig_u, [&](node v) {
                     v = permute(v);
-                    if (u > v) return; // only one message per undirected edge
+                    if (!Directed && u > v) return; // only one message per undirected edge
 
                     const auto hashed_v = trade_sequence.hash(v);
 
-                    if (hashed_u < hashed_v) {
+                    if (Directed || hashed_u < hashed_v) {
                         // u is processed before v
                         current_pq.emplace_in_bucket(hint_u, hashed_u, v);
                     } else {
@@ -118,7 +116,9 @@ public:
             } else {
                 current_pq.swap_top_bucket(pq_bucket);
                 neighbourhood.resize(pq_bucket.size());
-                std::transform(pq_bucket.cbegin(), pq_bucket.cend(), neighbourhood.begin(), [](const std::pair<node, node> &p) { return p.second; });
+                std::transform(pq_bucket.cbegin(), pq_bucket.cend(), neighbourhood.begin(),
+                    [](const std::pair<node, node> &p) { return p.second; });
+
                 assert(inputGraph.degree(x) - neighbourhood.size() <= 1);
                 pq_bucket.clear();
             }
@@ -154,12 +154,22 @@ public:
                 // filter out edge with trade partner (if it exists, it is
                 // contained in u's neighbourhood due to it smaller hash value)
                 bool edge_between_uv = false;
-                {
+                bool edge_between_vu = false;
+                if (!Directed || !allowSelfLoops) {
                     auto it = std::find(neighbourhood_of_u.begin(), neighbourhood_of_u.end(), v);
                     if (it != neighbourhood_of_u.end()) {
                         *it = neighbourhood_of_u.back();
                         neighbourhood_of_u.pop_back();
                         edge_between_uv = true;
+                    }
+
+                    if (Directed) {
+                        auto it = std::find(neighbourhood_of_v.begin(), neighbourhood_of_v.end(), u);
+                        if (it != neighbourhood_of_v.end()) {
+                            *it = neighbourhood_of_v.back();
+                            neighbourhood_of_v.pop_back();
+                            edge_between_vu = true;
+                        }
                     }
                 }
 
@@ -186,35 +196,41 @@ public:
 
                 // Directly forward neighbours shared by both nodes
                 for(const auto neighbour : common_neighbours) {
-                    auto neighbour_hash = trade_sequence.hash(neighbour);
-                    if (neighbour_hash > hashed_v) {
-                        // neighbour will be processed later this round
-                        const auto hint = current_pq.emplace(neighbour_hash, neighbour_hash, u);
-                        current_pq.emplace_in_bucket(hint, neighbour_hash, v);
+                    if (Directed) {
+                        next_pq.emplace_in_bucket(next_bucket_u, next_hashed_u, neighbour);
+                        next_pq.emplace_in_bucket(next_bucket_v, next_hashed_v, neighbour);
 
                     } else {
-                        // neighbour will be processed in next round,
-                        // so send edge into new PQ
-                        neighbour_hash = trade_sequence.hashNext(neighbour);
-
-                        const bool u_larger = neighbour_hash < next_hashed_u;
-                        const bool v_larger = neighbour_hash < next_hashed_v;
-
-                        if (u_larger && v_larger) {
-                            const auto hint = next_pq.emplace(neighbour_hash, neighbour_hash, u);
-                            next_pq.emplace_in_bucket(hint, neighbour_hash, v);
+                        auto neighbour_hash = trade_sequence.hash(neighbour);
+                        if (neighbour_hash > hashed_v) {
+                            // neighbour will be processed later this round
+                            const auto hint = current_pq.emplace(neighbour_hash, neighbour_hash, u);
+                            current_pq.emplace_in_bucket(hint, neighbour_hash, v);
 
                         } else {
-                            if (u_larger) {
-                                next_pq.emplace(neighbour_hash, neighbour_hash, u);
-                            } else {
-                                next_pq.emplace_in_bucket(next_bucket_u, next_hashed_u, neighbour);
-                            }
+                            // neighbour will be processed in next round,
+                            // so send edge into new PQ
+                            neighbour_hash = trade_sequence.hashNext(neighbour);
 
-                            if (v_larger) {
-                                next_pq.emplace(neighbour_hash, neighbour_hash, v);
+                            const bool u_larger = neighbour_hash < next_hashed_u;
+                            const bool v_larger = neighbour_hash < next_hashed_v;
+
+                            if (u_larger && v_larger) {
+                                const auto hint = next_pq.emplace(neighbour_hash, neighbour_hash, u);
+                                next_pq.emplace_in_bucket(hint, neighbour_hash, v);
+
                             } else {
-                                next_pq.emplace_in_bucket(next_bucket_v, next_hashed_v, neighbour);
+                                if (u_larger) {
+                                    next_pq.emplace(neighbour_hash, neighbour_hash, u);
+                                } else {
+                                    next_pq.emplace_in_bucket(next_bucket_u, next_hashed_u, neighbour);
+                                }
+
+                                if (v_larger) {
+                                    next_pq.emplace(neighbour_hash, neighbour_hash, v);
+                                } else {
+                                    next_pq.emplace_in_bucket(next_bucket_v, next_hashed_v, neighbour);
+                                }
                             }
                         }
                     }
@@ -224,6 +240,11 @@ public:
                 {
                     auto send_edge = [&]
                         (node trade_node, node trade_node_hash, size_t trade_node_bucket, node neighbour) {
+
+                        if (Directed) {
+                            next_pq.emplace_in_bucket(trade_node_bucket, trade_node_hash, neighbour);
+                            return;
+                        }
 
                         auto neighbour_hash = trade_sequence.hash(neighbour);
                         if (neighbour_hash > hashed_v) {
@@ -261,11 +282,15 @@ public:
 
                 // Do not forget edge between u and v
                 if (edge_between_uv) {
-                    if (next_hashed_u < next_hashed_v) {
+                    if (Directed || next_hashed_u < next_hashed_v) {
                         next_pq.emplace_in_bucket(next_bucket_u, next_hashed_u, v);
                     } else {
                         next_pq.emplace_in_bucket(next_bucket_v, next_hashed_v, u);
                     }
+                }
+
+                if (Directed && edge_between_vu) {
+                    next_pq.emplace_in_bucket(next_bucket_v, next_hashed_v, u);
                 }
 
                 assert(current_pq.size() + next_pq.size() == inputGraph.numberOfEdges());
@@ -292,14 +317,28 @@ public:
     }
 
     Graph getGraph() {
-        GraphBuilder builder(inputGraph.numberOfNodes(), false, false);
+        const bool is_directed = inputGraph.isDirected();
+        GraphBuilder builder(inputGraph.numberOfNodes(), false, is_directed);
 
-        for (; !prioQueue.empty(); prioQueue.pop()) {
-            const auto top = prioQueue.top();
-            builder.addHalfEdge(top.first, top.second);
 
-            if (top.first < top.second)
-                prioQueue.emplace(top.second, top.second, top.first);
+        if (is_directed) {
+            for (; !prioQueue.empty(); prioQueue.pop()) {
+                const auto top = prioQueue.top();
+                assert(allowSelfLoops || top.first != top.second);
+                builder.addHalfOutEdge(top.first, top.second);
+                builder.addHalfInEdge(top.second, top.first);
+
+            }
+
+        } else {
+
+            for (; !prioQueue.empty(); prioQueue.pop()) {
+                const auto top = prioQueue.top();
+                builder.addHalfEdge(top.first, top.second);
+
+                if (top.first < top.second)
+                    prioQueue.emplace(top.second, top.second, top.first);
+            }
         }
 
         return builder.toGraph(false, true);
@@ -314,6 +353,7 @@ protected:
     tfp_queue_type prioQueue;
 
     const Graph& inputGraph;
+    const bool allowSelfLoops; ///< Allow self loops (only relevant for directed graphs)
 
     void computeCommonDisjointNeighbour(std::vector<node> &neighbourhood_of_u,
                                         const std::vector<node> &neighbourhood_of_v,
