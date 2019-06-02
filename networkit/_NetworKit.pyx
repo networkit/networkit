@@ -11240,7 +11240,7 @@ cdef class PivotMDS (GraphLayoutAlgorithm):
 cdef extern from "<networkit/randomization/GlobalCurveball.hpp>":
 
 	cdef cppclass _GlobalCurveball "NetworKit::GlobalCurveball"(_Algorithm):
-		_GlobalCurveball(_Graph, count) except +
+		_GlobalCurveball(_Graph, count, bool) except +
 		_Graph getGraph() except +
 
 cdef class GlobalCurveball(Algorithm):
@@ -11273,9 +11273,9 @@ cdef class GlobalCurveball(Algorithm):
 		which yields good results experimentally (see Paper).
 
 	"""
-	def __cinit__(self, G, number_of_global_rounds = 20):
+	def __cinit__(self, G, number_of_global_rounds = 20, degreePreservingShufflePreprocessing = False):
 		if isinstance(G, Graph):
-			self._this = new _GlobalCurveball((<Graph>G)._this, number_of_global_rounds)
+			self._this = new _GlobalCurveball((<Graph>G)._this, number_of_global_rounds, degreePreservingShufflePreprocessing)
 		else:
 			raise RuntimeError("Parameter G has to be a graph")
 

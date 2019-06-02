@@ -33,6 +33,13 @@ class TestRandomization(unittest.TestCase):
             G2 = algo.getGraph()
             check_graphs(G, G2)
 
+    def test_global_curveball_with_preprocessing(self):
+        for G in self.graphs:
+            algo = nk.randomization.GlobalCurveball(G, 5, True)
+            algo.run()
+            G2 = algo.getGraph()
+            check_graphs(G, G2)
+
     def test_curveball_with_global(self):
         for G in self.graphs:
             n = G.numberOfNodes()

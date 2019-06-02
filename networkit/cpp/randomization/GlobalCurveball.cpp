@@ -8,14 +8,17 @@
 #include <networkit/auxiliary/Random.hpp>
 
 #include <networkit/randomization/GlobalCurveball.hpp>
-#include <networkit/randomization/GlobalCurveballImpl.hpp>
+#include <networkit/randomization/DegreePreservingShuffle.hpp>
+#include "GlobalCurveballImpl.hpp"
 
 namespace NetworKit {
 
 GlobalCurveball::GlobalCurveball(const Graph &G,
-                                 unsigned number_of_global_trades) :
+                                 unsigned number_of_global_trades,
+                                 bool degreePreservingShufflePreprocessing) :
     impl(new CurveballDetails::GlobalCurveballImpl{G}),
-    numGlobalTrades{number_of_global_trades}
+    numGlobalTrades(number_of_global_trades),
+    degreePreservingShuffle(degreePreservingShufflePreprocessing)
 {
     if (G.isDirected()) {
         throw std::runtime_error("GlobalCurveball supports only undirected graphs");
@@ -35,9 +38,17 @@ void GlobalCurveball::run() {
 
     auto& prng = Aux::Random::getURNG();
 
+    const std::vector<node>* permutation = nullptr;
+    DegreePreservingShuffle dps(impl->getInputGraph());
+
+    if (degreePreservingShuffle) {
+        dps.run();
+        permutation = &dps.getPermutation();
+    }
+
     CurveballDetails::GlobalTradeSequence<CurveballDetails::FixedLinearCongruentialMap<node> > hash{
         impl->getInputGraph().numberOfNodes(), numGlobalTrades, prng};
-    impl->run(hash);
+    impl->run(hash, permutation);
 
     hasRun = true;
 }

@@ -1,5 +1,5 @@
 /*
- * GlobalCurveballImpl.h
+ * GlobalCurveballImpl.hpp
  *
  *  Created on: 26.05.2018
  *      Author: Manuel Penschuck <networkit@manuel.jetzt>
@@ -11,6 +11,10 @@
 #include <cassert>
 #include <utility>
 #include <type_traits>
+#include <vector>
+
+#include <tlx/container/radix_heap.hpp>
+#include <tlx/algorithm/random_bipartition_shuffle.hpp>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
@@ -18,10 +22,6 @@
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/GraphBuilder.hpp>
-
-#include <tlx/container/radix_heap.hpp>
-#include <tlx/algorithm/random_bipartition_shuffle.hpp>
-
 #include <networkit/randomization/GlobalTradeSequence.hpp>
 #include <networkit/randomization/GlobalCurveball.hpp>
 
@@ -50,7 +50,7 @@ public:
     {}
 
     template <typename TradeSequence>
-    void run(TradeSequence& trade_sequence) {
+    void run(TradeSequence& trade_sequence, const std::vector<node>* permutation = nullptr) {
         Aux::SignalHandler handler;
 
         if (hasRun) {
@@ -79,10 +79,16 @@ public:
             Aux::Timer loadTimer;
             loadTimer.start();
 
-            inputGraph.forNodes([&](node u) {
+            auto permute = [permutation] (node u) -> node {
+                return permutation ? (*permutation)[u] : u;
+            };
+
+            inputGraph.forNodes([&](node orig_u) {
+                const auto u = permute(orig_u);
                 const auto hashed_u = trade_sequence.hash(u);
                 const auto hint_u = current_pq.get_bucket_key(hashed_u);
-                inputGraph.forNeighborsOf(u, [&](node v) {
+                inputGraph.forNeighborsOf(orig_u, [&](node v) {
+                    v = permute(v);
                     if (u > v) return; // only one message per undirected edge
 
                     const auto hashed_v = trade_sequence.hash(v);

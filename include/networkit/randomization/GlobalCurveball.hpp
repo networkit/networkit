@@ -27,9 +27,14 @@ public:
      * @param G                        Undirected and unweighted graph to be randomized
      * @param number_of_global_trades  Number of global trades to be executed (each edge
      *                                 is considered exactly twice per global traded)
+     * @param degreePreservingShufflePreprocessing Execute DegreePreservingShuffle
+     *                                 (see Algorithm for description) as a preprocessing
+     *                                 step. This is more efficient than calling the algorithm
+     *                                 explicitly.
      */
     explicit GlobalCurveball(const Graph &G,
-                             unsigned number_of_global_trades = 20);
+                             unsigned number_of_global_trades = 20,
+                             bool degreePreservingShufflePreprocessing = false);
 
 
     virtual ~GlobalCurveball();
@@ -55,6 +60,7 @@ public:
 private:
     std::unique_ptr<CurveballDetails::GlobalCurveballImpl> impl;
     unsigned numGlobalTrades;
+    bool degreePreservingShuffle;
 
 };
 
