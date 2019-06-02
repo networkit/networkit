@@ -53,5 +53,43 @@ class TestRandomization(unittest.TestCase):
             G2 = algo.getGraph()
             check_graphs(G, G2)
 
+    def test_degree_preserving_shuffle(self):
+        for G in self.graphs:
+            dps = nk.randomization.DegreePreservingShuffle(G)
+            dps.run()
+            G2 = dps.getGraph()
+            check_graphs(G, G2)
+            perm = dps.getPermutation()
+            for u in G.nodes():
+                self.assertEqual(G.degree(u), G.degree(perm[u]))
+
+    def test_degree_preserving_shuffle_directed_triangle(self):
+        """Test whether a directed triangle is reoriented in 50% of cases"""
+        G = nk.Graph(3, False, True)
+        G.addEdge(0, 1)
+        G.addEdge(1, 2)
+        G.addEdge(2, 0)
+
+        num_clockwise = 0
+        num_iterations = 1000
+
+        for i in range(num_iterations):
+            dps = nk.randomization.DegreePreservingShuffle(G)
+            dps.run()
+            G2 = dps.getGraph()
+            check_graphs(G, G2)
+
+            # check orientation
+            clockwise = G2.hasEdge(0, 1)
+            anticlkw  = G2.hasEdge(1, 0)
+            self.assertNotEqual(clockwise, anticlkw)
+
+            num_clockwise += clockwise
+            G = G2
+
+        # confidence interval with an error rate of ~ 1e-6
+        self.assertGreater(num_clockwise, 400)
+        self.assertLess   (num_clockwise, 600)
+
 if __name__ == "__main__":
     unittest.main()

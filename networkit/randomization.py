@@ -2,4 +2,4 @@
 
 __author__ = "Hung Tran, Manuel Penschuck"
 
-from _NetworKit import GlobalCurveball, Curveball, CurveballGlobalTradeGenerator, CurveballUniformTradeGenerator
+from _NetworKit import GlobalCurveball, Curveball, CurveballGlobalTradeGenerator, CurveballUniformTradeGenerator, DegreePreservingShuffle

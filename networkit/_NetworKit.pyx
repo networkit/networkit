@@ -11416,3 +11416,48 @@ cdef class Curveball(Algorithm):
 
 	def getNumberOfAffectedEdges(self):
 		return (<_Curveball*>(self._this)).getNumberOfAffectedEdges()
+
+
+cdef extern from "../include/networkit/randomization/DegreePreservingShuffle.hpp":
+	cdef cppclass _DegreePreservingShuffle "NetworKit::DegreePreservingShuffle"(_Algorithm):
+		_DegreePreservingShuffle(_Graph) except +
+		_Graph getGraph() except +
+		vector[node] getPermutation() except +
+
+cdef class DegreePreservingShuffle(Algorithm):
+	"""
+	Implementation of the preprocessing step proposed in
+	"Smaller Universes for Uniform Sampling of 0,1-matrices with fixed row and column sums"
+	by Annabell Berger, Corrie Jacobien Carstens [https://arxiv.org/abs/1803.02624]
+
+	The algorithms randomizes a graph without changing its topology simply
+	by renaming nodes. For any degree d (in case of an directed graph it's a degree pair)
+	consider the set X_d of node ids which have this degree. Then shuffle the ids in X_d.
+
+	Hence the algorithm satisfies: For all x in Ginput:
+	 i)  Ginput.degreeIn(x) = Goutput.degreeIn(x)
+	 ii) Ginput.degreeOut(x) = Goutput.degreeOut(x)
+
+	The authors argue that applying this preprocessing step before executing (Global)Curveball
+	leads to a faster mixing time. If you want to use it as a preprocessing step to GlobalCurveball,
+	it's more efficient to set degreePreservingShufflePreprocessing in GlobalCurveball's constructor.
+
+	Parameters
+	----------
+
+	G : networkit.Graph
+		The graph to be randomized. For a given degree sequence, e.g.
+		generators.HavelHakimi can be used to obtain this graph.
+
+	"""
+	def __cinit__(self, G):
+		if isinstance(G, Graph):
+			self._this = new _DegreePreservingShuffle((<Graph>G)._this)
+		else:
+			raise RuntimeError("Parameter G has to be a graph")
+
+	def getGraph(self):
+		return Graph().setThis((<_DegreePreservingShuffle*>self._this).getGraph())
+
+	def getPermutation(self):
+		return (<_DegreePreservingShuffle*>(self._this)).getPermutation()

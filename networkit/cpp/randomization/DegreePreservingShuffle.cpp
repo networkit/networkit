@@ -1,6 +1,7 @@
 #include <omp.h>
 
 #include <algorithm>
+#include <numeric>
 #include <vector>
 
 #include <networkit/Globals.hpp>
