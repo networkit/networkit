@@ -683,6 +683,17 @@ class Graph final {
     /** Default copy assignment operator */
     Graph &operator=(const Graph &other) = default;
 
+	/**
+	 * Reserves memory in the node's edge containers.
+	 *
+	 * @param u the node memory should be reserved for 
+	 * @param size the amount of memory to reserve
+	 * 
+	 * This function is thread-safe if called from different 
+	 * threads on different nodes.
+	 */
+	void preallocateUndirected(node u, size_t size);
+
     /** EDGE IDS **/
 
     /**

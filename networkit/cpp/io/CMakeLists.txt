@@ -3,6 +3,8 @@ networkit_add_module(io
     BinaryEdgeListPartitionWriter.cpp
     BinaryPartitionReader.cpp
     BinaryPartitionWriter.cpp
+    NetworkitBinaryReader.cpp
+    NetworkitBinaryWriter.cpp
     CoverReader.cpp
     CoverWriter.cpp
     DGSReader.cpp

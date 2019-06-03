@@ -10,6 +10,8 @@
 #include <fstream>
 #include <unordered_set>
 #include <vector>
+#include <chrono>
+#include <iostream>
 
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/METISGraphWriter.hpp>
@@ -38,6 +40,8 @@
 #include <networkit/io/BinaryPartitionReader.hpp>
 #include <networkit/io/BinaryEdgeListPartitionWriter.hpp>
 #include <networkit/io/BinaryEdgeListPartitionReader.hpp>
+#include <networkit/io/NetworkitBinaryReader.hpp>
+#include <networkit/io/NetworkitBinaryWriter.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 
 #include <networkit/community/GraphClusteringTools.hpp>
@@ -786,5 +790,80 @@ TEST_F(IOGTest, testKONECTGraphReader){
 	ASSERT_EQ(G.weight(0,1), 1.261404);
 	ASSERT_EQ(G.weight(127, 48), 0.03050447);
 }
+TEST_F(IOGTest, NetworkitBinary_tiny01) {
+	METISGraphReader reader2;
+	Graph G = reader2.read("../input/tiny_01.graph");
+	NetworkitBinaryWriter writer;
 
+	writer.write(G, "../input/binary_tiny01");
+	ASSERT_TRUE(!G.isEmpty());
+
+	NetworkitBinaryReader reader;
+	Graph G2 = reader.read("../input/binary_tiny01");
+	ASSERT_EQ(G2.numberOfNodes(), G.numberOfNodes());
+	ASSERT_EQ(G2.numberOfEdges(), G.numberOfEdges());	
+	G.forNodes([&](node u){
+		G.forEdgesOf(u, [&](node v) {
+			ASSERT_TRUE(G2.hasEdge(u,v));
+		});
+	});
+}
+
+TEST_F(IOGTest, NetworkitBinary_konect) {
+	KONECTGraphReader reader2;	
+	Graph G = reader2.read("../input/foodweb-baydry.konect");	
+	NetworkitBinaryWriter writer;
+
+	writer.write(G, "../input/binary_konect");
+	ASSERT_TRUE(!G.isEmpty());
+
+	NetworkitBinaryReader reader;
+	Graph G2 = reader.read("../input/binary_konect");
+	ASSERT_EQ(G2.numberOfEdges(), G.numberOfEdges());
+	ASSERT_EQ(G2.numberOfNodes(), G.numberOfNodes()); 	
+	G.forNodes([&](node u){
+		G.forEdgesOf(u, [&](node v) {
+			ASSERT_TRUE(G2.hasEdge(u,v));
+		});
+	});		
+}
+
+TEST_F(IOGTest, NetworkitBinary_jazz) {
+	METISGraphReader reader2;
+	Graph G = reader2.read("../input/jazz.graph");
+
+	NetworkitBinaryWriter writer;
+	writer.write(G, "../input/binary_jazz");
+	ASSERT_TRUE(!G.isEmpty());
+
+	NetworkitBinaryReader reader;
+	Graph G2 = reader.read("../input/binary_jazz");
+	ASSERT_EQ(G2.numberOfEdges(), G.numberOfEdges());
+	ASSERT_EQ(G2.numberOfNodes(), G.numberOfNodes()); 	
+	G.forNodes([&](node u){
+		G.forEdgesOf(u, [&](node v) {
+			ASSERT_TRUE(G2.hasEdge(u,v));
+		});
+	});		
+}
+
+TEST_F(IOGTest, NetworkitBinary_wiki) {
+	bool directed = true;	
+	SNAPGraphReader reader2(directed);
+	Graph G = reader2.read("../input/wiki-Vote.txt");
+	NetworkitBinaryWriter writer;
+
+	writer.write(G, "../input/binary_wiki");
+	ASSERT_TRUE(!G.isEmpty());
+
+	NetworkitBinaryReader reader;
+	Graph G2 = reader.read("../input/binary_wiki");
+	ASSERT_EQ(G2.numberOfEdges(), G.numberOfEdges());
+	ASSERT_EQ(G2.numberOfNodes(), G.numberOfNodes()); 	
+	G.forNodes([&](node u){
+		G.forEdgesOf(u, [&](node v) {
+			ASSERT_TRUE(G2.hasEdge(u,v));
+		});
+	});		
+}
 } /* namespace NetworKit */
