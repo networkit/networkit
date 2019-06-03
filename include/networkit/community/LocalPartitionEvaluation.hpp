@@ -1,9 +1,9 @@
 #ifndef LOCALPARTITIONEVALUATION_H
 #define LOCALPARTITIONEVALUATION_H
 
-#include "LocalCommunityEvaluation.hpp"
-#include "../structures/Partition.hpp"
-#include "../graph/Graph.hpp"
+#include <networkit/community/LocalCommunityEvaluation.hpp>
+#include <networkit/structures/Partition.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

@@ -13,7 +13,7 @@
 #include <cmath>
 #include <omp.h>
 #include <functional>
-#include "QuadNodePolarEuclid.hpp"
+#include <networkit/generators/quadtree/QuadNodePolarEuclid.hpp>
 
 namespace NetworKit {
 

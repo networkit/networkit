@@ -6,7 +6,7 @@
 #define DOTGRAPHWRITER_H
 
 #include <fstream>
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

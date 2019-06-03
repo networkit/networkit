@@ -7,10 +7,10 @@
 
 #include <gtest/gtest.h>
 
-#include "../../../include/networkit/randomization/GlobalCurveball.hpp"
-#include "../../../include/networkit/graph/Graph.hpp"
-#include "../../../include/networkit/generators/ErdosRenyiGenerator.hpp"
-#include "../../../include/networkit/generators/HyperbolicGenerator.hpp"
+#include <networkit/randomization/GlobalCurveball.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/generators/ErdosRenyiGenerator.hpp>
+#include <networkit/generators/HyperbolicGenerator.hpp>
 
 namespace NetworKit {
 

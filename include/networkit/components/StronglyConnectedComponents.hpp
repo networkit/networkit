@@ -8,8 +8,8 @@
 #ifndef STRONGLYCONNECTEDCOMPONENTS_H_
 #define STRONGLYCONNECTEDCOMPONENTS_H_
 
-#include "../graph/Graph.hpp"
-#include "../structures/Partition.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 

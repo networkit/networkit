@@ -11,14 +11,14 @@
 #include <queue>
 #include <unordered_set>
 
-#include "../../include/networkit/auxiliary/Log.hpp"
-#include "../../include/networkit/auxiliary/NumericTools.hpp"
-#include "../../include/networkit/auxiliary/PrioQueue.hpp"
-#include "../../include/networkit/distance/APSP.hpp"
-#include "../../include/networkit/distance/BFS.hpp"
-#include "../../include/networkit/distance/Dijkstra.hpp"
-#include "../../include/networkit/distance/DynAPSP.hpp"
-#include "../../include/networkit/distance/SSSP.hpp"
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/NumericTools.hpp>
+#include <networkit/auxiliary/PrioQueue.hpp>
+#include <networkit/distance/APSP.hpp>
+#include <networkit/distance/BFS.hpp>
+#include <networkit/distance/Dijkstra.hpp>
+#include <networkit/distance/DynAPSP.hpp>
+#include <networkit/distance/SSSP.hpp>
 
 namespace NetworKit {
 

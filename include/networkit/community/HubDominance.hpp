@@ -1,9 +1,9 @@
 #ifndef HUBDOMINANCE_H
 #define HUBDOMINANCE_H
 
-#include "../structures/Partition.hpp"
-#include "../structures/Cover.hpp"
-#include "QualityMeasure.hpp"
+#include <networkit/structures/Partition.hpp>
+#include <networkit/structures/Cover.hpp>
+#include <networkit/community/QualityMeasure.hpp>
 
 namespace NetworKit {
 

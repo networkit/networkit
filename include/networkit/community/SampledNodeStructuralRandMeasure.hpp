@@ -8,7 +8,7 @@
 #ifndef SAMPLEDNODESTRUCTURALRANDMEASURE_H_
 #define SAMPLEDNODESTRUCTURALRANDMEASURE_H_
 
-#include "DissimilarityMeasure.hpp"
+#include <networkit/community/DissimilarityMeasure.hpp>
 
 namespace NetworKit {
 

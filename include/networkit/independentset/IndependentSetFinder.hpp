@@ -8,7 +8,7 @@
 #ifndef INDEPENDENTSETFINDER_H_
 #define INDEPENDENTSETFINDER_H_
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

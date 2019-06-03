@@ -8,9 +8,9 @@
 #ifndef JACCARDDISTANCE_H_
 #define JACCARDDISTANCE_H_
 
-#include "NodeDistance.hpp"
-#include "../graph/Graph.hpp"
-#include "../auxiliary/Timer.hpp"
+#include <networkit/distance/NodeDistance.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/auxiliary/Timer.hpp>
 
 
 namespace NetworKit {

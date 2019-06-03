@@ -7,9 +7,9 @@
 
 #include <algorithm>
 
-#include "../../include/networkit/linkprediction/LinkPredictor.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
-#include "../../include/networkit/auxiliary/Parallel.hpp"
+#include <networkit/linkprediction/LinkPredictor.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
 
 #include <omp.h>
 

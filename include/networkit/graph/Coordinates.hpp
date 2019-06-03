@@ -8,7 +8,7 @@
 #ifndef COORDINATES_H_
 #define COORDINATES_H_
 
-#include "../viz/Point.hpp"
+#include <networkit/viz/Point.hpp>
 
 #include <vector>
 

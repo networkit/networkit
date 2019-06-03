@@ -8,7 +8,7 @@
 #ifndef KATZCENTRALITY_H_
 #define KATZCENTRALITY_H_
 
-#include "Centrality.hpp"
+#include <networkit/centrality/Centrality.hpp>
 
 namespace NetworKit {
 

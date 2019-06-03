@@ -1,7 +1,7 @@
 #ifndef EDGESWITCHINGMARKOVCHAINGENERATOR_H
 #define EDGESWITCHINGMARKOVCHAINGENERATOR_H
 
-#include "StaticDegreeSequenceGenerator.hpp"
+#include <networkit/generators/StaticDegreeSequenceGenerator.hpp>
 
 namespace NetworKit {
 

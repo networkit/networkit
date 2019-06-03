@@ -9,8 +9,8 @@
 
 #include <cassert>
 
-#include "../../include/networkit/geometric/HyperbolicSpace.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/geometric/HyperbolicSpace.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
 using std::abs;
 using std::max;

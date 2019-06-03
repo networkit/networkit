@@ -12,9 +12,9 @@
 #include <algorithm>
 #include <functional>
 #include <assert.h>
-#include "../../auxiliary/Log.hpp"
-#include "../../auxiliary/Parallel.hpp"
-#include "../../geometric/HyperbolicSpace.hpp"
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/geometric/HyperbolicSpace.hpp>
 
 using std::vector;
 using std::min;

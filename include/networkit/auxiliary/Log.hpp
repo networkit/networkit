@@ -4,7 +4,7 @@
 #include <iostream>
 #include <mutex>
 
-#include "StringBuilder.hpp"
+#include <networkit/auxiliary/StringBuilder.hpp>
 
 #ifdef NOLOGGING
 

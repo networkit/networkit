@@ -8,7 +8,7 @@
 #ifndef GMLGRAPHREADER_H_
 #define GMLGRAPHREADER_H_
 
-#include "GraphReader.hpp"
+#include <networkit/io/GraphReader.hpp>
 
 namespace NetworKit {
 

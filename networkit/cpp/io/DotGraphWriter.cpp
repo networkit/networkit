@@ -5,7 +5,7 @@
  *      Author: forigem
  */
 
-#include "../../include/networkit/io/DotGraphWriter.hpp"
+#include <networkit/io/DotGraphWriter.hpp>
 
 namespace NetworKit {
 

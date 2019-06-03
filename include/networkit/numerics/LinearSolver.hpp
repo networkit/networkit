@@ -8,8 +8,8 @@
 #ifndef LINEARSOLVER_H_
 #define LINEARSOLVER_H_
 
-#include "../algebraic/Vector.hpp"
-#include "../graph/Graph.hpp"
+#include <networkit/algebraic/Vector.hpp>
+#include <networkit/graph/Graph.hpp>
 #include <limits>
 
 namespace NetworKit {

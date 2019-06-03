@@ -8,8 +8,8 @@
 #ifndef LOCALLOGSCORE_H
 #define LOCALLOGSCORE_H
 
-#include "../edgescores/EdgeScore.hpp"
-#include "../auxiliary/Parallel.hpp"
+#include <networkit/edgescores/EdgeScore.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
 #include <atomic>
 #include <memory>
 

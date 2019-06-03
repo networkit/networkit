@@ -7,8 +7,8 @@
 
 #include <map>
 
-#include "../../include/networkit/io/DGSReader.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/io/DGSReader.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
 

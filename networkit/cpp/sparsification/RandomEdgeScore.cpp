@@ -5,7 +5,7 @@
  *      Author: Gerd Lindner
  */
 
-#include "../../include/networkit/sparsification/RandomEdgeScore.hpp"
+#include <networkit/sparsification/RandomEdgeScore.hpp>
 
 namespace NetworKit {
 

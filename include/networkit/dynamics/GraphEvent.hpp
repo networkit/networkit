@@ -8,7 +8,7 @@
 #ifndef GRAPHEVENT_H_
 #define GRAPHEVENT_H_
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

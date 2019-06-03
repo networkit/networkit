@@ -8,7 +8,7 @@
 
 #include <utility>
 #include <queue>
-#include "../../include/networkit/scd/ApproximatePageRank.hpp"
+#include <networkit/scd/ApproximatePageRank.hpp>
 
 namespace NetworKit {
 

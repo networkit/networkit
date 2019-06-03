@@ -12,18 +12,18 @@
 #include <utility>
 #include <type_traits>
 
-#include "../auxiliary/Log.hpp"
-#include "../auxiliary/SignalHandling.hpp"
-#include "../auxiliary/Timer.hpp"
-#include "../base/Algorithm.hpp"
-#include "../graph/Graph.hpp"
-#include "../graph/GraphBuilder.hpp"
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/SignalHandling.hpp>
+#include <networkit/auxiliary/Timer.hpp>
+#include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphBuilder.hpp>
 
 #include <tlx/container/radix_heap.hpp>
 #include <tlx/algorithm/random_bipartition_shuffle.hpp>
 
-#include "GlobalTradeSequence.hpp"
-#include "GlobalCurveball.hpp"
+#include <networkit/randomization/GlobalTradeSequence.hpp>
+#include <networkit/randomization/GlobalCurveball.hpp>
 
 namespace NetworKit {
 namespace CurveballDetails {

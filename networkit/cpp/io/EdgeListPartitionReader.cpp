@@ -5,7 +5,7 @@
  *      Author: forigem
  */
 
-#include "../../include/networkit/io/EdgeListPartitionReader.hpp"
+#include <networkit/io/EdgeListPartitionReader.hpp>
 
 namespace NetworKit {
 

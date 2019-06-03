@@ -5,15 +5,15 @@
 // *      Author: Michael
 // */
 //
-#include "../../../include/networkit/numerics/LAMG/SolverLamg.hpp"
-#include "../../../include/networkit/numerics/LAMG/LAMGSettings.hpp"
+#include <networkit/numerics/LAMG/SolverLamg.hpp>
+#include <networkit/numerics/LAMG/LAMGSettings.hpp>
 //
 //#include <fstream>
 //#include <iostream>
 //#include <sstream>
 //
-#include "../../../include/networkit/auxiliary/Enforce.hpp"
-#include "../../../include/networkit/auxiliary/Timer.hpp"
+#include <networkit/auxiliary/Enforce.hpp>
+#include <networkit/auxiliary/Timer.hpp>
 //
 //namespace NetworKit {
 //

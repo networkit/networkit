@@ -5,10 +5,10 @@
  *      Author: cls
  */
 
-#include "../../include/networkit/community/SampledGraphStructuralRandMeasure.hpp"
+#include <networkit/community/SampledGraphStructuralRandMeasure.hpp>
 
-#include "../../include/networkit/auxiliary/Random.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
 

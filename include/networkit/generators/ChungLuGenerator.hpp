@@ -8,8 +8,8 @@
 #ifndef CHUNGLU_H_
 #define CHUNGLU_H_
 
-#include "StaticDegreeSequenceGenerator.hpp"
-#include "../auxiliary/Random.hpp"
+#include <networkit/generators/StaticDegreeSequenceGenerator.hpp>
+#include <networkit/auxiliary/Random.hpp>
 
 namespace NetworKit {
 

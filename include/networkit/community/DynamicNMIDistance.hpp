@@ -8,8 +8,8 @@
 #ifndef DYNAMICNMIDISTANCE_H_
 #define DYNAMICNMIDISTANCE_H_
 
-#include "DissimilarityMeasure.hpp"
-#include "NMIDistance.hpp"
+#include <networkit/community/DissimilarityMeasure.hpp>
+#include <networkit/community/NMIDistance.hpp>
 
 namespace NetworKit {
 

@@ -3,9 +3,9 @@
 
 #include <fstream>
 
-#include "../structures/Partition.hpp"
-#include "../graph/Graph.hpp"
-#include "../auxiliary/StringTools.hpp"
+#include <networkit/structures/Partition.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/auxiliary/StringTools.hpp>
 
 
 namespace NetworKit {

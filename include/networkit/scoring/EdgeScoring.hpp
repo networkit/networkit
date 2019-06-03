@@ -8,7 +8,7 @@
 #ifndef EDGESCORING_H_
 #define EDGESCORING_H_
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

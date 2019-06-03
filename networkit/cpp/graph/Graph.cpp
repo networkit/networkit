@@ -10,8 +10,8 @@
 #include <random>
 #include <sstream>
 
-#include "../../include/networkit/graph/Graph.hpp"
-#include "../../include/networkit/graph/GraphBuilder.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphBuilder.hpp>
 
 namespace NetworKit {
 

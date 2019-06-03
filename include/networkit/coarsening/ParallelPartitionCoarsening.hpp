@@ -8,9 +8,9 @@
 #ifndef PARALLELPARTITIONCOARSENING_H_
 #define PARALLELPARTITIONCOARSENING_H_
 
-#include "../Globals.hpp"
-#include "GraphCoarsening.hpp"
-#include "../structures/Partition.hpp"
+#include <networkit/Globals.hpp>
+#include <networkit/coarsening/GraphCoarsening.hpp>
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 

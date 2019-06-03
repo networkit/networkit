@@ -8,8 +8,8 @@
 #ifndef MATCHER_H_
 #define MATCHER_H_
 
-#include "Matching.hpp"
-#include "../base/Algorithm.hpp"
+#include <networkit/matching/Matching.hpp>
+#include <networkit/base/Algorithm.hpp>
 
 
 namespace NetworKit {

@@ -8,7 +8,7 @@
 #include <omp.h>
 #include <stdexcept>
 
-#include "../../include/networkit/graph/GraphBuilder.hpp"
+#include <networkit/graph/GraphBuilder.hpp>
 
 namespace NetworKit {
 

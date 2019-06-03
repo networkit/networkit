@@ -6,9 +6,9 @@
  *      based on code by Elisabetta Bergamini
  */
 
-#include "../../include/networkit/centrality/DynKatzCentrality.hpp"
-#include "../../include/networkit/auxiliary/Timer.hpp"
-#include "../../include/networkit/auxiliary/NumericTools.hpp"
+#include <networkit/centrality/DynKatzCentrality.hpp>
+#include <networkit/auxiliary/Timer.hpp>
+#include <networkit/auxiliary/NumericTools.hpp>
 #include <float.h>
 #include <math.h>
 #include <omp.h>

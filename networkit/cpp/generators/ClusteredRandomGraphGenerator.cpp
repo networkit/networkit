@@ -5,9 +5,9 @@
  *      Author: cls
  */
 
-#include "../../include/networkit/generators/ClusteredRandomGraphGenerator.hpp"
-#include "../../include/networkit/structures/Partition.hpp"
-#include "../../include/networkit/auxiliary/Random.hpp"
+#include <networkit/generators/ClusteredRandomGraphGenerator.hpp>
+#include <networkit/structures/Partition.hpp>
+#include <networkit/auxiliary/Random.hpp>
 
 namespace NetworKit {
 

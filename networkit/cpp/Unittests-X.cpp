@@ -22,11 +22,11 @@
 #include <omp.h>
 
 // necessary for some reasons?
-#include "../../include/networkit/Globals.hpp"
-#include "../../include/networkit/ext/optionparser.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
-#include "../../include/networkit/graph/Graph.hpp"
-#include "../../include/networkit/auxiliary/Parallelism.hpp"
+#include <networkit/Globals.hpp>
+#include <networkit/ext/optionparser.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/auxiliary/Parallelism.hpp>
 
 
 using namespace NetworKit;

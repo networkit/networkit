@@ -8,9 +8,9 @@
 #ifndef GRAPHDISTANCE_H_
 #define GRAPHDISTANCE_H_
 
-#include "../graph/Graph.hpp"
-#include "Dijkstra.hpp"
-#include "BFS.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/distance/Dijkstra.hpp>
+#include <networkit/distance/BFS.hpp>
 
 namespace NetworKit {
 

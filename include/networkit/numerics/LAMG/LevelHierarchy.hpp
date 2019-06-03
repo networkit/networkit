@@ -8,12 +8,12 @@
 #ifndef LEVELHIERARCHY_H_
 #define LEVELHIERARCHY_H_
 
-#include "Level/Level.hpp"
-#include "Level/LevelFinest.hpp"
-#include "Level/LevelElimination.hpp"
-#include "Level/LevelAggregation.hpp"
-#include "LAMGSettings.hpp"
-#include "../../algebraic/DenseMatrix.hpp"
+#include <networkit/numerics/LAMG/Level/Level.hpp>
+#include <networkit/numerics/LAMG/Level/LevelFinest.hpp>
+#include <networkit/numerics/LAMG/Level/LevelElimination.hpp>
+#include <networkit/numerics/LAMG/Level/LevelAggregation.hpp>
+#include <networkit/numerics/LAMG/LAMGSettings.hpp>
+#include <networkit/algebraic/DenseMatrix.hpp>
 
 namespace NetworKit {
 

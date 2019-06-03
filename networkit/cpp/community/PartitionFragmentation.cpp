@@ -2,10 +2,10 @@
  *
  */
 
-#include "../../include/networkit/community/PartitionFragmentation.hpp"
-#include "../../include/networkit/community/PartitionIntersection.hpp"
-#include "../../include/networkit/components/ConnectedComponents.hpp"
-#include "../../include/networkit/auxiliary/SignalHandling.hpp"
+#include <networkit/community/PartitionFragmentation.hpp>
+#include <networkit/community/PartitionIntersection.hpp>
+#include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/auxiliary/SignalHandling.hpp>
 
 void NetworKit::PartitionFragmentation::run() {
 	hasRun = false;

@@ -8,9 +8,9 @@
 #ifndef WEAKLYCONNECTEDCOMPONENTS_H_
 #define WEAKLYCONNECTEDCOMPONENTS_H_
 
-#include "../graph/Graph.hpp"
-#include "../structures/Partition.hpp"
-#include "../base/Algorithm.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/structures/Partition.hpp>
+#include <networkit/base/Algorithm.hpp>
 
 namespace NetworKit {
 

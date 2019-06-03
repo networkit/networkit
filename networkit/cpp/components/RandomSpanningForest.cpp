@@ -5,9 +5,9 @@
  *      Author: Henning
  */
 
-#include "../../include/networkit/components/RandomSpanningForest.hpp"
-#include "../../include/networkit/graph/Sampling.hpp"
-#include "../../include/networkit/components/ConnectedComponents.hpp"
+#include <networkit/components/RandomSpanningForest.hpp>
+#include <networkit/graph/Sampling.hpp>
+#include <networkit/components/ConnectedComponents.hpp>
 #include <unordered_set>
 
 namespace NetworKit {

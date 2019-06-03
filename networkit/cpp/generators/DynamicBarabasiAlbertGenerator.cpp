@@ -5,9 +5,9 @@
  *      Author: cls
  */
 
-#include "../../include/networkit/auxiliary/Random.hpp"
+#include <networkit/auxiliary/Random.hpp>
 
-#include "../../include/networkit/generators/DynamicBarabasiAlbertGenerator.hpp"
+#include <networkit/generators/DynamicBarabasiAlbertGenerator.hpp>
 
 namespace NetworKit {
 

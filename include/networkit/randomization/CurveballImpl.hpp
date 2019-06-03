@@ -9,8 +9,8 @@
 #include <cassert>
 #include <utility>
 
-#include "../Globals.hpp"
-#include "../graph/Graph.hpp"
+#include <networkit/Globals.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 namespace CurveballDetails {

@@ -10,7 +10,7 @@
 
 #include <vector>
 #include <unordered_map>
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

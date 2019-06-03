@@ -1,8 +1,8 @@
-#include "../../include/networkit/io/EdgeListCoverReader.hpp"
+#include <networkit/io/EdgeListCoverReader.hpp>
 
 #include <fstream>
-#include "../../include/networkit/graph/Graph.hpp"
-#include "../../include/networkit/auxiliary/StringTools.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/auxiliary/StringTools.hpp>
 
 
 NetworKit::EdgeListCoverReader::EdgeListCoverReader(NetworKit::node firstNode) : firstNode(firstNode) {}

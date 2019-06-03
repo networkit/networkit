@@ -8,9 +8,9 @@
 #ifndef MULTILEVELSETUP_H_
 #define MULTILEVELSETUP_H_
 
-#include "LevelHierarchy.hpp"
-#include "../Smoother.hpp"
-#include "../../algebraic/CSRMatrix.hpp"
+#include <networkit/numerics/LAMG/LevelHierarchy.hpp>
+#include <networkit/numerics/Smoother.hpp>
+#include <networkit/algebraic/CSRMatrix.hpp>
 
 #include <limits>
 

@@ -1,7 +1,7 @@
 #ifndef PARTITIONHUBDOMINANCE_H
 #define PARTITIONHUBDOMINANCE_H
 
-#include "LocalPartitionEvaluation.hpp"
+#include <networkit/community/LocalPartitionEvaluation.hpp>
 
 namespace NetworKit {
 

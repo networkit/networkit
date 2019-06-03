@@ -8,12 +8,12 @@
 #ifndef NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICPAGERANK_H_
 #define NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICPAGERANK_H_
 
-#include "../../base/Algorithm.hpp"
-#include "../../auxiliary/Parallel.hpp"
+#include <networkit/base/Algorithm.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
 
-#include "../../graph/Graph.hpp"
-#include "../GraphBLAS.hpp"
-#include "../Vector.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/algebraic/GraphBLAS.hpp>
+#include <networkit/algebraic/Vector.hpp>
 
 namespace NetworKit {
 

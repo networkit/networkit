@@ -16,9 +16,9 @@
 #include <cstdio>
 #include <climits>
 
-#include "../graph/Graph.hpp"
-#include "../structures/Partition.hpp"
-#include "../community/ClusteringGenerator.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/structures/Partition.hpp>
+#include <networkit/community/ClusteringGenerator.hpp>
 
 namespace NetworKit {
 

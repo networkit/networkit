@@ -5,7 +5,7 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "../../include/networkit/community/DissimilarityMeasure.hpp"
+#include <networkit/community/DissimilarityMeasure.hpp>
 
 namespace NetworKit {
 

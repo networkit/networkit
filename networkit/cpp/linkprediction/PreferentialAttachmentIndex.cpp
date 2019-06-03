@@ -5,7 +5,7 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include "../../include/networkit/linkprediction/PreferentialAttachmentIndex.hpp"
+#include <networkit/linkprediction/PreferentialAttachmentIndex.hpp>
 
 namespace NetworKit {
 

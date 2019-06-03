@@ -8,7 +8,7 @@
 #ifndef ADJUSTEDRANDINDEX_H_
 #define ADJUSTEDRANDINDEX_H_
 
-#include "LinkPredictor.hpp"
+#include <networkit/linkprediction/LinkPredictor.hpp>
 
 namespace NetworKit {
 

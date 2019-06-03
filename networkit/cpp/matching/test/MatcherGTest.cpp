@@ -7,14 +7,14 @@
 
 #include <gtest/gtest.h>
 
-#include "../../../include/networkit/matching/Matcher.hpp"
-#include "../../../include/networkit/matching/Matching.hpp"
-#include "../../../include/networkit/matching/PathGrowingMatcher.hpp"
-#include "../../../include/networkit/matching/LocalMaxMatcher.hpp"
-#include "../../../include/networkit/graph/Graph.hpp"
-#include "../../../include/networkit/io/DibapGraphReader.hpp"
-#include "../../../include/networkit/io/METISGraphReader.hpp"
-#include "../../../include/networkit/auxiliary/Random.hpp"
+#include <networkit/matching/Matcher.hpp>
+#include <networkit/matching/Matching.hpp>
+#include <networkit/matching/PathGrowingMatcher.hpp>
+#include <networkit/matching/LocalMaxMatcher.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/io/DibapGraphReader.hpp>
+#include <networkit/io/METISGraphReader.hpp>
+#include <networkit/auxiliary/Random.hpp>
 
 namespace NetworKit {
 

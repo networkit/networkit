@@ -5,7 +5,7 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include "../../include/networkit/linkprediction/RandomLinkSampler.hpp"
+#include <networkit/linkprediction/RandomLinkSampler.hpp>
 
 namespace NetworKit {
 

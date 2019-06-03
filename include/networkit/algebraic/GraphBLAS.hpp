@@ -9,10 +9,10 @@
 #define NETWORKIT_CPP_ALGEBRAIC_GRAPHBLAS_H_
 
 #include <limits>
-#include "Semirings.hpp"
-#include "SparseAccumulator.hpp"
-#include "AlgebraicGlobals.hpp"
-#include "Vector.hpp"
+#include <networkit/algebraic/Semirings.hpp>
+#include <networkit/algebraic/SparseAccumulator.hpp>
+#include <networkit/algebraic/AlgebraicGlobals.hpp>
+#include <networkit/algebraic/Vector.hpp>
 
 /**
  * @ingroup algebraic

@@ -8,7 +8,7 @@
 #ifndef HARMONICCLOSENESS_H_
 #define HARMONICCLOSENESS_H_
 
-#include "Centrality.hpp"
+#include <networkit/centrality/Centrality.hpp>
 
 namespace NetworKit {
 

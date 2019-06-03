@@ -8,7 +8,7 @@
 #ifndef LPDEGREEORDERED_H_
 #define LPDEGREEORDERED_H_
 
-#include "CommunityDetectionAlgorithm.hpp"
+#include <networkit/community/CommunityDetectionAlgorithm.hpp>
 
 namespace NetworKit {
 

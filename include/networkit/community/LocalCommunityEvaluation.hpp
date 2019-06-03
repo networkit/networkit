@@ -1,9 +1,9 @@
 #ifndef LOCALCOMMUNITYEVALUATION_H
 #define LOCALCOMMUNITYEVALUATION_H
 
-#include "../base/Algorithm.hpp"
+#include <networkit/base/Algorithm.hpp>
 #include <vector>
-#include "../Globals.hpp"
+#include <networkit/Globals.hpp>
 
 namespace NetworKit {
 

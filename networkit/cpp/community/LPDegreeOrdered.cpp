@@ -7,9 +7,9 @@
 
 #include <unordered_map>
 
-#include "../../include/networkit/community/LPDegreeOrdered.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
-#include "../../include/networkit/auxiliary/Parallel.hpp"
+#include <networkit/community/LPDegreeOrdered.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
 
 namespace NetworKit {
 

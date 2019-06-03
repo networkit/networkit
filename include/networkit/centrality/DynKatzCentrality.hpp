@@ -9,10 +9,10 @@
 #ifndef DYNKATZCENTRALITY_H_
 #define DYNKATZCENTRALITY_H_
 
-#include "../auxiliary/PrioQueue.hpp"
-#include "../base/DynAlgorithm.hpp"
-#include "../dynamics/GraphEvent.hpp"
-#include "Centrality.hpp"
+#include <networkit/auxiliary/PrioQueue.hpp>
+#include <networkit/base/DynAlgorithm.hpp>
+#include <networkit/dynamics/GraphEvent.hpp>
+#include <networkit/centrality/Centrality.hpp>
 
 namespace NetworKit {
 

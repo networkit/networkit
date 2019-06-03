@@ -5,11 +5,11 @@
  *      Author: ebergamini
  */
 
-#include "../../include/networkit/distance/Dijkstra.hpp"
-#include "../../include/networkit/distance/DynDijkstra.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
-#include "../../include/networkit/auxiliary/PrioQueue.hpp"
-#include "../../include/networkit/auxiliary/NumericTools.hpp"
+#include <networkit/distance/Dijkstra.hpp>
+#include <networkit/distance/DynDijkstra.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/PrioQueue.hpp>
+#include <networkit/auxiliary/NumericTools.hpp>
 #include <queue>
 
 

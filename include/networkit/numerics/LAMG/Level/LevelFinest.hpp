@@ -8,7 +8,7 @@
 #ifndef LEVELFINEST_H_
 #define LEVELFINEST_H_
 
-#include "Level.hpp"
+#include <networkit/numerics/LAMG/Level/Level.hpp>
 
 namespace NetworKit {
 

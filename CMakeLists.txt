@@ -170,6 +170,7 @@ if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
 			ARCHIVE DESTINATION ${NETWORKIT_LIB_DEST})
 
 	target_link_libraries(networkit PRIVATE tlx OpenMP::OpenMP_CXX)
+	target_include_directories(networkit BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 endif()
 
 if(NETWORKIT_PYTHON)
@@ -178,6 +179,7 @@ if(NETWORKIT_PYTHON)
 	endif()
 
 	add_library(_NetworKit MODULE networkit/_NetworKit.cpp)
+	target_include_directories(_NetworKit BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 	target_include_directories(_NetworKit PRIVATE "${NETWORKIT_PYTHON}")
 
 	if(NOT NETWORKIT_BUILD_CORE)
@@ -233,6 +235,7 @@ function(networkit_add_module modname)
 			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
 
 		target_link_libraries(${MODULE_TARGET} PRIVATE tlx OpenMP::OpenMP_CXX)
+		target_include_directories(${MODULE_TARGET} BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 
 		# All tests added to this module will will also become a dependency
 		# of networkit_tests_MODNAME. This target hence allows to build all

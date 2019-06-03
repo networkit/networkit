@@ -8,7 +8,7 @@
 #ifndef SPANNINGFOREST_H_
 #define SPANNINGFOREST_H_
 
-#include "Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

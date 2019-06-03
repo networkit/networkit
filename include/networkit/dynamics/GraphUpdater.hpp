@@ -8,8 +8,8 @@
 #ifndef GRAPHUPDATER_H_
 #define GRAPHUPDATER_H_
 
-#include "../graph/Graph.hpp"
-#include "../dynamics/GraphEvent.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/dynamics/GraphEvent.hpp>
 
 namespace NetworKit {
 

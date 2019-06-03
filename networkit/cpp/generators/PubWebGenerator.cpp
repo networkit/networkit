@@ -8,9 +8,9 @@
 #include <set>
 #include <queue>
 
-#include "../../include/networkit/auxiliary/Random.hpp"
+#include <networkit/auxiliary/Random.hpp>
 
-#include "../../include/networkit/generators/PubWebGenerator.hpp"
+#include <networkit/generators/PubWebGenerator.hpp>
 
 namespace NetworKit {
 

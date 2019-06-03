@@ -7,7 +7,7 @@
 #ifndef BINARYEDGELISTPARTITIONWRITER_H_
 #define BINARYEDGELISTPARTITIONWRITER_H_
 
-#include "../structures/Partition.hpp"
+#include <networkit/structures/Partition.hpp>
 #include <string>
 
 namespace NetworKit {

@@ -5,8 +5,8 @@
  *      Authors: cls, Kolja Esders
  */
 
-#include "../../include/networkit/linkprediction/NeighborhoodDistanceIndex.hpp"
-#include "../../include/networkit/linkprediction/NeighborhoodUtility.hpp"
+#include <networkit/linkprediction/NeighborhoodDistanceIndex.hpp>
+#include <networkit/linkprediction/NeighborhoodUtility.hpp>
 
 namespace NetworKit {
 

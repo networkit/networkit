@@ -8,10 +8,10 @@
 #ifndef COMMUTETIMEDIST_H_
 #define COMMUTETIMEDIST_H_
 
-#include "../algebraic/CSRMatrix.hpp"
-#include "../numerics/LAMG/Lamg.hpp"
-#include "../graph/Graph.hpp"
-#include "../base/Algorithm.hpp"
+#include <networkit/algebraic/CSRMatrix.hpp>
+#include <networkit/numerics/LAMG/Lamg.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/base/Algorithm.hpp>
 
 
 namespace NetworKit {

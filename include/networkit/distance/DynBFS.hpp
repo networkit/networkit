@@ -8,7 +8,7 @@
 #ifndef DYNBFS_H_
 #define DYNBFS_H_
 
-#include "DynSSSP.hpp"
+#include <networkit/distance/DynSSSP.hpp>
 
 
 namespace NetworKit {

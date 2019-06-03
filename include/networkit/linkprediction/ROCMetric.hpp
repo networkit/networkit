@@ -8,8 +8,8 @@
 #ifndef ROCMETRIC_H_
 #define ROCMETRIC_H_
 
-#include "../graph/Graph.hpp"
-#include "EvaluationMetric.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/linkprediction/EvaluationMetric.hpp>
 
 namespace NetworKit {
 

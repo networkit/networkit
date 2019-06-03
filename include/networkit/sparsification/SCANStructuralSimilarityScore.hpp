@@ -2,7 +2,7 @@
 #ifndef SCANSTRUCTURALSIMILARITY_H
 #define SCANSTRUCTURALSIMILARITY_H
 
-#include "../edgescores/EdgeScore.hpp"
+#include <networkit/edgescores/EdgeScore.hpp>
 
 namespace NetworKit {
 

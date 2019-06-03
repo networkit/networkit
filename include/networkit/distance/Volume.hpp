@@ -8,7 +8,7 @@
 #ifndef VOLUME_H_
 #define VOLUME_H_
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 #include <unordered_map>
 
 namespace NetworKit {

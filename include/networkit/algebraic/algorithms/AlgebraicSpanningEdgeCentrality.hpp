@@ -8,8 +8,8 @@
 #ifndef NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICSPANNINGEDGECENTRALITY_H_
 #define NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICSPANNINGEDGECENTRALITY_H_
 
-#include "../../centrality/Centrality.hpp"
-#include "../../numerics/LAMG/Lamg.hpp"
+#include <networkit/centrality/Centrality.hpp>
+#include <networkit/numerics/LAMG/Lamg.hpp>
 
 namespace NetworKit {
 

@@ -8,10 +8,10 @@
 #ifndef DYNAPPROXBETW_H_
 #define DYNAPPROXBETW_H_
 
-#include "Centrality.hpp"
-#include "../base/DynAlgorithm.hpp"
-#include "../dynamics/GraphEvent.hpp"
-#include "../distance/DynSSSP.hpp"
+#include <networkit/centrality/Centrality.hpp>
+#include <networkit/base/DynAlgorithm.hpp>
+#include <networkit/dynamics/GraphEvent.hpp>
+#include <networkit/distance/DynSSSP.hpp>
 
 #include <math.h>
 #include <algorithm>

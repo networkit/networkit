@@ -5,7 +5,7 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#include "../../../include/networkit/numerics/LAMG/MultiLevelSetup.hpp"
+#include <networkit/numerics/LAMG/MultiLevelSetup.hpp>
 
 namespace NetworKit {
 

@@ -6,8 +6,8 @@
  */
 
 #include <cmath>
-#include "../../include/networkit/edgescores/GeometricMeanScore.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/edgescores/GeometricMeanScore.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
 

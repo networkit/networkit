@@ -5,7 +5,7 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "../../include/networkit/io/PartitionReader.hpp"
+#include <networkit/io/PartitionReader.hpp>
 
 namespace NetworKit {
 

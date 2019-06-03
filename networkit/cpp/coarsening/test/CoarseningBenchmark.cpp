@@ -7,13 +7,13 @@
 
 #include <gtest/gtest.h>
 
-#include "../../../include/networkit/generators/ErdosRenyiGenerator.hpp"
-#include "../../../include/networkit/community/ClusteringGenerator.hpp"
-#include "../../../include/networkit/coarsening/ParallelPartitionCoarsening.hpp"
-#include "../../../include/networkit/coarsening/ClusteringProjector.hpp"
-#include "../../../include/networkit/community/ClusteringGenerator.hpp"
-#include "../../../include/networkit/auxiliary/Timer.hpp"
-#include "../../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/generators/ErdosRenyiGenerator.hpp>
+#include <networkit/community/ClusteringGenerator.hpp>
+#include <networkit/coarsening/ParallelPartitionCoarsening.hpp>
+#include <networkit/coarsening/ClusteringProjector.hpp>
+#include <networkit/community/ClusteringGenerator.hpp>
+#include <networkit/auxiliary/Timer.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
 

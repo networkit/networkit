@@ -7,15 +7,15 @@
 
 #include <gtest/gtest.h>
 
-#include "../../../../include/networkit/io/METISGraphReader.hpp"
-#include "../../../../include/networkit/auxiliary/Timer.hpp"
-#include "../../../../include/networkit/graph/Graph.hpp"
+#include <networkit/io/METISGraphReader.hpp>
+#include <networkit/auxiliary/Timer.hpp>
+#include <networkit/graph/Graph.hpp>
 
-#include "../../../../include/networkit/algebraic/CSRMatrix.hpp"
+#include <networkit/algebraic/CSRMatrix.hpp>
 
-#include "../../../../include/networkit/distance/Dijkstra.hpp"
-#include "../../../../include/networkit/algebraic/DynamicMatrix.hpp"
-#include "../../../../include/networkit/algebraic/algorithms/AlgebraicBellmanFord.hpp"
+#include <networkit/distance/Dijkstra.hpp>
+#include <networkit/algebraic/DynamicMatrix.hpp>
+#include <networkit/algebraic/algorithms/AlgebraicBellmanFord.hpp>
 
 namespace NetworKit {
 

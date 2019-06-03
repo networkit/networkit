@@ -9,34 +9,34 @@
 #include <vector>
 #include <string>
 
-#include "../../../include/networkit/graph/Graph.hpp"
-#include "../../../include/networkit/viz/Point.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/viz/Point.hpp>
 
-#include "../../../include/networkit/io/METISGraphReader.hpp"
-#include "../../../include/networkit/io/METISGraphWriter.hpp"
-#include "../../../include/networkit/graph/Graph.hpp"
-#include "../../../include/networkit/components/ConnectedComponents.hpp"
-#include "../../../include/networkit/viz/MaxentStress.hpp"
+#include <networkit/io/METISGraphReader.hpp>
+#include <networkit/io/METISGraphWriter.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/viz/MaxentStress.hpp>
 
-#include "../../../include/networkit/numerics/LAMG/Lamg.hpp"
-#include "../../../include/networkit/numerics/ConjugateGradient.hpp"
-#include "../../../include/networkit/numerics/Preconditioner/IdentityPreconditioner.hpp"
-#include "../../../include/networkit/numerics/Preconditioner/DiagonalPreconditioner.hpp"
+#include <networkit/numerics/LAMG/Lamg.hpp>
+#include <networkit/numerics/ConjugateGradient.hpp>
+#include <networkit/numerics/Preconditioner/IdentityPreconditioner.hpp>
+#include <networkit/numerics/Preconditioner/DiagonalPreconditioner.hpp>
 
-#include "../../../include/networkit/community/PLM.hpp"
+#include <networkit/community/PLM.hpp>
 
-#include "../../../include/networkit/sparsification/LocalDegreeScore.hpp"
-#include "../../../include/networkit/sparsification/RandomEdgeScore.hpp"
-#include "../../../include/networkit/sparsification/GlobalThresholdFilter.hpp"
+#include <networkit/sparsification/LocalDegreeScore.hpp>
+#include <networkit/sparsification/RandomEdgeScore.hpp>
+#include <networkit/sparsification/GlobalThresholdFilter.hpp>
 
-#include "../../../include/networkit/auxiliary/Timer.hpp"
-#include "../../../include/networkit/auxiliary/Random.hpp"
+#include <networkit/auxiliary/Timer.hpp>
+#include <networkit/auxiliary/Random.hpp>
 
 #include <iostream>
 #include <unordered_map>
 #include <random>
 
-#include "../../../include/networkit/viz/PivotMDS.hpp"
+#include <networkit/viz/PivotMDS.hpp>
 
 #include <stdio.h>
 

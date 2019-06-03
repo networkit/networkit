@@ -13,8 +13,8 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-#include "../auxiliary/Log.hpp"
-#include "../auxiliary/Timer.hpp"
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/Timer.hpp>
 
 namespace NetworKit {
 

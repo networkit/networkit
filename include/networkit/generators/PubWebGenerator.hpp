@@ -8,7 +8,7 @@
 #ifndef PUBWEBGENERATOR_H_
 #define PUBWEBGENERATOR_H_
 
-#include "StaticGraphGenerator.hpp"
+#include <networkit/generators/StaticGraphGenerator.hpp>
 
 #include <cmath>
 

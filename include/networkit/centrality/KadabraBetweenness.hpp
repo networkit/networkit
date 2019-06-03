@@ -14,10 +14,10 @@
 #include <random>
 #include <vector>
 
-#include "../auxiliary/SortedList.hpp"
-#include "../base/Algorithm.hpp"
-#include "../components/ConnectedComponents.hpp"
-#include "../graph/Graph.hpp"
+#include <networkit/auxiliary/SortedList.hpp>
+#include <networkit/base/Algorithm.hpp>
+#include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

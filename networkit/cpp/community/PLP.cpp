@@ -5,13 +5,13 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "../../include/networkit/community/PLP.hpp"
+#include <networkit/community/PLP.hpp>
 
 #include <omp.h>
-#include "../../include/networkit/Globals.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
-#include "../../include/networkit/auxiliary/Timer.hpp"
-#include "../../include/networkit/auxiliary/Random.hpp"
+#include <networkit/Globals.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/Timer.hpp>
+#include <networkit/auxiliary/Random.hpp>
 
 namespace NetworKit {
 

@@ -8,7 +8,7 @@
 #ifndef BarabasiAlbertGenerator_H_
 #define BarabasiAlbertGenerator_H_
 
-#include "StaticGraphGenerator.hpp"
+#include <networkit/generators/StaticGraphGenerator.hpp>
 
 namespace NetworKit {
 

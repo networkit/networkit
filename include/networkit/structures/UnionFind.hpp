@@ -11,8 +11,8 @@
 #define UNIONFIND_H_
 
 #include <vector>
-#include "../Globals.hpp"
-#include "../structures/Partition.hpp"
+#include <networkit/Globals.hpp>
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 

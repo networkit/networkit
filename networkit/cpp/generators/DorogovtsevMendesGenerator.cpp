@@ -7,7 +7,7 @@
 
 #include <tuple>
 
-#include "../../include/networkit/generators/DorogovtsevMendesGenerator.hpp"
+#include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 
 namespace NetworKit {
 

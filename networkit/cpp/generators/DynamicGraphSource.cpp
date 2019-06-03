@@ -5,7 +5,7 @@
  *      Author: cls
  */
 
-#include "../../include/networkit/generators/DynamicGraphSource.hpp"
+#include <networkit/generators/DynamicGraphSource.hpp>
 
 namespace NetworKit {
 

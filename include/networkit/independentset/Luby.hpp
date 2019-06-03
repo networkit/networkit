@@ -8,7 +8,7 @@
 #ifndef LUBY_H_
 #define LUBY_H_
 
-#include "IndependentSetFinder.hpp"
+#include <networkit/independentset/IndependentSetFinder.hpp>
 
 
 namespace NetworKit {

@@ -8,7 +8,7 @@
 #ifndef GAUSSSEIDELRELAXATION_H_
 #define GAUSSSEIDELRELAXATION_H_
 
-#include "Smoother.hpp"
+#include <networkit/numerics/Smoother.hpp>
 
 namespace NetworKit {
 

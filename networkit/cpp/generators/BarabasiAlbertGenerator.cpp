@@ -5,9 +5,9 @@
  *      Author: forigem
  */
 
-#include "../../include/networkit/auxiliary/Random.hpp"
+#include <networkit/auxiliary/Random.hpp>
 
-#include "../../include/networkit/generators/BarabasiAlbertGenerator.hpp"
+#include <networkit/generators/BarabasiAlbertGenerator.hpp>
 
 #include <set>
 

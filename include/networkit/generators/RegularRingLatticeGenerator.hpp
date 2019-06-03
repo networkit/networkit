@@ -8,7 +8,7 @@
 #ifndef REGULARRINGLATTICEGENERATOR_H_
 #define REGULARRINGLATTICEGENERATOR_H_
 
-#include "StaticGraphGenerator.hpp"
+#include <networkit/generators/StaticGraphGenerator.hpp>
 
 namespace NetworKit {
 

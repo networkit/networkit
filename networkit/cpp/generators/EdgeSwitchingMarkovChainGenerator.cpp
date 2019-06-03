@@ -2,9 +2,9 @@
  *
  */
 
-#include "../../include/networkit/generators/EdgeSwitchingMarkovChainGenerator.hpp"
-#include "../../include/networkit/generators/HavelHakimiGenerator.hpp"
-#include "../../include/networkit/auxiliary/Random.hpp"
+#include <networkit/generators/EdgeSwitchingMarkovChainGenerator.hpp>
+#include <networkit/generators/HavelHakimiGenerator.hpp>
+#include <networkit/auxiliary/Random.hpp>
 
 NetworKit::EdgeSwitchingMarkovChainGenerator::EdgeSwitchingMarkovChainGenerator(const std::vector< NetworKit::count > &sequence, bool ignoreIfRealizable): StaticDegreeSequenceGenerator(sequence), ignoreIfRealizable(ignoreIfRealizable) {
 

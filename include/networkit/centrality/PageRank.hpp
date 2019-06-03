@@ -8,7 +8,7 @@
 #ifndef PAGERANK_H_
 #define PAGERANK_H_
 
-#include "Centrality.hpp"
+#include <networkit/centrality/Centrality.hpp>
 
 namespace NetworKit {
 

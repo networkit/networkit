@@ -5,7 +5,7 @@
  *      Author: cls
  */
 
-#include "../../include/networkit/structures/Cover.hpp"
+#include <networkit/structures/Cover.hpp>
 
 #include <algorithm>
 #include <iterator>

@@ -5,11 +5,11 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "../../include/networkit/io/METISParser.hpp"
+#include <networkit/io/METISParser.hpp>
 
-#include "../../include/networkit/auxiliary/NumberParsing.hpp"
-#include "../../include/networkit/auxiliary/Enforce.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/auxiliary/NumberParsing.hpp>
+#include <networkit/auxiliary/Enforce.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
 #include <stdexcept>
 

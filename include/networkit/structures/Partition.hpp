@@ -15,7 +15,7 @@
 #include <cassert>
 #include <limits>
 
-#include "../Globals.hpp"
+#include <networkit/Globals.hpp>
 
 namespace NetworKit {
 

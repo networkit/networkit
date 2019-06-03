@@ -8,7 +8,7 @@
 #ifndef GRAPHWRITER_H_
 #define GRAPHWRITER_H_
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 
 #include <fstream>
 

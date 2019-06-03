@@ -7,8 +7,8 @@
 
 #include <gtest/gtest.h>
 
-#include "../../../include/networkit/sparsification/LocalSimilarityScore.hpp"
-#include "../../../include/networkit/edgescores/ChibaNishizekiTriangleEdgeScore.hpp"
+#include <networkit/sparsification/LocalSimilarityScore.hpp>
+#include <networkit/edgescores/ChibaNishizekiTriangleEdgeScore.hpp>
 
 namespace NetworKit {
 

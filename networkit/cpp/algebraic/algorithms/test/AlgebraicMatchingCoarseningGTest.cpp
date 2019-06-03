@@ -7,12 +7,12 @@
 
 #include <gtest/gtest.h>
 
-#include "../../../../include/networkit/auxiliary/Timer.hpp"
-#include "../../../../include/networkit/algebraic/algorithms/AlgebraicMatchingCoarsening.hpp"
-#include "../../../../include/networkit/algebraic/CSRMatrix.hpp"
-#include "../../../../include/networkit/io/METISGraphReader.hpp"
-#include "../../../../include/networkit/matching/LocalMaxMatcher.hpp"
-#include "../../../../include/networkit/coarsening/MatchingCoarsening.hpp"
+#include <networkit/auxiliary/Timer.hpp>
+#include <networkit/algebraic/algorithms/AlgebraicMatchingCoarsening.hpp>
+#include <networkit/algebraic/CSRMatrix.hpp>
+#include <networkit/io/METISGraphReader.hpp>
+#include <networkit/matching/LocalMaxMatcher.hpp>
+#include <networkit/coarsening/MatchingCoarsening.hpp>
 
 namespace NetworKit {
 

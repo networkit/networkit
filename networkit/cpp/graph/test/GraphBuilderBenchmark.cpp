@@ -8,10 +8,10 @@
 
 #ifndef NOGTEST
 
-#include "../../../include/networkit/graph/test/GraphBuilderBenchmark.hpp"
-#include "../../../include/networkit/graph/GraphBuilder.hpp"
-#include "../../../include/networkit/io/METISGraphReader.hpp"
-#include "../../../include/networkit/generators/ErdosRenyiEnumerator.hpp"
+#include <networkit/graph/test/GraphBuilderBenchmark.hpp>
+#include <networkit/graph/GraphBuilder.hpp>
+#include <networkit/io/METISGraphReader.hpp>
+#include <networkit/generators/ErdosRenyiEnumerator.hpp>
 
 namespace NetworKit {
 

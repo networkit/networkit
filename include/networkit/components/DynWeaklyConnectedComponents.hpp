@@ -8,10 +8,10 @@
 #ifndef DYNWEAKLYCONNECTEDCOMPONENTS_H_
 #define DYNWEAKLYCONNECTEDCOMPONENTS_H_
 
-#include "../graph/Graph.hpp"
-#include "../base/Algorithm.hpp"
-#include "../base/DynAlgorithm.hpp"
-#include "../dynamics/GraphEvent.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/base/Algorithm.hpp>
+#include <networkit/base/DynAlgorithm.hpp>
+#include <networkit/dynamics/GraphEvent.hpp>
 
 namespace NetworKit {
 

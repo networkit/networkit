@@ -5,7 +5,7 @@
  *      Author: Henning
  */
 
-#include "../../include/networkit/community/EdgeCut.hpp"
+#include <networkit/community/EdgeCut.hpp>
 
 namespace NetworKit {
 

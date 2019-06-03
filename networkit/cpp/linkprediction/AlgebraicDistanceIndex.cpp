@@ -5,10 +5,10 @@
  *      Authors: cls, Kolja Esders
  */
 
-#include "../../include/networkit/auxiliary/Random.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
-#include "../../include/networkit/linkprediction/AlgebraicDistanceIndex.hpp"
+#include <networkit/linkprediction/AlgebraicDistanceIndex.hpp>
 
 namespace NetworKit {
 

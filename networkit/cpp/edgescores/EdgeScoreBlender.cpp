@@ -5,7 +5,7 @@
  *      Author: Michael Hamann
  */
 
-#include "../../include/networkit/edgescores/EdgeScoreBlender.hpp"
+#include <networkit/edgescores/EdgeScoreBlender.hpp>
 
 namespace NetworKit {
 

@@ -7,7 +7,7 @@
 
 #include <queue>
 
-#include "../../include/networkit/generators/DynamicPubWebGenerator.hpp"
+#include <networkit/generators/DynamicPubWebGenerator.hpp>
 
 namespace NetworKit {
 

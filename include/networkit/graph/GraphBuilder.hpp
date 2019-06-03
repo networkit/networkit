@@ -10,8 +10,8 @@
 
 #include <vector>
 
-#include "../Globals.hpp"
-#include "Graph.hpp"
+#include <networkit/Globals.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

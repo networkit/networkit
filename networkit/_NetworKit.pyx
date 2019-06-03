@@ -46,7 +46,7 @@ ctypedef index node
 ctypedef index cluster
 ctypedef double edgeweight
 
-cdef extern from "../include/networkit/Globals.hpp" namespace "NetworKit":
+cdef extern from "<networkit/Globals.hpp>" namespace "NetworKit":
 
 	index _none "NetworKit::none"
 
@@ -65,7 +65,7 @@ cdef extern from "<algorithm>" namespace "std":
 	vector[pair[pair[node, node], double]] move(vector[pair[pair[node, node], double]]) nogil
 	vector[pair[node, node]] move(vector[pair[node, node]]) nogil
 
-cdef extern from "../include/networkit/auxiliary/Parallel.hpp" namespace "Aux::Parallel":
+cdef extern from "<networkit/auxiliary/Parallel.hpp>" namespace "Aux::Parallel":
 
 	void sort[Iter](Iter begin, Iter end) nogil
 	void sort[Iter, Comp](Iter begin, Iter end, Comp compare) nogil
@@ -85,7 +85,7 @@ def pystring(stdstring):
 	return stdstring.decode("utf-8")
 
 
-cdef extern from "../include/networkit/base/Algorithm.hpp":
+cdef extern from "<networkit/base/Algorithm.hpp>":
 
 	cdef cppclass _Algorithm "NetworKit::Algorithm":
 		_Algorithm()
@@ -163,7 +163,7 @@ cdef class Algorithm:
 		return self._this.isParallel()
 
 
-cdef extern from "../include/networkit/generators/StaticGraphGenerator.hpp":
+cdef extern from "<networkit/generators/StaticGraphGenerator.hpp>":
 
 	cdef cppclass _StaticGraphGenerator "NetworKit::StaticGraphGenerator":
 		_StaticGraphGenerator()
@@ -200,7 +200,7 @@ cdef class StaticGraphGenerator:
 
 # Function definitions
 
-cdef extern from "../include/networkit/auxiliary/Log.hpp" namespace "Aux":
+cdef extern from "<networkit/auxiliary/Log.hpp>" namespace "Aux":
 
 	#void _configureLogging "Aux::configureLogging" (string loglevel)
 	string _getLogLevel "Aux::Log::getLogLevel" () except +
@@ -219,7 +219,7 @@ def setPrintLocation(flag):
 	""" Switch locations in log statements on or off"""
 	_setPrintLocation(flag)
 
-cdef extern from "../include/networkit/auxiliary/Parallelism.hpp" namespace "Aux":
+cdef extern from "<networkit/auxiliary/Parallelism.hpp>" namespace "Aux":
 
 	void _setNumberOfThreads "Aux::setNumberOfThreads" (int)
 	int _getCurrentNumberOfThreads "Aux::getCurrentNumberOfThreads" ()
@@ -242,7 +242,7 @@ def enableNestedParallelism():
 	""" Enable nested parallelism for OpenMP"""
 	_enableNestedParallelism()
 
-cdef extern from "../include/networkit/auxiliary/Random.hpp" namespace "Aux::Random":
+cdef extern from "<networkit/auxiliary/Random.hpp>" namespace "Aux::Random":
 
 	void _setSeed "Aux::Random::setSeed" (uint64_t, bool_t)
 
@@ -270,7 +270,7 @@ def setSeed(uint64_t seed, bool_t useThreadId):
 
 # DEPRECATED
 # TODO: replace with std::pair<double>
-cdef extern from "../include/networkit/viz/Point.hpp" namespace "NetworKit":
+cdef extern from "<networkit/viz/Point.hpp>" namespace "NetworKit":
 
 	cdef cppclass Point[T]:
 		Point()
@@ -278,7 +278,7 @@ cdef extern from "../include/networkit/viz/Point.hpp" namespace "NetworKit":
 		T& operator[](const index i) except +
 		T& at(const index i) except +
 
-cdef extern from "../include/networkit/graph/Graph.hpp":
+cdef extern from "<networkit/graph/Graph.hpp>":
 
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
@@ -1335,7 +1335,7 @@ cdef class Graph:
 
 # TODO: expose all methods
 
-cdef extern from "../include/networkit/distance/SSSP.hpp":
+cdef extern from "<networkit/distance/SSSP.hpp>":
 
 	cdef cppclass _SSSP "NetworKit::SSSP"(_Algorithm):
 		_SSSP(_Graph G, node source, bool_t storePaths, bool_t storeNodesSortedByDistance, node target) except +
@@ -1418,7 +1418,7 @@ cdef class SSSP(Algorithm):
 		return (<_SSSP*>(self._this))._numberOfPaths(t)
 
 
-cdef extern from "../include/networkit/distance/DynSSSP.hpp":
+cdef extern from "<networkit/distance/DynSSSP.hpp>":
 
 	cdef cppclass _DynSSSP "NetworKit::DynSSSP"(_SSSP):
 		_DynSSSP(_Graph G, node source, bool_t storePaths, bool_t storeStack, node target) except +
@@ -1461,7 +1461,7 @@ cdef class DynSSSP(SSSP):
 		(<_DynSSSP*>(self._this)).setTargetNode(t)
 
 
-cdef extern from "../include/networkit/distance/BFS.hpp":
+cdef extern from "<networkit/distance/BFS.hpp>":
 
 	cdef cppclass _BFS "NetworKit::BFS"(_SSSP):
 		_BFS(_Graph G, node source, bool_t storePaths, bool_t storeNodesSortedByDistance, node target) except +
@@ -1489,7 +1489,7 @@ cdef class BFS(SSSP):
 		self._G = G
 		self._this = new _BFS(G._this, source, storePaths, storeNodesSortedByDistance, target)
 
-cdef extern from "../include/networkit/distance/DynBFS.hpp":
+cdef extern from "<networkit/distance/DynBFS.hpp>":
 
 	cdef cppclass _DynBFS "NetworKit::DynBFS"(_DynSSSP):
 		_DynBFS(_Graph G, node source) except +
@@ -1515,7 +1515,7 @@ cdef class DynBFS(DynSSSP):
 		self._this = new _DynBFS(G._this, source)
 
 
-cdef extern from "../include/networkit/distance/Dijkstra.hpp":
+cdef extern from "<networkit/distance/Dijkstra.hpp>":
 
 	cdef cppclass _Dijkstra "NetworKit::Dijkstra"(_SSSP):
 		_Dijkstra(_Graph G, node source, bool_t storePaths, bool_t storeNodesSortedByDistance, node target) except +
@@ -1546,7 +1546,7 @@ cdef class Dijkstra(SSSP):
 		self._G = G
 		self._this = new _Dijkstra(G._this, source, storePaths, storeNodesSortedByDistance, target)
 
-cdef extern from "../include/networkit/distance/DynDijkstra.hpp":
+cdef extern from "<networkit/distance/DynDijkstra.hpp>":
 
 	cdef cppclass _DynDijkstra "NetworKit::DynDijkstra"(_DynSSSP):
 		_DynDijkstra(_Graph G, node source) except +
@@ -1586,7 +1586,7 @@ cdef cppclass PathCallbackWrapper:
 		if (error):
 			throw_runtime_error(message)
 
-cdef extern from "../include/networkit/distance/AllSimplePaths.hpp":
+cdef extern from "<networkit/distance/AllSimplePaths.hpp>":
 
 	cdef cppclass _AllSimplePaths "NetworKit::AllSimplePaths":
 		_AllSimplePaths(_Graph G, node source, node target, count cutoff) except +
@@ -1669,7 +1669,7 @@ cdef class AllSimplePaths:
 
 
 
-cdef extern from "../include/networkit/distance/APSP.hpp":
+cdef extern from "<networkit/distance/APSP.hpp>":
 
 	cdef cppclass _APSP "NetworKit::APSP"(_Algorithm):
 		_APSP(_Graph G) except +
@@ -1724,7 +1724,7 @@ cdef class APSP(Algorithm):
 		"""
 		return (<_APSP*>(self._this)).getDistance(u, v)
 
-cdef extern from "../include/networkit/distance/DynAPSP.hpp":
+cdef extern from "<networkit/distance/DynAPSP.hpp>":
 
 	cdef cppclass _DynAPSP "NetworKit::DynAPSP"(_APSP):
 		_DynAPSP(_Graph G) except +
@@ -1768,7 +1768,7 @@ cdef class DynAPSP(APSP):
 			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
 		(<_DynAPSP*>(self._this)).updateBatch(_batch)
 
-cdef extern from "../include/networkit/graph/SpanningForest.hpp":
+cdef extern from "<networkit/graph/SpanningForest.hpp>":
 
 	cdef cppclass _SpanningForest "NetworKit::SpanningForest":
 		_SpanningForest(_Graph) except +
@@ -1798,7 +1798,7 @@ cdef class SpanningForest:
 	def generate(self):
 		return Graph().setThis(self._this.generate())
 
-cdef extern from "../include/networkit/graph/UnionMaximumSpanningForest.hpp":
+cdef extern from "<networkit/graph/UnionMaximumSpanningForest.hpp>":
 
 	cdef cppclass _UnionMaximumSpanningForest "NetworKit::UnionMaximumSpanningForest"(_Algorithm):
 		_UnionMaximumSpanningForest(_Graph) except +
@@ -1884,7 +1884,7 @@ cdef class UnionMaximumSpanningForest(Algorithm):
 		else:
 			return (<_UnionMaximumSpanningForest*>(self._this)).inUMSF(u, v)
 
-cdef extern from "../include/networkit/graph/RandomMaximumSpanningForest.hpp":
+cdef extern from "<networkit/graph/RandomMaximumSpanningForest.hpp>":
 
 	cdef cppclass _RandomMaximumSpanningForest "NetworKit::RandomMaximumSpanningForest"(_Algorithm):
 		_RandomMaximumSpanningForest(_Graph) except +
@@ -1971,7 +1971,7 @@ cdef class RandomMaximumSpanningForest(Algorithm):
 		else:
 			return (<_RandomMaximumSpanningForest*>(self._this)).inMSF(u, v)
 
-cdef extern from "../include/networkit/independentset/Luby.hpp":
+cdef extern from "<networkit/independentset/Luby.hpp>":
 
 	cdef cppclass _Luby "NetworKit::Luby":
 		_Luby() except +
@@ -2009,7 +2009,7 @@ cdef class Luby:
 
 # Module: generators
 
-cdef extern from "../include/networkit/generators/BarabasiAlbertGenerator.hpp":
+cdef extern from "<networkit/generators/BarabasiAlbertGenerator.hpp>":
 
 	cdef cppclass _BarabasiAlbertGenerator "NetworKit::BarabasiAlbertGenerator"(_StaticGraphGenerator):
 		_BarabasiAlbertGenerator() except +
@@ -2050,7 +2050,7 @@ cdef class BarabasiAlbertGenerator(StaticGraphGenerator):
 		return cls(nMax=scale * n, k=k, n0=k)
 
 
-cdef extern from "../include/networkit/generators/PubWebGenerator.hpp":
+cdef extern from "<networkit/generators/PubWebGenerator.hpp>":
 
 	cdef cppclass _PubWebGenerator "NetworKit::PubWebGenerator"(_StaticGraphGenerator):
 		_PubWebGenerator(count numNodes, count numberOfDenseAreas, float neighborhoodRadius, count maxNumberOfNeighbors) except +
@@ -2089,7 +2089,7 @@ cdef class PubWebGenerator(StaticGraphGenerator):
 	def __cinit__(self, numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors):
 		self._this = new _PubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
 
-cdef extern from "../include/networkit/generators/ErdosRenyiGenerator.hpp":
+cdef extern from "<networkit/generators/ErdosRenyiGenerator.hpp>":
 
 	cdef cppclass _ErdosRenyiGenerator "NetworKit::ErdosRenyiGenerator"(_StaticGraphGenerator):
 		_ErdosRenyiGenerator(count nNodes, double prob, bool_t directed) except +
@@ -2126,7 +2126,7 @@ cdef class ErdosRenyiGenerator(StaticGraphGenerator):
 			p = (2 * m) / (scale * n * (n-1))
 		return cls(scale * n, p)
 
-cdef extern from "../include/networkit/generators/DorogovtsevMendesGenerator.hpp":
+cdef extern from "<networkit/generators/DorogovtsevMendesGenerator.hpp>":
 
 	cdef cppclass _DorogovtsevMendesGenerator "NetworKit::DorogovtsevMendesGenerator"(_StaticGraphGenerator):
 		_DorogovtsevMendesGenerator(count nNodes) except +
@@ -2152,7 +2152,7 @@ cdef class DorogovtsevMendesGenerator(StaticGraphGenerator):
 		return cls(scale * G.numberOfNodes())
 
 
-cdef extern from "../include/networkit/generators/RegularRingLatticeGenerator.hpp":
+cdef extern from "<networkit/generators/RegularRingLatticeGenerator.hpp>":
 
 	cdef cppclass _RegularRingLatticeGenerator "NetworKit::RegularRingLatticeGenerator"(_StaticGraphGenerator):
 		_RegularRingLatticeGenerator(count nNodes, count nNeighbors) except +
@@ -2175,7 +2175,7 @@ cdef class RegularRingLatticeGenerator(StaticGraphGenerator):
 		self._this = new _RegularRingLatticeGenerator(nNodes, nNeighbors)
 
 
-cdef extern from "../include/networkit/generators/WattsStrogatzGenerator.hpp":
+cdef extern from "<networkit/generators/WattsStrogatzGenerator.hpp>":
 
 	cdef cppclass _WattsStrogatzGenerator "NetworKit::WattsStrogatzGenerator"(_StaticGraphGenerator):
 		_WattsStrogatzGenerator(count nNodes, count nNeighbors, double p) except +
@@ -2201,7 +2201,7 @@ cdef class WattsStrogatzGenerator(StaticGraphGenerator):
 		self._this = new _WattsStrogatzGenerator(nNodes, nNeighbors, p)
 
 
-cdef extern from "../include/networkit/generators/ClusteredRandomGraphGenerator.hpp":
+cdef extern from "<networkit/generators/ClusteredRandomGraphGenerator.hpp>":
 
 	cdef cppclass _ClusteredRandomGraphGenerator "NetworKit::ClusteredRandomGraphGenerator"(_StaticGraphGenerator):
 		_ClusteredRandomGraphGenerator(count, count, double, double) except +
@@ -2243,7 +2243,7 @@ cdef class ClusteredRandomGraphGenerator(StaticGraphGenerator):
 		return Partition().setThis((<_ClusteredRandomGraphGenerator*>(self._this)).getCommunities())
 
 
-cdef extern from "../include/networkit/generators/ChungLuGenerator.hpp":
+cdef extern from "<networkit/generators/ChungLuGenerator.hpp>":
 
 	cdef cppclass _ChungLuGenerator "NetworKit::ChungLuGenerator"(_StaticGraphGenerator):
 		_ChungLuGenerator(vector[count] degreeSequence) except +
@@ -2270,7 +2270,7 @@ cdef class ChungLuGenerator(StaticGraphGenerator):
 		return cls(degSeq * scale)
 
 
-cdef extern from "../include/networkit/generators/HavelHakimiGenerator.hpp":
+cdef extern from "<networkit/generators/HavelHakimiGenerator.hpp>":
 
 	cdef cppclass _HavelHakimiGenerator "NetworKit::HavelHakimiGenerator"(_StaticGraphGenerator):
 		_HavelHakimiGenerator(vector[count] degreeSequence, bool_t ignoreIfRealizable) except +
@@ -2311,7 +2311,7 @@ cdef class HavelHakimiGenerator(StaticGraphGenerator):
 		degSeq = DegreeCentrality(G).run().scores()
 		return cls(degSeq * scale, ignoreIfRealizable=True)
 
-cdef extern from "../include/networkit/generators/EdgeSwitchingMarkovChainGenerator.hpp":
+cdef extern from "<networkit/generators/EdgeSwitchingMarkovChainGenerator.hpp>":
 
 	cdef cppclass _EdgeSwitchingMarkovChainGenerator "NetworKit::EdgeSwitchingMarkovChainGenerator"(_StaticGraphGenerator):
 		_EdgeSwitchingMarkovChainGenerator(vector[count] degreeSequence, bool_t ignoreIfRealizable) except +
@@ -2358,7 +2358,7 @@ cdef class EdgeSwitchingMarkovChainGenerator(StaticGraphGenerator):
 		return cls(degSeq * scale, ignoreIfRealizable=True)
 
 
-cdef extern from "../include/networkit/generators/HyperbolicGenerator.hpp":
+cdef extern from "<networkit/generators/HyperbolicGenerator.hpp>":
 
 	cdef cppclass _HyperbolicGenerator "NetworKit::HyperbolicGenerator"(_StaticGraphGenerator):
 		# TODO: revert to count when cython issue fixed
@@ -2419,7 +2419,7 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		return cls(n * scale, k, gamma)
 
 
-cdef extern from "../include/networkit/generators/MocnikGenerator.hpp":
+cdef extern from "<networkit/generators/MocnikGenerator.hpp>":
 
 	cdef cppclass _MocnikGenerator "NetworKit::MocnikGenerator"(_StaticGraphGenerator):
 		_MocnikGenerator(count dim, count n, double k, bool_t weighted) except +
@@ -2483,7 +2483,7 @@ cdef class MocnikGenerator(StaticGraphGenerator):
 		else:
 			pass
 
-cdef extern from "../include/networkit/generators/MocnikGeneratorBasic.hpp":
+cdef extern from "<networkit/generators/MocnikGeneratorBasic.hpp>":
 
 	cdef cppclass _MocnikGeneratorBasic "NetworKit::MocnikGeneratorBasic"(_StaticGraphGenerator):
 		_MocnikGeneratorBasic(count dim, count n, double k) except +
@@ -2522,7 +2522,7 @@ cdef class MocnikGeneratorBasic(StaticGraphGenerator):
 		self._this = new _MocnikGeneratorBasic(dim, n, k)
 
 
-cdef extern from "../include/networkit/generators/RmatGenerator.hpp":
+cdef extern from "<networkit/generators/RmatGenerator.hpp>":
 
 	cdef cppclass _RmatGenerator "NetworKit::RmatGenerator"(_StaticGraphGenerator):
 		_RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d, bool_t weighted, count reduceNodes) except +
@@ -2606,7 +2606,7 @@ cdef class RmatGenerator(StaticGraphGenerator):
 		print("random nodes to delete to achieve target node count: ", reduceNodes)
 		return RmatGenerator(scaleParameter, edgeFactor, a, b, c, d, False, reduceNodes)
 
-cdef extern from "../include/networkit/generators/PowerlawDegreeSequence.hpp":
+cdef extern from "<networkit/generators/PowerlawDegreeSequence.hpp>":
 
 	cdef cppclass _PowerlawDegreeSequence "NetworKit::PowerlawDegreeSequence":
 		_PowerlawDegreeSequence(count minDeg, count maxDeg, double gamma) except +
@@ -2773,7 +2773,7 @@ cdef class PowerlawDegreeSequence:
 		"""
 		return self._this.getDegree()
 
-cdef extern from "../include/networkit/generators/LFRGenerator.hpp":
+cdef extern from "<networkit/generators/LFRGenerator.hpp>":
 
 	cdef cppclass _LFRGenerator "NetworKit::LFRGenerator"(_Algorithm):
 		_LFRGenerator(count n) except +
@@ -3047,7 +3047,7 @@ cdef class LFRGenerator(Algorithm):
 		return gen
 
 
-# cdef extern from "../include/networkit/generators/MultiscaleGenerator.hpp":
+# cdef extern from "<networkit/generators/MultiscaleGenerator.hpp>":
 
 # 	cdef cppclass _MultiscaleGenerator "NetworKit::MultiscaleGenerator":
 # 		_MultiscaleGenerator(_Graph O) except +
@@ -3077,13 +3077,13 @@ cdef class LFRGenerator(Algorithm):
 
 # Module: graphio
 
-cdef extern from "../include/networkit/io/GraphReader.hpp":
+cdef extern from "<networkit/io/GraphReader.hpp>":
 
 	cdef cppclass _GraphReader "NetworKit::GraphReader":
 		_GraphReader() nogil except +
 		_Graph read(string path) nogil except +
 
-cdef extern from "../include/networkit/io/GraphReader.hpp" namespace "NetworKit::GraphReader":
+cdef extern from "<networkit/io/GraphReader.hpp>" namespace "NetworKit::GraphReader":
 
 	cdef enum _MultipleEdgesHandling "NetworKit::GraphReader::MultipleEdgesHandling":
 		DISCARD_EDGES,
@@ -3120,7 +3120,7 @@ cdef class GraphReader:
 			result = move(self._this.read(cpath)) # extra move in order to avoid copying the internal variable that is used by Cython
 		return Graph(0).setThis(result)
 
-cdef extern from "../include/networkit/io/METISGraphReader.hpp":
+cdef extern from "<networkit/io/METISGraphReader.hpp>":
 
 	cdef cppclass _METISGraphReader "NetworKit::METISGraphReader" (_GraphReader):
 		_METISGraphReader() nogil except +
@@ -3133,7 +3133,7 @@ cdef class METISGraphReader(GraphReader):
 	def __cinit__(self):
 		self._this = new _METISGraphReader()
 
-cdef extern from "../include/networkit/io/GraphToolBinaryReader.hpp":
+cdef extern from "<networkit/io/GraphToolBinaryReader.hpp>":
 
 	cdef cppclass _GraphToolBinaryReader "NetworKit::GraphToolBinaryReader" (_GraphReader):
 		_GraphToolBinaryReader() except +
@@ -3145,7 +3145,7 @@ cdef class GraphToolBinaryReader(GraphReader):
 	def __cinit__(self):
 		self._this = new _GraphToolBinaryReader()
 
-cdef extern from "../include/networkit/io/ThrillGraphBinaryReader.hpp":
+cdef extern from "<networkit/io/ThrillGraphBinaryReader.hpp>":
 
 	cdef cppclass _ThrillGraphBinaryReader "NetworKit::ThrillGraphBinaryReader" (_GraphReader):
 		_ThrillGraphBinaryReader(count n) except +
@@ -3192,7 +3192,7 @@ cdef class ThrillGraphBinaryReader(GraphReader):
 
 		return Graph(0).setThis(result)
 
-cdef extern from "../include/networkit/io/ThrillGraphBinaryWriter.hpp":
+cdef extern from "<networkit/io/ThrillGraphBinaryWriter.hpp>":
 
 	cdef cppclass _ThrillGraphBinaryWriter "NetworKit::ThrillGraphBinaryWriter":
 		void write(_Graph G, string path) nogil except +
@@ -3221,7 +3221,7 @@ cdef class ThrillGraphBinaryWriter:
 			self._this.write(G._this, c_path)
 		return self
 
-cdef extern from "../include/networkit/io/EdgeListReader.hpp":
+cdef extern from "<networkit/io/EdgeListReader.hpp>":
 
 	cdef cppclass _EdgeListReader "NetworKit::EdgeListReader"(_GraphReader):
 		_EdgeListReader() except +
@@ -3244,7 +3244,7 @@ cdef class EdgeListReader(GraphReader):
 			result[(elem.first).decode("utf-8")] = elem.second
 		return result
 
-cdef extern from "../include/networkit/io/KONECTGraphReader.hpp":
+cdef extern from "<networkit/io/KONECTGraphReader.hpp>":
 
 	cdef cppclass _KONECTGraphReader "NetworKit::KONECTGraphReader"(_GraphReader):
 		_KONECTGraphReader() except +
@@ -3258,7 +3258,7 @@ cdef class KONECTGraphReader(GraphReader):
 	def __cinit__(self, remapNodes = False, handlingmethod = MultipleEdgesHandling.DiscardEdges):
 		self._this = new _KONECTGraphReader(remapNodes, handlingmethod)
 
-cdef extern from "../include/networkit/io/GMLGraphReader.hpp":
+cdef extern from "<networkit/io/GMLGraphReader.hpp>":
 
 	cdef cppclass _GMLGraphReader "NetworKit::GMLGraphReader"(_GraphReader):
 		_GMLGraphReader() except +
@@ -3271,7 +3271,7 @@ cdef class GMLGraphReader(GraphReader):
 	def __cinit__(self):
 		self._this = new _GMLGraphReader()
 
-cdef extern from "../include/networkit/io/METISGraphWriter.hpp":
+cdef extern from "<networkit/io/METISGraphWriter.hpp>":
 
 	cdef cppclass _METISGraphWriter "NetworKit::METISGraphWriter":
 		_METISGraphWriter() except +
@@ -3288,7 +3288,7 @@ cdef class METISGraphWriter:
 		with nogil:
 			self._this.write(G._this, cpath)
 
-cdef extern from "../include/networkit/io/GraphToolBinaryWriter.hpp":
+cdef extern from "<networkit/io/GraphToolBinaryWriter.hpp>":
 
 	cdef cppclass _GraphToolBinaryWriter "NetworKit::GraphToolBinaryWriter":
 		_GraphToolBinaryWriter() except +
@@ -3308,7 +3308,7 @@ cdef class GraphToolBinaryWriter:
 			self._this.write(G._this, cpath)
 
 
-cdef extern from "../include/networkit/io/DotGraphWriter.hpp":
+cdef extern from "<networkit/io/DotGraphWriter.hpp>":
 
 	cdef cppclass _DotGraphWriter "NetworKit::DotGraphWriter":
 		_DotGraphWriter() except +
@@ -3326,7 +3326,7 @@ cdef class DotGraphWriter:
 			self._this.write(G._this, cpath)
 
 
-cdef extern from "../include/networkit/io/GMLGraphWriter.hpp":
+cdef extern from "<networkit/io/GMLGraphWriter.hpp>":
 
 	cdef cppclass _GMLGraphWriter "NetworKit::GMLGraphWriter":
 		_GMLGraphWriter() except +
@@ -3345,7 +3345,7 @@ cdef class GMLGraphWriter:
 			self._this.write(G._this, cpath)
 
 
-cdef extern from "../include/networkit/io/EdgeListWriter.hpp":
+cdef extern from "<networkit/io/EdgeListWriter.hpp>":
 
 	cdef cppclass _EdgeListWriter "NetworKit::EdgeListWriter":
 		_EdgeListWriter() except +
@@ -3378,7 +3378,7 @@ cdef class EdgeListWriter:
 
 
 
-cdef extern from "../include/networkit/io/LineFileReader.hpp":
+cdef extern from "<networkit/io/LineFileReader.hpp>":
 
 	cdef cppclass _LineFileReader "NetworKit::LineFileReader":
 		_LineFileReader() except +
@@ -3393,7 +3393,7 @@ cdef class LineFileReader:
 		return self._this.read(stdstring(path))
 
 
-cdef extern from "../include/networkit/io/SNAPGraphWriter.hpp":
+cdef extern from "<networkit/io/SNAPGraphWriter.hpp>":
 
 	cdef cppclass _SNAPGraphWriter "NetworKit::SNAPGraphWriter":
 		_SNAPGraphWriter() except +
@@ -3411,7 +3411,7 @@ cdef class SNAPGraphWriter:
 			self._this.write(G._this, cpath)
 
 
-cdef extern from "../include/networkit/io/SNAPGraphReader.hpp":
+cdef extern from "<networkit/io/SNAPGraphReader.hpp>":
 
 	cdef cppclass _SNAPGraphReader "NetworKit::SNAPGraphReader"(_GraphReader):
 		_SNAPGraphReader() except +
@@ -3426,7 +3426,7 @@ cdef class SNAPGraphReader(GraphReader):
 
 
 
-cdef extern from "../include/networkit/io/PartitionReader.hpp":
+cdef extern from "<networkit/io/PartitionReader.hpp>":
 
 	cdef cppclass _PartitionReader "NetworKit::PartitionReader":
 		_PartitionReader() except +
@@ -3443,7 +3443,7 @@ cdef class PartitionReader:
 		return Partition().setThis(self._this.read(stdstring(path)))
 
 
-cdef extern from "../include/networkit/io/PartitionWriter.hpp":
+cdef extern from "<networkit/io/PartitionWriter.hpp>":
 
 	cdef cppclass _PartitionWriter "NetworKit::PartitionWriter":
 		_PartitionWriter() except +
@@ -3461,7 +3461,7 @@ cdef class PartitionWriter:
 		with nogil:
 			self._this.write(zeta._this, cpath)
 
-cdef extern from "../include/networkit/io/BinaryPartitionReader.hpp":
+cdef extern from "<networkit/io/BinaryPartitionReader.hpp>":
 
 	cdef cppclass _BinaryPartitionReader "NetworKit::BinaryPartitionReader":
 		_BinaryPartitionReader() except +
@@ -3488,7 +3488,7 @@ cdef class BinaryPartitionReader:
 	def read(self, path):
 		return Partition().setThis(self._this.read(stdstring(path)))
 
-cdef extern from "../include/networkit/io/BinaryPartitionWriter.hpp":
+cdef extern from "<networkit/io/BinaryPartitionWriter.hpp>":
 
 	cdef cppclass _BinaryPartitionWriter "NetworKit::BinaryPartitionWriter":
 		_BinaryPartitionWriter() except +
@@ -3527,7 +3527,7 @@ cdef class BinaryPartitionWriter:
 
 		return self
 
-cdef extern from "../include/networkit/io/EdgeListPartitionReader.hpp":
+cdef extern from "<networkit/io/EdgeListPartitionReader.hpp>":
 
 	cdef cppclass _EdgeListPartitionReader "NetworKit::EdgeListPartitionReader":
 		_EdgeListPartitionReader() except +
@@ -3546,7 +3546,7 @@ cdef class EdgeListPartitionReader:
 	def read(self, path):
 		return Partition().setThis(self._this.read(stdstring(path)))
 
-cdef extern from "../include/networkit/io/BinaryEdgeListPartitionReader.hpp":
+cdef extern from "<networkit/io/BinaryEdgeListPartitionReader.hpp>":
 
 	cdef cppclass _BinaryEdgeListPartitionReader "NetworKit::BinaryEdgeListPartitionReader":
 		_BinaryEdgeListPartitionReader() except +
@@ -3598,7 +3598,7 @@ cdef class BinaryEdgeListPartitionReader:
 
 		return Partition().setThis(result)
 
-cdef extern from "../include/networkit/io/BinaryEdgeListPartitionWriter.hpp":
+cdef extern from "<networkit/io/BinaryEdgeListPartitionWriter.hpp>":
 
 	cdef cppclass _BinaryEdgeListPartitionWriter "NetworKit::BinaryEdgeListPartitionWriter":
 		_BinaryEdgeListPartitionWriter() except +
@@ -3637,7 +3637,7 @@ cdef class BinaryEdgeListPartitionWriter:
 
 		return self
 
-cdef extern from "../include/networkit/io/SNAPEdgeListPartitionReader.hpp":
+cdef extern from "<networkit/io/SNAPEdgeListPartitionReader.hpp>":
 
 	cdef cppclass _SNAPEdgeListPartitionReader "NetworKit::SNAPEdgeListPartitionReader":
 		_SNAPEdgeListPartitionReader() except +
@@ -3659,7 +3659,7 @@ cdef class SNAPEdgeListPartitionReader:
 #		return Partition().setThis(self._this.readWithInfo(stdstring(path),nNodes))
 
 #not existing yet, maybe in the future?
-#cdef extern from "../include/networkit/io/EdgeListPartitionWriter.hpp":
+#cdef extern from "<networkit/io/EdgeListPartitionWriter.hpp>":
 
 #	cdef cppclass _EdgeListPartitionWriter "NetworKit::EdgeListPartitionWriter":
 #		_EdgeListPartitionWriter() except +
@@ -3675,7 +3675,7 @@ cdef class SNAPEdgeListPartitionReader:
 #	def Write(self, Partition zeta, path):
 #		self._this.write(zeta._this, stdstring(path))
 
-cdef extern from "../include/networkit/io/CoverReader.hpp":
+cdef extern from "<networkit/io/CoverReader.hpp>":
 
 	cdef cppclass _CoverReader "NetworKit::CoverReader":
 		_CoverReader() except +
@@ -3690,7 +3690,7 @@ cdef class CoverReader:
 	def read(self, path, Graph G):
 		return Cover().setThis(self._this.read(stdstring(path), G._this))
 
-cdef extern from "../include/networkit/io/CoverWriter.hpp":
+cdef extern from "<networkit/io/CoverWriter.hpp>":
 
 	cdef cppclass _CoverWriter "NetworKit::CoverWriter":
 		_CoverWriter() except +
@@ -3708,7 +3708,7 @@ cdef class CoverWriter:
 		with nogil:
 			self._this.write(zeta._this, cpath)
 
-cdef extern from "../include/networkit/io/EdgeListCoverReader.hpp":
+cdef extern from "<networkit/io/EdgeListCoverReader.hpp>":
 
 	cdef cppclass _EdgeListCoverReader "NetworKit::EdgeListCoverReader":
 		_EdgeListCoverReader() except +
@@ -3731,7 +3731,7 @@ cdef class EdgeListCoverReader:
 
 # Module: structures
 #
-cdef extern from "../include/networkit/structures/Partition.hpp":
+cdef extern from "<networkit/structures/Partition.hpp>":
 
 	cdef cppclass _Partition "NetworKit::Partition":
 		_Partition() except +
@@ -4120,7 +4120,7 @@ cdef class Partition:
 				selfToOther[selfSubset] = other[i]
 		return True
 
-cdef extern from "../include/networkit/structures/Cover.hpp":
+cdef extern from "<networkit/structures/Cover.hpp>":
 
 	cdef cppclass _Cover "NetworKit::Cover":
 		_Cover() except +
@@ -4392,7 +4392,7 @@ ctypedef fused PartitionCover:
 	Partition
 	Cover
 
-cdef extern from "../include/networkit/community/ClusteringGenerator.hpp":
+cdef extern from "<networkit/community/ClusteringGenerator.hpp>":
 
 	cdef cppclass _ClusteringGenerator "NetworKit::ClusteringGenerator":
 		_ClusteringGenerator() except +
@@ -4484,7 +4484,7 @@ cdef class ClusteringGenerator:
 		"""
 		return Partition().setThis(self._this.makeNoncontinuousBalancedClustering(G._this, k))
 
-cdef extern from "../include/networkit/community/GraphClusteringTools.hpp" namespace "NetworKit::GraphClusteringTools":
+cdef extern from "<networkit/community/GraphClusteringTools.hpp>" namespace "NetworKit::GraphClusteringTools":
 
 	float getImbalance(_Partition zeta) except +
 	_Graph communicationGraph(_Graph graph, _Partition zeta) except +
@@ -4517,7 +4517,7 @@ cdef class GraphClusteringTools:
 	def equalClustering(Partition zeta, Partition eta, Graph G):
 		return equalClusterings(zeta._this, eta._this, G._this)
 
-cdef extern from "../include/networkit/graph/GraphTools.hpp" namespace "NetworKit::GraphTools":
+cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphTools":
 
 	_Graph getCompactedGraph(_Graph G, unordered_map[node,node]) nogil except +
 	unordered_map[node,node] getContinuousNodeIds(_Graph G) nogil except +
@@ -4561,7 +4561,7 @@ cdef class GraphTools:
 		return result
 
 
-cdef extern from "../include/networkit/community/PartitionIntersection.hpp":
+cdef extern from "<networkit/community/PartitionIntersection.hpp>":
 
 	cdef cppclass _PartitionIntersection "NetworKit::PartitionIntersection":
 		_PartitionIntersection() except +
@@ -4589,7 +4589,7 @@ cdef class PartitionIntersection:
 		"""
 		return Partition().setThis(self._this.calculate(zeta._this, eta._this))
 
-cdef extern from "../include/networkit/community/Coverage.hpp":
+cdef extern from "<networkit/community/Coverage.hpp>":
 
 	cdef cppclass _Coverage "NetworKit::Coverage":
 		_Coverage() except +
@@ -4603,7 +4603,7 @@ cdef class Coverage:
 		return self._this.getQuality(zeta._this, G._this)
 
 
-cdef extern from "../include/networkit/community/EdgeCut.hpp":
+cdef extern from "<networkit/community/EdgeCut.hpp>":
 
 	cdef cppclass _EdgeCut "NetworKit::EdgeCut":
 		_EdgeCut() except +
@@ -4617,7 +4617,7 @@ cdef class EdgeCut:
 		return self._this.getQuality(zeta._this, G._this)
 
 
-cdef extern from "../include/networkit/community/Modularity.hpp":
+cdef extern from "<networkit/community/Modularity.hpp>":
 
 	cdef cppclass _Modularity "NetworKit::Modularity":
 		_Modularity() except +
@@ -4644,7 +4644,7 @@ cdef class Modularity:
 			ret = self._this.getQuality(zeta._this, G._this)
 		return ret
 
-cdef extern from "../include/networkit/community/HubDominance.hpp":
+cdef extern from "<networkit/community/HubDominance.hpp>":
 
 	cdef cppclass _HubDominance "NetworKit::HubDominance":
 		_HubDominance() except +
@@ -4688,7 +4688,7 @@ cdef class HubDominance:
 		return self._this.getQuality(zeta._this, G._this)
 
 
-cdef extern from "../include/networkit/community/CommunityDetectionAlgorithm.hpp":
+cdef extern from "<networkit/community/CommunityDetectionAlgorithm.hpp>":
 
 	cdef cppclass _CommunityDetectionAlgorithm "NetworKit::CommunityDetectionAlgorithm"(_Algorithm):
 		_CommunityDetectionAlgorithm(const _Graph &_G)
@@ -4715,7 +4715,7 @@ cdef class CommunityDetector(Algorithm):
 			raise RuntimeError("Error, object not properly initialized")
 		return Partition().setThis((<_CommunityDetectionAlgorithm*>(self._this)).getPartition())
 
-cdef extern from "../include/networkit/community/PLP.hpp":
+cdef extern from "<networkit/community/PLP.hpp>":
 
 	cdef cppclass _PLP "NetworKit::PLP"(_CommunityDetectionAlgorithm):
 		_PLP(_Graph _G, count updateThreshold, count maxIterations) except +
@@ -4780,7 +4780,7 @@ cdef class PLP(CommunityDetector):
 		"""
 		return (<_PLP*>(self._this)).getTiming()
 
-cdef extern from "../include/networkit/community/LPDegreeOrdered.hpp":
+cdef extern from "<networkit/community/LPDegreeOrdered.hpp>":
 
 	cdef cppclass _LPDegreeOrdered "NetworKit::LPDegreeOrdered"(_CommunityDetectionAlgorithm):
 		_LPDegreeOrdered(_Graph _G) except +
@@ -4805,14 +4805,14 @@ cdef class LPDegreeOrdered(CommunityDetector):
 
 
 
-cdef extern from "../include/networkit/community/PLM.hpp":
+cdef extern from "<networkit/community/PLM.hpp>":
 
 	cdef cppclass _PLM "NetworKit::PLM"(_CommunityDetectionAlgorithm):
 		_PLM(_Graph _G) except +
 		_PLM(_Graph _G, bool_t refine, double gamma, string par, count maxIter, bool_t turbo, bool_t recurse) except +
 		map[string, vector[count]] getTiming() except +
 
-cdef extern from "../include/networkit/community/PLM.hpp" namespace "NetworKit::PLM":
+cdef extern from "<networkit/community/PLM.hpp>" namespace "NetworKit::PLM":
 
 	pair[_Graph, vector[node]] PLM_coarsen "NetworKit::PLM::coarsen" (const _Graph& G, const _Partition& zeta) except +
 	_Partition PLM_prolong "NetworKit::PLM::prolong"(const _Graph& Gcoarse, const _Partition& zetaCoarse, const _Graph& Gfine, vector[node] nodeToMetaNode) except +
@@ -4861,13 +4861,13 @@ cdef class PLM(CommunityDetector):
 	def prolong(Graph Gcoarse, Partition zetaCoarse, Graph Gfine, vector[node] nodeToMetaNode):
 		return Partition().setThis(PLM_prolong(Gcoarse._this, zetaCoarse._this, Gfine._this, nodeToMetaNode))
 
-cdef extern from "../include/networkit/community/CutClustering.hpp":
+cdef extern from "<networkit/community/CutClustering.hpp>":
 
 	cdef cppclass _CutClustering "NetworKit::CutClustering"(_CommunityDetectionAlgorithm):
 		_CutClustering(_Graph _G) except +
 		_CutClustering(_Graph _G, edgeweight alpha) except +
 
-cdef extern from "../include/networkit/community/CutClustering.hpp" namespace "NetworKit::CutClustering":
+cdef extern from "<networkit/community/CutClustering.hpp>" namespace "NetworKit::CutClustering":
 
 	map[double, _Partition] CutClustering_getClusterHierarchy "NetworKit::CutClustering::getClusterHierarchy"(const _Graph& G) nogil except +
 
@@ -4924,7 +4924,7 @@ cdef class DissimilarityMeasure:
 	pass
 
 
-cdef extern from "../include/networkit/community/NodeStructuralRandMeasure.hpp":
+cdef extern from "<networkit/community/NodeStructuralRandMeasure.hpp>":
 
 	cdef cppclass _NodeStructuralRandMeasure "NetworKit::NodeStructuralRandMeasure":
 		_NodeStructuralRandMeasure() except +
@@ -4943,7 +4943,7 @@ cdef class NodeStructuralRandMeasure(DissimilarityMeasure):
 		return ret
 
 
-cdef extern from "../include/networkit/community/GraphStructuralRandMeasure.hpp":
+cdef extern from "<networkit/community/GraphStructuralRandMeasure.hpp>":
 
 	cdef cppclass _GraphStructuralRandMeasure "NetworKit::GraphStructuralRandMeasure":
 		_GraphStructuralRandMeasure() except +
@@ -4962,7 +4962,7 @@ cdef class GraphStructuralRandMeasure(DissimilarityMeasure):
 		return ret
 
 
-cdef extern from "../include/networkit/community/JaccardMeasure.hpp":
+cdef extern from "<networkit/community/JaccardMeasure.hpp>":
 
 	cdef cppclass _JaccardMeasure "NetworKit::JaccardMeasure":
 		_JaccardMeasure() except +
@@ -4979,7 +4979,7 @@ cdef class JaccardMeasure(DissimilarityMeasure):
 			ret = self._this.getDissimilarity(G._this, first._this, second._this)
 		return ret
 
-cdef extern from "../include/networkit/community/NMIDistance.hpp":
+cdef extern from "<networkit/community/NMIDistance.hpp>":
 
 	cdef cppclass _NMIDistance "NetworKit::NMIDistance":
 		_NMIDistance() except +
@@ -4997,7 +4997,7 @@ cdef class NMIDistance(DissimilarityMeasure):
 			ret = self._this.getDissimilarity(G._this, first._this, second._this)
 		return ret
 
-cdef extern from "../include/networkit/community/AdjustedRandMeasure.hpp":
+cdef extern from "<networkit/community/AdjustedRandMeasure.hpp>":
 
 	cdef cppclass _AdjustedRandMeasure "NetworKit::AdjustedRandMeasure":
 		double getDissimilarity(_Graph G, _Partition first, _Partition second) nogil except +
@@ -5033,7 +5033,7 @@ cdef class AdjustedRandMeasure(DissimilarityMeasure):
 			ret = self._this.getDissimilarity(G._this, first._this, second._this)
 		return ret
 
-cdef extern from "../include/networkit/community/LocalCommunityEvaluation.hpp":
+cdef extern from "<networkit/community/LocalCommunityEvaluation.hpp>":
 
 	cdef cppclass _LocalCommunityEvaluation "NetworKit::LocalCommunityEvaluation"(_Algorithm):
 		double getWeightedAverage() except +
@@ -5142,7 +5142,7 @@ cdef class LocalCommunityEvaluation(Algorithm):
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_LocalCommunityEvaluation*>(self._this)).isSmallBetter()
 
-cdef extern from "../include/networkit/community/LocalPartitionEvaluation.hpp":
+cdef extern from "<networkit/community/LocalPartitionEvaluation.hpp>":
 
 	cdef cppclass _LocalPartitionEvaluation "NetworKit::LocalPartitionEvaluation"(_LocalCommunityEvaluation):
 		pass
@@ -5169,7 +5169,7 @@ cdef class LocalPartitionEvaluation(LocalCommunityEvaluation):
 		self._P = None
 
 
-cdef extern from "../include/networkit/community/LocalCoverEvaluation.hpp":
+cdef extern from "<networkit/community/LocalCoverEvaluation.hpp>":
 
 	cdef cppclass _LocalCoverEvaluation "NetworKit::LocalCoverEvaluation"(_LocalCommunityEvaluation):
 		pass
@@ -5196,7 +5196,7 @@ cdef class LocalCoverEvaluation(LocalCommunityEvaluation):
 		self._G = None
 		self._C = None
 
-cdef extern from "../include/networkit/community/IntrapartitionDensity.hpp":
+cdef extern from "<networkit/community/IntrapartitionDensity.hpp>":
 
 	cdef cppclass _IntrapartitionDensity "NetworKit::IntrapartitionDensity"(_LocalPartitionEvaluation):
 		_IntrapartitionDensity(_Graph G, _Partition P) except +
@@ -5230,7 +5230,7 @@ cdef class IntrapartitionDensity(LocalPartitionEvaluation):
 		return (<_IntrapartitionDensity*>(self._this)).getGlobal()
 
 
-cdef extern from "../include/networkit/community/IsolatedInterpartitionConductance.hpp":
+cdef extern from "<networkit/community/IsolatedInterpartitionConductance.hpp>":
 
 	cdef cppclass _IsolatedInterpartitionConductance "NetworKit::IsolatedInterpartitionConductance"(_LocalPartitionEvaluation):
 		_IsolatedInterpartitionConductance(_Graph G, _Partition P) except +
@@ -5261,7 +5261,7 @@ cdef class IsolatedInterpartitionConductance(LocalPartitionEvaluation):
 	def __cinit__(self):
 		self._this = new _IsolatedInterpartitionConductance(self._G._this, self._P._this)
 
-cdef extern from "../include/networkit/community/IsolatedInterpartitionExpansion.hpp":
+cdef extern from "<networkit/community/IsolatedInterpartitionExpansion.hpp>":
 
 	cdef cppclass _IsolatedInterpartitionExpansion "NetworKit::IsolatedInterpartitionExpansion"(_LocalPartitionEvaluation):
 		_IsolatedInterpartitionExpansion(_Graph G, _Partition P) except +
@@ -5292,7 +5292,7 @@ cdef class IsolatedInterpartitionExpansion(LocalPartitionEvaluation):
 	def __cinit__(self):
 		self._this = new _IsolatedInterpartitionExpansion(self._G._this, self._P._this)
 
-cdef extern from "../include/networkit/community/CoverHubDominance.hpp":
+cdef extern from "<networkit/community/CoverHubDominance.hpp>":
 
 	cdef cppclass _CoverHubDominance "NetworKit::CoverHubDominance"(_LocalCoverEvaluation):
 		_CoverHubDominance(_Graph G, _Cover C) except +
@@ -5321,7 +5321,7 @@ cdef class CoverHubDominance(LocalCoverEvaluation):
 	def __cinit__(self):
 		self._this = new _CoverHubDominance(self._G._this, self._C._this)
 
-cdef extern from "../include/networkit/community/PartitionHubDominance.hpp":
+cdef extern from "<networkit/community/PartitionHubDominance.hpp>":
 
 	cdef cppclass _PartitionHubDominance "NetworKit::PartitionHubDominance"(_LocalPartitionEvaluation):
 		_PartitionHubDominance(_Graph G, _Partition C) except +
@@ -5349,7 +5349,7 @@ cdef class PartitionHubDominance(LocalPartitionEvaluation):
 	def __cinit__(self):
 		self._this = new _PartitionHubDominance(self._G._this, self._P._this)
 
-cdef extern from "../include/networkit/community/PartitionFragmentation.hpp":
+cdef extern from "<networkit/community/PartitionFragmentation.hpp>":
 
 	cdef cppclass _PartitionFragmentation "NetworKit::PartitionFragmentation"(_LocalPartitionEvaluation):
 		_PartitionFragmentation(_Graph G, _Partition C) except +
@@ -5369,7 +5369,7 @@ cdef class PartitionFragmentation(LocalPartitionEvaluation):
 	def __cinit__(self):
 		self._this = new _PartitionFragmentation(self._G._this, self._P._this)
 
-cdef extern from "../include/networkit/community/StablePartitionNodes.hpp":
+cdef extern from "<networkit/community/StablePartitionNodes.hpp>":
 
 	cdef cppclass _StablePartitionNodes "NetworKit::StablePartitionNodes"(_LocalPartitionEvaluation):
 		_StablePartitionNodes(_Graph G, _Partition C) except +
@@ -5412,7 +5412,7 @@ cdef class StablePartitionNodes(LocalPartitionEvaluation):
 		return (<_StablePartitionNodes*>(self._this)).isStable(u)
 
 
-cdef extern from "../include/networkit/community/CoverF1Similarity.hpp":
+cdef extern from "<networkit/community/CoverF1Similarity.hpp>":
 
 	cdef cppclass _CoverF1Similarity "NetworKit::CoverF1Similarity"(_LocalCoverEvaluation):
 		_CoverF1Similarity(_Graph G, _Cover C, _Cover reference) except +
@@ -5453,7 +5453,7 @@ cdef class CoverF1Similarity(LocalCoverEvaluation):
 
 # Module: flows
 
-cdef extern from "../include/networkit/flow/EdmondsKarp.hpp":
+cdef extern from "<networkit/flow/EdmondsKarp.hpp>":
 
 	cdef cppclass _EdmondsKarp "NetworKit::EdmondsKarp":
 		_EdmondsKarp(const _Graph &graph, node source, node sink) except +
@@ -5552,7 +5552,7 @@ cdef class EdmondsKarp:
 
 # Module: properties
 
-cdef extern from "../include/networkit/components/ConnectedComponents.hpp":
+cdef extern from "<networkit/components/ConnectedComponents.hpp>":
 
 	cdef cppclass _ConnectedComponents "NetworKit::ConnectedComponents"(_Algorithm):
 		_ConnectedComponents(_Graph G) except +
@@ -5622,7 +5622,7 @@ cdef class ConnectedComponents(Algorithm):
 		"""
 		return (<_ConnectedComponents*>(self._this)).getComponents()
 
-cdef extern from "../include/networkit/components/ParallelConnectedComponents.hpp":
+cdef extern from "<networkit/components/ParallelConnectedComponents.hpp>":
 
 	cdef cppclass _ParallelConnectedComponents "NetworKit::ParallelConnectedComponents"(_Algorithm):
 		_ParallelConnectedComponents(_Graph G, bool_t coarsening) except +
@@ -5651,7 +5651,7 @@ cdef class ParallelConnectedComponents(Algorithm):
 		return (<_ParallelConnectedComponents*>(self._this)).componentOfNode(v)
 
 
-cdef extern from "../include/networkit/components/StronglyConnectedComponents.hpp":
+cdef extern from "<networkit/components/StronglyConnectedComponents.hpp>":
 
 	cdef cppclass _StronglyConnectedComponents "NetworKit::StronglyConnectedComponents":
 		_StronglyConnectedComponents(_Graph G, bool_t iterativeAlgo) except +
@@ -5712,7 +5712,7 @@ cdef class StronglyConnectedComponents:
 		return self._this.componentOfNode(v)
 
 
-cdef extern from "../include/networkit/components/WeaklyConnectedComponents.hpp":
+cdef extern from "<networkit/components/WeaklyConnectedComponents.hpp>":
 
 	cdef cppclass _WeaklyConnectedComponents "NetworKit::WeaklyConnectedComponents"(_Algorithm):
 		_WeaklyConnectedComponents(_Graph G) except +
@@ -5773,7 +5773,7 @@ cdef class WeaklyConnectedComponents(Algorithm):
 		return (<_WeaklyConnectedComponents*>(self._this)).getComponents()
 
 
-cdef extern from "../include/networkit/components/BiconnectedComponents.hpp":
+cdef extern from "<networkit/components/BiconnectedComponents.hpp>":
 
 	cdef cppclass _BiconnectedComponents "NetworKit::BiconnectedComponents"(_Algorithm):
 		_BiconnectedComponents(_Graph G) except +
@@ -5826,7 +5826,7 @@ cdef class BiconnectedComponents(Algorithm):
 		return (<_BiconnectedComponents*>(self._this)).getComponents()
 
 
-cdef extern from "../include/networkit/components/DynConnectedComponents.hpp":
+cdef extern from "<networkit/components/DynConnectedComponents.hpp>":
 
 	cdef cppclass _DynConnectedComponents "NetworKit::DynConnectedComponents"(_Algorithm):
 		_DynConnectedComponents(_Graph G) except +
@@ -5915,7 +5915,7 @@ cdef class DynConnectedComponents(Algorithm):
 
 
 
-cdef extern from "../include/networkit/components/DynWeaklyConnectedComponents.hpp":
+cdef extern from "<networkit/components/DynWeaklyConnectedComponents.hpp>":
 
 	cdef cppclass _DynWeaklyConnectedComponents "NetworKit::DynWeaklyConnectedComponents"(_Algorithm):
 		_DynWeaklyConnectedComponents(_Graph G) except +
@@ -6005,7 +6005,7 @@ cdef class DynWeaklyConnectedComponents(Algorithm):
 		(<_DynWeaklyConnectedComponents*>(self._this)).updateBatch(_batch)
 
 
-cdef extern from "../include/networkit/global/ClusteringCoefficient.hpp" namespace "NetworKit::ClusteringCoefficient":
+cdef extern from "<networkit/global/ClusteringCoefficient.hpp>" namespace "NetworKit::ClusteringCoefficient":
 
 		double avgLocal(_Graph G, bool_t turbo) nogil except +
 		double sequentialAvgLocal(_Graph G) nogil except +
@@ -6086,7 +6086,7 @@ cdef class ClusteringCoefficient:
 			ret = approxGlobal(G._this, trials)
 		return ret
 
-cdef extern from "../include/networkit/distance/Diameter.hpp" namespace "NetworKit":
+cdef extern from "<networkit/distance/Diameter.hpp>" namespace "NetworKit":
 
 	cdef enum DiameterAlgo:
 		automatic = 0
@@ -6102,7 +6102,7 @@ class _DiameterAlgo(object):
 	EstimatedSamples = estimatedSamples
 	EstimatedPedantic = estimatedPedantic
 
-cdef extern from "../include/networkit/distance/Diameter.hpp" namespace "NetworKit::Diameter":
+cdef extern from "<networkit/distance/Diameter.hpp>" namespace "NetworKit::Diameter":
 
 	cdef cppclass _Diameter "NetworKit::Diameter"(_Algorithm):
 		_Diameter(_Graph G, DiameterAlgo algo, double error, count nSamples) except +
@@ -6121,7 +6121,7 @@ cdef class Diameter(Algorithm):
 		return (<_Diameter*>(self._this)).getDiameter()
 
 
-cdef extern from "../include/networkit/distance/Eccentricity.hpp" namespace "NetworKit::Eccentricity":
+cdef extern from "<networkit/distance/Eccentricity.hpp>" namespace "NetworKit::Eccentricity":
 
 	pair[node, count] getValue(_Graph G, node v) except +
 
@@ -6135,7 +6135,7 @@ cdef class Eccentricity:
 		return getValue(G._this, v)
 
 
-cdef extern from "../include/networkit/distance/EffectiveDiameter.hpp" namespace "NetworKit::EffectiveDiameter":
+cdef extern from "<networkit/distance/EffectiveDiameter.hpp>" namespace "NetworKit::EffectiveDiameter":
 
 	cdef cppclass _EffectiveDiameter "NetworKit::EffectiveDiameter"(_Algorithm):
 		_EffectiveDiameter(_Graph& G, double ratio) except +
@@ -6169,7 +6169,7 @@ cdef class EffectiveDiameter(Algorithm):
 		return (<_EffectiveDiameter*>(self._this)).getEffectiveDiameter()
 
 
-cdef extern from "../include/networkit/distance/EffectiveDiameterApproximation.hpp" namespace "NetworKit::EffectiveDiameterApproximation":
+cdef extern from "<networkit/distance/EffectiveDiameterApproximation.hpp>" namespace "NetworKit::EffectiveDiameterApproximation":
 
 	cdef cppclass _EffectiveDiameterApproximation "NetworKit::EffectiveDiameterApproximation"(_Algorithm):
 		_EffectiveDiameterApproximation(_Graph& G, double ratio, count k, count r) except +
@@ -6211,7 +6211,7 @@ cdef class EffectiveDiameterApproximation(Algorithm):
 		return (<_EffectiveDiameterApproximation*>(self._this)).getEffectiveDiameter()
 
 
-cdef extern from "../include/networkit/distance/HopPlotApproximation.hpp" namespace "NetworKit::HopPlotApproximation":
+cdef extern from "<networkit/distance/HopPlotApproximation.hpp>" namespace "NetworKit::HopPlotApproximation":
 
 	cdef cppclass _HopPlotApproximation "NetworKit::HopPlotApproximation"(_Algorithm):
 		_HopPlotApproximation(_Graph& G, count maxDistance, count k, count r) except +
@@ -6259,7 +6259,7 @@ cdef class HopPlotApproximation(Algorithm):
 		return result
 
 
-cdef extern from "../include/networkit/distance/NeighborhoodFunction.hpp" namespace "NetworKit::NeighborhoodFunction":
+cdef extern from "<networkit/distance/NeighborhoodFunction.hpp>" namespace "NetworKit::NeighborhoodFunction":
 
 	cdef cppclass _NeighborhoodFunction "NetworKit::NeighborhoodFunction"(_Algorithm):
 		_NeighborhoodFunction(_Graph& G) except +
@@ -6292,7 +6292,7 @@ cdef class NeighborhoodFunction(Algorithm):
 		return (<_NeighborhoodFunction*>(self._this)).getNeighborhoodFunction()
 
 
-cdef extern from "../include/networkit/distance/NeighborhoodFunctionApproximation.hpp" namespace "NetworKit::NeighborhoodFunctionApproximation":
+cdef extern from "<networkit/distance/NeighborhoodFunctionApproximation.hpp>" namespace "NetworKit::NeighborhoodFunctionApproximation":
 
 	cdef cppclass _NeighborhoodFunctionApproximation "NetworKit::NeighborhoodFunctionApproximation"(_Algorithm):
 		_NeighborhoodFunctionApproximation(_Graph& G, count k, count r) except +
@@ -6332,13 +6332,13 @@ cdef class NeighborhoodFunctionApproximation(Algorithm):
 		"""
 		return (<_NeighborhoodFunctionApproximation*>(self._this)).getNeighborhoodFunction()
 
-cdef extern from "../include/networkit/distance/NeighborhoodFunctionHeuristic.hpp" namespace "NetworKit::NeighborhoodFunctionHeuristic::SelectionStrategy":
+cdef extern from "<networkit/distance/NeighborhoodFunctionHeuristic.hpp>" namespace "NetworKit::NeighborhoodFunctionHeuristic::SelectionStrategy":
 
 	enum _SelectionStrategy "NetworKit::NeighborhoodFunctionHeuristic::SelectionStrategy":
 		RANDOM
 		SPLIT
 
-cdef extern from "../include/networkit/distance/NeighborhoodFunctionHeuristic.hpp" namespace "NetworKit::NeighborhoodFunctionHeuristic":
+cdef extern from "<networkit/distance/NeighborhoodFunctionHeuristic.hpp>" namespace "NetworKit::NeighborhoodFunctionHeuristic":
 
 	cdef cppclass _NeighborhoodFunctionHeuristic "NetworKit::NeighborhoodFunctionHeuristic"(_Algorithm):
 		_NeighborhoodFunctionHeuristic(_Graph& G, const count nSamples, const _SelectionStrategy strategy) except +
@@ -6378,7 +6378,7 @@ cdef class NeighborhoodFunctionHeuristic(Algorithm):
 		return (<_NeighborhoodFunctionHeuristic*>(self._this)).getNeighborhoodFunction()
 
 
-cdef extern from "../include/networkit/correlation/Assortativity.hpp":
+cdef extern from "<networkit/correlation/Assortativity.hpp>":
 
 	cdef cppclass _Assortativity "NetworKit::Assortativity"(_Algorithm):
 		_Assortativity(_Graph, vector[double]) except +
@@ -6405,7 +6405,7 @@ cdef class Assortativity(Algorithm):
 
 # Module: centrality
 
-cdef extern from "../include/networkit/centrality/Centrality.hpp":
+cdef extern from "<networkit/centrality/Centrality.hpp>":
 
 	cdef cppclass _Centrality "NetworKit::Centrality"(_Algorithm):
 		_Centrality(_Graph, bool_t, bool_t) except +
@@ -6416,7 +6416,7 @@ cdef extern from "../include/networkit/centrality/Centrality.hpp":
 		double centralization() except +
 
 
-cdef extern from "../include/networkit/base/DynAlgorithm.hpp":
+cdef extern from "<networkit/base/DynAlgorithm.hpp>":
 
 	cdef cppclass _DynAlgorithm "NetworKit::DynAlgorithm":
 		void update(_GraphEvent) except +
@@ -6493,7 +6493,7 @@ cdef class Centrality(Algorithm):
 		return (<_Centrality*>(self._this)).centralization()
 
 
-cdef extern from "../include/networkit/centrality/TopCloseness.hpp":
+cdef extern from "<networkit/centrality/TopCloseness.hpp>":
 
 	cdef cppclass _TopCloseness "NetworKit::TopCloseness"(_Algorithm):
 		_TopCloseness(_Graph G, count, bool_t, bool_t) except +
@@ -6564,7 +6564,7 @@ cdef class TopCloseness(Algorithm):
 		return (<_TopCloseness*>(self._this)).topkScoresList(includeTrail)
 
 
-cdef extern from "../include/networkit/centrality/TopHarmonicCloseness.hpp":
+cdef extern from "<networkit/centrality/TopHarmonicCloseness.hpp>":
 
 	cdef cppclass _TopHarmonicCloseness "NetworKit::TopHarmonicCloseness"(_Algorithm):
 		_TopHarmonicCloseness(_Graph G, count, bool_t) except +
@@ -6637,7 +6637,7 @@ cdef class TopHarmonicCloseness(Algorithm):
 		return (<_TopHarmonicCloseness*>(self._this)).topkScoresList(includeTrail)
 
 
-cdef extern from "../include/networkit/centrality/DynKatzCentrality.hpp":
+cdef extern from "<networkit/centrality/DynKatzCentrality.hpp>":
 
 	cdef cppclass _DynKatzCentrality "NetworKit::DynKatzCentrality" (_Centrality):
 		_DynKatzCentrality(_Graph G, count, bool_t, double) except +
@@ -6675,7 +6675,7 @@ cdef class DynKatzCentrality(Centrality):
 	def areDistinguished(self, u, v):
 		return (<_DynKatzCentrality*>(self._this)).areDistinguished(u, v)
 
-cdef extern from "../include/networkit/centrality/DynTopHarmonicCloseness.hpp":
+cdef extern from "<networkit/centrality/DynTopHarmonicCloseness.hpp>":
 
 	cdef cppclass _DynTopHarmonicCloseness "NetworKit::DynTopHarmonicCloseness"(_Algorithm):
 		_DynTopHarmonicCloseness(_Graph G, count, bool_t) except +
@@ -6788,7 +6788,7 @@ cdef class DynTopHarmonicCloseness(Algorithm):
 
 
 
-cdef extern from "../include/networkit/centrality/GroupDegree.hpp":
+cdef extern from "<networkit/centrality/GroupDegree.hpp>":
 
 	cdef cppclass _GroupDegree "NetworKit::GroupDegree"(_Algorithm):
 		_GroupDegree(_Graph G, count, bool_t) except +
@@ -6865,7 +6865,7 @@ cdef class GroupDegree(Algorithm):
 
 
 
-cdef extern from "../include/networkit/centrality/GroupCloseness.hpp":
+cdef extern from "<networkit/centrality/GroupCloseness.hpp>":
 
 	cdef cppclass _GroupCloseness "NetworKit::GroupCloseness"(_Algorithm):
 		_GroupCloseness(_Graph G, count, count) except +
@@ -6925,7 +6925,7 @@ cdef class GroupCloseness(Algorithm):
 
 
 
-cdef extern from "../include/networkit/centrality/DegreeCentrality.hpp":
+cdef extern from "<networkit/centrality/DegreeCentrality.hpp>":
 
 	cdef cppclass _DegreeCentrality "NetworKit::DegreeCentrality" (_Centrality):
 		_DegreeCentrality(_Graph, bool_t normalized, bool_t outdeg, bool_t ignoreSelfLoops) except +
@@ -6954,7 +6954,7 @@ cdef class DegreeCentrality(Centrality):
 
 
 
-cdef extern from "../include/networkit/centrality/Betweenness.hpp":
+cdef extern from "<networkit/centrality/Betweenness.hpp>":
 
 	cdef cppclass _Betweenness "NetworKit::Betweenness" (_Centrality):
 		_Betweenness(_Graph, bool_t, bool_t) except +
@@ -6994,7 +6994,7 @@ cdef class Betweenness(Centrality):
 		return (<_Betweenness*>(self._this)).edgeScores()
 
 
-cdef extern from "../include/networkit/centrality/ApproxGroupBetweenness.hpp":
+cdef extern from "<networkit/centrality/ApproxGroupBetweenness.hpp>":
 
 	cdef cppclass _ApproxGroupBetweenness "NetworKit::ApproxGroupBetweenness" (_Algorithm):
 		_ApproxGroupBetweenness(_Graph, count, double) except +
@@ -7034,7 +7034,7 @@ cdef class ApproxGroupBetweenness(Algorithm):
 		"""
 		return (<_ApproxGroupBetweenness*>(self._this)).groupMaxBetweenness()
 
-cdef extern from "../include/networkit/centrality/Closeness.hpp" namespace "NetworKit":
+cdef extern from "<networkit/centrality/Closeness.hpp>" namespace "NetworKit":
 
 	cdef enum ClosenessVariant:
 		standard = 0
@@ -7044,7 +7044,7 @@ class _ClosenessVariant(object):
 	Standard = standard
 	Generalized = generalized
 
-cdef extern from "../include/networkit/centrality/Closeness.hpp":
+cdef extern from "<networkit/centrality/Closeness.hpp>":
 
 	cdef cppclass _Closeness "NetworKit::Closeness" (_Centrality):
 		_Closeness(_Graph, bool, ClosenessVariant) except +
@@ -7076,7 +7076,7 @@ cdef class Closeness(Centrality):
 			raise Exception("Error: the third parameter must be either a bool or a ClosenessVariant")
 
 
-cdef extern from "../include/networkit/centrality/HarmonicCloseness.hpp":
+cdef extern from "<networkit/centrality/HarmonicCloseness.hpp>":
 
 	cdef cppclass _HarmonicCloseness "NetworKit::HarmonicCloseness" (_Centrality):
 		_HarmonicCloseness(_Graph, bool_t) except +
@@ -7106,7 +7106,7 @@ cdef class HarmonicCloseness(Centrality):
 		self._this = new _HarmonicCloseness(G._this, normalized)
 
 
-cdef extern from "../include/networkit/centrality/KPathCentrality.hpp":
+cdef extern from "<networkit/centrality/KPathCentrality.hpp>":
 
 	cdef cppclass _KPathCentrality "NetworKit::KPathCentrality" (_Centrality):
 		_KPathCentrality(_Graph, double, count) except +
@@ -7133,7 +7133,7 @@ cdef class KPathCentrality(Centrality):
 		self._this = new _KPathCentrality(G._this, alpha, k)
 
 
-cdef extern from "../include/networkit/centrality/KatzCentrality.hpp":
+cdef extern from "<networkit/centrality/KatzCentrality.hpp>":
 
 	cdef cppclass _KatzCentrality "NetworKit::KatzCentrality" (_Centrality):
 		_KatzCentrality(_Graph, double, double, double) except +
@@ -7163,7 +7163,7 @@ cdef class KatzCentrality(Centrality):
 		self._G = G
 		self._this = new _KatzCentrality(G._this, alpha, beta, tol)
 
-cdef extern from "../include/networkit/dynamics/GraphDifference.hpp":
+cdef extern from "<networkit/dynamics/GraphDifference.hpp>":
 
 	cdef cppclass _GraphDifference "NetworKit::GraphDifference"(_Algorithm):
 		_GraphDifference(const _Graph &G1, const _Graph &G2) except +
@@ -7284,7 +7284,7 @@ cdef class GraphDifference(Algorithm):
 		"""
 		return (<_GraphDifference*>(self._this)).getNumberOfEdgeWeightUpdates()
 
-cdef extern from "../include/networkit/centrality/ApproxBetweenness.hpp":
+cdef extern from "<networkit/centrality/ApproxBetweenness.hpp>":
 
 	cdef cppclass _ApproxBetweenness "NetworKit::ApproxBetweenness" (_Centrality):
 		_ApproxBetweenness(_Graph, double, double, double) except +
@@ -7325,7 +7325,7 @@ cdef class ApproxBetweenness(Centrality):
 		return (<_ApproxBetweenness*>(self._this)).numberOfSamples()
 
 
-cdef extern from "../include/networkit/centrality/KadabraBetweenness.hpp":
+cdef extern from "<networkit/centrality/KadabraBetweenness.hpp>":
 
 	cdef cppclass _KadabraBetweenness "NetworKit::KadabraBetweenness" (_Algorithm):
 		_KadabraBetweenness(_Graph, double, double, count, count, count) except +
@@ -7455,7 +7455,7 @@ cdef class KadabraBetweenness(Algorithm):
 		return(<_KadabraBetweenness*>(self._this)).getOmega()
 
 
-cdef extern from "../include/networkit/centrality/EstimateBetweenness.hpp":
+cdef extern from "<networkit/centrality/EstimateBetweenness.hpp>":
 
 	cdef cppclass _EstimateBetweenness"NetworKit::EstimateBetweenness" (_Centrality):
 		_EstimateBetweenness(_Graph, count, bool_t, bool_t) except +
@@ -7525,14 +7525,14 @@ cdef class ApproxBetweenness2(Centrality):
 		self._this = new _EstimateBetweenness(G._this, nSamples, normalized, parallel)
 
 
-cdef extern from "../include/networkit/centrality/ApproxCloseness.hpp":
+cdef extern from "<networkit/centrality/ApproxCloseness.hpp>":
 
 	enum _ClosenessType "NetworKit::ApproxCloseness::CLOSENESS_TYPE":
 		INBOUND,
 		OUTBOUND,
 		SUM
 
-cdef extern from "../include/networkit/centrality/ApproxCloseness.hpp":
+cdef extern from "<networkit/centrality/ApproxCloseness.hpp>":
 
 	cdef cppclass _ApproxCloseness "NetworKit::ApproxCloseness" (_Centrality):
 		_ClosenessType type
@@ -7587,7 +7587,7 @@ cdef class ApproxCloseness(Centrality):
 
 
 
-cdef extern from "../include/networkit/centrality/PageRank.hpp":
+cdef extern from "<networkit/centrality/PageRank.hpp>":
 
 	cdef cppclass _PageRank "NetworKit::PageRank" (_Centrality):
 		_PageRank(_Graph, double damp, double tol) except +
@@ -7613,7 +7613,7 @@ cdef class PageRank(Centrality):
 
 
 
-cdef extern from "../include/networkit/centrality/EigenvectorCentrality.hpp":
+cdef extern from "<networkit/centrality/EigenvectorCentrality.hpp>":
 
 	cdef cppclass _EigenvectorCentrality "NetworKit::EigenvectorCentrality" (_Centrality):
 		_EigenvectorCentrality(_Graph, double tol) except +
@@ -7639,7 +7639,7 @@ cdef class EigenvectorCentrality(Centrality):
 		self._this = new _EigenvectorCentrality(G._this, tol)
 
 
-cdef extern from "../include/networkit/centrality/CoreDecomposition.hpp":
+cdef extern from "<networkit/centrality/CoreDecomposition.hpp>":
 
 	cdef cppclass _CoreDecomposition "NetworKit::CoreDecomposition" (_Centrality):
 		_CoreDecomposition(_Graph, bool_t, bool_t, bool_t) except +
@@ -7715,7 +7715,7 @@ cdef class CoreDecomposition(Centrality):
 		"""
 		return (<_CoreDecomposition*>(self._this)).getNodeOrder()
 
-cdef extern from "../include/networkit/centrality/LocalClusteringCoefficient.hpp":
+cdef extern from "<networkit/centrality/LocalClusteringCoefficient.hpp>":
 
 	cdef cppclass _LocalClusteringCoefficient "NetworKit::LocalClusteringCoefficient" (_Centrality):
 		_LocalClusteringCoefficient(_Graph, bool_t) except +
@@ -7750,7 +7750,7 @@ cdef class LocalClusteringCoefficient(Centrality):
 		self._this = new _LocalClusteringCoefficient(G._this, turbo)
 
 
-cdef extern from "../include/networkit/centrality/Sfigality.hpp":
+cdef extern from "<networkit/centrality/Sfigality.hpp>":
 
 	cdef cppclass _Sfigality "NetworKit::Sfigality" (_Centrality):
 		_Sfigality(_Graph) except +
@@ -7773,7 +7773,7 @@ cdef class Sfigality(Centrality):
 
 
 
-cdef extern from "../include/networkit/centrality/DynApproxBetweenness.hpp":
+cdef extern from "<networkit/centrality/DynApproxBetweenness.hpp>":
 
 	cdef cppclass _DynApproxBetweenness "NetworKit::DynApproxBetweenness"(_Algorithm):
 		_DynApproxBetweenness(_Graph, double, double, bool_t, double) except +
@@ -7879,7 +7879,7 @@ cdef class DynApproxBetweenness(Algorithm):
 		"""
 		return (<_DynApproxBetweenness*>(self._this)).getNumberOfSamples()
 
-cdef extern from "../include/networkit/centrality/DynBetweenness.hpp":
+cdef extern from "<networkit/centrality/DynBetweenness.hpp>":
 
 	cdef cppclass _DynBetweenness "NetworKit::DynBetweenness"(_Algorithm):
 		_DynBetweenness(_Graph) except +
@@ -7964,7 +7964,7 @@ cdef class DynBetweenness(Algorithm):
 		return (<_DynBetweenness*>(self._this)).ranking()
 
 
-cdef extern from "../include/networkit/centrality/DynBetweennessOneNode.hpp":
+cdef extern from "<networkit/centrality/DynBetweennessOneNode.hpp>":
 
 	cdef cppclass _DynBetweennessOneNode "NetworKit::DynBetweennessOneNode":
 		_DynBetweennessOneNode(_Graph, node) except +
@@ -8049,7 +8049,7 @@ cdef class DynBetweennessOneNode:
 		"""
 		return self._this.getbcx()
 
-cdef extern from "../include/networkit/centrality/PermanenceCentrality.hpp":
+cdef extern from "<networkit/centrality/PermanenceCentrality.hpp>":
 
 	cdef cppclass _PermanenceCentrality "NetworKit::PermanenceCentrality"(_Algorithm):
 		_PermanenceCentrality(const _Graph& G, const _Partition& P) except +
@@ -8084,7 +8084,7 @@ cdef class PermanenceCentrality(Algorithm):
 	def getPermanence(self, node u):
 		return (<_PermanenceCentrality*>(self._this)).getPermanence(u)
 
-cdef extern from "../include/networkit/centrality/LocalPartitionCoverage.hpp":
+cdef extern from "<networkit/centrality/LocalPartitionCoverage.hpp>":
 
 	cdef cppclass _LocalPartitionCoverage "NetworKit::LocalPartitionCoverage" (_Centrality):
 		_LocalPartitionCoverage(_Graph, _Partition) except +
@@ -8110,7 +8110,7 @@ cdef class LocalPartitionCoverage(Centrality):
 		self._P = P
 		self._this = new _LocalPartitionCoverage(G._this, P._this)
 
-cdef extern from "../include/networkit/centrality/LaplacianCentrality.hpp":
+cdef extern from "<networkit/centrality/LaplacianCentrality.hpp>":
 
 	cdef cppclass _LaplacianCentrality "NetworKit::LaplacianCentrality" (_Centrality):
 		_LaplacianCentrality(_Graph, bool_t) except +
@@ -8139,7 +8139,7 @@ cdef class LaplacianCentrality(Centrality):
 
 # Module: dynamic
 
-cdef extern from "../include/networkit/dynamics/GraphEvent.hpp" namespace "NetworKit::GraphEvent::Type":
+cdef extern from "<networkit/dynamics/GraphEvent.hpp>" namespace "NetworKit::GraphEvent::Type":
 
 	cdef enum _GraphEventType "NetworKit::GraphEvent::Type":
 		NODE_ADDITION,
@@ -8151,7 +8151,7 @@ cdef extern from "../include/networkit/dynamics/GraphEvent.hpp" namespace "Netwo
 		EDGE_WEIGHT_INCREMENT,
 		TIME_STEP
 
-cdef extern from "../include/networkit/dynamics/GraphEvent.hpp":
+cdef extern from "<networkit/dynamics/GraphEvent.hpp>":
 
 	cdef cppclass _GraphEvent "NetworKit::GraphEvent":
 		node u, v
@@ -8161,7 +8161,7 @@ cdef extern from "../include/networkit/dynamics/GraphEvent.hpp":
 		_GraphEvent(_GraphEventType type, node u, node v, edgeweight w) except +
 		string toString() except +
 
-cdef extern from "../include/networkit/dynamics/GraphEvent.hpp" namespace "NetworKit::GraphEvent":
+cdef extern from "<networkit/dynamics/GraphEvent.hpp>" namespace "NetworKit::GraphEvent":
 
 	bool_t _GraphEvent_equal "NetworKit::GraphEvent::equal"(_GraphEvent a, _GraphEvent b) except +
 	bool_t _GraphEvent_compare "NetworKit::GraphEvent::compare"(_GraphEvent a, _GraphEvent b) except +
@@ -8214,7 +8214,7 @@ cdef class GraphEvent:
 		return _GraphEvent_equal(self._this, other._this)
 
 
-cdef extern from "../include/networkit/dynamics/DGSStreamParser.hpp":
+cdef extern from "<networkit/dynamics/DGSStreamParser.hpp>":
 
 	cdef cppclass _DGSStreamParser "NetworKit::DGSStreamParser":
 		_DGSStreamParser(string path, bool_t mapped, node baseIndex) except +
@@ -8233,7 +8233,7 @@ cdef class DGSStreamParser:
 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.getStream()]
 
 
-cdef extern from "../include/networkit/dynamics/DGSWriter.hpp":
+cdef extern from "<networkit/dynamics/DGSWriter.hpp>":
 
 	cdef cppclass _DGSWriter "NetworKit::DGSWriter":
 		void write(vector[_GraphEvent] stream, string path) except +
@@ -8255,7 +8255,7 @@ cdef class DGSWriter:
 		self._this.write(_stream, stdstring(path))
 
 
-# cdef extern from "../include/networkit/dcd2/DynamicCommunityDetection.hpp":
+# cdef extern from "<networkit/dcd2/DynamicCommunityDetection.hpp>":
 
 # 	cdef cppclass _DynamicCommunityDetection "NetworKit::DynamicCommunityDetection":
 # 		_DynamicCommunityDetection(string inputPath, string algoName, string updateStrategy, count interval, count restart, vector[string] recordSettings) except +
@@ -8289,7 +8289,7 @@ cdef class DGSWriter:
 
 
 
-cdef extern from "../include/networkit/generators/DynamicPathGenerator.hpp":
+cdef extern from "<networkit/generators/DynamicPathGenerator.hpp>":
 
 	cdef cppclass _DynamicPathGenerator "NetworKit::DynamicPathGenerator":
 		_DynamicPathGenerator() except +
@@ -8310,7 +8310,7 @@ cdef class DynamicPathGenerator:
 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
 
 
-cdef extern from "../include/networkit/generators/DynamicDorogovtsevMendesGenerator.hpp":
+cdef extern from "<networkit/generators/DynamicDorogovtsevMendesGenerator.hpp>":
 
 	cdef cppclass _DynamicDorogovtsevMendesGenerator "NetworKit::DynamicDorogovtsevMendesGenerator":
 		_DynamicDorogovtsevMendesGenerator() except +
@@ -8344,7 +8344,7 @@ cdef class DynamicDorogovtsevMendesGenerator:
 
 
 
-cdef extern from "../include/networkit/generators/DynamicPubWebGenerator.hpp":
+cdef extern from "<networkit/generators/DynamicPubWebGenerator.hpp>":
 
 	cdef cppclass _DynamicPubWebGenerator "NetworKit::DynamicPubWebGenerator":
 		_DynamicPubWebGenerator(count numNodes, count numberOfDenseAreas,
@@ -8375,7 +8375,7 @@ cdef class DynamicPubWebGenerator:
 	def getGraph(self):
 		return Graph().setThis(self._this.getGraph())
 
-cdef extern from "../include/networkit/generators/DynamicHyperbolicGenerator.hpp":
+cdef extern from "<networkit/generators/DynamicHyperbolicGenerator.hpp>":
 
 	cdef cppclass _DynamicHyperbolicGenerator "NetworKit::DynamicHyperbolicGenerator":
 		_DynamicHyperbolicGenerator(count numNodes, double avgDegree, double gamma, double T, double moveEachStep, double moveDistance) except +
@@ -8431,7 +8431,7 @@ cdef class DynamicHyperbolicGenerator:
 
 
 
-cdef extern from "../include/networkit/generators/DynamicForestFireGenerator.hpp":
+cdef extern from "<networkit/generators/DynamicForestFireGenerator.hpp>":
 
 	cdef cppclass _DynamicForestFireGenerator "NetworKit::DynamicForestFireGenerator":
 		_DynamicForestFireGenerator(double p, bool_t directed, double r) except +
@@ -8481,7 +8481,7 @@ cdef class DynamicForestFireGenerator:
 
 
 
-cdef extern from "../include/networkit/dynamics/GraphUpdater.hpp":
+cdef extern from "<networkit/dynamics/GraphUpdater.hpp>":
 
 	cdef cppclass _GraphUpdater "NetworKit::GraphUpdater":
 		_GraphUpdater(_Graph G) except +
@@ -8516,7 +8516,7 @@ cdef class GraphUpdater:
 
 # Module: coarsening
 
-cdef extern from "../include/networkit/coarsening/GraphCoarsening.hpp":
+cdef extern from "<networkit/coarsening/GraphCoarsening.hpp>":
 
 	cdef cppclass _GraphCoarsening "NetworKit::GraphCoarsening"(_Algorithm):
 		_GraphCoarsening(_Graph) except +
@@ -8541,7 +8541,7 @@ cdef class GraphCoarsening(Algorithm):
 		return (<_GraphCoarsening*>(self._this)).getCoarseToFineNodeMapping()
 
 
-cdef extern from "../include/networkit/coarsening/ParallelPartitionCoarsening.hpp":
+cdef extern from "<networkit/coarsening/ParallelPartitionCoarsening.hpp>":
 
 	cdef cppclass _ParallelPartitionCoarsening "NetworKit::ParallelPartitionCoarsening"(_GraphCoarsening):
 		_ParallelPartitionCoarsening(_Graph, _Partition, bool_t) except +
@@ -8551,7 +8551,7 @@ cdef class ParallelPartitionCoarsening(GraphCoarsening):
 	def __cinit__(self, Graph G not None, Partition zeta not None, useGraphBuilder = True):
 		self._this = new _ParallelPartitionCoarsening(G._this, zeta._this, useGraphBuilder)
 
-cdef extern from "../include/networkit/coarsening/MatchingCoarsening.hpp":
+cdef extern from "<networkit/coarsening/MatchingCoarsening.hpp>":
 
 	cdef cppclass _MatchingCoarsening "NetworKit::MatchingCoarsening"(_GraphCoarsening):
 		_MatchingCoarsening(_Graph, _Matching, bool_t) except +
@@ -8573,7 +8573,7 @@ cdef class MatchingCoarsening(GraphCoarsening):
 
 # Module: scd
 
-cdef extern from "../include/networkit/scd/PageRankNibble.hpp":
+cdef extern from "<networkit/scd/PageRankNibble.hpp>":
 
 	cdef cppclass _PageRankNibble "NetworKit::PageRankNibble":
 		_PageRankNibble(_Graph G, double alpha, double epsilon) except +
@@ -8607,7 +8607,7 @@ cdef class PageRankNibble:
 		"""
 		return self._this.run(seeds)
 
-cdef extern from "../include/networkit/scd/GCE.hpp":
+cdef extern from "<networkit/scd/GCE.hpp>":
 
 	cdef cppclass _GCE "NetworKit::GCE":
 		_GCE(_Graph G, string quality) except +
@@ -8659,7 +8659,7 @@ cdef cppclass NodeVectorCallbackWrapper:
 			if (error):
 				throw_runtime_error(message)
 
-cdef extern from "../include/networkit/clique/MaximalCliques.hpp":
+cdef extern from "<networkit/clique/MaximalCliques.hpp>":
 
 	cdef cppclass _MaximalCliques "NetworKit::MaximalCliques"(_Algorithm):
 		_MaximalCliques(_Graph G, bool_t maximumOnly) except +
@@ -8739,7 +8739,7 @@ cdef class MaximalCliques(Algorithm):
 
 # Module: linkprediction
 
-cdef extern from "../include/networkit/linkprediction/LinkPredictor.hpp":
+cdef extern from "<networkit/linkprediction/LinkPredictor.hpp>":
 
 	cdef cppclass _LinkPredictor "NetworKit::LinkPredictor":
 		_LinkPredictor(const _Graph& G) except +
@@ -8830,7 +8830,7 @@ cdef class LinkPredictor:
 		"""
 		return move(self._this.runOn(nodePairs))
 
-cdef extern from "../include/networkit/linkprediction/KatzIndex.hpp":
+cdef extern from "<networkit/linkprediction/KatzIndex.hpp>":
 
 	cdef cppclass _KatzIndex "NetworKit::KatzIndex"(_LinkPredictor):
 		_KatzIndex(count maxPathLength, double dampingValue) except +
@@ -8878,7 +8878,7 @@ cdef class KatzIndex(LinkPredictor):
 		"""
 		return self._this.run(u, v)
 
-cdef extern from "../include/networkit/linkprediction/CommonNeighborsIndex.hpp":
+cdef extern from "<networkit/linkprediction/CommonNeighborsIndex.hpp>":
 
 	cdef cppclass _CommonNeighborsIndex "NetworKit::CommonNeighborsIndex"(_LinkPredictor):
 		_CommonNeighborsIndex() except +
@@ -8915,7 +8915,7 @@ cdef class CommonNeighborsIndex(LinkPredictor):
 		"""
 		return self._this.run(u, v)
 
-cdef extern from "../include/networkit/linkprediction/PreferentialAttachmentIndex.hpp":
+cdef extern from "<networkit/linkprediction/PreferentialAttachmentIndex.hpp>":
 
 	cdef cppclass _PreferentialAttachmentIndex "NetworKit::PreferentialAttachmentIndex"(_LinkPredictor):
 		_PreferentialAttachmentIndex() except +
@@ -8956,7 +8956,7 @@ cdef class PreferentialAttachmentIndex(LinkPredictor):
 		return self._this.run(u, v)
 
 
-cdef extern from "../include/networkit/distance/Volume.hpp" namespace "NetworKit::Volume":
+cdef extern from "<networkit/distance/Volume.hpp>" namespace "NetworKit::Volume":
 
 	double volume(const _Graph G, const double r, const count samples) nogil except +
 	vector[double] volume(const _Graph G, const vector[double] r, const count samples) nogil except +
@@ -9008,7 +9008,7 @@ cdef class Volume:
 			pass
 
 
-cdef extern from "../include/networkit/linkprediction/JaccardIndex.hpp":
+cdef extern from "<networkit/linkprediction/JaccardIndex.hpp>":
 
 	cdef cppclass _JaccardIndex "NetworKit::JaccardIndex"(_LinkPredictor):
 		_JaccardIndex() except +
@@ -9047,7 +9047,7 @@ cdef class JaccardIndex(LinkPredictor):
 		"""
 		return self._this.run(u, v)
 
-cdef extern from "../include/networkit/linkprediction/AdamicAdarIndex.hpp":
+cdef extern from "<networkit/linkprediction/AdamicAdarIndex.hpp>":
 
 	cdef cppclass _AdamicAdarIndex "NetworKit::AdamicAdarIndex"(_LinkPredictor):
 		_AdamicAdarIndex() except +
@@ -9087,7 +9087,7 @@ cdef class AdamicAdarIndex(LinkPredictor):
 		"""
 		return self._this.run(u, v)
 
-cdef extern from "../include/networkit/linkprediction/UDegreeIndex.hpp":
+cdef extern from "<networkit/linkprediction/UDegreeIndex.hpp>":
 
 	cdef cppclass _UDegreeIndex "NetworKit::UDegreeIndex"(_LinkPredictor):
 		_UDegreeIndex() except +
@@ -9124,7 +9124,7 @@ cdef class UDegreeIndex(LinkPredictor):
 		"""
 		return self._this.run(u, v)
 
-cdef extern from "../include/networkit/linkprediction/VDegreeIndex.hpp":
+cdef extern from "<networkit/linkprediction/VDegreeIndex.hpp>":
 
 	cdef cppclass _VDegreeIndex "NetworKit::VDegreeIndex"(_LinkPredictor):
 		_VDegreeIndex() except +
@@ -9161,7 +9161,7 @@ cdef class VDegreeIndex(LinkPredictor):
 		"""
 		return self._this.run(u, v)
 
-cdef extern from "../include/networkit/linkprediction/AlgebraicDistanceIndex.hpp":
+cdef extern from "<networkit/linkprediction/AlgebraicDistanceIndex.hpp>":
 
 	cdef cppclass _AlgebraicDistanceIndex "NetworKit::AlgebraicDistanceIndex"(_LinkPredictor):
 		_AlgebraicDistanceIndex(count numberSystems, count numberIterations, double omega, index norm) except +
@@ -9219,7 +9219,7 @@ cdef class AlgebraicDistanceIndex(LinkPredictor):
 		"""
 		return self._this.run(u, v)
 
-cdef extern from "../include/networkit/linkprediction/NeighborhoodDistanceIndex.hpp":
+cdef extern from "<networkit/linkprediction/NeighborhoodDistanceIndex.hpp>":
 
 	cdef cppclass _NeighborhoodDistanceIndex "NetworKit::NeighborhoodDistanceIndex"(_LinkPredictor):
 		_NeighborhoodDistanceIndex() except +
@@ -9256,7 +9256,7 @@ cdef class NeighborhoodDistanceIndex(LinkPredictor):
 		"""
 		return self._this.run(u, v)
 
-cdef extern from "../include/networkit/linkprediction/TotalNeighborsIndex.hpp":
+cdef extern from "<networkit/linkprediction/TotalNeighborsIndex.hpp>":
 
 	cdef cppclass _TotalNeighborsIndex "NetworKit::TotalNeighborsIndex"(_LinkPredictor):
 		_TotalNeighborsIndex() except +
@@ -9296,7 +9296,7 @@ cdef class TotalNeighborsIndex(LinkPredictor):
 		"""
 		return self._this.run(u, v)
 
-cdef extern from "../include/networkit/linkprediction/NeighborsMeasureIndex.hpp":
+cdef extern from "<networkit/linkprediction/NeighborsMeasureIndex.hpp>":
 
 	cdef cppclass _NeighborsMeasureIndex "NetworKit::NeighborsMeasureIndex"(_LinkPredictor):
 		_NeighborsMeasureIndex() except +
@@ -9336,7 +9336,7 @@ cdef class NeighborsMeasureIndex(LinkPredictor):
 		"""
 		return self._this.run(u, v)
 
-cdef extern from "../include/networkit/linkprediction/SameCommunityIndex.hpp":
+cdef extern from "<networkit/linkprediction/SameCommunityIndex.hpp>":
 
 	cdef cppclass _SameCommunityIndex "NetworKit::SameCommunityIndex"(_LinkPredictor):
 		_SameCommunityIndex() except +
@@ -9373,7 +9373,7 @@ cdef class SameCommunityIndex(LinkPredictor):
 		"""
 		return self._this.run(u, v)
 
-cdef extern from "../include/networkit/linkprediction/AdjustedRandIndex.hpp":
+cdef extern from "<networkit/linkprediction/AdjustedRandIndex.hpp>":
 
 	cdef cppclass _AdjustedRandIndex "NetworKit::AdjustedRandIndex"(_LinkPredictor):
 		_AdjustedRandIndex() except +
@@ -9410,7 +9410,7 @@ cdef class AdjustedRandIndex(LinkPredictor):
 		"""
 		return self._this.run(u, v)
 
-cdef extern from "../include/networkit/linkprediction/ResourceAllocationIndex.hpp":
+cdef extern from "<networkit/linkprediction/ResourceAllocationIndex.hpp>":
 
 	cdef cppclass _ResourceAllocationIndex "NetworKit::ResourceAllocationIndex"(_LinkPredictor):
 		_ResourceAllocationIndex() except +
@@ -9450,7 +9450,7 @@ cdef class ResourceAllocationIndex(LinkPredictor):
 		"""
 		return self._this.run(u, v)
 
-cdef extern from "../include/networkit/linkprediction/RandomLinkSampler.hpp" namespace "NetworKit::RandomLinkSampler":
+cdef extern from "<networkit/linkprediction/RandomLinkSampler.hpp>" namespace "NetworKit::RandomLinkSampler":
 
 	_Graph byPercentage(_Graph G, double percentage) except +
 	_Graph byCount(_Graph G, count numLinks) except +
@@ -9497,7 +9497,7 @@ cdef class RandomLinkSampler:
 		"""
 		return Graph().setThis(byCount(G._this, numLinks))
 
-cdef extern from "../include/networkit/linkprediction/EvaluationMetric.hpp":
+cdef extern from "<networkit/linkprediction/EvaluationMetric.hpp>":
 
 	cdef cppclass _EvaluationMetric "NetworKit::EvaluationMetric":
 		_EvaluationMetric() except +
@@ -9583,7 +9583,7 @@ cdef class EvaluationMetric:
 			return self._this.getAreaUnderCurve()
 		return self._this.getAreaUnderCurve(curve)
 
-cdef extern from "../include/networkit/linkprediction/ROCMetric.hpp":
+cdef extern from "<networkit/linkprediction/ROCMetric.hpp>":
 
 	cdef cppclass _ROCMetric "NetworKit::ROCMetric"(_EvaluationMetric):
 		_ROCMetric() except +
@@ -9626,7 +9626,7 @@ cdef class ROCMetric(EvaluationMetric):
 		"""
 		return self._this.getCurve(predictions, numThresholds)
 
-cdef extern from "../include/networkit/linkprediction/PrecisionRecallMetric.hpp":
+cdef extern from "<networkit/linkprediction/PrecisionRecallMetric.hpp>":
 
 	cdef cppclass _PrecisionRecallMetric "NetworKit::PrecisionRecallMetric"(_EvaluationMetric):
 		_PrecisionRecallMetric() except +
@@ -9670,7 +9670,7 @@ cdef class PrecisionRecallMetric(EvaluationMetric):
 		"""
 		return self._this.getCurve(predictions, numThresholds)
 
-cdef extern from "../include/networkit/linkprediction/MissingLinksFinder.hpp":
+cdef extern from "<networkit/linkprediction/MissingLinksFinder.hpp>":
 
 	cdef cppclass _MissingLinksFinder "NetworKit::MissingLinksFinder":
 		_MissingLinksFinder(const _Graph& G) except +
@@ -9736,7 +9736,7 @@ cdef class MissingLinksFinder:
 		"""
 		return move(self._this.findFromNode(u, k))
 
-cdef extern from "../include/networkit/linkprediction/NeighborhoodUtility.hpp" namespace "NetworKit::NeighborhoodUtility":
+cdef extern from "<networkit/linkprediction/NeighborhoodUtility.hpp>" namespace "NetworKit::NeighborhoodUtility":
 
 	vector[node] getNeighborsUnion(const _Graph& G, node u, node v) except +
 	vector[node] getCommonNeighbors(const _Graph& G, node u, node v) except +
@@ -9782,7 +9782,7 @@ cdef class NeighborhoodUtility:
 		"""
 		return getCommonNeighbors(G._this, u, v)
 
-cdef extern from "../include/networkit/linkprediction/LinkThresholder.hpp" namespace "NetworKit::LinkThresholder":
+cdef extern from "<networkit/linkprediction/LinkThresholder.hpp>" namespace "NetworKit::LinkThresholder":
 
 	vector[pair[node, node]] byScore(vector[pair[pair[node, node], double]] predictions, double minScore)
 	vector[pair[node, node]] byCount(vector[pair[pair[node, node], double]] predictions, count numLinks)
@@ -9846,7 +9846,7 @@ cdef class LinkThresholder:
 		"""
 		return byPercentage(predictions, percentageLinks)
 
-cdef extern from "../include/networkit/linkprediction/PredictionsSorter.hpp" namespace "NetworKit::PredictionsSorter":
+cdef extern from "<networkit/linkprediction/PredictionsSorter.hpp>" namespace "NetworKit::PredictionsSorter":
 
 	void sortByScore (vector[pair[pair[node, node], double]]& predictions) except +
 	void sortByNodePair (vector[pair[pair[node, node], double]]& predictions) except +
@@ -9887,7 +9887,7 @@ cdef class PredictionsSorter:
 
 # Module: EdgeScore
 
-cdef extern from "../include/networkit/edgescores/EdgeScore.hpp":
+cdef extern from "<networkit/edgescores/EdgeScore.hpp>":
 
 	cdef cppclass _EdgeScore "NetworKit::EdgeScore"[T](_Algorithm):
 		_EdgeScore(const _Graph& G) except +
@@ -9930,7 +9930,7 @@ cdef class EdgeScore(Algorithm):
 			return (<_EdgeScore[count]*>(self._this)).scores()
 
 
-cdef extern from "../include/networkit/edgescores/ChibaNishizekiTriangleEdgeScore.hpp":
+cdef extern from "<networkit/edgescores/ChibaNishizekiTriangleEdgeScore.hpp>":
 
 	cdef cppclass _ChibaNishizekiTriangleEdgeScore "NetworKit::ChibaNishizekiTriangleEdgeScore"(_EdgeScore[count]):
 		_ChibaNishizekiTriangleEdgeScore(const _Graph& G) except +
@@ -9956,7 +9956,7 @@ cdef class ChibaNishizekiTriangleEdgeScore(EdgeScore):
 	cdef bool_t isDoubleValue(self):
 		return False
 
-cdef extern from "../include/networkit/edgescores/ChibaNishizekiQuadrangleEdgeScore.hpp":
+cdef extern from "<networkit/edgescores/ChibaNishizekiQuadrangleEdgeScore.hpp>":
 
 	cdef cppclass _ChibaNishizekiQuadrangleEdgeScore "NetworKit::ChibaNishizekiQuadrangleEdgeScore"(_EdgeScore[count]):
 		_ChibaNishizekiQuadrangleEdgeScore(const _Graph& G) except +
@@ -9984,7 +9984,7 @@ cdef class ChibaNishizekiQuadrangleEdgeScore(EdgeScore):
 	cdef bool_t isDoubleValue(self):
 		return False
 
-cdef extern from "../include/networkit/edgescores/TriangleEdgeScore.hpp":
+cdef extern from "<networkit/edgescores/TriangleEdgeScore.hpp>":
 
 	cdef cppclass _TriangleEdgeScore "NetworKit::TriangleEdgeScore"(_EdgeScore[double]):
 		_TriangleEdgeScore(const _Graph& G) except +
@@ -10012,7 +10012,7 @@ cdef class TriangleEdgeScore(EdgeScore):
 	cdef bool_t isDoubleValue(self):
 		return False
 
-cdef extern from "../include/networkit/edgescores/EdgeScoreLinearizer.hpp":
+cdef extern from "<networkit/edgescores/EdgeScoreLinearizer.hpp>":
 
 	cdef cppclass _EdgeScoreLinearizer "NetworKit::EdgeScoreLinearizer"(_EdgeScore[double]):
 		_EdgeScoreLinearizer(const _Graph& G, const vector[double]& attribute, bool_t inverse) except +
@@ -10039,7 +10039,7 @@ cdef class EdgeScoreLinearizer(EdgeScore):
 		return True
 
 
-cdef extern from "../include/networkit/edgescores/EdgeScoreNormalizer.hpp":
+cdef extern from "<networkit/edgescores/EdgeScoreNormalizer.hpp>":
 
 	cdef cppclass _EdgeScoreNormalizer "NetworKit::EdgeScoreNormalizer"[T](_EdgeScore[double]):
 		_EdgeScoreNormalizer(const _Graph&, vector[T]&, bool_t inverse, double lower, double upper) except +
@@ -10079,7 +10079,7 @@ cdef class EdgeScoreNormalizer(EdgeScore):
 	cdef bool_t isDoubleValue(self):
 		return True
 
-cdef extern from "../include/networkit/edgescores/EdgeScoreBlender.hpp":
+cdef extern from "<networkit/edgescores/EdgeScoreBlender.hpp>":
 
 	cdef cppclass _EdgeScoreBlender "NetworKit::EdgeScoreBlender"(_EdgeScore[double]):
 		_EdgeScoreBlender(const _Graph&, const vector[double]&, const vector[double]&, const vector[bool_t]&) except +
@@ -10114,7 +10114,7 @@ cdef class EdgeScoreBlender(EdgeScore):
 	cdef bool_t isDoubleValue(self):
 		return True
 
-cdef extern from "../include/networkit/edgescores/GeometricMeanScore.hpp":
+cdef extern from "<networkit/edgescores/GeometricMeanScore.hpp>":
 
 	cdef cppclass _GeometricMeanScore "NetworKit::GeometricMeanScore"(_EdgeScore[double]):
 		_GeometricMeanScore(const _Graph& G, const vector[double]& a) except +
@@ -10140,7 +10140,7 @@ cdef class GeometricMeanScore(EdgeScore):
 	cdef bool_t isDoubleValue(self):
 		return True
 
-cdef extern from "../include/networkit/edgescores/EdgeScoreAsWeight.hpp":
+cdef extern from "<networkit/edgescores/EdgeScoreAsWeight.hpp>":
 
 	cdef cppclass _EdgeScoreAsWeight "NetworKit::EdgeScoreAsWeight":
 		_EdgeScoreAsWeight(const _Graph& G, const vector[double]& score, bool_t squared, edgeweight offset, edgeweight factor) except +
@@ -10188,7 +10188,7 @@ cdef class EdgeScoreAsWeight:
 		return Graph(0).setThis(self._this.calculate())
 
 # Module: distances
-cdef extern from "../include/networkit/distance/AdamicAdarDistance.hpp":
+cdef extern from "<networkit/distance/AdamicAdarDistance.hpp>":
 
 	cdef cppclass _AdamicAdarDistance "NetworKit::AdamicAdarDistance":
 		_AdamicAdarDistance(const _Graph& G) except +
@@ -10231,7 +10231,7 @@ cdef class AdamicAdarDistance:
 
 # Module: sparsification
 
-cdef extern from "../include/networkit/sparsification/SimmelianOverlapScore.hpp":
+cdef extern from "<networkit/sparsification/SimmelianOverlapScore.hpp>":
 
 	cdef cppclass _SimmelianOverlapScore "NetworKit::SimmelianOverlapScore"(_EdgeScore[double]):
 		_SimmelianOverlapScore(const _Graph& G, const vector[count]& triangles, count maxRank) except +
@@ -10259,7 +10259,7 @@ cdef class SimmelianOverlapScore(EdgeScore):
 	cdef bool_t isDoubleValue(self):
 		return True
 
-cdef extern from "../include/networkit/edgescores/PrefixJaccardScore.hpp":
+cdef extern from "<networkit/edgescores/PrefixJaccardScore.hpp>":
 
 	cdef cppclass _PrefixJaccardScore "NetworKit::PrefixJaccardScore<double>"(_EdgeScore[double]):
 		_PrefixJaccardScore(const _Graph& G, const vector[double]& a) except +
@@ -10275,7 +10275,7 @@ cdef class PrefixJaccardScore(EdgeScore):
 	cdef bool_t isDoubleValue(self):
 		return True
 
-cdef extern from "../include/networkit/sparsification/MultiscaleScore.hpp":
+cdef extern from "<networkit/sparsification/MultiscaleScore.hpp>":
 
 	cdef cppclass _MultiscaleScore "NetworKit::MultiscaleScore"(_EdgeScore[double]):
 		_MultiscaleScore(const _Graph& G, const vector[double]& a) except +
@@ -10303,7 +10303,7 @@ cdef class MultiscaleScore(EdgeScore):
 	cdef bool_t isDoubleValue(self):
 		return True
 
-cdef extern from "../include/networkit/sparsification/RandomEdgeScore.hpp":
+cdef extern from "<networkit/sparsification/RandomEdgeScore.hpp>":
 
 	cdef cppclass _RandomEdgeScore "NetworKit::RandomEdgeScore"(_EdgeScore[double]):
 		_RandomEdgeScore(const _Graph& G) except +
@@ -10325,7 +10325,7 @@ cdef class RandomEdgeScore(EdgeScore):
 	cdef bool_t isDoubleValue(self):
 		return True
 
-cdef extern from "../include/networkit/sparsification/LocalSimilarityScore.hpp":
+cdef extern from "<networkit/sparsification/LocalSimilarityScore.hpp>":
 
 	cdef cppclass _LocalSimilarityScore "NetworKit::LocalSimilarityScore"(_EdgeScore[double]):
 		_LocalSimilarityScore(const _Graph& G, const vector[count]& triangles) except +
@@ -10353,7 +10353,7 @@ cdef class LocalSimilarityScore(EdgeScore):
 	cdef bool_t isDoubleValue(self):
 		return True
 
-cdef extern from "../include/networkit/sparsification/ForestFireScore.hpp":
+cdef extern from "<networkit/sparsification/ForestFireScore.hpp>":
 
 	cdef cppclass _ForestFireScore "NetworKit::ForestFireScore"(_EdgeScore[double]):
 		_ForestFireScore(const _Graph& G, double pf, double tebr) except +
@@ -10381,7 +10381,7 @@ cdef class ForestFireScore(EdgeScore):
 	cdef bool_t isDoubleValue(self):
 		return True
 
-cdef extern from "../include/networkit/sparsification/LocalDegreeScore.hpp":
+cdef extern from "<networkit/sparsification/LocalDegreeScore.hpp>":
 
 	cdef cppclass _LocalDegreeScore "NetworKit::LocalDegreeScore"(_EdgeScore[double]):
 		_LocalDegreeScore(const _Graph& G) except +
@@ -10405,7 +10405,7 @@ cdef class LocalDegreeScore(EdgeScore):
 	cdef bool_t isDoubleValue(self):
 		return True
 
-cdef extern from "../include/networkit/distance/JaccardDistance.hpp":
+cdef extern from "<networkit/distance/JaccardDistance.hpp>":
 
 	cdef cppclass _JaccardDistance "NetworKit::JaccardDistance":
 		_JaccardDistance(const _Graph& G, const vector[count]& triangles) except +
@@ -10441,7 +10441,7 @@ cdef class JaccardDistance:
 		return self._this.getEdgeScores()
 
 
-cdef extern from "../include/networkit/distance/AlgebraicDistance.hpp":
+cdef extern from "<networkit/distance/AlgebraicDistance.hpp>":
 
 	cdef cppclass _AlgebraicDistance "NetworKit::AlgebraicDistance":
 		_AlgebraicDistance(_Graph G, count numberSystems, count numberIterations, double omega, index norm, bool_t withEdgeScores) except +
@@ -10523,7 +10523,7 @@ cdef class JaccardSimilarityAttributizer:
 		self._this.preprocess()
 		return [1 - x for x in self._this.getEdgeScores()]
 
-cdef extern from "../include/networkit/sparsification/RandomNodeEdgeScore.hpp":
+cdef extern from "<networkit/sparsification/RandomNodeEdgeScore.hpp>":
 
 	cdef cppclass _RandomNodeEdgeScore "NetworKit::RandomNodeEdgeScore"(_EdgeScore[double]):
 		_RandomNodeEdgeScore(const _Graph& G) except +
@@ -10549,7 +10549,7 @@ ctypedef fused DoubleInt:
 	int
 	double
 
-cdef extern from "../include/networkit/sparsification/LocalFilterScore.hpp":
+cdef extern from "<networkit/sparsification/LocalFilterScore.hpp>":
 
 	cdef cppclass _LocalFilterScoreDouble "NetworKit::LocalFilterScore<double>"(_EdgeScore[double]):
 		_LocalFilterScoreDouble(const _Graph& G, const vector[double]& a, bool_t logarithmic) except +
@@ -10584,7 +10584,7 @@ cdef class LocalFilterScore(EdgeScore):
 	cdef bool_t isDoubleValue(self):
 		return True
 
-cdef extern from "../include/networkit/sparsification/ChanceCorrectedTriangleScore.hpp":
+cdef extern from "<networkit/sparsification/ChanceCorrectedTriangleScore.hpp>":
 
 	cdef cppclass _ChanceCorrectedTriangleScore "NetworKit::ChanceCorrectedTriangleScore"(_EdgeScore[double]):
 		_ChanceCorrectedTriangleScore(const _Graph& G, const vector[count]& triangles) except +
@@ -10610,7 +10610,7 @@ cdef class ChanceCorrectedTriangleScore(EdgeScore):
 	cdef bool_t isDoubleValue(self):
 		return True
 
-cdef extern from "../include/networkit/sparsification/SCANStructuralSimilarityScore.hpp":
+cdef extern from "<networkit/sparsification/SCANStructuralSimilarityScore.hpp>":
 
 	cdef cppclass _SCANStructuralSimilarityScore "NetworKit::SCANStructuralSimilarityScore"(_EdgeScore[double]):
 		_SCANStructuralSimilarityScore(_Graph G, const vector[count]& triangles) except +
@@ -10626,7 +10626,7 @@ cdef class SCANStructuralSimilarityScore(EdgeScore):
 	cdef bool_t isDoubleValue(self):
 		return True
 
-cdef extern from "../include/networkit/sparsification/GlobalThresholdFilter.hpp":
+cdef extern from "<networkit/sparsification/GlobalThresholdFilter.hpp>":
 
 	cdef cppclass _GlobalThresholdFilter "NetworKit::GlobalThresholdFilter":
 		_GlobalThresholdFilter(const _Graph& G, const vector[double]& a, double alpha, bool_t above) except +
@@ -10666,7 +10666,7 @@ cdef class GlobalThresholdFilter:
 
 # matching
 
-cdef extern from "../include/networkit/matching/Matching.hpp":
+cdef extern from "<networkit/matching/Matching.hpp>":
 
 	cdef cppclass _Matching "NetworKit::Matching":
 		_Matching() except +
@@ -10744,7 +10744,7 @@ cdef class Matching:
 
 
 
-cdef extern from "../include/networkit/matching/Matcher.hpp":
+cdef extern from "<networkit/matching/Matcher.hpp>":
 
 	cdef cppclass _Matcher "NetworKit::Matcher"(_Algorithm):
 		_Matcher(const _Graph _G) except +
@@ -10770,7 +10770,7 @@ cdef class Matcher(Algorithm):
 		return Matching().setThis((<_Matcher*>(self._this)).getMatching())
 
 
-cdef extern from "../include/networkit/matching/PathGrowingMatcher.hpp":
+cdef extern from "<networkit/matching/PathGrowingMatcher.hpp>":
 
 	cdef cppclass _PathGrowingMatcher "NetworKit::PathGrowingMatcher"(_Matcher):
 		_PathGrowingMatcher(_Graph) except +
@@ -10831,7 +10831,7 @@ def sort2(sample):
 	return result
 
 
-cdef extern from "../include/networkit/distance/CommuteTimeDistance.hpp":
+cdef extern from "<networkit/distance/CommuteTimeDistance.hpp>":
 
 	cdef cppclass _CommuteTimeDistance "NetworKit::CommuteTimeDistance"(_Algorithm):
 		_CommuteTimeDistance(_Graph G, double tol) except +
@@ -10909,7 +10909,7 @@ def gini(values):
 
 
 # simulation
-cdef extern from "../include/networkit/simulation/EpidemicSimulationSEIR.hpp":
+cdef extern from "<networkit/simulation/EpidemicSimulationSEIR.hpp>":
 
 	cdef cppclass _EpidemicSimulationSEIR "NetworKit::EpidemicSimulationSEIR" (_Algorithm):
 		_EpidemicSimulationSEIR(_Graph, count, double, count, count, node) except +
@@ -10941,7 +10941,7 @@ cdef class EpidemicSimulationSEIR(Algorithm):
 
 
 
-cdef extern from "../include/networkit/centrality/SpanningEdgeCentrality.hpp":
+cdef extern from "<networkit/centrality/SpanningEdgeCentrality.hpp>":
 
 	cdef cppclass _SpanningEdgeCentrality "NetworKit::SpanningEdgeCentrality"(_Algorithm):
 		_SpanningEdgeCentrality(_Graph G, double tol) except +
@@ -10991,7 +10991,7 @@ cdef class SpanningEdgeCentrality(Algorithm):
 ## Module: viz
 
 
-cdef extern from "../include/networkit/viz/GraphLayoutAlgorithm.hpp":
+cdef extern from "<networkit/viz/GraphLayoutAlgorithm.hpp>":
 
 	cdef cppclass _GraphLayoutAlgorithm "NetworKit::GraphLayoutAlgorithm"[T]:
 		_GraphLayoutAlgorithm(_Graph, count) except +
@@ -11050,13 +11050,13 @@ cdef class GraphLayoutAlgorithm:
 
 
 
-cdef extern from "../include/networkit/viz/MaxentStress.hpp" namespace "NetworKit":
+cdef extern from "<networkit/viz/MaxentStress.hpp>" namespace "NetworKit":
 
 	enum _GraphDistance "NetworKit::MaxentStress::GraphDistance":
 		EDGE_WEIGHT,
 		ALGEBRAIC_DISTANCE
 
-cdef extern from "../include/networkit/viz/MaxentStress.hpp" namespace "NetworKit":
+cdef extern from "<networkit/viz/MaxentStress.hpp>" namespace "NetworKit":
 
 	enum _LinearSolverType "NetworKit::MaxentStress::LinearSolverType":
 		LAMG,
@@ -11064,7 +11064,7 @@ cdef extern from "../include/networkit/viz/MaxentStress.hpp" namespace "NetworKi
 		CONJUGATE_GRADIENT_DIAGONAL_PRECONDITIONER
 
 
-cdef extern from "../include/networkit/viz/MaxentStress.hpp":
+cdef extern from "<networkit/viz/MaxentStress.hpp>":
 
 	cdef cppclass _MaxentStress "NetworKit::MaxentStress" (_GraphLayoutAlgorithm[double]):
 		_MaxentStress(_Graph G, count dim, count k, double tolerance, _LinearSolverType linearSolverType, bool_t fastComputation, _GraphDistance graphDistance) except +
@@ -11197,7 +11197,7 @@ cdef class MaxentStress (GraphLayoutAlgorithm):
 
 
 
-cdef extern from "../include/networkit/viz/PivotMDS.hpp":
+cdef extern from "<networkit/viz/PivotMDS.hpp>":
 
 	cdef cppclass _PivotMDS "NetworKit::PivotMDS" (_GraphLayoutAlgorithm[double]):
 				_PivotMDS(_Graph G, count dim, count numberOfPivots) except +
@@ -11237,7 +11237,7 @@ cdef class PivotMDS (GraphLayoutAlgorithm):
 
 # Module: randomization
 
-cdef extern from "../include/networkit/randomization/GlobalCurveball.hpp":
+cdef extern from "<networkit/randomization/GlobalCurveball.hpp>":
 
 	cdef cppclass _GlobalCurveball "NetworKit::GlobalCurveball"(_Algorithm):
 		_GlobalCurveball(_Graph, count) except +
@@ -11289,7 +11289,7 @@ cdef class GlobalCurveball(Algorithm):
 		return Graph().setThis((<_GlobalCurveball*>self._this).getGraph())
 
 
-cdef extern from "../include/networkit/randomization/CurveballUniformTradeGenerator.hpp":
+cdef extern from "<networkit/randomization/CurveballUniformTradeGenerator.hpp>":
 
 	cdef cppclass _CurveballUniformTradeGenerator "NetworKit::CurveballUniformTradeGenerator":
 		_CurveballUniformTradeGenerator(count runLength, count numNodes) except +
@@ -11323,7 +11323,7 @@ cdef class CurveballUniformTradeGenerator:
 	def generate(self):
 		return self._this.generate()
 
-cdef extern from "../include/networkit/randomization/CurveballGlobalTradeGenerator.hpp":
+cdef extern from "<networkit/randomization/CurveballGlobalTradeGenerator.hpp>":
 
 	cdef cppclass _CurveballGlobalTradeGenerator "NetworKit::CurveballGlobalTradeGenerator":
 		_CurveballGlobalTradeGenerator(count runLength, count numNodes) except +
@@ -11360,7 +11360,7 @@ cdef class CurveballGlobalTradeGenerator:
 	def generate(self):
 		return self._this.generate()
 
-cdef extern from "../include/networkit/randomization/Curveball.hpp":
+cdef extern from "<networkit/randomization/Curveball.hpp>":
 
 	cdef cppclass _Curveball "NetworKit::Curveball"(_Algorithm):
 		_Curveball(_Graph) except +

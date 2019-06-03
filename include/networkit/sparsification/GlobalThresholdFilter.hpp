@@ -8,7 +8,7 @@
 #ifndef GLOBALTHRESHOLDFILTER_H_
 #define GLOBALTHRESHOLDFILTER_H_
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

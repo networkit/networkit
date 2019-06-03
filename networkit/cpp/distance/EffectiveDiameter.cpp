@@ -5,9 +5,9 @@
 *      Author: Marc Nemes
 */
 
-#include "../../include/networkit/distance/EffectiveDiameter.hpp"
-#include "../../include/networkit/components/ConnectedComponents.hpp"
-#include "../../include/networkit/auxiliary/Random.hpp"
+#include <networkit/distance/EffectiveDiameter.hpp>
+#include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/auxiliary/Random.hpp>
 
 #include <math.h>
 #include <iterator>

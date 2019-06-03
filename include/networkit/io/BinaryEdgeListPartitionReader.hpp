@@ -1,7 +1,7 @@
 #ifndef BINARYEDGELISTPARTITION_H_
 #define BINARYEDGELISTPARTITION_H_
 
-#include "../structures/Partition.hpp"
+#include <networkit/structures/Partition.hpp>
 #include <string>
 
 namespace NetworKit {

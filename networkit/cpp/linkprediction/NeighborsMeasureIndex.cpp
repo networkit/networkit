@@ -5,7 +5,7 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include "../../include/networkit/linkprediction/NeighborsMeasureIndex.hpp"
+#include <networkit/linkprediction/NeighborsMeasureIndex.hpp>
 
 namespace NetworKit {
 

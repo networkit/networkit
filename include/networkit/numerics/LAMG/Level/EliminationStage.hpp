@@ -8,7 +8,7 @@
 #ifndef ELIMINATIONSTAGE_H_
 #define ELIMINATIONSTAGE_H_
 
-#include "../../../algebraic/Vector.hpp"
+#include <networkit/algebraic/Vector.hpp>
 
 namespace NetworKit {
 

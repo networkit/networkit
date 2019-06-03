@@ -13,9 +13,9 @@
 #include <fstream>
 #include <unordered_map>
 
-#include "../graph/Graph.hpp"
-#include "../auxiliary/StringTools.hpp"
-#include "../structures/Cover.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/auxiliary/StringTools.hpp>
+#include <networkit/structures/Cover.hpp>
 
 namespace NetworKit {
 

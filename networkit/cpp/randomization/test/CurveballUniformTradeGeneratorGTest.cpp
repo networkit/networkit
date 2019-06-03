@@ -7,7 +7,7 @@
 
 #include <gtest/gtest.h>
 
-#include "../../../include/networkit/randomization/CurveballUniformTradeGenerator.hpp"
+#include <networkit/randomization/CurveballUniformTradeGenerator.hpp>
 
 namespace NetworKit {
 

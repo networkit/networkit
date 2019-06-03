@@ -7,10 +7,10 @@
 
 #include <gtest/gtest.h>
 
-#include "../../../include/networkit/distance/CommuteTimeDistance.hpp"
-#include "../../../include/networkit/graph/Graph.hpp"
-#include "../../../include/networkit/io/METISGraphReader.hpp"
-#include "../../../include/networkit/centrality/SpanningEdgeCentrality.hpp"
+#include <networkit/distance/CommuteTimeDistance.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/io/METISGraphReader.hpp>
+#include <networkit/centrality/SpanningEdgeCentrality.hpp>
 
 #include <vector>
 #include <string>

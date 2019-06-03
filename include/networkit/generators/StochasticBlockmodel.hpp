@@ -8,7 +8,7 @@
 #ifndef STOCHASTICBLOCKMODEL_H_
 #define STOCHASTICBLOCKMODEL_H_
 
-#include "StaticGraphGenerator.hpp"
+#include <networkit/generators/StaticGraphGenerator.hpp>
 
 namespace NetworKit {
 

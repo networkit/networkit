@@ -9,14 +9,14 @@
 #define NETWORKIT_CPP_NUMERICS_LAMG_LAMG_H_
 
 #include <vector>
+#include <omp.h>
 
-#include "../LinearSolver.hpp"
-#include "MultiLevelSetup.hpp"
-#include "SolverLamg.hpp"
-#include "../GaussSeidelRelaxation.hpp"
-#include "../../algebraic/MatrixTools.hpp"
-#include "../../components/ParallelConnectedComponents.hpp"
-#include "omp.h"
+#include <networkit/numerics/LinearSolver.hpp>
+#include <networkit/numerics/LAMG/MultiLevelSetup.hpp>
+#include <networkit/numerics/LAMG/SolverLamg.hpp>
+#include <networkit/numerics/GaussSeidelRelaxation.hpp>
+#include <networkit/algebraic/MatrixTools.hpp>
+#include <networkit/components/ParallelConnectedComponents.hpp>
 
 namespace NetworKit {
 

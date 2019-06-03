@@ -6,21 +6,21 @@
 */
 #include <gtest/gtest.h>
 
-#include "../../../include/networkit/components/ConnectedComponents.hpp"
-#include "../../../include/networkit/components/ParallelConnectedComponents.hpp"
-#include "../../../include/networkit/components/StronglyConnectedComponents.hpp"
-#include "../../../include/networkit/components/DynConnectedComponents.hpp"
-#include "../../../include/networkit/components/WeaklyConnectedComponents.hpp"
-#include "../../../include/networkit/components/DynWeaklyConnectedComponents.hpp"
-#include "../../../include/networkit/generators/ErdosRenyiGenerator.hpp"
+#include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/components/ParallelConnectedComponents.hpp>
+#include <networkit/components/StronglyConnectedComponents.hpp>
+#include <networkit/components/DynConnectedComponents.hpp>
+#include <networkit/components/WeaklyConnectedComponents.hpp>
+#include <networkit/components/DynWeaklyConnectedComponents.hpp>
+#include <networkit/generators/ErdosRenyiGenerator.hpp>
 
-#include "../../../include/networkit/distance/Diameter.hpp"
-#include "../../../include/networkit/io/METISGraphReader.hpp"
-#include "../../../include/networkit/io/EdgeListReader.hpp"
-#include "../../../include/networkit/io/KONECTGraphReader.hpp"
-#include "../../../include/networkit/generators/HavelHakimiGenerator.hpp"
-#include "../../../include/networkit/auxiliary/Log.hpp"
-#include "../../../include/networkit/generators/DorogovtsevMendesGenerator.hpp"
+#include <networkit/distance/Diameter.hpp>
+#include <networkit/io/METISGraphReader.hpp>
+#include <networkit/io/EdgeListReader.hpp>
+#include <networkit/io/KONECTGraphReader.hpp>
+#include <networkit/generators/HavelHakimiGenerator.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 
 namespace NetworKit {
 

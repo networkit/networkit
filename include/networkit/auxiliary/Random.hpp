@@ -13,7 +13,7 @@
 #include <cstdint>
 #include <random>
 #include <stdexcept>
-#include "Log.hpp"
+#include <networkit/auxiliary/Log.hpp>
 
 namespace Aux {
 

@@ -9,8 +9,8 @@
 
 #include <unordered_map>
 
-#include "../graph/Graph.hpp"
-#include "GraphReader.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/io/GraphReader.hpp>
 
 namespace NetworKit {
 

@@ -2,8 +2,8 @@
  *
  */
 
-#include "../../include/networkit/community/AdjustedRandMeasure.hpp"
-#include "../../include/networkit/community/PartitionIntersection.hpp"
+#include <networkit/community/AdjustedRandMeasure.hpp>
+#include <networkit/community/PartitionIntersection.hpp>
 
 
 double NetworKit::AdjustedRandMeasure::getDissimilarity(const NetworKit::Graph &G, const NetworKit::Partition &zeta, const NetworKit::Partition &eta) {

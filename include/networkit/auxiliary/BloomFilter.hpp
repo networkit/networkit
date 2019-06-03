@@ -8,8 +8,8 @@
 #ifndef BLOOMFILTER_H_
 #define BLOOMFILTER_H_
 
-#include "../auxiliary/Log.hpp"
-#include "../Globals.hpp"
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/Globals.hpp>
 
 namespace Aux {
 

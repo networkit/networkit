@@ -5,7 +5,7 @@
  *      Author: Henning
  */
 
-#include "../../include/networkit/community/Conductance.hpp"
+#include <networkit/community/Conductance.hpp>
 
 
 namespace NetworKit {

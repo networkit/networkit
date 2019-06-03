@@ -8,7 +8,7 @@
 #ifndef NETWORKIT_CPP_NUMERICS_PRECONDITIONER_DIAGONALPRECONDITIONER_H_
 #define NETWORKIT_CPP_NUMERICS_PRECONDITIONER_DIAGONALPRECONDITIONER_H_
 
-#include "../../algebraic/CSRMatrix.hpp"
+#include <networkit/algebraic/CSRMatrix.hpp>
 
 namespace NetworKit {
 

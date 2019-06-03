@@ -5,11 +5,11 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "../../include/networkit/community/Modularity.hpp"
+#include <networkit/community/Modularity.hpp>
 
 #include <cmath>
 #include <stdexcept>
-#include "../../include/networkit/community/Coverage.hpp"
+#include <networkit/community/Coverage.hpp>
 
 
 

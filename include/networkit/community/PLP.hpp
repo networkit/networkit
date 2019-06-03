@@ -8,8 +8,8 @@
 #ifndef PLP_H_
 #define PLP_H_
 
-#include "CommunityDetectionAlgorithm.hpp"
-#include "../structures/Partition.hpp"
+#include <networkit/community/CommunityDetectionAlgorithm.hpp>
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 

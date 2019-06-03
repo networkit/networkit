@@ -8,7 +8,7 @@
 #ifndef DOROGOVTSEVMENDESGENERATOR_H_
 #define DOROGOVTSEVMENDESGENERATOR_H_
 
-#include "StaticGraphGenerator.hpp"
+#include <networkit/generators/StaticGraphGenerator.hpp>
 
 namespace NetworKit {
 

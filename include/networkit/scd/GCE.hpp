@@ -10,8 +10,8 @@
 
 #include <unordered_set>
 
-#include "SelectiveCommunityDetector.hpp"
-#include "../auxiliary/SetIntersector.hpp"
+#include <networkit/scd/SelectiveCommunityDetector.hpp>
+#include <networkit/auxiliary/SetIntersector.hpp>
 
 
 namespace NetworKit {

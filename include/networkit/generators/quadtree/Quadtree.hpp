@@ -13,9 +13,9 @@
 #include <cmath>
 #include <omp.h>
 #include <functional>
-#include "QuadNode.hpp"
-#include "../../geometric/HyperbolicSpace.hpp"
-#include "../../auxiliary/Parallel.hpp"
+#include <networkit/generators/quadtree/QuadNode.hpp>
+#include <networkit/geometric/HyperbolicSpace.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
 
 namespace NetworKit {
 

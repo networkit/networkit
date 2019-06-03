@@ -9,8 +9,8 @@
 #define PAGERANKNIBBLE_H_
 
 #include <set>
-#include "../graph/Graph.hpp"
-#include "SelectiveCommunityDetector.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/scd/SelectiveCommunityDetector.hpp>
 
 
 namespace NetworKit {

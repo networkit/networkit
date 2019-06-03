@@ -1,10 +1,10 @@
 #ifndef LFRGENERATOR_H
 #define LFRGENERATOR_H
 
-#include "../graph/Graph.hpp"
-#include "../structures/Partition.hpp"
-#include "../base/Algorithm.hpp"
-#include "StaticGraphGenerator.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/structures/Partition.hpp>
+#include <networkit/base/Algorithm.hpp>
+#include <networkit/generators/StaticGraphGenerator.hpp>
 
 namespace NetworKit {
 

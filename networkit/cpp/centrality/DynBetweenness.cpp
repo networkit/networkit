@@ -11,13 +11,13 @@
 #include<algorithm>
 #include <time.h>
 
-#include "../../include/networkit/auxiliary/Log.hpp"
-#include "../../include/networkit/auxiliary/NumericTools.hpp"
-#include "../../include/networkit/auxiliary/PrioQueue.hpp"
-#include "../../include/networkit/distance/BFS.hpp"
-#include "../../include/networkit/distance/Dijkstra.hpp"
-#include "../../include/networkit/distance/SSSP.hpp"
-#include "../../include/networkit/centrality/DynBetweenness.hpp"
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/NumericTools.hpp>
+#include <networkit/auxiliary/PrioQueue.hpp>
+#include <networkit/distance/BFS.hpp>
+#include <networkit/distance/Dijkstra.hpp>
+#include <networkit/distance/SSSP.hpp>
+#include <networkit/centrality/DynBetweenness.hpp>
 
 namespace NetworKit {
 

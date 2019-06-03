@@ -5,12 +5,12 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#include "../../include/networkit/algebraic/CSRMatrix.hpp"
+#include <networkit/algebraic/CSRMatrix.hpp>
 
 #include <cassert>
 #include <atomic>
 #include <numeric>
-#include "omp.h"
+#include <omp.h>
 
 namespace NetworKit {
 

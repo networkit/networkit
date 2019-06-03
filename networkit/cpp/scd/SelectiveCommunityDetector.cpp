@@ -5,7 +5,7 @@
  *      Author: cls, Yassine Marrakchi
  */
 
-#include "../../include/networkit/scd/SelectiveCommunityDetector.hpp"
+#include <networkit/scd/SelectiveCommunityDetector.hpp>
 
 namespace NetworKit {
 

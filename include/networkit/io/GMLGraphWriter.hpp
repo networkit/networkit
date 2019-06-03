@@ -10,7 +10,7 @@
 
 #include <fstream>
 
-#include "GraphWriter.hpp"
+#include <networkit/io/GraphWriter.hpp>
 
 namespace NetworKit {
 

@@ -2,10 +2,10 @@
  * Author: Michael Hamann <michael.hamann@kit.edu>
  */
 
-#include "../../include/networkit/community/CutClustering.hpp"
-#include "../../include/networkit/flow/EdmondsKarp.hpp"
-#include "../../include/networkit/components/ConnectedComponents.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/community/CutClustering.hpp>
+#include <networkit/flow/EdmondsKarp.hpp>
+#include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
 #include <sstream>
 #include <stdexcept>

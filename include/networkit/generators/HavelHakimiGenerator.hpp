@@ -10,8 +10,8 @@
 
 #include <vector>
 
-#include "../graph/Graph.hpp"
-#include "StaticDegreeSequenceGenerator.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/generators/StaticDegreeSequenceGenerator.hpp>
 
 namespace NetworKit {
 

@@ -8,7 +8,7 @@
 #ifndef PARALLELAGGLOMERATIVECLUSTERER_H_
 #define PARALLELAGGLOMERATIVECLUSTERER_H_
 
-#include "CommunityDetectionAlgorithm.hpp"
+#include <networkit/community/CommunityDetectionAlgorithm.hpp>
 
 namespace NetworKit {
 

@@ -8,7 +8,7 @@
 #ifndef DYNAMICGRAPHREADER_H_
 #define DYNAMICGRAPHREADER_H_
 
-#include "../dynamics/GraphEventProxy.hpp"
+#include <networkit/dynamics/GraphEventProxy.hpp>
 
 namespace NetworKit {
 

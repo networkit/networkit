@@ -13,7 +13,7 @@
 #include <cmath>
 #include <omp.h>
 #include <functional>
-#include "QuadNodeCartesianEuclid.hpp"
+#include <networkit/generators/quadtree/QuadNodeCartesianEuclid.hpp>
 
 namespace NetworKit {
 

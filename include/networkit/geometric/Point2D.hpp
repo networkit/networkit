@@ -13,7 +13,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstdint>
-#include "../Globals.hpp"
+#include <networkit/Globals.hpp>
 
 namespace NetworKit {
 

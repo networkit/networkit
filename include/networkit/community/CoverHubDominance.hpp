@@ -1,7 +1,7 @@
 #ifndef COVERHUBDOMINANCE_H
 #define COVERHUBDOMINANCE_H
 
-#include "LocalCoverEvaluation.hpp"
+#include <networkit/community/LocalCoverEvaluation.hpp>
 
 namespace NetworKit {
 

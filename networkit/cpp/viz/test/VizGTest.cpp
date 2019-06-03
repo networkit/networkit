@@ -9,17 +9,17 @@
 
 #include <vector>
 
-#include "../../../include/networkit/viz/PostscriptWriter.hpp"
-#include "../../../include/networkit/viz/MaxentStress.hpp"
-#include "../../../include/networkit/graph/Graph.hpp"
-#include "../../../include/networkit/community/ClusteringGenerator.hpp"
-#include "../../../include/networkit/generators/ClusteredRandomGraphGenerator.hpp"
-#include "../../../include/networkit/io/PartitionWriter.hpp"
-#include "../../../include/networkit/io/METISGraphReader.hpp"
-#include "../../../include/networkit/io/METISGraphWriter.hpp"
-#include "../../../include/networkit/io/DibapGraphReader.hpp"
-#include "../../../include/networkit/generators/PubWebGenerator.hpp"
-#include "../../../include/networkit/auxiliary/Random.hpp"
+#include <networkit/viz/PostscriptWriter.hpp>
+#include <networkit/viz/MaxentStress.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/community/ClusteringGenerator.hpp>
+#include <networkit/generators/ClusteredRandomGraphGenerator.hpp>
+#include <networkit/io/PartitionWriter.hpp>
+#include <networkit/io/METISGraphReader.hpp>
+#include <networkit/io/METISGraphWriter.hpp>
+#include <networkit/io/DibapGraphReader.hpp>
+#include <networkit/generators/PubWebGenerator.hpp>
+#include <networkit/auxiliary/Random.hpp>
 
 
 namespace NetworKit {

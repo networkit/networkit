@@ -8,8 +8,8 @@
 #ifndef REVERSEBFS_H_
 #define REVERSEBFS_H_
 
-#include "../distance/SSSP.hpp"
-#include "../graph/Graph.hpp"
+#include <networkit/distance/SSSP.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

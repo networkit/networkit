@@ -7,18 +7,18 @@
 
 #include <gtest/gtest.h>
 
-#include "../../../include/networkit/graph/Graph.hpp"
-#include "../../../include/networkit/auxiliary/Timer.hpp"
-#include "../../../include/networkit/edgescores/ChibaNishizekiTriangleEdgeScore.hpp"
-#include "../../../include/networkit/edgescores/TriangleEdgeScore.hpp"
-#include "../../../include/networkit/edgescores/PrefixJaccardScore.hpp"
-#include "../../../include/networkit/sparsification/SimmelianOverlapScore.hpp"
-#include "../../../include/networkit/sparsification/MultiscaleScore.hpp"
-#include "../../../include/networkit/sparsification/LocalSimilarityScore.hpp"
-#include "../../../include/networkit/sparsification/RandomEdgeScore.hpp"
-#include "../../../include/networkit/sparsification/GlobalThresholdFilter.hpp"
-#include "../../../include/networkit/io/METISGraphReader.hpp"
-#include "../../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/auxiliary/Timer.hpp>
+#include <networkit/edgescores/ChibaNishizekiTriangleEdgeScore.hpp>
+#include <networkit/edgescores/TriangleEdgeScore.hpp>
+#include <networkit/edgescores/PrefixJaccardScore.hpp>
+#include <networkit/sparsification/SimmelianOverlapScore.hpp>
+#include <networkit/sparsification/MultiscaleScore.hpp>
+#include <networkit/sparsification/LocalSimilarityScore.hpp>
+#include <networkit/sparsification/RandomEdgeScore.hpp>
+#include <networkit/sparsification/GlobalThresholdFilter.hpp>
+#include <networkit/io/METISGraphReader.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
 

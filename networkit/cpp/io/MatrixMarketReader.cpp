@@ -5,7 +5,7 @@
  *      Author: dhoske
  */
 
-#include "../../include/networkit/io/MatrixMarketReader.hpp"
+#include <networkit/io/MatrixMarketReader.hpp>
 
 #include <cctype>
 #include <string>

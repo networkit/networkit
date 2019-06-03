@@ -8,8 +8,8 @@
 #ifndef APPROXNEIGHBORHOODFUNCTION_H_
 #define APPROXNEIGHBORHOODFUNCTION_H_
 
-#include "../base/Algorithm.hpp"
-#include "../graph/Graph.hpp"
+#include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

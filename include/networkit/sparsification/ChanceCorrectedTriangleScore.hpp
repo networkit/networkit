@@ -8,7 +8,7 @@
 #ifndef CHANCECORRECTEDTRIANGLESCORE_H
 #define CHANCECORRECTEDTRIANGLESCORE_H
 
-#include "../edgescores/EdgeScore.hpp"
+#include <networkit/edgescores/EdgeScore.hpp>
 
 namespace NetworKit {
 

@@ -5,7 +5,7 @@
  *      Author: Henning, Christian Staudt
  */
 
-#include "../../include/networkit/distance/Dijkstra.hpp"
+#include <networkit/distance/Dijkstra.hpp>
 
 #include <algorithm>
 

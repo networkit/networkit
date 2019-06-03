@@ -8,7 +8,7 @@
 #ifndef EDMONDSKARP_H_
 #define EDMONDSKARP_H_
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 #include <vector>
 
 namespace NetworKit {

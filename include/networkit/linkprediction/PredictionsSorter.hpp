@@ -8,7 +8,7 @@
 #ifndef PREDICTIONSSORTER_H_
 #define PREDICTIONSSORTER_H_
 
-#include "LinkPredictor.hpp"
+#include <networkit/linkprediction/LinkPredictor.hpp>
 
 namespace NetworKit {
 

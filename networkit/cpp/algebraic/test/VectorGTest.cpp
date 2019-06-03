@@ -6,10 +6,10 @@
  */
 #include <gtest/gtest.h>
 
-#include "../../../include/networkit/algebraic/Vector.hpp"
-#include "../../../include/networkit/algebraic/DynamicMatrix.hpp"
-#include "../../../include/networkit/algebraic/AlgebraicGlobals.hpp"
-#include "../../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/algebraic/Vector.hpp>
+#include <networkit/algebraic/DynamicMatrix.hpp>
+#include <networkit/algebraic/AlgebraicGlobals.hpp>
+#include <networkit/auxiliary/Log.hpp>
 #include <cmath>
 
 namespace NetworKit {

@@ -11,7 +11,7 @@
 
 #include <tlx/container/d_ary_addressable_int_heap.hpp>
 
-#include "Centrality.hpp"
+#include <networkit/centrality/Centrality.hpp>
 
 namespace NetworKit {
 

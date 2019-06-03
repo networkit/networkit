@@ -8,9 +8,9 @@
 #ifndef KRUSKALMSF_H_
 #define KRUSKALMSF_H_
 
-#include "../Globals.hpp"
-#include "Graph.hpp"
-#include "SpanningForest.hpp"
+#include <networkit/Globals.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/graph/SpanningForest.hpp>
 
 namespace NetworKit {
 

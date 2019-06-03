@@ -1,4 +1,4 @@
-#include "../../include/networkit/centrality/LocalClusteringCoefficient.hpp"
+#include <networkit/centrality/LocalClusteringCoefficient.hpp>
 #include <omp.h>
 
 namespace NetworKit {

@@ -10,10 +10,10 @@
 
 #include <set>
 
-#include "../graph/Graph.hpp"
-#include "../dynamics/GraphEvent.hpp"
-#include "../base/DynAlgorithm.hpp"
-#include "SSSP.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/dynamics/GraphEvent.hpp>
+#include <networkit/base/DynAlgorithm.hpp>
+#include <networkit/distance/SSSP.hpp>
 
 namespace NetworKit {
 

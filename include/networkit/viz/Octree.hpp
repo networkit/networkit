@@ -10,10 +10,10 @@
 
 #include <vector>
 
-#include "Point.hpp"
-#include "../algebraic/Vector.hpp"
+#include <networkit/viz/Point.hpp>
+#include <networkit/algebraic/Vector.hpp>
 
-#include "../auxiliary/Log.hpp"
+#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
 

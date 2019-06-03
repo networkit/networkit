@@ -1,7 +1,7 @@
 #ifndef STABLEPARTITIONNODES_H
 #define STABLEPARTITIONNODES_H
 
-#include "LocalPartitionEvaluation.hpp"
+#include <networkit/community/LocalPartitionEvaluation.hpp>
 
 namespace NetworKit {
 

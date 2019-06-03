@@ -7,9 +7,9 @@
 #ifndef MATCHING_H_
 #define MATCHING_H_
 
-#include "../auxiliary/Log.hpp"
-#include "../graph/Graph.hpp"
-#include "../structures/Partition.hpp"
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 

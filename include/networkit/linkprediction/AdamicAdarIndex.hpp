@@ -8,7 +8,7 @@
 #ifndef ADAMICADAR_H_
 #define ADAMICADAR_H_
 
-#include "LinkPredictor.hpp"
+#include <networkit/linkprediction/LinkPredictor.hpp>
 
 namespace NetworKit {
 

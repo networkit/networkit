@@ -5,7 +5,7 @@
  *      Author: Michael Hamann
  */
 
-#include "../../include/networkit/edgescores/EdgeScoreAsWeight.hpp"
+#include <networkit/edgescores/EdgeScoreAsWeight.hpp>
 
 namespace NetworKit {
 

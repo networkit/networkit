@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
 
-#include "../../../include/networkit/clique/MaximalCliques.hpp"
-#include "../../../include/networkit/graph/Graph.hpp"
-#include "../../../include/networkit/io/METISGraphReader.hpp"
-#include "../../../include/networkit/io/EdgeListReader.hpp"
-#include "../../../include/networkit/auxiliary/Log.hpp"
-#include "../../../include/networkit/auxiliary/Timer.hpp"
+#include <networkit/clique/MaximalCliques.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/io/METISGraphReader.hpp>
+#include <networkit/io/EdgeListReader.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/Timer.hpp>
 
 namespace NetworKit {
 

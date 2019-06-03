@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#include "../../include/networkit/auxiliary/BloomFilter.hpp"
-#include "../../include/networkit/auxiliary/Random.hpp"
+#include <networkit/auxiliary/BloomFilter.hpp>
+#include <networkit/auxiliary/Random.hpp>
 
 namespace Aux {
 

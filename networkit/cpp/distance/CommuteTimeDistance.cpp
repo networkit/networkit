@@ -6,15 +6,15 @@
  */
 
 
-#include "../../include/networkit/distance/CommuteTimeDistance.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
-#include "../../include/networkit/auxiliary/Timer.hpp"
+#include <networkit/distance/CommuteTimeDistance.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/Timer.hpp>
 
 #include <fstream>
 #include <sstream>
 #include <math.h>
 
-#include "omp.h"
+#include <omp.h>
 
 namespace NetworKit {
 

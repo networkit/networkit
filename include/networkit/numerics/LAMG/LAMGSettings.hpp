@@ -8,7 +8,7 @@
 #ifndef LAMGSETTINGS_H_
 #define LAMGSETTINGS_H_
 
-#include "../../Globals.hpp"
+#include <networkit/Globals.hpp>
 
 namespace NetworKit {
 

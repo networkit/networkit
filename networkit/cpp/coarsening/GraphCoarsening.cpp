@@ -5,7 +5,7 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "../../include/networkit/coarsening/GraphCoarsening.hpp"
+#include <networkit/coarsening/GraphCoarsening.hpp>
 
 namespace NetworKit {
 

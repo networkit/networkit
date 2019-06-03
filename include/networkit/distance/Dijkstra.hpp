@@ -10,8 +10,8 @@
 
 #include <tlx/container/d_ary_addressable_int_heap.hpp>
 
-#include "../graph/Graph.hpp"
-#include "SSSP.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/distance/SSSP.hpp>
 
 namespace NetworKit {
 

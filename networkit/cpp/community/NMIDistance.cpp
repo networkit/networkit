@@ -5,13 +5,13 @@
  *      Author: cls
  */
 
-#include "../../include/networkit/community/NMIDistance.hpp"
+#include <networkit/community/NMIDistance.hpp>
 
-#include "../../include/networkit/community/DynamicNMIDistance.hpp"
-#include "../../include/networkit/auxiliary/MissingMath.hpp"
-#include "../../include/networkit/auxiliary/NumericTools.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
-#include "../../include/networkit/community/PartitionIntersection.hpp"
+#include <networkit/community/DynamicNMIDistance.hpp>
+#include <networkit/auxiliary/MissingMath.hpp>
+#include <networkit/auxiliary/NumericTools.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/community/PartitionIntersection.hpp>
 
 namespace NetworKit {
 

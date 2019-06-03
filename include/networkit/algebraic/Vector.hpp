@@ -9,8 +9,8 @@
 #define VECTOR_H_
 
 #include <vector>
-#include "../Globals.hpp"
-#include "AlgebraicGlobals.hpp"
+#include <networkit/Globals.hpp>
+#include <networkit/algebraic/AlgebraicGlobals.hpp>
 #include <cassert>
 
 namespace NetworKit {

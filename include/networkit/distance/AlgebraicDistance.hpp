@@ -8,7 +8,7 @@
 #ifndef ALGEBRAICDISTANCE_H_
 #define ALGEBRAICDISTANCE_H_
 
-#include "NodeDistance.hpp"
+#include <networkit/distance/NodeDistance.hpp>
 
 
 namespace NetworKit {

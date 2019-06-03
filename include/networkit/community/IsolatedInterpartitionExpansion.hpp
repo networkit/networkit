@@ -1,7 +1,7 @@
 #ifndef ISOLATEDINTERPARTITIONEXPANSION_H
 #define ISOLATEDINTERPARTITIONEXPANSION_H
 
-#include "LocalPartitionEvaluation.hpp"
+#include <networkit/community/LocalPartitionEvaluation.hpp>
 
 namespace NetworKit {
 

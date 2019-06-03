@@ -5,7 +5,7 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include "../../include/networkit/community/CommunityDetectionAlgorithm.hpp"
+#include <networkit/community/CommunityDetectionAlgorithm.hpp>
 
 namespace NetworKit {
 

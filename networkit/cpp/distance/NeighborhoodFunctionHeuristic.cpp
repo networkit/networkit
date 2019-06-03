@@ -4,11 +4,11 @@
 *      Author: Maximilian Vogel
 */
 
-#include "../../include/networkit/distance/NeighborhoodFunctionHeuristic.hpp"
-#include "../../include/networkit/components/ConnectedComponents.hpp"
-#include "../../include/networkit/auxiliary/Random.hpp"
-#include "../../include/networkit/auxiliary/Parallel.hpp"
-#include "../../include/networkit/distance/Diameter.hpp"
+#include <networkit/distance/NeighborhoodFunctionHeuristic.hpp>
+#include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/distance/Diameter.hpp>
 
 #include <math.h>
 #include <iterator>

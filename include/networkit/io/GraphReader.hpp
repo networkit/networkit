@@ -8,8 +8,8 @@
 #ifndef GRAPHREADER_H_
 #define GRAPHREADER_H_
 
-#include "../graph/Graph.hpp"
-#include "../auxiliary/StringTools.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/auxiliary/StringTools.hpp>
 
 
 namespace NetworKit {

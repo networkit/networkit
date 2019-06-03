@@ -1,6 +1,6 @@
-#include "../../include/networkit/base/Algorithm.hpp"
-#include "../../include/networkit/auxiliary/SignalHandling.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
+#include <networkit/base/Algorithm.hpp>
+#include <networkit/auxiliary/SignalHandling.hpp>
+#include <networkit/auxiliary/Log.hpp>
 #include <exception>
 
 namespace NetworKit {

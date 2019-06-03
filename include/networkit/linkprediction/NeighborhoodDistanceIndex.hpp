@@ -8,7 +8,7 @@
 #ifndef NEIGHBORHOODDISTANCEINDEX_H_
 #define NEIGHBORHOODDISTANCEINDEX_H_
 
-#include "LinkPredictor.hpp"
+#include <networkit/linkprediction/LinkPredictor.hpp>
 #include <math.h>
 #include <algorithm>
 

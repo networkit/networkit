@@ -14,7 +14,7 @@
 #include <map>
 
 
-#include "GraphReader.hpp"
+#include <networkit/io/GraphReader.hpp>
 
 namespace NetworKit {
 

@@ -5,7 +5,7 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#include "../../include/networkit/algebraic/DynamicMatrix.hpp"
+#include <networkit/algebraic/DynamicMatrix.hpp>
 
 namespace NetworKit {
 

@@ -11,11 +11,11 @@
 #include <limits>
 #include <omp.h>
 
-#include "../../../include/networkit/auxiliary/Parallel.hpp"
-#include "../../../include/networkit/auxiliary/Parallelism.hpp"
-#include "../../../include/networkit/auxiliary/Random.hpp"
-#include "../../../include/networkit/centrality/KadabraBetweenness.hpp"
-#include "../../../include/networkit/distance/Diameter.hpp"
+#include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/auxiliary/Parallelism.hpp>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/centrality/KadabraBetweenness.hpp>
+#include <networkit/distance/Diameter.hpp>
 
 namespace NetworKit {
 

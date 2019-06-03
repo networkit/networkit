@@ -11,7 +11,7 @@
 #include <set>
 #include <algorithm>
 
-#include "Matcher.hpp"
+#include <networkit/matching/Matcher.hpp>
 
 namespace NetworKit {
 

@@ -12,7 +12,7 @@
 
 #include <gtest/gtest.h>
 #include <functional>
-#include "../../auxiliary/Timer.hpp"
+#include <networkit/auxiliary/Timer.hpp>
 
 namespace NetworKit {
 

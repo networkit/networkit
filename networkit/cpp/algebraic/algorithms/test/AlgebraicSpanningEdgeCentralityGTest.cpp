@@ -8,11 +8,11 @@
 
 #include <gtest/gtest.h>
 
-#include "../../../../include/networkit/algebraic/algorithms/AlgebraicSpanningEdgeCentrality.hpp"
-#include "../../../../include/networkit/algebraic/CSRMatrix.hpp"
+#include <networkit/algebraic/algorithms/AlgebraicSpanningEdgeCentrality.hpp>
+#include <networkit/algebraic/CSRMatrix.hpp>
 
-#include "../../../../include/networkit/io/METISGraphReader.hpp"
-#include "../../../../include/networkit/centrality/SpanningEdgeCentrality.hpp"
+#include <networkit/io/METISGraphReader.hpp>
+#include <networkit/centrality/SpanningEdgeCentrality.hpp>
 
 namespace NetworKit {
 

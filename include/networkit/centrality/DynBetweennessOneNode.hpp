@@ -8,8 +8,8 @@
 #ifndef DYNBETNODE1_H_
 #define DYNBETNODE1_H_
 
-#include "../dynamics/GraphEvent.hpp"
-#include "../base/DynAlgorithm.hpp"
+#include <networkit/dynamics/GraphEvent.hpp>
+#include <networkit/base/DynAlgorithm.hpp>
 
 namespace NetworKit {
 

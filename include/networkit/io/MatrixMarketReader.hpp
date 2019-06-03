@@ -8,7 +8,7 @@
 #ifndef MATRIXMARKETREADER_H_
 #define MATRIXMARKETREADER_H_
 
-#include "MatrixReader.hpp"
+#include <networkit/io/MatrixReader.hpp>
 
 namespace NetworKit {
 

@@ -8,7 +8,7 @@
 #ifndef MATRIXREADER_H_
 #define MATRIXREADER_H_
 
-#include "../algebraic/CSRMatrix.hpp"
+#include <networkit/algebraic/CSRMatrix.hpp>
 
 namespace NetworKit {
 

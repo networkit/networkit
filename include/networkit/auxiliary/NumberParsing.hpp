@@ -10,7 +10,7 @@
 #include <type_traits>
 
 
-#include "Enforce.hpp"
+#include <networkit/auxiliary/Enforce.hpp>
 
 namespace Aux {
 namespace Parsing {

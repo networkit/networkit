@@ -8,8 +8,8 @@
 #ifndef EDGESCORE_H_
 #define EDGESCORE_H_
 
-#include "../graph/Graph.hpp"
-#include "../base/Algorithm.hpp"
+#include <networkit/graph/Graph.hpp>
+#include <networkit/base/Algorithm.hpp>
 #include <vector>
 
 namespace NetworKit {

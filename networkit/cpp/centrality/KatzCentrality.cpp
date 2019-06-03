@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#include "../../include/networkit/centrality/KatzCentrality.hpp"
-#include "../../include/networkit/auxiliary/NumericTools.hpp"
+#include <networkit/centrality/KatzCentrality.hpp>
+#include <networkit/auxiliary/NumericTools.hpp>
 
 namespace NetworKit {
 

@@ -8,12 +8,12 @@
 #ifndef NETWORKIT_CPP_VIZ_PIVOTMDS_H_
 #define NETWORKIT_CPP_VIZ_PIVOTMDS_H_
 
-#include "GraphLayoutAlgorithm.hpp"
+#include <networkit/viz/GraphLayoutAlgorithm.hpp>
 
-#include "../algebraic/CSRMatrix.hpp"
-#include "../algebraic/Vector.hpp"
+#include <networkit/algebraic/CSRMatrix.hpp>
+#include <networkit/algebraic/Vector.hpp>
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

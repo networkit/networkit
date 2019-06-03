@@ -8,7 +8,7 @@
 #ifndef EDGECUT_H_
 #define EDGECUT_H_
 
-#include "QualityMeasure.hpp"
+#include <networkit/community/QualityMeasure.hpp>
 
 namespace NetworKit {
 

@@ -8,7 +8,7 @@
 #ifndef KPATHCENTRALITY_H_
 #define KPATHCENTRALITY_H_
 
-#include "Centrality.hpp"
+#include <networkit/centrality/Centrality.hpp>
 
 namespace NetworKit {
 

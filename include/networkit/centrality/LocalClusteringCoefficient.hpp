@@ -8,7 +8,7 @@
 #ifndef LOCALCLUSTERINGCOEFFICIENT_H_
 #define LOCALCLUSTERINGCOEFFICIENT_H_
 
-#include "Centrality.hpp"
+#include <networkit/centrality/Centrality.hpp>
 
 namespace NetworKit {
 

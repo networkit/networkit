@@ -7,7 +7,7 @@
 
 #ifndef NOGTEST
 
-#include "../../include/networkit/test/BasicsBenchmark.hpp"
+#include <networkit/test/BasicsBenchmark.hpp>
 
 namespace NetworKit {
 

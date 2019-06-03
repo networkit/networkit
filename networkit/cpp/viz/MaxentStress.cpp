@@ -5,16 +5,16 @@
  *      Author: Henning Meyerhenke and Michael Wegner
  */
 
-#include "../../include/networkit/viz/MaxentStress.hpp"
-#include "../../include/networkit/auxiliary/Log.hpp"
-#include "../../include/networkit/auxiliary/PrioQueue.hpp"
+#include <networkit/viz/MaxentStress.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/PrioQueue.hpp>
 
-#include "../../include/networkit/components/ConnectedComponents.hpp"
+#include <networkit/components/ConnectedComponents.hpp>
 
-#include "../../include/networkit/numerics/LAMG/Lamg.hpp"
-#include "../../include/networkit/numerics/ConjugateGradient.hpp"
-#include "../../include/networkit/numerics/Preconditioner/DiagonalPreconditioner.hpp"
-#include "../../include/networkit/numerics/Preconditioner/IdentityPreconditioner.hpp"
+#include <networkit/numerics/LAMG/Lamg.hpp>
+#include <networkit/numerics/ConjugateGradient.hpp>
+#include <networkit/numerics/Preconditioner/DiagonalPreconditioner.hpp>
+#include <networkit/numerics/Preconditioner/IdentityPreconditioner.hpp>
 
 #include <queue>
 

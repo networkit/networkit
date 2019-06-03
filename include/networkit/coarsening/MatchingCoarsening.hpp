@@ -8,9 +8,9 @@
 #ifndef MATCHINGCONTRACTER_H_
 #define MATCHINGCONTRACTER_H_
 
-#include "GraphCoarsening.hpp"
+#include <networkit/coarsening/GraphCoarsening.hpp>
 
-#include "../matching/Matching.hpp"
+#include <networkit/matching/Matching.hpp>
 
 namespace NetworKit {
 

@@ -8,7 +8,7 @@
 #ifndef APPROXBETWEENNESS_H_
 #define APPROXBETWEENNESS_H_
 
-#include "Centrality.hpp"
+#include <networkit/centrality/Centrality.hpp>
 
 namespace NetworKit {
 

@@ -8,7 +8,7 @@
 #ifndef EDGESCOREASWEIGHT_H
 #define EDGESCOREASWEIGHT_H
 
-#include "../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

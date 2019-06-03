@@ -10,8 +10,8 @@
 
 #include <unordered_set>
 
-#include "../auxiliary/Timer.hpp"
-#include "../graph/Graph.hpp"
+#include <networkit/auxiliary/Timer.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
