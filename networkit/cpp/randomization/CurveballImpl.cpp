@@ -4,16 +4,17 @@
  * Author: Hung Tran <htran@ae.cs.uni-frankfurt.de>
  */
 
-#include <networkit/randomization/CurveballImpl.hpp>
-
 #include <algorithm>
 #include <cassert>
 #include <numeric>
 #include <vector>
 
+#include <tlx/algorithm/random_bipartition_shuffle.hpp>
+
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/auxiliary/Timer.hpp>
-#include <tlx/algorithm/random_bipartition_shuffle.hpp>
+
+#include "CurveballImpl.hpp"
 
 namespace NetworKit {
 namespace CurveballDetails {
