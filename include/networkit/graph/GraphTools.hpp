@@ -15,7 +15,7 @@ namespace GraphTools {
  * @param  nodeIdMap The map providing the information about the node ids.
  * @return           Returns a compacted Graph.
  */
-Graph getCompactedGraph(const Graph& graph, std::unordered_map<node,node>& nodeIdMap);
+Graph getCompactedGraph(const Graph& graph, const std::unordered_map<node,node>& nodeIdMap);
 
 /**
  * Computes a map of node ids.
@@ -38,7 +38,7 @@ std::unordered_map<node, node> getRandomContinuousNodeIds(const Graph& graph);
  * @param 	G 			The compacted graph (currently only needed for the upper node id bound)
  * @return 				A vector of nodes id where the index is the node id of the compacted graph and the value is the node id of the noncontinuous graph.
  */
-std::vector<node> invertContinuousNodeIds(std::unordered_map<node,node>& nodeIdMap, const Graph& G);
+std::vector<node> invertContinuousNodeIds(const std::unordered_map<node,node>& nodeIdMap, const Graph& G);
 
 /**
  * Constructs a new graph that has the same node ids as before it was compacted.
@@ -46,7 +46,7 @@ std::vector<node> invertContinuousNodeIds(std::unordered_map<node,node>& nodeIdM
  * @param  G             The compacted graph.
  * @return               The original graph.
  */
-Graph restoreGraph(std::vector<node>& invertedIdMap, const Graph& G);
+Graph restoreGraph(const std::vector<node>& invertedIdMap, const Graph& G);
 
 
 /**
@@ -79,3 +79,4 @@ Graph remapNodes(const Graph& graph, count numNodes, UnaryFunc oldIdToNew) {
 }	// namespace NetworKit
 
 #endif // GRAPHTOOLS_H
+
