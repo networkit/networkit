@@ -8,7 +8,10 @@
 #ifndef APSP_H_
 #define APSP_H_
 
+#include <memory>
+
 #include <networkit/base/Algorithm.hpp>
+#include <networkit/distance/SSSP.hpp>
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
@@ -66,6 +69,7 @@ class APSP : public Algorithm {
   protected:
     const Graph &G;
     std::vector<std::vector<edgeweight>> distances;
+    std::vector<std::unique_ptr<SSSP>> sssps;
 };
 
 } /* namespace NetworKit */
