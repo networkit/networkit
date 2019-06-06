@@ -222,4 +222,86 @@ TEST_F(GraphToolsGTest, testRestoreGraph) {
 	EXPECT_EQ(Goriginal.isWeighted(),Gcompact.isWeighted());
 }
 
+TEST_F(GraphToolsGTest, testGetRemappedGraph) {
+	for(bool directed : {false, true}) {
+		const auto n = 4;
+		Graph G(n, true, directed);
+		for (auto i : {0, 1, 2})
+			G.addEdge(i, i + 1, i);
+
+		if (directed)
+			G.addEdge(1, 1, 12);
+
+		std::vector<node> perm(n);
+		for (int i = 0; i < n; ++i) perm[i] = i;
+
+		std::mt19937_64 gen;
+		for (int iter = 0; iter < 10; iter++) {
+			std::shuffle(perm.begin(), perm.end(), gen);
+			auto G1 = GraphTools::getRemappedGraph(G, n, [&](node i) { return perm[i]; });
+			ASSERT_EQ(G1.numberOfNodes(), n);
+			ASSERT_EQ(G1.numberOfEdges(), G.numberOfEdges());
+			ASSERT_EQ(G1.numberOfSelfLoops(), G.numberOfSelfLoops());
+
+			for (int i = 0; i < n; ++i) {
+				for (int j = 0; i < n; ++i) {
+					ASSERT_EQ(G.hasEdge(i, j), G1.hasEdge(perm[i], perm[j]));
+					ASSERT_EQ(G.weight(i, j), G1.weight(perm[i], perm[j]));
+				}
+			}
+		}
+	}
+}
+
+TEST_F(GraphToolsGTest, testGetRemappedGraphWithDelete) {
+	for(bool directed : {false, true}) {
+		const auto n = 4;
+		Graph G(n, true, directed);
+		for (auto i : {0, 1, 2})
+			G.addEdge(i, i + 1, i);
+
+		if (directed)
+			G.addEdge(1, 1, 12);
+
+		std::vector<node> perm(n);
+		for (int i = 0; i < n; ++i) perm[i] = i;
+
+		std::mt19937_64 gen;
+		std::uniform_int_distribution<node> distr(0, n-1);
+		for (int iter = 0; iter < 10; iter++) {
+			std::shuffle(perm.begin(), perm.end(), gen);
+
+			const auto del = distr(gen);
+
+			auto G1 = GraphTools::getRemappedGraph(G, n,
+				[&](node i) { return perm[i]; },
+				[&](node i) { return i == del; }
+			);
+
+			auto expected_num_edges = G.numberOfEdges();
+			expected_num_edges -= G.degree(del);
+			if (directed)
+				expected_num_edges -= G.degreeIn(del);
+			//do double count self-loops
+			expected_num_edges += G.hasEdge(del, del);
+
+			ASSERT_EQ(G1.numberOfNodes(), n - 1);
+			ASSERT_EQ(G1.numberOfEdges(), expected_num_edges) << " del=" << del;
+			ASSERT_EQ(G1.numberOfSelfLoops(), G.numberOfSelfLoops() - G.hasEdge(del, del)) << " del=" << del;
+
+			for (int i = 0; i < n; ++i) {
+				for (int j = 0; i < n; ++i) {
+					if (i == del || j == del) {
+						ASSERT_FALSE(G1.hasEdge(perm[i], perm[j])) << "i=" << i << " j=" << j << " del=" << del;
+					} else {
+						ASSERT_EQ(G.hasEdge(i, j), G1.hasEdge(perm[i], perm[j]));
+						ASSERT_EQ(G.weight(i, j), G1.weight(perm[i], perm[j]));
+					}
+				}
+			}
+		}
+	}
+}
+
+
 }

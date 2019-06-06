@@ -162,7 +162,7 @@ Graph DegreePreservingShuffle::getGraph() const {
     const auto n = G.numberOfNodes();
     assert(permutation.size() == n);
 
-    return GraphTools::remapNodes(G, n, [this] (node u) {
+    return GraphTools::getRemappedGraph(G, n, [this] (node u) {
         return permutation[u];
     });
 }

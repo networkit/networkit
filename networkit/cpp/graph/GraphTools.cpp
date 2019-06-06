@@ -8,7 +8,7 @@ namespace NetworKit {
 namespace GraphTools {
 
 Graph getCompactedGraph(const Graph& graph, const std::unordered_map<node,node>& nodeIdMap) {
-	return remapNodes(graph, nodeIdMap.size(), [&] (node u) {
+	return getRemappedGraph(graph, nodeIdMap.size(), [&] (node u) {
 	    const auto it = nodeIdMap.find(u);
 	    assert(it != nodeIdMap.cend());
 	    return it->second;

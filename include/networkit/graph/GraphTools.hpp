@@ -3,11 +3,10 @@
 
 #include <unordered_map>
 #include <networkit/graph/Graph.hpp>
+#include <tlx/unused.hpp>
 
 namespace NetworKit {
-
 namespace GraphTools {
-
 
 /**
  * Computes a graph with the same structure but with continuous node ids.
@@ -55,27 +54,58 @@ Graph restoreGraph(const std::vector<node>& invertedIdMap, const Graph& G);
  *
  * @param graph Input graph.
  * @param numNodes Number of nodes in the output graph.
- * @param oldIdToNew Translate old id to new ones.
+ * @param oldIdToNew Translate old id to new ones. Must be thread-safe
+ * @param deleteNode Delete all nodes (and incident edges) for old node
+ *                   ids u where deleteNode(u) == true, Must be thread-safe
+ * @param preallocate Preallocates memory before adding neighbors
+ *                   (Preallocation does not account for deleted nodes
+ *                   and hence may need more memory)
+ *
+ * @node preallocate is currently not implemented
  */
-template <typename UnaryFunc>
-Graph remapNodes(const Graph& graph, count numNodes, UnaryFunc oldIdToNew) {
-    // TODO: Add reserveNeighbors as soon as Graph supports it
+template <typename UnaryIdMapper, typename DeleteEdgePredicate>
+Graph getRemappedGraph(const Graph& graph, count numNodes,
+    UnaryIdMapper oldIdToNew, DeleteEdgePredicate deleteNode, bool preallocate = true)
+{
+    tlx::unused(preallocate); // TODO: Add perallocate as soon as Graph supports it
+
+
 #ifndef NDEBUG
-    graph.forNodes([&] (node u) {assert(oldIdToNew(u) < numNodes);});
+    graph.forNodes([&] (node u) {
+        assert(deleteNode(u) || oldIdToNew(u) < numNodes);
+    });
 #endif
 
-    Graph Gnew(numNodes, graph.isWeighted(), graph.isDirected());
+    const auto directed = graph.isDirected();
+    Graph Gnew(numNodes, graph.isWeighted(), directed);
 
-    graph.forEdges([&](const node u, const node v, edgeweight ew) {
-        Gnew.addEdge(oldIdToNew(u), oldIdToNew(v), ew);
+    graph.forNodes([&](const node u) { // TODO: Make parallel when graph support addHalfEdge
+        const node mapped_u = oldIdToNew(u);
+
+        if (deleteNode(u)) {
+            Gnew.removeNode(mapped_u);
+            return;
+        }
+
+        graph.forNeighborsOf(u, [&](node, node v, edgeweight ew) {
+            if (!directed && v < u) return;
+            if (deleteNode(v)) return;
+
+            const node mapped_v = oldIdToNew(v);
+            Gnew.addEdge(mapped_u, mapped_v, ew);
+        });
     });
 
     return Gnew;
 }
 
+template <typename UnaryIdMapper>
+Graph getRemappedGraph(const Graph& graph, count numNodes, UnaryIdMapper&& oldIdToNew, bool preallocate = true) {
+    return getRemappedGraph(graph, numNodes,
+        std::forward<UnaryIdMapper>(oldIdToNew), [](node) { return false; }, preallocate);
+}
 
 }	// namespace GraphTools
-
 }	// namespace NetworKit
 
 #endif // GRAPHTOOLS_H
