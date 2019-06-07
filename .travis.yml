@@ -89,6 +89,17 @@ matrix:
           packages:
             - libomp
 
+    # Test with sanitizers.
+    - name: "Linux, gcc 5.4: Core build, sanitizers"
+      compiler: gcc
+      os: linux
+      dist: xenial
+      script:
+        - mkdir debug_test && cd "$_"
+        - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_WITH_SANITIZERS=leak ..
+        - make -j2
+        - ctest -V
+
     - name: Linux, GCC 8
       env:
         - CC=gcc-8
