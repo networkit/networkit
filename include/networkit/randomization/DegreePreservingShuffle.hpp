@@ -48,7 +48,7 @@ public:
      * Execute trades as configured in the constructor.
      * @warning This function has to be called exactly once before invoking getGraph()
      */
-    virtual void run() override final;
+    void run() override final;
 
     /**
      * Returns a shuffled copy of the input graph.
@@ -66,9 +66,9 @@ public:
         return permutation;
     }
 
-    virtual std::string toString() const override final;
+    std::string toString() const override final;
 
-    virtual bool isParallel() const override final {
+    bool isParallel() const override final {
         return true;
     }
 
