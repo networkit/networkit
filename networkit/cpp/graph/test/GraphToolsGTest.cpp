@@ -285,7 +285,7 @@ TEST_F(GraphToolsGTest, testGetRemappedGraphWithDelete) {
 			//do double count self-loops
 			expected_num_edges += G.hasEdge(del, del);
 
-			ASSERT_EQ(G1.numberOfNodes(), n - 1);
+			ASSERT_EQ(G1.numberOfNodes(), n);
 			ASSERT_EQ(G1.numberOfEdges(), expected_num_edges) << " del=" << del;
 			ASSERT_EQ(G1.numberOfSelfLoops(), G.numberOfSelfLoops() - G.hasEdge(del, del)) << " del=" << del;
 

@@ -53,26 +53,25 @@ Graph restoreGraph(const std::vector<node>& invertedIdMap, const Graph& G);
  * For each node u in input graph, oldIdToNew(u) < numNodes.
  *
  * @param graph Input graph.
- * @param numNodes Number of nodes in the output graph.
- * @param oldIdToNew Translate old id to new ones. Must be thread-safe
- * @param deleteNode Delete all nodes (and incident edges) for old node
- *                   ids u where deleteNode(u) == true, Must be thread-safe
+ * @param numNodes    Number of nodes in the output graph.
+ * @param oldIdToNew  Translate old id to new ones. Must be thread-safe
+ * @param skipNode    Skip all nodes (and incident edges) for old node
+ *                    ids u where deleteNode(u) == true, Must be thread-safe
  * @param preallocate Preallocates memory before adding neighbors
- *                   (Preallocation does not account for deleted nodes
- *                   and hence may need more memory)
+ *                    (Preallocation does not account for deleted nodes
+ *                    and hence may need more memory)
  *
  * @node preallocate is currently not implemented
  */
-template <typename UnaryIdMapper, typename DeleteEdgePredicate>
+template <typename UnaryIdMapper, typename SkipEdgePredicate>
 Graph getRemappedGraph(const Graph& graph, count numNodes,
-    UnaryIdMapper oldIdToNew, DeleteEdgePredicate deleteNode, bool preallocate = true)
+    UnaryIdMapper&& oldIdToNew, SkipEdgePredicate&& skipNode, bool preallocate = true)
 {
     tlx::unused(preallocate); // TODO: Add perallocate as soon as Graph supports it
 
-
 #ifndef NDEBUG
     graph.forNodes([&] (node u) {
-        assert(deleteNode(u) || oldIdToNew(u) < numNodes);
+        assert(skipNode(u) || oldIdToNew(u) < numNodes);
     });
 #endif
 
@@ -80,16 +79,15 @@ Graph getRemappedGraph(const Graph& graph, count numNodes,
     Graph Gnew(numNodes, graph.isWeighted(), directed);
 
     graph.forNodes([&](const node u) { // TODO: Make parallel when graph support addHalfEdge
-        const node mapped_u = oldIdToNew(u);
-
-        if (deleteNode(u)) {
-            Gnew.removeNode(mapped_u);
+        if (skipNode(u))
             return;
-        }
 
+        const node mapped_u = oldIdToNew(u);
         graph.forNeighborsOf(u, [&](node, node v, edgeweight ew) {
-            if (!directed && v < u) return;
-            if (deleteNode(v)) return;
+            if (!directed && v < u)
+                return;
+            if (skipNode(v))
+                return;
 
             const node mapped_v = oldIdToNew(v);
             Gnew.addEdge(mapped_u, mapped_v, ew);
