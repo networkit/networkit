@@ -8,7 +8,7 @@
 #include <networkit/auxiliary/Random.hpp>
 
 #include <networkit/randomization/Curveball.hpp>
-#include <networkit/randomization/CurveballImpl.hpp>
+#include "CurveballImpl.hpp"
 
 namespace NetworKit {
 

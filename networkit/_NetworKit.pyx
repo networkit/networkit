@@ -11240,7 +11240,7 @@ cdef class PivotMDS (GraphLayoutAlgorithm):
 cdef extern from "<networkit/randomization/GlobalCurveball.hpp>":
 
 	cdef cppclass _GlobalCurveball "NetworKit::GlobalCurveball"(_Algorithm):
-		_GlobalCurveball(_Graph, count) except +
+		_GlobalCurveball(_Graph, count, bool_t, bool_t) except +
 		_Graph getGraph() except +
 
 cdef class GlobalCurveball(Algorithm):
@@ -11249,11 +11249,11 @@ cdef class GlobalCurveball(Algorithm):
 	Randomisation of Massive Networks using Global Curveball Trades",
 	Carstens et al., ESA 2018.
 
-	The algorithm perturbs an undirected and unweighted input graph,
-	by iteratively randomizing the neighbourhoods of node pairs. For
-	a large number of global trades this process is shown to produce
-	an uniform sample from the set of all graphs with the same degree
-	sequence as the input graph.
+	The algorithm perturbs an unweighted input graph, by iteratively
+	randomizing the neighbourhoods of node pairs. For a large number
+	of global trades this process is shown to produce an uniform sample
+	from the set of all graphs with the same degree sequence as the input
+	graph.
 
 	If you do not want to explicitly control the trade sequence,
 	we recommend using GlobalCurveball rather than Curveball since
@@ -11272,10 +11272,28 @@ cdef class GlobalCurveball(Algorithm):
 		asymptotically linearly in this parameter. Default: 20,
 		which yields good results experimentally (see Paper).
 
+	allowSelfLoops:
+		Has to be False for undirected graphs. For directed graphs
+		the randomization Markov chain is only irreducible if self loops
+		are allows. If they are forbidden, the degreePreservingShuffle
+		proprocessing has to be enabled. Otherwhise, not all topologies
+		can be produced.
+
+	degreePreservingShufflePreprocessing:
+		Execute the DegreePreservingShuffle algorithm before executing
+		Global Curveball. It's more efficient than manually invoking
+		the algorithm.
+
+	Warning
+	-------
+	For directed graphs at least one of allowSelfLoops or
+	degreePreservingShufflePreprocessing should be set; for more details
+	refer to "Switching edges to randomize networks: what goes wrong
+	and how to fix it" by C. J. Carstens K. J. Horadam
 	"""
-	def __cinit__(self, G, number_of_global_rounds = 20):
+	def __cinit__(self, G, number_of_global_rounds = 20, allowSelfLoops = False, degreePreservingShufflePreprocessing = True):
 		if isinstance(G, Graph):
-			self._this = new _GlobalCurveball((<Graph>G)._this, number_of_global_rounds)
+			self._this = new _GlobalCurveball((<Graph>G)._this, number_of_global_rounds, allowSelfLoops, degreePreservingShufflePreprocessing)
 		else:
 			raise RuntimeError("Parameter G has to be a graph")
 
@@ -11416,3 +11434,48 @@ cdef class Curveball(Algorithm):
 
 	def getNumberOfAffectedEdges(self):
 		return (<_Curveball*>(self._this)).getNumberOfAffectedEdges()
+
+
+cdef extern from "../include/networkit/randomization/DegreePreservingShuffle.hpp":
+	cdef cppclass _DegreePreservingShuffle "NetworKit::DegreePreservingShuffle"(_Algorithm):
+		_DegreePreservingShuffle(_Graph) except +
+		_Graph getGraph() except +
+		vector[node] getPermutation() except +
+
+cdef class DegreePreservingShuffle(Algorithm):
+	"""
+	Implementation of the preprocessing step proposed in
+	"Smaller Universes for Uniform Sampling of 0,1-matrices with fixed row and column sums"
+	by Annabell Berger, Corrie Jacobien Carstens [https://arxiv.org/abs/1803.02624]
+
+	The algorithms randomizes a graph without changing its topology simply
+	by renaming nodes. For any degree d (in case of an directed graph it's a degree pair)
+	consider the set X_d of node ids which have this degree. Then shuffle the ids in X_d.
+
+	Hence the algorithm satisfies: For all x in Ginput:
+	 i)  Ginput.degreeIn(x) = Goutput.degreeIn(x)
+	 ii) Ginput.degreeOut(x) = Goutput.degreeOut(x)
+
+	The authors argue that applying this preprocessing step before executing (Global)Curveball
+	leads to a faster mixing time. If you want to use it as a preprocessing step to GlobalCurveball,
+	it's more efficient to set degreePreservingShufflePreprocessing in GlobalCurveball's constructor.
+
+	Parameters
+	----------
+
+	G : networkit.Graph
+		The graph to be randomized. For a given degree sequence, e.g.
+		generators.HavelHakimi can be used to obtain this graph.
+
+	"""
+	def __cinit__(self, G):
+		if isinstance(G, Graph):
+			self._this = new _DegreePreservingShuffle((<Graph>G)._this)
+		else:
+			raise RuntimeError("Parameter G has to be a graph")
+
+	def getGraph(self):
+		return Graph().setThis((<_DegreePreservingShuffle*>self._this).getGraph())
+
+	def getPermutation(self):
+		return (<_DegreePreservingShuffle*>(self._this)).getPermutation()

@@ -7,7 +7,7 @@
 
 #include <gtest/gtest.h>
 
-#include <networkit/randomization/CurveballImpl.hpp>
+#include "../CurveballImpl.hpp"
 
 namespace NetworKit {
 

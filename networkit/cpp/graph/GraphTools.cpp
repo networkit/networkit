@@ -7,13 +7,12 @@ namespace NetworKit {
 
 namespace GraphTools {
 
-Graph getCompactedGraph(const Graph& graph, std::unordered_map<node,node>& nodeIdMap) {
-	Graph Gcompact(nodeIdMap.size(),graph.isWeighted(),graph.isDirected());
-	auto copyEdge = [&Gcompact,&nodeIdMap](node u, node v, edgeweight ew) {
-		Gcompact.addEdge(nodeIdMap[u], nodeIdMap[v], ew);
-	};
-	graph.forEdges(copyEdge);
-	return Gcompact;
+Graph getCompactedGraph(const Graph& graph, const std::unordered_map<node,node>& nodeIdMap) {
+	return getRemappedGraph(graph, nodeIdMap.size(), [&] (node u) {
+	    const auto it = nodeIdMap.find(u);
+	    assert(it != nodeIdMap.cend());
+	    return it->second;
+	});
 }
 
 std::unordered_map<node,node> getContinuousNodeIds(const Graph& graph) {
@@ -45,21 +44,21 @@ std::unordered_map<node,node> getRandomContinuousNodeIds(const Graph& graph) {
 	return nodeIdMap;
 }
 
-std::vector<node> invertContinuousNodeIds(std::unordered_map<node,node>& nodeIdMap, const Graph& G) {
+std::vector<node> invertContinuousNodeIds(const std::unordered_map<node,node>& nodeIdMap, const Graph& G) {
 	assert(nodeIdMap.size() == G.numberOfNodes());
 	std::vector<node> invertedIdMap(G.numberOfNodes() + 1);
 	// store upper node id bound
 	invertedIdMap[G.numberOfNodes()] = G.upperNodeIdBound();
 	// inverted node mapping
-	for (auto& x : nodeIdMap) {
+	for (const auto x : nodeIdMap) {
 		invertedIdMap[x.second] = x.first;
 	}
 	return invertedIdMap;
 }
 
-Graph restoreGraph(std::vector<node>& invertedIdMap, const Graph& G) {
+Graph restoreGraph(const std::vector<node>& invertedIdMap, const Graph& G) {
 	// with the inverted id map and the compacted graph, generate the original graph again
-	Graph Goriginal(invertedIdMap[invertedIdMap.size()-1],G.isWeighted(), G.isDirected());
+	Graph Goriginal(invertedIdMap.back(), G.isWeighted(), G.isDirected());
 	index current = 0;
 	Goriginal.forNodes([&](node u){
 		if (invertedIdMap[current] == u) {
@@ -74,6 +73,6 @@ Graph restoreGraph(std::vector<node>& invertedIdMap, const Graph& G) {
 	return Goriginal;
 }
 
-}
+} // namespace GraphTools
+} // namespace NetworKit
 
-}
