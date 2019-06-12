@@ -382,12 +382,16 @@ void KadabraBetweenness::run() {
         int32_t epochToWrite = 0;
         StateFrame *curFrame = &firstFrames[t];
         std::deque<StateFrame *> finishedQueue;
+        // Makes sure that dynamically allocated frames will be deallocated
+        std::vector<std::unique_ptr<StateFrame>> additionalFrames;
         maxFrames[t] = 0;
 
         auto moveToNextEpoch = [&]() {
             ++epochToWrite;
             if (unused.empty()) {
-                curFrame = new StateFrame(n);
+                additionalFrames.push_back(
+                    std::unique_ptr<StateFrame>(new StateFrame(n)));
+                curFrame = additionalFrames.back().get();
                 ++maxFrames[t];
             } else {
                 curFrame = unused.front();
@@ -442,6 +446,10 @@ void KadabraBetweenness::run() {
                 moveToNextEpoch();
             }
         }
+
+        // Guarantees that all threads finish the loop here and destroy
+        // allocated frames
+#pragma omp barrier
     }
 
 #pragma omp parallel for
