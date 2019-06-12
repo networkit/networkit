@@ -260,11 +260,11 @@ void AffectedNodes::removedEdge() {
 
     BFS bfsU(G, u);
     bfsU.run();
-    std::vector<edgeweight> distancesU = bfsU.getDistances(true);
+    auto distancesU = bfsU.getDistances();
 
     BFS bfsV(G, v);
     bfsV.run();
-    std::vector<edgeweight> distancesV = bfsV.getDistances(true);
+    auto distancesV = bfsV.getDistances();
 
     // Run a second BFS from u and v but abort if the distance to the node has
     // not decreased
@@ -293,7 +293,7 @@ void AffectedNodes::removedEdge() {
 
     ReverseBFS bfsV(G, v);
     bfsV.run();
-    std::vector<edgeweight> distancesV = bfsV.getDistances(true);
+    auto distancesV = bfsV.getDistances();
 
     // G.addEdge(u, v);
 
