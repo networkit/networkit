@@ -59,12 +59,12 @@ TEST_F(GraphToolsGTest, testGetCompactedGraphUndirectedUnweighted1) {
 
 	auto nodeMap = GraphTools::getContinuousNodeIds(G);
 	auto Gcompact = GraphTools::getCompactedGraph(G,nodeMap);
-	
+
 	EXPECT_EQ(G.numberOfNodes(),Gcompact.numberOfNodes());
 	EXPECT_EQ(G.numberOfEdges(),Gcompact.numberOfEdges());
 	EXPECT_EQ(G.isDirected(),Gcompact.isDirected());
 	EXPECT_EQ(G.isWeighted(),Gcompact.isWeighted());
-	// TODOish: find a deeper test to check if the structure of the graphs are the same, 
+	// TODOish: find a deeper test to check if the structure of the graphs are the same,
 	// probably compare results of some algorithms or compare each edge with a reference node id map.
 }
 
@@ -83,13 +83,13 @@ TEST_F(GraphToolsGTest, testGetCompactedGraphUndirectedUnweighted2) {
 
 	auto nodeMap = GraphTools::getContinuousNodeIds(G);
 	auto Gcompact = GraphTools::getCompactedGraph(G,nodeMap);
-	
+
 	EXPECT_NE(G.upperNodeIdBound(),Gcompact.upperNodeIdBound());
 	EXPECT_EQ(G.numberOfNodes(),Gcompact.numberOfNodes());
 	EXPECT_EQ(G.numberOfEdges(),Gcompact.numberOfEdges());
 	EXPECT_EQ(G.isDirected(),Gcompact.isDirected());
 	EXPECT_EQ(G.isWeighted(),Gcompact.isWeighted());
-	// TODOish: find a deeper test to check if the structure of the graphs are the same, 
+	// TODOish: find a deeper test to check if the structure of the graphs are the same,
 	// probably compare results of some algorithms or compare each edge with a reference node id map.
 }
 
@@ -108,14 +108,14 @@ TEST_F(GraphToolsGTest, testGetCompactedGraphUndirectedWeighted1) {
 
 	auto nodeMap = GraphTools::getContinuousNodeIds(G);
 	auto Gcompact = GraphTools::getCompactedGraph(G,nodeMap);
-	
+
 	EXPECT_EQ(G.totalEdgeWeight(),Gcompact.totalEdgeWeight());
 	EXPECT_NE(G.upperNodeIdBound(),Gcompact.upperNodeIdBound());
 	EXPECT_EQ(G.numberOfNodes(),Gcompact.numberOfNodes());
 	EXPECT_EQ(G.numberOfEdges(),Gcompact.numberOfEdges());
 	EXPECT_EQ(G.isDirected(),Gcompact.isDirected());
 	EXPECT_EQ(G.isWeighted(),Gcompact.isWeighted());
-	// TODOish: find a deeper test to check if the structure of the graphs are the same, 
+	// TODOish: find a deeper test to check if the structure of the graphs are the same,
 	// probably compare results of some algorithms or compare each edge with a reference node id map.
 }
 
@@ -134,14 +134,14 @@ TEST_F(GraphToolsGTest, testGetCompactedGraphDirectedWeighted1) {
 
 	auto nodeMap = GraphTools::getContinuousNodeIds(G);
 	auto Gcompact = GraphTools::getCompactedGraph(G,nodeMap);
-	
+
 	EXPECT_EQ(G.totalEdgeWeight(),Gcompact.totalEdgeWeight());
 	EXPECT_NE(G.upperNodeIdBound(),Gcompact.upperNodeIdBound());
 	EXPECT_EQ(G.numberOfNodes(),Gcompact.numberOfNodes());
 	EXPECT_EQ(G.numberOfEdges(),Gcompact.numberOfEdges());
 	EXPECT_EQ(G.isDirected(),Gcompact.isDirected());
 	EXPECT_EQ(G.isWeighted(),Gcompact.isWeighted());
-	// TODOish: find a deeper test to check if the structure of the graphs are the same, 
+	// TODOish: find a deeper test to check if the structure of the graphs are the same,
 	// probably compare results of some algorithms or compare each edge with a reference node id map.
 }
 
@@ -159,14 +159,14 @@ TEST_F(GraphToolsGTest, testGetCompactedGraphDirectedUnweighted1) {
 	G.addEdge(1,9);
 	auto nodeMap = GraphTools::getContinuousNodeIds(G);
 	auto Gcompact = GraphTools::getCompactedGraph(G,nodeMap);
-	
+
 	EXPECT_EQ(G.totalEdgeWeight(),Gcompact.totalEdgeWeight());
 	EXPECT_NE(G.upperNodeIdBound(),Gcompact.upperNodeIdBound());
 	EXPECT_EQ(G.numberOfNodes(),Gcompact.numberOfNodes());
 	EXPECT_EQ(G.numberOfEdges(),Gcompact.numberOfEdges());
 	EXPECT_EQ(G.isDirected(),Gcompact.isDirected());
 	EXPECT_EQ(G.isWeighted(),Gcompact.isWeighted());
-	// TODOish: find a deeper test to check if the structure of the graphs are the same, 
+	// TODOish: find a deeper test to check if the structure of the graphs are the same,
 	// probably compare results of some algorithms or compare each edge with a reference node id map.
 }
 
@@ -303,5 +303,26 @@ TEST_F(GraphToolsGTest, testGetRemappedGraphWithDelete) {
 	}
 }
 
+TEST_F(GraphToolsGTest, testExtractLargestConnectedComponent) {
+	Graph G(8);
 
+	G.addEdge(0, 1);
+	G.addEdge(2, 1);
+	G.addEdge(3, 1);
+	G.addEdge(4, 1);
+
+	G.addEdge(5, 6);
+	Graph G1(G);
+
+	G = GraphTools::extractLargestConnectedComponent(G, true);
+	EXPECT_EQ(G.numberOfNodes(), 5);
+	EXPECT_EQ(G.upperNodeIdBound(), 5);
+	EXPECT_EQ(G.numberOfEdges(), 4);
+
+	G1 = GraphTools::extractLargestConnectedComponent(G1, false);
+	EXPECT_EQ(G1.numberOfNodes(), 5);
+	EXPECT_EQ(G1.upperNodeIdBound(), 8);
+	EXPECT_EQ(G1.numberOfEdges(), 4);
 }
+
+} // namespace NetworKit

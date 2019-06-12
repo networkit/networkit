@@ -4522,6 +4522,7 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	_Graph getCompactedGraph(_Graph G, unordered_map[node,node]) nogil except +
 	unordered_map[node,node] getContinuousNodeIds(_Graph G) nogil except +
 	unordered_map[node,node] getRandomContinuousNodeIds(_Graph G) nogil except +
+	_Graph extractLargestConnectedComponent(_Graph G, bool_t) nogil except +
 
 cdef class GraphTools:
 	@staticmethod
@@ -4559,6 +4560,34 @@ cdef class GraphTools:
 		for elem in cResult:
 			result[elem.first] = elem.second
 		return result
+
+	@staticmethod
+	def extractLargestConnectedComponent(Graph graph, bool_t compactGraph = False):
+		"""
+			Constructs a new graph that contains only the nodes inside the
+			largest connected component.
+
+			Parameters
+			----------
+			graph: networkit.Graph
+				The input graph
+			compactGraph: bool
+				if true, the node ids of the output graph will be compacted
+				(i.e., re-numbered from 0 to n-1). If false, the node ids
+				will not be changed.
+
+			Returns
+			-------
+			networkit.Graph
+				A graph that contains only the nodes inside the largest
+				connected component.
+
+
+			Note
+			----
+			Available for undirected graphs only.
+		"""
+		return Graph().setThis(extractLargestConnectedComponent(graph._this, compactGraph))
 
 
 cdef extern from "<networkit/community/PartitionIntersection.hpp>":
