@@ -187,6 +187,16 @@ Single tests can be executed with:
 Additionally, one can specify the level of the logs outputs by adding `--loglevel=<log_level>`;
 supported log levels are: `TRACE`, `DEBUG`, `INFO`, `WARN`, `ERROR`, and `FATAL`.
 
+### Compiling with address/leak sanitizers
+
+Address and leak sanitizers are very useful tools to test if your code produces memory errors/leaks.
+To compile your code with sanitizers, set the [CMake] `NETWORKIT_WITH_SANITIZERS` to either `address` or `leak`:
+
+	cmake -DNETWORKIT_WITH_SANITIZERS='leak'
+
+By setting this flag to `address`, your code will be compiled with the `address` and the `undefined` sanitizers.
+Setting it to `leak` also adds the `leak` sanitizer.
+
 ## Known Issues
 - Mac OS X 10.10 "Yosemite": Some users have reported compilation problems on Yosemite with g++ 4.9. The compiler errors mention register problems.
   While the exact reason remains unclear, the actual issue seems to be that the compiler tries to perform a dual architecture build.

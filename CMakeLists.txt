@@ -17,6 +17,8 @@ option(NETWORKIT_INCLUDESYMLINK "Create symlink to cpp directory" ON)
 option(NETWORKIT_FLATINSTALL "Install into a flat directory structure (useful when building a Python package)" OFF)
 set(NETWORKIT_PYTHON "" CACHE STRING "Directory containing Python.h. Implies MONOLITH=TRUE")
 set(NETWORKIT_PYTHON_SOABI "" CACHE STRING "Platform specific file extension. Implies MONOLITH=TRUE")
+set(NETWORKIT_WITH_SANITIZERS "" CACHE STRING "Uses sanitizers during the compilation")
+set(NETWORKIT_CXX_SANITIZERS "")
 
 set (NETWORKIT_CXX_STANDARD "11" CACHE STRING "CXX Version to compile with. Currently fixed to 11")
 
@@ -74,6 +76,18 @@ else()
 	message(WARNING "Support only GCC, Clang, MSVC and AppleClang. Your compiler may or may not work.")
 endif()
 
+# Checking sanitizer options; in both cases we include 'undefined'
+if ("${NETWORKIT_WITH_SANITIZERS}" STREQUAL "address")
+	set(NETWORKIT_CXX_SANITIZERS "address,undefined")
+elseif ("${NETWORKIT_WITH_SANITIZERS}" STREQUAL "leak")
+	set(NETWORKIT_CXX_SANITIZERS "address,leak,undefined")
+elseif(NOT "${NETWORKIT_WITH_SANITIZERS}" STREQUAL "")
+	message(FATAL_ERROR "Unsupported option ${NETWORKIT_WITH_SANITIZERS}")
+endif()
+
+if (NOT "${NETWORKIT_CXX_SANITIZERS}" STREQUAL "")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=${NETWORKIT_CXX_SANITIZERS}")
+endif()
 
 # FindOpenMP.cmake does not reliably find a user installed openmp library
 # Following section manually sets the required fields for clang-like compiler
