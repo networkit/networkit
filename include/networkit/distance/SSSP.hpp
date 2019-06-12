@@ -95,7 +95,7 @@ class SSSP : public Algorithm {
      * @a t, otherwise the path is reversed.
      * @return A shortest path from source to @a t or an empty path.
      */
-    virtual std::vector<node> getPath(node t, bool forward = true) const;
+    std::vector<node> getPath(node t, bool forward = true) const;
 
     /**
      * Returns all shortest paths from source to @a t and an empty set if source
@@ -106,8 +106,7 @@ class SSSP : public Algorithm {
      * @a t, otherwise the path is reversed.
      * @return All shortest paths from source node to target node @a t.
      */
-    virtual std::set<std::vector<node>> getPaths(node t,
-                                                 bool forward = true) const;
+    std::set<std::vector<node>> getPaths(node t, bool forward = true) const;
 
     /* Returns the number of shortest paths to node t.*/
     bigfloat getNumberOfPaths(node t) const;
