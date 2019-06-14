@@ -39,11 +39,8 @@ class BFS : public SSSP {
 
     /**
      * Breadth-first search from @a source.
-     * @return Vector of unweighted distances from node @a source, i.e. the
-     * length (number of edges) of the shortest path from @a source to any other
-     * node.
      */
-    virtual void run();
+    void run() override;
 };
 } /* namespace NetworKit */
 #endif /* BFS_H_ */

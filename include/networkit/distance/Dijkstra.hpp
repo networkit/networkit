@@ -43,7 +43,7 @@ class Dijkstra : public SSSP {
      * Performs the Dijkstra SSSP algorithm on the graph given in the
      * constructor.
      */
-    virtual void run();
+    void run() override;
 
   private:
     struct Compare {
