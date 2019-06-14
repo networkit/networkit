@@ -169,6 +169,16 @@ Graph::Graph(const Graph &G, bool weighted, bool directed)
 	}
 }
 
+void Graph::preallocateUndirected(node u, size_t size) {
+	outEdges[u].reserve(size);
+	if(weighted) {
+		outEdgeWeights[u].reserve(size);
+	}
+	if(edgesIndexed) {
+		outEdgeIds[u].reserve(size);
+	}
+}
+
 /** PRIVATE HELPERS **/
 
 count Graph::getNextGraphId() {

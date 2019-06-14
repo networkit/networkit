@@ -332,5 +332,4 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 		INFO("Total infections: ", std::count(wasEverInfected.begin(), wasEverInfected.end(), true));
 	}
 }
-
 } /* namespace NetworKit */
