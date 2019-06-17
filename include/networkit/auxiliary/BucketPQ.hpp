@@ -44,12 +44,12 @@ private:
 	/**
 	 * Constructor. Not to be used, only here for overriding.
 	 */
-	BucketPQ(const std::vector<int64_t>& keys) {}
+	BucketPQ(const std::vector<int64_t>&) {}
 
 	/**
 	 * Constructor. Not to be used, only here for overriding.
 	 */
-	BucketPQ(uint64_t capacity) {}
+	BucketPQ(uint64_t) {}
 
 	/**
 	 * Called from various constructors for initializing members.

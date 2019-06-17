@@ -45,7 +45,7 @@ void LocalDegreeScore::run() {
 
 		std::vector<AttributizedEdge<count>> neighbors;
 		neighbors.reserve(G.degree(i));
-		G.forNeighborsOf(i, [&](node _i, node j, edgeid eid) {
+		G.forNeighborsOf(i, [&](node, node j, edgeid eid) {
 			neighbors.emplace_back(eid, G.degree(j));
 		});
 		std::sort(neighbors.begin(), neighbors.end());
@@ -89,11 +89,11 @@ void LocalDegreeScore::run() {
 	hasRun = true;
 }
 
-double LocalDegreeScore::score(node u, node v) {
+double LocalDegreeScore::score(node, node) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 
-double LocalDegreeScore::score(edgeid eid) {
+double LocalDegreeScore::score(edgeid) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 

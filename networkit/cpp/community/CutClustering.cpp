@@ -86,7 +86,7 @@ std::map< NetworKit::edgeweight, NetworKit::Partition > NetworKit::CutClustering
 	// for weighted networks the upper bound of alpha is the maximum edge weight +1
 	if (G.isWeighted()) {
 		// FIXME this could use an OpenMP parallel max reduction
-		G.forEdges([&](node u, node v, edgeweight weight) {
+		G.forEdges([&](node, node, edgeweight weight) {
 			upper = std::max(weight, upper);
 		});
 		upper += 1;

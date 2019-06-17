@@ -817,8 +817,6 @@ TEST_F(CentralityGTest, testClosenessCentralityDirected) {
     centrality.run();
     std::vector<double> bc = centrality.scores();
 
-    double maximum = centrality.maximum();
-
     const double tol = 1e-6;
     EXPECT_NEAR(0.4, bc[0], tol);
     EXPECT_NEAR(0.4, bc[1], tol);

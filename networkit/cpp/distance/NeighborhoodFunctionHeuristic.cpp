@@ -59,7 +59,7 @@ void NeighborhoodFunctionHeuristic::run() {
 	for (omp_index i = 0; i < static_cast<omp_index>(nSamples); ++i) {
 		count tid = omp_get_thread_num();
 		node u = start_nodes[i];
-		G.BFSfrom(u, [&](node v, count dist) {
+		G.BFSfrom(u, [&](node, count dist) {
 			nf[tid][dist] += 1;
 		});
 	}

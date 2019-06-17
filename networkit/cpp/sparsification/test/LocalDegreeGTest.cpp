@@ -64,7 +64,7 @@ directed edges.
 @param rankX rank of x in the neighborhood of y (1-based)
 @param rankY rank of y in the neighborhood of x (1-based)
 **/
-double LocalDegreeGTest::getScore(const Graph& g, node x, node y, count rankX, count rankY) {
+double LocalDegreeGTest::getScore(const Graph& g, node x, node y, count rankX, count) {
 	//Special case: degree one
 	if (g.degree(x) == 1 || g.degree(y) == 1)
 		return 1;

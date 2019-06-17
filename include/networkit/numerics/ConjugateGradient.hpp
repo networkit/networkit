@@ -65,7 +65,7 @@ private:
 };
 
 template<class Matrix, class Preconditioner>
-SolverStatus ConjugateGradient<Matrix, Preconditioner>::solve(const Vector& rhs, Vector& result, count maxConvergenceTime, count maxIterations) {
+SolverStatus ConjugateGradient<Matrix, Preconditioner>::solve(const Vector& rhs, Vector& result, count, count maxIterations) {
 	assert(matrix.numberOfRows() == rhs.getDimension());
 
 	// Absolute residual to achieve

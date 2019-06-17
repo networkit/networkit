@@ -24,7 +24,7 @@ void ChibaNishizekiTriangleEdgeScore::run() {
 	// copy edges with edge ids
 	G.parallelForNodes([&](node u) {
 		edges[u].reserve(G.degree(u));
-		G.forEdgesOf(u, [&](node _u, node v, edgeid eid) {
+		G.forEdgesOf(u, [&](node, node v, edgeid eid) {
 			edges[u].emplace_back(v, eid);
 		});
 	});
@@ -101,11 +101,11 @@ void ChibaNishizekiTriangleEdgeScore::run() {
 	hasRun = true;
 }
 
-count ChibaNishizekiTriangleEdgeScore::score(node u, node v) {
+count ChibaNishizekiTriangleEdgeScore::score(node, node) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 
-count ChibaNishizekiTriangleEdgeScore::score(edgeid eid) {
+count ChibaNishizekiTriangleEdgeScore::score(edgeid) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 

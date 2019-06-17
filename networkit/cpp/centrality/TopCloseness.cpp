@@ -151,7 +151,7 @@ void TopCloseness::computeReachableNodesDir() {
     reachU[v] = reachU_scc[sccs.componentOfNode(v) - 1];
     if (false) { // MICHELE: used to check if the bounds are correct
       count r = 0;
-      G.BFSfrom(v, [&](node w, count dist) { r++; });
+      G.BFSfrom(v, [&](node, count) { r++; });
 
       if (reachL[v] > r || reachU[v] < r) {
         DEBUG("BIG MISTAKE! ", reachL[v], " ", r, " ", reachU[v]);

@@ -42,8 +42,6 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 	std::ofstream outfile(path, std::ios::binary);
 	Aux::enforceOpened(outfile);
 
-	bool directed = G.isDirected();
-	bool weighted = G.isWeighted();
 	uint64_t weightFormat = 0;
 	Header header = {};
 
@@ -55,12 +53,6 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 		size_t off = nodes * sizeof(uint64_t); //prefSum
 		off += (chunks - 1) * sizeof(uint64_t); //first vertex
 		return sizeof(Header) + off;
-	};
-
-	auto calculateWeightsOffset = [&] () {
-		size_t off = G.numberOfEdges() * sizeof(uint8_t); //adj arrays
-		off += (chunks - 1) * sizeof(uint64_t);		  // adj offsets
-		return sizeof(Header) + off + calculateAdjOffset();
 	};
 
 	auto setFeatures = [&] () {
@@ -93,7 +85,6 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 		outfile.write(reinterpret_cast<char*>(&header.offsetWeights), sizeof(uint64_t));
 	};
 
-	count prefSum = 0;
 	nodes = G.numberOfNodes();
 	if (nodes < chunks) {
 		chunks = nodes;

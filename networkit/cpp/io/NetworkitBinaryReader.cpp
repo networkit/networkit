@@ -35,7 +35,6 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 
 	MemoryMappedFile mmfile(path);
 	auto it = mmfile.cbegin();
-	auto end = mmfile.cend();
 
 	auto readHeader = [&] () {
 		memcpy(&header.magic, it, sizeof(uint64_t));

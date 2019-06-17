@@ -36,7 +36,7 @@ void TriangleEdgeScore::run() {
 		for (index u = 0; u < G.upperNodeIdBound(); ++u) {
 			inBegin[u] = pos;
 			if (G.hasNode(u)) {
-				G.forEdgesOf(u, [&](node, node v, edgeid eid) {
+				G.forEdgesOf(u, [&](node, node v, edgeid) {
 					if (isOutEdge(v, u)) {
 						inEdges[pos++] = v;
 					}
@@ -109,11 +109,11 @@ void TriangleEdgeScore::run() {
 	hasRun = true;
 }
 
-count TriangleEdgeScore::score(node u, node v) {
+count TriangleEdgeScore::score(node, node) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 
-count TriangleEdgeScore::score(edgeid eid) {
+count TriangleEdgeScore::score(edgeid) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 

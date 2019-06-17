@@ -429,7 +429,12 @@ public:
 			}
 		}
 		count finalNeighbours = result.size();
-		if (probLB == 1) assert(finalNeighbours == incomingNeighbours + ownsize);
+		if (probLB == 1){
+			assert(finalNeighbours == incomingNeighbours + ownsize);
+			(void)finalNeighbours;
+			(void)incomingNeighbours;
+			(void)ownsize;
+		}
 		return candidatesTested;
 	}
 

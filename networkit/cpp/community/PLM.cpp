@@ -324,7 +324,7 @@ std::pair<Graph, std::vector<node> > PLM::coarsen(const Graph& G, const Partitio
 	return {parCoarsening.getCoarseGraph(),parCoarsening.getFineToCoarseNodeMapping()};
 }
 
-Partition PLM::prolong(const Graph& Gcoarse, const Partition& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode) {
+Partition PLM::prolong(const Graph &, const Partition& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode) {
 	Partition zetaFine(Gfine.upperNodeIdBound());
 	zetaFine.setUpperBound(zetaCoarse.upperBound());
 

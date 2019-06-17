@@ -19,18 +19,18 @@ void EdgeScoreBlender::run() {
 
 	scoreData.resize(G.upperEdgeIdBound());
 
-	G.parallelForEdges([&](node u, node v, edgeid eid) {
+	G.parallelForEdges([&](node, node, edgeid eid) {
 		scoreData[eid] = (selection[eid] ? attribute1[eid] : attribute0[eid]);
 	});
 
 	hasRun = true;
 }
 
-double EdgeScoreBlender::score(node u, node v) {
+double EdgeScoreBlender::score(node, node) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 
-double EdgeScoreBlender::score(edgeid eid) {
+double EdgeScoreBlender::score(edgeid) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 

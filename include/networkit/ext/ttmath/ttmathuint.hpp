@@ -1332,7 +1332,7 @@ private:
 	template<uint first_size, uint second_size, uint result_size>
 	void Mul3Big3(const uint * x1, const uint * x0, const uint * y1, const uint * y0, uint * result)
 	{
-	uint i, c, xc, yc;
+	uint i, xc, yc;
 
 		UInt<first_size>   temp, temp2;
 		UInt<first_size*3> z1;
@@ -1379,14 +1379,12 @@ private:
 		
 		if( xc )
 		{
-			c = AddVector(z1.table+first_size, temp2.table, first_size*3-first_size, first_size, z1.table+first_size);
-			TTMATH_ASSERT( c==0 )
+			TTMATH_ASSERT(!AddVector(z1.table+first_size, temp2.table, first_size*3-first_size, first_size, z1.table+first_size))
 		}
 
 		if( yc )
 		{
-			c = AddVector(z1.table+first_size, temp.table, first_size*3-first_size, first_size, z1.table+first_size);
-			TTMATH_ASSERT( c==0 )
+			TTMATH_ASSERT(!AddVector(z1.table+first_size, temp.table, first_size*3-first_size, first_size, z1.table+first_size))
 		}
 
 
@@ -1407,12 +1405,10 @@ private:
 		}
 
 		// z1 = z1 - z2
-		c = SubVector(z1.table, result+first_size*2, first_size*3, second_size*2, z1.table);
-		TTMATH_ASSERT(c==0)
+		TTMATH_ASSERT(!SubVector(z1.table, result+first_size*2, first_size*3, second_size*2, z1.table))
 
 		// z1 = z1 - z0
-		c = SubVector(z1.table, result, first_size*3, first_size*2, z1.table);
-		TTMATH_ASSERT(c==0)
+		TTMATH_ASSERT(!SubVector(z1.table, result, first_size*3, first_size*2, z1.table))
 
 		// here we've calculated the z1
 		// now we're adding it to the result
@@ -1436,13 +1432,11 @@ private:
 #pragma clang diagnostic pop
 #endif
  			
-			c = AddVector(result+first_size, z1.table, result_size-first_size, z1_size, result+first_size);
-			TTMATH_ASSERT(c==0)
+			TTMATH_ASSERT(!AddVector(result+first_size, z1.table, result_size-first_size, z1_size, result+first_size))
 		}
 		else
 		{
-			c = AddVector(result+first_size, z1.table, result_size-first_size, first_size*3, result+first_size);
-			TTMATH_ASSERT(c==0)
+			TTMATH_ASSERT(!AddVector(result+first_size, z1.table, result_size-first_size, first_size*3, result+first_size))
 		}
 	}
 

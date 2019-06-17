@@ -113,7 +113,7 @@ TEST_F(PartitionGTest, testNumberOfSubsets2) {
 	count n = 6542;
 	Partition p(n);
 	p.allToSingletons();
-	p.parallelForEntries([&](index e, index s) {
+	p.parallelForEntries([&](index e, index) {
 		p.moveToSubset(p[0],e);
 	});
 	EXPECT_EQ(1u, p.numberOfSubsets());
@@ -167,7 +167,7 @@ TEST_F(PartitionGTest, testContainsSuccessSingletons) {
 TEST_F(PartitionGTest, testContainsSuccessAfterMerges) {
 	Partition p(10);
 	p.allToSingletons();
-	p.forEntries([&](index e,index s){
+	p.forEntries([&](index e,index){
 		index n = (e==9)?0:e+1;
 		p.mergeSubsets(p[e],p[n]);
 	});

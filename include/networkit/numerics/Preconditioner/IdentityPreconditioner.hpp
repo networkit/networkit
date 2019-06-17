@@ -22,7 +22,7 @@ public:
 	 * Constructs an identity preconditioner for the matrix @a A.
 	 * @param A
 	 */
-	IdentityPreconditioner(const CSRMatrix &matrix)  {}
+	IdentityPreconditioner(const CSRMatrix &)  {}
 	virtual ~IdentityPreconditioner() = default;
 
 	/**

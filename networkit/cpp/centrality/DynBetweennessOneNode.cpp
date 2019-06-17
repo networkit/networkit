@@ -91,7 +91,7 @@ void DynBetweennessOneNode::update(GraphEvent event) {
 		// queue with all visited nodes
 		// if u has a new shortest path going through v, it updates the distance of u
 		// and inserts u in the priority queue (or updates its priority, if already in Q)
-		auto updateQueue = [&](node u, edgeweight priority) {
+		auto updateQueue = [&](node u) {
 			if (!enqueued[u]) {
 				Q.push(u);
 				enqueued[u] = true;
@@ -119,7 +119,7 @@ void DynBetweennessOneNode::update(GraphEvent event) {
 			node s = bfsQ.front();
 			bfsQ.pop();
 			DEBUG("Dequeueing node ", s);
-			G.forInNeighborsOf(s, [&](node w, edgeweight weightws) { // identify and process neighbors w of s
+			G.forInNeighborsOf(s, [&](node w, edgeweight) { // identify and process neighbors w of s
 				if (visited[w] == false && distances[w][v] >= distances[w][u] + weightuv) {
 					bfsQ.push(w);
 					DEBUG("Pushing neighbor ", w);
@@ -132,7 +132,7 @@ void DynBetweennessOneNode::update(GraphEvent event) {
 		std::vector<node> Pred(G.upperNodeIdBound());
 		Pred[v] = u;
 		visited[u] = true; // what's this?
-		updateQueue(v, weightuv);
+		updateQueue(v);
 		INFO("Entering phase 2. source_nodes[", u,"] = ", source_nodes[u]);
 		while(!Q.empty()) {
 			node y = getMin();
@@ -184,7 +184,7 @@ void DynBetweennessOneNode::update(GraphEvent event) {
 			G.forNeighborsOf(y, [&](node w, edgeweight weightyw){
 				if (distances[u][w] >= weightuv + distances[v][y] + weightyw && distances[v][w] == distances[v][y] + weightyw) { // I also check that y was a predecessor for w in the s.p. from v
 					Pred[w] = y;
-					updateQueue(w, weightuv + distances[v][y] + weightyw);
+					updateQueue(w);
 				}
 			});
 		}

@@ -227,7 +227,7 @@ void ApproxCloseness::computeClosenessForDirectedUnweightedGraph(bool outbound) 
 
 				// BFS part
 				if (outbound) {
-					G.forInNeighborsOf(v, [&](node v2, edgeweight w) {
+					G.forInNeighborsOf(v, [&](node v2, edgeweight) {
 						if (round[v2] < t) {
 							dist[v2] = dist[v] + 1;
 							q.push(v2);
@@ -235,7 +235,7 @@ void ApproxCloseness::computeClosenessForDirectedUnweightedGraph(bool outbound) 
 						}
 					});
 				} else {
-					G.forNeighborsOf(v, [&](node v2, edgeweight w) {
+					G.forNeighborsOf(v, [&](node v2, edgeweight) {
 						if (round[v2] < t) {
 							dist[v2] = dist[v] + 1;
 							q.push(v2);

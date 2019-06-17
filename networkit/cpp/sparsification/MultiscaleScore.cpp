@@ -27,15 +27,15 @@ void MultiscaleScore::run() {
 
 		//Normalize edgeweights of N(u)
 		edgeweight sum = 0.0;
-		G.forNeighborsOf(u, [&](node _u, node v, edgeid eid) {
+		G.forNeighborsOf(u, [&](node, node, edgeid eid) {
 			sum += attribute[eid];
 		});
-		G.forNeighborsOf(u, [&](node _u, node v, edgeid eid) {
+		G.forNeighborsOf(u, [&](node, node v, edgeid eid) {
 			normalizedWeights[v] = attribute[eid] / sum;
 		});
 
 		//Filter edges by probability
-		G.forNeighborsOf(u, [&](node _u, node v, edgeid eid) {
+		G.forNeighborsOf(u, [&](node, node v, edgeid eid) {
 			//In case d(u) == 1 and d(v) > 1: ignore u
 			//if (k > 1 || G.degree(v) == 1) {
 				edgeweight p = normalizedWeights[v];
@@ -61,11 +61,11 @@ double MultiscaleScore::getProbability(count degree, edgeweight normalizedWeight
 	return 1 - pow(1 - normalizedWeight, degree - 1);
 }
 
-double MultiscaleScore::score(node u, node v) {
+double MultiscaleScore::score(node, node) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 
-double MultiscaleScore::score(edgeid eid) {
+double MultiscaleScore::score(edgeid) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 

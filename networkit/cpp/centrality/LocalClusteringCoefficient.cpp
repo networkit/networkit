@@ -53,11 +53,11 @@ void LocalClusteringCoefficient::run() {
 			size_t tid = omp_get_thread_num();
 			count triangles = 0;
 
-			G.forEdgesOf(u, [&](node u, node v) {
+			G.forEdgesOf(u, [&](node v) {
 				nodeMarker[tid][v] = true;
 			});
 
-			G.forEdgesOf(u, [&](node u, node v) {
+			G.forEdgesOf(u, [&](node, node v) {
 				if (turbo) {
 					for (index i = inBegin[v]; i < inBegin[v+1]; ++i) {
 						node w = inEdges[i];
@@ -66,7 +66,7 @@ void LocalClusteringCoefficient::run() {
 						}
 					}
 				} else {
-					G.forEdgesOf(v, [&](node v, node w) {
+					G.forEdgesOf(v, [&](node, node w) {
 						if (nodeMarker[tid][w]) {
 							triangles += 1;
 						}
@@ -74,7 +74,7 @@ void LocalClusteringCoefficient::run() {
 				}
 			});
 
-			G.forEdgesOf(u, [&](node u, node v) {
+			G.forEdgesOf(u, [&](node, node v) {
 				nodeMarker[tid][v] = false;
 			});
 

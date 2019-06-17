@@ -482,7 +482,7 @@ edgeweight Graph::computeWeightedDegree(const node &v,
                                         const bool inDegree) const {
 	if (weighted) {
 		edgeweight sum = 0.0;
-		auto sumWeights = [&](const node u, const edgeweight w) { sum += w; };
+		auto sumWeights = [&](node, edgeweight w) { sum += w; };
 		if (inDegree) {
 			forInNeighborsOf(v, sumWeights);
 		} else {
@@ -763,7 +763,7 @@ void Graph::removeEdgesFromIsolatedSet(const std::vector<node> &nodesInSet) {
 }
 
 void Graph::removeSelfLoops() {
-	this->forEdges([&](node u, node v, edgeweight ew) {
+	this->forEdges([&](node u, node v, edgeweight) {
 		if (u == v) {
 			removeEdge(u, v);
 		}
@@ -941,7 +941,7 @@ void Graph::increaseWeight(node u, node v, edgeweight ew) {
 edgeweight Graph::totalEdgeWeight() const {
 	if (weighted) {
 		edgeweight sum = 0.0;
-		forEdges([&](node u, node v, edgeweight ew) { sum += ew; });
+		forEdges([&](node, node, edgeweight ew) { sum += ew; });
 		return sum;
 	} else {
 		return numberOfEdges() * defaultEdgeWeight;

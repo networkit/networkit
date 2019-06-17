@@ -477,8 +477,7 @@ public:
 		TRACE("Getting Euclidean distances");
 		auto distancePair = EuclideanDistances(phi_q, r_q);
 		double probUB = prob(distancePair.first);
-		double probLB = prob(distancePair.second);
-		assert(probLB <= probUB);
+		assert(prob(distancePair.second) <= probUB);
 		if (probUB > 0.5) probUB = 1;//if we are going to take every second element anyway, no use in calculating expensive jumps
 		if (probUB == 0) return 0;
 		//TODO: return whole if probLB == 1

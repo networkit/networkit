@@ -154,7 +154,7 @@ TEST_F(GraphBLASGTest, testMxMAccum) {
 	EXPECT_EQ(17, C(3,3));
 
 
-	GraphBLAS::MxM(mat1, mat2, C, [](const double a, const double b){return b;});
+	GraphBLAS::MxM(mat1, mat2, C, [](const double, const double b){return b;});
 
 	EXPECT_EQ(14, C(0,0));
 	EXPECT_EQ(6, C(0,1));

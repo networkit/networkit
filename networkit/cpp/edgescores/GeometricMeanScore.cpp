@@ -24,7 +24,7 @@ void GeometricMeanScore::run() {
 	std::vector<double> nodeSum(G.upperNodeIdBound());
 	
 	G.parallelForNodes([&](node u) {
-		G.forEdgesOf(u, [&](node _u, node v, edgeid eid) {
+		G.forEdgesOf(u, [&](node, node, edgeid eid) {
 			nodeSum[u] += attribute[eid];
 		});
 	});
@@ -41,11 +41,11 @@ void GeometricMeanScore::run() {
 	hasRun = true;
 }
 
-double GeometricMeanScore::score(node u, node v) {
+double GeometricMeanScore::score(node, node) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 
-double GeometricMeanScore::score(edgeid eid) {
+double GeometricMeanScore::score(edgeid) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 

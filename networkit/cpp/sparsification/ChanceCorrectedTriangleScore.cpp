@@ -30,11 +30,11 @@ void ChanceCorrectedTriangleScore::run() {
 	hasRun = true;
 }
 
-double ChanceCorrectedTriangleScore::score(node u, node v) {
+double ChanceCorrectedTriangleScore::score(node, node) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 
-double ChanceCorrectedTriangleScore::score(edgeid eid) {
+double ChanceCorrectedTriangleScore::score(edgeid) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 

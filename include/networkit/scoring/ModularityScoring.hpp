@@ -93,7 +93,7 @@ inline T ModularityScoring<T>::edgeScore(node u, node v) const {
 }
 
 template<typename T>
-void ModularityScoring<T>::scoreEdges(int attrId) {
+void ModularityScoring<T>::scoreEdges(int) {
 
 	// TODO: rewrite with new edge attribute system
 
