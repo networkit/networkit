@@ -502,7 +502,7 @@ class Graph final {
             return nIter != rhs.nIter;
         }
 
-        const node operator*() const { return *nIter; }
+        node operator*() const { return *nIter; }
 
       private:
         const Graph &G;
