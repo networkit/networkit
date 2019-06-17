@@ -249,7 +249,7 @@ void KadabraBetweenness::computeDeltaGuess() {
 
 void KadabraBetweenness::computeApproxParallel(
     const std::vector<StateFrame> &firstFrames) {
-    const auto omp_max_threads = omp_get_max_threads();
+    const count omp_max_threads = omp_get_max_threads();
 #pragma omp parallel for
     for (omp_index i = 0; i < static_cast<omp_index>(G.upperNodeIdBound());
          ++i) {
@@ -261,7 +261,7 @@ void KadabraBetweenness::computeApproxParallel(
 
 void KadabraBetweenness::init() {
     const count n = G.upperNodeIdBound();
-    const auto omp_max_threads = omp_get_max_threads();
+    const count omp_max_threads = omp_get_max_threads();
     approxSum.resize(n, 0);
     deltaLGuess.resize(n, 0);
     deltaUGuess.resize(n, 0);
@@ -428,7 +428,7 @@ void KadabraBetweenness::run() {
                     moveToNextEpoch();
                 }
             } else if (!finishedQueue.empty()) {
-                if (etr == finishedQueue.front()->epoch) {
+                if (etr == static_cast<int32_t>(finishedQueue.front()->epoch)) {
                     recycleFrame();
                     epochFinished[t].store(finishedQueue.front(),
                                            std::memory_order_release);
@@ -473,11 +473,11 @@ void KadabraBetweenness::run() {
 
 void KadabraBetweenness::checkConvergence(Status &status) {
     bool allEpochsFinished = true;
-    const auto omp_max_threads = omp_get_max_threads();
+    const count omp_max_threads = omp_get_max_threads();
     for (count i = 0; i < omp_max_threads; ++i) {
         auto frame = epochFinished[i].load(std::memory_order_acquire);
         if (!frame ||
-            frame->epoch != epochToRead.load(std::memory_order_relaxed)) {
+            static_cast<int32_t>(frame->epoch) != epochToRead.load(std::memory_order_relaxed)) {
             allEpochsFinished = false;
             break;
         }

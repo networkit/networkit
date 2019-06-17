@@ -1570,7 +1570,7 @@ TEST_F(CentralityGTest, testKadabraTopK) {
                 --j;
             }
             ++j;
-            while (j < n && betwRanking[j].second == betwRanking[i].second) {
+            while (j < static_cast<int>(n) && betwRanking[j].second == betwRanking[i].second) {
                 if (betwRanking[j].first == kadabraRanking[i].first) {
                     correctRanking = true;
                     break;

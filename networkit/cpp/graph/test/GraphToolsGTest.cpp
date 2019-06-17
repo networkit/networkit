@@ -291,7 +291,7 @@ TEST_F(GraphToolsGTest, testGetRemappedGraphWithDelete) {
 
 			for (int i = 0; i < n; ++i) {
 				for (int j = 0; i < n; ++i) {
-					if (i == del || j == del) {
+					if (i == static_cast<int>(del) || j == static_cast<int>(del)) {
 						ASSERT_FALSE(G1.hasEdge(perm[i], perm[j])) << "i=" << i << " j=" << j << " del=" << del;
 					} else {
 						ASSERT_EQ(G.hasEdge(i, j), G1.hasEdge(perm[i], perm[j]));

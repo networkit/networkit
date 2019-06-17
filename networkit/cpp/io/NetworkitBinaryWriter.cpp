@@ -26,7 +26,7 @@ size_t NetworkitBinaryWriter::encode(uint64_t value, uint8_t* buffer) {
 		value >>= 8 - (n + 1);
 	}
 
-	for(int i = 0; i < n; i++) {
+	for(uint64_t i = 0; i < n; i++) {
 		buffer[i+1] = value & 0xFF;
 	   	value >>= 8;
 	}
