@@ -267,9 +267,7 @@ void TradeList::initialize(const trade_vector &trades) {
 
 	// Push occurrences
 	for (const auto trade : trades) {
-		assert(trade.first >= 0);
 		assert(trade.first < numNodes);
-		assert(trade.second >= 0);
 		assert(trade.second < numNodes);
 
 		trade_count[trade.first]++;
@@ -320,9 +318,7 @@ TradeList::TradeList(const trade_vector &trades, const node num_nodes)
 
 	// Push occurences
 	for (const auto trade : trades) {
-		assert(trade.first >= 0);
 		assert(trade.first < num_nodes);
-		assert(trade.second >= 0);
 		assert(trade.second < num_nodes);
 
 		trade_count[trade.first]++;

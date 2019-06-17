@@ -218,7 +218,6 @@ TEST_F(QuadTreeGTest, testQuadTreeDeletion) {
 		index toRemove = Aux::Random::integer(indices.size());
 		if (toRemove == indices.size()) toRemove--;
 		assert(toRemove < indices.size());
-		assert(toRemove >= 0);
 
 		//remove content at point
 		EXPECT_EQ(quad.size(), indices.size());

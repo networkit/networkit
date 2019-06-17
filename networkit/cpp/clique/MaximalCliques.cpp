@@ -135,7 +135,6 @@ namespace {
 				G.forNeighborsOf(u, [&] (node v) {
 
 #ifndef NDEBUG
-					assert(pxlookup[v] >= 0);
 					assert(pxlookup[v] < pxvector.size());
 
 					assert(xcount <= xpbound);
@@ -195,7 +194,6 @@ namespace {
 			if (xpbound == pbound) return;
 
 #ifndef NDEBUG
-			assert(xbound >= 0);
 			assert(xbound <= xpbound);
 			assert(xpbound <= pbound);
 			assert(pbound <= pxvector.size());

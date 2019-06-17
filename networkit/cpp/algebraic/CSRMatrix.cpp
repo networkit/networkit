@@ -85,7 +85,7 @@ CSRMatrix::CSRMatrix(const count nRows, const count nCols, const std::vector<ind
 }
 
 count CSRMatrix::nnzInRow(const index i) const {
-	assert(i >= 0 && i < nRows);
+	assert(i < nRows);
 	return rowIdx[i+1] - rowIdx[i];
 }
 
@@ -94,8 +94,8 @@ count CSRMatrix::nnz() const {
 }
 
 double CSRMatrix::operator()(const index i, const index j) const {
-	assert(i >= 0 && i < nRows);
-	assert(j >= 0 && j < nCols);
+	assert(i < nRows);
+	assert(j < nCols);
 
 	if (rowIdx[i] == rowIdx[i+1]) return zero; // no non-zero value is present in this row
 
@@ -239,7 +239,7 @@ bool CSRMatrix::sorted() const {
 }
 
 Vector CSRMatrix::row(const index i) const {
-	assert(i >= 0 && i < nRows);
+	assert(i < nRows);
 
 	Vector row(numberOfColumns(), zero, true);
 	parallelForNonZeroElementsInRow(i, [&](index j, double value) {
@@ -250,7 +250,7 @@ Vector CSRMatrix::row(const index i) const {
 }
 
 Vector CSRMatrix::column(const index j) const {
-	assert(j >= 0 && j < nCols);
+	assert(j < nCols);
 
 	Vector column(numberOfRows(), getZero());
 #pragma omp parallel for

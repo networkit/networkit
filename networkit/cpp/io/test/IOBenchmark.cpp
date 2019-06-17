@@ -55,9 +55,7 @@ void IOBenchmark::convertToHeatMap(std::vector<bool> &infected, std::vector<doub
 		index yBin = (ycoords[i]-*minmaxy.first)/resolution;
 
 		//check bins
-		assert(xBin >= 0);
 		assert(xBin < infectedByRegion.size());
-		assert(yBin >= 0);
 		assert(yBin < infectedByRegion[0].size());
 		populated[xBin][yBin] = true;
 

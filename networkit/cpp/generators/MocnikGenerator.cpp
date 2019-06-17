@@ -100,7 +100,7 @@ int MocnikGenerator::toIndex(MocnikGenerator::LayerState &s, const std::vector<d
 
 int MocnikGenerator::toIndex(MocnikGenerator::LayerState &s, const std::vector<int> &v) {
 	int x = 0;
-	for (count j = v.size() - 1; j >= 0 && j < v.size(); j--) {
+	for (count j = v.size() - 1; j < v.size(); j--) {
 		x = x * s.aMax + v[j];
 	}
 	return x;
