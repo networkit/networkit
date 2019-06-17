@@ -150,7 +150,7 @@ matrix:
       script:
         - $CXX --version
         - mkdir debug_test && cd "$_"
-        - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug ..
+        - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_WARNINGS=ON ..
         - make -j2
         - ctest -V
 
@@ -164,7 +164,7 @@ matrix:
       script:
         - $CXX --version
         - mkdir build_non_monolith && cd "$_"
-        - cmake -DNETWORKIT_MONOLITH=OFF -DCMAKE_BUILD_TYPE=Debug ..
+        - cmake -DNETWORKIT_MONOLITH=OFF -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_WARNINGS=ON ..
         - make -j2
         - ctest -V
 
@@ -180,7 +180,7 @@ matrix:
       script: &script_cpp_only
         - $CXX --version
         - mkdir debug_test && cd "$_"
-        - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD ..
+        - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD -DNETWORKIT_WARNINGS=ON ..
         - make -j2
         - ctest -V
 
@@ -219,7 +219,7 @@ matrix:
         - pip3 install sphinx sphinx_bootstrap_theme
         # Build the C++ core library (no need for optimizations).
         - mkdir core_build && cd "$_"
-        - cmake -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD ..
+        - cmake -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD -DNETWORKIT_WARNINGS=ON ..
         - make -j2
         - cd ..
         # Build the Python extension.
@@ -255,7 +255,7 @@ script:
 
  # First, build the C++ core library and run C++ tests.
  - mkdir core_build && cd "$_"
- - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD ..
+ - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD -DNETWORKIT_WARNINGS=ON ..
  - make -j2
  - ctest -V
  - cd ..
