@@ -27,8 +27,10 @@ MaxentStress::MaxentStress(const Graph &G, const count dim, const count k, doubl
     switch (linearSolverType) {
         case LAMG:
             this->solver = Lamg<CSRMatrix>(tolerance);
+            break;
         case CONJUGATE_GRADIENT_IDENTITY_PRECONDITIONER:
             this->solver = ConjugateGradient<CSRMatrix, IdentityPreconditioner>(tolerance);
+            break;
         case CONJUGATE_GRADIENT_DIAGONAL_PRECONDITIONER:
             this->solver = ConjugateGradient<CSRMatrix, DiagonalPreconditioner>(tolerance);
     }
@@ -39,8 +41,10 @@ MaxentStress::MaxentStress(const Graph &G, const count dim, const std::vector<Po
     switch (linearSolverType) {
         case LAMG:
             this->solver = Lamg<CSRMatrix>(tolerance);
+            break;
         case CONJUGATE_GRADIENT_IDENTITY_PRECONDITIONER:
             this->solver = ConjugateGradient<CSRMatrix, IdentityPreconditioner>(tolerance);
+            break;
         case CONJUGATE_GRADIENT_DIAGONAL_PRECONDITIONER:
             this->solver = ConjugateGradient<CSRMatrix, DiagonalPreconditioner>(tolerance);
     }
