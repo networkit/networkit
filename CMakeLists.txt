@@ -154,7 +154,12 @@ endif()
 ################################################################################
 # Use TLX as a CMake submodule
 if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/tlx/CMakeLists.txt")
-	add_subdirectory(extlibs/tlx)
+	if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/tlx/tlx/math/power_to_the.hpp")
+		add_subdirectory(extlibs/tlx)
+	else()
+		message(FATAL_ERROR "It seems the TLX submodule is out-of-date"
+			"Please run `git submodule update` to update the submodule.")
+	endif()
 else()
 	message(FATAL_ERROR
 			"Missing TLX library in extlibs/tlx "
