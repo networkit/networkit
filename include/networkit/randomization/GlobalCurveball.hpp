@@ -71,6 +71,6 @@ private:
 
 };
 
-}; // ! namespace NetworKit
+} // ! namespace NetworKit
 
 #endif // ! RANDOMIZATION_GLOBAL_CURVEBALL_H_

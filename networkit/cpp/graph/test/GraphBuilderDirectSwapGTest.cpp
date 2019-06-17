@@ -61,7 +61,7 @@ GraphBuilder GraphBuilderDirectSwapGTest::createGraphBuilder(count n) const {
 
 Graph GraphBuilderDirectSwapGTest::toGraph(GraphBuilder& b) const {
 	return b.toGraph(false);
-};
+}
 
 void GraphBuilderDirectSwapGTest::SetUp() {
 	/*

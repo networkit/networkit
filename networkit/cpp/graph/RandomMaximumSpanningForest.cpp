@@ -8,7 +8,7 @@
 
 namespace NetworKit {
 
-RandomMaximumSpanningForest::RandomMaximumSpanningForest(const Graph &G) : G(G), hasWeightedEdges(false), hasMSF(false), hasAttribute(false) { };
+RandomMaximumSpanningForest::RandomMaximumSpanningForest(const Graph &G) : G(G), hasWeightedEdges(false), hasMSF(false), hasAttribute(false) { }
 
 void RandomMaximumSpanningForest::run() {
 	hasRun = false;

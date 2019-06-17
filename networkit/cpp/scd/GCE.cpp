@@ -282,6 +282,6 @@ std::set<node> GCE::expandSeed(node s) {
 	} else {
 		throw std::runtime_error("unknown objective function");
 	}
-};
+}
 
 } /* namespace NetworKit */

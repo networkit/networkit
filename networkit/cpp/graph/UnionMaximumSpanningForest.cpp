@@ -5,7 +5,7 @@
 
 namespace NetworKit {
 
-UnionMaximumSpanningForest::UnionMaximumSpanningForest(const Graph &G) : G(G), hasWeightedEdges(false), hasUMSF(false), hasAttribute(false) { };
+UnionMaximumSpanningForest::UnionMaximumSpanningForest(const Graph &G) : G(G), hasWeightedEdges(false), hasUMSF(false), hasAttribute(false) { }
 
 void UnionMaximumSpanningForest::run() {
 	hasRun = false;

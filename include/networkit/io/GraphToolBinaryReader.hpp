@@ -69,7 +69,7 @@ private:
 		}
 		delete[] bytes;
 		return val;
-	};
+	}
 
 };
 

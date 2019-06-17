@@ -87,7 +87,7 @@ namespace {
 		}
 		ss << "]";
 		return ss.str();
-	};
+	}
 
 	void expect_graph_equals(const Graph& G1, const Graph &G2) {
 		EXPECT_EQ(G1.numberOfNodes(), G2.numberOfNodes());
@@ -102,8 +102,8 @@ namespace {
 		diff2.run();
 		EXPECT_EQ(diff2.getNumberOfEdits(), 0);
 		EXPECT_TRUE(diff2.getEdits().empty()) << edits_to_string(diff2.getEdits());
-	};
-};
+	}
+}
 
 TEST_F(DynamicsGTest, testGraphDifference) {
 	Graph G1(11, false, false);

@@ -47,6 +47,6 @@ private:
 	std::unique_ptr<CurveballDetails::CurveballIM> impl;
 };
 
-}; // ! namespace NetworKit
+} // ! namespace NetworKit
 
 #endif // ! RANDOMIZATION_CURVEBALL_H
