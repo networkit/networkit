@@ -27,7 +27,7 @@ KadabraBetweenness::KadabraBetweenness(const Graph &G, const double err,
                                        const bool deterministic, const count k,
                                        count unionSample,
                                        const count startFactor)
-    : G(G), err(err), delta(delta), deterministic(deterministic), k(k),
+    : G(G), delta(delta), err(err), deterministic(deterministic), k(k),
       startFactor(startFactor), unionSample(unionSample), absolute(k == 0),
       stop(false) {
     const count n = G.upperNodeIdBound();

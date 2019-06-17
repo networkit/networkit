@@ -48,6 +48,10 @@ class Status {
 };
 
 class SpSampler {
+  private:
+    const Graph &G;
+    const ConnectedComponents &cc;
+
   public:
     SpSampler(const Graph &G, const ConnectedComponents &cc);
     void randomPath(StateFrame *curFrame);
@@ -56,7 +60,6 @@ class SpSampler {
     std::uniform_int_distribution<node> distr;
 
   private:
-    const Graph &G;
     std::vector<uint8_t> timestamp;
     uint8_t globalTS = 1;
     static constexpr uint8_t stampMask = 0x7F;
@@ -64,7 +67,6 @@ class SpSampler {
     std::vector<count> dist;
     std::vector<count> nPaths;
     std::vector<node> q;
-    const ConnectedComponents &cc;
     std::vector<std::pair<node, node>> spEdges;
 
     inline node randomNode() const;
