@@ -23,10 +23,8 @@ enum WEIGHT_FORMAT {
 enum MASKS {
 	DIR_MASK = 0x1, // bit 0
 	WGHT_MASK = 0x6, // bit 1-2
-	WGHT_SHIFT = 0x1
+	WGHT_SHIFT = 0x1,
+	DELETED_BIT = 0x1
 };
-
-constexpr auto DELETED_BIT = uint64_t(1) << 52;
-constexpr auto SIZE_MASK = (uint64_t(1) << 52) - 1;
 
 #endif
