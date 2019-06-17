@@ -22,7 +22,7 @@ namespace NetworKit {
  */
 class SSSP : public Algorithm {
 
-  public:
+public:
     /**
      * Creates the SSSP class for @a G and source @a s.
      *
@@ -149,7 +149,7 @@ class SSSP : public Algorithm {
         return sumDist;
     }
 
-  protected:
+protected:
     const Graph &G;
     node source;
     node target;
