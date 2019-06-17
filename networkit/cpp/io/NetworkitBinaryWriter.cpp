@@ -45,35 +45,12 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 	uint64_t weightFormat = 0;
 	Header header = {};
 
-	auto calculateBaseOffset = [&] () {
-		return sizeof(Header);
-	};
-
-	auto calculateAdjOffset = [&] () {
-		size_t off = nodes * sizeof(uint64_t); //prefSum
-		off += (chunks - 1) * sizeof(uint64_t); //first vertex
-		return sizeof(Header) + off;
-	};
-
 	auto setFeatures = [&] () {
 		header.features |= (G.isDirected() & DIR_MASK);
 		header.features |= ((weightFormat << WGHT_SHIFT) & WGHT_MASK);
 	};
 
-	auto setHeader = [&] () {
-		strncpy(header.magic,"nkbg000",8);
-		header.checksum = 0;
-		setFeatures();
-		header.nodes = nodes;
-		header.chunks = chunks;
-		header.offsetBaseData = calculateBaseOffset();
-		header.offsetAdjLists = calculateAdjOffset();
-		header.offsetAdjTranspose = 0;
-		header.offsetWeights = 0;
-	};
-
 	auto writeHeader = [&] () {
-
 		outfile.write(header.magic, 8);
 		outfile.write(reinterpret_cast<char*>(&header.checksum), sizeof(uint64_t));
 		outfile.write(reinterpret_cast<char*>(&header.features), sizeof(uint64_t));
@@ -115,7 +92,18 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 	}
 
 	// Write header.
-	setHeader();
+	strncpy(header.magic,"nkbg000",8);
+	header.checksum = 0;
+	setFeatures();
+	header.nodes = nodes;
+	header.chunks = chunks;
+	header.offsetBaseData = sizeof(Header);
+	header.offsetAdjLists = header.offsetBaseData
+			+ nodes * sizeof(uint64_t) // prefixSum.
+			+ (chunks - 1) * sizeof(uint64_t); // firstVertex.
+	header.offsetAdjTranspose = 0;
+	header.offsetWeights = 0;
+
 	writeHeader();
 
 	// Write base data.
