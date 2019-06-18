@@ -75,13 +75,14 @@ int main(int argc, char **argv) {
 	// feenableexcept(FE_ALL_EXCEPT);
 #endif
 
-	std::string program_name = argv[0];
-	// PARSE OPTIONS
-	argc-=(argc>0); argv+=(argc>0); // skip program name argv[0] if present
+	std::string program_name(argc ? argv[0] : "");
 
-	OptionParser::Stats  stats(usage, argc, argv);
+	// PARSE OPTIONS
+	const auto parse_argc = std::max(0, argc - 1);
+	const auto parse_argv = argv + (argc>0); // skip program name argv[0] if present
+	OptionParser::Stats  stats(usage, parse_argc, parse_argv);
 	std::vector<OptionParser::Option> options(stats.options_max), buffer(stats.buffer_max);
-	OptionParser::Parser parse(usage, argc, argv, options.data(), buffer.data());
+	OptionParser::Parser parse(usage, parse_argc, parse_argv, options.data(), buffer.data());
 
 	if (parse.error())
 	 return 1;
@@ -96,9 +97,6 @@ int main(int argc, char **argv) {
 
 	for (int i = 0; i < parse.nonOptionsCount(); ++i)
 	 std::cout << "Non-option #" << i << ": " << parse.nonOption(i) << "\n";
-
-
-
 
 	// CONFIGURE LOGGING
 #ifndef NOLOGGING
