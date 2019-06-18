@@ -7,9 +7,22 @@ env:
   global:
     - export OMP_NUM_THREADS=2
     - export CXX_STANDARD=11
+    - export MONOLITH=ON
 
 matrix:
   include:
+    - name: macOS 10.14, Apple Clang
+      env:
+        - CC=cc
+        - CXX=c++
+      os: osx
+      osx_image: xcode10.2
+      sudo: false
+      addons:
+        homebrew:
+          packages:
+            - libomp
+
     - name: macOS 10.14, llvm 8
       env:
         - CC=/usr/local/opt/llvm@8/bin/clang
@@ -37,7 +50,7 @@ matrix:
       before_install:
         - brew link gcc@8
 
-    - name: macOS 10.14, Apple Clang
+    - name: macOS 10.14, Apple Clang, non-monolith
       env:
         - CC=cc
         - CXX=c++
@@ -48,6 +61,12 @@ matrix:
         homebrew:
           packages:
             - libomp
+      script:
+        - $CXX --version
+        - mkdir build_non_monolith && cd "$_"
+        - cmake -DNETWORKIT_MONOLITH=OFF -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug ..
+        - make -j2
+        - ctest -V
 
     - name: macOS 10.13, llvm 8
       env:
@@ -159,10 +178,10 @@ matrix:
       os: linux
       dist: xenial
       addons: *gcc8
-      script:
+      script: &script_cpp_only
         - $CXX --version
         - mkdir debug_test && cd "$_"
-        - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_WARNINGS=ON ..
+        - cmake -DNETWORKIT_BUILD_TESTS=ON -DNETWORKIT_MONOLITH=$MONOLITH -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD -DNETWORKIT_WARNINGS=ON -DCMAKE_BUILD_TYPE=Debug ..
         - make -j2
         - ctest -V
 
@@ -170,15 +189,11 @@ matrix:
       env:
         - CC=gcc-8
         - CXX=g++-8
+        - MONOLITH=OFF
       os: linux
       dist: xenial
       addons: *gcc8
-      script:
-        - $CXX --version
-        - mkdir build_non_monolith && cd "$_"
-        - cmake -DNETWORKIT_MONOLITH=OFF -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_WARNINGS=ON ..
-        - make -j2
-        - ctest -V
+      script: *script_cpp_only
 
     # Finally, test conformance to newer versions of the C++ standard.
     - name: "Linux, GCC 8: C++14 conformance"
@@ -189,12 +204,7 @@ matrix:
       os: linux
       dist: xenial
       addons: *gcc8
-      script: &script_cpp_only
-        - $CXX --version
-        - mkdir debug_test && cd "$_"
-        - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD -DNETWORKIT_WARNINGS=ON ..
-        - make -j2
-        - ctest -V
+      script: *script_cpp_only
 
     - name: "Linux, GCC 8: C++17 conformance"
       env:
