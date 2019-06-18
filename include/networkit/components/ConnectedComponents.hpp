@@ -68,6 +68,14 @@ public:
      */
     std::vector<std::vector<node> > getComponents() const;
 
+    /**
+     * Constructs a new graph that contains only the nodes inside the largest
+     * connected component.
+     * @param G            The input graph.
+     * @param compactGraph If true, the node ids of the output graph will be compacted
+     * (i.e. re-numbered from 0 to n-1). If false, the node ids will not be changed.
+     */
+    static Graph extractLargestConnectedComponent(const Graph &G, bool compactGraph = false);
 
 private:
 	const Graph& G;

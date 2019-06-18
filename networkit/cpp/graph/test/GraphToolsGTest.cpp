@@ -303,26 +303,4 @@ TEST_F(GraphToolsGTest, testGetRemappedGraphWithDelete) {
 	}
 }
 
-TEST_F(GraphToolsGTest, testExtractLargestConnectedComponent) {
-	Graph G(8);
-
-	G.addEdge(0, 1);
-	G.addEdge(2, 1);
-	G.addEdge(3, 1);
-	G.addEdge(4, 1);
-
-	G.addEdge(5, 6);
-	Graph G1(G);
-
-	G = GraphTools::extractLargestConnectedComponent(G, true);
-	EXPECT_EQ(G.numberOfNodes(), 5);
-	EXPECT_EQ(G.upperNodeIdBound(), 5);
-	EXPECT_EQ(G.numberOfEdges(), 4);
-
-	G1 = GraphTools::extractLargestConnectedComponent(G1, false);
-	EXPECT_EQ(G1.numberOfNodes(), 5);
-	EXPECT_EQ(G1.upperNodeIdBound(), 8);
-	EXPECT_EQ(G1.numberOfEdges(), 4);
-}
-
 } // namespace NetworKit
