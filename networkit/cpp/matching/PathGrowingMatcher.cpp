@@ -132,7 +132,7 @@ void PathGrowingMatcher::run() {
 	} else {
 		weight1 = m1.weight(G);
 	}
-	edgeweight weight2;
+	edgeweight weight2 = 0.;
 	if (edgeScoresAsWeights) {
 		G.forEdges([&](node, node, edgeid eid){
 			weight2 += edgeScores.at(eid);

@@ -151,6 +151,7 @@ public:
 				}
 			}
 			assert(foundResponsibleChild);
+			(void)foundResponsibleChild;
 			subTreeSize++;
 		}
 	}

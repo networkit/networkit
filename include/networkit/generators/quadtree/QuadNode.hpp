@@ -502,12 +502,8 @@ public:
 		if (isLeaf) return *this;//will this return the reference to the subtree itself or to a copy?
 		else {
 			for (index i = 0; i < children.size(); i++) {
-				bool foundResponsibleChild = false;
-				if (children[i].responsible(angle, r)) {
-					assert(foundResponsibleChild == false);
-					foundResponsibleChild = true;
+				if (children[i].responsible(angle, r))
 					return children[i].getAppropriateLeaf(angle, r);
-				}
 			}
 			throw std::runtime_error("No responsible child found.");
 		}

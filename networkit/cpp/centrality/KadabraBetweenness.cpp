@@ -643,7 +643,7 @@ void SpSampler::backtrackPath(const node source, const node target,
     std::uniform_int_distribution<node> wDistr(0, totWeight - 1);
     const node randomPred = wDistr(rng);
 
-    node curPred, w;
+    node curPred = 0, w = 0;
     bool stop = false;
     // TODO: update this in the case of directed graphs (use inNeighbors if
     // ballind is 0x80)
