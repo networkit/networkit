@@ -343,7 +343,7 @@ AffectedNodes::bfsWithoutStartNeighbor(node source, node startNeighbor) {
     });
   }
 
-  return std::move(distances);
+  return distances;
 }
 
 std::vector<edgeweight>
@@ -383,7 +383,7 @@ AffectedNodes::reverseBfsWithoutStartNeighbor(node source, node startNeighbor) {
     });
   }
 
-  return std::move(distances);
+  return distances;
 }
 
 std::pair<std::vector<node>, std::vector<edgeweight>>
