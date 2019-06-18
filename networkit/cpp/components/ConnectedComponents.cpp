@@ -55,13 +55,13 @@ void ConnectedComponents::run() {
 }
 
 
-Partition ConnectedComponents::getPartition() {
+Partition ConnectedComponents::getPartition() const {
 	assureFinished();
 	return this->component;
 }
 
 
-std::vector<std::vector<node> > ConnectedComponents::getComponents() {
+std::vector<std::vector<node> > ConnectedComponents::getComponents() const {
 	assureFinished();
 
 	// transform partition into vector of unordered_set
@@ -76,7 +76,7 @@ std::vector<std::vector<node> > ConnectedComponents::getComponents() {
 
 
 
-std::map<index, count> ConnectedComponents::getComponentSizes() {
+std::map<index, count> ConnectedComponents::getComponentSizes() const {
 	assureFinished();
 	return this->component.subsetSizeMap();
 }

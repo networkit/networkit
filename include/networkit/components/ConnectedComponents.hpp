@@ -34,14 +34,14 @@ public:
 	/**
 	 * This method determines the connected components for the graph given in the constructor.
 	 */
-	void run();
+	void run() override;
 
 	/**
 	 * Get the number of connected components.
 	 *
 	 * @return The number of connected components.
 	 */
-	count numberOfComponents();
+	count numberOfComponents() const;
 
 	/**
 	 * Get the the component in which node @a u is situated.
@@ -56,17 +56,17 @@ public:
 	 *
 	 * @return A partition representing the found components.
 	 */
-	Partition getPartition();
+	Partition getPartition() const;
 
     /**
      *Return the map from component to size
      */
-    std::map<index, count> getComponentSizes();
+    std::map<index, count> getComponentSizes() const;
 
     /**
      * @return Vector of components, each stored as (unordered) set of nodes.
      */
-    std::vector<std::vector<node> > getComponents();
+    std::vector<std::vector<node> > getComponents() const;
 
 
 private:
@@ -81,7 +81,7 @@ inline count ConnectedComponents::componentOfNode(node u) const {
 	return component[u];
 }
 
-inline count ConnectedComponents::numberOfComponents() {
+inline count ConnectedComponents::numberOfComponents() const {
 	assureFinished();
 	return this->numComponents;
 }
