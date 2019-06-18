@@ -5,6 +5,10 @@ pull_requests:
 configuration:
 - Debug
 - Release
+environment:
+  matrix:
+    - MONOLITH: ON
+    - MONOLITH: OFF
 clone_folder: c:\dev\networkit
 before_build:
 - cmd: >-
@@ -18,7 +22,7 @@ before_build:
 
     cd build
 
-    cmake -G "Visual Studio 15 Win64" -DNETWORKIT_STATIC=ON -DNETWORKIT_BUILD_TESTS=ON ..
+    cmake -G "Visual Studio 15 Win64" -DNETWORKIT_STATIC=ON -DNETWORKIT_BUILD_TESTS=ON -DNETWORKIT_MONOLITH=%MONOLITH% ..
 build:
   project: c:\dev\networkit\build\networkit.sln
   parallel: true
