@@ -24,6 +24,7 @@
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/viz/Point.hpp>
 #include <networkit/graph/Coordinates.hpp>
+#include <tlx/define/deprecated.hpp>
 
 namespace NetworKit {
 
@@ -1267,7 +1268,7 @@ class Graph final {
      * @param u Node.
      * @return List of neighbors of @a u.
      */
-    [[deprecated]] std::vector<node> neighbors(node u) const;
+     std::vector<node> TLX_DEPRECATED(neighbors(node u) const);
 
     /**
      * Get an iterable range over the neighbors of @a.
