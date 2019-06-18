@@ -60,8 +60,6 @@ public:
 private:
 
   private:
-    const edgeweight epsilon =
-        0.0000000001; // make sure that no legitimate edge weight is below that.
     count visitedPairs = 0;
 };
 
