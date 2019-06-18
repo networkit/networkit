@@ -26,13 +26,13 @@
 class Arg: public OptionParser::Arg {
     static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool msg)
     {
-      if (option.arg != 0)
-        return OptionParser::ARG_OK;
+        if (option.arg != 0)
+            return OptionParser::ARG_OK;
 
-      if (msg) {
-          std::cout << "Option '" << option << "' requires an argument" << std::endl;
-      }
-      return OptionParser::ARG_ILLEGAL;
+        if (msg)
+            std::cout << "Option '" << option << "' requires an argument" << std::endl;
+
+        return OptionParser::ARG_ILLEGAL;
     }
 };
 
@@ -52,70 +52,70 @@ const OptionParser::Descriptor usage[] = {
 
 
 int main(int argc, char **argv) {
-	std::cout << "*** NetworKit Unit Tests ***\n";
+    std::cout << "*** NetworKit Unit Tests ***\n";
 
-	// PARSE OPTIONS
-	const auto parse_argc = std::max(0, argc - 1);
-	const auto parse_argv = argv + (argc>0); // skip program name argv[0] if present
-	OptionParser::Stats  stats(usage, parse_argc, parse_argv);
-	std::vector<OptionParser::Option> options(stats.options_max), buffer(stats.buffer_max);
-	OptionParser::Parser parse(usage, parse_argc, parse_argv, options.data(), buffer.data());
+    // PARSE OPTIONS
+    const auto parse_argc = std::max(0, argc - 1);
+    const auto parse_argv = argv + (argc>0); // skip program name argv[0] if present
+    OptionParser::Stats  stats(usage, parse_argc, parse_argv);
+    std::vector<OptionParser::Option> options(stats.options_max), buffer(stats.buffer_max);
+    OptionParser::Parser parse(usage, parse_argc, parse_argv, options.data(), buffer.data());
 
-	if (parse.error())
-		return 1;
+    if (parse.error())
+        return 1;
 
-	if (options[HELP]) {
-		OptionParser::printUsage(std::cout, usage);
-		return 0;
-	}
+    if (options[HELP]) {
+        OptionParser::printUsage(std::cout, usage);
+        return 0;
+    }
 
-	for (OptionParser::Option* opt = options[UNKNOWN]; opt; opt = opt->next())
-	    std::cout << "Unknown option: " << opt->name << "\n";
+    for (OptionParser::Option* opt = options[UNKNOWN]; opt; opt = opt->next())
+        std::cout << "Unknown option: " << opt->name << "\n";
 
-	for (int i = 0; i < parse.nonOptionsCount(); ++i)
-	    std::cout << "Non-option #" << i << ": " << parse.nonOption(i) << "\n";
+    for (int i = 0; i < parse.nonOptionsCount(); ++i)
+        std::cout << "Non-option #" << i << ": " << parse.nonOption(i) << "\n";
 
-	// CONFIGURE LOGGING
+    // CONFIGURE LOGGING
 #ifndef NOLOGGING
-	if (options[LOGLEVEL]) {
-		Aux::Log::setLogLevel(options[LOGLEVEL].arg);
-		if(Aux::Log::getLogLevel() == "INFO"){
-			Aux::Log::Settings::setPrintLocation(false);
-		}else{
-			Aux::Log::Settings::setPrintLocation(true);
-		}
-	} else {
-		Aux::Log::setLogLevel("ERROR");	// with default level
-		Aux::Log::Settings::setPrintLocation(true);
-	}
+    if (options[LOGLEVEL]) {
+        Aux::Log::setLogLevel(options[LOGLEVEL].arg);
+        if(Aux::Log::getLogLevel() == "INFO"){
+            Aux::Log::Settings::setPrintLocation(false);
+        }else{
+            Aux::Log::Settings::setPrintLocation(true);
+        }
+    } else {
+        Aux::Log::setLogLevel("ERROR");	// with default level
+        Aux::Log::Settings::setPrintLocation(true);
+    }
 #endif
 
-	// CONFIGURE PARALLELISM
-	omp_set_nested(1); // enable nested parallelism
+    // CONFIGURE PARALLELISM
+    omp_set_nested(1); // enable nested parallelism
 
-	if (options[THREADS]) {
-		// set number of threads
-		int nThreads = std::atoi(options[THREADS].arg);
-		Aux::setNumberOfThreads(nThreads);
-	}
+    if (options[THREADS]) {
+        // set number of threads
+        int nThreads = std::atoi(options[THREADS].arg);
+        Aux::setNumberOfThreads(nThreads);
+    }
 
-	::testing::InitGoogleTest(&argc, argv);
-	auto set_filter = [&] (const char* filter) {
-	    std::cout << "Set --gtest_filter='" << filter << "'\n";
+    ::testing::InitGoogleTest(&argc, argv);
+    auto set_filter = [&] (const char* filter) {
+        std::cout << "Set --gtest_filter='" << filter << "'\n";
         ::testing::GTEST_FLAG(filter) = filter;
-	};
+    };
 
-	if (options[TESTS]) {
+    if (options[TESTS]) {
         set_filter("*Test.test*");
-	} else if (options[DEBUG]) {
+    } else if (options[DEBUG]) {
         set_filter("*Test.debug*");
-	} else if (options[BENCHMARKS]) {
+    } else if (options[BENCHMARKS]) {
         set_filter("*Benchmark*");
-	}	else if (options[RUNNABLE]) {
+    }	else if (options[RUNNABLE]) {
         set_filter("*Test.run*");
-	}
+    }
 
-	INFO("=== starting unit tests ===");
+    INFO("=== starting unit tests ===");
 
-	return RUN_ALL_TESTS();
+    return RUN_ALL_TESTS();
 }
