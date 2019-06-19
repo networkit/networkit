@@ -218,7 +218,6 @@ TEST_F(QuadTreeGTest, testQuadTreeDeletion) {
 		index toRemove = Aux::Random::integer(indices.size());
 		if (toRemove == indices.size()) toRemove--;
 		assert(toRemove < indices.size());
-		assert(toRemove >= 0);
 
 		//remove content at point
 		EXPECT_EQ(quad.size(), indices.size());
@@ -475,7 +474,7 @@ TEST_F(QuadTreeGTest, testProbabilisticQuery) {
 	for (index i = 0; i < 200; i++) {
 		index query = Aux::Random::integer(n-1);
 		double acc = Aux::Random::probability() ;
-		auto edgeProb = [acc](double distance) -> double {return acc;};
+		auto edgeProb = [acc](double) -> double {return acc;};
 		vector<index> near;
 		quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[query], radii[query]), edgeProb, near);
 		EXPECT_NEAR(near.size(), acc*n, std::max(acc*n*0.25, 10.0));
@@ -483,12 +482,12 @@ TEST_F(QuadTreeGTest, testProbabilisticQuery) {
 
 	//TODO: some test about appropriate subtrees and leaves
 
-	auto edgeProb = [](double distance) -> double {return 1;};
+	auto edgeProb = [](double) -> double {return 1;};
 	vector<index> near;
 	quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[0], radii[0]), edgeProb, near);
 	EXPECT_EQ(n, near.size());
 
-	auto edgeProb2 = [](double distance) -> double {return 0;};
+	auto edgeProb2 = [](double) -> double {return 0;};
 	near.clear();
 	quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[0], radii[0]), edgeProb2, near);
 	EXPECT_EQ(0u, near.size());
@@ -531,12 +530,12 @@ TEST_F(QuadTreeGTest, testCartesianEuclidQuery) {
 
 	//TODO: some test about appropriate subtrees and leaves
 
-	auto edgeProb = [](double distance) -> double {return 1;};
+	auto edgeProb = [](double) -> double {return 1;};
 	vector<index> near;
 	quad.getElementsProbabilistically(positions[0], edgeProb, near);
 	EXPECT_EQ(n, near.size());
 
-	auto edgeProb2 = [](double distance) -> double {return 0;};
+	auto edgeProb2 = [](double) -> double {return 0;};
 	near.clear();
 	quad.getElementsProbabilistically(positions[0], edgeProb2, near);
 	EXPECT_EQ(0u, near.size());
@@ -720,7 +719,7 @@ TEST_F(QuadTreeGTest, testPolarEuclidQuery) {
 	for (index i = 0; i < 200; i++) {
 		index query = Aux::Random::integer(n-1);
 		double acc = Aux::Random::probability() ;
-		auto edgeProb = [acc](double distance) -> double {return acc;};
+		auto edgeProb = [acc](double) -> double {return acc;};
 		vector<index> near;
 		tree.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[query], radii[query]), edgeProb, near);
 		EXPECT_NEAR(near.size(), acc*n, std::max(acc*n*0.25, 10.0));
@@ -728,12 +727,12 @@ TEST_F(QuadTreeGTest, testPolarEuclidQuery) {
 
 	//TODO: some test about appropriate subtrees and leaves
 
-	auto edgeProb = [](double distance) -> double {return 1;};
+	auto edgeProb = [](double) -> double {return 1;};
 	vector<index> near;
 	tree.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[0], radii[0]), edgeProb, near);
 	EXPECT_EQ(n, near.size());
 
-	auto edgeProb2 = [](double distance) -> double {return 0;};
+	auto edgeProb2 = [](double) -> double {return 0;};
 	near.clear();
 	tree.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[0], radii[0]), edgeProb2, near);
 	EXPECT_EQ(0u, near.size());

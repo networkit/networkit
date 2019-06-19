@@ -151,12 +151,12 @@ void PrefixJaccardScore<AttributeT>::run() {
 }
 
 template <typename AttributeT>
-double PrefixJaccardScore<AttributeT>::score(node u, node v) {
+double PrefixJaccardScore<AttributeT>::score(node, node) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 
 template <typename AttributeT>
-double PrefixJaccardScore<AttributeT>::score(edgeid eid) {
+double PrefixJaccardScore<AttributeT>::score(edgeid) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 

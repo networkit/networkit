@@ -17,9 +17,7 @@ MocnikGenerator::MocnikGenerator(count dim, count n, double k, bool weighted): d
 }
 
 MocnikGenerator::MocnikGenerator(count dim, std::vector<count> ns, double k, bool weighted): dim(dim), ns(ns), weighted(weighted) {
-	for (auto &n : ns) {
-		ks.push_back(k);
-	}
+	ks.resize(ns.size(), k);
 }
 
 MocnikGenerator::MocnikGenerator(count dim, std::vector<count> ns, std::vector<double> ks, bool weighted): dim(dim), ns(ns), ks(ks), weighted(weighted) {
@@ -31,9 +29,7 @@ MocnikGenerator::MocnikGenerator(count dim, count n, double k, std::vector<doubl
 }
 
 MocnikGenerator::MocnikGenerator(count dim, std::vector<count> ns, double k, std::vector<double> weighted): dim(dim), ns(ns), weighted(true), relativeWeights(weighted) {
-	for (auto &n : ns) {
-		ks.push_back(k);
-	}
+	ks.resize(ns.size(), k);
 }
 
 MocnikGenerator::MocnikGenerator(count dim, std::vector<count> ns, std::vector<double> ks, std::vector<double> weighted): dim(dim), ns(ns), ks(ks), weighted(true), relativeWeights(weighted) {
@@ -90,11 +86,11 @@ MocnikGenerator::NodeCollection MocnikGenerator::getNodes(MocnikGenerator::Layer
 	return s.a[i];
 }
 
-const void MocnikGenerator::addNode(MocnikGenerator::LayerState &s, const int &j) {
+void MocnikGenerator::addNode(MocnikGenerator::LayerState &s, const int &j) {
 	s.a[toIndex(s, nodePositions[j])].push_back(j);
 }
 
-const int MocnikGenerator::toIndex(MocnikGenerator::LayerState &s, const std::vector<double> &v) {
+int MocnikGenerator::toIndex(MocnikGenerator::LayerState &s, const std::vector<double> &v) {
 	std::vector<int> w;
 	for (count j = 0; j < v.size(); j++) {
 		w.push_back(fmin(floor(v[j] * s.aMax), s.aMax - 1));
@@ -102,9 +98,9 @@ const int MocnikGenerator::toIndex(MocnikGenerator::LayerState &s, const std::ve
 	return toIndex(s, w);
 }
 
-const int MocnikGenerator::toIndex(MocnikGenerator::LayerState &s, const std::vector<int> &v) {
+int MocnikGenerator::toIndex(MocnikGenerator::LayerState &s, const std::vector<int> &v) {
 	int x = 0;
-	for (count j = v.size() - 1; j >= 0 && j < v.size(); j--) {
+	for (count j = v.size() - 1; j < v.size(); j--) {
 		x = x * s.aMax + v[j];
 	}
 	return x;
@@ -289,19 +285,13 @@ void MocnikGenerator::addEdgesToGraph(Graph &G, const count &n, const double &k,
 Graph MocnikGenerator::generate() {
 	// create relative weights
 	if (relativeWeights.empty()) {
-		for (auto &n : ns) {
-			relativeWeights.push_back(1);
-		}
+		relativeWeights.resize(ns.size(), 1);
 	}
 
 	// assertions
 	assert(dim > 0);
-	for (auto &n : ns) {
-		assert(n > 1);
-	}
-	for (auto &k : ks) {
-		assert(k > 1);
-	}
+	assert(std::all_of(ns.cbegin(), ns.cend(), [] (count n) { return n > 1; }));
+	assert(std::all_of(ks.cbegin(), ks.cend(), [] (double k) {return k > 1.0; }));
 	assert(ns.size() > 0);
 	assert(ks.size() == ns.size());
 	assert(relativeWeights.size() == ns.size());

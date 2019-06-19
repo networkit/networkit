@@ -66,7 +66,6 @@ void DynamicBarabasiAlbertGenerator::generate() {
 		auto notFound = [&](){ return ! found; };
 		this->G->forNodesWhile(notFound, [&](node v){
 			if (v != u) { // skip u, which has degree 0 anyway, to avoid self-loops
-				assert (rand >= 0);
 				if (rand <= this->G->degree(v)) {
 					found = true; // found a node to connect to
 					targets.insert(v);

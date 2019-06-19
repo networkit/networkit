@@ -63,11 +63,11 @@ void RandomNodeEdgeScore::run() {
 	hasRun = true;
 }
 
-double RandomNodeEdgeScore::score(node u, node v) {
+double RandomNodeEdgeScore::score(node, node) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 
-double RandomNodeEdgeScore::score(edgeid eid) {
+double RandomNodeEdgeScore::score(edgeid) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 

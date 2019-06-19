@@ -17,7 +17,7 @@ namespace {
 			case SIGINT: receivedSIGINT = true;
 			default: break;
 		}
-	};
+	}
 }
 
 bool gotSIGINT() {

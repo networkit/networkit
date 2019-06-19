@@ -68,7 +68,7 @@ void PathGrowingMatcher::run() {
 			edgeweight bestWeight = 0;
 
 			if (edgeScoresAsWeights) {
-				G.forEdgesOf(v, [&](node v, node u, edgeid eid) {
+				G.forEdgesOf(v, [&](node, node u, edgeid eid) {
 					if (alive.at(u)) {
 						if (edgeScores.at(eid) > bestWeight) {
 							bestNeighbor = u;
@@ -77,7 +77,7 @@ void PathGrowingMatcher::run() {
 					}
 				});
 			} else {
-				G.forEdgesOf(v, [&](node v, node u, edgeweight weight) {
+				G.forEdgesOf(v, [&](node, node u, edgeweight weight) {
 					if (alive.at(u)) {
 						if (weight > bestWeight) {
 							bestNeighbor = u;
@@ -100,7 +100,7 @@ void PathGrowingMatcher::run() {
 			}
 
 			// remove current vertex and its incident edges from graph
-			G.forEdgesOf(v, [&](node v, node u) {
+			G.forEdgesOf(v, [&](node, node u) {
 				if (alive.at(u)) {
 					degrees.at(u)--;
 					numEdges--;
@@ -126,15 +126,15 @@ void PathGrowingMatcher::run() {
 	// return the heavier one of the two
 	edgeweight weight1 {0};
 	if (edgeScoresAsWeights) {
-		G.forEdges([&](node u, node v, edgeid eid){
+		G.forEdges([&](node, node, edgeid eid){
 			weight1 += edgeScores.at(eid);
 		});
 	} else {
 		weight1 = m1.weight(G);
 	}
-	edgeweight weight2;
+	edgeweight weight2 = 0.;
 	if (edgeScoresAsWeights) {
-		G.forEdges([&](node u, node v, edgeid eid){
+		G.forEdges([&](node, node, edgeid eid){
 			weight2 += edgeScores.at(eid);
 		});
 	} else {

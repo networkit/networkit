@@ -47,7 +47,7 @@ void BucketPQ::construct(uint64_t capacity) {
 
 void BucketPQ::insert(int64_t key, index value) {
 	assert(minAdmissibleKey <= key && key <= maxAdmissibleKey);
-	assert(0 <= value && value < nodePtr.size());
+	assert(value < nodePtr.size());
 
 	buckets[key+offset].push_front(value);
 	nodePtr[value] = buckets[key+offset].begin();
@@ -64,7 +64,7 @@ void BucketPQ::insert(int64_t key, index value) {
 }
 
 void BucketPQ::remove(const index& value) {
-	assert(0 <= value && value < nodePtr.size());
+	assert(value < nodePtr.size());
 
 	if (myBucket[value] != none) {
 		// remove from appropriate bucket

@@ -817,8 +817,6 @@ TEST_F(CentralityGTest, testClosenessCentralityDirected) {
     centrality.run();
     std::vector<double> bc = centrality.scores();
 
-    double maximum = centrality.maximum();
-
     const double tol = 1e-6;
     EXPECT_NEAR(0.4, bc[0], tol);
     EXPECT_NEAR(0.4, bc[1], tol);
@@ -1572,7 +1570,7 @@ TEST_F(CentralityGTest, testKadabraTopK) {
                 --j;
             }
             ++j;
-            while (j < n && betwRanking[j].second == betwRanking[i].second) {
+            while (j < static_cast<int>(n) && betwRanking[j].second == betwRanking[i].second) {
                 if (betwRanking[j].first == kadabraRanking[i].first) {
                     correctRanking = true;
                     break;

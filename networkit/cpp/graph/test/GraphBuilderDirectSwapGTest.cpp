@@ -61,7 +61,7 @@ GraphBuilder GraphBuilderDirectSwapGTest::createGraphBuilder(count n) const {
 
 Graph GraphBuilderDirectSwapGTest::toGraph(GraphBuilder& b) const {
 	return b.toGraph(false);
-};
+}
 
 void GraphBuilderDirectSwapGTest::SetUp() {
 	/*
@@ -472,7 +472,7 @@ TEST_P(GraphBuilderDirectSwapGTest, testForValidStateAfterToGraph) {
 	ASSERT_EQ(0u, this->bHouse.upperNodeIdBound());
 	ASSERT_EQ(isWeighted(), this->bHouse.isWeighted());
 	ASSERT_EQ(isDirected(), this->bHouse.isDirected());
-	this->bHouse.forNodes([&](node v) {
+	this->bHouse.forNodes([&](node) {
 		FAIL();
 	});
 

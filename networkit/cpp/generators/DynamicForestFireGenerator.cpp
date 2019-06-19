@@ -50,7 +50,7 @@ std::vector<GraphEvent> DynamicForestFireGenerator::generate(count nSteps) {
 
 		auto backwardNeighbors = [&](node u) {
 			std::vector<node> validEdges;
-			G.forInNeighborsOf(u, [&](node u, node x){
+			G.forInNeighborsOf(u, [&](node, node x){
 				if (! visited[x]) {
 					validEdges.push_back(x);
 				}

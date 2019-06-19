@@ -89,11 +89,11 @@ void ForestFireScore::run() {
 	hasRun = true;
 }
 
-double ForestFireScore::score(node u, node v) {
+double ForestFireScore::score(node, node) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 
-double ForestFireScore::score(edgeid eid) {
+double ForestFireScore::score(edgeid) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 

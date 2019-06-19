@@ -47,7 +47,7 @@ void KruskalMSF::run() {
 
 		// sort edges in decreasing weight order
 		std::vector<MyEdge> sortedEdges; // (m);
-		G.forEdges([&](node u, node v, edgeweight ew, edgeid eid) {
+		G.forEdges([&](node u, node v, edgeweight ew, edgeid) {
 //			INFO("insert edge (", u, ", ", v, ") with weight ", ew);
 			MyEdge myEdge(u, v, ew);
 			sortedEdges.push_back(myEdge);
@@ -61,8 +61,6 @@ void KruskalMSF::run() {
 			INFO("process edge (", u, ", ", v, ") with weight ", e.weight);
 			assert(u < z);
 			assert(v < z);
-			assert(u >= 0);
-			assert(v >= 0);
 
 			// if edge does not close cycle, add it to tree
 			if (uf.find(u) != uf.find(v)) {

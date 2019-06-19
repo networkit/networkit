@@ -189,7 +189,7 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
 	 * objective function M
 	 * @return quality difference for the move of v to C
 	 */
-	auto deltaM = [&](node, double degInt, double degExt, const std::set<node>& C){
+	auto deltaM = [&](node, double degInt, double degExt, const std::set<node> &){
 		double delta = (intWeight + degInt) / (double) (extWeight - degInt + degExt);
 		return delta - currentQ;
 	};
@@ -282,6 +282,6 @@ std::set<node> GCE::expandSeed(node s) {
 	} else {
 		throw std::runtime_error("unknown objective function");
 	}
-};
+}
 
 } /* namespace NetworKit */

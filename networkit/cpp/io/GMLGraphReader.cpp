@@ -4,10 +4,13 @@
  *  Created on: 18.09.2014
  *      Author: Maximilian Vogel (maximilian.vogel@student.kit.edu)
  */
+
 #include <networkit/io/GMLGraphReader.hpp>
 #include <networkit/auxiliary/Enforce.hpp>
 #include <networkit/auxiliary/StringTools.hpp>
 #include <networkit/auxiliary/Log.hpp>
+#include <tlx/define/attribute_fallthrough.hpp>
+
 #include <unordered_map>
 #include <exception>
 #include <fstream>
@@ -155,7 +158,7 @@ Graph GMLGraphReader::read(const std::string& path) {
 								++key_type;
 								DEBUG("couldn't parse node; key type is now: ",key_type);
 							}
-							//break;
+						TLX_ATTRIBUTE_FALLTHROUGH;
 						case 2: if (parseEdge(G)) {
 								//DEBUG("parsed edge successfully");
 								break;
@@ -163,6 +166,7 @@ Graph GMLGraphReader::read(const std::string& path) {
 								DEBUG("parsing edge went wrong");
 								++key_type;
 							}
+						TLX_ATTRIBUTE_FALLTHROUGH;
 						default: if (!(line.find("]") < line.size())) {
 								DEBUG("expected closing bracket \"]\", got: ",line);
 							 }

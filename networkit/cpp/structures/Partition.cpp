@@ -34,7 +34,7 @@ Partition::Partition(index z, index defaultValue) : z(z), omega(0), data(z, defa
 
 void Partition::allToSingletons() {
 	setUpperBound(numberOfElements());
-	parallelForEntries([&](index e, index s) {
+	parallelForEntries([&](index e, index) {
 		data[e] = e;
 	});
 }
@@ -73,7 +73,7 @@ bool Partition::isOnePartition(Graph& G) { //FIXME what for is elements needed? 
 count Partition::numberOfSubsets() const {
 	auto n = upperBound();
 	std::unique_ptr<std::atomic<bool>[]> exists(new std::atomic<bool>[n]{}); // a boolean vector would not be thread-safe
-	this->parallelForEntries([&](index e, index s) {
+	this->parallelForEntries([&](index, index s) {
 		if (s != none) {
 			exists[s] = true;
 		}
@@ -104,7 +104,7 @@ void Partition::compact(bool useTurbo) {
 		});
 	} else {
 		std::vector<index> compactingMap(this->upperBound(), none);
-		this->forEntries([&](index e, index s){
+		this->forEntries([&](index, index s){
 			if (s != none && compactingMap[s] == none) {
 				compactingMap[s] = i++;
 			}
@@ -130,7 +130,7 @@ std::vector<count> Partition::subsetSizes() const {
 std::map<index, count> Partition::subsetSizeMap() const {
 	std::map<index, count> subset2size;
 
-	this->forEntries([&](index e, index s){
+	this->forEntries([&](index, index s){
 		if (s != none) {
 			subset2size[s] += 1;
 		}
@@ -173,7 +173,7 @@ std::set<std::set<index> > Partition::getSubsets() const {
 
 void Partition::allToOnePartition() {
 	omega = 0;
-	this->parallelForEntries([&](index e, index s) {
+	this->parallelForEntries([&](index e, index) {
 		this->data[e] = 0;
 	});
 }

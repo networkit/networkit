@@ -11,7 +11,7 @@ namespace NetworKit {
 		A minValue = std::numeric_limits< A >::max();
 		A maxValue = std::numeric_limits< A >::lowest();
 
-		G.forEdges([&](node u, node v, edgeid eid) {
+		G.forEdges([&](node, node, edgeid eid) {
 			if (input[eid] < minValue) {
 				minValue = input[eid];
 			}
@@ -30,7 +30,7 @@ namespace NetworKit {
 
 		scoreData.resize(G.upperEdgeIdBound(), std::numeric_limits<double>::quiet_NaN());
 
-		G.parallelForEdges([&](node u, node v, edgeid eid) {
+		G.parallelForEdges([&](node, node, edgeid eid) {
 			scoreData[eid] = factor * input[eid] + offset;
 		});
 
@@ -38,12 +38,12 @@ namespace NetworKit {
 	}
 
 	template<typename A>
-	double EdgeScoreNormalizer<A>::score(node u, node v) {
+	double EdgeScoreNormalizer<A>::score(node, node) {
 		throw std::runtime_error("Not implemented: Use scores() instead.");
 	}
 
 	template<typename A>
-	double EdgeScoreNormalizer<A>::score(edgeid eid) {
+	double EdgeScoreNormalizer<A>::score(edgeid) {
 		throw std::runtime_error("Not implemented: Use scores() instead.");
 	}
 

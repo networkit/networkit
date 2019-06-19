@@ -120,6 +120,7 @@ public:
                     [](const std::pair<node, node> &p) { return p.second; });
 
                 assert(inputGraph.degree(x) - neighbourhood.size() <= 1);
+                (void)x;
                 pq_bucket.clear();
             }
         };

@@ -63,7 +63,7 @@ private:
 		}
 		file.write((char*)bytes,width);
 		delete[] bytes;
-	};
+	}
 
 };
 

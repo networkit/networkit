@@ -81,14 +81,14 @@ public:
 			const count& maxRank);
 
 	void matchNeighbors(
-			const node& ego,
-			const node& alter,
-			const bool& reciprocityCheck,
+			node ego,
+			node alter,
+			bool reciprocityCheck,
 			std::vector<RankedEdge>::const_iterator& egoIt,
-			const RankedNeighbors& egoNeighbors,
+			RankedNeighbors egoNeighbors,
 			std::set<node>& egoNeighborsUnmatched,
 			std::set<node>& alterNeighborsUnmatched,
-			const count& rank,
+			count rank,
 			count& overlap);
 
 protected:

@@ -13,7 +13,7 @@
 #include <networkit/coarsening/ClusteringProjector.hpp>
 
 namespace NetworKit {
-ParallelAgglomerativeClusterer::ParallelAgglomerativeClusterer(const Graph& G) : CommunityDetectionAlgorithm(G) {};
+ParallelAgglomerativeClusterer::ParallelAgglomerativeClusterer(const Graph& G) : CommunityDetectionAlgorithm(G) {}
 
 void ParallelAgglomerativeClusterer::run() {
 

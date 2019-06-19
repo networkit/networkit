@@ -10,7 +10,7 @@
 namespace NetworKit {
 
 
-double DissimilarityMeasure::getDissimilarity(const Graph &G, const Cover &first, const Cover &second) {
+double DissimilarityMeasure::getDissimilarity(const Graph &, const Cover &, const Cover &) {
 	throw std::runtime_error("Not implemented");
 }
 

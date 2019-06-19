@@ -34,8 +34,8 @@ void AdamicAdarDistance::preprocess() {
 		});
 
 		//For all neighbors: check for already marked neighbors.
-		g.forNeighborsOf(u, [&](node _u, node v, edgeid eid_uv) {
-			g.forNeighborsOf(v, [&](node _v, node w, edgeid eid_vw) {
+		g.forNeighborsOf(u, [&](node, node v, edgeid eid_uv) {
+			g.forNeighborsOf(v, [&](node, node w, edgeid eid_vw) {
 				if (nodeMarker[w]) {
 
 					edgeid eid_uw = G.edgeId(u, w);
@@ -52,7 +52,7 @@ void AdamicAdarDistance::preprocess() {
 		removeNode(g, u);
 	});
 
-	G.parallelForEdges([&](node u, node v, edgeid eid) {
+	G.parallelForEdges([&](node, node, edgeid eid) {
 		aaDistance[eid] = 1 / aaDistance[eid];
 	});
 }

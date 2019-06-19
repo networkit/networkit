@@ -358,7 +358,7 @@ void DynTopHarmonicCloseness::run() {
 								double pqTop = top.peekMin(0).first;
 								double pqNext = pqTop;
 								top.forElementsWhile([&]() { return pqTop == pqNext; },
-								                     [&](double curKey, node curNode) {
+								                     [&](double curKey, node) {
 									                     pqNext = curKey;
 									                     ++nMinCloseness;
 								                     });
@@ -645,7 +645,7 @@ void DynTopHarmonicCloseness::addEdge(const GraphEvent &event) {
 								double pqTop = top.peekMin(0).first;
 								double pqNext = pqTop;
 								top.forElementsWhile([&]() { return pqTop == pqNext; },
-								                     [&](double curKey, node curNode) {
+								                     [&](double curKey, node) {
 									                     pqNext = curKey;
 									                     ++nMinCloseness;
 								                     });
@@ -805,7 +805,7 @@ void DynTopHarmonicCloseness::removeEdge(const GraphEvent &event) {
 								double pqTop = top.peekMin(0).first;
 								double pqNext = pqTop;
 								top.forElementsWhile([&]() { return pqTop == pqNext; },
-								                     [&](double curKey, node curNode) {
+								                     [&](double curKey, node) {
 									                     pqNext = curKey;
 									                     ++nMinCloseness;
 								                     });
@@ -950,7 +950,7 @@ void DynTopHarmonicCloseness::updateReachableNodesAfterInsertion(node u,
 		wComps->update(e);
 		// TODO use alias with components so we do not have to replicate the code
 		std::map<index, count> sizes = wComps->getComponentSizes();
-		G.forNodes([&](node w) {
+		G.forNodes([&](node) {
 			index cv = wComps->componentOfNode(v);
 			component[v] = cv;
 			r[v] = sizes[cv];

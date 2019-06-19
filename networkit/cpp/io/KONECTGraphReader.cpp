@@ -53,7 +53,7 @@ namespace NetworKit{
 		};
 
 		// Returns true if a line ending was found and skipped
-		auto skipLineEnding = [&](bool required = true) -> bool {
+		auto skipLineEnding = [&](bool required) -> bool {
 			auto length = detectLineEnding();
 			if (length) {
 				it += length;
@@ -153,7 +153,7 @@ namespace NetworKit{
 		}
 
 		skipWhitespace();
-		skipLineEnding();
+		skipLineEnding(true);
 		skipWhitespace();
 		//second optional property line
 		if(*it == '%'){
@@ -169,7 +169,7 @@ namespace NetworKit{
 				throw std::runtime_error("Unexpected end of file");
 			}
 			
-			skipLineEnding();
+			skipLineEnding(true);
 			DEBUG("Second property line read in. Edges: "+std::to_string(numberOfEdges)+ " / Nodes: "+std::to_string(numberOfNodes));
 		}
 
@@ -210,7 +210,7 @@ namespace NetworKit{
 		};
 
 		//Helper function for handling edges
-		auto handleEdge = [&] (node source, node target, edgeweight weight = defaultEdgeWeight) {
+		auto handleEdge = [&] (node source, node target, edgeweight weight) {
 			if(!graph.hasEdge(source,target)){
 				graph.addEdge(source, target, weight);
 			}else if (multiple){
@@ -264,12 +264,12 @@ namespace NetworKit{
 					auto edgeWeight = scanWeight();
 					handleEdge(mapNode(sourceId), mapNode(targetId), edgeWeight);
 				}else{
-					handleEdge(mapNode(sourceId), mapNode(targetId));
+					handleEdge(mapNode(sourceId), mapNode(targetId), defaultEdgeWeight);
 				}
 			}
 			//break lines
 			skipWhitespace();
-			skipLineEnding();
+			skipLineEnding(true);
 		}
 
 

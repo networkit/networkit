@@ -29,7 +29,7 @@ DynamicMatrix::DynamicMatrix(const count nRows, const count nCols, const std::ve
 }
 
 count DynamicMatrix::nnzInRow(const index i) const {
-	assert(i >= 0 && i < nRows);
+	assert(i < nRows);
 	return graph.degree(i);
 }
 
@@ -43,8 +43,8 @@ count DynamicMatrix::nnz() const {
 }
 
 double DynamicMatrix::operator()(const index i, const index j) const {
-	assert(i >= 0 && i < nRows);
-	assert(j >= 0 && j < nCols);
+	assert(i < nRows);
+	assert(j < nCols);
 
 	if (!graph.hasEdge(i,j)) return zero;
 
@@ -52,8 +52,8 @@ double DynamicMatrix::operator()(const index i, const index j) const {
 }
 
 void DynamicMatrix::setValue(const index i, const index j, const double value) {
-	assert(i >= 0 && i < nRows);
-	assert(j >= 0 && j < nCols);
+	assert(i < nRows);
+	assert(j < nCols);
 
 	if (value == getZero() && graph.hasEdge(i,j)) {
 		graph.removeEdge(i,j);
@@ -63,10 +63,10 @@ void DynamicMatrix::setValue(const index i, const index j, const double value) {
 }
 
 Vector DynamicMatrix::row(const index i) const {
-	assert(i >= 0 && i < nRows);
+	assert(i < nRows);
 
 	Vector row(numberOfColumns(), zero, true);
-	graph.forEdgesOf(i, [&](node i, node j, double value) {
+	graph.forEdgesOf(i, [&](node, node j, double value) {
 		row[j] = value;
 	});
 
@@ -74,7 +74,7 @@ Vector DynamicMatrix::row(const index i) const {
 }
 
 Vector DynamicMatrix::column(const index j) const {
-	assert(j >= 0 && j < nCols);
+	assert(j < nCols);
 
 	Vector column(numberOfRows());
 #pragma omp parallel for

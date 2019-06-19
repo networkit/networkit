@@ -116,7 +116,7 @@ void DynKatzCentrality::updateBatch(const std::vector<GraphEvent> &events){
 			for (node u : seenNodes) {
 				// Note: For directed graphs here the direction has to be the opposite
 				// of the static case.
-				G.forEdgesOf(u, [&](node v, edgeweight ew) {
+				G.forEdgesOf(u, [&](node v, edgeweight) {
 					visitedEdges++;
 					if(!wasSeen[v]) {
 						wasSeen[v] = true;
@@ -170,7 +170,7 @@ void DynKatzCentrality::updateBatch(const std::vector<GraphEvent> &events){
 			auto alpha_pow = pow(alpha, i);
 			G.balancedParallelForNodes([&](node u) {
 				nPaths[i][u] = 0;
-				G.forInEdgesOf(u, [&](node v, edgeweight ew) {
+				G.forInEdgesOf(u, [&](node v, edgeweight) {
 					nPaths[i][u] += preUpdateContrib[v];
 				});
 
@@ -257,7 +257,7 @@ void DynKatzCentrality::doIteration() {
 	auto next_alpha_pow = alpha * alpha_pow;
 	auto bound_factor = next_alpha_pow * (1/(1 - alpha * maxdeg));
 	G.balancedParallelForNodes([&](node u){
-		G.forInEdgesOf(u, [&](node v, edgeweight ew) {
+		G.forInEdgesOf(u, [&](node v, edgeweight) {
 			nPaths[r][u] += nPaths[r-1][v];
 		});
 

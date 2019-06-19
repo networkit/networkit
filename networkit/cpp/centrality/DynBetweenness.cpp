@@ -200,7 +200,7 @@ void DynBetweenness::update(GraphEvent event) {
 			node x = bfsQ.front();
 			bfsQ.pop();
 			DEBUG("Dequeueing node ", x);
-			G.forInNeighborsOf(x, [&](node w, edgeweight weightwx) { // identify and process neighbors w of x
+			G.forInNeighborsOf(x, [&](node w, edgeweight) { // identify and process neighbors w of x
 				if (visited[w] == false && distances[w][v] >= distances[w][u] + weightuv) {
 					bfsQ.push(w);
 					DEBUG("Pushing neighbor ", w);

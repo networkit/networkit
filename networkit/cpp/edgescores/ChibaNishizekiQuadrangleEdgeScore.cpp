@@ -22,7 +22,7 @@ void ChibaNishizekiQuadrangleEdgeScore::run() {
 	// copy edges with edge ids
 	G.parallelForNodes([&](node u) {
 		edges[u].reserve(G.degree(u));
-		G.forEdgesOf(u, [&](node _u, node v, edgeid eid) {
+		G.forEdgesOf(u, [&](node, node v, edgeid eid) {
 			edges[u].emplace_back(v, eid);
 		});
 	});
@@ -99,11 +99,11 @@ void ChibaNishizekiQuadrangleEdgeScore::run() {
 	hasRun = true;
 }
 
-count ChibaNishizekiQuadrangleEdgeScore::score(node u, node v) {
+count ChibaNishizekiQuadrangleEdgeScore::score(node, node) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 
-count ChibaNishizekiQuadrangleEdgeScore::score(edgeid eid) {
+count ChibaNishizekiQuadrangleEdgeScore::score(edgeid) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 

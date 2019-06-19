@@ -18,7 +18,7 @@ void RandomEdgeScore::run() {
 	}
 	scoreData.resize(G.upperEdgeIdBound(), 0.0);
 
-	G.parallelForEdges([&](node u, node v, edgeid eid) {
+	G.parallelForEdges([&](node, node, edgeid eid) {
 		//double r = Aux::Random::probability();
 		//scoreData[eid] = randomness * r + (1 - randomness) * attribute[eid];
 		scoreData[eid] = Aux::Random::probability();
@@ -26,11 +26,11 @@ void RandomEdgeScore::run() {
 	hasRun = true;
 }
 
-double RandomEdgeScore::score(node u, node v) {
+double RandomEdgeScore::score(node, node) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 
-double RandomEdgeScore::score(edgeid eid) {
+double RandomEdgeScore::score(edgeid) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 

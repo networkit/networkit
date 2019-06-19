@@ -249,7 +249,7 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
 	double tresholdDistance = R;
 	double beta = 1/T;
 	//dummy lambda:
-	std::function<double(double)> edgeProb = [beta, tresholdDistance](double distance) -> double {return distance <= tresholdDistance ? 1 : 0;};
+	std::function<double(double)> edgeProb = [tresholdDistance](double distance) -> double {return distance <= tresholdDistance ? 1 : 0;};
 
 	if (T > 0) {
 		if (!(beta == beta)) {

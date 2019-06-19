@@ -74,7 +74,7 @@ namespace NetworKit {
     }
 
     void WeaklyConnectedComponents::updateComponent(
-        index c, node w, std::queue<node>& q, bool inNeighbor
+        index c, node w, std::queue<node>& q, bool
     ) {
 
         if (components[w] == none) {

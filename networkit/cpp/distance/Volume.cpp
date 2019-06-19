@@ -46,10 +46,7 @@ double Volume::volume(const Graph &G, const double r, const count samples) {
 }
 
 std::vector<double> Volume::volume(const Graph &G, const std::vector<double> rs, const count samples) {
-	std::vector<double> xs;
-	for (auto &r : rs) {
-		xs.push_back(0);
-	}
+	std::vector<double> xs(rs.size(), 0);
 	double rmax = *std::max_element(std::begin(rs), std::end(rs));
 	for (count j = 0; j < samples; j++) {
 		std::unordered_map<node, double> ms = Volume::nodesWithinDistance(G, rmax, G.randomNode());

@@ -91,7 +91,6 @@ public:
 	node numberOfEdges() const { return static_cast<edgeid>(degreeCount); }
 
 	void resetRow(const node node_id) {
-		assert(node_id >= 0);
 		assert(node_id < static_cast<node>(offsets.size()));
 
 		offsets[node_id] = 0;
@@ -101,7 +100,6 @@ public:
 
 	count degreeAt(node node_id) const {
 		assert(node_id < static_cast<node>(offsets.size()));
-		assert(node_id >= 0);
 
 		return begins[node_id + 1] - begins[node_id] - 1;
 	}
@@ -149,14 +147,12 @@ public:
 	TradeList(const TradeList &) = delete;
 
 	tradeid_it getTrades(const node nodeid) const {
-		assert(nodeid >= 0);
 		assert(nodeid < numNodes);
 
 		return tradeList.begin() + offsets[nodeid];
 	}
 
 	void incrementOffset(const node nodeid) {
-		assert(nodeid >= 0);
 		assert(nodeid < numNodes);
 		assert(1 <= offsets[nodeid + 1] - offsets[nodeid]);
 

@@ -144,7 +144,7 @@ void SpanningEdgeCentrality::runParallelApproximation() {
 	hasRun = true;
 }
 
-uint64_t SpanningEdgeCentrality::runApproximationAndWriteVectors(const std::string &graphPath) {
+uint64_t SpanningEdgeCentrality::runApproximationAndWriteVectors(const std::string &) {
 	Aux::Timer t;
 	const count n = G.numberOfNodes();
 	const count m = G.numberOfEdges();

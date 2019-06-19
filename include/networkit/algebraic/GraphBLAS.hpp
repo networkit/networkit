@@ -281,7 +281,7 @@ NetworKit::Vector rowReduce(const Matrix& matrix) {
 
 #pragma omp parallel for
 	for (NetworKit::omp_index i = 0; i < static_cast<NetworKit::omp_index>(matrix.numberOfRows()); ++i) {
-		matrix.forNonZeroElementsInRow(i, [&](NetworKit::index j, double value) {
+		matrix.forNonZeroElementsInRow(i, [&](NetworKit::index, double value) {
 			rowReduction[i] = SemiRing::add(rowReduction[i], value);
 		});
 	}
@@ -300,7 +300,7 @@ NetworKit::Vector columnReduce(const Matrix& matrix) {
 	assert(matrix.getZero() == SemiRing::zero());
 	NetworKit::Vector columnReduction(matrix.numberOfColumns(), 0.0);
 
-	matrix.forNonZeroElementsInRowOrder([&](NetworKit::index i, NetworKit::index j, double value) {
+	matrix.forNonZeroElementsInRowOrder([&](NetworKit::index, NetworKit::index j, double value) {
 		columnReduction[j] = SemiRing::add(columnReduction[j], value);
 	});
 

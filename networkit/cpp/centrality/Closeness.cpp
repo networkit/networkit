@@ -61,7 +61,7 @@ void Closeness::run() {
     if (G.isWeighted()) {
         dDist.resize(omp_get_max_threads(), std::vector<double>(n));
         heaps.reserve(omp_get_max_threads());
-        for (count i = 0; i < omp_get_max_threads(); ++i) {
+        for (int i = 0; i < omp_get_max_threads(); ++i) {
             heaps.emplace_back((Compare(dDist[i])));
             heaps.back().reserve(n);
         }

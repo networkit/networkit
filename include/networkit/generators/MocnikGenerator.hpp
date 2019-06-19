@@ -62,18 +62,18 @@ private:
 	/**
 	 * Add the node with number j to the corresponing grid cell
 	 */
-	const void addNode(LayerState &s, const int &j);
+	void addNode(LayerState &s, const int &j);
 
 	/**
 	 * Determine, for a given position, the index of the corresponding grid cell
 	 */
-	const int toIndex(LayerState &s, const std::vector<double> &v);
+	int toIndex(LayerState &s, const std::vector<double> &v);
 
 	/**
 	 * Determine, for the given multi-dimensional index, the index of the
 	 * corresponding grid cell
 	 */
-	const int toIndex(LayerState &s, const std::vector<int> &v);
+	int toIndex(LayerState &s, const std::vector<int> &v);
 
 	/**
 	 * Determine, for a given index, the multi-dimensional index of a grid cell

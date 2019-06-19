@@ -161,7 +161,7 @@ TEST_F(AuxGTest, testPriorityQueue) {
 	EXPECT_EQ(pq.size(), vec.size());
 
 	double topKey = pq.peekMin(0).first;
-	pq.forElements([&](double curKey, uint64_t curElem){
+	pq.forElements([&](double curKey, uint64_t){
 		EXPECT_TRUE(curKey >= topKey);
 		topKey = curKey;
 	});

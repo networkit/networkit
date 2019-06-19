@@ -159,6 +159,7 @@ double DynamicNMIDistance::entropy(const Partition& clustering, count n, std::ve
 	// entropy values range from 0 for the 1-clustering to log_2(n) for the singleton clustering
 	assert (Aux::NumericTools::ge(H, 0.0));
 	assert (Aux::NumericTools::le(H, log_b(n, 2)));
+  (void)n;
 
 	return H;
 }
@@ -187,7 +188,7 @@ void DynamicNMIDistance::sanityCheck(double& NMI, double& NMID) const {
 	assert (Aux::NumericTools::le(NMID, 1.0));
 }
 
-std::vector<std::vector<count> > DynamicNMIDistance::confusionMatrix(const Graph& G,
+std::vector<std::vector<count> > DynamicNMIDistance::confusionMatrix(const Graph &,
 		const Partition& first, const Partition& second) {
 	index firstUpperId = first.upperBound();
 	index secondUpperId = second.upperBound();

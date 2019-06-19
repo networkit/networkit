@@ -1358,7 +1358,7 @@ TEST_P(GraphGTest, forNodesWhile) {
 	count nodesSeen = 0;
 
 	G.forNodesWhile([&]() { return nodesSeen < stopAfter; },
-	                [&](node u) { nodesSeen++; });
+	                [&](node) { nodesSeen++; });
 
 	ASSERT_EQ(stopAfter, nodesSeen);
 }
@@ -1484,7 +1484,7 @@ TEST_P(GraphGTest, testParallelForWeightedEdges) {
 	G.forNodePairs([&](node u, node v) { G.addEdge(u, v, 1.0); });
 
 	edgeweight weightSum = 0.0;
-	G.parallelForEdges([&](node u, node v, edgeweight ew) {
+	G.parallelForEdges([&](node, node, edgeweight ew) {
 #pragma omp atomic
 		weightSum += ew;
 	});
@@ -1498,7 +1498,7 @@ TEST_P(GraphGTest, testParallelForEdges) {
 	G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
 
 	edgeweight weightSum = 0.0;
-	G.parallelForEdges([&](node u, node v) {
+	G.parallelForEdges([&](node, node) {
 #pragma omp atomic
 		weightSum += 1;
 	});
@@ -1834,7 +1834,7 @@ TEST_P(GraphGTest, testParallelSumForNodes) {
 
 TEST_P(GraphGTest, testParallelSumForWeightedEdges) {
 	double sum = this->Ghouse.parallelSumForEdges(
-	    [](node u, node v, edgeweight ew) { return 1.5 * ew; });
+	    [](node, node, edgeweight ew) { return 1.5 * ew; });
 
 	double expected_sum = 1.5 * this->Ghouse.totalEdgeWeight();
 	ASSERT_EQ(expected_sum, sum);
@@ -1845,7 +1845,7 @@ TEST_P(GraphGTest, testParallelSumForWeightedEdges) {
 TEST_P(GraphGTest, testBFSfrom) {
 	std::vector<count> visitedOrder(5, none);
 	index i = 0;
-	this->Ghouse.BFSfrom(3, [&](node v, count dist) {
+	this->Ghouse.BFSfrom(3, [&](node v, count) {
 		EXPECT_EQ(none, visitedOrder[v]); // visit every node once
 		visitedOrder[v] = i++;
 	});
@@ -2016,14 +2016,14 @@ TEST_P(GraphGTest, testForEdgesWithIds) {
 		// No edge indices
 
 		count m = 0;
-		graph->forEdges([&](node u, node v, edgeid eid) {
+		graph->forEdges([&](node, node, edgeid eid) {
 			EXPECT_EQ(0, eid);
 			m++;
 		});
 		ASSERT_EQ(3u, m);
 
 		m = 0;
-		graph->parallelForEdges([&](node u, node v, edgeid eid) {
+		graph->parallelForEdges([&](node, node, edgeid eid) {
 			EXPECT_EQ(0, eid);
 #pragma omp atomic
 			m++;
@@ -2035,7 +2035,7 @@ TEST_P(GraphGTest, testForEdgesWithIds) {
 
 		edgeid expectedId = 0;
 		m = 0;
-		graph->forEdges([&](node u, node v, edgeid eid) {
+		graph->forEdges([&](node, node, edgeid eid) {
 			EXPECT_EQ(expectedId++, eid);
 			EXPECT_LT(eid, graph->upperEdgeIdBound());
 			m++;
@@ -2043,7 +2043,7 @@ TEST_P(GraphGTest, testForEdgesWithIds) {
 		ASSERT_EQ(3u, m);
 
 		m = 0;
-		graph->parallelForEdges([&](node u, node v, edgeid eid) {
+		graph->parallelForEdges([&](node, node, edgeid eid) {
 			EXPECT_NE(none, eid);
 			EXPECT_LT(eid, graph->upperEdgeIdBound());
 #pragma omp atomic
@@ -2069,7 +2069,7 @@ TEST_P(GraphGTest, testForWeightedEdgesWithIds) {
 
 		count m = 0;
 		edgeweight sum = 0;
-		graph->forEdges([&](node u, node v, edgeweight ew, edgeid eid) {
+		graph->forEdges([&](node, node, edgeweight ew, edgeid eid) {
 			EXPECT_EQ(0, eid);
 			m++;
 			sum += ew;
@@ -2084,7 +2084,7 @@ TEST_P(GraphGTest, testForWeightedEdgesWithIds) {
 
 		m = 0;
 		sum = .0;
-		graph->parallelForEdges([&](node u, node v, edgeweight ew, edgeid eid) {
+		graph->parallelForEdges([&](node, node, edgeweight ew, edgeid eid) {
 			EXPECT_EQ(0, eid);
 #pragma omp atomic
 			m++;
@@ -2105,7 +2105,7 @@ TEST_P(GraphGTest, testForWeightedEdgesWithIds) {
 		edgeid expectedId = 0;
 		m = 0;
 		sum = .0;
-		graph->forEdges([&](node u, node v, edgeweight ew, edgeid eid) {
+		graph->forEdges([&](node, node, edgeweight ew, edgeid eid) {
 			EXPECT_EQ(expectedId++, eid);
 			EXPECT_LT(eid, graph->upperEdgeIdBound());
 			m++;
@@ -2121,7 +2121,7 @@ TEST_P(GraphGTest, testForWeightedEdgesWithIds) {
 
 		m = 0;
 		sum = .0;
-		graph->parallelForEdges([&](node u, node v, edgeweight ew, edgeid eid) {
+		graph->parallelForEdges([&](node, node, edgeweight ew, edgeid eid) {
 			EXPECT_NE(none, eid);
 			EXPECT_LT(eid, graph->upperEdgeIdBound());
 #pragma omp atomic
@@ -2229,7 +2229,7 @@ TEST_P(GraphGTest, testSortEdges) {
 
 		std::vector<std::tuple<node, edgeweight, edgeid>> outEdges;
 		origG.forNodes([&](node u) {
-			origG.forEdgesOf(u, [&](node u, node v, edgeweight w, edgeid eid) {
+			origG.forEdgesOf(u, [&](node, node v, edgeweight w, edgeid eid) {
 				outEdges.emplace_back(v, w, eid);
 			});
 
@@ -2241,7 +2241,7 @@ TEST_P(GraphGTest, testSortEdges) {
 
 			outEdges.clear();
 
-			origG.forInEdgesOf(u, [&](node u, node v, edgeweight w, edgeid eid) {
+			origG.forInEdgesOf(u, [&](node, node v, edgeweight w, edgeid eid) {
 				outEdges.emplace_back(v, w, eid);
 			});
 

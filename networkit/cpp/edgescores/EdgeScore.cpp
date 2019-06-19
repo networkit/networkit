@@ -21,7 +21,7 @@ namespace NetworKit {
 	void EdgeScore<T>::run() {
 		// empty run method for edge scoring methods that do not require preprocessing but calculate score(u,v) on the fly
 		hasRun = true;
-	};
+	}
 
 	/** Get a vector containing the score for each edge in the graph.
 	@Return the edge scores calculated by @link run().
@@ -38,14 +38,14 @@ namespace NetworKit {
 	T EdgeScore<T>::score(edgeid eid) {
 		assureFinished();
 		return scoreData[eid];
-	};
+	}
 
 	/** Get the edge score of the given edge.
 	*/
 	template<typename T>
 	T EdgeScore<T>::score(node u, node v) {
 		return score(G.edgeId(u,v));
-	};
+	}
 
 	template class EdgeScore<double>;
 	template class EdgeScore<count>;

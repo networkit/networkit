@@ -26,14 +26,14 @@ void EdgeScoreLinearizer::run() {
 
 	// Special case for m = 1
 	if (G.numberOfEdges() == 1) {
-		G.forEdges([&](node u, node v, edgeid eid) {
+		G.forEdges([&](node, node, edgeid eid) {
 			scoreData[eid] = 0.5;
 		});
 	} else {
 		typedef std::tuple<edgeweight, index, edgeid> edgeTuple;
 		std::vector<edgeTuple> sorted(G.upperEdgeIdBound(), std::make_tuple(std::numeric_limits<edgeweight>::max(), std::numeric_limits<index>::max(), none));
 
-		G.parallelForEdges([&](node u, node v, edgeid eid) {
+		G.parallelForEdges([&](node, node, edgeid eid) {
 			sorted[eid] = std::make_tuple(attribute[eid], Aux::Random::integer(), eid);
 		});
 
@@ -55,11 +55,11 @@ void EdgeScoreLinearizer::run() {
 	hasRun = true;
 }
 
-double EdgeScoreLinearizer::score(node u, node v) {
+double EdgeScoreLinearizer::score(node, node) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 
-double EdgeScoreLinearizer::score(edgeid eid) {
+double EdgeScoreLinearizer::score(edgeid) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 

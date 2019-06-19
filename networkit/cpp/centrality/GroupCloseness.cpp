@@ -174,14 +174,14 @@ void GroupCloseness::run() {
 
 				omp_unset_lock(&lock);
 				INFO("Extracted node ", v, " with prio ", prevBound[v]);
-				if (i > 1 && prevBound[v] <= currentImpr) {
+				if (i > 1 && prevBound[v] <= static_cast<int64_t>(currentImpr)) {
 					INFO("Interrupting! currentImpr = ", currentImpr,
 					     ", previous bound = ", prevBound[v]);
 					toInterrupt = true;
 					break;
 				}
 				if (D[v] > 1 && !(d[v] == 1 && D[v] == 2) && d[v] > 0 &&
-				    (i == 1 || prevBound[v] > currentImpr)) {
+				    (i == 1 || prevBound[v] > static_cast<int64_t>(currentImpr))) {
 					count imp = computeImprovement(v, n, G, H);
 					omp_set_lock(&lock);
 					if (imp > currentImpr) {

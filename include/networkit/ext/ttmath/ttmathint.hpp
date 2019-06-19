@@ -812,7 +812,7 @@ public:
 	/*!
 		a copy constructor
 	*/
-	Int(const Int<value_size> & u)
+	Int(const Int<value_size> & u) : UInt<value_size>(u)
 	{
 		FromInt(u);
 	}

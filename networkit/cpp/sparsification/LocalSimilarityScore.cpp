@@ -34,7 +34,7 @@ void LocalSimilarityScore::run() {
 
 		std::vector<AttributizedEdge<double>> neighbors;
 		neighbors.reserve(G.degree(i));
-		G.forNeighborsOf(i, [&](node _i, node j, edgeid eid) {
+		G.forNeighborsOf(i, [&](node, node j, edgeid eid) {
 			double sim = triangles[eid] * 1.0 / (G.degree(i) + G.degree(j) - triangles[eid]);
 			neighbors.emplace_back(i, j, eid, sim);
 		});
@@ -65,11 +65,11 @@ void LocalSimilarityScore::run() {
 	hasRun = true;
 }
 
-double LocalSimilarityScore::score(node u, node v) {
+double LocalSimilarityScore::score(node, node) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 
-double LocalSimilarityScore::score(edgeid eid) {
+double LocalSimilarityScore::score(edgeid) {
 	throw std::runtime_error("Not implemented: Use scores() instead.");
 }
 

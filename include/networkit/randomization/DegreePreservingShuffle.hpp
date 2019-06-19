@@ -78,7 +78,7 @@ private:
 
 };
 
-}; // ! namespace NetworKit
+} // ! namespace NetworKit
 
 #endif // ! RANDOMIZATION_DEGREE_PRESERVING_SHUFFLE_H_
 

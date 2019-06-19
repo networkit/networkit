@@ -28,7 +28,7 @@ edgeweight EdmondsKarp::BFS(std::vector<edgeweight> &residFlow, std::vector<node
 		node u = Q.front(); Q.pop();
 
 		bool sinkReached = false;
-		graph.forNeighborsOf(u, [&](node _u, node v, edgeweight weight, edgeid eid){
+		graph.forNeighborsOf(u, [&](node, node v, edgeweight weight, edgeid eid){
 			if ((
 			(u >= v && flow[eid] < weight) || (u < v && residFlow[eid] < weight)
 			)&& pred[v] == none) { // only add those neighbors with rest capacity and which were not discovered yet
@@ -80,7 +80,7 @@ void EdmondsKarp::run() {
 		}
 	}
 
-	graph.parallelForEdges([&](node u, node v, edgeid eid) {
+	graph.parallelForEdges([&](node, node, edgeid eid) {
 		flow[eid] = std::max(flow[eid], residFlow[eid]);
 	});
 }
@@ -102,7 +102,7 @@ std::vector<node> EdmondsKarp::getSourceSet() const {
 		node u = Q.front(); Q.pop();
 		sourceSet.push_back(u);
 
-		graph.forNeighborsOf(u, [&](node _u, node v, edgeweight weight, edgeid eid) {
+		graph.forNeighborsOf(u, [&](node, node v, edgeweight weight, edgeid eid) {
 			if (!visited[v] && flow[eid] < weight) {
 				Q.push(v);
 				visited[v] = true;
