@@ -7,78 +7,63 @@
  *              Manuel Penschuck <networkit@manuel.jetzt>
  */
 
-
-// includes
 #include <algorithm>
 #include <iostream>
+#include <omp.h>
 #include <utility>
 
-// GoogleTest
 #include <gtest/gtest.h>
 
-// OpenMP
-#include <omp.h>
+#include <tlx/cmdline_parser.hpp>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Parallelism.hpp>
-#include <networkit/ext/optionparser.hpp>
 
-class Arg: public OptionParser::Arg {
-    static OptionParser::ArgStatus Required(const OptionParser::Option& option, bool msg)
-    {
-        if (option.arg != 0)
-            return OptionParser::ARG_OK;
+struct Options {
+    std::string loglevel;
+    unsigned numThreads{0};
 
-        if (msg)
-            std::cout << "Option '" << option << "' requires an argument" << std::endl;
+    bool modeTests{false};
+    bool modeDebug{false};
+    bool modeBenchmarks{false};
+    bool modeRunnable{false};
 
-        return OptionParser::ARG_ILLEGAL;
+    bool parse(int argc, char* argv[]) {
+        tlx::CmdlineParser parser;
+
+        parser.add_bool('t', "tests",      modeTests,      "Run unit tests");
+        parser.add_bool('r', "run",        modeRunnable,   "Run unit tests which don't use assertions");
+        parser.add_bool('d', "debug",      modeDebug,      "Run tests to debug some algorithms");
+        parser.add_bool('b', "benchmarks", modeBenchmarks, "Run benchmarks");
+        
+        parser.add_unsigned("threads",     numThreads,     "set the maximum number of threads; 0 (=default) uses OMP default");
+        parser.add_string("loglevel",      loglevel,       "set the log level (TRACE|DEBUG|INFO|WARN|ERROR|FATAL)");
+
+        if (!parser.process(argc, argv, std::cerr))
+            return false;
+
+        if (modeTests + modeDebug + modeBenchmarks + modeRunnable > 1) {
+            std::cerr << "Select at most one of -t, -r, -d, -b\n";
+            return false;
+        }
+
+        return true;
     }
 };
 
-enum  optionIndex { UNKNOWN, HELP, LOGLEVEL, THREADS, TESTS, RUNNABLE, DEBUG, BENCHMARKS };
-const OptionParser::Descriptor usage[] = {
-    {UNKNOWN,	0,	"" ,	"",				OptionParser::Arg::None,	"Options:" },
-    {HELP,		0,	"h",	"help",			OptionParser::Arg::None,	"  --help  \t Print usage and exit." },
-    {LOGLEVEL,	0,	"",		"loglevel",		OptionParser::Arg::Required,"  --loglevel=<LEVEL>  \t set the log level" },
-    {THREADS,	0,	"",		"threads",		OptionParser::Arg::Required,"  --threads=<NUM>  \t set the maximum number of threads" },
-    {TESTS,		0,	"t",	"tests",		OptionParser::Arg::None,	"  --tests \t Run unit tests"},
-    {RUNNABLE,	0,	"r",	"run",			OptionParser::Arg::None,	"  --run \t Run unit tests which don't use assertions"},
-    {DEBUG,		0,	"d",	"debug",		OptionParser::Arg::None,	"  --debug \t Run tests to debug some algorithms"},
-    {BENCHMARKS,0,	"b",	"benchmarks",	OptionParser::Arg::None,	"  --benchmarks \t Run benchmarks"},
-    {UNKNOWN,	0,	"",		"",				OptionParser::Arg::None,	"" },
-    {0,			0,	0,		0,				0,							0}
-};
-
-
-int main(int argc, char **argv) {
+int main(int argc, char *argv[]) {
     std::cout << "*** NetworKit Unit Tests ***\n";
 
-    // PARSE OPTIONS
-    const auto parse_argc = std::max(0, argc - 1);
-    const auto parse_argv = argv + (argc>0); // skip program name argv[0] if present
-    OptionParser::Stats  stats(usage, parse_argc, parse_argv);
-    std::vector<OptionParser::Option> options(stats.options_max), buffer(stats.buffer_max);
-    OptionParser::Parser parse(usage, parse_argc, parse_argv, options.data(), buffer.data());
-
-    if (parse.error())
-        return 1;
-
-    if (options[HELP]) {
-        OptionParser::printUsage(std::cout, usage);
-        return 0;
+    ::testing::InitGoogleTest(&argc, argv);
+    Options options;
+    if (!options.parse(argc, argv)) {
+        return -1;
     }
 
-    for (OptionParser::Option* opt = options[UNKNOWN]; opt; opt = opt->next())
-        std::cout << "Unknown option: " << opt->name << "\n";
-
-    for (int i = 0; i < parse.nonOptionsCount(); ++i)
-        std::cout << "Non-option #" << i << ": " << parse.nonOption(i) << "\n";
-
-    // CONFIGURE LOGGING
+    // Configure logging
 #ifndef NOLOGGING
-    if (options[LOGLEVEL]) {
-        Aux::Log::setLogLevel(options[LOGLEVEL].arg);
+    if (!options.loglevel.empty()) {
+        Aux::Log::setLogLevel(options.loglevel);
         if(Aux::Log::getLogLevel() == "INFO"){
             Aux::Log::Settings::setPrintLocation(false);
         }else{
@@ -88,31 +73,34 @@ int main(int argc, char **argv) {
         Aux::Log::setLogLevel("ERROR");	// with default level
         Aux::Log::Settings::setPrintLocation(true);
     }
+    std::cout << "Loglevel: " << Aux::Log::getLogLevel() << "\n";
 #endif
 
-    // CONFIGURE PARALLELISM
-    omp_set_nested(1); // enable nested parallelism
+    // Configure parallelism
+    {
+        omp_set_nested(1); // enable nested parallelism
 
-    if (options[THREADS]) {
-        // set number of threads
-        int nThreads = std::atoi(options[THREADS].arg);
-        Aux::setNumberOfThreads(nThreads);
+        if (options.numThreads) {
+            Aux::setNumberOfThreads(options.numThreads);
+        }
+        std::cout << "Max. number of threads: " << Aux::getMaxNumberOfThreads() << "\n";
     }
 
-    ::testing::InitGoogleTest(&argc, argv);
-    auto set_filter = [&] (const char* filter) {
-        std::cout << "Set --gtest_filter='" << filter << "'\n";
-        ::testing::GTEST_FLAG(filter) = filter;
-    };
+    // Configure test filter
+    {
+        auto setFilter = [&](const char *filter) {
+            ::testing::GTEST_FLAG(filter) = filter;
+        };
 
-    if (options[TESTS]) {
-        set_filter("*Test.test*");
-    } else if (options[DEBUG]) {
-        set_filter("*Test.debug*");
-    } else if (options[BENCHMARKS]) {
-        set_filter("*Benchmark*");
-    }	else if (options[RUNNABLE]) {
-        set_filter("*Test.run*");
+        if (options.modeTests) {
+            setFilter("*Test.test*");
+        } else if (options.modeDebug) {
+            setFilter("*Test.debug*");
+        } else if (options.modeBenchmarks) {
+            setFilter("*Benchmark*");
+        } else if (options.modeRunnable) {
+            setFilter("*Test.run*");
+        }
     }
 
     INFO("=== starting unit tests ===");
