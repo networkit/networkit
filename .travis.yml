@@ -100,6 +100,23 @@ matrix:
         - make -j2
         - ctest -V
 
+    - name: "Linux, gcc 5: Coverage"
+      compiler: gcc
+      os: linux
+      dist: xenial
+      addons: &gcc5
+        apt:
+          packages:
+            - python3-pip
+      script:
+        - pip3 install --user cpp-coveralls
+        - mkdir debug_test && cd "$_"
+        - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_COVERAGE=ON ..
+        - make -j2
+        - ctest -V
+      after_success:
+        coveralls --exclude-pattern "GTest" --exclude extlibs --gcov-options '\-lp'
+
     - name: Linux, GCC 8
       env:
         - CC=gcc-8
