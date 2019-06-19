@@ -39,7 +39,7 @@ public:
 	 *
 	 * @param G The graph.
 	 */
-	DynBetweenness(Graph& G);
+	DynBetweenness(const Graph &G);
 
   /**
    * Runs static betweenness centrality algorithm on the initial graph.
