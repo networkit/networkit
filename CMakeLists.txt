@@ -18,7 +18,6 @@ option(NETWORKIT_FLATINSTALL "Install into a flat directory structure (useful wh
 set(NETWORKIT_PYTHON "" CACHE STRING "Directory containing Python.h. Implies MONOLITH=TRUE")
 set(NETWORKIT_PYTHON_SOABI "" CACHE STRING "Platform specific file extension. Implies MONOLITH=TRUE")
 set(NETWORKIT_WITH_SANITIZERS "" CACHE STRING "Uses sanitizers during the compilation")
-set(NETWORKIT_CXX_SANITIZERS "")
 
 set (NETWORKIT_CXX_STANDARD "11" CACHE STRING "CXX Version to compile with. Currently fixed to 11")
 
@@ -77,6 +76,7 @@ else()
 endif()
 
 # Checking sanitizer options; in both cases we include 'undefined'
+set(NETWORKIT_CXX_SANITIZERS "")
 if ("${NETWORKIT_WITH_SANITIZERS}" STREQUAL "address")
 	set(NETWORKIT_CXX_SANITIZERS "address,undefined")
 elseif ("${NETWORKIT_WITH_SANITIZERS}" STREQUAL "leak")
@@ -86,7 +86,8 @@ elseif(NOT "${NETWORKIT_WITH_SANITIZERS}" STREQUAL "")
 endif()
 
 if (NOT "${NETWORKIT_CXX_SANITIZERS}" STREQUAL "")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=${NETWORKIT_CXX_SANITIZERS}")
+    set(NETWORKIT_CXX_FLAGS "-fsanitize=${NETWORKIT_CXX_SANITIZERS} ${NETWORKIT_CXX_FLAGS}")
+    set(NETWORKIT_LINK_FLAGS "-fsanitize=${NETWORKIT_CXX_SANITIZERS} ${NETWORKIT_LINK_FLAGS}")
 endif()
 
 # FindOpenMP.cmake does not reliably find a user installed openmp library
