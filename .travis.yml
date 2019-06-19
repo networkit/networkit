@@ -88,6 +88,7 @@ matrix:
         homebrew:
           packages:
             - libomp
+          update: true
 
     # Test with sanitizers.
     - name: "Linux, gcc 5.4: Core build, sanitizers"
