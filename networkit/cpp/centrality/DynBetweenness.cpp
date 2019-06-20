@@ -142,12 +142,14 @@ void DynBetweenness::decreaseScore(std::vector<bool> & affected, node y, std::pr
 		}
 		G.forNeighborsOf(x, [&](node w, edgeweight weightxw){
 			if (w!= x && (w != v || x != u) && x != y && distancesOld[x][y] == distancesOld[w][y] + weightxw) {
-				if (affected[x]) {
-					// TRACE("Affected node ", x, ". Subtracting from dep of ", w, ": ", sigmaOld[w][y]/sigmaOld[x][y]*(1+dep[x]));
-					dep[w] += sigmaOld[w][y]/sigmaOld[x][y]*(1+dep[x]);
-				} else {
-					// TRACE("Non affected node ", x, ". Subtracting from dep of ", w, ": ", sigmaOld[w][y]/sigmaOld[x][y]*(dep[x]));
-					dep[w] += sigmaOld[w][y]/sigmaOld[x][y]*(dep[x]);
+				if(sigmaOld[x][y] > 0){
+					if (affected[x]) {
+						// TRACE("Affected node ", x, ". Subtracting from dep of ", w, ": ", sigmaOld[w][y]/sigmaOld[x][y]*(1+dep[x]));
+						dep[w] += sigmaOld[w][y]/sigmaOld[x][y]*(1+dep[x]);
+					} else {
+						// TRACE("Non affected node ", x, ". Subtracting from dep of ", w, ": ", sigmaOld[w][y]/sigmaOld[x][y]*(dep[x]));
+						dep[w] += sigmaOld[w][y]/sigmaOld[x][y]*(dep[x]);
+					}
 				}
 				if (! visited[w] && !affected[w] && w != y) {
 					TRACE("Inserting node ", w, " with old priority ", distancesOld[w][y]);
