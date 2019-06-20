@@ -45,6 +45,7 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 	uint64_t weightFormat = 0;
 	Header header = {};
 	uint64_t adjListSize = 0;
+	uint64_t adjTransposeSize = 0;
 
 	auto setFeatures = [&] () {
 		header.features |= (G.isDirected() & DIR_MASK);
@@ -81,23 +82,36 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 
 	// Compute encoded size of arrays and store in vector.
 	uint64_t adjSize = 0;
-	std::vector<uint64_t> nrNbrs;
-	std::vector<size_t> adjOffsets;	//  pref sum of size encoded adj arrays
+	uint64_t transpSize = 0;
+	std::vector<uint64_t> nrOutNbrs;
+	std::vector<uint64_t> nrInNbrs;
+	std::vector<size_t> adjOffsets;	//Prefix sum of size encoded adj arrays
+	std::vector<size_t> transpOffsets;	//Prefix sum of encoded transposed adj arrays
 	for(uint64_t c = 0; c < chunks; c++) {
 		for(uint64_t n = firstInChunk[c]; n < firstInChunk[c+1]; n++) {
-			uint64_t nbrs = 0;
+			uint64_t outNbrs = 0;
+			uint64_t inNbrs = 0;
 			uint8_t tmp [10];
 			G.forNeighborsOf(n,[&](node v) {
 				if(v <= n) {
-					nbrs++;
+					outNbrs++;
 					adjSize += encode(v, tmp);
+				} else if (v >= n) {
+					inNbrs++;
+					transpSize += encode(v, tmp);
 				}
 			});
-			adjListSize += nbrs;
-			adjSize += encode(nbrs, tmp);
-			nrNbrs.push_back(nbrs);
+
+			adjListSize += outNbrs;
+			adjSize += encode(outNbrs, tmp);
+			nrOutNbrs.push_back(outNbrs);
+
+			adjTransposeSize += inNbrs;
+			transpSize += encode(inNbrs, tmp);
+			nrInNbrs.push_back(inNbrs);
 		}
 		adjOffsets.push_back(adjSize);
+		transpOffsets.push_back(transpSize);
 	}
 
 	// Write header.
@@ -110,7 +124,10 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 	header.offsetAdjLists = header.offsetBaseData
 			+ nodes * sizeof(uint8_t) // nodeFlags.
 			+ (chunks - 1) * sizeof(uint64_t); // firstVertex.
-	header.offsetAdjTranspose = 0;
+	header.offsetAdjTranspose = header.offsetAdjLists
+			+ (chunks -1) * sizeof(uint64_t) // adjOffsets
+			+ sizeof(uint64_t) // adjListSize
+			+ adjOffsets.back(); // Size of data
 	header.offsetWeights = 0;
 
 	writeHeader();
@@ -138,7 +155,7 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 	outfile.write(reinterpret_cast<char*>(&adjListSize), sizeof(uint64_t));
 	G.forNodes([&](node u) {
 		uint8_t tmp [10];
-		uint64_t nbrsSize = encode(nrNbrs[u], tmp);
+		uint64_t nbrsSize = encode(nrOutNbrs[u], tmp);
 		outfile.write(reinterpret_cast<char*>(tmp), nbrsSize);
 		G.forNeighborsOf(u,[&](node v){
 			if(v <= u) {
@@ -148,6 +165,23 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 		});
 	});
 
+	// Write transpose data.
+	for (uint64_t c = 1; c < chunks; c++) {
+		outfile.write(reinterpret_cast<char*>(&transpOffsets[c-1]), sizeof(uint64_t));
+	}
+	// Write size of list
+	outfile.write(reinterpret_cast<char*>(&adjTransposeSize), sizeof(uint64_t)); //Why are we writing this?
+	G.forNodes([&](node u) {
+		uint8_t tmp [10];
+		uint64_t nbrsSize = encode(nrInNbrs[u], tmp);
+		outfile.write(reinterpret_cast<char*>(tmp), nbrsSize);
+		G.forNeighborsOf(u,[&](node v){
+			if(v >= u) {
+				uint64_t nodeSize = encode(v, tmp);
+				outfile.write(reinterpret_cast<char*>(tmp), nodeSize);
+			}
+		});
+	});
 	INFO("Written graph to ", path);
 }
 } /*namespace */

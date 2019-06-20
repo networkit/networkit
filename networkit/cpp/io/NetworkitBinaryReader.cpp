@@ -5,7 +5,6 @@
  */
 
 #include <networkit/io/NetworkitBinaryReader.hpp>
-
 namespace NetworKit {
 
 size_t NetworkitBinaryReader::decode(const uint8_t* data, uint64_t& value) {
@@ -50,6 +49,8 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 		memcpy(&header.offsetBaseData, it, sizeof(uint64_t));
 		it += sizeof(uint64_t);
 		memcpy(&header.offsetAdjLists, it, sizeof(uint64_t));
+		it += sizeof(uint64_t);
+		memcpy(&header.offsetAdjTranspose, it, sizeof(uint64_t));
 		it += sizeof(uint64_t);
 		memcpy(&header.offsetWeights, it, sizeof(uint64_t));
 		it += sizeof(uint64_t);
@@ -98,34 +99,50 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 
 	// Read adjacency lists.
 	const char *adjIt = mmfile.cbegin() + header.offsetAdjLists;
+	const char *transpIt = mmfile.cbegin() + header.offsetAdjTranspose;
+	uint64_t adjListSize;
+	memcpy(&adjListSize, adjIt + (chunks -1) * sizeof(uint64_t), sizeof(uint64_t));
+	uint64_t transposeListSize;
+	memcpy(&transposeListSize, transpIt + (chunks -1) * sizeof(uint64_t), sizeof(uint64_t));
 
+	if(!directed)
+		assert(adjListSize == transposeListSize);
 	auto constructGraph = [&] (uint64_t c) {
 		node vertex = firstVert[c];
 		uint64_t off = 0;
+		uint64_t transpOff = 0;
 		if(vertex) {
 			memcpy(&off, adjIt + (c-1)* sizeof(uint64_t), sizeof(uint64_t));
+			memcpy(&transpOff, transpIt + (c-1)* sizeof(uint64_t), sizeof(uint64_t));
 		}
 		off += (chunks - 1) * sizeof(uint64_t);
+		transpOff += (chunks - 1) * sizeof(uint64_t);
 
-		uint64_t adjListSize;
-		memcpy(&adjListSize, (adjIt + off), sizeof(uint64_t));
 		off += sizeof(uint64_t);
-		DEBUG("adjListSize: ", adjListSize);
+		transpOff += sizeof(uint64_t);
+
 		uint64_t n = firstVert[c+1] - firstVert[c];
 
 		for (uint64_t i = 0; i < n; i++) {
 			uint64_t curr = vertex+i;
-			uint64_t nbrs;
-			size_t rd = NetworkitBinaryReader::decode(reinterpret_cast<const uint8_t*>(adjIt + off), nbrs);
-			off += rd;
+			uint64_t outNbrs;
+			off += NetworkitBinaryReader::decode(reinterpret_cast<const uint8_t*>(adjIt + off), outNbrs);
+			uint64_t inNbrs;
+			transpOff += NetworkitBinaryReader::decode(reinterpret_cast<const uint8_t*>(transpIt + transpOff), inNbrs);
 			if(!directed) {
-				G.preallocateUndirected(curr, nbrs);
+				G.preallocateUndirected(curr, outNbrs);
+			} else  {
+				G.preallocateDirected(curr, outNbrs, inNbrs);
 			}
-			for (uint64_t j = 0; j < nbrs; j++) {
-				uint64_t add;
-				rd = NetworkitBinaryReader::decode(reinterpret_cast<const uint8_t*>(adjIt + off), add);
+			//Read adj lists
+			uint64_t add;
+			for (uint64_t j = 0; j < outNbrs; j++) {
+				off += NetworkitBinaryReader::decode(reinterpret_cast<const uint8_t*>(adjIt + off), add);
 				G.addEdge(curr, add);
-				off+=rd;
+			}
+			//Read transp lists
+			for (uint64_t j = 0; j < inNbrs; j++) {
+				transpOff += NetworkitBinaryReader::decode(reinterpret_cast<const uint8_t*>(transpIt + transpOff), add);
 			}
 		}
 	};

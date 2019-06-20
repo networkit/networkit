@@ -179,6 +179,19 @@ void Graph::preallocateUndirected(node u, size_t size) {
 	}
 }
 
+void Graph::preallocateDirected(node u, size_t outSize, size_t inSize) {
+	inEdges[u].reserve(inSize);
+	outEdges[u].reserve(outSize);
+
+	if(weighted) {
+		inEdgeWeights[u].reserve(inSize);
+		outEdgeWeights[u].reserve(outSize);
+	}
+	if(edgesIndexed) {
+		inEdgeIds[u].reserve(inSize);
+		outEdgeIds[u].reserve(outSize);
+	}
+}
 /** PRIVATE HELPERS **/
 
 count Graph::getNextGraphId() {

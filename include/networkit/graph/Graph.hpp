@@ -679,15 +679,27 @@ class Graph final {
     Graph &operator=(const Graph &other) = default;
 
 	/**
-	 * Reserves memory in the node's edge containers.
+	 * Reserves memory in the node's edge containers for undirected graphs.
 	 *
-	 * @param u the node memory should be reserved for 
+	 * @param u the node memory should be reserved for
 	 * @param size the amount of memory to reserve
 	 * 
-	 * This function is thread-safe if called from different 
+	 * This function is thread-safe if called from different
 	 * threads on different nodes.
 	 */
 	void preallocateUndirected(node u, size_t size);
+
+	/**
+	 * Reserves memory in the node's edge containers for directed graphs.
+	 *
+	 * @param u the node memory should be reserved for
+	 * @param inSize the amount of memory to reserve for in edges
+	 * @param outSize the amount of memory to reserve for out edges
+	 * 
+	 * This function is thread-safe if called from different
+	 * threads on different nodes.
+	 */
+	void preallocateDirected(node u, size_t outSize, size_t inSize);
 
     /** EDGE IDS **/
 
