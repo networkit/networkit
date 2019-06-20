@@ -790,16 +790,16 @@ TEST_F(IOGTest, testKONECTGraphReader){
 	ASSERT_EQ(G.weight(0,1), 1.261404);
 	ASSERT_EQ(G.weight(127, 48), 0.03050447);
 }
-TEST_F(IOGTest, NetworkitBinary_tiny01) {
+TEST_F(IOGTest, testNetworkitBinaryTiny01) {
 	METISGraphReader reader2;
-	Graph G = reader2.read("../input/tiny_01.graph");
+	Graph G = reader2.read("input/tiny_01.graph");
 	NetworkitBinaryWriter writer;
 
-	writer.write(G, "../input/binary_tiny01");
+	writer.write(G, "input/binary_tiny01");
 	ASSERT_TRUE(!G.isEmpty());
 
 	NetworkitBinaryReader reader;
-	Graph G2 = reader.read("../input/binary_tiny01");
+	Graph G2 = reader.read("input/binary_tiny01");
 	ASSERT_EQ(G2.numberOfNodes(), G.numberOfNodes());
 	ASSERT_EQ(G2.numberOfEdges(), G.numberOfEdges());	
 	G.forNodes([&](node u){
@@ -809,16 +809,16 @@ TEST_F(IOGTest, NetworkitBinary_tiny01) {
 	});
 }
 
-TEST_F(IOGTest, NetworkitBinary_konect) {
+TEST_F(IOGTest, testNetworkitBinaryKonect) {
 	KONECTGraphReader reader2;	
-	Graph G = reader2.read("../input/foodweb-baydry.konect");	
+	Graph G = reader2.read("input/foodweb-baydry.konect");	
 	NetworkitBinaryWriter writer;
 
-	writer.write(G, "../input/binary_konect");
+	writer.write(G, "input/binary_konect");
 	ASSERT_TRUE(!G.isEmpty());
 
 	NetworkitBinaryReader reader;
-	Graph G2 = reader.read("../input/binary_konect");
+	Graph G2 = reader.read("input/binary_konect");
 	ASSERT_EQ(G2.numberOfEdges(), G.numberOfEdges());
 	ASSERT_EQ(G2.numberOfNodes(), G.numberOfNodes()); 	
 	G.forNodes([&](node u){
@@ -828,16 +828,16 @@ TEST_F(IOGTest, NetworkitBinary_konect) {
 	});		
 }
 
-TEST_F(IOGTest, NetworkitBinary_jazz) {
+TEST_F(IOGTest, testNetworkitBinaryJazz) {
 	METISGraphReader reader2;
-	Graph G = reader2.read("../input/jazz.graph");
+	Graph G = reader2.read("input/jazz.graph");
 
 	NetworkitBinaryWriter writer;
-	writer.write(G, "../input/binary_jazz");
+	writer.write(G, "input/binary_jazz");
 	ASSERT_TRUE(!G.isEmpty());
 
 	NetworkitBinaryReader reader;
-	Graph G2 = reader.read("../input/binary_jazz");
+	Graph G2 = reader.read("input/binary_jazz");
 	ASSERT_EQ(G2.numberOfEdges(), G.numberOfEdges());
 	ASSERT_EQ(G2.numberOfNodes(), G.numberOfNodes()); 	
 	G.forNodes([&](node u){
@@ -847,17 +847,17 @@ TEST_F(IOGTest, NetworkitBinary_jazz) {
 	});		
 }
 
-TEST_F(IOGTest, NetworkitBinary_wiki) {
+TEST_F(IOGTest, testNetworkitBinaryWiki) {
 	bool directed = true;	
 	SNAPGraphReader reader2(directed);
-	Graph G = reader2.read("../input/wiki-Vote.txt");
+	Graph G = reader2.read("input/wiki-Vote.txt");
 	NetworkitBinaryWriter writer;
 
-	writer.write(G, "../input/binary_wiki");
+	writer.write(G, "input/binary_wiki");
 	ASSERT_TRUE(!G.isEmpty());
 
 	NetworkitBinaryReader reader;
-	Graph G2 = reader.read("../input/binary_wiki");
+	Graph G2 = reader.read("input/binary_wiki");
 	ASSERT_EQ(G2.numberOfEdges(), G.numberOfEdges());
 	ASSERT_EQ(G2.numberOfNodes(), G.numberOfNodes()); 	
 	G.forNodes([&](node u){
