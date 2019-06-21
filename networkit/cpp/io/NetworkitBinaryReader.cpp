@@ -164,7 +164,8 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 	};
 
 	// create graph
-	for(uint64_t c = 0; c < chunks; c++) {
+	#pragma omp parallel for
+	for(omp_index c = 0; c < static_cast<omp_index>(chunks); c++) {
 		constructGraph(c);
 	}
 	G.setNumberOfSelfLoops(unsafe, selfLoops);
