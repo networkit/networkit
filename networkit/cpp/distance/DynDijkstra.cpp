@@ -5,28 +5,29 @@
  *      Author: ebergamini
  */
 
+#include <queue>
+
 #include <networkit/distance/Dijkstra.hpp>
 #include <networkit/distance/DynDijkstra.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/PrioQueue.hpp>
 #include <networkit/auxiliary/NumericTools.hpp>
-#include <queue>
 
 
 namespace NetworKit {
 
 DynDijkstra::DynDijkstra(const Graph& G, node source, bool storePredecessors) : DynSSSP(G, source, storePredecessors),
-color(G.upperNodeIdBound(), WHITE) {
-
-}
+color(G.upperNodeIdBound(), WHITE) {}
 
 void DynDijkstra::run() {
 	Dijkstra dij(G, source, true);
 	dij.run();
-	distances = dij.distances;
-	npaths = dij.npaths;
+	distances = dij.getDistances();
+	npaths.reserve(G.upperNodeIdBound());
+	G.forNodes([&](node u) { npaths.push_back(dij.numberOfPaths(u)); });
 	if (storePreds) {
-		previous = dij.previous;
+		previous.resize(G.upperNodeIdBound());
+		G.forNodes([&](node u) {previous[u] = dij.getPredecessors(u); });
 	}
 }
 

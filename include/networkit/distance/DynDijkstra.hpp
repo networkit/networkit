@@ -16,7 +16,7 @@ namespace NetworKit {
  * @ingroup distance
  * Dynamic Dijkstra.
  */
-class DynDijkstra : public DynSSSP {
+class DynDijkstra final : public DynSSSP {
 
 public:
 

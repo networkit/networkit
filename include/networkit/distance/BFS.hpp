@@ -8,7 +8,6 @@
 #ifndef BFS_H_
 #define BFS_H_
 
-#include <networkit/graph/Graph.hpp>
 #include <networkit/distance/SSSP.hpp>
 
 namespace NetworKit {
@@ -18,11 +17,9 @@ namespace NetworKit {
  * The BFS class is used to do a breadth-first search on a Graph from a given
  * source node.
  */
-class BFS : public SSSP {
+class BFS final : public SSSP {
 
-    friend class DynBFS;
-
-  public:
+public:
     /**
      * Constructs the BFS class for @a G and source node @a source.
      *
@@ -39,11 +36,8 @@ class BFS : public SSSP {
 
     /**
      * Breadth-first search from @a source.
-     * @return Vector of unweighted distances from node @a source, i.e. the
-     * length (number of edges) of the shortest path from @a source to any other
-     * node.
      */
-    virtual void run();
+    void run() override;
 };
 } /* namespace NetworKit */
 #endif /* BFS_H_ */

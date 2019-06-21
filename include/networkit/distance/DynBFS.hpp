@@ -17,7 +17,7 @@ namespace NetworKit {
  * @ingroup distance
  * Dynamic breadth-first search.
  */
-class DynBFS : public DynSSSP {
+class DynBFS final : public DynSSSP {
 
 public:
 

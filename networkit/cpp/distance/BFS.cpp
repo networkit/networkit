@@ -2,7 +2,8 @@
  * BFS.cpp
  *
  *  Created on: Jul 23, 2013
- *      Author: Henning */
+ *      Author: Henning
+ */
 
 #include <queue>
 

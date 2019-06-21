@@ -20,10 +20,13 @@ color(G.upperNodeIdBound(), WHITE) {
 void DynBFS::run() {
 	BFS bfs(G, source, true);
 	bfs.run();
-	distances = bfs.distances;
-	npaths = bfs.npaths;
-	if (storePreds)
-		previous = bfs.previous;
+	distances = bfs.getDistances();
+	npaths.reserve(G.upperNodeIdBound());
+	G.forNodes([&](node u) {npaths.push_back(bfs.numberOfPaths(u)); });
+	if (storePreds) {
+		previous.resize(G.upperNodeIdBound());
+		G.forNodes([&](node u) { previous[u] = bfs.getPredecessors(u); });
+	}
 	maxDistance = 0;
 	G.forNodes([&](node v){
 		if (distances[v] > maxDistance)

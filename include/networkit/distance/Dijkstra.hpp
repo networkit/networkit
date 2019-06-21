@@ -10,7 +10,6 @@
 
 #include <tlx/container/d_ary_addressable_int_heap.hpp>
 
-#include <networkit/graph/Graph.hpp>
 #include <networkit/distance/SSSP.hpp>
 
 namespace NetworKit {
@@ -19,12 +18,9 @@ namespace NetworKit {
  * @ingroup distance
  * Dijkstra's SSSP algorithm.
  */
-class Dijkstra : public SSSP {
+class Dijkstra final : public SSSP {
 
-    friend class DynDijkstra;
-    friend class DynDijkstra2;
-
-  public:
+public:
     /**
      * Creates the Dijkstra class for @a G and the source node @a source.
      *
@@ -43,16 +39,16 @@ class Dijkstra : public SSSP {
      * Performs the Dijkstra SSSP algorithm on the graph given in the
      * constructor.
      */
-    virtual void run();
+    void run() override;
 
-  private:
+private:
     struct Compare {
-      public:
+    public:
         Compare(const std::vector<double> &dist_) : dist(dist_) {}
 
         bool operator()(node x, node y) const { return dist[x] < dist[y]; }
 
-      private:
+    private:
         const std::vector<double> &dist;
     };
 
