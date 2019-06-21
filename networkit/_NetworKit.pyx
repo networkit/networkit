@@ -1340,6 +1340,7 @@ cdef extern from "<networkit/distance/SSSP.hpp>":
 	cdef cppclass _SSSP "NetworKit::SSSP"(_Algorithm):
 		_SSSP(_Graph G, node source, bool_t storePaths, bool_t storeNodesSortedByDistance, node target) except +
 		vector[edgeweight] getDistances(bool_t moveOut) except +
+		vector[edgeweight] getDistances() except +
 		edgeweight distance(node t) except +
 		vector[node] getPredecessors(node t) except +
 		vector[node] getPath(node t, bool_t forward) except +
@@ -1356,8 +1357,9 @@ cdef class SSSP(Algorithm):
 		if type(self) == SSSP:
 			raise RuntimeError("Error, you may not use SSSP directly, use a sub-class instead")
 
-	def getDistances(self, moveOut=True):
+	def getDistances(self, moveOut):
 		"""
+		DEPRECATED
 		Returns a vector of weighted distances from the source node, i.e. the
  	 	length of the shortest path from the source node to any other node.
 
@@ -1367,6 +1369,18 @@ cdef class SSSP(Algorithm):
  	 		The weighted distances from the source node to any other node in the graph.
 		"""
 		return (<_SSSP*>(self._this)).getDistances(moveOut)
+
+	def getDistances(self):
+		"""
+		Returns a vector of weighted distances from the source node, i.e. the
+		length of the shortest path from the source node to any other node.
+
+		Returns
+		-------
+		vector
+		The weighted distances from the source node to any other node in the graph.
+		"""
+		return (<_SSSP*>(self._this)).getDistances()
 
 	def distance(self, t):
 		return (<_SSSP*>(self._this)).distance(t)

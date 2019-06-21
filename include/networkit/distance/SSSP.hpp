@@ -13,6 +13,7 @@
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <tlx/define/deprecated.hpp>
 
 namespace NetworKit {
 
@@ -51,7 +52,8 @@ class SSSP : public Algorithm {
      * @return The weighted distances from the source node to any other node in
      * the graph.
      */
-    virtual std::vector<edgeweight> getDistances(bool moveOut = true);
+    std::vector<edgeweight> TLX_DEPRECATED(getDistances(bool moveOut));
+    const std::vector<edgeweight> &getDistances();
 
     /**
      * Returns the distance from the source node to @a t.
@@ -93,7 +95,7 @@ class SSSP : public Algorithm {
      * @a t, otherwise the path is reversed.
      * @return A shortest path from source to @a t or an empty path.
      */
-    virtual std::vector<node> getPath(node t, bool forward = true) const;
+    std::vector<node> getPath(node t, bool forward = true) const;
 
     /**
      * Returns all shortest paths from source to @a t and an empty set if source
@@ -104,8 +106,7 @@ class SSSP : public Algorithm {
      * @a t, otherwise the path is reversed.
      * @return All shortest paths from source node to target node @a t.
      */
-    virtual std::set<std::vector<node>> getPaths(node t,
-                                                 bool forward = true) const;
+    std::set<std::vector<node>> getPaths(node t, bool forward = true) const;
 
     /* Returns the number of shortest paths to node t.*/
     bigfloat getNumberOfPaths(node t) const;
@@ -121,7 +122,8 @@ class SSSP : public Algorithm {
      *class instead of copying it; default=true.
      * @return vector of nodes ordered in increasing distance from the source
      */
-    virtual std::vector<node> getNodesSortedByDistance(bool moveOut = true);
+    std::vector<node> TLX_DEPRECATED(getNodesSortedByDistance(bool moveOut));
+    const std::vector<node> &getNodesSortedByDistance() const;
 
     /**
      * Returns the number of nodes reached by the source.
