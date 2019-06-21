@@ -92,16 +92,26 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 			uint64_t outNbrs = 0;
 			uint64_t inNbrs = 0;
 			uint8_t tmp [10];
-			G.forNeighborsOf(n,[&](node v) {
-				if(v <= n) {
+			if(!G.isDirected()){
+				G.forNeighborsOf(n,[&](node v) {
+					if(v <= n) { 
+						outNbrs++;
+						adjSize += encode(v, tmp);
+					} else if (v >= n) {
+						inNbrs++;
+						transpSize += encode(v, tmp);
+					}
+				});
+			} else {
+				G.forNeighborsOf(n, [&] (node v) {
 					outNbrs++;
 					adjSize += encode(v, tmp);
-				} else if (v >= n) {
+				});
+				G.forInNeighborsOf(n, [&] (node v) {
 					inNbrs++;
 					transpSize += encode(v, tmp);
-				}
-			});
-
+				});
+			}
 			adjListSize += outNbrs;
 			adjSize += encode(outNbrs, tmp);
 			nrOutNbrs.push_back(outNbrs);
@@ -158,8 +168,14 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 		uint64_t nbrsSize = encode(nrOutNbrs[u], tmp);
 		outfile.write(reinterpret_cast<char*>(tmp), nbrsSize);
 		G.forNeighborsOf(u,[&](node v){
-			if(v <= u) {
-				uint64_t nodeSize = encode(v, tmp);
+			uint64_t nodeSize;
+			if(!G.isDirected()) {
+				if(v <= u) {
+					nodeSize = encode(v, tmp);
+					outfile.write(reinterpret_cast<char*>(tmp), nodeSize);
+				}
+			} else {
+				nodeSize = encode(v, tmp);
 				outfile.write(reinterpret_cast<char*>(tmp), nodeSize);
 			}
 		});
@@ -169,18 +185,26 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 	for (uint64_t c = 1; c < chunks; c++) {
 		outfile.write(reinterpret_cast<char*>(&transpOffsets[c-1]), sizeof(uint64_t));
 	}
-	// Write size of list
-	outfile.write(reinterpret_cast<char*>(&adjTransposeSize), sizeof(uint64_t)); //Why are we writing this?
+	// Write size of transpose list.
+	outfile.write(reinterpret_cast<char*>(&adjTransposeSize), sizeof(uint64_t));
 	G.forNodes([&](node u) {
 		uint8_t tmp [10];
 		uint64_t nbrsSize = encode(nrInNbrs[u], tmp);
 		outfile.write(reinterpret_cast<char*>(tmp), nbrsSize);
-		G.forNeighborsOf(u,[&](node v){
-			if(v >= u) {
-				uint64_t nodeSize = encode(v, tmp);
+		uint64_t nodeSize;
+		if(!G.isDirected()) {
+			G.forNeighborsOf(u,[&](node v){
+				if(v >= u) {
+					nodeSize = encode(v, tmp);
+					outfile.write(reinterpret_cast<char*>(tmp), nodeSize);
+				}
+			});
+		} else {
+			G.forInNeighborsOf(u,[&](node v){
+				nodeSize = encode(v, tmp);
 				outfile.write(reinterpret_cast<char*>(tmp), nodeSize);
-			}
-		});
+			});
+		}
 	});
 	INFO("Written graph to ", path);
 }
