@@ -359,10 +359,17 @@ if (NETWORKIT_BUILD_TESTS)
 
 	else()
 		add_library(networkit_gtest_main STATIC networkit/cpp/Unittests-X.cpp)
+
+		set_target_properties(networkit_gtest_main PROPERTIES
+				CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
+				COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
+				LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
+
 		target_link_libraries(networkit_gtest_main
 				PUBLIC
 					gtest
 				PRIVATE
+					tlx
 					networkit_auxiliary
 					OpenMP::OpenMP_CXX
 		)
