@@ -8,10 +8,13 @@
 #ifndef CONNECTEDCOMPONENTS_H_
 #define CONNECTEDCOMPONENTS_H_
 
+#include <cassert>
+#include <map>
+#include <vector>
+
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
 #include <networkit/base/Algorithm.hpp>
-#include <unordered_set>
 
 namespace NetworKit {
 
@@ -31,14 +34,14 @@ public:
 	/**
 	 * This method determines the connected components for the graph given in the constructor.
 	 */
-	void run();
+	void run() override;
 
 	/**
 	 * Get the number of connected components.
 	 *
 	 * @return The number of connected components.
 	 */
-	count numberOfComponents();
+	count numberOfComponents() const;
 
 	/**
 	 * Get the the component in which node @a u is situated.
@@ -53,18 +56,26 @@ public:
 	 *
 	 * @return A partition representing the found components.
 	 */
-	Partition getPartition();
+	Partition getPartition() const;
 
     /**
      *Return the map from component to size
      */
-    std::map<index, count> getComponentSizes();
+    std::map<index, count> getComponentSizes() const;
 
     /**
      * @return Vector of components, each stored as (unordered) set of nodes.
      */
-    std::vector<std::vector<node> > getComponents();
+    std::vector<std::vector<node> > getComponents() const;
 
+    /**
+     * Constructs a new graph that contains only the nodes inside the largest
+     * connected component.
+     * @param G            The input graph.
+     * @param compactGraph If true, the node ids of the output graph will be compacted
+     * (i.e. re-numbered from 0 to n-1). If false, the node ids will not be changed.
+     */
+    static Graph extractLargestConnectedComponent(const Graph &G, bool compactGraph = false);
 
 private:
 	const Graph& G;
@@ -78,7 +89,7 @@ inline count ConnectedComponents::componentOfNode(node u) const {
 	return component[u];
 }
 
-inline count ConnectedComponents::numberOfComponents() {
+inline count ConnectedComponents::numberOfComponents() const {
 	assureFinished();
 	return this->numComponents;
 }

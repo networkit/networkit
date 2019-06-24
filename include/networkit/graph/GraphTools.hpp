@@ -103,15 +103,6 @@ Graph getRemappedGraph(const Graph& graph, count numNodes, UnaryIdMapper&& oldId
         std::forward<UnaryIdMapper>(oldIdToNew), [](node) { return false; }, preallocate);
 }
 
-/**
- * Constructs a new graph that contains only the nodes inside the largest
- * connected component.
- * @param G            The input graph.
- * @param compactGraph If true, the node ids of the output graph will be compacted
- * (i.e. re-numbered from 0 to n-1). If false, the node ids will not be changed.
- */
-Graph extractLargestConnectedComponent(const Graph &G, bool compactGraph = false);
-
 
 }	// namespace GraphTools
 }	// namespace NetworKit

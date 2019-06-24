@@ -347,6 +347,21 @@ class Test_SelfLoops(unittest.TestCase):
 		CC.getPartition()
 		CC.numberOfComponents()
 
+	def test_extractLargestConnectedComponent(self):
+		G = Graph(10)
+		for i in range(3):
+			G.addEdge(i, i+1)
+
+		for i in range(4, 9):
+			G.addEdge(i, i+1)
+
+		G1 = components.ConnectedComponents.extractLargestConnectedComponent(G, True)
+		self.assertEqual(G1.numberOfNodes(), 6)
+		self.assertEqual(G1.numberOfEdges(), 5)
+
+		G2 = components.ConnectedComponents.extractLargestConnectedComponent(G, False)
+		for i in range(G.numberOfNodes()):
+			self.assertEqual(G2.hasNode(i), (4 <= i <= 9))
 
 	def test_distance_Diameter(self):
 		D = distance.Diameter(self.LL, distance.DiameterAlgo.EstimatedRange, error = 0.1)
