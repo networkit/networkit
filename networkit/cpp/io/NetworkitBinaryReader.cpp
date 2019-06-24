@@ -5,6 +5,16 @@
  */
 
 #include <networkit/io/NetworkitBinaryReader.hpp>
+
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/io/NetworkitBinaryGraph.hpp>
+#include <networkit/io/MemoryMappedFile.hpp>
+#include <tlx/math/ffs.hpp>
+#include <vector>
+#include <fstream>
+#include <string.h>
+#include <atomic>
+
 namespace NetworKit {
 
 size_t NetworkitBinaryReader::decode(const uint8_t* data, uint64_t& value) {
@@ -28,7 +38,7 @@ int64_t NetworkitBinaryReader::decodeZigzag(uint64_t value) {
 }
 
 Graph NetworkitBinaryReader::read(const std::string& path) {
-	Header header = {};
+	nkbg::Header header = {};
 	uint64_t weightFormat = 0;
 
 	MemoryMappedFile mmfile(path);
@@ -59,8 +69,8 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 		if(memcmp("nkbg001", header.magic, 8)) {
 			throw std::runtime_error("Reader expected another magic value");
 		} else {
-			directed = (header.features & DIR_MASK);
-			weightFormat = (header.features & WGHT_MASK) >> WGHT_SHIFT;
+			directed = (header.features & nkbg::DIR_MASK);
+			weightFormat = (header.features & nkbg::WGHT_MASK) >> nkbg::WGHT_SHIFT;
 		}
 	};
 
@@ -81,7 +91,7 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 		uint8_t flag;
 		memcpy(&flag, baseIt, sizeof(uint8_t));
 		baseIt += sizeof(uint8_t);
-		if (!(flag & DELETED_BIT)) {
+		if (!(flag & nkbg::DELETED_BIT)) {
 			G.removeNode(i);
 		}
 	}
@@ -108,8 +118,8 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 		assert(adjListSize == transposeListSize);
 	} 
 	G.setEdgeCount(unsafe, adjListSize);
-	
-	uint64_t selfLoops = 0;
+
+	std::atomic<count> selfLoops{0};
 	auto constructGraph = [&] (uint64_t c) {
 		node vertex = firstVert[c];
 		uint64_t off = 0;
@@ -136,8 +146,8 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 				G.preallocateDirected(curr, outNbrs, inNbrs);
 			}
 			//Read adjacency lists.
-			uint64_t add;
 			for (uint64_t j = 0; j < outNbrs; j++) {
+				uint64_t add;
 				off += NetworkitBinaryReader::decode(reinterpret_cast<const uint8_t*>(adjIt + off), add);
 				if(!directed) {
 					G.addPartialEdge(unsafe, curr, add);
@@ -150,6 +160,7 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 			}
 			//Read transpose lists.
 			for (uint64_t j = 0; j < inNbrs; j++) {
+				uint64_t add;
 				transpOff += NetworkitBinaryReader::decode(reinterpret_cast<const uint8_t*>(transpIt + transpOff), add);
 				if(!directed) {
 					G.addPartialEdge(unsafe, curr, add);
@@ -157,7 +168,7 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 					G.addPartialInEdge(unsafe, curr, add);
 				}
 				if(curr == add) {
-					selfLoops++;
+					selfLoops.fetch_add(1, std::memory_order_relaxed);
 				}
 			}
 		}

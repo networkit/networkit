@@ -994,17 +994,17 @@ class Graph final {
      * @param weight Optional edge weight.
      */
     void addEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
-    
-	/**
-     * Insert an edge between the nodes @a u and @a v. Unline the addEdge function, this function does not not add any information to v. If the graph is
-     * weighted you can optionally set a weight for this edge. The default
-     * weight is 1.0. Note: Multi-edges are not supported and will NOT be
-     * handled consistently by the graph data structure.
-     * @param u Endpoint of edge.
-     * @param v Endpoint of edge.
-     * @param weight Optional edge weight.
-     */
-	void addPartialEdge(Unsafe, node u, node v, uint64_t index = 0, edgeweight ew = defaultEdgeWeight);
+
+    /**
+    * Insert an edge between the nodes @a u and @a v. Unline the addEdge function, this function does not not add any information to v. If the graph is
+    * weighted you can optionally set a weight for this edge. The default
+    * weight is 1.0. Note: Multi-edges are not supported and will NOT be
+    * handled consistently by the graph data structure.
+    * @param u Endpoint of edge.
+    * @param v Endpoint of edge.
+    * @param weight Optional edge weight.
+    */
+    void addPartialEdge(Unsafe, node u, node v, uint64_t index = 0, edgeweight ew = defaultEdgeWeight);
 
     /**
      * Insert an in edge between the nodes @a u and @a v in a directed graph. If the graph is

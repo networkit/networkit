@@ -5,6 +5,11 @@
  */
 
 #include <networkit/io/NetworkitBinaryWriter.hpp>
+#include <networkit/auxiliary/Enforce.hpp>
+#include <networkit/io/NetworkitBinaryGraph.hpp>
+#include <tlx/math/clz.hpp>
+#include <fstream>
+#include <cstring>
 
 namespace NetworKit {
 
@@ -43,13 +48,13 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 	Aux::enforceOpened(outfile);
 
 	uint64_t weightFormat = 0;
-	Header header = {};
+	nkbg::Header header = {};
 	uint64_t adjListSize = 0;
 	uint64_t adjTransposeSize = 0;
 
 	auto setFeatures = [&] () {
-		header.features |= (G.isDirected() & DIR_MASK);
-		header.features |= ((weightFormat << WGHT_SHIFT) & WGHT_MASK);
+		header.features |= (G.isDirected() & nkbg::DIR_MASK);
+		header.features |= ((weightFormat << nkbg::WGHT_SHIFT) & nkbg::WGHT_MASK);
 	};
 
 	auto writeHeader = [&] () {
@@ -130,7 +135,7 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 	setFeatures();
 	header.nodes = nodes;
 	header.chunks = chunks;
-	header.offsetBaseData = sizeof(Header);
+	header.offsetBaseData = sizeof(nkbg::Header);
 	header.offsetAdjLists = header.offsetBaseData
 			+ nodes * sizeof(uint8_t) // nodeFlags.
 			+ (chunks - 1) * sizeof(uint64_t); // firstVertex.
@@ -147,7 +152,7 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 	G.forNodes([&] (node u) {
 		uint8_t nodeFlag = 0;
 		if (G.hasNode(u)) {
-			nodeFlag |= DELETED_BIT;
+			nodeFlag |= nkbg::DELETED_BIT;
 		}
 		outfile.write(reinterpret_cast<char*>(&nodeFlag), sizeof(uint8_t));
 	});

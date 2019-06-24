@@ -170,6 +170,8 @@ Graph::Graph(const Graph &G, bool weighted, bool directed)
 }
 
 void Graph::preallocateUndirected(node u, size_t size) {
+	assert(!directed);
+	assert(exists[u]);
 	outEdges[u].reserve(size);
 	if(weighted) {
 		outEdgeWeights[u].reserve(size);
@@ -180,6 +182,8 @@ void Graph::preallocateUndirected(node u, size_t size) {
 }
 
 void Graph::preallocateDirected(node u, size_t outSize, size_t inSize) {
+	assert(directed);
+	assert(exists[u]);
 	inEdges[u].reserve(inSize);
 	outEdges[u].reserve(outSize);
 
