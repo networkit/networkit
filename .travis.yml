@@ -101,6 +101,27 @@ matrix:
         - make -j2
         - ctest -V
 
+    - name: "Linux, gcc 5: Coverage"
+      compiler: gcc
+      os: linux
+      dist: xenial
+      addons: &gcc5
+        apt:
+          packages:
+            - python3-pip
+            - python3.5-venv
+      script:
+        - python3 -m venv pyenv && . pyenv/bin/activate
+        - pip3 install --upgrade pip
+        - pip3 install setuptools cpp-coveralls
+        - mkdir build && cd "$_"
+        - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_COVERAGE=ON ..
+        - make -j2
+        - ctest -V
+      after_success:
+        - cd ..
+        - coveralls -E ".*test/.*" -E ".*CMakeFiles.*" --exclude extlibs --exclude pyenv --exclude scripts --root .
+
     - name: Linux, GCC 8
       env:
         - CC=gcc-8

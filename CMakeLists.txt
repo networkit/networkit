@@ -15,6 +15,7 @@ option(NETWORKIT_NATIVE "Optimize for native architecture (often better performa
 option(NETWORKIT_WARNINGS "Issue more warnings" OFF)
 option(NETWORKIT_INCLUDESYMLINK "Create symlink to cpp directory" ON)
 option(NETWORKIT_FLATINSTALL "Install into a flat directory structure (useful when building a Python package)" OFF)
+option(NETWORKIT_COVERAGE "Build with support for coverage" OFF)
 set(NETWORKIT_PYTHON "" CACHE STRING "Directory containing Python.h. Implies MONOLITH=TRUE")
 set(NETWORKIT_PYTHON_SOABI "" CACHE STRING "Platform specific file extension. Implies MONOLITH=TRUE")
 set(NETWORKIT_WITH_SANITIZERS "" CACHE STRING "Uses sanitizers during the compilation")
@@ -88,6 +89,12 @@ endif()
 if (NOT "${NETWORKIT_CXX_SANITIZERS}" STREQUAL "")
     set(NETWORKIT_CXX_FLAGS "-fsanitize=${NETWORKIT_CXX_SANITIZERS} ${NETWORKIT_CXX_FLAGS}")
     set(NETWORKIT_LINK_FLAGS "-fsanitize=${NETWORKIT_CXX_SANITIZERS} ${NETWORKIT_LINK_FLAGS}")
+endif()
+
+# Check if coverage support is enabled
+if (NETWORKIT_COVERAGE)
+  set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} --coverage")
+  set(NETWORKIT_LINK_FLAGS "${NETWORKIT_LINK_FLAGS} --coverage")
 endif()
 
 # FindOpenMP.cmake does not reliably find a user installed openmp library
