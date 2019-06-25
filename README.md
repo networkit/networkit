@@ -1,7 +1,7 @@
 NetworKit
 =========
-[![Travis Build Status](https://travis-ci.org/kit-parco/networkit.svg?branch=Dev)](https://travis-ci.org/kit-parco/networkit)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/kit-parco/networkit?branch=Dev&svg=true)](https://ci.appveyor.com/project/kit-parco/networkit)
+[![Travis Build Status](https://travis-ci.org/networkit/networkit.svg?branch=Dev)](https://travis-ci.org/networkit/networkit)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/networkit/networkit?branch=Dev&svg=true)](https://ci.appveyor.com/project/networkit/networkit)
 [![PyPI version](https://badge.fury.io/py/networkit.svg)](https://badge.fury.io/py/networkit)
 [![Coverage Status](https://coveralls.io/repos/github/networkit/networkit/badge.svg?branch=Dev)](https://coveralls.io/github/networkit/networkit?branch=Dev)
 
@@ -236,7 +236,7 @@ in NetworKit, and simply using NetworKit. We ask you to cite the appropriate one
 [list]: https://sympa.cms.hu-berlin.de/sympa/subscribe/networkit
 [networkit]: https://networkit.github.io/
 [IPython]: https://ipython.readthedocs.io/en/stable/
-[NetworKit UserGuide]: https://github.com/kit-parco/networkit/blob/Dev/notebooks/User-Guide.ipynb
+[NetworKit UserGuide]: https://github.com/networkit/networkit/blob/Dev/notebooks/User-Guide.ipynb
 [g++]: https://gcc.gnu.org
 [clang++]: https://clang.llvm.org/
 [Pip]: https://pypi.python.org/pypi/pip
