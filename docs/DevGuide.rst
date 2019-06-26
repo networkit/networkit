@@ -22,7 +22,7 @@ publications is available on the
 Contribution Workflow
 ---------------------
 
-The development of the NetworKit project takes place at our `official repository on GitHub <https://github.com/kit-parco/networkit>`__.
+The development of the NetworKit project takes place at our `official repository on GitHub <https://github.com/networkit/networkit>`__.
 
 There are two important branches you need to be aware of:
 
@@ -58,7 +58,7 @@ Since the algorithm you're working on will take some time to implement, you want
 
 ::
 
-   git remote add upstream https://github.com/kit-parco/networkit.git
+   git remote add upstream https://github.com/networkit/networkit.git
 
 Now you can update your fork on a regular basis with changes from the original repository:
 
@@ -120,7 +120,7 @@ Once you finished the development and testing of your new feature, it is time to
 
 This can be done by visiting the **Pull requests page** (https://github.com/[YOUR-USERNAME]/[FORKED-NETWORKIT]/pulls) of your NetworKit fork on GitHub and clicking on the green **New pull request** button at the top right side of the page.
 
-Here the ``base fork`` at the top should point to ``kit-parco/networkit`` and the base should be ``Dev``. The ``head fork`` should point to your fork of networkit and the ``compare`` branch to the right should point to the feature branch (``feature/[my-awesome-feature-name]``) you would like to create the pull request for.
+Here the ``base fork`` at the top should point to ``networkit/networkit`` and the base should be ``Dev``. The ``head fork`` should point to your fork of networkit and the ``compare`` branch to the right should point to the feature branch (``feature/[my-awesome-feature-name]``) you would like to create the pull request for.
 
 Once you've reviewed all changes, click the green **Create pull request** button and your pull request will be created.
 
@@ -167,7 +167,7 @@ In a nutshell, new developers should familiarise themselves with the existing co
 Report bugs
 -----------
 
-Please report any bugs on the `issues page <https://github.com/kit-parco/networkit/issues>`__ of the official NetworKit repository on GitHub.
+Please report any bugs on the `issues page <https://github.com/networkit/networkit/issues>`__ of the official NetworKit repository on GitHub.
 In very urgent cases it might also make sense to write on the `mailing list <https://lists.uni-koeln.de/mailman/listinfo/networkit>`__.
 Please provide a minimal example so that others can reproduce that bug.
 

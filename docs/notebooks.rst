@@ -25,4 +25,4 @@ We provide several example notebooks to get started with NetworKit and Jupyter N
 
 .. |userGuide| raw:: html
 
-	<a href="https://github.com/kit-parco/networkit/blob/Dev/notebooks/User-Guide.ipynb" target="_blank">NetworKit User Guide</a>
+	<a href="https://github.com/networkit/networkit/blob/Dev/notebooks/User-Guide.ipynb" target="_blank">NetworKit User Guide</a>

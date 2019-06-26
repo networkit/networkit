@@ -20,7 +20,7 @@ and integration into the Python ecosystem of tools for data analysis and
 scientific computation.
 
 
-Usage examples can be found on https://github.com/kit-parco/networkit/blob/Dev/notebooks/User-Guide.ipynb
+Usage examples can be found on https://github.com/networkit/networkit/blob/Dev/notebooks/User-Guide.ipynb
 """
 
 __author__ = "Christian Staudt"
