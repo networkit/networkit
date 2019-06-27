@@ -5,6 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
+// networkit-format
+
 #ifndef NETWORKIT_ALGEBRAIC_ALGEBRAIC_GLOBALS_HPP_
 #define NETWORKIT_ALGEBRAIC_ALGEBRAIC_GLOBALS_HPP_
 
@@ -22,8 +24,6 @@ struct Triplet {
 /** Floating point epsilon to use in comparisons. */
 constexpr double FLOAT_EPSILON = 1e-9;
 
-}
-
-
+} // namespace NetworKit
 
 #endif // NETWORKIT_ALGEBRAIC_ALGEBRAIC_GLOBALS_HPP_
