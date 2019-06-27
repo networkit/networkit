@@ -16,6 +16,8 @@
 #include <networkit/graph/Sampling.hpp>
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
+#include <networkit/centrality/DynBetweenness.hpp>
+#include <networkit/auxiliary/Random.hpp>
 
 namespace NetworKit {
 
@@ -132,6 +134,79 @@ TEST_F(DynBetweennessGTest, runApproxBetweenness) {
 	ApproxBetweenness bc1(G1, 0.1, 0.1);
 	bc1.run();
 	DEBUG("Number of samples: ", bc1.numberOfSamples());
+}
+
+TEST_F(DynBetweennessGTest, runDynVsStaticCaseInsertDirected){
+	Aux::Random::setSeed(0, false);
+
+	auto genEdgeInsert = [](const Graph& g){
+		node u = g.randomNode();
+		node v = g.randomNode();
+		while (u == v || g.hasEdge(u, v)){
+			u = g.randomNode();
+			v = g.randomNode();
+		}
+		return std::make_pair(u, v);
+	};
+
+	for(count n = 2; n <= 25; n++)
+		for(count t = 0; t < 100; t++){
+			auto g = ErdosRenyiGenerator(n, 0.3, true).generate();
+
+			if(g.numberOfEdges() == g.numberOfNodes() * (g.numberOfNodes() - 1))continue;
+
+			auto e = genEdgeInsert(g);
+			auto ibet = DynBetweenness(g);
+
+			ibet.run();
+
+			auto ne = GraphEvent(GraphEvent::EDGE_ADDITION, e.first, e.second);
+			g.addEdge(e.first, e.second);
+			ibet.update(ne);
+
+			EXPECT_TRUE(g.hasEdge(e.first, e.second));
+			auto brandes = Betweenness(g);
+			brandes.run();
+			g.forNodes([&](node & v){
+				EXPECT_NEAR(brandes.score(v), ibet.score(v), 1e-8);
+			});
+		}
+}
+
+TEST_F(DynBetweennessGTest, runDynVsStaticCaseInsertUndirected){
+	Aux::Random::setSeed(0, false);
+
+	auto genEdgeInsert = [](const Graph& g){
+		node u = g.randomNode();
+		node v = g.randomNode();
+		while (u == v || g.hasEdge(u, v)){
+			u = g.randomNode();
+			v = g.randomNode();
+		}
+		return std::make_pair(u, v);
+	};
+
+	for(count n = 2; n <= 25; n++)
+		for(count t = 0; t < 100; t++){
+			auto g = ErdosRenyiGenerator(n, 0.3, false).generate();
+			if(g.numberOfEdges() == g.numberOfNodes() * (g.numberOfNodes() - 1) / 2)continue;
+
+			auto e = genEdgeInsert(g);
+			auto ibet = DynBetweenness(g);
+
+			ibet.run();
+
+			auto ne = GraphEvent(GraphEvent::EDGE_ADDITION, e.first, e.second);
+			g.addEdge(e.first, e.second);
+			ibet.update(ne);
+			EXPECT_TRUE(g.hasEdge(e.first, e.second));
+
+			auto brandes = Betweenness(g);
+			brandes.run();
+			g.forNodes([&](node & v){
+				EXPECT_NEAR(brandes.score(v), ibet.score(v), 1e-8);
+			});
+		}
 }
 
 
