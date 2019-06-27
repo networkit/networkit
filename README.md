@@ -217,13 +217,12 @@ List of contributors can be found on the [NetworKit website credits page](https:
 ### External Code
 
 The program source includes:
-
-- the *[The Lean Mean C++ Option Parser][optparse]* by Matthias S. Benkmann
-- the *[TTMath]* bignum library by Tomasz Sowa
+- the *[TLX][tlx]* library
+- the *[TTMath]* bignum library
 
 [mitlicense]: http://opensource.org/licenses/MIT
-[optparse]: http://optionparser.sourceforge.net/
 [ttmath]: http://www.ttmath.org/
+[tlx]: https://github.com/tlx/tlx/
 
 ## License
 The source code of this program is released under the [MIT License][mitlicense].  We ask you to cite us if you use this code in your project (c.f. the publications section below and especially the [technical report](https://arxiv.org/abs/1403.3005)). Feedback is also welcome.
