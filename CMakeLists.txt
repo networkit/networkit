@@ -13,7 +13,6 @@ option(NETWORKIT_STATIC "Build static libraries" OFF)
 option(NETWORKIT_MONOLITH "Build single library (and tests is requested; required for shared lib)" ON)
 option(NETWORKIT_NATIVE "Optimize for native architecture (often better performance)" OFF)
 option(NETWORKIT_WARNINGS "Issue more warnings" OFF)
-option(NETWORKIT_INCLUDESYMLINK "Create symlink to cpp directory" ON)
 option(NETWORKIT_FLATINSTALL "Install into a flat directory structure (useful when building a Python package)" OFF)
 option(NETWORKIT_COVERAGE "Build with support for coverage" OFF)
 set(NETWORKIT_PYTHON "" CACHE STRING "Directory containing Python.h. Implies MONOLITH=TRUE")
@@ -163,17 +162,6 @@ else()
 endif()
 
 ################################################################################
-#include symlink
-if(NETWORKIT_INCLUDESYMLINK)
-	if(UNIX)
-		add_custom_target(symlink_include ALL
-				COMMAND ${CMAKE_COMMAND} -E make_directory "include"
-				COMMAND ${CMAKE_COMMAND} -E create_symlink "${PROJECT_SOURCE_DIR}/networkit/cpp" "include/NetworKit")
-	else()
-		message(WARNING "Cannot create symlink on windows machine")
-	endif()
-endif()
-
 # NETWORKIT MODULES
 if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
 	if(NETWORKIT_STATIC)
