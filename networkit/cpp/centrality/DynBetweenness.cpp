@@ -30,7 +30,7 @@ namespace NetworKit {
 // };
 
 
-DynBetweenness::DynBetweenness(Graph& G) : Centrality(G),
+DynBetweenness::DynBetweenness(const Graph &G) : Centrality(G),
 distances(G.upperNodeIdBound(), std::vector<edgeweight>(G.upperNodeIdBound())),
 distancesOld(G.upperNodeIdBound(), std::vector<edgeweight>(G.upperNodeIdBound())),
 sigma(G.upperNodeIdBound(), std::vector<edgeweight>(G.upperNodeIdBound())),
