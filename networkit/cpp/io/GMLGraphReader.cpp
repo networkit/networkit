@@ -69,8 +69,7 @@ Graph GMLGraphReader::read(const std::string& path) {
 						nodeMap.insert(std::make_pair(pair.second,u));
 						DEBUG("added node: ",u,", ",pair.second);
 					}	
-				} catch (std::exception e) {
-					//throw std::runtime_error("something went wrong when parsing a node");
+				} catch (const std::exception &e) {
 					return false;
 				}
 				std::getline(graphFile, line);
@@ -102,8 +101,7 @@ Graph GMLGraphReader::read(const std::string& path) {
 					} else if (pair.first == "target") {
 						v = nodeMap[pair.second];
 					}
-				} catch (std::exception e) {
-					//throw std::runtime_error("something went wrong when parsing an edge");
+				} catch (const std::exception &e) {
 					return false;
 				}
 				std::getline(graphFile,line);
@@ -142,7 +140,7 @@ Graph GMLGraphReader::read(const std::string& path) {
 									DEBUG("set directed to true");
 								}
 								break;
-							} catch (std::exception e) {
+							} catch (const std::exception &e) {
 								if (directed) {
 									G = Graph(0,false,true);
 								} else {
