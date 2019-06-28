@@ -20,7 +20,8 @@
 #include <networkit/auxiliary/Parallelism.hpp>
 
 struct Options {
-    std::string loglevel;
+    std::string loglevel = "ERROR";
+    bool sourceLocation{false};
     unsigned numThreads{0};
 
     bool modeTests{false};
@@ -38,6 +39,7 @@ struct Options {
         
         parser.add_unsigned("threads",     numThreads,     "set the maximum number of threads; 0 (=default) uses OMP default");
         parser.add_string("loglevel",      loglevel,       "set the log level (TRACE|DEBUG|INFO|WARN|ERROR|FATAL)");
+        parser.add_bool("srcloc",          sourceLocation, "print source location of log messages");
 
         if (!parser.process(argc, argv, std::cerr))
             return false;
@@ -62,17 +64,8 @@ int main(int argc, char *argv[]) {
 
     // Configure logging
 #ifndef NOLOGGING
-    if (!options.loglevel.empty()) {
-        Aux::Log::setLogLevel(options.loglevel);
-        if(Aux::Log::getLogLevel() == "INFO"){
-            Aux::Log::Settings::setPrintLocation(false);
-        }else{
-            Aux::Log::Settings::setPrintLocation(true);
-        }
-    } else {
-        Aux::Log::setLogLevel("ERROR");	// with default level
-        Aux::Log::Settings::setPrintLocation(true);
-    }
+    Aux::Log::setLogLevel(options.loglevel);
+    Aux::Log::Settings::setPrintLocation(options.sourceLocation);
     std::cout << "Loglevel: " << Aux::Log::getLogLevel() << "\n";
 #endif
 
