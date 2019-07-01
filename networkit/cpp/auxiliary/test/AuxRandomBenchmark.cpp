@@ -1,4 +1,6 @@
-#include <networkit/auxiliary/test/AuxRandomBenchmark.hpp>
+#include <gtest/gtest.h>
+
+#include <tlx/unused.hpp>
 
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/auxiliary/Timer.hpp>
@@ -8,42 +10,53 @@
 #include <omp.h>
 
 namespace NetworKit {
-template<typename F>
-static double measure(F f, const size_t iterations = 50000000) {
-	Aux::Timer timer;
-	timer.start();
 
-	for (size_t i = 0; i < iterations; i++) {
-		f();
+class AuxRandomBenchmark: public testing::Test {
+public:
+	template<typename F>
+	static double measure(F f, const size_t iterations = 50000000) {
+		Aux::Timer timer;
+		timer.start();
+
+		for (size_t i = 0; i < iterations; i++) {
+			f();
+		}
+
+		timer.stop();
+		const auto ms = timer.elapsedMilliseconds();
+		return (1.0e6 * ms / iterations);
 	}
 
-	timer.stop();
-	const auto ms = timer.elapsedMilliseconds();
-	return (1.0e6 * ms / iterations);
-}
+	template<typename F>
+	static double measureParallel(F f) {
+		// TODO: replace with google benchmark infrastructure
+		std::atomic<uint64_t> atime{0}; // this is a very dirty hack, but atomic float-points are not fully support by standard
+		std::atomic<int> num_threads;
 
-template<typename F>
-static double measureParallel(F f) {
-	// TODO: replace with google benchmark infrastructure
-	std::atomic<uint64_t> atime{0}; // this is a very dirty hack, but atomic float-points are not fully support by standard
-	std::atomic<int> num_threads;
+		#pragma omp parallel
+		{
+			const double local_time = f();
+			num_threads.store(omp_get_num_threads());
+			atime.fetch_add(static_cast<uint64_t>(1e6 * local_time), std::memory_order_relaxed);
+		}
 
-	#pragma omp parallel
-	{
-		const double local_time = f();
-		num_threads.store(omp_get_num_threads());
-		atime.fetch_add(static_cast<uint64_t>(1e6 * local_time), std::memory_order_relaxed);
+		return 1e-6 * atime / num_threads;
 	}
 
-	return 1e-6 * atime / num_threads;
-}
+	template <typename T>
+	static void DoNotOptimize(T&& x) {
+		// TODO: replace with google benchmark infrastructure
+		volatile auto dummy = x;
+		tlx::unused(dummy);
+	}
+};
 
 TEST_F(AuxRandomBenchmark, benchmarkInteger) {
 	uint64_t tmp = 0;
 	auto atime = measure([&] {
 		tmp += Aux::Random::integer();
 	});
-	volatile auto dummy = tmp;
+	DoNotOptimize(tmp);
 	std::cout << "Average time of operation: " << atime << "ns\n";
 }
 
@@ -57,7 +70,7 @@ TEST_F(AuxRandomBenchmark, benchmarkLocalDistrInteger) {
 		tmp += distr(prng);
 	});
 
-	volatile auto dummy = tmp;
+	DoNotOptimize(tmp);
 	std::cout << "Average time of operation: " << atime << "ns\n";
 }
 
@@ -67,7 +80,7 @@ TEST_F(AuxRandomBenchmark, benchmarkIntegerParallel) {
 		auto local_time = measure([&] {
 			tmp += Aux::Random::integer();
 		});
-		volatile auto dummy = tmp;
+		DoNotOptimize(tmp);
 
 		return local_time;
 	});
@@ -84,7 +97,7 @@ TEST_F(AuxRandomBenchmark, benchmarkLocalDistrIntegerParallel) {
 		auto local_time = measure([&] {
 			tmp += distr(prng);
 		});
-		volatile auto dummy = tmp;
+		DoNotOptimize(tmp);
 
 		return local_time;
 	});
@@ -98,7 +111,7 @@ TEST_F(AuxRandomBenchmark, benchmarkProb) {
 	auto atime = measure([&] {
 		tmp += Aux::Random::probability();
 	});
-	volatile auto dummy = tmp;
+	DoNotOptimize(tmp);
 	std::cout << "Average time of operation: " << atime << "ns\n";
 }
 
@@ -112,7 +125,7 @@ TEST_F(AuxRandomBenchmark, benchmarkLocalDistrProb) {
 		tmp += distr(prng);
 	});
 
-	volatile auto dummy = tmp;
+	DoNotOptimize(tmp);
 	std::cout << "Average time of operation: " << atime << "ns\n";
 }
 
@@ -122,7 +135,7 @@ TEST_F(AuxRandomBenchmark, benchmarkProbParallel) {
 		auto local_time =  measure([&] {
 			tmp += Aux::Random::probability();
 		});
-		volatile auto dummy = tmp;
+		DoNotOptimize(tmp);
 
 		return local_time;
 	});
@@ -139,7 +152,7 @@ TEST_F(AuxRandomBenchmark, benchmarkLocalDistrProbParallel) {
 		auto local_time = measure([&] {
 			tmp += distr(prng);
 		});
-		volatile auto dummy = tmp;
+		DoNotOptimize(tmp);
 
 		return local_time;
 	});
