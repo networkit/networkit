@@ -164,7 +164,7 @@ TEST_F(QuadTreeGTest, testQuadTreeThresholdGrowth) {
 			vector<index> neighbours = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[query], radii[query]), threshold);
 			EXPECT_GE(neighbours.size(), lastNeighbours.size());
 			if (neighbours.size() < lastNeighbours.size()) {
-#if LOG_LEVEL >= LOG_LEVEL_DEBUG
+#ifndef NETWORKIT_RELEASE_LOGGING
 				DEBUG("Previous Neighbours: ");
 				for (index neighbour : lastNeighbours) {
 					DEBUG(neighbour);

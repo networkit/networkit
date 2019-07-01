@@ -208,7 +208,7 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
 	GraphUpdater gu(G);
 	std::vector<GraphEvent> stream;
 
-	#if LOG_LEVEL == LOG_LEVEL_DEBUG
+	#ifndef NETWORKIT_RELEASE_LOGGING
 		// static clustering algorithm for better visual output
 		PostscriptWriter psWriter(true);
 		psWriter.write(G, "output/pubweb-0000.eps");
@@ -233,7 +233,7 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
 			Point<float> p = iter->second;
 			G.setCoordinate(v, p);
 		}
-		#if LOG_LEVEL == LOG_LEVEL_DEBUG
+		#ifndef NETWORKIT_RELEASE_LOGGING
 			// output for visual inspection
 			char path[23];
 			sprintf(path, "output/pubweb-%04llu.eps", static_cast<unsigned long long>(i));
@@ -329,7 +329,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
 	GraphUpdater gu(G);
 	std::vector<GraphEvent> stream;
 	G.initCoordinates();
-	#if LOG_LEVEL == LOG_LEVEL_DEBUG
+	#ifndef NETWORKIT_RELEASE_LOGGING
 		PostscriptWriter psWriter(true);
 		psWriter.write(G, "output/hyperbolic-0000.eps");
 	#endif
@@ -347,7 +347,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
 		for (index j = 0; j < coords.size(); j++) {
 			G.setCoordinate(j, coords[j]);
 		}
-		#if LOG_LEVEL == LOG_LEVEL_DEBUG
+		#ifndef NETWORKIT_RELEASE_LOGGING
 			// output for visual inspection
 			char path[27];//TODO: come on, this is ridiculous!
 			sprintf(path, "output/hyperbolic-%04llu.eps", static_cast<unsigned long long>(i));
@@ -455,7 +455,7 @@ TEST_F(GeneratorsGTest, testDynamicPathGenerator) {
 	DynamicPathGenerator gen;
 	auto stream = gen.generate(nSteps);
 	EXPECT_EQ(stream.size(),nSteps * 3 + 1);
-	#if LOG_LEVEL == LOG_LEVEL_TRACE
+	#ifndef NETWORKIT_RELEASE_LOGGING
 		for (auto ev : stream) {
 			TRACE(ev.toString());
 		}

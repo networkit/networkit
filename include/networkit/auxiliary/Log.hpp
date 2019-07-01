@@ -12,20 +12,6 @@
 	#define NETWORKT_PRETTY_FUNCTION __PRETTY_FUNCTION__
 #endif
 
-#define LOG_LEVEL_FATAL 0
-#define LOG_LEVEL_ERROR 1
-#define LOG_LEVEL_WARN  2
-#define LOG_LEVEL_INFO  3
-#define LOG_LEVEL_DEBUG 4
-#define LOG_LEVEL_TRACE 5
-
-// For compatibility with existing code, we define the LOG_LEVEL macro.
-#if defined(NETWORKIT_RELEASE_LOGGING)
-#	define LOG_LEVEL LOG_LEVEL_NONE
-#else
-#	define LOG_LEVEL LOG_LEVEL_TRACE
-#endif
-
 #define FATAL(...) ::Aux::Log::log({__FILE__, NETWORKT_PRETTY_FUNCTION, __LINE__},\
 		::Aux::Log::LogLevel::fatal, __VA_ARGS__)
 #define FATALF(...) ::Aux::Log::logF({__FILE__, NETWORKT_PRETTY_FUNCTION, __LINE__},\

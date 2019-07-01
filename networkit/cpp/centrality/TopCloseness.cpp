@@ -456,7 +456,7 @@ void TopCloseness::run() {
     count *distances = NULL;
     node *pred = NULL;
     count visEdges = 0;
-#if LOG_LEVEL >= LOG_LEVEL_DEBUG
+#ifndef NETWORKIT_RELEASE_LOGGING
     count iters = 0;
 #endif
     double farnessS;

@@ -37,7 +37,7 @@ class AuxGTest: public testing::Test{};
 
 TEST_F(AuxGTest, produceRandomIntegers) {
 	Aux::Random::setSeed(1, false);
-#if (LOG_LEVEL == LOG_LEVEL_TRACE)
+#ifndef NETWORKIT_RELEASE_LOGGING
 	int64_t l = 0; 	// lower bound
 	int64_t u = 100;	// upper bound
 
