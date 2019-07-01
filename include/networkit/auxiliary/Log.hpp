@@ -123,7 +123,8 @@ enum class LogLevel {
 	info,
 	warn,
 	error,
-	fatal
+	fatal,
+	quiet // Emits no log messages at all.
 };
 
 /**

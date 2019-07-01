@@ -22,6 +22,8 @@ void setLogLevel(std::string logLevel) {
 		Settings::setLogLevel(LogLevel::error);		
 	} else if (logLevel == "FATAL") {
 		Settings::setLogLevel(LogLevel::fatal);
+	} else if (logLevel == "QUIET") {
+		Settings::setLogLevel(LogLevel::quiet);
 	} else {
 		throw std::runtime_error("unknown loglevel");
 	}
@@ -41,6 +43,8 @@ std::string getLogLevel() {
 		return "ERROR";
 	} else if (current == LogLevel::fatal) {
 		return "FATAL";
+	} else if (current == LogLevel::quiet) {
+		return "QUIET";
 	} else {
 		// this only exists to silence a warning:
 		// TODO: consider replacing it with __builtin_unreachable();
@@ -53,7 +57,13 @@ namespace Settings {
 namespace {
 bool printTime = false;
 bool printLocation = false;
+
+#ifdef NETWORKIT_QUIET_LOGGING
+LogLevel loglevel = LogLevel::quiet;
+#else
 LogLevel loglevel = LogLevel::info;
+#endif
+
 std::ofstream logfile;
 
 std::atomic_bool logfileIsOpen{false};
