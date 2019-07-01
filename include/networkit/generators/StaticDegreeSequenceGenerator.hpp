@@ -12,6 +12,7 @@
 
 namespace NetworKit {
 
+// TODO: Clean this up.
 const short NO = 0;
 const short YES = 1;
 const short UNKNOWN = 2;
