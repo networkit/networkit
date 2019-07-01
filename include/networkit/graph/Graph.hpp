@@ -57,6 +57,8 @@ struct Edge {
 inline bool operator==(const Edge &e1, const Edge &e2) {
     return e1.u == e2.u && e1.v == e2.v;
 }
+struct Unsafe {};
+static constexpr Unsafe unsafe {};
 } // namespace NetworKit
 
 namespace std {
@@ -679,15 +681,27 @@ class Graph final {
     Graph &operator=(const Graph &other) = default;
 
 	/**
-	 * Reserves memory in the node's edge containers.
+	 * Reserves memory in the node's edge containers for undirected graphs.
 	 *
-	 * @param u the node memory should be reserved for 
+	 * @param u the node memory should be reserved for
 	 * @param size the amount of memory to reserve
-	 * 
-	 * This function is thread-safe if called from different 
+	 *
+	 * This function is thread-safe if called from different
 	 * threads on different nodes.
 	 */
 	void preallocateUndirected(node u, size_t size);
+
+	/**
+	 * Reserves memory in the node's edge containers for directed graphs.
+	 *
+	 * @param u the node memory should be reserved for
+	 * @param inSize the amount of memory to reserve for in edges
+	 * @param outSize the amount of memory to reserve for out edges
+	 *
+	 * This function is thread-safe if called from different
+	 * threads on different nodes.
+	 */
+	void preallocateDirected(node u, size_t outSize, size_t inSize);
 
     /** EDGE IDS **/
 
@@ -765,7 +779,14 @@ class Graph final {
      */
     std::string getName() const { return name; }
 
-    /**
+	/**
+	 * Set edge count of the graph to edges.
+	 * @param edges the edge count of a graph
+	 */
+	void setEdgeCount(Unsafe, count edges) { m = edges; }
+    
+	void setNumberOfSelfLoops(Unsafe, count loops) { storedNumberOfSelfLoops = loops; }
+	/**
      * Returns a string representation of the graph.
      * @return A string representation.
      */
@@ -973,6 +994,40 @@ class Graph final {
      * @param weight Optional edge weight.
      */
     void addEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
+
+    /**
+    * Insert an edge between the nodes @a u and @a v. Unline the addEdge function, this function does not not add any information to v. If the graph is
+    * weighted you can optionally set a weight for this edge. The default
+    * weight is 1.0. Note: Multi-edges are not supported and will NOT be
+    * handled consistently by the graph data structure.
+    * @param u Endpoint of edge.
+    * @param v Endpoint of edge.
+    * @param weight Optional edge weight.
+    */
+    void addPartialEdge(Unsafe, node u, node v, uint64_t index = 0, edgeweight ew = defaultEdgeWeight);
+
+    /**
+     * Insert an in edge between the nodes @a u and @a v in a directed graph. If the graph is
+     * weighted you can optionally set a weight for this edge. The default
+     * weight is 1.0. Note: Multi-edges are not supported and will NOT be
+     * handled consistently by the graph data structure.
+     * @param u Endpoint of edge.
+     * @param v Endpoint of edge.
+     * @param weight Optional edge weight.
+     */
+	void addPartialInEdge(Unsafe, node u, node v, uint64_t index = 0, edgeweight ew = defaultEdgeWeight);
+
+    /**
+     * Insert an out edge between the nodes @a u and @a v in a directed graph. If the graph is
+     * weighted you can optionally set a weight for this edge. The default
+     * weight is 1.0. Note: Multi-edges are not supported and will NOT be
+     * handled consistently by the graph data structure.
+     * @param u Endpoint of edge.
+     * @param v Endpoint of edge.
+     * @param weight Optional edge weight.
+     */
+	void addPartialOutEdge(Unsafe, node u, node v, uint64_t index = 0, edgeweight ew = defaultEdgeWeight);
+
 
     /**
      * Removes the undirected edge {@a u,@a v}.

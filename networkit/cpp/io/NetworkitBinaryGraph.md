@@ -22,7 +22,7 @@ struct Header {
 };
 ```
 - magic: A constant value used to identify the file format version.
-    - The current version is '*nkbg000*' which supports unweighted, undirected graphs.
+    - The current version is '*nkbg001*' which supports unweighted, undirected and directed graphs.
 - checksum: Currently not used
 - features: Contains the graph information bitwise
     - Bit 0 : directed or undirected
@@ -35,23 +35,33 @@ struct Header {
 - chunks: The number of chunks the nodes have been divided in
 - offsetBaseData: Offset of base data in the file 
 - offsetAdjLists: Offset of the adjacency lists in the file
-- offsetTranspose: Currently unused
+- offsetTranspose: Offset of the transposed adjaceny lists in the file
 - offsetWeights: Offset of the weights in the file
 
-All offsets are relative to the beginning of the file.
+All offsets are relative to the beginning of the section.
 
 Base data
 ------------
 ```
-uint64_t sizeSum[nodes]: The sum of sizes of adjacency vertices with indices <= i
+uint64_t nodeFlags[nodes]: Flags storing information about a node
 uint64_t firstVertex[chunks-1]: The index of the first vertex of each chunk excluding the first chunk
 ```
 Adjacency lists
 -----------------
 ```
+uint64_t nrOfEdges: the total number of edges in the block
 uint64_t offset[chunks-1]: Offset of the file where the adjacency list of 
 the firstVertex of each chunk relative to data starts
 varint data [...]: Varint encoded adjaceny lists  
+```
+Transpose lists
+-----------------
+```
+uint64_t nrOfEdges: the total number of edges in the block
+uint64_t offset[chunks-1]: Offset of the file where the tranpose list of 
+the firstVertex of each chunk relative to data starts
+varint data [...]: Varint encoded transpose lists  
+
 ```
 Weights
 --------------------

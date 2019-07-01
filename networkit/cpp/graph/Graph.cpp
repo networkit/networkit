@@ -170,6 +170,8 @@ Graph::Graph(const Graph &G, bool weighted, bool directed)
 }
 
 void Graph::preallocateUndirected(node u, size_t size) {
+	assert(!directed);
+	assert(exists[u]);
 	outEdges[u].reserve(size);
 	if(weighted) {
 		outEdgeWeights[u].reserve(size);
@@ -179,6 +181,21 @@ void Graph::preallocateUndirected(node u, size_t size) {
 	}
 }
 
+void Graph::preallocateDirected(node u, size_t outSize, size_t inSize) {
+	assert(directed);
+	assert(exists[u]);
+	inEdges[u].reserve(inSize);
+	outEdges[u].reserve(outSize);
+
+	if(weighted) {
+		inEdgeWeights[u].reserve(inSize);
+		outEdgeWeights[u].reserve(outSize);
+	}
+	if(edgesIndexed) {
+		inEdgeIds[u].reserve(inSize);
+		outEdgeIds[u].reserve(outSize);
+	}
+}
 /** PRIVATE HELPERS **/
 
 count Graph::getNextGraphId() {
@@ -675,7 +692,49 @@ void Graph::addEdge(node u, node v, edgeweight ew) {
 	if (u == v) { // count self loop
 		++storedNumberOfSelfLoops;
 	}
-} // namespace NetworKit
+}
+void Graph::addPartialEdge(Unsafe, node u, node v, uint64_t index, edgeweight ew) {
+	assert(u < z);
+	assert(exists[u]);
+	assert(v < z);
+	assert(exists[v]);
+
+	outEdges[u].push_back(v);
+
+	// if edges indexed, give new id
+	if (edgesIndexed) {
+		outEdgeIds[u].push_back(index);
+	}
+	if (weighted) {
+		outEdgeWeights[u].push_back(ew);
+	}
+}
+void Graph::addPartialOutEdge(Unsafe, node u, node v, uint64_t index, edgeweight ew) {
+	assert(u < z);
+	assert(exists[u]);
+	assert(v < z);
+	assert(exists[v]);
+
+	outEdges[u].push_back(v);
+
+	if (weighted) {
+		outEdgeWeights[u].push_back(ew);
+	}
+}
+void Graph::addPartialInEdge(Unsafe, node u, node v, uint64_t index, edgeweight ew) {
+	assert(u < z);
+	assert(exists[u]);
+	assert(v < z);
+	assert(exists[v]);
+
+	inEdges[u].push_back(v);
+	if (edgesIndexed) {
+		inEdgeIds[u].push_back(index);
+	}
+	if (weighted) {
+		inEdgeWeights[u].push_back(ew);
+	}
+}
 
 template <typename T>
 void erase(node u, index idx, std::vector<std::vector<T>> &vec) {
