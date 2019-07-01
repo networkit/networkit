@@ -9,7 +9,6 @@
 #define GLOBALS_H_
 
 #include <cstdint>
-#include <cmath>
 #include <limits>
 
 #include <networkit/ext/ttmath/ttmath.hpp>

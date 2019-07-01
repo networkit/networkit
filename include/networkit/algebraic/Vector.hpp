@@ -8,10 +8,13 @@
 #ifndef VECTOR_H_
 #define VECTOR_H_
 
+#include <cassert>
+#include <cmath>
 #include <vector>
+
 #include <networkit/Globals.hpp>
 #include <networkit/algebraic/AlgebraicGlobals.hpp>
-#include <cassert>
+
 
 namespace NetworKit {
 

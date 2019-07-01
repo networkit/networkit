@@ -8,6 +8,7 @@
 #ifndef NETWORKIT_CPP_VIZ_OCTREE_H_
 #define NETWORKIT_CPP_VIZ_OCTREE_H_
 
+#include <cmath>
 #include <vector>
 
 #include <networkit/viz/Point.hpp>

@@ -13,6 +13,8 @@
 #include <networkit/algebraic/CSRMatrix.hpp>
 
 #include <limits>
+#include <cmath>
+#include <vector>
 
 namespace NetworKit {
 
