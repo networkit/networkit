@@ -67,6 +67,11 @@ int main(int argc, char *argv[]) {
     Aux::Log::setLogLevel(options.loglevel);
     Aux::Log::Settings::setPrintLocation(options.sourceLocation);
     std::cout << "Loglevel: " << Aux::Log::getLogLevel() << "\n";
+#else
+    if (options.loglevel != "ERROR")
+        std::cout << "WARNING: --loglevel is ignored in NOLOGGING builds" << std::endl;
+    if (options.sourceLocation)
+        std::cout << "WARNING: --srcloc is ignored in NOLOGGING builds" << std::endl;
 #endif
 
     // Configure parallelism
