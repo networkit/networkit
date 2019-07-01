@@ -6,6 +6,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup generators
  * Graph generator for generating a random simple graph with exactly the given degree sequence based on the Edge-Switching Markov-Chain method.
  *
  * This implementation is based on the paper

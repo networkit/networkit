@@ -12,7 +12,9 @@
 
 namespace NetworKit {
 
-
+/**
+ * @ingroup generators
+ */
 class RegularRingLatticeGenerator: public StaticGraphGenerator {
 
 public:
