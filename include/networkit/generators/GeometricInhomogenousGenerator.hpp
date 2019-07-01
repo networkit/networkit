@@ -17,7 +17,7 @@ namespace NetworKit {
 
 class GeometricInhomogenousGenerator: public StaticGraphGenerator {
 public:
-    using coordinate_t = std::vector<double>;
+    using Coordinate = std::vector<double>;
 
     /**
      * @param[in] n Number of nodes
@@ -39,7 +39,7 @@ public:
      * @warning points and weights are moved into the container. The we're not using
      * rvalue refs because Cython does not handle them.
      */
-    GeometricInhomogenousGenerator(std::vector<coordinate_t>& points, std::vector<double>& weights, double avgDegree, double alpha);
+    GeometricInhomogenousGenerator(std::vector<Coordinate> points, std::vector<double> weights, double avgDegree, double alpha);
 
     /**
      * Construct generator from *already scaled* weights.
@@ -51,7 +51,7 @@ public:
      * @warning points and weights are moved into the container. The we're not using
      * rvalue refs because Cython does not handle them.
      */
-    GeometricInhomogenousGenerator(std::vector<coordinate_t>& points, std::vector<double>& weights, double alpha);
+    GeometricInhomogenousGenerator(std::vector<Coordinate> points, std::vector<double> weights, double alpha);
 
     // Add virtual destructor
     virtual ~GeometricInhomogenousGenerator() = default;
@@ -74,17 +74,17 @@ public:
      * @return  Point positions used to generate the graph
      * @warning The data is destroyed if generate is called with keep_input = false (default).
      */
-    const std::vector<coordinate_t>& positions() const noexcept {
+    const std::vector<Coordinate>& positions() const noexcept {
         return pointPositions;
     }
 
 private:
     double alpha;
 
-    std::vector<coordinate_t> pointPositions;
+    std::vector<Coordinate> pointPositions;
     std::vector<double> pointWeights;
 
-    void check_input_parameters_() const;
+    void checkInputParameters() const;
 };
 
 } // NetworKit

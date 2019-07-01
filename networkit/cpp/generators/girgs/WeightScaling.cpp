@@ -14,9 +14,10 @@
 #include <cmath>
 #include <vector>
 
-#include "../../include/networkit/auxiliary/SignalHandling.hpp"
+#include <networkit/Globals.hpp>
+#include <networkit/auxiliary/SignalHandling.hpp>
 
-#include "../../../../include/networkit/generators/girgs/WeightScaling.hpp"
+#include "WeightScaling.hpp"
 
 namespace NetworKit {
 namespace girgs {
@@ -104,17 +105,24 @@ double estimateWeightScalingThreshold(const std::vector<double> &weights, double
     const auto n = weights.size();
     auto max_weight = 0.0;
     auto W = 0.0, sq_W = 0.0;
+    #pragma omp parallel reduction(+:W, sq_W) // not supported by MSVC reduction(max: max_weight)
     {
-        #pragma omp parallel for reduction(+:W, sq_W), reduction(max: max_weight)
-        for (int i = 0; i < n; ++i) {
+        auto max_weight_local = max_weight;
+
+        #pragma omp for
+        for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
             const auto each = weights[i];
             sweights[i] = each; // copy to sweights
 
             W += each;
             sq_W += each * each;
-            max_weight = std::max(max_weight, each);
+            max_weight_local = std::max(max_weight_local, each);
         }
+
+        #pragma omp critical
+        max_weight = std::max(max_weight, max_weight_local);
     }
+    assert(max_weight == *std::max_element(weights.cbegin(), weights.cend()));
 
     // my function to do the exponential search on
     auto f = [=, &sweights, &lazy_sorter](double c) {
@@ -130,24 +138,30 @@ double estimateWeightScalingThreshold(const std::vector<double> &weights, double
 
         auto w2sum = 0.0;
         auto w2 = sweights.cbegin();
-        for (auto w1 = richclub_end; w1-- > sweights.begin();) {
-            const auto fac = *w1 / W;
-            const auto my_thres = 1.0 / fac / pow2c;
+        if (richclub_end > sweights.begin()) {
+            for (auto w1 = richclub_end - 1; ; --w1) {
+                const auto fac = *w1 / W;
+                const auto my_thres = 1.0 / fac / pow2c;
 
-            for (; w2 < richclub_end && *w2 >= my_thres; w2sum += *(w2++));
+				for (; w2 < richclub_end && *w2 >= my_thres; ++w2)
+					w2sum += *w2;
 
-            /**
-              * sum_{k < j, k != i}{ std::pow(2*c,dimension)*(w1*w_k/W)-1.0 }
-              * = sum_{k < j, k != i}{ std::pow(2*c,dimension)*(w1*w_k/W) } - j
-              * = sum_{k < j}{ std::pow(2*c,dimension)*(w1*w_k/W) } - j - (0 if j < i else std::pow(2*c,dimension)*(w1*w_i/W) - 1)
-              * = pow2c * w1/W * (sum_j{w_j}) - j - (0 if j < i else pow2c*(w1/W)*w_i - 1)
-              */
+                /**
+                  * sum_{k < j, k != i}{ std::pow(2*c,dimension)*(w1*w_k/W)-1.0 }
+                  * = sum_{k < j, k != i}{ std::pow(2*c,dimension)*(w1*w_k/W) } - j
+                  * = sum_{k < j}{ std::pow(2*c,dimension)*(w1*w_k/W) } - j - (0 if j < i else std::pow(2*c,dimension)*(w1*w_i/W) - 1)
+                  * = pow2c * w1/W * (sum_j{w_j}) - j - (0 if j < i else pow2c*(w1/W)*w_i - 1)
+                  */
 
-            error += w2sum * pow2c * fac - (std::distance(sweights.cbegin(), w2));
+                error += w2sum * pow2c * fac - (std::distance(sweights.cbegin(), w2));
 
-            if (w2 >= w1) {
-                // we have to subtract the self-contribution of x == y
-                error -= pow2c * fac * (*w1) - 1.0;
+                if (w2 >= w1) {
+                    // we have to subtract the self-contribution of x == y
+                    error -= pow2c * fac * (*w1) - 1.0;
+                }
+
+				if (w1 == sweights.begin())
+					break;
             }
         }
 
@@ -193,8 +207,12 @@ double estimateWeightScaling(const std::vector<double> &weights, double desiredA
     // this loop causes >= 70% of runtime
     std::vector<double> sweights(n);
     LazySorter lazy_sorter(sweights);
+
+    #pragma omp parallel reduction(+:sum_sq_w, sum_w_a, sum_sq_w_a, sum_wwW_a) // not supported by MSVC reduction(max:max_w)
     {
-        #pragma omp parallel for reduction(+:sum_sq_w, sum_w_a, sum_sq_w_a, sum_wwW_a), reduction(max:max_w)
+        auto max_w_local = 0.0;
+
+        #pragma omp for
         for (int i = 0; i < n; ++i) {
             const auto each = weights[i];
             sweights[i] = each; // copy in parallel
@@ -207,9 +225,14 @@ double estimateWeightScaling(const std::vector<double> &weights, double desiredA
             sum_wwW_a += pow_each;
             sum_w_a += pow_each_W;
             sum_sq_w_a += pow_each * pow_each_W;
-            max_w = std::max(each, max_w);
+            max_w_local = std::max(each, max_w_local);
         }
+
+        #pragma omp critical
+        max_w = std::max(max_w, max_w_local);
     }
+    assert(max_w == *std::max_element(weights.cbegin(), weights.cend()));
+
     sum_wwW_a *= sum_w_a;
     const auto max_w_W = max_w / W;
 
@@ -235,7 +258,7 @@ double estimateWeightScaling(const std::vector<double> &weights, double desiredA
 
         // precompute new pows in case the richclub grew
         pow_weights.reserve(n / num_richclub > 2 ? num_richclub : n);
-        while (pow_weights.size() < num_richclub) {
+        while (pow_weights.size() < static_cast<unsigned>(num_richclub)) {
             pow_weights.push_back(std::pow(sweights[pow_weights.size()], alpha));
         }
 

@@ -19,7 +19,7 @@ namespace girgs {
 template<unsigned D, typename T = uint32_t, unsigned I = 0>
 struct BitPattern {
     constexpr static T setEveryDthBit(int i) {
-        return (i < 8 * sizeof(T)) ? (1llu << i) | setEveryDthBit(i + D) : 0;
+        return (static_cast<unsigned>(i) < 8 * sizeof(T)) ? (1llu << i) | setEveryDthBit(i + D) : 0;
     }
 
     constexpr static unsigned kBits = 8 * sizeof(T);
@@ -31,9 +31,11 @@ struct BitPattern {
 namespace BitManipulationDetails {
 namespace Generic {
 
-template<unsigned Bits, unsigned Space, unsigned Block>
+template<int Bits, int Space, int Block>
 struct ExtractionHelper {
 private:
+    static_assert(Bits >= 0 && Space >= 0 && Block >= 0, "May not be negative");
+
     static_assert((Block + Space) * (Bits / Block) - Space + (Bits % Block ? (Space + Bits % Block) : 0) <= 32,
                   "Pattern does not fit into 32 bits");
 
@@ -100,10 +102,10 @@ struct Extract {
         if (D % 2) {
             // if D is odd, shifts are slightly more complicated, hence
             // we cannot process two coordinates in parallel
-            for (int i = 0; i < D; ++i)
+            for (unsigned i = 0; i < D; ++i)
                 result[i] = Extractor::shift(cell >> i);
         } else {
-            for (int i = 0; i < D - 1; i += 2) {
+            for (unsigned i = 0; i < D - 1; i += 2) {
                 const auto twoWords = (cell >> i) | (static_cast<uint64_t>(cell >> (i + 1)) << 32);
                 const auto shifted = Extractor::shift(twoWords);
                 result[i] = shifted & 0xffffffff;
@@ -131,16 +133,16 @@ struct Deposit {
         if (D == 1)
             return coords.front();
 
-        unsigned int result = 0u;
+        uint64_t result = 0u;
         unsigned int bit = 0;
 
         for (auto l = 0u; l * D < 32 + D; l++) {
             for (auto d = 0u; d != D; d++) {
-                result |= ((coords[d] >> l) & 1) << bit++;
+                result |= static_cast<uint64_t>((coords[d] >> l) & 1) << bit++;
             }
         }
 
-        return result;
+        return static_cast<uint32_t>(result);
     }
 };
 

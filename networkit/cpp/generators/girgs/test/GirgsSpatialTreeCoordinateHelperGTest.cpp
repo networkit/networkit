@@ -1,8 +1,38 @@
+#include <array>
+#include <iostream>
+#include <sstream>
+#include <string>
 #include <random>
+#include <utility>
+
 #include <gtest/gtest.h>
-#include "../../SpatialTreeCoordinateHelper.h"
+
+#include "../SpatialTreeCoordinateHelper.hpp"
 
 class GirgsSpatialTreeCoordinateHelperGTest: public testing::Test {};
+
+template <typename T, unsigned D>
+std::string stringify(const std::array<T, D>& arr) {
+    std::stringstream ss;
+    ss << "[" << arr[0];
+    for(int i=1; i < D; ++i)
+        ss << " " << arr[i];
+    ss << "]";
+    return ss.str();
+}
+
+template <typename T, unsigned D>
+std::string stringify(const std::array<std::pair<T, T>, D>& arr) {
+    std::stringstream ss;
+    ss << "[";
+    for(int i=0; i < D; ++i) {
+        if (!i) ss << " ";
+        ss << "{" << arr[i].first << ", " << arr[i].second << "}";
+    }
+    ss << "]";
+    return ss.str();
+}
+
 
 template<unsigned int D>
 void testTreeStructure(const unsigned max_level) {
@@ -50,13 +80,29 @@ void testCoordMapping(const unsigned max_level) {
         auto containingCells = std::vector<unsigned int>(max_level);
         containingCells[0] = 0;
         for(auto l=1u; l < max_level; ++l){
-            containingCells[l] = Tree::cellForPoint(point, l) + Tree::firstCellOfLevel(l);
+            const auto firstPoint = Tree::firstCellOfLevel(l);
+            const auto cellPoint = Tree::cellForPoint(point, l);
+            containingCells[l] = firstPoint + cellPoint;
+
             auto cell = containingCells[l];
             auto bounds = Tree::bounds(cell, l);
             for(auto d=0u; d<D; ++d){
                 // point is in cell bounds
-                EXPECT_LE(bounds[d].first, point[d]);
-                EXPECT_LT(point[d], bounds[d].second);
+                EXPECT_LE(bounds[d].first, point[d])
+                    << " l=" << l
+                    << " point=" << stringify<double, D>(point)
+                    << " cell=" << cell
+                    << " bounds=" << stringify<double, D>(bounds)
+                    << " firstPoint=" << firstPoint
+                    << " cellPoint=" << cellPoint;
+
+                EXPECT_LT(point[d], bounds[d].second)
+                    << " l=" << l
+                    << " point=" << stringify<double, D>(point)
+                    << " cell=" << cell
+                    << " bounds=" << stringify<double, D>(bounds)
+                    << " firstPoint=" << firstPoint
+                    << " cellPoint=" << cellPoint;
             }
         }
 

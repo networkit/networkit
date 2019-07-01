@@ -12,7 +12,7 @@
 #define GENERATORS_GIRGS_GENERATOR_H_
 
 #include <vector>
-#include "../../graph/Graph.hpp"
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 namespace girgs {

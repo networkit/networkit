@@ -6,7 +6,7 @@
 
 #include <gtest/gtest.h>
 
-#include "../../include/networkit/generators/girgs/Generator.hpp"
+#include "../Generator.hpp"
 
 class GirgsDegreeEstimationGTest: public testing::Test {
 public:
@@ -256,6 +256,6 @@ TEST_F(GirgsDegreeEstimationGTest, testEstimationFormula)
     EXPECT_LT(abs(long_edges  - test_long ), epsilon);
     EXPECT_LT(abs(edges       - test_edges), epsilon);
 
-    EXPECT_LT(0.99*edges, experimental_number_of_edges);
-    EXPECT_GT(1.01*edges, experimental_number_of_edges);
+    EXPECT_LT(0.98*edges, experimental_number_of_edges);
+    EXPECT_GT(1.02*edges, experimental_number_of_edges);
 }

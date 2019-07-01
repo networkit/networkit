@@ -18,14 +18,15 @@
 #include <cassert>
 
 #include <omp.h>
-#include "../../auxiliary/Random.hpp"
-#include "../../auxiliary/Parallel.hpp"
-#include "../../auxiliary/SignalHandling.hpp"
+#include <tlx/math.hpp>
+
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/auxiliary/SignalHandling.hpp>
 
 #include "SpatialTreeCoordinateHelper.hpp"
 #include "WeightLayer.hpp"
 
-#include <tlx/math.hpp>
 
 namespace NetworKit {
 namespace girgs {
@@ -294,14 +295,14 @@ void SpatialTree<D, EdgeCallback>::generateEdges() {
     // do the collected calls in parallel
     int abort_caught = 0;
     #pragma omp parallel for schedule(static), num_threads(num_threads), reduction(+:abort_caught) // dynamic scheduling would be better but not reproducible
-    for (int i = 0; i < parallel_cells; ++i) {
+    for (int i = 0; i < static_cast<int>(parallel_cells); ++i) {
         try {
             Aux::SignalHandler handler;
             auto current_cell = first_parallel_cell + i;
 
             for (auto each : parallel_calls[i])
                 visitCellPair(current_cell, each, first_parallel_level, handler);
-        } catch (Aux::SignalHandling::InterruptException) {
+        } catch (const Aux::SignalHandling::InterruptException&) {
             abort_caught++;
         }
     }
@@ -431,7 +432,7 @@ void SpatialTree<D, EdgeCallback>::sampleTypeI(
 
             // pointer magic gives same results
             assert(nodeInA.index == m_weight_layers[i].kthPoint(cellA, level, kA).index);
-            assert(nodeInB.index == m_weight_layers[j].kthPoint(cellB, level, std::distance(rangeB.first, pointerB)).index);
+            assert(nodeInB.index == m_weight_layers[j].kthPoint(cellB, level, static_cast<int>(std::distance(rangeB.first, pointerB))).index);
 
             // points are in correct cells
             assert(cellA - CoordinateHelper::firstCellOfLevel(level) == CoordinateHelper::cellForPoint(nodeInA.coord, level));
@@ -472,8 +473,8 @@ void SpatialTree<D, EdgeCallback>::sampleTypeII(
     if (rangeA.first == rangeA.second || rangeB.first == rangeB.second)
         return;
 
-    const auto sizeV_i_A = std::distance(rangeA.first, rangeA.second);
-    const auto sizeV_j_B = std::distance(rangeB.first, rangeB.second);
+    const auto sizeV_i_A = static_cast<unsigned long long>(std::distance(rangeA.first, rangeA.second));
+    const auto sizeV_j_B = static_cast<unsigned long long>(std::distance(rangeB.first, rangeB.second));
 
     // get upper bound for probability
     const auto w_upper_bound = m_w0*(1<<(i+1)) * m_w0*(1<<(j+1)) / m_W;
@@ -537,11 +538,12 @@ void SpatialTree<D, EdgeCallback>::sampleTypeII(
 template<unsigned int D, typename EdgeCallback>
 unsigned int SpatialTree<D, EdgeCallback>::weightLayerTargetLevel(int layer) const {
     // -1 coz w0 is the upper bound for layer 0 in paper and our layers are shifted by -1
-    auto result = std::max((m_baseLevelConstant - layer - 1) / (int)D, 0);
+    auto result = std::max((m_baseLevelConstant - layer - 1) / static_cast<int>(D), 0);
+
 #ifndef NDEBUG
     {   // a lot of assertions that we have the correct insertion level
-        assert(0 <= layer && layer < m_layers);
-        assert(0 <= result && result <= m_levels); // note the result may be one larger than the deepest level (hence the <= m_levels)
+        assert(0 <= layer && static_cast<unsigned>(layer) < m_layers);
+        assert(0 <= result && static_cast<unsigned>(result) <= m_levels); // note the result may be one larger than the deepest level (hence the <= m_levels)
         auto volume_requested  = m_w0*m_w0*std::pow(2,layer+1)/m_W; // v(i) = w0*wi/W
         auto volume_current    = std::pow(2.0, -(result+0.0)*D); // in paper \mu with v <= \mu < O(v)
         auto volume_one_deeper = std::pow(2.0, -(result+1.0)*D);
@@ -549,6 +551,7 @@ unsigned int SpatialTree<D, EdgeCallback>::weightLayerTargetLevel(int layer) con
         assert(volume_requested >  volume_one_deeper);    // but is the smallest such level
     }
 #endif // NDEBUG
+
     return static_cast<unsigned int>(result);
 }
 
@@ -561,8 +564,8 @@ unsigned int SpatialTree<D, EdgeCallback>::partitioningBaseLevel(int layer1, int
     auto result = std::max((m_baseLevelConstant - layer1 - layer2 - 2) / (int)D, 0);
 #ifndef NDEBUG
     {   // a lot of assertions that we have the correct comparison level
-        assert(0 <= layer1 && layer1 < m_layers);
-        assert(0 <= layer2 && layer2 < m_layers);
+        assert(0 <= layer1 && static_cast<unsigned>(layer1) < m_layers);
+        assert(0 <= layer2 && static_cast<unsigned>(layer2) < m_layers);
         auto volume_requested  = m_w0*std::pow(2,layer1+1) * m_w0*std::pow(2,layer2+1) / m_W; // v(i,j) = wi*wj/W
         auto volume_current    = std::pow(2.0, -(result+0.0)*D); // in paper \mu with v <= \mu < O(v)
         auto volume_one_deeper = std::pow(2.0, -(result+1.0)*D);
@@ -580,13 +583,13 @@ std::vector<WeightLayer<D>> SpatialTree<D, EdgeCallback>::buildPartition(const s
     assert(positions.size() == n);
 
     auto weight_to_layer = [=] (double weight) {
-        return std::log2(weight / m_w0);
+        return static_cast<int>(std::log2(weight / m_w0));
     };
 
     const auto first_cell_of_layer = [&] {
         std::vector<unsigned int> first_cell_of_layer(m_layers + 1);
         unsigned int sum = 0;
-        for (auto l = 0; l < m_layers; ++l) {
+        for (auto l = 0u; l < m_layers; ++l) {
             first_cell_of_layer[l] = sum;
             sum += CoordinateHelper::numCellsInLevel(weightLayerTargetLevel(l));
         }
@@ -600,12 +603,12 @@ std::vector<WeightLayer<D>> SpatialTree<D, EdgeCallback>::buildPartition(const s
 
     // compute the cell a point belongs to
     #pragma omp parallel for
-    for (int i = 0; i < n; ++i) {
+    for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
         const auto layer = weight_to_layer(weights[i]);
         const auto level = weightLayerTargetLevel(layer);
         m_nodes[i] = Node<D>(positions[i], weights[i], i);
         m_nodes[i].cell_id = first_cell_of_layer[layer] + CoordinateHelper::cellForPoint(m_nodes[i].coord, level);
-        assert(m_nodes[i].cell_id < max_cell_id);
+        assert(static_cast<unsigned>(m_nodes[i].cell_id) < max_cell_id);
     }
 
     // Sort points by cell-ids
@@ -617,14 +620,14 @@ std::vector<WeightLayer<D>> SpatialTree<D, EdgeCallback>::buildPartition(const s
     m_first_in_cell = std::vector<unsigned int>(max_cell_id + 1, gap_cell_indicator);
 
     {
-        m_first_in_cell[max_cell_id] = n;
+        m_first_in_cell[max_cell_id] = static_cast<unsigned>(n);
 
         // First, we mark the begin of cells that actually contain points
         // and repair the gaps (i.e., empty cells) later. In the mean time,
         // the values of those gaps will remain at gap_cell_indicator.
         m_first_in_cell[m_nodes[0].cell_id] = 0;
         #pragma omp parallel for
-        for (int i = 1; i < n; ++i) {
+        for (omp_index i = 1; i < static_cast<omp_index>(n); ++i) {
             if (m_nodes[i - 1].cell_id != m_nodes[i].cell_id) {
                 m_first_in_cell[m_nodes[i].cell_id] = i;
             }

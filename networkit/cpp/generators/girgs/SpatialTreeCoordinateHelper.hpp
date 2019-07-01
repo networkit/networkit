@@ -12,6 +12,10 @@
 
 #include <array>
 #include <cassert>
+
+#include <tlx/define/likely.hpp>
+#include <tlx/math/clz.hpp>
+
 #include "BitManipulation.hpp"
 
 namespace NetworKit {
@@ -64,20 +68,11 @@ template<unsigned int D>
 unsigned int SpatialTreeCoordinateHelper<D>::cellOfLevel(unsigned cell) noexcept {
     // sets all bits below the most significant bit set in x
     auto assertLower = [] (uint32_t x) {
-#if defined(__GNUC__) || defined(__clang__)
-        if (__builtin_expect(!x, 0))
+        if (TLX_UNLIKELY(x == 0))
             return 0u; // __builtin_clz(x) is undefined for x == 0
 
         return static_cast<uint32_t>(
-            (1llu << (32 - __builtin_clz(x))) - 1);
-#else
-        x |= x >> 1;
-        x |= x >> 2;
-        x |= x >> 4;
-        x |= x >> 8;
-        x |= x >> 16;
-        return x;
-#endif
+            (1llu << (32 - tlx::clz(x))) - 1);
     };
 
     constexpr auto mask = BitPattern<D>::kEveryDthBit;

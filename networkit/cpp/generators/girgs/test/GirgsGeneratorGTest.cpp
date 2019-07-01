@@ -4,10 +4,8 @@
 
 #include <gtest/gtest.h>
 
-#include "../../include/networkit/generators/girgs/Generator.hpp"
-#include "../../include/networkit/auxiliary/Random.hpp"
-
-using namespace std;
+#include <networkit/auxiliary/Random.hpp>
+#include "../Generator.hpp"
 
 class GirgsGeneratorGTest: public testing::Test {
 public:
@@ -26,7 +24,7 @@ public:
 TEST_F(GirgsGeneratorGTest, testThresholdModel)
 {
     const auto n = 100;
-    const auto alpha = numeric_limits<double>::infinity();
+    constexpr auto alpha = std::numeric_limits<double>::infinity();
     const auto ple = 2.8;
 
     Aux::Random::setSeed(1332, true);
@@ -125,13 +123,13 @@ TEST_F(GirgsGeneratorGTest, testCompleteGraph)
 }
 
 // samples all edges by threshold model: dist(i,j) < c*(wiwj/W)^(1/d)
-static double edgesInQuadraticSampling(const std::vector<double>& w, const vector<vector<double>>& pos, double c) {
+static double edgesInQuadraticSampling(const std::vector<double>& w, const std::vector<std::vector<double>>& pos, double c) {
     auto n = w.size();
     auto d = pos.front().size();
     auto W = std::accumulate(w.begin(), w.end(), 0.0);
     auto edges = 0.0;
-    for(int i=0; i<n; ++i)
-        for(int j=i+1; j<n; ++j)
+    for(unsigned i=0; i<n; ++i)
+        for(unsigned j=i+1; j<n; ++j)
             if(GirgsGeneratorGTest::distance(pos[i], pos[j]) < c*std::pow(w[i] * w[j] / W, 1.0/d))
                 edges += 2; // both endpoints get an edge
     return edges;
@@ -140,9 +138,9 @@ static double edgesInQuadraticSampling(const std::vector<double>& w, const vecto
 
 TEST_F(GirgsGeneratorGTest, testThresholdEstimation)
 {
-    auto n = 300;
-    auto ple = 2.5;
-    auto alpha = numeric_limits<double>::infinity();
+    const auto n = 300;
+    const auto ple = 2.5;
+    constexpr auto alpha = std::numeric_limits<double>::infinity();
 
     auto desired_avg = 10;
     auto runs = 20;
@@ -183,11 +181,11 @@ TEST_F(GirgsGeneratorGTest, testThresholdEstimation)
 
 TEST_F(GirgsGeneratorGTest, testEstimation)
 {
-    auto all_n = {100, 150, 500};
-    auto all_alpha = {0.7, 3.0, numeric_limits<double>::infinity()};
-    auto all_desired_avg = {10, 20, 50, 100};
+    auto all_n = {100, 150, 250};
+    auto all_alpha = {0.7, 3.0, std::numeric_limits<double>::infinity()};
+    auto all_desired_avg = {10, 20, 100};
     auto all_dimensions = {1, 2, 3};
-    auto runs = 5;
+    auto runs = 10;
 
     auto ple = 2.5;
 
@@ -206,7 +204,6 @@ TEST_F(GirgsGeneratorGTest, testEstimation)
 
                     auto observed_avg = 0.0;
                     for(int i = 0; i<runs; ++i) {
-
                         // try GIRGS generator
                         auto positions = NetworKit::girgs::generatePositions(n, d);
                         auto graph = NetworKit::girgs::generateEdges(weights, positions, alpha);
@@ -217,7 +214,9 @@ TEST_F(GirgsGeneratorGTest, testEstimation)
                     observed_avg /= n;
 
                     // test the goodness of the estimation for weight scaling
-                    EXPECT_LT(abs(desired_avg - observed_avg)/desired_avg, 0.05) << "estimated constant does not produce desired average degree";
+					EXPECT_LT(abs(desired_avg - observed_avg) / desired_avg, 0.05)
+						<< " d=" << d << " n=" << n << " alpha=" << alpha 
+						<< " desired_avg=" << desired_avg << " observed_avg=" << observed_avg;
                 }
             }
         }

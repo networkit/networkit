@@ -4,7 +4,7 @@
 #include <sstream>
 
 #include <gtest/gtest.h>
-#include "../../include/networkit/generators/girgs/BitManipulation.hpp"
+#include "../BitManipulation.hpp"
 
 namespace NetworKit {
 
@@ -69,18 +69,18 @@ static std::array<uint32_t, D> ReferenceExtract(uint32_t x) {
 TYPED_TEST(GirgsBitManipulationGTest, DepositeSingle) {
     COMMON_DEFS
 
-    for(int d = 0; d < D; d++) {
-        const auto bits = 32 / D + (d < 32 % D);
+    for(unsigned d = 0; d < D; d++) {
+        const auto bits = 32 / D + (d < 32u % D);
         const auto allowedBits = girgs::BitPattern<D>::kEveryDthBit << d;
-        std::uniform_int_distribution<unsigned> distr(0, (1u << bits) - 1);
+        std::uniform_int_distribution<unsigned> distr(0, static_cast<uint32_t>((1llu << bits) - 1));
 
         for(int i=0; i < 1000; i++) {
             coord[d] = distr(prng);
             const auto tested = Impl::deposit(coord);
             const auto ref = ReferenceDeposite<D>(coord);
 
-            ASSERT_EQ(tested, tested & allowedBits) << coord;
-            ASSERT_EQ(tested, ref) << coord;
+            ASSERT_EQ(tested, tested & allowedBits);
+            ASSERT_EQ(tested, ref);
         }
 
         coord[d] = 0;
@@ -94,35 +94,35 @@ TYPED_TEST(GirgsBitManipulationGTest, DepositeAll) {
     for(int i=0; i < 10000; i++) {
         const auto d = dim_distr(prng);
         const auto bits = 32 / D + (d < 32 % D);
-        std::uniform_int_distribution<unsigned> distr(0, (1u << bits) - 1);
+        std::uniform_int_distribution<unsigned> distr(0, static_cast<uint32_t>((1llu << bits) - 1));
 
         coord[d] = distr(prng);
         const auto tested = Impl::deposit(coord);
         const auto ref = ReferenceDeposite<D>(coord);
 
-        ASSERT_EQ(tested, ref) << coord;
+        ASSERT_EQ(tested, ref);
     }
 }
 
 TYPED_TEST(GirgsBitManipulationGTest, ExtractSingle) {
     COMMON_DEFS
 
-    for(int d = 0; d < D; d++) {
+    for(unsigned d = 0; d < D; d++) {
         const auto allowedBits = girgs::BitPattern<D>::kEveryDthBit << d;
         std::uniform_int_distribution<unsigned> distr;
 
-        for(int i=0; i < 1000; i++) {
+        for(unsigned i=0; i < 1000u; i++) {
             const auto cell = distr(prng) & allowedBits;
 
             const auto tested = Impl::extract(cell);
             const auto ref = ReferenceExtract<D>(cell);
 
-            for(int j = 0; j < D; ++j) {
+            for(unsigned j = 0; j < D; ++j) {
                 if (j == d) continue;
-                ASSERT_EQ(tested[j], 0) << cell << " tested: " << tested << " ref: " << ref;
+                ASSERT_EQ(tested[j], 0);
             }
 
-            ASSERT_EQ(tested, ref) << cell;
+            ASSERT_EQ(tested, ref);
         }
     }
 }
@@ -131,14 +131,14 @@ TYPED_TEST(GirgsBitManipulationGTest, ExtractAll) {
     COMMON_DEFS
 
     std::uniform_int_distribution<unsigned> distr;
-    for(int d = 0; d < D; d++) {
-        for(int i=0; i < 1000; i++) {
+    for(unsigned d = 0; d < D; d++) {
+        for(unsigned i=0; i < 1000; i++) {
             const auto cell = distr(prng);
 
             const auto tested = Impl::extract(cell);
             const auto ref = ReferenceExtract<D>(cell);
 
-            ASSERT_EQ(tested, ref) << cell;
+            ASSERT_EQ(tested, ref);
         }
     }
 }
@@ -147,26 +147,15 @@ TYPED_TEST(GirgsBitManipulationGTest, XRef) {
     COMMON_DEFS
 
     std::uniform_int_distribution<unsigned> distr;
-    for(int i=0; i < 10000; i++) {
+    for(unsigned i=0; i < 10000u; i++) {
         const auto cell = distr(prng);
 
         const auto extr = Impl::extract(cell);
         const auto depo = Impl::deposit(extr);
 
-        ASSERT_EQ(cell, depo) << extr;
+        ASSERT_EQ(cell, depo);
     }
 }
 
 } // namespace NetworKit
 
-// put ostream adapter into global namespace
-template<typename T, size_t D>
-std::ostream &operator<<(std::ostream &o, const std::array<T, D> &c) {
-    std::stringstream ss;
-    ss << "[" << c[0];
-    for (int d = 1; d < D; d++)
-        ss << ", " << c[d];
-    ss << "]";
-    o << ss.str();
-    return o;
-}

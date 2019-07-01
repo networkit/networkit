@@ -23,7 +23,7 @@ struct Node {
     std::array<double, D>   coord;
     double                  weight;
     int                     index;
-    int                     cell_id;
+    unsigned int            cell_id;
 
     Node() {}; // prevent default values
 
