@@ -9,7 +9,8 @@
 #define TIMER_H_
 
 #include <chrono>
-#include <sstream>
+#include <cstdint>
+#include <string>
 
 namespace Aux {
 
@@ -31,56 +32,54 @@ public:
 	 * Start the clock.
 	 * Returns the time at which the instance was started.
 	 */
-	virtual my_steady_clock::time_point start();
+	virtual my_steady_clock::time_point start() noexcept;
 
 	/**
 	 * Stops the clock permanently for the instance of the Timer.
 	 * Returns the time at which the instance was stopped.
 	 */
-	virtual my_steady_clock::time_point stop();
+	virtual my_steady_clock::time_point stop() noexcept;
 
 	/**
 	 * The number of milliseconds since the current time that the Timer
 	 * object was created.  If stop() was called, it is the number
 	 * of seconds from the instance creation until stop() was called.
 	 */
-	virtual std::chrono::duration<uint64_t, std::milli> elapsed() const;
+	virtual std::chrono::duration<uint64_t, std::milli> elapsed() const noexcept;
 
 	/**
 	 * The number of milliseconds since the current time that the Timer
 	 * object was created. If stop() was called, it is the number
 	 * of seconds from the instance creation until stop() was called.
 	 */
-	virtual uint64_t elapsedMilliseconds() const;
+	virtual uint64_t elapsedMilliseconds() const noexcept;
 
 	/**
 	 * The number of microseconds since the current time that the Timer
 	 * object was created. If stop() was called, it is the number
 	 * of seconds from the instance creation until stop() was called.
 	 */
-	virtual uint64_t elapsedMicroseconds();
+	virtual uint64_t elapsedMicroseconds() const noexcept;
 
 	/**
 	 * The number of nanoseconds since the current time that the Timer
 	 * object was created. If stop() was called, it is the number
 	 * of seconds from the instance creation until stop() was called.
 	 */
-	virtual uint64_t elapsedNanoseconds();
+	virtual uint64_t elapsedNanoseconds() const noexcept;
 
 	/**
 	 * Returns the time at which the instance was started.
 	 */
-	virtual my_steady_clock::time_point startTime();
+	virtual my_steady_clock::time_point startTime() const noexcept;
 
 	/**
 	 * Returns the time at which the instance was stopped.
-	 *
 	 */
-	virtual my_steady_clock::time_point stopTime();
-
+	virtual my_steady_clock::time_point stopTime() const noexcept;
 
 	/**
-	 *
+	 * Returns a human-readable representation including the elapsed time and unit.
 	 */
 	virtual std::string elapsedTag() const;
 
@@ -89,9 +88,10 @@ protected:
 	my_steady_clock::time_point started;   //!< time at which timer has been started
 	my_steady_clock::time_point stopped;   //!< time at which timer has been stopped
 
-    /// If running returns now, otherwise the stop time
-    my_steady_clock::time_point stopTimeOrNow() const noexcept;
+	/// If running returns now, otherwise the stop time
+	my_steady_clock::time_point stopTimeOrNow() const noexcept;
 };
 
 } /* namespace Aux */
 #endif /* TIMER_H_ */
+

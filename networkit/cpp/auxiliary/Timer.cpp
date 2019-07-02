@@ -5,55 +5,56 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#include <sstream>
+
 #include <networkit/auxiliary/Timer.hpp>
 
 namespace Aux {
 
-Timer::my_steady_clock::time_point Timer::start() {
+Timer::my_steady_clock::time_point Timer::start() noexcept {
 	started = my_steady_clock::now();
 	running = true;
 	return started;
 }
 
-Timer::my_steady_clock::time_point Timer::stop() {
+Timer::my_steady_clock::time_point Timer::stop() noexcept {
 	stopped = my_steady_clock::now();
 	running = false;
 	return stopped;
 }
 
-std::chrono::duration<uint64_t, std::milli> Timer::elapsed() const {
-	if (running) {
-		return std::chrono::duration_cast<std::chrono::duration<uint64_t, std::milli>>(std::chrono::steady_clock::now() - this->started);
-	}
-	std::chrono::duration<uint64_t, std::milli> elapsed = std::chrono::duration_cast<std::chrono::duration<uint64_t, std::milli>>(this->stopped - this->started);
-	return elapsed;
+std::chrono::duration<uint64_t, std::milli> Timer::elapsed() const noexcept {
+	return std::chrono::duration_cast<std::chrono::duration<uint64_t, std::milli> >(stopTimeOrNow() - started);
 }
 
-Timer::my_steady_clock::time_point Timer::startTime() {
+Timer::my_steady_clock::time_point Timer::startTime() const noexcept {
 	return started;
 }
 
-Timer::my_steady_clock::time_point Timer::stopTime() {
+Timer::my_steady_clock::time_point Timer::stopTime() const noexcept {
 	return stopped;
 }
 
-uint64_t Timer::elapsedMilliseconds() {
+uint64_t Timer::elapsedMilliseconds() const noexcept {
 	return elapsed().count();
 }
 
-uint64_t Timer::elapsedMicroseconds() {
-	return std::chrono::duration_cast<std::chrono::duration<uint64_t, std::micro>>(this->stopped - this->started).count();
+uint64_t Timer::elapsedMicroseconds() const noexcept {
+	return std::chrono::duration_cast<std::chrono::duration<uint64_t, std::micro>>(stopTimeOrNow() - started).count();
 }
 
-uint64_t Timer::elapsedNanoseconds() {
-	return std::chrono::duration_cast<std::chrono::duration<uint64_t, std::nano>>(this->stopped - this->started).count();
+uint64_t Timer::elapsedNanoseconds() const noexcept {
+	return std::chrono::duration_cast<std::chrono::duration<uint64_t, std::nano>>(stopTimeOrNow() - started).count();
 }
 
-std::string Timer::elapsedTag() {
+std::string Timer::elapsedTag() const {
 	std::stringstream s;
 	s << "(" << elapsedMilliseconds() << " ms) ";
 	return s.str();
 }
 
+Timer::my_steady_clock::time_point Timer::stopTimeOrNow() const noexcept {
+    return running ? std::chrono::steady_clock::now() : stopped;
+}
 
 } /* namespace Aux */
