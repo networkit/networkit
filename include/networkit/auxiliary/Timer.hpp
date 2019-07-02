@@ -23,15 +23,9 @@ namespace Aux {
  * A timer for running time measurements.
  */
 class Timer {
-
-protected:
-
-	bool running;			//!< true if timer has been started and not stopped after that
-	my_steady_clock::time_point started;	//!< time at which timer has been started
-	my_steady_clock::time_point stopped;		//!< time at which timer has been stopped
-
 public:
-	Timer();
+	Timer() = default;
+	virtual ~Timer() = default;
 
 	/**
 	 * Start the clock.
@@ -88,7 +82,15 @@ public:
 	/**
 	 *
 	 */
-	virtual std::string elapsedTag();
+	virtual std::string elapsedTag() const;
+
+protected:
+	bool running{false};                   //!< true if timer has been started and not stopped after that
+	my_steady_clock::time_point started;   //!< time at which timer has been started
+	my_steady_clock::time_point stopped;   //!< time at which timer has been stopped
+
+    /// If running returns now, otherwise the stop time
+    my_steady_clock::time_point stopTimeOrNow() const noexcept;
 };
 
 } /* namespace Aux */

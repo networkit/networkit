@@ -9,9 +9,6 @@
 
 namespace Aux {
 
-Timer::Timer() : running(false) {
-}
-
 my_steady_clock::time_point Timer::start() {
 	this->started = my_steady_clock::now();
 	running = true;
