@@ -9,16 +9,16 @@
 
 namespace Aux {
 
-my_steady_clock::time_point Timer::start() {
-	this->started = my_steady_clock::now();
+Timer::my_steady_clock::time_point Timer::start() {
+	started = my_steady_clock::now();
 	running = true;
-	return this->started;
+	return started;
 }
 
-my_steady_clock::time_point Timer::stop() {
-	this->stopped = my_steady_clock::now();
+Timer::my_steady_clock::time_point Timer::stop() {
+	stopped = my_steady_clock::now();
 	running = false;
-	return this->stopped;
+	return stopped;
 }
 
 std::chrono::duration<uint64_t, std::milli> Timer::elapsed() const {
@@ -29,16 +29,16 @@ std::chrono::duration<uint64_t, std::milli> Timer::elapsed() const {
 	return elapsed;
 }
 
-my_steady_clock::time_point Timer::startTime() {
-	return this->started;
+Timer::my_steady_clock::time_point Timer::startTime() {
+	return started;
 }
 
-my_steady_clock::time_point Timer::stopTime() {
-	return this->stopped;
+Timer::my_steady_clock::time_point Timer::stopTime() {
+	return stopped;
 }
 
-uint64_t Timer::elapsedMilliseconds() const {
-	return this->elapsed().count();
+uint64_t Timer::elapsedMilliseconds() {
+	return elapsed().count();
 }
 
 uint64_t Timer::elapsedMicroseconds() {
@@ -51,7 +51,7 @@ uint64_t Timer::elapsedNanoseconds() {
 
 std::string Timer::elapsedTag() {
 	std::stringstream s;
-	s << "(" << this->elapsed().count() << " ms) ";
+	s << "(" << elapsedMilliseconds() << " ms) ";
 	return s.str();
 }
 

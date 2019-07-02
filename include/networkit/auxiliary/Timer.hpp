@@ -13,17 +13,17 @@
 
 namespace Aux {
 
-#ifdef __MIC__
-#define my_steady_clock std::chrono::monotonic_clock
-#else
-#define my_steady_clock std::chrono::steady_clock
-#endif
-
 /**
  * A timer for running time measurements.
  */
 class Timer {
 public:
+	#ifdef __MIC__
+		using my_steady_clock = std::chrono::monotonic_clock;
+	#else
+		using my_steady_clock = std::chrono::steady_clock;
+	#endif
+
 	Timer() = default;
 	virtual ~Timer() = default;
 
