@@ -41,30 +41,30 @@ public:
 	virtual my_steady_clock::time_point stop() noexcept;
 
 	/**
-	 * The number of milliseconds since the current time that the Timer
-	 * object was created.  If stop() was called, it is the number
-	 * of seconds from the instance creation until stop() was called.
+	 * Returns a chrono::duration since the Timer was started.
+	 * If stop() was called, the duration is between the start() and stop()
+	 * calls is returned.
 	 */
 	virtual std::chrono::duration<uint64_t, std::milli> elapsed() const noexcept;
 
 	/**
-	 * The number of milliseconds since the current time that the Timer
-	 * object was created. If stop() was called, it is the number
-	 * of seconds from the instance creation until stop() was called.
+	 * Returns the number of milliseconds since the Timer was started.
+	 * If stop() was called, the duration is between the start() and stop()
+	 * calls is returned.
 	 */
 	virtual uint64_t elapsedMilliseconds() const noexcept;
 
 	/**
-	 * The number of microseconds since the current time that the Timer
-	 * object was created. If stop() was called, it is the number
-	 * of seconds from the instance creation until stop() was called.
+	 * Returns the number of microseconds since the Timer was started.
+	 * If stop() was called, the duration is between the start() and stop()
+	 * calls is returned.
 	 */
 	virtual uint64_t elapsedMicroseconds() const noexcept;
 
 	/**
-	 * The number of nanoseconds since the current time that the Timer
-	 * object was created. If stop() was called, it is the number
-	 * of seconds from the instance creation until stop() was called.
+	 * Returns the number of nanoseconds since the Timer was started.
+	 * If stop() was called, the duration is between the start() and stop()
+	 * calls is returned.
 	 */
 	virtual uint64_t elapsedNanoseconds() const noexcept;
 
@@ -91,6 +91,17 @@ protected:
 	/// If running returns now, otherwise the stop time
 	my_steady_clock::time_point stopTimeOrNow() const noexcept;
 };
+
+/**
+  * A timer for running time measurements.
+  * Same as Timer but automatically starts on construction.
+ */
+class StartedTimer final : public Timer {
+public:
+    StartedTimer() : Timer() {start();}
+    virtual ~StartedTimer() = default;
+};
+
 
 } /* namespace Aux */
 #endif /* TIMER_H_ */
