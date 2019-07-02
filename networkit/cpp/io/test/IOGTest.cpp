@@ -795,11 +795,11 @@ TEST_F(IOGTest, testNetworkitBinaryTiny01) {
 	Graph G = reader2.read("input/tiny_01.graph");
 	NetworkitBinaryWriter writer;
 
-	writer.write(G, "input/binary_tiny01");
+	writer.write(G, "output/binary_tiny01");
 	ASSERT_TRUE(!G.isEmpty());
 
 	NetworkitBinaryReader reader;
-	Graph G2 = reader.read("input/binary_tiny01");
+	Graph G2 = reader.read("output/binary_tiny01");
 	ASSERT_EQ(G2.numberOfNodes(), G.numberOfNodes());
 	ASSERT_EQ(G2.numberOfEdges(), G.numberOfEdges());
 	G.forNodes([&](node u){
@@ -814,11 +814,11 @@ TEST_F(IOGTest, testNetworkitBinaryKonect) {
 	Graph G = reader2.read("input/foodweb-baydry.konect");
 	NetworkitBinaryWriter writer;
 
-	writer.write(G, "input/binary_konect");
+	writer.write(G, "output/binary_konect");
 	ASSERT_TRUE(!G.isEmpty());
 
 	NetworkitBinaryReader reader;
-	Graph G2 = reader.read("input/binary_konect");
+	Graph G2 = reader.read("output/binary_konect");
 	ASSERT_EQ(G2.numberOfEdges(), G.numberOfEdges());
 	ASSERT_EQ(G2.numberOfNodes(), G.numberOfNodes());
 	G.forNodes([&](node u){
@@ -833,11 +833,11 @@ TEST_F(IOGTest, testNetworkitBinaryJazz) {
 	Graph G = reader2.read("input/jazz.graph");
 
 	NetworkitBinaryWriter writer;
-	writer.write(G, "input/binary_jazz");
+	writer.write(G, "output/binary_jazz");
 	ASSERT_TRUE(!G.isEmpty());
 
 	NetworkitBinaryReader reader;
-	Graph G2 = reader.read("input/binary_jazz");
+	Graph G2 = reader.read("output/binary_jazz");
 	ASSERT_EQ(G2.numberOfEdges(), G.numberOfEdges());
 	ASSERT_EQ(G2.numberOfNodes(), G.numberOfNodes());
 	G.forNodes([&](node u){
@@ -853,11 +853,11 @@ TEST_F(IOGTest, testNetworkitBinaryWiki) {
 	Graph G = reader2.read("input/wiki-Vote.txt");
 	NetworkitBinaryWriter writer;
 
-	writer.write(G, "input/binary_wiki");
+	writer.write(G, "output/binary_wiki");
 	ASSERT_TRUE(!G.isEmpty());
 
 	NetworkitBinaryReader reader;
-	Graph G2 = reader.read("input/binary_wiki");
+	Graph G2 = reader.read("output/binary_wiki");
 	ASSERT_EQ(G2.numberOfEdges(), G.numberOfEdges());
 	ASSERT_EQ(G2.numberOfNodes(), G.numberOfNodes());
 	G.forNodes([&](node u){
