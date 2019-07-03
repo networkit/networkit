@@ -41,17 +41,26 @@ void Betweenness::run() {
 	}
 	DEBUG("edge score per thread: ", edgeScorePerThread.size());
 
+	std::vector<std::vector<double>> dependencies(maxThreads, std::vector<double>(z));
+	std::vector<std::unique_ptr<SSSP>> sssps;
+	sssps.resize(maxThreads);
+#pragma omp parallel
+	{
+		omp_index i = omp_get_thread_num();
+		if (G.isWeighted())
+			sssps[i] = std::unique_ptr<SSSP>(new Dijkstra(G, 0, true, true));
+		else
+			sssps[i] = std::unique_ptr<SSSP>(new BFS(G, 0, true, true));
+	}
+
 	auto computeDependencies = [&](node s) {
 
-		std::vector<double> dependency(z, 0.0);
+		std::vector<double> &dependency = dependencies[omp_get_thread_num()];
+		std::fill(dependency.begin(), dependency.end(), 0);
 
 		// run SSSP algorithm and keep track of everything
-		std::unique_ptr<SSSP> sssp;
-		if (G.isWeighted()) {
-			sssp.reset(new Dijkstra(G, s, true, true));
-		} else {
-			sssp.reset(new BFS(G, s, true, true));
-		}
+		auto sssp = sssps[omp_get_thread_num()].get();
+		sssp->setSource(s);
 		if (!handler.isRunning()) return;
 		sssp->run();
 		if (!handler.isRunning()) return;
