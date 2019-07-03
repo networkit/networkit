@@ -26,62 +26,61 @@ public:
 	#endif
 
 	Timer() = default;
-	virtual ~Timer() = default;
 
 	/**
 	 * Start the clock.
 	 * Returns the time at which the instance was started.
 	 */
-	virtual my_steady_clock::time_point start() noexcept;
+	my_steady_clock::time_point start() noexcept;
 
 	/**
 	 * Stops the clock permanently for the instance of the Timer.
 	 * Returns the time at which the instance was stopped.
 	 */
-	virtual my_steady_clock::time_point stop() noexcept;
+	my_steady_clock::time_point stop() noexcept;
 
 	/**
 	 * Returns a chrono::duration since the Timer was started.
 	 * If stop() was called, the duration is between the start() and stop()
 	 * calls is returned.
 	 */
-	virtual std::chrono::duration<uint64_t, std::milli> elapsed() const noexcept;
+	std::chrono::duration<uint64_t, std::milli> elapsed() const noexcept;
 
 	/**
 	 * Returns the number of milliseconds since the Timer was started.
 	 * If stop() was called, the duration is between the start() and stop()
 	 * calls is returned.
 	 */
-	virtual uint64_t elapsedMilliseconds() const noexcept;
+	uint64_t elapsedMilliseconds() const noexcept;
 
 	/**
 	 * Returns the number of microseconds since the Timer was started.
 	 * If stop() was called, the duration is between the start() and stop()
 	 * calls is returned.
 	 */
-	virtual uint64_t elapsedMicroseconds() const noexcept;
+	uint64_t elapsedMicroseconds() const noexcept;
 
 	/**
 	 * Returns the number of nanoseconds since the Timer was started.
 	 * If stop() was called, the duration is between the start() and stop()
 	 * calls is returned.
 	 */
-	virtual uint64_t elapsedNanoseconds() const noexcept;
+	uint64_t elapsedNanoseconds() const noexcept;
 
 	/**
 	 * Returns the time at which the instance was started.
 	 */
-	virtual my_steady_clock::time_point startTime() const noexcept;
+	my_steady_clock::time_point startTime() const noexcept;
 
 	/**
 	 * Returns the time at which the instance was stopped.
 	 */
-	virtual my_steady_clock::time_point stopTime() const noexcept;
+	my_steady_clock::time_point stopTime() const noexcept;
 
 	/**
 	 * Returns a human-readable representation including the elapsed time and unit.
 	 */
-	virtual std::string elapsedTag() const;
+	std::string elapsedTag() const;
 
 protected:
 	bool running{false};                   //!< true if timer has been started and not stopped after that
@@ -93,16 +92,18 @@ protected:
 };
 
 /**
-  * A timer for running time measurements.
-  * Same as Timer but automatically starts on construction.
+ * A timer for running time measurements.
+ * Same as Timer but automatically starts on construction.
  */
-class StartedTimer final : public Timer {
+class StartedTimer : public Timer {
 public:
-    StartedTimer() : Timer() {start();}
-    virtual ~StartedTimer() = default;
+	StartedTimer() : Timer() {
+		start();
+	}
 };
 
 
 } /* namespace Aux */
+
 #endif /* TIMER_H_ */
 
