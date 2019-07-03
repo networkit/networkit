@@ -102,6 +102,36 @@ public:
 	}
 };
 
+/**
+ * A timer for running time measurements within a scope.
+ *
+ * Same as Timer but automatically starts on construction and report on destruction.
+ *
+ * @code
+ * {
+ *    Aux::ScopedTimer someName("Algorithm B");
+ *    // some expensive operations
+ *
+ *
+ * } // <- Report time since creation of the timer object to std::cout
+ * @endcode
+ *
+ * @warning Similarly as std::unique_lock the timer needs a name ("someName" in the example)
+ * to exist until the end of the scope. If the time measured seems too short, make you created
+ * a named instances.
+ */
+class ScopedTimer : public StartedTimer {
+public:
+	explicit ScopedTimer(const std::string& label = "") :
+		StartedTimer(),
+		label(label)
+	{}
+
+	~ScopedTimer();
+
+private:
+	std::string label;
+};
 
 } /* namespace Aux */
 

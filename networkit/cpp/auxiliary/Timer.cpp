@@ -5,6 +5,7 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#include <iostream>
 #include <sstream>
 
 #include <networkit/auxiliary/Timer.hpp>
@@ -55,6 +56,18 @@ std::string Timer::elapsedTag() const {
 
 Timer::my_steady_clock::time_point Timer::stopTimeOrNow() const noexcept {
     return running ? std::chrono::steady_clock::now() : stopped;
+}
+
+ScopedTimer::~ScopedTimer() {
+	std::stringstream ss;
+	ss << "Timer ";
+
+	if (!label.empty())
+		ss << '"' << label << "\" ";
+
+	ss << "ran for " << (elapsedMicroseconds() * 1e-3) << " ms";
+
+	std::cout << ss.str() << std::endl; // we really want to flush here!
 }
 
 } /* namespace Aux */
