@@ -5,25 +5,19 @@
  *      Author: cls, ebergamini
  */
 
-#include <stack>
-#include <queue>
 #include <memory>
 #include <omp.h>
 
-
 #include <networkit/centrality/Betweenness.hpp>
-#include <networkit/auxiliary/PrioQueue.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
-#include <networkit/distance/SSSP.hpp>
 #include <networkit/distance/Dijkstra.hpp>
 #include <networkit/distance/BFS.hpp>
 
 namespace NetworKit {
 
-Betweenness::Betweenness(const Graph& G, bool normalized, bool computeEdgeCentrality) : Centrality(G, normalized, computeEdgeCentrality) {
-
-}
+Betweenness::Betweenness(const Graph& G, bool normalized, bool computeEdgeCentrality) :
+	Centrality(G, normalized, computeEdgeCentrality) {}
 
 void Betweenness::run() {
 	Aux::SignalHandler handler;
