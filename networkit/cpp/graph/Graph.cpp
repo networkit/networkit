@@ -566,9 +566,12 @@ void Graph::removeNode(node v) {
 	assert(v < z);
 	assert(exists[v]);
 
-	// Remove all out- and incoming edges
-	this->forEdgesOf(v, [&](node u) { removeEdge(v, u); });
-	this->forInEdgesOf(v, [&](node u) { removeEdge(u, v); });
+	// Remove all outgoing and ingoing edges
+	while (!outEdges[v].empty())
+		removeEdge(v, outEdges[v].front());
+	if (isDirected())
+		while (!inEdges[v].empty())
+			removeEdge(inEdges[v].front(), v);
 
 	exists[v] = false;
 	n--;
