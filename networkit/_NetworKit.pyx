@@ -355,7 +355,7 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		void DFSfrom[Callback](node r, Callback c) except +
 		void DFSEdgesFrom[Callback](node r, Callback c) except +
 		bool_t checkConsistency() except +
-		_Graph subgraphFromNodes(unordered_set[node] nodes)  except +
+		_Graph subgraphFromNodes(unordered_set[node] nodes, bool_t includeOutNeighbors, bool_t includeInNeighbors) except +
 
 cdef cppclass EdgeCallBackWrapper:
 	void* callback
@@ -1310,28 +1310,36 @@ cdef class Graph:
 		return self._this.checkConsistency()
 
 
-	def subgraphFromNodes(self, nodes):
+	def subgraphFromNodes(self, nodes, includeOutNeighbors = False, includeInNeighbors = False):
 		""" Create a subgraph induced by the set `nodes`.
+
+		There a two relevant sets of nodes:
+		- `nodes` are such passed as arguments
+		- Neighbors are empty by default.
+			If `includeOutNeighbors` is set, it includes all out neighbors of Nodes
+			If `includeInNeighbors` is set, it includes all in neighbors of Nodes (relevant only for directed graphs)
+
+		The subgraph contains all nodes in Nodes + Neighbors and all edge which have one end point in Nodes
+		and the other in Nodes or Neighbors.
 
 		Parameters
 		----------
-		nodes : list
+		nodes : list/set
 			A subset of nodes of `G` which induce the subgraph.
+		includeOutNeighbors : bool
+			If true also include nodes pointed to by a node in nodes.
+		includeInNeighbors : bool
+			If true also include nodes pointing to a node in nodes.
 
 		Returns
 		-------
 		networkit.Graph
-			The subgraph induced by `nodes`.
-
-		Notes
-		-----
-		The returned graph G' is isomorphic (structurally identical) to the subgraph in G,
-		but node indices are not preserved.
+			The subgraph induced by `nodes` (and possibly their neighbors)
 		"""
 		cdef unordered_set[node] nnodes
 		for node in nodes:
 			nnodes.insert(node)
-		return Graph().setThis(self._this.subgraphFromNodes(nnodes))
+		return Graph().setThis(self._this.subgraphFromNodes(nnodes, includeOutNeighbors, includeInNeighbors))
 
 # TODO: expose all methods
 
