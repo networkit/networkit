@@ -1,6 +1,6 @@
+#!/usr/bin/env python3
 import unittest
 import os
-
 
 class TestGEXFIO(unittest.TestCase):
 	def setUp(self):
