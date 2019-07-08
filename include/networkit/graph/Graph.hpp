@@ -1004,7 +1004,7 @@ class Graph final {
     * @param v Endpoint of edge.
     * @param weight Optional edge weight.
     */
-    void addPartialEdge(Unsafe, node u, node v, uint64_t index = 0, edgeweight ew = defaultEdgeWeight);
+    void addPartialEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight, uint64_t index = 0);
 
     /**
      * Insert an in edge between the nodes @a u and @a v in a directed graph. If the graph is
@@ -1015,7 +1015,7 @@ class Graph final {
      * @param v Endpoint of edge.
      * @param weight Optional edge weight.
      */
-	void addPartialInEdge(Unsafe, node u, node v, uint64_t index = 0, edgeweight ew = defaultEdgeWeight);
+	void addPartialInEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight, uint64_t index = 0);
 
     /**
      * Insert an out edge between the nodes @a u and @a v in a directed graph. If the graph is
@@ -1026,7 +1026,7 @@ class Graph final {
      * @param v Endpoint of edge.
      * @param weight Optional edge weight.
      */
-	void addPartialOutEdge(Unsafe, node u, node v, uint64_t index = 0, edgeweight ew = defaultEdgeWeight);
+	void addPartialOutEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight, uint64_t index = 0);
 
 
     /**

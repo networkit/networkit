@@ -696,7 +696,7 @@ void Graph::addEdge(node u, node v, edgeweight ew) {
 		++storedNumberOfSelfLoops;
 	}
 }
-void Graph::addPartialEdge(Unsafe, node u, node v, uint64_t index, edgeweight ew) {
+void Graph::addPartialEdge(Unsafe, node u, node v, edgeweight ew, uint64_t index) {
 	assert(u < z);
 	assert(exists[u]);
 	assert(v < z);
@@ -712,7 +712,7 @@ void Graph::addPartialEdge(Unsafe, node u, node v, uint64_t index, edgeweight ew
 		outEdgeWeights[u].push_back(ew);
 	}
 }
-void Graph::addPartialOutEdge(Unsafe, node u, node v, uint64_t index, edgeweight ew) {
+void Graph::addPartialOutEdge(Unsafe, node u, node v, edgeweight ew, uint64_t index) {
 	assert(u < z);
 	assert(exists[u]);
 	assert(v < z);
@@ -724,7 +724,7 @@ void Graph::addPartialOutEdge(Unsafe, node u, node v, uint64_t index, edgeweight
 		outEdgeWeights[u].push_back(ew);
 	}
 }
-void Graph::addPartialInEdge(Unsafe, node u, node v, uint64_t index, edgeweight ew) {
+void Graph::addPartialInEdge(Unsafe, node u, node v, edgeweight ew, uint64_t index) {
 	assert(u < z);
 	assert(exists[u]);
 	assert(v < z);

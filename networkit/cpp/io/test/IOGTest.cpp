@@ -866,4 +866,24 @@ TEST_F(IOGTest, testNetworkitBinaryWiki) {
 		});
 	});
 }
+TEST_F(IOGTest, NetworkitBinaryAutoDetect) {
+
+	Graph G(10, true, false);
+	int64_t weight = -1;
+	for(count n = 0; n < G.numberOfNodes(); n++) {
+		if(n != G.numberOfNodes()-1)
+			G.addEdge(n, n+1, weight++);
+	}
+	NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::autoDetect);
+	writer.write(G, "../output/binary_auto");
+
+	NetworkitBinaryReader reader;
+	Graph G2 = reader.read("../output/binary_auto");
+	G.forNodes([&](node u){
+		G.forEdgesOf(u, [&](node v) {
+			ASSERT_TRUE(G2.hasEdge(u,v));
+			ASSERT_EQ(G.weight(u,v), G2.weight(u,v));
+		});
+	});
+}
 } /* namespace NetworKit */

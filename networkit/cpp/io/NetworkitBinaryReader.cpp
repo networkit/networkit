@@ -5,12 +5,9 @@
  */
 
 #include <networkit/io/NetworkitBinaryReader.hpp>
-
-#include <networkit/auxiliary/Log.hpp>
 #include <networkit/io/NetworkitBinaryGraph.hpp>
 #include <networkit/io/MemoryMappedFile.hpp>
 #include <tlx/math/ffs.hpp>
-#include <vector>
 #include <fstream>
 #include <string.h>
 #include <atomic>
@@ -39,7 +36,7 @@ int64_t NetworkitBinaryReader::decodeZigzag(uint64_t value) {
 
 Graph NetworkitBinaryReader::read(const std::string& path) {
 	nkbg::Header header = {};
-	uint64_t weightFormat = 0;
+	nkbg::WEIGHT_FORMAT weightFormat;
 
 	MemoryMappedFile mmfile(path);
 	auto it = mmfile.cbegin();
@@ -61,19 +58,20 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 		it += sizeof(uint64_t);
 		memcpy(&header.offsetAdjTranspose, it, sizeof(uint64_t));
 		it += sizeof(uint64_t);
-		memcpy(&header.offsetWeights, it, sizeof(uint64_t));
+		memcpy(&header.offsetWeightLists, it, sizeof(uint64_t));
+		it += sizeof(uint64_t);
+		memcpy(&header.offsetWeightTranspose, it, sizeof(uint64_t));
 		it += sizeof(uint64_t);
 	};
 
 	auto checkHeader = [&] () {
-		if(memcmp("nkbg001", header.magic, 8)) {
+		if(memcmp("nkbg002", header.magic, 8)) {
 			throw std::runtime_error("Reader expected another magic value");
 		} else {
 			directed = (header.features & nkbg::DIR_MASK);
-			weightFormat = (header.features & nkbg::WGHT_MASK) >> nkbg::WGHT_SHIFT;
+			weightFormat = static_cast<nkbg::WEIGHT_FORMAT>((header.features & nkbg::WGHT_MASK) >> nkbg::WGHT_SHIFT);
 		}
 	};
-
 	readHeader();
 	checkHeader();
 
@@ -81,9 +79,12 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 	DEBUG("# nodes here = ", nodes);
 	chunks = header.chunks;
 	DEBUG("# chunks here = ", chunks);
-	weighted = header.offsetWeights;
+	if(weightFormat == nkbg::WEIGHT_FORMAT::none) {
+		weighted = false;
+	} else {
+		weighted = true;
+	}
 	Graph G(nodes, weighted, directed);
-
 	// Read base data.
 	std::vector<uint8_t> nodeFlags;
 	const char *baseIt = mmfile.cbegin() + header.offsetBaseData;
@@ -109,6 +110,8 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 	// Read adjacency lists.
 	const char *adjIt = mmfile.cbegin() + header.offsetAdjLists;
 	const char *transpIt = mmfile.cbegin() + header.offsetAdjTranspose;
+	const char *adjWghtIt = mmfile.cbegin() + header.offsetWeightLists;
+	const char *transpWghtIt = mmfile.cbegin() + header.offsetWeightTranspose;
 	uint64_t adjListSize;
 	memcpy(&adjListSize, adjIt + (chunks -1) * sizeof(uint64_t), sizeof(uint64_t));
 	uint64_t transposeListSize;
@@ -124,14 +127,20 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 		node vertex = firstVert[c];
 		uint64_t off = 0;
 		uint64_t transpOff = 0;
+		uint64_t wghtOff = 0;
+		uint64_t transWghtOff = 0;
 		if(vertex) {
 			memcpy(&off, adjIt + (c-1)* sizeof(uint64_t), sizeof(uint64_t));
 			memcpy(&transpOff, transpIt + (c-1)* sizeof(uint64_t), sizeof(uint64_t));
+			memcpy(&wghtOff, adjWghtIt + (c-1) * sizeof(uint64_t), sizeof(uint64_t));
+			memcpy(&transWghtOff, transpWghtIt + (c-1) * sizeof(uint64_t), sizeof(uint64_t));
 		}
 		off += (chunks - 1) * sizeof(uint64_t);
 		transpOff += (chunks - 1) * sizeof(uint64_t);
 		off += sizeof(uint64_t);
 		transpOff += sizeof(uint64_t);
+		wghtOff += (chunks - 1) * sizeof(uint64_t);
+		transWghtOff += (chunks - 1) * sizeof(uint64_t);
 		uint64_t n = firstVert[c+1] - firstVert[c];
 
 		for (uint64_t i = 0; i < n; i++) {
@@ -148,24 +157,81 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 			//Read adjacency lists.
 			for (uint64_t j = 0; j < outNbrs; j++) {
 				uint64_t add;
+				double weight;
 				off += NetworkitBinaryReader::decode(reinterpret_cast<const uint8_t*>(adjIt + off), add);
-				if(!directed) {
-					G.addPartialEdge(unsafe, curr, add);
-				} else {
-					G.addPartialOutEdge(unsafe, curr, add);
+				switch(weightFormat) {
+					case nkbg::WEIGHT_FORMAT::unsignedFormat:
+						{
+							uint64_t unsignedWeight;
+							wghtOff += NetworkitBinaryReader::decode(reinterpret_cast<const uint8_t*>(adjWghtIt + wghtOff), unsignedWeight);
+							weight = unsignedWeight;
+						}
+					break;
+					case nkbg::WEIGHT_FORMAT::doubleFormat:
+						{
+							memcpy(&weight, adjWghtIt + wghtOff, sizeof(double));
+							wghtOff += sizeof(double);
+						}
+					break;
+					case nkbg::WEIGHT_FORMAT::signedFormat:
+						{
+							uint64_t unsignedWeight;
+							wghtOff += NetworkitBinaryReader::decode(reinterpret_cast<const uint8_t*>(adjWghtIt + wghtOff), unsignedWeight);
+							weight = decodeZigzag(unsignedWeight);
+						}
+					break;
+					case nkbg::WEIGHT_FORMAT::floatFormat:
+						{
+							float floatWeight;
+							memcpy(&floatWeight, adjWghtIt + wghtOff, sizeof(float));
+							wghtOff += sizeof(float);
+							weight = floatWeight;
+						}
+					break;
 				}
-				if(curr == add) {
-					selfLoops++;
+				if(!directed) {
+					G.addPartialEdge(unsafe, curr, add, weight);
+				} else {
+					G.addPartialOutEdge(unsafe, curr, add, weight);
 				}
 			}
 			//Read transpose lists.
 			for (uint64_t j = 0; j < inNbrs; j++) {
 				uint64_t add;
+				double weight =1;
 				transpOff += NetworkitBinaryReader::decode(reinterpret_cast<const uint8_t*>(transpIt + transpOff), add);
+				switch(weightFormat) {
+					case nkbg::WEIGHT_FORMAT::unsignedFormat:
+						{
+							uint64_t unsignedWeight;
+							transWghtOff += NetworkitBinaryReader::decode(reinterpret_cast<const uint8_t*>(transpWghtIt + transWghtOff), unsignedWeight);
+							weight = unsignedWeight;
+						}
+					break;
+					case nkbg::WEIGHT_FORMAT::doubleFormat:
+						memcpy(&weight, transpWghtIt + transWghtOff, sizeof(double));
+						transWghtOff += sizeof(double);
+					break;
+					case nkbg::WEIGHT_FORMAT::signedFormat:
+						{
+							uint64_t unsignedWeight;
+							transWghtOff += NetworkitBinaryReader::decode(reinterpret_cast<const uint8_t*>(transpWghtIt + transWghtOff), unsignedWeight);
+							weight = decodeZigzag(unsignedWeight);
+						}
+					break;
+					case nkbg::WEIGHT_FORMAT::floatFormat:
+						{
+							float floatWeight;
+							memcpy(&floatWeight, transpWghtIt + transWghtOff, sizeof(float));
+							transWghtOff += sizeof(float);
+							weight = floatWeight;
+						}
+					break;
+				}
 				if(!directed) {
-					G.addPartialEdge(unsafe, curr, add);
+					G.addPartialEdge(unsafe, curr, add, weight);
 				} else {
-					G.addPartialInEdge(unsafe, curr, add);
+					G.addPartialInEdge(unsafe, curr, add, weight);
 				}
 				if(curr == add) {
 					selfLoops.fetch_add(1, std::memory_order_relaxed);
@@ -183,5 +249,3 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 	return G;
 }
 } /* namespace */
-
-

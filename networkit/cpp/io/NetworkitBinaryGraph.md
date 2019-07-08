@@ -18,11 +18,12 @@ struct Header {
     uint64_t offsetBaseData;
     uint64_t offsetAdjLists;
     uint64_t offsetTranspose;
-	uint64_t offsetWeights;
+    uint64_t offsetWeightLists;
+    uint64_t offsetWeightTranspose;
 };
 ```
 - magic: A constant value used to identify the file format version.
-    - The current version is '*nkbg001*' which supports unweighted, undirected and directed graphs.
+    - The current version is '*nkbg002*' which supports weighted, undirected and directed graphs.
 - checksum: Currently not used
 - features: Contains the graph information bitwise
     - Bit 0 : directed or undirected
@@ -36,7 +37,8 @@ struct Header {
 - offsetBaseData: Offset of base data in the file 
 - offsetAdjLists: Offset of the adjacency lists in the file
 - offsetTranspose: Offset of the transposed adjaceny lists in the file
-- offsetWeights: Offset of the weights in the file
+- offsetWeightLists: Offset of the adjacency weights in the file
+- offsetWeightTranspose: Offset of the transposed adjacency weights in the file
 
 All offsets are relative to the beginning of the section.
 
@@ -63,7 +65,21 @@ the firstVertex of each chunk relative to data starts
 varint data [...]: Varint encoded transpose lists  
 
 ```
-Weights
+Weight lists
 --------------------
-Weights are currently not supported. 
-
+```
+uint64_t offset[chunks-1]: Offset of the file where the weights are
+Depending on the type of weights:
+ - unsigned/signed weights: varint data [...]: Varint encoded weight lists
+ - double weights: double data [...]: Weight lists as doubles
+ - float weights: float data [...]: Weight lists as floats
+```
+Weight transpose
+--------------------
+```
+uint64_t offset[chunks-1]: Offset of the file where the transposed weights are
+Depending on the type of weights:
+ - unsigned/signed weights: varint data [...]: Varint encoded weight lists
+ - double weights: double data [...]: Weight lists as doubles
+ - float weights: float data [...]: Weight lists as floats
+```

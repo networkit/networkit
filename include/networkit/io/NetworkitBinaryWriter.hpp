@@ -9,6 +9,7 @@
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/io/GraphWriter.hpp>
+#include <networkit/io/NetworkitBinaryGraph.hpp>
 
 namespace NetworKit {
 
@@ -17,11 +18,20 @@ namespace NetworKit {
  *
  * Writes a graph in the custom Networkit format documented in cpp/io/NetworkitGraph.md
  */
+enum class NetworkitBinaryWeights {
+	none,
+	unsignedFormat,
+	signedFormat,
+	doubleFormat,
+	floatFormat,
+	autoDetect
+};
 
 class NetworkitBinaryWriter : public GraphWriter {
 
 public:
-	NetworkitBinaryWriter(uint64_t chunks = 32);
+
+	NetworkitBinaryWriter(uint64_t chunks = 32, NetworkitBinaryWeights weightsType = NetworkitBinaryWeights::autoDetect);
 
 	void write(const Graph& G, const std::string& path) override;
 
@@ -32,6 +42,7 @@ private:
 
 	count nodes;
 	count chunks;
+	NetworkitBinaryWeights weightsType;
 };
 } /* namespace */
 #endif
