@@ -342,13 +342,13 @@ if (NETWORKIT_BUILD_TESTS)
 
 		add_test(
 			NAME networkit_tests
-			COMMAND networkit_tests -t
+			COMMAND networkit_tests -t --srcloc
 			WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 		)
 
 		add_test(
 			NAME networkit_tests_no_assertions
-			COMMAND networkit_tests -r
+			COMMAND networkit_tests -r --srcloc
 			WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 		)
 
@@ -416,13 +416,13 @@ function(networkit_add_extra IS_TEST MOD NAME)
 
 				add_test(
 					NAME "${MOD}/${NAME}"
-					COMMAND ${TARGET_NAME} -t
+					COMMAND ${TARGET_NAME} -t --srcloc
 					WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 					)
 
 				add_test(
 					NAME "${MOD}/${NAME}_no_assertions"
-					COMMAND ${TARGET_NAME} -r
+					COMMAND ${TARGET_NAME} -r --srcloc
 					WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 				)
 			endif()
