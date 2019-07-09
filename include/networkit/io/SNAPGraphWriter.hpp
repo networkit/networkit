@@ -1,5 +1,5 @@
 /*
- * SNAPGraphWriter.h
+ * SNAPGraphWriter.hpp
  *
  *  Created on: 24.09.2013
  *      Author: cls
@@ -41,16 +41,13 @@ namespace NetworKit {
  *
  * The problem line is followed by a listing on exactly m edges. The format
  * is <u v w> for a weighted graph, and <u v> for an unweighted graph.
- *
- * Good job
  */
-class SNAPGraphWriter: public GraphWriter {
+class SNAPGraphWriter final : public GraphWriter {
 public:
+
 	SNAPGraphWriter() = default;
-	virtual void write(const Graph& G, const std::string& path) override;
 
-private:
-
+	void write(const Graph &G, const std::string &path) const override;
 };
 
 } /* namespace NetworKit */

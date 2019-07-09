@@ -1,5 +1,5 @@
 /*
- * METISGraphWriter.h
+ * GMLGraphWriter.hpp
  *
  *  Created on: 30.01.2013
  *      Author: Christian Staudt (christian.staudt@kit.edu)
@@ -7,8 +7,6 @@
 
 #ifndef GMLGRAPHWRITER_H_
 #define GMLGRAPHWRITER_H_
-
-#include <fstream>
 
 #include <networkit/io/GraphWriter.hpp>
 
@@ -20,7 +18,7 @@ namespace NetworKit {
  *
  * [1] http://svn.bigcat.unimaas.nl/pvplugins/GML/trunk/docs/gml-technical-report.pdf
  */
-class GMLGraphWriter: public GraphWriter {
+class GMLGraphWriter final: public GraphWriter {
 public:
 	/** Default constructor */
 	GMLGraphWriter() = default;
@@ -31,7 +29,7 @@ public:
 	 * @param[in]	G		Graph of type NetworKit with 2D coordinates.
 	 * @param[in]	path	Path to file.
 	 */
-	virtual void write(const Graph& G, const std::string& path) override;
+	void write(const Graph &G, const std::string &path) const override;
 };
 
 } /* namespace NetworKit */

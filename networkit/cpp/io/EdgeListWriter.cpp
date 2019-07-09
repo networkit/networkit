@@ -5,18 +5,17 @@
  *      Author: cls
  */
 
-#include <networkit/io/EdgeListWriter.hpp>
-#include <networkit/auxiliary/Log.hpp>
-
-#include <sstream>
+#include <fstream>
 
 #include <networkit/auxiliary/Enforce.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/io/EdgeListWriter.hpp>
 
 namespace NetworKit {
 
 EdgeListWriter::EdgeListWriter(char separator, node firstNode, bool bothDirections) : separator(separator), firstNode(firstNode), bothDirections(bothDirections) {}
 
-void EdgeListWriter::write(const Graph& G, std::string path) {
+void EdgeListWriter::write(const Graph &G, const std::string &path) const {
 	std::ofstream file(path);
 	Aux::enforceOpened(file);
 

@@ -3327,7 +3327,7 @@ cdef extern from "<networkit/io/ThrillGraphBinaryWriter.hpp>":
 
 cdef class ThrillGraphBinaryWriter:
 	"""
-	Writes a graph format consisting of a serialized DIA of vector<uint32_t> from thrill.
+	Writes a graph format consisting of a serialized DIA of vector<uint32_t> from Thrill.
 	Edges are written only in one direction.
 	"""
 

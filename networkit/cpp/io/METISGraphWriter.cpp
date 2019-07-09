@@ -5,17 +5,19 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include <networkit/io/METISGraphWriter.hpp>
-#include <networkit/graph/GraphTools.hpp>
+#include <fstream>
 
 #include <networkit/auxiliary/Enforce.hpp>
+#include <networkit/graph/GraphTools.hpp>
+#include <networkit/io/METISGraphWriter.hpp>
 
 namespace NetworKit {
 
-void METISGraphWriter::write(const Graph& G, const std::string& path) {
+void METISGraphWriter::write(const Graph &G, const std::string &path) const {
 	this->write(G, G.isWeighted(), path);
 }
-void METISGraphWriter::write(const Graph& G, bool weighted, std::string path) {
+
+void METISGraphWriter::write(const Graph &G, bool weighted, const std::string &path) const {
 	if (G.isDirected()) {
 		throw std::invalid_argument{"METIS does not support directed graphs"};
 	}
