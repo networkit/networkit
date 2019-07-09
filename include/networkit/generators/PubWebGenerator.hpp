@@ -16,6 +16,7 @@
 
 namespace NetworKit {
 
+// TODO: Clean this up.
 const int MAX_RAND_VAL = 1000;
 const float MAX_DENSE_AREA_RADIUS = 0.2f;
 const float MIN_MAX_DENSE_AREA_FACTOR = 5.0f;

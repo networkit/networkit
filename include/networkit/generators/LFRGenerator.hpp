@@ -9,6 +9,7 @@
 namespace NetworKit {
 
 /**
+ * @ingroup generators
  * The LFR clustered graph generator as introduced by Andrea Lancichinetti, Santo Fortunato, and Filippo Radicchi.
  *
  * The community assignment follows the algorithm described in

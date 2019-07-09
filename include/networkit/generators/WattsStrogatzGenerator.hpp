@@ -13,6 +13,9 @@
 namespace NetworKit {
 
 
+/**
+ * @ingroup generators
+ */
 class WattsStrogatzGenerator: public StaticGraphGenerator {
 
 public:
