@@ -29,22 +29,22 @@ public:
 	 *
 	 * @param[in]	path	input file path
 	 */
-	void write(const Graph &G, const std::string &path) const override;
+	void write(const Graph &G, const std::string &path) override;
 
 protected:
 	bool littleEndianness;
 
 private:
-	void writeAdjacencies(std::ofstream &file, const Graph &G) const;
+	void writeAdjacencies(std::ofstream &file, const Graph &G);
 
-	uint8_t getAdjacencyWidth(uint64_t n) const;
+	uint8_t getAdjacencyWidth(uint64_t n) ;
 
-	void writeComment(std::ofstream &file) const;
+	void writeComment(std::ofstream &file);
 
-	void writeHeader(std::ofstream &file) const;
+	void writeHeader(std::ofstream &file);
 
 	template<typename Type>
-	void writeType(std::ofstream& file, int width, Type val) const {
+	void writeType(std::ofstream& file, int width, Type val) {
 		//DEBUG("writing ",val, "with width ", width, " to file");
 		uint8_t* bytes = new uint8_t[width];
 		if (this->littleEndianness) {

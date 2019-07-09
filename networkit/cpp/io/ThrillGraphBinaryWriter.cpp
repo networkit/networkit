@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-void ThrillGraphBinaryWriter::write(const Graph &G, const std::string &path) const {
+void ThrillGraphBinaryWriter::write(const Graph &G, const std::string &path) {
 	if (G.upperNodeIdBound() > std::numeric_limits<uint32_t>::max()) {
 		throw std::runtime_error("Thrill binary graphs only support graphs with up to 2^32-1 nodes.");
 	}

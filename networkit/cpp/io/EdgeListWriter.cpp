@@ -15,7 +15,7 @@ namespace NetworKit {
 
 EdgeListWriter::EdgeListWriter(char separator, node firstNode, bool bothDirections) : separator(separator), firstNode(firstNode), bothDirections(bothDirections) {}
 
-void EdgeListWriter::write(const Graph &G, const std::string &path) const {
+void EdgeListWriter::write(const Graph &G, const std::string &path) {
 	std::ofstream file(path);
 	Aux::enforceOpened(file);
 

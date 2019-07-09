@@ -20,7 +20,7 @@ class GraphWriter {
 public:
 	virtual ~GraphWriter() = default;
 
-	virtual void write(const Graph &G, const std::string &path) const = 0;
+	virtual void write(const Graph &G, const std::string &path) = 0;
 };
 
 } /* namespace NetworKit */

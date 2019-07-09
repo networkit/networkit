@@ -44,7 +44,7 @@ uint64_t NetworkitBinaryWriter::encodeZigzag(int64_t value) {
 	return (value << 1) ^ (value >> 31);
 }
 
-void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) const {
+void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
 
 	std::ofstream outfile(path, std::ios::binary);
 	Aux::enforceOpened(outfile);
@@ -150,10 +150,9 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) const
 		}
 	};
 
-	count nNodes = G.numberOfNodes();
-	count nChunks = chunks;
-	if (nNodes < chunks) {
-		nChunks = nNodes;
+	count nodes = G.numberOfNodes();
+	if (nodes < chunks) {
+		chunks = nodes;
 		INFO("reducing chunks to ", chunks, " chunks");
 	}
 
@@ -161,11 +160,11 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) const
 	std::vector<uint64_t> firstInChunk;
 	firstInChunk.push_back(0);
 	uint64_t firstNode = 0;
-	for(uint64_t c = 1; c < nChunks; c++) {
-		firstNode += (nNodes/nChunks);
+	for(uint64_t c = 1; c < chunks; c++) {
+		firstNode += (nodes/chunks);
 		firstInChunk.push_back(firstNode);
 	}
-	firstInChunk.push_back(nNodes);
+	firstInChunk.push_back(nodes);
 
 	// Compute encoded size of arrays and store in vector.
 	uint64_t adjSize = 0;
@@ -249,14 +248,14 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) const
 	strncpy(header.magic,"nkbg002",8);
 	header.checksum = 0;
 	setFeatures();
-	header.nodes = nNodes;
-	header.chunks = nChunks;
+	header.nodes = nodes;
+	header.chunks = chunks;
 	header.offsetBaseData = sizeof(nkbg::Header);
 	header.offsetAdjLists = header.offsetBaseData
-			+ nNodes * sizeof(uint8_t) // nodeFlags.
-			+ (nChunks - 1) * sizeof(uint64_t); // firstVertex.
+			+ nodes * sizeof(uint8_t) // nodeFlags.
+			+ (chunks - 1) * sizeof(uint64_t); // firstVertex.
 	header.offsetAdjTranspose = header.offsetAdjLists
-			+ (nChunks - 1) * sizeof(uint64_t) // adjOffsets
+			+ (chunks - 1) * sizeof(uint64_t) // adjOffsets
 			+ sizeof(uint64_t) // adjListSize
 			+ adjOffsets.back(); // Size of data
 	if(weightFormat != nkbg::WEIGHT_FORMAT::NONE) {
@@ -282,12 +281,12 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) const
 	});
 
 	assert(!firstInChunk[0]);
-	for (uint64_t c = 1; c < nChunks; c++) {
+	for (uint64_t c = 1; c < chunks; c++) {
 		outfile.write(reinterpret_cast<char*>(&firstInChunk[c]), sizeof(uint64_t));
 	}
 
 	// Write adjacency data.
-	for (uint64_t c = 1; c < nChunks; c++) {
+	for (uint64_t c = 1; c < chunks; c++) {
 		outfile.write(reinterpret_cast<char*>(&adjOffsets[c-1]), sizeof(uint64_t));
 	}
 	// Write size of list
@@ -311,7 +310,7 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) const
 	});
 
 	// Write transpose data.
-	for (uint64_t c = 1; c < nChunks; c++) {
+	for (uint64_t c = 1; c < chunks; c++) {
 		outfile.write(reinterpret_cast<char*>(&transpOffsets[c-1]), sizeof(uint64_t));
 	}
 	// Write size of transpose list.

@@ -19,7 +19,7 @@ public:
 	 * @param[in] G The graph to write.
 	 * @param[in] path The path where to write the graph.
 	 */
-	void write(const Graph &G, const std::string &path) const override;
+	void write(const Graph &G, const std::string &path) override;
 };
 
 } /* namespace NetworKit */

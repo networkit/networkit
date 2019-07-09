@@ -30,7 +30,7 @@ public:
 	 * @param[in]	graph	The graph object
 	 * @param[in]	path	The file path to be written to
 	 */
-	void write(const Graph &G, const std::string &path) const override;
+	void write(const Graph &G, const std::string &path) override;
 
 };
 

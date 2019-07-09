@@ -37,7 +37,7 @@ public:
 	 * @param[in]	G		the graph
 	 * @param[in]	path	the output file path
 	 */
-	void write(const Graph &G, const std::string &path) const override;
+	void write(const Graph &G, const std::string &path) override;
 
 protected:
 

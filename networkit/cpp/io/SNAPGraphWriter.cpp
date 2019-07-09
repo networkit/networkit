@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-void SNAPGraphWriter::write(const Graph &G, const std::string &path) const {
+void SNAPGraphWriter::write(const Graph &G, const std::string &path) {
     std::ofstream file(path);
     Aux::enforceOpened(file);
 
