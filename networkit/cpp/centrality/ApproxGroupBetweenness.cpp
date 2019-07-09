@@ -5,14 +5,14 @@
  *      Author: Marvin Pogoda
  */
 
-#include <networkit/centrality/ApproxGroupBetweenness.hpp>
-#include <networkit/auxiliary/BucketPQ.hpp>
-#include <networkit/auxiliary/Random.hpp>
-#include <networkit/distance/BFS.hpp>
-#include <networkit/distance/SSSP.hpp>
-
 #include <math.h>
 #include <omp.h>
+
+#include <networkit/auxiliary/BucketPQ.hpp>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/centrality/ApproxGroupBetweenness.hpp>
+#include <networkit/distance/BFS.hpp>
+#include <networkit/distance/SSSP.hpp>
 
 namespace NetworKit {
 
@@ -27,7 +27,7 @@ ApproxGroupBetweenness::ApproxGroupBetweenness(const Graph &G,
 		throw std::runtime_error(
 		    "Error: the group size must be between 1 and n-1.");
 	}
-	if (epsilon <= 0.f) {
+	if (epsilon <= 0) {
 		throw std::runtime_error("Error: epsilon must be greater than 0.");
 	}
 	hasRun = false;
@@ -41,8 +41,6 @@ void ApproxGroupBetweenness::run() {
 	count samples = groupSize * log(n) / (epsilon * epsilon);
 	std::vector<std::vector<count>> hyperEdgesPerSample(samples);
 	Aux::BucketPQ nodeDegrees(bucketInitializer, -samples, 1);
-
-	hasSortedGroup = false;
 
 #pragma omp parallel for
 	for (omp_index l = 0; l < static_cast<omp_index>(samples); ++l) {
