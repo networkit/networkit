@@ -63,15 +63,13 @@ int main(int argc, char *argv[]) {
     }
 
     // Configure logging
-#ifndef NOLOGGING
     Aux::Log::setLogLevel(options.loglevel);
     Aux::Log::Settings::setPrintLocation(options.sourceLocation);
     std::cout << "Loglevel: " << Aux::Log::getLogLevel() << "\n";
-#else
-    if (options.loglevel != "ERROR")
-        std::cout << "WARNING: --loglevel is ignored in NOLOGGING builds" << std::endl;
-    if (options.sourceLocation)
-        std::cout << "WARNING: --srcloc is ignored in NOLOGGING builds" << std::endl;
+#ifdef NETWORKIT_RELEASE_LOGGING
+    if (options.loglevel == "TRACE" || options.loglevel == "DEBUG")
+        std::cout << "WARNING: TRACE and DEBUG messages are missing"
+                     " in NETWORKIT_RELEASE_LOGGING builds" << std::endl;
 #endif
 
     // Configure parallelism
