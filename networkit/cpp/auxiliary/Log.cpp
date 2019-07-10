@@ -9,7 +9,7 @@
 
 namespace Aux { namespace Log {
 
-void setLogLevel(std::string logLevel) {
+void setLogLevel(const std::string &logLevel) {
 	if (logLevel == "TRACE") {
 		Settings::setLogLevel(LogLevel::trace);
 	} else if (logLevel == "DEBUG") {
@@ -79,7 +79,7 @@ bool getPrintTime() {return printTime;}
 void setPrintLocation(bool b) {printLocation = b;}
 bool getPrintLocation() {return printLocation;}
 
-void setLogfile(const std::string& filename) {
+void setLogfile(const std::string &filename) {
 	std::lock_guard<std::mutex> guard{logfileMutex};
 	if(logfile.is_open()) {
 		logfile.close();
@@ -93,7 +93,7 @@ void setLogfile(const std::string& filename) {
 }
 } // namespace Settings
 
-void printLogLevel(std::ostream& stream, LogLevel p) {
+void printLogLevel(std::ostream &stream, LogLevel p) {
 	switch(p) {
 		case LogLevel::fatal:
 			stream << "[FATAL]"; break;
@@ -110,12 +110,12 @@ void printLogLevel(std::ostream& stream, LogLevel p) {
 	}
 }
 
-void printTime(std::ostream& stream,
-		const std::chrono::time_point<std::chrono::system_clock>& timePoint) {
+void printTime(std::ostream &stream,
+		const std::chrono::time_point<std::chrono::system_clock> &timePoint) {
 	stream << "[" << timePoint.time_since_epoch().count() << "]";
 }
 
-void printLocation(std::ostream& stream, const Location& loc) {
+void printLocation(std::ostream &stream, const Location &loc) {
 	stream << "[" << loc.file << ", " << loc.line << ": " << loc.function << "]";
 }
 
@@ -138,9 +138,9 @@ std::tuple<std::string, std::string> getTerminalFormat(LogLevel p) {
 	}
 }
 
-static void logToTerminal(const Location& loc, LogLevel p,
-		const std::chrono::time_point<std::chrono::system_clock>& timePoint,
-		const std::string msg) {
+static void logToTerminal(const Location &loc, LogLevel p,
+		const std::chrono::time_point<std::chrono::system_clock> &timePoint,
+		const std::string &msg) {
 	std::stringstream stream;
 	
 	if(Settings::getPrintTime()) {
@@ -181,9 +181,9 @@ static void logToTerminal(const Location& loc, LogLevel p,
 	}
 }
 
-static void logToFile(const Location& loc, LogLevel p,
-		const std::chrono::time_point<std::chrono::system_clock>& timePoint,
-		const std::string& msg) {
+static void logToFile(const Location &loc, LogLevel p,
+		const std::chrono::time_point<std::chrono::system_clock> &timePoint,
+		const std::string &msg) {
 	if(!Settings::logfileIsOpen) {
 		return;
 	}
@@ -209,7 +209,7 @@ static void logToFile(const Location& loc, LogLevel p,
 
 namespace Impl {
 
-void log(const Location& loc, LogLevel p, const std::string msg) {
+void log(const Location &loc, LogLevel p, const std::string &msg) {
 	auto time =std::chrono::system_clock::now();
 	
 	logToTerminal(loc, p, time, msg);

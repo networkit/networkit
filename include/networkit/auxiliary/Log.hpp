@@ -76,7 +76,7 @@ enum class LogLevel {
  * Accept loglevel as string and set.
  * @param logLevel as string
  */
-void setLogLevel(std::string logLevel);
+void setLogLevel(const std::string &logLevel);
 
 /**
  * @return current loglevel as string
@@ -94,15 +94,15 @@ bool getPrintTime();
 void setPrintLocation(bool b);
 bool getPrintLocation();
 
-void setLogfile(const std::string& filename);
+void setLogfile(const std::string &filename);
 }
 
 namespace Impl {
-void log(const Location& loc, LogLevel p, const std::string msg);
+void log(const Location &loc, LogLevel p, const std::string &msg);
 } //namespace impl
 
 template<typename...T>
-void log(const Location& loc, LogLevel p, const T&...args) {
+void log(const Location &loc, LogLevel p, const T &...args) {
 	if(p >= Settings::getLogLevel()) {
 		std::stringstream stream;
 		printToStream(stream, args...);
@@ -111,7 +111,7 @@ void log(const Location& loc, LogLevel p, const T&...args) {
 }
 
 template<typename...T>
-void logF(const Location& loc, LogLevel p, const std::string& format, const T&...args) {
+void logF(const Location &loc, LogLevel p, const std::string &format, const T &...args) {
 	if(p >= Settings::getLogLevel()) {
 		std::stringstream stream;
 		printToStreamF(stream, format, args...);
