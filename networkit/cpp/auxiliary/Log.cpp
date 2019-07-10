@@ -31,24 +31,23 @@ void setLogLevel(const std::string &logLevel) {
 
 std::string getLogLevel() {
 	LogLevel current = Settings::getLogLevel();
-	if (current == LogLevel::trace) {
+	switch (current) {
+	case LogLevel::trace:
 		return "TRACE";
-	} else if (current == LogLevel::debug) {
+	case LogLevel::debug:
 		return "DEBUG";
-	} else if (current == LogLevel::info) {
+	case LogLevel::info:
 		return "INFO";
-	} else if (current == LogLevel::warn) {
+	case LogLevel::warn:
 		return "WARN";
-	} else if (current == LogLevel::error) {
+	case LogLevel::error:
 		return "ERROR";
-	} else if (current == LogLevel::fatal) {
+	case LogLevel::fatal:
 		return "FATAL";
-	} else if (current == LogLevel::quiet) {
+	case LogLevel::quiet:
 		return "QUIET";
-	} else {
-		// this only exists to silence a warning:
-		// TODO: consider replacing it with __builtin_unreachable();
-		throw std::logic_error{"invalid loglevel. This should NEVER happen"};
+	default:
+		throw std::logic_error{"invalid loglevel in getLogLevel()"};
 	}
 }
 
