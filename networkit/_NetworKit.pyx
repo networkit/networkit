@@ -7095,18 +7095,31 @@ cdef extern from "<networkit/centrality/Closeness.hpp>":
 
 cdef class Closeness(Centrality):
 	"""
-		Closeness(G, normalized=True, variant=ClosenessVariant::standard/checkConnectdedness=True)
+		Closeness(G, normalized, bool checkConnectdedness)
+		Closeness(G, normalized, networkit.centrality.ClosenessVariant variant)
 
 		Constructs the Closeness class for the given Graph `G`. If the Closeness scores should not be normalized,
-  		set `normalized` to False. The run() method takes O(nm) time, where n is the number
-	 	 of nodes and m is the number of edges of the graph. NOTICE: the graph has to be connected.
+		set `normalized` to False. The run() method takes O(nm) time, where n is the number
+		of nodes and m is the number of edges of the graph.
 
-	 	Parameters
-	 	----------
-	 	G : networkit.Graph
-	 		The graph.
-	 	normalized : bool, optional
-	 		Set this parameter to False if scores should not be normalized into an interval of [0,1]. Normalization only for unweighted graphs.
+		Parameters
+		----------
+		G : networkit.Graph
+			The graph.
+		normalized : bool
+			Set this parameter to False if scores should not be normalized into an interval of [0,1].
+			Normalization only works for unweighted graphs.
+		checkConnectdedness : bool
+			Set this parameter to True to also check if the graph is connected before computing closeness.
+			Set this parameter to False to not check if the graph is connected (note: the standard definition
+			of closeness works for connected graphs, choose this if the input graph is known to be connected).
+		ClosenessVariant : networkit.centrality.ClosenessVariant
+			Set this parameter to networkit.centrality.ClosenessVariant.Standard to use the standard
+			definition of closeness, that is defined for connected graphs only; in this case, checkConnectdedness
+			is automatically set to True.
+			Set this parameter to networkit.centrality.ClosenessVariant.Generalized to use the generalized
+			definition of closeness, that is defined for also non-connected graphs; in this case, checkConnectdedness
+			is automatically set to False.
 	"""
 
 	def __cinit__(self, Graph G, normalized, third):
