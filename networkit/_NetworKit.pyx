@@ -1347,6 +1347,8 @@ cdef extern from "<networkit/distance/SSSP.hpp>":
 		set[vector[node]] getPaths(node t, bool_t forward) except +
 		vector[node] getNodesSortedByDistance(bool_t moveOut) except +
 		double _numberOfPaths(node t) except +
+		void setSource(node s) except +
+		void setTarget(node t) except +
 
 cdef class SSSP(Algorithm):
 	""" Base class for single source shortest path algorithms. """
@@ -1430,6 +1432,28 @@ cdef class SSSP(Algorithm):
 
 	def numberOfPaths(self, t):
 		return (<_SSSP*>(self._this))._numberOfPaths(t)
+
+	def setSource(self, s not None):
+		"""
+		Sets a new source node.
+
+		Parameters
+		----------
+		s : node
+			New source node.
+		"""
+		(<_SSSP*>(self._this)).setSource(s)
+
+	def setTarget(self, t not None):
+		"""
+		Sets a new target node.
+
+		Parameters
+		----------
+		t : node
+			New target node.
+		"""
+		(<_SSSP*>(self._this)).setTarget(t)
 
 
 cdef extern from "<networkit/distance/DynSSSP.hpp>":

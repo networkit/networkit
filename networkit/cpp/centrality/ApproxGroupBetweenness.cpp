@@ -41,6 +41,7 @@ void ApproxGroupBetweenness::run() {
 	count samples = groupSize * log(n) / (epsilon * epsilon);
 	std::vector<std::vector<count>> hyperEdgesPerSample(samples);
 	Aux::BucketPQ nodeDegrees(bucketInitializer, -samples, 1);
+	std::vector<BFS> bfss(omp_get_max_threads(), BFS(G, 0, true, true));
 
 #pragma omp parallel for
 	for (omp_index l = 0; l < static_cast<omp_index>(samples); ++l) {
@@ -49,7 +50,10 @@ void ApproxGroupBetweenness::run() {
 		do {
 			t = G.randomNode();
 		} while (s == t);
-		BFS bfs(G, s, true, true, t);
+
+		BFS &bfs = bfss[omp_get_thread_num()];
+		bfs.setSource(s);
+		bfs.setTarget(t);
 		bfs.run();
 		std::set<std::vector<node>> shortestPaths = bfs.getPaths(t);
 

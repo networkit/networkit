@@ -143,6 +143,15 @@ public:
     }
 
     /**
+     * Sets a new target.
+     */
+    void setTarget(node newTarget) {
+        if (!G.hasNode(newTarget))
+            throw std::runtime_error("Error: node not in the graph.");
+        target = newTarget;
+    }
+
+    /**
      * Returns the sum of distances from the source node node to the reached
      * nodes.
      */
