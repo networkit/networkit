@@ -372,34 +372,26 @@ TEST_P(GraphGTest, testAddNode) {
 }
 
 TEST_P(GraphGTest, testRemoveNode) {
-	Graph G = createGraph(4);
-	G.addEdge(0, 1);
-	G.addEdge(0, 2);
+	auto testGraph = [&](Graph &G) {
+		count n = G.numberOfNodes();
+		count z = n;
+		count m = G.numberOfEdges();
+		for (node u = 0; u < z; ++u) {
+			count deg = G.degreeOut(u);
+			count degIn = G.isDirected() ? G.degreeIn(u) : 0;
+			G.removeNode(u);
+			--n;
+			m -= deg + degIn;
+			ASSERT_EQ(G.numberOfNodes(), n);
+			ASSERT_EQ(G.numberOfEdges(), m);
+			G.forNodes([&](node v) { ASSERT_EQ(G.hasNode(v), v > u); });
+		}
+	};
 
-	ASSERT_EQ(4u, G.numberOfNodes());
-	ASSERT_EQ(2u, G.numberOfEdges());
-	ASSERT_TRUE(G.hasNode(0));
-	ASSERT_TRUE(G.hasNode(1));
-	ASSERT_TRUE(G.hasNode(2));
-	ASSERT_TRUE(G.hasNode(3));
-
-	G.removeNode(2);
-
-	ASSERT_EQ(3u, G.numberOfNodes());
-	ASSERT_EQ(1u, G.numberOfEdges());
-	ASSERT_TRUE(G.hasNode(0));
-	ASSERT_TRUE(G.hasNode(1));
-	ASSERT_FALSE(G.hasNode(2));
-	ASSERT_TRUE(G.hasNode(3));
-
-	G.removeNode(1);
-
-	ASSERT_EQ(2u, G.numberOfNodes());
-	ASSERT_EQ(0u, G.numberOfEdges());
-	ASSERT_TRUE(G.hasNode(0));
-	ASSERT_FALSE(G.hasNode(1));
-	ASSERT_FALSE(G.hasNode(2));
-	ASSERT_TRUE(G.hasNode(3));
+	Graph G1 = ErdosRenyiGenerator(200, 0.2, false).generate();
+	Graph G2 = ErdosRenyiGenerator(200, 0.2, true).generate();
+	testGraph(G1);
+	testGraph(G2);
 }
 
 TEST_P(GraphGTest, testHasNode) {
