@@ -148,7 +148,6 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 	writeHeader();
 
 	// Write base data.
-	uint64_t sum = 0;
 	G.forNodes([&] (node u) {
 		uint8_t nodeFlag = 0;
 		if (G.hasNode(u)) {
