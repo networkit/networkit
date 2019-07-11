@@ -1479,6 +1479,7 @@ TEST_F(CentralityGTest, testGroupBetweennessScore) {
     G.addEdge(5, 6);
     G.addEdge(6, 7);
 
+    BFS bfs(G, 0, true, false);
     // Naively computes the group betweenness of a group of nodes S
     auto naiveGB = [&](const std::vector<node> &S) -> double {
         double score = 0;
@@ -1487,7 +1488,7 @@ TEST_F(CentralityGTest, testGroupBetweennessScore) {
         for (node u : S)
             inGroup[u] = true;
         for (node source = 0; source < n; ++source) {
-            BFS bfs(G, source, true, false);
+            bfs.setSource(source);
             bfs.run();
             for (node target = 0; target < n; ++target) {
                 if (target == source)
@@ -1529,7 +1530,9 @@ TEST_F(CentralityGTest, testGroupBetweennessScore) {
                         break;
                 }
             }
-            EXPECT_EQ(gb.scoreOfGroup(group), naiveGB(group));
+            double computedScore = gb.scoreOfGroup(group);
+            double naiveScore = naiveGB(group);
+            EXPECT_NEAR(computedScore, naiveScore, 1e-6);
         } while (std::next_permutation(inGroup.begin(), inGroup.end()));
     }
 }
