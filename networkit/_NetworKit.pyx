@@ -3325,17 +3325,17 @@ cdef class ThrillGraphBinaryWriter:
 
 	cdef _ThrillGraphBinaryWriter _this
 
-	"""
-	Write the graph to a binary file.
-
-	Parameters
-	----------
-	G     : networkit.Graph
-		The graph to write
-	paths : str
-		The output path
-	"""
 	def write(self, Graph G not None, path):
+		"""
+		Write the graph to a binary file.
+
+		Parameters
+		----------
+		G     : networkit.Graph
+			The graph to write
+		paths : str
+			The output path
+		"""
 		cdef string c_path = stdstring(path)
 		with nogil:
 			self._this.write(G._this, c_path)
@@ -3350,19 +3350,61 @@ cdef extern from "<networkit/io/EdgeListReader.hpp>":
 
 
 cdef class EdgeListReader(GraphReader):
-	""" Reads a file in an edge list format.
-		TODO: docstring
+	""" Reads a graph from various text-based edge list formats.
+
+	EdgeListReader(self, separator, firstNode, commentPrefix="#", continuous=True, directed=False)
+
+	A line has to contain two or three entries separated with the separator symbol (one ASCII character).
+	If at least one line contains three entries, the generated graph will be weighted and
+	each line with only two fields will be interpreted as weight 1.0.
+
+	A file may contain the same edge multiple times; then, the weight of the first
+	occurrence is used.
+
+	Undirected graphs need to include an edge only in one direction, i.e. edge {u, v} may
+	be represented by (u, v) or (v, u) or both (again, only the first occurrence is used).
+
+	If the input file contains non-continuous node ids with large gaps or non-integer node labels,
+	set the parameter continuous to False. Then, gaps are automatically removed and node ids are
+	reassigned to [0, n) where n is the number of nodes in the graph. The mapping will be arbitrary
+	and can be accessed using getNodeMap().
+
+	To shift continuous integer node labels which are not zero-indexed, set firstNode to
+	the smallest id used in the file.
+
+	The file may also include line comments which start with the commentPrefix.
+
+	Parameters
+	----------
+	separator : char
+		The separator character. Must have length of exactly one.
+	firstNode : node
+		The id of the first node, this value will be subtracted from all node ids
+	commentPrefix : string
+		Lines starting with this prefix will be ignored
+	continuous : bool
+		File uses continuous node ids.
+	directed : bool
+		Treat input file as a directed graph.
 	"""
 	def __cinit__(self, separator, firstNode, commentPrefix="#", continuous=True, directed=False):
+		if len(separator) != 1 or ord(separator[0]) > 255:
+			raise RuntimeError("separator has to be exactly one ascii character");
+
 		self._this = new _EdgeListReader(stdstring(separator)[0], firstNode, stdstring(commentPrefix), continuous, directed)
 
 	def getNodeMap(self):
+		""" Returns mapping of non-continuous files.
+
+		The mapping is returned as dict (string -> node) projecting the original
+		labels (as strings) to the reassigned integer node ids.
+		"""
 		cdef map[string,node] cResult = (<_EdgeListReader*>(self._this)).getNodeMap()
 		result = dict()
 		for elem in cResult:
-			#result.append((elem.first,elem.second))
 			result[(elem.first).decode("utf-8")] = elem.second
 		return result
+
 
 cdef extern from "<networkit/io/KONECTGraphReader.hpp>":
 
