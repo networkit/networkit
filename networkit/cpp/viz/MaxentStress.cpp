@@ -16,6 +16,7 @@
 #include <networkit/numerics/Preconditioner/DiagonalPreconditioner.hpp>
 #include <networkit/numerics/Preconditioner/IdentityPreconditioner.hpp>
 
+#include <cmath>
 #include <queue>
 
 namespace NetworKit {
