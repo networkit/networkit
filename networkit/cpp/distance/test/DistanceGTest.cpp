@@ -7,7 +7,11 @@
 
 #include <gtest/gtest.h>
 
+#include <networkit/distance/BFS.hpp>
+#include <networkit/distance/BidirectionalBFS.hpp>
+#include <networkit/distance/BidirectionalDijkstra.hpp>
 #include <networkit/distance/Diameter.hpp>
+#include <networkit/distance/Dijkstra.hpp>
 #include <networkit/distance/EffectiveDiameter.hpp>
 #include <networkit/distance/EffectiveDiameterApproximation.hpp>
 #include <networkit/distance/HopPlotApproximation.hpp>
@@ -30,6 +34,81 @@ TEST_F(DistanceGTest, testVertexDiameterPedantically) {
 	diam.run();
 	count vd = diam.getDiameter().first;
 	EXPECT_EQ(1000, vd);
+}
+
+TEST_F(DistanceGTest, testBidirectionalBFS) {
+	Aux::Random::setSeed(42, false);
+	Graph G = ErdosRenyiGenerator(500, 0.02, false).generate();
+	Graph G1 = ErdosRenyiGenerator(500, 0.05, true).generate();
+	auto testGraph = [&](const Graph &G) {
+		node source = G.randomNode();
+		node target = G.randomNode();
+		while (source == target)
+			target = G.randomNode();
+		BFS bfs(G, source, true, false, target);
+		bfs.run();
+		BidirectionalBFS bbfs(G, source, target, true);
+		bbfs.run();
+		if (bfs.distance(target) < G.upperNodeIdBound())
+			EXPECT_EQ(bfs.distance(target), bbfs.getDistance());
+		else
+			EXPECT_EQ(std::numeric_limits<count>::max(), bbfs.getDistance());
+		auto path = bbfs.getPath();
+		EXPECT_EQ(path.size(), bbfs.getDistance() - 1);
+		if (path.size()) {
+			EXPECT_TRUE(G.hasEdge(source, path.front()));
+			EXPECT_TRUE(G.hasEdge(path.back(), target));
+			for (count i = 1; i < path.size()-1; ++i)
+				EXPECT_TRUE(G.hasEdge(path[i], path[i + 1]));
+		} else
+			EXPECT_TRUE(G.hasEdge(source, target));
+	};
+	for (int i = 0; i < 10; ++i) {
+		testGraph(G);
+		testGraph(G1);
+	}
+}
+
+TEST_F(DistanceGTest, testBidirectionalDijkstra) {
+	Aux::Random::setSeed(42, false);
+	count n = 300;
+	Graph G(n, true, false);
+	Graph G1(n, true, true);
+	Graph gen = ErdosRenyiGenerator(n, 0.05, false).generate();
+	Graph gen1 = ErdosRenyiGenerator(n, 0.05, true).generate();
+	gen.forEdges([&](node u, node v) {
+		G.setWeight(u, v, Aux::Random::probability());
+	});
+	gen1.forEdges([&](node u, node v) {
+		G1.setWeight(u, v, Aux::Random::probability());
+	});
+
+	auto testGraph = [&](const Graph &G) {
+		node source = G.randomNode();
+		node target = G.randomNode();
+		while (source == target)
+			target = G.randomNode();
+		BidirectionalDijkstra bdij(G, source, target, true);
+		bdij.run();
+		Dijkstra dij(G, source, true, true, target);
+		dij.run();
+
+		EXPECT_NEAR(bdij.getDistance(), dij.distance(target), 1e-6);
+		auto path = bdij.getPath();
+
+		if (path.size()) {
+			EXPECT_TRUE(G.hasEdge(source, path.front()));
+			for (int i = 0; i < path.size() - 1; ++i)
+				EXPECT_TRUE(G.hasEdge(path[i], path[i + 1]));
+				EXPECT_TRUE(G.hasEdge(path.back(), target));
+		} else
+			EXPECT_TRUE(G.hasEdge(source, target));
+	};
+
+	for (int i = 0; i < 10; ++i) {
+		testGraph(G);
+		testGraph(G1);
+	}
 }
 
 TEST_F(DistanceGTest, testExactDiameter) {

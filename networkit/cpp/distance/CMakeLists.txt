@@ -5,6 +5,8 @@ networkit_add_module(distance
     AlgebraicDistance.cpp
     AllSimplePaths.cpp
     BFS.cpp
+    BidirectionalBFS.cpp
+    BidirectionalDijkstra.cpp
     CommuteTimeDistance.cpp
     Diameter.cpp
     Dijkstra.cpp

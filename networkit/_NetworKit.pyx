@@ -1333,6 +1333,112 @@ cdef class Graph:
 			nnodes.insert(node)
 		return Graph().setThis(self._this.subgraphFromNodes(nnodes))
 
+
+cdef extern from "<networkit/distance/STSP.hpp>":
+	cdef cppclass _STSP "NetworKit::STSP"(_Algorithm):
+		_STSP(_Graph G, node source, node target, bool_t storePred) except +
+		vector[node] getPath() except +
+		vector[node] getPredecessors() except +
+		edgeweight getDistance() except +
+
+cdef class STSP(Algorithm):
+	""" Abstract base class for source-target shortest path algorithms. """
+
+	cdef Graph _G
+
+	def __init__(self, *args, **namedargs):
+		"""
+		Creates the STSP class for a graph G, a source node, and a target node.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The graph.
+		source : node
+			The source node.
+		target : node
+			The target node.
+		storePred : bool
+			If true, the algorithm will also store the predecessors
+			and reconstruct a shortest path from @a source and @a target.
+	"""
+		if type(self) == STSP:
+			raise RuntimeError("Error, you may not use STSP directly, use a sub-class instead")
+
+	def getPath(self):
+		"""
+		Returns a shortest path from the source node to the target node (without
+		including them). Note: the shortest path can be constructed only if the
+		algorithm is executed with @a storePred set to true.
+
+		Returns
+		-------
+		vector
+			A shortest path from the source node to the target node.
+		"""
+		return (<_STSP*>(self._this)).getPath()
+
+	def getPredecessors(self):
+		"""
+		Returns the predecessor nodes from the target node to the source node,
+		Note: predecessors are stored only if the algorithm is executed with
+		storePred set to true.
+
+		Returns
+		-------
+		vector
+			The list of predecessors from @a target to @a source.
+		"""
+		return (<_STSP*>(self._this)).getPredecessors()
+
+	def getDistance(self):
+		"""
+		Returns the distance from the source node to the target node
+
+		Returns
+		-------
+		edgeweight
+			The distance from source to the target node.
+		"""
+		return (<_STSP*>(self._this)).getDistance()
+
+cdef extern from "<networkit/distance/BidirectionalBFS.hpp>":
+	cdef cppclass _BidirectionalBFS "NetworKit::BidirectionalBFS"(_STSP):
+		count getHops() except +
+
+cdef class BidirectionalBFS(STSP):
+	"""
+		Implements a bidirectional breadth-first search on a graph from
+		two given source and target nodes.
+		Explores the graph from both the source and target nodes until
+		the two explorations meet.
+	"""
+
+	def getHops(self):
+		"""
+		Returns the distance (i.e., number of hops) from the source to the
+		target node.
+
+		Returns
+		-------
+		count
+			Number of hops from the source to the target node.
+		"""
+		return (<_BidirectionalBFS*>(self._this)).getDistance()
+
+cdef extern from "<networkit/distance/BidirectionalDijkstra.hpp>":
+	cdef cppclass _BidirectionalDijkstra "NetworKit::BidirectionalDijkstra"(_STSP):
+		pass
+
+cdef class BidirectionalDijkstra(STSP):
+	"""
+		Bidirectional implementation of the Dijkstra algorithm from
+		two given source and target nodes.
+		Explores the graph from both the source and target nodes until
+		the two explorations meet.
+	"""
+	pass
+
 # TODO: expose all methods
 
 cdef extern from "<networkit/distance/SSSP.hpp>":
