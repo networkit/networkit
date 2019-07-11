@@ -1,5 +1,5 @@
 /*
- * Betweenness.h
+ * Betweenness.hpp
  *
  *  Created on: 19.02.2014
  *      Author: cls, ebergamini
@@ -15,7 +15,7 @@ namespace NetworKit {
 /**
  * @ingroup centrality
  */
-class Betweenness: public Centrality {
+class Betweenness final: public Centrality {
 public:
 	/**
 	 * Constructs the Betweenness class for the given Graph @a G. If the betweenness scores should be normalized,
