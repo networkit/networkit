@@ -9,7 +9,7 @@
 
 namespace Aux { namespace Log {
 
-void setLogLevel(std::string logLevel) {
+void setLogLevel(const std::string &logLevel) {
 	if (logLevel == "TRACE") {
 		Settings::setLogLevel(LogLevel::trace);
 	} else if (logLevel == "DEBUG") {
@@ -22,6 +22,8 @@ void setLogLevel(std::string logLevel) {
 		Settings::setLogLevel(LogLevel::error);		
 	} else if (logLevel == "FATAL") {
 		Settings::setLogLevel(LogLevel::fatal);
+	} else if (logLevel == "QUIET") {
+		Settings::setLogLevel(LogLevel::quiet);
 	} else {
 		throw std::runtime_error("unknown loglevel");
 	}
@@ -29,22 +31,23 @@ void setLogLevel(std::string logLevel) {
 
 std::string getLogLevel() {
 	LogLevel current = Settings::getLogLevel();
-	if (current == LogLevel::trace) {
+	switch (current) {
+	case LogLevel::trace:
 		return "TRACE";
-	} else if (current == LogLevel::debug) {
+	case LogLevel::debug:
 		return "DEBUG";
-	} else if (current == LogLevel::info) {
+	case LogLevel::info:
 		return "INFO";
-	} else if (current == LogLevel::warn) {
+	case LogLevel::warn:
 		return "WARN";
-	} else if (current == LogLevel::error) {
+	case LogLevel::error:
 		return "ERROR";
-	} else if (current == LogLevel::fatal) {
+	case LogLevel::fatal:
 		return "FATAL";
-	} else {
-		// this only exists to silence a warning:
-		// TODO: consider replacing it with __builtin_unreachable();
-		throw std::logic_error{"invalid loglevel. This should NEVER happen"};
+	case LogLevel::quiet:
+		return "QUIET";
+	default:
+		throw std::logic_error{"invalid loglevel in getLogLevel()"};
 	}
 }
 
@@ -53,7 +56,13 @@ namespace Settings {
 namespace {
 bool printTime = false;
 bool printLocation = false;
+
+#ifdef NETWORKIT_QUIET_LOGGING
+LogLevel loglevel = LogLevel::quiet;
+#else
 LogLevel loglevel = LogLevel::info;
+#endif
+
 std::ofstream logfile;
 
 std::atomic_bool logfileIsOpen{false};
@@ -69,7 +78,7 @@ bool getPrintTime() {return printTime;}
 void setPrintLocation(bool b) {printLocation = b;}
 bool getPrintLocation() {return printLocation;}
 
-void setLogfile(const std::string& filename) {
+void setLogfile(const std::string &filename) {
 	std::lock_guard<std::mutex> guard{logfileMutex};
 	if(logfile.is_open()) {
 		logfile.close();
@@ -83,7 +92,7 @@ void setLogfile(const std::string& filename) {
 }
 } // namespace Settings
 
-void printLogLevel(std::ostream& stream, LogLevel p) {
+void printLogLevel(std::ostream &stream, LogLevel p) {
 	switch(p) {
 		case LogLevel::fatal:
 			stream << "[FATAL]"; break;
@@ -100,12 +109,12 @@ void printLogLevel(std::ostream& stream, LogLevel p) {
 	}
 }
 
-void printTime(std::ostream& stream,
-		const std::chrono::time_point<std::chrono::system_clock>& timePoint) {
+void printTime(std::ostream &stream,
+		const std::chrono::time_point<std::chrono::system_clock> &timePoint) {
 	stream << "[" << timePoint.time_since_epoch().count() << "]";
 }
 
-void printLocation(std::ostream& stream, const Location& loc) {
+void printLocation(std::ostream &stream, const Location &loc) {
 	stream << "[" << loc.file << ", " << loc.line << ": " << loc.function << "]";
 }
 
@@ -128,9 +137,9 @@ std::tuple<std::string, std::string> getTerminalFormat(LogLevel p) {
 	}
 }
 
-static void logToTerminal(const Location& loc, LogLevel p,
-		const std::chrono::time_point<std::chrono::system_clock>& timePoint,
-		const std::string msg) {
+static void logToTerminal(const Location &loc, LogLevel p,
+		const std::chrono::time_point<std::chrono::system_clock> &timePoint,
+		const std::string &msg) {
 	std::stringstream stream;
 	
 	if(Settings::getPrintTime()) {
@@ -171,9 +180,9 @@ static void logToTerminal(const Location& loc, LogLevel p,
 	}
 }
 
-static void logToFile(const Location& loc, LogLevel p,
-		const std::chrono::time_point<std::chrono::system_clock>& timePoint,
-		const std::string& msg) {
+static void logToFile(const Location &loc, LogLevel p,
+		const std::chrono::time_point<std::chrono::system_clock> &timePoint,
+		const std::string &msg) {
 	if(!Settings::logfileIsOpen) {
 		return;
 	}
@@ -199,7 +208,7 @@ static void logToFile(const Location& loc, LogLevel p,
 
 namespace Impl {
 
-void log(const Location& loc, LogLevel p, const std::string msg) {
+void log(const Location &loc, LogLevel p, const std::string &msg) {
 	auto time =std::chrono::system_clock::now();
 	
 	logToTerminal(loc, p, time, msg);

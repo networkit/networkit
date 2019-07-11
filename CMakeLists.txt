@@ -8,7 +8,7 @@ endif("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
 # BUILD OPTIONS
 option(NETWORKIT_BUILD_CORE "Build NetworKit core library" ON)
 option(NETWORKIT_BUILD_TESTS "Build NetworKit C++ tests" OFF)
-option(NETWORKIT_LOGGING "Build with logging support" ON)
+option(NETWORKIT_QUIET_LOGGING "Set log level to QUIET by default (can still be changed at run time)" OFF)
 option(NETWORKIT_STATIC "Build static libraries" OFF)
 option(NETWORKIT_MONOLITH "Build single library (and tests is requested; required for shared lib)" ON)
 option(NETWORKIT_NATIVE "Optimize for native architecture (often better performance)" OFF)
@@ -18,6 +18,7 @@ option(NETWORKIT_COVERAGE "Build with support for coverage" OFF)
 set(NETWORKIT_PYTHON "" CACHE STRING "Directory containing Python.h. Implies MONOLITH=TRUE")
 set(NETWORKIT_PYTHON_SOABI "" CACHE STRING "Platform specific file extension. Implies MONOLITH=TRUE")
 set(NETWORKIT_WITH_SANITIZERS "" CACHE STRING "Uses sanitizers during the compilation")
+set(NETWORKIT_RELEASE_LOGGING "AUTO" CACHE STRING "Do not compile log messages at levels TRACE or DEBUG (AUTO|ON|OFF)")
 
 set (NETWORKIT_CXX_STANDARD "11" CACHE STRING "CXX Version to compile with. Currently fixed to 11")
 
@@ -51,8 +52,22 @@ endif()
 set(NETWORKIT_CXX_FLAGS "")
 set(NETWORKIT_LINK_FLAGS "")
 
-if (NOT NETWORKIT_LOGGING)
-	set(NETWORKIT_CXX_FLAGS "-DNOLOGGING")
+if (NETWORKIT_QUIET_LOGGING)
+	set(NETWORKIT_CXX_FLAGS "-DNETWORKIT_QUIET_LOGGING")
+endif()
+
+if (NETWORKIT_RELEASE_LOGGING STREQUAL "AUTO")
+	if (CMAKE_BUILD_TYPE STREQUAL "Release")
+		set(NETWORKIT_RELEASE_LOGGING "ON")
+	else()
+		set(NETWORKIT_RELEASE_LOGGING "OFF")
+	endif()
+endif()
+
+if (NETWORKIT_RELEASE_LOGGING STREQUAL "ON")
+	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} -DNETWORKIT_RELEASE_LOGGING")
+elseif(NOT NETWORKIT_RELEASE_LOGGING STREQUAL "OFF")
+	message(FATAL_ERROR "Unsupported setting ${NETWORKIT_RELEASE_LOGGING} for NETWORKIT_RELEASE_LOGGING")
 endif()
 
 if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR
