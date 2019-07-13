@@ -5,7 +5,6 @@
  *      Author: nemes
  */
 
-#include <memory>
 #include <omp.h>
 #include <queue>
 #include <stack>
@@ -40,6 +39,10 @@ void TopCloseness::init() {
   DEBUG("k = ", k);
   farness.clear();
   farness.resize(n, 0);
+  if (sec_heu) {
+      nodesPerLevs.resize(omp_get_max_threads(), std::vector<count>(n));
+      sumLevels.resize(omp_get_max_threads(), std::vector<count>(n));
+  }
   computeReachable();
   DEBUG("Done INIT");
 }
@@ -259,14 +262,16 @@ void TopCloseness::computelBound1(std::vector<double> &S) {
   DEBUG("Visited edges (first lbound): ", n_op);
 }
 
-void TopCloseness::BFSbound(node x, std::vector<double> &S2, count *visEdges,
+void TopCloseness::BFSbound(node x, std::vector<double> &S2, count &visEdges,
                             const std::vector<bool> &toAnalyze) {
   count r = 0;
   std::vector<std::vector<node>> levels(n);
   // nodesPerLev[i] contains the number of nodes in level i
-  std::vector<count> nodesPerLev(n, 0);
+  std::vector<count> &nodesPerLev = nodesPerLevs[omp_get_thread_num()];
+  std::fill(nodesPerLev.begin(), nodesPerLev.end(), 0);
   // sumLevs[i] contains the sum of the nodes in levels j <= i
-  std::vector<count> sumLevs(n, 0);
+  std::vector<count> &sumLevs = sumLevels[omp_get_thread_num()];
+  std::fill(sumLevs.begin(), sumLevs.end(), 0);
   count nLevs = 0;
   double sum_dist = 0;
   Traversal::BFSfrom(G, x, [&](node u, count dist) {
@@ -283,9 +288,9 @@ void TopCloseness::BFSbound(node x, std::vector<double> &S2, count *visEdges,
   });
   sumLevs[nLevs] += nodesPerLev[nLevs];
   if (G.isDirected()) {
-    (*visEdges) += G.numberOfEdges();
+    visEdges += G.numberOfEdges();
   } else {
-    (*visEdges) += 2 * G.numberOfEdges();
+    visEdges += 2 * G.numberOfEdges();
   }
   S2[x] = sum_dist * (n - 1.0) / (r - 1.0) / (r - 1.0);
   // we compute the bound for the first level
@@ -331,8 +336,8 @@ void TopCloseness::BFSbound(node x, std::vector<double> &S2, count *visEdges,
   }
 }
 
-double TopCloseness::BFScut(node v, double x, bool *visited, count *distances,
-                            node *pred, count *visEdges) {
+double TopCloseness::BFScut(node v, double x, std::vector<bool> &visited, std::vector<count> &distances,
+                            std::vector<node> &pred, count &visEdges) {
   count d = 0, f = 0, nd = 1;
   double rL = reachL[v], rU = reachU[v];
   std::queue<node> Q1;
@@ -368,7 +373,7 @@ double TopCloseness::BFScut(node v, double x, bool *visited, count *distances,
     bool cont = true;
     G.forNeighborsOf(u, [&](node w) {
       if (cont) {
-        (*visEdges)++;
+        ++visEdges;
         if (!visited[w]) {
           distances[w] = distances[u] + 1;
           Q1.push(w);
@@ -440,6 +445,16 @@ void TopCloseness::run() {
   Q.build_heap(std::move(nodes));
   DEBUG("Done filling the queue");
 
+  std::vector<std::vector<bool>> visitedVec;
+  std::vector<std::vector<count>> distVec;
+  std::vector<std::vector<node>> predVec;
+
+  if (!sec_heu) {
+      visitedVec.resize(omp_get_max_threads(), std::vector<bool>(n));
+      distVec.resize(omp_get_max_threads(), std::vector<count>(n));
+      predVec.resize(omp_get_max_threads(), std::vector<node>(n));
+  }
+
   double kth = std::numeric_limits<double>::max(); // like in Crescenzi
 #pragma omp parallel                               // Shared variables:
   // cc: synchronized write, read leads to a positive race condition;
@@ -448,9 +463,6 @@ void TopCloseness::run() {
   // toAnalyze: fully synchronized;
   // visEdges: one variable for each thread, summed at the end;
   {
-    bool *visited = NULL;
-    count *distances = NULL;
-    node *pred = NULL;
     count visEdges = 0;
 #ifndef NETWORKIT_RELEASE_LOGGING
     count iters = 0;
@@ -461,16 +473,10 @@ void TopCloseness::run() {
       DEBUG("Number of threads: ", omp_get_num_threads());
     }
 
-    if (!sec_heu) {
-      visited = (bool *)calloc(n, sizeof(bool));
-      distances = (count *)malloc(n * sizeof(count));
-      pred = (node *)malloc(n * sizeof(node));
-    }
-
-    while (Q.size() != 0) {
+    while (!Q.empty()) {
       DEBUG("To be analyzed: ", Q.size());
       omp_set_lock(&lock);
-      if (Q.size() == 0) { // The size of Q might have changed.
+      if (Q.empty()) { // The size of Q might have changed.
         omp_unset_lock(&lock);
         break;
       }
@@ -495,7 +501,7 @@ void TopCloseness::run() {
       } else if (sec_heu) {
         // MICHELE: we use BFSbound to bound the centrality of all nodes.
         DEBUG("    Running BFSbound.");
-        BFSbound(s, S, &visEdges, toAnalyze);
+        BFSbound(s, S, visEdges, toAnalyze);
         omp_set_lock(&lock);
         farness[s] = S[s];
         omp_unset_lock(&lock);
@@ -519,7 +525,11 @@ void TopCloseness::run() {
         // MICHELE: we use BFScut to bound the centrality of s.
         DEBUG("    Running BFScut with x=", kth, " (degree:", G.degreeOut(s),
               ").");
-        farnessS = BFScut(s, kth, visited, distances, pred, &visEdges);
+        auto &visited = visitedVec[omp_get_thread_num()];
+        std::fill(visited.begin(), visited.end(), false);
+        auto &distances = distVec[omp_get_thread_num()];
+        auto &pred = predVec[omp_get_thread_num()];
+        farnessS = BFScut(s, kth, visited, distances, pred, visEdges);
         DEBUG("    Visited edges: ", visEdges, ".");
         omp_set_lock(&lock);
         farness[s] = farnessS;
@@ -592,11 +602,6 @@ void TopCloseness::run() {
     }
     DEBUG("Number of iterations of thread ", omp_get_thread_num(), ": ", iters,
           " out of ", n);
-    if (!sec_heu) {
-      free(visited);
-      free(distances);
-      free(pred);
-    }
     omp_set_lock(&lock);
     this->visEdges += visEdges;
     omp_unset_lock(&lock);
