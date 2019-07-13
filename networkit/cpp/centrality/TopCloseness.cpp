@@ -545,36 +545,27 @@ void TopCloseness::run() {
           ++trail;
           if (farness[s] < kth) {
             if (nMaxFarness == trail) {
-              // Purging trial
-              while (top.size() > k) {
+              // Purging trail
+              do {
                 top.extract_top();
-              }
+              } while (top.size() > k);
+
               trail = 0;
               nMaxFarness = 1;
               if (k > 1) {
-                  std::stack<node> tmp;
                 node last = top.extract_top();
-                node next = top.extract_top();
                 maxFarness = farness[last];
+                std::stack<node> tmp;
+                tmp.push(last);
 
-                if (farness[last] == farness[next]) {
-                  tmp.push(last);
-                  while (farness[last] == farness[next] && !top.empty()) {
-                    tmp.push(next);
+                while (!top.empty() && farness[last] == farness[top.top()]) {
+                    tmp.push(top.extract_top());
                     ++nMaxFarness;
-                    next = top.extract_top();
-                  }
-                  if (farness[next] != farness[last]) {
-                    top.push(next);
-                  }
+                }
 
-                  while (!tmp.empty()) {
+                while (!tmp.empty()) {
                     top.push(tmp.top());
                     tmp.pop();
-                  }
-                } else {
-                  top.push(next);
-                  top.push(last);
                 }
               }
             }
