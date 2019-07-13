@@ -11,11 +11,13 @@
 #include <stack>
 
 #include <networkit/auxiliary/Log.hpp>
-#include <networkit/auxiliary/PrioQueue.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/components/StronglyConnectedComponents.hpp>
 #include <networkit/centrality/TopCloseness.hpp>
 #include <networkit/graph/BFS.hpp>
+
+#include <tlx/container/d_ary_heap.hpp>
+#include <tlx/container/d_ary_addressable_int_heap.hpp>
 
 namespace NetworKit {
 
@@ -410,7 +412,8 @@ double TopCloseness::BFScut(node v, double x, bool *visited, count *distances,
 
 void TopCloseness::run() {
   init();
-  Aux::PrioQueue<double, node> top(n); // like in Crescenzi
+  tlx::d_ary_heap<node, 2, LargerFarness> top{farness};
+  top.reserve(k);
   std::vector<bool> toAnalyze(n, true);
   omp_lock_t lock;
   omp_init_lock(&lock);
@@ -432,7 +435,9 @@ void TopCloseness::run() {
       farness[u] = -(static_cast<double>(G.degreeOut(u)));
     }
   });
-  Aux::PrioQueue<double, node> Q(farness);
+  tlx::d_ary_addressable_int_heap<node, 2, SmallerFarness> Q{farness};
+  auto nodes = G.nodes();
+  Q.build_heap(std::move(nodes));
   DEBUG("Done filling the queue");
 
   double kth = std::numeric_limits<double>::max(); // like in Crescenzi
@@ -469,9 +474,8 @@ void TopCloseness::run() {
         omp_unset_lock(&lock);
         break;
       }
-      std::pair<double, node> p =
-          Q.extractMin(); // Access to Q must be synchronized
-      node s = p.second;  // TODO change!
+      // Access to Q must be synchronized
+      node s = Q.extract_top();
       toAnalyze[s] = false;
       omp_unset_lock(&lock);
 
@@ -480,7 +484,7 @@ void TopCloseness::run() {
       }
       DEBUG("Iteration ", ++iters, " of thread ", omp_get_thread_num());
 
-      DEBUG("    Extracted node ", s, " with priority ", p.first, ".");
+      DEBUG("    Extracted node ", s, " with priority ", farness[s], ".");
       if (G.degreeOut(s) == 0) {
 
         omp_set_lock(&lock);
@@ -505,8 +509,7 @@ void TopCloseness::run() {
                                 // might have changed
               imp++;
               farness[v] = S[v];
-              Q.remove(v);
-              Q.insert(farness[v], v);
+              Q.update(v);
             }
             omp_unset_lock(&lock);
           }
@@ -527,44 +530,41 @@ void TopCloseness::run() {
       omp_set_lock(&lock);
       if (farness[s] <= kth) {
         DEBUG("    The closeness of s is ", 1.0 / farness[s], ".");
-        top.insert(-farness[s], s);
+        top.push(s);
         if (top.size() > k) {
           ++trail;
           if (farness[s] < kth) {
             if (nMaxFarness == trail) {
               // Purging trial
               while (top.size() > k) {
-                top.extractMin();
+                top.extract_top();
               }
               trail = 0;
               nMaxFarness = 1;
               if (k > 1) {
-                Aux::PrioQueue<double, node> tmp(n);
-                auto last = top.extractMin();
-                auto next = top.extractMin();
-                maxFarness = last.first;
+                  std::stack<node> tmp;
+                node last = top.extract_top();
+                node next = top.extract_top();
+                maxFarness = farness[last];
 
-                if (last.first == next.first) {
-                  tmp.insert(last.first, last.second);
-                  while (next.first == last.first) {
-                    tmp.insert(next.first, next.second);
+                if (farness[last] == farness[next]) {
+                  tmp.push(last);
+                  while (farness[last] == farness[next] && !top.empty()) {
+                    tmp.push(next);
                     ++nMaxFarness;
-                    if (top.size() == 0) {
-                      break;
-                    }
-                    next = top.extractMin();
+                    next = top.extract_top();
                   }
-                  if (next.first != last.first) {
-                    top.insert(next.first, next.second);
+                  if (farness[next] != farness[last]) {
+                    top.push(next);
                   }
 
-                  while (tmp.size() > 0) {
-                    auto elem = tmp.extractMin();
-                    top.insert(elem.first, elem.second);
+                  while (!tmp.empty()) {
+                    top.push(tmp.top());
+                    tmp.pop();
                   }
                 } else {
-                  top.insert(next.first, next.second);
-                  top.insert(last.first, last.second);
+                  top.push(next);
+                  top.push(last);
                 }
               }
             }
@@ -583,9 +583,7 @@ void TopCloseness::run() {
 
       // We load the new value of kth.
       if (top.size() >= k) {
-        std::pair<double, node> elem = top.extractMin();
-        kth = -elem.first;
-        top.insert(elem.first, elem.second);
+        kth = farness[top.top()];
         if (nMaxFarness == 1) {
           maxFarness = kth;
         }
@@ -609,10 +607,10 @@ void TopCloseness::run() {
     topkScores.resize(k + trail);
   }
 
-  for (int i = top.size() - 1; i >= 0; i--) {
-    std::pair<double, node> elem = top.extractMin();
-    topk[i] = elem.second;
-    topkScores[i] = 1.0 / -elem.first;
+  for (count i = top.size(); i; --i) {
+    node elem = top.extract_top();
+    topk[i - 1] = elem;
+    topkScores[i - 1] = 1.0 / farness[elem];
   }
   for (count j = 0; j < k + trail; j++) {
     DEBUG(j + 1, "-th node with max closeness: ", topk[j],

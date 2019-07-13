@@ -7,7 +7,7 @@
 
 #ifndef NETWORKIT_CENTRALITY_TOP_CLOSENESS_HPP_
 #define NETWORKIT_CENTRALITY_TOP_CLOSENESS_HPP_
-#include <networkit/auxiliary/PrioQueue.hpp>
+
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 
@@ -97,6 +97,25 @@ private:
   void computeReachable();
   void computeReachableNodesUndir();
   void computeReachableNodesDir();
+
+  // Returns the node with highest farness
+  struct LargerFarness {
+  public:
+    LargerFarness(const std::vector<double> &v_) : v(v_) {}
+    bool operator()(node x, node y) const { return v[x] > v[y]; }
+
+  private:
+    const std::vector<double> &v;
+  };
+
+  struct SmallerFarness {
+  public:
+      SmallerFarness(const std::vector<double> &v_) : v(v_) {}
+      bool operator()(node x, node y) const { return v[x] < v[y]; }
+
+  private:
+      const std::vector<double> &v;
+  };
 };
 
 inline std::vector<node> TopCloseness::topkNodesList(bool includeTrail) {
