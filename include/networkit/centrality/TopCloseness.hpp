@@ -16,7 +16,7 @@ namespace NetworKit {
 /**
  * @ingroup centrality
  */
-class TopCloseness : public Algorithm {
+class TopCloseness final : public Algorithm {
 public:
   /**
    * Finds the top k nodes with highest closeness centrality faster than
@@ -46,7 +46,7 @@ public:
   /**
    * Computes top-k closeness on the graph passed in the constructor.
    */
-  void run();
+  void run() override;
 
   /**
    * Returns a list with the k nodes with highest closeness.
@@ -70,28 +70,23 @@ public:
    */
   std::vector<edgeweight> topkScoresList(bool includeTrail = false);
 
-protected:
-  Graph G;
+private:
+  const Graph &G;
   count n;
   count k;
   bool first_heu, sec_heu;
   std::vector<node> topk;
-  count visEdges = 0;
-  count n_op = 0;
-  count trail = 0;
-  double maxFarness = -1.f;
-  count nMaxFarness = 0;
-  std::vector<std::vector<node>> levels;
-  std::vector<count> nodesPerLev;
-  count nLevs = 0;
+  count visEdges;
+  count n_op;
+  count trail;
+  double maxFarness = -1.0;
+  count nMaxFarness;
+  std::vector<std::vector<count>> nodesPerLevs, sumLevels;
   std::vector<edgeweight> topkScores;
-  std::vector<count> maxlevel;
-  std::vector<count> maxlevelSize;
-  std::vector<std::vector<count>> subtree;
   std::vector<double> farness;
   std::vector<count> reachL;
   std::vector<count> reachU;
-  std::vector<count> component;
+  std::vector<index> component;
 
   void init();
   double BFScut(node v, double x, bool *visited, count *distances, node *pred,
@@ -122,6 +117,7 @@ inline std::vector<edgeweight> TopCloseness::topkScoresList(bool includeTrail) {
     std::vector<double> topkScoresNoTrail(begin, begin + k);
     return topkScoresNoTrail;
   }
+
   return topkScores;
 }
 

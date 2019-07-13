@@ -1,11 +1,10 @@
 /*
  * TopCloseness.cpp
  *
- *  Created on: 03.42658.2014
+ *  Created on: 12.13.2016
  *      Author: nemes
  */
 
-#include <cstdlib>
 #include <memory>
 #include <omp.h>
 #include <queue>
@@ -15,9 +14,6 @@
 #include <networkit/auxiliary/PrioQueue.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/components/StronglyConnectedComponents.hpp>
-#include <networkit/distance/BFS.hpp>
-#include <networkit/distance/Dijkstra.hpp>
-#include <networkit/distance/SSSP.hpp>
 #include <networkit/centrality/TopCloseness.hpp>
 #include <networkit/graph/BFS.hpp>
 
@@ -30,7 +26,9 @@ TopCloseness::TopCloseness(const Graph &G, count k, bool first_heu,
 void TopCloseness::init() {
   n = G.upperNodeIdBound();
   trail = 0;
-  maxFarness = 0.f;
+  visEdges = 0;
+  n_op = 0;
+  maxFarness = 0.0;
   nMaxFarness = 0;
   topk.clear();
   topk.resize(k);
@@ -95,14 +93,7 @@ void TopCloseness::computeReachableNodesDir() {
     if (sccGraph.degreeOut(V) > sccGraph.degreeOut(maxSizeCC)) {
       maxSizeCC = V;
     }
-    // ELISABETTA: maybe the code can be made simpler by running G.forEdges to
-    // scan all the edges. Would it be better to have a Graph object to store
-    // the SCC graph?
-  } // MICHELE: I have used a graph instead of scc_adjlist. About G.forEdges, I
-    // think it is
-  // a bit more complicated: I have to scan nodes, otherwise I do not know how
-  // to avoid multiple edges. This scan is made using variable "found". Do you
-  // have better ideas? Note that this is linear in the graph size.
+  }
 
   // BFS from the biggest SCC.
   std::queue<count> Q;
@@ -275,7 +266,6 @@ void TopCloseness::BFSbound(node x, std::vector<double> &S2, count *visEdges,
   // sumLevs[i] contains the sum of the nodes in levels j <= i
   std::vector<count> sumLevs(n, 0);
   count nLevs = 0;
-  levels[nLevs].clear();
   double sum_dist = 0;
   Traversal::BFSfrom(G, x, [&](node u, count dist) {
     sum_dist += dist;
@@ -299,14 +289,14 @@ void TopCloseness::BFSbound(node x, std::vector<double> &S2, count *visEdges,
   // we compute the bound for the first level
   count closeNodes = 0, farNodes = 0;
   for (count j = 0; j <= nLevs; j++) {
-    if (std::abs((long long)j - 1LL) <= 1) {
+    if (std::abs(static_cast<long long>(j) - 1LL) <= 1) {
       closeNodes += nodesPerLev[j];
     } else {
-      farNodes += nodesPerLev[j] * std::abs(1LL - (long long)j);
+      farNodes += nodesPerLev[j] * std::abs(1LL - static_cast<long long>(j));
     }
   }
 
-  edgeweight level_bound = 2.0 * (closeNodes) + (double)farNodes;
+  edgeweight level_bound = 2.0 * closeNodes + static_cast<double>(farNodes);
   for (count j = 0; j < levels[1].size(); j++) {
     node w = levels[1][j];
     // we subtract 2 not to count the node itself
@@ -439,7 +429,7 @@ void TopCloseness::run() {
     } else if (first_heu) {
       farness[u] = S[u];
     } else {
-      farness[u] = -((double)G.degreeOut(u));
+      farness[u] = -(static_cast<double>(G.degreeOut(u)));
     }
   });
   Aux::PrioQueue<double, node> Q(farness);
@@ -614,9 +604,7 @@ void TopCloseness::run() {
     omp_unset_lock(&lock);
   }
 
-  hasRun = true;
-
-  if (trail > 0) {
+  if (trail) {
     topk.resize(k + trail);
     topkScores.resize(k + trail);
   }
@@ -644,6 +632,8 @@ void TopCloseness::run() {
       i += toSort - 1;
     }
   }
+
+  hasRun = true;
 }
 
 } /* namespace NetworKit */
