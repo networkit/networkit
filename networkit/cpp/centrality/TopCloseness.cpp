@@ -11,7 +11,6 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
-#include <networkit/components/StronglyConnectedComponents.hpp>
 #include <networkit/centrality/TopCloseness.hpp>
 #include <networkit/graph/BFS.hpp>
 
@@ -49,6 +48,7 @@ void TopCloseness::init() {
 
 void TopCloseness::computeReachable() {
   if (G.isDirected()) {
+    sccsPtr = std::unique_ptr<StronglyConnectedComponents>(new StronglyConnectedComponents(G));
     computeReachableNodesDir();
   } else {
     computeReachableNodesUndir();
@@ -58,9 +58,8 @@ void TopCloseness::computeReachable() {
 void TopCloseness::computeReachableNodesDir() {
   reachL = std::vector<count>(n);
   reachU = std::vector<count>(n);
-  component = std::vector<count>(n);
   DEBUG("Before running SCCs");
-  StronglyConnectedComponents sccs(G);
+  auto &sccs = *(sccsPtr.get());
   sccs.run();
 
   count N = sccs.numberOfComponents();
@@ -78,7 +77,6 @@ void TopCloseness::computeReachableNodesDir() {
   // We compute the vector sccs_vec, where each component contains the list of
   // its nodes
   for (count v = 0; v < n; v++) {
-    component[v] = sccs.componentOfNode(v);
     sccs_vec[sccs.componentOfNode(v) - 1].push_back(v);
   }
 
@@ -264,6 +262,7 @@ void TopCloseness::computelBound1(std::vector<double> &S) {
 
 void TopCloseness::BFSbound(node x, std::vector<double> &S2, count &visEdges,
                             const std::vector<bool> &toAnalyze) {
+  auto &sccs = *(sccsPtr.get());
   count r = 0;
   std::vector<std::vector<node>> levels(n);
   // nodesPerLev[i] contains the number of nodes in level i
@@ -310,7 +309,7 @@ void TopCloseness::BFSbound(node x, std::vector<double> &S2, count &visEdges,
     double bound = (level_bound - 2 - G.degree(w)) * (n - 1.0) /
                    (reachU[w] - 1.0) / (reachU[w] - 1.0);
     if (toAnalyze[w] && bound > S2[w] &&
-        (!G.isDirected() || component[w] == component[x])) {
+        (!G.isDirected() || sccs.componentOfNode(w) == sccs.componentOfNode(x))) {
       S2[w] = bound;
     }
   }
@@ -328,7 +327,7 @@ void TopCloseness::BFSbound(node x, std::vector<double> &S2, count &visEdges,
       double bound = (level_bound - 2 - G.degree(w)) * (n - 1.0) /
                      (reachU[w] - 1.0) / (reachU[w] - 1.0);
       if (toAnalyze[w] && bound > S2[w] &&
-          (!G.isDirected() || component[w] == component[x])) {
+          (!G.isDirected() || sccs.componentOfNode(w) == sccs.componentOfNode(x))) {
         // TODO MICHELE: as before.
         S2[w] = bound;
       }

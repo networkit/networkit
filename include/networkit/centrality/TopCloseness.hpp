@@ -8,7 +8,10 @@
 #ifndef NETWORKIT_CENTRALITY_TOP_CLOSENESS_HPP_
 #define NETWORKIT_CENTRALITY_TOP_CLOSENESS_HPP_
 
+#include <memory>
+
 #include <networkit/base/Algorithm.hpp>
+#include <networkit/components/StronglyConnectedComponents.hpp>
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
@@ -86,7 +89,8 @@ private:
   std::vector<double> farness;
   std::vector<count> reachL;
   std::vector<count> reachU;
-  std::vector<index> component;
+
+  std::unique_ptr<StronglyConnectedComponents> sccsPtr;
 
   void init();
   double BFScut(node v, double x, std::vector<bool> &visited, std::vector<count> &distances,
