@@ -2271,4 +2271,115 @@ TEST_P(GraphGTest, testSortEdges) {
 	}
 }
 
+TEST_P(GraphGTest, testSubgraphFromNodesUndirected) {
+	auto G = Graph(4, true, false);
+
+	/**
+	 *      1
+	 *   /  |  \
+	 * 0    |    3
+	 *   \  |  /
+	 *      2
+	 */
+
+	G.addEdge(0, 1, 1.0);
+	G.addEdge(0, 2, 2.0);
+	G.addEdge(3, 1, 4.0);
+	G.addEdge(3, 2, 5.0);
+	G.addEdge(1, 2, 3.0);
+
+	{
+		std::unordered_set<node> nodes = {0};
+		auto res = G.subgraphFromNodes(nodes);
+		EXPECT_TRUE(res.isWeighted());
+		EXPECT_FALSE(res.isDirected());
+		EXPECT_EQ(res.numberOfNodes(), 1);
+		EXPECT_EQ(res.numberOfEdges(), 0);
+	}
+
+	{
+		std::unordered_set<node> nodes = {0};
+		auto res = G.subgraphFromNodes(nodes, true);
+
+		EXPECT_EQ(res.numberOfNodes(), 3);
+		EXPECT_EQ(res.numberOfEdges(), 2); // 0-1, 0-2, NOT 1-2
+
+		EXPECT_DOUBLE_EQ(G.weight(0, 1), 1.0);
+		EXPECT_DOUBLE_EQ(G.weight(0, 2), 2.0);
+	}
+
+	{
+		std::unordered_set<node> nodes = {0, 1};
+		auto res = G.subgraphFromNodes(nodes);
+		EXPECT_EQ(res.numberOfNodes(), 2);
+		EXPECT_EQ(res.numberOfEdges(), 1); // 0 - 1
+	}
+
+	{
+		std::unordered_set<node> nodes = {0, 1};
+		auto res = G.subgraphFromNodes(nodes, true);
+		EXPECT_EQ(res.numberOfNodes(), 4);
+		EXPECT_EQ(res.numberOfEdges(), 4); // 0-1, 0-2, 1-2, 1-3
+	}
+}
+
+TEST_P(GraphGTest, testSubgraphFromNodesDirected) {
+	auto G = Graph(4, true, true);
+
+	/**
+	 *      1
+	 *   /  |  \
+	 * 0    |    3
+	 *   \  |  /
+	 *      2
+	 */
+
+	G.addEdge(0, 1, 1.0);
+	G.addEdge(0, 2, 2.0);
+	G.addEdge(3, 1, 4.0);
+	G.addEdge(3, 2, 5.0);
+	G.addEdge(1, 2, 3.0);
+
+	{
+		std::unordered_set<node> nodes = {0};
+		auto res = G.subgraphFromNodes(nodes);
+
+		EXPECT_TRUE(res.isWeighted());
+		EXPECT_TRUE(res.isDirected());
+
+		EXPECT_EQ(res.numberOfNodes(), 1);
+		EXPECT_EQ(res.numberOfEdges(), 0);
+	}
+
+	{
+		std::unordered_set<node> nodes = {0};
+		auto res = G.subgraphFromNodes(nodes, true);
+		EXPECT_EQ(res.numberOfNodes(), 3);
+		EXPECT_EQ(res.numberOfEdges(), 2); // 0->1, 0->2, NOT 1->2
+	}
+
+	{
+		std::unordered_set<node> nodes = {0, 1};
+		auto res = G.subgraphFromNodes(nodes);
+		EXPECT_EQ(res.numberOfNodes(), 2);
+		EXPECT_EQ(res.numberOfEdges(), 1); // 0 -> 1
+	}
+
+	{
+		std::unordered_set<node> nodes = {0, 1};
+		auto res = G.subgraphFromNodes(nodes, true);
+		EXPECT_EQ(res.numberOfNodes(), 3);
+		EXPECT_EQ(res.numberOfEdges(), 3); // 0->1, 0->2, 1->2
+	}
+
+	{
+		std::unordered_set<node> nodes = {0, 1};
+		auto res = G.subgraphFromNodes(nodes, true, true);
+		EXPECT_EQ(res.numberOfNodes(), 4);
+		EXPECT_EQ(res.numberOfEdges(), 4); // 0->1, 0->2, 1->2, 3->1
+	}
+
+}
+
+
 } /* namespace NetworKit */

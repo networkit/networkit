@@ -1116,19 +1116,50 @@ void Graph::merge(const Graph &G) {
 
 // SUBGRAPHS
 
-Graph Graph::subgraphFromNodes(const std::unordered_set<node> &nodes) const {
+Graph Graph::subgraphFromNodes(const std::unordered_set<node> &nodes, bool includeOutNeighbors, bool includeInNeighbors) const {
+	const auto neighbors = [&] {
+		std::unordered_set<node> neighbors;
+
+		if (!includeOutNeighbors && !includeInNeighbors)
+			return neighbors;
+
+		for (node u : nodes) {
+			if (includeOutNeighbors)
+				for(const node v : neighborRange(u))
+					neighbors.insert(v);
+
+			if (includeInNeighbors)
+				for(const node v : inNeighborRange(u))
+					neighbors.insert(v);
+		}
+
+		return neighbors;
+	}();
+
+	/*
+	 * returns one of three different relevance scores:
+	 * 2: Is in the original nodes set
+	 * 1: Is a relevant neighbor (i.e., respective include*Neighbor was set)
+	 * 0: Neither of both
+	 */
+	auto isRelevantNode = [&] (const node u) {
+		if (nodes.find(u) != nodes.end()) return 2;
+		if (!neighbors.empty() && neighbors.find(u) != neighbors.end()) return 1;
+		return 0;
+	};
 
 	Graph S(upperNodeIdBound(), isWeighted(), isDirected());
 	// delete all nodes that are not in the node set
 	S.forNodes([&](node u) {
-		if (nodes.find(u) == nodes.end()) {
+		if (!isRelevantNode(u)) {
 			S.removeNode(u);
 		}
 	});
 
 	forEdges([&](node u, node v, edgeweight w) {
-		// if both end nodes are in the node set
-		if (nodes.find(u) != nodes.end() && nodes.find(v) != nodes.end()) {
+		// only include edges if at least one endpoint is in nodes (relevance 2),
+		// and the other is either in nodes or in neighbors (relevance >= 1)
+		if (isRelevantNode(u) + isRelevantNode(v) > 2) {
 			S.addEdge(u, v, w);
 		}
 	});
