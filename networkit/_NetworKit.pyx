@@ -317,6 +317,7 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		void removeAllEdges() except +
 		void removeEdgesFromIsolatedSet(vector[node] nodes) except +
 		void removeSelfLoops() except +
+		void removeMultiEdges() except +
 		void swapEdge(node s1, node t1, node s2, node t2) except +
 		void compactEdges() except +
 		void sortEdges() except +
@@ -817,6 +818,11 @@ cdef class Graph:
 		""" Removes all self-loops from the graph.
 		"""
 		self._this.removeSelfLoops()
+
+	def removeMultiEdges(self):
+		""" Removes all multi-edges from the graph.
+		"""
+		self._this.removeMultiEdges()
 
 	def swapEdge(self, node s1, node t1, node s2, node t2):
 		"""

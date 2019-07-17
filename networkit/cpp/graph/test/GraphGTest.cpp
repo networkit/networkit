@@ -2381,5 +2381,26 @@ TEST_P(GraphGTest, testSubgraphFromNodesDirected) {
 
 }
 
+TEST_P(GraphGTest, testRemoveMultiEdges) {
+	Aux::Random::setSeed(42, false);
+	Graph G(this->Ghouse);
+	auto edgeSet = G.edges();
+	const count nMultiEdges = 10;
+	const count m = G.numberOfEdges();
+
+	// Adding multiedges at random
+	for (count i = 0; i < nMultiEdges; ++i) {
+		auto e = G.randomEdge();
+		G.addEdge(e.first, e.second);
+	}
+
+	EXPECT_EQ(G.numberOfEdges(), m + nMultiEdges);
+	G.removeMultiEdges();
+	EXPECT_EQ(G.numberOfEdges(), m);
+	auto edgeSet_ = G.edges();
+
+	for (count i = 0; i < G.numberOfEdges(); ++i)
+		EXPECT_EQ(edgeSet[i], edgeSet_[i]);
+}
 
 } /* namespace NetworKit */
