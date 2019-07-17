@@ -12,6 +12,8 @@
 #include <cstdint>
 #include <string>
 
+#include <networkit/auxiliary/Log.hpp>
+
 namespace Aux {
 
 /**
@@ -109,27 +111,32 @@ public:
  *
  * @code
  * {
- *    Aux::ScopedTimer someName("Algorithm B");
+ *    Aux::ScopedTimer("Algorithm A"); // WRONG; will directly report without measuring the scope
+ *    Aux::ScopedTimer someName("Algorithm B"); // OK: the named instance is valid until the end of the scope
  *    // some expensive operations
  *
  *
- * } // <- Report time since creation of the timer object to std::cout
+ * } // <- Report time since creation of the timer object via Aux::Log
  * @endcode
  *
- * @warning Similarly as std::unique_lock the timer needs a name ("someName" in the example)
- * to exist until the end of the scope. If the time measured seems too short, make you created
- * a named instances.
+ * @warning
+ * As the timer exploits RAII, it requires a named instance to extend its life time until the
+ * end of the current scope. In the example above "someName" is used. If the time measured seems
+ * too short, make you created a named instances.
  */
-class ScopedTimer : public StartedTimer {
+class LoggingTimer : public Timer {
 public:
-	explicit ScopedTimer(const std::string& label = "") :
-		StartedTimer(),
-		label(label)
-	{}
-
-	~ScopedTimer();
+	/**
+	 * @param label The label printed out next to the measurement
+	 * @param level Only measure if logging at the provided LogLevel is enabled during runtime.
+	 *              If logging at the given level is disable the Timer is very cheap to construct.
+	 *              If logging is disabled during construction or destruction, no message is shown.
+	 */
+	explicit LoggingTimer(const std::string& label = "", Aux::Log::LogLevel level = Aux::Log::LogLevel::debug);
+	~LoggingTimer();
 
 private:
+	Aux::Log::LogLevel level;
 	std::string label;
 };
 

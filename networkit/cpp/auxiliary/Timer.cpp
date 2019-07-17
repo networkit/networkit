@@ -55,10 +55,23 @@ std::string Timer::elapsedTag() const {
 }
 
 Timer::my_steady_clock::time_point Timer::stopTimeOrNow() const noexcept {
-    return running ? std::chrono::steady_clock::now() : stopped;
+	return running ? std::chrono::steady_clock::now() : stopped;
 }
 
-ScopedTimer::~ScopedTimer() {
+LoggingTimer::LoggingTimer(const std::string &label, Aux::Log::LogLevel level)
+	: level(level)
+{
+	if (!Aux::Log::isLogLevelEnabled(level))
+		return;
+
+	this->label = label;
+	start();
+}
+
+LoggingTimer::~LoggingTimer() {
+	if (!running)
+		return;
+
 	std::stringstream ss;
 	ss << "Timer ";
 
@@ -67,7 +80,7 @@ ScopedTimer::~ScopedTimer() {
 
 	ss << "ran for " << (elapsedMicroseconds() * 1e-3) << " ms";
 
-	std::cout << ss.str() << std::endl; // we really want to flush here!
+	LOG_AT(level, ss.str());
 }
 
 } /* namespace Aux */

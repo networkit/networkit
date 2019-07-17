@@ -36,30 +36,32 @@ namespace NetworKit {
 class AuxGTest: public testing::Test{};
 
 TEST_F(AuxGTest, testTimer) {
-    Aux::StartedTimer timer;
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    const auto ms = timer.elapsedMilliseconds();
-    const auto us = timer.elapsedMicroseconds();
-    const auto ns = timer.elapsedNanoseconds();
+	Aux::LoggingTimer ltimer("LogginTimer", Aux::Log::LogLevel::trace); // only enabled if test is execut with raised loglevel
 
-    ASSERT_GE(ms, 5);
-    ASSERT_GE(us, 5000);
-    ASSERT_GE(ns, 5000000);
+	Aux::StartedTimer timer;
+	std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	const auto ms = timer.elapsedMilliseconds();
+	const auto us = timer.elapsedMicroseconds();
+	const auto ns = timer.elapsedNanoseconds();
 
-    timer.stop();
+	ASSERT_GE(ms, 5);
+	ASSERT_GE(us, 5000);
+	ASSERT_GE(ns, 5000000);
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+	timer.stop();
 
-    const auto ms2 = timer.elapsedMilliseconds();
-    const auto us2 = timer.elapsedMicroseconds();
-    const auto ns2 = timer.elapsedNanoseconds();
+	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
-    ASSERT_GE(ms2, 5);
-    ASSERT_GE(us2, 5000);
-    ASSERT_GE(ns2, 5000000);
+	const auto ms2 = timer.elapsedMilliseconds();
+	const auto us2 = timer.elapsedMicroseconds();
+	const auto ns2 = timer.elapsedNanoseconds();
 
-    ASSERT_LE(ms2, us2 / 1000 + 1);
-    ASSERT_LE(us2, ns2 / 1000 + 1);
+	ASSERT_GE(ms2, 5);
+	ASSERT_GE(us2, 5000);
+	ASSERT_GE(ns2, 5000000);
+
+	ASSERT_LE(ms2, us2 / 1000 + 1);
+	ASSERT_LE(us2, ns2 / 1000 + 1);
 }
 
 TEST_F(AuxGTest, produceRandomIntegers) {
