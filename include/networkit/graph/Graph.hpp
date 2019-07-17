@@ -784,7 +784,7 @@ class Graph final {
 	 * @param edges the edge count of a graph
 	 */
 	void setEdgeCount(Unsafe, count edges) { m = edges; }
-    
+
 	void setNumberOfSelfLoops(Unsafe, count loops) { storedNumberOfSelfLoops = loops; }
 	/**
      * Returns a string representation of the graph.
