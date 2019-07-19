@@ -9,7 +9,6 @@
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/io/GraphWriter.hpp>
-#include <networkit/io/NetworkitBinaryGraph.hpp>
 
 namespace NetworKit {
 
@@ -30,7 +29,6 @@ enum class NetworkitBinaryWeights {
 class NetworkitBinaryWriter : public GraphWriter {
 
 public:
-
 	NetworkitBinaryWriter(uint64_t chunks = 32, NetworkitBinaryWeights weightsType = NetworkitBinaryWeights::autoDetect);
 
 	void write(const Graph& G, const std::string& path) override;

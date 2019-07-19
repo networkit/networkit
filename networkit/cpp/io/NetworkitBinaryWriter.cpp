@@ -5,6 +5,7 @@
  */
 
 #include <networkit/io/NetworkitBinaryWriter.hpp>
+#include <networkit/io/NetworkitBinaryGraph.hpp>
 #include <networkit/auxiliary/Enforce.hpp>
 #include <tlx/math/clz.hpp>
 #include <fstream>
@@ -48,7 +49,7 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 	nkbg::WEIGHT_FORMAT weightFormat;
 
 	auto detectWeightsType = [&] () {
-		weightFormat = nkbg::WEIGHT_FORMAT::unsignedFormat;
+		weightFormat = nkbg::WEIGHT_FORMAT::VARINT;
 		bool isUnsigned = true;
 		bool fitsIntoInt64 = true;
 		bool fitsIntoFloat = true;
@@ -65,38 +66,38 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 		});
 		if(fitsIntoInt64) {
 			if(isUnsigned) {
-				weightFormat = nkbg::WEIGHT_FORMAT::unsignedFormat;
+				weightFormat = nkbg::WEIGHT_FORMAT::VARINT;
 			} else {
-				weightFormat = nkbg::WEIGHT_FORMAT::signedFormat;
+				weightFormat = nkbg::WEIGHT_FORMAT::SIGNED_VARINT;
 			}
 		} else {
 			if(fitsIntoFloat) {
-				weightFormat = nkbg::WEIGHT_FORMAT::floatFormat;
+				weightFormat = nkbg::WEIGHT_FORMAT::FLOAT;
 			} else {
-				weightFormat = nkbg::WEIGHT_FORMAT::doubleFormat;
+				weightFormat = nkbg::WEIGHT_FORMAT::DOUBLE;
 			}
 		}
 	};
 
 	switch(weightsType) {
 		case NetworkitBinaryWeights::none:
-			weightFormat = nkbg::WEIGHT_FORMAT::none;
-		break;
+			weightFormat = nkbg::WEIGHT_FORMAT::NONE;
+			break;
 		case NetworkitBinaryWeights::autoDetect:
 			detectWeightsType();
-		break;
+			break;
 		case NetworkitBinaryWeights::unsignedFormat:
-			weightFormat = nkbg::WEIGHT_FORMAT::unsignedFormat;
-		break;
+			weightFormat = nkbg::WEIGHT_FORMAT::VARINT;
+			break;
 		case NetworkitBinaryWeights::signedFormat:
-			weightFormat = nkbg::WEIGHT_FORMAT::signedFormat;
-		break;
+			weightFormat = nkbg::WEIGHT_FORMAT::SIGNED_VARINT;
+			break;
 		case NetworkitBinaryWeights::doubleFormat:
-			weightFormat = nkbg::WEIGHT_FORMAT::doubleFormat;
-		break;
+			weightFormat = nkbg::WEIGHT_FORMAT::DOUBLE;
+			break;
 		case NetworkitBinaryWeights::floatFormat:
-			weightFormat = nkbg::WEIGHT_FORMAT::floatFormat;
-		break;
+			weightFormat = nkbg::WEIGHT_FORMAT::FLOAT;
+			break;
 	}
 
 	nkbg::Header header = {};
@@ -119,6 +120,33 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 		outfile.write(reinterpret_cast<char*>(&header.offsetAdjTranspose), sizeof(uint64_t));
 		outfile.write(reinterpret_cast<char*>(&header.offsetWeightLists), sizeof(uint64_t));
 		outfile.write(reinterpret_cast<char*>(&header.offsetWeightTranspose), sizeof(uint64_t));
+	};
+
+	auto writeWeightsToFile = [&] (edgeweight w) {
+		uint8_t tmp [10];
+		uint64_t weightSize;
+		switch(weightFormat) {
+			case nkbg::WEIGHT_FORMAT::VARINT:
+				weightSize = encode(w, tmp);
+				outfile.write(reinterpret_cast<char*>(tmp), weightSize);
+				break;
+			case nkbg::WEIGHT_FORMAT::DOUBLE:
+				outfile.write(reinterpret_cast<char*>(&w), sizeof(double));
+				break;
+			case nkbg::WEIGHT_FORMAT::SIGNED_VARINT:
+			{
+				uint64_t weight = encodeZigzag(w);
+				weightSize = encode(weight,tmp);
+				outfile.write(reinterpret_cast<char*>(tmp), weightSize);
+			}
+				break;
+			case nkbg::WEIGHT_FORMAT::FLOAT:
+			{
+				float weight = w;
+				outfile.write(reinterpret_cast<char*>(&weight), sizeof(float));
+			}
+				break;
+		}
 	};
 
 	nodes = G.numberOfNodes();
@@ -149,6 +177,30 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 	std::vector<size_t> adjWghtOffsets;	//Prefix sum of size encoded adj weights
 	std::vector<size_t> transpWghtOffsets;	//Prefix sum of encoded transposed weights
 
+	auto computeWeightsOffsets = [&] (edgeweight w) {
+		uint64_t size = 0;
+		uint8_t tmp [10];
+		switch(weightFormat) {
+			case nkbg::WEIGHT_FORMAT::VARINT:
+				size = encode(w,tmp);
+				break;
+			case nkbg::WEIGHT_FORMAT::DOUBLE:
+				size = sizeof(double);
+				break;
+			case nkbg::WEIGHT_FORMAT::SIGNED_VARINT:
+			{
+				uint64_t weight = encodeZigzag(w);
+				size += encode(weight,tmp);
+			}
+				break;
+			case nkbg::WEIGHT_FORMAT::FLOAT:
+				size += sizeof(float);
+				break;
+		}
+
+		return size;
+	};
+
 	for(uint64_t c = 0; c < chunks; c++) {
 		for(uint64_t n = firstInChunk[c]; n < firstInChunk[c+1]; n++) {
 			uint64_t outNbrs = 0;
@@ -160,59 +212,23 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 					if(v <= n) {
 						outNbrs++;
 						adjSize += encode(v, tmp);
-						if(weightFormat == nkbg::WEIGHT_FORMAT::unsignedFormat) {
-							adjWeightSize += encode(w,tmp);
-						} else if (weightFormat == nkbg::WEIGHT_FORMAT::doubleFormat) {
-							adjWeightSize += sizeof(double);
-						} else if(weightFormat == nkbg::WEIGHT_FORMAT::signedFormat) {
-							uint64_t weight = encodeZigzag(w);
-							adjWeightSize += encode(weight,tmp);
-						} else if(weightFormat == nkbg::WEIGHT_FORMAT::floatFormat) {
-							adjWeightSize += sizeof(float);
-						}
+						adjWeightSize += computeWeightsOffsets(w);
 					} else if (v >= n) {
 						inNbrs++;
 						transpSize += encode(v, tmp);
-						if(weightFormat == nkbg::WEIGHT_FORMAT::unsignedFormat) {
-							transpWeightSize += encode(w,tmp);
-						} else if(weightFormat == nkbg::WEIGHT_FORMAT::doubleFormat) {
-							transpWeightSize += sizeof(double);
-						} else if(weightFormat == nkbg::WEIGHT_FORMAT::signedFormat) {
-							uint64_t weight = encodeZigzag(w);
-							transpWeightSize += encode(weight,tmp);
-						} else if(weightFormat == nkbg::WEIGHT_FORMAT::floatFormat) {
-							transpWeightSize += sizeof(float);
-						}
+						transpWeightSize += computeWeightsOffsets(w);
 					}
 				});
 			} else {
 				G.forNeighborsOf(n, [&] (node v, edgeweight w) {
 					outNbrs++;
 					adjSize += encode(v, tmp);
-					if(weightFormat == nkbg::WEIGHT_FORMAT::unsignedFormat) {
-						adjWeightSize += encode(w,tmp);
-					} else if(weightFormat == nkbg::WEIGHT_FORMAT::doubleFormat) {
-						adjWeightSize += sizeof(double);
-					} else if(weightFormat == nkbg::WEIGHT_FORMAT::signedFormat) {
-						uint64_t weight = encodeZigzag(w);
-						adjWeightSize += encode(weight,tmp);
-					} else if(weightFormat == nkbg::WEIGHT_FORMAT::floatFormat) {
-						adjWeightSize += sizeof(float);
-					}
+					adjWeightSize += computeWeightsOffsets(w);
 				});
 				G.forInNeighborsOf(n, [&] (node v, edgeweight w) {
 					inNbrs++;
 					transpSize += encode(v, tmp);
-					if(weightFormat == nkbg::WEIGHT_FORMAT::unsignedFormat) {
-						transpWeightSize += encode(w,tmp);
-					} else if(weightFormat == nkbg::WEIGHT_FORMAT::doubleFormat) {
-						transpWeightSize += sizeof(double);
-					} else if(weightFormat == nkbg::WEIGHT_FORMAT::signedFormat) {
-						uint64_t weight = encodeZigzag(w);
-						transpWeightSize += encode(weight,tmp);
-					} else if(weightFormat == nkbg::WEIGHT_FORMAT::floatFormat) {
-						transpWeightSize += sizeof(float);
-					}
+					transpWeightSize += computeWeightsOffsets(w);
 				});
 			}
 			adjListSize += outNbrs;
@@ -242,7 +258,7 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 			+ (chunks -1) * sizeof(uint64_t) // adjOffsets
 			+ sizeof(uint64_t) // adjListSize
 			+ adjOffsets.back(); // Size of data
-	if(weightFormat != nkbg::WEIGHT_FORMAT::none) {
+	if(weightFormat != nkbg::WEIGHT_FORMAT::NONE) {
 			header.offsetWeightLists = header.offsetAdjTranspose
 			+ (chunks - 1) * sizeof(uint64_t) //transpOffsets
 			+ sizeof(uint64_t) //adjTranspSize
@@ -281,7 +297,6 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 		outfile.write(reinterpret_cast<char*>(tmp), nbrsSize);
 		G.forNeighborsOf(u,[&](node v){
 			uint64_t nodeSize;
-			uint64_t weightSize;
 			if(!G.isDirected()) {
 				if(v <= u) {
 					nodeSize = encode(v, tmp);
@@ -319,6 +334,7 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 			});
 		}
 	});
+
 	// Write adj weights.
 	for (uint64_t c = 1; c < chunks; c++) {
 		outfile.write(reinterpret_cast<char*>(&adjWghtOffsets[c-1]), sizeof(uint64_t));
@@ -329,58 +345,10 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 			uint64_t weightSize;
 			if(!G.isDirected()) {
 				if(v <= u) {
-					switch(weightFormat) {
-						case nkbg::WEIGHT_FORMAT::unsignedFormat:
-							weightSize = encode(w, tmp);
-							outfile.write(reinterpret_cast<char*>(tmp), weightSize);
-						break;
-						case nkbg::WEIGHT_FORMAT::doubleFormat:
-							{
-								outfile.write(reinterpret_cast<char*>(&w), sizeof(double));
-							}
-						break;
-						case nkbg::WEIGHT_FORMAT::signedFormat:
-							{
-								uint64_t weight = encodeZigzag(w);
-								weightSize = encode(weight,tmp);
-								outfile.write(reinterpret_cast<char*>(tmp), weightSize);
-							}
-						break;
-						case nkbg::WEIGHT_FORMAT::floatFormat:
-							{
-								float weight = w;
-								outfile.write(reinterpret_cast<char*>(&weight), sizeof(float));
-							}
-						break;
-					}
+					writeWeightsToFile(w);
 				}
 			} else {
-				switch(weightFormat) {
-					case nkbg::WEIGHT_FORMAT::unsignedFormat:
-						{
-							weightSize = encode(w, tmp);
-							outfile.write(reinterpret_cast<char*>(tmp), weightSize);
-						}
-					break;
-					case nkbg::WEIGHT_FORMAT::doubleFormat:
-						{
-							outfile.write(reinterpret_cast<char*>(&w), sizeof(double));
-						}
-					break;
-					case nkbg::WEIGHT_FORMAT::signedFormat:
-						{
-							int64_t weight = encodeZigzag(w);
-							weightSize = encode(weight,tmp);
-							outfile.write(reinterpret_cast<char*>(tmp), weightSize);
-						}
-					break;
-					case nkbg::WEIGHT_FORMAT::floatFormat:
-						{
-							float weight = w;
-							outfile.write(reinterpret_cast<char*>(&weight), sizeof(float));
-						}
-					break;
-				}
+				writeWeightsToFile(w);
 			}
 		});
 	});
@@ -391,69 +359,19 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 	}
 	G.forNodes([&](node u) {
 		uint8_t tmp [10];
-		uint64_t weightSize;
 		if(!G.isDirected()) {
 			G.forNeighborsOf(u,[&](node v, edgeweight w){
 				if(v >= u) {
-					switch(weightFormat) {
-						case nkbg::WEIGHT_FORMAT::unsignedFormat:
-							{
-								weightSize = encode(w, tmp);
-								outfile.write(reinterpret_cast<char*>(tmp), weightSize);
-							}
-						break;
-						case nkbg::WEIGHT_FORMAT::doubleFormat:
-							{
-								outfile.write(reinterpret_cast<char*>(&w), sizeof(double));
-							}
-						break;
-						case nkbg::WEIGHT_FORMAT::signedFormat:
-							{
-								uint64_t weight = encodeZigzag(w);
-								weightSize = encode(weight, tmp);
-								outfile.write(reinterpret_cast<char*>(tmp), weightSize);
-							}
-						break;
-						case nkbg::WEIGHT_FORMAT::floatFormat:
-							{
-								float weight = w;
-								outfile.write(reinterpret_cast<char*>(&weight), sizeof(float));
-							}
-						break;
-					}
+					writeWeightsToFile(w);
 				}
 			});
 		} else {
 			G.forInNeighborsOf(u,[&](node v, edgeweight w){
-				switch(weightFormat) {
-					case nkbg::WEIGHT_FORMAT::unsignedFormat:
-						{
-							weightSize = encode(w, tmp);
-							outfile.write(reinterpret_cast<char*>(tmp), weightSize);
-						}
-					break;
-					case nkbg::WEIGHT_FORMAT::doubleFormat:
-						{
-							outfile.write(reinterpret_cast<char*>(&w), sizeof(double));
-						}
-					break;
-					case nkbg::WEIGHT_FORMAT::signedFormat:
-						{
-							uint64_t weight = encodeZigzag(w);
-							weightSize = encode(weight, tmp);
-							outfile.write(reinterpret_cast<char*>(tmp), weightSize);
-						}
-					break;
-					case nkbg::WEIGHT_FORMAT::floatFormat:
-						{
-							float weight = w;
-							outfile.write(reinterpret_cast<char*>(&weight), sizeof(float));
-						}
-					break;
-				}
+				writeWeightsToFile(w);
 			});
 		}
 	});
+
 	INFO("Written graph to ", path);
 }
 } /*namespace */

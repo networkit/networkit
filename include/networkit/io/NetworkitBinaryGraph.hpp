@@ -16,11 +16,11 @@ struct Header {
 };
 
 enum WEIGHT_FORMAT {
-	none = 0,
-	unsignedFormat = 1,
-	signedFormat = 2,
-	doubleFormat = 3,
-	floatFormat = 4
+	NONE = 0,
+	VARINT = 1,
+	SIGNED_VARINT = 2,
+	DOUBLE = 3,
+	FLOAT = 4
 };
 
 static constexpr uint8_t DELETED_BIT = 0x1; // bit 0
