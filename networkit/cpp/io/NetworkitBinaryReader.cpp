@@ -230,12 +230,11 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 						break;
 				}
 				if(!directed) {
-					G.addPartialEdge(unsafe, curr, add, weight);
+					if(curr != add) {
+						G.addPartialEdge(unsafe, curr, add, weight);
+					}
 				} else {
 					G.addPartialInEdge(unsafe, curr, add, weight);
-				}
-				if(curr == add) {
-					selfLoops.fetch_add(1, std::memory_order_relaxed);
 				}
 			}
 		}

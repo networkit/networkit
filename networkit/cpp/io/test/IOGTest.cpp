@@ -908,4 +908,34 @@ TEST_F(IOGTest, testNetworkitBinaryFloatWeights) {
 		});
 	});
 }
+
+TEST_F(IOGTest, testNetworkitBinaryUndirectedSelfLoops) {
+
+	Graph G(5, false, false);
+	G.addEdge(0,0);
+	G.addEdge(1,1);
+	G.addEdge(2,2);
+	G.addEdge(3,3);
+	G.addEdge(4,4);
+	NetworkitBinaryWriter writer;
+	writer.write(G, "output/loops");
+	NetworkitBinaryReader reader;
+	Graph G2 = reader.read("output/loops");
+	ASSERT_EQ(G.numberOfSelfLoops(), G2.numberOfSelfLoops());
+}
+
+TEST_F(IOGTest, testNetworkitBinaryDirectedSelfLoops) {
+
+	Graph G(5, false, true);
+	G.addEdge(0,0);
+	G.addEdge(1,1);
+	G.addEdge(2,2);
+	G.addEdge(3,3);
+	G.addEdge(4,4);
+	NetworkitBinaryWriter writer;
+	writer.write(G, "output/loops");
+	NetworkitBinaryReader reader;
+	Graph G2 = reader.read("output/loops");
+	ASSERT_EQ(G.numberOfSelfLoops(), G2.numberOfSelfLoops());
+}
 } /* namespace NetworKit */

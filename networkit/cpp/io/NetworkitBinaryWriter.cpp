@@ -213,7 +213,8 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string& path) {
 						outNbrs++;
 						adjSize += encode(v, tmp);
 						adjWeightSize += computeWeightsOffsets(w);
-					} else if (v >= n) {
+					}
+					if (v >= n) {
 						inNbrs++;
 						transpSize += encode(v, tmp);
 						transpWeightSize += computeWeightsOffsets(w);
