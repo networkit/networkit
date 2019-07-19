@@ -35,6 +35,35 @@ namespace NetworKit {
 
 class AuxGTest: public testing::Test{};
 
+TEST_F(AuxGTest, testTimer) {
+	Aux::LoggingTimer ltimer("LogginTimer", Aux::Log::LogLevel::trace); // only enabled if test is execut with raised loglevel
+
+	Aux::StartedTimer timer;
+	std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	const auto ms = timer.elapsedMilliseconds();
+	const auto us = timer.elapsedMicroseconds();
+	const auto ns = timer.elapsedNanoseconds();
+
+	ASSERT_GE(ms, 5);
+	ASSERT_GE(us, 5000);
+	ASSERT_GE(ns, 5000000);
+
+	timer.stop();
+
+	std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
+	const auto ms2 = timer.elapsedMilliseconds();
+	const auto us2 = timer.elapsedMicroseconds();
+	const auto ns2 = timer.elapsedNanoseconds();
+
+	ASSERT_GE(ms2, 5);
+	ASSERT_GE(us2, 5000);
+	ASSERT_GE(ns2, 5000000);
+
+	ASSERT_LE(ms2, us2 / 1000 + 1);
+	ASSERT_LE(us2, ns2 / 1000 + 1);
+}
+
 TEST_F(AuxGTest, produceRandomIntegers) {
 	Aux::Random::setSeed(1, false);
 #ifndef NETWORKIT_RELEASE_LOGGING

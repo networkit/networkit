@@ -98,9 +98,9 @@ TEST_F(DistanceGTest, testBidirectionalDijkstra) {
 
 		if (path.size()) {
 			EXPECT_TRUE(G.hasEdge(source, path.front()));
-			for (int i = 0; i < path.size() - 1; ++i)
+			for (size_t i = 0; i < path.size() - 1; ++i)
 				EXPECT_TRUE(G.hasEdge(path[i], path[i + 1]));
-				EXPECT_TRUE(G.hasEdge(path.back(), target));
+			EXPECT_TRUE(G.hasEdge(path.back(), target));
 		} else
 			EXPECT_TRUE(G.hasEdge(source, target));
 	};

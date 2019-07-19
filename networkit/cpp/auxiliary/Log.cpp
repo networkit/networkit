@@ -2,8 +2,10 @@
 #include <chrono>
 #include <ctime>
 #include <fstream>
+#include <iostream>
 #include <iomanip>
 #include <ios>
+#include <mutex>
 
 #include <networkit/auxiliary/Log.hpp>
 
@@ -106,6 +108,8 @@ void printLogLevel(std::ostream &stream, LogLevel p) {
 			stream << "[DEBUG]"; break;
 		case LogLevel::trace:
 			stream << "[TRACE]"; break;
+        default:
+            break;
 	}
 }
 
