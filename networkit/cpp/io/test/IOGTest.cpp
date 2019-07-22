@@ -866,4 +866,46 @@ TEST_F(IOGTest, testNetworkitBinaryWiki) {
 		});
 	});
 }
+
+TEST_F(IOGTest, testNetworkitBinarySignedWeights) {
+
+	Graph G(10, true, false);
+	int64_t weight = -1;
+	for(count n = 0; n < G.numberOfNodes(); n++) {
+		if(n != G.numberOfNodes()-1)
+			G.addEdge(n, n+1, weight++);
+	}
+	NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::autoDetect);
+	writer.write(G, "output/binarySigned");
+
+	NetworkitBinaryReader reader;
+	Graph G2 = reader.read("output/binarySigned");
+	G.forNodes([&](node u){
+		G.forEdgesOf(u, [&](node v) {
+			ASSERT_TRUE(G2.hasEdge(u,v));
+			ASSERT_EQ(G.weight(u,v), G2.weight(u,v));
+		});
+	});
+}
+
+TEST_F(IOGTest, testNetworkitBinaryFloatWeights) {
+
+	Graph G(10, true, false);
+	float weight = 987.654f;
+	for(count n = 0; n < G.numberOfNodes(); n++) {
+		if(n != G.numberOfNodes()-1)
+			G.addEdge(n, n+1, weight++);
+	}
+	NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::autoDetect);
+	writer.write(G, "output/binaryFloats");
+
+	NetworkitBinaryReader reader;
+	Graph G2 = reader.read("output/binaryFloats");
+	G.forNodes([&](node u){
+		G.forEdgesOf(u, [&](node v) {
+			ASSERT_TRUE(G2.hasEdge(u,v));
+			ASSERT_EQ(G.weight(u,v), G2.weight(u,v));
+		});
+	});
+}
 } /* namespace NetworKit */
