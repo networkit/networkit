@@ -1015,6 +1015,8 @@ class Graph final {
     * @param u Endpoint of edge.
     * @param v Endpoint of edge.
     * @param weight Optional edge weight.
+    * @param ew Optional edge weight.
+    * @param index Optional node index.
     */
     void addPartialEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight, uint64_t index = 0);
 
@@ -1025,7 +1027,8 @@ class Graph final {
      * handled consistently by the graph data structure.
      * @param u Endpoint of edge.
      * @param v Endpoint of edge.
-     * @param weight Optional edge weight.
+     * @param ew Optional edge weight.
+     * @param index Optional node index.
      */
 	void addPartialInEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight, uint64_t index = 0);
 
@@ -1036,7 +1039,8 @@ class Graph final {
      * handled consistently by the graph data structure.
      * @param u Endpoint of edge.
      * @param v Endpoint of edge.
-     * @param weight Optional edge weight.
+     * @param ew Optional edge weight.
+     * @param index Optional node index.
      */
 	void addPartialOutEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight, uint64_t index = 0);
 

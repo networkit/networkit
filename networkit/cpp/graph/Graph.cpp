@@ -720,6 +720,10 @@ void Graph::addPartialOutEdge(Unsafe, node u, node v, edgeweight ew, uint64_t in
 
 	outEdges[u].push_back(v);
 
+	// if edges indexed, give new id
+	if (edgesIndexed) {
+		outEdgeIds[u].push_back(index);
+	}
 	if (weighted) {
 		outEdgeWeights[u].push_back(ew);
 	}
@@ -731,6 +735,7 @@ void Graph::addPartialInEdge(Unsafe, node u, node v, edgeweight ew, uint64_t ind
 	assert(exists[v]);
 
 	inEdges[u].push_back(v);
+
 	if (edgesIndexed) {
 		inEdgeIds[u].push_back(index);
 	}
