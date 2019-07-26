@@ -1,7 +1,7 @@
 /*
- * NetworkitBinaryWriter.h
+ * NetworkitBinaryWriter.hpp
  *
- *@author Charmaine Ndolo <charmaine.ndolo@b-tu.de>
+ * @author Charmaine Ndolo <charmaine.ndolo@b-tu.de>
  */
 
 #ifndef NETWORKIT_BINARY_WRITER_H
@@ -26,19 +26,18 @@ enum class NetworkitBinaryWeights {
 	autoDetect
 };
 
-class NetworkitBinaryWriter : public GraphWriter {
+class NetworkitBinaryWriter final : public GraphWriter {
 
 public:
 	NetworkitBinaryWriter(uint64_t chunks = 32, NetworkitBinaryWeights weightsType = NetworkitBinaryWeights::autoDetect);
 
-	void write(const Graph& G, const std::string& path) override;
+	void write(const Graph &G, const std::string &path) override;
 
 private:
 	static size_t encode(uint64_t value, uint8_t* buffer);
 
 	static uint64_t encodeZigzag(int64_t value);
 
-	count nodes;
 	count chunks;
 	NetworkitBinaryWeights weightsType;
 };

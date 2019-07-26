@@ -5,15 +5,17 @@
  *      Author: forigem
  */
 
+#include <fstream>
+
 #include <networkit/io/DotGraphWriter.hpp>
 
 namespace NetworKit {
 
-void DotGraphWriter::write(Graph& graph, std::string path) const {
+void DotGraphWriter::write(const Graph &G, const std::string &path) {
 	std::ofstream file{path};
-	
+
 	file << "graph {\n";
-	graph.forEdges([&](node u, node v){
+	G.forEdges([&](node u, node v){
 		file << u << " -- " << v << ";\n";
 	});
 	file << "}\n";

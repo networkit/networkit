@@ -1,5 +1,5 @@
 /*
- * GraphToolBinaryWriter.h
+ * GraphToolBinaryWriter.hpp
  *
  *  Created on: 02.12.14
  *      Author: Maximilian Vogel
@@ -8,11 +8,7 @@
 #ifndef GRAPHTOOLBINARYWRITER_H_
 #define GRAPHTOOLBINARYWRITER_H_
 
-#include <fstream>
-#include <iostream>
-#include <string>
 #include <unordered_map>
-
 
 #include <networkit/io/GraphWriter.hpp>
 
@@ -22,7 +18,7 @@ namespace NetworKit {
  * Writes graphs to files in the binary format defined by graph-tool[1].
  * [1]: http://graph-tool.skewed.de/static/doc/gt_format.html
  */
-class GraphToolBinaryWriter: public GraphWriter {
+class GraphToolBinaryWriter final: public GraphWriter {
 
 public:
 
@@ -33,20 +29,19 @@ public:
 	 *
 	 * @param[in]	path	input file path
 	 */
-	void write(const Graph& G, const std::string& path);
+	void write(const Graph &G, const std::string &path) override;
 
 protected:
 	bool littleEndianness;
 
-
 private:
-	void writeAdjacencies(std::ofstream& file, const Graph& G);
+	void writeAdjacencies(std::ofstream &file, const Graph &G);
 
-	uint8_t getAdjacencyWidth(uint64_t n);
+	uint8_t getAdjacencyWidth(uint64_t n) ;
 
-	void writeComment(std::ofstream& file);
+	void writeComment(std::ofstream &file);
 
-	void writeHeader(std::ofstream& file);
+	void writeHeader(std::ofstream &file);
 
 	template<typename Type>
 	void writeType(std::ofstream& file, int width, Type val) {
@@ -59,7 +54,7 @@ private:
 		} else {
 			for (int i = 0; i < width; ++i) {
 				bytes[i] = (val >> ((width-1-i)*8)) & 0xFF;
-			}		
+			}
 		}
 		file.write((char*)bytes,width);
 		delete[] bytes;

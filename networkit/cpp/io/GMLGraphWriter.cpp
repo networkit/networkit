@@ -5,26 +5,28 @@
  *      Author: Stefan Bertsch
  */
 
-#include <networkit/io/GMLGraphWriter.hpp>
+#include <fstream>
+
 #include <networkit/auxiliary/Enforce.hpp>
+#include <networkit/io/GMLGraphWriter.hpp>
 
 namespace NetworKit {
 
-void GMLGraphWriter::write(const Graph& G, const std::string& path) {
+void GMLGraphWriter::write(const Graph &G, const std::string &path) {
 	std::ofstream file(path);
 	Aux::enforceOpened(file);
-	
+
 	file << "graph [\n";
 	if (G.isDirected()) {
 		file << "  directed 1\n";
 	}
-	
+
 	G.forNodes([&](node u) {
 		file << "  node [\n";
 		file << "    id " << u << "\n";
                 file << "  ]\n";
 	});
-		
+
 	G.forEdges([&](node u, node v) {
 			file << "  edge [\n";
 			file << "    source "<< u << "\n";

@@ -1,5 +1,5 @@
 /*
- * ThrillGraphBinaryWriter.h
+ * ThrillGraphBinaryWriter.hpp
  *
  * @author Michael Hamann <michael.hamann@kit.edu>
  */
@@ -11,15 +11,15 @@
 
 namespace NetworKit {
 
-class ThrillGraphBinaryWriter : public GraphWriter {
+class ThrillGraphBinaryWriter final : public GraphWriter {
 public:
 	/**
 	 * Write the given graph into a binary file at the given path.
-	 * 
+	 *
 	 * @param[in] G The graph to write.
 	 * @param[in] path The path where to write the graph.
 	 */
-	virtual void write(const Graph& G, const std::string& path);
+	void write(const Graph &G, const std::string &path) override;
 };
 
 } /* namespace NetworKit */

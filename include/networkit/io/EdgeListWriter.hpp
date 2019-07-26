@@ -1,5 +1,5 @@
 /*
- * EdgeListWriter.h
+ * EdgeListWriter.hpp
  *
  *  Created on: 18.06.2013
  *      Author: cls
@@ -8,11 +8,7 @@
 #ifndef EDGELISTWRITER_H_
 #define EDGELISTWRITER_H_
 
-#include <fstream>
-#include <iostream>
-#include <string>
-
-#include <networkit/io/GraphReader.hpp>
+#include <networkit/io/GraphWriter.hpp>
 
 namespace NetworKit {
 
@@ -23,7 +19,7 @@ namespace NetworKit {
  * the user.
  *
  */
-class EdgeListWriter {
+class EdgeListWriter final : public GraphWriter {
 
 public:
 
@@ -41,7 +37,7 @@ public:
 	 * @param[in]	G		the graph
 	 * @param[in]	path	the output file path
 	 */
-	void write(const Graph& G, std::string path);
+	void write(const Graph &G, const std::string &path) override;
 
 protected:
 

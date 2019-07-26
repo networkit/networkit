@@ -3248,6 +3248,48 @@ cdef class GraphReader:
 			result = move(self._this.read(cpath)) # extra move in order to avoid copying the internal variable that is used by Cython
 		return Graph(0).setThis(result)
 
+cdef extern from "<networkit/io/GraphWriter.hpp>":
+
+	cdef cppclass _GraphWriter "NetworKit::GraphWriter":
+		_GraphWriter() nogil except +
+		void write(_Graph G, string path) nogil except +
+
+cdef class GraphWriter:
+	"""
+	Abstract base class for graph writers
+	"""
+
+	cdef _GraphWriter *_this
+
+	def __init__(self, *args, **kwargs):
+		if type(self) == GraphWriter:
+			raise RuntimeError("Error, you may not use GraphReader directly, use a sub-class instead")
+
+	def __cinit__(self, *args, **kwargs):
+		self._this = NULL
+
+	def __dealloc__(self):
+		if self._this != NULL:
+			del self._this
+		self._this = NULL
+
+	def write(self, Graph G not None, path):
+		"""
+		Write the graph to a file.
+
+		Parameters
+		----------
+		G     : networkit.Graph
+			The graph to write
+		paths : str
+			The output path
+		"""
+		assert path != None
+		cdef string c_path = stdstring(path)
+		with nogil:
+			self._this.write(G._this, c_path)
+		return self
+
 cdef extern from "<networkit/io/METISGraphReader.hpp>":
 
 	cdef cppclass _METISGraphReader "NetworKit::METISGraphReader" (_GraphReader):
@@ -3260,6 +3302,26 @@ cdef class METISGraphReader(GraphReader):
 	"""
 	def __cinit__(self):
 		self._this = new _METISGraphReader()
+
+cdef extern from "<networkit/io/NetworkitBinaryReader.hpp>":
+	cdef cppclass _NetworkitBinaryReader "NetworKit::NetworkitBinaryReader" (_GraphReader):
+		_NetworkitBinaryReader() except +
+
+cdef class NetworkitBinaryReader(GraphReader):
+	"""
+	Reads a graph written in the custom Networkit format documented in cpp/io/NetworkitGraph.md
+	"""
+
+	def __cinit__(self):
+		self._this = new _NetworkitBinaryReader()
+
+cdef extern from "<networkit/io/NetworkitBinaryWriter.hpp>":
+	cdef cppclass _NetworkitBinaryWriter "NetworKit::NetworkitBinaryWriter" (_GraphWriter):
+		_NetworkitBinaryWriter() except +
+
+cdef class NetworkitBinaryWriter(GraphWriter):
+	def __cinit__(self):
+		self._this = new _NetworkitBinaryWriter()
 
 cdef extern from "<networkit/io/GraphToolBinaryReader.hpp>":
 
@@ -3322,32 +3384,17 @@ cdef class ThrillGraphBinaryReader(GraphReader):
 
 cdef extern from "<networkit/io/ThrillGraphBinaryWriter.hpp>":
 
-	cdef cppclass _ThrillGraphBinaryWriter "NetworKit::ThrillGraphBinaryWriter":
-		void write(_Graph G, string path) nogil except +
+	cdef cppclass _ThrillGraphBinaryWriter "NetworKit::ThrillGraphBinaryWriter" (_GraphWriter):
+		_ThrillGraphBinaryWriter() except +
 
-cdef class ThrillGraphBinaryWriter:
+cdef class ThrillGraphBinaryWriter(GraphWriter):
 	"""
-	Writes a graph format consisting of a serialized DIA of vector<uint32_t> from thrill.
+	Writes a graph format consisting of a serialized DIA of vector<uint32_t> from Thrill.
 	Edges are written only in one direction.
 	"""
 
-	cdef _ThrillGraphBinaryWriter _this
-
-	def write(self, Graph G not None, path):
-		"""
-		Write the graph to a binary file.
-
-		Parameters
-		----------
-		G     : networkit.Graph
-			The graph to write
-		paths : str
-			The output path
-		"""
-		cdef string c_path = stdstring(path)
-		with nogil:
-			self._this.write(G._this, c_path)
-		return self
+	def __cinit__(self):
+		self._this = new _ThrillGraphBinaryWriter()
 
 cdef extern from "<networkit/io/EdgeListReader.hpp>":
 
@@ -3443,86 +3490,59 @@ cdef class GMLGraphReader(GraphReader):
 
 cdef extern from "<networkit/io/METISGraphWriter.hpp>":
 
-	cdef cppclass _METISGraphWriter "NetworKit::METISGraphWriter":
+	cdef cppclass _METISGraphWriter "NetworKit::METISGraphWriter" (_GraphWriter):
 		_METISGraphWriter() except +
-		void write(_Graph G, string path) nogil except +
 
 
-cdef class METISGraphWriter:
+cdef class METISGraphWriter(GraphWriter):
 	""" Writes graphs in the METIS format"""
-	cdef _METISGraphWriter _this
 
-	def write(self, Graph G not None, path):
-		 # string needs to be converted to bytes, which are coerced to std::string
-		cdef string cpath = stdstring(path)
-		with nogil:
-			self._this.write(G._this, cpath)
+	def __cinit__(self):
+		self._this = new _METISGraphWriter()
 
 cdef extern from "<networkit/io/GraphToolBinaryWriter.hpp>":
 
-	cdef cppclass _GraphToolBinaryWriter "NetworKit::GraphToolBinaryWriter":
+	cdef cppclass _GraphToolBinaryWriter "NetworKit::GraphToolBinaryWriter" (_GraphWriter):
 		_GraphToolBinaryWriter() except +
-		void write(_Graph G, string path) nogil except +
 
 
-cdef class GraphToolBinaryWriter:
+cdef class GraphToolBinaryWriter(GraphWriter):
 	""" Reads the binary file format defined by graph-tool[1].
 		[1]: http://graph-tool.skewed.de/static/doc/gt_format.html
 	"""
-	cdef _GraphToolBinaryWriter _this
-
-	def write(self, Graph G not None, path):
-		 # string needs to be converted to bytes, which are coerced to std::string
-		cdef string cpath = stdstring(path)
-		with nogil:
-			self._this.write(G._this, cpath)
-
+	def __cinit__(self):
+		self._this = new _GraphToolBinaryWriter()
 
 cdef extern from "<networkit/io/DotGraphWriter.hpp>":
 
-	cdef cppclass _DotGraphWriter "NetworKit::DotGraphWriter":
+	cdef cppclass _DotGraphWriter "NetworKit::DotGraphWriter" (_GraphWriter):
 		_DotGraphWriter() except +
-		void write(_Graph G, string path) nogil except +
 
-
-cdef class DotGraphWriter:
+cdef class DotGraphWriter(GraphWriter):
 	""" Writes graphs in the .dot/GraphViz format"""
-	cdef _DotGraphWriter _this
-
-	def write(self, Graph G not None, path):
-		 # string needs to be converted to bytes, which are coerced to std::string
-		cdef string cpath = stdstring(path)
-		with nogil:
-			self._this.write(G._this, cpath)
-
+	def __cinit__(self):
+		self._this = new _DotGraphWriter()
 
 cdef extern from "<networkit/io/GMLGraphWriter.hpp>":
 
-	cdef cppclass _GMLGraphWriter "NetworKit::GMLGraphWriter":
+	cdef cppclass _GMLGraphWriter "NetworKit::GMLGraphWriter" (_GraphWriter):
 		_GMLGraphWriter() except +
-		void write(_Graph G, string path) nogil except +
 
 
-cdef class GMLGraphWriter:
+cdef class GMLGraphWriter(GraphWriter):
 	""" Writes a graph and its coordinates as a GML file.[1]
 		[1] http://svn.bigcat.unimaas.nl/pvplugins/GML/trunk/docs/gml-technical-report.pdf """
-	cdef _GMLGraphWriter _this
 
-	def write(self, Graph G not None, path):
-		 # string needs to be converted to bytes, which are coerced to std::string
-		cdef string cpath = stdstring(path)
-		with nogil:
-			self._this.write(G._this, cpath)
-
+	def __cinit__(self):
+		self._this = new _GMLGraphWriter()
 
 cdef extern from "<networkit/io/EdgeListWriter.hpp>":
 
-	cdef cppclass _EdgeListWriter "NetworKit::EdgeListWriter":
+	cdef cppclass _EdgeListWriter "NetworKit::EdgeListWriter" (_GraphWriter):
 		_EdgeListWriter() except +
 		_EdgeListWriter(char separator, node firstNode, bool_t bothDirections) except +
-		void write(_Graph G, string path) nogil except +
 
-cdef class EdgeListWriter:
+cdef class EdgeListWriter(GraphWriter):
 	""" Writes graphs in various edge list formats.
 
 	Parameters
@@ -3535,17 +3555,9 @@ cdef class EdgeListWriter:
 		If undirected edges shall be written in both directions, i.e., as symmetric directed graph (default: false)
 	"""
 
-	cdef _EdgeListWriter _this
-
 	def __cinit__(self, separator, firstNode, bool_t bothDirections = False):
 		cdef char sep = stdstring(separator)[0]
-		self._this = _EdgeListWriter(sep, firstNode, bothDirections)
-
-	def write(self, Graph G not None, path):
-		cdef string cpath = stdstring(path)
-		with nogil:
-			self._this.write(G._this, cpath)
-
+		self._this = new _EdgeListWriter(sep, firstNode, bothDirections)
 
 
 cdef extern from "<networkit/io/LineFileReader.hpp>":
@@ -3564,22 +3576,16 @@ cdef class LineFileReader:
 
 
 cdef extern from "<networkit/io/SNAPGraphWriter.hpp>":
-
-	cdef cppclass _SNAPGraphWriter "NetworKit::SNAPGraphWriter":
+	cdef cppclass _SNAPGraphWriter "NetworKit::SNAPGraphWriter" (_GraphWriter):
 		_SNAPGraphWriter() except +
-		void write(_Graph G, string path) nogil except +
 
-cdef class SNAPGraphWriter:
+cdef class SNAPGraphWriter(GraphWriter):
 	""" Writes graphs in a format suitable for the Georgia Tech SNAP software [1]
 		[1]: http://snap-graph.sourceforge.net/
 	"""
-	cdef _SNAPGraphWriter _this
 
-	def write(self, Graph G, path):
-		cdef string cpath = stdstring(path)
-		with nogil:
-			self._this.write(G._this, cpath)
-
+	def __cinit__(self):
+		self._this = new _SNAPGraphWriter()
 
 cdef extern from "<networkit/io/SNAPGraphReader.hpp>":
 

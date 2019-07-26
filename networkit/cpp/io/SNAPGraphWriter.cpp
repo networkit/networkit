@@ -5,12 +5,14 @@
  *      Author: cls
  */
 
-#include <networkit/io/SNAPGraphWriter.hpp>
+#include <fstream>
+
 #include <networkit/auxiliary/Enforce.hpp>
+#include <networkit/io/SNAPGraphWriter.hpp>
 
 namespace NetworKit {
 
-void SNAPGraphWriter::write(const Graph& G, const std::string& path) {
+void SNAPGraphWriter::write(const Graph &G, const std::string &path) {
     std::ofstream file(path);
     Aux::enforceOpened(file);
 
