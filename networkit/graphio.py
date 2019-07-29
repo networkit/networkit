@@ -92,7 +92,7 @@ def getReader(fileformat, **kwargs):
 			Format.METIS:			METISGraphReader(),
 			Format.GraphML:			GraphMLReader(),
 			Format.GEXF:			GEXFReader(),
-			Format.SNAP:			EdgeListReader('\t',0,'#',False),
+			Format.SNAP:			SNAPGraphReader(),
 			Format.EdgeListCommaOne:	EdgeListReader(',',1,),
 			Format.EdgeListSpaceOne:	EdgeListReader(' ',1),
 			Format.EdgeListSpaceZero:	EdgeListReader(' ',0),
@@ -226,7 +226,7 @@ def getWriter(fileformat, **kwargs):
 			Format.METIS:			METISGraphWriter(),
 			Format.GraphML:			GraphMLWriter(),
 			Format.GEXF:			GEXFWriter(),
-#			Format.SNAP:			EdgeListWriter('\t',0,'#',False),
+			Format.SNAP:			SNAPGraphWriter(),
 			Format.EdgeListCommaOne:	EdgeListWriter(',',1,),
 			Format.EdgeListSpaceOne:	EdgeListWriter(' ',1),
 			Format.EdgeListSpaceZero:	EdgeListWriter(' ',0),
@@ -236,7 +236,8 @@ def getWriter(fileformat, **kwargs):
 			Format.DOT:			DotGraphWriter(),
 			Format.GML:			GMLGraphWriter(),
 			Format.LFR:			EdgeListWriter('\t',1),
-			Format.GraphToolBinary:		GraphToolBinaryWriter()
+			Format.GraphToolBinary:         GraphToolBinaryWriter(),
+			Format.ThrillBinary:		ThrillGraphBinaryWriter(),
 			}
 	try:
 		# special case for custom Edge Lists
