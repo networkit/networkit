@@ -38,7 +38,8 @@ try:
 	class Format(__AutoNumber):
 		""" Simple enumeration class to list supported file types. Currently supported
 		file types: SNAP, EdgeListSpaceZero, EdgeListSpaceOne, EdgeListTabZero, EdgeListTabOne,
-		METIS, GraphML, GEXF, GML, EdgeListCommaOne, GraphViz, DOT, EdgeList, LFR, KONEC, GraphToolBinary"""
+		METIS, GraphML, GEXF, GML, EdgeListCommaOne, GraphViz, DOT, EdgeList, LFR, KONEC, GraphToolBinary,
+                NetworkitBinary"""
 		SNAP = ()
 		EdgeListSpaceZero = ()
 		EdgeListSpaceOne = ()
@@ -57,6 +58,7 @@ try:
 		GraphToolBinary = ()
 		MAT = ()
 		ThrillBinary = ()
+		NetworkitBinary = ()
 
 except ImportError:
 	print("Update to Python >=3.4 recommended - support for < 3.4 may be discontinued in the future")
@@ -79,7 +81,7 @@ except ImportError:
 		GraphToolBinary = "gtbin"
 		MAT = "mat"
 		ThrillBinary = "thrillbinary"
-
+		NetworkitBinary = "networkitbinary"
 
 
 
@@ -104,6 +106,7 @@ def getReader(fileformat, **kwargs):
 			Format.GraphToolBinary:		GraphToolBinaryReader(),
 			Format.MAT:			MatReader(),
 			Format.ThrillBinary:		ThrillGraphBinaryReader(),
+			Format.NetworkitBinary:         NetworkitBinaryReader()
 			}
 
 	try:
@@ -238,6 +241,7 @@ def getWriter(fileformat, **kwargs):
 			Format.LFR:			EdgeListWriter('\t',1),
 			Format.GraphToolBinary:         GraphToolBinaryWriter(),
 			Format.ThrillBinary:		ThrillGraphBinaryWriter(),
+			Format.NetworkitBinary:         NetworkitBinaryWriter()
 			}
 	try:
 		# special case for custom Edge Lists
