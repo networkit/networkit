@@ -255,6 +255,41 @@ class build_ext(Command):
 			prefix = self.distribution.src_root or os.getcwd()
 		buildNetworKit(prefix, externalCore=self.networkit_external_core)
 
+	def get_ext_fullpath(self, ext_name):
+		"""Returns the path of the filename for a given extension.
+		The file is located in `build_lib` or directly in the package
+		(inplace option).
+		"""
+		fullname = self.get_ext_fullname(ext_name)
+		modpath = fullname.split('.')
+		filename = self.get_ext_filename(modpath[-1])
+
+		if not self.inplace:
+			# no further work needed
+			# returning :
+			#   build_dir/package/path/filename
+			filename = os.path.join(*modpath[:-1]+[filename])
+			return os.path.join(self.build_lib, filename)
+
+		# the inplace option requires to find the package directory
+		# using the build_py command for that
+		package = '.'.join(modpath[0:-1])
+		build_py = self.get_finalized_command('build_py')
+		package_dir = os.path.abspath(build_py.get_package_dir(package))
+
+		# returning
+		#   package_dir/filename
+		return os.path.join(package_dir, filename)
+
+	def get_outputs(self):
+		# And build the list of output (built) filenames.  Note that this
+		# ignores the 'inplace' flag, and assumes everything goes in the
+		# "build" tree.
+		outputs = []
+		for ext in self.extensions:
+			outputs.append(self.get_ext_fullpath(ext.name))
+		return outputs
+
 ################################################
 # initialize python setup
 ################################################
