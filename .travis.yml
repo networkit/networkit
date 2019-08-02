@@ -294,7 +294,7 @@ script:
  - pip3 install --upgrade pip
  # cython is required because git does not contain _NetworKit.
  # ipython is required for tests.
- - pip3 install cython ipython
+ - pip3 install cython ipython jupyter
 
  # First, build the C++ core library and run C++ tests.
  - mkdir core_build && cd "$_"
@@ -309,6 +309,9 @@ script:
  - NETWORKIT_PARALLEL_JOBS=2 python3 ./setup.py build_ext --inplace --networkit-external-core
  - NETWORKIT_PARALLEL_JOBS=2 pip3 install -e .
  - python3 -m unittest discover -v networkit/test/
+
+ # Test Jupyter-notebooks
+ - python3 notebooks/test_notebooks.py 'notebooks/'
 
 notifications:
   email: false
