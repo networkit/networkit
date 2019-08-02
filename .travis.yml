@@ -78,6 +78,7 @@ matrix:
     - name: Linux, modern GCC
       env: CC=gcc-8 CXX=g++-8
       os: linux
+      dist: trusty
       addons: &gcc8
         apt:
           sources:
@@ -90,6 +91,7 @@ matrix:
     - name: Linux, legacy GCC 4.9
       env: CC=gcc-4.9 CXX=g++-4.9
       os: linux
+      dist: trusty
       sudo: false
       addons:
         apt:
@@ -104,6 +106,7 @@ matrix:
     - name: Linux, legacy Clang 3.8
       env: CC="clang-3.8" CXX="clang++-3.8"
       os: linux
+      dist: trusty
       sudo: false
       addons:
         apt:
@@ -120,6 +123,7 @@ matrix:
     - name: "Linux, modern GCC: Core build, debugging"
       env: CC=gcc-8 CXX=g++-8
       os: linux
+      dist: trusty
       addons: *gcc8
       script:
         - $CXX --version
@@ -131,6 +135,7 @@ matrix:
     - name: "Linux, modern GCC: Core build, non-monolithic"
       env: CC=gcc-8 CXX=g++-8
       os: linux
+      dist: trusty
       addons: *gcc8
       script:
         - $CXX --version
@@ -143,6 +148,7 @@ matrix:
     - name: C++14 conformance
       env: CC=gcc-8 CXX=g++-8 CXX_STANDARD=14
       os: linux
+      dist: trusty
       addons: *gcc8
       script: &script_cpp_only
         - $CXX --version
@@ -154,12 +160,14 @@ matrix:
     - name: C++17 conformance
       env: CC=gcc-8 CXX=g++-8 CXX_STANDARD=17
       os: linux
+      dist: trusty
       addons: *gcc8
       script: *script_cpp_only
 
     - name: Documentation only
       env: CC=gcc-8 CXX=g++-8
       os: linux
+      dist: trusty
       addons:
         apt:
           sources:
