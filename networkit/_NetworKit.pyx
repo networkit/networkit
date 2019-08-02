@@ -2220,14 +2220,14 @@ cdef class PubWebGenerator(StaticGraphGenerator):
 cdef extern from "<networkit/generators/ErdosRenyiGenerator.hpp>":
 
 	cdef cppclass _ErdosRenyiGenerator "NetworKit::ErdosRenyiGenerator"(_StaticGraphGenerator):
-		_ErdosRenyiGenerator(count nNodes, double prob, bool_t directed) except +
+		_ErdosRenyiGenerator(count nNodes, double prob, bool_t directed, bool_t selfLoops) except +
 
 cdef class ErdosRenyiGenerator(StaticGraphGenerator):
 	""" Creates random graphs in the G(n,p) model.
 	The generation follows Vladimir Batagelj and Ulrik Brandes: "Efficient
 	generation of large random networks", Phys Rev E 71, 036113 (2005).
 
-	ErdosRenyiGenerator(count, double)
+	ErdosRenyiGenerator(count nNodes, double prob, directed = False, selfLoops = False)
 
 	Creates G(nNodes, prob) graphs.
 
@@ -2239,10 +2239,12 @@ cdef class ErdosRenyiGenerator(StaticGraphGenerator):
 		Probability of existence for each edge p.
 	directed : bool
 		Generates a directed
+	selfLoops : bool
+		Allows self-loops to be generated (only for directed graphs)
 	"""
 
-	def __cinit__(self, nNodes, prob, directed=False):
-		self._this = new _ErdosRenyiGenerator(nNodes, prob, directed)
+	def __cinit__(self, nNodes, prob, directed = False, selfLoops = False):
+		self._this = new _ErdosRenyiGenerator(nNodes, prob, directed, selfLoops)
 
 	@classmethod
 	def fit(cls, Graph G, scale=1):
