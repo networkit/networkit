@@ -4704,8 +4704,19 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 cdef class GraphTools:
 	@staticmethod
 	def getCompactedGraph(Graph graph, nodeIdMap):
-		"""
-			Computes a graph with the same structure but with continuous node ids.
+		""" Computes a graph with the same structure but with continuous node ids.
+
+                Parameters
+		----------
+		graph : networkit.Graph
+			The graph to be compacted.
+                nodeIdMap:
+                        The map providing the information about the node ids.
+
+                Returns
+		-------
+		networkit.Graph
+		    The compacted graph
 		"""
 		cdef unordered_map[node,node] cNodeIdMap
 		for key in nodeIdMap:
@@ -4715,7 +4726,15 @@ cdef class GraphTools:
 	@staticmethod
 	def getContinuousNodeIds(Graph graph):
 		"""
-			Computes a map of node ids to continuous node ids.
+                Computes a map of node ids to continuous node ids.
+
+                Parameters
+		----------
+		graph : networkit.Graph
+			The graph of which the node id map is wanted.
+                Returns
+		-------
+                    Returns the node id map
 		"""
 		cdef unordered_map[node,node] cResult
 		with nogil:
@@ -4728,8 +4747,16 @@ cdef class GraphTools:
 	@staticmethod
 	def getRandomContinuousNodeIds(Graph graph):
 		"""
-			Computes a map of node ids to continuous, randomly permutated node ids.
-		"""
+                Computes a map of node ids to continuous, randomly permutated node ids.
+
+                Parameters
+		----------
+		graph : networkit.Graph
+			The graph of which the node id map is wanted.
+		Returns
+		-------
+                    Returns the node id map
+                """
 		cdef unordered_map[node,node] cResult
 		with nogil:
 			cResult = getRandomContinuousNodeIds(graph._this)
