@@ -53,25 +53,23 @@ void ApproxGroupBetweenness::run() {
 		} while (s == t);
 		BFS bfs(G, s, true, true, t);
 		bfs.run();
-		std::set<std::vector<node>> shortestPaths = bfs.getPaths(t);
 
 		// If the selected nodes are in different connected components, the
 		// hyperedge is an empty set. Chooseing nodes in different connected
 		// components wont affect the algorithm. (See Mahmoody "Scalable Betweenness
 		// Centrality Maximization via Sampling",page 4,Lemma 3,2016)
-		if (shortestPaths.size() == 0) {
+		if (bfs.getNumberOfPaths(t) == 0) {
 			continue;
 		}
 
-		// Uniformly select a shortest path
-		std::set<std::vector<node>>::const_iterator iterator(shortestPaths.begin());
-		advance(iterator, Aux::Random::integer(shortestPaths.size() - 1));
-		std::vector<node> newHyperEdge = *iterator;
-
-		// Insert the HyperEdge into hyperEdgePerSample
-		for (auto n : newHyperEdge) {
-			if(n != s && n != t)
-				hyperEdgesPerSample[l].push_back(n);
+		// Uniformly select a shortest path and insert the hyperedge into hyperEdgesPerSample
+		count dist = static_cast<count>(bfs.distance(t));
+		assert(dist);
+		hyperEdgesPerSample[l].reserve(dist - 1);
+		for (count i = 0; i < dist - 1; ++i) {
+			auto predecessors = bfs.getPredecessors(t);
+			t = predecessors[Aux::Random::integer(predecessors.size() - 1)];
+			hyperEdgesPerSample[l].push_back(t);
 		}
 	}
 
