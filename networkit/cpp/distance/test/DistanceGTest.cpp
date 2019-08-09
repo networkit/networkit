@@ -7,6 +7,7 @@
 
 #include <gtest/gtest.h>
 
+#include <networkit/distance/AStar.hpp>
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/BidirectionalBFS.hpp>
 #include <networkit/distance/BidirectionalDijkstra.hpp>
@@ -34,6 +35,77 @@ TEST_F(DistanceGTest, testVertexDiameterPedantically) {
 	diam.run();
 	count vd = diam.getDiameter().first;
 	EXPECT_EQ(1000, vd);
+}
+
+TEST_F(DistanceGTest, testAStar) {
+
+	// Builds a mesh graph with the given number of rows and columns
+	auto buildMesh = [](count rows, count cols) -> Graph {
+		Graph G(rows * cols, false, false);
+
+		for (count i = 0; i < rows; ++i) {
+			for (count j = 0; j < cols; ++j) {
+				if (j < cols - 1) {
+					G.addEdge(i * cols + j, i * cols + j + 1);
+				}
+				if (i < rows - 1) {
+					G.addEdge(i * cols + j, (i + 1) * cols + j);
+				}
+			}
+		}
+
+		return G;
+	};
+
+	// Test AStar on a mesh for every pair of nodes (u, v), u != v.
+	auto testMesh = [&](count rows, count cols) {
+		auto G = buildMesh(rows, cols);
+
+		// Test AStar for every pair.
+		G.forNodePairs([&](node source, node target) {
+
+			// Three distance heuristics
+            std::vector<double> zeroDist(rows*cols, 0);
+            std::vector<double> exactDist(rows*cols);
+            std::vector<double> eucledianDist(rows*cols);
+            for (node u = 0; u < rows*cols; ++u) {
+				count rowU = u / cols;
+				count colU = u % cols;
+				count rowT = target / cols;
+				count colT = target % cols;
+				exactDist[u] = static_cast<double>((rowU > rowT ? rowU - rowT : rowT - rowU) +
+					   (colU > colT ? colU - colT : colT - colU));
+				double rowDiff = std::abs(static_cast<double>(u / cols) - static_cast<double>(rowT));
+				double colDiff = std::abs(static_cast<double>(u % cols) - static_cast<double>(rowT));
+				eucledianDist[u] = sqrt(std::pow(rowDiff, 2) + std::pow(colDiff, 2));
+			};
+			BFS bfs(G, source, true, false, target);
+			bfs.run();
+
+            std::vector<std::vector<double>> heuristics;
+
+			for (auto heu : heuristics) {
+				AStar astar(G, heu, source, target, true);
+				astar.run();
+				EXPECT_EQ(astar.getDistance(), bfs.distance(target));
+
+				auto path = astar.getPath();
+				EXPECT_EQ(path.size(), bfs.getPath(target).size() - 2);
+
+				if (!path.size()) {
+					return;
+				}
+				for (size_t i = 0; i < path.size() - 1; ++i) {
+					EXPECT_TRUE(G.hasEdge(path[i], path[i + 1]));
+				}
+			}
+		});
+	};
+
+	// Test cases
+	testMesh(10, 10);
+	testMesh(1, 15);
+	testMesh(25, 5);
 }
 
 TEST_F(DistanceGTest, testBidirectionalBFS) {

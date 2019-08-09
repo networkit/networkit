@@ -48,7 +48,7 @@ public:
      *
      * @return A shortest path from the @a source to @a target.
      */
-    std::vector<node> getPath() const {
+    virtual std::vector<node> getPath() const {
         checkStorePredecessors();
         assureFinished();
         return path;
