@@ -925,7 +925,7 @@ cdef class Graph:
 	 		List of neighbors of `u`.
 		"""
 		neighborList = []
-		self.forEdgesOf(u, lambda v : neighborList.append(v))
+		self.forEdgesOf(u, lambda u, v, w, eid : neighborList.append(v))
 		return neighborList
 
 	def inNeighbors(self, u):

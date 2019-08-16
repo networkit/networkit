@@ -92,6 +92,34 @@ class TestGraph(unittest.TestCase):
 		m = G.numberOfEdges()
 		testGraph(G)
 
+	def testNeighbors(self):
+		# Directed
+		G = nk.Graph(4, False, True)
+
+		G.addEdge(0, 1)
+		G.addEdge(0, 2)
+		G.addEdge(3, 1)
+		G.addEdge(3, 2)
+		G.addEdge(1, 2)
+
+		self.assertEqual(sorted(G.neighbors(0)), [1, 2])
+		self.assertEqual(sorted(G.neighbors(1)), [2])
+		self.assertEqual(sorted(G.neighbors(2)), [])
+		self.assertEqual(sorted(G.neighbors(3)), [1, 2])
+
+		# Undirected
+		G = nk.Graph(4, False, False)
+
+		G.addEdge(0, 1)
+		G.addEdge(0, 2)
+		G.addEdge(3, 1)
+		G.addEdge(3, 2)
+		G.addEdge(1, 2)
+
+		self.assertEqual(sorted(G.neighbors(0)), [1, 2])
+		self.assertEqual(sorted(G.neighbors(1)), [0, 2, 3])
+		self.assertEqual(sorted(G.neighbors(2)), [0, 1, 3])
+		self.assertEqual(sorted(G.neighbors(3)), [1, 2])
 
 if __name__ == "__main__":
 	unittest.main()
