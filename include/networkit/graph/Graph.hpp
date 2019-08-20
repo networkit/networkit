@@ -784,7 +784,7 @@ class Graph final {
 	 * @param edges the edge count of a graph
 	 */
 	void setEdgeCount(Unsafe, count edges) { m = edges; }
-    
+
 	void setNumberOfSelfLoops(Unsafe, count loops) { storedNumberOfSelfLoops = loops; }
 	/**
      * Returns a string representation of the graph.
@@ -1067,9 +1067,27 @@ class Graph final {
     void removeAllEdges();
 
     /**
+     * Removes edges adjacent to a node according to a specific criterion.
+     *
+     * @param u The node whose adjacent edges shall be removed.
+     * @param condition A function that takes a node as an input and returns a
+     * bool. If true the edge (u, v) is removed.
+     * @param edgesIn Whether in-going or out-going edges shall be removed.
+     * @return count The number of removed edges.
+     */
+    template <typename Condition>
+    count removeAdjacentEdges(node u, Condition condition, bool edgesIn = false);
+
+
+    /**
      * Removes all self-loops in the graph.
      */
     void removeSelfLoops();
+
+    /**
+     * Removes all multi-edges in the graph.
+     */
+    void removeMultiEdges();
 
     /**
      * Changes the edges {@a s1, @a t1} into {@a s1, @a t2} and the edge {@a
@@ -2094,6 +2112,36 @@ template <typename L> void Graph::DFSEdgesFrom(node r, L handle) const {
         });
     } while (!s.empty());
 }
+
+/* EDGE MODIFIERS */
+
+template <typename Condition>
+count Graph::removeAdjacentEdges(node u, Condition condition, bool edgesIn) {
+	count removedEdges = 0;
+	auto &edges_ = outEdges[u];
+	for (index vi = 0; vi < edges_.size();) {
+		if (condition(edges_[vi])) {
+			++removedEdges;
+			edges_[vi] = edges_.back();
+			edges_.pop_back();
+			if (isWeighted()) {
+				auto &weights_ = edgesIn ? inEdgeWeights[u] : outEdgeWeights[u];
+				weights_[vi] = weights_.back();
+				weights_.pop_back();
+			}
+			if (hasEdgeIds()) {
+				auto &edgeIds_ = edgesIn ? inEdgeIds[u] : outEdgeIds[u];
+				edgeIds_[vi] = edgeIds_.back();
+				edgeIds_.pop_back();
+			}
+		} else {
+			++vi;
+		}
+	}
+
+	return removedEdges;
+}
+
 
 } /* namespace NetworKit */
 
