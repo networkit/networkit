@@ -32,16 +32,17 @@ void BiconnectedComponents::init() {
   componentsOfNode.resize(n);
 }
 
-void BiconnectedComponents::visit(node u) {
-  level[u] = idx;
-  lowpt[u] = idx;
-  ++idx;
-  visited[u] = true;
-}
-
 void BiconnectedComponents::run() {
 
   init();
+
+  auto visitNode = [&](node u) {
+    level[u] = idx;
+    lowpt[u] = idx;
+    ++idx;
+    visited[u] = true;
+  };
+
   G.forNodes([&](node v) {
     if (visited[v]) {
       return;
@@ -55,7 +56,7 @@ void BiconnectedComponents::run() {
     while (!stack.empty()) {
       node u = stack.top();
       if (!visited[u]) {
-        visit(u);
+        visitNode(u);
       }
 
       bool allVisited = true;
@@ -63,7 +64,7 @@ void BiconnectedComponents::run() {
       for (node neighbor : G.neighborRange(u)) {
         if (!visited[neighbor]) {
           allVisited = false;
-          visit(neighbor);
+          visitNode(neighbor);
           parent[neighbor] = u;
           stack.push(neighbor);
           edgeStack.push_back(std::make_pair(u, neighbor));
