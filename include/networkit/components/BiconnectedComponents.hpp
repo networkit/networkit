@@ -8,6 +8,8 @@
 #ifndef BICONNECTEDCOMPONENTS_H_
 #define BICONNECTEDCOMPONENTS_H_
 
+#include <unordered_set>
+
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 
@@ -70,7 +72,7 @@ private:
   std::vector<node> parent;
   std::vector<bool> visited;
   std::vector<bool> isRoot;
-  std::vector<std::set<node>> componentsOfNode;
+  std::vector<std::unordered_set<node>> componentsOfNode;
   std::map<count, count> componentSizes;
 };
 
