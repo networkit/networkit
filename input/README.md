@@ -13,6 +13,7 @@ This folder contains many smaller graphs. They are used in the testing suite and
 | astro-ph.graph                   | Format.METIS            | METISGraphReader        | 1259548            | 16706           | 121251          | FALSE    | FALSE    | n/a     |
 | caidaRouterLevel.graph           | Format.METIS            | METISGraphReader        | 7490360            | 192244          | 609066          | FALSE    | FALSE    | n/a     |
 | celegans_metabolic.graph         | Format.METIS            | METISGraphReader        | 16015              | 453             | 2025            | FALSE    | FALSE    | n/a     |
+| celegans_metabolic.thrill        | Format.THRILL           | ThrillGraphReader       | 8554               | 453             | 2025            | FALSE    | FALSE    | n/a     |
 | comments.edgelist                | Format.EdgeListTabOne   | EdgeListReader          | 127                | 10              | 10              | FALSE    | FALSE    | n/a     |
 | community_overlapping.cover      | n/a                     | CoverReader             | 61                 | n/a             | n/a             | n/a      | n/a      | n/a     |
 | community_overlapping.dat        | n/a                     | EdgeListCoverReader     | 83                 | n/a             | n/a             | n/a      | n/a      | n/a     |
@@ -24,6 +25,7 @@ This folder contains many smaller graphs. They are used in the testing suite and
 | example.graph                    | Format.METIS            | METISGraphReader        | 16                 | 4               | 2               | FALSE    | FALSE    | n/a     |
 | example2.dgs                     | n/a                     | DGSReader               | 161                | n/a             | n/a             | n/a      | n/a      | n/a     |
 | foodweb-baydry.konect            | Format.KONECT           | KONECTGraphReader       | 42847              | 128             | 2137            | TRUE     | TRUE     | n/a     |
+| foodweb-baydry.networkit         | Format.NETWORKITBINARY  | NetworkitBinaryReader   | 42491              | 128             | 2137            | TRUE     | TRUE     | n/a     |
 | grid-5x5-dist-arch.graph         | Format.METIS            | METISGraphReader        | 218                | 25              | 40              | FALSE    | FALSE    | n/a     |
 | hamming6-4.edgelist              | Format.EdgeListSpaceOne | EdgeListReader          | 4088               | 64              | 704             | FALSE    | FALSE    | n/a     |
 | hep-th.graph                     | Format.METIS            | METISGraphReader        | 157814             | 8361            | 15751           | FALSE    | FALSE    | n/a     |
