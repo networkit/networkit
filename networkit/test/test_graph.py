@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import unittest
+import random
 import networkit as nk
 
 class TestGraph(unittest.TestCase):
@@ -13,8 +14,7 @@ class TestGraph(unittest.TestCase):
 
 		return G
 
-	def testSubgraphFromNodes(self):
-		# Directed
+	def testSubgraphFromNodesDirected(self):
 		G = self.getSmallGraph(True, True)
 
 		res = G.subgraphFromNodes([0])
@@ -39,8 +39,8 @@ class TestGraph(unittest.TestCase):
 		self.assertEqual(res.numberOfNodes(), 4)
 		self.assertEqual(res.numberOfEdges(), 4)
 
-		# Undirected
-		G = G.toUndirected()
+	def testSubgraphFromNodesUndirected(self):
+		G = self.getSmallGraph(True, False)
 
 		res = G.subgraphFromNodes([0])
 		self.assertTrue(res.isWeighted())
@@ -120,6 +120,48 @@ class TestGraph(unittest.TestCase):
 		self.assertEqual(sorted(G.neighbors(1)), [0, 2, 3])
 		self.assertEqual(sorted(G.neighbors(2)), [0, 1, 3])
 		self.assertEqual(sorted(G.neighbors(3)), [1, 2])
+
+	def testGraphTranspose(self):
+		nk.setSeed(1, True)
+		G = nk.generators.ErdosRenyiGenerator(100, 0.2, True).generate()
+
+		for i in range(20):
+			u = G.randomNode()
+			if not G.hasEdge(u, u):
+				G.addEdge(u, u)
+		self.assertGreater(G.numberOfSelfLoops(), 0)
+
+		# Delete a few nodes
+		for i in range(10):
+			G.removeNode(G.randomNode())
+		self.assertGreater(G.numberOfSelfLoops(), 0)
+
+		# Assign random weights
+		GWeighted = nk.Graph(G, True, True)
+		for u, v in GWeighted.edges():
+			GWeighted.setWeight(u, v, random.random())
+
+		GWeighted.indexEdges()
+
+		GTrans = GWeighted.transpose()
+
+		for u, v in GWeighted.edges():
+			self.assertEqual(GWeighted.edgeId(u, v), GTrans.edgeId(v, u))
+			self.assertEqual(GWeighted.weight(u, v), GTrans.weight(v, u))
+
+		for v, u in GTrans.edges():
+			self.assertEqual(GWeighted.edgeId(u, v), GTrans.edgeId(v, u))
+			self.assertEqual(GWeighted.weight(u, v), GTrans.weight(v, u))
+
+		for u in range(GWeighted.upperNodeIdBound()):
+			self.assertEqual(GWeighted.hasNode(u), GTrans.hasNode(u))
+
+		self.assertEqual(GWeighted.upperEdgeIdBound(),  GTrans.upperEdgeIdBound())
+		self.assertEqual(GWeighted.upperNodeIdBound(),  GTrans.upperNodeIdBound())
+		self.assertEqual(GWeighted.numberOfSelfLoops(), GTrans.numberOfSelfLoops())
+		self.assertEqual(GWeighted.numberOfNodes(),     GTrans.numberOfNodes())
+		self.assertEqual(GWeighted.numberOfEdges(),     GTrans.numberOfEdges())
+
 
 if __name__ == "__main__":
 	unittest.main()
