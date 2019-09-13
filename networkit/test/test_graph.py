@@ -163,5 +163,62 @@ class TestGraph(unittest.TestCase):
 		self.assertEqual(GWeighted.numberOfEdges(),     GTrans.numberOfEdges())
 
 
+	def testIterator(self):
+		# Undirected
+		G = nk.Graph(4, False, False)
+
+		G.addEdge(0, 1)
+		G.addEdge(0, 2)
+		G.addEdge(1, 2)
+		G.addEdge(3, 1)
+		G.addEdge(3, 2)
+
+		def nbrFunc(u, v, weight, edgeId):
+			forEdgesNbrs.append(v)
+
+		# Iterate through neighbours of node using iterNeighbors
+		def nodeIter(node):
+			nodeList = []
+			nbrs = G.iterNeighbors(node)
+			try:
+				while nbrs is not None:
+					nodeList.append(next(nbrs))
+			except StopIteration:
+				pass
+			return nodeList
+
+		for node in range(G.upperNodeIdBound()):
+			forEdgesNbrs = []
+			G.forEdgesOf(node, nbrFunc)
+			nodeNbrs = nodeIter(node)
+			self.assertEqual(sorted(forEdgesNbrs), sorted(nodeNbrs))
+
+		# Directed
+		G = nk.Graph(4, False, True)
+
+		G.addEdge(0, 1)
+		G.addEdge(0, 2)
+		G.addEdge(3, 1)
+		G.addEdge(3, 2)
+		G.addEdge(1, 2)
+
+		# Iterate through neighbours of node using iterNeighbors
+		def nodeInIter(node):
+			nodeList = []
+			nbrs = G.iterInNeighbors(node)
+			try:
+				while nbrs is not None:
+					nodeList.append(next(nbrs))
+					print(nodeList)
+			except StopIteration:
+				pass
+			return nodeList
+
+		for node in range(G.upperNodeIdBound()):
+			forEdgesNbrs = []
+			G.forInEdgesOf(node, nbrFunc)
+			nodeInNbrs = nodeInIter(node)
+			self.assertEqual(sorted(forEdgesNbrs), sorted(nodeInNbrs))
+
 if __name__ == "__main__":
 	unittest.main()

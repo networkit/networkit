@@ -357,6 +357,8 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		void DFSEdgesFrom[Callback](node r, Callback c) except +
 		bool_t checkConsistency() except +
 		_Graph subgraphFromNodes(unordered_set[node] nodes, bool_t includeOutNeighbors, bool_t includeInNeighbors) except +
+		_OutNeighborRange neighborRange(node u) except +
+		_InNeighborRange inNeighborRange(node u) except +
 
 cdef cppclass EdgeCallBackWrapper:
 	void* callback
@@ -418,7 +420,28 @@ cdef cppclass NodePairCallbackWrapper:
 		if (error):
 			throw_runtime_error(message)
 
+cdef extern from "<networkit/graph/Graph.hpp>":
+
+	cdef cppclass _NeighborIterator "NetworKit::Graph::NeighborIterator":
+		_NeighborIterator operator++() except +
+		_NeighborIterator operator++(int) except +
+		bool_t operator!=(const _NeighborIterator) except +
+		node operator*() except +
+
+cdef extern from "<networkit/graph/Graph.hpp>":
+
+	cdef cppclass _OutNeighborRange "NetworKit::Graph::OutNeighborRange":
+		_NeighborIterator begin() except +
+		_NeighborIterator end() except +
+
+cdef extern from "<networkit/graph/Graph.hpp>":
+
+	cdef cppclass _InNeighborRange "NetworKit::Graph::InNeighborRange":
+		_NeighborIterator begin() except +
+		_NeighborIterator end() except +
+
 cdef class Graph:
+
 	""" An undirected graph (with optional weights) and parallel iterator methods.
 
 		Graph(n=0, weighted=False, directed=False)
@@ -1347,6 +1370,39 @@ cdef class Graph:
 			nnodes.insert(node)
 		return Graph().setThis(self._this.subgraphFromNodes(nnodes, includeOutNeighbors, includeInNeighbors))
 
+	def iterNeighbors(self, u):
+		"""
+		Wrapper class to iterate over a range of the neighbors of a node within
+		a for loop.
+		Parameters
+		----------
+		u : Node
+
+		Returns
+		-------
+		List of a node u's neighbours
+		"""
+		it = self._this.neighborRange(u).begin()
+		while it != self._this.neighborRange(u).end():
+			yield dereference(it)
+			preincrement(it)
+
+	def iterInNeighbors(self, u):
+		"""
+		Wrapper class to iterate over a range of the in neighbours of a node within
+		a for loop.
+		Parameters
+		----------
+		u : Node
+
+		Returns
+		-------
+		List of a node u's in neighbours
+		"""
+		it = self._this.inNeighborRange(u).begin()
+		while it != self._this.inNeighborRange(u).end():
+			yield dereference(it)
+			preincrement(it)
 
 cdef extern from "<networkit/distance/STSP.hpp>":
 	cdef cppclass _STSP "NetworKit::STSP"(_Algorithm):
