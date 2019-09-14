@@ -987,7 +987,7 @@ std::vector<std::pair<node, node>> Graph::randomEdges(count nr) const {
 	}
 	std::vector<std::pair<node, node>> edges;
 
-	std::default_random_engine gen{std::random_device{}()};
+	auto& gen = Aux::Random::getURNG();
 	std::vector<count> outDeg(upperNodeIdBound());
 	for (count i = 0; i < upperNodeIdBound(); ++i) {
 		outDeg[i] = outEdges[i].size();
