@@ -12,9 +12,11 @@
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/centrality/SpanningEdgeCentrality.hpp>
 
+#include <tlx/unused.hpp>
+
 #include <vector>
 #include <string>
-#include <math.h>
+#include <cmath>
 #include <fstream>
 #include <iomanip>
 
@@ -192,6 +194,7 @@ TEST_F(CommuteTimeDistanceGTest, runECTDSingleSource) {
 		});
 		DEBUG("sum1 = ", sum1);
 		DEBUG("sum2 = ", sum2);
+		tlx::unused(sum1, sum2);
 	//	INFO("Avg. relative error: ", error);
 	}
 }

@@ -16,6 +16,8 @@
 #include <networkit/io/KONECTGraphReader.hpp>
 #include <networkit/io/MemoryMappedFile.hpp>
 
+#include <tlx/unused.hpp>
+
 namespace NetworKit{
 	KONECTGraphReader::KONECTGraphReader(bool remapNodes, MultipleEdgesHandling handlingmethod):
 	remapNodes(remapNodes), multipleEdgesHandlingMethod(handlingmethod){}
@@ -171,6 +173,7 @@ namespace NetworKit{
 			
 			skipLineEnding(true);
 			DEBUG("Second property line read in. Edges: "+std::to_string(numberOfEdges)+ " / Nodes: "+std::to_string(numberOfNodes));
+			tlx::unused(numberOfEdges);
 		}
 
 

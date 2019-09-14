@@ -28,12 +28,12 @@
 
 // DEBUG and TRACE are no-ops if NETWORKIT_RELEASE_LOGGING is defined.
 #if defined(NETWORKIT_RELEASE_LOGGING)
-#	define DEBUG(...) do {} while(false)
-#	define DEBUGF(...) do {} while(false)
-
-#	define TRACE(...) do {} while(false)
-#	define TRACEF(...) do {} while(false)
-#	define TRACEPOINT do {} while(false)
+#   define NETWORKIT_LOG_DUMMY(...) do {} while(false)
+#	define DEBUG(...)  NETWORKIT_LOG_DUMMY(__VA_ARGS__)
+#	define DEBUGF(...) NETWORKIT_LOG_DUMMY(__VA_ARGS__)
+#	define TRACE(...)  NETWORKIT_LOG_DUMMY(__VA_ARGS__)
+#	define TRACEF(...) NETWORKIT_LOG_DUMMY(__VA_ARGS__)
+#	define TRACEPOINT  NETWORKIT_LOG_DUMMY()
 #else
 #	define DEBUG(...) LOG_AT(::Aux::Log::LogLevel::debug, __VA_ARGS__)
 #	define TRACE(...) LOG_AT(::Aux::Log::LogLevel::trace, __VA_ARGS__)

@@ -21,6 +21,8 @@
 #include <networkit/generators/quadtree/QuadtreeCartesianEuclid.hpp>
 #include <networkit/generators/quadtree/QuadtreePolarEuclid.hpp>
 
+#include <tlx/unused.hpp>
+
 namespace NetworKit {
 
 class QuadTreeGTest: public testing::Test {
@@ -623,7 +625,7 @@ TEST_F(QuadTreeGTest, debugTreeExport) {
 	count treeheight = quad.height();
 	DEBUG("Quadtree height: ", treeheight);
 	auto deg = [](double rad) -> double {return 180*rad/PI;};
-
+	tlx::unused(treeheight, deg);
 
 	index query = Aux::Random::integer(n-1);
 	radii[query] = HyperbolicSpace::hyperbolicRadiusToEuclidean(HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[query])*0.75);
@@ -654,6 +656,7 @@ TEST_F(QuadTreeGTest, debugTreeExport) {
 		auto distances = current.hyperbolicDistances(angles[query], radii[query]);
 		DEBUG("Mindistance to query:", distances.first);
 		DEBUG("ProbUB:", edgeProb(distances.first), " ProbLB:", edgeProb(distances.second));
+		tlx::unused(probUB, distances);
 
 		if (current.height() == 1) {
 			index i = 0;
@@ -662,6 +665,7 @@ TEST_F(QuadTreeGTest, debugTreeExport) {
 				double p = edgeProb(HyperbolicSpace::poincareMetric(angles[elem], radii[elem], angles[query], radii[query]));
 				DEBUG("\\drawPoint{", deg(angles[elem]), "}{", HyperbolicSpace::EuclideanRadiusToHyperbolic(radii[elem]), "}{", p, "}{", current.getID(), "}{", i, "}");
 				DEBUG("Leaf contains: ", angles[elem], ", ", radii[elem], " p: ", p);
+				tlx::unused(p);
 			}
 		}
 

@@ -56,6 +56,8 @@
 #include <networkit/community/PLP.hpp>
 #include <networkit/dynamics/GraphDifference.hpp>
 
+#include <tlx/unused.hpp>
+
 namespace NetworKit {
 
 class IOGTest: public testing::Test {};
@@ -333,6 +335,7 @@ TEST_F(IOGTest, debugDGSReader) {
 
 	G.forNodes([&](node n) {
 		DEBUG("DEGREE OF NODE: " , G.degree(n) , "\n");
+		tlx::unused(n);
 	});
 
 }

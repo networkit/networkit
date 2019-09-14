@@ -10,6 +10,8 @@
 #include <networkit/auxiliary/NumericTools.hpp>
 #include <networkit/auxiliary/Log.hpp>
 
+#include <tlx/unused.hpp>
+
 namespace NetworKit {
 
 bool DynamicNMIDistance::isInBoth(node u, const Partition& oldClustering, const Partition& newClustering) {
@@ -166,6 +168,7 @@ double DynamicNMIDistance::entropy(const Partition& clustering, count n, std::ve
 
 void DynamicNMIDistance::sanityCheck(double& NMI, double& NMID) const {
 	DEBUG("sanity check, NMI: " , NMI);
+	tlx::unused(NMI);
 
 	if (Aux::NumericTools::equal(NMID, 0.0)) {
 		NMID = 0.0;
