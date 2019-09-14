@@ -229,7 +229,7 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
 		}
 
 		//set neighbor probability
-		auto edgeProb = [n](double distance) -> double {return (1/distance)*exp(-11);};
+		auto edgeProb = [](double distance) -> double {return (1/distance)*exp(-11);};
 
 		//convert coordinates
 		runtime.start();

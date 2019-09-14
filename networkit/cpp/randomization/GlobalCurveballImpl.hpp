@@ -13,8 +13,9 @@
 #include <type_traits>
 #include <vector>
 
-#include <tlx/container/radix_heap.hpp>
 #include <tlx/algorithm/random_bipartition_shuffle.hpp>
+#include <tlx/container/radix_heap.hpp>
+#include <tlx/unused.hpp>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
@@ -120,7 +121,7 @@ public:
                     [](const std::pair<node, node> &p) { return p.second; });
 
                 assert(inputGraph.degree(x) - neighbourhood.size() <= 1);
-                (void)x;
+                tlx::unused(x, inputGraph);
                 pq_bucket.clear();
             }
         };
@@ -378,7 +379,7 @@ protected:
         for(const auto nv : neighbourhood_of_v) {
             const auto u_it = std::lower_bound(neighbourhood_of_u.begin(),
                 neighbourhood_of_u.end(), nv,
-                [MASK] (const node u, const node v) {return (u&MASK) < v;});
+                [=] (const node u, const node v) {return (u&MASK) < v;});
 
             if (u_it != neighbourhood_of_u.cend() && *u_it == nv) {
                 common_neighbours.push_back(nv);
@@ -387,7 +388,7 @@ protected:
                 if (!--remaining_hits)
                 {
                     auto new_end = std::remove_if(neighbourhood_of_u.begin(), neighbourhood_of_u.end(),
-                    [BIT] (const node u) {return u & BIT;});
+                        [=] (const node u) {return u & BIT;});
                     neighbourhood_of_u.resize(std::distance(neighbourhood_of_u.begin(), new_end));
                     remaining_hits = neighbourhood_of_u.size() / 2;
                     if (remaining_hits < 8) remaining_hits = neighbourhood_of_u.size();
@@ -399,7 +400,7 @@ protected:
         }
 
         auto new_end = std::remove_if(neighbourhood_of_u.begin(), neighbourhood_of_u.end(),
-                                      [BIT] (const node u) {return u & BIT;});
+                                      [=] (const node u) {return u & BIT;});
         disjoint_neighbours.insert(disjoint_neighbours.end(), neighbourhood_of_u.begin(), new_end);
 
         assert(2*common_neighbours.size() + disjoint_neighbours.size() == initial_size);
