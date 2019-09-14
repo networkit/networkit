@@ -664,7 +664,7 @@ void MaxentStress::randomSphereCoordinates(CoordinateVector &coordinates) const 
 	count numSet = 1;
 
 	while (numSet < G.numberOfNodes()) {
-		node start;
+		node start = none;
 		G.forNodes([&](node u) {
 			if (coordinateSet[u]) {
 				start = u;
