@@ -182,7 +182,6 @@ TEST_F(CommuteTimeDistanceGTest, runECTDSingleSource) {
 
 	for (auto graphFile: graphFiles) {
 		Graph G = reader.read(graphFile);
-		Aux::Timer timer;
 		CommuteTimeDistance ectd(G);
 		node u = G.randomNode();
 		double sum1 = ectd.runSingleSource(u);
