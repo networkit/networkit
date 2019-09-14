@@ -120,6 +120,8 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
 				outfile.write(reinterpret_cast<char*>(&weight), sizeof(float));
 			}
 				break;
+			case nkbg::WEIGHT_FORMAT::NONE:
+				break; // avoid compiler warning
 		}
 	};
 
@@ -170,6 +172,8 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
 			case nkbg::WEIGHT_FORMAT::FLOAT:
 				size += sizeof(float);
 				break;
+			case nkbg::WEIGHT_FORMAT::NONE:
+				break; // avoid compiler warning
 		}
 
 		return size;
