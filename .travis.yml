@@ -290,7 +290,7 @@ script:
  - mkdir core_build && cd "$_"
  - cmake -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD -DNETWORKIT_WARNINGS=ON ..
  - make -j2
- - ctest -V
+ - UBSAN_OPTIONS=print_stacktrace=1:halt_on_error=1 ASAN_OPTIONS=abort_on_error=1 ctest -V
  - cd ..
 
  # Finally, build the Python extension and run Python tests.
