@@ -12,6 +12,7 @@
 
 #include <tlx/math/clz.hpp>
 #include <tlx/math/ffs.hpp>
+#include <tlx/define/likely.hpp>
 
 namespace NetworKit {
 namespace nkbg {
@@ -44,43 +45,57 @@ static constexpr uint64_t WGHT_SHIFT = 0x1;
 
 /// Serializes value into a buffer and returns the number of bytes written.
 inline size_t varIntEncode(uint64_t value, uint8_t *buffer) noexcept {
-	uint64_t n;
-	if(!value) {
-		buffer[0] =1;
+	if (!value) {
+		buffer[0] = 1;
 		return 1;
 	}
 
-	if (value > (uint64_t(1) << 63)) {
-		n = 8;
+	int dataBytes;
+
+	if (TLX_UNLIKELY(value >= (1llu << 56))) {
+		// We have more than 56 bits of data, i.e. we need 8 data bytes.
 		buffer[0] = 0;
+		dataBytes = 8;
+
 	} else {
-		n = (64 - tlx::clz(value)) / 7;
-		buffer[0] = (1 << n) | (value << (n + 1));
-		value >>= 8 - (n + 1);
+		const auto bits = 64 - tlx::clz(value);
+		dataBytes = (bits - 1) / 7;
+
+		// number of bytes is encode by the number of trailing zeros
+		buffer[0] = static_cast<uint8_t>(1 << dataBytes);
+
+		// put the 8 - (dataBytes - 1) least significant bits into the remainder of the buffer byte
+		buffer[0] |= static_cast<uint8_t>(value << (dataBytes + 1));
+		value >>= 7 - dataBytes;
 	}
 
-	for(uint64_t i = 0; i < n; i++) {
-		buffer[i+1] = value & 0xFF;
+	for (uint64_t i = 0; i < dataBytes; i++) {
+		buffer[i + 1] = static_cast<uint8_t>(value & 0xFF);
 		value >>= 8;
 	}
-	return n + 1;
+
+	return dataBytes + 1;
 }
 
 /// Converts a serialized varint into an uint64_t value and returns the number of bytes consumed.
 inline size_t varIntDecode(const uint8_t *data, uint64_t &value) noexcept {
-	int n;
-	if(!data[0]) {
-		n = 8;
-		value = 0;
-	} else {
-		n = tlx::ffs(data[0]) -1;
-		value = data[0] >> (n+1);
+	int n = 8;
+	int bitsRecovered = 0;
+	uint64_t decoded = 0;
+
+	if (data[0]) {
+		n = tlx::ffs(data[0]) - 1;
+		decoded = data[0] >> (n + 1);
+		bitsRecovered = 7 - n;
 	}
 
-	for(int i = 0; i < n; i++) {
-		value |= data[i+1] << (8 - (n + 1) + i * 8);
+	for (int i = 0; i < n; i++) {
+		decoded |= static_cast<uint64_t>(data[i + 1]) << bitsRecovered;
+		bitsRecovered += 8;
 	}
-	return n+1;
+
+	value = decoded;
+	return n + 1;
 }
 
 } // namespace nkbg
