@@ -25,8 +25,6 @@ public:
 	Graph read(const std::string& path) override; 
 
 private:
-	static size_t decode(const uint8_t* data, uint64_t& result);
-
 	static int64_t decodeZigzag(uint64_t value);
 
 	count nodes;

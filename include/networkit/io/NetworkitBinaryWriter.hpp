@@ -41,5 +41,7 @@ private:
 	count chunks;
 	NetworkitBinaryWeights weightsType;
 };
-} /* namespace */
+
+} // namespace NetworKit
+
 #endif

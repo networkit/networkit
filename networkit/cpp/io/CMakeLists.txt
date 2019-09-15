@@ -3,8 +3,6 @@ networkit_add_module(io
     BinaryEdgeListPartitionWriter.cpp
     BinaryPartitionReader.cpp
     BinaryPartitionWriter.cpp
-    NetworkitBinaryReader.cpp
-    NetworkitBinaryWriter.cpp
     CoverReader.cpp
     CoverWriter.cpp
     DGSReader.cpp
@@ -27,6 +25,8 @@ networkit_add_module(io
     METISGraphReader.cpp
     METISGraphWriter.cpp
     METISParser.cpp
+    NetworkitBinaryReader.cpp
+    NetworkitBinaryWriter.cpp
     MatrixMarketReader.cpp
     PartitionReader.cpp
     PartitionWriter.cpp
