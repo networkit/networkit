@@ -103,7 +103,7 @@ inline size_t varIntDecode(const uint8_t *data, uint64_t &value) noexcept {
  * stored in the remaining upper 63 bits. This allows more effective compression using varint.
  */
 inline uint64_t zigzagEncode(int64_t value) noexcept {
-	return (value << 1) ^ (value >> 31);
+	return (static_cast<uint64_t>(value) << 1) ^ (int64_t(-1) * (value < 0));
 }
 
 //! Reverses zigzagEncode.
