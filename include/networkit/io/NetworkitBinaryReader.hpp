@@ -1,8 +1,9 @@
 /*
- * NetworkitBinaryReader.h
+ * NetworkitBinaryReader.hpp
  *
- *@author Charmaine Ndolo <charmaine.ndolo@b-tu.de>
+ *      Author: Charmaine Ndolo <charmaine.ndolo@b-tu.de>
  */
+
 #ifndef NETWORKIT_BINARY_READER_H
 #define NETWORKIT_BINARY_READER_H
 
