@@ -17,10 +17,6 @@ namespace NetworKit {
 
 NetworkitBinaryWriter::NetworkitBinaryWriter(uint64_t chunks, NetworkitBinaryWeights weightsType): chunks(chunks), weightsType(weightsType) {}
 
-uint64_t NetworkitBinaryWriter::encodeZigzag(int64_t value) {
-	return (value << 1) ^ (value >> 31);
-}
-
 void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
 
 	std::ofstream outfile(path, std::ios::binary);
@@ -113,7 +109,7 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
 				break;
 			case nkbg::WEIGHT_FORMAT::SIGNED_VARINT:
 			{
-				uint64_t weight = encodeZigzag(w);
+				uint64_t weight = nkbg::zigzagEncode(w);
 				weightSize = nkbg::varIntEncode(weight,tmp);
 				outfile.write(reinterpret_cast<char*>(tmp), weightSize);
 			}
@@ -167,7 +163,7 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
 				break;
 			case nkbg::WEIGHT_FORMAT::SIGNED_VARINT:
 			{
-				uint64_t weight = encodeZigzag(w);
+				uint64_t weight = nkbg::zigzagEncode(w);
 				size += nkbg::varIntEncode(weight,tmp);
 			}
 				break;

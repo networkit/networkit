@@ -943,7 +943,7 @@ TEST_F(IOGTest, testNetworkitBinaryDirectedSelfLoops) {
 	ASSERT_EQ(G.numberOfSelfLoops(), G2.numberOfSelfLoops());
 }
 
-TEST_F(IOGTest, testNetworkitVarInt) {
+TEST_F(IOGTest, testNetworkitBinaryVarInt) {
 	std::array<uint8_t, 10> buffer;
 
 	// write defined values into buffer
@@ -999,6 +999,25 @@ TEST_F(IOGTest, testNetworkitVarInt) {
 	// make sure we touched each bit at least once
 	ASSERT_EQ(checked_bits, std::numeric_limits<uint64_t>::max());
 
+}
+
+TEST_F(IOGTest, testNetworkitBinaryZigzag) {
+	std::mt19937_64 gen(1);
+	std::uniform_int_distribution<uint64_t> distr(0, (std::numeric_limits<uint64_t>::max() >> 1) - 1);
+
+	for(int i = 0; i < 10000; ++i) {
+		auto check = [] (int64_t value) {
+			const auto encoded = nkbg::zigzagEncode(value);
+			const auto decoded = nkbg::zigzagDecode(encoded);
+
+			ASSERT_EQ(value, decoded);
+			ASSERT_LE(encoded, 2u * static_cast<uint64_t>(std::abs(value)));
+		};
+
+		const auto x = distr(gen);
+		check(x);
+		check(-1 * x);
+	}
 }
 
 } /* namespace NetworKit */

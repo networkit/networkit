@@ -13,10 +13,6 @@
 
 namespace NetworKit {
 
-int64_t NetworkitBinaryReader::decodeZigzag(uint64_t value) {
-	 return (value >> 1) ^ (-(value & 1));
-}
-
 Graph NetworkitBinaryReader::read(const std::string& path) {
 	nkbg::Header header = {};
 	nkbg::WEIGHT_FORMAT weightFormat;
@@ -158,7 +154,7 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 					{
 						uint64_t unsignedWeight;
 						wghtOff += nkbg::varIntDecode(reinterpret_cast<const uint8_t*>(adjWghtIt + wghtOff), unsignedWeight);
-						weight = decodeZigzag(unsignedWeight);
+						weight = nkbg::zigzagDecode(unsignedWeight);
 					}
 						break;
 					case nkbg::WEIGHT_FORMAT::FLOAT:
@@ -200,7 +196,7 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 					{
 						uint64_t unsignedWeight;
 						transWghtOff += nkbg::varIntDecode(reinterpret_cast<const uint8_t*>(transpWghtIt + transWghtOff), unsignedWeight);
-						weight = decodeZigzag(unsignedWeight);
+						weight = nkbg::zigzagDecode(unsignedWeight);
 					}
 						break;
 					case nkbg::WEIGHT_FORMAT::FLOAT:

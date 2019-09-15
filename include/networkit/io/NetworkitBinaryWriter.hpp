@@ -34,10 +34,6 @@ public:
 	void write(const Graph &G, const std::string &path) override;
 
 private:
-	static size_t encode(uint64_t value, uint8_t* buffer);
-
-	static uint64_t encodeZigzag(int64_t value);
-
 	count chunks;
 	NetworkitBinaryWeights weightsType;
 };

@@ -98,6 +98,19 @@ inline size_t varIntDecode(const uint8_t *data, uint64_t &value) noexcept {
 	return n + 1;
 }
 
+/**
+ * Encodes a singed value, s.t. the sign bit is in the LSB bit, while the absolute value is
+ * stored in the remaining upper 63 bits. This allows more effective compression using varint.
+ */
+inline uint64_t zigzagEncode(int64_t value) noexcept {
+	return (value << 1) ^ (value >> 31);
+}
+
+//! Reverses zigzagEncode.
+inline int64_t zigzagDecode(uint64_t value) noexcept {
+	return (value >> 1) ^ (-(value & 1));
+}
+
 } // namespace nkbg
 } // namespace NetworKit
 
