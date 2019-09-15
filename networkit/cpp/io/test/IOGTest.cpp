@@ -7,11 +7,14 @@
 
 #include <gtest/gtest.h>
 
-#include <fstream>
-#include <unordered_set>
-#include <vector>
+#include <array>
+#include <cassert>
 #include <chrono>
 #include <iostream>
+#include <fstream>
+#include <limits>
+#include <unordered_set>
+#include <vector>
 
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/METISGraphWriter.hpp>
@@ -40,6 +43,7 @@
 #include <networkit/io/BinaryPartitionReader.hpp>
 #include <networkit/io/BinaryEdgeListPartitionWriter.hpp>
 #include <networkit/io/BinaryEdgeListPartitionReader.hpp>
+#include <networkit/io/NetworkitBinaryGraph.hpp>
 #include <networkit/io/NetworkitBinaryReader.hpp>
 #include <networkit/io/NetworkitBinaryWriter.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
@@ -938,4 +942,63 @@ TEST_F(IOGTest, testNetworkitBinaryDirectedSelfLoops) {
 	Graph G2 = reader.read("output/loops");
 	ASSERT_EQ(G.numberOfSelfLoops(), G2.numberOfSelfLoops());
 }
+
+TEST_F(IOGTest, testNetworkitVarInt) {
+	std::array<uint8_t, 10> buffer;
+
+	// write defined values into buffer
+	{
+		uint8_t i = 0;
+		for(auto& x : buffer)
+			x = i++;
+	}
+
+	std::mt19937_64 gen{1};
+
+	uint64_t checked_bits = 0;
+
+	for (int bits = 0; bits < 64; ++bits) {
+		auto min = uint64_t(1) << bits;
+		auto max = 2*min - 1;
+
+		// special cases
+		if (bits == 0) {
+			min = 0;
+			max = 0;
+		} else if (bits == 64) {
+			max = std::numeric_limits<uint64_t>::max();
+		}
+
+		std::uniform_int_distribution<uint64_t> distr{min, max};
+
+		const auto nSamples = std::min<size_t>(10 * max + 2, 1000);
+
+		for (size_t i = 0; i < nSamples; ++i) {
+			// first two iterations test min/max values, all other random values
+			const auto orig = [&] {
+				if (i == 0) return min;
+				if (i == 1) return max;
+				return distr(gen);
+			}();
+
+			uint64_t valueRead;
+			const auto bytesWritten = nkbg::varIntEncode(orig, buffer.data());
+			const auto bytesRead    = nkbg::varIntDecode(buffer.data(), valueRead);
+
+			ASSERT_EQ(bytesWritten, bytesRead) << "bits=" << bits << ", i=" << i;
+			ASSERT_EQ(valueRead, orig)         << "bits=" << bits << ", i=" << i;
+			ASSERT_GT(buffer[bytesWritten-1], 0) << "bits=" << bits << ", i=" << i;
+
+			for(size_t j = bytesWritten; j < buffer.size(); ++j)
+				ASSERT_EQ(buffer[j], j);
+
+			checked_bits |= orig;
+		}
+	}
+
+	// make sure we touched each bit at least once
+	ASSERT_EQ(checked_bits, std::numeric_limits<uint64_t>::max());
+
+}
+
 } /* namespace NetworKit */
