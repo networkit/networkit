@@ -43,7 +43,34 @@ static constexpr uint64_t DIR_MASK = 0x1; // bit 0
 static constexpr uint64_t WGHT_MASK = 0xE; //bit 1-3
 static constexpr uint64_t WGHT_SHIFT = 0x1;
 
-/// Serializes value into a buffer and returns the number of bytes written.
+/**
+ * Serializes value into a buffer and returns the number of bytes written.
+ * The space required to store an integer x ranges between 1 and 9 bytes.
+ *
+ * The first byte (buffer[0]) encodes the number of following data bytes
+ * in the position y in [0, 7] of the least significant bit that is asserted.
+ * If the header byte is zero (i.e., it contains no asserted bits), exactly
+ * y=8 data bytes follow.
+ * Possibly remaining bits in the header are used to store the least
+ * significant bits of x. The subsequent data bytes store the remainder of x
+ * in little endian, i.e. * the eight least significant bits (not stored in
+ * the header) are stored in buffer[1], the next higher eight bits in
+ * buffer[2] and so on.
+ *
+ * Example:
+ * x = 0b0GFE'DCBA with G=1 requires 7 bit of storage. Hence it fits
+ * completely into the header which is
+ * buffer[0] = 0bGFED'CBA|1 where bit 0 encodes that no
+ * data bytes follow while bits 1 to 7 store x.
+ *
+ * x = 0bHGFE'DCBA with H=1 requires 8 bit of storage. Hence an
+ * additional data byte is required:
+ *
+ * buffer[0] = 0bFEDC'BA|10 where bits 0 and 1 encode that one data byte will follow
+ * buffer[1] = 0b0000'00|HG where bits 0 and 1 encode the remaining two bits
+ * of x, and bits 2 to 7 are filled as zeros
+ */
+
 inline size_t varIntEncode(uint64_t value, uint8_t *buffer) noexcept {
 	if (!value) {
 		buffer[0] = 1;
