@@ -5823,6 +5823,13 @@ cdef class ConnectedComponents(Algorithm):
 		return (<_ConnectedComponents*>(self._this)).componentOfNode(v)
 
 	def getComponentSizes(self):
+		""" Get the component sizes.
+
+		Returns
+		------
+		map:
+			The map from component to size.
+		"""
 		return (<_ConnectedComponents*>(self._this)).getComponentSizes()
 
 	def getComponents(self):
