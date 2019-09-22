@@ -444,7 +444,7 @@ class Graph final {
     auto callBFSHandle(F &f, node u, count) const -> decltype(f(u)) {
         return f(u);
     }
-
+public:
     /**
      * Class to iterate over the in/out neighbors of a node.
      */
@@ -453,25 +453,30 @@ class Graph final {
       public:
         // The value type of the neighbors (i.e. nodes). Returned by
         // operator*().
-        typedef node value_type;
+        using value_type = node;
 
         // Reference to the value_type, required by STL.
-        typedef value_type &reference;
+        using reference = value_type &;
 
         // Pointer to the value_type, required by STL.
-        typedef value_type *pointer;
+        using pointer = value_type *;
 
         // STL iterator category.
-        typedef std::forward_iterator_tag iterator_category;
+        using iterator_category = std::forward_iterator_tag;
 
         // Signed integer type of the result of subtracting two pointers,
         // required by STL.
-        typedef ptrdiff_t difference_type;
+        using difference_type = ptrdiff_t;
 
         // Own type.
-        typedef NeighborIterator self;
+        using self = NeighborIterator;
 
         NeighborIterator(std::vector<node>::const_iterator nodesIter) : nIter(nodesIter) {}
+
+        /**
+         * @brief WARNING: This contructor is required for Python and should not be used as the iterator is not initialised.
+         */
+        NeighborIterator() {}
 
         NeighborIterator operator++() {
             auto prev = *this;
@@ -518,23 +523,23 @@ class Graph final {
       public:
         // The value type of the neighbors (i.e. nodes). Returned by
         // operator*().
-        typedef std::pair<node, edgeweight> value_type;
+        using value_type = std::pair<node, edgeweight>;
 
         // Reference to the value_type, required by STL.
-        typedef value_type &reference;
+        using reference = value_type &;
 
         // Pointer to the value_type, required by STL.
-        typedef value_type *pointer;
+        using pointer = value_type *;
 
         // STL iterator category.
-        typedef std::forward_iterator_tag iterator_category;
+        using iterator_category = std::forward_iterator_tag;
 
         // Signed integer type of the result of subtracting two pointers,
         // required by STL.
-        typedef ptrdiff_t difference_type;
+        using difference_type = ptrdiff_t;
 
         // Own type.
-        typedef NeighborWeightIterator self;
+        using self = NeighborWeightIterator;
 
         NeighborWeightIterator(
             std::vector<node>::const_iterator nodesIter,
@@ -590,25 +595,34 @@ class Graph final {
      */
     template <bool InEdges = false> class NeighborRange {
       public:
-        NeighborRange(const Graph &G, node u) : G(G), u(u){};
+        NeighborRange(const Graph &G, node u) : G(&G), u(u){
+			assert(G.hasNode(u));
+        };
+
+        NeighborRange() : G(nullptr) {};
 
         NeighborIterator begin() const {
+            assert(G != nullptr);
             if (InEdges)
-                return NeighborIterator(G.inEdges[u].begin());
-            return NeighborIterator(G.outEdges[u].begin());
+                return NeighborIterator(G->inEdges[u].begin());
+            return NeighborIterator(G->outEdges[u].begin());
         }
 
         NeighborIterator end() const {
+            assert(G != nullptr);
             if (InEdges)
-                return NeighborIterator(G.inEdges[u].end());
-            return NeighborIterator(G.outEdges[u].end());
+                return NeighborIterator(G->inEdges[u].end());
+            return NeighborIterator(G->outEdges[u].end());
         }
 
       private:
-        const Graph &G;
-        const node u;
+        const Graph *G;
+        node u;
     };
 
+    using OutNeighborRange = NeighborRange<false>;
+
+    using InNeighborRange = NeighborRange<true>;
     /**
      * Wrapper class to iterate over a range of the neighbors of a node
      * including the edge weights within a for loop.
@@ -640,7 +654,6 @@ class Graph final {
         const node u;
     };
 
-  public:
     /**
      * Create a graph of @a n nodes. The graph has assignable edge weights if @a
      * weighted is set to <code>true</code>. If @a weighted is set to
