@@ -1,7 +1,7 @@
 /*
  * NetworkitBinaryWriter.hpp
  *
- * @author Charmaine Ndolo <charmaine.ndolo@b-tu.de>
+ *      Author: Charmaine Ndolo <charmaine.ndolo@b-tu.de>
  */
 
 #ifndef NETWORKIT_BINARY_WRITER_H
@@ -12,11 +12,6 @@
 
 namespace NetworKit {
 
-/**
- * @ingroup io
- *
- * Writes a graph in the custom Networkit format documented in cpp/io/NetworkitGraph.md
- */
 enum class NetworkitBinaryWeights {
 	none,
 	unsignedFormat,
@@ -26,6 +21,11 @@ enum class NetworkitBinaryWeights {
 	autoDetect
 };
 
+/**
+ * @ingroup io
+ *
+ * Writes a graph in the custom Networkit format documented in cpp/io/NetworkitGraph.md
+ */
 class NetworkitBinaryWriter final : public GraphWriter {
 
 public:
@@ -34,12 +34,10 @@ public:
 	void write(const Graph &G, const std::string &path) override;
 
 private:
-	static size_t encode(uint64_t value, uint8_t* buffer);
-
-	static uint64_t encodeZigzag(int64_t value);
-
 	count chunks;
 	NetworkitBinaryWeights weightsType;
 };
-} /* namespace */
+
+} // namespace NetworKit
+
 #endif

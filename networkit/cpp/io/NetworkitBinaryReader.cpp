@@ -7,32 +7,11 @@
 #include <networkit/io/NetworkitBinaryReader.hpp>
 #include <networkit/io/NetworkitBinaryGraph.hpp>
 #include <networkit/io/MemoryMappedFile.hpp>
-#include <tlx/math/ffs.hpp>
 #include <fstream>
 #include <string.h>
 #include <atomic>
 
 namespace NetworKit {
-
-size_t NetworkitBinaryReader::decode(const uint8_t* data, uint64_t& value) {
-	int n;
-	if(!data[0]) {
-		n = 8;
-		value = 0;
-	} else {
-		n = tlx::ffs(data[0]) -1;
-		value = data[0] >> (n+1);
-	}
-
-	for(int i = 0; i < n; i++) {
-		value |= data[i+1] << (8 - (n + 1) + i * 8);
-	}
-	return n+1;
-}
-
-int64_t NetworkitBinaryReader::decodeZigzag(uint64_t value) {
-	 return (value >> 1) ^ (-(value & 1));
-}
 
 Graph NetworkitBinaryReader::read(const std::string& path) {
 	nkbg::Header header = {};
@@ -146,9 +125,9 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 		for (uint64_t i = 0; i < n; i++) {
 			uint64_t curr = vertex+i;
 			uint64_t outNbrs;
-			off += NetworkitBinaryReader::decode(reinterpret_cast<const uint8_t*>(adjIt + off), outNbrs);
+			off += nkbg::varIntDecode(reinterpret_cast<const uint8_t*>(adjIt + off), outNbrs);
 			uint64_t inNbrs;
-			transpOff += NetworkitBinaryReader::decode(reinterpret_cast<const uint8_t*>(transpIt + transpOff), inNbrs);
+			transpOff += nkbg::varIntDecode(reinterpret_cast<const uint8_t*>(transpIt + transpOff), inNbrs);
 			if(!directed) {
 				G.preallocateUndirected(curr, outNbrs+inNbrs);
 			} else  {
@@ -158,12 +137,12 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 			for (uint64_t j = 0; j < outNbrs; j++) {
 				uint64_t add;
 				double weight;
-				off += NetworkitBinaryReader::decode(reinterpret_cast<const uint8_t*>(adjIt + off), add);
+				off += nkbg::varIntDecode(reinterpret_cast<const uint8_t*>(adjIt + off), add);
 				switch(weightFormat) {
 					case nkbg::WEIGHT_FORMAT::VARINT:
 					{
 						uint64_t unsignedWeight;
-						wghtOff += NetworkitBinaryReader::decode(reinterpret_cast<const uint8_t*>(adjWghtIt + wghtOff), unsignedWeight);
+						wghtOff += nkbg::varIntDecode(reinterpret_cast<const uint8_t*>(adjWghtIt + wghtOff), unsignedWeight);
 						weight = unsignedWeight;
 					}
 						break;
@@ -174,8 +153,8 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 					case nkbg::WEIGHT_FORMAT::SIGNED_VARINT:
 					{
 						uint64_t unsignedWeight;
-						wghtOff += NetworkitBinaryReader::decode(reinterpret_cast<const uint8_t*>(adjWghtIt + wghtOff), unsignedWeight);
-						weight = decodeZigzag(unsignedWeight);
+						wghtOff += nkbg::varIntDecode(reinterpret_cast<const uint8_t*>(adjWghtIt + wghtOff), unsignedWeight);
+						weight = nkbg::zigzagDecode(unsignedWeight);
 					}
 						break;
 					case nkbg::WEIGHT_FORMAT::FLOAT:
@@ -200,12 +179,12 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 			for (uint64_t j = 0; j < inNbrs; j++) {
 				uint64_t add;
 				double weight =1;
-				transpOff += NetworkitBinaryReader::decode(reinterpret_cast<const uint8_t*>(transpIt + transpOff), add);
+				transpOff += nkbg::varIntDecode(reinterpret_cast<const uint8_t*>(transpIt + transpOff), add);
 				switch(weightFormat) {
 					case nkbg::WEIGHT_FORMAT::VARINT:
 					{
 						uint64_t unsignedWeight;
-						transWghtOff += NetworkitBinaryReader::decode(reinterpret_cast<const uint8_t*>(transpWghtIt + transWghtOff), unsignedWeight);
+						transWghtOff += nkbg::varIntDecode(reinterpret_cast<const uint8_t*>(transpWghtIt + transWghtOff), unsignedWeight);
 						weight = unsignedWeight;
 					}
 						break;
@@ -216,8 +195,8 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 					case nkbg::WEIGHT_FORMAT::SIGNED_VARINT:
 					{
 						uint64_t unsignedWeight;
-						transWghtOff += NetworkitBinaryReader::decode(reinterpret_cast<const uint8_t*>(transpWghtIt + transWghtOff), unsignedWeight);
-						weight = decodeZigzag(unsignedWeight);
+						transWghtOff += nkbg::varIntDecode(reinterpret_cast<const uint8_t*>(transpWghtIt + transWghtOff), unsignedWeight);
+						weight = nkbg::zigzagDecode(unsignedWeight);
 					}
 						break;
 					case nkbg::WEIGHT_FORMAT::FLOAT:

@@ -1,8 +1,9 @@
 /*
- * NetworkitBinaryReader.h
+ * NetworkitBinaryReader.hpp
  *
- *@author Charmaine Ndolo <charmaine.ndolo@b-tu.de>
+ *      Author: Charmaine Ndolo <charmaine.ndolo@b-tu.de>
  */
+
 #ifndef NETWORKIT_BINARY_READER_H
 #define NETWORKIT_BINARY_READER_H
 
@@ -25,10 +26,6 @@ public:
 	Graph read(const std::string& path) override; 
 
 private:
-	static size_t decode(const uint8_t* data, uint64_t& result);
-
-	static int64_t decodeZigzag(uint64_t value);
-
 	count nodes;
 	count chunks;
 	bool directed;
