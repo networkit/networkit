@@ -7239,7 +7239,7 @@ cdef class DegreeCentrality(Centrality):
  	Optional normalization by maximum degree. The run() method runs in O(m) time, where m is the number of
 	edges in the graph.
 
- 	DegreeCentrality(G, normalized=False)
+	DegreeCentrality(G, normalized=False, outDeg=True, ignoreSelfLoops=True)
 
  	Constructs the DegreeCentrality class for the given Graph `G`. If the scores should be normalized,
  	then set `normalized` to True.
@@ -7250,6 +7250,10 @@ cdef class DegreeCentrality(Centrality):
  		The graph.
  	normalized : bool, optional
  		Normalize centrality values in the interval [0,1].
+        outdeg : bool, optional
+		If set to true, computes the centrality based on out-degrees, otherwise based on the in-degrees.
+        ignoreSelfLoops : bool, optional
+		If set to true, self loops will not be taken into account.
 	"""
 
 	def __cinit__(self, Graph G, bool_t normalized=False, bool_t outDeg = True, bool_t ignoreSelfLoops=True):
