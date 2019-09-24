@@ -33,12 +33,12 @@ namespace NetworKit {
 class DGSReader: public DynamicGraphReader {
 
 public:
-	
-	/**
-	 * @param[in]	path	Path to file in DGS format.
-	 * @param[in]	Gproxy	Graph event proxy receives the events from the file.
-	 */
-	virtual void read(std::string path, GraphEventProxy& Gproxy);
+    
+    /**
+     * @param[in]	path	Path to file in DGS format.
+     * @param[in]	Gproxy	Graph event proxy receives the events from the file.
+     */
+    virtual void read(std::string path, GraphEventProxy& Gproxy);
 };
 
 } /* namespace NetworKit */

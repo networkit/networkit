@@ -21,27 +21,27 @@ class EdgeScore : public Algorithm {
 
 public:
 
-	EdgeScore(const Graph& G);
+    EdgeScore(const Graph& G);
 
-	/** Compute the edge score. */
-	virtual void run();
+    /** Compute the edge score. */
+    virtual void run();
 
-	/** Get a vector containing the score for each edge in the graph.
-	@Return the edge scores calculated by @link run().
-	*/
-	virtual std::vector<T> scores() const;
+    /** Get a vector containing the score for each edge in the graph.
+    @Return the edge scores calculated by @link run().
+    */
+    virtual std::vector<T> scores() const;
 
-	/** Get the edge score of the edge with the given edge id.
-	*/
-	virtual T score(edgeid eid);
+    /** Get the edge score of the edge with the given edge id.
+    */
+    virtual T score(edgeid eid);
 
-	/** Get the edge score of the given edge.
-	*/
-	virtual T score(node u, node v);
+    /** Get the edge score of the given edge.
+    */
+    virtual T score(node u, node v);
 
 protected:
-	const Graph& G;
-	std::vector<T> scoreData;
+    const Graph& G;
+    std::vector<T> scoreData;
 
 };
 

@@ -15,63 +15,63 @@ namespace NetworKit {
 
 class GraphBenchmark: public testing::Test {
 protected:
-	const int64_t n {1000};
+    const int64_t n {1000};
 };
 
 
 // TASK: benchmark edge insertions standard vs raw
 
 TEST_F(GraphBenchmark, edgeInsertions_noop_seq) {
-	int64_t n = this->n;
-	Aux::Timer runtime;
+    int64_t n = this->n;
+    Aux::Timer runtime;
 
-	Graph G(n);
-	int64_t i = 0;
-	runtime.start();
-	G.forNodePairs([&](node, node) {
-		i++;
-		// G.insertEdge(u, v);
-	});
-	runtime.stop();
+    Graph G(n);
+    int64_t i = 0;
+    runtime.start();
+    G.forNodePairs([&](node, node) {
+        i++;
+        // G.insertEdge(u, v);
+    });
+    runtime.stop();
 
-	TRACE("counted i = " , i);
+    TRACE("counted i = " , i);
 
-	INFO("[DONE] edgeInsertions_noop_seq (" , runtime.elapsed().count() , " ms)");
+    INFO("[DONE] edgeInsertions_noop_seq (" , runtime.elapsed().count() , " ms)");
 
 }
 
 TEST_F(GraphBenchmark, edgeInsertions_noop_par) {
-	int64_t n = this->n;
-	Aux::Timer runtime;
+    int64_t n = this->n;
+    Aux::Timer runtime;
 
-	Graph G(n);
-	int64_t i = 0;
-	runtime.start();
-	G.parallelForNodePairs([&](node, node) {
-		i++;
-		// G.insertEdge(u, v);
-	});
-	runtime.stop();
+    Graph G(n);
+    int64_t i = 0;
+    runtime.start();
+    G.parallelForNodePairs([&](node, node) {
+        i++;
+        // G.insertEdge(u, v);
+    });
+    runtime.stop();
 
-	TRACE("counted i = " , i);
+    TRACE("counted i = " , i);
 
-	INFO("[DONE] edgeInsertions_noop_par (" , runtime.elapsed().count() , " ms)");
+    INFO("[DONE] edgeInsertions_noop_par (" , runtime.elapsed().count() , " ms)");
 
 }
 
 TEST_F(GraphBenchmark, edgeInsertions_standard_seq) {
-	count n = this->n;
-	Aux::Timer runtime;
+    count n = this->n;
+    Aux::Timer runtime;
 
-	Graph G(n);
-	runtime.start();
-	G.forNodePairs([&](node u, node v) {
-		G.addEdge(u, v);
-	});
-	runtime.stop();
+    Graph G(n);
+    runtime.start();
+    G.forNodePairs([&](node u, node v) {
+        G.addEdge(u, v);
+    });
+    runtime.stop();
 
-	INFO("[DONE] edgeInsertions_standard_seq (" , runtime.elapsed().count() , " ms)");
-	EXPECT_EQ((n * (n-1)) / 2, G.numberOfEdges());
+    INFO("[DONE] edgeInsertions_standard_seq (" , runtime.elapsed().count() , " ms)");
+    EXPECT_EQ((n * (n-1)) / 2, G.numberOfEdges());
 
 
 }
@@ -143,31 +143,31 @@ TEST_F(GraphBenchmark, edgeInsertions_standard_seq) {
 
 
 TEST_F(GraphBenchmark, weightedDegree_standard_seq) {
-	int64_t n = this->n;
-	Graph G(n);
-	G.forNodePairs([&](node u, node v){
-		G.addEdge(u,v);
-	});
+    int64_t n = this->n;
+    Graph G(n);
+    G.forNodePairs([&](node u, node v){
+        G.addEdge(u,v);
+    });
 
-	Aux::Timer runtime;
+    Aux::Timer runtime;
 
-	runtime.start();
-	std::vector<double> weightedDegree(n, 0.0);
+    runtime.start();
+    std::vector<double> weightedDegree(n, 0.0);
 
-	G.forNodes([&](node v) {
-		weightedDegree[v] = G.weightedDegree(v);
-	});
-	runtime.stop();
+    G.forNodes([&](node v) {
+        weightedDegree[v] = G.weightedDegree(v);
+    });
+    runtime.stop();
 
-	INFO("[DONE] (" , runtime.elapsed().count() , " ms)");
+    INFO("[DONE] (" , runtime.elapsed().count() , " ms)");
 
-	// test correctness of result
-	bool correct = true;
-	G.forNodes([&](node v){
-		correct &= (weightedDegree[v] == (n - 1));
-	});
+    // test correctness of result
+    bool correct = true;
+    G.forNodes([&](node v){
+        correct &= (weightedDegree[v] == (n - 1));
+    });
 
-	EXPECT_TRUE(correct);
+    EXPECT_TRUE(correct);
 }
 
 
@@ -178,31 +178,31 @@ TEST_F(GraphBenchmark, weightedDegree_standard_seq) {
 // TEST: parallelize
 
 TEST_F(GraphBenchmark, weightedDegree_standard_par) {
-	int64_t n = this->n;
-	Graph G(n);
-	G.forNodePairs([&](node u, node v){
-		G.addEdge(u,v);
-	});
+    int64_t n = this->n;
+    Graph G(n);
+    G.forNodePairs([&](node u, node v){
+        G.addEdge(u,v);
+    });
 
-	Aux::Timer runtime;
+    Aux::Timer runtime;
 
-	runtime.start();
-	std::vector<double> weightedDegree(n, 0.0);
+    runtime.start();
+    std::vector<double> weightedDegree(n, 0.0);
 
-	G.parallelForNodes([&](node v) {
-		weightedDegree[v] = G.weightedDegree(v);
-	});
-	runtime.stop();
+    G.parallelForNodes([&](node v) {
+        weightedDegree[v] = G.weightedDegree(v);
+    });
+    runtime.stop();
 
-	INFO("[DONE] (" , runtime.elapsed().count() , " ms)");
+    INFO("[DONE] (" , runtime.elapsed().count() , " ms)");
 
-	// test correctness of result
-	bool correct = true;
-	G.forNodes([&](node v){
-		correct &= (weightedDegree[v] == (n - 1));
-	});
+    // test correctness of result
+    bool correct = true;
+    G.forNodes([&](node v){
+        correct &= (weightedDegree[v] == (n - 1));
+    });
 
-	EXPECT_TRUE(correct);
+    EXPECT_TRUE(correct);
 }
 
 

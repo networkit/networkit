@@ -29,31 +29,31 @@ namespace StringTools {
  */
 template<typename Iterator, typename Character>
 std::vector<std::string> split(Iterator begin, Iterator end, Character delim = Character{' '}) {
-	
-	// measurements showed that precalculating the number of tokens and
-	// reserving space for them was in fact slower than just letting
-	// the vector grow naturally.
-	std::vector<std::string> tokens;
-	
-	auto it = begin;
-	while (it != end) {
-		auto tmp = std::find(it, end, delim);
-		tokens.emplace_back(it, tmp);
-		if (tmp == end) {
-			break;
-		}
-		it = tmp;
-		++it;
-		
-	}
-	return tokens;
+    
+    // measurements showed that precalculating the number of tokens and
+    // reserving space for them was in fact slower than just letting
+    // the vector grow naturally.
+    std::vector<std::string> tokens;
+    
+    auto it = begin;
+    while (it != end) {
+        auto tmp = std::find(it, end, delim);
+        tokens.emplace_back(it, tmp);
+        if (tmp == end) {
+            break;
+        }
+        it = tmp;
+        ++it;
+        
+    }
+    return tokens;
 }
 
 /**
  * Split a string at delimiter and return vector of parts.
  */
 inline std::vector<std::string> split(const std::string& s, char delim = ' ') {
-	return split(s.begin(), s.end(), delim);
+    return split(s.begin(), s.end(), delim);
 }
 
 /**

@@ -26,68 +26,68 @@ namespace NetworKit {
 template<class T>
 class Coordinates {
 protected:
-	std::vector<Point<T> > data;
+    std::vector<Point<T> > data;
 
 
 public:
-	/**
-	 * Allocates space for @a numNodes entries.
-	 */
-	void init(count numNodes) {
-		data.resize(numNodes);
-	}
+    /**
+     * Allocates space for @a numNodes entries.
+     */
+    void init(count numNodes) {
+        data.resize(numNodes);
+    }
 
-	/**
-	 * Sets entry at index @a v to value @a value.
-	 */
-	void setCoordinate(index v, const Point<T>& value) {
-		data[v] = value;
-	}
+    /**
+     * Sets entry at index @a v to value @a value.
+     */
+    void setCoordinate(index v, const Point<T>& value) {
+        data[v] = value;
+    }
 
-	/**
-	 * @return Entry at index @a v.
-	 */
-	Point<T>& getCoordinate(index v) {
-		return data[v];
-	}
+    /**
+     * @return Entry at index @a v.
+     */
+    Point<T>& getCoordinate(index v) {
+        return data[v];
+    }
 
-	/**
-	 * @return Minimum value of all coordinates with respect to dimension @a dim.
-	 */
-	T minCoordinate(count dim) {
-		T value = data[0][dim];
-		for (index i = 1; i < data.size(); ++i) {
-			T temp = data[i][dim];
-			if (temp < value) {
-				value = temp;
-			}
-		}
-		return value;
-	}
+    /**
+     * @return Minimum value of all coordinates with respect to dimension @a dim.
+     */
+    T minCoordinate(count dim) {
+        T value = data[0][dim];
+        for (index i = 1; i < data.size(); ++i) {
+            T temp = data[i][dim];
+            if (temp < value) {
+                value = temp;
+            }
+        }
+        return value;
+    }
 
-	/**
-	 * @return Maximum value of all coordinates with respect to dimension @a dim.
-	 */
-	T maxCoordinate(count dim) {
-		T value = data[0][dim];
-		for (index i = 1; i < data.size(); ++i) {
-			T temp = data[i][dim];
-			if (temp > value) {
-				value = temp;
-			}
-		}
-		return value;
-	}
+    /**
+     * @return Maximum value of all coordinates with respect to dimension @a dim.
+     */
+    T maxCoordinate(count dim) {
+        T value = data[0][dim];
+        for (index i = 1; i < data.size(); ++i) {
+            T temp = data[i][dim];
+            if (temp > value) {
+                value = temp;
+            }
+        }
+        return value;
+    }
 
-	/**
-	 * Insert coordinates of a new vertex.
-	 */
-	void addCoordinates(std::vector<T>& values) {
-		Point<T> p(values);
-		data.push_back(p);
-	}
+    /**
+     * Insert coordinates of a new vertex.
+     */
+    void addCoordinates(std::vector<T>& values) {
+        Point<T> p(values);
+        data.push_back(p);
+    }
 
-	virtual ~Coordinates() {}
+    virtual ~Coordinates() {}
 };
 
 

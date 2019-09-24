@@ -96,7 +96,7 @@ std::size_t index(std::size_t max);
  */
 template<typename Container>
 typename Container::const_reference choice(const Container& container) {
-	return container[index(container.size())];
+    return container[index(container.size())];
 }
 
 
@@ -105,21 +105,21 @@ typename Container::const_reference choice(const Container& container) {
  */
 template <typename Element>
 const Element& weightedChoice(const std::vector<std::pair<Element, double>>& weightedElements) {
-	if (weightedElements.size() == 0)
-		throw std::runtime_error("Random::weightedChoice: input size equal to 0");
-	double total = 0.0;
-	for (const auto& entry : weightedElements) {
-		assert(entry.second >= 0.0 && "This algorithm only works with non-negative weights");
-		total += entry.second;
-	}
-	double r = Aux::Random::real(total);
-	for (const auto& entry : weightedElements) {
-		if (r < entry.second) {
-			return entry.first;
-		}
-		r -= entry.second;
-	}
-	throw std::runtime_error("Random::weightedChoice: should never get here"); // should never get here
+    if (weightedElements.size() == 0)
+        throw std::runtime_error("Random::weightedChoice: input size equal to 0");
+    double total = 0.0;
+    for (const auto& entry : weightedElements) {
+        assert(entry.second >= 0.0 && "This algorithm only works with non-negative weights");
+        total += entry.second;
+    }
+    double r = Aux::Random::real(total);
+    for (const auto& entry : weightedElements) {
+        if (r < entry.second) {
+            return entry.first;
+        }
+        r -= entry.second;
+    }
+    throw std::runtime_error("Random::weightedChoice: should never get here"); // should never get here
 }
 
 } // namespace Random

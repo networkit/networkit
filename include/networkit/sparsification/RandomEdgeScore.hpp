@@ -19,14 +19,14 @@ class RandomEdgeScore : public EdgeScore<double> {
 
 public:
 
-	/**
-	 * Creates a new instance of the Random edge score.
-	 */
-	RandomEdgeScore(const Graph& G);
+    /**
+     * Creates a new instance of the Random edge score.
+     */
+    RandomEdgeScore(const Graph& G);
 
-	virtual double score(edgeid eid) override;
-	virtual double score(node u, node v) override;
-	virtual void run() override;
+    virtual double score(edgeid eid) override;
+    virtual double score(node u, node v) override;
+    virtual void run() override;
 };
 
 }

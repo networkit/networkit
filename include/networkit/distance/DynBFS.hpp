@@ -21,35 +21,35 @@ class DynBFS final : public DynSSSP {
 
 public:
 
-	/**
-	 * Creates the object for @a G and source @a s.
-	 *
-	 * @param G The graph.
-	 * @param s The source node.
-	 * @param   storePredecessors   keep track of the lists of predecessors?
-	 */
-	DynBFS(const Graph& G, node s, bool storePredecessors = true);
+    /**
+     * Creates the object for @a G and source @a s.
+     *
+     * @param G The graph.
+     * @param s The source node.
+     * @param   storePredecessors   keep track of the lists of predecessors?
+     */
+    DynBFS(const Graph& G, node s, bool storePredecessors = true);
 
-	void run() override;
+    void run() override;
 
-	/** Updates the distances after an edge insertion.*/
-	void update(GraphEvent e) override;
+    /** Updates the distances after an edge insertion.*/
+    void update(GraphEvent e) override;
 
-	/** Updates the distances after a batch of edge insertions.*/
-	void updateBatch(const std::vector<GraphEvent>& batch) override;
+    /** Updates the distances after a batch of edge insertions.*/
+    void updateBatch(const std::vector<GraphEvent>& batch) override;
 
-	/* Returns the number of shortest paths to node t.*/
-	bigfloat getNumberOfPaths(node t) const;
+    /* Returns the number of shortest paths to node t.*/
+    bigfloat getNumberOfPaths(node t) const;
 
 protected:
-	enum Color {WHITE, BLACK, GRAY};
-	std::vector<Color> color;
-	count maxDistance;
+    enum Color {WHITE, BLACK, GRAY};
+    std::vector<Color> color;
+    count maxDistance;
 
 };
 
 inline bigfloat DynBFS::getNumberOfPaths(node t) const {
-	return npaths[t];
+    return npaths[t];
 }
 
 } /* namespace NetworKit */

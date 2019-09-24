@@ -20,15 +20,15 @@ class SimmelianOverlapScore : public SimmelianScore {
 
 public:
 
-	/**
-	 * Creates a new instance of the parametric variant of the Simmelian Backbone calculator.
-	 * @param maxRank 		the maximum rank that is considered for overlap calculation
-	 */
-	SimmelianOverlapScore(const Graph& graph, const std::vector<count>& triangles, count maxRank);
-	virtual void run() override;
+    /**
+     * Creates a new instance of the parametric variant of the Simmelian Backbone calculator.
+     * @param maxRank 		the maximum rank that is considered for overlap calculation
+     */
+    SimmelianOverlapScore(const Graph& graph, const std::vector<count>& triangles, count maxRank);
+    virtual void run() override;
 
 private:
-	count maxRank;
+    count maxRank;
 };
 
 }

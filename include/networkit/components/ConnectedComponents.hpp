@@ -24,39 +24,39 @@ namespace NetworKit {
  */
 class ConnectedComponents : public Algorithm {
 public:
-	/**
-	 * Create ConnectedComponents class for Graph @a G.
-	 *
-	 * @param G The graph.
-	 */
-	ConnectedComponents(const Graph& G);
+    /**
+     * Create ConnectedComponents class for Graph @a G.
+     *
+     * @param G The graph.
+     */
+    ConnectedComponents(const Graph& G);
 
-	/**
-	 * This method determines the connected components for the graph given in the constructor.
-	 */
-	void run() override;
+    /**
+     * This method determines the connected components for the graph given in the constructor.
+     */
+    void run() override;
 
-	/**
-	 * Get the number of connected components.
-	 *
-	 * @return The number of connected components.
-	 */
-	count numberOfComponents() const;
+    /**
+     * Get the number of connected components.
+     *
+     * @return The number of connected components.
+     */
+    count numberOfComponents() const;
 
-	/**
-	 * Get the the component in which node @a u is situated.
-	 *
-	 * @param[in]	u	The node whose component is asked for.
-	 */
-	count componentOfNode(node u) const;
+    /**
+     * Get the the component in which node @a u is situated.
+     *
+     * @param[in]	u	The node whose component is asked for.
+     */
+    count componentOfNode(node u) const;
 
 
-	/**
-	 * Get a Partition that represents the components.
-	 *
-	 * @return A partition representing the found components.
-	 */
-	Partition getPartition() const;
+    /**
+     * Get a Partition that represents the components.
+     *
+     * @return A partition representing the found components.
+     */
+    Partition getPartition() const;
 
     /**
      *Return the map from component to size
@@ -78,20 +78,20 @@ public:
     static Graph extractLargestConnectedComponent(const Graph &G, bool compactGraph = false);
 
 private:
-	const Graph& G;
-	Partition component;
-	count numComponents;
+    const Graph& G;
+    Partition component;
+    count numComponents;
 };
 
 inline count ConnectedComponents::componentOfNode(node u) const {
-	assert (component[u] != none);
-	assureFinished();
-	return component[u];
+    assert (component[u] != none);
+    assureFinished();
+    return component[u];
 }
 
 inline count ConnectedComponents::numberOfComponents() const {
-	assureFinished();
-	return this->numComponents;
+    assureFinished();
+    return this->numComponents;
 }
 
 }

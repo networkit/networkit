@@ -21,15 +21,15 @@ namespace NetworKit {
 class DynAPSP : public APSP, public DynAlgorithm {
 
 public:
-	/**
-	 * Creates the object for @a G.
-	 *
-	 * @param G The graph.
-	 */
-	DynAPSP(Graph& G);
+    /**
+     * Creates the object for @a G.
+     *
+     * @param G The graph.
+     */
+    DynAPSP(Graph& G);
 
-	/** initialize distances and Pred by repeatedly running the Dijkstra2 algorithm */
-	void run() override;
+    /** initialize distances and Pred by repeatedly running the Dijkstra2 algorithm */
+    void run() override;
 
   /**
   * Updates the pairwise distances after an edge insertions on the graph.
@@ -48,14 +48,14 @@ public:
   void updateBatch(const std::vector<GraphEvent>& batch) override;
 
 
-	/** Returns number of visited pairs */
-	count visPairs();
+    /** Returns number of visited pairs */
+    count visPairs();
 
-	/**
-	* Returns a vector containing a shortest path from node u to node v, and an empty path if u and v are not connected.
-	*
-	*/
-	std::vector<node> getPath(node u, node v);
+    /**
+    * Returns a vector containing a shortest path from node u to node v, and an empty path if u and v are not connected.
+    *
+    */
+    std::vector<node> getPath(node u, node v);
 
 private:
 

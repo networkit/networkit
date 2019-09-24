@@ -24,7 +24,7 @@ class NMIDistance: public DissimilarityMeasure {
 public:
 
 
-	virtual double getDissimilarity(const Graph& G, const Partition& zeta, const Partition& eta);
+    virtual double getDissimilarity(const Graph& G, const Partition& zeta, const Partition& eta);
 
 };
 

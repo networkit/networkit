@@ -20,7 +20,7 @@ namespace NetworKit {
 class DynamicPathGenerator: public DynamicGraphGenerator {
 public:
 
-	std::vector<GraphEvent> generate(count nSteps) override;
+    std::vector<GraphEvent> generate(count nSteps) override;
 
 };
 

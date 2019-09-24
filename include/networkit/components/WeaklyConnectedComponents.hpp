@@ -90,7 +90,7 @@ namespace NetworKit {
     }
 
     inline std::map<index, count> WeaklyConnectedComponents::getComponentSizes() {
-       	assureFinished(); 
+        assureFinished(); 
         return compSize;
     }
 

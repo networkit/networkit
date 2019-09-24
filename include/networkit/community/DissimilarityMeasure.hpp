@@ -23,10 +23,10 @@ class DissimilarityMeasure {
 
 public:
 
-	virtual double getDissimilarity(const Graph& G, const Partition& first, const Partition& second) = 0;
+    virtual double getDissimilarity(const Graph& G, const Partition& first, const Partition& second) = 0;
 
 
-	virtual double getDissimilarity(const Graph &G, const Cover &first, const Cover &second);
+    virtual double getDissimilarity(const Graph &G, const Cover &first, const Cover &second);
 };
 
 } /* namespace NetworKit */

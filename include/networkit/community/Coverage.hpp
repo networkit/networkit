@@ -19,7 +19,7 @@ namespace NetworKit {
 class Coverage: public QualityMeasure {
 public:
 
-	virtual double getQuality(const Partition& zeta, const Graph& G);
+    virtual double getQuality(const Partition& zeta, const Graph& G);
 };
 
 } /* namespace NetworKit */

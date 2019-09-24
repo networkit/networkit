@@ -22,29 +22,29 @@ namespace CurveballDetails { class CurveballIM; }
 class Curveball : public Algorithm {
 public:
 
-	explicit Curveball(const Graph &G);
+    explicit Curveball(const Graph &G);
 
-	virtual ~Curveball();
+    virtual ~Curveball();
 
-	void run() override final {
-		throw std::runtime_error("run() is not supported by this algorithm; use run(trades)");
-	};
+    void run() override final {
+        throw std::runtime_error("run() is not supported by this algorithm; use run(trades)");
+    };
 
-	void run(const std::vector<std::pair<node, node> >& trades);
+    void run(const std::vector<std::pair<node, node> >& trades);
 
-	Graph getGraph(bool parallel = false);
+    Graph getGraph(bool parallel = false);
 
-	virtual std::string toString() const override final;
+    virtual std::string toString() const override final;
 
-	virtual bool isParallel() const override final {
-		return false;
-	}
+    virtual bool isParallel() const override final {
+        return false;
+    }
 
-	count getNumberOfAffectedEdges() const;
+    count getNumberOfAffectedEdges() const;
 
 
 private:
-	std::unique_ptr<CurveballDetails::CurveballIM> impl;
+    std::unique_ptr<CurveballDetails::CurveballIM> impl;
 };
 
 } // ! namespace NetworKit

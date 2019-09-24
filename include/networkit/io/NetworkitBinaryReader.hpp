@@ -21,15 +21,15 @@ namespace NetworKit {
 class NetworkitBinaryReader : public GraphReader {
 
 public:
-	NetworkitBinaryReader() {};
+    NetworkitBinaryReader() {};
 
-	Graph read(const std::string& path) override; 
+    Graph read(const std::string& path) override; 
 
 private:
-	count nodes;
-	count chunks;
-	bool directed;
-	bool weighted;
+    count nodes;
+    count chunks;
+    bool directed;
+    bool weighted;
 };
 } /* namespace */
 

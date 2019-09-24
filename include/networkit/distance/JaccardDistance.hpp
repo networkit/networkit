@@ -24,34 +24,34 @@ class JaccardDistance: public NodeDistance {
 
 public:
 
-	/**
-	 * @param G The graph.
-	 * @param triangles Edge attribute containing the number of triangles each edge is contained in.
-	 */
-	JaccardDistance(const Graph& G, const std::vector<count>& triangles);
+    /**
+     * @param G The graph.
+     * @param triangles Edge attribute containing the number of triangles each edge is contained in.
+     */
+    JaccardDistance(const Graph& G, const std::vector<count>& triangles);
 
-	/**
-	 * REQ: Needs to be called before getEdgeScores delivers meaningful results.
-	 */
-	virtual void preprocess();
+    /**
+     * REQ: Needs to be called before getEdgeScores delivers meaningful results.
+     */
+    virtual void preprocess();
 
-	/**
-	 * Returns the Jaccard distance between node @a u and node @a v.
-	 * @return Jaccard distance between the two nodes.
-	 */
-	virtual double distance(node u, node v);
+    /**
+     * Returns the Jaccard distance between node @a u and node @a v.
+     * @return Jaccard distance between the two nodes.
+     */
+    virtual double distance(node u, node v);
 
-	/**
-	 * Returns the Jaccard distances between all connected nodes.
-	 * @return Vector containing the Jaccard distances between all connected pairs of nodes.
-	 */
-	std::vector<double> getEdgeScores();
+    /**
+     * Returns the Jaccard distances between all connected nodes.
+     * @return Vector containing the Jaccard distances between all connected pairs of nodes.
+     */
+    std::vector<double> getEdgeScores();
 
 protected:
-	const std::vector<count>& triangles;
-	std::vector<double> jDistance; //result vector
+    const std::vector<count>& triangles;
+    std::vector<double> jDistance; //result vector
 
-	inline double getJaccardDistance(count degU, count degV, count t);
+    inline double getJaccardDistance(count degU, count degV, count t);
 
 };
 

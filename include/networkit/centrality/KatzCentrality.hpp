@@ -21,26 +21,26 @@ namespace NetworKit {
  */
 class KatzCentrality: public Centrality {
 protected:
-	double alpha; // damping
-	double beta; // constant centrality amount
-	double tol; // error tolerance
+    double alpha; // damping
+    double beta; // constant centrality amount
+    double tol; // error tolerance
 
 public:
-	/**
-	 * Constructs a KatzCentrality object for the given Graph @a G. @a tol defines the tolerance for convergence.
-	 * Each iteration of the algorithm requires O(m) time. The number of iterations depends on how long it takes to reach the convergence.
-	 *
-	 * @param[in] G The graph.
-	 * @param[in] alpha Damping of the matrix vector product result
-	 * @param[in] beta Constant value added to the centrality of each vertex
-	 * @param[in] tol The tolerance for convergence.
-	 */
-	KatzCentrality(const Graph& G, double alpha = 5e-4, double beta = 0.1, double tol = 1e-8);
+    /**
+     * Constructs a KatzCentrality object for the given Graph @a G. @a tol defines the tolerance for convergence.
+     * Each iteration of the algorithm requires O(m) time. The number of iterations depends on how long it takes to reach the convergence.
+     *
+     * @param[in] G The graph.
+     * @param[in] alpha Damping of the matrix vector product result
+     * @param[in] beta Constant value added to the centrality of each vertex
+     * @param[in] tol The tolerance for convergence.
+     */
+    KatzCentrality(const Graph& G, double alpha = 5e-4, double beta = 0.1, double tol = 1e-8);
 
-	/**
-	 * Computes katz centrality on the graph passed in constructor.
-	 */
-	virtual void run();
+    /**
+     * Computes katz centrality on the graph passed in constructor.
+     */
+    virtual void run();
 };
 
 } /* namespace NetworKit */

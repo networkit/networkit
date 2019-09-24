@@ -21,7 +21,7 @@ namespace NetworKit {
 class PartitionWriter {
 
 public:
-	virtual void write(Partition& zeta, const std::string& path) const;
+    virtual void write(Partition& zeta, const std::string& path) const;
 };
 
 } /* namespace NetworKit */

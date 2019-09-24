@@ -22,22 +22,22 @@ const short UNKNOWN = 2;
  */
 class StaticDegreeSequenceGenerator: public StaticGraphGenerator {
 protected:
-	std::vector<count> seq;
-	short realizable;
+    std::vector<count> seq;
+    short realizable;
 
 
 public:
-	StaticDegreeSequenceGenerator(const std::vector<count>& sequence);
+    StaticDegreeSequenceGenerator(const std::vector<count>& sequence);
 
-	/**
-	 * Erdoes-Gallai test if degree sequence seq is realizable.
-	 */
-	virtual bool isRealizable();
+    /**
+     * Erdoes-Gallai test if degree sequence seq is realizable.
+     */
+    virtual bool isRealizable();
 
-	virtual bool getRealizable() const;
+    virtual bool getRealizable() const;
 
 
-	virtual Graph generate() = 0;
+    virtual Graph generate() = 0;
 };
 
 } /* namespace NetworKit */

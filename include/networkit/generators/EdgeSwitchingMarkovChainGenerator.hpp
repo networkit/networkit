@@ -24,28 +24,28 @@ namespace NetworKit {
  */
 class EdgeSwitchingMarkovChainGenerator : public StaticDegreeSequenceGenerator {
 public:
-	/**
-	 * Initializes the configuration model generator with the given degree sequence @a sequence.
-	 *
-	 * If the sequence cannot be realized, optionally if @a ignoreIfRealizable is true, a graph with a different degree
-	 * sequence is generated where certain nodes might not have their full degree.
-	 *
-	 * @param sequence The wanted degree sequence.
-	 * @param ignoreIfRealizable Ignore if the sequence is realizable and generate a graph anyway.
-	 */
-	EdgeSwitchingMarkovChainGenerator(const std::vector<count> &sequence, bool ignoreIfRealizable = false);
+    /**
+     * Initializes the configuration model generator with the given degree sequence @a sequence.
+     *
+     * If the sequence cannot be realized, optionally if @a ignoreIfRealizable is true, a graph with a different degree
+     * sequence is generated where certain nodes might not have their full degree.
+     *
+     * @param sequence The wanted degree sequence.
+     * @param ignoreIfRealizable Ignore if the sequence is realizable and generate a graph anyway.
+     */
+    EdgeSwitchingMarkovChainGenerator(const std::vector<count> &sequence, bool ignoreIfRealizable = false);
 
-	/**
-	 * Generate a graph according to the configuration model.
-	 *
-	 * Issues a INFO log message if the wanted number of edge swaps cannot be performed because of the limit of attempts (see in the description of the class for details).
-	 *
-	 * @throws std::runtime_error If the sequence cannot be generated and ignoreIfRealizable is false.
-	 * @return The generated graph
-	 */
-	virtual Graph generate() override;
+    /**
+     * Generate a graph according to the configuration model.
+     *
+     * Issues a INFO log message if the wanted number of edge swaps cannot be performed because of the limit of attempts (see in the description of the class for details).
+     *
+     * @throws std::runtime_error If the sequence cannot be generated and ignoreIfRealizable is false.
+     * @return The generated graph
+     */
+    virtual Graph generate() override;
 private:
-	bool ignoreIfRealizable;
+    bool ignoreIfRealizable;
 };
 
 } // namespace NetworKit

@@ -13,9 +13,9 @@ namespace NetworKit {
 
 class CoverWriter
 {
-	public:
+    public:
 
-		virtual void write(Cover& zeta, const std::string& path) const;
+        virtual void write(Cover& zeta, const std::string& path) const;
 };
 }
 

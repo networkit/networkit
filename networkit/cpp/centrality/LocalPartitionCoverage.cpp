@@ -9,35 +9,35 @@ NetworKit::LocalPartitionCoverage::LocalPartitionCoverage(const NetworKit::Graph
 }
 
 void NetworKit::LocalPartitionCoverage::run() {
-	hasRun = false;
+    hasRun = false;
 
-	scoreData.clear();
-	scoreData.resize(G.upperNodeIdBound());
+    scoreData.clear();
+    scoreData.resize(G.upperNodeIdBound());
 
-	G.balancedParallelForNodes([&](node u) {
-		G.forNeighborsOf(u, [&](node, node v, edgeweight ew) {
-			if (P[u] == P[v]) scoreData[u] += ew;
-		});
+    G.balancedParallelForNodes([&](node u) {
+        G.forNeighborsOf(u, [&](node, node v, edgeweight ew) {
+            if (P[u] == P[v]) scoreData[u] += ew;
+        });
 
-		// Avoid division by 0 if u has no neighbors (then also scoreData[u] == 0).
-		if (scoreData[u] > 0) {
-			scoreData[u] /= G.weightedDegree(u);
-		}
-	});
+        // Avoid division by 0 if u has no neighbors (then also scoreData[u] == 0).
+        if (scoreData[u] > 0) {
+            scoreData[u] /= G.weightedDegree(u);
+        }
+    });
 
-	hasRun = true;
+    hasRun = true;
 }
 
 double NetworKit::LocalPartitionCoverage::maximum() {
-	return 1.0;
+    return 1.0;
 }
 
 bool NetworKit::LocalPartitionCoverage::isParallel() const {
-	return true;
+    return true;
 }
 
 std::string NetworKit::LocalPartitionCoverage::toString() const {
-	return "Local partition coverage";
+    return "Local partition coverage";
 }
 
 

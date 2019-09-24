@@ -18,17 +18,17 @@ namespace NetworKit {
 class DorogovtsevMendesGenerator: public StaticGraphGenerator {
 
 public:
-	/**
-	* TODO:
-	*
-	* @param nNodes 	number of nodes in target graph
-	*/
-	DorogovtsevMendesGenerator(count nNodes);
+    /**
+    * TODO:
+    *
+    * @param nNodes 	number of nodes in target graph
+    */
+    DorogovtsevMendesGenerator(count nNodes);
 
-	virtual Graph generate();
+    virtual Graph generate();
 
 protected:
-		count nNodes;
+        count nNodes;
 
 };
 

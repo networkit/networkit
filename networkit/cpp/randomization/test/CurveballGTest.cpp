@@ -65,37 +65,37 @@ void CurveballGTest::checkWithGraph(Graph& G, bool checkBuilder) {
         ASSERT_EQ(degrees[u], outG.degree(u));
     });
 
-	// check builder: parallel is equal to sequential
-	if (checkBuilder) {
-		Graph outGpar = algo.getGraph(true);
+    // check builder: parallel is equal to sequential
+    if (checkBuilder) {
+        Graph outGpar = algo.getGraph(true);
 
-		// check degrees
-		outGpar.forNodes([&](node u){
-			ASSERT_EQ(degrees[u], outGpar.degree(u));
-		});
+        // check degrees
+        outGpar.forNodes([&](node u){
+            ASSERT_EQ(degrees[u], outGpar.degree(u));
+        });
 
-		// check equality of neighbours for each node
-		outGpar.forNodes([&](node u){
-			std::vector<node> par_neighbors;
-			par_neighbors.reserve(outGpar.degree(u));
+        // check equality of neighbours for each node
+        outGpar.forNodes([&](node u){
+            std::vector<node> par_neighbors;
+            par_neighbors.reserve(outGpar.degree(u));
 
-			std::vector<node> seq_neighbors;
-			seq_neighbors.reserve(outG.degree(u));
+            std::vector<node> seq_neighbors;
+            seq_neighbors.reserve(outG.degree(u));
 
-			outGpar.forNeighborsOf(u, [&](node v) {
-				par_neighbors.push_back(v);
-			});
+            outGpar.forNeighborsOf(u, [&](node v) {
+                par_neighbors.push_back(v);
+            });
 
-			outG.forNeighborsOf(u, [&](node v) {
-				seq_neighbors.push_back(v);
-			});
+            outG.forNeighborsOf(u, [&](node v) {
+                seq_neighbors.push_back(v);
+            });
 
-			ASSERT_EQ(par_neighbors.size(), seq_neighbors.size());
-			ASSERT_TRUE(std::equal(par_neighbors.begin(),
-								   par_neighbors.begin() + par_neighbors.size(),
-								   seq_neighbors.begin()));
-		});
-	}
+            ASSERT_EQ(par_neighbors.size(), seq_neighbors.size());
+            ASSERT_TRUE(std::equal(par_neighbors.begin(),
+                                   par_neighbors.begin() + par_neighbors.size(),
+                                   seq_neighbors.begin()));
+        });
+    }
 }
 
 
@@ -120,13 +120,13 @@ TEST_F(CurveballGTest, testCurveballHyperbolic) {
 }
 
 TEST_F(CurveballGTest, testCurveballMaterialization) {
-	Aux::Random::setSeed(1, false);
+    Aux::Random::setSeed(1, false);
 
-	node numNodes = 500;
-	ErdosRenyiGenerator generator(numNodes, 0.3);
-	Graph G = generator.generate();
+    node numNodes = 500;
+    ErdosRenyiGenerator generator(numNodes, 0.3);
+    Graph G = generator.generate();
 
-	this->checkWithGraph(G, true);
+    this->checkWithGraph(G, true);
 }
 
 }

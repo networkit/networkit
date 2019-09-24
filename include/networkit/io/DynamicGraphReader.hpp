@@ -18,11 +18,11 @@ namespace NetworKit {
 class DynamicGraphReader {
 
 public:
-	/**
-	 * @param[in]	path	path to dynamic graph file
-	 * @param[in]	Gproxy	graph event proxy receives the events from the file
-	 */
-	virtual void read(std::string path, GraphEventProxy& Gproxy) =0;
+    /**
+     * @param[in]	path	path to dynamic graph file
+     * @param[in]	Gproxy	graph event proxy receives the events from the file
+     */
+    virtual void read(std::string path, GraphEventProxy& Gproxy) =0;
 };
 
 } /* namespace NetworKit */

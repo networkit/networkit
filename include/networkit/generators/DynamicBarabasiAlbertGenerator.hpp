@@ -23,18 +23,18 @@ class DynamicBarabasiAlbertGenerator: public DynamicGraphSource {
 
 protected:
 
-	count k; 						//!< parameter of the BA model: number of edges per new node
-	count degSum; 					//!< degree sum of current graph
+    count k; 						//!< parameter of the BA model: number of edges per new node
+    count degSum; 					//!< degree sum of current graph
 
 
 public:
 
 
-	DynamicBarabasiAlbertGenerator(count k = 2);
+    DynamicBarabasiAlbertGenerator(count k = 2);
 
-	virtual void initializeGraph();
+    virtual void initializeGraph();
 
-	virtual void generate();
+    virtual void generate();
 
 };
 

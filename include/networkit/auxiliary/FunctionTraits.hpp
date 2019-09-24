@@ -18,18 +18,18 @@ struct FunctionTraits<R(*)(Args...)> : public FunctionTraits<R(Args...)>
 
 template<class R, class... Args>
 struct FunctionTraits<R(Args...)> {
-	using result_type = R;
+    using result_type = R;
 
-	static constexpr size_t arity = sizeof...(Args);
+    static constexpr size_t arity = sizeof...(Args);
 
-	template<size_t N, bool> struct arg_impl;
-	template<size_t N> struct arg_impl<N, false> {};
-	template<size_t N> struct arg_impl<N, true> {
-		using type = typename std::tuple_element<N, std::tuple<Args...> >::type;
-	};
+    template<size_t N, bool> struct arg_impl;
+    template<size_t N> struct arg_impl<N, false> {};
+    template<size_t N> struct arg_impl<N, true> {
+        using type = typename std::tuple_element<N, std::tuple<Args...> >::type;
+    };
 
-	template <size_t N>
-	using arg = arg_impl<N, N < arity>;
+    template <size_t N>
+    using arg = arg_impl<N, N < arity>;
 };
 
 
@@ -52,14 +52,14 @@ struct FunctionTraits<R(C:: *)> : public FunctionTraits<R(C &)>
 template<class F>
 struct FunctionTraits {
 private:
-	using call_type = FunctionTraits<decltype(&F::operator())>;
+    using call_type = FunctionTraits<decltype(&F::operator())>;
 public:
-	using result_type = typename call_type::result_type;
+    using result_type = typename call_type::result_type;
 
-	static constexpr size_t arity = call_type::arity - 1;
+    static constexpr size_t arity = call_type::arity - 1;
 
-	template <size_t N>
-	using arg = typename call_type::template arg < N + 1 >;
+    template <size_t N>
+    using arg = typename call_type::template arg < N + 1 >;
 };
 
 template<class F>

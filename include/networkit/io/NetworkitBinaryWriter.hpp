@@ -13,12 +13,12 @@
 namespace NetworKit {
 
 enum class NetworkitBinaryWeights {
-	none,
-	unsignedFormat,
-	signedFormat,
-	doubleFormat,
-	floatFormat,
-	autoDetect
+    none,
+    unsignedFormat,
+    signedFormat,
+    doubleFormat,
+    floatFormat,
+    autoDetect
 };
 
 /**
@@ -29,13 +29,13 @@ enum class NetworkitBinaryWeights {
 class NetworkitBinaryWriter final : public GraphWriter {
 
 public:
-	NetworkitBinaryWriter(uint64_t chunks = 32, NetworkitBinaryWeights weightsType = NetworkitBinaryWeights::autoDetect);
+    NetworkitBinaryWriter(uint64_t chunks = 32, NetworkitBinaryWeights weightsType = NetworkitBinaryWeights::autoDetect);
 
-	void write(const Graph &G, const std::string &path) override;
+    void write(const Graph &G, const std::string &path) override;
 
 private:
-	count chunks;
-	NetworkitBinaryWeights weightsType;
+    count chunks;
+    NetworkitBinaryWeights weightsType;
 };
 
 } // namespace NetworKit

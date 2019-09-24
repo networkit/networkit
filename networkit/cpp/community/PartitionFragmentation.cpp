@@ -8,69 +8,69 @@
 #include <networkit/auxiliary/SignalHandling.hpp>
 
 void NetworKit::PartitionFragmentation::run() {
-	hasRun = false;
+    hasRun = false;
 
-	Aux::SignalHandler handler;
+    Aux::SignalHandler handler;
 
-	ConnectedComponents cc(G);
-	cc.run();
+    ConnectedComponents cc(G);
+    cc.run();
 
-	handler.assureRunning();
+    handler.assureRunning();
 
-	Partition ccP = cc.getPartition();
+    Partition ccP = cc.getPartition();
 
-	handler.assureRunning();
+    handler.assureRunning();
 
-	Partition ints = PartitionIntersection().calculate(P, ccP);
+    Partition ints = PartitionIntersection().calculate(P, ccP);
 
-	handler.assureRunning();
+    handler.assureRunning();
 
-	std::vector<count> intsSizes(ints.upperBound());
-	std::vector<count> PSizes(P.upperBound());
+    std::vector<count> intsSizes(ints.upperBound());
+    std::vector<count> PSizes(P.upperBound());
 
-	handler.assureRunning();
+    handler.assureRunning();
 
-	G.forNodes([&](node u) {
-		++intsSizes[ints[u]];
-		++PSizes[P[u]];
-	});
+    G.forNodes([&](node u) {
+        ++intsSizes[ints[u]];
+        ++PSizes[P[u]];
+    });
 
-	handler.assureRunning();
+    handler.assureRunning();
 
-	values.clear();
-	values.resize(P.upperBound(), std::numeric_limits< double >::max());
+    values.clear();
+    values.resize(P.upperBound(), std::numeric_limits< double >::max());
 
-	handler.assureRunning();
+    handler.assureRunning();
 
-	G.forNodes([&](node u) {
-		values[P[u]] = std::min(values[P[u]], 1.0 - intsSizes[ints[u]] * 1.0 / PSizes[P[u]]);
-	});
+    G.forNodes([&](node u) {
+        values[P[u]] = std::min(values[P[u]], 1.0 - intsSizes[ints[u]] * 1.0 / PSizes[P[u]]);
+    });
 
-	handler.assureRunning();
+    handler.assureRunning();
 
-	maximumValue = 0.0;
-	minimumValue = std::numeric_limits<double>::max();
-	unweightedAverage = 0.0;
-	weightedAverage = 0.0;
+    maximumValue = 0.0;
+    minimumValue = std::numeric_limits<double>::max();
+    unweightedAverage = 0.0;
+    weightedAverage = 0.0;
 
-	count numSubsets = 0;
+    count numSubsets = 0;
 
-	for (index i = 0; i < P.upperBound(); ++i) {
-		if (values[i] < std::numeric_limits< double >::max()) {
-			maximumValue = std::max(values[i], maximumValue);
-			minimumValue = std::min(values[i], minimumValue);
-			unweightedAverage += values[i];
-			weightedAverage += values[i] * PSizes[i];
+    for (index i = 0; i < P.upperBound(); ++i) {
+        if (values[i] < std::numeric_limits< double >::max()) {
+            maximumValue = std::max(values[i], maximumValue);
+            minimumValue = std::min(values[i], minimumValue);
+            unweightedAverage += values[i];
+            weightedAverage += values[i] * PSizes[i];
 
-			++numSubsets;
-		}
-	}
+            ++numSubsets;
+        }
+    }
 
-	handler.assureRunning();
+    handler.assureRunning();
 
-	unweightedAverage /= numSubsets;
-	weightedAverage /= G.numberOfNodes();
+    unweightedAverage /= numSubsets;
+    weightedAverage /= G.numberOfNodes();
 
-	hasRun = true;
+    hasRun = true;
 }
 

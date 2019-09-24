@@ -13,42 +13,42 @@ NetworKit::EdgeSwitchingMarkovChainGenerator::EdgeSwitchingMarkovChainGenerator(
 }
 
 NetworKit::Graph NetworKit::EdgeSwitchingMarkovChainGenerator::generate() {
-	Graph result(HavelHakimiGenerator(seq, ignoreIfRealizable).generate());
+    Graph result(HavelHakimiGenerator(seq, ignoreIfRealizable).generate());
 
-	count neededSwaps = result.numberOfEdges() * 10;
-	count maxTry = neededSwaps * 2;
-	count performedSwaps = 0;
+    count neededSwaps = result.numberOfEdges() * 10;
+    count maxTry = neededSwaps * 2;
+    count performedSwaps = 0;
 
-	std::vector<node> nodeSelection;
-	nodeSelection.reserve(result.numberOfEdges() * 2);
+    std::vector<node> nodeSelection;
+    nodeSelection.reserve(result.numberOfEdges() * 2);
 
-	result.forNodes([&](node u) {
-		for (count i = 0; i < result.degree(u); ++i) {
-			nodeSelection.push_back(u);
-		}
-	});
+    result.forNodes([&](node u) {
+        for (count i = 0; i < result.degree(u); ++i) {
+            nodeSelection.push_back(u);
+        }
+    });
 
-	for (count attempts = 0; attempts < maxTry && performedSwaps < neededSwaps; ++attempts) {
-		node s1 = Aux::Random::choice(nodeSelection);
-		node s2 = Aux::Random::choice(nodeSelection);
+    for (count attempts = 0; attempts < maxTry && performedSwaps < neededSwaps; ++attempts) {
+        node s1 = Aux::Random::choice(nodeSelection);
+        node s2 = Aux::Random::choice(nodeSelection);
 
-		if (s1 == s2) continue;
+        if (s1 == s2) continue;
 
-		node t1 = result.randomNeighbor(s1);
-		node t2 = result.randomNeighbor(s2);
+        node t1 = result.randomNeighbor(s1);
+        node t2 = result.randomNeighbor(s2);
 
-		if (t1 == t2 || s1 == t2 || s2 == t1) continue;
+        if (t1 == t2 || s1 == t2 || s2 == t1) continue;
 
-		if (result.hasEdge(s1, t2) || result.hasEdge(s2, t1)) continue; // FIXME make efficient!
+        if (result.hasEdge(s1, t2) || result.hasEdge(s2, t1)) continue; // FIXME make efficient!
 
-		result.swapEdge(s1, t1, s2, t2);
+        result.swapEdge(s1, t1, s2, t2);
 
-		++performedSwaps;
-	}
+        ++performedSwaps;
+    }
 
-	if (performedSwaps < neededSwaps) {
-		INFO("Did only perform ", performedSwaps, " instead of ", neededSwaps, " edge swaps but made ", maxTry, " attempts to swap an edge");
-	}
+    if (performedSwaps < neededSwaps) {
+        INFO("Did only perform ", performedSwaps, " instead of ", neededSwaps, " edge swaps but made ", maxTry, " attempts to swap an edge");
+    }
 
-	return result;
+    return result;
 }

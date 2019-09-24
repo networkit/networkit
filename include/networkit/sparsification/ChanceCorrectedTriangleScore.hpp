@@ -15,13 +15,13 @@ namespace NetworKit {
 class ChanceCorrectedTriangleScore : public EdgeScore<double> {
 
 public:
-	ChanceCorrectedTriangleScore(const Graph& graph, const std::vector<count>& triangles);
-	virtual double score(edgeid eid) override;
-	virtual double score(node u, node v) override;
-	virtual void run() override;
+    ChanceCorrectedTriangleScore(const Graph& graph, const std::vector<count>& triangles);
+    virtual double score(edgeid eid) override;
+    virtual double score(node u, node v) override;
+    virtual void run() override;
 
 private:
-	const std::vector<count>& triangles;
+    const std::vector<count>& triangles;
 
 };
 

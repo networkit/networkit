@@ -19,11 +19,11 @@ class Sampling {
 
 public:
 
-	static node randomNode(const Graph& G);
+    static node randomNode(const Graph& G);
 
-	static std::pair<node, node> randomEdge(const Graph& G);
+    static std::pair<node, node> randomEdge(const Graph& G);
 
-	static node randomNeighbor(const Graph& G, node u);
+    static node randomNeighbor(const Graph& G, node u);
 
 };
 

@@ -15,65 +15,65 @@ AdamicAdarDistance::AdamicAdarDistance(const Graph& G) : NodeDistance(G) {
 }
 
 void AdamicAdarDistance::preprocess() {
-	if (!G.hasEdgeIds()) {
-		throw std::runtime_error("edges have not been indexed - call indexEdges first");
-	}
+    if (!G.hasEdgeIds()) {
+        throw std::runtime_error("edges have not been indexed - call indexEdges first");
+    }
 
-	Graph g = G;
+    Graph g = G;
 
-	//Node attribute: marker
-	std::vector<bool> nodeMarker(g.upperNodeIdBound(), false);
+    //Node attribute: marker
+    std::vector<bool> nodeMarker(g.upperNodeIdBound(), false);
 
-	//Edge attribute: triangle count
-	aaDistance = std::vector<double>(g.upperEdgeIdBound(), 0);
+    //Edge attribute: triangle count
+    aaDistance = std::vector<double>(g.upperEdgeIdBound(), 0);
 
-	g.forNodes([&](node u) {
-		//Mark all neighbors
-		g.forNeighborsOf(u, [&](node v) {
-			nodeMarker[v] = true;
-		});
+    g.forNodes([&](node u) {
+        //Mark all neighbors
+        g.forNeighborsOf(u, [&](node v) {
+            nodeMarker[v] = true;
+        });
 
-		//For all neighbors: check for already marked neighbors.
-		g.forNeighborsOf(u, [&](node, node v, edgeid eid_uv) {
-			g.forNeighborsOf(v, [&](node, node w, edgeid eid_vw) {
-				if (nodeMarker[w]) {
+        //For all neighbors: check for already marked neighbors.
+        g.forNeighborsOf(u, [&](node, node v, edgeid eid_uv) {
+            g.forNeighborsOf(v, [&](node, node w, edgeid eid_vw) {
+                if (nodeMarker[w]) {
 
-					edgeid eid_uw = G.edgeId(u, w);
+                    edgeid eid_uw = G.edgeId(u, w);
 
-					aaDistance[eid_uv] = aaDistance[eid_uv] + 1.0 / log(G.degree(w));
-					aaDistance[eid_uw] = aaDistance[eid_uw] + 1.0 / log(G.degree(v));
-					aaDistance[eid_vw] = aaDistance[eid_vw] + 1.0 / log(G.degree(u));
-				}
-			});
+                    aaDistance[eid_uv] = aaDistance[eid_uv] + 1.0 / log(G.degree(w));
+                    aaDistance[eid_uw] = aaDistance[eid_uw] + 1.0 / log(G.degree(v));
+                    aaDistance[eid_vw] = aaDistance[eid_vw] + 1.0 / log(G.degree(u));
+                }
+            });
 
-			nodeMarker[v] = false;
-		});
+            nodeMarker[v] = false;
+        });
 
-		removeNode(g, u);
-	});
+        removeNode(g, u);
+    });
 
-	G.parallelForEdges([&](node, node, edgeid eid) {
-		aaDistance[eid] = 1 / aaDistance[eid];
-	});
+    G.parallelForEdges([&](node, node, edgeid eid) {
+        aaDistance[eid] = 1 / aaDistance[eid];
+    });
 }
 
 double AdamicAdarDistance::distance(node u, node v) {
-	edgeid eid = G.edgeId(u, v);
-	return aaDistance[eid];
+    edgeid eid = G.edgeId(u, v);
+    return aaDistance[eid];
 }
 
 
 std::vector< double > AdamicAdarDistance::getEdgeScores() {
-	return aaDistance;
+    return aaDistance;
 }
 
 void AdamicAdarDistance::removeNode(Graph& graph, node u) {
-	//isolate the node before removing it.
-	graph.forNeighborsOf(u, [&](node v) {
-		graph.removeEdge(u,v);
-	});
+    //isolate the node before removing it.
+    graph.forNeighborsOf(u, [&](node v) {
+        graph.removeEdge(u,v);
+    });
 
-	graph.removeNode(u);
+    graph.removeNode(u);
 }
 
 } /* namespace NetworKit */

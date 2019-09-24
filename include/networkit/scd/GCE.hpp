@@ -26,17 +26,17 @@ class GCE: public SelectiveCommunityDetector {
 
 public:
 
-	GCE(const Graph& G, std::string objective);
+    GCE(const Graph& G, std::string objective);
 
 
-	std::map<node, std::set<node> >  run(const std::set<node>& seeds) override;
+    std::map<node, std::set<node> >  run(const std::set<node>& seeds) override;
 
-	/**
-	 * @param[in]	s	seed node
-	 *
-	 * @param[out]		community as a set of nodes
-	 */
-	std::set<node> expandSeed(node s);
+    /**
+     * @param[in]	s	seed node
+     *
+     * @param[out]		community as a set of nodes
+     */
+    std::set<node> expandSeed(node s);
 
 protected:
 

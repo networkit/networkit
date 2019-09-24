@@ -13,66 +13,66 @@ namespace NetworKit {
  */
 class LocalCommunityEvaluation : public Algorithm {
 public:
-	/**
-	 * Default destructor for the virtual base class
-	 */
-	virtual ~LocalCommunityEvaluation() = default;
+    /**
+     * Default destructor for the virtual base class
+     */
+    virtual ~LocalCommunityEvaluation() = default;
 
-	/**
-	 * Get the average value weighted by cluster size.
-	 *
-	 * @return The weighted average value.
-	 */
-	double getWeightedAverage() const { assureFinished(); return weightedAverage; };
+    /**
+     * Get the average value weighted by cluster size.
+     *
+     * @return The weighted average value.
+     */
+    double getWeightedAverage() const { assureFinished(); return weightedAverage; };
 
-	/**
-	 * Get the (unweighted) average value of all clusters.
-	 *
-	 * @return The unweighted average value.
-	 */
-	double getUnweightedAverage() const { assureFinished(); return unweightedAverage; };
+    /**
+     * Get the (unweighted) average value of all clusters.
+     *
+     * @return The unweighted average value.
+     */
+    double getUnweightedAverage() const { assureFinished(); return unweightedAverage; };
 
-	/**
-	 * Get the maximum value of all clusters.
-	 *
-	 * @return The maximum value.
-	 */
-	double getMaximumValue() const { assureFinished(); return maximumValue; };
+    /**
+     * Get the maximum value of all clusters.
+     *
+     * @return The maximum value.
+     */
+    double getMaximumValue() const { assureFinished(); return maximumValue; };
 
-	/**
-	 * Get the minimum value of all clusters.
-	 *
-	 * @return The minimum value.
-	 */
-	double getMinimumValue() const { assureFinished(); return minimumValue; };
+    /**
+     * Get the minimum value of all clusters.
+     *
+     * @return The minimum value.
+     */
+    double getMinimumValue() const { assureFinished(); return minimumValue; };
 
-	/**
-	 * Get the value of the specified cluster.
-	 *
-	 * @param i The cluster to get the value for.
-	 * @return The value of cluster @a i.
-	 */
-	double getValue(index i) const { assureFinished(); return values[i]; };
+    /**
+     * Get the value of the specified cluster.
+     *
+     * @param i The cluster to get the value for.
+     * @return The value of cluster @a i.
+     */
+    double getValue(index i) const { assureFinished(); return values[i]; };
 
-	/**
-	 * Get the values of all clusters.
-	 *
-	 * @return The values of all clusters.
-	 */
-	std::vector<double> getValues() const { assureFinished(); return values; };
+    /**
+     * Get the values of all clusters.
+     *
+     * @return The values of all clusters.
+     */
+    std::vector<double> getValues() const { assureFinished(); return values; };
 
-	/**
-	 * If small values are better (otherwise large values are better).
-	 *
-	 * @return If small values are better.
-	 */
-	virtual bool isSmallBetter() const = 0;
+    /**
+     * If small values are better (otherwise large values are better).
+     *
+     * @return If small values are better.
+     */
+    virtual bool isSmallBetter() const = 0;
 protected:
-	double weightedAverage;
-	double unweightedAverage;
-	double maximumValue;
-	double minimumValue;
-	std::vector<double> values;
+    double weightedAverage;
+    double unweightedAverage;
+    double maximumValue;
+    double minimumValue;
+    std::vector<double> values;
 };
 
 }

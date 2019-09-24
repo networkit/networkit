@@ -21,76 +21,76 @@ namespace Aux {
  */
 class Timer {
 public:
-	#ifdef __MIC__
-		using my_steady_clock = std::chrono::monotonic_clock;
-	#else
-		using my_steady_clock = std::chrono::steady_clock;
-	#endif
+    #ifdef __MIC__
+        using my_steady_clock = std::chrono::monotonic_clock;
+    #else
+        using my_steady_clock = std::chrono::steady_clock;
+    #endif
 
-	Timer() = default;
+    Timer() = default;
 
-	/**
-	 * Start the clock.
-	 * Returns the time at which the instance was started.
-	 */
-	my_steady_clock::time_point start() noexcept;
+    /**
+     * Start the clock.
+     * Returns the time at which the instance was started.
+     */
+    my_steady_clock::time_point start() noexcept;
 
-	/**
-	 * Stops the clock permanently for the instance of the Timer.
-	 * Returns the time at which the instance was stopped.
-	 */
-	my_steady_clock::time_point stop() noexcept;
+    /**
+     * Stops the clock permanently for the instance of the Timer.
+     * Returns the time at which the instance was stopped.
+     */
+    my_steady_clock::time_point stop() noexcept;
 
-	/**
-	 * Returns a chrono::duration since the Timer was started.
-	 * If stop() was called, the duration is between the start() and stop()
-	 * calls is returned.
-	 */
-	std::chrono::duration<uint64_t, std::milli> elapsed() const noexcept;
+    /**
+     * Returns a chrono::duration since the Timer was started.
+     * If stop() was called, the duration is between the start() and stop()
+     * calls is returned.
+     */
+    std::chrono::duration<uint64_t, std::milli> elapsed() const noexcept;
 
-	/**
-	 * Returns the number of milliseconds since the Timer was started.
-	 * If stop() was called, the duration is between the start() and stop()
-	 * calls is returned.
-	 */
-	uint64_t elapsedMilliseconds() const noexcept;
+    /**
+     * Returns the number of milliseconds since the Timer was started.
+     * If stop() was called, the duration is between the start() and stop()
+     * calls is returned.
+     */
+    uint64_t elapsedMilliseconds() const noexcept;
 
-	/**
-	 * Returns the number of microseconds since the Timer was started.
-	 * If stop() was called, the duration is between the start() and stop()
-	 * calls is returned.
-	 */
-	uint64_t elapsedMicroseconds() const noexcept;
+    /**
+     * Returns the number of microseconds since the Timer was started.
+     * If stop() was called, the duration is between the start() and stop()
+     * calls is returned.
+     */
+    uint64_t elapsedMicroseconds() const noexcept;
 
-	/**
-	 * Returns the number of nanoseconds since the Timer was started.
-	 * If stop() was called, the duration is between the start() and stop()
-	 * calls is returned.
-	 */
-	uint64_t elapsedNanoseconds() const noexcept;
+    /**
+     * Returns the number of nanoseconds since the Timer was started.
+     * If stop() was called, the duration is between the start() and stop()
+     * calls is returned.
+     */
+    uint64_t elapsedNanoseconds() const noexcept;
 
-	/**
-	 * Returns the time at which the instance was started.
-	 */
-	my_steady_clock::time_point startTime() const noexcept;
+    /**
+     * Returns the time at which the instance was started.
+     */
+    my_steady_clock::time_point startTime() const noexcept;
 
-	/**
-	 * Returns the time at which the instance was stopped.
-	 */
-	my_steady_clock::time_point stopTime() const noexcept;
+    /**
+     * Returns the time at which the instance was stopped.
+     */
+    my_steady_clock::time_point stopTime() const noexcept;
 
-	/**
-	 * Returns a human-readable representation including the elapsed time and unit.
-	 */
-	std::string elapsedTag() const;
+    /**
+     * Returns a human-readable representation including the elapsed time and unit.
+     */
+    std::string elapsedTag() const;
 
 protected:
-	bool running{false};                   //!< true if timer has been started and not stopped after that
-	my_steady_clock::time_point started;   //!< time at which timer has been started
-	my_steady_clock::time_point stopped;   //!< time at which timer has been stopped
+    bool running{false};                   //!< true if timer has been started and not stopped after that
+    my_steady_clock::time_point started;   //!< time at which timer has been started
+    my_steady_clock::time_point stopped;   //!< time at which timer has been stopped
 
-	/// If running returns now, otherwise the stop time
-	my_steady_clock::time_point stopTimeOrNow() const noexcept;
+    /// If running returns now, otherwise the stop time
+    my_steady_clock::time_point stopTimeOrNow() const noexcept;
 };
 
 /**
@@ -99,9 +99,9 @@ protected:
  */
 class StartedTimer : public Timer {
 public:
-	StartedTimer() : Timer() {
-		start();
-	}
+    StartedTimer() : Timer() {
+        start();
+    }
 };
 
 /**
@@ -126,18 +126,18 @@ public:
  */
 class LoggingTimer : public Timer {
 public:
-	/**
-	 * @param label The label printed out next to the measurement
-	 * @param level Only measure if logging at the provided LogLevel is enabled during runtime.
-	 *              If logging at the given level is disable the Timer is very cheap to construct.
-	 *              If logging is disabled during construction or destruction, no message is shown.
-	 */
-	explicit LoggingTimer(const std::string& label = "", Aux::Log::LogLevel level = Aux::Log::LogLevel::debug);
-	~LoggingTimer();
+    /**
+     * @param label The label printed out next to the measurement
+     * @param level Only measure if logging at the provided LogLevel is enabled during runtime.
+     *              If logging at the given level is disable the Timer is very cheap to construct.
+     *              If logging is disabled during construction or destruction, no message is shown.
+     */
+    explicit LoggingTimer(const std::string& label = "", Aux::Log::LogLevel level = Aux::Log::LogLevel::debug);
+    ~LoggingTimer();
 
 private:
-	Aux::Log::LogLevel level;
-	std::string label;
+    Aux::Log::LogLevel level;
+    std::string label;
 };
 
 } /* namespace Aux */

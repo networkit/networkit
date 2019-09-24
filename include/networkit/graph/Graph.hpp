@@ -594,7 +594,7 @@ public:
     template <bool InEdges = false> class NeighborRange {
       public:
         NeighborRange(const Graph &G, node u) : G(&G), u(u){
-			assert(G.hasNode(u));
+            assert(G.hasNode(u));
         };
 
         NeighborRange() : G(nullptr) {};
@@ -691,28 +691,28 @@ public:
     /** Default copy assignment operator */
     Graph &operator=(const Graph &other) = default;
 
-	/**
-	 * Reserves memory in the node's edge containers for undirected graphs.
-	 *
-	 * @param u the node memory should be reserved for
-	 * @param size the amount of memory to reserve
-	 *
-	 * This function is thread-safe if called from different
-	 * threads on different nodes.
-	 */
-	void preallocateUndirected(node u, size_t size);
+    /**
+     * Reserves memory in the node's edge containers for undirected graphs.
+     *
+     * @param u the node memory should be reserved for
+     * @param size the amount of memory to reserve
+     *
+     * This function is thread-safe if called from different
+     * threads on different nodes.
+     */
+    void preallocateUndirected(node u, size_t size);
 
-	/**
-	 * Reserves memory in the node's edge containers for directed graphs.
-	 *
-	 * @param u the node memory should be reserved for
-	 * @param inSize the amount of memory to reserve for in edges
-	 * @param outSize the amount of memory to reserve for out edges
-	 *
-	 * This function is thread-safe if called from different
-	 * threads on different nodes.
-	 */
-	void preallocateDirected(node u, size_t outSize, size_t inSize);
+    /**
+     * Reserves memory in the node's edge containers for directed graphs.
+     *
+     * @param u the node memory should be reserved for
+     * @param inSize the amount of memory to reserve for in edges
+     * @param outSize the amount of memory to reserve for out edges
+     *
+     * This function is thread-safe if called from different
+     * threads on different nodes.
+     */
+    void preallocateDirected(node u, size_t outSize, size_t inSize);
 
     /** EDGE IDS **/
 
@@ -790,14 +790,14 @@ public:
      */
     std::string getName() const { return name; }
 
-	/**
-	 * Set edge count of the graph to edges.
-	 * @param edges the edge count of a graph
-	 */
-	void setEdgeCount(Unsafe, count edges) { m = edges; }
+    /**
+     * Set edge count of the graph to edges.
+     * @param edges the edge count of a graph
+     */
+    void setEdgeCount(Unsafe, count edges) { m = edges; }
 
-	void setNumberOfSelfLoops(Unsafe, count loops) { storedNumberOfSelfLoops = loops; }
-	/**
+    void setNumberOfSelfLoops(Unsafe, count loops) { storedNumberOfSelfLoops = loops; }
+    /**
      * Returns a string representation of the graph.
      * @return A string representation.
      */
@@ -1041,7 +1041,7 @@ public:
      * @param ew Optional edge weight.
      * @param index Optional node index.
      */
-	void addPartialInEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight, uint64_t index = 0);
+    void addPartialInEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight, uint64_t index = 0);
 
     /**
      * Insert an out edge between the nodes @a u and @a v in a directed graph. If the graph is
@@ -1053,7 +1053,7 @@ public:
      * @param ew Optional edge weight.
      * @param index Optional node index.
      */
-	void addPartialOutEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight, uint64_t index = 0);
+    void addPartialOutEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight, uint64_t index = 0);
 
 
     /**
@@ -2128,35 +2128,35 @@ template <typename L> void Graph::DFSEdgesFrom(node r, L handle) const {
 
 template <typename Condition>
 std::pair<count, count> Graph::removeAdjacentEdges(node u, Condition condition, bool edgesIn) {
-	count removedEdges = 0;
-	count removedSelfLoops = 0;
+    count removedEdges = 0;
+    count removedSelfLoops = 0;
 
-	// For directed graphs, this function is supposed to be called twice: one to remove out-edges,
-	// and one to remove in-edges.
-	auto &edges_ = edgesIn ? inEdges[u] : outEdges[u];
-	for (index vi = 0; vi < edges_.size();) {
-		if (condition(edges_[vi])) {
+    // For directed graphs, this function is supposed to be called twice: one to remove out-edges,
+    // and one to remove in-edges.
+    auto &edges_ = edgesIn ? inEdges[u] : outEdges[u];
+    for (index vi = 0; vi < edges_.size();) {
+        if (condition(edges_[vi])) {
             const auto isSelfLoop = (edges_[vi] == u);
             removedSelfLoops += isSelfLoop;
             removedEdges += !isSelfLoop;
-			edges_[vi] = edges_.back();
-			edges_.pop_back();
-			if (isWeighted()) {
-				auto &weights_ = edgesIn ? inEdgeWeights[u] : outEdgeWeights[u];
-				weights_[vi] = weights_.back();
-				weights_.pop_back();
-			}
-			if (hasEdgeIds()) {
-				auto &edgeIds_ = edgesIn ? inEdgeIds[u] : outEdgeIds[u];
-				edgeIds_[vi] = edgeIds_.back();
-				edgeIds_.pop_back();
-			}
-		} else {
-			++vi;
-		}
-	}
+            edges_[vi] = edges_.back();
+            edges_.pop_back();
+            if (isWeighted()) {
+                auto &weights_ = edgesIn ? inEdgeWeights[u] : outEdgeWeights[u];
+                weights_[vi] = weights_.back();
+                weights_.pop_back();
+            }
+            if (hasEdgeIds()) {
+                auto &edgeIds_ = edgesIn ? inEdgeIds[u] : outEdgeIds[u];
+                edgeIds_[vi] = edgeIds_.back();
+                edgeIds_.pop_back();
+            }
+        } else {
+            ++vi;
+        }
+    }
 
-	return {removedEdges, removedSelfLoops};
+    return {removedEdges, removedSelfLoops};
 }
 
 

@@ -23,31 +23,31 @@ namespace NetworKit {
  */
 class RmatGenerator: public StaticGraphGenerator {
 protected:
-	count scale; ///< n = 2^scale
-	count edgeFactor;
-	double a, b, c, d; ///< probabilities
-	double defaultEdgeWeight;
-	bool weighted;
-	count reduceNodes;
+    count scale; ///< n = 2^scale
+    count edgeFactor;
+    double a, b, c, d; ///< probabilities
+    double defaultEdgeWeight;
+    bool weighted;
+    count reduceNodes;
 
 public:
 
-	/**
-	 * @param[in] scale Number of nodes = 2^scale
-	 * @param[in] edgeFactor Number of edges = number of nodes * edgeFactor
-	 * @param[in] a Probability for quadrant upper left
-	 * @param[in] b Probability for quadrant upper right
-	 * @param[in] c Probability for quadrant lower left
-	 * @param[in] d Probability for quadrant lower right
-	 * @param[in] weighted	result graph weighted?
-	 * @param[in] reduceNodes	number of random nodes to delete to achieve a given node count
-	 */
-	RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d, bool weighted=false, count reduceNodes=0);
+    /**
+     * @param[in] scale Number of nodes = 2^scale
+     * @param[in] edgeFactor Number of edges = number of nodes * edgeFactor
+     * @param[in] a Probability for quadrant upper left
+     * @param[in] b Probability for quadrant upper right
+     * @param[in] c Probability for quadrant lower left
+     * @param[in] d Probability for quadrant lower right
+     * @param[in] weighted	result graph weighted?
+     * @param[in] reduceNodes	number of random nodes to delete to achieve a given node count
+     */
+    RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d, bool weighted=false, count reduceNodes=0);
 
-	/**
-	 * @return Graph to be generated according to parameters specified in constructor.
-	 */
-	Graph generate() override;
+    /**
+     * @return Graph to be generated according to parameters specified in constructor.
+     */
+    Graph generate() override;
 };
 
 } /* namespace NetworKit */

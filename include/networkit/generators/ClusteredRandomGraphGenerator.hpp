@@ -21,35 +21,35 @@ namespace NetworKit {
  */
 class ClusteredRandomGraphGenerator: public StaticGraphGenerator {
 public:
-	/**
-	 * Creates a clustered random graph:
-	 *
-	 * @param[in]	n	number of nodes
-	 * @param[in]	k	number of clusters
-	 * @param[in]	pin		intra-cluster edge probability
-	 * @param[in]	pout	inter-cluster edge probability
-	 */
-	ClusteredRandomGraphGenerator(count n, count k, double pin, double pout);
+    /**
+     * Creates a clustered random graph:
+     *
+     * @param[in]	n	number of nodes
+     * @param[in]	k	number of clusters
+     * @param[in]	pin		intra-cluster edge probability
+     * @param[in]	pout	inter-cluster edge probability
+     */
+    ClusteredRandomGraphGenerator(count n, count k, double pin, double pout);
 
-	/**
-	 * Generates a clustered random graph with the properties given in the constructor.
-	 * @return The generated graph.
-	 */
-	Graph generate() override;
+    /**
+     * Generates a clustered random graph with the properties given in the constructor.
+     * @return The generated graph.
+     */
+    Graph generate() override;
 
-	/**
-	 * Returns the generated ground truth communities.
-	 * @return The generated partition
-	 */
-	Partition getCommunities();
+    /**
+     * Returns the generated ground truth communities.
+     * @return The generated partition
+     */
+    Partition getCommunities();
 
 private:
 
-	count n;
-	count k;
-	double pin;
-	double pout;
-	Partition zeta;
+    count n;
+    count k;
+    double pin;
+    double pout;
+    Partition zeta;
 };
 
 } /* namespace NetworKit */

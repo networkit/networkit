@@ -18,19 +18,19 @@ namespace NetworKit {
 class RegularRingLatticeGenerator: public StaticGraphGenerator {
 
 public:
-	/**
-	* Construct a undirected regular ring lattice.
-	*
-	* @param nNodes 		number of nodes in target graph
-	* @param nNeighbors		number of neighbors on each side of a node
-	*/
-	RegularRingLatticeGenerator(count nNodes, count nNeighbors);
+    /**
+    * Construct a undirected regular ring lattice.
+    *
+    * @param nNodes 		number of nodes in target graph
+    * @param nNeighbors		number of neighbors on each side of a node
+    */
+    RegularRingLatticeGenerator(count nNodes, count nNeighbors);
 
-	virtual Graph generate();
+    virtual Graph generate();
 
 protected:
-		count nNodes;
-		count nNeighbors;
+        count nNodes;
+        count nNeighbors;
 
 };
 

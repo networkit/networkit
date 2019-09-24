@@ -54,26 +54,26 @@
 
 
 /*!
-	\file ttmaththreads.h
+    \file ttmaththreads.h
     \brief Some objects used in multithreads environment
 */
 
 
 /*
-	this is a simple skeleton of a program in multithreads environment:
+    this is a simple skeleton of a program in multithreads environment:
 
-	#define TTMATH_MULTITHREADS
-	#include<ttmath/ttmath.h>
-	
-	TTMATH_MULTITHREADS_HELPER
+    #define TTMATH_MULTITHREADS
+    #include<ttmath/ttmath.h>
+    
+    TTMATH_MULTITHREADS_HELPER
 
-	int main()
-	{
-	[...]
-	}
+    int main()
+    {
+    [...]
+    }
 
-	make sure that macro TTMATH_MULTITHREADS is defined and (somewhere in *.cpp file)
-	use TTMATH_MULTITHREADS_HELPER macro (outside of any classes/functions/namespaces scope)
+    make sure that macro TTMATH_MULTITHREADS is defined and (somewhere in *.cpp file)
+    use TTMATH_MULTITHREADS_HELPER macro (outside of any classes/functions/namespaces scope)
 */
 
 
@@ -83,76 +83,76 @@ namespace ttmath
 
 #ifdef TTMATH_WIN32_THREADS
 
-	/*
-		we use win32 threads
-	*/
+    /*
+        we use win32 threads
+    */
 
 
-	/*!
-		in multithreads environment you should use TTMATH_MULTITHREADS_HELPER macro
-		somewhere in *.cpp file
+    /*!
+        in multithreads environment you should use TTMATH_MULTITHREADS_HELPER macro
+        somewhere in *.cpp file
 
-		(at the moment in win32 this macro does nothing)
-	*/
-	#define TTMATH_MULTITHREADS_HELPER
-
-
-	/*!
-		objects of this class are used to synchronize
-	*/
-	class ThreadLock
-	{
-		HANDLE mutex_handle;
+        (at the moment in win32 this macro does nothing)
+    */
+    #define TTMATH_MULTITHREADS_HELPER
 
 
-		void CreateName(char * buffer) const
-		{
-			#ifdef _MSC_VER
-			#pragma warning (disable : 4996)
-			// warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead.
-			#endif
-
-			sprintf(buffer, "TTMATH_LOCK_%ul", (unsigned long)GetCurrentProcessId());
-
-			#ifdef _MSC_VER
-			#pragma warning (default : 4996)
-			#endif
-		}
+    /*!
+        objects of this class are used to synchronize
+    */
+    class ThreadLock
+    {
+        HANDLE mutex_handle;
 
 
-	public:
+        void CreateName(char * buffer) const
+        {
+            #ifdef _MSC_VER
+            #pragma warning (disable : 4996)
+            // warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead.
+            #endif
 
-		bool Lock()
-		{
-		char buffer[50];
+            sprintf(buffer, "TTMATH_LOCK_%ul", (unsigned long)GetCurrentProcessId());
 
-			CreateName(buffer);
-			mutex_handle = CreateMutexA(0, false, buffer);
-
-			if( mutex_handle == 0 )
-				return false;
-
-			WaitForSingleObject(mutex_handle, INFINITE);
-
-		return true;
-		}
+            #ifdef _MSC_VER
+            #pragma warning (default : 4996)
+            #endif
+        }
 
 
-		ThreadLock()
-		{
-			mutex_handle = 0;
-		}
+    public:
+
+        bool Lock()
+        {
+        char buffer[50];
+
+            CreateName(buffer);
+            mutex_handle = CreateMutexA(0, false, buffer);
+
+            if( mutex_handle == 0 )
+                return false;
+
+            WaitForSingleObject(mutex_handle, INFINITE);
+
+        return true;
+        }
 
 
-		~ThreadLock()
-		{
-			if( mutex_handle != 0 )
-			{
-				ReleaseMutex(mutex_handle);
-				CloseHandle(mutex_handle);
-			}
-		}
-	};
+        ThreadLock()
+        {
+            mutex_handle = 0;
+        }
+
+
+        ~ThreadLock()
+        {
+            if( mutex_handle != 0 )
+            {
+                ReleaseMutex(mutex_handle);
+                CloseHandle(mutex_handle);
+            }
+        }
+    };
 
 #endif  // #ifdef TTMATH_WIN32_THREADS
 
@@ -162,50 +162,50 @@ namespace ttmath
 
 #ifdef TTMATH_POSIX_THREADS
 
-	/*
-		we use posix threads
-	*/
+    /*
+        we use posix threads
+    */
 
 
-	/*!
-		in multithreads environment you should use TTMATH_MULTITHREADS_HELPER macro
-		somewhere in *.cpp file
-		(this macro defines a pthread_mutex_t object used by TTMath library)
-	*/
-	#define TTMATH_MULTITHREADS_HELPER                          \
-	namespace ttmath                                            \
-	{                                                           \
-	pthread_mutex_t ttmath_mutex = PTHREAD_MUTEX_INITIALIZER;   \
-	}
+    /*!
+        in multithreads environment you should use TTMATH_MULTITHREADS_HELPER macro
+        somewhere in *.cpp file
+        (this macro defines a pthread_mutex_t object used by TTMath library)
+    */
+    #define TTMATH_MULTITHREADS_HELPER                          \
+    namespace ttmath                                            \
+    {                                                           \
+    pthread_mutex_t ttmath_mutex = PTHREAD_MUTEX_INITIALIZER;   \
+    }
 
 
-	/*!
-		ttmath_mutex will be defined by TTMATH_MULTITHREADS_HELPER macro 
-	*/
-	extern pthread_mutex_t ttmath_mutex;
+    /*!
+        ttmath_mutex will be defined by TTMATH_MULTITHREADS_HELPER macro 
+    */
+    extern pthread_mutex_t ttmath_mutex;
 
 
-	/*!
-		objects of this class are used to synchronize
-	*/
-	class ThreadLock
-	{
-	public:
+    /*!
+        objects of this class are used to synchronize
+    */
+    class ThreadLock
+    {
+    public:
 
-		bool Lock()
-		{
-			if( pthread_mutex_lock(&ttmath_mutex) != 0 )
-				return false;
+        bool Lock()
+        {
+            if( pthread_mutex_lock(&ttmath_mutex) != 0 )
+                return false;
 
-		return true;
-		}
+        return true;
+        }
 
 
-		~ThreadLock()
-		{
-			pthread_mutex_unlock(&ttmath_mutex);
-		}
-	};
+        ~ThreadLock()
+        {
+            pthread_mutex_unlock(&ttmath_mutex);
+        }
+    };
 
 #endif // #ifdef TTMATH_POSIX_THREADS
 
@@ -214,28 +214,28 @@ namespace ttmath
 
 #if !defined(TTMATH_POSIX_THREADS) && !defined(TTMATH_WIN32_THREADS)
 
-	/*!
-		we don't use win32 and pthreads
-	*/
+    /*!
+        we don't use win32 and pthreads
+    */
 
-	/*!
-	*/
-	#define TTMATH_MULTITHREADS_HELPER
+    /*!
+    */
+    #define TTMATH_MULTITHREADS_HELPER
 
 
-	/*!
-		objects of this class are used to synchronize
-		actually we don't synchronize, the method Lock() returns always 'false'
-	*/
-	class ThreadLock
-	{
-	public:
+    /*!
+        objects of this class are used to synchronize
+        actually we don't synchronize, the method Lock() returns always 'false'
+    */
+    class ThreadLock
+    {
+    public:
 
-		bool Lock()
-		{
-			return false;
-		}
-	};
+        bool Lock()
+        {
+            return false;
+        }
+    };
 
 
 #endif // #if !defined(TTMATH_POSIX_THREADS) && !defined(TTMATH_WIN32_THREADS)

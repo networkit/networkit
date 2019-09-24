@@ -34,12 +34,12 @@ public:
 class DynBetweenness: public Centrality, public DynAlgorithm {
 
 public:
-	/**
-	 * Creates the object for @a G.
-	 *
-	 * @param G The graph.
-	 */
-	DynBetweenness(const Graph &G);
+    /**
+     * Creates the object for @a G.
+     *
+     * @param G The graph.
+     */
+    DynBetweenness(const Graph &G);
 
   /**
    * Runs static betweenness centrality algorithm on the initial graph.
@@ -63,35 +63,35 @@ public:
   void updateBatch(const std::vector<GraphEvent>& batch) override;
 
 
-	/** Returns number of visited pairs */
-	count visPairs();
+    /** Returns number of visited pairs */
+    count visPairs();
 
-	edgeweight getDistance(node u, node v);
-	edgeweight getSigma(node u, node v);
+    edgeweight getDistance(node u, node v);
+    edgeweight getSigma(node u, node v);
 
-	count numAffectedAPSP();
+    count numAffectedAPSP();
 
-	count numAffectedDep();
+    count numAffectedDep();
 
   double getTimeDep();
 
 
 private:
-	void increaseScore(std::vector<bool> & affected, node y, std::priority_queue<std::pair<double, node>, std::vector<std::pair<double,node>>, CompareDist> & Q);
-	void decreaseScore(std::vector<bool> & affected, node y, std::priority_queue<std::pair<double, node>, std::vector<std::pair<double,node>>, CompareDist> & Q);
-	node u;
-	node v;
-	count diameter = 0;
-	const edgeweight infDist = std::numeric_limits<edgeweight>::max();
-	count visitedPairs = 0;
-	std::vector<std::vector<edgeweight>> distances;
-	std::vector<std::vector<edgeweight>> distancesOld;
-	// total number of shortest paths between two nodes
-	std::vector<std::vector<edgeweight>> sigma;
-	std::vector<std::vector<edgeweight>> sigmaOld;
+    void increaseScore(std::vector<bool> & affected, node y, std::priority_queue<std::pair<double, node>, std::vector<std::pair<double,node>>, CompareDist> & Q);
+    void decreaseScore(std::vector<bool> & affected, node y, std::priority_queue<std::pair<double, node>, std::vector<std::pair<double,node>>, CompareDist> & Q);
+    node u;
+    node v;
+    count diameter = 0;
+    const edgeweight infDist = std::numeric_limits<edgeweight>::max();
+    count visitedPairs = 0;
+    std::vector<std::vector<edgeweight>> distances;
+    std::vector<std::vector<edgeweight>> distancesOld;
+    // total number of shortest paths between two nodes
+    std::vector<std::vector<edgeweight>> sigma;
+    std::vector<std::vector<edgeweight>> sigmaOld;
 
-	count affectedAPSP = 0;
-	count affectedDep = 0;
+    count affectedAPSP = 0;
+    count affectedDep = 0;
   double timeDep = 0;
 };
 

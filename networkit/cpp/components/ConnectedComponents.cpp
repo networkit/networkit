@@ -16,71 +16,71 @@
 namespace NetworKit {
 
 ConnectedComponents::ConnectedComponents(const Graph& G) : G(G) {
-	if (G.isDirected()) {
-		throw std::runtime_error("Error, connected components of directed graphs cannot be computed, use StronglyConnectedComponents for them.");
-	}
+    if (G.isDirected()) {
+        throw std::runtime_error("Error, connected components of directed graphs cannot be computed, use StronglyConnectedComponents for them.");
+    }
 }
 
 void ConnectedComponents::run() {
-	DEBUG("initializing labels");
-	component = Partition(G.upperNodeIdBound(), none);
-	numComponents = 0;
+    DEBUG("initializing labels");
+    component = Partition(G.upperNodeIdBound(), none);
+    numComponents = 0;
 
-	std::queue<node> q;
+    std::queue<node> q;
 
-	// perform breadth-first searches
-	G.forNodes([&](node u) {
-		if (component[u] == none) {
-			component.setUpperBound(numComponents+1);
-			index c = numComponents;
+    // perform breadth-first searches
+    G.forNodes([&](node u) {
+        if (component[u] == none) {
+            component.setUpperBound(numComponents+1);
+            index c = numComponents;
 
-			q.push(u);
-			component[u] = c;
+            q.push(u);
+            component[u] = c;
 
-			do {
-				node u = q.front();
-				q.pop();
-				// enqueue neighbors, set component
-				G.forNeighborsOf(u, [&](node v) {
-					if (component[v] == none) {
-						q.push(v);
-						component[v] = c;
-					}
-				});
-			} while (!q.empty());
+            do {
+                node u = q.front();
+                q.pop();
+                // enqueue neighbors, set component
+                G.forNeighborsOf(u, [&](node v) {
+                    if (component[v] == none) {
+                        q.push(v);
+                        component[v] = c;
+                    }
+                });
+            } while (!q.empty());
 
-			++numComponents;
-		}
-	});
+            ++numComponents;
+        }
+    });
 
-	hasRun = true;
+    hasRun = true;
 }
 
 
 Partition ConnectedComponents::getPartition() const {
-	assureFinished();
-	return this->component;
+    assureFinished();
+    return this->component;
 }
 
 
 std::vector<std::vector<node> > ConnectedComponents::getComponents() const {
-	assureFinished();
+    assureFinished();
 
-	// transform partition into vector of unordered_set
-	std::vector<std::vector<node> > result(numComponents);
+    // transform partition into vector of unordered_set
+    std::vector<std::vector<node> > result(numComponents);
 
-	G.forNodes([&](node u) {
-		result[component[u]].push_back(u);
-	});
+    G.forNodes([&](node u) {
+        result[component[u]].push_back(u);
+    });
 
-	return result;
+    return result;
 }
 
 
 
 std::map<index, count> ConnectedComponents::getComponentSizes() const {
-	assureFinished();
-	return this->component.subsetSizeMap();
+    assureFinished();
+    return this->component.subsetSizeMap();
 }
 
 Graph ConnectedComponents::extractLargestConnectedComponent(const Graph &G, bool compactGraph) {

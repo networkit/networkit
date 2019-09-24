@@ -20,16 +20,16 @@ namespace NetworKit {
  */
 class KruskalMSF: public SpanningForest {
 public:
-	KruskalMSF(const Graph& G);
-	virtual ~KruskalMSF() = default;
+    KruskalMSF(const Graph& G);
+    virtual ~KruskalMSF() = default;
 
-	/**
-	 * Computes for each component a minimum weight spanning tree
-	 * (or simply a spanning tree in unweighted graphs).
-	 * Uses Kruskal's algorithm.
-	 * Time complexity: sort(n) + n * inverse Ackermann(n, m).
-	 */
-	virtual void run() override;
+    /**
+     * Computes for each component a minimum weight spanning tree
+     * (or simply a spanning tree in unweighted graphs).
+     * Uses Kruskal's algorithm.
+     * Time complexity: sort(n) + n * inverse Ackermann(n, m).
+     */
+    virtual void run() override;
 };
 
 } /* namespace NetworKit */

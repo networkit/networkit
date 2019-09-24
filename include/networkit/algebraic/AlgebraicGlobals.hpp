@@ -14,9 +14,9 @@ namespace NetworKit {
 
 /** Represents a matrix entry s.t. matrix(row, column) = value */
 struct Triplet {
-	index row;
-	index column;
-	double value;
+    index row;
+    index column;
+    double value;
 };
 
 /** Floating point epsilon to use in comparisons. */

@@ -14,36 +14,36 @@ GraphCoarsening::GraphCoarsening(const Graph& G) : Algorithm(), G(G) {
 }
 
 Graph GraphCoarsening::getCoarseGraph() const {
-	if(!hasRun) {
-		throw std::runtime_error("Call run()-method first.");
-	}
-	return Gcoarsened;
+    if(!hasRun) {
+        throw std::runtime_error("Call run()-method first.");
+    }
+    return Gcoarsened;
 }
 
 std::vector<node> GraphCoarsening::getFineToCoarseNodeMapping() const {
-	if(!hasRun) {
-		throw std::runtime_error("Call run()-method first.");
-	}
-	return nodeMapping;
+    if(!hasRun) {
+        throw std::runtime_error("Call run()-method first.");
+    }
+    return nodeMapping;
 }
 
 
 std::map<node, std::vector<node> > GraphCoarsening::getCoarseToFineNodeMapping() const {
-	assureFinished();
+    assureFinished();
 
-	std::map<node, std::vector<node>> reverseMap;
-	Gcoarsened.forNodes([&](node v_){
-		std::vector<node> empty;
-		reverseMap[v_] = empty;
-	});
+    std::map<node, std::vector<node>> reverseMap;
+    Gcoarsened.forNodes([&](node v_){
+        std::vector<node> empty;
+        reverseMap[v_] = empty;
+    });
 
 
-	G.forNodes([&](node v) {
-		node v_ = nodeMapping[v];
-		reverseMap[v_].push_back(v);
-	});
+    G.forNodes([&](node v) {
+        node v_ = nodeMapping[v];
+        reverseMap[v_].push_back(v);
+    });
 
-	return reverseMap;
+    return reverseMap;
 }
 
 

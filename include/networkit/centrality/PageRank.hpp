@@ -21,28 +21,28 @@ namespace NetworKit {
  */
 class PageRank: public Centrality {
 protected:
-	double damp;
-	double tol;
+    double damp;
+    double tol;
 
 public:
-	/**
-	 * Constructs the PageRank class for the Graph @a G
-	 *
-	 * @param[in] G Graph to be processed.
-	 * @param[in] damp Damping factor of the PageRank algorithm.
-	 * @param[in] tol Error tolerance for PageRank iteration.
-	 */
-	PageRank(const Graph& G, double damp=0.85, double tol = 1e-8);
+    /**
+     * Constructs the PageRank class for the Graph @a G
+     *
+     * @param[in] G Graph to be processed.
+     * @param[in] damp Damping factor of the PageRank algorithm.
+     * @param[in] tol Error tolerance for PageRank iteration.
+     */
+    PageRank(const Graph& G, double damp=0.85, double tol = 1e-8);
 
-	/**
-	 * Computes page rank on the graph passed in constructor.
-	 */
-	virtual void run();
+    /**
+     * Computes page rank on the graph passed in constructor.
+     */
+    virtual void run();
 
-	/**
-	 * Returns upper bound on the page rank: 1.0. This could be tighter by assuming e.g. a star graph with n nodes.
-	 */
-	virtual double maximum();
+    /**
+     * Returns upper bound on the page rank: 1.0. This could be tighter by assuming e.g. a star graph with n nodes.
+     */
+    virtual double maximum();
 };
 
 } /* namespace NetworKit */

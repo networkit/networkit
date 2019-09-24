@@ -26,28 +26,28 @@ namespace NetworKit {
  */
 class DynamicDGSParser: public DynamicGraphSource {
 public:
-	DynamicDGSParser(std::string path);
+    DynamicDGSParser(std::string path);
 
-	/**
-	 * The generator may expect the graph to be in a certain initial state. Call this method first.
-	 */
-	virtual void initializeGraph();
+    /**
+     * The generator may expect the graph to be in a certain initial state. Call this method first.
+     */
+    virtual void initializeGraph();
 
 
-	/**
-	 * Perform one generative step - as defined by the implementation.
-	 */
-	virtual void generate();
+    /**
+     * Perform one generative step - as defined by the implementation.
+     */
+    virtual void generate();
 
-	void evaluateClusterings(const std::string path, const Partition& clustering);
+    void evaluateClusterings(const std::string path, const Partition& clustering);
 
 
 protected:
-	bool graphInitialized;	//!< true if initializeGraph has been called and graph has been properly initialized
-	std::unordered_map<std::string, node> nodeNames;
-	std::vector<std::string> nodeDates;
-	std::ifstream dgsFile;
-	std::vector<std::vector<std::string>> nodeCategories;
+    bool graphInitialized;	//!< true if initializeGraph has been called and graph has been properly initialized
+    std::unordered_map<std::string, node> nodeNames;
+    std::vector<std::string> nodeDates;
+    std::ifstream dgsFile;
+    std::vector<std::vector<std::string>> nodeCategories;
 
 
 };

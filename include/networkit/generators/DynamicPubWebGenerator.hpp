@@ -25,28 +25,28 @@ namespace NetworKit {
 class DynamicPubWebGenerator: public DynamicGraphGenerator {
 
 protected:
-	PubWebGenerator initGen; // multiple inheritance did not work with different generate functions
-	std::map<node, Point<float> > coordinates; //<! new and changed coordinates
-	bool writeInitialGraphToStream; // if true, on first call, write initial graph to stream
+    PubWebGenerator initGen; // multiple inheritance did not work with different generate functions
+    std::map<node, Point<float> > coordinates; //<! new and changed coordinates
+    bool writeInitialGraphToStream; // if true, on first call, write initial graph to stream
 
 
 public:
-	DynamicPubWebGenerator(count numNodes, count numberOfDenseAreas,
-			float neighborhoodRadius, count maxNumberOfNeighbors,
-			bool writeInitialGraphToStream = true);
+    DynamicPubWebGenerator(count numNodes, count numberOfDenseAreas,
+            float neighborhoodRadius, count maxNumberOfNeighbors,
+            bool writeInitialGraphToStream = true);
 
 
-	Graph getGraph() const { return G; }
+    Graph getGraph() const { return G; }
 
-	/**
-	 * Generate event stream.
-	 *
-	 * @param[in]	nSteps	number of time steps in the event stream
-	 */
-	virtual std::vector<GraphEvent> generate(count nSteps);
+    /**
+     * Generate event stream.
+     *
+     * @param[in]	nSteps	number of time steps in the event stream
+     */
+    virtual std::vector<GraphEvent> generate(count nSteps);
 
 
-	virtual std::map<node, Point<float> > getNewCoordinates() const;
+    virtual std::map<node, Point<float> > getNewCoordinates() const;
 
 
 

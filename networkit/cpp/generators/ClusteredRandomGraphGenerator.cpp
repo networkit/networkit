@@ -15,40 +15,40 @@ ClusteredRandomGraphGenerator::ClusteredRandomGraphGenerator(count n, count k, d
 }
 
 Graph ClusteredRandomGraphGenerator::generate() {
-	assert(pin >= pout);
+    assert(pin >= pout);
 
-	Graph G(n);
-	// assign nodes evenly to clusters
-	Partition zeta(n);
-	zeta.setUpperBound(k);
-	G.forNodes([&](node v){
-		index c = Aux::Random::integer(k-1);
-		zeta.addToSubset(c, v);
-	});
+    Graph G(n);
+    // assign nodes evenly to clusters
+    Partition zeta(n);
+    zeta.setUpperBound(k);
+    G.forNodes([&](node v){
+        index c = Aux::Random::integer(k-1);
+        zeta.addToSubset(c, v);
+    });
 
-	assert (zeta.numberOfSubsets() == k);
+    assert (zeta.numberOfSubsets() == k);
 
-	G.forNodePairs([&](node u, node v){
-		if (zeta.subsetOf(u) == zeta.subsetOf(v)) {
-			if (Aux::Random::probability() <= pin) {
-				G.addEdge(u, v);
-			}
-		} else {
-			if (Aux::Random::probability() <= pout) {
-				G.addEdge(u, v);
-			}
-		}
-	});
+    G.forNodePairs([&](node u, node v){
+        if (zeta.subsetOf(u) == zeta.subsetOf(v)) {
+            if (Aux::Random::probability() <= pin) {
+                G.addEdge(u, v);
+            }
+        } else {
+            if (Aux::Random::probability() <= pout) {
+                G.addEdge(u, v);
+            }
+        }
+    });
 
-	this->zeta = std::move(zeta);
+    this->zeta = std::move(zeta);
 
-	G.shrinkToFit();
-	return G;
+    G.shrinkToFit();
+    return G;
 
 }
 
 Partition ClusteredRandomGraphGenerator::getCommunities() {
-	return zeta;
+    return zeta;
 }
 
 

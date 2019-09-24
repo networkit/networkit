@@ -31,38 +31,38 @@ public:
 
     //! Creates a MemoryMappedFile instance in an unmapped state.
     //! A call to open() is required.
-	MemoryMappedFile();
+    MemoryMappedFile();
 
-	//! Invokes open(path) automatically
-	explicit MemoryMappedFile(const std::string& path);
+    //! Invokes open(path) automatically
+    explicit MemoryMappedFile(const std::string& path);
 
-	//! Invokes close
-	~MemoryMappedFile();
+    //! Invokes close
+    ~MemoryMappedFile();
 
-	//! It's non copy-able
-	MemoryMappedFile(const MemoryMappedFile&) = delete;
-	MemoryMappedFile& operator=(const MemoryMappedFile&) = delete;
+    //! It's non copy-able
+    MemoryMappedFile(const MemoryMappedFile&) = delete;
+    MemoryMappedFile& operator=(const MemoryMappedFile&) = delete;
 
-	//! Takes over the mapping (if any) from o, leaves o in a "closed"
-	//! state ready to be opened again.
-	MemoryMappedFile(MemoryMappedFile&& o) noexcept;
+    //! Takes over the mapping (if any) from o, leaves o in a "closed"
+    //! state ready to be opened again.
+    MemoryMappedFile(MemoryMappedFile&& o) noexcept;
 
-	//! If *this currently holds a mapping, it is closed and replaced
-	//! the other's state which in turn is left closed.
-	MemoryMappedFile& operator=(MemoryMappedFile&& o) noexcept;
+    //! If *this currently holds a mapping, it is closed and replaced
+    //! the other's state which in turn is left closed.
+    MemoryMappedFile& operator=(MemoryMappedFile&& o) noexcept;
 
-	//! Opens the file and maps it to cbegin() ... cend()
-	//! Opening an empty file is considered an error.
-	void open(const std::string& file);
+    //! Opens the file and maps it to cbegin() ... cend()
+    //! Opening an empty file is considered an error.
+    void open(const std::string& file);
 
-	//! If a file is mapped, it is closed. Otherwise, operation is carried out.
-	//! @note This function is automatically called by the destructor.
+    //! If a file is mapped, it is closed. Otherwise, operation is carried out.
+    //! @note This function is automatically called by the destructor.
     void close() noexcept;
 
     //! If a file is opened, a random-access iterator to the first byte mapped is returned.
     //! If no file is opened, nullptr is returned.
     const_iterator cbegin() const {
-    	return beginIt;
+        return beginIt;
     }
 
     //! Analogously to cbegin()
@@ -70,7 +70,7 @@ public:
 
     //! Number of bytes mapped
     size_t size() const {
-    	return std::distance(beginIt, endIt);
+        return std::distance(beginIt, endIt);
     }
 
 private:

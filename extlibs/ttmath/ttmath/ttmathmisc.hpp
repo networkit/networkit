@@ -40,7 +40,7 @@
 
 
 /*!
-	\file ttmathmisc.h
+    \file ttmathmisc.h
     \brief some helpful functions
 */
 
@@ -52,7 +52,7 @@ namespace ttmath
 {
 
 /*!
-	some helpful functions
+    some helpful functions
 */
 class Misc
 {
@@ -67,55 +67,55 @@ public:
  */
 
 /*!
-	result = str
+    result = str
 */
 static void AssignString(std::string & result, const char * str)
 {
-	result = str;
+    result = str;
 }
 
 
 #ifndef TTMATH_DONT_USE_WCHAR
 
 /*!
-	result = str
+    result = str
 */
 static void AssignString(std::wstring & result, const char * str)
 {
-	result.clear();
+    result.clear();
 
-	for( ; *str ; ++str )
-		result += *str;
+    for( ; *str ; ++str )
+        result += *str;
 }
 
 
 /*!
-	result = str
+    result = str
 */
 static void AssignString(std::wstring & result, const std::string & str)
 {
-	return AssignString(result, str.c_str());
+    return AssignString(result, str.c_str());
 }
 
 
 /*!
-	result = str
+    result = str
 */
 static void AssignString(std::string & result, const wchar_t * str)
 {
-	result.clear();
+    result.clear();
 
-	for( ; *str ; ++str )
-		result += static_cast<char>(*str);
+    for( ; *str ; ++str )
+        result += static_cast<char>(*str);
 }
 
 
 /*!
-	result = str
+    result = str
 */
 static void AssignString(std::string & result, const std::wstring & str)
 {
-	return AssignString(result, str.c_str());
+    return AssignString(result, str.c_str());
 }
 
 #endif
@@ -130,91 +130,91 @@ static void AssignString(std::string & result, const std::wstring & str)
 
 
 /*!
-	result += str
+    result += str
 */
 static void AddString(std::string & result, const char * str)
 {
-	result += str;
+    result += str;
 }
 
 
 #ifndef TTMATH_DONT_USE_WCHAR
 
 /*!
-	result += str
+    result += str
 */
 static void AddString(std::wstring & result, const char * str)
 {
-	for( ; *str ; ++str )
-		result += *str;
+    for( ; *str ; ++str )
+        result += *str;
 }
 
 #endif
 
 
 /*
-	this method omits any white characters from the string
-	char_type is char or wchar_t
+    this method omits any white characters from the string
+    char_type is char or wchar_t
 */
 template<class char_type>
 static void SkipWhiteCharacters(const char_type * & c)
 {
-	// 13 is at the end in a DOS text file (\r\n)
-	while( (*c==' ' ) || (*c=='\t') || (*c==13 ) || (*c=='\n') )
-		++c;
+    // 13 is at the end in a DOS text file (\r\n)
+    while( (*c==' ' ) || (*c=='\t') || (*c==13 ) || (*c=='\n') )
+        ++c;
 }
 
 
 
 
 /*!
-	this static method converts one character into its value
+    this static method converts one character into its value
 
-	for example:
-		1 -> 1
-		8 -> 8
-		A -> 10
-		f -> 15
+    for example:
+        1 -> 1
+        8 -> 8
+        A -> 10
+        f -> 15
 
-	this method don't check whether c is correct or not
+    this method don't check whether c is correct or not
 */
 static uint CharToDigit(uint c)
 {
-	if(c>='0' && c<='9')
-		return c-'0';
+    if(c>='0' && c<='9')
+        return c-'0';
 
-	if(c>='a' && c<='z')
-		return c-'a'+10;
+    if(c>='a' && c<='z')
+        return c-'a'+10;
 
 return c-'A'+10;
 }
 
 
 /*!
-	this method changes a character 'c' into its value
-	(if there can't be a correct value it returns -1)
+    this method changes a character 'c' into its value
+    (if there can't be a correct value it returns -1)
 
-	for example:
-	c=2, base=10 -> function returns 2
-	c=A, base=10 -> function returns -1
-	c=A, base=16 -> function returns 10
+    for example:
+    c=2, base=10 -> function returns 2
+    c=A, base=10 -> function returns -1
+    c=A, base=16 -> function returns 10
 */
 static sint CharToDigit(uint c, uint base)
 {
-	if( c>='0' && c<='9' )
-		c=c-'0';
-	else
-	if( c>='a' && c<='z' )
-		c=c-'a'+10;
-	else
-	if( c>='A' && c<='Z' )
-		c=c-'A'+10;
-	else
-		return -1;
+    if( c>='0' && c<='9' )
+        c=c-'0';
+    else
+    if( c>='a' && c<='z' )
+        c=c-'a'+10;
+    else
+    if( c>='A' && c<='Z' )
+        c=c-'A'+10;
+    else
+        return -1;
 
 
-	if( c >= base )
-		return -1;
+    if( c >= base )
+        return -1;
 
 
 return sint(c);
@@ -223,20 +223,20 @@ return sint(c);
 
 
 /*!
-	this method converts a digit into a char
-	digit should be from <0,F>
-	(we don't have to get a base)
-	
-	for example:
-		1  -> 1
-		8  -> 8
-		10 -> A
-		15 -> F
+    this method converts a digit into a char
+    digit should be from <0,F>
+    (we don't have to get a base)
+    
+    for example:
+        1  -> 1
+        8  -> 8
+        10 -> A
+        15 -> F
 */
 static uint DigitToChar(uint digit)
 {
-	if( digit < 10 )
-		return digit + '0';
+    if( digit < 10 )
+        return digit + '0';
 
 return digit - 10 + 'A';
 }

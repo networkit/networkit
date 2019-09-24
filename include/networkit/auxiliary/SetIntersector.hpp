@@ -22,19 +22,19 @@ namespace Aux {
 template<class T>
 class SetIntersector {
 public:
-	/**
-	 * @param upperBound Exclusive upper bound for IDs of set members.
-	 */
-	SetIntersector(T upperBound);
+    /**
+     * @param upperBound Exclusive upper bound for IDs of set members.
+     */
+    SetIntersector(T upperBound);
 
-	/**
-	 * @return Intersection of sets provided in @a A and @a B.
-	 */
-	std::set<T> intersect(const std::vector<T>& A, const std::vector<T>& B);
+    /**
+     * @return Intersection of sets provided in @a A and @a B.
+     */
+    std::set<T> intersect(const std::vector<T>& A, const std::vector<T>& B);
 
 private:
-	std::vector<bool> bv;
-	uint64_t n;
+    std::vector<bool> bv;
+    uint64_t n;
 };
 
 } // namespace Aux
@@ -42,33 +42,33 @@ private:
 
 template<class T>
 inline Aux::SetIntersector<T>::SetIntersector(T upperBound): n(upperBound) {
-	bv.resize(n, false);
+    bv.resize(n, false);
 
 }
 
 template<class T>
 inline std::set<T> Aux::SetIntersector<T>::intersect(const std::vector<T>& A,
-		const std::vector<T>& B)
+        const std::vector<T>& B)
 {
-	const std::vector<T>& smaller = (A.size() <= B.size()) ? A : B;
-	const std::vector<T>& larger = (A.size() <= B.size()) ? B : A;
+    const std::vector<T>& smaller = (A.size() <= B.size()) ? A : B;
+    const std::vector<T>& larger = (A.size() <= B.size()) ? B : A;
 
-	for (auto entry: smaller) {
-		bv[entry] = true;
-	}
+    for (auto entry: smaller) {
+        bv[entry] = true;
+    }
 
-	std::set<T> result;
-	for (auto entry: larger) {
-		if (bv[entry]) {
-			result.insert(entry);
-		}
-	}
+    std::set<T> result;
+    for (auto entry: larger) {
+        if (bv[entry]) {
+            result.insert(entry);
+        }
+    }
 
-	for (auto entry: smaller) {
-		bv[entry] = false;
-	}
+    for (auto entry: smaller) {
+        bv[entry] = false;
+    }
 
-	return result;
+    return result;
 }
 
 #endif /* SETINTERSECTOR_H_ */

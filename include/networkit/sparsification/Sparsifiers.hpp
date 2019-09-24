@@ -24,21 +24,21 @@ class Sparsifier {
 
 public:
 
-	Sparsifier(const Graph& inputGraph);
+    Sparsifier(const Graph& inputGraph);
 
-	virtual ~Sparsifier() = default;
+    virtual ~Sparsifier() = default;
 
-	/**
-	 * REQ: Needs to fill outputGraph and set hasOutput to true.
-	 */
-	virtual void run() = 0;
+    /**
+     * REQ: Needs to fill outputGraph and set hasOutput to true.
+     */
+    virtual void run() = 0;
 
-	Graph getGraph();
+    Graph getGraph();
 
 protected:
-	const Graph& inputGraph;
-	Graph outputGraph;
-	bool hasOutput;
+    const Graph& inputGraph;
+    Graph outputGraph;
+    bool hasOutput;
 
 };
 
@@ -50,17 +50,17 @@ protected:
 class SimmelianSparsifierNonParametric : public Sparsifier {
 
 public:
-	/**
-	 * Creates a new instance of the non-parametric (jaccard) variant of the Simmelian Backbone calculator.
-	 * @param graph			the input graph
-	 * @param threshold		the jaccard index threshold.
-	 */
-	SimmelianSparsifierNonParametric(const Graph& graph, double threshold);
+    /**
+     * Creates a new instance of the non-parametric (jaccard) variant of the Simmelian Backbone calculator.
+     * @param graph			the input graph
+     * @param threshold		the jaccard index threshold.
+     */
+    SimmelianSparsifierNonParametric(const Graph& graph, double threshold);
 
-	virtual void run() override;
+    virtual void run() override;
 
 private:
-	double threshold;
+    double threshold;
 
 };
 
@@ -71,20 +71,20 @@ private:
 class SimmelianSparsifierParametric : public Sparsifier {
 
 public:
-	/**
-	 * Creates a new instance of the parametric variant of the Simmelian Backbone calculator.
-	 * @param graph			the input graph
-	 * @param maxRank 		the maximum rank that is considered for overlap calculation
-	 * @param minOverlap	the minimum overlap of the top-k neighbors for an edge to be
-		 	 	 	 	 	 	contained in the sparsified graph.
-	 */
-	SimmelianSparsifierParametric(const Graph& graph, int maxRank, int minOverlap);
+    /**
+     * Creates a new instance of the parametric variant of the Simmelian Backbone calculator.
+     * @param graph			the input graph
+     * @param maxRank 		the maximum rank that is considered for overlap calculation
+     * @param minOverlap	the minimum overlap of the top-k neighbors for an edge to be
+                                contained in the sparsified graph.
+     */
+    SimmelianSparsifierParametric(const Graph& graph, int maxRank, int minOverlap);
 
-	virtual void run() override;
+    virtual void run() override;
 
 private:
-	int maxRank;
-	int minOverlap;
+    int maxRank;
+    int minOverlap;
 
 };
 
@@ -94,17 +94,17 @@ private:
 class MultiscaleSparsifier : public Sparsifier {
 
 public:
-	/**
-	 * Creates a new instance of the Multiscale Backbone calculator.
-	 * @param graph			the input graph
-	 * @param alpha 		the probability threshold
-	 */
-	MultiscaleSparsifier(const Graph& graph, double alpha);
+    /**
+     * Creates a new instance of the Multiscale Backbone calculator.
+     * @param graph			the input graph
+     * @param alpha 		the probability threshold
+     */
+    MultiscaleSparsifier(const Graph& graph, double alpha);
 
-	virtual void run() override;
+    virtual void run() override;
 
 private:
-	double alpha;
+    double alpha;
 
 };
 
@@ -114,17 +114,17 @@ private:
 class LocalSimilaritySparsifier : public Sparsifier {
 
 public:
-	/**
-	 * Creates a new instance of the Local Similarity sparsifier.
-	 * @param graph			the input graph
-	 * @param e				the threshold value
-	 */
-	LocalSimilaritySparsifier(const Graph& graph, double e);
+    /**
+     * Creates a new instance of the Local Similarity sparsifier.
+     * @param graph			the input graph
+     * @param e				the threshold value
+     */
+    LocalSimilaritySparsifier(const Graph& graph, double e);
 
-	virtual void run() override;
+    virtual void run() override;
 
 private:
-	double e;
+    double e;
 
 };
 
@@ -134,17 +134,17 @@ private:
 class SimmelianMultiscaleSparsifier : public Sparsifier {
 
 public:
-	/**
-	 * Creates a new instance of the Simmelian Multiscale Backbone calculator
-	 * @param graph			the input graph
-	 * @param alpha			the threshold value for multiscale filtering
-	 */
-	SimmelianMultiscaleSparsifier(const Graph& graph, double alpha);
+    /**
+     * Creates a new instance of the Simmelian Multiscale Backbone calculator
+     * @param graph			the input graph
+     * @param alpha			the threshold value for multiscale filtering
+     */
+    SimmelianMultiscaleSparsifier(const Graph& graph, double alpha);
 
-	virtual void run() override;
+    virtual void run() override;
 
 private:
-	double alpha;
+    double alpha;
 
 };
 
@@ -155,17 +155,17 @@ private:
 class RandomSparsifier : public Sparsifier {
 
 public:
-	/**
-	* Creates a new instance of the Random Sparsifier.
-	* @param graph			the input graph
-	* @param ratio			edge ratio in [0,1] to be kept in the sparse graph.
-	*/
-	RandomSparsifier(const Graph& graph, double ratio);
+    /**
+    * Creates a new instance of the Random Sparsifier.
+    * @param graph			the input graph
+    * @param ratio			edge ratio in [0,1] to be kept in the sparse graph.
+    */
+    RandomSparsifier(const Graph& graph, double ratio);
 
-	virtual void run() override;
+    virtual void run() override;
 
 private:
-	double ratio;
+    double ratio;
 
 };
 

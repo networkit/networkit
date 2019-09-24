@@ -24,28 +24,28 @@ class GraphCoarsening : public Algorithm {
 
 public:
 
-	GraphCoarsening(const Graph& G);
+    GraphCoarsening(const Graph& G);
 
-	virtual ~GraphCoarsening() = default;
+    virtual ~GraphCoarsening() = default;
 
-	virtual void run() = 0;
+    virtual void run() = 0;
 
-	Graph getCoarseGraph() const;
+    Graph getCoarseGraph() const;
 
-	/**
-	 * Get mapping from fine to coarse node.
-	 */
-	std::vector<node> getFineToCoarseNodeMapping() const;
+    /**
+     * Get mapping from fine to coarse node.
+     */
+    std::vector<node> getFineToCoarseNodeMapping() const;
 
-	/**
-	 * Get mapping from coarse node to collection of fine nodes.
-	 */
-	std::map<node, std::vector<node> > getCoarseToFineNodeMapping() const;
+    /**
+     * Get mapping from coarse node to collection of fine nodes.
+     */
+    std::map<node, std::vector<node> > getCoarseToFineNodeMapping() const;
 
 protected:
-	const Graph& G;
-	Graph Gcoarsened;
-	std::vector<node> nodeMapping;
+    const Graph& G;
+    Graph Gcoarsened;
+    std::vector<node> nodeMapping;
 
 };
 

@@ -22,9 +22,9 @@ class GraphStructuralRandMeasure: public DissimilarityMeasure {
 public:
 
 
-	virtual double getDissimilarity(const Graph& G, const Partition& first, const Partition& second);
+    virtual double getDissimilarity(const Graph& G, const Partition& first, const Partition& second);
 
-	//virtual double getDissimilarity(Graph& G, Clustering& zeta1, Graph& G2, Clustering& zeta2);
+    //virtual double getDissimilarity(Graph& G, Clustering& zeta1, Graph& G2, Clustering& zeta2);
 };
 
 } /* namespace NetworKit */

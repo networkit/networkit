@@ -15,15 +15,15 @@ namespace NetworKit {
 class EdgeScoreLinearizer : public EdgeScore<double> {
 
 private:
-	const std::vector<double>& attribute;
-	bool inverse;
+    const std::vector<double>& attribute;
+    bool inverse;
 
 public:
-	EdgeScoreLinearizer(const Graph& graph, const std::vector<double>& attribute, bool inverse = false);
+    EdgeScoreLinearizer(const Graph& graph, const std::vector<double>& attribute, bool inverse = false);
 
-	virtual double score(edgeid eid) override;
-	virtual double score(node u, node v) override;
-	virtual void run() override;
+    virtual double score(edgeid eid) override;
+    virtual double score(node u, node v) override;
+    virtual void run() override;
 
 };
 

@@ -6,69 +6,69 @@
 #include <networkit/auxiliary/SignalHandling.hpp>
 
 void NetworKit::IntrapartitionDensity::run() {
-	hasRun = false;
+    hasRun = false;
 
-	Aux::SignalHandler handler;
+    Aux::SignalHandler handler;
 
-	minimumValue = std::numeric_limits< double >::max();
-	maximumValue  = std::numeric_limits< double >::lowest();
-	unweightedAverage = 0;
-	weightedAverage = 0;
-	values.clear();
+    minimumValue = std::numeric_limits< double >::max();
+    maximumValue  = std::numeric_limits< double >::lowest();
+    unweightedAverage = 0;
+    weightedAverage = 0;
+    values.clear();
 
-	std::vector<count> clusterSizes(P.upperBound(), 0);
-	std::vector<count> intraEdges(P.upperBound(), 0);
+    std::vector<count> clusterSizes(P.upperBound(), 0);
+    std::vector<count> intraEdges(P.upperBound(), 0);
 
-	handler.assureRunning();
+    handler.assureRunning();
 
-	G.forEdges([&](node u, node v) {
-		if (P[u] == P[v]) {
-			++intraEdges[P[u]];
-		}
-	});
+    G.forEdges([&](node u, node v) {
+        if (P[u] == P[v]) {
+            ++intraEdges[P[u]];
+        }
+    });
 
-	handler.assureRunning();
+    handler.assureRunning();
 
-	G.forNodes([&](node u) {
-		++clusterSizes[P[u]];
-	});
+    G.forNodes([&](node u) {
+        ++clusterSizes[P[u]];
+    });
 
-	handler.assureRunning();
+    handler.assureRunning();
 
-	count numClusters = 0;
-	count intraEdgesSum = 0;
-	count possibleIntraEdgesSum = 0;
+    count numClusters = 0;
+    count intraEdgesSum = 0;
+    count possibleIntraEdgesSum = 0;
 
-	values.resize(P.upperBound(), 0);
+    values.resize(P.upperBound(), 0);
 
-	for (index i = 0; i < clusterSizes.size(); ++i) {
-		if (clusterSizes[i] > 0) {
-			double id = 1;
-			count possibleEdges = clusterSizes[i] * (clusterSizes[i]-1) / 2;
-			if (possibleEdges > 0) {
-				id = intraEdges[i] * 1.0 / possibleEdges;
-			}
+    for (index i = 0; i < clusterSizes.size(); ++i) {
+        if (clusterSizes[i] > 0) {
+            double id = 1;
+            count possibleEdges = clusterSizes[i] * (clusterSizes[i]-1) / 2;
+            if (possibleEdges > 0) {
+                id = intraEdges[i] * 1.0 / possibleEdges;
+            }
 
-			values[i] = id;
+            values[i] = id;
 
-			unweightedAverage += id;
-			weightedAverage += id * clusterSizes[i];
-			minimumValue = std::min(id, minimumValue);
-			maximumValue = std::max(id, maximumValue);
+            unweightedAverage += id;
+            weightedAverage += id * clusterSizes[i];
+            minimumValue = std::min(id, minimumValue);
+            maximumValue = std::max(id, maximumValue);
 
-			possibleIntraEdgesSum += possibleEdges;
-			intraEdgesSum += intraEdges[i];
-			++numClusters;
-		} else {
-			clusterSizes[i] = none;
-		}
-	}
+            possibleIntraEdgesSum += possibleEdges;
+            intraEdgesSum += intraEdges[i];
+            ++numClusters;
+        } else {
+            clusterSizes[i] = none;
+        }
+    }
 
-	handler.assureRunning();
+    handler.assureRunning();
 
-	unweightedAverage /= numClusters;
-	weightedAverage /= G.numberOfNodes();
+    unweightedAverage /= numClusters;
+    weightedAverage /= G.numberOfNodes();
 
-	globalValue = intraEdgesSum * 1.0 / possibleIntraEdgesSum;
-	hasRun = true;
+    globalValue = intraEdgesSum * 1.0 / possibleIntraEdgesSum;
+    hasRun = true;
 }

@@ -13,16 +13,16 @@ namespace NetworKit {
  */
 class LocalCoverEvaluation : public LocalCommunityEvaluation {
 public:
-	/**
-	 * Initialize the cover evaluation method.
-	 *
-	 * @param G The graph on which the evaluation shall be performed
-	 * @param C The cover that shall be evaluated.
-	 */
-	LocalCoverEvaluation(const Graph &G, const Cover &C);
+    /**
+     * Initialize the cover evaluation method.
+     *
+     * @param G The graph on which the evaluation shall be performed
+     * @param C The cover that shall be evaluated.
+     */
+    LocalCoverEvaluation(const Graph &G, const Cover &C);
 protected:
-	const Graph &G;
-	const Cover &C;
+    const Graph &G;
+    const Cover &C;
 };
 
 }

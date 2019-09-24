@@ -11,10 +11,10 @@
 namespace NetworKit {
 
 double NeighborhoodDistanceIndex::runImpl(node u, node v) {
-	count uNeighborhood = G->degree(u);
-	count vNeighborhood = G->degree(v);
-	count intersection = NeighborhoodUtility::getCommonNeighbors(*G, u, v).size();
-	return ((double)intersection) / (sqrt(uNeighborhood * vNeighborhood));
+    count uNeighborhood = G->degree(u);
+    count vNeighborhood = G->degree(v);
+    count intersection = NeighborhoodUtility::getCommonNeighbors(*G, u, v).size();
+    return ((double)intersection) / (sqrt(uNeighborhood * vNeighborhood));
 }
 
 } /* namespace NetworKit */

@@ -19,22 +19,22 @@ namespace NetworKit {
 
 class CurveballGlobalTradeGenerator {
 public:
-	using value_type = std::vector< std::pair<node, node> >;
+    using value_type = std::vector< std::pair<node, node> >;
 
 protected:
-	const node numNodes;
-	const count numGlobalTrades;
+    const node numNodes;
+    const count numGlobalTrades;
 
 public:
-	CurveballGlobalTradeGenerator(const count run_length, const node num_nodes)
-		: numNodes(num_nodes)
-		, numGlobalTrades(run_length)
-	{
-		if (num_nodes <= 1)
-			throw std::runtime_error("At least two nodes are required.");
-	}
+    CurveballGlobalTradeGenerator(const count run_length, const node num_nodes)
+        : numNodes(num_nodes)
+        , numGlobalTrades(run_length)
+    {
+        if (num_nodes <= 1)
+            throw std::runtime_error("At least two nodes are required.");
+    }
 
-	value_type generate() const;
+    value_type generate() const;
 };
 
 }

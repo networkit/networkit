@@ -14,29 +14,29 @@ namespace NetworKit {
 
 template<typename T>
 struct AttributizedEdge {
-	node ego;
-	node alter;
-	edgeid eid;
-	T value;
+    node ego;
+    node alter;
+    edgeid eid;
+    T value;
 
-	AttributizedEdge(node ego, node alter, edgeid eid, T v) :
-			ego(ego), alter(alter), eid(eid), value(v) {
-	}
+    AttributizedEdge(node ego, node alter, edgeid eid, T v) :
+            ego(ego), alter(alter), eid(eid), value(v) {
+    }
 
-	bool operator<(const AttributizedEdge<T>& other) const {
-		return (value > other.value)
-				|| (value == other.value && alter < other.alter);
-	}
+    bool operator<(const AttributizedEdge<T>& other) const {
+        return (value > other.value)
+                || (value == other.value && alter < other.alter);
+    }
 
-	bool operator>(const AttributizedEdge<T>& other) const {
-		return (value < other.value)
-				|| (value == other.value && alter > other.alter);
-	}
+    bool operator>(const AttributizedEdge<T>& other) const {
+        return (value < other.value)
+                || (value == other.value && alter > other.alter);
+    }
 
-	bool operator==(const AttributizedEdge<T>& other) const {
-		return ego == other.ego && alter == other.alter
-				&& value == other.value;
-	}
+    bool operator==(const AttributizedEdge<T>& other) const {
+        return ego == other.ego && alter == other.alter
+                && value == other.value;
+    }
 };
 
 struct greater {
@@ -51,13 +51,13 @@ class LocalSimilarityScore : public EdgeScore<double> {
 
 public:
 
-	LocalSimilarityScore(const Graph& G, const std::vector<count>& triangles);
-	virtual double score(edgeid eid) override;
-	virtual double score(node u, node v) override;
-	virtual void run() override;
+    LocalSimilarityScore(const Graph& G, const std::vector<count>& triangles);
+    virtual double score(edgeid eid) override;
+    virtual double score(node u, node v) override;
+    virtual void run() override;
 
 private:
-	const std::vector<count>& triangles;
+    const std::vector<count>& triangles;
 };
 
 }

@@ -19,27 +19,27 @@ namespace NetworKit {
 class NeighborhoodFunction : public Algorithm {
 
 public:
-	/**
-	* Computes the neighborhood function exactly.
-	* The neighborhood function N of a graph G for a given distance t is defined
-	* as the number of node pairs (u,v) that can be reached within distance t.
-	*
-	* @param G the given graph
-	* @return the exact effective diameter of the graph
-	*/
-	NeighborhoodFunction(const Graph& G);
+    /**
+    * Computes the neighborhood function exactly.
+    * The neighborhood function N of a graph G for a given distance t is defined
+    * as the number of node pairs (u,v) that can be reached within distance t.
+    *
+    * @param G the given graph
+    * @return the exact effective diameter of the graph
+    */
+    NeighborhoodFunction(const Graph& G);
 
-	void run() override;
+    void run() override;
 
-	/**
-	 * Returns the neighborhood function of the graph.
-	 * @return the neighborhood function of the graph
-	 */
-	std::vector<count> getNeighborhoodFunction() const;
+    /**
+     * Returns the neighborhood function of the graph.
+     * @return the neighborhood function of the graph
+     */
+    std::vector<count> getNeighborhoodFunction() const;
 
 private:
-	const Graph& G;
-	std::vector<count> result;
+    const Graph& G;
+    std::vector<count> result;
 };
 
 } /* namespace NetworKit */

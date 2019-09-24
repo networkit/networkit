@@ -21,20 +21,20 @@ namespace NetworKit {
  */
 class RasterReader {
 private:
-	double normalizationFactor;
+    double normalizationFactor;
 
 public:
-	/**
-	 * @param[in] Factor by which population per grid cell should be multiplied
-	 */
-	RasterReader(double normalizationFactor);
-	virtual ~RasterReader() = default;
+    /**
+     * @param[in] Factor by which population per grid cell should be multiplied
+     */
+    RasterReader(double normalizationFactor);
+    virtual ~RasterReader() = default;
 
-	/**
-	 * @param[in] path Path and name of file to be read.
-	 * @return Vectors of x- and y-coordinates of the points.
-	 */
-	std::pair<std::vector<double>, std::vector<double> > read(const std::string& path);
+    /**
+     * @param[in] path Path and name of file to be read.
+     * @return Vectors of x- and y-coordinates of the points.
+     */
+    std::pair<std::vector<double>, std::vector<double> > read(const std::string& path);
 };
 
 } /* namespace NetworKit */
