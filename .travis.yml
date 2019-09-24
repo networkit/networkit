@@ -275,6 +275,13 @@ matrix:
         on:
           branch: Dev
 
+    - name: "Style guide compliance"
+      os: linux
+      dist: xenial
+      script:
+        - set -e
+        - python3 extrafiles/tooling/CppIndentation.py
+
 script:
  - $CXX --version
  - python3 --version
