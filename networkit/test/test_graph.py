@@ -162,6 +162,28 @@ class TestGraph(unittest.TestCase):
 		self.assertEqual(GWeighted.numberOfNodes(),     GTrans.numberOfNodes())
 		self.assertEqual(GWeighted.numberOfEdges(),     GTrans.numberOfEdges())
 
+	def testRandomEdgesReproducibility(self):
+		numSamples = 10
+		numSeeds = 3
+		numRepeats = 10
+
+		for directed in [False, True]:
+			G = self.getSmallGraph(False, directed)
+
+			results = [[] for i in range(numSeeds)]
+			for repeats in range(numRepeats):
+				for seed in range(numSeeds):
+					nk.setSeed(seed, False)
+					results[seed].append(G.randomEdges(numSamples))
+
+			# assert results are different for different seeds
+			for seed in range(1, numSeeds):
+				self.assertNotEqual(results[0][0], results[seed][0])
+
+			# assert results are consistent for same seeds
+			for repeats in results:
+				for x in repeats[1:]:
+					self.assertEqual(repeats[0], x)
 
 	def testIterator(self):
 		# Undirected
