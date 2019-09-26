@@ -2413,8 +2413,9 @@ TEST_P(GraphGTest, testSubgraphFromNodesDirected) {
 TEST_P(GraphGTest, testRemoveMultiEdges) {
 	Aux::Random::setSeed(42, false);
 	Graph G(this->Ghouse);
-	auto edgeSet = G.edges();
-	const count nMultiEdges = 10;
+	const auto edgeSet = G.edges();
+	constexpr count nMultiEdges = 10;
+	constexpr count nMultiSelfLoops = 10;
 	const count m = G.numberOfEdges();
 
 	// Adding multiedges at random
@@ -2423,8 +2424,19 @@ TEST_P(GraphGTest, testRemoveMultiEdges) {
 		G.addEdge(e.first, e.second);
 	}
 
-	EXPECT_EQ(G.numberOfEdges(), m + nMultiEdges);
+	std::unordered_set<node> uniqueSelfLoops;
+	// Adding multiple self-loops at random
+	for (count i = 0; i < nMultiSelfLoops; ++i) {
+		node u = G.randomNode();
+		G.addEdge(u, u);
+		G.addEdge(u, u);
+		uniqueSelfLoops.insert(u);
+	}
+
+	EXPECT_EQ(G.numberOfEdges(), m + nMultiEdges + 2 * nMultiSelfLoops);
 	G.removeMultiEdges();
+	EXPECT_EQ(G.numberOfEdges(), m + uniqueSelfLoops.size());
+	G.removeSelfLoops();
 	EXPECT_EQ(G.numberOfEdges(), m);
 	auto edgeSet_ = G.edges();
 
