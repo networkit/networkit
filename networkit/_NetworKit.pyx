@@ -1509,6 +1509,53 @@ cdef class BidirectionalDijkstra(STSP):
 	"""
 	pass
 
+
+cdef extern from "<networkit/distance/AStar.hpp>":
+	cdef cppclass _AStar "NetworKit::AStar"(_STSP):
+		_AStar(_Graph G, vector[double] &heu, node source, node target, bool_t storePred) except +
+
+cdef class AStar(STSP):
+	"""
+	A* path-finding algorithm.
+
+	Parameters
+	----------
+
+	G : networkit.Graph
+		The input graph.
+	heu : list
+		List of lower bounds of the distance of each node to the target.
+	source : node
+		The source node.
+	target : node
+		The target node.
+	storePred : bool
+		If true, the algorithm will also store the predecessors
+		and reconstruct a shortest path from @a source and @a target.
+	"""
+
+	cdef vector[double] heu
+	def __cinit__(self, Graph G, vector[double] &heu, node source, node target, bool_t storePred):
+		self.heu = heu
+		self._this = new _AStar(G._this, self.heu, source, target, storePred)
+
+	def run(self):
+		(<_AStar*>(self._this)).run()
+		return self
+
+	def getPath(self):
+		"""
+		Returns a shortest path from the source node to the target node (without
+		including them). Note: the shortest path can be constructed only if the
+		algorithm is executed with @a storePred set to true.
+
+		Returns
+		-------
+		vector
+			A shortest path from the source node to the target node.
+		"""
+		return (<_AStar*>(self._this)).getPath()
+
 # TODO: expose all methods
 
 cdef extern from "<networkit/distance/SSSP.hpp>":

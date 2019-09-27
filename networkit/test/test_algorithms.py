@@ -410,6 +410,76 @@ class Test_SelfLoops(unittest.TestCase):
 		algo = distance.NeighborhoodFunctionApproximation(self.LL)
 		algo.run()
 
+	def test_distance_AStar(self):
+		# Builds a mesh graph with the given number of rows and columns
+		def build_mesh(rows, cols):
+			G = Graph(rows * cols, False, False)
+			for i in range(rows):
+				for j in range(cols):
+					if j < cols - 1:
+						G.addEdge(i * cols + j, i * cols + j + 1)
+					if i < rows - 1:
+						G.addEdge(i * cols + j, (i + 1) * cols + j)
+			return G
+
+		# Test the AStar algorithm on a mesh with the given number of rows and columns
+		def test_mesh(rows, cols):
+			G = build_mesh(rows, cols)
+
+			# Test A* on the given source-target pair
+			def test_pair(s, t):
+
+				# Some distance heuristics:
+
+				# Always returns 0, A* degenerates to Dijkstra
+				def zero_dist(u):
+					return 0
+
+				# Returns the exact distance from u to the target
+				def exact_dist(u):
+					rowU = int(u / cols)
+					colU = int(u % cols)
+					rowT = int(t / cols)
+					colT = int(t % cols)
+					return abs(rowU - rowT) + abs(colU - colT)
+
+				# Returns the eucledian distance from u to the target
+				def eucledian_dist(u):
+					rowT = int(t / cols)
+					colT = int(t % cols)
+					rowDiff = abs(int(u / cols) - rowT)
+					colDiff = abs(int(u % cols) - rowT)
+					return (rowDiff**2 + colDiff**2)**.5
+
+				# Use BFS as ground truth
+				bfs = distance.BFS(G, s, True, False, t).run()
+
+				# Test A* on all the heuristics
+				for heu in [zero_dist, exact_dist, eucledian_dist]:
+					heuristics = [heu(u) for u in range(G.numberOfNodes())]
+					astar = distance.AStar(G, heuristics, s, t, True)
+					astar.run()
+
+					# Test distance of target
+					self.assertEqual(astar.getDistance(), bfs.distance(t))
+
+					# Test path
+					path = astar.getPath()
+					self.assertEqual(len(path), len(bfs.getPath(t)) - 2)
+					if len(path) == 0:
+						continue
+					for i in range(len(path) - 1):
+						self.assertTrue(G.hasEdge(path[i], path[i + 1]))
+
+			# Iterate over all possible source-target pairs
+			G.forNodePairs(test_pair)
+
+		# Test some meshes
+		test_mesh(10, 10)
+		test_mesh(21, 5)
+		test_mesh(9, 18)
+		test_mesh(7, 1)
+
 
 if __name__ == "__main__":
 	unittest.main()
