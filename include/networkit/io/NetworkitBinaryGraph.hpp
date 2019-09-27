@@ -96,7 +96,7 @@ inline size_t varIntEncode(uint64_t value, uint8_t *buffer) noexcept {
 		value >>= 7 - dataBytes;
 	}
 
-	for (uint64_t i = 0; i < dataBytes; i++) {
+	for (int i = 0; i < dataBytes; i++) {
 		buffer[i + 1] = static_cast<uint8_t>(value & 0xFF);
 		value >>= 8;
 	}
