@@ -362,6 +362,21 @@ class Test_SelfLoops(unittest.TestCase):
 		for i in range(G.numberOfNodes()):
 			self.assertEqual(G2.hasNode(i), (4 <= i <= 9))
 
+	def test_components_BiconnectedComponents(self):
+		bcc = components.BiconnectedComponents(self.LL)
+		bcc.run()
+
+		for component in bcc.getComponents():
+			G1 = self.LL.subgraphFromNodes(component, False, False)
+			def test_node(v):
+				G2 = Graph(G1)
+				G2.removeNode(v)
+				cc = components.ConnectedComponents(G2)
+				cc.run()
+				self.assertEqual(cc.numberOfComponents(), 1)
+			G1.forNodes(test_node)
+
+
 	def test_distance_Diameter(self):
 		D = distance.Diameter(self.LL, distance.DiameterAlgo.EstimatedRange, error = 0.1)
 		D.run()

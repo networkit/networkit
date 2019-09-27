@@ -32,40 +32,40 @@ void BiconnectedComponents::init() {
   componentsOfNode.resize(n);
 }
 
-void BiconnectedComponents::visit(node u) {
-  level[u] = idx;
-  lowpt[u] = idx;
-  ++idx;
-  visited[u] = true;
-}
-
 void BiconnectedComponents::run() {
 
   init();
+
+  auto visitNode = [&](node u) {
+    level[u] = idx;
+    lowpt[u] = idx;
+    ++idx;
+    visited[u] = true;
+  };
+
+  std::stack<std::pair<node, Graph::NeighborIterator>> stack;
+  std::vector<std::pair<node, node>> edgeStack;
   G.forNodes([&](node v) {
     if (visited[v]) {
       return;
     }
 
     isRoot[v] = true;
-    std::stack<node> stack;
-    std::vector<std::pair<node, node>> edgeStack;
-    stack.push(v);
+    stack.push(std::make_pair(v, G.neighborRange(v).begin()));
 
-    while (!stack.empty()) {
-      node u = stack.top();
+    do {
+      node u = stack.top().first;
+      auto &iter = stack.top().second;
       if (!visited[u]) {
-        visit(u);
+        visitNode(u);
       }
 
-      bool allVisited = true;
-
-      for (node neighbor : G.neighborRange(u)) {
+      for (; iter != G.neighborRange(u).end(); ++iter) {
+        node neighbor = *iter;
         if (!visited[neighbor]) {
-          allVisited = false;
-          visit(neighbor);
+          visitNode(neighbor);
           parent[neighbor] = u;
-          stack.push(neighbor);
+          stack.push(std::make_pair(neighbor, G.neighborRange(neighbor).begin()));
           edgeStack.push_back(std::make_pair(u, neighbor));
           break;
         } else if (neighbor != parent[u] && level[neighbor] < level[u]) {
@@ -74,7 +74,7 @@ void BiconnectedComponents::run() {
         }
       }
 
-      if (allVisited) {
+      if (iter == G.neighborRange(u).end()) {
         stack.pop();
 
         if (isRoot[u]) {
@@ -102,7 +102,9 @@ void BiconnectedComponents::run() {
           ++nComp;
         }
       }
-    }
+    } while (!stack.empty());
+
+    edgeStack.clear();
   });
 
   hasRun = true;

@@ -444,7 +444,9 @@ class Graph final {
     auto callBFSHandle(F &f, node u, count) const -> decltype(f(u)) {
         return f(u);
     }
+
 public:
+
     /**
      * Class to iterate over the in/out neighbors of a node.
      */

@@ -2,7 +2,7 @@
  * BiconnectedComponentsGTest.cpp
  *
  * Created on: March 2018
- * 		 Author: Eugenio Angriman
+ *     Author: Eugenio Angriman
  */
 
 #include <gtest/gtest.h>
@@ -36,36 +36,23 @@ TEST_F(BiconnectedComponentsGTest, testBiconnectedComponentsTiny) {
 }
 
 TEST_F(BiconnectedComponentsGTest, testBiconnectedComponents) {
-	Graph G = ErdosRenyiGenerator(200, 0.2, false).generate();
+	Aux::Random::setSeed(42, false);
+	Graph G = ErdosRenyiGenerator(200, 0.01, false).generate();
 
 	BiconnectedComponents bc(G);
 	bc.run();
 
-	auto components = bc.getComponents();
+	for (auto component : bc.getComponents()) {
+		std::unordered_set<node> subgraph(component.begin(), component.end());
+		auto G1 = G.subgraphFromNodes(subgraph, false, false);
 
-	for (auto component : components) {
-		ConnectedComponents cc(G);
-		cc.run();
-		count nComps = cc.numberOfComponents();
-		for (node v : component) {
-
-			std::vector<node> neighbors(G.neighborRange(v).begin(),
-										G.neighborRange(v).end());
-			// Simulating node removal
-			for (node w : neighbors) {
-				G.removeEdge(v, w);
-			}
-			ConnectedComponents cc1(G);
-			cc1.run();
-			count nComps1 = cc1.numberOfComponents();
-			// Isolated node counts as a new component
-			EXPECT_EQ(nComps, nComps1 - 1);
-
-			// Simulating node re-insertion
-			for (node w : neighbors) {
-				G.addEdge(v, w);
-			}
-		}
+		G1.forNodes([&](node v) {
+			auto G2(G1);
+			G2.removeNode(v);
+			ConnectedComponents cc(G2);
+			cc.run();
+			EXPECT_EQ(cc.numberOfComponents(), 1);
+		});
 	}
 }
 

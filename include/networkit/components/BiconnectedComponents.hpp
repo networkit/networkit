@@ -1,5 +1,5 @@
 /*
- * BiconnectedeComponents.h
+ * BiconnectedeComponents.hpp
  *
  * Created on: March 2018
  * 		 Author: Eugenio Angriman
@@ -7,6 +7,8 @@
 
 #ifndef BICONNECTEDCOMPONENTS_H_
 #define BICONNECTEDCOMPONENTS_H_
+
+#include <unordered_set>
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -19,7 +21,7 @@ namespace NetworKit {
  * Tarjan, Robert. Depth-First Search and Linear Graph Algorithms. SIAM J.
  * Comput. Vol 1, No. 2, June 1972.
  */
-class BiconnectedComponents : public Algorithm {
+class BiconnectedComponents final : public Algorithm {
 
 public:
   /*
@@ -57,9 +59,8 @@ public:
    */
   std::vector<std::vector<node>> getComponents();
 
-protected:
+private:
   void init();
-  void visit(node u);
   void newComponent(std::pair<node, node> e);
 
   const Graph &G;
@@ -71,7 +72,7 @@ protected:
   std::vector<node> parent;
   std::vector<bool> visited;
   std::vector<bool> isRoot;
-  std::vector<std::set<node>> componentsOfNode;
+  std::vector<std::unordered_set<node>> componentsOfNode;
   std::map<count, count> componentSizes;
 };
 
