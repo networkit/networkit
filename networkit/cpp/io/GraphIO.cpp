@@ -5,6 +5,7 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#include <fstream>
 #include <networkit/io/GraphIO.hpp>
 
 namespace NetworKit {

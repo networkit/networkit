@@ -9,19 +9,13 @@
 #define POINT_H_
 
 #include <vector>
-#include <cinttypes>
 #include <cassert>
 #include <cmath>
-#include <cstdint>
-#include <iostream>
-#include <sstream>
+#include <string>
+
+#include <networkit/Globals.hpp>
 
 namespace NetworKit {
-
-typedef uint64_t index; // more expressive name for an index into an array
-typedef uint64_t count; // more expressive name for an integer quantity
-
-
 
 /**
  * @ingroup viz
@@ -92,7 +86,6 @@ public:
 
 	std::string genericToString(const std::string& start, const std::string& sep, const std::string& end);
 
-//	friend std::ostream& operator<< <>(std::ostream &out, Point<T>& point);
 };
 
 template<class T>
@@ -232,18 +225,6 @@ inline T Point<T>::at(index i) const {
 }
 
 template<class T>
-std::ostream& operator <<(std::ostream& out, Point<T>& point)
-{
-	assert(point.data.size() > 0);
-	out << "(" << point[0];
-	for (index i = 1; i < point.data.size(); ++i) {
-		out << ", " << point.data[i];
-	}
-	out << ")";
-	return out;
-}
-
-template<class T>
 std::string Point<T>::toString() {
 	return genericToString("", ", ", "");
 }
@@ -264,13 +245,17 @@ inline std::string Point<T>::genericToString(
 		const std::string& end)
 {
 	assert(this->data.size() > 0);
-	std::stringstream out;
-	out << start << (*this)[0];
+
+	std::string res = start;
+
+	res += std::to_string((*this)[0]);
 	for (index i = 1; i < this->data.size(); ++i) {
-		out << sep << this->data[i];
+		res += sep;
+		res += std::to_string(this->data[i]);
 	}
-	out << end;
-	return out.str();
+
+	res += end;
+	return res;
 }
 
 } /* namespace NetworKit */

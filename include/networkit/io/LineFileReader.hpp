@@ -8,8 +8,6 @@
 #ifndef LINEFILEREADER_H_
 #define LINEFILEREADER_H_
 
-#include <fstream>
-#include <iostream>
 #include <string>
 #include <vector>
 

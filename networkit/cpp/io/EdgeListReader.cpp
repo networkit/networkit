@@ -8,6 +8,7 @@
 #include <networkit/io/EdgeListReader.hpp>
 #include <networkit/auxiliary/Log.hpp>
 
+#include <fstream>
 #include <sstream>
 
 #include <networkit/auxiliary/Enforce.hpp>

@@ -5,6 +5,7 @@
  *      Author: cls
  */
 
+#include <iostream>
 #include <map>
 
 #include <networkit/io/DGSReader.hpp>

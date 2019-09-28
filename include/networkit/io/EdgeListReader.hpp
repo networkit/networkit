@@ -8,8 +8,6 @@
 #ifndef EDGELISTREADER_H_
 #define EDGELISTREADER_H_
 
-#include <fstream>
-#include <iostream>
 #include <string>
 #include <map>
 
