@@ -11,7 +11,7 @@
 #include <cstdint>
 #include <limits>
 
-#include <networkit/ext/ttmath/ttmath.hpp>
+#include <ttmath/ttmath.hpp>
 
 namespace NetworKit {
     using index = uint64_t; ///< more expressive name for an index into an array
