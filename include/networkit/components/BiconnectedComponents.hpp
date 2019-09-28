@@ -8,7 +8,9 @@
 #ifndef BICONNECTEDCOMPONENTS_H_
 #define BICONNECTEDCOMPONENTS_H_
 
+#include <map>
 #include <unordered_set>
+#include <vector>
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>

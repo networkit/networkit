@@ -8,6 +8,8 @@
 #ifndef BLOOMFILTER_H_
 #define BLOOMFILTER_H_
 
+#include <vector>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/Globals.hpp>
 

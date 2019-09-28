@@ -7,6 +7,7 @@
  */
 
 #include <cmath>
+#include <map>
 #include <random>
 #include <sstream>
 

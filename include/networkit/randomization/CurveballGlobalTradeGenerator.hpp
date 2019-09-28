@@ -9,6 +9,10 @@
 #ifndef RANDOMIZATION_CURVEBALL_GLOBAL_TRADE_GENERATOR_H
 #define RANDOMIZATION_CURVEBALL_GLOBAL_TRADE_GENERATOR_H
 
+#include <utility>
+#include <stdexcept>
+#include <vector>
+
 #include <networkit/Globals.hpp>
 
 namespace NetworKit {

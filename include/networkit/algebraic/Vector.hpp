@@ -10,6 +10,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <stdexcept>
 #include <vector>
 
 #include <networkit/Globals.hpp>

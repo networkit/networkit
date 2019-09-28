@@ -5,9 +5,13 @@
  * Author: Franz-Benjamin Mocnik <mail@mocnik-science.net>
  */
 
+#include <algorithm>
+#include <cmath>
+#include <map>
+#include <vector>
+
 #include <networkit/generators/MocnikGenerator.hpp>
 #include <networkit/auxiliary/Random.hpp>
-#include <cmath>
 
 namespace NetworKit {
 

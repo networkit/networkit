@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <numeric>
+#include <set>
 
 #include <networkit/linkprediction/EvaluationMetric.hpp>
 #include <networkit/linkprediction/PredictionsSorter.hpp>

@@ -8,6 +8,9 @@
 #ifndef DYNWEAKLYCONNECTEDCOMPONENTS_H_
 #define DYNWEAKLYCONNECTEDCOMPONENTS_H_
 
+#include <map>
+#include <vector>
+
 #include <networkit/graph/Graph.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/base/DynAlgorithm.hpp>
