@@ -1,6 +1,7 @@
 #include <networkit/io/CoverReader.hpp>
 
 #include <fstream>
+#include <sstream>
 
 NetworKit::Cover NetworKit::CoverReader::read(std::string path, NetworKit::Graph &G)
 {

@@ -5,9 +5,10 @@
  *      Author: Henning, Christian Staudt
  */
 
-#include <networkit/distance/Dijkstra.hpp>
-
 #include <algorithm>
+#include <networkit/auxiliary/Log.hpp>
+
+#include <networkit/distance/Dijkstra.hpp>
 
 namespace NetworKit {
 

@@ -5,6 +5,7 @@
  *      Author: Gerd Lindner
  */
 
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/edgescores/EdgeScore.hpp>
 
 namespace NetworKit {

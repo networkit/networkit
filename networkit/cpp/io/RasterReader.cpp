@@ -5,12 +5,14 @@
  *      Author: Henning
  */
 
-#include <networkit/io/RasterReader.hpp>
-#include <networkit/auxiliary/NumberParsing.hpp>
-#include <networkit/auxiliary/Random.hpp>
 #include <cassert>
 #include <iostream>
 #include <fstream>
+
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/NumberParsing.hpp>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/io/RasterReader.hpp>
 
 namespace NetworKit {
 

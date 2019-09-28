@@ -2,8 +2,10 @@
  *
  */
 
-#include <networkit/dynamics/GraphDifference.hpp>
 #include <string>
+
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/dynamics/GraphDifference.hpp>
 
 namespace NetworKit {
 

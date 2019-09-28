@@ -5,6 +5,7 @@
  *      Author: Henning
  */
 
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/distance/GraphDistance.hpp>
 
 namespace NetworKit {

@@ -9,6 +9,7 @@
 #define GROUPCLOSENESS_H_
 
 #include <numeric>
+#include <sstream>
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>

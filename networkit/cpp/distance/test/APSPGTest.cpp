@@ -5,14 +5,15 @@
  *      Author: Arie Slobbe, Elisabetta Bergamini
  */
 
+#include <string>
+
 #include <gtest/gtest.h>
 
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/Random.hpp>
 #include <networkit/distance/APSP.hpp>
 #include <networkit/distance/DynAPSP.hpp>
 #include <networkit/io/METISGraphReader.hpp>
-#include <string>
-#include <networkit/auxiliary/Random.hpp>
-
 
 namespace NetworKit {
 class APSPGTest: public testing::Test{};

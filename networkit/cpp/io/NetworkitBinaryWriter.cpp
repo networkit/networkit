@@ -7,6 +7,7 @@
 #include <cstring>
 #include <fstream>
 
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Enforce.hpp>
 #include <networkit/io/NetworkitBinaryGraph.hpp>
 #include <networkit/io/NetworkitBinaryWriter.hpp>

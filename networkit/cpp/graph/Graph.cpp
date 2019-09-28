@@ -11,6 +11,7 @@
 #include <random>
 #include <sstream>
 
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {

@@ -3,8 +3,10 @@
  */
 
 #include <stdexcept>
-#include <networkit/centrality/PermanenceCentrality.hpp>
+
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
+#include <networkit/centrality/PermanenceCentrality.hpp>
 
 NetworKit::PermanenceCentrality::PermanenceCentrality(const NetworKit::Graph &G, const NetworKit::Partition &P): Algorithm(), G(G), P(P) {
 }

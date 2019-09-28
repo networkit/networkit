@@ -172,7 +172,6 @@ public:
 		if (T == 0) {
 			double v = targetAvgDegree * (PI/2)*xiInv*xiInv;
 			result = 2*log(n / v);
-			TRACE("expected:", getExpectedDegree(n, alpha, result));
 			result = searchTargetRadiusForColdGraphs(n, targetAvgDegree, alpha, epsilon);
 		} else {
 			double beta = 1/T;

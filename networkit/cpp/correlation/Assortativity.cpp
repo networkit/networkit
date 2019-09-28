@@ -5,8 +5,10 @@
  *      Author: Christian Staudt
  */
 
+#include <cmath>
+
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/correlation/Assortativity.hpp>
-#include <math.h>
 
 namespace NetworKit {
 
