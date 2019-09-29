@@ -1318,17 +1318,17 @@ cdef class Graph:
 		return self._this.randomNode()
 
 	def randomNeighbor(self, u):
-		""" Get a random neighbor of `v` and `none` if degree is zero.
+		""" Get a random neighbor of `u`. Returns `none` if the degree of `u` is zero.
 
 		Parameters
 		----------
-		v : node
+		u : node
 			Node.
 
 		Returns
 		-------
 		node
-			A random neighbor of `v.
+			A random neighbor of `u`, `none` if the degree of `u` is zero.
 		"""
 		from warnings import warn
 		warn("Graph.randomNeighbor is deprecated, use graphtools.randomNeighbor instead.")
