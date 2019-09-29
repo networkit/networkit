@@ -1800,6 +1800,21 @@ public:
         return outEdges[u][i];
     }
 
+    /**
+     * Get i-th (outgoing) neighbor of @a u and the corresponding edge id.
+     *
+     * @param u Node.
+     * @param i index; should be in [0, degreeOut(u))
+     * @return pair: i-th (outgoing) neighbor of @a u and the corresponding
+     * edge id, or @c none if no such neighbor exists.
+     */
+    std::pair<node, edgeid> getIthNeighborWithId(node u, index i) const {
+        assert(hasEdgeIds());
+        if (!hasNode(u) || i >= outEdges[u].size())
+            return {none, none};
+        return {outEdges[u][i], outEdgeIds[u][i]};
+    }
+
     /* Derivative Graphs */
 
     /**

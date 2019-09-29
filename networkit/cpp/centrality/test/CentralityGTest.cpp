@@ -14,6 +14,7 @@
 #include <networkit/auxiliary/Timer.hpp>
 #include <networkit/centrality/ApproxBetweenness.hpp>
 #include <networkit/centrality/ApproxCloseness.hpp>
+#include <networkit/centrality/ApproxSpanningEdge.hpp>
 #include <networkit/centrality/ApproxGroupBetweenness.hpp>
 #include <networkit/centrality/Betweenness.hpp>
 #include <networkit/centrality/Closeness.hpp>
@@ -1719,6 +1720,30 @@ TEST_P(CentralityGTest, testDynTopHarmonicCloseness) {
     for (count j = 0; j < k; ++j) {
         EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
     }
+}
+
+TEST_F(CentralityGTest, testApproxSpanningEdge) {
+    Aux::Random::setSeed(42, false);
+
+    // Testing a graph that is too small yields approximation errors; however, if the input
+    // graph has > 100 nodes, running the exact algorithm takes too long.
+    // Therefore, in this test we use the approximation algorithm implemented in
+    // SpanningEdgeCentrality as baseline, and check that the values are within a 2-epsilon
+    // approximation.
+    Graph G = ErdosRenyiGenerator(300, 0.1, false).generate();
+    G.indexEdges();
+    constexpr double eps = 0.1;
+
+    ApproxSpanningEdge apx(G, eps);
+    apx.run();
+    SpanningEdgeCentrality se(G, eps);
+    se.runParallelApproximation();
+    auto apxScores = apx.scores();
+    auto exactScores = se.scores();
+
+    G.forEdges([&](node /*u*/, node /*v*/, edgeweight /*w*/, edgeid eid) {
+        EXPECT_NEAR(apxScores[eid], exactScores[eid], 2*eps);
+    });
 }
 
 } /* namespace NetworKit */

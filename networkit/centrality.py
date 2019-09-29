@@ -13,7 +13,7 @@ ApproxBetweenness2, EstimateBetweenness, DynApproxBetweenness, Closeness, Harmon
 KatzCentrality, LocalClusteringCoefficient, ApproxCloseness, LocalPartitionCoverage, Sfigality, SpanningEdgeCentrality,\
 PermanenceCentrality, TopCloseness, TopHarmonicCloseness, DynTopHarmonicCloseness, DynBetweenness,\
 GroupDegree, GroupCloseness, DynBetweennessOneNode, LaplacianCentrality, ApproxGroupBetweenness, DynKatzCentrality,\
-KadabraBetweenness
+KadabraBetweenness, ApproxSpanningEdge
 from _NetworKit import _ClosenessVariant as ClosenessVariant
 
 # local imports

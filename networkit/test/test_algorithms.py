@@ -171,6 +171,19 @@ class Test_SelfLoops(unittest.TestCase):
 		CLL.run()
 		self.assertEqual(len(CL.ranking()), len(centrality.relativeRankErrors(CL.ranking(),CLL.ranking())))
 
+	def test_centrality_ApproxSpanningEdge(self):
+		setSeed(42, False)
+		g = generators.ErdosRenyiGenerator(300, 0.1, False).generate()
+		g.indexEdges()
+		eps = 0.1
+
+		apx = centrality.ApproxSpanningEdge(g, eps)
+		apx.run()
+		se = centrality.SpanningEdgeCentrality(g, eps)
+		se.runParallelApproximation()
+
+		for apxScore, exactScore in zip(apx.scores(), se.scores()):
+			self.assertLessEqual(abs(apxScore - exactScore), 2*eps)
 
 	def test_community_PLM(self):
 		PLML = community.PLM(self.L)
