@@ -79,8 +79,11 @@ class SpSampler {
  * @ingroup centrality
  */
 class KadabraBetweenness : public Algorithm {
-
   public:
+    // See EUROPAR'19 paper for the selection of these parameters.
+    unsigned int baseItersPerStep = 1000;
+    double itersPerStepExp = 1.33;
+
     /**
      * Approximation of the betweenness centrality and computation of the top-k
      * nodes with highest betweenness centrality according to the algorithm
