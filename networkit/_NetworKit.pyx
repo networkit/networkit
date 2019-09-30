@@ -1570,6 +1570,8 @@ cdef extern from "<networkit/distance/SSSP.hpp>":
 		set[vector[node]] getPaths(node t, bool_t forward) except +
 		vector[node] getNodesSortedByDistance(bool_t moveOut) except +
 		double _numberOfPaths(node t) except +
+		void setSource(node s) except +
+		void setTarget(node t) except +
 
 cdef class SSSP(Algorithm):
 	""" Base class for single source shortest path algorithms. """
@@ -1583,7 +1585,7 @@ cdef class SSSP(Algorithm):
 	def getDistances(self, moveOut):
 		"""
 		DEPRECATED
-		Returns a vector of weighted distances from the source node, i.e. the
+		Returns a list of weighted distances from the source node, i.e. the
  	 	length of the shortest path from the source node to any other node.
 
  	 	Returns
@@ -1595,24 +1597,19 @@ cdef class SSSP(Algorithm):
 
 	def getDistances(self):
 		"""
-		Returns a vector of weighted distances from the source node, i.e. the
+		Returns a list of weighted distances from the source node, i.e. the
 		length of the shortest path from the source node to any other node.
 
 		Returns
 		-------
-		vector
-		The weighted distances from the source node to any other node in the graph.
+		list
+			The weighted distances from the source node to any other node in the graph.
 		"""
 		return (<_SSSP*>(self._this)).getDistances()
 
 	def distance(self, t):
-		return (<_SSSP*>(self._this)).distance(t)
-
-	def getPredecessors(self, t):
-		return (<_SSSP*>(self._this)).getPredecessors(t)
-
-	def getPath(self, t, forward=True):
-		""" Returns a shortest path from source to `t` and an empty path if source and `t` are not connected.
+		"""
+		Returns the distance from the source node to @a t.
 
 		Parameters
 		----------
@@ -1621,12 +1618,64 @@ cdef class SSSP(Algorithm):
 
 		Returns
 		-------
-		vector
-			A shortest path from source to `t or an empty path.
+		double
+			Distance from the source node to @a t.
+		"""
+		return (<_SSSP*>(self._this)).distance(t)
+
+	def getPredecessors(self, t):
+		"""
+		Returns the predecessor nodes of @a t on all shortest paths from source
+		to @a t.
+		Parameters
+		----------
+		t : node
+			Target node.
+
+		Returns
+		-------
+		list
+			The predecessors of @a t on all shortest paths from source to @a t.
+		"""
+		return (<_SSSP*>(self._this)).getPredecessors(t)
+
+	def getPath(self, t, forward=True):
+		"""
+		Returns a shortest path from source to @a t and an empty path if source and @a t
+		are not connected.
+
+		Parameters
+		----------
+		t : node
+			Target node.
+		forward : bool
+			If @c true (default) the path is directed from source to @a t, otherwise the path
+			is reversed.
+
+		Returns
+		-------
+		list
+			A shortest path from source to @a t or an empty path.
 		"""
 		return (<_SSSP*>(self._this)).getPath(t, forward)
 
 	def getPaths(self, t, forward=True):
+		"""
+		Returns all shortest paths from source to @a t and an empty set if source
+		and @a t are not connected.
+
+		Parameters
+		----------
+		t : node
+			Target node.
+		forward : bool
+			If @c true (default) the path is directed from source to
+			@a t, otherwise the path is reversed.
+
+		Returns
+		-------
+			All shortest paths from source node to target node @a t.
+		"""
 		cdef set[vector[node]] paths = (<_SSSP*>(self._this)).getPaths(t, forward)
 		result = []
 		for elem in paths:
@@ -1634,7 +1683,7 @@ cdef class SSSP(Algorithm):
 		return result
 
 	def getNodesSortedByDistance(self, moveOut=True):
-		""" Returns a vector of nodes ordered in increasing distance from the source.
+		""" Returns a list of nodes ordered in increasing distance from the source.
 
 		For this functionality to be available, storeNodesSortedByDistance has to be set to true in the constructor.
 		There are no guarantees regarding the ordering of two nodes with the same distance to the source.
@@ -1646,13 +1695,48 @@ cdef class SSSP(Algorithm):
 
 		Returns
 		-------
-		vector
+		list
 			Nodes ordered in increasing distance from the source.
 		"""
 		return (<_SSSP*>(self._this)).getNodesSortedByDistance(moveOut)
 
 	def numberOfPaths(self, t):
+		"""
+		Returns the number of paths from the source node to @a t.
+
+		Parameters
+		----------
+		t : node
+			Target node.
+
+		Returns
+		-------
+		int
+			The number of paths from the source node to @a t.
+		"""
 		return (<_SSSP*>(self._this))._numberOfPaths(t)
+
+	def setSource(self, s not None):
+		"""
+		Sets a new source node.
+
+		Parameters
+		----------
+		s : node
+			New source node.
+		"""
+		(<_SSSP*>(self._this)).setSource(s)
+
+	def setTarget(self, t not None):
+		"""
+		Sets a new target node.
+
+		Parameters
+		----------
+		t : node
+			New target node.
+		"""
+		(<_SSSP*>(self._this)).setTarget(t)
 
 
 cdef extern from "<networkit/distance/DynSSSP.hpp>":

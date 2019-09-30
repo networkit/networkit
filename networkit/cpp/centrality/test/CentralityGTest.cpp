@@ -1457,11 +1457,92 @@ TEST_F(CentralityGTest, testGroupDegreeDirected) {
               gdIncludeGroup.scoreOfGroup(gdIncludeGroup.groupMaxDegree()));
 }
 
+TEST_F(CentralityGTest, testGroupBetweennessScore) {
+/** 0           5
+ *  | \       / |
+ *  1 - 3 - 4 - 6
+ *  | /       \ |
+ *  2           7
+ */
+    Graph G(8, false, false);
+    G.addEdge(0, 1);
+    G.addEdge(1, 2);
+    G.addEdge(0, 3);
+    G.addEdge(1, 3);
+    G.addEdge(2, 3);
+
+    G.addEdge(3, 4);
+
+    G.addEdge(4, 5);
+    G.addEdge(4, 6);
+    G.addEdge(4, 7);
+    G.addEdge(5, 6);
+    G.addEdge(6, 7);
+
+    BFS bfs(G, 0, true, false);
+    // Naively computes the group betweenness of a group of nodes S
+    auto naiveGB = [&](const std::vector<node> &S) -> double {
+        double score = 0;
+        count n = G.upperNodeIdBound();
+        std::vector<bool> inGroup(n);
+        for (node u : S)
+            inGroup[u] = true;
+        for (node source = 0; source < n; ++source) {
+            bfs.setSource(source);
+            bfs.run();
+            for (node target = 0; target < n; ++target) {
+                if (target == source)
+                    continue;
+
+                auto paths = bfs.getPaths(target);
+                if (paths.empty())
+                    continue;
+                double curScore = 0;
+                for (auto &path : paths) {
+                    for (node u : path) {
+                        if (u != source && u != target && inGroup[u]) {
+                            curScore += 1;
+                            break;
+                        }
+                    }
+                }
+
+                score += curScore / static_cast<double>(paths.size());
+            }
+        }
+
+        return score;
+    };
+
+    ApproxGroupBetweenness gb(G, 2, 0.1);
+    count z = G.numberOfNodes();
+    for (count k = 1; k <= z; ++k) {
+        std::vector<bool> inGroup(z);
+        for (index i = 0; i < k; ++i)
+            inGroup[z - i - 1] = true;
+        do {
+            std::vector<node> group;
+            group.reserve(k);
+            for (node u = 0; u < z; ++u) {
+                if (inGroup[u]) {
+                    group.push_back(u);
+                    if (group.size() == k)
+                        break;
+                }
+            }
+            double computedScore = gb.scoreOfGroup(group);
+            double naiveScore = naiveGB(group);
+            EXPECT_NEAR(computedScore, naiveScore, 1e-6);
+        } while (std::next_permutation(inGroup.begin(), inGroup.end()));
+    }
+}
+
 TEST_F(CentralityGTest, runTestApproxGroupBetweennessSmallGraph) {
 
     Aux::Random::setSeed(42, false);
 
-    Graph g(8, false, false);
+    count n = 8;
+    Graph g(n, false, false);
 
     g.addEdge(0, 2);
     g.addEdge(1, 2);
@@ -1473,8 +1554,30 @@ TEST_F(CentralityGTest, runTestApproxGroupBetweennessSmallGraph) {
     g.addEdge(5, 7);
     g.addEdge(0, 5);
 
-    ApproxGroupBetweenness gb(g, 2, 0.1);
+    count k = 2;
+    double eps = 0.1;
+    ApproxGroupBetweenness gb(g, k, eps);
     gb.run();
+
+    double maxScore = 0;
+    std::vector<bool> inGroup(n);
+    for (index i = 0; i < k; ++i)
+        inGroup[n - i - 1] = true;
+    do {
+        std::vector<node> group;
+        group.reserve(k);
+        for (node u = 0; u < n; ++u) {
+            if (inGroup[u]) {
+                group.push_back(u);
+                if (group.size() == k)
+                    break;
+            }
+        }
+
+        maxScore = std::max(maxScore, gb.scoreOfGroup(group));
+    } while (std::next_permutation(inGroup.begin(), inGroup.end()));
+
+    EXPECT_TRUE(gb.scoreOfGroup(gb.groupMaxBetweenness()) >= maxScore * eps);
 }
 
 TEST_F(CentralityGTest, testGroupCloseness) {
