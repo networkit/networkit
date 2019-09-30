@@ -414,13 +414,13 @@ void KadabraBetweenness::run() {
         while (!stop.load(std::memory_order_relaxed)) {
             // Reader thread
             if (t == 0) {
-                if (epochToRead.load(std::memory_order_acquire) == epochRead) {
-                    epochToRead.store(epochRead + 1, std::memory_order_release);
+                if (epochToRead.load(std::memory_order_relaxed) == epochRead) {
+                    epochToRead.store(epochRead + 1, std::memory_order_relaxed);
                 }
                 checkConvergence(status);
             }
 
-            auto etr = epochToRead.load(std::memory_order_acquire);
+            const auto etr = epochToRead.load(std::memory_order_relaxed);
             if (!deterministic) {
                 if (etr == epochToWrite) {
                     recycleFrame();
