@@ -411,7 +411,7 @@ void KadabraBetweenness::run() {
         };
 
         sampler.rng.seed(seed1 ^ (epochToWrite * omp_get_max_threads() + t));
-        while (!stop && nPairs < omega) {
+        while (!stop.load(std::memory_order_relaxed)) {
             // Reader thread
             if (t == 0) {
                 if (epochToRead.load(std::memory_order_acquire) == epochRead) {
@@ -499,7 +499,8 @@ void KadabraBetweenness::checkConvergence(Status &status) {
         }
 
         getStatus(&status);
-        stop = computeFinished(&status);
+        if(computeFinished(&status) || nPairs >= omega)
+            stop.store(true, std::memory_order_relaxed);
         epochRead = epochToRead.load(std::memory_order_relaxed);
     }
 }
