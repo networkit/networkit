@@ -1088,11 +1088,11 @@ public:
      * @param condition A function that takes a node as an input and returns a
      * bool. If true the edge (u, v) is removed.
      * @param edgesIn Whether in-going or out-going edges shall be removed.
-     * @return count The number of removed edges.
+     * @return std::pair<count, count> The number of removed edges (first) and the number of removed
+     * self-loops (second).
      */
     template <typename Condition>
-    count removeAdjacentEdges(node u, Condition condition, bool edgesIn = false);
-
+    std::pair<count, count> removeAdjacentEdges(node u, Condition condition, bool edgesIn = false);
 
     /**
      * Removes all self-loops in the graph.
@@ -2131,12 +2131,18 @@ template <typename L> void Graph::DFSEdgesFrom(node r, L handle) const {
 /* EDGE MODIFIERS */
 
 template <typename Condition>
-count Graph::removeAdjacentEdges(node u, Condition condition, bool edgesIn) {
+std::pair<count, count> Graph::removeAdjacentEdges(node u, Condition condition, bool edgesIn) {
 	count removedEdges = 0;
-	auto &edges_ = outEdges[u];
+	count removedSelfLoops = 0;
+
+	// For directed graphs, this function is supposed to be called twice: one to remove out-edges,
+	// and one to remove in-edges.
+	auto &edges_ = edgesIn ? inEdges[u] : outEdges[u];
 	for (index vi = 0; vi < edges_.size();) {
 		if (condition(edges_[vi])) {
-			++removedEdges;
+            const auto isSelfLoop = (edges_[vi] == u);
+            removedSelfLoops += isSelfLoop;
+            removedEdges += !isSelfLoop;
 			edges_[vi] = edges_.back();
 			edges_.pop_back();
 			if (isWeighted()) {
@@ -2154,7 +2160,7 @@ count Graph::removeAdjacentEdges(node u, Condition condition, bool edgesIn) {
 		}
 	}
 
-	return removedEdges;
+	return {removedEdges, removedSelfLoops};
 }
 
 
