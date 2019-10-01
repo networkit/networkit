@@ -5127,6 +5127,15 @@ cdef class PLP(CommunityDetector):
 	""" Parallel label propagation for community detection:
 	Moderate solution quality, very short time to solution.
 
+	Parameters
+	----------
+	G : networkit.Graph
+		The graph on which the algorithm has to run.
+	updateThreshold : int
+		number of nodes that have to be changed in each iteration so that a new iteration starts.
+	baseClustering : networkit.Partition
+		PLP needs a base clustering to start from; if none is given the algorithm will run on a singleton clustering.
+
 	Notes
 	-----
 	As described in Ovelgoenne et al: An Ensemble Learning Strategy for Graph Clustering
@@ -5141,14 +5150,6 @@ cdef class PLP(CommunityDetector):
 		"""
 		Constructor to the Parallel label propagation community detection algorithm.
 
-		Parameters
-		----------
-		G : networkit.Graph
-			The graph on which the algorithm has to run.
-		updateThreshold : integer
-			number of nodes that have to be changed in each iteration so that a new iteration starts.
-		baseClustering : networkit.Partition
-			PLP needs a base clustering to start from; if none is given the algorithm will run on a singleton clustering.
 		"""
 		self._G = G
 
