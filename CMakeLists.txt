@@ -19,7 +19,7 @@ set(NETWORKIT_PYTHON "" CACHE STRING "Directory containing Python.h. Implies MON
 set(NETWORKIT_PYTHON_SOABI "" CACHE STRING "Platform specific file extension. Implies MONOLITH=TRUE")
 set(NETWORKIT_WITH_SANITIZERS "" CACHE STRING "Uses sanitizers during the compilation")
 set(NETWORKIT_RELEASE_LOGGING "AUTO" CACHE STRING "Do not compile log messages at levels TRACE or DEBUG (AUTO|ON|OFF)")
-set(NETWORKIT_RPATH "" CACHE STRING "Build specific rpath references.")
+set(NETWORKIT_PYTHON_RPATH "" CACHE STRING "Build specific rpath references.")
 
 set (NETWORKIT_CXX_STANDARD "11" CACHE STRING "CXX Version to compile with. Currently fixed to 11")
 
@@ -223,13 +223,19 @@ if(NETWORKIT_PYTHON)
 				LINK_FLAGS "${NETWORKIT_LINK_FLAGS}"
 				PREFIX ""
 				OUTPUT_NAME "_NetworKit.${NETWORKIT_PYTHON_SOABI}")
-	# DSOs on Apple OSes use different conventions for RPATH.
-	if(APPLE)
+	# If rpath-content is set explicitly, omit the dynamic binary path
+	if(NETWORKIT_PYTHON_RPATH)
 		set_target_properties(_NetworKit PROPERTIES
-				INSTALL_RPATH "@loader_path;${NETWORKIT_RPATH}")
+			INSTALL_RPATH "${NETWORKIT_PYTHON_RPATH}")
 	else()
-		set_target_properties(_NetworKit PROPERTIES
-				INSTALL_RPATH "$ORIGIN;${NETWORKIT_RPATH}")
+		# DSOs on Apple OSes use different conventions for RPATH.
+		if(APPLE)
+			set_target_properties(_NetworKit PROPERTIES
+				INSTALL_RPATH "@loader_path")
+		else()
+			set_target_properties(_NetworKit PROPERTIES
+				INSTALL_RPATH "$ORIGIN")
+		endif()
 	endif()
 
 	target_link_libraries(_NetworKit PRIVATE tlx OpenMP::OpenMP_CXX)

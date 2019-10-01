@@ -140,7 +140,7 @@ def cythonizeFile(filepath):
 			exit(1)
 		print("_NetworKit.pyx cythonized", flush=True)
 
-def buildNetworKit(install_prefix, externalCore=False, withTests=False, rpath=False):
+def buildNetworKit(install_prefix, externalCore=False, withTests=False, rpath=None):
 	# Cythonize file
 	cythonizeFile("networkit/_NetworKit.pyx")
 	try:
@@ -162,7 +162,7 @@ def buildNetworKit(install_prefix, externalCore=False, withTests=False, rpath=Fa
 		comp_cmd.append("-GNinja")
 	comp_cmd.append(os.getcwd()) #call CMakeLists.txt from networkit root
 	if rpath:
-		comp_cmd.append("-DNETWORKIT_RPATH="+rpath)
+		comp_cmd.append("-DNETWORKIT_PYTHON_RPATH="+rpath)
 	# Run cmake
 	print("initializing NetworKit compilation with: '{0}'".format(" ".join(comp_cmd)), flush=True)
 	if not subprocess.call(comp_cmd, cwd=buildDirectory) == 0:
@@ -218,7 +218,7 @@ class build_ext(Command):
 		self.include_dirs = None
 		self.library_dirs = None
 		self.networkit_external_core = False
-		self.rpath = False
+		self.rpath = None
 
 		self.extensions = None
 		self.package = None
