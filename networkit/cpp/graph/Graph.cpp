@@ -523,6 +523,7 @@ std::string Graph::toString() const {
 /** COPYING **/
 
 Graph Graph::copyNodes() const {
+    WARN("Graph::copyNodes is deprecated, use GraphTools::copyNodes instead.");
     Graph C(z, weighted, directed);
     for (node u = 0; u < z; ++u) {
         if (!exists[u]) {

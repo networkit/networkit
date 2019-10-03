@@ -504,6 +504,8 @@ cdef class Graph:
 		networkit.Graph
 			Graph with the same nodes (without edges)
 		"""
+		from warnings import warn
+		warn("Graph.copyNodes is deprecated, use graph.GraphTools.copyNodes instead.")
 		return Graph().setThis(self._this.copyNodes())
 
 	def indexEdges(self, bool_t force = False):
@@ -4960,11 +4962,29 @@ cdef class GraphClusteringTools:
 
 cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphTools":
 
+	_Graph copyNodes(_Graph G) nogil except +
 	_Graph getCompactedGraph(_Graph G, unordered_map[node,node]) nogil except +
 	unordered_map[node,node] getContinuousNodeIds(_Graph G) nogil except +
 	unordered_map[node,node] getRandomContinuousNodeIds(_Graph G) nogil except +
 
 cdef class GraphTools:
+	@staticmethod
+	def copyNodes(Graph graph):
+		"""
+		Copies all nodes of the input graph to a new graph (edges are not copied).
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+
+		Returns
+		-------
+		graph : networkit.Graph
+			Graph with the same nodes as the input graph (and without any edge).
+		"""
+		return Graph().setThis(copyNodes(graph._this))
+
 	@staticmethod
 	def getCompactedGraph(Graph graph, nodeIdMap):
 		"""

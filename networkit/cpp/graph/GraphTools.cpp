@@ -9,6 +9,16 @@ namespace NetworKit {
 
 namespace GraphTools {
 
+Graph copyNodes(const Graph &G) {
+    Graph C(G.upperNodeIdBound(), G.isWeighted(), G.isDirected());
+    for (node u = 0; u < G.upperNodeIdBound(); ++u) {
+        if (!G.hasNode(u)) {
+            C.removeNode(u);
+        }
+    }
+    return C;
+}
+
 Graph getCompactedGraph(const Graph& graph, const std::unordered_map<node,node>& nodeIdMap) {
     return getRemappedGraph(graph, nodeIdMap.size(), [&] (node u) {
         const auto it = nodeIdMap.find(u);

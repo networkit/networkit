@@ -7,6 +7,8 @@
 
 #include <gtest/gtest.h>
 
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/GraphTools.hpp>
 
@@ -316,6 +318,35 @@ TEST_P(GraphToolsGTest, testGetRemappedGraphWithDelete) {
                     ASSERT_EQ(G.weight(i, j), G1.weight(perm[i], perm[j]));
                 }
             }
+        }
+    }
+}
+
+TEST_P(GraphToolsGTest, testCopyNodes) {
+    constexpr count n = 200;
+    constexpr double p = 0.01;
+    constexpr count nodesToDelete = 50;
+
+    auto checkNodes = [&](const Graph &G, const Graph &GCopy) {
+        EXPECT_EQ(G.isDirected(), GCopy.isDirected());
+        EXPECT_EQ(G.isWeighted(), GCopy.isWeighted());
+        EXPECT_EQ(G.numberOfNodes(), GCopy.numberOfNodes());
+        EXPECT_EQ(GCopy.numberOfEdges(), 0);
+        for (node u = 0; u < G.upperNodeIdBound(); ++u) {
+            EXPECT_EQ(G.hasNode(u), GCopy.hasNode(u));
+        }
+    };
+
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, false);
+        auto G = ErdosRenyiGenerator(n, p, directed()).generate();
+
+        auto GCopy = GraphTools::copyNodes(G);
+        checkNodes(G, GCopy);
+        for (count i = 0; i < nodesToDelete; ++i) {
+            G.removeNode(G.randomNode());
+            GCopy = GraphTools::copyNodes(G);
+            checkNodes(G, GCopy);
         }
     }
 }

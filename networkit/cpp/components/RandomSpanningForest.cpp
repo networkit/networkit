@@ -6,6 +6,7 @@
  */
 
 #include <networkit/components/RandomSpanningForest.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/graph/Sampling.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
 #include <unordered_set>
@@ -26,7 +27,7 @@ void RandomSpanningForest::run() {
     cc.run();
     std::vector<std::vector<node> > comps = cc.getComponents();
 
-    forest = G.copyNodes();
+    forest = GraphTools::copyNodes(G);
     for (auto comp: comps) {
         std::unordered_set<node> visited;
         const count compSize = comp.size();

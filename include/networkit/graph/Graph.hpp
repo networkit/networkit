@@ -814,7 +814,7 @@ public:
      * Copies all nodes to a new graph
      * @return graph with the same nodes.
      */
-    Graph copyNodes() const;
+    Graph TLX_DEPRECATED(copyNodes() const);
 
     /* NODE MODIFIERS */
 

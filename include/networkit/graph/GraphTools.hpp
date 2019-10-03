@@ -9,6 +9,15 @@ namespace NetworKit {
 namespace GraphTools {
 
 /**
+ * Copies all nodes of the input graph to a new graph (edges are not copied).
+ *
+ * @param G The input graph.
+ *
+ * @return Graph with the same nodes as the input graph (and without any edge).
+ */
+Graph copyNodes(const Graph &G);
+
+/**
  * Computes a graph with the same structure but with continuous node ids.
  * @param  graph     The graph to be compacted.
  * @param  nodeIdMap The map providing the information about the node ids.
