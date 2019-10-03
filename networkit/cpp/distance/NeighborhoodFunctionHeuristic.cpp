@@ -117,7 +117,9 @@ std::vector<node> NeighborhoodFunctionHeuristic::split(const Graph& G, count nSa
     G.parallelForNodes([&](node u) {
             nodeDeg[u] = G.degree(u);
     });
-    std::vector<node> nodes = G.nodes();
+    std::vector<node> nodes;
+    nodes.reserve(G.numberOfNodes());
+    G.forNodes([&](node u) { nodes.push_back(u); });
     nodes.erase(std::remove_if(nodes.begin(), nodes.end(), [](node u){return u == none;}), nodes.end());
     //std::random_shuffle(nodes.begin(), nodes.end());
     Aux::Parallel::sort(nodes.begin(), nodes.end(), [&nodeDeg](const node& a, const node& b) {return nodeDeg[a] < nodeDeg[b];});

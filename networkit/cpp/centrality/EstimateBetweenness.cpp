@@ -27,7 +27,6 @@ void EstimateBetweenness::run() {
 
     Aux::SignalHandler handler;
 
-    //std::vector<node> sampledNodes = G.nodes();
     std::vector<node> sampledNodes;
 
     // sample nodes

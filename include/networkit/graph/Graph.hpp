@@ -1275,13 +1275,13 @@ public:
      * Get list of all nodes.
      * @return List of all nodes.
      */
-    std::vector<node> nodes() const;
+    std::vector<node> TLX_DEPRECATED(nodes() const);
 
     /**
      * Get list of edges as node pairs.
      * @return List of edges as node pairs.
      */
-    std::vector<std::pair<node, node>> edges() const;
+    std::vector<std::pair<node, node>> TLX_DEPRECATED(edges() const);
 
     /**
      * Get list of neighbors of @a u.
@@ -1583,7 +1583,9 @@ void Graph::forNodesWhile(C condition, L handle) const {
 }
 
 template <typename L> void Graph::forNodesInRandomOrder(L handle) const {
-    std::vector<node> randVec = nodes();
+    std::vector<node> randVec;
+    randVec.reserve(numberOfNodes());
+    forNodes([&](node u) { randVec.push_back(u); });
     std::shuffle(randVec.begin(), randVec.end(), Aux::Random::getURNG());
     for (node v : randVec) {
         handle(v);

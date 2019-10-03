@@ -18,7 +18,9 @@ MissingLinksFinder::MissingLinksFinder(const Graph& G) : G(G) {
 
 std::vector<std::pair<node, node>> MissingLinksFinder::findAtDistance(count k) {
   std::vector<std::pair<node, node>> missingLinks;
-  std::vector<node> nodes = G.nodes();
+  std::vector<node> nodes;
+  nodes.reserve(G.numberOfNodes());
+  G.forNodes([&](node u) { nodes.push_back(u); });
   #pragma omp parallel
   {
     std::vector<std::pair<node, node>> missingLinksPrivate;

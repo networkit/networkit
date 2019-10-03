@@ -840,21 +840,22 @@ TEST_P(GraphGTest, testRemoveAllEdges) {
     Graph g = ErdosRenyiGenerator(20, 0.1, false).generate();
     g.removeAllEdges();
     EXPECT_EQ(g.numberOfEdges(), 0);
-    EXPECT_EQ(g.edges().size(), 0);
-    for (node u : g.nodes()) {
+    count edgeCount = 0;
+    g.forEdges([&edgeCount](node, node) { ++edgeCount; });
+    EXPECT_EQ(edgeCount, 0);
+    g.forNodes([&](node u) {
         EXPECT_EQ(g.degree(u), 0);
         EXPECT_EQ(g.degree(u), 0);
-    }
+    });
 
     g = ErdosRenyiGenerator(20, 0.1, true).generate();
     g.removeAllEdges();
     EXPECT_EQ(g.numberOfEdges(), 0);
-    EXPECT_EQ(g.edges().size(), 0);
-    for (node u : g.nodes()) {
+    g.forNodes([&](node u) {
         EXPECT_EQ(g.degree(u), 0);
         EXPECT_EQ(g.degree(u), 0);
         EXPECT_EQ(g.degreeIn(u), 0);
-    }
+    });
 }
 
 TEST_P(GraphGTest, testRemoveSelfLoops) {
@@ -1330,13 +1331,13 @@ TEST_P(GraphGTest, testTranspose) {
         G.removeEdge(0, 4);
         G.addEdge(0, 6, 3.14);
     }
-    DEBUG("Ghouse: ", G.nodes(), " ", G.edges());
+
     // expect throw error when G is undirected
     if (!G.isDirected()) {
         EXPECT_ANY_THROW(G.transpose());
     } else {
         Graph Gtrans = G.transpose();
-        DEBUG("GhouseTrans: ", Gtrans.nodes(), " ", Gtrans.edges());
+
         // check summation statistics
         EXPECT_EQ(G.numberOfNodes(), Gtrans.numberOfNodes());
         EXPECT_EQ(G.numberOfEdges(), Gtrans.numberOfEdges());
@@ -2440,7 +2441,15 @@ TEST_P(GraphGTest, testSubgraphFromNodesDirected) {
 TEST_P(GraphGTest, testRemoveMultiEdges) {
     Aux::Random::setSeed(42, false);
     Graph G(this->Ghouse);
-    const auto edgeSet = G.edges();
+    auto getGraphEdges = [&](const Graph &G) {
+        std::vector<std::pair<node, node>> edges;
+        edges.reserve(G.numberOfEdges());
+        G.forEdges([&](node u, node v) {
+            edges.push_back({u, v});
+        });
+        return edges;
+    };
+    const auto edgeSet = getGraphEdges(G);
     constexpr count nMultiEdges = 10;
     constexpr count nMultiSelfLoops = 10;
     const count m = G.numberOfEdges();
@@ -2465,7 +2474,7 @@ TEST_P(GraphGTest, testRemoveMultiEdges) {
     EXPECT_EQ(G.numberOfEdges(), m + uniqueSelfLoops.size());
     G.removeSelfLoops();
     EXPECT_EQ(G.numberOfEdges(), m);
-    auto edgeSet_ = G.edges();
+    auto edgeSet_ = getGraphEdges(G);
 
     for (count i = 0; i < G.numberOfEdges(); ++i)
         EXPECT_EQ(edgeSet[i], edgeSet_[i]);

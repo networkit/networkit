@@ -964,6 +964,8 @@ cdef class Graph:
 	 	list
 	 		List of all nodes.
 		"""
+		from warnings import warn
+		warn("Graph.nodes is deprecated.")
 		return self._this.nodes()
 
 	def edges(self):
@@ -974,6 +976,8 @@ cdef class Graph:
 	 	list
 	 		List of edges as node pairs.
 		"""
+		from warnings import warn
+		warn("Graph.edges is deprecated.")
 		return self._this.edges()
 
 	def neighbors(self, u):

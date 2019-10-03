@@ -1138,6 +1138,7 @@ edgeweight Graph::totalEdgeWeight() const {
 /** Collections **/
 
 std::vector<node> Graph::nodes() const {
+    WARN("Graph::nodes is deprecated and will not be supported in future releases.");
     std::vector<node> nodes;
     nodes.reserve(numberOfNodes());
     this->forNodes([&](node u) { nodes.push_back(u); });
@@ -1145,6 +1146,7 @@ std::vector<node> Graph::nodes() const {
 }
 
 std::vector<std::pair<node, node>> Graph::edges() const {
+    WARN("Graph::edges is deprecated and will not be supported in future releases.");
     std::vector<std::pair<node, node>> edges;
     edges.reserve(numberOfEdges());
     this->forEdges(
