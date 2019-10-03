@@ -33,5 +33,65 @@ class TestGraphTools(unittest.TestCase):
 					GCopy = nk.graph.GraphTools.copyNodes(G)
 					checkNodes(G, GCopy)
 
+	def testSubgraphFromNodesUndirected(self):
+		G = self.getSmallGraph(True, False)
+
+		nodes = set([0])
+		res = nk.graph.GraphTools.subgraphFromNodes(G, nodes)
+		self.assertTrue(res.isWeighted())
+		self.assertFalse(res.isDirected())
+		self.assertEqual(res.numberOfNodes(), 1)
+		self.assertEqual(res.numberOfEdges(), 0)
+
+		res = nk.graph.GraphTools.subgraphFromNodes(G, nodes, True)
+
+		self.assertEqual(res.numberOfNodes(), 3)
+		self.assertEqual(res.numberOfEdges(), 2) # 0-1, 0-2, NOT 1-2
+
+		self.assertEqual(G.weight(0, 1), 1.0)
+		self.assertEqual(G.weight(0, 2), 2.0)
+
+		nodes = set([0, 1])
+		res = nk.graph.GraphTools.subgraphFromNodes(G, nodes)
+		self.assertEqual(res.numberOfNodes(), 2)
+		self.assertEqual(res.numberOfEdges(), 1) # 0 - 1
+
+		res = nk.graph.GraphTools.subgraphFromNodes(G, nodes, True)
+		self.assertEqual(res.numberOfNodes(), 4)
+		self.assertEqual(res.numberOfEdges(), 4) # 0-1, 0-2, 1-2, 1-3
+
+	def testSubgraphFromNodesDirected(self):
+		G = self.getSmallGraph(True, True)
+
+		nodes = set([0])
+		res = nk.graph.GraphTools.subgraphFromNodes(G, nodes)
+
+		self.assertTrue(res.isWeighted())
+		self.assertTrue(res.isDirected())
+
+		self.assertEqual(res.numberOfNodes(), 1)
+		self.assertEqual(res.numberOfEdges(), 0)
+
+		nodes = set([0])
+		res = nk.graph.GraphTools.subgraphFromNodes(G, nodes, True)
+		self.assertEqual(res.numberOfNodes(), 3)
+		self.assertEqual(res.numberOfEdges(), 2) # 0->1, 0->2, NOT 1->2
+
+		nodes = set([0, 1])
+		res = nk.graph.GraphTools.subgraphFromNodes(G, nodes)
+		self.assertEqual(res.numberOfNodes(), 2)
+		self.assertEqual(res.numberOfEdges(), 1) # 0 -> 1
+
+		nodes = set([0, 1])
+		res = nk.graph.GraphTools.subgraphFromNodes(G, nodes, True)
+		self.assertEqual(res.numberOfNodes(), 3)
+		self.assertEqual(res.numberOfEdges(), 3) # 0->1, 0->2, 1->2
+
+		nodes = set([0, 1])
+		res = nk.graph.GraphTools.subgraphFromNodes(G, nodes, True, True)
+		self.assertEqual(res.numberOfNodes(), 4)
+		self.assertEqual(res.numberOfEdges(), 4) # 0->1, 0->2, 1->2, 3->1
+
+
 if __name__ == "__main__":
 	unittest.main()

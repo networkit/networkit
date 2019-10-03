@@ -367,7 +367,7 @@ class Test_SelfLoops(unittest.TestCase):
 		bcc.run()
 
 		for component in bcc.getComponents():
-			G1 = self.LL.subgraphFromNodes(component, False, False)
+			G1 = graphtools.subgraphFromNodes(self.LL, component)
 			def test_node(v):
 				G2 = Graph(G1)
 				G2.removeNode(v)

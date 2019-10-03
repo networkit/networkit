@@ -889,7 +889,9 @@ public:
      * The subgraph contains all nodes in Nodes + Neighbors and all edge which have one end point in Nodes
      * and the other in Nodes or Neighbors.
      */
-    Graph subgraphFromNodes(const std::unordered_set<node> &nodes, bool includeOutNeighbors = false, bool includeInNeighbors = false) const;
+    Graph TLX_DEPRECATED(subgraphFromNodes(const std::unordered_set<node> &nodes,
+                                           bool includeOutNeighbors = false,
+                                           bool includeInNeighbors = false) const);
 
     /** NODE PROPERTIES **/
 

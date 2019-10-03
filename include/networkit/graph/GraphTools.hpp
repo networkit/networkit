@@ -2,6 +2,8 @@
 #define NETWORKIT_GRAPH_GRAPH_TOOLS_HPP_
 
 #include <unordered_map>
+#include <unordered_set>
+
 #include <networkit/graph/Graph.hpp>
 #include <tlx/unused.hpp>
 
@@ -16,6 +18,19 @@ namespace GraphTools {
  * @return Graph with the same nodes as the input graph (and without any edge).
  */
 Graph copyNodes(const Graph &G);
+
+/**
+ * Returns an induced subgraph of the input graph (including potential edge weights/directions).
+ *
+ * @param G The input graph.
+ * @param nodes Nodes of the induced subgraph.
+ * @param includeOutNeighbors If set to true, out-neighbors will also be included.
+ * @param includeInNeighbors If set to true, in-neighbors will also be included.
+ *
+ * @return Induced subgraph.
+ */
+Graph subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes,
+                        bool includeOutNeighbors = false, bool includeInNeighbors = false);
 
 /**
  * Computes a graph with the same structure but with continuous node ids.

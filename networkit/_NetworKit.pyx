@@ -1377,6 +1377,8 @@ cdef class Graph:
 		networkit.Graph
 			The subgraph induced by `nodes` (and possibly their neighbors)
 		"""
+		from warnings import warn
+		warn("Graph.subgraphFromNodes is deprecated, use graph.GraphTools.subgraphFromNodes instead.")
 		cdef unordered_set[node] nnodes
 		for node in nodes:
 			nnodes.insert(node)
@@ -4963,6 +4965,7 @@ cdef class GraphClusteringTools:
 cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphTools":
 
 	_Graph copyNodes(_Graph G) nogil except +
+	_Graph subgraphFromNodes(_Graph G, unordered_set[node], bool_t, bool_t) nogil except +
 	_Graph getCompactedGraph(_Graph G, unordered_map[node,node]) nogil except +
 	unordered_map[node,node] getContinuousNodeIds(_Graph G) nogil except +
 	unordered_map[node,node] getRandomContinuousNodeIds(_Graph G) nogil except +
@@ -4984,6 +4987,31 @@ cdef class GraphTools:
 			Graph with the same nodes as the input graph (and without any edge).
 		"""
 		return Graph().setThis(copyNodes(graph._this))
+
+	@staticmethod
+	def subgraphFromNodes(Graph graph, nodes, includeOutNeighbors=False, includeInNeighbors=False):
+		"""
+		Returns an induced subgraph of the input graph (including potential edge
+		weights/directions).
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+		nodes : set
+			Nodes in the induced subgraph.
+		includeOutNeighbors : bool
+			If set to true, out-neighbors will also be included.
+		includeInNeighbors : bool
+			If set to true, in-neighbors will also be included.
+
+		Returns
+		-------
+		graph : networkit.Graph
+			Induced subgraph.
+		"""
+		return Graph().setThis(subgraphFromNodes(
+			graph._this, nodes, includeOutNeighbors, includeInNeighbors))
 
 	@staticmethod
 	def getCompactedGraph(Graph graph, nodeIdMap):
