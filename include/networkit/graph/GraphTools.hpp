@@ -33,6 +33,15 @@ Graph subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes,
                         bool includeOutNeighbors = false, bool includeInNeighbors = false);
 
 /**
+ * Returns the transpose of the input graph. The graph must be directed.
+ *
+ * @param G The input graph.
+ *
+ * @return Transpose of the input graph.
+ */
+Graph transpose(const Graph &G);
+
+/**
  * Computes a graph with the same structure but with continuous node ids.
  * @param  graph     The graph to be compacted.
  * @param  nodeIdMap The map providing the information about the node ids.

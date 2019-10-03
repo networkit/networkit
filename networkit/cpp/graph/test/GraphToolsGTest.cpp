@@ -461,4 +461,54 @@ TEST_P(GraphToolsGTest, testSubgraphFromNodesDirected) {
 
 }
 
+TEST_P(GraphToolsGTest, testTranspose) {
+    auto G = Graph(4, weighted(), true);
+
+    /**
+     *      1
+     *   /  |  \
+     * 0    |    3
+     *   \  |  /
+     *      2
+     */
+
+    G.addNode(); // node 4
+    G.addNode(); // node 5
+    G.addNode(); // node 6
+    G.removeNode(5);
+
+    G.addEdge(0, 0, 3.14);
+    G.addEdge(0, 4, 3.14);
+    G.removeEdge(0, 4);
+    G.addEdge(0, 6, 3.14);
+
+    // expect throw error when G is undirected
+    if (!G.isDirected()) {
+        EXPECT_ANY_THROW(GraphTools::transpose(G));
+    } else {
+        Graph Gtrans = GraphTools::transpose(G);
+        // check summation statistics
+        EXPECT_EQ(G.numberOfNodes(), Gtrans.numberOfNodes());
+        EXPECT_EQ(G.upperNodeIdBound(), Gtrans.upperNodeIdBound());
+        EXPECT_EQ(G.numberOfEdges(), Gtrans.numberOfEdges());
+        EXPECT_EQ(G.upperEdgeIdBound(), Gtrans.upperEdgeIdBound());
+        EXPECT_EQ(G.totalEdgeWeight(), Gtrans.totalEdgeWeight());
+        EXPECT_EQ(G.numberOfSelfLoops(), Gtrans.numberOfSelfLoops());
+
+        // test for regular edges
+        EXPECT_TRUE(G.hasEdge(0, 6));
+        EXPECT_FALSE(G.hasEdge(6, 0));
+        EXPECT_TRUE(Gtrans.hasEdge(6, 0));
+        EXPECT_FALSE(Gtrans.hasEdge(0, 6));
+        // .. and for selfloops
+        EXPECT_TRUE(G.hasEdge(0, 0));
+        EXPECT_TRUE(Gtrans.hasEdge(0, 0));
+
+        // check for edge weights
+        EXPECT_EQ(G.weight(0, 6), weighted() ? 3.14 : defaultEdgeWeight);
+        EXPECT_EQ(Gtrans.weight(6, 0), weighted() ? 3.14 : defaultEdgeWeight);
+        EXPECT_EQ(G.weight(0, 0), Gtrans.weight(0, 0));
+    }
+}
+
 } // namespace NetworKit

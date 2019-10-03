@@ -1144,6 +1144,8 @@ cdef class Graph:
 		networkit.Graph
 			Directed graph.
 		"""
+		from warnings import warn
+		warn("Graph.transpose is deprecated, use graph.GraphTools.transpose instead.")
 		return Graph().setThis(self._this.transpose())
 
 	def isWeighted(self):
@@ -4967,6 +4969,7 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	_Graph copyNodes(_Graph G) nogil except +
 	_Graph subgraphFromNodes(_Graph G, unordered_set[node], bool_t, bool_t) nogil except +
 	_Graph getCompactedGraph(_Graph G, unordered_map[node,node]) nogil except +
+	_Graph transpose(_Graph G) nogil except +
 	unordered_map[node,node] getContinuousNodeIds(_Graph G) nogil except +
 	unordered_map[node,node] getRandomContinuousNodeIds(_Graph G) nogil except +
 
@@ -5012,6 +5015,22 @@ cdef class GraphTools:
 		"""
 		return Graph().setThis(subgraphFromNodes(
 			graph._this, nodes, includeOutNeighbors, includeInNeighbors))
+
+	@staticmethod
+	def transpose(Graph graph):
+		"""
+		Returns the transpose of the input graph. The graph must be directed.
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+
+		Returns
+		graph : networkit.Graph
+			Transpose of the input graph.
+		"""
+		return Graph().setThis(transpose(graph._this))
 
 	@staticmethod
 	def getCompactedGraph(Graph graph, nodeIdMap):

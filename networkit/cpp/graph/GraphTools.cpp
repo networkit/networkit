@@ -71,6 +71,46 @@ Graph subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes,
     return S;
 }
 
+Graph transpose(const Graph &G) {
+    if (!G.isDirected()) {
+        throw std::runtime_error("The transpose of an undirected graph is "
+                                 "identical to the original graph.");
+    }
+
+    Graph GTranspose(G.upperNodeIdBound(), G.isWeighted(), true);
+
+    // prepare edge id storage if input has indexed edges
+    if (G.hasEdgeIds()) {
+        GTranspose.indexEdges();
+    }
+
+    #pragma omp parallel for
+    for (omp_index u = 0; u < static_cast<omp_index>(G.upperNodeIdBound()); ++u) {
+        if (G.hasNode(u)) {
+            GTranspose.preallocateDirected(u, G.degreeIn(u), G.degreeOut(u));
+
+            G.forInEdgesOf(u, [&] (node, node v, edgeweight w, edgeid id) {
+                GTranspose.addPartialOutEdge(unsafe, u, v, w, id);
+            });
+
+            G.forEdgesOf(u, [&] (node, node v, edgeweight w, edgeid id) {
+                GTranspose.addPartialInEdge(unsafe, u, v, w, id);
+            });
+
+        } else {
+            #pragma omp critical
+            GTranspose.removeNode(u);
+        }
+    }
+
+    GTranspose.setEdgeCount(unsafe, G.numberOfEdges());
+    GTranspose.setNumberOfSelfLoops(unsafe, G.numberOfSelfLoops());
+    GTranspose.setUpperEdgeIdBound(unsafe, G.upperEdgeIdBound());
+    assert(GTranspose.checkConsistency());
+
+    return GTranspose;
+}
+
 Graph getCompactedGraph(const Graph& graph, const std::unordered_map<node,node>& nodeIdMap) {
     return getRemappedGraph(graph, nodeIdMap.size(), [&] (node u) {
         const auto it = nodeIdMap.find(u);

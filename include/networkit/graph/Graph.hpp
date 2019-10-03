@@ -801,6 +801,13 @@ public:
      */
     void setEdgeCount(Unsafe, count edges) { m = edges; }
 
+    /**
+     * Set upper bound of edge count.
+     *
+     * @param newBound New upper edge id bound.
+     */
+    void setUpperEdgeIdBound(Unsafe, edgeid newBound) { omega = newBound; }
+
     void setNumberOfSelfLoops(Unsafe, count loops) { storedNumberOfSelfLoops = loops; }
     /**
      * Returns a string representation of the graph.
@@ -1382,7 +1389,7 @@ public:
      *
      * @return transpose of the graph.
      */
-    Graph transpose() const;
+    Graph TLX_DEPRECATED(transpose() const);
 
     /* NODE ITERATORS */
 

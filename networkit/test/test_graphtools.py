@@ -14,6 +14,13 @@ class TestGraphTools(unittest.TestCase):
 
 		return G
 
+	def generateRandomWeights(self, G):
+		if not G.isWeighted():
+			G = nk.graph.GraphTools.toWeighted(G)
+		G.forEdges(lambda u, v, w, eid: G.setWeight(u, v, random.random()))
+
+		return G
+
 	def testCopyNodes(self):
 		def checkNodes(G, GCopy):
 			self.assertEqual(G.isDirected(), GCopy.isDirected())
@@ -92,6 +99,46 @@ class TestGraphTools(unittest.TestCase):
 		self.assertEqual(res.numberOfNodes(), 4)
 		self.assertEqual(res.numberOfEdges(), 4) # 0->1, 0->2, 1->2, 3->1
 
+	def testGraphTranspose(self):
+		for seed in range(1, 4):
+			nk.setSeed(seed, True)
+			random.seed(seed)
+			G = nk.generators.ErdosRenyiGenerator(100, 0.2, True).generate()
+
+			for _ in range(20):
+				u = G.randomNode()
+				if not G.hasEdge(u, u):
+					G.addEdge(u, u)
+
+			# Delete a few nodes
+			for _ in range(10):
+				G.removeNode(G.randomNode())
+			self.assertGreater(G.numberOfSelfLoops(), 0)
+
+			# Assign random weights
+			GWeighted = self.generateRandomWeights(G)
+
+			GWeighted.indexEdges()
+			GTrans = nk.graph.GraphTools.transpose(GWeighted)
+
+			def checkGWeightedEdges(u, v, w, eid):
+				self.assertEqual(GWeighted.edgeId(u, v), GTrans.edgeId(v, u))
+				self.assertEqual(GWeighted.weight(u, v), GTrans.weight(v, u))
+			GWeighted.forEdges(checkGWeightedEdges)
+
+			def checkGTransEdges(v, u, w, eid):
+				self.assertEqual(GWeighted.edgeId(u, v), GTrans.edgeId(v, u))
+				self.assertEqual(GWeighted.weight(u, v), GTrans.weight(v, u))
+			GTrans.forEdges(checkGTransEdges)
+
+			for u in range(GWeighted.upperNodeIdBound()):
+				self.assertEqual(GWeighted.hasNode(u), GTrans.hasNode(u))
+
+			self.assertEqual(GWeighted.numberOfNodes(), GTrans.numberOfNodes())
+			self.assertEqual(GWeighted.upperNodeIdBound(), GTrans.upperNodeIdBound())
+			self.assertEqual(GWeighted.numberOfEdges(), GTrans.numberOfEdges())
+			self.assertEqual(GWeighted.upperEdgeIdBound(), GTrans.upperEdgeIdBound())
+			self.assertEqual(GWeighted.numberOfSelfLoops(), GTrans.numberOfSelfLoops())
 
 if __name__ == "__main__":
 	unittest.main()

@@ -1163,6 +1163,7 @@ std::vector<node> Graph::neighbors(node u) const {
 }
 
 Graph Graph::transpose() const {
+    WARN("Graph::transpose is deprecated, use GraphTools::transpose instead.");
     if (directed == false) {
         throw std::runtime_error("The transpose of an undirected graph is "
                                  "identical to the original graph.");
