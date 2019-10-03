@@ -10,6 +10,7 @@
 #include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/distance/Diameter.hpp>
 #include <networkit/graph/BFS.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 #include <math.h>
 #include <iterator>
@@ -41,7 +42,7 @@ void NeighborhoodFunctionHeuristic::run() {
         diam.run();
         dia = diam.getDiameter().first;
     } else {
-        Graph Gcopy = G.toUnweighted();
+        Graph Gcopy = GraphTools::toUnweighted(G);
         Diameter diam(Gcopy);
         diam.run();
         dia = diam.getDiameter().first;

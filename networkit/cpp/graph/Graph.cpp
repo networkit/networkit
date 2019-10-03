@@ -1209,6 +1209,7 @@ Graph Graph::transpose() const {
 }
 
 Graph Graph::toUndirected() const {
+    WARN("Graph::toUndirected is deprecated, use GraphTools::toUndirected instead.");
     if (directed == false) {
         throw std::runtime_error("this graph is already undirected");
     }
@@ -1217,6 +1218,7 @@ Graph Graph::toUndirected() const {
 }
 
 Graph Graph::toUnweighted() const {
+    WARN("Graph::toUnweighted is deprecated, use GraphTools::toUnweighted instead.");
     if (weighted == false) {
         throw std::runtime_error("this graph is already unweighted");
     }

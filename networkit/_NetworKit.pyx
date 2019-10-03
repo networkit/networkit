@@ -1122,8 +1122,9 @@ cdef class Graph:
 	 	-------
 			undirected graph.
 		"""
+		from warnings import warn
+		warn("Graph.toUndirected is deprecated, use graph.GraphTools.toUndirected instead.")
 		return Graph().setThis(self._this.toUndirected())
-
 
 	def toUnweighted(self):
 		"""
@@ -1133,6 +1134,8 @@ cdef class Graph:
 	 	-------
 		networkit.Graph
 		"""
+		from warnings import warn
+		warn("Graph.toUnweighted is deprecated, use graph.GraphTools.toUnweighted instead.")
 		return Graph().setThis(self._this.toUnweighted())
 
 	def transpose(self):
@@ -5080,6 +5083,9 @@ cdef class Traversal:
 cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphTools":
 
 	_Graph copyNodes(_Graph G) nogil except +
+	_Graph toUndirected(_Graph G) nogil except +
+	_Graph toUnweighted(_Graph G) nogil except +
+	_Graph toWeighted(_Graph G) nogil except +
 	_Graph subgraphFromNodes(_Graph G, unordered_set[node], bool_t, bool_t) nogil except +
 	_Graph getCompactedGraph(_Graph G, unordered_map[node,node]) nogil except +
 	_Graph transpose(_Graph G) nogil except +
@@ -5087,6 +5093,58 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	unordered_map[node,node] getRandomContinuousNodeIds(_Graph G) nogil except +
 
 cdef class GraphTools:
+
+	@staticmethod
+	def toUndirected(Graph graph):
+		"""
+		Returns an undirected copy of the input graph.
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+
+		Returns
+		-------
+		graph : networkit.Graph
+			Undirected copy of the input graph.
+		"""
+		return Graph().setThis(toUndirected(graph._this))
+
+	@staticmethod
+	def toUnweighted(Graph graph):
+		"""
+		Returns an unweighted copy of the input graph.
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+
+		Returns
+		-------
+		graph : networkit.Graph
+			Unweighted copy of the input graph.
+		"""
+		return Graph().setThis(toUnweighted(graph._this))
+
+	@staticmethod
+	def toWeighted(Graph graph):
+		"""
+		Returns a weighted copy of the input graph.
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+
+		Returns
+		-------
+		graph : networkit.Graph
+			Weighted copy of the input graph.
+		"""
+		return Graph().setThis(toWeighted(graph._this))
+
 	@staticmethod
 	def copyNodes(Graph graph):
 		"""

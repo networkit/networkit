@@ -1375,14 +1375,14 @@ public:
      *
      * @return undirected graph.
      */
-    Graph toUndirected() const;
+    Graph TLX_DEPRECATED(toUndirected() const);
 
     /**
      * Return an unweighted version of this graph.
      *
      * @return unweighted graph.
      */
-    Graph toUnweighted() const;
+    Graph TLX_DEPRECATED(toUnweighted() const);
 
     /**
      * Return the transpose of this graph. The graph must be directed.

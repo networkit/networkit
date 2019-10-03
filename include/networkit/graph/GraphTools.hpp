@@ -33,6 +33,33 @@ Graph subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes,
                         bool includeOutNeighbors = false, bool includeInNeighbors = false);
 
 /**
+ * Returns an undirected copy of the input graph.
+ *
+ * @param G The input graph.
+ *
+ * @return Undirected copy of the input graph.
+ */
+Graph toUndirected(const Graph &G);
+
+/**
+ * Return an unweighted copy of the input graph.
+ *
+ * @param G The input graph.
+ *
+ * @return Unweighted copy of the input graph.
+ */
+Graph toUnweighted(const Graph &G);
+
+/**
+ * Return a weighted copy of the input graph.
+ *
+ * @param G The input graph.
+ *
+ * @return Weighted copy of the input graph.
+ */
+Graph toWeighted(const Graph &G);
+
+/**
  * Returns the transpose of the input graph. The graph must be directed.
  *
  * @param G The input graph.

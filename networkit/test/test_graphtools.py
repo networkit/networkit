@@ -140,5 +140,65 @@ class TestGraphTools(unittest.TestCase):
 			self.assertEqual(GWeighted.upperEdgeIdBound(), GTrans.upperEdgeIdBound())
 			self.assertEqual(GWeighted.numberOfSelfLoops(), GTrans.numberOfSelfLoops())
 
+	def testToUndirected(self):
+		n = 200
+		p = 0.2
+
+		def testGraphs(G, G1):
+			self.assertEqual(G.numberOfNodes(), G1.numberOfNodes())
+			self.assertEqual(G.upperNodeIdBound(), G1.upperNodeIdBound())
+			self.assertEqual(G.numberOfEdges(), G1.numberOfEdges())
+			self.assertEqual(G.upperEdgeIdBound(), G1.upperEdgeIdBound())
+			self.assertEqual(G.isWeighted(), G1.isWeighted())
+			self.assertNotEqual(G.isDirected(), G1.isDirected())
+			self.assertEqual(G.hasEdgeIds(), G1.hasEdgeIds())
+
+			def testEdges(u, v, w, eid):
+				self.assertTrue(G1.hasEdge(u, v))
+				self.assertEqual(G1.weight(u, v), w)
+			G.forEdges(testEdges)
+
+		for seed in range(1, 4):
+			nk.setSeed(seed, False)
+			random.seed(seed)
+			G = nk.generators.ErdosRenyiGenerator(n, p, True).generate()
+			for weighted in [True, False]:
+				if weighted:
+					G = self.generateRandomWeights(G)
+				G1 = nk.graph.GraphTools.toUndirected(G)
+				testGraphs(G, G1)
+
+	def testToUnWeighted(self):
+		n = 200
+		p = 0.2
+
+		def testGraphs(G, G1):
+			self.assertEqual(G.numberOfNodes(), G1.numberOfNodes())
+			self.assertEqual(G.upperNodeIdBound(), G1.upperNodeIdBound())
+			self.assertEqual(G.numberOfEdges(), G1.numberOfEdges())
+			self.assertNotEqual(G.isWeighted(), G1.isWeighted())
+			self.assertEqual(G.isDirected(), G1.isDirected())
+			self.assertEqual(G.hasEdgeIds(), G1.hasEdgeIds())
+
+			def checkEdges(u, v, w, eid):
+				self.assertTrue(G1.hasEdge(u, v))
+				if G1.isWeighted():
+					self.assertEqual(G1.weight(u, v), 1.0)
+			G.forEdges(checkEdges)
+
+		for seed in range(1, 4):
+			nk.setSeed(seed, False)
+			random.seed(seed)
+			for directed in [True, False]:
+				G = nk.generators.ErdosRenyiGenerator(n, p, directed).generate()
+
+				G1 = nk.graph.GraphTools.toWeighted(G)
+				testGraphs(G, G1)
+
+				G = self.generateRandomWeights(G)
+
+				G1 = nk.graph.GraphTools.toUnweighted(G)
+				testGraphs(G, G1)
+
 if __name__ == "__main__":
 	unittest.main()

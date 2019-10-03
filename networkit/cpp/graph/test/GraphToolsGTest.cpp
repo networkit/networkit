@@ -511,4 +511,66 @@ TEST_P(GraphToolsGTest, testTranspose) {
     }
 }
 
+TEST_P(GraphToolsGTest, testToUndirected) {
+    constexpr count n = 200;
+    constexpr double p = 0.2;
+
+    auto testGraphs = [&](const Graph &G, const Graph &G1) {
+        EXPECT_EQ(G.numberOfNodes(), G1.numberOfNodes());
+        EXPECT_EQ(G.upperNodeIdBound(), G1.upperNodeIdBound());
+        EXPECT_EQ(G.numberOfEdges(), G1.numberOfEdges());
+        EXPECT_EQ(G.upperEdgeIdBound(), G1.upperEdgeIdBound());
+        EXPECT_EQ(G.isWeighted(), G1.isWeighted());
+        EXPECT_NE(G.isDirected(), G1.isDirected());
+        EXPECT_EQ(G.hasEdgeIds(), G1.hasEdgeIds());
+
+        G.forEdges([&](node u, node v, edgeweight w) {
+            EXPECT_TRUE(G1.hasEdge(u, v));
+            EXPECT_DOUBLE_EQ(G1.weight(u, v), w);
+        });
+    };
+
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, false);
+        auto G = ErdosRenyiGenerator(n, p, true).generate();
+        if (weighted()) {
+            G = generateRandomWeights(G);
+        }
+        auto G1 = GraphTools::toUndirected(G);
+        testGraphs(G, G1);
+    }
+}
+
+TEST_P(GraphToolsGTest, testToUnWeighted) {
+    constexpr count n = 200;
+    constexpr double p = 0.2;
+
+    auto testGraphs = [&](const Graph &G, const Graph &G1) {
+        EXPECT_EQ(G.numberOfNodes(), G1.numberOfNodes());
+        EXPECT_EQ(G.upperNodeIdBound(), G1.upperNodeIdBound());
+        EXPECT_EQ(G.numberOfEdges(), G1.numberOfEdges());
+        EXPECT_NE(G.isWeighted(), G1.isWeighted());
+        EXPECT_EQ(G.isDirected(), G1.isDirected());
+        EXPECT_EQ(G.hasEdgeIds(), G1.hasEdgeIds());
+
+        G.forEdges([&](node u, node v) {
+            EXPECT_TRUE(G1.hasEdge(u, v));
+            if (G1.isWeighted()) {
+                EXPECT_EQ(G1.weight(u, v), defaultEdgeWeight);
+            }
+        });
+    };
+
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, false);
+        auto G = ErdosRenyiGenerator(n, p, directed()).generate();
+        auto G1 = GraphTools::toWeighted(G);
+        testGraphs(G, G1);
+
+        G = generateRandomWeights(G);
+        G1 = GraphTools::toUnweighted(G);
+        testGraphs(G, G1);
+    }
+}
+
 } // namespace NetworKit

@@ -22,6 +22,7 @@
 
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 
 namespace NetworKit {
@@ -406,7 +407,7 @@ TEST_F(DistanceGTest, testHopPlotApproximation) {
 
 TEST_F(DistanceGTest, testNeighborhoodFunctionApproximation) {
     METISGraphReader reader;
-    Graph G = reader.read("input/lesmis.graph").toUnweighted();
+    Graph G = GraphTools::toUnweighted(reader.read("input/lesmis.graph"));
     NeighborhoodFunction nf(G);
     nf.run();
     auto exact = nf.getNeighborhoodFunction();
@@ -418,7 +419,7 @@ TEST_F(DistanceGTest, testNeighborhoodFunctionApproximation) {
 
 TEST_F(DistanceGTest, testNeighborhoodFunctionHeuristic) {
     METISGraphReader reader;
-    Graph G = reader.read("input/lesmis.graph").toUnweighted();
+    Graph G = GraphTools::toUnweighted(reader.read("input/lesmis.graph"));
     NeighborhoodFunction nf(G);
     nf.run();
     auto exact = nf.getNeighborhoodFunction();

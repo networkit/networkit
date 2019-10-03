@@ -1,5 +1,6 @@
 #include <algorithm>
 
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -68,6 +69,30 @@ Graph subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes,
     });
 
     return S;
+}
+
+Graph toUndirected(const Graph &G) {
+    if (!G.isDirected()) {
+        WARN("The graph is already undirected");
+    }
+
+    return Graph(G, G.isWeighted(), false);
+}
+
+Graph toUnweighted(const Graph &G) {
+    if (!G.isWeighted()) {
+        WARN("The graph is already unweighted");
+    }
+
+    return Graph(G, false, G.isDirected());
+}
+
+Graph toWeighted(const Graph &G) {
+    if (G.isWeighted()) {
+        WARN("The graph is already weighted");
+    }
+
+    return Graph(G, true, G.isDirected());
 }
 
 Graph transpose(const Graph &G) {
