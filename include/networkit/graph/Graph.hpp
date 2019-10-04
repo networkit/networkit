@@ -1232,13 +1232,19 @@ public:
     /**
      * Trigger a time step - increments counter.
      */
-    void timeStep() { t++; }
+    void TLX_DEPRECATED(timeStep()) {
+        WARN("Graph::timeStep is deprecated and will not be supported in future releases.");
+        t++;
+    }
 
     /**
      * Get time step counter.
      * @return Time step counter.
      */
-    count time() { return t; }
+    count TLX_DEPRECATED(time()) {
+        WARN("Graph::time is deprecated and will not be supported in future releases.");
+        return t;
+    }
 
     /**
      * Return edge weight of edge {@a u,@a v}. Returns 0 if edge does not

@@ -1112,17 +1112,6 @@ TEST_P(GraphGTest, testCheckConsistency_MultiEdgeDetection) {
     ASSERT_TRUE(G.checkConsistency());
 }
 
-/** DYNAMICS **/
-
-TEST_P(GraphGTest, testTime) {
-    ASSERT_EQ(0u, this->Ghouse.time());
-    this->Ghouse.timeStep();
-    ASSERT_EQ(1u, this->Ghouse.time());
-    this->Ghouse.timeStep();
-    this->Ghouse.timeStep();
-    ASSERT_EQ(3u, this->Ghouse.time());
-}
-
 /** EDGE ATTRIBUTES **/
 
 TEST_P(GraphGTest, testWeight) {
@@ -1344,9 +1333,6 @@ TEST_P(GraphGTest, testTranspose) {
         EXPECT_EQ(G.totalEdgeWeight(), Gtrans.totalEdgeWeight());
         EXPECT_EQ(G.numberOfSelfLoops(), Gtrans.numberOfSelfLoops());
 
-        // check time step
-        EXPECT_EQ(G.time(), Gtrans.time());
-
         // check graph names
         EXPECT_EQ(G.getName() + "Transpose", Gtrans.getName());
 
@@ -1554,9 +1540,6 @@ TEST_P(GraphGTest, testParallelForEdges) {
 
     ASSERT_EQ(6.0, weightSum) << "sum of edge weights should be 6 in every case";
 }
-
-// template<typename L> void forEdgesWithAttribute_double(int attrId, L handle)
-// const;
 
 /** NEIGHBORHOOD ITERATORS **/
 
