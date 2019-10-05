@@ -573,4 +573,91 @@ TEST_P(GraphToolsGTest, testToUnWeighted) {
     }
 }
 
+TEST_P(GraphToolsGTest, testAppend) {
+    constexpr count n1 = 100, n2 = 50;
+    constexpr double p1 = 0.01, p2 = 0.05;
+    constexpr count nodesToDelete = 20;
+
+    auto testGraphs = [&] (const Graph &G, const Graph &G1, const Graph &G2) {
+        EXPECT_EQ(G.numberOfNodes(), G1.numberOfNodes() + G2.numberOfNodes());
+        EXPECT_EQ(G.numberOfEdges(), G1.numberOfEdges() + G2.numberOfEdges());
+        EXPECT_EQ(G.isDirected(), G1.isDirected());
+        EXPECT_EQ(G.isDirected(), G2.isDirected());
+        EXPECT_EQ(G.isWeighted(), G1.isWeighted());
+        EXPECT_EQ(G.isWeighted(), G2.isWeighted());
+
+        std::unordered_map<node, node> nodeMap;
+        node v = G1.upperNodeIdBound();
+        for (node u = 0; u < G2.upperNodeIdBound(); ++u) {
+            if (G2.hasNode(u)) {
+                nodeMap[u] = v++;
+            }
+        }
+
+        G1.forNodes([&](node u) { EXPECT_TRUE(G.hasNode(u)); });
+        G1.forEdges([&](node u, node v) { EXPECT_TRUE(G.hasEdge(u, v)); });
+        G2.forNodes([&](node u) { EXPECT_TRUE(G.hasNode(nodeMap[u])); });
+        G2.forEdges([&](node u, node v) { EXPECT_TRUE(G.hasEdge(nodeMap[u], nodeMap[v])); });
+    };
+
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, false);
+        auto G1 = ErdosRenyiGenerator(n1, p1, directed()).generate();
+        auto G2 = ErdosRenyiGenerator(n2, p2, directed()).generate();
+
+        if (weighted()) {
+            G1 = generateRandomWeights(G1);
+            G2 = generateRandomWeights(G2);
+        }
+
+        auto G(G1);
+        GraphTools::append(G, G2);
+        testGraphs(G, G1, G2);
+
+        for (count i = 0; i < nodesToDelete; ++i) {
+            G1.removeNode(G1.randomNode());
+            G2.removeNode(G2.randomNode());
+            auto G3(G1);
+            GraphTools::append(G3, G2);
+            testGraphs(G3, G1, G2);
+        }
+    }
+}
+
+TEST_P(GraphToolsGTest, testMerge) {
+    constexpr count n1 = 100, n2 = 150;
+    constexpr double p1 = 0.01, p2 = 0.05;
+
+    auto testGraphs = [&](const Graph &Gorig, const Graph &Gmerge, const Graph &G1) {
+        for (node u = 0; u < std::max(Gorig.upperNodeIdBound(), G1.upperNodeIdBound()); ++u) {
+            EXPECT_EQ(Gmerge.hasNode(u), Gorig.hasNode(u) || G1.hasNode(u));
+        }
+        Gorig.forEdges([&](node u, node v) { EXPECT_TRUE(Gmerge.hasEdge(u, v)); });
+        G1.forEdges([&](node u, node v) { EXPECT_TRUE(Gmerge.hasEdge(u, v)); });
+
+        Gmerge.forEdges([&](node u, node v, edgeweight w) {
+            if (Gorig.hasNode(u) && Gorig.hasNode(v) && Gorig.hasEdge(u, v)) {
+                EXPECT_EQ(Gorig.weight(u, v), w);
+            } else {
+                EXPECT_EQ(G1.weight(u, v), w);
+            }
+        });
+    };
+
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, false);
+        auto Gorig = ErdosRenyiGenerator(n1, p1, directed()).generate();
+        auto G1 = ErdosRenyiGenerator(n2, p2, directed()).generate();
+
+        if (weighted()) {
+            Gorig = generateRandomWeights(Gorig);
+            G1 = generateRandomWeights(G1);
+        }
+
+        auto Gmerge(Gorig);
+        GraphTools::merge(Gmerge, G1);
+        testGraphs(Gorig, Gmerge, G1);
+    }
+}
+
 } // namespace NetworKit

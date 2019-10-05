@@ -1245,6 +1245,7 @@ bool Graph::checkConsistency() const {
 }
 
 void Graph::append(const Graph &G) {
+    WARN("Graph::append is deprecated, use GraphTools::append instead.");
     std::map<node, node> nodeMap;
     G.forNodes([&](node u) {
         node u_ = this->addNode();
@@ -1260,6 +1261,7 @@ void Graph::append(const Graph &G) {
 }
 
 void Graph::merge(const Graph &G) {
+    WARN("Graph::merge is deprecated, use GraphTools::merge instead.");
     // TODO: handle edge weights
     G.forEdges([&](node u, node v) {
         // naive implementation takes $O(m \cdot d)$ for $m$ edges and max. degree

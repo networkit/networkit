@@ -873,14 +873,14 @@ public:
      * id remapping.
      * @param G [description]
      */
-    void append(const Graph &G);
+    void TLX_DEPRECATED(append(const Graph &G));
 
     /**
      * Modifies this graph to be the union of it and another graph.
      * Nodes with the same ids are identified with each other.
      * @param G [description]
      */
-    void merge(const Graph &G);
+    void TLX_DEPRECATED(merge(const Graph &G));
 
     // SUBGRAPHS
 

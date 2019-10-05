@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import unittest
 import random
+from copy import copy
 import networkit as nk
 
 class TestGraphTools(unittest.TestCase):
@@ -199,6 +200,85 @@ class TestGraphTools(unittest.TestCase):
 
 				G1 = nk.graph.GraphTools.toUnweighted(G)
 				testGraphs(G, G1)
+
+	def testAppend(self):
+		n1, n2 = 100, 50
+		p1, p2 = 0.01, 0.05
+		nodesToDelete = 20
+
+		def testGraphs(G, G1, G2):
+			self.assertEqual(G.numberOfNodes(), G1.numberOfNodes() + G2.numberOfNodes())
+			self.assertEqual(G.numberOfEdges(), G1.numberOfEdges() + G2.numberOfEdges())
+			self.assertEqual(G.isDirected(), G1.isDirected())
+			self.assertEqual(G.isDirected(), G2.isDirected())
+			self.assertEqual(G.isWeighted(), G1.isWeighted())
+			self.assertEqual(G.isWeighted(), G2.isWeighted())
+
+			nodeMap = {}
+			v = G1.upperNodeIdBound()
+			for u in range(G2.upperNodeIdBound()):
+				if G2.hasNode(u):
+					nodeMap[u] = v
+					v += 1
+
+			G1.forNodes(lambda u: self.assertTrue(G.hasNode(u)))
+			G1.forEdges(lambda u, v, w, eid: self.assertTrue(G.hasEdge(u, v)))
+			G2.forNodes(lambda u: self.assertTrue(G.hasNode(nodeMap[u])))
+			G2.forEdges(lambda u, v, w, eid: self.assertTrue(G.hasEdge(nodeMap[u], nodeMap[v])))
+
+		for seed in range(1, 4):
+			nk.setSeed(seed, False)
+			random.seed(seed)
+			for directed in [True, False]:
+				for weighted in [True, False]:
+					G1 = nk.generators.ErdosRenyiGenerator(n1, p1, directed).generate()
+					G2 = nk.generators.ErdosRenyiGenerator(n2, p2, directed).generate()
+					if weighted:
+						G1 = self.generateRandomWeights(G1)
+						G2 = self.generateRandomWeights(G2)
+
+					G = copy(G1)
+					nk.graph.GraphTools.append(G, G2)
+					testGraphs(G, G1, G2)
+
+					for _ in range(nodesToDelete):
+						G1.removeNode(G1.randomNode())
+						G2.removeNode(G2.randomNode())
+						G3 = copy(G1)
+						nk.graph.GraphTools.append(G3, G2)
+						testGraphs(G3, G1, G2)
+
+	def testMerge(self):
+		n1, n2 = 100, 150
+		p1, p2 = 0.01, 0.05
+
+		def testGraphs (Gorig, Gmerge, G1):
+			for u in range(max(Gorig.upperNodeIdBound(), G1.upperNodeIdBound())):
+				self.assertEqual(Gmerge.hasNode(u), Gorig.hasNode(u) or G1.hasNode(u))
+
+			Gorig.forEdges(lambda u, v, w, eid: self.assertTrue(Gmerge.hasEdge(u, v)))
+			G1.forEdges(lambda u, v, w, eid: self.assertTrue(Gmerge.hasEdge(u, v)))
+
+			def checkEdges(u, v, w, eid):
+				if Gorig.hasNode(u) and Gorig.hasNode(v) and Gorig.hasEdge(u, v):
+					self.assertEqual(Gorig.weight(u, v), w)
+				else:
+					self.assertEqual(G1.weight(u, v), w)
+			Gmerge.forEdges(checkEdges)
+
+		for seed in range(1, 4):
+			nk.setSeed(seed, False)
+			random.seed(seed)
+			for directed in [True, False]:
+				for weighted in [True, False]:
+					Gorig = nk.generators.ErdosRenyiGenerator(n1, p1, directed).generate()
+					G1 = nk.generators.ErdosRenyiGenerator(n2, p2, directed).generate()
+					if weighted:
+						Gorig = self.generateRandomWeights(Gorig)
+						G1 = self.generateRandomWeights(G1)
+					Gmerge = copy(Gorig)
+					nk.graph.GraphTools.merge(Gmerge, G1)
+					testGraphs(Gorig, Gmerge, G1)
 
 if __name__ == "__main__":
 	unittest.main()

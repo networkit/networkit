@@ -69,6 +69,23 @@ Graph toWeighted(const Graph &G);
 Graph transpose(const Graph &G);
 
 /**
+ * Appends graph @a G1 to graph @a G as a new subgraph. Performs node id remapping.
+ *
+ * @param G Graph where @G1 will be appended to.
+ * @param G1 Graph that will be appended to @a G.
+ */
+void append(Graph &G, const Graph &G1);
+
+/**
+ * Modifies graph @a G to be the union of it and graph @a G1.
+ * Nodes with the same ids are identified with each other.
+ *
+ * @param G Result of the merge.
+ * @param G1 Graph that will be merged with @a G.
+ */
+void merge(Graph &G, const Graph &G1);
+
+/**
  * Computes a graph with the same structure but with continuous node ids.
  * @param  graph     The graph to be compacted.
  * @param  nodeIdMap The map providing the information about the node ids.

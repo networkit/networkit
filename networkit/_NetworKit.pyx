@@ -777,6 +777,8 @@ cdef class Graph:
 		----------
 		G : networkit.Graph
 		"""
+		from warnings import warn
+		warn("Graph.append is deprecated, use graph.GraphTools.append instead.")
 		self._this.append(G._this)
 		return self
 
@@ -788,6 +790,8 @@ cdef class Graph:
 		----------
 		G : networkit.Graph
 		"""
+		from warnings import warn
+		warn("Graph.merge is deprecated, use graph.GraphTools.merge instead.")
 		self._this.merge(G._this)
 		return self
 
@@ -5087,12 +5091,43 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	_Graph toUnweighted(_Graph G) nogil except +
 	_Graph toWeighted(_Graph G) nogil except +
 	_Graph subgraphFromNodes(_Graph G, unordered_set[node], bool_t, bool_t) nogil except +
+	void append(_Graph G, _Graph G1) nogil except +
+	void merge(_Graph G, _Graph G1) nogil except +
 	_Graph getCompactedGraph(_Graph G, unordered_map[node,node]) nogil except +
 	_Graph transpose(_Graph G) nogil except +
 	unordered_map[node,node] getContinuousNodeIds(_Graph G) nogil except +
 	unordered_map[node,node] getRandomContinuousNodeIds(_Graph G) nogil except +
 
 cdef class GraphTools:
+
+	@staticmethod
+	def append(Graph G, Graph G1):
+		"""
+		Appends graph `G1` to graph `G` as a new subgraph. Performs node id remapping.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			Graph where `G1` will be appended to.
+		G1 : networkit.Graph
+			Graph that will be appended to `G`.
+		"""
+		append(G._this, G1._this)
+
+	@staticmethod
+	def merge(Graph G, Graph G1):
+		"""
+		Modifies graph `G` to be the union of it and graph `G1`.
+		Nodes with the same ids are identified with each other.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			Result of the merge.
+		G1 : networkit.Graph
+			Graph that will be merged with `G`.
+		"""
+		merge(G._this, G1._this)
 
 	@staticmethod
 	def toUndirected(Graph graph):

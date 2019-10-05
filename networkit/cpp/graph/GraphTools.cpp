@@ -135,6 +135,50 @@ Graph transpose(const Graph &G) {
     return GTranspose;
 }
 
+void append(Graph &G, const Graph &G1) {
+    std::unordered_map<node, node> nodeMap;
+    G1.forNodes([&](node u) {
+        node u_ = G.addNode();
+        nodeMap[u] = u_;
+    });
+
+    if (G.isWeighted()) {
+        G1.forEdges([&](node u, node v, edgeweight ew) {
+            G.addEdge(nodeMap[u], nodeMap[v], ew);
+        });
+    } else {
+        G1.forEdges([&](node u, node v) { G.addEdge(nodeMap[u], nodeMap[v]); });
+    }
+}
+
+void merge(Graph &G, const Graph &G1) {
+    if (G1.upperNodeIdBound() > G.upperNodeIdBound()) {
+        count prevBound = G.upperNodeIdBound();
+        for (node i = prevBound; i < G1.upperNodeIdBound(); ++i) {
+            G.addNode();
+        }
+        for (node i = prevBound; i < G1.upperNodeIdBound(); ++i) {
+            if (!G1.hasNode(i)) {
+                G.removeNode(i);
+            }
+        }
+    }
+
+    for (node i = 0; i < G.upperNodeIdBound(); ++i) {
+        if (!G.hasNode(i) && G1.hasNode(i)) {
+            G.restoreNode(i);
+        }
+    }
+
+    G1.forEdges([&](node u, node v, edgeweight w) {
+        // naive implementation takes $O(m \cdot d)$ for $m$ edges and max. degree
+        // $d$ in this graph
+        if (!G.hasEdge(u, v)) {
+            G.addEdge(u, v, w);
+        }
+    });
+}
+
 Graph getCompactedGraph(const Graph& graph, const std::unordered_map<node,node>& nodeIdMap) {
     return getRemappedGraph(graph, nodeIdMap.size(), [&] (node u) {
         const auto it = nodeIdMap.find(u);
