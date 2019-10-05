@@ -13,6 +13,8 @@
 #include <networkit/Globals.hpp>
 #include <networkit/graph/Graph.hpp>
 
+#include <tlx/define/deprecated.hpp>
+
 namespace NetworKit {
 
 /*
@@ -88,7 +90,7 @@ public:
      * Set name of graph to @a name.
      * @param name The name.
      */
-    void setName(std::string name) { this->name = name; }
+    void TLX_DEPRECATED(setName(std::string name)) { this->name = name; }
 
     /**
      * Returns <code>true</code> if this graph supports edge weights other

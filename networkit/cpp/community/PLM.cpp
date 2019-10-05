@@ -28,7 +28,6 @@ PLM::PLM(const Graph& G, const PLM& other) : CommunityDetectionAlgorithm(G), par
 
 void PLM::run() {
     Aux::SignalHandler handler;
-    DEBUG("calling run method on " , G.toString());
 
     count z = G.upperNodeIdBound();
 

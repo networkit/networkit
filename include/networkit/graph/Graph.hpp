@@ -744,7 +744,10 @@ public:
      * Get the ID of this graph. The ID is a unique unsigned integer given to
      * every graph on construction.
      */
-    count getId() const { return id; }
+    count TLX_DEPRECATED(getId() const) {
+        WARN("Graph::getId is deprecated and will not be supported in future releases.");
+        return id;
+    }
 
     /**
      * Return the type of the graph.
@@ -753,7 +756,7 @@ public:
      * 		DirectedGraph: not weighted, directed
      * 		WeightedDirectedGraph: weighted, directed
      */
-    std::string typ() const;
+    std::string TLX_DEPRECATED(typ() const);
 
     /**
      * Try to save some memory by shrinking internal data structures of the
@@ -778,13 +781,19 @@ public:
      * Set name of graph to @a name.
      * @param name The name.
      */
-    void setName(std::string name) { this->name = name; }
+    void TLX_DEPRECATED(setName(std::string name)) {
+        WARN("Graph::setName is deprecated and will not be supported in future releases.");
+        this->name = name;
+    }
 
     /*
      * Returns the name of the graph.
      * @return The name of the graph.
      */
-    std::string getName() const { return name; }
+    std::string TLX_DEPRECATED(getName() const) {
+        WARN("Graph::getName is deprecated and will not be supported in future releases.");
+        return name;
+    }
 
     /**
      * Set edge count of the graph to edges.
@@ -797,7 +806,7 @@ public:
      * Returns a string representation of the graph.
      * @return A string representation.
      */
-    std::string toString() const;
+    std::string TLX_DEPRECATED(toString() const);
 
     /* COPYING */
 

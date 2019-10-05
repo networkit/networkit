@@ -1160,6 +1160,8 @@ cdef class Graph:
 		string
 			A string representation of the graph.
 		"""
+		from warnings import warn
+		warn("Graph.toString is deprecated.")
 		return self._this.toString()
 
 	def getName(self):
@@ -1170,6 +1172,8 @@ cdef class Graph:
 		string
 			The name of the graph.
 		"""
+		from warnings import warn
+		warn("Graph.getName is deprecated.")
 		return pystring(self._this.getName())
 
 	def setName(self, name):
@@ -1180,6 +1184,8 @@ cdef class Graph:
 		name : string
 			The name.
 		"""
+		from warnings import warn
+		warn("Graph.setName is deprecated.")
 		self._this.setName(stdstring(name))
 
 	def totalEdgeWeight(self):

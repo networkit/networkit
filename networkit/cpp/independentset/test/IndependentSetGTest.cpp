@@ -21,8 +21,6 @@ TEST_F(IndependentSetGTest, debugLuby) {
     ErdosRenyiGenerator generator(n, 0.001);
     Graph G = generator.generate();
 
-    INFO("G: " , G.toString());
-
     Luby luby;
     std::vector<bool> I = luby.run(G);
 
@@ -45,8 +43,6 @@ TEST_F(IndependentSetGTest, debugLubyWithSelfLoops) {
     G.forNodes([&](node u){
         G.addEdge(u,u);
     });
-
-    INFO("G: " , G.toString());
 
     Luby luby;
     std::vector<bool> I = luby.run(G);
