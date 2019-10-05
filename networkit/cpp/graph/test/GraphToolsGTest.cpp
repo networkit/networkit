@@ -12,17 +12,38 @@
 
 namespace NetworKit {
 
-class GraphToolsGTest: public testing::Test {};
+class GraphToolsGTest : public testing::TestWithParam<std::pair<bool, bool>> {
+protected:
+    Graph generateRandomWeights(const Graph &G) const;
+    bool weighted() const noexcept;
+    bool directed() const noexcept;
+};
 
-TEST_F(GraphToolsGTest, testGetContinuousOnContinuous) {
-    Graph G(10);
+INSTANTIATE_TEST_CASE_P(InstantiationName, GraphToolsGTest,
+                        testing::Values(std::make_pair(false, false),
+                                        std::make_pair(true, false),
+                                        std::make_pair(false, true),
+                                        std::make_pair(true, true)), ); // comma required for variadic macro
+
+Graph GraphToolsGTest::generateRandomWeights(const Graph &G) const {
+    Graph Gw(G, true, G.isDirected());
+    Gw.forEdges([&](node u, node v) { Gw.setWeight(u, v, Aux::Random::probability()); });
+    return Gw;
+}
+
+bool GraphToolsGTest::weighted() const noexcept { return GetParam().first; }
+
+bool GraphToolsGTest::directed() const noexcept { return GetParam().second; }
+
+TEST_P(GraphToolsGTest, testGetContinuousOnContinuous) {
+    Graph G(10, weighted(), directed());
     auto nodeIds = GraphTools::getContinuousNodeIds(G);
     std::unordered_map<node,node> reference = {{0,0},{1,1},{2,2},{3,3},{4,4},{5,5},{6,6},{7,7},{8,8},{9,9}};
     EXPECT_EQ(reference,nodeIds);
 }
 
-TEST_F(GraphToolsGTest, testGetContinuousOnDeletedNodes1) {
-    Graph G(10);
+TEST_P(GraphToolsGTest, testGetContinuousOnDeletedNodes1) {
+    Graph G(10, weighted(), directed());
     G.removeNode(0);
     G.removeNode(1);
     G.removeNode(2);
@@ -33,8 +54,8 @@ TEST_F(GraphToolsGTest, testGetContinuousOnDeletedNodes1) {
     EXPECT_EQ(reference,nodeIds);
 }
 
-TEST_F(GraphToolsGTest, testGetContinuousOnDeletedNodes2) {
-    Graph G(10);
+TEST_P(GraphToolsGTest, testGetContinuousOnDeletedNodes2) {
+    Graph G(10, weighted(), directed());
     G.removeNode(0);
     G.removeNode(2);
     G.removeNode(4);
@@ -170,8 +191,8 @@ TEST_F(GraphToolsGTest, testGetCompactedGraphDirectedUnweighted1) {
     // probably compare results of some algorithms or compare each edge with a reference node id map.
 }
 
-TEST_F(GraphToolsGTest, testInvertedMapping) {
-    Graph G(10,false,true);
+TEST_P(GraphToolsGTest, testInvertedMapping) {
+    Graph G(10, weighted(), directed());
     G.removeNode(0);
     G.removeNode(2);
     G.removeNode(4);
@@ -222,81 +243,77 @@ TEST_F(GraphToolsGTest, testRestoreGraph) {
     EXPECT_EQ(Goriginal.isWeighted(),Gcompact.isWeighted());
 }
 
-TEST_F(GraphToolsGTest, testGetRemappedGraph) {
-    for(bool directed : {false, true}) {
-        const auto n = 4;
-        Graph G(n, true, directed);
-        for (auto i : {0, 1, 2})
-            G.addEdge(i, i + 1, i);
+TEST_P(GraphToolsGTest, testGetRemappedGraph) {
+    const auto n = 4;
+    Graph G(n, weighted(), directed());
+    for (auto i : {0, 1, 2})
+        G.addEdge(i, i + 1, i);
 
-        if (directed)
-            G.addEdge(1, 1, 12);
+    if (directed())
+        G.addEdge(1, 1, 12);
 
-        std::vector<node> perm(n);
-        for (int i = 0; i < n; ++i) perm[i] = i;
+    std::vector<node> perm(n);
+    for (int i = 0; i < n; ++i) perm[i] = i;
 
-        std::mt19937_64 gen;
-        for (int iter = 0; iter < 10; iter++) {
-            std::shuffle(perm.begin(), perm.end(), gen);
-            auto G1 = GraphTools::getRemappedGraph(G, n, [&](node i) { return perm[i]; });
-            ASSERT_EQ(G1.numberOfNodes(), n);
-            ASSERT_EQ(G1.numberOfEdges(), G.numberOfEdges());
-            ASSERT_EQ(G1.numberOfSelfLoops(), G.numberOfSelfLoops());
+    std::mt19937_64 gen;
+    for (int iter = 0; iter < 10; iter++) {
+        std::shuffle(perm.begin(), perm.end(), gen);
+        auto G1 = GraphTools::getRemappedGraph(G, n, [&](node i) { return perm[i]; });
+        ASSERT_EQ(G1.numberOfNodes(), n);
+        ASSERT_EQ(G1.numberOfEdges(), G.numberOfEdges());
+        ASSERT_EQ(G1.numberOfSelfLoops(), G.numberOfSelfLoops());
 
-            for (int i = 0; i < n; ++i) {
-                for (int j = 0; i < n; ++i) {
-                    ASSERT_EQ(G.hasEdge(i, j), G1.hasEdge(perm[i], perm[j]));
-                    ASSERT_EQ(G.weight(i, j), G1.weight(perm[i], perm[j]));
-                }
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; i < n; ++i) {
+                ASSERT_EQ(G.hasEdge(i, j), G1.hasEdge(perm[i], perm[j]));
+                ASSERT_EQ(G.weight(i, j), G1.weight(perm[i], perm[j]));
             }
         }
     }
 }
 
-TEST_F(GraphToolsGTest, testGetRemappedGraphWithDelete) {
-    for(bool directed : {false, true}) {
-        const auto n = 4;
-        Graph G(n, true, directed);
-        for (auto i : {0, 1, 2})
-            G.addEdge(i, i + 1, i);
+TEST_P(GraphToolsGTest, testGetRemappedGraphWithDelete) {
+    const auto n = 4;
+    Graph G(n, weighted(), directed());
+    for (auto i : {0, 1, 2})
+        G.addEdge(i, i + 1, i);
 
-        if (directed)
-            G.addEdge(1, 1, 12);
+    if (directed())
+        G.addEdge(1, 1, 12);
 
-        std::vector<node> perm(n);
-        for (int i = 0; i < n; ++i) perm[i] = i;
+    std::vector<node> perm(n);
+    for (int i = 0; i < n; ++i) perm[i] = i;
 
-        std::mt19937_64 gen;
-        std::uniform_int_distribution<node> distr(0, n-1);
-        for (int iter = 0; iter < 10; iter++) {
-            std::shuffle(perm.begin(), perm.end(), gen);
+    std::mt19937_64 gen;
+    std::uniform_int_distribution<node> distr(0, n-1);
+    for (int iter = 0; iter < 10; iter++) {
+        std::shuffle(perm.begin(), perm.end(), gen);
 
-            const auto del = distr(gen);
+        const auto del = distr(gen);
 
-            auto G1 = GraphTools::getRemappedGraph(G, n,
-                [&](node i) { return perm[i]; },
-                [&](node i) { return i == del; }
-            );
+        auto G1 = GraphTools::getRemappedGraph(G, n,
+            [&](node i) { return perm[i]; },
+            [&](node i) { return i == del; }
+        );
 
-            auto expected_num_edges = G.numberOfEdges();
-            expected_num_edges -= G.degree(del);
-            if (directed)
-                expected_num_edges -= G.degreeIn(del);
-            //do double count self-loops
-            expected_num_edges += G.hasEdge(del, del);
+        auto expected_num_edges = G.numberOfEdges();
+        expected_num_edges -= G.degree(del);
+        if (directed())
+            expected_num_edges -= G.degreeIn(del);
+        //do double count self-loops
+        expected_num_edges += G.hasEdge(del, del);
 
-            ASSERT_EQ(G1.numberOfNodes(), n);
-            ASSERT_EQ(G1.numberOfEdges(), expected_num_edges) << " del=" << del;
-            ASSERT_EQ(G1.numberOfSelfLoops(), G.numberOfSelfLoops() - G.hasEdge(del, del)) << " del=" << del;
+        ASSERT_EQ(G1.numberOfNodes(), n);
+        ASSERT_EQ(G1.numberOfEdges(), expected_num_edges) << " del=" << del;
+        ASSERT_EQ(G1.numberOfSelfLoops(), G.numberOfSelfLoops() - G.hasEdge(del, del)) << " del=" << del;
 
-            for (int i = 0; i < n; ++i) {
-                for (int j = 0; i < n; ++i) {
-                    if (i == static_cast<int>(del) || j == static_cast<int>(del)) {
-                        ASSERT_FALSE(G1.hasEdge(perm[i], perm[j])) << "i=" << i << " j=" << j << " del=" << del;
-                    } else {
-                        ASSERT_EQ(G.hasEdge(i, j), G1.hasEdge(perm[i], perm[j]));
-                        ASSERT_EQ(G.weight(i, j), G1.weight(perm[i], perm[j]));
-                    }
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; i < n; ++i) {
+                if (i == static_cast<int>(del) || j == static_cast<int>(del)) {
+                    ASSERT_FALSE(G1.hasEdge(perm[i], perm[j])) << "i=" << i << " j=" << j << " del=" << del;
+                } else {
+                    ASSERT_EQ(G.hasEdge(i, j), G1.hasEdge(perm[i], perm[j]));
+                    ASSERT_EQ(G.weight(i, j), G1.weight(perm[i], perm[j]));
                 }
             }
         }
