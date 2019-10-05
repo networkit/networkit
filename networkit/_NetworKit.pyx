@@ -307,7 +307,8 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		count degree(node u) except +
 		count degreeIn(node u) except +
 		count degreeOut(node u) except +
-		double weightedDegree(node u) except +
+		double weightedDegree(node u, bool_t) except +
+		double weightedDegreeIn(node u, bool_t) except +
 		count maxDegree() except +
 		count maxDegreeIn() except +
 		double maxWeightedDegree() except +
@@ -628,23 +629,45 @@ cdef class Graph:
 	def degreeOut(self, u):
 		return self._this.degreeOut(u)
 
-	def weightedDegree(self, v):
+	def weightedDegree(self, u, countSelfLoopsTwice=False):
 		"""
-		Returns the weighted degree of v.
+		Returns the weighted out-degree of u.
 
-		For directed graphs this is the sum of weights of all outgoing edges of v.
+		For directed graphs this is the sum of weights of all outgoing edges of u.
 
 		Parameters
 		----------
-		v : node
+		u : node
 			Node.
+		countSelfLoopsTwice : bool
+			If set to true, self-loops will be counted twice
 
 		Returns
 		-------
 		double
-			The weighted degree of v.
+			The weighted out-degree of u.
 		"""
-		return self._this.weightedDegree(v)
+		return self._this.weightedDegree(u, countSelfLoopsTwice)
+
+	def weightedDegreeIn(self, u, countSelfLoopsTwice=False):
+		"""
+		Returns the weighted in-degree of u.
+
+		For directed graphs this is the sum of weights of all ingoing edges of u.
+
+		Parameters
+		----------
+		u : node
+			Node.
+		countSelfLoopsTwice : bool
+			If set to true, self-loops will be counted twice
+
+		Returns
+		-------
+		double
+			The weighted in-degree of u.
+		"""
+		return self._this.weightedDegreeIn(u, countSelfLoopsTwice)
 
 	def maxDegree(self):
 		"""

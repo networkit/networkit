@@ -580,42 +580,75 @@ TEST_P(GraphGTest, testWeightedDegree) {
     }
 }
 
-TEST_P(GraphGTest, testVolume) {
+TEST_P(GraphGTest, testWeightedDegree2) {
     // add self-loop
     this->Ghouse.addEdge(2, 2, 0.75);
 
     if (isGraph()) {
-        ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.volume(0));
-        ASSERT_EQ(4 * defaultEdgeWeight, this->Ghouse.volume(1));
-        ASSERT_EQ(6 * defaultEdgeWeight, this->Ghouse.volume(2));
-        ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.volume(3));
-        ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.volume(4));
+        ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.weightedDegree(0, true));
+        ASSERT_EQ(4 * defaultEdgeWeight, this->Ghouse.weightedDegree(1, true));
+        ASSERT_EQ(6 * defaultEdgeWeight, this->Ghouse.weightedDegree(2, true));
+        ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.weightedDegree(3, true));
+        ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.weightedDegree(4, true));
     }
 
     if (isWeightedGraph()) {
-        ASSERT_EQ(5.0, this->Ghouse.volume(0));
-        ASSERT_EQ(12.0, this->Ghouse.volume(1));
-        ASSERT_EQ(23.5, this->Ghouse.volume(2));
-        ASSERT_EQ(14.0, this->Ghouse.volume(3));
-        ASSERT_EQ(19.0, this->Ghouse.volume(4));
+        ASSERT_EQ(5.0, this->Ghouse.weightedDegree(0, true));
+        ASSERT_EQ(12.0, this->Ghouse.weightedDegree(1, true));
+        ASSERT_EQ(23.5, this->Ghouse.weightedDegree(2, true));
+        ASSERT_EQ(14.0, this->Ghouse.weightedDegree(3, true));
+        ASSERT_EQ(19.0, this->Ghouse.weightedDegree(4, true));
     }
 
     if (isDirectedGraph()) {
         // only count outgoing edges
-        ASSERT_EQ(1 * defaultEdgeWeight, this->Ghouse.volume(0));
-        ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.volume(1));
-        ASSERT_EQ(4 * defaultEdgeWeight, this->Ghouse.volume(2));
-        ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.volume(3));
-        ASSERT_EQ(1 * defaultEdgeWeight, this->Ghouse.volume(4));
+        ASSERT_EQ(1 * defaultEdgeWeight, this->Ghouse.weightedDegree(0, true));
+        ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.weightedDegree(1, true));
+        ASSERT_EQ(4 * defaultEdgeWeight, this->Ghouse.weightedDegree(2, true));
+        ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.weightedDegree(3, true));
+        ASSERT_EQ(1 * defaultEdgeWeight, this->Ghouse.weightedDegree(4, true));
     }
 
     if (isWeightedDirectedGraph()) {
         // only sum weight of outgoing edges
-        ASSERT_EQ(3.0, this->Ghouse.volume(0));
-        ASSERT_EQ(7.0, this->Ghouse.volume(1));
-        ASSERT_EQ(13.5, this->Ghouse.volume(2));
-        ASSERT_EQ(8.0, this->Ghouse.volume(3));
-        ASSERT_EQ(6.0, this->Ghouse.volume(4));
+        ASSERT_EQ(3.0, this->Ghouse.weightedDegree(0, true));
+        ASSERT_EQ(7.0, this->Ghouse.weightedDegree(1, true));
+        ASSERT_EQ(13.5, this->Ghouse.weightedDegree(2, true));
+        ASSERT_EQ(8.0, this->Ghouse.weightedDegree(3, true));
+        ASSERT_EQ(6.0, this->Ghouse.weightedDegree(4, true));
+    }
+}
+
+TEST_P(GraphGTest, testWeightedDegree3) {
+    constexpr count n = 100;
+    constexpr double p = 0.1;
+
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, false);
+        auto G = ErdosRenyiGenerator(n, p, isDirected()).generate();
+        if (isWeighted()) {
+            G = Graph(G, true, G.isDirected());
+            G.forEdges([&](node u, node v) { G.setWeight(u, v, Aux::Random::probability()); });
+        }
+        G.forNodes([&](node u) {
+            edgeweight wDeg = 0, wDegTwice = 0;
+            G.forNeighborsOf(u, [&](node v, edgeweight w) {
+                wDeg += w;
+                wDegTwice += (u == v) ? 2. * w : w;
+            });
+
+            EXPECT_DOUBLE_EQ(G.weightedDegree(u), wDeg);
+            EXPECT_DOUBLE_EQ(G.weightedDegree(u, true), wDegTwice);
+
+            edgeweight wInDeg = 0, wInDegTwice = 0;
+            G.forInNeighborsOf(u, [&](node v, edgeweight w) {
+                wInDeg += w;
+                wInDegTwice += (u == v) ? 2. * w : w;
+            });
+
+            EXPECT_DOUBLE_EQ(G.weightedDegreeIn(u), wInDeg);
+            EXPECT_DOUBLE_EQ(G.weightedDegreeIn(u, true), wInDegTwice);
+        });
     }
 }
 

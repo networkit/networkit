@@ -279,5 +279,76 @@ class TestGraph(unittest.TestCase):
 		self.assertEqual(G.numberOfNodes(), 3)
 		self.assertEqual(G.numberOfEdges(), 2)
 
+	def testMaxDegree(self):
+		n = 100
+		p = 0.2
+		edgeUpdates = 10
+
+		def computeMaxDeg(G, inDegree = False):
+			nodes = []
+			G.forNodes(lambda u: nodes.append(u))
+			maxDeg = 0
+			for u in nodes:
+				maxDeg = max(maxDeg, G.degreeIn(u) if inDegree else G.degreeOut(u))
+			return maxDeg
+
+		def doTest(G):
+			self.assertEqual(G.maxDegree(), computeMaxDeg(G))
+			self.assertEqual(G.maxDegreeIn(), computeMaxDeg(G, True))
+
+		for seed in range(1, 4):
+			nk.setSeed(seed, False)
+			for directed in [True, False]:
+				for weighted in [True, False]:
+					G = nk.generators.ErdosRenyiGenerator(n, p, directed).generate()
+					if weighted:
+						G = nk.graph.GraphTools.toWeighted(G)
+
+					doTest(G)
+					for _ in range(edgeUpdates):
+						e = G.randomEdge()
+						G.removeEdge(e[0], e[1])
+						doTest(G)
+
+					for _ in range(edgeUpdates):
+						e = G.randomNode(), G.randomNode()
+						while G.hasEdge(e[0], e[1]):
+							e = G.randomNode(), G.randomNode()
+						G.addEdge(e[0], e[1])
+						doTest(G)
+
+	def testWeightedDegree(self):
+		n = 100
+		p = 0.2
+
+		for seed in range(1, 4):
+			nk.setSeed(seed, False)
+			random.seed(seed)
+			for directed in [True, False]:
+				for weighted in [True, False]:
+					G = nk.generators.ErdosRenyiGenerator(n, p, directed).generate()
+					if weighted:
+						G = nk.graph.GraphTools.toWeighted(G)
+						G.forEdges(lambda u, v, w, eid: G.setWeight(u, v, random.random()))
+
+					def testWeightedDegreeOfNode(u):
+						wDeg, wDegTwice = 0, 0
+						for v in G.iterNeighbors(u):
+							w = G.weight(u, v)
+							wDeg += w
+							wDegTwice += w if u != v else 2 * w
+
+						self.assertEqual(G.weightedDegre(u), wDeg)
+						self.assertEqual(G.weightedDegre(u, True), wDegTwice)
+
+						wInDeg, wInDegTwice = 0, 0
+						for v in G.iterInNeighbors(u):
+							w = G.weight(v, u)
+							wInDeg += w
+							wInDegTwice += w if u != v else 2 * w
+
+						self.assertEqual(G.weightedDegreeIn(u), wInDeg)
+						self.assertEqual(G.weightedDegreeIn(u, True), wInDegTwice)
+
 if __name__ == "__main__":
 	unittest.main()

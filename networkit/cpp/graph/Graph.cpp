@@ -497,19 +497,32 @@ edgeweight Graph::computeMaxWeightedDegree(const bool inDegree) const {
     return result;
 }
 
-edgeweight Graph::computeWeightedDegree(const node &v,
-                                        const bool inDegree) const {
+edgeweight Graph::computeWeightedDegree(node u, bool inDegree, bool countSelfLoopsTwice) const {
     if (weighted) {
         edgeweight sum = 0.0;
-        auto sumWeights = [&](node, edgeweight w) { sum += w; };
+        auto sumWeights = [&](node v, edgeweight w) {
+            sum += (countSelfLoopsTwice && u == v) ? 2. * w : w;
+        };
         if (inDegree) {
-            forInNeighborsOf(v, sumWeights);
+            forInNeighborsOf(u, sumWeights);
         } else {
-            forNeighborsOf(v, sumWeights);
+            forNeighborsOf(u, sumWeights);
         }
         return sum;
     }
-    return defaultEdgeWeight * (inDegree ? degreeIn(v) : degreeOut(v));
+
+    count sum = inDegree ? degreeIn(u) : degreeOut(u);
+    auto countSelfLoops = [&](node v) { sum += (u == v); };
+
+    if (countSelfLoopsTwice && numberOfSelfLoops()) {
+        if (inDegree) {
+            forInNeighborsOf(u, countSelfLoops);
+        } else {
+            forNeighborsOf(u, countSelfLoops);
+        }
+    }
+
+    return static_cast<edgeweight>(sum);
 }
 
 std::string Graph::toString() const {
@@ -609,15 +622,16 @@ void Graph::restoreNode(node v) {
 
 /** NODE PROPERTIES **/
 
-edgeweight Graph::weightedDegree(const node &v) const {
-    return computeWeightedDegree(v);
+edgeweight Graph::weightedDegree(node u, bool countSelfLoopsTwice) const {
+    return computeWeightedDegree(u, false, countSelfLoopsTwice);
 }
 
-edgeweight Graph::weightedDegreeIn(const node &v) const {
-    return computeWeightedDegree(v, true);
+edgeweight Graph::weightedDegreeIn(node u, bool countSelfLoopsTwice) const {
+    return computeWeightedDegree(u, true, countSelfLoopsTwice);
 }
 
 edgeweight Graph::volume(node v) const {
+    WARN("Graph::volume is deprecated, use Graph::weightedDegree instead.");
     if (weighted) {
         edgeweight sum = 0.0;
         for (index i = 0; i < outEdges[v].size(); i++) {

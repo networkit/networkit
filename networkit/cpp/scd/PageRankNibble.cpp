@@ -24,7 +24,7 @@ std::set<node> PageRankNibble::bestSweepSet(std::vector<std::pair<node, double>>
     // order vertices
     TRACE("Before sorting");
     for (size_t i = 0; i < pr.size(); i++) {
-        pr[i].second = pr[i].second / G.volume(pr[i].first);
+        pr[i].second = pr[i].second / G.weightedDegree(pr[i].first, true);
     }
     auto comp([&](const std::pair<node, double>& a, const std::pair<node, double>& b) {
         return a.second > b.second;

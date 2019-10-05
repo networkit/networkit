@@ -156,12 +156,16 @@ class Graph final {
     index indexInOutEdgeArray(node u, node v) const;
 
     /**
-     * Computes the weighted in/out degree of a graph.
+     * Computes the weighted in/out degree of node @a u.
      *
+     * @param u Node.
      * @param inDegree whether to compute the in degree or the out degree.
+     * @param countSelfLoopsTwice If set to true, self-loops will be counted twice.
+     *
+     * @return Weighted in/out degree of node @a u.
      */
-    edgeweight computeWeightedDegree(const node &v,
-                                     const bool inDegree = false) const;
+    edgeweight computeWeightedDegree(node u, bool inDegree = false,
+                                     bool countSelfLoopsTwice = false) const;
 
     /**
      * Computes the maximum in/out degree of the graph.
@@ -955,14 +959,14 @@ public:
     }
 
     /**
-     * Returns the weighted degree of @a v.
+     * Returns the weighted degree of @a u.
      *
-     * @param v Node.
-     * @return Weighted degree of @a v.
-     * @note For directed graphs this is the sum of weights of all outgoing
-     * edges. of @a v.
+     * @param u Node.
+     * @param countSelfLoopsTwice If set to true, self-loops will be counted twice.
+     *
+     * @return Weighted degree of @a u.
      */
-    edgeweight weightedDegree(const node &v) const;
+    edgeweight weightedDegree(node u, bool countSelfLoopsTwice = false) const;
 
     /**
      * Returns the maximum weighted degree of the graph.
@@ -983,14 +987,14 @@ public:
     edgeweight maxWeightedDegreeIn() const;
 
     /**
-     * Returns the weighted in-degree of @a v.
+     * Returns the weighted in-degree of @a u.
      *
-     * @param v Node.
+     * @param u Node.
+     * @param countSelfLoopsTwice If set to true, self-loops will be counted twice.
+     *
      * @return Weighted in-degree of @a v.
-     * @note For directed graphs this is the sum of weights of all ingoing
-     * edges. of @a v.
      */
-    edgeweight weightedDegreeIn(const node &v) const;
+    edgeweight weightedDegreeIn(node u, bool countSelfLoopsTwice = false) const;
 
     /**
      * Returns the volume of the @a v, which is the weighted degree with
@@ -999,7 +1003,7 @@ public:
      * @param v Node.
      * @return The volume of the @a v.
      */
-    edgeweight volume(node v) const;
+    edgeweight TLX_DEPRECATED(volume(node v) const);
 
     /**
      * Returns a random node of the graph.
