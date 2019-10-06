@@ -316,8 +316,13 @@ void KadabraBetweenness::fillResult() {
 void KadabraBetweenness::run() {
     init();
     const count n = G.upperNodeIdBound();
-    const uint8_t itersPerStep = 11;
     const auto omp_max_threads = omp_get_max_threads();
+
+    // Compute the number of samples per SF as in our EUROPAR'19 paper.
+    const auto itersPerStep = std::max(1U,
+            static_cast<unsigned int>(baseItersPerStep
+                                      / std::pow(omp_max_threads, itersPerStepExp)));
+
     // TODO: setting the maximum relateve error to 0 gives the exact diameter
     // but may be inefficient for large graphs. What is the maximum relative
     // error that we can tolerate?
@@ -411,16 +416,16 @@ void KadabraBetweenness::run() {
         };
 
         sampler.rng.seed(seed1 ^ (epochToWrite * omp_get_max_threads() + t));
-        while (!stop && nPairs < omega) {
+        while (!stop.load(std::memory_order_relaxed)) {
             // Reader thread
             if (t == 0) {
-                if (epochToRead.load(std::memory_order_acquire) == epochRead) {
-                    epochToRead.store(epochRead + 1, std::memory_order_release);
+                if (epochToRead.load(std::memory_order_relaxed) == epochRead) {
+                    epochToRead.store(epochRead + 1, std::memory_order_relaxed);
                 }
                 checkConvergence(status);
             }
 
-            auto etr = epochToRead.load(std::memory_order_acquire);
+            const auto etr = epochToRead.load(std::memory_order_relaxed);
             if (!deterministic) {
                 if (etr == epochToWrite) {
                     recycleFrame();
@@ -436,11 +441,11 @@ void KadabraBetweenness::run() {
                 }
             }
 
-            for (uint8_t i = 0; i < itersPerStep; ++i) {
+            for (unsigned int i = 0; i < itersPerStep; ++i) {
                 sampler.randomPath(curFrame);
             }
-
             curFrame->nPairs += itersPerStep;
+
             if (deterministic && curFrame->nPairs > 1000) {
                 finishedQueue.push_back(curFrame);
                 moveToNextEpoch();
@@ -499,7 +504,8 @@ void KadabraBetweenness::checkConvergence(Status &status) {
         }
 
         getStatus(&status);
-        stop = computeFinished(&status);
+        if(computeFinished(&status) || nPairs >= omega)
+            stop.store(true, std::memory_order_relaxed);
         epochRead = epochToRead.load(std::memory_order_relaxed);
     }
 }
