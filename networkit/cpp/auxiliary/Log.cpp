@@ -169,18 +169,10 @@ static void logToTerminal(const Location &loc, LogLevel p,
     
     stream.put('\n');
     
-    if (p < LogLevel::warn) {
-        static std::mutex cout_mutex;
-        {
-            std::lock_guard<std::mutex> guard{cout_mutex};
-            std::cout << stream.str();
-        }
-    } else {
-        static std::mutex cerr_mutex;
-        {
-            std::lock_guard<std::mutex> guard{cerr_mutex};
-            std::cerr << stream.str();
-        }
+    static std::mutex cerr_mutex;
+    {
+        std::lock_guard<std::mutex> guard{cerr_mutex};
+        std::cerr << stream.str();
     }
 }
 
