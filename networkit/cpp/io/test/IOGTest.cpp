@@ -807,6 +807,8 @@ TEST_F(IOGTest, testNetworkitBinaryTiny01) {
 
     NetworkitBinaryReader reader;
     Graph G2 = reader.read("output/binary_tiny01");
+    EXPECT_EQ(G2.isDirected(), false);
+    EXPECT_EQ(G2.isWeighted(), false);
     ASSERT_EQ(G2.numberOfNodes(), G.numberOfNodes());
     ASSERT_EQ(G2.numberOfEdges(), G.numberOfEdges());
     G.forNodes([&](node u){
@@ -826,6 +828,8 @@ TEST_F(IOGTest, testNetworkitBinaryKonect) {
 
     NetworkitBinaryReader reader;
     Graph G2 = reader.read("output/binary_konect");
+    EXPECT_EQ(G2.isDirected(), true);
+    EXPECT_EQ(G2.isWeighted(), true);
     ASSERT_EQ(G2.numberOfEdges(), G.numberOfEdges());
     ASSERT_EQ(G2.numberOfNodes(), G.numberOfNodes());
     G.forNodes([&](node u){
@@ -845,6 +849,8 @@ TEST_F(IOGTest, testNetworkitBinaryJazz) {
 
     NetworkitBinaryReader reader;
     Graph G2 = reader.read("output/binary_jazz");
+    EXPECT_EQ(G2.isDirected(), false);
+    EXPECT_EQ(G2.isWeighted(), false);
     ASSERT_EQ(G2.numberOfEdges(), G.numberOfEdges());
     ASSERT_EQ(G2.numberOfNodes(), G.numberOfNodes());
     G.forNodes([&](node u){
@@ -855,8 +861,7 @@ TEST_F(IOGTest, testNetworkitBinaryJazz) {
 }
 
 TEST_F(IOGTest, testNetworkitBinaryWiki) {
-    bool directed = true;
-    SNAPGraphReader reader2(directed);
+    SNAPGraphReader reader2(true);
     Graph G = reader2.read("input/wiki-Vote.txt");
     NetworkitBinaryWriter writer;
 
@@ -865,6 +870,8 @@ TEST_F(IOGTest, testNetworkitBinaryWiki) {
 
     NetworkitBinaryReader reader;
     Graph G2 = reader.read("output/binary_wiki");
+    EXPECT_EQ(G2.isDirected(), true);
+    EXPECT_EQ(G2.isWeighted(), false);
     ASSERT_EQ(G2.numberOfEdges(), G.numberOfEdges());
     ASSERT_EQ(G2.numberOfNodes(), G.numberOfNodes());
     G.forNodes([&](node u){
@@ -887,6 +894,8 @@ TEST_F(IOGTest, testNetworkitBinarySignedWeights) {
 
     NetworkitBinaryReader reader;
     Graph G2 = reader.read("output/binarySigned");
+    EXPECT_EQ(G2.isDirected(), false);
+    EXPECT_EQ(G2.isWeighted(), true);
     G.forNodes([&](node u){
         G.forEdgesOf(u, [&](node v) {
             ASSERT_TRUE(G2.hasEdge(u,v));
@@ -908,6 +917,8 @@ TEST_F(IOGTest, testNetworkitBinaryFloatWeights) {
 
     NetworkitBinaryReader reader;
     Graph G2 = reader.read("output/binaryFloats");
+    EXPECT_EQ(G2.isDirected(), false);
+    EXPECT_EQ(G2.isWeighted(), true);
     G.forNodes([&](node u){
         G.forEdgesOf(u, [&](node v) {
             ASSERT_TRUE(G2.hasEdge(u,v));
@@ -928,6 +939,8 @@ TEST_F(IOGTest, testNetworkitBinaryUndirectedSelfLoops) {
     writer.write(G, "output/loops");
     NetworkitBinaryReader reader;
     Graph G2 = reader.read("output/loops");
+    EXPECT_EQ(G2.isDirected(), false);
+    EXPECT_EQ(G2.isWeighted(), false);
     ASSERT_EQ(G.numberOfSelfLoops(), G2.numberOfSelfLoops());
 }
 
@@ -943,6 +956,8 @@ TEST_F(IOGTest, testNetworkitBinaryDirectedSelfLoops) {
     writer.write(G, "output/loops");
     NetworkitBinaryReader reader;
     Graph G2 = reader.read("output/loops");
+    EXPECT_EQ(G2.isDirected(), true);
+    EXPECT_EQ(G2.isWeighted(), false);
     ASSERT_EQ(G.numberOfSelfLoops(), G2.numberOfSelfLoops());
 }
 
