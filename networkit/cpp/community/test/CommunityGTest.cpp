@@ -40,6 +40,8 @@
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/community/CoverF1Similarity.hpp>
 
+#include <tlx/unused.hpp>
+
 namespace NetworKit {
 
 class CommunityGTest: public testing::Test{};
@@ -434,6 +436,7 @@ TEST_F(CommunityGTest, testNMIDistance) {
 
 	double distContinuous = NMID.getDissimilarity(G, continuous1, continuous2);
 	DEBUG("NMID for two continuous clusterings: " , distContinuous);
+	tlx::unused(distContinuous);
 
 	Partition smallClusters = clustGen.makeContinuousBalancedClustering(G, 300);
 	double distSingleIntersection = NMID.getDissimilarity(G, singleton1, smallClusters);

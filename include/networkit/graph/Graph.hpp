@@ -381,8 +381,7 @@ class Graph final {
                   std::is_same<edgeweight,
                                typename Aux::FunctionTraits<F>::template arg<
                                    2>::type>::value>::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight ew, edgeid /*id*/) const
-        -> decltype(f(u, v, ew)) {
+    auto edgeLambda(F &f, node u, node v, edgeweight ew, edgeid /*id*/) const -> decltype(f(u, v, ew)) {
         return f(u, v, ew);
     }
 
@@ -397,8 +396,7 @@ class Graph final {
             (Aux::FunctionTraits<F>::arity >= 1) &&
             std::is_same<node, typename Aux::FunctionTraits<F>::template arg<
                                    1>::type>::value>::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight /*ew*/,
-                    edgeid /*id*/) const -> decltype(f(u, v)) {
+    auto edgeLambda(F &f, node u, node v, edgeweight /*ew*/, edgeid /*id*/) const -> decltype(f(u, v)) {
         return f(u, v);
     }
 
@@ -414,8 +412,7 @@ class Graph final {
                   std::is_same<edgeweight,
                                typename Aux::FunctionTraits<F>::template arg<
                                    1>::type>::value>::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight ew, edgeid /*id*/) const
-        -> decltype(f(u, ew)) {
+    auto edgeLambda(F &f, node, node v, edgeweight ew, edgeid /*id*/) const -> decltype(f(v, ew)) {
         return f(v, ew);
     }
 
@@ -424,8 +421,7 @@ class Graph final {
      * first node id, the edge weight and the edge id
      */
     template <class F, void * = (void *)0>
-    auto edgeLambda(F &f, node, node v, edgeweight, edgeid) const
-        -> decltype(f(v)) {
+    auto edgeLambda(F &f, node, node v, edgeweight, edgeid) const -> decltype(f(v)) {
         return f(v);
     }
 

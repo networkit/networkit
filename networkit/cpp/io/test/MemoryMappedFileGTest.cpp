@@ -131,7 +131,7 @@ namespace NetworKit {
 			(1 << 10) - 1, (1 << 10), (1 << 10) + 1,
 			(1 << 16) - 1, (1 << 16), (1 << 16) + 1,
 			(1 << 22) - 1, (1 << 22), (1 << 22) + 1
-		));
+		), ); // comma required for variadic macro
 
 	TEST_F(MemoryMappedFileGTest, testMove) {
 		const size_t bytes = 1000;

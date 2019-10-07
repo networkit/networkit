@@ -19,7 +19,7 @@ using HashMapTypes = ::testing::Types<
     CurveballDetails::FixedLinearCongruentialMap<uint64_t>,
     CurveballDetails::LinearCongruentialMap<uint64_t>
 >;
-TYPED_TEST_CASE(GlobalTradeSequenceGTest, HashMapTypes);
+TYPED_TEST_CASE(GlobalTradeSequenceGTest, HashMapTypes, ); // comma required for variadic macro
 
 TYPED_TEST(GlobalTradeSequenceGTest, testInvert) {
     using Hash = TypeParam;

@@ -74,13 +74,14 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
 			break;
 	}
 
-	nkbg::Header header = {};
+	nkbg::Header header;
 	uint64_t adjListSize = 0;
 	uint64_t adjTransposeSize = 0;
 
 	auto setFeatures = [&] () {
-		header.features |= (G.isDirected() & nkbg::DIR_MASK);
-		header.features |= ((static_cast<uint64_t>(weightFormat) << nkbg::WGHT_SHIFT) & nkbg::WGHT_MASK);
+		header.features =
+			(G.isDirected() & nkbg::DIR_MASK)
+			| ((static_cast<uint64_t>(weightFormat) << nkbg::WGHT_SHIFT) & nkbg::WGHT_MASK);
 	};
 
 	auto writeHeader = [&] () {
@@ -120,6 +121,8 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
 				outfile.write(reinterpret_cast<char*>(&weight), sizeof(float));
 			}
 				break;
+			case nkbg::WEIGHT_FORMAT::NONE:
+				break; // avoid compiler warning
 		}
 	};
 
@@ -170,6 +173,8 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
 			case nkbg::WEIGHT_FORMAT::FLOAT:
 				size += sizeof(float);
 				break;
+			case nkbg::WEIGHT_FORMAT::NONE:
+				break; // avoid compiler warning
 		}
 
 		return size;

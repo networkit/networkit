@@ -947,8 +947,6 @@ std::pair<node, node> Graph::randomEdge(bool uniformDistribution) const {
 				idx  = (upper-1) - idx;
 
 				for(u = upperNodeIdBound() - 1; idx >= degreeOut(u); --u) {
-					assert(0 <= u);
-
 					idx -= degreeOut(u);
 				}
 

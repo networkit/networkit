@@ -14,7 +14,7 @@
 namespace NetworKit {
 
 Graph NetworkitBinaryReader::read(const std::string& path) {
-	nkbg::Header header = {};
+	nkbg::Header header;
 	nkbg::WEIGHT_FORMAT weightFormat;
 
 	MemoryMappedFile mmfile(path);
@@ -136,7 +136,7 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 			//Read adjacency lists.
 			for (uint64_t j = 0; j < outNbrs; j++) {
 				uint64_t add;
-				double weight;
+				double weight = defaultEdgeWeight;
 				off += nkbg::varIntDecode(reinterpret_cast<const uint8_t*>(adjIt + off), add);
 				switch(weightFormat) {
 					case nkbg::WEIGHT_FORMAT::VARINT:
@@ -165,6 +165,8 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 						weight = floatWeight;
 					}
 						break;
+					case nkbg::WEIGHT_FORMAT::NONE:
+						break;
 				}
 				if(!directed) {
 					G.addPartialEdge(unsafe, curr, add, weight);
@@ -178,7 +180,7 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 			//Read transpose lists.
 			for (uint64_t j = 0; j < inNbrs; j++) {
 				uint64_t add;
-				double weight =1;
+ 				double weight = defaultEdgeWeight;
 				transpOff += nkbg::varIntDecode(reinterpret_cast<const uint8_t*>(transpIt + transpOff), add);
 				switch(weightFormat) {
 					case nkbg::WEIGHT_FORMAT::VARINT:
@@ -206,6 +208,8 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 						transWghtOff += sizeof(float);
 						weight = floatWeight;
 					}
+						break;
+					case nkbg::WEIGHT_FORMAT::NONE:
 						break;
 				}
 				if(!directed) {

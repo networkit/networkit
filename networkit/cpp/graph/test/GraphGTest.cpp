@@ -44,11 +44,10 @@ protected:
 	count countSelfLoopsManually(const Graph &G);
 };
 
-INSTANTIATE_TEST_CASE_P(InstantiationName, GraphGTest,
-                        testing::Values(std::make_tuple(false, false),
-                                        std::make_tuple(true, false),
-                                        std::make_tuple(false, true),
-                                        std::make_tuple(true, true)));
+INSTANTIATE_TEST_CASE_P(InstantiationName, GraphGTest, testing::Values(std::make_tuple(false, false),
+                        std::make_tuple(true, false),
+                        std::make_tuple(false, true),
+                        std::make_tuple(true, true)), ); // comma required for variadic macro
 
 bool GraphGTest::isWeighted() const { return std::get<0>(GetParam()); }
 bool GraphGTest::isDirected() const { return std::get<1>(GetParam()); }

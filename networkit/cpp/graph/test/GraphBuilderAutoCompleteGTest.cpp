@@ -51,7 +51,7 @@ INSTANTIATE_TEST_CASE_P(InstantiationName, GraphBuilderAutoCompleteGTest, testin
 	std::make_tuple(true, false, true),
 	std::make_tuple(false, true, true),
 	std::make_tuple(true, true, true)
-));
+), ); // comma required for variadic macro
 
 bool GraphBuilderAutoCompleteGTest::isWeighted() const {
 	return std::get<0>(GetParam());

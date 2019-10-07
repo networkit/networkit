@@ -16,7 +16,7 @@
 namespace NetworKit {
 
 // pImpl
-namespace CurveballDetails { struct GlobalCurveballImpl; }
+namespace CurveballDetails { class GlobalCurveballImpl; }
 
 
 class GlobalCurveball : public Algorithm {
