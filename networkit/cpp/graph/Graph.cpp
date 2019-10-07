@@ -857,7 +857,7 @@ void Graph::removeMultiEdges() {
         removedSelfLoops += result.second;
         if (isDirected()) {
             nodes.clear();
-            removeAdjacentEdges(u, isMultiedge, true).first;
+            removeAdjacentEdges(u, isMultiedge, true);
         }
         nodes.clear();
     });
