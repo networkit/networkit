@@ -9,8 +9,6 @@
 #define GRAPHIO_H_
 
 #include <string>
-#include <iostream>
-#include <fstream>
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/auxiliary/Log.hpp>

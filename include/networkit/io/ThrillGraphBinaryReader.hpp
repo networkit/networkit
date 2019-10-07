@@ -8,11 +8,8 @@
 #ifndef THRILLGRAPHBINARYREADER_H_
 #define THRILLGRAPHBINARYREADER_H_
 
-#include <fstream>
-#include <iostream>
 #include <string>
-#include <unordered_map>
-
+#include <vector>
 
 #include <networkit/io/GraphReader.hpp>
 

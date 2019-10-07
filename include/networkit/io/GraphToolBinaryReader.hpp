@@ -9,7 +9,6 @@
 #define GRAPHTOOLBINARYREADER_H_
 
 #include <fstream>
-#include <iostream>
 #include <string>
 #include <unordered_map>
 

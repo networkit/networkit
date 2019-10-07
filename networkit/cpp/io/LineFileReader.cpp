@@ -5,6 +5,8 @@
  *      Author: cls
  */
 
+#include <fstream>
+
 #include <networkit/io/LineFileReader.hpp>
 
 namespace NetworKit {

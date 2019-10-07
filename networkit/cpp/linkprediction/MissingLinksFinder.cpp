@@ -5,11 +5,11 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include <networkit/linkprediction/MissingLinksFinder.hpp>
-#include <networkit/auxiliary/Parallel.hpp>
-
 #include <algorithm>
-#include <random>
+
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/linkprediction/MissingLinksFinder.hpp>
 
 namespace NetworKit {
 

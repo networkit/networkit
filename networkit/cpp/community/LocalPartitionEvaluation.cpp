@@ -2,6 +2,7 @@
  *
  */
 
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/community/LocalPartitionEvaluation.hpp>
 
 NetworKit::LocalPartitionEvaluation::LocalPartitionEvaluation(const Graph &G, const Partition &P) : G(G), P(P) {

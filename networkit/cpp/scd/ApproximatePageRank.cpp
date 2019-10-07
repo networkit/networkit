@@ -46,7 +46,6 @@ std::vector<std::pair<node, double>> ApproximatePageRank::run(node seed) {
 	while (!activeNodes.empty()) {
 		node v =  activeNodes.front();
 		activeNodes.pop();
-		TRACE("queue size: ", activeNodes.size());
 		push(v, activeNodes);
 	}
 

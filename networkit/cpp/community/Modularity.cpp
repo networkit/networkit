@@ -5,14 +5,13 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#include <networkit/community/Modularity.hpp>
 
 #include <cmath>
 #include <stdexcept>
+
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/community/Coverage.hpp>
-
-
-
+#include <networkit/community/Modularity.hpp>
 
 namespace NetworKit {
 

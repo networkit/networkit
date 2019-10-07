@@ -4,12 +4,14 @@
  *@author Charmaine Ndolo <charmaine.ndolo@b-tu.de>
  */
 
-#include <networkit/io/NetworkitBinaryReader.hpp>
-#include <networkit/io/NetworkitBinaryGraph.hpp>
-#include <networkit/io/MemoryMappedFile.hpp>
 #include <fstream>
 #include <string.h>
 #include <atomic>
+
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/io/NetworkitBinaryReader.hpp>
+#include <networkit/io/NetworkitBinaryGraph.hpp>
+#include <networkit/io/MemoryMappedFile.hpp>
 
 namespace NetworKit {
 

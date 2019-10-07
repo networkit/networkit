@@ -7,6 +7,7 @@
 
 #include <gtest/gtest.h>
 
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/graph/KruskalMSF.hpp>
 #include <networkit/graph/SpanningForest.hpp>
 #include <networkit/io/METISGraphReader.hpp>

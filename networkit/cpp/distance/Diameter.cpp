@@ -7,11 +7,12 @@
 
 #include <numeric>
 
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/distance/Diameter.hpp>
 #include <networkit/distance/Eccentricity.hpp>
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/Dijkstra.hpp>
-#include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {

@@ -5,8 +5,9 @@
  *      Author: Henning
  */
 
-#include <networkit/centrality/KatzCentrality.hpp>
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/NumericTools.hpp>
+#include <networkit/centrality/KatzCentrality.hpp>
 
 namespace NetworKit {
 

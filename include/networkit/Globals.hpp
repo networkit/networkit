@@ -11,8 +11,6 @@
 #include <cstdint>
 #include <limits>
 
-#include <networkit/ext/ttmath/ttmath.hpp>
-
 namespace NetworKit {
     using index = uint64_t; ///< more expressive name for an index into an array
 
@@ -28,7 +26,6 @@ namespace NetworKit {
     using node       = index;    ///< node indices are 0-based
     using edgeweight = double;   ///< edge weight type
     using edgeid     = index;	 ///< edge id
-    using bigfloat = ttmath::Big<TTMATH_BITS(64),TTMATH_BITS(64)>;	///< big floating point number
 
     constexpr index none = std::numeric_limits<index>::max(); ///< value for not existing nodes/edges
     constexpr edgeweight defaultEdgeWeight = 1.0;

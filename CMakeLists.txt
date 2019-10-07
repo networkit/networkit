@@ -201,6 +201,7 @@ if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
 
 	target_link_libraries(networkit PRIVATE tlx OpenMP::OpenMP_CXX)
 	target_include_directories(networkit BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
+	target_include_directories(networkit PUBLIC "${PROJECT_SOURCE_DIR}/extlibs/ttmath/")
 endif()
 
 if(NETWORKIT_PYTHON)
@@ -210,6 +211,7 @@ if(NETWORKIT_PYTHON)
 
 	add_library(_NetworKit MODULE networkit/_NetworKit.cpp)
 	target_include_directories(_NetworKit BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
+	target_include_directories(_NetworKit PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/ttmath/")
 	target_include_directories(_NetworKit PRIVATE "${NETWORKIT_PYTHON}")
 
 	if(NOT NETWORKIT_BUILD_CORE)
@@ -272,6 +274,7 @@ function(networkit_add_module modname)
 
 		target_link_libraries(${MODULE_TARGET} PRIVATE tlx OpenMP::OpenMP_CXX)
 		target_include_directories(${MODULE_TARGET} BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
+		target_include_directories(${MODULE_TARGET} PUBLIC "${PROJECT_SOURCE_DIR}/extlibs/ttmath/")
 
 		# All tests added to this module will will also become a dependency
 		# of networkit_tests_MODNAME. This target hence allows to build all

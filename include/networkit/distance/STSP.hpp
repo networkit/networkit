@@ -9,6 +9,7 @@
 #define STSP_H
 
 #include <networkit/Globals.hpp>
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 

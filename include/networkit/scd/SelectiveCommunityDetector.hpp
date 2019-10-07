@@ -8,7 +8,8 @@
 #ifndef SELECTIVECOMMUNITYDETECTOR_H_
 #define SELECTIVECOMMUNITYDETECTOR_H_
 
-#include <unordered_set>
+#include <map>
+#include <set>
 
 #include <networkit/auxiliary/Timer.hpp>
 #include <networkit/graph/Graph.hpp>

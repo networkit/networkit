@@ -13,6 +13,7 @@
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/auxiliary/Multiprecision.hpp>
 #include <tlx/define/deprecated.hpp>
 
 namespace NetworKit {

@@ -8,6 +8,10 @@
 #ifndef DYNCONNECTEDCOMPONENTS_H_
 #define DYNCONNECTEDCOMPONENTS_H_
 
+#include <map>
+#include <vector>
+#include <queue>
+
 #include <networkit/graph/Graph.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/base/DynAlgorithm.hpp>

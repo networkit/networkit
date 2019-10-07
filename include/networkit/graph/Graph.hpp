@@ -20,10 +20,10 @@
 
 #include <networkit/Globals.hpp>
 #include <networkit/auxiliary/FunctionTraits.hpp>
-#include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/viz/Point.hpp>
 #include <networkit/graph/Coordinates.hpp>
+
 #include <tlx/define/deprecated.hpp>
 
 namespace NetworKit {

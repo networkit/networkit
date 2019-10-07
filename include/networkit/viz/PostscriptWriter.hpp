@@ -9,16 +9,13 @@
 #define POSTSCRIPTWRITER_H_
 
 #include <string>
-#include <iostream>
 #include <fstream>
-#include <cmath>
-#include <cassert>
-#include <cstdio>
-#include <climits>
+#include <vector>
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
 #include <networkit/community/ClusteringGenerator.hpp>
+#include <networkit/viz/Point.hpp>
 
 namespace NetworKit {
 

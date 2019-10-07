@@ -5,11 +5,12 @@
  *      Author: forigem
  */
 
+#include <set>
+#include <networkit/auxiliary/Log.hpp>
+
 #include <networkit/auxiliary/Random.hpp>
 
 #include <networkit/generators/BarabasiAlbertGenerator.hpp>
-
-#include <set>
 
 
 namespace NetworKit {

@@ -5,6 +5,8 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
+#include <list>
+
 #include <networkit/linkprediction/LinkThresholder.hpp>
 #include <networkit/linkprediction/PredictionsSorter.hpp>
 #include <networkit/auxiliary/Parallel.hpp>

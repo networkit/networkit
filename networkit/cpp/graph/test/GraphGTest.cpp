@@ -6,19 +6,19 @@
  * (marvin.ritter@gmail.com)
  */
 
-#include <gtest/gtest.h>
-
 #include <algorithm>
 #include <tuple>
 
-#include <networkit/graph/Graph.hpp>
+#include <gtest/gtest.h>
 
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/NumericTools.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/distance/DynBFS.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphBuilder.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/io/METISGraphReader.hpp>
-#include <networkit/graph/GraphBuilder.hpp>
 
 namespace NetworKit {
 

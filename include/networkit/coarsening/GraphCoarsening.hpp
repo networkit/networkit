@@ -8,6 +8,9 @@
 #ifndef GRAPHCOARSENING_H_
 #define GRAPHCOARSENING_H_
 
+#include <map>
+#include <vector>
+
 #include <networkit/graph/Graph.hpp>
 #include <networkit/base/Algorithm.hpp>
 

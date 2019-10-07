@@ -8,12 +8,12 @@
 #ifndef PARTITION_H_
 #define PARTITION_H_
 
-#include <cinttypes>
 #include <set>
 #include <vector>
 #include <map>
 #include <cassert>
 #include <limits>
+#include <string>
 
 #include <networkit/Globals.hpp>
 
