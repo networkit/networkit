@@ -1562,13 +1562,12 @@ cdef extern from "<networkit/distance/SSSP.hpp>":
 
 	cdef cppclass _SSSP "NetworKit::SSSP"(_Algorithm):
 		_SSSP(_Graph G, node source, bool_t storePaths, bool_t storeNodesSortedByDistance, node target) except +
-		vector[edgeweight] getDistances(bool_t moveOut) except +
 		vector[edgeweight] getDistances() except +
 		edgeweight distance(node t) except +
 		vector[node] getPredecessors(node t) except +
 		vector[node] getPath(node t, bool_t forward) except +
 		set[vector[node]] getPaths(node t, bool_t forward) except +
-		vector[node] getNodesSortedByDistance(bool_t moveOut) except +
+		vector[node] getNodesSortedByDistance() except +
 		double _numberOfPaths(node t) except +
 		void setSource(node s) except +
 		void setTarget(node t) except +
@@ -1582,7 +1581,7 @@ cdef class SSSP(Algorithm):
 		if type(self) == SSSP:
 			raise RuntimeError("Error, you may not use SSSP directly, use a sub-class instead")
 
-	def getDistances(self, moveOut):
+	def getDistances(self, moveOut=False):
 		"""
 		DEPRECATED
 		Returns a list of weighted distances from the source node, i.e. the
@@ -1593,18 +1592,10 @@ cdef class SSSP(Algorithm):
  	 	vector
  	 		The weighted distances from the source node to any other node in the graph.
 		"""
-		return (<_SSSP*>(self._this)).getDistances(moveOut)
+		if moveOut:
+			from warnings import warn
+			warn("moveOut parameter is deprecated and not used")
 
-	def getDistances(self):
-		"""
-		Returns a list of weighted distances from the source node, i.e. the
-		length of the shortest path from the source node to any other node.
-
-		Returns
-		-------
-		list
-			The weighted distances from the source node to any other node in the graph.
-		"""
 		return (<_SSSP*>(self._this)).getDistances()
 
 	def distance(self, t):
@@ -1682,23 +1673,21 @@ cdef class SSSP(Algorithm):
 			result.append(list(elem))
 		return result
 
-	def getNodesSortedByDistance(self, moveOut=True):
+	def getNodesSortedByDistance(self, moveOut=False):
 		""" Returns a list of nodes ordered in increasing distance from the source.
 
 		For this functionality to be available, storeNodesSortedByDistance has to be set to true in the constructor.
 		There are no guarantees regarding the ordering of two nodes with the same distance to the source.
-
-		Parameters
-		----------
-		moveOut : bool
-			If set to true, the container will be moved out of the class instead of copying it; default=true.
 
 		Returns
 		-------
 		list
 			Nodes ordered in increasing distance from the source.
 		"""
-		return (<_SSSP*>(self._this)).getNodesSortedByDistance(moveOut)
+		if moveOut:
+			from warnings import warn
+			warn("moveOut parameter is deprecated and not used")
+		return (<_SSSP*>(self._this)).getNodesSortedByDistance()
 
 	def numberOfPaths(self, t):
 		"""
