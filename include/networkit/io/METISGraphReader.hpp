@@ -21,16 +21,16 @@ namespace NetworKit {
 class METISGraphReader: public GraphReader {
 public:
 
-	METISGraphReader() = default;
-	
-	/**
-	 * Takes a file path as parameter and returns a graph file.
-	 *
-	 * @param[in]	path	file path
-	 *
-	 * @param[out]	the graph read from file
-	 */
-	virtual Graph read(const std::string& path) override;
+    METISGraphReader() = default;
+    
+    /**
+     * Takes a file path as parameter and returns a graph file.
+     *
+     * @param[in]	path	file path
+     *
+     * @param[out]	the graph read from file
+     */
+    virtual Graph read(const std::string& path) override;
 };
 
 } /* namespace NetworKit */

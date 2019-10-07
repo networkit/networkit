@@ -13,74 +13,74 @@
 namespace Aux {
 
 Timer::my_steady_clock::time_point Timer::start() noexcept {
-	started = my_steady_clock::now();
-	running = true;
-	return started;
+    started = my_steady_clock::now();
+    running = true;
+    return started;
 }
 
 Timer::my_steady_clock::time_point Timer::stop() noexcept {
-	stopped = my_steady_clock::now();
-	running = false;
-	return stopped;
+    stopped = my_steady_clock::now();
+    running = false;
+    return stopped;
 }
 
 std::chrono::duration<uint64_t, std::milli> Timer::elapsed() const noexcept {
-	return std::chrono::duration_cast<std::chrono::duration<uint64_t, std::milli> >(stopTimeOrNow() - started);
+    return std::chrono::duration_cast<std::chrono::duration<uint64_t, std::milli> >(stopTimeOrNow() - started);
 }
 
 Timer::my_steady_clock::time_point Timer::startTime() const noexcept {
-	return started;
+    return started;
 }
 
 Timer::my_steady_clock::time_point Timer::stopTime() const noexcept {
-	return stopped;
+    return stopped;
 }
 
 uint64_t Timer::elapsedMilliseconds() const noexcept {
-	return elapsed().count();
+    return elapsed().count();
 }
 
 uint64_t Timer::elapsedMicroseconds() const noexcept {
-	return std::chrono::duration_cast<std::chrono::duration<uint64_t, std::micro>>(stopTimeOrNow() - started).count();
+    return std::chrono::duration_cast<std::chrono::duration<uint64_t, std::micro>>(stopTimeOrNow() - started).count();
 }
 
 uint64_t Timer::elapsedNanoseconds() const noexcept {
-	return std::chrono::duration_cast<std::chrono::duration<uint64_t, std::nano>>(stopTimeOrNow() - started).count();
+    return std::chrono::duration_cast<std::chrono::duration<uint64_t, std::nano>>(stopTimeOrNow() - started).count();
 }
 
 std::string Timer::elapsedTag() const {
-	std::stringstream s;
-	s << "(" << elapsedMilliseconds() << " ms) ";
-	return s.str();
+    std::stringstream s;
+    s << "(" << elapsedMilliseconds() << " ms) ";
+    return s.str();
 }
 
 Timer::my_steady_clock::time_point Timer::stopTimeOrNow() const noexcept {
-	return running ? std::chrono::steady_clock::now() : stopped;
+    return running ? std::chrono::steady_clock::now() : stopped;
 }
 
 LoggingTimer::LoggingTimer(const std::string &label, Aux::Log::LogLevel level)
-	: level(level)
+    : level(level)
 {
-	if (!Aux::Log::isLogLevelEnabled(level))
-		return;
+    if (!Aux::Log::isLogLevelEnabled(level))
+        return;
 
-	this->label = label;
-	start();
+    this->label = label;
+    start();
 }
 
 LoggingTimer::~LoggingTimer() {
-	if (!running)
-		return;
+    if (!running)
+        return;
 
-	std::stringstream ss;
-	ss << "Timer ";
+    std::stringstream ss;
+    ss << "Timer ";
 
-	if (!label.empty())
-		ss << '"' << label << "\" ";
+    if (!label.empty())
+        ss << '"' << label << "\" ";
 
-	ss << "ran for " << (elapsedMicroseconds() * 1e-3) << " ms";
+    ss << "ran for " << (elapsedMicroseconds() * 1e-3) << " ms";
 
-	LOG_AT(level, ss.str());
+    LOG_AT(level, ss.str());
 }
 
 } /* namespace Aux */

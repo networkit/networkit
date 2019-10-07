@@ -24,10 +24,10 @@ namespace NetworKit {
 class LocalMaxMatcher: public Matcher {
 public:
 
-	LocalMaxMatcher(const Graph& G);
+    LocalMaxMatcher(const Graph& G);
 
 
-	virtual void run();
+    virtual void run();
 
 protected:
 

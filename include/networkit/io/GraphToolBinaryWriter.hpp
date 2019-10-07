@@ -22,43 +22,43 @@ class GraphToolBinaryWriter final: public GraphWriter {
 
 public:
 
-	GraphToolBinaryWriter(bool littleEndianness = true);
+    GraphToolBinaryWriter(bool littleEndianness = true);
 
-	/**
-	 * Given the path of an input file, read the graph contained.
-	 *
-	 * @param[in]	path	input file path
-	 */
-	void write(const Graph &G, const std::string &path) override;
+    /**
+     * Given the path of an input file, read the graph contained.
+     *
+     * @param[in]	path	input file path
+     */
+    void write(const Graph &G, const std::string &path) override;
 
 protected:
-	bool littleEndianness;
+    bool littleEndianness;
 
 private:
-	void writeAdjacencies(std::ofstream &file, const Graph &G);
+    void writeAdjacencies(std::ofstream &file, const Graph &G);
 
-	uint8_t getAdjacencyWidth(uint64_t n) ;
+    uint8_t getAdjacencyWidth(uint64_t n) ;
 
-	void writeComment(std::ofstream &file);
+    void writeComment(std::ofstream &file);
 
-	void writeHeader(std::ofstream &file);
+    void writeHeader(std::ofstream &file);
 
-	template<typename Type>
-	void writeType(std::ofstream& file, int width, Type val) {
-		//DEBUG("writing ",val, "with width ", width, " to file");
-		uint8_t* bytes = new uint8_t[width];
-		if (this->littleEndianness) {
-			for (int i = 0; i < width;++i) {
-				bytes[i] = (val >> (i*8)) & 0xFF;
-			}
-		} else {
-			for (int i = 0; i < width; ++i) {
-				bytes[i] = (val >> ((width-1-i)*8)) & 0xFF;
-			}
-		}
-		file.write((char*)bytes,width);
-		delete[] bytes;
-	}
+    template<typename Type>
+    void writeType(std::ofstream& file, int width, Type val) {
+        //DEBUG("writing ",val, "with width ", width, " to file");
+        uint8_t* bytes = new uint8_t[width];
+        if (this->littleEndianness) {
+            for (int i = 0; i < width;++i) {
+                bytes[i] = (val >> (i*8)) & 0xFF;
+            }
+        } else {
+            for (int i = 0; i < width; ++i) {
+                bytes[i] = (val >> ((width-1-i)*8)) & 0xFF;
+            }
+        }
+        file.write((char*)bytes,width);
+        delete[] bytes;
+    }
 
 };
 

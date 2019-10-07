@@ -11,12 +11,12 @@
 namespace NetworKit {
 
 node Sampling::randomNode(const Graph& G) {
-	assert (G.numberOfNodes() > 0);
-	node v = none;
-	do {
-		v = Aux::Random::integer(G.upperNodeIdBound());
-	} while (!G.hasNode(v));
-	return v;
+    assert (G.numberOfNodes() > 0);
+    node v = none;
+    do {
+        v = Aux::Random::integer(G.upperNodeIdBound());
+    } while (!G.hasNode(v));
+    return v;
 }
 
 // the following methdods are commented in order to create linker-errors should they be used before

@@ -19,27 +19,27 @@ namespace NetworKit {
  */
 class ApproximatePageRank {
 protected:
-	const Graph& G;
-	double alpha;
-	double eps;
+    const Graph& G;
+    double alpha;
+    double eps;
 
-	std::unordered_map<node, std::pair<double, double>> pr_res;
+    std::unordered_map<node, std::pair<double, double>> pr_res;
 
-	void push(node u, std::queue<node>& activeNodes);
+    void push(node u, std::queue<node>& activeNodes);
 
 public:
-	/**
-	 * @param g Graph for which an APR is computed.
-	 * @param alpha Loop probability of random walk.
-	 * @param epsilon Error tolerance.
-	 */
-	ApproximatePageRank(const Graph& g, double alpha, double epsilon = 1e-12);
+    /**
+     * @param g Graph for which an APR is computed.
+     * @param alpha Loop probability of random walk.
+     * @param epsilon Error tolerance.
+     */
+    ApproximatePageRank(const Graph& g, double alpha, double epsilon = 1e-12);
 
-	/**
-	 * @return Approximate PageRank vector from @a seed with parameters
-	 *         specified in the constructor.
-	 */
-	std::vector<std::pair<node, double>> run(node seed);
+    /**
+     * @return Approximate PageRank vector from @a seed with parameters
+     *         specified in the constructor.
+     */
+    std::vector<std::pair<node, double>> run(node seed);
 };
 
 } /* namespace NetworKit */

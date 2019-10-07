@@ -10,20 +10,20 @@ namespace NetworKit {
 class DynAlgorithm {
 
 public:
-	/**
-	 * Virtual default destructor
-	 */
-	virtual ~DynAlgorithm() = default;
+    /**
+     * Virtual default destructor
+     */
+    virtual ~DynAlgorithm() = default;
 
-	/**
-	 * The generic update method for updating data structure after an update.
-	 */
-	virtual void update(GraphEvent e) = 0;
+    /**
+     * The generic update method for updating data structure after an update.
+     */
+    virtual void update(GraphEvent e) = 0;
 
-	/**
-	 * The generic update method for updating data structure after a batch of updates.
-	 */
-	virtual void updateBatch(const std::vector<GraphEvent>& batch) = 0;
+    /**
+     * The generic update method for updating data structure after a batch of updates.
+     */
+    virtual void updateBatch(const std::vector<GraphEvent>& batch) = 0;
 
 };
 

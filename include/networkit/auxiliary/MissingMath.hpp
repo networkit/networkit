@@ -22,23 +22,23 @@ namespace MissingMath {
 
 
 inline int64_t binomial(int64_t n, int64_t k) {
-	if (k == 0) return 1;
-	if (2 * k > n) return binomial(n, n - k);
+    if (k == 0) return 1;
+    if (2 * k > n) return binomial(n, n - k);
 
-	int64_t b = n - k + 1;
-	for (int64_t i = 2; i <= k; ++i) {
-		b = b * (n - k + i);
-		b = b / i;
-	}
-	return b;
+    int64_t b = n - k + 1;
+    for (int64_t i = 2; i <= k; ++i) {
+        b = b * (n - k + i);
+        b = b / i;
+    }
+    return b;
 }
 
 inline double log_b(double x, double b) {
-	if (x == 0) {
-		throw std::domain_error("log(0) is undefined");
-	}
-	assert (log(b) != 0);
-	return log(x) / log(b);
+    if (x == 0) {
+        throw std::domain_error("log(0) is undefined");
+    }
+    assert (log(b) != 0);
+    return log(x) / log(b);
 }
 
 } /* namespace MissingMath */

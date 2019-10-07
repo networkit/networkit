@@ -15,13 +15,13 @@ namespace NetworKit {
 class GeometricMeanScore : public EdgeScore<double> {
 
 private:
-	const std::vector<double>& attribute;
+    const std::vector<double>& attribute;
 
 public:
-	GeometricMeanScore(const Graph& G, const std::vector<double>& attribute);
-	virtual double score(edgeid eid) override;
-	virtual double score(node u, node v) override;
-	virtual void run() override;
+    GeometricMeanScore(const Graph& G, const std::vector<double>& attribute);
+    virtual double score(edgeid eid) override;
+    virtual double score(node u, node v) override;
+    virtual void run() override;
 };
 
 } // namespace NetworKit

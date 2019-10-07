@@ -25,7 +25,7 @@ namespace NetworKit {
  */
 class SNAPEdgeListPartitionReader {
 public:
-	virtual Cover read(std::string path, std::unordered_map<node,node>& mapNodeIds, Graph& G);
+    virtual Cover read(std::string path, std::unordered_map<node,node>& mapNodeIds, Graph& G);
 
 //	virtual Partition readWithInfo(std::string path, count nNodes);
 

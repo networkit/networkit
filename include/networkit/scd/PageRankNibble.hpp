@@ -25,32 +25,32 @@ class PageRankNibble : public SelectiveCommunityDetector {
 
 protected:
 
-	double alpha;
-	double epsilon;
+    double alpha;
+    double epsilon;
 
-	std::set<node> bestSweepSet(std::vector<std::pair<node, double>>& pr);
+    std::set<node> bestSweepSet(std::vector<std::pair<node, double>>& pr);
 
 public:
-	/**
-	 * @param Graph @a g for which PageRank-Nibble is to be performed. Is treated as
-	 * unweighted in current implementation.
-	 * @param alpha Loop probability of random walk; smaller values tend to produce larger
-	 *        communities.
-	 * @param eps Tolerance threshold for approximation of PageRank vectors.
-	 */
-	PageRankNibble(const Graph& g, double alpha, double epsilon);
+    /**
+     * @param Graph @a g for which PageRank-Nibble is to be performed. Is treated as
+     * unweighted in current implementation.
+     * @param alpha Loop probability of random walk; smaller values tend to produce larger
+     *        communities.
+     * @param eps Tolerance threshold for approximation of PageRank vectors.
+     */
+    PageRankNibble(const Graph& g, double alpha, double epsilon);
 
-	virtual ~PageRankNibble() = default;
+    virtual ~PageRankNibble() = default;
 
-	virtual std::map<node, std::set<node> >  run(const std::set<node>& seeds) override;
+    virtual std::map<node, std::set<node> >  run(const std::set<node>& seeds) override;
 
-	/**
-	 * @param seed Seed node for which a community is to be found.
+    /**
+     * @param seed Seed node for which a community is to be found.
 
-	 * @return Set of nodes that makes up the best community found around node @a seed.
-	 *   If target conductance or target size are not fulfilled, an empty set is returned.
-	 */
-	virtual std::set<node> expandSeed(node seed);
+     * @return Set of nodes that makes up the best community found around node @a seed.
+     *   If target conductance or target size are not fulfilled, an empty set is returned.
+     */
+    virtual std::set<node> expandSeed(node seed);
 };
 
 } /* namespace NetworKit */

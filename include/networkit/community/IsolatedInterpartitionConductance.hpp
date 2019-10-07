@@ -22,27 +22,27 @@ namespace NetworKit {
  */
 class IsolatedInterpartitionConductance : public LocalPartitionEvaluation {
 public:
-	using LocalPartitionEvaluation::LocalPartitionEvaluation;
+    using LocalPartitionEvaluation::LocalPartitionEvaluation;
 
-	/**
-	 * Execute the algorithm.
-	 */
-	virtual void run() override;
+    /**
+     * Execute the algorithm.
+     */
+    virtual void run() override;
 
-	/**
-	 * @return true - smaller values are better than larger values.
-	 */
-	virtual bool isSmallBetter() const override { return true; };
+    /**
+     * @return true - smaller values are better than larger values.
+     */
+    virtual bool isSmallBetter() const override { return true; };
 
-	/**
-	 * @return false - only minor parts of this implementation are parallel.
-	 */
-	virtual bool isParallel() const override { return false; };
+    /**
+     * @return false - only minor parts of this implementation are parallel.
+     */
+    virtual bool isParallel() const override { return false; };
 
-	/**
-	 * Get the name of the algorithm.
-	 */
-	virtual std::string toString() const override { return "Isolated inter-partition conductance"; };
+    /**
+     * Get the name of the algorithm.
+     */
+    virtual std::string toString() const override { return "Isolated inter-partition conductance"; };
 };
 
 }

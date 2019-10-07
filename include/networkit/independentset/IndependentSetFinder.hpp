@@ -23,29 +23,29 @@ IndependentSetFinder {
 
 public:
 
-	/** Default destructor */
-	virtual ~IndependentSetFinder() = default;
+    /** Default destructor */
+    virtual ~IndependentSetFinder() = default;
 
-	/**
-	 * Returns a boolean vector of length n where vec[v] is @c true iff v is in the independent sets.
-	 * @param[in]	G	The graph.
-	 * @return A boolean vector of length n.
-	 */
-	virtual std::vector<bool> run(const Graph& G) = 0;
+    /**
+     * Returns a boolean vector of length n where vec[v] is @c true iff v is in the independent sets.
+     * @param[in]	G	The graph.
+     * @return A boolean vector of length n.
+     */
+    virtual std::vector<bool> run(const Graph& G) = 0;
 
-	/**
-	 * Get string representation of the algorithm.
-	 * @return The string representation of the algorithm.
-	 */
-	virtual std::string toString() const;
+    /**
+     * Get string representation of the algorithm.
+     * @return The string representation of the algorithm.
+     */
+    virtual std::string toString() const;
 
-	/**
-	 * Checks whether a set is independent.
-	 * @param set The set which is supposed to be independent.
-	 * @param The graph.
-	 * @return @c true iff @a set is independent.
-	 */
-	bool isIndependentSet(const std::vector<bool>& set, const Graph& G) const;
+    /**
+     * Checks whether a set is independent.
+     * @param set The set which is supposed to be independent.
+     * @param The graph.
+     * @return @c true iff @a set is independent.
+     */
+    bool isIndependentSet(const std::vector<bool>& set, const Graph& G) const;
 
 };
 

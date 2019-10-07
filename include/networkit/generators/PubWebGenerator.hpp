@@ -27,9 +27,9 @@ typedef std::pair<node, node> edge;
 
 
 struct circle {
-	float x;
-	float y;
-	float rad;
+    float x;
+    float y;
+    float rad;
 };
 
 /**
@@ -57,45 +57,45 @@ struct circle {
  */
 class PubWebGenerator: public StaticGraphGenerator {
 
-	friend class DynamicPubWebGenerator;
+    friend class DynamicPubWebGenerator;
 
 protected:
-	count n; //!< number of nodes
-	count numDenseAreas; //!< number of areas with more nodes (denser)
-	float neighRad; //!< neighborhood radius
-	count maxNeigh; //!< maximum number of neighbors
-	std::vector<circle> denseAreaXYR; //!< position of each circular dense area
-	std::vector<count> numPerArea; //!< number of points in each circular area
+    count n; //!< number of nodes
+    count numDenseAreas; //!< number of areas with more nodes (denser)
+    float neighRad; //!< neighborhood radius
+    count maxNeigh; //!< maximum number of neighbors
+    std::vector<circle> denseAreaXYR; //!< position of each circular dense area
+    std::vector<count> numPerArea; //!< number of points in each circular area
 
-	void determineNeighbors(Graph& g);
-	void moveNodeIntoUnitSquare(float& x, float& y);
-	float squaredDistanceInUnitTorus(float x1, float y1, float x2, float y2);
-	void chooseDenseAreaSizes();
-	void fillDenseAreas(Graph& g);
-	void spreadRemainingNodes(Graph& g);
-	void chooseClusterSizes();
-	void addNodesToArea(index area, count num, Graph& g);
-	bool isValidEdge(Graph& g, node u, node v, edgeweight& ew);
+    void determineNeighbors(Graph& g);
+    void moveNodeIntoUnitSquare(float& x, float& y);
+    float squaredDistanceInUnitTorus(float x1, float y1, float x2, float y2);
+    void chooseDenseAreaSizes();
+    void fillDenseAreas(Graph& g);
+    void spreadRemainingNodes(Graph& g);
+    void chooseClusterSizes();
+    void addNodesToArea(index area, count num, Graph& g);
+    bool isValidEdge(Graph& g, node u, node v, edgeweight& ew);
 
 public:
-	PubWebGenerator() {} // nullary constructor needed for Python Shell - do not use this to construct instance
+    PubWebGenerator() {} // nullary constructor needed for Python Shell - do not use this to construct instance
 
-	PubWebGenerator(count numNodes, count numberOfDenseAreas,
-			float neighborhoodRadius, count maxNumberOfNeighbors);
+    PubWebGenerator(count numNodes, count numberOfDenseAreas,
+            float neighborhoodRadius, count maxNumberOfNeighbors);
 
-	virtual Graph generate();
+    virtual Graph generate();
 
 protected:
 
-	/**
-	 * Adds nodes randomly, distribution respects original one.
-	 */
-	void addNode(Graph& g);
+    /**
+     * Adds nodes randomly, distribution respects original one.
+     */
+    void addNode(Graph& g);
 
-	/**
-	 * Removes random node, uniform distribution.
-	 */
-	void removeRandomNode(Graph& g);
+    /**
+     * Removes random node, uniform distribution.
+     */
+    void removeRandomNode(Graph& g);
 };
 
 } /* namespace NetworKit */

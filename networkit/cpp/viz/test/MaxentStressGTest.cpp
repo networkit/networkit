@@ -47,36 +47,36 @@ class MaxentStressGTest : public testing::Test {};
 TEST_F(MaxentStressGTest, benchMaxentStressCoordinatesLAMG) {
 
     std::vector<std::string> graphFiles = {"input/airfoil1.graph"};
-	METISGraphReader reader;
+    METISGraphReader reader;
 
-	for (const std::string& graphFile : graphFiles) {
-		Graph graph = reader.read(graphFile);
+    for (const std::string& graphFile : graphFiles) {
+        Graph graph = reader.read(graphFile);
 
-		double runtime = 0;
-		double fullStress = 0;
-		double maxentStress = 0;
-		Aux::Random::setSeed(Aux::Random::integer(), false);
+        double runtime = 0;
+        double fullStress = 0;
+        double maxentStress = 0;
+        Aux::Random::setSeed(Aux::Random::integer(), false);
 
-		Aux::Timer t;
-		t.start();
-		PivotMDS pivotMds(graph, 2, 30);
-		pivotMds.run();
+        Aux::Timer t;
+        t.start();
+        PivotMDS pivotMds(graph, 2, 30);
+        pivotMds.run();
         MaxentStress maxentStressAlgo(graph, 2, pivotMds.getCoordinates(), 1, 0.001, MaxentStress::LinearSolverType::LAMG);
-		maxentStressAlgo.run();
-		t.stop();
+        maxentStressAlgo.run();
+        t.stop();
 
-		runtime = t.elapsedMicroseconds();
-		if (graph.numberOfNodes() < 1e5) {
-			maxentStressAlgo.scaleLayout();
-			fullStress = maxentStressAlgo.fullStressMeasure();
-			maxentStress = maxentStressAlgo.maxentMeasure();
-		}
+        runtime = t.elapsedMicroseconds();
+        if (graph.numberOfNodes() < 1e5) {
+            maxentStressAlgo.scaleLayout();
+            fullStress = maxentStressAlgo.fullStressMeasure();
+            maxentStress = maxentStressAlgo.maxentMeasure();
+        }
 
 
-		runtime /= 1000;
+        runtime /= 1000;
 
-		INFO(graphFile, "\t", maxentStress, "\t", fullStress, "\t", runtime);
-	}
+        INFO(graphFile, "\t", maxentStress, "\t", fullStress, "\t", runtime);
+    }
 }
 
 TEST_F(MaxentStressGTest, benchMaxentStressConjGradIdPrecAlgebraicDistance) {

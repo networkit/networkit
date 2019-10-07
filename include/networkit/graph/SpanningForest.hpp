@@ -17,25 +17,25 @@ namespace NetworKit {
  */
 class SpanningForest {
 protected:
-	const Graph& G;
-	Graph forest;
+    const Graph& G;
+    Graph forest;
 
 public:
-	SpanningForest(const Graph& G);
-	virtual ~SpanningForest() = default;
+    SpanningForest(const Graph& G);
+    virtual ~SpanningForest() = default;
 
-	virtual void run();
+    virtual void run();
 
-	/**
-	 * Deprecated. Please integrate into run method.
-	 */
-	Graph generate();
+    /**
+     * Deprecated. Please integrate into run method.
+     */
+    Graph generate();
 
-	/**
-	 * @return Forest computed by run method.
-	 * Note: So far no explicit check if run method has been invoked before.
-	 */
-	Graph getForest();
+    /**
+     * @return Forest computed by run method.
+     * Note: So far no explicit check if run method has been invoked before.
+     */
+    Graph getForest();
 };
 
 } /* namespace NetworKit */

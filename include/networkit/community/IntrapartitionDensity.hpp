@@ -11,32 +11,32 @@ namespace NetworKit {
  */
 class IntrapartitionDensity : public LocalPartitionEvaluation {
 public:
-	using LocalPartitionEvaluation::LocalPartitionEvaluation;
+    using LocalPartitionEvaluation::LocalPartitionEvaluation;
 
-	/**
-	 * Execute the algorithm.
-	 */
-	virtual void run() override;
+    /**
+     * Execute the algorithm.
+     */
+    virtual void run() override;
 
-	/**
-	 * Get the global intra-cluster density.
-	 *
-	 * @return The global intra-cluster density.
-	 */
-	double getGlobal() const { assureFinished(); return globalValue; };
+    /**
+     * Get the global intra-cluster density.
+     *
+     * @return The global intra-cluster density.
+     */
+    double getGlobal() const { assureFinished(); return globalValue; };
 
-	/**
-	 * @return false - this algorithm is not parallel.
-	 */
-	bool isParallel() const override { return false; }
+    /**
+     * @return false - this algorithm is not parallel.
+     */
+    bool isParallel() const override { return false; }
 
-	/**
-	 * This value should be high in a good clustering.
-	 * @return false - high values are better than small values.
-	 */
-	bool isSmallBetter() const override { return false; }
+    /**
+     * This value should be high in a good clustering.
+     * @return false - high values are better than small values.
+     */
+    bool isSmallBetter() const override { return false; }
 protected:
-	double globalValue;
+    double globalValue;
 };
 
 }

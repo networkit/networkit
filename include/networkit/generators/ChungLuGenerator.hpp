@@ -32,16 +32,16 @@ namespace NetworKit {
 
 class ChungLuGenerator: public StaticDegreeSequenceGenerator {
 protected:
-	count sum_deg;
-	count n;
+    count sum_deg;
+    count n;
 
 public:
-	ChungLuGenerator(const std::vector<count>& degreeSequence);
+    ChungLuGenerator(const std::vector<count>& degreeSequence);
 
-	/**
-	 * Generates graph with expected degree sequence seq.
-	 */
-	virtual Graph generate();
+    /**
+     * Generates graph with expected degree sequence seq.
+     */
+    virtual Graph generate();
 };
 
 } /* namespace NetworKit */

@@ -20,10 +20,10 @@ class StaticGraphGenerator {
 
 public:
 
-	/** Default destructor */
-	virtual ~StaticGraphGenerator() = default;
+    /** Default destructor */
+    virtual ~StaticGraphGenerator() = default;
 
-	virtual Graph generate() = 0;
+    virtual Graph generate() = 0;
 };
 
 } /* namespace NetworKit */

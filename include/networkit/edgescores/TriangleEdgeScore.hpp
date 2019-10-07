@@ -29,10 +29,10 @@ class TriangleEdgeScore : public EdgeScore<count> {
 
 public:
 
-	TriangleEdgeScore(const Graph& G);
-	virtual count score(edgeid eid) override;
-	virtual count score(node u, node v) override;
-	virtual void run() override;
+    TriangleEdgeScore(const Graph& G);
+    virtual count score(edgeid eid) override;
+    virtual count score(node u, node v) override;
+    virtual void run() override;
 
 };
 

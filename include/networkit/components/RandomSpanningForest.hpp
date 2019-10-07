@@ -20,15 +20,15 @@ namespace NetworKit {
  */
 class RandomSpanningForest: public SpanningForest {
 public:
-	RandomSpanningForest(const Graph& G);
-	virtual ~RandomSpanningForest() = default;
+    RandomSpanningForest(const Graph& G);
+    virtual ~RandomSpanningForest() = default;
 
-	/**
-	 * Computes for each component a random spanning tree.
-	 * Uses simple random-walk based algorithm.
-	 * Time complexity: cover time of G.
-	 */
-	virtual void run() override;
+    /**
+     * Computes for each component a random spanning tree.
+     * Uses simple random-walk based algorithm.
+     * Time complexity: cover time of G.
+     */
+    virtual void run() override;
 };
 
 } /* namespace NetworKit */

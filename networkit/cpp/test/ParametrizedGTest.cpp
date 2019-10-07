@@ -11,8 +11,8 @@
 
 
 TEST_P(ParametrizedGTest, testParameter) {
-	int n = GetParam();
-	EXPECT_EQ(n, GetParam());
+    int n = GetParam();
+    EXPECT_EQ(n, GetParam());
 }
 
 

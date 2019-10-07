@@ -26,27 +26,27 @@ namespace NetworKit {
  */
 class Modularity: public QualityMeasure {
 protected:
-	double gTotalEdgeWeight;
+    double gTotalEdgeWeight;
 
 public:
 
-	/** Default constructor */
-	Modularity();
+    /** Default constructor */
+    Modularity();
 
-	/**
-	 * Returns the Modularity of the given clustering with respect to the graph @a G.
-	 *
-	 * @param zeta The clustering.
-	 * @param G The graph.
-	 * @return The modularity.
-	 */
-	virtual double getQuality(const Partition& zeta, const Graph& G);
+    /**
+     * Returns the Modularity of the given clustering with respect to the graph @a G.
+     *
+     * @param zeta The clustering.
+     * @param G The graph.
+     * @return The modularity.
+     */
+    virtual double getQuality(const Partition& zeta, const Graph& G);
 
-	/**
-	 * @param totalEdgeWeight Sum of all edge weights in @a G. If specified, it does not
-	 *        have to be computed.
-	 */
-	void setTotalEdgeWeight(double totalEdgeWeight);
+    /**
+     * @param totalEdgeWeight Sum of all edge weights in @a G. If specified, it does not
+     *        have to be computed.
+     */
+    void setTotalEdgeWeight(double totalEdgeWeight);
 
 };
 

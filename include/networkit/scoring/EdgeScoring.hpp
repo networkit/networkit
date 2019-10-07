@@ -22,23 +22,23 @@ class EdgeScoring {
 
 protected:
 
-	Graph* G;	//!< pointer to the graph
+    Graph* G;	//!< pointer to the graph
 
 public:
 
-	EdgeScoring(Graph& G);
+    EdgeScoring(Graph& G);
 
-	virtual ~EdgeScoring();
+    virtual ~EdgeScoring();
 
-	virtual void scoreEdges(int attrId) = 0;
+    virtual void scoreEdges(int attrId) = 0;
 
-	virtual T edgeScore(node u, node v) const = 0;
+    virtual T edgeScore(node u, node v) const = 0;
 };
 
 
 template<typename T>
 EdgeScoring<T>::EdgeScoring(Graph& G) {
-	this->G = &G;
+    this->G = &G;
 }
 
 template<typename T>

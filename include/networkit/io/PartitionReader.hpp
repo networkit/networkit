@@ -21,13 +21,13 @@ namespace NetworKit {
 class PartitionReader {
 
 public:
-	/**
-	 * Read a clustering from a file. File format:
-	 * 		line n contains cluster id of node (n - 1)
-	 *
-	 * @param[in]	path	Path to file.
-	 */
-	virtual Partition read(std::string path);
+    /**
+     * Read a clustering from a file. File format:
+     * 		line n contains cluster id of node (n - 1)
+     *
+     * @param[in]	path	Path to file.
+     */
+    virtual Partition read(std::string path);
 };
 
 } /* namespace NetworKit */

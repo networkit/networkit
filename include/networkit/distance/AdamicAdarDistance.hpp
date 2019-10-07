@@ -20,34 +20,34 @@ namespace NetworKit {
 class AdamicAdarDistance : public NodeDistance {
 
 protected:
-	std::vector<double> aaDistance; //result vector
+    std::vector<double> aaDistance; //result vector
 
-	void removeNode(Graph& graph, node u);
+    void removeNode(Graph& graph, node u);
 
 public:
 
-	/**
-	 * @param G The graph.
-	 */
-	AdamicAdarDistance(const Graph& G);
+    /**
+     * @param G The graph.
+     */
+    AdamicAdarDistance(const Graph& G);
 
-	/**
-	 * Computes the Adamic Adar distances of all connected pairs of nodes.
-	 * REQ: Needs to be called before distance() and getEdgeScores() deliver meaningful results!
-	 */
-	virtual void preprocess();
+    /**
+     * Computes the Adamic Adar distances of all connected pairs of nodes.
+     * REQ: Needs to be called before distance() and getEdgeScores() deliver meaningful results!
+     */
+    virtual void preprocess();
 
-	/**
-	 * Returns the Adamic Adar distance between node @a u and node @a v.
-	 * @return Adamic Adar distance between the two nodes.
-	 */
-	virtual double distance(node u, node v);
+    /**
+     * Returns the Adamic Adar distance between node @a u and node @a v.
+     * @return Adamic Adar distance between the two nodes.
+     */
+    virtual double distance(node u, node v);
 
-	/**
-	 * Returns the Adamic Adar distances between all connected nodes.
-	 * @return Vector containing the Adamic Adar distances between all connected pairs of nodes.
-	 */
-	virtual std::vector<double> getEdgeScores();
+    /**
+     * Returns the Adamic Adar distances between all connected nodes.
+     * @return Vector containing the Adamic Adar distances between all connected pairs of nodes.
+     */
+    virtual std::vector<double> getEdgeScores();
 
 };
 

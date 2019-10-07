@@ -21,7 +21,7 @@ class QualityMeasure {
 
 
 public:
-	virtual double getQuality(const Partition& zeta, const Graph& G) = 0;
+    virtual double getQuality(const Partition& zeta, const Graph& G) = 0;
 };
 
 } /* namespace NetworKit */

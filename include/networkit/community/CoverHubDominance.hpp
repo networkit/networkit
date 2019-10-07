@@ -20,22 +20,22 @@ namespace NetworKit {
  */
 class CoverHubDominance : public LocalCoverEvaluation {
 public:
-	using LocalCoverEvaluation::LocalCoverEvaluation;
+    using LocalCoverEvaluation::LocalCoverEvaluation;
 
-	/**
-	 * Execute the algorithm.
-	 */
-	virtual void run() override;
+    /**
+     * Execute the algorithm.
+     */
+    virtual void run() override;
 
-	/**
-	 * @return false - smaller is not better, larger values indicate better cluster cohesion.
-	 */
-	virtual bool isSmallBetter() const override { return false; }
+    /**
+     * @return false - smaller is not better, larger values indicate better cluster cohesion.
+     */
+    virtual bool isSmallBetter() const override { return false; }
 
-	/**
-	 * @return true - this algorithm is partially parallel (but \f$\Omega(n)\f$ sequential work remains)
-	 */
-	virtual bool isParallel() const override { return true; }
+    /**
+     * @return true - this algorithm is partially parallel (but \f$\Omega(n)\f$ sequential work remains)
+     */
+    virtual bool isParallel() const override { return true; }
 };
 
 }

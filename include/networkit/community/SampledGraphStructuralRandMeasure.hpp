@@ -22,18 +22,18 @@ class SampledGraphStructuralRandMeasure: public DissimilarityMeasure {
 
 public:
 
-	/**
-	 * Constructs the SampledGraphStructuralRandMeasure. A maximum of @a maxSamples samples are drawn.
-	 *
-	 * @param maxSamples The amount of samples to draw.
-	 */
-	SampledGraphStructuralRandMeasure(count maxSamples);
+    /**
+     * Constructs the SampledGraphStructuralRandMeasure. A maximum of @a maxSamples samples are drawn.
+     *
+     * @param maxSamples The amount of samples to draw.
+     */
+    SampledGraphStructuralRandMeasure(count maxSamples);
 
-	virtual double getDissimilarity(const Graph& G, const Partition& first, const Partition& second);
+    virtual double getDissimilarity(const Graph& G, const Partition& first, const Partition& second);
 
 protected:
 
-	count maxSamples;
+    count maxSamples;
 
 };
 

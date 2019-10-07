@@ -20,32 +20,32 @@ namespace NetworKit {
  */
 class EpidemicSimulationSEIR: public Algorithm {
 public:
-	/**
-	 *
-	 *
-	 * @param G The network.
-	 *
-	 */
-	EpidemicSimulationSEIR(const Graph& G, count tMax, double transP, count eTime, count iTime, node zero);
+    /**
+     *
+     *
+     * @param G The network.
+     *
+     */
+    EpidemicSimulationSEIR(const Graph& G, count tMax, double transP, count eTime, count iTime, node zero);
 
-	void run() override;
+    void run() override;
 
 
-	std::vector<std::vector<count>> getData();
+    std::vector<std::vector<count>> getData();
 
 protected:
 
-	const Graph& G;
-	count tMax;
-	double transP;
-	count eTime;
-	count iTime;
-	node zero;
-	enum class State {S, E, I, R, U}; // Susceptible, Exposed, Infectious, Removed, Undefined
-	std::vector<State> state;
-	std::vector<index> timestamp;
-	std::vector<std::vector<count>> stats;
-	bool randStartNode;
+    const Graph& G;
+    count tMax;
+    double transP;
+    count eTime;
+    count iTime;
+    node zero;
+    enum class State {S, E, I, R, U}; // Susceptible, Exposed, Infectious, Removed, Undefined
+    std::vector<State> state;
+    std::vector<index> timestamp;
+    std::vector<std::vector<count>> stats;
+    bool randStartNode;
 
 };
 

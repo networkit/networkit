@@ -17,9 +17,9 @@ namespace NetworKit {
  */
 class DGSWriter {
 public:
-	DGSWriter() = default;
+    DGSWriter() = default;
 
-	void write(std::vector<GraphEvent>& stream, std::string path);
+    void write(std::vector<GraphEvent>& stream, std::string path);
 
 };
 

@@ -21,19 +21,19 @@ namespace NetworKit {
 class DynamicGraphGenerator {
 
 public:
-	/** Default destructor */
-	virtual ~DynamicGraphGenerator() = default;
+    /** Default destructor */
+    virtual ~DynamicGraphGenerator() = default;
 
-	/**
-	 * Generate event stream.
-	 *
-	 * @param[in]	nSteps	number of time steps in the event stream
-	 */
-	virtual std::vector<GraphEvent> generate(count nSteps) = 0;
+    /**
+     * Generate event stream.
+     *
+     * @param[in]	nSteps	number of time steps in the event stream
+     */
+    virtual std::vector<GraphEvent> generate(count nSteps) = 0;
 
 protected:
 
-	Graph G; // the graph instance
+    Graph G; // the graph instance
 };
 
 } /* namespace NetworKit */

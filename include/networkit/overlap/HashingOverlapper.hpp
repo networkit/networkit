@@ -22,7 +22,7 @@ class HashingOverlapper: public Overlapper {
 
 public:
 
-	virtual Partition run(const Graph& G, const std::vector<Partition>& clusterings);
+    virtual Partition run(const Graph& G, const std::vector<Partition>& clusterings);
 
 };
 

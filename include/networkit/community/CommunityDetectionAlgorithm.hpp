@@ -20,43 +20,43 @@ namespace NetworKit {
  */
 class CommunityDetectionAlgorithm : public Algorithm {
 public:
-	/**
-	 * A community detection algorithm operates on a graph, so the constructor expects a graph.
-	 *
-	 * @param[in]	G	input graph
-	 */
-	CommunityDetectionAlgorithm(const Graph& G);
-	
-	/**
-	 * A community detection algorithm operates on a graph, so the constructor expects a graph.
-	 *
-	 * @param[in]	G	input graph
-	 * @param[in]	baseClustering optional; the algorithm will start from the given clustering.
-	 */
-	CommunityDetectionAlgorithm(const Graph& G, const Partition baseClustering);
+    /**
+     * A community detection algorithm operates on a graph, so the constructor expects a graph.
+     *
+     * @param[in]	G	input graph
+     */
+    CommunityDetectionAlgorithm(const Graph& G);
+    
+    /**
+     * A community detection algorithm operates on a graph, so the constructor expects a graph.
+     *
+     * @param[in]	G	input graph
+     * @param[in]	baseClustering optional; the algorithm will start from the given clustering.
+     */
+    CommunityDetectionAlgorithm(const Graph& G, const Partition baseClustering);
 
-	/** Default destructor */
-	virtual ~CommunityDetectionAlgorithm() = default;
+    /** Default destructor */
+    virtual ~CommunityDetectionAlgorithm() = default;
 
-	/**
-	 * Apply algorithm to graph
-	 */
-	virtual void run() = 0;
+    /**
+     * Apply algorithm to graph
+     */
+    virtual void run() = 0;
 
-	/**
-	 * Returns the result of the run method or throws an error, if the algorithm hasn't run yet.
-	 * @return partition of the node set
-	 */
-	virtual Partition getPartition();
+    /**
+     * Returns the result of the run method or throws an error, if the algorithm hasn't run yet.
+     * @return partition of the node set
+     */
+    virtual Partition getPartition();
 
-	/**
-	 * @return string representation of algorithm and parameters.
-	 */
-	virtual std::string toString() const;
+    /**
+     * @return string representation of algorithm and parameters.
+     */
+    virtual std::string toString() const;
 
 protected:
-	const Graph& G;
-	Partition result;
+    const Graph& G;
+    Partition result;
 };
 
 } /* namespace NetworKit */

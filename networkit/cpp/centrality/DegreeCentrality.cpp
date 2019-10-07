@@ -13,30 +13,30 @@ DegreeCentrality::DegreeCentrality(const Graph& G, bool normalized, bool outDeg,
 }
 
 void DegreeCentrality::run() {
-	scoreData = std::vector<double>(G.upperNodeIdBound(), 0.0);
+    scoreData = std::vector<double>(G.upperNodeIdBound(), 0.0);
 
-	if (G.isDirected() && !outDeg) {
-		G.parallelForNodes([&](node u) {
-			scoreData[u] = G.degreeIn(u);
-		});
-	} else {
-		G.parallelForNodes([&](node u) {
-			scoreData[u] = G.degree(u);
-		});
-	}
+    if (G.isDirected() && !outDeg) {
+        G.parallelForNodes([&](node u) {
+            scoreData[u] = G.degreeIn(u);
+        });
+    } else {
+        G.parallelForNodes([&](node u) {
+            scoreData[u] = G.degree(u);
+        });
+    }
 
-	if (normalized) {
-		count maxDeg = maximum();
-		G.parallelForNodes([&](node u) {
-			scoreData[u] = scoreData[u] / maxDeg;
-		});
-	}
-	hasRun = true;
+    if (normalized) {
+        count maxDeg = maximum();
+        G.parallelForNodes([&](node u) {
+            scoreData[u] = scoreData[u] / maxDeg;
+        });
+    }
+    hasRun = true;
 }
 
 
 double DegreeCentrality::maximum() {
-	return G.numberOfNodes() - ignoreSelfLoops;
+    return G.numberOfNodes() - ignoreSelfLoops;
 }
 
 

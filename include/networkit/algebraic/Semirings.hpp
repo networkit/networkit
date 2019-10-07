@@ -24,20 +24,20 @@
  */
 class ArithmeticSemiring {
 public:
-	ArithmeticSemiring() = default;
-	virtual ~ArithmeticSemiring() = default;
+    ArithmeticSemiring() = default;
+    virtual ~ArithmeticSemiring() = default;
 
-	inline static double add(double a, double b) {
-		return a + b;
-	}
+    inline static double add(double a, double b) {
+        return a + b;
+    }
 
-	inline static double mult(double a, double b) {
-		return a * b;
-	}
+    inline static double mult(double a, double b) {
+        return a * b;
+    }
 
-	inline static double zero() {return 0;};
+    inline static double zero() {return 0;};
 
-	inline static double one() {return 1;};
+    inline static double one() {return 1;};
 };
 
 /**
@@ -50,20 +50,20 @@ public:
  */
 class MinPlusSemiring {
 public:
-	MinPlusSemiring() = default;
-	virtual ~MinPlusSemiring() = default;
+    MinPlusSemiring() = default;
+    virtual ~MinPlusSemiring() = default;
 
-	inline static double add(double a, double b) {
-		return std::min(a,b);
-	}
+    inline static double add(double a, double b) {
+        return std::min(a,b);
+    }
 
-	inline static double mult(double a, double b) {
-		return a+b;
-	}
+    inline static double mult(double a, double b) {
+        return a+b;
+    }
 
-	inline static double zero() {return std::numeric_limits<double>::infinity();};
+    inline static double zero() {return std::numeric_limits<double>::infinity();};
 
-	inline static double one() {return 0;};
+    inline static double one() {return 0;};
 };
 
 /**
@@ -76,20 +76,20 @@ public:
  */
 class MaxPlusSemiring {
 public:
-	MaxPlusSemiring() = default;
-	virtual ~MaxPlusSemiring() = default;
+    MaxPlusSemiring() = default;
+    virtual ~MaxPlusSemiring() = default;
 
-	inline static double add(double a, double b) {
-		return std::max(a,b);
-	}
+    inline static double add(double a, double b) {
+        return std::max(a,b);
+    }
 
-	inline static double mult(double a, double b) {
-		return a+b;
-	}
+    inline static double mult(double a, double b) {
+        return a+b;
+    }
 
-	inline static double zero() {return -std::numeric_limits<double>::infinity();};
+    inline static double zero() {return -std::numeric_limits<double>::infinity();};
 
-	inline static double one() {return 0;};
+    inline static double one() {return 0;};
 };
 
 /**
@@ -102,20 +102,20 @@ public:
  */
 class MinMaxSemiring {
 public:
-	MinMaxSemiring() = default;
-	virtual ~MinMaxSemiring() = default;
+    MinMaxSemiring() = default;
+    virtual ~MinMaxSemiring() = default;
 
-	inline static double add(double a, double b) {
-		return std::min(a,b);
-	}
+    inline static double add(double a, double b) {
+        return std::min(a,b);
+    }
 
-	inline static double mult(double a, double b) {
-		return std::max(a,b);
-	}
+    inline static double mult(double a, double b) {
+        return std::max(a,b);
+    }
 
-	inline static double zero() {return std::numeric_limits<double>::infinity();};
+    inline static double zero() {return std::numeric_limits<double>::infinity();};
 
-	inline static double one() {return -std::numeric_limits<double>::infinity();};
+    inline static double one() {return -std::numeric_limits<double>::infinity();};
 };
 
 /**
@@ -128,20 +128,20 @@ public:
  */
 class MaxMinSemiring{
 public:
-	MaxMinSemiring() = default;
-	virtual ~MaxMinSemiring() = default;
+    MaxMinSemiring() = default;
+    virtual ~MaxMinSemiring() = default;
 
-	inline static double add(double a, double b) {
-		return std::max(a,b);
-	}
+    inline static double add(double a, double b) {
+        return std::max(a,b);
+    }
 
-	inline static double mult(double a, double b) {
-		return std::min(a,b);
-	}
+    inline static double mult(double a, double b) {
+        return std::min(a,b);
+    }
 
-	inline static double zero() {return -std::numeric_limits<double>::infinity();};
+    inline static double zero() {return -std::numeric_limits<double>::infinity();};
 
-	inline static double one() {return 0;};
+    inline static double one() {return 0;};
 };
 
 /**
@@ -154,20 +154,20 @@ public:
  */
 class IntLogicalSemiring {
 public:
-	IntLogicalSemiring() = default;
-	virtual ~IntLogicalSemiring() = default;
+    IntLogicalSemiring() = default;
+    virtual ~IntLogicalSemiring() = default;
 
-	inline static double add(double a, double b) {
-		return (int) a || (int) b;
-	}
+    inline static double add(double a, double b) {
+        return (int) a || (int) b;
+    }
 
-	inline static double mult(double a, double b) {
-		return (int) a && (int) b;
-	}
+    inline static double mult(double a, double b) {
+        return (int) a && (int) b;
+    }
 
-	inline static double zero() {return 0;};
+    inline static double zero() {return 0;};
 
-	inline static double one() {return 1;};
+    inline static double one() {return 1;};
 };
 
 /**
@@ -180,20 +180,20 @@ public:
  */
 class GaloisFieldSemiring {
 public:
-	GaloisFieldSemiring() = default;
-	virtual ~GaloisFieldSemiring() = default;
+    GaloisFieldSemiring() = default;
+    virtual ~GaloisFieldSemiring() = default;
 
-	inline static double add(double a, double b) {
-		return (int) a ^ (int) b;
-	}
+    inline static double add(double a, double b) {
+        return (int) a ^ (int) b;
+    }
 
-	inline static double mult(double a, double b) {
-		return (int) a & (int) b;
-	}
+    inline static double mult(double a, double b) {
+        return (int) a & (int) b;
+    }
 
-	inline static double zero() {return 0;};
+    inline static double zero() {return 0;};
 
-	inline static double one() {return 1;};
+    inline static double one() {return 1;};
 };
 
 

@@ -17,16 +17,16 @@ template <typename A>
 class EdgeScoreNormalizer : public EdgeScore<double> {
 
 public:
-	EdgeScoreNormalizer(const Graph &G, const std::vector<A> &score, bool invert = false, double lower = 0, double upper = 1.0);
+    EdgeScoreNormalizer(const Graph &G, const std::vector<A> &score, bool invert = false, double lower = 0, double upper = 1.0);
 
-	virtual double score(edgeid eid) override;
-	virtual double score(node u, node v) override;
-	virtual void run() override;
+    virtual double score(edgeid eid) override;
+    virtual double score(node u, node v) override;
+    virtual void run() override;
 
 private:
-	const std::vector<A> &input;
-	bool invert;
-	double lower, upper;
+    const std::vector<A> &input;
+    bool invert;
+    double lower, upper;
 };
 
 }

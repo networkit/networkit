@@ -24,13 +24,13 @@ namespace NetworKit {
  */
 class DotGraphWriter final : public GraphWriter {
 public:
-	/**
-	 * Write a graph as a GraphViz/file.
-	 *
-	 * @param[in]	graph	The graph object
-	 * @param[in]	path	The file path to be written to
-	 */
-	void write(const Graph &G, const std::string &path) override;
+    /**
+     * Write a graph as a GraphViz/file.
+     *
+     * @param[in]	graph	The graph object
+     * @param[in]	path	The file path to be written to
+     */
+    void write(const Graph &G, const std::string &path) override;
 
 };
 

@@ -17,15 +17,15 @@ class EdgeScoreBlender : public EdgeScore<double> {
 
 public:
 
-	EdgeScoreBlender(const Graph &G, const std::vector<double> &attribute0, const std::vector<double> &attribute1, const std::vector<bool> &selection);
+    EdgeScoreBlender(const Graph &G, const std::vector<double> &attribute0, const std::vector<double> &attribute1, const std::vector<bool> &selection);
 
-	virtual double score(edgeid eid) override;
-	virtual double score(node u, node v) override;
-	virtual void run() override;
+    virtual double score(edgeid eid) override;
+    virtual double score(node u, node v) override;
+    virtual void run() override;
 
 private:
-	const std::vector<double> &attribute0, &attribute1;
-	const std::vector<bool> &selection;
+    const std::vector<double> &attribute0, &attribute1;
+    const std::vector<bool> &selection;
 };
 
 } // namespace NetworKit

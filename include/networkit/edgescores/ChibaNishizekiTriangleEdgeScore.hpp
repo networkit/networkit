@@ -22,10 +22,10 @@ class ChibaNishizekiTriangleEdgeScore : public EdgeScore<count> {
 
 public:
 
-	ChibaNishizekiTriangleEdgeScore(const Graph& G);
-	virtual count score(edgeid eid) override;
-	virtual count score(node u, node v) override;
-	virtual void run() override;
+    ChibaNishizekiTriangleEdgeScore(const Graph& G);
+    virtual count score(edgeid eid) override;
+    virtual count score(node u, node v) override;
+    virtual void run() override;
 };
 
 } /* namespace NetworKit */

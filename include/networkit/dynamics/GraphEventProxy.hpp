@@ -23,34 +23,34 @@ class GraphEventProxy {
 
 protected:
 
-	std::vector<GraphEventHandler*> observers;
+    std::vector<GraphEventHandler*> observers;
 
 
 public:
 
-	Graph* G;
+    Graph* G;
 
-	GraphEventProxy(); // nullary constructor needed for python interface
+    GraphEventProxy(); // nullary constructor needed for python interface
 
-	GraphEventProxy(Graph& G);
+    GraphEventProxy(Graph& G);
 
-	void registerObserver(GraphEventHandler* observer);
+    void registerObserver(GraphEventHandler* observer);
 
-	node addNode();
+    node addNode();
 
-	void removeNode(node u);
+    void removeNode(node u);
 
-	void restoreNode(node u);
+    void restoreNode(node u);
 
-	void addEdge(node u, node v, edgeweight weight = defaultEdgeWeight);
+    void addEdge(node u, node v, edgeweight weight = defaultEdgeWeight);
 
-	void removeEdge(node u, node v);
+    void removeEdge(node u, node v);
 
-	void setWeight(node u, node v, edgeweight w);
+    void setWeight(node u, node v, edgeweight w);
 
-	void incrementWeight(node u, node v, edgeweight delta);
+    void incrementWeight(node u, node v, edgeweight delta);
 
-	void timeStep();
+    void timeStep();
 };
 
 } /* namespace NetworKit */

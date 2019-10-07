@@ -22,27 +22,27 @@ namespace NetworKit {
  */
 class IsolatedInterpartitionExpansion : public LocalPartitionEvaluation {
 public:
-	using LocalPartitionEvaluation::LocalPartitionEvaluation;
+    using LocalPartitionEvaluation::LocalPartitionEvaluation;
 
-	/**
-	 * Execute the algorithm.
-	 */
-	virtual void run() override;
+    /**
+     * Execute the algorithm.
+     */
+    virtual void run() override;
 
-	/**
-	 * @return true - smaller values are better than larger values.
-	 */
-	virtual bool isSmallBetter() const override { return true; };
+    /**
+     * @return true - smaller values are better than larger values.
+     */
+    virtual bool isSmallBetter() const override { return true; };
 
-	/**
-	 * @return false - this algorithm is not parallel.
-	 */
-	virtual bool isParallel() const override { return false; };
+    /**
+     * @return false - this algorithm is not parallel.
+     */
+    virtual bool isParallel() const override { return false; };
 
-	/**
-	 * Get the name of the algorithm.
-	 */
-	virtual std::string toString() const override { return "Isolated inter-partition expansion"; };
+    /**
+     * Get the name of the algorithm.
+     */
+    virtual std::string toString() const override { return "Isolated inter-partition expansion"; };
 };
 
 }

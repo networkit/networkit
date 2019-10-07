@@ -56,7 +56,7 @@ template<bool B> using boolToType = std::integral_constant<bool, B>;
  */
 template<typename T1, typename T2>
 constexpr bool isSame() {
-	return std::is_same<T1, T2>::value;
+    return std::is_same<T1, T2>::value;
 }
 
 /**
@@ -66,7 +66,7 @@ constexpr bool isSame() {
  */
 template<typename Base, typename Derived>
 constexpr bool isBaseOrSame() {
-	return isSame<Base, Derived>() || std::is_base_of<Base, Derived>::value;
+    return isSame<Base, Derived>() || std::is_base_of<Base, Derived>::value;
 }
 
 } // namespace Aux

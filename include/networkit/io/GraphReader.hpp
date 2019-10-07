@@ -27,21 +27,21 @@ namespace NetworKit {
 class GraphReader {
 public:
 
-	enum MultipleEdgesHandling
-	{
-		 DISCARD_EDGES, //Reads and selects the first edge which occurs and discards all following
-		 SUM_WEIGHTS_UP, //If an edge occurs again, the weight of it is added to the existing edge
-		 KEEP_MINIUM_WEIGHT //The edge with the lowest weight is kept
-	};
+    enum MultipleEdgesHandling
+    {
+         DISCARD_EDGES, //Reads and selects the first edge which occurs and discards all following
+         SUM_WEIGHTS_UP, //If an edge occurs again, the weight of it is added to the existing edge
+         KEEP_MINIUM_WEIGHT //The edge with the lowest weight is kept
+    };
 
-	virtual ~GraphReader() = default;
+    virtual ~GraphReader() = default;
 
-	/**
-	 * Given the path of an input file, read the graph contained.
-	 *
-	 * @param[in]	path	input file path
-	 */
-	virtual Graph read(const std::string& path) = 0;
+    /**
+     * Given the path of an input file, read the graph contained.
+     *
+     * @param[in]	path	input file path
+     */
+    virtual Graph read(const std::string& path) = 0;
 };
 
 } /* namespace NetworKit */

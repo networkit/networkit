@@ -23,21 +23,21 @@ namespace NetworKit {
  */
 class LaplacianCentrality: public Centrality {
 public:
-	/**
-	 * Constructs a LaplacianCentrality object for the given Graph @a G.
-	 *
-	 * @param G The graph.
-	 * @param normalized Whether scores should be normalized by the energy of the full graph.
-	 */
-	LaplacianCentrality(const Graph& G, bool normalized = false);
+    /**
+     * Constructs a LaplacianCentrality object for the given Graph @a G.
+     *
+     * @param G The graph.
+     * @param normalized Whether scores should be normalized by the energy of the full graph.
+     */
+    LaplacianCentrality(const Graph& G, bool normalized = false);
 
-	/**
-	 * Computes the Laplacian centrality on the graph passed in the constructor.
-	 *
-	 * See https://dl.acm.org/citation.cfm?id=2181343.2181780 for more details about
-	 * Laplacian centrality.
-	 */
-	void run() override;
+    /**
+     * Computes the Laplacian centrality on the graph passed in the constructor.
+     *
+     * See https://dl.acm.org/citation.cfm?id=2181343.2181780 for more details about
+     * Laplacian centrality.
+     */
+    void run() override;
 };
 
 } /* namespace NetworKit */

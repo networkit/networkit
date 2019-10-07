@@ -16,21 +16,21 @@ namespace NetworKit {
  */
 class IdentityPreconditioner {
 public:
-	/** Default constructor */
-	IdentityPreconditioner() = default;
-	/**
-	 * Constructs an identity preconditioner for the matrix @a A.
-	 * @param A
-	 */
-	IdentityPreconditioner(const CSRMatrix &)  {}
-	virtual ~IdentityPreconditioner() = default;
+    /** Default constructor */
+    IdentityPreconditioner() = default;
+    /**
+     * Constructs an identity preconditioner for the matrix @a A.
+     * @param A
+     */
+    IdentityPreconditioner(const CSRMatrix &)  {}
+    virtual ~IdentityPreconditioner() = default;
 
-	/**
-	 * Returns the preconditioned right-hand-side \f$P(b) = b\f$.
-	 */
-	Vector rhs(const Vector& b) const {
-		return b;
-	}
+    /**
+     * Returns the preconditioned right-hand-side \f$P(b) = b\f$.
+     */
+    Vector rhs(const Vector& b) const {
+        return b;
+    }
 };
 
 } /* namespace NetworKit */

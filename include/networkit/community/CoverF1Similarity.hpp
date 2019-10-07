@@ -25,31 +25,31 @@ namespace NetworKit {
  */
 class CoverF1Similarity : public LocalCoverEvaluation {
 public:
-	/**
-	 * Initialize the cover F1 similarity.
-	 *
-	 * @param G The graph on which the evaluation is performed.
-	 * @param C The cover that shall be evaluated.
-	 * @param reference The reference cover to which @a C shall be compared.
-	 */
-	CoverF1Similarity(const Graph& G, const Cover& C, const Cover& reference);
+    /**
+     * Initialize the cover F1 similarity.
+     *
+     * @param G The graph on which the evaluation is performed.
+     * @param C The cover that shall be evaluated.
+     * @param reference The reference cover to which @a C shall be compared.
+     */
+    CoverF1Similarity(const Graph& G, const Cover& C, const Cover& reference);
 
-	/**
-	 * Execute the algorithm.
-	 */
-	virtual void run() override;
+    /**
+     * Execute the algorithm.
+     */
+    virtual void run() override;
 
-	/**
-	 * @return false - smaller is not better, larger values indicate better matching clusters.
-	 */
-	virtual bool isSmallBetter() const override { return false; }
+    /**
+     * @return false - smaller is not better, larger values indicate better matching clusters.
+     */
+    virtual bool isSmallBetter() const override { return false; }
 
-	/**
-	 * @return false - this algorithm has not been parallelized.
-	 */
-	virtual bool isParallel() const override { return false; }
+    /**
+     * @return false - this algorithm has not been parallelized.
+     */
+    virtual bool isParallel() const override { return false; }
 private:
-	const Cover &reference;
+    const Cover &reference;
 };
 
 }

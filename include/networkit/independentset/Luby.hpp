@@ -23,10 +23,10 @@ Luby: public IndependentSetFinder {
 
 public:
 
-	// FIXME: check correctness of implementation
-	std::vector<bool> run(const Graph& G) override;
+    // FIXME: check correctness of implementation
+    std::vector<bool> run(const Graph& G) override;
 
-	std::string toString() const override;
+    std::string toString() const override;
 };
 
 } /* namespace NetworKit */

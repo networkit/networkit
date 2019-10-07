@@ -19,22 +19,22 @@ namespace NetworKit {
  */
 class PartitionHubDominance : public LocalPartitionEvaluation {
 public:
-	using LocalPartitionEvaluation::LocalPartitionEvaluation;
+    using LocalPartitionEvaluation::LocalPartitionEvaluation;
 
-	/**
-	 * Execute the algorithm.
-	 */
-	virtual void run() override;
+    /**
+     * Execute the algorithm.
+     */
+    virtual void run() override;
 
-	/**
-	 * @return false - small values are not better, large values indicate better cluster cohesion.
-	 */
-	virtual bool isSmallBetter() const override { return false; }
+    /**
+     * @return false - small values are not better, large values indicate better cluster cohesion.
+     */
+    virtual bool isSmallBetter() const override { return false; }
 
-	/**
-	 * @return false - this implementation is not paralle.
-	 */
-	virtual bool isParallel() const override { return false; }
+    /**
+     * @return false - this implementation is not paralle.
+     */
+    virtual bool isParallel() const override { return false; }
 };
 
 }

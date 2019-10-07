@@ -17,7 +17,7 @@ namespace NetworKit {
  */
 class EdgeCut: public QualityMeasure {
 public:
-	virtual double getQuality(const Partition& zeta, const Graph& G);
+    virtual double getQuality(const Partition& zeta, const Graph& G);
 };
 
 } /* namespace NetworKit */

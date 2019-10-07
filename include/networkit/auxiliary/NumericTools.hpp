@@ -26,12 +26,12 @@ static constexpr double acceptableError = 1e-12;
 
 template <typename T>
 bool willOverflow(const T& pX, const T& pValue, const T& pMax = std::numeric_limits<T>::max()) {
-	return pMax - pValue < pX;
+    return pMax - pValue < pX;
 }
 
 template <typename T>
 bool willUnderflow(const T& pX, const T& pValue, const T& pMin = std::numeric_limits<T>::min()) {
-	return pMin + pValue > pX;
+    return pMin + pValue > pX;
 }
 
 

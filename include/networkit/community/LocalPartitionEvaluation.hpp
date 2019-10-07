@@ -13,16 +13,16 @@ namespace NetworKit {
  */
 class LocalPartitionEvaluation : public LocalCommunityEvaluation {
 public:
-	/**
-	 * Initialize the partition evaluation method.
-	 *
-	 * @param G The graph on which the evaluation shall be performed
-	 * @param P The partition that shall be evaluated.
-	 */
-	LocalPartitionEvaluation(const Graph &G, const Partition &P);
+    /**
+     * Initialize the partition evaluation method.
+     *
+     * @param G The graph on which the evaluation shall be performed
+     * @param P The partition that shall be evaluated.
+     */
+    LocalPartitionEvaluation(const Graph &G, const Partition &P);
 protected:
-	const Graph &G;
-	const Partition &P;
+    const Graph &G;
+    const Partition &P;
 };
 
 }

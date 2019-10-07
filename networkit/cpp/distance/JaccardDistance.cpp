@@ -16,28 +16,28 @@ JaccardDistance::JaccardDistance(const Graph& G, const std::vector<count>& trian
 }
 
 void JaccardDistance::preprocess() {
-	if (!G.hasEdgeIds()) {
-		throw std::runtime_error("edges have not been indexed - call indexEdges first");
-	}
+    if (!G.hasEdgeIds()) {
+        throw std::runtime_error("edges have not been indexed - call indexEdges first");
+    }
 
-	jDistance = std::vector< double>(G.upperEdgeIdBound());
+    jDistance = std::vector< double>(G.upperEdgeIdBound());
 
-	G.parallelForEdges([&](node u, node v, edgeid eid) {
-		jDistance[eid] = getJaccardDistance(G.degree(u), G.degree(v), triangles[eid]);
-	});
+    G.parallelForEdges([&](node u, node v, edgeid eid) {
+        jDistance[eid] = getJaccardDistance(G.degree(u), G.degree(v), triangles[eid]);
+    });
 }
 
 double JaccardDistance::distance(node u, node v) {
-	edgeid eid = G.edgeId(u, v);
-	return getJaccardDistance(G.degree(u), G.degree(v), triangles[eid]);
+    edgeid eid = G.edgeId(u, v);
+    return getJaccardDistance(G.degree(u), G.degree(v), triangles[eid]);
 }
 
 std::vector<double> JaccardDistance::getEdgeScores() {
-	return jDistance;
+    return jDistance;
 }
 
 inline double JaccardDistance::getJaccardDistance(count degU, count degV, count t) {
-	return 1 - (t * 1.0 / (degU + degV - t));
+    return 1 - (t * 1.0 / (degU + degV - t));
 }
 
 } /* namespace NetworKit */

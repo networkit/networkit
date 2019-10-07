@@ -20,10 +20,10 @@ class LocalDegreeScore : public EdgeScore<double> {
 
 public:
 
-	LocalDegreeScore(const Graph& G);
-	virtual void run() override;
-	virtual double score(edgeid eid) override;
-	virtual double score(node u, node v) override;
+    LocalDegreeScore(const Graph& G);
+    virtual void run() override;
+    virtual double score(edgeid eid) override;
+    virtual double score(node u, node v) override;
 
 };
 

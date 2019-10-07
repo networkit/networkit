@@ -9,71 +9,71 @@
 #include <memory>
 
 void NetworKit::CoverHubDominance::run() {
-	hasRun = false;
-	Aux::SignalHandler handler;
+    hasRun = false;
+    Aux::SignalHandler handler;
 
-	std::unique_ptr<std::atomic<count>[]> maxInternalDeg(new std::atomic<count>[C.upperBound()]{});
+    std::unique_ptr<std::atomic<count>[]> maxInternalDeg(new std::atomic<count>[C.upperBound()]{});
 
-	handler.assureRunning();
+    handler.assureRunning();
 
-	G.balancedParallelForNodes([&](node u) {
-		for (index c : C[u]) {
-			count internalDeg = 0;
-			G.forNeighborsOf(u, [&](node v) {
-				if (C[v].count(c) > 0) {
-					internalDeg++;
-				}
-			});
+    G.balancedParallelForNodes([&](node u) {
+        for (index c : C[u]) {
+            count internalDeg = 0;
+            G.forNeighborsOf(u, [&](node v) {
+                if (C[v].count(c) > 0) {
+                    internalDeg++;
+                }
+            });
 
-			Aux::Parallel::atomic_max(maxInternalDeg[c], internalDeg);
-		}
-	});
+            Aux::Parallel::atomic_max(maxInternalDeg[c], internalDeg);
+        }
+    });
 
-	handler.assureRunning();
+    handler.assureRunning();
 
-	std::vector<count> clusterSizes(C.upperBound(), 0);
-	count numMemberships = 0;
+    std::vector<count> clusterSizes(C.upperBound(), 0);
+    count numMemberships = 0;
 
-	G.forNodes([&](node u) {
-		for (index c : C[u]) {
-			++clusterSizes[c];
-		}
+    G.forNodes([&](node u) {
+        for (index c : C[u]) {
+            ++clusterSizes[c];
+        }
 
-		numMemberships += C[u].size();
-	});
+        numMemberships += C[u].size();
+    });
 
-	handler.assureRunning();
+    handler.assureRunning();
 
-	unweightedAverage = 0;
-	weightedAverage = 0;
-	minimumValue = std::numeric_limits<double>::max();
-	maximumValue = std::numeric_limits<double>::lowest();
-	values.clear();
-	values.resize(C.upperBound(), 0);
+    unweightedAverage = 0;
+    weightedAverage = 0;
+    minimumValue = std::numeric_limits<double>::max();
+    maximumValue = std::numeric_limits<double>::lowest();
+    values.clear();
+    values.resize(C.upperBound(), 0);
 
-	count numClusters = 0;
+    count numClusters = 0;
 
-	for (index i = 0; i < C.upperBound(); ++i) {
-		if (clusterSizes[i] > 0) {
-			++numClusters;
+    for (index i = 0; i < C.upperBound(); ++i) {
+        if (clusterSizes[i] > 0) {
+            ++numClusters;
 
-			double dominance = 1;
-			if (clusterSizes[i] > 1) {
-				dominance = maxInternalDeg[i] * 1.0 / (clusterSizes[i] - 1);
-			}
+            double dominance = 1;
+            if (clusterSizes[i] > 1) {
+                dominance = maxInternalDeg[i] * 1.0 / (clusterSizes[i] - 1);
+            }
 
-			values[i] = dominance;
-			minimumValue = std::min(dominance, minimumValue);
-			maximumValue = std::max(dominance, maximumValue);
-			unweightedAverage += dominance;
-			weightedAverage += dominance * clusterSizes[i];
-		}
-	}
+            values[i] = dominance;
+            minimumValue = std::min(dominance, minimumValue);
+            maximumValue = std::max(dominance, maximumValue);
+            unweightedAverage += dominance;
+            weightedAverage += dominance * clusterSizes[i];
+        }
+    }
 
-	handler.assureRunning();
+    handler.assureRunning();
 
-	unweightedAverage /= numClusters;
-	weightedAverage /= numMemberships;
+    unweightedAverage /= numClusters;
+    weightedAverage /= numMemberships;
 
-	hasRun = true;
+    hasRun = true;
 }

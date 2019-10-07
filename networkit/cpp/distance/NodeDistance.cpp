@@ -10,7 +10,7 @@
 namespace NetworKit {
 
 NodeDistance::NodeDistance(const Graph& G) : G(G) {
-	// TODO Auto-generated constructor stub
+    // TODO Auto-generated constructor stub
 
 }
 

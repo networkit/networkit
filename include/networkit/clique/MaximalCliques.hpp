@@ -27,54 +27,54 @@ namespace NetworKit {
 class MaximalCliques : public Algorithm {
 
 public:
-	/**
-	 * Construct the maximal cliques algorithm with the given graph.
-	 *
-	 * If the @a maximumOnly argument is set, the algorithm will only store
-	 * the clique of maximum size. Further, this enables some optimizations
-	 * to skip smaller cliques more efficiently leading to a reduced
-	 * running time.
-	 *
-	 * @param G The graph to list the cliques for.
-	 * @param maximumOnly If only a maximum clique shall be found.
-	 */
-	MaximalCliques(const Graph& G, bool maximumOnly = false);
+    /**
+     * Construct the maximal cliques algorithm with the given graph.
+     *
+     * If the @a maximumOnly argument is set, the algorithm will only store
+     * the clique of maximum size. Further, this enables some optimizations
+     * to skip smaller cliques more efficiently leading to a reduced
+     * running time.
+     *
+     * @param G The graph to list the cliques for.
+     * @param maximumOnly If only a maximum clique shall be found.
+     */
+    MaximalCliques(const Graph& G, bool maximumOnly = false);
 
-	/**
-	 * Construct the maximal cliques algorithm with the given graph and a callback.
-	 *
-	 * The callback is called once for each found clique with a reference to the clique.
-	 * Note that the reference is to an internal object, the callback should not assume that
-	 * this reference is still valid after it returned.
-	 *
-	 * @param G The graph to list cliques for
-	 * @param callback The callback to call for each clique.
-	 */
-	MaximalCliques(const Graph& G, std::function<void(const std::vector<node>&)> callback);
+    /**
+     * Construct the maximal cliques algorithm with the given graph and a callback.
+     *
+     * The callback is called once for each found clique with a reference to the clique.
+     * Note that the reference is to an internal object, the callback should not assume that
+     * this reference is still valid after it returned.
+     *
+     * @param G The graph to list cliques for
+     * @param callback The callback to call for each clique.
+     */
+    MaximalCliques(const Graph& G, std::function<void(const std::vector<node>&)> callback);
 
-	/**
-	 * Execute the maximal clique listing algorithm.
-	 */
-	void run() override;
+    /**
+     * Execute the maximal clique listing algorithm.
+     */
+    void run() override;
 
-	/**
-	 * Return all found cliques unless a callback was given.
-	 *
-	 * This method will throw if a callback was given and thus the cliques were not stored.
-	 * If only the maximum clique was stored, it will return exactly one clique unless the graph
-	 * is empty.
-	 *
-	 * @return a vector of cliques, each being represented as a vector of nodes.
-	 */
-	const std::vector<std::vector<node>>& getCliques() const;
+    /**
+     * Return all found cliques unless a callback was given.
+     *
+     * This method will throw if a callback was given and thus the cliques were not stored.
+     * If only the maximum clique was stored, it will return exactly one clique unless the graph
+     * is empty.
+     *
+     * @return a vector of cliques, each being represented as a vector of nodes.
+     */
+    const std::vector<std::vector<node>>& getCliques() const;
 
 protected:
-	const Graph& G;
+    const Graph& G;
 
-	std::vector<std::vector<node>> result;
+    std::vector<std::vector<node>> result;
 
-	std::function<void(const std::vector<node>&)> callback;
-	bool maximumOnly;
+    std::function<void(const std::vector<node>&)> callback;
+    bool maximumOnly;
 };
 
 }

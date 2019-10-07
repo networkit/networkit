@@ -19,49 +19,49 @@ namespace NetworKit {
  */
 class StronglyConnectedComponents {
 public:
-	StronglyConnectedComponents(const Graph& G, bool iterativeAlgo=true);
+    StronglyConnectedComponents(const Graph& G, bool iterativeAlgo=true);
 
-	/**
-	 * This method determines the connected components for the graph g
-	 * (by default: iteratively).
-	 */
-	void run();
+    /**
+     * This method determines the connected components for the graph g
+     * (by default: iteratively).
+     */
+    void run();
 
-	/**
-	 * This method determines the connected components for the graph g
-	 * (iterative implementation).
-	 */
-	void runIteratively();
+    /**
+     * This method determines the connected components for the graph g
+     * (iterative implementation).
+     */
+    void runIteratively();
 
-	/**
-	 * This method determines the connected components for the graph g
-	 * (recursive implementation).
-	 */
-	void runRecursively();
+    /**
+     * This method determines the connected components for the graph g
+     * (recursive implementation).
+     */
+    void runRecursively();
 
-	/**
-	 * This method returns the number of connected components.
-	 */
-	count numberOfComponents();
+    /**
+     * This method returns the number of connected components.
+     */
+    count numberOfComponents();
 
-	/**
-	 * This method returns the the component in which node query is situated.
-	 *
-	 * @param[in]	query	the node whose component is asked for
-	 */
-	count componentOfNode(node u);
+    /**
+     * This method returns the the component in which node query is situated.
+     *
+     * @param[in]	query	the node whose component is asked for
+     */
+    count componentOfNode(node u);
 
 
-	/**
-	 * Return a Partition that represents the components
-	 */
-	Partition getPartition();
+    /**
+     * Return a Partition that represents the components
+     */
+    Partition getPartition();
 
 
 private:
-	const Graph& G;
-	bool iterativeAlgo;
-	Partition component;
+    const Graph& G;
+    bool iterativeAlgo;
+    Partition component;
 };
 
 }

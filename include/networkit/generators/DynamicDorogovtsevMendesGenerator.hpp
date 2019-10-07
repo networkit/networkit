@@ -20,15 +20,15 @@ class DynamicDorogovtsevMendesGenerator: public DynamicGraphGenerator {
 
 public:
 
-	DynamicDorogovtsevMendesGenerator();
+    DynamicDorogovtsevMendesGenerator();
 
-	std::vector<GraphEvent> generate(count nSteps) override;
+    std::vector<GraphEvent> generate(count nSteps) override;
 
 private:
 
-	std::vector<std::pair<node, node> > edges;
-	bool initial;
-	node u; // current node
+    std::vector<std::pair<node, node> > edges;
+    bool initial;
+    node u; // current node
 
 };
 
