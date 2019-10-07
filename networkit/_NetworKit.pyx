@@ -2346,6 +2346,8 @@ cdef class BarabasiAlbertGenerator(StaticGraphGenerator):
 	[1] Barabasi, Albert: Emergence of Scaling in Random Networks http://arxiv.org/pdf/cond-mat/9910332.pdf
 	[2] ALG 5 of Batagelj, Brandes: Efficient Generation of Large Random Networks https://kops.uni-konstanz.de/bitstream/handle/123456789/5799/random.pdf?sequence=1
 
+    BarabasiAlbertGenerator(k, nMax, n0=0, batagelj=True)
+
 	Parameters
 	----------
 	k : count
@@ -2684,9 +2686,8 @@ cdef class EdgeSwitchingMarkovChainGenerator(StaticGraphGenerator):
 cdef extern from "<networkit/generators/HyperbolicGenerator.hpp>":
 
 	cdef cppclass _HyperbolicGenerator "NetworKit::HyperbolicGenerator"(_StaticGraphGenerator):
-		# TODO: revert to count when cython issue fixed
-		_HyperbolicGenerator(unsigned int nodes,  double k, double gamma, double T) except +
-		void setLeafCapacity(unsigned int capacity) except +
+		_HyperbolicGenerator(count nodes,  double k, double gamma, double T) except +
+		void setLeafCapacity(count capacity) except +
 		void setTheoreticalSplit(bool_t split) except +
 		void setBalance(double balance) except +
 		vector[double] getElapsedMilliseconds() except +
@@ -2696,11 +2697,11 @@ cdef class HyperbolicGenerator(StaticGraphGenerator):
 	""" The Hyperbolic Generator distributes points in hyperbolic space and adds edges between points with a probability depending on their distance. The resulting graphs have a power-law degree distribution, small diameter and high clustering coefficient.
 For a temperature of 0, the model resembles a unit-disk model in hyperbolic space.
 
- 		HyperbolicGenerator(n, k=6, gamma=3, T=0)
+		HyperbolicGenerator(n=10000, k=6, gamma=3, T=0)
 
  		Parameters
 		----------
-		n : integer
+		n : int
 			number of nodes
 		k : double
 			average degree
@@ -2858,7 +2859,7 @@ cdef class RmatGenerator(StaticGraphGenerator):
 	Deepayan Chakrabarti, Yiping Zhan, Christos Faloutsos:
 	R-MAT: A Recursive Model for Graph Mining. SDM 2004: 442-446.
 
-	RmatGenerator(scale, edgeFactor, a, b, c, d)
+	RmatGenerator(scale, edgeFactor, a, b, c, d, weighted=False, reduceNodes=0)
 
 	Parameters
 	----------
@@ -2952,6 +2953,12 @@ cdef class PowerlawDegreeSequence:
 
 	If a list of degrees or a graph is given instead of a minimum degree, the class uses the minimum and maximum
 	value of the sequence and fits the exponent such that the expected average degree is the actual average degree.
+
+	PowerlawDegreeSequence(minDeg, maxDeg, gamma)
+
+	PowerlawDegreeSequence(degreeSequence)
+
+	PowerlawDegreeSequence(G)
 
 	Parameters
 	----------
