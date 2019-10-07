@@ -156,7 +156,7 @@ TEST(AlgebraicTriangleCountingGTest, testLocalClusteringCoefficient) {
     LocalClusteringCoefficient lcc(graph);
     timer.start();
     lcc.run();
-    std::vector<double> lccValues = lcc.scores(true);
+    std::vector<double> lccValues = lcc.scores();
     timer.stop();
 
     INFO("Graph theoretic local clustering coefficient took ", timer.elapsedTag());
