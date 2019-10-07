@@ -28,11 +28,19 @@
 
 namespace NetworKit {
 
-/**
- * Data type of nodes inside adjacency lists.
- * This is an internal detail of NetworKit; there is no need for users to use this type.
- */
-using storednode = node;
+#ifdef NETWORKIT_U32_NODES
+	/**
+	 * Data type of nodes inside adjacency lists.
+	 * This is an internal detail of NetworKit; there is no need for users to use this type.
+	 */
+	using storednode = uint32_t;
+#else
+	/**
+	 * Data type of nodes inside adjacency lists.
+	 * This is an internal detail of NetworKit; there is no need for users to use this type.
+	 */
+	using storednode = node;
+#endif
 
 /**
  * A weighted edge used for the graph constructor with
