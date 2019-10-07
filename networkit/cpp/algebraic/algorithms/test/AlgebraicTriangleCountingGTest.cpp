@@ -27,7 +27,7 @@ TEST(AlgebraicTriangleCountingGTest, testToyGraphOne) {
     AlgebraicTriangleCounting<CSRMatrix> atc(graph);
     atc.run();
 
-    std::vector<count> nodeScores = atc.getScores(true);
+    std::vector<count> nodeScores = atc.getScores();
 
     EXPECT_EQ(1u, nodeScores[0]) << "wrong triangle count";
     EXPECT_EQ(1u, nodeScores[1]) << "wrong triangle count";
@@ -50,8 +50,7 @@ TEST(AlgebraicTriangleCountingGTest, testToyGraphTwo) {
     atc.run();
 
     EXPECT_TRUE(atc.hasFinished());
-    std::vector<count> nodeScores = atc.getScores(true);
-    EXPECT_FALSE(atc.hasFinished());
+    std::vector<count> nodeScores = atc.getScores();
 
     EXPECT_EQ(1u, nodeScores[0]) << "wrong triangle count";
     EXPECT_EQ(1u, nodeScores[1]) << "wrong triangle count";
@@ -80,7 +79,7 @@ TEST(AlgebraicTriangleCountingGTest, testDirectedToyGraphOne) {
     AlgebraicTriangleCounting<CSRMatrix> atc(graph);
     atc.run();
 
-    std::vector<count> nodeScores = atc.getScores(true);
+    std::vector<count> nodeScores = atc.getScores();
 
     EXPECT_EQ(1u, nodeScores[0]) << "wrong triangle count";
     EXPECT_EQ(1u, nodeScores[1]) << "wrong triangle count";
@@ -99,7 +98,7 @@ TEST(AlgebraicTriangleCountingGTest, testDirectedToyGraphTwo) {
     AlgebraicTriangleCounting<CSRMatrix> atc(graph);
     atc.run();
 
-    std::vector<count> nodeScores = atc.getScores(true);
+    std::vector<count> nodeScores = atc.getScores();
 
     EXPECT_EQ(0u, nodeScores[0]) << "wrong triangle count";
     EXPECT_EQ(0u, nodeScores[1]) << "wrong triangle count";
@@ -121,7 +120,7 @@ TEST(AlgebraicTriangleCountingGTest, testDirectedToyGraphThree) {
     AlgebraicTriangleCounting<CSRMatrix> atc(graph);
     atc.run();
 
-    std::vector<count> nodeScores = atc.getScores(true);
+    std::vector<count> nodeScores = atc.getScores();
 
     EXPECT_EQ(2u, nodeScores[0]) << "wrong triangle count";
     EXPECT_EQ(2u, nodeScores[1]) << "wrong triangle count";
@@ -140,7 +139,7 @@ TEST(AlgebraicTriangleCountingGTest, testLocalClusteringCoefficient) {
     timer.start();
     atc.run();
 
-    std::vector<count> nodeScores = atc.getScores(true);
+    std::vector<count> nodeScores = atc.getScores();
     std::vector<double> lccAlgebraic(graph.numberOfNodes());
     graph.parallelForNodes([&](node u) {
         if (graph.degree(u) < 2) {
@@ -164,7 +163,6 @@ TEST(AlgebraicTriangleCountingGTest, testLocalClusteringCoefficient) {
     graph.forNodes([&](node u) {
         EXPECT_EQ(lccValues[u], lccAlgebraic[u]);
     });
-
 }
 
 } /* namespace NetworKit */
