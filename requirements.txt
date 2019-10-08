@@ -1,2 +1,3 @@
+cmake
 seaborn
 sklearn
