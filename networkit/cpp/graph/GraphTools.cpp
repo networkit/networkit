@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <unordered_map>
 
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/graph/GraphTools.hpp>

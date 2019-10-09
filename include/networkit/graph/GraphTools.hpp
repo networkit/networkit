@@ -136,8 +136,8 @@ Graph getRemappedGraph(const Graph& graph, count numNodes, UnaryIdMapper&& oldId
         std::forward<UnaryIdMapper>(oldIdToNew), [](node) { return false; }, preallocate);
 }
 
-
 }	// namespace GraphTools
+
 }	// namespace NetworKit
 
 #endif // NETWORKIT_GRAPH_GRAPH_TOOLS_HPP_

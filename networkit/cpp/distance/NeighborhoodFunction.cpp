@@ -8,6 +8,7 @@
 #include <networkit/distance/NeighborhoodFunction.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/auxiliary/Random.hpp>
+#include <networkit/graph/BFS.hpp>
 
 #include <math.h>
 #include <iterator>
@@ -29,7 +30,7 @@ void NeighborhoodFunction::run() {
     std::vector<std::map<count, count>> nf(max_threads);
     G.parallelForNodes([&](node u){
         index tid = omp_get_thread_num();
-        G.BFSfrom(u, [&](node, count dist) {
+        Traversal::BFSfrom(G, u, [&](node, count dist) {
             nf[tid][dist] += 1;
         });
     });

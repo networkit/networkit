@@ -6,6 +6,7 @@
  */
 
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/graph/BFS.hpp>
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/graph/SpanningForest.hpp>
 
@@ -30,7 +31,7 @@ Graph SpanningForest::generate() {
 
     G.forNodes([&](node s){
         if (! visited[s]) {
-            G.BFSEdgesFrom(s, [&](node u, node v, edgeweight w, edgeid) {
+            Traversal::BFSEdgesFrom(G, s, [&](node u, node v, edgeweight w, edgeid) {
                 visited[u] = true;
                 visited[v] = true;
                 F.addEdge(u, v, w);

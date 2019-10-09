@@ -1542,11 +1542,11 @@ public:
      * @param r Node.
      * @param handle Takes parameter <code>(node)</code>.
      */
-    template <typename L> void BFSfrom(node r, L handle) const;
+    template <typename L> void TLX_DEPRECATED(BFSfrom(node r, L handle) const);
     template <typename L>
-    void BFSfrom(const std::vector<node> &startNodes, L handle) const;
+    void TLX_DEPRECATED(BFSfrom(const std::vector<node> &startNodes, L handle) const);
 
-    template <typename L> void BFSEdgesFrom(node r, L handle) const;
+    template <typename L> void TLX_DEPRECATED(BFSEdgesFrom(node r, L handle) const);
 
     /**
      * Iterate over nodes in depth-first search order starting from r until
@@ -1555,9 +1555,9 @@ public:
      * @param r Node.
      * @param handle Takes parameter <code>(node)</code>.
      */
-    template <typename L> void DFSfrom(node r, L handle) const;
+    template <typename L> void TLX_DEPRECATED(DFSfrom(node r, L handle) const);
 
-    template <typename L> void DFSEdgesFrom(node r, L handle) const;
+    template <typename L> void TLX_DEPRECATED(DFSEdgesFrom(node r, L handle) const);
 };
 
 /* NODE ITERATORS */
@@ -1973,12 +1973,14 @@ template <typename L> double Graph::parallelSumForEdges(L handle) const {
 /* GRAPH SEARCHES */
 
 template <typename L> void Graph::BFSfrom(node r, L handle) const {
+    WARN("Graph::BFSfrom is deprecated, use Traversal::BFSfrom instead.");
     std::vector<node> startNodes(1, r);
     BFSfrom(startNodes, handle);
 }
 
 template <typename L>
 void Graph::BFSfrom(const std::vector<node> &startNodes, L handle) const {
+    WARN("Graph::BFSfrom is deprecated, use Traversal::BFSfrom instead.");
     std::vector<bool> marked(z);
     std::queue<node> q, qNext;
     count dist = 0;
@@ -2006,6 +2008,7 @@ void Graph::BFSfrom(const std::vector<node> &startNodes, L handle) const {
 }
 
 template <typename L> void Graph::BFSEdgesFrom(node r, L handle) const {
+    WARN("Graph::BFSEdgesFrom is deprecated, use Traversal::BFSEdgesFrom instead.");
     std::vector<bool> marked(z);
     std::queue<node> q;
     q.push(r); // enqueue root
@@ -2025,6 +2028,7 @@ template <typename L> void Graph::BFSEdgesFrom(node r, L handle) const {
 }
 
 template <typename L> void Graph::DFSfrom(node r, L handle) const {
+    WARN("Graph::DFSfrom is deprecated, use Traversal::DFSfrom instead.");
     std::vector<bool> marked(z);
     std::stack<node> s;
     s.push(r); // enqueue root
@@ -2044,6 +2048,7 @@ template <typename L> void Graph::DFSfrom(node r, L handle) const {
 }
 
 template <typename L> void Graph::DFSEdgesFrom(node r, L handle) const {
+    WARN("Graph::DFSEdgesFrom is deprecated, use Traversal::DFSEdgesFrom instead.");
     std::vector<bool> marked(z);
     std::stack<node> s;
     s.push(r); // enqueue root

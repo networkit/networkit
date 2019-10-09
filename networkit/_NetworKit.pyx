@@ -1285,6 +1285,8 @@ cdef class Graph:
 		callback : object
 			Any callable object that takes the parameter (node, count) (the second parameter is the depth)
 		"""
+		from warnings import warn
+		warn("Graph.BFSfrom is deprecated, use graph.Traversal.BFSfrom instead")
 		cdef NodeDistCallbackWrapper *wrapper
 		try:
 			wrapper = new NodeDistCallbackWrapper(callback)
@@ -1305,6 +1307,8 @@ cdef class Graph:
 		callback : object
 			Any callable object that takes the parameter (node, node)
 		"""
+		from warnings import warn
+		warn("Graph.BFSEdgesFrom is deprecated, use graph.Traversal.BFSEdgesFrom instead")
 		cdef EdgeCallBackWrapper *wrapper
 		try:
 			wrapper = new EdgeCallBackWrapper(callback)
@@ -1322,6 +1326,8 @@ cdef class Graph:
 		callback : object
 			Any callable object that takes the parameter node
 		"""
+		from warnings import warn
+		warn("Graph.DFSfrom is deprecated, use graph.Traversal.DFSfrom instead")
 		cdef NodeCallbackWrapper *wrapper
 		try:
 			wrapper = new NodeCallbackWrapper(callback)
@@ -1339,6 +1345,8 @@ cdef class Graph:
 		callback : object
 			Any callable object that takes the parameter (node, node)
 		"""
+		from warnings import warn
+		warn("Graph.DFSEdgesFrom is deprecated, use graph.Traversal.DFSEdgesFrom instead")
 		cdef NodePairCallbackWrapper *wrapper
 		try:
 			wrapper = new NodePairCallbackWrapper(callback)
@@ -4963,6 +4971,111 @@ cdef class GraphClusteringTools:
 	@staticmethod
 	def equalClustering(Partition zeta, Partition eta, Graph G):
 		return equalClusterings(zeta._this, eta._this, G._this)
+
+cdef extern from "<networkit/graph/BFS.hpp>" namespace "NetworKit::Traversal":
+
+	void BFSfrom[InputIt, Callback](_Graph G, InputIt first, InputIt last, Callback c) nogil except +
+	void BFSEdgesFrom[Callback](_Graph G, node source, Callback c) nogil except +
+
+cdef extern from "<networkit/graph/DFS.hpp>" namespace "NetworKit::Traversal":
+	void DFSfrom[Callback](_Graph G, node source, Callback c) nogil except +
+	void DFSEdgesFrom[Callback](_Graph G, node source, Callback c) nogil except +
+
+cdef class Traversal:
+
+	@staticmethod
+	def BFSfrom(Graph graph, start, object callback):
+		"""
+		Iterate over nodes in breadth-first search order starting from the given node(s).
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+		start : node/list
+			Single node or list of nodes from where the BFS will start.
+		callback : Function
+			Takes either one (node) or two (node, distance) input parameters.
+		"""
+
+		cdef NodeDistCallbackWrapper *wrapper
+		cdef vector[node] sources
+
+		try:
+			wrapper = new NodeDistCallbackWrapper(callback)
+			try:
+				sources = <vector[node]?>start
+			except TypeError:
+				sources = [<node?>start]
+			BFSfrom[vector[node].iterator, NodeDistCallbackWrapper](graph._this, sources.begin(),sources.end(), dereference(wrapper))
+		finally:
+			del wrapper
+
+	@staticmethod
+	def BFSEdgesFrom(Graph graph, node start, object callback):
+		"""
+		Iterate over edges in breadth-first search order starting from the given node(s).
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+		start : node/list
+			Single node or list of nodes from where the BFS will start.
+		callback : Function
+			Takes four input parameters: (u, v, edgeweight, edgeid)
+		"""
+
+		cdef EdgeCallBackWrapper *wrapper
+
+		try:
+			wrapper = new EdgeCallBackWrapper(callback)
+			BFSEdgesFrom[EdgeCallBackWrapper](graph._this, start, dereference(wrapper))
+		finally:
+			del wrapper
+
+	@staticmethod
+	def DFSfrom(Graph graph, node start, object callback):
+		"""
+		Iterate over nodes in depth-first search order starting from the given node(s).
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+		start : node
+			Source node from where the DFS will start.
+		callback : Function
+			Takes a node as input parameter.
+		"""
+		cdef NodeCallbackWrapper *wrapper
+		try:
+			wrapper = new NodeCallbackWrapper(callback)
+			DFSfrom[NodeCallbackWrapper](graph._this, start, dereference(wrapper))
+		finally:
+			del wrapper
+
+	@staticmethod
+	def DFSEdgesFrom(Graph graph, node start, object callback):
+		"""
+		Iterate over edges in depth-first search order starting from the given node(s).
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+		start : node
+			Source node from where the DFS will start.
+		callback : Function
+			Takes four input parameters: (u, v, edgeweight, edgeid)
+		"""
+		cdef EdgeCallBackWrapper *wrapper
+		try:
+			wrapper = new EdgeCallBackWrapper(callback)
+			DFSEdgesFrom[EdgeCallBackWrapper](graph._this, start, dereference(wrapper))
+		finally:
+			del wrapper
+
 
 cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphTools":
 
