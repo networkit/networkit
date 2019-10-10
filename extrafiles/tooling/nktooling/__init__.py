@@ -106,7 +106,7 @@ class FileRewriter:
 		"""
 		Checks whether the content written matches the content read (so far).
 		"""
-		return self.in_lines == self.out_lines
+		return "".join( self.in_lines ) == "".join( self.out_lines )
 
 	def commit(self, force = False):
 		"""
