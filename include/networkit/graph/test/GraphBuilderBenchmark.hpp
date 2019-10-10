@@ -5,8 +5,6 @@
  *      Author: Marvin Ritter (marvin.ritter@gmail.com)
  */
 
-#ifndef NOGTEST
-
 #ifndef GRAPH_BUILDER_BENCHMARK_H_
 #define GRAPH_BUILDER_BENCHMARK_H_
 
@@ -64,5 +62,3 @@ public:
 } /* namespace NetworKit */
 
 #endif /* GRAPH_BUILDER_BENCHMARK_H_ */
-
-#endif /*NOGTEST */
