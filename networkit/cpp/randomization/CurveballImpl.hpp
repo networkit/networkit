@@ -3,6 +3,7 @@
  *
  * Author: Hung Tran <htran@ae.cs.uni-frankfurt.de>
  */
+// networkit-format
 #ifndef RANDOMIZATION_CURVEBALL_IMPL_H
 #define RANDOMIZATION_CURVEBALL_IMPL_H
 
@@ -48,8 +49,7 @@ public:
 
     // Receives the degree_vector to initialize
     // As trades permute neighbours the degrees don't change
-    CurveballAdjacencyList(const degree_vector &degrees,
-                           const edgeid degree_count);
+    CurveballAdjacencyList(const degree_vector &degrees, const edgeid degree_count);
 
     void initialize(const degree_vector &degrees, const edgeid degree_count);
 
@@ -58,17 +58,13 @@ public:
     // No Copy Constructor
     CurveballAdjacencyList(const CurveballAdjacencyList &) = delete;
 
-    neighbour_it begin(const node node_id) {
-        return neighbours.begin() + begins[node_id];
-    }
+    neighbour_it begin(const node node_id) { return neighbours.begin() + begins[node_id]; }
 
     neighbour_it end(const node node_id) {
         return neighbours.begin() + begins[node_id] + offsets[node_id];
     }
 
-    cneighbour_it cbegin(const node node_id) const {
-        return neighbours.cbegin() + begins[node_id];
-    }
+    cneighbour_it cbegin(const node node_id) const { return neighbours.cbegin() + begins[node_id]; }
 
     cneighbour_it cend(const node node_id) const {
         return neighbours.cbegin() + begins[node_id] + offsets[node_id];

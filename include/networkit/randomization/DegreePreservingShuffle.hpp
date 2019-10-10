@@ -4,6 +4,8 @@
  *  Created on: 21.08.2018
  *      Author: Manuel Penschuck <networkit@manuel.jetzt>
  */
+// networkit-format
+
 #ifndef NETWORKIT_RANDOMIZATION_DEGREE_PRESERVING_SHUFFLE_HPP_
 #define NETWORKIT_RANDOMIZATION_DEGREE_PRESERVING_SHUFFLE_HPP_
 
@@ -40,7 +42,7 @@ public:
      *
      * @param G Input graph that will be shuffled
      */
-    explicit DegreePreservingShuffle(const Graph& G);
+    explicit DegreePreservingShuffle(const Graph &G);
 
     virtual ~DegreePreservingShuffle();
 
@@ -62,23 +64,17 @@ public:
      *
      * @warning Invoke run() before calling this function.
      */
-    const std::vector<node>& getPermutation() const noexcept {
-        return permutation;
-    }
+    const std::vector<node> &getPermutation() const noexcept { return permutation; }
 
     std::string toString() const override final;
 
-    bool isParallel() const override final {
-        return true;
-    }
+    bool isParallel() const override final { return true; }
 
 private:
-    const Graph& G;
+    const Graph &G;
     std::vector<node> permutation;
-
 };
 
-} // ! namespace NetworKit
+} // namespace NetworKit
 
 #endif // NETWORKIT_RANDOMIZATION_DEGREE_PRESERVING_SHUFFLE_HPP_
-

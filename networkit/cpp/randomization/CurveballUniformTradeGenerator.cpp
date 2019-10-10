@@ -4,15 +4,15 @@
  *  Created on: Jul 11, 2017
  *  	Author: Hung Tran <htran@ae.cs.uni-frankfurt.de>
  */
+// networkit-format
 
-#include <cassert>
 #include <algorithm>
+#include <cassert>
 #include <vector>
 
 #include <networkit/randomization/CurveballUniformTradeGenerator.hpp>
 
 #include <networkit/auxiliary/Random.hpp>
-
 
 namespace NetworKit {
 

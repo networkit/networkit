@@ -4,13 +4,14 @@
  *  Created on: 26.05.2018
  *      Author: Manuel Penschuck <networkit@manuel.jetzt>
  */
+// networkit-format
 #ifndef RANDOMIZATION_GLOBAL_CURVEBALL_IMPL_H_
 #define RANDOMIZATION_GLOBAL_CURVEBALL_IMPL_H_
 
 #include <algorithm>
 #include <cassert>
-#include <utility>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include <tlx/algorithm/random_bipartition_shuffle.hpp>
@@ -23,15 +24,15 @@
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/GraphBuilder.hpp>
-#include <networkit/randomization/GlobalTradeSequence.hpp>
 #include <networkit/randomization/GlobalCurveball.hpp>
+#include <networkit/randomization/GlobalTradeSequence.hpp>
 
 namespace NetworKit {
 namespace CurveballDetails {
 
 template <typename T1, typename T2>
 struct PairFirst {
-    T1 operator()(const std::pair<T1, T2>& p) {return p.first;}
+    T1 operator()(const std::pair<T1, T2> &p) { return p.first; }
 };
 
 /**
@@ -41,35 +42,31 @@ struct PairFirst {
  * GlobalCurveball.
  */
 class GlobalCurveballImpl {
-    using edgelist_type = std::vector<std::pair<node, node> >;
+    using edgelist_type = std::vector<std::pair<node, node>>;
     using extract_type = PairFirst<node, node>;
-    using tfp_queue_type = tlx::RadixHeap< std::pair<node, node>, extract_type , node, 256>;
+    using tfp_queue_type = tlx::RadixHeap<std::pair<node, node>, extract_type, node, 256>;
 
 public:
-    GlobalCurveballImpl(const Graph &G, bool allowSelfLoops) :
-        inputGraph(G), allowSelfLoops(allowSelfLoops)
-    {
+    GlobalCurveballImpl(const Graph &G, bool allowSelfLoops)
+        : inputGraph(G), allowSelfLoops(allowSelfLoops) {
         assert(!allowSelfLoops || inputGraph.isDirected());
     }
 
     template <bool Directed, typename TradeSequence>
-    void run(TradeSequence& trade_sequence, const std::vector<node>* permutation = nullptr) {
+    void run(TradeSequence &trade_sequence, const std::vector<node> *permutation = nullptr) {
         Aux::SignalHandler handler;
 
         if (hasRun) {
-            throw std::runtime_error {"Cannot invoke run several times"};
+            throw std::runtime_error{"Cannot invoke run several times"};
         }
 
         Aux::Timer timer;
         timer.start();
 
-        std::vector<node>
-            neighbourhood_of_u,
-            neighbourhood_of_v,
-            disjoint_neighbours,
+        std::vector<node> neighbourhood_of_u, neighbourhood_of_v, disjoint_neighbours,
             common_neighbours;
 
-        auto& urng = Aux::Random::getURNG();
+        auto &urng = Aux::Random::getURNG();
 
         // copy input graph into queue
         tfp_queue_type current_pq;
@@ -78,7 +75,7 @@ public:
             Aux::Timer loadTimer;
             loadTimer.start();
 
-            auto permute = [permutation] (node u) -> node {
+            auto permute = [permutation](node u) -> node {
                 return permutation ? (*permutation)[u] : u;
             };
 
@@ -88,7 +85,8 @@ public:
                 const auto hint_u = current_pq.get_bucket_key(hashed_u);
                 inputGraph.forNeighborsOf(orig_u, [&](node v) {
                     v = permute(v);
-                    if (!Directed && u > v) return; // only one message per undirected edge
+                    if (!Directed && u > v)
+                        return; // only one message per undirected edge
 
                     const auto hashed_v = trade_sequence.hash(v);
 
@@ -108,9 +106,8 @@ public:
         tfp_queue_type next_pq;
 
         typename tfp_queue_type::bucket_data_type pq_bucket;
-        auto receive_neighbours = [&pq_bucket, &current_pq, this]
-            (std::vector<node>& neighbourhood, node x) {
-
+        auto receive_neighbours = [&pq_bucket, &current_pq, this](std::vector<node> &neighbourhood,
+                                                                  node x) {
             if (current_pq.empty()) {
                 neighbourhood.clear();
 
@@ -118,7 +115,7 @@ public:
                 current_pq.swap_top_bucket(pq_bucket);
                 neighbourhood.resize(pq_bucket.size());
                 std::transform(pq_bucket.cbegin(), pq_bucket.cend(), neighbourhood.begin(),
-                    [](const std::pair<node, node> &p) { return p.second; });
+                               [](const std::pair<node, node> &p) { return p.second; });
 
                 assert(inputGraph.degree(x) - neighbourhood.size() <= 1);
                 tlx::unused(x, inputGraph);
@@ -126,13 +123,13 @@ public:
             }
         };
 
-        for(size_t round = 0; round < trade_sequence.numberOfRounds(); round++) {
+        for (size_t round = 0; round < trade_sequence.numberOfRounds(); round++) {
             assert(next_pq.empty());
             assert(current_pq.size() == inputGraph.numberOfEdges());
             trade_sequence.switchToRound(round);
 
             count trade = 0;
-            while(!current_pq.empty()) {
+            while (!current_pq.empty()) {
                 handler.assureRunning();
                 trade++;
 
@@ -166,7 +163,8 @@ public:
                     }
 
                     if (Directed) {
-                        auto it = std::find(neighbourhood_of_v.begin(), neighbourhood_of_v.end(), u);
+                        auto it =
+                            std::find(neighbourhood_of_v.begin(), neighbourhood_of_v.end(), u);
                         if (it != neighbourhood_of_v.end()) {
                             *it = neighbourhood_of_v.back();
                             neighbourhood_of_v.pop_back();
@@ -191,13 +189,15 @@ public:
                 const auto num_neighbourhood_of_v = neighbourhood_of_v.size();
 
                 if (num_neighbourhood_of_u < num_neighbourhood_of_v) {
-                    computeCommonDisjointNeighbour(neighbourhood_of_u, neighbourhood_of_v, common_neighbours, disjoint_neighbours);
+                    computeCommonDisjointNeighbour(neighbourhood_of_u, neighbourhood_of_v,
+                                                   common_neighbours, disjoint_neighbours);
                 } else {
-                    computeCommonDisjointNeighbour(neighbourhood_of_v, neighbourhood_of_u, common_neighbours, disjoint_neighbours);
+                    computeCommonDisjointNeighbour(neighbourhood_of_v, neighbourhood_of_u,
+                                                   common_neighbours, disjoint_neighbours);
                 }
 
                 // Directly forward neighbours shared by both nodes
-                for(const auto neighbour : common_neighbours) {
+                for (const auto neighbour : common_neighbours) {
                     if (Directed) {
                         next_pq.emplace_in_bucket(next_bucket_u, next_hashed_u, neighbour);
                         next_pq.emplace_in_bucket(next_bucket_v, next_hashed_v, neighbour);
@@ -218,20 +218,23 @@ public:
                             const bool v_larger = neighbour_hash < next_hashed_v;
 
                             if (u_larger && v_larger) {
-                                const auto hint = next_pq.emplace(neighbour_hash, neighbour_hash, u);
+                                const auto hint =
+                                    next_pq.emplace(neighbour_hash, neighbour_hash, u);
                                 next_pq.emplace_in_bucket(hint, neighbour_hash, v);
 
                             } else {
                                 if (u_larger) {
                                     next_pq.emplace(neighbour_hash, neighbour_hash, u);
                                 } else {
-                                    next_pq.emplace_in_bucket(next_bucket_u, next_hashed_u, neighbour);
+                                    next_pq.emplace_in_bucket(next_bucket_u, next_hashed_u,
+                                                              neighbour);
                                 }
 
                                 if (v_larger) {
                                     next_pq.emplace(neighbour_hash, neighbour_hash, v);
                                 } else {
-                                    next_pq.emplace_in_bucket(next_bucket_v, next_hashed_v, neighbour);
+                                    next_pq.emplace_in_bucket(next_bucket_v, next_hashed_v,
+                                                              neighbour);
                                 }
                             }
                         }
@@ -240,11 +243,11 @@ public:
 
                 // Shuffle and send disjoint edges
                 {
-                    auto send_edge = [&]
-                        (node trade_node, node trade_node_hash, size_t trade_node_bucket, node neighbour) {
-
+                    auto send_edge = [&](node trade_node, node trade_node_hash,
+                                         size_t trade_node_bucket, node neighbour) {
                         if (Directed) {
-                            next_pq.emplace_in_bucket(trade_node_bucket, trade_node_hash, neighbour);
+                            next_pq.emplace_in_bucket(trade_node_bucket, trade_node_hash,
+                                                      neighbour);
                             return;
                         }
 
@@ -257,7 +260,8 @@ public:
                             if (neighbour_hash < trade_node_hash) {
                                 next_pq.emplace(neighbour_hash, neighbour_hash, trade_node);
                             } else {
-                                next_pq.emplace_in_bucket(trade_node_bucket, trade_node_hash, neighbour);
+                                next_pq.emplace_in_bucket(trade_node_bucket, trade_node_hash,
+                                                          neighbour);
                             }
                         }
                     };
@@ -268,14 +272,12 @@ public:
                     assert(u_setsize + v_setsize == disjoint_neighbours.size());
 
                     tlx::random_bipartition_shuffle(disjoint_neighbours.begin(),
-                                                    disjoint_neighbours.end(),
-                                                    u_setsize, urng);
+                                                    disjoint_neighbours.end(), u_setsize, urng);
 
                     size_t i = 0;
                     for (; i < u_setsize; i++) {
                         send_edge(u, next_hashed_u, next_bucket_u, disjoint_neighbours[i]);
                     }
-
 
                     for (; i < setsize; i++) {
                         send_edge(v, next_hashed_v, next_bucket_v, disjoint_neighbours[i]);
@@ -298,15 +300,14 @@ public:
                 assert(current_pq.size() + next_pq.size() == inputGraph.numberOfEdges());
             }
 
-
-            #ifndef NDEBUG
+#ifndef NDEBUG
             // After a global trade at most one node may remain with messages
-            if (!current_pq.empty()){
+            if (!current_pq.empty()) {
                 current_pq.swap_top_bucket(pq_bucket);
                 pq_bucket.clear();
                 assert(current_pq.empty());
             }
-            #endif
+#endif
             current_pq.clear();
             std::swap(current_pq, next_pq);
         }
@@ -322,14 +323,12 @@ public:
         const bool is_directed = inputGraph.isDirected();
         GraphBuilder builder(inputGraph.numberOfNodes(), false, is_directed);
 
-
         if (is_directed) {
             for (; !prioQueue.empty(); prioQueue.pop()) {
                 const auto top = prioQueue.top();
                 assert(allowSelfLoops || top.first != top.second);
                 builder.addHalfOutEdge(top.first, top.second);
                 builder.addHalfInEdge(top.second, top.first);
-
             }
 
         } else {
@@ -346,15 +345,13 @@ public:
         return builder.toGraph(false, true);
     }
 
-    const Graph& getInputGraph() const {
-        return inputGraph;
-    }
+    const Graph &getInputGraph() const { return inputGraph; }
 
 protected:
-    bool hasRun {false};
+    bool hasRun{false};
     tfp_queue_type prioQueue;
 
-    const Graph& inputGraph;
+    const Graph &inputGraph;
     const bool allowSelfLoops; ///< Allow self loops (only relevant for directed graphs)
 
     void computeCommonDisjointNeighbour(std::vector<node> &neighbourhood_of_u,
@@ -372,26 +369,27 @@ protected:
 
         size_t remaining_hits = neighbourhood_of_u.size() / 2;
 
-        #ifndef NDEBUG
+#ifndef NDEBUG
         const size_t initial_size = neighbourhood_of_u.size() + neighbourhood_of_v.size();
-        #endif
+#endif
 
-        for(const auto nv : neighbourhood_of_v) {
-            const auto u_it = std::lower_bound(neighbourhood_of_u.begin(),
-                neighbourhood_of_u.end(), nv,
-                [=] (const node u, const node v) {return (u&MASK) < v;});
+        for (const auto nv : neighbourhood_of_v) {
+            const auto u_it =
+                std::lower_bound(neighbourhood_of_u.begin(), neighbourhood_of_u.end(), nv,
+                                 [=](const node u, const node v) { return (u & MASK) < v; });
 
             if (u_it != neighbourhood_of_u.cend() && *u_it == nv) {
                 common_neighbours.push_back(nv);
                 *u_it |= BIT;
 
-                if (!--remaining_hits)
-                {
-                    auto new_end = std::remove_if(neighbourhood_of_u.begin(), neighbourhood_of_u.end(),
-                        [=] (const node u) {return u & BIT;});
+                if (!--remaining_hits) {
+                    auto new_end =
+                        std::remove_if(neighbourhood_of_u.begin(), neighbourhood_of_u.end(),
+                                       [=](const node u) { return u & BIT; });
                     neighbourhood_of_u.resize(std::distance(neighbourhood_of_u.begin(), new_end));
                     remaining_hits = neighbourhood_of_u.size() / 2;
-                    if (remaining_hits < 8) remaining_hits = neighbourhood_of_u.size();
+                    if (remaining_hits < 8)
+                        remaining_hits = neighbourhood_of_u.size();
                 }
 
             } else {
@@ -400,19 +398,19 @@ protected:
         }
 
         auto new_end = std::remove_if(neighbourhood_of_u.begin(), neighbourhood_of_u.end(),
-                                      [=] (const node u) {return u & BIT;});
+                                      [=](const node u) { return u & BIT; });
         disjoint_neighbours.insert(disjoint_neighbours.end(), neighbourhood_of_u.begin(), new_end);
 
-        assert(2*common_neighbours.size() + disjoint_neighbours.size() == initial_size);
-        #ifndef NDEBUG
-        for(auto x : common_neighbours)
-            assert(std::find(disjoint_neighbours.cbegin(), disjoint_neighbours.cend(), x) == disjoint_neighbours.cend());
-        #endif
+        assert(2 * common_neighbours.size() + disjoint_neighbours.size() == initial_size);
+#ifndef NDEBUG
+        for (auto x : common_neighbours)
+            assert(std::find(disjoint_neighbours.cbegin(), disjoint_neighbours.cend(), x)
+                   == disjoint_neighbours.cend());
+#endif
     }
-
 };
 
-} // ! namespace CurveballDetails
-} // ! namespace NetworKit
+} // namespace CurveballDetails
+} // namespace NetworKit
 
 #endif // ! RANDOMIZATION_GLOBAL_CURVEBALL_IMPL_H_

@@ -4,6 +4,7 @@
  *  Created on: Jul 11, 2017
  *      Author: Hung Tran <htran@ae.cs.uni-frankfurt.de>
  */
+// networkit-format
 
 #include <gtest/gtest.h>
 
@@ -27,4 +28,4 @@ TEST_F(CurveballGlobalTradeGeneratorGTest, testTradeNumber) {
     ASSERT_EQ(tradesOddTimesFive.size(), 35u);
 }
 
-}
+} // namespace NetworKit

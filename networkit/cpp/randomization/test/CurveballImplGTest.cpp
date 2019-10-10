@@ -4,6 +4,7 @@
  *  Created on: 26.08.2018
  *      Author:  Hung Tran <htran@ae.cs.uni-frankfurt.de>
  */
+// networkit-format
 
 #include <gtest/gtest.h>
 
@@ -12,7 +13,6 @@
 namespace NetworKit {
 
 class CurveballImplGTest : public ::testing::Test {};
-
 
 namespace CurveballDetails {
 
@@ -160,14 +160,8 @@ TEST_F(CurveballImplGTest, testContainerByInitialize) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
 TEST_F(CurveballImplGTest, testTradeListConstructor) {
-    std::vector<trade_descriptor> trades = {{1, 2},
-                                           {1, 3},
-                                           {1, 4},
-                                           {1, 5},
-                                           {2, 5},
-                                           {5, 8}};
+    std::vector<trade_descriptor> trades = {{1, 2}, {1, 3}, {1, 4}, {1, 5}, {2, 5}, {5, 8}};
 
     /*
      * Expected Structure:
@@ -242,12 +236,7 @@ TEST_F(CurveballImplGTest, testTradeListConstructor) {
 }
 
 TEST_F(CurveballImplGTest, testTradeListInitialize) {
-    std::vector<trade_descriptor> trades = {{1, 2},
-                                           {1, 3},
-                                           {1, 4},
-                                           {1, 5},
-                                           {2, 5},
-                                           {5, 8}};
+    std::vector<trade_descriptor> trades = {{1, 2}, {1, 3}, {1, 4}, {1, 5}, {2, 5}, {5, 8}};
 
     /*
      * Expected Structure:

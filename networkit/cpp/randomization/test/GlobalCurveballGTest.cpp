@@ -4,24 +4,24 @@
  *  Created on: 24.05.2018
  *      Author: Manuel Penschuck (networkit@manuel.jetzt)
  */
+// networkit-format
 
 #include <gtest/gtest.h>
 
-#include <networkit/randomization/GlobalCurveball.hpp>
-#include <networkit/graph/Graph.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/generators/HyperbolicGenerator.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/randomization/GlobalCurveball.hpp>
 
 namespace NetworKit {
 
-class GlobalCurveballGTest : public ::testing::Test  {
+class GlobalCurveballGTest : public ::testing::Test {
 protected:
-    void checkWithUndirectedGraph(Graph&);
-    void checkWithDirectedGraph(Graph& G, bool selfLoops);
-
+    void checkWithUndirectedGraph(Graph &);
+    void checkWithDirectedGraph(Graph &G, bool selfLoops);
 };
 
-void GlobalCurveballGTest::checkWithUndirectedGraph(Graph& G) {
+void GlobalCurveballGTest::checkWithUndirectedGraph(Graph &G) {
     ASSERT_FALSE(G.isDirected());
 
     node numNodes = G.numberOfNodes();
@@ -48,18 +48,15 @@ void GlobalCurveballGTest::checkWithUndirectedGraph(Graph& G) {
         }
     });
 
-
     GlobalCurveball algo(G, numTrades);
     algo.run();
 
     // check degrees
     Graph outG = algo.getGraph();
-    outG.forNodes([&](node u){
-        ASSERT_EQ(degrees[u], outG.degree(u));
-    });
+    outG.forNodes([&](node u) { ASSERT_EQ(degrees[u], outG.degree(u)); });
 }
 
-void GlobalCurveballGTest::checkWithDirectedGraph(Graph& G, bool selfLoops) {
+void GlobalCurveballGTest::checkWithDirectedGraph(Graph &G, bool selfLoops) {
     ASSERT_TRUE(G.isDirected());
 
     node numNodes = G.numberOfNodes();
@@ -88,13 +85,12 @@ void GlobalCurveballGTest::checkWithDirectedGraph(Graph& G, bool selfLoops) {
         }
     });
 
-
     GlobalCurveball algo(G, numTrades, selfLoops);
     algo.run();
 
     // check degrees
     Graph outG = algo.getGraph();
-    outG.forNodes([&](node u){
+    outG.forNodes([&](node u) {
         ASSERT_EQ(degreesIn[u], outG.degreeIn(u));
         ASSERT_EQ(degreesOut[u], outG.degreeOut(u));
     });
@@ -105,7 +101,6 @@ void GlobalCurveballGTest::checkWithDirectedGraph(Graph& G, bool selfLoops) {
         ASSERT_EQ(outG.numberOfSelfLoops(), 0);
     }
 }
-
 
 TEST_F(GlobalCurveballGTest, testCurveballUndirectedErdosRenyi) {
     Aux::Random::setSeed(1, false);
@@ -146,7 +141,5 @@ TEST_F(GlobalCurveballGTest, testCurveballHyperbolic) {
 
     this->checkWithUndirectedGraph(G);
 }
-
-
 
 } // namespace NetworKit
