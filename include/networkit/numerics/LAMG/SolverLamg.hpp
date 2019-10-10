@@ -5,8 +5,8 @@
  *      Author: Michael
  */
 
-#ifndef SOLVERLAMG_H_
-#define SOLVERLAMG_H_
+#ifndef NETWORKIT_NUMERICS_LAMG_SOLVER_LAMG_HPP_
+#define NETWORKIT_NUMERICS_LAMG_SOLVER_LAMG_HPP_
 
 #include <cmath>
 #include <vector>
@@ -355,4 +355,4 @@ void SolverLamg<Matrix>::minRes(index level, Vector& x, const Vector& r) {
 
 } /* namespace NetworKit */
 
-#endif /* SOLVERLAMG_H_ */
+#endif // NETWORKIT_NUMERICS_LAMG_SOLVER_LAMG_HPP_

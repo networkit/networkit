@@ -5,8 +5,8 @@
  * 		 Author: Eugenio Angriman
  */
 
-#ifndef HARMONICCLOSENESS_H_
-#define HARMONICCLOSENESS_H_
+#ifndef NETWORKIT_CENTRALITY_HARMONIC_CLOSENESS_HPP_
+#define NETWORKIT_CENTRALITY_HARMONIC_CLOSENESS_HPP_
 
 #include <networkit/centrality/Centrality.hpp>
 
@@ -45,4 +45,4 @@ public:
 };
 } // namespace NetworKit
 
-#endif
+#endif // NETWORKIT_CENTRALITY_HARMONIC_CLOSENESS_HPP_

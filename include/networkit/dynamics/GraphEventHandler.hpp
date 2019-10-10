@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef GRAPHEVENTHANDLER_H_
-#define GRAPHEVENTHANDLER_H_
+#ifndef NETWORKIT_DYNAMICS_GRAPH_EVENT_HANDLER_HPP_
+#define NETWORKIT_DYNAMICS_GRAPH_EVENT_HANDLER_HPP_
 
 #include <networkit/graph/Graph.hpp>
 
@@ -36,4 +36,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* GRAPHEVENTHANDLER_H_ */
+#endif // NETWORKIT_DYNAMICS_GRAPH_EVENT_HANDLER_HPP_

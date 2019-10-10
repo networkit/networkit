@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef PAGERANK_H_
-#define PAGERANK_H_
+#ifndef NETWORKIT_CENTRALITY_PAGE_RANK_HPP_
+#define NETWORKIT_CENTRALITY_PAGE_RANK_HPP_
 
 #include <networkit/centrality/Centrality.hpp>
 
@@ -46,4 +46,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* PAGERANK_H_ */
+#endif // NETWORKIT_CENTRALITY_PAGE_RANK_HPP_

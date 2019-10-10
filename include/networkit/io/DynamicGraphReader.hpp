@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef DYNAMICGRAPHREADER_H_
-#define DYNAMICGRAPHREADER_H_
+#ifndef NETWORKIT_IO_DYNAMIC_GRAPH_READER_HPP_
+#define NETWORKIT_IO_DYNAMIC_GRAPH_READER_HPP_
 
 #include <networkit/dynamics/GraphEventProxy.hpp>
 
@@ -26,4 +26,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* DYNAMICGRAPHREADER_H_ */
+#endif // NETWORKIT_IO_DYNAMIC_GRAPH_READER_HPP_

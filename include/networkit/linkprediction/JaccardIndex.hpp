@@ -5,8 +5,8 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#ifndef JACCARDINDEX_H_
-#define JACCARDINDEX_H_
+#ifndef NETWORKIT_LINKPREDICTION_JACCARD_INDEX_HPP_
+#define NETWORKIT_LINKPREDICTION_JACCARD_INDEX_HPP_
 
 #include <networkit/linkprediction/LinkPredictor.hpp>
 
@@ -36,4 +36,4 @@ public:
 
 } // namespace NetworKit
 
-#endif /* JACCARDINDEX_H_ */
+#endif // NETWORKIT_LINKPREDICTION_JACCARD_INDEX_HPP_

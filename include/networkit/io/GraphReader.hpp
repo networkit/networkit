@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef GRAPHREADER_H_
-#define GRAPHREADER_H_
+#ifndef NETWORKIT_IO_GRAPH_READER_HPP_
+#define NETWORKIT_IO_GRAPH_READER_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/auxiliary/StringTools.hpp>
@@ -45,4 +45,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* GRAPHREADER_H_ */
+#endif // NETWORKIT_IO_GRAPH_READER_HPP_

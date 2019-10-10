@@ -5,8 +5,8 @@
  *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
  */
 
-#ifndef HYPERBOLICGENERATOR_H_
-#define HYPERBOLICGENERATOR_H_
+#ifndef NETWORKIT_GENERATORS_HYPERBOLIC_GENERATOR_HPP_
+#define NETWORKIT_GENERATORS_HYPERBOLIC_GENERATOR_HPP_
 
 #include <cmath>
 
@@ -231,4 +231,4 @@ private:
     vector<Aux::Timer> threadtimers;
 };
 }
-#endif /* HYPERBOLICGENERATOR_H_ */
+#endif // NETWORKIT_GENERATORS_HYPERBOLIC_GENERATOR_HPP_

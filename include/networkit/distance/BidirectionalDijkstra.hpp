@@ -5,8 +5,8 @@
  *      Author: Eugenio Angriman <angrimae@hu-berlin.de>
  */
 
-#ifndef BIDIRECTIONALDIJKSTRA_H
-#define BIDIRECTIONALDIJKSTRA_H
+#ifndef NETWORKIT_DISTANCE_BIDIRECTIONAL_DIJKSTRA_HPP_
+#define NETWORKIT_DISTANCE_BIDIRECTIONAL_DIJKSTRA_HPP_
 
 #include <networkit/distance/STSP.hpp>
 #include <tlx/container/d_ary_addressable_int_heap.hpp>
@@ -73,4 +73,4 @@ private:
     tlx::d_ary_addressable_int_heap<node, 2, CompareST> stH{CompareST(dist1, dist2)};
 };
 } // namespace NetworKit
-#endif
+#endif // NETWORKIT_DISTANCE_BIDIRECTIONAL_DIJKSTRA_HPP_

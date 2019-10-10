@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef MATCHINGCONTRACTER_H_
-#define MATCHINGCONTRACTER_H_
+#ifndef NETWORKIT_COARSENING_MATCHING_COARSENING_HPP_
+#define NETWORKIT_COARSENING_MATCHING_COARSENING_HPP_
 
 #include <networkit/coarsening/GraphCoarsening.hpp>
 
@@ -40,4 +40,4 @@ private:
 };
 
 } /* namespace NetworKit */
-#endif /* MATCHINGCONTRACTER_H_ */
+#endif // NETWORKIT_COARSENING_MATCHING_COARSENING_HPP_

@@ -1,5 +1,5 @@
-#ifndef TEMPLATE_UTILS_H_
-#define TEMPLATE_UTILS_H_
+#ifndef NETWORKIT_AUXILIARY_TEMPLATE_UTILS_HPP_
+#define NETWORKIT_AUXILIARY_TEMPLATE_UTILS_HPP_
 
 #include <type_traits>
 
@@ -71,4 +71,4 @@ constexpr bool isBaseOrSame() {
 
 } // namespace Aux
 
-#endif
+#endif // NETWORKIT_AUXILIARY_TEMPLATE_UTILS_HPP_

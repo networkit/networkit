@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef GLOBALS_H_
-#define GLOBALS_H_
+#ifndef NETWORKIT_GLOBALS_HPP_
+#define NETWORKIT_GLOBALS_HPP_
 
 #include <cstdint>
 #include <limits>
@@ -20,7 +20,7 @@ namespace NetworKit {
     using omp_index = int64_t;
 #else
     using omp_index = index;
-#endif
+#endif // _MSC_VER
 
     using count      = uint64_t; ///< more expressive name for an integer quantity
     using node       = index;    ///< node indices are 0-based
@@ -35,4 +35,4 @@ namespace NetworKit {
 
 }
 
-#endif /* GLOBALS_H_ */
+#endif // NETWORKIT_GLOBALS_HPP_

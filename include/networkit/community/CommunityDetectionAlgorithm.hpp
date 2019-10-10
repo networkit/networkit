@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef COMMUNITYDETECTIONALGORITHM_H_
-#define COMMUNITYDETECTIONALGORITHM_H_
+#ifndef NETWORKIT_COMMUNITY_COMMUNITY_DETECTION_ALGORITHM_HPP_
+#define NETWORKIT_COMMUNITY_COMMUNITY_DETECTION_ALGORITHM_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
@@ -60,4 +60,4 @@ protected:
 };
 
 } /* namespace NetworKit */
-#endif // COMMUNITYDETECTIONALGORITHM_H_
+#endif // NETWORKIT_COMMUNITY_COMMUNITY_DETECTION_ALGORITHM_HPP_

@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef RASTERREADER_H_
-#define RASTERREADER_H_
+#ifndef NETWORKIT_IO_RASTER_READER_HPP_
+#define NETWORKIT_IO_RASTER_READER_HPP_
 
 #include <utility>
 #include <vector>
@@ -38,4 +38,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* RASTERREADER_H_ */
+#endif // NETWORKIT_IO_RASTER_READER_HPP_

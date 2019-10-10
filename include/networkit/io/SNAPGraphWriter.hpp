@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef SNAPGRAPHWRITER_H_
-#define SNAPGRAPHWRITER_H_
+#ifndef NETWORKIT_IO_SNAP_GRAPH_WRITER_HPP_
+#define NETWORKIT_IO_SNAP_GRAPH_WRITER_HPP_
 
 #include <networkit/io/GraphWriter.hpp>
 
@@ -51,4 +51,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* SNAPGRAPHWRITER_H_ */
+#endif // NETWORKIT_IO_SNAP_GRAPH_WRITER_HPP_

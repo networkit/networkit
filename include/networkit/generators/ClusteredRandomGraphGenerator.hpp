@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef CLUSTEREDRANDOMGRAPHGENERATOR_H_
-#define CLUSTEREDRANDOMGRAPHGENERATOR_H_
+#ifndef NETWORKIT_GENERATORS_CLUSTERED_RANDOM_GRAPH_GENERATOR_HPP_
+#define NETWORKIT_GENERATORS_CLUSTERED_RANDOM_GRAPH_GENERATOR_HPP_
 
 #include <networkit/generators/StaticGraphGenerator.hpp>
 #include <networkit/structures/Partition.hpp>
@@ -54,4 +54,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* CLUSTEREDRANDOMGRAPHGENERATOR_H_ */
+#endif // NETWORKIT_GENERATORS_CLUSTERED_RANDOM_GRAPH_GENERATOR_HPP_

@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef DYNAMICDOROGOVTSEVMENDESGENERATOR_H_
-#define DYNAMICDOROGOVTSEVMENDESGENERATOR_H_
+#ifndef NETWORKIT_GENERATORS_DYNAMIC_DOROGOVTSEV_MENDES_GENERATOR_HPP_
+#define NETWORKIT_GENERATORS_DYNAMIC_DOROGOVTSEV_MENDES_GENERATOR_HPP_
 
 #include <networkit/generators/DynamicGraphGenerator.hpp>
 #include <networkit/auxiliary/Random.hpp>
@@ -34,4 +34,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* DYNAMICDOROGOVTSEVMENDESGENERATOR_H_ */
+#endif // NETWORKIT_GENERATORS_DYNAMIC_DOROGOVTSEV_MENDES_GENERATOR_HPP_

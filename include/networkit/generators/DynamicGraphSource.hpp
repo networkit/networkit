@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef DYNAMICGRAPHSOURCE_H_
-#define DYNAMICGRAPHSOURCE_H_
+#ifndef NETWORKIT_GENERATORS_DYNAMIC_GRAPH_SOURCE_HPP_
+#define NETWORKIT_GENERATORS_DYNAMIC_GRAPH_SOURCE_HPP_
 
 #include <functional>
 
@@ -78,4 +78,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* DYNAMICGRAPHGENERATOR_H_ */
+#endif // NETWORKIT_GENERATORS_DYNAMIC_GRAPH_SOURCE_HPP_

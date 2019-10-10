@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef GRAPHCOARSENING_H_
-#define GRAPHCOARSENING_H_
+#ifndef NETWORKIT_COARSENING_GRAPH_COARSENING_HPP_
+#define NETWORKIT_COARSENING_GRAPH_COARSENING_HPP_
 
 #include <map>
 #include <vector>
@@ -52,4 +52,4 @@ protected:
 } // namespace
 
 
-#endif /* GRAPHCOARSENING_H_ */
+#endif // NETWORKIT_COARSENING_GRAPH_COARSENING_HPP_

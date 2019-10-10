@@ -5,8 +5,8 @@
  *      Author: Michael Hamann, Gerd Lindner
  */
 
-#ifndef LOCALLOGSCORE_H
-#define LOCALLOGSCORE_H
+#ifndef NETWORKIT_SPARSIFICATION_LOCAL_FILTER_SCORE_HPP_
+#define NETWORKIT_SPARSIFICATION_LOCAL_FILTER_SCORE_HPP_
 
 #include <networkit/edgescores/EdgeScore.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
@@ -122,4 +122,4 @@ private:
 
 } // namespace NetworKit
 
-#endif // LOCALLOGSCORE_H
+#endif // NETWORKIT_SPARSIFICATION_LOCAL_FILTER_SCORE_HPP_

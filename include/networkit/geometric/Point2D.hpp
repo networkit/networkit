@@ -5,8 +5,8 @@
  *      Author: moritzl
  */
 
-#ifndef POINT2D_H_
-#define POINT2D_H_
+#ifndef NETWORKIT_GEOMETRIC_POINT2_D_HPP_
+#define NETWORKIT_GEOMETRIC_POINT2_D_HPP_
 
 #include <vector>
 #include <cinttypes>
@@ -152,4 +152,4 @@ inline index Point2D<T>::getIndex() const {
 }
 
 } /* namespace NetworKit */
-#endif /* POINT2D_H_ */
+#endif // NETWORKIT_GEOMETRIC_POINT2_D_HPP_

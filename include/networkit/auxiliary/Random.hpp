@@ -5,8 +5,8 @@
  *      Author: FJW
  */
 
-#ifndef RANDOM_H_
-#define RANDOM_H_
+#ifndef NETWORKIT_AUXILIARY_RANDOM_HPP_
+#define NETWORKIT_AUXILIARY_RANDOM_HPP_
 
 #include <cassert>
 #include <cstddef>
@@ -126,4 +126,4 @@ const Element& weightedChoice(const std::vector<std::pair<Element, double>>& wei
 } // namespace Aux
 
 
-#endif /* RANDOM_H_ */
+#endif // NETWORKIT_AUXILIARY_RANDOM_HPP_

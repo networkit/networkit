@@ -5,8 +5,8 @@
  *      Author: forigem
  */
 
-#ifndef SNAPEDGELISTPARTITIONREADER_H_
-#define SNAPEDGELISTPARTITIONREADER_H_
+#ifndef NETWORKIT_IO_SNAP_EDGE_LIST_PARTITION_READER_HPP_
+#define NETWORKIT_IO_SNAP_EDGE_LIST_PARTITION_READER_HPP_
 
 #include <set>
 #include <vector>
@@ -32,4 +32,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* SNAPEDGELISTPARTITIONREADER_H_ */
+#endif // NETWORKIT_IO_SNAP_EDGE_LIST_PARTITION_READER_HPP_

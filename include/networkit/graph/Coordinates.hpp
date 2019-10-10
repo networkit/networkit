@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef COORDINATES_H_
-#define COORDINATES_H_
+#ifndef NETWORKIT_GRAPH_COORDINATES_HPP_
+#define NETWORKIT_GRAPH_COORDINATES_HPP_
 
 #include <networkit/viz/Point.hpp>
 
@@ -92,4 +92,4 @@ public:
 
 
 } /* namespace NetworKit */
-#endif /* COORDINATES_H_ */
+#endif // NETWORKIT_GRAPH_COORDINATES_HPP_

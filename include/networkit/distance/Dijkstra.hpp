@@ -5,8 +5,8 @@
  *      Author: Henning, Christian Staudt
  */
 
-#ifndef DIJKSTRA_H_
-#define DIJKSTRA_H_
+#ifndef NETWORKIT_DISTANCE_DIJKSTRA_HPP_
+#define NETWORKIT_DISTANCE_DIJKSTRA_HPP_
 
 #include <tlx/container/d_ary_addressable_int_heap.hpp>
 
@@ -56,4 +56,4 @@ private:
 };
 
 } /* namespace NetworKit */
-#endif /* DIJKSTRA_H_ */
+#endif // NETWORKIT_DISTANCE_DIJKSTRA_HPP_

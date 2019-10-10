@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef SETINTERSECTOR_H_
-#define SETINTERSECTOR_H_
+#ifndef NETWORKIT_AUXILIARY_SET_INTERSECTOR_HPP_
+#define NETWORKIT_AUXILIARY_SET_INTERSECTOR_HPP_
 
 #include <vector>
 #include <set>
@@ -71,4 +71,4 @@ inline std::set<T> Aux::SetIntersector<T>::intersect(const std::vector<T>& A,
     return result;
 }
 
-#endif /* SETINTERSECTOR_H_ */
+#endif // NETWORKIT_AUXILIARY_SET_INTERSECTOR_HPP_

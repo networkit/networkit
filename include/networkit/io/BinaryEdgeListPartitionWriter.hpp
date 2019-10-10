@@ -4,8 +4,8 @@
  * @author Michael Hamann <michael.hamann@kit.edu>
  */
 
-#ifndef BINARYEDGELISTPARTITIONWRITER_H_
-#define BINARYEDGELISTPARTITIONWRITER_H_
+#ifndef NETWORKIT_IO_BINARY_EDGE_LIST_PARTITION_WRITER_HPP_
+#define NETWORKIT_IO_BINARY_EDGE_LIST_PARTITION_WRITER_HPP_
 
 #include <networkit/structures/Partition.hpp>
 #include <string>
@@ -42,4 +42,4 @@ private:
 };
 } /* namespace NetworKit */
 
-#endif /* BINARYEDGELISTPARTITIONWRITER_H_ */
+#endif // NETWORKIT_IO_BINARY_EDGE_LIST_PARTITION_WRITER_HPP_

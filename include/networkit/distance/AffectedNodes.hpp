@@ -5,8 +5,8 @@
  * Created on 17. Dezember 2016, 16:35
  */
 
-#ifndef AFFECTEDNODES_H
-#define AFFECTEDNODES_H
+#ifndef NETWORKIT_DISTANCE_AFFECTED_NODES_HPP_
+#define NETWORKIT_DISTANCE_AFFECTED_NODES_HPP_
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -123,5 +123,5 @@ namespace NetworKit {
 }
 
 
-#endif /* AFFECTEDNODES_H */
+#endif // NETWORKIT_DISTANCE_AFFECTED_NODES_HPP_
 

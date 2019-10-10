@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef COVER_H_
-#define COVER_H_
+#ifndef NETWORKIT_STRUCTURES_COVER_HPP_
+#define NETWORKIT_STRUCTURES_COVER_HPP_
 
 #include <cinttypes>
 #include <set>
@@ -271,4 +271,4 @@ inline void Cover::parallelForEntries(Callback handle) const {
 
 } /* namespace NetworKit */
 
-#endif /* COVER_H_ */
+#endif // NETWORKIT_STRUCTURES_COVER_HPP_

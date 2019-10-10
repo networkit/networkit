@@ -1,5 +1,5 @@
-#ifndef ALGORITHM_H
-#define ALGORITHM_H
+#ifndef NETWORKIT_BASE_ALGORITHM_HPP_
+#define NETWORKIT_BASE_ALGORITHM_HPP_
 
 #include <string>
 #include <stdexcept>
@@ -57,4 +57,4 @@ public:
 
 } /* NetworKit */
 
-#endif /* ALGORITHM_H */
+#endif // NETWORKIT_BASE_ALGORITHM_HPP_

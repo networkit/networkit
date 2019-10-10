@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu), Henning Meyerhenke (henning.meyerhenke@kit.edu)
  */
 
-#ifndef PARALLELAGGLOMERATIVECLUSTERER_H_
-#define PARALLELAGGLOMERATIVECLUSTERER_H_
+#ifndef NETWORKIT_COMMUNITY_PARALLEL_AGGLOMERATIVE_CLUSTERER_HPP_
+#define NETWORKIT_COMMUNITY_PARALLEL_AGGLOMERATIVE_CLUSTERER_HPP_
 
 #include <networkit/community/CommunityDetectionAlgorithm.hpp>
 
@@ -35,4 +35,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* SCOREMATCHCONTRACT_H_ */
+#endif // NETWORKIT_COMMUNITY_PARALLEL_AGGLOMERATIVE_CLUSTERER_HPP_

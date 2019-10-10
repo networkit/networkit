@@ -4,8 +4,8 @@
  *  Created on: 26.05.2018
  *      Author: Manuel Penschuck <networkit@manuel.jetzt>
  */
-#ifndef RANDOMIZATION_GLOBAL_CURVEBALL_H_
-#define RANDOMIZATION_GLOBAL_CURVEBALL_H_
+#ifndef NETWORKIT_RANDOMIZATION_GLOBAL_CURVEBALL_HPP_
+#define NETWORKIT_RANDOMIZATION_GLOBAL_CURVEBALL_HPP_
 
 #include <memory>
 #include <utility>
@@ -73,4 +73,4 @@ private:
 
 } // ! namespace NetworKit
 
-#endif // ! RANDOMIZATION_GLOBAL_CURVEBALL_H_
+#endif // NETWORKIT_RANDOMIZATION_GLOBAL_CURVEBALL_HPP_

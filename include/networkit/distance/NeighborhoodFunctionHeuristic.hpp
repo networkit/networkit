@@ -4,8 +4,8 @@
 *      Author: Maximilian Vogel
 */
 
-#ifndef NEIGHBORHOODFUNCTIONHEURISTIC_H_
-#define NEIGHBORHOODFUNCTIONHEURISTIC_H_
+#ifndef NETWORKIT_DISTANCE_NEIGHBORHOOD_FUNCTION_HEURISTIC_HPP_
+#define NETWORKIT_DISTANCE_NEIGHBORHOOD_FUNCTION_HEURISTIC_HPP_
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -57,4 +57,4 @@ private:
 } /* namespace NetworKit */
 
 
-#endif /* NEIGHBORHOODFUNCTIONHEURISTIC_H_ */
+#endif // NETWORKIT_DISTANCE_NEIGHBORHOOD_FUNCTION_HEURISTIC_HPP_

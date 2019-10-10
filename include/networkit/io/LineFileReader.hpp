@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef LINEFILEREADER_H_
-#define LINEFILEREADER_H_
+#ifndef NETWORKIT_IO_LINE_FILE_READER_HPP_
+#define NETWORKIT_IO_LINE_FILE_READER_HPP_
 
 #include <string>
 #include <vector>
@@ -23,4 +23,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* LINEFILEREADER_H_ */
+#endif // NETWORKIT_IO_LINE_FILE_READER_HPP_

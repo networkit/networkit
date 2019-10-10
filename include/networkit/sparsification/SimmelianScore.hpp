@@ -5,8 +5,8 @@
  *      Author: Gerd Lindner
  */
 
-#ifndef SIMMELIANATTRIBUTIZER_H_
-#define SIMMELIANATTRIBUTIZER_H_
+#ifndef NETWORKIT_SPARSIFICATION_SIMMELIAN_SCORE_HPP_
+#define NETWORKIT_SPARSIFICATION_SIMMELIAN_SCORE_HPP_
 
 #include <networkit/edgescores/EdgeScore.hpp>
 #include <set>
@@ -98,4 +98,4 @@ protected:
 
 } /* namespace NetworKit */
 
-#endif /* SIMMELIANSCORE_H_ */
+#endif // NETWORKIT_SPARSIFICATION_SIMMELIAN_SCORE_HPP_

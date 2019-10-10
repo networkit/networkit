@@ -6,8 +6,8 @@
  *      based on code by Elisabetta Bergamini
  */
 
-#ifndef DYNKATZCENTRALITY_H_
-#define DYNKATZCENTRALITY_H_
+#ifndef NETWORKIT_CENTRALITY_DYN_KATZ_CENTRALITY_HPP_
+#define NETWORKIT_CENTRALITY_DYN_KATZ_CENTRALITY_HPP_
 
 #include <networkit/auxiliary/PrioQueue.hpp>
 #include <networkit/base/DynAlgorithm.hpp>
@@ -111,4 +111,4 @@ public: // TODO: This is public because tests access it.
 };
 
 } /* namespace NetworKit */
-#endif /* DYNKATZCENTRALITY_H_ */
+#endif // NETWORKIT_CENTRALITY_DYN_KATZ_CENTRALITY_HPP_

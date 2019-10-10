@@ -5,8 +5,8 @@
  *      Author: Gerd Lindner
  */
 
-#ifndef RANDOMEDGESCORE_H_
-#define RANDOMEDGESCORE_H_
+#ifndef NETWORKIT_SPARSIFICATION_RANDOM_EDGE_SCORE_HPP_
+#define NETWORKIT_SPARSIFICATION_RANDOM_EDGE_SCORE_HPP_
 
 #include <networkit/edgescores/EdgeScore.hpp>
 
@@ -31,4 +31,4 @@ public:
 
 }
 /* namespace NetworKit */
-#endif /* RANDOMEDGESCORE_H_ */
+#endif // NETWORKIT_SPARSIFICATION_RANDOM_EDGE_SCORE_HPP_

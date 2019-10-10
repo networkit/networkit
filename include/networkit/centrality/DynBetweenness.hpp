@@ -5,8 +5,8 @@
  *      Author: Arie Slobbe, Elisabetta Bergamini
  */
 
-#ifndef DYNBETWEENNESS_H_
-#define DYNBETWEENNESS_H_
+#ifndef NETWORKIT_CENTRALITY_DYN_BETWEENNESS_HPP_
+#define NETWORKIT_CENTRALITY_DYN_BETWEENNESS_HPP_
 
 #include <memory>
 #include <queue>
@@ -97,4 +97,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* DynBETWEENNESS_H_ */
+#endif // NETWORKIT_CENTRALITY_DYN_BETWEENNESS_HPP_

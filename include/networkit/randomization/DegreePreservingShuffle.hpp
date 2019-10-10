@@ -4,8 +4,8 @@
  *  Created on: 21.08.2018
  *      Author: Manuel Penschuck <networkit@manuel.jetzt>
  */
-#ifndef RANDOMIZATION_DEGREE_PRESERVING_SHUFFLE_H_
-#define RANDOMIZATION_DEGREE_PRESERVING_SHUFFLE_H_
+#ifndef NETWORKIT_RANDOMIZATION_DEGREE_PRESERVING_SHUFFLE_HPP_
+#define NETWORKIT_RANDOMIZATION_DEGREE_PRESERVING_SHUFFLE_HPP_
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -80,5 +80,5 @@ private:
 
 } // ! namespace NetworKit
 
-#endif // ! RANDOMIZATION_DEGREE_PRESERVING_SHUFFLE_H_
+#endif // NETWORKIT_RANDOMIZATION_DEGREE_PRESERVING_SHUFFLE_HPP_
 

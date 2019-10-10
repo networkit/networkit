@@ -5,8 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu), Michael Hamann <michael.hamann@kit.edu>
  */
 
-#ifndef EDMONDSKARP_H_
-#define EDMONDSKARP_H_
+#ifndef NETWORKIT_FLOW_EDMONDS_KARP_HPP_
+#define NETWORKIT_FLOW_EDMONDS_KARP_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <vector>
@@ -94,4 +94,4 @@ public:
 
 } /* namespace NetworKit */
 
-#endif /* EDMONDSKARP_H_ */
+#endif // NETWORKIT_FLOW_EDMONDS_KARP_HPP_

@@ -5,8 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#ifndef CSRMATRIX_H_
-#define CSRMATRIX_H_
+#ifndef NETWORKIT_ALGEBRAIC_CSR_MATRIX_HPP_
+#define NETWORKIT_ALGEBRAIC_CSR_MATRIX_HPP_
 
 #include <vector>
 #include <networkit/Globals.hpp>
@@ -609,4 +609,4 @@ inline void NetworKit::CSRMatrix::parallelForNonZeroElementsInRowOrder(L handle)
     }
 }
 
-#endif /* TESTMATRIX_H_ */
+#endif // NETWORKIT_ALGEBRAIC_CSR_MATRIX_HPP_

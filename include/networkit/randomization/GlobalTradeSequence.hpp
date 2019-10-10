@@ -5,8 +5,8 @@
  *      Author: Manuel Penschuck <networkit@manuel.jetzt>
  */
 
-#ifndef CURVEBALL_GLOBAL_TRADE_SEQUENCE_H_
-#define CURVEBALL_GLOBAL_TRADE_SEQUENCE_H_
+#ifndef NETWORKIT_RANDOMIZATION_GLOBAL_TRADE_SEQUENCE_HPP_
+#define NETWORKIT_RANDOMIZATION_GLOBAL_TRADE_SEQUENCE_HPP_
 
 #include <cmath>
 #include <tuple>
@@ -361,4 +361,4 @@ private:
 } // namespace NetworKit
 
 
-#endif // !CURVEBALL_GLOBAL_TRADE_SEQUENCE_H_
+#endif // NETWORKIT_RANDOMIZATION_GLOBAL_TRADE_SEQUENCE_HPP_

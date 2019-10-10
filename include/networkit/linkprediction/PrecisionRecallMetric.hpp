@@ -5,8 +5,8 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#ifndef PRECISIONRECALLMETRIC_H_
-#define PRECISIONRECALLMETRIC_H_
+#ifndef NETWORKIT_LINKPREDICTION_PRECISION_RECALL_METRIC_HPP_
+#define NETWORKIT_LINKPREDICTION_PRECISION_RECALL_METRIC_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/linkprediction/EvaluationMetric.hpp>
@@ -37,4 +37,4 @@ public:
 
 } // namespace NetworKit
 
-#endif /* PRECISIONRECALLMETRIC_H_ */
+#endif // NETWORKIT_LINKPREDICTION_PRECISION_RECALL_METRIC_HPP_

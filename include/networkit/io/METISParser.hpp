@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef METISPARSER_H_
-#define METISPARSER_H_
+#ifndef NETWORKIT_IO_METIS_PARSER_HPP_
+#define NETWORKIT_IO_METIS_PARSER_HPP_
 
 #include <fstream>
 #include <vector>
@@ -62,4 +62,4 @@ public:
 
 };
 } /* namespace NetworKit */
-#endif /* METISPARSER_H_ */
+#endif // NETWORKIT_IO_METIS_PARSER_HPP_

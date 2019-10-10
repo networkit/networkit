@@ -5,8 +5,8 @@
  *      Author: Michael
  */
 
-#ifndef LEVELFINEST_H_
-#define LEVELFINEST_H_
+#ifndef NETWORKIT_NUMERICS_LAMG_LEVEL_LEVEL_FINEST_HPP_
+#define NETWORKIT_NUMERICS_LAMG_LEVEL_LEVEL_FINEST_HPP_
 
 #include <networkit/numerics/LAMG/Level/Level.hpp>
 
@@ -24,4 +24,4 @@ public:
 
 } /* namespace NetworKit */
 
-#endif /* LEVELFINEST_H_ */
+#endif // NETWORKIT_NUMERICS_LAMG_LEVEL_LEVEL_FINEST_HPP_

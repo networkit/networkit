@@ -5,8 +5,8 @@
  *      Author: Gerd Lindner, Michael Hamann
  */
 
-#ifndef TRIANGLE_COUNTER_H_
-#define TRIANGLE_COUNTER_H_
+#ifndef NETWORKIT_EDGESCORES_TRIANGLE_EDGE_SCORE_HPP_
+#define NETWORKIT_EDGESCORES_TRIANGLE_EDGE_SCORE_HPP_
 
 #include <networkit/edgescores/EdgeScore.hpp>
 
@@ -38,4 +38,4 @@ public:
 
 } /* namespace NetworKit */
 
-#endif /* TRIANGLE_COUNTER_H_ */
+#endif // NETWORKIT_EDGESCORES_TRIANGLE_EDGE_SCORE_HPP_

@@ -5,8 +5,8 @@
  *      Author: cls, ebergamini
  */
 
-#ifndef BETWEENNESS_H_
-#define BETWEENNESS_H_
+#ifndef NETWORKIT_CENTRALITY_BETWEENNESS_HPP_
+#define NETWORKIT_CENTRALITY_BETWEENNESS_HPP_
 
 #include <networkit/centrality/Centrality.hpp>
 
@@ -44,4 +44,4 @@ public:
 
 } /* namespace NetworKit */
 
-#endif /* BETWEENNESS_H_ */
+#endif // NETWORKIT_CENTRALITY_BETWEENNESS_HPP_

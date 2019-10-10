@@ -1,5 +1,5 @@
-#ifndef BINARYEDGELISTPARTITION_H_
-#define BINARYEDGELISTPARTITION_H_
+#ifndef NETWORKIT_IO_BINARY_EDGE_LIST_PARTITION_READER_HPP_
+#define NETWORKIT_IO_BINARY_EDGE_LIST_PARTITION_READER_HPP_
 
 #include <networkit/structures/Partition.hpp>
 #include <string>
@@ -40,4 +40,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* BINARYEDGELISTPARTITIONREADER_H_ */
+#endif // NETWORKIT_IO_BINARY_EDGE_LIST_PARTITION_READER_HPP_

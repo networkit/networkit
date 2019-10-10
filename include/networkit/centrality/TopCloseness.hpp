@@ -5,8 +5,8 @@
  *      Author: ebergamini, michele borassi
  */
 
-#ifndef TOPCLOSENESS_H_
-#define TOPCLOSENESS_H_
+#ifndef NETWORKIT_CENTRALITY_TOP_CLOSENESS_HPP_
+#define NETWORKIT_CENTRALITY_TOP_CLOSENESS_HPP_
 #include <networkit/auxiliary/PrioQueue.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -126,4 +126,4 @@ inline std::vector<edgeweight> TopCloseness::topkScoresList(bool includeTrail) {
 }
 
 } /* namespace NetworKit */
-#endif /* TOPCLOSENESS_H_ */
+#endif // NETWORKIT_CENTRALITY_TOP_CLOSENESS_HPP_

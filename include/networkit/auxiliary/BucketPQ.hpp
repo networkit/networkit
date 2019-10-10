@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef BUCKETPQ_H_
-#define BUCKETPQ_H_
+#ifndef NETWORKIT_AUXILIARY_BUCKET_PQ_HPP_
+#define NETWORKIT_AUXILIARY_BUCKET_PQ_HPP_
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/Globals.hpp>
@@ -112,4 +112,4 @@ public:
 };
 
 } /* namespace Aux */
-#endif /* BUCKETPQ_H_ */
+#endif // NETWORKIT_AUXILIARY_BUCKET_PQ_HPP_

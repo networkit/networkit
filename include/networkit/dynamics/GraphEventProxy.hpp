@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef GRAPHEVENTPROXY_H_
-#define GRAPHEVENTPROXY_H_
+#ifndef NETWORKIT_DYNAMICS_GRAPH_EVENT_PROXY_HPP_
+#define NETWORKIT_DYNAMICS_GRAPH_EVENT_PROXY_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/dynamics/GraphEventHandler.hpp>
@@ -54,4 +54,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* GRAPHEVENTPROXY_H_ */
+#endif // NETWORKIT_DYNAMICS_GRAPH_EVENT_PROXY_HPP_

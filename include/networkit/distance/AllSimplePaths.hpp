@@ -5,8 +5,8 @@
 *      Author: Eugenio Angriman
 */
 
-#ifndef AllSimplePaths_H_
-#define AllSimplePaths_H_
+#ifndef NETWORKIT_DISTANCE_ALL_SIMPLE_PATHS_HPP_
+#define NETWORKIT_DISTANCE_ALL_SIMPLE_PATHS_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/base/Algorithm.hpp>
@@ -114,4 +114,4 @@ namespace NetworKit {
 
 } /* namespace NetworKit */
 
-#endif /* AllSimplePaths_H_ */
+#endif // NETWORKIT_DISTANCE_ALL_SIMPLE_PATHS_HPP_

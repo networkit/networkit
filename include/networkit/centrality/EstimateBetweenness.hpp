@@ -5,8 +5,8 @@
  *      Author: Christian Staudt, Elisabetta Bergamini
  */
 
-#ifndef ESTIMATEBETWEENNESS_H_
-#define ESTIMATEBETWEENNESS_H_
+#ifndef NETWORKIT_CENTRALITY_ESTIMATE_BETWEENNESS_HPP_
+#define NETWORKIT_CENTRALITY_ESTIMATE_BETWEENNESS_HPP_
 
 #include <networkit/centrality/Centrality.hpp>
 
@@ -51,4 +51,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* ESTIMATEBETWEENNESS_H_ */
+#endif // NETWORKIT_CENTRALITY_ESTIMATE_BETWEENNESS_HPP_

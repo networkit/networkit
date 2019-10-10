@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef PARTITIONREADER_H_
-#define PARTITIONREADER_H_
+#ifndef NETWORKIT_IO_PARTITION_READER_HPP_
+#define NETWORKIT_IO_PARTITION_READER_HPP_
 
 #include <fstream>
 
@@ -31,4 +31,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* PARTITIONREADER_H_ */
+#endif // NETWORKIT_IO_PARTITION_READER_HPP_

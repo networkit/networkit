@@ -4,8 +4,8 @@
  *  Created on: 04.05.2018
  *      Author: Alexander van der Grinten
  */
-#ifndef SNAPGRAPHREADER_H_
-#define SNAPGRAPHREADER_H_
+#ifndef NETWORKIT_IO_SNAP_GRAPH_READER_HPP_
+#define NETWORKIT_IO_SNAP_GRAPH_READER_HPP_
 
 #include <unordered_map>
 
@@ -47,4 +47,4 @@ public:
 
 } /* namespace NetworKit */
 
-#endif /* SNAPGRAPHREADER_H_ */
+#endif // NETWORKIT_IO_SNAP_GRAPH_READER_HPP_

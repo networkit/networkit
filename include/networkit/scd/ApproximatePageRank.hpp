@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef APPROXIMATEPAGERANK_H_
-#define APPROXIMATEPAGERANK_H_
+#ifndef NETWORKIT_SCD_APPROXIMATE_PAGE_RANK_HPP_
+#define NETWORKIT_SCD_APPROXIMATE_PAGE_RANK_HPP_
 
 #include <vector>
 #include <unordered_map>
@@ -43,4 +43,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* APPROXIMATEPAGERANK_H_ */
+#endif // NETWORKIT_SCD_APPROXIMATE_PAGE_RANK_HPP_

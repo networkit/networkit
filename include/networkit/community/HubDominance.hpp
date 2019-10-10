@@ -1,5 +1,5 @@
-#ifndef HUBDOMINANCE_H
-#define HUBDOMINANCE_H
+#ifndef NETWORKIT_COMMUNITY_HUB_DOMINANCE_HPP_
+#define NETWORKIT_COMMUNITY_HUB_DOMINANCE_HPP_
 
 #include <networkit/structures/Partition.hpp>
 #include <networkit/structures/Cover.hpp>
@@ -43,4 +43,4 @@ public:
 
 } // namespace NetworKit
 
-#endif // HUBDOMINANCE_H
+#endif // NETWORKIT_COMMUNITY_HUB_DOMINANCE_HPP_

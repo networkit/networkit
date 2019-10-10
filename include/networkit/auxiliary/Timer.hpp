@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef TIMER_H_
-#define TIMER_H_
+#ifndef NETWORKIT_AUXILIARY_TIMER_HPP_
+#define NETWORKIT_AUXILIARY_TIMER_HPP_
 
 #include <chrono>
 #include <cstdint>
@@ -25,7 +25,7 @@ public:
         using my_steady_clock = std::chrono::monotonic_clock;
     #else
         using my_steady_clock = std::chrono::steady_clock;
-    #endif
+    #endif // __MIC__
 
     Timer() = default;
 
@@ -142,5 +142,5 @@ private:
 
 } /* namespace Aux */
 
-#endif /* TIMER_H_ */
+#endif // NETWORKIT_AUXILIARY_TIMER_HPP_
 

@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef SSSP_H_
-#define SSSP_H_
+#ifndef NETWORKIT_DISTANCE_SSSP_HPP_
+#define NETWORKIT_DISTANCE_SSSP_HPP_
 
 #include <set>
 #include <stack>
@@ -211,4 +211,4 @@ inline bigfloat SSSP::getNumberOfPaths(node t) const { return npaths[t]; }
 
 } /* namespace NetworKit */
 
-#endif /* SSSP_H_ */
+#endif // NETWORKIT_DISTANCE_SSSP_HPP_

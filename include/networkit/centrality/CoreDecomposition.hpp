@@ -5,8 +5,8 @@
  *      Author: Lukas Barth, David Weiss, Christian Staudt
  */
 
-#ifndef COREDECOMPOSITION_H_
-#define COREDECOMPOSITION_H_
+#ifndef NETWORKIT_CENTRALITY_CORE_DECOMPOSITION_HPP_
+#define NETWORKIT_CENTRALITY_CORE_DECOMPOSITION_HPP_
 
 #include <vector>
 #include <string>
@@ -153,4 +153,4 @@ private:
 };
 
 } /* namespace NetworKit */
-#endif /* COREDECOMPOSITION_H_ */
+#endif // NETWORKIT_CENTRALITY_CORE_DECOMPOSITION_HPP_

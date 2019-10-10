@@ -5,8 +5,8 @@
  *      Author: Arie Slobbe, Elisabetta Bergamini
  */
 
-#ifndef DYNAPSP_H_
-#define DYNAPSP_H_
+#ifndef NETWORKIT_DISTANCE_DYN_APSP_HPP_
+#define NETWORKIT_DISTANCE_DYN_APSP_HPP_
 
 #include <networkit/distance/APSP.hpp>
 #include <networkit/dynamics/GraphEvent.hpp>
@@ -65,4 +65,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* DynAPSP_H_ */
+#endif // NETWORKIT_DISTANCE_DYN_APSP_HPP_

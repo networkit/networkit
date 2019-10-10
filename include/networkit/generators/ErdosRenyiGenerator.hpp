@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef ERDOSRENYIGENERATOR_H_
-#define ERDOSRENYIGENERATOR_H_
+#ifndef NETWORKIT_GENERATORS_ERDOS_RENYI_GENERATOR_HPP_
+#define NETWORKIT_GENERATORS_ERDOS_RENYI_GENERATOR_HPP_
 
 #include <networkit/generators/StaticGraphGenerator.hpp>
 
@@ -53,4 +53,4 @@ private:
 };
 
 } /* namespace NetworKit */
-#endif /* ERDOSRENYIGENERATOR_H_ */
+#endif // NETWORKIT_GENERATORS_ERDOS_RENYI_GENERATOR_HPP_

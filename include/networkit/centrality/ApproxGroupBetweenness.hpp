@@ -4,8 +4,8 @@
  *  Created on: 13.03.2018
  *      Author: Marvin Pogoda
  */
-#ifndef APPROXGROUPBETWEENNESS_H_
-#define APPROXGROUPBETWEENNESS_H_
+#ifndef NETWORKIT_CENTRALITY_APPROX_GROUP_BETWEENNESS_HPP_
+#define NETWORKIT_CENTRALITY_APPROX_GROUP_BETWEENNESS_HPP_
 
 #include <omp.h>
 
@@ -124,4 +124,4 @@ ApproxGroupBetweenness::scoreOfGroup(const std::vector<node> &S,
 
 } /* namespace NetworKit */
 
-#endif /* APPROXGROUPBETWEENNESS_H_ */
+#endif // NETWORKIT_CENTRALITY_APPROX_GROUP_BETWEENNESS_HPP_

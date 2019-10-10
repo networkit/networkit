@@ -5,8 +5,8 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#ifndef NEIGHBORSMEASUREINDEX_H_
-#define NEIGHBORSMEASUREINDEX_H_
+#ifndef NETWORKIT_LINKPREDICTION_NEIGHBORS_MEASURE_INDEX_HPP_
+#define NETWORKIT_LINKPREDICTION_NEIGHBORS_MEASURE_INDEX_HPP_
 
 #include <networkit/linkprediction/LinkPredictor.hpp>
 
@@ -37,4 +37,4 @@ public:
 
 } // namespace NetworKit
 
-#endif /* NEIGHBORSMEASUREINDEX_H_ */
+#endif // NETWORKIT_LINKPREDICTION_NEIGHBORS_MEASURE_INDEX_HPP_

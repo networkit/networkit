@@ -1,5 +1,5 @@
-#ifndef GRAPHDIFFERENCE_H
-#define GRAPHDIFFERENCE_H
+#ifndef NETWORKIT_DYNAMICS_GRAPH_DIFFERENCE_HPP_
+#define NETWORKIT_DYNAMICS_GRAPH_DIFFERENCE_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/dynamics/GraphEvent.hpp>
@@ -106,4 +106,4 @@ private:
 
 } // namespace NetworKit
 
-#endif // GRAPHDIFFERENCE_H
+#endif // NETWORKIT_DYNAMICS_GRAPH_DIFFERENCE_HPP_

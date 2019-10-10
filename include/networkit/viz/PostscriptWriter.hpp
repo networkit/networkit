@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef POSTSCRIPTWRITER_H_
-#define POSTSCRIPTWRITER_H_
+#ifndef NETWORKIT_VIZ_POSTSCRIPT_WRITER_HPP_
+#define NETWORKIT_VIZ_POSTSCRIPT_WRITER_HPP_
 
 #include <string>
 #include <fstream>
@@ -73,4 +73,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* POSTSCRIPTWRITER_H_ */
+#endif // NETWORKIT_VIZ_POSTSCRIPT_WRITER_HPP_

@@ -5,8 +5,8 @@
  *      Authors: cls, Kolja Esders
  */
 
-#ifndef ALGEBRAICDISTANCEINDEX_H_
-#define ALGEBRAICDISTANCEINDEX_H_
+#ifndef NETWORKIT_LINKPREDICTION_ALGEBRAIC_DISTANCE_INDEX_HPP_
+#define NETWORKIT_LINKPREDICTION_ALGEBRAIC_DISTANCE_INDEX_HPP_
 
 #include <networkit/linkprediction/LinkPredictor.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -68,4 +68,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* ALGEBRAICDISTANCEINDEX_H_ */
+#endif // NETWORKIT_LINKPREDICTION_ALGEBRAIC_DISTANCE_INDEX_HPP_

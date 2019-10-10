@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef MODULARITY_H_
-#define MODULARITY_H_
+#ifndef NETWORKIT_COMMUNITY_MODULARITY_HPP_
+#define NETWORKIT_COMMUNITY_MODULARITY_HPP_
 
 #include <networkit/community/QualityMeasure.hpp>
 
@@ -51,4 +51,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* MODULARITY_H_ */
+#endif // NETWORKIT_COMMUNITY_MODULARITY_HPP_

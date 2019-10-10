@@ -1,5 +1,5 @@
-#ifndef COVERF1SIMILARITY_H_
-#define COVERF1SIMILARITY_H_
+#ifndef NETWORKIT_COMMUNITY_COVER_F1_SIMILARITY_HPP_
+#define NETWORKIT_COMMUNITY_COVER_F1_SIMILARITY_HPP_
 
 #include <networkit/community/LocalCoverEvaluation.hpp>
 
@@ -54,4 +54,4 @@ private:
 
 }
 
-#endif
+#endif // NETWORKIT_COMMUNITY_COVER_F1_SIMILARITY_HPP_

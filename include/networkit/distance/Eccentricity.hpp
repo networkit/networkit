@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef ECCENTRICITY_H_
-#define ECCENTRICITY_H_
+#ifndef NETWORKIT_DISTANCE_ECCENTRICITY_HPP_
+#define NETWORKIT_DISTANCE_ECCENTRICITY_HPP_
 
 #include <networkit/graph/Graph.hpp>
 
@@ -30,4 +30,4 @@ public:
 
 } /* namespace NetworKit */
 
-#endif /* ECCENTRICITY_H_ */
+#endif // NETWORKIT_DISTANCE_ECCENTRICITY_HPP_

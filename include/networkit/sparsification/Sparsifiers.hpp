@@ -5,8 +5,8 @@
  *      Author: Gerd Lindner
  */
 
-#ifndef SPARSIFIERS_H_
-#define SPARSIFIERS_H_
+#ifndef NETWORKIT_SPARSIFICATION_SPARSIFIERS_HPP_
+#define NETWORKIT_SPARSIFICATION_SPARSIFIERS_HPP_
 
 #include <networkit/graph/Graph.hpp>
 
@@ -170,4 +170,4 @@ private:
 };
 
 } /* namespace NetworKit */
-#endif /* SPARSIFIERS_H_ */
+#endif // NETWORKIT_SPARSIFICATION_SPARSIFIERS_HPP_

@@ -5,8 +5,8 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#ifndef ADAMICADAR_H_
-#define ADAMICADAR_H_
+#ifndef NETWORKIT_LINKPREDICTION_ADAMIC_ADAR_INDEX_HPP_
+#define NETWORKIT_LINKPREDICTION_ADAMIC_ADAR_INDEX_HPP_
 
 #include <networkit/linkprediction/LinkPredictor.hpp>
 
@@ -36,4 +36,4 @@ public:
 
 } // namespace NetworKit
 
-#endif /* ADAMICADAR_H_ */
+#endif // NETWORKIT_LINKPREDICTION_ADAMIC_ADAR_INDEX_HPP_

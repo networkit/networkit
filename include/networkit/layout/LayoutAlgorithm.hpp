@@ -5,8 +5,8 @@
  *      Author: Christian Staudt
  */
 
-#ifndef LAYOUTALGORITHM_H_
-#define LAYOUTALGORITHM_H_
+#ifndef NETWORKIT_LAYOUT_LAYOUT_ALGORITHM_HPP_
+#define NETWORKIT_LAYOUT_LAYOUT_ALGORITHM_HPP_
 
 #include <networkit/graph/Graph.hpp>
 
@@ -41,4 +41,4 @@ protected:
 };
 
 } /* namespace NetworKit */
-#endif /* LAYOUTALGORITHM_H_ */
+#endif // NETWORKIT_LAYOUT_LAYOUT_ALGORITHM_HPP_

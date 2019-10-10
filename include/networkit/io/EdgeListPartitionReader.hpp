@@ -1,5 +1,5 @@
-#ifndef EDGELISTPARTITION_H_
-#define EDGELISTPARTITION_H_
+#ifndef NETWORKIT_IO_EDGE_LIST_PARTITION_READER_HPP_
+#define NETWORKIT_IO_EDGE_LIST_PARTITION_READER_HPP_
 
 #include <fstream>
 
@@ -39,4 +39,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* PARTITIONREADER_H_ */
+#endif // NETWORKIT_IO_EDGE_LIST_PARTITION_READER_HPP_

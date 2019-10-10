@@ -5,8 +5,8 @@
  *      Author: Michael Hamann
  */
 
-#ifndef GEOMETRICMEANSCORE_H
-#define GEOMETRICMEANSCORE_H
+#ifndef NETWORKIT_EDGESCORES_GEOMETRIC_MEAN_SCORE_HPP_
+#define NETWORKIT_EDGESCORES_GEOMETRIC_MEAN_SCORE_HPP_
 
 #include <networkit/edgescores/EdgeScore.hpp>
 
@@ -26,4 +26,4 @@ public:
 
 } // namespace NetworKit
 
-#endif // GEOMETRICMEANSCORE_H
+#endif // NETWORKIT_EDGESCORES_GEOMETRIC_MEAN_SCORE_HPP_

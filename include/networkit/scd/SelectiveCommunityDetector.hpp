@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef SELECTIVECOMMUNITYDETECTOR_H_
-#define SELECTIVECOMMUNITYDETECTOR_H_
+#ifndef NETWORKIT_SCD_SELECTIVE_COMMUNITY_DETECTOR_HPP_
+#define NETWORKIT_SCD_SELECTIVE_COMMUNITY_DETECTOR_HPP_
 
 #include <map>
 #include <set>
@@ -35,4 +35,4 @@ protected:
 };
 
 } /* namespace NetworKit */
-#endif /* SELECTIVECOMMUNITYDETECTOR_H_ */
+#endif // NETWORKIT_SCD_SELECTIVE_COMMUNITY_DETECTOR_HPP_

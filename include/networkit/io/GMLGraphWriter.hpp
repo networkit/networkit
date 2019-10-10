@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef GMLGRAPHWRITER_H_
-#define GMLGRAPHWRITER_H_
+#ifndef NETWORKIT_IO_GML_GRAPH_WRITER_HPP_
+#define NETWORKIT_IO_GML_GRAPH_WRITER_HPP_
 
 #include <networkit/io/GraphWriter.hpp>
 
@@ -33,4 +33,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* GMLGRAPHWRITER_H_ */
+#endif // NETWORKIT_IO_GML_GRAPH_WRITER_HPP_

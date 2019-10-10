@@ -1,5 +1,5 @@
-#ifndef MAXIMAL_CLIQUES_H_
-#define MAXIMAL_CLIQUES_H_
+#ifndef NETWORKIT_CLIQUE_MAXIMAL_CLIQUES_HPP_
+#define NETWORKIT_CLIQUE_MAXIMAL_CLIQUES_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/base/Algorithm.hpp>
@@ -79,4 +79,4 @@ protected:
 
 }
 
-#endif /* MAXIMAL_CLIQUES_H_ */
+#endif // NETWORKIT_CLIQUE_MAXIMAL_CLIQUES_HPP_

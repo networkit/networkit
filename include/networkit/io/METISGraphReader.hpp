@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef METISGRAPHREADER_H_
-#define METISGRAPHREADER_H_
+#ifndef NETWORKIT_IO_METIS_GRAPH_READER_HPP_
+#define NETWORKIT_IO_METIS_GRAPH_READER_HPP_
 
 #include <networkit/io/GraphReader.hpp>
 
@@ -34,4 +34,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* METISGRAPHREADER_H_ */
+#endif // NETWORKIT_IO_METIS_GRAPH_READER_HPP_

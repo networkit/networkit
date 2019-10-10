@@ -1,5 +1,5 @@
-#ifndef COVERHUBDOMINANCE_H
-#define COVERHUBDOMINANCE_H
+#ifndef NETWORKIT_COMMUNITY_COVER_HUB_DOMINANCE_HPP_
+#define NETWORKIT_COMMUNITY_COVER_HUB_DOMINANCE_HPP_
 
 #include <networkit/community/LocalCoverEvaluation.hpp>
 
@@ -40,4 +40,4 @@ public:
 
 }
 
-#endif // COVERHUBDOMINANCE_H
+#endif // NETWORKIT_COMMUNITY_COVER_HUB_DOMINANCE_HPP_

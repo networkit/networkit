@@ -5,8 +5,8 @@
  *      Author: Florian Weber (uagws@student.kit.edu)
  */
 
-#ifndef STRINGTOOLS_H_
-#define STRINGTOOLS_H_
+#ifndef NETWORKIT_AUXILIARY_STRING_TOOLS_HPP_
+#define NETWORKIT_AUXILIARY_STRING_TOOLS_HPP_
 
 #include <algorithm>
 #include <vector>
@@ -74,4 +74,4 @@ inline bool starts_with(const std::string& str, const std::string& prefix) {
 
 } /* namespace StringTools */
 } /* namespace Aux */
-#endif /* STRINGTOOLS_H_ */
+#endif // NETWORKIT_AUXILIARY_STRING_TOOLS_HPP_

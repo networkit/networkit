@@ -5,8 +5,8 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#ifndef UDEGREEINDEX_H_
-#define UDEGREEINDEX_H_
+#ifndef NETWORKIT_LINKPREDICTION_U_DEGREE_INDEX_HPP_
+#define NETWORKIT_LINKPREDICTION_U_DEGREE_INDEX_HPP_
 
 #include <networkit/linkprediction/LinkPredictor.hpp>
 
@@ -34,4 +34,4 @@ public:
 
 } // namespace NetworKit
 
-#endif /* UDEGREEINDEX_H_ */
+#endif // NETWORKIT_LINKPREDICTION_U_DEGREE_INDEX_HPP_

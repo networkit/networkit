@@ -5,8 +5,8 @@
  *      Author: dhoske
  */
 
-#ifndef INCOMPLETEDIJKSTRA_H_
-#define INCOMPLETEDIJKSTRA_H_
+#ifndef NETWORKIT_DISTANCE_INCOMPLETE_DIJKSTRA_HPP_
+#define NETWORKIT_DISTANCE_INCOMPLETE_DIJKSTRA_HPP_
 
 #include <unordered_map>
 #include <unordered_set>
@@ -69,4 +69,4 @@ private:
 
 }
 
-#endif
+#endif // NETWORKIT_DISTANCE_INCOMPLETE_DIJKSTRA_HPP_

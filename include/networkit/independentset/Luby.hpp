@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef LUBY_H_
-#define LUBY_H_
+#ifndef NETWORKIT_INDEPENDENTSET_LUBY_HPP_
+#define NETWORKIT_INDEPENDENTSET_LUBY_HPP_
 
 #include <networkit/independentset/IndependentSetFinder.hpp>
 
@@ -30,4 +30,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* LUBY_H_ */
+#endif // NETWORKIT_INDEPENDENTSET_LUBY_HPP_

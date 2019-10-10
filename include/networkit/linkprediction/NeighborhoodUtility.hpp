@@ -5,8 +5,8 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#ifndef NEIGHBORHOODUTILITY_H_
-#define NEIGHBORHOODUTILITY_H_
+#ifndef NETWORKIT_LINKPREDICTION_NEIGHBORHOOD_UTILITY_HPP_
+#define NETWORKIT_LINKPREDICTION_NEIGHBORHOOD_UTILITY_HPP_
 
 #include <networkit/graph/Graph.hpp>
 
@@ -51,4 +51,4 @@ public:
 
 } // namespace NetworKit
 
-#endif /* NEIGHBORHOODUTILITY_H_ */
+#endif // NETWORKIT_LINKPREDICTION_NEIGHBORHOOD_UTILITY_HPP_

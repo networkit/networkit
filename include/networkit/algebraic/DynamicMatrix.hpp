@@ -5,8 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#ifndef DYNAMIC_MATRIX_H_
-#define DYNAMIC_MATRIX_H_
+#ifndef NETWORKIT_ALGEBRAIC_DYNAMIC_MATRIX_HPP_
+#define NETWORKIT_ALGEBRAIC_DYNAMIC_MATRIX_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/algebraic/Vector.hpp>
@@ -378,4 +378,4 @@ inline void NetworKit::DynamicMatrix::parallelForNonZeroElementsInRowOrder(L han
     }
 }
 
-#endif /* DYNAMIC_MATRIX_H_ */
+#endif // NETWORKIT_ALGEBRAIC_DYNAMIC_MATRIX_HPP_

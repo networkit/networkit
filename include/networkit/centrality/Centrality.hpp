@@ -5,8 +5,8 @@
  *      Author: Christian Staudt
  */
 
-#ifndef CENTRALITY_H_
-#define CENTRALITY_H_
+#ifndef NETWORKIT_CENTRALITY_CENTRALITY_HPP_
+#define NETWORKIT_CENTRALITY_CENTRALITY_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/base/Algorithm.hpp>
@@ -101,4 +101,4 @@ protected:
 
 } /* namespace NetworKit */
 
-#endif /* CENTRALITY_H_ */
+#endif // NETWORKIT_CENTRALITY_CENTRALITY_HPP_

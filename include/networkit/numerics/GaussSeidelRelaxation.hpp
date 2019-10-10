@@ -5,8 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#ifndef GAUSSSEIDELRELAXATION_H_
-#define GAUSSSEIDELRELAXATION_H_
+#ifndef NETWORKIT_NUMERICS_GAUSS_SEIDEL_RELAXATION_HPP_
+#define NETWORKIT_NUMERICS_GAUSS_SEIDEL_RELAXATION_HPP_
 
 #include <networkit/numerics/Smoother.hpp>
 
@@ -92,4 +92,4 @@ Vector GaussSeidelRelaxation<Matrix>::relax(const Matrix& A, const Vector& b, co
 
 } /* namespace NetworKit */
 
-#endif /* GAUSSSEIDELRELAXATION_H_ */
+#endif // NETWORKIT_NUMERICS_GAUSS_SEIDEL_RELAXATION_HPP_

@@ -5,8 +5,8 @@
  *      Author: Gerd Lindner
  */
 
-#ifndef CHIBANISHIZEKITRIANGLEEDGESCORE_H_
-#define CHIBANISHIZEKITRIANGLEEDGESCORE_H_
+#ifndef NETWORKIT_EDGESCORES_CHIBA_NISHIZEKI_TRIANGLE_EDGE_SCORE_HPP_
+#define NETWORKIT_EDGESCORES_CHIBA_NISHIZEKI_TRIANGLE_EDGE_SCORE_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/edgescores/EdgeScore.hpp>
@@ -30,4 +30,4 @@ public:
 
 } /* namespace NetworKit */
 
-#endif /* CHIBANISHIZEKITRIANGLEEDGESCORE_H_ */
+#endif // NETWORKIT_EDGESCORES_CHIBA_NISHIZEKI_TRIANGLE_EDGE_SCORE_HPP_

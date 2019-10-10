@@ -5,8 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#ifndef SMOOTHER_H_
-#define SMOOTHER_H_
+#ifndef NETWORKIT_NUMERICS_SMOOTHER_HPP_
+#define NETWORKIT_NUMERICS_SMOOTHER_HPP_
 
 #include <networkit/algebraic/CSRMatrix.hpp>
 #include <networkit/algebraic/Vector.hpp>
@@ -32,4 +32,4 @@ public:
 
 } /* namespace NetworKit */
 
-#endif /* SMOOTHER_H_ */
+#endif // NETWORKIT_NUMERICS_SMOOTHER_HPP_

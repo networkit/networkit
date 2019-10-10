@@ -4,8 +4,8 @@
  *  Created on: 26.05.2018
  *      Author:  Hung Tran <htran@ae.cs.uni-frankfurt.de>, Manuel Penschuck <networkit@manuel.jetzt>
  */
-#ifndef RANDOMIZATION_CURVEBALL_H
-#define RANDOMIZATION_CURVEBALL_H
+#ifndef NETWORKIT_RANDOMIZATION_CURVEBALL_HPP_
+#define NETWORKIT_RANDOMIZATION_CURVEBALL_HPP_
 
 #include <memory>
 #include <utility>
@@ -49,4 +49,4 @@ private:
 
 } // ! namespace NetworKit
 
-#endif // ! RANDOMIZATION_CURVEBALL_H
+#endif // NETWORKIT_RANDOMIZATION_CURVEBALL_HPP_

@@ -4,8 +4,8 @@
  * @author Michael Hamann <michael.hamann@kit.edu>
  */
 
-#ifndef BINARYPARTITIONWRITER_H_
-#define BINARYPARTITIONWRITER_H_
+#ifndef NETWORKIT_IO_BINARY_PARTITION_WRITER_HPP_
+#define NETWORKIT_IO_BINARY_PARTITION_WRITER_HPP_
 
 #include <networkit/structures/Partition.hpp>
 #include <string>
@@ -39,4 +39,4 @@ private:
 };
 }
 
-#endif
+#endif // NETWORKIT_IO_BINARY_PARTITION_WRITER_HPP_

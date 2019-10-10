@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef RANDOMSPANNINGFOREST_H_
-#define RANDOMSPANNINGFOREST_H_
+#ifndef NETWORKIT_COMPONENTS_RANDOM_SPANNING_FOREST_HPP_
+#define NETWORKIT_COMPONENTS_RANDOM_SPANNING_FOREST_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/SpanningForest.hpp>
@@ -32,4 +32,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* RANDOMSPANNINGFOREST_H_ */
+#endif // NETWORKIT_COMPONENTS_RANDOM_SPANNING_FOREST_HPP_

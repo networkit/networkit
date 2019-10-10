@@ -5,8 +5,8 @@
  *      Author: Michael Hamann, Gerd Lindner
  */
 
-#ifndef JACCARDDISTANCE_H_
-#define JACCARDDISTANCE_H_
+#ifndef NETWORKIT_DISTANCE_JACCARD_DISTANCE_HPP_
+#define NETWORKIT_DISTANCE_JACCARD_DISTANCE_HPP_
 
 #include <networkit/distance/NodeDistance.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -56,4 +56,4 @@ protected:
 };
 
 } /* namespace NetworKit */
-#endif /* JACCARDDISTANCE_H_ */
+#endif // NETWORKIT_DISTANCE_JACCARD_DISTANCE_HPP_

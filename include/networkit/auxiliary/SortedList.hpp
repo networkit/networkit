@@ -5,8 +5,8 @@
  *      Author: Eugenio Angriman
  */
 
-#ifndef SORTEDLIST_H_
-#define SORTEDLIST_H_
+#ifndef NETWORKIT_AUXILIARY_SORTED_LIST_HPP_
+#define NETWORKIT_AUXILIARY_SORTED_LIST_HPP_
 
 #include <algorithm>
 #include <vector>
@@ -130,4 +130,4 @@ inline void SortedList::insert(const uint64_t newElement, const double newValue)
 }
 } // namespace Aux
 
-#endif
+#endif // NETWORKIT_AUXILIARY_SORTED_LIST_HPP_

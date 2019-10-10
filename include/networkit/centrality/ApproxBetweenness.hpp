@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef APPROXBETWEENNESS_H_
-#define APPROXBETWEENNESS_H_
+#ifndef NETWORKIT_CENTRALITY_APPROX_BETWEENNESS_HPP_
+#define NETWORKIT_CENTRALITY_APPROX_BETWEENNESS_HPP_
 
 #include <networkit/centrality/Centrality.hpp>
 
@@ -60,4 +60,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* APPROXBETWEENNESS_H_ */
+#endif // NETWORKIT_CENTRALITY_APPROX_BETWEENNESS_HPP_

@@ -4,8 +4,8 @@
  *      Author: Charmaine Ndolo <charmaine.ndolo@b-tu.de>
  */
 
-#ifndef NETWORKIT_BINARY_WRITER_H
-#define NETWORKIT_BINARY_WRITER_H
+#ifndef NETWORKIT_IO_NETWORKIT_BINARY_WRITER_HPP_
+#define NETWORKIT_IO_NETWORKIT_BINARY_WRITER_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/io/GraphWriter.hpp>
@@ -40,4 +40,4 @@ private:
 
 } // namespace NetworKit
 
-#endif
+#endif // NETWORKIT_IO_NETWORKIT_BINARY_WRITER_HPP_

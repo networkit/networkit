@@ -1,5 +1,5 @@
-#ifndef CUTCLUSTERING_H
-#define CUTCLUSTERING_H
+#ifndef NETWORKIT_COMMUNITY_CUT_CLUSTERING_HPP_
+#define NETWORKIT_COMMUNITY_CUT_CLUSTERING_HPP_
 
 #include <networkit/community/CommunityDetectionAlgorithm.hpp>
 
@@ -60,4 +60,4 @@ private:
 
 } // namespace NetworKit
 
-#endif // CUTCLUSTERING_H
+#endif // NETWORKIT_COMMUNITY_CUT_CLUSTERING_HPP_

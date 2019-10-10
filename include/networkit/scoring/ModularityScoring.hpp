@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef MODULARITY_SCORING_H_
-#define MODULARITY_SCORING_H_
+#ifndef NETWORKIT_SCORING_MODULARITY_SCORING_HPP_
+#define NETWORKIT_SCORING_MODULARITY_SCORING_HPP_
 
 #include <networkit/scoring/EdgeScoring.hpp>
 
@@ -106,4 +106,4 @@ void ModularityScoring<T>::scoreEdges(int) {
 
 } /* namespace NetworKit */
 
-#endif /* MODULARITY_H_ */
+#endif // NETWORKIT_SCORING_MODULARITY_SCORING_HPP_

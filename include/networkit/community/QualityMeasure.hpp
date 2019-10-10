@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef QUALITYMEASURE_H_
-#define QUALITYMEASURE_H_
+#ifndef NETWORKIT_COMMUNITY_QUALITY_MEASURE_HPP_
+#define NETWORKIT_COMMUNITY_QUALITY_MEASURE_HPP_
 
 #include <networkit/structures/Partition.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -25,4 +25,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* QUALITYMEASURE_H_ */
+#endif // NETWORKIT_COMMUNITY_QUALITY_MEASURE_HPP_

@@ -5,8 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#ifndef NETWORKIT_CPP_ALGEBRAIC_ALGEBRAICGLOBALS_H_
-#define NETWORKIT_CPP_ALGEBRAIC_ALGEBRAICGLOBALS_H_
+#ifndef NETWORKIT_ALGEBRAIC_ALGEBRAIC_GLOBALS_HPP_
+#define NETWORKIT_ALGEBRAIC_ALGEBRAIC_GLOBALS_HPP_
 
 #include <networkit/Globals.hpp>
 
@@ -26,4 +26,4 @@ constexpr double FLOAT_EPSILON = 1e-9;
 
 
 
-#endif /* NETWORKIT_CPP_ALGEBRAIC_ALGEBRAICGLOBALS_H_ */
+#endif // NETWORKIT_ALGEBRAIC_ALGEBRAIC_GLOBALS_HPP_

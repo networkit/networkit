@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef DGSSTREAMPARSER_H_
-#define DGSSTREAMPARSER_H_
+#ifndef NETWORKIT_DYNAMICS_DGS_STREAM_PARSER_HPP_
+#define NETWORKIT_DYNAMICS_DGS_STREAM_PARSER_HPP_
 
 #include <string>
 #include <vector>
@@ -41,4 +41,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* DGSSTREAMPARSER_H_ */
+#endif // NETWORKIT_DYNAMICS_DGS_STREAM_PARSER_HPP_

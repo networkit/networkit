@@ -5,8 +5,8 @@
 *      Author: Simon Bischof
 */
 
-#ifndef REGULARRINGLATTICEGENERATOR_H_
-#define REGULARRINGLATTICEGENERATOR_H_
+#ifndef NETWORKIT_GENERATORS_REGULAR_RING_LATTICE_GENERATOR_HPP_
+#define NETWORKIT_GENERATORS_REGULAR_RING_LATTICE_GENERATOR_HPP_
 
 #include <networkit/generators/StaticGraphGenerator.hpp>
 
@@ -35,4 +35,4 @@ protected:
 };
 
 } /* namespace NetworKit */
-#endif /* REGULARRINGLATTICEGENERATOR_H_ */
+#endif // NETWORKIT_GENERATORS_REGULAR_RING_LATTICE_GENERATOR_HPP_

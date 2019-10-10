@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef BLOOMFILTER_H_
-#define BLOOMFILTER_H_
+#ifndef NETWORKIT_AUXILIARY_BLOOM_FILTER_HPP_
+#define NETWORKIT_AUXILIARY_BLOOM_FILTER_HPP_
 
 #include <vector>
 
@@ -67,4 +67,4 @@ public:
 
 }
 
-#endif /* BLOOMFILTER_H_ */
+#endif // NETWORKIT_AUXILIARY_BLOOM_FILTER_HPP_

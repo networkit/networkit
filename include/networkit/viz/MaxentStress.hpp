@@ -5,8 +5,8 @@
  *      Author: Henning Meyerhenke and Michael Wegner
  */
 
-#ifndef MAXENTSTRESS_H_
-#define MAXENTSTRESS_H_
+#ifndef NETWORKIT_VIZ_MAXENT_STRESS_HPP_
+#define NETWORKIT_VIZ_MAXENT_STRESS_HPP_
 
 #include <networkit/viz/GraphLayoutAlgorithm.hpp>
 #include <networkit/numerics/LinearSolver.hpp>
@@ -352,4 +352,4 @@ namespace NetworKit {
     };
 
 } /* namespace NetworKit */
-#endif /* MAXENTSTRESS_H_ */
+#endif // NETWORKIT_VIZ_MAXENT_STRESS_HPP_

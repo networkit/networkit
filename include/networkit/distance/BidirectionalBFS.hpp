@@ -5,8 +5,8 @@
  *      Author: Eugenio Angriman <angrimae@hu-berlin.de>
  */
 
-#ifndef BIDIRECTIONAL_BFS_H
-#define BIDIRECTIONAL_BFS_H
+#ifndef NETWORKIT_DISTANCE_BIDIRECTIONAL_BFS_HPP_
+#define NETWORKIT_DISTANCE_BIDIRECTIONAL_BFS_HPP_
 
 #include <queue>
 
@@ -54,4 +54,4 @@ private:
 };
 } // namespace NetworKit
 
-#endif
+#endif // NETWORKIT_DISTANCE_BIDIRECTIONAL_BFS_HPP_

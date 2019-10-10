@@ -5,8 +5,8 @@
  *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
  */
 
-#ifndef QUADTREECARTESIANEUCLID_H_
-#define QUADTREECARTESIANEUCLID_H_
+#ifndef NETWORKIT_GENERATORS_QUADTREE_QUADTREE_CARTESIAN_EUCLID_HPP_
+#define NETWORKIT_GENERATORS_QUADTREE_QUADTREE_CARTESIAN_EUCLID_HPP_
 
 #include <vector>
 #include <memory>
@@ -159,4 +159,4 @@ private:
 };
 }
 
-#endif /* QUADTREE_H_ */
+#endif // NETWORKIT_GENERATORS_QUADTREE_QUADTREE_CARTESIAN_EUCLID_HPP_

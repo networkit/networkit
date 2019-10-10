@@ -5,8 +5,8 @@
 *      Author: Christian Staudt
 */
 
-#ifndef DOROGOVTSEVMENDESGENERATOR_H_
-#define DOROGOVTSEVMENDESGENERATOR_H_
+#ifndef NETWORKIT_GENERATORS_DOROGOVTSEV_MENDES_GENERATOR_HPP_
+#define NETWORKIT_GENERATORS_DOROGOVTSEV_MENDES_GENERATOR_HPP_
 
 #include <networkit/generators/StaticGraphGenerator.hpp>
 
@@ -33,4 +33,4 @@ protected:
 };
 
 } /* namespace NetworKit */
-#endif /* DOROGOVTSEVMENDESGENERATOR_H_ */
+#endif // NETWORKIT_GENERATORS_DOROGOVTSEV_MENDES_GENERATOR_HPP_

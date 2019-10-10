@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef MATCHER_H_
-#define MATCHER_H_
+#ifndef NETWORKIT_MATCHING_MATCHER_HPP_
+#define NETWORKIT_MATCHING_MATCHER_HPP_
 
 #include <networkit/matching/Matching.hpp>
 #include <networkit/base/Algorithm.hpp>
@@ -54,4 +54,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* MATCHER_H_ */
+#endif // NETWORKIT_MATCHING_MATCHER_HPP_

@@ -5,8 +5,8 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#ifndef ROCMETRIC_H_
-#define ROCMETRIC_H_
+#ifndef NETWORKIT_LINKPREDICTION_ROC_METRIC_HPP_
+#define NETWORKIT_LINKPREDICTION_ROC_METRIC_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/linkprediction/EvaluationMetric.hpp>
@@ -36,4 +36,4 @@ public:
 
 } // namespace NetworKit
 
-#endif /* ROCMETRIC_H_ */
+#endif // NETWORKIT_LINKPREDICTION_ROC_METRIC_HPP_

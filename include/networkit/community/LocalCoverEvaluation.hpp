@@ -1,5 +1,5 @@
-#ifndef LOCALCOVEREVALUATION_H
-#define LOCALCOVEREVALUATION_H
+#ifndef NETWORKIT_COMMUNITY_LOCAL_COVER_EVALUATION_HPP_
+#define NETWORKIT_COMMUNITY_LOCAL_COVER_EVALUATION_HPP_
 
 #include <networkit/community/LocalCommunityEvaluation.hpp>
 #include <networkit/structures/Cover.hpp>
@@ -27,4 +27,4 @@ protected:
 
 }
 
-#endif // LOCALCOVEREVALUATION_H
+#endif // NETWORKIT_COMMUNITY_LOCAL_COVER_EVALUATION_HPP_

@@ -5,8 +5,8 @@
  *      Author: Michael
  */
 
-#ifndef LEVELHIERARCHY_H_
-#define LEVELHIERARCHY_H_
+#ifndef NETWORKIT_NUMERICS_LAMG_LEVEL_HIERARCHY_HPP_
+#define NETWORKIT_NUMERICS_LAMG_LEVEL_HIERARCHY_HPP_
 
 #include <networkit/numerics/LAMG/Level/Level.hpp>
 #include <networkit/numerics/LAMG/Level/LevelFinest.hpp>
@@ -138,4 +138,4 @@ double LevelHierarchy<Matrix>::cycleIndex(index levelIdx) {
 
 } /* namespace NetworKit */
 
-#endif /* LEVELHIERARCHY_H_ */
+#endif // NETWORKIT_NUMERICS_LAMG_LEVEL_HIERARCHY_HPP_

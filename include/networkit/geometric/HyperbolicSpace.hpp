@@ -5,8 +5,8 @@
  *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
  */
 
-#ifndef HYPERBOLICSPACE_H_
-#define HYPERBOLICSPACE_H_
+#ifndef NETWORKIT_GEOMETRIC_HYPERBOLIC_SPACE_HPP_
+#define NETWORKIT_GEOMETRIC_HYPERBOLIC_SPACE_HPP_
 
 #include <cmath>
 
@@ -209,4 +209,4 @@ public:
 };
 }
 
-#endif /* HYPERBOLICSPACE_H_ */
+#endif // NETWORKIT_GEOMETRIC_HYPERBOLIC_SPACE_HPP_

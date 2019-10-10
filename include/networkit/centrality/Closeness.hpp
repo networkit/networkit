@@ -6,8 +6,8 @@
  *              Eugenio Angriman <angrimae@hu-berlin.de>
  */
 
-#ifndef CLOSENESS_H_
-#define CLOSENESS_H_
+#ifndef NETWORKIT_CENTRALITY_CLOSENESS_HPP_
+#define NETWORKIT_CENTRALITY_CLOSENESS_HPP_
 
 #include <tlx/container/d_ary_addressable_int_heap.hpp>
 
@@ -106,4 +106,4 @@ class Closeness : public Centrality {
 
 } /* namespace NetworKit */
 
-#endif /* CLOSENESS_H_ */
+#endif // NETWORKIT_CENTRALITY_CLOSENESS_HPP_

@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef GRAPHSTRUCTURALRANDMEASURE_H_
-#define GRAPHSTRUCTURALRANDMEASURE_H_
+#ifndef NETWORKIT_COMMUNITY_GRAPH_STRUCTURAL_RAND_MEASURE_HPP_
+#define NETWORKIT_COMMUNITY_GRAPH_STRUCTURAL_RAND_MEASURE_HPP_
 
 #include <networkit/community/DissimilarityMeasure.hpp>
 
@@ -28,4 +28,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* GRAPHSTRUCTURALRANDMEASURE_H_ */
+#endif // NETWORKIT_COMMUNITY_GRAPH_STRUCTURAL_RAND_MEASURE_HPP_

@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef MISSINGMATH_H_
-#define MISSINGMATH_H_
+#ifndef NETWORKIT_AUXILIARY_MISSING_MATH_HPP_
+#define NETWORKIT_AUXILIARY_MISSING_MATH_HPP_
 
 #include <cinttypes>
 #include <cmath>
@@ -44,4 +44,4 @@ inline double log_b(double x, double b) {
 } /* namespace MissingMath */
 
 } /* namespace Aux */
-#endif /* MISSINGMATH_H_ */
+#endif // NETWORKIT_AUXILIARY_MISSING_MATH_HPP_

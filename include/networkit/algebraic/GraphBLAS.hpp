@@ -5,8 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#ifndef NETWORKIT_CPP_ALGEBRAIC_GRAPHBLAS_H_
-#define NETWORKIT_CPP_ALGEBRAIC_GRAPHBLAS_H_
+#ifndef NETWORKIT_ALGEBRAIC_GRAPH_BLAS_HPP_
+#define NETWORKIT_ALGEBRAIC_GRAPH_BLAS_HPP_
 
 #include <limits>
 #include <networkit/algebraic/Semirings.hpp>
@@ -311,4 +311,4 @@ NetworKit::Vector columnReduce(const Matrix& matrix) {
 
 
 
-#endif /* NETWORKIT_CPP_ALGEBRAIC_GRAPHBLAS_H_ */
+#endif // NETWORKIT_ALGEBRAIC_GRAPH_BLAS_HPP_

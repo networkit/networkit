@@ -5,8 +5,8 @@
  *      Author: Eugenio Angriman <angrimae@hu-berlin.de>
  */
 
-#ifndef A_STAR_GENERAL_H
-#define A_STAR_GENERAL_H
+#ifndef NETWORKIT_DISTANCE_A_STAR_GENERAL_HPP_
+#define NETWORKIT_DISTANCE_A_STAR_GENERAL_HPP_
 
 #include <networkit/distance/STSP.hpp>
 
@@ -114,4 +114,4 @@ private:
 };
 } // namespace NetworKit
 
-#endif /* ifndef A_STAR_GENERAL_H */
+#endif // NETWORKIT_DISTANCE_A_STAR_GENERAL_HPP_

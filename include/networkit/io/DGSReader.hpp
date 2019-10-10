@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef DGSREADER_H_
-#define DGSREADER_H_
+#ifndef NETWORKIT_IO_DGS_READER_HPP_
+#define NETWORKIT_IO_DGS_READER_HPP_
 
 #include <fstream>
 
@@ -42,4 +42,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* DGSREADER_H_ */
+#endif // NETWORKIT_IO_DGS_READER_HPP_

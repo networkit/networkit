@@ -5,8 +5,8 @@
  *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
  */
 
-#ifndef QUADTREEPOLAREUCLID_H_
-#define QUADTREEPOLAREUCLID_H_
+#ifndef NETWORKIT_GENERATORS_QUADTREE_QUADTREE_POLAR_EUCLID_HPP_
+#define NETWORKIT_GENERATORS_QUADTREE_QUADTREE_POLAR_EUCLID_HPP_
 
 #include <vector>
 #include <memory>
@@ -148,4 +148,4 @@ private:
 };
 }
 
-#endif /* QUADTREE_H_ */
+#endif // NETWORKIT_GENERATORS_QUADTREE_QUADTREE_POLAR_EUCLID_HPP_

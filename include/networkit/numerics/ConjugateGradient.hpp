@@ -5,8 +5,8 @@
  *      Author: Daniel Hoske and Michael Wegner
  */
 
-#ifndef CONJUGATE_GRADIENT_H_
-#define CONJUGATE_GRADIENT_H_
+#ifndef NETWORKIT_NUMERICS_CONJUGATE_GRADIENT_HPP_
+#define NETWORKIT_NUMERICS_CONJUGATE_GRADIENT_HPP_
 
 #include <cstdint>
 #include <utility>
@@ -120,4 +120,4 @@ void ConjugateGradient<Matrix, Preconditioner>::parallelSolve(const std::vector<
 
 } /* namespace NetworKit */
 
-#endif /* CONJUGATE_GRADIENT_H_ */
+#endif // NETWORKIT_NUMERICS_CONJUGATE_GRADIENT_HPP_

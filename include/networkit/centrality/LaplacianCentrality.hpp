@@ -5,8 +5,8 @@
  *      Author: Kolja Esders
  */
 
-#ifndef LAPLACIANCENTRALITY_H_
-#define LAPLACIANCENTRALITY_H_
+#ifndef NETWORKIT_CENTRALITY_LAPLACIAN_CENTRALITY_HPP_
+#define NETWORKIT_CENTRALITY_LAPLACIAN_CENTRALITY_HPP_
 
 #include <networkit/centrality/Centrality.hpp>
 
@@ -41,4 +41,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* LAPLACIANCENTRALITY_H_ */
+#endif // NETWORKIT_CENTRALITY_LAPLACIAN_CENTRALITY_HPP_

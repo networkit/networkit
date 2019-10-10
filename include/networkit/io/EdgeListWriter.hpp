@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef EDGELISTWRITER_H_
-#define EDGELISTWRITER_H_
+#ifndef NETWORKIT_IO_EDGE_LIST_WRITER_HPP_
+#define NETWORKIT_IO_EDGE_LIST_WRITER_HPP_
 
 #include <networkit/io/GraphWriter.hpp>
 
@@ -47,4 +47,4 @@ protected:
 };
 
 } /* namespace NetworKit */
-#endif /* EDGELISTIO_H_ */
+#endif // NETWORKIT_IO_EDGE_LIST_WRITER_HPP_

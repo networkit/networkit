@@ -4,8 +4,8 @@
  *      Author: Charmaine Ndolo <charmaine.ndolo@b-tu.de>
  */
 
-#ifndef NETWORKIT_BINARY_GRAPH_HPP
-#define NETWORKIT_BINARY_GRAPH_HPP
+#ifndef NETWORKIT_IO_NETWORKIT_BINARY_GRAPH_HPP_
+#define NETWORKIT_IO_NETWORKIT_BINARY_GRAPH_HPP_
 
 #include <cstdint>
 #include <cstddef>
@@ -141,4 +141,4 @@ inline int64_t zigzagDecode(uint64_t value) noexcept {
 } // namespace nkbg
 } // namespace NetworKit
 
-#endif
+#endif // NETWORKIT_IO_NETWORKIT_BINARY_GRAPH_HPP_

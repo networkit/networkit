@@ -5,8 +5,8 @@
 *      Author: Eugenio Angriman
 */
 
-#ifndef WEAKLYCONNECTEDCOMPONENTS_H_
-#define WEAKLYCONNECTEDCOMPONENTS_H_
+#ifndef NETWORKIT_COMPONENTS_WEAKLY_CONNECTED_COMPONENTS_HPP_
+#define NETWORKIT_COMPONENTS_WEAKLY_CONNECTED_COMPONENTS_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
@@ -97,4 +97,4 @@ namespace NetworKit {
 }
 
 
-#endif /* WEAKLYCONNECTEDCOMPONENTS_H_ */
+#endif // NETWORKIT_COMPONENTS_WEAKLY_CONNECTED_COMPONENTS_HPP_

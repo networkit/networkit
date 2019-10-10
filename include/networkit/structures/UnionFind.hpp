@@ -7,8 +7,8 @@
  *        as taught in "Algorithms 1"
  */
 
-#ifndef UNIONFIND_H_
-#define UNIONFIND_H_
+#ifndef NETWORKIT_STRUCTURES_UNION_FIND_HPP_
+#define NETWORKIT_STRUCTURES_UNION_FIND_HPP_
 
 #include <vector>
 #include <networkit/Globals.hpp>
@@ -65,4 +65,4 @@ public:
     Partition toPartition();
 };
 }
-#endif
+#endif // NETWORKIT_STRUCTURES_UNION_FIND_HPP_

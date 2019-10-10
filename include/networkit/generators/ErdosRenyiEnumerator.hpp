@@ -5,8 +5,8 @@
  *      Author: Manuel Penschuck (networkit@manuel.jetzt)
  */
 
-#ifndef ERDOSRENYIENUMERATOR_H_
-#define ERDOSRENYIENUMERATOR_H_
+#ifndef NETWORKIT_GENERATORS_ERDOS_RENYI_ENUMERATOR_HPP_
+#define NETWORKIT_GENERATORS_ERDOS_RENYI_ENUMERATOR_HPP_
 
 #include <omp.h>
 
@@ -314,4 +314,4 @@ using ErdosRenyiEnumeratorDefault = ErdosRenyiEnumerator<true>;
 
 }
 
-#endif // ERDOSRENYIENUMERATOR_H_
+#endif // NETWORKIT_GENERATORS_ERDOS_RENYI_ENUMERATOR_HPP_

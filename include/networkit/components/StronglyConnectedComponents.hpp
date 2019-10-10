@@ -5,8 +5,8 @@
  *      Author: Klara Reichard (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
  */
 
-#ifndef STRONGLYCONNECTEDCOMPONENTS_H_
-#define STRONGLYCONNECTEDCOMPONENTS_H_
+#ifndef NETWORKIT_COMPONENTS_STRONGLY_CONNECTED_COMPONENTS_HPP_
+#define NETWORKIT_COMPONENTS_STRONGLY_CONNECTED_COMPONENTS_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
@@ -67,4 +67,4 @@ private:
 }
 
 
-#endif /* STRONGLYCONNECTEDCOMPONENTS_H_ */
+#endif // NETWORKIT_COMPONENTS_STRONGLY_CONNECTED_COMPONENTS_HPP_

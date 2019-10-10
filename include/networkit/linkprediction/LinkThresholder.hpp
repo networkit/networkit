@@ -5,8 +5,8 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#ifndef LINKTHRESHOLDER_H_
-#define LINKTHRESHOLDER_H_
+#ifndef NETWORKIT_LINKPREDICTION_LINK_THRESHOLDER_HPP_
+#define NETWORKIT_LINKPREDICTION_LINK_THRESHOLDER_HPP_
 
 #include <networkit/linkprediction/LinkPredictor.hpp>
 
@@ -50,4 +50,4 @@ std::vector<std::pair<node, node>> byPercentage(std::vector<LinkPredictor::predi
 
 } // namespace NetworKit
 
-#endif /* LINKTHRESHOLDER_H_ */
+#endif // NETWORKIT_LINKPREDICTION_LINK_THRESHOLDER_HPP_

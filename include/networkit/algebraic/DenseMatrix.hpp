@@ -5,8 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#ifndef NETWORKIT_CPP_ALGEBRAIC_DENSEMATRIX_H_
-#define NETWORKIT_CPP_ALGEBRAIC_DENSEMATRIX_H_
+#ifndef NETWORKIT_ALGEBRAIC_DENSE_MATRIX_HPP_
+#define NETWORKIT_ALGEBRAIC_DENSE_MATRIX_HPP_
 
 #include <networkit/Globals.hpp>
 #include <networkit/algebraic/AlgebraicGlobals.hpp>
@@ -424,4 +424,4 @@ inline void DenseMatrix::parallelForNonZeroElementsInRowOrder(L handle) const {
 
 } /* namespace NetworKit */
 
-#endif /* NETWORKIT_CPP_ALGEBRAIC_DENSEMATRIX_H_ */
+#endif // NETWORKIT_ALGEBRAIC_DENSE_MATRIX_HPP_

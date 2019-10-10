@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef EDGESCORING_H_
-#define EDGESCORING_H_
+#ifndef NETWORKIT_SCORING_EDGE_SCORING_HPP_
+#define NETWORKIT_SCORING_EDGE_SCORING_HPP_
 
 #include <networkit/graph/Graph.hpp>
 
@@ -48,4 +48,4 @@ EdgeScoring<T>::~EdgeScoring() {
 
 
 } /* namespace NetworKit */
-#endif /* EDGESCORING_H_ */
+#endif // NETWORKIT_SCORING_EDGE_SCORING_HPP_

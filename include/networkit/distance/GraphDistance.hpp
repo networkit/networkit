@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef GRAPHDISTANCE_H_
-#define GRAPHDISTANCE_H_
+#ifndef NETWORKIT_DISTANCE_GRAPH_DISTANCE_HPP_
+#define NETWORKIT_DISTANCE_GRAPH_DISTANCE_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/distance/Dijkstra.hpp>
@@ -47,4 +47,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* GRAPHDISTANCE_H_ */
+#endif // NETWORKIT_DISTANCE_GRAPH_DISTANCE_HPP_

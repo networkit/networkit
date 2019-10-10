@@ -5,8 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#ifndef NETWORKIT_CPP_ALGEBRAIC_SEMIRINGS_H_
-#define NETWORKIT_CPP_ALGEBRAIC_SEMIRINGS_H_
+#ifndef NETWORKIT_ALGEBRAIC_SEMIRINGS_HPP_
+#define NETWORKIT_ALGEBRAIC_SEMIRINGS_HPP_
 
 #include <algorithm>
 
@@ -198,4 +198,4 @@ public:
 
 
 
-#endif /* NETWORKIT_CPP_ALGEBRAIC_SEMIRINGS_H_ */
+#endif // NETWORKIT_ALGEBRAIC_SEMIRINGS_HPP_

@@ -5,8 +5,8 @@
  *      Author: Michael Hamann
  */
 
-#ifndef EDGESCOREBLENDER_H
-#define EDGESCOREBLENDER_H
+#ifndef NETWORKIT_EDGESCORES_EDGE_SCORE_BLENDER_HPP_
+#define NETWORKIT_EDGESCORES_EDGE_SCORE_BLENDER_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/edgescores/EdgeScore.hpp>
@@ -30,4 +30,4 @@ private:
 
 } // namespace NetworKit
 
-#endif // EDGESCOREBLENDER_H
+#endif // NETWORKIT_EDGESCORES_EDGE_SCORE_BLENDER_HPP_

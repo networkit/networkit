@@ -1,5 +1,5 @@
-#ifndef COVERREADER_H_
-#define COVERREADER_H_
+#ifndef NETWORKIT_IO_COVER_READER_HPP_
+#define NETWORKIT_IO_COVER_READER_HPP_
 
 #include <networkit/structures/Cover.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -24,4 +24,4 @@ class CoverReader {
 
 } /* namespace NetworKit */
 
-#endif // COVERREADER_H_
+#endif // NETWORKIT_IO_COVER_READER_HPP_

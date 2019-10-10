@@ -5,8 +5,8 @@
  *      Author: Lukas Barth, David Weiss
  */
 
-#ifndef CLUSTERINGCOEFFICIENT_H_
-#define CLUSTERINGCOEFFICIENT_H_
+#ifndef NETWORKIT_GLOBAL_CLUSTERING_COEFFICIENT_HPP_
+#define NETWORKIT_GLOBAL_CLUSTERING_COEFFICIENT_HPP_
 
 #include <networkit/graph/Graph.hpp>
 
@@ -40,4 +40,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* CLUSTERINGCOEFFICIENT_H_ */
+#endif // NETWORKIT_GLOBAL_CLUSTERING_COEFFICIENT_HPP_

@@ -1,5 +1,5 @@
-#ifndef LFRGENERATOR_H
-#define LFRGENERATOR_H
+#ifndef NETWORKIT_GENERATORS_LFR_GENERATOR_HPP_
+#define NETWORKIT_GENERATORS_LFR_GENERATOR_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
@@ -174,4 +174,4 @@ protected:
 
 } // namespace NetworKit
 
-#endif // LFRGENERATOR_H
+#endif // NETWORKIT_GENERATORS_LFR_GENERATOR_HPP_

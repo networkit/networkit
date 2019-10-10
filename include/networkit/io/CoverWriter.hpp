@@ -1,5 +1,5 @@
-#ifndef COVERWRITER_H
-#define COVERWRITER_H
+#ifndef NETWORKIT_IO_COVER_WRITER_HPP_
+#define NETWORKIT_IO_COVER_WRITER_HPP_
 
 #include <networkit/structures/Cover.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -19,4 +19,4 @@ class CoverWriter
 };
 }
 
-#endif // COVERWRITER_H
+#endif // NETWORKIT_IO_COVER_WRITER_HPP_

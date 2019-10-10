@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef REVERSEBFS_H_
-#define REVERSEBFS_H_
+#ifndef NETWORKIT_DISTANCE_REVERSE_BFS_HPP_
+#define NETWORKIT_DISTANCE_REVERSE_BFS_HPP_
 
 #include <networkit/distance/SSSP.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -43,4 +43,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* REVERSEBFS_H_ */
+#endif // NETWORKIT_DISTANCE_REVERSE_BFS_HPP_

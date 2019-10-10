@@ -5,8 +5,8 @@
  *      Author: Marvin Ritter (marvin.ritter@gmail.com)
  */
 
-#ifndef GRAPH_BUILDER_BENCHMARK_H_
-#define GRAPH_BUILDER_BENCHMARK_H_
+#ifndef NETWORKIT_GRAPH_TEST_GRAPH_BUILDER_BENCHMARK_HPP_
+#define NETWORKIT_GRAPH_TEST_GRAPH_BUILDER_BENCHMARK_HPP_
 
 #include <gtest/gtest.h>
 #include <functional>
@@ -61,4 +61,4 @@ public:
 
 } /* namespace NetworKit */
 
-#endif /* GRAPH_BUILDER_BENCHMARK_H_ */
+#endif // NETWORKIT_GRAPH_TEST_GRAPH_BUILDER_BENCHMARK_HPP_

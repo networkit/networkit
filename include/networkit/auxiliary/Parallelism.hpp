@@ -7,8 +7,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef PARALLELISM_H_
-#define PARALLELISM_H_
+#ifndef NETWORKIT_AUXILIARY_PARALLELISM_HPP_
+#define NETWORKIT_AUXILIARY_PARALLELISM_HPP_
 
 
 
@@ -39,4 +39,4 @@ void enableNestedParallelism();
 
 }
 
-#endif
+#endif // NETWORKIT_AUXILIARY_PARALLELISM_HPP_

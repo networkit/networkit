@@ -5,8 +5,8 @@
  * @author Michael Hamann <michael.hamann@kit.edu>
  */
 
-#ifndef THRILLGRAPHBINARYREADER_H_
-#define THRILLGRAPHBINARYREADER_H_
+#ifndef NETWORKIT_IO_THRILL_GRAPH_BINARY_READER_HPP_
+#define NETWORKIT_IO_THRILL_GRAPH_BINARY_READER_HPP_
 
 #include <string>
 #include <vector>
@@ -41,4 +41,4 @@ private:
 };
 
 } /* namespace NetworKit */
-#endif /* THRILLGRAPHBINARYREADER_H_ */
+#endif // NETWORKIT_IO_THRILL_GRAPH_BINARY_READER_HPP_

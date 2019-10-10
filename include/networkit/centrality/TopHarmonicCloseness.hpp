@@ -5,8 +5,8 @@
  *		Authors: nemes, Eugenio Angriman
  */
 
-#ifndef TOPHARMONICCLOSENESS_H_
-#define TOPHARMONICCLOSENESS_H_
+#ifndef NETWORKIT_CENTRALITY_TOP_HARMONIC_CLOSENESS_HPP_
+#define NETWORKIT_CENTRALITY_TOP_HARMONIC_CLOSENESS_HPP_
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
@@ -164,4 +164,4 @@ TopHarmonicCloseness::topkScoresList(bool includeTrail) {
 }
 
 } // namespace NetworKit
-#endif /* TOPHARMONICCLOSENESS_H_ */
+#endif // NETWORKIT_CENTRALITY_TOP_HARMONIC_CLOSENESS_HPP_

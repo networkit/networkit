@@ -5,8 +5,8 @@
  * 		 Author: Eugenio Angriman
  */
 
-#ifndef BICONNECTEDCOMPONENTS_H_
-#define BICONNECTEDCOMPONENTS_H_
+#ifndef NETWORKIT_COMPONENTS_BICONNECTED_COMPONENTS_HPP_
+#define NETWORKIT_COMPONENTS_BICONNECTED_COMPONENTS_HPP_
 
 #include <map>
 #include <unordered_set>
@@ -102,4 +102,4 @@ inline std::vector<std::vector<node>> BiconnectedComponents::getComponents() {
   return result;
 }
 } // namespace NetworKit
-#endif // BICONNECTEDCOMPONENTS_H_
+#endif // NETWORKIT_COMPONENTS_BICONNECTED_COMPONENTS_HPP_

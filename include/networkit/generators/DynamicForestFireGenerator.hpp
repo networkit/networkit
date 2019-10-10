@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef FORESTFIREGENERATOR_H_
-#define FORESTFIREGENERATOR_H_
+#ifndef NETWORKIT_GENERATORS_DYNAMIC_FOREST_FIRE_GENERATOR_HPP_
+#define NETWORKIT_GENERATORS_DYNAMIC_FOREST_FIRE_GENERATOR_HPP_
 
 #include <networkit/generators/DynamicGraphGenerator.hpp>
 
@@ -53,4 +53,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* FORESTFIREGENERATOR_H_ */
+#endif // NETWORKIT_GENERATORS_DYNAMIC_FOREST_FIRE_GENERATOR_HPP_

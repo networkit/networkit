@@ -5,8 +5,8 @@
  *      Author: nemes
  */
 
-#ifndef KPATHCENTRALITY_H_
-#define KPATHCENTRALITY_H_
+#ifndef NETWORKIT_CENTRALITY_K_PATH_CENTRALITY_HPP_
+#define NETWORKIT_CENTRALITY_K_PATH_CENTRALITY_HPP_
 
 #include <networkit/centrality/Centrality.hpp>
 
@@ -51,4 +51,4 @@ public:
 
 } /* namespace NetworKit */
 
-#endif /* KPATHCENTRALITY_H_ */
+#endif // NETWORKIT_CENTRALITY_K_PATH_CENTRALITY_HPP_

@@ -5,8 +5,8 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#ifndef LINKPREDICTOR_H_
-#define LINKPREDICTOR_H_
+#ifndef NETWORKIT_LINKPREDICTION_LINK_PREDICTOR_HPP_
+#define NETWORKIT_LINKPREDICTION_LINK_PREDICTOR_HPP_
 
 #include <memory>
 
@@ -95,4 +95,4 @@ public:
 
 } // namespace NetworKit
 
-#endif /* LINKPREDICTOR_H_ */
+#endif // NETWORKIT_LINKPREDICTION_LINK_PREDICTOR_HPP_

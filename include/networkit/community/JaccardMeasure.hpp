@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef JACCARDMEASURE_H_
-#define JACCARDMEASURE_H_
+#ifndef NETWORKIT_COMMUNITY_JACCARD_MEASURE_HPP_
+#define NETWORKIT_COMMUNITY_JACCARD_MEASURE_HPP_
 
 #include <networkit/community/DissimilarityMeasure.hpp>
 
@@ -23,4 +23,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* JACCARDMEASURE_H_ */
+#endif // NETWORKIT_COMMUNITY_JACCARD_MEASURE_HPP_

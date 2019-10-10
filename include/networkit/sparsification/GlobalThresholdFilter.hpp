@@ -5,8 +5,8 @@
  *      Author: Gerd Lindner
  */
 
-#ifndef GLOBALTHRESHOLDFILTER_H_
-#define GLOBALTHRESHOLDFILTER_H_
+#ifndef NETWORKIT_SPARSIFICATION_GLOBAL_THRESHOLD_FILTER_HPP_
+#define NETWORKIT_SPARSIFICATION_GLOBAL_THRESHOLD_FILTER_HPP_
 
 #include <networkit/graph/Graph.hpp>
 
@@ -46,4 +46,4 @@ private:
 
 }
 /* namespace NetworKit */
-#endif /* GLOBALTHRESHOLDFILTER_H_ */
+#endif // NETWORKIT_SPARSIFICATION_GLOBAL_THRESHOLD_FILTER_HPP_

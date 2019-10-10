@@ -5,8 +5,8 @@
  *      Author: Henning Meyerhenke, Christian Staudt, Michael Hamann
  */
 
-#ifndef ALGEBRAICDISTANCE_H_
-#define ALGEBRAICDISTANCE_H_
+#ifndef NETWORKIT_DISTANCE_ALGEBRAIC_DISTANCE_HPP_
+#define NETWORKIT_DISTANCE_ALGEBRAIC_DISTANCE_HPP_
 
 #include <networkit/distance/NodeDistance.hpp>
 
@@ -69,4 +69,4 @@ protected:
 };
 
 } /* namespace NetworKit */
-#endif /* ALGEBRAICDISTANCE_H_ */
+#endif // NETWORKIT_DISTANCE_ALGEBRAIC_DISTANCE_HPP_

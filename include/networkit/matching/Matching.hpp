@@ -4,8 +4,8 @@
  *  Created on: 03.12.2012
  */
 
-#ifndef MATCHING_H_
-#define MATCHING_H_
+#ifndef NETWORKIT_MATCHING_MATCHING_HPP_
+#define NETWORKIT_MATCHING_MATCHING_HPP_
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -116,4 +116,4 @@ protected:
 };
 
 } /* namespace NetworKit */
-#endif /* MATCHING_H_ */
+#endif // NETWORKIT_MATCHING_MATCHING_HPP_
