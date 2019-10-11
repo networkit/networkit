@@ -10,6 +10,7 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
+#include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/generators/BarabasiAlbertGenerator.hpp>
 
 
@@ -70,6 +71,7 @@ Graph BarabasiAlbertGenerator::generateOriginal() {
     }
     assert (G.numberOfNodes() >= k);
 
+    Aux::SignalHandler handler;
     for (count i = n0; i < nMax; i++) {
         count degreeSum = G.numberOfEdges() * 2;
         node u = i;
@@ -89,6 +91,8 @@ Graph BarabasiAlbertGenerator::generateOriginal() {
                 }
                 random -= G.degree(v);
             });
+
+            handler.assureRunning();
         }
 
         targets.erase(u);
@@ -137,6 +141,7 @@ Graph BarabasiAlbertGenerator::generateBatagelj() {
 
     // for each of the remaining nodes [n0, n), we draw k random DIFFERENT neighbors
     auto& gen = Aux::Random::getURNG();
+    Aux::SignalHandler handler;
     for (index v = n0; v < n; ++v) {
         // If we were to update the range in the next loop, the additionally available nodes
         // would only lead to self-loops are multi-edges.
@@ -167,6 +172,8 @@ Graph BarabasiAlbertGenerator::generateBatagelj() {
                     addEdge(v, newNeighbor);
                     break;
                 }
+
+                handler.assureRunning();
             }
         }
     }
