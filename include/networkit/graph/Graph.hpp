@@ -812,7 +812,13 @@ public:
      */
     void setUpperEdgeIdBound(Unsafe, edgeid newBound) { omega = newBound; }
 
+    /**
+     * Set the number of self-loops.
+     *
+     * @param loops New number of self-loops.
+     */
     void setNumberOfSelfLoops(Unsafe, count loops) { storedNumberOfSelfLoops = loops; }
+
     /**
      * Returns a string representation of the graph.
      * @return A string representation.
