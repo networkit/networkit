@@ -8,6 +8,7 @@
 #ifndef NETWORKIT_VIZ_POINT_HPP_
 #define NETWORKIT_VIZ_POINT_HPP_
 
+#include <algorithm>
 #include <vector>
 #include <cassert>
 #include <cmath>
@@ -39,6 +40,7 @@ public:
     Point(T x, T y) { data = {x, y}; }
     Point(count dimension) : data(std::vector<T>(dimension, 0.0)) {}
     Point(std::vector<T>& values): data(values) {}
+
     virtual ~Point() {}
 
     count getDimensions() const { return data.size(); }
@@ -59,6 +61,11 @@ public:
     bool operator!=(const Point<T>& other) const;
 
     Point<T>& operator=(const Point<T>& other) = default;
+
+    template <typename It>
+    void copyFrom(It begin) {
+        std::copy_n(begin, data.size(), data.begin());
+    }
 
     T length() const;
     T squaredLength() const;
