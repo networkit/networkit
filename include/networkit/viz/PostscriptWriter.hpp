@@ -4,18 +4,17 @@
  *  Created on: Apr 10, 2013
  *      Author: Henning
  */
+// networkit-format
 
 #ifndef NETWORKIT_VIZ_POSTSCRIPT_WRITER_HPP_
 #define NETWORKIT_VIZ_POSTSCRIPT_WRITER_HPP_
 
-#include <string>
 #include <fstream>
+#include <string>
 #include <vector>
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
-#include <networkit/community/ClusteringGenerator.hpp>
-#include <networkit/viz/Point.hpp>
 
 namespace NetworKit {
 
@@ -39,28 +38,35 @@ public:
      * @param[in] clustering Clustering of the graph, visualized by different colors.
      * @param[in] filename Name of file to write to.
      */
-    void write(const Graph& g, const std::vector<coord2d>& coordinates, const Partition& clustering, const std::string& filename);
+    void write(const Graph &g, const std::vector<coord2d> &coordinates, const Partition &clustering,
+               const std::string &filename);
 
     /**
      * Outputs an EPS file with name @a filename of the graph @a g with 2D coordinates.
      * @param[in] g Graph to be visualized.
      * @param[in] filename Name of file to write to.
      */
-    void write(const Graph& g, const std::vector<coord2d>& coordinates, const std::string& filename);
+    void write(const Graph &g, const std::vector<coord2d> &coordinates,
+               const std::string &filename);
 
 private:
     bool wrapAround;
 
     coord2d ps_size;
     coord2d ps_border;
+
     coord2d ps_min;
     coord2d ps_max;
+    coord2d ps_scale;
 
-    void init(std::string filename, std::ofstream& file);
-    void writeHeader(std::ofstream& file);
-    void writeMacros(std::ofstream& file);
-    void writeClustering(const Graph& g, const std::vector<coord2d>& coordinates, const Partition& clustering, std::ofstream& file);
+    void init(std::ofstream &file) const;
 
+    void computeBoundaryBox(const std::vector<coord2d> &coordinates);
+
+    void writeHeader(std::ofstream &file) const;
+    void writeMacros(std::ofstream &file) const;
+    void writeClustering(const Graph &g, const std::vector<coord2d> &coordinates,
+                         const Partition &clustering, std::ofstream &file);
 };
 
 } /* namespace NetworKit */

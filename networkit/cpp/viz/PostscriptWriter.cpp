@@ -4,65 +4,53 @@
  *  Created on: Apr 10, 2013
  *      Author: Henning
  */
+// networkit-format
 
-#include <array>
-
+#include <networkit/community/ClusteringGenerator.hpp>
 #include <networkit/viz/PostscriptWriter.hpp>
-#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
 
 namespace PostscriptWriterColors {
-    struct RGBColor {
-        float r;
-        float g;
-        float b;
-    };
+struct RGBColor {
+    float r;
+    float g;
+    float b;
+};
 
-    constexpr std::array<RGBColor, 24> colors{
-            RGBColor{1.0f, 0.0f, 0.0f},
-            RGBColor{1.0f, 0.5f, 0.0f},
-            RGBColor{1.0f, 1.0f, 0.0f},
-            RGBColor{0.5f, 1.0f, 0.0f},
-            RGBColor{0.0f, 1.0f, 0.0f},
-            RGBColor{0.0f, 1.0f, 0.5f},
-            RGBColor{0.0f, 1.0f, 1.0f},
-            RGBColor{0.0f, 0.5f, 1.0f},
-            RGBColor{0.0f, 0.0f, 1.0f},
-            RGBColor{0.5f, 0.0f, 1.0f},
-            RGBColor{1.0f, 0.0f, 1.0f},
-            RGBColor{1.0f, 0.0f, 0.5f},
-            RGBColor{0.6f, 0.0f, 0.0f},
-            RGBColor{0.6f, 0.3f, 0.0f},
-            RGBColor{0.6f, 0.6f, 0.0f},
-            RGBColor{0.3f, 0.6f, 0.0f},
-            RGBColor{0.0f, 0.6f, 0.0f},
-            RGBColor{0.0f, 0.6f, 0.3f},
-            RGBColor{0.0f, 0.6f, 0.6f},
-            RGBColor{0.0f, 0.3f, 0.6f},
-            RGBColor{0.0f, 0.0f, 0.6f},
-            RGBColor{0.3f, 0.0f, 0.6f},
-            RGBColor{0.6f, 0.0f, 0.6f},
-            RGBColor{0.6f, 0.0f, 0.3f}
-    };
+static RGBColor fromCyclicRotation(size_t index) {
+    constexpr RGBColor colors[] = {
+        RGBColor({1.0f, 0.0f, 0.0f}), RGBColor({1.0f, 0.5f, 0.0f}), RGBColor({1.0f, 1.0f, 0.0f}),
+        RGBColor({0.5f, 1.0f, 0.0f}), RGBColor({0.0f, 1.0f, 0.0f}), RGBColor({0.0f, 1.0f, 0.5f}),
+        RGBColor({0.0f, 1.0f, 1.0f}), RGBColor({0.0f, 0.5f, 1.0f}), RGBColor({0.0f, 0.0f, 1.0f}),
+        RGBColor({0.5f, 0.0f, 1.0f}), RGBColor({1.0f, 0.0f, 1.0f}), RGBColor({1.0f, 0.0f, 0.5f}),
+        RGBColor({0.6f, 0.0f, 0.0f}), RGBColor({0.6f, 0.3f, 0.0f}), RGBColor({0.6f, 0.6f, 0.0f}),
+        RGBColor({0.3f, 0.6f, 0.0f}), RGBColor({0.0f, 0.6f, 0.0f}), RGBColor({0.0f, 0.6f, 0.3f}),
+        RGBColor({0.0f, 0.6f, 0.6f}), RGBColor({0.0f, 0.3f, 0.6f}), RGBColor({0.0f, 0.0f, 0.6f}),
+        RGBColor({0.3f, 0.0f, 0.6f}), RGBColor({0.6f, 0.0f, 0.6f}), RGBColor({0.6f, 0.0f, 0.3f})};
+    constexpr auto numColors = sizeof(colors) / sizeof(colors[0]);
 
-    constexpr RGBColor fromCyclicRotation(size_t index) {
-        return colors[index % colors.size()];
+    return colors[index % numColors];
+}
+} // namespace PostscriptWriterColors
+
+PostscriptWriter::PostscriptWriter(bool isTorus) : wrapAround(isTorus), ps_size{1020.0, 1020.0} {}
+
+void PostscriptWriter::computeBoundaryBox(const std::vector<coord2d> &coordinates) {
+    ps_min = {std::numeric_limits<coord>::max(), std::numeric_limits<coord>::max()};
+    ps_max = {std::numeric_limits<coord>::min(), std::numeric_limits<coord>::min()};
+    for (const auto p : coordinates) {
+        ps_min.first = std::min(ps_min.first, p.first);
+        ps_max.first = std::max(ps_max.first, p.first);
+        ps_min.second = std::min(ps_min.second, p.second);
+        ps_max.second = std::max(ps_max.second, p.second);
     }
+
+    ps_scale = {(ps_size.first - 2 * ps_border.first) / (ps_max.first - ps_min.first),
+                (ps_size.second - 2 * ps_border.second) / (ps_max.second - ps_min.second)};
 }
 
-PostscriptWriter::PostscriptWriter(bool isTorus) : wrapAround(isTorus) {
-    numColors = 24;
-
-    // set colors in RGB format, where 0.0 is no color and 1.0 is full color
-    // (1.0 would mean 255 in a 3x8 bit color scheme)
-
-
-    // bounding box size
-    ps_size = {1020.0, 1020.0};
-}
-
-void PostscriptWriter::writeHeader(std::ofstream& file) {
+void PostscriptWriter::writeHeader(std::ofstream &file) const {
     /* Header */
     if (wrapAround) {
         file << "%!PS-Adobe-3.0 EPSF-3.0\n";
@@ -70,104 +58,75 @@ void PostscriptWriter::writeHeader(std::ofstream& file) {
         file << "%!PS-Adobe-1.0\n";
     }
     file << "%%Title: NetworKit visualization\n";
-    file << "%%BoundingBox: 0.000 0.000 " << ps_size[0] << " " << ps_size[1] << "\n";
+    file << "%%BoundingBox: 0.000 0.000 " << ps_size.first << " " << ps_size.second << "\n";
     file << "%%EndComments\n";
-    if (! wrapAround) {
+    if (!wrapAround) {
         file << "%%EndProlog\n";
         file << "gsave\n";
     }
 }
 
-void PostscriptWriter::writeMacros(std::ofstream& file) {
+void PostscriptWriter::writeMacros(std::ofstream &file) const {
     /* Macros */
-    file << "/p {newpath} bind def\n";
-    file << "/m {moveto} bind def\n";
-    file << "/r {rmoveto} bind def\n";
-    file << "/k {rlineto} bind def\n";
-    file << "/l {lineto} bind def\n";
-    file << "/n {rlineto} bind def\n";
-    file << "/c {setrgbcolor} bind def\n";
-    file << "/s {stroke} bind def\n";
-    file << "/w {setlinewidth} bind def\n";
-    file << "/h {show} bind def\n";
-    file << "/a {arc closepath fill} bind def\n";
-    file << "/b {closepath eofill} bind def\n";
+    file << "/p {newpath} bind def\n"
+            "/m {moveto} bind def\n"
+            "/r {rmoveto} bind def\n"
+            "/k {rlineto} bind def\n"
+            "/l {lineto} bind def\n"
+            "/n {rlineto} bind def\n"
+            "/c {setrgbcolor} bind def\n"
+            "/s {stroke} bind def\n"
+            "/w {setlinewidth} bind def\n"
+            "/h {show} bind def\n"
+            "/a {arc closepath fill} bind def\n"
+            "/b {closepath eofill} bind def\n";
 }
 
-// TODO: node and edge weights and thicker nodes/edges
-void PostscriptWriter::writeClustering(Graph& g, Partition& clustering, std::ofstream& file)
-{
-    /////////////////////////////////
-    // bounding box adjustment
-    /////////////////////////////////
-    ps_min = {g.minCoordinate(0), g.minCoordinate(1)};
-    ps_max = {g.maxCoordinate(0), g.maxCoordinate(1)};
-    Point<float> ps_stretch = {ps_size[0] - 2 * ps_border[0], ps_size[1] - 2 * ps_border[1]};
+void PostscriptWriter::writeClustering(const Graph &g, const std::vector<coord2d> &coordinates,
+                                       const Partition &clustering, std::ofstream &file) {
 
-    TRACE("min: ", ps_min.toCsvString());
-    TRACE("max: ", ps_max.toCsvString());
-    TRACE("stretch: ", ps_stretch.toCsvString());
-
-    auto adjustToBoundingBox([&](Point<float> p) {
-        for (index c = 0; c < 2; ++c) {
-            p[c] -= ps_min[c];
-            p[c] *= ps_stretch[c] / (ps_max[c] - ps_min[c]);
-            p[c] += ps_border[c];
-        }
-//		TRACE("New coordinate: ", p.toCsvString());
-        return p;
+    auto adjustToBoundingBox([&](coord2d p) {
+        return coord2d{(p.first - ps_min.first) * ps_scale.first + ps_border.first,
+                       (p.second - ps_min.second) * ps_scale.second + ps_border.second};
     });
 
+    auto adjustWrapAround = [](coord2d p) {
+        auto adjust = [](coord val) { // TODO: externalize constants
+            if (val > 500.0f)
+                return val - 1000.0f;
+            if (val < -500.0f)
+                return val + 1000.0f;
+            return val;
+        };
 
-    /////////////////////////////////
-    // wrap-around adjustment
-    /////////////////////////////////
-    auto adjust1([&](float& val) { // TODO: externalize constants
-        if (val > 500.0f) {
-            val -= 1000.0f;
-        }
-        else if (val < -500.0f) {
-            val += 1000.0f;
-        }
-    });
-
-    auto adjustWrapAround([&](Point<float>& diff) {
-        adjust1(diff[0]);
-        adjust1(diff[1]);
-    });
-
-
-    // draw edges
-    TRACE("start edge loop in writeClustering, wrapAround? ", wrapAround);
-    TRACE("num edges: ", g.numberOfEdges());
+        return coord2d{adjust(p.first), adjust(p.second)};
+    };
 
     g.forEdges([&](node u, node v) {
-
         // set edge color
         if (clustering[u] == clustering[v] && clustering[u] != none) {
             // same cluster
             const auto color = PostscriptWriterColors::fromCyclicRotation(clustering[u]);
             file << color.r << " " << color.g << " " << color.b << " c ";
-        }
-        else {
+        } else {
             // different clusters -> grey
             file << "0.80 0.80 0.80 c 1.0 w ";
         }
 
         // set edge start and end point
-        Point<float> start = adjustToBoundingBox(g.getCoordinate(u));
-        Point<float> end = adjustToBoundingBox(g.getCoordinate(v));
-        Point<float> diff = {end[0] - start[0], end[1] - start[1]};
+        auto start = adjustToBoundingBox(coordinates[u]);
+        auto end = adjustToBoundingBox(coordinates[v]);
+        auto diff = coord2d{end.first - start.first, end.second - start.second};
+
         if (wrapAround) {
-            adjustWrapAround(diff);
+            diff = adjustWrapAround(diff);
+            end = {start.first + diff.first, start.second + diff.second};
         }
-        end = start;
-        end += diff;
 
         // write edge to file
-        file << "p " << start.toSsvString() << " m " << end.toSsvString() << " l s\n";
+        file << "p " << start.first << " " << start.second << " m " << end.first << " "
+             << end.second << " l s\n";
     });
-
 
     // draw vertices
     float dotsize = 2.0;
@@ -176,22 +135,18 @@ void PostscriptWriter::writeClustering(Graph& g, Partition& clustering, std::ofs
             // change color
             const auto color = PostscriptWriterColors::fromCyclicRotation(clustering[u]);
             file << color.r << " " << color.g << " " << color.b << " c ";
-        }
-        else {
+        } else {
             file << "0.0 0.0 0.0 c ";
         }
 
-        Point<float> point = adjustToBoundingBox(g.getCoordinate(u));
+        const auto point = adjustToBoundingBox(coordinates[u]);
 
-        file << "p " << point.toSsvString() << " " << dotsize << " 0.00 360.00 a s\n";
-//		TRACE("write coordinate to file: ", point[0], ", ", point[1]);
+        file << "p " << point.first << " " << point.second << " " << dotsize
+             << " 0.00 360.00 a s\n";
     });
 }
 
-void PostscriptWriter::init(std::string path, std::ofstream& file) {
-    TRACE("start ps init");
-
-    file.open(path.c_str());
+void PostscriptWriter::init(std::ofstream &file) const {
     file.precision(3);
     file << std::fixed;
 
@@ -200,27 +155,26 @@ void PostscriptWriter::init(std::string path, std::ofstream& file) {
     file << "0.000 0.000 0.000 c\n";
 }
 
-void PostscriptWriter::write(Graph& g, Partition& clustering, std::string path) {
-    TRACE("start ps write clustering");
-    assert(g.getCoordinate(0).getDimensions() == 2);
+void PostscriptWriter::write(const Graph &g, const std::vector<coord2d> &coordinates,
+                             const Partition &clustering, const std::string &path) {
+    std::ofstream file(path);
+    init(file);
+    computeBoundaryBox(coordinates);
 
-    std::ofstream file;
-    init(path, file);
+    writeClustering(g, coordinates, clustering, file);
 
-    writeClustering(g, clustering, file);
-
-    if (! wrapAround) {
+    if (!wrapAround) {
         file << "grestore\n";
     }
+
     file.close();
 }
 
-void PostscriptWriter::write(Graph& g, std::string path) {
-    TRACE("start ps write");
+void PostscriptWriter::write(const Graph &g, const std::vector<coord2d> &coordinates,
+                             const std::string &path) {
     ClusteringGenerator gen;
     Partition allNone = gen.makeOneClustering(g);
-    write(g, allNone, path);
+    write(g, coordinates, allNone, path);
 }
-
 
 } /* namespace NetworKit */
