@@ -11,21 +11,21 @@
 #include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
-Partition ClusteringGenerator::makeSingletonClustering(Graph& G) {
+Partition ClusteringGenerator::makeSingletonClustering(const Graph& G) {
     count n = G.upperNodeIdBound();
     Partition zeta(n);
     zeta.allToSingletons();
     return zeta;
 }
 
-Partition ClusteringGenerator::makeOneClustering(Graph& G) {
+Partition ClusteringGenerator::makeOneClustering(const Graph& G) {
     count n = G.upperNodeIdBound();
     Partition zeta(n);
     zeta.allToOnePartition();
     return zeta;
 }
 
-Partition ClusteringGenerator::makeRandomClustering(Graph& G, count k) {
+Partition ClusteringGenerator::makeRandomClustering(const Graph& G, count k) {
     count n = G.upperNodeIdBound();
     Partition zeta(n);
 
@@ -43,7 +43,7 @@ Partition ClusteringGenerator::makeRandomClustering(Graph& G, count k) {
     return zeta;
 }
 
-Partition ClusteringGenerator::makeContinuousBalancedClustering(Graph& G, count k) {
+Partition ClusteringGenerator::makeContinuousBalancedClustering(const Graph& G, count k) {
     count n = G.upperNodeIdBound(); 
     Partition clustering(n);
     clustering.setUpperBound(k);
@@ -72,7 +72,7 @@ Partition ClusteringGenerator::makeContinuousBalancedClustering(Graph& G, count 
     return clustering;
 }
 
-Partition ClusteringGenerator::makeNoncontinuousBalancedClustering(Graph &G, count k) {
+Partition ClusteringGenerator::makeNoncontinuousBalancedClustering(const Graph &G, count k) {
     Partition clustering(G.upperNodeIdBound());
     clustering.setUpperBound(k);
 
