@@ -231,7 +231,6 @@ class TestGraph(unittest.TestCase):
 			try:
 				while nbrs is not None:
 					nodeList.append(next(nbrs))
-					print(nodeList)
 			except StopIteration:
 				pass
 			return nodeList
@@ -241,6 +240,44 @@ class TestGraph(unittest.TestCase):
 			G.forInEdgesOf(node, nbrFunc)
 			nodeInNbrs = nodeInIter(node)
 			self.assertEqual(sorted(forEdgesNbrs), sorted(nodeInNbrs))
+
+	def testAddNodes(self):
+		G = nk.Graph(0)
+		G.addNodes(10)
+		self.assertEqual(G.numberOfNodes(), 10)
+		for u in range(G.numberOfNodes()):
+			self.assertTrue(G.hasNode(u))
+
+	def testAddEdgeWithMissingNodes(self):
+		G = nk.Graph(0)
+
+		with self.assertRaises(RuntimeError):
+			G.addEdge(0, 1)
+
+		self.assertEqual(G.numberOfNodes(), 0)
+		self.assertEqual(G.numberOfEdges(), 0)
+
+		G.addEdge(0, 2, addMissing = True)
+
+		self.assertEqual(G.numberOfNodes(), 3)
+		self.assertEqual(G.numberOfEdges(), 1)
+
+		G.removeNode(1)
+
+		self.assertEqual(G.numberOfNodes(), 2)
+		self.assertEqual(G.numberOfEdges(), 1)
+
+		G.addEdge(0, 1, addMissing = True)
+
+		self.assertEqual(G.numberOfNodes(), 3)
+		self.assertEqual(G.numberOfEdges(), 2)
+
+		G.removeNode(2)
+
+		G.addEdge(1, 2, addMissing = True)
+
+		self.assertEqual(G.numberOfNodes(), 3)
+		self.assertEqual(G.numberOfEdges(), 2)
 
 if __name__ == "__main__":
 	unittest.main()
