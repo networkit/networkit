@@ -5,41 +5,58 @@
  *      Author: Henning
  */
 
+#include <array>
+
 #include <networkit/viz/PostscriptWriter.hpp>
 #include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
+
+namespace PostscriptWriterColors {
+    struct RGBColor {
+        float r;
+        float g;
+        float b;
+    };
+
+    constexpr std::array<RGBColor, 24> colors{
+            RGBColor{1.0f, 0.0f, 0.0f},
+            RGBColor{1.0f, 0.5f, 0.0f},
+            RGBColor{1.0f, 1.0f, 0.0f},
+            RGBColor{0.5f, 1.0f, 0.0f},
+            RGBColor{0.0f, 1.0f, 0.0f},
+            RGBColor{0.0f, 1.0f, 0.5f},
+            RGBColor{0.0f, 1.0f, 1.0f},
+            RGBColor{0.0f, 0.5f, 1.0f},
+            RGBColor{0.0f, 0.0f, 1.0f},
+            RGBColor{0.5f, 0.0f, 1.0f},
+            RGBColor{1.0f, 0.0f, 1.0f},
+            RGBColor{1.0f, 0.0f, 0.5f},
+            RGBColor{0.6f, 0.0f, 0.0f},
+            RGBColor{0.6f, 0.3f, 0.0f},
+            RGBColor{0.6f, 0.6f, 0.0f},
+            RGBColor{0.3f, 0.6f, 0.0f},
+            RGBColor{0.0f, 0.6f, 0.0f},
+            RGBColor{0.0f, 0.6f, 0.3f},
+            RGBColor{0.0f, 0.6f, 0.6f},
+            RGBColor{0.0f, 0.3f, 0.6f},
+            RGBColor{0.0f, 0.0f, 0.6f},
+            RGBColor{0.3f, 0.0f, 0.6f},
+            RGBColor{0.6f, 0.0f, 0.6f},
+            RGBColor{0.6f, 0.0f, 0.3f}
+    };
+
+    constexpr RGBColor fromCyclicRotation(size_t index) {
+        return colors[index % colors.size()];
+    }
+}
 
 PostscriptWriter::PostscriptWriter(bool isTorus) : wrapAround(isTorus) {
     numColors = 24;
 
     // set colors in RGB format, where 0.0 is no color and 1.0 is full color
     // (1.0 would mean 255 in a 3x8 bit color scheme)
-    psColor = { 
-        {1.0f, 0.0f, 0.0f},
-        {1.0f, 0.5f, 0.0f},
-        {1.0f, 1.0f, 0.0f},
-        {0.5f, 1.0f, 0.0f},
-        {0.0f, 1.0f, 0.0f},
-        {0.0f, 1.0f, 0.5f},
-        {0.0f, 1.0f, 1.0f},
-        {0.0f, 0.5f, 1.0f},
-        {0.0f, 0.0f, 1.0f},
-        {0.5f, 0.0f, 1.0f},
-        {1.0f, 0.0f, 1.0f},
-        {1.0f, 0.0f, 0.5f},
-        {0.6f, 0.0f, 0.0f},
-        {0.6f, 0.3f, 0.0f},
-        {0.6f, 0.6f, 0.0f},
-        {0.3f, 0.6f, 0.0f},
-        {0.0f, 0.6f, 0.0f},
-        {0.0f, 0.6f, 0.3f},
-        {0.0f, 0.6f, 0.6f},
-        {0.0f, 0.3f, 0.6f},
-        {0.0f, 0.0f, 0.6f},
-        {0.3f, 0.0f, 0.6f},
-        {0.6f, 0.0f, 0.6f},
-        {0.6f, 0.0f, 0.3f}};
+
 
     // bounding box size
     ps_size = {1020.0, 1020.0};
@@ -129,10 +146,8 @@ void PostscriptWriter::writeClustering(Graph& g, Partition& clustering, std::ofs
         // set edge color
         if (clustering[u] == clustering[v] && clustering[u] != none) {
             // same cluster
-            float r = psColor[clustering[u] % numColors].r;
-            float g = psColor[clustering[u] % numColors].g;
-            float b = psColor[clustering[u] % numColors].b;
-            file << r << " " << g << " " << b << " c ";
+            const auto color = PostscriptWriterColors::fromCyclicRotation(clustering[u]);
+            file << color.r << " " << color.g << " " << color.b << " c ";
         }
         else {
             // different clusters -> grey
@@ -159,10 +174,8 @@ void PostscriptWriter::writeClustering(Graph& g, Partition& clustering, std::ofs
     g.forNodes([&](node u) {
         if (clustering[u] != none) {
             // change color
-            float r = psColor[clustering[u] % numColors].r;
-            float g = psColor[clustering[u] % numColors].g;
-            float b = psColor[clustering[u] % numColors].b;
-            file << r << " " << g << " " << b << " c ";
+            const auto color = PostscriptWriterColors::fromCyclicRotation(clustering[u]);
+            file << color.r << " " << color.g << " " << color.b << " c ";
         }
         else {
             file << "0.0 0.0 0.0 c ";

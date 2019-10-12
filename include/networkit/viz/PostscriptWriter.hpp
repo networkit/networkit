@@ -24,29 +24,6 @@ namespace NetworKit {
  * EPS output of graphs with 2D coordinates
  */
 class PostscriptWriter {
-
-    struct float_triple {
-        float r;
-        float g;
-        float b;
-    };
-
-protected:
-    bool wrapAround;
-
-    count numColors;
-    std::vector<float_triple> psColor;
-
-    Point<float> ps_size;
-    Point<float> ps_border;
-    Point<float> ps_min;
-    Point<float> ps_max;
-
-    void init(std::string filename, std::ofstream& file);
-    void writeHeader(std::ofstream& file);
-    void writeMacros(std::ofstream& file);
-    void writeClustering(Graph& g, Partition& clustering, std::ofstream& file);
-
 public:
     /**
      * @param[in] isTorus Specifies whether the visualization square is treated as torus,
@@ -62,14 +39,28 @@ public:
      * @param[in] clustering Clustering of the graph, visualized by different colors.
      * @param[in] filename Name of file to write to.
      */
-    void write(Graph& g, Partition& clustering, std::string filename);
+    void write(const Graph& g, const std::vector<coord2d>& coordinates, const Partition& clustering, const std::string& filename);
 
     /**
      * Outputs an EPS file with name @a filename of the graph @a g with 2D coordinates.
      * @param[in] g Graph to be visualized.
      * @param[in] filename Name of file to write to.
      */
-    void write(Graph& g, std::string filename);
+    void write(const Graph& g, const std::vector<coord2d>& coordinates, const std::string& filename);
+
+private:
+    bool wrapAround;
+
+    coord2d ps_size;
+    coord2d ps_border;
+    coord2d ps_min;
+    coord2d ps_max;
+
+    void init(std::string filename, std::ofstream& file);
+    void writeHeader(std::ofstream& file);
+    void writeMacros(std::ofstream& file);
+    void writeClustering(const Graph& g, const std::vector<coord2d>& coordinates, const Partition& clustering, std::ofstream& file);
+
 };
 
 } /* namespace NetworKit */
