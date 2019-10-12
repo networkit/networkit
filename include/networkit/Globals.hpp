@@ -10,6 +10,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <utility>
 
 namespace NetworKit {
     using index = uint64_t; ///< more expressive name for an index into an array
@@ -30,6 +31,9 @@ namespace NetworKit {
     constexpr index none = std::numeric_limits<index>::max(); ///< value for not existing nodes/edges
     constexpr edgeweight defaultEdgeWeight = 1.0;
     constexpr edgeweight nullWeight = 0.0;
+
+    using coord    = double;
+    using coord2d  = std::pair<coord, coord>;
 
     constexpr double PI = 3.141592653589793238462643383279502884197169399375105820974944592307816406286;
 
