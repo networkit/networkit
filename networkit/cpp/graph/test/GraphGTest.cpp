@@ -385,6 +385,19 @@ TEST_P(GraphGTest, testAddNode) {
     ASSERT_EQ(4u, G2.numberOfNodes());
 }
 
+TEST_P(GraphGTest, testAddNodes) {
+    auto G = createGraph(5);
+    G.addNodes(5);
+
+    ASSERT_EQ(G.numberOfNodes(), 10);
+    ASSERT_TRUE(G.hasNode(9));
+
+    G.addNodes(90);
+
+    ASSERT_EQ(G.numberOfNodes(), 100);
+    ASSERT_TRUE(G.hasNode(99));
+}
+
 TEST_P(GraphGTest, testRemoveNode) {
     auto testGraph = [&](Graph &G) {
         count n = G.numberOfNodes();

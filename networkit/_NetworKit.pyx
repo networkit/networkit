@@ -305,6 +305,7 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		bool_t isIsolated(node u) except +
 		_Graph copyNodes() except +
 		node addNode() except +
+		node addNodes(node) except +
 		void removeNode(node u) except +
 		bool_t hasNode(node u) except +
 		void restoreNode(node u) except +
