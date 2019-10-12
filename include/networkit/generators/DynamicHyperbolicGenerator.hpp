@@ -71,7 +71,7 @@ public:
      * Get coordinates in native representation
      * @return vector of 2D-Points in Cartesian coordinates
      */
-    std::vector<Point<float> > getCoordinates() const;
+    std::vector<coord2d> getCoordinates() const;
 
 private:
     /**

@@ -328,11 +328,6 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
 
     GraphUpdater gu(G);
     std::vector<GraphEvent> stream;
-    G.initCoordinates();
-    #ifndef NETWORKIT_RELEASE_LOGGING
-        PostscriptWriter psWriter(true);
-        psWriter.write(G, "output/hyperbolic-0000.eps");
-    #endif
 
     for (index i = 0; i < nSteps; i++) {
         stream = dynGen.generate(1);
@@ -341,18 +336,17 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
             EXPECT_TRUE(event.type == GraphEvent::EDGE_REMOVAL || event.type == GraphEvent::EDGE_ADDITION || event.type == GraphEvent::TIME_STEP);
         }
         gu.update(stream);
-        G.initCoordinates();
 
-        auto coords = dynGen.getCoordinates();
-        for (index j = 0; j < coords.size(); j++) {
-            G.setCoordinate(j, coords[j]);
-        }
+        auto coordinates = dynGen.getCoordinates();
+
         #ifndef NETWORKIT_RELEASE_LOGGING
-            // output for visual inspection
-            char path[27];//TODO: come on, this is ridiculous!
-            sprintf(path, "output/hyperbolic-%04llu.eps", static_cast<unsigned long long>(i));
-            TRACE("path: " , path);
-            psWriter.write(G, path);
+        {
+            std::stringstream ss;
+            ss << "output/hyperbolic-" << std::setw(4) << std::setfill('0') << i << ".eps";
+
+            PostscriptWriter psWriter(true);
+            psWriter.write(G, coordinates, ss.str());
+        }
         #endif
     }
 }

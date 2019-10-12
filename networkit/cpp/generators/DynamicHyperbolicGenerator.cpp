@@ -128,14 +128,13 @@ Graph DynamicHyperbolicGenerator::getGraph() const {
     return HyperbolicGenerator().generate(angles, radii, R, T);
 }
 
-std::vector<Point<float> > DynamicHyperbolicGenerator::getCoordinates() const {
+std::vector<coord2d> DynamicHyperbolicGenerator::getCoordinates() const {
     const count n = angles.size();
     assert(radii.size() == n);
-    std::vector<Point<float> > result;
+    std::vector<coord2d> result;
     for (index i = 0; i < n; i++) {
-        Point2D<double> coord = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
-        Point<float> temp(coord[0], coord[1]);
-        result.push_back(temp);
+        const auto coord = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
+        result.emplace_back(coord.getX(), coord.getY());
     }
     return result;
 }
