@@ -41,6 +41,7 @@ protected:
     bool isWeighted() const;
     bool isDirected() const;
     Graph createGraph(count n = 0) const;
+    Graph createGraph(count n, count m) const;
     count countSelfLoopsManually(const Graph &G);
 };
 
@@ -56,6 +57,20 @@ Graph GraphGTest::createGraph(count n) const {
     bool weighted, directed;
     std::tie(weighted, directed) = GetParam();
     Graph G(n, weighted, directed);
+    return G;
+}
+
+Graph GraphGTest::createGraph(count n, count m) const {
+    auto G = createGraph(n);
+    while(G.numberOfEdges() < m) {
+        const auto u = Aux::Random::index(n);
+        const auto v = Aux::Random::index(n);
+        if (u == v) continue;
+        if (G.hasEdge(u, v)) continue;
+
+        const auto p = Aux::Random::probability();
+        G.addEdge(u, v, p);
+    }
     return G;
 }
 
@@ -2441,6 +2456,37 @@ TEST_P(GraphGTest, testRemoveMultiEdges) {
 
     for (count i = 0; i < G.numberOfEdges(); ++i)
         EXPECT_EQ(edgeSet[i], edgeSet_[i]);
+}
+
+TEST_P(GraphGTest, testEdgeIdsAfterRemove) {
+    constexpr node n = 100;
+
+    Aux::Random::setSeed(42, true);
+    auto G = createGraph(n, 10*n);
+    G.indexEdges();
+    auto original = G;
+
+    // remove some nodes and edges
+    G.removeNode(5);
+    G.removeNode(10);
+    while(2*G.numberOfEdges() > original.numberOfEdges()) {
+        auto e = G.randomEdge(false);
+        G.removeEdge(e.first, e.second);
+    }
+    ASSERT_GT(G.numberOfEdges(), original.numberOfEdges() / 3);
+
+    // check that the remaining edges still have the same ids
+    G.forNodes([&] (node u) {
+        G.forNeighborsOf(u, [&] (node, node v, edgeweight, edgeid id) {
+            ASSERT_EQ(id, original.edgeId(u, v));
+        });
+
+        if (!isDirected()) return;
+
+        G.forInNeighborsOf(u, [&] (node, node v, edgeweight, edgeid id) {
+            ASSERT_EQ(id, original.edgeId(v, u));
+        });
+    });
 }
 
 } /* namespace NetworKit */
