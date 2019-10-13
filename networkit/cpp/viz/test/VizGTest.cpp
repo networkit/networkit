@@ -36,19 +36,18 @@ TEST_F(VizGTest, testPostscriptWriterOnRandomGraph) {
 
     ClusteredRandomGraphGenerator graphGen(n, numClusters, pin, pout);
     Graph G = graphGen.generate();
-    G.initCoordinates();
+    std::vector<coord2d> coordinates(G.upperNodeIdBound());
 
     // create coordinates
     G.forNodes([&](node u) {
-        Point<float> p(Aux::Random::probability(), Aux::Random::probability());
-        G.setCoordinate(u, p);
+        coordinates[u] = {Aux::Random::probability(), Aux::Random::probability()};
     });
 
 
     // write graph to file
     std::string path = "output/testGraph.eps";
     PostscriptWriter psWriter;
-    psWriter.write(G, path);
+    psWriter.write(G, coordinates, path);
 
     bool exists = false;
     std::ifstream file(path);
@@ -58,16 +57,18 @@ TEST_F(VizGTest, testPostscriptWriterOnRandomGraph) {
     EXPECT_TRUE(exists) << "A file should have been created : " << path;
 }
 
-#if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
+#ifndef NETWORKIT_WINDOWS
 TEST_F(VizGTest, testPostscriptWriterOnRealGraph) {
     // read graph and coordinates from binary file
     DibapGraphReader reader;
     Graph G = reader.read("input/airfoil1.gi");
+    const auto coordinates = reader.moveCoordinates();
+
 
     // write graph to file
     std::string path = "output/airfoil1.eps";
     PostscriptWriter psWriter;
-    psWriter.write(G, path);
+    psWriter.write(G, Point<>::pointVectorToCoord2d(coordinates), path);
 
     bool exists = false;
     std::ifstream file(path);
