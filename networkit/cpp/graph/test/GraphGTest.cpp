@@ -293,32 +293,50 @@ TEST_P(GraphGTest, testSetName) {
     ASSERT_EQ(s2, G2.getName());
 }
 
-TEST_P(GraphGTest, testMaxDegreeUndirected) {
-    Aux::Random::setSeed(1, false);
-    Graph G = ErdosRenyiGenerator(20, 0.2, false).generate();
+TEST_P(GraphGTest, testMaxDegree) {
+    constexpr count n = 100;
+    constexpr double p = 0.1;
+    constexpr count edgeUpdates = 10;
 
-    count maxDegOut = 0, maxDegIn = 0;
-    G.forNodes([&](const node u) {
-        maxDegOut = std::max(maxDegOut, G.degreeOut(u));
-        maxDegIn = std::max(maxDegIn, G.degreeIn(u));
-    });
+    auto computeMaxDeg = [&](const Graph &G, bool inDegree) {
+        count maxDeg = 0;
+        G.forNodes([&](const node u) {
+            maxDeg = std::max(maxDeg, inDegree ? G.degreeIn(u) : G.degreeOut(u));
+        });
 
-    ASSERT_EQ(G.maxDegree(), maxDegOut);
-    ASSERT_EQ(G.maxDegreeIn(), maxDegIn);
-}
+    return maxDeg;
+    };
 
-TEST_P(GraphGTest, testMaxDegreeDirected) {
-    Aux::Random::setSeed(1, false);
-    Graph G = ErdosRenyiGenerator(20, 0.2, true).generate();
+    auto doTest = [&](const Graph &G) {
+        EXPECT_EQ(G.maxDegree(), computeMaxDeg(G, false));
+        EXPECT_EQ(G.maxDegreeIn(), computeMaxDeg(G, true));
+    };
 
-    count maxDegOut = 0, maxDegIn = 0;
-    G.forNodes([&](const node u) {
-        maxDegOut = std::max(maxDegOut, G.degreeOut(u));
-        maxDegIn = std::max(maxDegIn, G.degreeIn(u));
-    });
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, false);
+        auto G = ErdosRenyiGenerator(n, p, isDirected()).generate();
+        if (isWeighted()) {
+            G = Graph(G, true, G.isDirected());
+        }
 
-    ASSERT_EQ(G.maxDegree(), maxDegOut);
-    ASSERT_EQ(G.maxDegreeIn(), maxDegIn);
+        doTest(G);
+        for (count i = 0; i < edgeUpdates; ++i) {
+            const auto e = G.randomEdge();
+            G.removeEdge(e.first, e.second);
+            doTest(G);
+        }
+
+        for (count i = 0; i < edgeUpdates; ++i) {
+            node u = G.randomNode();
+            node v = G.randomNode();
+            while (G.hasEdge(u, v)) {
+                u = G.randomNode();
+                v = G.randomNode();
+            }
+            G.addEdge(u, v);
+            doTest(G);
+        }
+    }
 }
 
 TEST_P(GraphGTest, testMaxWeightedDegreeUndirected) {
