@@ -196,7 +196,6 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
     EXPECT_TRUE(G.checkConsistency());
 }
 
-
 TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
     count nSteps = 5;
     count n = 200;
@@ -209,17 +208,10 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
     GraphUpdater gu(G);
     std::vector<GraphEvent> stream;
 
-    #ifndef NETWORKIT_RELEASE_LOGGING
-        // static clustering algorithm for better visual output
-        PostscriptWriter psWriter(true);
-        psWriter.write(G, "output/pubweb-0000.eps");
-    #endif
-
     for (index i = 1; i <= nSteps; ++i) {
         stream = dynGen.generate(1);
         DEBUG("updating graph");
         gu.update(stream);
-        G.initCoordinates();
 
         DEBUG("updated graph, new (n, m) = (" , G.numberOfNodes() , ", " , G.numberOfEdges() , ")");
         edgeweight tew = G.totalEdgeWeight();
@@ -227,19 +219,13 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
         EXPECT_GT(tew, 0);
 
         // update coordinates
-        std::map<node, Point<float> > newCoordinates = dynGen.getNewCoordinates();
-        for (std::map<node, Point<float> >::iterator iter = newCoordinates.begin();
-                iter != newCoordinates.end(); ++iter) {
-            node v = iter->first;
-            Point<float> p = iter->second;
-            G.setCoordinate(v, p);
-        }
         #ifndef NETWORKIT_RELEASE_LOGGING
-            // output for visual inspection
-            char path[23];
-            sprintf(path, "output/pubweb-%04llu.eps", static_cast<unsigned long long>(i));
-            DEBUG("path: " , path);
-            psWriter.write(G, path);
+        {
+            PostscriptWriter psWriter(true);
+            std::stringstream ss;
+            ss << "output/pubweb-" << std::setw(4) << std::setfill('0') << i <<  ".eps";
+            psWriter.write(G, dynGen.getCoordinates(), ss.str());
+        }
         #endif
     }
 }
