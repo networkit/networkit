@@ -30,18 +30,18 @@ namespace NetworKit {
  *
  * Points in any dimension of templated type.
  */
-template<class T>
+template<class T = coord>
 class Point {
 protected:
     std::vector<T> data;
 
 public:
-    Point() { data = {0.0, 0.0}; }
-    Point(T x, T y) { data = {x, y}; }
-    Point(count dimension) : data(std::vector<T>(dimension, 0.0)) {}
-    Point(std::vector<T>& values): data(values) {}
+    Point() : data{0,0} {}
+    Point(T x, T y) : data{x,y} {}
+    explicit Point(count dimension) : data(std::vector<T>(dimension, 0.0)) {}
+    explicit Point(std::vector<T>& values): data(values) {}
 
-    virtual ~Point() {}
+    virtual ~Point() = default;
 
     count getDimensions() const { return data.size(); }
 
@@ -92,6 +92,25 @@ public:
     std::string toSsvString();
 
     std::string genericToString(const std::string& start, const std::string& sep, const std::string& end);
+
+    static std::vector<coord2d> pointVectorToCoord2d(const std::vector<Point<T>>& input) {
+        std::vector<coord2d> result;
+        result.reserve(input.size());
+        for(auto& pt : input) {
+            assert(pt.getDimensions() == 2);
+            result.emplace_back(pt[0], pt[1]);
+        }
+        return result;
+    }
+
+    static std::vector<Point<T>> coord2dVectorToPoint(const std::vector<coord2d>& input) {
+        std::vector<Point<T>> result;
+        result.reserve(input.size());
+        for(auto& pt : input) {
+            result.emplace_back(pt.first, pt.second);
+        }
+        return result;
+    }
 
 };
 
