@@ -8,12 +8,14 @@
 #ifndef NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICPAGERANK_H_
 #define NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICPAGERANK_H_
 
-#include <networkit/base/Algorithm.hpp>
+#include <networkit/centrality/Centrality.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/algebraic/GraphBLAS.hpp>
 #include <networkit/algebraic/Vector.hpp>
+
+#include <tlx/define/deprecated.hpp>
 
 namespace NetworKit {
 
@@ -22,7 +24,7 @@ namespace NetworKit {
  * Implementation of PageRank using the GraphBLAS interface.
  */
 template<class Matrix>
-class AlgebraicPageRank : public Algorithm {
+class AlgebraicPageRank final : public Centrality {
 public:
 
     /**
@@ -32,7 +34,8 @@ public:
      * @param damp
      * @param tol
      */
-    AlgebraicPageRank(const Graph& graph, const double damp = 0.85, const double tol = 1e-8) : damp(damp), tol(tol) {
+    AlgebraicPageRank(const Graph& graph, const double damp = 0.85, const double tol = 1e-8)
+        : Centrality(graph), damp(damp), tol(tol) {
         Matrix A = Matrix::adjacencyMatrix(graph);
         // normalize At by out-degree
         Vector invOutDeg = GraphBLAS::rowReduce(A);
@@ -53,18 +56,18 @@ public:
 
     /**
      * Get a vector containing the betweenness score for each node in the graph.
-     * @param moveOut Return the actual internal data instead of a copy. Resets the hasRun-state. Default: false.
+     *
      * @return The betweenness scores calculated by @link run().
      */
-    std::vector<double> scores(bool moveOut = false);
-
+    std::vector<double> TLX_DEPRECATED(scores(bool moveOut) override);
+    const std::vector<double> &scores() const override;
 
     /**
      * Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
      * calculated by @link run().
      * @return A vector of pairs.
      */
-    std::vector<std::pair<node, double>> ranking();
+    std::vector<std::pair<node, double>> ranking() override;
 
     /**
      * Get the betweenness score of node @a v calculated by @link run().
@@ -72,14 +75,14 @@ public:
      * @param v A node.
      * @return The betweenness score of node @a v.
      */
-    double score(node v);
+    double score(node v) override;
 
     /**
      * Get the theoretical maximum of centrality score in the given graph.
      *
      * @return The maximum centrality score.
      */
-    double maximum() {
+    double maximum() override {
         return 1.0;
     }
 
@@ -88,9 +91,6 @@ private:
 
     const double damp;
     const double tol;
-
-    std::vector<double> scoreData;
-    std::vector<double> edgeScoreData;
 };
 
 template<class Matrix>
@@ -126,6 +126,12 @@ std::vector<double> AlgebraicPageRank<Matrix>::scores(bool moveOut) {
     assureFinished();
     hasRun = !moveOut;
     return moveOut ? std::move(scoreData) : scoreData;
+}
+
+template<class Matrix>
+const std::vector<double> &AlgebraicPageRank<Matrix>::scores() const {
+    assureFinished();
+    return scoreData;
 }
 
 template<class Matrix>
