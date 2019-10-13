@@ -4,9 +4,11 @@
  *  Created on: Apr 10, 2013
  *      Author: Henning
  */
+// networkit-format
 
-#include <set>
+#include <cmath>
 #include <queue>
+#include <set>
 
 #include <networkit/auxiliary/Random.hpp>
 
@@ -14,92 +16,54 @@
 
 namespace NetworKit {
 
+PubWebGenerator::PubWebGenerator(count n, count numDenseAreas, coord neighRad,
+                                 count maxNumNeighbors)
+    : n(n), numDenseAreas(numDenseAreas), neighRad(neighRad), maxNeigh(maxNumNeighbors) {}
 
-void PubWebGenerator::moveNodeIntoUnitSquare(float& x, float& y) {
-    auto move([&](float& z) {
-        if (z > 1.0f) {
-            z -= 1.0f;
-        } else if (z < 0.0f) {
-            z += 1.0f;
-        }
-    });
+coord2d PubWebGenerator::intoUnitSquare(coord2d pt) const noexcept {
+    auto toUnitSquare = [](coord z) {
+        if (z > 1.0)
+            return z - 1.0;
+        if (z < 0.0)
+            return z + 1.0;
+        return z;
+    };
 
-    move(x);
-    move(y);
+    return {toUnitSquare(pt.first), toUnitSquare(pt.second)};
 }
 
-float PubWebGenerator::squaredDistanceInUnitTorus(float x1, float y1, float x2,
-        float y2) {
-    auto adjustForUnitTorus([&](float& z) {
-        if (z > 0.5) {
-            z = 1.0 - z;
-        }
-        else if (z < -0.5) {
-            z = z + 1.0;
-        }
-    });
+coord PubWebGenerator::squaredDistanceInUnitTorus(coord2d pt1, coord2d pt2) const noexcept {
+    auto adjustForUnitTorus = [](coord z) -> coord {
+        if (z > 0.5)
+            return 1.0 - z;
+        if (z < -0.5)
+            return z + 1.0;
+        return z;
+    };
 
-    float distx = x1 - x2;
-    float disty = y1 - y2;
-    adjustForUnitTorus(distx);
-    adjustForUnitTorus(disty);
+    coord distx = adjustForUnitTorus(pt1.first - pt2.first);
+    coord disty = adjustForUnitTorus(pt1.second - pt2.second);
 
-    return (distx * distx + disty * disty);
+    return distx * distx + disty * disty;
 }
-
-
-PubWebGenerator::PubWebGenerator(count numNodes, count numberOfDenseAreas,
-        float neighborhoodRadius, count maxNumberOfNeighbors) :
-        n(numNodes), numDenseAreas(numberOfDenseAreas), neighRad(
-                neighborhoodRadius), maxNeigh(maxNumberOfNeighbors) {
-
-}
-
-bool PubWebGenerator::isValidEdge(Graph& g, node u, node v, edgeweight& weight) {
-
-    auto isValid([&](node u, node v, float squaredDistance) {
-        return ((squaredDistance <= neighRad * neighRad)
-                && (g.degree(u) < maxNeigh)
-                && (g.degree(v) < maxNeigh));
-    });
-
-    Point<float> pu = g.getCoordinate(u);
-    Point<float> pv = g.getCoordinate(v);
-    float& x1 = pu[0];
-    float& y1 = pu[1];
-    float& x2 = pv[0];
-    float& y2 = pv[1];
-    float sqrDist = squaredDistanceInUnitTorus(x1, y1, x2, y2);
-
-    weight = BASE_WEIGHT /  sqrt(sqrDist);
-
-    return isValid(u, v, sqrDist);
-}
-
 
 // TODO: use ANN or similar library with appropriate space-partitioning data structure to
 //       get rid of quadratic time complexity
-void PubWebGenerator::determineNeighbors(Graph& g) {
+void PubWebGenerator::determineNeighbors(Graph &g) {
+    coord sqrNeighRad = neighRad * neighRad;
 
-    float sqrNeighRad = neighRad * neighRad;
-    std::set<edge> eligibleEdges;
+    using edge = std::pair<node, node>;
+    std::set<std::pair<node, node>> eligibleEdges;
 
-    auto isInRange([&](float squaredDistance) {
-        return (squaredDistance <= sqrNeighRad);
-    });
+    auto isInRange([&](coord squaredDistance) { return (squaredDistance <= sqrNeighRad); });
 
     g.forNodes([&](node u) {
-        std::priority_queue<std::pair<distance, edge> > pq;
-        Point<float> p1 = g.getCoordinate(u);
-        float& x1 = p1[0];
-        float& y1 = p1[1];
+        std::priority_queue<std::pair<coord, edge>> pq;
+        const auto p1 = coordinates[u];
 
         // fill PQ with neighbors in range
         g.forNodes([&](node v) {
-            Point<float> p2 = g.getCoordinate(v);
-            float& x2 = p2[0];
-            float& y2 = p2[1];
-            float sqrDist = squaredDistanceInUnitTorus(x1, y1, x2, y2);
+            const auto sqrDist = squaredDistanceInUnitTorus(p1, coordinates[v]);
 
             if (isInRange(sqrDist)) {
                 edge e = std::make_pair(std::min(u, v), std::max(u, v));
@@ -108,18 +72,18 @@ void PubWebGenerator::determineNeighbors(Graph& g) {
         });
 
         // mark maxNeigh nearest neighbors as eligible or insert them into graph g
-        count end = std::min(maxNeigh, (count) pq.size());
+        count end = std::min(maxNeigh, (count)pq.size());
         for (index i = 0; i < end; ++i) {
-            std::pair<distance, edge> currentBest = pq.top();
+            const auto currentBest = pq.top();
             pq.pop();
 
             if (eligibleEdges.count(currentBest.second) > 0) {
                 // edge is already marked => insert it
                 edgeweight ew = BASE_WEIGHT / -currentBest.first;
                 g.addEdge(currentBest.second.first, currentBest.second.second, ew);
-//				TRACE("add edge " , currentBest.second.first , "/" , currentBest.second.second);
-            }
-            else {
+                //				TRACE("add edge " , currentBest.second.first , "/" ,
+                // currentBest.second.second);
+            } else {
                 // mark edge as eligible
                 eligibleEdges.insert(currentBest.second);
             }
@@ -127,30 +91,19 @@ void PubWebGenerator::determineNeighbors(Graph& g) {
     });
 }
 
-void PubWebGenerator::addNodesToArea(index area, count num, Graph& g) {
-
+void PubWebGenerator::addNodesToArea(index area, count num, Graph &g) {
     for (index j = 0; j < num; ++j) {
         // compute random angle between [0, 2pi) and distance between [0, width/2]
-        float angle = Aux::Random::real() * 2.0 * PI;
-        float dist = Aux::Random::real() * denseAreaXYR[area].rad;
+        coord angle = Aux::Random::real() * 2.0 * PI;
+        coord dist = Aux::Random::real() * denseAreaXYR[area].rad;
 
         // compute coordinates and adjust them
-        float x = denseAreaXYR[area].x + cosf(angle) * dist;
-        float y = denseAreaXYR[area].y + sinf(angle) * dist;
-        moveNodeIntoUnitSquare(x, y);
+        coord x = denseAreaXYR[area].x + std::cos(angle) * dist;
+        coord y = denseAreaXYR[area].y + std::sin(angle) * dist;
 
         // create vertex with these coordinates
-        g.addNode(x, y);
-    }
-}
-
-void PubWebGenerator::fillDenseAreas(Graph& g) {
-
-    for (index area = 0; area < numDenseAreas; ++area) {
-        // choose center randomly, ensure complete cluster is within (0,1) without modifications
-        denseAreaXYR[area].x = Aux::Random::real();
-        denseAreaXYR[area].y = Aux::Random::real();
-        addNodesToArea(area, numPerArea[area], g);
+        g.addNode();
+        coordinates.push_back(intoUnitSquare({x, y}));
     }
 }
 
@@ -159,35 +112,39 @@ void PubWebGenerator::chooseDenseAreaSizes() {
 
     for (index area = 0; area < numDenseAreas; ++area) {
         // anti-quadratic probability distribution
-        float f = Aux::Random::real() * MIN_MAX_DENSE_AREA_FACTOR + 1.0f;
+        coord f = Aux::Random::real() * MIN_MAX_DENSE_AREA_FACTOR + 1.0;
         denseAreaXYR[area].rad = (MAX_DENSE_AREA_RADIUS * f * f)
-                / (MIN_MAX_DENSE_AREA_FACTOR * MIN_MAX_DENSE_AREA_FACTOR);
-    }
-}
-
-// randomly spread remaining vertices over whole area
-void PubWebGenerator::spreadRemainingNodes(Graph& g) {
-
-    while (g.numberOfNodes() < n) {
-        float x = Aux::Random::real();
-        float y = Aux::Random::real();
-        g.addNode(x, y);
+                                 / (MIN_MAX_DENSE_AREA_FACTOR * MIN_MAX_DENSE_AREA_FACTOR);
     }
 }
 
 // compute number of nodes per cluster, each cluster has approx. same density
 void PubWebGenerator::chooseClusterSizes() {
-    float f = 0.0;
-    for (index i = 0; i < numDenseAreas; ++i) {
-        f += pow(denseAreaXYR[i].rad, 1.5);
-    }
-    f = ((float) n * ((float) numDenseAreas / ((float) numDenseAreas + 2.0f)))
-            / f;
-    // TODO: better formula?
+    auto f = std::accumulate(denseAreaXYR.begin(), denseAreaXYR.end(), 0.0,
+                             [](coord sum, circle c) { return sum + pow(c.rad, 1.5); });
 
-    numPerArea.resize(numDenseAreas);
-    for (index i = 0; i < numDenseAreas; ++i) {
-        numPerArea[i] = roundf(f * pow(denseAreaXYR[i].rad, 1.5));
+    f = (n * (numDenseAreas / (numDenseAreas + 2.0))) / f;
+
+    numPerArea.reserve(numDenseAreas);
+    for (auto circle : denseAreaXYR) {
+        numPerArea.emplace_back(std::round(f * pow(circle.rad, 1.5)));
+    }
+}
+
+void PubWebGenerator::fillDenseAreas(Graph &g) {
+    for (index area = 0; area < numDenseAreas; ++area) {
+        // choose center randomly, ensure complete cluster is within (0,1) without modifications
+        denseAreaXYR[area].x = Aux::Random::real();
+        denseAreaXYR[area].y = Aux::Random::real();
+        addNodesToArea(area, numPerArea[area], g);
+    }
+}
+
+// randomly spread remaining vertices over whole area
+void PubWebGenerator::spreadRemainingNodes(Graph &g) {
+    while (g.numberOfNodes() < n) {
+        g.addNode(); // TODO: Replace with g.addNodes()
+        coordinates.emplace_back(Aux::Random::real(), Aux::Random::real());
     }
 }
 
@@ -206,12 +163,4 @@ Graph PubWebGenerator::generate() {
     return G;
 }
 
-
-// TODO: NOT tested!
-void PubWebGenerator::removeRandomNode(Graph& g) {
-    node u = Aux::Random::integer(n - 1);
-    g.removeNode(u);
-}
-
 } /* namespace NetworKit */
-

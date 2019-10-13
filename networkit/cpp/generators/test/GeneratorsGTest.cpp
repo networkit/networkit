@@ -164,6 +164,7 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 
     PubWebGenerator gen(n, numCluster, rad, maxNumNeighbors);
     Graph G = gen.generate();
+    auto coordinates = gen.moveCoordinates();
     EXPECT_EQ(n, G.numberOfNodes()) << "number of generated nodes";
 
     // check degree
@@ -178,14 +179,14 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 
     // output to EPS file
     PostscriptWriter psWriter(true);
-    psWriter.write(G, oneClustering, "output/pubweb.eps");
+    psWriter.write(G, coordinates, oneClustering, "output/pubweb.eps");
 
     // clustering
     PLM clusterAlgo(G, false, 1.0, "none randomized");
     clusterAlgo.run();
     Partition clustering = clusterAlgo.getPartition();
     EXPECT_EQ(G.numberOfNodes(),clustering.numberOfElements());
-    psWriter.write(G, clustering, "output/pubweb-clustered-PLM.eps");
+    psWriter.write(G, coordinates, clustering, "output/pubweb-clustered-PLM.eps");
 
     Modularity mod;
     double modVal = mod.getQuality(clustering, G);
