@@ -45,6 +45,8 @@ ctypedef uint64_t edgeid
 ctypedef index node
 ctypedef index cluster
 ctypedef double edgeweight
+ctypedef double coord
+ctypedef pair[coord,coord] coord2d
 
 cdef extern from "<networkit/Globals.hpp>" namespace "NetworKit":
 
@@ -344,9 +346,6 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		node randomNeighbor(node) except +
 		pair[node, node] randomEdge(bool_t) except +
 		vector[pair[node, node]] randomEdges(count) except +
-		Point[float] getCoordinate(node v) except +
-		void setCoordinate(node v, Point[float] value) except +
-		void initCoordinates() except +
 		count numberOfSelfLoops() except +
 		_Graph toUndirected() except +
 		_Graph toUnweighted() except +
@@ -1244,48 +1243,6 @@ cdef class Graph:
 			The selected edges.
 		"""
 		return self._this.randomEdges(numEdges)
-
-	def getCoordinate(self, v):
-		"""
-		DEPRECATED: Coordinates should be handled outside the Graph class
-		 like general node attributes.
-
-		Get the coordinates of node v.
-		Parameters
-		----------
-		v : node
-			Node.
-
-		Returns
-		-------
-		pair[float, float]
-			x and y coordinates of v.
-		"""
-
-		return (self._this.getCoordinate(v)[0], self._this.getCoordinate(v)[1])
-
-	def setCoordinate(self, v, value):
-		"""
-		DEPRECATED: Coordinates should be handled outside the Graph class
-		 like general node attributes.
-
-		Set the coordinates of node v.
-		Parameters
-		----------
-		v : node
-			Node.
-		value : pair[float, float]
-			x and y coordinates of v.
-		"""
-		cdef Point[float] p = Point[float](value[0], value[1])
-		self._this.setCoordinate(v, p)
-
-	def initCoordinates(self):
-		"""
-		DEPRECATED: Coordinates should be handled outside the Graph class
-		 like general node attributes.
-		"""
-		self._this.initCoordinates()
 
 	def numberOfSelfLoops(self):
 		""" Get number of self-loops, i.e. edges {v, v}.
@@ -2459,6 +2416,7 @@ cdef extern from "<networkit/generators/PubWebGenerator.hpp>":
 
 	cdef cppclass _PubWebGenerator "NetworKit::PubWebGenerator"(_StaticGraphGenerator):
 		_PubWebGenerator(count numNodes, count numberOfDenseAreas, float neighborhoodRadius, count maxNumberOfNeighbors) except +
+		vector[coord2d] getCoordinates()
 
 cdef class PubWebGenerator(StaticGraphGenerator):
 	""" Generates a static graph that resembles an assumed geometric distribution of nodes in
@@ -2493,6 +2451,10 @@ cdef class PubWebGenerator(StaticGraphGenerator):
 
 	def __cinit__(self, numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors):
 		self._this = new _PubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
+
+	def getCoordinates(self):
+		"""Returns a list of coordinates"""
+		return (<_PubWebGenerator*>(self._this)).getCoordinates()
 
 cdef extern from "<networkit/generators/ErdosRenyiGenerator.hpp>":
 
@@ -8899,7 +8861,8 @@ cdef extern from "<networkit/generators/DynamicPubWebGenerator.hpp>":
 			float neighborhoodRadius, count maxNumberOfNeighbors) except +
 		vector[_GraphEvent] generate(count nSteps) except +
 		_Graph getGraph() except +
-
+		vector[coord2d] getCoordinates()
+		map[node, coord2d] getNewCoordinates()
 
 cdef class DynamicPubWebGenerator:
 	cdef _DynamicPubWebGenerator* _this
@@ -8923,13 +8886,21 @@ cdef class DynamicPubWebGenerator:
 	def getGraph(self):
 		return Graph().setThis(self._this.getGraph())
 
+	def getCoordinates(self):
+		"""The coordinates currently assumed for each node"""
+		return (<_DynamicPubWebGenerator*>(self._this)).getCoordinates()
+
+	def getNewCoordinates(self):
+		"""A map of recently updated coordinates"""
+		return (<_DynamicPubWebGenerator*>(self._this)).getNewCoordinates()
+
 cdef extern from "<networkit/generators/DynamicHyperbolicGenerator.hpp>":
 
 	cdef cppclass _DynamicHyperbolicGenerator "NetworKit::DynamicHyperbolicGenerator":
 		_DynamicHyperbolicGenerator(count numNodes, double avgDegree, double gamma, double T, double moveEachStep, double moveDistance) except +
 		vector[_GraphEvent] generate(count nSteps) except +
 		_Graph getGraph() except +
-		vector[Point[float]] getCoordinates() except +
+		vector[coord2d] getCoordinates() except +
 
 
 cdef class DynamicHyperbolicGenerator:
@@ -8975,7 +8946,7 @@ cdef class DynamicHyperbolicGenerator:
 
 	def getCoordinates(self):
 		""" Get coordinates in the Poincare disk"""
-		return [(p[0], p[1]) for p in self._this.getCoordinates()]
+		return self._this.getCoordinates()
 
 
 
