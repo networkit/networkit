@@ -179,11 +179,11 @@ def readMat(path, key="G"):
 	return G
 
 class MatWriter:
-	def __init__(self):
+	def __init__(self, key="G"):
 		self.key = key
 
 	def write(self, G, path, key="G"):
-		writeMat(path, key)
+		writeMat(G, path, key)
 
 def writeMat(G, path, key="G"):
 	""" Writes a NetworKit::Graph to a Matlab object file.
@@ -213,6 +213,7 @@ def getWriter(fileformat, *kargs, **kwargs):
 		Format.GML:			GMLGraphWriter(),
 		Format.LFR:			EdgeListWriter('\t',1),
 		Format.GraphToolBinary:         GraphToolBinaryWriter(),
+		Format.MAT:			MatWriter(),
 		Format.ThrillBinary:		ThrillGraphBinaryWriter(),
 		Format.NetworkitBinary:         NetworkitBinaryWriter()
 	}
