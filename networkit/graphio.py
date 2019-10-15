@@ -24,67 +24,40 @@ except ImportError:
 	print("module 'scipy' not available - some functionality will be restricted")
 import fnmatch
 
-try:
-	from enum import Enum
+from enum import Enum
 
-	class __AutoNumber(Enum):
-		def __new__(cls):
-			value = len(cls.__members__) + 1
-			obj = object.__new__(cls)
-			obj._value_ = value
-			return obj
-
-
-	class Format(__AutoNumber):
-		""" Simple enumeration class to list supported file types. Currently supported
-		file types: SNAP, EdgeListSpaceZero, EdgeListSpaceOne, EdgeListTabZero, EdgeListTabOne,
-		METIS, GraphML, GEXF, GML, EdgeListCommaOne, GraphViz, DOT, EdgeList, LFR, KONEC, GraphToolBinary,
-                NetworkitBinary"""
-		SNAP = ()
-		EdgeListSpaceZero = ()
-		EdgeListSpaceOne = ()
-		EdgeListTabZero = ()
-		EdgeListTabOne = ()
-		METIS = ()
-		GraphML = ()
-		GEXF = ()
-		GML = ()
-		EdgeListCommaOne = ()
-		GraphViz = ()
-		DOT = ()
-		EdgeList = ()
-		LFR = ()
-		KONECT = ()
-		GraphToolBinary = ()
-		MAT = ()
-		ThrillBinary = ()
-		NetworkitBinary = ()
-
-except ImportError:
-	print("Update to Python >=3.4 recommended - support for < 3.4 may be discontinued in the future")
-	class Format:
-		SNAP = "snap"
-		EdgeListTabOne = "edgelist-t1"
-		EdgeListTabZero = "edgelist-t0"
-		EdgeListSpaceOne = "edgelist-s1"
-		EdgeListSpaceZero = "edgelist-s0"
-		METIS = "metis"
-		GraphML = "graphml"
-		GEXF = "gexf"
-		GML = "gml"
-		EdgeListCommaOne = "edgelist-cs1"
-		GraphViz = "dot"
-		DOT = "dot"
-		EdgeList = "edgelist"
-		LFR = "edgelist-t1"
-		KONECT = "konect"
-		GraphToolBinary = "gtbin"
-		MAT = "mat"
-		ThrillBinary = "thrillbinary"
-		NetworkitBinary = "networkitbinary"
+class __AutoNumber(Enum):
+	def __new__(cls):
+		value = len(cls.__members__) + 1
+		obj = object.__new__(cls)
+		obj._value_ = value
+		return obj
 
 
-
+class Format(__AutoNumber):
+	""" Simple enumeration class to list supported file types. Currently supported
+	file types: SNAP, EdgeListSpaceZero, EdgeListSpaceOne, EdgeListTabZero, EdgeListTabOne,
+	METIS, GraphML, GEXF, GML, EdgeListCommaOne, GraphViz, DOT, EdgeList, LFR, KONEC, GraphToolBinary,
+			NetworkitBinary"""
+	SNAP = ()
+	EdgeListSpaceZero = ()
+	EdgeListSpaceOne = ()
+	EdgeListTabZero = ()
+	EdgeListTabOne = ()
+	METIS = ()
+	GraphML = ()
+	GEXF = ()
+	GML = ()
+	EdgeListCommaOne = ()
+	GraphViz = ()
+	DOT = ()
+	EdgeList = ()
+	LFR = ()
+	KONECT = ()
+	GraphToolBinary = ()
+	MAT = ()
+	ThrillBinary = ()
+	NetworkitBinary = ()
 
 # reading
 
