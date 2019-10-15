@@ -61,41 +61,42 @@ class Format(__AutoNumber):
 
 # reading
 
-def getReader(fileformat, **kwargs):
+def getReader(fileformat, *kargs, **kwargs):
 	#define your [edgelist] reader here:
-	readers =	{
-			Format.METIS:			METISGraphReader(),
-			Format.GraphML:			GraphMLReader(),
-			Format.GEXF:			GEXFReader(),
-			Format.SNAP:			SNAPGraphReader(),
-			Format.EdgeListCommaOne:	EdgeListReader(',',1,),
-			Format.EdgeListSpaceOne:	EdgeListReader(' ',1),
-			Format.EdgeListSpaceZero:	EdgeListReader(' ',0),
-			Format.EdgeListTabOne:		EdgeListReader('\t',1),
-			Format.EdgeListTabZero:		EdgeListReader('\t',0),
-			Format.LFR:			EdgeListReader('\t',1),
-			Format.KONECT:			KONECTGraphReader(),
-			Format.GML:			GMLGraphReader(),
-			Format.GraphToolBinary:		GraphToolBinaryReader(),
-			Format.MAT:			MatReader(),
-			Format.ThrillBinary:		ThrillGraphBinaryReader(),
-			Format.NetworkitBinary:         NetworkitBinaryReader()
-			}
+	readers = {
+		Format.METIS:			METISGraphReader(),
+		Format.GraphML:			GraphMLReader(),
+		Format.GEXF:			GEXFReader(),
+		Format.SNAP:			SNAPGraphReader(),
+		Format.EdgeListCommaOne:	EdgeListReader(',',1,),
+		Format.EdgeListSpaceOne:	EdgeListReader(' ',1),
+		Format.EdgeListSpaceZero:	EdgeListReader(' ',0),
+		Format.EdgeListTabOne:		EdgeListReader('\t',1),
+		Format.EdgeListTabZero:		EdgeListReader('\t',0),
+		Format.LFR:			EdgeListReader('\t',1),
+		Format.KONECT:			KONECTGraphReader(),
+		Format.GML:			GMLGraphReader(),
+		Format.GraphToolBinary:		GraphToolBinaryReader(),
+		Format.MAT:			MatReader(),
+		Format.ThrillBinary:		ThrillGraphBinaryReader(),
+		Format.NetworkitBinary:         NetworkitBinaryReader()
+	}
 
-	try:
-		# special case for custom Edge Lists
-		if fileformat == Format.EdgeList:
-			if kwargs["continuous"] == False:
-				kwargs["firstNode"] = 0
-			reader = EdgeListReader(**kwargs)
-		else:
-			reader = readers[fileformat]#(**kwargs)
-	except Exception or KeyError:
-		raise Exception("unrecognized format/format not supported as input: {0}".format(fileformat))
+	# special case for custom Edge Lists
+	if fileformat == Format.EdgeList:
+		if "continuous" in kwargs and kwargs["continuous"] == False:
+			kwargs["firstNode"] = 0
+		reader = EdgeListReader(*kargs, **kwargs)
+
+	else:
+		if fileformat not in readers:
+			raise Exception("unrecognized format/format not supported as input: {0}".format(fileformat))
+		reader = readers[fileformat]#(**kwargs)
+
 	return reader
 
 
-def readGraph(path, fileformat, **kwargs):
+def readGraph(path, fileformat, *kargs, **kwargs):
 	""" Read graph file in various formats and return a NetworKit::Graph
 	    Parameters:
 		- fileformat: An element of the Format enumeration. Currently supported file types:
@@ -107,8 +108,7 @@ def readGraph(path, fileformat, **kwargs):
 			commentPrefix='#', continuous=True and directed=False are optional because of their default values;
 			firstNode is not needed when continuous=True.
 	"""
-	reader = getReader(fileformat,**kwargs)
-
+	reader = getReader(fileformat, *kargs, **kwargs)
 
 	if ("~" in path):
 		path = os.path.expanduser(path)
@@ -197,36 +197,37 @@ def writeMat(G, path, key="G"):
 
 
 # writing
-def getWriter(fileformat, **kwargs):
+def getWriter(fileformat, *kargs, **kwargs):
 	writers =	{
-			Format.METIS:			METISGraphWriter(),
-			Format.GraphML:			GraphMLWriter(),
-			Format.GEXF:			GEXFWriter(),
-			Format.SNAP:			SNAPGraphWriter(),
-			Format.EdgeListCommaOne:	EdgeListWriter(',',1,),
-			Format.EdgeListSpaceOne:	EdgeListWriter(' ',1),
-			Format.EdgeListSpaceZero:	EdgeListWriter(' ',0),
-			Format.EdgeListTabOne:		EdgeListWriter('\t',1),
-			Format.EdgeListTabZero:		EdgeListWriter('\t',0),
-			Format.GraphViz:		DotGraphWriter(),
-			Format.DOT:			DotGraphWriter(),
-			Format.GML:			GMLGraphWriter(),
-			Format.LFR:			EdgeListWriter('\t',1),
-			Format.GraphToolBinary:         GraphToolBinaryWriter(),
-			Format.ThrillBinary:		ThrillGraphBinaryWriter(),
-			Format.NetworkitBinary:         NetworkitBinaryWriter()
-			}
-	try:
-		# special case for custom Edge Lists
-		if fileformat == Format.EdgeList:
-			writer = EdgeListWriter(**kwargs)
-		else:
-			writer = writers[fileformat]#(**kwargs)
-	except KeyError:
-		raise Exception("format {0} currently not supported".format(fileformat))
-	return writer
+		Format.METIS:			METISGraphWriter(),
+		Format.GraphML:			GraphMLWriter(),
+		Format.GEXF:			GEXFWriter(),
+		Format.SNAP:			SNAPGraphWriter(),
+		Format.EdgeListCommaOne:	EdgeListWriter(',',1,),
+		Format.EdgeListSpaceOne:	EdgeListWriter(' ',1),
+		Format.EdgeListSpaceZero:	EdgeListWriter(' ',0),
+		Format.EdgeListTabOne:		EdgeListWriter('\t',1),
+		Format.EdgeListTabZero:		EdgeListWriter('\t',0),
+		Format.GraphViz:		DotGraphWriter(),
+		Format.DOT:			DotGraphWriter(),
+		Format.GML:			GMLGraphWriter(),
+		Format.LFR:			EdgeListWriter('\t',1),
+		Format.GraphToolBinary:         GraphToolBinaryWriter(),
+		Format.ThrillBinary:		ThrillGraphBinaryWriter(),
+		Format.NetworkitBinary:         NetworkitBinaryWriter()
+	}
 
-def writeGraph(G, path, fileformat, **kwargs):
+	# special case for custom Edge Lists
+	if fileformat == Format.EdgeList:
+		return EdgeListWriter(*kargs, **kwargs)
+
+	else:
+		if fileformat not in writers:
+			raise Exception("format {0} currently not supported".format(fileformat))
+
+		return writers[fileformat]#(**kwargs)
+
+def writeGraph(G, path, fileformat, *kargs, **kwargs):
 	""" Write graph to various output formats.
 
 	Paramaters:
@@ -250,7 +251,7 @@ def writeGraph(G, path, fileformat, **kwargs):
 			raise IOError("No permission to write")
 		else:
 			logging.warning("overriding given file")
-	writer = getWriter(fileformat, **kwargs)
+	writer = getWriter(fileformat, *kargs, **kwargs)
 	writer.write(G, path)
 	logging.info("wrote graph {0} to file {1}".format(G, path))
 
