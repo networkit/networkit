@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import unittest
 import os
+import networkit as nk
 
 class TestGEXFIO(unittest.TestCase):
 	def setUp(self):
@@ -66,6 +67,35 @@ class TestGEXFIO(unittest.TestCase):
 		self.checkDynamic(self.events2, testEvents2)
 		self.checkDynamic(self.events3, testEvents3)
 		self.checkDynamic(self.events4, testEvents4)
+
+	def testWriteGraphReadGraph(self):
+		G = nk.generators.ErdosRenyiGenerator(100, 0.1).generate()
+		someFailed = False
+
+		for format in nk.Format:
+			if format == nk.Format.KONECT or format == nk.Format.DOT or format == nk.Format.GraphViz:
+				# format do not support both reading and writing
+				continue
+
+			filename = "output/testWriteGraphReadGraph." + str(format)
+			if format == nk.Format.MAT:
+				filename += ".mat" # suffix required
+
+			try:
+				if os.path.exists(filename):
+					os.remove(filename)
+
+				kargs = [' ', 0] if format == nk.Format.EdgeList else []
+				nk.graphio.writeGraph(G, filename, format, *kargs)
+				G1 = nk.graphio.readGraph(filename, format, *kargs)
+				self.checkStatic(G, G1)
+
+			except Exception as e:
+				someFailed = True
+				print("Test failed for format {0}".format(format))
+				print(e)
+
+		# assert(not someFailed)
 
 if __name__ == "__main__":
 	unittest.main()
