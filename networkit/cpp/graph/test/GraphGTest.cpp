@@ -14,7 +14,6 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/NumericTools.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
-#include <networkit/distance/DynBFS.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/GraphBuilder.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
@@ -257,42 +256,6 @@ TEST_P(GraphGTest, testCopyConstructor) {
 
 /** GRAPH INFORMATION **/
 
-TEST_P(GraphGTest, testGetId) {
-    Graph G1 = createGraph();
-    Graph G2 = createGraph(5);
-
-    ASSERT_TRUE(G1.getId() > 0);
-    ASSERT_TRUE(G2.getId() > 0);
-    ASSERT_TRUE(G1.getId() < G2.getId());
-}
-
-TEST_P(GraphGTest, testTyp) {
-    Graph G = createGraph();
-    if (isGraph()) {
-        ASSERT_EQ("Graph", G.typ());
-    } else if (isWeightedGraph()) {
-        ASSERT_EQ("WeightedGraph", G.typ());
-    } else if (isDirectedGraph()) {
-        ASSERT_EQ("DirectedGraph", G.typ());
-    } else if (isWeightedDirectedGraph()) {
-        ASSERT_EQ("WeightedDirectedGraph", G.typ());
-    } else {
-        FAIL();
-    }
-}
-
-TEST_P(GraphGTest, testSetName) {
-    Graph G1 = createGraph(0);
-    Graph G2 = createGraph(0);
-
-    std::string s1 = "Graph 1";
-    std::string s2 = "Graph 2";
-    G1.setName(s1);
-    G2.setName(s2);
-    ASSERT_EQ(s1, G1.getName());
-    ASSERT_EQ(s2, G2.getName());
-}
-
 TEST_P(GraphGTest, testMaxDegree) {
     constexpr count n = 100;
     constexpr double p = 0.1;
@@ -365,14 +328,6 @@ TEST_P(GraphGTest, testMaxWeightedDegreeDirected) {
 
     ASSERT_EQ(G.maxWeightedDegree(), maxDegOut);
     ASSERT_EQ(G.maxWeightedDegreeIn(), maxDegIn);
-}
-
-TEST_P(GraphGTest, testToString) {
-    Graph G1 = createGraph(0);
-    Graph G2 = createGraph(0);
-
-    ASSERT_TRUE(G1.toString() != "");
-    ASSERT_TRUE(G2.toString() != "");
 }
 
 /** NODE MODIFIERS **/
@@ -1270,23 +1225,6 @@ TEST_P(GraphGTest, testTotalEdgeWeight) {
 
 /** Collections **/
 
-TEST_P(GraphGTest, testNodes) {
-    Graph G = createGraph(3);
-    G.addNode();
-    G.removeNode(2);
-    G.addNode();
-    auto nodes = G.nodes();
-
-    auto containsNode = [&nodes](node v) {
-        return std::find(nodes.begin(), nodes.end(), v) != nodes.end();
-    };
-
-    ASSERT_EQ(G.numberOfNodes(), nodes.size());
-    for (node v : nodes) {
-        ASSERT_TRUE(containsNode(v));
-    }
-}
-
 TEST_P(GraphGTest, testNeighborsIterators) {
     auto iter = this->Ghouse.neighborRange(1).begin();
     this->Ghouse.forNeighborsOf(1, [&](node v) {
@@ -1321,86 +1259,6 @@ TEST_P(GraphGTest, testNeighborsIterators) {
                 ++iterW;
             });
             ASSERT_TRUE(iterW == this->Ghouse.weightInNeighborRange(1).end());
-        }
-    }
-}
-
-TEST_P(GraphGTest, testEdges) {
-    // add self-loop
-    this->Ghouse.addEdge(3, 3);
-    auto isCorrectEdge = [&](node u, node v) {
-        if (u == 3 && v == 3) {
-            return true;
-        }
-        auto it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(),
-                            std::make_pair(u, v));
-        if (it != this->houseEdgesOut.end()) {
-            return true;
-        } else if (!this->Ghouse.isDirected()) {
-            it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(),
-                           std::make_pair(v, u));
-            return it != this->houseEdgesOut.end();
-        }
-        return false;
-    };
-
-    auto edges = this->Ghouse.edges();
-    ASSERT_EQ(this->m_house + 1, edges.size()); // plus self-loop
-    for (auto e : edges) {
-        ASSERT_TRUE(isCorrectEdge(e.first, e.second))
-            << "(" << e.first << ", " << e.second
-            << ") is in edge array, but is not an edge of Ghouse";
-    }
-}
-
-TEST_P(GraphGTest, testTranspose) {
-    Graph G = this->Ghouse;
-
-    G.addNode(); // node 5
-    G.addNode(); // node 6
-    G.removeNode(5);
-
-    if (!G.isWeighted()) {
-        G.addEdge(0, 0);
-        G.addEdge(0, 4);
-        G.removeEdge(0, 4);
-        G.addEdge(0, 6);
-    } else {
-        G.addEdge(0, 0, 3.14);
-        G.addEdge(0, 4, 3.14);
-        G.removeEdge(0, 4);
-        G.addEdge(0, 6, 3.14);
-    }
-
-    // expect throw error when G is undirected
-    if (!G.isDirected()) {
-        EXPECT_ANY_THROW(G.transpose());
-    } else {
-        Graph Gtrans = G.transpose();
-
-        // check summation statistics
-        EXPECT_EQ(G.numberOfNodes(), Gtrans.numberOfNodes());
-        EXPECT_EQ(G.numberOfEdges(), Gtrans.numberOfEdges());
-        EXPECT_EQ(G.totalEdgeWeight(), Gtrans.totalEdgeWeight());
-        EXPECT_EQ(G.numberOfSelfLoops(), Gtrans.numberOfSelfLoops());
-
-        // check graph names
-        EXPECT_EQ(G.getName() + "Transpose", Gtrans.getName());
-
-        // test for regular edges
-        EXPECT_TRUE(G.hasEdge(0, 6));
-        EXPECT_FALSE(G.hasEdge(6, 0));
-        EXPECT_TRUE(Gtrans.hasEdge(6, 0));
-        EXPECT_FALSE(Gtrans.hasEdge(0, 6));
-        // .. and for selfloops
-        EXPECT_TRUE(G.hasEdge(0, 0));
-        EXPECT_TRUE(Gtrans.hasEdge(0, 0));
-
-        // check for edge weights
-        if (G.isWeighted()) {
-            EXPECT_EQ(G.weight(0, 6), 3.14);
-            EXPECT_EQ(Gtrans.weight(6, 0), 3.14);
-            EXPECT_EQ(G.weight(0, 0), Gtrans.weight(0, 0));
         }
     }
 }
@@ -1925,100 +1783,6 @@ TEST_P(GraphGTest, testParallelSumForWeightedEdges) {
 
 /** GRAPH SEARCHES **/
 
-TEST_P(GraphGTest, testBFSfrom) {
-    std::vector<count> visitedOrder(5, none);
-    index i = 0;
-    this->Ghouse.BFSfrom(3, [&](node v, count) {
-        EXPECT_EQ(none, visitedOrder[v]); // visit every node once
-        visitedOrder[v] = i++;
-    });
-    // have we visited all nodes
-    for (count l : visitedOrder) {
-        EXPECT_TRUE(l != none);
-    }
-
-    if (isDirected()) {
-        // root on level 0
-        EXPECT_EQ(0u, visitedOrder[3]);
-
-        // level 1
-        EXPECT_TRUE((visitedOrder[1] == 1) ^ (visitedOrder[1] == 2));
-        EXPECT_TRUE((visitedOrder[2] == 1) ^ (visitedOrder[2] == 2));
-
-        // level 2
-        EXPECT_TRUE((visitedOrder[0] == 3) ^ (visitedOrder[0] == 4));
-        EXPECT_TRUE((visitedOrder[4] == 3) ^ (visitedOrder[4] == 4));
-    } else {
-        EXPECT_EQ(0u, visitedOrder[3]);
-        EXPECT_TRUE((visitedOrder[1] == 1) ^ (visitedOrder[1] == 2) ^
-                    (visitedOrder[1] == 3));
-        EXPECT_TRUE((visitedOrder[2] == 1) ^ (visitedOrder[2] == 2) ^
-                    (visitedOrder[2] == 3));
-        EXPECT_TRUE((visitedOrder[4] == 1) ^ (visitedOrder[4] == 2) ^
-                    (visitedOrder[4] == 3));
-        EXPECT_TRUE((visitedOrder[0] == 4));
-    }
-}
-
-TEST_P(GraphGTest, testDFSfrom) {
-    if (isDirected()) {
-        std::vector<count> visitedOrder(5, none);
-        index i = 0;
-        this->Ghouse.DFSfrom(3, [&](node v) {
-            EXPECT_EQ(none, visitedOrder[v]); // visit every node once
-            visitedOrder[v] = i++;
-        });
-
-        // have we visited all nodes
-        for (count l : visitedOrder) {
-            EXPECT_TRUE(l != none);
-        }
-
-        // root on level 0
-        EXPECT_EQ(0u, visitedOrder[3]);
-
-        // level 1
-        EXPECT_TRUE((visitedOrder[1] == 1) ^ (visitedOrder[2] == 1));
-
-        // level 2
-        EXPECT_TRUE((visitedOrder[0] == 2) ^ (visitedOrder[1] == 2) ^
-                    (visitedOrder[4] == 2));
-
-        // level 3
-        EXPECT_TRUE((visitedOrder[2] == 3) ^ (visitedOrder[0] == 3) ^
-                    (visitedOrder[4] == 3) ^ (visitedOrder[1] == 3));
-
-        // level 4
-        EXPECT_TRUE((visitedOrder[2] == 4) ^ (visitedOrder[4] == 4) ^
-                    (visitedOrder[0] == 4));
-    } else {
-        count n = 5;
-        std::vector<count> visitedOrder(n, none);
-        Graph G = createGraph(n);
-        G.addEdge(0, 1);
-        G.addEdge(0, 2);
-        G.addEdge(2, 3);
-        G.addEdge(3, 4);
-
-        index i = 0;
-        G.DFSfrom(0, [&](node v) { visitedOrder[v] = i++; });
-
-        for (count l : visitedOrder) {
-            EXPECT_TRUE(l != none);
-        }
-
-        EXPECT_EQ(0u, visitedOrder[0]);
-
-        EXPECT_TRUE((visitedOrder[1] == 1) ^ (visitedOrder[2] == 1));
-
-        EXPECT_TRUE((visitedOrder[2] == 2) ^ (visitedOrder[3] == 2));
-
-        EXPECT_TRUE((visitedOrder[3] == 3) ^ (visitedOrder[4] == 3));
-
-        EXPECT_TRUE((visitedOrder[4] == 4) ^ (visitedOrder[1] == 4));
-    }
-}
-
 TEST_P(GraphGTest, testEdgeIndexGenerationDirected) {
     Graph G = Graph(10, false, true);
     G.addEdge(2, 0);
@@ -2360,116 +2124,6 @@ TEST_P(GraphGTest, testSortEdges) {
             });
         });
     }
-}
-
-TEST_P(GraphGTest, testSubgraphFromNodesUndirected) {
-    auto G = Graph(4, true, false);
-
-    /**
-     *      1
-     *   /  |  \
-     * 0    |    3
-     *   \  |  /
-     *      2
-     */
-
-    G.addEdge(0, 1, 1.0);
-    G.addEdge(0, 2, 2.0);
-    G.addEdge(3, 1, 4.0);
-    G.addEdge(3, 2, 5.0);
-    G.addEdge(1, 2, 3.0);
-
-    {
-        std::unordered_set<node> nodes = {0};
-        auto res = G.subgraphFromNodes(nodes);
-        EXPECT_TRUE(res.isWeighted());
-        EXPECT_FALSE(res.isDirected());
-        EXPECT_EQ(res.numberOfNodes(), 1);
-        EXPECT_EQ(res.numberOfEdges(), 0);
-    }
-
-    {
-        std::unordered_set<node> nodes = {0};
-        auto res = G.subgraphFromNodes(nodes, true);
-
-        EXPECT_EQ(res.numberOfNodes(), 3);
-        EXPECT_EQ(res.numberOfEdges(), 2); // 0-1, 0-2, NOT 1-2
-
-        EXPECT_DOUBLE_EQ(G.weight(0, 1), 1.0);
-        EXPECT_DOUBLE_EQ(G.weight(0, 2), 2.0);
-    }
-
-    {
-        std::unordered_set<node> nodes = {0, 1};
-        auto res = G.subgraphFromNodes(nodes);
-        EXPECT_EQ(res.numberOfNodes(), 2);
-        EXPECT_EQ(res.numberOfEdges(), 1); // 0 - 1
-    }
-
-    {
-        std::unordered_set<node> nodes = {0, 1};
-        auto res = G.subgraphFromNodes(nodes, true);
-        EXPECT_EQ(res.numberOfNodes(), 4);
-        EXPECT_EQ(res.numberOfEdges(), 4); // 0-1, 0-2, 1-2, 1-3
-    }
-}
-
-TEST_P(GraphGTest, testSubgraphFromNodesDirected) {
-    auto G = Graph(4, true, true);
-
-    /**
-     *      1
-     *   /  |  \
-     * 0    |    3
-     *   \  |  /
-     *      2
-     */
-
-    G.addEdge(0, 1, 1.0);
-    G.addEdge(0, 2, 2.0);
-    G.addEdge(3, 1, 4.0);
-    G.addEdge(3, 2, 5.0);
-    G.addEdge(1, 2, 3.0);
-
-    {
-        std::unordered_set<node> nodes = {0};
-        auto res = G.subgraphFromNodes(nodes);
-
-        EXPECT_TRUE(res.isWeighted());
-        EXPECT_TRUE(res.isDirected());
-
-        EXPECT_EQ(res.numberOfNodes(), 1);
-        EXPECT_EQ(res.numberOfEdges(), 0);
-    }
-
-    {
-        std::unordered_set<node> nodes = {0};
-        auto res = G.subgraphFromNodes(nodes, true);
-        EXPECT_EQ(res.numberOfNodes(), 3);
-        EXPECT_EQ(res.numberOfEdges(), 2); // 0->1, 0->2, NOT 1->2
-    }
-
-    {
-        std::unordered_set<node> nodes = {0, 1};
-        auto res = G.subgraphFromNodes(nodes);
-        EXPECT_EQ(res.numberOfNodes(), 2);
-        EXPECT_EQ(res.numberOfEdges(), 1); // 0 -> 1
-    }
-
-    {
-        std::unordered_set<node> nodes = {0, 1};
-        auto res = G.subgraphFromNodes(nodes, true);
-        EXPECT_EQ(res.numberOfNodes(), 3);
-        EXPECT_EQ(res.numberOfEdges(), 3); // 0->1, 0->2, 1->2
-    }
-
-    {
-        std::unordered_set<node> nodes = {0, 1};
-        auto res = G.subgraphFromNodes(nodes, true, true);
-        EXPECT_EQ(res.numberOfNodes(), 4);
-        EXPECT_EQ(res.numberOfEdges(), 4); // 0->1, 0->2, 1->2, 3->1
-    }
-
 }
 
 TEST_P(GraphGTest, testRemoveMultiEdges) {
