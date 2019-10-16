@@ -76,6 +76,7 @@ from . import sampling
 from . import viz
 from . import randomization
 from .support import MissingDependencyError
+from _NetworKit import GraphTools as graphtools
 
 if have_plt:
 	from . import plot

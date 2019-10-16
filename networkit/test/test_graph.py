@@ -302,7 +302,7 @@ class TestGraph(unittest.TestCase):
 				for weighted in [True, False]:
 					G = nk.generators.ErdosRenyiGenerator(n, p, directed).generate()
 					if weighted:
-						G = nk.graph.GraphTools.toWeighted(G)
+						G = nk.graphtools.toWeighted(G)
 
 					doTest(G)
 					for _ in range(edgeUpdates):
@@ -328,7 +328,7 @@ class TestGraph(unittest.TestCase):
 				for weighted in [True, False]:
 					G = nk.generators.ErdosRenyiGenerator(n, p, directed).generate()
 					if weighted:
-						G = nk.graph.GraphTools.toWeighted(G)
+						G = nk.graphtools.toWeighted(G)
 						G.forEdges(lambda u, v, w, eid: G.setWeight(u, v, random.random()))
 
 					def testWeightedDegreeOfNode(u):

@@ -506,7 +506,7 @@ cdef class Graph:
 			Graph with the same nodes (without edges)
 		"""
 		from warnings import warn
-		warn("Graph.copyNodes is deprecated, use graph.GraphTools.copyNodes instead.")
+		warn("Graph.copyNodes is deprecated, use graphtools.copyNodes instead.")
 		return Graph().setThis(self._this.copyNodes())
 
 	def indexEdges(self, bool_t force = False):
@@ -801,7 +801,7 @@ cdef class Graph:
 		G : networkit.Graph
 		"""
 		from warnings import warn
-		warn("Graph.append is deprecated, use graph.GraphTools.append instead.")
+		warn("Graph.append is deprecated, use graphtools.append instead.")
 		self._this.append(G._this)
 		return self
 
@@ -814,7 +814,7 @@ cdef class Graph:
 		G : networkit.Graph
 		"""
 		from warnings import warn
-		warn("Graph.merge is deprecated, use graph.GraphTools.merge instead.")
+		warn("Graph.merge is deprecated, use graphtools.merge instead.")
 		self._this.merge(G._this)
 		return self
 
@@ -1150,7 +1150,7 @@ cdef class Graph:
 			undirected graph.
 		"""
 		from warnings import warn
-		warn("Graph.toUndirected is deprecated, use graph.GraphTools.toUndirected instead.")
+		warn("Graph.toUndirected is deprecated, use graphtools.toUndirected instead.")
 		return Graph().setThis(self._this.toUndirected())
 
 	def toUnweighted(self):
@@ -1162,7 +1162,7 @@ cdef class Graph:
 		networkit.Graph
 		"""
 		from warnings import warn
-		warn("Graph.toUnweighted is deprecated, use graph.GraphTools.toUnweighted instead.")
+		warn("Graph.toUnweighted is deprecated, use graphtools.toUnweighted instead.")
 		return Graph().setThis(self._this.toUnweighted())
 
 	def transpose(self):
@@ -1175,7 +1175,7 @@ cdef class Graph:
 			Directed graph.
 		"""
 		from warnings import warn
-		warn("Graph.transpose is deprecated, use graph.GraphTools.transpose instead.")
+		warn("Graph.transpose is deprecated, use graphtools.transpose instead.")
 		return Graph().setThis(self._this.transpose())
 
 	def isWeighted(self):
@@ -1418,7 +1418,7 @@ cdef class Graph:
 			The subgraph induced by `nodes` (and possibly their neighbors)
 		"""
 		from warnings import warn
-		warn("Graph.subgraphFromNodes is deprecated, use graph.GraphTools.subgraphFromNodes instead.")
+		warn("Graph.subgraphFromNodes is deprecated, use graphtools.subgraphFromNodes instead.")
 		cdef unordered_set[node] nnodes
 		for node in nodes:
 			nnodes.insert(node)

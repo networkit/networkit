@@ -1,2 +1,2 @@
 # extension imports
-from _NetworKit import Graph, SpanningForest, GraphTools, RandomMaximumSpanningForest, UnionMaximumSpanningForest, Traversal
+from _NetworKit import Graph, SpanningForest, RandomMaximumSpanningForest, UnionMaximumSpanningForest, Traversal

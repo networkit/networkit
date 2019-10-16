@@ -17,7 +17,7 @@ class TestGraphTools(unittest.TestCase):
 
 	def generateRandomWeights(self, G):
 		if not G.isWeighted():
-			G = nk.graph.GraphTools.toWeighted(G)
+			G = nk.graphtools.toWeighted(G)
 		G.forEdges(lambda u, v, w, eid: G.setWeight(u, v, random.random()))
 
 		return G
@@ -33,25 +33,25 @@ class TestGraphTools(unittest.TestCase):
 		for directed in [True, False]:
 			for weighted in [True, False]:
 				G = self.getSmallGraph(weighted, directed)
-				GCopy = nk.graph.GraphTools.copyNodes(G)
+				GCopy = nk.graphtools.copyNodes(G)
 				checkNodes(G, GCopy)
 
 				for _ in range(1, G.numberOfNodes()):
 					G.removeNode(G.randomNode())
-					GCopy = nk.graph.GraphTools.copyNodes(G)
+					GCopy = nk.graphtools.copyNodes(G)
 					checkNodes(G, GCopy)
 
 	def testSubgraphFromNodesUndirected(self):
 		G = self.getSmallGraph(True, False)
 
 		nodes = set([0])
-		res = nk.graph.GraphTools.subgraphFromNodes(G, nodes)
+		res = nk.graphtools.subgraphFromNodes(G, nodes)
 		self.assertTrue(res.isWeighted())
 		self.assertFalse(res.isDirected())
 		self.assertEqual(res.numberOfNodes(), 1)
 		self.assertEqual(res.numberOfEdges(), 0)
 
-		res = nk.graph.GraphTools.subgraphFromNodes(G, nodes, True)
+		res = nk.graphtools.subgraphFromNodes(G, nodes, True)
 
 		self.assertEqual(res.numberOfNodes(), 3)
 		self.assertEqual(res.numberOfEdges(), 2) # 0-1, 0-2, NOT 1-2
@@ -60,11 +60,11 @@ class TestGraphTools(unittest.TestCase):
 		self.assertEqual(G.weight(0, 2), 2.0)
 
 		nodes = set([0, 1])
-		res = nk.graph.GraphTools.subgraphFromNodes(G, nodes)
+		res = nk.graphtools.subgraphFromNodes(G, nodes)
 		self.assertEqual(res.numberOfNodes(), 2)
 		self.assertEqual(res.numberOfEdges(), 1) # 0 - 1
 
-		res = nk.graph.GraphTools.subgraphFromNodes(G, nodes, True)
+		res = nk.graphtools.subgraphFromNodes(G, nodes, True)
 		self.assertEqual(res.numberOfNodes(), 4)
 		self.assertEqual(res.numberOfEdges(), 4) # 0-1, 0-2, 1-2, 1-3
 
@@ -72,7 +72,7 @@ class TestGraphTools(unittest.TestCase):
 		G = self.getSmallGraph(True, True)
 
 		nodes = set([0])
-		res = nk.graph.GraphTools.subgraphFromNodes(G, nodes)
+		res = nk.graphtools.subgraphFromNodes(G, nodes)
 
 		self.assertTrue(res.isWeighted())
 		self.assertTrue(res.isDirected())
@@ -81,22 +81,22 @@ class TestGraphTools(unittest.TestCase):
 		self.assertEqual(res.numberOfEdges(), 0)
 
 		nodes = set([0])
-		res = nk.graph.GraphTools.subgraphFromNodes(G, nodes, True)
+		res = nk.graphtools.subgraphFromNodes(G, nodes, True)
 		self.assertEqual(res.numberOfNodes(), 3)
 		self.assertEqual(res.numberOfEdges(), 2) # 0->1, 0->2, NOT 1->2
 
 		nodes = set([0, 1])
-		res = nk.graph.GraphTools.subgraphFromNodes(G, nodes)
+		res = nk.graphtools.subgraphFromNodes(G, nodes)
 		self.assertEqual(res.numberOfNodes(), 2)
 		self.assertEqual(res.numberOfEdges(), 1) # 0 -> 1
 
 		nodes = set([0, 1])
-		res = nk.graph.GraphTools.subgraphFromNodes(G, nodes, True)
+		res = nk.graphtools.subgraphFromNodes(G, nodes, True)
 		self.assertEqual(res.numberOfNodes(), 3)
 		self.assertEqual(res.numberOfEdges(), 3) # 0->1, 0->2, 1->2
 
 		nodes = set([0, 1])
-		res = nk.graph.GraphTools.subgraphFromNodes(G, nodes, True, True)
+		res = nk.graphtools.subgraphFromNodes(G, nodes, True, True)
 		self.assertEqual(res.numberOfNodes(), 4)
 		self.assertEqual(res.numberOfEdges(), 4) # 0->1, 0->2, 1->2, 3->1
 
@@ -120,7 +120,7 @@ class TestGraphTools(unittest.TestCase):
 			GWeighted = self.generateRandomWeights(G)
 
 			GWeighted.indexEdges()
-			GTrans = nk.graph.GraphTools.transpose(GWeighted)
+			GTrans = nk.graphtools.transpose(GWeighted)
 
 			def checkGWeightedEdges(u, v, w, eid):
 				self.assertEqual(GWeighted.edgeId(u, v), GTrans.edgeId(v, u))
@@ -166,7 +166,7 @@ class TestGraphTools(unittest.TestCase):
 			for weighted in [True, False]:
 				if weighted:
 					G = self.generateRandomWeights(G)
-				G1 = nk.graph.GraphTools.toUndirected(G)
+				G1 = nk.graphtools.toUndirected(G)
 				testGraphs(G, G1)
 
 	def testToUnWeighted(self):
@@ -193,12 +193,12 @@ class TestGraphTools(unittest.TestCase):
 			for directed in [True, False]:
 				G = nk.generators.ErdosRenyiGenerator(n, p, directed).generate()
 
-				G1 = nk.graph.GraphTools.toWeighted(G)
+				G1 = nk.graphtools.toWeighted(G)
 				testGraphs(G, G1)
 
 				G = self.generateRandomWeights(G)
 
-				G1 = nk.graph.GraphTools.toUnweighted(G)
+				G1 = nk.graphtools.toUnweighted(G)
 				testGraphs(G, G1)
 
 	def testAppend(self):
@@ -238,14 +238,14 @@ class TestGraphTools(unittest.TestCase):
 						G2 = self.generateRandomWeights(G2)
 
 					G = copy(G1)
-					nk.graph.GraphTools.append(G, G2)
+					nk.graphtools.append(G, G2)
 					testGraphs(G, G1, G2)
 
 					for _ in range(nodesToDelete):
 						G1.removeNode(G1.randomNode())
 						G2.removeNode(G2.randomNode())
 						G3 = copy(G1)
-						nk.graph.GraphTools.append(G3, G2)
+						nk.graphtools.append(G3, G2)
 						testGraphs(G3, G1, G2)
 
 	def testMerge(self):
@@ -277,7 +277,7 @@ class TestGraphTools(unittest.TestCase):
 						Gorig = self.generateRandomWeights(Gorig)
 						G1 = self.generateRandomWeights(G1)
 					Gmerge = copy(Gorig)
-					nk.graph.GraphTools.merge(Gmerge, G1)
+					nk.graphtools.merge(Gmerge, G1)
 					testGraphs(Gorig, Gmerge, G1)
 
 if __name__ == "__main__":
