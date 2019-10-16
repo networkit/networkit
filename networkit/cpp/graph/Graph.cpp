@@ -13,6 +13,7 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
 
@@ -537,13 +538,7 @@ std::string Graph::toString() const {
 
 Graph Graph::copyNodes() const {
     WARN("Graph::copyNodes is deprecated, use GraphTools::copyNodes instead.");
-    Graph C(z, weighted, directed);
-    for (node u = 0; u < z; ++u) {
-        if (!exists[u]) {
-            C.removeNode(u);
-        }
-    }
-    return C;
+    return GraphTools::copyNodes(*this);
 }
 
 /** NODE MODIFIERS **/
@@ -632,26 +627,7 @@ edgeweight Graph::weightedDegreeIn(node u, bool countSelfLoopsTwice) const {
 
 edgeweight Graph::volume(node v) const {
     WARN("Graph::volume is deprecated, use Graph::weightedDegree instead.");
-    if (weighted) {
-        edgeweight sum = 0.0;
-        for (index i = 0; i < outEdges[v].size(); i++) {
-            node u = outEdges[v][i];
-            if (u == v) {
-                sum += 2 * outEdgeWeights[v][i];
-            } else if (u != none) {
-                sum += outEdgeWeights[v][i];
-            }
-        }
-        return sum;
-    } else {
-        count c = outEdges[v].size();
-        for (node u : outEdges[v]) {
-            if (u == v) {
-                c++;
-            }
-        }
-        return c * defaultEdgeWeight;
-    }
+    return weightedDegree(v, true);
 }
 
 node Graph::randomNode() const {
@@ -1178,66 +1154,17 @@ std::vector<node> Graph::neighbors(node u) const {
 
 Graph Graph::transpose() const {
     WARN("Graph::transpose is deprecated, use GraphTools::transpose instead.");
-    if (directed == false) {
-        throw std::runtime_error("The transpose of an undirected graph is "
-                                 "identical to the original graph.");
-    }
-
-    Graph GTranspose(z, weighted, true);
-
-    // prepare edge id storage if input has indexed edges
-    GTranspose.edgesIndexed = edgesIndexed;
-    GTranspose.omega = omega;
-    if (edgesIndexed) {
-        GTranspose.inEdgeIds.resize(z);
-        GTranspose.outEdgeIds.resize(z);
-    }
-
-    #pragma omp parallel for
-    for (omp_index u = 0; u <  static_cast<omp_index>(z); ++u) {
-        if (exists[u]) {
-            GTranspose.preallocateDirected(u, degreeIn(u), degreeOut(u));
-
-            forInEdgesOf(u, [&] (node, node v, edgeweight w, edgeid id) {
-                GTranspose.addPartialOutEdge(unsafe, u, v, w, id);
-            });
-
-            forEdgesOf(u, [&] (node, node v, edgeweight w, edgeid id) {
-                GTranspose.addPartialInEdge(unsafe, u, v, w, id);
-            });
-
-        } else {
-            #pragma omp critical
-            GTranspose.removeNode(u);
-        }
-    }
-
-    GTranspose.setEdgeCount(unsafe, numberOfEdges());
-    GTranspose.setNumberOfSelfLoops(unsafe, numberOfSelfLoops());
-    GTranspose.t = t;
-    GTranspose.setName(getName() + "Transpose");
-
-    assert(GTranspose.checkConsistency());
-
-    return GTranspose;
+    return GraphTools::transpose(*this);
 }
 
 Graph Graph::toUndirected() const {
     WARN("Graph::toUndirected is deprecated, use GraphTools::toUndirected instead.");
-    if (directed == false) {
-        throw std::runtime_error("this graph is already undirected");
-    }
-    Graph U(*this, weighted, false);
-    return U;
+    return GraphTools::toUndirected(*this);
 }
 
 Graph Graph::toUnweighted() const {
     WARN("Graph::toUnweighted is deprecated, use GraphTools::toUnweighted instead.");
-    if (weighted == false) {
-        throw std::runtime_error("this graph is already unweighted");
-    }
-    Graph U(*this, false, directed);
-    return U;
+    return GraphTools::toUnweighted(*this);
 }
 
 bool Graph::checkConsistency() const {
@@ -1260,84 +1187,19 @@ bool Graph::checkConsistency() const {
 
 void Graph::append(const Graph &G) {
     WARN("Graph::append is deprecated, use GraphTools::append instead.");
-    std::map<node, node> nodeMap;
-    G.forNodes([&](node u) {
-        node u_ = this->addNode();
-        nodeMap[u] = u_;
-    });
-    if (this->isWeighted()) {
-        G.forEdges([&](node u, node v, edgeweight ew) {
-            this->addEdge(nodeMap[u], nodeMap[v], ew);
-        });
-    } else {
-        G.forEdges([&](node u, node v) { this->addEdge(nodeMap[u], nodeMap[v]); });
-    }
+    GraphTools::append(*this, G);
 }
 
 void Graph::merge(const Graph &G) {
     WARN("Graph::merge is deprecated, use GraphTools::merge instead.");
-    // TODO: handle edge weights
-    G.forEdges([&](node u, node v) {
-        // naive implementation takes $O(m \cdot d)$ for $m$ edges and max. degree
-        // $d$ in this graph
-        if (!this->hasEdge(u, v)) {
-            this->addEdge(u, v);
-        }
-    });
+    GraphTools::merge(*this, G);
 }
 
 // SUBGRAPHS
 
 Graph Graph::subgraphFromNodes(const std::unordered_set<node> &nodes, bool includeOutNeighbors, bool includeInNeighbors) const {
     WARN("Graph::subgraphFromNodes is deprecated, use GraphTools::subgraphFromNodes instead.");
-    const auto neighbors = [&] {
-        std::unordered_set<node> neighbors;
-
-        if (!includeOutNeighbors && !includeInNeighbors)
-            return neighbors;
-
-        for (node u : nodes) {
-            if (includeOutNeighbors)
-                for(const node v : neighborRange(u))
-                    neighbors.insert(v);
-
-            if (includeInNeighbors)
-                for(const node v : inNeighborRange(u))
-                    neighbors.insert(v);
-        }
-
-        return neighbors;
-    }();
-
-    /*
-     * returns one of three different relevance scores:
-     * 2: Is in the original nodes set
-     * 1: Is a relevant neighbor (i.e., respective include*Neighbor was set)
-     * 0: Neither of both
-     */
-    auto isRelevantNode = [&] (const node u) {
-        if (nodes.find(u) != nodes.end()) return 2;
-        if (!neighbors.empty() && neighbors.find(u) != neighbors.end()) return 1;
-        return 0;
-    };
-
-    Graph S(upperNodeIdBound(), isWeighted(), isDirected());
-    // delete all nodes that are not in the node set
-    S.forNodes([&](node u) {
-        if (!isRelevantNode(u)) {
-            S.removeNode(u);
-        }
-    });
-
-    forEdges([&](node u, node v, edgeweight w) {
-        // only include edges if at least one endpoint is in nodes (relevance 2),
-        // and the other is either in nodes or in neighbors (relevance >= 1)
-        if (isRelevantNode(u) + isRelevantNode(v) > 2) {
-            S.addEdge(u, v, w);
-        }
-    });
-
-    return S;
+    return GraphTools::subgraphFromNodes(*this, nodes, includeOutNeighbors, includeInNeighbors);
 }
 
 } /* namespace NetworKit */
