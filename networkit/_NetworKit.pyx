@@ -1474,6 +1474,7 @@ cdef class STSP(Algorithm):
 
 cdef extern from "<networkit/distance/BidirectionalBFS.hpp>":
 	cdef cppclass _BidirectionalBFS "NetworKit::BidirectionalBFS"(_STSP):
+		_BidirectionalBFS(_Graph G, node source, node target, bool_t storePred) except +
 		count getHops() except +
 
 cdef class BidirectionalBFS(STSP):
@@ -1482,7 +1483,23 @@ cdef class BidirectionalBFS(STSP):
 		two given source and target nodes.
 		Explores the graph from both the source and target nodes until
 		the two explorations meet.
+
+		Parameters
+		----------
+
+		G : networkit.Graph
+			The input graph.
+		source : node
+			The source node.
+		target : node
+			The target node.
+		storePred : bool
+			If true, the algorithm will also store the predecessors
+			and reconstruct a shortest path from @a source and @a target.
 	"""
+
+	def __cinit__(self, Graph G, node source, node target, bool_t storePred=True):
+		self._this = new _BidirectionalBFS(G._this, source, target, storePred)
 
 	def getHops(self):
 		"""
@@ -1494,11 +1511,11 @@ cdef class BidirectionalBFS(STSP):
 		count
 			Number of hops from the source to the target node.
 		"""
-		return (<_BidirectionalBFS*>(self._this)).getDistance()
+		return (<_BidirectionalBFS*>(self._this)).getHops()
 
 cdef extern from "<networkit/distance/BidirectionalDijkstra.hpp>":
 	cdef cppclass _BidirectionalDijkstra "NetworKit::BidirectionalDijkstra"(_STSP):
-		pass
+		_BidirectionalDijkstra(_Graph G, node source, node target, bool_t storePred) except +
 
 cdef class BidirectionalDijkstra(STSP):
 	"""
@@ -1506,9 +1523,23 @@ cdef class BidirectionalDijkstra(STSP):
 		two given source and target nodes.
 		Explores the graph from both the source and target nodes until
 		the two explorations meet.
-	"""
-	pass
 
+		Parameters
+		----------
+
+		G : networkit.Graph
+			The input graph.
+		source : node
+			The source node.
+		target : node
+			The target node.
+		storePred : bool
+			If true, the algorithm will also store the predecessors
+			and reconstruct a shortest path from @a source and @a target.
+	"""
+
+	def __cinit__(self, Graph G, node source, node target, bool_t storePred=True):
+		self._this = new _BidirectionalDijkstra(G._this, source, target, storePred)
 
 cdef extern from "<networkit/distance/AStar.hpp>":
 	cdef cppclass _AStar "NetworKit::AStar"(_STSP):
@@ -1535,7 +1566,7 @@ cdef class AStar(STSP):
 	"""
 
 	cdef vector[double] heu
-	def __cinit__(self, Graph G, vector[double] &heu, node source, node target, bool_t storePred):
+	def __cinit__(self, Graph G, vector[double] &heu, node source, node target, bool_t storePred=True):
 		self.heu = heu
 		self._this = new _AStar(G._this, self.heu, source, target, storePred)
 
