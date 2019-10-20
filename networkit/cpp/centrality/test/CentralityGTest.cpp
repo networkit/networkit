@@ -1342,77 +1342,13 @@ TEST_F(CentralityGTest, testLaplacianCentralityUnweighted) {
     EXPECT_EQ(6, scores[5]);
 }
 
-TEST_F(CentralityGTest, testGroupDegreeUndirected) {
+TEST_P(CentralityGTest, testGroupDegree) {
     Aux::Random::setSeed(42, false);
-    count nodes = 12;
-    Graph g = ErdosRenyiGenerator(nodes, 0.3, false).generate();
-    count k = 5;
+    constexpr count nodes = 12;
+    constexpr count k = 5;
+    auto g = ErdosRenyiGenerator(nodes, 0.3, isDirected()).generate();
 
-    GroupDegree gd(g, k, false);
-    gd.run();
-    count score = gd.getScore();
-    GroupDegree gdIncludeGroup(g, k, true);
-    gdIncludeGroup.run();
-    count scorePlusGroup = gdIncludeGroup.getScore();
-
-    std::vector<bool> reference(nodes, false);
-    for (count i = nodes - k; i < nodes; ++i) {
-        reference[i] = true;
-    }
-
-    auto computeGroupDegree = [&](std::vector<bool> curGroup, Graph g) {
-        count result = 0;
-        g.forNodes([&](node u) {
-            if (!curGroup[u]) {
-                bool neighborInGroup = false;
-                g.forNeighborsOf(u, [&](node v) {
-                    if (!neighborInGroup && curGroup[v]) {
-                        neighborInGroup = true;
-                        ++result;
-                    }
-                });
-            }
-        });
-        return result;
-    };
-
-    count maxScore = 0;
-
-    do {
-        count curScore = computeGroupDegree(reference, g);
-        if (curScore > maxScore) {
-            maxScore = curScore;
-        }
-    } while (std::next_permutation(reference.begin(), reference.end()));
-
-    EXPECT_TRUE(score > 0.5 * maxScore);
-    EXPECT_TRUE(scorePlusGroup >
-                (1.0 - 1.0 / std::exp(1.0) * (double)(maxScore + k)));
-    EXPECT_EQ(score, gd.scoreOfGroup(gd.groupMaxDegree()));
-    EXPECT_EQ(scorePlusGroup,
-              gdIncludeGroup.scoreOfGroup(gdIncludeGroup.groupMaxDegree()));
-}
-
-TEST_F(CentralityGTest, testGroupDegreeDirected) {
-    Aux::Random::setSeed(42, false);
-    count nodes = 12;
-    Graph g = ErdosRenyiGenerator(nodes, 0.3, true, false).generate();
-    count k = 5;
-
-    GroupDegree gd(g, k, false);
-    gd.run();
-
-    count scoreNoGroup = gd.getScore();
-    GroupDegree gdIncludeGroup(g, k, true);
-    gdIncludeGroup.run();
-    count scorePlusGroup = gdIncludeGroup.getScore();
-
-    std::vector<bool> reference(nodes, false);
-    for (count i = nodes - k; i < nodes; ++i) {
-        reference[i] = true;
-    }
-
-    auto computeGroupDegree = [&](std::vector<bool> curGroup, Graph g) {
+    auto computeGroupDegree = [&](const std::vector<bool> &curGroup, const Graph &g) {
         count result = 0;
         g.forNodes([&](node u) {
             if (!curGroup[u]) {
@@ -1425,8 +1361,22 @@ TEST_F(CentralityGTest, testGroupDegreeDirected) {
                 });
             }
         });
+
         return result;
     };
+
+    GroupDegree gd(g, k, false);
+    gd.run();
+    auto scoreNoGroup = gd.getScore();
+
+    GroupDegree gdIncludeGroup(g, k, true);
+    gdIncludeGroup.run();
+    auto scorePlusGroup = gdIncludeGroup.getScore();
+
+    std::vector<bool> reference(nodes, false);
+    for (count i = nodes - k; i < nodes; ++i) {
+        reference[i] = true;
+    }
 
     count maxScore = 0;
 
@@ -1439,7 +1389,7 @@ TEST_F(CentralityGTest, testGroupDegreeDirected) {
 
     EXPECT_TRUE(scoreNoGroup > 0.5 * maxScore);
     EXPECT_TRUE(scorePlusGroup >
-                (1.0 - 1.0 / std::exp(1.0)) * (double)(maxScore + k));
+                (1.0 - 1.0 / std::exp(1.0)) * static_cast<double>(maxScore + k));
     EXPECT_EQ(scoreNoGroup, gd.scoreOfGroup(gd.groupMaxDegree()));
     EXPECT_EQ(scorePlusGroup,
               gdIncludeGroup.scoreOfGroup(gdIncludeGroup.groupMaxDegree()));
