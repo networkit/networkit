@@ -4,6 +4,7 @@ networkit_add_module(randomization
     CurveballImpl.cpp
     CurveballUniformTradeGenerator.cpp
     DegreePreservingShuffle.cpp
+    EdgeSwitching.cpp
     GlobalCurveball.cpp
     )
 
