@@ -1204,51 +1204,26 @@ TEST_F(CentralityGTest, testSimplePermanence) {
     EXPECT_NEAR(0.167, perm.getPermanence(v), 0.0005);
 }
 
-TEST_F(CentralityGTest, testTopClosenessDirected) {
-    count size = 400;
-    count k = 10;
-    Graph G1 = DorogovtsevMendesGenerator(size).generate();
-    Graph G(G1.upperNodeIdBound(), false, true);
-    G1.forEdges([&](node u, node v) {
-        G.addEdge(u, v);
-        G.addEdge(v, u);
-    });
-    Closeness cc(G1, true, ClosenessVariant::generalized);
-    cc.run();
-    TopCloseness topcc(G, k, true, true);
-    topcc.run();
-    const edgeweight tol = 1e-7;
-    for (count i = 0; i < k; i++) {
-        EXPECT_NEAR(cc.ranking()[i].second, topcc.topkScoresList()[i], tol);
-    }
-    TopCloseness topcc2(G, k, true, false);
-    topcc2.run();
-    for (count i = 0; i < k; i++) {
-        EXPECT_NEAR(cc.ranking()[i].second, topcc2.topkScoresList()[i], tol);
-    }
-}
+TEST_P(CentralityGTest, testTopCloseness) {
+    constexpr count size = 400;
+    constexpr count k = 10;
+    Aux::Random::setSeed(42, false);
+    const auto G1 = DorogovtsevMendesGenerator(size).generate();
+    Graph G(G1, false, isDirected());
 
-TEST_F(CentralityGTest, testTopClosenessUndirected) {
-    count size = 400;
-    count k = 10;
-    Graph G1 = DorogovtsevMendesGenerator(size).generate();
-    Graph G(G1.upperNodeIdBound(), false, false);
-    G1.forEdges([&](node u, node v) {
-        G.addEdge(u, v);
-        G.addEdge(v, u);
-    });
     Closeness cc(G1, true, ClosenessVariant::generalized);
     cc.run();
-    TopCloseness topcc(G, k, true, true);
-    topcc.run();
-    const edgeweight tol = 1e-7;
-    for (count i = 0; i < k; i++) {
-        EXPECT_NEAR(cc.ranking()[i].second, topcc.topkScoresList()[i], tol);
-    }
-    TopCloseness topcc2(G, k, true, false);
-    topcc2.run();
-    for (count i = 0; i < k; i++) {
-        EXPECT_NEAR(cc.ranking()[i].second, topcc2.topkScoresList()[i], tol);
+    auto exactScores = cc.scores();
+    auto ranking = cc.ranking();
+    for (auto firstHeu : {true, false}) {
+        for (auto secHeu : {true, false}) {
+            TopCloseness topcc(G, k, firstHeu, secHeu);
+            topcc.run();
+            auto scores = topcc.topkScoresList();
+            for (count i = 0; i < k; i++) {
+                EXPECT_DOUBLE_EQ(ranking[i].second, scores[i]);
+            }
+        }
     }
 }
 
