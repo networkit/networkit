@@ -4,7 +4,7 @@ import os
 
 import networkit as nk
 
-class Test_SelfLoops(unittest.TestCase):
+class TestSelfLoops(unittest.TestCase):
 
 	def checkCovers(self, c1, c2):
 		if not c1.numberOfElements() == c2.numberOfElements(): return False
@@ -20,14 +20,14 @@ class Test_SelfLoops(unittest.TestCase):
 		self.L = nk.readGraph("input/looptest1.gml", nk.Format.GML) #without self-loops
 		self.LL = nk.readGraph("input/looptest2.gml", nk.Format.GML) #with self-loops sprinkled in
 
-	def test_centrality_Betweenness(self):
+	def testCentralityBetweenness(self):
 		CL = nk.centrality.Betweenness(self.L)
 		CL.run()
 		CLL = nk.centrality.Betweenness(self.LL)
 		CLL.run()
 		self.assertEqual(CL.ranking(), CLL.ranking())
 
-	def test_centrality_ApproxBetweenness(self):
+	def testCentralityApproxBetweenness(self):
 		CL = nk.centrality.ApproxBetweenness(self.L, epsilon=0.01, delta=0.1)
 		CL.run()
 		CLL = nk.centrality.ApproxBetweenness(self.LL, epsilon=0.01, delta=0.1)
@@ -38,7 +38,7 @@ class Test_SelfLoops(unittest.TestCase):
 			self.assertAlmostEqual(CL.ranking()[i][1], CLL.ranking()[i][1], delta=0.2*CL.ranking()[i][1])
 
 
-	def test_centrality_Closeness(self):
+	def testCentralityCloseness(self):
 		CL = nk.centrality.Closeness(self.L, True, nk.centrality.ClosenessVariant.Generalized)
 		CL.run()
 		CLL = nk.centrality.Closeness(self.LL, True, nk.centrality.ClosenessVariant.Generalized)
@@ -46,21 +46,21 @@ class Test_SelfLoops(unittest.TestCase):
 		self.assertEqual(CL.ranking(), CLL.ranking())
 
 
-	def test_centrality_TopCloseness(self):
-		CC = centrality.Closeness(self.L, True, centrality.ClosenessVariant.Generalized)
+	def testCentralityTopCloseness(self):
+		CC = nk.centrality.Closeness(self.L, True, nk.centrality.ClosenessVariant.Generalized)
 		CC.run()
 		k = 5
-		TC1 = centrality.TopCloseness(self.L, k, True, True)
+		TC1 = nk.centrality.TopCloseness(self.L, k, True, True)
 		TC1.run()
-		TC2 = centrality.TopCloseness(self.L, k, True, False)
+		TC2 = nk.centrality.TopCloseness(self.L, k, True, False)
 		TC2.run()
-		TC3 = centrality.TopCloseness(self.L, k, False, True)
+		TC3 = nk.centrality.TopCloseness(self.L, k, False, True)
 		TC3.run()
-		TC4 = centrality.TopCloseness(self.L, k, False, False)
+		TC4 = nk.centrality.TopCloseness(self.L, k, False, False)
 		TC4.run()
 
 		# Test if top nodes and scores lists have the same length
-		def test_topk_lists(with_trail):
+		def testTopKLists(with_trail):
 			if not with_trail:
 				self.assertEqual(len(TC1.topkNodesList()), k)
 				self.assertEqual(len(TC2.topkNodesList()), k)
@@ -72,7 +72,7 @@ class Test_SelfLoops(unittest.TestCase):
 			self.assertEqual(len(TC4.topkNodesList(with_trail)), len(TC4.topkScoresList(with_trail)))
 
 		# Test if the ranking is correct
-		def test_topk_ranking(with_trail):
+		def testTopKRanking(with_trail):
 			def zip_ranking(nodes, scores):
 				return [(node, score) for node, score in zip(nodes, scores)]
 			length = len(TC1.topkNodesList(with_trail))
@@ -81,13 +81,13 @@ class Test_SelfLoops(unittest.TestCase):
 			self.assertEqual(CC.ranking()[:length], zip_ranking(TC3.topkNodesList(), TC3.topkScoresList()))
 			self.assertEqual(CC.ranking()[:length], zip_ranking(TC4.topkNodesList(), TC4.topkScoresList()))
 
-		test_topk_lists(False)
-		test_topk_lists(True)
-		test_topk_ranking(False)
-		test_topk_ranking(True)
+		testTopKLists(False)
+		testTopKLists(True)
+		testTopKRanking(False)
+		testTopKRanking(True)
 
 
-	def test_centrality_CoreDecomposition(self):
+	def testCentralityCoreDecomposition(self):
 		CL = nk.centrality.CoreDecomposition(self.L)
 		CL.run()
 		try:
@@ -101,7 +101,7 @@ class Test_SelfLoops(unittest.TestCase):
 			self.assertTrue(self.checkCovers(CL.getCover(),CLL.getCover()))
 
 
-	def test_centrality_EigenvectorCentrality(self):
+	def testCentralityEigenvectorCentrality(self):
 		CL = nk.centrality.EigenvectorCentrality(self.L)
 		CL.run()
 		CLL = nk.centrality.EigenvectorCentrality(self.LL)
@@ -110,7 +110,7 @@ class Test_SelfLoops(unittest.TestCase):
 		self.assertEqual(len(CL.ranking()),len(CLL.ranking()))
 
 
-	def test_centrality_KPathCentrality(self):
+	def testCentralityKPathCentrality(self):
 		CL = nk.centrality.KPathCentrality(self.L)
 		CL.run()
 		CLL = nk.centrality.KPathCentrality(self.LL)
@@ -119,7 +119,7 @@ class Test_SelfLoops(unittest.TestCase):
 		self.assertEqual(len(CL.ranking()),len(CLL.ranking()))
 
 
-	def test_centrality_KatzCentrality(self):
+	def testCentralityKatzCentrality(self):
 		CL = nk.centrality.KatzCentrality(self.L)
 		CL.run()
 		CLL = nk.centrality.KatzCentrality(self.LL)
@@ -128,7 +128,7 @@ class Test_SelfLoops(unittest.TestCase):
 		self.assertEqual(len(CL.ranking()),len(CLL.ranking()))
 
 
-	def test_centrality_PageRank(self):
+	def testCentralityPageRank(self):
 		CL = nk.centrality.PageRank(self.L)
 		CL.run()
 		CLL = nk.centrality.PageRank(self.LL)
@@ -137,7 +137,7 @@ class Test_SelfLoops(unittest.TestCase):
 		self.assertEqual(len(CL.ranking()),len(CLL.ranking()))
 
 
-	def test_centrality_rankPerNode(self):
+	def testCentralityRankPerNode(self):
 		CL = nk.centrality.PageRank(self.L)
 		CL.run()
 		CLL = nk.centrality.PageRank(self.LL)
@@ -147,7 +147,7 @@ class Test_SelfLoops(unittest.TestCase):
 		self.assertEqual(len(CLL.ranking()),len(nk.centrality.rankPerNode(CLL.ranking())))
 
 
-	def test_centrality_SciPyPageRank(self):
+	def testCentralitySciPyPageRank(self):
 		CL = nk.centrality.SciPyPageRank(self.L)
 		CL.run()
 		CLL = nk.centrality.SciPyPageRank(self.LL)
@@ -156,7 +156,7 @@ class Test_SelfLoops(unittest.TestCase):
 		self.assertEqual(len(CL.ranking()),len(CLL.ranking()))
 
 
-	def test_centrality_SciPyEVZ(self):
+	def testCentralitySciPyEVZ(self):
 		CL = nk.centrality.SciPyEVZ(self.L)
 		CL.run()
 		CLL = nk.centrality.SciPyEVZ(self.LL)
@@ -164,14 +164,14 @@ class Test_SelfLoops(unittest.TestCase):
 		#test if lists have the same length
 		self.assertEqual(len(CL.ranking()),len(CLL.ranking()))
 
-	def test_centrality_relativeRankErrors(self):
+	def testCentralityRelativeRankErrors(self):
 		CL = nk.centrality.Betweenness(self.L)
 		CL.run()
 		CLL = nk.centrality.Betweenness(self.LL)
 		CLL.run()
 		self.assertEqual(len(CL.ranking()), len(nk.centrality.relativeRankErrors(CL.ranking(),CLL.ranking())))
 
-	def test_centrality_ApproxSpanningEdge(self):
+	def testCentralityApproxSpanningEdge(self):
 		nk.setSeed(42, False)
 		g = nk.generators.ErdosRenyiGenerator(300, 0.1, False).generate()
 		g.indexEdges()
@@ -185,7 +185,7 @@ class Test_SelfLoops(unittest.TestCase):
 		for apxScore, exactScore in zip(apx.scores(), se.scores()):
 			self.assertLessEqual(abs(apxScore - exactScore), 2*eps)
 
-	def test_community_PLM(self):
+	def testCommunityPLM(self):
 		PLML = nk.community.PLM(self.L)
 		PLMLL = nk.community.PLM(self.LL)
 		PLML.run()
@@ -206,7 +206,7 @@ class Test_SelfLoops(unittest.TestCase):
 				reconstructedSet.append(j)
 		self.assertEqual(set(self.LL.iterNodes()), set(reconstructedSet))
 
-	def test_community_PLP(self):
+	def testCommunityPLP(self):
 		PLPL = nk.community.PLP(self.L)
 		PLPLL = nk.community.PLP(self.LL)
 		PLPL.run()
@@ -228,7 +228,7 @@ class Test_SelfLoops(unittest.TestCase):
 		self.assertEqual(set(self.LL.iterNodes()), set(reconstructedSet))
 
 
-	def test_community_CutClustering(self):
+	def testCommunityCutClustering(self):
 		CL = nk.community.CutClustering(self.L, 0.2)
 		CLL = nk.community.CutClustering(self.LL, 0.2)
 		CL.run()
@@ -250,7 +250,7 @@ class Test_SelfLoops(unittest.TestCase):
 		self.assertEqual(set(self.LL.iterNodes()), set(reconstructedSet))
 
 
-	def test_community_GraphClusteringTools(self):
+	def testCommunityGraphClusteringTools(self):
 		PLMLL = nk.community.PLM(self.LL)
 		PLMLL.run()
 		PLMLLP = PLMLL.getPartition()
@@ -265,7 +265,7 @@ class Test_SelfLoops(unittest.TestCase):
 		self.assertIsInstance(GCT.isSingletonClustering(self.LL, PLPLLP), bool)
 
 
-	def test_community_GraphStructuralRandMeasure(self):
+	def testCommunityGraphStructuralRandMeasure(self):
 		PLMLL = nk.community.PLM(self.LL)
 		PLMLL.run()
 		PLMLLP = PLMLL.getPartition()
@@ -276,7 +276,7 @@ class Test_SelfLoops(unittest.TestCase):
 		self.assertAlmostEqual(GSRM.getDissimilarity(self.LL, PLMLLP, PLPLLP),0.5, delta=0.5 )
 
 
-	def test_community_Hubdominance(self):
+	def testCommunityHubdominance(self):
 		PLMLL = nk.community.PLM(self.LL)
 		PLMLL.run()
 		PLMLLP = PLMLL.getPartition()
@@ -284,7 +284,7 @@ class Test_SelfLoops(unittest.TestCase):
 		self.assertIsInstance(HD.getQuality(PLMLLP, self.LL),float )
 
 
-	def test_community_JaccardMeasure(self):
+	def testCommunityJaccardMeasure(self):
 		PLMLL = nk.community.PLM(self.LL)
 		PLMLL.run()
 		PLMLLP = PLMLL.getPartition()
@@ -295,7 +295,7 @@ class Test_SelfLoops(unittest.TestCase):
 		self.assertIsInstance(JM.getDissimilarity(self.LL, PLMLLP, PLPLLP),float)
 
 
-	def test_community_LPDegreeOrdered(self):
+	def testCommunityLPDegreeOrdered(self):
 		CL = nk.community.LPDegreeOrdered(self.L)
 		CLL = nk.community.LPDegreeOrdered(self.LL)
 		CL.run()
@@ -316,7 +316,7 @@ class Test_SelfLoops(unittest.TestCase):
 				reconstructedSet.append(j)
 		self.assertEqual(set(self.LL.iterNodes()), set(reconstructedSet))
 
-	def test_community_Modularity(self):
+	def testCommunityModularity(self):
 		PLPLL = nk.community.PLP(self.LL)
 		PLPLL.run()
 		PLPLLP = PLPLL.getPartition()
@@ -324,7 +324,7 @@ class Test_SelfLoops(unittest.TestCase):
 		self.assertAlmostEqual(Mod.getQuality(PLPLLP, self.LL),0.25, delta=0.75)
 
 
-	def test_community_NMIDistance(self):
+	def testCommunityNMIDistance(self):
 		PLMLL = nk.community.PLM(self.LL)
 		PLMLL.run()
 		PLMLLP = PLMLL.getPartition()
@@ -335,7 +335,7 @@ class Test_SelfLoops(unittest.TestCase):
 		self.assertIsInstance(NMI.getDissimilarity(self.LL, PLMLLP, PLPLLP),float)
 
 
-	def test_community_NodeStructuralRandMeasure(self):
+	def testCommunityNodeStructuralRandMeasure(self):
 		PLMLL = nk.community.PLM(self.LL)
 		PLMLL.run()
 		PLMLLP = PLMLL.getPartition()
@@ -346,7 +346,7 @@ class Test_SelfLoops(unittest.TestCase):
 		self.assertAlmostEqual(NSRM.getDissimilarity(self.LL, PLMLLP, PLPLLP),0.5, delta=0.5 )
 
 
-	def test_community_communityGraph(self):
+	def testCommunityCommunityGraph(self):
 		PLMLL = nk.community.PLM(self.LL)
 		PLMLL.run()
 		PLMLLP = PLMLL.getPartition()
@@ -354,17 +354,17 @@ class Test_SelfLoops(unittest.TestCase):
 		self.assertIsInstance(len(CG.nodes()), int)
 
 
-	def test_community_evaluateCommunityDetection(self):
+	def testCommunityEvaluateCommunityDetection(self):
 		PLMLL = nk.community.PLM(self.LL)
 		nk.community.evalCommunityDetection(PLMLL, self.LL)
 
 
-	def test_community_kCoreCommunityDetection(self):
+	def testCommunityKCoreCommunityDetection(self):
 		with self.assertRaises(RuntimeError) as cm:
 			kCCD = nk.community.kCoreCommunityDetection(self.LL, 1, inspect=False)
 
 
-	def test_flow_EdmondsKarp(self):
+	def testFlowEdmondsKarp(self):
 		self.L.indexEdges()
 		self.LL.indexEdges()
 		r1 = nk.graphtools.randomNode(self.L)
@@ -377,7 +377,7 @@ class Test_SelfLoops(unittest.TestCase):
 		EKLL.run()
 
 
-	def test_globals_ClusteringCoefficient(self):
+	def testGlobalsClusteringCoefficient(self):
 		CL = nk.globals.ClusteringCoefficient()
 		CL.exactGlobal(self.L)
 		CL.exactGlobal(self.LL)
@@ -392,7 +392,7 @@ class Test_SelfLoops(unittest.TestCase):
 		CL.sequentialAvgLocal(self.LL)
 
 
-	def test_components_ConnectedComponents(self):
+	def testComponentsConnectedComponents(self):
 		CC = nk.components.ConnectedComponents(self.LL)
 		CC.run()
 		CC.componentOfNode(1)
@@ -400,7 +400,7 @@ class Test_SelfLoops(unittest.TestCase):
 		CC.getPartition()
 		CC.numberOfComponents()
 
-	def test_extractLargestConnectedComponent(self):
+	def testExtractLargestConnectedComponent(self):
 		G = nk.Graph(10)
 		for i in range(3):
 			G.addEdge(i, i+1)
@@ -416,22 +416,22 @@ class Test_SelfLoops(unittest.TestCase):
 		for i in range(G.numberOfNodes()):
 			self.assertEqual(G2.hasNode(i), (4 <= i <= 9))
 
-	def test_components_BiconnectedComponents(self):
+	def testComponentsBiconnectedComponents(self):
 		bcc = nk.components.BiconnectedComponents(self.LL)
 		bcc.run()
 
 		for component in bcc.getComponents():
 			G1 = nk.graphtools.subgraphFromNodes(self.LL, component)
-			def test_node(v):
+			def testNode(v):
 				G2 = nk.Graph(G1)
 				G2.removeNode(v)
 				cc = nk.components.ConnectedComponents(G2)
 				cc.run()
 				self.assertEqual(cc.numberOfComponents(), 1)
-			G1.forNodes(test_node)
+			G1.forNodes(testNode)
 
 
-	def test_distance_Diameter(self):
+	def testDistanceDiameter(self):
 		D = nk.distance.Diameter(self.LL, nk.distance.DiameterAlgo.EstimatedRange, error = 0.1)
 		D.run()
 		D = nk.distance.Diameter(self.LL, nk.distance.DiameterAlgo.EstimatedSamples, nSamples = 5)
@@ -440,48 +440,48 @@ class Test_SelfLoops(unittest.TestCase):
 		D.run()
 
 
-	def test_distance_Eccentricity(self):
+	def testDistanceEccentricity(self):
 		E = nk.distance.Eccentricity()
 		E.getValue(self.LL, 0)
 
 
-	def test_distance_EffectiveDiameter(self):
+	def testDistanceEffectiveDiameter(self):
 		algo = nk.distance.EffectiveDiameter(self.L)
 		algo.run()
 		algo = nk.distance.EffectiveDiameter(self.LL)
 		algo.run()
 
 
-	def test_distance_ApproxEffectiveDiameter(self):
+	def testDistanceApproxEffectiveDiameter(self):
 		algo = nk.distance.EffectiveDiameterApproximation(self.L)
 		algo.run()
 		algo = nk.distance.EffectiveDiameterApproximation(self.LL)
 		algo.run()
 
 
-	def test_distance_ApproxHopPlot(self):
+	def testDistanceApproxHopPlot(self):
 		algo = nk.distance.HopPlotApproximation(self.L)
 		algo.run()
 		algo = nk.distance.HopPlotApproximation(self.LL)
 		algo.run()
 
 
-	def test_distance_NeighborhoodFunction(self):
+	def testDistanceNeighborhoodFunction(self):
 		algo = nk.distance.NeighborhoodFunction(self.L)
 		algo.run()
 		algo = nk.distance.NeighborhoodFunction(self.LL)
 		algo.run()
 
 
-	def test_distance_ApproxNeighborhoodFunction(self):
+	def testDistanceApproxNeighborhoodFunction(self):
 		algo = nk.distance.NeighborhoodFunctionApproximation(self.L)
 		algo.run()
 		algo = nk.distance.NeighborhoodFunctionApproximation(self.LL)
 		algo.run()
 
-	def test_distance_AStar(self):
+	def testDistanceAStar(self):
 		# Builds a mesh graph with the given number of rows and columns
-		def build_mesh(rows, cols):
+		def buildMesh(rows, cols):
 			G = nk.Graph(rows * cols, False, False)
 			for i in range(rows):
 				for j in range(cols):
@@ -492,20 +492,20 @@ class Test_SelfLoops(unittest.TestCase):
 			return G
 
 		# Test the AStar algorithm on a mesh with the given number of rows and columns
-		def test_mesh(rows, cols):
-			G = build_mesh(rows, cols)
+		def testMesh(rows, cols):
+			G = buildMesh(rows, cols)
 
 			# Test A* on the given source-target pair
-			def test_pair(s, t):
+			def testPair(s, t):
 
 				# Some distance heuristics:
 
 				# Always returns 0, A* degenerates to Dijkstra
-				def zero_dist(u):
+				def zeroDist(u):
 					return 0
 
 				# Returns the exact distance from u to the target
-				def exact_dist(u):
+				def exactDist(u):
 					rowU = int(u / cols)
 					colU = int(u % cols)
 					rowT = int(t / cols)
@@ -513,7 +513,7 @@ class Test_SelfLoops(unittest.TestCase):
 					return abs(rowU - rowT) + abs(colU - colT)
 
 				# Returns the eucledian distance from u to the target
-				def eucledian_dist(u):
+				def eucledianDist(u):
 					rowT = int(t / cols)
 					colT = int(t % cols)
 					rowDiff = abs(int(u / cols) - rowT)
@@ -524,7 +524,7 @@ class Test_SelfLoops(unittest.TestCase):
 				bfs = nk.distance.BFS(G, s, True, False, t).run()
 
 				# Test A* on all the heuristics
-				for heu in [zero_dist, exact_dist, eucledian_dist]:
+				for heu in [zeroDist, exactDist, eucledianDist]:
 					heuristics = [heu(u) for u in range(G.numberOfNodes())]
 					astar = nk.distance.AStar(G, heuristics, s, t, True)
 					astar.run()
@@ -541,13 +541,13 @@ class Test_SelfLoops(unittest.TestCase):
 						self.assertTrue(G.hasEdge(path[i], path[i + 1]))
 
 			# Iterate over all possible source-target pairs
-			G.forNodePairs(test_pair)
+			G.forNodePairs(testPair)
 
 		# Test some meshes
-		test_mesh(10, 10)
-		test_mesh(21, 5)
-		test_mesh(9, 18)
-		test_mesh(7, 1)
+		testMesh(10, 10)
+		testMesh(21, 5)
+		testMesh(9, 18)
+		testMesh(7, 1)
 
 
 if __name__ == "__main__":
