@@ -45,7 +45,20 @@
 
 namespace NetworKit {
 
-class CentralityGTest : public testing::Test {};
+class CentralityGTest : public testing::TestWithParam<std::pair<bool, bool>> {
+protected:
+    bool isDirected() const noexcept;
+    bool isWeighted() const noexcept;
+};
+
+INSTANTIATE_TEST_CASE_P(InstantiationName, CentralityGTest,
+        testing::Values(std::make_pair(false, false), std::make_pair(true, false),
+                        std::make_pair(false, true),
+                        std::make_pair(true, true)), ); // comma required for variadic macro
+
+bool CentralityGTest::isWeighted() const noexcept { return GetParam().first; }
+
+bool CentralityGTest::isDirected() const noexcept { return GetParam().second; }
 
 TEST_F(CentralityGTest, testBetweennessCentrality) {
     /* Graph:
