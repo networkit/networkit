@@ -14,13 +14,16 @@ namespace NetworKit {
 
 /**
  * @ingroup distance
+ * The eccentricity of a node `u` is defined as the distance to the farthest
+ * node from `u`. In other words, it is the longest shortest-path starting from
+ * node `u`.
  */
 class Eccentricity {
 
 public:
 
     /**
-     * TODO: documentation
+     * @return The farthest node v, and the length of the shortest path to v.
      */
     static std::pair<node, count> getValue(const Graph& G, node u);
 };

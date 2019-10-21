@@ -1821,7 +1821,7 @@ cdef extern from "<networkit/distance/BFS.hpp>":
 cdef class BFS(SSSP):
 	""" Simple breadth-first search on a Graph from a given source
 
-	BFS(G, source, [storePaths], [storeNodesSortedByDistance], target)
+	BFS(G, source, storePaths=True, storeNodesSortedByDistance=False, target=None)
 
 	Create BFS for `G` and source node `source`.
 
@@ -1877,7 +1877,7 @@ cdef class Dijkstra(SSSP):
 	Returns list of weighted distances from node source, i.e. the length of the shortest path from source to
 	any other node.
 
-    Dijkstra(G, source, [storePaths], [storeNodesSortedByDistance], target)
+    Dijkstra(G, source, storePaths=True, storeNodesSortedByDistance=False, target=None)
 
     Creates Dijkstra for `G` and source node `source`.
 
@@ -6601,11 +6601,17 @@ cdef extern from "<networkit/distance/Eccentricity.hpp>" namespace "NetworKit::E
 
 cdef class Eccentricity:
 	"""
-	TODO: docstring
+	The eccentricity of a node `u` is defined as the distance to the farthest node from node u. In other words, it is the longest shortest-path starting from node `u`.
 	"""
 
 	@staticmethod
 	def getValue(Graph G, v):
+		"""
+		Returns
+		-------
+		pair[node, count]
+			node is the farthest node `v` from `u`, and the count is the length of the shortest path from `u` to `v`.
+		"""
 		return getValue(G._this, v)
 
 
