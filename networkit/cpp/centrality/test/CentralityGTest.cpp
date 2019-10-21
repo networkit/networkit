@@ -36,6 +36,7 @@
 #include <networkit/centrality/SpanningEdgeCentrality.hpp>
 #include <networkit/centrality/TopCloseness.hpp>
 #include <networkit/centrality/TopHarmonicCloseness.hpp>
+#include <networkit/distance/Dijkstra.hpp>
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/io/METISGraphReader.hpp>
@@ -740,7 +741,7 @@ TEST_F(CentralityGTest, debugEdgeBetweennessCentrality) {
     std::vector<double> bc = centrality.edgeScores();
 }
 
-TEST_F(CentralityGTest, testClosenessCentrality) {
+TEST_P(CentralityGTest, testClosenessCentrality) {
     /* Graph:
      0    3
       \  / \
@@ -749,7 +750,7 @@ TEST_F(CentralityGTest, testClosenessCentrality) {
      1    4
     */
     count n = 6;
-    Graph G(n);
+    Graph G(n, isWeighted(), isDirected());
 
     G.addEdge(0, 2);
     G.addEdge(1, 2);
@@ -758,85 +759,58 @@ TEST_F(CentralityGTest, testClosenessCentrality) {
     G.addEdge(3, 5);
     G.addEdge(4, 5);
 
-    Closeness centrality(G, false, ClosenessVariant::generalized);
-    centrality.run();
-    std::vector<double> bc = centrality.scores();
-
-    double maximum = centrality.maximum();
-
-    const double tol = 1e-3;
-    EXPECT_NEAR(0.1, bc[0], tol);
-    EXPECT_NEAR(0.1, bc[1], tol);
-    EXPECT_NEAR(0.166667, bc[2], tol);
-    EXPECT_NEAR(0.125, bc[3], tol);
-    EXPECT_NEAR(0.125, bc[4], tol);
-    EXPECT_NEAR(0.1, bc[5], tol);
-    EXPECT_NEAR(0.2, maximum, tol);
-}
-
-TEST_F(CentralityGTest, testClosenessCentralityWeighted) {
-    /* Graph:
-     0    3
-      \  / \
-       2    5
-      /  \ /
-     1    4
-    */
-    count n = 6;
-    Graph G(n);
-    Graph Gw(n, true, false);
-
-    G.addEdge(0, 2);
-    G.addEdge(1, 2);
-    G.addEdge(2, 3);
-    G.addEdge(2, 4);
-    G.addEdge(3, 5);
-    G.addEdge(4, 5);
-    G.forEdges([&](node u, node v) { Gw.addEdge(u, v, 1.); });
-
-    Closeness centrality(G, false, ClosenessVariant::generalized);
-    Closeness cw(Gw, false, ClosenessVariant::generalized);
-    centrality.run();
-    cw.run();
-
-    auto bc = centrality.scores();
-    auto bc_ = centrality.scores();
-
-    const double tol = 1e-6;
-    for (node u = 0; u < n; ++u) {
-        EXPECT_NEAR(bc[u], bc_[u], tol);
+    if (isDirected()) {
+        G.addEdge(4, 1);
+        G.addEdge(3, 0);
+        G.addEdge(5, 2);
     }
-}
 
-TEST_F(CentralityGTest, testClosenessCentralityDirected) {
-    /* Graph:
-     0    3
-      \  / \
-       2    5
-      /  \ /
-     1    4
-    */
-    count n = 6;
-    Graph G(n, false, true);
+    if (isWeighted()) {
+        Aux::Random::setSeed(42, false);
+        G.forEdges([&](node u, node v) { G.setWeight(u, v, Aux::Random::probability()); });
+    }
 
-    G.addEdge(0, 2);
-    G.addEdge(1, 2);
-    G.addEdge(2, 3);
-    G.addEdge(2, 4);
-    G.addEdge(3, 5);
-    G.addEdge(4, 5);
+    auto computeCloseness = [&](node u, ClosenessVariant variant, bool normalized) {
+        Dijkstra dij(G, u, false);
+        dij.run();
+        auto dists = dij.getDistances();
 
-    Closeness centrality(G, true, ClosenessVariant::generalized);
-    centrality.run();
-    std::vector<double> bc = centrality.scores();
+        double sumDist = 0.;
+        double reached = 0.;
 
-    const double tol = 1e-6;
-    EXPECT_NEAR(0.4, bc[0], tol);
-    EXPECT_NEAR(0.4, bc[1], tol);
-    EXPECT_NEAR(0.45, bc[2], tol);
-    EXPECT_NEAR(0.2, bc[3], tol);
-    EXPECT_NEAR(0.2, bc[4], tol);
-    EXPECT_NEAR(0, bc[5], tol);
+        G.forNodes([&](node v) {
+            if (variant == ClosenessVariant::standard) {
+                sumDist += dists[v];
+            } else if (dists[v] != std::numeric_limits<double>::max()) {
+                ++reached;
+                sumDist += dists[v];
+            }
+        });
+
+        double score = sumDist;
+        if (score) {
+            score = (variant == ClosenessVariant::standard) ?
+                1.0 / score : (reached - 1.0) / sumDist / (G.numberOfNodes() - 1.0);
+        }
+
+        if (normalized) {
+            score *= (variant == ClosenessVariant::standard ? G.numberOfNodes() : reached) - 1.0;
+        }
+
+        return score;
+    };
+
+    for (auto variant : {ClosenessVariant::standard, ClosenessVariant::generalized}) {
+        for (auto normalized : {true, false}) {
+            Closeness centrality(G, normalized, variant);
+            centrality.run();
+            const auto bc = centrality.scores();
+
+            G.forNodes([&](node u) {
+                EXPECT_DOUBLE_EQ(bc[u], computeCloseness(u, variant, normalized));
+            });
+        }
+    }
 }
 
 TEST_F(CentralityGTest, testHarmonicClosenessCentrality) {
@@ -1220,6 +1194,7 @@ TEST_P(CentralityGTest, testTopCloseness) {
             TopCloseness topcc(G, k, firstHeu, secHeu);
             topcc.run();
             auto scores = topcc.topkScoresList();
+            EXPECT_EQ(topcc.topkNodesList().size(), k);
             for (count i = 0; i < k; i++) {
                 EXPECT_DOUBLE_EQ(ranking[i].second, scores[i]);
             }
