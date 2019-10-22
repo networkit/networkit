@@ -1866,6 +1866,33 @@ cdef class DynBFS(DynSSSP):
 		self._G = G
 		self._this = new _DynBFS(G._this, source)
 
+cdef extern from "<networkit/distance/ReverseBFS.hpp>":
+
+	cdef cppclass _ReverseBFS "NetworKit::ReverseBFS"(_SSSP):
+		_ReverseBFS(_Graph G, node source, bool_t storePaths, bool_t storeNodesSortedByDistance, node target) except +
+
+cdef class ReverseBFS(SSSP):
+	""" Simple reverse breadth-first search on a Graph from a given source
+
+	ReverseBFS(G, source, storePaths=True, storeNodesSortedByDistance=False, target=None)
+
+	Create ReverseBFS for `G` and source node `source`.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The graph.
+	source : node
+		The source node of the breadth-first search.
+	storePaths : bool
+		Paths are reconstructable and the number of paths is stored.
+	target: node
+		terminate search when the target has been reached
+	"""
+
+	def __cinit__(self, Graph G, source, storePaths=True, storeNodesSortedByDistance=False, target=none):
+		self._G = G
+		self._this = new _ReverseBFS(G._this, source, storePaths, storeNodesSortedByDistance, target)
 
 cdef extern from "<networkit/distance/Dijkstra.hpp>":
 
