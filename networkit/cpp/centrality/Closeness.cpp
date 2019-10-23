@@ -130,6 +130,7 @@ void Closeness::dijkstra() {
         heap.push(u);
         dist_[u] = 0.;
         double sum = 0.;
+        visited_[u] = ts_;
         count reached = 1;
 
         do {
