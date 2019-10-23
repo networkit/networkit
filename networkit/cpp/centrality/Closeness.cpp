@@ -129,13 +129,14 @@ void Closeness::dijkstra() {
 
         heap.push(u);
         dist_[u] = 0.;
-        double sum = 0.;
         visited_[u] = ts_;
+
+        double sumDist = 0.;
         count reached = 1;
 
         do {
-            node x = heap.extract_top();
-            sum += dist_[x];
+            const auto x = heap.extract_top();
+            sumDist += dist_[x];
             G.forNeighborsOf(x, [&](node y, edgeweight ew) {
                 if (ts_ != visited_[y]) {
                     ++reached;
@@ -148,7 +149,9 @@ void Closeness::dijkstra() {
                 }
             });
         } while (!heap.empty());
-        updateScoreData(u, reached, sum);
+
+        updateScoreData(u, reached, sumDist);
     }
 }
+
 } // namespace NetworKit
