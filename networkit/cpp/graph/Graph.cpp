@@ -766,10 +766,16 @@ void Graph::removeEdge(node u, node v) {
         throw std::runtime_error(strm.str());
     }
 
+    const auto isLoop = (u == v);
     m--; // decrease number of edges
+    if (isLoop) storedNumberOfSelfLoops--;
+
     erase<node>(u, vi, outEdges);
     if (weighted) {
         erase<edgeweight>(u, vi, outEdgeWeights);
+    }
+    if (edgesIndexed) {
+        erase<edgeid>(u, vi, outEdgeIds);
     }
 
     if (directed) {
@@ -779,21 +785,19 @@ void Graph::removeEdge(node u, node v) {
         if (weighted) {
             erase<edgeweight>(v, ui, inEdgeWeights);
         }
-    } else if (u != v) {
+        if (edgesIndexed) {
+            erase<edgeid>(v, ui, inEdgeIds);
+        }
+    } else if (!isLoop) {
         // undirected, not self-loop
         erase<node>(v, ui, outEdges);
         if (weighted) {
             erase<edgeweight>(v, ui, outEdgeWeights);
         }
+        if (edgesIndexed) {
+            erase<edgeid>(v, ui, outEdgeIds);
+        }
     }
-
-    if (u == v) {
-        storedNumberOfSelfLoops--;
-    }
-
-    // dose not make a lot of sense do remove attributes,
-    // cause the edge is marked as deleted and we have no null values for the
-    // attributes
 }
 
 void Graph::removeAllEdges() {
@@ -803,10 +807,16 @@ void Graph::removeAllEdges() {
         if (isWeighted()) {
             outEdgeWeights[u].clear();
         }
+        if (edgesIndexed) {
+            outEdgeIds[u].clear();
+        }
         if (isDirected()) {
             inEdges[u].clear();
             if (isWeighted()) {
                 inEdgeWeights[u].clear();
+            }
+            if (edgesIndexed) {
+                inEdgeIds[u].clear();
             }
         }
     }
@@ -819,11 +829,20 @@ void Graph::removeEdgesFromIsolatedSet(const std::vector<node> &nodesInSet) {
     for (node u : nodesInSet) {
         removedEdges += outEdges[u].size();
         outEdges[u].clear();
-        if (this->weighted) {
+        if (weighted) {
             outEdgeWeights[u].clear();
         }
-        if (this->isDirected()) {
+        if (edgesIndexed) {
+            outEdgeIds[u].clear();
+        }
+        if (directed) {
             inEdges[u].clear();
+            if (weighted) {
+                inEdgeWeights[u].clear();
+            }
+            if (edgesIndexed) {
+                inEdgeIds[u].clear();
+            }
         }
     }
     this->m -= removedEdges;
