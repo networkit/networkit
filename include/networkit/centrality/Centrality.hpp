@@ -11,6 +11,8 @@
 #include <networkit/graph/Graph.hpp>
 #include <networkit/base/Algorithm.hpp>
 
+#include <tlx/define/deprecated.hpp>
+
 namespace NetworKit {
 
 /**
@@ -39,10 +41,11 @@ public:
 
     /**
      * Get a vector containing the centrality score for each node in the graph.
-     * @param moveOut Return the actual internal data instead of a copy. Resets the hasRun-state. Default: false.
+     *
      * @return The centrality scores calculated by @link run().
      */
-    virtual std::vector<double> scores(bool moveOut = false);
+    virtual std::vector<double> TLX_DEPRECATED(scores(bool moveOut));
+    virtual const std::vector<double> &scores() const;
 
     /**
      * Get a vector containing the edge centrality score for each edge in the graph (where applicable).
@@ -73,14 +76,14 @@ public:
     virtual double maximum();
 
     /**
-     * 	Compute the centralization of a network with respect to some centrality measure.
+     * Compute the centralization of a network with respect to some centrality measure.
 
-        The centralization of any network is a measure of how central its most central
-        node is in relation to how central all the other nodes are.
-        Centralization measures then (a) calculate the sum in differences
-        in centrality between the most central node in a network and all other nodes;
-        and (b) divide this quantity by the theoretically largest such sum of
-        differences in any network of the same size.
+     * The centralization of any network is a measure of how central its most central
+     * node is in relation to how central all the other nodes are.
+     * Centralization measures then (a) calculate the sum in differences
+     * in centrality between the most central node in a network and all other nodes;
+     * and (b) divide this quantity by the theoretically largest such sum of
+     * differences in any network of the same size.
 
      * @return centrality index
      */

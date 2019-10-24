@@ -46,6 +46,11 @@ std::vector<double> Centrality::scores(bool moveOut) {
   return moveOut ? std::move(scoreData) : scoreData;
 }
 
+const std::vector<double> &Centrality::scores() const {
+  assureFinished();
+  return scoreData;
+}
+
 std::vector<double> Centrality::edgeScores() {
   assureFinished();
   return edgeScoreData;

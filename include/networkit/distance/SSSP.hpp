@@ -48,8 +48,6 @@ public:
      * Returns a vector of weighted distances from the source node, i.e. the
      * length of the shortest path from the source node to any other node.
      *
-     * @param moveOut If set to true, the container will be moved out of the
-     * class instead of copying it; default=true.
      * @return The weighted distances from the source node to any other node in
      * the graph.
      */
@@ -115,12 +113,10 @@ public:
     /**
      * Returns a vector of nodes ordered in increasing distance from the source.
      *
-     *	For this functionality to be available, storeNodesSortedByDistance has
-     *to be set to true in the constructor. There are no guarantees regarding
-     *the ordering of two nodes with the same distance to the source.
+     * For this functionality to be available, storeNodesSortedByDistance has
+     * to be set to true in the constructor. There are no guarantees regarding
+     * the ordering of two nodes with the same distance to the source.
      *
-     * @param moveOut If set to true, the container will be moved out of the
-     *class instead of copying it; default=true.
      * @return vector of nodes ordered in increasing distance from the source
      */
     std::vector<node> TLX_DEPRECATED(getNodesSortedByDistance(bool moveOut));
