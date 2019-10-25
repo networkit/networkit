@@ -540,20 +540,45 @@ node Graph::addNode() {
     // update per node data structures
     exists.push_back(true);
 
-    // update per node data structures
-    if (weighted) {
+    outEdges.emplace_back();
+    if (weighted) outEdgeWeights.emplace_back();
+    if (edgesIndexed) outEdgeIds.emplace_back();
 
-        std::vector<edgeweight> edgeWeight;
-        inEdgeWeights.push_back(edgeWeight);
-        outEdgeWeights.push_back(edgeWeight);
-    }
-
-    outEdges.push_back(std::vector<node>{});
     if (directed) {
-        inEdges.push_back(std::vector<node>{});
+        inEdges.emplace_back();
+        if (weighted) inEdgeWeights.emplace_back();
+        if (edgesIndexed) inEdgeIds.emplace_back();
     }
 
     return v;
+}
+
+node Graph::addNodes(count numberOfNewNodes) {
+    if (numberOfNewNodes < 10) {
+        // benchmarks suggested, it's cheaper to call 10 time emplace_back than resizing.
+        while (numberOfNewNodes--)
+            addNode();
+
+        return z - 1;
+    }
+
+    z += numberOfNewNodes;
+    n += numberOfNewNodes;
+
+    // update per node data structures
+    exists.resize(z, true);
+
+    outEdges.resize(z);
+    if (weighted) outEdgeWeights.resize(z);
+    if (edgesIndexed) outEdgeIds.resize(z);
+
+    if (directed) {
+        inEdges.resize(z);
+        if (weighted) inEdgeWeights.resize(z);
+        if (edgesIndexed) inEdgeIds.resize(z);
+    }
+
+    return z-1;
 }
 
 node Graph::addNode(float x, float y) {

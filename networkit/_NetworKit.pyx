@@ -305,6 +305,7 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		bool_t isIsolated(node u) except +
 		_Graph copyNodes() except +
 		node addNode() except +
+		node addNodes(node) except +
 		void removeNode(node u) except +
 		bool_t hasNode(node u) except +
 		void restoreNode(node u) except +
@@ -706,6 +707,23 @@ cdef class Graph:
 	 	"""
 		return self._this.addNode()
 
+	def addNodes(self, numberOfNewNodes):
+		""" Add numberOfNewNodes many new nodes to the graph and return
+		the id of the last node added.
+
+		Parameters
+		----------
+		numberOfNewNodes : node
+			Number of nodes to be added.
+
+		Returns
+		-------
+		node
+			The id of the last node added.
+		"""
+		assert(numberOfNewNodes >= 0)
+		return self._this.addNodes(numberOfNewNodes)
+
 	def removeNode(self, u):
 		""" Remove a node `v` and all incident edges from the graph.
 
@@ -714,7 +732,7 @@ cdef class Graph:
 	 	Parameters
 	 	----------
 	 	u : node
-	 		Node.
+	 		Id of node to be removed.
 		"""
 		self._this.removeNode(u)
 
@@ -734,7 +752,7 @@ cdef class Graph:
 		Parameters
 		----------
 		u : node
-			Node
+			Id of node queried.
 
 		Returns
 		-------
@@ -764,9 +782,10 @@ cdef class Graph:
 		self._this.merge(G._this)
 		return self
 
-	def addEdge(self, u, v, w=1.0):
+	def addEdge(self, u, v, w=1.0, addMissing = False):
 		""" Insert an undirected edge between the nodes `u` and `v`. If the graph is weighted you can optionally
 		set a weight for this edge. The default weight is 1.0.
+		If one or both end-points do not exists and addMissing is set, they are silently added.
 		Caution: It is not checked whether this edge already exists, thus it is possible to create multi-edges.
 
 	 	Parameters
@@ -777,7 +796,23 @@ cdef class Graph:
  			Endpoint of edge.
 		w : edgeweight, optional
 			Edge weight.
+		addMissing : optional, default: False
+			Add add missing endpoints if necessary (i.e., increase numberOfNodes).
 		"""
+		if not (self._this.hasNode(u) and self._this.hasNode(v)):
+			if not addMissing:
+				raise RuntimeError("Cannot create edge ({0}, {1}) as at least one end point does not exsists".format(u,v))
+
+			k = max(u, v)
+			if k >= self._this.upperNodeIdBound():
+				self._this.addNodes(k - self._this.upperNodeIdBound() + 1)
+
+			if not self._this.hasNode(u):
+				self._this.restoreNode(u)
+
+			if not self._this.hasNode(v):
+				self._this.restoreNode(v)
+
 		self._this.addEdge(u, v, w)
 		return self
 

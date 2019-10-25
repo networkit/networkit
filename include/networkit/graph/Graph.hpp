@@ -820,6 +820,13 @@ public:
     node addNode();
 
     /**
+     * Add numberOfNewNodes new nodes.
+     * @param  numberOfNewNodes Number of new nodes.
+     * @return The index of the last node added.
+     */
+    node addNodes(count numberOfNewNodes);
+
+    /**
      * DEPRECATED: Coordinates should be handled outside the Graph class
      * like general node attributes.
      *
