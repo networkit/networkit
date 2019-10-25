@@ -729,7 +729,7 @@ public:
      *
      * @return bool if edges have been indexed
      */
-    bool hasEdgeIds() const { return edgesIndexed; }
+    bool hasEdgeIds() const noexcept { return edgesIndexed; }
 
     /**
      * Get the id of the given edge.
@@ -740,7 +740,7 @@ public:
      * Get an upper bound for the edge ids in the graph.
      * @return An upper bound for the edge ids.
      */
-    index upperEdgeIdBound() const { return omega; }
+    index upperEdgeIdBound() const noexcept { return omega; }
 
     /** GRAPH INFORMATION **/
 
@@ -864,7 +864,7 @@ public:
      * @return @c true if @a v exists, @c false otherwise.
      */
 
-    bool hasNode(node v) const { return (v < z) && this->exists[v]; }
+    bool hasNode(node v) const noexcept { return (v < z) && this->exists[v]; }
 
     /**
      * Restores a previously deleted node @a v with its previous id in the
@@ -1143,7 +1143,7 @@ public:
      * @return <code>true</code> if the edge exists, <code>false</code>
      * otherwise.
      */
-    bool hasEdge(node u, node v) const;
+    bool hasEdge(node u, node v) const noexcept;
 
     /**
      * Returns a random edge. By default a random node u is chosen and then
@@ -1168,37 +1168,37 @@ public:
      * @return <code>true</code> if this graph supports edge weights other
      * than 1.0.
      */
-    bool isWeighted() const { return weighted; }
+    bool isWeighted() const noexcept { return weighted; }
 
     /**
      * Return @c true if this graph supports directed edges.
      * @return @c true if this graph supports directed edges.
      */
-    bool isDirected() const { return directed; }
+    bool isDirected() const noexcept { return directed; }
 
     /**
      * Return <code>true</code> if graph contains no nodes.
      * @return <code>true</code> if graph contains no nodes.
      */
-    bool isEmpty() const { return n == 0; }
+    bool isEmpty() const noexcept { return !n; }
 
     /**
      * Return the number of nodes in the graph.
      * @return The number of nodes.
      */
-    count numberOfNodes() const { return n; }
+    count numberOfNodes() const noexcept { return n; }
 
     /**
      * Return the number of edges in the graph.
      * @return The number of edges.
      */
-    count numberOfEdges() const { return m; }
+    count numberOfEdges() const noexcept { return m; }
 
     /**
      * @return a pair (n, m) where n is the number of nodes and m is the
      * number of edges
      */
-    std::pair<count, count> const size() const { return {n, m}; };
+    std::pair<count, count> const size() const noexcept { return {n, m}; };
 
     /**
      * @return the density of the graph
@@ -1223,13 +1223,13 @@ public:
      * @note This involves calculation, so store result if needed multiple
      * times.
      */
-    count numberOfSelfLoops() const;
+    count numberOfSelfLoops() const noexcept { return storedNumberOfSelfLoops; }
 
     /**
      * Get an upper bound for the node ids in the graph.
      * @return An upper bound for the node ids.
      */
-    index upperNodeIdBound() const { return z; }
+    index upperNodeIdBound() const noexcept { return z; }
 
     /**
      * Check for invalid graph states, such as multi-edges.
@@ -1292,7 +1292,7 @@ public:
      * Returns the sum of all edge weights.
      * @return The sum of all edge weights.
      */
-    edgeweight totalEdgeWeight() const;
+    edgeweight totalEdgeWeight() const noexcept;
 
     /* Collections */
 

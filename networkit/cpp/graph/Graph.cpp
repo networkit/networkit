@@ -937,7 +937,10 @@ void Graph::swapEdge(node s1, node t1, node s2, node t2) {
     }
 }
 
-bool Graph::hasEdge(node u, node v) const {
+bool Graph::hasEdge(node u, node v) const noexcept{
+    if (u >= z || v >= z) {
+        return false;
+    }
     if (!directed &&
         outEdges[u].size() > outEdges[v].size()) {
         return indexInOutEdgeArray(v, u) != none;
@@ -1053,10 +1056,6 @@ std::vector<std::pair<node, node>> Graph::randomEdges(count nr) const {
     return edges;
 }
 
-/** GLOBAL PROPERTIES **/
-
-count Graph::numberOfSelfLoops() const { return storedNumberOfSelfLoops; }
-
 /** EDGE ATTRIBUTES **/
 
 edgeweight Graph::weight(node u, node v) const {
@@ -1116,7 +1115,7 @@ void Graph::increaseWeight(node u, node v, edgeweight ew) {
 
 /** SUMS **/
 
-edgeweight Graph::totalEdgeWeight() const {
+edgeweight Graph::totalEdgeWeight() const noexcept {
     if (weighted) {
         edgeweight sum = 0.0;
         forEdges([&](node, node, edgeweight ew) { sum += ew; });
