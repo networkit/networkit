@@ -130,13 +130,13 @@ TEST_F(IOBenchmark, benchRasterReader) {
             runtime.start();
             std::vector<double> angles(n);
             std::vector<double> radii(n);
-            std::vector<Point2D<double> > positions(n);
+            std::vector<Point2DWithIndex<double> > positions(n);
             std::vector<index> content(n);
             double maxR = 0;
             for (index i = 0; i < n; i++) {
-                HyperbolicSpace::cartesianToPolar(Point2D<double>(xcoords[i], ycoords[i]), angles[i], radii[i]);
+                HyperbolicSpace::cartesianToPolar(Point2DWithIndex<double>(xcoords[i], ycoords[i]), angles[i], radii[i]);
                 maxR = std::max(maxR, radii[i]);
-                positions[i] = Point2D<double>(xcoords[i], ycoords[i]);
+                positions[i] = Point2DWithIndex<double>(xcoords[i], ycoords[i]);
                 content[i] = i;
             }
             runtime.stop();
@@ -160,7 +160,7 @@ TEST_F(IOBenchmark, benchRasterReader) {
             for (uint64_t q = 0; q < numQueries; ++q) {
                 std::vector<index> result;
                 index comparison = Aux::Random::integer(xcoords.size());
-                Point2D<double> query(xcoords[comparison], ycoords[comparison]);
+                Point2DWithIndex<double> query(xcoords[comparison], ycoords[comparison]);
                 tree.getElementsProbabilistically(query, edgeProb, result);
                 treeTotalNeighbours += result.size();
             }
@@ -239,7 +239,7 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
         double maxR = 0;
 
         for (index i = 0; i < n; i++) {
-            HyperbolicSpace::cartesianToPolar(Point2D<double>(xcoords[i], ycoords[i]), angles[i], radii[i]);
+            HyperbolicSpace::cartesianToPolar(Point2DWithIndex<double>(xcoords[i], ycoords[i]), angles[i], radii[i]);
             maxR = std::max(maxR, radii[i]);
             content[i] = i;
         }
@@ -272,7 +272,7 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
             //get new infections
             std::vector<index> newInfections;
             for (index patient : infectedList) {
-                Point2D<double> query(xcoords[patient], ycoords[patient]);
+                Point2DWithIndex<double> query(xcoords[patient], ycoords[patient]);
                 tree.getElementsProbabilistically(query, edgeProb, newInfections);
             }
 

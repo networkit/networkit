@@ -69,8 +69,8 @@ TEST_F(QuadTreeGTest, testQuadTreeHyperbolicCircle) {
     EXPECT_EQ(quad.size(), n);
     for (index testindex = 0; testindex < 100; testindex++) {
         index comparison = Aux::Random::integer(n-1);
-        Point2D<double> origin;
-        Point2D<double> query = HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]);
+        Point2DWithIndex<double> origin;
+        Point2DWithIndex<double> query = HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]);
         DEBUG("Using ", comparison, " at (", angles[comparison], ",", radii[comparison], ") as query point");
 
         vector<index> closeToOne = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]), R);
@@ -282,8 +282,8 @@ TEST_F(QuadTreeGTest, testEuclideanCircle) {
     QuadNode<index> root = getRoot(quad);
     for (index i = 0; i < 100; i++) {
         index comparison = Aux::Random::integer(n);
-        Point2D<double> origin;
-        Point2D<double> query = HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]);
+        Point2DWithIndex<double> origin;
+        Point2DWithIndex<double> query = HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]);
         double radius = Aux::Random::real(1);//this may overshoot the poincar disc, this is intentional. I want to know what happens
         double minR = query.length() - radius;
         double maxR = query.length() + radius;
@@ -325,7 +325,7 @@ TEST_F(QuadTreeGTest, testEuclideanCircle) {
 
 
         for (index j = 0; j < n; j++) {
-            Point2D<double> comp = HyperbolicSpace::polarToCartesian(angles[j], radii[j]);
+            Point2DWithIndex<double> comp = HyperbolicSpace::polarToCartesian(angles[j], radii[j]);
             double dist = comp.distance(query);
             if (dist < radius) {
                 bool found = false;
@@ -792,13 +792,13 @@ TEST_F(QuadTreeGTest, testQuadNodeHyperbolicDistances) {
     ASSERT_LE(minPhi, maxPhi);
     ASSERT_LE(minR, maxR);
 
-    Point2D<double> query(0.99999879353779952, 0.0011511619164281455);
+    Point2DWithIndex<double> query(0.99999879353779952, 0.0011511619164281455);
     double phi_q, r_q;
     HyperbolicSpace::cartesianToPolar(query, phi_q, r_q);
 
     QuadNode<index> node(minPhi, minR, maxPhi, maxR, 1000, 0);
     count steps = 100;
-    Point2D<double> posAtMin = HyperbolicSpace::polarToCartesian(minPhi, minR);
+    Point2DWithIndex<double> posAtMin = HyperbolicSpace::polarToCartesian(minPhi, minR);
     double minDistance = HyperbolicSpace::poincareMetric(query, posAtMin);
     double minR_Hyper = HyperbolicSpace::EuclideanRadiusToHyperbolic(minR);
 
@@ -813,7 +813,7 @@ TEST_F(QuadTreeGTest, testQuadNodeHyperbolicDistances) {
             } else {
                 EXPECT_FALSE(node.responsible(phi, r));
             }
-            Point2D<double> pos = HyperbolicSpace::polarToCartesian(phi, r);
+            Point2DWithIndex<double> pos = HyperbolicSpace::polarToCartesian(phi, r);
             double distance =  HyperbolicSpace::poincareMetric(query, pos);
             if (distance < minDistance) {
                 minDistance = distance;
@@ -826,7 +826,7 @@ TEST_F(QuadTreeGTest, testQuadNodeHyperbolicDistances) {
     HyperbolicSpace::cartesianToPolar(posAtMin, phiAtMin, rAtMin);
     DEBUG("Point in Cell at minimal distance at (", phiAtMin, ", ", rAtMin, ") on the poincare disk, which is ", HyperbolicSpace::EuclideanRadiusToHyperbolic(rAtMin), " in native radius.");
 
-    Point2D<double> p(0.99983582188685627, -0.0020919222764388666);
+    Point2DWithIndex<double> p(0.99983582188685627, -0.0020919222764388666);
     double phi, r;
     HyperbolicSpace::cartesianToPolar(p, phi, r);
 

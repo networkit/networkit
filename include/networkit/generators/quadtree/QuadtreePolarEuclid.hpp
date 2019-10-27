@@ -85,15 +85,15 @@ public:
         root.getCoordinates(anglesContainer, radiiContainer);
     }
 
-    void getElementsInEuclideanCircle(const Point2D<double> circleCenter, const double radius, vector<T> &circleDenizens) const {
+    void getElementsInEuclideanCircle(const Point2DWithIndex<double> circleCenter, const double radius, vector<T> &circleDenizens) const {
         root.getElementsInEuclideanCircle(circleCenter, radius, false, circleDenizens);
     }
 
-    count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &circleDenizens) {
+    count getElementsProbabilistically(Point2DWithIndex<double> euQuery, std::function<double(double)> prob, vector<T> &circleDenizens) {
         return root.getElementsProbabilistically(euQuery, prob, false, circleDenizens);
     }
 
-    count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, bool suppressLeft, vector<T> &circleDenizens) {
+    count getElementsProbabilistically(Point2DWithIndex<double> euQuery, std::function<double(double)> prob, bool suppressLeft, vector<T> &circleDenizens) {
         return root.getElementsProbabilistically(euQuery, prob, suppressLeft, circleDenizens);
     }
 

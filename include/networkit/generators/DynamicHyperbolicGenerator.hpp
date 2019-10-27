@@ -127,7 +127,7 @@ private:
     //data structures
     Quadtree<index, false> quad;
     vector<double> bandRadii;
-    vector<vector<Point2D<double>>> bands;
+    vector<vector<Point2DWithIndex<double>>> bands;
     vector<vector<double> > bandAngles;
 
     bool initialized;

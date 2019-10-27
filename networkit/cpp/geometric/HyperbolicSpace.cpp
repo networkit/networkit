@@ -47,7 +47,7 @@ double HyperbolicSpace::poincareMetric(double phi_a, double  r_a, double phi_b, 
     return poincareMetric(polarToCartesian(phi_a, r_a), polarToCartesian(phi_b, r_b));
 }
 
-double HyperbolicSpace::poincareMetric(Point2D<double> a, Point2D<double> b) {
+double HyperbolicSpace::poincareMetric(Point2DWithIndex<double> a, Point2DWithIndex<double> b) {
     assert(a.length() < 1);
     assert(b.length() < 1);
     double result = acosh( 1 + 2*a.squaredDistance(b) / ((1 - a.squaredLength())*(1 - b.squaredLength())));
@@ -95,22 +95,22 @@ void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, 
     }
 }
 
-Point2D<double> HyperbolicSpace::polarToCartesian(double phi, double r) {
-    return Point2D<double>(r*cos(phi), r*sin(phi));
+Point2DWithIndex<double> HyperbolicSpace::polarToCartesian(double phi, double r) {
+    return Point2DWithIndex<double>(r*cos(phi), r*sin(phi));
 }
 
 std::map<index, Point<float> > HyperbolicSpace::polarToCartesian(const vector<double> &angles, const vector<double> &radii) {
     assert(radii.size() == angles.size());
     std::map<index, Point<float> > result;
     for (index i = 0; i < angles.size(); i++) {
-        Point2D<double> coord = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
+        Point2DWithIndex<double> coord = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
         Point<float> temp(coord[0], coord[1]);
         result.insert(std::make_pair(i, temp));
     }
     return result;
 }
 
-void HyperbolicSpace::cartesianToPolar(Point2D<double> a, double &phi, double &r) {
+void HyperbolicSpace::cartesianToPolar(Point2DWithIndex<double> a, double &phi, double &r) {
     r = a.length();
     if (r == 0) phi = 0;
     else if (a[1] >= 0){
@@ -121,7 +121,7 @@ void HyperbolicSpace::cartesianToPolar(Point2D<double> a, double &phi, double &r
     if (phi < 0) phi += 2*PI;
 }
 
-void HyperbolicSpace::getEuclideanCircle(Point2D<double> hyperbolicCenter, double hyperbolicRadius, Point2D<double> &euclideanCenter, double &euclideanRadius) {
+void HyperbolicSpace::getEuclideanCircle(Point2DWithIndex<double> hyperbolicCenter, double hyperbolicRadius, Point2DWithIndex<double> &euclideanCenter, double &euclideanRadius) {
     double phi_h, r_h;
     HyperbolicSpace::cartesianToPolar(hyperbolicCenter, phi_h, r_h);
     double r_c;
