@@ -69,8 +69,6 @@ TEST_F(QuadTreeGTest, testQuadTreeHyperbolicCircle) {
     EXPECT_EQ(quad.size(), n);
     for (index testindex = 0; testindex < 100; testindex++) {
         index comparison = Aux::Random::integer(n-1);
-        Point2DWithIndex<double> origin;
-        Point2DWithIndex<double> query = HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]);
         DEBUG("Using ", comparison, " at (", angles[comparison], ",", radii[comparison], ") as query point");
 
         vector<index> closeToOne = quad.getElementsInHyperbolicCircle(HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]), R);
@@ -282,7 +280,7 @@ TEST_F(QuadTreeGTest, testEuclideanCircle) {
     QuadNode<index> root = getRoot(quad);
     for (index i = 0; i < 100; i++) {
         index comparison = Aux::Random::integer(n);
-        Point2DWithIndex<double> origin;
+
         Point2DWithIndex<double> query = HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]);
         double radius = Aux::Random::real(1);//this may overshoot the poincar disc, this is intentional. I want to know what happens
         double minR = query.length() - radius;
@@ -506,7 +504,7 @@ TEST_F(QuadTreeGTest, testCartesianEuclidQuery) {
     vector<index> content(n);
 
     for (index i = 0; i < n; i++) {
-        Point<double> pos = Point<double>({Aux::Random::probability(), Aux::Random::probability()});
+        Point<double> pos{Aux::Random::probability(), Aux::Random::probability()};
         positions[i] = pos;
         content[i] = i;
     }
@@ -841,15 +839,15 @@ TEST_F(QuadTreeGTest, testQuadNodeHyperbolicDistances) {
 }
 
 TEST_F(QuadTreeGTest, testQuadNodeCartesianDistances) {
-    Point<double> lower({0.24997519780061023, 0.7499644402803205});
-    Point<double> upper({0.49995039560122045, 0.99995258704042733});
+    Point<double> lower(0.24997519780061023, 0.7499644402803205);
+    Point<double> upper(0.49995039560122045, 0.99995258704042733);
 
     ASSERT_LE(lower[0], upper[0]);
     ASSERT_LE(lower[1], upper[1]);
     ASSERT_EQ(2u, lower.getDimensions());
     ASSERT_EQ(2u, upper.getDimensions());
 
-    Point<double> query({0.81847946542324035, 0.91885035291473593});
+    Point<double> query(0.81847946542324035, 0.91885035291473593);
 
     QuadNodeCartesianEuclid<index> node(lower, upper, 1000);
     //count steps = 100;

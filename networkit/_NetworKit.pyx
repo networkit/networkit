@@ -46,7 +46,6 @@ ctypedef index node
 ctypedef index cluster
 ctypedef double edgeweight
 ctypedef double coordinate
-ctypedef pair[coordinate,coordinate] coord2d
 
 cdef extern from "<networkit/Globals.hpp>" namespace "NetworKit":
 
@@ -270,15 +269,24 @@ def setSeed(uint64_t seed, bool_t useThreadId):
 
 ## Module: graph
 
-# DEPRECATED
-# TODO: replace with std::pair<double>
-cdef extern from "<networkit/viz/Point.hpp>" namespace "NetworKit":
+
+cdef extern from "<networkit/viz/Point.hpp>" namespace "NetworKit" nogil:
 
 	cdef cppclass Point[T]:
 		Point()
 		Point(T x, T y)
 		T& operator[](const index i) except +
 		T& at(const index i) except +
+
+	cdef cppclass _Point2D "NetworKit::Point2D":
+		_Point2D()
+		pair[coordinate, coordinate] asPair()
+
+cdef object toPoint2DVector(const vector[_Point2D]& v):
+	return [v[i].asPair() for i in range(v.size())]
+
+cdef object toNodePoint2DVector(const vector[pair[node, _Point2D]]& v):
+	return [(v[i].first, v[i].second.asPair()) for i in range(v.size())]
 
 cdef extern from "<networkit/graph/Graph.hpp>":
 
@@ -2416,7 +2424,8 @@ cdef extern from "<networkit/generators/PubWebGenerator.hpp>":
 
 	cdef cppclass _PubWebGenerator "NetworKit::PubWebGenerator"(_StaticGraphGenerator):
 		_PubWebGenerator(count numNodes, count numberOfDenseAreas, float neighborhoodRadius, count maxNumberOfNeighbors) except +
-		vector[coord2d] getCoordinates()
+		const vector[_Point2D]& getCoordinates()
+
 
 cdef class PubWebGenerator(StaticGraphGenerator):
 	""" Generates a static graph that resembles an assumed geometric distribution of nodes in
@@ -2454,7 +2463,7 @@ cdef class PubWebGenerator(StaticGraphGenerator):
 
 	def getCoordinates(self):
 		"""Returns a list of coordinates"""
-		return (<_PubWebGenerator*>(self._this)).getCoordinates()
+		return toPoint2DVector((<_PubWebGenerator*>(self._this)).getCoordinates())
 
 cdef extern from "<networkit/generators/ErdosRenyiGenerator.hpp>":
 
@@ -8852,17 +8861,14 @@ cdef class DynamicDorogovtsevMendesGenerator:
 		"""
 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
 
-
-
 cdef extern from "<networkit/generators/DynamicPubWebGenerator.hpp>":
-
 	cdef cppclass _DynamicPubWebGenerator "NetworKit::DynamicPubWebGenerator":
 		_DynamicPubWebGenerator(count numNodes, count numberOfDenseAreas,
 			float neighborhoodRadius, count maxNumberOfNeighbors) except +
 		vector[_GraphEvent] generate(count nSteps) except +
 		_Graph getGraph() except +
-		vector[coord2d] getCoordinates()
-		map[node, coord2d] getNewCoordinates()
+		vector[_Point2D] getCoordinates()
+		vector[pair[node, _Point2D]] getNewCoordinates()
 
 cdef class DynamicPubWebGenerator:
 	cdef _DynamicPubWebGenerator* _this
@@ -8888,11 +8894,11 @@ cdef class DynamicPubWebGenerator:
 
 	def getCoordinates(self):
 		"""The coordinates currently assumed for each node"""
-		return (<_DynamicPubWebGenerator*>(self._this)).getCoordinates()
+		return toPoint2DVector((<_DynamicPubWebGenerator*>(self._this)).getCoordinates())
 
 	def getNewCoordinates(self):
-		"""A map of recently updated coordinates"""
-		return (<_DynamicPubWebGenerator*>(self._this)).getNewCoordinates()
+		"""List [(node-id, (coordx, coordy)] of points added during last generate call."""
+		return toNodePoint2DVector((<_DynamicPubWebGenerator*>(self._this)).getNewCoordinates())
 
 cdef extern from "<networkit/generators/DynamicHyperbolicGenerator.hpp>":
 
@@ -8900,7 +8906,7 @@ cdef extern from "<networkit/generators/DynamicHyperbolicGenerator.hpp>":
 		_DynamicHyperbolicGenerator(count numNodes, double avgDegree, double gamma, double T, double moveEachStep, double moveDistance) except +
 		vector[_GraphEvent] generate(count nSteps) except +
 		_Graph getGraph() except +
-		vector[coord2d] getCoordinates() except +
+		vector[_Point2D] getCoordinates() except +
 
 
 cdef class DynamicHyperbolicGenerator:
@@ -8946,9 +8952,7 @@ cdef class DynamicHyperbolicGenerator:
 
 	def getCoordinates(self):
 		""" Get coordinates in the Poincare disk"""
-		return self._this.getCoordinates()
-
-
+		return toPoint2DVector(self._this.getCoordinates())
 
 cdef extern from "<networkit/generators/DynamicForestFireGenerator.hpp>":
 

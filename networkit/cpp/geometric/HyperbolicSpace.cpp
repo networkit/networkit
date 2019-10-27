@@ -104,8 +104,7 @@ std::map<index, Point<float> > HyperbolicSpace::polarToCartesian(const vector<do
     std::map<index, Point<float> > result;
     for (index i = 0; i < angles.size(); i++) {
         Point2DWithIndex<double> coord = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
-        Point<float> temp(coord[0], coord[1]);
-        result.insert(std::make_pair(i, temp));
+        result.emplace(i, Point<float>{static_cast<float>(coord[0]), static_cast<float>(coord[1])});
     }
     return result;
 }

@@ -36,8 +36,10 @@ public:
     std::vector<GraphEvent> generate(count nSteps) override;
 
     /// Returns a map of coordinates that were updated.
-    const std::map<node, Point2D> &getNewCoordinates() const { return newCoordinates; }
-    std::map<node, Point2D> moveNewCoordinates() { return std::move(newCoordinates); }
+    const std::vector<std::pair<node, Point2D>> &getNewCoordinates() const {
+        return newCoordinates;
+    }
+    std::vector<std::pair<node, Point2D>> moveNewCoordinates() { return std::move(newCoordinates); }
 
     /// Returns a vector of the currently valid coordinates
     const std::vector<Point2D> &getCoordinates() const { return coordinates; }
@@ -45,9 +47,9 @@ public:
 
 protected:
     PubWebGenerator initGen; // multiple inheritance did not work with different generate functions
-    std::map<node, Point2D> newCoordinates; //<! new and changed coordinates
-    std::vector<Point2D> coordinates;       //<! vector of all coordinates
-    bool writeInitialGraphToStream;         // if true, on first call, write initial graph to stream
+    std::vector<std::pair<node, Point2D>> newCoordinates; //<! new and changed coordinates
+    std::vector<Point2D> coordinates;                     //<! vector of all coordinates
+    bool writeInitialGraphToStream; // if true, on first call, write initial graph to stream
 };
 
 } /* namespace NetworKit */

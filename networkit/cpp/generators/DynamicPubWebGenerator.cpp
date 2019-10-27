@@ -26,6 +26,7 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
     std::vector<GraphEvent> eventStream;
     std::vector<std::pair<node, node>> edgesToDelete;
     newCoordinates.clear();
+    newCoordinates.reserve(numToIns);
 
     if (writeInitialGraphToStream) {
         // write initial graph to stream
@@ -57,7 +58,7 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
                 edgesToDelete.push_back(std::make_pair(nodeToDel, neigh));
             });
             for (auto elem : edgesToDelete) {
-                node &neigh = elem.second;
+                node neigh = elem.second;
                 G.removeEdge(nodeToDel, neigh);
                 GraphEvent event(GraphEvent::EDGE_REMOVAL, nodeToDel, neigh);
                 //				TRACE("Event: REMOVE edge " , nodeToDel , "-" , neigh);
@@ -73,6 +74,7 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
         }
 
         // insert nodes
+        coordinates.reserve(coordinates.size() + numToIns);
         for (index i = 0; i < numToIns; ++i) {
             // draw a cluster where the vertex should be inserted, +1 to account for the noise
             auto drawCoordinate = [&]() -> Point2D {
@@ -96,7 +98,9 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 
             // create vertex with these coordinates
             node newNode = G.addNode();
-            newCoordinates.emplace(newNode, drawCoordinate());
+            const auto coord = drawCoordinate();
+            coordinates.emplace_back(coord);
+            newCoordinates.emplace_back(newNode, coord);
             GraphEvent event(GraphEvent::NODE_ADDITION, newNode);
             //			TRACE("Event: ADD node " , newNode);
             eventStream.push_back(event);
@@ -107,8 +111,6 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
         coordinate sqrNeighRad = initGen.neighRad * initGen.neighRad;
         std::map<edge, count> eligibleEdges;
 
-        auto isInRange([&](coordinate squaredDistance) { return (squaredDistance <= sqrNeighRad); });
-
         // find for each node the rad-neighborhood
         // FIXME: get rid of quadratic running time!
         G.forNodes([&](node u) {
@@ -118,18 +120,17 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
             G.forNodes([&](node v) {
                 coordinate sqrDist = initGen.squaredDistanceInUnitTorus(coordinates[u], coordinates[v]);
 
-                if (isInRange(sqrDist)) {
-                    edge e = std::make_pair(std::min(u, v), std::max(u, v));
-                    pq.push(std::make_pair(-sqrDist, e));
+                if (sqrDist <= sqrNeighRad) {
+                    edge e{std::min(u, v), std::max(u, v)};
+                    pq.emplace(-sqrDist, e);
                 }
             });
 
             // mark up to maxNeigh nearest neighbors as eligible
             count end = std::min(initGen.maxNeigh, (count)pq.size());
             for (index i = 0; i < end; ++i) {
-                std::pair<coordinate, edge> currentBest = pq.top();
+                eligibleEdges[pq.top().second]++;
                 pq.pop();
-                eligibleEdges[currentBest.second]++;
             }
         });
 

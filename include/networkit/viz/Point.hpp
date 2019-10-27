@@ -18,6 +18,7 @@
 #include <string>
 #include <vector>
 
+#include <tlx/simple_vector.hpp>
 #include <tlx/unused.hpp>
 
 #include <networkit/Globals.hpp>
@@ -35,24 +36,41 @@ protected:
 template <typename T>
 class Storage<T, 2> {
 public:
-    Storage() = default;
-    Storage(T x, T y) : data({x, y}) {}
+    Storage() : data{{0, 0}} {};
+    Storage(T x, T y) : data{{x, y}} {}
+
+    std::pair<T, T> asPair() const noexcept { return {data[0], data[1]}; }
 
 protected:
-    std::array<T, 2> data = {0, 0};
+    std::array<T, 2> data;
 };
 
 template <typename T>
 class Storage<T, 0> {
 public:
-    Storage() : data({0, 0}) {}
-    Storage(T x, T y) : data({x, y}) {}
+    Storage() : data(2) { data.fill(0); }
+    Storage(T x, T y) : data(2) {
+        data[0] = x;
+        data[1] = y;
+    }
 
-    explicit Storage(count dimension) : data(std::vector<T>(dimension, 0.0)) {}
-    explicit Storage(std::vector<T> &values) : data(values) {}
+    explicit Storage(count dimension) : data(dimension) {}
+    explicit Storage(const std::vector<T> &values) : data(values.size()) {
+        std::copy(values.begin(), values.end(), data.begin());
+    }
+
+    Storage(const Storage &other) : data(other.data.size()) {
+        std::copy(other.data.begin(), other.data.end(), data.begin());
+    }
+
+    Storage &operator=(const Storage &other) {
+        data.resize(other.data.size());
+        std::copy(other.data.begin(), other.data.end(), data.begin());
+        return *this;
+    }
 
 protected:
-    std::vector<T> data;
+    tlx::SimpleVector<T, tlx::SimpleVectorMode::NoInitNoDestroy> data;
 };
 
 } // namespace PointImpl
@@ -73,6 +91,8 @@ class Point : public PointImpl::Storage<T, Dimensions> {
 public:
     // Pull in constructors
     using PointImpl::Storage<T, Dimensions>::Storage;
+
+    Point() = default;
 
     Point(const Point &) = default;
     Point &operator=(const Point &) = default;
@@ -255,10 +275,16 @@ public:
     }
 
     /// Returns true, if all coordinates match
-    bool operator==(const Point &other) const noexcept { return data == other.data; }
+    bool operator==(const Point &other) const noexcept {
+        for (count i = 0; i < getDimensions(); ++i)
+            if (data[i] != other.data[i])
+                return false;
+
+        return true;
+    }
 
     /// Returns false, if all coordinates match
-    bool operator!=(const Point &other) const noexcept { return data != other.data; }
+    bool operator!=(const Point &other) const noexcept { return !(*this == other); }
 
     /// Compute element-wise min and returns new Point
     Point min(const Point &other) const {

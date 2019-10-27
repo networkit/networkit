@@ -54,7 +54,7 @@ public:
      * @param splitTheoretical Whether to split in a theoretically optimal way or in a way to decrease measured running times
      *
      */
-    QuadNodeCartesianEuclid(Point<double> lower = Point<double>({0.0, 0.0}), Point<double> upper = Point<double>({1.0, 1.0}), unsigned capacity = 1000, bool splitTheoretical = false) {
+    QuadNodeCartesianEuclid(Point<double> lower = Point<double>(0.0, 0.0), Point<double> upper = Point<double>(1.0, 1.0), unsigned capacity = 1000, bool splitTheoretical = false) {
         this->minPoint = lower;
         this->maxPoint = upper;
         this->dimension = minPoint.getDimensions();
