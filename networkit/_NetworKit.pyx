@@ -45,8 +45,8 @@ ctypedef uint64_t edgeid
 ctypedef index node
 ctypedef index cluster
 ctypedef double edgeweight
-ctypedef double coord
-ctypedef pair[coord,coord] coord2d
+ctypedef double coordinate
+ctypedef pair[coordinate,coordinate] coord2d
 
 cdef extern from "<networkit/Globals.hpp>" namespace "NetworKit":
 

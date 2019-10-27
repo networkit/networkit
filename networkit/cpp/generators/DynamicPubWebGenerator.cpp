@@ -12,7 +12,7 @@
 namespace NetworKit {
 
 DynamicPubWebGenerator::DynamicPubWebGenerator(count numNodes, count numberOfDenseAreas,
-                                               coord neighborhoodRadius, count maxNumberOfNeighbors,
+                                               coordinate neighborhoodRadius, count maxNumberOfNeighbors,
                                                bool writeInitialGraphToStream)
     : initGen(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors),
       writeInitialGraphToStream(writeInitialGraphToStream) {
@@ -81,8 +81,8 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
                 if (clusterToIns < initGen.numDenseAreas) {
                     // real cluster, FIXME: DRY!
                     // compute random angle between [0, 2pi) and distance between [0, width/2]
-                    coord angle = Aux::Random::real() * 2.0 * PI;
-                    coord dist = Aux::Random::real() * initGen.denseAreaXYR[clusterToIns].rad;
+                    coordinate angle = Aux::Random::real() * 2.0 * PI;
+                    coordinate dist = Aux::Random::real() * initGen.denseAreaXYR[clusterToIns].rad;
 
                     // compute coordinates and adjust them
                     return initGen.intoUnitSquare(
@@ -104,19 +104,19 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 
         // determine events by computing new graph structure
         using edge = std::pair<node, node>;
-        coord sqrNeighRad = initGen.neighRad * initGen.neighRad;
+        coordinate sqrNeighRad = initGen.neighRad * initGen.neighRad;
         std::map<edge, count> eligibleEdges;
 
-        auto isInRange([&](coord squaredDistance) { return (squaredDistance <= sqrNeighRad); });
+        auto isInRange([&](coordinate squaredDistance) { return (squaredDistance <= sqrNeighRad); });
 
         // find for each node the rad-neighborhood
         // FIXME: get rid of quadratic running time!
         G.forNodes([&](node u) {
-            std::priority_queue<std::pair<coord, edge>> pq;
+            std::priority_queue<std::pair<coordinate, edge>> pq;
 
             // fill PQ with neighbors in range
             G.forNodes([&](node v) {
-                coord sqrDist = initGen.squaredDistanceInUnitTorus(coordinates[u], coordinates[v]);
+                coordinate sqrDist = initGen.squaredDistanceInUnitTorus(coordinates[u], coordinates[v]);
 
                 if (isInRange(sqrDist)) {
                     edge e = std::make_pair(std::min(u, v), std::max(u, v));
@@ -127,7 +127,7 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
             // mark up to maxNeigh nearest neighbors as eligible
             count end = std::min(initGen.maxNeigh, (count)pq.size());
             for (index i = 0; i < end; ++i) {
-                std::pair<coord, edge> currentBest = pq.top();
+                std::pair<coordinate, edge> currentBest = pq.top();
                 pq.pop();
                 eligibleEdges[currentBest.second]++;
             }

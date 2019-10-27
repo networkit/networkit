@@ -47,7 +47,7 @@ public:
     } // nullary constructor needed for Python Shell - do not use this to construct instance
     virtual ~PubWebGenerator() = default;
 
-    PubWebGenerator(count numNodes, count numberOfDenseAreas, coord neighborhoodRadius,
+    PubWebGenerator(count numNodes, count numberOfDenseAreas, coordinate neighborhoodRadius,
                     count maxNumberOfNeighbors);
 
     Graph generate() override;
@@ -57,25 +57,25 @@ public:
 
 protected:
     struct circle {
-        coord x;
-        coord y;
-        coord rad;
+        coordinate x;
+        coordinate y;
+        coordinate rad;
     };
 
-    static constexpr coord MAX_DENSE_AREA_RADIUS = 0.2;
-    static constexpr coord MIN_MAX_DENSE_AREA_FACTOR = 5.0;
+    static constexpr coordinate MAX_DENSE_AREA_RADIUS = 0.2;
+    static constexpr coordinate MIN_MAX_DENSE_AREA_FACTOR = 5.0;
     static constexpr edgeweight BASE_WEIGHT = 0.01;
 
     count n;                          //!< number of nodes
     count numDenseAreas;              //!< number of areas with more nodes (denser)
-    coord neighRad;                   //!< neighborhood radius
+    coordinate neighRad;                   //!< neighborhood radius
     count maxNeigh;                   //!< maximum number of neighbors
     std::vector<circle> denseAreaXYR; //!< position of each circular dense area
     std::vector<count> numPerArea;    //!< number of points in each circular area
     std::vector<coord2d> coordinates; //!< storage for point coordinates
 
     coord2d intoUnitSquare(coord2d pt) const noexcept;
-    coord squaredDistanceInUnitTorus(coord2d pt1, coord2d pt2) const noexcept;
+    coordinate squaredDistanceInUnitTorus(coord2d pt1, coord2d pt2) const noexcept;
 
     void determineNeighbors(Graph &g);
     void chooseDenseAreaSizes();

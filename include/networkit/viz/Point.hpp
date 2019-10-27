@@ -30,7 +30,7 @@ namespace NetworKit {
  *
  * Points in any dimension of templated type.
  */
-template<class T = coord>
+template<class T = coordinate>
 class Point {
 protected:
     std::vector<T> data;

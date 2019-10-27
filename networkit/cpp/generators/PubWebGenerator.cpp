@@ -16,12 +16,12 @@
 
 namespace NetworKit {
 
-PubWebGenerator::PubWebGenerator(count n, count numDenseAreas, coord neighRad,
+PubWebGenerator::PubWebGenerator(count n, count numDenseAreas, coordinate neighRad,
                                  count maxNumNeighbors)
     : n(n), numDenseAreas(numDenseAreas), neighRad(neighRad), maxNeigh(maxNumNeighbors) {}
 
 coord2d PubWebGenerator::intoUnitSquare(coord2d pt) const noexcept {
-    auto toUnitSquare = [](coord z) {
+    auto toUnitSquare = [](coordinate z) {
         if (z > 1.0)
             return z - 1.0;
         if (z < 0.0)
@@ -32,8 +32,8 @@ coord2d PubWebGenerator::intoUnitSquare(coord2d pt) const noexcept {
     return {toUnitSquare(pt.first), toUnitSquare(pt.second)};
 }
 
-coord PubWebGenerator::squaredDistanceInUnitTorus(coord2d pt1, coord2d pt2) const noexcept {
-    auto adjustForUnitTorus = [](coord z) -> coord {
+coordinate PubWebGenerator::squaredDistanceInUnitTorus(coord2d pt1, coord2d pt2) const noexcept {
+    auto adjustForUnitTorus = [](coordinate z) -> coordinate {
         if (z > 0.5)
             return 1.0 - z;
         if (z < -0.5)
@@ -41,8 +41,8 @@ coord PubWebGenerator::squaredDistanceInUnitTorus(coord2d pt1, coord2d pt2) cons
         return z;
     };
 
-    coord distx = adjustForUnitTorus(pt1.first - pt2.first);
-    coord disty = adjustForUnitTorus(pt1.second - pt2.second);
+    coordinate distx = adjustForUnitTorus(pt1.first - pt2.first);
+    coordinate disty = adjustForUnitTorus(pt1.second - pt2.second);
 
     return distx * distx + disty * disty;
 }
@@ -50,15 +50,15 @@ coord PubWebGenerator::squaredDistanceInUnitTorus(coord2d pt1, coord2d pt2) cons
 // TODO: use ANN or similar library with appropriate space-partitioning data structure to
 //       get rid of quadratic time complexity
 void PubWebGenerator::determineNeighbors(Graph &g) {
-    coord sqrNeighRad = neighRad * neighRad;
+    coordinate sqrNeighRad = neighRad * neighRad;
 
     using edge = std::pair<node, node>;
     std::set<std::pair<node, node>> eligibleEdges;
 
-    auto isInRange([&](coord squaredDistance) { return (squaredDistance <= sqrNeighRad); });
+    auto isInRange([&](coordinate squaredDistance) { return (squaredDistance <= sqrNeighRad); });
 
     g.forNodes([&](node u) {
-        std::priority_queue<std::pair<coord, edge>> pq;
+        std::priority_queue<std::pair<coordinate, edge>> pq;
         const auto p1 = coordinates[u];
 
         // fill PQ with neighbors in range
@@ -94,12 +94,12 @@ void PubWebGenerator::determineNeighbors(Graph &g) {
 void PubWebGenerator::addNodesToArea(index area, count num, Graph &g) {
     for (index j = 0; j < num; ++j) {
         // compute random angle between [0, 2pi) and distance between [0, width/2]
-        coord angle = Aux::Random::real() * 2.0 * PI;
-        coord dist = Aux::Random::real() * denseAreaXYR[area].rad;
+        coordinate angle = Aux::Random::real() * 2.0 * PI;
+        coordinate dist = Aux::Random::real() * denseAreaXYR[area].rad;
 
         // compute coordinates and adjust them
-        coord x = denseAreaXYR[area].x + std::cos(angle) * dist;
-        coord y = denseAreaXYR[area].y + std::sin(angle) * dist;
+        coordinate x = denseAreaXYR[area].x + std::cos(angle) * dist;
+        coordinate y = denseAreaXYR[area].y + std::sin(angle) * dist;
 
         // create vertex with these coordinates
         g.addNode();
@@ -112,7 +112,7 @@ void PubWebGenerator::chooseDenseAreaSizes() {
 
     for (index area = 0; area < numDenseAreas; ++area) {
         // anti-quadratic probability distribution
-        coord f = Aux::Random::real() * MIN_MAX_DENSE_AREA_FACTOR + 1.0;
+        coordinate f = Aux::Random::real() * MIN_MAX_DENSE_AREA_FACTOR + 1.0;
         denseAreaXYR[area].rad = (MAX_DENSE_AREA_RADIUS * f * f)
                                  / (MIN_MAX_DENSE_AREA_FACTOR * MIN_MAX_DENSE_AREA_FACTOR);
     }
@@ -121,7 +121,7 @@ void PubWebGenerator::chooseDenseAreaSizes() {
 // compute number of nodes per cluster, each cluster has approx. same density
 void PubWebGenerator::chooseClusterSizes() {
     auto f = std::accumulate(denseAreaXYR.begin(), denseAreaXYR.end(), 0.0,
-                             [](coord sum, circle c) { return sum + pow(c.rad, 1.5); });
+                             [](coordinate sum, circle c) { return sum + pow(c.rad, 1.5); });
 
     f = (n * (numDenseAreas / (numDenseAreas + 2.0))) / f;
 

@@ -37,8 +37,8 @@ static RGBColor fromCyclicRotation(size_t index) {
 PostscriptWriter::PostscriptWriter(bool isTorus) : wrapAround(isTorus), ps_size{1020.0, 1020.0} {}
 
 void PostscriptWriter::computeBoundaryBox(const std::vector<coord2d> &coordinates) {
-    ps_min = {std::numeric_limits<coord>::max(), std::numeric_limits<coord>::max()};
-    ps_max = {std::numeric_limits<coord>::min(), std::numeric_limits<coord>::min()};
+    ps_min = {std::numeric_limits<coordinate>::max(), std::numeric_limits<coordinate>::max()};
+    ps_max = {std::numeric_limits<coordinate>::min(), std::numeric_limits<coordinate>::min()};
     for (const auto p : coordinates) {
         ps_min.first = std::min(ps_min.first, p.first);
         ps_max.first = std::max(ps_max.first, p.first);
@@ -91,7 +91,7 @@ void PostscriptWriter::writeClustering(const Graph &g, const std::vector<coord2d
     });
 
     auto adjustWrapAround = [](coord2d p) {
-        auto adjust = [](coord val) { // TODO: externalize constants
+        auto adjust = [](coordinate val) { // TODO: externalize constants
             if (val > 500.0f)
                 return val - 1000.0f;
             if (val < -500.0f)

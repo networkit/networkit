@@ -23,7 +23,7 @@ namespace NetworKit {
  */
 class DynamicPubWebGenerator : public DynamicGraphGenerator {
 public:
-    DynamicPubWebGenerator(count numNodes, count numberOfDenseAreas, coord neighborhoodRadius,
+    DynamicPubWebGenerator(count numNodes, count numberOfDenseAreas, coordinate neighborhoodRadius,
                            count maxNumberOfNeighbors, bool writeInitialGraphToStream = true);
 
     Graph getGraph() const { return G; }
