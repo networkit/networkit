@@ -20,31 +20,29 @@ PubWebGenerator::PubWebGenerator(count n, count numDenseAreas, coordinate neighR
                                  count maxNumNeighbors)
     : n(n), numDenseAreas(numDenseAreas), neighRad(neighRad), maxNeigh(maxNumNeighbors) {}
 
-coord2d PubWebGenerator::intoUnitSquare(coord2d pt) const noexcept {
-    auto toUnitSquare = [](coordinate z) {
+Point2D PubWebGenerator::intoUnitSquare(Point2D pt) const noexcept {
+    pt.apply([](index, coordinate z) {
         if (z > 1.0)
             return z - 1.0;
         if (z < 0.0)
             return z + 1.0;
         return z;
-    };
+    });
 
-    return {toUnitSquare(pt.first), toUnitSquare(pt.second)};
+    return pt;
 }
 
-coordinate PubWebGenerator::squaredDistanceInUnitTorus(coord2d pt1, coord2d pt2) const noexcept {
-    auto adjustForUnitTorus = [](coordinate z) -> coordinate {
+coordinate PubWebGenerator::squaredDistanceInUnitTorus(Point2D pt1, Point2D pt2) const noexcept {
+    pt1 -= pt2;
+    pt1.apply([](index, coordinate z) -> coordinate {
         if (z > 0.5)
             return 1.0 - z;
         if (z < -0.5)
             return z + 1.0;
         return z;
-    };
+    });
 
-    coordinate distx = adjustForUnitTorus(pt1.first - pt2.first);
-    coordinate disty = adjustForUnitTorus(pt1.second - pt2.second);
-
-    return distx * distx + disty * disty;
+    return pt1.squaredLength();
 }
 
 // TODO: use ANN or similar library with appropriate space-partitioning data structure to

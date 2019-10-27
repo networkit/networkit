@@ -36,17 +36,17 @@ public:
     std::vector<GraphEvent> generate(count nSteps) override;
 
     /// Returns a map of coordinates that were updated.
-    const std::map<node, coord2d> &getNewCoordinates() const { return newCoordinates; }
-    std::map<node, coord2d> moveNewCoordinates() {return std::move(newCoordinates);}
+    const std::map<node, Point2D> &getNewCoordinates() const { return newCoordinates; }
+    std::map<node, Point2D> moveNewCoordinates() { return std::move(newCoordinates); }
 
     /// Returns a vector of the currently valid coordinates
-    const std::vector<coord2d> &getCoordinates() const { return coordinates; }
+    const std::vector<Point2D> &getCoordinates() const { return coordinates; }
     // no moveCoordinates, as generator needs its own copy for the next run of generate!
 
 protected:
     PubWebGenerator initGen; // multiple inheritance did not work with different generate functions
-    std::map<node, coord2d> newCoordinates; //<! new and changed coordinates
-    std::vector<coord2d> coordinates;       //<! vector of all coordinates
+    std::map<node, Point2D> newCoordinates; //<! new and changed coordinates
+    std::vector<Point2D> coordinates;       //<! vector of all coordinates
     bool writeInitialGraphToStream;         // if true, on first call, write initial graph to stream
 };
 

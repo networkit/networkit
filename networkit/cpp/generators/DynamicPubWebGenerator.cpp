@@ -75,7 +75,7 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
         // insert nodes
         for (index i = 0; i < numToIns; ++i) {
             // draw a cluster where the vertex should be inserted, +1 to account for the noise
-            auto drawCoordinate = [&]() -> coord2d {
+            auto drawCoordinate = [&]() -> Point2D {
                 count clusterToIns = Aux::Random::integer(initGen.numDenseAreas + 1);
 
                 if (clusterToIns < initGen.numDenseAreas) {

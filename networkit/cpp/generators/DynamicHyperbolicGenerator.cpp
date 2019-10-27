@@ -128,10 +128,10 @@ Graph DynamicHyperbolicGenerator::getGraph() const {
     return HyperbolicGenerator().generate(angles, radii, R, T);
 }
 
-std::vector<coord2d> DynamicHyperbolicGenerator::getCoordinates() const {
+std::vector<Point2D> DynamicHyperbolicGenerator::getCoordinates() const {
     const count n = angles.size();
     assert(radii.size() == n);
-    std::vector<coord2d> result;
+    std::vector<Point2D> result;
     for (index i = 0; i < n; i++) {
         const auto coord = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
         result.emplace_back(coord.getX(), coord.getY());

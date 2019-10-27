@@ -36,18 +36,15 @@ static RGBColor fromCyclicRotation(size_t index) {
 
 PostscriptWriter::PostscriptWriter(bool isTorus) : wrapAround(isTorus), ps_size{1020.0, 1020.0} {}
 
-void PostscriptWriter::computeBoundaryBox(const std::vector<coord2d> &coordinates) {
+void PostscriptWriter::computeBoundaryBox(const std::vector<Point2D> &coordinates) {
     ps_min = {std::numeric_limits<coordinate>::max(), std::numeric_limits<coordinate>::max()};
     ps_max = {std::numeric_limits<coordinate>::min(), std::numeric_limits<coordinate>::min()};
     for (const auto p : coordinates) {
-        ps_min.first = std::min(ps_min.first, p.first);
-        ps_max.first = std::max(ps_max.first, p.first);
-        ps_min.second = std::min(ps_min.second, p.second);
-        ps_max.second = std::max(ps_max.second, p.second);
+        ps_min = ps_min.min(p);
+        ps_max = ps_max.max(p);
     }
 
-    ps_scale = {(ps_size.first - 2 * ps_border.first) / (ps_max.first - ps_min.first),
-                (ps_size.second - 2 * ps_border.second) / (ps_max.second - ps_min.second)};
+    ps_scale = (ps_size - (ps_border * 2.0)) / (ps_max - ps_min);
 }
 
 void PostscriptWriter::writeHeader(std::ofstream &file) const {
@@ -58,7 +55,7 @@ void PostscriptWriter::writeHeader(std::ofstream &file) const {
         file << "%!PS-Adobe-1.0\n";
     }
     file << "%%Title: NetworKit visualization\n";
-    file << "%%BoundingBox: 0.000 0.000 " << ps_size.first << " " << ps_size.second << "\n";
+    file << "%%BoundingBox: 0.000 0.000 " << ps_size[0] << " " << ps_size[0] << "\n";
     file << "%%EndComments\n";
     if (!wrapAround) {
         file << "%%EndProlog\n";
@@ -82,25 +79,10 @@ void PostscriptWriter::writeMacros(std::ofstream &file) const {
             "/b {closepath eofill} bind def\n";
 }
 
-void PostscriptWriter::writeClustering(const Graph &g, const std::vector<coord2d> &coordinates,
+void PostscriptWriter::writeClustering(const Graph &g, const std::vector<Point2D> &coordinates,
                                        const Partition &clustering, std::ofstream &file) {
 
-    auto adjustToBoundingBox([&](coord2d p) {
-        return coord2d{(p.first - ps_min.first) * ps_scale.first + ps_border.first,
-                       (p.second - ps_min.second) * ps_scale.second + ps_border.second};
-    });
-
-    auto adjustWrapAround = [](coord2d p) {
-        auto adjust = [](coordinate val) { // TODO: externalize constants
-            if (val > 500.0f)
-                return val - 1000.0f;
-            if (val < -500.0f)
-                return val + 1000.0f;
-            return val;
-        };
-
-        return coord2d{adjust(p.first), adjust(p.second)};
-    };
+    auto adjustToBoundingBox([&](Point2D p) { return (p - ps_min) * ps_scale + ps_border; });
 
     g.forEdges([&](node u, node v) {
         // set edge color
@@ -116,16 +98,21 @@ void PostscriptWriter::writeClustering(const Graph &g, const std::vector<coord2d
         // set edge start and end point
         auto start = adjustToBoundingBox(coordinates[u]);
         auto end = adjustToBoundingBox(coordinates[v]);
-        auto diff = coord2d{end.first - start.first, end.second - start.second};
+        auto diff = end - start;
 
         if (wrapAround) {
-            diff = adjustWrapAround(diff);
-            end = {start.first + diff.first, start.second + diff.second};
+            diff.apply([](index, coordinate val) { // TODO: externalize constants
+                if (val > 500.0f)
+                    return val - 1000.0f;
+                if (val < -500.0f)
+                    return val + 1000.0f;
+                return val;
+            });
+            end = start + diff;
         }
 
         // write edge to file
-        file << "p " << start.first << " " << start.second << " m " << end.first << " "
-             << end.second << " l s\n";
+        file << "p " << start[0] << " " << start[1] << " m " << end[0] << " " << end[1] << " l s\n";
     });
 
     // draw vertices
@@ -141,8 +128,7 @@ void PostscriptWriter::writeClustering(const Graph &g, const std::vector<coord2d
 
         const auto point = adjustToBoundingBox(coordinates[u]);
 
-        file << "p " << point.first << " " << point.second << " " << dotsize
-             << " 0.00 360.00 a s\n";
+        file << "p " << point[0] << " " << point[1] << " " << dotsize << " 0.00 360.00 a s\n";
     });
 }
 
@@ -155,8 +141,10 @@ void PostscriptWriter::init(std::ofstream &file) const {
     file << "0.000 0.000 0.000 c\n";
 }
 
-void PostscriptWriter::write(const Graph &g, const std::vector<coord2d> &coordinates,
+void PostscriptWriter::write(const Graph &g, const std::vector<Point2D> &coordinates,
                              const Partition &clustering, const std::string &path) {
+    assert(g.upperNodeIdBound() == coordinates.size());
+
     std::ofstream file(path);
     init(file);
     computeBoundaryBox(coordinates);
@@ -170,8 +158,10 @@ void PostscriptWriter::write(const Graph &g, const std::vector<coord2d> &coordin
     file.close();
 }
 
-void PostscriptWriter::write(const Graph &g, const std::vector<coord2d> &coordinates,
+void PostscriptWriter::write(const Graph &g, const std::vector<Point2D> &coordinates,
                              const std::string &path) {
+    assert(g.upperNodeIdBound() == coordinates.size());
+
     ClusteringGenerator gen;
     Partition allNone = gen.makeOneClustering(g);
     write(g, coordinates, allNone, path);

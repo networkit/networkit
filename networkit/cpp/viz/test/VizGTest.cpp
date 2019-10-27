@@ -10,17 +10,12 @@
 #include <vector>
 
 #include <networkit/viz/PostscriptWriter.hpp>
-#include <networkit/viz/MaxentStress.hpp>
 #include <networkit/graph/Graph.hpp>
-#include <networkit/community/ClusteringGenerator.hpp>
 #include <networkit/generators/ClusteredRandomGraphGenerator.hpp>
 #include <networkit/io/PartitionWriter.hpp>
-#include <networkit/io/METISGraphReader.hpp>
-#include <networkit/io/METISGraphWriter.hpp>
 #include <networkit/io/DibapGraphReader.hpp>
 #include <networkit/generators/PubWebGenerator.hpp>
 #include <networkit/auxiliary/Random.hpp>
-
 
 namespace NetworKit {
 
@@ -36,7 +31,7 @@ TEST_F(VizGTest, testPostscriptWriterOnRandomGraph) {
 
     ClusteredRandomGraphGenerator graphGen(n, numClusters, pin, pout);
     Graph G = graphGen.generate();
-    std::vector<coord2d> coordinates(G.upperNodeIdBound());
+    std::vector<Point2D> coordinates(G.upperNodeIdBound());
 
     // create coordinates
     G.forNodes([&](node u) {
@@ -68,7 +63,7 @@ TEST_F(VizGTest, testPostscriptWriterOnRealGraph) {
     // write graph to file
     std::string path = "output/airfoil1.eps";
     PostscriptWriter psWriter;
-    psWriter.write(G, Point<>::pointVectorToCoord2d(coordinates), path);
+    psWriter.write(G, Point<>::pointVectorToPoint2D(coordinates), path);
 
     bool exists = false;
     std::ifstream file(path);

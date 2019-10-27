@@ -13,6 +13,7 @@
 
 #include <networkit/generators/StaticGraphGenerator.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/viz/Point.hpp>
 
 namespace NetworKit {
 
@@ -52,8 +53,8 @@ public:
 
     Graph generate() override;
 
-    const std::vector<coord2d> &getCoordinates() const { return coordinates; }
-    std::vector<coord2d> moveCoordinates() { return std::move(coordinates); }
+    const std::vector<Point2D> &getCoordinates() const { return coordinates; }
+    std::vector<Point2D> moveCoordinates() { return std::move(coordinates); }
 
 protected:
     struct circle {
@@ -68,14 +69,14 @@ protected:
 
     count n;                          //!< number of nodes
     count numDenseAreas;              //!< number of areas with more nodes (denser)
-    coordinate neighRad;                   //!< neighborhood radius
+    coordinate neighRad;              //!< neighborhood radius
     count maxNeigh;                   //!< maximum number of neighbors
     std::vector<circle> denseAreaXYR; //!< position of each circular dense area
     std::vector<count> numPerArea;    //!< number of points in each circular area
-    std::vector<coord2d> coordinates; //!< storage for point coordinates
+    std::vector<Point2D> coordinates; //!< storage for point coordinates
 
-    coord2d intoUnitSquare(coord2d pt) const noexcept;
-    coordinate squaredDistanceInUnitTorus(coord2d pt1, coord2d pt2) const noexcept;
+    Point2D intoUnitSquare(Point2D pt) const noexcept;
+    coordinate squaredDistanceInUnitTorus(Point2D pt1, Point2D pt2) const noexcept;
 
     void determineNeighbors(Graph &g);
     void chooseDenseAreaSizes();

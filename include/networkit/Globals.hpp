@@ -26,14 +26,13 @@ namespace NetworKit {
     using count      = uint64_t; ///< more expressive name for an integer quantity
     using node       = index;    ///< node indices are 0-based
     using edgeweight = double;   ///< edge weight type
-    using edgeid     = index;	 ///< edge id
+    using edgeid     = index;    ///< edge id
 
     constexpr index none = std::numeric_limits<index>::max(); ///< value for not existing nodes/edges
     constexpr edgeweight defaultEdgeWeight = 1.0;
     constexpr edgeweight nullWeight = 0.0;
 
-    using coordinate    = double;
-    using coord2d  = std::pair<coordinate, coordinate>;
+    using coordinate = double;
 
     constexpr double PI = 3.141592653589793238462643383279502884197169399375105820974944592307816406286;
 
