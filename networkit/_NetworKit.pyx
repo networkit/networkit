@@ -10753,6 +10753,9 @@ cdef class AdamicAdarDistance:
 		#### TODO: convert distance to similarity!?! ####
 		return self._this.getEdgeScores()
 
+	def distance(self, node u, node v):
+		return self._this.distance(u, v)
+
 # Module: sparsification
 
 cdef extern from "<networkit/sparsification/SimmelianOverlapScore.hpp>":
