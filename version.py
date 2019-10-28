@@ -54,10 +54,5 @@ classifiers = [
 
 install_requires = [
 	'scipy',
-	'matplotlib',
-	'pandas',
-	'numpy',
-	'networkx',
-	'tabulate',
-	'ipython'
+	'numpy'
 ]

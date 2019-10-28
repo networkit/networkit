@@ -3,9 +3,15 @@ from . import nxadapter
 from . import community
 from . import centrality
 from _NetworKit import ParallelPartitionCoarsening
+from .support import MissingDependencyError
 
 # external imports
-import networkx
+try:
+	import networkx
+except ImportError:
+	have_nx = False
+else:
+	have_nx = True
 
 def save(name, dir="."):
 	""" Save a figure """
@@ -27,6 +33,8 @@ def drawGraph(G, **kwargs):
 	""" Draws a graph via networkX. Passes additional arguments beyond the graph to networkx.draw(...).
 	    By default, node sizes are scaled between 30 and 300 by node degree.
 	"""
+	if not have_nx:
+		raise MissingDependencyError("networkx")
 	nxG = nxadapter.nk2nx(G)
 	if not "node_size" in kwargs:
 		kwargs["node_size"] =[30+270*s for s in centrality.DegreeCentrality(G,True).run().scores()],
@@ -36,6 +44,8 @@ def drawCommunityGraph(G, zeta, **kwargs):
 	""" Draws the community graph for a given graph and partition. Passes any additional arguments to networkx.draw(...).
 	    By default, node sizes are scaled between 30 and 500 by community size.
 	"""
+	if not have_nx:
+		raise MissingDependencyError("networkx")
 	cg = ParallelPartitionCoarsening(G,zeta)
 	cg.run() # convert communities to nodes
 	graph = cg.getCoarseGraph()

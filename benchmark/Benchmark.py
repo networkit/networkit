@@ -8,40 +8,62 @@ This module implements a comprehensive benchmark of NetworKit's analytics algori
 """
 
 
-import pandas
 import sys
 import warnings
 import math
 import os
 import numpy
-import matplotlib.pyplot as plt
-import seaborn
+
 from time import gmtime, strftime
 import signal
-
-
 import networkit
 
 from util import *
+from networkit.support import MissingDependencyError
 import nk
+
+try:
+	import pandas
+except ImportError:
+	have_pandas = False
+else:
+	have_pandas = True
+try:
+	import matplotlib.pyplot as plt
+except ImportError:
+	have_plt = False
+else:
+	have_plt = True
+try:
+	import seaborn
+except ImportError:
+	have_seaborn = False
+else:
+	have_seaborn = True
 
 try:
 	import networkx
 	import nx
-except ImportError as ex:
-	print("networkx not available")
+except ImportError:
+	have_nx = False
+else:
+	have_nx = True
 
 try:
 	import igraph
 	import ig
-except ImportError as ex:
-	print("igraph not available")
+except ImportError:
+	have_ig = False
+else:
+	have_ig = True
+
 try:
 	import graph_tool
 	import gt
-except ImportError as ex:
-	print("graph_tool not available")
-
+except ImportError:
+	have_gt = False
+else:
+	have_gt = True
 
 # helper function
 
@@ -54,6 +76,8 @@ def averageRuns(df, groupby=["graph"]):
 
 
 def graphMeta(graphNames, graphDir, fileEnding=".gml.graph", graphFormat=networkit.Format.GML):
+	if not have_pandas:
+		raise MissingDependencyError("pandas")
 	meta = []
 	for name in graphNames:
 		info("loading {name}".format(**locals()))
@@ -94,7 +118,8 @@ class bFail:
 # Plots
 
 ## plot settings
-
+if not have_seaborn:
+	raise MissingDependencyError("seaborn")
 seaborn.set_style("whitegrid")
 
 ### Colors
@@ -106,6 +131,8 @@ orange = seaborn.xkcd_rgb["bright orange"]
 # plot functions
 
 def timePlot(data, size=(6,3)):
+	if not have_plt:
+		raise MissingDependencyError("matplotlib")
 	pos = numpy.arange(len(data))+.5	# the bar centers on the y axis
 	labels = list(data["graph"])
 	plt.figure(figsize=size)
@@ -119,6 +146,8 @@ def timePlot(data, size=(6,3)):
 
 
 def epsPlot(data, size=(6,3)):
+	if not have_plt:
+		raise MissingDependencyError("matplotlib")
 	pos = numpy.arange(len(data))+.5	# the bar centers on the y axis
 	labels = list(data["graph"])
 	plt.figure(figsize=size)
@@ -133,6 +162,8 @@ def epsPlot(data, size=(6,3)):
 
 
 def graphPlot(data, size=None):
+	if not have_plt:
+		raise MissingDependencyError("matplotlib")
 	pos = arange(len(data))	# the bar centers on the y axis
 	plt.figure(figsize=(5,3.3))
 	sizes = data["m"]
@@ -145,6 +176,8 @@ def graphPlot(data, size=None):
 
 
 def barPlot(data, labels, x_label="", y_label="", size=None, color="b", transparency=1.0, scale="linear"):
+	if not have_plt:
+		raise MissingDependencyError("matplotlib")
 	pos = numpy.arange(len(data))+.5	# the bar centers on the y axis
 	plt.figure(figsize=size)
 	plt.xscale(scale)
@@ -215,6 +248,10 @@ class Bench:
 			return G
 
 	def getSize(self, G):
+		if not have_gt:
+			raise MissingDependencyError("graph_tool")
+		if not have_ig:
+			raise MissingDependencyError("igraph")
 		if isinstance(G, networkit.Graph):
 			return G.size()
 		elif isinstance(G, igraph.Graph):
@@ -308,16 +345,22 @@ class Bench:
 
 
 	def timePlot(self, algoName):
+		if not have_plt:
+			raise MissingDependencyError("matplotlib")
 		timePlot(averageRuns(self.data[algoName]))
 		if self.save:
 			plt.savefig(os.path.join(self.plotDir, "{algoName}-time.pdf".format(**locals())), bbox_inches="tight")
 
 	def epsPlot(self, algoName):
+		if not have_plt:
+			raise MissingDependencyError("matplotlib")
 		epsPlot(averageRuns(self.data[algoName]))
 		if self.save:
 			plt.savefig(os.path.join(self.plotDir, "{algoName}-eps.pdf".format(**locals())), bbox_inches="tight")
 
 	def graphPlot(self):
+		if not have_plt:
+			raise MissingDependencyError("matplotlib")
 		epsPlot(averageRuns(self.data))
 		if self.save:
 			plt.savefig(os.path.join(self.plotDir, "graphs.pdf".format(**locals())), bbox_inches="tight")
@@ -328,12 +371,18 @@ class Bench:
 		self.epsPlot(algoName)
 
 	def finalize(self):
+		if not have_pandas:
+			raise MissingDependencyError("pandas")
 		self.dataFrame = pandas.DataFrame(self.data)
 		if self.save:
 			self.dataFrame.to_csv(os.path.join(self.outDataDir, "data.csv".format(**locals())))
 
 	def plotSummary2(self, figsize=None, groupby="framework", palette="Greens_d"):
 		""" Plot a summary of algorithm performances"""
+		if not have_plt:
+			raise MissingDependencyError("matplotlib")
+		if not have_seaborn:
+			raise MissingDependencyError("seaborn")
 		if figsize:
 			plt.figure(figsize=figsize)
 		plt.gca().xaxis.get_major_formatter().set_powerlimits((3, 3))
@@ -345,6 +394,12 @@ class Bench:
 
 	def plotSummary(self, algoNames=None, figsize=None):
 		""" Plot a summary of algorithm performances"""
+		if not have_plt:
+			raise MissingDependencyError("matplotlib")
+		if not have_pandas:
+			raise MissingDependencyError("pandas")
+		if not have_seaborn:
+			raise MissingDependencyError("seaborn")
 		if algoNames is None:
 			algoNames = list(self.data.keys())
 		epsSummary = pandas.DataFrame()
@@ -374,12 +429,16 @@ class Bench:
 
 	def getLoadTimes(self):
 		""" Get input times for graphs"""
+		if not have_pandas:
+			raise MissingDependencyError("pandas")
 		return pandas.DataFrame(self.loadTimes)
 
 
 
 	def generatorBenchmark(self, generator, argtuples, nRuns=None, timeout=None):
 		""" Run a kernel represented by an algorithm benchmark object """
+		if not have_pandas:
+			raise MissingDependencyError("pandas")
 		# set the defaults
 		if nRuns is None:
 			nRuns = self.nRuns  # lets argument override the default nRuns
@@ -423,7 +482,8 @@ class Bench:
 					self.error("generator {genName} failed with exception: {ex}".format(**locals()))
 			except Exception as ex:
 				self.error("initializing generator {genName} failed with exception: {ex}".format(**locals()))
-
+		if not have_pandas:
+			raise MissingDependencyError("pandas")
 		df = pandas.DataFrame(table)
 		self.data[genName] = df
 		# store data frame on disk

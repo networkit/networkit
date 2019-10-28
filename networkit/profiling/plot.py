@@ -4,17 +4,22 @@
 #
 
 from . import job
+from ..support import MissingDependencyError
 
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-from matplotlib.ticker import FormatStrFormatter, ScalarFormatter
-from matplotlib.backends.backend_pdf import PdfPages
+try:
+	import matplotlib as mpl
+	import matplotlib.pyplot as plt
+	import matplotlib.patches as patches
+	from matplotlib.ticker import FormatStrFormatter, ScalarFormatter
+	from matplotlib.backends.backend_pdf import PdfPages
+except ImportError:
+	have_mpl = False
+else:
+	have_mpl = True
 
 import io
 from urllib.parse import quote
 import math
-
 
 class Theme:
 	""" layout theme for plots """
@@ -42,6 +47,8 @@ class Theme:
 			style: ("light")
 			color: RGB tuple
 		"""
+		if not have_mpl:
+			raise MissingDependencyError("matplotlib")
 		optionsStyle = ["light", "system"]
 		if style not in optionsStyle:
 			raise ValueError("possible style options: " + str(optionsStyle))
@@ -174,6 +181,8 @@ class PlotJob(job.Job):
 	
 	def save(self, id, fig, extention):
 		""" generate plot output """
+		if not have_mpl:
+			raise MissingDependencyError("matplotlib")
 		result = ""
 
 		fig.tight_layout()
@@ -217,6 +226,8 @@ class Measure(PlotJob):
 
 	def run(self):
 		""" computation """
+		if not have_mpl:
+			raise MissingDependencyError("matplotlib")
 		(index, stat, category, name, label, theme) = self.getParams()
 		plt.ioff()
 
@@ -245,6 +256,8 @@ class Measure(PlotJob):
 
 		def funcPlotEnd(fig, ax, theme, width, height, x_showTicks=True, x_showTickLabels=True, y_showTicks=True, y_showTickLabels=True, drawAxis=True, showGrid=True):
 			""" set some layout options """
+			if not have_mpl:
+				raise MissingDependencyError("matplotlib")
 			if not x_showTicks:
 				ax.set_xticks([])
 			if not x_showTickLabels:
@@ -277,6 +290,8 @@ class Measure(PlotJob):
 
 
 		def funcPlotBox(ax):
+			if not have_mpl:
+				raise MissingDependencyError("matplotlib")
 			""" Box Plot """
 			q1 = stat["Location"]["1st Quartile"]
 			q3 = stat["Location"]["3rd Quartile"]
@@ -359,6 +374,8 @@ class Measure(PlotJob):
 
 		def funcPlotPDF(ax):
 			""" Histogram Plot """
+			if not have_mpl:
+				raise MissingDependencyError("matplotlib")
 			numberOfBins = stat["Binning"]["Number Histogram"]
 			intervals = stat["Binning"]["Intervals Histogram"]
 			absoluteFrequencies = stat["Binning"]["Absolute Frequencies Histogram"]
@@ -414,6 +431,8 @@ class Measure(PlotJob):
 
 		def funcPlotPie(ax):
 			""" Pie Plot """
+			if not have_mpl:
+				raise MissingDependencyError("matplotlib")
 			numberOfTooSmallSubsets = stat["Binning"]["Pie"][1]
 			relativeFrequencies = stat["Binning"]["Pie"][0]
 			radius = 2
@@ -591,10 +610,14 @@ class Scatter(PlotJob):
 		
 	def run(self):
 		""" computation """
+		if not have_mpl:
+			raise MissingDependencyError("matplotlib")
 		(name, nameA, nameB, labelA, labelB, stat_1, stat_2, correlation, theme) = self.getParams()
 		plt.ioff()
 
 		def funcHexBin(ax):
+			if not have_mpl:
+				raise MissingDependencyError("matplotlib")
 			gridsize = correlation["Binning"]["Grid Size"]
 			frequencies = correlation["Binning"]["Absolute Frequencies"]
 			max  = correlation["Binning"]["Max Frequency"]
@@ -613,7 +636,7 @@ class Scatter(PlotJob):
 				path = paths.transformed(mpl.transforms.Affine2D().translate(
 					offsets[i][0],
 					offsets[i][1]
-				)) 
+				))
 				ax.add_patch(patches.PathPatch(
 					path,
 					facecolor = color,

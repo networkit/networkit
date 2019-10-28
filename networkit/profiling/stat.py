@@ -6,11 +6,17 @@
 from . import job
 
 import math
-import matplotlib.pyplot as plt
+try:
+	import matplotlib.pyplot as plt
+except ImportError:
+	have_plt = False
+else:
+	have_plt = True
 
 from _NetworKit import sort2
 from _NetworKit import ranked
 
+from ..support import MissingDependencyError
 
 def sorted(sample):
 	"""	returns a sorted list of given numbers """
@@ -488,7 +494,8 @@ class Correlation(job.Job):
 			""" binning for scatter plots """
 			result = {}
 			n = 32
-			
+			if not have_plt:
+				raise MissingDependencyError("matplotlib")
 			fig = plt.figure()
 			extent = [
 				stat_1["Location"]["Min"],
@@ -517,6 +524,6 @@ class Correlation(job.Job):
 		results["Binning"] = funcHexBinning(
 			sample_1,
 			sample_2
-		) 
+		)
 
 		return (nameB, results)

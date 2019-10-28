@@ -1,9 +1,13 @@
 import csv
 import os
-import pandas
-
+try:
+	import pandas
+except ImportError:
+	have_pandas = False
+else:
+	have_pandas = True
 from networkit import *
-
+from ..support import MissingDependencyError
 
 def getFileList(directory):
 	""" Get list of graph files in directory"""
@@ -15,6 +19,8 @@ def getFileList(directory):
 
 
 def graphInfo(directory, fileEnding, outPath, fileformat=Format.METIS):
+	if not have_pandas:
+		raise MissingDependencyError("pandas")
 	fileList = []
 	data = []
 	for (root, _, filenames) in os.walk(directory):

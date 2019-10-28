@@ -1,2 +1,7 @@
 seaborn
 sklearn
+matplotlib
+pandas
+networkx
+tabulate
+ipython

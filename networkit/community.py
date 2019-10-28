@@ -17,7 +17,7 @@ from _NetworKit import Partition, Coverage, Modularity, CommunityDetector, PLP, 
 from . import graph
 from . import stopwatch
 from . import graphio
-from .exceptions import ReducedFunctionalityWarning
+from .support import MissingDependencyError
 
 # external imports
 import os
@@ -27,8 +27,9 @@ import warnings
 try:
 	import tabulate
 except ImportError:
-	warnings.warn("WARNING: module 'tabulate' not found, please install it to use the full functionality of NetworKit",
-			ReducedFunctionalityWarning)
+	have_tabulate = False
+else:
+	have_tabulate = True
 import tempfile
 import subprocess
 
@@ -55,6 +56,8 @@ def inspectCommunities(zeta, G):
 		:param    zeta    communities
 		:param    G        graph
 	"""
+	if not have_tabulate:
+		raise MissingDependencyError("tabulate")
 	communitySizes = zeta.subsetSizes()
 	mod = Modularity().getQuality(zeta, G)
 	commProps = [
@@ -78,6 +81,8 @@ def communityGraph(G, zeta):
 def evalCommunityDetection(algo, G):
 	""" Evaluate a community detection algorithm """
 
+	if not have_tabulate:
+		raise MissingDependencyError("tabulate")
 	t = stopwatch.Timer()
 	algo.run()
 	zeta = algo.getPartition()

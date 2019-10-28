@@ -1,8 +1,13 @@
 from networkit import *
 from networkit.dynamic import *
 from networkit.centrality import *
-import pandas as pd
-
+from ..support import MissingDependencyError
+try:
+	import pandas as pd
+except ImportError:
+	have_pandas = False
+else:
+	have_pandas = True
 import random
 
 def isConnected(G):
@@ -45,6 +50,8 @@ def setRandomWeights(G, mu, sigma):
 
 def test(G, nEdges, batchSize, epsilon, delta, size):
 	# find a set of nEdges to remove from G
+	if not have_pandas:
+		raise MissingDependencyError("pandas")
 	T = graph.SpanningForest(G).generate()
 	(removeStream, addStream) = removeAndAddEdges(G, nEdges, tabu=T)
 	# remove the edges from G
