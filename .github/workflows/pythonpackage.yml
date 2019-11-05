@@ -17,16 +17,16 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install gcc
-      run: |
-        brew install gcc libomp cmake
+    - name: Pull submodules
+      run: git submodule update --init
+    - name: Install system dependencies
+      run: brew install gcc libomp cmake
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install cython
     - name: Build
-      run: |
-        C=gcc-9 CXX=g++-9 python setup.py install
+      run: C=gcc-9 CXX=g++-9 python setup.py install
     - name: Smoke test
       run: python -c "import networkit; networkit.Graph(5)"    
   
