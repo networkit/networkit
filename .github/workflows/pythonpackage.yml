@@ -20,7 +20,9 @@ jobs:
     - name: Pull submodules
       run: git submodule update --init
     - name: Install system dependencies
-      run: brew install gcc libomp cmake
+      run: |
+        brew install libomp cmake
+        brew reinstall gcc
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
