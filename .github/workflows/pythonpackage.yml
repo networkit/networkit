@@ -26,7 +26,7 @@ jobs:
         pip install cython
     - name: Build
       run: |
-        CXX=g++-9 python setup.py install
+        C=gcc-9 CXX=g++-9 python setup.py install
     - name: Smoke test
       run: python -c "import networkit; networkit.Graph(5)"    
   
