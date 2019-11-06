@@ -22,7 +22,8 @@ jobs:
     - name: Install system dependencies
       run: |
         brew update
-        brew install libomp cmake
+        brew install libomp
+        brew upgrade cmake
         brew reinstall gcc
     - name: Install dependencies
       run: |
