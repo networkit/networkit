@@ -45,7 +45,7 @@ jobs:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        twine upload --repository-url https://pypi.scm.io/simple dist/*
+        twine upload --repository-url https://pypi.scm.io/simple dist/*.whl
         
   build_linux:
     runs-on: ubuntu-latest
@@ -83,4 +83,4 @@ jobs:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        twine upload --repository-url https://pypi.scm.io/simple dist/*
+        twine upload --repository-url https://pypi.scm.io/simple dist/*.whl
