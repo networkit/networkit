@@ -32,7 +32,7 @@ jobs:
     - name: Build
       run: |
         CC=gcc-9 CXX=g++-9 python setup.py build_ext
-        pip install -e .
+        CC=gcc-9 CXX=g++-9 python setup.py install
     - name: Smoke test
       run: |
         cd /tmp
