@@ -31,8 +31,7 @@ jobs:
         pip install cython
     - name: Build
       run: |
-        CC=gcc-9 CXX=g++-9 python setup.py build_ext
-        CC=gcc-9 CXX=g++-9 python setup.py install
+        CC=gcc-9 python setup.py build_ext install
     - name: Smoke test
       run: |
         cd /tmp
