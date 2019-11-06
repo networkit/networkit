@@ -39,5 +39,10 @@ jobs:
       run: python -m unittest discover -v networkit/test/
     - name: Build wheel
       run: |
-        CC=gcc-9 python setup.py build_ext bdist_wheel
-      
+        CC=gcc-9 python setup.py build_ext sdist bdist_wheel
+    - name: Publish
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: |
+        twine upload --repository-url https://pypi.scm.io/simple dist/*
