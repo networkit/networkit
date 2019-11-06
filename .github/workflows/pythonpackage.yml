@@ -32,5 +32,7 @@ jobs:
     - name: Build
       run: CC=gcc-9 CXX=g++-9 python setup.py install
     - name: Smoke test
-      run: python -c "import networkit; networkit.Graph(5)"    
+      run: |
+        cd /tmp
+        python -c "import networkit; networkit.Graph(5)"    
   
