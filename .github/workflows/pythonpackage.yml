@@ -3,8 +3,7 @@ name: Python package
 on: [push]
 
 jobs:
-  build:
-
+  build_mac:
     runs-on: macOS-10.14
     strategy:
       max-parallel: 4
