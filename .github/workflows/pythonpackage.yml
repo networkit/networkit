@@ -46,3 +46,41 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
         twine upload --repository-url https://pypi.scm.io/simple dist/*
+        
+  build_linux:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.6, 3.7]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Pull submodules
+      run: git submodule update --init
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install cython wheel twine
+    - name: Build
+      run: |
+        python setup.py build_ext install
+    - name: Smoke test
+      run: |
+        cd /tmp
+        python -c "import networkit; networkit.Graph(5)"
+    - name: Tests
+      run: python -m unittest discover -v networkit/test/
+    - name: Build wheel
+      run: |
+        python setup.py build_ext sdist bdist_wheel
+    - name: Publish
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: |
+        twine upload --repository-url https://pypi.scm.io/simple dist/*
