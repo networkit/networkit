@@ -52,7 +52,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: ['cp35-cp35m', 'cp36-cp36m', 'cp37-cp37m', 'cp38-cp38']
+        python-version: ['cp35-cp35m', 'cp36-cp36m', 'cp37-cp37m']
 
     steps:
     - uses: actions/checkout@v1
