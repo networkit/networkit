@@ -80,6 +80,7 @@ jobs:
             for PYBIN in /opt/python/cp3*/bin; do
               echo '-->' \$PYBIN
               \$PYBIN/pip install cython
+              \$PYBIN/cython -3 --cplus -t networkit/_NetworKit.pyx
               \$PYBIN/python setup.py build_ext install
               \$PYBIN/python setup.py sdist bdist_wheel -p manylinux2010_x86_64
             done"
