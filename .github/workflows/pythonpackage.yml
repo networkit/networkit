@@ -86,7 +86,7 @@ jobs:
             \$PYBIN/pip install cython
             \$PYBIN/cython -3 --cplus -t networkit/_NetworKit.pyx
             \$PYBIN/python setup.py build_ext
-            \$PYBIN/python setup.py sdist bdist_wheel -p manylinux2010_x86_64
+            \$PYBIN/python setup.py sdist bdist_wheel -p manylinux2010_x86_64"
     - name: Test with manylinux2010
       run: |
         docker run \
