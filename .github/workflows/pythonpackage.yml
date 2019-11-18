@@ -52,14 +52,14 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.7]
+        python-version: ['cp35-cp35m', 'cp36-cp36m', 'cp37-cp37m', 'cp38-cp38']
 
     steps:
     - uses: actions/checkout@v1
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v1
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: 3.7
     - name: Pull submodules
       run: git submodule update --init
     - name: Install dependencies
@@ -74,35 +74,33 @@ jobs:
         docker run \
           -v$(pwd):/app \
           -w/app \
+          --rm \
+          -e PYBIN=/opt/python/${{ matrix.python-version }}/bin \
           quay.io/pypa/manylinux2010_x86_64 \
           bash -c "
             set -e -x
-            for PYBIN in /opt/python/cp3*/bin; do
-              echo '-->' \$PYBIN
-              \$PYBIN/pip install cython
-              \$PYBIN/cython -3 --cplus -t networkit/_NetworKit.pyx
-              \$PYBIN/python setup.py build_ext install
-              \$PYBIN/python setup.py sdist bdist_wheel -p manylinux2010_x86_64
-            done"
-    - name: Try to import on different python versions
+            yum remove cmake -y
+            yum install cmake3 -y
+            ln -s /usr/bin/cmake3 /usr/bin/cmake
+            echo '-->' \$PYBIN
+            \$PYBIN/pip install cython
+            \$PYBIN/cython -3 --cplus -t networkit/_NetworKit.pyx
+            \$PYBIN/python setup.py build_ext
+            \$PYBIN/python setup.py sdist bdist_wheel -p manylinux2010_x86_64
+    - name: Test with manylinux2010
       run: |
         docker run \
           -v$(pwd):/app \
+          -w/app \
+          --rm \
+          -e PYBIN=/opt/python/${{ matrix.python-version }}/bin \
           quay.io/pypa/manylinux2010_x86_64 \
           bash -c "
             set -e -x
-            for PYBIN in /opt/python/cp3*/bin; do
-              echo '-->' \$PYBIN
-              \$PYBIN/pip install /app/python/dist/*-py3-none-manylinux2010_x86_64.whl
-              \$PYBIN/python -c 'import networkit; networkit.Graph(5)'
-              \$PYBIN/python -m unittest discover -v networkit/test/
-            done"
-    - name: Smoke test
-      run: |
-        cd /tmp
-        python -c "import networkit; networkit.Graph(5)"
-    - name: Tests
-      run: python -m unittest discover -v networkit/test/
+            echo '-->' \$PYBIN
+            \$PYBIN/pip install dist/*${{ matrix.python-version }}-manylinux2010_x86_64.whl
+            \$PYBIN/python -c 'import networkit; networkit.Graph(5)'
+            \$PYBIN/python -m unittest discover -v networkit/test/"
     - name: Publish
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
