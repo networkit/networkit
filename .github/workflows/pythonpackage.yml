@@ -76,8 +76,11 @@ jobs:
           -w/app \
           quay.io/pypa/manylinux2010_x86_64 \
           bash -c "
-            \$PYBIN/python setup.py build_ext install
-            \$PYBIN/python setup.py sdist bdist_wheel -p manylinux2010_x86_64"
+            for PYBIN in /opt/python/*/bin; do
+              echo --> \$PYBIN
+              \$PYBIN/python setup.py build_ext install
+              \$PYBIN/python setup.py sdist bdist_wheel -p manylinux2010_x86_64
+            done"
     - name: Try to import on different python versions
       run: |
         docker run \
