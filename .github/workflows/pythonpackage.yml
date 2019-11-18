@@ -76,7 +76,8 @@ jobs:
           -w/app \
           quay.io/pypa/manylinux2010_x86_64 \
           bash -c "
-            for PYBIN in /opt/python/*/bin; do
+            set -e -x
+            for PYBIN in /opt/python/cp3*/bin; do
               echo '-->' \$PYBIN
               \$PYBIN/pip install cython
               \$PYBIN/python setup.py build_ext install
@@ -88,7 +89,8 @@ jobs:
           -v$(pwd):/app \
           quay.io/pypa/manylinux2010_x86_64 \
           bash -c "
-            for PYBIN in /opt/python/*/bin; do
+            set -e -x
+            for PYBIN in /opt/python/cp3*/bin; do
               echo '-->' \$PYBIN
               \$PYBIN/pip install /app/python/dist/*-py3-none-manylinux2010_x86_64.whl
               \$PYBIN/python -c 'import networkit; networkit.Graph(5)'
