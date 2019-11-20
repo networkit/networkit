@@ -1509,6 +1509,7 @@ cdef class STSP(Algorithm):
 
 cdef extern from "<networkit/distance/BidirectionalBFS.hpp>":
 	cdef cppclass _BidirectionalBFS "NetworKit::BidirectionalBFS"(_STSP):
+		_BidirectionalBFS(_Graph G, node source, node target, bool_t storePred) except +
 		count getHops() except +
 
 cdef class BidirectionalBFS(STSP):
@@ -1517,7 +1518,23 @@ cdef class BidirectionalBFS(STSP):
 		two given source and target nodes.
 		Explores the graph from both the source and target nodes until
 		the two explorations meet.
+
+		Parameters
+		----------
+
+		G : networkit.Graph
+			The input graph.
+		source : node
+			The source node.
+		target : node
+			The target node.
+		storePred : bool
+			If true, the algorithm will also store the predecessors
+			and reconstruct a shortest path from @a source and @a target.
 	"""
+
+	def __cinit__(self, Graph G, node source, node target, bool_t storePred=True):
+		self._this = new _BidirectionalBFS(G._this, source, target, storePred)
 
 	def getHops(self):
 		"""
@@ -1529,11 +1546,11 @@ cdef class BidirectionalBFS(STSP):
 		count
 			Number of hops from the source to the target node.
 		"""
-		return (<_BidirectionalBFS*>(self._this)).getDistance()
+		return (<_BidirectionalBFS*>(self._this)).getHops()
 
 cdef extern from "<networkit/distance/BidirectionalDijkstra.hpp>":
 	cdef cppclass _BidirectionalDijkstra "NetworKit::BidirectionalDijkstra"(_STSP):
-		pass
+		_BidirectionalDijkstra(_Graph G, node source, node target, bool_t storePred) except +
 
 cdef class BidirectionalDijkstra(STSP):
 	"""
@@ -1541,9 +1558,23 @@ cdef class BidirectionalDijkstra(STSP):
 		two given source and target nodes.
 		Explores the graph from both the source and target nodes until
 		the two explorations meet.
-	"""
-	pass
 
+		Parameters
+		----------
+
+		G : networkit.Graph
+			The input graph.
+		source : node
+			The source node.
+		target : node
+			The target node.
+		storePred : bool
+			If true, the algorithm will also store the predecessors
+			and reconstruct a shortest path from @a source and @a target.
+	"""
+
+	def __cinit__(self, Graph G, node source, node target, bool_t storePred=True):
+		self._this = new _BidirectionalDijkstra(G._this, source, target, storePred)
 
 cdef extern from "<networkit/distance/AStar.hpp>":
 	cdef cppclass _AStar "NetworKit::AStar"(_STSP):
@@ -1570,7 +1601,7 @@ cdef class AStar(STSP):
 	"""
 
 	cdef vector[double] heu
-	def __cinit__(self, Graph G, vector[double] &heu, node source, node target, bool_t storePred):
+	def __cinit__(self, Graph G, vector[double] &heu, node source, node target, bool_t storePred=True):
 		self.heu = heu
 		self._this = new _AStar(G._this, self.heu, source, target, storePred)
 
@@ -1814,7 +1845,7 @@ cdef extern from "<networkit/distance/BFS.hpp>":
 cdef class BFS(SSSP):
 	""" Simple breadth-first search on a Graph from a given source
 
-	BFS(G, source, [storePaths], [storeNodesSortedByDistance], target)
+	BFS(G, source, storePaths=True, storeNodesSortedByDistance=False, target=None)
 
 	Create BFS for `G` and source node `source`.
 
@@ -1859,6 +1890,33 @@ cdef class DynBFS(DynSSSP):
 		self._G = G
 		self._this = new _DynBFS(G._this, source)
 
+cdef extern from "<networkit/distance/ReverseBFS.hpp>":
+
+	cdef cppclass _ReverseBFS "NetworKit::ReverseBFS"(_SSSP):
+		_ReverseBFS(_Graph G, node source, bool_t storePaths, bool_t storeNodesSortedByDistance, node target) except +
+
+cdef class ReverseBFS(SSSP):
+	""" Simple reverse breadth-first search on a Graph from a given source
+
+	ReverseBFS(G, source, storePaths=True, storeNodesSortedByDistance=False, target=None)
+
+	Create ReverseBFS for `G` and source node `source`.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The graph.
+	source : node
+		The source node of the breadth-first search.
+	storePaths : bool
+		Paths are reconstructable and the number of paths is stored.
+	target: node
+		terminate search when the target has been reached
+	"""
+
+	def __cinit__(self, Graph G, source, storePaths=True, storeNodesSortedByDistance=False, target=none):
+		self._G = G
+		self._this = new _ReverseBFS(G._this, source, storePaths, storeNodesSortedByDistance, target)
 
 cdef extern from "<networkit/distance/Dijkstra.hpp>":
 
@@ -1870,7 +1928,7 @@ cdef class Dijkstra(SSSP):
 	Returns list of weighted distances from node source, i.e. the length of the shortest path from source to
 	any other node.
 
-    Dijkstra(G, source, [storePaths], [storeNodesSortedByDistance], target)
+    Dijkstra(G, source, storePaths=True, storeNodesSortedByDistance=False, target=None)
 
     Creates Dijkstra for `G` and source node `source`.
 
@@ -6594,11 +6652,17 @@ cdef extern from "<networkit/distance/Eccentricity.hpp>" namespace "NetworKit::E
 
 cdef class Eccentricity:
 	"""
-	TODO: docstring
+	The eccentricity of a node `u` is defined as the distance to the farthest node from node u. In other words, it is the longest shortest-path starting from node `u`.
 	"""
 
 	@staticmethod
 	def getValue(Graph G, v):
+		"""
+		Returns
+		-------
+		pair[node, count]
+			node is the farthest node `v` from `u`, and the count is the length of the shortest path from `u` to `v`.
+		"""
 		return getValue(G._this, v)
 
 
@@ -10712,6 +10776,9 @@ cdef class AdamicAdarDistance:
 		"""
 		#### TODO: convert distance to similarity!?! ####
 		return self._this.getEdgeScores()
+
+	def distance(self, node u, node v):
+		return self._this.distance(u, v)
 
 # Module: sparsification
 
