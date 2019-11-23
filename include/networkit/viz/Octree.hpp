@@ -39,7 +39,7 @@ public:
     /**
      *
      */
-    BoundingBox(const BoundingBox<T>& other) : center(other.center), sideLength(other.sideLength), halfSideLength(other.halfSideLength), sqSideLength(other.sqSideLength), dimension(other.dimension) {}
+    BoundingBox(const BoundingBox<T>& other) = default;
 
     /**
      * Sets the center of the bounding box.

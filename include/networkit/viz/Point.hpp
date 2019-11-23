@@ -58,7 +58,7 @@ public:
     bool operator==(const Point<T>& other) const;
     bool operator!=(const Point<T>& other) const;
 
-    void operator=(const Point<T>& other);
+    Point<T>& operator=(const Point<T>& other) = default;
 
     T length() const;
     T squaredLength() const;
@@ -185,12 +185,6 @@ template<typename T>
 bool Point<T>::operator!=(const Point<T>& other) const {
     return !(*this == other);
 }
-
-template<typename T>
-void Point<T>::operator=(const Point& other) {
-    this->data = other.data;
-}
-
 
 template<class T>
 Point<T>& Point<T>::scale(const T factor) {
