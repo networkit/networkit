@@ -14,8 +14,6 @@ noncompliantFiles = 0
 
 files = nkt.getCXXFiles()
 
-msgType = "[ERROR]" if nkt.isReadonly() else "[FIXED]"
-
 for file in files:
 	rw = nkt.FileRewriter(file)
 	for line in rw.lines():
@@ -33,7 +31,7 @@ for file in files:
 		rw.write((" " * int(x)) + line[i:])
 
 	if not rw.isIdentical():
-		print(msgType, file, " is (partially) indented with tabs")
+		nkt.reportChange(file + " is (partially) indented with tabs")
 		rw.commit()
 		noncompliantFiles += 1
 

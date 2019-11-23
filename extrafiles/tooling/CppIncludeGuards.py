@@ -16,8 +16,6 @@ numIllegalFiles = 0
 
 files = nkt.getCXXFiles(includeSources = False)
 
-msgType = "[ERROR]" if nkt.isReadonly() else "[FIXED]"
-
 includePragmaOnce = False
 
 rePragmaOnce = re.compile("#pragma\s+once$")
@@ -94,7 +92,7 @@ for file in files:
 			raise Exception("%s no include guard found" % file)
 
 		if not rw.isIdentical():
-			print(msgType, file, "changed")
+			nkt.reportChange(file + " changed.")
 			rw.commit()
 			numNoncompliantFiles += 1
 

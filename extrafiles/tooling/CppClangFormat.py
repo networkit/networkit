@@ -46,7 +46,6 @@ numberFileSkipped = 0
 clangFormatCommand = findClangFormat()
 with tempfile.TemporaryDirectory(dir=nkt.getNetworKitRoot()) as tempDir:
     files = nkt.getCXXFiles()
-    msgType = "[ERROR]" if nkt.isReadonly() else "[FIXED]"
     for file in files:
         if not subscribedToFormat(file):
             numberFileSkipped += 1
@@ -60,7 +59,7 @@ with tempfile.TemporaryDirectory(dir=nkt.getNetworKitRoot()) as tempDir:
             if not nkt.isReadonly():
                 os.replace(tempFile, file)
 
-            print(msgType, file, " is non-compliant")
+            nkt.reportChange(file + " is non-compliant")
 
 print("Scanned %d files (skipped %d files without subscription). Non-compliant files: %d." %
       (len(files), numberFileSkipped, numberNonCompliant))
