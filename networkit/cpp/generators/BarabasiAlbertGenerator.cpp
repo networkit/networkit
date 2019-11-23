@@ -5,7 +5,7 @@
  *      Author: forigem, Manuel Penschuck <networkit@manuel.jetzt>
  */
 
-#include <set>
+#include <unordered_set>
 #include <random>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -72,24 +72,25 @@ Graph BarabasiAlbertGenerator::generateOriginal() {
     assert (G.numberOfNodes() >= k);
 
     Aux::SignalHandler handler;
-    for (count i = n0; i < nMax; i++) {
-        count degreeSum = G.numberOfEdges() * 2;
-        node u = i;
-        std::set<node> targets;
+    auto &gen = Aux::Random::getURNG();
+    for (node u = n0; u < static_cast<node>(nMax); ++u) {
+        std::uniform_int_distribution<uint64_t> indexDist{0, 2 * G.numberOfEdges()};
+
+        std::unordered_set<node> targets;
+        targets.reserve(k + 1);
         targets.insert(u);
-        int j = 0;
+
         while (targets.size() - 1 < k) {
-            uint64_t random = (uint64_t) Aux::Random::integer(degreeSum);
-            j++;
+            auto randomIndex = indexDist(gen);
             bool found = false; // break from node iteration when done
             auto notFound = [&](){ return ! found; };
 
             G.forNodesWhile(notFound, [&](node v) {
-                if (random <= G.degree(v)) {
+                if (randomIndex <= G.degree(v)) {
                     found = true; // found a node to connect to
                     targets.insert(v);
                 }
-                random -= G.degree(v);
+                randomIndex -= G.degree(v);
             });
 
             handler.assureRunning();
@@ -97,6 +98,7 @@ Graph BarabasiAlbertGenerator::generateOriginal() {
 
         targets.erase(u);
 
+        G.preallocateUndirected(u, k);
         for (node x : targets) {
             G.addEdge(u, x);
         }
