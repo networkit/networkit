@@ -11,6 +11,9 @@ def run_notebook(path):
     with open(path) as f:
         nb = nbformat.read(f, as_version=4)
 
+    print("Start ", path)
+    sys.stdout.flush()
+
     proc = ExecutePreprocessor(timeout=600, kernel_name='python3')
     proc.allow_errors = True
 
@@ -22,10 +25,10 @@ def run_notebook(path):
                 if output.output_type == 'error':
                     errors.append(output)
     if errors == []:
-        print(path + " test successfully completed.")
+        print(" " + path + " test successfully completed.")
         return 0
     else:
-        print(path + " test exited with errors.")
+        print(" " + path + " test exited with errors.")
         return 1
 
 if __name__ == '__main__':
