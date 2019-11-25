@@ -82,11 +82,11 @@ class Closeness : public Centrality {
         scoreData[u] =
             sum ? variant == ClosenessVariant::standard
                       ? 1.0 / sum
-                      : (reached - 1) / sum / (G.upperNodeIdBound() - 1)
+                      : (reached - 1) / sum / (G.numberOfNodes() - 1)
                 : 0.;
         if (normalized)
             scoreData[u] *=
-                (variant == ClosenessVariant::standard ? G.upperNodeIdBound()
+                (variant == ClosenessVariant::standard ? G.numberOfNodes()
                                                        : reached) -
                 1.;
     }
