@@ -835,6 +835,7 @@ TEST_F(IOGTest, testNetworkitBinaryKonect) {
     G.forNodes([&](node u){
         G.forEdgesOf(u, [&](node v) {
             ASSERT_TRUE(G2.hasEdge(u,v));
+            ASSERT_EQ(G.weight(u,v), G2.weight(u,v));
         });
     });
 }
