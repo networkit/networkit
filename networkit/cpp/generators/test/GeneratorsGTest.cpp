@@ -413,7 +413,7 @@ TEST_F(GeneratorsGTest, testBarabasiAlbertGeneratorConstructor) {
 
 TEST_F(GeneratorsGTest, testBarabasiAlbertGeneratorBatagelj) {
     count k = 3;
-    count nMax = 100;
+    count nMax = 1000;
     count n0 = 3;
 
     BarabasiAlbertGenerator BarabasiAlbert(k, nMax, n0, true);
