@@ -24,105 +24,79 @@ except ImportError:
 	print("module 'scipy' not available - some functionality will be restricted")
 import fnmatch
 
-try:
-	from enum import Enum
+from enum import Enum
 
-	class __AutoNumber(Enum):
-		def __new__(cls):
-			value = len(cls.__members__) + 1
-			obj = object.__new__(cls)
-			obj._value_ = value
-			return obj
-
-
-	class Format(__AutoNumber):
-		""" Simple enumeration class to list supported file types. Currently supported
-		file types: SNAP, EdgeListSpaceZero, EdgeListSpaceOne, EdgeListTabZero, EdgeListTabOne,
-		METIS, GraphML, GEXF, GML, EdgeListCommaOne, GraphViz, DOT, EdgeList, LFR, KONEC, GraphToolBinary,
-                NetworkitBinary"""
-		SNAP = ()
-		EdgeListSpaceZero = ()
-		EdgeListSpaceOne = ()
-		EdgeListTabZero = ()
-		EdgeListTabOne = ()
-		METIS = ()
-		GraphML = ()
-		GEXF = ()
-		GML = ()
-		EdgeListCommaOne = ()
-		GraphViz = ()
-		DOT = ()
-		EdgeList = ()
-		LFR = ()
-		KONECT = ()
-		GraphToolBinary = ()
-		MAT = ()
-		ThrillBinary = ()
-		NetworkitBinary = ()
-
-except ImportError:
-	print("Update to Python >=3.4 recommended - support for < 3.4 may be discontinued in the future")
-	class Format:
-		SNAP = "snap"
-		EdgeListTabOne = "edgelist-t1"
-		EdgeListTabZero = "edgelist-t0"
-		EdgeListSpaceOne = "edgelist-s1"
-		EdgeListSpaceZero = "edgelist-s0"
-		METIS = "metis"
-		GraphML = "graphml"
-		GEXF = "gexf"
-		GML = "gml"
-		EdgeListCommaOne = "edgelist-cs1"
-		GraphViz = "dot"
-		DOT = "dot"
-		EdgeList = "edgelist"
-		LFR = "edgelist-t1"
-		KONECT = "konect"
-		GraphToolBinary = "gtbin"
-		MAT = "mat"
-		ThrillBinary = "thrillbinary"
-		NetworkitBinary = "networkitbinary"
+class __AutoNumber(Enum):
+	def __new__(cls):
+		value = len(cls.__members__) + 1
+		obj = object.__new__(cls)
+		obj._value_ = value
+		return obj
 
 
-
+class Format(__AutoNumber):
+	""" Simple enumeration class to list supported file types. Currently supported
+	file types: SNAP, EdgeListSpaceZero, EdgeListSpaceOne, EdgeListTabZero, EdgeListTabOne,
+	METIS, GraphML, GEXF, GML, EdgeListCommaOne, GraphViz, DOT, EdgeList, LFR, KONEC, GraphToolBinary,
+			NetworkitBinary"""
+	SNAP = ()
+	EdgeListSpaceZero = ()
+	EdgeListSpaceOne = ()
+	EdgeListTabZero = ()
+	EdgeListTabOne = ()
+	METIS = ()
+	GraphML = ()
+	GEXF = ()
+	GML = ()
+	EdgeListCommaOne = ()
+	GraphViz = ()
+	DOT = ()
+	EdgeList = ()
+	LFR = ()
+	KONECT = ()
+	GraphToolBinary = ()
+	MAT = ()
+	ThrillBinary = ()
+	NetworkitBinary = ()
 
 # reading
 
-def getReader(fileformat, **kwargs):
+def getReader(fileformat, *kargs, **kwargs):
 	#define your [edgelist] reader here:
-	readers =	{
-			Format.METIS:			METISGraphReader(),
-			Format.GraphML:			GraphMLReader(),
-			Format.GEXF:			GEXFReader(),
-			Format.SNAP:			SNAPGraphReader(),
-			Format.EdgeListCommaOne:	EdgeListReader(',',1,),
-			Format.EdgeListSpaceOne:	EdgeListReader(' ',1),
-			Format.EdgeListSpaceZero:	EdgeListReader(' ',0),
-			Format.EdgeListTabOne:		EdgeListReader('\t',1),
-			Format.EdgeListTabZero:		EdgeListReader('\t',0),
-			Format.LFR:			EdgeListReader('\t',1),
-			Format.KONECT:			KONECTGraphReader(),
-			Format.GML:			GMLGraphReader(),
-			Format.GraphToolBinary:		GraphToolBinaryReader(),
-			Format.MAT:			MatReader(),
-			Format.ThrillBinary:		ThrillGraphBinaryReader(),
-			Format.NetworkitBinary:         NetworkitBinaryReader()
-			}
+	readers = {
+		Format.METIS:			METISGraphReader(),
+		Format.GraphML:			GraphMLReader(),
+		Format.GEXF:			GEXFReader(),
+		Format.SNAP:			SNAPGraphReader(),
+		Format.EdgeListCommaOne:	EdgeListReader(',',1,),
+		Format.EdgeListSpaceOne:	EdgeListReader(' ',1),
+		Format.EdgeListSpaceZero:	EdgeListReader(' ',0),
+		Format.EdgeListTabOne:		EdgeListReader('\t',1),
+		Format.EdgeListTabZero:		EdgeListReader('\t',0),
+		Format.LFR:			EdgeListReader('\t',1),
+		Format.KONECT:			KONECTGraphReader(),
+		Format.GML:			GMLGraphReader(),
+		Format.GraphToolBinary:		GraphToolBinaryReader(),
+		Format.MAT:			MatReader(),
+		Format.ThrillBinary:		ThrillGraphBinaryReader(),
+		Format.NetworkitBinary:         NetworkitBinaryReader()
+	}
 
-	try:
-		# special case for custom Edge Lists
-		if fileformat == Format.EdgeList:
-			if kwargs["continuous"] == False:
-				kwargs["firstNode"] = 0
-			reader = EdgeListReader(**kwargs)
-		else:
-			reader = readers[fileformat]#(**kwargs)
-	except Exception or KeyError:
-		raise Exception("unrecognized format/format not supported as input: {0}".format(fileformat))
+	# special case for custom Edge Lists
+	if fileformat == Format.EdgeList:
+		if "continuous" in kwargs and kwargs["continuous"] == False:
+			kwargs["firstNode"] = 0
+		reader = EdgeListReader(*kargs, **kwargs)
+
+	else:
+		if fileformat not in readers:
+			raise Exception("unrecognized format/format not supported as input: {0}".format(fileformat))
+		reader = readers[fileformat]#(**kwargs)
+
 	return reader
 
 
-def readGraph(path, fileformat, **kwargs):
+def readGraph(path, fileformat, *kargs, **kwargs):
 	""" Read graph file in various formats and return a NetworKit::Graph
 	    Parameters:
 		- fileformat: An element of the Format enumeration. Currently supported file types:
@@ -134,8 +108,7 @@ def readGraph(path, fileformat, **kwargs):
 			commentPrefix='#', continuous=True and directed=False are optional because of their default values;
 			firstNode is not needed when continuous=True.
 	"""
-	reader = getReader(fileformat,**kwargs)
-
+	reader = getReader(fileformat, *kargs, **kwargs)
 
 	if ("~" in path):
 		path = os.path.expanduser(path)
@@ -206,11 +179,11 @@ def readMat(path, key="G"):
 	return G
 
 class MatWriter:
-	def __init__(self):
+	def __init__(self, key="G"):
 		self.key = key
 
 	def write(self, G, path, key="G"):
-		writeMat(path, key)
+		writeMat(G, path, key)
 
 def writeMat(G, path, key="G"):
 	""" Writes a NetworKit::Graph to a Matlab object file.
@@ -224,36 +197,38 @@ def writeMat(G, path, key="G"):
 
 
 # writing
-def getWriter(fileformat, **kwargs):
+def getWriter(fileformat, *kargs, **kwargs):
 	writers =	{
-			Format.METIS:			METISGraphWriter(),
-			Format.GraphML:			GraphMLWriter(),
-			Format.GEXF:			GEXFWriter(),
-			Format.SNAP:			SNAPGraphWriter(),
-			Format.EdgeListCommaOne:	EdgeListWriter(',',1,),
-			Format.EdgeListSpaceOne:	EdgeListWriter(' ',1),
-			Format.EdgeListSpaceZero:	EdgeListWriter(' ',0),
-			Format.EdgeListTabOne:		EdgeListWriter('\t',1),
-			Format.EdgeListTabZero:		EdgeListWriter('\t',0),
-			Format.GraphViz:		DotGraphWriter(),
-			Format.DOT:			DotGraphWriter(),
-			Format.GML:			GMLGraphWriter(),
-			Format.LFR:			EdgeListWriter('\t',1),
-			Format.GraphToolBinary:         GraphToolBinaryWriter(),
-			Format.ThrillBinary:		ThrillGraphBinaryWriter(),
-			Format.NetworkitBinary:         NetworkitBinaryWriter()
-			}
-	try:
-		# special case for custom Edge Lists
-		if fileformat == Format.EdgeList:
-			writer = EdgeListWriter(**kwargs)
-		else:
-			writer = writers[fileformat]#(**kwargs)
-	except KeyError:
-		raise Exception("format {0} currently not supported".format(fileformat))
-	return writer
+		Format.METIS:			METISGraphWriter(),
+		Format.GraphML:			GraphMLWriter(),
+		Format.GEXF:			GEXFWriter(),
+		Format.SNAP:			SNAPGraphWriter(),
+		Format.EdgeListCommaOne:	EdgeListWriter(',',1,),
+		Format.EdgeListSpaceOne:	EdgeListWriter(' ',1),
+		Format.EdgeListSpaceZero:	EdgeListWriter(' ',0),
+		Format.EdgeListTabOne:		EdgeListWriter('\t',1),
+		Format.EdgeListTabZero:		EdgeListWriter('\t',0),
+		Format.GraphViz:		DotGraphWriter(),
+		Format.DOT:			DotGraphWriter(),
+		Format.GML:			GMLGraphWriter(),
+		Format.LFR:			EdgeListWriter('\t',1),
+		Format.GraphToolBinary:         GraphToolBinaryWriter(),
+		Format.MAT:			MatWriter(),
+		Format.ThrillBinary:		ThrillGraphBinaryWriter(),
+		Format.NetworkitBinary:         NetworkitBinaryWriter()
+	}
 
-def writeGraph(G, path, fileformat, **kwargs):
+	# special case for custom Edge Lists
+	if fileformat == Format.EdgeList:
+		return EdgeListWriter(*kargs, **kwargs)
+
+	else:
+		if fileformat not in writers:
+			raise Exception("format {0} currently not supported".format(fileformat))
+
+		return writers[fileformat]#(**kwargs)
+
+def writeGraph(G, path, fileformat, *kargs, **kwargs):
 	""" Write graph to various output formats.
 
 	Paramaters:
@@ -277,7 +252,7 @@ def writeGraph(G, path, fileformat, **kwargs):
 			raise IOError("No permission to write")
 		else:
 			logging.warning("overriding given file")
-	writer = getWriter(fileformat, **kwargs)
+	writer = getWriter(fileformat, *kargs, **kwargs)
 	writer.write(G, path)
 	logging.info("wrote graph {0} to file {1}".format(G, path))
 
