@@ -217,7 +217,7 @@ class build_ext(Command):
 		self.build_lib = None # Output directory for libraries
 		self.build_temp = None # Temporary directory
 		self.inplace = False
-		#self.include_dirs = None
+		self.include_dirs = None
 		self.library_dirs = None
 		self.networkit_external_core = False
 		self.rpath = None
