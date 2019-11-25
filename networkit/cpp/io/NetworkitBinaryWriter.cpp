@@ -31,15 +31,13 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
         bool isUnsigned = true;
         bool fitsIntoInt64 = true;
         bool fitsIntoFloat = true;
-        G.forNodes([&](node n) {
-            G.forNeighborsOf(n,[&](node, edgeweight w) {
-                if(w < 0)
-                    isUnsigned = false;
-                if(w != static_cast<int64_t>(w))
-                    fitsIntoInt64 = false;
-                if(w != static_cast<float>(w))
-                    fitsIntoFloat = false;
-            });
+        G.forEdges([&](node, node, edgeweight w) {
+            if(w < 0)
+                isUnsigned = false;
+            if(w != static_cast<int64_t>(w))
+                fitsIntoInt64 = false;
+            if(w != static_cast<float>(w))
+                fitsIntoFloat = false;
         });
         if(fitsIntoInt64) {
             if(isUnsigned) {
