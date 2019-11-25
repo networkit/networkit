@@ -22,7 +22,7 @@ jobs:
       run: |
         brew update
         brew install libomp
-        brew upgrade cmake
+        brew upgrade cmake || True
         brew reinstall gcc
     - name: Install dependencies
       run: |
