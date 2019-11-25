@@ -5,8 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#ifndef SPARSEACCUMULATOR_H_
-#define SPARSEACCUMULATOR_H_
+#ifndef NETWORKIT_ALGEBRAIC_SPARSE_ACCUMULATOR_HPP_
+#define NETWORKIT_ALGEBRAIC_SPARSE_ACCUMULATOR_HPP_
 
 #include <vector>
 #include <algorithm>
@@ -104,4 +104,4 @@ public:
 
 } /* namespace NetworKit */
 
-#endif /* SPARSEACCUMULATOR_H_ */
+#endif // NETWORKIT_ALGEBRAIC_SPARSE_ACCUMULATOR_HPP_

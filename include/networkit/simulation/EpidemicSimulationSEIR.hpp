@@ -5,8 +5,8 @@
  *      Author: Christian Staudt
  */
 
-#ifndef EPIDEMICSIMULATIONSEIR_H_
-#define EPIDEMICSIMULATIONSEIR_H_
+#ifndef NETWORKIT_SIMULATION_EPIDEMIC_SIMULATION_SEIR_HPP_
+#define NETWORKIT_SIMULATION_EPIDEMIC_SIMULATION_SEIR_HPP_
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -51,4 +51,4 @@ protected:
 
 } /* namespace NetworKit */
 
-#endif /* DEPIDEMICSIMULATIONSEIR_H_ */
+#endif // NETWORKIT_SIMULATION_EPIDEMIC_SIMULATION_SEIR_HPP_

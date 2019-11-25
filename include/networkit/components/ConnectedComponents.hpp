@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef CONNECTEDCOMPONENTS_H_
-#define CONNECTEDCOMPONENTS_H_
+#ifndef NETWORKIT_COMPONENTS_CONNECTED_COMPONENTS_HPP_
+#define NETWORKIT_COMPONENTS_CONNECTED_COMPONENTS_HPP_
 
 #include <cassert>
 #include <map>
@@ -97,4 +97,4 @@ inline count ConnectedComponents::numberOfComponents() const {
 }
 
 
-#endif /* CONNECTEDCOMPONENTS_H_ */
+#endif // NETWORKIT_COMPONENTS_CONNECTED_COMPONENTS_HPP_

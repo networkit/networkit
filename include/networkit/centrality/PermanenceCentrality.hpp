@@ -1,5 +1,5 @@
-#ifndef PERMANENCECENTRALITY_H
-#define PERMANENCECENTRALITY_H
+#ifndef NETWORKIT_CENTRALITY_PERMANENCE_CENTRALITY_HPP_
+#define NETWORKIT_CENTRALITY_PERMANENCE_CENTRALITY_HPP_
 
 #include <networkit/centrality/Centrality.hpp>
 #include <networkit/structures/Partition.hpp>
@@ -24,4 +24,4 @@ private:
 
 }
 
-#endif // PERMANENCECENTRALITY_H
+#endif // NETWORKIT_CENTRALITY_PERMANENCE_CENTRALITY_HPP_

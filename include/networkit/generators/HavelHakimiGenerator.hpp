@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef HAVELHAKIMIGENERATOR_H_
-#define HAVELHAKIMIGENERATOR_H_
+#ifndef NETWORKIT_GENERATORS_HAVEL_HAKIMI_GENERATOR_HPP_
+#define NETWORKIT_GENERATORS_HAVEL_HAKIMI_GENERATOR_HPP_
 
 #include <vector>
 
@@ -45,4 +45,4 @@ private:
 
 
 } /* namespace NetworKit */
-#endif /* HAVELHAKIMIGENERATOR_H_ */
+#endif // NETWORKIT_GENERATORS_HAVEL_HAKIMI_GENERATOR_HPP_

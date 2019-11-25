@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef DIBAPGRAPHREADER_H_
-#define DIBAPGRAPHREADER_H_
+#ifndef NETWORKIT_IO_DIBAP_GRAPH_READER_HPP_
+#define NETWORKIT_IO_DIBAP_GRAPH_READER_HPP_
 
 #if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
 
@@ -46,4 +46,4 @@ public:
 
 #endif /* check for non-Windows */
 
-#endif /* DIBAPGRAPHREADER_H_ */
+#endif // NETWORKIT_IO_DIBAP_GRAPH_READER_HPP_

@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef DISSIMILARITYMEASURE_H_
-#define DISSIMILARITYMEASURE_H_
+#ifndef NETWORKIT_COMMUNITY_DISSIMILARITY_MEASURE_HPP_
+#define NETWORKIT_COMMUNITY_DISSIMILARITY_MEASURE_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
@@ -30,4 +30,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* DISSIMILARITYMEASURE_H_ */
+#endif // NETWORKIT_COMMUNITY_DISSIMILARITY_MEASURE_HPP_

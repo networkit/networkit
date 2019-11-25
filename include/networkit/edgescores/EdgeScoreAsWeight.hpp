@@ -5,8 +5,8 @@
  *      Author: Michael Hamann
  */
 
-#ifndef EDGESCOREASWEIGHT_H
-#define EDGESCOREASWEIGHT_H
+#ifndef NETWORKIT_EDGESCORES_EDGE_SCORE_AS_WEIGHT_HPP_
+#define NETWORKIT_EDGESCORES_EDGE_SCORE_AS_WEIGHT_HPP_
 
 #include <networkit/graph/Graph.hpp>
 
@@ -29,4 +29,4 @@ private:
 
 } // namespace NetworKit
 
-#endif // EDGESCOREASWEIGHT_H
+#endif // NETWORKIT_EDGESCORES_EDGE_SCORE_AS_WEIGHT_HPP_

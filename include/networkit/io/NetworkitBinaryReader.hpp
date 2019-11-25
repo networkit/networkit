@@ -4,8 +4,8 @@
  *      Author: Charmaine Ndolo <charmaine.ndolo@b-tu.de>
  */
 
-#ifndef NETWORKIT_BINARY_READER_H
-#define NETWORKIT_BINARY_READER_H
+#ifndef NETWORKIT_IO_NETWORKIT_BINARY_READER_HPP_
+#define NETWORKIT_IO_NETWORKIT_BINARY_READER_HPP_
 
 #include <networkit/io/GraphReader.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -33,4 +33,4 @@ private:
 };
 } /* namespace */
 
-#endif
+#endif // NETWORKIT_IO_NETWORKIT_BINARY_READER_HPP_

@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef DEGREECENTRALITY_H_
-#define DEGREECENTRALITY_H_
+#ifndef NETWORKIT_CENTRALITY_DEGREE_CENTRALITY_HPP_
+#define NETWORKIT_CENTRALITY_DEGREE_CENTRALITY_HPP_
 
 #include <networkit/centrality/Centrality.hpp>
 
@@ -47,4 +47,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* DEGREECENTRALITY_H_ */
+#endif // NETWORKIT_CENTRALITY_DEGREE_CENTRALITY_HPP_

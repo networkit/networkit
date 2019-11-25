@@ -1,5 +1,5 @@
-#ifndef ADJUSTEDRANDINDEX_H
-#define ADJUSTEDRANDINDEX_H
+#ifndef NETWORKIT_COMMUNITY_ADJUSTED_RAND_MEASURE_HPP_
+#define NETWORKIT_COMMUNITY_ADJUSTED_RAND_MEASURE_HPP_
 
 #include <networkit/community/DissimilarityMeasure.hpp>
 
@@ -25,4 +25,4 @@ public:
 
 } // namespace NetworKit
 
-#endif // ADJUSTEDRANDINDEX_H
+#endif // NETWORKIT_COMMUNITY_ADJUSTED_RAND_MEASURE_HPP_

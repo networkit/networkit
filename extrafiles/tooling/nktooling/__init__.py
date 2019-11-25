@@ -27,6 +27,15 @@ def isReadonly():
 	"""
 	return READONLY
 
+def reportChange(msg):
+	"""
+	Informs the user (currently via STDOUT) about a change that was carried out.
+	The message is prefixed with either [ERROR] (if we operate in readonly mode,
+	since the change cannot be carried out) or [FIXED] (if write are allowed)
+	"""
+	msgType = "[ERROR]" if isReadonly() else "[FIXED]"
+	print(msgType, msg)
+
 def failIfReadonly(prgname):
 	"""
 	Helper function indented to give a summary after a test in read-only mode.
@@ -106,7 +115,7 @@ class FileRewriter:
 		"""
 		Checks whether the content written matches the content read (so far).
 		"""
-		return self.in_lines == self.out_lines
+		return "".join( self.in_lines ) == "".join( self.out_lines )
 
 	def commit(self, force = False):
 		"""

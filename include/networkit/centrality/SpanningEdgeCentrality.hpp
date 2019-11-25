@@ -5,8 +5,8 @@
  *      Author: henningm
  */
 
-#ifndef SPANNING_H_
-#define SPANNING_H_
+#ifndef NETWORKIT_CENTRALITY_SPANNING_EDGE_CENTRALITY_HPP_
+#define NETWORKIT_CENTRALITY_SPANNING_EDGE_CENTRALITY_HPP_
 
 #include <networkit/numerics/LAMG/Lamg.hpp>
 #include <networkit/centrality/Centrality.hpp>
@@ -84,4 +84,4 @@ public:
 } /* namespace NetworKit */
 
 
-#endif /* SPANNING_H_ */
+#endif // NETWORKIT_CENTRALITY_SPANNING_EDGE_CENTRALITY_HPP_

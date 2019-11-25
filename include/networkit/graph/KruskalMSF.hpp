@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef KRUSKALMSF_H_
-#define KRUSKALMSF_H_
+#ifndef NETWORKIT_GRAPH_KRUSKAL_MSF_HPP_
+#define NETWORKIT_GRAPH_KRUSKAL_MSF_HPP_
 
 #include <networkit/Globals.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -33,4 +33,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* KRUSKALMSF_H_ */
+#endif // NETWORKIT_GRAPH_KRUSKAL_MSF_HPP_

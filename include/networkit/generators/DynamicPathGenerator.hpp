@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef DYNAMICPATHGENERATOR_H_
-#define DYNAMICPATHGENERATOR_H_
+#ifndef NETWORKIT_GENERATORS_DYNAMIC_PATH_GENERATOR_HPP_
+#define NETWORKIT_GENERATORS_DYNAMIC_PATH_GENERATOR_HPP_
 
 #include <networkit/generators/DynamicGraphGenerator.hpp>
 #include <map>
@@ -26,4 +26,4 @@ public:
 
 } /* namespace NetworKit */
 
-#endif /* DYNAMICPATHGENERATOR_H_ */
+#endif // NETWORKIT_GENERATORS_DYNAMIC_PATH_GENERATOR_HPP_

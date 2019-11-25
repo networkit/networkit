@@ -5,8 +5,8 @@
  *      Author: Eugenio Angriman
  */
 
-#ifndef GROUPDEGREE_H_
-#define GROUPDEGREE_H_
+#ifndef NETWORKIT_CENTRALITY_GROUP_DEGREE_HPP_
+#define NETWORKIT_CENTRALITY_GROUP_DEGREE_HPP_
 
 #include <omp.h>
 
@@ -151,4 +151,4 @@ inline count GroupDegree::scoreOfGroup(const std::vector<node> &group) const {
 
 } // namespace NetworKit
 
-#endif
+#endif // NETWORKIT_CENTRALITY_GROUP_DEGREE_HPP_

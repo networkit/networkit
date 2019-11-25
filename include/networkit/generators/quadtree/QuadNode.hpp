@@ -5,8 +5,8 @@
  *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
  */
 
-#ifndef QUADNODE_H_
-#define QUADNODE_H_
+#ifndef NETWORKIT_GENERATORS_QUADTREE_QUAD_NODE_HPP_
+#define NETWORKIT_GENERATORS_QUADTREE_QUAD_NODE_HPP_
 
 #include <vector>
 #include <algorithm>
@@ -564,7 +564,7 @@ public:
         assert(probLB <= probUB);
 #else
         ((void)(probLB));
-#endif
+#endif // NDEBUG
         if (probUB > 0.5) probUB = 1;//if we are going to take every second element anyway, no use in calculating expensive jumps
         if (probUB == 0) return 0;
         //TODO: return whole if probLB == 1
@@ -780,7 +780,7 @@ public:
         {
 #ifndef NETWORKIT_OMP2
             #pragma omp task
-#endif
+#endif // NETWORKIT_OMP2
             {
                 index p = offset;
                 std::generate(content.begin(), content.end(), [&p](){return p++;});
@@ -797,4 +797,4 @@ public:
 };
 }
 
-#endif /* QUADNODE_H_ */
+#endif // NETWORKIT_GENERATORS_QUADTREE_QUAD_NODE_HPP_

@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef NODESTRUCTURALRANDMEASURE_H_
-#define NODESTRUCTURALRANDMEASURE_H_
+#ifndef NETWORKIT_COMMUNITY_NODE_STRUCTURAL_RAND_MEASURE_HPP_
+#define NETWORKIT_COMMUNITY_NODE_STRUCTURAL_RAND_MEASURE_HPP_
 
 #include <networkit/community/DissimilarityMeasure.hpp>
 
@@ -27,4 +27,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* RANDMEASURE_H_ */
+#endif // NETWORKIT_COMMUNITY_NODE_STRUCTURAL_RAND_MEASURE_HPP_

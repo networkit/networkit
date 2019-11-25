@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef POINT_H_
-#define POINT_H_
+#ifndef NETWORKIT_VIZ_POINT_HPP_
+#define NETWORKIT_VIZ_POINT_HPP_
 
 #include <vector>
 #include <cassert>
@@ -254,4 +254,4 @@ inline std::string Point<T>::genericToString(
 
 } /* namespace NetworKit */
 
-#endif /* POINT_H_ */
+#endif // NETWORKIT_VIZ_POINT_HPP_

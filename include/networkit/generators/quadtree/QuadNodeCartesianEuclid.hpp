@@ -7,8 +7,8 @@
  *  Note: This is similar enough to QuadNode.h that one could merge these two classes.
  */
 
-#ifndef QUADNODECARTESIANEUCLID_H_
-#define QUADNODECARTESIANEUCLID_H_
+#ifndef NETWORKIT_GENERATORS_QUADTREE_QUAD_NODE_CARTESIAN_EUCLID_HPP_
+#define NETWORKIT_GENERATORS_QUADTREE_QUAD_NODE_CARTESIAN_EUCLID_HPP_
 
 #include <vector>
 #include <algorithm>
@@ -553,7 +553,7 @@ public:
         {
 #ifndef NETWORKIT_OMP2
             #pragma omp task
-#endif
+#endif // NETWORKIT_OMP2
             {
                 index p = offset;
                 std::generate(content.begin(), content.end(), [&p](){return p++;});
@@ -569,4 +569,4 @@ public:
 };
 }
 
-#endif /* QUADNODE_H_ */
+#endif // NETWORKIT_GENERATORS_QUADTREE_QUAD_NODE_CARTESIAN_EUCLID_HPP_

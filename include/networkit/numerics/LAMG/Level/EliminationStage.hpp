@@ -5,8 +5,8 @@
  *      Author: Michael
  */
 
-#ifndef ELIMINATIONSTAGE_H_
-#define ELIMINATIONSTAGE_H_
+#ifndef NETWORKIT_NUMERICS_LAMG_LEVEL_ELIMINATION_STAGE_HPP_
+#define NETWORKIT_NUMERICS_LAMG_LEVEL_ELIMINATION_STAGE_HPP_
 
 #include <networkit/algebraic/Vector.hpp>
 
@@ -54,4 +54,4 @@ public:
 
 } /* namespace NetworKit */
 
-#endif /* ELIMINATIONSTAGE_H_ */
+#endif // NETWORKIT_NUMERICS_LAMG_LEVEL_ELIMINATION_STAGE_HPP_

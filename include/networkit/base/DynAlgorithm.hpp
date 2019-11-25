@@ -1,5 +1,5 @@
-#ifndef DYNALGORITHM_H
-#define DYNALGORITHM_H
+#ifndef NETWORKIT_BASE_DYN_ALGORITHM_HPP_
+#define NETWORKIT_BASE_DYN_ALGORITHM_HPP_
 
 #include <string>
 #include <stdexcept>
@@ -29,4 +29,4 @@ public:
 
 } /* NetworKit */
 
-#endif /* DYNALGORITHM_H */
+#endif // NETWORKIT_BASE_DYN_ALGORITHM_HPP_

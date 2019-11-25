@@ -5,8 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#ifndef VECTOR_H_
-#define VECTOR_H_
+#ifndef NETWORKIT_ALGEBRAIC_VECTOR_HPP_
+#define NETWORKIT_ALGEBRAIC_VECTOR_HPP_
 
 #include <cassert>
 #include <cmath>
@@ -364,4 +364,4 @@ inline void Vector::parallelForElements(L handle) const {
 } /* namespace NetworKit */
 
 
-#endif /* VECTOR_H_ */
+#endif // NETWORKIT_ALGEBRAIC_VECTOR_HPP_

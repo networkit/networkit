@@ -5,8 +5,8 @@
  *      Author: Sarah Lutteropp (uwcwa@student.kit.edu) and Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#ifndef NETWORKIT_CPP_CENTRALITY_APPROXCLOSENESS_H_
-#define NETWORKIT_CPP_CENTRALITY_APPROXCLOSENESS_H_
+#ifndef NETWORKIT_CENTRALITY_APPROX_CLOSENESS_HPP_
+#define NETWORKIT_CENTRALITY_APPROX_CLOSENESS_HPP_
 
 #include <networkit/centrality/Centrality.hpp>
 #include <limits>
@@ -122,4 +122,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* NETWORKIT_CPP_CENTRALITY_APPROXCLOSENESS_H_ */
+#endif // NETWORKIT_CENTRALITY_APPROX_CLOSENESS_HPP_

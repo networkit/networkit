@@ -5,8 +5,8 @@
 *      Author: Christian Staudt
 */
 
-#ifndef STOCHASTICBLOCKMODEL_H_
-#define STOCHASTICBLOCKMODEL_H_
+#ifndef NETWORKIT_GENERATORS_STOCHASTIC_BLOCKMODEL_HPP_
+#define NETWORKIT_GENERATORS_STOCHASTIC_BLOCKMODEL_HPP_
 
 #include <networkit/generators/StaticGraphGenerator.hpp>
 
@@ -40,4 +40,4 @@ protected:
 };
 
 } /* namespace NetworKit */
-#endif /* STOCHASTICBLOCKMODEL_H_ */
+#endif // NETWORKIT_GENERATORS_STOCHASTIC_BLOCKMODEL_HPP_

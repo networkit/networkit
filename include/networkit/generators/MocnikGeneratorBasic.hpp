@@ -5,8 +5,8 @@
  * Author: Franz-Benjamin Mocnik <mail@mocnik-science.net>
  */
 
-#ifndef MOCNIKGENERATORBASIC_H_
-#define MOCNIKGENERATORBASIC_H_
+#ifndef NETWORKIT_GENERATORS_MOCNIK_GENERATOR_BASIC_HPP_
+#define NETWORKIT_GENERATORS_MOCNIK_GENERATOR_BASIC_HPP_
 
 #include <networkit/generators/StaticGraphGenerator.hpp>
 
@@ -57,4 +57,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* MOCNIKGENERATORBASIC_H_ */
+#endif // NETWORKIT_GENERATORS_MOCNIK_GENERATOR_BASIC_HPP_

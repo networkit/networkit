@@ -5,8 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#ifndef NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICBFS_H_
-#define NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICBFS_H_
+#ifndef NETWORKIT_ALGEBRAIC_ALGORITHMS_ALGEBRAIC_BFS_HPP_
+#define NETWORKIT_ALGEBRAIC_ALGORITHMS_ALGEBRAIC_BFS_HPP_
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -69,4 +69,4 @@ void AlgebraicBFS<Matrix>::run() {
 
 
 
-#endif /* NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICBFS_H_ */
+#endif // NETWORKIT_ALGEBRAIC_ALGORITHMS_ALGEBRAIC_BFS_HPP_

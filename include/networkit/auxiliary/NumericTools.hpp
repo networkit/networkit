@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef NUMERICTOOLS_H_
-#define NUMERICTOOLS_H_
+#ifndef NETWORKIT_AUXILIARY_NUMERIC_TOOLS_HPP_
+#define NETWORKIT_AUXILIARY_NUMERIC_TOOLS_HPP_
 
 #include <limits>
 
@@ -58,4 +58,4 @@ bool logically_equal(double a, double b, double error_factor=1.0);
 } /* namespace NumericTools */
 
 } /* namespace NetworKit */
-#endif /* NUMERICTOOLS_H_ */
+#endif // NETWORKIT_AUXILIARY_NUMERIC_TOOLS_HPP_

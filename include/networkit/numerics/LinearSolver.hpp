@@ -5,8 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#ifndef LINEARSOLVER_H_
-#define LINEARSOLVER_H_
+#ifndef NETWORKIT_NUMERICS_LINEAR_SOLVER_HPP_
+#define NETWORKIT_NUMERICS_LINEAR_SOLVER_HPP_
 
 #include <networkit/algebraic/Vector.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -105,4 +105,4 @@ void LinearSolver<Matrix>::parallelSolve(const std::vector<Vector>& rhs, std::ve
 
 } /* namespace NetworKit */
 
-#endif /* LINEARSOLVER_H_ */
+#endif // NETWORKIT_NUMERICS_LINEAR_SOLVER_HPP_

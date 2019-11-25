@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef CONDUCTANCE_H_
-#define CONDUCTANCE_H_
+#ifndef NETWORKIT_COMMUNITY_CONDUCTANCE_HPP_
+#define NETWORKIT_COMMUNITY_CONDUCTANCE_HPP_
 
 #include <networkit/community/QualityMeasure.hpp>
 #include <networkit/community/EdgeCut.hpp>
@@ -29,4 +29,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* CONDUCTANCE_H_ */
+#endif // NETWORKIT_COMMUNITY_CONDUCTANCE_HPP_

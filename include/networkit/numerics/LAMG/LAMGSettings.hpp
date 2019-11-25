@@ -5,8 +5,8 @@
  *      Author: Michael
  */
 
-#ifndef LAMGSETTINGS_H_
-#define LAMGSETTINGS_H_
+#ifndef NETWORKIT_NUMERICS_LAMG_LAMG_SETTINGS_HPP_
+#define NETWORKIT_NUMERICS_LAMG_LAMG_SETTINGS_HPP_
 
 #include <networkit/Globals.hpp>
 
@@ -68,4 +68,4 @@ constexpr count SETUP_RELAX_COARSEST_SWEEPS = 400;
 
 
 
-#endif /* LAMGSETTINGS_H_ */
+#endif // NETWORKIT_NUMERICS_LAMG_LAMG_SETTINGS_HPP_

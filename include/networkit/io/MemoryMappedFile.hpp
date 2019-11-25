@@ -5,8 +5,8 @@
  *      Author: Manuel Penschuck (networkit@manuel.jetzt)
  */
 
-#ifndef MEMORY_MAPPED_FILE_H_
-#define MEMORY_MAPPED_FILE_H_
+#ifndef NETWORKIT_IO_MEMORY_MAPPED_FILE_HPP_
+#define NETWORKIT_IO_MEMORY_MAPPED_FILE_HPP_
 
 #include <iterator>
 #include <memory>
@@ -83,4 +83,4 @@ private:
 }
 
 
-#endif // MEMORY_MAPPED_FILE_H_
+#endif // NETWORKIT_IO_MEMORY_MAPPED_FILE_HPP_

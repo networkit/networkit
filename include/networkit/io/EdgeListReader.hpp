@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef EDGELISTREADER_H_
-#define EDGELISTREADER_H_
+#ifndef NETWORKIT_IO_EDGE_LIST_READER_HPP_
+#define NETWORKIT_IO_EDGE_LIST_READER_HPP_
 
 #include <string>
 #include <map>
@@ -72,4 +72,4 @@ private:
 };
 
 } /* namespace NetworKit */
-#endif /* EDGELISTREADER_H_ */
+#endif // NETWORKIT_IO_EDGE_LIST_READER_HPP_

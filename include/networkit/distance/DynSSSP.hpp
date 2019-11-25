@@ -5,8 +5,8 @@
  *      Author: cls, ebergamini
  */
 
-#ifndef DYNSSSP_H_
-#define DYNSSSP_H_
+#ifndef NETWORKIT_DISTANCE_DYN_SSSP_HPP_
+#define NETWORKIT_DISTANCE_DYN_SSSP_HPP_
 
 #include <set>
 
@@ -84,4 +84,4 @@ inline std::vector<node> DynSSSP::getPredecessors(node t) const {
 
 } /* namespace NetworKit */
 
-#endif /* DYNSSSP_H_ */
+#endif // NETWORKIT_DISTANCE_DYN_SSSP_HPP_

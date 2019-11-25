@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef GRAPHIO_H_
-#define GRAPHIO_H_
+#ifndef NETWORKIT_IO_GRAPH_IO_HPP_
+#define NETWORKIT_IO_GRAPH_IO_HPP_
 
 #include <string>
 
@@ -52,4 +52,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* GRAPHIO_H_ */
+#endif // NETWORKIT_IO_GRAPH_IO_HPP_

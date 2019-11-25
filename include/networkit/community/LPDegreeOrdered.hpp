@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef LPDEGREEORDERED_H_
-#define LPDEGREEORDERED_H_
+#ifndef NETWORKIT_COMMUNITY_LP_DEGREE_ORDERED_HPP_
+#define NETWORKIT_COMMUNITY_LP_DEGREE_ORDERED_HPP_
 
 #include <networkit/community/CommunityDetectionAlgorithm.hpp>
 
@@ -49,4 +49,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* LPDEGREEORDERED_H_ */
+#endif // NETWORKIT_COMMUNITY_LP_DEGREE_ORDERED_HPP_

@@ -5,8 +5,8 @@
  *      Author: forigem
  */
 
-#ifndef DYNAMICDGSPARSER_H_
-#define DYNAMICDGSPARSER_H_
+#ifndef NETWORKIT_GENERATORS_DYNAMIC_DGS_PARSER_HPP_
+#define NETWORKIT_GENERATORS_DYNAMIC_DGS_PARSER_HPP_
 
 #include <fstream>
 #include <vector>
@@ -53,4 +53,4 @@ protected:
 };
 
 } /* namespace NetworKit */
-#endif /* DYNAMICDGSPARSER_H_ */
+#endif // NETWORKIT_GENERATORS_DYNAMIC_DGS_PARSER_HPP_

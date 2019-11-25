@@ -5,8 +5,8 @@
  *      Author: Eugenio Angriman <angrimae@hu-berlin.de>
  */
 
-#ifndef STSP_H
-#define STSP_H
+#ifndef NETWORKIT_DISTANCE_STSP_HPP_
+#define NETWORKIT_DISTANCE_STSP_HPP_
 
 #include <networkit/Globals.hpp>
 #include <networkit/auxiliary/Log.hpp>
@@ -107,4 +107,4 @@ inline void STSP::buildPath() {
 
 } // namespace NetworKit
 
-#endif
+#endif // NETWORKIT_DISTANCE_STSP_HPP_

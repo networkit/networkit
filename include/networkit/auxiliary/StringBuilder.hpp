@@ -1,5 +1,5 @@
-#ifndef STRING_BUILDER_H_
-#define STRING_BUILDER_H_
+#ifndef NETWORKIT_AUXILIARY_STRING_BUILDER_HPP_
+#define NETWORKIT_AUXILIARY_STRING_BUILDER_HPP_
 
 #include <algorithm>
 #include <cassert>
@@ -291,4 +291,4 @@ std::ostream& printToStreamF(std::ostream& stream, const std::string& format, co
 } //namespace Aux
 
 
-#endif
+#endif // NETWORKIT_AUXILIARY_STRING_BUILDER_HPP_

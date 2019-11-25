@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef STATICGRAPHGENERATOR_H_
-#define STATICGRAPHGENERATOR_H_
+#ifndef NETWORKIT_GENERATORS_STATIC_GRAPH_GENERATOR_HPP_
+#define NETWORKIT_GENERATORS_STATIC_GRAPH_GENERATOR_HPP_
 
 #include <networkit/graph/Graph.hpp>
 
@@ -27,4 +27,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* STATICGRAPHGENERATOR_H_ */
+#endif // NETWORKIT_GENERATORS_STATIC_GRAPH_GENERATOR_HPP_

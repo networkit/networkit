@@ -5,8 +5,8 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#ifndef SAMECOMMUNITYINDEX_H_
-#define SAMECOMMUNITYINDEX_H_
+#ifndef NETWORKIT_LINKPREDICTION_SAME_COMMUNITY_INDEX_HPP_
+#define NETWORKIT_LINKPREDICTION_SAME_COMMUNITY_INDEX_HPP_
 
 #include <networkit/linkprediction/LinkPredictor.hpp>
 #include <networkit/structures/Partition.hpp>
@@ -49,4 +49,4 @@ public:
 
 } // namespace NetworKit
 
-#endif /* SAMECOMMUNITYINDEX_H_ */
+#endif // NETWORKIT_LINKPREDICTION_SAME_COMMUNITY_INDEX_HPP_

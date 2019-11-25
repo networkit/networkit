@@ -5,8 +5,8 @@
 *      Author: Maximilian Vogel
 */
 
-#ifndef EFFECTIVEDIAMETERAPPROXIMATION_H_
-#define EFFECTIVEDIAMETERAPPROXIMATION_H_
+#ifndef NETWORKIT_DISTANCE_EFFECTIVE_DIAMETER_APPROXIMATION_HPP_
+#define NETWORKIT_DISTANCE_EFFECTIVE_DIAMETER_APPROXIMATION_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/base/Algorithm.hpp>
@@ -51,4 +51,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* EFFECTIVEDIAMETERAPPROXIMATION_H_ */
+#endif // NETWORKIT_DISTANCE_EFFECTIVE_DIAMETER_APPROXIMATION_HPP_

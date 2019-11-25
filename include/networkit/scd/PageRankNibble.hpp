@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef PAGERANKNIBBLE_H_
-#define PAGERANKNIBBLE_H_
+#ifndef NETWORKIT_SCD_PAGE_RANK_NIBBLE_HPP_
+#define NETWORKIT_SCD_PAGE_RANK_NIBBLE_HPP_
 
 #include <set>
 #include <networkit/graph/Graph.hpp>
@@ -54,4 +54,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* PAGERANKNIBBLE_H_ */
+#endif // NETWORKIT_SCD_PAGE_RANK_NIBBLE_HPP_

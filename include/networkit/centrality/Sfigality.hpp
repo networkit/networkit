@@ -5,8 +5,8 @@
  *      Author:Christian Staudt
  */
 
-#ifndef SFIGALITY_H_
-#define SFIGALITY_H_
+#ifndef NETWORKIT_CENTRALITY_SFIGALITY_HPP_
+#define NETWORKIT_CENTRALITY_SFIGALITY_HPP_
 
 #include <networkit/centrality/Centrality.hpp>
 
@@ -39,4 +39,4 @@ public:
 
 } /* namespace NetworKit */
 
-#endif /* SFIGALITY_H_ */
+#endif // NETWORKIT_CENTRALITY_SFIGALITY_HPP_

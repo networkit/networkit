@@ -5,8 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#ifndef NETWORKIT_CPP_VIZ_PIVOTMDS_H_
-#define NETWORKIT_CPP_VIZ_PIVOTMDS_H_
+#ifndef NETWORKIT_VIZ_PIVOT_MDS_HPP_
+#define NETWORKIT_VIZ_PIVOT_MDS_HPP_
 
 #include <networkit/viz/GraphLayoutAlgorithm.hpp>
 
@@ -63,4 +63,4 @@ class PivotMDS : public GraphLayoutAlgorithm<double> {
 
 } /* namespace NetworKit */
 
-#endif /* NETWORKIT_CPP_VIZ_PIVOTMDS_H_ */
+#endif // NETWORKIT_VIZ_PIVOT_MDS_HPP_

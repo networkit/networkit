@@ -5,8 +5,8 @@
  *      Author: Michael
  */
 
-#ifndef LEVELELIMINATION_H_
-#define LEVELELIMINATION_H_
+#ifndef NETWORKIT_NUMERICS_LAMG_LEVEL_LEVEL_ELIMINATION_HPP_
+#define NETWORKIT_NUMERICS_LAMG_LEVEL_LEVEL_ELIMINATION_HPP_
 
 #include <networkit/numerics/LAMG/Level/Level.hpp>
 #include <networkit/numerics/LAMG/Level/EliminationStage.hpp>
@@ -121,4 +121,4 @@ void LevelElimination<Matrix>::subVectorExtract(Vector& subVector, const Vector&
 
 } /* namespace NetworKit */
 
-#endif /* LEVELELIMINATION_H_ */
+#endif // NETWORKIT_NUMERICS_LAMG_LEVEL_LEVEL_ELIMINATION_HPP_

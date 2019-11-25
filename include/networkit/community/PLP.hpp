@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef PLP_H_
-#define PLP_H_
+#ifndef NETWORKIT_COMMUNITY_PLP_HPP_
+#define NETWORKIT_COMMUNITY_PLP_HPP_
 
 #include <networkit/community/CommunityDetectionAlgorithm.hpp>
 #include <networkit/structures/Partition.hpp>
@@ -90,4 +90,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* PLP_H_ */
+#endif // NETWORKIT_COMMUNITY_PLP_HPP_

@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef CHUNGLU_H_
-#define CHUNGLU_H_
+#ifndef NETWORKIT_GENERATORS_CHUNG_LU_GENERATOR_HPP_
+#define NETWORKIT_GENERATORS_CHUNG_LU_GENERATOR_HPP_
 
 #include <networkit/generators/StaticDegreeSequenceGenerator.hpp>
 #include <networkit/auxiliary/Random.hpp>
@@ -45,4 +45,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* CHUNGLU_H_ */
+#endif // NETWORKIT_GENERATORS_CHUNG_LU_GENERATOR_HPP_

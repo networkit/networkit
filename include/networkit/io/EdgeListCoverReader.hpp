@@ -1,5 +1,5 @@
-#ifndef EDGELISTCOVERREADER_H
-#define EDGELISTCOVERREADER_H
+#ifndef NETWORKIT_IO_EDGE_LIST_COVER_READER_HPP_
+#define NETWORKIT_IO_EDGE_LIST_COVER_READER_HPP_
 
 #include <networkit/io/CoverReader.hpp>
 
@@ -29,4 +29,4 @@ class EdgeListCoverReader : public CoverReader {
 };
 }
 
-#endif // EDGELISTCOVERREADER_H
+#endif // NETWORKIT_IO_EDGE_LIST_COVER_READER_HPP_

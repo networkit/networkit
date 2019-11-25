@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef PARTITIONWRITER_H_
-#define PARTITIONWRITER_H_
+#ifndef NETWORKIT_IO_PARTITION_WRITER_HPP_
+#define NETWORKIT_IO_PARTITION_WRITER_HPP_
 
 #include <fstream>
 
@@ -25,4 +25,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* CLUSTERINGWRITER_H_ */
+#endif // NETWORKIT_IO_PARTITION_WRITER_HPP_

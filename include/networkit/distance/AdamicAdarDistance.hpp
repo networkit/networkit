@@ -5,8 +5,8 @@
  *      Author: Michael Hamann, Gerd Lindner
  */
 
-#ifndef ADAMICADARDISTANCE_H_
-#define ADAMICADARDISTANCE_H_
+#ifndef NETWORKIT_DISTANCE_ADAMIC_ADAR_DISTANCE_HPP_
+#define NETWORKIT_DISTANCE_ADAMIC_ADAR_DISTANCE_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/distance/NodeDistance.hpp>
@@ -53,4 +53,4 @@ public:
 
 } /* namespace NetworKit */
 
-#endif /* ADAMICADARDISTANCE_H_ */
+#endif // NETWORKIT_DISTANCE_ADAMIC_ADAR_DISTANCE_HPP_

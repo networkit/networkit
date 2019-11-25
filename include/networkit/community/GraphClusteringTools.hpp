@@ -1,3 +1,10 @@
+/*
+ * GraphClusteringTools.hpp
+ */
+
+#ifndef NETWORKIT_COMMUNITY_GRAPH_CLUSTERING_TOOLS_HPP_
+#define NETWORKIT_COMMUNITY_GRAPH_CLUSTERING_TOOLS_HPP_
+
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
 
@@ -26,4 +33,4 @@ bool equalClusterings(const Partition &zeta, const Partition &eta, Graph& G);
 
 }
 
-
+#endif // NETWORKIT_COMMUNITY_GRAPH_CLUSTERING_TOOLS_HPP_

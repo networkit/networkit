@@ -5,8 +5,8 @@
  *      Author: Christian Staudt
  */
 
-#ifndef ASSORTATIVITY_H_
-#define ASSORTATIVITY_H_
+#ifndef NETWORKIT_CORRELATION_ASSORTATIVITY_HPP_
+#define NETWORKIT_CORRELATION_ASSORTATIVITY_HPP_
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -74,4 +74,4 @@ private:
 };
 
 } /* namespace NetworKit */
-#endif /* ASSORTATIVITY_H_ */
+#endif // NETWORKIT_CORRELATION_ASSORTATIVITY_HPP_

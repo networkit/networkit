@@ -5,8 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#ifndef NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICMATCHINGCOARSENING_H_
-#define NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICMATCHINGCOARSENING_H_
+#ifndef NETWORKIT_ALGEBRAIC_ALGORITHMS_ALGEBRAIC_MATCHING_COARSENING_HPP_
+#define NETWORKIT_ALGEBRAIC_ALGORITHMS_ALGEBRAIC_MATCHING_COARSENING_HPP_
 
 #include <networkit/algebraic/AlgebraicGlobals.hpp>
 #include <networkit/coarsening/GraphCoarsening.hpp>
@@ -87,4 +87,4 @@ void AlgebraicMatchingCoarsening<Matrix>::run() {
 
 } /* namespace NetworKit */
 
-#endif /* NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICMATCHINGCOARSENING_H_ */
+#endif // NETWORKIT_ALGEBRAIC_ALGORITHMS_ALGEBRAIC_MATCHING_COARSENING_HPP_

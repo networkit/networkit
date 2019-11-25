@@ -6,8 +6,8 @@
  *             Alexander van der Grinten <avdgrinten@hu-berlin.de>
  */
 
-#ifndef KADABRA_H_
-#define KADABRA_H_
+#ifndef NETWORKIT_CENTRALITY_KADABRA_BETWEENNESS_HPP_
+#define NETWORKIT_CENTRALITY_KADABRA_BETWEENNESS_HPP_
 
 #include <atomic>
 #include <memory>
@@ -242,4 +242,4 @@ KadabraBetweenness::ranking() const {
 }
 } // namespace NetworKit
 
-#endif /* ifndef KADABRA_H_ */
+#endif // NETWORKIT_CENTRALITY_KADABRA_BETWEENNESS_HPP_

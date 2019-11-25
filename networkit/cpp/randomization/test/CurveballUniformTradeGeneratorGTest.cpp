@@ -4,6 +4,7 @@
  *  Created on: 26.05.2018
  *      Author:  Hung Tran <htran@ae.cs.uni-frankfurt.de>
  */
+// networkit-format
 
 #include <gtest/gtest.h>
 
@@ -25,4 +26,4 @@ TEST_F(CurveballUniformTradeGeneratorGTest, testGeneration) {
     }
 }
 
-}
+} // namespace NetworKit

@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef HASHINGOVERLAPPER_H_
-#define HASHINGOVERLAPPER_H_
+#ifndef NETWORKIT_OVERLAP_HASHING_OVERLAPPER_HPP_
+#define NETWORKIT_OVERLAP_HASHING_OVERLAPPER_HPP_
 
 #include <functional>
 
@@ -27,4 +27,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* HASHINGOVERLAPPER_H_ */
+#endif // NETWORKIT_OVERLAP_HASHING_OVERLAPPER_HPP_

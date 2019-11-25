@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef SPANNINGFOREST_H_
-#define SPANNINGFOREST_H_
+#ifndef NETWORKIT_GRAPH_SPANNING_FOREST_HPP_
+#define NETWORKIT_GRAPH_SPANNING_FOREST_HPP_
 
 #include <networkit/graph/Graph.hpp>
 
@@ -39,4 +39,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* SPANNINGFOREST_H_ */
+#endif // NETWORKIT_GRAPH_SPANNING_FOREST_HPP_

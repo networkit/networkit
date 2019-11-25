@@ -5,8 +5,8 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#ifndef KATZINDEX_H_
-#define KATZINDEX_H_
+#ifndef NETWORKIT_LINKPREDICTION_KATZ_INDEX_HPP_
+#define NETWORKIT_LINKPREDICTION_KATZ_INDEX_HPP_
 
 #include <unordered_map>
 
@@ -81,4 +81,4 @@ public:
 
 } // namespace NetworKit
 
-#endif /* KATZINDEX_H_ */
+#endif // NETWORKIT_LINKPREDICTION_KATZ_INDEX_HPP_

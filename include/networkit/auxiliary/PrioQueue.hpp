@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef PRIORITYQUEUE_H_
-#define PRIORITYQUEUE_H_
+#ifndef NETWORKIT_AUXILIARY_PRIO_QUEUE_HPP_
+#define NETWORKIT_AUXILIARY_PRIO_QUEUE_HPP_
 
 #include <set>
 #include <vector>
@@ -234,4 +234,4 @@ inline void Aux::PrioQueue<Key, Value>::forElementsWhile(C condition,
 }
 
 } /* namespace Aux */
-#endif /* PRIORITYQUEUE_H_ */
+#endif // NETWORKIT_AUXILIARY_PRIO_QUEUE_HPP_

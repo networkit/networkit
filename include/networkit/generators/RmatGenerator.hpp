@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef RMATGENERATOR_H_
-#define RMATGENERATOR_H_
+#ifndef NETWORKIT_GENERATORS_RMAT_GENERATOR_HPP_
+#define NETWORKIT_GENERATORS_RMAT_GENERATOR_HPP_
 
 #include <networkit/generators/StaticGraphGenerator.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -51,4 +51,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* RMATGENERATOR_H_ */
+#endif // NETWORKIT_GENERATORS_RMAT_GENERATOR_HPP_

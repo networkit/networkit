@@ -5,8 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#ifndef NETWORKIT_CPP_ALGEBRAIC_MATRIXTOOLS_H_
-#define NETWORKIT_CPP_ALGEBRAIC_MATRIXTOOLS_H_
+#ifndef NETWORKIT_ALGEBRAIC_MATRIX_TOOLS_HPP_
+#define NETWORKIT_ALGEBRAIC_MATRIX_TOOLS_HPP_
 
 #include <atomic>
 #include <cmath>
@@ -122,4 +122,4 @@ NetworKit::Graph matrixToGraph(const Matrix& matrix) {
 
 
 
-#endif /* NETWORKIT_CPP_ALGEBRAIC_MATRIXTOOLS_H_ */
+#endif // NETWORKIT_ALGEBRAIC_MATRIX_TOOLS_HPP_

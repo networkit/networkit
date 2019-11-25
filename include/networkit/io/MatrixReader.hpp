@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef MATRIXREADER_H_
-#define MATRIXREADER_H_
+#ifndef NETWORKIT_IO_MATRIX_READER_HPP_
+#define NETWORKIT_IO_MATRIX_READER_HPP_
 
 #include <networkit/algebraic/CSRMatrix.hpp>
 
@@ -32,4 +32,4 @@ public:
 };
 
 }
-#endif
+#endif // NETWORKIT_IO_MATRIX_READER_HPP_

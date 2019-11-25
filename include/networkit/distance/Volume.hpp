@@ -5,8 +5,8 @@
  * Author: Franz-Benjamin Mocnik <mail@mocnik-science.net>
  */
 
-#ifndef VOLUME_H_
-#define VOLUME_H_
+#ifndef NETWORKIT_DISTANCE_VOLUME_HPP_
+#define NETWORKIT_DISTANCE_VOLUME_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <unordered_map>
@@ -62,4 +62,4 @@ public:
 
 } /* namespace NetworKit */
 
-#endif /* VOLUME_H_ */
+#endif // NETWORKIT_DISTANCE_VOLUME_HPP_

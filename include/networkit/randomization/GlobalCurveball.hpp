@@ -4,8 +4,10 @@
  *  Created on: 26.05.2018
  *      Author: Manuel Penschuck <networkit@manuel.jetzt>
  */
-#ifndef RANDOMIZATION_GLOBAL_CURVEBALL_H_
-#define RANDOMIZATION_GLOBAL_CURVEBALL_H_
+// networkit-format
+
+#ifndef NETWORKIT_RANDOMIZATION_GLOBAL_CURVEBALL_HPP_
+#define NETWORKIT_RANDOMIZATION_GLOBAL_CURVEBALL_HPP_
 
 #include <memory>
 #include <utility>
@@ -16,8 +18,9 @@
 namespace NetworKit {
 
 // pImpl
-namespace CurveballDetails { class GlobalCurveballImpl; }
-
+namespace CurveballDetails {
+class GlobalCurveballImpl;
+}
 
 class GlobalCurveball : public Algorithm {
 public:
@@ -38,11 +41,9 @@ public:
      * directed graphs, since otherwise some topologies cannot be realized (i.e., only
      * preprocessing allows for uniform samples).
      */
-    explicit GlobalCurveball(const Graph &G,
-                             count number_of_global_trades = 20,
+    explicit GlobalCurveball(const Graph &G, count number_of_global_trades = 20,
                              bool allowSelfLoops = false,
                              bool degreePreservingShufflePreprocessing = true);
-
 
     virtual ~GlobalCurveball();
 
@@ -60,17 +61,14 @@ public:
 
     virtual std::string toString() const override final;
 
-    virtual bool isParallel() const override final {
-        return false;
-    }
+    virtual bool isParallel() const override final { return false; }
 
 private:
     std::unique_ptr<CurveballDetails::GlobalCurveballImpl> impl;
     unsigned numGlobalTrades;
     bool degreePreservingShuffle;
-
 };
 
-} // ! namespace NetworKit
+} // namespace NetworKit
 
-#endif // ! RANDOMIZATION_GLOBAL_CURVEBALL_H_
+#endif // NETWORKIT_RANDOMIZATION_GLOBAL_CURVEBALL_HPP_

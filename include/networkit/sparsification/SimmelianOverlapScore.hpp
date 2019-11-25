@@ -5,8 +5,8 @@
  *      Author: Gerd Lindner
  */
 
-#ifndef SIMMELIANOVERLAPSCORE_H_
-#define SIMMELIANOVERLAPSCORE_H_
+#ifndef NETWORKIT_SPARSIFICATION_SIMMELIAN_OVERLAP_SCORE_HPP_
+#define NETWORKIT_SPARSIFICATION_SIMMELIAN_OVERLAP_SCORE_HPP_
 
 #include <networkit/sparsification/SimmelianScore.hpp>
 #include <set>
@@ -33,4 +33,4 @@ private:
 
 }
 /* namespace NetworKit */
-#endif /* SIMMELIANOVERLAPSCORE_H_ */
+#endif // NETWORKIT_SPARSIFICATION_SIMMELIAN_OVERLAP_SCORE_HPP_

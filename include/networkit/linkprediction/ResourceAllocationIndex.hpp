@@ -5,8 +5,8 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#ifndef RESOURCEALLOCATIONINDEX_H_
-#define RESOURCEALLOCATIONINDEX_H_
+#ifndef NETWORKIT_LINKPREDICTION_RESOURCE_ALLOCATION_INDEX_HPP_
+#define NETWORKIT_LINKPREDICTION_RESOURCE_ALLOCATION_INDEX_HPP_
 
 #include <networkit/linkprediction/LinkPredictor.hpp>
 
@@ -36,4 +36,4 @@ public:
 
 } // namespace NetworKit
 
-#endif /* RESOURCEALLOCATIONINDEX_H_ */
+#endif // NETWORKIT_LINKPREDICTION_RESOURCE_ALLOCATION_INDEX_HPP_

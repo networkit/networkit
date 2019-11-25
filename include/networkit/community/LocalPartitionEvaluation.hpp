@@ -1,5 +1,5 @@
-#ifndef LOCALPARTITIONEVALUATION_H
-#define LOCALPARTITIONEVALUATION_H
+#ifndef NETWORKIT_COMMUNITY_LOCAL_PARTITION_EVALUATION_HPP_
+#define NETWORKIT_COMMUNITY_LOCAL_PARTITION_EVALUATION_HPP_
 
 #include <networkit/community/LocalCommunityEvaluation.hpp>
 #include <networkit/structures/Partition.hpp>
@@ -27,4 +27,4 @@ protected:
 
 }
 
-#endif // LOCALPARTITIONEVALUATION_H
+#endif // NETWORKIT_COMMUNITY_LOCAL_PARTITION_EVALUATION_HPP_

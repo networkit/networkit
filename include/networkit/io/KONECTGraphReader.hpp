@@ -5,8 +5,8 @@
  *      Author: Roman Bange
  */
 
-#ifndef KONECTGRAPHREADER_H_
-#define KONECTGRAPHREADER_H_
+#ifndef NETWORKIT_IO_KONECT_GRAPH_READER_HPP_
+#define NETWORKIT_IO_KONECT_GRAPH_READER_HPP_
 
 #include <unordered_map>
 
@@ -41,4 +41,4 @@ namespace NetworKit {
         MultipleEdgesHandling multipleEdgesHandlingMethod;
     };
 } /* namespace NetworKit */
-#endif /* KONECTGRAPHREADER_H_ */
+#endif // NETWORKIT_IO_KONECT_GRAPH_READER_HPP_

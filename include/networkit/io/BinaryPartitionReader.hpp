@@ -5,8 +5,8 @@
  *      Author: Michael Hamann <michael.hamann@kit.edu>
  */
 
-#ifndef BINARYPARTITIONREADER_H_
-#define BINARYPARTITIONREADER_H_
+#ifndef NETWORKIT_IO_BINARY_PARTITION_READER_HPP_
+#define NETWORKIT_IO_BINARY_PARTITION_READER_HPP_
 
 #include <networkit/structures/Partition.hpp>
 
@@ -38,4 +38,4 @@ private:
 };
 
 } /* namespace NetworKit */
-#endif /* BINARYPARTITIONREADER_H_ */
+#endif // NETWORKIT_IO_BINARY_PARTITION_READER_HPP_

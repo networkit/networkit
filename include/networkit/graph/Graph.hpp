@@ -6,8 +6,8 @@
  * (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
  */
 
-#ifndef GRAPH_H_
-#define GRAPH_H_
+#ifndef NETWORKIT_GRAPH_GRAPH_HPP_
+#define NETWORKIT_GRAPH_GRAPH_HPP_
 
 #include <algorithm>
 #include <functional>
@@ -2169,4 +2169,4 @@ std::pair<count, count> Graph::removeAdjacentEdges(node u, Condition condition, 
 
 } /* namespace NetworKit */
 
-#endif /* GRAPH_H_ */
+#endif // NETWORKIT_GRAPH_GRAPH_HPP_

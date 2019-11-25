@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef SAMPLING_H_
-#define SAMPLING_H_
+#ifndef NETWORKIT_GRAPH_SAMPLING_HPP_
+#define NETWORKIT_GRAPH_SAMPLING_HPP_
 
 #include <networkit/graph/Graph.hpp>
 
@@ -29,4 +29,4 @@ public:
 
 } /* namespace NetworKit */
 
-#endif /* SAMPLING_H_ */
+#endif // NETWORKIT_GRAPH_SAMPLING_HPP_

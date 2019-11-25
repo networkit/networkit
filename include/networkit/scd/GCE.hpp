@@ -5,8 +5,8 @@
  */
 
 
-#ifndef GCE_H_
-#define GCE_H_
+#ifndef NETWORKIT_SCD_GCE_HPP_
+#define NETWORKIT_SCD_GCE_HPP_
 
 #include <unordered_set>
 
@@ -46,4 +46,4 @@ protected:
 };
 
 } /* namespace NetworKit */
-#endif
+#endif // NETWORKIT_SCD_GCE_HPP_

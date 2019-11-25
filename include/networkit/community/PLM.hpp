@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef PLM_H_
-#define PLM_H_
+#ifndef NETWORKIT_COMMUNITY_PLM_HPP_
+#define NETWORKIT_COMMUNITY_PLM_HPP_
 
 #include <networkit/community/CommunityDetectionAlgorithm.hpp>
 
@@ -72,4 +72,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* PLM_H_ */
+#endif // NETWORKIT_COMMUNITY_PLM_HPP_

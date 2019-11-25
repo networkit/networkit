@@ -5,8 +5,8 @@
  *      Author: Daniel Hoske, Christian Staudt
  */
 
-#ifndef DIAMETER_H_
-#define DIAMETER_H_
+#ifndef NETWORKIT_DISTANCE_DIAMETER_HPP_
+#define NETWORKIT_DISTANCE_DIAMETER_HPP_
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -88,4 +88,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* DIAMETER_H_ */
+#endif // NETWORKIT_DISTANCE_DIAMETER_HPP_

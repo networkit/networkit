@@ -5,8 +5,8 @@
  *      Author: Michael Hamann
  */
 
-#ifndef EDGESCORELINEARIZER_H
-#define EDGESCORELINEARIZER_H
+#ifndef NETWORKIT_EDGESCORES_EDGE_SCORE_LINEARIZER_HPP_
+#define NETWORKIT_EDGESCORES_EDGE_SCORE_LINEARIZER_HPP_
 
 #include <networkit/edgescores/EdgeScore.hpp>
 
@@ -29,4 +29,4 @@ public:
 
 } // namespace NetworKit
 
-#endif // EDGESCORELINEARIZER_H
+#endif // NETWORKIT_EDGESCORES_EDGE_SCORE_LINEARIZER_HPP_

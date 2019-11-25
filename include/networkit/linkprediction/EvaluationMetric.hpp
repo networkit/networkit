@@ -5,8 +5,8 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#ifndef EVALUATIONMETRIC_H_
-#define EVALUATIONMETRIC_H_
+#ifndef NETWORKIT_LINKPREDICTION_EVALUATION_METRIC_HPP_
+#define NETWORKIT_LINKPREDICTION_EVALUATION_METRIC_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/linkprediction/LinkPredictor.hpp>
@@ -128,4 +128,4 @@ public:
 
 } // namespace NetworKit
 
-#endif /* EVALUATIONMETRIC_H_ */
+#endif // NETWORKIT_LINKPREDICTION_EVALUATION_METRIC_HPP_

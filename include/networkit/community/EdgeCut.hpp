@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef EDGECUT_H_
-#define EDGECUT_H_
+#ifndef NETWORKIT_COMMUNITY_EDGE_CUT_HPP_
+#define NETWORKIT_COMMUNITY_EDGE_CUT_HPP_
 
 #include <networkit/community/QualityMeasure.hpp>
 
@@ -21,4 +21,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* EDGECUT_H_ */
+#endif // NETWORKIT_COMMUNITY_EDGE_CUT_HPP_

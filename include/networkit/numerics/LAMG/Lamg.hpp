@@ -5,8 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#ifndef NETWORKIT_CPP_NUMERICS_LAMG_LAMG_H_
-#define NETWORKIT_CPP_NUMERICS_LAMG_LAMG_H_
+#ifndef NETWORKIT_NUMERICS_LAMG_LAMG_HPP_
+#define NETWORKIT_NUMERICS_LAMG_LAMG_HPP_
 
 #include <vector>
 #include <omp.h>
@@ -247,4 +247,4 @@ void Lamg<Matrix>::parallelSolve(const std::vector<Vector>& rhs, std::vector<Vec
 
 } /* namespace NetworKit */
 
-#endif /* NETWORKIT_CPP_NUMERICS_LAMG_LAMG_H_ */
+#endif // NETWORKIT_NUMERICS_LAMG_LAMG_HPP_

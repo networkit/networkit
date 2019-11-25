@@ -5,8 +5,8 @@
  *      Author: forigem
  */
 
-#ifndef DOTGRAPHWRITER_H
-#define DOTGRAPHWRITER_H
+#ifndef NETWORKIT_IO_DOT_GRAPH_WRITER_HPP_
+#define NETWORKIT_IO_DOT_GRAPH_WRITER_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/io/GraphWriter.hpp>
@@ -35,4 +35,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* DOTGRAPHWRITER_H */
+#endif // NETWORKIT_IO_DOT_GRAPH_WRITER_HPP_

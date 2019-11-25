@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef GRAPHWRITER_H_
-#define GRAPHWRITER_H_
+#ifndef NETWORKIT_IO_GRAPH_WRITER_HPP_
+#define NETWORKIT_IO_GRAPH_WRITER_HPP_
 
 #include <networkit/graph/Graph.hpp>
 
@@ -24,4 +24,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* GRAPHWRITER_H_ */
+#endif // NETWORKIT_IO_GRAPH_WRITER_HPP_

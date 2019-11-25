@@ -5,8 +5,8 @@
  *      Author: Michael Wegner
  */
 
-#ifndef NETWORKIT_CPP_VIZ_GRAPHLAYOUTALGORITHM_H_
-#define NETWORKIT_CPP_VIZ_GRAPHLAYOUTALGORITHM_H_
+#ifndef NETWORKIT_VIZ_GRAPH_LAYOUT_ALGORITHM_HPP_
+#define NETWORKIT_VIZ_GRAPH_LAYOUT_ALGORITHM_HPP_
 
 #include <networkit/viz/Point.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -147,4 +147,4 @@ protected:
 
 } /* namespace NetworKit */
 
-#endif /* NETWORKIT_CPP_VIZ_GRAPHLAYOUTALGORITHM_H_ */
+#endif // NETWORKIT_VIZ_GRAPH_LAYOUT_ALGORITHM_HPP_

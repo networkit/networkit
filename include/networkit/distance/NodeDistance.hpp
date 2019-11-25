@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef NODEDISTANCE_H_
-#define NODEDISTANCE_H_
+#ifndef NETWORKIT_DISTANCE_NODE_DISTANCE_HPP_
+#define NETWORKIT_DISTANCE_NODE_DISTANCE_HPP_
 
 #include <networkit/graph/Graph.hpp>
 
@@ -52,4 +52,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* NODEDISTANCE_H_ */
+#endif // NETWORKIT_DISTANCE_NODE_DISTANCE_HPP_

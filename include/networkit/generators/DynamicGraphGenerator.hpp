@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef DYNAMICGRAPHGENERATOR_H_
-#define DYNAMICGRAPHGENERATOR_H_
+#ifndef NETWORKIT_GENERATORS_DYNAMIC_GRAPH_GENERATOR_HPP_
+#define NETWORKIT_GENERATORS_DYNAMIC_GRAPH_GENERATOR_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/dynamics/GraphEvent.hpp>
@@ -38,4 +38,4 @@ protected:
 
 } /* namespace NetworKit */
 
-#endif /* DYNAMICGRAPHGENERATOR_H_ */
+#endif // NETWORKIT_GENERATORS_DYNAMIC_GRAPH_GENERATOR_HPP_

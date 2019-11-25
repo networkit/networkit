@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef COVERAGE_H_
-#define COVERAGE_H_
+#ifndef NETWORKIT_COMMUNITY_COVERAGE_HPP_
+#define NETWORKIT_COMMUNITY_COVERAGE_HPP_
 
 #include <networkit/community/QualityMeasure.hpp>
 
@@ -23,4 +23,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* COVERAGE_H_ */
+#endif // NETWORKIT_COMMUNITY_COVERAGE_HPP_

@@ -5,8 +5,8 @@
  *      Author: elisabetta bergamini
  */
 
-#ifndef GROUPCLOSENESS_H_
-#define GROUPCLOSENESS_H_
+#ifndef NETWORKIT_CENTRALITY_GROUP_CLOSENESS_HPP_
+#define NETWORKIT_CENTRALITY_GROUP_CLOSENESS_HPP_
 
 #include <numeric>
 #include <sstream>
@@ -143,4 +143,4 @@ GroupCloseness::scoreOfGroup(const std::vector<node> &group) const {
                : ((double)G.upperNodeIdBound() - (double)group.size()) / dSum;
 }
 } /* namespace NetworKit */
-#endif /* GROUPCLOSENESS_H_ */
+#endif // NETWORKIT_CENTRALITY_GROUP_CLOSENESS_HPP_

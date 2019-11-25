@@ -5,8 +5,8 @@
  *      Author: Gerd Lindner
  */
 
-#ifndef LOCALSIMSCORE_H_
-#define LOCALSIMSCORE_H_
+#ifndef NETWORKIT_SPARSIFICATION_LOCAL_SIMILARITY_SCORE_HPP_
+#define NETWORKIT_SPARSIFICATION_LOCAL_SIMILARITY_SCORE_HPP_
 
 #include <networkit/edgescores/EdgeScore.hpp>
 
@@ -63,4 +63,4 @@ private:
 }
 /* namespace NetworKit */
 
-#endif /* LOCALSIMSCORE_H_ */
+#endif // NETWORKIT_SPARSIFICATION_LOCAL_SIMILARITY_SCORE_HPP_

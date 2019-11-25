@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef CLUSTERINGGENERATOR_H_
-#define CLUSTERINGGENERATOR_H_
+#ifndef NETWORKIT_COMMUNITY_CLUSTERING_GENERATOR_HPP_
+#define NETWORKIT_COMMUNITY_CLUSTERING_GENERATOR_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
@@ -73,4 +73,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* CLUSTERINGGENERATOR_H_ */
+#endif // NETWORKIT_COMMUNITY_CLUSTERING_GENERATOR_HPP_

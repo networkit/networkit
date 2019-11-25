@@ -5,8 +5,8 @@
  *      Author: ebergamini
  */
 
-#ifndef COMMUTETIMEDIST_H_
-#define COMMUTETIMEDIST_H_
+#ifndef NETWORKIT_DISTANCE_COMMUTE_TIME_DISTANCE_HPP_
+#define NETWORKIT_DISTANCE_COMMUTE_TIME_DISTANCE_HPP_
 
 #include <networkit/algebraic/CSRMatrix.hpp>
 #include <networkit/numerics/LAMG/Lamg.hpp>
@@ -88,4 +88,4 @@ protected:
 } /* namespace NetworKit */
 
 
-#endif /* COMMUTETIMEDIST_H_ */
+#endif // NETWORKIT_DISTANCE_COMMUTE_TIME_DISTANCE_HPP_

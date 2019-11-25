@@ -5,8 +5,8 @@
  *      Author: dhoske
  */
 
-#ifndef INCOMPLETESSSP_H_
-#define INCOMPLETESSSP_H_
+#ifndef NETWORKIT_DISTANCE_INCOMPLETE_SSSP_HPP_
+#define NETWORKIT_DISTANCE_INCOMPLETE_SSSP_HPP_
 
 #include <networkit/graph/Graph.hpp>
 
@@ -39,4 +39,4 @@ public:
 
 }
 
-#endif
+#endif // NETWORKIT_DISTANCE_INCOMPLETE_SSSP_HPP_

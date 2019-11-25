@@ -4,9 +4,10 @@
  *  Created on: Jul 11, 2017
  *      Author: Hung Tran <htran@ae.cs.uni-frankfurt.de>
  */
+// networkit-format
 
-#include <cassert>
 #include <algorithm>
+#include <cassert>
 #include <vector>
 
 #include <networkit/randomization/CurveballGlobalTradeGenerator.hpp>
@@ -29,8 +30,7 @@ CurveballGlobalTradeGenerator::value_type CurveballGlobalTradeGenerator::generat
     for (count run = 0; run < numGlobalTrades; run++) {
         // shuffling a shuffled node_permutation is okay, no need
         // to reinitialize it
-        std::shuffle(node_permutation.begin(), node_permutation.end(),
-                     Aux::Random::getURNG());
+        std::shuffle(node_permutation.begin(), node_permutation.end(), Aux::Random::getURNG());
 
         auto rand_node_iter = node_permutation.cbegin();
         for (count t_id = 0; t_id < numNodes / 2; t_id++) {
@@ -48,4 +48,4 @@ CurveballGlobalTradeGenerator::value_type CurveballGlobalTradeGenerator::generat
     return trades_out;
 }
 
-}
+} // namespace NetworKit

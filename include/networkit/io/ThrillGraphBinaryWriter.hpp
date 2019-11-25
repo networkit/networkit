@@ -4,8 +4,8 @@
  * @author Michael Hamann <michael.hamann@kit.edu>
  */
 
-#ifndef THRILLGRAPHBINARYWRITER_H_
-#define THRILLGRAPHBINARYWRITER_H_
+#ifndef NETWORKIT_IO_THRILL_GRAPH_BINARY_WRITER_HPP_
+#define NETWORKIT_IO_THRILL_GRAPH_BINARY_WRITER_HPP_
 
 #include <networkit/io/GraphWriter.hpp>
 
@@ -25,4 +25,4 @@ public:
 } /* namespace NetworKit */
 
 
-#endif /* THRILLGRAPHBINARYWRITER_H_ */
+#endif // NETWORKIT_IO_THRILL_GRAPH_BINARY_WRITER_HPP_

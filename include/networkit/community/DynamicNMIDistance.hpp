@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef DYNAMICNMIDISTANCE_H_
-#define DYNAMICNMIDISTANCE_H_
+#ifndef NETWORKIT_COMMUNITY_DYNAMIC_NMI_DISTANCE_HPP_
+#define NETWORKIT_COMMUNITY_DYNAMIC_NMI_DISTANCE_HPP_
 
 #include <networkit/community/DissimilarityMeasure.hpp>
 #include <networkit/community/NMIDistance.hpp>
@@ -41,4 +41,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* DYNAMICNMIDISTANCE_H_ */
+#endif // NETWORKIT_COMMUNITY_DYNAMIC_NMI_DISTANCE_HPP_

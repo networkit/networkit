@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef DGSWRITER_H_
-#define DGSWRITER_H_
+#ifndef NETWORKIT_DYNAMICS_DGS_WRITER_HPP_
+#define NETWORKIT_DYNAMICS_DGS_WRITER_HPP_
 
 #include <networkit/dynamics/GraphEvent.hpp>
 
@@ -25,4 +25,4 @@ public:
 
 } /* namespace NetworKit */
 
-#endif /* DGSWRITER_H_ */
+#endif // NETWORKIT_DYNAMICS_DGS_WRITER_HPP_

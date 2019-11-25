@@ -5,8 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#ifndef MULTILEVELSETUP_H_
-#define MULTILEVELSETUP_H_
+#ifndef NETWORKIT_NUMERICS_LAMG_MULTI_LEVEL_SETUP_HPP_
+#define NETWORKIT_NUMERICS_LAMG_MULTI_LEVEL_SETUP_HPP_
 
 #include <networkit/numerics/LAMG/LevelHierarchy.hpp>
 #include <networkit/numerics/Smoother.hpp>
@@ -217,7 +217,7 @@ void MultiLevelSetup<Matrix>::setupForMatrix(Matrix& A, LevelHierarchy<Matrix>& 
 
 #ifndef NDEBUG
     DEBUG("FINEST\t", A.numberOfRows(), "\t", A.nnz());
-#endif
+#endif // NDEBUG
 
     bool doneCoarsening = false;
     count numTVs = TV_NUM;
@@ -230,7 +230,7 @@ void MultiLevelSetup<Matrix>::setupForMatrix(Matrix& A, LevelHierarchy<Matrix>& 
             level++;
 #ifndef NDEBUG
             DEBUG(level, " ELIM\t\t", A.numberOfRows(), "\t", A.nnz() / 2);
-#endif
+#endif // NDEBUG
         }
 
         // AGGREGATION
@@ -242,7 +242,7 @@ void MultiLevelSetup<Matrix>::setupForMatrix(Matrix& A, LevelHierarchy<Matrix>& 
             level++;
 #ifndef NDEBUG
             DEBUG(level, " AGG\t\t", A.numberOfRows(), "\t", A.nnz() / 2);
-#endif
+#endif // NDEBUG
             if (numTVs < TV_MAX) {
                 numTVs += TV_INC;
             }
@@ -784,4 +784,4 @@ void MultiLevelSetup<Matrix>::galerkinOperator(const Matrix& P, const Matrix& A,
 
 } /* namespace NetworKit */
 
-#endif /* MULTILEVELSETUP_H_ */
+#endif // NETWORKIT_NUMERICS_LAMG_MULTI_LEVEL_SETUP_HPP_

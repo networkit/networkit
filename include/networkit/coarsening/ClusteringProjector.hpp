@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef CLUSTERINGPROJECTOR_H_
-#define CLUSTERINGPROJECTOR_H_
+#ifndef NETWORKIT_COARSENING_CLUSTERING_PROJECTOR_HPP_
+#define NETWORKIT_COARSENING_CLUSTERING_PROJECTOR_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
@@ -69,4 +69,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* CLUSTERINGPROJECTOR_H_ */
+#endif // NETWORKIT_COARSENING_CLUSTERING_PROJECTOR_HPP_

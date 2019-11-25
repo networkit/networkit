@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef GRAPHUPDATER_H_
-#define GRAPHUPDATER_H_
+#ifndef NETWORKIT_DYNAMICS_GRAPH_UPDATER_HPP_
+#define NETWORKIT_DYNAMICS_GRAPH_UPDATER_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/dynamics/GraphEvent.hpp>
@@ -37,4 +37,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* GRAPHUPDATER_H_ */
+#endif // NETWORKIT_DYNAMICS_GRAPH_UPDATER_HPP_

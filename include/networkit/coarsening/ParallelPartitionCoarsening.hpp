@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef PARALLELPARTITIONCOARSENING_H_
-#define PARALLELPARTITIONCOARSENING_H_
+#ifndef NETWORKIT_COARSENING_PARALLEL_PARTITION_COARSENING_HPP_
+#define NETWORKIT_COARSENING_PARALLEL_PARTITION_COARSENING_HPP_
 
 #include <networkit/Globals.hpp>
 #include <networkit/coarsening/GraphCoarsening.hpp>
@@ -30,4 +30,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* PARALLELPARTITIONCOARSENING_H_ */
+#endif // NETWORKIT_COARSENING_PARALLEL_PARTITION_COARSENING_HPP_

@@ -5,8 +5,8 @@
  *      Author: Gerd Lindner
  */
 
-#ifndef LOCALDEGREESCORE_H_
-#define LOCALDEGREESCORE_H_
+#ifndef NETWORKIT_SPARSIFICATION_LOCAL_DEGREE_SCORE_HPP_
+#define NETWORKIT_SPARSIFICATION_LOCAL_DEGREE_SCORE_HPP_
 
 #include <networkit/edgescores/EdgeScore.hpp>
 
@@ -29,4 +29,4 @@ public:
 
 }
 /* namespace NetworKit */
-#endif /* LOCALDEGREESCORE_H_ */
+#endif // NETWORKIT_SPARSIFICATION_LOCAL_DEGREE_SCORE_HPP_

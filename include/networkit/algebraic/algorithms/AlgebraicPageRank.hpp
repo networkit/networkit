@@ -5,8 +5,8 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-#ifndef NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICPAGERANK_H_
-#define NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICPAGERANK_H_
+#ifndef NETWORKIT_ALGEBRAIC_ALGORITHMS_ALGEBRAIC_PAGE_RANK_HPP_
+#define NETWORKIT_ALGEBRAIC_ALGORITHMS_ALGEBRAIC_PAGE_RANK_HPP_
 
 #include <networkit/centrality/Centrality.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
@@ -153,4 +153,4 @@ double AlgebraicPageRank<Matrix>::score(node v) {
 
 } /* namespace NetworKit */
 
-#endif /* NETWORKIT_CPP_ALGEBRAIC_ALGORITHMS_ALGEBRAICPAGERANK_H_ */
+#endif // NETWORKIT_ALGEBRAIC_ALGORITHMS_ALGEBRAIC_PAGE_RANK_HPP_

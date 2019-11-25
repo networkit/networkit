@@ -5,8 +5,8 @@
  *      Author: Marvin Ritter (marvin.ritter@gmail.com)
  */
 
-#ifndef GRAPH_BUILDER_H
-#define GRAPH_BUILDER_H
+#ifndef NETWORKIT_GRAPH_GRAPH_BUILDER_HPP_
+#define NETWORKIT_GRAPH_GRAPH_BUILDER_HPP_
 
 #include <vector>
 
@@ -256,4 +256,4 @@ void GraphBuilder::copyAndClear(std::vector<T> &source,
 
 } /* namespace NetworKit */
 
-#endif /* GRAPH_BUILDER_H */
+#endif // NETWORKIT_GRAPH_GRAPH_BUILDER_HPP_

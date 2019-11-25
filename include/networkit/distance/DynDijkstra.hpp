@@ -5,8 +5,8 @@
  *      Author: ebergamini
  */
 
-#ifndef DYNDIJKSTRA_H_
-#define DYNDIJKSTRA_H_
+#ifndef NETWORKIT_DISTANCE_DYN_DIJKSTRA_HPP_
+#define NETWORKIT_DISTANCE_DYN_DIJKSTRA_HPP_
 
 #include <networkit/distance/DynSSSP.hpp>
 
@@ -47,4 +47,4 @@ protected:
 
 } /* namespace NetworKit */
 
-#endif /* DYNDIJKSTRA_H_ */
+#endif // NETWORKIT_DISTANCE_DYN_DIJKSTRA_HPP_

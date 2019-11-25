@@ -5,8 +5,8 @@
 *      Author: Simon Bischof
 */
 
-#ifndef WattsStrogatzGENERATOR_H_
-#define WattsStrogatzGENERATOR_H_
+#ifndef NETWORKIT_GENERATORS_WATTS_STROGATZ_GENERATOR_HPP_
+#define NETWORKIT_GENERATORS_WATTS_STROGATZ_GENERATOR_HPP_
 
 #include <networkit/generators/StaticGraphGenerator.hpp>
 
@@ -42,4 +42,4 @@ protected:
 };
 
 } /* namespace NetworKit */
-#endif /* WattsStrogatzGENERATOR_H_ */
+#endif // NETWORKIT_GENERATORS_WATTS_STROGATZ_GENERATOR_HPP_

@@ -1,5 +1,5 @@
-#ifndef LOG_H_
-#define LOG_H_
+#ifndef NETWORKIT_AUXILIARY_LOG_HPP_
+#define NETWORKIT_AUXILIARY_LOG_HPP_
 
 #include <sstream>
 #include <string>
@@ -10,7 +10,7 @@
     #define NETWORKT_PRETTY_FUNCTION __FUNCSIG__
 #else
     #define NETWORKT_PRETTY_FUNCTION __PRETTY_FUNCTION__
-#endif
+#endif // _MSC_VER
 
 /// Logging without format string
 #define LOG_AT(level, ...) ::Aux::Log::log({__FILE__, NETWORKT_PRETTY_FUNCTION, __LINE__}, level, __VA_ARGS__)
@@ -118,4 +118,4 @@ void logF(const Location &loc, LogLevel p, const std::string &format, const T &.
 
 }} // namespace Aux::Log
 
-#endif
+#endif // NETWORKIT_AUXILIARY_LOG_HPP_

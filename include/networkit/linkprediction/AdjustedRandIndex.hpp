@@ -5,8 +5,8 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#ifndef ADJUSTEDRANDINDEX_H_
-#define ADJUSTEDRANDINDEX_H_
+#ifndef NETWORKIT_LINKPREDICTION_ADJUSTED_RAND_INDEX_HPP_
+#define NETWORKIT_LINKPREDICTION_ADJUSTED_RAND_INDEX_HPP_
 
 #include <networkit/linkprediction/LinkPredictor.hpp>
 
@@ -35,4 +35,4 @@ public:
 
 } // namespace NetworKit
 
-#endif /* ADJUSTEDRANDINDEX_H_ */
+#endif // NETWORKIT_LINKPREDICTION_ADJUSTED_RAND_INDEX_HPP_

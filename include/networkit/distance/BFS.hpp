@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef BFS_H_
-#define BFS_H_
+#ifndef NETWORKIT_DISTANCE_BFS_HPP_
+#define NETWORKIT_DISTANCE_BFS_HPP_
 
 #include <networkit/distance/SSSP.hpp>
 
@@ -40,4 +40,4 @@ public:
     void run() override;
 };
 } /* namespace NetworKit */
-#endif /* BFS_H_ */
+#endif // NETWORKIT_DISTANCE_BFS_HPP_

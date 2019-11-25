@@ -1,5 +1,5 @@
-#ifndef CLUSTERPRODUCT_H
-#define CLUSTERPRODUCT_H
+#ifndef NETWORKIT_COMMUNITY_PARTITION_INTERSECTION_HPP_
+#define NETWORKIT_COMMUNITY_PARTITION_INTERSECTION_HPP_
 
 #include <networkit/structures/Partition.hpp>
 
@@ -23,4 +23,4 @@ class PartitionIntersection {
 } /* namespace NetworKit */
 
 
-#endif // CLUSTERPRODUCT_H
+#endif // NETWORKIT_COMMUNITY_PARTITION_INTERSECTION_HPP_

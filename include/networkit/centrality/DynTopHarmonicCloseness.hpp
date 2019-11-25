@@ -5,8 +5,8 @@
  *      Author: nemes, Eugenio Angriman
  */
 
-#ifndef DYNTOPHARMONICCLOSENESS_H_
-#define DYNTOPHARMONICCLOSENESS_H_
+#ifndef NETWORKIT_CENTRALITY_DYN_TOP_HARMONIC_CLOSENESS_HPP_
+#define NETWORKIT_CENTRALITY_DYN_TOP_HARMONIC_CLOSENESS_HPP_
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/base/DynAlgorithm.hpp>
@@ -225,4 +225,4 @@ DynTopHarmonicCloseness::topkScoresList(bool includeTrail) {
 }
 
 } /* namespace NetworKit */
-#endif /* DYNTOPCLOSENESSHARMONIC_H_ */
+#endif // NETWORKIT_CENTRALITY_DYN_TOP_HARMONIC_CLOSENESS_HPP_

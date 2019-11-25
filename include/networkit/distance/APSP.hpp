@@ -5,8 +5,8 @@
  *      Author: Arie Slobbe
  */
 
-#ifndef APSP_H_
-#define APSP_H_
+#ifndef NETWORKIT_DISTANCE_APSP_HPP_
+#define NETWORKIT_DISTANCE_APSP_HPP_
 
 #include <memory>
 
@@ -74,4 +74,4 @@ class APSP : public Algorithm {
 
 } /* namespace NetworKit */
 
-#endif /* APSP_H_ */
+#endif // NETWORKIT_DISTANCE_APSP_HPP_

@@ -5,8 +5,8 @@
  *      Author: Gerd Lindner
  */
 
-#ifndef EDGESCORE_H_
-#define EDGESCORE_H_
+#ifndef NETWORKIT_EDGESCORES_EDGE_SCORE_HPP_
+#define NETWORKIT_EDGESCORES_EDGE_SCORE_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/base/Algorithm.hpp>
@@ -48,4 +48,4 @@ protected:
 }
 
 
-#endif /* EDGESCORE_H_ */
+#endif // NETWORKIT_EDGESCORES_EDGE_SCORE_HPP_

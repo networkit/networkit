@@ -5,8 +5,8 @@
  *      Author: Michael Hamann
  */
 
-#ifndef EDGESCORENORMALIZER_H
-#define EDGESCORENORMALIZER_H
+#ifndef NETWORKIT_EDGESCORES_EDGE_SCORE_NORMALIZER_HPP_
+#define NETWORKIT_EDGESCORES_EDGE_SCORE_NORMALIZER_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/edgescores/EdgeScore.hpp>
@@ -31,4 +31,4 @@ private:
 
 }
 
-#endif /* EDGESCORENORMALIZER_H */
+#endif // NETWORKIT_EDGESCORES_EDGE_SCORE_NORMALIZER_HPP_

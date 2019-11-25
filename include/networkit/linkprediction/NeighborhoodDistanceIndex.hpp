@@ -5,8 +5,8 @@
  *      Authors: cls, Kolja Esders
  */
 
-#ifndef NEIGHBORHOODDISTANCEINDEX_H_
-#define NEIGHBORHOODDISTANCEINDEX_H_
+#ifndef NETWORKIT_LINKPREDICTION_NEIGHBORHOOD_DISTANCE_INDEX_HPP_
+#define NETWORKIT_LINKPREDICTION_NEIGHBORHOOD_DISTANCE_INDEX_HPP_
 
 #include <networkit/linkprediction/LinkPredictor.hpp>
 #include <math.h>
@@ -36,4 +36,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* NEIGHBORHOODDISTANCEINDEX_H_ */
+#endif // NETWORKIT_LINKPREDICTION_NEIGHBORHOOD_DISTANCE_INDEX_HPP_

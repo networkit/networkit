@@ -5,8 +5,8 @@
  *      Author: dhoske
  */
 
-#ifndef MATRIXMARKETREADER_H_
-#define MATRIXMARKETREADER_H_
+#ifndef NETWORKIT_IO_MATRIX_MARKET_READER_HPP_
+#define NETWORKIT_IO_MATRIX_MARKET_READER_HPP_
 
 #include <networkit/io/MatrixReader.hpp>
 
@@ -31,4 +31,4 @@ public:
 };
 
 }
-#endif
+#endif // NETWORKIT_IO_MATRIX_MARKET_READER_HPP_

@@ -5,8 +5,8 @@
  *      Author: Michael
  */
 
-#ifndef LEVELAGGREGATION_H_
-#define LEVELAGGREGATION_H_
+#ifndef NETWORKIT_NUMERICS_LAMG_LEVEL_LEVEL_AGGREGATION_HPP_
+#define NETWORKIT_NUMERICS_LAMG_LEVEL_LEVEL_AGGREGATION_HPP_
 
 #include <networkit/numerics/LAMG/Level/Level.hpp>
 
@@ -48,4 +48,4 @@ void LevelAggregation<Matrix>::interpolate(const Vector& xc, Vector& xf) const {
 
 } /* namespace NetworKit */
 
-#endif /* LEVELAGGREGATION_H_ */
+#endif // NETWORKIT_NUMERICS_LAMG_LEVEL_LEVEL_AGGREGATION_HPP_

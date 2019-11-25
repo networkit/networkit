@@ -5,8 +5,8 @@
  *      Author: Maximilian Vogel
  */
 
-#ifndef GRAPHTOOLBINARYREADER_H_
-#define GRAPHTOOLBINARYREADER_H_
+#ifndef NETWORKIT_IO_GRAPH_TOOL_BINARY_READER_HPP_
+#define NETWORKIT_IO_GRAPH_TOOL_BINARY_READER_HPP_
 
 #include <fstream>
 #include <string>
@@ -73,4 +73,4 @@ private:
 };
 
 } /* namespace NetworKit */
-#endif /* GRAPHTOOLBINARYREADER_H_ */
+#endif // NETWORKIT_IO_GRAPH_TOOL_BINARY_READER_HPP_

@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef KATZCENTRALITY_H_
-#define KATZCENTRALITY_H_
+#ifndef NETWORKIT_CENTRALITY_KATZ_CENTRALITY_HPP_
+#define NETWORKIT_CENTRALITY_KATZ_CENTRALITY_HPP_
 
 #include <networkit/centrality/Centrality.hpp>
 
@@ -44,4 +44,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* KATZCENTRALITY_H_ */
+#endif // NETWORKIT_CENTRALITY_KATZ_CENTRALITY_HPP_

@@ -1,8 +1,8 @@
 /*
  * Header which provides parallel STL implementations when available.
  */
-#ifndef PARALLEL_H
-#define PARALLEL_H
+#ifndef NETWORKIT_AUXILIARY_PARALLEL_HPP_
+#define NETWORKIT_AUXILIARY_PARALLEL_HPP_
 
 #include <atomic>
 #include <functional>
@@ -22,7 +22,7 @@ namespace Aux {
         #else
         using __gnu_parallel::sort;
         using __gnu_parallel::max_element;
-        #endif
+        #endif // NETWORKIT_NO_PARALLEL_STL
 
         template <typename ValueType, typename Comp>
         void atomic_set(std::atomic<ValueType> &target, const ValueType &input, Comp shallSet) {
@@ -48,4 +48,4 @@ namespace Aux {
     }
 }
 
-#endif
+#endif // NETWORKIT_AUXILIARY_PARALLEL_HPP_

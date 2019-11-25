@@ -5,8 +5,8 @@
  *      Author: forigem
  */
 
-#ifndef BarabasiAlbertGenerator_H_
-#define BarabasiAlbertGenerator_H_
+#ifndef NETWORKIT_GENERATORS_BARABASI_ALBERT_GENERATOR_HPP_
+#define NETWORKIT_GENERATORS_BARABASI_ALBERT_GENERATOR_HPP_
 
 #include <networkit/generators/StaticGraphGenerator.hpp>
 
@@ -58,4 +58,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* BarabasiAlbertGenerator_H_ */
+#endif // NETWORKIT_GENERATORS_BARABASI_ALBERT_GENERATOR_HPP_

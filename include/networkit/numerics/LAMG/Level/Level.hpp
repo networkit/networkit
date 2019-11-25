@@ -5,8 +5,8 @@
  *      Author: Michael
  */
 
-#ifndef LEVEL_H_
-#define LEVEL_H_
+#ifndef NETWORKIT_NUMERICS_LAMG_LEVEL_LEVEL_HPP_
+#define NETWORKIT_NUMERICS_LAMG_LEVEL_LEVEL_HPP_
 
 #include <networkit/algebraic/CSRMatrix.hpp>
 
@@ -56,4 +56,4 @@ public:
 
 } /* namespace NetworKit */
 
-#endif /* LEVEL_H_ */
+#endif // NETWORKIT_NUMERICS_LAMG_LEVEL_LEVEL_HPP_

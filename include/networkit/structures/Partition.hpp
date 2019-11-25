@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef PARTITION_H_
-#define PARTITION_H_
+#ifndef NETWORKIT_STRUCTURES_PARTITION_HPP_
+#define NETWORKIT_STRUCTURES_PARTITION_HPP_
 
 #include <set>
 #include <vector>
@@ -344,4 +344,4 @@ inline void Partition::parallelForEntries(Callback handle) const {
 
 } /* namespace NetworKit */
 
-#endif /* PARTITION_H_ */
+#endif // NETWORKIT_STRUCTURES_PARTITION_HPP_

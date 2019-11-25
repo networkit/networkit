@@ -5,8 +5,8 @@
 *      Author: Eugenio Angriman
 */
 
-#ifndef DYNWEAKLYCONNECTEDCOMPONENTS_H_
-#define DYNWEAKLYCONNECTEDCOMPONENTS_H_
+#ifndef NETWORKIT_COMPONENTS_DYN_WEAKLY_CONNECTED_COMPONENTS_HPP_
+#define NETWORKIT_COMPONENTS_DYN_WEAKLY_CONNECTED_COMPONENTS_HPP_
 
 #include <map>
 #include <vector>
@@ -149,4 +149,4 @@ namespace NetworKit {
 }
 
 
-#endif /* DynWeaklyConnectedComponents_H_ */
+#endif // NETWORKIT_COMPONENTS_DYN_WEAKLY_CONNECTED_COMPONENTS_HPP_

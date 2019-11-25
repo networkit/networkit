@@ -5,8 +5,8 @@
  *      Author: Gerd Lindner
  */
 
-#ifndef FORESTFIRESCORE_H_
-#define FORESTFIRESCORE_H_
+#ifndef NETWORKIT_SPARSIFICATION_FOREST_FIRE_SCORE_HPP_
+#define NETWORKIT_SPARSIFICATION_FOREST_FIRE_SCORE_HPP_
 
 #include <networkit/edgescores/EdgeScore.hpp>
 
@@ -33,4 +33,4 @@ private:
 
 }
 /* namespace NetworKit */
-#endif /* FORESTFIRESCORE_H_ */
+#endif // NETWORKIT_SPARSIFICATION_FOREST_FIRE_SCORE_HPP_

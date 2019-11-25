@@ -5,8 +5,8 @@
  *      Author: Elisabetta Bergamini
  */
 
-#ifndef DYNBETNODE1_H_
-#define DYNBETNODE1_H_
+#ifndef NETWORKIT_CENTRALITY_DYN_BETWEENNESS_ONE_NODE_HPP_
+#define NETWORKIT_CENTRALITY_DYN_BETWEENNESS_ONE_NODE_HPP_
 
 #include <networkit/dynamics/GraphEvent.hpp>
 #include <networkit/base/DynAlgorithm.hpp>
@@ -76,4 +76,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* DYNBETNODE1_H_ */
+#endif // NETWORKIT_CENTRALITY_DYN_BETWEENNESS_ONE_NODE_HPP_

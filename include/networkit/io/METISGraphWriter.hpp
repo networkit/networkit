@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef METISGRAPHWRITER_H_
-#define METISGRAPHWRITER_H_
+#ifndef NETWORKIT_IO_METIS_GRAPH_WRITER_HPP_
+#define NETWORKIT_IO_METIS_GRAPH_WRITER_HPP_
 
 #include <networkit/io/GraphWriter.hpp>
 
@@ -27,4 +27,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* METISGRAPHWRITER_H_ */
+#endif // NETWORKIT_IO_METIS_GRAPH_WRITER_HPP_

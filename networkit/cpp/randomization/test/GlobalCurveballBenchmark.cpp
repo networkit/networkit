@@ -4,24 +4,25 @@
  *  Created on: 24.05.2018
  *      Author: Manuel Penschuck (networkit@manuel.jetzt)
  */
+// networkit-format
 
 #include <gtest/gtest.h>
 
 #include <networkit/randomization/GlobalCurveball.hpp>
 #include <networkit/randomization/GlobalTradeSequence.hpp>
 
-#include <networkit/graph/Graph.hpp>
-#include <networkit/generators/HyperbolicGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
+#include <networkit/generators/HyperbolicGenerator.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
-class GlobalCurveballBenchmark : public ::testing::Test  {
+class GlobalCurveballBenchmark : public ::testing::Test {
 protected:
-    void checkWithGraph(Graph&);
+    void checkWithGraph(Graph &);
 };
 
-void GlobalCurveballBenchmark::checkWithGraph(Graph& G) {
+void GlobalCurveballBenchmark::checkWithGraph(Graph &G) {
     node numNodes = G.numberOfNodes();
     const count numTrades = 2;
     std::vector<node> degrees(numNodes + 1);
@@ -46,15 +47,12 @@ void GlobalCurveballBenchmark::checkWithGraph(Graph& G) {
         }
     });
 
-
     GlobalCurveball algo(G, numTrades);
     algo.run();
 
     // check degrees
     Graph outG = algo.getGraph();
-    outG.forNodes([&](node u){
-        ASSERT_EQ(degrees[u], outG.degree(u));
-    });
+    outG.forNodes([&](node u) { ASSERT_EQ(degrees[u], outG.degree(u)); });
 }
 
 TEST_F(GlobalCurveballBenchmark, benchmarkCurveballHyperbolic) {
@@ -77,8 +75,7 @@ TEST_F(GlobalCurveballBenchmark, benchmarkErdosRenyiHyperbolic) {
     this->checkWithGraph(G);
 }
 
-
-template<typename T>
+template <typename T>
 static void benchmarkHash(const count n, const count r) {
     Aux::Random::setSeed(1, false);
     CurveballDetails::GlobalTradeSequence<T> hash{n, r, Aux::Random::getURNG()};
@@ -86,7 +83,7 @@ static void benchmarkHash(const count n, const count r) {
     Aux::Timer timer;
     timer.start();
     node tmp = 0;
-    for (count ir=0; ir < r; ir++) {
+    for (count ir = 0; ir < r; ir++) {
         hash.switchToRound(r);
         for (count i = 0; i < n; i++) {
             tmp += hash.hash(i);
@@ -96,16 +93,17 @@ static void benchmarkHash(const count n, const count r) {
     timer.stop();
 
     const auto time = static_cast<double>(timer.elapsedNanoseconds());
-    std::cout << "Time: " << time << "ns (" << (time / (2*r*n)) << "ns per Hash)\n";
-    if (time == 1) {std::cout << tmp;}
+    std::cout << "Time: " << time << "ns (" << (time / (2 * r * n)) << "ns per Hash)\n";
+    if (time == 1) {
+        std::cout << tmp;
+    }
 }
 
 TEST_F(GlobalCurveballBenchmark, benchmarkGlobalTradeSequence) {
     const count n = 100000;
     const count r = 10;
 
-    benchmarkHash<CurveballDetails::LinearCongruentialMap<node> >(n, r);
+    benchmarkHash<CurveballDetails::LinearCongruentialMap<node>>(n, r);
 }
 
-
-}
+} // namespace NetworKit

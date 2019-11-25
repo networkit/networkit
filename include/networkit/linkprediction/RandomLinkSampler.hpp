@@ -5,8 +5,8 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#ifndef RANDOMLINKSAMPLER_H_
-#define RANDOMLINKSAMPLER_H_
+#ifndef NETWORKIT_LINKPREDICTION_RANDOM_LINK_SAMPLER_HPP_
+#define NETWORKIT_LINKPREDICTION_RANDOM_LINK_SAMPLER_HPP_
 
 #include <utility>
 
@@ -44,4 +44,4 @@ Graph byCount(const Graph& G, count numLinks);
 
 } // namespace NetworKit
 
-#endif /* RANDOMLINKSAMPLER_H_ */
+#endif // NETWORKIT_LINKPREDICTION_RANDOM_LINK_SAMPLER_HPP_

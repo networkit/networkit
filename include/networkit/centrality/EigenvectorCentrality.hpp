@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef EIGENVECTORCENTRALITY_H_
-#define EIGENVECTORCENTRALITY_H_
+#ifndef NETWORKIT_CENTRALITY_EIGENVECTOR_CENTRALITY_HPP_
+#define NETWORKIT_CENTRALITY_EIGENVECTOR_CENTRALITY_HPP_
 
 #include <networkit/centrality/Centrality.hpp>
 
@@ -38,4 +38,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* EIGENVECTORCENTRALITY_H_ */
+#endif // NETWORKIT_CENTRALITY_EIGENVECTOR_CENTRALITY_HPP_

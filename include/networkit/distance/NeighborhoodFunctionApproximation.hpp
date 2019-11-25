@@ -5,8 +5,8 @@
 *      Author: Maximilian Vogel
 */
 
-#ifndef APPROXNEIGHBORHOODFUNCTION_H_
-#define APPROXNEIGHBORHOODFUNCTION_H_
+#ifndef NETWORKIT_DISTANCE_NEIGHBORHOOD_FUNCTION_APPROXIMATION_HPP_
+#define NETWORKIT_DISTANCE_NEIGHBORHOOD_FUNCTION_APPROXIMATION_HPP_
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -50,4 +50,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* APPROXNEIGHBORHOODFUNCTION_H_ */
+#endif // NETWORKIT_DISTANCE_NEIGHBORHOOD_FUNCTION_APPROXIMATION_HPP_

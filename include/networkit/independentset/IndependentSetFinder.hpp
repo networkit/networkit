@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef INDEPENDENTSETFINDER_H_
-#define INDEPENDENTSETFINDER_H_
+#ifndef NETWORKIT_INDEPENDENTSET_INDEPENDENT_SET_FINDER_HPP_
+#define NETWORKIT_INDEPENDENTSET_INDEPENDENT_SET_FINDER_HPP_
 
 #include <networkit/graph/Graph.hpp>
 
@@ -50,4 +50,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* INDEPENDENTSETFINDER_H_ */
+#endif // NETWORKIT_INDEPENDENTSET_INDEPENDENT_SET_FINDER_HPP_

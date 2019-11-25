@@ -1,5 +1,5 @@
-#ifndef UNIONMAXIMUMSPANNINGFOREST_H
-#define UNIONMAXIMUMSPANNINGFOREST_H
+#ifndef NETWORKIT_GRAPH_UNION_MAXIMUM_SPANNING_FOREST_HPP_
+#define NETWORKIT_GRAPH_UNION_MAXIMUM_SPANNING_FOREST_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <limits>
@@ -124,4 +124,4 @@ UnionMaximumSpanningForest::UnionMaximumSpanningForest(const Graph &G, const std
 
 } // namespace NetworKit
 
-#endif // UNIONMAXIMUMSPANNINGFOREST_H
+#endif // NETWORKIT_GRAPH_UNION_MAXIMUM_SPANNING_FOREST_HPP_

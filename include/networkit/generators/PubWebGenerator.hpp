@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef PUBWEBGENERATOR_H_
-#define PUBWEBGENERATOR_H_
+#ifndef NETWORKIT_GENERATORS_PUB_WEB_GENERATOR_HPP_
+#define NETWORKIT_GENERATORS_PUB_WEB_GENERATOR_HPP_
 
 #include <networkit/generators/StaticGraphGenerator.hpp>
 
@@ -99,4 +99,4 @@ protected:
 };
 
 } /* namespace NetworKit */
-#endif /* PUBWEBGENERATOR_H_ */
+#endif // NETWORKIT_GENERATORS_PUB_WEB_GENERATOR_HPP_

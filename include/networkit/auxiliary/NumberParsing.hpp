@@ -1,5 +1,5 @@
-#ifndef NUMBER_PARSING_H
-#define NUMBER_PARSING_H
+#ifndef NETWORKIT_AUXILIARY_NUMBER_PARSING_HPP_
+#define NETWORKIT_AUXILIARY_NUMBER_PARSING_HPP_
 
 #include <algorithm>
 #include <cassert>
@@ -301,4 +301,4 @@ double powerOf10(Integer exp) {
 
 }} // namespace Aux::Parsing
 
-#endif
+#endif // NETWORKIT_AUXILIARY_NUMBER_PARSING_HPP_

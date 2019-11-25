@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef PARALLELMATCHER_H_
-#define PARALLELMATCHER_H_
+#ifndef NETWORKIT_MATCHING_LOCAL_MAX_MATCHER_HPP_
+#define NETWORKIT_MATCHING_LOCAL_MAX_MATCHER_HPP_
 
 #include <set>
 #include <algorithm>
@@ -34,4 +34,4 @@ protected:
 };
 
 } /* namespace NetworKit */
-#endif /* PARALLELMATCHER_H_ */
+#endif // NETWORKIT_MATCHING_LOCAL_MAX_MATCHER_HPP_

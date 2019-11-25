@@ -5,8 +5,8 @@
  *      Author: Gerd Lindner
  */
 
-#ifndef MULTISCALESCORE_H_
-#define MULTISCALESCORE_H_
+#ifndef NETWORKIT_SPARSIFICATION_MULTISCALE_SCORE_HPP_
+#define NETWORKIT_SPARSIFICATION_MULTISCALE_SCORE_HPP_
 
 #include <networkit/edgescores/EdgeScore.hpp>
 
@@ -36,4 +36,4 @@ private:
 }
 /* namespace NetworKit */
 
-#endif /* MULTISCALESCORE_H_ */
+#endif // NETWORKIT_SPARSIFICATION_MULTISCALE_SCORE_HPP_

@@ -5,8 +5,8 @@
 *      Author: Marc Nemes
 */
 
-#ifndef EFFECTIVEDIAMETER_H_
-#define EFFECTIVEDIAMETER_H_
+#ifndef NETWORKIT_DISTANCE_EFFECTIVE_DIAMETER_HPP_
+#define NETWORKIT_DISTANCE_EFFECTIVE_DIAMETER_HPP_
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -43,4 +43,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* EFFECTIVEDIAMETER_H_ */
+#endif // NETWORKIT_DISTANCE_EFFECTIVE_DIAMETER_HPP_

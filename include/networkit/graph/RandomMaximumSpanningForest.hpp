@@ -1,5 +1,5 @@
-#ifndef RANDOMMAXIMUMSPANNINGFOREST_H
-#define RANDOMMAXIMUMSPANNINGFOREST_H
+#ifndef NETWORKIT_GRAPH_RANDOM_MAXIMUM_SPANNING_FOREST_HPP_
+#define NETWORKIT_GRAPH_RANDOM_MAXIMUM_SPANNING_FOREST_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <limits>
@@ -133,4 +133,4 @@ RandomMaximumSpanningForest::RandomMaximumSpanningForest(const Graph &G, const s
 
 } // namespace NetworKit
 
-#endif // RANDOMMAXIMUMSPANNINGFOREST_H
+#endif // NETWORKIT_GRAPH_RANDOM_MAXIMUM_SPANNING_FOREST_HPP_

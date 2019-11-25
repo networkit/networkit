@@ -5,8 +5,8 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-#ifndef OVERLAPPER_H_
-#define OVERLAPPER_H_
+#ifndef NETWORKIT_OVERLAP_OVERLAPPER_HPP_
+#define NETWORKIT_OVERLAP_OVERLAPPER_HPP_
 
 #include <set>
 #include <vector>
@@ -30,4 +30,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* OVERLAPPER_H_ */
+#endif // NETWORKIT_OVERLAP_OVERLAPPER_HPP_

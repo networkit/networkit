@@ -5,8 +5,8 @@
  *      Author: Maximilian Vogel (maximilian.vogel@student.kit.edu)
  */
 
-#ifndef GMLGRAPHREADER_H_
-#define GMLGRAPHREADER_H_
+#ifndef NETWORKIT_IO_GML_GRAPH_READER_HPP_
+#define NETWORKIT_IO_GML_GRAPH_READER_HPP_
 
 #include <networkit/io/GraphReader.hpp>
 
@@ -34,4 +34,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* GMLGRAPHREADER_H_ */
+#endif // NETWORKIT_IO_GML_GRAPH_READER_HPP_

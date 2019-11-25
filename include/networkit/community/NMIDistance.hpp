@@ -5,8 +5,8 @@
  *      Author: cls
  */
 
-#ifndef NMIDISTANCE_H_
-#define NMIDISTANCE_H_
+#ifndef NETWORKIT_COMMUNITY_NMI_DISTANCE_HPP_
+#define NETWORKIT_COMMUNITY_NMI_DISTANCE_HPP_
 
 
 #include <networkit/community/DissimilarityMeasure.hpp>
@@ -29,4 +29,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* NORMALIZEDMUTUALINFORMATION_H_ */
+#endif // NETWORKIT_COMMUNITY_NMI_DISTANCE_HPP_

@@ -1,5 +1,5 @@
-#ifndef FUNCTIONTRAITS_H
-#define FUNCTIONTRAITS_H
+#ifndef NETWORKIT_AUXILIARY_FUNCTION_TRAITS_HPP_
+#define NETWORKIT_AUXILIARY_FUNCTION_TRAITS_HPP_
 
 #include <type_traits>
 #include <tuple>
@@ -74,4 +74,4 @@ struct FunctionTraits < F && > : public FunctionTraits<F>
 
 } // namespace Aux
 
-#endif // FUNCTIONTRAITS_H
+#endif // NETWORKIT_AUXILIARY_FUNCTION_TRAITS_HPP_

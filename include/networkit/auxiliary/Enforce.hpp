@@ -1,5 +1,5 @@
-#ifndef ENFORCE_H_
-#define ENFORCE_H_
+#ifndef NETWORKIT_AUXILIARY_ENFORCE_HPP_
+#define NETWORKIT_AUXILIARY_ENFORCE_HPP_
 
 #include <cassert>
 #include <stdexcept>
@@ -116,4 +116,4 @@ namespace Checkers {
 
 } // namespace Aux
 
-#endif // ENFORCE_H_
+#endif // NETWORKIT_AUXILIARY_ENFORCE_HPP_

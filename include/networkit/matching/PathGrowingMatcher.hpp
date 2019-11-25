@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#ifndef PATHGROWINGMATCHER_H_
-#define PATHGROWINGMATCHER_H_
+#ifndef NETWORKIT_MATCHING_PATH_GROWING_MATCHER_HPP_
+#define NETWORKIT_MATCHING_PATH_GROWING_MATCHER_HPP_
 
 #include <networkit/matching/Matcher.hpp>
 #include <networkit/matching/Matching.hpp>
@@ -41,4 +41,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* PATHGROWINGMATCHER_H_ */
+#endif // NETWORKIT_MATCHING_PATH_GROWING_MATCHER_HPP_

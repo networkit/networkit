@@ -5,8 +5,8 @@
  *      Author: Michael Wegner
  */
 
-#ifndef NETWORKIT_CPP_VIZ_OCTREE_H_
-#define NETWORKIT_CPP_VIZ_OCTREE_H_
+#ifndef NETWORKIT_VIZ_OCTREE_HPP_
+#define NETWORKIT_VIZ_OCTREE_HPP_
 
 #include <cmath>
 #include <vector>
@@ -429,4 +429,4 @@ void Octree<T>::approximateDistance(const OctreeNode<T>& node, const Point<T>& p
 
 } /* namespace NetworKit */
 
-#endif /* NETWORKIT_CPP_VIZ_OCTREE_H_ */
+#endif // NETWORKIT_VIZ_OCTREE_HPP_

@@ -5,8 +5,8 @@
 *      Author: Maximilian Vogel
 */
 
-#ifndef HOPPLOTAPPROXIMATION_H_
-#define HOPPLOTAPPROXIMATION_H_
+#ifndef NETWORKIT_DISTANCE_HOP_PLOT_APPROXIMATION_HPP_
+#define NETWORKIT_DISTANCE_HOP_PLOT_APPROXIMATION_HPP_
 
 #include <map>
 #include <networkit/graph/Graph.hpp>
@@ -55,4 +55,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* HOPPLOTAPPROXIMATION_H_ */
+#endif // NETWORKIT_DISTANCE_HOP_PLOT_APPROXIMATION_HPP_

@@ -1,5 +1,5 @@
-#ifndef GRAPHTOOLS_H
-#define GRAPHTOOLS_H
+#ifndef NETWORKIT_GRAPH_GRAPH_TOOLS_HPP_
+#define NETWORKIT_GRAPH_GRAPH_TOOLS_HPP_
 
 #include <unordered_map>
 #include <networkit/graph/Graph.hpp>
@@ -73,7 +73,7 @@ Graph getRemappedGraph(const Graph& graph, count numNodes,
     graph.forNodes([&] (node u) {
         assert(skipNode(u) || oldIdToNew(u) < numNodes);
     });
-#endif
+#endif // NDEBUG
 
     const auto directed = graph.isDirected();
     Graph Gnew(numNodes, graph.isWeighted(), directed);
@@ -107,4 +107,4 @@ Graph getRemappedGraph(const Graph& graph, count numNodes, UnaryIdMapper&& oldId
 }	// namespace GraphTools
 }	// namespace NetworKit
 
-#endif // GRAPHTOOLS_H
+#endif // NETWORKIT_GRAPH_GRAPH_TOOLS_HPP_

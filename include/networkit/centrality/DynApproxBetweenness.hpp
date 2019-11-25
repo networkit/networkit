@@ -5,8 +5,8 @@
  *      Author: ebergamini
  */
 
-#ifndef DYNAPPROXBETW_H_
-#define DYNAPPROXBETW_H_
+#ifndef NETWORKIT_CENTRALITY_DYN_APPROX_BETWEENNESS_HPP_
+#define NETWORKIT_CENTRALITY_DYN_APPROX_BETWEENNESS_HPP_
 
 #include <networkit/centrality/Centrality.hpp>
 #include <networkit/base/DynAlgorithm.hpp>
@@ -82,4 +82,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif /* DYNAPPROXBETW_H_ */
+#endif // NETWORKIT_CENTRALITY_DYN_APPROX_BETWEENNESS_HPP_

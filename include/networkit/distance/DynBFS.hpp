@@ -5,8 +5,8 @@
  *      Author: cls, ebergamini
  */
 
-#ifndef DYNBFS_H_
-#define DYNBFS_H_
+#ifndef NETWORKIT_DISTANCE_DYN_BFS_HPP_
+#define NETWORKIT_DISTANCE_DYN_BFS_HPP_
 
 #include <networkit/distance/DynSSSP.hpp>
 
@@ -54,4 +54,4 @@ inline bigfloat DynBFS::getNumberOfPaths(node t) const {
 
 } /* namespace NetworKit */
 
-#endif /* DYNSSSP_H_ */
+#endif // NETWORKIT_DISTANCE_DYN_BFS_HPP_

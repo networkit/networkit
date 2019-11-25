@@ -2,8 +2,8 @@
  * DotPartitionWriter.h
  */
 
-#ifndef DOTPARTITIONWRITER_H_
-#define DOTPARTITIONWRITER_H_
+#ifndef NETWORKIT_IO_DOT_PARTITION_WRITER_HPP_
+#define NETWORKIT_IO_DOT_PARTITION_WRITER_HPP_
 
 #include <map>
 
@@ -23,4 +23,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif /* DOTPARTITIONGWRITER_H_ */
+#endif // NETWORKIT_IO_DOT_PARTITION_WRITER_HPP_
