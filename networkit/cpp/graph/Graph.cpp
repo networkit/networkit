@@ -693,7 +693,7 @@ void Graph::addEdge(node u, node v, edgeweight ew) {
         inEdges[v].push_back(u);
 
         if (edgesIndexed) {
-            inEdgeIds[v].push_back(id);
+            inEdgeIds[v].push_back(omega - 1);
         }
 
         if (weighted) {
