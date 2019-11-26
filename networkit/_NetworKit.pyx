@@ -28,7 +28,7 @@ from libc.stdint cimport uint8_t
 # the C++ standard library
 from libcpp cimport bool as bool_t
 from libcpp.vector cimport vector
-from libcpp.utility cimport pair
+from libcpp.utility cimport pair, tuple
 from libcpp.map cimport map
 from libcpp.set cimport set
 from libcpp.stack cimport stack
@@ -6055,7 +6055,12 @@ cdef class EdmondsKarp:
 
 # Module: properties
 
-cdef extern from "<networkit/components/ConnectedComponents.hpp>":
+cdef extern from "<networkit/components/ConnectedComponents.hpp>" namespace "NetworKit":
+	ctypedef struct cc_result:
+		node* components
+		node n_nodes
+		node* component_sizes
+		node n_components
 
 	cdef cppclass _ConnectedComponents "NetworKit::ConnectedComponents"(_Algorithm):
 		_ConnectedComponents(_Graph G) except +
@@ -6065,7 +6070,7 @@ cdef extern from "<networkit/components/ConnectedComponents.hpp>":
 		map[index, count] getComponentSizes() except +
 		vector[vector[node]] getComponents() except +
 		@staticmethod
-		node * get_raw_partition(_Graph G) nogil except +
+		cc_result get_raw_partition(_Graph G) nogil except +
 		@staticmethod
 		_Graph extractLargestConnectedComponent(_Graph G, bool_t) nogil except +
 
@@ -6137,15 +6142,22 @@ cdef class ConnectedComponents(Algorithm):
 
 	@staticmethod
 	def get_raw_partition(Graph graph):
-		cdef node* array
-		cdef np.ndarray ndarray
-		cdef index size
-		array = _ConnectedComponents.get_raw_partition(graph._this)
+		cdef node* components
+		cdef node* component_sizes
+		cdef np.ndarray np_mapping_array
+		cdef index n_nodes
+		cdef index n_components
+		cc_result = _ConnectedComponents.get_raw_partition(graph._this)
+		components = cc_result.components
+		n_nodes = cc_result.n_nodes
+		component_sizes = cc_result.component_sizes
+		n_components = cc_result.n_components
 		array_wrapper = ArrayWrapper()
-		size = graph.upperNodeIdBound()
-		ndarray = array_wrapper.as_ndarray(size, <void *>array)
+		np_mapping_array = array_wrapper.as_ndarray(n_nodes, <void *>components)
+		array_wrapper = ArrayWrapper()
+		np_component_sizes = array_wrapper.as_ndarray(n_components, <void *>component_sizes)
 		
-		return ndarray
+		return np_mapping_array, np_component_sizes
 
 	@staticmethod
 	def extractLargestConnectedComponent(Graph graph, bool_t compactGraph = False):
