@@ -76,6 +76,7 @@ public:
      * (i.e. re-numbered from 0 to n-1). If false, the node ids will not be changed.
      */
     static Graph extractLargestConnectedComponent(const Graph &G, bool compactGraph = false);
+    static node* get_raw_partition(const Graph &G);
 
 private:
     const Graph& G;

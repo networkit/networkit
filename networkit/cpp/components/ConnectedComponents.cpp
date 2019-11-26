@@ -7,6 +7,7 @@
 
 #include <set>
 #include <unordered_map>
+#include <algorithm>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
@@ -19,6 +20,40 @@ ConnectedComponents::ConnectedComponents(const Graph& G) : G(G) {
     if (G.isDirected()) {
         throw std::runtime_error("Error, connected components of directed graphs cannot be computed, use StronglyConnectedComponents for them.");
     }
+}
+
+node * ConnectedComponents::get_raw_partition(const Graph & G) {
+    node n_components = 0;
+    node max_id = G.upperNodeIdBound();
+    auto array = new node[max_id];
+
+    std::fill_n(array, max_id, none);
+    std::queue<node> q;
+
+    // perform breadth-first searches
+    G.forNodes([&](node u) {
+        if (array[u] == none) {
+            index c = n_components;
+
+            q.push(u);
+            array[u] = c;
+
+            do {
+                node u = q.front();
+                q.pop();
+                // enqueue neighbors, set array
+                G.forNeighborsOf(u, [&](node v) {
+                    if (array[v] == none) {
+                        q.push(v);
+                        array[v] = c;
+                    }
+                });
+            } while (!q.empty());
+
+            ++n_components;
+        }
+    });
+    return array;
 }
 
 void ConnectedComponents::run() {

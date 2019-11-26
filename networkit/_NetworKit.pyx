@@ -1,15 +1,14 @@
 
 # cython: language_level=3
 
-#includes
-# needed for collections.Iterable
-from networkit.exceptions import ReducedFunctionalityWarning
 import collections
 import math
 import os
 import tempfile
 import warnings
-
+#includes
+# needed for collections.Iterable
+from networkit.exceptions import ReducedFunctionalityWarning
 
 try:
 	import pandas
@@ -54,6 +53,60 @@ import numpy as np
 # currently part of the Cython distribution).
 cimport numpy as np
 cimport cython
+from libc.stdlib cimport free
+from cpython cimport PyObject, Py_INCREF
+# Numpy must be initialized. When using numpy from C or Cython you must
+# _always_ do that, or you will have segfaults
+np.import_array()
+
+cdef class ArrayWrapper:
+	cdef void* data_ptr
+	cdef index size
+
+	cdef set_data(self, index size, void* data_ptr):
+		""" Set the data of the array
+	
+		This cannot be done in the constructor as it must recieve C-level
+		arguments.
+	
+		Parameters:
+		-----------
+		size: int
+			Length of the array.
+		data_ptr: void*
+			Pointer to the data            
+	
+		"""
+		self.data_ptr = data_ptr
+		self.size = size
+
+	def __array__(self):
+		""" Here we use the __array__ method, that is called when numpy
+		    tries to get an array from the object."""
+		cdef np.npy_intp shape[1]
+		shape[0] = <np.npy_intp> self.size
+		# Create a 1D array, of length 'size'
+		ndarray = np.PyArray_SimpleNewFromData(1, shape,
+		                                       np.NPY_UINT64, self.data_ptr)
+		return ndarray
+
+	cdef as_ndarray(self, index size, void* data_ptr):
+		cdef np.ndarray ndarray
+		self.set_data(size, data_ptr)
+		ndarray = np.array(self, copy=False)
+		# Assign our object to the 'base' of the ndarray object
+		ndarray.base = <PyObject*> self
+		# Increment the reference count, as the above assignement was done in
+		# C, and Python does not know that there is this additional reference
+		Py_INCREF(self)
+		return ndarray
+
+	def __dealloc__(self):
+		""" Frees the array. This is called by Python when all the
+		references to the object are gone. """
+		free(<void*>self.data_ptr)
+
+
 cdef extern from "<networkit/Globals.hpp>" namespace "NetworKit":
 
 	index _none "NetworKit::none"
@@ -6012,6 +6065,8 @@ cdef extern from "<networkit/components/ConnectedComponents.hpp>":
 		map[index, count] getComponentSizes() except +
 		vector[vector[node]] getComponents() except +
 		@staticmethod
+		node * get_raw_partition(_Graph G) nogil except +
+		@staticmethod
 		_Graph extractLargestConnectedComponent(_Graph G, bool_t) nogil except +
 
 cdef class ConnectedComponents(Algorithm):
@@ -6079,6 +6134,18 @@ cdef class ConnectedComponents(Algorithm):
 			The connected components.
 		"""
 		return (<_ConnectedComponents*>(self._this)).getComponents()
+
+	@staticmethod
+	def get_raw_partition(Graph graph):
+		cdef node* array
+		cdef np.ndarray ndarray
+		cdef index size
+		array = _ConnectedComponents.get_raw_partition(graph._this)
+		array_wrapper = ArrayWrapper()
+		size = graph.upperNodeIdBound()
+		ndarray = array_wrapper.as_ndarray(size, <void *>array)
+		
+		return ndarray
 
 	@staticmethod
 	def extractLargestConnectedComponent(Graph graph, bool_t compactGraph = False):
