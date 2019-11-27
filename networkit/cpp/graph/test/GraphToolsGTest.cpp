@@ -51,9 +51,20 @@ TEST_P(GraphToolsGTest, testMaxDegree) {
         return maxDeg;
     };
 
+    auto computeMaxWeightedDeg = [&](const Graph &G, bool inDegree) {
+        edgeweight maxDeg = std::numeric_limits<edgeweight>::min();
+        G.forNodes([&](const node u) {
+            maxDeg = std::max(maxDeg, inDegree ? G.weightedDegreeIn(u) : G.weightedDegree(u));
+        });
+
+        return maxDeg;
+    };
+
     auto doTest = [&](const Graph &G) {
         EXPECT_EQ(GraphTools::maxDegree(G), computeMaxDeg(G, false));
         EXPECT_EQ(GraphTools::maxInDegree(G), computeMaxDeg(G, true));
+        EXPECT_DOUBLE_EQ(GraphTools::maxWeightedDegree(G), computeMaxWeightedDeg(G, false));
+        EXPECT_DOUBLE_EQ(GraphTools::maxWeightedInDegree(G), computeMaxWeightedDeg(G, true));
     };
 
     for (int seed : {1, 2, 3}) {

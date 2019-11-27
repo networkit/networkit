@@ -24,9 +24,34 @@ count computeMaxDegree(const Graph &G, bool inDegree = false) {
     return result;
 }
 
+edgeweight computeMaxWeightedDegree(const Graph &G, bool inDegree = false) {
+    edgeweight result = 0;
+#ifndef NETWORKIT_OMP2
+#pragma omp parallel for reduction(max : result)
+    for (omp_index u = 0; u < static_cast<omp_index>(G.upperNodeIdBound()); ++u) {
+        result =
+            std::max(result, inDegree ? G.weightedDegreeIn(u) : G.weightedDegree(u));
+    }
+#else
+    G.forNodes([&](const node u) {
+        result =
+            std::max(result, inDegree ? G.weightedDegreeIn(u) : G.weightedDegree(u));
+    });
+#endif
+    return result;
+}
+
 count maxDegree(const Graph &G) { return computeMaxDegree(G); }
 
 count maxInDegree(const Graph &G) { return computeMaxDegree(G, true); }
+
+edgeweight maxWeightedDegree(const Graph &G) {
+    return computeMaxWeightedDegree(G);
+}
+
+edgeweight maxWeightedInDegree(const Graph &G) {
+    return computeMaxWeightedDegree(G, true);
+}
 
 Graph copyNodes(const Graph &G) {
     Graph C(G.upperNodeIdBound(), G.isWeighted(), G.isDirected());

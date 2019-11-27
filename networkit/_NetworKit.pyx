@@ -704,6 +704,8 @@ cdef class Graph:
 		double
 			Maximum weighted degree of the graph.
 		"""
+		from warnings import warn
+		warn("Graph.maxWeightedDegree is deprecated, use graphtools.maxWeightedDegree instead.")
 		return self._this.maxWeightedDegree()
 
 	def maxWeightedDegreeIn(self):
@@ -715,6 +717,8 @@ cdef class Graph:
 		double
 			Maximum weighted in degree of the graph.
 		"""
+		from warnings import warn
+		warn("Graph.maxWeightedDegreeIn is deprecated, use graphtools.maxWeightedInDegree instead.")
 		return self._this.maxWeightedDegreeIn()
 
 	def isIsolated(self, u):
@@ -5115,6 +5119,8 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 
 	count maxDegree(_Graph G) nogil except +
 	count maxInDegree(_Graph G) nogil except +
+	edgeweight maxWeightedDegree(_Graph G) nogil except +
+	edgeweight maxWeightedInDegree(_Graph G) nogil except +
 	_Graph copyNodes(_Graph G) nogil except +
 	_Graph toUndirected(_Graph G) nogil except +
 	_Graph toUnweighted(_Graph G) nogil except +
@@ -5162,6 +5168,40 @@ cdef class GraphTools:
 			The maximum in-degree of the graph.
 		"""
 		return maxInDegree(G._this)
+
+	@staticmethod
+	def maxWeightedDegree(Graph G):
+		"""
+		Returns the maximum weighted out-degree of the graph.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+
+		Returns
+		-------
+		edgeweight
+			The maximum weighted out-degree of the graph.
+		"""
+		return maxWeightedDegree(G._this)
+
+	@staticmethod
+	def maxWeightedInDegree(Graph G):
+		"""
+		Returns the maximum weighted in-degree of the graph.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+
+		Returns
+		-------
+		edgeweight
+			The maximum weighted in-degree of the graph.
+		"""
+		return maxWeightedInDegree(G._this)
 
 	@staticmethod
 	def append(Graph G, Graph G1):

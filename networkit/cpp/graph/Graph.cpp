@@ -459,28 +459,11 @@ count Graph::maxDegree() const { return GraphTools::maxDegree(*this); }
 count Graph::maxDegreeIn() const { return GraphTools::maxInDegree(*this); }
 
 edgeweight Graph::maxWeightedDegree() const {
-    return computeMaxWeightedDegree();
+    return GraphTools::maxWeightedDegree(*this);
 }
 
 edgeweight Graph::maxWeightedDegreeIn() const {
-    return computeMaxWeightedDegree(true);
-}
-
-edgeweight Graph::computeMaxWeightedDegree(const bool inDegree) const {
-    edgeweight result = 0;
-#ifndef NETWORKIT_OMP2
-#pragma omp parallel for reduction(max : result)
-    for (omp_index u = 0; u < upperNodeIdBound(); ++u) {
-        result =
-            std::max(result, inDegree ? weightedDegreeIn(u) : weightedDegree(u));
-    }
-#else
-    this->forNodes([&](const node u) {
-        result =
-            std::max(result, inDegree ? weightedDegreeIn(u) : weightedDegree(u));
-    });
-#endif
-    return result;
+    return GraphTools::maxWeightedInDegree(*this);
 }
 
 edgeweight Graph::computeWeightedDegree(node u, bool inDegree, bool countSelfLoopsTwice) const {

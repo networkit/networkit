@@ -254,36 +254,6 @@ TEST_P(GraphGTest, testCopyConstructor) {
     ASSERT_EQ(m_expected, m);
 }
 
-/** GRAPH INFORMATION **/
-
-TEST_P(GraphGTest, testMaxWeightedDegreeUndirected) {
-    Aux::Random::setSeed(1, false);
-    Graph G = ErdosRenyiGenerator(20, 0.2, false).generate();
-
-    edgeweight maxDegOut = 0.0, maxDegIn = 0.0;
-    G.forNodes([&](const node u) {
-        maxDegOut = std::max(maxDegOut, G.weightedDegree(u));
-        maxDegIn = std::max(maxDegIn, G.weightedDegreeIn(u));
-    });
-
-    ASSERT_EQ(G.maxWeightedDegree(), maxDegOut);
-    ASSERT_EQ(G.maxWeightedDegreeIn(), maxDegIn);
-}
-
-TEST_P(GraphGTest, testMaxWeightedDegreeDirected) {
-    Aux::Random::setSeed(1, false);
-    Graph G = ErdosRenyiGenerator(20, 0.2, true).generate();
-
-    edgeweight maxDegOut = 0.0, maxDegIn = 0.0;
-    G.forNodes([&](const node u) {
-        maxDegOut = std::max(maxDegOut, G.weightedDegree(u));
-        maxDegIn = std::max(maxDegIn, G.weightedDegreeIn(u));
-    });
-
-    ASSERT_EQ(G.maxWeightedDegree(), maxDegOut);
-    ASSERT_EQ(G.maxWeightedDegreeIn(), maxDegIn);
-}
-
 /** NODE MODIFIERS **/
 
 TEST_P(GraphGTest, testAddNode) {

@@ -169,13 +169,6 @@ class Graph final {
                                      bool countSelfLoopsTwice = false) const;
 
     /**
-     * Computes the maximum in/out weighted degree of the graph
-     *
-     * @param inDegree whether to compute the in degree or the out degree
-     */
-    edgeweight computeMaxWeightedDegree(const bool inDegree = false) const;
-
-    /**
      * Returns the edge weight of the outgoing edge of index i in the outgoing
      * edges of node u
      * @param u The node
@@ -975,7 +968,7 @@ public:
      * @note For directed graphs this is the sum of weights of all outgoing
      * edges.
      */
-    edgeweight maxWeightedDegree() const;
+    edgeweight TLX_DEPRECATED(maxWeightedDegree() const);
 
     /**
      * Returns the maximum weighted in degree of the graph.
@@ -984,7 +977,7 @@ public:
      * @note For directed graphs this is the sum of weights of all in-going
      * edges.
      */
-    edgeweight maxWeightedDegreeIn() const;
+    edgeweight TLX_DEPRECATED(maxWeightedDegreeIn() const);
 
     /**
      * Returns the weighted in-degree of @a u.

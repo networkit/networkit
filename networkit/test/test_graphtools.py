@@ -27,17 +27,25 @@ class TestGraphTools(unittest.TestCase):
 		p = 0.2
 		edgeUpdates = 10
 
-		def computeMaxDeg(G, inDegree = False):
+		def computeMaxDeg(G, weighted = False, inDegree = False):
 			nodes = []
 			G.forNodes(lambda u: nodes.append(u))
 			maxDeg = 0
+			def getDegree(u):
+				if weighted:
+					return G.weightedDegreeIn(u) if inDegree else G.weightedDegree(u)
+				return G.degreeIn(u) if inDegree else G.degreeOut(u)
+
 			for u in nodes:
-				maxDeg = max(maxDeg, G.degreeIn(u) if inDegree else G.degreeOut(u))
+				maxDeg = max(maxDeg, getDegree(u))
+
 			return maxDeg
 
 		def doTest(G):
-			self.assertEqual(nk.graphtools.maxDegree(G), computeMaxDeg(G))
-			self.assertEqual(nk.graphtools.maxInDegree(G), computeMaxDeg(G, True))
+			self.assertEqual(nk.graphtools.maxDegree(G), computeMaxDeg(G, False))
+			self.assertEqual(nk.graphtools.maxInDegree(G), computeMaxDeg(G, False, True))
+			self.assertEqual(nk.graphtools.maxWeightedDegree(G), computeMaxDeg(G, True))
+			self.assertEqual(nk.graphtools.maxWeightedInDegree(G), computeMaxDeg(G, True, True))
 
 		for seed in range(1, 4):
 			nk.setSeed(seed, False)
@@ -59,7 +67,6 @@ class TestGraphTools(unittest.TestCase):
 							e = G.randomNode(), G.randomNode()
 						G.addEdge(e[0], e[1])
 						doTest(G)
-
 
 	def testCopyNodes(self):
 		def checkNodes(G, GCopy):

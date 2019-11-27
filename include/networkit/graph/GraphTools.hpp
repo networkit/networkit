@@ -27,6 +27,22 @@ count maxDegree(const Graph &G);
 count maxInDegree(const Graph &G);
 
 /**
+ * Returns the maximum weighted out-degree of the graph.
+ *
+ * @param G The input graph.
+ * @return Maximum weighted degree of the graph.
+ */
+edgeweight maxWeightedDegree(const Graph &G);
+
+/**
+ * Returns the maximum weighted in-degree of the graph.
+ *
+ * @param G The input graph.
+ * @return Maximum weighted in degree of the graph.
+ */
+edgeweight maxWeightedInDegree(const Graph &G);
+
+/**
  * Copies all nodes of the input graph to a new graph (edges are not copied).
  *
  * @param G The input graph.
