@@ -57,7 +57,7 @@ class TestGraphTools(unittest.TestCase):
 
 					doTest(G)
 					for _ in range(edgeUpdates):
-						e = G.randomEdge()
+						e = nk.graphtools.randomEdge(G)
 						G.removeEdge(e[0], e[1])
 						doTest(G)
 
@@ -88,6 +88,13 @@ class TestGraphTools(unittest.TestCase):
 					v = nk.graphtools.randomNeighbor(G, u)
 					self.assertNotEqual(G.degree(u) == 0, G.hasNode(v))
 
+	def testRandomEdge(self):
+		for directed in [True, False]:
+			for weighted in [True, False]:
+				G = self.getSmallGraph(weighted, directed)
+				for i in range(10):
+					u, v = nk.graphtools.randomEdge(G)
+					self.assertTrue(G.hasEdge(u, v))
 
 	def testCopyNodes(self):
 		def checkNodes(G, GCopy):

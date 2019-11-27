@@ -1293,6 +1293,8 @@ cdef class Graph:
 		Fast, but not uniformly random if uniformDistribution is not set,
 		slow and uniformly random otherwise.
 		"""
+		from warnings import warn
+		warn("Graph.randomEdge is deprecated, use graphtools.randomEdge instead.")
 		return self._this.randomEdge(uniformDistribution)
 
 	def randomEdges(self, count numEdges):
@@ -5129,6 +5131,7 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	edgeweight maxWeightedInDegree(_Graph G) nogil except +
 	node randomNode(_Graph G) nogil except +
 	node randomNeighbor(_Graph G, node u) nogil except +
+	pair[node, node] randomEdge(_Graph G, bool_t uniformDistribution) nogil except +
 	_Graph copyNodes(_Graph G) nogil except +
 	_Graph toUndirected(_Graph G) nogil except +
 	_Graph toUnweighted(_Graph G) nogil except +
@@ -5247,6 +5250,29 @@ cdef class GraphTools:
 			A random neighbor of `u`.
 		"""
 		return randomNeighbor(G._this, u)
+
+	@staticmethod
+	def randomEdge(Graph G, uniformDistribution = False):
+		""" Get a random edge of the graph.
+
+		Parameters
+		----------
+        G : networkit.Graph
+            The input graph.
+		uniformDistribution : bool
+			If the distribution of the edge shall be uniform.
+
+		Returns
+		-------
+		pair
+			Random edge.
+
+		Notes
+		-----
+		Fast, but not uniformly random if uniformDistribution is not set,
+		slow and uniformly random otherwise.
+		"""
+		return randomEdge(G._this, uniformDistribution)
 
 	@staticmethod
 	def append(Graph G, Graph G1):

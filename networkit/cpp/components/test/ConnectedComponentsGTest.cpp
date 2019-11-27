@@ -287,7 +287,7 @@ TEST_F(ConnectedComponentsGTest, testDynConnectedComponents) {
         }
         else {
             while (!G.hasEdge(u, v)) {
-                std::pair<node, node> edge = G.randomEdge();
+                std::pair<node, node> edge = GraphTools::randomEdge(G);
                 u = edge.first;
                 v = edge.second;
             }
@@ -314,7 +314,7 @@ TEST_F(ConnectedComponentsGTest, testDynConnectedComponents) {
         }
         else {
             while (!G.hasEdge(u, v)) {
-                std::pair<node, node> edge = G.randomEdge();
+                std::pair<node, node> edge = GraphTools::randomEdge(G);
                 u = edge.first;
                 v = edge.second;
             }
@@ -475,7 +475,7 @@ TEST_F(ConnectedComponentsGTest, testDynWeaklyConnectedComponents) {
         }
         else {
             while (!G.hasEdge(u, v) || u == v) {
-                std::pair<node, node> edge = G.randomEdge();
+                std::pair<node, node> edge = GraphTools::randomEdge(G);
                 u = edge.first;
                 v = edge.second;
             }
@@ -501,7 +501,7 @@ TEST_F(ConnectedComponentsGTest, testDynWeaklyConnectedComponents) {
         }
         else {
             while (!G.hasEdge(u, v) || u == v) {
-                std::pair<node, node> edge = G.randomEdge();
+                std::pair<node, node> edge = GraphTools::randomEdge(G);
                 u = edge.first;
                 v = edge.second;
             }

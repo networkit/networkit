@@ -48,14 +48,14 @@ class TestGraph(unittest.TestCase):
 				nEdges = G.numberOfEdges()
 
 				for _ in range(nMultiedges):
-					u, v = G.randomEdge()
+					u, v = nk.graphtools.randomEdge(G)
 					G.addEdge(u, v)
 
 				G.removeMultiEdges()
 				self.assertEqual(G.numberOfEdges(), nEdges)
 
 				for _ in range(nEdges):
-					u, v = G.randomEdge()
+					u, v = nk.graphtools.randomEdge(G)
 					G.removeEdge(u, v)
 					self.assertFalse(G.hasEdge(u, v))
 				self.assertEqual(G.numberOfEdges(), 0)

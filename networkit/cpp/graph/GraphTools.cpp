@@ -70,6 +70,71 @@ node randomNode(const Graph &G) {
     return v;
 }
 
+std::pair<node, node> randomEdge(const Graph &G, bool uniformDistribution) {
+    if (!G.numberOfEdges()) {
+        throw std::runtime_error("Error: the graph has no edges!");
+    }
+
+    if (uniformDistribution) {
+        /*
+         * The simple idea here is to interpret all neighborhoods next to each other, resulting
+         * in a virtual vector of size m. Then we draw a random index and return the edge.
+         * For undirected edges, the vector has size 2m; but the idea remains. There is one minor
+         * complication for undirected edges with self-loops: each edge {u,v} with u != v is stored
+         * twice (once in the neighborhood of u, once in v) but a loop (u, u) is only stored once.
+         * To equalize the probabilities we reject edges {u,v} with u > v and try again. This leads
+         * to less than two expected trails in and is only done for undirected graphs with self-loops.
+         */
+
+        do  {
+            const auto upper = G.isDirected()
+                ? G.numberOfEdges()
+                : 2 * G.numberOfEdges() - G.numberOfSelfLoops();
+            auto idx = Aux::Random::index(upper);
+
+            node u, v;
+
+            if (idx > upper / 2) {
+                // assuming degrees are somewhat distributed uniformly, it's better to start with
+                // larger nodes for large indices. In this case we have to mirror the index:
+                idx  = (upper-1) - idx;
+
+                for (u = G.upperNodeIdBound() - 1; idx >= G.degree(u); --u) {
+                    idx -= G.degree(u);
+                }
+
+                v = G.getIthNeighbor(u, G.degree(u) - 1 - idx);
+
+            } else {
+                for(u = 0; idx >= G.degree(u); ++u) {
+                    assert(u < G.upperNodeIdBound());
+                    idx -= G.degree(u);
+                }
+
+                v = G.getIthNeighbor(u, idx);
+
+            }
+
+            if (G.numberOfSelfLoops() && !G.isDirected() && u > v)
+                // reject (see above)
+                continue;
+
+            return {u, v};
+        } while (true);
+    }
+
+    node u; // we will return edge (u, v)
+
+    // fast way, but not a uniform random edge!
+    do {
+        u = GraphTools::randomNode(G);
+    } while (!G.degree(u));
+
+    const auto v = GraphTools::randomNeighbor(G, u);
+
+    return {u, v};
+}
+
 node randomNeighbor(const Graph &G, node u) {
     if (!G.degree(u))
         return none;

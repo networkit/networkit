@@ -279,7 +279,7 @@ TEST_F(CentralityGTest, testKatzDynamicDeletion) {
     DEBUG("start kc run");
     kc.run();
     DEBUG("finish kc");
-    std::pair<node, node> p = G.randomEdge();
+    std::pair<node, node> p = GraphTools::randomEdge(G);
     node u = p.first;
     node v = p.second;
     INFO("Deleting edge ", u, ", ", v);
@@ -454,7 +454,7 @@ TEST_F(CentralityGTest, testKatzDirectedDeletion) {
     kc.run();
 
     Aux::Random::setSeed(42, false);
-    std::pair<node, node> p = G.randomEdge();
+    std::pair<node, node> p = GraphTools::randomEdge(G);
     node u = p.first;
     node v = p.second;
     INFO("Removing ", u, " -> ", v);

@@ -1171,7 +1171,7 @@ public:
      * give you a real uniform distributed edge, but will be slower.
      * Exp. time complexity: O(1) for uniformDistribution = false, O(n) otherwise.
      */
-    std::pair<node, node> randomEdge(bool uniformDistribution = false) const;
+    std::pair<node, node> TLX_DEPRECATED(randomEdge(bool uniformDistribution = false) const);
 
     /**
      * Returns a vector with nr random edges. The edges are chosen uniform

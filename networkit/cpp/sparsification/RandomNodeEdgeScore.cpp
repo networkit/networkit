@@ -47,7 +47,7 @@ void RandomNodeEdgeScore::run() {
                 }
             }
         } else { // random node - edge
-            auto edge = sparseGraph.randomEdge();
+            const auto edge = GraphTools::randomEdge(sparseGraph);
 
             edgeid id = sparseGraph.edgeId(edge.first, edge.second);
 
