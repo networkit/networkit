@@ -20,6 +20,7 @@
 
 #include <networkit/Globals.hpp>
 #include <networkit/auxiliary/FunctionTraits.hpp>
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
 
 #include <tlx/define/deprecated.hpp>
