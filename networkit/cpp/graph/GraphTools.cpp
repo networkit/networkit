@@ -53,6 +53,23 @@ edgeweight maxWeightedInDegree(const Graph &G) {
     return computeMaxWeightedDegree(G, true);
 }
 
+node randomNode(const Graph &G) {
+    if (!G.numberOfNodes())
+        return none;
+
+    auto &gen = Aux::Random::getURNG();
+    std::uniform_int_distribution<node> distr{0, G.upperNodeIdBound() - 1};
+    node v;
+
+    do {
+        // When there are many deleted nodes, we might call Aux::Random::integer
+        // many times, and it is very expensive.
+        v = distr(gen);
+    } while (!G.hasNode(v));
+
+    return v;
+}
+
 Graph copyNodes(const Graph &G) {
     Graph C(G.upperNodeIdBound(), G.isWeighted(), G.isDirected());
     for (node u = 0; u < G.upperNodeIdBound(); ++u) {

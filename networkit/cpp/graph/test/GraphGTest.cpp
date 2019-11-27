@@ -16,6 +16,7 @@
 #include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/GraphBuilder.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 
@@ -549,24 +550,6 @@ TEST_P(GraphGTest, testWeightedDegree3) {
     }
 }
 
-TEST_P(GraphGTest, testRandomNode) {
-    count n = 4;
-    count samples = 100000;
-    double maxAbsoluteError = 0.005;
-    Aux::Random::setSeed(42, false);
-
-    Graph G = createGraph(n);
-    std::vector<count> drawCounts(n, 0);
-    for (count i = 0; i < samples; i++) {
-        node x = G.randomNode();
-        drawCounts[x]++;
-    }
-    for (node v = 0; v < n; v++) {
-        double p = drawCounts[v] / (double)samples;
-        ASSERT_NEAR(1.0 / n, p, maxAbsoluteError);
-    }
-}
-
 TEST_P(GraphGTest, testRandomNeighbor) {
     Graph G = createGraph(10);
     G.addEdge(2, 0);
@@ -933,12 +916,12 @@ TEST_P(GraphGTest, testIsEmpty) {
     ASSERT_FALSE(G2.isEmpty());
 
     node v = G1.addNode();
-    G2.removeNode(G2.randomNode());
+    G2.removeNode(GraphTools::randomNode(G2));
     ASSERT_FALSE(G1.isEmpty());
     ASSERT_FALSE(G2.isEmpty());
 
     G1.removeNode(v);
-    G2.removeNode(G2.randomNode());
+    G2.removeNode(GraphTools::randomNode(G2));
     ASSERT_TRUE(G1.isEmpty());
     ASSERT_TRUE(G2.isEmpty());
 }
@@ -2075,7 +2058,7 @@ TEST_P(GraphGTest, testRemoveMultiEdges) {
     std::unordered_set<node> uniqueSelfLoops;
     // Adding multiple self-loops at random
     for (count i = 0; i < nMultiSelfLoops; ++i) {
-        node u = G.randomNode();
+        node u = GraphTools::randomNode(G);
         G.addEdge(u, u);
         G.addEdge(u, u);
         uniqueSelfLoops.insert(u);

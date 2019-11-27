@@ -2,14 +2,15 @@
  * Author: Michael Hamann <michael.hamann@kit.edu>
  */
 
-#include <networkit/community/CutClustering.hpp>
-#include <networkit/flow/EdmondsKarp.hpp>
-#include <networkit/components/ConnectedComponents.hpp>
-#include <networkit/auxiliary/Log.hpp>
-
 #include <sstream>
 #include <stdexcept>
 #include <limits>
+
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/community/CutClustering.hpp>
+#include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/flow/EdmondsKarp.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 NetworKit::CutClustering::CutClustering(const Graph& G, NetworKit::edgeweight alpha) : CommunityDetectionAlgorithm(G), alpha(alpha) { }
 
@@ -119,7 +120,7 @@ std::map< NetworKit::edgeweight, NetworKit::Partition > NetworKit::CutClustering
 
     // If there is more than one connected component, the whole graph is another valid lower bound
     if (connComp.numberOfComponents() > 1) {
-        node rep = G.randomNode();
+        node rep = GraphTools::randomNode(G);
         Partition wholeGraph(G.upperNodeIdBound(), rep);
         wholeGraph.setUpperBound(rep + 1);
 

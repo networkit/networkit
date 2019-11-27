@@ -5,12 +5,14 @@
  *      Author: Gerd Lindner
  */
 
-#include <networkit/sparsification/ForestFireScore.hpp>
 #include <limits>
-#include <set>
 #include <queue>
+#include <set>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/graph/GraphTools.hpp>
+#include <networkit/sparsification/ForestFireScore.hpp>
 
 namespace NetworKit {
 
@@ -29,7 +31,7 @@ void ForestFireScore::run() {
         //Start a new fire
         std::queue<node> activeNodes;
         std::vector<bool> visited (G.upperNodeIdBound(), false);
-        activeNodes.push(G.randomNode());
+        activeNodes.push(GraphTools::randomNode(G));
 
         auto forwardNeighbors = [&](node u) {
             std::vector<std::pair<node, edgeid>> validEdges;

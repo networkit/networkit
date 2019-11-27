@@ -7,6 +7,8 @@
 
 #include <networkit/distance/Volume.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphTools.hpp>
+
 #include <unordered_map>
 
 namespace NetworKit {
@@ -40,7 +42,7 @@ std::unordered_map<node, double> Volume::nodesWithinDistance(const Graph &G, dou
 double Volume::volume(const Graph &G, const double r, const count samples) {
     double x = 0;
     for (count j = 0; j < samples; j++) {
-        x += Volume::nodesWithinDistance(G, r, G.randomNode()).size();
+        x += Volume::nodesWithinDistance(G, r, GraphTools::randomNode(G)).size();
     }
     return x / samples;
 }
@@ -49,7 +51,7 @@ std::vector<double> Volume::volume(const Graph &G, const std::vector<double> rs,
     std::vector<double> xs(rs.size(), 0);
     double rmax = *std::max_element(std::begin(rs), std::end(rs));
     for (count j = 0; j < samples; j++) {
-        std::unordered_map<node, double> ms = Volume::nodesWithinDistance(G, rmax, G.randomNode());
+        std::unordered_map<node, double> ms = Volume::nodesWithinDistance(G, rmax, GraphTools::randomNode(G));
         count i = 0;
         for (auto &r : rs) {
             for (auto &it : ms) {

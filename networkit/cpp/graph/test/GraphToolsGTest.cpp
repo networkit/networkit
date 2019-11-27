@@ -71,7 +71,7 @@ TEST_P(GraphToolsGTest, testMaxDegree) {
         Aux::Random::setSeed(seed, false);
         auto G = ErdosRenyiGenerator(n, p, directed()).generate();
         if (weighted()) {
-            G = Graph(G, true, G.isDirected());
+            G = generateRandomWeights(G);
         }
 
         doTest(G);
@@ -82,15 +82,39 @@ TEST_P(GraphToolsGTest, testMaxDegree) {
         }
 
         for (count i = 0; i < edgeUpdates; ++i) {
-            node u = G.randomNode();
-            node v = G.randomNode();
+            node u = GraphTools::randomNode(G);
+            node v = GraphTools::randomNode(G);
             while (G.hasEdge(u, v)) {
-                u = G.randomNode();
-                v = G.randomNode();
+                u = GraphTools::randomNode(G);
+                v = GraphTools::randomNode(G);
             }
             G.addEdge(u, v);
             doTest(G);
         }
+    }
+}
+
+TEST_P(GraphToolsGTest, testRandomNode) {
+    constexpr count n = 20;
+    constexpr double p = 0.01;
+    constexpr count samples = 100000;
+    constexpr double maxAbsoluteError = 0.005;
+
+    Aux::Random::setSeed(42, false);
+
+    auto G = ErdosRenyiGenerator(n, p, directed()).generate();
+    if (weighted()) {
+        G = Graph(G, true, G.isDirected());
+    }
+
+    std::vector<count> drawCounts(n, 0);
+    for (count i = 0; i < samples; i++) {
+        ++drawCounts[GraphTools::randomNode(G)];
+    }
+
+    for (node v = 0; v < n; v++) {
+        const auto p = static_cast<double>(drawCounts[v]) / static_cast<double>(samples);
+        ASSERT_NEAR(1.0 / n, p, maxAbsoluteError);
     }
 }
 
@@ -401,7 +425,7 @@ TEST_P(GraphToolsGTest, testCopyNodes) {
         auto GCopy = GraphTools::copyNodes(G);
         checkNodes(G, GCopy);
         for (count i = 0; i < nodesToDelete; ++i) {
-            G.removeNode(G.randomNode());
+            G.removeNode(GraphTools::randomNode(G));
             GCopy = GraphTools::copyNodes(G);
             checkNodes(G, GCopy);
         }
@@ -672,8 +696,8 @@ TEST_P(GraphToolsGTest, testAppend) {
         testGraphs(G, G1, G2);
 
         for (count i = 0; i < nodesToDelete; ++i) {
-            G1.removeNode(G1.randomNode());
-            G2.removeNode(G2.randomNode());
+            G1.removeNode(GraphTools::randomNode(G1));
+            G2.removeNode(GraphTools::randomNode(G2));
             auto G3(G1);
             GraphTools::append(G3, G2);
             testGraphs(G3, G1, G2);

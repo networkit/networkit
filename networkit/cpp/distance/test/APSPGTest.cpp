@@ -13,6 +13,7 @@
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/distance/APSP.hpp>
 #include <networkit/distance/DynAPSP.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 
 namespace NetworKit {
@@ -66,8 +67,8 @@ TEST_F(APSPGTest, debugAPSP) {
     count m = int(n * n);
     Graph G(n, true, false);
     for (count i = 0; i < m; i++) {
-        node u = G.randomNode();
-        node v = G.randomNode();
+        node u = GraphTools::randomNode(G);
+        node v = GraphTools::randomNode(G);
         if (u != v && !G.hasEdge(u, v)) {
             G.addEdge(u, v, Aux::Random::integer(10));
         }
@@ -83,11 +84,11 @@ TEST_F(APSPGTest, testDynAPSPRealGraph) {
     DynAPSP apsp(G);
     apsp.run();
     for (count i = 0; i < 10; i++) {
-        count u = G.randomNode();
-        count v = G.randomNode();
+        count u = GraphTools::randomNode(G);
+        count v = GraphTools::randomNode(G);
         while(G.hasEdge(u, v)) {
-            u = G.randomNode();
-            v = G.randomNode();
+            u = GraphTools::randomNode(G);
+            v = GraphTools::randomNode(G);
         }
         DEBUG("u = ", u, ", v = ", v);
         GraphEvent event(GraphEvent::EDGE_ADDITION, u, v, 1);

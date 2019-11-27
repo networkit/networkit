@@ -14,6 +14,7 @@
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/Dijkstra.hpp>
 #include <networkit/graph/BFS.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
@@ -259,7 +260,7 @@ edgeweight Diameter::estimatedVertexDiameter(const Graph& G, count samples) {
     edgeweight vdMax = 0;
     #pragma omp parallel for
     for (omp_index i = 0; i < static_cast<omp_index>(samples); ++i) {
-        node u = G.randomNode();
+        node u = GraphTools::randomNode(G);
         edgeweight vd = estimateFrom(u);
         DEBUG("sampled vertex diameter from node ", u, ": ", vd);
         #pragma omp critical

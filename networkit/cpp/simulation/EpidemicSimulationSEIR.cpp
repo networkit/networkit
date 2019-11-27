@@ -7,7 +7,7 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
-
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/simulation/EpidemicSimulationSEIR.hpp>
 
 namespace NetworKit {
@@ -81,7 +81,7 @@ void EpidemicSimulationSEIR::run() {
 
     // if starting node node provided, start with random node
     if (zero == none) {
-        zero = G.randomNode();
+        zero = GraphTools::randomNode(G);
     }
     INFO("zero node: ", zero);
     setState(zero, State::I);	// infect node zero

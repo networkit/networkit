@@ -1252,6 +1252,8 @@ cdef class Graph:
 		node
 			A random node.
 		"""
+		from warnings import warn
+		warn("Graph.randomNode is deprecated, use graphtools.randomNode instead.")
 		return self._this.randomNode()
 
 	def randomNeighbor(self, u):
@@ -5121,6 +5123,7 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	count maxInDegree(_Graph G) nogil except +
 	edgeweight maxWeightedDegree(_Graph G) nogil except +
 	edgeweight maxWeightedInDegree(_Graph G) nogil except +
+	node randomNode(_Graph G) nogil except +
 	_Graph copyNodes(_Graph G) nogil except +
 	_Graph toUndirected(_Graph G) nogil except +
 	_Graph toUnweighted(_Graph G) nogil except +
@@ -5202,6 +5205,23 @@ cdef class GraphTools:
 			The maximum weighted in-degree of the graph.
 		"""
 		return maxWeightedInDegree(G._this)
+
+	@staticmethod
+	def randomNode(Graph G):
+		"""
+		Returns a random node of the input graph.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+
+		Returns
+		-------
+		node
+			A random node.
+		"""
+		return randomNode(G._this)
 
 	@staticmethod
 	def append(Graph G, Graph G1):

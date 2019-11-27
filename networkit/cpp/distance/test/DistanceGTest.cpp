@@ -114,10 +114,10 @@ TEST_F(DistanceGTest, testBidirectionalBFS) {
     Graph G = ErdosRenyiGenerator(500, 0.02, false).generate();
     Graph G1 = ErdosRenyiGenerator(500, 0.05, true).generate();
     auto testGraph = [&](const Graph &G) {
-        node source = G.randomNode();
-        node target = G.randomNode();
+        node source = GraphTools::randomNode(G);
+        node target = GraphTools::randomNode(G);
         while (source == target)
-            target = G.randomNode();
+            target = GraphTools::randomNode(G);
         BFS bfs(G, source, true, false, target);
         bfs.run();
         BidirectionalBFS bbfs(G, source, target, true);
@@ -157,10 +157,10 @@ TEST_F(DistanceGTest, testBidirectionalDijkstra) {
     });
 
     auto testGraph = [&](const Graph &G) {
-        node source = G.randomNode();
-        node target = G.randomNode();
+        node source = GraphTools::randomNode(G);
+        node target = GraphTools::randomNode(G);
         while (source == target)
-            target = G.randomNode();
+            target = GraphTools::randomNode(G);
         BidirectionalDijkstra bdij(G, source, target, true);
         bdij.run();
         Dijkstra dij(G, source, true, true, target);

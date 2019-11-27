@@ -5,13 +5,14 @@
  *      Author: Lukas Barth, David Weiss
  */
 
+#include <omp.h>
 #include <unordered_set>
 
-#include <networkit/global/ClusteringCoefficient.hpp>
-#include <networkit/centrality/LocalClusteringCoefficient.hpp>
-#include <networkit/auxiliary/Random.hpp>
 #include <networkit/auxiliary/Log.hpp>
-#include <omp.h>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/centrality/LocalClusteringCoefficient.hpp>
+#include <networkit/global/ClusteringCoefficient.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
 
@@ -134,7 +135,7 @@ double ClusteringCoefficient::approxAvgLocal(Graph& G, const count trials) {
 
     double triangles = 0;
     for (count k = 0; k < trials; ++k) {
-        node v = G.randomNode();
+        node v = GraphTools::randomNode(G);
         TRACE("trial ", k, " sampled node ", v);
 
         if (G.degree(v) < 2) {

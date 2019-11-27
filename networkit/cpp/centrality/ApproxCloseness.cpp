@@ -7,6 +7,8 @@
 
 #include <networkit/centrality/ApproxCloseness.hpp>
 #include <networkit/auxiliary/PrioQueue.hpp>
+#include <networkit/graph/GraphTools.hpp>
+
 #include <cassert>
 #include <queue>
 
@@ -66,9 +68,9 @@ void ApproxCloseness::estimateClosenessForUndirectedGraph() {
     // sample nodes
     std::vector<bool> alreadySampled(G.upperNodeIdBound(), false);
     for (count i = 0; i < nSamples; ++i) { // we have to sample distinct nodes
-        node v = G.randomNode();
+        node v = GraphTools::randomNode(G);
         while (alreadySampled[v]) {
-            v = G.randomNode();
+            v = GraphTools::randomNode(G);
         }
         sampledNodes.push_back(v);
         alreadySampled[v] = true;

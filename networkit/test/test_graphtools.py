@@ -62,11 +62,22 @@ class TestGraphTools(unittest.TestCase):
 						doTest(G)
 
 					for _ in range(edgeUpdates):
-						e = G.randomNode(), G.randomNode()
+						e = nk.graphtools.randomNode(G), nk.graphtools.randomNode(G)
 						while G.hasEdge(e[0], e[1]):
-							e = G.randomNode(), G.randomNode()
+							e = nk.graphtools.randomNode(G), nk.graphtools.randomNode(G)
 						G.addEdge(e[0], e[1])
 						doTest(G)
+
+	def testRandomNode(self):
+		for directed in [True, False]:
+			for weighted in [True, False]:
+				G = self.getSmallGraph(weighted, directed)
+				for i in range(10):
+					self.assertTrue(G.hasNode(nk.graphtools.randomNode(G)))
+				n = G.numberOfNodes()
+				for i in range(n):
+					G.removeNode(i)
+				self.assertEqual(nk.graphtools.randomNode(G), nk.none)
 
 	def testCopyNodes(self):
 		def checkNodes(G, GCopy):
@@ -83,7 +94,7 @@ class TestGraphTools(unittest.TestCase):
 				checkNodes(G, GCopy)
 
 				for _ in range(1, G.numberOfNodes()):
-					G.removeNode(G.randomNode())
+					G.removeNode(nk.graphtools.randomNode(G))
 					GCopy = nk.graphtools.copyNodes(G)
 					checkNodes(G, GCopy)
 
@@ -153,13 +164,13 @@ class TestGraphTools(unittest.TestCase):
 			G = nk.generators.ErdosRenyiGenerator(100, 0.2, True).generate()
 
 			for _ in range(20):
-				u = G.randomNode()
+				u = nk.graphtools.randomNode(G)
 				if not G.hasEdge(u, u):
 					G.addEdge(u, u)
 
 			# Delete a few nodes
 			for _ in range(10):
-				G.removeNode(G.randomNode())
+				G.removeNode(nk.graphtools.randomNode(G))
 			self.assertGreater(G.numberOfSelfLoops(), 0)
 
 			# Assign random weights
@@ -288,8 +299,8 @@ class TestGraphTools(unittest.TestCase):
 					testGraphs(G, G1, G2)
 
 					for _ in range(nodesToDelete):
-						G1.removeNode(G1.randomNode())
-						G2.removeNode(G2.randomNode())
+						G1.removeNode(nk.graphtools.randomNode(G1))
+						G2.removeNode(nk.graphtools.randomNode(G2))
 						G3 = copy(G1)
 						nk.graphtools.append(G3, G2)
 						testGraphs(G3, G1, G2)

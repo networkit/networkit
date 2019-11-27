@@ -14,7 +14,7 @@
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
-#include <networkit/graph/Sampling.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <random>
 
 
@@ -179,8 +179,8 @@ TEST_F(DynSSSPGTest, testDynamicBFSGeneratedGraph) {
     count nInsertions = 750, i = 0;
     while (i < nInsertions) {
         DEBUG("Sampling a new edge");
-        node v1 = Sampling::randomNode(G);
-        node v2 = Sampling::randomNode(G);
+        node v1 = GraphTools::randomNode(G);
+        node v2 = GraphTools::randomNode(G);
         if (v1 != v2 && !G.hasEdge(v1, v2)) {
             i++;
             DEBUG("Adding edge number ", i);
@@ -216,8 +216,8 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraGeneratedGraph) {
     count nInsertions = 10, i = 0;
     while (i < nInsertions) {
         DEBUG("Sampling a new edge");
-        node v1 = Sampling::randomNode(G);
-        node v2 = Sampling::randomNode(G);
+        node v1 = GraphTools::randomNode(G);
+        node v2 = GraphTools::randomNode(G);
         if (v1 != v2 && !G.hasEdge(v1, v2)) {
             i++;
             DEBUG("Adding edge number ", i);
@@ -262,8 +262,8 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraBatches) {
             i = 0;
             while (i < batchSize) {
                 DEBUG("Sampling a new edge");
-                node v1 = Sampling::randomNode(G);
-                node v2 = Sampling::randomNode(G);
+                node v1 = GraphTools::randomNode(G);
+                node v2 = GraphTools::randomNode(G);
                 if (v1 != v2 && !G.hasEdge(v1, v2)) {
                     i++;
                     double number = distribution(random_generator);

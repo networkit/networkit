@@ -13,6 +13,7 @@
 #include <networkit/centrality/ApproxGroupBetweenness.hpp>
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/SSSP.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
 
@@ -45,10 +46,10 @@ void ApproxGroupBetweenness::run() {
 
 #pragma omp parallel for
     for (omp_index l = 0; l < static_cast<omp_index>(samples); ++l) {
-        node s = G.randomNode();
+        node s = GraphTools::randomNode(G);
         node t;
         do {
-            t = G.randomNode();
+            t = GraphTools::randomNode(G);
         } while (s == t);
 
         BFS &bfs = bfss[omp_get_thread_num()];

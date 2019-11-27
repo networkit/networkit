@@ -43,6 +43,14 @@ edgeweight maxWeightedDegree(const Graph &G);
 edgeweight maxWeightedInDegree(const Graph &G);
 
 /**
+ * Returns a random node of the input graph.
+ *
+ * @param G The input graph.
+ * @return A random node.
+ */
+node randomNode(const Graph &G);
+
+/**
  * Copies all nodes of the input graph to a new graph (edges are not copied).
  *
  * @param G The input graph.

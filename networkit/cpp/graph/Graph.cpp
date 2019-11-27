@@ -599,16 +599,7 @@ edgeweight Graph::volume(node v) const {
 }
 
 node Graph::randomNode() const {
-    if (numberOfNodes() == 0) {
-        return none;
-    }
-
-    node v;
-    do {
-        v = Aux::Random::integer(z - 1);
-    } while (!exists[v]);
-
-    return v;
+    return GraphTools::randomNode(*this);
 }
 
 node Graph::randomNeighbor(node u) const {

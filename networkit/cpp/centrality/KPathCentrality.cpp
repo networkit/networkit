@@ -11,6 +11,7 @@
 #include <networkit/auxiliary/PrioQueue.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
 
@@ -46,7 +47,7 @@ void KPathCentrality::run() {
     node v;
 
     for (index i = 1; i <= t; i++) { // FIXME: int -> count
-        node s = G.randomNode();
+        node s = GraphTools::randomNode(G);
         auto l = Aux::Random::integer(1, k);
         explored[s] = true;
         stack.push(s);

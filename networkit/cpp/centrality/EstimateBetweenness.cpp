@@ -12,6 +12,7 @@
 #include <networkit/distance/SSSP.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/auxiliary/Parallelism.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 
 #include <memory>
@@ -31,7 +32,7 @@ void EstimateBetweenness::run() {
 
     // sample nodes
     for (count i = 0; i <= nSamples; ++i) {
-        sampledNodes.push_back(G.randomNode());
+        sampledNodes.push_back(GraphTools::randomNode(G));
     }
 
 

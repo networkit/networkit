@@ -108,7 +108,7 @@ std::vector<node> NeighborhoodFunctionHeuristic::random(const Graph& G, count nS
     std::vector<node> start_nodes(nSamples, 0);
     // the vector of start nodes is chosen completely at random with the graphs "randomNode()" function.
     for (index i = 0; i < nSamples; ++i) {
-        start_nodes[i] = G.randomNode();
+        start_nodes[i] = GraphTools::randomNode(G);
     }
     return start_nodes;
 }

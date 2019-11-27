@@ -1002,7 +1002,7 @@ public:
      * Returns a random node of the graph.
      * @return A random node.
      */
-    node randomNode() const;
+    node TLX_DEPRECATED(randomNode() const);
 
     /**
      * Returns a random neighbor of @a u and @c none if degree is zero.

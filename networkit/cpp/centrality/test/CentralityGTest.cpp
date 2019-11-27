@@ -39,6 +39,7 @@
 #include <networkit/distance/Dijkstra.hpp>
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/SNAPGraphReader.hpp>
 #include <networkit/structures/Cover.hpp>
@@ -243,8 +244,8 @@ TEST_F(CentralityGTest, testKatzDynamicAddition) {
     DEBUG("finish kc");
     node u, v;
     do {
-        u = G.randomNode();
-        v = G.randomNode();
+        u = GraphTools::randomNode(G);
+        v = GraphTools::randomNode(G);
     } while (G.hasEdge(u, v));
     GraphEvent e(GraphEvent::EDGE_ADDITION, u, v, 1.0);
     kc.update(e);
@@ -392,8 +393,8 @@ TEST_F(CentralityGTest, testKatzDirectedAddition) {
     node u, v;
     Aux::Random::setSeed(42, false);
     do {
-        u = G.randomNode();
-        v = G.randomNode();
+        u = GraphTools::randomNode(G);
+        v = GraphTools::randomNode(G);
     } while (G.hasEdge(u, v));
     GraphEvent e(GraphEvent::EDGE_ADDITION, u, v, 1.0);
     kc.update(e);
@@ -1653,8 +1654,8 @@ TEST_P(CentralityGTest, testDynTopHarmonicCloseness) {
         node v = G.upperNodeIdBound();
 
         do {
-            u = G.randomNode();
-            v = G.randomNode();
+            u = GraphTools::randomNode(G);
+            v = GraphTools::randomNode(G);
         } while (G.hasEdge(u, v));
 
         GraphEvent edgeAddition(GraphEvent::EDGE_ADDITION, u, v);
