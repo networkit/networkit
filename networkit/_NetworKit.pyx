@@ -678,6 +678,8 @@ cdef class Graph:
 		count
 			Maximum out-degree of the graph.
 		"""
+		from warnings import warn
+		warn("Graph.maxDegree is deprecated, use graphtools.maxDegree instead.")
 		return self._this.maxDegree()
 
 	def maxDegreeIn(self):
@@ -689,6 +691,8 @@ cdef class Graph:
 		count
 			Maximum in-degree of the graph.
 		"""
+		from warnings import warn
+		warn("Graph.maxDegreeIn is deprecated, use graphtools.maxInDegree instead.")
 		return self._this.maxDegreeIn()
 
 	def maxWeightedDegree(self):
@@ -5109,6 +5113,8 @@ cdef class Traversal:
 
 cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphTools":
 
+	count maxDegree(_Graph G) nogil except +
+	count maxInDegree(_Graph G) nogil except +
 	_Graph copyNodes(_Graph G) nogil except +
 	_Graph toUndirected(_Graph G) nogil except +
 	_Graph toUnweighted(_Graph G) nogil except +
@@ -5122,6 +5128,40 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	unordered_map[node,node] getRandomContinuousNodeIds(_Graph G) nogil except +
 
 cdef class GraphTools:
+
+	@staticmethod
+	def maxDegree(Graph G):
+		"""
+		Returns the maximum out-degree of the graph.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+
+		Returns
+		-------
+		count
+			The maximum out-degree of the graph.
+		"""
+		return maxDegree(G._this)
+
+	@staticmethod
+	def maxInDegree(Graph G):
+		"""
+		Returns the maximum in-degree of the graph.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+
+		Returns
+		-------
+		count
+			The maximum in-degree of the graph.
+		"""
+		return maxInDegree(G._this)
 
 	@staticmethod
 	def append(Graph G, Graph G1):

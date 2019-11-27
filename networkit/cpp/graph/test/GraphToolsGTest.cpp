@@ -37,6 +37,52 @@ bool GraphToolsGTest::weighted() const noexcept { return GetParam().first; }
 
 bool GraphToolsGTest::directed() const noexcept { return GetParam().second; }
 
+TEST_P(GraphToolsGTest, testMaxDegree) {
+    constexpr count n = 100;
+    constexpr double p = 0.1;
+    constexpr count edgeUpdates = 10;
+
+    auto computeMaxDeg = [&](const Graph &G, bool inDegree) {
+        count maxDeg = 0;
+        G.forNodes([&](const node u) {
+            maxDeg = std::max(maxDeg, inDegree ? G.degreeIn(u) : G.degreeOut(u));
+        });
+
+        return maxDeg;
+    };
+
+    auto doTest = [&](const Graph &G) {
+        EXPECT_EQ(GraphTools::maxDegree(G), computeMaxDeg(G, false));
+        EXPECT_EQ(GraphTools::maxInDegree(G), computeMaxDeg(G, true));
+    };
+
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, false);
+        auto G = ErdosRenyiGenerator(n, p, directed()).generate();
+        if (weighted()) {
+            G = Graph(G, true, G.isDirected());
+        }
+
+        doTest(G);
+        for (count i = 0; i < edgeUpdates; ++i) {
+            const auto e = G.randomEdge();
+            G.removeEdge(e.first, e.second);
+            doTest(G);
+        }
+
+        for (count i = 0; i < edgeUpdates; ++i) {
+            node u = G.randomNode();
+            node v = G.randomNode();
+            while (G.hasEdge(u, v)) {
+                u = G.randomNode();
+                v = G.randomNode();
+            }
+            G.addEdge(u, v);
+            doTest(G);
+        }
+    }
+}
+
 TEST_P(GraphToolsGTest, testGetContinuousOnContinuous) {
     Graph G(10, weighted(), directed());
     auto nodeIds = GraphTools::getContinuousNodeIds(G);

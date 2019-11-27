@@ -11,6 +11,22 @@ namespace NetworKit {
 namespace GraphTools {
 
 /**
+ * Returns the maximum out-degree of the graph.
+ *
+ * @param G The input graph.
+ * @return The maximum out-degree of the graph.
+ */
+count maxDegree(const Graph &G);
+
+/**
+ * Returns the maximum in-degree of the graph.
+ *
+ * @param G The input graph.
+ * @return The maximum in-degree of the graph.
+ */
+count maxInDegree(const Graph &G);
+
+/**
  * Copies all nodes of the input graph to a new graph (edges are not copied).
  *
  * @param G The input graph.

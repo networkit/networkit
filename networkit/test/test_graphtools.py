@@ -22,6 +22,45 @@ class TestGraphTools(unittest.TestCase):
 
 		return G
 
+	def testMaxDegree(self):
+		n = 100
+		p = 0.2
+		edgeUpdates = 10
+
+		def computeMaxDeg(G, inDegree = False):
+			nodes = []
+			G.forNodes(lambda u: nodes.append(u))
+			maxDeg = 0
+			for u in nodes:
+				maxDeg = max(maxDeg, G.degreeIn(u) if inDegree else G.degreeOut(u))
+			return maxDeg
+
+		def doTest(G):
+			self.assertEqual(nk.graphtools.maxDegree(G), computeMaxDeg(G))
+			self.assertEqual(nk.graphtools.maxInDegree(G), computeMaxDeg(G, True))
+
+		for seed in range(1, 4):
+			nk.setSeed(seed, False)
+			for directed in [True, False]:
+				for weighted in [True, False]:
+					G = nk.generators.ErdosRenyiGenerator(n, p, directed).generate()
+					if weighted:
+						G = nk.graphtools.toWeighted(G)
+
+					doTest(G)
+					for _ in range(edgeUpdates):
+						e = G.randomEdge()
+						G.removeEdge(e[0], e[1])
+						doTest(G)
+
+					for _ in range(edgeUpdates):
+						e = G.randomNode(), G.randomNode()
+						while G.hasEdge(e[0], e[1]):
+							e = G.randomNode(), G.randomNode()
+						G.addEdge(e[0], e[1])
+						doTest(G)
+
+
 	def testCopyNodes(self):
 		def checkNodes(G, GCopy):
 			self.assertEqual(G.isDirected(), GCopy.isDirected())

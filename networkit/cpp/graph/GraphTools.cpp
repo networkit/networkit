@@ -9,6 +9,25 @@ namespace NetworKit {
 
 namespace GraphTools {
 
+count computeMaxDegree(const Graph &G, bool inDegree = false) {
+    count result = 0;
+#ifndef NETWORKIT_OMP2
+#pragma omp parallel for reduction(max : result)
+    for (omp_index u = 0; u < static_cast<omp_index>(G.upperNodeIdBound()); ++u) {
+        result = std::max(result, inDegree ? G.degreeIn(u) : G.degreeOut(u));
+    }
+#else
+    G.forNodes([&](const node u) {
+        result = std::max(result, inDegree ? G.degreeIn(u) : G.degreeOut(u));
+    });
+#endif
+    return result;
+}
+
+count maxDegree(const Graph &G) { return computeMaxDegree(G); }
+
+count maxInDegree(const Graph &G) { return computeMaxDegree(G, true); }
+
 Graph copyNodes(const Graph &G) {
     Graph C(G.upperNodeIdBound(), G.isWeighted(), G.isDirected());
     for (node u = 0; u < G.upperNodeIdBound(); ++u) {

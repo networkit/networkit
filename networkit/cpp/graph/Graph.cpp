@@ -454,24 +454,9 @@ void Graph::sortEdges() {
     }
 }
 
-count Graph::maxDegree() const { return computeMaxDegree(); }
+count Graph::maxDegree() const { return GraphTools::maxDegree(*this); }
 
-count Graph::maxDegreeIn() const { return computeMaxDegree(true); }
-
-count Graph::computeMaxDegree(const bool inDegree) const {
-    count result = 0;
-#ifndef NETWORKIT_OMP2
-#pragma omp parallel for reduction(max : result)
-    for (omp_index u = 0; u < upperNodeIdBound(); ++u) {
-        result = std::max(result, inDegree ? degreeIn(u) : degreeOut(u));
-    }
-#else
-    this->forNodes([&](const node u) {
-        result = std::max(result, inDegree ? degreeIn(u) : degreeOut(u));
-    });
-#endif
-    return result;
-}
+count Graph::maxDegreeIn() const { return GraphTools::maxInDegree(*this); }
 
 edgeweight Graph::maxWeightedDegree() const {
     return computeMaxWeightedDegree();

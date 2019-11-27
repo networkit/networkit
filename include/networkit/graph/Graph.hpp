@@ -169,13 +169,6 @@ class Graph final {
                                      bool countSelfLoopsTwice = false) const;
 
     /**
-     * Computes the maximum in/out degree of the graph.
-     *
-     * @param inDegree wheter to compute the in degree or the out degree.
-     */
-    count computeMaxDegree(const bool inDegree = false) const;
-
-    /**
      * Computes the maximum in/out weighted degree of the graph
      *
      * @param inDegree whether to compute the in degree or the out degree
@@ -945,14 +938,14 @@ public:
      *
      * @return The maximum out-degree of the graph.
      */
-    count maxDegree() const;
+    count TLX_DEPRECATED(maxDegree() const);
 
     /**
      * Returns the maximum in-degree of the graph.
      *
      * @return The maximum in-degree of the graph.
      */
-    count maxDegreeIn() const;
+    count TLX_DEPRECATED(maxDegreeIn() const);
 
     /**
      * Check whether @a v is isolated, i.e. degree is 0.
