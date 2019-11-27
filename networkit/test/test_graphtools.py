@@ -347,5 +347,31 @@ class TestGraphTools(unittest.TestCase):
 					nk.graphtools.merge(Gmerge, G1)
 					testGraphs(Gorig, Gmerge, G1)
 
+	def testRemoveEdgesFromIsolatedSet(self):
+		n = 6
+
+		def generateTwoComponents(directed, weighted):
+			G = nk.Graph(n, directed, weighted)
+			G.addEdge(0, 1)
+			G.addEdge(1, 2)
+			G.addEdge(2, 0)
+
+			G.addEdge(3, 4)
+			G.addEdge(4, 5)
+			G.addEdge(5, 3)
+
+			return G
+
+		for directed in [True, False]:
+			for weighted in [True, False]:
+				G = generateTwoComponents(directed, weighted)
+				nk.graphtools.removeEdgesFromIsolatedSet(G, [0, 1, 2])
+				self.assertEqual(G.numberOfEdges(), 3)
+				self.assertTrue(G.hasEdge(3, 4))
+				self.assertTrue(G.hasEdge(4, 5))
+				self.assertTrue(G.hasEdge(5, 3))
+				nk.graphtools.removeEdgesFromIsolatedSet(G, [3, 4, 5])
+				self.assertEqual(G.numberOfEdges(), 0)
+
 if __name__ == "__main__":
 	unittest.main()

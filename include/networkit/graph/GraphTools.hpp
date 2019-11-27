@@ -60,6 +60,36 @@ node randomNode(const Graph &G);
 node randomNeighbor(const Graph &G, node u);
 
 /**
+ * Removes all the edges in the graph.
+ */
+void removeAllEdges(Graph &G);
+
+/**
+ * Efficiently removes all the edges adjacent to a set of nodes that is
+ * not connected to the rest of the graph. This is meant to optimize the
+ * Kadabra algorithm.
+ *
+ * @param G The input graph.
+ * @param first Start of the range that contains the nodes in the set.
+ * @param last End of the range that contains the nodes in the set.
+ * is isolated from the rest of the graph.
+ */
+template <class InputIt>
+void removeEdgesFromIsolatedSet(Graph &G, InputIt first, InputIt last) {
+    count removedEdges = 0;
+    while (first != last) {
+        const auto u = *first++;
+        removedEdges += G.degree(u);
+        G.removePartialOutEdges(unsafe, u);
+        if (G.isDirected()) {
+            G.removePartialInEdges(unsafe, u);
+        }
+    }
+
+    G.setEdgeCount(unsafe, G.numberOfEdges() - (G.isDirected() ? removedEdges : removedEdges / 2));
+}
+
+/**
  * Copies all nodes of the input graph to a new graph (edges are not copied).
  *
  * @param G The input graph.

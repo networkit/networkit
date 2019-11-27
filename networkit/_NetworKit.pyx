@@ -913,6 +913,8 @@ cdef class Graph:
 			Efficiently removes all the edges adjacent to a set of nodes that is not connected
 			to the rest of the graph. This is meant to optimize the Kadabra algorithm.
 		"""
+		from warnings import warn
+		warn("Graph.removeEdgesFromIsolatedSet is deprecated, use graphtools.removeEdgesFromIsolatedSet instead.")
 		self._this.removeEdgesFromIsolatedSet(nodes)
 		return self
 
@@ -5134,6 +5136,7 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	_Graph subgraphFromNodes(_Graph G, unordered_set[node], bool_t, bool_t) nogil except +
 	void append(_Graph G, _Graph G1) nogil except +
 	void merge(_Graph G, _Graph G1) nogil except +
+	void removeEdgesFromIsolatedSet[InputIt](_Graph G, InputIt first, InputIt last) except +
 	_Graph getCompactedGraph(_Graph G, unordered_map[node,node]) nogil except +
 	_Graph transpose(_Graph G) nogil except +
 	unordered_map[node,node] getContinuousNodeIds(_Graph G) nogil except +
@@ -5273,6 +5276,29 @@ cdef class GraphTools:
 			Graph that will be merged with `G`.
 		"""
 		merge(G._this, G1._this)
+
+	@staticmethod
+	def removeEdgesFromIsolatedSet(Graph graph, nodes):
+		"""
+		Efficiently removes all the edges adjacent to a set of nodes that is
+		not connected to the rest of the graph. This is meant to optimize the
+		Kadabra algorithm.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		nodes : list
+			Isolates set of nodes from where the edges will be removed.
+		"""
+		cdef vector[node] isolatedSet
+
+		try:
+			isolatedSet = <vector[node]?>nodes
+		except TypeError:
+			raise RuntimeError("Error, nodes must be a list of nodes.")
+		removeEdgesFromIsolatedSet[vector[node].iterator](graph._this,
+				isolatedSet.begin(), isolatedSet.end())
 
 	@staticmethod
 	def toUndirected(Graph graph):

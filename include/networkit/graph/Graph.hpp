@@ -845,6 +845,38 @@ public:
     void removeNode(node v);
 
     /**
+     * Removes out-going edges from node @u. If the graph is weighted and/or has edge ids, weights and/or edge ids will also be removed.
+     *
+     * @param node u Node.
+     */
+    void removePartialOutEdges(Unsafe, node u) {
+        assert(hasNode(u));
+        outEdges[u].clear();
+        if (isWeighted()) {
+            outEdgeWeights[u].clear();
+        }
+        if (hasEdgeIds()) {
+            outEdgeIds[u].clear();
+        }
+    }
+
+    /**
+     * Removes in-going edges to node @u. If the graph is weighted and/or has edge ids, weights and/or edge ids will also be removed.
+     *
+     * @param node u Node.
+     */
+    void removePartialInEdges(Unsafe, node u) {
+        assert(hasNode(u));
+        inEdges[u].clear();
+        if (isWeighted()) {
+            inEdgeWeights[u].clear();
+        }
+        if (hasEdgeIds()) {
+            inEdgeIds[u].clear();
+        }
+    }
+
+    /**
      * Check if node @a v exists in the graph.
      *
      * @param v Node.
@@ -1077,7 +1109,7 @@ public:
      * @param nodesInSet vector of nodes that form a connected component that
      * is isolated from the rest of the graph.
      */
-    void removeEdgesFromIsolatedSet(const std::vector<node> &nodesInSet);
+    void TLX_DEPRECATED(removeEdgesFromIsolatedSet(const std::vector<node> &nodesInSet));
 
     /**
      * Removes all the edges in the graph.
