@@ -59,6 +59,11 @@ from cpython cimport PyObject, Py_INCREF
 # _always_ do that, or you will have segfaults
 np.import_array()
 
+# In order to transfer the ownership from C to python,
+# this class takes the C pointer and knows how to clean
+# up once the python object goes out of scope.
+# The wrapper code is taken from here: https://gist.github.com/GaelVaroquaux/1249305
+
 cdef class ArrayWrapper:
 	cdef void* data_ptr
 	cdef index size

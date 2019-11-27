@@ -23,6 +23,11 @@ ConnectedComponents::ConnectedComponents(const Graph& G) : G(G) {
 }
 
 cc_result ConnectedComponents::get_raw_partition(const Graph & G) {
+    /*
+     * This is basically a copy from ConnectedComponents::run,
+     * but this function uses a raw c pointer to store the mapping_array
+     * instead of a std::vector. This enables the python interface to take ownership of the data and to avoid a copy.
+     */
     node n_components = 0;
     node max_id = G.upperNodeIdBound();
     auto mapping_array = new node[max_id];
