@@ -146,14 +146,14 @@ double ClusteringCoefficient::approxAvgLocal(Graph& G, const count trials) {
         }
 
         TRACE("deg(v) = ", G.degree(v));
-        node u = G.randomNeighbor(v);
-        node w = G.randomNeighbor(v);
+        node u = GraphTools::randomNeighbor(G, v);
+        node w = GraphTools::randomNeighbor(G, v);
         TRACE("u=", u);
         TRACE("w=", w);
 
         // TODO This could be sped up for degree(v) == 2...
         while (u == w) {
-            w = G.randomNeighbor(v);
+            w = GraphTools::randomNeighbor(G, v);
             TRACE("w=", w);
         }
 
@@ -265,12 +265,12 @@ double ClusteringCoefficient::approxGlobal(Graph& G, const count trials) {
             continue;
         }
 
-        node u = G.randomNeighbor(v);
-        node w = G.randomNeighbor(v);
+        node u = GraphTools::randomNeighbor(G, v);
+        node w = GraphTools::randomNeighbor(G, v);
 
         // TODO This could be sped up for degree(v) == 2...
         while (u == w) {
-            w = G.randomNeighbor(v);
+            w = GraphTools::randomNeighbor(G, v);
         }
 
         if (G.hasEdge(u,w)) {

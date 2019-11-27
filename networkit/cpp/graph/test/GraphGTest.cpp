@@ -550,38 +550,6 @@ TEST_P(GraphGTest, testWeightedDegree3) {
     }
 }
 
-TEST_P(GraphGTest, testRandomNeighbor) {
-    Graph G = createGraph(10);
-    G.addEdge(2, 0);
-    G.addEdge(2, 1);
-    G.addEdge(2, 2);
-    G.addEdge(5, 6);
-
-    Aux::Random::setSeed(42, false);
-
-    ASSERT_EQ(none, G.randomNeighbor(3));
-    ASSERT_EQ(6u, G.randomNeighbor(5));
-
-    if (G.isDirected()) {
-        ASSERT_EQ(none, G.randomNeighbor(1));
-    } else {
-        ASSERT_EQ(2u, G.randomNeighbor(1));
-    }
-
-    count nn = 3;
-    count samples = 100000;
-    double maxAbsoluteError = 0.005;
-    std::vector<count> drawCounts(nn, 0);
-    for (count i = 0; i < samples; i++) {
-        node x = G.randomNeighbor(2);
-        drawCounts[x]++;
-    }
-    for (node v = 0; v < nn; v++) {
-        double p = drawCounts[v] / (double)samples;
-        ASSERT_NEAR(1.0 / nn, p, maxAbsoluteError);
-    }
-}
-
 /** EDGE MODIFIERS **/
 
 TEST_P(GraphGTest, testAddEdge) {

@@ -51,6 +51,15 @@ edgeweight maxWeightedInDegree(const Graph &G);
 node randomNode(const Graph &G);
 
 /**
+ * Returns a random neighbor of node @a u. Returns none if degree is zero.
+ *
+ * @param G The input graph.
+ * @param u Node.
+ * @return A random neighbor of @a u.
+ */
+node randomNeighbor(const Graph &G, node u);
+
+/**
  * Copies all nodes of the input graph to a new graph (edges are not copied).
  *
  * @param G The input graph.

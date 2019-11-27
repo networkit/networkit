@@ -118,6 +118,38 @@ TEST_P(GraphToolsGTest, testRandomNode) {
     }
 }
 
+TEST_P(GraphToolsGTest, testRandomNeighbor) {
+    constexpr count n = 10;
+    auto G = Graph(n, weighted(), directed());
+    G.addEdge(2, 0);
+    G.addEdge(2, 1);
+    G.addEdge(2, 2);
+    G.addEdge(5, 6);
+
+    Aux::Random::setSeed(42, false);
+
+    ASSERT_EQ(none, GraphTools::randomNeighbor(G, 3));
+    ASSERT_EQ(6u, GraphTools::randomNeighbor(G, 5));
+
+    if (G.isDirected()) {
+        ASSERT_EQ(none, GraphTools::randomNeighbor(G, 1));
+    } else {
+        ASSERT_EQ(2u, GraphTools::randomNeighbor(G, 1));
+    }
+
+    constexpr count nn = 3;
+    constexpr count samples = 100000;
+    constexpr double maxAbsoluteError = 0.005;
+    std::vector<count> drawCounts(nn, 0);
+    for (count i = 0; i < samples; i++) {
+        ++drawCounts[GraphTools::randomNeighbor(G, 2)];
+    }
+    for (node v = 0; v < nn; v++) {
+        double p = static_cast<double>(drawCounts[v]) / static_cast<double>(samples);
+        ASSERT_NEAR(1.0 / nn, p, maxAbsoluteError);
+    }
+}
+
 TEST_P(GraphToolsGTest, testGetContinuousOnContinuous) {
     Graph G(10, weighted(), directed());
     auto nodeIds = GraphTools::getContinuousNodeIds(G);

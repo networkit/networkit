@@ -79,6 +79,16 @@ class TestGraphTools(unittest.TestCase):
 					G.removeNode(i)
 				self.assertEqual(nk.graphtools.randomNode(G), nk.none)
 
+	def testRandomNeighbor(self):
+		for directed in [True, False]:
+			for weighted in [True, False]:
+				G = self.getSmallGraph(weighted, directed)
+				for i in range(10):
+					u = nk.graphtools.randomNode(G)
+					v = nk.graphtools.randomNeighbor(G, u)
+					self.assertNotEqual(G.degree(u) == 0, G.hasNode(v))
+
+
 	def testCopyNodes(self):
 		def checkNodes(G, GCopy):
 			self.assertEqual(G.isDirected(), GCopy.isDirected())

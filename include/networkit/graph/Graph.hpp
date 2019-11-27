@@ -1010,7 +1010,7 @@ public:
      * @param u Node.
      * @return A random neighbor of @a u.
      */
-    node randomNeighbor(node u) const;
+    node TLX_DEPRECATED(randomNeighbor(node u) const);
 
     /* EDGE MODIFIERS */
 
@@ -1369,6 +1369,12 @@ public:
             return v;
         else
             return none;
+    }
+
+    node getIthNeighbor(node u, index i) const {
+        if (!hasNode(u) || i >= outEdges[u].size())
+            return none;
+        return outEdges[u][i];
     }
 
     /* Derivative Graphs */

@@ -5,11 +5,11 @@
  *      Author: Henning
  */
 
+#include <unordered_set>
+
+#include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/components/RandomSpanningForest.hpp>
 #include <networkit/graph/GraphTools.hpp>
-#include <networkit/graph/Sampling.hpp>
-#include <networkit/components/ConnectedComponents.hpp>
-#include <unordered_set>
 
 namespace NetworKit {
 
@@ -40,7 +40,7 @@ void RandomSpanningForest::run() {
         // random walk starting from root
         while (visited.size() < compSize) {
             // get random neighbor
-            node neigh = G.randomNeighbor(curr);
+            node neigh = GraphTools::randomNeighbor(G, curr);
 
             // if not seen before, insert tree edge
             if (visited.count(neigh) == 0) {

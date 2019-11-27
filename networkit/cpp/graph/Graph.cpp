@@ -603,17 +603,7 @@ node Graph::randomNode() const {
 }
 
 node Graph::randomNeighbor(node u) const {
-    if (outEdges[u].empty()) {
-        return none;
-    }
-
-    node v;
-    do {
-        index i = Aux::Random::integer(outEdges[u].size() - 1);
-        v = outEdges[u][i];
-    } while (v == none);
-
-    return v;
+    return GraphTools::randomNeighbor(*this, u);
 }
 
 /** EDGE MODIFIERS **/
@@ -968,10 +958,10 @@ std::pair<node, node> Graph::randomEdge(bool uniformDistribution) const {
 
     // fast way, but not a uniform random edge!
     do {
-        u = randomNode();
+        u = GraphTools::randomNode(*this);
     } while (outEdges[u].empty());
 
-    const auto v = randomNeighbor(u);
+    const auto v = GraphTools::randomNeighbor(*this, u);
 
     return {u, v};
 }
@@ -997,7 +987,7 @@ std::vector<std::pair<node, node>> Graph::randomEdges(count nr) const {
             // should always be the case as  without
             // edges should have probability 0
             assert(outEdges[u].size() > 0);
-            v = randomNeighbor(u);
+            v = GraphTools::randomNeighbor(*this, u);
         } else {
             // self-loops which appear only once in the outEdge arrays
             // easiest way it to ignore edges (u, v) with u > v
@@ -1006,7 +996,7 @@ std::vector<std::pair<node, node>> Graph::randomEdges(count nr) const {
                 // should always be the case as  without
                 // edges should have probability 0
                 assert(outEdges[u].size() > 0);
-                v = randomNeighbor(u);
+                v = GraphTools::randomNeighbor(*this, u);
             } while (u > v);
         }
         edges.push_back({u, v});

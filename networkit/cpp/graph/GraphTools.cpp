@@ -70,6 +70,13 @@ node randomNode(const Graph &G) {
     return v;
 }
 
+node randomNeighbor(const Graph &G, node u) {
+    if (!G.degree(u))
+        return none;
+
+    return G.getIthNeighbor(u, Aux::Random::integer(G.degree(u) - 1));
+}
+
 Graph copyNodes(const Graph &G) {
     Graph C(G.upperNodeIdBound(), G.isWeighted(), G.isDirected());
     for (node u = 0; u < G.upperNodeIdBound(); ++u) {
