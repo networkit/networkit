@@ -28,7 +28,7 @@ from libc.stdint cimport uint8_t
 # the C++ standard library
 from libcpp cimport bool as bool_t
 from libcpp.vector cimport vector
-from libcpp.utility cimport pair, tuple
+from libcpp.utility cimport pair
 from libcpp.map cimport map
 from libcpp.set cimport set
 from libcpp.stack cimport stack
