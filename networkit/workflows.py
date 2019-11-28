@@ -10,9 +10,7 @@ import os
 import csv
 import fnmatch
 
-
-
-from networkit import graph, generators, components
+import networkit as nk
 
 def extractLargestComponent(G):
 	"""
@@ -28,9 +26,9 @@ def extractLargestComponent(G):
 		Subgraph of largest component, preserving node ids of orignal graph.
 	"""
 
-	cc = components.ConnectedComponents(G)
+	cc = nk.components.Connectednk.components(G)
 	cc.run()
-	cSizes = cc.getComponentSizes()
+	cSizes = cc.getnk.componentsizes()
 	(largestCompo, size) = max(cSizes.items(), key=operator.itemgetter(1))
 	logging.info("extracting component {0} containing {1} nodes".format(largestCompo, size))
 	compoNodes = [v for v in G.nodes() if cc.componentOfNode(v) is largestCompo]
@@ -58,7 +56,7 @@ def batch(graphDir, match, format, function, outPath, header=None):
 					print("processing {0}".format(filename))
 					graphPath = os.path.join(root, filename)
 					timer = stopwatch.Timer()
-					G = graphio.readGraph(graphPath)
+					G = nk.graphio.readGraph(graphPath)
 					timer.stop()
 					result = function(G)
 					if type(result) is tuple:
@@ -78,7 +76,7 @@ class TestWorkflows(unittest.TestCase):
 	def testExtractLargestComponent(self):
 		G = generators.DorogovtsevMendesGenerator(100).generate()
 		C = extractLargestComponent(G)
-		self.assertEqual(C.size(), G.size())
+		self.assertEqual(nk.graphtools.size(C), nk.graphtools.size(G))
 
 if __name__ == '__main__':
     unittest.main()

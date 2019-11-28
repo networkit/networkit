@@ -1217,7 +1217,7 @@ public:
      * @return a pair (n, m) where n is the number of nodes and m is the
      * number of edges
      */
-    std::pair<count, count> const size() const noexcept { return {n, m}; };
+    std::pair<count, count> const TLX_DEPRECATED(size() const noexcept);
 
     /**
      * @return the density of the graph

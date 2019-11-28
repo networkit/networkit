@@ -109,6 +109,15 @@ void removeEdgesFromIsolatedSet(Graph &G, InputIt first, InputIt last) {
 }
 
 /**
+ * Returns the number of nodes and the number of edges of the input graph.
+ *
+ * @param G The input graph.
+ * @return std::pair<count, count> with the number of nodes and the number
+ * of edges of the input graph.
+ */
+std::pair<node, node> size(const Graph &G) noexcept;
+
+/**
  * Copies all nodes of the input graph to a new graph (edges are not copied).
  *
  * @param G The input graph.

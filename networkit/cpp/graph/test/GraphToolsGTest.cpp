@@ -37,6 +37,38 @@ bool GraphToolsGTest::weighted() const noexcept { return GetParam().first; }
 
 bool GraphToolsGTest::directed() const noexcept { return GetParam().second; }
 
+TEST_P(GraphToolsGTest, testSize) {
+    constexpr count n = 100;
+    constexpr double p = 0.1;
+    constexpr count updates = 10;
+
+    auto doTest = [](const Graph &G) {
+        const auto size = GraphTools::size(G);
+        EXPECT_EQ(size.first,  G.numberOfNodes());
+        EXPECT_EQ(size.second, G.numberOfEdges());
+    };
+
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, false);
+        auto G = ErdosRenyiGenerator(n, p, directed()).generate();
+        if (weighted()) {
+            G = generateRandomWeights(G);
+        }
+
+        doTest(G);
+        for (count i = 0; i < updates; ++i) {
+            G.removeNode(GraphTools::randomNode(G));
+            doTest(G);
+        }
+
+        for (count i = 0; i < updates && G.numberOfEdges(); ++i) {
+            const auto randomEdge = GraphTools::randomEdge(G);
+            G.removeEdge(randomEdge.first, randomEdge.second);
+            doTest(G);
+        }
+    }
+}
+
 TEST_P(GraphToolsGTest, testMaxDegree) {
     constexpr count n = 100;
     constexpr double p = 0.1;

@@ -128,7 +128,7 @@ TEST_F(MaximalCliquesGTest, benchMaximalCliques) {
     EdgeListReader r('\t',0,"#", false);
     Graph G = r.read(graphPath);
     G.removeSelfLoops();
-    INFO(G.size());
+    INFO(GraphTools::size(G));
     INFO("Starting MaximalCliques");
     Aux::Timer timer;
     count numCliques = 0;

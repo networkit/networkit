@@ -572,6 +572,8 @@ cdef class Graph:
 	 	tuple
 	 		a pair (n, m) where n is the number of nodes and m is the number of edges
 		"""
+		from warnings import warn
+		warn("Graph.size is deprecated, use graphtools.size instead.")
 		return self._this.size()
 
 
@@ -2487,7 +2489,7 @@ cdef class BarabasiAlbertGenerator(StaticGraphGenerator):
 
 	@classmethod
 	def fit(cls, Graph G, scale=1):
-		(n, m) = G.size()
+		(n, m) = GraphTools.size(G)
 		k = math.floor(m / n)
 		return cls(nMax=scale * n, k=k, n0=k)
 
@@ -2569,7 +2571,7 @@ cdef class ErdosRenyiGenerator(StaticGraphGenerator):
 	@classmethod
 	def fit(cls, Graph G, scale=1):
 		""" Fit model to input graph"""
-		(n, m) = G.size()
+		(n, m) = GraphTools.size(G)
 		if G.isDirected():
 			raise Exception("TODO: figure out scaling scheme for directed graphs")
 		else:
@@ -2715,7 +2717,7 @@ cdef class ChungLuGenerator(StaticGraphGenerator):
 	@classmethod
 	def fit(cls, Graph G, scale=1):
 		""" Fit model to input graph"""
-		(n, m) = G.size()
+		(n, m) = GraphTools.size(G)
 		degSeq = DegreeCentrality(G).run().scores()
 		return cls(degSeq * scale)
 
@@ -2863,7 +2865,7 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		""" Fit model to input graph"""
 		degSeq = DegreeCentrality(G).run().scores()
 		gamma = max(-1 * PowerlawDegreeSequence(degSeq).getGamma(), 2.1)
-		(n, m) = G.size()
+		(n, m) = GraphTools.size(G)
 		k = 2 * (m / n)
 		return cls(n * scale, k, gamma)
 
@@ -3048,7 +3050,7 @@ cdef class RmatGenerator(StaticGraphGenerator):
 			(a,b,c,d) = nweights
 		print("using initiator matrix [{0},{1};{2},{3}]".format(a,b,c,d))
 		# other parameters
-		(n,m) = G.size()
+		(n,m) = GraphTools.size(G)
 		scaleParameter = math.ceil(math.log(n * scale, 2))
 		edgeFactor = math.floor(m / n)
 		reduceNodes = (2**scaleParameter) - (scale * n)
@@ -3421,7 +3423,7 @@ cdef class LFRGenerator(Algorithm):
 	@classmethod
 	def fit(cls, Graph G, scale=1, vanilla=False, communityDetectionAlgorithm=PLM, plfit=False):
 		""" Fit model to input graph"""
-		(n, m) = G.size()
+		(n, m) = GraphTools.size(G)
 		# detect communities
 		communities = communityDetectionAlgorithm(G).run().getPartition()
 		# get degree sequence
@@ -5135,6 +5137,7 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	node randomNeighbor(_Graph G, node u) nogil except +
 	pair[node, node] randomEdge(_Graph G, bool_t uniformDistribution) nogil except +
 	vector[pair[node, node]] randomEdges(_Graph G, count numEdges) nogil except +
+	pair[count, count] size(_Graph G) nogil except +
 	_Graph copyNodes(_Graph G) nogil except +
 	_Graph toUndirected(_Graph G) nogil except +
 	_Graph toUnweighted(_Graph G) nogil except +
@@ -5398,6 +5401,18 @@ cdef class GraphTools:
 			Weighted copy of the input graph.
 		"""
 		return Graph().setThis(toWeighted(graph._this))
+
+	@staticmethod
+	def size(Graph graph):
+		"""
+		Return the size of the graph.
+
+		Returns
+		-------
+		tuple
+			a pair (n, m) where n is the number of nodes and m is the number of edges.
+		"""
+		return size(graph._this)
 
 	@staticmethod
 	def copyNodes(Graph graph):
