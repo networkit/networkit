@@ -10,18 +10,13 @@ from _NetworKit import Graph as __Graph
 from .GraphMLIO import GraphMLReader, GraphMLWriter
 from .GEXFIO import GEXFReader, GEXFWriter
 from . import algebraic
+from .support import MissingDependencyError
 
 # external imports
 import os
 import logging
-try:
-	import numpy
-except ImportError:
-	print("module 'numpy' not available - some functionality will be restricted")
-try:
-	import scipy.io
-except ImportError:
-	print("module 'scipy' not available - some functionality will be restricted")
+import numpy
+import scipy.io
 import fnmatch
 
 from enum import Enum

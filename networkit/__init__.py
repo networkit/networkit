@@ -40,8 +40,10 @@ import sys
 # pyplot might not be available in non-interactive environments.
 try:
 	import matplotlib.pyplot as _pyplot
-except ImportError as importError:
-	_pyplot = None
+except ImportError:
+	have_plt = False
+else:
+	have_plt = True
 
 # local imports
 from . import stopwatch
@@ -73,18 +75,16 @@ from . import stats
 from . import sampling
 from . import viz
 from . import randomization
+from .support import MissingDependencyError
 
-if _pyplot is not None:
+if have_plt:
 	from . import plot
 	from .profiling import profiling
-else:
-	print("WARNING: pyplot is not available; some functionality is disabled", file=sys.stderr)
 
 try:
 	from . import viztasks
-except ImportError as importError:
-	print("WARNING: some dependencies are not satisfied"
-			" which are needed to use the 'viztasks' submodule", file=sys.stderr)
+except ImportError:
+	raise MissingDependencyError("viztasks")
 
 #--------- Top Level Classes and Functions ----------------#
 #

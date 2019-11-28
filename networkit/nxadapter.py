@@ -4,15 +4,17 @@ This module handles compatibility between NetworKit and NetworkX
 
 # local imports
 from . import graph
-from networkit.exceptions import ReducedFunctionalityWarning
 import warnings
+from .support import MissingDependencyError
 
 # non standard library modules / external
 try:
 	import networkx as nx
 except ImportError:
-	warnings.warn("WARNING: module 'networkx' not installed, which is required by some functions.",
-			ReducedFunctionalityWarning)
+	have_nx = False
+else:
+	have_nx = True
+
 ########  CONVERSION ########
 
 def nx2nk(nxG, weightAttr=None):
@@ -21,6 +23,8 @@ def nx2nk(nxG, weightAttr=None):
 		:param weightAttr: the edge attribute which should be treated as the edge weight.
 	"""
 
+	if not have_nx:
+		raise MissingDependencyError("networkx")
 	# map networkx node ids to consecutive numerical node ids
 	idmap = dict((id, u) for (id, u) in zip(nxG.nodes(), range(nxG.number_of_nodes())))
 	z = max(idmap.values()) + 1
@@ -45,9 +49,12 @@ def nx2nk(nxG, weightAttr=None):
 	assert (nkG.numberOfEdges() == nxG.number_of_edges())
 	return nkG
 
-
 def nk2nx(nkG):
 	""" Convert a NetworKit.Graph to a networkx.Graph """
+
+	if not have_nx:
+		raise MissingDependencyError("networkx")
+
 	if nkG.isDirected():
 		nxG = nx.DiGraph()
 	else:

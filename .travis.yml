@@ -308,6 +308,10 @@ script:
  - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$(pwd)/core_build
  - NETWORKIT_PARALLEL_JOBS=2 python3 ./setup.py build_ext --inplace --networkit-external-core
  - NETWORKIT_PARALLEL_JOBS=2 pip3 install -e .
+ # Check that NetworKit can be successfuly imported without dependencies.
+ - python3 -c "import networkit"
+ # Install dependencies before running the tests.
+ - pip3 install -r requirements.txt
  - python3 -m unittest discover -v networkit/test/
 
  # Test Jupyter-notebooks

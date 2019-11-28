@@ -6,15 +6,8 @@ __author__ = "Christian Staudt"
 # local imports
 
 # external imports
-try:
-	import scipy.sparse
-except ImportError:
-	print("module 'scipy' not available -- some functionality will be restricted")
-try:
-	import numpy as np
-except ImportError:
-	print("module 'numpy' not available -- some functionality will be restricted")
-
+import scipy.sparse
+import numpy as np
 
 def column(matrix, i):
 	return [row[i] for row in matrix]

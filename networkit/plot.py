@@ -1,21 +1,32 @@
 from networkit import *
-from networkit.exceptions import ReducedFunctionalityWarning
-import matplotlib.pyplot as plt
 import numpy as np
 import operator
-import pandas
 import warnings
-
+from .support import MissingDependencyError
+try:
+	import matplotlib.pyplot as plt
+except ImportError:
+	have_plt = False
+else:
+	have_plt = True
+try:
+	import pandas
+except ImportError:
+	have_pandas = False
+else:
+	have_pandas = True
 try:
 	import seaborn
 	seaborn.set_style("whitegrid")
 except ImportError:
-	warnings.warn("WARNING: module 'seaborn' is not installed, plotting functionality will be limited",
-			ReducedFunctionalityWarning)
-
+	have_seaborn = False
+else:
+	have_seaborn = True
 
 def nodeProperty(data, label, sorted=True, yscale="linear", xscale="linear"):
 	""" General plotting function for a node property"""
+	if not have_plt:
+		raise MissingDependencyError("matplotlib")
 	plt.yscale(yscale)
 	plt.xscale(xscale)
 	plt.xlabel("nodes")
@@ -27,6 +38,8 @@ def nodeProperty(data, label, sorted=True, yscale="linear", xscale="linear"):
 
 def degreeDistribution(G, **kwargs):
 	"""Plots the degree distribution of the given network."""
+	if not have_plt:
+		raise MissingDependencyError("matplotlib")
 	dd = properties.degreeDistribution(G)
 	plt.yscale("symlog")
 	plt.xscale("log")
@@ -36,6 +49,10 @@ def degreeDistribution(G, **kwargs):
 
 def connectedComponentsSizes(G, **kwargs):
 	""" Plot the size distribution of connected components as a pie chart """
+	if not have_seaborn:
+		raise MissingDependencyError("seaborn")
+	if not have_plt:
+		raise MissingDependencyError("matplotlib")
 	csizes = components.ConnectedComponents(G).run().getComponentSizes()
 	colors = seaborn.color_palette("Set2", 10)
 	data = list(csizes.values())
@@ -51,6 +68,10 @@ def connectedComponentsSizes(G, **kwargs):
 
 def coreDecompositionSequence(G, **kwargs):
 	""" Plots the core decomposition sequence of G, i.e. the size of the k-shell for the core number k"""
+	if not have_plt:
+		raise MissingDependencyError("matplotlib")
+	if not have_pandas:
+		raise MissingDependencyError("pandas")
 	shells = centrality.CoreDecomposition(G).run().shells()
 	data = pandas.DataFrame({"k": range(len(shells)), "n_k": [len(shell) for shell in shells]})
 	plt.xlabel("core number")
@@ -60,6 +81,10 @@ def coreDecompositionSequence(G, **kwargs):
 
 def clusteringPerDegree(G, **kwargs):
 	""" Plots the local clustering coefficient for nodes with specific degree"""
+	if not have_seaborn:
+		raise MissingDependencyError("seaborn")
+	if not have_pandas:
+		raise MissingDependencyError("pandas")
 	degs = centrality.DegreeCentrality(G).run().scores()
 	cc = centrality.LocalClusteringCoefficient(G).run().scores()
 	data = pandas.DataFrame({"deg": degs, "cc" : cc})
@@ -70,6 +95,8 @@ def clusteringPerDegree(G, **kwargs):
 def hopPlot(G, **kwargs):
 	""" Prints the hop-plot"""
 	#hop-plot
+	if not have_plt:
+		raise MissingDependencyError("matplotlib")
 	if G.isDirected():
 		cc = components.StronglyConnectedComponents(G)
 	else:

@@ -3,7 +3,7 @@ from _NetworKit import Partition, Modularity
 
 # local imports
 from .algebraic import laplacianEigenvectors
-from .exceptions import ReducedFunctionalityWarning
+from .support import MissingDependencyError
 
 # external imports
 import warnings
@@ -12,8 +12,9 @@ import numpy as np
 try:
 	import tabulate
 except ImportError:
-	warnings.warn("WARNING: module 'tabulate' not found, please install it to use the full functionality of NetworKit",
-			ReducedFunctionalityWarning)
+	have_tabulate = False
+else:
+	have_tabulate = True
 
 def computeEdgeCut(partition, graph):
 	cut = 0
@@ -35,6 +36,8 @@ def computeImbalance(partition, graph):
 	return maximum / desired
 
 def inspectPartitions(partition, graph):
+	if not have_tabulate:
+		raise MissingDependencyError("tabulate")
 	partitionSizes = partition.subsetSizes()
 	mod = Modularity().getQuality(partition, graph)
 	props = [
