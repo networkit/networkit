@@ -718,25 +718,29 @@ TEST_P(GraphGTest, testRemoveEdge) {
 }
 
 TEST_P(GraphGTest, testRemoveAllEdges) {
-    Graph g = ErdosRenyiGenerator(20, 0.1, false).generate();
-    g.removeAllEdges();
-    EXPECT_EQ(g.numberOfEdges(), 0);
-    count edgeCount = 0;
-    g.forEdges([&edgeCount](node, node) { ++edgeCount; });
-    EXPECT_EQ(edgeCount, 0);
-    g.forNodes([&](node u) {
-        EXPECT_EQ(g.degree(u), 0);
-        EXPECT_EQ(g.degree(u), 0);
-    });
+    constexpr count n = 100;
+    constexpr double p = 0.2;
 
-    g = ErdosRenyiGenerator(20, 0.1, true).generate();
-    g.removeAllEdges();
-    EXPECT_EQ(g.numberOfEdges(), 0);
-    g.forNodes([&](node u) {
-        EXPECT_EQ(g.degree(u), 0);
-        EXPECT_EQ(g.degree(u), 0);
-        EXPECT_EQ(g.degreeIn(u), 0);
-    });
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, false);
+        auto g = ErdosRenyiGenerator(n, p, isDirected()).generate();
+        if (isWeighted()) {
+            g = Graph(g, true, isDirected());
+        }
+
+        g.removeAllEdges();
+
+        EXPECT_EQ(g.numberOfEdges(), 0);
+
+        count edgeCount = 0;
+        g.forEdges([&edgeCount](node, node) { ++edgeCount; });
+        EXPECT_EQ(edgeCount, 0);
+
+        g.forNodes([&](node u) {
+            EXPECT_EQ(g.degree(u), 0);
+            EXPECT_EQ(g.degree(u), 0);
+        });
+    }
 }
 
 TEST_P(GraphGTest, testRemoveSelfLoops) {

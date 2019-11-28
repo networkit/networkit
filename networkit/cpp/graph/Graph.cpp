@@ -761,25 +761,12 @@ void Graph::removeEdge(node u, node v) {
 }
 
 void Graph::removeAllEdges() {
-#pragma omp parallel for
-    for (omp_index u = 0; u < z; ++u) {
-        outEdges[u].clear();
-        if (isWeighted()) {
-            outEdgeWeights[u].clear();
-        }
-        if (edgesIndexed) {
-            outEdgeIds[u].clear();
-        }
+    parallelForNodes([&](const node u) {
+        removePartialOutEdges(unsafe, u);
         if (isDirected()) {
-            inEdges[u].clear();
-            if (isWeighted()) {
-                inEdgeWeights[u].clear();
-            }
-            if (edgesIndexed) {
-                inEdgeIds[u].clear();
-            }
+            removePartialInEdges(unsafe, u);
         }
-    }
+    });
 
     m = 0;
 }

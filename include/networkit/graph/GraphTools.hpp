@@ -60,9 +60,42 @@ node randomNode(const Graph &G);
 node randomNeighbor(const Graph &G, node u);
 
 /**
- * Removes all the edges in the graph.
+ * Returns a random edge. By default a random node u is chosen and then
+ * some random neighbor v. So the probability of choosing (u, v) highly
+ * depends on the degree of u. Setting uniformDistribution to true, will
+ * give you a real uniform distributed edge, but will be slower.
+ * Exp. time complexity: O(1) for uniformDistribution = false, O(n) otherwise.
+ *
+ * @param Graph G The input graph.
+ * @param bool uniformDistribution Whether the random edge should be extracted uniformly at
+ * random.
+ * @return std::pair<node, node> A random edge.
  */
-void removeAllEdges(Graph &G);
+std::pair<node, node> randomEdge(const Graph &G, bool uniformDistribution = false);
+
+/**
+ * Returns a vector with @a nr random edges. The edges are chosen uniformly
+ * random.
+ *
+ * @param G The input graph.
+ * @param nr The number of random edges to be returned.
+ * @return std::vector<std::pair<node, node>> Vector with random edges.
+ */
+std::vector<std::pair<node, node>> randomEdges(const Graph &G, count nr);
+
+/**
+ * Removes all self-loops in the graph.
+ *
+ * @param G The input graph.
+ */
+void removeSelfLoops(Graph &G);
+
+/**
+ * Removes all multi-edges in the graph.
+ *
+ * @param G The input graph.
+ */
+void removeMultiEdges(Graph &G);
 
 /**
  * Efficiently removes all the edges adjacent to a set of nodes that is

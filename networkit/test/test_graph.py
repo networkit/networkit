@@ -14,6 +14,14 @@ class TestGraph(unittest.TestCase):
 
 		return G
 
+	def testRemoveAllEdges(self):
+		for directed in [True, False]:
+			for weighted in [True, False]:
+				G = self.getSmallGraph(weighted, directed)
+				G.removeAllEdges()
+				self.assertEqual(G.numberOfEdges(), 0)
+				G.forNodePairs(lambda u, v: self.assertFalse(G.hasEdge(u, v)))
+
 	def testRemoveMultiEdges(self):
 
 		def addMultiEdges(G, nMultiEdges):
