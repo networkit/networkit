@@ -183,6 +183,18 @@ node randomNeighbor(const Graph &G, node u) {
     return G.getIthNeighbor(u, Aux::Random::integer(G.degree(u) - 1));
 }
 
+std::pair<node, node> size(const Graph &G) noexcept {
+    return {G.numberOfNodes(), G.numberOfEdges()};
+}
+
+double density(const Graph &G) noexcept {
+    if (G.numberOfNodes() <= 1)
+        return 0;
+    const auto n = static_cast<double>(G.numberOfNodes());
+    const auto m = static_cast<double>((G.numberOfEdges() - G.numberOfSelfLoops()) * (G.isDirected() ? 1 : 2));
+    return m / (n * (n - 1));
+}
+
 Graph copyNodes(const Graph &G) {
     Graph C(G.upperNodeIdBound(), G.isWeighted(), G.isDirected());
     for (node u = 0; u < G.upperNodeIdBound(); ++u) {

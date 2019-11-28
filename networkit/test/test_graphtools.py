@@ -131,6 +131,27 @@ class TestGraphTools(unittest.TestCase):
 						G.removeEdge(u, v)
 						doTest(G)
 
+	def testDensity(self):
+		def doTest(G):
+			d = nk.graphtools.density(G)
+			self.assertGreaterEqual(d, 0)
+			self.assertEqual(
+					d > 0,
+					G.numberOfNodes() >= 1 and G.numberOfEdges() - G.numberOfSelfLoops() > 0)
+
+		n, p = 100, 0.1
+		for seed in range(1, 4):
+			for directed in [True, False]:
+				for weighted in [True, False]:
+					G = nk.generators.ErdosRenyiGenerator(n, p, directed).generate()
+					if weighted:
+						G = nk.graphtools.toWeighted(G)
+					doTest(G)
+
+					for _ in range(n):
+						G.removeNode(nk.graphtools.randomNode(G))
+						doTest(G)
+
 	def testCopyNodes(self):
 		def checkNodes(G, GCopy):
 			self.assertEqual(G.isDirected(), GCopy.isDirected())

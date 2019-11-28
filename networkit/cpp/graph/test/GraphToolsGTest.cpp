@@ -69,6 +69,32 @@ TEST_P(GraphToolsGTest, testSize) {
     }
 }
 
+TEST_P(GraphToolsGTest, testDensity) {
+    constexpr count n = 100;
+    constexpr double p = 0.1;
+
+    auto doTest = [](const Graph &G) {
+        const auto density = GraphTools::density(G);
+        EXPECT_TRUE(density >= 0);
+        EXPECT_EQ(density > 0, G.numberOfNodes() > 1 && G.numberOfEdges() - G.numberOfSelfLoops());
+    };
+
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, false);
+        auto G = ErdosRenyiGenerator(n, p, directed()).generate();
+        if (weighted()) {
+            G = generateRandomWeights(G);
+        }
+
+        doTest(G);
+        for (node u = 0; u < G.upperNodeIdBound(); ++u) {
+            if (G.hasNode(u))
+                G.removeNode(u);
+            doTest(G);
+        }
+    }
+}
+
 TEST_P(GraphToolsGTest, testMaxDegree) {
     constexpr count n = 100;
     constexpr double p = 0.1;

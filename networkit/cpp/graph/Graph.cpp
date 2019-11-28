@@ -764,6 +764,10 @@ std::pair<count, count> const Graph::size() const noexcept {
     return GraphTools::size(*this);
 }
 
+double Graph::density() const {
+    return GraphTools::density(*this);
+}
+
 void Graph::removeAllEdges() {
     parallelForNodes([&](const node u) {
         removePartialOutEdges(unsafe, u);

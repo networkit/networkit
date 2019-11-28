@@ -1222,19 +1222,7 @@ public:
     /**
      * @return the density of the graph
      */
-    double density() const {
-        count n = numberOfNodes();
-        count m = numberOfEdges();
-        count loops = numberOfSelfLoops();
-        m -= loops;
-        double d;
-        if (isDirected()) {
-            d = m / (double)(n * (n - 1));
-        } else {
-            d = (2 * m) / (double)(n * (n - 1));
-        }
-        return d;
-    }
+    double TLX_DEPRECATED(density() const);
 
     /**
      * Return the number of loops {v,v} in the graph.

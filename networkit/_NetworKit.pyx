@@ -585,6 +585,8 @@ cdef class Graph:
 	 	-------
 	 	double
 		"""
+		from warnings import warn
+		warn("Graph.density is deprecated, use graphtools.density instead.")
 		return self._this.density()
 
 	def upperNodeIdBound(self):
@@ -5138,6 +5140,7 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	pair[node, node] randomEdge(_Graph G, bool_t uniformDistribution) nogil except +
 	vector[pair[node, node]] randomEdges(_Graph G, count numEdges) nogil except +
 	pair[count, count] size(_Graph G) nogil except +
+	double density(_Graph G) nogil except +
 	_Graph copyNodes(_Graph G) nogil except +
 	_Graph toUndirected(_Graph G) nogil except +
 	_Graph toUnweighted(_Graph G) nogil except +
@@ -5413,6 +5416,23 @@ cdef class GraphTools:
 			a pair (n, m) where n is the number of nodes and m is the number of edges.
 		"""
 		return size(graph._this)
+
+	@staticmethod
+	def density(Graph graph):
+		"""
+		Get the density of the input graph.
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+
+		Returns
+		-------
+		double
+			The density of the input graph.
+		"""
+		return density(graph._this)
 
 	@staticmethod
 	def copyNodes(Graph graph):

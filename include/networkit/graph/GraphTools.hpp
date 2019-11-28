@@ -118,6 +118,15 @@ void removeEdgesFromIsolatedSet(Graph &G, InputIt first, InputIt last) {
 std::pair<node, node> size(const Graph &G) noexcept;
 
 /**
+ * Return the density of the input graph.
+ *
+ * @param G The input graph.
+ *
+ * @return double The density of the input graph.
+ */
+double density(const Graph &G) noexcept;
+
+/**
  * Copies all nodes of the input graph to a new graph (edges are not copied).
  *
  * @param G The input graph.
