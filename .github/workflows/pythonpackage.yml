@@ -42,6 +42,7 @@ jobs:
       run: |
         CC=gcc-9 python setup.py build_ext sdist bdist_wheel
     - name: Publish
+      if: github.ref == 'Dev'
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
@@ -99,6 +100,7 @@ jobs:
             \$PYBIN/python -m unittest discover -v networkit/test/"
 
     - name: Publish
+      if: github.ref == 'Dev'
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
