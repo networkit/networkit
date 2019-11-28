@@ -20,6 +20,10 @@ def findClangFormat():
     allowed = ["clang-format" + x for x in ["-8"]]
     for candidate in allowed:
         if not shutil.which(candidate) is None:
+            if nkt.isVerbose():
+                version = str(subprocess.check_output([candidate, "--version"], universal_newlines=True)).strip()
+                print("clang-format: %s\n -> Version: %s" % (candidate, version))
+
             return candidate
 
     raise "clang-format binary not found. We searched for:\n " + "\n ".join(allowed)
@@ -56,10 +60,13 @@ with tempfile.TemporaryDirectory(dir=nkt.getNetworKitRoot()) as tempDir:
 
         if not filecmp.cmp(file, tempFile, shallow=False):
             numberNonCompliant += 1
+            nkt.reportChange(file + " is non-compliant")
+
+            if nkt.doReportDiff():
+                nkt.computeAndReportDiff(file, tempFile)
+
             if not nkt.isReadonly():
                 os.replace(tempFile, file)
-
-            nkt.reportChange(file + " is non-compliant")
 
 print("Scanned %d files (skipped %d files without subscription). Non-compliant files: %d." %
       (len(files), numberFileSkipped, numberNonCompliant))
