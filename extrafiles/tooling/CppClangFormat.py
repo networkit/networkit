@@ -17,7 +17,7 @@ import os
 
 def findClangFormat():
     """Tries to find clang-format-XXX variants within the path"""
-    allowed = ["clang-format" + x for x in ["-9", "-8", "-7", ""]]
+    allowed = ["clang-format" + x for x in ["-8"]]
     for candidate in allowed:
         if not shutil.which(candidate) is None:
             return candidate

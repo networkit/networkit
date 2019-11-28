@@ -279,8 +279,9 @@ matrix:
       os: linux
       dist: bionic 
       addons:
-         packages:
-            clang-format-7
+        apt:
+          sources: ['llvm-toolchain-bionic-8']
+          packages: ['clang-format-8']
       script:
         - set -e
         - ./check_code.sh 
