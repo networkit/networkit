@@ -28,7 +28,7 @@ public:
      * @param splitTheoretical Whether to split in a theoretically optimal way or in a way to decrease measured running times
      *
      */
-    QuadtreeCartesianEuclid(Point<double> lower = Point<double>({0.0, 0.0}), Point<double> upper = Point<double>({1.0, 1.0}), bool theoreticalSplit=false, count capacity=1000) {
+    QuadtreeCartesianEuclid(Point<double> lower = Point<double>(0.0, 0.0), Point<double> upper = Point<double>(1.0, 1.0), bool theoreticalSplit=false, count capacity=1000) {
         assert(lower.getDimensions() == upper.getDimensions());
         root = QuadNodeCartesianEuclid<T>(lower, upper, capacity, theoreticalSplit);
         this->lower = lower;

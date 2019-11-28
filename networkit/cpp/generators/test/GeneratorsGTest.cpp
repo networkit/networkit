@@ -164,6 +164,7 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 
     PubWebGenerator gen(n, numCluster, rad, maxNumNeighbors);
     Graph G = gen.generate();
+    auto coordinates = gen.moveCoordinates();
     EXPECT_EQ(n, G.numberOfNodes()) << "number of generated nodes";
 
     // check degree
@@ -178,14 +179,14 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
 
     // output to EPS file
     PostscriptWriter psWriter(true);
-    psWriter.write(G, oneClustering, "output/pubweb.eps");
+    psWriter.write(G, coordinates, oneClustering, "output/pubweb.eps");
 
     // clustering
     PLM clusterAlgo(G, false, 1.0, "none randomized");
     clusterAlgo.run();
     Partition clustering = clusterAlgo.getPartition();
     EXPECT_EQ(G.numberOfNodes(),clustering.numberOfElements());
-    psWriter.write(G, clustering, "output/pubweb-clustered-PLM.eps");
+    psWriter.write(G, coordinates, clustering, "output/pubweb-clustered-PLM.eps");
 
     Modularity mod;
     double modVal = mod.getQuality(clustering, G);
@@ -194,7 +195,6 @@ TEST_F(GeneratorsGTest, testStaticPubWebGenerator) {
     DEBUG("Total edge weight: " , G.totalEdgeWeight());
     EXPECT_TRUE(G.checkConsistency());
 }
-
 
 TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
     count nSteps = 5;
@@ -208,17 +208,10 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
     GraphUpdater gu(G);
     std::vector<GraphEvent> stream;
 
-    #ifndef NETWORKIT_RELEASE_LOGGING
-        // static clustering algorithm for better visual output
-        PostscriptWriter psWriter(true);
-        psWriter.write(G, "output/pubweb-0000.eps");
-    #endif
-
     for (index i = 1; i <= nSteps; ++i) {
         stream = dynGen.generate(1);
         DEBUG("updating graph");
         gu.update(stream);
-        G.initCoordinates();
 
         DEBUG("updated graph, new (n, m) = (" , G.numberOfNodes() , ", " , G.numberOfEdges() , ")");
         edgeweight tew = G.totalEdgeWeight();
@@ -226,19 +219,13 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
         EXPECT_GT(tew, 0);
 
         // update coordinates
-        std::map<node, Point<float> > newCoordinates = dynGen.getNewCoordinates();
-        for (std::map<node, Point<float> >::iterator iter = newCoordinates.begin();
-                iter != newCoordinates.end(); ++iter) {
-            node v = iter->first;
-            Point<float> p = iter->second;
-            G.setCoordinate(v, p);
-        }
         #ifndef NETWORKIT_RELEASE_LOGGING
-            // output for visual inspection
-            char path[23];
-            sprintf(path, "output/pubweb-%04llu.eps", static_cast<unsigned long long>(i));
-            DEBUG("path: " , path);
-            psWriter.write(G, path);
+        {
+            PostscriptWriter psWriter(true);
+            std::stringstream ss;
+            ss << "output/pubweb-" << std::setw(4) << std::setfill('0') << i <<  ".eps";
+            psWriter.write(G, dynGen.getCoordinates(), ss.str());
+        }
         #endif
     }
 }
@@ -328,11 +315,6 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
 
     GraphUpdater gu(G);
     std::vector<GraphEvent> stream;
-    G.initCoordinates();
-    #ifndef NETWORKIT_RELEASE_LOGGING
-        PostscriptWriter psWriter(true);
-        psWriter.write(G, "output/hyperbolic-0000.eps");
-    #endif
 
     for (index i = 0; i < nSteps; i++) {
         stream = dynGen.generate(1);
@@ -341,18 +323,17 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
             EXPECT_TRUE(event.type == GraphEvent::EDGE_REMOVAL || event.type == GraphEvent::EDGE_ADDITION || event.type == GraphEvent::TIME_STEP);
         }
         gu.update(stream);
-        G.initCoordinates();
 
-        auto coords = dynGen.getCoordinates();
-        for (index j = 0; j < coords.size(); j++) {
-            G.setCoordinate(j, coords[j]);
-        }
+        auto coordinates = dynGen.getCoordinates();
+
         #ifndef NETWORKIT_RELEASE_LOGGING
-            // output for visual inspection
-            char path[27];//TODO: come on, this is ridiculous!
-            sprintf(path, "output/hyperbolic-%04llu.eps", static_cast<unsigned long long>(i));
-            TRACE("path: " , path);
-            psWriter.write(G, path);
+        {
+            std::stringstream ss;
+            ss << "output/hyperbolic-" << std::setw(4) << std::setfill('0') << i << ".eps";
+
+            PostscriptWriter psWriter(true);
+            psWriter.write(G, coordinates, ss.str());
+        }
         #endif
     }
 }

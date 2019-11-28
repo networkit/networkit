@@ -27,7 +27,7 @@ public:
     /**
      * Constructor for creating an empty bounding box of size 0.
      */
-    BoundingBox() : center(Point<T>()), sideLength(0), halfSideLength(0), sqSideLength(0), dimension(0) {}
+    BoundingBox() : sideLength(0), halfSideLength(0), sqSideLength(0), dimension(0) {}
 
     /**
      * Constructor for creating a bounding box.
@@ -119,8 +119,8 @@ struct OctreeNode {
     std::vector<OctreeNode> children;
     BoundingBox<T> bBox;
 
-    OctreeNode() : weight(0), centerOfMass({0,0}), children({}), bBox(BoundingBox<T>()) {}
-    OctreeNode(BoundingBox<T>& bBox) : weight(0), centerOfMass(Point<T>(bBox.getCenter().getDimensions())), children({}), bBox(bBox) {}
+    OctreeNode() : weight(0), children({}), bBox() {}
+    OctreeNode(BoundingBox<T>& bBox) : weight(0), centerOfMass(bBox.getCenter().getDimensions()), children({}), bBox(bBox) {}
 
     /**
      * @return True if node is leaf, false otherwise.

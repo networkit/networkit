@@ -92,20 +92,20 @@ public:
      * @param circleCenter Cartesian coordinates of the query circle's center
      * @param hyperbolicRadius Radius of the query circle
      */
-    vector<T> getElementsInHyperbolicCircle(Point2D<double> circleCenter, double hyperbolicRadius) const {
+    vector<T> getElementsInHyperbolicCircle(Point2DWithIndex<double> circleCenter, double hyperbolicRadius) const {
         vector<T> circleDenizens;
         getElementsInHyperbolicCircle(circleCenter, hyperbolicRadius, circleDenizens);
         return circleDenizens;
     }
 
-    void getElementsInHyperbolicCircle(const Point2D<double> circleCenter, const double hyperbolicRadius, const bool suppressLeft, vector<T> &circleDenizens) const {
+    void getElementsInHyperbolicCircle(const Point2DWithIndex<double> circleCenter, const double hyperbolicRadius, const bool suppressLeft, vector<T> &circleDenizens) const {
         assert(circleDenizens.empty());
         double cc_phi, cc_r;
         HyperbolicSpace::cartesianToPolar(circleCenter, cc_phi, cc_r);
         //Transform hyperbolic circle into Euclidean circle
         double minPhi, maxPhi, radius, r_e;
         HyperbolicSpace::getEuclideanCircle(cc_r, hyperbolicRadius, r_e, radius);
-        Point2D<double> center = HyperbolicSpace::polarToCartesian(cc_phi, r_e);
+        Point2DWithIndex<double> center = HyperbolicSpace::polarToCartesian(cc_phi, r_e);
         double minR = r_e - radius;
         double maxR = r_e + radius;
         //assert(maxR < 1);//this looks fishy
@@ -167,15 +167,15 @@ public:
         }
     }
 
-    void getElementsInHyperbolicCircle(const Point2D<double> circleCenter, const double hyperbolicRadius, vector<T> &circleDenizens) const {
+    void getElementsInHyperbolicCircle(const Point2DWithIndex<double> circleCenter, const double hyperbolicRadius, vector<T> &circleDenizens) const {
         getElementsInHyperbolicCircle(circleCenter, hyperbolicRadius, false, circleDenizens);
     }
 
-    count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, vector<T> &circleDenizens) {
+    count getElementsProbabilistically(Point2DWithIndex<double> euQuery, std::function<double(double)> prob, vector<T> &circleDenizens) {
         return root.getElementsProbabilistically(euQuery, prob, false, circleDenizens);
     }
 
-    count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, bool suppressLeft, vector<T> &circleDenizens) {
+    count getElementsProbabilistically(Point2DWithIndex<double> euQuery, std::function<double(double)> prob, bool suppressLeft, vector<T> &circleDenizens) {
         return root.getElementsProbabilistically(euQuery, prob, suppressLeft, circleDenizens);
     }
 

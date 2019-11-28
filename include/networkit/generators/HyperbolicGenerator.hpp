@@ -86,7 +86,7 @@ private:
 
     Graph generate(count n, double R, double alpha, double T = 0);
 
-    static vector<vector<double> > getBandAngles(const vector<vector<Point2D<double>>> &bands) {
+    static vector<vector<double> > getBandAngles(const vector<vector<Point2DWithIndex<double>>> &bands) {
         vector<vector<double>> bandAngles(bands.size());
         #pragma omp parallel for
         for (omp_index i=0; i < static_cast<omp_index>(bands.size()); i++){
@@ -147,7 +147,7 @@ private:
       return std::make_tuple(minTheta, maxTheta);
     }
 
-    static vector<Point2D<double>> getPointsWithinAngles(double minTheta, double maxTheta, const vector<Point2D<double>> &band, vector<double> &bandAngles){
+    static vector<Point2DWithIndex<double>> getPointsWithinAngles(double minTheta, double maxTheta, const vector<Point2DWithIndex<double>> &band, vector<double> &bandAngles){
         /**
         Returns the list of points, w, that lies within minTheta and maxTheta
         in the supplied band(That area is called as slab)
@@ -156,7 +156,7 @@ private:
         //TODO: This can be done faster. Instead of returning the copying to slab array, just return the indexes and iterate over the band array
         assert(band.size() == bandAngles.size());
 
-        vector<Point2D<double>> slab;
+        vector<Point2DWithIndex<double>> slab;
 
         std::vector<double>::iterator low;
         std::vector<double>::iterator high;
@@ -167,8 +167,8 @@ private:
         if(maxTheta <= 2*PI && minTheta >= 0){
             low = std::lower_bound(bandAngles.begin(), bandAngles.end(), minTheta);
             high = std::upper_bound(bandAngles.begin(), bandAngles.end(), maxTheta);
-            std::vector<Point2D<double>>::const_iterator first = band.begin() + (low - bandAngles.begin());
-            std::vector<Point2D<double>>::const_iterator last = band.begin() + (high - bandAngles.begin());
+            std::vector<Point2DWithIndex<double>>::const_iterator first = band.begin() + (low - bandAngles.begin());
+            std::vector<Point2DWithIndex<double>>::const_iterator last = band.begin() + (high - bandAngles.begin());
             //Q: Does this operation increases the complexity ? It is linear in times of high - low
             //Does not increase the complexity, since we have to check these points anyway
             slab.insert(slab.end(), first, last);
@@ -178,16 +178,16 @@ private:
             //1. Get points from minTheta to 2pi
             low = std::lower_bound(bandAngles.begin(), bandAngles.end(), minTheta);
             high = std::upper_bound(bandAngles.begin(), bandAngles.end(), 2*PI);
-            std::vector<Point2D<double>>::const_iterator first = band.begin() + (low - bandAngles.begin());
-            std::vector<Point2D<double>>::const_iterator last = band.begin() + (high - bandAngles.begin());
+            std::vector<Point2DWithIndex<double>>::const_iterator first = band.begin() + (low - bandAngles.begin());
+            std::vector<Point2DWithIndex<double>>::const_iterator last = band.begin() + (high - bandAngles.begin());
             slab.insert(slab.end(), first, last);
 
             //2. Get points from 0 to maxTheta%2pi
             low = std::lower_bound(bandAngles.begin(), bandAngles.end(), 0);
             maxTheta = fmod(maxTheta, (2*PI));
             high = std::upper_bound(bandAngles.begin(), bandAngles.end(), maxTheta);
-            std::vector<Point2D<double>>::const_iterator first2 = band.begin() + (low - bandAngles.begin());
-            std::vector<Point2D<double>>::const_iterator last2 = band.begin() + (high - bandAngles.begin());
+            std::vector<Point2DWithIndex<double>>::const_iterator first2 = band.begin() + (low - bandAngles.begin());
+            std::vector<Point2DWithIndex<double>>::const_iterator last2 = band.begin() + (high - bandAngles.begin());
             slab.insert(slab.end(), first2, last2);
         }
         //Case 3: We have 'backward' overlap at 2pi, that is minTheta < 0
@@ -196,14 +196,14 @@ private:
             minTheta = (2*PI) + minTheta;
             low = std::lower_bound(bandAngles.begin(), bandAngles.end(), minTheta);
             high = std::upper_bound(bandAngles.begin(), bandAngles.end(), 2*PI);
-            std::vector<Point2D<double>>::const_iterator first = band.begin() + (low - bandAngles.begin());
-            std::vector<Point2D<double>>::const_iterator last = band.begin() + (high - bandAngles.begin());
+            std::vector<Point2DWithIndex<double>>::const_iterator first = band.begin() + (low - bandAngles.begin());
+            std::vector<Point2DWithIndex<double>>::const_iterator last = band.begin() + (high - bandAngles.begin());
             slab.insert(slab.end(), first, last);
             //2. Get points from 0 to maxTheta
             low = std::lower_bound(bandAngles.begin(), bandAngles.end(), 0);
             high = std::upper_bound(bandAngles.begin(), bandAngles.end(), maxTheta);
-            std::vector<Point2D<double>>::const_iterator first2 = band.begin() + (low - bandAngles.begin());
-            std::vector<Point2D<double>>::const_iterator last2 = band.begin() + (high - bandAngles.begin());
+            std::vector<Point2DWithIndex<double>>::const_iterator first2 = band.begin() + (low - bandAngles.begin());
+            std::vector<Point2DWithIndex<double>>::const_iterator last2 = band.begin() + (high - bandAngles.begin());
             slab.insert(slab.end(), first2, last2);
         }
         return slab;

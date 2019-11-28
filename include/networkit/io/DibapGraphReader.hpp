@@ -4,30 +4,18 @@
  *  Created on: Jun 12, 2013
  *      Author: Henning
  */
+// networkit-format
 
 #ifndef NETWORKIT_IO_DIBAP_GRAPH_READER_HPP_
 #define NETWORKIT_IO_DIBAP_GRAPH_READER_HPP_
 
-#if !defined _WIN32 && !defined _WIN64 && !defined WIN32 && !defined WIN64
+#ifndef NETWORKIT_WINDOWS
 
-#include <networkit/io/GraphReader.hpp>
+#include <vector>
+
 #include <networkit/graph/Graph.hpp>
-
-#include <cstdio>
-#include <netinet/in.h>
-
-// codes in file headers to distinguish type
-#define IO_TYPE_XX (('X' << 8) | 'X')
-#define IO_TYPE_GI (('G' << 8) | 'I')
-#define IO_TYPE_GF (('G' << 8) | 'F')
-#define IO_TYPE_HI (('H' << 8) | 'I')
-#define IO_TYPE_HF (('H' << 8) | 'F')
-#define IO_TYPE_P2 (('P' << 8) | '2')
-#define IO_TYPE_P4 (('P' << 8) | '4')
-#define IO_TYPE_AA (('A' << 8) | 'A')
-#define IO_TYPE_T2 (('T' << 8) | '2')
-#define IO_TYPE_TE (('T' << 8) | 'E')
-
+#include <networkit/io/GraphReader.hpp>
+#include <networkit/viz/Point.hpp>
 
 namespace NetworKit {
 
@@ -35,15 +23,22 @@ namespace NetworKit {
  * @ingroup io
  * TODO: class documentation
  */
-class DibapGraphReader: public GraphReader {
+class DibapGraphReader final : public GraphReader {
 public:
     DibapGraphReader() = default;
 
-    virtual Graph read(const std::string& path) override;
+    Graph read(const std::string &path) override;
+
+    const std::vector<Point<coordinate>> &getCoordinates() const { return coordinates; }
+
+    std::vector<Point<coordinate>> moveCoordinates() { return std::move(coordinates); }
+
+private:
+    std::vector<Point<coordinate>> coordinates;
 };
 
 } /* namespace NetworKit */
 
-#endif /* check for non-Windows */
+#endif // NETWORKIT_WINDOWS
 
 #endif // NETWORKIT_IO_DIBAP_GRAPH_READER_HPP_

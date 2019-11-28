@@ -112,7 +112,7 @@ void DynamicHyperbolicGenerator::recomputeBands() {
         for (index i = 0; i < nodeCount; i++){
             double alias = permutation[i];
             if (radii[alias] >= bandRadii[j] && radii[alias] <= bandRadii[j+1]){
-                bands[j].push_back(Point2D<double>(angles[alias], radii[alias], alias));
+                bands[j].push_back(Point2DWithIndex<double>(angles[alias], radii[alias], alias));
                 bandAngles[j].push_back(angles[alias]);
             }
         }
@@ -128,14 +128,13 @@ Graph DynamicHyperbolicGenerator::getGraph() const {
     return HyperbolicGenerator().generate(angles, radii, R, T);
 }
 
-std::vector<Point<float> > DynamicHyperbolicGenerator::getCoordinates() const {
+std::vector<Point2D> DynamicHyperbolicGenerator::getCoordinates() const {
     const count n = angles.size();
     assert(radii.size() == n);
-    std::vector<Point<float> > result;
+    std::vector<Point2D> result;
     for (index i = 0; i < n; i++) {
-        Point2D<double> coord = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
-        Point<float> temp(coord[0], coord[1]);
-        result.push_back(temp);
+        const auto coord = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
+        result.emplace_back(coord.getX(), coord.getY());
     }
     return result;
 }
@@ -226,7 +225,7 @@ vector<index> DynamicHyperbolicGenerator::getNeighborsInBands(index i, bool both
             double minTheta, maxTheta;
             std::tie (minTheta, maxTheta) = HyperbolicGenerator::getMinMaxTheta(phi, r, bandRadii[j], R);
 
-            vector<Point2D<double>> neighborCandidates = HyperbolicGenerator::getPointsWithinAngles(minTheta, maxTheta, bands[j], bandAngles[j]);
+            vector<Point2DWithIndex<double>> neighborCandidates = HyperbolicGenerator::getPointsWithinAngles(minTheta, maxTheta, bands[j], bandAngles[j]);
 
             const count sSize = neighborCandidates.size();
             for(index w = 0; w < sSize; w++){
@@ -271,7 +270,7 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
             if (T == 0) {
                 localOldNeighbors = getNeighborsInBands(i, true);
             } else {
-                Point2D<double> q = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
+                Point2DWithIndex<double> q = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
                 quad.getElementsProbabilistically(q, edgeProb, suppressLeft, localOldNeighbors);
             }
             oldNeighbours.push_back(localOldNeighbors);
@@ -311,7 +310,7 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
         if (T == 0) {
             newNeighbours = getNeighborsInBands(toWiggle[j], true);
         } else {
-            Point2D<double> q = HyperbolicSpace::polarToCartesian(angles[toWiggle[j]], radii[toWiggle[j]]);
+            Point2DWithIndex<double> q = HyperbolicSpace::polarToCartesian(angles[toWiggle[j]], radii[toWiggle[j]]);
             quad.getElementsProbabilistically(q, edgeProb, suppressLeft, newNeighbours);
         }
 

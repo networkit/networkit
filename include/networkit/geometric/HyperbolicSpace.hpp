@@ -12,9 +12,9 @@
 
 #include <vector>
 #include <map>
-#include <networkit/geometric/Point2D.hpp>
-#include <networkit/viz/Point.hpp>
 #include <networkit/auxiliary/Random.hpp>
+#include <networkit/geometric/Point2DWithIndex.hpp>
+#include <networkit/viz/Point.hpp>
 
 using std::vector;
 using std::abs;
@@ -71,7 +71,7 @@ public:
      *
      * @return distance between a and b in the poincare metric
      */
-    static double poincareMetric(Point2D<double> a, Point2D<double> b);
+    static double poincareMetric(Point2DWithIndex<double> a, Point2DWithIndex<double> b);
 
 
 
@@ -81,7 +81,7 @@ public:
      *
      * @return cartesian coordinates represented by phi and r
      */
-    static Point2D<double> polarToCartesian(double phi, double r);
+    static Point2DWithIndex<double> polarToCartesian(double phi, double r);
 
     /**
      * Convenience function for visualizations which expect coordinates as map<index,Point<float> >
@@ -93,7 +93,7 @@ public:
      * @param phi empty double value to receive angular coordinate
      * @param r empty double value to receive radial coordinate
      */
-    static void cartesianToPolar(Point2D<double> a, double &phi, double &r);
+    static void cartesianToPolar(Point2DWithIndex<double> a, double &phi, double &r);
 
     /**
      * Converts a hyperbolic circle to a Euclidean circle
@@ -103,7 +103,7 @@ public:
      * @param euclideanCenter point to receive the center of the Euclidean circle, given in cartesian coordinates
      * @param euclidenRadius double to receive the radius of the Euclidean circle
      */
-    static void getEuclideanCircle(Point2D<double> hyperbolicCenter, double hyperbolicRadius, Point2D<double> &euclideanCenter, double &euclideanRadius);
+    static void getEuclideanCircle(Point2DWithIndex<double> hyperbolicCenter, double hyperbolicRadius, Point2DWithIndex<double> &euclideanCenter, double &euclideanRadius);
     static void getEuclideanCircle(double r_h, double hyperbolicRadius, double &radialCoordOfEuclideanCenter, double &euclideanRadius);
 
     /**

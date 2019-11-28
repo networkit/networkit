@@ -2,255 +2,406 @@
  * Point.h
  *
  *  Created on: Apr 11, 2013
- *      Author: Henning
+ *      Author: Henning, Manuel Penschuck <networkit@manuel.jetzt>
  */
+
+// networkit-format
 
 #ifndef NETWORKIT_VIZ_POINT_HPP_
 #define NETWORKIT_VIZ_POINT_HPP_
 
-#include <vector>
+#include <algorithm>
+#include <array>
 #include <cassert>
 #include <cmath>
+#include <numeric>
 #include <string>
+#include <vector>
+
+#include <tlx/simple_vector.hpp>
+#include <tlx/unused.hpp>
 
 #include <networkit/Globals.hpp>
 
 namespace NetworKit {
+namespace PointImpl {
+template <typename T, size_t Dimensions>
+class Storage {
+    Storage() { std::fill(data.begin(), data.end(), T{0}); }
+
+protected:
+    std::array<T, Dimensions> data;
+};
+
+template <typename T>
+class Storage<T, 2> {
+public:
+    Storage() : data{{0, 0}} {};
+    Storage(T x, T y) : data{{x, y}} {}
+
+    std::pair<T, T> asPair() const noexcept { return {data[0], data[1]}; }
+
+protected:
+    std::array<T, 2> data;
+};
+
+template <typename T>
+class Storage<T, 0> {
+public:
+    Storage() : data(2) { data.fill(0); }
+    Storage(T x, T y) : data(2) {
+        data[0] = x;
+        data[1] = y;
+    }
+
+    explicit Storage(count dimension) : data(dimension) {}
+    explicit Storage(const std::vector<T> &values) : data(values.size()) {
+        std::copy(values.begin(), values.end(), data.begin());
+    }
+
+    Storage(const Storage &other) : data(other.data.size()) {
+        std::copy(other.data.begin(), other.data.end(), data.begin());
+    }
+
+    Storage &operator=(const Storage &other) {
+        data.resize(other.data.size());
+        std::copy(other.data.begin(), other.data.end(), data.begin());
+        return *this;
+    }
+
+protected:
+    tlx::SimpleVector<T, tlx::SimpleVectorMode::NoInitNoDestroy> data;
+};
+
+} // namespace PointImpl
 
 /**
  * @ingroup viz
  *
- * Formerly marked as deprecated:
- * To take advantage of automatic mapping between C++ and Python data structures, use
- * standard library containers (std::pair, std::tuple..) instead.
+ * An abstraction to store k-dimensional geometric points. All arithmic operations are
+ * implemented element-wise; i.e., x * y does return a point (x[0]*y[0], x[1]*y[1], ...)
+ * rather than the inner product (use Point::dot for this purpose).
  *
- * DEPRECATION removed since suggested solution does not work when dimension is not known
- * at compile time.
- *
- * Points in any dimension of templated type.
+ * The point supports both compile-time selection of dimensions (Dimensions > 0) and
+ * runtime selection (Dimensions = 0). If at all possible prefer setting the number of
+ * Dimensions at compile-time for performance reasons.
  */
-template<class T>
-class Point {
-protected:
-    std::vector<T> data;
-
+template <class T = coordinate, size_t Dimensions = 0>
+class Point : public PointImpl::Storage<T, Dimensions> {
 public:
-    Point() { data = {0.0, 0.0}; }
-    Point(T x, T y) { data = {x, y}; }
-    Point(count dimension) : data(std::vector<T>(dimension, 0.0)) {}
-    Point(std::vector<T>& values): data(values) {}
-    virtual ~Point() {}
+    // Pull in constructors
+    using PointImpl::Storage<T, Dimensions>::Storage;
 
-    count getDimensions() const { return data.size(); }
+    Point() = default;
 
-    T distance(const Point<T>& p) const;
-    T squaredDistance(const Point<T>& p) const;
+    Point(const Point &) = default;
+    Point &operator=(const Point &) = default;
 
-    Point& operator+=(const Point<T>& p);
-    Point& operator-=(const Point<T>& p);
-    Point& scale(const T factor);
+    Point(Point &&) = default;
+    Point &operator=(Point &&) = default;
 
-    Point operator-(const Point<T>& other);
-    Point operator+(const Point<T>& other);
+    /// Type conversion between points of different size
+    template <size_t otherDim>
+    Point &operator=(const Point<T, otherDim> &other) {
+        const auto minSize = static_cast<index>(std::min(getDimensions(), other.getDimensions()));
 
-    Point operator*(const double scalar) const;
+        for (index i = 0; i < minSize; ++i)
+            data[i] = other[i];
 
-    bool operator==(const Point<T>& other) const;
-    bool operator!=(const Point<T>& other) const;
+        for (index i = minSize; i < getDimensions(); ++i)
+            data[i] = 0.0;
 
-    Point<T>& operator=(const Point<T>& other) = default;
+        return *this;
+    }
 
-    T length() const;
-    T squaredLength() const;
+    template <size_t otherDim>
+    explicit Point(const Point<T, otherDim> &other) {
+        *this = other;
+    }
 
-    T& operator[](const index i);
-    T& at(const index i);
+    /// Returns number of coordinates stored within point
+    count getDimensions() const noexcept { return data.size(); }
 
-    T operator[](const index i) const;
-    T at(const index i) const;
+    /// Returns euclidian distance between this point and the one provided
+    T distance(const Point &p) const { return std::sqrt(squaredDistance(p)); }
 
-    /**
-     * Default point to string conversion.
-     */
-    std::string toString();
+    /// Return euclidian distance squared between this point and the one provided. Faster than
+    /// distance()
+    T squaredDistance(const Point &p) const noexcept {
+        assertMatchingDimensions(p);
+        auto dist = T{0};
+        for (index i = 0; i < getDimensions(); ++i) {
+            const auto diff = data[i] - p.data[i];
+            dist += diff * diff;
+        }
+        return dist;
+    }
 
-    /**
-     * Point to comma separated string.
-     */
-    std::string toCsvString();
+    /// Returns 2-norm of point, i.e. sqrt{ sum_i point[i]*point[i] }
+    T length() const { return std::sqrt(squaredLength()); }
 
-    /**
-     * Point to space separated string.
-     */
-    std::string toSsvString();
+    /// Returns 2-norm of point squard, i.e. sum_i point[i]*point[i]. It's faster to compute than
+    /// length().
+    T squaredLength() const noexcept {
+        return std::accumulate(data.cbegin(), data.cend(), T{0},
+                               [](T runningSum, T coord) { return runningSum + coord * coord; });
+    }
 
-    std::string genericToString(const std::string& start, const std::string& sep, const std::string& end);
+    /// Elementwise addition, in-place
+    Point &operator+=(const Point &other) noexcept {
+        assertMatchingDimensions(other);
+        apply([&](index i, T v) { return v + other[i]; });
+        return *this;
+    }
 
+    /// Elementwise subtraction, in-place
+    Point &operator-=(const Point &other) noexcept {
+        assertMatchingDimensions(other);
+        apply([&](index i, T v) { return v - other[i]; });
+        return *this;
+    }
+
+    /// Elementwise multiplicate, in-place
+    Point &operator*=(const Point &other) noexcept {
+        assertMatchingDimensions(other);
+        apply([&](index i, T v) { return v * other[i]; });
+        return *this;
+    }
+
+    /// Elementwise division, in-place
+    Point &operator/=(const Point &other) noexcept {
+        assertMatchingDimensions(other);
+        apply([&](index i, T v) { return v / other[i]; });
+        return *this;
+    }
+
+    /// Add constant to each coordinate, in-place
+    Point &operator+=(const T scalar) noexcept {
+        apply([&](index, T v) { return v + scalar; });
+        return *this;
+    }
+
+    /// Subtract constant from each coordinate, in-place
+    Point &operator-=(const T scalar) noexcept {
+        apply([&](index, T v) { return v - scalar; });
+        return *this;
+    }
+
+    /// Multiply each coordinate with constant, in-place
+    Point &operator*=(const T scalar) noexcept {
+        apply([&](index, T v) { return v * scalar; });
+        return *this;
+    }
+
+    /// Alias to (*this) *= factor;
+    Point &scale(const T factor) noexcept {
+        *this *= factor;
+        return *this;
+    }
+
+    /// Divide each coordinate with constant, in-place
+    Point &operator/=(const T scalar) noexcept {
+        apply([&](index, T v) { return v / scalar; });
+        return *this;
+    }
+
+    /// Elementwise addition
+    Point operator+(const Point &other) const {
+        auto result = *this;
+        result += other;
+
+        return result;
+    }
+
+    /// Elementwise subtraction
+    Point operator-(const Point &other) const {
+        auto result = *this;
+        result -= other;
+        return result;
+    }
+
+    /// Elementwise multiplication
+    Point operator*(const Point &other) const {
+        auto result = *this;
+        result *= other;
+
+        return result;
+    }
+
+    /// Elementwise division
+    Point operator/(const Point &other) const {
+        auto result = *this;
+        result /= other;
+
+        return result;
+    }
+
+    /// Elementwise addition
+    Point operator+(const T scalar) const {
+        auto result = *this;
+        result += scalar;
+
+        return result;
+    }
+
+    /// Elementwise subtraction
+    Point operator-(const T scalar) const {
+        auto result = *this;
+        result -= scalar;
+        return result;
+    }
+
+    /// Elementwise multiplication
+    Point operator*(const T scalar) const {
+        auto result = *this;
+        result *= scalar;
+        return result;
+    }
+
+    /// Elementwise division
+    Point operator/(const T scalar) const {
+        auto result = *this;
+        result /= scalar;
+        return result;
+    }
+
+    /// Computes the dot product (aka inner product)
+    T dot(const Point &other) const noexcept {
+        assertMatchingDimensions(other);
+        auto sum = T{0};
+        for (index i = 0; i < getDimensions(); ++i)
+            sum *= data[i] * other[i];
+        return sum;
+    }
+
+    /// Returns true, if all coordinates match
+    bool operator==(const Point &other) const noexcept {
+        for (count i = 0; i < getDimensions(); ++i)
+            if (data[i] != other.data[i])
+                return false;
+
+        return true;
+    }
+
+    /// Returns false, if all coordinates match
+    bool operator!=(const Point &other) const noexcept { return !(*this == other); }
+
+    /// Compute element-wise min and returns new Point
+    Point min(const Point &other) const {
+        assertMatchingDimensions(other);
+
+        Point result(*this);
+        result.apply([&](index i, T v) { return std::min(v, other[i]); });
+
+        return result;
+    }
+
+    /// Compute element-wise min and returns new Point
+    Point max(const Point &other) const {
+        assertMatchingDimensions(other);
+
+        Point result(*this);
+        result.apply([&](index i, T v) { return std::max(v, other[i]); });
+
+        return result;
+    }
+
+    /// Applies a function(index, data[i]) to each element of the point, and stores the value
+    template <typename Func>
+    Func apply(Func fu) {
+        for (index i = 0; i < getDimensions(); ++i)
+            data[i] = fu(i, data[i]);
+
+        return fu;
+    }
+
+    /// Access i-th coordintate without boundary check
+    T &operator[](index i) noexcept {
+        assert(i >= 0 && i < data.size());
+        return data[i];
+    }
+
+    /// Access i-th coordintate with boundary check
+    T &at(index i) {
+        if (!(i >= 0 && i < data.size()))
+            throw std::out_of_range{""};
+        return data[i];
+    }
+
+    /// Access i-th coordintate without boundary check
+    T operator[](index i) const noexcept {
+        assert(i >= 0 && i < data.size());
+        return data[i];
+    }
+
+    /// Access i-th coordintate with boundary check
+    T at(index i) const {
+        if (!(i >= 0 && i < data.size()))
+            throw std::out_of_range{""};
+        return data[i];
+    }
+
+    /// Read coordinates from iterator.
+    template <typename It>
+    void copyFrom(It begin) {
+        std::copy_n(begin, data.size(), data.begin());
+    }
+
+    /// Default point to string conversion.
+    std::string toString() { return genericToString("", ", ", ""); }
+
+    /// Point to comma separated string.
+    std::string toCsvString() { return genericToString("(", ", ", ")"); }
+
+    /// Point to space separated string.
+    std::string toSsvString() { return genericToString("", " ", ""); }
+
+    std::string genericToString(const std::string &start, const std::string &sep,
+                                const std::string &end) {
+        assert(data.size() > 0);
+
+        std::string res = start;
+
+        res += std::to_string((*this)[0]);
+        for (index i = 1; i < data.size(); ++i) {
+            res += sep;
+            res += std::to_string(data[i]);
+        }
+
+        res += end;
+        return res;
+    }
+
+    static std::vector<Point<coordinate, 2>> pointVectorToPoint2D(const std::vector<Point> &input) {
+        std::vector<Point<coordinate, 2>> result;
+        result.reserve(input.size());
+        for (const auto &pt : input) {
+            assert(pt.getDimensions() == 2);
+            result.emplace_back(pt);
+        }
+        return result;
+    }
+
+    static std::vector<Point<T>>
+    point2DVectorToPoint(const std::vector<Point<coordinate, 2>> &input) {
+        std::vector<Point<T>> result;
+        result.reserve(input.size());
+        for (const auto &pt : input) {
+            result.emplace_back(pt);
+        }
+        return result;
+    }
+
+protected:
+    void assertMatchingDimensions(const Point &o) const {
+        assert(getDimensions() == o.getDimensions());
+        tlx::unused(o);
+    }
+
+    using PointImpl::Storage<T, Dimensions>::data;
 };
 
-template<class T>
-T Point<T>::length() const {
-    T length = (T) 0;
-    for (index i = 0; i < data.size(); ++i) {
-        T diff = this->data[i];
-        length += diff * diff;
-    }
-    return sqrt(length);
-}
-
-template<class T>
-T Point<T>::squaredLength() const {
-    T length = (T) 0;
-    for (index i = 0; i < data.size(); ++i) {
-        T diff = this->data[i];
-        length += diff * diff;
-    }
-    return length;
-}
-
-template<class T>
-T Point<T>::squaredDistance(const Point<T>& p) const {
-    assert(this->data.size() == p.data.size());
-    T dist = (T) 0;
-    for (index i = 0; i < data.size(); ++i) {
-        T diff = this->data[i] - p.data[i];
-        dist += diff * diff;
-    }
-    return dist;
-}
-
-template<class T>
-T Point<T>::distance(const Point<T>& p) const {
-    return sqrt(squaredDistance(p));
-}
-
-template<class T>
-Point<T>& Point<T>::operator+=(const Point<T>& p) {
-    assert(this->data.size() == p.data.size());
-    for (index i = 0; i < data.size(); ++i) {
-        this->data[i] += p.data[i];
-    }
-    return *this;
-}
-
-template<class T>
-Point<T>& Point<T>::operator-=(const Point<T>& p) {
-    assert(this->data.size() == p.data.size());
-    for (index i = 0; i < data.size(); ++i) {
-        this->data[i] -= p.data[i];
-    }
-    return *this;
-}
-
-template<class T>
-Point<T> Point<T>::operator-(const Point<T>& other) {
-    Point<T> result(*this);
-    assert(result.data.size() == other.data.size());
-    for (index i = 0; i < result.data.size(); ++i) {
-        result.data[i] -= other.data[i];
-    }
-    return result;
-}
-
-template<class T>
-Point<T> Point<T>::operator+(const Point<T>& other) {
-    Point<T> result(*this);
-    assert(result.data.size() == other.data.size());
-    for (index i = 0; i < result.data.size(); ++i) {
-        result.data[i] += other.data[i];
-    }
-    return result;
-}
-
-template<typename T>
-Point<T> Point<T>::operator*(const double scalar) const {
-    Point<T> result(*this);
-    for (index i = 0; i < getDimensions(); ++i) {
-        result.data[i] = data[i] * scalar;
-    }
-
-    return result;
-}
-
-template<typename T>
-bool Point<T>::operator==(const Point<T>& other) const {
-    if (getDimensions() != other.getDimensions()) return false;
-    for (index i = 0; i < data.size(); ++i) {
-        if (data[i] != other.data[i]) return false;
-    }
-    return true;
-}
-
-template<typename T>
-bool Point<T>::operator!=(const Point<T>& other) const {
-    return !(*this == other);
-}
-
-template<class T>
-Point<T>& Point<T>::scale(const T factor) {
-    for (index i = 0; i < data.size(); ++i) {
-        this->data[i] *= factor;
-    }
-    return *this;
-}
-
-template<class T>
-inline T& Point<T>::operator [](index i) {
-    assert(i >= 0 && i < data.size());
-    return data[i];
-}
-
-template<class T>
-inline T& Point<T>::at(index i) {
-    assert(i >= 0 && i < data.size());
-    return data[i];
-}
-
-template<class T>
-inline T Point<T>::operator [](index i) const {
-    assert(i >= 0 && i < data.size());
-    return data[i];
-}
-
-template<class T>
-inline T Point<T>::at(index i) const {
-    assert(i >= 0 && i < data.size());
-    return data[i];
-}
-
-template<class T>
-std::string Point<T>::toString() {
-    return genericToString("", ", ", "");
-}
-
-template<class T>
-inline std::string Point<T>::toCsvString() {
-    return genericToString("(", ", ", ")");
-}
-
-template<class T>
-inline std::string Point<T>::toSsvString() {
-    return genericToString("", " ", "");
-}
-
-template<class T>
-inline std::string Point<T>::genericToString(
-        const std::string& start, const std::string& sep,
-        const std::string& end)
-{
-    assert(this->data.size() > 0);
-
-    std::string res = start;
-
-    res += std::to_string((*this)[0]);
-    for (index i = 1; i < this->data.size(); ++i) {
-        res += sep;
-        res += std::to_string(this->data[i]);
-    }
-
-    res += end;
-    return res;
-}
+using Point2D = Point<coordinate, 2>;
 
 } /* namespace NetworKit */
 

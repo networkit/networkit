@@ -32,12 +32,12 @@ private:
     double minR;
     double rightAngle;
     double maxR;
-    Point2D<double> a,b,c,d;
+    Point2DWithIndex<double> a,b,c,d;
     unsigned capacity;
     static const unsigned coarsenLimit = 4;
     count subTreeSize;
     std::vector<T> content;
-    std::vector<Point2D<double> > positions;
+    std::vector<Point2DWithIndex<double> > positions;
     std::vector<double> angles;
     std::vector<double> radii;
     bool isLeaf;
@@ -141,7 +141,7 @@ public:
                 content.push_back(input);
                 angles.push_back(angle);
                 radii.push_back(R);
-                Point2D<double> pos = HyperbolicSpace::polarToCartesian(angle, R);
+                Point2DWithIndex<double> pos = HyperbolicSpace::polarToCartesian(angle, R);
                 positions.push_back(pos);
             } else {
 
@@ -217,7 +217,7 @@ public:
                 //coarsen!!
                 //why not assert empty containers and then insert directly?
                 vector<T> allContent;
-                vector<Point2D<double> > allPositions;
+                vector<Point2DWithIndex<double> > allPositions;
                 vector<double> allAngles;
                 vector<double> allRadii;
                 for (index i = 0; i < children.size(); i++) {
@@ -251,7 +251,7 @@ public:
      *
      * @return True if the region managed by this node lies completely outside of the circle
      */
-    bool outOfReach(Point2D<double> query, double radius) const {
+    bool outOfReach(Point2DWithIndex<double> query, double radius) const {
         double phi, r;
         HyperbolicSpace::cartesianToPolar(query, phi, r);
         if (responsible(phi, r)) return false;
@@ -302,7 +302,7 @@ public:
      */
     bool outOfReach(double angle_c, double r_c, double radius) const {
         if (responsible(angle_c, r_c)) return false;
-        Point2D<double> query = HyperbolicSpace::polarToCartesian(angle_c, r_c);
+        Point2DWithIndex<double> query = HyperbolicSpace::polarToCartesian(angle_c, r_c);
         return outOfReach(query, radius);
     }
 
@@ -444,7 +444,7 @@ public:
      * @param lowR Optional value for the minimum radial coordinate of the query region
      * @param highR Optional value for the maximum radial coordinate of the query region
      */
-    void getElementsInEuclideanCircle(Point2D<double> center, double radius, vector<T> &result, double minAngle=0, double maxAngle=2*PI, double lowR=0, double highR = 1) const {
+    void getElementsInEuclideanCircle(Point2DWithIndex<double> center, double radius, vector<T> &result, double minAngle=0, double maxAngle=2*PI, double lowR=0, double highR = 1) const {
         if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR < lowerBoundR) return;
         if (outOfReach(center, radius)) {
             return;
@@ -470,7 +470,7 @@ public:
         }
     }
 
-    count getElementsProbabilistically(Point2D<double> euQuery, std::function<double(double)> prob, bool suppressLeft, vector<T> &result) const {
+    count getElementsProbabilistically(Point2DWithIndex<double> euQuery, std::function<double(double)> prob, bool suppressLeft, vector<T> &result) const {
         double phi_q, r_q;
         HyperbolicSpace::cartesianToPolar(euQuery, phi_q, r_q);
         if (suppressLeft && phi_q > rightAngle) return 0;
@@ -548,7 +548,7 @@ public:
     }
 
 
-    void maybeGetKthElement(double upperBound, Point2D<double> euQuery, std::function<double(double)> prob, index k, vector<T> &circleDenizens) const {
+    void maybeGetKthElement(double upperBound, Point2DWithIndex<double> euQuery, std::function<double(double)> prob, index k, vector<T> &circleDenizens) const {
         TRACE("Maybe get element ", k, " with upper Bound ", upperBound);
         assert(k < size());
         if (isLeaf) {

@@ -116,14 +116,14 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 
     vector<double> bandRadii = getBandRadii(n, R);
     //Initialize empty bands
-    vector<vector<Point2D<double>>> bands(bandRadii.size() - 1);
+    vector<vector<Point2DWithIndex<double>>> bands(bandRadii.size() - 1);
     //Put points to bands
     #pragma omp parallel for
     for (omp_index j = 0; j < static_cast<omp_index>(bands.size()); j++){
         for (index i = 0; i < n; i++){
             double alias = permutation[i];
             if (radii[alias] >= bandRadii[j] && radii[alias] <= bandRadii[j+1]){
-                bands[j].push_back(Point2D<double>(angles[alias], radii[alias], alias));
+                bands[j].push_back(Point2DWithIndex<double>(angles[alias], radii[alias], alias));
             }
         }
     }
@@ -168,14 +168,14 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
             count expectedDegree = (4/PI)*n*exp(-(radii[i])/2);
             vector<index> near;
             near.reserve(expectedDegree*1.1);
-            Point2D<double> pointV(angles[i], radii[i], i);
+            Point2DWithIndex<double> pointV(angles[i], radii[i], i);
             for(index j = 0; j < bandCount; j++){
                 if(directSwap || bandRadii[j+1] > radii[i]){
                     double minTheta, maxTheta;
                     std::tie (minTheta, maxTheta) = getMinMaxTheta(angles[i], radii[i], bandRadii[j], R);
                     //minTheta = 0;
                     //maxTheta = 2*PI;
-                    vector<Point2D<double>> neighborCandidates = getPointsWithinAngles(minTheta, maxTheta, bands[j], bandAngles[j]);
+                    vector<Point2DWithIndex<double>> neighborCandidates = getPointsWithinAngles(minTheta, maxTheta, bands[j], bandAngles[j]);
 
                     const count sSize = neighborCandidates.size();
                     for(index w = 0; w < sSize; w++){

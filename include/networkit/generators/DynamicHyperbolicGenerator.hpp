@@ -71,7 +71,7 @@ public:
      * Get coordinates in native representation
      * @return vector of 2D-Points in Cartesian coordinates
      */
-    std::vector<Point<float> > getCoordinates() const;
+    std::vector<Point2D> getCoordinates() const;
 
 private:
     /**
@@ -127,7 +127,7 @@ private:
     //data structures
     Quadtree<index, false> quad;
     vector<double> bandRadii;
-    vector<vector<Point2D<double>>> bands;
+    vector<vector<Point2DWithIndex<double>>> bands;
     vector<vector<double> > bandAngles;
 
     bool initialized;

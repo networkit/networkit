@@ -4,37 +4,27 @@
  *  Created on: 15.01.2014
  *      Author: Henning
  */
+// networkit-format
 
 #ifndef NETWORKIT_GENERATORS_DYNAMIC_PUB_WEB_GENERATOR_HPP_
 #define NETWORKIT_GENERATORS_DYNAMIC_PUB_WEB_GENERATOR_HPP_
 
 #include <map>
+#include <vector>
 
+#include <networkit/dynamics/GraphEvent.hpp>
 #include <networkit/generators/DynamicGraphGenerator.hpp>
 #include <networkit/generators/PubWebGenerator.hpp>
-#include <networkit/dynamics/GraphEvent.hpp>
-#include <networkit/dynamics/DGSWriter.hpp>
-#include <networkit/auxiliary/Random.hpp>
-#include <networkit/viz/Point.hpp>
 
 namespace NetworKit {
 
 /**
  * @ingroup generators
  */
-class DynamicPubWebGenerator: public DynamicGraphGenerator {
-
-protected:
-    PubWebGenerator initGen; // multiple inheritance did not work with different generate functions
-    std::map<node, Point<float> > coordinates; //<! new and changed coordinates
-    bool writeInitialGraphToStream; // if true, on first call, write initial graph to stream
-
-
+class DynamicPubWebGenerator : public DynamicGraphGenerator {
 public:
-    DynamicPubWebGenerator(count numNodes, count numberOfDenseAreas,
-            float neighborhoodRadius, count maxNumberOfNeighbors,
-            bool writeInitialGraphToStream = true);
-
+    DynamicPubWebGenerator(count numNodes, count numberOfDenseAreas, coordinate neighborhoodRadius,
+                           count maxNumberOfNeighbors, bool writeInitialGraphToStream = true);
 
     Graph getGraph() const { return G; }
 
@@ -43,13 +33,23 @@ public:
      *
      * @param[in]	nSteps	number of time steps in the event stream
      */
-    virtual std::vector<GraphEvent> generate(count nSteps);
+    std::vector<GraphEvent> generate(count nSteps) override;
 
+    /// Returns a map of coordinates that were updated.
+    const std::vector<std::pair<node, Point2D>> &getNewCoordinates() const {
+        return newCoordinates;
+    }
+    std::vector<std::pair<node, Point2D>> moveNewCoordinates() { return std::move(newCoordinates); }
 
-    virtual std::map<node, Point<float> > getNewCoordinates() const;
+    /// Returns a vector of the currently valid coordinates
+    const std::vector<Point2D> &getCoordinates() const { return coordinates; }
+    // no moveCoordinates, as generator needs its own copy for the next run of generate!
 
-
-
+protected:
+    PubWebGenerator initGen; // multiple inheritance did not work with different generate functions
+    std::vector<std::pair<node, Point2D>> newCoordinates; //<! new and changed coordinates
+    std::vector<Point2D> coordinates;                     //<! vector of all coordinates
+    bool writeInitialGraphToStream; // if true, on first call, write initial graph to stream
 };
 
 } /* namespace NetworKit */

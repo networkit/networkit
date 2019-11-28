@@ -21,8 +21,6 @@
 #include <networkit/Globals.hpp>
 #include <networkit/auxiliary/FunctionTraits.hpp>
 #include <networkit/auxiliary/Random.hpp>
-#include <networkit/viz/Point.hpp>
-#include <networkit/graph/Coordinates.hpp>
 
 #include <tlx/define/deprecated.hpp>
 
@@ -122,8 +120,6 @@ class Graph final {
     // per node data
     //!< exists[v] is true if node v has not been removed from the graph
     std::vector<bool> exists;
-    //!< coordinates of nodes (if present)
-    Coordinates<float> coordinates;
 
     //!< only used for directed graphs, inEdges[v] contains all nodes u that
     //!< have an edge (u, v)
@@ -827,17 +823,6 @@ public:
     node addNodes(count numberOfNewNodes);
 
     /**
-     * DEPRECATED: Coordinates should be handled outside the Graph class
-     * like general node attributes.
-     *
-     * Add a new node to the graph with coordinates @a x and @y and return it.
-     */
-    // TODO: remove method
-    // [[deprecated("Deprecated: Node coordinates should be stored externally
-    // like any other node attribute")]]
-    node addNode(float x, float y);
-
-    /**
      * Remove a node @a v and all incident edges from the graph.
      *
      * Incoming as well as outgoing edges will be removed.
@@ -1236,80 +1221,6 @@ public:
      * @return Time step counter.
      */
     count time() { return t; }
-
-    /* COORDINATES */
-
-    /**
-     * DEPRECATED: Coordinates should be handled outside the Graph class
-     * like general node attributes.
-     *
-     * Sets the coordinate of @a v to @a value.
-     *
-     * @param v Node.
-     * @param value The coordinate of @a v.
-     */
-    // TODO: remove method
-    // [[deprecated("Deprecated: Node coordinates should be stored externally
-    // like any other node attribute")]]
-    void setCoordinate(node v, Point<float> value) {
-        coordinates.setCoordinate(v, value);
-    }
-
-    /**
-     * DEPRECATED: Coordinates should be handled outside the Graph class
-     * like general node attributes.
-     *
-     * Get the coordinate of @a v.
-     * @param v Node.
-     * @return The coordinate of @a v.
-     */
-    // TODO: remove method
-    // [[deprecated("Deprecated: Node coordinates should be stored externally
-    // like any other node attribute")]]
-    Point<float> &getCoordinate(node v) { return coordinates.getCoordinate(v); }
-
-    /**
-     * DEPRECATED: Coordinates should be handled outside the Graph class
-     * like general node attributes.
-     *
-     * Get minimum coordinate of all coordinates with respect to dimension @a
-     * dim.
-     * @param dim The dimension to search for minimum.
-     * @return The minimum coordinate in dimension @a dim.
-     */
-    // TODO: remove method
-    // [[deprecated("Deprecated: Node coordinates should be stored externally
-    // like any other node attribute")]]
-    float minCoordinate(count dim) { return coordinates.minCoordinate(dim); }
-
-    /**
-     * DEPRECATED: Coordinates should be handled outside the Graph class
-     * like general node attributes.
-     *
-     * Get maximum coordinate of all coordinates with respect to dimension @a
-     * dim.
-     * @param dim The dimension to search for maximum.
-     * @return The maximum coordinate in dimension @a dim.
-     */
-    // TODO: remove method
-    // [[deprecated("Deprecated: Node coordinates should be stored externally
-    // like any other node attribute")]]
-    float maxCoordinate(count dim) { return coordinates.maxCoordinate(dim); }
-
-    /**
-     * DEPRECATED: Coordinates should be handled outside the Graph class
-     * like general node attributes.
-     *
-     * Initializes the coordinates for the nodes in graph.
-     * @note This has to be called once and before you set coordinates. Call
-     * this method again if new nodes have been added.
-     */
-    // TODO: remove method
-    // [[deprecated("Deprecated: Node coordinates should be stored externally
-    // like any other node attribute")]]
-    void initCoordinates() { coordinates.init(z); }
-
-    /* EDGE ATTRIBUTES */
 
     /**
      * Return edge weight of edge {@a u,@a v}. Returns 0 if edge does not

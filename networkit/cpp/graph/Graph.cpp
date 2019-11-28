@@ -581,13 +581,6 @@ node Graph::addNodes(count numberOfNewNodes) {
     return z-1;
 }
 
-node Graph::addNode(float x, float y) {
-    node v = addNode();
-    std::vector<float> coords = {x, y};
-    coordinates.addCoordinates(coords);
-    return v;
-}
-
 void Graph::removeNode(node v) {
     assert(v < z);
     assert(exists[v]);
