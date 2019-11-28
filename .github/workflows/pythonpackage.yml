@@ -79,6 +79,9 @@ jobs:
             yum install cmake3 -y
             ln -s /usr/bin/cmake3 /usr/bin/cmake
             echo '-->' \$PYBIN
+
+            \$PYBIN/python -m pip install --upgrade pip
+            \$PYBIN/pip install -r requirements.txt
             \$PYBIN/pip install cython
             \$PYBIN/cython -3 --cplus -t networkit/_NetworKit.pyx
             \$PYBIN/python setup.py build_ext
