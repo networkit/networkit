@@ -776,15 +776,13 @@ void Graph::removeEdgesFromIsolatedSet(const std::vector<node> &nodesInSet) {
 }
 
 void Graph::removeSelfLoops() {
-#pragma omp parallel for
-    for (omp_index i = 0; i < static_cast<omp_index>(z); ++i) {
-        const auto u = static_cast<node>(i);
-        auto isSelfLoop = [u](node v) { return u == v; };
+    parallelForNodes([&](const node u) {
+        auto isSelfLoop = [u](const node v) { return u == v; };
         removeAdjacentEdges(u, isSelfLoop);
         if (isDirected()) {
             removeAdjacentEdges(u, isSelfLoop, true);
         }
-    }
+    });
 
     m -= storedNumberOfSelfLoops;
     storedNumberOfSelfLoops = 0;
@@ -795,9 +793,9 @@ void Graph::removeMultiEdges() {
     count removedSelfLoops = 0;
     std::unordered_set<node> nodes;
 
-    forNodes([&](node u) {
+    forNodes([&](const node u) {
         nodes.reserve(degree(u));
-        auto isMultiedge = [&nodes](node v) { return !nodes.insert(v).second; };
+        auto isMultiedge = [&nodes](const node v) { return !nodes.insert(v).second; };
         auto result = removeAdjacentEdges(u, isMultiedge);
         removedEdges += result.first;
         removedSelfLoops += result.second;

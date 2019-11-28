@@ -22,31 +22,44 @@ class TestGraph(unittest.TestCase):
 				self.assertEqual(G.numberOfEdges(), 0)
 				G.forNodePairs(lambda u, v: self.assertFalse(G.hasEdge(u, v)))
 
+	def testRemoveSelfLoops(self):
+		for directed in [True, False]:
+			for weighted in [True, False]:
+				g  = self.getSmallGraph(weighted, directed)
+				for i in range(10):
+					u = nk.graphtools.randomNode(g)
+					g.addEdge(u, u)
+
+				nSelfLoops = g.numberOfSelfLoops()
+				nEdges = g.numberOfEdges()
+
+				g.removeSelfLoops()
+
+				self.assertEqual(nEdges - nSelfLoops, g.numberOfEdges())
+				self.assertEqual(g.numberOfSelfLoops(), 0)
+
+				g.forNodes(lambda u: self.assertFalse(g.hasEdge(u, u)))
+
 	def testRemoveMultiEdges(self):
+		nMultiedges = 5
+		for directed in [True, False]:
+			for weighted in [True, False]:
+				G = self.getSmallGraph(weighted, directed)
+				nEdges = G.numberOfEdges()
 
-		def addMultiEdges(G, nMultiEdges):
-			for i in range(nMultiEdges):
-				e = G.randomEdge()
-				G.addEdge(e[0], e[1])
-			return G
+				for _ in range(nMultiedges):
+					u, v = G.randomEdge()
+					G.addEdge(u, v)
 
-		def testGraph(G):
-			addMultiEdges(G, nMultiEdges)
-			self.assertEqual(G.numberOfEdges(), m + nMultiEdges)
-			G.removeMultiEdges()
-			self.assertEqual(G.numberOfEdges(), m)
+				G.removeMultiEdges()
+				self.assertEqual(G.numberOfEdges(), nEdges)
 
-		nMultiEdges = 5
+				for _ in range(nEdges):
+					u, v = G.randomEdge()
+					G.removeEdge(u, v)
+					self.assertFalse(G.hasEdge(u, v))
+				self.assertEqual(G.numberOfEdges(), 0)
 
-		# Directed
-		G = self.getSmallGraph(True, True)
-		m = G.numberOfEdges()
-		testGraph(G)
-
-		# Undirected
-		G = self.getSmallGraph(True, False)
-		m = G.numberOfEdges()
-		testGraph(G)
 
 	def testNeighbors(self):
 		# Directed

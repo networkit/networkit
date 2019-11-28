@@ -697,7 +697,6 @@ TEST_P(GraphGTest, testRemoveEdge) {
     // remove self-loops
     ewBefore = G.totalEdgeWeight();
 
-    // G.removeSelfLoops();
     G.removeEdge(0, 0);
     G.removeEdge(1, 1);
 
@@ -744,47 +743,87 @@ TEST_P(GraphGTest, testRemoveAllEdges) {
 }
 
 TEST_P(GraphGTest, testRemoveSelfLoops) {
-    double epsilon = 1e-6;
-    Graph G = createGraph(2);
+    constexpr count n = 100;
+    constexpr count nSelfLoops = 100;
+    constexpr double p = 0.2;
 
-    edgeweight ewBefore = G.totalEdgeWeight();
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, false);
+        auto g = ErdosRenyiGenerator(n, p, isDirected()).generate();
+        if (isWeighted()) {
+            g = Graph(g, true, isDirected());
+        }
 
-    G.addEdge(0, 1);
-    G.addEdge(0, 0, 3.14);
-    G.addEdge(1, 1);
+        for (count i = 0; i < nSelfLoops; ++i) {
+            const auto u = GraphTools::randomNode(g);
+            g.addEdge(u, u);
+        }
 
-    if (G.isWeighted()) {
-        EXPECT_NEAR(ewBefore + 3.14 + 2 * defaultEdgeWeight, G.totalEdgeWeight(),
-                    epsilon);
-    } else {
-        EXPECT_NEAR(ewBefore + 3 * defaultEdgeWeight, G.totalEdgeWeight(), epsilon);
+        const auto numberOfSelfLoops = g.numberOfSelfLoops();
+        const auto numberOfEdges = g.numberOfEdges();
+        g.removeSelfLoops();
+
+        EXPECT_EQ(numberOfEdges - numberOfSelfLoops, g.numberOfEdges());
+        EXPECT_EQ(g.numberOfSelfLoops(), 0);
+        g.forNodes([&g](const node u) { EXPECT_FALSE(g.hasEdge(u, u)); });
     }
+}
 
-    EXPECT_EQ(3u, G.numberOfEdges());
-    EXPECT_TRUE(G.hasEdge(0, 0));
-    EXPECT_TRUE(G.hasEdge(0, 1));
-    EXPECT_TRUE(G.hasEdge(1, 1));
-    EXPECT_EQ(G.numberOfSelfLoops(), 2u);
-    EXPECT_EQ(G.numberOfSelfLoops(), 2u);
+TEST_P(GraphGTest, testRemoveMultiEdges) {
+    constexpr count n = 200;
+    constexpr double p = 0.1;
+    constexpr count nMultiEdges = 10;
+    constexpr count nMultiSelfLoops = 10;
 
-    // remove self-loops
-    ewBefore = G.totalEdgeWeight();
-    G.removeSelfLoops();
+    auto getGraphEdges = [](const Graph &G) {
+        std::vector<std::pair<node, node>> edges;
+        edges.reserve(G.numberOfEdges());
 
-    if (G.isWeighted()) {
-        EXPECT_NEAR(ewBefore - defaultEdgeWeight - 3.14, G.totalEdgeWeight(),
-                    epsilon);
-    } else {
-        EXPECT_NEAR(ewBefore - 2 * defaultEdgeWeight, G.totalEdgeWeight(), epsilon)
-            << "Weighted, directed: " << G.isWeighted() << ", " << G.isDirected();
+        G.forEdges([&](const node u, const node v) {
+            edges.push_back({u, v});
+        });
+
+        return edges;
+    };
+
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, false);
+        auto g = ErdosRenyiGenerator(n, p, isDirected()).generate();
+        if (isWeighted()) {
+            g = Graph(g, true, isDirected());
+        }
+
+        const auto edgeSet = getGraphEdges(g);
+        const auto m = g.numberOfEdges();
+
+        // Adding multiedges at random
+        for (count i = 0; i < nMultiEdges; ++i) {
+            const auto e = g.randomEdge();
+            g.addEdge(e.first, e.second);
+        }
+
+        std::unordered_set<node> uniqueSelfLoops;
+        // Adding multiple self-loops at random
+        for (count i = 0; i < nMultiSelfLoops; ++i) {
+            const auto u = GraphTools::randomNode(g);
+            g.addEdge(u, u);
+            g.addEdge(u, u);
+            uniqueSelfLoops.insert(u);
+        }
+
+        EXPECT_EQ(g.numberOfEdges(), m + nMultiEdges + 2 * nMultiSelfLoops);
+
+        g.removeMultiEdges();
+
+        EXPECT_EQ(g.numberOfEdges(), m + uniqueSelfLoops.size());
+        g.removeSelfLoops();
+
+        EXPECT_EQ(g.numberOfEdges(), m);
+        auto edgeSet_ = getGraphEdges(g);
+
+        for (count i = 0; i < g.numberOfEdges(); ++i)
+            EXPECT_EQ(edgeSet[i], edgeSet_[i]);
     }
-
-    EXPECT_EQ(1u, G.numberOfEdges());
-    EXPECT_FALSE(G.hasEdge(0, 0));
-    EXPECT_FALSE(G.hasEdge(1, 1));
-    EXPECT_TRUE(G.hasEdge(0, 1));
-    EXPECT_EQ(0u, G.numberOfSelfLoops())
-        << "Weighted, directed: " << G.isWeighted() << ", " << G.isDirected();
 }
 
 TEST_P(GraphGTest, testHasEdge) {
@@ -2003,48 +2042,6 @@ TEST_P(GraphGTest, testSortEdges) {
             });
         });
     }
-}
-
-TEST_P(GraphGTest, testRemoveMultiEdges) {
-    Aux::Random::setSeed(42, false);
-    Graph G(this->Ghouse);
-    auto getGraphEdges = [&](const Graph &G) {
-        std::vector<std::pair<node, node>> edges;
-        edges.reserve(G.numberOfEdges());
-        G.forEdges([&](node u, node v) {
-            edges.push_back({u, v});
-        });
-        return edges;
-    };
-    const auto edgeSet = getGraphEdges(G);
-    constexpr count nMultiEdges = 10;
-    constexpr count nMultiSelfLoops = 10;
-    const count m = G.numberOfEdges();
-
-    // Adding multiedges at random
-    for (count i = 0; i < nMultiEdges; ++i) {
-        auto e = G.randomEdge();
-        G.addEdge(e.first, e.second);
-    }
-
-    std::unordered_set<node> uniqueSelfLoops;
-    // Adding multiple self-loops at random
-    for (count i = 0; i < nMultiSelfLoops; ++i) {
-        node u = GraphTools::randomNode(G);
-        G.addEdge(u, u);
-        G.addEdge(u, u);
-        uniqueSelfLoops.insert(u);
-    }
-
-    EXPECT_EQ(G.numberOfEdges(), m + nMultiEdges + 2 * nMultiSelfLoops);
-    G.removeMultiEdges();
-    EXPECT_EQ(G.numberOfEdges(), m + uniqueSelfLoops.size());
-    G.removeSelfLoops();
-    EXPECT_EQ(G.numberOfEdges(), m);
-    auto edgeSet_ = getGraphEdges(G);
-
-    for (count i = 0; i < G.numberOfEdges(); ++i)
-        EXPECT_EQ(edgeSet[i], edgeSet_[i]);
 }
 
 TEST_P(GraphGTest, testEdgeIdsAfterRemove) {

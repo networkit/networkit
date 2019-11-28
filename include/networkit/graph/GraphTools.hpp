@@ -84,20 +84,6 @@ std::pair<node, node> randomEdge(const Graph &G, bool uniformDistribution = fals
 std::vector<std::pair<node, node>> randomEdges(const Graph &G, count nr);
 
 /**
- * Removes all self-loops in the graph.
- *
- * @param G The input graph.
- */
-void removeSelfLoops(Graph &G);
-
-/**
- * Removes all multi-edges in the graph.
- *
- * @param G The input graph.
- */
-void removeMultiEdges(Graph &G);
-
-/**
  * Efficiently removes all the edges adjacent to a set of nodes that is
  * not connected to the rest of the graph. This is meant to optimize the
  * Kadabra algorithm.
