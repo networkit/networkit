@@ -871,42 +871,7 @@ std::pair<node, node> Graph::randomEdge(bool uniformDistribution) const {
 }
 
 std::vector<std::pair<node, node>> Graph::randomEdges(count nr) const {
-    if (numberOfEdges() == 0) {
-        throw std::runtime_error(
-            "Graph has no edges to sample from. Add edges to the graph first.");
-    }
-    std::vector<std::pair<node, node>> edges;
-
-    auto& gen = Aux::Random::getURNG();
-    std::vector<count> outDeg(upperNodeIdBound());
-    for (count i = 0; i < upperNodeIdBound(); ++i) {
-        outDeg[i] = outEdges[i].size();
-    }
-    std::discrete_distribution<count> distribution(outDeg.begin(), outDeg.end());
-
-    for (index i = 0; i < nr; i++) {
-        node u, v; // we will pick edge (u, v)
-        if (directed) {
-            u = distribution(gen);
-            // should always be the case as  without
-            // edges should have probability 0
-            assert(outEdges[u].size() > 0);
-            v = GraphTools::randomNeighbor(*this, u);
-        } else {
-            // self-loops which appear only once in the outEdge arrays
-            // easiest way it to ignore edges (u, v) with u > v
-            do {
-                u = distribution(gen);
-                // should always be the case as  without
-                // edges should have probability 0
-                assert(outEdges[u].size() > 0);
-                v = GraphTools::randomNeighbor(*this, u);
-            } while (u > v);
-        }
-        edges.push_back({u, v});
-    }
-
-    return edges;
+    return GraphTools::randomEdges(*this, nr);
 }
 
 /** EDGE ATTRIBUTES **/

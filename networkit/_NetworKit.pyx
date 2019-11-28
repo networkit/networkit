@@ -1310,6 +1310,8 @@ cdef class Graph:
 		list of pairs
 			The selected edges.
 		"""
+		from warnings import warn
+		warn("Graph.randomEdges is deprecated, use graphtools.randomEdges instead.")
 		return self._this.randomEdges(numEdges)
 
 	def numberOfSelfLoops(self):
@@ -5132,6 +5134,7 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	node randomNode(_Graph G) nogil except +
 	node randomNeighbor(_Graph G, node u) nogil except +
 	pair[node, node] randomEdge(_Graph G, bool_t uniformDistribution) nogil except +
+	vector[pair[node, node]] randomEdges(_Graph G, count numEdges) nogil except +
 	_Graph copyNodes(_Graph G) nogil except +
 	_Graph toUndirected(_Graph G) nogil except +
 	_Graph toUnweighted(_Graph G) nogil except +
@@ -5257,8 +5260,8 @@ cdef class GraphTools:
 
 		Parameters
 		----------
-        G : networkit.Graph
-            The input graph.
+		G : networkit.Graph
+			The input graph.
 		uniformDistribution : bool
 			If the distribution of the edge shall be uniform.
 
@@ -5273,6 +5276,25 @@ cdef class GraphTools:
 		slow and uniformly random otherwise.
 		"""
 		return randomEdge(G._this, uniformDistribution)
+
+	@staticmethod
+	def randomEdges(Graph G, numEdges):
+		"""
+		Returns a list with numEdges random edges. The edges are chosen uniformly at random.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		numEdges : count
+			The number of edges to choose.
+
+		Returns
+		-------
+		list of pairs
+			List of with `numEdges` random edges.
+		"""
+		return randomEdges(G._this, numEdges)
 
 	@staticmethod
 	def append(Graph G, Graph G1):

@@ -848,33 +848,6 @@ TEST_P(GraphGTest, testHasEdge) {
     }
 }
 
-TEST_P(GraphGTest, testRandomEdges) {
-    Aux::Random::setSeed(1, false);
-    // we only test the uniform version
-    constexpr count n = 4;
-    constexpr count m = 5;
-    constexpr count samples = 100000;
-    constexpr double maxAbsoluteError = 0.005;
-
-    Graph G = createGraph(n);
-    G.addEdge(0, 1); // 0 * 1 = 0
-    G.addEdge(1, 2); // 1 * 2 = 2
-    G.addEdge(3, 2); // 3 * 2 = 1 (mod 5)
-    G.addEdge(2, 2); // 2 * 2 = 4
-    G.addEdge(3, 1); // 3 * 1 = 3
-    ASSERT_EQ(m, G.numberOfEdges());
-
-    std::vector<count> drawCounts(m, 0);
-    for (const auto e : G.randomEdges(samples)) {
-        count id = (e.first * e.second) % 5;
-        drawCounts[id]++;
-    }
-    for (node id = 0; id < m; id++) {
-        double p = drawCounts[id] / (double)samples;
-        ASSERT_NEAR(1.0 / m, p, maxAbsoluteError);
-    }
-}
-
 /** GLOBAL PROPERTIES **/
 
 TEST_P(GraphGTest, testSelfLoopCountSimple) {

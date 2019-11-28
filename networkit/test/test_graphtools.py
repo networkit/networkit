@@ -96,6 +96,15 @@ class TestGraphTools(unittest.TestCase):
 					u, v = nk.graphtools.randomEdge(G)
 					self.assertTrue(G.hasEdge(u, v))
 
+	def testRandomEdges(self):
+		for directed in [True, False]:
+			for weighted in [True, False]:
+				G = self.getSmallGraph(weighted, directed)
+				for i in range(10):
+					randomEdges = nk.graphtools.randomEdges(G, 5)
+					for u, v in randomEdges:
+						self.assertTrue(G.hasEdge(u, v))
+
 	def testCopyNodes(self):
 		def checkNodes(G, GCopy):
 			self.assertEqual(G.isDirected(), GCopy.isDirected())

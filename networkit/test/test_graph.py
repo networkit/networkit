@@ -102,7 +102,7 @@ class TestGraph(unittest.TestCase):
 			for repeats in range(numRepeats):
 				for seed in range(numSeeds):
 					nk.setSeed(seed, False)
-					results[seed].append(G.randomEdges(numSamples))
+					results[seed].append(nk.graphtools.randomEdges(G, numSamples))
 
 			# assert results are different for different seeds
 			for seed in range(1, numSeeds):

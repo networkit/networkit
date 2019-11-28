@@ -135,6 +135,47 @@ std::pair<node, node> randomEdge(const Graph &G, bool uniformDistribution) {
     return {u, v};
 }
 
+std::vector<std::pair<node, node>> randomEdges(const Graph &G, count nr) {
+    if (!nr) return {};
+
+    if (!G.numberOfEdges()) {
+        throw std::runtime_error(
+            "Graph has no edges to sample from. Add edges to the graph first.");
+    }
+
+    std::vector<std::pair<node, node>> edges;
+
+    auto& gen = Aux::Random::getURNG();
+    std::vector<count> outDeg(G.upperNodeIdBound());
+    G.forNodes([&outDeg, &G](const node u) { outDeg[u] = G.degree(u); });
+
+    std::discrete_distribution<count> distribution(outDeg.begin(), outDeg.end());
+
+    for (index i = 0; i < nr; i++) {
+        node u, v; // we will pick edge (u, v)
+        if (G.isDirected()) {
+            u = distribution(gen);
+            // should always be the case as  without
+            // edges should have probability 0
+            assert(G.degree(u));
+            v = randomNeighbor(G, u);
+        } else {
+            // self-loops which appear only once in the outEdge arrays
+            // easiest way it to ignore edges (u, v) with u > v
+            do {
+                u = distribution(gen);
+                // should always be the case as  without
+                // edges should have probability 0
+                assert(G.degree(u));
+                v = randomNeighbor(G, u);
+            } while (u > v);
+        }
+        edges.push_back({u, v});
+    }
+
+    return edges;
+}
+
 node randomNeighbor(const Graph &G, node u) {
     if (!G.degree(u))
         return none;

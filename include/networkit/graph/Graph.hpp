@@ -1177,7 +1177,7 @@ public:
      * Returns a vector with nr random edges. The edges are chosen uniform
      * random.
      */
-    std::vector<std::pair<node, node>> randomEdges(count nr) const;
+    std::vector<std::pair<node, node>> TLX_DEPRECATED(randomEdges(count nr) const);
 
     /* GLOBAL PROPERTIES */
 
