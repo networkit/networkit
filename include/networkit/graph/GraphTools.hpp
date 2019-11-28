@@ -1,11 +1,13 @@
+// networkit-format
+
 #ifndef NETWORKIT_GRAPH_GRAPH_TOOLS_HPP_
 #define NETWORKIT_GRAPH_GRAPH_TOOLS_HPP_
 
 #include <unordered_map>
 #include <unordered_set>
 
-#include <networkit/graph/Graph.hpp>
 #include <tlx/unused.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 namespace GraphTools {
@@ -207,30 +209,32 @@ void merge(Graph &G, const Graph &G1);
  * @param  nodeIdMap The map providing the information about the node ids.
  * @return           Returns a compacted Graph.
  */
-Graph getCompactedGraph(const Graph& graph, const std::unordered_map<node,node>& nodeIdMap);
+Graph getCompactedGraph(const Graph &graph, const std::unordered_map<node, node> &nodeIdMap);
 
 /**
  * Computes a map of node ids.
  * @param	graph	The graph of which the node id map is wanted.
  * @return			Returns the node id map.
  */
-std::unordered_map<node,node> getContinuousNodeIds(const Graph& graph);
+std::unordered_map<node, node> getContinuousNodeIds(const Graph &graph);
 
 /**
  * Computes a map of random node ids
  * @param	graph	The graph of which the node id map is wanted.
  * @return		Returns the node id map.
  */
-std::unordered_map<node, node> getRandomContinuousNodeIds(const Graph& graph);
-
+std::unordered_map<node, node> getRandomContinuousNodeIds(const Graph &graph);
 
 /**
  * Inverts a given mapping of node ids from a graph with deleted nodes to continuous node ids.
- * @param 	nodeIdMap	The mapping from node ids with gaps to continuous node ids (i.e. from @getContinuousNodeIds)
+ * @param 	nodeIdMap	The mapping from node ids with gaps to continuous node ids (i.e. from
+ * @getContinuousNodeIds)
  * @param 	G 			The compacted graph (currently only needed for the upper node id bound)
- * @return 				A vector of nodes id where the index is the node id of the compacted graph and the value is the node id of the noncontinuous graph.
+ * @return 				A vector of nodes id where the index is the node id of the compacted graph
+ * and the value is the node id of the noncontinuous graph.
  */
-std::vector<node> invertContinuousNodeIds(const std::unordered_map<node,node>& nodeIdMap, const Graph& G);
+std::vector<node> invertContinuousNodeIds(const std::unordered_map<node, node> &nodeIdMap,
+                                          const Graph &G);
 
 /**
  * Constructs a new graph that has the same node ids as before it was compacted.
@@ -238,8 +242,7 @@ std::vector<node> invertContinuousNodeIds(const std::unordered_map<node,node>& n
  * @param  G             The compacted graph.
  * @return               The original graph.
  */
-Graph restoreGraph(const std::vector<node>& invertedIdMap, const Graph& G);
-
+Graph restoreGraph(const std::vector<node> &invertedIdMap, const Graph &G);
 
 /**
  * Rename nodes in a graph using a callback which translates each old id to a new one.
@@ -257,15 +260,12 @@ Graph restoreGraph(const std::vector<node>& invertedIdMap, const Graph& G);
  * @node preallocate is currently not implemented
  */
 template <typename UnaryIdMapper, typename SkipEdgePredicate>
-Graph getRemappedGraph(const Graph& graph, count numNodes,
-    UnaryIdMapper&& oldIdToNew, SkipEdgePredicate&& skipNode, bool preallocate = true)
-{
+Graph getRemappedGraph(const Graph &graph, count numNodes, UnaryIdMapper &&oldIdToNew,
+                       SkipEdgePredicate &&skipNode, bool preallocate = true) {
     tlx::unused(preallocate); // TODO: Add perallocate as soon as Graph supports it
 
 #ifndef NDEBUG
-    graph.forNodes([&] (node u) {
-        assert(skipNode(u) || oldIdToNew(u) < numNodes);
-    });
+    graph.forNodes([&](node u) { assert(skipNode(u) || oldIdToNew(u) < numNodes); });
 #endif // NDEBUG
 
     const auto directed = graph.isDirected();
@@ -291,13 +291,15 @@ Graph getRemappedGraph(const Graph& graph, count numNodes,
 }
 
 template <typename UnaryIdMapper>
-Graph getRemappedGraph(const Graph& graph, count numNodes, UnaryIdMapper&& oldIdToNew, bool preallocate = true) {
-    return getRemappedGraph(graph, numNodes,
-        std::forward<UnaryIdMapper>(oldIdToNew), [](node) { return false; }, preallocate);
+Graph getRemappedGraph(const Graph &graph, count numNodes, UnaryIdMapper &&oldIdToNew,
+                       bool preallocate = true) {
+    return getRemappedGraph(
+        graph, numNodes, std::forward<UnaryIdMapper>(oldIdToNew), [](node) { return false; },
+        preallocate);
 }
 
-}	// namespace GraphTools
+} // namespace GraphTools
 
-}	// namespace NetworKit
+} // namespace NetworKit
 
 #endif // NETWORKIT_GRAPH_GRAPH_TOOLS_HPP_

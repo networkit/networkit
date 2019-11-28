@@ -1,9 +1,11 @@
+// networkit-format
+
 #include <algorithm>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
-#include <networkit/graph/GraphTools.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
 
@@ -29,21 +31,23 @@ edgeweight computeMaxWeightedDegree(const Graph &G, bool inDegree = false) {
 #ifndef NETWORKIT_OMP2
 #pragma omp parallel for reduction(max : result)
     for (omp_index u = 0; u < static_cast<omp_index>(G.upperNodeIdBound()); ++u) {
-        result =
-            std::max(result, inDegree ? G.weightedDegreeIn(u) : G.weightedDegree(u));
+        result = std::max(result, inDegree ? G.weightedDegreeIn(u) : G.weightedDegree(u));
     }
 #else
     G.forNodes([&](const node u) {
-        result =
-            std::max(result, inDegree ? G.weightedDegreeIn(u) : G.weightedDegree(u));
+        result = std::max(result, inDegree ? G.weightedDegreeIn(u) : G.weightedDegree(u));
     });
 #endif
     return result;
 }
 
-count maxDegree(const Graph &G) { return computeMaxDegree(G); }
+count maxDegree(const Graph &G) {
+    return computeMaxDegree(G);
+}
 
-count maxInDegree(const Graph &G) { return computeMaxDegree(G, true); }
+count maxInDegree(const Graph &G) {
+    return computeMaxDegree(G, true);
+}
 
 edgeweight maxWeightedDegree(const Graph &G) {
     return computeMaxWeightedDegree(G);
@@ -83,13 +87,13 @@ std::pair<node, node> randomEdge(const Graph &G, bool uniformDistribution) {
          * complication for undirected edges with self-loops: each edge {u,v} with u != v is stored
          * twice (once in the neighborhood of u, once in v) but a loop (u, u) is only stored once.
          * To equalize the probabilities we reject edges {u,v} with u > v and try again. This leads
-         * to less than two expected trails in and is only done for undirected graphs with self-loops.
+         * to less than two expected trails in and is only done for undirected graphs with
+         * self-loops.
          */
 
-        do  {
-            const auto upper = G.isDirected()
-                ? G.numberOfEdges()
-                : 2 * G.numberOfEdges() - G.numberOfSelfLoops();
+        do {
+            const auto upper =
+                G.isDirected() ? G.numberOfEdges() : 2 * G.numberOfEdges() - G.numberOfSelfLoops();
             auto idx = Aux::Random::index(upper);
 
             node u, v;
@@ -97,7 +101,7 @@ std::pair<node, node> randomEdge(const Graph &G, bool uniformDistribution) {
             if (idx > upper / 2) {
                 // assuming degrees are somewhat distributed uniformly, it's better to start with
                 // larger nodes for large indices. In this case we have to mirror the index:
-                idx  = (upper-1) - idx;
+                idx = (upper - 1) - idx;
 
                 for (u = G.upperNodeIdBound() - 1; idx >= G.degree(u); --u) {
                     idx -= G.degree(u);
@@ -106,13 +110,12 @@ std::pair<node, node> randomEdge(const Graph &G, bool uniformDistribution) {
                 v = G.getIthNeighbor(u, G.degree(u) - 1 - idx);
 
             } else {
-                for(u = 0; idx >= G.degree(u); ++u) {
+                for (u = 0; idx >= G.degree(u); ++u) {
                     assert(u < G.upperNodeIdBound());
                     idx -= G.degree(u);
                 }
 
                 v = G.getIthNeighbor(u, idx);
-
             }
 
             if (G.numberOfSelfLoops() && !G.isDirected() && u > v)
@@ -136,7 +139,8 @@ std::pair<node, node> randomEdge(const Graph &G, bool uniformDistribution) {
 }
 
 std::vector<std::pair<node, node>> randomEdges(const Graph &G, count nr) {
-    if (!nr) return {};
+    if (!nr)
+        return {};
 
     if (!G.numberOfEdges()) {
         throw std::runtime_error(
@@ -145,7 +149,7 @@ std::vector<std::pair<node, node>> randomEdges(const Graph &G, count nr) {
 
     std::vector<std::pair<node, node>> edges;
 
-    auto& gen = Aux::Random::getURNG();
+    auto &gen = Aux::Random::getURNG();
     std::vector<count> outDeg(G.upperNodeIdBound());
     G.forNodes([&outDeg, &G](const node u) { outDeg[u] = G.degree(u); });
 
@@ -191,7 +195,8 @@ double density(const Graph &G) noexcept {
     if (G.numberOfNodes() <= 1)
         return 0;
     const auto n = static_cast<double>(G.numberOfNodes());
-    const auto m = static_cast<double>((G.numberOfEdges() - G.numberOfSelfLoops()) * (G.isDirected() ? 1 : 2));
+    const auto m =
+        static_cast<double>((G.numberOfEdges() - G.numberOfSelfLoops()) * (G.isDirected() ? 1 : 2));
     return m / (n * (n - 1));
 }
 
@@ -215,11 +220,11 @@ Graph subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes,
 
         for (node u : nodes) {
             if (includeOutNeighbors)
-                for(const node v : G.neighborRange(u))
+                for (const node v : G.neighborRange(u))
                     neighbors.insert(v);
 
             if (includeInNeighbors)
-                for(const node v : G.inNeighborRange(u))
+                for (const node v : G.inNeighborRange(u))
                     neighbors.insert(v);
         }
 
@@ -232,9 +237,11 @@ Graph subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes,
      * 1: Is a relevant neighbor (i.e., respective include*Neighbor was set)
      * 0: Neither of both
      */
-    auto isRelevantNode = [&] (const node u) {
-        if (nodes.find(u) != nodes.end()) return 2;
-        if (!neighbors.empty() && neighbors.find(u) != neighbors.end()) return 1;
+    auto isRelevantNode = [&](const node u) {
+        if (nodes.find(u) != nodes.end())
+            return 2;
+        if (!neighbors.empty() && neighbors.find(u) != neighbors.end())
+            return 1;
         return 0;
     };
 
@@ -294,21 +301,21 @@ Graph transpose(const Graph &G) {
         GTranspose.indexEdges();
     }
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (omp_index u = 0; u < static_cast<omp_index>(G.upperNodeIdBound()); ++u) {
         if (G.hasNode(u)) {
             GTranspose.preallocateDirected(u, G.degreeIn(u), G.degreeOut(u));
 
-            G.forInEdgesOf(u, [&] (node, node v, edgeweight w, edgeid id) {
+            G.forInEdgesOf(u, [&](node, node v, edgeweight w, edgeid id) {
                 GTranspose.addPartialOutEdge(unsafe, u, v, w, id);
             });
 
-            G.forEdgesOf(u, [&] (node, node v, edgeweight w, edgeid id) {
+            G.forEdgesOf(u, [&](node, node v, edgeweight w, edgeid id) {
                 GTranspose.addPartialInEdge(unsafe, u, v, w, id);
             });
 
         } else {
-            #pragma omp critical
+#pragma omp critical
             GTranspose.removeNode(u);
         }
     }
@@ -329,9 +336,7 @@ void append(Graph &G, const Graph &G1) {
     });
 
     if (G.isWeighted()) {
-        G1.forEdges([&](node u, node v, edgeweight ew) {
-            G.addEdge(nodeMap[u], nodeMap[v], ew);
-        });
+        G1.forEdges([&](node u, node v, edgeweight ew) { G.addEdge(nodeMap[u], nodeMap[v], ew); });
     } else {
         G1.forEdges([&](node u, node v) { G.addEdge(nodeMap[u], nodeMap[v]); });
     }
@@ -365,43 +370,42 @@ void merge(Graph &G, const Graph &G1) {
     });
 }
 
-Graph getCompactedGraph(const Graph& graph, const std::unordered_map<node,node>& nodeIdMap) {
-    return getRemappedGraph(graph, nodeIdMap.size(), [&] (node u) {
+Graph getCompactedGraph(const Graph &graph, const std::unordered_map<node, node> &nodeIdMap) {
+    return getRemappedGraph(graph, nodeIdMap.size(), [&](node u) {
         const auto it = nodeIdMap.find(u);
         assert(it != nodeIdMap.cend());
         return it->second;
     });
 }
 
-std::unordered_map<node,node> getContinuousNodeIds(const Graph& graph) {
-    std::unordered_map<node,node> nodeIdMap;
+std::unordered_map<node, node> getContinuousNodeIds(const Graph &graph) {
+    std::unordered_map<node, node> nodeIdMap;
     count continuousId = 0;
-    auto addToMap = [&nodeIdMap,&continuousId](node v) {
-        nodeIdMap.insert(std::make_pair(v,continuousId++));
+    auto addToMap = [&nodeIdMap, &continuousId](node v) {
+        nodeIdMap.insert(std::make_pair(v, continuousId++));
     };
     graph.forNodes(addToMap);
     return nodeIdMap;
 }
-std::unordered_map<node,node> getRandomContinuousNodeIds(const Graph& graph) {
-    std::unordered_map<node,node> nodeIdMap;
+std::unordered_map<node, node> getRandomContinuousNodeIds(const Graph &graph) {
+    std::unordered_map<node, node> nodeIdMap;
     std::vector<node> nodes;
     nodes.reserve(graph.numberOfNodes());
 
-    graph.forNodes([&](node u) {
-        nodes.push_back(u);
-    });
+    graph.forNodes([&](node u) { nodes.push_back(u); });
 
     std::shuffle(nodes.begin(), nodes.end(), Aux::Random::getURNG());
 
     count continuousId = 0;
     for (node v : nodes) {
-        nodeIdMap.insert(std::make_pair(v,continuousId++));
+        nodeIdMap.insert(std::make_pair(v, continuousId++));
     };
 
     return nodeIdMap;
 }
 
-std::vector<node> invertContinuousNodeIds(const std::unordered_map<node,node>& nodeIdMap, const Graph& G) {
+std::vector<node> invertContinuousNodeIds(const std::unordered_map<node, node> &nodeIdMap,
+                                          const Graph &G) {
     assert(nodeIdMap.size() == G.numberOfNodes());
     std::vector<node> invertedIdMap(G.numberOfNodes() + 1);
     // store upper node id bound
@@ -413,15 +417,13 @@ std::vector<node> invertContinuousNodeIds(const std::unordered_map<node,node>& n
     return invertedIdMap;
 }
 
-Graph restoreGraph(const std::vector<node>& invertedIdMap, const Graph& G) {
+Graph restoreGraph(const std::vector<node> &invertedIdMap, const Graph &G) {
     // with the inverted id map and the compacted graph, generate the original graph again
     Graph Goriginal(invertedIdMap.back(), G.isWeighted(), G.isDirected());
     index current = 0;
-    Goriginal.forNodes([&](node u){
+    Goriginal.forNodes([&](node u) {
         if (invertedIdMap[current] == u) {
-            G.forNeighborsOf(current,[&](node v){
-                Goriginal.addEdge(u,invertedIdMap[v]);
-            });
+            G.forNeighborsOf(current, [&](node v) { Goriginal.addEdge(u, invertedIdMap[v]); });
             ++current;
         } else {
             Goriginal.removeNode(u);

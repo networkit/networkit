@@ -1,5 +1,7 @@
-#ifndef GRAPH_DFS_H
-#define GRAPH_DFS_H
+// networkit-format
+
+#ifndef NETWORKIT_GRAPH_DFS_HPP_
+#define NETWORKIT_GRAPH_DFS_HPP_
 
 #include <stack>
 #include <vector>
@@ -67,4 +69,4 @@ void DFSEdgesFrom(const Graph &G, node source, L handle) {
 } // namespace Traversal
 
 } // namespace NetworKit
-#endif
+#endif // NETWORKIT_GRAPH_DFS_HPP_

@@ -1,5 +1,7 @@
-#ifndef GRAPH_BFS_H
-#define GRAPH_BFS_H
+// networkit-format
+
+#ifndef NETWORKIT_GRAPH_BFS_HPP_
+#define NETWORKIT_GRAPH_BFS_HPP_
 
 #include <queue>
 #include <vector>
@@ -106,4 +108,4 @@ void BFSEdgesFrom(const Graph &G, node source, L handle) {
 
 } // namespace NetworKit
 
-#endif
+#endif // NETWORKIT_GRAPH_BFS_HPP_

@@ -6,6 +6,8 @@
  * (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
  */
 
+// networkit-format
+
 #ifndef NETWORKIT_GRAPH_GRAPH_HPP_
 #define NETWORKIT_GRAPH_GRAPH_HPP_
 
@@ -57,14 +59,13 @@ inline bool operator==(const Edge &e1, const Edge &e2) {
     return e1.u == e2.u && e1.v == e2.v;
 }
 struct Unsafe {};
-static constexpr Unsafe unsafe {};
+static constexpr Unsafe unsafe{};
 } // namespace NetworKit
 
 namespace std {
-template <> struct hash<NetworKit::Edge> {
-    size_t operator()(const NetworKit::Edge &e) const {
-        return hash_node(e.u) ^ hash_node(e.v);
-    }
+template <>
+struct hash<NetworKit::Edge> {
+    size_t operator()(const NetworKit::Edge &e) const { return hash_node(e.u) ^ hash_node(e.v); }
 
     hash<NetworKit::node> hash_node;
 };
@@ -87,7 +88,7 @@ class Graph final {
     friend class GraphBuilder;
     friend class CurveballDetails::CurveballMaterialization;
 
-  private:
+private:
     // graph attributes
     //!< unique graph id, starts at 0
     count id;
@@ -234,8 +235,7 @@ class Graph final {
      * @param handle The handle that shall be executed for each edge
      * @return void
      */
-    template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds,
-              typename L>
+    template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
     inline void forOutEdgesOfImpl(node u, L handle) const;
 
     /**
@@ -248,8 +248,7 @@ class Graph final {
      * @param handle The handle that shall be executed for each edge
      * @return void
      */
-    template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds,
-              typename L>
+    template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
     inline void forInEdgesOfImpl(node u, L handle) const;
 
     /**
@@ -258,8 +257,7 @@ class Graph final {
      * @param handle The handle that shall be executed for all edges
      * @return void
      */
-    template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds,
-              typename L>
+    template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
     inline void forEdgeImpl(L handle) const;
 
     /**
@@ -269,8 +267,7 @@ class Graph final {
      * @param handle The handle that shall be executed for all edges
      * @return void
      */
-    template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds,
-              typename L>
+    template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
     inline void parallelForEdgesImpl(L handle) const;
 
     /**
@@ -280,8 +277,7 @@ class Graph final {
      * @param handle The handle that shall be executed for all edges
      * @return void
      */
-    template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds,
-              typename L>
+    template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
     inline double parallelSumForEdgesImpl(L handle) const;
 
     /*
@@ -310,13 +306,12 @@ class Graph final {
     typename Aux::FunctionTraits<F>::result_type edgeLambda(F &, ...) const {
         // the strange condition is used in order to delay the evaluation of the
         // static assert to the moment when this function is actually used
-        static_assert(
-            !std::is_same<F, F>::value,
-            "Your lambda does not support the required parameters or the "
-            "parameters have the wrong type.");
-        return std::declval<typename Aux::FunctionTraits<
-            F>::result_type>(); // use the correct return type (this won't
-                                // compile)
+        static_assert(!std::is_same<F, F>::value,
+                      "Your lambda does not support the required parameters or the "
+                      "parameters have the wrong type.");
+        return std::declval<typename Aux::FunctionTraits<F>::result_type>(); // use the correct
+                                                                             // return type (this
+                                                                             // won't compile)
     }
 
     /**
@@ -324,14 +319,13 @@ class Graph final {
      * and third of type edgeweight Note that the decltype check is not enough
      * as edgeweight can be casted to node and we want to assure that .
      */
-    template <
-        class F,
-        typename std::enable_if<
-            (Aux::FunctionTraits<F>::arity >= 3) &&
-            std::is_same<edgeweight, typename Aux::FunctionTraits<
-                                         F>::template arg<2>::type>::value &&
-            std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<
-                                     3>::type>::value>::type * = (void *)0>
+    template <class F,
+              typename std::enable_if<
+                  (Aux::FunctionTraits<F>::arity >= 3)
+                  && std::is_same<edgeweight,
+                                  typename Aux::FunctionTraits<F>::template arg<2>::type>::value
+                  && std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<3>::type>::
+                      value>::type * = (void *)0>
     auto edgeLambda(F &f, node u, node v, edgeweight ew, edgeid id) const
         -> decltype(f(u, v, ew, id)) {
         return f(u, v, ew, id);
@@ -345,15 +339,13 @@ class Graph final {
     template <
         class F,
         typename std::enable_if<
-            (Aux::FunctionTraits<F>::arity >= 2) &&
-            std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<
-                                     2>::type>::value &&
-            std::is_same<node, typename Aux::FunctionTraits<F>::template arg<
-                                   1>::type>::value /* prevent f(v, weight, eid)
-                                                     */
+            (Aux::FunctionTraits<F>::arity >= 2)
+            && std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<2>::type>::value
+            && std::is_same<node, typename Aux::FunctionTraits<F>::template arg<1>::type>::
+                value /* prevent f(v, weight, eid)
+                       */
             >::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight, edgeid id) const
-        -> decltype(f(u, v, id)) {
+    auto edgeLambda(F &f, node u, node v, edgeweight, edgeid id) const -> decltype(f(u, v, id)) {
         return f(u, v, id);
     }
 
@@ -364,11 +356,11 @@ class Graph final {
      */
     template <class F,
               typename std::enable_if<
-                  (Aux::FunctionTraits<F>::arity >= 2) &&
-                  std::is_same<edgeweight,
-                               typename Aux::FunctionTraits<F>::template arg<
-                                   2>::type>::value>::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight ew, edgeid /*id*/) const -> decltype(f(u, v, ew)) {
+                  (Aux::FunctionTraits<F>::arity >= 2)
+                  && std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<
+                                                  2>::type>::value>::type * = (void *)0>
+    auto edgeLambda(F &f, node u, node v, edgeweight ew, edgeid /*id*/) const
+        -> decltype(f(u, v, ew)) {
         return f(u, v, ew);
     }
 
@@ -377,13 +369,12 @@ class Graph final {
      * argument is of type node, discards edge weight and id Note that the
      * decltype check is not enough as edgeweight can be casted to node.
      */
-    template <
-        class F,
-        typename std::enable_if<
-            (Aux::FunctionTraits<F>::arity >= 1) &&
-            std::is_same<node, typename Aux::FunctionTraits<F>::template arg<
-                                   1>::type>::value>::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight /*ew*/, edgeid /*id*/) const -> decltype(f(u, v)) {
+    template <class F, typename std::enable_if<
+                           (Aux::FunctionTraits<F>::arity >= 1)
+                           && std::is_same<node, typename Aux::FunctionTraits<F>::template arg<
+                                                     1>::type>::value>::type * = (void *)0>
+    auto edgeLambda(F &f, node u, node v, edgeweight /*ew*/, edgeid /*id*/) const
+        -> decltype(f(u, v)) {
         return f(u, v);
     }
 
@@ -395,10 +386,9 @@ class Graph final {
      */
     template <class F,
               typename std::enable_if<
-                  (Aux::FunctionTraits<F>::arity >= 1) &&
-                  std::is_same<edgeweight,
-                               typename Aux::FunctionTraits<F>::template arg<
-                                   1>::type>::value>::type * = (void *)0>
+                  (Aux::FunctionTraits<F>::arity >= 1)
+                  && std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<
+                                                  1>::type>::value>::type * = (void *)0>
     auto edgeLambda(F &f, node, node v, edgeweight ew, edgeid /*id*/) const -> decltype(f(v, ew)) {
         return f(v, ew);
     }
@@ -429,13 +419,12 @@ class Graph final {
     }
 
 public:
-
     /**
      * Class to iterate over the in/out neighbors of a node.
      */
     class NeighborIterator {
 
-      public:
+    public:
         // The value type of the neighbors (i.e. nodes). Returned by
         // operator*().
         using value_type = node;
@@ -459,7 +448,8 @@ public:
         NeighborIterator(std::vector<node>::const_iterator nodesIter) : nIter(nodesIter) {}
 
         /**
-         * @brief WARNING: This contructor is required for Python and should not be used as the iterator is not initialised.
+         * @brief WARNING: This contructor is required for Python and should not be used as the
+         * iterator is not initialised.
          */
         NeighborIterator() {}
 
@@ -485,17 +475,13 @@ public:
             return *this;
         }
 
-        bool operator==(const NeighborIterator &rhs) const {
-            return nIter == rhs.nIter;
-        }
+        bool operator==(const NeighborIterator &rhs) const { return nIter == rhs.nIter; }
 
-        bool operator!=(const NeighborIterator &rhs) const {
-            return nIter != rhs.nIter;
-        }
+        bool operator!=(const NeighborIterator &rhs) const { return nIter != rhs.nIter; }
 
         node operator*() const { return *nIter; }
 
-      private:
+    private:
         std::vector<node>::const_iterator nIter;
     };
 
@@ -505,7 +491,7 @@ public:
      */
     class NeighborWeightIterator {
 
-      public:
+    public:
         // The value type of the neighbors (i.e. nodes). Returned by
         // operator*().
         using value_type = std::pair<node, edgeweight>;
@@ -526,9 +512,8 @@ public:
         // Own type.
         using self = NeighborWeightIterator;
 
-        NeighborWeightIterator(
-            std::vector<node>::const_iterator nodesIter,
-            std::vector<edgeweight>::const_iterator weightIter)
+        NeighborWeightIterator(std::vector<node>::const_iterator nodesIter,
+                               std::vector<edgeweight>::const_iterator weightIter)
             : nIter(nodesIter), wIter(weightIter) {}
 
         NeighborWeightIterator operator++() {
@@ -569,7 +554,7 @@ public:
             return std::make_pair(*nIter, *wIter);
         }
 
-      private:
+    private:
         std::vector<node>::const_iterator nIter;
         std::vector<edgeweight>::const_iterator wIter;
     };
@@ -578,13 +563,12 @@ public:
      * Wrapper class to iterate over a range of the neighbors of a node within
      * a for loop.
      */
-    template <bool InEdges = false> class NeighborRange {
-      public:
-        NeighborRange(const Graph &G, node u) : G(&G), u(u){
-            assert(G.hasNode(u));
-        };
+    template <bool InEdges = false>
+    class NeighborRange {
+    public:
+        NeighborRange(const Graph &G, node u) : G(&G), u(u) { assert(G.hasNode(u)); };
 
-        NeighborRange() : G(nullptr) {};
+        NeighborRange() : G(nullptr){};
 
         NeighborIterator begin() const {
             assert(G != nullptr);
@@ -600,7 +584,7 @@ public:
             return NeighborIterator(G->outEdges[u].end());
         }
 
-      private:
+    private:
         const Graph *G;
         node u;
     };
@@ -613,28 +597,25 @@ public:
      * including the edge weights within a for loop.
      * Values are std::pair<node, edgeweight>.
      */
-    template <bool InEdges = false> class NeighborWeightRange {
+    template <bool InEdges = false>
+    class NeighborWeightRange {
 
-      public:
+    public:
         NeighborWeightRange(const Graph &G, node u) : G(G), u(u){};
 
         NeighborWeightIterator begin() const {
             if (InEdges)
-                return NeighborWeightIterator(G.inEdges[u].begin(),
-                                              G.inEdgeWeights[u].begin());
-            return NeighborWeightIterator(G.outEdges[u].begin(),
-                                          G.outEdgeWeights[u].begin());
+                return NeighborWeightIterator(G.inEdges[u].begin(), G.inEdgeWeights[u].begin());
+            return NeighborWeightIterator(G.outEdges[u].begin(), G.outEdgeWeights[u].begin());
         }
 
         NeighborWeightIterator end() const {
             if (InEdges)
-                return NeighborWeightIterator(G.inEdges[u].end(),
-                                              G.inEdgeWeights[u].end());
-            return NeighborWeightIterator(G.outEdges[u].end(),
-                                          G.outEdgeWeights[u].end());
+                return NeighborWeightIterator(G.inEdges[u].end(), G.inEdgeWeights[u].end());
+            return NeighborWeightIterator(G.outEdges[u].end(), G.outEdgeWeights[u].end());
         }
 
-      private:
+    private:
         const Graph &G;
         const node u;
     };
@@ -845,7 +826,8 @@ public:
     void removeNode(node v);
 
     /**
-     * Removes out-going edges from node @u. If the graph is weighted and/or has edge ids, weights and/or edge ids will also be removed.
+     * Removes out-going edges from node @u. If the graph is weighted and/or has edge ids, weights
+     * and/or edge ids will also be removed.
      *
      * @param node u Node.
      */
@@ -861,7 +843,8 @@ public:
     }
 
     /**
-     * Removes in-going edges to node @u. If the graph is weighted and/or has edge ids, weights and/or edge ids will also be removed.
+     * Removes in-going edges to node @u. If the graph is weighted and/or has edge ids, weights
+     * and/or edge ids will also be removed.
      *
      * @param node u Node.
      */
@@ -920,10 +903,11 @@ public:
      *  - Nodes are such passed as arguments
      *  - Neighbors are empty by default.
      *      If includeOutNeighbors is set, it includes all out neighbors of Nodes
-     *      If includeInNeighbors is set, it includes all in neighbors of Nodes (relevant only for directed graphs)
+     *      If includeInNeighbors is set, it includes all in neighbors of Nodes (relevant only for
+     * directed graphs)
      *
-     * The subgraph contains all nodes in Nodes + Neighbors and all edge which have one end point in Nodes
-     * and the other in Nodes or Neighbors.
+     * The subgraph contains all nodes in Nodes + Neighbors and all edge which have one end point in
+     * Nodes and the other in Nodes or Neighbors.
      */
     Graph TLX_DEPRECATED(subgraphFromNodes(const std::unordered_set<node> &nodes,
                                            bool includeOutNeighbors = false,
@@ -946,9 +930,7 @@ public:
      * @return The number of incoming neighbors.
      * @note If the graph is not directed, the outgoing degree is returned.
      */
-    count degreeIn(node v) const {
-        return directed ? inEdges[v].size() : outEdges[v].size();
-    }
+    count degreeIn(node v) const { return directed ? inEdges[v].size() : outEdges[v].size(); }
 
     /**
      * Get the number of outgoing neighbors of @a v.
@@ -1058,17 +1040,18 @@ public:
     void addEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
 
     /**
-    * Insert an edge between the nodes @a u and @a v. Unline the addEdge function, this function does not not add any information to v. If the graph is
-    * weighted you can optionally set a weight for this edge. The default
-    * weight is 1.0. Note: Multi-edges are not supported and will NOT be
-    * handled consistently by the graph data structure.
-    * @param u Endpoint of edge.
-    * @param v Endpoint of edge.
-    * @param weight Optional edge weight.
-    * @param ew Optional edge weight.
-    * @param index Optional node index.
-    */
-    void addPartialEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight, uint64_t index = 0);
+     * Insert an edge between the nodes @a u and @a v. Unline the addEdge function, this function
+     * does not not add any information to v. If the graph is weighted you can optionally set a
+     * weight for this edge. The default weight is 1.0. Note: Multi-edges are not supported and will
+     * NOT be handled consistently by the graph data structure.
+     * @param u Endpoint of edge.
+     * @param v Endpoint of edge.
+     * @param weight Optional edge weight.
+     * @param ew Optional edge weight.
+     * @param index Optional node index.
+     */
+    void addPartialEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight,
+                        uint64_t index = 0);
 
     /**
      * Insert an in edge between the nodes @a u and @a v in a directed graph. If the graph is
@@ -1080,7 +1063,8 @@ public:
      * @param ew Optional edge weight.
      * @param index Optional node index.
      */
-    void addPartialInEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight, uint64_t index = 0);
+    void addPartialInEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight,
+                          uint64_t index = 0);
 
     /**
      * Insert an out edge between the nodes @a u and @a v in a directed graph. If the graph is
@@ -1092,8 +1076,8 @@ public:
      * @param ew Optional edge weight.
      * @param index Optional node index.
      */
-    void addPartialOutEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight, uint64_t index = 0);
-
+    void addPartialOutEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight,
+                           uint64_t index = 0);
 
     /**
      * Removes the undirected edge {@a u,@a v}.
@@ -1321,7 +1305,7 @@ public:
      * @param u Node.
      * @return List of neighbors of @a u.
      */
-     std::vector<node> TLX_DEPRECATED(neighbors(node u) const);
+    std::vector<node> TLX_DEPRECATED(neighbors(node u) const);
 
     /**
      * Get an iterable range over the neighbors of @a.
@@ -1383,7 +1367,8 @@ public:
      * @return @a i -th (outgoing) neighbor of @a u, or @c none if no such
      * neighbor exists.
      */
-    template <bool graphIsDirected> node getIthNeighbor(node u, index i) const {
+    template <bool graphIsDirected>
+    node getIthNeighbor(node u, index i) const {
         node v = outEdges[u][i];
         if (useEdgeInIteration<graphIsDirected>(u, v))
             return v;
@@ -1428,7 +1413,8 @@ public:
      *
      * @param handle Takes parameter <code>(node)</code>.
      */
-    template <typename L> void forNodes(L handle) const;
+    template <typename L>
+    void forNodes(L handle) const;
 
     /**
      * Iterate randomly over all nodes of the graph and call @a handle (lambda
@@ -1436,7 +1422,8 @@ public:
      *
      * @param handle Takes parameter <code>(node)</code>.
      */
-    template <typename L> void parallelForNodes(L handle) const;
+    template <typename L>
+    void parallelForNodes(L handle) const;
 
     /** Iterate over all nodes of the graph and call @a handle (lambda
      * closure) as long as @a condition remains true. This allows for breaking
@@ -1454,7 +1441,8 @@ public:
      *
      * @param handle Takes parameter <code>(node)</code>.
      */
-    template <typename L> void forNodesInRandomOrder(L handle) const;
+    template <typename L>
+    void forNodesInRandomOrder(L handle) const;
 
     /**
      * Iterate in parallel over all nodes of the graph and call handler
@@ -1463,7 +1451,8 @@ public:
      *
      * @param handle Takes parameter <code>(node)</code>.
      */
-    template <typename L> void balancedParallelForNodes(L handle) const;
+    template <typename L>
+    void balancedParallelForNodes(L handle) const;
 
     /**
      * Iterate over all undirected pairs of nodes and call @a handle (lambda
@@ -1471,7 +1460,8 @@ public:
      *
      * @param handle Takes parameters <code>(node, node)</code>.
      */
-    template <typename L> void forNodePairs(L handle) const;
+    template <typename L>
+    void forNodePairs(L handle) const;
 
     /**
      * Iterate over all undirected pairs of nodes in parallel and call @a
@@ -1479,7 +1469,8 @@ public:
      *
      * @param handle Takes parameters <code>(node, node)</code>.
      */
-    template <typename L> void parallelForNodePairs(L handle) const;
+    template <typename L>
+    void parallelForNodePairs(L handle) const;
 
     /* EDGE ITERATORS */
 
@@ -1491,7 +1482,8 @@ public:
      * node, edgweight)</code>, <code>(node, node, edgeid)</code> or
      * <code>(node, node, edgeweight, edgeid)</code>.
      */
-    template <typename L> void forEdges(L handle) const;
+    template <typename L>
+    void forEdges(L handle) const;
 
     /**
      * Iterate in parallel over all edges of the const graph and call @a
@@ -1501,7 +1493,8 @@ public:
      * <code>(node, node, edgweight)</code>, <code>(node, node, edgeid)</code>
      * or <code>(node, node, edgeweight, edgeid)</code>.
      */
-    template <typename L> void parallelForEdges(L handle) const;
+    template <typename L>
+    void parallelForEdges(L handle) const;
 
     /* NEIGHBORHOOD ITERATORS */
 
@@ -1516,7 +1509,8 @@ public:
      * A node is its own neighbor if there is a self-loop.
      *
      */
-    template <typename L> void forNeighborsOf(node u, L handle) const;
+    template <typename L>
+    void forNeighborsOf(node u, L handle) const;
 
     /**
      * Iterate over all incident edges of a node and call @a handle (lamdba
@@ -1530,13 +1524,15 @@ public:
      * @note For undirected graphs all edges incident to @a u are also
      * outgoing edges.
      */
-    template <typename L> void forEdgesOf(node u, L handle) const;
+    template <typename L>
+    void forEdgesOf(node u, L handle) const;
 
     /**
      * Iterate over all neighbors of a node and call handler (lamdba closure).
      * For directed graphs only incoming edges from u are considered.
      */
-    template <typename L> void forInNeighborsOf(node u, L handle) const;
+    template <typename L>
+    void forInNeighborsOf(node u, L handle) const;
 
     /**
      * Iterate over all incoming edges of a node and call handler (lamdba
@@ -1546,7 +1542,8 @@ public:
      *
      * Handle takes parameters (u, v) or (u, v, w) where w is the edge weight.
      */
-    template <typename L> void forInEdgesOf(node u, L handle) const;
+    template <typename L>
+    void forInEdgesOf(node u, L handle) const;
 
     /* REDUCTION ITERATORS */
 
@@ -1554,13 +1551,15 @@ public:
      * Iterate in parallel over all nodes and sum (reduce +) the values
      * returned by the handler
      */
-    template <typename L> double parallelSumForNodes(L handle) const;
+    template <typename L>
+    double parallelSumForNodes(L handle) const;
 
     /**
      * Iterate in parallel over all edges and sum (reduce +) the values
      * returned by the handler
      */
-    template <typename L> double parallelSumForEdges(L handle) const;
+    template <typename L>
+    double parallelSumForEdges(L handle) const;
 
     /* GRAPH SEARCHES */
 
@@ -1571,11 +1570,13 @@ public:
      * @param r Node.
      * @param handle Takes parameter <code>(node)</code>.
      */
-    template <typename L> void TLX_DEPRECATED(BFSfrom(node r, L handle) const);
+    template <typename L>
+    void TLX_DEPRECATED(BFSfrom(node r, L handle) const);
     template <typename L>
     void TLX_DEPRECATED(BFSfrom(const std::vector<node> &startNodes, L handle) const);
 
-    template <typename L> void TLX_DEPRECATED(BFSEdgesFrom(node r, L handle) const);
+    template <typename L>
+    void TLX_DEPRECATED(BFSEdgesFrom(node r, L handle) const);
 
     /**
      * Iterate over nodes in depth-first search order starting from r until
@@ -1584,14 +1585,17 @@ public:
      * @param r Node.
      * @param handle Takes parameter <code>(node)</code>.
      */
-    template <typename L> void TLX_DEPRECATED(DFSfrom(node r, L handle) const);
+    template <typename L>
+    void TLX_DEPRECATED(DFSfrom(node r, L handle) const);
 
-    template <typename L> void TLX_DEPRECATED(DFSEdgesFrom(node r, L handle) const);
+    template <typename L>
+    void TLX_DEPRECATED(DFSEdgesFrom(node r, L handle) const);
 };
 
 /* NODE ITERATORS */
 
-template <typename L> void Graph::forNodes(L handle) const {
+template <typename L>
+void Graph::forNodes(L handle) const {
     for (node v = 0; v < z; ++v) {
         if (exists[v]) {
             handle(v);
@@ -1599,7 +1603,8 @@ template <typename L> void Graph::forNodes(L handle) const {
     }
 }
 
-template <typename L> void Graph::parallelForNodes(L handle) const {
+template <typename L>
+void Graph::parallelForNodes(L handle) const {
 #pragma omp parallel for
     for (omp_index v = 0; v < static_cast<omp_index>(z); ++v) {
         if (exists[v]) {
@@ -1620,7 +1625,8 @@ void Graph::forNodesWhile(C condition, L handle) const {
     }
 }
 
-template <typename L> void Graph::forNodesInRandomOrder(L handle) const {
+template <typename L>
+void Graph::forNodesInRandomOrder(L handle) const {
     std::vector<node> randVec;
     randVec.reserve(numberOfNodes());
     forNodes([&](node u) { randVec.push_back(u); });
@@ -1630,7 +1636,8 @@ template <typename L> void Graph::forNodesInRandomOrder(L handle) const {
     }
 }
 
-template <typename L> void Graph::balancedParallelForNodes(L handle) const {
+template <typename L>
+void Graph::balancedParallelForNodes(L handle) const {
 // TODO: define min block size (and test it!)
 #pragma omp parallel for schedule(guided)
     for (omp_index v = 0; v < static_cast<omp_index>(z); ++v) {
@@ -1640,7 +1647,8 @@ template <typename L> void Graph::balancedParallelForNodes(L handle) const {
     }
 }
 
-template <typename L> void Graph::forNodePairs(L handle) const {
+template <typename L>
+void Graph::forNodePairs(L handle) const {
     for (node u = 0; u < z; ++u) {
         if (exists[u]) {
             for (node v = u + 1; v < z; ++v) {
@@ -1652,7 +1660,8 @@ template <typename L> void Graph::forNodePairs(L handle) const {
     }
 }
 
-template <typename L> void Graph::parallelForNodePairs(L handle) const {
+template <typename L>
+void Graph::parallelForNodePairs(L handle) const {
 #pragma omp parallel for schedule(guided)
     for (omp_index u = 0; u < static_cast<omp_index>(z); ++u) {
         if (exists[u]) {
@@ -1690,7 +1699,8 @@ inline edgeweight Graph::getInEdgeWeight(node u, index i) const {
 }
 
 // implementation for weighted == false
-template <> inline edgeweight Graph::getInEdgeWeight<false>(node, index) const {
+template <>
+inline edgeweight Graph::getInEdgeWeight<false>(node, index) const {
     return defaultEdgeWeight;
 }
 
@@ -1701,7 +1711,8 @@ inline edgeid Graph::getOutEdgeId(node u, index i) const {
 }
 
 // implementation for hasEdgeIds == false
-template <> inline edgeid Graph::getOutEdgeId<false>(node, index) const {
+template <>
+inline edgeid Graph::getOutEdgeId<false>(node, index) const {
     return 0;
 }
 
@@ -1712,7 +1723,8 @@ inline edgeid Graph::getInEdgeId(node u, index i) const {
 }
 
 // implementation for hasEdgeIds == false
-template <> inline edgeid Graph::getInEdgeId<false>(node, index) const {
+template <>
+inline edgeid Graph::getInEdgeId<false>(node, index) const {
     return 0;
 }
 
@@ -1723,12 +1735,12 @@ inline bool Graph::useEdgeInIteration(node /* u */, node v) const {
 }
 
 // implementation for graphIsDirected == false
-template <> inline bool Graph::useEdgeInIteration<false>(node u, node v) const {
+template <>
+inline bool Graph::useEdgeInIteration<false>(node u, node v) const {
     return u >= v;
 }
 
-template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds,
-          typename L>
+template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline void Graph::forOutEdgesOfImpl(node u, L handle) const {
     for (index i = 0; i < outEdges[u].size(); ++i) {
         node v = outEdges[u][i];
@@ -1740,8 +1752,7 @@ inline void Graph::forOutEdgesOfImpl(node u, L handle) const {
     }
 }
 
-template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds,
-          typename L>
+template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline void Graph::forInEdgesOfImpl(node u, L handle) const {
     if (graphIsDirected) {
         for (index i = 0; i < inEdges[u].size(); i++) {
@@ -1764,27 +1775,22 @@ inline void Graph::forInEdgesOfImpl(node u, L handle) const {
     }
 }
 
-template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds,
-          typename L>
+template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline void Graph::forEdgeImpl(L handle) const {
     for (node u = 0; u < z; ++u) {
-        forOutEdgesOfImpl<graphIsDirected, hasWeights, graphHasEdgeIds, L>(
-            u, handle);
+        forOutEdgesOfImpl<graphIsDirected, hasWeights, graphHasEdgeIds, L>(u, handle);
     }
 }
 
-template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds,
-          typename L>
+template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline void Graph::parallelForEdgesImpl(L handle) const {
 #pragma omp parallel for schedule(guided)
     for (omp_index u = 0; u < static_cast<omp_index>(z); ++u) {
-        forOutEdgesOfImpl<graphIsDirected, hasWeights, graphHasEdgeIds, L>(
-            u, handle);
+        forOutEdgesOfImpl<graphIsDirected, hasWeights, graphHasEdgeIds, L>(u, handle);
     }
 }
 
-template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds,
-          typename L>
+template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline double Graph::parallelSumForEdgesImpl(L handle) const {
     double sum = 0.0;
 
@@ -1796,8 +1802,7 @@ inline double Graph::parallelSumForEdgesImpl(L handle) const {
             // undirected, do not iterate over edges twice
             // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
             if (useEdgeInIteration<graphIsDirected>(u, v)) {
-                sum += edgeLambda<L>(handle, u, v,
-                                     getOutEdgeWeight<hasWeights>(u, i),
+                sum += edgeLambda<L>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i),
                                      getOutEdgeId<graphHasEdgeIds>(u, i));
             }
         }
@@ -1806,7 +1811,8 @@ inline double Graph::parallelSumForEdgesImpl(L handle) const {
     return sum;
 }
 
-template <typename L> void Graph::forEdges(L handle) const {
+template <typename L>
+void Graph::forEdges(L handle) const {
     switch (weighted + 2 * directed + 4 * edgesIndexed) {
     case 0: // unweighted, undirected, no edgeIds
         forEdgeImpl<false, false, false, L>(handle);
@@ -1842,7 +1848,8 @@ template <typename L> void Graph::forEdges(L handle) const {
     }
 }
 
-template <typename L> void Graph::parallelForEdges(L handle) const {
+template <typename L>
+void Graph::parallelForEdges(L handle) const {
     switch (weighted + 2 * directed + 4 * edgesIndexed) {
     case 0: // unweighted, undirected, no edgeIds
         parallelForEdgesImpl<false, false, false, L>(handle);
@@ -1880,11 +1887,13 @@ template <typename L> void Graph::parallelForEdges(L handle) const {
 
 /* NEIGHBORHOOD ITERATORS */
 
-template <typename L> void Graph::forNeighborsOf(node u, L handle) const {
+template <typename L>
+void Graph::forNeighborsOf(node u, L handle) const {
     forEdgesOf(u, handle);
 }
 
-template <typename L> void Graph::forEdgesOf(node u, L handle) const {
+template <typename L>
+void Graph::forEdgesOf(node u, L handle) const {
     switch (weighted + 2 * edgesIndexed) {
     case 0: // not weighted, no edge ids
         forOutEdgesOfImpl<true, false, false, L>(u, handle);
@@ -1904,11 +1913,13 @@ template <typename L> void Graph::forEdgesOf(node u, L handle) const {
     }
 }
 
-template <typename L> void Graph::forInNeighborsOf(node u, L handle) const {
+template <typename L>
+void Graph::forInNeighborsOf(node u, L handle) const {
     forInEdgesOf(u, handle);
 }
 
-template <typename L> void Graph::forInEdgesOf(node u, L handle) const {
+template <typename L>
+void Graph::forInEdgesOf(node u, L handle) const {
     switch (weighted + 2 * directed + 4 * edgesIndexed) {
     case 0: // unweighted, undirected, no edge ids
         forInEdgesOfImpl<false, false, false, L>(u, handle);
@@ -1946,7 +1957,8 @@ template <typename L> void Graph::forInEdgesOf(node u, L handle) const {
 
 /* REDUCTION ITERATORS */
 
-template <typename L> double Graph::parallelSumForNodes(L handle) const {
+template <typename L>
+double Graph::parallelSumForNodes(L handle) const {
     double sum = 0.0;
 
 #pragma omp parallel for reduction(+ : sum)
@@ -1959,7 +1971,8 @@ template <typename L> double Graph::parallelSumForNodes(L handle) const {
     return sum;
 }
 
-template <typename L> double Graph::parallelSumForEdges(L handle) const {
+template <typename L>
+double Graph::parallelSumForEdges(L handle) const {
     double sum = 0.0;
 
     switch (weighted + 2 * directed + 4 * edgesIndexed) {
@@ -2001,7 +2014,8 @@ template <typename L> double Graph::parallelSumForEdges(L handle) const {
 
 /* GRAPH SEARCHES */
 
-template <typename L> void Graph::BFSfrom(node r, L handle) const {
+template <typename L>
+void Graph::BFSfrom(node r, L handle) const {
     WARN("Graph::BFSfrom is deprecated, use Traversal::BFSfrom instead.");
     std::vector<node> startNodes(1, r);
     BFSfrom(startNodes, handle);
@@ -2036,7 +2050,8 @@ void Graph::BFSfrom(const std::vector<node> &startNodes, L handle) const {
     } while (!q.empty());
 }
 
-template <typename L> void Graph::BFSEdgesFrom(node r, L handle) const {
+template <typename L>
+void Graph::BFSEdgesFrom(node r, L handle) const {
     WARN("Graph::BFSEdgesFrom is deprecated, use Traversal::BFSEdgesFrom instead.");
     std::vector<bool> marked(z);
     std::queue<node> q;
@@ -2056,7 +2071,8 @@ template <typename L> void Graph::BFSEdgesFrom(node r, L handle) const {
     } while (!q.empty());
 }
 
-template <typename L> void Graph::DFSfrom(node r, L handle) const {
+template <typename L>
+void Graph::DFSfrom(node r, L handle) const {
     WARN("Graph::DFSfrom is deprecated, use Traversal::DFSfrom instead.");
     std::vector<bool> marked(z);
     std::stack<node> s;
@@ -2076,7 +2092,8 @@ template <typename L> void Graph::DFSfrom(node r, L handle) const {
     } while (!s.empty());
 }
 
-template <typename L> void Graph::DFSEdgesFrom(node r, L handle) const {
+template <typename L>
+void Graph::DFSEdgesFrom(node r, L handle) const {
     WARN("Graph::DFSEdgesFrom is deprecated, use Traversal::DFSEdgesFrom instead.");
     std::vector<bool> marked(z);
     std::stack<node> s;
@@ -2130,7 +2147,6 @@ std::pair<count, count> Graph::removeAdjacentEdges(node u, Condition condition, 
 
     return {removedEdges, removedSelfLoops};
 }
-
 
 } /* namespace NetworKit */
 
