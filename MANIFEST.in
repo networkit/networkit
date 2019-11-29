@@ -1,4 +1,7 @@
+include networkit.pc
 include version.py
 include CMakeLists.txt
+graft include
 graft extlibs/tlx
+graft extlibs/ttmath
 exclude extlibs/tlx/.git
