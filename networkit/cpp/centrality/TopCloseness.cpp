@@ -437,7 +437,10 @@ void TopCloseness::run() {
         }
     });
     tlx::d_ary_addressable_int_heap<node, 2, SmallerFarness> Q{farness};
-    auto nodes = G.nodes();
+
+    std::vector<node> nodes;
+    nodes.reserve(G.numberOfNodes());
+    G.forNodes([&](const node u) { nodes.emplace_back(u); });
     Q.build_heap(std::move(nodes));
     DEBUG("Done filling the queue");
 
