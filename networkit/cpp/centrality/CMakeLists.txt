@@ -15,6 +15,7 @@ networkit_add_module(centrality
     DynTopHarmonicCloseness.cpp
     EigenvectorCentrality.cpp
     EstimateBetweenness.cpp
+    GedWalk.cpp
     GroupCloseness.cpp
     GroupDegree.cpp
     HarmonicCloseness.cpp

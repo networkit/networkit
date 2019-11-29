@@ -164,8 +164,16 @@ class TestSelfLoops(unittest.TestCase):
 		self.assertEqual(len(CL.ranking()),len(nk.centrality.rankPerNode(CL.ranking())))
 		self.assertEqual(len(CLL.ranking()),len(nk.centrality.rankPerNode(CLL.ranking())))
 
+	def testGedWalkCentrality(self):
+		k, epsilon = 2, 0.05
+		gedw = nk.centrality.GedWalk(self.L, k, epsilon)
+		gedw.run()
+		apxScore, group = gedw.getApproximateScore(), gedw.groupMaxGedWalk()
+		self.assertGreaterEqual(apxScore, 0)
+		self.assertEqual(len(set(group)), k)
+		self.assertAlmostEqual(apxScore, gedw.scoreOfGroup(group), 1)
 
-	def testCentralitySciPyPageRank(self):
+	def test_centrality_SciPyPageRank(self):
 		CL = nk.centrality.SciPyPageRank(self.L)
 		CL.run()
 		CLL = nk.centrality.SciPyPageRank(self.LL)

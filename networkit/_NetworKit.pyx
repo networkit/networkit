@@ -7998,6 +7998,120 @@ cdef class GroupDegree(Algorithm):
 			return (<_GroupDegree*>(self._this)).scoreOfGroup(group)
 
 
+cdef extern from "<networkit/centrality/GedWalk.hpp>" namespace "NetworKit::GedWalk":
+
+	cdef enum BoundStrategy:
+		no
+		spectral
+		geometric
+		adaptiveGeometric
+
+	cdef enum GreedyStrategy:
+		lazy
+		stochastic
+
+
+class _BoundStrategy(object):
+	No = no
+	Spectral = spectral
+	Geometric = geometric
+	AdaptiveGeometric = adaptiveGeometric
+
+class _GreedyStrategy(object):
+	Lazy = lazy
+	Stochastic = stochastic
+
+
+cdef extern from "<networkit/centrality/GedWalk.hpp>":
+
+	cdef cppclass _GedWalk "NetworKit::GedWalk"(_Algorithm):
+		_GedWalk(_Graph G, count, double, double, BoundStrategy, GreedyStrategy, double) except +
+		vector[node] groupMaxGedWalk() except +
+		double getApproximateScore() except +
+		double scoreOfGroup[InputIt](InputIt first, InputIt last, double epsilon) except +
+
+cdef class GedWalk(Algorithm):
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, k = 1, epsilon = 0.1, alpha = -1.0, bs = BoundStrategy.geometric,
+			gs = GreedyStrategy.lazy, spectralDelta = 0.5):
+		"""
+		Finds a group of `k` vertices with at least ((1 - 1/e) * opt - epsilon) GedWalk centrality
+		score, where opt is the highest possible score. The algorithm is based on the paper "Group
+		Centrality Maximization for Large-scale Graphs", Angriman et al., ALENEX20. It implements two
+		independent greedy strategies (lazy and stochastic). Furthermore, it allows to compute the
+		GedWalk score of a given set of nodes.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			A (weakly) connected graph.
+		k : int
+			The desired group size.
+		epsilon : double
+			Precision of the algorithm.
+		alpha : double
+			Exponent to compute the GedWalk score.
+		bs : BoundStrategy
+			Bound strategy to compute the GedWalk bounds, default: BoundStrategy.geometric.
+		gs : GreedyStrategy
+			Greedy strategy to be used (lazy or stochastic), default: GreedyStrategy.lazy.
+		spectralDelta : double
+			Delta to be used for the spectral bound.
+		"""
+		self._G = G
+		self._this = new _GedWalk(G._this, k, epsilon, alpha, bs, gs, spectralDelta)
+
+	def __dealloc__(self):
+		if self._this is not NULL:
+			del self._this
+			self._this = NULL
+
+	def groupMaxGedWalk(self):
+		"""
+		Returns the computed group.
+
+		Returns
+		-------
+		list
+			The computed group.
+		"""
+		return (<_GedWalk*>(self._this)).groupMaxGedWalk()
+
+	def getApproximateScore(self):
+		"""
+		Returns the GedWalk score of the computed group.
+
+		Returns
+		-------
+		double
+			The GedWalk score of the computed group.
+		"""
+		return (<_GedWalk*>(self._this)).getApproximateScore()
+
+	def scoreOfGroup(self, group, epsilon = 0.1):
+		"""
+		Returns the GedWalk score of the input group.
+
+		Parameters
+		----------
+		group : list
+			The input group.
+		epsilon : double
+			The precision of the score to be computed.
+
+		Returns
+		-------
+		double
+			An epsilon-approximation of the GedWalk score of the input group.
+		"""
+		cdef vector[node] groupVec
+
+		try:
+			groupVec = <vector[node]?>group
+		except TypeError:
+			raise RuntimeError("Error, group must be a list of nodes.")
+		return (<_GedWalk*>(self._this)).scoreOfGroup[vector[node].iterator](groupVec.begin(), groupVec.end(), epsilon)
 
 cdef extern from "<networkit/centrality/GroupCloseness.hpp>":
 
