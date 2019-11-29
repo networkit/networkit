@@ -715,11 +715,10 @@ public:
     /**
      * Get the ID of this graph. The ID is a unique unsigned integer given to
      * every graph on construction.
+     *
+     * This method is deprecated and will not be supported in future releases.
      */
-    count TLX_DEPRECATED(getId() const) {
-        WARN("Graph::getId is deprecated and will not be supported in future releases.");
-        return id;
-    }
+    count TLX_DEPRECATED(getId() const) { return id; }
 
     /**
      * Return the type of the graph.
@@ -727,6 +726,8 @@ public:
      * 		WeightedGraph: weighted, undirected
      * 		DirectedGraph: not weighted, directed
      * 		WeightedDirectedGraph: weighted, directed
+     *
+     * This method is deprecated and will not be supported in future releases.
      */
     std::string TLX_DEPRECATED(typ() const);
 
@@ -752,20 +753,18 @@ public:
     /**
      * Set name of graph to @a name.
      * @param name The name.
+     *
+     * This method is deprecated and will not be supported in future releases.
      */
-    void TLX_DEPRECATED(setName(std::string name)) {
-        WARN("Graph::setName is deprecated and will not be supported in future releases.");
-        this->name = name;
-    }
+    void TLX_DEPRECATED(setName(std::string name)) { this->name = name; }
 
     /*
      * Returns the name of the graph.
      * @return The name of the graph.
+     *
+     * This method is deprecated and will not be supported in future releases.
      */
-    std::string TLX_DEPRECATED(getName() const) {
-        WARN("Graph::getName is deprecated and will not be supported in future releases.");
-        return name;
-    }
+    std::string TLX_DEPRECATED(getName() const) { return name; }
 
     /**
      * Set edge count of the graph to edges.
@@ -790,6 +789,8 @@ public:
     /**
      * Returns a string representation of the graph.
      * @return A string representation.
+     *
+     * This method is deprecated and will not be supported in future releases.
      */
     std::string TLX_DEPRECATED(toString() const);
 
@@ -798,6 +799,8 @@ public:
     /*
      * Copies all nodes to a new graph
      * @return graph with the same nodes.
+     *
+     * This method is deprecated, use GraphTools::copyNodes instead.
      */
     Graph TLX_DEPRECATED(copyNodes() const);
 
@@ -884,6 +887,8 @@ public:
      * Appends another graph to this graph as a new subgraph. Performs node
      * id remapping.
      * @param G [description]
+     *
+     * This method is deprecated, use GraphTools::append instead.
      */
     void TLX_DEPRECATED(append(const Graph &G));
 
@@ -891,6 +896,8 @@ public:
      * Modifies this graph to be the union of it and another graph.
      * Nodes with the same ids are identified with each other.
      * @param G [description]
+     *
+     * This method is deprecated, use GraphTools::merge instead.
      */
     void TLX_DEPRECATED(merge(const Graph &G));
 
@@ -908,6 +915,8 @@ public:
      *
      * The subgraph contains all nodes in Nodes + Neighbors and all edge which have one end point in
      * Nodes and the other in Nodes or Neighbors.
+     *
+     * This method is deprecated, use GraphTools::subgraphFromNodes instead.
      */
     Graph TLX_DEPRECATED(subgraphFromNodes(const std::unordered_set<node> &nodes,
                                            bool includeOutNeighbors = false,
@@ -944,6 +953,8 @@ public:
      * Returns the maximum out-degree of the graph.
      *
      * @return The maximum out-degree of the graph.
+     *
+     * This method is deprecated, use GraphTools::maxDegree instead.
      */
     count TLX_DEPRECATED(maxDegree() const);
 
@@ -951,6 +962,8 @@ public:
      * Returns the maximum in-degree of the graph.
      *
      * @return The maximum in-degree of the graph.
+     *
+     * This method is deprecated, use GraphTools::maxWeightedDegree instead.
      */
     count TLX_DEPRECATED(maxDegreeIn() const);
 
@@ -981,6 +994,8 @@ public:
      * @return Maximum weighted degree of the graph.
      * @note For directed graphs this is the sum of weights of all outgoing
      * edges.
+     *
+     * This method is deprecated, use GraphTools::maxWeightedDegree instead.
      */
     edgeweight TLX_DEPRECATED(maxWeightedDegree() const);
 
@@ -990,6 +1005,8 @@ public:
      * @return Maximum weighted in degree of the graph.
      * @note For directed graphs this is the sum of weights of all in-going
      * edges.
+     *
+     * This method is deprecated, use GraphTools::maxWeightedDegreeIn instead.
      */
     edgeweight TLX_DEPRECATED(maxWeightedDegreeIn() const);
 
@@ -1009,12 +1026,16 @@ public:
      *
      * @param v Node.
      * @return The volume of the @a v.
+     *
+     * This method is deprecated, use GraphTools::weightedDegree instead.
      */
     edgeweight TLX_DEPRECATED(volume(node v) const);
 
     /**
      * Returns a random node of the graph.
      * @return A random node.
+     *
+     * This method is deprecated, use GraphTools::randomNode instead.
      */
     node TLX_DEPRECATED(randomNode() const);
 
@@ -1023,6 +1044,8 @@ public:
      *
      * @param u Node.
      * @return A random neighbor of @a u.
+     *
+     * This method is deprecated, use GraphTools::randomNeighbor instead.
      */
     node TLX_DEPRECATED(randomNeighbor(node u) const);
 
@@ -1092,6 +1115,8 @@ public:
      * Kadabra algorithm.
      * @param nodesInSet vector of nodes that form a connected component that
      * is isolated from the rest of the graph.
+     *
+     * This method is deprecated, use GraphTools::removeEdgesFromIsolatedSet instead.
      */
     void TLX_DEPRECATED(removeEdgesFromIsolatedSet(const std::vector<node> &nodesInSet));
 
@@ -1154,12 +1179,16 @@ public:
      * depends on the degree of u. Setting uniformDistribution to true, will
      * give you a real uniform distributed edge, but will be slower.
      * Exp. time complexity: O(1) for uniformDistribution = false, O(n) otherwise.
+     *
+     * This method is deprecated, use GraphTools::randomEdge instead.
      */
     std::pair<node, node> TLX_DEPRECATED(randomEdge(bool uniformDistribution = false) const);
 
     /**
      * Returns a vector with nr random edges. The edges are chosen uniform
      * random.
+     *
+     * This method is deprecated, use GraphTools::randomEdges instead.
      */
     std::vector<std::pair<node, node>> TLX_DEPRECATED(randomEdges(count nr) const);
 
@@ -1205,6 +1234,8 @@ public:
 
     /**
      * @return the density of the graph
+     *
+     * This method is deprecated, use GraphTools::density instead.
      */
     double TLX_DEPRECATED(density() const);
 
@@ -1232,6 +1263,8 @@ public:
 
     /**
      * Trigger a time step - increments counter.
+     *
+     * This method is deprecated and will not be supported in future releases.
      */
     void TLX_DEPRECATED(timeStep()) {
         WARN("Graph::timeStep is deprecated and will not be supported in future releases.");
@@ -1241,6 +1274,8 @@ public:
     /**
      * Get time step counter.
      * @return Time step counter.
+     *
+     * This method is deprecated and will not be supported in future releases.
      */
     count TLX_DEPRECATED(time()) {
         WARN("Graph::time is deprecated and will not be supported in future releases.");
@@ -1290,12 +1325,16 @@ public:
     /**
      * Get list of all nodes.
      * @return List of all nodes.
+     *
+     * This method is deprecated and will not be supported in future releases.
      */
     std::vector<node> TLX_DEPRECATED(nodes() const);
 
     /**
      * Get list of edges as node pairs.
      * @return List of edges as node pairs.
+     *
+     * This method is deprecated and will not be supported in future releases.
      */
     std::vector<std::pair<node, node>> TLX_DEPRECATED(edges() const);
 
@@ -1304,6 +1343,8 @@ public:
      *
      * @param u Node.
      * @return List of neighbors of @a u.
+     *
+     * This method is deprecated and will not be supported in future releases.
      */
     std::vector<node> TLX_DEPRECATED(neighbors(node u) const);
 
@@ -1388,6 +1429,8 @@ public:
      * Return an undirected version of this graph.
      *
      * @return undirected graph.
+     *
+     * This method is deprecated, use GraphTools::toUndirected instead.
      */
     Graph TLX_DEPRECATED(toUndirected() const);
 
@@ -1395,6 +1438,8 @@ public:
      * Return an unweighted version of this graph.
      *
      * @return unweighted graph.
+     *
+     * This method is deprecated, use GraphTools::toUnweighted instead.
      */
     Graph TLX_DEPRECATED(toUnweighted() const);
 
@@ -1402,6 +1447,8 @@ public:
      * Return the transpose of this graph. The graph must be directed.
      *
      * @return transpose of the graph.
+     *
+     * This method is deprecated, use GraphTools::transpose instead.
      */
     Graph TLX_DEPRECATED(transpose() const);
 
@@ -1569,6 +1616,8 @@ public:
      *
      * @param r Node.
      * @param handle Takes parameter <code>(node)</code>.
+     *
+     * These methods are deprecated, use Traversal::BFSfrom instead.
      */
     template <typename L>
     void TLX_DEPRECATED(BFSfrom(node r, L handle) const);
@@ -1584,6 +1633,8 @@ public:
      *
      * @param r Node.
      * @param handle Takes parameter <code>(node)</code>.
+     *
+     * These methods are deprecated, use Traversal::DFSfrom instead.
      */
     template <typename L>
     void TLX_DEPRECATED(DFSfrom(node r, L handle) const);
