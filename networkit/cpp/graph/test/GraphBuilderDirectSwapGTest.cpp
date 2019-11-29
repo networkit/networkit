@@ -14,6 +14,7 @@
 #include <networkit/auxiliary/Parallel.hpp>
 
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/graph/GraphBuilder.hpp>
 
 namespace NetworKit {
@@ -447,7 +448,8 @@ TEST_P(GraphBuilderDirectSwapGTest, testSameAsGraph) {
             ASSERT_EQ(G_expected.degreeIn(v), G_actual.degreeIn(v));
             ASSERT_EQ(G_expected.degreeOut(v), G_actual.degreeOut(v));
             ASSERT_NEAR(G_expected.weightedDegree(v), G_actual.weightedDegree(v), epsilon);
-            ASSERT_NEAR(G_expected.volume(v), G_actual.volume(v), epsilon);
+            ASSERT_NEAR(G_expected.weightedDegree(v, true),
+                        G_actual.weightedDegree(v, true), epsilon);
         });
         G_expected.forEdges([&](node u, node v, edgeweight ew) {
             ASSERT_TRUE(G_actual.hasEdge(u, v));

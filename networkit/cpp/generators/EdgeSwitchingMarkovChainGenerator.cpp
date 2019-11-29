@@ -7,6 +7,7 @@
 
 #include <networkit/generators/EdgeSwitchingMarkovChainGenerator.hpp>
 #include <networkit/generators/HavelHakimiGenerator.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 NetworKit::EdgeSwitchingMarkovChainGenerator::EdgeSwitchingMarkovChainGenerator(const std::vector< NetworKit::count > &sequence, bool ignoreIfRealizable): StaticDegreeSequenceGenerator(sequence), ignoreIfRealizable(ignoreIfRealizable) {
 
@@ -34,8 +35,8 @@ NetworKit::Graph NetworKit::EdgeSwitchingMarkovChainGenerator::generate() {
 
         if (s1 == s2) continue;
 
-        node t1 = result.randomNeighbor(s1);
-        node t2 = result.randomNeighbor(s2);
+        node t1 = GraphTools::randomNeighbor(result, s1);
+        node t2 = GraphTools::randomNeighbor(result, s2);
 
         if (t1 == t2 || s1 == t2 || s2 == t1) continue;
 

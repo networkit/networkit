@@ -51,15 +51,14 @@ double LinkPredictor::run(node u, node v) {
 }
 
 std::vector<LinkPredictor::prediction> LinkPredictor::runAll() {
-  std::vector<node> nodes = G->nodes();
   std::vector<std::pair<node, node>> nodePairs;
   // Exclude all node-pairs that are already connected and ensure u != v for all node-pairs (u, v).
-  for (index i = 0; i < nodes.size(); ++i) {
-    for (index j = i + 1; j < nodes.size(); ++j) {
+  G->forNodes([&](node i) {
+    G->forNodes([&](node j) {
       if (!G->hasEdge(i, j))
         nodePairs.push_back(std::make_pair(i, j));
-    }
-  }
+    });
+  });
   return runOn(nodePairs);
 }
 

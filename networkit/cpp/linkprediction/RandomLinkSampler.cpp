@@ -5,6 +5,7 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/linkprediction/RandomLinkSampler.hpp>
 
 namespace NetworKit {
@@ -24,7 +25,7 @@ Graph byCount(const Graph& G, count numTrainLinks) {
   }
   Graph trainingGraph(G);
   for (count i = 0; i < G.numberOfEdges() - numTrainLinks; ++i) {
-    std::pair<node, node> edgeToRemove = trainingGraph.randomEdge();
+    std::pair<node, node> edgeToRemove = GraphTools::randomEdge(trainingGraph);
     trainingGraph.removeEdge(edgeToRemove.first, edgeToRemove.second);
   }
   return trainingGraph;

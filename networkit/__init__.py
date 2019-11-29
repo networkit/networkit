@@ -76,6 +76,7 @@ from . import sampling
 from . import viz
 from . import randomization
 from .support import MissingDependencyError
+from _NetworKit import GraphTools as graphtools
 
 if have_plt:
 	from . import plot
@@ -137,7 +138,7 @@ def overview(G):
 	print("weighted?\t\t\t{}".format("True" if G.isWeighted() else "False"))
 	print("isolated nodes\t\t\t{}".format(getIsolatedNodes(degrees)))
 	print("self-loops\t\t\t{}".format(numSelfLoops))
-	print("density\t\t\t\t{:.6f}".format(G.density()))
+	print("density\t\t\t\t{:.6f}".format(graphtools.density(G)))
 	if numSelfLoops == 0 and not G.isDirected():
 		print("clustering coefficient\t\t{:.6f}".format(
 			getClusteringCoefficient(G)))

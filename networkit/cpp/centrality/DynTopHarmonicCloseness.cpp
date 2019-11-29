@@ -13,6 +13,7 @@
 #include <networkit/components/StronglyConnectedComponents.hpp>
 #include <networkit/distance/AffectedNodes.hpp>
 #include <networkit/centrality/DynTopHarmonicCloseness.hpp>
+#include <networkit/graph/BFS.hpp>
 
 namespace NetworKit {
 
@@ -148,7 +149,7 @@ void DynTopHarmonicCloseness::BFSbound(node source, std::vector<double> &S2,
 
     auto inverseDistance = [&](edgeweight dist) { return 1.0 / dist; };
 
-    G.BFSfrom(source, [&](node u, count dist) {
+    Traversal::BFSfrom(G, source, [&](node u, count dist) {
         sum_dist += dist > 0 ? inverseDistance(dist) : 0;
 
         ++r;

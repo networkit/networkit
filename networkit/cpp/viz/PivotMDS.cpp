@@ -16,6 +16,8 @@
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/Dijkstra.hpp>
 
+#include <networkit/graph/GraphTools.hpp>
+
 namespace NetworKit {
 
 PivotMDS::PivotMDS(const Graph &graph, count dim, count numPivots)
@@ -115,7 +117,7 @@ std::vector<node> PivotMDS::computePivots() {
 
     index pivotIdx = 0;
     while (pivotIdx < numPivots) {
-        node pivotCandidate = G.randomNode();
+        node pivotCandidate = GraphTools::randomNode(G);
         if (!pivot[pivotCandidate]) {
             pivots[pivotIdx++] = pivotCandidate;
             pivot[pivotCandidate] = true;

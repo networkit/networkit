@@ -2,6 +2,7 @@
 
 #include <networkit/clique/MaximalCliques.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/EdgeListReader.hpp>
 #include <networkit/auxiliary/Log.hpp>
@@ -21,7 +22,7 @@ TEST_F(MaximalCliquesGTest, testMaximalCliques) {
                          G.neighborRange(seed).end());
     auto sneighbors = std::unordered_set<node>(sn.begin(), sn.end());
     sneighbors.insert(seed);
-    auto subG = G.subgraphFromNodes(sneighbors);
+    const auto subG = GraphTools::subgraphFromNodes(G, sneighbors);
 
     MaximalCliques clique(subG);
 
@@ -35,7 +36,7 @@ TEST_F(MaximalCliquesGTest, testMaximalCliques) {
     // check results (are they cliques?)
     for (auto cliq : result) {
         auto cli = std::unordered_set<node>(cliq.begin(), cliq.end());
-        auto cliqueGraph = G.subgraphFromNodes(cli);
+        const auto cliqueGraph = GraphTools::subgraphFromNodes(G, cli);
 
         EXPECT_EQ(cliqueGraph.numberOfEdges(), (cliqueGraph.numberOfNodes() * (cliqueGraph.numberOfNodes() - 1) / 2));
         EXPECT_EQ(cli.count(seed), 1u);
@@ -127,7 +128,7 @@ TEST_F(MaximalCliquesGTest, benchMaximalCliques) {
     EdgeListReader r('\t',0,"#", false);
     Graph G = r.read(graphPath);
     G.removeSelfLoops();
-    INFO(G.size());
+    INFO(GraphTools::size(G));
     INFO("Starting MaximalCliques");
     Aux::Timer timer;
     count numCliques = 0;

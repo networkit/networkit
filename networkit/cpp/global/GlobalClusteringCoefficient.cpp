@@ -4,8 +4,9 @@
  *  Created on: 12.11.2013
  */
 
-#include <networkit/global/GlobalClusteringCoefficient.hpp>
 #include <networkit/auxiliary/Random.hpp>
+#include <networkit/global/GlobalClusteringCoefficient.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
 
@@ -50,10 +51,10 @@ double GlobalClusteringCoefficient::approximate(const Graph& G, int k) {
   for(int i = 0; i < k; i++) {
     int r2 = uniformRandom(w[n]);
     node r = findIndex(w, r2, 0, n);
-    node u = G.randomNeighbor(r);
+    node u = GraphTools::randomNeighbor(G, r);
     node w;
     do {
-      w = G.randomNeighbor(r);
+      w = GraphTools::randomNeighbor(G, r);
     } while (w == u);
     if(G.hasEdge(u, w)) {
       l++;

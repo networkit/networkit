@@ -13,6 +13,8 @@
 #include <networkit/distance/Eccentricity.hpp>
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/Dijkstra.hpp>
+#include <networkit/graph/BFS.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
@@ -118,7 +120,7 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph &
         distFirst.resize(numberOfComponents, 0);
         std::vector<bool> foundFirstDeg2Node(numberOfComponents, false);
 
-        G.BFSfrom(startNodes, [&](node v, count dist) {
+        Traversal::BFSfrom(G, startNodes.begin(), startNodes.end(), [&](node v, count dist) {
             distances[v] = dist;
 
             index c = comp.componentOfNode(v);
@@ -258,7 +260,7 @@ edgeweight Diameter::estimatedVertexDiameter(const Graph& G, count samples) {
     edgeweight vdMax = 0;
     #pragma omp parallel for
     for (omp_index i = 0; i < static_cast<omp_index>(samples); ++i) {
-        node u = G.randomNode();
+        node u = GraphTools::randomNode(G);
         edgeweight vd = estimateFrom(u);
         DEBUG("sampled vertex diameter from node ", u, ": ", vd);
         #pragma omp critical
@@ -280,7 +282,7 @@ edgeweight Diameter::estimatedVertexDiameterPedantic(const Graph& G) {
         G.forNodes([&](node u) {
             if (visited[u] == false) {
                 count maxDist = 0, maxDist2 = 0;
-                G.BFSfrom(u, [&](node v, count dist) {
+                Traversal::BFSfrom(G, u, [&](node v, count dist) {
                     visited[v] = true;
                     if (dist > maxDist) {
                         maxDist2 = maxDist;

@@ -22,6 +22,7 @@
 
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 
 namespace NetworKit {
@@ -113,10 +114,10 @@ TEST_F(DistanceGTest, testBidirectionalBFS) {
     Graph G = ErdosRenyiGenerator(500, 0.02, false).generate();
     Graph G1 = ErdosRenyiGenerator(500, 0.05, true).generate();
     auto testGraph = [&](const Graph &G) {
-        node source = G.randomNode();
-        node target = G.randomNode();
+        node source = GraphTools::randomNode(G);
+        node target = GraphTools::randomNode(G);
         while (source == target)
-            target = G.randomNode();
+            target = GraphTools::randomNode(G);
         BFS bfs(G, source, true, false, target);
         bfs.run();
         BidirectionalBFS bbfs(G, source, target, true);
@@ -156,10 +157,10 @@ TEST_F(DistanceGTest, testBidirectionalDijkstra) {
     });
 
     auto testGraph = [&](const Graph &G) {
-        node source = G.randomNode();
-        node target = G.randomNode();
+        node source = GraphTools::randomNode(G);
+        node target = GraphTools::randomNode(G);
         while (source == target)
-            target = G.randomNode();
+            target = GraphTools::randomNode(G);
         BidirectionalDijkstra bdij(G, source, target, true);
         bdij.run();
         Dijkstra dij(G, source, true, true, target);
@@ -406,7 +407,7 @@ TEST_F(DistanceGTest, testHopPlotApproximation) {
 
 TEST_F(DistanceGTest, testNeighborhoodFunctionApproximation) {
     METISGraphReader reader;
-    Graph G = reader.read("input/lesmis.graph").toUnweighted();
+    Graph G = GraphTools::toUnweighted(reader.read("input/lesmis.graph"));
     NeighborhoodFunction nf(G);
     nf.run();
     auto exact = nf.getNeighborhoodFunction();
@@ -418,7 +419,7 @@ TEST_F(DistanceGTest, testNeighborhoodFunctionApproximation) {
 
 TEST_F(DistanceGTest, testNeighborhoodFunctionHeuristic) {
     METISGraphReader reader;
-    Graph G = reader.read("input/lesmis.graph").toUnweighted();
+    Graph G = GraphTools::toUnweighted(reader.read("input/lesmis.graph"));
     NeighborhoodFunction nf(G);
     nf.run();
     auto exact = nf.getNeighborhoodFunction();

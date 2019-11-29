@@ -13,11 +13,11 @@
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/NumericTools.hpp>
-#include <networkit/graph/Sampling.hpp>
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/centrality/DynBetweenness.hpp>
 #include <networkit/auxiliary/Random.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
 
@@ -97,8 +97,8 @@ TEST_F(DynBetweennessGTest, runDynVsStatic) {
     std::vector<GraphEvent> batch;
     count nInsertions = 10, i = 0;
     while (i < nInsertions) {
-        node v1 = Sampling::randomNode(G);
-        node v2 = Sampling::randomNode(G);
+        node v1 = GraphTools::randomNode(G);
+        node v2 = GraphTools::randomNode(G);
         if (v1 != v2 && !G.hasEdge(v1, v2)) {
             G.addEdge(v1, v2);
             batch.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2, 1.0));
@@ -140,11 +140,11 @@ TEST_F(DynBetweennessGTest, runDynVsStaticCaseInsertDirected){
     Aux::Random::setSeed(0, false);
 
     auto genEdgeInsert = [](const Graph& g){
-        node u = g.randomNode();
-        node v = g.randomNode();
+        node u = GraphTools::randomNode(g);
+        node v = GraphTools::randomNode(g);
         while (u == v || g.hasEdge(u, v)){
-            u = g.randomNode();
-            v = g.randomNode();
+            u = GraphTools::randomNode(g);
+            v = GraphTools::randomNode(g);
         }
         return std::make_pair(u, v);
     };
@@ -177,11 +177,11 @@ TEST_F(DynBetweennessGTest, runDynVsStaticCaseInsertUndirected){
     Aux::Random::setSeed(0, false);
 
     auto genEdgeInsert = [](const Graph& g){
-        node u = g.randomNode();
-        node v = g.randomNode();
+        node u = GraphTools::randomNode(g);
+        node v = GraphTools::randomNode(g);
         while (u == v || g.hasEdge(u, v)){
-            u = g.randomNode();
-            v = g.randomNode();
+            u = GraphTools::randomNode(g);
+            v = GraphTools::randomNode(g);
         }
         return std::make_pair(u, v);
     };

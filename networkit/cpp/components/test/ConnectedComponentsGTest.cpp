@@ -13,6 +13,7 @@
 #include <networkit/components/WeaklyConnectedComponents.hpp>
 #include <networkit/components/DynWeaklyConnectedComponents.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 #include <networkit/distance/Diameter.hpp>
 #include <networkit/io/METISGraphReader.hpp>
@@ -278,15 +279,15 @@ TEST_F(ConnectedComponentsGTest, testDynConnectedComponents) {
         // Perform edge insertion
         if (((double) rand() / (RAND_MAX)) > p) {
             while (G.hasEdge(u, v)) {
-                u = G.randomNode();
-                v = G.randomNode();
+                u = GraphTools::randomNode(G);
+                v = GraphTools::randomNode(G);
             }
             G.addEdge(u, v);
             dccs.update(GraphEvent(GraphEvent::EDGE_ADDITION, u, v, 0));
         }
         else {
             while (!G.hasEdge(u, v)) {
-                std::pair<node, node> edge = G.randomEdge();
+                std::pair<node, node> edge = GraphTools::randomEdge(G);
                 u = edge.first;
                 v = edge.second;
             }
@@ -301,19 +302,19 @@ TEST_F(ConnectedComponentsGTest, testDynConnectedComponents) {
     // Testing batch update.
     std::vector<GraphEvent> batch(numberOfTests);
     for (int i = 0; i < numberOfTests; ++i) {
-        node u = G.randomNode();
-        node v = G.randomNode();
+        node u = GraphTools::randomNode(G);
+        node v = GraphTools::randomNode(G);
         if (((double) rand() / (RAND_MAX)) > -1) {
             while (G.hasEdge(u, v)) {
-                u = G.randomNode();
-                v = G.randomNode();
+                u = GraphTools::randomNode(G);
+                v = GraphTools::randomNode(G);
             }
             batch[i] = GraphEvent(GraphEvent::EDGE_ADDITION, u, v, 0);
             G.addEdge(u, v);
         }
         else {
             while (!G.hasEdge(u, v)) {
-                std::pair<node, node> edge = G.randomEdge();
+                std::pair<node, node> edge = GraphTools::randomEdge(G);
                 u = edge.first;
                 v = edge.second;
             }
@@ -466,15 +467,15 @@ TEST_F(ConnectedComponentsGTest, testDynWeaklyConnectedComponents) {
         // Perform edge insertion
         if (((double) rand() / (RAND_MAX)) > p) {
             while (G.hasEdge(u, v)) {
-                u = G.randomNode();
-                v = G.randomNode();
+                u = GraphTools::randomNode(G);
+                v = GraphTools::randomNode(G);
             }
             G.addEdge(u, v);
             dw.update(GraphEvent(GraphEvent::EDGE_ADDITION, u, v, 0));
         }
         else {
             while (!G.hasEdge(u, v) || u == v) {
-                std::pair<node, node> edge = G.randomEdge();
+                std::pair<node, node> edge = GraphTools::randomEdge(G);
                 u = edge.first;
                 v = edge.second;
             }
@@ -488,19 +489,19 @@ TEST_F(ConnectedComponentsGTest, testDynWeaklyConnectedComponents) {
     // Testing batch update.
     std::vector<GraphEvent> batch(numberOfTests);
     for (int i = 0; i < numberOfTests; ++i) {
-        node u = G.randomNode();
-        node v = G.randomNode();
+        node u = GraphTools::randomNode(G);
+        node v = GraphTools::randomNode(G);
         if (((double) rand() / (RAND_MAX)) > p) {
             while (G.hasEdge(u, v) || u == v) {
-                u = G.randomNode();
-                v = G.randomNode();
+                u = GraphTools::randomNode(G);
+                v = GraphTools::randomNode(G);
             }
             batch[i] = GraphEvent(GraphEvent::EDGE_ADDITION, u, v, 0);
             G.addEdge(u, v);
         }
         else {
             while (!G.hasEdge(u, v) || u == v) {
-                std::pair<node, node> edge = G.randomEdge();
+                std::pair<node, node> edge = GraphTools::randomEdge(G);
                 u = edge.first;
                 v = edge.second;
             }

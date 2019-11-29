@@ -5,6 +5,7 @@
  *      Author: cls
  */
 
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/dynamics/GraphEventProxy.hpp>
 
 namespace NetworKit {
@@ -77,6 +78,7 @@ void GraphEventProxy::incrementWeight(node u, node v, edgeweight delta) {
 }
 
 void GraphEventProxy::timeStep() {
+    WARN("GraphEventProxy::timeStep is deprecated and will not be supported in future releases.");
 //	TRACE("time step");
     // increment time step counter in G
     this->G->timeStep();

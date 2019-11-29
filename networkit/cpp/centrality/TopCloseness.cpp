@@ -19,6 +19,7 @@
 #include <networkit/distance/Dijkstra.hpp>
 #include <networkit/distance/SSSP.hpp>
 #include <networkit/centrality/TopCloseness.hpp>
+#include <networkit/graph/BFS.hpp>
 
 namespace NetworKit {
 
@@ -151,7 +152,7 @@ void TopCloseness::computeReachableNodesDir() {
     reachU[v] = reachU_scc[sccs.componentOfNode(v) - 1];
     if (false) { // MICHELE: used to check if the bounds are correct
       count r = 0;
-      G.BFSfrom(v, [&](node, count) { r++; });
+      Traversal::BFSfrom(G, v, [&](node, count) { r++; });
 
       if (reachL[v] > r || reachU[v] < r) {
         DEBUG("BIG MISTAKE! ", reachL[v], " ", r, " ", reachU[v]);
@@ -276,7 +277,7 @@ void TopCloseness::BFSbound(node x, std::vector<double> &S2, count *visEdges,
   count nLevs = 0;
   levels[nLevs].clear();
   double sum_dist = 0;
-  G.BFSfrom(x, [&](node u, count dist) {
+  Traversal::BFSfrom(G, x, [&](node u, count dist) {
     sum_dist += dist;
     r++;
     if (dist > nLevs) {

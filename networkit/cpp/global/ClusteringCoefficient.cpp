@@ -5,13 +5,14 @@
  *      Author: Lukas Barth, David Weiss
  */
 
+#include <omp.h>
 #include <unordered_set>
 
-#include <networkit/global/ClusteringCoefficient.hpp>
-#include <networkit/centrality/LocalClusteringCoefficient.hpp>
-#include <networkit/auxiliary/Random.hpp>
 #include <networkit/auxiliary/Log.hpp>
-#include <omp.h>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/centrality/LocalClusteringCoefficient.hpp>
+#include <networkit/global/ClusteringCoefficient.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
 
@@ -134,7 +135,7 @@ double ClusteringCoefficient::approxAvgLocal(Graph& G, const count trials) {
 
     double triangles = 0;
     for (count k = 0; k < trials; ++k) {
-        node v = G.randomNode();
+        node v = GraphTools::randomNode(G);
         TRACE("trial ", k, " sampled node ", v);
 
         if (G.degree(v) < 2) {
@@ -145,14 +146,14 @@ double ClusteringCoefficient::approxAvgLocal(Graph& G, const count trials) {
         }
 
         TRACE("deg(v) = ", G.degree(v));
-        node u = G.randomNeighbor(v);
-        node w = G.randomNeighbor(v);
+        node u = GraphTools::randomNeighbor(G, v);
+        node w = GraphTools::randomNeighbor(G, v);
         TRACE("u=", u);
         TRACE("w=", w);
 
         // TODO This could be sped up for degree(v) == 2...
         while (u == w) {
-            w = G.randomNeighbor(v);
+            w = GraphTools::randomNeighbor(G, v);
             TRACE("w=", w);
         }
 
@@ -264,12 +265,12 @@ double ClusteringCoefficient::approxGlobal(Graph& G, const count trials) {
             continue;
         }
 
-        node u = G.randomNeighbor(v);
-        node w = G.randomNeighbor(v);
+        node u = GraphTools::randomNeighbor(G, v);
+        node w = GraphTools::randomNeighbor(G, v);
 
         // TODO This could be sped up for degree(v) == 2...
         while (u == w) {
-            w = G.randomNeighbor(v);
+            w = GraphTools::randomNeighbor(G, v);
         }
 
         if (G.hasEdge(u,w)) {

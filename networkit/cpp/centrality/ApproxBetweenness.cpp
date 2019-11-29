@@ -8,7 +8,7 @@
 #include <networkit/centrality/ApproxBetweenness.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/distance/Diameter.hpp>
-#include <networkit/graph/Sampling.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/distance/Dijkstra.hpp>
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/SSSP.hpp>
@@ -61,9 +61,9 @@ void ApproxBetweenness::run() {
         // DEBUG
         // sample random node pair
         node u, v;
-        u = Sampling::randomNode(G);
+        u = GraphTools::randomNode(G);
         do {
-            v = Sampling::randomNode(G);
+            v = GraphTools::randomNode(G);
         } while (v == u);
 
         // runs faster for unweighted graphs

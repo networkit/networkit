@@ -277,13 +277,14 @@ matrix:
 
     - name: "Style guide compliance"
       os: linux
-      dist: bionic 
+      dist: bionic
       addons:
-         packages:
-            clang-format-7
+        apt:
+          sources: ['llvm-toolchain-bionic-8']
+          packages: ['clang-format-8']
       script:
         - set -e
-        - ./check_code.sh 
+        - ./check_code.sh
 
 script:
  - $CXX --version

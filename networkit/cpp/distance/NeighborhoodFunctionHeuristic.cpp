@@ -9,6 +9,8 @@
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/distance/Diameter.hpp>
+#include <networkit/graph/BFS.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 #include <math.h>
 #include <iterator>
@@ -40,7 +42,7 @@ void NeighborhoodFunctionHeuristic::run() {
         diam.run();
         dia = diam.getDiameter().first;
     } else {
-        Graph Gcopy = G.toUnweighted();
+        Graph Gcopy = GraphTools::toUnweighted(G);
         Diameter diam(Gcopy);
         diam.run();
         dia = diam.getDiameter().first;
@@ -59,7 +61,7 @@ void NeighborhoodFunctionHeuristic::run() {
     for (omp_index i = 0; i < static_cast<omp_index>(nSamples); ++i) {
         count tid = omp_get_thread_num();
         node u = start_nodes[i];
-        G.BFSfrom(u, [&](node, count dist) {
+        Traversal::BFSfrom(G, u, [&](node, count dist) {
             nf[tid][dist] += 1;
         });
     }
@@ -106,7 +108,7 @@ std::vector<node> NeighborhoodFunctionHeuristic::random(const Graph& G, count nS
     std::vector<node> start_nodes(nSamples, 0);
     // the vector of start nodes is chosen completely at random with the graphs "randomNode()" function.
     for (index i = 0; i < nSamples; ++i) {
-        start_nodes[i] = G.randomNode();
+        start_nodes[i] = GraphTools::randomNode(G);
     }
     return start_nodes;
 }
@@ -117,7 +119,9 @@ std::vector<node> NeighborhoodFunctionHeuristic::split(const Graph& G, count nSa
     G.parallelForNodes([&](node u) {
             nodeDeg[u] = G.degree(u);
     });
-    std::vector<node> nodes = G.nodes();
+    std::vector<node> nodes;
+    nodes.reserve(G.numberOfNodes());
+    G.forNodes([&](node u) { nodes.push_back(u); });
     nodes.erase(std::remove_if(nodes.begin(), nodes.end(), [](node u){return u == none;}), nodes.end());
     //std::random_shuffle(nodes.begin(), nodes.end());
     Aux::Parallel::sort(nodes.begin(), nodes.end(), [&nodeDeg](const node& a, const node& b) {return nodeDeg[a] < nodeDeg[b];});

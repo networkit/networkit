@@ -6,6 +6,8 @@
  */
 
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/graph/BFS.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/graph/SpanningForest.hpp>
 
 namespace NetworKit {
@@ -24,12 +26,12 @@ void SpanningForest::run() {
 
 // CLS's code for generating spanning forest with BFS, please fixme!
 Graph SpanningForest::generate() {
-    Graph F = G.copyNodes();
+    Graph F = GraphTools::copyNodes(G);
     std::vector<bool> visited(G.upperNodeIdBound(), false);
 
     G.forNodes([&](node s){
         if (! visited[s]) {
-            G.BFSEdgesFrom(s, [&](node u, node v, edgeweight w, edgeid) {
+            Traversal::BFSEdgesFrom(G, s, [&](node u, node v, edgeweight w, edgeid) {
                 visited[u] = true;
                 visited[v] = true;
                 F.addEdge(u, v, w);

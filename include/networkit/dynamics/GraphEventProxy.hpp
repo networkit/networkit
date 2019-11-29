@@ -11,6 +11,8 @@
 #include <networkit/graph/Graph.hpp>
 #include <networkit/dynamics/GraphEventHandler.hpp>
 
+#include <tlx/define/deprecated.hpp>
+
 namespace NetworKit {
 
 /**
@@ -50,7 +52,7 @@ public:
 
     void incrementWeight(node u, node v, edgeweight delta);
 
-    void timeStep();
+    void TLX_DEPRECATED(timeStep());
 };
 
 } /* namespace NetworKit */

@@ -5,7 +5,7 @@ __author__ = "Elisabetta Bergamini"
 def bfsSample(G, source=None, k = 50):
     """ Start a BFS from source node, return node-induced subgraph of the first k nodes discovered"""
     if not source:
-        source = G.randomNode()
+        source = nk.graphtools.randomNode(G)
     n = G.numberOfNodes()
     visited = [False]*n
     Q = [source]

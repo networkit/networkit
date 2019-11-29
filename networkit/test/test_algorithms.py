@@ -313,10 +313,10 @@ class Test_SelfLoops(unittest.TestCase):
 	def test_flow_EdmondsKarp(self):
 		self.L.indexEdges()
 		self.LL.indexEdges()
-		r1 = self.L.randomNode()
-		r2 = self.L.randomNode()
+		r1 = graphtools.randomNode(self.L)
+		r2 = graphtools.randomNode(self.L)
 		while r1 is r2:
-			r2 = self.L.randomNode()
+			r2 = graphtools.randomNode(self.L)
 		EKL = flow.EdmondsKarp(self.L, r1, r2)
 		EKLL = flow.EdmondsKarp(self.LL, r1, r2)
 		EKL.run()
@@ -367,7 +367,7 @@ class Test_SelfLoops(unittest.TestCase):
 		bcc.run()
 
 		for component in bcc.getComponents():
-			G1 = self.LL.subgraphFromNodes(component, False, False)
+			G1 = graphtools.subgraphFromNodes(self.LL, component)
 			def test_node(v):
 				G2 = Graph(G1)
 				G2.removeNode(v)

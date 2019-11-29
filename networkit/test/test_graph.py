@@ -14,83 +14,52 @@ class TestGraph(unittest.TestCase):
 
 		return G
 
-	def testSubgraphFromNodesDirected(self):
-		G = self.getSmallGraph(True, True)
+	def testRemoveAllEdges(self):
+		for directed in [True, False]:
+			for weighted in [True, False]:
+				G = self.getSmallGraph(weighted, directed)
+				G.removeAllEdges()
+				self.assertEqual(G.numberOfEdges(), 0)
+				G.forNodePairs(lambda u, v: self.assertFalse(G.hasEdge(u, v)))
 
-		res = G.subgraphFromNodes([0])
-		self.assertTrue(res.isWeighted())
-		self.assertTrue(res.isDirected())
-		self.assertEqual(res.numberOfNodes(), 1)
-		self.assertEqual(res.numberOfEdges(), 0)
+	def testRemoveSelfLoops(self):
+		for directed in [True, False]:
+			for weighted in [True, False]:
+				g  = self.getSmallGraph(weighted, directed)
+				for i in range(10):
+					u = nk.graphtools.randomNode(g)
+					g.addEdge(u, u)
 
-		res = G.subgraphFromNodes([0], True)
-		self.assertEqual(res.numberOfNodes(), 3)
-		self.assertEqual(res.numberOfEdges(), 2)
+				nSelfLoops = g.numberOfSelfLoops()
+				nEdges = g.numberOfEdges()
 
-		res = G.subgraphFromNodes([0, 1])
-		self.assertEqual(res.numberOfNodes(), 2)
-		self.assertEqual(res.numberOfEdges(), 1)
+				g.removeSelfLoops()
 
-		res = G.subgraphFromNodes([0, 1], True)
-		self.assertEqual(res.numberOfNodes(), 3)
-		self.assertEqual(res.numberOfEdges(), 3)
+				self.assertEqual(nEdges - nSelfLoops, g.numberOfEdges())
+				self.assertEqual(g.numberOfSelfLoops(), 0)
 
-		res = G.subgraphFromNodes([0, 1], True, True)
-		self.assertEqual(res.numberOfNodes(), 4)
-		self.assertEqual(res.numberOfEdges(), 4)
-
-	def testSubgraphFromNodesUndirected(self):
-		G = self.getSmallGraph(True, False)
-
-		res = G.subgraphFromNodes([0])
-		self.assertTrue(res.isWeighted())
-		self.assertFalse(res.isDirected())
-		self.assertEqual(res.numberOfNodes(), 1)
-		self.assertEqual(res.numberOfEdges(), 0)
-
-		res = G.subgraphFromNodes([0], True)
-		self.assertEqual(res.numberOfNodes(), 3)
-		self.assertEqual(res.numberOfEdges(), 2)
-		self.assertEqual(G.weight(0, 1), 1.0)
-		self.assertEqual(G.weight(0, 2), 2.0)
-
-		res = G.subgraphFromNodes([0, 1])
-		self.assertEqual(res.numberOfNodes(), 2)
-		self.assertEqual(res.numberOfEdges(), 1)
-
-		res = G.subgraphFromNodes([0, 1], True)
-		self.assertEqual(res.numberOfNodes(), 4)
-		self.assertEqual(res.numberOfEdges(), 4)
-
-		res = G.subgraphFromNodes(set([0, 1]), True)
-		self.assertEqual(res.numberOfNodes(), 4)
-		self.assertEqual(res.numberOfEdges(), 4)
+				g.forNodes(lambda u: self.assertFalse(g.hasEdge(u, u)))
 
 	def testRemoveMultiEdges(self):
+		nMultiedges = 5
+		for directed in [True, False]:
+			for weighted in [True, False]:
+				G = self.getSmallGraph(weighted, directed)
+				nEdges = G.numberOfEdges()
 
-		def addMultiEdges(G, nMultiEdges):
-			for i in range(nMultiEdges):
-				e = G.randomEdge()
-				G.addEdge(e[0], e[1])
-			return G
+				for _ in range(nMultiedges):
+					u, v = nk.graphtools.randomEdge(G)
+					G.addEdge(u, v)
 
-		def testGraph(G):
-			addMultiEdges(G, nMultiEdges)
-			self.assertEqual(G.numberOfEdges(), m + nMultiEdges)
-			G.removeMultiEdges()
-			self.assertEqual(G.numberOfEdges(), m)
+				G.removeMultiEdges()
+				self.assertEqual(G.numberOfEdges(), nEdges)
 
-		nMultiEdges = 5
+				for _ in range(nEdges):
+					u, v = nk.graphtools.randomEdge(G)
+					G.removeEdge(u, v)
+					self.assertFalse(G.hasEdge(u, v))
+				self.assertEqual(G.numberOfEdges(), 0)
 
-		# Directed
-		G = self.getSmallGraph(True, True)
-		m = G.numberOfEdges()
-		testGraph(G)
-
-		# Undirected
-		G = self.getSmallGraph(True, False)
-		m = G.numberOfEdges()
-		testGraph(G)
 
 	def testNeighbors(self):
 		# Directed
@@ -121,47 +90,6 @@ class TestGraph(unittest.TestCase):
 		self.assertEqual(sorted(G.neighbors(2)), [0, 1, 3])
 		self.assertEqual(sorted(G.neighbors(3)), [1, 2])
 
-	def testGraphTranspose(self):
-		nk.setSeed(1, True)
-		G = nk.generators.ErdosRenyiGenerator(100, 0.2, True).generate()
-
-		for i in range(20):
-			u = G.randomNode()
-			if not G.hasEdge(u, u):
-				G.addEdge(u, u)
-		self.assertGreater(G.numberOfSelfLoops(), 0)
-
-		# Delete a few nodes
-		for i in range(10):
-			G.removeNode(G.randomNode())
-		self.assertGreater(G.numberOfSelfLoops(), 0)
-
-		# Assign random weights
-		GWeighted = nk.Graph(G, True, True)
-		for u, v in GWeighted.edges():
-			GWeighted.setWeight(u, v, random.random())
-
-		GWeighted.indexEdges()
-
-		GTrans = GWeighted.transpose()
-
-		for u, v in GWeighted.edges():
-			self.assertEqual(GWeighted.edgeId(u, v), GTrans.edgeId(v, u))
-			self.assertEqual(GWeighted.weight(u, v), GTrans.weight(v, u))
-
-		for v, u in GTrans.edges():
-			self.assertEqual(GWeighted.edgeId(u, v), GTrans.edgeId(v, u))
-			self.assertEqual(GWeighted.weight(u, v), GTrans.weight(v, u))
-
-		for u in range(GWeighted.upperNodeIdBound()):
-			self.assertEqual(GWeighted.hasNode(u), GTrans.hasNode(u))
-
-		self.assertEqual(GWeighted.upperEdgeIdBound(),  GTrans.upperEdgeIdBound())
-		self.assertEqual(GWeighted.upperNodeIdBound(),  GTrans.upperNodeIdBound())
-		self.assertEqual(GWeighted.numberOfSelfLoops(), GTrans.numberOfSelfLoops())
-		self.assertEqual(GWeighted.numberOfNodes(),     GTrans.numberOfNodes())
-		self.assertEqual(GWeighted.numberOfEdges(),     GTrans.numberOfEdges())
-
 	def testRandomEdgesReproducibility(self):
 		numSamples = 10
 		numSeeds = 3
@@ -174,7 +102,7 @@ class TestGraph(unittest.TestCase):
 			for repeats in range(numRepeats):
 				for seed in range(numSeeds):
 					nk.setSeed(seed, False)
-					results[seed].append(G.randomEdges(numSamples))
+					results[seed].append(nk.graphtools.randomEdges(G, numSamples))
 
 			# assert results are different for different seeds
 			for seed in range(1, numSeeds):

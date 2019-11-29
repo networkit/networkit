@@ -39,6 +39,7 @@
 #include <networkit/distance/Dijkstra.hpp>
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/SNAPGraphReader.hpp>
 #include <networkit/structures/Cover.hpp>
@@ -243,8 +244,8 @@ TEST_F(CentralityGTest, testKatzDynamicAddition) {
     DEBUG("finish kc");
     node u, v;
     do {
-        u = G.randomNode();
-        v = G.randomNode();
+        u = GraphTools::randomNode(G);
+        v = GraphTools::randomNode(G);
     } while (G.hasEdge(u, v));
     GraphEvent e(GraphEvent::EDGE_ADDITION, u, v, 1.0);
     kc.update(e);
@@ -278,7 +279,7 @@ TEST_F(CentralityGTest, testKatzDynamicDeletion) {
     DEBUG("start kc run");
     kc.run();
     DEBUG("finish kc");
-    std::pair<node, node> p = G.randomEdge();
+    std::pair<node, node> p = GraphTools::randomEdge(G);
     node u = p.first;
     node v = p.second;
     INFO("Deleting edge ", u, ", ", v);
@@ -392,8 +393,8 @@ TEST_F(CentralityGTest, testKatzDirectedAddition) {
     node u, v;
     Aux::Random::setSeed(42, false);
     do {
-        u = G.randomNode();
-        v = G.randomNode();
+        u = GraphTools::randomNode(G);
+        v = GraphTools::randomNode(G);
     } while (G.hasEdge(u, v));
     GraphEvent e(GraphEvent::EDGE_ADDITION, u, v, 1.0);
     kc.update(e);
@@ -453,7 +454,7 @@ TEST_F(CentralityGTest, testKatzDirectedDeletion) {
     kc.run();
 
     Aux::Random::setSeed(42, false);
-    std::pair<node, node> p = G.randomEdge();
+    std::pair<node, node> p = GraphTools::randomEdge(G);
     node u = p.first;
     node v = p.second;
     INFO("Removing ", u, " -> ", v);
@@ -1653,8 +1654,8 @@ TEST_P(CentralityGTest, testDynTopHarmonicCloseness) {
         node v = G.upperNodeIdBound();
 
         do {
-            u = G.randomNode();
-            v = G.randomNode();
+            u = GraphTools::randomNode(G);
+            v = GraphTools::randomNode(G);
         } while (G.hasEdge(u, v));
 
         GraphEvent edgeAddition(GraphEvent::EDGE_ADDITION, u, v);
