@@ -14,6 +14,7 @@
 #include <networkit/components/DynWeaklyConnectedComponents.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/graph/GraphTools.hpp>
+#include <networkit/graph/BFS.hpp>
 
 #include <networkit/distance/Diameter.hpp>
 #include <networkit/io/METISGraphReader.hpp>
@@ -130,7 +131,7 @@ TEST_F(ConnectedComponentsGTest, benchConnectedComponents) {
 }
 
 
-TEST_F(ConnectedComponentsGTest, testStronglyConnectedComponents) {
+TEST_F(ConnectedComponentsGTest, testStronglyConnectedComponentsTiny) {
 
     auto comparePartitions = [](const Partition& p1, const Partition& p2) {
         std::vector<index> partitionIdMap(p1.upperBound(), none);
@@ -188,6 +189,68 @@ TEST_F(ConnectedComponentsGTest, testStronglyConnectedComponents) {
     p_actual.compact();
 
     comparePartitions(p_expected, p_actual);
+}
+
+TEST_F(ConnectedComponentsGTest, testStronglyConnectedComponents) {
+
+    auto testComponent = [](const Graph &G, const std::vector<node> &cmp) {
+        std::vector<bool> inComponent(G.upperNodeIdBound());
+        std::vector<bool> reachableFromComponent(G.upperNodeIdBound());
+        for (const auto u : cmp) {
+            inComponent[u] = true;
+            std::unordered_set<node> unvisited(cmp.begin(), cmp.end());
+            Traversal::BFSfrom(G, u, [&](const node v, count) {
+                const auto iter = unvisited.find(v);
+                if (iter != unvisited.end()) {
+                    unvisited.erase(iter);
+                }
+                reachableFromComponent[v] = true;
+            });
+
+            EXPECT_TRUE(unvisited.empty());
+        }
+
+        G.forNodes([&](const node u) {
+
+            if (inComponent[u] || !reachableFromComponent[u])
+                return;
+
+            Traversal::BFSfrom(G, u, [&](const node v) {
+                EXPECT_FALSE(inComponent[v]);
+            });
+        });
+    };
+
+    constexpr count n = 200;
+    for (int i : {1, 2, 3}) {
+        Aux::Random::setSeed(i, false);
+        for (double p : {0.01, 0.05, 0.1}) {
+            const auto G = ErdosRenyiGenerator(n, p, true).generate();
+            StronglyConnectedComponents scc(G);
+            scc.run();
+
+            const auto nComponents = scc.numberOfComponents();
+            const auto cmpVec = scc.getComponents();
+
+            EXPECT_EQ(cmpVec.size(), nComponents);
+
+            const auto compSizes = scc.getComponentSizes();
+            for (const auto &entry : compSizes) {
+                EXPECT_TRUE(entry.first < cmpVec.size());
+                EXPECT_EQ(cmpVec[entry.first].size(), entry.second);
+            }
+
+            for (index i = 0; i < cmpVec.size(); ++i) {
+                for (const auto u : cmpVec[i]) {
+                    EXPECT_EQ(scc.componentOfNode(u), i);
+                }
+            }
+
+            for (const auto &cmp : cmpVec) {
+                testComponent(G, cmp);
+            }
+        }
+    }
 }
 
 TEST_F(ConnectedComponentsGTest, testDynConnectedComponentsTiny) {

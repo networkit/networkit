@@ -434,6 +434,22 @@ class TestSelfLoops(unittest.TestCase):
 		for i in range(G.numberOfNodes()):
 			self.assertEqual(G2.hasNode(i), (4 <= i <= 9))
 
+	def test_components_StronglyConnectedComponents(self):
+		g = nk.readGraph("input/MIT8.edgelist",
+				nk.Format.EdgeList, separator='\t', firstNode=0, continuous=False, directed=True)
+		scc = nk.components.StronglyConnectedComponents(g)
+		scc.run()
+		self.assertNotEqual(scc.componentOfNode(0), None)
+		nComponents = scc.numberOfComponents()
+		compSizes = scc.getComponentSizes()
+		self.assertEqual(nComponents, len(compSizes))
+
+		comps = scc.getComponents()
+		for idx, size in compSizes.items():
+			self.assertEqual(len(comps[idx]), size)
+
+		_=scc.getPartition()
+
 	def testComponentsBiconnectedComponents(self):
 		bcc = nk.components.BiconnectedComponents(self.LL)
 		bcc.run()
