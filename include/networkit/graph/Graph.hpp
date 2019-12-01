@@ -77,7 +77,7 @@ struct hash<NetworKit::Edge> {
 
 namespace NetworKit {
 
-// forward declaration to randomization/CurveballImpl.h
+// forward declaration to randomization/CurveballImpl.hpp
 namespace CurveballDetails {
 class CurveballMaterialization;
 }
