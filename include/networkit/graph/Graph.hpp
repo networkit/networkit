@@ -1052,17 +1052,6 @@ public:
     /** GRAPH INFORMATION **/
 
     /**
-     * Return the type of the graph.
-     * 		Graph: not weighted, undirected
-     * 		WeightedGraph: weighted, undirected
-     * 		DirectedGraph: not weighted, directed
-     * 		WeightedDirectedGraph: weighted, directed
-     *
-     * This method is deprecated and will not be supported in future releases.
-     */
-    std::string TLX_DEPRECATED(typ() const);
-
-    /**
      * Try to save some memory by shrinking internal data structures of the
      * graph. Only run this once you finished editing the graph. Otherwise it
      * will cause unnecessary reallocation of memory.

@@ -288,15 +288,6 @@ edgeid Graph::edgeId(node u, node v) const {
 
 /** GRAPH INFORMATION **/
 
-std::string Graph::typ() const {
-    WARN("Graph::typ is deprecated and will not be supported in future releases.");
-    if (weighted) {
-        return directed ? "WeightedDirectedGraph" : "WeightedGraph";
-    } else {
-        return directed ? "DirectedGraph" : "Graph";
-    }
-}
-
 void Graph::shrinkToFit() {
     exists.shrink_to_fit();
 
@@ -487,8 +478,6 @@ edgeweight Graph::computeWeightedDegree(node u, bool inDegree, bool countSelfLoo
 std::string Graph::toString() const {
     WARN("Graph::toString is deprecated and will not be supported in future releases.");
     std::stringstream strm;
-    strm << typ() << "(name=" << getName() << ", n=" << numberOfNodes() << ", m=" << numberOfEdges()
-         << ")";
     return strm.str();
 }
 
