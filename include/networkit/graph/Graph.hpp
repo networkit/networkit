@@ -93,8 +93,6 @@ class Graph final {
     friend class CurveballDetails::CurveballMaterialization;
 
     // graph attributes
-    //!< unique graph id, starts at 0
-    count id;
     //!< name of the graph, initially G#ID
     std::string name;
 
@@ -142,11 +140,6 @@ class Graph final {
     std::vector<std::vector<edgeid>> inEdgeIds;
     //!< same schema (and same order!) as outEdges
     std::vector<std::vector<edgeid>> outEdgeIds;
-
-    /**
-     * Returns the next unique graph id.
-     */
-    count getNextGraphId();
 
     /**
      * Returns the index of node u in the array of incoming edges of node v.
@@ -1057,14 +1050,6 @@ public:
     index upperEdgeIdBound() const noexcept { return omega; }
 
     /** GRAPH INFORMATION **/
-
-    /**
-     * Get the ID of this graph. The ID is a unique unsigned integer given to
-     * every graph on construction.
-     *
-     * This method is deprecated and will not be supported in future releases.
-     */
-    count TLX_DEPRECATED(getId() const) { return id; }
 
     /**
      * Return the type of the graph.

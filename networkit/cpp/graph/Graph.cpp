@@ -41,10 +41,7 @@ Graph::Graph(count n, bool weighted, bool directed)
       outEdges(n), inEdgeWeights(weighted && directed ? n : 0), outEdgeWeights(weighted ? n : 0),
       inEdgeIds(), outEdgeIds() {
 
-    // set name from global id
-    id = getNextGraphId();
     std::stringstream sstm;
-    sstm << "G#" << id;
     name = sstm.str();
 }
 
@@ -74,10 +71,7 @@ Graph::Graph(const Graph &G, bool weighted, bool directed)
       // let the following be empty for the start, we fill them later
       inEdges(0), outEdges(0), inEdgeWeights(0), outEdgeWeights(0) {
 
-    // set name from global id
-    id = getNextGraphId();
     std::stringstream sstm;
-    sstm << "G#" << id;
     name = sstm.str();
 
     if (G.isDirected() == directed) {
@@ -197,11 +191,6 @@ void Graph::preallocateDirected(node u, size_t outSize, size_t inSize) {
     }
 }
 /** PRIVATE HELPERS **/
-
-count Graph::getNextGraphId() {
-    static count nextGraphId = 1;
-    return nextGraphId++;
-}
 
 index Graph::indexInInEdgeArray(node v, node u) const {
     if (!directed) {
