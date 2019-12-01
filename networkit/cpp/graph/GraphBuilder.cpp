@@ -13,14 +13,13 @@
 namespace NetworKit {
 
 GraphBuilder::GraphBuilder(count n, bool weighted, bool directed)
-    : n(n), selfloops(0), name(""), weighted(weighted), directed(directed),
+    : n(n), selfloops(0), weighted(weighted), directed(directed),
       outEdges(n), outEdgeWeights(weighted ? n : 0), inEdges(directed ? n : 0),
       inEdgeWeights((directed && weighted) ? n : 0) {}
 
 void GraphBuilder::reset(count n) {
     this->n = n;
     selfloops = 0;
-    name = "";
     outEdges.assign(n, std::vector<node>{});
     outEdgeWeights.assign(isWeighted() ? n : 0, std::vector<edgeweight>{}),
         inEdges.assign(isDirected() ? n : 0, std::vector<node>{}),
