@@ -551,11 +551,6 @@ edgeweight Graph::weightedDegreeIn(node u, bool countSelfLoopsTwice) const {
     return computeWeightedDegree(u, true, countSelfLoopsTwice);
 }
 
-edgeweight Graph::volume(node v) const {
-    WARN("Graph::volume is deprecated, use Graph::weightedDegree instead.");
-    return weightedDegree(v, true);
-}
-
 node Graph::randomNode() const {
     return GraphTools::randomNode(*this);
 }

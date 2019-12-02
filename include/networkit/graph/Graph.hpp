@@ -1232,17 +1232,6 @@ public:
     edgeweight weightedDegreeIn(node u, bool countSelfLoopsTwice = false) const;
 
     /**
-     * Returns the volume of the @a v, which is the weighted degree with
-     * self-loops counted twice.
-     *
-     * @param v Node.
-     * @return The volume of the @a v.
-     *
-     * This method is deprecated, use GraphTools::weightedDegree instead.
-     */
-    edgeweight TLX_DEPRECATED(volume(node v) const);
-
-    /**
      * Returns a random node of the graph.
      * @return A random node.
      *
