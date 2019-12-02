@@ -41,11 +41,11 @@ class GephiStreamingClient:
             graph.indexEdges()
             self.directed = graph.isDirected()
 
-            self._exportNodes(graph.nodes())
+            self._exportNodes(graph.iterNodes())
 
-            for edge in graph.edges():
+            for u, v in graph.iterEdges():
                 if self.directed:
-                    edgeId = str(edge[0]) + '->' + str(edge[1])
+                    edgeId = str(u) + '->' + str(v)
                 else:
                     edgeId = str(min(edge[0],edge[1])) + '-' + str(max(edge[0],edge[1]))
                 self._pygephi.add_edge(edgeId, edge[0], edge[1], self.directed)
@@ -161,7 +161,7 @@ class GephiStreamingClient:
             if len(values) != graph.numberOfNodes():
                 print("Warning: #Nodes (", graph.numberOfNodes(), ") does not match #Values (", len(values), ").")
 
-            for i in graph.nodes():
+            for i in graph.iterNodes():
                 nAttrs = {attribute_name:values[i]}
                 self._pygephi.change_node(str(i), **nAttrs)
 
@@ -171,8 +171,8 @@ class GephiStreamingClient:
 
     def exportCoordinates(self, graph, scale=1):
         try:
-            xcoords = [scale*graph.getCoordinate(v)[0] for v in graph.nodes()]
-            ycoords = [scale*graph.getCoordinate(v)[1] for v in graph.nodes()]
+            xcoords = [scale*graph.getCoordinate(v)[0] for v in graph.iterNodes()]
+            ycoords = [scale*graph.getCoordinate(v)[1] for v in graph.iterNodes()]
             self.exportNodeValues(graph, xcoords, 'x')
             self.exportNodeValues(graph, ycoords, 'y')
             self._pygephi.flush()
@@ -193,9 +193,9 @@ class GephiStreamingClient:
                 print("Warning: Upper edge id bound (", graph.upperEdgeIdBound(), ") does not match #Values (", len(values), ").")
 
             idx = 0
-            for edge in graph.edges():
+            for edge in graph.iterEdges():
                 if self.directed:
-                    edgeId = str(edge[0]) + '->' + str(edge[1])
+                    edgeId = str(u) + '->' + str(v)
                     edgetype = "Directed"
                 else:
                     edgeId = str(min(edge[0],edge[1])) + '-' + str(max(edge[0],edge[1]))

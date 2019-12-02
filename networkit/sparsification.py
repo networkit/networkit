@@ -329,7 +329,7 @@ class DegreeMultiscaleSparsifier(Sparsifier):
 		"""
 
 		inputAttribute = [0] * G.upperEdgeIdBound()
-		for (x,y) in G.edges():
+		for x, y in G.iterEdges():
 			inputAttribute[G.edgeId(x,y)] = self.degsToAttrValue(G.degree(x), G.degree(y))
 
 		ms = MultiscaleScore(G, inputAttribute)
@@ -396,9 +396,9 @@ class MultiscaleSparsifier(Sparsifier):
 		"""
 
 		inputAttribute = [0.0] * G.upperEdgeIdBound()
-		for edge in G.edges():
-			edgeId = G.edgeId(edge[0], edge[1])
-			inputAttribute[edgeId] = G.weight(edge[0], edge[1])
+		for u, v, w in G.iterEdgesWeights():
+			edgeId = G.edgeId(u, v)
+			inputAttribute[edgeId] = w
 
 		scorer = MultiscaleScore(G, inputAttribute)
 		scorer.run()

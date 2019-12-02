@@ -71,7 +71,7 @@ def setRandomWeights(G, mu, sigma):
 	"""
 	Add random weights, normal distribution with mean mu and standard deviation sigma
 	"""
-	for (u, v) in G.edges():
+	for (u, v) in G.iterEdges():
 		w = random.normalvariate(mu, sigma)
 		G.setWeight(u, v, w)
 	return G

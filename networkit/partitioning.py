@@ -19,7 +19,7 @@ else:
 def computeEdgeCut(partition, graph):
 	cut = 0
 
-	for (n1, n2) in graph.edges():
+	for (n1, n2) in graph.iterEdges():
 		if partition[n1] != partition[n2]:
 			if (graph.isWeighted()):
 				cut += graph.weight(n1,n2)
@@ -104,7 +104,7 @@ class SpectralPartitioner:
 
 	def _trisect(self, partition=None, iteration=1):
 		if partition is None:
-			vertices = self.graph.nodes()
+			vertices = self.graph.iterNodes()
 		else:
 			vertices = self.partitions[partition]
 
@@ -144,7 +144,7 @@ class SpectralPartitioner:
 			return
 
 		if partition is None:
-			vertices = self.graph.nodes()
+			vertices = self.graph.iterNodes()
 		else:
 			vertices = self.partitions[partition]
 
