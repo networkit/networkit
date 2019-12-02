@@ -142,7 +142,7 @@ class SpectralCentrality:
 		else:
 			normFactor = 1
 
-		for v in self.graph.nodes():
+		for v in self.graph.iterNodes():
 			self.evz[v] = self.eigenvector[v] * normFactor
 		return self
 

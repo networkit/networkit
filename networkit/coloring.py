@@ -48,7 +48,7 @@ class SpectralColoring(object):
 	def run(self):
 		self.prepareSpectrum()
 
-		self.colors = {0 : set(self.graph.nodes())}
+		self.colors = {0 : set(self.graph.iterNodes())}
 		self.nextColor = 1
 
 		self.split(0)

@@ -14,7 +14,7 @@ class Test_CommunityDetection(unittest.TestCase):
 		comms = community.detectCommunities(self.G, community.PLM(self.G))
 
 		# each node must be assigned
-		for v in self.G.nodes():
+		for v in self.G.iterNodes():
 			self.assertTrue(comms.contains(v))
 
 	def test_CutClustering(self):

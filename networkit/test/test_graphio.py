@@ -21,7 +21,7 @@ class TestGEXFIO(unittest.TestCase):
 		self.assertEqual(graph.isDirected(), graph2.isDirected())
 		self.assertEqual(graph.isWeighted(), graph2.isWeighted())
 		self.assertEqual(graph.numberOfNodes(), graph2.numberOfNodes())
-		self.assertEqual(graph.edges(), graph2.edges())
+		self.assertEqual([(u, v) for u, v in graph.iterEdges()], [(u, v) for u, v in graph2.iterEdges()])
 
 	def checkDynamic(self, eventStream, eventStream2):
 		from _NetworKit import GraphEvent

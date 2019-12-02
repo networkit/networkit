@@ -177,7 +177,7 @@ class GraphMLWriter:
 		graphElement.set('id', graph.getName())
 
 		# Add nodes
-		for n in graph.nodes():
+		for n in graph.iterNodes():
 			nodeElement = ET.SubElement(graphElement,'node')
 			nodeElement.set('id', str(n))
 			for attName, attData in nodeAttributes.items():

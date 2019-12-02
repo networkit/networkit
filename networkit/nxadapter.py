@@ -40,7 +40,6 @@ def nx2nk(nxG, weightAttr=None):
 		nkG = graph.Graph(z, directed=nxG.is_directed())
 		for (u_, v_) in nxG.edges():
 			u, v = idmap[u_], idmap[v_]
-			# print(u_, v_, u, v)
 			assert (u < z)
 			assert (v < z)
 			nkG.addEdge(u, v)
@@ -59,12 +58,12 @@ def nk2nx(nkG):
 		nxG = nx.DiGraph()
 	else:
 		nxG = nx.Graph()
-	nxG.add_nodes_from(nkG.nodes())
+	nxG.add_nodes_from(nkG.iterNodes())
 	if nkG.isWeighted():
-		for (u, v) in nkG.edges():
-			nxG.add_edge(u, v, weight=nkG.weight(u, v))
+		for u, v, w in nkG.iterEdgesWeights():
+			nxG.add_edge(u, v, weight=w)
 	else:
-		nxG.add_edges_from(nkG.edges())
+		nxG.add_edges_from(nkG.iterEdges())
 
 	assert (nkG.numberOfNodes() == nxG.number_of_nodes())
 	assert (nkG.numberOfEdges() == nxG.number_of_edges())
