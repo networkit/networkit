@@ -7848,7 +7848,7 @@ cdef class GroupDegree(Algorithm):
 	score, this make the group degree monotone and submodular and the algorithm
 	is guaranteed to return a (1 - 1/e)-approximation of the optimal solution.
 
-	GroupDegree(G, k = 1, countGroupNodes = False)
+	GroupDegree(G, k = 1, countGroupNodes = True)
 
 	Parameters
 	----------
@@ -7939,6 +7939,13 @@ cdef class GroupCloseness(Algorithm):
 		The group of k nodes with highest closeness.
 	"""
 	def groupMaxCloseness(self):
+		"""
+		Returns the group with maximum closeness centrality.
+		Returns
+		-------
+		vector
+			The group of k nodes with maximum closeness centrality.
+		"""
 		return (<_GroupCloseness*>(self._this)).groupMaxCloseness()
 
 
