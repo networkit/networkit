@@ -23,7 +23,7 @@ namespace NetworKit {
     * @ingroup components
     * Determines and updates the connected components of an undirected graph.
     */
-    class DynConnectedComponents : public Algorithm, public DynAlgorithm {
+    class DynConnectedComponents final : public Algorithm, public DynAlgorithm {
 
     public:
         /**
@@ -95,7 +95,7 @@ namespace NetworKit {
         std::pair<bool, edgeid> updateMapAfterAddition(node u, node v);
         void init();
         std::pair<node, node> makePair(node u, node v);
-        const Graph& G;
+        const Graph* G;
         std::vector<bool> isTree;
         std::vector<index> components;
         std::map<index, count> compSize;
@@ -106,7 +106,7 @@ namespace NetworKit {
     };
 
     inline count DynConnectedComponents::componentOfNode(node u) {
-        assert(u <= G.upperNodeIdBound());
+        assert(u <= G->upperNodeIdBound());
         assert (components[u] != none);
         assureFinished();
         return components[u];
