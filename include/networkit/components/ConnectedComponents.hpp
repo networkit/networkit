@@ -22,7 +22,7 @@ namespace NetworKit {
  * @ingroup components
  * Determines the connected components of an undirected graph.
  */
-class ConnectedComponents : public Algorithm {
+class ConnectedComponents final : public Algorithm {
 public:
     /**
      * Create ConnectedComponents class for Graph @a G.
@@ -78,7 +78,7 @@ public:
     static Graph extractLargestConnectedComponent(const Graph &G, bool compactGraph = false);
 
 private:
-    const Graph& G;
+    const Graph* G;
     Partition component;
     count numComponents;
 };

@@ -15,7 +15,7 @@
 
 namespace NetworKit {
 
-ConnectedComponents::ConnectedComponents(const Graph& G) : G(G) {
+ConnectedComponents::ConnectedComponents(const Graph& G) : G(&G) {
     if (G.isDirected()) {
         throw std::runtime_error("Error, connected components of directed graphs cannot be computed, use StronglyConnectedComponents for them.");
     }
@@ -23,13 +23,13 @@ ConnectedComponents::ConnectedComponents(const Graph& G) : G(G) {
 
 void ConnectedComponents::run() {
     DEBUG("initializing labels");
-    component = Partition(G.upperNodeIdBound(), none);
+    component = Partition(G->upperNodeIdBound(), none);
     numComponents = 0;
 
     std::queue<node> q;
 
     // perform breadth-first searches
-    G.forNodes([&](node u) {
+    G->forNodes([&](node u) {
         if (component[u] == none) {
             component.setUpperBound(numComponents+1);
             index c = numComponents;
@@ -41,7 +41,7 @@ void ConnectedComponents::run() {
                 node u = q.front();
                 q.pop();
                 // enqueue neighbors, set component
-                G.forNeighborsOf(u, [&](node v) {
+                G->forNeighborsOf(u, [&](node v) {
                     if (component[v] == none) {
                         q.push(v);
                         component[v] = c;
@@ -69,7 +69,7 @@ std::vector<std::vector<node> > ConnectedComponents::getComponents() const {
     // transform partition into vector of unordered_set
     std::vector<std::vector<node> > result(numComponents);
 
-    G.forNodes([&](node u) {
+    G->forNodes([&](node u) {
         result[component[u]].push_back(u);
     });
 
