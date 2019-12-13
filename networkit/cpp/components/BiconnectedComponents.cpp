@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-BiconnectedComponents::BiconnectedComponents(const Graph &G) : G(G) {
+BiconnectedComponents::BiconnectedComponents(const Graph &G) : G(&G) {
   if (G.isDirected()) {
     throw std::runtime_error(
         "Error, biconnected components cannot be computed on directed graphs.");
@@ -20,7 +20,7 @@ BiconnectedComponents::BiconnectedComponents(const Graph &G) : G(G) {
 }
 
 void BiconnectedComponents::init() {
-  n = G.numberOfNodes();
+  n = G->numberOfNodes();
   idx = 0;
   nComp = 0;
   level.assign(n, 0);
@@ -45,13 +45,13 @@ void BiconnectedComponents::run() {
 
   std::stack<std::pair<node, Graph::NeighborIterator>> stack;
   std::vector<std::pair<node, node>> edgeStack;
-  G.forNodes([&](node v) {
+  G->forNodes([&](node v) {
     if (visited[v]) {
       return;
     }
 
     isRoot[v] = true;
-    stack.push(std::make_pair(v, G.neighborRange(v).begin()));
+    stack.push(std::make_pair(v, G->neighborRange(v).begin()));
 
     do {
       node u = stack.top().first;
@@ -60,12 +60,12 @@ void BiconnectedComponents::run() {
         visitNode(u);
       }
 
-      for (; iter != G.neighborRange(u).end(); ++iter) {
+      for (; iter != G->neighborRange(u).end(); ++iter) {
         node neighbor = *iter;
         if (!visited[neighbor]) {
           visitNode(neighbor);
           parent[neighbor] = u;
-          stack.push(std::make_pair(neighbor, G.neighborRange(neighbor).begin()));
+          stack.push(std::make_pair(neighbor, G->neighborRange(neighbor).begin()));
           edgeStack.push_back(std::make_pair(u, neighbor));
           break;
         } else if (neighbor != parent[u] && level[neighbor] < level[u]) {
@@ -74,7 +74,7 @@ void BiconnectedComponents::run() {
         }
       }
 
-      if (iter == G.neighborRange(u).end()) {
+      if (iter == G->neighborRange(u).end()) {
         stack.pop();
 
         if (isRoot[u]) {
