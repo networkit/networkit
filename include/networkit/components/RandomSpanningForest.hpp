@@ -18,17 +18,17 @@ namespace NetworKit {
  * Time complexity: cover time of G.
  * @ingroup graph
  */
-class RandomSpanningForest: public SpanningForest {
+class RandomSpanningForest final : public SpanningForest {
 public:
     RandomSpanningForest(const Graph& G);
-    virtual ~RandomSpanningForest() = default;
+    ~RandomSpanningForest() = default;
 
     /**
      * Computes for each component a random spanning tree.
      * Uses simple random-walk based algorithm.
      * Time complexity: cover time of G.
      */
-    virtual void run() override;
+    void run() override;
 };
 
 } /* namespace NetworKit */
