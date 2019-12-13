@@ -18,7 +18,7 @@ namespace NetworKit {
  * @ingroup components
  * Determines the connected components of an undirected graph.
  */
-class ParallelConnectedComponents : public Algorithm {
+class ParallelConnectedComponents final : public Algorithm {
 public:
 
     /**
@@ -39,7 +39,7 @@ public:
     /**
      * This method determines the connected components for the graph g.
      */
-    void run();
+    void run() override;
 
     /**
      * This method returns the number of connected components.
@@ -61,7 +61,7 @@ public:
 
 
 private:
-    const Graph& G;
+    const Graph* G;
     Partition component;
     bool coarsening;
 };
