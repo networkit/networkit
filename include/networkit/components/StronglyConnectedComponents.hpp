@@ -59,7 +59,7 @@ public:
 
 
 private:
-    const Graph& G;
+    const Graph* G;
     bool iterativeAlgo;
     Partition component;
 };

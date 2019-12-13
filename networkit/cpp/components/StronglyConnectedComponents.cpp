@@ -18,7 +18,7 @@
 
 namespace NetworKit {
 
-StronglyConnectedComponents::StronglyConnectedComponents(const Graph& G, bool iterativeAlgo) : G(G), iterativeAlgo(iterativeAlgo) {
+StronglyConnectedComponents::StronglyConnectedComponents(const Graph& G, bool iterativeAlgo) : G(&G), iterativeAlgo(iterativeAlgo) {
 
 }
 
@@ -31,7 +31,7 @@ void StronglyConnectedComponents::run() {
 }
 
 void StronglyConnectedComponents::runRecursively() {
-    count z = G.upperNodeIdBound();
+    count z = G->upperNodeIdBound();
     component = Partition(z);
 
     index nextIndex = 0;
@@ -46,7 +46,7 @@ void StronglyConnectedComponents::runRecursively() {
         stx.push(v);
         onStack[v] = true;
 
-        G.forNeighborsOf(v, [&](node w) {
+        G->forNeighborsOf(v, [&](node w) {
             if (nodeIndex[w] == none) {
                 strongConnect(w);
                 nodeLowLink[v] = std::min(nodeLowLink[v], nodeLowLink[w]);
@@ -69,7 +69,7 @@ void StronglyConnectedComponents::runRecursively() {
         }
     };
 
-    G.forNodes([&](node v) {
+    G->forNodes([&](node v) {
         if (nodeIndex[v] == none) {
             strongConnect(v);
         }
@@ -77,7 +77,7 @@ void StronglyConnectedComponents::runRecursively() {
 }
 
 void StronglyConnectedComponents::runIteratively() {
-    count z = G.upperNodeIdBound();
+    count z = G->upperNodeIdBound();
     component = Partition(z);
 
     index nextIndex = 0;
@@ -99,7 +99,7 @@ void StronglyConnectedComponents::runIteratively() {
     dfss.reserve(z);
     //auto max_stack_size = dfss.size();
 
-    G.forNodes([&](node _v) {
+    G->forNodes([&](node _v) {
         if (nodes[_v].i != none)
             return;
         DEBUG("DFS init: dfss.emplace(", _v, ", none, -1)");
@@ -119,7 +119,7 @@ void StronglyConnectedComponents::runIteratively() {
                 nextIndex++;
                 stx.push_back(u);
                 onStack[u] = true;
-                j = G.degreeOut(u);
+                j = G->degreeOut(u);
                 DEBUG("j <- ", j, ", nextIndex=", nextIndex);
             }
             if (j == 0) {
@@ -145,7 +145,7 @@ void StronglyConnectedComponents::runIteratively() {
                 // manually to allow constant-time lookup of the i-th neighbor
                 // (see networkit/cpp/graph/Graph.h)
                 // Note: Neighbors in reverse order compared to original impl
-                auto v = G.getIthNeighbor<true>(u, j-1);
+                auto v = G->getIthNeighbor<true>(u, j-1);
                 // Unoptimised version that works with the public API only:
                 //auto v = G.neighbors(u)[G.degreeOut(u)-j];
                 if (v == none) {
