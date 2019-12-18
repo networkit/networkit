@@ -20,7 +20,7 @@ namespace NetworKit {
  * The DynamicMatrix class represents a matrix that is optimized for sparse matrices and internally uses a graph data structure.
  * DynamicMatrix should be used when changes to the structure of the matrix are frequent.
  */
-class DynamicMatrix {
+class DynamicMatrix final {
 protected:
     Graph graph;
 
@@ -38,7 +38,7 @@ public:
      * @param dimension Defines how many rows and columns this matrix has.
      * @param zero The zero element (default is 0.0).
      */
-    DynamicMatrix(const count dimension, const double zero = 0.0);
+    DynamicMatrix(count dimension, double zero = 0.0);
 
 
     /**
@@ -47,7 +47,7 @@ public:
      * @param nCols Number of columns.
      * @param zero The zero element (default is 0.0).
      */
-    DynamicMatrix(const count nRows, const count nCols, const double zero = 0.0);
+    DynamicMatrix(count nRows, count nCols, double zero = 0.0);
 
     /**
      * Constructs the @a dimension x @a dimension Matrix from the elements at position @a positions with values @values.
@@ -55,7 +55,7 @@ public:
      * @param triplets The nonzero elements.
      * @param zero The zero element (default is 0.0).
      */
-    DynamicMatrix(const count dimension, const std::vector<Triplet>& triplets, const double zero = 0.0);
+    DynamicMatrix(count dimension, const std::vector<Triplet>& triplets, double zero = 0.0);
 
     /**
      * Constructs the @a nRows x @a nCols Matrix from the elements at position @a positions with values @values.
@@ -64,7 +64,7 @@ public:
      * @param triplets The nonzero elements.
      * @param zero The zero element (default is 0.0).
      */
-    DynamicMatrix(const count nRows, const count nCols, const std::vector<Triplet>& triplets, const double zero = 0.0);
+    DynamicMatrix(count nRows, count nCols, const std::vector<Triplet>& triplets, double zero = 0.0);
 
     /** Default copy constructor */
     DynamicMatrix(const DynamicMatrix &other) = default;
@@ -73,7 +73,7 @@ public:
     DynamicMatrix(DynamicMatrix &&other) = default;
 
     /** Default destructor */
-    virtual ~DynamicMatrix() = default;
+     ~DynamicMatrix() = default;
 
     /** Default move assignment operator */
     DynamicMatrix& operator=(DynamicMatrix &&other) = default;
@@ -134,7 +134,7 @@ public:
      * @param i The row index.
      * @return Number of non-zeros in row @a i.
      */
-    count nnzInRow(const index i) const;
+    count nnzInRow(index i) const;
 
     /**
      * @return Number of non-zeros in this matrix.
@@ -144,22 +144,22 @@ public:
     /**
      * @return Value at matrix position (i,j).
      */
-    double operator()(const index i, const index j) const;
+    double operator()(index i, index j) const;
 
     /**
      * Set the matrix at position (@a i, @a j) to @a value.
      */
-    void setValue(const index i, const index j, const double value);
+    void setValue(index i, index j, double value);
 
     /**
      * @return Row @a i of this matrix as vector.
      */
-    Vector row(const index i) const;
+    Vector row(index i) const;
 
     /**
      * @return Column @a j of this matrix as vector.
      */
-    Vector column(const index j) const;
+    Vector column(index j) const;
 
     /**
      * @return The main diagonal of this matrix.
@@ -195,13 +195,13 @@ public:
      * Multiplies this matrix with a scalar specified in @a scalar and returns the result.
      * @return The result of multiplying this matrix with @a scalar.
      */
-    DynamicMatrix operator*(const double scalar) const;
+    DynamicMatrix operator*(double scalar) const;
 
     /**
      * Multiplies this matrix with a scalar specified in @a scalar.
      * @return Reference to this matrix.
      */
-    DynamicMatrix& operator*=(const double scalar);
+    DynamicMatrix& operator*=(double scalar);
 
     /**
      * Multiplies this matrix with @a vector and returns the result.
@@ -219,13 +219,13 @@ public:
      * Divides this matrix by a divisor specified in @a divisor and returns the result in a new matrix.
      * @return The result of dividing this matrix by @a divisor.
      */
-    DynamicMatrix operator/(const double divisor) const;
+    DynamicMatrix operator/(double divisor) const;
 
     /**
      * Divides this matrix by a divisor specified in @a divisor.
      * @return Reference to this matrix.
      */
-    DynamicMatrix& operator/=(const double divisor);
+    DynamicMatrix& operator/=(double divisor);
 
     /**
      * Computes A^T * B.
