@@ -26,14 +26,9 @@ def extractLargestComponent(G):
 		Subgraph of largest component, preserving node ids of orignal graph.
 	"""
 
-	cc = nk.components.Connectednk.components(G)
-	cc.run()
-	cSizes = cc.getnk.componentsizes()
-	(largestCompo, size) = max(cSizes.items(), key=operator.itemgetter(1))
-	logging.info("extracting component {0} containing {1} nodes".format(largestCompo, size))
-	compoNodes = [v for v in G.iterNodes() if cc.componentOfNode(v) is largestCompo]
-	C = G.subgraphFromNodes(compoNodes)
-	return C
+	from warnings import warn
+	warn("This function is deprecated, use extractLargestConnectedComponent in the ConnectedComponents module instead.")
+	return nk.components.extractLargestConnectedComponent(G)
 
 
 def batch(graphDir, match, format, function, outPath, header=None):
@@ -67,16 +62,6 @@ def batch(graphDir, match, format, function, outPath, header=None):
 						row = [result]
 					row = [filename, timer.elapsed] + list(row)
 					writer.writerow(row)
-
-
-# TODO: move this to testing module
-
-class TestWorkflows(unittest.TestCase):
-
-	def testExtractLargestComponent(self):
-		G = generators.DorogovtsevMendesGenerator(100).generate()
-		C = extractLargestComponent(G)
-		self.assertEqual(nk.graphtools.size(C), nk.graphtools.size(G))
 
 if __name__ == '__main__':
     unittest.main()
