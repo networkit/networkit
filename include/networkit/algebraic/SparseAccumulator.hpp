@@ -19,12 +19,11 @@ namespace NetworKit {
  * The SparseAccumulator class represents the sparse accumulator datastructure as described in Kepner, Jeremy, and John Gilbert, eds.
  * Graph algorithms in the language of linear algebra. Vol. 22. SIAM, 2011. It is used as temporal storage for efficient computations on matrices.
  */
-class SparseAccumulator {
+class SparseAccumulator final {
 private:
     /** row indicator used to avoid resetting the occupied vector */
     count row;
 
-protected:
     /** dense vector of doubles which stores the computed values */
     std::vector<double> values; // w
 
