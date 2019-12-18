@@ -23,7 +23,7 @@ namespace NetworKit {
  * The CSRMatrix class represents a sparse matrix stored in CSR-Format (i.e. compressed sparse row).
  * If speed is important, use this CSRMatrix instead of the Matrix class.
  */
-class CSRMatrix {
+class CSRMatrix final {
 private:
     std::vector<index> rowIdx;
     std::vector<index> columnIdx;
@@ -70,7 +70,7 @@ public:
      * @param dimension Defines how many rows and columns this matrix has.
      * @param zero The zero element (default = 0.0).
      */
-    CSRMatrix(const count dimension, const double zero = 0.0);
+    CSRMatrix(count dimension, double zero = 0.0);
 
     /**
      * Constructs the CSRMatrix with size @a nRows x @a nCols.
@@ -78,7 +78,7 @@ public:
      * @param nCols Number of columns.
      * @param zero The zero element (default = 0.0).
      */
-    CSRMatrix(const count nRows, const count nCols, const double zero = 0.0);
+    CSRMatrix(count nRows, count nCols, double zero = 0.0);
 
     /**
      * Constructs the @a dimension x @a dimension Matrix from the elements at position @a positions with values @values.
@@ -87,7 +87,7 @@ public:
      * @param zero The zero element (default is 0.0).
      * @param isSorted True, if the triplets are sorted per row. Default is false.
      */
-    CSRMatrix(const count dimension, const std::vector<Triplet>& triplets, const double zero = 0.0, bool isSorted = false);
+    CSRMatrix(count dimension, const std::vector<Triplet>& triplets, double zero = 0.0, bool isSorted = false);
 
     /**
      * Constructs the @a nRows x @a nCols Matrix from the elements at position @a positions with values @values.
@@ -97,7 +97,7 @@ public:
      * @param zero The zero element (default is 0.0).
      * @param isSorted True, if the triplets are sorted per row. Default is false.
      */
-    CSRMatrix(const count nRows, const count nCols, const std::vector<Triplet>& triplets, const double zero = 0.0, bool isSorted = false);
+    CSRMatrix(count nRows, const count nCols, const std::vector<Triplet>& triplets, double zero = 0.0, bool isSorted = false);
 
     /**
      * Constructs the @a nRows x @a nCols Matrix from the elements stored in @a columnIdx and @a values. @a columnIdx and @a values store the colums and values by row.
@@ -108,7 +108,7 @@ public:
      * @param zero The zero element (default is 0.0).
      * @param isSorted True if the column indices in @a columnIdx are sorted in every row.
      */
-    CSRMatrix(const count nRows, const count nCols, const std::vector<std::vector<index>> &columnIdx, const std::vector<std::vector<double>> &values, const double zero = 0.0, bool isSorted = false);
+    CSRMatrix(count nRows, count nCols, const std::vector<std::vector<index>> &columnIdx, const std::vector<std::vector<double>> &values, double zero = 0.0, bool isSorted = false);
 
     /**
      * Constructs the @a nRows x @a nCols Matrix from the elements at position @a positions with values @values.
@@ -120,7 +120,7 @@ public:
      * @param zero The zero element (default is 0.0).
      * @param isSorted True, if the triplets are sorted per row. Default is false.
      */
-    CSRMatrix(const count nRows, const count nCols, const std::vector<index>& rowIdx, const std::vector<index>& columnIdx, const std::vector<double>& nonZeros, const double zero = 0.0, bool isSorted = false);
+    CSRMatrix(count nRows, count nCols, const std::vector<index>& rowIdx, const std::vector<index>& columnIdx, const std::vector<double>& nonZeros, double zero = 0.0, bool isSorted = false);
 
     /** Default copy constructor */
     CSRMatrix (const CSRMatrix &other) = default;
@@ -129,7 +129,7 @@ public:
     CSRMatrix (CSRMatrix &&other) = default;
 
     /** Default destructor */
-    virtual ~CSRMatrix() = default;
+    ~CSRMatrix() = default;
 
     /** Default move assignment operator */
     CSRMatrix& operator=(CSRMatrix &&other) = default;
@@ -190,7 +190,7 @@ public:
      * @param i The row index.
      * @return Number of non-zeros in row @a i.
      */
-    count nnzInRow(const index i) const;
+    count nnzInRow(index i) const;
 
     /**
      * @return Number of non-zeros in this matrix.
@@ -200,13 +200,13 @@ public:
     /**
      * @return Value at matrix position (i,j).
      */
-    double operator()(const index i, const index j) const;
+    double operator()(index i, index j) const;
 
     /**
      * Set the matrix at position (@a i, @a j) to @a value.
      * @note This operation can be linear in the number of non-zeros due to vector element movements
      */
-    void setValue(const index i, const index j, const double value);
+    void setValue(index i, index j, double value);
 
     /**
      * Sorts the column indices in each row for faster access.
@@ -221,12 +221,12 @@ public:
     /**
      * @return Row @a i of this matrix as vector.
      */
-    Vector row(const index i) const;
+    Vector row(index i) const;
 
     /**
      * @return Column @a j of this matrix as vector.
      */
-    Vector column(const index j) const;
+    Vector column(index j) const;
 
     /**
      * @return The main diagonal of this matrix.
