@@ -110,11 +110,11 @@ DenseMatrix& DenseMatrix::operator-=(const DenseMatrix &other) {
     return *this;
 }
 
-DenseMatrix DenseMatrix::operator*(const double &scalar) const {
+DenseMatrix DenseMatrix::operator*(double scalar) const {
     return DenseMatrix(*this) *= scalar;
 }
 
-DenseMatrix& DenseMatrix::operator*=(const double &scalar) {
+DenseMatrix& DenseMatrix::operator*=(double scalar) {
 #pragma omp parallel for
     for (omp_index k = 0; k < static_cast<omp_index>(entries.size()); ++k) {
         entries[k] *= scalar;
@@ -157,11 +157,11 @@ DenseMatrix DenseMatrix::operator*(const DenseMatrix &other) const {
     return DenseMatrix(numberOfRows(), other.numberOfColumns(), resultEntries);
 }
 
-DenseMatrix DenseMatrix::operator/(const double &divisor) const {
+DenseMatrix DenseMatrix::operator/(double divisor) const {
     return DenseMatrix(*this) /= divisor;
 }
 
-DenseMatrix& DenseMatrix::operator/=(const double &divisor) {
+DenseMatrix& DenseMatrix::operator/=(double divisor) {
     return *this *= 1.0 / divisor;
 }
 

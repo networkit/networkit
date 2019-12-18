@@ -262,13 +262,13 @@ public:
      * Multiplies this matrix with a scalar specified in @a scalar and returns the result.
      * @return The result of multiplying this matrix with @a scalar.
      */
-    CSRMatrix operator*(const double &scalar) const;
+    CSRMatrix operator*(double scalar) const;
 
     /**
      * Multiplies this matrix with a scalar specified in @a scalar.
      * @return Reference to this matrix.
      */
-    CSRMatrix& operator*=(const double &scalar);
+    CSRMatrix& operator*=(double scalar);
 
     /**
      * Multiplies this matrix with @a vector and returns the result.
@@ -286,13 +286,13 @@ public:
      * Divides this matrix by a divisor specified in @a divisor and returns the result in a new matrix.
      * @return The result of dividing this matrix by @a divisor.
      */
-    CSRMatrix operator/(const double &divisor) const;
+    CSRMatrix operator/(double divisor) const;
 
     /**
      * Divides this matrix by a divisor specified in @a divisor.
      * @return Reference to this matrix.
      */
-    CSRMatrix& operator/=(const double &divisor);
+    CSRMatrix& operator/=(double divisor);
 
     /**
      * Computes @a A @a binaryOp @a B on the elements of matrix @a A and matrix @a B.

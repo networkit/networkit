@@ -182,26 +182,26 @@ public:
      * Multiplies this vector with a scalar specified in @a scalar and returns the result in a new vector.
      * @return The result of multiplying this vector with @a scalar.
      */
-    Vector operator*(const double &scalar) const;
+    Vector operator*(double scalar) const;
 
     /**
      * Multiplies this vector with a scalar specified in @a scalar.
      * @return Reference to this vector.
      */
-    Vector& operator*=(const double &scalar);
+    Vector& operator*=(double scalar);
 
 
     /**
      * Divides this vector by a divisor specified in @a divisor and returns the result in a new vector.
      * @return The result of dividing this vector by @a divisor.
      */
-    Vector operator/(const double &divisor) const;
+    Vector operator/(double divisor) const;
 
     /**
      * Divides this vector by a divisor specified in @a divisor.
      * @return Reference to this vector.
      */
-    Vector& operator/=(const double &divisor);
+    Vector& operator/=(double divisor);
 
     /**
      * Adds this vector to @a other and returns the result.

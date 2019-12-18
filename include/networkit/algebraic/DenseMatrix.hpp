@@ -179,13 +179,13 @@ public:
      * Multiplies this matrix with a scalar specified in @a scalar and returns the result.
      * @return The result of multiplying this matrix with @a scalar.
      */
-    DenseMatrix operator*(const double &scalar) const;
+    DenseMatrix operator*(double scalar) const;
 
     /**
      * Multiplies this matrix with a scalar specified in @a scalar.
      * @return Reference to this matrix.
      */
-    DenseMatrix& operator*=(const double &scalar);
+    DenseMatrix& operator*=(double scalar);
 
     /**
      * Multiplies this matrix with @a vector and returns the result.
@@ -203,13 +203,13 @@ public:
      * Divides this matrix by a divisor specified in @a divisor and returns the result in a new matrix.
      * @return The result of dividing this matrix by @a divisor.
      */
-    DenseMatrix operator/(const double &divisor) const;
+    DenseMatrix operator/(double divisor) const;
 
     /**
      * Divides this matrix by a divisor specified in @a divisor.
      * @return Reference to this matrix.
      */
-    DenseMatrix& operator/=(const double &divisor);
+    DenseMatrix& operator/=(double divisor);
 
     /**
      * Transposes this matrix and returns it.
