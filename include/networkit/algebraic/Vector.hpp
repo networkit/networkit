@@ -26,7 +26,7 @@ class DynamicMatrix;
  * @ingroup algebraic
  * The Vector class represents a basic vector with double coefficients.
  */
-class Vector {
+class Vector final {
 private:
     std::vector<double> values;
     bool transposed;
@@ -41,14 +41,14 @@ public:
      * @param initialValue All coefficients will be initialized to @a initialValue.
      * @param transpose Indicates whether this vector is transposed (row vector) or not (column vector).
      */
-    Vector(const count dimension, const double initialValue = 0, const bool transpose = false);
+    Vector(count dimension, double initialValue = 0, bool transpose = false);
 
     /**
      * Constructs the Vector with the contents of @a values.
      * @param values The values of this Vector.
      * @param transpose Indicates whether this vector is transposed (row vector) or not (column vector).
      */
-    Vector(const std::vector<double> &values, const bool transpose = false);
+    Vector(const std::vector<double> &values, bool transpose = false);
 
     /**
      * Constructs the Vector from the contents of the initializer list @a list.
@@ -63,7 +63,7 @@ public:
     Vector(Vector &&other) = default;
 
     /** Default destructor */
-    virtual ~Vector() = default;
+    ~Vector() = default;
 
     /** Default copy assignment operator */
     Vector& operator=(const Vector &other) = default;
@@ -109,7 +109,7 @@ public:
      * @param idx The index of the element.
      * @return Reference to the element at index @a idx.
      */
-    inline double& operator[](const index idx) {
+    inline double& operator[](index idx) {
         assert(idx < values.size());
         return values[idx];
     }
@@ -119,7 +119,7 @@ public:
      * @a idx The index of the element.
      * @return Constant reference to the element at index @a idx.
      */
-    inline const double& operator[](const index idx) const {
+    inline const double& operator[](index idx) const {
         assert(idx < values.size());
         return values[idx];
     }
@@ -129,7 +129,7 @@ public:
      * @param idx The index of the element.
      * @return Reference to the element at index @a idx.
      */
-    double &at(const index idx) {
+    double &at(index idx) {
         if (idx >= values.size()) {
             throw std::runtime_error("index out of range");
         } else {
@@ -184,7 +184,7 @@ public:
      */
     Vector operator*(double scalar) const;
 
-    /**
+    /*
      * Multiplies this vector with a scalar specified in @a scalar.
      * @return Reference to this vector.
      */
@@ -213,7 +213,7 @@ public:
     /**
      * Adds @a value to each element of this vector and returns the result.
      */
-    Vector operator+(const double value) const;
+    Vector operator+(double value) const;
 
     /**
      * Adds @a other to this vector.
@@ -225,7 +225,7 @@ public:
     /**
      * Adds @a value to each element of this vector.
      */
-    Vector& operator+=(const double value);
+    Vector& operator+=(double value);
 
     /**
      * Subtracts @a other from this vector and returns the result.
@@ -238,7 +238,7 @@ public:
     /**
      * Subtracts @a value from each element of this vector and returns the result.
      */
-    Vector operator-(const double value) const;
+    Vector operator-(double value) const;
 
     /**
      * Subtracts @a other from this vector.
@@ -250,7 +250,7 @@ public:
     /**
      * Subtracts @a value from each element of this vector.
      */
-    Vector& operator-=(const double value);
+    Vector& operator-=(double value);
 
     /**
      * Applies the unary function @a unaryElementFunction to each value in the Vector. Note that it must hold that the

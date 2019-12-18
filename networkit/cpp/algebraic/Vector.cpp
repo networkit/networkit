@@ -100,7 +100,7 @@ Vector Vector::operator+(const Vector &other) const {
     return Vector(*this) += other;
 }
 
-Vector Vector::operator+(const double value) const {
+Vector Vector::operator+(double value) const {
     return Vector(*this) += value;
 }
 
