@@ -14,15 +14,6 @@ namespace NetworKit {
 
 namespace Traversal {
 
-struct CompareDistance {
-public:
-    CompareDistance(const std::vector<edgeweight> &distance) : distance(distance) {}
-
-    bool operator()(const node x, const node y) const noexcept { return distance[x] < distance[y]; }
-
-private:
-    const std::vector<edgeweight> &distance;
-};
 /**
  * Calls the given Dijkstra handle with distance parameter
  */
@@ -50,7 +41,11 @@ auto callDijkstraHandle(F &f, node u, edgeweight) -> decltype(f(u)) {
 template <class InputIt, typename Handle>
 void DijkstraFrom(const Graph &G, InputIt first, InputIt last, Handle handle) {
     std::vector<edgeweight> distance(G.upperNodeIdBound(), std::numeric_limits<edgeweight>::max());
-    tlx::d_ary_addressable_int_heap<node, 2, CompareDistance> heap{CompareDistance(distance)};
+    const auto compareDistance = [&distance](node u, node v) noexcept -> bool {
+        return distance[u] < distance[v];
+    };
+
+    tlx::d_ary_addressable_int_heap<node, 2, decltype(compareDistance)> heap{compareDistance};
 
     std::for_each(first, last, [&heap, &distance](const node u) {
         heap.push(u);

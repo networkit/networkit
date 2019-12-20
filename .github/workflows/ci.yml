@@ -7,6 +7,7 @@ env:
   CXX_STANDARD: 14
   MONOLITH: ON
   TLX_PATH: /home/runner/work/networkit/networkit/tlx
+  NATIVE: OFF
 
 jobs:
   macos-build-apple-clang:
@@ -36,7 +37,7 @@ jobs:
       - name: Checkout tlx
         if: matrix.variant == 'full build'
         uses: actions/checkout@v2
-        with: 
+        with:
           repository: tlx/tlx
           path: tlx
       - name: Prepare environment and run checks (full build)
@@ -45,6 +46,7 @@ jobs:
         shell: bash
         env:
           TLX_PATH: /Users/runner/work/networkit/networkit/tlx
+          NATIVE: ON
       - name: Prepare environment and run checks (non-monolithic)
         if: matrix.variant == 'non-monolithic'
         run:  ${{ github.workspace }}/.github/workflows/scripts/cpp_only.sh
@@ -55,6 +57,8 @@ jobs:
   macos-build-misc-compiler:
     name: "macOS ${{ matrix.os }} (latest ${{ matrix.variant }}, Python 3.9): core build"
     runs-on: macos-${{ matrix.os }}
+    env:
+        NATIVE: ON
     strategy:
       matrix:
         os: ['10.15']  # 11.0 temp. removed due to errors in preview image / git actions pipelines
@@ -120,13 +124,15 @@ jobs:
       - name: Checkout tlx
         if: matrix.variant == 'full build'
         uses: actions/checkout@v2
-        with: 
+        with:
           repository: tlx/tlx
           path: tlx
       - name: Prepare environment and run checks (full build)
         if: matrix.variant == 'full build'
         run:  ${{ github.workspace }}/.github/workflows/scripts/full.sh
         shell: bash
+        env:
+          NATIVE: ON
       - name: Prepare environment and run checks (core build)
         if: matrix.variant == 'core build'
         run:  ${{ github.workspace }}/.github/workflows/scripts/cpp_only.sh
@@ -139,6 +145,8 @@ jobs:
   linux-build-misc-compiler:
     name: "Linux (latest ${{ matrix.variant }}, Python 3.9): full build"
     runs-on: ubuntu-20.04
+    env:
+        NATIVE: ON
     strategy:
       matrix:
         variant: ['llvm-11']
@@ -159,7 +167,7 @@ jobs:
           submodules: true
       - name: Checkout tlx
         uses: actions/checkout@v2
-        with: 
+        with:
           repository: tlx/tlx
           path: tlx
       - name: Prepare environment and run checks
@@ -172,6 +180,8 @@ jobs:
   linux-build-min-support:
     name: "Linux (${{ matrix.variant }}, Python 3.6): full build"
     runs-on: ubuntu-16.04
+    env:
+        NATIVE: ON
     strategy:
       matrix:
         variant: ['gcc-5', 'clang-3.9']
@@ -192,7 +202,7 @@ jobs:
           submodules: true
       - name: Checkout tlx
         uses: actions/checkout@v2
-        with: 
+        with:
           repository: tlx/tlx
           path: tlx
       - name: Prepare environment and run checks (gcc-5)
@@ -209,6 +219,7 @@ jobs:
         env:
           CC: clang-3.9
           CXX: clang++-3.9
+          NATIVE: ON
 
   linux-build-conformance:
     name: "Linux (latest gcc-10): C++${{ matrix.variant }} conformance"
