@@ -8091,12 +8091,13 @@ cdef class ApproxGroupBetweenness(Algorithm):
 
 		Parameters
 		----------
-		group : set of nodes
+		group : list
+			Set of nodes.
 
 		Returns
 		-------
 		count
-				The score of the given group.
+			The score of the given group.
 		"""
 		return (<_ApproxGroupBetweenness*>(self._this)).scoreOfGroup(group)
 
