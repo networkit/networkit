@@ -1,5 +1,5 @@
 /*
- * DenseMatrix.h
+ * DenseMatrix.hpp
  *
  *  Created on: Nov 25, 2015
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
@@ -8,11 +8,12 @@
 #ifndef NETWORKIT_ALGEBRAIC_DENSE_MATRIX_HPP_
 #define NETWORKIT_ALGEBRAIC_DENSE_MATRIX_HPP_
 
+#include <cassert>
+#include <vector>
+
 #include <networkit/Globals.hpp>
 #include <networkit/algebraic/AlgebraicGlobals.hpp>
 #include <networkit/algebraic/Vector.hpp>
-#include <cassert>
-#include <vector>
 
 namespace NetworKit {
 
@@ -242,7 +243,7 @@ public:
      * @param unaryElementFunction
      */
     template<typename F>
-    void apply(const F unaryElementFunction);
+    void apply(F unaryElementFunction);
 
     /**
      * Decomposes the given @a matrix into lower L and upper U matrix (in-place).
@@ -318,7 +319,7 @@ public:
 };
 
 template<typename F>
-void DenseMatrix::apply(const F unaryElementFunction) {
+void DenseMatrix::apply(F unaryElementFunction) {
 #pragma omp parallel for
     for (omp_index k = 0; k < static_cast<omp_index>(entries.size()); ++k) {
         entries[k] = unaryElementFunction(entries[k]);
