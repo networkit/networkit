@@ -1,5 +1,5 @@
 /*
- * DynamicMatrix.h
+ * DynamicMatrix.hpp
  *
  *  Created on: 13.03.2014
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
@@ -8,10 +8,10 @@
 #ifndef NETWORKIT_ALGEBRAIC_DYNAMIC_MATRIX_HPP_
 #define NETWORKIT_ALGEBRAIC_DYNAMIC_MATRIX_HPP_
 
-#include <networkit/graph/Graph.hpp>
-#include <networkit/algebraic/Vector.hpp>
-#include <networkit/algebraic/SparseAccumulator.hpp>
 #include <networkit/algebraic/AlgebraicGlobals.hpp>
+#include <networkit/algebraic/SparseAccumulator.hpp>
+#include <networkit/algebraic/Vector.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
@@ -279,7 +279,7 @@ public:
      * @param unaryElementFunction
      */
     template<typename F>
-    void apply(const F unaryElementFunction);
+    void apply(F unaryElementFunction);
 
     /**
      * Returns the (weighted) adjacency matrix of the (weighted) Graph @a graph.
@@ -337,7 +337,7 @@ public:
 } /* namespace NetworKit */
 
 template<typename F>
-void NetworKit::DynamicMatrix::apply(const F unaryElementFunction) {
+void NetworKit::DynamicMatrix::apply(F unaryElementFunction) {
     forNonZeroElementsInRowOrder([&](index i, index j, double value) {
         setValue(i,j, unaryElementFunction(value));
     });
