@@ -1,5 +1,5 @@
 /*
- * Vector.h
+ * Vector.hpp
  *
  *  Created on: 12.03.2014
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
@@ -115,11 +115,11 @@ public:
     }
 
     /**
-     * Returns a constant reference to the element at index @a idx without checking the range of this vector.
+     * Returns the element at index @a idx without checking the range of this vector.
      * @a idx The index of the element.
      * @return Constant reference to the element at index @a idx.
      */
-    inline const double& operator[](index idx) const {
+    inline double operator[](index idx) const {
         assert(idx < values.size());
         return values[idx];
     }
@@ -258,7 +258,7 @@ public:
      * @param unaryElementFunction
      */
     template<typename F>
-    void apply(const F unaryElementFunction);
+    void apply(F unaryElementFunction);
 
     /**
      * Iterate over all elements of the vector and call handler (lambda closure).
@@ -287,7 +287,7 @@ public:
  * Multiplies the vector @a v with a scalar specified in @a scalar and returns the result.
  * @return The result of multiplying this vector with @a scalar.
  */
-inline Vector operator*(const double &scalar, const Vector &v) {
+inline Vector operator*(double scalar, const Vector &v) {
     return v.operator*(scalar);
 }
 
@@ -323,7 +323,7 @@ Vector Vector::operator*(const Matrix& matrix) const {
 }
 
 template<typename F>
-void Vector::apply(const F unaryElementFunction) {
+void Vector::apply(F unaryElementFunction) {
 #pragma omp parallel for
     for (omp_index i = 0; i < static_cast<omp_index>(getDimension()); ++i) {
         values[i] = unaryElementFunction(values[i]);
@@ -332,14 +332,14 @@ void Vector::apply(const F unaryElementFunction) {
 
 template<typename L>
 inline void Vector::forElements(L handle) {
-    for (uint64_t i = 0; i < getDimension(); i++) {
+    for (uint64_t i = 0; i < getDimension(); ++i) {
         handle(values[i]);
     }
 }
 
 template<typename L>
 inline void Vector::forElements(L handle) const {
-    for (uint64_t i = 0; i < getDimension(); i++) {
+    for (uint64_t i = 0; i < getDimension(); ++i) {
         handle(values[i]);
     }
 }
@@ -347,7 +347,7 @@ inline void Vector::forElements(L handle) const {
 template<typename L>
 inline void Vector::parallelForElements(L handle) {
 #pragma omp parallel for
-    for (omp_index i = 0; i < static_cast<omp_index>(getDimension()); i++) {
+    for (omp_index i = 0; i < static_cast<omp_index>(getDimension()); ++i) {
         handle(i, values[i]);
     }
 }
@@ -355,13 +355,10 @@ inline void Vector::parallelForElements(L handle) {
 template<typename L>
 inline void Vector::parallelForElements(L handle) const {
 #pragma omp parallel for
-    for (omp_index i = 0; i < static_cast<omp_index>(getDimension()); i++) {
+    for (omp_index i = 0; i < static_cast<omp_index>(getDimension()); ++i) {
         handle(i, values[i]);
     }
 }
 
-
 } /* namespace NetworKit */
-
-
 #endif // NETWORKIT_ALGEBRAIC_VECTOR_HPP_
