@@ -1,5 +1,5 @@
 /*
- * SparseAccumulator.h
+ * SparseAccumulator.hpp
  *
  *  Created on: 14.05.2014
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
@@ -8,9 +8,10 @@
 #ifndef NETWORKIT_ALGEBRAIC_SPARSE_ACCUMULATOR_HPP_
 #define NETWORKIT_ALGEBRAIC_SPARSE_ACCUMULATOR_HPP_
 
-#include <vector>
 #include <algorithm>
 #include <cassert>
+#include <vector>
+
 #include <networkit/Globals.hpp>
 
 namespace NetworKit {
@@ -86,7 +87,7 @@ public:
         std::sort(indices.begin(), indices.end());
         for (index idx : indices) {
             handle(row - 1, idx, values[idx]);
-            nonZeros++;
+            ++nonZeros;
         }
 
         return nonZeros;
@@ -96,7 +97,7 @@ public:
      * Sets the SparseAccumulator to the next row which invalidates all currently stored data.
      */
     void increaseRow() {
-        row++;
+        ++row;
         indices.clear();
     }
 };
