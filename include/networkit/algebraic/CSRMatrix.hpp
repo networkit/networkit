@@ -1,5 +1,5 @@
 /*
- * CSRMatrix.h
+ * CSRMatrix.hpp
  *
  *  Created on: May 6, 2015
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
@@ -9,6 +9,7 @@
 #define NETWORKIT_ALGEBRAIC_CSR_MATRIX_HPP_
 
 #include <vector>
+
 #include <networkit/Globals.hpp>
 #include <networkit/algebraic/AlgebraicGlobals.hpp>
 #include <networkit/algebraic/Vector.hpp>
@@ -97,7 +98,7 @@ public:
      * @param zero The zero element (default is 0.0).
      * @param isSorted True, if the triplets are sorted per row. Default is false.
      */
-    CSRMatrix(count nRows, const count nCols, const std::vector<Triplet>& triplets, double zero = 0.0, bool isSorted = false);
+    CSRMatrix(count nRows, count nCols, const std::vector<Triplet>& triplets, double zero = 0.0, bool isSorted = false);
 
     /**
      * Constructs the @a nRows x @a nCols Matrix from the elements stored in @a columnIdx and @a values. @a columnIdx and @a values store the colums and values by row.
@@ -557,7 +558,7 @@ template<typename L> inline CSRMatrix CSRMatrix::binaryOperator(const CSRMatrix 
 }
 
 template<typename F>
-void CSRMatrix::apply(const F unaryElementFunction) {
+void CSRMatrix::apply(F unaryElementFunction) {
 #pragma omp parallel for
     for (omp_index k = 0; k < static_cast<omp_index>(nonZeros.size()); ++k) {
         nonZeros[k] = unaryElementFunction(nonZeros[k]);
