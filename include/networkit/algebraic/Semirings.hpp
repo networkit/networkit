@@ -1,5 +1,5 @@
 /*
- * Semirings.h
+ * Semirings.hpp
  *
  *  Created on: May 31, 2016
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
