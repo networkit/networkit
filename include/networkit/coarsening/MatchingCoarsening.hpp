@@ -1,5 +1,5 @@
 /*
- * MatchingCoarsening.h
+ * MatchingCoarsening.hpp
  *
  *  Created on: 30.10.2012
  *      Author: Christian Staudt (christian.staudt@kit.edu)
@@ -18,7 +18,7 @@ namespace NetworKit {
  * @ingroup coarsening
  * Coarsens graph according to a matching.
  */
-class MatchingCoarsening: public GraphCoarsening {
+class MatchingCoarsening final : public GraphCoarsening {
 
 public:
     MatchingCoarsening(const Graph& G, const Matching& M, bool noSelfLoops = false);
@@ -32,7 +32,7 @@ public:
      *
      * @return		coarse graph
      */
-    virtual void run();
+    void run() override;
 
 private:
     const Matching& M;
