@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-GraphCoarsening::GraphCoarsening(const Graph& G) : Algorithm(), G(G) {
+GraphCoarsening::GraphCoarsening(const Graph& G) : Algorithm(), G(&G) {
 
 }
 
@@ -38,7 +38,7 @@ std::map<node, std::vector<node> > GraphCoarsening::getCoarseToFineNodeMapping()
     });
 
 
-    G.forNodes([&](node v) {
+    G->forNodes([&](node v) {
         node v_ = nodeMapping[v];
         reverseMap[v_].push_back(v);
     });

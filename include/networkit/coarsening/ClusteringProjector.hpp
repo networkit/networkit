@@ -1,5 +1,5 @@
 /*
- * ClusteringProjector.h
+ * ClusteringProjector.hpp
  *
  *  Created on: 07.01.2013
  *      Author: Christian Staudt (christian.staudt@kit.edu)
