@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-    DynWeaklyConnectedComponents::DynWeaklyConnectedComponents(const Graph& G) : G(G) {
+    DynWeaklyConnectedComponents::DynWeaklyConnectedComponents(const Graph& G) : G(&G) {
         if (!G.isDirected()) {
             throw std::runtime_error("Weakly Connected Components can be computeed for directed graphs. Use ConnectedComponents for undirected graphs.");
         }
@@ -19,7 +19,7 @@ namespace NetworKit {
     void DynWeaklyConnectedComponents::init() {
         edgesMap.clear();
         indexEdges();
-        components.assign(G.upperNodeIdBound(), none);
+        components.assign(G->upperNodeIdBound(), none);
         isTree.assign(edgesMap.size(), false);
         compSize.clear();
         std::queue<index> emptyQueue;
@@ -36,7 +36,7 @@ namespace NetworKit {
         std::queue<node> q;
 
         // Perform BFSs to assign a component ID to each node.
-        G.forNodes([&](node u) {
+        G->forNodes([&](node u) {
 
             // Node u has not been visited.
             if (components[u] == none) {
@@ -55,11 +55,11 @@ namespace NetworKit {
 
                     // Enqueue neighbors (both from in and out edges) and set
                     // new component.
-                    G.forNeighborsOf(v, [&](node w) {
+                    G->forNeighborsOf(v, [&](node w) {
                         updateComponent(c, w, q, v);
                     });
 
-                    G.forInNeighborsOf(v, [&](node w) {
+                    G->forInNeighborsOf(v, [&](node w) {
                         updateComponent(c, w, q, v);
                     });
                 } while (!q.empty());
@@ -87,7 +87,7 @@ namespace NetworKit {
 
     void DynWeaklyConnectedComponents::indexEdges() {
         edgeid eid = 0;
-        G.forEdges([&] (node u, node v) {
+        G->forEdges([&] (node u, node v) {
             if (edgesMap.find(makePair(u, v)) == edgesMap.end()) {
                 insertEdgeIntoMap(u, v, eid);
                 ++eid;
@@ -154,14 +154,14 @@ namespace NetworKit {
         index maxComp = std::max(components[u], components[v]);
         index minComp = std::min(components[u], components[v]);
 
-        if (maxComp == minComp || G.hasEdge(v, u)) {
+        if (maxComp == minComp || G->hasEdge(v, u)) {
             updateTreeAfterAddition(eid, false);
             return;
         }
 
         // in the other case, we can merge the two components in an undirected
         // graph
-        G.parallelForNodes([&](node w) {
+        G->parallelForNodes([&](node w) {
             // We update the component with higher index with the lower index
             if (components[w] == maxComp) {
                 components[w] = minComp;
@@ -210,7 +210,7 @@ namespace NetworKit {
         newCmp[u] = nextId;
         count newCmpSize = 1;
 
-        tmpDistances.assign(G.upperNodeIdBound(), none);
+        tmpDistances.assign(G->upperNodeIdBound(), none);
         std::queue<node> q;
         q.push(u);
         tmpDistances[u] = 0;
@@ -227,7 +227,7 @@ namespace NetworKit {
             count d = tmpDistances[s] + 1;
 
             // Enqueue not visited neighbors reachable through outgoing edges
-            G.forNeighborsOf(s, [&](node w) {
+            G->forNeighborsOf(s, [&](node w) {
                 if (!connected) {
                     if (tmpDistances[w] == none) {
                         tmpDistances[w] = d;
@@ -249,7 +249,7 @@ namespace NetworKit {
             // Checking in neighbors (forNeighborsOf gets only the out-degree
             // neighbors).
             if (!connected) {
-                G.forInNeighborsOf(s, [&](node w) {
+                G->forInNeighborsOf(s, [&](node w) {
                     if (!connected) {
                         if (tmpDistances[w] == none) {
                             tmpDistances[w] = d;
@@ -296,7 +296,7 @@ namespace NetworKit {
             q.pop();
 
             bool nextEdgeFound = false;
-            G.forNeighborsOf(s, [&](node w) {
+            G->forNeighborsOf(s, [&](node w) {
                 if (!nextEdgeFound) {
                     if (visitNodeReversed(
                         u, s, w, v, d, q, nextEdgeFound, level)
@@ -307,7 +307,7 @@ namespace NetworKit {
             });
 
             if (!nextEdgeFound) {
-                G.forInNeighborsOf(s, [&](node w) {
+                G->forInNeighborsOf(s, [&](node w) {
                     if (!nextEdgeFound) {
                         if (visitNodeReversed(
                             u, s, w, v, d, q, nextEdgeFound, level)
@@ -397,7 +397,7 @@ namespace NetworKit {
             }
         }
 
-        G.forNodes([&](node u) {
+        G->forNodes([&](node u) {
             result[compIndex.find(components[u])->second].push_back(u);
         });
 

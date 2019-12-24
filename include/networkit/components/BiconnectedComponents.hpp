@@ -65,7 +65,7 @@ private:
   void init();
   void newComponent(std::pair<node, node> e);
 
-  const Graph &G;
+  const Graph *G;
   count n;
   count idx;
   count nComp;
