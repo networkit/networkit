@@ -24,7 +24,7 @@ namespace NetworKit {
  * particular for complex networks it is usually quite fast, even graphs with
  * millions of edges can usually be processed in less than a minute.
  */
-class MaximalCliques : public Algorithm {
+class MaximalCliques final : public Algorithm {
 
 public:
     /**
@@ -68,8 +68,8 @@ public:
      */
     const std::vector<std::vector<node>>& getCliques() const;
 
-protected:
-    const Graph& G;
+private:
+    const Graph* G;
 
     std::vector<std::vector<node>> result;
 
