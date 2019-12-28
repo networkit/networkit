@@ -7848,7 +7848,7 @@ cdef class GroupDegree(Algorithm):
 	score, this make the group degree monotone and submodular and the algorithm
 	is guaranteed to return a (1 - 1/e)-approximation of the optimal solution.
 
-	GroupDegree(G, k = 1, countGroupNodes = False)
+	GroupDegree(G, k = 1, countGroupNodes = True)
 
 	Parameters
 	----------
@@ -7859,7 +7859,7 @@ cdef class GroupDegree(Algorithm):
 	"""
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, k = 1, countGroupNodes = False):
+	def __cinit__(self, Graph G, k = 1, countGroupNodes = True):
 		self._G = G
 		self._this = new _GroupDegree(G._this, k, countGroupNodes)
 
@@ -7939,6 +7939,13 @@ cdef class GroupCloseness(Algorithm):
 		The group of k nodes with highest closeness.
 	"""
 	def groupMaxCloseness(self):
+		"""
+		Returns the group with maximum closeness centrality.
+		Returns
+		-------
+		vector
+			The group of k nodes with maximum closeness centrality.
+		"""
 		return (<_GroupCloseness*>(self._this)).groupMaxCloseness()
 
 
@@ -8042,6 +8049,7 @@ cdef extern from "<networkit/centrality/ApproxGroupBetweenness.hpp>":
 	cdef cppclass _ApproxGroupBetweenness "NetworKit::ApproxGroupBetweenness" (_Algorithm):
 		_ApproxGroupBetweenness(_Graph, count, double) except +
 		vector[node] groupMaxBetweenness() except +
+		count scoreOfGroup(vector[node]) except +
 
 cdef class ApproxGroupBetweenness(Algorithm):
 	"""
@@ -8076,6 +8084,22 @@ cdef class ApproxGroupBetweenness(Algorithm):
 				The group of nodes with highest approximated group betweenness.
 		"""
 		return (<_ApproxGroupBetweenness*>(self._this)).groupMaxBetweenness()
+
+	def scoreOfGroup(self, vector[node] group):
+		"""
+		Returns the score of the given group.
+
+		Parameters
+		----------
+		group : list
+			Set of nodes.
+
+		Returns
+		-------
+		count
+			The score of the given group.
+		"""
+		return (<_ApproxGroupBetweenness*>(self._this)).scoreOfGroup(group)
 
 cdef extern from "<networkit/centrality/Closeness.hpp>" namespace "NetworKit":
 
