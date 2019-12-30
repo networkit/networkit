@@ -11337,6 +11337,8 @@ cdef class SimmelianOverlapScore(EdgeScore):
 		The graph to apply the Simmelian Backbone algorithm to.
 	triangles : vector[count]
 		Previously calculated edge triangle counts on G.
+	maxRank: count
+		maximum rank that is considered for overlap calculation.
 	"""
 	def __cinit__(self, Graph G, vector[count] triangles, count maxRank):
 		self._G = G
@@ -11397,7 +11399,7 @@ cdef extern from "<networkit/sparsification/RandomEdgeScore.hpp>":
 
 cdef class RandomEdgeScore(EdgeScore):
 	"""
-	[todo]
+	Generates a random edge attribute. Each edge is assigned a random value in [0,1].
 
 	Parameters
 	----------
@@ -11703,6 +11705,16 @@ cdef extern from "<networkit/sparsification/SCANStructuralSimilarityScore.hpp>":
 		_SCANStructuralSimilarityScore(_Graph G, const vector[count]& triangles) except +
 
 cdef class SCANStructuralSimilarityScore(EdgeScore):
+	"""
+	An implementation of the SCANStructuralSimilarityScore algorithm.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The graph to apply the Local Similarity algorithm to.
+	triangles : vector[count]
+		Previously calculated edge triangle counts.
+	"""
 	cdef vector[count] _triangles
 
 	def __cinit__(self, Graph G, vector[count] triangles):
