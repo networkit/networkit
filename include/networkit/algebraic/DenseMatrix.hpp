@@ -1,5 +1,5 @@
 /*
- * DenseMatrix.h
+ * DenseMatrix.hpp
  *
  *  Created on: Nov 25, 2015
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
@@ -8,11 +8,12 @@
 #ifndef NETWORKIT_ALGEBRAIC_DENSE_MATRIX_HPP_
 #define NETWORKIT_ALGEBRAIC_DENSE_MATRIX_HPP_
 
+#include <cassert>
+#include <vector>
+
 #include <networkit/Globals.hpp>
 #include <networkit/algebraic/AlgebraicGlobals.hpp>
 #include <networkit/algebraic/Vector.hpp>
-#include <cassert>
-#include <vector>
 
 namespace NetworKit {
 
@@ -21,7 +22,7 @@ namespace NetworKit {
  * Represents a dense matrix. Use this matrix to run LU decompositions and LU solves.
  * Note that most matrices are rather sparse s.t. CSRMatrix might be a better representation.
  */
-class DenseMatrix {
+class DenseMatrix final {
 private:
     count nRows;
     count nCols;
@@ -37,7 +38,7 @@ public:
      * @param dimension Defines how many rows and columns this matrix has.
      * @param zero The zero element (default is 0.0).
      */
-    DenseMatrix(const count dimension, double zero = 0.0);
+    DenseMatrix(count dimension, double zero = 0.0);
 
     /**
      * Constructs the DenseMatrix with size @a nRows x @a nCols.
@@ -45,7 +46,7 @@ public:
      * @param nCols Number of columns.
      * @param zero The zero element (default is 0.0).
      */
-    DenseMatrix(const count nRows, const count nCols, double zero = 0.0);
+    DenseMatrix(count nRows, count nCols, double zero = 0.0);
 
     /**
      * Constructs the @a dimension x @a dimension DenseMatrix from the elements at position @a positions with values @values.
@@ -53,7 +54,7 @@ public:
      * @param triplets The nonzero elements.
      * @param zero The zero element (default is 0.0).
      */
-    DenseMatrix(const count dimension, const std::vector<Triplet>& triplets, double zero = 0.0);
+    DenseMatrix(count dimension, const std::vector<Triplet>& triplets, double zero = 0.0);
 
     /**
      * Constructs the @a nRows x @a nCols DenseMatrix from the elements at position @a positions with values @values.
@@ -62,7 +63,7 @@ public:
      * @param triplets The nonzero elements.
      * @param zero The zero element (default is 0.0).
      */
-    DenseMatrix(const count nRows, const count nCols, const std::vector<Triplet>& triplets, double zero = 0.0);
+    DenseMatrix(count nRows,count nCols, const std::vector<Triplet>& triplets, double zero = 0.0);
 
     /**
      * Constructs an instance of DenseMatrix given the number of rows (@a nRows) and the number of columns (@a nCols) and its
@@ -73,10 +74,10 @@ public:
      * @param zero The zero element (default is 0.0).
      * @note The size of the @a entries vector should be equal to @a nRows * @a nCols.
      */
-    DenseMatrix(const count nRows, const count nCols, const std::vector<double>& entries, double zero = 0.0);
+    DenseMatrix(count nRows, count nCols, const std::vector<double>& entries, double zero = 0.0);
 
     /** Default destructor */
-    virtual ~DenseMatrix() = default;
+    ~DenseMatrix() = default;
 
     /** Default copy constructor */
     DenseMatrix (const DenseMatrix &other) = default;
@@ -116,7 +117,7 @@ public:
      * @return Number of non-zeros in row @a i.
      * @note This function is linear in the number of columns of the matrix.
      */
-    count nnzInRow(const index i) const;
+    count nnzInRow(index i) const;
 
     /**
      * @return Number of non-zeros in this matrix.
@@ -127,23 +128,23 @@ public:
     /**
      * @return Value at matrix position (i,j).
      */
-    double operator()(const index i, const index j) const;
+    double operator()(index i, index j) const;
 
     /**
      * Set the matrix at position (@a i, @a j) to @a value.
      */
-    void setValue(const index i, const index j, const double value);
+    void setValue(index i, index j, double value);
 
 
     /**
      * @return Row @a i of this matrix as vector.
      */
-    Vector row(const index i) const;
+    Vector row(index i) const;
 
     /**
      * @return Column @a j of this matrix as vector.
      */
-    Vector column(const index j) const;
+    Vector column(index j) const;
 
     /**
      * @return The main diagonal of this matrix.
@@ -179,13 +180,13 @@ public:
      * Multiplies this matrix with a scalar specified in @a scalar and returns the result.
      * @return The result of multiplying this matrix with @a scalar.
      */
-    DenseMatrix operator*(const double &scalar) const;
+    DenseMatrix operator*(double scalar) const;
 
     /**
      * Multiplies this matrix with a scalar specified in @a scalar.
      * @return Reference to this matrix.
      */
-    DenseMatrix& operator*=(const double &scalar);
+    DenseMatrix& operator*=(double scalar);
 
     /**
      * Multiplies this matrix with @a vector and returns the result.
@@ -203,13 +204,13 @@ public:
      * Divides this matrix by a divisor specified in @a divisor and returns the result in a new matrix.
      * @return The result of dividing this matrix by @a divisor.
      */
-    DenseMatrix operator/(const double &divisor) const;
+    DenseMatrix operator/(double divisor) const;
 
     /**
      * Divides this matrix by a divisor specified in @a divisor.
      * @return Reference to this matrix.
      */
-    DenseMatrix& operator/=(const double &divisor);
+    DenseMatrix& operator/=(double divisor);
 
     /**
      * Transposes this matrix and returns it.
@@ -242,7 +243,7 @@ public:
      * @param unaryElementFunction
      */
     template<typename F>
-    void apply(const F unaryElementFunction);
+    void apply(F unaryElementFunction);
 
     /**
      * Decomposes the given @a matrix into lower L and upper U matrix (in-place).
@@ -318,7 +319,7 @@ public:
 };
 
 template<typename F>
-void DenseMatrix::apply(const F unaryElementFunction) {
+void DenseMatrix::apply(F unaryElementFunction) {
 #pragma omp parallel for
     for (omp_index k = 0; k < static_cast<omp_index>(entries.size()); ++k) {
         entries[k] = unaryElementFunction(entries[k]);
