@@ -2,7 +2,7 @@
  * MatchingCoarsening.cpp
  *
  *  Created on: 30.10.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #include <networkit/coarsening/MatchingCoarsening.hpp>

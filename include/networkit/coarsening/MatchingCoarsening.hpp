@@ -2,14 +2,13 @@
  * MatchingCoarsening.hpp
  *
  *  Created on: 30.10.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #ifndef NETWORKIT_COARSENING_MATCHING_COARSENING_HPP_
 #define NETWORKIT_COARSENING_MATCHING_COARSENING_HPP_
 
 #include <networkit/coarsening/GraphCoarsening.hpp>
-
 #include <networkit/matching/Matching.hpp>
 
 namespace NetworKit {
