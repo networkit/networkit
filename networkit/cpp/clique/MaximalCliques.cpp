@@ -1,9 +1,9 @@
-#include <networkit/clique/MaximalCliques.hpp>
-#include <networkit/centrality/CoreDecomposition.hpp>
-#include <networkit/auxiliary/SignalHandling.hpp>
-
-#include <cassert>
 #include <algorithm>
+#include <cassert>
+
+#include <networkit/auxiliary/SignalHandling.hpp>
+#include <networkit/centrality/CoreDecomposition.hpp>
+#include <networkit/clique/MaximalCliques.hpp>
 
 namespace {
     // Private implementation namespace
@@ -31,7 +31,7 @@ namespace {
             G(&G), result(&result), callback(callback), maximumOnly(maximumOnly), maxFound(0),
             pxvector(G.numberOfNodes()), pxlookup(G.upperNodeIdBound()),
             firstOut(G.upperNodeIdBound() + 1), head(G.numberOfEdges()) {}
-    
+
     private:
         void buildOutGraph() {
             index currentOut = 0;
