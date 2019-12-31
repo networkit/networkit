@@ -10,8 +10,8 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Timer.hpp>
-#include <networkit/graph/GraphBuilder.hpp>
 #include <networkit/coarsening/ParallelPartitionCoarsening.hpp>
+#include <networkit/graph/GraphBuilder.hpp>
 
 namespace NetworKit {
 
