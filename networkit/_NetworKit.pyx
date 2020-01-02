@@ -1058,7 +1058,7 @@ cdef class Graph:
 			warn("The graph is not directed, returning the neighbors!")
 			return self.neighbors(u)
 		neighborList = []
-		self.forInEdgesOf(u, lambda v : neighborList.append(v))
+		self.forInEdgesOf(u, lambda u, v, w, eid : neighborList.append(v))
 		return neighborList
 
 	def forNodes(self, object callback):
