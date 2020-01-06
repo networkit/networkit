@@ -1,8 +1,8 @@
 /*
- * Modularity.h
+ * Modularity.hpp
  *
  *  Created on: 10.12.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #ifndef NETWORKIT_COMMUNITY_MODULARITY_HPP_
@@ -24,7 +24,7 @@ namespace NetworKit {
  * 	$$mod(\zeta) := \frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)}
  * 	- \frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$$
  */
-class Modularity: public QualityMeasure {
+class Modularity final : public QualityMeasure {
 protected:
     double gTotalEdgeWeight;
 
@@ -40,7 +40,7 @@ public:
      * @param G The graph.
      * @return The modularity.
      */
-    virtual double getQuality(const Partition& zeta, const Graph& G);
+    double getQuality(const Partition& zeta, const Graph& G) override;
 
     /**
      * @param totalEdgeWeight Sum of all edge weights in @a G. If specified, it does not
