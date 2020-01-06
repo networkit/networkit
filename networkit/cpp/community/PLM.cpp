@@ -5,13 +5,13 @@
  *      Author: cls
  */
 
-#include <networkit/community/PLM.hpp>
 #include <omp.h>
-#include <networkit/coarsening/ParallelPartitionCoarsening.hpp>
-#include <networkit/coarsening/ClusteringProjector.hpp>
 #include <networkit/auxiliary/Log.hpp>
-#include <networkit/auxiliary/Timer.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
+#include <networkit/auxiliary/Timer.hpp>
+#include <networkit/coarsening/ClusteringProjector.hpp>
+#include <networkit/coarsening/ParallelPartitionCoarsening.hpp>
+#include <networkit/community/PLM.hpp>
 
 
 #include <sstream>
@@ -29,7 +29,7 @@ PLM::PLM(const Graph& G, const PLM& other) : CommunityDetectionAlgorithm(G), par
 void PLM::run() {
     Aux::SignalHandler handler;
 
-    count z = G.upperNodeIdBound();
+    count z = G->upperNodeIdBound();
 
 
     // init communities to singletons
@@ -40,13 +40,13 @@ void PLM::run() {
     // init graph-dependent temporaries
     std::vector<double> volNode(z, 0.0);
     // $\omega(E)$
-    edgeweight total = G.totalEdgeWeight();
+    edgeweight total = G->totalEdgeWeight();
     DEBUG("total edge weight: " , total);
     edgeweight divisor = (2 * total * total); // needed in modularity calculation
 
-    G.parallelForNodes([&](node u) { // calculate and store volume of each node
-        volNode[u] += G.weightedDegree(u);
-        volNode[u] += G.weight(u, u); // consider self-loop twice
+    G->parallelForNodes([&](node u) { // calculate and store volume of each node
+        volNode[u] += G->weightedDegree(u);
+        volNode[u] += G->weight(u, u); // consider self-loop twice
         // TRACE("init volNode[" , u , "] to " , volNode[u]);
     });
 
@@ -91,11 +91,11 @@ void PLM::run() {
 
         if (turbo) {
             neigh_comm[tid].clear();
-            G.forNeighborsOf(u, [&](node v) {
+            G->forNeighborsOf(u, [&](node v) {
                 turboAffinity[tid][zeta[v]] = -1; // set all to -1 so we can see when we get to it the first time
             });
             turboAffinity[tid][zeta[u]] = 0;
-            G.forNeighborsOf(u, [&](node v, edgeweight weight) {
+            G->forNeighborsOf(u, [&](node v, edgeweight weight) {
                 if (u != v) {
                     index C = zeta[v];
                     if (turboAffinity[tid][C] == -1) {
@@ -107,7 +107,7 @@ void PLM::run() {
                 }
             });
         } else {
-            G.forNeighborsOf(u, [&](node v, edgeweight weight) {
+            G->forNeighborsOf(u, [&](node v, edgeweight weight) {
                 if (u != v) {
                     index C = zeta[v];
                     affinity[C] += weight;
@@ -211,13 +211,13 @@ void PLM::run() {
             moved = false;
             // apply node movement according to parallelization strategy
             if (this->parallelism == "none") {
-                G.forNodes(tryMove);
+                G->forNodes(tryMove);
             } else if (this->parallelism == "simple") {
-                G.parallelForNodes(tryMove);
+                G->parallelForNodes(tryMove);
             } else if (this->parallelism == "balanced") {
-                G.balancedParallelForNodes(tryMove);
+                G->balancedParallelForNodes(tryMove);
             } else if (this->parallelism == "none randomized") {
-                G.forNodesInRandomOrder(tryMove);
+                G->forNodesInRandomOrder(tryMove);
             } else {
                 ERROR("unknown parallelization strategy: " , this->parallelism);
                 throw std::runtime_error("unknown parallelization strategy");
@@ -246,7 +246,7 @@ void PLM::run() {
 
         timer.start();
         //
-        std::pair<Graph, std::vector<node>> coarsened = coarsen(G, zeta);	// coarsen graph according to communitites
+        std::pair<Graph, std::vector<node>> coarsened = coarsen(*G, zeta);	// coarsen graph according to communitites
         //
         timer.stop();
         timing["coarsen"].push_back(timer.elapsedMilliseconds());
@@ -269,7 +269,7 @@ void PLM::run() {
 
 
         DEBUG("coarse graph has ", coarsened.first.numberOfNodes(), " nodes and ", coarsened.first.numberOfEdges(), " edges");
-        zeta = prolong(coarsened.first, zetaCoarse, G, coarsened.second); // unpack communities in coarse graph onto fine graph
+        zeta = prolong(coarsened.first, zetaCoarse, *G, coarsened.second); // unpack communities in coarse graph onto fine graph
         // refinement phase
         if (refine) {
             DEBUG("refinement phase");

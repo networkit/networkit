@@ -1,5 +1,5 @@
 /*
- * PLM.h
+ * PLM.hpp
  *
  *  Created on: 20.11.2013
  *      Author: cls
@@ -16,7 +16,7 @@ namespace NetworKit {
  * @ingroup community
  * Parallel Louvain Method - a multi-level modularity maximizer.
  */
-class PLM: public CommunityDetectionAlgorithm {
+class PLM final : public CommunityDetectionAlgorithm {
 
 public:
     /**
