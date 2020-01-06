@@ -20,7 +20,7 @@ namespace NetworKit {
  * Robert Grke, Andrea Kappes and  Dorothea Wagner, JEA 2015:
  * http://dx.doi.org/10.1145/2638551
  */
-class IsolatedInterpartitionConductance : public LocalPartitionEvaluation {
+class IsolatedInterpartitionConductance final : public LocalPartitionEvaluation {
 public:
     using LocalPartitionEvaluation::LocalPartitionEvaluation;
 
