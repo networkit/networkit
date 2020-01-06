@@ -1,8 +1,8 @@
 /*
- * ClusteringGenerator.h
+ * ClusteringGenerator.hpp
  *
  *  Created on: 10.12.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #ifndef NETWORKIT_COMMUNITY_CLUSTERING_GENERATOR_HPP_
@@ -17,7 +17,7 @@ namespace NetworKit {
  * @ingroup community
  * Provides several methods for generating special clusterings.
  */
-class ClusteringGenerator {
+class ClusteringGenerator final {
 
 public:
     /**
@@ -27,7 +27,7 @@ public:
      * @param G The graph.
      * @return A Partition in which every node belongs to its own cluster.
      */
-    virtual Partition makeSingletonClustering(const Graph& G);
+    Partition makeSingletonClustering(const Graph& G);
 
     /**
      * Make a 1-clustering of Graph @a G, i.e. a clustering in which all nodes belong to the same
@@ -36,7 +36,7 @@ public:
      * @param G The graph.
      * @return A Partition in which all nodes belong to the same cluster.
      */
-    virtual Partition makeOneClustering(const Graph& G);
+    Partition makeOneClustering(const Graph& G);
 
 
     /**
@@ -46,7 +46,7 @@ public:
      * @param k The amount of clusters.
      * @return A Partition with @a k clusters and each node randomly assigned to one of them.
      */
-    virtual Partition makeRandomClustering(const Graph& G, count k);
+    Partition makeRandomClustering(const Graph& G, count k);
 
 
     /**
@@ -57,7 +57,7 @@ public:
      * @param k The amount of clusters.
      * @return A Partition with @a k clusters and each node assigned like described above.
      */
-    virtual Partition makeContinuousBalancedClustering(const Graph& G, count k);
+    Partition makeContinuousBalancedClustering(const Graph& G, count k);
 
     /**
      * Make a clustering of a Graph @a G with @a k clusters. Each node u is assigned to cluster u % k.
@@ -69,7 +69,7 @@ public:
      * @param k The amount of clusters.
      * @return A Partition with @a k clusters and each node assigned as described above.
      */
-    virtual Partition makeNoncontinuousBalancedClustering(const Graph &G, count k);
+    Partition makeNoncontinuousBalancedClustering(const Graph &G, count k);
 };
 
 } /* namespace NetworKit */
