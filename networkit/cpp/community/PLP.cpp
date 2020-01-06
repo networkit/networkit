@@ -2,16 +2,16 @@
  * PLP.cpp
  *
  *  Created on: 07.12.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
-#include <networkit/community/PLP.hpp>
 
 #include <omp.h>
 #include <networkit/Globals.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Timer.hpp>
 #include <networkit/auxiliary/Random.hpp>
+#include <networkit/community/PLP.hpp>
 
 namespace NetworKit {
 
@@ -28,7 +28,7 @@ void PLP::run() {
     }
 
     // set unique label for each node if no baseClustering was given
-    index z = G.upperNodeIdBound();
+    index z = G->upperNodeIdBound();
     if (result.numberOfElements() != z) {
         result = Partition(z);
         result.allToSingletons();
@@ -36,7 +36,7 @@ void PLP::run() {
 
     typedef index label; // a label is the same as a cluster id
 
-    count n = G.numberOfNodes();
+    count n = G->numberOfNodes();
     // update threshold heuristic
     if (updateThreshold == none) {
         updateThreshold = (count) (n / 1e5);
@@ -74,13 +74,13 @@ void PLP::run() {
         // reset updated
         nUpdated = 0;
 
-        G.balancedParallelForNodes([&](node v){
-            if ((activeNodes[v]) && (G.degree(v) > 0)) {
+        G->balancedParallelForNodes([&](node v){
+            if ((activeNodes[v]) && (G->degree(v) > 0)) {
 
                 std::map<label, double> labelWeights; // neighborLabelCounts maps label -> frequency in the neighbors
 
                 // weigh the labels in the neighborhood of v
-                G.forNeighborsOf(v, [&](node w, edgeweight weight) {
+                G->forNeighborsOf(v, [&](node w, edgeweight weight) {
                     label lw = result.subsetOf(w);
                     labelWeights[lw] += weight; // add weight of edge {v, w}
                 });
@@ -94,7 +94,7 @@ void PLP::run() {
                 if (result.subsetOf(v) != heaviest) { // UPDATE
                     result.moveToSubset(heaviest,v); //result[v] = heaviest;
                     nUpdated += 1; // TODO: atomic update?
-                    G.forNeighborsOf(v, [&](node u) {
+                    G->forNeighborsOf(v, [&](node u) {
                         activeNodes[u] = true;
                     });
                 } else {

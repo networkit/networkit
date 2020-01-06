@@ -1,8 +1,8 @@
 /*
- * PLP.h
+ * PLP.hpp
  *
  *  Created on: 07.12.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #ifndef NETWORKIT_COMMUNITY_PLP_HPP_
@@ -23,9 +23,9 @@ namespace NetworKit {
  * has the label that at least half of its neighbors have.
  *
  */
-class PLP: public CommunityDetectionAlgorithm {
+class PLP final : public CommunityDetectionAlgorithm {
 
-protected:
+private:
 
     count updateThreshold = 0;
     count maxIterations;
@@ -55,12 +55,12 @@ public:
     /**
      * Run the label propagation clustering algorithm.
      */
-    virtual void run();
+    void run() override;
 
     /**
      * @return String representation of algorithm and parameters.
      */
-    virtual std::string toString() const;
+    std::string toString() const override;
 
 
     /**
@@ -69,14 +69,14 @@ public:
      *
      * @param th The threshold.
     */
-    virtual void setUpdateThreshold(count th);
+    void setUpdateThreshold(count th);
 
     /**
     * Get number of iterations in last run.
     *
     * @return The number of iterations.
     */
-    virtual count numberOfIterations();
+    count numberOfIterations();
 
 
     /**
@@ -84,7 +84,7 @@ public:
     *
     * @return The list of running times in milliseconds
     */
-    virtual std::vector<count> getTiming();
+    std::vector<count> getTiming();
 
 
 };
