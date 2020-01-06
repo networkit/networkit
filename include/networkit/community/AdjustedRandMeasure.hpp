@@ -8,7 +8,7 @@ namespace NetworKit {
 /**
  * The adjusted rand dissimilarity measure as proposed by Huber and Arabie in "Comparing partitions" (http://link.springer.com/article/10.1007/BF01908075)
  */
-class AdjustedRandMeasure : public DissimilarityMeasure {
+class AdjustedRandMeasure final : public DissimilarityMeasure {
 public:
     /**
      * Get the adjust rand dissimilarity. Runs in O(n log(n)).
@@ -20,7 +20,7 @@ public:
      * @param eta  The second partition
      * @return The adjusted rand dissimilarity.
      */
-    virtual double getDissimilarity(const Graph &G, const NetworKit::Partition &zeta, const NetworKit::Partition &eta);
+    double getDissimilarity(const Graph &G, const NetworKit::Partition &zeta, const NetworKit::Partition &eta) override;
 };
 
 } // namespace NetworKit
