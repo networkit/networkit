@@ -21,8 +21,8 @@ public:
      */
     LocalPartitionEvaluation(const Graph &G, const Partition &P);
 protected:
-    const Graph &G;
-    const Partition &P;
+    const Graph *G;
+    const Partition *P;
 };
 
 }
