@@ -20,29 +20,29 @@ namespace NetworKit {
  * Robert Grke, Andrea Kappes and Dorothea Wagner, JEA 2015:
  * http://dx.doi.org/10.1145/2638551
  */
-class IsolatedInterpartitionExpansion : public LocalPartitionEvaluation {
+class IsolatedInterpartitionExpansion final : public LocalPartitionEvaluation {
 public:
     using LocalPartitionEvaluation::LocalPartitionEvaluation;
 
     /**
      * Execute the algorithm.
      */
-    virtual void run() override;
+    void run() override;
 
     /**
      * @return true - smaller values are better than larger values.
      */
-    virtual bool isSmallBetter() const override { return true; };
+    bool isSmallBetter() const override { return true; };
 
     /**
      * @return false - this algorithm is not parallel.
      */
-    virtual bool isParallel() const override { return false; };
+    bool isParallel() const override { return false; };
 
     /**
      * Get the name of the algorithm.
      */
-    virtual std::string toString() const override { return "Isolated inter-partition expansion"; };
+    std::string toString() const override { return "Isolated inter-partition expansion"; };
 };
 
 }
