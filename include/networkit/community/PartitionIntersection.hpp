@@ -9,7 +9,7 @@ namespace NetworKit {
  * Class for calculating the intersection of two partitions, i.e. the clustering with the fewest clusters
  * such that each cluster is a subset of a cluster in both partitions.
  */
-class PartitionIntersection {
+class PartitionIntersection final {
     public:
         /**
          * Calculate the intersection of two partitions @a zeta and @a eta
