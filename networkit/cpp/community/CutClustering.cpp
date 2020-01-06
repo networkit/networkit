@@ -15,11 +15,11 @@
 NetworKit::CutClustering::CutClustering(const Graph& G, NetworKit::edgeweight alpha) : CommunityDetectionAlgorithm(G), alpha(alpha) { }
 
 void NetworKit::CutClustering::run() {
-    Partition result(G.upperNodeIdBound());
-    result.setUpperBound(G.upperNodeIdBound());
+    Partition result(G->upperNodeIdBound());
+    result.setUpperBound(G->upperNodeIdBound());
 
     // Create a weighted copy of G
-    Graph graph(G, true, false);
+    Graph graph(*G, true, false);
 
     // Augment graph by an additional node t that is connected to all other nodes
     // via an edge of weight alpha
@@ -36,13 +36,13 @@ void NetworKit::CutClustering::run() {
 
     // sort nodes by degree, this (heuristically) reduces the number of needed cut calculations
     // bucket sort
-    count n = G.numberOfNodes();
+    count n = G->numberOfNodes();
     std::vector<node> sortedNodes(n);
     {
         std::vector<index> nodePos(n + 1, 0);
 
-        G.forNodes([&](node u) {
-            ++nodePos[n - G.degree(u)];
+        G->forNodes([&](node u) {
+            ++nodePos[n - G->degree(u)];
         });
 
         // exclusive prefix sum
@@ -56,8 +56,8 @@ void NetworKit::CutClustering::run() {
             sum += tmp;
         }
 
-        G.forNodes([&](node u) {
-            sortedNodes[nodePos[n - G.degree(u)]++] = u;
+        G->forNodes([&](node u) {
+            sortedNodes[nodePos[n - G->degree(u)]++] = u;
         });
     }
 
