@@ -1,16 +1,16 @@
 /*
- * CommunityDetectionAlgorithm.h
+ * CommunityDetectionAlgorithm.hpp
  *
  *  Created on: 30.10.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #ifndef NETWORKIT_COMMUNITY_COMMUNITY_DETECTION_ALGORITHM_HPP_
 #define NETWORKIT_COMMUNITY_COMMUNITY_DETECTION_ALGORITHM_HPP_
 
+#include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
-#include <networkit/base/Algorithm.hpp>
 
 namespace NetworKit {
 
@@ -55,7 +55,7 @@ public:
     virtual std::string toString() const;
 
 protected:
-    const Graph& G;
+    const Graph* G;
     Partition result;
 };
 
