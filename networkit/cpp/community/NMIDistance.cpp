@@ -7,10 +7,10 @@
 
 #include <networkit/community/NMIDistance.hpp>
 
-#include <networkit/community/DynamicNMIDistance.hpp>
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/MissingMath.hpp>
 #include <networkit/auxiliary/NumericTools.hpp>
-#include <networkit/auxiliary/Log.hpp>
+#include <networkit/community/DynamicNMIDistance.hpp>
 #include <networkit/community/PartitionIntersection.hpp>
 
 namespace NetworKit {
