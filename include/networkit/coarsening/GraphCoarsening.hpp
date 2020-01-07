@@ -43,7 +43,7 @@ public:
     std::map<node, std::vector<node> > getCoarseToFineNodeMapping() const;
 
 protected:
-    const Graph& G;
+    const Graph* G;
     Graph Gcoarsened;
     std::vector<node> nodeMapping;
 

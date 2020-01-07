@@ -10,8 +10,8 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Timer.hpp>
-#include <networkit/graph/GraphBuilder.hpp>
 #include <networkit/coarsening/ParallelPartitionCoarsening.hpp>
+#include <networkit/graph/GraphBuilder.hpp>
 
 namespace NetworKit {
 
@@ -27,7 +27,7 @@ void ParallelPartitionCoarsening::run() {
     Partition nodeToSuperNode = zeta;
     nodeToSuperNode.compact(
         (zeta.upperBound() <=
-         G.upperNodeIdBound())); // use turbo if the upper id bound is <= number
+         G->upperNodeIdBound())); // use turbo if the upper id bound is <= number
                                  // of nodes
     count nextNodeId = nodeToSuperNode.upperBound();
 
@@ -42,7 +42,7 @@ void ParallelPartitionCoarsening::run() {
         // iterate over edges of G and create edges in coarse graph or update edge
         // and node weights in Gcon
         DEBUG("create edges in coarse graphs");
-        G.parallelForEdges([&](node u, node v, edgeweight ew) {
+        G->parallelForEdges([&](node u, node v, edgeweight ew) {
             index t = omp_get_thread_num();
 
             node su = nodeToSuperNode[u];
@@ -98,7 +98,7 @@ void ParallelPartitionCoarsening::run() {
         INFO("combining coarse graphs took ", timer2.elapsedTag());
     } else {
         std::vector<std::vector<node>> nodesPerSuperNode(nextNodeId);
-        G.forNodes([&](node v) {
+        G->forNodes([&](node v) {
             node sv = nodeToSuperNode[v];
             nodesPerSuperNode[sv].push_back(v);
         });
@@ -111,7 +111,7 @@ void ParallelPartitionCoarsening::run() {
         for (omp_index su = 0; su < static_cast<omp_index>(nextNodeId); su++) {
             std::map<index, edgeweight> outEdges;
             for (node u : nodesPerSuperNode[su]) {
-                G.forNeighborsOf(u, [&](node v, edgeweight ew) {
+                G->forNeighborsOf(u, [&](node v, edgeweight ew) {
                     node sv = nodeToSuperNode[v];
                     if (su != sv || u >= v) { // count edges inside uv only once (we
                                                 // iterate over them twice)

@@ -1,5 +1,5 @@
 /*
- * Assortativity.h
+ * Assortativity.hpp
  *
  *  Created on: Jun 13, 2015
  *      Author: Christian Staudt
@@ -21,7 +21,7 @@ namespace NetworKit {
  * Assortativity computes a coefficient that expresses the correlation of a
  * node attribute among connected pairs of nodes.
  */
-class Assortativity : public Algorithm {
+class Assortativity final : public Algorithm {
 
 public:
 
@@ -64,11 +64,11 @@ public:
 
 
 private:
-    const Graph& G;
+    const Graph* G;
     const std::vector<double> emptyVector;
     const Partition emptyPartition;
-    const std::vector<double>& attribute;
-    const Partition& partition;
+    const std::vector<double>* attribute;
+    const Partition* partition;
     bool nominal; // whether we calculate assortativity for a nominal or ordinal attribute
     double coefficient;
 };

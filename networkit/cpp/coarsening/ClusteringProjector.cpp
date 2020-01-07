@@ -2,11 +2,11 @@
  * ClusteringProjector.cpp
  *
  *  Created on: 07.01.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
-#include <networkit/coarsening/ClusteringProjector.hpp>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/coarsening/ClusteringProjector.hpp>
 
 namespace NetworKit {
 
@@ -14,7 +14,7 @@ namespace NetworKit {
 Partition ClusteringProjector::projectBack(const Graph&, const Graph& Gfine, const std::vector<node>& fineToCoarse,
         const Partition& zetaCoarse) {
 
-    Partition zetaFine(Gfine.upperNodeIdBound()); //Gfine.numberOfNodes()
+    Partition zetaFine(Gfine.upperNodeIdBound());
     zetaFine.setUpperBound(zetaCoarse.upperBound());
     Gfine.forNodes([&](node v) {
         node sv = fineToCoarse[v];
@@ -31,11 +31,11 @@ Partition ClusteringProjector::projectBackToFinest(const Partition& zetaCoarse,
         return zetaCoarse;
     }
 
-    Partition zetaFine(Gfinest.upperNodeIdBound()); //Gfinest.numberOfNodes()
+    Partition zetaFine(Gfinest.upperNodeIdBound());
     zetaFine.setUpperBound(zetaCoarse.upperBound()); // upper bound for ids in zetaFine must be set to upper bound of zetaCoarse, or modularity assertions fail
 
     // store temporarily coarsest supernode here
-    std::vector<node> tempMap(Gfinest.upperNodeIdBound()); //Gfinest.numberOfNodes()
+    std::vector<node> tempMap(Gfinest.upperNodeIdBound());
 
     // initialize to identity
     Gfinest.parallelForNodes([&](node v){
@@ -53,7 +53,7 @@ Partition ClusteringProjector::projectBackToFinest(const Partition& zetaCoarse,
     // set clusters for fine nodes
     Gfinest.parallelForNodes([&](node v) {
         index sc = zetaCoarse[tempMap[v]];
-        zetaFine.addToSubset(sc,v);//zetaFine[v] = sc;
+        zetaFine.addToSubset(sc,v);
     });
 
     return zetaFine;
@@ -81,7 +81,6 @@ Partition ClusteringProjector::projectCoarseGraphToFinestClustering(const Graph&
 
     // assign super node id as cluster id
     Gfinest.parallelForNodes([&](node v) {
-        //zeta.addToSubset(super[v],v);
         zeta[v] = super[v];
     });
 
@@ -92,18 +91,5 @@ Partition ClusteringProjector::projectCoarseGraphToFinestClustering(const Graph&
     return zeta;
 
 }
-/* FIXME: to be deleted?
-Partition ClusteringProjector::projectBack(Graph& Gcoarse, Graph& Gfine, std::vector<node>& fineToCoarse, Partition& zetaCoarse) {
-
-    Partition zetaFine(Gfine.numberOfNodes());
-
-    Gfine.forNodes([&](node v) {
-        node sv = fineToCoarse[v];
-        index cv = zetaCoarse[sv];//zetaCoarse.clusterOf(sv);
-        zetaFine.addToSubset(cv,v); //zetaFine[v] = cv;
-    });
-
-    return zetaFine;
-}*/
 
 } /* namespace NetworKit */
