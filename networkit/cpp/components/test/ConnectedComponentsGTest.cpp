@@ -526,10 +526,19 @@ TEST_F(ConnectedComponentsGTest, testExtractLargestConnectedComponent) {
     G.addEdge(5, 6);
     Graph G1(G);
 
-    G = ConnectedComponents::extractLargestConnectedComponent(G, true);
-    EXPECT_EQ(G.numberOfNodes(), 5);
-    EXPECT_EQ(G.upperNodeIdBound(), 5);
-    EXPECT_EQ(G.numberOfEdges(), 4);
+    auto lcc = ConnectedComponents::extractLargestConnectedComponent(G, true);
+    EXPECT_EQ(lcc.numberOfNodes(), 5);
+    EXPECT_EQ(lcc.upperNodeIdBound(), 5);
+    EXPECT_EQ(lcc.numberOfEdges(), 4);
+
+    G.removeNode(0);
+    lcc = ConnectedComponents::extractLargestConnectedComponent(G, false);
+    lcc = ConnectedComponents::extractLargestConnectedComponent(lcc, true);
+    EXPECT_EQ(lcc.numberOfNodes(), 4);
+    EXPECT_EQ(lcc.upperNodeIdBound(), 4);
+    EXPECT_EQ(lcc.numberOfEdges(), 3);
+    node u = 0;
+    lcc.forNodes([&u](const node v) { EXPECT_EQ(u++, v); });
 
     G1 = ConnectedComponents::extractLargestConnectedComponent(G1, false);
     EXPECT_EQ(G1.numberOfNodes(), 5);
