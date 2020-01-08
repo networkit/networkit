@@ -84,44 +84,49 @@ std::map<index, count> ConnectedComponents::getComponentSizes() const {
 }
 
 Graph ConnectedComponents::extractLargestConnectedComponent(const Graph &G, bool compactGraph) {
-    if (!G.numberOfNodes())
+    if (!G.numberOfNodes()) {
         return G;
+    }
 
     ConnectedComponents cc(G);
     cc.run();
 
-    auto compSizes = cc.getComponentSizes();
-    if (compSizes.size() == 1)
+    const auto compSizes = cc.getComponentSizes();
+    if (compSizes.size() == 1) {
         return G;
+    }
 
-    auto largestCC = std::max_element(
+    const auto largestCC = std::max_element(
         compSizes.begin(), compSizes.end(),
         [](const std::pair<index, count> &x, const std::pair<index, count> &y) {
             return x.second < y.second;
         });
 
-    std::unordered_map<node, node> continuousNodeIds;
-    index nextId = 0;
-    G.forNodes([&](node u) {
-        if (cc.componentOfNode(u) == largestCC->first)
-            continuousNodeIds[u] = nextId++;
-    });
-
     if (compactGraph) {
+        std::unordered_map<node, node> continuousNodeIds;
+        index nextId = 0;
+        G.forNodes([&](const node u) {
+            if (cc.componentOfNode(u) == largestCC->first) {
+                continuousNodeIds[u] = nextId++;
+            }
+        });
+
         return GraphTools::getRemappedGraph(
             G, largestCC->second,
-            [&](node u) { return continuousNodeIds[u]; },
-            [&](node u) { return cc.componentOfNode(u) != largestCC->first; });
+            [&](const node u) { return continuousNodeIds[u]; },
+            [&](const node u) { return cc.componentOfNode(u) != largestCC->first; });
 
     } else {
         Graph S(G);
-        auto components = cc.getComponents();
-        for (count i = 0; i < components.size(); ++i) {
+        const auto components = cc.getComponents();
+        for (size_t i = 0; i < components.size(); ++i) {
             if (i != largestCC->first) {
-                for (node u : components[i])
+                for (auto u : components[i]) {
                     S.removeNode(u);
+                }
             }
         }
+
         return S;
     }
 }
