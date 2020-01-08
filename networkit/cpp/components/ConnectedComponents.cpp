@@ -93,6 +93,9 @@ Graph ConnectedComponents::extractLargestConnectedComponent(const Graph &G, bool
 
     const auto compSizes = cc.getComponentSizes();
     if (compSizes.size() == 1) {
+        if (compactGraph) {
+            return GraphTools::getCompactedGraph(G, GraphTools::getContinuousNodeIds(G));
+        }
         return G;
     }
 
@@ -121,7 +124,7 @@ Graph ConnectedComponents::extractLargestConnectedComponent(const Graph &G, bool
         const auto components = cc.getComponents();
         for (size_t i = 0; i < components.size(); ++i) {
             if (i != largestCC->first) {
-                for (auto u : components[i]) {
+                for (const auto u : components[i]) {
                     S.removeNode(u);
                 }
             }
