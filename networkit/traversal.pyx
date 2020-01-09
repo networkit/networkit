@@ -88,6 +88,10 @@ cdef extern from "<networkit/graph/DFS.hpp>" namespace "NetworKit::Traversal":
 	void DFSfrom[Callback](_Graph G, node source, Callback c) nogil except +
 	void DFSEdgesFrom[Callback](_Graph G, node source, Callback c) nogil except +
 
+cdef extern from "<networkit/graph/Dijkstra.hpp>" namespace "NetworKit::Traversal":
+
+	void DijkstraFrom[InputIt, Callback](_Graph G, InputIt first, InputIt last, Callback c) nogil except +
+
 cdef class Traversal:
 
 	@staticmethod
@@ -180,5 +184,33 @@ cdef class Traversal:
 		try:
 			wrapper = new TraversalEdgeCallBackWrapper(callback)
 			DFSEdgesFrom[TraversalEdgeCallBackWrapper](graph._this, start, dereference(wrapper))
+		finally:
+			del wrapper
+
+	@staticmethod
+	def DijkstraFrom(Graph graph, start, object callback):
+		"""
+		Iterate over nodes with Dijkstra search order starting from the given node(s).
+
+		Parameters:
+		-----------
+		graph : networkit.Graph
+			The input graph.
+		start : node/list
+			Single node or list of nodes from where Dijkstra will start.
+		callback : Function
+			Takes either one (node) or two (node, distance) input parameters.
+		"""
+
+		cdef TraversalNodeDistCallbackWrapper *wrapper
+		cdef vector[node] sources
+
+		try:
+			wrapper = new TraversalNodeDistCallbackWrapper(callback)
+			try:
+				sources = <vector[node]?>start
+			except TypeError:
+				sources = [<node?>start]
+			DijkstraFrom[vector[node].iterator, TraversalNodeDistCallbackWrapper](graph._this, sources.begin(),sources.end(), dereference(wrapper))
 		finally:
 			del wrapper
