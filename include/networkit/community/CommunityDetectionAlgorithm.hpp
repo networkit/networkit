@@ -23,15 +23,15 @@ public:
     /**
      * A community detection algorithm operates on a graph, so the constructor expects a graph.
      *
-     * @param[in]	G	input graph
+     * @param[in] G input graph
      */
     CommunityDetectionAlgorithm(const Graph& G);
-    
+
     /**
      * A community detection algorithm operates on a graph, so the constructor expects a graph.
      *
-     * @param[in]	G	input graph
-     * @param[in]	baseClustering optional; the algorithm will start from the given clustering.
+     * @param[in] G input graph
+     * @param[in] baseClustering optional; the algorithm will start from the given clustering.
      */
     CommunityDetectionAlgorithm(const Graph& G, const Partition baseClustering);
 
