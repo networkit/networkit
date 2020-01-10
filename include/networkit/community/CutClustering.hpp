@@ -49,6 +49,7 @@ public:
      * @return The hierarchy as map
      */
     static std::map<edgeweight, Partition> getClusterHierarchy(const Graph& G);
+
 private:
 
     /**

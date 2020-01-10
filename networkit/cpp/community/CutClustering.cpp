@@ -2,9 +2,9 @@
  * Author: Michael Hamann <michael.hamann@kit.edu>
  */
 
+#include <limits>
 #include <sstream>
 #include <stdexcept>
-#include <limits>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/community/CutClustering.hpp>
@@ -19,7 +19,7 @@ void NetworKit::CutClustering::run() {
     result.setUpperBound(G->upperNodeIdBound());
 
     // Create a weighted copy of G
-    Graph graph(*G, true, false);
+    auto graph = GraphTools::toWeighted(*G);
 
     // Augment graph by an additional node t that is connected to all other nodes
     // via an edge of weight alpha
@@ -241,7 +241,7 @@ void NetworKit::CutClustering::clusterHierarchyRecursion(const NetworKit::Graph 
 
 std::string NetworKit::CutClustering::toString() const {
     std::stringstream stream;
-    
+
     stream << "CutClustering(" << alpha << ")";
     return stream.str();
 }
