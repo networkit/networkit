@@ -8,8 +8,8 @@
 #ifndef NETWORKIT_COMMUNITY_QUALITY_MEASURE_HPP_
 #define NETWORKIT_COMMUNITY_QUALITY_MEASURE_HPP_
 
-#include <networkit/structures/Partition.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 
