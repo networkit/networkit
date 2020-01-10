@@ -22,7 +22,7 @@ public:
     /**
      * Constructor to the parallel agglomerative clusterer.
      *
-     * @param[in]	G	input graph
+     * @param[in] G input graph
      */
     ParallelAgglomerativeClusterer(const Graph& G);
 
