@@ -5,22 +5,19 @@
  *      Author: Christian Staudt
  */
 
-
 #include <omp.h>
+
 #include <networkit/Globals.hpp>
 #include <networkit/auxiliary/Log.hpp>
-#include <networkit/auxiliary/Timer.hpp>
 #include <networkit/auxiliary/Random.hpp>
+#include <networkit/auxiliary/Timer.hpp>
 #include <networkit/community/PLP.hpp>
 
 namespace NetworKit {
 
-PLP::PLP(const Graph& G, count theta, count maxIterations) : CommunityDetectionAlgorithm(G), updateThreshold(theta), maxIterations(maxIterations) {
-}
+PLP::PLP(const Graph& G, count theta, count maxIterations) : CommunityDetectionAlgorithm(G), updateThreshold(theta), maxIterations(maxIterations) {}
 
-
-PLP::PLP(const Graph& G, const Partition baseClustering, count theta) : CommunityDetectionAlgorithm(G, baseClustering), updateThreshold(theta) {
-}
+PLP::PLP(const Graph& G, const Partition baseClustering, count theta) : CommunityDetectionAlgorithm(G, baseClustering), updateThreshold(theta) {}
 
 void PLP::run() {
     if (hasRun) {
@@ -112,7 +109,6 @@ void PLP::run() {
         this->timing.push_back(runtime.elapsedMilliseconds());
         DEBUG("[DONE] LabelPropagation: iteration #" , nIterations , " - updated " , nUpdated , " labels, time spent: " , runtime.elapsedTag());
 
-
     } // end while
     hasRun = true;
 }
@@ -123,16 +119,13 @@ std::string PLP::toString() const {
     return strm.str();
 }
 
-
 void PLP::setUpdateThreshold(count th) {
     this->updateThreshold = th;
 }
 
-
 count PLP::numberOfIterations() {
     return this->nIterations;
 }
-
 
 std::vector<count> PLP::getTiming() {
     return this->timing;
