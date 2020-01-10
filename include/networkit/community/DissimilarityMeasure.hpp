@@ -9,11 +9,10 @@
 #define NETWORKIT_COMMUNITY_DISSIMILARITY_MEASURE_HPP_
 
 #include <networkit/graph/Graph.hpp>
-#include <networkit/structures/Partition.hpp>
 #include <networkit/structures/Cover.hpp>
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
-
 
 /**
  * @ingroup community
