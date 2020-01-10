@@ -6,6 +6,8 @@
  */
 
 #include <omp.h>
+#include <sstream>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/auxiliary/Timer.hpp>
@@ -13,24 +15,16 @@
 #include <networkit/coarsening/ParallelPartitionCoarsening.hpp>
 #include <networkit/community/PLM.hpp>
 
-
-#include <sstream>
-
 namespace NetworKit {
 
-PLM::PLM(const Graph& G, bool refine, double gamma, std::string par, count maxIter, bool turbo, bool recurse) : CommunityDetectionAlgorithm(G), parallelism(par), refine(refine), gamma(gamma), maxIter(maxIter), turbo(turbo), recurse(recurse) {
+PLM::PLM(const Graph& G, bool refine, double gamma, std::string par, count maxIter, bool turbo, bool recurse) : CommunityDetectionAlgorithm(G), parallelism(par), refine(refine), gamma(gamma), maxIter(maxIter), turbo(turbo), recurse(recurse) {}
 
-}
-
-PLM::PLM(const Graph& G, const PLM& other) : CommunityDetectionAlgorithm(G), parallelism(other.parallelism), refine(other.refine), gamma(other.gamma), maxIter(other.maxIter), turbo(other.turbo), recurse(other.recurse) {
-
-}
+PLM::PLM(const Graph& G, const PLM& other) : CommunityDetectionAlgorithm(G), parallelism(other.parallelism), refine(other.refine), gamma(other.gamma), maxIter(other.maxIter), turbo(other.turbo), recurse(other.recurse) {}
 
 void PLM::run() {
     Aux::SignalHandler handler;
 
     count z = G->upperNodeIdBound();
-
 
     // init communities to singletons
     Partition zeta(z);
@@ -47,12 +41,11 @@ void PLM::run() {
     G->parallelForNodes([&](node u) { // calculate and store volume of each node
         volNode[u] += G->weightedDegree(u);
         volNode[u] += G->weight(u, u); // consider self-loop twice
-        // TRACE("init volNode[" , u , "] to " , volNode[u]);
     });
 
     // init community-dependent temporaries
     std::vector<double> volCommunity(o, 0.0);
-    zeta.parallelForEntries([&](node u, index C) { 	// set volume for all communities
+    zeta.parallelForEntries([&](node u, index C) { // set volume for all communities
         if (C != none)
             volCommunity[C] = volNode[u];
     });
@@ -83,7 +76,7 @@ void PLM::run() {
 
     // try to improve modularity by moving a node to neighboring clusters
     auto tryMove = [&](node u) {
-        // TRACE("trying to move node " , u);
+        // trying to move node u
         index tid = omp_get_thread_num();
 
         // collect edge weight to neighbor clusters
@@ -115,7 +108,6 @@ void PLM::run() {
             });
         }
 
-
         // sub-functions
 
         // $\vol(C \ {x})$ - volume of cluster C excluding node x
@@ -131,16 +123,10 @@ void PLM::run() {
             }
         };
 
-        // // $\omega(u | C \ u)$
-        // auto omegaCut = [&](node u, index C) {
-        // 	return affinity[C];
-        // };
-
         auto modGain = [&](node u, index C, index D, edgeweight affinityC, edgeweight affinityD) {
             double volN = 0.0;
             volN = volNode[u];
             double delta = (affinityD - affinityC) / total + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * volN) / divisor;
-            //TRACE("(" , affinity[D] , " - " , affinity[C] , ") / " , total , " + " , this->gamma , " * ((" , volCommunityMinusNode(C, u) , " - " , volCommunityMinusNode(D, u) , ") *" , volN , ") / 2 * " , (total * total));
             return delta;
         };
 
@@ -157,7 +143,6 @@ void PLM::run() {
                 if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
                     double delta = modGain(u, C, D, affinityC, turboAffinity[tid][D]);
 
-                    // TRACE("mod gain: " , delta);
                     if (delta > deltaBest) {
                         deltaBest = delta;
                         best = D;
@@ -167,12 +152,10 @@ void PLM::run() {
         } else {
             edgeweight affinityC = affinity[C];
 
-//			TRACE("Processing neighborhood of node " , u , ", which is in cluster " , C);
             for (auto it : affinity) {
                 index D = it.first;
                 if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
                     double delta = modGain(u, C, D, affinityC, it.second);
-                    // TRACE("mod gain: " , delta);
                     if (delta > deltaBest) {
                         deltaBest = delta;
                         best = D;
@@ -181,12 +164,11 @@ void PLM::run() {
             }
         }
 
-        // TRACE("deltaBest=" , deltaBest);
         if (deltaBest > 0) { // if modularity improvement possible
             assert (best != C && best != none);// do not "move" to original cluster
 
             zeta[u] = best; // move to best cluster
-            // TRACE("node " , u , " moved");
+            // node u moved
 
             // mod update
             double volN = 0.0;
@@ -198,9 +180,6 @@ void PLM::run() {
             volCommunity[best] += volN;
 
             moved = true; // change to clustering has been made
-
-        } else {
-            // TRACE("node " , u , " not moved");
         }
     };
 
@@ -235,9 +214,9 @@ void PLM::run() {
     // first move phase
     Aux::Timer timer;
     timer.start();
-    //
+
     movePhase();
-    //
+
     timer.stop();
     timing["move"].push_back(timer.elapsedMilliseconds());
     handler.assureRunning();
@@ -245,9 +224,9 @@ void PLM::run() {
         DEBUG("nodes moved, so begin coarsening and recursive call");
 
         timer.start();
-        //
-        std::pair<Graph, std::vector<node>> coarsened = coarsen(*G, zeta);	// coarsen graph according to communitites
-        //
+
+        std::pair<Graph, std::vector<node>> coarsened = coarsen(*G, zeta); // coarsen graph according to communities
+
         timer.stop();
         timing["coarsen"].push_back(timer.elapsedMilliseconds());
 
@@ -267,7 +246,6 @@ void PLM::run() {
             timing["refine"].push_back(t);
         }
 
-
         DEBUG("coarse graph has ", coarsened.first.numberOfNodes(), " nodes and ", coarsened.first.numberOfEdges(), " edges");
         zeta = prolong(coarsened.first, zetaCoarse, *G, coarsened.second); // unpack communities in coarse graph onto fine graph
         // refinement phase
@@ -277,7 +255,7 @@ void PLM::run() {
             o = zeta.upperBound();
             volCommunity.clear();
             volCommunity.resize(o, 0.0);
-            zeta.parallelForEntries([&](node u, index C) { 	// set volume for all communities
+            zeta.parallelForEntries([&](node u, index C) { // set volume for all communities
                 if (C != none) {
                     edgeweight volN = volNode[u];
                     #pragma omp atomic
@@ -286,9 +264,9 @@ void PLM::run() {
             });
             // second move phase
             timer.start();
-            //
+
             movePhase();
-            //
+
             timer.stop();
             timing["refine"].push_back(timer.elapsedMilliseconds());
 
@@ -333,11 +311,8 @@ Partition PLM::prolong(const Graph &, const Partition& zetaCoarse, const Graph& 
         zetaFine[v] = cv;
     });
 
-
     return zetaFine;
 }
-
-
 
 std::map<std::string, std::vector<count> > PLM::getTiming() {
     return timing;
