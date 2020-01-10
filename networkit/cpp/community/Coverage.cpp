@@ -5,15 +5,12 @@
  *      Author: Christian Staudt
  */
 
-#include <networkit/community/Coverage.hpp>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/community/Coverage.hpp>
 
 namespace NetworKit {
 
-
 double Coverage::getQuality(const Partition& zeta, const Graph& G) {
-
-
 
     double cov = 0.0; // term $\frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)}$
     double totalEdgeWeight = G.totalEdgeWeight(); // add edge weight
@@ -52,7 +49,6 @@ double Coverage::getQuality(const Partition& zeta, const Graph& G) {
         intraEdgeWeightSum += intraEdgeWeight[c];
     }
     TRACE("total intra-cluster edge weight = " , intraEdgeWeightSum);
-
 
     cov = intraEdgeWeightSum / totalEdgeWeight;
     DEBUG("coverage = " , cov);
