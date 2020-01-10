@@ -1,5 +1,6 @@
 #include <atomic>
 #include <memory>
+
 #include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/community/CoverHubDominance.hpp>
