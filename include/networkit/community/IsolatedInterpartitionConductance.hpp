@@ -27,22 +27,22 @@ public:
     /**
      * Execute the algorithm.
      */
-    virtual void run() override;
+    void run() override;
 
     /**
      * @return true - smaller values are better than larger values.
      */
-    virtual bool isSmallBetter() const override { return true; };
+    bool isSmallBetter() const override { return true; };
 
     /**
      * @return false - only minor parts of this implementation are parallel.
      */
-    virtual bool isParallel() const override { return false; };
+    bool isParallel() const override { return false; };
 
     /**
      * Get the name of the algorithm.
      */
-    virtual std::string toString() const override { return "Isolated inter-partition conductance"; };
+    std::string toString() const override { return "Isolated inter-partition conductance"; };
 };
 
 }
