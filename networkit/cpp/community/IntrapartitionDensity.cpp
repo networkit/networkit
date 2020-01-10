@@ -1,5 +1,5 @@
-#include <networkit/community/IntrapartitionDensity.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
+#include <networkit/community/IntrapartitionDensity.hpp>
 
 void NetworKit::IntrapartitionDensity::run() {
     hasRun = false;
