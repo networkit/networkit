@@ -1,5 +1,5 @@
 /*
- * SampledRandMeasure.hpp
+ * SampledGraphStructuralRandMeasure.hpp
  *
  *  Created on: 01.07.2013
  *      Author: cls
