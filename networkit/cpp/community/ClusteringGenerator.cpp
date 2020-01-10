@@ -5,12 +5,13 @@
  *      Author: Christian Staudt
  */
 
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/Random.hpp>
 #include <networkit/community/ClusteringGenerator.hpp>
 #include <networkit/community/GraphClusteringTools.hpp>
-#include <networkit/auxiliary/Random.hpp>
-#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
+
 Partition ClusteringGenerator::makeSingletonClustering(const Graph& G) {
     count n = G.upperNodeIdBound();
     Partition zeta(n);
@@ -44,7 +45,7 @@ Partition ClusteringGenerator::makeRandomClustering(const Graph& G, count k) {
 }
 
 Partition ClusteringGenerator::makeContinuousBalancedClustering(const Graph& G, count k) {
-    count n = G.upperNodeIdBound(); 
+    count n = G.upperNodeIdBound();
     Partition clustering(n);
     clustering.setUpperBound(k);
 
