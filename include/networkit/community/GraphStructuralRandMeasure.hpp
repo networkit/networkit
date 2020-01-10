@@ -21,7 +21,6 @@ class GraphStructuralRandMeasure final: public DissimilarityMeasure {
 
 public:
 
-
     double getDissimilarity(const Graph& G, const Partition& first, const Partition& second)override;
 
 };
