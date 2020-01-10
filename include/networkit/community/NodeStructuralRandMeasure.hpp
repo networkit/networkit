@@ -1,5 +1,5 @@
 /*
- * RandMeasure.hpp
+ * NodeStructuralRandMeasure.hpp
  *
  *  Created on: 19.01.2013
  *      Author: Christian Staudt
@@ -20,7 +20,6 @@ namespace NetworKit {
 class NodeStructuralRandMeasure final: public DissimilarityMeasure {
 
 public:
-
 
     double getDissimilarity(const Graph &G, const Partition &zeta, const Partition &eta) override;
 
