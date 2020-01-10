@@ -1,7 +1,8 @@
 #include <atomic>
 #include <memory>
-#include <networkit/auxiliary/SignalHandling.hpp>
+
 #include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/community/PartitionHubDominance.hpp>
 
 void NetworKit::PartitionHubDominance::run() {
