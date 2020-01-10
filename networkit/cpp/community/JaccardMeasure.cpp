@@ -10,7 +10,6 @@
 
 namespace NetworKit {
 
-
 double JaccardMeasure::getDissimilarity(const Graph& G, const Partition& zeta,
         const Partition& eta) {
 
