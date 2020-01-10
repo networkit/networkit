@@ -25,8 +25,8 @@ public:
      * Calculates the dominance of hubs in the given Partition @a zeta of the given
      * Graph @a G.
      *
-     * @param zeta	The partition for which the hub dominance shall be calculated
-     * @param G	The graph that is partitioned in @a zeta
+     * @param zeta The partition for which the hub dominance shall be calculated
+     * @param G The graph that is partitioned in @a zeta
      * @return The average hub dominance of @a zeta
      */
     double getQuality(const Partition& zeta, const Graph& G) override;
@@ -34,8 +34,8 @@ public:
      * Calculates the dominance of hubs in the given Cover @a zeta of the given
      * Graph @a G.
      *
-     * @param zeta	The cover for which the hub dominance shall be calculated
-     * @param G	The graph that is partitioned in @a zeta
+     * @param zeta The cover for which the hub dominance shall be calculated
+     * @param G The graph that is partitioned in @a zeta
      * @return The average hub dominance of @a zeta
      */
     double getQuality(const Cover& zeta, const Graph& G);
