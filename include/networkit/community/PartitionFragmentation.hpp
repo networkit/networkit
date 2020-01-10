@@ -7,7 +7,7 @@ namespace NetworKit {
 
 /**
  * This measure evaluates how fragmented a partition is. The fragmentation of a single cluster is defined as one minus the
- * number of nodes in its maximum connected componented divided by its total number of nodes. Smaller values thus indicate a smaller fragmentation.
+ * number of nodes in its maximum connected components divided by its total number of nodes. Smaller values thus indicate a smaller fragmentation.
  */
 class PartitionFragmentation final : public LocalPartitionEvaluation {
 public:
