@@ -2,6 +2,7 @@
 #define NETWORKIT_COMMUNITY_LOCAL_COMMUNITY_EVALUATION_HPP_
 
 #include <vector>
+
 #include <networkit/Globals.hpp>
 #include <networkit/base/Algorithm.hpp>
 
