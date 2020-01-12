@@ -13,7 +13,6 @@
 #include <networkit/graph/Graph.hpp>
 #include <networkit/numerics/LAMG/Lamg.hpp>
 
-
 namespace NetworKit {
 
 /**
@@ -42,6 +41,7 @@ public:
      * Computes ECTD exactly.
      */
     void run() override;
+
     /**
      * Computes approximation by projection.
      */
@@ -51,24 +51,28 @@ public:
      * Computes approximation by projection, in parallel.
      */
     void runParallelApproximation();
+
     /**
      * @return The elapsed time to setup the solver in milliseconds.
      */
     uint64_t getSetupTime() const;
+
     /**
      * Returns the commute time distance between node @a u and node @a v.
      * @return commute time distance between the two nodes. Needs to call run() or runApproximation() first.
      */
     double distance(node u, node v);
+
     /**
      * Returns the commute time distance between node @a u and node @a v.
      * This method does not need the initial preprocessing (no need to call the run() method).
      * @return commute time distance between the two nodes.
      */
+
     double runSinglePair(node u, node v);
 
     /**
-     * Returns the the sum of the distances from node @a u.
+     * Returns the sum of the distances from node @a u.
      * This method does not need the initial preprocessing.
      * @return commute sum of the distances from the node.
      */
@@ -86,6 +90,5 @@ protected:
 };
 
 } /* namespace NetworKit */
-
 
 #endif // NETWORKIT_DISTANCE_COMMUTE_TIME_DISTANCE_HPP_

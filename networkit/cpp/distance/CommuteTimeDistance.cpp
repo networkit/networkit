@@ -2,13 +2,12 @@
  * CommuteTimeDistance.cpp
  *
  *  Created on: 29.07.2015
- *      Author: henningm
+ *      Author: henning
  */
 
-#include <fstream>
 #include <math.h>
 #include <omp.h>
-#include <sstream>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Timer.hpp>
 #include <networkit/distance/CommuteTimeDistance.hpp>
@@ -16,7 +15,7 @@
 namespace NetworKit {
 
 CommuteTimeDistance::CommuteTimeDistance(const Graph& G, double tol): Algorithm(), G(&G), tol(tol), lamg(1e-5) {
-    // main purpose of methd: preparing LAMG
+    // main purpose of method: preparing LAMG
 
     // construct matrix from graph
     CSRMatrix matrix = CSRMatrix::laplacianMatrix(G);
@@ -127,8 +126,6 @@ void CommuteTimeDistance::runParallelApproximation() {
     INFO("Number k of iterations: ", k);
 #pragma omp parallel for
     for (omp_index i = 0; i < static_cast<omp_index>(k); ++i) {
-        // rhs(v) = \sum_e=1 ^m q(e) * B(e, v)
-        //        = +/- q(e)
         G->forEdges([&](node u, node v) {
             double r = randTab[Aux::Random::integer(1)];
 
