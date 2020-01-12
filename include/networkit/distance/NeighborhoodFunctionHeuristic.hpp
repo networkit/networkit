@@ -1,5 +1,5 @@
 /*
-* NeighborhoodFunctionHeuristic.h
+* NeighborhoodFunctionHeuristic.hpp
 *
 *      Author: Maximilian Vogel
 */
@@ -15,7 +15,7 @@ namespace NetworKit {
 /**
  * @ingroup distance
  */
-class NeighborhoodFunctionHeuristic : public Algorithm {
+class NeighborhoodFunctionHeuristic final : public Algorithm {
 
 public:
     enum SelectionStrategy {
@@ -43,7 +43,7 @@ public:
     std::vector<count> getNeighborhoodFunction() const;
 
 private:
-    const Graph& G;
+    const Graph* G;
     const count nSamples;
     const SelectionStrategy strategy;
     std::vector<count> result;
