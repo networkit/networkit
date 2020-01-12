@@ -6,7 +6,6 @@
  */
 
 #include <queue>
-
 #include <networkit/distance/BFS.hpp>
 
 namespace NetworKit {
@@ -16,7 +15,7 @@ BFS::BFS(const Graph &G, node source, bool storePaths,
     : SSSP(G, source, storePaths, storeNodesSortedByDistance, target) {}
 
 void BFS::run() {
-    count z = G.upperNodeIdBound();
+    count z = G->upperNodeIdBound();
     reachedNodes = 1;
     sumDist = 0.;
 
@@ -61,10 +60,10 @@ void BFS::run() {
         }
 
         // TRACE("current node in BFS: " , u);
-        //		TRACE(distances);
+        // TRACE(distances);
 
         // insert untouched neighbors into queue
-        G.forNeighborsOf(u, [&](node v) {
+        G->forNeighborsOf(u, [&](node v) {
             // TRACE("scanning neighbor ", v);
 
             if (ts != visited[v]) {
