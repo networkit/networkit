@@ -495,7 +495,6 @@ cdef class Graph:
 	def __str__(self):
 		return "NetworKit.Graph(name={0}, n={1}, m={2})".format(self.getName(), self.numberOfNodes(), self.numberOfEdges())
 
-
 	def copyNodes(self):
 		"""
 		Copies all nodes to a new graph
@@ -5730,7 +5729,7 @@ cdef extern from "<networkit/community/PLP.hpp>":
 
 	cdef cppclass _PLP "NetworKit::PLP"(_CommunityDetectionAlgorithm):
 		_PLP(_Graph _G, count updateThreshold, count maxIterations) except +
-		_PLP(_Graph _G, _Partition baseClustering, count updateThreshold) except +
+		_PLP(_Graph _G, _Partition baseClustering, count updateThreshold, count maxIterations) except +
 		count numberOfIterations() except +
 		vector[count] getTiming() except +
 
@@ -5765,11 +5764,10 @@ cdef class PLP(CommunityDetector):
 		"""
 		self._G = G
 
-
 		if baseClustering is None:
 			self._this = new _PLP(G._this, updateThreshold, maxIterations)
 		else:
-			self._this = new _PLP(G._this, baseClustering._this, updateThreshold)
+			self._this = new _PLP(G._this, baseClustering._this, updateThreshold, maxIterations)
 
 
 	def numberOfIterations(self):
