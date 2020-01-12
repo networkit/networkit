@@ -1,3 +1,12 @@
+/*
+ * BidirectionalDijkstra.cpp
+ *
+ *  Created on: 14.06.2019
+ *      Author: Eugenio Angriman <angrimae@hu-berlin.de>
+ */
+
+// networkit-format
+
 #include <limits>
 
 #include <networkit/distance/BidirectionalDijkstra.hpp>
