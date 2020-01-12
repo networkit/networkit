@@ -5,21 +5,21 @@
 *      Author: Maximilian Vogel
 */
 
-#include <networkit/distance/NeighborhoodFunctionApproximation.hpp>
-#include <networkit/components/ConnectedComponents.hpp>
-#include <networkit/auxiliary/Random.hpp>
-#include <networkit/Globals.hpp>
 
-#include <math.h>
 #include <iterator>
+#include <math.h>
+#include <map>
 #include <stdlib.h>
 #include <omp.h>
-#include <map>
 #include <vector>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/distance/NeighborhoodFunctionApproximation.hpp>
+#include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/Globals.hpp>
 
 namespace NetworKit {
 
-NeighborhoodFunctionApproximation::NeighborhoodFunctionApproximation(const Graph& G, const count k, const count r) : Algorithm(), G(G), k(k), r(r), result() {
+NeighborhoodFunctionApproximation::NeighborhoodFunctionApproximation(const Graph& G, const count k, const count r) : Algorithm(), G(&G), k(k), r(r), result() {
     if (G.isDirected()) throw std::runtime_error("current implementation can only deal with undirected graphs");
     ConnectedComponents cc(G);
     cc.run();
@@ -34,15 +34,15 @@ NeighborhoodFunctionApproximation::NeighborhoodFunctionApproximation(const Graph
 #endif // _MSC_VER
 void NeighborhoodFunctionApproximation::run() {
     // the length of the bitmask where the number of connected nodes is saved
-    const count lengthOfBitmask = (count) ceil(log2(G.numberOfNodes())) + r;
+    const count lengthOfBitmask = (count) ceil(log2(G->numberOfNodes())) + r;
     // saves all k bitmasks for every node of the current iteration
-    std::vector<std::vector<unsigned int> > mCurr(G.upperNodeIdBound());
+    std::vector<std::vector<unsigned int> > mCurr(G->upperNodeIdBound());
     // saves all k bitmasks for every node of the previous iteration
-    std::vector<std::vector<unsigned int> > mPrev(G.upperNodeIdBound());
+    std::vector<std::vector<unsigned int> > mPrev(G->upperNodeIdBound());
     // the list of nodes that are already connected to all other nodes
     std::vector<unsigned int> highestCount(k, 0);
     // nodes that are not connected to enough nodes yet
-    std::vector<char> activeNodes(G.upperNodeIdBound(),0);
+    std::vector<char> activeNodes(G->upperNodeIdBound(),0);
 
     // initialize all vectors
     std::vector<std::vector<unsigned int>> localHighest(omp_get_max_threads(), std::vector<unsigned int>(k, 0));
@@ -50,7 +50,7 @@ void NeighborhoodFunctionApproximation::run() {
     std::vector<unsigned int> bitmasks(k, 0);
     omp_set_nested(1);
     Aux::Random::setSeed(Aux::Random::getSeed(), true);
-    G.parallelForNodes([&](node v) {
+    G->parallelForNodes([&](node v) {
         mCurr[v] = bitmasks;
         mPrev[v] = bitmasks;
         activeNodes[v] = 1;
@@ -92,7 +92,7 @@ void NeighborhoodFunctionApproximation::run() {
             
             for (count j = 0; j < k; j++) {
                 // and to all previous neighbors of all its neighbors
-                G.forNeighborsOf(v, [&](node u) {
+                G->forNeighborsOf(v, [&](node u) {
                     mCurr[v][j] |= mPrev[u][j];
                 });
             }
