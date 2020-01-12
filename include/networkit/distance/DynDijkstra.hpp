@@ -1,5 +1,5 @@
 /*
- * DynDijkstra.h
+ * DynDijkstra.hpp
  *
  *  Created on: 21.07.2014
  *      Author: ebergamini
@@ -39,7 +39,7 @@ public:
     void updateBatch(const std::vector<GraphEvent>& batch) override;
 
 
-protected:
+private:
     enum Color {WHITE, BLACK};
     std::vector<Color> color;
 };

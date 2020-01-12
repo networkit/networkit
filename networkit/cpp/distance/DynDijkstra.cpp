@@ -7,11 +7,11 @@
 
 #include <queue>
 
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/NumericTools.hpp>
+#include <networkit/auxiliary/PrioQueue.hpp>
 #include <networkit/distance/Dijkstra.hpp>
 #include <networkit/distance/DynDijkstra.hpp>
-#include <networkit/auxiliary/Log.hpp>
-#include <networkit/auxiliary/PrioQueue.hpp>
-#include <networkit/auxiliary/NumericTools.hpp>
 
 
 namespace NetworKit {
@@ -20,14 +20,14 @@ DynDijkstra::DynDijkstra(const Graph& G, node source, bool storePredecessors) : 
 color(G.upperNodeIdBound(), WHITE) {}
 
 void DynDijkstra::run() {
-    Dijkstra dij(G, source, true);
+    Dijkstra dij(*G, source, true);
     dij.run();
     distances = dij.getDistances();
-    npaths.reserve(G.upperNodeIdBound());
-    G.forNodes([&](node u) { npaths.push_back(dij.numberOfPaths(u)); });
+    npaths.reserve(G->upperNodeIdBound());
+    G->forNodes([&](node u) { npaths.push_back(dij.numberOfPaths(u)); });
     if (storePreds) {
-        previous.resize(G.upperNodeIdBound());
-        G.forNodes([&](node u) {previous[u] = dij.getPredecessors(u); });
+        previous.resize(G->upperNodeIdBound());
+        G->forNodes([&](node u) {previous[u] = dij.getPredecessors(u); });
     }
 }
 
@@ -40,7 +40,7 @@ void DynDijkstra::update(GraphEvent e) {
 void DynDijkstra::updateBatch(const std::vector<GraphEvent>& batch) {
     mod = false;
     // priority queue with distance-node pairs
-    Aux::PrioQueue<edgeweight, node> Q(G.upperNodeIdBound());
+    Aux::PrioQueue<edgeweight, node> Q(G->upperNodeIdBound());
     // queue with all visited nodes
     std::queue<node> visited;
     // if u has a new shortest path going through v, it updates the distance of u
@@ -74,7 +74,7 @@ void DynDijkstra::updateBatch(const std::vector<GraphEvent>& batch) {
             previous[current].clear();
         }
         npaths[current] = 0;
-        G.forInNeighborsOf(current, [&](node current, node z, edgeweight w){
+        G->forInNeighborsOf(current, [&](node current, node z, edgeweight w){
             //z is a predecessor of current node
             if (Aux::NumericTools::equal(distances[current], distances[z]+w, 0.000001)) {
                 if (storePreds) {
