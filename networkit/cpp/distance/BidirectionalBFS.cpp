@@ -5,7 +5,7 @@
 namespace NetworKit {
 
 void BidirectionalBFS::run() {
-    if (G.isWeighted())
+    if (G->isWeighted())
         WARN("Treating the graph as unweighted!");
 
     stDist = 0;
@@ -15,7 +15,7 @@ void BidirectionalBFS::run() {
     }
 
     init();
-    visited.resize(G.upperNodeIdBound(), ts);
+    visited.resize(G->upperNodeIdBound(), ts);
     if (ts++ == 128) {
         ts = 1;
         std::fill(visited.begin(), visited.end(), 0);
@@ -59,16 +59,16 @@ void BidirectionalBFS::run() {
             node u = q.front();
             q.pop();
 
-            if (!G.isDirected() || !idx) {
+            if (!G->isDirected() || !idx) {
                 // Expanding from source
-                for (node v : G.neighborRange(u)) {
+                for (node v : G->neighborRange(u)) {
                     visitEdge(u, v);
                     if (stop)
                         break;
                 }
             } else {
                 // Expanding from target
-                for (node v : G.inNeighborRange(u)) {
+                for (node v : G->inNeighborRange(u)) {
                     visitEdge(u, v);
                     if (stop)
                         break;
