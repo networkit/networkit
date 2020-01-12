@@ -18,7 +18,6 @@ namespace NetworKit {
  * Algebraic distance assigns a distance value to pairs of nodes
  * according to their structural closeness in the graph.
  * Algebraic distances will become small within dense subgraphs.
- *
  */
 class AlgebraicDistance final: public NodeDistance {
 
@@ -30,13 +29,10 @@ public:
      * @param numberIterations Number of iterations in each system.
      * @param omega attenuation factor influencing convergence speed.
      * @param norm The norm factor of the extended algebraic distance.
-     * @param withEdgeScores	 calculate array of scores for edges {u,v} that equal ad(u,v)
+     * @param withEdgeScores calculate array of scores for edges {u,v} that equal ad(u,v)
      */
     AlgebraicDistance(const Graph& G, count numberSystems=10, count numberIterations=30, double omega=0.5, index norm=0, bool withEdgeScores=false);
 
-    /**
-     *
-     */
      void preprocess() override;
 
     /**
@@ -44,9 +40,7 @@ public:
      */
      double distance(node u, node v) override;
 
-
      std::vector<double> getEdgeScores() override;
-
 
 private:
 

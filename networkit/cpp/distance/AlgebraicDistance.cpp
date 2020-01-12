@@ -5,11 +5,10 @@
  *      Author: Henning Meyerhenke, Christian Staudt, Michael Hamann
  */
 
-
+#include <omp.h>
 
 #include <networkit/auxiliary/Timer.hpp>
 #include <networkit/distance/AlgebraicDistance.hpp>
-#include <omp.h>
 
 
 namespace NetworKit {
@@ -138,12 +137,9 @@ double AlgebraicDistance::distance(node u, node v) {
     return std::isnan(result) ? 0 : result;
 }
 
-
 std::vector<double> AlgebraicDistance::getEdgeScores() {
     if (!withEdgeScores) throw std::runtime_error("set constructor parameter 'withEdgeScores' to true");
     return edgeScores;
 }
-
-
 
 } /* namespace NetworKit */
