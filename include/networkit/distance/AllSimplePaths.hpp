@@ -1,5 +1,5 @@
 /*
-* AllSimplePaths.h
+* AllSimplePaths.hpp
 *
 *  Created on: 23.06.2017
 *      Author: Eugenio Angriman
@@ -8,8 +8,8 @@
 #ifndef NETWORKIT_DISTANCE_ALL_SIMPLE_PATHS_HPP_
 #define NETWORKIT_DISTANCE_ALL_SIMPLE_PATHS_HPP_
 
-#include <networkit/graph/Graph.hpp>
 #include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
 
 
 namespace NetworKit {
@@ -18,7 +18,7 @@ namespace NetworKit {
      * @ingroup distance
      * Determines all the possible simple paths from a given source node to a target node of a directed unweighted graph. It also accepts a cutoff value i.e. the maximum length of paths.
      */
-    class AllSimplePaths : public Algorithm {
+    class AllSimplePaths final : public Algorithm {
 
     public:
 
@@ -60,7 +60,7 @@ namespace NetworKit {
         template<typename L> void parallelForAllSimplePaths(L handle);
 
 
-    protected:
+    private:
 
         // This method computes all the paths after a reverse BFS from the target node and a normal BFS from the source node.
         void computePaths();
@@ -69,7 +69,7 @@ namespace NetworKit {
         std::vector<node> getAvailableSources(node s, count pathLength = 0);
 
         // The graph
-        const Graph &G;
+        const Graph *G;
         // The source node
         node source;
         // The target node
