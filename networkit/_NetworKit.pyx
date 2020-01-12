@@ -5823,8 +5823,7 @@ cdef extern from "<networkit/community/PLM.hpp>":
 		map[string, vector[count]] getTiming() except +
 
 cdef extern from "<networkit/community/PLM.hpp>" namespace "NetworKit::PLM":
-
-	pair[_Graph, vector[node]] PLM_coarsen "NetworKit::PLM::coarsen" (const _Graph& G, const _Partition& zeta) except +
+	pair[_Graph, vector[node]] PLM_coarsen "NetworKit::PLM::coarsen" (const _Graph& G, const _Partition& zeta, bool_t parallel) except +
 	_Partition PLM_prolong "NetworKit::PLM::prolong"(const _Graph& Gcoarse, const _Partition& zetaCoarse, const _Graph& Gfine, vector[node] nodeToMetaNode) except +
 
 
@@ -5864,7 +5863,7 @@ cdef class PLM(CommunityDetector):
 
 	@staticmethod
 	def coarsen(Graph G, Partition zeta, bool_t parallel = False):
-		cdef pair[_Graph, vector[node]] result = move(PLM_coarsen(G._this, zeta._this))
+		cdef pair[_Graph, vector[node]] result = move(PLM_coarsen(G._this, zeta._this, parallel))
 		return (Graph().setThis(result.first), result.second)
 
 	@staticmethod
