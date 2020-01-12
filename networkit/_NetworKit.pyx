@@ -2333,7 +2333,7 @@ cdef extern from "<networkit/graph/RandomMaximumSpanningForest.hpp>":
 	cdef cppclass _RandomMaximumSpanningForest "NetworKit::RandomMaximumSpanningForest"(_Algorithm):
 		_RandomMaximumSpanningForest(_Graph) except +
 		_RandomMaximumSpanningForest(_Graph, vector[double]) except +
-		_Graph getMSF(bool_t move) except +
+		_Graph getMSF() except +
 		vector[bool_t] getAttribute(bool_t move) except +
 		bool_t inMSF(edgeid eid) except +
 		bool_t inMSF(node u, node v) except +
@@ -2360,7 +2360,7 @@ cdef class RandomMaximumSpanningForest(Algorithm):
 			self._attribute = move(attribute)
 			self._this = new _RandomMaximumSpanningForest(G._this, self._attribute)
 
-	def getMSF(self, bool_t move = False):
+	def getMSF(self):
 		"""
 		Gets the calculated maximum-weight spanning forest as graph.
 
@@ -2374,7 +2374,7 @@ cdef class RandomMaximumSpanningForest(Algorithm):
 		networkit.Graph
 			The calculated maximum-weight spanning forest.
 		"""
-		return Graph().setThis((<_RandomMaximumSpanningForest*>(self._this)).getMSF(move))
+		return Graph().setThis((<_RandomMaximumSpanningForest*>(self._this)).getMSF())
 
 	def getAttribute(self, bool_t move = False):
 		"""
