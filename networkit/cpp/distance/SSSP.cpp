@@ -5,14 +5,14 @@
  *      Author: cls
  */
 
-#include <networkit/distance/SSSP.hpp>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/distance/SSSP.hpp>
 
 namespace NetworKit {
 
 SSSP::SSSP(const Graph &G, node source, bool storePaths,
            bool storeNodesSortedByDistance, node target)
-    : Algorithm(), G(G), source(source), target(target), ts(0),
+    : Algorithm(), G(&G), source(source), target(target), ts(0),
       storePaths(storePaths),
       storeNodesSortedByDistance(storeNodesSortedByDistance) {}
 
