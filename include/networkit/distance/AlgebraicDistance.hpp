@@ -1,5 +1,5 @@
 /*
- * AlgebraicDistance.h
+ * AlgebraicDistance.hpp
  *
  *  Created on: 03.11.2015
  *      Author: Henning Meyerhenke, Christian Staudt, Michael Hamann
@@ -20,7 +20,7 @@ namespace NetworKit {
  * Algebraic distances will become small within dense subgraphs.
  *
  */
-class AlgebraicDistance: public NodeDistance {
+class AlgebraicDistance final: public NodeDistance {
 
 public:
 
@@ -37,18 +37,18 @@ public:
     /**
      *
      */
-    virtual void preprocess();
+     void preprocess() override;
 
     /**
      * @return algebraic distance between the two nodes.
      */
-    virtual double distance(node u, node v);
+     double distance(node u, node v) override;
 
 
-    virtual std::vector<double> getEdgeScores();
+     std::vector<double> getEdgeScores() override;
 
 
-protected:
+private:
 
     /**
      * initialize vectors randomly

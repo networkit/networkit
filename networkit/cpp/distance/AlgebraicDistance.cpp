@@ -6,9 +6,9 @@
  */
 
 
-#include <networkit/distance/AlgebraicDistance.hpp>
 
 #include <networkit/auxiliary/Timer.hpp>
+#include <networkit/distance/AlgebraicDistance.hpp>
 #include <omp.h>
 
 
@@ -23,7 +23,7 @@ AlgebraicDistance::AlgebraicDistance(const Graph& G, count numberSystems, count 
 
 void AlgebraicDistance::randomInit() {
     // allocate space for loads
-    loads.resize(numSystems*G.upperNodeIdBound());
+    loads.resize(numSystems*G->upperNodeIdBound());
 
     #pragma omp parallel for
     for (omp_index i = 0; i < static_cast<omp_index>(loads.size()); ++i) {
@@ -46,12 +46,12 @@ void AlgebraicDistance::preprocess() {
             // store previous iteration
             loads.swap(oldLoads);
 
-            G.balancedParallelForNodes([&](node u) {
+            G->balancedParallelForNodes([&](node u) {
                 std::vector<double> val(numSystems, 0.0);
 
                 double weightedDeg = 0;
                 // step 1
-                G.forNeighborsOf(u, [&](node v, edgeweight weight) {
+                G->forNeighborsOf(u, [&](node v, edgeweight weight) {
                     for (index i = 0; i < numSystems; ++i) {
                         val[i] += weight * oldLoads[v*numSystems + i];
                     }
@@ -72,7 +72,7 @@ void AlgebraicDistance::preprocess() {
     // normalization. Compute min/max over all nodes per system (and per thread)
     std::vector<std::vector<double>> minPerThread(omp_get_max_threads(), std::vector<double>(numSystems, std::numeric_limits<double>::max()));
     std::vector<std::vector<double>> maxPerThread(omp_get_max_threads(), std::vector<double>(numSystems, std::numeric_limits<double>::lowest()));
-    G.parallelForNodes([&](node u) {
+    G->parallelForNodes([&](node u) {
         auto tid = omp_get_thread_num();
         const index startId = u*numSystems;
         for (index sys = 0; sys < numSystems; ++sys) {
@@ -92,7 +92,7 @@ void AlgebraicDistance::preprocess() {
 
     // set normalized values: new = (min - old) / (min - max)
     // normalization is per system
-    G.parallelForNodes([&](node u) {
+    G->parallelForNodes([&](node u) {
         const index startId = u*numSystems;
         for (index sys = 0; sys < numSystems; ++sys) {
             loads[startId + sys] = (minPerSystem[sys] - loads[startId + sys]) / (minPerSystem[sys] - maxPerSystem[sys]);
@@ -102,9 +102,9 @@ void AlgebraicDistance::preprocess() {
     // calculate edge scores
 
     if (withEdgeScores) {
-        edgeScores.resize(G.upperEdgeIdBound(), none);
+        edgeScores.resize(G->upperEdgeIdBound(), none);
 
-        G.parallelForEdges([&](node u, node v, edgeid eid) {
+        G->parallelForEdges([&](node u, node v, edgeid eid) {
             edgeScores[eid] = distance(u, v);
         });
     }
