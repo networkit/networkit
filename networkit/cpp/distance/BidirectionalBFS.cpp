@@ -1,3 +1,12 @@
+/*
+ * BidirectionalBFS.cpp
+ *
+ *  Created on: 14.06.2019
+ *      Author: Eugenio Angriman <angrimae@hu-berlin.de>
+ */
+
+// networkit-format
+
 #include <limits>
 
 #include <networkit/distance/BidirectionalBFS.hpp>
@@ -30,7 +39,7 @@ void BidirectionalBFS::run() {
     sQueue.push(source);
     tQueue.push(target);
 
-    // Mark source as fisited by the ball we grow from the source
+    // Mark source as visited by the ball we grow from the source
     visited[source] = ts;
     // Mark the target as visited the ball we grow from the target
     visited[target] = ts + ballMask;

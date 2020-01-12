@@ -41,8 +41,8 @@ public:
     }
 
     edgeweight getDistance() const override {
-      assureFinished();
-      return static_cast<edgeweight>(stDist);
+        assureFinished();
+        return static_cast<edgeweight>(stDist);
     }
 
 private:
