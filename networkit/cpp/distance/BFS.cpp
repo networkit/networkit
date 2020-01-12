@@ -6,6 +6,7 @@
  */
 
 #include <queue>
+
 #include <networkit/distance/BFS.hpp>
 
 namespace NetworKit {
@@ -59,13 +60,8 @@ void BFS::run() {
             break;
         }
 
-        // TRACE("current node in BFS: " , u);
-        // TRACE(distances);
-
         // insert untouched neighbors into queue
         G->forNeighborsOf(u, [&](node v) {
-            // TRACE("scanning neighbor ", v);
-
             if (ts != visited[v]) {
                 q.push(v);
                 visited[v] = ts;
