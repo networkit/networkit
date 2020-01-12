@@ -9,10 +9,10 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
-#include <networkit/distance/Diameter.hpp>
-#include <networkit/distance/Eccentricity.hpp>
 #include <networkit/distance/BFS.hpp>
+#include <networkit/distance/Diameter.hpp>
 #include <networkit/distance/Dijkstra.hpp>
+#include <networkit/distance/Eccentricity.hpp>
 #include <networkit/graph/BFS.hpp>
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/structures/Partition.hpp>
@@ -172,7 +172,7 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph &
         }
     };
 
-    // for each component, find the node with the maximum degreee and add it as start node
+    // for each component, find the node with the maximum degree and add it as start node
     G.forNodes([&](node v) {
         count d = G.degree(v);
         count c = comp.componentOfNode(v);
