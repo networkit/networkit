@@ -16,7 +16,7 @@ ReverseBFS::ReverseBFS(const Graph &G, node source, bool storePaths,
 
 void ReverseBFS::run() {
   edgeweight infDist = std::numeric_limits<edgeweight>::max();
-  count z = G.upperNodeIdBound();
+  count z = G->upperNodeIdBound();
   distances.clear();
   distances.resize(z, infDist);
 
@@ -53,7 +53,7 @@ void ReverseBFS::run() {
     }
 
     // insert untouched neighbors into queue
-    G.forInNeighborsOf(u, [&](node v) {
+    G->forInNeighborsOf(u, [&](node v) {
       if (!visited[v]) {
         q.push(v);
         visited[v] = true;
