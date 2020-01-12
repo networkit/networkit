@@ -1,5 +1,5 @@
 /*
- * Volume.h
+ * Volume.hpp
  *
  * Created on: July 7, 2018
  * Author: Franz-Benjamin Mocnik <mail@mocnik-science.net>
