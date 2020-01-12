@@ -1,5 +1,5 @@
 /*
-* HopPlotApproximation.h
+* HopPlotApproximation.hpp
 *
 *  Created on: 30.03.2016
 *      Author: Maximilian Vogel
@@ -17,7 +17,7 @@ namespace NetworKit {
 /**
  * @ingroup distance
  */
-class HopPlotApproximation : public Algorithm {
+class HopPlotApproximation final : public Algorithm {
 
 public:
     /**
@@ -45,7 +45,7 @@ public:
     std::map<count, double> getHopPlot() const;
 
 private:
-    const Graph& G;
+    const Graph* G;
     const count maxDistance;
     const count k;
     const count r;
