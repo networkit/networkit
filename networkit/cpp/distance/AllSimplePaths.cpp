@@ -204,7 +204,6 @@ namespace NetworKit {
     }
 
 
-
     std::vector<node> AllSimplePaths::getAvailableSources(node s, count pathLength) {
         std::vector<node> availableSources;
         G->forNeighborsOf(s, [&](node v) {

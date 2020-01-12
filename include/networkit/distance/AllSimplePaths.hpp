@@ -45,7 +45,7 @@ namespace NetworKit {
         count numberOfSimplePaths();
 
         /*
-        * This method returns a vector that contains all the simple paths from a source node to a target node repepresented by vectors. Each path contains the source node as the first element and the target node as the last element.
+        * This method returns a vector that contains all the simple paths from a source node to a target node represented by vectors. Each path contains the source node as the first element and the target node as the last element.
         */
         std::vector<std::vector<node>> getAllSimplePaths();
 
@@ -65,7 +65,7 @@ namespace NetworKit {
         // This method computes all the paths after a reverse BFS from the target node and a normal BFS from the source node.
         void computePaths();
 
-        // This method returns a queue thatcontains all the nodes that could be part of a path from the source to the target that crosses @s.
+        // This method returns a queue that contains all the nodes that could be part of a path from the source to the target that crosses @s.
         std::vector<node> getAvailableSources(node s, count pathLength = 0);
 
         // The graph
