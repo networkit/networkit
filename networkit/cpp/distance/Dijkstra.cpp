@@ -7,7 +7,6 @@
 
 #include <algorithm>
 #include <networkit/auxiliary/Log.hpp>
-
 #include <networkit/distance/Dijkstra.hpp>
 
 namespace NetworKit {
@@ -21,10 +20,10 @@ void Dijkstra::run() {
 
     TRACE("initializing Dijkstra data structures");
     // init distances
-    if (distances.size() < G.upperNodeIdBound()) {
-        distances.resize(G.upperNodeIdBound(),
+    if (distances.size() < G->upperNodeIdBound()) {
+        distances.resize(G->upperNodeIdBound(),
                          std::numeric_limits<double>::max());
-        visited.resize(G.upperNodeIdBound(), ts);
+        visited.resize(G->upperNodeIdBound(), ts);
     }
 
     sumDist = 0.;
@@ -37,15 +36,15 @@ void Dijkstra::run() {
 
     if (storePaths) {
         previous.clear();
-        previous.resize(G.upperNodeIdBound());
+        previous.resize(G->upperNodeIdBound());
         npaths.clear();
-        npaths.resize(G.upperNodeIdBound(), 0);
+        npaths.resize(G->upperNodeIdBound(), 0);
         npaths[source] = 1;
     }
 
     if (storeNodesSortedByDistance) {
         nodesSortedByDistance.clear();
-        nodesSortedByDistance.reserve(G.upperNodeIdBound());
+        nodesSortedByDistance.reserve(G->upperNodeIdBound());
     }
 
     // priority queue with distance-node pairs
@@ -73,7 +72,7 @@ void Dijkstra::run() {
         if (storeNodesSortedByDistance)
             nodesSortedByDistance.push_back(u);
 
-        G.forNeighborsOf(u, [&](node v, edgeweight w) {
+        G->forNeighborsOf(u, [&](node v, edgeweight w) {
             double newDist = distances[u] + w;
             if (ts != visited[v]) {
                 visited[v] = ts;
