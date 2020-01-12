@@ -1,5 +1,5 @@
 /*
-* EffectiveDiameter.h
+* EffectiveDiameter.hpp
 *
 *  Created on: 16.06.2014
 *      Author: Marc Nemes
@@ -16,7 +16,7 @@ namespace NetworKit {
 /**
  * @ingroup distance
  */
-class EffectiveDiameter : public Algorithm {
+class EffectiveDiameter final : public Algorithm {
 
 public:
     /**
@@ -36,7 +36,7 @@ public:
     double getEffectiveDiameter() const;
 
 private:
-    const Graph& G;
+    const Graph* G;
     const double ratio;
     double effectiveDiameter;
 };

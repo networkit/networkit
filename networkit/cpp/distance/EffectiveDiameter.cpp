@@ -17,7 +17,7 @@
 
 namespace NetworKit {
 
-EffectiveDiameter::EffectiveDiameter(const Graph& G, const double ratio) : Algorithm(), G(G), ratio(ratio) {
+EffectiveDiameter::EffectiveDiameter(const Graph& G, const double ratio) : Algorithm(), G(&G), ratio(ratio) {
     if (G.isDirected()) throw std::runtime_error("current implementation can only deal with undirected graphs");
     ConnectedComponents cc(G);
     cc.run();
@@ -25,7 +25,7 @@ EffectiveDiameter::EffectiveDiameter(const Graph& G, const double ratio) : Algor
 }
 
 void EffectiveDiameter::run() {
-    count z = G.upperNodeIdBound();
+    count z = G->upperNodeIdBound();
     // saves the reachable nodes of the current iteration
     std::vector<std::vector<bool> > mCurr(z);
     // saves the reachable nodes of the previous iteration
@@ -35,12 +35,12 @@ void EffectiveDiameter::run() {
     // the current distance of the neighborhoods
     count h = 1;
     // number of nodes that need to be connected with all other nodes
-    count threshold = (uint64_t) (ceil(ratio * G.numberOfNodes()) + 0.5);
+    count threshold = (uint64_t) (ceil(ratio * G->numberOfNodes()) + 0.5);
     // nodes that are not connected to enough nodes yet
     std::vector<node> activeNodes;
 
     // initialize all nodes
-    G.forNodes([&](node v){
+    G->forNodes([&](node v){
         std::vector<bool> connectedNodes;
         // initialize n entries with value 0
         connectedNodes.assign(z, 0);
@@ -56,8 +56,8 @@ void EffectiveDiameter::run() {
         for (count x = 0; x < activeNodes.size(); x++) {
             node v = activeNodes[x];
                 mCurr[v] = mPrev[v];
-                G.forNeighborsOf(v, [&](node u) {
-                    for (count i = 0; i < G.numberOfNodes(); i++) {
+                G->forNeighborsOf(v, [&](node u) {
+                    for (count i = 0; i < G->numberOfNodes(); i++) {
                         // add the current neighbor of u to the neighborhood of v
                         mCurr[v][i] = mCurr[v][i] || mPrev[u][i];
                     }
@@ -65,7 +65,7 @@ void EffectiveDiameter::run() {
 
                 // compute the number of connected nodes
                 count numConnectedNodes = 0;
-                for (count i = 0; i < G.numberOfNodes(); i++) {
+                for (count i = 0; i < G->numberOfNodes(); i++) {
                     if (mCurr[v][i] == 1) {
                         numConnectedNodes++;
                     }
@@ -83,7 +83,7 @@ void EffectiveDiameter::run() {
             mPrev = mCurr;
             h++;
     }
-    effectiveDiameter /= G.numberOfNodes();
+    effectiveDiameter /= G->numberOfNodes();
     hasRun = true;
 }
 
