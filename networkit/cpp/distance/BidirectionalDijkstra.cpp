@@ -5,7 +5,7 @@
 namespace NetworKit {
 
 void BidirectionalDijkstra::run() {
-    if (!G.isWeighted())
+    if (!G->isWeighted())
         WARN("The graph is unweighted, use BidirectionalBFS for better "
              "efficiency!");
     stDist = 0.;
@@ -15,12 +15,12 @@ void BidirectionalDijkstra::run() {
     }
 
     init();
-    visited.resize(G.upperNodeIdBound(), ts);
+    visited.resize(G->upperNodeIdBound(), ts);
     if (ts++ == 128) {
         ts = 1;
         std::fill(visited.begin(), visited.end(), 0);
     }
-    count n = G.upperNodeIdBound();
+    count n = G->upperNodeIdBound();
     if (storePred) {
         pred[source] = source;
         predT.resize(n);
@@ -75,10 +75,10 @@ void BidirectionalDijkstra::run() {
             }
         };
 
-        if (!G.isDirected() || idx != ballMask)
-            G.forNeighborsOf(u, visitEdge);
+        if (!G->isDirected() || idx != ballMask)
+            G->forNeighborsOf(u, visitEdge);
         else
-            G.forInNeighborsOf(u, visitEdge);
+            G->forInNeighborsOf(u, visitEdge);
 
         return none;
     };
