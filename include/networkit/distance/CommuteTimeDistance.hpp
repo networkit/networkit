@@ -1,5 +1,5 @@
 /*
- * CommuteTimeDistance.h
+ * CommuteTimeDistance.hpp
  *
  *  Created on: 12.04.2016
  *      Author: ebergamini
@@ -9,9 +9,9 @@
 #define NETWORKIT_DISTANCE_COMMUTE_TIME_DISTANCE_HPP_
 
 #include <networkit/algebraic/CSRMatrix.hpp>
-#include <networkit/numerics/LAMG/Lamg.hpp>
-#include <networkit/graph/Graph.hpp>
 #include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/numerics/LAMG/Lamg.hpp>
 
 
 namespace NetworKit {
@@ -22,7 +22,7 @@ namespace NetworKit {
  * CommuteTimeDistance edge centrality.
  *
  */
-class CommuteTimeDistance: public Algorithm {
+class CommuteTimeDistance final : public Algorithm {
 
 public:
     /**
@@ -41,7 +41,7 @@ public:
     /**
      * Computes ECTD exactly.
      */
-    virtual void run();
+    void run() override;
     /**
      * Computes approximation by projection.
      */
@@ -75,7 +75,7 @@ public:
     double runSingleSource(node u);
 
 protected:
-    const Graph& G;
+    const Graph* G;
     double tol;
     Lamg<CSRMatrix> lamg;
     uint64_t setupTime;
