@@ -1,5 +1,5 @@
 /*
-* EffectiveDiameterApproximation.h
+* EffectiveDiameterApproximation.hpp
 *
 *  Created on: 29.03.16
 *      Author: Maximilian Vogel
@@ -16,7 +16,7 @@ namespace NetworKit {
 /**
  * @ingroup distance
  */
-class EffectiveDiameterApproximation : public Algorithm {
+class EffectiveDiameterApproximation final : public Algorithm {
 
 public:
     /**
@@ -42,7 +42,7 @@ public:
     double getEffectiveDiameter() const;
 
 private:
-    const Graph& G;
+    const Graph* G;
     const double ratio;
     const count k;
     const count r;
