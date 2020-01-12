@@ -4633,6 +4633,7 @@ cdef extern from "<networkit/structures/Cover.hpp>":
 		_Cover() except +
 		_Cover(_Partition p) except +
 		_Cover(count n) except +
+		_Cover(_Cover c) except +
 		set[index] subsetsOf(index e) except +
 		index extend() except +
 		void remove(index e) except +
@@ -4666,12 +4667,26 @@ cdef class Cover:
 	def __cinit__(self, n=0):
 		if isinstance(n, Partition):
 			self._this = move(_Cover((<Partition>n)._this))
+		elif isinstance(n, Cover):
+			self._this = move(_Cover((<Cover>n)._this))
 		else:
 			self._this = move(_Cover(<count?>n))
 
 	cdef setThis(self, _Cover& other):
 		swap[_Cover](self._this, other)
 		return self
+
+	def __copy__(self):
+		"""
+		Generates a copy of the cover
+		"""
+		return Cover().setThis(_Cover(self._this))
+
+	def __deepcopy__(self):
+		"""
+		Generates a copy of the cover
+		"""
+		return Cover().setThis(_Cover(self._this))
 
 	def subsetsOf(self, e):
 		""" Get the ids of subsets in which the element `e` is contained.
