@@ -1,5 +1,5 @@
 /*
- * Diameter.h
+ * Diameter.hpp
  *
  *  Created on: 19.02.2014
  *      Author: Daniel Hoske, Christian Staudt
@@ -8,10 +8,9 @@
 #ifndef NETWORKIT_DISTANCE_DIAMETER_HPP_
 #define NETWORKIT_DISTANCE_DIAMETER_HPP_
 
+#include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
-#include <networkit/auxiliary/SignalHandling.hpp>
-
 
 namespace NetworKit {
 enum DiameterAlgo {automatic = 0, exact = 1, estimatedRange = 2, estimatedSamples = 3, estimatedPedantic = 4};
@@ -19,7 +18,7 @@ enum DiameterAlgo {automatic = 0, exact = 1, estimatedRange = 2, estimatedSample
 /**
  * @ingroup distance
  */
-class Diameter : public Algorithm {
+class Diameter final : public Algorithm {
 
 public:
     
@@ -33,7 +32,7 @@ public:
 
 
 private:
-    const Graph& G;
+    const Graph* G;
     DiameterAlgo algo;
     double error;
     count nSamples;
@@ -65,11 +64,11 @@ private:
     /**
      * Get a 2-approximation of the node diameter (unweighted diameter) of @a G.
      *
-     * @param[in]	G			The graph.
-     * @param[in]	samples		One sample is enough if the graph is connected. If there
-     *							are multiple connected components, then the number of samples
-     *							must be chosen so that the probability of sampling the component
-     *							with the largest diameter ist high.
+     * @param[in] G        The graph.
+     * @param[in] samples  One sample is enough if the graph is connected. If there
+     *       are multiple connected components, then the number of samples
+     *       must be chosen so that the probability of sampling the component
+     *       with the largest diameter ist high.
      * @return A 2-approximation of the vertex diameter (unweighted diameter) of @a G.
      */
     edgeweight estimatedVertexDiameter(const Graph& G, count samples);

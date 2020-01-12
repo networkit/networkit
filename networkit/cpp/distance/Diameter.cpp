@@ -19,7 +19,7 @@
 
 namespace NetworKit {
 
-Diameter::Diameter(const Graph& G, DiameterAlgo algo, double error, count nSamples) : Algorithm(), G(G), error(error), nSamples(nSamples) {
+Diameter::Diameter(const Graph& G, DiameterAlgo algo, double error, count nSamples) : Algorithm(), G(&G), error(error), nSamples(nSamples) {
     if (algo == DiameterAlgo::automatic) {
         this->algo = DiameterAlgo::exact;
     } else {
@@ -35,13 +35,13 @@ Diameter::Diameter(const Graph& G, DiameterAlgo algo, double error, count nSampl
 void Diameter::run() {
     diameterBounds = {0, 0};
     if (algo == DiameterAlgo::exact) {
-        std::get<0>(diameterBounds) = this->exactDiameter(G);
+        std::get<0>(diameterBounds) = this->exactDiameter(*G);
     } else if (algo == DiameterAlgo::estimatedRange) {
-        diameterBounds = this->estimatedDiameterRange(G, error);
+        diameterBounds = this->estimatedDiameterRange(*G, error);
     } else if (algo == DiameterAlgo::estimatedSamples) {
-        std::get<0>(diameterBounds) = this->estimatedVertexDiameter(G, nSamples);
+        std::get<0>(diameterBounds) = this->estimatedVertexDiameter(*G, nSamples);
     } else if (algo == DiameterAlgo::estimatedPedantic) {
-        std::get<0>(diameterBounds) = this->estimatedVertexDiameterPedantic(G);
+        std::get<0>(diameterBounds) = this->estimatedVertexDiameterPedantic(*G);
     } else {
         throw std::runtime_error("should never reach this code as the algorithm should be set correctly in the constructor or fail there");
     }
