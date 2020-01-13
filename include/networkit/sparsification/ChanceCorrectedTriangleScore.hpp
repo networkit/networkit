@@ -1,5 +1,5 @@
 /*
- * ChangeCorrectedTriangleScore.h
+ * ChangeCorrectedTriangleScore.hpp
  *
  *  Created on: 20.11.2014
  *      Author: Michael Hamann
@@ -12,16 +12,16 @@
 
 namespace NetworKit {
 
-class ChanceCorrectedTriangleScore : public EdgeScore<double> {
+class ChanceCorrectedTriangleScore final : public EdgeScore<double> {
 
 public:
     ChanceCorrectedTriangleScore(const Graph& graph, const std::vector<count>& triangles);
-    virtual double score(edgeid eid) override;
-    virtual double score(node u, node v) override;
-    virtual void run() override;
+    double score(edgeid eid) override;
+    double score(node u, node v) override;
+    void run() override;
 
 private:
-    const std::vector<count>& triangles;
+    const std::vector<count>* triangles;
 
 };
 
