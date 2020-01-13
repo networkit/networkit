@@ -11,10 +11,11 @@
 #include <set>
 #include <stack>
 
+#include <tlx/define/deprecated.hpp>
+
 #include <networkit/auxiliary/Multiprecision.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
-#include <tlx/define/deprecated.hpp>
 
 namespace NetworKit {
 
