@@ -1,5 +1,5 @@
 /*
- * GraphEvent.h
+ * GraphEvent.hpp
  *
  *  Created on: 02.04.2013
  *      Author: cls
@@ -16,7 +16,7 @@ namespace NetworKit {
 /**
  * @ingroup dynamics
  */
-class GraphEvent {
+class GraphEvent final {
 
 
 public:
@@ -33,10 +33,10 @@ public:
         
     };
 
-    Type type;	//!< type of graph event
-    node u; 				//!< first node parameter
-    node v;					//!< second node parameter
-    edgeweight w;			//!< edge weight parameter
+    Type type;  //!< type of graph event
+    node u;         //!< first node parameter
+    node v;        //!< second node parameter
+    edgeweight w;      //!< edge weight parameter
 
 
     GraphEvent() = default;
