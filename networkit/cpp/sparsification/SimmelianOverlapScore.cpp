@@ -14,14 +14,14 @@ SimmelianOverlapScore::SimmelianOverlapScore(const Graph& G, const std::vector<c
         SimmelianScore(G, triangles), maxRank(maxRank) {}
 
 void SimmelianOverlapScore::run() {
-    if (!G.hasEdgeIds()) {
+    if (!G->hasEdgeIds()) {
         throw std::runtime_error("edges have not been indexed - call indexEdges first");
     }
 
-    std::vector<RankedNeighbors> neighbors = getRankedNeighborhood(G, triangles);
-    scoreData.resize(G.upperEdgeIdBound(), 0.0);
+    std::vector<RankedNeighbors> neighbors = getRankedNeighborhood(*G, *triangles);
+    scoreData.resize(G->upperEdgeIdBound(), 0.0);
 
-    G.parallelForEdges([&](node u, node v, edgeid eid) {
+    G->parallelForEdges([&](node u, node v, edgeid eid) {
         Redundancy redundancy = getOverlap(u, v, neighbors, maxRank);
 
         scoreData[eid] = (double) redundancy.overlap;
