@@ -1,5 +1,5 @@
 /*
- * ChibaNishizekiQuadrangleEdgeScore.h
+ * ChibaNishizekiQuadrangleEdgeScore.hpp
  *
  *  Created on: 18.11.2014
  *      Author: Michael Hamann, Gerd Lindner
@@ -12,13 +12,13 @@
 
 namespace NetworKit {
 
-class ChibaNishizekiQuadrangleEdgeScore : public EdgeScore<count> {
+class ChibaNishizekiQuadrangleEdgeScore final : public EdgeScore<count> {
 
 public:
     ChibaNishizekiQuadrangleEdgeScore(const Graph& G);
     virtual count score(edgeid eid) override;
     virtual count score(node u, node v) override;
-    virtual void run() override;
+    void run() override;
 };
 
 } // namespace NetworKit
