@@ -8,9 +8,10 @@
 #ifndef NETWORKIT_DYNAMICS_GRAPH_EVENT_PROXY_HPP_
 #define NETWORKIT_DYNAMICS_GRAPH_EVENT_PROXY_HPP_
 
+#include <tlx/define/deprecated.hpp>
+
 #include <networkit/dynamics/GraphEventHandler.hpp>
 #include <networkit/graph/Graph.hpp>
-#include <tlx/define/deprecated.hpp>
 
 namespace NetworKit {
 
@@ -25,7 +26,6 @@ class GraphEventProxy final {
 private:
 
     std::vector<GraphEventHandler*> observers;
-
 
 public:
 
