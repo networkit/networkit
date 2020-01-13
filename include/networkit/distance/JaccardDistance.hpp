@@ -12,7 +12,6 @@
 #include <networkit/distance/NodeDistance.hpp>
 #include <networkit/graph/Graph.hpp>
 
-
 namespace NetworKit {
 
 /**
