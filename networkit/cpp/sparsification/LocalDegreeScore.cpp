@@ -5,10 +5,10 @@
  *      Author: Gerd Lindner
  */
 
-#include <networkit/sparsification/LocalDegreeScore.hpp>
-#include <networkit/auxiliary/Parallel.hpp>
 #include <atomic>
 #include <memory>
+#include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/sparsification/LocalDegreeScore.hpp>
 
 namespace NetworKit {
 
@@ -30,23 +30,23 @@ LocalDegreeScore::LocalDegreeScore(const Graph& G) : EdgeScore<double>(G) {
 }
 
 void LocalDegreeScore::run() {
-    if (!G.hasEdgeIds()) {
+   if (!G->hasEdgeIds()) {
         throw std::runtime_error("edges have not been indexed - call indexEdges first");
     }
 
-    std::unique_ptr<std::atomic<double>[]> exponents(new std::atomic<double>[G.upperEdgeIdBound()]{});
+    std::unique_ptr<std::atomic<double>[]> exponents(new std::atomic<double>[G->upperEdgeIdBound()]{});
 
-    G.balancedParallelForNodes([&](node i) {
-        count d = G.degree(i);
+    G->balancedParallelForNodes([&](node i) {
+        count d = G->degree(i);
 
         /**
          *  The top d^e edges (sorted by degree)
          * are to be kept in the graph */
 
         std::vector<AttributizedEdge<count>> neighbors;
-        neighbors.reserve(G.degree(i));
-        G.forNeighborsOf(i, [&](node, node j, edgeid eid) {
-            neighbors.emplace_back(eid, G.degree(j));
+        neighbors.reserve(G->degree(i));
+        G->forNeighborsOf(i, [&](node, node j, edgeid eid) {
+            neighbors.emplace_back(eid, G->degree(j));
         });
         std::sort(neighbors.begin(), neighbors.end());
 
@@ -79,7 +79,7 @@ void LocalDegreeScore::run() {
     });
 
     scoreData.clear();
-    scoreData.resize(G.upperEdgeIdBound());
+    scoreData.resize(G->upperEdgeIdBound());
 
     #pragma omp parallel for
     for (omp_index i = 0; i < static_cast<omp_index>(scoreData.size()); ++i) {

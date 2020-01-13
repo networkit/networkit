@@ -1,5 +1,5 @@
 /*
- * LocalDegreeScore.h
+ * LocalDegreeScore.hpp
  *
  *  Created on: 28.08.2014
  *      Author: Gerd Lindner
@@ -16,14 +16,14 @@ namespace NetworKit {
  * Local Degree sparsification method.
  * See 'Structure-Preserving Sparsification of Social Networks' by Lindner, Staudt, Hamann.
  */
-class LocalDegreeScore : public EdgeScore<double> {
+class LocalDegreeScore final : public EdgeScore<double> {
 
 public:
 
     LocalDegreeScore(const Graph& G);
-    virtual void run() override;
-    virtual double score(edgeid eid) override;
-    virtual double score(node u, node v) override;
+    void run() override;
+    double score(edgeid eid) override;
+    double score(node u, node v) override;
 
 };
 
