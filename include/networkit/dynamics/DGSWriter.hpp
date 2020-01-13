@@ -23,7 +23,6 @@ public:
     DGSWriter() = default;
 
     void write(std::vector<GraphEvent>& stream, const std::string& path);
-
 };
 
 } /* namespace NetworKit */
