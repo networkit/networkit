@@ -10,8 +10,7 @@
 
 namespace NetworKit {
 
-GraphUpdater::GraphUpdater(Graph& G) : G(&G) {
-}
+GraphUpdater::GraphUpdater(Graph& G) : G(&G) {}
 
 void GraphUpdater::update(const std::vector<GraphEvent>& stream) {
     for (GraphEvent ev : stream) {
@@ -58,7 +57,7 @@ void GraphUpdater::update(const std::vector<GraphEvent>& stream) {
     size.push_back(std::make_pair(G->numberOfNodes(), G->numberOfEdges()));
 }
 
-std::vector<std::pair<count, count> > GraphUpdater::getSizeTimeline() {
+std::vector<std::pair<count, count>> GraphUpdater::getSizeTimeline() {
     return size;
 }
 

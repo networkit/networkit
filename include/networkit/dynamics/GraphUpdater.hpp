@@ -32,7 +32,7 @@ public:
 private:
 
     Graph* G;
-    std::vector<std::pair<count, count> > size;
+    std::vector<std::pair<count, count>> size;
 };
 
 } /* namespace NetworKit */
