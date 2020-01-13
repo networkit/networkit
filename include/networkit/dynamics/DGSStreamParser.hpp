@@ -8,10 +8,10 @@
 #ifndef NETWORKIT_DYNAMICS_DGS_STREAM_PARSER_HPP_
 #define NETWORKIT_DYNAMICS_DGS_STREAM_PARSER_HPP_
 
+#include <fstream>
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
-#include <fstream>
 
 #include <networkit/dynamics/GraphEvent.hpp>
 
@@ -24,7 +24,7 @@ class DGSStreamParser final {
 
 public:
 
-    DGSStreamParser(std::string path, bool mapped=true, node baseIndex=0);
+    DGSStreamParser(std::string path, bool mapped = true, node baseIndex = 0);
 
     std::vector<GraphEvent> getStream();
 
@@ -35,8 +35,6 @@ private:
     std::map<std::string, node> key2id;
     node baseIndex;
     node nextNode;
-
-
 };
 
 } /* namespace NetworKit */
