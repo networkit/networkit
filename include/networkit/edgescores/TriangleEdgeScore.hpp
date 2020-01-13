@@ -1,5 +1,5 @@
 /*
- * TriangleEdgeScore.h
+ * TriangleEdgeScore.hpp
  *
  *  Created on: 22.05.2014
  *      Author: Gerd Lindner, Michael Hamann
@@ -25,14 +25,14 @@ namespace NetworKit {
  * Mark Ortmann and Ulrik Brandes                                                                          *
  * 2014 Proceedings of the Sixteenth Workshop on Algorithm Engineering and Experiments (ALENEX). 2014, 1-8
  */
-class TriangleEdgeScore : public EdgeScore<count> {
+class TriangleEdgeScore final : public EdgeScore<count> {
 
 public:
 
     TriangleEdgeScore(const Graph& G);
-    virtual count score(edgeid eid) override;
-    virtual count score(node u, node v) override;
-    virtual void run() override;
+    count score(edgeid eid) override;
+    count score(node u, node v) override;
+    void run() override;
 
 };
 
