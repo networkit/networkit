@@ -70,7 +70,7 @@ void GraphDifference::run() {
                 });
         }
 
-        // unmark common neighbors, detect edge addtions
+        // unmark common neighbors, detect edge additions
         if (G2->hasNode(u)) {
             G2->forNeighborsOf(u, [&](node v, edgeweight w) {
                     // for undirected graphs, edges are only added in one direction unless
@@ -166,4 +166,4 @@ count GraphDifference::getNumberOfEdgeWeightUpdates() const {
     return numWeightUpdates;
 }
 
-}
+} // namespace NetworKit

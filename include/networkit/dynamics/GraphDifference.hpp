@@ -1,9 +1,9 @@
 #ifndef NETWORKIT_DYNAMICS_GRAPH_DIFFERENCE_HPP_
 #define NETWORKIT_DYNAMICS_GRAPH_DIFFERENCE_HPP_
 
-#include <networkit/graph/Graph.hpp>
-#include <networkit/dynamics/GraphEvent.hpp>
 #include <networkit/base/Algorithm.hpp>
+#include <networkit/dynamics/GraphEvent.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
@@ -52,7 +52,7 @@ public:
     count getNumberOfEdits() const;
 
     /**
-     * Get the required number of node addtions.
+     * Get the required number of node additions.
      *
      * @return The number of node additions.
      */
@@ -73,7 +73,7 @@ public:
     count getNumberOfNodeRestorations() const;
 
     /**
-     * Get the required number of edge addtions.
+     * Get the required number of edge additions.
      *
      * @return The number of edge additions.
      */
