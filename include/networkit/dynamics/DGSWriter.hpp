@@ -1,5 +1,5 @@
 /*
- * DGSWriter.h
+ * DGSWriter.hpp
  *
  *  Created on: 14.01.2014
  *      Author: cls
@@ -18,7 +18,7 @@ namespace NetworKit {
 /**
  * @ingroup dynamics
  */
-class DGSWriter {
+class DGSWriter final {
 public:
     DGSWriter() = default;
 
