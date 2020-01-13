@@ -19,7 +19,7 @@ namespace NetworKit {
  * Note that edge weight differences are not detected but edge
  * addition events set the correct edge weight.
  */
-class GraphDifference : public Algorithm {
+class GraphDifference final : public Algorithm {
 public:
     /**
      * Construct the edge edit difference with two graphs to compare.
@@ -32,7 +32,7 @@ public:
     /**
      * Execute the algorithm and compute the difference.
      */
-    virtual void run() override;
+    void run() override;
 
     /**
      * Get the required edits.
@@ -93,7 +93,7 @@ public:
      */
     count getNumberOfEdgeWeightUpdates() const;
 private:
-    const Graph &G1, &G2;
+    const Graph *G1, *G2;
     std::vector<GraphEvent> edits;
     count numEdits;
     count numNodeAdditions;
