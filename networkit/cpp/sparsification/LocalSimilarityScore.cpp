@@ -12,10 +12,10 @@
 namespace NetworKit {
 
 LocalSimilarityScore::LocalSimilarityScore(const Graph& G, const std::vector<count>& triangles) :
-    EdgeScore<double>(G), triangles(triangles) {}
+    EdgeScore<double>(G), triangles(&triangles) {}
 
 void LocalSimilarityScore::run() {
-    if (!G.hasEdgeIds()) {
+    if (!G->hasEdgeIds()) {
         throw std::runtime_error("edges have not been indexed - call indexEdges first");
     }
 
@@ -24,18 +24,18 @@ void LocalSimilarityScore::run() {
      * such that the edge is contained in the sparse graph.
      */
 
-    std::vector<double> sparsificationExp(G.upperEdgeIdBound(), 0.0);
+    std::vector<double> sparsificationExp(G->upperEdgeIdBound(), 0.0);
 
-    G.balancedParallelForNodes([&](node i) {
-        count d = G.degree(i);
+    G->balancedParallelForNodes([&](node i) {
+        count d = G->degree(i);
 
         /* The top d^e edges (sorted by similarity)
          * are to be kept in the graph. */
 
         std::vector<AttributizedEdge<double>> neighbors;
-        neighbors.reserve(G.degree(i));
-        G.forNeighborsOf(i, [&](node, node j, edgeid eid) {
-            double sim = triangles[eid] * 1.0 / (G.degree(i) + G.degree(j) - triangles[eid]);
+        neighbors.reserve(G->degree(i));
+        G->forNeighborsOf(i, [&](node, node j, edgeid eid) {
+            double sim = (*triangles)[eid] * 1.0 / (G->degree(i) + G->degree(j) - (*triangles)[eid]);
             neighbors.emplace_back(i, j, eid, sim);
         });
         std::sort(neighbors.begin(), neighbors.end());
