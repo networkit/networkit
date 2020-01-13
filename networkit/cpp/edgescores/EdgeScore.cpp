@@ -11,7 +11,7 @@
 namespace NetworKit {
 
     template<typename T>
-    EdgeScore<T>::EdgeScore(const Graph& G) : Algorithm(), G(G), scoreData() {
+    EdgeScore<T>::EdgeScore(const Graph& G) : Algorithm(), G(&G), scoreData() {
         if (G.isDirected()) {
             WARN("Application to directed graphs is not well tested");
         }
@@ -45,7 +45,7 @@ namespace NetworKit {
     */
     template<typename T>
     T EdgeScore<T>::score(node u, node v) {
-        return score(G.edgeId(u,v));
+        return score(G->edgeId(u,v));
     }
 
     template class EdgeScore<double>;

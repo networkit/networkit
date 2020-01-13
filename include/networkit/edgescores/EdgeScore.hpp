@@ -1,5 +1,5 @@
 /*
- * EdgeScore.h
+ * EdgeScore.hpp
  *
  *  Created on: 18.08.2015
  *      Author: Gerd Lindner
@@ -8,8 +8,8 @@
 #ifndef NETWORKIT_EDGESCORES_EDGE_SCORE_HPP_
 #define NETWORKIT_EDGESCORES_EDGE_SCORE_HPP_
 
-#include <networkit/graph/Graph.hpp>
 #include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
 #include <vector>
 
 namespace NetworKit {
@@ -40,7 +40,7 @@ public:
     virtual T score(node u, node v);
 
 protected:
-    const Graph& G;
+    const Graph* G;
     std::vector<T> scoreData;
 
 };
