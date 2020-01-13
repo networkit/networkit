@@ -28,7 +28,7 @@ public:
      *
      * @param G The graph.
      */
-    NodeDistance(const Graph& G);
+    NodeDistance(const Graph& G) : G(&G) {}
 
     /** Default destructor */
     virtual ~NodeDistance() = default;
