@@ -1,5 +1,5 @@
 /*
- * DGSStreamParser.h
+ * DGSStreamParser.hpp
  *
  *  Created on: 23.12.2013
  *      Author: cls
@@ -20,7 +20,7 @@ namespace NetworKit {
 /**
  * @ingroup dynamics
  */
-class DGSStreamParser {
+class DGSStreamParser final {
 
 public:
 

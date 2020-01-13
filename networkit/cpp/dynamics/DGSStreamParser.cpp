@@ -5,9 +5,9 @@
  *      Author: cls
  */
 
-#include <networkit/dynamics/DGSStreamParser.hpp>
-#include <networkit/auxiliary/StringTools.hpp>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/StringTools.hpp>
+#include <networkit/dynamics/DGSStreamParser.hpp>
 
 namespace NetworKit {
 
