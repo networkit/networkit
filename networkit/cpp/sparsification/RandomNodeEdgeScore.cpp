@@ -15,12 +15,12 @@ RandomNodeEdgeScore::RandomNodeEdgeScore(const Graph& G, double rneRatio) : Edge
 }
 
 void RandomNodeEdgeScore::run() {
-    if (!G.hasEdgeIds()) {
+    if (!G->hasEdgeIds()) {
         throw std::runtime_error("edges have not been indexed - call indexEdges first");
     }
 
-    Graph sparseGraph = G;
-    std::vector<double> workScores(G.upperEdgeIdBound(), 0);
+    Graph sparseGraph = *G;
+    std::vector<double> workScores(G->upperEdgeIdBound(), 0);
     count numRemoved = 0;
     std::vector< std::pair<node, node> > uniformlyRandomEdges;
 
@@ -39,7 +39,7 @@ void RandomNodeEdgeScore::run() {
                 if (sparseGraph.hasEdge(edge.first, edge.second)) {
                     edgeid id = sparseGraph.edgeId(edge.first, edge.second);
 
-                    workScores[id] = numRemoved * 1.0 / G.numberOfEdges();
+                    workScores[id] = numRemoved * 1.0 / G->numberOfEdges();
 
                     sparseGraph.removeEdge(edge.first, edge.second);
 
@@ -52,7 +52,7 @@ void RandomNodeEdgeScore::run() {
 
             edgeid id = sparseGraph.edgeId(edge.first, edge.second);
 
-            workScores[id] = numRemoved * 1.0 / G.numberOfEdges();
+            workScores[id] = numRemoved * 1.0 / G->numberOfEdges();
 
             sparseGraph.removeEdge(edge.first, edge.second);
 

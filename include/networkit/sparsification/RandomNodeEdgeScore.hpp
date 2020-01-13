@@ -1,5 +1,5 @@
 /*
- * RandomNodeEdgeScore.h
+ * RandomNodeEdgeScore.hpp
  *
  *  Created on: 20.11.2014
  *      Author: Michael Hamann
@@ -12,13 +12,13 @@
 
 namespace NetworKit {
 
-class RandomNodeEdgeScore : public EdgeScore<double> {
+class RandomNodeEdgeScore final : public EdgeScore<double> {
 
 public:
     RandomNodeEdgeScore(const Graph& graph, double rneRatio = 0.8);
-    virtual void run() override;
-    virtual double score(edgeid eid) override;
-    virtual double score(node u, node v) override;
+    void run() override;
+    double score(edgeid eid) override;
+    double score(node u, node v) override;
 
 private:
     double rneRatio;
