@@ -4,11 +4,10 @@
 *  Created on: 30.03.2016
 *      Author: Maximilian Vogel
 */
-#include <iterator>
-#include <math.h>
 #include <map>
-#include <stdlib.h>
+#include <math.h>
 #include <omp.h>
+
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/distance/NeighborhoodFunction.hpp>
@@ -17,10 +16,12 @@
 namespace NetworKit {
 
 NeighborhoodFunction::NeighborhoodFunction(const Graph& G) : Algorithm(), G(&G) {
-    if (G.isDirected()) throw std::runtime_error("current implementation can only deal with undirected graphs");
+    if (G.isDirected())
+        throw std::runtime_error("current implementation can only deal with undirected graphs");
     ConnectedComponents cc(G);
     cc.run();
-    if (cc.getPartition().numberOfSubsets() > 1) throw std::runtime_error("current implementation only runs on graphs with 1 connected component");
+    if (cc.numberOfComponents() > 1) 
+        throw std::runtime_error("current implementation only runs on graphs with 1 connected component");
 }
 
 void NeighborhoodFunction::run() {
@@ -57,5 +58,4 @@ std::vector<count> NeighborhoodFunction::getNeighborhoodFunction() const {
     return result;
 }
 
-
-}
+} // namespace NetworKit
