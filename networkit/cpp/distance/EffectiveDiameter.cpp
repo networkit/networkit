@@ -1,19 +1,16 @@
 /*
-* EffectiveDiameter.cpp
+*  EffectiveDiameter.cpp
 *
 *  Created on: 16.06.2014
 *      Author: Marc Nemes
 */
 
-#include <networkit/distance/EffectiveDiameter.hpp>
-#include <networkit/components/ConnectedComponents.hpp>
-#include <networkit/auxiliary/Random.hpp>
-
 #include <math.h>
-#include <iterator>
-#include <stdlib.h>
 #include <omp.h>
-#include <map>
+
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/distance/EffectiveDiameter.hpp>
 
 namespace NetworKit {
 
@@ -21,21 +18,21 @@ EffectiveDiameter::EffectiveDiameter(const Graph& G, const double ratio) : Algor
     if (G.isDirected()) throw std::runtime_error("current implementation can only deal with undirected graphs");
     ConnectedComponents cc(G);
     cc.run();
-    if (cc.getPartition().numberOfSubsets() > 1) throw std::runtime_error("current implementation only runs on graphs with 1 connected component");
+    if (cc.numberOfComponents() > 1) throw std::runtime_error("current implementation only runs on graphs with 1 connected component");
 }
 
 void EffectiveDiameter::run() {
     count z = G->upperNodeIdBound();
     // saves the reachable nodes of the current iteration
-    std::vector<std::vector<bool> > mCurr(z);
+    std::vector<std::vector<bool>> mCurr(z);
     // saves the reachable nodes of the previous iteration
-    std::vector<std::vector<bool> > mPrev(z);
+    std::vector<std::vector<bool>> mPrev(z);
     // sums over the number of edges needed to reach 90% of all other nodes
     effectiveDiameter = 0;
     // the current distance of the neighborhoods
     count h = 1;
     // number of nodes that need to be connected with all other nodes
-    count threshold = (uint64_t) (ceil(ratio * G->numberOfNodes()) + 0.5);
+    auto threshold = static_cast<count>(std::ceil(ratio * G->numberOfNodes()) + 0.5);
     // nodes that are not connected to enough nodes yet
     std::vector<node> activeNodes;
 
@@ -94,5 +91,4 @@ double EffectiveDiameter::getEffectiveDiameter() const {
     return effectiveDiameter;
 }
 
-
-}
+} // namespace NetworKit
