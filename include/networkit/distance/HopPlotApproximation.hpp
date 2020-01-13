@@ -1,5 +1,5 @@
 /*
-* HopPlotApproximation.hpp
+*  HopPlotApproximation.hpp
 *
 *  Created on: 30.03.2016
 *      Author: Maximilian Vogel
@@ -9,8 +9,9 @@
 #define NETWORKIT_DISTANCE_HOP_PLOT_APPROXIMATION_HPP_
 
 #include <map>
-#include <networkit/graph/Graph.hpp>
+
 #include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
@@ -21,7 +22,7 @@ class HopPlotApproximation final : public Algorithm {
 
 public:
     /**
-    * Computes an approxmation of the hop-plot of a given graph
+    * Computes an approximation of the hop-plot of a given graph
     * The hop-plot is the set of pairs (d, g(g)) for each natural number d
     * and where g(d) is the fraction of connected node pairs whose shortest connecting path has length at most d.
     * Implementation after the ANF algorithm presented in the paper "A Fast and Scalable Tool for Data Mining in Massive Graphs"[1]
@@ -34,7 +35,7 @@ public:
     * @param r the amount of bits that are added to the length of the bitmask to improve the accuracy; default = 7
     * @return the approximated hop-plot of the graph
     */
-    HopPlotApproximation(const Graph& G, const count maxDistance=0, const count k=64, const count r=7);
+    HopPlotApproximation(const Graph& G, count maxDistance = 0, count k = 64, count r = 7);
 
     void run() override;
 

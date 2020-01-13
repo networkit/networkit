@@ -1,23 +1,20 @@
 /*
-* HopPlotApproximation.cpp
+*  HopPlotApproximation.cpp
 *
 *  Created on: 16.06.2014
 *      Author: Marc Nemes
 */
 
-
-#include <iterator>
 #include <math.h>
-#include <map>
 #include <omp.h>
-#include <stdlib.h>
+
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/distance/HopPlotApproximation.hpp>
 
 namespace NetworKit {
 
-HopPlotApproximation::HopPlotApproximation(const Graph& G, const count maxDistance, const count k, const count r): Algorithm(), G(&G), maxDistance(maxDistance), k(k), r(r) {
+HopPlotApproximation::HopPlotApproximation(const Graph& G, count maxDistance, count k, count r): Algorithm(), G(&G), maxDistance(maxDistance), k(k), r(r) {
     if (G.isDirected()) throw std::runtime_error("current implementation can only deal with undirected graphs");
     ConnectedComponents cc(G);
     cc.run();
@@ -29,9 +26,9 @@ void HopPlotApproximation::run() {
     // the length of the bitmask where the number of connected nodes is saved
     count lengthOfBitmask = (count) ceil(log2(G->numberOfNodes()));
     // saves all k bitmasks for every node of the current iteration
-    std::vector<std::vector<unsigned int> > mCurr(z);
+    std::vector<std::vector<unsigned int>> mCurr(z);
     // saves all k bitmasks for every node of the previous iteration
-    std::vector<std::vector<unsigned int> > mPrev(z);
+    std::vector<std::vector<unsigned int>> mPrev(z);
     // the maximum possible bitmask based on the random initialization of all k bitmasks
     std::vector<count> highestCount;
     // the current distance of the neighborhoods
