@@ -1,5 +1,5 @@
 /*
-* EffectiveDiameterApproximation.hpp
+*  EffectiveDiameterApproximation.hpp
 *
 *  Created on: 29.03.16
 *      Author: Maximilian Vogel
@@ -8,8 +8,8 @@
 #ifndef NETWORKIT_DISTANCE_EFFECTIVE_DIAMETER_APPROXIMATION_HPP_
 #define NETWORKIT_DISTANCE_EFFECTIVE_DIAMETER_APPROXIMATION_HPP_
 
-#include <networkit/graph/Graph.hpp>
 #include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

@@ -1,3 +1,9 @@
+/*
+*  EffectiveDiameterApproximation.cpp
+*
+*  Created on: 29.03.16
+*      Author: Maximilian Vogel
+*/
 
 #include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/distance/EffectiveDiameterApproximation.hpp>
@@ -15,9 +21,9 @@ void EffectiveDiameterApproximation::run() {
     // the length of the bitmask where the number of connected nodes is saved
     count lengthOfBitmask = (count) ceil(log2(G->numberOfNodes()));
     // saves all k bitmasks for every node of the current iteration
-    std::vector<std::vector<unsigned int> > mCurr(z);
+    std::vector<std::vector<unsigned int>> mCurr(z);
     // saves all k bitmasks for every node of the previous iteration
-    std::vector<std::vector<unsigned int> > mPrev(z);
+    std::vector<std::vector<unsigned int>> mPrev(z);
     // the maximum possible bitmask based on the random initialization of all k bitmasks
     std::vector<count> highestCount;
     // the amount of nodes that need to be connected to all others nodes
