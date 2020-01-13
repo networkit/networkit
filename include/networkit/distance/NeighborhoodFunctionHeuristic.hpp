@@ -32,7 +32,7 @@ public:
     * @param nSamples the amount of samples, set to zero for heuristic of max(sqrt(m), 0.15*n)
     * @param strategy the strategy to select the samples, accepts "random" or "split"
     */
-    NeighborhoodFunctionHeuristic(const Graph& G, const count nSamples = 0, const SelectionStrategy strategy = SPLIT);
+    NeighborhoodFunctionHeuristic(const Graph& G, count nSamples = 0, SelectionStrategy strategy = SPLIT);
 
     void run() override;
 
@@ -55,6 +55,5 @@ private:
 };
 
 } /* namespace NetworKit */
-
 
 #endif // NETWORKIT_DISTANCE_NEIGHBORHOOD_FUNCTION_HEURISTIC_HPP_

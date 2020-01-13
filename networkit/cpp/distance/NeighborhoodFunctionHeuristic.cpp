@@ -4,13 +4,12 @@
 *      Author: Maximilian Vogel
 */
 
-#include <math.h>
 #include <map>
-#include <iterator>
-#include <stdlib.h>
+#include <math.h>
 #include <omp.h>
-#include <networkit/auxiliary/Random.hpp>
+
 #include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/auxiliary/Random.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/distance/Diameter.hpp>
 #include <networkit/distance/NeighborhoodFunctionHeuristic.hpp>
@@ -19,15 +18,19 @@
 
 namespace NetworKit {
 
-NeighborhoodFunctionHeuristic::NeighborhoodFunctionHeuristic(const Graph& G, const count nSamples, const SelectionStrategy strategy) :
+NeighborhoodFunctionHeuristic::NeighborhoodFunctionHeuristic(const Graph& G, count nSamples, SelectionStrategy strategy) :
     Algorithm(),
     G(&G),
-    nSamples((nSamples == 0)? (count)ceil(std::max((double)0.15f * G.numberOfNodes(), sqrt(G.numberOfEdges()))) : nSamples),
+    nSamples(!nSamples ? (count)ceil(std::max((double)0.15f * G.numberOfNodes(), sqrt(G.numberOfEdges()))) : nSamples),
     strategy(strategy) {
-    if (G.isDirected()) throw std::runtime_error("current implementation can only deal with undirected graphs");
+
+    if (G.isDirected())
+        throw std::runtime_error("current implementation can only deal with undirected graphs");
     ConnectedComponents cc(G);
     cc.run();
-    if (cc.getPartition().numberOfSubsets() > 1) throw std::runtime_error("current implementation only runs on graphs with 1 connected component");
+    if (cc.numberOfComponents() > 1)
+        throw std::runtime_error("current implementation only runs on graphs with 1 connected component");
+
     if (strategy != SPLIT && strategy != RANDOM) {
         throw std::runtime_error("unknown strategy, choose either split or random");
     }
