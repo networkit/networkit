@@ -5,28 +5,28 @@
 *      Author: Maximilian Vogel
 */
 
-
-#include <iterator>
-#include <math.h>
 #include <map>
-#include <stdlib.h>
+#include <math.h>
 #include <omp.h>
 #include <vector>
-#include <networkit/auxiliary/Random.hpp>
-#include <networkit/distance/NeighborhoodFunctionApproximation.hpp>
-#include <networkit/components/ConnectedComponents.hpp>
+
 #include <networkit/Globals.hpp>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/distance/NeighborhoodFunctionApproximation.hpp>
 
 namespace NetworKit {
 
 NeighborhoodFunctionApproximation::NeighborhoodFunctionApproximation(const Graph& G, const count k, const count r) : Algorithm(), G(&G), k(k), r(r), result() {
-    if (G.isDirected()) throw std::runtime_error("current implementation can only deal with undirected graphs");
+    if (G.isDirected())
+        throw std::runtime_error("current implementation can only deal with undirected graphs");
     ConnectedComponents cc(G);
     cc.run();
-    if (cc.getPartition().numberOfSubsets() > 1) throw std::runtime_error("current implementation only runs on graphs with 1 connected component");
+    if (cc.numberOfComponents() > 1)
+        throw std::runtime_error("current implementation only runs on graphs with 1 connected component");
 }
 
-#ifdef _MSC_VER 
+#ifdef _MSC_VER
 // MSVC Optimizer crashes with an internal error message.
 // Until this is either fixed by Microsoft, or the issue here can was
 // found, let's just disable the optimizer.
@@ -36,9 +36,9 @@ void NeighborhoodFunctionApproximation::run() {
     // the length of the bitmask where the number of connected nodes is saved
     const count lengthOfBitmask = (count) ceil(log2(G->numberOfNodes())) + r;
     // saves all k bitmasks for every node of the current iteration
-    std::vector<std::vector<unsigned int> > mCurr(G->upperNodeIdBound());
+    std::vector<std::vector<unsigned int>> mCurr(G->upperNodeIdBound());
     // saves all k bitmasks for every node of the previous iteration
-    std::vector<std::vector<unsigned int> > mPrev(G->upperNodeIdBound());
+    std::vector<std::vector<unsigned int>> mPrev(G->upperNodeIdBound());
     // the list of nodes that are already connected to all other nodes
     std::vector<unsigned int> highestCount(k, 0);
     // nodes that are not connected to enough nodes yet
@@ -77,7 +77,7 @@ void NeighborhoodFunctionApproximation::run() {
 
     std::vector<count> localEstimatesSum(omp_get_max_threads(), 0);
     std::vector<count> localSumRemoved(omp_get_max_threads(), 0);
-    
+
     bool queued = true;
     while (queued) {
         queued = false;
@@ -85,11 +85,11 @@ void NeighborhoodFunctionApproximation::run() {
         for (index i = 0; i < (count)omp_get_max_threads(); ++i) {
             tmp += localSumRemoved[i];
         }
-        #pragma omp parallel for schedule(guided) 
+        #pragma omp parallel for schedule(guided)
         for (omp_index v = 0; v < static_cast<omp_index>(activeNodes.size()); ++v) {
             if (!activeNodes[v]) continue;
             index tid = (index)omp_get_thread_num();
-            
+
             for (count j = 0; j < k; j++) {
                 // and to all previous neighbors of all its neighbors
                 G->forNeighborsOf(v, [&](node u) {
@@ -138,7 +138,7 @@ void NeighborhoodFunctionApproximation::run() {
     }
     hasRun = true;
 }
-#ifdef _MSC_VER 
+#ifdef _MSC_VER
 #pragma optimize( "", on)
 #endif // _MSC_VER
 
@@ -149,5 +149,4 @@ std::vector<count> NeighborhoodFunctionApproximation::getNeighborhoodFunction() 
     return result;
 }
 
-
-}
+} // namespace NetworKit
