@@ -28,7 +28,12 @@ void PageRank::run() {
     std::vector<double> deg(z, 0.0);
     G.parallelForNodes([&](const node u) { deg[u] = static_cast<double>(G.weightedDegree(u)); });
 
+    iterations = 0;
+
     auto converged([&]() {
+        if (iterations >= maxIterations) {
+            return true;
+        }
         double diff = G.parallelSumForNodes([&](node u) {
             double d = scoreData[u] - pr[u];
             return d * d;
@@ -51,6 +56,7 @@ void PageRank::run() {
             pr[u] += teleportProb;
         });
 
+        ++iterations;
         isConverged = converged();
         scoreData = pr;
     }

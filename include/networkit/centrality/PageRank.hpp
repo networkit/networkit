@@ -10,6 +10,8 @@
 #ifndef NETWORKIT_CENTRALITY_PAGE_RANK_HPP_
 #define NETWORKIT_CENTRALITY_PAGE_RANK_HPP_
 
+#include <limits>
+
 #include <networkit/centrality/Centrality.hpp>
 
 namespace NetworKit {
@@ -44,9 +46,23 @@ public:
      */
     double maximum() override;
 
+    /**
+     * Return the number of iterations performed by the algorithm.
+     *
+     * @return Number of iterations performed by the algorithm.
+     */
+    count numberOfIterations() const {
+        assureFinished();
+        return iterations;
+    }
+
+    // Maximum number of iterations allowed
+    count maxIterations = std::numeric_limits<count>::max();
+
 private:
     double damp;
     double tol;
+    count iterations;
 };
 
 } /* namespace NetworKit */
