@@ -480,20 +480,33 @@ TEST_F(CentralityGTest, testKatzDirectedDeletion) {
     INFO("Level reached: ", kc.levelReached, ", ", kc2.levelReached);
 }
 
-// TODO: replace by smaller graph
-TEST_F(CentralityGTest, testPageRankDirected) {
-    SNAPGraphReader reader;
-    Graph G = reader.read("input/wiki-Vote.txt");
-    PageRank pr(G);
+TEST_P(CentralityGTest, testPageRank) {
+    SNAPGraphReader reader(isDirected());
+    auto G = reader.read("input/wiki-Vote.txt");
 
-    DEBUG("start pr run");
-    pr.run();
-    DEBUG("finish pr");
-    std::vector<std::pair<node, double>> pr_ranking = pr.ranking();
+    auto doTest = [&G](PageRank::Norm norm) {
+        PageRank pr(G);
+        pr.norm = norm;
+        pr.run();
 
-    const double tol = 1e-3;
-    EXPECT_EQ(pr_ranking[0].first, 699);
-    EXPECT_NEAR(pr_ranking[0].second, 0.00432, tol);
+        auto pr_ranking = pr.ranking();
+        constexpr double eps = 1e-3;
+        if (G.isDirected()) {
+            EXPECT_EQ(pr_ranking[0].first, 326);
+            EXPECT_NEAR(pr_ranking[0].second, 0.00460, eps);
+        } else {
+            EXPECT_EQ(pr_ranking[0].first, 699);
+            EXPECT_NEAR(pr_ranking[0].second, 0.00432, eps);
+        }
+
+        constexpr count maxIterations = 2;
+        pr.maxIterations = maxIterations;
+        pr.run();
+        EXPECT_LE(pr.numberOfIterations(), maxIterations);
+    };
+
+    doTest(PageRank::Norm::L1Norm);
+    doTest(PageRank::Norm::L2Norm);
 }
 
 TEST_F(CentralityGTest, testEigenvectorCentrality) {

@@ -26,6 +26,8 @@ namespace NetworKit {
 class PageRank final : public Centrality {
 
 public:
+    enum Norm { L1Norm, L2Norm };
+
     /**
      * Constructs the PageRank class for the Graph @a G
      *
@@ -58,6 +60,9 @@ public:
 
     // Maximum number of iterations allowed
     count maxIterations = std::numeric_limits<count>::max();
+
+    // Norm used as stopping criterion
+    Norm norm = Norm::L2Norm;
 
 private:
     double damp;

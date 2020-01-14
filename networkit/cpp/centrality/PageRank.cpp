@@ -30,19 +30,27 @@ void PageRank::run() {
 
     iterations = 0;
 
+    auto sumL1Norm = [&](const node u) { return std::abs(scoreData[u] - pr[u]); };
+
+    auto sumL2Norm = [&](const node u) {
+        const auto d = scoreData[u] - pr[u];
+        return d * d;
+    };
+
     auto converged([&]() {
         if (iterations >= maxIterations) {
             return true;
         }
-        double diff = G.parallelSumForNodes([&](node u) {
-            double d = scoreData[u] - pr[u];
-            return d * d;
-        });
-        return (sqrt(diff) <= tol);
+
+        if (norm == Norm::L2Norm) {
+            return std::sqrt(G.parallelSumForNodes(sumL2Norm)) <= tol;
+        }
+
+        return G.parallelSumForNodes(sumL1Norm) <= tol;
     });
 
     bool isConverged = false;
-    while (!isConverged) {
+    do {
         handler.assureRunning();
         G.balancedParallelForNodes([&](const node u) {
             pr[u] = 0.0;
@@ -58,8 +66,8 @@ void PageRank::run() {
 
         ++iterations;
         isConverged = converged();
-        scoreData = pr;
-    }
+        std::swap(pr, scoreData);
+    } while (!isConverged);
 
     handler.assureRunning();
 

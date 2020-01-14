@@ -8761,14 +8761,26 @@ cdef class ApproxCloseness(Centrality):
 		return (<_ApproxCloseness*>(self._this)).getSquareErrorEstimates()
 
 
+cdef extern from "<networkit/centrality/PageRank.hpp>" namespace "NetworKit::PageRank":
+
+	cdef enum Norm:
+		L1Norm = 0
+		L2Norm = 1
+
+class _PageRankNorm(object):
+	l1norm = L1Norm
+	l2norm = L2Norm
 
 cdef extern from "<networkit/centrality/PageRank.hpp>":
 
 	cdef cppclass _PageRank "NetworKit::PageRank" (_Centrality):
 		_PageRank(_Graph, double damp, double tol) except +
+		count numberOfIterations() except +
+		Norm norm
+		count maxIterations
 
 cdef class PageRank(Centrality):
-	"""	Compute PageRank as node centrality measure.
+	""" Compute PageRank as node centrality measure.
 
 	PageRank(G, damp=0.85, tol=1e-9)
 
@@ -8786,6 +8798,34 @@ cdef class PageRank(Centrality):
 		self._G = G
 		self._this = new _PageRank(G._this, damp, tol)
 
+	def numberOfIterations(self):
+		"""
+		Returns the number of iterations performed by the algorithm.
+
+		Returns
+		-------
+		int
+			Number of iterations performed by the algorithm.
+		"""
+		return (<_PageRank*>(self._this)).numberOfIterations()
+
+	property norm:
+		def __get__(self):
+			""" Get the norm used as stopping criterion. """
+			return (<_PageRank*>(self._this)).norm
+		def __set__(self, norm):
+			""" Set the norm used as stopping criterion. """
+			(<_PageRank*>(self._this)).norm = norm
+
+	property maxIterations:
+		def __get__(self):
+			""" Get the maximum number of iterations. """
+			return (<_PageRank*>(self._this)).maxIterations
+		def __set__(self, maxIterations):
+			""" Set the maximum number of iterations. """
+			if maxIterations < 0:
+				raise Exception("Max iterations cannot be a negative number.")
+			(<_PageRank*>(self._this)).maxIterations = maxIterations
 
 
 cdef extern from "<networkit/centrality/EigenvectorCentrality.hpp>":

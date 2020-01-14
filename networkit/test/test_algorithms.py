@@ -92,9 +92,27 @@ class Test_SelfLoops(unittest.TestCase):
 		CL.run()
 		CLL = centrality.PageRank(self.LL)
 		CLL.run()
-		#test if lists have the same length
-		self.assertEqual(len(CL.ranking()),len(CLL.ranking()))
 
+		#test if lists have the same length
+		self.assertEqual(len(CL.ranking()), len(CLL.ranking()))
+		self.assertEqual(CL.norm, CLL.norm)
+		self.assertEqual(CL.maxIterations, CLL.maxIterations)
+
+		norm = centrality.Norm.l2norm
+		maxIters = 2
+		CL.norm = norm
+		CL.maxIterations = maxIters
+		CLL.norm = norm
+		CLL.maxIterations = maxIters
+
+		self.assertEqual(CL.norm, CLL.norm)
+		self.assertEqual(CL.maxIterations, CLL.maxIterations)
+
+		CL.run()
+		CLL.run()
+
+		self.assertLessEqual(CL.numberOfIterations(), maxIters)
+		self.assertLessEqual(CLL.numberOfIterations(), maxIters)
 
 	def test_centrality_rankPerNode(self):
 		CL = centrality.PageRank(self.L)
