@@ -10,6 +10,7 @@
 
 #include <atomic>
 #include <memory>
+
 #include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/edgescores/EdgeScore.hpp>
 
@@ -29,7 +30,7 @@ public:
      * Initialize the local edge filtering score.
      *
      * @param G The graph for which the score shall be.
-     * @param attribute The input attribute according to which the edges shall be fitlered locally.
+     * @param attribute The input attribute according to which the edges shall be filtered locally.
      * @param logarithmic If the score shall be logarithmic in the rank (then d^e edges are kept). Linear otherwise.
      */
     LocalFilterScore(const Graph& G, const std::vector< InType > &attribute, bool logarithmic = true) :
