@@ -7,15 +7,15 @@
 
 #include <numeric>
 #include <tuple>
-#include <networkit/auxiliary/Random.hpp>
+
 #include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/auxiliary/Random.hpp>
 #include <networkit/edgescores/EdgeScoreLinearizer.hpp>
 
 namespace NetworKit {
 
 EdgeScoreLinearizer::EdgeScoreLinearizer(const Graph& G, const std::vector<double>& attribute, bool inverse) : EdgeScore<double>(G), attribute(&attribute), inverse(inverse) {
 }
-
 
 void EdgeScoreLinearizer::run() {
     if (!G->hasEdgeIds()) {
