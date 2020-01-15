@@ -11,15 +11,14 @@
 
 namespace NetworKit {
 
-ChibaNishizekiTriangleEdgeScore::ChibaNishizekiTriangleEdgeScore(const Graph& G) : EdgeScore<count>(G) {
-}
+ChibaNishizekiTriangleEdgeScore::ChibaNishizekiTriangleEdgeScore(const Graph& G) : EdgeScore<count>(G) {}
 
 void ChibaNishizekiTriangleEdgeScore::run() {
     if (!G->hasEdgeIds()) {
         throw std::runtime_error("edges have not been indexed - call indexEdges first");
     }
 
-    std::vector<std::vector<std::pair<node, edgeid> > > edges(G->upperNodeIdBound());
+    std::vector<std::vector<std::pair<node, edgeid>>> edges(G->upperNodeIdBound());
 
     // copy edges with edge ids
     G->parallelForNodes([&](node u) {
