@@ -18,7 +18,7 @@ void ChanceCorrectedTriangleScore::run() {
     }
 
     scoreData.resize(G->upperEdgeIdBound(), 0.0);
-    
+
     G->parallelForEdges([&](node u, node v, edgeid eid) {
         if ((*triangles)[eid] > 0) {
             scoreData[eid] = (*triangles)[eid] * (G->numberOfNodes() - 2) * 1.0 / ((G->degree(u) - 1) * (G->degree(v) - 1));
@@ -26,7 +26,7 @@ void ChanceCorrectedTriangleScore::run() {
             scoreData[eid] = 1;
         }
     });
-    
+
     hasRun = true;
 }
 
