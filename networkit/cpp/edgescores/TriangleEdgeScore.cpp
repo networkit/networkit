@@ -5,10 +5,11 @@
  *      Author: Michael Hamann, Gerd Lindner
  */
 
+#include <omp.h>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Timer.hpp>
 #include <networkit/edgescores/TriangleEdgeScore.hpp>
-#include <omp.h>
 
 namespace NetworKit {
 

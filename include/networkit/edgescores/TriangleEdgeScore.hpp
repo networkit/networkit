@@ -5,6 +5,8 @@
  *      Author: Gerd Lindner, Michael Hamann
  */
 
+// networkit-format
+
 #ifndef NETWORKIT_EDGESCORES_TRIANGLE_EDGE_SCORE_HPP_
 #define NETWORKIT_EDGESCORES_TRIANGLE_EDGE_SCORE_HPP_
 
@@ -22,18 +24,16 @@ namespace NetworKit {
  * ChibaNishizekiTriangleEdgeScore in NetworKit.
  *
  * [0] Triangle Listing Algorithms: Back from the Diversion
- * Mark Ortmann and Ulrik Brandes                                                                          *
- * 2014 Proceedings of the Sixteenth Workshop on Algorithm Engineering and Experiments (ALENEX). 2014, 1-8
+ * Mark Ortmann and Ulrik Brandes * 2014 Proceedings of the Sixteenth Workshop on Algorithm
+ * Engineering and Experiments (ALENEX). 2014, 1-8
  */
 class TriangleEdgeScore final : public EdgeScore<count> {
 
 public:
-
-    TriangleEdgeScore(const Graph& G);
+    TriangleEdgeScore(const Graph &G);
     count score(edgeid eid) override;
     count score(node u, node v) override;
     void run() override;
-
 };
 
 } /* namespace NetworKit */
