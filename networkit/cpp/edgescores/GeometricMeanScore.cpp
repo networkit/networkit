@@ -6,6 +6,7 @@
  */
 
 #include <cmath>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/edgescores/GeometricMeanScore.hpp>
 
@@ -20,15 +21,15 @@ void GeometricMeanScore::run() {
     }
 
     scoreData.resize(G->upperEdgeIdBound());
-    
+
     std::vector<double> nodeSum(G->upperNodeIdBound());
-    
+
     G->parallelForNodes([&](node u) {
         G->forEdgesOf(u, [&](node, node, edgeid eid) {
             nodeSum[u] += (*attribute)[eid];
         });
     });
-    
+
     G->parallelForEdges([&](node u, node v, edgeid eid) {
         if ((*attribute)[eid] > 0) {
             scoreData[eid] = (*attribute)[eid] * 1.0 / std::sqrt(nodeSum[u] * nodeSum[v]);
@@ -37,7 +38,7 @@ void GeometricMeanScore::run() {
             }
         }
     });
-    
+
     hasRun = true;
 }
 
