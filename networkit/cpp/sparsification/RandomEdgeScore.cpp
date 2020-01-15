@@ -9,8 +9,7 @@
 
 namespace NetworKit {
 
-RandomEdgeScore::RandomEdgeScore(const Graph& G) : EdgeScore<double>(G) {
-}
+RandomEdgeScore::RandomEdgeScore(const Graph& G) : EdgeScore<double>(G) {}
 
 void RandomEdgeScore::run() {
     if (!G->hasEdgeIds()) {
@@ -19,8 +18,6 @@ void RandomEdgeScore::run() {
     scoreData.resize(G->upperEdgeIdBound(), 0.0);
 
     G->parallelForEdges([&](node, node, edgeid eid) {
-        //double r = Aux::Random::probability();
-        //scoreData[eid] = randomness * r + (1 - randomness) * attribute[eid];
         scoreData[eid] = Aux::Random::probability();
     });
     hasRun = true;
