@@ -25,7 +25,8 @@ namespace NetworKit {
     }
 
     /** Get a vector containing the score for each edge in the graph.
-    @Return the edge scores calculated by @link run().
+     *
+     * @return the edge scores calculated by @link run().
     */
     template<typename T>
     std::vector<T> EdgeScore<T>::scores() const {
